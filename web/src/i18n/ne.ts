@@ -2373,4 +2373,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'एउटा गोप्य देश छानिन्छ, र सबैले अरू देशको अनुमान गर्छन्। हरेक अनुमानले गोप्य देशसम्मको दूरी र दिशा, क्षेत्र, उपक्षेत्र र जनसंख्या देखाउँछ। कम अनुमानमा ठीक बुझ्नेलाई बढी अङ्क मिल्छ।',
   'Apagar conversa': 'कुराकानी मेटाऊ',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'कुराकानी तिम्रो सूचीबाट हट्छ र सन्देशहरू तिम्रो लागि मात्र मेटिन्छन्। अरूले सबै कुरा देखिरहन्छन्, र नयाँ सन्देश आएपछि कुराकानी फर्किन्छ।',
+  'Responder': 'जवाफ देऊ',
+  'Respondendo a {nome}': '{nome} लाई जवाफ',
+  'Cancelar resposta': 'जवाफ रद्द गर',
+  'Mensagem apagada': 'मेटाइएको सन्देश',
+  'Anexo': 'संलग्न फाइल',
 } satisfies Record<string, string>;

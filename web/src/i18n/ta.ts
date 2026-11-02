@@ -2286,4 +2286,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'ஒரு ரகசிய நாடு தேர்வாகும்; ஒவ்வொருவரும் மற்ற நாடுகளை ஊகிக்கலாம். ஒவ்வொரு ஊகமும் ரகசிய நாட்டுக்கான தூரம், திசை, பகுதி, துணைப் பகுதி, மக்கள்தொகை ஆகியவற்றைக் காட்டும். குறைந்த ஊகங்களில் சரியாகக் கண்டுபிடிப்பவருக்கு அதிகப் புள்ளிகள்.',
   'Apagar conversa': 'உரையாடலை நீக்கு',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'உரையாடல் உன் பட்டியலிலிருந்து போய்விடும், செய்திகள் உனக்கு மட்டும் மறைந்துவிடும். மற்றவர்கள் எல்லாவற்றையும் தொடர்ந்து பார்ப்பார்கள், புதிய செய்தி வந்தால் உரையாடல் திரும்ப வரும்.',
+  'Responder': 'பதில் அளி',
+  'Respondendo a {nome}': '{nome} க்குப் பதில்',
+  'Cancelar resposta': 'பதிலை ரத்துசெய்',
+  'Mensagem apagada': 'நீக்கப்பட்ட செய்தி',
+  'Anexo': 'இணைப்பு',
 } satisfies Record<string, string>;

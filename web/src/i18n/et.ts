@@ -2368,4 +2368,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Loositakse salajane riik ja igaüks pakub teisi. Iga pakkumine näitab kaugust ja suunda salajase riigini, piirkonda, alampiirkonda ja rahvaarvu. Mida vähemate pakkumistega ära arvata, seda rohkem punkte.',
   'Apagar conversa': 'Kustuta vestlus',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Vestlus kaob sinu nimekirjast ja sõnumid kaovad ainult sinu jaoks. Teised näevad endiselt kõike ja uus sõnum toob vestluse tagasi.',
+  'Responder': 'Vasta',
+  'Respondendo a {nome}': 'Vastus kasutajale {nome}',
+  'Cancelar resposta': 'Tühista vastus',
+  'Mensagem apagada': 'Kustutatud sõnum',
+  'Anexo': 'Manus',
 } satisfies Record<string, string>;

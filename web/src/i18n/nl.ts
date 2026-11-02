@@ -2300,4 +2300,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Er wordt een geheim land getrokken, en iedereen raadt andere. Elke gok laat de afstand en de richting naar het geheime land zien, de regio, de subregio en de bevolking. Wie het met minder gokken raadt, krijgt meer punten.',
   'Apagar conversa': 'Gesprek verwijderen',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Het gesprek verdwijnt uit je lijst en de berichten verdwijnen alleen voor jou. De anderen blijven alles zien, en een nieuw bericht brengt het gesprek terug.',
+  'Responder': 'Beantwoorden',
+  'Respondendo a {nome}': 'Antwoord aan {nome}',
+  'Cancelar resposta': 'Antwoord annuleren',
+  'Mensagem apagada': 'Verwijderd bericht',
+  'Anexo': 'Bijlage',
 } satisfies Record<string, string>;

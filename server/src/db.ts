@@ -229,6 +229,20 @@ export interface Message {
   reactions: Reaction[];
   /** Quando esta mensagem é uma ideia mandada pela tela inicial: o número dela e se já foi acolhida. */
   suggestion: { id: number; accepted: boolean } | null;
+  /** A mensagem a que esta responde, resumida; null quando não é resposta. Ver a tabela `respostas`. */
+  replyTo: Citacao | null;
+}
+
+/**
+ * O pedacinho da original que aparece em cima da resposta. `id` nulo quando a original não existe mais para quem lê:
+ * apagada, ou de antes de a pessoa apagar a conversa (ver apagarConversaParaMim). Aí não vai nem autor nem texto.
+ */
+export interface Citacao {
+  id: number | null;
+  author: UserRef | null;
+  content: string;
+  anexos: number;
+  enquete: string | null;
 }
 
 const db = new DatabaseSync(config.databasePath);
@@ -1018,6 +1032,20 @@ addColumnIfMissing('channel_members', 'last_read_id', 'INTEGER');
  */
 addColumnIfMissing('channel_members', 'apagada_ate', 'INTEGER');
 addColumnIfMissing('channel_members', 'escondida', 'INTEGER NOT NULL DEFAULT 0');
+
+/**
+ * RESPONDER A UMA MENSAGEM (pedido dele, 02/11/2026). Tabela à parte, e não uma coluna em messages, porque são DOIS
+ * fatos: "esta mensagem é uma resposta" (a linha existe) e "a original ainda existe" (`alvo_id` não é nulo). Com uma
+ * coluna só, apagar a original faria a resposta parecer mensagem comum, e o id solto podia até ser reaproveitado por
+ * uma mensagem nova (INTEGER PRIMARY KEY sem AUTOINCREMENT), citando o que ninguém citou.
+ */
+db.exec(`
+  CREATE TABLE IF NOT EXISTS respostas (
+    message_id INTEGER PRIMARY KEY REFERENCES messages(id) ON DELETE CASCADE,
+    alvo_id    INTEGER REFERENCES messages(id) ON DELETE SET NULL
+  );
+  CREATE INDEX IF NOT EXISTS idx_respostas_alvo ON respostas(alvo_id);
+`);
 
 /**
  * ===================================================================================================
@@ -3189,7 +3217,75 @@ function toMessage(row: MessageRow): Message {
     thread: null,
     reactions: [],
     suggestion: null,
+    replyTo: null,
   };
+}
+
+/** Até onde a citação mostra o texto da original: o bastante para reconhecer, sem repetir a mensagem inteira. */
+const CITACAO_MAX = 200;
+
+/** As citações das respostas entre `ids`, do jeito que `viewerId` pode vê-las. */
+function citacoes(ids: number[], viewerId: number): Map<number, Citacao> {
+  const resultado = new Map<number, Citacao>();
+  if (ids.length === 0) return resultado;
+  const linhas = db
+    .prepare(
+      `SELECT r.message_id AS messageId, a.id AS alvoId, a.content, u.id AS userId, u.username,
+              u.nome_exibicao AS nomeDeExibicao, u.sistema,
+              (SELECT COUNT(*) FROM attachments f WHERE f.message_id = a.id) AS anexos,
+              (SELECT p.question FROM polls p WHERE p.message_id = a.id) AS enquete,
+              COALESCE((SELECT cm.apagada_ate FROM channel_members cm WHERE cm.channel_id = a.channel_id AND cm.user_id = ?), 0) AS apagadaAte
+       FROM respostas r
+       LEFT JOIN messages a ON a.id = r.alvo_id
+       LEFT JOIN users u ON u.id = a.user_id
+       WHERE r.message_id IN (${idList(ids)})`,
+    )
+    .all(viewerId) as unknown as {
+    messageId: number;
+    alvoId: number | null;
+    content: string | null;
+    userId: number | null;
+    username: string | null;
+    nomeDeExibicao: string | null;
+    sistema: number | null;
+    anexos: number;
+    enquete: string | null;
+    apagadaAte: number;
+  }[];
+  for (const l of linhas) {
+    if (l.alvoId === null || l.alvoId <= l.apagadaAte || l.userId === null) {
+      resultado.set(l.messageId, { id: null, author: null, content: '', anexos: 0, enquete: null });
+      continue;
+    }
+    resultado.set(l.messageId, {
+      id: l.alvoId,
+      author: l.sistema === 1 ? { id: l.userId, username: 'Syden', app: true } : { id: l.userId, username: l.username ?? '', nomeDeExibicao: l.nomeDeExibicao },
+      content: (l.content ?? '').slice(0, CITACAO_MAX),
+      anexos: l.anexos,
+      enquete: l.enquete,
+    });
+  }
+  return resultado;
+}
+
+/** A citação de UMA resposta para quem lê; para mandar a mesma mensagem a cada pessoa de uma conversa privada. */
+export function citacaoPara(messageId: number, viewerId: number): Citacao | null {
+  return citacoes([messageId], viewerId).get(messageId) ?? null;
+}
+
+/**
+ * Dá para responder a `alvoId` daqui? Tem de ser do mesmo canal e do mesmo lugar dele (o canal ou o mesmo tópico), e
+ * quem responde tem de poder vê-la: quem apagou a conversa não cita o que apagou.
+ */
+export function podeResponderA(alvoId: number, channelId: number, threadId: number | null, userId: number): boolean {
+  const alvo = db
+    .prepare(
+      `SELECT m.channel_id AS channelId, m.thread_id AS threadId,
+              COALESCE((SELECT cm.apagada_ate FROM channel_members cm WHERE cm.channel_id = m.channel_id AND cm.user_id = ?), 0) AS apagadaAte
+       FROM messages m WHERE m.id = ?`,
+    )
+    .get(userId, alvoId) as { channelId: number; threadId: number | null; apagadaAte: number } | undefined;
+  return !!alvo && alvo.channelId === channelId && alvo.threadId === threadId && alvoId > alvo.apagadaAte;
 }
 
 /** Lista de ids para um `IN (...)`. São números vindos do próprio banco, então não há o que escapar. */
@@ -3203,6 +3299,11 @@ function hydrate(messages: Message[], viewerId: number): Message[] {
   if (messages.length === 0) return messages;
   const byId = new Map(messages.map((m) => [m.id, m]));
   const ids = idList([...byId.keys()]);
+
+  for (const [messageId, citacao] of citacoes([...byId.keys()], viewerId)) {
+    const m = byId.get(messageId);
+    if (m) m.replyTo = citacao;
+  }
 
   const files = db
     .prepare(
@@ -3635,12 +3736,18 @@ export function trafficForMonth(month: string): number {
   return (db.prepare('SELECT bytes FROM traffic_months WHERE month = ?').get(month) as { bytes: number } | undefined)?.bytes ?? 0;
 }
 
-export function createMessage(channelId: number, userId: number, content: string, threadId: number | null = null): Message {
+/** `replyTo` já conferido por quem chama (podeResponderA); a citação volta montada do jeito que QUEM ESCREVEU a vê. */
+export function createMessage(channelId: number, userId: number, content: string, threadId: number | null = null, replyTo: number | null = null): Message {
   const result = db
     .prepare('INSERT INTO messages (channel_id, user_id, content, thread_id) VALUES (?, ?, ?, ?)')
     .run(channelId, userId, content, threadId);
   const row = db.prepare(`${messageSelect} WHERE m.id = ?`).get(result.lastInsertRowid) as unknown as MessageRow;
-  return toMessage(row);
+  const message = toMessage(row);
+  if (replyTo !== null) {
+    db.prepare('INSERT INTO respostas (message_id, alvo_id) VALUES (?, ?)').run(message.id, replyTo);
+    message.replyTo = citacaoPara(message.id, userId);
+  }
+  return message;
 }
 
 // ---------- Reações ----------

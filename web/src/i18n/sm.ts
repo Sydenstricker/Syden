@@ -2305,4 +2305,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'E filifilia se atunuʻu lilo, ma e taumate e tagata taʻitoʻatasi isi. E faʻaali e taumate taʻitasi le mamao ma le itu e agaʻi i le atunuʻu lilo, le itulagi, le vaega itulagi ma le faitau tagata. O lē e saʻo i taumate e sili ona itiiti e maua ni ʻai e tele.',
   'Apagar conversa': 'Tape le talanoaga',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'O le a alu ese le talanoaga mai lau lisi ma o le a mou atu feʻau mo oe naʻo oe. O isi o loʻo vaʻai pea i mea uma, ma o se feʻau fou e toe aumaia ai le talanoaga.',
+  'Responder': 'Tali',
+  'Respondendo a {nome}': 'O loʻo tali atu iā {nome}',
+  'Cancelar resposta': 'Faʻaleaogā le tali',
+  'Mensagem apagada': 'Feʻau ua tapeʻese',
+  'Anexo': 'Faila faʻapipiʻi',
 } satisfies Record<string, string>;

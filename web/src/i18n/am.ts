@@ -2301,4 +2301,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'ሚስጥራዊ አገር ይመረጣል፣ እና እያንዳንዱ ተጫዋች ሌሎችን ይገምታል። እያንዳንዱ ግምት እስከ ሚስጥራዊው አገር ያለውን ርቀትና አቅጣጫ፣ ክልሉን፣ ንዑስ ክልሉን እና የሕዝብ ብዛቱን ያሳያል። በጥቂት ግምቶች ያገኘ ብዙ ነጥብ ያገኛል።',
   'Apagar conversa': 'ውይይቱን ሰርዝ',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'ውይይቱ ከዝርዝርዎ ይወጣል፣ መልእክቶቹም ለእርስዎ ብቻ ይጠፋሉ። ሌሎቹ ሰዎች ሁሉንም ማየታቸውን ይቀጥላሉ፣ አዲስ መልእክት ደግሞ ውይይቱን ይመልሰዋል።',
+  'Responder': 'መልስ',
+  'Respondendo a {nome}': 'ለ{nome} መልስ',
+  'Cancelar resposta': 'መልሱን ሰርዝ',
+  'Mensagem apagada': 'መልእክቱ ተሰርዟል',
+  'Anexo': 'አባሪ',
 } satisfies Record<string, string>;

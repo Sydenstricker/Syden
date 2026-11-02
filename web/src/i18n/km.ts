@@ -2370,4 +2370,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'មានប្រទេសសម្ងាត់មួយ ហើយម្នាក់ៗទាយប្រទេសផ្សេងទៀត។ ការទាយនីមួយៗបង្ហាញចម្ងាយ និងទិសដៅទៅប្រទេសសម្ងាត់ តំបន់ អនុតំបន់ និងប្រជាជន។ អ្នកដែលទាយត្រូវដោយទាយតិចជាង ទទួលបានពិន្ទុច្រើនជាង។',
   'Apagar conversa': 'លុបការសន្ទនា',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'ការសន្ទនានឹងចេញពីបញ្ជីរបស់អ្នក ហើយសារនឹងបាត់សម្រាប់តែអ្នកប៉ុណ្ណោះ។ អ្នកផ្សេងទៀតនៅតែឃើញទាំងអស់ ហើយសារថ្មីនឹងនាំការសន្ទនាត្រឡប់មកវិញ។',
+  'Responder': 'ឆ្លើយតប',
+  'Respondendo a {nome}': 'កំពុងឆ្លើយតបទៅ {nome}',
+  'Cancelar resposta': 'បោះបង់ការឆ្លើយតប',
+  'Mensagem apagada': 'សារដែលបានលុប',
+  'Anexo': 'ឯកសារភ្ជាប់',
 } satisfies Record<string, string>;

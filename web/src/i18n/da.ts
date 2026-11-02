@@ -2365,4 +2365,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Et hemmeligt land trækkes, og alle gætter på andre. Hvert gæt viser afstanden og retningen til det hemmelige, regionen, delregionen og befolkningen. Den, der rammer det med færrest gæt, får flest point.',
   'Apagar conversa': 'Slet samtale',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Samtalen forsvinder fra din liste, og beskederne forsvinder kun for dig. De andre kan stadig se det hele, og en ny besked bringer samtalen tilbage.',
+  'Responder': 'Svar',
+  'Respondendo a {nome}': 'Svarer {nome}',
+  'Cancelar resposta': 'Annuller svar',
+  'Mensagem apagada': 'Slettet besked',
+  'Anexo': 'Vedhæftet fil',
 } satisfies Record<string, string>;

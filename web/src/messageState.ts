@@ -58,3 +58,13 @@ export function applyReactionUpdate(list: Message[], update: ReactionUpdate): Me
 export function replaceReactions(list: Message[], messageId: number, reactions: Reaction[]): Message[] {
   return list.map((message) => (message.id === messageId ? { ...message, reactions } : message));
 }
+
+/**
+ * Tira a mensagem apagada da lista, e as respostas a ela passam a citar "mensagem apagada" na hora, como o servidor
+ * faria ao recarregar (a tabela `respostas` perde o alvo).
+ */
+export function removeMessage(list: Message[], id: number): Message[] {
+  return list
+    .filter((m) => m.id !== id)
+    .map((m) => (m.replyTo?.id === id ? { ...m, replyTo: { id: null, author: null, content: '', anexos: 0, enquete: null } } : m));
+}

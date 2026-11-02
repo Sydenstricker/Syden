@@ -29,6 +29,21 @@ export const salaDaPessoa = (userId: number) => `user:${userId}`;
 export const channelRoom = (channel: { id: number; communityId: number | null }) =>
   channel.communityId === null ? directRoom(channel.id) : communityRoom(channel.communityId);
 
+/**
+ * Manda a mensagem nova para quem tem que receber. A exceção é a RESPOSTA numa conversa privada: cada pessoa recebe a
+ * citação do jeito que a vê, porque quem apagou a conversa não pode receber de volta o texto que apagou.
+ */
+export function publicarMensagem(io: IOServer, channel: { id: number; communityId: number | null }, message: db.Message) {
+  const evento = { ...message, communityId: channel.communityId };
+  if (channel.communityId === null && message.replyTo?.id != null) {
+    for (const userId of db.channelMemberIds(channel.id)) {
+      io.to(salaDaPessoa(userId)).emit('message:new', { ...evento, replyTo: db.citacaoPara(message.id, userId) });
+    }
+    return;
+  }
+  io.to(channelRoom(channel)).emit('message:new', evento);
+}
+
 /** Status de presença, como no Discord. "invisivel" faz o cliente tratar a pessoa como offline (ver
  * web/src/MemberList.tsx) — a marcação em si é só de boa-fé, não é escondida de verdade no servidor. */
 export type PresenceStatus = 'online' | 'ausente' | 'ocupado' | 'invisivel';
@@ -430,7 +445,7 @@ export function setupRealtime(io: IOServer) {
       broadcastPresence(io);
     });
 
-    socket.on('message:send', (payload: { channelId?: number; content?: string; threadId?: number }, ack?: Ack) => {
+    socket.on('message:send', (payload: { channelId?: number; content?: string; threadId?: number; replyTo?: number }, ack?: Ack) => {
       const content = String(payload?.content ?? '').trim();
       const channel = db.findChannel(Number(payload?.channelId));
       if (!channel || (channel.type !== 'text' && channel.type !== 'dm')) return ack?.({ ok: false, error: 'Canal inválido.' });
@@ -450,12 +465,17 @@ export function setupRealtime(io: IOServer) {
         if (!thread || thread.channelId !== channel.id) return ack?.({ ok: false, error: 'Tópico não encontrado.' });
         threadId = thread.id;
       }
+      // Respondendo a uma mensagem: ela tem de estar aqui mesmo (ver podeResponderA).
+      let replyTo: number | null = null;
+      if (payload?.replyTo !== undefined && payload.replyTo !== null) {
+        replyTo = Number(payload.replyTo);
+        if (!Number.isInteger(replyTo) || !db.podeResponderA(replyTo, channel.id, threadId, user.id)) {
+          return ack?.({ ok: false, error: 'A mensagem que você está respondendo não existe mais.' });
+        }
+      }
 
       const room = channelRoom(channel);
-      io.to(room).emit('message:new', {
-        ...db.createMessage(channel.id, user.id, content, threadId),
-        communityId: channel.communityId,
-      });
+      publicarMensagem(io, channel, db.createMessage(channel.id, user.id, content, threadId, replyTo));
       if (threadId !== null) {
         const thread = db.findThread(threadId);
         if (thread) io.to(room).emit('thread:updated', { ...thread, communityId: channel.communityId });

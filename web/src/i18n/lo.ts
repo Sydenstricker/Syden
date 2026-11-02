@@ -2372,4 +2372,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'ລະບົບສຸ່ມປະເທດລັບມາໜຶ່ງປະເທດ ແລ້ວທຸກຄົນທາຍປະເທດອື່ນ ທຸກເທື່ອທີ່ທາຍຈະເຫັນໄລຍະທາງ ແລະທິດທາງໄປຫາປະເທດລັບ ພາກພື້ນ ອະນຸພາກພື້ນ ແລະພົນລະເມືອງ ໃຜທາຍຖືກໂດຍໃຊ້ໜ້ອຍເທື່ອກວ່າໄດ້ຄະແນນຫຼາຍກວ່າ',
   'Apagar conversa': 'ລຶບການສົນທະນາ',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'ການສົນທະນາຈະອອກຈາກລາຍການຂອງເຈົ້າ ແລະ ຂໍ້ຄວາມຈະຫາຍໄປສະເພາະເຈົ້າເທົ່ານັ້ນ. ຄົນອື່ນຍັງເຫັນທຸກຢ່າງ, ແລະ ຂໍ້ຄວາມໃໝ່ຈະນຳການສົນທະນາກັບມາ.',
+  'Responder': 'ຕອບກັບ',
+  'Respondendo a {nome}': 'ຕອບກັບ {nome}',
+  'Cancelar resposta': 'ຍົກເລີກການຕອບ',
+  'Mensagem apagada': 'ຂໍ້ຄວາມທີ່ຖືກລຶບ',
+  'Anexo': 'ໄຟລ໌ແນບ',
 } satisfies Record<string, string>;

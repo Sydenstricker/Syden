@@ -2298,4 +2298,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Satu negara rahasia dipilih, dan setiap orang menebak negara lain. Setiap tebakan menunjukkan jarak dan arah ke negara rahasia, wilayah, subwilayah, dan populasinya. Yang benar dengan tebakan paling sedikit mendapat poin lebih banyak.',
   'Apagar conversa': 'Hapus percakapan',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Percakapan keluar dari daftarmu dan pesannya hilang hanya untukmu. Orang lain tetap melihat semuanya, dan pesan baru akan mengembalikan percakapan.',
+  'Responder': 'Balas',
+  'Respondendo a {nome}': 'Membalas {nome}',
+  'Cancelar resposta': 'Batalkan balasan',
+  'Mensagem apagada': 'Pesan dihapus',
+  'Anexo': 'Lampiran',
 } satisfies Record<string, string>;

@@ -2283,4 +2283,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'ఒక రహస్య దేశం ఎంపికవుతుంది, ప్రతి ఒక్కరూ వేరే దేశాలను ఊహిస్తారు. ప్రతి అంచనా రహస్య దేశానికి దూరం, దిశ, ప్రాంతం, ఉపప్రాంతం, జనాభాను చూపిస్తుంది. తక్కువ అంచనాలతో సరిగ్గా కనిపెట్టినవారికి ఎక్కువ పాయింట్లు.',
   'Apagar conversa': 'సంభాషణను తొలగించు',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'సంభాషణ నీ జాబితా నుండి వెళ్లిపోతుంది, సందేశాలు నీకు మాత్రమే కనిపించవు. మిగతావాళ్లకు అన్నీ కనిపిస్తూనే ఉంటాయి, కొత్త సందేశం వస్తే సంభాషణ మళ్లీ వస్తుంది.',
+  'Responder': 'జవాబు ఇవ్వు',
+  'Respondendo a {nome}': '{nome}కి జవాబు',
+  'Cancelar resposta': 'జవాబును రద్దు చేయి',
+  'Mensagem apagada': 'తొలగించిన సందేశం',
+  'Anexo': 'జోడింపు',
 } satisfies Record<string, string>;

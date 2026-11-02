@@ -2319,4 +2319,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Загадывается секретная страна, а все называют другие. Каждая попытка показывает расстояние и направление до секретной страны, регион, субрегион и население. Кто угадает за меньшее число попыток, получает больше очков.',
   'Apagar conversa': 'Удалить переписку',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Переписка исчезнет из твоего списка, а сообщения пропадут только у тебя. Остальные по-прежнему видят всё, а новое сообщение вернёт переписку.',
+  'Responder': 'Ответить',
+  'Respondendo a {nome}': 'Ответ для {nome}',
+  'Cancelar resposta': 'Отменить ответ',
+  'Mensagem apagada': 'Удалённое сообщение',
+  'Anexo': 'Вложение',
 } satisfies Record<string, string>;

@@ -2307,4 +2307,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'ʻOku fili ha fonua fufū, pea fakafuofua ʻa e tokotaha kotoa ki ha niʻihi kehe. ʻOku fakahā ʻe he fakafuofua taki taha ʻa e mamaʻo mo e hala ki he fonua fufū, feituʻu, feituʻu siʻi mo e kakai. Ko ia ʻoku tonu ʻi he fakafuofua siʻi taha ʻe maʻu ʻa e ngaahi poini lahi ange.',
   'Apagar conversa': 'Tāmateʻi ʻa e fetalanoaʻaki',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'ʻE mole atu ʻa e fetalanoaʻaki mei hoʻo lisí pea ʻe mole ʻa e ngaahi pōpoaki maʻau pē. ʻOku kei sio pē ʻa e niʻihi kehé ki he meʻa kotoa, pea ʻe toe ʻomi ʻe ha pōpoaki foʻou ʻa e fetalanoaʻakí.',
+  'Responder': 'Tali',
+  'Respondendo a {nome}': 'Tali kia {nome}',
+  'Cancelar resposta': 'Taʻofi ʻa e tali',
+  'Mensagem apagada': 'Pōpoaki kuo tāmateʻi',
+  'Anexo': 'Faile fakapipiki',
 } satisfies Record<string, string>;

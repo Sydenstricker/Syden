@@ -2370,4 +2370,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Izvlači se tajna država, a svi pogađaju druge. Svaki pokušaj pokazuje udaljenost i smjer do tajne države, region, podregion i stanovništvo. Ko pogodi iz manje pokušaja, dobija više poena.',
   'Apagar conversa': 'Obriši razgovor',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Razgovor nestaje s tvoje liste, a poruke nestaju samo za tebe. Ostali i dalje vide sve, a nova poruka vraća razgovor.',
+  'Responder': 'Odgovori',
+  'Respondendo a {nome}': 'Odgovor za {nome}',
+  'Cancelar resposta': 'Otkaži odgovor',
+  'Mensagem apagada': 'Obrisana poruka',
+  'Anexo': 'Prilog',
 } satisfies Record<string, string>;

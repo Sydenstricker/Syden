@@ -2373,4 +2373,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Gizlin bir ýurt saýlanýar, her kim başgalaryny çaklaýar. Her çaklama gizlin ýurda çenli aralygy we ugry, sebiti, kiçi sebiti we ilaty görkezýär. Az çaklama bilen tapan köp utuk alýar.',
   'Apagar conversa': 'Söhbetdeşligi poz',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Söhbetdeşlik sanawyňdan çykýar we hatlar diňe seniň üçin ýitýär. Beýlekiler hemme zady görmegi dowam edýär, täze hat bolsa söhbetdeşligi yzyna getirýär.',
+  'Responder': 'Jogap ber',
+  'Respondendo a {nome}': '{nome} üçin jogap',
+  'Cancelar resposta': 'Jogaby ýatyr',
+  'Mensagem apagada': 'Pozulan hat',
+  'Anexo': 'Goşundy',
 } satisfies Record<string, string>;

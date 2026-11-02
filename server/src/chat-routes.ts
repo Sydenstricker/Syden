@@ -8,7 +8,7 @@ import { talvezDestacar } from './destaques-routes.js';
 import { pontuarMensagem } from './niveis.js';
 import { entregarArquivo } from './entregar.js';
 import { decodeDataUrl, sniffAttachmentMime } from './media.js';
-import { channelRoom, communityRoom } from './realtime.js';
+import { channelRoom, communityRoom, publicarMensagem } from './realtime.js';
 import { canUseChannel, cotaEsgotada, manages, poderDeOperador, requireUser, roleIn } from './routes.js';
 
 const MB = 1024 * 1024;
@@ -85,7 +85,7 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
     /** Manda a mensagem pronta para quem tem que receber: a comunidade toda, ou só a conversa privada. */
     function publish(channel: db.Channel, message: db.Message) {
       const room = channelRoom(channel);
-      io.to(room).emit('message:new', { ...message, communityId: channel.communityId });
+      publicarMensagem(io, channel, message);
       if (message.threadId !== null) {
         const thread = db.findThread(message.threadId);
         if (thread) io.to(room).emit('thread:updated', { ...thread, communityId: channel.communityId });
@@ -134,7 +134,7 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
 
     authed.post<{
       Params: { id: string };
-      Body: { content?: string; threadId?: number; files?: { name?: string; data?: string; width?: number; height?: number }[] };
+      Body: { content?: string; threadId?: number; replyTo?: number; files?: { name?: string; data?: string; width?: number; height?: number }[] };
     }>('/api/channels/:id/messages', { bodyLimit: UPLOAD_BODY_LIMIT }, async (request, reply) => {
       if (cotaEsgotada(request, reply)) return reply;
       const where = destination(request, reply, request.body?.threadId);
@@ -150,6 +150,10 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
         return reply.code(400).send({ error: `Dá para mandar até ${MAX_FILES_PER_MESSAGE} arquivos por mensagem.` });
       }
       if (content.length > 2000) return reply.code(400).send({ error: 'Mensagem longa demais.' });
+      const replyTo = request.body?.replyTo === undefined || request.body.replyTo === null ? null : Number(request.body.replyTo);
+      if (replyTo !== null && (!Number.isInteger(replyTo) || !db.podeResponderA(replyTo, where.channel.id, where.threadId, request.user.id))) {
+        return reply.code(400).send({ error: 'A mensagem que você está respondendo não existe mais.' });
+      }
 
       // Decodifica tudo antes de gravar: se um arquivo não presta, nada é criado pela metade.
       const prepared: db.NewAttachment[] = [];
@@ -181,7 +185,7 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
         });
       }
 
-      const message = db.createMessage(where.channel.id, request.user.id, content, where.threadId);
+      const message = db.createMessage(where.channel.id, request.user.id, content, where.threadId, replyTo);
       for (const file of prepared) message.attachments.push(db.addAttachment(message.id, file));
       // Os níveis (desligados, não faz nada): uma mensagem por minuto rende pontos. Ver niveis.ts.
       if (where.channel.communityId !== null) pontuarMensagem(io, where.channel.communityId, request.user.id);

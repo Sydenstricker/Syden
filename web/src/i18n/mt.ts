@@ -2317,4 +2317,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Joħroġ pajjiż sigriet, u kulħadd jipprova oħrajn. Kull tentattiv juri d-distanza u d-direzzjoni lejn is-sigriet, ir-reġjun, is-sottoreġjun u l-popolazzjoni. Min jaqta\' b\'inqas tentattivi jieħu aktar punti.',
   'Apagar conversa': 'Ħassar il-konversazzjoni',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Il-konversazzjoni toħroġ mil-lista tiegħek u l-messaġġi jisparixxu għalik biss. L-oħrajn jibqgħu jaraw kollox, u messaġġ ġdid iġib il-konversazzjoni lura.',
+  'Responder': 'Wieġeb',
+  'Respondendo a {nome}': 'Tweġiba lil {nome}',
+  'Cancelar resposta': 'Ikkanċella t-tweġiba',
+  'Mensagem apagada': 'Messaġġ imħassar',
+  'Anexo': 'Annessjoni',
 } satisfies Record<string, string>;

@@ -1,4 +1,5 @@
-import { Download, FileText, Flag, MessageSquarePlus, MessagesSquare, SmilePlus, ThumbsUp, Trash2, Check } from 'lucide-react';
+import { Download, FileText, Flag, MessageSquarePlus, MessagesSquare, Reply, SmilePlus, ThumbsUp, Trash2, Check } from 'lucide-react';
+import { useBloqueados } from './bloqueios';
 import { DialogoDeDenuncia } from './Denuncia';
 import { BotaoDeLembrete } from './Lembrete';
 import { useRef, useState } from 'react';
@@ -13,7 +14,7 @@ import { corDoNome, efeitoDoNome, letraDoNome } from './profileStyles';
 import { EmojiPicker } from './EmojiPicker';
 import { PollCard } from './PollCard';
 import { formatBytes } from './upload';
-import type { Attachment, Message, Poll, Reaction, ThreadSummary } from './types';
+import type { Attachment, Citacao, Message, Poll, Reaction, ThreadSummary } from './types';
 import { chave, idiomaAtual, t as traduzir, useT } from './i18n';
 import { gifDaMensagem } from './gifs';
 
@@ -220,6 +221,47 @@ function ThreadChip({ thread, onOpen }: { thread: ThreadSummary; onOpen: () => v
   );
 }
 
+/** O resumo de uma mensagem numa linha: o texto, ou o que ela traz quando não tem texto. */
+export function resumoDaMensagem(c: { content: string; anexos: number; enquete: string | null }, t: ReturnType<typeof useT>): string {
+  if (c.content) return gifDaMensagem(c.content) ? t('GIF') : c.content;
+  if (c.enquete) return c.enquete;
+  if (c.anexos > 0) return t('Anexo');
+  return '';
+}
+
+/**
+ * A ORIGINAL EM CIMA DA RESPOSTA. Clicar leva até ela, se estiver carregada na tela (é só rolar até lá e piscar).
+ * Original de quem você bloqueou fica sem texto, como as mensagens dela, que a conversa já esconde.
+ */
+function CitacaoDaResposta({ citacao }: { citacao: Citacao }) {
+  const t = useT();
+  const bloqueados = useBloqueados();
+  if (citacao.id === null || !citacao.author || bloqueados.has(citacao.author.id)) {
+    return (
+      <div className="citacao indisponivel">
+        <Reply size={14} aria-hidden="true" /> {t('Mensagem apagada')}
+      </div>
+    );
+  }
+  const alvo = citacao.id;
+  function irAte() {
+    const el = document.querySelector<HTMLElement>(`[data-mensagem="${alvo}"]`);
+    if (!el) return;
+    el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    el.classList.remove('destacada');
+    void el.offsetWidth; // recomeça a animação quando se clica duas vezes seguidas
+    el.classList.add('destacada');
+    window.setTimeout(() => el.classList.remove('destacada'), 1600);
+  }
+  return (
+    <button type="button" className="citacao" onClick={irAte}>
+      <Reply size={14} aria-hidden="true" />
+      <span className="citacao-autor">{citacao.author.app ? 'Syden' : nomeDe(citacao.author)}</span>
+      <span className="citacao-texto">{resumoDaMensagem(citacao, t)}</span>
+    </button>
+  );
+}
+
 /**
  * Uma mensagem na conversa, com tudo que ela pode carregar: texto, arquivos, enquete e o tópico
  * pendurado nela. O mesmo componente desenha as mensagens do canal e as respostas de um tópico.
@@ -235,6 +277,7 @@ export function MessageItem({
   onOpenThread,
   onCreateThread,
   onAcolher,
+  onReply,
   meuId,
 }: {
   message: Message;
@@ -249,6 +292,8 @@ export function MessageItem({
   onCreateThread?: (message: Message) => void;
   /** Só para quem cuida do Syden, e só em mensagem de ideia: o joinha que acolhe a sugestão. */
   onAcolher?: (message: Message) => void;
+  /** "Responder": a mensagem vai para cima do campo de escrever. Ausente onde não se escreve (a mãe do tópico). */
+  onReply?: (message: Message) => void;
   /** Quem está lendo: a mensagem dos outros ganha o "Denunciar" (a própria, não). */
   meuId?: number;
 }) {
@@ -281,6 +326,11 @@ export function MessageItem({
 
   const actions = (
     <div className="message-actions">
+      {onReply && (
+        <button className="message-action" title={t('Responder')} aria-label={t('Responder')} onClick={() => onReply(message)}>
+          <Reply size={16} />
+        </button>
+      )}
       <AddReactionButton onPick={(emoji) => void reactWith(emoji)} />
       <BotaoDeLembrete messageId={message.id} />
       {onAcolher && message.suggestion && !message.suggestion.accepted && (
@@ -335,9 +385,10 @@ export function MessageItem({
     </div>
   );
 
-  if (grouped) {
+  // A resposta nunca se agrupa com a anterior: a citação precisa do nome e da hora em volta para ser lida.
+  if (grouped && !message.replyTo) {
     return (
-      <div className="message grouped">
+      <div className="message grouped" data-mensagem={message.id}>
         <div className="message-body">{body}</div>
         {actions}
       </div>
@@ -345,9 +396,10 @@ export function MessageItem({
   }
 
   return (
-    <div className="message">
+    <div className="message" data-mensagem={message.id}>
       {message.author.app ? <AvatarDoApp size={40} /> : <Avatar name={nomeDe(message.author)} userId={message.author.id} size={40} />}
       <div className="message-body">
+        {message.replyTo && <CitacaoDaResposta citacao={message.replyTo} />}
         <div className="message-meta">
           <AutorNome id={message.author.id} nome={message.author.username} nomeDeExibicao={message.author.nomeDeExibicao} app={message.author.app} />
           <time dateTime={message.createdAt}>{formatTime(message.createdAt)}</time>

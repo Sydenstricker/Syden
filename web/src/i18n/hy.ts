@@ -2390,4 +2390,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Ընտրվում է գաղտնի երկիր, և ամեն մեկը ուրիշներին է գուշակում։ Ամեն փորձ ցույց է տալիս հեռավորությունը և ուղղությունը մինչև գաղտնի երկիրը, տարածաշրջանը, ենթատարածաշրջանը և բնակչությունը։ Ով ավելի քիչ փորձով գուշակի, ավելի շատ միավոր կստանա։',
   'Apagar conversa': 'Ջնջել զրույցը',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Զրույցը դուրս է գալիս քո ցուցակից, և հաղորդագրությունները անհետանում են միայն քեզ համար։ Մյուսները շարունակում են տեսնել ամեն ինչ, իսկ նոր հաղորդագրությունը վերադարձնում է զրույցը։',
+  'Responder': 'Պատասխանել',
+  'Respondendo a {nome}': 'Պատասխան {nome}-ին',
+  'Cancelar resposta': 'Չեղարկել պատասխանը',
+  'Mensagem apagada': 'Ջնջված հաղորդագրություն',
+  'Anexo': 'Կցորդ',
 } satisfies Record<string, string>;

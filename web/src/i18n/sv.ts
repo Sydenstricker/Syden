@@ -2363,4 +2363,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Ett hemligt land dras, och alla gissar på andra. Varje gissning visar avståndet och riktningen till det hemliga, regionen, delregionen och befolkningen. Den som klarar det på färre gissningar får fler poäng.',
   'Apagar conversa': 'Radera konversationen',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Konversationen försvinner från din lista och meddelandena försvinner bara för dig. De andra ser fortfarande allt, och ett nytt meddelande tar tillbaka konversationen.',
+  'Responder': 'Svara',
+  'Respondendo a {nome}': 'Svarar {nome}',
+  'Cancelar resposta': 'Avbryt svaret',
+  'Mensagem apagada': 'Raderat meddelande',
+  'Anexo': 'Bilaga',
 } satisfies Record<string, string>;

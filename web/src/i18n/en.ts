@@ -2296,4 +2296,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'A secret country is drawn, and everyone guesses others. Each guess shows the distance and direction to the secret one, the region, the subregion and the population. Whoever gets it in fewer guesses scores more points.',
   'Apagar conversa': 'Delete conversation',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'The conversation leaves your list and the messages disappear only for you. Everyone else still sees everything, and a new message brings the conversation back.',
+  'Responder': 'Reply',
+  'Respondendo a {nome}': 'Replying to {nome}',
+  'Cancelar resposta': 'Cancel reply',
+  'Mensagem apagada': 'Deleted message',
+  'Anexo': 'Attachment',
 } satisfies Record<string, string>;

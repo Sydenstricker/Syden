@@ -2373,4 +2373,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Tiek izlozēta slepena valsts, un katrs min citas. Katrs minējums parāda attālumu un virzienu līdz slepenajai valstij, reģionu, apakšreģionu un iedzīvotāju skaitu. Jo mazāk minējumu līdz pareizajai, jo vairāk punktu.',
   'Apagar conversa': 'Dzēst sarunu',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Saruna pazūd no tava saraksta, un ziņas pazūd tikai tev. Pārējie joprojām redz visu, un jauna ziņa sarunu atgriež.',
+  'Responder': 'Atbildēt',
+  'Respondendo a {nome}': 'Atbilde: {nome}',
+  'Cancelar resposta': 'Atcelt atbildi',
+  'Mensagem apagada': 'Dzēsta ziņa',
+  'Anexo': 'Pielikums',
 } satisfies Record<string, string>;

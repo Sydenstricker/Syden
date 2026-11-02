@@ -2341,4 +2341,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Biyyi dhokataan tokko ni filatama, namni hundi immoo kan biroo tilmaama. Tilmaamni hundi fageenyaa fi kallattii hanga biyya dhokataatti, naannoo, naannoo xiqqaa fi baay’ina uummataa agarsiisa. Kan tilmaama muraasaan argate qabxii caalaa argata.',
   'Apagar conversa': 'Haasawa haqi',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Haasawaan tarree kee irraa ba’a, ergaaleenis siif qofa badu. Namoonni kaan hunda arguu itti fufu, ergaan haaraan immoo haasawa deebisa.',
+  'Responder': 'Deebisi',
+  'Respondendo a {nome}': '{nome}f deebii',
+  'Cancelar resposta': 'Deebii haqi',
+  'Mensagem apagada': 'Ergaa haqame',
+  'Anexo': 'Maxxansa',
 } satisfies Record<string, string>;

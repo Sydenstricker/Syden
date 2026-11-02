@@ -2325,4 +2325,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Ein geheimes Land wird gezogen, und alle raten andere. Jeder Tipp zeigt die Entfernung und die Richtung zum geheimen Land, die Region, die Teilregion und die Bevölkerung. Wer es mit weniger Tipps errät, bekommt mehr Punkte.',
   'Apagar conversa': 'Unterhaltung löschen',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Die Unterhaltung verschwindet aus deiner Liste, und die Nachrichten verschwinden nur für dich. Die anderen sehen weiterhin alles, und eine neue Nachricht holt die Unterhaltung zurück.',
+  'Responder': 'Antworten',
+  'Respondendo a {nome}': 'Antwort an {nome}',
+  'Cancelar resposta': 'Antwort abbrechen',
+  'Mensagem apagada': 'Gelöschte Nachricht',
+  'Anexo': 'Anhang',
 } satisfies Record<string, string>;

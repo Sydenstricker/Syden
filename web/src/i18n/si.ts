@@ -2371,4 +2371,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'රහස් රටක් තෝරාගනු ලැබේ, සෑම කෙනෙක්ම වෙනත් රටවල් අනුමාන කරයි. සෑම අනුමානයක්ම රහස් රටට ඇති දුර සහ දිශාව, කලාපය, උප කලාපය සහ ජනගහනය පෙන්වයි. අඩු අනුමානවලින් නිවැරදි කරන අයට වැඩි ලකුණු ලැබේ.',
   'Apagar conversa': 'සංවාදය මකන්න',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'සංවාදය ඔබේ ලැයිස්තුවෙන් ඉවත් වන අතර පණිවිඩ ඔබට පමණක් නැති වේ. අනෙක් අයට තවමත් සියල්ල පෙනේ, නව පණිවිඩයක් සංවාදය නැවත ගෙන එයි.',
+  'Responder': 'පිළිතුරු දෙන්න',
+  'Respondendo a {nome}': '{nome} ට පිළිතුරු',
+  'Cancelar resposta': 'පිළිතුර අවලංගු කරන්න',
+  'Mensagem apagada': 'මැකූ පණිවිඩය',
+  'Anexo': 'ඇමුණුම',
 } satisfies Record<string, string>;

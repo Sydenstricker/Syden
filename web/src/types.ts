@@ -263,6 +263,17 @@ export interface Message {
   reactions: Reaction[];
   /** Quando a mensagem é uma ideia mandada pela tela inicial: o número dela e se já foi acolhida. */
   suggestion: { id: number; accepted: boolean } | null;
+  /** A mensagem a que esta responde; null quando não é resposta. Pode faltar em mensagem de servidor antigo. */
+  replyTo?: Citacao | null;
+}
+
+/** O pedacinho da original em cima da resposta. `id` nulo: a original não existe mais para quem lê. */
+export interface Citacao {
+  id: number | null;
+  author: UserRef | null;
+  content: string;
+  anexos: number;
+  enquete: string | null;
 }
 
 export interface VoiceMember {

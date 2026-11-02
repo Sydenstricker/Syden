@@ -2385,4 +2385,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Нууц улс сонгогдох бөгөөд хүн бүр өөрийг нь таамаглана. Таамаг бүр нууц улс хүртэлх зай, чиглэл, бүс, дэд бүс, хүн амыг харуулна. Цөөн таамгаар олсон нь илүү оноо авна.',
   'Apagar conversa': 'Харилцааг устгах',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Харилцаа таны жагсаалтаас гарч, мессежүүд зөвхөн танд харагдахгүй болно. Бусад хүмүүс бүгдийг харсаар байх бөгөөд шинэ мессеж ирвэл харилцаа буцаж гарч ирнэ.',
+  'Responder': 'Хариулах',
+  'Respondendo a {nome}': '{nome}-д хариулж байна',
+  'Cancelar resposta': 'Хариултыг цуцлах',
+  'Mensagem apagada': 'Устгасан мессеж',
+  'Anexo': 'Хавсралт',
 } satisfies Record<string, string>;

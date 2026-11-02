@@ -2296,4 +2296,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Sale un país secreto, y cada uno prueba con otros. Cada intento muestra la distancia y la dirección hasta el secreto, la región, la subregión y la población. Quien acierte con menos intentos gana más puntos.',
   'Apagar conversa': 'Borrar conversación',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'La conversación sale de tu lista y los mensajes desaparecen solo para ti. Las demás personas siguen viéndolo todo, y un mensaje nuevo trae la conversación de vuelta.',
+  'Responder': 'Responder',
+  'Respondendo a {nome}': 'Respondiendo a {nome}',
+  'Cancelar resposta': 'Cancelar respuesta',
+  'Mensagem apagada': 'Mensaje borrado',
+  'Anexo': 'Adjunto',
 } satisfies Record<string, string>;

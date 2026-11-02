@@ -2381,4 +2381,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'ސިއްރު ޤައުމެއް ހޮވޭ، އަދި ކޮންމެ މީހަކު އެހެން ޤައުމުތައް ގެސްކުރޭ. ކޮންމެ ގެސްއަކުން ސިއްރު ޤައުމަށް ހުރި ދުރުމިނާއި ދިމާ، ސަރަޙައްދު، ކުދި ސަރަޙައްދު އަދި އާބާދީ ދައްކާ. މަދު ގެސްއަކުން ޖަވާބު ދޭ މީހާއަށް ގިނަ ޕޮއިންޓް ލިބޭ.',
   'Apagar conversa': 'ވާހަކަ ފޮހެލާ',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'ވާހަކަ ތިބާގެ ލިސްޓުން ނެތިގެންދާނެ، އަދި މެސެޖުތައް ފޮހެވޭނީ ހަމައެކަނި ތިބާއަށް. އެހެން މީހުންނަށް ހުރިހާ އެއްޗެއް ފެންނާނެ، އަދި އާ މެސެޖެއް އައުމުން ވާހަކަ އަނބުރާ ފެންނާނެ.',
+  'Responder': 'ޖަވާބުދޭ',
+  'Respondendo a {nome}': '{nome} އަށް ޖަވާބު',
+  'Cancelar resposta': 'ޖަވާބު ކެންސަލްކުރޭ',
+  'Mensagem apagada': 'ފޮހެލެވުނު މެސެޖެއް',
+  'Anexo': 'އެޓޭޗްމަންޓް',
 } satisfies Record<string, string>;

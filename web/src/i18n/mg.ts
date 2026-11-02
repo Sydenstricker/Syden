@@ -2371,4 +2371,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Misy firenena miafina voafidy, ary samy maminavina ny hafa ny tsirairay. Asehon’ny vinany tsirairay ny halavirana sy ny lalana mankany amin’ilay miafina, ny faritra, ny zana-paritra ary ny mponina. Izay mahita amin’ny vinany vitsy indrindra no mahazo isa betsaka kokoa.',
   'Apagar conversa': 'Fafao ny resaka',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Miala amin’ny lisitrao ny resaka ary manjavona ho anao ihany ireo hafatra. Mbola mahita ny zava-drehetra ny hafa, ary mampiverina ny resaka ny hafatra vaovao.',
+  'Responder': 'Valio',
+  'Respondendo a {nome}': 'Mamaly an’i {nome}',
+  'Cancelar resposta': 'Foano ny valiny',
+  'Mensagem apagada': 'Hafatra voafafa',
+  'Anexo': 'Rakitra miaraka',
 } satisfies Record<string, string>;

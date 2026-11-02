@@ -2371,4 +2371,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Waddan qarsoon ayaa la doortaa, qof walbana wuxuu qiyaasaa kuwo kale. Qiyaas kastaa waxay muujinaysaa masaafada iyo jihada ilaa waddanka qarsoon, gobolka, gobol-hoosaadka iyo tirada dadka. Qofka ku helaa qiyaasaha ugu yar ayaa hela dhibcaha ugu badan.',
   'Apagar conversa': 'Tirtir wada-hadalka',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Wada-hadalku wuxuu ka baxayaa liiskaaga, fariimahuna adiga oo keliya ayay kaa lumayaan. Dadka kale wax walba way sii arkayaan, fariin cusubna wada-hadalka ayay soo celinaysaa.',
+  'Responder': 'Ka jawaab',
+  'Respondendo a {nome}': 'U jawaabid {nome}',
+  'Cancelar resposta': 'Jooji jawaabta',
+  'Mensagem apagada': 'Fariin la tirtiray',
+  'Anexo': 'Lifaaq',
 } satisfies Record<string, string>;

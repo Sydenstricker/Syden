@@ -2351,4 +2351,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'נבחרת מדינה סודית, ומנחשים מדינות אחרות. כל ניחוש מראה את המרחק והכיוון עד הסודית, את האזור, התת-אזור והאוכלוסייה. ככל שמנחשים נכון בפחות ניחושים, מקבלים יותר נקודות.',
   'Apagar conversa': 'מחיקת השיחה',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'השיחה יוצאת מהרשימה וההודעות נמחקות רק בצד הזה. האחרים ממשיכים לראות הכול, והודעה חדשה מחזירה את השיחה.',
+  'Responder': 'תשובה',
+  'Respondendo a {nome}': 'תשובה ל{nome}',
+  'Cancelar resposta': 'ביטול התשובה',
+  'Mensagem apagada': 'הודעה שנמחקה',
+  'Anexo': 'קובץ מצורף',
 } satisfies Record<string, string>;

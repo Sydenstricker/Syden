@@ -2379,4 +2379,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Yashirin mamlakat tanlanadi, har kim boshqalarini taxmin qiladi. Har bir taxmin yashirin mamlakatgacha boʻlgan masofa va yoʻnalishni, mintaqani, kichik mintaqani va aholini koʻrsatadi. Kamroq taxmin bilan topgan koʻproq ball oladi.',
   'Apagar conversa': 'Suhbatni o‘chirish',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Suhbat ro‘yxatingdan chiqadi va xabarlar faqat sen uchun yo‘qoladi. Boshqalar hammasini ko‘rishda davom etadi, yangi xabar esa suhbatni qaytaradi.',
+  'Responder': 'Javob berish',
+  'Respondendo a {nome}': '{nome} uchun javob',
+  'Cancelar resposta': 'Javobni bekor qilish',
+  'Mensagem apagada': 'O‘chirilgan xabar',
+  'Anexo': 'Ilova',
 } satisfies Record<string, string>;

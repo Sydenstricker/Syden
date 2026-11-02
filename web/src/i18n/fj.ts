@@ -2300,4 +2300,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'E digitaki e dua na vanua vuni, ka ra vakatovotovo kece na tamata ena so tale. Na vakatovotovo yadua e vakaraitaka na yawa kei na sala ki na vanua vuni, na yalava, yalava lailai kei na lewenivanua. O koya e dodonu ena vakatovotovo lailai duadua e rawata e levu na maka.',
   'Apagar conversa': 'Bokoca na veivosaki',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Na veivosaki e na lako tani mai na nomu lisi, ka na itukutuku era na yali ga vei iko. Era se raica tiko na tamata tale eso na ka kece, ka na itukutuku vou ena kauta lesu mai na veivosaki.',
+  'Responder': 'Sauma',
+  'Respondendo a {nome}': 'Sauma vei {nome}',
+  'Cancelar resposta': 'Bokoca na isau',
+  'Mensagem apagada': 'Itukutuku e bokoci',
+  'Anexo': 'Ka e vakacurumi',
 } satisfies Record<string, string>;

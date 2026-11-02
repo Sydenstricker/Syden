@@ -2373,4 +2373,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Išrenkama slapta šalis, ir kiekvienas spėja kitas. Kiekvienas spėjimas parodo atstumą ir kryptį iki slaptosios šalies, regioną, subregioną ir gyventojų skaičių. Kuo mažiau spėjimų iki teisingo, tuo daugiau taškų.',
   'Apagar conversa': 'Ištrinti pokalbį',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Pokalbis dingsta iš tavo sąrašo, o žinutės dingsta tik tau. Kiti ir toliau mato viską, o nauja žinutė pokalbį sugrąžina.',
+  'Responder': 'Atsakyti',
+  'Respondendo a {nome}': 'Atsakymas: {nome}',
+  'Cancelar resposta': 'Atšaukti atsakymą',
+  'Mensagem apagada': 'Ištrinta žinutė',
+  'Anexo': 'Priedas',
 } satisfies Record<string, string>;

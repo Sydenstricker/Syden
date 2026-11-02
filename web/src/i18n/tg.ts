@@ -2372,4 +2372,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Кишвари пинҳонӣ интихоб мешавад ва ҳар кас дигаронро тахмин мезанад. Ҳар тахмин масофа ва самтро то кишвари пинҳонӣ, минтақа, зерминтақа ва аҳолиро нишон медиҳад. Касе, ки бо тахминҳои камтар ёбад, холи бештар мегирад.',
   'Apagar conversa': 'Нест кардани сӯҳбат',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Сӯҳбат аз рӯйхати ту мебарояд ва паёмҳо танҳо барои ту нест мешаванд. Дигарон ҳамаашро мебинанд, ва паёми нав сӯҳбатро бармегардонад.',
+  'Responder': 'Ҷавоб додан',
+  'Respondendo a {nome}': 'Ҷавоб ба {nome}',
+  'Cancelar resposta': 'Бекор кардани ҷавоб',
+  'Mensagem apagada': 'Паёми несткардашуда',
+  'Anexo': 'Замима',
 } satisfies Record<string, string>;

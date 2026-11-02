@@ -2303,4 +2303,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Sai nasaun ida ne\'ebé subar, no ema ida-idak koko seluk. Koko ida-idak hatudu distánsia no diresaun to\'o nasaun ne\'ebé subar, rejiaun, sub-rejiaun no populasaun. Ema ne\'ebé loos ho koko uitoan liu, hetan pontu barak liu.',
   'Apagar conversa': 'Hamoos konversa',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Konversa sai husi ó-nia lista no mensajen sira lakon ba ó deit. Ema seluk kontinua haree buat hotu, no mensajen foun ida lori fali konversa.',
+  'Responder': 'Hatán',
+  'Respondendo a {nome}': 'Hatán ba {nome}',
+  'Cancelar resposta': 'Kansela resposta',
+  'Mensagem apagada': 'Mensajen ne’ebé hamoos ona',
+  'Anexo': 'Anexu',
 } satisfies Record<string, string>;

@@ -2370,4 +2370,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Vylosuje se tajná země a každý tipuje jiné. Každý tip ukáže vzdálenost a směr k tajné zemi, region, subregion a počet obyvatel. Čím méně tipů do uhodnutí, tím víc bodů.',
   'Apagar conversa': 'Smazat konverzaci',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Konverzace zmizí z tvého seznamu a zprávy zmizí jen tobě. Ostatní dál vidí všechno a nová zpráva konverzaci vrátí.',
+  'Responder': 'Odpovědět',
+  'Respondendo a {nome}': 'Odpověď pro {nome}',
+  'Cancelar resposta': 'Zrušit odpověď',
+  'Mensagem apagada': 'Smazaná zpráva',
+  'Anexo': 'Příloha',
 } satisfies Record<string, string>;

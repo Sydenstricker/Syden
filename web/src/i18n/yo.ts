@@ -2316,4 +2316,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Orílẹ̀-èdè àṣírí kan yóò jáde, gbogbo èèyàn yóò sì máa mòro àwọn mìíràn. Àmòro kọ̀ọ̀kan ń fi ìjìnnà àti ìhà sí orílẹ̀-èdè àṣírí náà hàn, pẹ̀lú agbègbè, agbègbè kékeré àti iye ènìyàn. Ẹni tó bá rí i pẹ̀lú àmòro díẹ̀ jù ló máa gba àmì púpọ̀ jù.',
   'Apagar conversa': 'Pa ìjíròrò rẹ́',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Ìjíròrò náà yóò kúrò nínú àkójọ rẹ, àwọn ìfiránṣẹ́ yóò sì pòórá fún ìwọ nìkan. Àwọn yòókù yóò máa rí gbogbo rẹ̀, ìfiránṣẹ́ tuntun yóò sì mú ìjíròrò náà padà.',
+  'Responder': 'Fèsì',
+  'Respondendo a {nome}': 'Ń fèsì sí {nome}',
+  'Cancelar resposta': 'Fagilé èsì',
+  'Mensagem apagada': 'Ìfiránṣẹ́ tí a ti pa rẹ́',
+  'Anexo': 'Àsomọ́',
 } satisfies Record<string, string>;

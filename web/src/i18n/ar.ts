@@ -2321,4 +2321,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'تُختار دولة سرية، ويخمّن كل لاعب دولًا أخرى. يُظهر كل تخمين المسافة والاتجاه إلى السرية، والمنطقة والمنطقة الفرعية والسكان. من يصيب بتخمينات أقل ينال نقاطًا أكثر.',
   'Apagar conversa': 'حذف المحادثة',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'تُزال المحادثة من القائمة وتختفي الرسائل من هذا الجانب فقط. يظل الآخرون يرون كل شيء، ووصول رسالة جديدة يعيد المحادثة.',
+  'Responder': 'رد',
+  'Respondendo a {nome}': 'الرد على {nome}',
+  'Cancelar resposta': 'إلغاء الرد',
+  'Mensagem apagada': 'رسالة محذوفة',
+  'Anexo': 'مرفق',
 } satisfies Record<string, string>;

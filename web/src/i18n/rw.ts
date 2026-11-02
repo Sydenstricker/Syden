@@ -2312,4 +2312,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Hatoranywa igihugu cy\'ibanga, buri wese agakeka ibindi. Igisubizo cyose cyerekana intera n\'icyerekezo kugera ku gihugu cy\'ibanga, akarere, agace n\'abaturage. Ugitahura mu bisubizo bike abona amanota menshi.',
   'Apagar conversa': 'Siba ikiganiro',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Ikiganiro kiva ku rutonde rwawe kandi ubutumwa bukabura kuri wowe gusa. Abandi bakomeza kubona byose, kandi ubutumwa bushya bugarura ikiganiro.',
+  'Responder': 'Subiza',
+  'Respondendo a {nome}': 'Gusubiza {nome}',
+  'Cancelar resposta': 'Hagarika igisubizo',
+  'Mensagem apagada': 'Ubutumwa bwasibwe',
+  'Anexo': 'Umugereka',
 } satisfies Record<string, string>;

@@ -2282,4 +2282,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': '秘密の国が1つ選ばれ、みんなで別の国を予想します。予想するたびに、秘密の国までの距離と方角、地域、小地域、人口が表示されます。少ない回数で当てた人ほど高得点です。',
   'Apagar conversa': '会話を削除',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': '会話があなたのリストから消え、メッセージもあなたにだけ見えなくなります。ほかの人には引き続きすべて表示され、新しいメッセージが届くと会話が戻ってきます。',
+  'Responder': '返信',
+  'Respondendo a {nome}': '{nome}さんに返信',
+  'Cancelar resposta': '返信をやめる',
+  'Mensagem apagada': '削除されたメッセージ',
+  'Anexo': '添付ファイル',
 } satisfies Record<string, string>;

@@ -2335,4 +2335,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Gizli bir ölkə seçilir, hər kəs başqalarını təxmin edir. Hər təxmin gizli ölkəyə qədər məsafəni və istiqaməti, regionu, alt regionu və əhalini göstərir. Daha az təxminlə tapan daha çox xal qazanır.',
   'Apagar conversa': 'Söhbəti sil',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Söhbət siyahından çıxır və mesajlar yalnız sənin üçün silinir. Digər insanlar hər şeyi görməyə davam edir, yeni mesaj isə söhbəti geri qaytarır.',
+  'Responder': 'Cavab ver',
+  'Respondendo a {nome}': '{nome} adlı şəxsə cavab',
+  'Cancelar resposta': 'Cavabı ləğv et',
+  'Mensagem apagada': 'Mesaj silinib',
+  'Anexo': 'Əlavə',
 } satisfies Record<string, string>;

@@ -2372,4 +2372,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Kukhethwa izwe eliyimfihlo, bese wonke umuntu eqagela amanye. Ukuqagela ngakunye kubonisa ibanga nendlela eya ezweni eliyimfihlo, isifunda, isifundana nenani labantu. Othola ngokuqagela okumbalwa uthola amaphuzu amaningi.',
   'Apagar conversa': 'Susa ingxoxo',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Ingxoxo iyaphuma ohlwini lwakho futhi imilayezo inyamalala kuwe kuphela. Abanye baqhubeka bebona konke, futhi umlayezo omusha ubuyisa ingxoxo.',
+  'Responder': 'Phendula',
+  'Respondendo a {nome}': 'Uphendula u-{nome}',
+  'Cancelar resposta': 'Khansela impendulo',
+  'Mensagem apagada': 'Umlayezo osusiwe',
+  'Anexo': 'Okunamathiselwe',
 } satisfies Record<string, string>;

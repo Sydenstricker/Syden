@@ -15,6 +15,7 @@ import {
   applyReactionUpdate,
   applyTally,
   applyThread,
+  removeMessage,
   removeThread,
   replacePoll,
   replaceReactions,
@@ -54,6 +55,7 @@ export function TextChannel({
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<Message | null>(null);
   const [threadFor, setThreadFor] = useState<Message | null>(null);
+  const [respondendo, setRespondendo] = useState<Message | null>(null);
   const [openThread, setOpenThread] = useState<ThreadSummary | null>(null);
   const [dragging, setDragging] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
@@ -78,7 +80,10 @@ export function TextChannel({
       // Respostas de tópico ficam no painel do tópico, não no meio do canal.
       if (message.channelId === channel.id && message.threadId === null) setMessages((list) => [...list, message]);
     };
-    const onDeleted = ({ id }: { id: number }) => setMessages((list) => list.filter((m) => m.id !== id));
+    const onDeleted = ({ id }: { id: number }) => {
+      setMessages((list) => removeMessage(list, id));
+      setRespondendo((r) => (r?.id === id ? null : r));
+    };
     // Conta excluída: as mensagens dela somem da tela também.
     const onUserDeleted = ({ id }: { id: number }) => setMessages((list) => list.filter((m) => m.author.id !== id));
     const onTally = (tally: PollTally) => setMessages((list) => applyTally(list, tally));
@@ -232,6 +237,7 @@ export function TextChannel({
                 onOpenThread={setOpenThread}
                 onCreateThread={setThreadFor}
                 onAcolher={user.isOwner ? acolherIdeia : undefined}
+                onReply={setRespondendo}
                 meuId={user.id}
               />
             );
@@ -254,6 +260,8 @@ export function TextChannel({
           // Quem administra não passa pelo modo lento, então não há o que avisar a quem administra.
           modoLento={role === 'member' ? (channel.modoLento ?? 0) : 0}
           silenciadoAte={members.get(user.id)?.silenciadoAte ?? null}
+          respondendo={respondendo?.channelId === channel.id ? respondendo : null}
+          aoCancelarResposta={() => setRespondendo(null)}
         />
 
         {dragging && <div className="drop-overlay">{t('Solte para enviar o arquivo')}</div>}

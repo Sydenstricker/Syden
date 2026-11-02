@@ -2371,4 +2371,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Salainen maa arvotaan, ja jokainen arvaa muita. Jokainen arvaus näyttää etäisyyden ja suunnan salaiseen maahan, alueen, osa-alueen ja väkiluvun. Mitä vähemmillä arvauksilla osuu, sitä enemmän pisteitä.',
   'Apagar conversa': 'Poista keskustelu',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Keskustelu katoaa listaltasi, ja viestit katoavat vain sinulta. Muut näkevät edelleen kaiken, ja uusi viesti tuo keskustelun takaisin.',
+  'Responder': 'Vastaa',
+  'Respondendo a {nome}': 'Vastaus: {nome}',
+  'Cancelar resposta': 'Peru vastaus',
+  'Mensagem apagada': 'Poistettu viesti',
+  'Anexo': 'Liite',
 } satisfies Record<string, string>;

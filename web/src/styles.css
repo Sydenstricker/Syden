@@ -15290,3 +15290,93 @@ body.arrastando-barra {
 .karaoke-topo-acoes .link-button[aria-pressed='true'] {
   text-decoration: underline;
 }
+
+/* ---------- Responder a uma mensagem (MessageItem.tsx, Composer.tsx) ---------- */
+
+/* A original em cima da resposta: uma linha só, discreta, e clicável para ir até ela. */
+.citacao {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  margin: 0 0 2px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: calc(13px * var(--escala-do-texto));
+  text-align: start;
+  cursor: pointer;
+}
+
+.citacao:hover .citacao-texto {
+  color: var(--text);
+}
+
+.citacao.indisponivel {
+  font-style: italic;
+  cursor: default;
+}
+
+.citacao svg {
+  flex: none;
+}
+
+.citacao-autor {
+  flex: none;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.citacao-texto,
+.composer-resposta-texto {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Ao clicar na citação, a original pisca para o olho achar onde caiu. */
+.message.destacada {
+  animation: mensagem-destacada 1.6s ease-out;
+}
+
+@keyframes mensagem-destacada {
+  from {
+    background: color-mix(in srgb, var(--accent) 25%, transparent);
+  }
+  to {
+    background: transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .message.destacada {
+    animation: none;
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+}
+
+/* "Respondendo a fulano", logo acima da caixa de escrever. */
+.composer-resposta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  margin-bottom: 4px;
+  border-radius: var(--radius);
+  background: var(--bg-raised);
+  color: var(--text-muted);
+  font-size: calc(13px * var(--escala-do-texto));
+}
+
+.composer-resposta-quem {
+  flex: none;
+  color: var(--text);
+}
+
+.composer-resposta-texto {
+  flex: 1;
+}

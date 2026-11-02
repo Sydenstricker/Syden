@@ -2301,4 +2301,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Se alege o țară secretă, și fiecare încearcă altele. Fiecare încercare arată distanța și direcția până la cea secretă, regiunea, subregiunea și populația. Cine ghicește din mai puține încercări primește mai multe puncte.',
   'Apagar conversa': 'Șterge conversația',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Conversația dispare din lista ta, iar mesajele dispar doar pentru tine. Ceilalți văd în continuare totul, iar un mesaj nou aduce conversația înapoi.',
+  'Responder': 'Răspunde',
+  'Respondendo a {nome}': 'Răspuns pentru {nome}',
+  'Cancelar resposta': 'Anulează răspunsul',
+  'Mensagem apagada': 'Mesaj șters',
+  'Anexo': 'Atașament',
 } satisfies Record<string, string>;

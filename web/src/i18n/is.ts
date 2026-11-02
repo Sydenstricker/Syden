@@ -2372,4 +2372,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Leyniland er dregið, og allir giska á önnur. Hver ágiskun sýnir fjarlægð og stefnu að leynilandinu, svæðið, undirsvæðið og mannfjöldann. Færri ágiskanir gefa fleiri stig.',
   'Apagar conversa': 'Eyða samtali',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Samtalið hverfur af listanum þínum og skilaboðin hverfa bara hjá þér. Hinir sjá áfram allt, og ný skilaboð koma með samtalið aftur.',
+  'Responder': 'Svara',
+  'Respondendo a {nome}': 'Svar til {nome}',
+  'Cancelar resposta': 'Hætta við svar',
+  'Mensagem apagada': 'Eytt skilaboð',
+  'Anexo': 'Viðhengi',
 } satisfies Record<string, string>;

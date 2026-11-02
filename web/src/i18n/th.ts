@@ -2314,4 +2314,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'ระบบสุ่มประเทศลับมาหนึ่งประเทศ แล้วทุกคนทายประเทศอื่น ทุกครั้งที่ทายจะเห็นระยะทางและทิศทางไปยังประเทศลับ ภูมิภาค อนุภูมิภาค และประชากร ใครทายถูกโดยใช้ครั้งน้อยกว่าได้คะแนนมากกว่า',
   'Apagar conversa': 'ลบการสนทนา',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'การสนทนาจะหายไปจากรายการของคุณ และข้อความจะหายไปเฉพาะฝั่งคุณ คนอื่นยังเห็นทุกอย่างเหมือนเดิม และเมื่อมีข้อความใหม่ การสนทนาจะกลับมา',
+  'Responder': 'ตอบกลับ',
+  'Respondendo a {nome}': 'ตอบกลับ {nome}',
+  'Cancelar resposta': 'ยกเลิกการตอบกลับ',
+  'Mensagem apagada': 'ข้อความที่ถูกลบ',
+  'Anexo': 'ไฟล์แนบ',
 } satisfies Record<string, string>;

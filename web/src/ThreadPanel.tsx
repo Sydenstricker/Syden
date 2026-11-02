@@ -5,7 +5,7 @@ import { api } from './api';
 import { Composer, type ComposerHandle } from './Composer';
 import { ConfirmDialog } from './ConfirmDialog';
 import { MessageItem } from './MessageItem';
-import { applyReactionUpdate, applyTally, replacePoll, replaceReactions, type PollTally, type ReactionUpdate } from './messageState';
+import { applyReactionUpdate, applyTally, removeMessage, replacePoll, replaceReactions, type PollTally, type ReactionUpdate } from './messageState';
 import type { Message, Reaction, Role, ThreadSummary, User } from './types';
 import { useT } from './i18n';
 
@@ -40,6 +40,7 @@ export function ThreadPanel({
   const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [respondendo, setRespondendo] = useState<Message | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const composerRef = useRef<ComposerHandle>(null);
   const stick = useRef(true);
@@ -53,7 +54,10 @@ export function ThreadPanel({
     const onMessage = (message: Message) => {
       if (message.threadId === thread.id) setMessages((list) => [...list, message]);
     };
-    const onDeleted = ({ id }: { id: number }) => setMessages((list) => list.filter((m) => m.id !== id));
+    const onDeleted = ({ id }: { id: number }) => {
+      setMessages((list) => removeMessage(list, id));
+      setRespondendo((r) => (r?.id === id ? null : r));
+    };
     const onUserDeleted = ({ id }: { id: number }) => setMessages((list) => list.filter((m) => m.author.id !== id));
     const onTally = (tally: PollTally) => setMessages((list) => applyTally(list, tally));
     const onReaction = (update: ReactionUpdate) => setMessages((list) => applyReactionUpdate(list, update));
@@ -159,6 +163,7 @@ export function ThreadPanel({
               canDelete={canManage(message)}
               canManagePoll={canManage(message)}
               onDelete={onDeleteMessage}
+              onReply={setRespondendo}
               meuId={user.id}
               onPollChange={(poll) => setMessages((list) => replacePoll(list, poll))}
               onReactionsChange={(id, reactions) => setMessages((list) => replaceReactions(list, id, reactions))}
@@ -174,6 +179,8 @@ export function ThreadPanel({
         socket={socket}
         placeholder={t('Responder no tópico')}
         onSent={() => (stick.current = true)}
+        respondendo={respondendo}
+        aoCancelarResposta={() => setRespondendo(null)}
       />
 
       {deleting && (

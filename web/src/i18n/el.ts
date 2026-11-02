@@ -2307,4 +2307,9 @@ export default {
   'Sai um país secreto, e cada um chuta outros. Cada chute mostra a distância e a direção até o secreto, a região, a sub-região e a população. Quem acertar com menos chutes ganha mais pontos.': 'Βγαίνει μια μυστική χώρα, και όλοι μαντεύουν άλλες. Κάθε μαντεψιά δείχνει την απόσταση και την κατεύθυνση ως τη μυστική χώρα, την περιοχή, την υποπεριοχή και τον πληθυσμό. Όποιος βρει με λιγότερες μαντεψιές παίρνει περισσότερους πόντους.',
   'Apagar conversa': 'Διαγραφή συνομιλίας',
   'A conversa sai da sua lista e as mensagens somem só para você. As outras pessoas continuam vendo tudo, e uma mensagem nova traz a conversa de volta.': 'Η συνομιλία φεύγει από τη λίστα σου και τα μηνύματα χάνονται μόνο για σένα. Οι άλλοι συνεχίζουν να βλέπουν τα πάντα, και ένα νέο μήνυμα φέρνει πίσω τη συνομιλία.',
+  'Responder': 'Απάντηση',
+  'Respondendo a {nome}': 'Απάντηση σε {nome}',
+  'Cancelar resposta': 'Ακύρωση απάντησης',
+  'Mensagem apagada': 'Διαγραμμένο μήνυμα',
+  'Anexo': 'Συνημμένο',
 } satisfies Record<string, string>;

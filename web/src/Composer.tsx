@@ -1,4 +1,4 @@
-import { BarChart3, FileText, Film, ImageUp, MonitorPlay, Plus, Smile, X, Timer } from 'lucide-react';
+import { BarChart3, FileText, Film, ImageUp, MonitorPlay, Plus, Reply, Smile, X, Timer } from 'lucide-react';
 import { duracaoCurta } from './Moderacao';
 import { silencioVale } from './ModeracaoDaPessoa';
 import {
@@ -21,6 +21,8 @@ import { type Gif, gifsDisponiveis } from './gifs';
 import { PollDialog } from './PollDialog';
 import { MAX_ATTACHMENT_BYTES, formatBytes, prepareAttachment, type PreparedFile } from './upload';
 import type { Message } from './types';
+import { nomeDe } from './directory';
+import { resumoDaMensagem } from './MessageItem';
 import { useT, idiomaAtual } from './i18n';
 
 const MAX_FILES = 5;
@@ -48,7 +50,10 @@ export const Composer = forwardRef<ComposerHandle, {
   modoLento?: number;
   /** Você está em silêncio nesta comunidade até quando (ISO). Ver ModeracaoDaPessoa.tsx. */
   silenciadoAte?: string | null;
-}>(function Composer({ channelId, threadId = null, socket, placeholder, onSent, modoLento = 0, silenciadoAte = null }, ref) {
+  /** A mensagem que se está respondendo (o "Responder" dela foi clicado); vai junto com a próxima que sair daqui. */
+  respondendo?: Message | null;
+  aoCancelarResposta?: () => void;
+}>(function Composer({ channelId, threadId = null, socket, placeholder, onSent, modoLento = 0, silenciadoAte = null, respondendo = null, aoCancelarResposta }, ref) {
   const t = useT();
   const [draft, setDraft] = useState('');
   const [staged, setStaged] = useState<Staged[]>([]);
@@ -107,6 +112,17 @@ export const Composer = forwardRef<ComposerHandle, {
     void gifsDisponiveis().then(setTemGif);
   }, []);
 
+  // Clicou em "Responder": o cursor já vem para cá, pronto para escrever.
+  useEffect(() => {
+    if (respondendo) inputRef.current?.focus();
+  }, [respondendo]);
+
+  /** A resposta vale para UMA mensagem: saiu, a barrinha some. */
+  const replyTo = respondendo?.id ?? null;
+  function respondida() {
+    if (respondendo) aoCancelarResposta?.();
+  }
+
   /**
    * Mandar um GIF é mandar o ENDEREÇO dele, e não o arquivo.
    *
@@ -116,9 +132,10 @@ export const Composer = forwardRef<ComposerHandle, {
    */
   function mandarGif(gif: Gif) {
     setGifOpen(false);
-    socket.emit('message:send', { channelId, content: gif.url, threadId }, (result: { ok: boolean; error?: string }) => {
+    socket.emit('message:send', { channelId, content: gif.url, threadId, replyTo }, (result: { ok: boolean; error?: string }) => {
       setError(result.ok ? null : (result.error ?? 'Falha ao enviar.'));
     });
+    respondida();
     onSent?.();
   }
 
@@ -127,7 +144,7 @@ export const Composer = forwardRef<ComposerHandle, {
     if (sending) return;
     if (staged.length === 0) {
       if (!content) return;
-      socket.emit('message:send', { channelId, content, threadId }, (result: { ok: boolean; error?: string }) => {
+      socket.emit('message:send', { channelId, content, threadId, replyTo }, (result: { ok: boolean; error?: string }) => {
         setError(result.ok ? null : (result.error ?? 'Falha ao enviar.'));
         // RECUSADA, O TEXTO VOLTA PARA A CAIXA: a moderação da comunidade barrou (palavra, link, modo
         // lento) e quem escreveu precisa poder editar, e não reescrever do zero. Só se a caixa ainda
@@ -135,6 +152,7 @@ export const Composer = forwardRef<ComposerHandle, {
         if (!result.ok) setDraft((agora) => agora || content);
       });
       setDraft('');
+      respondida();
       pareiDeDigitar(channelId);
       onSent?.();
       return;
@@ -147,12 +165,14 @@ export const Composer = forwardRef<ComposerHandle, {
         body: {
           content,
           threadId,
+          replyTo,
           files: staged.map(({ name, data, width, height }) => ({ name, data, width, height })),
         },
       });
       setDraft('');
       setStaged([]);
       setError(null);
+      respondida();
       onSent?.();
     } catch (e) {
       setError((e as Error).message);
@@ -177,6 +197,11 @@ export const Composer = forwardRef<ComposerHandle, {
   }
 
   function onKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
+    if (event.key === 'Escape' && respondendo) {
+      event.preventDefault();
+      aoCancelarResposta?.();
+      return;
+    }
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
       void send();
@@ -246,6 +271,19 @@ export const Composer = forwardRef<ComposerHandle, {
           <ScreenMessage channelId={channelId} onEnviado={() => setGravandoTela(false)} />
           <button className="icon-plain" title={t('Fechar o gravador')} aria-label={t('Fechar o gravador')} onClick={() => setGravandoTela(false)}>
             <X size={16} />
+          </button>
+        </div>
+      )}
+
+      {respondendo && (
+        <div className="composer-resposta">
+          <Reply size={14} aria-hidden="true" />
+          <span className="composer-resposta-quem">{t('Respondendo a {nome}', { nome: respondendo.author.app ? 'Syden' : nomeDe(respondendo.author) })}</span>
+          <span className="composer-resposta-texto">
+            {resumoDaMensagem({ content: respondendo.content, anexos: respondendo.attachments.length, enquete: respondendo.poll?.question ?? null }, t)}
+          </span>
+          <button type="button" className="icon-plain" title={t('Cancelar resposta')} aria-label={t('Cancelar resposta')} onClick={aoCancelarResposta}>
+            <X size={14} />
           </button>
         </div>
       )}
