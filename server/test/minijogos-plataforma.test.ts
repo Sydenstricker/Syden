@@ -81,13 +81,15 @@ test('a posição é conferida e carimbada: fora da fase, jeito inventado ou de 
   assert.ok(typeof jogo !== 'string');
   assert.equal(jogo.tempoReal!(anaId, { x: 100, y: 100, n: 4, j: 1, andou: 0.01 }), null, 'antes do verde');
   m.relogio[0].depois();
-  assert.deepEqual(jogo.tempoReal!(anaId, { x: 100.04, y: 100, n: 4, j: 1, andou: 0.01, userId: biaId }), { userId: anaId, x: 100, y: 100, n: 4, j: 1, andou: 0.01 });
-  assert.equal(jogo.tempoReal!(anaId, { x: 99999, y: 100, n: 4, j: 1, andou: 0.01 }), null);
-  assert.equal(jogo.tempoReal!(anaId, { x: 100, y: 100, n: 4, j: 9, andou: 0.01 }), null);
-  assert.equal(jogo.tempoReal!(anaId, { x: 100, y: 100, n: 4, j: 1, andou: 3 }), null);
-  assert.equal(jogo.tempoReal!(caioId, { x: 100, y: 100, n: 4, j: 1, andou: 0.01 }), null, 'quem não está na corrida');
+  // o quanto andou sai do x, no servidor: o que a pessoa diz não conta
+  assert.deepEqual(jogo.tempoReal!(anaId, { x: 100.04, y: 100, n: 4, j: 1, andou: 0.9, userId: biaId }), { userId: anaId, x: 100, y: 100, n: 4, j: 1, andou: 0.013 });
+  assert.equal(jogo.tempoReal!(anaId, { x: 99999, y: 100, n: 4, j: 1 }), null);
+  assert.equal(jogo.tempoReal!(anaId, { x: 100, y: 100, n: 4, j: 9 }), null);
+  assert.equal(jogo.tempoReal!(caioId, { x: 100, y: 100, n: 4, j: 1 }), null, 'quem não está na corrida');
   // ninguém chega: o fim pelo relógio, quem andou mais na frente, e nenhum troféu (ninguém tem resultado)
-  jogo.tempoReal!(biaId, { x: 900, y: 100, n: 400, j: 1, andou: 0.3 });
+  agora += 10_000;
+  jogo.tempoReal!(biaId, { x: 900, y: 100, n: 400, j: 1, andou: 0 });
+  jogo.tempoReal!(anaId, { x: 300, y: 100, n: 400, j: 1, andou: 1 });
   m.relogio[0].depois();
   assert.equal(m.terminou(), true);
   assert.deepEqual((jogo.publico(anaId).pilotos as { userId: number }[]).map((p) => p.userId), [biaId, anaId]);
@@ -135,4 +137,69 @@ test('quem fica sozinho na sala não ganha troféu, e quem saiu também não', a
   assert.equal(m.terminou(), true);
   assert.equal((await trofeus(ana.token)).length, antesAna, 'a Ana ficou sozinha');
   assert.equal((await trofeus(bia.token)).length, antesBia, 'a Bia saiu');
+});
+
+test('a posição ao vivo: o passo não passa do relógio do servidor (+3 s), e um passo enorme não passa', () => {
+  const m = contexto(() => [anaId, biaId]);
+  const jogo = plataforma.comecar(m.ctx, { naSala: [anaId, biaId], criadaPor: anaId, corpo: {} });
+  assert.ok(typeof jogo !== 'string');
+  m.relogio[0].depois();
+  agora += 2000; // 120 passos desde o verde, e a folga de 180
+  assert.ok(jogo.tempoReal!(anaId, { x: 200, y: 100, n: 300, j: 1 }), 'dentro da folga');
+  assert.equal(jogo.tempoReal!(anaId, { x: 200, y: 100, n: 301, j: 1 }), null, 'à frente do relógio');
+  assert.equal(jogo.tempoReal!(anaId, { x: 200, y: 100, n: 36000, j: 1 }), null, 'o passo enorme que congelaria o coelho para os outros');
+  // o quanto andou fica entre 0 e 1, pelo x
+  assert.equal((jogo.tempoReal!(anaId, { x: 3500, y: 100, n: 120, j: 1 }) as { andou: number }).andou, 1);
+  assert.equal((jogo.tempoReal!(anaId, { x: 10, y: 100, n: 124, j: 1 }) as { andou: number }).andou, 0);
+});
+
+test('quem sai antes do fim aparece sem posição nem troféu; os que ficaram dividem o empate, na tela e no troféu', async () => {
+  const dan = await criarConta(app, 'dan-plataforma');
+  const danId = await idDe(dan.token);
+  let naSala = [anaId, biaId, caioId, danId];
+  const m = contexto(() => naSala);
+  const jogo = plataforma.comecar(m.ctx, { naSala: [...naSala], criadaPor: anaId, corpo: { pista: 'toca-1' } });
+  assert.ok(typeof jogo !== 'string');
+  m.relogio[0].depois();
+  agora += 200_000;
+  assert.equal(jogo.acao(danId, pulo('toca-1', 2100)), null, 'o Dan chega primeiro e sai');
+  naSala = [anaId, biaId, caioId];
+  assert.equal(jogo.acao(anaId, pulo('toca-1', 2300)), null);
+  assert.equal(jogo.acao(biaId, pulo('toca-1', 2300)), null, 'a Ana e a Bia empatam');
+  assert.equal(jogo.acao(caioId, pulo('toca-1', 2400)), null);
+  assert.equal(m.terminou(), true);
+  const pilotos = jogo.publico(anaId).pilotos as { userId: number; posicao: number | null }[];
+  assert.deepEqual(pilotos.map((p) => [p.userId, p.posicao]), [[anaId, 1], [biaId, 1], [caioId, 3], [danId, null]]);
+  const daToca = async (token: string, tempoMs: number) => (await trofeus(token)).find((t) => t.pista === 'toca-1' && t.tempoMs === tempoMs);
+  assert.equal((await daToca(ana.token, 38333))?.posicao, 1);
+  assert.equal((await daToca(bia.token, 38333))?.posicao, 1);
+  assert.equal((await daToca(caio.token, 40000))?.posicao, 3);
+  assert.deepEqual(await trofeus(dan.token), [], 'quem saiu não ganha troféu');
+});
+
+test('a copa: quem sai no meio aparece no placar sem posição; com uma só que ficou, ninguém ganha troféu', async () => {
+  let naSala = [anaId, biaId];
+  const m = contexto(() => naSala);
+  const jogo = plataforma.comecar(m.ctx, { naSala: [anaId, biaId], criadaPor: anaId, corpo: { pista: 'copa-do-pulo' } });
+  assert.ok(typeof jogo !== 'string');
+  const antes = (await trofeus(ana.token)).length;
+  m.relogio[0].depois();
+  agora += 200_000;
+  assert.equal(jogo.acao(biaId, pulo('prado-1', 2100)), null);
+  assert.equal(jogo.acao(anaId, pulo('prado-1', 2200)), null);
+  assert.equal(jogo.publico(anaId).fase, 'intervalo');
+  let placar = jogo.publico(anaId).placarDaCopa as { userId: number; posicao: number | null }[];
+  assert.deepEqual(placar.map((l) => [l.userId, l.posicao]), [[biaId, 1], [anaId, 2]]);
+  naSala = [anaId]; // a Bia sai no intervalo
+  m.relogio[0].depois();
+  for (const fase of ['toca-1', 'copas-1']) {
+    m.relogio[0].depois();
+    agora += 200_000;
+    assert.equal(jogo.acao(anaId, pulo(fase, 2400)), null);
+    if (fase === 'toca-1') m.relogio[0].depois();
+  }
+  assert.equal(m.terminou(), true);
+  placar = jogo.publico(anaId).placarDaCopa as { userId: number; posicao: number | null }[];
+  assert.deepEqual(placar.map((l) => [l.userId, l.posicao]), [[anaId, 1], [biaId, null]], 'quem saiu vem depois, sem posição');
+  assert.equal((await trofeus(ana.token)).length, antes, 'sozinha, a Ana não ganha troféu');
 });

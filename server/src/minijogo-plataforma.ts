@@ -30,6 +30,8 @@ const FASE_MS = 4 * 60_000;
 export const PONTOS = [10, 8, 6, 5, 4, 3, 2, 1];
 /** A folga do relógio de verdade contra o tempo declarado (o atraso da rede na largada de cada um). */
 export const FOLGA_MS = 3000;
+/** O passo da posição ao vivo pode estar até isto à frente do relógio do servidor (3 s). */
+export const PASSOS_DE_FOLGA = 180;
 
 interface Corredor {
   tempoMs: number | null;
@@ -42,6 +44,21 @@ interface Linha {
   username: string;
   tempoMs: number | null;
   andou: number;
+  /** A posição entre quem ficou até o fim (empatados dividem); null para quem saiu, que vem depois, sem posição nem medalha. */
+  posicao: number | null;
+}
+
+/**
+ * A posição de cada linha, só entre `contam` (quem ficou): 1 + quantos dos que contam ficaram na frente dela, então
+ * empatados dividem. As linhas voltam com quem conta primeiro, na ordem dada, e quem saiu depois, com a posição null.
+ * É a MESMA conta da tela e do troféu.
+ */
+export function comPosicoes<L extends { userId: number }>(linhas: L[], contam: Set<number>, naFrente: (o: L, l: L) => boolean): (L & { posicao: number | null })[] {
+  const ficou = linhas.filter((l) => contam.has(l.userId));
+  return [
+    ...ficou.map((l) => ({ ...l, posicao: 1 + ficou.filter((o) => naFrente(o, l)).length })),
+    ...linhas.filter((l) => !contam.has(l.userId)).map((l) => ({ ...l, posicao: null })),
+  ];
 }
 
 export const plataforma: Definicao = criarPlataforma();
@@ -67,9 +84,15 @@ export function criarPlataforma(agora: () => number = Date.now): Definicao {
       const pontos = new Map<number, number>(inscritos.map((id) => [id, 0]));
       const somas = new Map<number, number | null>(inscritos.map((id) => [id, 0]));
       let ultima: Linha[] | null = null;
+      /** Quem estava na sala ao fechar a fase atual (null enquanto ela corre: aí contam os presentes). */
+      let ficaramNaFase: Set<number> | null = null;
 
-      const classificacao = (): Linha[] =>
-        [...corredores.entries()]
+      /** `o` ficou na frente de `l` numa fase: chegou com menos tempo; quem chegou fica na frente de quem não chegou; senão, andou mais. */
+      const naFrenteNaFase = (o: { tempoMs: number | null; andou: number }, l: { tempoMs: number | null; andou: number }) =>
+        o.tempoMs !== null && l.tempoMs !== null ? o.tempoMs < l.tempoMs : o.tempoMs !== null ? true : l.tempoMs === null && o.andou > l.andou;
+
+      const classificacao = (): Linha[] => {
+        const linhas = [...corredores.entries()]
           .map(([userId, c]) => ({ userId, username: ctx.nome(userId), tempoMs: c.tempoMs, andou: c.andou }))
           .sort((a, b) =>
             a.tempoMs !== null && b.tempoMs !== null
@@ -80,15 +103,27 @@ export function criarPlataforma(agora: () => number = Date.now): Definicao {
                   ? 1
                   : b.andou - a.andou,
           );
+        return comPosicoes(linhas, ficaramNaFase ?? new Set(ctx.naSala()), naFrenteNaFase);
+      };
 
+      /** Na copa: mais pontos na frente, e no empate a soma menor dos tempos (quem não chegou numa fase não tem soma). */
+      const naFrenteNaCopa = (o: { pontos: number; soma: number | null }, l: { pontos: number; soma: number | null }) =>
+        o.pontos > l.pontos || (o.pontos === l.pontos && (o.soma ?? Infinity) < (l.soma ?? Infinity));
+
+      /** A posição é só de quem correu todas as fases até aqui, presente (antes da primeira fechar, quem está na sala). */
       const placarDaCopa = () =>
-        inscritos
-          .map((userId) => ({ userId, username: ctx.nome(userId), pontos: pontos.get(userId) ?? 0, soma: somas.get(userId) ?? null }))
-          .sort((a, b) => b.pontos - a.pontos || (a.soma ?? Infinity) - (b.soma ?? Infinity) || a.username.localeCompare(b.username));
+        comPosicoes(
+          inscritos
+            .map((userId) => ({ userId, username: ctx.nome(userId), pontos: pontos.get(userId) ?? 0, soma: somas.get(userId) ?? null }))
+            .sort((a, b) => b.pontos - a.pontos || (a.soma ?? Infinity) - (b.soma ?? Infinity) || a.username.localeCompare(b.username)),
+          correramTodas ?? new Set(ctx.naSala()),
+          naFrenteNaCopa,
+        );
 
       const largar = () => {
         const presentes = ctx.naSala().filter((id) => inscritos.includes(id));
         corredores = new Map(presentes.map((id) => [id, { tempoMs: null, andou: 0 }]));
+        ficaramNaFase = null;
         fase = 'largada';
         prazoAberto = false;
         ctx.agendar(LARGADA_MS, () => {
@@ -100,39 +135,35 @@ export function criarPlataforma(agora: () => number = Date.now): Definicao {
       };
 
       /**
-       * O pódio (até 3), com 2 pessoas ou mais e só de quem tem resultado de verdade; empatados dividem a posição (o tempo
-       * igual na fase; os pontos e a soma iguais na copa).
+       * O pódio (até 3), com 2 pessoas ou mais que ficaram até o fim e só de quem tem resultado de verdade. A posição é a
+       * que a tela mostra (comPosicoes: empatados dividem, quem saiu não tem): a tela e o troféu não discordam.
        */
-      const darTrofeus = (pista: string, ordem: { userId: number; tempoMs: number | null; pontos: number | null; chegou: boolean }[]) => {
-        if (ordem.length < 2) return;
-        const todos = ordem.map((l) => l.userId);
-        const tempo = (o: { tempoMs: number | null }) => o.tempoMs ?? Infinity;
-        /** `o` ficou na frente de `l`: menos tempo; na copa, mais pontos, e no empate a soma menor. */
-        const naFrente = (o: (typeof ordem)[number], l: (typeof ordem)[number]) =>
-          o.pontos !== null && l.pontos !== null ? o.pontos > l.pontos || (o.pontos === l.pontos && tempo(o) < tempo(l)) : tempo(o) < tempo(l);
-        ordem.forEach((l) => {
-          if (!l.chegou) return;
-          const posicao = 1 + ordem.filter((o) => o.chegou && naFrente(o, l)).length;
-          if (posicao > 3) return;
+      const darTrofeus = (pista: string, linhas: { userId: number; posicao: number | null; tempoMs: number | null; pontos: number | null; chegou: boolean }[]) => {
+        const ficou = linhas.filter((l) => l.posicao !== null);
+        if (ficou.length < 2) return;
+        const todos = ficou.map((l) => l.userId);
+        for (const l of ficou) {
+          if (!l.chegou || l.posicao === null || l.posicao > 3) continue;
           db.guardarTrofeu({
             userId: l.userId,
             evento,
             communityId: ctx.comunidade ?? 0,
             pista,
-            posicao,
+            posicao: l.posicao,
             tempoMs: l.tempoMs,
             pontos: l.pontos,
             rivais: todos.filter((id) => id !== l.userId),
           });
-        });
+        }
       };
 
       const fecharFase = () => {
         if (fase !== 'correndo' && fase !== 'largada') return;
+        const naSalaAgora = new Set(ctx.naSala());
+        const ficaram = new Set([...corredores.keys()].filter((id) => naSalaAgora.has(id)));
+        ficaramNaFase = ficaram;
         const ordem = classificacao();
         ultima = ordem;
-        const naSalaAgora = new Set(ctx.naSala());
-        const ficaram = new Set(ordem.map((l) => l.userId).filter((id) => naSalaAgora.has(id)));
         correramTodas = correramTodas === null ? ficaram : new Set([...correramTodas].filter((id) => ficaram.has(id)));
         ordem.forEach((l, i) => {
           if (l.tempoMs === null) {
@@ -147,10 +178,7 @@ export function criarPlataforma(agora: () => number = Date.now): Definicao {
         });
         for (const id of inscritos) if (!corredores.has(id)) somas.set(id, null);
         if (!copa) {
-          darTrofeus(
-            fases[0],
-            ordem.filter((l) => ficaram.has(l.userId)).map((l) => ({ userId: l.userId, tempoMs: l.tempoMs, pontos: null, chegou: l.tempoMs !== null })),
-          );
+          darTrofeus(fases[0], ordem.map((l) => ({ userId: l.userId, posicao: l.posicao, tempoMs: l.tempoMs, pontos: null, chegou: l.tempoMs !== null })));
           fase = 'fim';
           ctx.terminar();
           return;
@@ -165,9 +193,7 @@ export function criarPlataforma(agora: () => number = Date.now): Definicao {
           ctx.avisar();
           return;
         }
-        const turma = correramTodas ?? new Set<number>();
-        const placar = placarDaCopa().filter((l) => turma.has(l.userId));
-        darTrofeus(pedida, placar.map((l) => ({ userId: l.userId, tempoMs: l.soma, pontos: l.pontos, chegou: l.pontos > 0 })));
+        darTrofeus(pedida, placarDaCopa().map((l) => ({ userId: l.userId, posicao: l.posicao, tempoMs: l.soma, pontos: l.pontos, chegou: l.pontos > 0 })));
         fase = 'fim';
         ctx.terminar();
       };
@@ -190,9 +216,10 @@ export function criarPlataforma(agora: () => number = Date.now): Definicao {
           copa,
           corrida: indice + 1,
           corridas: fases.length,
-          pilotos: classificacao().map(({ userId, username, tempoMs }) => ({ userId, username, tempoMs })),
-          placarDaCopa: copa ? placarDaCopa().map(({ userId, username, pontos: p, soma }) => ({ userId, username, pontos: p, soma })) : null,
-          ultima: ultima ? ultima.map(({ userId, username, tempoMs }) => ({ userId, username, tempoMs })) : null,
+          // a posição vem daqui (só entre quem ficou; empatados dividem), e a tela só a mostra: a mesma do troféu
+          pilotos: classificacao().map(({ userId, username, tempoMs, posicao }) => ({ userId, username, tempoMs, posicao })),
+          placarDaCopa: copa ? placarDaCopa().map(({ userId, username, pontos: p, soma, posicao }) => ({ userId, username, pontos: p, soma, posicao })) : null,
+          ultima: ultima ? ultima.map(({ userId, username, tempoMs, posicao }) => ({ userId, username, tempoMs, posicao })) : null,
           prazo: prazoAberto,
         }),
         acao(quem, corpo) {
@@ -216,14 +243,21 @@ export function criarPlataforma(agora: () => number = Date.now): Definicao {
           ctx.avisar();
           return null;
         },
-        /** A posição de quem corre, conferida e carimbada: x e y dentro da fase, o passo, o jeito e o quanto andou. */
+        /**
+         * A posição de quem corre, conferida e carimbada: x e y dentro da fase, o passo e o jeito. O quanto andou sai do x,
+         * aqui (o que a pessoa diz não conta: ele ordena quem não chegou). O passo não passa do que o relógio do servidor viu
+         * correr desde o verde, mais 3 s de folga (a rede e a contagem de cada um): a tela dos outros descarta a posição com
+         * passo menor que o da última, e um passo enorme congelaria para eles o coelho de quem mandou.
+         */
         tempoReal(quem, dados) {
           const c = corredores.get(quem);
           if (!c || fase !== 'correndo' || !dados || typeof dados !== 'object') return null;
-          const { x, y, n, j, andou } = dados as Record<string, unknown>;
+          const { x, y, n, j } = dados as Record<string, unknown>;
           const def = FASES_DO_PULO[fases[indice]];
-          if (!numero(x) || !numero(y) || !numero(n) || !numero(j) || !numero(andou)) return null;
-          if (x < 0 || x > def.largura || y < -64 || y > 260 || n < 0 || n > 60 * 60 * 10 || ![-2, -1, 1, 2].includes(j) || andou < 0 || andou > 1) return null;
+          if (!numero(x) || !numero(y) || !numero(n) || !numero(j)) return null;
+          const passoMaximo = ((agora() - verdeEm) * 60) / 1000 + PASSOS_DE_FOLGA;
+          if (x < 0 || x > def.largura || y < -64 || y > 260 || n < 0 || n > passoMaximo || ![-2, -1, 1, 2].includes(j)) return null;
+          const andou = Math.round(Math.max(0, Math.min(1, (x - def.largada[0]) / (def.chegada - def.largada[0]))) * 1000) / 1000;
           if (c.tempoMs === null) c.andou = andou;
           return { userId: quem, x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10, n: Math.round(n), j, andou };
         },

@@ -16811,6 +16811,11 @@ body.arrastando-barra {
   image-rendering: pixelated;
 }
 
+/* No fim do Pulo, quem saiu da sala vem embaixo, sem posição nem medalha. */
+.pulo-saiu {
+  opacity: 0.6;
+}
+
 /* O MINIGOLFE DA TOCA (03/11/2026, JogoGolfe.tsx): a mesa em 192 × 128, ampliada com os pixels nítidos. As cores do desenho
    são as do quarto; a moldura segue o tema. */
 .minijogo.jogando-golfe {

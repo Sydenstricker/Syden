@@ -406,7 +406,11 @@ export function JogoPlataforma({ eu, aoVoltar }: { eu: number; aoVoltar: () => v
 // NA SALA (a turma corre junto)
 // =====================================================================================================================
 
-type LinhaDoPulo = { userId: number; username: string; tempoMs: number | null };
+/**
+ * `posicao` vem do servidor: só entre quem ficou até o fim (empatados dividem, a mesma conta do troféu); null para quem
+ * saiu, que vem depois, sem posição nem medalha.
+ */
+type LinhaDoPulo = { userId: number; username: string; tempoMs: number | null; posicao: number | null };
 
 /** O Pulo do coelho da sala, como o servidor o manda (server/src/minijogo-plataforma.ts). */
 export interface EstadoPlataforma {
@@ -417,20 +421,17 @@ export interface EstadoPlataforma {
   corrida?: number;
   corridas?: number;
   pilotos: LinhaDoPulo[];
-  placarDaCopa?: { userId: number; username: string; pontos: number; soma: number | null }[] | null;
+  placarDaCopa?: { userId: number; username: string; pontos: number; soma: number | null; posicao: number | null }[] | null;
   ultima?: LinhaDoPulo[] | null;
   prazo: boolean;
 }
 
-/** A posição de cada linha, com empate dividindo o lugar (pelo valor que ordena). */
-const posicoes = <L,>(linhas: L[], valor: (l: L) => number | null) =>
-  linhas.map((l) => {
-    const v = valor(l);
-    return v === null ? null : 1 + linhas.filter((o) => {
-      const w = valor(o);
-      return w !== null && w < v;
-    }).length;
-  });
+/**
+ * O que vai no lugar da posição, no fim: a medalha (só com 2 ou mais que ficaram, e com resultado de verdade, como o
+ * troféu), o número da posição, ou "–" para quem saiu.
+ */
+const marcaDoLugar = (posicao: number | null, comResultado: boolean, ficaram: number) =>
+  posicao === null ? '–' : comResultado && ficaram >= 2 && posicao <= 3 ? MEDALHAS[posicao - 1] : posicao;
 
 export function JogoPlataformaNaSala(props: {
   estado: EstadoPlataforma & Partida;
@@ -456,18 +457,17 @@ export function JogoPlataformaNaSala(props: {
 
   if (estado.fase === 'intervalo' || (fim && copa)) {
     const placar = estado.placarDaCopa ?? [];
-    // no fim, a medalha divide o lugar como o troféu: mais pontos na frente, e no empate a soma menor dos tempos
-    const soma = (l: (typeof placar)[number]) => l.soma ?? Infinity;
-    const lugares = placar.map((l) => 1 + placar.filter((o) => o.pontos > l.pontos || (o.pontos === l.pontos && soma(o) < soma(l))).length);
+    // a posição vem do servidor, só entre quem correu todas as fases até aqui (a mesma do troféu); quem saiu, sem posição
+    const ficaram = placar.filter((l) => l.posicao !== null).length;
     return (
       <div className="corrida">
         {cabecalho}
         <div className="corrida-tela corrida-placar-da-copa">
           <div className="corrida-fim">
             <ol className="corrida-classificacao">
-              {placar.map((p, i) => (
-                <li key={p.userId} className={p.userId === eu ? 'eu' : undefined}>
-                  <span className="corrida-posicao">{fim && p.pontos > 0 && lugares[i] <= 3 ? MEDALHAS[lugares[i] - 1] : i + 1}</span>
+              {placar.map((p) => (
+                <li key={p.userId} className={[p.userId === eu ? 'eu' : '', p.posicao === null ? 'pulo-saiu' : ''].join(' ').trim() || undefined}>
+                  <span className="corrida-posicao">{fim ? marcaDoLugar(p.posicao, p.pontos > 0, ficaram) : (p.posicao ?? '–')}</span>
                   <span className="corrida-quem">{p.username}</span>
                   <span className="corrida-pontos">{p.pontos}</span>
                 </li>
@@ -475,9 +475,9 @@ export function JogoPlataformaNaSala(props: {
             </ol>
             {estado.ultima && (
               <ol className="corrida-voltas corrida-ultima">
-                {estado.ultima.map((p, i) => (
-                  <li key={p.userId}>
-                    {i + 1}. {p.username} · {p.tempoMs !== null ? tempoLegivel(p.tempoMs) : '—'}
+                {estado.ultima.map((p) => (
+                  <li key={p.userId} className={p.posicao === null ? 'pulo-saiu' : undefined}>
+                    {p.posicao ?? '–'}. {p.username} · {p.tempoMs !== null ? tempoLegivel(p.tempoMs) : '—'}
                   </li>
                 ))}
               </ol>
@@ -589,7 +589,7 @@ function FaseDaSala({
 
   const nomeDe = (id: number) => estado.pilotos.find((p) => p.userId === id)?.username ?? '';
   const comTempos = chegou || fim;
-  const lugares = posicoes(estado.pilotos, (p) => p.tempoMs);
+  const ficaram = estado.pilotos.filter((p) => p.posicao !== null).length;
 
   return (
     <>
@@ -609,10 +609,11 @@ function FaseDaSala({
         {comTempos && (
           <div className="corrida-fim">
             <ol className="corrida-classificacao">
-              {estado.pilotos.map((p, i) => (
-                <li key={p.userId} className={p.userId === eu ? 'eu' : undefined}>
-                  {/* a posição só no fim: antes, quem ainda corre pode fazer um tempo menor; empatados dividem o lugar */}
-                  <span className="corrida-posicao">{!fim ? '' : lugares[i] !== null && lugares[i]! <= 3 ? MEDALHAS[lugares[i]! - 1] : i + 1}</span>
+              {estado.pilotos.map((p) => (
+                <li key={p.userId} className={[p.userId === eu ? 'eu' : '', fim && p.posicao === null ? 'pulo-saiu' : ''].join(' ').trim() || undefined}>
+                  {/* a posição só no fim (antes, quem ainda corre pode fazer um tempo menor), e a do servidor: só entre quem
+                      ficou, empatados dividem, a mesma do troféu */}
+                  <span className="corrida-posicao">{!fim ? '' : marcaDoLugar(p.posicao, p.tempoMs !== null, ficaram)}</span>
                   <span className="corrida-quem">{p.username}</span>
                   <span className="corrida-relogio">{p.tempoMs !== null ? tempoLegivel(p.tempoMs) : fim ? '—' : '…'}</span>
                 </li>
