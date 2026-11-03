@@ -4,6 +4,7 @@ import type { Socket } from 'socket.io-client';
 import { CapaDoJogo, CapaPalavraDoDia } from './CapasDosJogos';
 import { IconButton } from './IconButton';
 import { idiomaAtual, useT } from './i18n';
+import { EscolhaDosBlocos, JogoBlocos } from './JogoBlocos';
 import { JogoDesenho } from './JogoDesenho';
 import { JogoDuelo } from './JogoDuelo';
 import { JogoFesta } from './JogoFesta';
@@ -26,6 +27,7 @@ import {
   nomeDoJogo,
   souJogador,
   SITES_PARA_TRANSMITIR,
+  type EstadoBlocos,
   type EstadoDesenho,
   type EstadoDuelo,
   type EstadoFesta,
@@ -136,7 +138,9 @@ export function PainelDoMinijogo({
   const partida = sozinho ? null : partidaDaSala;
   const setEscolhendoCategoria = (sim: boolean) => setEscolhendo(sim ? 'tamanho' : null);
   /** Os jogos que pedem categoria: clicar na capa abre a escolha, e não a partida. */
-  const pedeCategoria = (jogo: IdDoJogo) => jogo === 'tamanho' || (ehQuiz(jogo) && CATEGORIAS_DO_QUIZ[jogo] !== undefined);
+  // (a Horta em cascata pede o modo só no Solo: sem fim ou 2 minutos; na sala é sempre o versus)
+  const pedeCategoria = (jogo: IdDoJogo, solo = true) =>
+    jogo === 'tamanho' || (jogo === 'blocos' && solo) || (ehQuiz(jogo) && CATEGORIAS_DO_QUIZ[jogo] !== undefined);
   /** A aba da estante: a última escolhida volta na próxima vez (só neste navegador). */
   const [abaEscolhida, setAba] = useState<GrupoDoJogo>(() => {
     try {
@@ -243,6 +247,12 @@ export function PainelDoMinijogo({
           aoVoltar={() => setEscolhendoCategoria(false)}
         />
       )}
+      {!partida && escolhendo === 'blocos' && (
+        <EscolhaDosBlocos
+          aoEscolher={(modo) => tentar(() => aoComecar('blocos', { modo }, true).then(() => setEscolhendo(null)))}
+          aoVoltar={() => setEscolhendo(null)}
+        />
+      )}
       {!partida && escolhendo === 'plataforma' && (
         <EscolhaDaFase
           aoEscolher={(fase) => tentar(() => aoComecar('plataforma', { pista: fase }, false).then(() => setEscolhendo(null)))}
@@ -268,7 +278,7 @@ export function PainelDoMinijogo({
                       ? aba === 'solo'
                         ? setPulando(true)
                         : setEscolhendo('plataforma')
-                    : jogo.id === 'tabuleiro' || pedeCategoria(jogo.id)
+                    : jogo.id === 'tabuleiro' || pedeCategoria(jogo.id, aba === 'solo')
                       ? setEscolhendo(jogo.id)
                       : tentar(() => aoComecar(jogo.id, {}, aba === 'solo'))
                 }
@@ -335,6 +345,15 @@ export function PainelDoMinijogo({
         <JogoFesta
           key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
           estado={jogoNaTela as unknown as EstadoFesta & Partida} eu={eu} jogador={souJogador(partida)} restante={restante} agir={agir} />
+      )}
+      {jogoNaTela?.jogo === 'blocos' && (
+        <JogoBlocos
+          key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
+          estado={jogoNaTela as unknown as EstadoBlocos & Partida}
+          eu={eu}
+          jogador={souJogador(partida)}
+          aoAgir={aoAgir}
+        />
       )}
       {jogoNaTela?.jogo === 'plataforma' && (
         <JogoPlataformaNaSala

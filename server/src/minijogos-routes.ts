@@ -1,6 +1,7 @@
 import type { FastifyInstance, FastifyReply } from 'fastify';
 import type { Server as IOServer, Socket } from 'socket.io';
 import * as db from './db.js';
+import { blocos } from './minijogo-blocos.js';
 import { corrida } from './minijogo-corrida.js';
 import { desenho } from './minijogo-desenho.js';
 import { festa } from './minijogo-festa.js';
@@ -48,6 +49,7 @@ export const JOGOS: Record<string, Definicao> = {
   palavra,
   corrida,
   festa,
+  blocos,
   plataforma,
   golfe,
   tabuleiro: tabuleiroDaTurma,
@@ -61,7 +63,7 @@ export const JOGOS: Record<string, Definicao> = {
  * ocupa a sala (a turma continua podendo começar o jogo dela), não pede chamada (dá para jogar pelo computador do
  * quarto) e não conta nas conquistas da turma, que medem gente junta.
  */
-export const JOGOS_SOLO = new Set(['tamanho', 'xadrez', 'sudoku', 'festa', 'golfe', ...Object.keys(TEMAS)]);
+export const JOGOS_SOLO = new Set(['tamanho', 'xadrez', 'sudoku', 'festa', 'blocos', 'golfe', ...Object.keys(TEMAS)]);
 
 interface Partida {
   channelId: number;

@@ -399,7 +399,29 @@ export interface EstadoGolfe {
   partidaId: string;
 }
 
-export type IdDoJogo = 'corrida' | 'festa' | 'tabuleiro' | 'golfe' | 'plataforma' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'xadrez' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
+/** A Horta em cascata (server/src/minijogo-blocos.ts): cada um com a sua pilha; o servidor refaz a partida de cada um. */
+export interface EstadoBlocos {
+  fase: 'largada' | 'jogando' | 'fim';
+  modo: 'versus' | 'sem-fim' | 'dois-minutos';
+  semente: number;
+  decorridoMs: number;
+  partidaId: string;
+  /** Cada um como o servidor viu: a pilha em 72 letras ('.' vazio, '0' a '5' os legumes, 'x' o caixote). */
+  jogadores: { userId: number; username: string; pontos: number; vivo: boolean; saiu: boolean; grade: string }[];
+  meu: {
+    recebidas: number;
+    versao: number;
+    passo: number;
+    pontos: number;
+    lixos: { id: number; n: number; largura: number; altura: number }[];
+    jogadas: [number, number, number, number][] | null;
+    fim: boolean;
+  } | null;
+  /** No fim: o lugar (a ordem de eliminação; empatados dividem), os pontos e quanto a pilha aguentou. */
+  resultado: { userId: number; username: string; lugar: number; pontos: number; tempoMs: number }[] | null;
+}
+
+export type IdDoJogo = 'corrida' | 'festa' | 'tabuleiro' | 'golfe' | 'plataforma' | 'blocos' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'xadrez' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
 
 /**
  * As duas abas da estante (pedido dele, 14/10/2026). SOLO: a partida é só de quem joga, começa sem convite, não ocupa
@@ -509,6 +531,13 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
     abas: ['coletivo'],
     // As palavras são do dicionário do servidor, que por enquanto só existe em português.
     idioma: 'pt',
+  },
+  {
+    // Trocar e combinar com a pilha subindo (JogoBlocos.tsx, server/src/minijogo-blocos.ts): cada um na própria tela.
+    id: 'blocos',
+    nome: chave('Horta em cascata'),
+    dica: chave('Troque dois legumes vizinhos para juntar três ou mais iguais. A pilha sobe sem parar: não deixe chegar ao topo. Com a turma, as cadeias e os combos mandam caixotes para os outros.'),
+    abas: ['solo', 'coletivo'],
   },
   {
     // O minigolfe (JogoGolfe.tsx, server/src/minijogo-golfe.ts): todos no mesmo buraco, ao mesmo tempo, cada um na própria tela.

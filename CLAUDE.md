@@ -509,6 +509,18 @@ tela, mas nunca abaixo de 100 ms nem muito abaixo do que o servidor viu passar).
 de troféus do quarto (`pista: 'festa'`). Microjogo novo é uma entrada nos dois lados; a estante de troféus serve a qualquer
 jogo da sala. Testes: `server/test/minijogos-festa.test.ts` e `e2e/festa.mjs` (com o LiveKit).
 
+**A HORTA EM CASCATA está feita (03/11/2026, o item 4):** trocar e combinar com a pilha subindo, 6 × 12 (NÃO é Tetris: nada
+cai do alto em forma de peça), com seis legumes desenhados por código. Cadeia (o que cai e combina) e combo (4 ou mais)
+valem mais e, na sala, mandam CAIXOTES ao próximo adversário vivo, em roda; o caixote vira legume quando algo some do lado.
+Nas duas abas: no Solo, "Sem fim" ou "2 minutos"; no Coletivo, de 2 a 8, ganha quem sobra. **A regra mora num arquivo só, em
+duas cópias iguais byte a byte** (`server/src/blocos-sim.ts` e `web/src/blocos/sim.ts`; `web/test/blocos.test.ts` confere): o
+servidor dá a semente, o site manda as jogadas (o passo e a casa) em lotes, e o servidor REFAZ a partida de cada um — os
+pontos, os caixotes e quem chegou ao topo são dele (`server/src/minijogo-blocos.ts`). O caixote cai ~1,5 s no futuro de quem
+recebe; chegou atrasado, a tela refaz a partida do começo. Passo à frente do relógio do servidor não vale, e no versus quem
+fica 5 s calado é levado adiante sem jogadas. No pódio, a POSIÇÃO é a ordem de eliminação, `pontos` o placar e `tempoMs` o
+quanto a pilha aguentou (`pista: 'blocos'`; quem não fez nenhuma troca não sobe). Testes: `server/test/minijogos-blocos.test.ts`,
+`web/test/blocos.test.ts` e `e2e/blocos.mjs` (o piloto automático liga por `window.blocosPilotoAutomatico`, só em desenvolvimento).
+
 **O PULO DO COELHO está feito (03/11/2026, o item 3: a corrida de plataforma com fantasmas, no motor do kart):**
 `web/src/plataforma/`, `web/src/JogoPlataforma.tsx`, `server/src/plataforma.ts`, `server/src/minijogo-plataforma.ts`, nas duas
 abas. Três fases curtas POR CÓDIGO (Prado, Toca e Galhos, ~35 s cada; `fases.ts` monta a grade de blocos por um roteiro):
