@@ -217,6 +217,26 @@ export function cabeNoRitmo(jogadas: readonly Jogada[], n: number): boolean {
   return conta < MAX_JOGADAS_POR_SEGUNDO;
 }
 
+/** Entre uma troca e a seguinte, no mínimo tantos passos (15 por segundo: mais que isso não é mão de gente). */
+export const INTERVALO_DA_TROCA = 4;
+
+/** Uma troca no passo n respeita o intervalo desde a troca anterior? (`jogadas` em ordem.) */
+export function trocaNoIntervalo(jogadas: readonly Jogada[], n: number): boolean {
+  for (let i = jogadas.length - 1; i >= 0 && jogadas[i][0] > n - INTERVALO_DA_TROCA; i--) if (jogadas[i][1] === 0) return false;
+  return true;
+}
+
+/** O "subir" faria alguma coisa agora? (Não, se já está subindo, se algo some ou vira, ou se a pilha está no teto.) */
+export function subirFazEfeito(e: Estado): boolean {
+  if (e.forcando || e.fim) return false;
+  let topo = false;
+  for (let i = 0; i < e.tipo.length; i++) {
+    if (e.estado[i] === LIMPANDO || e.estado[i] === VIRANDO) return false;
+    if (i < COLUNAS && e.tipo[i] !== VAZIO) topo = true;
+  }
+  return !(topo && e.subida >= UNIDADES_POR_LINHA - 1);
+}
+
 /** A troca é possível agora? (As duas casas paradas ou vazias, sem caixote, e não as duas vazias.) */
 export function podeTrocar(e: Estado, l: number, c: number): boolean {
   if (l < 0 || l >= LINHAS || c < 0 || c >= COLUNAS - 1) return false;

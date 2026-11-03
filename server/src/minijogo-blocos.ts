@@ -23,14 +23,20 @@
  * então lá só vale o teto.
  *
  * O QUE AINDA É POSSÍVEL, e fica, porque é jogo entre amigos: um programa que jogue sozinho pelo console (o servidor só
- * sabe que as jogadas são possíveis e no ritmo de uma mão, até 20 por segundo); e, no Solo, pausar para pensar.
+ * sabe que as jogadas são possíveis e no ritmo de uma mão: até 20 por segundo, e uma troca a cada 4 passos no máximo); e, no
+ * Solo, pausar para pensar.
+ *
+ * O FIM DO VERSUS espera os atrasados: quando sobra um vivo, a partida só acaba depois que a simulação dele (no servidor)
+ * passou do passo da última eliminação — senão quem estava atrás ganharia mesmo chegando ao topo antes. A espera é curta,
+ * porque o servidor leva adiante quem fica mais de 5 s para trás. No teto de 8 minutos, todos são levados ao mesmo passo
+ * antes da comparação.
  *
  * OS TROFÉUS (versus, com 2 pessoas ou mais que ficaram até o fim): a POSIÇÃO é a ordem de eliminação (quem chegou ao topo
  * por último, no passo da própria partida, fica na frente; quem sobra vivo é o primeiro, e se o tempo acabar com mais de um
  * vivo, os pontos desempatam); `pontos` é o placar de cada um, e `tempoMs` o quanto a pilha aguentou.
  */
 import * as db from './db.js';
-import { avancar, cabeNoRitmo, DOIS_MINUTOS, jogadaValida, PASSOS_POR_SEGUNDO, retrato, simulacao, type Ataque, type Jogada, type Simulacao } from './blocos-sim.js';
+import { avancar, cabeNoRitmo, DOIS_MINUTOS, jogadaValida, PASSOS_POR_SEGUNDO, retrato, simulacao, trocaNoIntervalo, type Ataque, type Jogada, type Simulacao } from './blocos-sim.js';
 import type { Definicao } from './minijogo-motor.js';
 
 /** A contagem antes de começar (o site mostra 3, 2, 1). */
@@ -59,6 +65,8 @@ interface Jogador {
   recebidas: number;
   /** Sobe quando uma jogada é recusada: o site refaz a partida com a lista aceita. */
   versao: number;
+  /** A versão que o site disse ter no último lote: a lista aceita só vai no estado enquanto as duas diferem. */
+  versaoDoSite: number;
   /** O passo em que a pilha chegou ao topo (ou em que a pessoa saiu da sala). */
   eliminadoEm: number | null;
   saiu: boolean;
@@ -88,14 +96,14 @@ export function criarBlocos({ agora = Date.now, aleatorio = Math.random }: Opcoe
       const jogadores = new Map<number, Jogador>(
         inscritos.map((userId) => [
           userId,
-          { userId, s: simulacao(semente, modo === 'dois-minutos' ? DOIS_MINUTOS : 0), recebidas: 0, versao: 0, eliminadoEm: null, saiu: false, alvo: 0, jogou: false },
+          { userId, s: simulacao(semente, modo === 'dois-minutos' ? DOIS_MINUTOS : 0), recebidas: 0, versao: 0, versaoDoSite: 0, eliminadoEm: null, saiu: false, alvo: 0, jogou: false },
         ]),
       );
       let fase: 'largada' | 'jogando' | 'fim' = 'largada';
       let inicioEm = 0;
       let lixoId = 0;
       let ultimoAviso = 0;
-      let resultado: { userId: number; username: string; lugar: number; pontos: number; tempoMs: number }[] | null = null;
+      let resultado: { userId: number; username: string; lugar: number | null; pontos: number; tempoMs: number }[] | null = null;
 
       const decorrido = () => (fase === 'largada' ? 0 : Math.floor(((agora() - inicioEm) * PASSOS_POR_SEGUNDO) / 1000));
       const vivos = () => [...jogadores.values()].filter((j) => j.eliminadoEm === null);
@@ -159,11 +167,20 @@ export function criarBlocos({ agora = Date.now, aleatorio = Math.random }: Opcoe
         if (fase === 'fim') return;
         fase = 'fim';
         const todos = inscritos.map((id) => jogadores.get(id)!);
-        resultado = ordenar(todos).map(({ j, lugar }) => ({ userId: j.userId, username: ctx.nome(j.userId), lugar, pontos: j.s.e.pontos, tempoMs: tempoDe(j) }));
+        const naSala = new Set(ctx.naSala());
+        // A POSIÇÃO é só entre quem ficou até o fim (a mesma conta do troféu; empatados dividem); quem saiu vem embaixo, sem
+        // posição. No Solo, a pessoa é a turma.
+        const turma = versus ? todos.filter((j) => !j.saiu && naSala.has(j.userId)) : todos;
+        const linha = (j: Jogador, lugar: number | null) => ({ userId: j.userId, username: ctx.nome(j.userId), lugar, pontos: j.s.e.pontos, tempoMs: tempoDe(j) });
+        resultado = [
+          ...ordenar(turma).map(({ j, lugar }) => linha(j, lugar)),
+          ...todos
+            .filter((j) => !turma.includes(j))
+            .sort((a, b) => ctx.nome(a.userId).localeCompare(ctx.nome(b.userId)))
+            .map((j) => linha(j, null)),
+        ];
         // O PÓDIO: só no versus, só entre quem ficou até o fim (2 ou mais), e só quem jogou de verdade
         if (versus) {
-          const naSala = new Set(ctx.naSala());
-          const turma = todos.filter((j) => !j.saiu && naSala.has(j.userId));
           if (turma.length >= 2) {
             for (const { j, lugar } of ordenar(turma)) {
               if (lugar > 3 || !j.jogou) continue;
@@ -183,10 +200,31 @@ export function criarBlocos({ agora = Date.now, aleatorio = Math.random }: Opcoe
         ctx.terminar();
       };
 
-      /** Acabou? No versus, quando sobra um (ou nenhum); no Solo, quando a partida da pessoa acaba. */
+      /**
+       * Acabou? No Solo, quando a partida da pessoa acaba. No versus, quando sobra um (ou nenhum) E a simulação de quem sobrou
+       * já chegou ao passo da última eliminação: quem estava atrás ainda pode chegar ao topo antes dele, e aí perde.
+       */
       const conferirFim = () => {
         if (fase !== 'jogando') return;
-        if (versus ? vivos().length <= 1 : vivos().length === 0) terminar();
+        if (!versus) {
+          if (vivos().length === 0) terminar();
+          return;
+        }
+        const restam = vivos();
+        if (restam.length > 1) return;
+        const ultima = Math.max(0, ...[...jogadores.values()].filter((j) => !j.saiu && j.eliminadoEm !== null).map((j) => j.eliminadoEm!));
+        if (restam.every((j) => j.s.e.passo >= ultima)) terminar();
+      };
+
+      /** O teto de 8 minutos: os vivos que estão atrás são levados ao passo do mais adiantado, e a comparação é no mesmo passo. */
+      const noTeto = () => {
+        if (fase !== 'jogando') return;
+        if (versus) {
+          arrumar();
+          const ate = Math.max(0, ...vivos().map((j) => j.s.e.passo));
+          for (const j of vivos()) if (j.s.e.passo < ate) andar(j, ate);
+        }
+        terminar();
       };
 
       const avisar = (forte: boolean) => {
@@ -200,7 +238,7 @@ export function criarBlocos({ agora = Date.now, aleatorio = Math.random }: Opcoe
       ctx.agendar(LARGADA_MS, () => {
         fase = 'jogando';
         inicioEm = agora();
-        ctx.agendar(versus ? VERSUS_MS : SOLO_MS, terminar);
+        ctx.agendar(versus ? VERSUS_MS : SOLO_MS, noTeto);
         ctx.avisar();
       });
 
@@ -228,8 +266,8 @@ export function criarBlocos({ agora = Date.now, aleatorio = Math.random }: Opcoe
                   passo: meu.s.e.passo,
                   pontos: meu.s.e.pontos,
                   lixos: meu.s.lixos,
-                  // a lista aceita só vai quando o site precisa se acertar com ela
-                  jogadas: meu.versao > 0 ? meu.s.jogadas : null,
+                  // a lista aceita só vai quando o site precisa se acertar com ela (a versão dele é outra), e não para sempre
+                  jogadas: meu.versao !== meu.versaoDoSite ? meu.s.jogadas : null,
                   fim: meu.eliminadoEm !== null,
                 }
               : null,
@@ -246,6 +284,8 @@ export function criarBlocos({ agora = Date.now, aleatorio = Math.random }: Opcoe
             return null;
           }
           if (fase !== 'jogando') return 'Esta rodada já acabou.';
+          // a versão que o site tem (o lote foi montado com ela): igual à daqui, a lista aceita deixa de ir no estado
+          if (inteiro(corpo.versao) && corpo.versao <= j.versao) j.versaoDoSite = corpo.versao;
           if (j.eliminadoEm !== null) return null;
           const { de, passo: dito, jogadas } = corpo;
           if (!inteiro(de) || !inteiro(dito) || !Array.isArray(jogadas) || jogadas.length > MAX_POR_LOTE) return 'Ação desconhecida.';
@@ -261,7 +301,8 @@ export function criarBlocos({ agora = Date.now, aleatorio = Math.random }: Opcoe
               x[0] >= j.s.e.passo &&
               x[0] <= ate &&
               (!ultima || x[0] >= ultima[0]) &&
-              cabeNoRitmo(j.s.jogadas, x[0]);
+              cabeNoRitmo(j.s.jogadas, x[0]) &&
+              (x[1] !== 0 || trocaNoIntervalo(j.s.jogadas, x[0]));
             if (!ok) {
               j.versao++;
               continue;

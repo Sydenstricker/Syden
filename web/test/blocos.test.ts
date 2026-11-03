@@ -6,6 +6,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
+import { registrarEntrada } from '../src/blocos/entrada.ts';
 import { escolherJogada } from '../src/blocos/piloto.ts';
 import * as Sim from '../src/blocos/sim.ts';
 
@@ -173,4 +174,37 @@ test('o piloto automático faz pontos, e a partida refeita com as mesmas jogadas
     Sim.avancar(r, 1e9);
     assert.deepEqual([r.e.passo, r.e.pontos, Sim.retrato(r.e)], [s.e.passo, s.e.pontos, Sim.retrato(s.e)]);
   }
+});
+
+test('as trocas: no mínimo 4 passos entre uma e outra, e a que chega antes espera a vez em vez de sumir', () => {
+  assert.equal(Sim.trocaNoIntervalo([[10, 0, 11, 0]], 13), false);
+  assert.equal(Sim.trocaNoIntervalo([[10, 0, 11, 0]], 14), true);
+  assert.equal(Sim.trocaNoIntervalo([[10, 0, 11, 0], [12, 1, 0, 0]], 13), false, 'o "subir" no meio não conta');
+  assert.equal(Sim.trocaNoIntervalo([[12, 1, 0, 0]], 12), true);
+  const s = Sim.simulacao(3);
+  assert.equal(registrarEntrada(s, { tipo: 'troca', l: 11, c: 0 }, 0), true);
+  assert.equal(registrarEntrada(s, { tipo: 'troca', l: 11, c: 1 }, 1), false, 'cedo demais: fica na fila');
+  assert.equal(registrarEntrada(s, { tipo: 'troca', l: 11, c: 1 }, 4), true);
+  assert.deepEqual(s.jogadas, [
+    [0, 0, 11, 0],
+    [4, 0, 11, 1],
+  ]);
+});
+
+test('segurar o "subir" não enche o ritmo: ele só é gravado quando faz efeito, e as trocas sempre têm lugar', () => {
+  const s = Sim.simulacao(5);
+  const trocas: number[] = [];
+  // o X segurado a partida inteira, e uma troca pedida a cada passo (mais que qualquer mão)
+  for (let n = 0; n < 1200 && !s.e.fim; n++) {
+    registrarEntrada(s, { tipo: 'subir' }, n);
+    const antes = s.jogadas.length;
+    for (let c = 0; c < Sim.COLUNAS - 1; c++) if (registrarEntrada(s, { tipo: 'troca', l: Sim.LINHAS - 1, c }, n) && s.jogadas.length > antes) break;
+    if (s.jogadas.length > antes && s.jogadas[s.jogadas.length - 1][1] === 0) trocas.push(n);
+    Sim.avancar(s, n + 1);
+  }
+  // nenhuma janela de 1 s passa do ritmo que o servidor aceita
+  for (let i = 0; i < s.jogadas.length; i++) assert.ok(Sim.cabeNoRitmo(s.jogadas.slice(0, i), s.jogadas[i][0]), `a jogada ${i} cabe no ritmo`);
+  // e o "subir" não foi gravado passo a passo enquanto não podia fazer nada
+  const subidas = s.jogadas.filter((j) => j[1] === 1).length;
+  assert.ok(subidas < s.e.passo / 8, `${subidas} "subir" em ${s.e.passo} passos`);
 });
