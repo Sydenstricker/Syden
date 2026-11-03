@@ -2359,4 +2359,11 @@ export default {
   'Pedir amizade': 'Запропонувати дружбу',
   'Aceitar o pedido de amizade': 'Прийняти запит на дружбу',
   'Pedido de amizade enviado': 'Запит на дружбу надіслано',
+  'Iniciar chamada': 'Почати дзвінок',
+  'Iniciar chamada de vídeo': 'Почати відеодзвінок',
+  'Entrar na chamada': 'Приєднатися до дзвінка',
+  '{quem} está ligando': '{quem} телефонує',
+  'Atender': 'Відповісти',
+  'Recusar chamada': 'Відхилити дзвінок',
+  '{quem} recusou a chamada': 'Дзвінок відхилено: {quem}',
 } satisfies Record<string, string>;

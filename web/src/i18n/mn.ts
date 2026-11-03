@@ -2393,4 +2393,11 @@ export default {
   'Pedir amizade': 'Найз болох хүсэлт илгээх',
   'Aceitar o pedido de amizade': 'Найз болох хүсэлтийг зөвшөөрөх',
   'Pedido de amizade enviado': 'Найз болох хүсэлт илгээгдлээ',
+  'Iniciar chamada': 'Дуудлага эхлүүлэх',
+  'Iniciar chamada de vídeo': 'Видео дуудлага эхлүүлэх',
+  'Entrar na chamada': 'Дуудлагад нэгдэх',
+  '{quem} está ligando': '{quem} залгаж байна',
+  'Atender': 'Хариулах',
+  'Recusar chamada': 'Дуудлагаас татгалзах',
+  '{quem} recusou a chamada': '{quem} дуудлагаас татгалзлаа',
 } satisfies Record<string, string>;

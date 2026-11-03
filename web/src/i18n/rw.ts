@@ -2320,4 +2320,11 @@ export default {
   'Pedir amizade': 'Saba ubucuti',
   'Aceitar o pedido de amizade': 'Emera ubusabe bw\'ubucuti',
   'Pedido de amizade enviado': 'Ubusabe bw\'ubucuti bwoherejwe',
+  'Iniciar chamada': 'Tangira guhamagara',
+  'Iniciar chamada de vídeo': 'Tangira guhamagara kuri videwo',
+  'Entrar na chamada': 'Injira mu guhamagara',
+  '{quem} está ligando': '{quem} arahamagara',
+  'Atender': 'Itaba',
+  'Recusar chamada': 'Anga guhamagarwa',
+  '{quem} recusou a chamada': '{quem} yanze guhamagarwa',
 } satisfies Record<string, string>;

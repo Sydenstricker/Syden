@@ -2315,4 +2315,11 @@ export default {
   'Pedir amizade': 'Kole ke kaumeʻa',
   'Aceitar o pedido de amizade': 'Tali ʻa e kole ke kaumeʻa',
   'Pedido de amizade enviado': 'Kuo ʻave ʻa e kole ke kaumeʻa',
+  'Iniciar chamada': 'Kamata ha telefoni',
+  'Iniciar chamada de vídeo': 'Kamata ha telefoni vitiō',
+  'Entrar na chamada': 'Kau ki he telefoní',
+  '{quem} está ligando': 'ʻOku telefoni mai ʻa {quem}',
+  'Atender': 'Tali',
+  'Recusar chamada': 'Fakafisi ki he telefoní',
+  '{quem} recusou a chamada': 'Kuo fakafisi ʻa {quem} ki he telefoní',
 } satisfies Record<string, string>;

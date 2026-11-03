@@ -2379,4 +2379,11 @@ export default {
   'Pedir amizade': 'Požiadať o priateľstvo',
   'Aceitar o pedido de amizade': 'Prijať žiadosť o priateľstvo',
   'Pedido de amizade enviado': 'Žiadosť o priateľstvo odoslaná',
+  'Iniciar chamada': 'Začať hovor',
+  'Iniciar chamada de vídeo': 'Začať videohovor',
+  'Entrar na chamada': 'Pripojiť sa k hovoru',
+  '{quem} está ligando': 'Prichádzajúci hovor od {quem}',
+  'Atender': 'Prijať',
+  'Recusar chamada': 'Odmietnuť hovor',
+  '{quem} recusou a chamada': 'Hovor odmietnutý: {quem}',
 } satisfies Record<string, string>;

@@ -2379,4 +2379,11 @@ export default {
   'Pedir amizade': 'Codso saaxiibtinimo',
   'Aceitar o pedido de amizade': 'Aqbal codsiga saaxiibtinimo',
   'Pedido de amizade enviado': 'Codsiga saaxiibtinimo waa la diray',
+  'Iniciar chamada': 'Bilow wac',
+  'Iniciar chamada de vídeo': 'Bilow wac fiidiyow',
+  'Entrar na chamada': 'Ku biir wacitaanka',
+  '{quem} está ligando': 'Wac ka imanaya {quem}',
+  'Atender': 'Ka jawaab',
+  'Recusar chamada': 'Diid wacitaanka',
+  '{quem} recusou a chamada': 'Wacitaanka waa la diiday: {quem}',
 } satisfies Record<string, string>;

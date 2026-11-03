@@ -2381,4 +2381,11 @@ export default {
   'Pedir amizade': 'Barátkérés küldése',
   'Aceitar o pedido de amizade': 'A barátkérés elfogadása',
   'Pedido de amizade enviado': 'Barátkérés elküldve',
+  'Iniciar chamada': 'Hívás indítása',
+  'Iniciar chamada de vídeo': 'Videohívás indítása',
+  'Entrar na chamada': 'Csatlakozás a híváshoz',
+  '{quem} está ligando': '{quem} hív',
+  'Atender': 'Fogadás',
+  'Recusar chamada': 'Hívás elutasítása',
+  '{quem} recusou a chamada': '{quem} elutasította a hívást',
 } satisfies Record<string, string>;

@@ -2359,4 +2359,11 @@ export default {
   'Pedir amizade': 'לשלוח בקשת חברות',
   'Aceitar o pedido de amizade': 'לאשר את בקשת החברות',
   'Pedido de amizade enviado': 'בקשת החברות נשלחה',
+  'Iniciar chamada': 'התחלת שיחה',
+  'Iniciar chamada de vídeo': 'התחלת שיחת וידאו',
+  'Entrar na chamada': 'הצטרפות לשיחה',
+  '{quem} está ligando': 'שיחה נכנסת מ{quem}',
+  'Atender': 'מענה',
+  'Recusar chamada': 'דחיית השיחה',
+  '{quem} recusou a chamada': 'השיחה נדחתה: {quem}',
 } satisfies Record<string, string>;

@@ -2380,4 +2380,11 @@ export default {
   'Pedir amizade': 'Biðja um vináttu',
   'Aceitar o pedido de amizade': 'Samþykkja vinabeiðnina',
   'Pedido de amizade enviado': 'Vinabeiðni send',
+  'Iniciar chamada': 'Hefja símtal',
+  'Iniciar chamada de vídeo': 'Hefja myndsímtal',
+  'Entrar na chamada': 'Taka þátt í símtalinu',
+  '{quem} está ligando': 'Símtal frá {quem}',
+  'Atender': 'Svara',
+  'Recusar chamada': 'Hafna símtali',
+  '{quem} recusou a chamada': 'Símtali hafnað: {quem}',
 } satisfies Record<string, string>;

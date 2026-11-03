@@ -2348,4 +2348,11 @@ export default {
   'Pedir amizade': 'မိတ်ဆွေဖွဲ့ရန် တောင်းဆိုရန်',
   'Aceitar o pedido de amizade': 'မိတ်ဆွေတောင်းဆိုချက်ကို လက်ခံရန်',
   'Pedido de amizade enviado': 'မိတ်ဆွေတောင်းဆိုချက် ပို့ပြီးပါပြီ',
+  'Iniciar chamada': 'ဖုန်းခေါ်ရန်',
+  'Iniciar chamada de vídeo': 'ဗီဒီယိုဖုန်းခေါ်ရန်',
+  'Entrar na chamada': 'ဖုန်းခေါ်ဆိုမှုသို့ ဝင်ရန်',
+  '{quem} está ligando': '{quem} ခေါ်နေသည်',
+  'Atender': 'ဖြေရန်',
+  'Recusar chamada': 'ဖုန်းခေါ်ဆိုမှု ငြင်းရန်',
+  '{quem} recusou a chamada': '{quem} ဖုန်းခေါ်ဆိုမှုကို ငြင်းခဲ့သည်',
 } satisfies Record<string, string>;

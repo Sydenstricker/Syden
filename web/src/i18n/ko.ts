@@ -2297,4 +2297,11 @@ export default {
   'Pedir amizade': '친구 요청',
   'Aceitar o pedido de amizade': '친구 요청 수락',
   'Pedido de amizade enviado': '친구 요청을 보냈어요',
+  'Iniciar chamada': '통화 시작',
+  'Iniciar chamada de vídeo': '영상 통화 시작',
+  'Entrar na chamada': '통화 참여',
+  '{quem} está ligando': '{quem} 님의 전화',
+  'Atender': '받기',
+  'Recusar chamada': '통화 거절',
+  '{quem} recusou a chamada': '{quem} 님이 통화를 거절했어요',
 } satisfies Record<string, string>;

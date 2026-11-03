@@ -2381,4 +2381,11 @@ export default {
   'Pedir amizade': 'Dostluk haýyşyny iber',
   'Aceitar o pedido de amizade': 'Dostluk haýyşyny kabul et',
   'Pedido de amizade enviado': 'Dostluk haýyşy iberildi',
+  'Iniciar chamada': 'Jaň başla',
+  'Iniciar chamada de vídeo': 'Wideo jaň başla',
+  'Entrar na chamada': 'Jaňa goşul',
+  '{quem} está ligando': '{quem} jaň edýär',
+  'Atender': 'Jogap ber',
+  'Recusar chamada': 'Jaňy ret et',
+  '{quem} recusou a chamada': '{quem} jaňy ret etdi',
 } satisfies Record<string, string>;

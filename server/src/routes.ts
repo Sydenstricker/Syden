@@ -19,6 +19,7 @@ import { salaDaPessoa,
   leaveCommunityRoom,
   estaOnline,
   pessoasNaSala,
+  podeEntrarNaChamadaDaConversa,
   removeVoiceChannelMembers,
   salaDeVozDe,
   cortarVideo,
@@ -72,6 +73,10 @@ export async function tirarDeTodasAsChamadas(userId: number) {
       await rooms.removeParticipant(voiceRoomName(canal.id), String(userId)).catch(() => {});
       await rooms.removeParticipant(voiceRoomName(canal.id), 'peek-' + userId).catch(() => {});
     }
+  }
+  // E as chamadas das conversas privadas (desde 02/11/2026), que não moram em comunidade nenhuma.
+  for (const conversa of db.idsDasConversas(userId)) {
+    await rooms.removeParticipant(voiceRoomName(conversa), String(userId)).catch(() => {});
   }
 }
 
@@ -1244,7 +1249,7 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
         // Na sala em que a pessoa está AGORA (pode ser outra da mesma comunidade), a permissão muda na hora. Sem sessão
         // de voz (o socket reconectando), tenta a sala do pedido assim mesmo: o LiveKit pode já tê-la lá dentro.
         const sessao = salaDeVozDe(targetId);
-        const sala = sessao && sessao.communityId === channel.communityId ? sessao : { channelId: channel.id, communityId: channel.communityId };
+        const sala = { channelId: sessao && sessao.communityId === channel.communityId ? sessao.channelId : channel.id, communityId: channel.communityId };
         {
           const room = voiceRoomName(sala.channelId);
           await rooms.updateParticipant(room, String(targetId), undefined, permissaoNaSala({ id: sala.channelId, communityId: sala.communityId }, targetId)).catch(() => {});
@@ -1809,6 +1814,48 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
         e2ee: process.env.CHAMADAS_E2EE !== 'nao',
         // O app não tenta abrir o microfone ao entrar (seria recusado e pareceria defeito); ver useVoice.ts.
         microfoneTravado: microfoneTravado(channel.communityId, request.user.id),
+      };
+    });
+
+    /**
+     * A SENHA DA CHAMADA DE UMA CONVERSA PRIVADA (pedido dele, 02/11/2026): voz, câmera e transmissão entre quem conversa.
+     *
+     * A trava de verdade é esta, e não o voice:join: é o token que deixa ouvir. As regras são as de
+     * podeEntrarNaChamadaDaConversa (membro da conversa; contra cada um de quem já está na chamada, nenhum bloqueio e a
+     * regra dos menores). Não há moderação de comunidade aqui (palco, microfone travado); o corte de tela pela moderação
+     * do Syden continua valendo. Mesma cifra de ponta a ponta das salas. A recusa não diz o porquê.
+     */
+    authed.post<{ Params: { id: string } }>('/api/direct/:id/voice-token', async (request, reply) => {
+      if (barrarTemporario(request, reply)) return reply;
+      const conversa = db.findChannel(Number(request.params.id));
+      if (!conversa || conversa.type !== 'dm' || !db.isChannelMember(conversa.id, request.user.id)) {
+        return reply.code(404).send({ error: 'Conversa não encontrada.' });
+      }
+      if (!podeEntrarNaChamadaDaConversa(request.user.id, conversa.id)) {
+        return reply.code(403).send({ error: 'Não foi possível entrar nesta chamada.' });
+      }
+      const fontes = videoCortado(request.user.id, conversa.id)
+        ? [TrackSource.MICROPHONE]
+        : [TrackSource.MICROPHONE, TrackSource.CAMERA, TrackSource.SCREEN_SHARE, TrackSource.SCREEN_SHARE_AUDIO];
+      const token = new AccessToken(config.livekit.apiKey, config.livekit.apiSecret, {
+        identity: String(request.user.id),
+        name: request.user.username,
+        ttl: '6h',
+      });
+      token.addGrant({
+        room: voiceRoomName(conversa.id),
+        roomJoin: true,
+        canPublish: true,
+        canSubscribe: true,
+        canPublishData: true,
+        canPublishSources: fontes.length === 4 ? [] : fontes,
+      });
+      return {
+        url: config.livekit.url,
+        token: await token.toJwt(),
+        channelId: conversa.id,
+        e2ee: process.env.CHAMADAS_E2EE !== 'nao',
+        microfoneTravado: false,
       };
     });
   });

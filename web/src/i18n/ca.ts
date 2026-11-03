@@ -2375,4 +2375,11 @@ export default {
   'Pedir amizade': 'Demanar amistat',
   'Aceitar o pedido de amizade': 'Acceptar la sol·licitud d\'amistat',
   'Pedido de amizade enviado': 'Sol·licitud d\'amistat enviada',
+  'Iniciar chamada': 'Iniciar una trucada',
+  'Iniciar chamada de vídeo': 'Iniciar una videotrucada',
+  'Entrar na chamada': 'Entrar a la trucada',
+  '{quem} está ligando': 'Trucada entrant de {quem}',
+  'Atender': 'Respondre',
+  'Recusar chamada': 'Rebutjar la trucada',
+  '{quem} recusou a chamada': 'Trucada rebutjada: {quem}',
 } satisfies Record<string, string>;

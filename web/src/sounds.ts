@@ -115,6 +115,23 @@ export const sounds = {
   unmute: () => play([{ freq: D5, at: 0, dur: 0.09 }, { freq: G5, at: 0.05, dur: 0.14 }]),
   deafen: () => play([{ freq: E5, at: 0, dur: 0.1 }, { freq: G4, at: 0.06, dur: 0.18 }]),
   undeafen: () => play([{ freq: G4, at: 0, dur: 0.1 }, { freq: E5, at: 0.06, dur: 0.18 }]),
+  /**
+   * O TOQUE de alguém ligando numa conversa privada: uma frase curta, repetida pela tela que mostra a chamada (ver
+   * ChamadaRecebida.tsx) até atender, recusar ou desistirem. Conta como som "dos outros": quem desligou esses avisos, ou
+   * desativou o áudio, vê a chamada sem ouvir.
+   */
+  toque: () =>
+    play(
+      [
+        { freq: E5, at: 0, dur: 0.18 },
+        { freq: G5, at: 0.12, dur: 0.18 },
+        { freq: C6, at: 0.24, dur: 0.32 },
+        { freq: E5, at: 0.7, dur: 0.18 },
+        { freq: G5, at: 0.82, dur: 0.18 },
+        { freq: C6, at: 0.94, dur: 0.32 },
+      ],
+      true,
+    ),
   /** Coelho cutucado na tela inicial: dois pulinhos curtos, bem discretos. */
   bunny: () => play([{ freq: A5, at: 0, dur: 0.08 }, { freq: C6, at: 0.06, dur: 0.12 }]),
   screenShareStart: () =>

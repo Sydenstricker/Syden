@@ -2308,4 +2308,11 @@ export default {
   'Pedir amizade': 'Omba urafiki',
   'Aceitar o pedido de amizade': 'Kubali ombi la urafiki',
   'Pedido de amizade enviado': 'Ombi la urafiki limetumwa',
+  'Iniciar chamada': 'Anza simu',
+  'Iniciar chamada de vídeo': 'Anza simu ya video',
+  'Entrar na chamada': 'Jiunge na simu',
+  '{quem} está ligando': '{quem} anapiga simu',
+  'Atender': 'Pokea',
+  'Recusar chamada': 'Kataa simu',
+  '{quem} recusou a chamada': '{quem} amekataa simu',
 } satisfies Record<string, string>;

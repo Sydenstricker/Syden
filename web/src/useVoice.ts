@@ -714,6 +714,14 @@ export function useVoice(socket: Socket | null) {
     const naLista = () => ultima.includes(Number(room.localParticipant.identity));
     const onState = ({ communityId, members }: { communityId: number; members: { userId: number; travado?: boolean }[] }) => {
       if (communityId !== comunidadeRef.current) return;
+      conferirLista(members);
+    };
+    // A chamada de uma conversa privada tem a sua própria lista, e a mesma conferência.
+    const onChamada = ({ channelId, members }: { channelId: number; members: { userId: number }[] }) => {
+      if (comunidadeRef.current !== null || channelId !== channelRef.current) return;
+      conferirLista(members);
+    };
+    const conferirLista = (members: { userId: number; travado?: boolean }[]) => {
       ultima = members.map((m) => m.userId);
       const eu = members.find((m) => m.userId === Number(room.localParticipant.identity));
       if (eu) definirTravado(!!eu.travado);
@@ -728,10 +736,12 @@ export function useVoice(socket: Socket | null) {
       }, 3000);
     };
     socket.on('voice:state', onState);
+    socket.on('chamada:estado', onChamada);
     socket.on('voice:substituida', onSubstituida);
     return () => {
       socket.off('connect', onConnect);
       socket.off('voice:state', onState);
+      socket.off('chamada:estado', onChamada);
       socket.off('voice:substituida', onSubstituida);
       clearTimeout(conferir);
     };
@@ -858,7 +868,8 @@ export function useVoice(socket: Socket | null) {
   }, []);
 
   const join = useCallback(
-    async (id: number): Promise<number | null> => {
+    /** `conversa`: é a chamada de uma conversa privada (a senha vem de outra rota, com as regras dela). */
+    async (id: number, conversa = false): Promise<number | null> => {
       if (channelRef.current === id || connecting || !socketRef.current) return channelRef.current;
       setError(null);
       setConnecting(true);
@@ -889,7 +900,7 @@ export function useVoice(socket: Socket | null) {
           e2ee?: boolean;
           microfoneTravado?: boolean;
         }>(
-          `/api/channels/${id}/voice-token`,
+          conversa ? `/api/direct/${id}/voice-token` : `/api/channels/${id}/voice-token`,
           { method: 'POST' },
         );
         const sala = destino ?? id;
@@ -909,6 +920,8 @@ export function useVoice(socket: Socket | null) {
         channelRef.current = sala;
         setChannelId(sala);
         substituidaRef.current = null;
+        // Na conversa privada não há comunidade: a lista que confere a presença é a da chamada (chamada:estado).
+        if (conversa) comunidadeRef.current = null;
         socketRef.current.emit('voice:join', { channelId: sala }, (r?: { communityId?: number }) => {
           if (typeof r?.communityId === 'number') comunidadeRef.current = r.communityId;
         });

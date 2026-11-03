@@ -2375,4 +2375,11 @@ export default {
   'Pedir amizade': 'Достық сұрау',
   'Aceitar o pedido de amizade': 'Достық сұранысын қабылдау',
   'Pedido de amizade enviado': 'Достық сұранысы жіберілді',
+  'Iniciar chamada': 'Қоңырау шалу',
+  'Iniciar chamada de vídeo': 'Бейне қоңырау шалу',
+  'Entrar na chamada': 'Қоңырауға қосылу',
+  '{quem} está ligando': '{quem} қоңырау шалып жатыр',
+  'Atender': 'Жауап беру',
+  'Recusar chamada': 'Қоңырауды қабылдамау',
+  '{quem} recusou a chamada': '{quem} қоңырауды қабылдамады',
 } satisfies Record<string, string>;

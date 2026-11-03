@@ -1183,7 +1183,7 @@ function useTransmissaoNaTela(screen: TrackReferenceOrPlaceholder | undefined) {
   }, [video, audio]);
 }
 
-function Stage({
+export function Stage({
   voice,
   members,
   channelId,
@@ -1192,6 +1192,7 @@ function Stage({
   canaisDeTexto,
   aoAbrirVozEVideo,
   simples = false,
+  privada = false,
   canais,
   aoMandarMensagem,
   aoEditarPerfil,
@@ -1206,6 +1207,12 @@ function Stage({
   aoAbrirVozEVideo?: () => void;
   /** Modo sala (aula): só microfone, áudio, câmera e sair — o resto do Syden fica de fora. */
   simples?: boolean;
+  /**
+   * A chamada de uma CONVERSA PRIVADA (02/11/2026): voz, câmera, transmissão e os efeitos de voz. Ficam de fora os
+   * mini-games, o karaokê, o soundboard e o clipe, que moram numa comunidade (as partidas, as músicas e os sons são
+   * dela, e o clipe vai para um canal dela), e a moderação do menu de cada pessoa.
+   */
+  privada?: boolean;
   canais: Channel[];
   aoMandarMensagem?: (userId: number) => void;
   aoEditarPerfil?: () => void;
@@ -1252,7 +1259,7 @@ function Stage({
   const [karaokeOpen, setKaraokeOpen] = useState(false);
   // O mini-game: o painel abre sozinho para quem JOGA (quem começou, quem aceitou o convite) e fecha quando a partida
   // acaba. Quem não respondeu recebe o convite pequeno; quem não joga pode abrir pelo botão e assistir.
-  const minijogo = usarMinijogo(channelId, socket);
+  const minijogo = usarMinijogo(privada ? null : channelId, socket);
   // A partida SOLO (a aba Solo): só minha, não ocupa a sala. Enquanto ela existe, é ela que o painel mostra; o convite
   // de um jogo da turma continua chegando pelo aviso pequeno.
   const solo = usarMinijogoSolo(socket);
@@ -1483,7 +1490,7 @@ function Stage({
           {voice.media.video ? <Video /> : <VideoOff />}
         </IconButton>
         {!simples && <ScreenShareButton voice={voice} />}
-        {!simples && <BotaoMinijogo partida={solo.partida ?? minijogo.partida} aberto={minijogoAberto} aoAlternar={() => setMinijogoAberto(!minijogoAberto)} />}
+        {!simples && !privada && <BotaoMinijogo partida={solo.partida ?? minijogo.partida} aberto={minijogoAberto} aoAlternar={() => setMinijogoAberto(!minijogoAberto)} />}
         {/*
           Ver lado a lado fica FORA do menu: só aparece quando há mais de uma transmissão aberta, e
           nesse momento é exatamente o que a pessoa quer fazer. Botão que só existe quando é útil não
@@ -1503,6 +1510,8 @@ function Stage({
         <MaisNaChamada quantosAtivos={voice.voiceEffect !== 'none' ? 1 : 0}>
           <VoiceEffectButton voice={voice} />
           <EfeitoVisualButton voice={voice} />
+          {!privada && (
+            <>
           <ClipButton clipe={clipe} />
           <div className="soundboard-anchor">
             <IconButton
@@ -1518,6 +1527,8 @@ function Stage({
             <AudioLines />
           </IconButton>
           </div>
+            </>
+          )}
         </MaisNaChamada>
         )}
 
@@ -1571,7 +1582,7 @@ function Stage({
           target={menu.target}
           onClose={menu.close}
           voice={voice}
-          role={daComunidade.get(eu)?.role ?? 'member'}
+          role={privada ? 'member' : (daComunidade.get(eu)?.role ?? 'member')}
           channelId={voice.channelId}
           communityId={communityId}
           channels={canais}

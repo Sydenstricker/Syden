@@ -2309,4 +2309,11 @@ export default {
   'Pedir amizade': 'ጓደኝነት መጠየቅ',
   'Aceitar o pedido de amizade': 'የጓደኝነት ጥያቄውን መቀበል',
   'Pedido de amizade enviado': 'የጓደኝነት ጥያቄ ተልኳል',
+  'Iniciar chamada': 'ጥሪ መጀመር',
+  'Iniciar chamada de vídeo': 'የቪዲዮ ጥሪ መጀመር',
+  'Entrar na chamada': 'ጥሪውን መቀላቀል',
+  '{quem} está ligando': 'ከ{quem} ገቢ ጥሪ',
+  'Atender': 'መመለስ',
+  'Recusar chamada': 'ጥሪውን አለመቀበል',
+  '{quem} recusou a chamada': 'ጥሪው ውድቅ ሆኗል፦ {quem}',
 } satisfies Record<string, string>;

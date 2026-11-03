@@ -2324,4 +2324,11 @@ export default {
   'Pedir amizade': 'Béèrè ọ̀rẹ́',
   'Aceitar o pedido de amizade': 'Gba ìbéèrè ọ̀rẹ́',
   'Pedido de amizade enviado': 'A ti fi ìbéèrè ọ̀rẹ́ ránṣẹ́',
+  'Iniciar chamada': 'Bẹ̀rẹ̀ ìpè',
+  'Iniciar chamada de vídeo': 'Bẹ̀rẹ̀ ìpè fídíò',
+  'Entrar na chamada': 'Darapọ̀ mọ́ ìpè',
+  '{quem} está ligando': '{quem} ń pè',
+  'Atender': 'Dáhùn',
+  'Recusar chamada': 'Kọ ìpè',
+  '{quem} recusou a chamada': '{quem} kọ ìpè náà',
 } satisfies Record<string, string>;

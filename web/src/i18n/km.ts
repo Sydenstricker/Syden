@@ -2378,4 +2378,11 @@ export default {
   'Pedir amizade': 'ស្នើសុំជាមិត្ត',
   'Aceitar o pedido de amizade': 'ទទួលយកសំណើជាមិត្ត',
   'Pedido de amizade enviado': 'បានផ្ញើសំណើជាមិត្ត',
+  'Iniciar chamada': 'ចាប់ផ្ដើមការហៅ',
+  'Iniciar chamada de vídeo': 'ចាប់ផ្ដើមការហៅជាវីដេអូ',
+  'Entrar na chamada': 'ចូលរួមការហៅ',
+  '{quem} está ligando': '{quem} កំពុងហៅ',
+  'Atender': 'ទទួល',
+  'Recusar chamada': 'បដិសេធការហៅ',
+  '{quem} recusou a chamada': '{quem} បានបដិសេធការហៅ',
 } satisfies Record<string, string>;

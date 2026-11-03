@@ -2317,4 +2317,11 @@ export default {
   'Pedir amizade': 'Rịọ ọbụbụenyi',
   'Aceitar o pedido de amizade': 'Nabata arịrịọ ọbụbụenyi',
   'Pedido de amizade enviado': 'E zipụla arịrịọ ọbụbụenyi',
+  'Iniciar chamada': 'Malite oku',
+  'Iniciar chamada de vídeo': 'Malite oku vidiyo',
+  'Entrar na chamada': 'Banye n\'oku a',
+  '{quem} está ligando': '{quem} na-akpọ',
+  'Atender': 'Zaa',
+  'Recusar chamada': 'Jụ oku a',
+  '{quem} recusou a chamada': '{quem} jụrụ oku a',
 } satisfies Record<string, string>;

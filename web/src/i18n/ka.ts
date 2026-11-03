@@ -2397,4 +2397,11 @@ export default {
   'Pedir amizade': 'მეგობრობის თხოვნა',
   'Aceitar o pedido de amizade': 'მეგობრობის თხოვნის მიღება',
   'Pedido de amizade enviado': 'მეგობრობის თხოვნა გაიგზავნა',
+  'Iniciar chamada': 'ზარის დაწყება',
+  'Iniciar chamada de vídeo': 'ვიდეოზარის დაწყება',
+  'Entrar na chamada': 'ზარში შესვლა',
+  '{quem} está ligando': '{quem} გირეკავს',
+  'Atender': 'პასუხი',
+  'Recusar chamada': 'ზარის უარყოფა',
+  '{quem} recusou a chamada': '{quem}-მა ზარი უარყო',
 } satisfies Record<string, string>;

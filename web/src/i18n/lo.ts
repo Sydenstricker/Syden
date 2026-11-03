@@ -2380,4 +2380,11 @@ export default {
   'Pedir amizade': 'ຂໍເປັນໝູ່',
   'Aceitar o pedido de amizade': 'ຍອມຮັບຄຳຂໍເປັນໝູ່',
   'Pedido de amizade enviado': 'ສົ່ງຄຳຂໍເປັນໝູ່ແລ້ວ',
+  'Iniciar chamada': 'ເລີ່ມການໂທ',
+  'Iniciar chamada de vídeo': 'ເລີ່ມການໂທວິດີໂອ',
+  'Entrar na chamada': 'ເຂົ້າຮ່ວມການໂທ',
+  '{quem} está ligando': '{quem} ກຳລັງໂທມາ',
+  'Atender': 'ຮັບສາຍ',
+  'Recusar chamada': 'ປະຕິເສດການໂທ',
+  '{quem} recusou a chamada': '{quem} ປະຕິເສດການໂທ',
 } satisfies Record<string, string>;

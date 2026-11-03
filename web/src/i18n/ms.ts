@@ -2309,4 +2309,11 @@ export default {
   'Pedir amizade': 'Minta berkawan',
   'Aceitar o pedido de amizade': 'Terima permintaan berkawan',
   'Pedido de amizade enviado': 'Permintaan berkawan dihantar',
+  'Iniciar chamada': 'Mulakan panggilan',
+  'Iniciar chamada de vídeo': 'Mulakan panggilan video',
+  'Entrar na chamada': 'Sertai panggilan',
+  '{quem} está ligando': '{quem} sedang memanggil',
+  'Atender': 'Jawab',
+  'Recusar chamada': 'Tolak panggilan',
+  '{quem} recusou a chamada': '{quem} menolak panggilan',
 } satisfies Record<string, string>;

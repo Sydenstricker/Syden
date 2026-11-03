@@ -2308,4 +2308,11 @@ export default {
   'Pedir amizade': 'दोस्ती का अनुरोध भेजो',
   'Aceitar o pedido de amizade': 'दोस्ती का अनुरोध स्वीकार करो',
   'Pedido de amizade enviado': 'दोस्ती का अनुरोध भेजा गया',
+  'Iniciar chamada': 'कॉल शुरू करो',
+  'Iniciar chamada de vídeo': 'वीडियो कॉल शुरू करो',
+  'Entrar na chamada': 'कॉल में शामिल हो',
+  '{quem} está ligando': '{quem} की कॉल आ रही है',
+  'Atender': 'उठाओ',
+  'Recusar chamada': 'कॉल अस्वीकार करो',
+  '{quem} recusou a chamada': 'कॉल अस्वीकार हुई: {quem}',
 } satisfies Record<string, string>;

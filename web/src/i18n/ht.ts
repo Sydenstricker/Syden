@@ -2389,4 +2389,11 @@ export default {
   'Pedir amizade': 'Mande zanmitay',
   'Aceitar o pedido de amizade': 'Aksepte demann zanmitay a',
   'Pedido de amizade enviado': 'Demann zanmitay voye',
+  'Iniciar chamada': 'Kòmanse yon apèl',
+  'Iniciar chamada de vídeo': 'Kòmanse yon apèl videyo',
+  'Entrar na chamada': 'Antre nan apèl la',
+  '{quem} está ligando': '{quem} ap rele',
+  'Atender': 'Reponn',
+  'Recusar chamada': 'Refize apèl la',
+  '{quem} recusou a chamada': '{quem} refize apèl la',
 } satisfies Record<string, string>;

@@ -50,7 +50,7 @@ try {
   await ana.keyboard.press('Escape');
 
   // ---------- a câmera, fora da chamada ----------
-  (await ana.locator('.user-panel button[aria-label="Ligar câmera"]').count()) === 0
+  (await ana.locator('.sidebar button[aria-label="Ligar câmera"]').count()) === 0
     ? ok('fora de chamada, a barra de baixo não mostra a câmera')
     : falhou('a câmera apareceu na barra de baixo sem chamada');
 

@@ -2290,4 +2290,11 @@ export default {
   'Pedir amizade': '友達申請',
   'Aceitar o pedido de amizade': '友達申請を承認',
   'Pedido de amizade enviado': '友達申請を送りました',
+  'Iniciar chamada': '通話を開始',
+  'Iniciar chamada de vídeo': 'ビデオ通話を開始',
+  'Entrar na chamada': '通話に参加',
+  '{quem} está ligando': '{quem}さんから着信中',
+  'Atender': '応答',
+  'Recusar chamada': '通話を拒否',
+  '{quem} recusou a chamada': '{quem}さんが通話を拒否しました',
 } satisfies Record<string, string>;

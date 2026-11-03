@@ -2329,4 +2329,11 @@ export default {
   'Pedir amizade': 'طلب صداقة',
   'Aceitar o pedido de amizade': 'قبول طلب الصداقة',
   'Pedido de amizade enviado': 'تم إرسال طلب الصداقة',
+  'Iniciar chamada': 'بدء مكالمة',
+  'Iniciar chamada de vídeo': 'بدء مكالمة فيديو',
+  'Entrar na chamada': 'الانضمام إلى المكالمة',
+  '{quem} está ligando': 'مكالمة واردة من {quem}',
+  'Atender': 'الرد',
+  'Recusar chamada': 'رفض المكالمة',
+  '{quem} recusou a chamada': 'رُفضت المكالمة: {quem}',
 } satisfies Record<string, string>;

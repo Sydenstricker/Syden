@@ -2387,4 +2387,11 @@ export default {
   'Pedir amizade': 'Doʻstlik soʻrash',
   'Aceitar o pedido de amizade': 'Doʻstlik soʻrovini qabul qilish',
   'Pedido de amizade enviado': 'Doʻstlik soʻrovi yuborildi',
+  'Iniciar chamada': 'Qoʻngʻiroq qilish',
+  'Iniciar chamada de vídeo': 'Video qoʻngʻiroq qilish',
+  'Entrar na chamada': 'Qoʻngʻiroqqa qoʻshilish',
+  '{quem} está ligando': '{quem} qoʻngʻiroq qilmoqda',
+  'Atender': 'Javob berish',
+  'Recusar chamada': 'Qoʻngʻiroqni rad etish',
+  '{quem} recusou a chamada': '{quem} qoʻngʻiroqni rad etdi',
 } satisfies Record<string, string>;

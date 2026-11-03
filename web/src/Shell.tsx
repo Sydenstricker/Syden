@@ -7,6 +7,7 @@ import { carregarBloqueios, guardarBloqueados } from './bloqueios';
 import { Avatar } from './Avatar';
 import { Comemoracao } from './Comemoracao';
 import { type ConviteRecebido, ConviteParaVoz } from './ConviteParaVoz';
+import { type ChamadaTocando, ChamadaRecebida, TEMPO_DO_TOQUE_MS } from './ChamadaRecebida';
 import { ParabensDoSyden } from './ParabensDoSyden';
 import { AniversarioDoSyden } from './AniversarioDoSyden';
 import { ehAniversarioDoSyden } from './diaDoSyden';
@@ -40,7 +41,7 @@ import type { Channel, Community, DirectChannel, Message, PresenceEntry, Presenc
 import { avisarBarreira, type Barreira } from './protecao';
 import { UsageDashboard } from './UsageDashboard';
 import { useVoice } from './useVoice';
-import { VoiceStage } from './VoiceStage';
+import { Stage, VoiceStage } from './VoiceStage';
 import { type AulaEmCurso, guardarAulaEmCurso, lerAulaEmCurso } from './aula';
 import { Mascote } from './Mascote';
 import { useT, idiomaAtual } from './i18n';
@@ -158,6 +159,9 @@ export function Shell({
   const [comemorar, setComemorar] = useState<{ id: number; content: string }[]>([]);
   // Alguém chamou você para a voz (ver ConviteParaVoz.tsx): o último convite, até entrar, recusar ou ele perder o sentido.
   const [conviteVoz, setConviteVoz] = useState<ConviteRecebido | null>(null);
+  // AS CHAMADAS DAS CONVERSAS PRIVADAS (02/11/2026): quem está em cada uma ('chamada:estado'), e a que está tocando agora.
+  const [chamadas, setChamadas] = useState<Record<number, VoiceMember[]>>({});
+  const [tocando, setTocando] = useState<ChamadaTocando | null>(null);
   // Itens que você ganhou e ainda não abriu. A tela de destaque mostra um de cada vez, em fila.
   const [porRevelar, setPorRevelar] = useState<string[]>([]);
   // A FESTA DE ANIVERSÁRIO (18/10/2026): hoje é o dia da pessoa, e ela ainda não viu a festa neste ano.
@@ -558,6 +562,31 @@ export function Shell({
         aviso.close();
       };
     });
+    // A LIGAÇÃO NA CONVERSA PRIVADA (02/11/2026). Quem está em cada chamada; o toque (menos para quem já está nela); e a
+    // recusa: a minha, vinda de outra aba, para o toque daqui; a do outro lado, numa conversa de duas pessoas, vira aviso.
+    s.on('chamada:estado', ({ channelId, members }: { channelId: number; members: VoiceMember[] }) =>
+      setChamadas((antes) => ({ ...antes, [channelId]: members })),
+    );
+    s.on('chamada:tocando', (chamada: ChamadaTocando) => {
+      if (voiceRef.current.channelId === chamada.channelId) return;
+      setTocando(chamada);
+      if (document.hasFocus() || loadMyStatus() === 'ocupado' || !getSettings().notifications) return;
+      if (!('Notification' in window) || Notification.permission !== 'granted') return;
+      const aviso = new Notification(t('{quem} está ligando', { quem: isolar(nomeDe(chamada.de)) }), { tag: `chamada-${chamada.channelId}` });
+      aviso.onclick = () => {
+        desktopBridge?.focus();
+        window.focus();
+        aviso.close();
+      };
+    });
+    s.on('chamada:recusada', ({ channelId, userId }: { channelId: number; userId: number }) => {
+      if (userId === loggedUser.id) return setTocando((agora) => (agora?.channelId === channelId ? null : agora));
+      const conversa = directsRef.current.find((c) => c.id === channelId);
+      const quem = conversa?.members.find((m) => m.id === userId);
+      if (voiceRef.current.channelId === channelId && conversa && conversa.members.length <= 2 && quem) {
+        setNotice(t('{quem} recusou a chamada', { quem: isolar(nomeDe(quem)) }));
+      }
+    });
     // Subiu de nível: o aviso é só seu, na faixa de avisos, e não na conversa dos outros (ver niveis.ts).
     s.on('nivel:subiu', ({ nivel }: { communityId: number; nivel: number }) =>
       setNotice(t('Você chegou ao nível {nivel}!', { nivel })),
@@ -897,6 +926,36 @@ export function Shell({
     return () => window.clearTimeout(relogio);
   }, [conviteVoz, voiceByCommunity, voice.channelId]);
 
+  // O TOQUE PARA quando perde o sentido: quem ligou desistiu (a chamada esvaziou), eu entrei nela (por esta ou outra
+  // aba, que o chamada:estado conta), ou passaram 30 s.
+  useEffect(() => {
+    if (!tocando) return;
+    const naChamada = chamadas[tocando.channelId] ?? [];
+    if (naChamada.length === 0 || naChamada.some((m) => m.userId === user.id) || voice.channelId === tocando.channelId) return setTocando(null);
+    const relogio = window.setTimeout(() => setTocando(null), TEMPO_DO_TOQUE_MS);
+    return () => window.clearTimeout(relogio);
+  }, [tocando, chamadas, voice.channelId, user.id]);
+
+  /** Liga (ou entra na chamada que já existe) na conversa; com vídeo, a câmera abre assim que a chamada conecta. */
+  async function ligarNaConversa(channelId: number, comVideo: boolean) {
+    const sala = await voice.join(channelId, true);
+    if (sala === channelId && comVideo) await voice.toggleCamera();
+  }
+
+  function atenderChamada(chamada: ChamadaTocando) {
+    setTocando(null);
+    const conversa = directs.find((c) => c.id === chamada.channelId);
+    if (conversa) openConversation(conversa);
+    // Fora da lista (eu tinha apagado a conversa de duas pessoas): abrir pela pessoa a traz de volta.
+    else void startConversation(chamada.de.id);
+    void ligarNaConversa(chamada.channelId, false);
+  }
+
+  function recusarChamada(chamada: ChamadaTocando) {
+    setTocando(null);
+    socket?.emit('chamada:recusar', { channelId: chamada.channelId });
+  }
+
   function entrarPeloConvite(convite: ConviteRecebido) {
     setConviteVoz(null);
     void voice.join(convite.channelId);
@@ -1054,6 +1113,10 @@ export function Shell({
               setMobileChannels(false);
             }}
             onOpenSettings={() => setSettingsOpen('account')}
+            nomeDaChamadaPrivada={(() => {
+              const conversa = directs.find((c) => c.id === voice.channelId);
+              return conversa && directName(conversa, user.id, t);
+            })()}
             aoEditarCapa={() => {
               setAncoraDasConfiguracoes('capa-da-comunidade');
               setSettingsOpen('community');
@@ -1158,6 +1221,24 @@ export function Shell({
                   <UserX size={15} /> {t('Esta pessoa excluiu a conta. As mensagens daqui não chegam a ninguém.')}
                 </p>
               )}
+              {/* A CHAMADA DA CONVERSA, em cima dela, como no Discord: a conversa continua embaixo (pedido dele, 02/11/2026). */}
+              {voice.channelId === directAsChannel.id && (
+                <div className="chamada-da-conversa">
+                  <Stage
+                    voice={voice}
+                    members={chamadas[directAsChannel.id] ?? []}
+                    channelId={directAsChannel.id}
+                    socket={socket}
+                    communityId={0}
+                    canaisDeTexto={[]}
+                    canais={[]}
+                    privada
+                    aoAbrirVozEVideo={() => setSettingsOpen('voice')}
+                    aoMandarMensagem={(userId) => void startConversation(userId)}
+                    aoEditarPerfil={() => setSettingsOpen('aparencia')}
+                  />
+                </div>
+              )}
               <TextChannel
                 key={`dm-${directAsChannel.id}`}
                 channel={directAsChannel}
@@ -1165,7 +1246,23 @@ export function Shell({
                 user={user}
                 role="member"
                 onMobileBack={() => setMobileChannels(true)}
-                acoesDoCabecalho={openDirect && <AcoesDaConversa conversa={openDirect} selfId={user.id} />}
+                acoesDoCabecalho={
+                  openDirect && (
+                    <AcoesDaConversa
+                      conversa={openDirect}
+                      selfId={user.id}
+                      chamada={
+                        contaExcluida(openDirect, user.id)
+                          ? undefined
+                          : {
+                              quantos: chamadas[openDirect.id]?.length ?? 0,
+                              euDentro: voice.channelId === openDirect.id,
+                              aoLigar: (comVideo) => void ligarNaConversa(openDirect.id, comVideo),
+                            }
+                      }
+                    />
+                  )
+                }
               />
             </>
           )}
@@ -1297,6 +1394,18 @@ export function Shell({
       )}
       {/* Ideia acolhida: confete na tela, uma festa de cada vez. */}
       {conviteVoz && <ConviteParaVoz convite={conviteVoz} aoEntrar={() => entrarPeloConvite(conviteVoz)} aoFechar={() => setConviteVoz(null)} />}
+      {tocando && (
+        <ChamadaRecebida
+          chamada={tocando}
+          grupo={(() => {
+            const conversa = directs.find((c) => c.id === tocando.channelId);
+            return conversa && conversa.members.length > 2 ? directName(conversa, user.id, t) : null;
+          })()}
+          calado={myStatus === 'ocupado'}
+          aoAtender={() => atenderChamada(tocando)}
+          aoRecusar={() => recusarChamada(tocando)}
+        />
+      )}
       {comemorar[0] && <Comemoracao ideia={comemorar[0].content} aoFechar={() => fecharComemoracao(comemorar[0].id)} />}
       {/*
         Um anúncio de cada vez, e nesta ordem: primeiro a festa da ideia acolhida (a notícia), depois a

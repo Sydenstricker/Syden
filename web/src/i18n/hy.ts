@@ -2398,4 +2398,11 @@ export default {
   'Pedir amizade': 'Ուղարկել ընկերության հայտ',
   'Aceitar o pedido de amizade': 'Ընդունել ընկերության հայտը',
   'Pedido de amizade enviado': 'Ընկերության հայտն ուղարկված է',
+  'Iniciar chamada': 'Սկսել զանգ',
+  'Iniciar chamada de vídeo': 'Սկսել տեսազանգ',
+  'Entrar na chamada': 'Միանալ զանգին',
+  '{quem} está ligando': '{quem}-ը զանգում է',
+  'Atender': 'Պատասխանել',
+  'Recusar chamada': 'Մերժել զանգը',
+  '{quem} recusou a chamada': '{quem}-ը մերժեց զանգը',
 } satisfies Record<string, string>;

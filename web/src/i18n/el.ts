@@ -2315,4 +2315,11 @@ export default {
   'Pedir amizade': 'Αίτημα φιλίας',
   'Aceitar o pedido de amizade': 'Αποδοχή του αιτήματος φιλίας',
   'Pedido de amizade enviado': 'Το αίτημα φιλίας στάλθηκε',
+  'Iniciar chamada': 'Έναρξη κλήσης',
+  'Iniciar chamada de vídeo': 'Έναρξη βιντεοκλήσης',
+  'Entrar na chamada': 'Συμμετοχή στην κλήση',
+  '{quem} está ligando': 'Εισερχόμενη κλήση από {quem}',
+  'Atender': 'Απάντηση',
+  'Recusar chamada': 'Απόρριψη κλήσης',
+  '{quem} recusou a chamada': 'Η κλήση απορρίφθηκε: {quem}',
 } satisfies Record<string, string>;

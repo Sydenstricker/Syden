@@ -2379,4 +2379,11 @@ export default {
   'Pedir amizade': 'මිත්‍රත්ව ඉල්ලීමක් යවන්න',
   'Aceitar o pedido de amizade': 'මිත්‍රත්ව ඉල්ලීම පිළිගන්න',
   'Pedido de amizade enviado': 'මිත්‍රත්ව ඉල්ලීම යැව්වා',
+  'Iniciar chamada': 'ඇමතුමක් අරඹන්න',
+  'Iniciar chamada de vídeo': 'වීඩියෝ ඇමතුමක් අරඹන්න',
+  'Entrar na chamada': 'ඇමතුමට එක්වන්න',
+  '{quem} está ligando': '{quem} අමතයි',
+  'Atender': 'පිළිතුරු දෙන්න',
+  'Recusar chamada': 'ඇමතුම ප්‍රතික්ෂේප කරන්න',
+  '{quem} recusou a chamada': '{quem} ඇමතුම ප්‍රතික්ෂේප කළා',
 } satisfies Record<string, string>;

@@ -2381,4 +2381,11 @@ export default {
   'Pedir amizade': 'मित्रताको अनुरोध पठाउनुहोस्',
   'Aceitar o pedido de amizade': 'मित्रताको अनुरोध स्वीकार गर्नुहोस्',
   'Pedido de amizade enviado': 'मित्रताको अनुरोध पठाइयो',
+  'Iniciar chamada': 'कल सुरु गर्नुहोस्',
+  'Iniciar chamada de vídeo': 'भिडियो कल सुरु गर्नुहोस्',
+  'Entrar na chamada': 'कलमा सामेल हुनुहोस्',
+  '{quem} está ligando': '{quem} कल गर्दै हुनुहुन्छ',
+  'Atender': 'उठाउनुहोस्',
+  'Recusar chamada': 'कल अस्वीकार गर्नुहोस्',
+  '{quem} recusou a chamada': '{quem} ले कल अस्वीकार गर्नुभयो',
 } satisfies Record<string, string>;

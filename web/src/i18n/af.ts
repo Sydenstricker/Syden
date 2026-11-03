@@ -2373,4 +2373,11 @@ export default {
   'Pedir amizade': 'Vra vriendskap',
   'Aceitar o pedido de amizade': 'Aanvaar die vriendskapsversoek',
   'Pedido de amizade enviado': 'Vriendskapsversoek gestuur',
+  'Iniciar chamada': 'Begin oproep',
+  'Iniciar chamada de vídeo': 'Begin video-oproep',
+  'Entrar na chamada': 'Sluit by die oproep aan',
+  '{quem} está ligando': '{quem} bel',
+  'Atender': 'Antwoord',
+  'Recusar chamada': 'Weier oproep',
+  '{quem} recusou a chamada': '{quem} het die oproep geweier',
 } satisfies Record<string, string>;

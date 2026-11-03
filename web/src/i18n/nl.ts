@@ -2308,4 +2308,11 @@ export default {
   'Pedir amizade': 'Vriendschapsverzoek sturen',
   'Aceitar o pedido de amizade': 'Vriendschapsverzoek accepteren',
   'Pedido de amizade enviado': 'Vriendschapsverzoek verstuurd',
+  'Iniciar chamada': 'Gesprek starten',
+  'Iniciar chamada de vídeo': 'Videogesprek starten',
+  'Entrar na chamada': 'Deelnemen aan het gesprek',
+  '{quem} está ligando': '{quem} belt',
+  'Atender': 'Opnemen',
+  'Recusar chamada': 'Gesprek weigeren',
+  '{quem} recusou a chamada': '{quem} heeft het gesprek geweigerd',
 } satisfies Record<string, string>;

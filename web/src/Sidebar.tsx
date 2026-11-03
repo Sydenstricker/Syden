@@ -91,6 +91,8 @@ interface Props {
   onOpenSettings: () => void;
   /** Quem administra clica na capa e vai direto a Configurações → Comunidade, na parte da capa. */
   aoEditarCapa?: () => void;
+  /** O nome da conversa privada em cuja chamada estou, para o painel "Voz conectada" (e o botão de desligar) aparecer. */
+  nomeDaChamadaPrivada?: string;
 }
 
 export function Sidebar({
@@ -121,10 +123,12 @@ export function Sidebar({
   onOpenInicio,
   onOpenSettings,
   aoEditarCapa,
+  nomeDaChamadaPrivada,
 }: Props) {
   // Indicador de fala só existe para a sala em que estamos conectados (é o LiveKit que sabe quem fala).
   const speaking = new Set(useSpeakingParticipants().map((p) => p.identity));
-  const connectedChannel = channels.find((c) => c.id === voice.channelId);
+  // A sala em que estou: uma desta comunidade, ou a chamada de uma conversa privada (o nome vem do Shell, que conhece as conversas).
+  const connectedChannel = channels.find((c) => c.id === voice.channelId) ?? (voice.channelId !== null && nomeDaChamadaPrivada ? { name: nomeDaChamadaPrivada } : undefined);
   const [deleting, setDeleting] = useState<Channel | null>(null);
   // O código de segurança da chamada de ponta a ponta, aberto pelo cadeado: só quando a pessoa pede.
   const [verCodigo, setVerCodigo] = useState(false);
@@ -337,6 +341,13 @@ export function Sidebar({
             )}
           </div>
           <div className="icon-row">
+            {/* A CÂMERA JUNTO DOS CONTROLES DA CHAMADA (pedido dele, 02/11/2026): antes ela só existia no palco, e quem
+                estava na sala olhando um canal de texto não tinha como ligá-la. Ela foi primeiro para o lado do microfone,
+                na linha de baixo, e ali quatro botões não deixavam lugar para o nome na barra de 200 px (visto na foto do
+                teste). Aqui, como no Discord: ao lado da transmissão, logo acima do microfone, e só existe na chamada. */}
+            <IconButton label={voice.media.video ? t('Desligar câmera') : t('Ligar câmera')} active={voice.media.video} onClick={voice.toggleCamera}>
+              {voice.media.video ? <Video size={18} /> : <VideoOff size={18} />}
+            </IconButton>
             <ScreenShareButton voice={voice} />
             <IconButton label={t('Desconectar')} onClick={voice.leave}>
               <PhoneOff size={18} />
@@ -392,14 +403,6 @@ export function Sidebar({
           >
             {voice.deafened ? <HeadphoneOff size={18} /> : <Headphones size={18} />}
           </IconButton>
-          {/* A CÂMERA AO LADO DO MICROFONE (pedido dele, 02/11/2026): antes ela só existia nos controles do palco, e quem
-              estava na sala olhando um canal de texto não tinha como ligá-la. Só dentro de uma chamada: fora dela não há
-              para onde mandar a imagem, e ao contrário do microfone ela não fica guardada para a próxima. */}
-          {voice.channelId !== null && (
-            <IconButton label={voice.media.video ? t('Desligar câmera') : t('Ligar câmera')} active={voice.media.video} onClick={voice.toggleCamera}>
-              {voice.media.video ? <Video size={18} /> : <VideoOff size={18} />}
-            </IconButton>
-          )}
           <IconButton label={t('Configurações')} onClick={onOpenSettings}>
             <Settings size={18} />
           </IconButton>

@@ -2325,4 +2325,11 @@ export default {
   'Pedir amizade': 'Itlob ħbiberija',
   'Aceitar o pedido de amizade': 'Aċċetta t-talba ta\' ħbiberija',
   'Pedido de amizade enviado': 'It-talba ta\' ħbiberija ntbagħtet',
+  'Iniciar chamada': 'Ibda sejħa',
+  'Iniciar chamada de vídeo': 'Ibda sejħa bil-vidjo',
+  'Entrar na chamada': 'Idħol fis-sejħa',
+  '{quem} está ligando': 'Sejħa minn {quem}',
+  'Atender': 'Wieġeb',
+  'Recusar chamada': 'Irrifjuta s-sejħa',
+  '{quem} recusou a chamada': 'Sejħa rrifjutata: {quem}',
 } satisfies Record<string, string>;

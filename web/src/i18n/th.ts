@@ -2322,4 +2322,11 @@ export default {
   'Pedir amizade': 'ขอเป็นเพื่อน',
   'Aceitar o pedido de amizade': 'ยอมรับคำขอเป็นเพื่อน',
   'Pedido de amizade enviado': 'ส่งคำขอเป็นเพื่อนแล้ว',
+  'Iniciar chamada': 'เริ่มโทร',
+  'Iniciar chamada de vídeo': 'เริ่มวิดีโอคอล',
+  'Entrar na chamada': 'เข้าร่วมการโทร',
+  '{quem} está ligando': '{quem} กำลังโทรมา',
+  'Atender': 'รับสาย',
+  'Recusar chamada': 'ปฏิเสธสาย',
+  '{quem} recusou a chamada': '{quem} ปฏิเสธสาย',
 } satisfies Record<string, string>;

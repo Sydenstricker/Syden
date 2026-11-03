@@ -2266,7 +2266,65 @@ textarea {
 .acoes-da-conversa {
   margin-left: auto;
   display: flex;
+  align-items: center;
   gap: 4px;
+}
+
+/* ---------- A ligação na conversa privada (02/11/2026) ---------- */
+
+/* Há gente na chamada e eu não: o convite fica à vista no cabeçalho, em verde, a cor de "atender". */
+.entrar-na-chamada {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--green);
+  color: #fff;
+}
+
+/* O palco da chamada em cima da conversa: metade de cima, e a conversa continua embaixo, como no Discord. */
+.main > .chamada-da-conversa {
+  flex: 0 0 auto;
+  height: 46%;
+  min-height: 240px;
+  display: flex;
+  flex-direction: column;
+  background: #000;
+  border-bottom: 1px solid var(--border);
+}
+
+/* O cartão do toque é o do convite para a voz, com o contorno verde que diz "ligação" antes de ler. */
+.chamada-recebida {
+  outline: 2px solid var(--green);
+  outline-offset: -2px;
+}
+
+.chamada-recebida .chamada-atender {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--green);
+  color: #fff;
+}
+
+.chamada-recebida .chamada-recusar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .chamada-recebida {
+    animation: chamada-pulsa 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes chamada-pulsa {
+  50% {
+    box-shadow:
+      0 8px 28px var(--shadow),
+      0 0 0 6px color-mix(in srgb, var(--green) 25%, transparent);
+  }
 }
 
 .cartao-da-peca {

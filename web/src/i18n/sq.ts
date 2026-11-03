@@ -2371,4 +2371,11 @@ export default {
   'Pedir amizade': 'Kërko miqësi',
   'Aceitar o pedido de amizade': 'Prano kërkesën për miqësi',
   'Pedido de amizade enviado': 'Kërkesa për miqësi u dërgua',
+  'Iniciar chamada': 'Nis një thirrje',
+  'Iniciar chamada de vídeo': 'Nis një thirrje me video',
+  'Entrar na chamada': 'Hyr në thirrje',
+  '{quem} está ligando': 'Thirrje hyrëse nga {quem}',
+  'Atender': 'Përgjigju',
+  'Recusar chamada': 'Refuzo thirrjen',
+  '{quem} recusou a chamada': 'Thirrja u refuzua: {quem}',
 } satisfies Record<string, string>;

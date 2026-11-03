@@ -2303,4 +2303,11 @@ export default {
   'Pedir amizade': 'Arkadaşlık isteği gönder',
   'Aceitar o pedido de amizade': 'Arkadaşlık isteğini kabul et',
   'Pedido de amizade enviado': 'Arkadaşlık isteği gönderildi',
+  'Iniciar chamada': 'Arama başlat',
+  'Iniciar chamada de vídeo': 'Görüntülü arama başlat',
+  'Entrar na chamada': 'Aramaya katıl',
+  '{quem} está ligando': '{quem} arıyor',
+  'Atender': 'Cevapla',
+  'Recusar chamada': 'Aramayı reddet',
+  '{quem} recusou a chamada': '{quem} aramayı reddetti',
 } satisfies Record<string, string>;

@@ -2311,4 +2311,11 @@ export default {
   'Pedir amizade': 'Nemi abota',
   'Aceitar o pedido de amizade': 'Karɓi buƙatar abota',
   'Pedido de amizade enviado': 'An aika buƙatar abota',
+  'Iniciar chamada': 'Fara kira',
+  'Iniciar chamada de vídeo': 'Fara kiran bidiyo',
+  'Entrar na chamada': 'Shiga kiran',
+  '{quem} está ligando': 'Kira daga {quem}',
+  'Atender': 'Amsa',
+  'Recusar chamada': 'Ƙi kiran',
+  '{quem} recusou a chamada': 'An ƙi kiran: {quem}',
 } satisfies Record<string, string>;

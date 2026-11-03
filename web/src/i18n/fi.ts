@@ -2379,4 +2379,11 @@ export default {
   'Pedir amizade': 'Lähetä kaveripyyntö',
   'Aceitar o pedido de amizade': 'Hyväksy kaveripyyntö',
   'Pedido de amizade enviado': 'Kaveripyyntö lähetetty',
+  'Iniciar chamada': 'Aloita puhelu',
+  'Iniciar chamada de vídeo': 'Aloita videopuhelu',
+  'Entrar na chamada': 'Liity puheluun',
+  '{quem} está ligando': '{quem} soittaa',
+  'Atender': 'Vastaa',
+  'Recusar chamada': 'Hylkää puhelu',
+  '{quem} recusou a chamada': '{quem} hylkäsi puhelun',
 } satisfies Record<string, string>;

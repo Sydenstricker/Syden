@@ -2381,4 +2381,11 @@ export default {
   'Pedir amizade': 'Pakviesti draugauti',
   'Aceitar o pedido de amizade': 'Priimti kvietimą draugauti',
   'Pedido de amizade enviado': 'Kvietimas draugauti išsiųstas',
+  'Iniciar chamada': 'Pradėti skambutį',
+  'Iniciar chamada de vídeo': 'Pradėti vaizdo skambutį',
+  'Entrar na chamada': 'Prisijungti prie skambučio',
+  '{quem} está ligando': 'Skambina {quem}',
+  'Atender': 'Atsiliepti',
+  'Recusar chamada': 'Atmesti skambutį',
+  '{quem} recusou a chamada': 'Skambutis atmestas: {quem}',
 } satisfies Record<string, string>;

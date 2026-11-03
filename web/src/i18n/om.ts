@@ -2349,4 +2349,11 @@ export default {
   'Pedir amizade': 'Hiriyummaa gaafadhu',
   'Aceitar o pedido de amizade': 'Gaaffii hiriyummaa fudhadhu',
   'Pedido de amizade enviado': 'Gaaffiin hiriyummaa ergameera',
+  'Iniciar chamada': 'Bilbila jalqabi',
+  'Iniciar chamada de vídeo': 'Bilbila viidiyoo jalqabi',
+  'Entrar na chamada': 'Bilbilatti makami',
+  '{quem} está ligando': '{quem} bilbilaa jira',
+  'Atender': 'Deebisi',
+  'Recusar chamada': 'Bilbila didi',
+  '{quem} recusou a chamada': '{quem} bilbila dideera',
 } satisfies Record<string, string>;

@@ -2315,4 +2315,11 @@ export default {
   'Pedir amizade': 'Iarr cairdeas',
   'Aceitar o pedido de amizade': 'Glac leis an iarratas cairdis',
   'Pedido de amizade enviado': 'Seoladh an t-iarratas cairdis',
+  'Iniciar chamada': 'Tosaigh glao',
+  'Iniciar chamada de vídeo': 'Tosaigh físghlao',
+  'Entrar na chamada': 'Téigh isteach sa ghlao',
+  '{quem} está ligando': 'Tá {quem} ag glaoch',
+  'Atender': 'Freagair',
+  'Recusar chamada': 'Diúltaigh don ghlao',
+  '{quem} recusou a chamada': 'Dhiúltaigh {quem} don ghlao',
 } satisfies Record<string, string>;

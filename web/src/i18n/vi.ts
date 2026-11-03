@@ -2279,4 +2279,11 @@ export default {
   'Pedir amizade': 'Kết bạn',
   'Aceitar o pedido de amizade': 'Chấp nhận lời mời kết bạn',
   'Pedido de amizade enviado': 'Đã gửi lời mời kết bạn',
+  'Iniciar chamada': 'Bắt đầu cuộc gọi',
+  'Iniciar chamada de vídeo': 'Bắt đầu cuộc gọi video',
+  'Entrar na chamada': 'Tham gia cuộc gọi',
+  '{quem} está ligando': '{quem} đang gọi',
+  'Atender': 'Trả lời',
+  'Recusar chamada': 'Từ chối cuộc gọi',
+  '{quem} recusou a chamada': '{quem} đã từ chối cuộc gọi',
 } satisfies Record<string, string>;

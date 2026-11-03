@@ -1,4 +1,4 @@
-import { LogOut, Pencil, Trash2, UserPlus } from 'lucide-react';
+import { LogOut, Pencil, Phone, Trash2, UserPlus, Video } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api } from './api';
 import { Avatar } from './Avatar';
@@ -19,12 +19,46 @@ type Aberto = 'adicionar' | 'renomear' | 'sair' | 'apagar' | null;
  *
  * A lista muda sozinha pelo socket (direct:updated, direct:removed, em Shell.tsx): aqui só se pede ao servidor.
  */
-export function AcoesDaConversa({ conversa, selfId }: { conversa: DirectChannel; selfId: number }) {
+export function AcoesDaConversa({
+  conversa,
+  selfId,
+  chamada,
+}: {
+  conversa: DirectChannel;
+  selfId: number;
+  /**
+   * A LIGAÇÃO (02/11/2026). Sem ela (a conversa com quem excluiu a conta), não há botão de ligar. `quantos` é quem está
+   * na chamada agora, `euDentro` se sou eu um deles: dentro, os controles são os da própria chamada, e aqui não há
+   * nada; com gente e sem mim, o botão vira "Entrar na chamada".
+   */
+  chamada?: { quantos: number; euDentro: boolean; aoLigar: (comVideo: boolean) => void };
+}) {
   const t = useT();
   const [aberto, setAberto] = useState<Aberto>(null);
   const grupo = conversa.members.length > 2;
   return (
     <div className="acoes-da-conversa">
+      {chamada && !chamada.euDentro && chamada.quantos > 0 && (
+        <button type="button" className="btn-primary entrar-na-chamada" onClick={() => chamada.aoLigar(false)}>
+          <Phone size={16} aria-hidden="true" /> {t('Entrar na chamada')}
+        </button>
+      )}
+      {chamada && !chamada.euDentro && chamada.quantos === 0 && (
+        <>
+          <button type="button" className="icon-plain" title={t('Iniciar chamada')} aria-label={t('Iniciar chamada')} onClick={() => chamada.aoLigar(false)}>
+            <Phone size={18} />
+          </button>
+          <button
+            type="button"
+            className="icon-plain"
+            title={t('Iniciar chamada de vídeo')}
+            aria-label={t('Iniciar chamada de vídeo')}
+            onClick={() => chamada.aoLigar(true)}
+          >
+            <Video size={18} />
+          </button>
+        </>
+      )}
       <button type="button" className="icon-plain" title={t('Adicionar pessoa')} aria-label={t('Adicionar pessoa')} onClick={() => setAberto('adicionar')}>
         <UserPlus size={18} />
       </button>

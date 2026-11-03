@@ -2309,4 +2309,11 @@ export default {
   'Pedir amizade': 'Cere prietenia',
   'Aceitar o pedido de amizade': 'Acceptă cererea de prietenie',
   'Pedido de amizade enviado': 'Cererea de prietenie a fost trimisă',
+  'Iniciar chamada': 'Începe un apel',
+  'Iniciar chamada de vídeo': 'Începe un apel video',
+  'Entrar na chamada': 'Intră în apel',
+  '{quem} está ligando': 'Apel de la {quem}',
+  'Atender': 'Răspunde',
+  'Recusar chamada': 'Respinge apelul',
+  '{quem} recusou a chamada': 'Apel respins: {quem}',
 } satisfies Record<string, string>;

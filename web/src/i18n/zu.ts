@@ -2380,4 +2380,11 @@ export default {
   'Pedir amizade': 'Cela ubungane',
   'Aceitar o pedido de amizade': 'Yamukela isicelo sobungane',
   'Pedido de amizade enviado': 'Isicelo sobungane sithunyelwe',
+  'Iniciar chamada': 'Qala ikholi',
+  'Iniciar chamada de vídeo': 'Qala ikholi yevidiyo',
+  'Entrar na chamada': 'Joyina ikholi',
+  '{quem} está ligando': '{quem} uyashaya',
+  'Atender': 'Phendula',
+  'Recusar chamada': 'Yenqaba ikholi',
+  '{quem} recusou a chamada': '{quem} wenqabe ikholi',
 } satisfies Record<string, string>;

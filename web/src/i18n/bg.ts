@@ -2376,4 +2376,11 @@ export default {
   'Pedir amizade': 'Покани за приятелство',
   'Aceitar o pedido de amizade': 'Приеми поканата за приятелство',
   'Pedido de amizade enviado': 'Поканата за приятелство е изпратена',
+  'Iniciar chamada': 'Започни разговор',
+  'Iniciar chamada de vídeo': 'Започни видеоразговор',
+  'Entrar na chamada': 'Влез в разговора',
+  '{quem} está ligando': 'Входящо обаждане от {quem}',
+  'Atender': 'Отговори',
+  'Recusar chamada': 'Откажи обаждането',
+  '{quem} recusou a chamada': 'Обаждането е отказано: {quem}',
 } satisfies Record<string, string>;

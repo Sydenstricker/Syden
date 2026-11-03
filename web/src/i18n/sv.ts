@@ -2371,4 +2371,11 @@ export default {
   'Pedir amizade': 'Skicka vänförfrågan',
   'Aceitar o pedido de amizade': 'Acceptera vänförfrågan',
   'Pedido de amizade enviado': 'Vänförfrågan skickad',
+  'Iniciar chamada': 'Starta samtal',
+  'Iniciar chamada de vídeo': 'Starta videosamtal',
+  'Entrar na chamada': 'Gå med i samtalet',
+  '{quem} está ligando': '{quem} ringer',
+  'Atender': 'Svara',
+  'Recusar chamada': 'Avvisa samtalet',
+  '{quem} recusou a chamada': '{quem} avvisade samtalet',
 } satisfies Record<string, string>;

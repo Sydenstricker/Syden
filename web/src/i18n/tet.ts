@@ -2311,4 +2311,11 @@ export default {
   'Pedir amizade': 'Husu amizade',
   'Aceitar o pedido de amizade': 'Simu pedidu amizade',
   'Pedido de amizade enviado': 'Pedidu amizade haruka ona',
+  'Iniciar chamada': 'Hahú telefone',
+  'Iniciar chamada de vídeo': 'Hahú telefone ho vídeo',
+  'Entrar na chamada': 'Tama ba telefone',
+  '{quem} está ligando': '{quem} telefone hela',
+  'Atender': 'Hatán',
+  'Recusar chamada': 'Rejeita telefone',
+  '{quem} recusou a chamada': '{quem} rejeita ona telefone',
 } satisfies Record<string, string>;

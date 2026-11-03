@@ -2297,4 +2297,11 @@ export default {
   'Pedir amizade': 'درخواست دوستی',
   'Aceitar o pedido de amizade': 'پذیرفتن درخواست دوستی',
   'Pedido de amizade enviado': 'درخواست دوستی فرستاده شد',
+  'Iniciar chamada': 'شروع تماس',
+  'Iniciar chamada de vídeo': 'شروع تماس تصویری',
+  'Entrar na chamada': 'پیوستن به تماس',
+  '{quem} está ligando': '{quem} در حال تماس است',
+  'Atender': 'پاسخ',
+  'Recusar chamada': 'رد تماس',
+  '{quem} recusou a chamada': '{quem} تماس را رد کرد',
 } satisfies Record<string, string>;

@@ -2376,4 +2376,11 @@ export default {
   'Pedir amizade': 'Saada sõbrakutse',
   'Aceitar o pedido de amizade': 'Nõustu sõbrakutsega',
   'Pedido de amizade enviado': 'Sõbrakutse saadetud',
+  'Iniciar chamada': 'Alusta kõnet',
+  'Iniciar chamada de vídeo': 'Alusta videokõnet',
+  'Entrar na chamada': 'Liitu kõnega',
+  '{quem} está ligando': '{quem} helistab',
+  'Atender': 'Vasta',
+  'Recusar chamada': 'Keeldu kõnest',
+  '{quem} recusou a chamada': '{quem} keeldus kõnest',
 } satisfies Record<string, string>;

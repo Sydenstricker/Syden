@@ -2379,4 +2379,11 @@ export default {
   'Pedir amizade': 'Hangataka ho namana',
   'Aceitar o pedido de amizade': 'Ekeo ny fangatahana ho namana',
   'Pedido de amizade enviado': 'Lasa ny fangatahana ho namana',
+  'Iniciar chamada': 'Manomboka antso',
+  'Iniciar chamada de vídeo': 'Manomboka antso an-tsary',
+  'Entrar na chamada': 'Hiditra amin\'ny antso',
+  '{quem} está ligando': 'Miantso i {quem}',
+  'Atender': 'Valio',
+  'Recusar chamada': 'Lavio ny antso',
+  '{quem} recusou a chamada': 'Nolavin\'i {quem} ny antso',
 } satisfies Record<string, string>;

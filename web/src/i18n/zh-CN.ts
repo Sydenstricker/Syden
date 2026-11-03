@@ -2296,4 +2296,11 @@ export default {
   'Pedir amizade': '加好友',
   'Aceitar o pedido de amizade': '接受好友申请',
   'Pedido de amizade enviado': '好友申请已发送',
+  'Iniciar chamada': '发起通话',
+  'Iniciar chamada de vídeo': '发起视频通话',
+  'Entrar na chamada': '加入通话',
+  '{quem} está ligando': '{quem} 来电',
+  'Atender': '接听',
+  'Recusar chamada': '拒绝通话',
+  '{quem} recusou a chamada': '{quem} 拒绝了通话',
 } satisfies Record<string, string>;

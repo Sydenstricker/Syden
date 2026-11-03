@@ -92,7 +92,8 @@ export interface VoiceMember {
   username: string;
   /** Lido na hora de entrar (o `user` do socket é de quando ele conectou). */
   nomeDeExibicao: string | null;
-  communityId: number;
+  /** Nula na CHAMADA DE UMA CONVERSA PRIVADA (02/11/2026): ela não é de comunidade nenhuma (ver anunciarVoz). */
+  communityId: number | null;
   channelId: number;
   muted: boolean;
   deafened: boolean;
@@ -152,6 +153,75 @@ function voiceState(communityId: number): VoiceMember[] {
 
 function broadcastVoice(io: IOServer, communityId: number) {
   io.to(communityRoom(communityId)).emit('voice:state', { communityId, members: voiceState(communityId) });
+}
+
+/**
+ * A CHAMADA DE UMA CONVERSA PRIVADA (pedido dele, 02/11/2026): voz, câmera e transmissão entre quem conversa, sem
+ * comunidade. Quem está nela vai só para quem está na conversa (a sala `dm:<id>` do socket), num evento próprio, para a
+ * lista das comunidades nunca a ver.
+ */
+function membrosDaChamada(channelId: number): VoiceMember[] {
+  return [...voiceMembers.values()]
+    .filter((m) => m.communityId === null && m.channelId === channelId)
+    .map(({ socketId: _s, voiceSessionId: _v, screenSessionId: _c, ...member }) => ({ ...member, travado: false }));
+}
+
+function broadcastChamada(io: IOServer, channelId: number) {
+  io.to(directRoom(channelId)).emit('chamada:estado', { channelId, members: membrosDaChamada(channelId) });
+}
+
+/** Avisa a lista certa: a da comunidade, ou a da conversa privada. */
+function anunciarVoz(io: IOServer, sala: { communityId: number | null; channelId: number }) {
+  if (sala.communityId === null) broadcastChamada(io, sala.channelId);
+  else broadcastVoice(io, sala.communityId);
+}
+
+/**
+ * Esta pessoa pode estar NESTA chamada de conversa privada? Membro da conversa e, contra CADA UM de quem já está na
+ * chamada, nenhum bloqueio (em qualquer sentido) e a regra dos menores (só amigos, ECA Digital). Conferir contra quem
+ * ESTÁ, e não contra a conversa inteira, cobre o grupo com alguém bloqueado: os dois nunca ficam juntos na chamada,
+ * entre quem chega por último. A recusa não diz o porquê (o mesmo motivo do convite para a voz).
+ */
+export function podeEntrarNaChamadaDaConversa(userId: number, channelId: number): boolean {
+  const conversa = db.findChannel(channelId);
+  if (!conversa || conversa.type !== 'dm' || !db.isChannelMember(conversa.id, userId)) return false;
+  for (const outro of quemEstaNaSala(conversa.id)) {
+    if (outro === userId) continue;
+    if (db.haBloqueio(userId, outro) || !podeConversarNoParticular(userId, outro)) return false;
+  }
+  return true;
+}
+
+/** Quando cada pessoa fez tocar cada conversa ("quem:conversa"): entrar e sair em seguida não vira toque sem fim. */
+const toquesRecentes = new Map<string, number>();
+
+/**
+ * O TOQUE: quem liga entrou numa chamada vazia, e cada um dos outros da conversa que está com o Syden aberto recebe
+ * "fulano está ligando". Só quem poderia entrar (sem bloqueio, e a regra dos menores): tocar para quem seria recusado
+ * ao atender é chamar para uma porta fechada. Um toque a cada 20 s por pessoa e conversa.
+ */
+function tocarParaQuemPode(io: IOServer, quemLiga: number, channelId: number) {
+  const chave = `${quemLiga}:${channelId}`, agora = Date.now();
+  if ((toquesRecentes.get(chave) ?? 0) > agora - 20_000) return;
+  toquesRecentes.set(chave, agora);
+  for (const [k, quando] of toquesRecentes) if (quando <= agora - 20_000) toquesRecentes.delete(k);
+  const eu = db.findUserById(quemLiga);
+  if (!eu) return;
+  const de = { id: eu.id, username: eu.username, nomeDeExibicao: eu.nomeDeExibicao ?? null };
+  for (const outro of db.channelMemberIds(channelId)) {
+    if (outro === quemLiga || !estaOnline(outro)) continue;
+    if (db.haBloqueio(quemLiga, outro) || !podeConversarNoParticular(quemLiga, outro)) continue;
+    io.to(salaDaPessoa(outro)).emit('chamada:tocando', { channelId, de });
+  }
+}
+
+/** Tira alguém da chamada da conversa (saiu da conversa), e avisa quem está nela. */
+export function encerrarChamadaDe(io: IOServer, userId: number, channelId: number) {
+  const sessao = voiceMembers.get(userId);
+  if (!sessao || sessao.channelId !== channelId) return;
+  io.to(sessao.socketId).emit('voice:substituida', { channelId });
+  endVoiceSession(userId);
+  anunciarVoz(io, sessao);
 }
 
 /** Entrou numa comunidade com o app aberto: as abas dela passam a receber os avisos de lá. */
@@ -257,7 +327,7 @@ export function quemEstaNaSala(channelId: number): number[] {
 let ioDoServidor: IOServer | null = null;
 
 /** Em que sala de voz a pessoa está agora, se estiver. */
-export function salaDeVozDe(userId: number): { channelId: number; communityId: number } | undefined {
+export function salaDeVozDe(userId: number): { channelId: number; communityId: number | null } | undefined {
   const sessao = voiceMembers.get(userId);
   return sessao && { channelId: sessao.channelId, communityId: sessao.communityId };
 }
@@ -266,19 +336,18 @@ export function salaDeVozDe(userId: number): { channelId: number; communityId: n
 export function removeVoiceChannelMembers(io: IOServer, channelId: number) {
   const inChannel = [...voiceMembers.values()].filter((m) => m.channelId === channelId);
   if (inChannel.length === 0) return;
-  const communityId = inChannel[0].communityId;
   for (const member of inChannel) endVoiceSession(member.userId);
-  broadcastVoice(io, communityId);
+  anunciarVoz(io, inChannel[0]);
 }
 
 /** Conta excluída: tira a pessoa das salas de voz e derruba as conexões abertas (o app volta ao login). */
 export function disconnectUser(io: IOServer, userId: number) {
-  const communityId = voiceMembers.get(userId)?.communityId;
+  const sessao = voiceMembers.get(userId);
   endVoiceSession(userId);
   const online = onlineSockets.get(userId);
   onlineSockets.delete(userId);
   for (const socketId of online?.sockets ?? []) io.sockets.sockets.get(socketId)?.disconnect(true);
-  if (communityId !== undefined) broadcastVoice(io, communityId);
+  if (sessao) anunciarVoz(io, sessao);
   broadcastPresence(io);
 }
 
@@ -396,13 +465,14 @@ export function setupRealtime(io: IOServer) {
   setInterval(() => {
     db.touchUsageSessions([...voiceMembers.values()].flatMap(activeUsageSessionIds));
     // O minuto de voz dos níveis: quem não está sozinho na sala ganha pontos (ver niveis.ts).
-    pontuarMinutoDeVoz(io, [...voiceMembers.values()]);
+    // Só as salas de comunidade: os níveis são de cada comunidade, e a chamada da conversa privada não é de nenhuma.
+    pontuarMinutoDeVoz(io, [...voiceMembers.values()].filter((m): m is VoiceSession & { communityId: number } => m.communityId !== null));
     // A "Sessão de cinema" das conquistas: transmitir com 2 ou mais assistindo (ver conquistas.ts). Quem assiste é quem
     // tem o id de quem transmite no PRÓPRIO `assistindo` (a lista das transmissões que cada um abriu) — e não o contrário,
     // que era o erro da primeira versão (achado da revisão, 21/10/2026).
     const membros = [...voiceMembers.values()];
     for (const m of membros) {
-      if (!m.screen) continue;
+      if (!m.screen || m.communityId === null) continue;
       const plateia = membros.filter((o) => o.channelId === m.channelId && o.userId !== m.userId && o.assistindo.includes(m.userId)).length;
       if (plateia >= 2) db.somarCinema(m.communityId, m.userId, USAGE_HEARTBEAT_MS / 1000);
     }
@@ -430,7 +500,11 @@ export function setupRealtime(io: IOServer) {
     }
     // E também as conversas privadas de que ela participa.
     // Inclusive as que ela apagou: é pela sala que chega a mensagem nova que traz a conversa de volta.
-    for (const id of db.idsDasConversas(user.id)) socket.join(directRoom(id));
+    for (const id of db.idsDasConversas(user.id)) {
+      socket.join(directRoom(id));
+      // Uma chamada já aberta numa conversa dela: quem abre o Syden no meio vê o "Entrar na chamada".
+      if (pessoasNaSala(id) > 0) socket.emit('chamada:estado', { channelId: id, members: membrosDaChamada(id) });
+    }
 
     // Uma sala por PESSOA, juntando todas as abas dela. É por onde chega o que é dirigido a ela e
     // não a um lugar — hoje, os pedidos de amizade. Sem ela, avisar alguém exigiria procurar todos
@@ -503,11 +577,18 @@ export function setupRealtime(io: IOServer) {
 
     socket.on('voice:join', (payload: { channelId?: number }, ack?: Ack) => {
       const channel = db.findChannel(Number(payload?.channelId));
-      if (!channel || channel.type !== 'voice' || channel.communityId === null) {
+      // A sala de voz de uma comunidade, ou a chamada de uma conversa privada (com as regras de quem pode estar nela).
+      const daConversa = channel?.type === 'dm';
+      if (!channel || !(daConversa || (channel.type === 'voice' && channel.communityId !== null))) {
         return ack?.({ ok: false, error: 'Sala inválida.' });
       }
-      if (!db.memberRole(channel.communityId, user.id)) return ack?.({ ok: false, error: 'Você não participa desta comunidade.' });
-      const anterior = voiceMembers.get(user.id), previous = anterior?.communityId;
+      if (daConversa ? !podeEntrarNaChamadaDaConversa(user.id, channel.id) : !db.memberRole(channel.communityId!, user.id)) {
+        return ack?.({ ok: false, error: daConversa ? 'Não foi possível entrar nesta chamada.' : 'Você não participa desta comunidade.' });
+      }
+      const communityId = daConversa ? null : channel.communityId;
+      // Ninguém na chamada da conversa até agora: é quem LIGA, e os outros recebem o toque (abaixo).
+      const ligando = daConversa && pessoasNaSala(channel.id) === 0;
+      const anterior = voiceMembers.get(user.id);
       // A chamada foi assumida por OUTRO aparelho ou aba (revisão de 16/10/2026): o antigo é avisado, para não
       // "reanunciar" a cada 3 s e tomar a chamada de volta (os dois ficavam se alternando na lista para sempre).
       if (anterior && anterior.socketId !== socket.id) io.to(anterior.socketId).emit('voice:substituida', { channelId: anterior.channelId });
@@ -517,7 +598,7 @@ export function setupRealtime(io: IOServer) {
         userId: user.id,
         username: user.username,
         nomeDeExibicao: db.findUserById(user.id)?.nomeDeExibicao ?? null,
-        communityId: channel.communityId,
+        communityId,
         channelId: channel.id,
         muted: false,
         deafened: false,
@@ -528,13 +609,25 @@ export function setupRealtime(io: IOServer) {
         assistindo: [],
         travado: false, // o voiceState lê de microfonesTravados
         socketId: socket.id,
-        voiceSessionId: db.startUsageSession('voice', user.id, channel.communityId, channel.id),
+        voiceSessionId: db.startUsageSession('voice', user.id, communityId, channel.id),
         screenSessionId: null,
       });
-      if (previous !== undefined && previous !== channel.communityId) broadcastVoice(io, previous);
-      broadcastVoice(io, channel.communityId);
-      // A comunidade volta para o app conferir, em cada voice:state dela, que continua na lista (useVoice.ts).
-      ack?.({ ok: true, communityId: channel.communityId });
+      // Saiu de outra sala (de comunidade ou de outra conversa): a lista de lá fica sabendo.
+      if (anterior && (anterior.communityId !== communityId || anterior.channelId !== channel.id)) anunciarVoz(io, anterior);
+      anunciarVoz(io, { communityId, channelId: channel.id });
+      if (ligando) tocarParaQuemPode(io, user.id, channel.id);
+      // A comunidade volta para o app conferir, em cada voice:state dela, que continua na lista (useVoice.ts). Na
+      // conversa ela é nula, e quem confere é o chamada:estado.
+      ack?.({ ok: true, communityId: communityId ?? undefined });
+    });
+
+    // Recusar o toque: quem está na chamada fica sabendo (na conversa de duas pessoas, a tela diz), e as outras abas de
+    // quem recusou param de tocar. Só para quem é da conversa.
+    socket.on('chamada:recusar', (payload: { channelId?: unknown }) => {
+      const channelId = Number(payload?.channelId);
+      const conversa = db.findChannel(channelId);
+      if (!conversa || conversa.type !== 'dm' || !db.isChannelMember(channelId, user.id)) return;
+      io.to(directRoom(channelId)).emit('chamada:recusada', { channelId, userId: user.id });
     });
 
     socket.on('voice:update', (patch: Partial<Pick<VoiceMember, 'muted' | 'deafened' | 'video' | 'screen' | 'screenName' | 'screenGenero' | 'assistindo'>>) => {
@@ -561,7 +654,7 @@ export function setupRealtime(io: IOServer) {
         db.touchUsageSessions([member.screenSessionId]);
         member.screenSessionId = null;
       }
-      broadcastVoice(io, member.communityId);
+      anunciarVoz(io, member);
     });
 
     // A CHAMADA DE PONTA A PONTA (web/src/chaveDaChamada.ts): o servidor só REPASSA, entre duas pessoas da mesma
@@ -585,7 +678,8 @@ export function setupRealtime(io: IOServer) {
       const eu = voiceMembers.get(user.id);
       const alvo = Number(payload?.userId);
       const recusar = () => ack?.({ ok: false });
-      if (!eu || eu.socketId !== socket.id || !Number.isInteger(alvo) || alvo === user.id) return recusar();
+      // Na chamada de uma conversa privada não há comunidade para convidar: quem chama é o toque.
+      if (!eu || eu.communityId === null || eu.socketId !== socket.id || !Number.isInteger(alvo) || alvo === user.id) return recusar();
       const online = onlineSockets.get(alvo);
       if (!online || online.status === 'invisivel' || !db.memberRole(eu.communityId, alvo)) return recusar();
       if (voiceMembers.get(alvo)?.channelId === eu.channelId || db.haBloqueio(user.id, alvo)) return recusar();
@@ -610,7 +704,7 @@ export function setupRealtime(io: IOServer) {
       const member = voiceMembers.get(user.id);
       if (member?.socketId === socket.id) {
         endVoiceSession(user.id);
-        broadcastVoice(io, member.communityId);
+        anunciarVoz(io, member);
       }
     };
     socket.on('voice:leave', () => {

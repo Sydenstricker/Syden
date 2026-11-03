@@ -2308,4 +2308,11 @@ export default {
   'Pedir amizade': 'Chiedi l\'amicizia',
   'Aceitar o pedido de amizade': 'Accetta la richiesta di amicizia',
   'Pedido de amizade enviado': 'Richiesta di amicizia inviata',
+  'Iniciar chamada': 'Avvia una chiamata',
+  'Iniciar chamada de vídeo': 'Avvia una videochiamata',
+  'Entrar na chamada': 'Partecipa alla chiamata',
+  '{quem} está ligando': 'Chiamata in arrivo da {quem}',
+  'Atender': 'Rispondi',
+  'Recusar chamada': 'Rifiuta la chiamata',
+  '{quem} recusou a chamada': 'Chiamata rifiutata: {quem}',
 } satisfies Record<string, string>;

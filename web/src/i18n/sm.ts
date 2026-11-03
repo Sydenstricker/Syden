@@ -2313,4 +2313,11 @@ export default {
   'Pedir amizade': 'Talosaga mo se uō',
   'Aceitar o pedido de amizade': 'Talia le talosaga mo se uō',
   'Pedido de amizade enviado': 'Ua uma ona auina le talosaga mo se uō',
+  'Iniciar chamada': 'Amata se telefoni',
+  'Iniciar chamada de vídeo': 'Amata se telefoni vitio',
+  'Entrar na chamada': 'Auai i le telefoni',
+  '{quem} está ligando': 'O loo telefoni mai {quem}',
+  'Atender': 'Tali',
+  'Recusar chamada': 'Teena le telefoni',
+  '{quem} recusou a chamada': 'Na teena e {quem} le telefoni',
 } satisfies Record<string, string>;

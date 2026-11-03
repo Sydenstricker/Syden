@@ -2304,4 +2304,11 @@ export default {
   'Pedir amizade': 'Add friend',
   'Aceitar o pedido de amizade': 'Accept friend request',
   'Pedido de amizade enviado': 'Friend request sent',
+  'Iniciar chamada': 'Start call',
+  'Iniciar chamada de vídeo': 'Start video call',
+  'Entrar na chamada': 'Join call',
+  '{quem} está ligando': '{quem} is calling',
+  'Atender': 'Answer',
+  'Recusar chamada': 'Decline call',
+  '{quem} recusou a chamada': '{quem} declined the call',
 } satisfies Record<string, string>;

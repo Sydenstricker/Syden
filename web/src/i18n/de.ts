@@ -2333,4 +2333,11 @@ export default {
   'Pedir amizade': 'Freundschaft anfragen',
   'Aceitar o pedido de amizade': 'Freundschaftsanfrage annehmen',
   'Pedido de amizade enviado': 'Freundschaftsanfrage gesendet',
+  'Iniciar chamada': 'Anruf starten',
+  'Iniciar chamada de vídeo': 'Videoanruf starten',
+  'Entrar na chamada': 'Dem Anruf beitreten',
+  '{quem} está ligando': '{quem} ruft an',
+  'Atender': 'Annehmen',
+  'Recusar chamada': 'Anruf ablehnen',
+  '{quem} recusou a chamada': '{quem} hat den Anruf abgelehnt',
 } satisfies Record<string, string>;

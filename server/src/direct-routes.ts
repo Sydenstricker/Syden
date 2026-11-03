@@ -5,8 +5,8 @@ import type { Server as IOServer } from 'socket.io';
 import * as db from './db.js';
 import { podeConversarNoParticular } from './protecao.js';
 import { INSIGNIAS, entregar } from './presentes.js';
-import { anunciarPerfil, directRoom, emitToUser, joinDirectRoom, leaveDirectRoom } from './realtime.js';
-import { barrarTemporario, requireUser } from './routes.js';
+import { anunciarPerfil, directRoom, emitToUser, encerrarChamadaDe, joinDirectRoom, leaveDirectRoom } from './realtime.js';
+import { barrarTemporario, requireUser, tirarDaChamada } from './routes.js';
 
 const MAX_GROUP_MEMBERS = 20;
 
@@ -258,6 +258,9 @@ export function registerDirectRoutes(app: FastifyInstance, io: IOServer) {
       const channel = myConversation(Number(request.params.id), request.user.id);
       if (!channel) return reply.code(404).send({ error: 'Conversa não encontrada.' });
       db.removeChannelMember(channel.id, request.user.id);
+      // Quem sai da conversa sai da chamada dela: a lista e o LiveKit (o áudio sobreviveria só com a lista).
+      encerrarChamadaDe(io, request.user.id, channel.id);
+      void tirarDaChamada(channel.id, request.user.id);
       leaveDirectRoom(io, request.user.id, channel.id);
       emitToUser(io, request.user.id, 'direct:removed', { id: channel.id });
       // Conversa sem ninguém some junto com as mensagens; com gente, os outros só veem a lista mudar.

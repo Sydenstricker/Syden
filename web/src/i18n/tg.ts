@@ -2380,4 +2380,11 @@ export default {
   'Pedir amizade': 'Дархости дӯстӣ фиристодан',
   'Aceitar o pedido de amizade': 'Қабул кардани дархости дӯстӣ',
   'Pedido de amizade enviado': 'Дархости дӯстӣ фиристода шуд',
+  'Iniciar chamada': 'Оғози занг',
+  'Iniciar chamada de vídeo': 'Оғози занги видеоӣ',
+  'Entrar na chamada': 'Ҳамроҳ шудан ба занг',
+  '{quem} está ligando': '{quem} занг мезанад',
+  'Atender': 'Ҷавоб додан',
+  'Recusar chamada': 'Рад кардани занг',
+  '{quem} recusou a chamada': '{quem} зангро рад кард',
 } satisfies Record<string, string>;

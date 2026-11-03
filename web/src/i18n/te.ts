@@ -2291,4 +2291,11 @@ export default {
   'Pedir amizade': 'స్నేహ అభ్యర్థన పంపు',
   'Aceitar o pedido de amizade': 'స్నేహ అభ్యర్థనను అంగీకరించు',
   'Pedido de amizade enviado': 'స్నేహ అభ్యర్థన పంపబడింది',
+  'Iniciar chamada': 'కాల్ మొదలుపెట్టు',
+  'Iniciar chamada de vídeo': 'వీడియో కాల్ మొదలుపెట్టు',
+  'Entrar na chamada': 'కాల్‌లో చేరు',
+  '{quem} está ligando': '{quem} కాల్ చేస్తున్నారు',
+  'Atender': 'ఎత్తు',
+  'Recusar chamada': 'కాల్ తిరస్కరించు',
+  '{quem} recusou a chamada': '{quem} కాల్‌ను తిరస్కరించారు',
 } satisfies Record<string, string>;

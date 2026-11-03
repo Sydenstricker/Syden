@@ -2308,4 +2308,11 @@ export default {
   'Pedir amizade': 'Kerea me veitokani',
   'Aceitar o pedido de amizade': 'Ciqoma na kerekere ni veitokani',
   'Pedido de amizade enviado': 'Sa vakau na kerekere ni veitokani',
+  'Iniciar chamada': 'Tekivu na veiqiri',
+  'Iniciar chamada de vídeo': 'Tekivu na veiqiri vakaraitayaloyalo',
+  'Entrar na chamada': 'Curu ena veiqiri',
+  '{quem} está ligando': 'E qiri tiko o {quem}',
+  'Atender': 'Sauma',
+  'Recusar chamada': 'Cakitaka na veiqiri',
+  '{quem} recusou a chamada': 'E cakitaka na veiqiri o {quem}',
 } satisfies Record<string, string>;

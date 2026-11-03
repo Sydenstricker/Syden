@@ -2306,4 +2306,11 @@ export default {
   'Pedir amizade': 'বন্ধুত্বের অনুরোধ পাঠাও',
   'Aceitar o pedido de amizade': 'বন্ধুত্বের অনুরোধ গ্রহণ করো',
   'Pedido de amizade enviado': 'বন্ধুত্বের অনুরোধ পাঠানো হয়েছে',
+  'Iniciar chamada': 'কল শুরু করো',
+  'Iniciar chamada de vídeo': 'ভিডিও কল শুরু করো',
+  'Entrar na chamada': 'কলে যোগ দাও',
+  '{quem} está ligando': '{quem} কল করছে',
+  'Atender': 'ধরো',
+  'Recusar chamada': 'কল প্রত্যাখ্যান করো',
+  '{quem} recusou a chamada': '{quem} কলটি প্রত্যাখ্যান করেছে',
 } satisfies Record<string, string>;

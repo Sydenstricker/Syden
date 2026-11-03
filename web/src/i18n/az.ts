@@ -2343,4 +2343,11 @@ export default {
   'Pedir amizade': 'Dostluq istə',
   'Aceitar o pedido de amizade': 'Dostluq sorğusunu qəbul et',
   'Pedido de amizade enviado': 'Dostluq sorğusu göndərildi',
+  'Iniciar chamada': 'Zəng et',
+  'Iniciar chamada de vídeo': 'Video zəng et',
+  'Entrar na chamada': 'Zəngə qoşul',
+  '{quem} está ligando': '{quem} zəng edir',
+  'Atender': 'Cavab ver',
+  'Recusar chamada': 'Zəngi rədd et',
+  '{quem} recusou a chamada': '{quem} zəngi rədd etdi',
 } satisfies Record<string, string>;

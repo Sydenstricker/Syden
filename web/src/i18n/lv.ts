@@ -2381,4 +2381,11 @@ export default {
   'Pedir amizade': 'Uzaicināt draudzēties',
   'Aceitar o pedido de amizade': 'Pieņemt draudzības uzaicinājumu',
   'Pedido de amizade enviado': 'Draudzības uzaicinājums nosūtīts',
+  'Iniciar chamada': 'Sākt zvanu',
+  'Iniciar chamada de vídeo': 'Sākt videozvanu',
+  'Entrar na chamada': 'Pievienoties zvanam',
+  '{quem} está ligando': 'Ienākošs zvans no {quem}',
+  'Atender': 'Atbildēt',
+  'Recusar chamada': 'Noraidīt zvanu',
+  '{quem} recusou a chamada': 'Zvans noraidīts: {quem}',
 } satisfies Record<string, string>;

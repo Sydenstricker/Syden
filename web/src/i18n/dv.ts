@@ -2389,4 +2389,11 @@ export default {
   'Pedir amizade': 'ރަޙްމަތެރިކަމުގެ ރިކުއެސްޓް ފޮނުވާ',
   'Aceitar o pedido de amizade': 'ރަޙްމަތެރިކަމުގެ ރިކުއެސްޓް ގަބޫލުކުރޭ',
   'Pedido de amizade enviado': 'ރަޙްމަތެރިކަމުގެ ރިކުއެސްޓް ފޮނުވިއްޖެ',
+  'Iniciar chamada': 'ކޯލެއް ފައްޓަވާ',
+  'Iniciar chamada de vídeo': 'ވީޑިއޯ ކޯލެއް ފައްޓަވާ',
+  'Entrar na chamada': 'ކޯލަށް ބައިވެރިވޭ',
+  '{quem} está ligando': '{quem} ގެ ފަރާތުން ކޯލެއް',
+  'Atender': 'ޖަވާބުދޭ',
+  'Recusar chamada': 'ކޯލު ރިޖެކްޓްކުރޭ',
+  '{quem} recusou a chamada': 'ކޯލު ރިޖެކްޓްކުރެވިއްޖެ: {quem}',
 } satisfies Record<string, string>;
