@@ -157,21 +157,71 @@ test('a Copa da Cenoura: três pistas, pontos por posição, o troféu da copa e
   assert.equal(copasDaComunidade(comunidade.id), 1, 'a copa da turma conta na comunidade');
 });
 
-test('os itens: o servidor carimba o dono, e não deixa usar mais do que as caixas dão', () => {
+test('os itens: o servidor carimba o dono, só aceita perto de quem usa, e não deixa usar mais do que as caixas dão', () => {
   const m = contexto([anaId, biaId], comunidade.id);
   const jogo = corrida.comecar(m.ctx, { naSala: [anaId, biaId], criadaPor: anaId, corpo: {} });
   assert.ok(typeof jogo !== 'string');
   assert.equal(jogo.tempoReal!(anaId, { tipo: 'repolho', n: 10, s: 100, lado: 3 }), null, 'antes do verde, não');
   m.relogio[0].depois();
-  const r = jogo.tempoReal!(anaId, { tipo: 'repolho', n: 300, s: 100, lado: 3, dono: biaId });
-  assert.deepEqual(r, { tipo: 'repolho', id: `${anaId}-300`, dono: anaId, n: 300, s: 100, lado: 3 }, 'o dono é quem mandou');
-  assert.equal(jogo.tempoReal!(anaId, { tipo: 'lama', n: 310, x: 10, y: 10 }), null, 'dois no mesmo segundo, não');
-  let usados = 1;
+  assert.equal(jogo.tempoReal!(anaId, { tipo: 'repolho', n: 300, s: 100, lado: 3 }), null, 'sem posição nenhuma, não');
+  // a Ana está a 1/30 da volta (~100 unidades da largada), em (10, 10)
+  jogo.tempoReal!(anaId, { x: 10, y: 10, a: 0, n: 297, andou: 100 / 3008 });
+  const r = jogo.tempoReal!(anaId, { tipo: 'repolho', n: 300, s: 116, lado: 3, dono: biaId });
+  assert.deepEqual(r, { tipo: 'repolho', id: `${anaId}-300`, dono: anaId, n: 300, s: 116, lado: 3 }, 'o dono é quem mandou');
+  agora += 2000;
+  assert.equal(jogo.tempoReal!(anaId, { tipo: 'repolho', n: 320, s: 1500, lado: 3 }), null, 'o repolho do outro lado da pista, não');
+  assert.equal(jogo.tempoReal!(anaId, { tipo: 'lama', n: 320, x: 500, y: 500 }), null, 'a lama longe de quem a soltou, não');
+  assert.equal(jogo.tempoReal!(anaId, { tipo: 'lama', n: 900, x: 10, y: 10 }), null, 'num passo longe do último, não');
+  assert.ok(jogo.tempoReal!(anaId, { tipo: 'lama', n: 320, x: 12, y: 8 }), 'a lama atrás do kart, sim');
+  assert.equal(jogo.tempoReal!(anaId, { tipo: 'lama', n: 321, x: 10, y: 10 }), null, 'dois no mesmo segundo, não');
+  let usados = 2;
   for (let i = 0; i < 20; i++) {
     agora += 2000;
-    if (jogo.tempoReal!(anaId, { tipo: 'lama', n: 400 + i, x: 10, y: 10 })) usados++;
+    if (jogo.tempoReal!(anaId, { tipo: 'lama', n: 300 + i, x: 10, y: 10 })) usados++;
   }
   assert.equal(usados, 7, 'duas fileiras de caixas por volta, três voltas, e uma de folga');
   assert.equal(jogo.tempoReal!(biaId, { tipo: 'acertou', id: 'x; DROP' }), null);
+  assert.equal(jogo.tempoReal!(biaId, { tipo: 'acertou', id: `${anaId}-999` }), null, 'um item que não existe não some');
   assert.deepEqual(jogo.tempoReal!(biaId, { tipo: 'acertou', id: `${anaId}-300` }), { tipo: 'acertou', id: `${anaId}-300` });
+  assert.equal(jogo.tempoReal!(biaId, { tipo: 'acertou', id: `${anaId}-300` }), null, 'e só uma vez');
+});
+
+test('quem fica sozinho na sala não ganha o troféu "com a turma"', async () => {
+  let naSala = [anaId, biaId];
+  const relogio: { ms: number; depois: () => void }[] = [];
+  let terminou = false;
+  const ctx = {
+    agendar: (ms: number, depois: () => void) => relogio.splice(0, relogio.length, { ms, depois }),
+    avisar: () => {},
+    terminar: () => (terminou = true),
+    naSala: () => naSala,
+    nome: (id: number) => (id === anaId ? 'ana' : 'bia'),
+    comunidade: comunidade.id,
+  };
+  const antes = (await comToken(app, ana.token)('GET', '/api/corrida-trofeus')).json().trofeus.length;
+  const jogo = corrida.comecar(ctx, { naSala: [anaId, biaId], criadaPor: anaId, corpo: {} });
+  assert.ok(typeof jogo !== 'string');
+  relogio[0].depois();
+  naSala = [anaId]; // a Bia saiu logo depois do verde
+  agora += 120_000;
+  assert.equal(jogo.acao(anaId, corridaDe(1200)), null);
+  assert.equal(terminou, true);
+  const depois = (await comToken(app, ana.token)('GET', '/api/corrida-trofeus')).json().trofeus.length;
+  assert.equal(depois, antes, 'sem troféu');
+});
+
+test('o troféu não mostra, no lugar de quem excluiu a conta, quem ganhou o mesmo número depois', async () => {
+  const dbm = await import('../src/db.js');
+  const { DatabaseSync } = await import('node:sqlite');
+  const caio = await criarConta(app, 'caio-corrida');
+  const caioId = await idDe(caio.token);
+  dbm.guardarTrofeu({ userId: anaId, evento: 'teste', communityId: comunidade.id, pista: 'horta-1', posicao: 1, tempoMs: 60000, pontos: null, rivais: [caioId] });
+  const visto = (await comToken(app, ana.token)('GET', '/api/corrida-trofeus')).json().trofeus[0];
+  assert.deepEqual(visto.rivais.map((r: { userId: number }) => r.userId), [caioId]);
+  // uma conta criada DEPOIS do troféu, com o mesmo id (o que o SQLite faz quando a mais nova é excluída), não aparece
+  const banco = new DatabaseSync(process.env.DATABASE_PATH!);
+  banco.prepare("UPDATE users SET created_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now', '+1 day') WHERE id = ?").run(caioId);
+  banco.close();
+  const depois = (await comToken(app, ana.token)('GET', '/api/corrida-trofeus')).json().trofeus[0];
+  assert.deepEqual([depois.rivais.length, depois.excluidos], [0, 1]);
 });

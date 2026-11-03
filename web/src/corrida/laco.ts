@@ -227,6 +227,9 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
     const acertados = new Set<string>();
     const pegarItem = (item: Item | null) => {
       meuItem = item;
+      // o botão de toque some com o item antes de o dedo levantar: a tecla "usar" volta sozinha, senão o próximo item
+      // precisaria de dois toques (revisão de 03/11/2026)
+      if (item === null) comandos.usa = false;
       o.itens?.aoItem?.(item);
     };
     const lancar = (e: EventoDeItem) => {
@@ -284,9 +287,11 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
         pegarItem(null);
       }
       usavaAntes = usa;
-      // fui atingido? (quem decide é quem leva)
+      // fui atingido? (quem decide é quem leva). O item que já acertou alguém sumiu para todos, e não acerta mais ninguém
+      // (revisão de 03/11/2026: o repolho invisível seguia derrubando quem vinha atrás)
+      const sumiram = new Set(o.itens!.eventos.filter((e) => e.tipo === 'acertou').map((e) => e.id));
       for (const e of o.itens!.eventos) {
-        if (e.tipo === 'acertou' || acertados.has(e.id) || e.dono === o.eu || kart.rodando > 0) continue;
+        if (e.tipo === 'acertou' || acertados.has(e.id) || sumiram.has(e.id) || e.dono === o.eu || kart.rodando > 0) continue;
         const alvo = e.tipo === 'repolho' ? repolhoEm(p, e, n) : n >= e.n && n - e.n < VIDA_DA_LAMA ? e : null;
         if (alvo && Math.hypot(alvo.x - kart.x, alvo.y - kart.y) < (e.tipo === 'repolho' ? 9 : 8)) {
           atingir(kart, e.tipo === 'lama' ? 0.7 : 1);

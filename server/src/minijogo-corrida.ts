@@ -54,6 +54,8 @@ interface Piloto {
   itens: number;
   ultimoItem: number;
   acertos: number;
+  /** A última posição que a pessoa mandou: o item só sai de perto dela (revisão de 03/11/2026). */
+  ultima: { x: number; y: number; n: number; andou: number } | null;
 }
 
 interface Linha {
@@ -83,6 +85,12 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
       /** Quem começou a partida: só eles correm (a copa inteira), e quem sai da sala fica sem pontos dali em diante. */
       const inscritos = [...naSala];
       let pilotos = new Map<number, Piloto>();
+      /** Os itens desta corrida que o servidor carimbou, e os que já acertaram alguém: "acertou" só vale para um item de
+       * verdade, uma vez (revisão de 03/11/2026: um "acertou" inventado sumia com o item dos outros). */
+      let itensDaCorrida = new Set<string>();
+      let itensQueAcertaram = new Set<string>();
+      /** Quem correu cada corrida da copa até o fim dela, presente: só eles contam como "a turma" no troféu e na copa. */
+      let correramTodas: Set<number> | null = null;
       const pontos = new Map<number, number>(inscritos.map((id) => [id, 0]));
       /** A soma dos tempos na copa: desempata os pontos (quem não chegou numa corrida não tem soma). */
       const somas = new Map<number, number | null>(inscritos.map((id) => [id, 0]));
@@ -108,7 +116,9 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
 
       const largar = () => {
         const presentes = ctx.naSala().filter((id) => inscritos.includes(id));
-        pilotos = new Map(presentes.map((id) => [id, { tempoMs: null, voltas: [], andou: 0, itens: 0, ultimoItem: 0, acertos: 0 }]));
+        pilotos = new Map(presentes.map((id) => [id, { tempoMs: null, voltas: [], andou: 0, itens: 0, ultimoItem: 0, acertos: 0, ultima: null }]));
+        itensDaCorrida = new Set();
+        itensQueAcertaram = new Set();
         fase = 'largada';
         prazoAberto = false;
         ctx.agendar(LARGADA_MS, () => {
@@ -119,7 +129,10 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
         });
       };
 
-      /** OS TROFÉUS: o pódio (até 3), com 2 pessoas ou mais, para quem chegou ao pódio de verdade. */
+      /**
+       * OS TROFÉUS: o pódio (até 3), com 2 pessoas ou mais, para quem chegou ao pódio de verdade. `ordem` já vem só com quem
+       * correu até o fim, presente (revisão de 03/11/2026: quem ficava sozinho na sala ganhava o troféu "com a turma").
+       */
       const darTrofeus = (pista: string, ordem: { userId: number; tempoMs: number | null; pontos: number | null; chegou: boolean }[]) => {
         if (ordem.length < 2) return;
         const todos = ordem.map((l) => l.userId);
@@ -142,6 +155,10 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
         if (fase !== 'correndo' && fase !== 'largada') return;
         const ordem = classificacao();
         resultados.push({ pista: corridas[indice], pilotos: ordem });
+        // quem correu esta corrida e ainda está na sala no fim dela
+        const naSalaAgora = new Set(ctx.naSala());
+        const ficaram = new Set(ordem.map((l) => l.userId).filter((id) => naSalaAgora.has(id)));
+        correramTodas = correramTodas === null ? ficaram : new Set([...correramTodas].filter((id) => ficaram.has(id)));
         ordem.forEach((l, i) => {
           if (l.tempoMs === null) {
             somas.set(l.userId, null);
@@ -154,7 +171,10 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
         // quem não correu esta (saiu da sala) também fica sem soma
         for (const id of inscritos) if (!pilotos.has(id)) somas.set(id, null);
         if (!copa) {
-          darTrofeus(corridas[0], ordem.map((l) => ({ userId: l.userId, tempoMs: l.tempoMs, pontos: null, chegou: l.tempoMs !== null })));
+          darTrofeus(
+            corridas[0],
+            ordem.filter((l) => ficaram.has(l.userId)).map((l) => ({ userId: l.userId, tempoMs: l.tempoMs, pontos: null, chegou: l.tempoMs !== null })),
+          );
           fase = 'fim';
           ctx.terminar();
           return;
@@ -170,9 +190,10 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
           return;
         }
         // o fim da copa: o pódio pelos pontos, e a copa da turma
-        const placar = placarDaCopa();
+        const turma = correramTodas ?? new Set<number>();
+        const placar = placarDaCopa().filter((l) => turma.has(l.userId));
         darTrofeus(COPA, placar.map((l) => ({ userId: l.userId, tempoMs: l.soma, pontos: l.pontos, chegou: l.pontos > 0 })));
-        if (inscritos.length >= 2) db.registrarCopa(ctx.comunidade ?? 0, inscritos.length);
+        if (turma.size >= 2) db.registrarCopa(ctx.comunidade ?? 0, turma.size);
         fase = 'fim';
         ctx.terminar();
       };
@@ -236,22 +257,34 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
             // não mais itens que as caixas da pista dão (uma fileira por volta, cada uma), nem dois no mesmo segundo
             const maximo = (PISTAS[corridas[indice]]?.caixas ?? 2) * VOLTAS + 1;
             if (p.itens >= maximo || agora() - p.ultimoItem < 1000) return null;
+            // O ITEM SAI DE PERTO DE QUEM O USA (revisão de 03/11/2026: pelo console, a lama caía na frente do líder): perto da
+            // última posição que a pessoa mandou, e no mesmo segundo dela
+            const u = p.ultima;
+            if (!u || Math.abs((d.n as number) - u.n) > 60) return null;
             const id = `${quem}-${Math.round(d.n as number)}`;
             if (d.tipo === 'repolho') {
               if (!numero(d.s) || !numero(d.lado) || Math.abs(d.lado as number) > 60 || (d.s as number) < 0 || (d.s as number) > 20000) return null;
+              const comprimento = PISTAS[corridas[indice]]?.comprimento ?? 3000;
+              const onde = (u.andou % 1) * comprimento;
+              const dist = Math.abs((((d.s as number) - onde) % comprimento + comprimento * 1.5) % comprimento - comprimento / 2);
+              if (dist > 80) return null;
               p.itens++;
               p.ultimoItem = agora();
+              itensDaCorrida.add(id);
               return { tipo: 'repolho', id, dono: quem, n: Math.round(d.n as number), s: d.s, lado: d.lado };
             }
             if (!numero(d.x) || !numero(d.y) || (d.x as number) < 0 || (d.y as number) < 0 || (d.x as number) > 1024 || (d.y as number) > 1024) return null;
+            if (Math.hypot((d.x as number) - u.x, (d.y as number) - u.y) > 30) return null;
             p.itens++;
             p.ultimoItem = agora();
+            itensDaCorrida.add(id);
             return { tipo: 'lama', id, dono: quem, n: Math.round(d.n as number), x: d.x, y: d.y };
           }
           if (d.tipo === 'acertou') {
             // quem foi atingido avisa, para o item sumir para todos
-            if (typeof d.id !== 'string' || !/^\d{1,10}-\d{1,7}$/.test(d.id) || p.acertos >= 40) return null;
+            if (typeof d.id !== 'string' || !itensDaCorrida.has(d.id) || itensQueAcertaram.has(d.id) || p.acertos >= 40) return null;
             p.acertos++;
+            itensQueAcertaram.add(d.id);
             return { tipo: 'acertou', id: d.id };
           }
           const { x, y, a, n, andou } = d;
@@ -259,6 +292,7 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
           if ((x as number) < 0 || (y as number) < 0 || (x as number) > 1024 || (y as number) > 1024) return null;
           if ((andou as number) < 0 || (andou as number) > VOLTAS) return null;
           if (p.tempoMs === null) p.andou = andou as number;
+          p.ultima = { x: x as number, y: y as number, n: n as number, andou: andou as number };
           return { userId: quem, x, y, a, n, andou };
         },
         conferir,

@@ -4350,11 +4350,13 @@ export function trofeusDe(userId: number): TrofeuDaCorrida[] {
   const linhas = db
     .prepare('SELECT id, pista, posicao, tempo_ms AS tempoMs, pontos, rivais, em FROM corrida_trofeus WHERE user_id = ? ORDER BY em DESC, id DESC LIMIT 200')
     .all(userId) as { id: number; pista: string; posicao: number; tempoMs: number | null; pontos: number | null; rivais: string; em: string }[];
-  const pessoa = db.prepare('SELECT id, username, nome_exibicao AS nomeDeExibicao FROM users WHERE id = ?');
+  // só quem JÁ existia no dia do troféu (revisão de 03/11/2026): o SQLite reaproveita o id da conta mais nova quando ela é
+  // excluída, e a conta seguinte apareceria no troféu dos outros no lugar de quem saiu
+  const pessoa = db.prepare('SELECT id, username, nome_exibicao AS nomeDeExibicao FROM users WHERE id = ? AND created_at <= ?');
   return linhas.map((l) => {
     const ids = JSON.parse(l.rivais) as number[];
     const rivais = ids
-      .map((id) => pessoa.get(id) as { id: number; username: string; nomeDeExibicao: string | null } | undefined)
+      .map((id) => pessoa.get(id, l.em) as { id: number; username: string; nomeDeExibicao: string | null } | undefined)
       .filter((u): u is { id: number; username: string; nomeDeExibicao: string | null } => !!u)
       .map((u) => ({ userId: u.id, username: u.username, nomeDeExibicao: u.nomeDeExibicao }));
     return { id: l.id, pista: l.pista, posicao: l.posicao, tempoMs: l.tempoMs, pontos: l.pontos, em: l.em, rivais, excluidos: ids.length - rivais.length };
