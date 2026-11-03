@@ -30,7 +30,7 @@ import { ModeracaoDaPessoa, podeAgirSobre } from './ModeracaoDaPessoa';
 import { pedirMencao } from './mencao';
 import { guardarNota, LIMITE_DA_NOTA, useNota } from './notas';
 import { corDoNome, efeitoDoNome, letraDoNome } from './profileStyles';
-import { getUserVolume, isLocallyMuted, setLocalMute, setUserVolume } from './voiceVolumes';
+import { getUserVolume, isLocallyMuted, setLocalMute, setUserVolume, TETO_DA_VOZ } from './voiceVolumes';
 import type { Channel, Role } from './types';
 import type { Voice } from './useVoice';
 import { chave, useT } from './i18n';
@@ -479,7 +479,8 @@ export function PersonMenu({
             <input
               type="range"
               min={0}
-              max={1}
+              // Até 200% (pedido dele, 02/11/2026): o reforço com o limitador está em voiceVolumes.ts.
+              max={TETO_DA_VOZ}
               step={0.05}
               value={volume}
               aria-label={t('Volume de {nome}', { nome: nomeVisto })}

@@ -46,14 +46,27 @@ export function idsComVolumeAjustado(): string[] {
   return Object.keys(volumes).filter((id) => (volumes[id] ?? 0) > 0 && mutes[id] !== true);
 }
 
+/**
+ * A VOZ DE CADA PESSOA VAI ATÉ 200% (pedido dele, 02/11/2026), pelo mesmo caminho do som da transmissão (ver
+ * TETO_DA_TRANSMISSAO, abaixo): acima de 100% a faixa passa a tocar por Web Audio, com o limitador antes do ganho. É o
+ * amigo de microfone baixo que se quer ouvir mais alto, e não um estouro no ouvido de quem ajusta.
+ */
+export const TETO_DA_VOZ = 2;
+
 function apply(room: Room, userId: number) {
   const participant = room.remoteParticipants.get(String(userId));
-  participant?.setVolume(isLocallyMuted(userId) ? 0 : getUserVolume(userId));
+  if (!participant) return;
+  const volume = isLocallyMuted(userId) ? 0 : getUserVolume(userId);
+  // O volume da PESSOA nunca passa de 1: o LiveKit o guarda e o repete em cada faixa que chega, e uma faixa ainda sem o
+  // reforço o escreveria no `element.volume`, que dá erro acima de 1 e derruba o som. O que passa de 100% vai só na
+  // faixa do microfone, depois de o reforço estar ligado; quando ela ainda não chegou, o TrackSubscribed devolve tudo.
+  participant.setVolume(Math.min(1, volume));
+  const microfone = participant.getTrackPublication(Track.Source.Microphone)?.track as RemoteAudioTrack | undefined;
+  if (microfone && volume > 1) aplicarVolume(microfone, volume);
 }
 
 export function setUserVolume(room: Room, userId: number, volume: number) {
-  // O navegador só aceita de 0 a 1 no volume de um áudio; passar disso dá erro e derruba o som.
-  volumes = { ...volumes, [String(userId)]: Math.min(1, Math.max(0, volume)) };
+  volumes = { ...volumes, [String(userId)]: Math.min(TETO_DA_VOZ, Math.max(0, volume)) };
   write(KEY, volumes);
   void import('./preferencias').then((m) => m.guardarEmBreve());
   apply(room, userId);
@@ -152,7 +165,7 @@ function ligarReforco(faixa: RemoteAudioTrack): boolean {
 export function alternarMudoDaTela(room: Room, userId: number) {
   if (caladas.has(userId) || !(screenVolumes[String(userId)] ?? 1)) caladas.delete(userId);
   else caladas.add(userId);
-  aplicarVolumeDaTela(screenAudioTrack(room, userId), getScreenVolume(userId));
+  aplicarVolume(screenAudioTrack(room, userId), getScreenVolume(userId));
   return getScreenVolume(userId);
 }
 
@@ -166,7 +179,7 @@ export function setScreenVolume(room: Room, userId: number, volume: number) {
     write(SCREEN_KEY, screenVolumes);
     void import('./preferencias').then((m) => m.guardarEmBreve());
   }
-  aplicarVolumeDaTela(screenAudioTrack(room, userId), getScreenVolume(userId));
+  aplicarVolume(screenAudioTrack(room, userId), getScreenVolume(userId));
 }
 
 /**
@@ -176,7 +189,7 @@ export function setScreenVolume(room: Room, userId: number, volume: number) {
  * (o TrackSubscribed devolve todos os volumes, ver useVoice.ts). Era daí a impressão de que o
  * controle não funcionava para uma transmissão cujo som ainda não tinha sido assinado.
  */
-function aplicarVolumeDaTela(faixa: RemoteAudioTrack | undefined, volume: number) {
+function aplicarVolume(faixa: RemoteAudioTrack | undefined, volume: number) {
   if (!faixa) return;
   // Acima de 100% sem o caminho de Web Audio, o navegador prenderia em 1 sem avisar. Melhor entregar
   // o máximo que existe do que fingir um número que não acontece.
@@ -189,7 +202,7 @@ export function applyAllVolumes(room: Room) {
   for (const [identity, participant] of room.remoteParticipants) {
     const userId = Number(identity);
     if (!Number.isFinite(userId)) continue;
-    participant.setVolume(isLocallyMuted(userId) ? 0 : getUserVolume(userId));
-    aplicarVolumeDaTela(screenAudioTrack(room, userId), getScreenVolume(userId));
+    apply(room, userId);
+    aplicarVolume(screenAudioTrack(room, userId), getScreenVolume(userId));
   }
 }
