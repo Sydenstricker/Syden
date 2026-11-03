@@ -6,6 +6,7 @@ import { IconButton } from './IconButton';
 import { idiomaAtual, useT } from './i18n';
 import { JogoDesenho } from './JogoDesenho';
 import { JogoDuelo } from './JogoDuelo';
+import { JogoFesta } from './JogoFesta';
 import { JogoLobisomem } from './JogoLobisomem';
 import { JogoPalavra } from './JogoPalavra';
 import { EscolhaDoQuiz, JogoQuiz } from './JogoQuiz';
@@ -24,6 +25,7 @@ import {
   SITES_PARA_TRANSMITIR,
   type EstadoDesenho,
   type EstadoDuelo,
+  type EstadoFesta,
   type EstadoLobisomem,
   type EstadoPalavra,
   type EstadoStop,
@@ -172,7 +174,7 @@ export function PainelDoMinijogo({
   const restante = partida ? Math.max(0, partida.restanteMs - (agora - partida.recebidaEm)) : 0;
   const naEspera = Boolean(partida?.convite);
   const rodada =
-    partida && !naEspera && (partida.jogo === 'tamanho' || partida.jogo === 'stop' || partida.jogo === 'xadrez' || partida.jogo === 'palavra' || ehQuiz(partida.jogo)) && !partida.terminada
+    partida && !naEspera && (partida.jogo === 'tamanho' || partida.jogo === 'stop' || partida.jogo === 'xadrez' || partida.jogo === 'palavra' || partida.jogo === 'festa' || ehQuiz(partida.jogo)) && !partida.terminada
       ? (partida as unknown as EstadoTamanho)
       : null;
   // Quem não aceitou o convite vê a partida, mas não mexe nela (a mesa cuida de quem senta).
@@ -302,6 +304,9 @@ export function PainelDoMinijogo({
           socket={socket}
           channelId={channelId}
         />
+      )}
+      {jogoNaTela?.jogo === 'festa' && (
+        <JogoFesta estado={jogoNaTela as unknown as EstadoFesta & Partida} eu={eu} jogador={souJogador(partida)} restante={restante} agir={agir} />
       )}
       {jogoNaTela?.jogo === 'lobisomem' && <JogoLobisomem estado={jogoNaTela as unknown as EstadoLobisomem & Partida} eu={eu} restante={restante} agir={agir} />}
       {(jogoNaTela?.jogo === 'gomoku' || jogoNaTela?.jogo === 'mancala') && (
