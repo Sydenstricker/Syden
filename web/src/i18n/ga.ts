@@ -2312,4 +2312,7 @@ export default {
   'Cancelar resposta': 'Cealaigh an freagra',
   'Mensagem apagada': 'Teachtaireacht scriosta',
   'Anexo': 'Ceangaltán',
+  'Pedir amizade': 'Iarr cairdeas',
+  'Aceitar o pedido de amizade': 'Glac leis an iarratas cairdis',
+  'Pedido de amizade enviado': 'Seoladh an t-iarratas cairdis',
 } satisfies Record<string, string>;

@@ -2305,4 +2305,7 @@ export default {
   'Cancelar resposta': 'जवाब रद्द करो',
   'Mensagem apagada': 'मिटाया गया संदेश',
   'Anexo': 'अटैचमेंट',
+  'Pedir amizade': 'दोस्ती का अनुरोध भेजो',
+  'Aceitar o pedido de amizade': 'दोस्ती का अनुरोध स्वीकार करो',
+  'Pedido de amizade enviado': 'दोस्ती का अनुरोध भेजा गया',
 } satisfies Record<string, string>;

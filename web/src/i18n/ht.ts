@@ -2386,4 +2386,7 @@ export default {
   'Cancelar resposta': 'Anile repons lan',
   'Mensagem apagada': 'Mesaj efase',
   'Anexo': 'Fichye atache',
+  'Pedir amizade': 'Mande zanmitay',
+  'Aceitar o pedido de amizade': 'Aksepte demann zanmitay a',
+  'Pedido de amizade enviado': 'Demann zanmitay voye',
 } satisfies Record<string, string>;

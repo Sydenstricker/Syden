@@ -2372,4 +2372,7 @@ export default {
   'Cancelar resposta': 'Жауаптан бас тарту',
   'Mensagem apagada': 'Жойылған хабарлама',
   'Anexo': 'Тіркеме',
+  'Pedir amizade': 'Достық сұрау',
+  'Aceitar o pedido de amizade': 'Достық сұранысын қабылдау',
+  'Pedido de amizade enviado': 'Достық сұранысы жіберілді',
 } satisfies Record<string, string>;

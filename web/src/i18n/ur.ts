@@ -2293,4 +2293,7 @@ export default {
   'Cancelar resposta': 'جواب منسوخ کرو',
   'Mensagem apagada': 'مٹایا گیا پیغام',
   'Anexo': 'منسلک فائل',
+  'Pedir amizade': 'دوستی کی درخواست بھیجیں',
+  'Aceitar o pedido de amizade': 'دوستی کی درخواست قبول کریں',
+  'Pedido de amizade enviado': 'دوستی کی درخواست بھیج دی گئی',
 } satisfies Record<string, string>;

@@ -2394,4 +2394,7 @@ export default {
   'Cancelar resposta': 'პასუხის გაუქმება',
   'Mensagem apagada': 'წაშლილი შეტყობინება',
   'Anexo': 'დანართი',
+  'Pedir amizade': 'მეგობრობის თხოვნა',
+  'Aceitar o pedido de amizade': 'მეგობრობის თხოვნის მიღება',
+  'Pedido de amizade enviado': 'მეგობრობის თხოვნა გაიგზავნა',
 } satisfies Record<string, string>;

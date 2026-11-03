@@ -15,6 +15,7 @@ import {
   Settings,
   Trash2,
   Video,
+  VideoOff,
   Volume2,
   CopyPlus,
   UsersRound,
@@ -88,6 +89,8 @@ interface Props {
   onOpenRanking: () => void;
   onOpenInicio: () => void;
   onOpenSettings: () => void;
+  /** Quem administra clica na capa e vai direto a Configurações → Comunidade, na parte da capa. */
+  aoEditarCapa?: () => void;
 }
 
 export function Sidebar({
@@ -117,6 +120,7 @@ export function Sidebar({
   onOpenRanking,
   onOpenInicio,
   onOpenSettings,
+  aoEditarCapa,
 }: Props) {
   // Indicador de fala só existe para a sala em que estamos conectados (é o LiveKit que sabe quem fala).
   const speaking = new Set(useSpeakingParticipants().map((p) => p.identity));
@@ -134,6 +138,9 @@ export function Sidebar({
   // Quem criou o canal mexe nele; quem administra a comunidade mexe em todos.
   const managesCommunity = community.role === 'owner' || community.role === 'admin';
   const canManage = (channel: Channel) => managesCommunity || channel.createdBy === user.id;
+  // QUEM ADMINISTRA CLICA NA CAPA E CAI NA CAPA (pedido dele, 02/11/2026): antes ela só se trocava em Configurações →
+  // Comunidade, rolando até achar. Para os outros a faixa continua sendo só desenho.
+  const capaEditavel = !directMode && managesCommunity && aoEditarCapa;
   // Assistindo junto: a sala ganha a pipoca, e quem está na plateia também (ver assistindo.ts).
   const assistindoJunto = (channelId: number) => salaAssistindoJunto(voiceMembers, channelId);
   const plateia = quemAssiste(voiceMembers);
@@ -161,7 +168,12 @@ export function Sidebar({
           degradê que ele escolheu para as boas-vindas. Ver web/src/CapaDaComunidade.tsx.
           Nas conversas privadas não há comunidade, então não há faixa — e o cabeçalho volta a ser o
           cabeçalho comum. */}
-      <header className={`sidebar-header${directMode ? '' : ' com-capa'}`}>
+      <header
+        className={`sidebar-header${directMode ? '' : ' com-capa'}${capaEditavel ? ' capa-editavel' : ''}`}
+        title={capaEditavel ? t('Trocar a capa') : undefined}
+        // O link de baixar o app mora dentro do cabeçalho: clicar nele não pode abrir as configurações junto.
+        onClick={capaEditavel ? (e) => !(e.target as HTMLElement).closest('a, button') && aoEditarCapa() : undefined}
+      >
         {!directMode && <CapaDaComunidade community={community} arte={arteDaComunidade} />}
         {/* A LETRA DA COMUNIDADE vale só no NOME dela, e não na tela inteira: trocar a fonte das
             mensagens de todo mundo por gosto de quem administra é mexer no que os outros leem. Em
@@ -190,6 +202,12 @@ export function Sidebar({
           >
             <Download size={18} />
           </a>
+        )}
+        {/* O lápis diz que a faixa se clica (e dá a quem usa teclado um lugar para chegar). */}
+        {capaEditavel && (
+          <button className="capa-lapis" aria-label={t('Trocar a capa')} onClick={aoEditarCapa}>
+            <Pencil size={14} aria-hidden="true" />
+          </button>
         )}
       </header>
 
@@ -374,6 +392,14 @@ export function Sidebar({
           >
             {voice.deafened ? <HeadphoneOff size={18} /> : <Headphones size={18} />}
           </IconButton>
+          {/* A CÂMERA AO LADO DO MICROFONE (pedido dele, 02/11/2026): antes ela só existia nos controles do palco, e quem
+              estava na sala olhando um canal de texto não tinha como ligá-la. Só dentro de uma chamada: fora dela não há
+              para onde mandar a imagem, e ao contrário do microfone ela não fica guardada para a próxima. */}
+          {voice.channelId !== null && (
+            <IconButton label={voice.media.video ? t('Desligar câmera') : t('Ligar câmera')} active={voice.media.video} onClick={voice.toggleCamera}>
+              {voice.media.video ? <Video size={18} /> : <VideoOff size={18} />}
+            </IconButton>
+          )}
           <IconButton label={t('Configurações')} onClick={onOpenSettings}>
             <Settings size={18} />
           </IconButton>

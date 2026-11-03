@@ -7999,6 +7999,33 @@ textarea {
   filter: brightness(1.1);
 }
 
+/* O segundo botão do cartão (adicionar amigo) fica abaixo da mensagem, sem a cor de destaque: um só chama a atenção. */
+.perfil-acao-sutil {
+  margin-top: 8px;
+  background: var(--bg-raised);
+  color: var(--text);
+}
+
+.perfil-acao-sutil:hover {
+  background: var(--bg-raised-hover);
+  filter: none;
+}
+
+.perfil-acao:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.perfil-amizade-enviada {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 10px 0 0;
+  color: var(--text-muted);
+  font-size: calc(13px * var(--escala-do-texto));
+}
+
 /* ---------- O editor, nas configurações ---------- */
 
 .perfil-previa {
@@ -11373,6 +11400,47 @@ body.arrastando-barra {
   margin-top: 8px;
   position: relative;
   z-index: 1;
+}
+
+/* Quem administra clica na faixa e cai na capa nas Configurações. O lápis fica no canto e só aparece por inteiro ao
+   passar o mouse: discreto o bastante para não sujar a capa, visível o bastante para dizer que ela se troca. */
+.sidebar-header.capa-editavel {
+  cursor: pointer;
+}
+
+/* Aonde o clique na capa rola as Configurações: com folga, para o título não nascer colado (e cortado) no alto. */
+#capa-da-comunidade {
+  scroll-margin-top: 32px;
+}
+
+.capa-lapis {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  color: #f2f3f5;
+  opacity: 0.55;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.sidebar-header.capa-editavel:hover .capa-lapis,
+.capa-lapis:focus-visible {
+  opacity: 1;
+}
+
+/* Com o botão de baixar o app no mesmo canto, o lápis vai para o outro. */
+.sidebar-header.capa-editavel .icon-button ~ .capa-lapis {
+  right: auto;
+  left: 8px;
 }
 
 .sidebar-header.com-capa .sidebar-brand {

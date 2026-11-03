@@ -2368,4 +2368,7 @@ export default {
   'Cancelar resposta': 'Anulo përgjigjen',
   'Mensagem apagada': 'Mesazh i fshirë',
   'Anexo': 'Bashkëngjitje',
+  'Pedir amizade': 'Kërko miqësi',
+  'Aceitar o pedido de amizade': 'Prano kërkesën për miqësi',
+  'Pedido de amizade enviado': 'Kërkesa për miqësi u dërgua',
 } satisfies Record<string, string>;

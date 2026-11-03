@@ -2310,4 +2310,7 @@ export default {
   'Cancelar resposta': 'Faʻaleaogā le tali',
   'Mensagem apagada': 'Feʻau ua tapeʻese',
   'Anexo': 'Faila faʻapipiʻi',
+  'Pedir amizade': 'Talosaga mo se uō',
+  'Aceitar o pedido de amizade': 'Talia le talosaga mo se uō',
+  'Pedido de amizade enviado': 'Ua uma ona auina le talosaga mo se uō',
 } satisfies Record<string, string>;

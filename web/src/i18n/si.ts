@@ -2376,4 +2376,7 @@ export default {
   'Cancelar resposta': 'පිළිතුර අවලංගු කරන්න',
   'Mensagem apagada': 'මැකූ පණිවිඩය',
   'Anexo': 'ඇමුණුම',
+  'Pedir amizade': 'මිත්‍රත්ව ඉල්ලීමක් යවන්න',
+  'Aceitar o pedido de amizade': 'මිත්‍රත්ව ඉල්ලීම පිළිගන්න',
+  'Pedido de amizade enviado': 'මිත්‍රත්ව ඉල්ලීම යැව්වා',
 } satisfies Record<string, string>;

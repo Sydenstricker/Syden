@@ -2377,4 +2377,7 @@ export default {
   'Cancelar resposta': 'Hætta við svar',
   'Mensagem apagada': 'Eytt skilaboð',
   'Anexo': 'Viðhengi',
+  'Pedir amizade': 'Biðja um vináttu',
+  'Aceitar o pedido de amizade': 'Samþykkja vinabeiðnina',
+  'Pedido de amizade enviado': 'Vinabeiðni send',
 } satisfies Record<string, string>;

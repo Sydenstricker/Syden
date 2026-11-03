@@ -2319,4 +2319,7 @@ export default {
   'Cancelar resposta': 'ยกเลิกการตอบกลับ',
   'Mensagem apagada': 'ข้อความที่ถูกลบ',
   'Anexo': 'ไฟล์แนบ',
+  'Pedir amizade': 'ขอเป็นเพื่อน',
+  'Aceitar o pedido de amizade': 'ยอมรับคำขอเป็นเพื่อน',
+  'Pedido de amizade enviado': 'ส่งคำขอเป็นเพื่อนแล้ว',
 } satisfies Record<string, string>;

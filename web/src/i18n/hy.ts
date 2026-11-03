@@ -2395,4 +2395,7 @@ export default {
   'Cancelar resposta': 'Չեղարկել պատասխանը',
   'Mensagem apagada': 'Ջնջված հաղորդագրություն',
   'Anexo': 'Կցորդ',
+  'Pedir amizade': 'Ուղարկել ընկերության հայտ',
+  'Aceitar o pedido de amizade': 'Ընդունել ընկերության հայտը',
+  'Pedido de amizade enviado': 'Ընկերության հայտն ուղարկված է',
 } satisfies Record<string, string>;

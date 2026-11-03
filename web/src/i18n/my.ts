@@ -2345,4 +2345,7 @@ export default {
   'Cancelar resposta': 'ပြန်ဖြေခြင်းကို ပယ်ဖျက်ရန်',
   'Mensagem apagada': 'ဖျက်ထားသော မက်ဆေ့ချ်',
   'Anexo': 'ပူးတွဲဖိုင်',
+  'Pedir amizade': 'မိတ်ဆွေဖွဲ့ရန် တောင်းဆိုရန်',
+  'Aceitar o pedido de amizade': 'မိတ်ဆွေတောင်းဆိုချက်ကို လက်ခံရန်',
+  'Pedido de amizade enviado': 'မိတ်ဆွေတောင်းဆိုချက် ပို့ပြီးပါပြီ',
 } satisfies Record<string, string>;

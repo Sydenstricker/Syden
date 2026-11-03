@@ -2373,4 +2373,7 @@ export default {
   'Cancelar resposta': 'Откажи отговора',
   'Mensagem apagada': 'Изтрито съобщение',
   'Anexo': 'Прикачен файл',
+  'Pedir amizade': 'Покани за приятелство',
+  'Aceitar o pedido de amizade': 'Приеми поканата за приятелство',
+  'Pedido de amizade enviado': 'Поканата за приятелство е изпратена',
 } satisfies Record<string, string>;

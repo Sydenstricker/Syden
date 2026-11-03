@@ -2372,4 +2372,7 @@ export default {
   'Cancelar resposta': 'Cancel·la la resposta',
   'Mensagem apagada': 'Missatge esborrat',
   'Anexo': 'Fitxer adjunt',
+  'Pedir amizade': 'Demanar amistat',
+  'Aceitar o pedido de amizade': 'Acceptar la sol·licitud d\'amistat',
+  'Pedido de amizade enviado': 'Sol·licitud d\'amistat enviada',
 } satisfies Record<string, string>;

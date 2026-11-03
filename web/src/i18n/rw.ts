@@ -2317,4 +2317,7 @@ export default {
   'Cancelar resposta': 'Hagarika igisubizo',
   'Mensagem apagada': 'Ubutumwa bwasibwe',
   'Anexo': 'Umugereka',
+  'Pedir amizade': 'Saba ubucuti',
+  'Aceitar o pedido de amizade': 'Emera ubusabe bw\'ubucuti',
+  'Pedido de amizade enviado': 'Ubusabe bw\'ubucuti bwoherejwe',
 } satisfies Record<string, string>;

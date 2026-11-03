@@ -2370,4 +2370,7 @@ export default {
   'Cancelar resposta': 'Kanselleer antwoord',
   'Mensagem apagada': 'Boodskap uitgevee',
   'Anexo': 'Aanhegsel',
+  'Pedir amizade': 'Vra vriendskap',
+  'Aceitar o pedido de amizade': 'Aanvaar die vriendskapsversoek',
+  'Pedido de amizade enviado': 'Vriendskapsversoek gestuur',
 } satisfies Record<string, string>;

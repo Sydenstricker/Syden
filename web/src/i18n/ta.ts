@@ -2291,4 +2291,7 @@ export default {
   'Cancelar resposta': 'பதிலை ரத்துசெய்',
   'Mensagem apagada': 'நீக்கப்பட்ட செய்தி',
   'Anexo': 'இணைப்பு',
+  'Pedir amizade': 'நட்புக் கோரிக்கை அனுப்பு',
+  'Aceitar o pedido de amizade': 'நட்புக் கோரிக்கையை ஏற்றுக்கொள்',
+  'Pedido de amizade enviado': 'நட்புக் கோரிக்கை அனுப்பப்பட்டது',
 } satisfies Record<string, string>;

@@ -2376,4 +2376,7 @@ export default {
   'Cancelar resposta': 'Foano ny valiny',
   'Mensagem apagada': 'Hafatra voafafa',
   'Anexo': 'Rakitra miaraka',
+  'Pedir amizade': 'Hangataka ho namana',
+  'Aceitar o pedido de amizade': 'Ekeo ny fangatahana ho namana',
+  'Pedido de amizade enviado': 'Lasa ny fangatahana ho namana',
 } satisfies Record<string, string>;

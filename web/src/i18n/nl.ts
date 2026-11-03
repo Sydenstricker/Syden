@@ -2305,4 +2305,7 @@ export default {
   'Cancelar resposta': 'Antwoord annuleren',
   'Mensagem apagada': 'Verwijderd bericht',
   'Anexo': 'Bijlage',
+  'Pedir amizade': 'Vriendschapsverzoek sturen',
+  'Aceitar o pedido de amizade': 'Vriendschapsverzoek accepteren',
+  'Pedido de amizade enviado': 'Vriendschapsverzoek verstuurd',
 } satisfies Record<string, string>;

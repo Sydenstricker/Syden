@@ -2368,4 +2368,7 @@ export default {
   'Cancelar resposta': 'Avbryt svaret',
   'Mensagem apagada': 'Raderat meddelande',
   'Anexo': 'Bilaga',
+  'Pedir amizade': 'Skicka vänförfrågan',
+  'Aceitar o pedido de amizade': 'Acceptera vänförfrågan',
+  'Pedido de amizade enviado': 'Vänförfrågan skickad',
 } satisfies Record<string, string>;

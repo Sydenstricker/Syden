@@ -2373,4 +2373,7 @@ export default {
   'Cancelar resposta': 'Tühista vastus',
   'Mensagem apagada': 'Kustutatud sõnum',
   'Anexo': 'Manus',
+  'Pedir amizade': 'Saada sõbrakutse',
+  'Aceitar o pedido de amizade': 'Nõustu sõbrakutsega',
+  'Pedido de amizade enviado': 'Sõbrakutse saadetud',
 } satisfies Record<string, string>;

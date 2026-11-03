@@ -1,6 +1,7 @@
-import { MessageSquare, Pencil } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { Check, MessageSquare, Pencil, UserPlus } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { ApiError, api } from './api';
 import { Avatar } from './Avatar';
 import { EscolhasDoCartao } from './Aparencia';
 import { nomeDe, useDirectory } from './directory';
@@ -23,6 +24,87 @@ const PRESENCA: Record<PresenceStatus, string> = {
   ocupado: chave('Não perturbe'),
   invisivel: chave('Offline'),
 };
+
+type Relacao = 'nenhuma' | 'enviei' | 'recebi' | 'amigos';
+
+/**
+ * ADICIONAR AMIGO PELO CARTÃO (pedido dele, 02/11/2026): "quando eu clico no balão da pessoa, deveria ter a opção".
+ * Antes o pedido só saía pela tela de Amigos, e ela só abre pelo quadro de fotos do quarto — quem não achava o quadro
+ * não achava os amigos.
+ *
+ * Vai pelo NOME da conta, pela mesma rota da tela de Amigos (com o freio e a recusa que não conta se a pessoa existe:
+ * ver amigos-routes.ts). A relação é lida ao abrir, para o botão não oferecer o que já foi feito; quem já é amigo não vê
+ * botão nenhum, porque desfazer amizade num clique distraído do cartão seria fácil demais (fica na tela de Amigos).
+ */
+function BotaoDeAmizade({ userId, username }: { userId: number; username: string }) {
+  const t = useT();
+  const [relacao, setRelacao] = useState<Relacao | null>(null);
+  const [ocupado, setOcupado] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
+
+  const carregar = useCallback(async () => {
+    try {
+      const { amigos } = await api<{ amigos: { userId: number; situacao: 'pendente' | 'aceita'; euPedi: boolean }[] }>('/api/amigos');
+      const achada = amigos.find((a) => a.userId === userId);
+      setRelacao(!achada ? 'nenhuma' : achada.situacao === 'aceita' ? 'amigos' : achada.euPedi ? 'enviei' : 'recebi');
+    } catch {
+      // Sem a resposta, nada de botão: oferecer um pedido que talvez já exista seria a tela afirmando o que não sabe.
+    }
+  }, [userId]);
+
+  useEffect(() => {
+    void carregar();
+    const aoMudar = () => void carregar();
+    window.addEventListener('syden:amigos', aoMudar);
+    return () => window.removeEventListener('syden:amigos', aoMudar);
+  }, [carregar]);
+
+  async function agir(fazer: () => unknown) {
+    setOcupado(true);
+    setErro(null);
+    try {
+      await fazer();
+      await carregar();
+    } catch (e) {
+      setErro(e instanceof ApiError ? e.message : t('Não deu certo. Tente de novo.'));
+    } finally {
+      setOcupado(false);
+    }
+  }
+
+  if (relacao === null || relacao === 'amigos') return null;
+  return (
+    <>
+      {relacao === 'nenhuma' && (
+        <button
+          className="perfil-acao perfil-acao-sutil"
+          disabled={ocupado}
+          onClick={() => agir(() => api('/api/amigos', { method: 'POST', body: { username } }))}
+        >
+          <UserPlus size={16} aria-hidden="true" />
+          {t('Pedir amizade')}
+        </button>
+      )}
+      {relacao === 'recebi' && (
+        <button
+          className="perfil-acao perfil-acao-sutil"
+          disabled={ocupado}
+          onClick={() => agir(() => api(`/api/amigos/${userId}/aceitar`, { method: 'POST' }))}
+        >
+          <Check size={16} aria-hidden="true" />
+          {t('Aceitar o pedido de amizade')}
+        </button>
+      )}
+      {relacao === 'enviei' && (
+        <p className="perfil-amizade-enviada" role="status">
+          <Check size={14} aria-hidden="true" />
+          {t('Pedido de amizade enviado')}
+        </p>
+      )}
+      {erro && <p className="form-error">{erro}</p>}
+    </>
+  );
+}
 
 /**
  * O cartão que aparece ao clicar em alguém: o fundo escolhido pela pessoa, o avatar por cima e o nome
@@ -169,6 +251,7 @@ export function ProfileCard({
               {t('Mandar mensagem')}
             </button>
           )}
+          {!isSelf && <BotaoDeAmizade userId={membro.id} username={membro.username} />}
         </div>
       </div>
     </div>,

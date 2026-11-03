@@ -2294,4 +2294,7 @@ export default {
   'Cancelar resposta': 'لغو پاسخ',
   'Mensagem apagada': 'پیام حذف‌شده',
   'Anexo': 'پیوست',
+  'Pedir amizade': 'درخواست دوستی',
+  'Aceitar o pedido de amizade': 'پذیرفتن درخواست دوستی',
+  'Pedido de amizade enviado': 'درخواست دوستی فرستاده شد',
 } satisfies Record<string, string>;

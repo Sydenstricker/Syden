@@ -2377,4 +2377,7 @@ export default {
   'Cancelar resposta': 'Бекор кардани ҷавоб',
   'Mensagem apagada': 'Паёми несткардашуда',
   'Anexo': 'Замима',
+  'Pedir amizade': 'Дархости дӯстӣ фиристодан',
+  'Aceitar o pedido de amizade': 'Қабул кардани дархости дӯстӣ',
+  'Pedido de amizade enviado': 'Дархости дӯстӣ фиристода шуд',
 } satisfies Record<string, string>;

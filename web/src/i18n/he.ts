@@ -2356,4 +2356,7 @@ export default {
   'Cancelar resposta': 'ביטול התשובה',
   'Mensagem apagada': 'הודעה שנמחקה',
   'Anexo': 'קובץ מצורף',
+  'Pedir amizade': 'לשלוח בקשת חברות',
+  'Aceitar o pedido de amizade': 'לאשר את בקשת החברות',
+  'Pedido de amizade enviado': 'בקשת החברות נשלחה',
 } satisfies Record<string, string>;

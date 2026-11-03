@@ -2328,4 +2328,7 @@ export default {
   'Cancelar resposta': 'Annuler la réponse',
   'Mensagem apagada': 'Message supprimé',
   'Anexo': 'Pièce jointe',
+  'Pedir amizade': 'Envoyer une demande d\'amitié',
+  'Aceitar o pedido de amizade': 'Accepter la demande d\'amitié',
+  'Pedido de amizade enviado': 'Demande d\'amitié envoyée',
 } satisfies Record<string, string>;

@@ -2371,4 +2371,7 @@ export default {
   'Cancelar resposta': 'Anuluj odpowiedź',
   'Mensagem apagada': 'Usunięta wiadomość',
   'Anexo': 'Załącznik',
+  'Pedir amizade': 'Zaproś do znajomych',
+  'Aceitar o pedido de amizade': 'Przyjmij zaproszenie do znajomych',
+  'Pedido de amizade enviado': 'Zaproszenie do znajomych wysłane',
 } satisfies Record<string, string>;

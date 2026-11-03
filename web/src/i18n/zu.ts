@@ -2377,4 +2377,7 @@ export default {
   'Cancelar resposta': 'Khansela impendulo',
   'Mensagem apagada': 'Umlayezo osusiwe',
   'Anexo': 'Okunamathiselwe',
+  'Pedir amizade': 'Cela ubungane',
+  'Aceitar o pedido de amizade': 'Yamukela isicelo sobungane',
+  'Pedido de amizade enviado': 'Isicelo sobungane sithunyelwe',
 } satisfies Record<string, string>;

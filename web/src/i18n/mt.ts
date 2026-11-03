@@ -2322,4 +2322,7 @@ export default {
   'Cancelar resposta': 'Ikkanċella t-tweġiba',
   'Mensagem apagada': 'Messaġġ imħassar',
   'Anexo': 'Annessjoni',
+  'Pedir amizade': 'Itlob ħbiberija',
+  'Aceitar o pedido de amizade': 'Aċċetta t-talba ta\' ħbiberija',
+  'Pedido de amizade enviado': 'It-talba ta\' ħbiberija ntbagħtet',
 } satisfies Record<string, string>;

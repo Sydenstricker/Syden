@@ -2375,4 +2375,7 @@ export default {
   'Cancelar resposta': 'Zrušit odpověď',
   'Mensagem apagada': 'Smazaná zpráva',
   'Anexo': 'Příloha',
+  'Pedir amizade': 'Požádat o přátelství',
+  'Aceitar o pedido de amizade': 'Přijmout žádost o přátelství',
+  'Pedido de amizade enviado': 'Žádost o přátelství odeslána',
 } satisfies Record<string, string>;

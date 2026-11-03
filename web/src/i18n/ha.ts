@@ -2308,4 +2308,7 @@ export default {
   'Cancelar resposta': 'Soke amsa',
   'Mensagem apagada': 'An goge saƙon',
   'Anexo': 'Haɗe-haɗe',
+  'Pedir amizade': 'Nemi abota',
+  'Aceitar o pedido de amizade': 'Karɓi buƙatar abota',
+  'Pedido de amizade enviado': 'An aika buƙatar abota',
 } satisfies Record<string, string>;

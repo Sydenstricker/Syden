@@ -2340,4 +2340,7 @@ export default {
   'Cancelar resposta': 'Cavabı ləğv et',
   'Mensagem apagada': 'Mesaj silinib',
   'Anexo': 'Əlavə',
+  'Pedir amizade': 'Dostluq istə',
+  'Aceitar o pedido de amizade': 'Dostluq sorğusunu qəbul et',
+  'Pedido de amizade enviado': 'Dostluq sorğusu göndərildi',
 } satisfies Record<string, string>;

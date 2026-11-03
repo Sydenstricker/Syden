@@ -2293,4 +2293,7 @@ export default {
   'Cancelar resposta': '取消回复',
   'Mensagem apagada': '已删除的消息',
   'Anexo': '附件',
+  'Pedir amizade': '加好友',
+  'Aceitar o pedido de amizade': '接受好友申请',
+  'Pedido de amizade enviado': '好友申请已发送',
 } satisfies Record<string, string>;

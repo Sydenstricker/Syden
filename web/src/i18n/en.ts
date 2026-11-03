@@ -2301,4 +2301,7 @@ export default {
   'Cancelar resposta': 'Cancel reply',
   'Mensagem apagada': 'Deleted message',
   'Anexo': 'Attachment',
+  'Pedir amizade': 'Add friend',
+  'Aceitar o pedido de amizade': 'Accept friend request',
+  'Pedido de amizade enviado': 'Friend request sent',
 } satisfies Record<string, string>;

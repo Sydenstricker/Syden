@@ -2378,4 +2378,7 @@ export default {
   'Cancelar resposta': 'Atcelt atbildi',
   'Mensagem apagada': 'Dzēsta ziņa',
   'Anexo': 'Pielikums',
+  'Pedir amizade': 'Uzaicināt draudzēties',
+  'Aceitar o pedido de amizade': 'Pieņemt draudzības uzaicinājumu',
+  'Pedido de amizade enviado': 'Draudzības uzaicinājums nosūtīts',
 } satisfies Record<string, string>;

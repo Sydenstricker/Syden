@@ -2308,4 +2308,7 @@ export default {
   'Cancelar resposta': 'Kansela resposta',
   'Mensagem apagada': 'Mensajen ne’ebé hamoos ona',
   'Anexo': 'Anexu',
+  'Pedir amizade': 'Husu amizade',
+  'Aceitar o pedido de amizade': 'Simu pedidu amizade',
+  'Pedido de amizade enviado': 'Pedidu amizade haruka ona',
 } satisfies Record<string, string>;

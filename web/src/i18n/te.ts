@@ -2288,4 +2288,7 @@ export default {
   'Cancelar resposta': 'జవాబును రద్దు చేయి',
   'Mensagem apagada': 'తొలగించిన సందేశం',
   'Anexo': 'జోడింపు',
+  'Pedir amizade': 'స్నేహ అభ్యర్థన పంపు',
+  'Aceitar o pedido de amizade': 'స్నేహ అభ్యర్థనను అంగీకరించు',
+  'Pedido de amizade enviado': 'స్నేహ అభ్యర్థన పంపబడింది',
 } satisfies Record<string, string>;

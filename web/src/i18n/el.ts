@@ -2312,4 +2312,7 @@ export default {
   'Cancelar resposta': 'Ακύρωση απάντησης',
   'Mensagem apagada': 'Διαγραμμένο μήνυμα',
   'Anexo': 'Συνημμένο',
+  'Pedir amizade': 'Αίτημα φιλίας',
+  'Aceitar o pedido de amizade': 'Αποδοχή του αιτήματος φιλίας',
+  'Pedido de amizade enviado': 'Το αίτημα φιλίας στάλθηκε',
 } satisfies Record<string, string>;

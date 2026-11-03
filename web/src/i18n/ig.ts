@@ -2314,4 +2314,7 @@ export default {
   'Cancelar resposta': 'Kagbuo nzaghachi',
   'Mensagem apagada': 'Ozi ehichapụrụ',
   'Anexo': 'Ihe etinyere',
+  'Pedir amizade': 'Rịọ ọbụbụenyi',
+  'Aceitar o pedido de amizade': 'Nabata arịrịọ ọbụbụenyi',
+  'Pedido de amizade enviado': 'E zipụla arịrịọ ọbụbụenyi',
 } satisfies Record<string, string>;

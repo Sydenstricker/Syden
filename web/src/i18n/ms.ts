@@ -2306,4 +2306,7 @@ export default {
   'Cancelar resposta': 'Batalkan balasan',
   'Mensagem apagada': 'Mesej dipadam',
   'Anexo': 'Lampiran',
+  'Pedir amizade': 'Minta berkawan',
+  'Aceitar o pedido de amizade': 'Terima permintaan berkawan',
+  'Pedido de amizade enviado': 'Permintaan berkawan dihantar',
 } satisfies Record<string, string>;

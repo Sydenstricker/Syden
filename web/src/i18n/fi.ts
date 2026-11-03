@@ -2376,4 +2376,7 @@ export default {
   'Cancelar resposta': 'Peru vastaus',
   'Mensagem apagada': 'Poistettu viesti',
   'Anexo': 'Liite',
+  'Pedir amizade': 'Lähetä kaveripyyntö',
+  'Aceitar o pedido de amizade': 'Hyväksy kaveripyyntö',
+  'Pedido de amizade enviado': 'Kaveripyyntö lähetetty',
 } satisfies Record<string, string>;

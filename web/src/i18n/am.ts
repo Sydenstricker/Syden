@@ -2306,4 +2306,7 @@ export default {
   'Cancelar resposta': 'መልሱን ሰርዝ',
   'Mensagem apagada': 'መልእክቱ ተሰርዟል',
   'Anexo': 'አባሪ',
+  'Pedir amizade': 'ጓደኝነት መጠየቅ',
+  'Aceitar o pedido de amizade': 'የጓደኝነት ጥያቄውን መቀበል',
+  'Pedido de amizade enviado': 'የጓደኝነት ጥያቄ ተልኳል',
 } satisfies Record<string, string>;

@@ -2303,4 +2303,7 @@ export default {
   'Cancelar resposta': 'উত্তর বাতিল করো',
   'Mensagem apagada': 'মুছে ফেলা বার্তা',
   'Anexo': 'সংযুক্তি',
+  'Pedir amizade': 'বন্ধুত্বের অনুরোধ পাঠাও',
+  'Aceitar o pedido de amizade': 'বন্ধুত্বের অনুরোধ গ্রহণ করো',
+  'Pedido de amizade enviado': 'বন্ধুত্বের অনুরোধ পাঠানো হয়েছে',
 } satisfies Record<string, string>;

@@ -2375,4 +2375,7 @@ export default {
   'Cancelar resposta': 'បោះបង់ការឆ្លើយតប',
   'Mensagem apagada': 'សារដែលបានលុប',
   'Anexo': 'ឯកសារភ្ជាប់',
+  'Pedir amizade': 'ស្នើសុំជាមិត្ត',
+  'Aceitar o pedido de amizade': 'ទទួលយកសំណើជាមិត្ត',
+  'Pedido de amizade enviado': 'បានផ្ញើសំណើជាមិត្ត',
 } satisfies Record<string, string>;

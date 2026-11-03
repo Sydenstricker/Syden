@@ -2370,4 +2370,7 @@ export default {
   'Cancelar resposta': 'Annuller svar',
   'Mensagem apagada': 'Slettet besked',
   'Anexo': 'Vedhæftet fil',
+  'Pedir amizade': 'Anmod om venskab',
+  'Aceitar o pedido de amizade': 'Acceptér venneanmodningen',
+  'Pedido de amizade enviado': 'Venneanmodning sendt',
 } satisfies Record<string, string>;

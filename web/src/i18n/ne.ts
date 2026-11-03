@@ -2378,4 +2378,7 @@ export default {
   'Cancelar resposta': 'जवाफ रद्द गर',
   'Mensagem apagada': 'मेटाइएको सन्देश',
   'Anexo': 'संलग्न फाइल',
+  'Pedir amizade': 'मित्रताको अनुरोध पठाउनुहोस्',
+  'Aceitar o pedido de amizade': 'मित्रताको अनुरोध स्वीकार गर्नुहोस्',
+  'Pedido de amizade enviado': 'मित्रताको अनुरोध पठाइयो',
 } satisfies Record<string, string>;

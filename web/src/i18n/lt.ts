@@ -2378,4 +2378,7 @@ export default {
   'Cancelar resposta': 'Atšaukti atsakymą',
   'Mensagem apagada': 'Ištrinta žinutė',
   'Anexo': 'Priedas',
+  'Pedir amizade': 'Pakviesti draugauti',
+  'Aceitar o pedido de amizade': 'Priimti kvietimą draugauti',
+  'Pedido de amizade enviado': 'Kvietimas draugauti išsiųstas',
 } satisfies Record<string, string>;

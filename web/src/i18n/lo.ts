@@ -2377,4 +2377,7 @@ export default {
   'Cancelar resposta': 'ຍົກເລີກການຕອບ',
   'Mensagem apagada': 'ຂໍ້ຄວາມທີ່ຖືກລຶບ',
   'Anexo': 'ໄຟລ໌ແນບ',
+  'Pedir amizade': 'ຂໍເປັນໝູ່',
+  'Aceitar o pedido de amizade': 'ຍອມຮັບຄຳຂໍເປັນໝູ່',
+  'Pedido de amizade enviado': 'ສົ່ງຄຳຂໍເປັນໝູ່ແລ້ວ',
 } satisfies Record<string, string>;

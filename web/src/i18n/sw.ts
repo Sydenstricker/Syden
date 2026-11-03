@@ -2305,4 +2305,7 @@ export default {
   'Cancelar resposta': 'Ghairi jibu',
   'Mensagem apagada': 'Ujumbe uliofutwa',
   'Anexo': 'Kiambatisho',
+  'Pedir amizade': 'Omba urafiki',
+  'Aceitar o pedido de amizade': 'Kubali ombi la urafiki',
+  'Pedido de amizade enviado': 'Ombi la urafiki limetumwa',
 } satisfies Record<string, string>;

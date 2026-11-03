@@ -2376,4 +2376,7 @@ export default {
   'Cancelar resposta': 'Jooji jawaabta',
   'Mensagem apagada': 'Fariin la tirtiray',
   'Anexo': 'Lifaaq',
+  'Pedir amizade': 'Codso saaxiibtinimo',
+  'Aceitar o pedido de amizade': 'Aqbal codsiga saaxiibtinimo',
+  'Pedido de amizade enviado': 'Codsiga saaxiibtinimo waa la diray',
 } satisfies Record<string, string>;

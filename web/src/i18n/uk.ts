@@ -2356,4 +2356,7 @@ export default {
   'Cancelar resposta': 'Скасувати відповідь',
   'Mensagem apagada': 'Видалене повідомлення',
   'Anexo': 'Вкладення',
+  'Pedir amizade': 'Запропонувати дружбу',
+  'Aceitar o pedido de amizade': 'Прийняти запит на дружбу',
+  'Pedido de amizade enviado': 'Запит на дружбу надіслано',
 } satisfies Record<string, string>;

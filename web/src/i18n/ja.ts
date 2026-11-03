@@ -2287,4 +2287,7 @@ export default {
   'Cancelar resposta': '返信をやめる',
   'Mensagem apagada': '削除されたメッセージ',
   'Anexo': '添付ファイル',
+  'Pedir amizade': '友達申請',
+  'Aceitar o pedido de amizade': '友達申請を承認',
+  'Pedido de amizade enviado': '友達申請を送りました',
 } satisfies Record<string, string>;

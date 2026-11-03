@@ -2346,4 +2346,7 @@ export default {
   'Cancelar resposta': 'Deebii haqi',
   'Mensagem apagada': 'Ergaa haqame',
   'Anexo': 'Maxxansa',
+  'Pedir amizade': 'Hiriyummaa gaafadhu',
+  'Aceitar o pedido de amizade': 'Gaaffii hiriyummaa fudhadhu',
+  'Pedido de amizade enviado': 'Gaaffiin hiriyummaa ergameera',
 } satisfies Record<string, string>;

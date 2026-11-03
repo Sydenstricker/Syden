@@ -2330,4 +2330,7 @@ export default {
   'Cancelar resposta': 'Antwort abbrechen',
   'Mensagem apagada': 'Gelöschte Nachricht',
   'Anexo': 'Anhang',
+  'Pedir amizade': 'Freundschaft anfragen',
+  'Aceitar o pedido de amizade': 'Freundschaftsanfrage annehmen',
+  'Pedido de amizade enviado': 'Freundschaftsanfrage gesendet',
 } satisfies Record<string, string>;

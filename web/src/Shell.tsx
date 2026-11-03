@@ -136,6 +136,8 @@ export function Shell({
   const [voiceByCommunity, setVoiceByCommunity] = useState<Record<number, VoiceMember[]>>({});
   // As configurações abrem numa aba escolhida: a vila manda direto para os pacotes de sons.
   const [settingsOpen, setSettingsOpen] = useState<SettingsSection | null>(null);
+  /** Onde a janela das configurações abre rolada (o id de um título dentro da aba); hoje só a capa usa. */
+  const [ancoraDasConfiguracoes, setAncoraDasConfiguracoes] = useState<string | null>(null);
   // "Explorar", na vila, abre a mesma janela de adicionar comunidade da barra lateral.
   const [explorarAberto, setExplorarAberto] = useState(false);
   // Troca de comunidade em andamento: a tela de agora continua no lugar até a nova estar inteira.
@@ -1052,6 +1054,10 @@ export function Shell({
               setMobileChannels(false);
             }}
             onOpenSettings={() => setSettingsOpen('account')}
+            aoEditarCapa={() => {
+              setAncoraDasConfiguracoes('capa-da-comunidade');
+              setSettingsOpen('community');
+            }}
             directMode={view === 'direct'}
             directList={
               <DirectList
@@ -1305,10 +1311,14 @@ export function Shell({
       {settingsOpen !== null && (
         <SettingsModal
           secaoInicial={settingsOpen}
+          ancoraInicial={ancoraDasConfiguracoes ?? undefined}
           user={user}
           community={community}
           voice={voice}
-          onClose={() => setSettingsOpen(null)}
+          onClose={() => {
+            setSettingsOpen(null);
+            setAncoraDasConfiguracoes(null);
+          }}
           onLogout={logout}
           onCommunityChanged={() => void afterCommunityChange(null)}
         />

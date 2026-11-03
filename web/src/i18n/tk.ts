@@ -2378,4 +2378,7 @@ export default {
   'Cancelar resposta': 'Jogaby ýatyr',
   'Mensagem apagada': 'Pozulan hat',
   'Anexo': 'Goşundy',
+  'Pedir amizade': 'Dostluk haýyşyny iber',
+  'Aceitar o pedido de amizade': 'Dostluk haýyşyny kabul et',
+  'Pedido de amizade enviado': 'Dostluk haýyşy iberildi',
 } satisfies Record<string, string>;

@@ -2321,4 +2321,7 @@ export default {
   'Cancelar resposta': 'Fagilé èsì',
   'Mensagem apagada': 'Ìfiránṣẹ́ tí a ti pa rẹ́',
   'Anexo': 'Àsomọ́',
+  'Pedir amizade': 'Béèrè ọ̀rẹ́',
+  'Aceitar o pedido de amizade': 'Gba ìbéèrè ọ̀rẹ́',
+  'Pedido de amizade enviado': 'A ti fi ìbéèrè ọ̀rẹ́ ránṣẹ́',
 } satisfies Record<string, string>;

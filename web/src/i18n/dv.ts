@@ -2386,4 +2386,7 @@ export default {
   'Cancelar resposta': 'ޖަވާބު ކެންސަލްކުރޭ',
   'Mensagem apagada': 'ފޮހެލެވުނު މެސެޖެއް',
   'Anexo': 'އެޓޭޗްމަންޓް',
+  'Pedir amizade': 'ރަޙްމަތެރިކަމުގެ ރިކުއެސްޓް ފޮނުވާ',
+  'Aceitar o pedido de amizade': 'ރަޙްމަތެރިކަމުގެ ރިކުއެސްޓް ގަބޫލުކުރޭ',
+  'Pedido de amizade enviado': 'ރަޙްމަތެރިކަމުގެ ރިކުއެސްޓް ފޮނުވިއްޖެ',
 } satisfies Record<string, string>;

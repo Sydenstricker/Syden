@@ -2326,4 +2326,7 @@ export default {
   'Cancelar resposta': 'إلغاء الرد',
   'Mensagem apagada': 'رسالة محذوفة',
   'Anexo': 'مرفق',
+  'Pedir amizade': 'طلب صداقة',
+  'Aceitar o pedido de amizade': 'قبول طلب الصداقة',
+  'Pedido de amizade enviado': 'تم إرسال طلب الصداقة',
 } satisfies Record<string, string>;

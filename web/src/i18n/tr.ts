@@ -2300,4 +2300,7 @@ export default {
   'Cancelar resposta': 'Yanıtı iptal et',
   'Mensagem apagada': 'Silinmiş mesaj',
   'Anexo': 'Ek',
+  'Pedir amizade': 'Arkadaşlık isteği gönder',
+  'Aceitar o pedido de amizade': 'Arkadaşlık isteğini kabul et',
+  'Pedido de amizade enviado': 'Arkadaşlık isteği gönderildi',
 } satisfies Record<string, string>;

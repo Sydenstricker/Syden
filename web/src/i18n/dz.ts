@@ -2389,4 +2389,7 @@ export default {
   'Cancelar resposta': 'ལན་ཆ་མེད་གཏང་',
   'Mensagem apagada': 'འཕྲིན་དོན་བཏོན་ཡོདཔ་',
   'Anexo': 'མཉམ་སྦྲགས་',
+  'Pedir amizade': 'ཆ་རོགས་ཀྱི་ཞུ་བ་གཏང་།',
+  'Aceitar o pedido de amizade': 'ཆ་རོགས་ཀྱི་ཞུ་བ་ངོས་ལེན།',
+  'Pedido de amizade enviado': 'ཆ་རོགས་ཀྱི་ཞུ་བ་བཏང་ཡོད།',
 } satisfies Record<string, string>;

@@ -2276,4 +2276,7 @@ export default {
   'Cancelar resposta': 'Hủy trả lời',
   'Mensagem apagada': 'Tin nhắn đã xóa',
   'Anexo': 'Tệp đính kèm',
+  'Pedir amizade': 'Kết bạn',
+  'Aceitar o pedido de amizade': 'Chấp nhận lời mời kết bạn',
+  'Pedido de amizade enviado': 'Đã gửi lời mời kết bạn',
 } satisfies Record<string, string>;

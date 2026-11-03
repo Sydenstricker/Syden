@@ -2306,4 +2306,7 @@ export default {
   'Cancelar resposta': 'Anulează răspunsul',
   'Mensagem apagada': 'Mesaj șters',
   'Anexo': 'Atașament',
+  'Pedir amizade': 'Cere prietenia',
+  'Aceitar o pedido de amizade': 'Acceptă cererea de prietenie',
+  'Pedido de amizade enviado': 'Cererea de prietenie a fost trimisă',
 } satisfies Record<string, string>;

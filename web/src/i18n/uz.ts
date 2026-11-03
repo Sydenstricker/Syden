@@ -2384,4 +2384,7 @@ export default {
   'Cancelar resposta': 'Javobni bekor qilish',
   'Mensagem apagada': 'O‘chirilgan xabar',
   'Anexo': 'Ilova',
+  'Pedir amizade': 'Doʻstlik soʻrash',
+  'Aceitar o pedido de amizade': 'Doʻstlik soʻrovini qabul qilish',
+  'Pedido de amizade enviado': 'Doʻstlik soʻrovi yuborildi',
 } satisfies Record<string, string>;

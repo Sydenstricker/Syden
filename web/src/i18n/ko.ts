@@ -2294,4 +2294,7 @@ export default {
   'Cancelar resposta': '답장 취소',
   'Mensagem apagada': '삭제된 메시지',
   'Anexo': '첨부 파일',
+  'Pedir amizade': '친구 요청',
+  'Aceitar o pedido de amizade': '친구 요청 수락',
+  'Pedido de amizade enviado': '친구 요청을 보냈어요',
 } satisfies Record<string, string>;

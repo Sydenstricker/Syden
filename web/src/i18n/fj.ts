@@ -2305,4 +2305,7 @@ export default {
   'Cancelar resposta': 'Bokoca na isau',
   'Mensagem apagada': 'Itukutuku e bokoci',
   'Anexo': 'Ka e vakacurumi',
+  'Pedir amizade': 'Kerea me veitokani',
+  'Aceitar o pedido de amizade': 'Ciqoma na kerekere ni veitokani',
+  'Pedido de amizade enviado': 'Sa vakau na kerekere ni veitokani',
 } satisfies Record<string, string>;

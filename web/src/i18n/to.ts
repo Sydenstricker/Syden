@@ -2312,4 +2312,7 @@ export default {
   'Cancelar resposta': 'Taʻofi ʻa e tali',
   'Mensagem apagada': 'Pōpoaki kuo tāmateʻi',
   'Anexo': 'Faile fakapipiki',
+  'Pedir amizade': 'Kole ke kaumeʻa',
+  'Aceitar o pedido de amizade': 'Tali ʻa e kole ke kaumeʻa',
+  'Pedido de amizade enviado': 'Kuo ʻave ʻa e kole ke kaumeʻa',
 } satisfies Record<string, string>;

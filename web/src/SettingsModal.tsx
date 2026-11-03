@@ -144,6 +144,7 @@ const manages = (community: Community) => community.role === 'owner' || communit
 
 export function SettingsModal({
   secaoInicial = 'account',
+  ancoraInicial,
   user,
   community,
   voice,
@@ -153,6 +154,8 @@ export function SettingsModal({
 }: {
   /** Em que aba a janela abre: a vila manda direto para os pacotes de sons. */
   secaoInicial?: Section;
+  /** O id de um título dentro da aba, para a janela já abrir rolada até ele (clicar na capa leva à capa). */
+  ancoraInicial?: string;
   user: User;
   community: Community | undefined;
   voice: Voice;
@@ -170,6 +173,13 @@ export function SettingsModal({
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [onClose]);
+
+  useEffect(() => {
+    if (!ancoraInicial) return;
+    // Um quadro depois de abrir: a aba precisa estar desenhada para o título existir.
+    const quadro = requestAnimationFrame(() => document.getElementById(ancoraInicial)?.scrollIntoView({ block: 'start' }));
+    return () => cancelAnimationFrame(quadro);
+  }, [ancoraInicial]);
 
   return (
     <div className="settings" role="dialog" aria-modal="true" aria-label={t('Configurações')}>
@@ -1220,7 +1230,7 @@ function CommunityBannerEditor({ community, onChanged }: { community: Community;
 
   return (
     <>
-      <h3>{t('Capa da comunidade')}</h3>
+      <h3 id="capa-da-comunidade">{t('Capa da comunidade')}</h3>
       {/*
        * ARRASTAR A CAPA, E NÃO MEXER NUMA RÉGUA.
        *

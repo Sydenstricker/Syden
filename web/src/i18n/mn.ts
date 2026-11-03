@@ -2390,4 +2390,7 @@ export default {
   'Cancelar resposta': 'Хариултыг цуцлах',
   'Mensagem apagada': 'Устгасан мессеж',
   'Anexo': 'Хавсралт',
+  'Pedir amizade': 'Найз болох хүсэлт илгээх',
+  'Aceitar o pedido de amizade': 'Найз болох хүсэлтийг зөвшөөрөх',
+  'Pedido de amizade enviado': 'Найз болох хүсэлт илгээгдлээ',
 } satisfies Record<string, string>;

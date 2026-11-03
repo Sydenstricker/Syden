@@ -2324,4 +2324,7 @@ export default {
   'Cancelar resposta': 'Отменить ответ',
   'Mensagem apagada': 'Удалённое сообщение',
   'Anexo': 'Вложение',
+  'Pedir amizade': 'Предложить дружбу',
+  'Aceitar o pedido de amizade': 'Принять заявку в друзья',
+  'Pedido de amizade enviado': 'Заявка в друзья отправлена',
 } satisfies Record<string, string>;

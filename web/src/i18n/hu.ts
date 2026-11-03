@@ -2378,4 +2378,7 @@ export default {
   'Cancelar resposta': 'Válasz elvetése',
   'Mensagem apagada': 'Törölt üzenet',
   'Anexo': 'Melléklet',
+  'Pedir amizade': 'Barátkérés küldése',
+  'Aceitar o pedido de amizade': 'A barátkérés elfogadása',
+  'Pedido de amizade enviado': 'Barátkérés elküldve',
 } satisfies Record<string, string>;
