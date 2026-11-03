@@ -2322,4 +2322,5 @@ export default {
   'Atender': 'Απάντηση',
   'Recusar chamada': 'Απόρριψη κλήσης',
   '{quem} recusou a chamada': 'Η κλήση απορρίφθηκε: {quem}',
+  'Placar': 'Βαθμολογία',
 } satisfies Record<string, string>;

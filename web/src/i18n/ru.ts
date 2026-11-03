@@ -2334,4 +2334,5 @@ export default {
   'Atender': 'Ответить',
   'Recusar chamada': 'Отклонить звонок',
   '{quem} recusou a chamada': 'Звонок отклонён: {quem}',
+  'Placar': 'Счёт',
 } satisfies Record<string, string>;

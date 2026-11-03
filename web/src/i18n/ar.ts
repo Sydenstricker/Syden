@@ -2336,4 +2336,5 @@ export default {
   'Atender': 'الرد',
   'Recusar chamada': 'رفض المكالمة',
   '{quem} recusou a chamada': 'رُفضت المكالمة: {quem}',
+  'Placar': 'لوحة النقاط',
 } satisfies Record<string, string>;

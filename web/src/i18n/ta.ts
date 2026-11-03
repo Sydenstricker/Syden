@@ -2301,4 +2301,5 @@ export default {
   'Atender': 'பதிலளி',
   'Recusar chamada': 'அழைப்பை நிராகரி',
   '{quem} recusou a chamada': '{quem} அழைப்பை நிராகரித்தார்',
+  'Placar': 'மதிப்பெண்கள்',
 } satisfies Record<string, string>;

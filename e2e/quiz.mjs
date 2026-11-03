@@ -68,6 +68,10 @@ try {
   await duda.getByRole('button', { name: 'Começar' }).click();
   await duda.locator('.quiz-busca input').waitFor({ timeout: 10000 });
   ok('a largada veio, e o campo de chute está aberto');
+  // O placar ao vivo (02/11/2026): as duas pessoas, em cima do jogo, desde o primeiro chute.
+  (await duda.locator('.minijogo .placar-ao-vivo li').count()) === 2
+    ? ok('o placar ao vivo mostra as duas pessoas durante a partida')
+    : falhou('o placar ao vivo não aparece durante a partida');
 
   await duda.locator('.quiz-busca input').fill('adult red');
   await duda.locator('.quiz-busca li').first().waitFor({ timeout: 5000 });

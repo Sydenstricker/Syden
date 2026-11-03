@@ -2387,4 +2387,5 @@ export default {
   'Atender': 'Phendula',
   'Recusar chamada': 'Yenqaba ikholi',
   '{quem} recusou a chamada': '{quem} wenqabe ikholi',
+  'Placar': 'Amaphuzu',
 } satisfies Record<string, string>;

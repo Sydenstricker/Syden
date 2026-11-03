@@ -2380,4 +2380,5 @@ export default {
   'Atender': 'Besvar',
   'Recusar chamada': 'Afvis opkald',
   '{quem} recusou a chamada': '{quem} afviste opkaldet',
+  'Placar': 'Pointtavle',
 } satisfies Record<string, string>;

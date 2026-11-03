@@ -2394,4 +2394,5 @@ export default {
   'Atender': 'Javob berish',
   'Recusar chamada': 'Qoʻngʻiroqni rad etish',
   '{quem} recusou a chamada': '{quem} qoʻngʻiroqni rad etdi',
+  'Placar': 'Hisob',
 } satisfies Record<string, string>;

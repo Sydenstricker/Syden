@@ -2322,4 +2322,5 @@ export default {
   'Atender': 'Freagair',
   'Recusar chamada': 'Diúltaigh don ghlao',
   '{quem} recusou a chamada': 'Dhiúltaigh {quem} don ghlao',
+  'Placar': 'Scórchlár',
 } satisfies Record<string, string>;

@@ -2388,4 +2388,5 @@ export default {
   'Atender': 'Jogap ber',
   'Recusar chamada': 'Jaňy ret et',
   '{quem} recusou a chamada': '{quem} jaňy ret etdi',
+  'Placar': 'Hasap',
 } satisfies Record<string, string>;

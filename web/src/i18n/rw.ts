@@ -2327,4 +2327,5 @@ export default {
   'Atender': 'Itaba',
   'Recusar chamada': 'Anga guhamagarwa',
   '{quem} recusou a chamada': '{quem} yanze guhamagarwa',
+  'Placar': 'Amanota',
 } satisfies Record<string, string>;

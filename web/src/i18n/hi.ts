@@ -2315,4 +2315,5 @@ export default {
   'Atender': 'उठाओ',
   'Recusar chamada': 'कॉल अस्वीकार करो',
   '{quem} recusou a chamada': 'कॉल अस्वीकार हुई: {quem}',
+  'Placar': 'स्कोर',
 } satisfies Record<string, string>;

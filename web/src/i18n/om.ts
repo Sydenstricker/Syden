@@ -2356,4 +2356,5 @@ export default {
   'Atender': 'Deebisi',
   'Recusar chamada': 'Bilbila didi',
   '{quem} recusou a chamada': '{quem} bilbila dideera',
+  'Placar': 'Qabxii',
 } satisfies Record<string, string>;

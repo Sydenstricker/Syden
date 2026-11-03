@@ -429,6 +429,27 @@ export function Relogio({ restante, total }: { restante: number; total: number }
   );
 }
 
+/**
+ * O PLACAR AO VIVO (pedido dele, 02/11/2026, para o Stop e os quizzes): uma faixa compacta em cima do jogo, na ordem de
+ * quem está na frente, com você em destaque. No Stop ele anda a cada rodada (as respostas só se conhecem no STOP); no
+ * quiz, a cada acerto.
+ */
+export function PlacarAoVivo({ linhas, eu }: { linhas: { userId: number; username: string; pontos: number }[]; eu: number }) {
+  const t = useT();
+  if (linhas.length < 2) return null;
+  return (
+    <ol className="placar-ao-vivo" aria-label={t('Placar')}>
+      {linhas.map((linha, i) => (
+        <li key={linha.userId} className={linha.userId === eu ? 'eu' : ''}>
+          <span className="placar-ao-vivo-posicao">{i + 1}</span>
+          <span className="minijogo-nome">{linha.username}</span>
+          <strong>{linha.pontos}</strong>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
 /** O placar final, com medalha para os três primeiros. `valor` é o que aparece à direita de cada nome. */
 export function Placar({ linhas, eu }: { linhas: { userId: number; username: string; valor: string }[]; eu: number }) {
   const t = useT();

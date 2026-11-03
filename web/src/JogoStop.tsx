@@ -1,7 +1,7 @@
 import { Check, Hand } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useT } from './i18n';
-import { Placar, Relogio, type Agir } from './Minijogo';
+import { Placar, PlacarAoVivo, Relogio, type Agir } from './Minijogo';
 import { CATEGORIAS_DO_STOP, type EstadoStop, type Partida } from './minijogos';
 
 /**
@@ -61,6 +61,7 @@ export function JogoStop({
   if (escrevendo || estado.fase === 'parando') {
     return (
       <div className="stop">
+        <PlacarAoVivo eu={eu} linhas={estado.placar} />
         <div className="stop-letra" aria-label={t('Letra: {letra}', { letra: estado.letra })}>
           {estado.letra}
         </div>
@@ -117,6 +118,7 @@ export function JogoStop({
   const prontoEu = estado.prontos.includes(eu);
   return (
     <div className="stop">
+      <PlacarAoVivo eu={eu} linhas={estado.placar} />
       <p className="minijogo-situacao">
         {conferindo ? t('Clique numa resposta que não vale. Ela cai se mais da metade concordar.') : t('Pontos da rodada')}
       </p>

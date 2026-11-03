@@ -2380,4 +2380,5 @@ export default {
   'Atender': 'Antwoord',
   'Recusar chamada': 'Weier oproep',
   '{quem} recusou a chamada': '{quem} het die oproep geweier',
+  'Placar': 'Telbord',
 } satisfies Record<string, string>;

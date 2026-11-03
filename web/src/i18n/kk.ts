@@ -2382,4 +2382,5 @@ export default {
   'Atender': 'Жауап беру',
   'Recusar chamada': 'Қоңырауды қабылдамау',
   '{quem} recusou a chamada': '{quem} қоңырауды қабылдамады',
+  'Placar': 'Ұпай',
 } satisfies Record<string, string>;

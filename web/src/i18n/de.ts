@@ -2340,4 +2340,5 @@ export default {
   'Atender': 'Annehmen',
   'Recusar chamada': 'Anruf ablehnen',
   '{quem} recusou a chamada': '{quem} hat den Anruf abgelehnt',
+  'Placar': 'Punktestand',
 } satisfies Record<string, string>;

@@ -2313,4 +2313,5 @@ export default {
   'Atender': 'ধরো',
   'Recusar chamada': 'কল প্রত্যাখ্যান করো',
   '{quem} recusou a chamada': '{quem} কলটি প্রত্যাখ্যান করেছে',
+  'Placar': 'স্কোরবোর্ড',
 } satisfies Record<string, string>;

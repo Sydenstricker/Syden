@@ -2381,4 +2381,5 @@ export default {
   'Atender': 'Odbierz',
   'Recusar chamada': 'Odrzuć połączenie',
   '{quem} recusou a chamada': 'Połączenie odrzucone: {quem}',
+  'Placar': 'Wyniki',
 } satisfies Record<string, string>;

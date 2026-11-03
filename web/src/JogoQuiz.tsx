@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { api } from './api';
 import { idiomaAtual, useT } from './i18n';
-import { Placar, Relogio } from './Minijogo';
+import { Placar, PlacarAoVivo, Relogio } from './Minijogo';
 import type { Partida } from './minijogos';
 import { type EstadoQuiz, type IdDoQuiz, ROTULOS, sugestoes, textoDoValor, type Veredito } from './quiz';
 
@@ -108,6 +108,7 @@ export function JogoQuiz({
   const outros = estado.outros.filter((o) => o.userId !== eu);
   return (
     <div className="quiz">
+      <PlacarAoVivo eu={eu} linhas={estado.placar} />
       {chutando && (
         <div className="quiz-busca">
           <input

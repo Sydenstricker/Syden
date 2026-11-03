@@ -2316,4 +2316,5 @@ export default {
   'Atender': 'መመለስ',
   'Recusar chamada': 'ጥሪውን አለመቀበል',
   '{quem} recusou a chamada': 'ጥሪው ውድቅ ሆኗል፦ {quem}',
+  'Placar': 'የነጥብ ሰሌዳ',
 } satisfies Record<string, string>;

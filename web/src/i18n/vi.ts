@@ -2286,4 +2286,5 @@ export default {
   'Atender': 'Trả lời',
   'Recusar chamada': 'Từ chối cuộc gọi',
   '{quem} recusou a chamada': '{quem} đã từ chối cuộc gọi',
+  'Placar': 'Bảng điểm',
 } satisfies Record<string, string>;

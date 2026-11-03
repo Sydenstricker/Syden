@@ -2316,4 +2316,5 @@ export default {
   'Atender': 'Răspunde',
   'Recusar chamada': 'Respinge apelul',
   '{quem} recusou a chamada': 'Apel respins: {quem}',
+  'Placar': 'Scor',
 } satisfies Record<string, string>;

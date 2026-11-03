@@ -2318,4 +2318,5 @@ export default {
   'Atender': 'Hatán',
   'Recusar chamada': 'Rejeita telefone',
   '{quem} recusou a chamada': '{quem} rejeita ona telefone',
+  'Placar': 'Pontu',
 } satisfies Record<string, string>;

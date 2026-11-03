@@ -2322,4 +2322,5 @@ export default {
   'Atender': 'Tali',
   'Recusar chamada': 'Fakafisi ki he telefoní',
   '{quem} recusou a chamada': 'Kuo fakafisi ʻa {quem} ki he telefoní',
+  'Placar': 'Maaka',
 } satisfies Record<string, string>;

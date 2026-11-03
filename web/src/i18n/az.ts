@@ -2350,4 +2350,5 @@ export default {
   'Atender': 'Cavab ver',
   'Recusar chamada': 'Zəngi rədd et',
   '{quem} recusou a chamada': '{quem} zəngi rədd etdi',
+  'Placar': 'Hesab',
 } satisfies Record<string, string>;

@@ -2388,4 +2388,5 @@ export default {
   'Atender': 'Atbildēt',
   'Recusar chamada': 'Noraidīt zvanu',
   '{quem} recusou a chamada': 'Zvans noraidīts: {quem}',
+  'Placar': 'Rezultāti',
 } satisfies Record<string, string>;

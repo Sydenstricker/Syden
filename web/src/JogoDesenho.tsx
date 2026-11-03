@@ -220,7 +220,11 @@ export function JogoDesenho({
   return (
     <div className="desenho">
       <div className="desenho-topo" role="status">
-        <span className="minijogo-rodada">{t('Vez {n} de {total}', { n: estado.vez, total: estado.vezes })}</span>
+        <span className="minijogo-rodada">
+          {estado.rodada && estado.rodadas
+            ? t('Rodada {n} de {total}', { n: estado.rodada, total: estado.rodadas })
+            : t('Vez {n} de {total}', { n: estado.vez, total: estado.vezes })}
+        </span>
         <div className="desenho-palavra">{topo}</div>
       </div>
       <div className="desenho-corpo">

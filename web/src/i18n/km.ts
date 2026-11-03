@@ -2385,4 +2385,5 @@ export default {
   'Atender': 'ទទួល',
   'Recusar chamada': 'បដិសេធការហៅ',
   '{quem} recusou a chamada': '{quem} បានបដិសេធការហៅ',
+  'Placar': 'ពិន្ទុ',
 } satisfies Record<string, string>;

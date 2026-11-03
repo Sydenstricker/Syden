@@ -2320,4 +2320,5 @@ export default {
   'Atender': 'Tali',
   'Recusar chamada': 'Teena le telefoni',
   '{quem} recusou a chamada': 'Na teena e {quem} le telefoni',
+  'Placar': 'Togi',
 } satisfies Record<string, string>;

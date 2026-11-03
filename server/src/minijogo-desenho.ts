@@ -2,7 +2,7 @@ import { embaralhar, placar, type Definicao } from './minijogo-motor.js';
 import { normalizar } from './minijogo-stop.js';
 
 /**
- * O DESENHA E ADIVINHA (o Gartic do Syden). Cada pessoa da sala desenha uma vez: escolhe uma de três
+ * O DESENHA E ADIVINHA (o Gartic do Syden). Três rodadas, e em cada uma cada pessoa desenha uma vez: escolhe uma de três
  * palavras, desenha, e o resto chuta digitando. Quem acerta mais rápido ganha mais; quem desenha ganha a
  * cada acerto. O chute errado aparece para todo mundo, que é metade da graça.
  *
@@ -49,7 +49,9 @@ export const PALAVRAS_DO_DESENHO = [
 export const ESCOLHENDO_MS = 15_000;
 export const DESENHANDO_MS = 80_000;
 export const REVELANDO_DESENHO_MS = 5_000;
+/** Quantas pessoas desenham em cada rodada (as outras chutam o tempo todo). */
 export const MAXIMO_DE_VEZES = 10;
+export const RODADAS_DO_DESENHO = 3;
 /** As cores e as espessuras que o site oferece (o índice é o que viaja). */
 export const CORES = 12;
 export const ESPESSURAS = 3;
@@ -82,7 +84,10 @@ export const desenho: Definicao = {
   minimo: 2,
   comecar(ctx, { naSala }) {
     if (naSala.length < 2) return 'O desenho precisa de pelo menos 2 pessoas na sala.';
-    const ordem = embaralhar([...naSala]).slice(0, MAXIMO_DE_VEZES);
+    // TRÊS RODADAS, e em cada uma todo mundo desenha uma vez, na mesma ordem (pedido dele, 02/11/2026: "pelo menos uns
+    // 3 rounds"; antes cada um desenhava uma vez só, e com duas pessoas a partida acabava em dois desenhos).
+    const pessoas = embaralhar([...naSala]).slice(0, MAXIMO_DE_VEZES);
+    const ordem = Array.from({ length: RODADAS_DO_DESENHO }, () => pessoas).flat();
     const usadas = new Set<string>();
     const pontos = new Map(naSala.map((id) => [id, 0]));
 
@@ -181,6 +186,8 @@ export const desenho: Definicao = {
           fase,
           vez: vez + 1,
           vezes: ordem.length,
+          rodada: Math.floor(vez / pessoas.length) + 1,
+          rodadas: RODADAS_DO_DESENHO,
           quemDesenha,
           opcoes: desenhando && fase === 'escolhendo' ? opcoes : null,
           palavra: aberta && palavra ? palavra : null,

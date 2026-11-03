@@ -2366,4 +2366,5 @@ export default {
   'Atender': 'מענה',
   'Recusar chamada': 'דחיית השיחה',
   '{quem} recusou a chamada': 'השיחה נדחתה: {quem}',
+  'Placar': 'לוח תוצאות',
 } satisfies Record<string, string>;

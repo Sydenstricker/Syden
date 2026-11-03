@@ -271,6 +271,9 @@ export interface EstadoDesenho {
   fase: 'escolhendo' | 'desenhando' | 'revelando' | 'fim';
   vez: number;
   vezes: number;
+  /** Três rodadas, cada uma com todo mundo desenhando uma vez (02/11/2026). Servidor antigo não manda. */
+  rodada?: number;
+  rodadas?: number;
   quemDesenha: number;
   opcoes: string[] | null;
   palavra: { id: string; texto: string; outras: string[] } | null;

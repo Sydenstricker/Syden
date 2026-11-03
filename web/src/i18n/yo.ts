@@ -2331,4 +2331,5 @@ export default {
   'Atender': 'Dáhùn',
   'Recusar chamada': 'Kọ ìpè',
   '{quem} recusou a chamada': '{quem} kọ ìpè náà',
+  'Placar': 'Àmì',
 } satisfies Record<string, string>;

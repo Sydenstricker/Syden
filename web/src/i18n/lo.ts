@@ -2387,4 +2387,5 @@ export default {
   'Atender': 'ຮັບສາຍ',
   'Recusar chamada': 'ປະຕິເສດການໂທ',
   '{quem} recusou a chamada': '{quem} ປະຕິເສດການໂທ',
+  'Placar': 'ຄະແນນ',
 } satisfies Record<string, string>;

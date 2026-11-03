@@ -2355,4 +2355,5 @@ export default {
   'Atender': 'ဖြေရန်',
   'Recusar chamada': 'ဖုန်းခေါ်ဆိုမှု ငြင်းရန်',
   '{quem} recusou a chamada': '{quem} ဖုန်းခေါ်ဆိုမှုကို ငြင်းခဲ့သည်',
+  'Placar': 'ရမှတ်',
 } satisfies Record<string, string>;

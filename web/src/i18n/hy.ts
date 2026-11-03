@@ -2405,4 +2405,5 @@ export default {
   'Atender': 'Պատասխանել',
   'Recusar chamada': 'Մերժել զանգը',
   '{quem} recusou a chamada': '{quem}-ը մերժեց զանգը',
+  'Placar': 'Հաշիվ',
 } satisfies Record<string, string>;

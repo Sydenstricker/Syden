@@ -2386,4 +2386,5 @@ export default {
   'Atender': 'Ka jawaab',
   'Recusar chamada': 'Diid wacitaanka',
   '{quem} recusou a chamada': 'Wacitaanka waa la diiday: {quem}',
+  'Placar': 'Dhibcaha',
 } satisfies Record<string, string>;

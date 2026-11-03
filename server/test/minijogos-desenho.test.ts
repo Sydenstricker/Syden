@@ -46,6 +46,8 @@ test('desenho: sozinho não dá; a dois, quem desenha escolhe, risca, e os chute
 
   const p0 = (await ana('POST', rota, { jogo: 'desenho' })).json().partida;
   assert.equal(p0.fase, 'escolhendo');
+  // Três rodadas, cada uma com todo mundo desenhando uma vez (02/11/2026): a dois, seis desenhos.
+  assert.deepEqual([p0.rodada, p0.rodadas, p0.vez, p0.vezes], [1, 3, 1, 6]);
   const [desenha, chuta] = p0.quemDesenha === contaAna.user.id ? [ana, bia] : [bia, ana];
   const [socketDesenha, socketChuta] = p0.quemDesenha === contaAna.user.id ? [socketAna, socketBia] : [socketBia, socketAna];
   const daVez = (await desenha('GET', rota)).json().partida;

@@ -2315,4 +2315,5 @@ export default {
   'Atender': 'Pokea',
   'Recusar chamada': 'Kataa simu',
   '{quem} recusou a chamada': '{quem} amekataa simu',
+  'Placar': 'Alama',
 } satisfies Record<string, string>;

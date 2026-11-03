@@ -2315,4 +2315,5 @@ export default {
   'Atender': 'Rispondi',
   'Recusar chamada': 'Rifiuta la chiamata',
   '{quem} recusou a chamada': 'Chiamata rifiutata: {quem}',
+  'Placar': 'Punteggio',
 } satisfies Record<string, string>;

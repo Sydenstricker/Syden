@@ -2310,4 +2310,5 @@ export default {
   'Atender': 'Cevapla',
   'Recusar chamada': 'Aramayı reddet',
   '{quem} recusou a chamada': '{quem} aramayı reddetti',
+  'Placar': 'Skor tablosu',
 } satisfies Record<string, string>;

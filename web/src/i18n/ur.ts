@@ -2303,4 +2303,5 @@ export default {
   'Atender': 'اٹھائیں',
   'Recusar chamada': 'کال مسترد کریں',
   '{quem} recusou a chamada': 'کال مسترد ہوئی: {quem}',
+  'Placar': 'اسکور',
 } satisfies Record<string, string>;

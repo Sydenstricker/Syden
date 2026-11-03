@@ -2304,4 +2304,5 @@ export default {
   'Atender': '받기',
   'Recusar chamada': '통화 거절',
   '{quem} recusou a chamada': '{quem} 님이 통화를 거절했어요',
+  'Placar': '점수판',
 } satisfies Record<string, string>;

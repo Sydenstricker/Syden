@@ -244,10 +244,7 @@ export function criarQuiz(tema: Tema): Definicao {
 
       function revelar() {
         if (fase !== 'chutando') return;
-        const acertaram = [...quadros.entries()].filter(([, q]) => q.acertouEm !== null);
-        for (const [id, q] of acertaram) pontos.set(id, (pontos.get(id) ?? 0) + pontosDoQuiz(q.linhas.length));
-        const primeiro = acertaram.sort(([, a], [, b]) => (a.acertouEm ?? 0) - (b.acertouEm ?? 0))[0];
-        if (primeiro) pontos.set(primeiro[0], (pontos.get(primeiro[0]) ?? 0) + 1);
+        // Os pontos já entraram a cada acerto (ver a ação 'chute').
         fase = 'revelando';
         ctx.agendar(REVELACAO_QUIZ_MS, () => {
           if (rodada >= RODADAS_QUIZ) {
@@ -301,7 +298,13 @@ export function criarQuiz(tema: Tema): Definicao {
           // O mesmo chute duas vezes não conta outra vez (Enter apertado duas vezes com a internet lenta).
           if (q.linhas.some((l) => l.id === item.id)) return 'Você já chutou esse.';
           q.linhas.push(linha(item, secreto()));
-          if (item.id === secreto().id) q.acertouEm = Date.now() - inicio;
+          if (item.id === secreto().id) {
+            // OS PONTOS ENTRAM NA HORA DO ACERTO (pedido dele, 02/11/2026: "pontuação ao vivo"), e não na revelação: o
+            // placar da sala anda enquanto a rodada corre. O mesmo total de antes: o do chute, e +1 para o primeiro.
+            const primeiro = ![...quadros.values()].some((o) => o.acertouEm !== null);
+            q.acertouEm = Date.now() - inicio;
+            pontos.set(quem, (pontos.get(quem) ?? 0) + pontosDoQuiz(q.linhas.length) + (primeiro ? 1 : 0));
+          }
           if (todosAcertaram()) revelar();
           else ctx.avisar();
           return null;

@@ -13608,6 +13608,44 @@ body.arrastando-barra {
   font-weight: 700;
 }
 
+/* O placar ao vivo do Stop e dos quizzes: uma faixa de fichas que rola de lado quando há muita gente. */
+.placar-ao-vivo {
+  list-style: none;
+  margin: 0 0 10px;
+  padding: 0;
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  font-size: calc(13px * var(--escala-do-texto));
+}
+
+.placar-ao-vivo li {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 180px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--bg-raised);
+}
+
+.placar-ao-vivo li.eu {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.placar-ao-vivo .minijogo-nome {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.placar-ao-vivo-posicao {
+  color: var(--text-muted);
+}
+
 .minijogo-placar {
   list-style: none;
   margin: 0 0 12px;

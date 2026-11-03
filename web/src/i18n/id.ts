@@ -2313,4 +2313,5 @@ export default {
   'Atender': 'Jawab',
   'Recusar chamada': 'Tolak panggilan',
   '{quem} recusou a chamada': '{quem} menolak panggilan',
+  'Placar': 'Skor',
 } satisfies Record<string, string>;

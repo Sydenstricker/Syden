@@ -2382,4 +2382,5 @@ export default {
   'Atender': 'Respondre',
   'Recusar chamada': 'Rebutjar la trucada',
   '{quem} recusou a chamada': 'Trucada rebutjada: {quem}',
+  'Placar': 'Marcador',
 } satisfies Record<string, string>;

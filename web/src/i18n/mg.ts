@@ -2386,4 +2386,5 @@ export default {
   'Atender': 'Valio',
   'Recusar chamada': 'Lavio ny antso',
   '{quem} recusou a chamada': 'Nolavin\'i {quem} ny antso',
+  'Placar': 'Isa',
 } satisfies Record<string, string>;

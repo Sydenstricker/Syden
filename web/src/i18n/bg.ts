@@ -2383,4 +2383,5 @@ export default {
   'Atender': 'Отговори',
   'Recusar chamada': 'Откажи обаждането',
   '{quem} recusou a chamada': 'Обаждането е отказано: {quem}',
+  'Placar': 'Класиране',
 } satisfies Record<string, string>;

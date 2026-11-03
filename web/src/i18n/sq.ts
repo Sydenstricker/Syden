@@ -2378,4 +2378,5 @@ export default {
   'Atender': 'Përgjigju',
   'Recusar chamada': 'Refuzo thirrjen',
   '{quem} recusou a chamada': 'Thirrja u refuzua: {quem}',
+  'Placar': 'Rezultati',
 } satisfies Record<string, string>;

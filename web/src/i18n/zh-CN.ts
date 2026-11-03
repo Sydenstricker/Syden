@@ -2303,4 +2303,5 @@ export default {
   'Atender': '接听',
   'Recusar chamada': '拒绝通话',
   '{quem} recusou a chamada': '{quem} 拒绝了通话',
+  'Placar': '积分榜',
 } satisfies Record<string, string>;

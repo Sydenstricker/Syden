@@ -2318,4 +2318,5 @@ export default {
   'Atender': 'Amsa',
   'Recusar chamada': 'Ƙi kiran',
   '{quem} recusou a chamada': 'An ƙi kiran: {quem}',
+  'Placar': 'Maki',
 } satisfies Record<string, string>;

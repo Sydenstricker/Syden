@@ -2387,4 +2387,5 @@ export default {
   'Atender': 'Svara',
   'Recusar chamada': 'Hafna símtali',
   '{quem} recusou a chamada': 'Símtali hafnað: {quem}',
+  'Placar': 'Stigatafla',
 } satisfies Record<string, string>;

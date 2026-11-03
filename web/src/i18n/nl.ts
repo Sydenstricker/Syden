@@ -2315,4 +2315,5 @@ export default {
   'Atender': 'Opnemen',
   'Recusar chamada': 'Gesprek weigeren',
   '{quem} recusou a chamada': '{quem} heeft het gesprek geweigerd',
+  'Placar': 'Scorebord',
 } satisfies Record<string, string>;

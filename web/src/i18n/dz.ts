@@ -2399,4 +2399,5 @@ export default {
   'Atender': 'ལན་སློག',
   'Recusar chamada': 'བརྒྱུད་འཕྲིན་ངོས་མ་ལེན།',
   '{quem} recusou a chamada': '{quem} གིས་བརྒྱུད་འཕྲིན་ངོས་མ་ལེན།',
+  'Placar': 'སྐུགས་ཐོ།',
 } satisfies Record<string, string>;

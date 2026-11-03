@@ -2298,4 +2298,5 @@ export default {
   'Atender': 'ఎత్తు',
   'Recusar chamada': 'కాల్ తిరస్కరించు',
   '{quem} recusou a chamada': '{quem} కాల్‌ను తిరస్కరించారు',
+  'Placar': 'స్కోరు',
 } satisfies Record<string, string>;

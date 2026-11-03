@@ -2329,4 +2329,5 @@ export default {
   'Atender': 'รับสาย',
   'Recusar chamada': 'ปฏิเสธสาย',
   '{quem} recusou a chamada': '{quem} ปฏิเสธสาย',
+  'Placar': 'คะแนน',
 } satisfies Record<string, string>;

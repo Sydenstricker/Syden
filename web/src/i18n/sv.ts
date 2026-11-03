@@ -2378,4 +2378,5 @@ export default {
   'Atender': 'Svara',
   'Recusar chamada': 'Avvisa samtalet',
   '{quem} recusou a chamada': '{quem} avvisade samtalet',
+  'Placar': 'Poängtavla',
 } satisfies Record<string, string>;

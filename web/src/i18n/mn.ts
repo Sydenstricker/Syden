@@ -2400,4 +2400,5 @@ export default {
   'Atender': 'Хариулах',
   'Recusar chamada': 'Дуудлагаас татгалзах',
   '{quem} recusou a chamada': '{quem} дуудлагаас татгалзлаа',
+  'Placar': 'Оноо',
 } satisfies Record<string, string>;

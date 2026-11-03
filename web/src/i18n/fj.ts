@@ -2315,4 +2315,5 @@ export default {
   'Atender': 'Sauma',
   'Recusar chamada': 'Cakitaka na veiqiri',
   '{quem} recusou a chamada': 'E cakitaka na veiqiri o {quem}',
+  'Placar': 'Maka',
 } satisfies Record<string, string>;

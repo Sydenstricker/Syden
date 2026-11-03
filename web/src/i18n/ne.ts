@@ -2388,4 +2388,5 @@ export default {
   'Atender': 'उठाउनुहोस्',
   'Recusar chamada': 'कल अस्वीकार गर्नुहोस्',
   '{quem} recusou a chamada': '{quem} ले कल अस्वीकार गर्नुभयो',
+  'Placar': 'अंक',
 } satisfies Record<string, string>;

@@ -2297,4 +2297,5 @@ export default {
   'Atender': '応答',
   'Recusar chamada': '通話を拒否',
   '{quem} recusou a chamada': '{quem}さんが通話を拒否しました',
+  'Placar': 'スコア',
 } satisfies Record<string, string>;

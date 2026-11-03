@@ -2388,4 +2388,5 @@ export default {
   'Atender': 'Fogadás',
   'Recusar chamada': 'Hívás elutasítása',
   '{quem} recusou a chamada': '{quem} elutasította a hívást',
+  'Placar': 'Állás',
 } satisfies Record<string, string>;

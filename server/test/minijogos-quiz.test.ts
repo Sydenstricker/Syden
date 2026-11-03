@@ -127,6 +127,8 @@ test('Quiz: a corrida — os outros veem as cores, nunca os chutes, até a revel
   assert.equal(jogo.acao(1, { tipo: 'chute', id: 'adult-red-dragon' }), null);
   assert.ok(ver(1).acertei);
   assert.equal(ver(1).fase, 'chutando', 'o 2 ainda não acertou');
+  // O placar ao vivo (02/11/2026): o ponto entra na hora do acerto, e a sala o vê com a rodada ainda correndo.
+  assert.equal(ver(2).placar.find((l) => l.userId === 1)!.pontos, pontosDoQuiz(2) + 1, 'o ponto entra na hora do acerto');
   assert.equal(jogo.acao(2, { tipo: 'chute', id: 'adult-red-dragon' }), null);
   assert.equal(ver(1).fase, 'revelando', 'todos acertaram: revela na hora');
   assert.equal(ver(2).resposta!.id, 'adult-red-dragon');

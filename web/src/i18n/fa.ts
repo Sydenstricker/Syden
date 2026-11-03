@@ -2304,4 +2304,5 @@ export default {
   'Atender': 'پاسخ',
   'Recusar chamada': 'رد تماس',
   '{quem} recusou a chamada': '{quem} تماس را رد کرد',
+  'Placar': 'امتیازها',
 } satisfies Record<string, string>;

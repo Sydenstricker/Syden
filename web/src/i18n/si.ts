@@ -2386,4 +2386,5 @@ export default {
   'Atender': 'පිළිතුරු දෙන්න',
   'Recusar chamada': 'ඇමතුම ප්‍රතික්ෂේප කරන්න',
   '{quem} recusou a chamada': '{quem} ඇමතුම ප්‍රතික්ෂේප කළා',
+  'Placar': 'ලකුණු',
 } satisfies Record<string, string>;

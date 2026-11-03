@@ -2386,4 +2386,5 @@ export default {
   'Atender': 'Vastaa',
   'Recusar chamada': 'Hylkää puhelu',
   '{quem} recusou a chamada': '{quem} hylkäsi puhelun',
+  'Placar': 'Pistetilanne',
 } satisfies Record<string, string>;

@@ -2386,4 +2386,5 @@ export default {
   'Atender': 'Prijať',
   'Recusar chamada': 'Odmietnuť hovor',
   '{quem} recusou a chamada': 'Hovor odmietnutý: {quem}',
+  'Placar': 'Skóre',
 } satisfies Record<string, string>;

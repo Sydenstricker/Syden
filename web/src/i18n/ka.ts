@@ -2404,4 +2404,5 @@ export default {
   'Atender': 'პასუხი',
   'Recusar chamada': 'ზარის უარყოფა',
   '{quem} recusou a chamada': '{quem}-მა ზარი უარყო',
+  'Placar': 'ანგარიში',
 } satisfies Record<string, string>;

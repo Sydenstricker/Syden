@@ -2386,4 +2386,5 @@ export default {
   'Atender': 'Одговори',
   'Recusar chamada': 'Одбиј го повикот',
   '{quem} recusou a chamada': 'Повикот е одбиен: {quem}',
+  'Placar': 'Резултат',
 } satisfies Record<string, string>;

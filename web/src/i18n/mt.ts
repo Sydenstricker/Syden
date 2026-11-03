@@ -2332,4 +2332,5 @@ export default {
   'Atender': 'Wieġeb',
   'Recusar chamada': 'Irrifjuta s-sejħa',
   '{quem} recusou a chamada': 'Sejħa rrifjutata: {quem}',
+  'Placar': 'Punteġġ',
 } satisfies Record<string, string>;
