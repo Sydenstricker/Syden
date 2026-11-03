@@ -135,13 +135,58 @@ test('menor de idade: com a amizade desfeita, a chamada com quem não é amigo f
   await esperar();
 });
 
-test('recusar avisa a conversa', async () => {
+test('recusar avisa a conversa, só com chamada aberta e sem repetir', async () => {
   const recusas: { channelId: number; userId: number }[] = [];
   daAna.on('chamada:recusada', (r) => recusas.push(r));
+  daBia.emit('chamada:recusar', { channelId: conversaAnaBia.id }); // ninguém ligando: ignorado
+  await esperar();
+  assert.equal(recusas.length, 0);
+  await entrar(daAna, conversaAnaBia.id);
   daBia.emit('chamada:recusar', { channelId: conversaAnaBia.id });
+  daBia.emit('chamada:recusar', { channelId: conversaAnaBia.id }); // repetido: um aviso só
   doCaio.emit('chamada:recusar', { channelId: conversaAnaBia.id }); // de fora: ignorado
   await esperar();
   assert.deepEqual(recusas, [{ channelId: conversaAnaBia.id, userId: contaBia.user.id }]);
+  daAna.emit('voice:leave');
+  await esperar();
+});
+
+// OS ACHADOS DA REVISÃO (02/11/2026): o bloqueio e a amizade desfeita valem também para quem JÁ está na chamada; quem não
+// poderia entrar não vê a chamada; e a transmissão privada se denuncia.
+const naChamada = (channelId: number) => estados.filter((e) => e.channelId === channelId).at(-1)?.members.map((m) => m.userId) ?? [];
+
+test('bloquear no meio da chamada tira quem chegou depois, e quem bloqueou deixa de vê-la', async () => {
+  assert.equal((await entrar(daAna, conversaAnaBia.id)).ok, true);
+  assert.equal((await entrar(daBia, conversaAnaBia.id)).ok, true);
+  await esperar();
+  assert.deepEqual(naChamada(conversaAnaBia.id), [contaAna.user.id, contaBia.user.id]);
+  await ana('POST', '/api/me/bloqueios', { userId: contaBia.user.id });
+  await esperar();
+  assert.deepEqual(naChamada(conversaAnaBia.id), [], 'a Bia saiu, e a chamada da Ana some da tela dela');
+  assert.equal((await entrar(daBia, conversaAnaBia.id)).ok, false, 'e não volta');
+  daAna.emit('voice:leave');
+  await esperar();
+  await ana('DELETE', `/api/me/bloqueios/${contaBia.user.id}`);
+});
+
+test('desfazer a amizade com um menor no meio da chamada a encerra', async () => {
+  await ana('POST', '/api/amigos', { username: 'dani-chamada' });
+  await dani('POST', `/api/amigos/${contaAna.user.id}/aceitar`);
+  assert.equal((await entrar(daAna, conversaAnaDani.id)).ok, true);
+  const encerradas: number[] = [];
+  daDani.on('voice:substituida', ({ channelId }: { channelId: number }) => encerradas.push(channelId));
+  assert.equal((await entrar(daDani, conversaAnaDani.id)).ok, true);
+  await dani('DELETE', `/api/amigos/${contaAna.user.id}`);
+  await esperar();
+  assert.deepEqual(encerradas, [conversaAnaDani.id], 'a Dani, que chegou depois, sai');
+  daAna.emit('voice:leave');
+  await esperar();
+});
+
+test('a transmissão da chamada privada se denuncia (só quem é da conversa)', async () => {
+  const denuncia = { tipo: 'transmissao', alvo: contaAna.user.id, motivo: 'transmissão imprópria', canal: conversaAnaBia.id };
+  assert.equal((await bia('POST', '/api/reports', denuncia)).statusCode, 200);
+  assert.equal((await caio('POST', '/api/reports', denuncia)).statusCode, 404, 'o Caio não é da conversa');
 });
 
 test('quem sai da conversa sai da chamada dela', async () => {

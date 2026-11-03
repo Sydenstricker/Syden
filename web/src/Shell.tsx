@@ -927,14 +927,18 @@ export function Shell({
   }, [conviteVoz, voiceByCommunity, voice.channelId]);
 
   // O TOQUE PARA quando perde o sentido: quem ligou desistiu (a chamada esvaziou), eu entrei nela (por esta ou outra
-  // aba, que o chamada:estado conta), ou passaram 30 s.
+  // aba, que o chamada:estado conta), ou passaram 30 s. O relógio é um efeito à parte, preso só ao toque: junto com a
+  // lista, cada mudança numa chamada (alguém ligou a câmera) o recomeçava, e o cartão tocava sem fim (achado da revisão).
   useEffect(() => {
     if (!tocando) return;
     const naChamada = chamadas[tocando.channelId] ?? [];
-    if (naChamada.length === 0 || naChamada.some((m) => m.userId === user.id) || voice.channelId === tocando.channelId) return setTocando(null);
+    if (naChamada.length === 0 || naChamada.some((m) => m.userId === user.id) || voice.channelId === tocando.channelId) setTocando(null);
+  }, [tocando, chamadas, voice.channelId, user.id]);
+  useEffect(() => {
+    if (!tocando) return;
     const relogio = window.setTimeout(() => setTocando(null), TEMPO_DO_TOQUE_MS);
     return () => window.clearTimeout(relogio);
-  }, [tocando, chamadas, voice.channelId, user.id]);
+  }, [tocando]);
 
   /** Liga (ou entra na chamada que já existe) na conversa; com vídeo, a câmera abre assim que a chamada conecta. */
   async function ligarNaConversa(channelId: number, comVideo: boolean) {
@@ -942,13 +946,18 @@ export function Shell({
     if (sala === channelId && comVideo) await voice.toggleCamera();
   }
 
-  function atenderChamada(chamada: ChamadaTocando) {
+  async function atenderChamada(chamada: ChamadaTocando) {
     setTocando(null);
     const conversa = directs.find((c) => c.id === chamada.channelId);
     if (conversa) openConversation(conversa);
-    // Fora da lista (eu tinha apagado a conversa de duas pessoas): abrir pela pessoa a traz de volta.
-    else void startConversation(chamada.de.id);
-    void ligarNaConversa(chamada.channelId, false);
+    await ligarNaConversa(chamada.channelId, false);
+    if (conversa) return;
+    // Fora da lista (eu tinha apagado a conversa, de duas pessoas ou de grupo): entrar na chamada a trouxe de volta no
+    // servidor, e a lista relida a tem.
+    const lista = await api<DirectChannel[]>('/api/direct').catch(() => null);
+    const voltou = lista?.find((c) => c.id === chamada.channelId);
+    if (lista) setDirects(lista);
+    if (voltou) openConversation(voltou);
   }
 
   function recusarChamada(chamada: ChamadaTocando) {
@@ -1402,7 +1411,7 @@ export function Shell({
             return conversa && conversa.members.length > 2 ? directName(conversa, user.id, t) : null;
           })()}
           calado={myStatus === 'ocupado'}
-          aoAtender={() => atenderChamada(tocando)}
+          aoAtender={() => void atenderChamada(tocando)}
           aoRecusar={() => recusarChamada(tocando)}
         />
       )}

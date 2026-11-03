@@ -166,8 +166,46 @@ function membrosDaChamada(channelId: number): VoiceMember[] {
     .map(({ socketId: _s, voiceSessionId: _v, screenSessionId: _c, ...member }) => ({ ...member, travado: false }));
 }
 
+/** Esta pessoa pode estar junto de cada uma destas na chamada? Nenhum bloqueio, e a regra dos menores. */
+function compativelCom(userId: number, outros: number[]): boolean {
+  return outros.every((outro) => outro === userId || (!db.haBloqueio(userId, outro) && podeConversarNoParticular(userId, outro)));
+}
+
+/**
+ * Quem está na chamada, como ESTA pessoa o vê: a lista inteira para quem está nela ou poderia entrar; vazia para quem
+ * seria recusado (achado da revisão de 02/11/2026). Sem isso, quem bloqueou via "Entrar na chamada" de quem bloqueou, e o
+ * menor via a chamada de um adulto que já não é amigo: o mesmo sinal de contato que o toque já não mandava.
+ */
+function chamadaVistaPor(userId: number, channelId: number): VoiceMember[] {
+  const membros = membrosDaChamada(channelId);
+  const ids = membros.map((m) => m.userId);
+  return ids.includes(userId) || compativelCom(userId, ids) ? membros : [];
+}
+
 function broadcastChamada(io: IOServer, channelId: number) {
-  io.to(directRoom(channelId)).emit('chamada:estado', { channelId, members: membrosDaChamada(channelId) });
+  for (const id of db.channelMemberIds(channelId)) {
+    io.to(salaDaPessoa(id)).emit('chamada:estado', { channelId, members: chamadaVistaPor(id, channelId) });
+  }
+}
+
+/**
+ * CONFERE DE NOVO a chamada privada em que a pessoa está (achado da revisão de 02/11/2026: o bloqueio e a amizade desfeita
+ * só valiam na entrada, e quem já estava junto continuava ouvindo e vendo). Percorre quem está nela NA ORDEM DE CHEGADA e
+ * tira quem não pode mais estar junto de alguém que chegou antes: da lista e do LiveKit, onde mora o áudio. Chamada ao
+ * bloquear, ao desfazer amizade e quando o responsável muda as regras de um menor.
+ */
+export function reconferirChamadaDe(io: IOServer, userId: number) {
+  const sessao = voiceMembers.get(userId);
+  if (!sessao || sessao.communityId !== null) return;
+  const ficam: number[] = [];
+  for (const m of [...voiceMembers.values()].filter((v) => v.communityId === null && v.channelId === sessao.channelId)) {
+    if (compativelCom(m.userId, ficam)) {
+      ficam.push(m.userId);
+      continue;
+    }
+    encerrarChamadaDe(io, m.userId, sessao.channelId);
+    void import('./routes.js').then(({ tirarDaChamada }) => tirarDaChamada(sessao.channelId, m.userId)).catch(() => {});
+  }
 }
 
 /** Avisa a lista certa: a da comunidade, ou a da conversa privada. */
@@ -185,11 +223,7 @@ function anunciarVoz(io: IOServer, sala: { communityId: number | null; channelId
 export function podeEntrarNaChamadaDaConversa(userId: number, channelId: number): boolean {
   const conversa = db.findChannel(channelId);
   if (!conversa || conversa.type !== 'dm' || !db.isChannelMember(conversa.id, userId)) return false;
-  for (const outro of quemEstaNaSala(conversa.id)) {
-    if (outro === userId) continue;
-    if (db.haBloqueio(userId, outro) || !podeConversarNoParticular(userId, outro)) return false;
-  }
-  return true;
+  return compativelCom(userId, quemEstaNaSala(conversa.id));
 }
 
 /** Quando cada pessoa fez tocar cada conversa ("quem:conversa"): entrar e sair em seguida não vira toque sem fim. */
@@ -503,7 +537,7 @@ export function setupRealtime(io: IOServer) {
     for (const id of db.idsDasConversas(user.id)) {
       socket.join(directRoom(id));
       // Uma chamada já aberta numa conversa dela: quem abre o Syden no meio vê o "Entrar na chamada".
-      if (pessoasNaSala(id) > 0) socket.emit('chamada:estado', { channelId: id, members: membrosDaChamada(id) });
+      if (pessoasNaSala(id) > 0) socket.emit('chamada:estado', { channelId: id, members: chamadaVistaPor(user.id, id) });
     }
 
     // Uma sala por PESSOA, juntando todas as abas dela. É por onde chega o que é dirigido a ela e
@@ -583,8 +617,13 @@ export function setupRealtime(io: IOServer) {
         return ack?.({ ok: false, error: 'Sala inválida.' });
       }
       if (daConversa ? !podeEntrarNaChamadaDaConversa(user.id, channel.id) : !db.memberRole(channel.communityId!, user.id)) {
+        // Na conversa, a recusa também tira do LiveKit (achado da revisão de 02/11/2026): o token pode ter saído com a
+        // chamada vazia, e quem foi bloqueado no meio-tempo chegaria lá dentro mesmo sem lugar na lista.
+        if (daConversa) void import('./routes.js').then(({ tirarDaChamada }) => tirarDaChamada(channel.id, user.id)).catch(() => {});
         return ack?.({ ok: false, error: daConversa ? 'Não foi possível entrar nesta chamada.' : 'Você não participa desta comunidade.' });
       }
+      // Entrar na chamada de uma conversa que a pessoa tinha apagado a traz de volta à lista dela (vazia, como reabrir).
+      if (daConversa) db.reexibirConversa(user.id, channel.id);
       const communityId = daConversa ? null : channel.communityId;
       // Ninguém na chamada da conversa até agora: é quem LIGA, e os outros recebem o toque (abaixo).
       const ligando = daConversa && pessoasNaSala(channel.id) === 0;
@@ -627,6 +666,11 @@ export function setupRealtime(io: IOServer) {
       const channelId = Number(payload?.channelId);
       const conversa = db.findChannel(channelId);
       if (!conversa || conversa.type !== 'dm' || !db.isChannelMember(channelId, user.id)) return;
+      // Só com chamada aberta, e um aviso a cada 20 s: repetir não vira enxurrada de "recusou" (achado da revisão).
+      if (pessoasNaSala(channelId) === 0) return;
+      const chave = `recusa:${user.id}:${channelId}`, agora = Date.now();
+      if ((toquesRecentes.get(chave) ?? 0) > agora - 20_000) return;
+      toquesRecentes.set(chave, agora);
       io.to(directRoom(channelId)).emit('chamada:recusada', { channelId, userId: user.id });
     });
 

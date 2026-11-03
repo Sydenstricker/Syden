@@ -20,6 +20,7 @@ import { salaDaPessoa,
   estaOnline,
   pessoasNaSala,
   podeEntrarNaChamadaDaConversa,
+  reconferirChamadaDe,
   removeVoiceChannelMembers,
   salaDeVozDe,
   cortarVideo,
@@ -788,6 +789,9 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       io.to(salaDaPessoa(request.user.id)).emit('bloqueios:mudou', db.listarBloqueios(request.user.id));
       io.to(salaDaPessoa(request.user.id)).emit('amigos:mudou', db.listarAmizades(request.user.id));
       io.to(salaDaPessoa(alvo)).emit('amigos:mudou', db.listarAmizades(alvo));
+      // Juntos numa chamada privada, deixam de estar: quem chegou depois sai (ver reconferirChamadaDe).
+      reconferirChamadaDe(io, request.user.id);
+      reconferirChamadaDe(io, alvo);
       return { ok: true, bloqueios: db.listarBloqueios(request.user.id) };
     });
 
@@ -1840,7 +1844,9 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       const token = new AccessToken(config.livekit.apiKey, config.livekit.apiSecret, {
         identity: String(request.user.id),
         name: request.user.username,
-        ttl: '6h',
+        // CURTO DE PROPÓSITO (achado da revisão de 02/11/2026): o token só serve para entrar, e o LiveKit renova sozinho o
+        // de quem já está na chamada. Com 6 h, quem o pegou antes de ser bloqueado ou de sair da conversa voltaria por ele.
+        ttl: '5m',
       });
       token.addGrant({
         room: voiceRoomName(conversa.id),

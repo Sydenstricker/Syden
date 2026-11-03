@@ -683,7 +683,10 @@ export function useVoice(socket: Socket | null) {
     if (!socket) return;
     const onConnect = () => {
       if (channelRef.current === null) return;
-      socket.emit('voice:join', { channelId: channelRef.current });
+      // Na chamada da conversa, a volta pode ser recusada (bloqueio, amizade desfeita): aí a chamada acaba aqui também.
+      socket.emit('voice:join', { channelId: channelRef.current }, (r?: { ok?: boolean }) => {
+        if (comunidadeRef.current === null && r?.ok === false) void room.disconnect();
+      });
       // O socket caído pode ter perdido uma troca de chave da chamada cifrada: reencontra todo mundo da sala.
       void chamadaRef.current?.reencontrar([...room.remoteParticipants.keys()]);
       const media = readLocalMedia(room.localParticipant);
@@ -922,8 +925,11 @@ export function useVoice(socket: Socket | null) {
         substituidaRef.current = null;
         // Na conversa privada não há comunidade: a lista que confere a presença é a da chamada (chamada:estado).
         if (conversa) comunidadeRef.current = null;
-        socketRef.current.emit('voice:join', { channelId: sala }, (r?: { communityId?: number }) => {
+        socketRef.current.emit('voice:join', { channelId: sala }, (r?: { ok?: boolean; communityId?: number }) => {
           if (typeof r?.communityId === 'number') comunidadeRef.current = r.communityId;
+          // Recusada na conversa (um bloqueio ou a regra dos menores no meio-tempo): sai do LiveKit também, em vez de
+          // ficar ouvindo sem lugar na lista (achado da revisão de 02/11/2026).
+          if (conversa && r?.ok === false) void room.disconnect();
         });
         if (e2ee && chaves) {
           // As chaves desta chamada, antes de o microfone abrir: o primeiro quadro já sai cifrado.

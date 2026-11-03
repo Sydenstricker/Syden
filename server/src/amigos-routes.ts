@@ -20,7 +20,7 @@ import type { Server } from 'socket.io';
 import * as db from './db.js';
 import { Freio } from './freio.js';
 import { barrarTemporario, requireUser } from './routes.js';
-import { salaDaPessoa } from './realtime.js';
+import { reconferirChamadaDe, salaDaPessoa } from './realtime.js';
 
 /**
  * Freio dos pedidos de amizade, por conta.
@@ -98,6 +98,9 @@ export function registerAmigosRoutes(app: FastifyInstance, io: Server) {
         return reply.code(404).send({ error: 'Vocês não têm nenhuma relação para desfazer.' });
       }
       avisar(request.user.id, outro);
+      // Com um menor de "só amigos", a amizade desfeita encerra a chamada privada dos dois na hora (ver reconferirChamadaDe).
+      reconferirChamadaDe(io, request.user.id);
+      reconferirChamadaDe(io, outro);
       return { ok: true, amigos: db.listarAmizades(request.user.id) };
     });
   });

@@ -72,7 +72,9 @@ export function registerModeracaoRoutes(app: FastifyInstance, io: IOServer) {
         // Nada é gravado no Syden; a imagem é a prova, tirada por quem viu, e só quem cuida do Syden a abre.
         const pessoa = db.findUserById(alvo);
         const canal = db.findChannel(Number(request.body?.canal));
-        if (!pessoa || !canal || canal.type !== 'voice' || !podeVer(request.user, canal)) {
+        // A sala de voz de uma comunidade, ou a chamada de uma conversa privada (02/11/2026; o achado da revisão: a denúncia
+        // da transmissão faltava justamente onde o caso Discord aconteceu, a transmissão privada).
+        if (!pessoa || !canal || (canal.type !== 'voice' && canal.type !== 'dm') || !podeVer(request.user, canal)) {
           return reply.code(404).send({ error: 'Transmissão não encontrada.' });
         }
         let sha: string | null = null;

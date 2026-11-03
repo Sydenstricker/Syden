@@ -7,7 +7,7 @@ import type { FastifyInstance } from 'fastify';
 import type { Server as IOServer } from 'socket.io';
 import * as db from './db.js';
 import { barreiraDe, dataValida, DIAS_PARA_LIGAR_RESPONSAVEL, ehMenor, faixaDaConta, faixaDe, faixaDoWindows, hojeEmBrasilia, podeMudarRegras, regrasDe } from './protecao.js';
-import { aplicarBarreira, emitToUser } from './realtime.js';
+import { aplicarBarreira, emitToUser, reconferirChamadaDe } from './realtime.js';
 import { requireUser } from './routes.js';
 
 /** O código que o menor manda ao responsável: 8 letras e números sem os que se confundem (0/O, 1/I). */
@@ -229,6 +229,8 @@ export function registerProtecaoRoutes(app: FastifyInstance, io: IOServer) {
       if (!regras) return reply.code(400).send({ error: 'Limite inválido: de 15 minutos a 24 horas.' });
       db.ajustarSupervisao(menorId, regras);
       emitToUser(io, menorId, 'protecao:mudou', {});
+      // "Só amigos" ligado no meio de uma chamada privada com quem não é amigo: vale na hora (ver reconferirChamadaDe).
+      reconferirChamadaDe(io, menorId);
       // apertou o limite abaixo do que já foi usado hoje: vale na hora
       const barreira = barreiraDe(menorId);
       if (barreira) void aplicarBarreira(io, menorId, barreira);
