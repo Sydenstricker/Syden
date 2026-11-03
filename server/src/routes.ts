@@ -20,7 +20,7 @@ import { salaDaPessoa,
   estaOnline,
   pessoasNaSala,
   podeEntrarNaChamadaDaConversa,
-  reconferirChamadaDe,
+  afastarDasChamadas,
   removeVoiceChannelMembers,
   salaDeVozDe,
   cortarVideo,
@@ -63,21 +63,22 @@ export async function tirarDaChamada(channelId: number, userId: number) {
  * ouvindo a sala. Uma vez por minuto por pessoa, porque o app antigo tenta reconectar sem parar.
  */
 const tiradosHaPouco = new Map<number, number>();
-export async function tirarDeTodasAsChamadas(userId: number) {
+export async function tirarDeTodasAsChamadas(userId: number, { semFreio = false } = {}) {
   const agora = Date.now();
-  if ((tiradosHaPouco.get(userId) ?? 0) > agora - 60_000) return;
+  if (!semFreio && (tiradosHaPouco.get(userId) ?? 0) > agora - 60_000) return;
   for (const [quem, quando] of tiradosHaPouco) if (quando <= agora - 60_000) tiradosHaPouco.delete(quem); // o que já venceu sai
   tiradosHaPouco.set(userId, agora);
+  // A LISTA DAS SALAS SAI TODA ANTES do primeiro await: quem exclui a conta chama isto e apaga a conta em seguida, e
+  // depois do apagamento o banco já não diria de que salas ela era.
+  const salas: string[] = [];
   for (const comunidade of db.listCommunitiesForUser(userId)) {
-    for (const canal of db.listChannels(comunidade.id)) {
-      if (canal.type !== 'voice') continue;
-      await rooms.removeParticipant(voiceRoomName(canal.id), String(userId)).catch(() => {});
-      await rooms.removeParticipant(voiceRoomName(canal.id), 'peek-' + userId).catch(() => {});
-    }
+    for (const canal of db.listChannels(comunidade.id)) if (canal.type === 'voice') salas.push(voiceRoomName(canal.id));
   }
   // E as chamadas das conversas privadas (desde 02/11/2026), que não moram em comunidade nenhuma.
-  for (const conversa of db.idsDasConversas(userId)) {
-    await rooms.removeParticipant(voiceRoomName(conversa), String(userId)).catch(() => {});
+  for (const conversa of db.idsDasConversas(userId)) salas.push(voiceRoomName(conversa));
+  for (const sala of salas) {
+    await rooms.removeParticipant(sala, String(userId)).catch(() => {});
+    await rooms.removeParticipant(sala, 'peek-' + userId).catch(() => {});
   }
 }
 
@@ -240,6 +241,8 @@ export function canUseChannel(user: db.User, channel: db.Channel): boolean {
 const NOT_MEMBER = 'Você não participa desta comunidade.';
 
 function removeAccount(io: IOServer, userId: number) {
+  // Antes de apagar (a lista das salas sai do banco): o áudio é do LiveKit e sobreviveria à conexão derrubada.
+  void tirarDeTodasAsChamadas(userId, { semFreio: true });
   db.deleteAccount(userId);
   disconnectUser(io, userId);
   // Os apps tiram a pessoa das listas e apagam as mensagens dela da tela.
@@ -789,9 +792,8 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       io.to(salaDaPessoa(request.user.id)).emit('bloqueios:mudou', db.listarBloqueios(request.user.id));
       io.to(salaDaPessoa(request.user.id)).emit('amigos:mudou', db.listarAmizades(request.user.id));
       io.to(salaDaPessoa(alvo)).emit('amigos:mudou', db.listarAmizades(alvo));
-      // Juntos numa chamada privada, deixam de estar: quem chegou depois sai (ver reconferirChamadaDe).
-      reconferirChamadaDe(io, request.user.id);
-      reconferirChamadaDe(io, alvo);
+      // Juntos numa chamada privada, deixam de estar: sai quem foi bloqueado, nunca quem bloqueou (ver afastarDasChamadas).
+      afastarDasChamadas(io, request.user.id);
       return { ok: true, bloqueios: db.listarBloqueios(request.user.id) };
     });
 
@@ -884,6 +886,8 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
     authed.post('/api/me/sessions/revoke', async (request) => {
       const token = await signSession(request.user, db.bumpSessionVersion(request.user.id));
       disconnectUser(io, request.user.id);
+      // E das chamadas: a conexão de áudio é do LiveKit, e o aparelho que vazou continuaria ouvindo.
+      void tirarDeTodasAsChamadas(request.user.id, { semFreio: true });
       return { ok: true, token };
     });
 

@@ -162,6 +162,13 @@ export function Shell({
   // AS CHAMADAS DAS CONVERSAS PRIVADAS (02/11/2026): quem está em cada uma ('chamada:estado'), e a que está tocando agora.
   const [chamadas, setChamadas] = useState<Record<number, VoiceMember[]>>({});
   const [tocando, setTocando] = useState<ChamadaTocando | null>(null);
+  // A notificação do sistema do toque: some junto com ele, para não sobrar na central um "está ligando" sem chamada.
+  const avisoDoToqueRef = useRef<Notification | null>(null);
+  useEffect(() => {
+    if (tocando) return;
+    avisoDoToqueRef.current?.close();
+    avisoDoToqueRef.current = null;
+  }, [tocando]);
   // Itens que você ganhou e ainda não abriu. A tela de destaque mostra um de cada vez, em fila.
   const [porRevelar, setPorRevelar] = useState<string[]>([]);
   // A FESTA DE ANIVERSÁRIO (18/10/2026): hoje é o dia da pessoa, e ela ainda não viu a festa neste ano.
@@ -409,6 +416,9 @@ export function Shell({
     const s = io(API_URL, { auth: (pronto) => pronto({ token: loadToken() ?? token }) });
     s.on('connect', () => {
       setOnline(true);
+      // As chamadas das conversas: o servidor manda de novo as abertas, e as que acabaram com o socket caído não ficam na
+      // tela como "Entrar na chamada" (revisão de 02/11/2026).
+      setChamadas({});
       // O servidor sempre começa te vendo como "online"; se você tinha escolhido outro status, reafirma.
       const saved = loadMyStatus();
       if (saved !== 'online') s.emit('presence:set', saved);
@@ -573,6 +583,7 @@ export function Shell({
       if (document.hasFocus() || loadMyStatus() === 'ocupado' || !getSettings().notifications) return;
       if (!('Notification' in window) || Notification.permission !== 'granted') return;
       const aviso = new Notification(t('{quem} está ligando', { quem: isolar(nomeDe(chamada.de)) }), { tag: `chamada-${chamada.channelId}` });
+      avisoDoToqueRef.current = aviso;
       aviso.onclick = () => {
         desktopBridge?.focus();
         window.focus();
@@ -1124,7 +1135,10 @@ export function Shell({
             onOpenSettings={() => setSettingsOpen('account')}
             nomeDaChamadaPrivada={(() => {
               const conversa = directs.find((c) => c.id === voice.channelId);
-              return conversa && directName(conversa, user.id, t);
+              if (conversa) return directName(conversa, user.id, t);
+              // Numa sala de OUTRA comunidade: o nome dela, de quem está em chamada lá.
+              const [daSala] = Object.entries(voiceByCommunity).find(([, gente]) => gente.some((m) => m.channelId === voice.channelId)) ?? [];
+              return communities.find((c) => String(c.id) === daSala)?.name;
             })()}
             aoEditarCapa={() => {
               setAncoraDasConfiguracoes('capa-da-comunidade');

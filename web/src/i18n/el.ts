@@ -2323,4 +2323,6 @@ export default {
   'Recusar chamada': 'Απόρριψη κλήσης',
   '{quem} recusou a chamada': 'Η κλήση απορρίφθηκε: {quem}',
   'Placar': 'Βαθμολογία',
+  'A chamada terminou.': 'Η κλήση τελείωσε.',
+  'Não foi possível entrar nesta chamada.': 'Δεν ήταν δυνατή η συμμετοχή σε αυτή την κλήση.',
 } satisfies Record<string, string>;

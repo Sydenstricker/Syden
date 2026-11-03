@@ -2386,4 +2386,6 @@ export default {
   'Recusar chamada': 'Odmítnout hovor',
   '{quem} recusou a chamada': 'Hovor odmítnut: {quem}',
   'Placar': 'Skóre',
+  'A chamada terminou.': 'Hovor skončil.',
+  'Não foi possível entrar nesta chamada.': 'Do tohoto hovoru se nepodařilo připojit.',
 } satisfies Record<string, string>;

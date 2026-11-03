@@ -2383,4 +2383,6 @@ export default {
   'Recusar chamada': 'Rebutjar la trucada',
   '{quem} recusou a chamada': 'Trucada rebutjada: {quem}',
   'Placar': 'Marcador',
+  'A chamada terminou.': 'La trucada ha acabat.',
+  'Não foi possível entrar nesta chamada.': 'No s\'ha pogut entrar a aquesta trucada.',
 } satisfies Record<string, string>;

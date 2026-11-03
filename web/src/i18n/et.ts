@@ -2384,4 +2384,6 @@ export default {
   'Recusar chamada': 'Keeldu kõnest',
   '{quem} recusou a chamada': '{quem} keeldus kõnest',
   'Placar': 'Seis',
+  'A chamada terminou.': 'Kõne lõppes.',
+  'Não foi possível entrar nesta chamada.': 'Selle kõnega ei õnnestunud liituda.',
 } satisfies Record<string, string>;

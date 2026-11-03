@@ -2383,4 +2383,6 @@ export default {
   'Recusar chamada': 'Қоңырауды қабылдамау',
   '{quem} recusou a chamada': '{quem} қоңырауды қабылдамады',
   'Placar': 'Ұпай',
+  'A chamada terminou.': 'Қоңырау аяқталды.',
+  'Não foi possível entrar nesta chamada.': 'Бұл қоңырауға қосылу мүмкін болмады.',
 } satisfies Record<string, string>;

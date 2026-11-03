@@ -2401,4 +2401,6 @@ export default {
   'Recusar chamada': 'Дуудлагаас татгалзах',
   '{quem} recusou a chamada': '{quem} дуудлагаас татгалзлаа',
   'Placar': 'Оноо',
+  'A chamada terminou.': 'Дуудлага дууслаа.',
+  'Não foi possível entrar nesta chamada.': 'Энэ дуудлагад нэгдэж чадсангүй.',
 } satisfies Record<string, string>;

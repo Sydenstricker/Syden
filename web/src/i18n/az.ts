@@ -2351,4 +2351,6 @@ export default {
   'Recusar chamada': 'Zəngi rədd et',
   '{quem} recusou a chamada': '{quem} zəngi rədd etdi',
   'Placar': 'Hesab',
+  'A chamada terminou.': 'Zəng başa çatdı.',
+  'Não foi possível entrar nesta chamada.': 'Bu zəngə qoşulmaq mümkün olmadı.',
 } satisfies Record<string, string>;

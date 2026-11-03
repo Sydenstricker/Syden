@@ -250,6 +250,10 @@ export function registerDirectRoutes(app: FastifyInstance, io: IOServer) {
       const channel = myConversation(Number(request.params.id), request.user.id);
       if (!channel) return reply.code(404).send({ error: 'Conversa não encontrada.' });
       db.apagarConversaParaMim(request.user.id, channel.id);
+      // Apagar a conversa durante a chamada dela também encerra a chamada para quem apagou: com a conversa fora da lista,
+      // a tela não teria mais onde mostrar o palco nem o botão de desligar (revisão de 02/11/2026).
+      encerrarChamadaDe(io, request.user.id, channel.id);
+      void tirarDaChamada(channel.id, request.user.id);
       emitToUser(io, request.user.id, 'direct:removed', { id: channel.id });
       return { ok: true };
     });

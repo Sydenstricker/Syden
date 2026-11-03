@@ -2312,4 +2312,6 @@ export default {
   'Recusar chamada': 'Decline call',
   '{quem} recusou a chamada': '{quem} declined the call',
   'Placar': 'Scoreboard',
+  'A chamada terminou.': 'The call ended.',
+  'Não foi possível entrar nesta chamada.': 'Couldn\'t join this call.',
 } satisfies Record<string, string>;

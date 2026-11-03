@@ -2386,4 +2386,6 @@ export default {
   'Recusar chamada': 'បដិសេធការហៅ',
   '{quem} recusou a chamada': '{quem} បានបដិសេធការហៅ',
   'Placar': 'ពិន្ទុ',
+  'A chamada terminou.': 'ការហៅបានបញ្ចប់។',
+  'Não foi possível entrar nesta chamada.': 'មិនអាចចូលរួមការហៅនេះបានទេ។',
 } satisfies Record<string, string>;

@@ -2325,4 +2325,6 @@ export default {
   'Recusar chamada': 'Jụ oku a',
   '{quem} recusou a chamada': '{quem} jụrụ oku a',
   'Placar': 'Akara',
+  'A chamada terminou.': 'Oku a agwụla.',
+  'Não foi possível entrar nesta chamada.': 'Enweghị ike ịbanye n\'oku a.',
 } satisfies Record<string, string>;

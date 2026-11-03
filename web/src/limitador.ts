@@ -23,20 +23,30 @@ const TETO_DB = -6;
  * vale derrubar a reprodução por causa disso).
  */
 /**
- * O limitador sozinho, sem ligar em nada. Para quem precisa pô-lo no meio de um caminho que já existe
- * — é o caso do reforço do som da transmissão, onde o ganho vem DEPOIS e quem monta a ligação é o
- * LiveKit (ver voiceVolumes.ts). Lá a ordem importa: com o teto antes do ganho, o dobro de volume
- * chega no máximo a 0 dB, que é o limite do que não estoura.
+ * O limitador do REFORÇO (a voz e o som da transmissão acima de 100%, em voiceVolumes.ts), sem ligar em nada: quem monta
+ * o caminho é o LiveKit, e o ganho vem DEPOIS destes nós.
+ *
+ * DOIS NÓS, E NÃO UM (revisão de 02/11/2026, medido no navegador): o compressor do Web Audio aplica sozinho um ganho de
+ * compensação (a especificação não deixa desligar), uns +3,4 dB com estes valores. Com ele, passar de 100% para 105% subia
+ * o som de uma vez (quase 4 dB), e o pico, dobrado, passava de 0 dB e estourava. O segundo nó desfaz essa compensação,
+ * pela mesma conta da especificação: abaixo do teto o som sai como entrou, e o pico sai no teto. O teto é -7 dB para o
+ * dobro (o máximo da régua) ainda ficar abaixo de 0 dB.
  */
-export function criarTeto(ctx: BaseAudioContext): DynamicsCompressorNode | null {
+const TETO_DO_REFORCO_DB = -7;
+const RAZAO = 20;
+export function criarTeto(ctx: BaseAudioContext): AudioNode[] | null {
   try {
     const limitador = ctx.createDynamicsCompressor();
-    limitador.threshold.value = TETO_DB;
+    limitador.threshold.value = TETO_DO_REFORCO_DB;
     limitador.knee.value = 0;
-    limitador.ratio.value = 20;
+    limitador.ratio.value = RAZAO;
     limitador.attack.value = 0.003;
     limitador.release.value = 0.25;
-    return limitador;
+    // A especificação: makeup = (1 / curva(0 dBFS)) ^ 0,6. Com joelho zero, curva(0 dBFS) = teto + (0 - teto) / razão.
+    const curvaEmZeroDb = TETO_DO_REFORCO_DB - TETO_DO_REFORCO_DB / RAZAO;
+    const compensacao = ctx.createGain();
+    compensacao.gain.value = 10 ** ((0.6 * curvaEmZeroDb) / 20);
+    return [limitador, compensacao];
   } catch {
     return null;
   }

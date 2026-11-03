@@ -2388,4 +2388,6 @@ export default {
   'Recusar chamada': 'Hafna símtali',
   '{quem} recusou a chamada': 'Símtali hafnað: {quem}',
   'Placar': 'Stigatafla',
+  'A chamada terminou.': 'Símtalinu lauk.',
+  'Não foi possível entrar nesta chamada.': 'Ekki tókst að taka þátt í þessu símtali.',
 } satisfies Record<string, string>;

@@ -2319,4 +2319,6 @@ export default {
   'Recusar chamada': 'Rejeita telefone',
   '{quem} recusou a chamada': '{quem} rejeita ona telefone',
   'Placar': 'Pontu',
+  'A chamada terminou.': 'Telefone remata ona.',
+  'Não foi possível entrar nesta chamada.': 'La bele tama ba telefone ida-ne\'e.',
 } satisfies Record<string, string>;

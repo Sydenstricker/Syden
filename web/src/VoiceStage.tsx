@@ -1293,7 +1293,8 @@ export function Stage({
   const card = cardSize(tracks.length);
   // O clipe segue o que está grande na tela; com a tela dividida, a primeira transmissão.
   const paraClipar = (focused?.source === Track.Source.ScreenShare ? focused : undefined) ?? abertas[0];
-  const transmissaoNaTela = useTransmissaoNaTela(paraClipar);
+  // Na chamada privada não há clipe (ele vai para um canal da comunidade): nada de gravar a tela e as vozes em memória à toa.
+  const transmissaoNaTela = useTransmissaoNaTela(privada ? undefined : paraClipar);
   const quemTransmite = paraClipar ? paraClipar.participant.name || paraClipar.participant.identity : '';
   // A GRAVAÇÃO DO CLIPE MORA AQUI, e não no botão. O botão vive dentro do menu "...", que abre e
   // fecha; a gravação precisa durar enquanto a transmissão existir — é a premissa da função, que é

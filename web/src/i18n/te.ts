@@ -2299,4 +2299,6 @@ export default {
   'Recusar chamada': 'కాల్ తిరస్కరించు',
   '{quem} recusou a chamada': '{quem} కాల్‌ను తిరస్కరించారు',
   'Placar': 'స్కోరు',
+  'A chamada terminou.': 'కాల్ ముగిసింది.',
+  'Não foi possível entrar nesta chamada.': 'ఈ కాల్‌లో చేరడం కుదరలేదు.',
 } satisfies Record<string, string>;

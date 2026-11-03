@@ -2389,4 +2389,6 @@ export default {
   'Recusar chamada': 'Jaňy ret et',
   '{quem} recusou a chamada': '{quem} jaňy ret etdi',
   'Placar': 'Hasap',
+  'A chamada terminou.': 'Jaň gutardy.',
+  'Não foi possível entrar nesta chamada.': 'Bu jaňa goşulyp bolmady.',
 } satisfies Record<string, string>;

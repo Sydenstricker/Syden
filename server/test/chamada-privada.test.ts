@@ -155,7 +155,7 @@ test('recusar avisa a conversa, só com chamada aberta e sem repetir', async () 
 // poderia entrar não vê a chamada; e a transmissão privada se denuncia.
 const naChamada = (channelId: number) => estados.filter((e) => e.channelId === channelId).at(-1)?.members.map((m) => m.userId) ?? [];
 
-test('bloquear no meio da chamada tira quem chegou depois, e quem bloqueou deixa de vê-la', async () => {
+test('bloquear no meio da chamada tira quem foi bloqueado, e ele deixa de vê-la', async () => {
   assert.equal((await entrar(daAna, conversaAnaBia.id)).ok, true);
   assert.equal((await entrar(daBia, conversaAnaBia.id)).ok, true);
   await esperar();
@@ -174,13 +174,49 @@ test('desfazer a amizade com um menor no meio da chamada a encerra', async () =>
   await dani('POST', `/api/amigos/${contaAna.user.id}/aceitar`);
   assert.equal((await entrar(daAna, conversaAnaDani.id)).ok, true);
   const encerradas: number[] = [];
-  daDani.on('voice:substituida', ({ channelId }: { channelId: number }) => encerradas.push(channelId));
+  daAna.on('voice:substituida', ({ channelId }: { channelId: number }) => encerradas.push(channelId));
   assert.equal((await entrar(daDani, conversaAnaDani.id)).ok, true);
   await dani('DELETE', `/api/amigos/${contaAna.user.id}`);
   await esperar();
-  assert.deepEqual(encerradas, [conversaAnaDani.id], 'a Dani, que chegou depois, sai');
+  // Quem sai é o adulto, nunca a pessoa protegida (a revisão de 02/11/2026: antes saía "quem chegou depois").
+  assert.deepEqual(encerradas, [conversaAnaDani.id], 'a Ana, que não é mais amiga da menor, sai');
+  daDani.emit('voice:leave');
+  await esperar();
+});
+
+test('no bloqueio, sai quem foi bloqueado, mesmo tendo chegado antes', async () => {
+  assert.equal((await entrar(daBia, conversaAnaBia.id)).ok, true);
+  assert.equal((await entrar(daAna, conversaAnaBia.id)).ok, true);
+  await esperar();
+  await ana('POST', '/api/me/bloqueios', { userId: contaBia.user.id });
+  await esperar();
+  assert.deepEqual(naChamada(conversaAnaBia.id), [], 'a Bia (bloqueada) saiu; a Ana, que bloqueou, fica');
+  const daAnaAgora = await new Promise<{ members: { userId: number }[] }>((ok) => {
+    daAna.once('chamada:estado', ok);
+    daAna.emit('voice:update', { muted: true });
+  });
+  assert.deepEqual(daAnaAgora.members.map((m) => m.userId), [contaAna.user.id]);
   daAna.emit('voice:leave');
   await esperar();
+  await ana('DELETE', `/api/me/bloqueios/${contaBia.user.id}`);
+});
+
+test('quem ainda não entrou não vê o título da janela transmitida', async () => {
+  assert.equal((await entrar(daAna, conversaAnaBia.id)).ok, true);
+  daAna.emit('voice:update', { screen: true, screenName: 'Minha janela' });
+  await esperar();
+  const visto = estados.filter((e) => e.channelId === conversaAnaBia.id).at(-1)?.members as { screenName: string | null }[];
+  assert.equal(visto[0].screenName, null);
+  daAna.emit('voice:leave');
+  await esperar();
+});
+
+test('apagar a conversa durante a chamada encerra a chamada de quem apagou', async () => {
+  assert.equal((await entrar(daBia, conversaAnaBia.id)).ok, true);
+  await esperar();
+  await bia('POST', `/api/direct/${conversaAnaBia.id}/apagar`);
+  await esperar();
+  assert.deepEqual(naChamada(conversaAnaBia.id), []);
 });
 
 test('a transmissão da chamada privada se denuncia (só quem é da conversa)', async () => {

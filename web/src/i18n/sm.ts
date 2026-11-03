@@ -2321,4 +2321,6 @@ export default {
   'Recusar chamada': 'Teena le telefoni',
   '{quem} recusou a chamada': 'Na teena e {quem} le telefoni',
   'Placar': 'Togi',
+  'A chamada terminou.': 'Ua uma le telefoni.',
+  'Não foi possível entrar nesta chamada.': 'Sa le mafai ona auai i lenei telefoni.',
 } satisfies Record<string, string>;

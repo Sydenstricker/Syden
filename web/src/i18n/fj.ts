@@ -2316,4 +2316,6 @@ export default {
   'Recusar chamada': 'Cakitaka na veiqiri',
   '{quem} recusou a chamada': 'E cakitaka na veiqiri o {quem}',
   'Placar': 'Maka',
+  'A chamada terminou.': 'Sa oti na veiqiri.',
+  'Não foi possível entrar nesta chamada.': 'E sega ni rawa ni curu ena veiqiri oqo.',
 } satisfies Record<string, string>;

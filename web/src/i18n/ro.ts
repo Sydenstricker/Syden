@@ -2317,4 +2317,6 @@ export default {
   'Recusar chamada': 'Respinge apelul',
   '{quem} recusou a chamada': 'Apel respins: {quem}',
   'Placar': 'Scor',
+  'A chamada terminou.': 'Apelul s-a încheiat.',
+  'Não foi possível entrar nesta chamada.': 'Nu s-a putut intra în acest apel.',
 } satisfies Record<string, string>;

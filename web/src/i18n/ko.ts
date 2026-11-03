@@ -2305,4 +2305,6 @@ export default {
   'Recusar chamada': '통화 거절',
   '{quem} recusou a chamada': '{quem} 님이 통화를 거절했어요',
   'Placar': '점수판',
+  'A chamada terminou.': '통화가 끝났어요.',
+  'Não foi possível entrar nesta chamada.': '이 통화에 참여할 수 없어요.',
 } satisfies Record<string, string>;

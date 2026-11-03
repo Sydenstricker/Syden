@@ -2357,4 +2357,6 @@ export default {
   'Recusar chamada': 'Bilbila didi',
   '{quem} recusou a chamada': '{quem} bilbila dideera',
   'Placar': 'Qabxii',
+  'A chamada terminou.': 'Bilbilli xumurameera.',
+  'Não foi possível entrar nesta chamada.': 'Bilbila kanatti makamuun hin danda\'amne.',
 } satisfies Record<string, string>;

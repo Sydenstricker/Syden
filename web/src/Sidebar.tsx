@@ -91,7 +91,7 @@ interface Props {
   onOpenSettings: () => void;
   /** Quem administra clica na capa e vai direto a Configurações → Comunidade, na parte da capa. */
   aoEditarCapa?: () => void;
-  /** O nome da conversa privada em cuja chamada estou, para o painel "Voz conectada" (e o botão de desligar) aparecer. */
+  /** O nome da chamada quando ela não é desta comunidade (a conversa privada, ou a outra comunidade), para o painel "Voz conectada". */
   nomeDaChamadaPrivada?: string;
 }
 
@@ -127,8 +127,10 @@ export function Sidebar({
 }: Props) {
   // Indicador de fala só existe para a sala em que estamos conectados (é o LiveKit que sabe quem fala).
   const speaking = new Set(useSpeakingParticipants().map((p) => p.identity));
-  // A sala em que estou: uma desta comunidade, ou a chamada de uma conversa privada (o nome vem do Shell, que conhece as conversas).
-  const connectedChannel = channels.find((c) => c.id === voice.channelId) ?? (voice.channelId !== null && nomeDaChamadaPrivada ? { name: nomeDaChamadaPrivada } : undefined);
+  // A sala em que estou: uma desta comunidade, ou outra (de outra comunidade, ou a chamada de uma conversa privada), cujo
+  // nome vem do Shell. O painel "Voz conectada" aparece em QUALQUER chamada: é nele que ficam a câmera e o desligar, e
+  // sem ele a pessoa ficava na chamada sem ter como sair (revisão de 02/11/2026).
+  const connectedChannel = channels.find((c) => c.id === voice.channelId) ?? (voice.channelId !== null ? { name: nomeDaChamadaPrivada ?? '' } : undefined);
   const [deleting, setDeleting] = useState<Channel | null>(null);
   // O código de segurança da chamada de ponta a ponta, aberto pelo cadeado: só quando a pessoa pede.
   const [verCodigo, setVerCodigo] = useState(false);

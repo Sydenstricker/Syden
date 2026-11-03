@@ -2389,4 +2389,6 @@ export default {
   'Recusar chamada': 'Hívás elutasítása',
   '{quem} recusou a chamada': '{quem} elutasította a hívást',
   'Placar': 'Állás',
+  'A chamada terminou.': 'A hívás véget ért.',
+  'Não foi possível entrar nesta chamada.': 'Nem sikerült csatlakozni ehhez a híváshoz.',
 } satisfies Record<string, string>;

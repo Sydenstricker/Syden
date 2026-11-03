@@ -1,5 +1,6 @@
 import {
   ConnectionState,
+  DisconnectReason,
   type LocalParticipant,
   type LocalVideoTrack,
   type Participant,
@@ -27,7 +28,7 @@ import { type ScreenQuality, getSettings, updateSettings } from './settings';
 import { playSoundboard, stopAllSounds } from './soundboard';
 import { nomeDaTransmissao } from './streamName';
 import { aoMudarEconomia, aplicarTetoEmTodas } from './qualidadeQueRecebo';
-import { applyAllVolumes, idsComVolumeAjustado } from './voiceVolumes';
+import { applyAllVolumes, idsComVolumeAjustado, trocarSaidaDoReforco } from './voiceVolumes';
 import { type Fonte, lembrarFalantes, quemOuvir, queroEstaFaixa } from './quemOuvir';
 import {
   SCALE_STEPS,
@@ -406,7 +407,12 @@ export function useVoice(socket: Socket | null) {
     const syncIfLocal = (_: TrackPublication, participant: Participant) => {
       if (participant === lp) sync();
     };
-    const onDisconnected = () => {
+    const onDisconnected = (motivo?: DisconnectReason) => {
+      // TIRADA DA CHAMADA PRIVADA pelo servidor (bloqueio, a regra dos menores): a tela diz que acabou, sem dizer o
+      // porquê (como toda recusa dessas). Sem a frase, a chamada só sumia, e parecia defeito (revisão de 02/11/2026).
+      if (motivo === DisconnectReason.PARTICIPANT_REMOVED && comunidadeRef.current === null && channelRef.current !== null) {
+        setError(t('A chamada terminou.'));
+      }
       chamadaRef.current?.encerrar(); // as chaves desta chamada morrem com ela
       chamadaRef.current = null;
       setCodigoDeSeguranca(null);
@@ -685,7 +691,10 @@ export function useVoice(socket: Socket | null) {
       if (channelRef.current === null) return;
       // Na chamada da conversa, a volta pode ser recusada (bloqueio, amizade desfeita): aí a chamada acaba aqui também.
       socket.emit('voice:join', { channelId: channelRef.current }, (r?: { ok?: boolean }) => {
-        if (comunidadeRef.current === null && r?.ok === false) void room.disconnect();
+        if (comunidadeRef.current === null && r?.ok === false) {
+          setError(t('A chamada terminou.'));
+          void room.disconnect();
+        }
       });
       // O socket caído pode ter perdido uma troca de chave da chamada cifrada: reencontra todo mundo da sala.
       void chamadaRef.current?.reencontrar([...room.remoteParticipants.keys()]);
@@ -929,7 +938,10 @@ export function useVoice(socket: Socket | null) {
           if (typeof r?.communityId === 'number') comunidadeRef.current = r.communityId;
           // Recusada na conversa (um bloqueio ou a regra dos menores no meio-tempo): sai do LiveKit também, em vez de
           // ficar ouvindo sem lugar na lista (achado da revisão de 02/11/2026).
-          if (conversa && r?.ok === false) void room.disconnect();
+          if (conversa && r?.ok === false) {
+            setError(t('A chamada terminou.'));
+            void room.disconnect();
+          }
         });
         if (e2ee && chaves) {
           // As chaves desta chamada, antes de o microfone abrir: o primeiro quadro já sai cifrado.
@@ -1460,6 +1472,8 @@ export function useVoice(socket: Socket | null) {
         if (deviceId || kind !== 'videoinput') {
           // 'default' é o dispositivo padrão do sistema para microfone e alto-falante.
           await room.switchActiveDevice(kind, deviceId || 'default', false);
+          // A voz e o som da transmissão acima de 100% tocam por um contexto nosso, que o LiveKit não troca (voiceVolumes.ts).
+          if (kind === 'audiooutput') trocarSaidaDoReforco(deviceId);
         } else {
           room.options.videoCaptureDefaults = { ...room.options.videoCaptureDefaults, deviceId: undefined };
         }

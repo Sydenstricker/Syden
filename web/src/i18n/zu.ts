@@ -2388,4 +2388,6 @@ export default {
   'Recusar chamada': 'Yenqaba ikholi',
   '{quem} recusou a chamada': '{quem} wenqabe ikholi',
   'Placar': 'Amaphuzu',
+  'A chamada terminou.': 'Ikholi iphelile.',
+  'Não foi possível entrar nesta chamada.': 'Akukwazekanga ukujoyina le kholi.',
 } satisfies Record<string, string>;

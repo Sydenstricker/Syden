@@ -2387,4 +2387,6 @@ export default {
   'Recusar chamada': 'Diid wacitaanka',
   '{quem} recusou a chamada': 'Wacitaanka waa la diiday: {quem}',
   'Placar': 'Dhibcaha',
+  'A chamada terminou.': 'Wacitaanku wuu dhammaaday.',
+  'Não foi possível entrar nesta chamada.': 'Lagama biiri karin wacitaankan.',
 } satisfies Record<string, string>;

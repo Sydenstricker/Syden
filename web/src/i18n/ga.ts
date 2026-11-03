@@ -2323,4 +2323,6 @@ export default {
   'Recusar chamada': 'Diúltaigh don ghlao',
   '{quem} recusou a chamada': 'Dhiúltaigh {quem} don ghlao',
   'Placar': 'Scórchlár',
+  'A chamada terminou.': 'Tá an glao thart.',
+  'Não foi possível entrar nesta chamada.': 'Níorbh fhéidir dul isteach sa ghlao seo.',
 } satisfies Record<string, string>;

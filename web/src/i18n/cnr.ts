@@ -2386,4 +2386,6 @@ export default {
   'Recusar chamada': 'Odbij poziv',
   '{quem} recusou a chamada': 'Poziv je odbijen: {quem}',
   'Placar': 'Rezultat',
+  'A chamada terminou.': 'Poziv je završen.',
+  'Não foi possível entrar nesta chamada.': 'Nije moguće ući u ovaj poziv.',
 } satisfies Record<string, string>;

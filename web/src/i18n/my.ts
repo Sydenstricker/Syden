@@ -2356,4 +2356,6 @@ export default {
   'Recusar chamada': 'ဖုန်းခေါ်ဆိုမှု ငြင်းရန်',
   '{quem} recusou a chamada': '{quem} ဖုန်းခေါ်ဆိုမှုကို ငြင်းခဲ့သည်',
   'Placar': 'ရမှတ်',
+  'A chamada terminou.': 'ဖုန်းခေါ်ဆိုမှု ပြီးဆုံးသွားပါပြီ။',
+  'Não foi possível entrar nesta chamada.': 'ဤဖုန်းခေါ်ဆိုမှုသို့ ဝင်၍မရပါ။',
 } satisfies Record<string, string>;

@@ -1,5 +1,6 @@
 import { type RemoteAudioTrack, type Room, Track } from 'livekit-client';
 import { criarTeto } from './limitador';
+import { getSettings } from './settings';
 
 // Volume de cada pessoa, ajustado por quem escuta e guardado no navegador: um amigo com microfone baixo
 // continua alto na próxima chamada, sem precisar mexer de novo. Nada disso vai para o servidor.
@@ -112,8 +113,8 @@ function screenAudioTrack(room: Room, userId: number) {
  *
  * Acima de 100% o LiveKit passa a tocar por Web Audio, onde o ganho é um nó e pode passar de 1. Só
  * que um ganho solto é justamente como alguém leva um estouro no ouvido (ver limitador.ts, e o motivo
- * dele existir), então o teto entra ANTES do ganho: o limitador segura os picos em -6 dB e o dobro
- * leva isso a 0 dB, que é o limite do que não estoura. Mais volume, nunca mais pico.
+ * dele existir), então o teto entra ANTES do ganho: o limitador segura os picos em -7 dB e o dobro
+ * os leva a uns -0,6 dB, abaixo do estouro (ver criarTeto, com a compensação que o compressor aplica sozinho).
  *
  * O caminho novo só é ligado quando alguém realmente pede mais de 100%. Quem nunca mexe continua
  * exatamente como antes — se o reforço tiver algum problema, ele não alcança quem não pediu.
@@ -139,7 +140,10 @@ function ligarReforco(faixa: RemoteAudioTrack): boolean {
   };
   if (typeof interna.setAudioContext !== 'function') return false;
   try {
-    contextoDoReforco ??= new AudioContext();
+    if (!contextoDoReforco) {
+      contextoDoReforco = new AudioContext();
+      trocarSaidaDoReforco(getSettings().audioOutput);
+    }
     // O contexto nasce suspenso quando a página ainda não teve gesto nenhum. Arrastando a régua sempre teve; mas o
     // volume acima de 100% GUARDADO é ligado sozinho quando o som chega (applyAllVolumes), e um contexto suspenso deixa
     // a transmissão muda. Por isso, além de tentar já, ele é retomado no próximo clique ou tecla da pessoa.
@@ -151,7 +155,7 @@ function ligarReforco(faixa: RemoteAudioTrack): boolean {
       addEventListener('keydown', retomar, true);
     }
     const teto = criarTeto(contextoDoReforco);
-    if (teto && typeof interna.setWebAudioPlugins === 'function') interna.setWebAudioPlugins([teto]);
+    if (teto && typeof interna.setWebAudioPlugins === 'function') interna.setWebAudioPlugins(teto);
     interna.setAudioContext(contextoDoReforco);
     jaReforcadas.add(faixa);
     return true;
@@ -159,6 +163,16 @@ function ligarReforco(faixa: RemoteAudioTrack): boolean {
     console.error(erro);
     return false;
   }
+}
+
+/**
+ * O ALTO-FALANTE DO REFORÇO. Com o reforço ligado, quem decide para onde o som vai é o contexto, e não mais o elemento de
+ * áudio: sem isto, a voz de um amigo a 150% saía nas caixas de som enquanto o resto da chamada tocava no fone (revisão de
+ * 02/11/2026). O mesmo cuidado do soundboard.ts. Vazio é o padrão do sistema.
+ */
+export function trocarSaidaDoReforco(deviceId: string) {
+  const ctx = contextoDoReforco as (AudioContext & { setSinkId?(id: string): Promise<void> }) | null;
+  void ctx?.setSinkId?.(deviceId || '').catch(() => {});
 }
 
 /** O clique no alto-falante: cala, e o clique seguinte devolve o volume que estava (que continua guardado). */

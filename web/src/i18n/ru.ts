@@ -2335,4 +2335,6 @@ export default {
   'Recusar chamada': 'Отклонить звонок',
   '{quem} recusou a chamada': 'Звонок отклонён: {quem}',
   'Placar': 'Счёт',
+  'A chamada terminou.': 'Звонок завершён.',
+  'Não foi possível entrar nesta chamada.': 'Не удалось присоединиться к этому звонку.',
 } satisfies Record<string, string>;

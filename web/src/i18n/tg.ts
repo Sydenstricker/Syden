@@ -2388,4 +2388,6 @@ export default {
   'Recusar chamada': 'Рад кардани занг',
   '{quem} recusou a chamada': '{quem} зангро рад кард',
   'Placar': 'Хол',
+  'A chamada terminou.': 'Занг ба охир расид.',
+  'Não foi possível entrar nesta chamada.': 'Ба ин занг ҳамроҳ шудан имконнопазир буд.',
 } satisfies Record<string, string>;

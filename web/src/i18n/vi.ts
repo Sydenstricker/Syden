@@ -2287,4 +2287,6 @@ export default {
   'Recusar chamada': 'Từ chối cuộc gọi',
   '{quem} recusou a chamada': '{quem} đã từ chối cuộc gọi',
   'Placar': 'Bảng điểm',
+  'A chamada terminou.': 'Cuộc gọi đã kết thúc.',
+  'Não foi possível entrar nesta chamada.': 'Không thể tham gia cuộc gọi này.',
 } satisfies Record<string, string>;

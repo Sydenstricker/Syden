@@ -7,7 +7,7 @@ import type { FastifyInstance } from 'fastify';
 import type { Server as IOServer } from 'socket.io';
 import * as db from './db.js';
 import { barreiraDe, dataValida, DIAS_PARA_LIGAR_RESPONSAVEL, ehMenor, faixaDaConta, faixaDe, faixaDoWindows, hojeEmBrasilia, podeMudarRegras, regrasDe } from './protecao.js';
-import { aplicarBarreira, emitToUser, reconferirChamadaDe } from './realtime.js';
+import { aplicarBarreira, emitToUser, afastarDasChamadas } from './realtime.js';
 import { requireUser } from './routes.js';
 
 /** O código que o menor manda ao responsável: 8 letras e números sem os que se confundem (0/O, 1/I). */
@@ -151,6 +151,8 @@ export function registerProtecaoRoutes(app: FastifyInstance, io: IOServer) {
       const antes = db.protecaoDe(eu)?.faixaWindows ?? null;
       db.guardarFaixaDoWindows(eu, faixa);
       if (faixa === 'crianca' && antes !== 'crianca') db.suspenderPorIdade(eu, 'O Syden é para quem tem 13 anos ou mais.');
+      // Virou menor no meio de uma chamada privada com quem não é amigo: vale na hora (ver afastarDasChamadas).
+      afastarDasChamadas(io, eu);
       return { guardada: true, faixa, barreira: barreiraDe(eu) };
     });
 
@@ -214,6 +216,7 @@ export function registerProtecaoRoutes(app: FastifyInstance, io: IOServer) {
       if (sup.menorId === eu) return reply.code(400).send({ error: 'Você não pode ser o seu próprio responsável.' });
       if (sup.responsavelId) return reply.code(409).send({ error: 'Esta conta já está ligada a um responsável.' });
       db.ligarResponsavel(sup.menorId, eu);
+      afastarDasChamadas(io, sup.menorId);
       emitToUser(io, sup.menorId, 'protecao:mudou', {});
       return painelDoMenor(sup.menorId);
     });
@@ -229,8 +232,8 @@ export function registerProtecaoRoutes(app: FastifyInstance, io: IOServer) {
       if (!regras) return reply.code(400).send({ error: 'Limite inválido: de 15 minutos a 24 horas.' });
       db.ajustarSupervisao(menorId, regras);
       emitToUser(io, menorId, 'protecao:mudou', {});
-      // "Só amigos" ligado no meio de uma chamada privada com quem não é amigo: vale na hora (ver reconferirChamadaDe).
-      reconferirChamadaDe(io, menorId);
+      // "Só amigos" ligado no meio de uma chamada privada com quem não é amigo: vale na hora (ver afastarDasChamadas).
+      afastarDasChamadas(io, menorId);
       // apertou o limite abaixo do que já foi usado hoje: vale na hora
       const barreira = barreiraDe(menorId);
       if (barreira) void aplicarBarreira(io, menorId, barreira);

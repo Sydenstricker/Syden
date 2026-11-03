@@ -2304,4 +2304,6 @@ export default {
   'Recusar chamada': 'کال مسترد کریں',
   '{quem} recusou a chamada': 'کال مسترد ہوئی: {quem}',
   'Placar': 'اسکور',
+  'A chamada terminou.': 'کال ختم ہو گئی۔',
+  'Não foi possível entrar nesta chamada.': 'اس کال میں شامل نہیں ہو سکے۔',
 } satisfies Record<string, string>;

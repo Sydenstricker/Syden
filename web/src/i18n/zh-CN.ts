@@ -2304,4 +2304,6 @@ export default {
   'Recusar chamada': '拒绝通话',
   '{quem} recusou a chamada': '{quem} 拒绝了通话',
   'Placar': '积分榜',
+  'A chamada terminou.': '通话已结束。',
+  'Não foi possível entrar nesta chamada.': '无法加入此通话。',
 } satisfies Record<string, string>;

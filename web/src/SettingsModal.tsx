@@ -177,8 +177,15 @@ export function SettingsModal({
   useEffect(() => {
     if (!ancoraInicial) return;
     // Um quadro depois de abrir: a aba precisa estar desenhada para o título existir.
-    const quadro = requestAnimationFrame(() => document.getElementById(ancoraInicial)?.scrollIntoView({ block: 'start' }));
-    return () => cancelAnimationFrame(quadro);
+    const rolar = () => document.getElementById(ancoraInicial)?.scrollIntoView({ block: 'start' });
+    const quadro = requestAnimationFrame(rolar);
+    // E de novo quando o que fica ACIMA termina de carregar (o editor das boas-vindas cresce centenas de pixels): o
+    // Chromium compensa sozinho, o Safari não, e a capa sairia da vista (revisão de 02/11/2026).
+    const depois = window.setTimeout(rolar, 700);
+    return () => {
+      cancelAnimationFrame(quadro);
+      window.clearTimeout(depois);
+    };
   }, [ancoraInicial]);
 
   return (

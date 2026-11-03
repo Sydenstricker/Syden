@@ -2389,4 +2389,6 @@ export default {
   'Recusar chamada': 'Noraidīt zvanu',
   '{quem} recusou a chamada': 'Zvans noraidīts: {quem}',
   'Placar': 'Rezultāti',
+  'A chamada terminou.': 'Zvans beidzās.',
+  'Não foi possível entrar nesta chamada.': 'Neizdevās pievienoties šim zvanam.',
 } satisfies Record<string, string>;

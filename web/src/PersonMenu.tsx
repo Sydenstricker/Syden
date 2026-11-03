@@ -255,7 +255,8 @@ export function PersonMenu({
   }
 
   /** O APELIDO NA COMUNIDADE: cada um troca o seu; quem administra, o de quem está abaixo (o dono, o de todos). */
-  const podeApelidar = isSelf || (manages && (role === 'owner' || targetRole === 'member'));
+  // Na chamada privada (communityId 0) não há comunidade onde ter apelido.
+  const podeApelidar = communityId > 0 && (isSelf || (manages && (role === 'owner' || targetRole === 'member')));
   async function salvarApelido() {
     try {
       await api(`/api/communities/${communityId}/members/${target.userId}/apelido`, { method: 'PUT', body: { apelido } });

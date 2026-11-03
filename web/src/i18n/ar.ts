@@ -2337,4 +2337,6 @@ export default {
   'Recusar chamada': 'رفض المكالمة',
   '{quem} recusou a chamada': 'رُفضت المكالمة: {quem}',
   'Placar': 'لوحة النقاط',
+  'A chamada terminou.': 'انتهت المكالمة.',
+  'Não foi possível entrar nesta chamada.': 'تعذّر الانضمام إلى هذه المكالمة.',
 } satisfies Record<string, string>;

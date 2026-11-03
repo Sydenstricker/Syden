@@ -2314,4 +2314,6 @@ export default {
   'Recusar chamada': 'কল প্রত্যাখ্যান করো',
   '{quem} recusou a chamada': '{quem} কলটি প্রত্যাখ্যান করেছে',
   'Placar': 'স্কোরবোর্ড',
+  'A chamada terminou.': 'কল শেষ হয়েছে।',
+  'Não foi possível entrar nesta chamada.': 'এই কলে যোগ দেওয়া যায়নি।',
 } satisfies Record<string, string>;

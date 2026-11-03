@@ -2312,4 +2312,6 @@ export default {
   'Recusar chamada': 'Rechazar llamada',
   '{quem} recusou a chamada': 'Llamada rechazada: {quem}',
   'Placar': 'Marcador',
+  'A chamada terminou.': 'La llamada terminó.',
+  'Não foi possível entrar nesta chamada.': 'No se pudo entrar en esta llamada.',
 } satisfies Record<string, string>;

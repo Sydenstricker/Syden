@@ -2388,4 +2388,6 @@ export default {
   'Recusar chamada': 'ປະຕິເສດການໂທ',
   '{quem} recusou a chamada': '{quem} ປະຕິເສດການໂທ',
   'Placar': 'ຄະແນນ',
+  'A chamada terminou.': 'ການໂທສິ້ນສຸດແລ້ວ.',
+  'Não foi possível entrar nesta chamada.': 'ບໍ່ສາມາດເຂົ້າຮ່ວມການໂທນີ້ໄດ້.',
 } satisfies Record<string, string>;

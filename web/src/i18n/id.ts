@@ -2314,4 +2314,6 @@ export default {
   'Recusar chamada': 'Tolak panggilan',
   '{quem} recusou a chamada': '{quem} menolak panggilan',
   'Placar': 'Skor',
+  'A chamada terminou.': 'Panggilan berakhir.',
+  'Não foi possível entrar nesta chamada.': 'Tidak dapat bergabung ke panggilan ini.',
 } satisfies Record<string, string>;

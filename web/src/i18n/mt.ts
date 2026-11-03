@@ -2333,4 +2333,6 @@ export default {
   'Recusar chamada': 'Irrifjuta s-sejħa',
   '{quem} recusou a chamada': 'Sejħa rrifjutata: {quem}',
   'Placar': 'Punteġġ',
+  'A chamada terminou.': 'Is-sejħa spiċċat.',
+  'Não foi possível entrar nesta chamada.': 'Ma kienx possibbli tidħol f\'din is-sejħa.',
 } satisfies Record<string, string>;

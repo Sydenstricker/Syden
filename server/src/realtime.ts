@@ -179,7 +179,11 @@ function compativelCom(userId: number, outros: number[]): boolean {
 function chamadaVistaPor(userId: number, channelId: number): VoiceMember[] {
   const membros = membrosDaChamada(channelId);
   const ids = membros.map((m) => m.userId);
-  return ids.includes(userId) || compativelCom(userId, ids) ? membros : [];
+  if (ids.includes(userId)) return membros;
+  if (!compativelCom(userId, ids)) return [];
+  // Quem ainda não entrou vê quem está, e não o título da janela que alguém transmite nem quem assiste o quê: é conversa
+  // privada, e isso é de quem está dentro (revisão de 02/11/2026).
+  return membros.map((m) => ({ ...m, screenName: null, screenGenero: null, assistindo: [] }));
 }
 
 function broadcastChamada(io: IOServer, channelId: number) {
@@ -188,23 +192,27 @@ function broadcastChamada(io: IOServer, channelId: number) {
   }
 }
 
+
 /**
- * CONFERE DE NOVO a chamada privada em que a pessoa está (achado da revisão de 02/11/2026: o bloqueio e a amizade desfeita
- * só valiam na entrada, e quem já estava junto continuava ouvindo e vendo). Percorre quem está nela NA ORDEM DE CHEGADA e
- * tira quem não pode mais estar junto de alguém que chegou antes: da lista e do LiveKit, onde mora o áudio. Chamada ao
- * bloquear, ao desfazer amizade e quando o responsável muda as regras de um menor.
+ * AFASTA DE UMA PESSOA, em toda chamada privada dela, quem não pode mais estar junto (bloqueio, amizade desfeita com um
+ * menor, regras novas do responsável, a idade que chega pelo Windows). Duas lições das revisões de 02/11/2026:
+ *
+ *   - QUEM SAI É O OUTRO, nunca a pessoa protegida: tirar "quem chegou por último" fazia a vítima que bloqueia sair da
+ *     chamada e o agressor ficar com o grupo;
+ *   - TIRA PELO LIVEKIT, e não só pela lista do socket: quem ouve é o LiveKit, e um app modificado pode sair da lista
+ *     (voice:leave) e continuar conectado. Por isso a volta passa por TODAS as conversas da pessoa, com ou sem lista.
  */
-export function reconferirChamadaDe(io: IOServer, userId: number) {
-  const sessao = voiceMembers.get(userId);
+export function afastarDasChamadas(io: IOServer, protegido: number) {
+  // Só a chamada em que a pessoa protegida está (a lista dela é a confiável: é ela quem se protege). Num grupo em que ela
+  // nem entrou, o outro pode ficar: a regra é nunca estarem JUNTOS.
+  const sessao = voiceMembers.get(protegido);
   if (!sessao || sessao.communityId !== null) return;
-  const ficam: number[] = [];
-  for (const m of [...voiceMembers.values()].filter((v) => v.communityId === null && v.channelId === sessao.channelId)) {
-    if (compativelCom(m.userId, ficam)) {
-      ficam.push(m.userId);
-      continue;
+  for (const conversa of [sessao.channelId]) {
+    for (const outro of db.channelMemberIds(conversa)) {
+      if (outro === protegido || compativelCom(protegido, [outro])) continue;
+      encerrarChamadaDe(io, outro, conversa);
+      void import('./routes.js').then(({ tirarDaChamada }) => tirarDaChamada(conversa, outro)).catch(() => {});
     }
-    encerrarChamadaDe(io, m.userId, sessao.channelId);
-    void import('./routes.js').then(({ tirarDaChamada }) => tirarDaChamada(sessao.channelId, m.userId)).catch(() => {});
   }
 }
 
@@ -232,13 +240,23 @@ const toquesRecentes = new Map<string, number>();
 /**
  * O TOQUE: quem liga entrou numa chamada vazia, e cada um dos outros da conversa que está com o Syden aberto recebe
  * "fulano está ligando". Só quem poderia entrar (sem bloqueio, e a regra dos menores): tocar para quem seria recusado
- * ao atender é chamar para uma porta fechada. Um toque a cada 20 s por pessoa e conversa.
+ * ao atender é chamar para uma porta fechada.
+ *
+ * O FREIO, para o toque não virar insistência (revisão de 02/11/2026: sair e entrar fazia tocar a cada 20 s sem fim): no
+ * mínimo 20 s entre um toque e outro, e no máximo 3 em 5 minutos, por pessoa e conversa.
  */
+const toquesDaJanela = new Map<string, number[]>();
+/**
+ * Quando cada pessoa saiu da chamada de cada conversa ("pessoa:conversa"). Voltar em até 15 s é o socket que caiu e
+ * voltou, e não uma ligação nova: não toca de novo (revisão de 02/11/2026).
+ */
+const saiuDaChamadaEm = new Map<string, number>();
 function tocarParaQuemPode(io: IOServer, quemLiga: number, channelId: number) {
   const chave = `${quemLiga}:${channelId}`, agora = Date.now();
-  if ((toquesRecentes.get(chave) ?? 0) > agora - 20_000) return;
-  toquesRecentes.set(chave, agora);
-  for (const [k, quando] of toquesRecentes) if (quando <= agora - 20_000) toquesRecentes.delete(k);
+  const recentes = (toquesDaJanela.get(chave) ?? []).filter((t) => t > agora - 5 * 60_000);
+  if (recentes.length >= 3 || (recentes.at(-1) ?? 0) > agora - 20_000) return;
+  toquesDaJanela.set(chave, [...recentes, agora]);
+  for (const [k, lista] of toquesDaJanela) if (!lista.some((t) => t > agora - 5 * 60_000)) toquesDaJanela.delete(k);
   const eu = db.findUserById(quemLiga);
   if (!eu) return;
   const de = { id: eu.id, username: eu.username, nomeDeExibicao: eu.nomeDeExibicao ?? null };
@@ -320,6 +338,7 @@ function endVoiceSession(userId: number) {
   if (!session) return;
   db.touchUsageSessions(activeUsageSessionIds(session));
   voiceMembers.delete(userId);
+  if (session.communityId === null) saiuDaChamadaEm.set(`${userId}:${session.channelId}`, Date.now());
   // Era a última pessoa numa sala temporária: ela some. Depois desta volta, para quem chamou terminar de
   // avisar a saída antes de a sala desaparecer da lista.
   const io = ioDoServidor;
@@ -403,11 +422,10 @@ function contarMinutoDosMenores(io: IOServer) {
 /** Barrou agora: avisa a tela, tira da chamada e derruba as conexões (o login continua valendo, a barreira não). */
 export async function aplicarBarreira(io: IOServer, userId: number, barreira: unknown) {
   emitToUser(io, userId, 'barreira', barreira);
-  const naVoz = voiceMembers.get(userId);
-  if (naVoz) {
-    const { tirarDaChamada } = await import('./routes.js');
-    await tirarDaChamada(naVoz.channelId, userId);
-  }
+  // De TODAS as chamadas pelo LiveKit, e não só da que está na lista (revisão de 02/11/2026): um app modificado pode ter
+  // saído da lista e continuado conectado ao áudio.
+  const { tirarDeTodasAsChamadas } = await import('./routes.js');
+  await tirarDeTodasAsChamadas(userId, { semFreio: true });
   // um instante para o aviso chegar antes de a conexão cair
   setTimeout(() => disconnectUser(io, userId), 300).unref();
 }
@@ -626,7 +644,12 @@ export function setupRealtime(io: IOServer) {
       if (daConversa) db.reexibirConversa(user.id, channel.id);
       const communityId = daConversa ? null : channel.communityId;
       // Ninguém na chamada da conversa até agora: é quem LIGA, e os outros recebem o toque (abaixo).
-      const ligando = daConversa && pessoasNaSala(channel.id) === 0;
+      // (Voltar em até 15 s é o socket que caiu, e não uma ligação nova: ver saiuDaChamadaEm.)
+      const chaveDaVolta = `${user.id}:${channel.id}`;
+      const voltando = (saiuDaChamadaEm.get(chaveDaVolta) ?? 0) > Date.now() - 15_000;
+      saiuDaChamadaEm.delete(chaveDaVolta);
+      for (const [k, quando] of saiuDaChamadaEm) if (quando <= Date.now() - 15_000) saiuDaChamadaEm.delete(k);
+      const ligando = daConversa && pessoasNaSala(channel.id) === 0 && !voltando;
       const anterior = voiceMembers.get(user.id);
       // A chamada foi assumida por OUTRO aparelho ou aba (revisão de 16/10/2026): o antigo é avisado, para não
       // "reanunciar" a cada 3 s e tomar a chamada de volta (os dois ficavam se alternando na lista para sempre).
@@ -655,6 +678,9 @@ export function setupRealtime(io: IOServer) {
       if (anterior && (anterior.communityId !== communityId || anterior.channelId !== channel.id)) anunciarVoz(io, anterior);
       anunciarVoz(io, { communityId, channelId: channel.id });
       if (ligando) tocarParaQuemPode(io, user.id, channel.id);
+      // Quem entra numa chamada privada tira dela, no LiveKit, quem não poderia estar junto e ficou lá sem lugar na lista
+      // (um app modificado que mandou voice:leave e continuou conectado; revisão de 02/11/2026).
+      if (daConversa) afastarDasChamadas(io, user.id);
       // A comunidade volta para o app conferir, em cada voice:state dela, que continua na lista (useVoice.ts). Na
       // conversa ela é nula, e quem confere é o chamada:estado.
       ack?.({ ok: true, communityId: communityId ?? undefined });
@@ -671,7 +697,9 @@ export function setupRealtime(io: IOServer) {
       const chave = `recusa:${user.id}:${channelId}`, agora = Date.now();
       if ((toquesRecentes.get(chave) ?? 0) > agora - 20_000) return;
       toquesRecentes.set(chave, agora);
-      io.to(directRoom(channelId)).emit('chamada:recusada', { channelId, userId: user.id });
+      // Só para quem está NA chamada (e para as outras abas de quem recusou, que param de tocar): mandar à conversa toda
+      // contava a quem bloqueou que havia uma chamada aberta (revisão de 02/11/2026).
+      for (const id of new Set([...quemEstaNaSala(channelId), user.id])) io.to(salaDaPessoa(id)).emit('chamada:recusada', { channelId, userId: user.id });
     });
 
     socket.on('voice:update', (patch: Partial<Pick<VoiceMember, 'muted' | 'deafened' | 'video' | 'screen' | 'screenName' | 'screenGenero' | 'assistindo'>>) => {

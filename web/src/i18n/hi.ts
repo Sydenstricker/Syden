@@ -2316,4 +2316,6 @@ export default {
   'Recusar chamada': 'कॉल अस्वीकार करो',
   '{quem} recusou a chamada': 'कॉल अस्वीकार हुई: {quem}',
   'Placar': 'स्कोर',
+  'A chamada terminou.': 'कॉल खत्म हो गई।',
+  'Não foi possível entrar nesta chamada.': 'इस कॉल में शामिल नहीं हो सके।',
 } satisfies Record<string, string>;

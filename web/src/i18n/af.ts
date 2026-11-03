@@ -2381,4 +2381,6 @@ export default {
   'Recusar chamada': 'Weier oproep',
   '{quem} recusou a chamada': '{quem} het die oproep geweier',
   'Placar': 'Telbord',
+  'A chamada terminou.': 'Die oproep het geëindig.',
+  'Não foi possível entrar nesta chamada.': 'Kon nie by hierdie oproep aansluit nie.',
 } satisfies Record<string, string>;

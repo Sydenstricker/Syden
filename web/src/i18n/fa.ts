@@ -2305,4 +2305,6 @@ export default {
   'Recusar chamada': 'رد تماس',
   '{quem} recusou a chamada': '{quem} تماس را رد کرد',
   'Placar': 'امتیازها',
+  'A chamada terminou.': 'تماس تمام شد.',
+  'Não foi possível entrar nesta chamada.': 'پیوستن به این تماس ممکن نشد.',
 } satisfies Record<string, string>;

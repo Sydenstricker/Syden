@@ -2397,4 +2397,6 @@ export default {
   'Recusar chamada': 'Refize apèl la',
   '{quem} recusou a chamada': '{quem} refize apèl la',
   'Placar': 'Pwen yo',
+  'A chamada terminou.': 'Apèl la fini.',
+  'Não foi possível entrar nesta chamada.': 'Pa t kapab antre nan apèl sa a.',
 } satisfies Record<string, string>;

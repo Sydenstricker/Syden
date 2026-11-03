@@ -2387,4 +2387,6 @@ export default {
   'Recusar chamada': 'Lavio ny antso',
   '{quem} recusou a chamada': 'Nolavin\'i {quem} ny antso',
   'Placar': 'Isa',
+  'A chamada terminou.': 'Vita ny antso.',
+  'Não foi possível entrar nesta chamada.': 'Tsy afaka niditra tamin\'ity antso ity.',
 } satisfies Record<string, string>;

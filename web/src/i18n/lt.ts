@@ -2389,4 +2389,6 @@ export default {
   'Recusar chamada': 'Atmesti skambutį',
   '{quem} recusou a chamada': 'Skambutis atmestas: {quem}',
   'Placar': 'Rezultatai',
+  'A chamada terminou.': 'Skambutis baigėsi.',
+  'Não foi possível entrar nesta chamada.': 'Nepavyko prisijungti prie šio skambučio.',
 } satisfies Record<string, string>;

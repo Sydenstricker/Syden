@@ -2405,4 +2405,6 @@ export default {
   'Recusar chamada': 'ზარის უარყოფა',
   '{quem} recusou a chamada': '{quem}-მა ზარი უარყო',
   'Placar': 'ანგარიში',
+  'A chamada terminou.': 'ზარი დასრულდა.',
+  'Não foi possível entrar nesta chamada.': 'ამ ზარში შესვლა ვერ მოხერხდა.',
 } satisfies Record<string, string>;

@@ -50,7 +50,8 @@ export const ESCOLHENDO_MS = 15_000;
 export const DESENHANDO_MS = 80_000;
 export const REVELANDO_DESENHO_MS = 5_000;
 /** Quantas pessoas desenham em cada rodada (as outras chutam o tempo todo). */
-export const MAXIMO_DE_VEZES = 10;
+// 6, e não 10, desde as 3 rodadas (revisão de 02/11/2026): com 10 pessoas, 30 desenhos davam uns 50 minutos de partida.
+export const MAXIMO_DE_VEZES = 6;
 export const RODADAS_DO_DESENHO = 3;
 /** As cores e as espessuras que o site oferece (o índice é o que viaja). */
 export const CORES = 12;
@@ -116,7 +117,8 @@ export const desenho: Definicao = {
       // Quem saiu da sala perde a vez de desenhar.
       const naSalaAgora = ctx.naSala();
       while (vez < ordem.length && !naSalaAgora.includes(ordem[vez])) vez++;
-      if (vez >= ordem.length) {
+      // Sozinho na sala não há quem chute: a partida acaba, em vez de uma pessoa desenhar para ninguém até o relógio vencer.
+      if (vez >= ordem.length || naSalaAgora.length < 2) {
         fase = 'fim';
         return ctx.terminar();
       }

@@ -2387,4 +2387,6 @@ export default {
   'Recusar chamada': 'Hylkää puhelu',
   '{quem} recusou a chamada': '{quem} hylkäsi puhelun',
   'Placar': 'Pistetilanne',
+  'A chamada terminou.': 'Puhelu päättyi.',
+  'Não foi possível entrar nesta chamada.': 'Puheluun ei voitu liittyä.',
 } satisfies Record<string, string>;

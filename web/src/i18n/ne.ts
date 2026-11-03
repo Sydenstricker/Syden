@@ -2389,4 +2389,6 @@ export default {
   'Recusar chamada': 'कल अस्वीकार गर्नुहोस्',
   '{quem} recusou a chamada': '{quem} ले कल अस्वीकार गर्नुभयो',
   'Placar': 'अंक',
+  'A chamada terminou.': 'कल सकियो।',
+  'Não foi possível entrar nesta chamada.': 'यो कलमा सामेल हुन सकिएन।',
 } satisfies Record<string, string>;

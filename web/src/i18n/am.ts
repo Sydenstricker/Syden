@@ -2317,4 +2317,6 @@ export default {
   'Recusar chamada': 'ጥሪውን አለመቀበል',
   '{quem} recusou a chamada': 'ጥሪው ውድቅ ሆኗል፦ {quem}',
   'Placar': 'የነጥብ ሰሌዳ',
+  'A chamada terminou.': 'ጥሪው አብቅቷል።',
+  'Não foi possível entrar nesta chamada.': 'ወደዚህ ጥሪ መግባት አልተቻለም።',
 } satisfies Record<string, string>;

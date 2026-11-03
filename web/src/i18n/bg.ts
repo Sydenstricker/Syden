@@ -2384,4 +2384,6 @@ export default {
   'Recusar chamada': 'Откажи обаждането',
   '{quem} recusou a chamada': 'Обаждането е отказано: {quem}',
   'Placar': 'Класиране',
+  'A chamada terminou.': 'Разговорът приключи.',
+  'Não foi possível entrar nesta chamada.': 'Не можа да се влезе в този разговор.',
 } satisfies Record<string, string>;

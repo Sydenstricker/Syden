@@ -2395,4 +2395,6 @@ export default {
   'Recusar chamada': 'Qoʻngʻiroqni rad etish',
   '{quem} recusou a chamada': '{quem} qoʻngʻiroqni rad etdi',
   'Placar': 'Hisob',
+  'A chamada terminou.': 'Qoʻngʻiroq tugadi.',
+  'Não foi possível entrar nesta chamada.': 'Bu qoʻngʻiroqqa qoʻshilib boʻlmadi.',
 } satisfies Record<string, string>;

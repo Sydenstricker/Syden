@@ -439,9 +439,10 @@ export function PlacarAoVivo({ linhas, eu }: { linhas: { userId: number; usernam
   if (linhas.length < 2) return null;
   return (
     <ol className="placar-ao-vivo" aria-label={t('Placar')}>
-      {linhas.map((linha, i) => (
+      {linhas.map((linha) => (
         <li key={linha.userId} className={linha.userId === eu ? 'eu' : ''}>
-          <span className="placar-ao-vivo-posicao">{i + 1}</span>
+          {/* Empatados dividem a posição: no começo, todos com 0 são "1", e não 1, 2, 3 pela ordem alfabética. */}
+          <span className="placar-ao-vivo-posicao">{1 + linhas.filter((o) => o.pontos > linha.pontos).length}</span>
           <span className="minijogo-nome">{linha.username}</span>
           <strong>{linha.pontos}</strong>
         </li>

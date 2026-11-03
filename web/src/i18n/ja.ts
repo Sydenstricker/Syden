@@ -2298,4 +2298,6 @@ export default {
   'Recusar chamada': '通話を拒否',
   '{quem} recusou a chamada': '{quem}さんが通話を拒否しました',
   'Placar': 'スコア',
+  'A chamada terminou.': '通話が終了しました。',
+  'Não foi possível entrar nesta chamada.': 'この通話に参加できませんでした。',
 } satisfies Record<string, string>;

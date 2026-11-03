@@ -32,6 +32,7 @@ export const ERROS_TRADUZIDOS = [
   chave('Pessoa não encontrada.'),
   chave('Canal não encontrado.'),
   chave('Conversa não encontrada.'),
+  chave('Não foi possível entrar nesta chamada.'),
   chave('Comunidade não encontrada.'),
   chave('Mensagem vazia.'),
   chave('Mensagem longa demais.'),

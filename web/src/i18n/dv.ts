@@ -2397,4 +2397,6 @@ export default {
   'Recusar chamada': 'ކޯލު ރިޖެކްޓްކުރޭ',
   '{quem} recusou a chamada': 'ކޯލު ރިޖެކްޓްކުރެވިއްޖެ: {quem}',
   'Placar': 'ސްކޯ',
+  'A chamada terminou.': 'ކޯލު ނިމިއްޖެ.',
+  'Não foi possível entrar nesta chamada.': 'މި ކޯލަށް ބައިވެރިވެވެން ނެތް.',
 } satisfies Record<string, string>;

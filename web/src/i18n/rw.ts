@@ -2328,4 +2328,6 @@ export default {
   'Recusar chamada': 'Anga guhamagarwa',
   '{quem} recusou a chamada': '{quem} yanze guhamagarwa',
   'Placar': 'Amanota',
+  'A chamada terminou.': 'Guhamagara byarangiye.',
+  'Não foi possível entrar nesta chamada.': 'Ntibyashobotse kwinjira muri uku guhamagara.',
 } satisfies Record<string, string>;

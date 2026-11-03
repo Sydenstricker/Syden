@@ -2382,4 +2382,6 @@ export default {
   'Recusar chamada': 'Odrzuć połączenie',
   '{quem} recusou a chamada': 'Połączenie odrzucone: {quem}',
   'Placar': 'Wyniki',
+  'A chamada terminou.': 'Rozmowa się zakończyła.',
+  'Não foi possível entrar nesta chamada.': 'Nie udało się dołączyć do tej rozmowy.',
 } satisfies Record<string, string>;

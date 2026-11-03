@@ -2297,6 +2297,9 @@ textarea {
 .chamada-recebida {
   outline: 2px solid var(--green);
   outline-offset: -2px;
+  /* No canto de CIMA: o convite para a voz mora embaixo, e os dois juntos ficavam um em cima do outro. */
+  top: 16px;
+  bottom: auto;
 }
 
 .chamada-recebida .chamada-atender {
@@ -13616,6 +13619,10 @@ body.arrastando-barra {
   display: flex;
   gap: 6px;
   overflow-x: auto;
+  /* Dentro do quiz (coluna centralizada) a lista crescia do tamanho das fichas e estourava o painel, sem rolar: esticada
+     e presa à largura dele, ela rola (revisão de 02/11/2026, medido: 1349 px com 8 pessoas). */
+  align-self: stretch;
+  max-width: 100%;
   font-size: calc(13px * var(--escala-do-texto));
 }
 

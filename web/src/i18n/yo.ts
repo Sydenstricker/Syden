@@ -2332,4 +2332,6 @@ export default {
   'Recusar chamada': 'Kọ ìpè',
   '{quem} recusou a chamada': '{quem} kọ ìpè náà',
   'Placar': 'Àmì',
+  'A chamada terminou.': 'Ìpè náà ti parí.',
+  'Não foi possível entrar nesta chamada.': 'Kò ṣeé ṣe láti darapọ̀ mọ́ ìpè yìí.',
 } satisfies Record<string, string>;

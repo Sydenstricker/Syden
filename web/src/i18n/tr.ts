@@ -2311,4 +2311,6 @@ export default {
   'Recusar chamada': 'Aramayı reddet',
   '{quem} recusou a chamada': '{quem} aramayı reddetti',
   'Placar': 'Skor tablosu',
+  'A chamada terminou.': 'Arama sona erdi.',
+  'Não foi possível entrar nesta chamada.': 'Bu aramaya katılınamadı.',
 } satisfies Record<string, string>;

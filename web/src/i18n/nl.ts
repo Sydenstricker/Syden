@@ -2316,4 +2316,6 @@ export default {
   'Recusar chamada': 'Gesprek weigeren',
   '{quem} recusou a chamada': '{quem} heeft het gesprek geweigerd',
   'Placar': 'Scorebord',
+  'A chamada terminou.': 'Het gesprek is beëindigd.',
+  'Não foi possível entrar nesta chamada.': 'Kon niet deelnemen aan dit gesprek.',
 } satisfies Record<string, string>;

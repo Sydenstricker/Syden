@@ -2302,4 +2302,6 @@ export default {
   'Recusar chamada': 'அழைப்பை நிராகரி',
   '{quem} recusou a chamada': '{quem} அழைப்பை நிராகரித்தார்',
   'Placar': 'மதிப்பெண்கள்',
+  'A chamada terminou.': 'அழைப்பு முடிந்தது.',
+  'Não foi possível entrar nesta chamada.': 'இந்த அழைப்பில் சேர முடியவில்லை.',
 } satisfies Record<string, string>;

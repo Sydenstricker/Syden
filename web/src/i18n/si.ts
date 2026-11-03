@@ -2387,4 +2387,6 @@ export default {
   'Recusar chamada': 'ඇමතුම ප්‍රතික්ෂේප කරන්න',
   '{quem} recusou a chamada': '{quem} ඇමතුම ප්‍රතික්ෂේප කළා',
   'Placar': 'ලකුණු',
+  'A chamada terminou.': 'ඇමතුම අවසන් විය.',
+  'Não foi possível entrar nesta chamada.': 'මෙම ඇමතුමට එක්විය නොහැකි විය.',
 } satisfies Record<string, string>;

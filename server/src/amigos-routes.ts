@@ -19,8 +19,9 @@ import type { FastifyInstance } from 'fastify';
 import type { Server } from 'socket.io';
 import * as db from './db.js';
 import { Freio } from './freio.js';
+import { regrasDe } from './protecao.js';
 import { barrarTemporario, requireUser } from './routes.js';
-import { reconferirChamadaDe, salaDaPessoa } from './realtime.js';
+import { afastarDasChamadas, salaDaPessoa } from './realtime.js';
 
 /**
  * Freio dos pedidos de amizade, por conta.
@@ -44,6 +45,17 @@ export function registerAmigosRoutes(app: FastifyInstance, io: Server) {
       amigos: db.listarAmizades(request.user.id),
       sugestoes: db.sugestoesDeAmizade(request.user.id),
     }));
+
+    /**
+     * A relação com UMA pessoa, para o cartão de perfil (revisão de 02/11/2026): o GET de cima monta também as sugestões,
+     * que juntam os membros de todas as comunidades em comum, e o cartão o chamava a cada abertura só para ler uma linha.
+     * Só a relação de quem pergunta: "nenhuma" é a mesma resposta para a conta que não existe.
+     */
+    authed.get<{ Params: { id: string } }>('/api/amigos/:id', async (request) => {
+      const outro = Number(request.params.id);
+      const relacao = Number.isInteger(outro) ? db.amizadeEntre(request.user.id, outro) : null;
+      return relacao ? { situacao: relacao.situacao, euPedi: relacao.quemPediu === request.user.id } : { situacao: null };
+    });
 
     authed.post<{ Body: { username?: string } }>('/api/amigos', async (request, reply) => {
       if (barrarTemporario(request, reply)) return reply;
@@ -98,9 +110,11 @@ export function registerAmigosRoutes(app: FastifyInstance, io: Server) {
         return reply.code(404).send({ error: 'Vocês não têm nenhuma relação para desfazer.' });
       }
       avisar(request.user.id, outro);
-      // Com um menor de "só amigos", a amizade desfeita encerra a chamada privada dos dois na hora (ver reconferirChamadaDe).
-      reconferirChamadaDe(io, request.user.id);
-      reconferirChamadaDe(io, outro);
+      // Com um menor de "só amigos", a amizade desfeita encerra a chamada privada dos dois na hora. Quem é protegido é o
+      // menor (sai o outro); a segunda volta já não acha nada (ver afastarDasChamadas).
+      const [menor, adulto] = regrasDe(outro) ? [outro, request.user.id] : [request.user.id, outro];
+      afastarDasChamadas(io, menor);
+      afastarDasChamadas(io, adulto);
       return { ok: true, amigos: db.listarAmizades(request.user.id) };
     });
   });

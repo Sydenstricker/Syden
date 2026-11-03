@@ -2367,4 +2367,6 @@ export default {
   'Recusar chamada': 'דחיית השיחה',
   '{quem} recusou a chamada': 'השיחה נדחתה: {quem}',
   'Placar': 'לוח תוצאות',
+  'A chamada terminou.': 'השיחה הסתיימה.',
+  'Não foi possível entrar nesta chamada.': 'לא ניתן להצטרף לשיחה הזו.',
 } satisfies Record<string, string>;

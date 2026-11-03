@@ -2381,4 +2381,6 @@ export default {
   'Recusar chamada': 'Afvis opkald',
   '{quem} recusou a chamada': '{quem} afviste opkaldet',
   'Placar': 'Pointtavle',
+  'A chamada terminou.': 'Opkaldet er slut.',
+  'Não foi possível entrar nesta chamada.': 'Kunne ikke deltage i dette opkald.',
 } satisfies Record<string, string>;

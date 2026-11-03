@@ -2367,4 +2367,6 @@ export default {
   'Recusar chamada': 'Відхилити дзвінок',
   '{quem} recusou a chamada': 'Дзвінок відхилено: {quem}',
   'Placar': 'Рахунок',
+  'A chamada terminou.': 'Дзвінок завершено.',
+  'Não foi possível entrar nesta chamada.': 'Не вдалося приєднатися до цього дзвінка.',
 } satisfies Record<string, string>;

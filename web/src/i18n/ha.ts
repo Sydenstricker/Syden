@@ -2319,4 +2319,6 @@ export default {
   'Recusar chamada': 'Ƙi kiran',
   '{quem} recusou a chamada': 'An ƙi kiran: {quem}',
   'Placar': 'Maki',
+  'A chamada terminou.': 'Kiran ya ƙare.',
+  'Não foi possível entrar nesta chamada.': 'Ba a iya shiga wannan kiran ba.',
 } satisfies Record<string, string>;

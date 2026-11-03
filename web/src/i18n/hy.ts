@@ -2406,4 +2406,6 @@ export default {
   'Recusar chamada': 'Մերժել զանգը',
   '{quem} recusou a chamada': '{quem}-ը մերժեց զանգը',
   'Placar': 'Հաշիվ',
+  'A chamada terminou.': 'Զանգն ավարտվեց։',
+  'Não foi possível entrar nesta chamada.': 'Չհաջողվեց միանալ այս զանգին։',
 } satisfies Record<string, string>;

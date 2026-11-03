@@ -2379,4 +2379,6 @@ export default {
   'Recusar chamada': 'Avvisa samtalet',
   '{quem} recusou a chamada': '{quem} avvisade samtalet',
   'Placar': 'Poängtavla',
+  'A chamada terminou.': 'Samtalet har avslutats.',
+  'Não foi possível entrar nesta chamada.': 'Det gick inte att gå med i samtalet.',
 } satisfies Record<string, string>;

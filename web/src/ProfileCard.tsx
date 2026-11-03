@@ -44,9 +44,9 @@ function BotaoDeAmizade({ userId, username }: { userId: number; username: string
 
   const carregar = useCallback(async () => {
     try {
-      const { amigos } = await api<{ amigos: { userId: number; situacao: 'pendente' | 'aceita'; euPedi: boolean }[] }>('/api/amigos');
-      const achada = amigos.find((a) => a.userId === userId);
-      setRelacao(!achada ? 'nenhuma' : achada.situacao === 'aceita' ? 'amigos' : achada.euPedi ? 'enviei' : 'recebi');
+      // Só a relação com esta pessoa (GET /api/amigos/:id), e não a lista inteira com as sugestões (revisão de 02/11/2026).
+      const r = await api<{ situacao: 'pendente' | 'aceita' | null; euPedi?: boolean }>(`/api/amigos/${userId}`);
+      setRelacao(!r.situacao ? 'nenhuma' : r.situacao === 'aceita' ? 'amigos' : r.euPedi ? 'enviei' : 'recebi');
     } catch {
       // Sem a resposta, nada de botão: oferecer um pedido que talvez já exista seria a tela afirmando o que não sabe.
     }
@@ -66,7 +66,10 @@ function BotaoDeAmizade({ userId, username }: { userId: number; username: string
       await fazer();
       await carregar();
     } catch (e) {
-      setErro(e instanceof ApiError ? e.message : t('Não deu certo. Tente de novo.'));
+      // A recusa do pedido fala em "conferir o nome", que no cartão ninguém digitou: ali ela vira a frase geral. Ela é a
+      // mesma para "não existe", "bloqueou" e "já há pedido" de propósito (ver amigos-routes.ts), e continua sendo.
+      const generica = !(e instanceof ApiError) || e.status === 404 || e.status === 409;
+      setErro(generica ? t('Não deu certo. Tente de novo.') : e.message);
     } finally {
       setOcupado(false);
     }

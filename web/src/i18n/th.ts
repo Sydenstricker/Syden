@@ -2330,4 +2330,6 @@ export default {
   'Recusar chamada': 'ปฏิเสธสาย',
   '{quem} recusou a chamada': '{quem} ปฏิเสธสาย',
   'Placar': 'คะแนน',
+  'A chamada terminou.': 'การโทรสิ้นสุดแล้ว',
+  'Não foi possível entrar nesta chamada.': 'เข้าร่วมการโทรนี้ไม่ได้',
 } satisfies Record<string, string>;

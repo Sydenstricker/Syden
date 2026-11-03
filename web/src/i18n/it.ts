@@ -2316,4 +2316,6 @@ export default {
   'Recusar chamada': 'Rifiuta la chiamata',
   '{quem} recusou a chamada': 'Chiamata rifiutata: {quem}',
   'Placar': 'Punteggio',
+  'A chamada terminou.': 'La chiamata è terminata.',
+  'Não foi possível entrar nesta chamada.': 'Non è stato possibile partecipare a questa chiamata.',
 } satisfies Record<string, string>;

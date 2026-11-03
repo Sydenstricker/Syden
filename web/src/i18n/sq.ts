@@ -2379,4 +2379,6 @@ export default {
   'Recusar chamada': 'Refuzo thirrjen',
   '{quem} recusou a chamada': 'Thirrja u refuzua: {quem}',
   'Placar': 'Rezultati',
+  'A chamada terminou.': 'Thirrja përfundoi.',
+  'Não foi possível entrar nesta chamada.': 'Nuk u arrit të hyhej në këtë thirrje.',
 } satisfies Record<string, string>;

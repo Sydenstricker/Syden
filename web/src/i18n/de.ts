@@ -2341,4 +2341,6 @@ export default {
   'Recusar chamada': 'Anruf ablehnen',
   '{quem} recusou a chamada': '{quem} hat den Anruf abgelehnt',
   'Placar': 'Punktestand',
+  'A chamada terminou.': 'Der Anruf ist beendet.',
+  'Não foi possível entrar nesta chamada.': 'Diesem Anruf konnte nicht beigetreten werden.',
 } satisfies Record<string, string>;

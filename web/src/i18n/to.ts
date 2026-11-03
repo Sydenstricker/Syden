@@ -2323,4 +2323,6 @@ export default {
   'Recusar chamada': 'Fakafisi ki he telefoní',
   '{quem} recusou a chamada': 'Kuo fakafisi ʻa {quem} ki he telefoní',
   'Placar': 'Maaka',
+  'A chamada terminou.': 'Kuo ʻosi ʻa e telefoní.',
+  'Não foi possível entrar nesta chamada.': 'Naʻe ʻikai lava ke kau ki he telefoni ko ʻení.',
 } satisfies Record<string, string>;

@@ -2316,4 +2316,6 @@ export default {
   'Recusar chamada': 'Kataa simu',
   '{quem} recusou a chamada': '{quem} amekataa simu',
   'Placar': 'Alama',
+  'A chamada terminou.': 'Simu imeisha.',
+  'Não foi possível entrar nesta chamada.': 'Imeshindikana kujiunga na simu hii.',
 } satisfies Record<string, string>;
