@@ -3,7 +3,7 @@
  * (corrida.ts). A fase roda inteira no computador de quem joga (web/src/plataforma/), em passos fixos de 1/60 s, e o tempo
  * é o NÚMERO DE PASSOS. O servidor guarda o melhor tempo e o fantasma de cada um, e confere o caminho:
  * - uma posição a cada 4 passos, e o número de posições bate com o tempo declarado;
- * - a primeira na largada e a última na chegada da fase;
+ * - a primeira na largada e a última no máximo 3 passos (de corrida) antes da chegada da fase;
  * - nenhuma posição mais longe da anterior do que o coelho anda: no x, a corrida (110/s), e onde há plataforma que anda,
  *   a corrida somada à dela; no y, a queda e a mola;
  * - o único salto aceito é a VOLTA AO POSTO depois de cair: exatamente num posto, e num que já se alcançou;
@@ -50,6 +50,12 @@ const VMOVEL = 145;
 /** Por amostra (4 passos), em décimos: a corrida, com uma folga de arredondamento. */
 const DX = Math.ceil(((VMAX * AMOSTRA) / 60) * 10) + 2;
 const DX_RAPIDO = Math.ceil((((VMAX + VMOVEL) * AMOSTRA) / 60) * 10) + 2;
+/**
+ * O quanto a última posição pode ficar antes da chegada, em décimos: ela é de no máximo 3 passos antes do passo que cruzou
+ * (uma a cada 4), e perto da chegada não há plataforma que anda, então são 3 passos de corrida (~5,5 px) e 1 px de folga.
+ * Mais que isso deixaria tirar as últimas amostras de uma corrida honesta e declarar menos passos.
+ */
+export const ANTES_DA_CHEGADA = 3 * Math.ceil((VMAX * 10) / 60) + 10;
 /** A mola sobe a 500/s; a queda, no máximo 430/s. */
 const DY = Math.ceil(((500 * AMOSTRA) / 60) * 10) + 2;
 /** Uma fase não leva mais de 10 min. */
@@ -90,8 +96,10 @@ export function validarPulo(fase: string, corpo: unknown): { ok: FaseValidada } 
     andou += dx;
     if (x > maiorX) maiorX = x;
   }
-  // a última posição é de no máximo 3 passos antes da chegada
-  if (a[a.length - 3] < def.chegada * 10 - 3 * DX_RAPIDO) return invalida;
+  // a última posição é de no máximo 3 passos antes da chegada (nenhuma fase tem trecho rápido perto dela: o teste confere)
+  if (a[a.length - 3] < def.chegada * 10 - ANTES_DA_CHEGADA) return invalida;
+  // a distância andada é uma conferência a mais, contra o caminho que vai e volta no lugar; a folga de 2% não abre o
+  // corte do fim, que é da conferência de cima
   if (andou < (def.chegada - def.largada[0]) * 10 * 0.98) return invalida;
   return { ok: { tempoMs: Math.round(((passos as number) * 1000) / 60), passos: passos as number, amostras: a } };
 }

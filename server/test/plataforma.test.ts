@@ -7,7 +7,7 @@ import { after, test } from 'node:test';
 import { comToken, criarConta, servidorDeTeste } from './ajuda.js';
 
 const { app, fechar } = await servidorDeTeste();
-const { FASES_DO_PULO, validarPulo } = await import('../src/plataforma.js');
+const { ANTES_DA_CHEGADA, FASES_DO_PULO, validarPulo } = await import('../src/plataforma.js');
 after(fechar);
 
 const ana = await criarConta(app, 'ana-pulo');
@@ -63,6 +63,20 @@ test('a conferência recusa o que não fecha: rápido demais, salto, longe da ch
   adiante.amostras.splice(30, 3, px * 10, py * 10, 1);
   assert.ok('erro' in validarPulo('prado-1', adiante), 'pular para um posto ainda não alcançado');
   assert.ok('erro' in validarPulo('prado-1', { passos: 2100, amostras: pulo('prado-1', 2100).amostras.map((v, i) => (i % 3 === 2 ? 7 : v)) }), 'jeito inventado');
+});
+
+test('uma corrida honesta com as últimas amostras cortadas (e menos passos declarados) não vale', () => {
+  const honesta = pulo('prado-1', 2100);
+  assert.ok('ok' in validarPulo('prado-1', honesta));
+  // 6 amostras a menos = 24 passos (0,4 s): o número de amostras fecha com 2073 passos, mas a última fica ~38 px antes
+  const seis = { passos: 2073, amostras: honesta.amostras.slice(0, -18) };
+  assert.ok('erro' in validarPulo('prado-1', seis), 'seis amostras cortadas');
+  // até uma só a menos (4 passos) já fica longe demais da chegada
+  const uma = { passos: 2093, amostras: honesta.amostras.slice(0, -3) };
+  assert.ok('erro' in validarPulo('prado-1', uma), 'uma amostra cortada');
+  // e a folga do fim vale porque nenhuma fase tem plataforma que anda perto da chegada
+  for (const [id, d] of Object.entries(FASES_DO_PULO))
+    for (const [, x1] of d.rapidos) assert.ok(x1 * 10 < d.chegada * 10 - ANTES_DA_CHEGADA - 1000, `trecho rápido perto da chegada em ${id}`);
 });
 
 test('só o melhor tempo fica, e quem não é amigo não vê o recorde nem o fantasma', async () => {
