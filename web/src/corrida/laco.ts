@@ -1,5 +1,19 @@
-import { AMOSTRA, amostrar, fantasmaEm, nivelDaCarga, novoKart, PASSO, passo, passosEmMs, pilotoAutomatico, progresso, type Comandos, type Kart } from './fisica';
-import { HORTA, montarPista, type Pista } from './pista';
+import {
+  AMOSTRA,
+  amostrar,
+  atingir,
+  fantasmaEm,
+  nivelDaCarga,
+  novoKart,
+  PASSO,
+  passo,
+  passosEmMs,
+  pilotoAutomatico,
+  progresso,
+  type Comandos,
+  type Kart,
+} from './fisica';
+import { HORTA, montarPista, type DefinicaoDaPista, type Pista } from './pista';
 import {
   cameraAtras,
   desenharChao,
@@ -11,25 +25,36 @@ import {
   pontoNoMapa,
   prepararDesenho,
   W,
+  type Desenho,
   type Figura,
 } from './render';
 
 /**
- * O LAÇO DA CORRIDA (03/11/2026): o que o contra o relógio (degrau 1) e a corrida na sala (degrau 2) têm em comum — a física
- * em passos fixos, a câmera, o desenho e o mapa pequeno. Quem chama diz o que muda: os fantasmas, os RIVAIS ao vivo (que
- * chegam pelo socket), a contagem da largada e o que fazer na chegada.
+ * O LAÇO DA CORRIDA (03/11/2026): o que o contra o relógio (degrau 1) e a corrida na sala (degraus 2 e 3) têm em comum — a
+ * física em passos fixos, a câmera, o desenho e o mapa pequeno. Quem chama diz o que muda: a pista, os fantasmas, os RIVAIS
+ * ao vivo (que chegam pelo socket), os ITENS, a contagem da largada e o que fazer na chegada.
  *
  * Com a janela sem foco, o kart PARA (a física e o relógio também). Na sala isso não tira vantagem de ninguém: o tempo de
  * cada um é contado nos passos dele, desde o sinal verde dele.
+ *
+ * OS ITENS (degrau 3, só na sala): as caixas ficam em fileiras na pista, e cada um pega as suas no próprio computador (a
+ * caixa que um pegou continua para os outros). O item sai conforme a posição: quem está atrás ganha mais cenoura e
+ * repolho; quem está na frente, mais lama. Tudo o que um item faz é um EVENTO com o passo da corrida de quem o usou, e todo
+ * computador simula o mesmo trajeto a partir dele (o repolho anda pela linha do meio, a lama fica onde caiu). Quem decide
+ * se foi atingido é o computador de quem leva — que vê o item chegando, e avisa os outros para ele sumir.
  */
 
-let pistaPronta: Pista | null = null;
+const pistas = new Map<string, Pista>();
 let coelhoPronto: HTMLImageElement | null = null;
 
 /** A pista, montada uma vez por página (são uns 300 ms de conta, e 20 MB que não mudam). */
-export function pistaDaCorrida(): Pista {
-  if (!pistaPronta) pistaPronta = montarPista(HORTA);
-  return pistaPronta;
+export function pistaDaCorrida(def: DefinicaoDaPista = HORTA): Pista {
+  let p = pistas.get(def.id);
+  if (!p) {
+    p = montarPista(def);
+    pistas.set(def.id, p);
+  }
+  return p;
 }
 
 async function coelho(): Promise<HTMLImageElement> {
@@ -63,10 +88,28 @@ export interface LinhaDaOrdem {
   eu: boolean;
 }
 
+export type Item = 'cenoura' | 'repolho' | 'lama';
+
+/** O que um item fez, no passo `n` da corrida de quem o usou. O servidor carimba o `dono`. */
+export type EventoDeItem =
+  | { tipo: 'repolho'; id: string; dono: number; n: number; s: number; lado: number }
+  | { tipo: 'lama'; id: string; dono: number; n: number; x: number; y: number }
+  | { tipo: 'acertou'; id: string };
+
+export interface Itens {
+  /** Todos os eventos da corrida, os meus e os que chegaram: o laço lê, quem recebe do socket acrescenta. */
+  eventos: EventoDeItem[];
+  /** Um evento meu, para mandar aos outros (o laço já o pôs em `eventos`). */
+  aoEvento: (e: Exclude<EventoDeItem, { tipo: 'acertou' }> | { tipo: 'acertou'; id: string }) => void;
+  /** O item na mão mudou (para o botão de toque). */
+  aoItem?: (item: Item | null) => void;
+}
+
 export interface OpcoesDoLaco {
   canvas: HTMLCanvasElement;
   /** O que o teclado e o toque estão apertando (quem chama escreve aqui). */
   comandos: Comandos;
+  pista: DefinicaoDaPista;
   /** Sem kart (quem assiste): a câmera vai atrás de quem está na frente. */
   piloto: boolean;
   eu: number;
@@ -74,6 +117,8 @@ export interface OpcoesDoLaco {
   fantasmas?: number[][];
   /** Os rivais da sala, por id. */
   rivais?: Map<number, Rival>;
+  /** Os itens (só na sala). */
+  itens?: Itens;
   /** Passos de semáforo antes do verde (3 s = 180). */
   contagem: number;
   aoPlacar: (p: { volta: number; ms: number; pausado: boolean }) => void;
@@ -103,16 +148,55 @@ export function rivalEm(posicoes: PosicaoDoRival[], n: number): PosicaoDoRival |
   return { n, x: a.x + (a.x - antes.x) * passos, y: a.y + (a.y - antes.y) * passos, a: a.a, andou: a.andou };
 }
 
+/** O repolho anda 230 unidades por segundo pela linha do meio, por 4 s; a lama fica 30 s. */
+export const VELOCIDADE_DO_REPOLHO = 230;
+export const VIDA_DO_REPOLHO = 4 * 60;
+export const VIDA_DA_LAMA = 30 * 60;
+
+/** O ponto da linha do meio a `s` unidades da largada (dá a volta), e a direção dela ali. */
+export function pontoNaLinha(p: Pista, s: number): { x: number; y: number; dx: number; dy: number } {
+  const n = p.lx.length;
+  const sv = ((s % p.comprimento) + p.comprimento) % p.comprimento;
+  let lo = 0, hi = n - 1;
+  while (lo < hi) {
+    const m = (lo + hi + 1) >> 1;
+    if (p.la[m] <= sv) lo = m;
+    else hi = m - 1;
+  }
+  const a = lo, b = (lo + 1) % n;
+  const seg = p.la[lo + 1] - p.la[lo] || 1;
+  const t = (sv - p.la[lo]) / seg;
+  const dx = p.lx[b] - p.lx[a], dy = p.ly[b] - p.ly[a], l = Math.hypot(dx, dy) || 1;
+  return { x: p.lx[a] + dx * t, y: p.ly[a] + dy * t, dx: dx / l, dy: dy / l };
+}
+
+/** Onde está o repolho no passo `m` de quem olha (null se ainda não saiu ou já acabou). */
+export function repolhoEm(p: Pista, e: { n: number; s: number; lado: number }, m: number) {
+  const dt = m - e.n;
+  if (dt < 0 || dt > VIDA_DO_REPOLHO) return null;
+  const q = pontoNaLinha(p, e.s + (VELOCIDADE_DO_REPOLHO * dt) / 60);
+  return { x: q.x - q.dy * e.lado, y: q.y + q.dx * e.lado };
+}
+
+/** O item que sai da caixa, pela posição (0 = na frente) entre `total`. */
+export function sortearItem(posicao: number, total: number, sorte = Math.random): Item {
+  const atras = total > 1 ? posicao / (total - 1) : 0.5;
+  // na frente: 10% cenoura, 30% repolho, 60% lama; atrás: 50% cenoura, 40% repolho, 10% lama
+  const cenoura = 0.1 + 0.4 * atras, repolho = 0.3 + 0.1 * atras;
+  const r = sorte();
+  return r < cenoura ? 'cenoura' : r < cenoura + repolho ? 'repolho' : 'lama';
+}
+
 export function rodarCorrida(o: OpcoesDoLaco): () => void {
   const { comandos } = o;
   let vivo = true;
   let quadro = 0;
-  const d = prepararDesenho(o.canvas);
+  const d: Desenho = prepararDesenho(o.canvas, o.pista.tema);
 
   void (async () => {
     d.coelho = await coelho();
     if (!vivo) return;
-    const p = pistaDaCorrida();
+    const p = pistaDaCorrida(o.pista);
     const mapa = mapaDaPista(p, 56);
     const kart: Kart = novoKart(p);
     const caminho: number[] = [];
@@ -127,6 +211,28 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
     let ordemAntes = '';
     /** Quem assiste: o passo da corrida que se mostra (o de quem está mais à frente no tempo). */
     let nAssistindo = 0;
+    /** A minha posição agora (0 = na frente) e quantos correm: decide o item da caixa. */
+    let minhaPosicao = 0;
+    let quantos = 1;
+
+    // AS CAIXAS: fileiras de quatro atravessando o asfalto, e a cada caixa o passo até quando ela está pega (para mim)
+    const caixas = o.itens
+      ? o.pista.caixas.flatMap((f) => {
+          const q = pontoNaLinha(p, f * p.comprimento);
+          return [-18, -6, 6, 18].map((lado) => ({ x: q.x - q.dy * lado, y: q.y + q.dx * lado, ate: 0 }));
+        })
+      : [];
+    let meuItem: Item | null = null;
+    let usavaAntes = false;
+    const acertados = new Set<string>();
+    const pegarItem = (item: Item | null) => {
+      meuItem = item;
+      o.itens?.aoItem?.(item);
+    };
+    const lancar = (e: EventoDeItem) => {
+      o.itens!.eventos.push(e);
+      o.itens!.aoEvento(e);
+    };
 
     const andar = () => {
       if (contagem > 0) {
@@ -136,17 +242,60 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
       if (!o.piloto) return;
       const jaTinhaChegado = kart.terminou;
       const auto = import.meta.env.DEV && (window as { corridaPilotoAutomatico?: boolean }).corridaPilotoAutomatico;
-      passo(kart, auto ? pilotoAutomatico(kart, p, true) : comandos, p);
+      const c = auto ? { ...pilotoAutomatico(kart, p, true), usa: meuItem !== null } : comandos;
+      passo(kart, c, p);
       if (!jaTinhaChegado) {
         amostrar(kart, caminho);
         if ((kart.passos - 1) % AMOSTRA === 0) {
           o.aoPosicao?.({ n: kart.passos, x: +kart.x.toFixed(1), y: +kart.y.toFixed(1), a: +kart.angulo.toFixed(3), andou: +progresso(kart, p).toFixed(3) });
         }
       }
+      if (o.itens && !kart.terminou) usarItens(c);
       if (kart.bateu) tremor = 6;
       // a câmera vai atrás do rumo, puxada um pouco para o nariz: na derrapagem, o kart aparece virado
       seguir(kart.rumo + (kart.angulo - kart.rumo) * 0.35);
     };
+
+    const usarItens = (c: Comandos) => {
+      const n = kart.passos;
+      // pegar da caixa
+      if (meuItem === null) {
+        for (const cx of caixas) {
+          if (cx.ate <= n && Math.hypot(cx.x - kart.x, cx.y - kart.y) < 8) {
+            cx.ate = n + 120;
+            pegarItem(sortearItem(minhaPosicao, quantos));
+            break;
+          }
+        }
+      }
+      // usar (na hora em que a tecla desce)
+      const usa = c.usa === true;
+      if (usa && !usavaAntes && meuItem !== null) {
+        const id = `${o.eu}-${n}`;
+        if (meuItem === 'cenoura') kart.turbo = Math.max(kart.turbo, 1.1);
+        else if (meuItem === 'repolho') {
+          // sai na frente do kart, na faixa em que ele está
+          const q = pontoNaLinha(p, p.la[kart.indice]);
+          const lado = -(kart.x - q.x) * q.dy + (kart.y - q.y) * q.dx;
+          lancar({ tipo: 'repolho', id, dono: o.eu, n, s: +(p.la[kart.indice] + 16).toFixed(1), lado: +lado.toFixed(1) });
+        } else {
+          lancar({ tipo: 'lama', id, dono: o.eu, n, x: +(kart.x - Math.cos(kart.angulo) * 12).toFixed(1), y: +(kart.y - Math.sin(kart.angulo) * 12).toFixed(1) });
+        }
+        pegarItem(null);
+      }
+      usavaAntes = usa;
+      // fui atingido? (quem decide é quem leva)
+      for (const e of o.itens!.eventos) {
+        if (e.tipo === 'acertou' || acertados.has(e.id) || e.dono === o.eu || kart.rodando > 0) continue;
+        const alvo = e.tipo === 'repolho' ? repolhoEm(p, e, n) : n >= e.n && n - e.n < VIDA_DA_LAMA ? e : null;
+        if (alvo && Math.hypot(alvo.x - kart.x, alvo.y - kart.y) < (e.tipo === 'repolho' ? 9 : 8)) {
+          atingir(kart, e.tipo === 'lama' ? 0.7 : 1);
+          acertados.add(e.id);
+          lancar({ tipo: 'acertou', id: e.id });
+        }
+      }
+    };
+
     const seguir = (alvo: number) => {
       let dif = alvo - camAngulo;
       while (dif > Math.PI) dif -= 2 * Math.PI;
@@ -182,8 +331,24 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
       desenharChao(d, p, cam);
       const figuras: Figura[] = [];
       for (const ob of p.objetos) {
-        const f = figuraNoChao(d, cam, ob.tipo, ob.x, ob.y, ob.tipo === 'arvore' ? 2.6 : ob.tipo === 'cenoura' ? 1 : 0.8);
+        const f = figuraNoChao(d, cam, ob.tipo, ob.x, ob.y, ob.raio > 0 ? 2.6 : ob.tipo === 'cenoura' ? 1 : 0.8);
         if (f) figuras.push(f);
+      }
+      // as caixas pulsam devagar; a que eu peguei some até voltar
+      for (const cx of caixas) {
+        if (o.piloto && cx.ate > n) continue;
+        const f = figuraNoChao(d, cam, 'caixa', cx.x, cx.y, 1.1 + 0.06 * Math.sin(performance.now() / 260));
+        if (f) figuras.push(f);
+      }
+      if (o.itens) {
+        const sumiram = new Set(o.itens.eventos.filter((e) => e.tipo === 'acertou').map((e) => e.id));
+        for (const e of o.itens.eventos) {
+          if (e.tipo === 'acertou' || sumiram.has(e.id)) continue;
+          const pos = e.tipo === 'repolho' ? repolhoEm(p, e, n) : n >= e.n && n - e.n < VIDA_DA_LAMA ? e : null;
+          if (!pos) continue;
+          const f = figuraNoChao(d, cam, e.tipo, pos.x, pos.y, e.tipo === 'repolho' ? 1.2 : 1.4);
+          if (f) figuras.push(f);
+        }
       }
       for (const amostras of o.fantasmas ?? []) {
         const g = fantasmaEm(amostras, n);
@@ -204,6 +369,8 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
       if (o.piloto && (kart.deriva !== 0 || kart.turbo > 0)) {
         faiscas(d.ctx, W / 2, 168, kart.turbo > 0 ? 2 : nivelDaCarga(kart), performance.now() / 1000, kart.deriva);
       }
+      // o item na mão: um quadro no alto, no meio (como nos jogos da época)
+      if (o.itens && o.piloto && contagem === 0 && !kart.terminou) quadroDoItem(d, meuItem);
       // o mapa pequeno no canto: os fantasmas em cinza, os rivais em azul, a pessoa em laranja
       d.ctx.globalAlpha = 0.85;
       d.ctx.drawImage(mapa, W - 60, H - 60);
@@ -224,14 +391,16 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
       }
 
       // a ordem de quem está na frente: eu pelo meu progresso, os rivais pelo deles no mesmo passo
-      if (o.aoOrdem && o.rivais) {
+      if (o.rivais) {
         const linhas = rivais.map((r) => ({ id: r.id, nome: r.nome, eu: false, andou: r.pos.andou }));
         if (o.piloto) linhas.push({ id: o.eu, nome: '', eu: true, andou: kart.terminou ? p.def.voltas : progresso(kart, p) });
         // quem ainda não mandou posição nenhuma fica no fim, na ordem de chegada da lista
         for (const [id, r] of o.rivais) if (!linhas.some((l) => l.id === id)) linhas.push({ id, nome: r.nome, eu: false, andou: -1 });
         linhas.sort((a, b) => b.andou - a.andou);
+        minhaPosicao = Math.max(0, linhas.findIndex((l) => l.eu));
+        quantos = linhas.length;
         const chave = linhas.map((l) => l.id).join(',');
-        if (chave !== ordemAntes) {
+        if (chave !== ordemAntes && o.aoOrdem) {
           ordemAntes = chave;
           o.aoOrdem(linhas.map(({ id, nome, eu }) => ({ id, nome, eu })));
         }
@@ -276,6 +445,23 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
     vivo = false;
     cancelAnimationFrame(quadro);
   };
+}
+
+/** O quadro do item, no alto e no meio: vazio, ou com a figura do item. */
+function quadroDoItem(d: Desenho, item: Item | null) {
+  const ctx = d.ctx;
+  const x = W / 2 - 13, y = 6;
+  ctx.fillStyle = '#1e1822';
+  ctx.fillRect(x - 1, y - 1, 28, 24);
+  ctx.fillStyle = '#3a3040';
+  ctx.fillRect(x, y, 26, 22);
+  ctx.fillStyle = '#fbf3e4';
+  ctx.fillRect(x + 1, y + 1, 24, 1);
+  if (!item) return;
+  const fig = d.figuras[item];
+  const escala = item === 'lama' ? 1.2 : 1.6;
+  const w = Math.round(fig.width * escala), h = Math.round(fig.height * escala);
+  ctx.drawImage(fig, Math.round(x + 13 - w / 2), Math.round(y + 11 - h / 2), w, h);
 }
 
 /** O semáforo da largada: três luzes vermelhas que acendem uma a uma, e as três verdes na hora de sair. */

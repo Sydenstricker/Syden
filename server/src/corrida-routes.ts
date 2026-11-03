@@ -19,6 +19,9 @@ export function registerCorridaRoutes(app: FastifyInstance) {
   app.register(async (authed) => {
     authed.addHook('preHandler', requireUser);
 
+    /** Os MEUS troféus (o quarto mostra): o pódio das corridas e das copas na sala, com contra quem foi. */
+    authed.get('/api/corrida-trofeus', async (request) => ({ trofeus: db.trofeusDe(request.user.id) }));
+
     authed.get<{ Params: { pista: string } }>('/api/corrida/:pista', async (request, reply) => {
       const { pista } = request.params;
       if (!PISTAS[pista]) return reply.code(404).send({ error: 'Pista desconhecida.' });

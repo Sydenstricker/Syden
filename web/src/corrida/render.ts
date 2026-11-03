@@ -1,4 +1,4 @@
-import { MUNDO, RES, sorteio, type Pista } from './pista';
+import { MUNDO, RES, sorteio, type Pista, type Tema } from './pista';
 
 /**
  * O DESENHO DA CORRIDA (03/11/2026): a câmera do "Mode 7" do Super Nintendo. O chão é a textura da pista deitada em
@@ -30,13 +30,12 @@ export function cameraAtras(kx: number, ky: number, angulo: number): Camera {
   return { x: kx - Math.cos(angulo) * ATRAS, y: ky - Math.sin(angulo) * ATRAS, angulo };
 }
 
-/** A cor do que fica fora do mapa (a grama de longe). */
-const FORA = 0xff3a7a4c >>> 0;
-/** A névoa do horizonte: a cor do céu lá embaixo, misturada ao chão conforme a distância. */
-const NEVOA = [236, 196, 160];
 
 export interface Desenho {
   ctx: CanvasRenderingContext2D;
+  /** A cor do horizonte (a névoa de longe) e a do que fica fora do mapa, do tema da pista. */
+  nevoa: [number, number, number];
+  fora: number;
   imagem: ImageData;
   pontos: Uint32Array;
   ceu: Uint32Array;
@@ -45,7 +44,7 @@ export interface Desenho {
   coelho: HTMLImageElement | null;
 }
 
-export function prepararDesenho(canvas: HTMLCanvasElement): Desenho {
+export function prepararDesenho(canvas: HTMLCanvasElement, tema: Tema): Desenho {
   canvas.width = W;
   canvas.height = H;
   const ctx = canvas.getContext('2d')!;
@@ -55,8 +54,19 @@ export function prepararDesenho(canvas: HTMLCanvasElement): Desenho {
     ctx,
     imagem,
     pontos: new Uint32Array(imagem.data.buffer),
-    ceu: desenharCeu(),
-    figuras: { arvore: arvore(), cenoura: cenoura(), flor: flor() },
+    nevoa: tema.ceu.baixo,
+    fora: tema.grama[1],
+    ceu: desenharCeu(tema),
+    figuras: {
+      arvore: arvore(),
+      laranjeira: laranjeira(),
+      coqueiro: coqueiro(),
+      cenoura: cenoura(),
+      flor: flor(),
+      caixa: caixa(),
+      repolho: repolho(),
+      lama: lama(),
+    },
     coelho: null,
   };
 }
@@ -68,9 +78,10 @@ const rgb = (r: number, g: number, b: number) => (0xff000000 | (b << 16) | (g <<
  * fileiras de morros, a de trás mais clara. Desenhado uma vez, ponto a ponto, como pixel art.
  */
 const CEU_W = W * 4;
-function desenharCeu(): Uint32Array {
+function desenharCeu(tema: Tema): Uint32Array {
   const ceu = new Uint32Array(CEU_W * HORIZONTE);
-  const topo = [116, 146, 196], meio = [226, 170, 150], baixo = NEVOA;
+  const { topo, meio, baixo } = tema.ceu;
+  const [fundoClaro, fundoCor, frenteCor, frenteFaixa] = tema.morros.map((c) => rgb(...c));
   for (let y = 0; y < HORIZONTE; y++) {
     const t = y / (HORIZONTE - 1);
     const a = t < 0.6 ? topo : meio, b = t < 0.6 ? meio : baixo, u = t < 0.6 ? t / 0.6 : (t - 0.6) / 0.4;
@@ -100,8 +111,8 @@ function desenharCeu(): Uint32Array {
     const h1 = HORIZONTE - 16 - morro(x, fundo, 7);
     const h2 = HORIZONTE - 7 - morro(x, frente, 4);
     for (let y = 0; y < HORIZONTE; y++) {
-      if (y >= h2) ceu[y * CEU_W + x] = (x >> 2) % 7 === 0 && y > h2 + 2 ? rgb(84, 116, 82) : rgb(96, 132, 90);
-      else if (y >= h1) ceu[y * CEU_W + x] = y < h1 + 1 ? rgb(178, 150, 156) : rgb(156, 134, 148);
+      if (y >= h2) ceu[y * CEU_W + x] = (x >> 2) % 7 === 0 && y > h2 + 2 ? frenteFaixa : frenteCor;
+      else if (y >= h1) ceu[y * CEU_W + x] = y < h1 + 1 ? fundoClaro : fundoCor;
     }
   }
   return ceu;
@@ -149,6 +160,101 @@ function arvore() {
       '.......kkkkkk.......',
     ],
     { k: '#1e2a1e', G: '#5e9a4c', g: '#86bc62', d: '#3e6e3a', T: '#8a5a36', t: '#6a4428' },
+  );
+}
+
+/** A laranjeira do Pomar: a copa do outono, com as frutas. */
+function laranjeira() {
+  return figura(
+    [
+      '.......kkkkkk.......',
+      '.....kkGGGGGGkk.....',
+      '....kGGoGGgGGGGk....',
+      '...kGGgGGGGGoGGGk...',
+      '..kGoGGGGGGGGGGGGk..',
+      '..kGgGGGGoGgGGGGdk..',
+      '.kGGGGGGgGGGGGoGddk.',
+      '.kGoGgGGGGGGGgGGddk.',
+      '.kGGGGGGGoGGGGGdddk.',
+      '.kdGGGGGgGGGGoGdddk.',
+      '..kdGoGGGGGGGGdddk..',
+      '..kddGGGGGoGGddddk..',
+      '...kdddGGGdddddk....',
+      '....kkdddddddkk.....',
+      '......kkkTTkk.......',
+      '........kTTk........',
+      '........kTtk........',
+      '........kTtk........',
+      '.......kkTtkk.......',
+      '.......kkkkkk.......',
+    ],
+    { k: '#2a1e14', G: '#6e8a3a', g: '#8eaa4a', d: '#4e6a2a', o: '#f08a3a', T: '#8a5a36', t: '#6a4428' },
+  );
+}
+
+/** O coqueiro da Praia: o tronco curvo e as folhas abertas. */
+function coqueiro() {
+  return figura(
+    [
+      '....kk.......kk.....',
+      '...kGGk.....kGGk....',
+      '..kGGGGk...kGGGGk...',
+      '.kGGkkGGkkkGGkkGGk..',
+      'kGk...kGGgGGk...kGk.',
+      'kk...kGGcGcGGk...kk.',
+      '....kGGk.cc.kGGk....',
+      '...kGk..kTTk..kGk...',
+      '...kk...kTtk...kk...',
+      '........kTtk........',
+      '.........kTtk.......',
+      '.........kTtk.......',
+      '.........kTTk.......',
+      '..........kTtk......',
+      '..........kTtk......',
+      '..........kTTk......',
+      '..........kTtk......',
+      '.........kTTtk......',
+      '.........kTtk.......',
+      '........kkTTkk......',
+      '........kkkkkk......',
+    ],
+    { k: '#1e2a1e', G: '#4e9a58', g: '#7cc070', c: '#7a5432', T: '#a8784a', t: '#86603a' },
+  );
+}
+
+/** A caixa de item (a corrida da sala): um caixote com a cenoura pintada. */
+function caixa() {
+  return figura(
+    [
+      'kkkkkkkkkkkk',
+      'kMmmmmmmmmMk',
+      'kmMk.gg.kMmk',
+      'km.kg..gk.mk',
+      'km..kOOk..mk',
+      'km..kOok..mk',
+      'km...kOk..mk',
+      'km...kk...mk',
+      'kmMk....kMmk',
+      'kMmmmmmmmmMk',
+      'kkkkkkkkkkkk',
+    ],
+    { k: '#2a1a14', M: '#c88a4a', m: '#a86c38', O: '#f08a3a', o: '#ffc07a', g: '#6aa848' },
+  );
+}
+
+/** O repolho que rola (o item que vai pela pista até o kart da frente). */
+function repolho() {
+  return figura(
+    ['...kkkk...', '..kGgGGk..', '.kGgGGgGk.', 'kGGgGgGGgk', 'kgGGgGGgGk', 'kGgGGgGgGk', '.kGGgGGGk.', '..kgGGgk..', '...kkkk...'],
+    { k: '#1e2a1e', G: '#86c06a', g: '#5e9a4c' },
+  );
+}
+
+/** A poça de lama (o item que fica para trás). */
+function lama() {
+  return figura(
+    ['....kkkkkkkk....', '..kkLlLLLlLLkk..', '.kLLLlLLLLLlLLk.', 'kLlLLLLlLLLLLlLk', '.kLLLlLLLlLLLLk.', '..kkkkkkkkkkkk..'],
+    { k: '#2a1a14', L: '#6a4628', l: '#8a6038' },
   );
 }
 
@@ -203,8 +309,8 @@ export function desenharChao(d: Desenho, p: Pista, cam: Camera): void {
     const linha = y * W;
     for (let x = 0; x < W; x++) {
       const tx = wx | 0, ty = wy | 0;
-      let cor = tx >= 0 && ty >= 0 && tx < RES && ty < RES ? tex[ty * RES + tx] : FORA;
-      if (nev > 0) cor = misturar(cor, nev / 5);
+      let cor = tx >= 0 && ty >= 0 && tx < RES && ty < RES ? tex[ty * RES + tx] : d.fora;
+      if (nev > 0) cor = misturar(cor, nev / 5, d.nevoa);
       pontos[linha + x] = cor;
       wx += px;
       wy += py;
@@ -213,7 +319,7 @@ export function desenharChao(d: Desenho, p: Pista, cam: Camera): void {
   d.ctx.putImageData(d.imagem, 0, 0);
 }
 
-function misturar(cor: number, t: number) {
+function misturar(cor: number, t: number, NEVOA: [number, number, number]) {
   const r = cor & 0xff, g = (cor >> 8) & 0xff, b = (cor >> 16) & 0xff;
   return rgb(Math.round(r + (NEVOA[0] - r) * t), Math.round(g + (NEVOA[1] - g) * t), Math.round(b + (NEVOA[2] - b) * t));
 }

@@ -1,24 +1,28 @@
+import { Trophy } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { api } from './api';
 import { useT } from './i18n';
 import { passosEmMs, tempoLegivel, type Comandos } from './corrida/fisica';
-import { pistaDaCorrida, rodarCorrida, type LinhaDaOrdem, type PosicaoDoRival, type Rival } from './corrida/laco';
-import { HORTA } from './corrida/pista';
+import { pistaDaCorrida, rodarCorrida, type EventoDeItem, type Item, type LinhaDaOrdem, type PosicaoDoRival, type Rival } from './corrida/laco';
+import { nomeDaPista } from './corrida/nomes';
+import { COPA, HORTA, PISTAS, pistaPorId, type DefinicaoDaPista } from './corrida/pista';
 import { H, mapaDaPista, pontoNoMapa, W } from './corrida/render';
 import type { Agir } from './Minijogo';
 import type { Partida } from './minijogos';
+import { TrofeusDaCorrida } from './TrofeusDaCorrida';
 
 /**
  * A CORRIDA DOS COELHOS (03/11/2026, pedido dele): kart de 16 bits. O coelho no kart é o mascote 3D renderizado em 24
- * ângulos (e2e/pixel-art/personagem/blender/meshy/kart.py); a pista e o resto, desenhados por código (corrida/).
+ * ângulos (e2e/pixel-art/personagem/blender/meshy/kart.py); as pistas e o resto, desenhados por código (corrida/).
  *
  * Dois jeitos de jogar, o mesmo laço (corrida/laco.ts):
- * - CONTRA O RELÓGIO (degrau 1, JogoCorrida): na aba Solo, com os FANTASMAS dos recordes dos amigos. Só o resultado vai
- *   ao servidor (server/src/corrida.ts): o melhor tempo e o fantasma.
- * - NA SALA (degrau 2, JogoCorridaNaSala): a turma corre junto. O servidor dá a largada e repassa as posições; cada um
- *   dirige no próprio computador, e a classificação é pelo tempo de cada um (server/src/minijogo-corrida.ts).
- * O degrau 3, combinado com ele: os itens, as copas e os troféus (do quarto, de quem ganhou; e o coletivo, do salão).
+ * - CONTRA O RELÓGIO (degrau 1, JogoCorrida): na aba Solo, em qualquer das três pistas, com os FANTASMAS dos recordes dos
+ *   amigos, e sem itens (o recorde é da pilotagem). Só o resultado vai ao servidor (server/src/corrida.ts).
+ * - NA SALA (degraus 2 e 3, JogoCorridaNaSala): a turma corre junto, numa pista ou na Copa da Cenoura (as três seguidas),
+ *   com os itens. O servidor dá a largada, repassa as posições e os itens, e classifica pelo tempo de cada um
+ *   (server/src/minijogo-corrida.ts). O pódio vira TROFÉU no quarto de quem ganhou (TrofeusDaCorrida.tsx), e a copa
+ *   corrida até o fim conta na conquista coletiva do salão.
  */
 
 interface Recorde {
@@ -40,9 +44,12 @@ const MAX_FANTASMAS = 3;
 const CONTAGEM = 3 * 60;
 const MEDALHAS = ['🥇', '🥈', '🥉'];
 
-/** O TECLADO E O TOQUE: setas ou WASD, Espaço (ou Shift) derrapa. Só enquanto `ativo`, e sem rolar a página. */
+/**
+ * O TECLADO E O TOQUE: setas ou WASD, Espaço (ou Shift) derrapa, E (ou Ctrl) usa o item. Só enquanto `ativo`, e sem rolar
+ * a página.
+ */
 function useControles(ativo: boolean) {
-  const comandos = useRef<Comandos>({ acelera: false, freia: false, vira: 0, derrapa: false });
+  const comandos = useRef<Comandos>({ acelera: false, freia: false, vira: 0, derrapa: false, usa: false });
   const lados = useRef({ esquerda: false, direita: false, toqueEsquerda: false, toqueDireita: false });
   const virar = () => {
     const l = lados.current;
@@ -62,6 +69,7 @@ function useControles(ativo: boolean) {
       else if (k === 'arrowleft' || k === 'a') lados.current.esquerda = apertada;
       else if (k === 'arrowright' || k === 'd') lados.current.direita = apertada;
       else if (k === ' ' || k === 'shift') c.derrapa = apertada;
+      else if (k === 'e' || k === 'control') c.usa = apertada;
       else usou = false;
       virar();
       if (usou) e.preventDefault();
@@ -71,7 +79,7 @@ function useControles(ativo: boolean) {
     // trocou de janela com a tecla apertada: o "soltar" vai para a outra janela, e o kart seguiria virando sozinho
     const soltarTudo = () => {
       const toque = window.matchMedia?.('(pointer: coarse)').matches ?? false;
-      Object.assign(c, { acelera: toque, freia: false, vira: 0, derrapa: false });
+      Object.assign(c, { acelera: toque, freia: false, vira: 0, derrapa: false, usa: false });
       Object.assign(lados.current, { esquerda: false, direita: false, toqueEsquerda: false, toqueDireita: false });
     };
     const escondeu = () => document.hidden && soltarTudo();
@@ -86,7 +94,7 @@ function useControles(ativo: boolean) {
       window.removeEventListener('keyup', sobe);
       window.removeEventListener('blur', soltarTudo);
       document.removeEventListener('visibilitychange', escondeu);
-      Object.assign(c, { acelera: false, freia: false, vira: 0, derrapa: false });
+      Object.assign(c, { acelera: false, freia: false, vira: 0, derrapa: false, usa: false });
     };
   }, [ativo]);
   const tocar = (lado: 'toqueEsquerda' | 'toqueDireita', apertado: boolean) => {
@@ -96,7 +104,7 @@ function useControles(ativo: boolean) {
   return { comandos, tocar };
 }
 
-function BotoesDeToque({ controles }: { controles: ReturnType<typeof useControles> }) {
+function BotoesDeToque({ controles, item }: { controles: ReturnType<typeof useControles>; item?: Item | null }) {
   const t = useT();
   const { comandos, tocar } = controles;
   const lado = (qual: 'toqueEsquerda' | 'toqueDireita') => ({
@@ -110,6 +118,17 @@ function BotoesDeToque({ controles }: { controles: ReturnType<typeof useControle
       <button type="button" aria-label={t('Virar para a esquerda')} {...lado('toqueEsquerda')}>
         ◀
       </button>
+      {item && (
+        <button
+          type="button"
+          aria-label={t('Usar o item')}
+          onPointerDown={() => (comandos.current.usa = true)}
+          onPointerUp={() => (comandos.current.usa = false)}
+          onPointerCancel={() => (comandos.current.usa = false)}
+        >
+          {item === 'cenoura' ? '🥕' : item === 'repolho' ? '🥬' : '🟤'}
+        </button>
+      )}
       <button
         type="button"
         aria-label={t('Derrapar')}
@@ -127,10 +146,10 @@ function BotoesDeToque({ controles }: { controles: ReturnType<typeof useControle
 }
 
 /** O placar de cima: a volta e o relógio. */
-function Placar({ placar }: { placar: { volta: number; ms: number } }) {
+function Placar({ placar, voltas }: { placar: { volta: number; ms: number }; voltas: number }) {
   return (
     <div className="corrida-placar" aria-live="off">
-      <span>🏁 {placar.volta}/{HORTA.voltas}</span>
+      <span>🏁 {placar.volta}/{voltas}</span>
       <span className="corrida-relogio">{tempoLegivel(placar.ms)}</span>
     </div>
   );
@@ -144,6 +163,62 @@ function usePlacar() {
   return [placar, atualizar] as const;
 }
 
+/** O mapa de uma pista, desenhado quando a pista fica pronta (montar cada uma leva uns 300 ms, uma vez por página). */
+function MapaDaPista({ def, lado }: { def: DefinicaoDaPista; lado: number }) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const quadro = requestAnimationFrame(() => {
+      const p = pistaDaCorrida(def);
+      const alvo = ref.current?.getContext('2d');
+      if (!alvo) return;
+      alvo.imageSmoothingEnabled = false;
+      alvo.clearRect(0, 0, lado, lado);
+      alvo.drawImage(mapaDaPista(p, lado), 0, 0);
+      pontoNoMapa(alvo, 0, 0, lado, p.largada.x, p.largada.y, '#ffa24a');
+    });
+    return () => cancelAnimationFrame(quadro);
+  }, [def, lado]);
+  return <canvas ref={ref} width={lado} height={lado} aria-hidden="true" style={{ background: corDoFundo(def) }} />;
+}
+
+const corDoFundo = (def: DefinicaoDaPista) => {
+  const c = def.tema.grama[0];
+  return `rgb(${c & 0xff}, ${(c >> 8) & 0xff}, ${(c >> 16) & 0xff})`;
+};
+
+/** A ESCOLHA DA PISTA da corrida na sala: as três, ou a copa com as três seguidas. */
+export function EscolhaDaPista({ aoEscolher, aoVoltar }: { aoEscolher: (pista: string) => void; aoVoltar: () => void }) {
+  const t = useT();
+  return (
+    <div className="corrida-escolha">
+      <ul className="corrida-pistas">
+        {PISTAS.map((def) => (
+          <li key={def.id}>
+            <button type="button" className="corrida-pista-botao" onClick={() => aoEscolher(def.id)}>
+              <MapaDaPista def={def} lado={72} />
+              <strong>{t(nomeDaPista(def.id))}</strong>
+            </button>
+          </li>
+        ))}
+        <li>
+          <button type="button" className="corrida-pista-botao copa" onClick={() => aoEscolher(COPA)}>
+            <span className="corrida-copa-mapas" aria-hidden="true">
+              <Trophy size={40} />
+            </span>
+            <strong>{t(nomeDaPista(COPA))}</strong>
+            <small>{t('As três pistas seguidas, com pontos por posição.')}</small>
+          </button>
+        </li>
+      </ul>
+      <div className="minijogo-acoes">
+        <button type="button" className="btn-secondary" onClick={aoVoltar}>
+          {t('Outros jogos')}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // =====================================================================================================================
 // CONTRA O RELÓGIO (a aba Solo)
 // =====================================================================================================================
@@ -151,21 +226,22 @@ function usePlacar() {
 export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void }) {
   const t = useT();
   const [fase, setFase] = useState<'largada' | 'correndo' | 'fim'>('largada');
+  const [def, setDef] = useState<DefinicaoDaPista>(HORTA);
   const [recordes, setRecordes] = useState<Recorde[] | null>(null);
   const [escolhidos, setEscolhidos] = useState<Set<number>>(new Set());
   const [resultado, setResultado] = useState<Resultado | null>(null);
   const [erro, setErro] = useState<string | null>(null);
   const [placar, setPlacar] = usePlacar();
+  const [vendoTrofeus, setVendoTrofeus] = useState(false);
   const canvas = useRef<HTMLCanvasElement>(null);
   const controles = useControles(fase === 'correndo');
   /** Cada "Jogar de novo" é uma corrida nova, sem voltar à tela da largada. */
   const [rodada, setRodada] = useState(0);
   const tela = useRef<HTMLDivElement>(null);
-  const mapaDaLargada = useRef<HTMLCanvasElement>(null);
-  const pista = HORTA.id;
+  const pista = def.id;
 
-  const lerRecordes = () =>
-    api<{ recordes: Recorde[] }>(`/api/corrida/${pista}`)
+  const lerRecordes = (id = pista) =>
+    api<{ recordes: Recorde[] }>(`/api/corrida/${id}`)
       .then((r) => {
         setRecordes(r.recordes);
         return r.recordes;
@@ -175,31 +251,17 @@ export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void
         return [] as Recorde[];
       });
 
-  // Os recordes ao abrir: os fantasmas que vêm marcados são o meu e os dos amigos logo acima de mim (o próximo alvo).
+  // Os recordes da pista escolhida: os fantasmas que vêm marcados são o meu e os dos amigos logo acima de mim (o próximo alvo).
   useEffect(() => {
-    void lerRecordes().then((lista) => {
+    setRecordes(null);
+    void lerRecordes(pista).then((lista) => {
       const meu = lista.findIndex((r) => r.userId === eu);
       const ate = meu < 0 ? lista.length : meu;
       const acima = lista.slice(Math.max(0, ate - (MAX_FANTASMAS - 1)), ate).map((r) => r.userId);
       setEscolhidos(new Set([...(meu >= 0 ? [eu] : []), ...acima].slice(0, MAX_FANTASMAS)));
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // O MAPA DA LARGADA: a pista é montada já aqui (uns 300 ms, uma vez por página), e a corrida começa sem espera.
-  useEffect(() => {
-    if (fase !== 'largada') return;
-    const quadro = requestAnimationFrame(() => {
-      const p = pistaDaCorrida();
-      const alvo = mapaDaLargada.current?.getContext('2d');
-      if (alvo) {
-        alvo.imageSmoothingEnabled = false;
-        alvo.drawImage(mapaDaPista(p, 112), 0, 0);
-        pontoNoMapa(alvo, 0, 0, 112, p.largada.x, p.largada.y, '#ffa24a');
-      }
-    });
-    return () => cancelAnimationFrame(quadro);
-  }, [fase]);
+  }, [pista]);
 
   // A CORRIDA: baixa os fantasmas marcados, conta 3, 2, 1 e roda até a chegada.
   useEffect(() => {
@@ -221,6 +283,7 @@ export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void
       parar = rodarCorrida({
         canvas: canvas.current,
         comandos: controles.comandos.current,
+        pista: def,
         piloto: true,
         eu,
         fantasmas,
@@ -264,13 +327,26 @@ export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void
     <div className="corrida">
       {fase === 'largada' && (
         <div className="corrida-largada">
-          <div className="corrida-pista">
-            <canvas ref={mapaDaLargada} width={112} height={112} aria-hidden="true" />
-            <div className="corrida-pista-nome">
-              <strong>{t('Horta')}</strong>
-              {meu && <span>{t('Seu recorde: {tempo}', { tempo: tempoLegivel(meu.tempoMs) })}</span>}
-              <p className="settings-hint">{t('Setas para dirigir, Espaço para derrapar e carregar o turbo.')}</p>
-            </div>
+          {/* a escolha da pista: o mapa de cada uma, e a escolhida em destaque */}
+          <ul className="corrida-pistas" role="radiogroup">
+            {PISTAS.map((p) => (
+              <li key={p.id}>
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={p.id === pista}
+                  className={`corrida-pista-botao${p.id === pista ? ' escolhida' : ''}`}
+                  onClick={() => setDef(p)}
+                >
+                  <MapaDaPista def={p} lado={72} />
+                  <strong>{t(nomeDaPista(p.id))}</strong>
+                </button>
+              </li>
+            ))}
+          </ul>
+          <div className="corrida-pista-nome">
+            {meu && <span>{t('Seu recorde: {tempo}', { tempo: tempoLegivel(meu.tempoMs) })}</span>}
+            <p className="settings-hint">{t('Setas para dirigir, Espaço para derrapar e carregar o turbo.')}</p>
           </div>
           {recordes !== null && (
             <fieldset className="corrida-fantasmas">
@@ -300,6 +376,9 @@ export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void
             <button type="button" className="btn-primary" onClick={() => setFase('correndo')}>
               {t('Começar')}
             </button>
+            <button type="button" className="btn-secondary" onClick={() => setVendoTrofeus(true)}>
+              <Trophy size={14} aria-hidden="true" /> {t('Troféus')}
+            </button>
             <button type="button" className="btn-secondary" onClick={aoVoltar}>
               {t('Outros jogos')}
             </button>
@@ -310,7 +389,7 @@ export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void
       {fase !== 'largada' && (
         <div className="corrida-tela" ref={tela} tabIndex={-1}>
           <canvas ref={canvas} width={W} height={H} />
-          {fase === 'correndo' && <Placar placar={placar} />}
+          {fase === 'correndo' && <Placar placar={placar} voltas={def.voltas} />}
           {fase === 'correndo' && <BotoesDeToque controles={controles} />}
           {fase === 'fim' && resultado && (
             <div className="corrida-fim">
@@ -349,6 +428,7 @@ export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void
           )}
         </div>
       )}
+      {vendoTrofeus && <TrofeusDaCorrida aoFechar={() => setVendoTrofeus(false)} />}
       {erro && <p className="form-error small">{erro}</p>}
     </div>
   );
@@ -358,25 +438,29 @@ export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void
 // NA SALA (a turma corre junto)
 // =====================================================================================================================
 
+type LinhaDaCorrida = { userId: number; username: string; tempoMs: number | null; voltas?: number[] };
+
 /** A corrida da sala, como o servidor a manda (server/src/minijogo-corrida.ts). */
 export interface EstadoCorrida {
-  fase: 'largada' | 'correndo' | 'fim';
+  fase: 'largada' | 'correndo' | 'intervalo' | 'fim';
+  /** A pista desta corrida (na copa, a da vez). */
   pista: string;
+  copa?: boolean;
+  /** Na copa: qual corrida é esta (1 a 3), de quantas. */
+  corrida?: number;
+  corridas?: number;
   voltasDaCorrida: number;
+  itens?: boolean;
   /** Em ordem: quem chegou, pelo tempo; depois quem não chegou, pelo quanto andou. */
-  pilotos: { userId: number; username: string; tempoMs: number | null; voltas: number[] }[];
+  pilotos: LinhaDaCorrida[];
+  /** Na copa: os pontos somados, do primeiro ao último. */
+  placarDaCopa?: { userId: number; username: string; pontos: number }[] | null;
+  /** A classificação da corrida que acabou de acabar (no intervalo e no fim). */
+  ultima?: LinhaDaCorrida[] | null;
   prazo: boolean;
 }
 
-export function JogoCorridaNaSala({
-  estado,
-  eu,
-  jogador,
-  restante,
-  agir,
-  socket,
-  channelId,
-}: {
+export function JogoCorridaNaSala(props: {
   estado: EstadoCorrida & Partida;
   eu: number;
   jogador: boolean;
@@ -385,15 +469,90 @@ export function JogoCorridaNaSala({
   socket: Socket | null;
   channelId: number;
 }) {
+  const t = useT();
+  const { estado, eu } = props;
+  const fim = estado.fase === 'fim' || estado.terminada;
+  const copa = estado.copa === true;
+  const cabecalho = copa && (
+    <div className="corrida-copa-topo">
+      <strong>{t(nomeDaPista(COPA))}</strong>
+      <span>
+        {t('Rodada {n} de {total}', { n: estado.corrida ?? 1, total: estado.corridas ?? 3 })} · {t(nomeDaPista(estado.pista))}
+      </span>
+    </div>
+  );
+
+  // entre as corridas da copa: a última corrida e o placar somado
+  if (estado.fase === 'intervalo' || (fim && copa)) {
+    return (
+      <div className="corrida">
+        {cabecalho}
+        <div className="corrida-tela corrida-placar-da-copa">
+          <div className="corrida-fim">
+            <ol className="corrida-classificacao">
+              {(estado.placarDaCopa ?? []).map((p, i) => (
+                <li key={p.userId} className={p.userId === eu ? 'eu' : undefined}>
+                  <span className="corrida-posicao">{fim && i < 3 && p.pontos > 0 ? MEDALHAS[i] : i + 1}</span>
+                  <span className="corrida-quem">{p.username}</span>
+                  <span className="corrida-pontos">{p.pontos}</span>
+                </li>
+              ))}
+            </ol>
+            {estado.ultima && (
+              <ol className="corrida-voltas corrida-ultima">
+                {estado.ultima.map((p, i) => (
+                  <li key={p.userId}>
+                    {i + 1}. {p.username} · {p.tempoMs !== null ? tempoLegivel(p.tempoMs) : '—'}
+                  </li>
+                ))}
+              </ol>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="corrida">
+      {cabecalho}
+      {/* uma corrida, um laço: na copa, cada corrida monta a sua (os rivais e os itens recomeçam) */}
+      <CorridaDaSala key={`${estado.corrida ?? 1}-${estado.pista}`} {...props} fim={fim} />
+    </div>
+  );
+}
+
+function CorridaDaSala({
+  estado,
+  eu,
+  jogador,
+  restante,
+  agir,
+  socket,
+  channelId,
+  fim,
+}: {
+  estado: EstadoCorrida & Partida;
+  eu: number;
+  jogador: boolean;
+  restante: number;
+  agir: Agir;
+  socket: Socket | null;
+  channelId: number;
+  fim: boolean;
+}) {
+  const t = useT();
   const canvas = useRef<HTMLCanvasElement>(null);
   const tela = useRef<HTMLDivElement>(null);
   const [placar, setPlacar] = usePlacar();
   const [ordem, setOrdem] = useState<LinhaDaOrdem[]>([]);
   const [chegou, setChegou] = useState(false);
+  const [item, setItem] = useState<Item | null>(null);
   const piloto = jogador && estado.pilotos.some((p) => p.userId === eu);
-  const controles = useControles(piloto && !chegou && !estado.terminada);
+  const controles = useControles(piloto && !chegou && !fim);
   const rivais = useRef(new Map<number, Rival>());
-  const fim = estado.fase === 'fim' || estado.terminada;
+  const eventos = useRef<EventoDeItem[]>([]);
+  const def = pistaPorId(estado.pista);
 
   // os rivais: todo mundo da corrida menos eu, com o nome que a turma vê
   for (const p of estado.pilotos) {
@@ -403,13 +562,19 @@ export function JogoCorridaNaSala({
     else rivais.current.set(p.userId, { nome: p.username, posicoes: [] });
   }
 
-  // AS POSIÇÕES DOS OUTROS chegam pelo socket, já com quem mandou (o servidor carimba)
+  // AS POSIÇÕES E OS ITENS DOS OUTROS chegam pelo socket, já com quem mandou (o servidor carimba)
   useEffect(() => {
     if (!socket) return;
-    const chegada = (m: { channelId?: number; dados?: { userId?: number } & Partial<PosicaoDoRival> }) => {
-      if (m.channelId !== channelId || !m.dados || typeof m.dados.userId !== 'number') return;
-      const r = rivais.current.get(m.dados.userId);
-      const { n, x, y, a, andou } = m.dados;
+    const chegada = (m: { channelId?: number; dados?: Record<string, unknown> }) => {
+      if (m.channelId !== channelId || !m.dados) return;
+      const d = m.dados;
+      if (d.tipo === 'repolho' || d.tipo === 'lama' || d.tipo === 'acertou') {
+        if (typeof d.id === 'string' && !eventos.current.some((e) => e.id === d.id && e.tipo === d.tipo)) eventos.current.push(d as unknown as EventoDeItem);
+        return;
+      }
+      if (typeof d.userId !== 'number') return;
+      const r = rivais.current.get(d.userId);
+      const { n, x, y, a, andou } = d as unknown as PosicaoDoRival;
       if (!r || typeof n !== 'number' || typeof x !== 'number' || typeof y !== 'number' || typeof a !== 'number' || typeof andou !== 'number') return;
       const ultima = r.posicoes.at(-1);
       if (ultima && ultima.n >= n) return;
@@ -435,16 +600,19 @@ export function JogoCorridaNaSala({
     if (fim || !canvas.current) return;
     tela.current?.focus();
     const contagem = estado.fase === 'largada' ? Math.max(0, Math.round((restante * 60) / 1000)) : 0;
+    const enviar = (dados: unknown) => socket?.emit('minijogo:tempo-real', { channelId, dados });
     const parar = rodarCorrida({
       canvas: canvas.current,
       comandos: controles.comandos.current,
+      pista: def,
       piloto,
       eu,
       rivais: rivais.current,
+      itens: estado.itens === false ? undefined : { eventos: eventos.current, aoEvento: enviar, aoItem: setItem },
       contagem,
       aoPlacar: setPlacar,
       aoOrdem: setOrdem,
-      aoPosicao: (pos) => socket?.emit('minijogo:tempo-real', { channelId, dados: pos }),
+      aoPosicao: enviar,
       aoChegar: (voltas, caminho) => {
         if (acabou.current) return;
         setChegou(true);
@@ -461,10 +629,10 @@ export function JogoCorridaNaSala({
   const comTempos = chegou || fim;
 
   return (
-    <div className="corrida">
+    <>
       <div className="corrida-tela" ref={tela} tabIndex={-1}>
         <canvas ref={canvas} width={W} height={H} />
-        {!fim && piloto && <Placar placar={placar} />}
+        {!fim && piloto && <Placar placar={placar} voltas={def.voltas} />}
         {!comTempos && ordem.length > 1 && (
           <ol className="corrida-ordem" aria-live="off">
             {ordem.map((l, i) => (
@@ -474,7 +642,7 @@ export function JogoCorridaNaSala({
             ))}
           </ol>
         )}
-        {!fim && piloto && !chegou && <BotoesDeToque controles={controles} />}
+        {!fim && piloto && !chegou && <BotoesDeToque controles={controles} item={item} />}
         {comTempos && (
           <div className="corrida-fim">
             <ol className="corrida-classificacao">
@@ -490,6 +658,7 @@ export function JogoCorridaNaSala({
           </div>
         )}
       </div>
-    </div>
+      {piloto && !fim && <p className="settings-hint corrida-dica">{t('Setas para dirigir, Espaço para derrapar, E para usar o item.')}</p>}
+    </>
   );
 }

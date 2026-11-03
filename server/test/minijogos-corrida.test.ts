@@ -18,6 +18,7 @@ const bia = await criarConta(app, 'bia-corrida');
 const idDe = async (token: string) => (await comToken(app, token)('GET', '/api/me')).json().id as number;
 const anaId = await idDe(ana.token);
 const biaId = await idDe(bia.token);
+const comunidade = (await comToken(app, ana.token)('POST', '/api/communities', { name: 'Turma do kart' })).json() as { id: number };
 
 /** Como em corrida.test.ts: um círculo que passa pela linha de chegada da horta-1. */
 function corridaDe(porVolta: number) {
@@ -31,8 +32,24 @@ function corridaDe(porVolta: number) {
   return { tipo: 'chegada', voltas, amostras };
 }
 
+/** Um círculo que passa pela linha de chegada de outra pista (o centro em (520, 520), o raio até a linha). */
+function corridaPela(linha: [number, number]) {
+  return (porVolta: number) => {
+    const voltas = [porVolta, porVolta * 2, porVolta * 3];
+    const r = Math.hypot(linha[0] - 520, linha[1] - 520), a0 = Math.atan2(linha[1] - 520, linha[0] - 520);
+    const amostras: number[] = [];
+    for (let p = 1; p <= voltas[2]; p += 4) {
+      const a = a0 + (2 * Math.PI * (p - 1)) / porVolta;
+      amostras.push(Math.round((520 + Math.cos(a) * r) * 10), Math.round((520 + Math.sin(a) * r) * 10), Math.round(a * 1000));
+    }
+    return { tipo: 'chegada', voltas, amostras };
+  };
+}
+const corridaNoPomar = corridaPela([220, 300]);
+const corridaNaPraia = corridaPela([230, 230]);
+
 /** O motor de mentira: o relógio é chamado na mão. */
-function contexto(naSala: number[]) {
+function contexto(naSala: number[], comunidade = 0) {
   const relogio: { ms: number; depois: () => void }[] = [];
   let terminou = false;
   return {
@@ -44,6 +61,7 @@ function contexto(naSala: number[]) {
       terminar: () => (terminou = true),
       naSala: () => naSala,
       nome: (id: number) => (id === anaId ? 'ana' : 'bia'),
+      comunidade,
     },
   };
 }
@@ -90,13 +108,70 @@ test('fantasma que não fecha é recusado; quem não chega fica atrás, pelo qua
   assert.deepEqual(pilotos.map((p) => [p.userId, p.tempoMs]), [[biaId, null], [anaId, null]], 'a Bia andou mais');
 });
 
-test('a corrida da sala que bate o recorde vira o recorde', async () => {
-  const m = contexto([anaId, biaId]);
-  const jogo = corrida.comecar(m.ctx, { naSala: [anaId, biaId], criadaPor: anaId, corpo: {} });
+
+test('a corrida avulsa dá o troféu do pódio, com contra quem, e não vira recorde (tem itens)', async () => {
+  const m = contexto([anaId, biaId], comunidade.id);
+  const jogo = corrida.comecar(m.ctx, { naSala: [anaId, biaId], criadaPor: anaId, corpo: { pista: 'pomar-1' } });
   assert.ok(typeof jogo !== 'string');
+  assert.equal(jogo.publico(anaId).pista, 'pomar-1');
   m.relogio[0].depois();
   agora += 120_000;
-  assert.equal(jogo.acao(anaId, corridaDe(1200)), null);
-  const recordes = (await comToken(app, ana.token)('GET', '/api/corrida/horta-1')).json().recordes;
-  assert.equal(recordes[0].tempoMs, 60_000);
+  assert.ok(jogo.acao(anaId, corridaDe(1200)), 'o fantasma da Horta não fecha no Pomar (a linha de chegada é outra)');
+  assert.equal(jogo.acao(anaId, corridaNoPomar(1200)), null);
+  assert.equal(jogo.acao(biaId, corridaNoPomar(1300)), null);
+  assert.equal(m.terminou(), true);
+  const daAna = (await comToken(app, ana.token)('GET', '/api/corrida-trofeus')).json().trofeus;
+  assert.ok(daAna.length >= 1);
+  assert.deepEqual([daAna[0].pista, daAna[0].posicao, daAna[0].tempoMs], ['pomar-1', 1, 60_000]);
+  assert.deepEqual(daAna[0].rivais.map((r: { userId: number }) => r.userId), [biaId], 'contra a Bia');
+  const daBia = (await comToken(app, bia.token)('GET', '/api/corrida-trofeus')).json().trofeus;
+  assert.equal(daBia[0].posicao, 2);
+  assert.deepEqual((await comToken(app, ana.token)('GET', '/api/corrida/pomar-1')).json().recordes, [], 'a corrida com itens não é recorde');
+});
+
+test('a Copa da Cenoura: três pistas, pontos por posição, o troféu da copa e a copa da turma', async () => {
+  const { copasDaComunidade } = await import('../src/db.js');
+  const m = contexto([anaId, biaId], comunidade.id);
+  const jogo = corrida.comecar(m.ctx, { naSala: [anaId, biaId], criadaPor: anaId, corpo: { pista: 'copa-da-cenoura' } });
+  assert.ok(typeof jogo !== 'string');
+  const correr = (pista: string, tempoAna: number, tempoBia: number) => {
+    assert.equal(jogo.publico(anaId).pista, pista);
+    m.relogio[0].depois(); // o verde
+    agora += 200_000;
+    const de = pista === 'horta-1' ? corridaDe : pista === 'pomar-1' ? corridaNoPomar : corridaNaPraia;
+    assert.equal(jogo.acao(anaId, de(tempoAna)), null);
+    assert.equal(jogo.acao(biaId, de(tempoBia)), null);
+  };
+  correr('horta-1', 1200, 1300);
+  assert.equal(jogo.publico(anaId).fase, 'intervalo');
+  assert.equal(m.relogio[0].ms, 10_000);
+  m.relogio[0].depois(); // o fim do intervalo: a próxima largada
+  correr('pomar-1', 1400, 1250);
+  m.relogio[0].depois();
+  correr('praia-1', 1250, 1300);
+  assert.equal(m.terminou(), true);
+  const placar = jogo.publico(anaId).placarDaCopa as { userId: number; pontos: number }[];
+  assert.deepEqual(placar.map((l) => [l.userId, l.pontos]), [[anaId, 28], [biaId, 26]]);
+  const daAna = (await comToken(app, ana.token)('GET', '/api/corrida-trofeus')).json().trofeus;
+  assert.deepEqual([daAna[0].pista, daAna[0].posicao, daAna[0].pontos], ['copa-da-cenoura', 1, 28]);
+  assert.equal(copasDaComunidade(comunidade.id), 1, 'a copa da turma conta na comunidade');
+});
+
+test('os itens: o servidor carimba o dono, e não deixa usar mais do que as caixas dão', () => {
+  const m = contexto([anaId, biaId], comunidade.id);
+  const jogo = corrida.comecar(m.ctx, { naSala: [anaId, biaId], criadaPor: anaId, corpo: {} });
+  assert.ok(typeof jogo !== 'string');
+  assert.equal(jogo.tempoReal!(anaId, { tipo: 'repolho', n: 10, s: 100, lado: 3 }), null, 'antes do verde, não');
+  m.relogio[0].depois();
+  const r = jogo.tempoReal!(anaId, { tipo: 'repolho', n: 300, s: 100, lado: 3, dono: biaId });
+  assert.deepEqual(r, { tipo: 'repolho', id: `${anaId}-300`, dono: anaId, n: 300, s: 100, lado: 3 }, 'o dono é quem mandou');
+  assert.equal(jogo.tempoReal!(anaId, { tipo: 'lama', n: 310, x: 10, y: 10 }), null, 'dois no mesmo segundo, não');
+  let usados = 1;
+  for (let i = 0; i < 20; i++) {
+    agora += 2000;
+    if (jogo.tempoReal!(anaId, { tipo: 'lama', n: 400 + i, x: 10, y: 10 })) usados++;
+  }
+  assert.equal(usados, 7, 'duas fileiras de caixas por volta, três voltas, e uma de folga');
+  assert.equal(jogo.tempoReal!(biaId, { tipo: 'acertou', id: 'x; DROP' }), null);
+  assert.deepEqual(jogo.tempoReal!(biaId, { tipo: 'acertou', id: `${anaId}-300` }), { tipo: 'acertou', id: `${anaId}-300` });
 });

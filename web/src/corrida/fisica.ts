@@ -15,6 +15,14 @@ export const VMAX_GRAMA = 58;
 export const VTURBO = 185;
 /** De quantos em quantos passos o fantasma guarda uma posição (15 por segundo). */
 export const AMOSTRA = 4;
+/** Quanto dura a rodada de quem foi atingido (s): uma volta inteira do kart. */
+export const RODADA = 1;
+
+/** O kart atingido por um item começa a rodar (a lama é mais curta). */
+export function atingir(k: Kart, quanto = RODADA) {
+  if (k.rodando > 0 || k.terminou) return;
+  k.rodando = quanto;
+}
 
 export interface Comandos {
   acelera: boolean;
@@ -23,6 +31,8 @@ export interface Comandos {
   vira: number;
   /** Segurando o botão de derrapar. */
   derrapa: boolean;
+  /** Usar o item (só na corrida da sala; quem lê é o laço, na hora em que a tecla desce). */
+  usa?: boolean;
 }
 
 export interface Kart {
@@ -55,13 +65,15 @@ export interface Kart {
   chao: Chao;
   /** Bateu neste passo (para tremer a tela). */
   bateu: boolean;
+  /** Atingido por um item: quanto falta da rodada (s). Gira, perde velocidade e não obedece o direcional. */
+  rodando: number;
 }
 
 export function novoKart(p: Pista): Kart {
   const { x, y, angulo } = p.largada;
   return {
     x, y, angulo, rumo: angulo, v: 0, deriva: 0, carga: 0, turbo: 0, pulo: 0, vpulo: 0,
-    indice: p.lx.length - 3, volta: 0, meio: false, voltas: [], passos: 0, terminou: false, chao: Chao.Asfalto, bateu: false,
+    indice: p.lx.length - 3, volta: 0, meio: false, voltas: [], passos: 0, terminou: false, chao: Chao.Asfalto, bateu: false, rodando: 0,
   };
 }
 
@@ -87,6 +99,16 @@ export function passo(k: Kart, c: Comandos, p: Pista): void {
   k.chao = chao;
   if (chao === Chao.Turbo && k.turbo < 0.9) k.turbo = 0.9;
   const naGrama = chao === Chao.Grama || chao === Chao.Terra;
+  // ATINGIDO (o repolho, a lama): a rodada de um segundo, sem direção nem acelerador, e a volta inteira no desenho
+  if (k.rodando > 0) {
+    k.rodando = Math.max(0, k.rodando - dt);
+    c = { acelera: false, freia: false, vira: 0, derrapa: false };
+    k.v *= 1 - 2.2 * dt;
+    k.angulo += (Math.PI * 2 * dt) / RODADA;
+    k.deriva = 0;
+    k.carga = 0;
+    k.turbo = 0;
+  }
 
   // A VELOCIDADE: o teto depende do chão e do turbo; acelerar aproxima do teto, frear desce, soltar perde um pouco.
   const teto = k.turbo > 0 ? (naGrama ? VMAX_GRAMA + 50 : VTURBO) : naGrama ? VMAX_GRAMA : VMAX;

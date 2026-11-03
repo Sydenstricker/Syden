@@ -321,7 +321,7 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
     // no Coletivo, a turma corre junto (server/src/minijogo-corrida.ts).
     id: 'corrida',
     nome: chave('Corrida dos coelhos'),
-    dica: chave('Uma corrida de kart contra o relógio, com os fantasmas dos recordes dos seus amigos correndo junto.'),
+    dica: chave('Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.'),
     abas: ['solo', 'coletivo'],
   },
   {

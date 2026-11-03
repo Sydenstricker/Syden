@@ -48,6 +48,8 @@ export const CONQUISTAS: Conquista[] = [
   { id: 'repertorio', grupo: 'jogos', degraus: [3, 6, JOGOS_DAS_CONQUISTAS.length] },
   { id: 'vila-completa', grupo: 'jogos', degraus: [6, 8, 10] },
   { id: 'todo-mundo-joga', grupo: 'jogos', degraus: [5, 15, 30] },
+  // O TROFÉU COLETIVO DA CORRIDA (03/11/2026, decisão dele): cada Copa da Cenoura que a turma correu até o fim, com 2 ou mais
+  { id: 'copa-da-turma', grupo: 'jogos', degraus: [1, 5, 20] },
   ...JOGOS_DAS_CONQUISTAS.map((jogo): Conquista => ({ id: 'turma-' + jogo, grupo: 'jogos', degraus: [10, 50, 200], jogo })),
   { id: 'palco-aberto', grupo: 'karaoke', degraus: [10, 50, 200] },
   { id: 'coral', grupo: 'karaoke', degraus: [3, 8, 20] },
@@ -194,6 +196,7 @@ export function medir(d: DadosDasConquistas, agora = Date.now()): Record<string,
   m.repertorio = { valor: [...porJogo.keys()].filter((j) => (JOGOS_DAS_CONQUISTAS as readonly string[]).includes(j)).length };
   m['vila-completa'] = { valor: vila };
   m['todo-mundo-joga'] = { valor: jogaram.size };
+  m['copa-da-turma'] = { valor: d.copas ?? 0 };
   for (const jogo of JOGOS_DAS_CONQUISTAS) {
     m['turma-' + jogo] = { valor: porJogo.get(jogo) ?? 0, exemplos: maiores(porJogoRecente.get(jogo) ?? new Map(), membros) };
   }

@@ -21,6 +21,8 @@ export interface Contexto {
    */
   naSala(): number[];
   nome(userId: number): string;
+  /** A comunidade da sala (0 na partida solo): o que a turma faz junta conta nela (a Copa da Cenoura, 03/11/2026). */
+  comunidade?: number;
 }
 
 export interface Jogo {

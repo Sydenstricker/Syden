@@ -454,6 +454,30 @@ que batem com a pista do site e que o fantasma honesto passa); e, na sala, um fa
 segundo depois do verde ganhava e fechava o prazo de todos — agora a chegada não pode declarar mais tempo do que passou
 desde o verde do servidor (+3 s de folga). Pista nova precisa da linha dela em `PISTAS`.
 
+**O degrau 3 está feito (03/11/2026, pedido dele: "pode fazer o degrau 3 que depois subo tudo de uma vez"):**
+- **Três pistas e a Copa da Cenoura.** A Horta, o **Pomar** (outono, laranjeiras, um "S") e a **Praia** (areia fora do asfalto,
+  que segura como a grama, coqueiros, uma lagoa), todas por código a partir de um TEMA (`Tema` em `pista.ts`: as cores do
+  chão, o que cresce, o céu e os morros). No Solo, escolhe-se a pista, e cada uma tem os seus recordes. Na sala, escolhe-se
+  uma pista ou a **copa**: as três seguidas, com pontos por posição (10, 8, 6, 5, 4, 3, 2, 1) e 10 s de placar entre uma e
+  outra; empate nos pontos desempata pela soma dos tempos.
+- **Os itens, só na sala** (o contra o relógio fica limpo: o recorde é da pilotagem, e por isso a corrida da sala, com itens,
+  NÃO vira recorde). Caixas em fileiras na pista; o item sai pela posição (quem está atrás ganha mais cenoura e repolho, quem
+  lidera mais lama): **cenoura** (turbo), **repolho** (anda pela linha do meio até 4 s e derruba quem pega) e **lama** (fica
+  30 s onde caiu). Cada item é um evento com o passo da corrida de quem o usou, e todo computador simula o mesmo trajeto;
+  **quem decide se foi atingido é quem leva**, e avisa os outros para o item sumir. O servidor carimba o dono e não deixa
+  usar mais itens que as caixas dão (2 fileiras × 3 voltas + 1), nem dois no mesmo segundo. Tecla E (ou Ctrl); no toque, um
+  botão com o item.
+- **O troféu do QUARTO** (`corrida_trofeus`, `TrofeusDaCorrida.tsx`): o pódio de cada corrida avulsa e de cada copa na sala,
+  com 2 ou mais, com a posição, a pista, o tempo (na copa, a soma, e os pontos), a data e CONTRA QUEM — guardado pelos ids, e
+  o nome lido na hora (quem exclui a conta vira "Conta excluída" no troféu dos outros, e o nome dela não fica guardado). Só a
+  pessoa vê. Abre pela estante de troféus do quarto (que entrou na arrumação de fábrica, na parede da direita, e aparece
+  sozinha nos quartos já arrumados) e pelo botão "Troféus" da largada do Solo.
+- **O troféu COLETIVO** é a conquista **"Copa da turma"** no salão (`corrida_copas`, `conquistas.ts`): copas corridas até o
+  fim pela turma, com 2 ou mais, em degraus de 1, 5 e 20. Sem pessoa.
+- Testes: `server/test/minijogos-corrida.test.ts` (a copa, os troféus, o limite dos itens), `web/test/corrida.test.ts` (as três
+  pistas: medidas iguais às do servidor, sem trecho encostado, o fantasma honesto passando; o repolho e o sorteio),
+  `e2e/corrida-na-sala.mjs` (a copa inteira, ~5 min; `SO_HORTA=1` faz uma corrida só) e `e2e/corrida.mjs`.
+
 **A sondagem de jogos dele (12/10/2026), avaliada:** os campeões de receita (Coin Master, Candy Crush, Sheep a Sheep)
 são solo e se pagam com anúncio, vidas e roleta. **Decisão dele: clonar só a MECÂNICA DE JOGO** (empilhar e combinar
 peças, parafusos, setas, combinar três) — nunca a de cassino nem a de "volte todo dia". Integração, nenhuma. Party game de ação (Mario Party, Overcooked) tem aderência

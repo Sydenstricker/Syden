@@ -579,7 +579,11 @@ if (CENA === 'salao') document.body.classList.add('salao');
     poster: { parede: 'direita', v: 8.6, h: 6 },
     // o pôster "Café & Fofoca" na cozinha, ao lado da prateleira de snacks (dele, 17/10/2026, feito no ChatGPT)
     cafe: { parede: 'esquerda', v: 12.6, h: 6 },
-  } : { quadro: { parede: 'esquerda', v: 0, h: 0 }, fone: { parede: 'esquerda', v: -2.5, h: -6 }, cortica: { parede: 'esquerda', v: 3, h: 0 } };
+  } : {
+    quadro: { parede: 'esquerda', v: 0, h: 0 }, fone: { parede: 'esquerda', v: -2.5, h: -6 }, cortica: { parede: 'esquerda', v: 3, h: 0 },
+    // a estante de troféus da Corrida dos coelhos (03/11/2026): entra sozinha nos quartos já arrumados (comNovos, abaixo)
+    trofeus: { parede: 'direita', v: 3.9, h: 16 },
+  };
   let NA_PAREDE = JSON.parse(JSON.stringify(PAREDE_INICIAL));
   // OBJETO NOVO ENTRA SOZINHO (relato dele, 16/10/2026: "atualizei a sala mas não vi o pôster"): a arrumação guarda quais
   // objetos da parede a página conhecia ao salvar ("conhecidos"). Um objeto de fábrica que ela não conhecia (veio depois)

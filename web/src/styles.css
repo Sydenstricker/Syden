@@ -15833,3 +15833,139 @@ body.arrastando-barra {
 .corrida-classificacao .corrida-quem {
   text-align: left;
 }
+
+/* A Corrida dos coelhos, degrau 3 (03/11/2026): a escolha da pista, o topo da copa, o placar entre as corridas e os troféus. */
+.corrida-pistas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 8px;
+}
+
+.corrida-pista-botao {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px;
+  border-radius: 10px;
+  border: 2px solid var(--border);
+  background: var(--bg-raised);
+  color: inherit;
+  cursor: pointer;
+  text-align: center;
+}
+
+.corrida-pista-botao:hover,
+.corrida-pista-botao.escolhida {
+  border-color: var(--accent);
+}
+
+.corrida-pista-botao canvas {
+  width: 72px;
+  height: 72px;
+  border-radius: 6px;
+  image-rendering: pixelated;
+}
+
+.corrida-pista-botao small {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.corrida-copa-mapas {
+  width: 72px;
+  height: 72px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  background: #3a2c1e;
+  color: #ffc46a;
+}
+
+.corrida-escolha {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.corrida-copa-topo {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.corrida-copa-topo span {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.corrida-placar-da-copa {
+  min-height: 260px;
+  aspect-ratio: 16 / 9;
+}
+
+.corrida-pontos {
+  min-width: 2.5em;
+  text-align: right;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.corrida-ultima {
+  opacity: 0.85;
+}
+
+.corrida-dica {
+  margin: 0;
+  text-align: center;
+}
+
+.trofeus-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.trofeus-lista li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+}
+
+.trofeus-lista li > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.trofeu-medalha {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.trofeu-detalhe {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.trofeu-rivais {
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}

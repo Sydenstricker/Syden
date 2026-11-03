@@ -31,7 +31,29 @@ export interface DefinicaoDaPista {
   /** Lagos (paredes redondas na grama): [x, y, raio]. */
   lagos: [number, number, number][];
   semente: number;
+  /** As caixas de item (só na corrida da sala): uma fileira atravessando a pista em cada fração da volta. */
+  caixas: number[];
+  tema: Tema;
 }
+
+/** O jeito de cada pista: as cores do chão, o que cresce fora do asfalto, e o céu. */
+export interface Tema {
+  grama: [number, number];
+  gramaPonto: number;
+  gramaEscura: number;
+  cerca: [number, number];
+  /** Fora do asfalto é areia (segura como a grama), e não grama. */
+  areia: boolean;
+  /** A árvore desta pista (o desenho, em render.ts). */
+  arvore: 'arvore' | 'laranjeira' | 'coqueiro';
+  /** Os canteiros de cenoura entre as árvores. */
+  canteiros: boolean;
+  ceu: { topo: [number, number, number]; meio: [number, number, number]; baixo: [number, number, number] };
+  /** Os morros do fundo: o de trás (claro, sombra) e o da frente (cor, faixa). */
+  morros: [[number, number, number], [number, number, number], [number, number, number], [number, number, number]];
+}
+
+const rgb = (r: number, g: number, b: number) => (0xff000000 | (b << 16) | (g << 8) | r) >>> 0;
 
 export const HORTA: DefinicaoDaPista = {
   id: 'horta-1',
@@ -45,12 +67,82 @@ export const HORTA: DefinicaoDaPista = {
   turbos: [[0.205, 0.225], [0.62, 0.64]],
   lagos: [[380, 470, 70]],
   semente: 7,
+  caixas: [0.3, 0.75],
+  tema: {
+    grama: [rgb(98, 150, 70), rgb(90, 140, 64)],
+    gramaPonto: rgb(122, 172, 84),
+    gramaEscura: rgb(76, 122, 56),
+    cerca: [rgb(54, 92, 50), rgb(44, 78, 42)],
+    areia: false,
+    arvore: 'arvore',
+    canteiros: true,
+    ceu: { topo: [116, 146, 196], meio: [226, 170, 150], baixo: [236, 196, 160] },
+    morros: [[178, 150, 156], [156, 134, 148], [96, 132, 90], [84, 116, 82]],
+  },
 };
+
+/** O POMAR (03/11/2026): o outono, as laranjeiras e uma volta mais sinuosa, com um "S" no meio. */
+export const POMAR: DefinicaoDaPista = {
+  id: 'pomar-1',
+  pontos: [
+    [220, 300], [360, 170], [560, 200], [720, 130], [880, 230], [870, 420], [720, 520], [860, 650], [840, 860],
+    [620, 890], [500, 760], [370, 880], [170, 820], [130, 590], [270, 470],
+  ],
+  meiaLargura: 30,
+  voltas: 3,
+  turbos: [[0.15, 0.17], [0.55, 0.57]],
+  lagos: [[600, 560, 55]],
+  semente: 21,
+  caixas: [0.32, 0.7],
+  tema: {
+    grama: [rgb(170, 150, 74), rgb(158, 138, 66)],
+    gramaPonto: rgb(206, 132, 66),
+    gramaEscura: rgb(124, 108, 54),
+    cerca: [rgb(110, 62, 40), rgb(92, 52, 34)],
+    areia: false,
+    arvore: 'laranjeira',
+    canteiros: false,
+    ceu: { topo: [150, 136, 190], meio: [236, 160, 120], baixo: [244, 200, 150] },
+    morros: [[190, 136, 126], [170, 120, 116], [150, 120, 70], [132, 104, 60]],
+  },
+};
+
+/** A PRAIA (03/11/2026): areia fora do asfalto (segura como a grama), coqueiros, e uma lagoa no meio. */
+export const PRAIA: DefinicaoDaPista = {
+  id: 'praia-1',
+  pontos: [
+    [230, 230], [520, 170], [800, 200], [880, 360], [760, 470], [560, 450], [470, 560], [640, 660], [860, 700],
+    [820, 880], [520, 900], [240, 860], [140, 640], [170, 420],
+  ],
+  meiaLargura: 32,
+  voltas: 3,
+  turbos: [[0.1, 0.12], [0.6, 0.62]],
+  lagos: [[300, 560, 80]],
+  semente: 33,
+  caixas: [0.28, 0.72],
+  tema: {
+    grama: [rgb(226, 204, 150), rgb(216, 194, 140)],
+    gramaPonto: rgb(244, 230, 196),
+    gramaEscura: rgb(196, 172, 120),
+    cerca: [rgb(70, 140, 170), rgb(60, 124, 156)],
+    areia: true,
+    arvore: 'coqueiro',
+    canteiros: false,
+    ceu: { topo: [96, 160, 214], meio: [170, 210, 230], baixo: [230, 226, 206] },
+    morros: [[150, 176, 190], [130, 160, 178], [110, 160, 110], [96, 144, 98]],
+  },
+};
+
+/** As pistas, na ordem da copa. */
+export const PISTAS = [HORTA, POMAR, PRAIA];
+export const pistaPorId = (id: string) => PISTAS.find((p) => p.id === id) ?? HORTA;
+/** A Copa da Cenoura: as três, seguidas. */
+export const COPA = 'copa-da-cenoura';
 
 export interface Objeto {
   x: number;
   y: number;
-  tipo: 'arvore' | 'cenoura' | 'flor';
+  tipo: 'arvore' | 'laranjeira' | 'coqueiro' | 'cenoura' | 'flor';
   /** Raio sólido (0 = atravessa). */
   raio: number;
 }
@@ -101,20 +193,14 @@ export function sorteio(semente: number) {
   };
 }
 
-const rgb = (r: number, g: number, b: number) => (0xff000000 | (b << 16) | (g << 8) | r) >>> 0;
-
-/** As cores, quentes e pouco saturadas, como o quarto: uma horta no fim da tarde. */
+/** As cores que não mudam de pista (as que mudam estão no tema), quentes e pouco saturadas, como o quarto. */
 const COR = {
   asfalto: [rgb(104, 98, 106), rgb(110, 104, 112), rgb(98, 92, 100)],
   faixa: rgb(222, 214, 196),
   zebraA: rgb(196, 70, 62),
   zebraB: rgb(232, 226, 210),
-  grama: [rgb(98, 150, 70), rgb(90, 140, 64)],
-  gramaPonto: rgb(122, 172, 84),
-  gramaEscura: rgb(76, 122, 56),
   terra: [rgb(150, 104, 66), rgb(138, 94, 58)],
   sulco: rgb(112, 76, 48),
-  cerca: [rgb(54, 92, 50), rgb(44, 78, 42)],
   agua: [rgb(70, 128, 168), rgb(84, 144, 182)],
   aguaBorda: rgb(196, 182, 140),
   turbo: rgb(244, 176, 60),
@@ -158,6 +244,9 @@ export function montarPista(def: DefinicaoDaPista = HORTA): Pista {
     }
   }
 
+  const T = def.tema;
+  /** O chão de fora do asfalto: grama, ou areia (que segura igual). */
+  const FORA = T.areia ? Chao.Terra : Chao.Grama;
   const chao = new Uint8Array(RES * RES);
   const textura = new Uint32Array(RES * RES);
   const sorte = sorteio(def.semente);
@@ -175,7 +264,7 @@ export function montarPista(def: DefinicaoDaPista = HORTA): Pista {
       let tipo: Chao, cor: number;
       if (x < BORDA || y < BORDA || x > MUNDO - BORDA || y > MUNDO - BORDA) {
         tipo = Chao.Parede;
-        cor = COR.cerca[(((tx >> 3) + (ty >> 3)) & 1)];
+        cor = T.cerca[(((tx >> 3) + (ty >> 3)) & 1)];
       } else if (d < hw) {
         tipo = Chao.Asfalto;
         cor = COR.asfalto[r3];
@@ -199,12 +288,12 @@ export function montarPista(def: DefinicaoDaPista = HORTA): Pista {
         tipo = Chao.Zebra;
         cor = Math.floor(s / 7) % 2 === 0 ? COR.zebraA : COR.zebraB;
       } else {
-        tipo = Chao.Grama;
-        // a grama cortada em faixas largas, como um gramado
+        tipo = FORA;
+        // a grama cortada em faixas largas, como um gramado (na areia, as ondas que o vento deixa)
         const faixa = Math.floor((x + y * 0.6) / 28) & 1;
-        cor = COR.grama[faixa];
-        if (((ruido >>> 4) & 0x3f) === 0) cor = COR.gramaPonto;
-        if (d < hw + 6) cor = COR.gramaEscura;
+        cor = T.grama[faixa];
+        if (((ruido >>> 4) & 0x3f) === 0) cor = T.gramaPonto;
+        if (d < hw + 6) cor = T.gramaEscura;
       }
       chao[k] = tipo;
       textura[k] = cor;
@@ -221,25 +310,25 @@ export function montarPista(def: DefinicaoDaPista = HORTA): Pista {
   const objetos: Objeto[] = [];
   const longeDoAsfalto = (x: number, y: number, m: number) => {
     const k = Math.floor(y * K) * RES + Math.floor(x * K);
-    return Math.sqrt(dist[k]) > hw + m && chao[k] === Chao.Grama;
+    return Math.sqrt(dist[k]) > hw + m && chao[k] === FORA;
   };
   for (let tentativa = 0; tentativa < 4000 && objetos.length < 150; tentativa++) {
     const x = 30 + sorte() * (MUNDO - 60), y = 30 + sorte() * (MUNDO - 60);
     if (!longeDoAsfalto(x, y, 12)) continue;
     if (objetos.some((o) => Math.hypot(o.x - x, o.y - y) < 26)) continue;
     const q = sorte();
-    objetos.push(q < 0.55 ? { x, y, tipo: 'arvore', raio: 5 } : q < 0.8 ? { x, y, tipo: 'cenoura', raio: 0 } : { x, y, tipo: 'flor', raio: 0 });
+    objetos.push(q < 0.55 ? { x, y, tipo: T.arvore, raio: 5 } : q < 0.8 && T.canteiros ? { x, y, tipo: 'cenoura', raio: 0 } : { x, y, tipo: 'flor', raio: 0 });
   }
   // os canteiros: terra com sulcos debaixo de cada cenoura
   for (const o of objetos) {
     if (o.tipo === 'cenoura') {
-      pintarRetangulo(chao, textura, o.x - 9, o.y - 6, 18, 12, (tx, ty) => [Chao.Terra, (ty >> 2) % 2 ? COR.sulco : COR.terra[tx & 1]]);
+      pintarRetangulo(chao, textura, o.x - 9, o.y - 6, 18, 12, FORA, (tx, ty) => [Chao.Terra, (ty >> 2) % 2 ? COR.sulco : COR.terra[tx & 1]]);
     }
     if (o.tipo === 'flor') {
       const cor = COR.flor[Math.floor(sorte() * 3)];
       for (let i = 0; i < 9; i++) {
         const fx = Math.floor((o.x + (sorte() - 0.5) * 20) * K), fy = Math.floor((o.y + (sorte() - 0.5) * 20) * K);
-        if (fx > 0 && fy > 0 && fx < RES - 1 && fy < RES - 1 && chao[fy * RES + fx] === Chao.Grama) {
+        if (fx > 0 && fy > 0 && fx < RES - 1 && fy < RES - 1 && chao[fy * RES + fx] === FORA) {
           textura[fy * RES + fx] = cor;
           textura[fy * RES + fx + 1] = cor;
         }
@@ -251,7 +340,7 @@ export function montarPista(def: DefinicaoDaPista = HORTA): Pista {
     return rgb(Math.round(r * 0.62), Math.round(g * 0.62), Math.round(b * 0.7));
   };
   // a sombra das árvores no chão, um pouco para a direita (o sol baixo da tarde)
-  for (const o of objetos.filter((o) => o.tipo === 'arvore')) {
+  for (const o of objetos.filter((o) => o.raio > 0)) {
     pintarCirculo(chao, textura, o.x + 3, o.y + 2, 9, (_d, tx, ty) => {
       const k = ty * RES + tx;
       return [chao[k] as Chao, sombra(textura[k])];
@@ -290,11 +379,12 @@ function pintarRetangulo(
   y: number,
   w: number,
   h: number,
+  fora: Chao,
   f: (tx: number, ty: number) => [Chao, number],
 ) {
   for (let ty = Math.max(0, Math.floor(y * K)); ty < Math.min(RES, Math.ceil((y + h) * K)); ty++) {
     for (let tx = Math.max(0, Math.floor(x * K)); tx < Math.min(RES, Math.ceil((x + w) * K)); tx++) {
-      if (chao[ty * RES + tx] !== Chao.Grama) continue;
+      if (chao[ty * RES + tx] !== fora) continue;
       const [tipo, cor] = f(tx, ty);
       chao[ty * RES + tx] = tipo;
       textura[ty * RES + tx] = cor;

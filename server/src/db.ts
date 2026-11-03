@@ -777,6 +777,34 @@ db.exec(`
     PRIMARY KEY (user_id, pista)
   );
 
+  -- OS TROFÉUS DA CORRIDA (03/11/2026, decisão dele: "um registro do momento entre amigos"): quem ficou no pódio de uma
+  -- corrida ou de uma Copa da Cenoura NA SALA, com a turma (2 pessoas ou mais). Guarda a posição, a pista (ou a copa), o
+  -- tempo, os pontos da copa e CONTRA QUEM — pelos ids, e o nome é lido na hora de mostrar (quem exclui a conta some do
+  -- troféu dos outros, e não fica o nome dela guardado aqui). Moram no quarto de quem ganhou (corrida-routes.ts).
+  CREATE TABLE IF NOT EXISTS corrida_trofeus (
+    id           INTEGER PRIMARY KEY,
+    user_id      INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    evento       TEXT NOT NULL,
+    community_id INTEGER NOT NULL,
+    pista        TEXT NOT NULL,
+    posicao      INTEGER NOT NULL,
+    tempo_ms     INTEGER,
+    pontos       INTEGER,
+    rivais       TEXT NOT NULL,
+    em           TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+  );
+  CREATE INDEX IF NOT EXISTS idx_corrida_trofeus_user ON corrida_trofeus(user_id, em);
+
+  -- AS COPAS DA TURMA (03/11/2026): cada Copa da Cenoura que a turma correu até o fim, com 2 ou mais, na comunidade. É o
+  -- troféu COLETIVO (a conquista "Copa da turma", conquistas.ts). Sem pessoa: é da comunidade, e não desacontece quando
+  -- alguém exclui a conta.
+  CREATE TABLE IF NOT EXISTS corrida_copas (
+    id           INTEGER PRIMARY KEY,
+    community_id INTEGER NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
+    jogadores    INTEGER NOT NULL,
+    em           TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+  );
+
   -- O SALÃO de cada comunidade (15/10/2026): a arrumação do salão isométrico, no mesmo formato do quarto (quarto.ts).
   -- É da TURMA: todo membro vê igual, e mexe quem administra ou tem um cargo que arruma o salão (salao-routes.ts).
   CREATE TABLE IF NOT EXISTS saloes (
@@ -4271,6 +4299,13 @@ export function recordeDaCorrida(userId: number, pista: string): { tempoMs: numb
   return linha ?? null;
 }
 
+/** Os troféus da pessoa (para o "Levar seus dados"): só os ids de contra quem, como estão guardados. */
+export function trofeusParaLevar(userId: number) {
+  return (db
+    .prepare('SELECT pista, posicao, tempo_ms AS tempoMs, pontos, rivais, em FROM corrida_trofeus WHERE user_id = ? ORDER BY em')
+    .all(userId) as { rivais: string }[]).map((l) => ({ ...l, rivais: JSON.parse(l.rivais) as number[] }));
+}
+
 /** Os recordes da pessoa em todas as pistas, com o fantasma (para o "Levar seus dados"). */
 export function corridasDe(userId: number) {
   const linhas = db
@@ -4290,6 +4325,50 @@ export function guardarCorrida(userId: number, pista: string, tempoMs: number, v
        amostras = excluded.amostras, em = excluded.em`,
   ).run(userId, pista, tempoMs, JSON.stringify(voltas), amostras);
   return { anterior: antes?.tempoMs ?? null, recorde: true };
+}
+
+export interface TrofeuDaCorrida {
+  id: number;
+  pista: string;
+  posicao: number;
+  tempoMs: number | null;
+  pontos: number | null;
+  em: string;
+  /** Contra quem: os que ainda têm conta, com o nome de agora; `excluidos` conta os que não têm mais. */
+  rivais: { userId: number; username: string; nomeDeExibicao: string | null }[];
+  excluidos: number;
+}
+
+export function guardarTrofeu(t: { userId: number; evento: string; communityId: number; pista: string; posicao: number; tempoMs: number | null; pontos: number | null; rivais: number[] }) {
+  db.prepare(
+    'INSERT INTO corrida_trofeus (user_id, evento, community_id, pista, posicao, tempo_ms, pontos, rivais) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+  ).run(t.userId, t.evento, t.communityId, t.pista, t.posicao, t.tempoMs, t.pontos, JSON.stringify(t.rivais));
+}
+
+/** Os troféus de alguém, do mais novo ao mais velho (no máximo 200). */
+export function trofeusDe(userId: number): TrofeuDaCorrida[] {
+  const linhas = db
+    .prepare('SELECT id, pista, posicao, tempo_ms AS tempoMs, pontos, rivais, em FROM corrida_trofeus WHERE user_id = ? ORDER BY em DESC, id DESC LIMIT 200')
+    .all(userId) as { id: number; pista: string; posicao: number; tempoMs: number | null; pontos: number | null; rivais: string; em: string }[];
+  const pessoa = db.prepare('SELECT id, username, nome_exibicao AS nomeDeExibicao FROM users WHERE id = ?');
+  return linhas.map((l) => {
+    const ids = JSON.parse(l.rivais) as number[];
+    const rivais = ids
+      .map((id) => pessoa.get(id) as { id: number; username: string; nomeDeExibicao: string | null } | undefined)
+      .filter((u): u is { id: number; username: string; nomeDeExibicao: string | null } => !!u)
+      .map((u) => ({ userId: u.id, username: u.username, nomeDeExibicao: u.nomeDeExibicao }));
+    return { id: l.id, pista: l.pista, posicao: l.posicao, tempoMs: l.tempoMs, pontos: l.pontos, em: l.em, rivais, excluidos: ids.length - rivais.length };
+  });
+}
+
+/** Uma Copa da Cenoura que a turma correu até o fim. */
+export function registrarCopa(communityId: number, jogadores: number) {
+  if (!communityId) return;
+  db.prepare('INSERT INTO corrida_copas (community_id, jogadores) VALUES (?, ?)').run(communityId, jogadores);
+}
+
+export function copasDaComunidade(communityId: number): number {
+  return (db.prepare('SELECT COUNT(*) AS n FROM corrida_copas WHERE community_id = ? AND jogadores >= 2').get(communityId) as { n: number }).n;
 }
 
 // ---------- O salão de cada comunidade ----------
@@ -6870,6 +6949,8 @@ export function dadosDasConquistas(communityId: number) {
     parabens,
     mensagens,
     eventos,
+    // as Copas da Cenoura que a turma correu até o fim (corrida_copas)
+    copas: copasDaComunidade(communityId) as number | undefined,
   };
 }
 

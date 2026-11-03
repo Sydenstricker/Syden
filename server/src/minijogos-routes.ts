@@ -154,6 +154,7 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
       },
       naSala: () => presentes(p),
       nome: (userId) => nomeNa(p, userId),
+      comunidade: p.communityId,
     };
     // O relógio do convite sai antes: um jogo que não marca relógio ao começar herdaria o fim do convite.
     if (p.relogio) clearTimeout(p.relogio);

@@ -1,12 +1,13 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { AMOSTRA, amostrar, fantasmaEm, novoKart, passo, passosEmMs, pilotoAutomatico, tempoLegivel } from '../src/corrida/fisica';
-import { Chao, chaoEm, HORTA, montarPista } from '../src/corrida/pista';
+import { pontoNaLinha, repolhoEm, sortearItem } from '../src/corrida/laco';
+import { Chao, chaoEm, HORTA, montarPista, PISTAS, type Pista } from '../src/corrida/pista';
 
 const pista = montarPista(HORTA);
 
 /** Um piloto automático: mira um ponto da linha do meio um pouco à frente e acelera. */
-function pilotar(derrapar: boolean) {
+function pilotar(derrapar: boolean, pista: Pista = montarPista(HORTA)) {
   const k = novoKart(pista);
   const caminho: number[] = [];
   while (!k.terminou && k.passos < 60 * 60 * 5) {
@@ -53,16 +54,46 @@ test('dar ré na linha de chegada não conta volta', () => {
   assert.equal(k.volta, 0);
 });
 
-test('o fantasma do piloto automático passa na conferência do servidor, e as medidas da pista batem', async () => {
-  const { PISTAS, validarCorrida } = await import('../../server/src/corrida.ts');
-  const def = PISTAS[HORTA.id];
-  assert.ok(def, 'a pista existe no servidor');
-  assert.ok(Math.abs(def.comprimento - pista.comprimento) < 2, `comprimento: servidor ${def.comprimento}, site ${pista.comprimento}`);
-  assert.deepEqual(def.linha, [Math.round(pista.lx[0]), Math.round(pista.ly[0])]);
-  assert.equal(def.voltas, HORTA.voltas);
-  for (const derrapar of [false, true]) {
-    const { k, caminho } = pilotar(derrapar);
-    const v = validarCorrida(HORTA.id, { voltas: k.voltas, amostras: caminho });
-    assert.ok('ok' in v, `o servidor recusou a corrida honesta (derrapando: ${derrapar})`);
+test('em cada pista, o fantasma do piloto automático passa na conferência do servidor, e as medidas batem', async () => {
+  const { PISTAS: NO_SERVIDOR, validarCorrida } = await import('../../server/src/corrida.ts');
+  for (const def of PISTAS) {
+    const p = montarPista(def);
+    const s = NO_SERVIDOR[def.id];
+    assert.ok(s, `${def.id} existe no servidor`);
+    assert.ok(Math.abs(s.comprimento - p.comprimento) < 2, `${def.id}: comprimento do servidor ${s.comprimento}, do site ${p.comprimento}`);
+    assert.deepEqual(s.linha, [Math.round(p.lx[0]), Math.round(p.ly[0])], `${def.id}: a linha de chegada`);
+    assert.equal(s.voltas, def.voltas);
+    assert.equal(s.caixas, def.caixas.length, `${def.id}: as fileiras de caixas (o servidor limita os itens por elas)`);
+    assert.equal(chaoEm(p, p.largada.x, p.largada.y), Chao.Asfalto, `${def.id}: a largada é no asfalto`);
+    // nenhum trecho do asfalto encosta em outro (a pista não passa perto dela mesma)
+    const n = p.lx.length;
+    for (let i = 0; i < n; i += 3) {
+      for (let j = i + 40; j < n && n - j + i >= 40; j += 3) {
+        assert.ok(Math.hypot(p.lx[i] - p.lx[j], p.ly[i] - p.ly[j]) > 2 * def.meiaLargura + 20, `${def.id}: trechos ${i} e ${j} encostam`);
+      }
+    }
+    for (const derrapar of [false, true]) {
+      const { k, caminho } = pilotar(derrapar, p);
+      assert.equal(k.terminou, true, `${def.id}: o piloto automático não terminou`);
+      const v = validarCorrida(def.id, { voltas: k.voltas, amostras: caminho });
+      assert.ok('ok' in v, `${def.id}: o servidor recusou a corrida honesta (derrapando: ${derrapar})`);
+    }
   }
+});
+
+test('os itens: o repolho anda pela linha do meio, some depois de 4 s, e o sorteio favorece quem está atrás', () => {
+  const comeco = pontoNaLinha(pista, 100);
+  const r0 = repolhoEm(pista, { n: 100, s: 100, lado: 0 }, 100)!;
+  assert.ok(Math.hypot(r0.x - comeco.x, r0.y - comeco.y) < 0.01, 'no passo em que saiu, está onde saiu');
+  const r1 = repolhoEm(pista, { n: 100, s: 100, lado: 0 }, 160)!;
+  const depois = pontoNaLinha(pista, 330);
+  assert.ok(Math.hypot(r1.x - depois.x, r1.y - depois.y) < 0.01, 'um segundo depois, 230 unidades à frente');
+  assert.equal(repolhoEm(pista, { n: 100, s: 100, lado: 0 }, 100 + 4 * 60 + 1), null);
+  assert.equal(repolhoEm(pista, { n: 100, s: 100, lado: 0 }, 99), null, 'antes de sair, não está');
+  const conta = (posicao: number) => {
+    let cenouras = 0;
+    for (let i = 0; i < 1000; i++) if (sortearItem(posicao, 4, () => i / 1000) === 'cenoura') cenouras++;
+    return cenouras;
+  };
+  assert.ok(conta(3) > conta(0) * 3, `o último ganha mais cenoura (${conta(3)}) que o primeiro (${conta(0)})`);
 });

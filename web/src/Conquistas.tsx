@@ -40,6 +40,7 @@ const TEXTOS: Record<string, { nome: string; sobre: string }> = {
   repertorio: { nome: chave('Repertório'), sobre: chave('Mini-games diferentes jogados em grupo.') },
   'vila-completa': { nome: chave('Vila completa'), sobre: chave('O maior Lobisomem da turma, em jogadores.') },
   'todo-mundo-joga': { nome: chave('Todo mundo joga'), sobre: chave('Pessoas diferentes que já jogaram uma partida.') },
+  'copa-da-turma': { nome: chave('Copa da turma'), sobre: chave('Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.') },
   'palco-aberto': { nome: chave('Palco aberto'), sobre: chave('Vezes que alguém cantou no karaokê com a turma na sala.') },
   coral: { nome: chave('Coral'), sobre: chave('Pessoas diferentes que já cantaram.') },
   setlist: { nome: chave('Setlist'), sobre: chave('Músicas diferentes cantadas.') },

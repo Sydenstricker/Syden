@@ -11,10 +11,12 @@
  */
 
 /** As pistas que existem, pelo id com a versão (mudar o traçado é pista nova: os fantasmas da antiga não servem). */
-export const PISTAS: Record<string, { voltas: number; comprimento: number; linha: [number, number] }> = {
+export const PISTAS: Record<string, { voltas: number; comprimento: number; linha: [number, number]; caixas: number }> = {
   // o comprimento da linha do meio e o ponto da linha de chegada saem de web/src/corrida/pista.ts (HORTA); o teste
   // web/test/corrida.test.ts confere que batem
-  'horta-1': { voltas: 3, comprimento: 3008, linha: [250, 190] },
+  'horta-1': { voltas: 3, comprimento: 3008, linha: [250, 190], caixas: 2 },
+  'pomar-1': { voltas: 3, comprimento: 2987, linha: [220, 300], caixas: 2 },
+  'praia-1': { voltas: 3, comprimento: 3191, linha: [230, 230], caixas: 2 },
 };
 
 /** Quanto de cada volta o kart tem de andar, no mínimo (o resto é o atalho que se aceita). */

@@ -11,6 +11,7 @@ import { getTheme, toggleTheme } from './theme';
 import type { Channel, Community, VoiceMember } from './types';
 import { Farol, atividadeAgora } from './Farol';
 import { type AcoesDoQuarto, Quarto } from './Quarto';
+import { TrofeusDaCorrida } from './TrofeusDaCorrida';
 import { usarCenaNova } from './cenaNova';
 import { ENDERECO_DO_QUARTO, type EstadoNoQuarto, QuartoNovo } from './QuartoNovo';
 import { loadMyStatus } from './presenceStatus';
@@ -171,6 +172,8 @@ export function Home({
   const [periodo, setPeriodo] = useState<Periodo>(() => (getTheme() === 'light' ? periodoClaro() : 'noite'));
   const [salasAbertas, setSalasAbertas] = useState(false);
   const [jogosAbertos, setJogosAbertos] = useState(false);
+  /** Os troféus da Corrida dos coelhos, na estante de troféus do quarto (03/11/2026). */
+  const [trofeusAbertos, setTrofeusAbertos] = useState(false);
   // JOGAR SOZINHO PELO COMPUTADOR DO QUARTO (24/10/2026): os jogos da aba Solo, sem entrar em sala nenhuma.
   const solo = usarMinijogoSolo(socket);
   const [soloAberto, setSoloAberto] = useState(false);
@@ -204,6 +207,8 @@ export function Home({
     janela: { rotulo: t('Explorar'), sub: t('Entrar em outra comunidade'), onClick: aoExplorar },
     cortica: { rotulo: t('Tem uma ideia para o Syden?'), onClick: () => ideiasRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) },
     abajur: { rotulo: t('Dia e noite'), onClick: alternarLuz },
+    // a estante de troféus: o pódio das corridas na sala (os troféus do quarto, decisão dele de 03/11/2026)
+    trofeu: { rotulo: t('Troféus'), sub: t('Do pódio da Corrida dos coelhos'), onClick: () => setTrofeusAbertos(true) },
     computador: {
       rotulo: t('Mini-games'),
       sub: t('Jogar com a turma'),
@@ -386,6 +391,7 @@ export function Home({
       </div>
 
       <Farol atividade={atividade} aoIr={aoIrParaComunidade} />
+      {trofeusAbertos && <TrofeusDaCorrida aoFechar={() => setTrofeusAbertos(false)} />}
       {siteAberto && <SiteEmbutido nome={siteAberto.nome} endereco={siteAberto.endereco} aoFechar={() => setSiteAberto(null)} />}
       {soloAberto && (
         <div className="minijogo-no-quarto">

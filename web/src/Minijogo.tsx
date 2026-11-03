@@ -10,7 +10,7 @@ import { JogoLobisomem } from './JogoLobisomem';
 import { JogoPalavra } from './JogoPalavra';
 import { EscolhaDoQuiz, JogoQuiz } from './JogoQuiz';
 import { CATEGORIAS_DO_QUIZ, ehQuiz, type EstadoQuiz } from './quiz';
-import { JogoCorrida, JogoCorridaNaSala, type EstadoCorrida } from './JogoCorrida';
+import { EscolhaDaPista, JogoCorrida, JogoCorridaNaSala, type EstadoCorrida } from './JogoCorrida';
 import { JogoStop } from './JogoStop';
 import { JogoSudoku } from './JogoSudoku';
 import { EscolhaDeCategoria, JogoTamanho } from './JogoTamanho';
@@ -214,6 +214,12 @@ export function PainelDoMinijogo({
           aoVoltar={() => setEscolhendo(null)}
         />
       )}
+      {!partida && escolhendo === 'corrida' && (
+        <EscolhaDaPista
+          aoEscolher={(pista) => tentar(() => aoComecar('corrida', { pista }, false).then(() => setEscolhendo(null)))}
+          aoVoltar={() => setEscolhendo(null)}
+        />
+      )}
       {!partida && escolhendo === 'tamanho' && (
         <EscolhaDeCategoria
           aoEscolher={(categoria) => tentar(() => aoComecar('tamanho', { categoria }, aba === 'solo').then(() => setEscolhendoCategoria(false)))}
@@ -230,8 +236,10 @@ export function PainelDoMinijogo({
                 className="minijogo-jogo"
                 title={t(jogo.dica)}
                 onClick={() =>
-                  jogo.id === 'corrida' && aba === 'solo'
-                    ? setCorrendo(true)
+                  jogo.id === 'corrida'
+                    ? aba === 'solo'
+                      ? setCorrendo(true)
+                      : setEscolhendo('corrida')
                     : pedeCategoria(jogo.id)
                       ? setEscolhendo(jogo.id)
                       : tentar(() => aoComecar(jogo.id, {}, aba === 'solo'))
