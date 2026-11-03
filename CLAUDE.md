@@ -509,6 +509,18 @@ tela, mas nunca abaixo de 100 ms nem muito abaixo do que o servidor viu passar).
 de troféus do quarto (`pista: 'festa'`). Microjogo novo é uma entrada nos dois lados; a estante de troféus serve a qualquer
 jogo da sala. Testes: `server/test/minijogos-festa.test.ts` e `e2e/festa.mjs` (com o LiveKit).
 
+**O MINIGOLFE DA TOCA está feito (03/11/2026, o item 2):** `server/src/minijogo-golfe.ts`, `web/src/JogoGolfe.tsx`, nas duas
+abas. Seis buracos curtos vistos de cima, desenhados pixel a pixel (jardim, horta, toca, lago, porteira com a tábua que anda,
+raízes), com areia que segura, água que devolve a bola com uma tacada a mais e cogumelos que quicam. Puxar a bola para trás e
+soltar (ou setas e Espaço segurado). A turma joga o MESMO buraco ao mesmo tempo, cada um na própria tela, com as bolas dos
+outros como pontinhos (o tempo real); o buraco fecha quando todos terminaram ou em 60 s (120 s sozinho), e quem não acertou
+em 6 tacadas fica com 7. Menos tacadas ganha. **A FÍSICA É UM ARQUIVO SÓ, NOS DOIS LADOS** (`server/src/golfe-fisica.ts` e
+`web/src/golfe/fisica.ts`, iguais byte a byte, e `web/test/golfe.test.ts` confere): cada tacada vai ao servidor na hora,
+com o passo do relógio e o vetor em inteiros, e o servidor a simula — o resultado é o dele. Sem seno nem cosseno dentro da
+simulação (só + − × ÷ e raiz, que dão o mesmo número em qualquer navegador). O que sobra possível: um programa que calcule a
+tacada perfeita. Troféu com `pista: 'golfe'`, os pontos sendo o total de tacadas. Testes: `server/test/minijogos-golfe.test.ts`,
+`web/test/golfe.test.ts` e `e2e/golfe.mjs`.
+
 **O TABULEIRO DA TURMA está feito (03/11/2026, o item 5):** `server/src/minijogo-tabuleiro-da-turma.ts`, `web/src/JogoTabuleiro.tsx`,
 só no Coletivo (2 a 8). Uma volta de 30 casas em volta de uma horta, desenhada por código; 5, 10 ou 15 rodadas. Na vez, cada
 um pede o dado (QUEM SORTEIA É O SERVIDOR), a peça anda na tela casa a casa, e a casa age: +3 cenouras, −3, ou um evento

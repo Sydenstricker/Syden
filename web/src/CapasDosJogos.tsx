@@ -13,6 +13,8 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
       return <CapaCorrida />;
     case 'festa':
       return <CapaFesta />;
+    case 'golfe':
+      return <CapaGolfe />;
     case 'tabuleiro':
       return <CapaTabuleiro />;
     case 'tamanho':
@@ -580,6 +582,36 @@ function CapaTabuleiro() {
       <rect x="96" y="22" width="8" height="4" fill="#d08e2c" />
       <rect x="98" y="26" width="4" height="4" fill="#b8741e" />
       <rect x="94" y="12" width="4" height="2" fill="#fff1c8" />
+    </svg>
+  );
+}
+
+/**
+ * O Minigolfe da toca: a grama em faixas vista de cima, a borda de madeira, um cogumelo, o buraco com a bandeira e a bola
+ * chegando, com o rastro pontilhado da tacada.
+ */
+function CapaGolfe() {
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true" shapeRendering="crispEdges">
+      <rect width="160" height="120" fill="#55804c" />
+      <rect x="10" y="14" width="140" height="92" fill="#d8c49a" />
+      <rect x="14" y="18" width="132" height="84" fill="#7fae6a" />
+      {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
+        <rect key={i} x={14 + i * 18} y="18" width="9" height="84" fill="#76a462" />
+      ))}
+      <rect x="40" y="52" width="26" height="22" fill="#dcc38e" />
+      <circle cx="122" cy="34" r="7" fill="#c4614e" />
+      <rect x="119" y="30" width="3" height="3" fill="#ead9c0" />
+      <rect x="124" y="35" width="2" height="2" fill="#ead9c0" />
+      <ellipse cx="112" cy="84" rx="7" ry="6" fill="#4a3e34" />
+      <ellipse cx="112" cy="84" rx="5" ry="4" fill="#2a2420" />
+      <rect x="112" y="50" width="2" height="34" fill="#e8e0d0" />
+      <path d="M114 50 L132 56 L114 62 Z" fill="#d9774f" />
+      {[0, 1, 2, 3, 4, 5].map((i) => (
+        <rect key={i} x={34 + i * 10} y={96 - i * 1.5} width="3" height="2" fill="#f4ecdc" opacity={0.45 + i * 0.08} />
+      ))}
+      <circle cx="98" cy="86" r="4" fill="#f4ecdc" />
+      <rect x="96" y="84" width="2" height="2" fill="#fffaf0" />
     </svg>
   );
 }

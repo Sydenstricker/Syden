@@ -16430,6 +16430,122 @@ body.arrastando-barra {
   }
 }
 
+/* O MINIGOLFE DA TOCA (03/11/2026, JogoGolfe.tsx): a mesa em 192 × 128, ampliada com os pixels nítidos. As cores do desenho
+   são as do quarto; a moldura segue o tema. */
+.minijogo.jogando-golfe {
+  width: min(680px, 94vw);
+}
+
+.golfe {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.golfe-topo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.golfe-topo .minijogo-tempo {
+  flex: 1;
+}
+
+.golfe-tacadas {
+  color: var(--text-strong);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.golfe-moldura {
+  position: relative;
+  width: 100%;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--bg-darkest);
+}
+
+.golfe-tela {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  image-rendering: pixelated;
+  touch-action: none;
+  cursor: crosshair;
+}
+
+.golfe-contagem {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(44px * var(--escala-do-texto));
+  font-weight: 700;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+.golfe-aviso {
+  color: var(--amber);
+}
+
+.golfe-placar {
+  width: 100%;
+  max-width: 460px;
+  border-collapse: separate;
+  border-spacing: 0 5px;
+}
+
+.golfe-placar th {
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: calc(12px * var(--escala-do-texto));
+  text-align: right;
+  padding: 0 12px;
+}
+
+.golfe-placar td {
+  padding: 6px 12px;
+  background: var(--bg-raised);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.golfe-placar td:first-child {
+  border-radius: 8px 0 0 8px;
+  color: var(--text-muted);
+  text-align: left;
+  width: 2ch;
+}
+
+.golfe-placar td:last-child {
+  border-radius: 0 8px 8px 0;
+  color: var(--text-strong);
+}
+
+.golfe-placar td.minijogo-nome {
+  text-align: left;
+  max-width: 0;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.golfe-placar tr.eu td {
+  box-shadow: inset 0 2px 0 var(--accent), inset 0 -2px 0 var(--accent);
+}
+
 /* O Tabuleiro da turma (03/11/2026, JogoTabuleiro.tsx): o placar de fichas, o tabuleiro em pixels e a vez. */
 .minijogo.jogando-tabuleiro {
   width: min(680px, 94vw);

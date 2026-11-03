@@ -363,7 +363,26 @@ export interface EstadoTabuleiro {
   partidaId: string;
 }
 
-export type IdDoJogo = 'corrida' | 'festa' | 'tabuleiro' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'xadrez' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
+/** O Minigolfe da toca (server/src/minijogo-golfe.ts): seis buracos, menos tacadas ganha. */
+export interface EstadoGolfe {
+  fase: 'preparando' | 'jogando' | 'placar' | 'fim';
+  rodada: number;
+  rodadas: number;
+  /** O índice do buraco (web/src/golfe/fisica.ts, BURACOS). */
+  buraco: number;
+  duracaoMs: number;
+  /** Quanto do buraco já passou, no servidor (só jogando). */
+  decorridoMs: number | null;
+  tacadasMax: number;
+  bolas: { userId: number; username: string; x: number; y: number; tacadas: number; dentro: boolean; acabou: boolean }[];
+  /** A minha bola, como o servidor a simulou. */
+  meu: import('./golfe/fisica').Bola | null;
+  /** Em ordem: menos tacadas primeiro. `buraco`: as tacadas do último buraco jogado. */
+  placar: { userId: number; username: string; pontos: number; buraco: number | null }[];
+  partidaId: string;
+}
+
+export type IdDoJogo = 'corrida' | 'festa' | 'tabuleiro' | 'golfe' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'xadrez' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
 
 /**
  * As duas abas da estante (pedido dele, 14/10/2026). SOLO: a partida é só de quem joga, começa sem convite, não ocupa
@@ -465,6 +484,13 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
     abas: ['coletivo'],
     // As palavras são do dicionário do servidor, que por enquanto só existe em português.
     idioma: 'pt',
+  },
+  {
+    // O minigolfe (JogoGolfe.tsx, server/src/minijogo-golfe.ts): todos no mesmo buraco, ao mesmo tempo, cada um na própria tela.
+    id: 'golfe',
+    nome: chave('Minigolfe da toca'),
+    dica: chave('Seis buracos de minigolfe, todos jogando o mesmo ao mesmo tempo. Puxe a bola para trás e solte para dar a tacada. Ganha quem somar menos tacadas.'),
+    abas: ['solo', 'coletivo'],
   },
   {
     // O tabuleiro de festa (JogoTabuleiro.tsx, server/src/minijogo-tabuleiro-da-turma.ts): dado, casas, a cenoura dourada e
