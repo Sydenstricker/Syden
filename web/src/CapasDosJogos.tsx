@@ -13,6 +13,8 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
       return <CapaCorrida />;
     case 'festa':
       return <CapaFesta />;
+    case 'blocos':
+      return <CapaBlocos />;
     case 'tamanho':
       return <CapaQualEMaior />;
     case 'stop':
@@ -98,6 +100,68 @@ function CapaFesta() {
           <rect x={x - 12} y="98" width="24" height="4" rx="1" fill="#8e5530" />
           <rect x={x - 8} y="73" width="16" height="3" rx="1" fill="#d39a62" />
         </g>
+      ))}
+    </svg>
+  );
+}
+
+/**
+ * A Horta em cascata: a pilha de legumes subindo, de alturas diferentes, com a linha nova apagada embaixo e três cenouras
+ * alinhadas brilhando (a combinação). As cores são as das peças do jogo (web/src/blocos/desenho.ts).
+ */
+function CapaBlocos() {
+  const fundos = ['#e9b48a', '#a9c99a', '#e39a8e', '#b9a3c9', '#ecd58a', '#e8d6e0'];
+  const bordas = ['#b9794e', '#6f9a5e', '#b2604f', '#7f6a96', '#bfa04c', '#b39aa8'];
+  // de cima para baixo; -1 é vazio, 9 é a cenoura que brilha
+  const pilha = [
+    [-1, -1, -1, -1, 1, -1],
+    [-1, 3, -1, -1, 5, -1],
+    [9, 9, 9, 2, 4, -1],
+    [4, 2, 5, 1, 3, 2],
+    [1, 5, 3, 4, 0, 1],
+    [2, 0, 1, 5, 2, 4],
+  ];
+  const lado = 18;
+  const x0 = 80 - 3 * lado;
+  const legume = (t: number, x: number, y: number) => {
+    const cx = x + lado / 2;
+    const cy = y + lado / 2;
+    switch (t) {
+      case 0:
+        return <path d={`M${cx - 5} ${cy - 3} L${cx + 5} ${cy - 3} L${cx} ${cy + 6} Z`} fill="#e07a2e" />;
+      case 1:
+        return <circle cx={cx} cy={cy} r={5.5} fill="#8fbf6e" stroke="#4f7d3c" strokeWidth="1" />;
+      case 2:
+        return <circle cx={cx} cy={cy + 1} r={5} fill="#d0503c" />;
+      case 3:
+        return <ellipse cx={cx} cy={cy + 1} rx={3.5} ry={6} fill="#7a5296" transform={`rotate(30 ${cx} ${cy})`} />;
+      case 4:
+        return <ellipse cx={cx} cy={cy} rx={3} ry={6} fill="#f0cf5a" stroke="#8fbf6a" strokeWidth="1.2" />;
+      default:
+        return <circle cx={cx} cy={cy + 1} r={5} fill="#f6ece2" stroke="#b05a8a" strokeWidth="2" />;
+    }
+  };
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#2e2630" />
+      <rect x={x0} y="0" width={lado * 6} height="120" fill="#352c38" />
+      {pilha.map((linha, l) =>
+        linha.map((t, c) => {
+          if (t < 0) return null;
+          const x = x0 + c * lado;
+          const y = 4 + l * lado;
+          const tipo = t === 9 ? 0 : t;
+          return (
+            <g key={`${l}-${c}`}>
+              <rect x={x + 0.5} y={y + 0.5} width={lado - 1} height={lado - 1} rx="3" fill={fundos[tipo]} stroke={bordas[tipo]} />
+              {legume(tipo, x, y)}
+              {t === 9 && <rect x={x + 0.5} y={y + 0.5} width={lado - 1} height={lado - 1} rx="3" fill="#fbf3e4" opacity="0.45" />}
+            </g>
+          );
+        }),
+      )}
+      {[0, 1, 2, 3, 4, 5].map((c) => (
+        <rect key={c} x={x0 + c * lado + 0.5} y={4 + 6 * lado + 0.5} width={lado - 1} height={lado - 1} rx="3" fill={fundos[(c * 4 + 1) % 6]} opacity="0.35" />
       ))}
     </svg>
   );
