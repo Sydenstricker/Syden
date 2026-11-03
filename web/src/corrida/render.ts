@@ -271,7 +271,7 @@ export function kartNaTela(
   ky: number,
   angulo: number,
   pulo: number,
-  opcoes: { fantasma?: boolean; sombra?: boolean; tremor?: number } = {},
+  opcoes: { fantasma?: boolean; sombra?: boolean; tremor?: number; nome?: string } = {},
 ): Figura | null {
   const pr = projetar(cam, kx, ky);
   if (!pr || !d.coelho) return null;
@@ -295,6 +295,16 @@ export function kartNaTela(
       if (opcoes.fantasma) ctx.globalAlpha = 0.5;
       ctx.drawImage(img, n * LADO_DO_KART, 0, LADO_DO_KART, LADO_DO_KART, Math.round(x), Math.round(y), Math.round(w), Math.round(w));
       ctx.globalAlpha = 1;
+      // o nome de quem dirige, em cima do kart (só perto o bastante para caber)
+      if (opcoes.nome && e > 0.25) {
+        ctx.font = '7px sans-serif';
+        ctx.textAlign = 'center';
+        const tx = Math.round(pr.sx), ty = Math.round(y + 2 * e);
+        ctx.fillStyle = '#1e1822';
+        ctx.fillText(opcoes.nome, tx + 1, ty + 1);
+        ctx.fillStyle = '#fbf3e4';
+        ctx.fillText(opcoes.nome, tx, ty);
+      }
     },
   };
 }

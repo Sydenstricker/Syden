@@ -433,6 +433,21 @@ mudar o traçado não mistura fantasmas. Testes: `web/test/corrida.test.ts` (o p
 `server/test/corrida.test.ts` e `e2e/corrida.mjs` (o piloto automático liga por `window.corridaPilotoAutomatico`, só no site
 de desenvolvimento). Sem som por enquanto.
 
+**O degrau 2 está feito (03/11/2026, depois de ele testar o 1: "ficou ótimo"): a corrida NA SALA.** A Corrida dos
+coelhos está nas duas abas: no Solo, o contra o relógio; no Coletivo, o convite de sempre (2 pessoas ou mais), e a turma
+corre junto (`server/src/minijogo-corrida.ts`, `JogoCorridaNaSala` em `web/src/JogoCorrida.tsx`; o laço comum mora em
+`web/src/corrida/laco.ts`). Como decidido pela rede: o servidor dá a LARGADA (o mesmo semáforo para todos, pelo relógio
+da partida) e só REPASSA as posições (o tempo real do motor, 15 por segundo, carimbadas com quem mandou); cada um dirige
+no próprio computador, e os outros aparecem no MESMO PASSO da corrida deles, interpolados (e um pouco adiante, se a
+internet atrasa). **A classificação é pelo tempo de cada um, em passos desde o próprio verde**, conferido pelo fantasma
+como no contra o relógio: quem tem internet pior não perde por isso, e quem pausa (janela sem foco) só perde o prazo.
+A primeira chegada abre 30 s para os outros; quem não chega fica atrás, pelo quanto andou. Na tela: o nome em cima de
+cada kart, a ordem ao vivo no canto, e na chegada a lista com os tempos — **as medalhas só no fim**, porque quem ainda
+corre pode fazer um tempo menor. Quem disse "Agora não" assiste pela câmera de quem está na frente. Uma corrida da sala
+que bate o recorde da pessoa vira o recorde dela. Sem batida entre karts. A corrida ainda NÃO entra nas conquistas da
+turma (nem os quizzes estão lá): o troféu coletivo do degrau 3 é o lugar dela. Testes: `server/test/minijogos-corrida.test.ts`
+e `e2e/corrida-na-sala.mjs` (três pessoas, uma assistindo, com o LiveKit).
+
 **A sondagem de jogos dele (12/10/2026), avaliada:** os campeões de receita (Coin Master, Candy Crush, Sheep a Sheep)
 são solo e se pagam com anúncio, vidas e roleta. **Decisão dele: clonar só a MECÂNICA DE JOGO** (empilhar e combinar
 peças, parafusos, setas, combinar três) — nunca a de cassino nem a de "volte todo dia". Integração, nenhuma. Party game de ação (Mario Party, Overcooked) tem aderência

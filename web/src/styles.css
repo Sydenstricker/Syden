@@ -15766,3 +15766,70 @@ body.arrastando-barra {
   font-variant-numeric: tabular-nums;
   font-size: 0.9rem;
 }
+
+/* A corrida na sala: a ordem ao vivo, no canto de cima à esquerda (como nos jogos da época), e a classificação final. */
+.corrida-ordem {
+  position: absolute;
+  top: 34px;
+  left: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 40%;
+  color: #fbf3e4;
+  font-weight: 700;
+  font-size: clamp(0.7rem, 1.9vw, 0.9rem);
+  text-shadow: 0 1px 0 #2a1e2c, 1px 0 0 #2a1e2c, -1px 0 0 #2a1e2c, 0 -1px 0 #2a1e2c;
+}
+
+.corrida-ordem li {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.corrida-ordem li span {
+  display: inline-block;
+  min-width: 1.2em;
+}
+
+.corrida-ordem li.eu {
+  color: #ffc46a;
+}
+
+.corrida-classificacao {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: min(320px, 90%);
+}
+
+.corrida-classificacao li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(251, 243, 228, 0.08);
+}
+
+.corrida-classificacao li.eu {
+  background: rgba(255, 196, 106, 0.22);
+}
+
+.corrida-posicao {
+  min-width: 1.6em;
+  text-align: center;
+  font-weight: 800;
+}
+
+.corrida-classificacao .corrida-quem {
+  text-align: left;
+}

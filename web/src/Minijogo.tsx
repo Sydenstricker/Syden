@@ -10,7 +10,7 @@ import { JogoLobisomem } from './JogoLobisomem';
 import { JogoPalavra } from './JogoPalavra';
 import { EscolhaDoQuiz, JogoQuiz } from './JogoQuiz';
 import { CATEGORIAS_DO_QUIZ, ehQuiz, type EstadoQuiz } from './quiz';
-import { JogoCorrida } from './JogoCorrida';
+import { JogoCorrida, JogoCorridaNaSala, type EstadoCorrida } from './JogoCorrida';
 import { JogoStop } from './JogoStop';
 import { JogoSudoku } from './JogoSudoku';
 import { EscolhaDeCategoria, JogoTamanho } from './JogoTamanho';
@@ -227,7 +227,7 @@ export function PainelDoMinijogo({
                 className="minijogo-jogo"
                 title={t(jogo.dica)}
                 onClick={() =>
-                  jogo.id === 'corrida'
+                  jogo.id === 'corrida' && aba === 'solo'
                     ? setCorrendo(true)
                     : pedeCategoria(jogo.id)
                       ? setEscolhendo(jogo.id)
@@ -280,6 +280,17 @@ export function PainelDoMinijogo({
       {jogoNaTela?.jogo === 'palavra' && <JogoPalavra estado={jogoNaTela as unknown as EstadoPalavra & Partida} eu={eu} jogador={souJogador(partida)} restante={restante} agir={agir} />}
       {jogoNaTela && ehQuiz(jogoNaTela.jogo) && (
         <JogoQuiz tema={jogoNaTela.jogo} estado={jogoNaTela as unknown as EstadoQuiz & Partida} eu={eu} jogador={souJogador(partida)} restante={restante} agir={agir} />
+      )}
+      {jogoNaTela?.jogo === 'corrida' && (
+        <JogoCorridaNaSala
+          estado={jogoNaTela as unknown as EstadoCorrida & Partida}
+          eu={eu}
+          jogador={souJogador(partida)}
+          restante={restante}
+          agir={agir}
+          socket={socket}
+          channelId={channelId}
+        />
       )}
       {jogoNaTela?.jogo === 'lobisomem' && <JogoLobisomem estado={jogoNaTela as unknown as EstadoLobisomem & Partida} eu={eu} restante={restante} agir={agir} />}
       {(jogoNaTela?.jogo === 'gomoku' || jogoNaTela?.jogo === 'mancala') && (

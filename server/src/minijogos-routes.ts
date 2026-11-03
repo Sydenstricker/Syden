@@ -1,6 +1,7 @@
 import type { FastifyInstance, FastifyReply } from 'fastify';
 import type { Server as IOServer, Socket } from 'socket.io';
 import * as db from './db.js';
+import { corrida } from './minijogo-corrida.js';
 import { desenho } from './minijogo-desenho.js';
 import type { Contexto, Definicao, Jogo } from './minijogo-motor.js';
 import { lobisomem } from './minijogo-lobisomem.js';
@@ -41,6 +42,7 @@ export const JOGOS: Record<string, Definicao> = {
   lobisomem,
   desenho,
   palavra,
+  corrida,
   // Os quizzes de adivinhar (minijogo-quiz.ts): um jogo por tema, todos no mesmo motor.
   ...Object.fromEntries(Object.entries(TEMAS).map(([id, tema]) => [id, criarQuiz(tema)])),
 };

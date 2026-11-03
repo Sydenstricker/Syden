@@ -317,12 +317,12 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
     abas: ['solo', 'coletivo'],
   },
   {
-    // A corrida de kart contra o relógio (JogoCorrida.tsx): roda no computador de quem joga, sem partida no servidor,
-    // e só por isso fica só no Solo. A corrida ao vivo da sala é o degrau 2.
+    // A corrida de kart (JogoCorrida.tsx). No Solo, contra o relógio, com os fantasmas dos amigos, sem partida no servidor;
+    // no Coletivo, a turma corre junto (server/src/minijogo-corrida.ts).
     id: 'corrida',
     nome: chave('Corrida dos coelhos'),
     dica: chave('Uma corrida de kart contra o relógio, com os fantasmas dos recordes dos seus amigos correndo junto.'),
-    abas: ['solo'],
+    abas: ['solo', 'coletivo'],
   },
   {
     id: 'stop',
