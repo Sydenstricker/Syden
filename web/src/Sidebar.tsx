@@ -332,7 +332,14 @@ export function Sidebar({
                 </span>
               )}
             </div>
-            <div className="voice-panel-channel">{connectedChannel.name}</div>
+            {/* O nome da sala leva de volta a ela (de uma conversa privada, por exemplo), como no Discord. */}
+            {'id' in connectedChannel ? (
+              <button className="voice-panel-channel voice-panel-ir" onClick={() => onSelect(connectedChannel)}>
+                {connectedChannel.name}
+              </button>
+            ) : (
+              <div className="voice-panel-channel">{connectedChannel.name}</div>
+            )}
             {/* COM O NOME ESCRITO, e não só o cadeado (relato de 20/10/2026: os usuários o liam como o do HTTPS). Um
                 cadeado sozinho é o símbolo do HTTPS para todo mundo; o que este diz é outra coisa, e precisa dizer. */}
             {voice.codigoDeSeguranca && (

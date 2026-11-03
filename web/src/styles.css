@@ -1375,6 +1375,20 @@ textarea {
   color: var(--text-muted);
 }
 
+/* O nome da sala, no painel "Voz conectada", é o caminho de volta a ela. */
+.voice-panel-ir {
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.voice-panel-ir:hover {
+  color: var(--text);
+  text-decoration: underline;
+}
+
 /* "Criptografada de ponta a ponta", embaixo do nome da sala: abre o código de segurança. */
 .chamada-cifrada {
   display: inline-flex;

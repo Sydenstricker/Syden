@@ -338,6 +338,15 @@ export function Shell({
   };
   openRef.current = view === 'direct' ? directId : null;
   const voiceMembers = visivelId === null ? [] : (voiceByCommunity[visivelId] ?? []);
+  // A SALA DE VOZ CONTINUA NA TELA COM A CONVERSA ABERTA (relato dele, 02/11/2026: "quando eu vou falar com alguém no
+  // chat, eu saio da sala"). A chamada nunca caía, mas o palco sumia e sobrava só o painel do canto, e isso se lê como
+  // ter saído. Na conversa, o palco da sala fica em cima, como o da chamada privada. A sala pode ser de outra comunidade:
+  // a gente dela e a comunidade vêm de voiceByCommunity.
+  const [comunidadeDaSala, genteDaSala] = (() => {
+    if (voice.channelId === null || directs.some((c) => c.id === voice.channelId)) return [null, []] as const;
+    const achada = Object.entries(voiceByCommunity).find(([, gente]) => gente.some((m) => m.channelId === voice.channelId));
+    return achada ? ([Number(achada[0]), achada[1].filter((m) => m.channelId === voice.channelId)] as const) : [null, []] as const;
+  })();
   const onlineHere = presence.filter((p) => members.has(p.id));
   const myStatus = presence.find((p) => p.id === user.id)?.status ?? loadMyStatus();
 
@@ -1256,6 +1265,23 @@ export function Shell({
                     canaisDeTexto={[]}
                     canais={[]}
                     privada
+                    aoAbrirVozEVideo={() => setSettingsOpen('voice')}
+                    aoMandarMensagem={(userId) => void startConversation(userId)}
+                    aoEditarPerfil={() => setSettingsOpen('aparencia')}
+                  />
+                </div>
+              )}
+              {comunidadeDaSala !== null && voice.channelId !== null && (
+                <div className="chamada-da-conversa">
+                  <Stage
+                    voice={voice}
+                    members={genteDaSala}
+                    channelId={voice.channelId}
+                    socket={socket}
+                    communityId={comunidadeDaSala}
+                    // Os canais só se conhecem da comunidade aberta; numa sala de outra, o clipe e o "mover" ficam sem destino.
+                    canaisDeTexto={comunidadeDaSala === visivelId ? channels.filter((c) => c.type === 'text') : []}
+                    canais={comunidadeDaSala === visivelId ? channels : []}
                     aoAbrirVozEVideo={() => setSettingsOpen('voice')}
                     aoMandarMensagem={(userId) => void startConversation(userId)}
                     aoEditarPerfil={() => setSettingsOpen('aparencia')}
