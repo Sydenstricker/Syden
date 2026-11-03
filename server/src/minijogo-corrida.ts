@@ -35,10 +35,23 @@ interface Piloto {
   andou: number;
 }
 
-export const corrida: Definicao = {
+/**
+ * A FOLGA DO RELÓGIO: a chegada não pode declarar um tempo maior do que o que de fato passou desde o verde do servidor,
+ * mais isto (a contagem de cada um começa com o atraso da rede). Sem isso, um fantasma guardado, mandado pelo console um
+ * segundo depois da largada, ganhava a corrida e fechava o prazo de 30 s para todo mundo (revisão de 03/11/2026). Pausar
+ * não atrapalha: a janela sem foco para os passos, e o relógio de verdade só fica maior.
+ */
+export const FOLGA_MS = 3000;
+
+export const corrida: Definicao = criarCorrida();
+
+/** `agora` é trocável para o teste. */
+export function criarCorrida(agora: () => number = Date.now): Definicao {
+  return {
   minimo: 2,
   comecar(ctx, { naSala }) {
     let fase: 'largada' | 'correndo' | 'fim' = 'largada';
+    let verdeEm = 0;
     const pilotos = new Map<number, Piloto>(naSala.map((id) => [id, { tempoMs: null, voltas: [], andou: 0 }]));
     let prazoAberto = false;
 
@@ -70,6 +83,7 @@ export const corrida: Definicao = {
 
     ctx.agendar(LARGADA_MS, () => {
       fase = 'correndo';
+      verdeEm = agora();
       ctx.agendar(CORRIDA_MS, fechar);
       ctx.avisar();
     });
@@ -90,6 +104,7 @@ export const corrida: Definicao = {
         if (p.tempoMs !== null) return null;
         const v = validarCorrida(PISTA, corpo);
         if ('erro' in v) return v.erro;
+        if (v.ok.tempoMs > agora() - verdeEm + FOLGA_MS) return 'Corrida inválida.';
         p.tempoMs = v.ok.tempoMs;
         p.voltas = v.ok.voltas.map((passos) => Math.round((passos * 1000) / 60));
         p.andou = VOLTAS;
@@ -110,11 +125,12 @@ export const corrida: Definicao = {
         const numeros = [x, y, a, n, andou];
         if (!numeros.every((k) => typeof k === 'number' && Number.isFinite(k))) return null;
         if ((x as number) < 0 || (y as number) < 0 || (x as number) > 1024 || (y as number) > 1024) return null;
-        if ((andou as number) < 0 || (andou as number) > VOLTAS + 1) return null;
+        if ((andou as number) < 0 || (andou as number) > VOLTAS) return null;
         if (p.tempoMs === null) p.andou = andou as number;
         return { userId: quem, x, y, a, n, andou };
       },
       conferir,
     };
   },
-};
+  };
+}

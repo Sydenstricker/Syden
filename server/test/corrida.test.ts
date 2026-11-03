@@ -16,13 +16,17 @@ const idDe = async (pedir: typeof comoAna) => (await pedir('GET', '/api/me')).js
 const anaId = await idDe(comoAna);
 const biaId = await idDe(comoBia);
 
-/** Uma corrida de mentira, mas coerente: 3 voltas de `porVolta` passos, andando 1 unidade por passo em círculo. */
+/**
+ * Uma corrida de mentira, mas coerente: 3 voltas de `porVolta` passos, num círculo que passa pela linha de chegada da
+ * horta-1 (250, 190), com o centro em (500, 500): ~2500 unidades por volta, mais que os 70% da pista que se exige.
+ */
 function corrida(porVolta: number) {
   const voltas = [porVolta, porVolta * 2, porVolta * 3];
+  const r = Math.hypot(250 - 500, 190 - 500), a0 = Math.atan2(190 - 500, 250 - 500);
   const amostras: number[] = [];
   for (let p = 1; p <= voltas[2]; p += 4) {
-    const a = p / 300;
-    amostras.push(Math.round((500 + Math.cos(a) * 300) * 10), Math.round((500 + Math.sin(a) * 300) * 10), Math.round(a * 1000));
+    const a = a0 + (2 * Math.PI * (p - 1)) / porVolta;
+    amostras.push(Math.round((500 + Math.cos(a) * r) * 10), Math.round((500 + Math.sin(a) * r) * 10), Math.round(a * 1000));
   }
   return { voltas, amostras };
 }
@@ -38,6 +42,13 @@ test('a conferência recusa o que não fecha: tempo sem caminho, volta curta dem
   salto.amostras[30] += 5000;
   assert.ok('erro' in validarCorrida('horta-1', salto), 'o kart pulou 500 unidades');
   assert.equal((validarCorrida('horta-1', corrida(1200)) as { ok: { tempoMs: number } }).ok.tempoMs, 60000, '3600 passos = 1 min');
+  // o kart parado (revisão de 03/11/2026): as amostras no mesmo lugar, com voltas de 8 s, viravam recorde de 0:24
+  const parado = { voltas: [480, 960, 1440], amostras: Array.from({ length: 361 }, () => [5000, 5000, 0]).flat() };
+  assert.ok('erro' in validarCorrida('horta-1', parado), 'o kart que não anda não fecha volta');
+  // a volta que anda, mas termina longe da linha de chegada
+  const longe = corrida(1200);
+  longe.amostras = longe.amostras.map((v, i) => (i % 3 === 0 ? v + 800 : v));
+  assert.ok('erro' in validarCorrida('horta-1', longe), 'o fim da volta tem de cair na linha');
 });
 
 test('só o melhor tempo fica, e quem não é amigo não vê o recorde nem o fantasma', async () => {

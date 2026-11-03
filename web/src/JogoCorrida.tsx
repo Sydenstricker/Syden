@@ -52,9 +52,9 @@ function useControles(ativo: boolean) {
     if (!ativo) return;
     const c = comandos.current;
     const tecla = (e: KeyboardEvent, apertada: boolean) => {
-      // escrevendo na conversa, as setas são do texto
+      // escrevendo na conversa, as setas são do texto (mas soltar a tecla vale sempre, senão ela fica presa)
       const alvo = e.target as HTMLElement | null;
-      if (alvo && (alvo.tagName === 'INPUT' || alvo.tagName === 'TEXTAREA' || alvo.isContentEditable)) return;
+      if (apertada && alvo && (alvo.tagName === 'INPUT' || alvo.tagName === 'TEXTAREA' || alvo.isContentEditable)) return;
       const k = e.key.toLowerCase();
       let usou = true;
       if (k === 'arrowup' || k === 'w') c.acelera = apertada;
@@ -68,13 +68,24 @@ function useControles(ativo: boolean) {
     };
     const desce = (e: KeyboardEvent) => tecla(e, true);
     const sobe = (e: KeyboardEvent) => tecla(e, false);
+    // trocou de janela com a tecla apertada: o "soltar" vai para a outra janela, e o kart seguiria virando sozinho
+    const soltarTudo = () => {
+      const toque = window.matchMedia?.('(pointer: coarse)').matches ?? false;
+      Object.assign(c, { acelera: toque, freia: false, vira: 0, derrapa: false });
+      Object.assign(lados.current, { esquerda: false, direita: false, toqueEsquerda: false, toqueDireita: false });
+    };
+    const escondeu = () => document.hidden && soltarTudo();
     window.addEventListener('keydown', desce);
     window.addEventListener('keyup', sobe);
+    window.addEventListener('blur', soltarTudo);
+    document.addEventListener('visibilitychange', escondeu);
     // na tela de toque não há botão de acelerar: o kart acelera sozinho, e os dedos só viram e derrapam
     if (window.matchMedia?.('(pointer: coarse)').matches) c.acelera = true;
     return () => {
       window.removeEventListener('keydown', desce);
       window.removeEventListener('keyup', sobe);
+      window.removeEventListener('blur', soltarTudo);
+      document.removeEventListener('visibilitychange', escondeu);
       Object.assign(c, { acelera: false, freia: false, vira: 0, derrapa: false });
     };
   }, [ativo]);
@@ -411,7 +422,15 @@ export function JogoCorridaNaSala({
     };
   }, [socket, channelId]);
 
-  // A CORRIDA: começa ao abrir, com a contagem que o servidor deu (quem abre atrasado larga na hora: o tempo é o dele)
+  // A CORRIDA: começa ao abrir, com a contagem que o servidor deu (quem abre atrasado larga na hora: o tempo é o dele), e
+  // PARA quando a corrida acaba (revisão de 03/11/2026: quem não tinha chegado seguia correndo atrás da classificação, e a
+  // chegada depois do prazo dava "A partida acabou." embaixo dela)
+  const pararCorrida = useRef<() => void>(() => {});
+  const acabou = useRef(fim);
+  acabou.current = fim;
+  useEffect(() => {
+    if (fim) pararCorrida.current();
+  }, [fim]);
   useEffect(() => {
     if (fim || !canvas.current) return;
     tela.current?.focus();
@@ -427,10 +446,12 @@ export function JogoCorridaNaSala({
       aoOrdem: setOrdem,
       aoPosicao: (pos) => socket?.emit('minijogo:tempo-real', { channelId, dados: pos }),
       aoChegar: (voltas, caminho) => {
+        if (acabou.current) return;
         setChegou(true);
         void agir({ tipo: 'chegada', voltas, amostras: caminho });
       },
     });
+    pararCorrida.current = parar;
     return parar;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

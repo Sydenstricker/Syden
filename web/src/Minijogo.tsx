@@ -79,7 +79,7 @@ export interface Agir {
 }
 
 export function PainelDoMinijogo({
-  partida,
+  partida: partidaDaSala,
   eu,
   podeEncerrar,
   aoComecar,
@@ -121,6 +121,9 @@ export function PainelDoMinijogo({
   const escolhendoCategoria = escolhendo !== null;
   /** A Corrida dos coelhos aberta: ela não é partida do servidor (roda aqui), então mora fora da `partida`. */
   const [correndo, setCorrendo] = useState(false);
+  // Correndo sozinho, o jogo da sala fica fora da tela (revisão de 03/11/2026: um convite de outra pessoa derrubava a corrida
+  // no meio). O convite continua chegando pelo aviso pequeno da sala; ao sair da corrida, o jogo da sala aparece.
+  const partida = correndo ? null : partidaDaSala;
   const setEscolhendoCategoria = (sim: boolean) => setEscolhendo(sim ? 'tamanho' : null);
   /** Os jogos que pedem categoria: clicar na capa abre a escolha, e não a partida. */
   const pedeCategoria = (jogo: IdDoJogo) => jogo === 'tamanho' || (ehQuiz(jogo) && CATEGORIAS_DO_QUIZ[jogo] !== undefined);

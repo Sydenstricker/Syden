@@ -447,6 +447,12 @@ corre pode fazer um tempo menor. Quem disse "Agora não" assiste pela câmera de
 que bate o recorde da pessoa vira o recorde dela. Sem batida entre karts. A corrida ainda NÃO entra nas conquistas da
 turma (nem os quizzes estão lá): o troféu coletivo do degrau 3 é o lugar dela. Testes: `server/test/minijogos-corrida.test.ts`
 e `e2e/corrida-na-sala.mjs` (três pessoas, uma assistindo, com o LiveKit).
+**A revisão independente (03/11/2026, antes do push do degrau 2) achou que o servidor confiava demais no fantasma**, e
+virou regra: um kart PARADO passava e virava recorde de 0:24 — agora cada volta tem de andar 70% da pista e acabar na
+linha de chegada (`PISTAS` em `server/src/corrida.ts` guarda o comprimento e a linha; `web/test/corrida.test.ts` confere
+que batem com a pista do site e que o fantasma honesto passa); e, na sala, um fantasma guardado mandado pelo console um
+segundo depois do verde ganhava e fechava o prazo de todos — agora a chegada não pode declarar mais tempo do que passou
+desde o verde do servidor (+3 s de folga). Pista nova precisa da linha dela em `PISTAS`.
 
 **A sondagem de jogos dele (12/10/2026), avaliada:** os campeões de receita (Coin Master, Candy Crush, Sheep a Sheep)
 são solo e se pagam com anúncio, vidas e roleta. **Decisão dele: clonar só a MECÂNICA DE JOGO** (empilhar e combinar

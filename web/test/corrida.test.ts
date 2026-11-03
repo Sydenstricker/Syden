@@ -52,3 +52,17 @@ test('dar ré na linha de chegada não conta volta', () => {
   for (let i = 0; i < 300; i++) passo(k, { acelera: true, freia: false, vira: 0, derrapa: false }, pista);
   assert.equal(k.volta, 0);
 });
+
+test('o fantasma do piloto automático passa na conferência do servidor, e as medidas da pista batem', async () => {
+  const { PISTAS, validarCorrida } = await import('../../server/src/corrida.ts');
+  const def = PISTAS[HORTA.id];
+  assert.ok(def, 'a pista existe no servidor');
+  assert.ok(Math.abs(def.comprimento - pista.comprimento) < 2, `comprimento: servidor ${def.comprimento}, site ${pista.comprimento}`);
+  assert.deepEqual(def.linha, [Math.round(pista.lx[0]), Math.round(pista.ly[0])]);
+  assert.equal(def.voltas, HORTA.voltas);
+  for (const derrapar of [false, true]) {
+    const { k, caminho } = pilotar(derrapar);
+    const v = validarCorrida(HORTA.id, { voltas: k.voltas, amostras: caminho });
+    assert.ok('ok' in v, `o servidor recusou a corrida honesta (derrapando: ${derrapar})`);
+  }
+});
