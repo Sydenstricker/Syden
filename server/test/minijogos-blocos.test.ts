@@ -20,6 +20,8 @@ const bia = await criarConta(app, 'bia-blocos');
 const idDe = async (token: string) => (await comToken(app, token)('GET', '/api/me')).json().id as number;
 const anaId = await idDe(ana.token);
 const biaId = await idDe(bia.token);
+const carla = await criarConta(app, 'carla-blocos');
+const carlaId = await idDe(carla.token);
 const comunidade = (await comToken(app, ana.token)('POST', '/api/communities', { name: 'Turma da horta' })).json() as { id: number };
 
 type Meu = { recebidas: number; versao: number; passo: number; pontos: number; lixos: Sim.Lixo[]; jogadas: Sim.Jogada[] | null; fim: boolean };
@@ -32,7 +34,7 @@ function comecar(naSala: () => number[], corpo: Record<string, unknown> = {}) {
     avisar: () => {},
     terminar: () => (terminou = true),
     naSala,
-    nome: (id: number) => (id === anaId ? 'ana' : 'bia'),
+    nome: (id: number) => (id === anaId ? 'ana' : id === biaId ? 'bia' : 'carla'),
     comunidade: comunidade.id,
   };
   const jogo = criarBlocos({ agora: () => agora, aleatorio: () => 0.25 }).comecar(ctx, { naSala: naSala(), criadaPor: naSala()[0], corpo });
@@ -41,17 +43,18 @@ function comecar(naSala: () => number[], corpo: Record<string, unknown> = {}) {
 }
 
 /** Uma pessoa jogando com o piloto automático: a partida dela, aqui, e os lotes para o servidor. */
-function cliente(jogo: { acao: (q: number, c: Record<string, unknown>) => string | null; publico: (q: number) => Record<string, unknown> }, quem: number) {
+function cliente(jogo: { acao: (q: number, c: Record<string, unknown>) => string | null; publico: (q: number) => Record<string, unknown> }, quem: number, ritmo = 8) {
   const p = jogo.publico(quem);
   const s = Sim.simulacao(p.semente as number, p.modo === 'dois-minutos' ? Sim.DOIS_MINUTOS : 0);
   let enviadas = 0;
   return {
     s,
-    /** Joga até o passo `ate` (uma jogada a cada 8 passos, se o piloto achar). */
+    /** Joga até o passo `ate` (uma jogada a cada `ritmo` passos, se o piloto achar), com os caixotes que o servidor mandou. */
     jogar(ate: number) {
+      s.lixos = ((jogo.publico(quem).meu as Meu | null)?.lixos ?? []).slice();
       while (s.e.passo < ate && !s.e.fim) {
         const n = s.e.passo;
-        if (n % 8 === 0) {
+        if (n % ritmo === 0) {
           const j = escolherJogada(s.e);
           if (j && Sim.cabeNoRitmo(s.jogadas, n)) s.jogadas.push(j.tipo === 'subir' ? [n, 1, 0, 0] : [n, 0, j.l, j.c]);
         }
@@ -116,9 +119,9 @@ test('o relógio e o ritmo: nada à frente do servidor, e no máximo 20 jogadas 
   agora += 1000;
   jogo.acao(anaId, { tipo: 'jogadas', de: 1, passo: 200, jogadas: [[10, 0, 11, 0]] });
   assert.equal(meu(jogo, anaId).versao, 2);
-  // 30 trocas no mesmo segundo: só 20 entram
+  // 30 "subir" no mesmo segundo: só 20 entram
   const n = meu(jogo, anaId).passo;
-  const rajada = Array.from({ length: 30 }, (_, i) => [n + i, 0, 11, i % 5]);
+  const rajada = Array.from({ length: 30 }, (_, i) => [n + i, 1, 0, 0]);
   agora += 1000;
   jogo.acao(anaId, { tipo: 'jogadas', de: 2, passo: n + 40, jogadas: rajada });
   assert.equal(meu(jogo, anaId).jogadas!.length, 20);
@@ -198,8 +201,15 @@ test('quem sai da sala perde, e quem fica sozinho não ganha o pódio "com a tur
   naSala = [anaId];
   jogo.conferir!();
   assert.equal(terminou(), true);
-  const resultado = jogo.publico(anaId).resultado as { userId: number; lugar: number }[];
-  assert.equal(resultado[0].userId, anaId);
+  const resultado = jogo.publico(anaId).resultado as { userId: number; lugar: number | null }[];
+  assert.deepEqual(
+    resultado.map((r) => [r.userId, r.lugar]),
+    [
+      [anaId, 1],
+      [biaId, null],
+    ],
+    'quem saiu vem embaixo, sem posição',
+  );
   const depois = (await comToken(app, ana.token)('GET', '/api/corrida-trofeus')).json().trofeus.length;
   assert.equal(depois, antes, 'sozinha na sala, sem troféu');
 });
@@ -228,4 +238,158 @@ test('sozinho: começa pela rota do Solo, no contra o relógio de 2 minutos, e a
   assert.ok(a.s.e.fim === 'tempo' ? a.s.e.passo === Sim.DOIS_MINUTOS : a.s.e.fim === 'topo');
   assert.equal(jogo.publico(anaId).modo, 'dois-minutos');
   assert.equal((jogo.publico(anaId).resultado as { pontos: number }[])[0].pontos, a.s.e.pontos);
+});
+
+test('as trocas: no mínimo 4 passos entre uma e a seguinte (o "subir" não conta)', () => {
+  const { jogo, relogio } = comecar(() => [anaId, biaId]);
+  agora += LARGADA_MS;
+  relogio[0].depois();
+  agora += 1000;
+  const n = 10;
+  const jogadas = [
+    [n, 0, 11, 0],
+    [n, 0, 11, 2],
+    [n + 1, 1, 0, 0],
+    [n + 3, 0, 11, 1],
+    [n + 4, 0, 11, 3],
+    [n + 20, 0, 11, 4],
+  ];
+  jogo.acao(anaId, { tipo: 'jogadas', de: 0, passo: 40, jogadas });
+  assert.deepEqual(
+    meu(jogo, anaId).jogadas!.map((j) => j[0]),
+    [n, n + 1, n + 4, n + 20],
+    'a segunda troca do mesmo passo, e a de 3 passos depois, não valem',
+  );
+  assert.equal(meu(jogo, anaId).versao, 2);
+});
+
+test('a lista aceita vai no estado só enquanto o site não se acertou com ela', () => {
+  const { jogo, relogio } = comecar(() => [anaId, biaId]);
+  agora += LARGADA_MS;
+  relogio[0].depois();
+  agora += 1000;
+  // uma jogada do futuro é recusada: a lista vai
+  jogo.acao(anaId, { tipo: 'jogadas', de: 0, passo: 60, versao: 0, jogadas: [[5000, 0, 11, 0]] });
+  assert.equal(meu(jogo, anaId).versao, 1);
+  assert.deepEqual(meu(jogo, anaId).jogadas, []);
+  // o site refez a partida (versão 1) e manda o lote seguinte: daí em diante, sem a lista
+  agora += 500;
+  jogo.acao(anaId, { tipo: 'jogadas', de: 1, passo: 90, versao: 1, jogadas: [[70, 0, 11, 0]] });
+  assert.equal(meu(jogo, anaId).jogadas, null);
+  agora += 500;
+  jogo.acao(anaId, { tipo: 'jogadas', de: 2, passo: 120, versao: 1, jogadas: [] });
+  assert.equal(meu(jogo, anaId).jogadas, null, 'nem nos lotes seguintes');
+  // uma versão que o servidor nunca deu não vale
+  jogo.acao(anaId, { tipo: 'jogadas', de: 2, passo: 120, versao: 99, jogadas: [] });
+  assert.equal(meu(jogo, anaId).jogadas, null);
+  // o painel aberto de novo: a lista volta até o site mandar a versão nova
+  jogo.acao(anaId, { tipo: 'sincronizar' });
+  assert.deepEqual(meu(jogo, anaId).jogadas, [[70, 0, 11, 0]]);
+  jogo.acao(anaId, { tipo: 'jogadas', de: 2, passo: 120, versao: 2, jogadas: [] });
+  assert.equal(meu(jogo, anaId).jogadas, null);
+});
+
+/** As duas sem jogar, a Bia uns 3 s atrás (sem passar do limite em que o servidor a leva adiante), até a Ana chegar ao topo. */
+function ateAAnaChegarAoTopo(jogo: ReturnType<typeof comecar>['jogo']) {
+  for (let t = 1; !meu(jogo, anaId).fim && t < 400; t++) {
+    agora += 500;
+    jogo.acao(anaId, { tipo: 'jogadas', de: 0, passo: t * 30, versao: 0, jogadas: [] });
+    jogo.acao(biaId, { tipo: 'jogadas', de: 0, passo: Math.max(0, t * 30 - 180), versao: 0, jogadas: [] });
+  }
+  assert.equal(meu(jogo, anaId).fim, true, 'a pilha da Ana chegou ao topo');
+}
+
+test('as duas últimas: a partida só acaba quando a de trás passou do passo em que a outra chegou ao topo', () => {
+  // sem jogar, com a mesma semente e sem caixotes, as duas pilhas chegam ao topo NO MESMO PASSO: um empate
+  const { jogo, relogio, terminou } = comecar(() => [anaId, biaId]);
+  agora += LARGADA_MS;
+  relogio[0].depois();
+  ateAAnaChegarAoTopo(jogo);
+  const y = meu(jogo, anaId).passo;
+  assert.ok(meu(jogo, biaId).passo < y, 'a Bia está atrás');
+  assert.equal(terminou(), false, 'ainda não acabou: a Bia pode chegar ao topo antes');
+  jogo.conferir!();
+  assert.equal(terminou(), false);
+  agora += 500;
+  jogo.acao(biaId, { tipo: 'jogadas', de: 0, passo: y + 30, versao: 0, jogadas: [] });
+  assert.equal(terminou(), true);
+  const resultado = jogo.publico(anaId).resultado as { userId: number; lugar: number }[];
+  assert.deepEqual(
+    resultado.map((r) => r.lugar),
+    [1, 1],
+    'chegaram ao topo no mesmo passo: empate, e não a de trás na frente',
+  );
+});
+
+test('as duas últimas: quem para de mandar depois da eliminação da outra é levado adiante, e a partida acaba sozinha', () => {
+  const { jogo, relogio, terminou } = comecar(() => [anaId, biaId]);
+  agora += LARGADA_MS;
+  relogio[0].depois();
+  ateAAnaChegarAoTopo(jogo);
+  assert.equal(terminou(), false);
+  // a Bia some (a internet caiu): o servidor a leva adiante e confere
+  for (let k = 0; k < 4 && !terminou(); k++) {
+    agora += 4000;
+    jogo.conferir!();
+  }
+  assert.equal(terminou(), true);
+});
+
+test('o teto de 8 minutos compara todos no mesmo passo', () => {
+  const { jogo, relogio, terminou } = comecar(() => [anaId, biaId]);
+  agora += LARGADA_MS;
+  relogio[0].depois();
+  agora += 4000;
+  jogo.acao(anaId, { tipo: 'jogadas', de: 0, passo: 240, versao: 0, jogadas: [] });
+  jogo.acao(biaId, { tipo: 'jogadas', de: 0, passo: 60, versao: 0, jogadas: [] });
+  relogio[0].depois(); // o teto (chamado cedo, para não esperar 8 minutos)
+  assert.equal(terminou(), true);
+  const resultado = jogo.publico(anaId).resultado as { userId: number; lugar: number; tempoMs: number }[];
+  assert.equal(resultado[0].tempoMs, resultado[1].tempoMs, 'as duas no mesmo passo');
+  assert.deepEqual(
+    resultado.map((r) => r.lugar),
+    [1, 1],
+  );
+});
+
+test('o placar do fim: a posição é só de quem ficou; quem saiu, mesmo tendo durado mais, vem embaixo e sem posição', async () => {
+  let naSala = [anaId, biaId, carlaId];
+  const { jogo, relogio, terminou } = comecar(() => naSala);
+  agora += LARGADA_MS;
+  relogio[0].depois();
+  const a = cliente(jogo, anaId);
+  const c = cliente(jogo, carlaId, 20);
+  // a Bia não joga; a Carla joga e sai da sala logo DEPOIS de a pilha da Bia chegar ao topo: pela ordem de eliminação ela
+  // ficaria na frente da Bia, mas não ficou até o fim
+  let biaCaiu = false;
+  for (let t = 1; t <= 400 && !terminou(); t++) {
+    agora += 500;
+    a.jogar(t * 30);
+    a.lote();
+    jogo.acao(biaId, { tipo: 'jogadas', de: 0, passo: t * 30, jogadas: [] });
+    if (naSala.length === 3) {
+      c.jogar(t * 30);
+      c.lote();
+    }
+    if (naSala.length === 3 && meu(jogo, biaId).fim) {
+      assert.equal(meu(jogo, carlaId).fim, false, 'a Carla ainda estava viva quando a Bia caiu');
+      assert.ok(meu(jogo, carlaId).passo > meu(jogo, biaId).passo, 'e mais adiante que ela');
+      biaCaiu = true;
+      naSala = [anaId, biaId];
+      jogo.conferir!();
+    }
+  }
+  assert.ok(biaCaiu);
+  assert.equal(terminou(), true);
+  const resultado = jogo.publico(anaId).resultado as { userId: number; lugar: number | null }[];
+  assert.deepEqual(
+    resultado.map((r) => [r.userId, r.lugar]),
+    [
+      [anaId, 1],
+      [biaId, 2],
+      [carlaId, null],
+    ],
+  );
+  const daCarla = (await comToken(app, carla.token)('GET', '/api/corrida-trofeus')).json().trofeus;
+  assert.equal(daCarla.length, 0);
 });

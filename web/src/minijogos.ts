@@ -417,8 +417,11 @@ export interface EstadoBlocos {
     jogadas: [number, number, number, number][] | null;
     fim: boolean;
   } | null;
-  /** No fim: o lugar (a ordem de eliminação; empatados dividem), os pontos e quanto a pilha aguentou. */
-  resultado: { userId: number; username: string; lugar: number; pontos: number; tempoMs: number }[] | null;
+  /**
+   * No fim: o lugar (a ordem de eliminação; empatados dividem), os pontos e quanto a pilha aguentou. O lugar é só entre quem
+   * ficou até o fim (a mesma conta do troféu); quem saiu vem por último, com `lugar` null.
+   */
+  resultado: { userId: number; username: string; lugar: number | null; pontos: number; tempoMs: number }[] | null;
 }
 
 /** A Briga na horta (server/src/minijogo-briga.ts): o estado lento; o rápido vem no quadro do tempo real (briga/regras.ts). */

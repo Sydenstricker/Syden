@@ -16753,6 +16753,11 @@ body.arrastando-barra {
   height: 144px;
 }
 
+/* No fim, quem saiu da sala vem embaixo do pódio, sem posição nem medalha. */
+.blocos-sairam {
+  opacity: 0.6;
+}
+
 /* O PULO DO COELHO (JogoPlataforma.tsx): a tela é a da corrida de kart; aqui, o placar, os botões de toque e a miniatura */
 .pulo-placar {
   position: absolute;

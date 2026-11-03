@@ -1,6 +1,7 @@
 import { ChevronsUp, Infinity as SemFim, Timer } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { ALTURA, desenharMiniatura, desenharTabuleiro, LARGURA, PECA, type Enfeites } from './blocos/desenho';
+import { MAX_NA_FILA, registrarEntrada, type Entrada } from './blocos/entrada';
 import { escolherJogada } from './blocos/piloto';
 import * as Sim from './blocos/sim';
 import { useT } from './i18n';
@@ -17,7 +18,6 @@ import type { EstadoBlocos, Partida } from './minijogos';
  * não); no Solo, a janela sem foco pausa.
  */
 
-type Entrada = { tipo: 'troca'; l: number; c: number } | { tipo: 'subir' };
 type Casa = { l: number; c: number };
 
 /** O que a partida desta tela guarda entre um quadro e outro (fora do React: muda 60 vezes por segundo). */
@@ -39,18 +39,39 @@ interface Caixa {
   ultimoEnvio: number;
   passoEnviado: number;
   pronto: boolean;
+  /** Até quando (Date.now) a tela diz que uma jogada não valeu (o servidor a recusou). */
+  recusadaAte: number;
 }
+
 
 const limiteDo = (modo: EstadoBlocos['modo']) => (modo === 'dois-minutos' ? Sim.DOIS_MINUTOS : 0);
 
 export function JogoBlocos({ estado, eu, jogador, aoAgir }: { estado: EstadoBlocos & Partida; eu: number; jogador: boolean; aoAgir: Agir }) {
   if (estado.terminada || estado.fase === 'fim') {
-    // o lugar é a ordem de eliminação (empatados dividem), e o número é o placar de cada um
+    // o lugar é a ordem de eliminação (empatados dividem), só entre quem ficou até o fim, como no troféu; quem saiu vem
+    // embaixo, sem posição nem medalha. O número é o placar de cada um.
+    const resultado = estado.resultado ?? [];
+    const sairam = resultado.filter((r) => r.lugar === null);
     return (
-      <Placar
-        eu={eu}
-        linhas={(estado.resultado ?? []).map((r) => ({ userId: r.userId, username: r.username, valor: String(r.pontos), posicao: r.lugar }))}
-      />
+      <>
+        <Placar
+          eu={eu}
+          linhas={resultado.filter((r) => r.lugar !== null).map((r) => ({ userId: r.userId, username: r.username, valor: String(r.pontos), posicao: r.lugar ?? undefined }))}
+        />
+        {sairam.length > 0 && (
+          <ul className="minijogo-placar blocos-sairam">
+            {sairam.map((r) => (
+              <li key={r.userId} className={r.userId === eu ? 'eu' : ''}>
+                <span className="minijogo-medalha" aria-hidden="true">
+                  –
+                </span>
+                <span className="minijogo-nome">{r.username}</span>
+                <span className="minijogo-pontos">{r.pontos}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </>
     );
   }
   const joga = jogador && estado.meu !== null;
@@ -151,8 +172,9 @@ function MeuTabuleiro({ estado, aoAgir }: { estado: EstadoBlocos & Partida; aoAg
     passoEnviado: 0,
     // o painel aberto de novo no meio da partida: espera a lista de jogadas do servidor antes de andar
     pronto: !estado.meu || estado.meu.recebidas === 0,
+    recusadaAte: 0,
   }));
-  const [painel, setPainel] = useState({ pontos: 0, passo: 0, fim: false, lixos: 0 });
+  const [painel, setPainel] = useState({ pontos: 0, passo: 0, fim: false, lixos: 0, recusada: false });
 
   // O QUE O SERVIDOR DISSE: as jogadas que ele já leu, os caixotes que vêm, e (se ele recusou alguma) a lista aceita
   useEffect(() => {
@@ -165,6 +187,8 @@ function MeuTabuleiro({ estado, aoAgir }: { estado: EstadoBlocos & Partida; aoAg
     const igual = (a: Sim.Jogada, b: readonly number[]) => a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3];
     const divergiu = meu.jogadas !== null && (meu.jogadas.length > g.s.jogadas.length || meu.jogadas.some((j, i) => !igual(g.s.jogadas[i], j)));
     if (meu.jogadas && (meu.versao > g.versao || divergiu)) {
+      // o servidor recusou alguma jogada daqui (e não foi só o painel aberto de novo): a tela diz, em vez de sumir com ela
+      if (g.pronto && meu.versao > g.versao) g.recusadaAte = Date.now() + 2500;
       g.versao = meu.versao;
       jogadas = meu.jogadas.map((j) => [...j] as Sim.Jogada);
       g.enviadasIdx = jogadas.length;
@@ -203,17 +227,10 @@ function MeuTabuleiro({ estado, aoAgir }: { estado: EstadoBlocos & Partida; aoAg
       const pausa = g.pausaMs + (g.pausadoDesde !== null ? agora - g.pausadoDesde : 0);
       return Math.max(0, Math.floor(((agora - inicio.current - pausa) * Sim.PASSOS_POR_SEGUNDO) / 1000));
     };
-    const registrar = (x: Entrada, n: number) => {
-      if (!Sim.cabeNoRitmo(g.s.jogadas, n)) return;
-      if (x.tipo === 'subir') {
-        if (!g.s.e.forcando) g.s.jogadas.push([n, 1, 0, 0]);
-      } else if (Sim.podeTrocar(g.s.e, x.l, x.c)) {
-        g.s.jogadas.push([n, 0, x.l, x.c]);
-      }
-    };
     const aoPasso = (r: Sim.ResultadoDoPasso) => {
       if (r.linhaNova) {
-        // tudo subiu uma casa: o cursor e o dedo acompanham
+        // tudo subiu uma casa: o cursor, o dedo e as trocas que esperam a vez acompanham
+        g.fila = g.fila.flatMap((x): Entrada[] => (x.tipo !== 'troca' ? [x] : x.l > 0 ? [{ ...x, l: x.l - 1 }] : []));
         g.cursor.l = Math.max(0, g.cursor.l - 1);
         if (g.escolhida) g.escolhida = g.escolhida.l > 0 ? { l: g.escolhida.l - 1, c: g.escolhida.c } : null;
         if (g.arrasto) g.arrasto.l--;
@@ -245,7 +262,9 @@ function MeuTabuleiro({ estado, aoAgir }: { estado: EstadoBlocos & Partida; aoAg
             if (j) g.fila.push(j);
           }
           if (g.subindo) g.fila.push({ tipo: 'subir' });
-          for (const x of g.fila.splice(0)) registrar(x, n);
+          // a troca que ainda não pode (o intervalo, o ritmo) espera o passo seguinte; nenhuma some calada
+          const esperam = g.fila.splice(0).filter((x) => !registrarEntrada(g.s, x, n));
+          g.fila.push(...esperam.slice(-MAX_NA_FILA));
           Sim.avancar(g.s, n + 1, aoPasso);
         }
       } else if (e.fase !== 'jogando') {
@@ -257,10 +276,11 @@ function MeuTabuleiro({ estado, aoAgir }: { estado: EstadoBlocos & Partida; aoAg
       desenharTabuleiro(ctx, g.s.e, { cursor: g.cursor, escolhida: g.escolhida, avisos: g.avisos, contagem, apagado: g.s.e.fim !== null });
       if (++quadro % 6 === 0) {
         const lixos = g.s.e.fila.reduce((a, l) => a + l.altura, 0) + g.s.lixos.filter((l) => l.n >= g.s.e.passo).reduce((a, l) => a + l.altura, 0);
+        const recusada = Date.now() < g.recusadaAte;
         setPainel((p) =>
-          p.pontos === g.s.e.pontos && p.passo === g.s.e.passo && p.fim === (g.s.e.fim !== null) && p.lixos === lixos
+          p.pontos === g.s.e.pontos && p.passo === g.s.e.passo && p.fim === (g.s.e.fim !== null) && p.lixos === lixos && p.recusada === recusada
             ? p
-            : { pontos: g.s.e.pontos, passo: g.s.e.passo, fim: g.s.e.fim !== null, lixos },
+            : { pontos: g.s.e.pontos, passo: g.s.e.passo, fim: g.s.e.fim !== null, lixos, recusada },
         );
       }
     };
@@ -278,7 +298,7 @@ function MeuTabuleiro({ estado, aoAgir }: { estado: EstadoBlocos & Partida; aoAg
       g.enviando = true;
       g.ultimoEnvio = agora;
       agirRef
-        .current({ tipo: 'jogadas', de: g.deBase, passo, jogadas: g.s.jogadas.slice(g.enviadasIdx) })
+        .current({ tipo: 'jogadas', de: g.deBase, passo, versao: g.versao, jogadas: g.s.jogadas.slice(g.enviadasIdx) })
         .then(() => {
           g.passoEnviado = passo;
         })
@@ -430,6 +450,11 @@ function MeuTabuleiro({ estado, aoAgir }: { estado: EstadoBlocos & Partida; aoAg
         onLostPointerCapture={soltar}
       />
       {painel.fim && versus && <p className="minijogo-situacao">{t('Sua pilha chegou ao topo.')}</p>}
+      {painel.recusada && !painel.fim && (
+        <p className="minijogo-situacao blocos-recusada" role="status">
+          {t('Uma jogada não valeu.')}
+        </p>
+      )}
       {!painel.fim && (
         <button
           type="button"
