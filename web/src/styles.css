@@ -15970,6 +15970,64 @@ body.arrastando-barra {
   overflow-wrap: anywhere;
 }
 
+/* A ESTANTE COMO HUB (03/11/2026, Trofeus.tsx): a estrela põe e tira do destaque, à direita de cada troféu. */
+.trofeus-lista li > div {
+  flex: 1;
+}
+
+.trofeu-estrela {
+  flex: none;
+  color: var(--text-muted);
+}
+
+.trofeu-estrela[aria-pressed='true'] {
+  color: var(--accent);
+}
+
+.trofeu-estrela:disabled {
+  opacity: 0.4;
+}
+
+.trofeus-destaque .trofeus-lista li {
+  border-color: var(--accent);
+}
+
+/* A VISITA AO QUARTO (VisitaAoQuarto.tsx): o quarto de outra pessoa, numa janela por cima. */
+.dialog.visita-quarto {
+  width: min(96vw, 700px);
+  max-height: 96vh;
+  overflow: auto;
+}
+
+.visita-quarto .quarto-novo-caixa {
+  position: relative;
+}
+
+.visita-quarto-espera {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+/* Quem visita o seu quarto (QuemVisita.tsx): os amigos para convidar, no privado. */
+.quem-visita-lista {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 240px;
+  overflow: auto;
+}
+
+.quem-visita-lista label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 /* A FESTA DOS COELHOS (03/11/2026, JogoFesta.tsx): cinco microjogos, cada um na própria tela. As cores do desenho são as do
    quarto (quentes, pouco saturadas); a moldura segue o tema. */
 .minijogo.jogando-festa {

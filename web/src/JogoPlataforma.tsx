@@ -11,7 +11,7 @@ import { H, W } from './plataforma/desenho';
 import { COPAS_DO_PULO, FASES, fasePorId, type Fase } from './plataforma/fases';
 import { passosEmMs, type Comandos } from './plataforma/fisica';
 import { rodarFase, type LinhaDaOrdem, type PosicaoDoRival, type Rival } from './plataforma/laco';
-import { TrofeusDaCorrida } from './TrofeusDaCorrida';
+import { Trofeus } from './Trofeus';
 
 /**
  * O PULO DO COELHO (03/11/2026): corrida de plataforma de 16 bits, só a mecânica (correr, pular mais alto segurando, a
@@ -396,7 +396,7 @@ export function JogoPlataforma({ eu, aoVoltar }: { eu: number; aoVoltar: () => v
           )}
         </div>
       )}
-      {vendoTrofeus && <TrofeusDaCorrida aoFechar={() => setVendoTrofeus(false)} />}
+      {vendoTrofeus && <Trofeus aoFechar={() => setVendoTrofeus(false)} />}
       {erro && <p className="form-error small">{erro}</p>}
     </div>
   );

@@ -10,7 +10,7 @@ import { COPAS, HORTA, PISTAS, pistaPorId, type DefinicaoDaPista } from './corri
 import { H, mapaDaPista, pontoNoMapa, W } from './corrida/render';
 import type { Agir } from './Minijogo';
 import type { Partida } from './minijogos';
-import { TrofeusDaCorrida } from './TrofeusDaCorrida';
+import { Trofeus } from './Trofeus';
 
 /**
  * A CORRIDA DOS COELHOS (03/11/2026, pedido dele): kart de 16 bits. O coelho no kart é o mascote 3D renderizado em 24
@@ -21,7 +21,7 @@ import { TrofeusDaCorrida } from './TrofeusDaCorrida';
  *   amigos, e sem itens (o recorde é da pilotagem). Só o resultado vai ao servidor (server/src/corrida.ts).
  * - NA SALA (degraus 2 e 3, JogoCorridaNaSala): a turma corre junto, numa pista ou na Copa da Cenoura (as três seguidas),
  *   com os itens. O servidor dá a largada, repassa as posições e os itens, e classifica pelo tempo de cada um
- *   (server/src/minijogo-corrida.ts). O pódio vira TROFÉU no quarto de quem ganhou (TrofeusDaCorrida.tsx), e a copa
+ *   (server/src/minijogo-corrida.ts). O pódio vira TROFÉU no quarto de quem ganhou (Trofeus.tsx), e a copa
  *   corrida até o fim conta na conquista coletiva do salão.
  */
 
@@ -435,7 +435,7 @@ export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void
           )}
         </div>
       )}
-      {vendoTrofeus && <TrofeusDaCorrida aoFechar={() => setVendoTrofeus(false)} />}
+      {vendoTrofeus && <Trofeus aoFechar={() => setVendoTrofeus(false)} />}
       {erro && <p className="form-error small">{erro}</p>}
     </div>
   );

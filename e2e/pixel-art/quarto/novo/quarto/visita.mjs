@@ -18,6 +18,8 @@ async function conta(nome) {
   const c = await fetch(API + '/api/auth/register', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ username: nome, password: 'segredo123', email: nome + '@exemplo.teste', inviteCode: 'teste', nascimento: '1990-01-01' }) });
   if (!c.ok) throw new Error('cadastro ' + nome + ': ' + (await c.text()));
   const e = await (await fetch(API + '/api/auth/login', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ username: nome, password: 'segredo123' }) })).json();
+  // Desde 03/11/2026 quem mora decide quem entra (trofeus-routes.ts); aqui, o quarto aberto a todos.
+  await fetch(API + '/api/quarto-acesso', { method: 'PUT', headers: { authorization: 'Bearer ' + e.token, 'content-type': 'application/json' }, body: JSON.stringify({ modo: 'publico' }) });
   return { nome, id: e.user.id };
 }
 const ana = await conta('ana' + sufixo), zeca = await conta('zeca' + sufixo);

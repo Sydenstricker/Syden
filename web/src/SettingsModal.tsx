@@ -66,6 +66,7 @@ import { AgendadasSection } from './Agendadas';
 import { MeuAniversario } from './Aniversario';
 import { MeusIdiomas } from './IdiomasDoPerfil';
 import { AoAbrir } from './AoAbrir';
+import { QuemVisita } from './QuemVisita';
 import { SorteiosSection } from './Sorteios';
 import { TicketsSection } from './Tickets';
 import { CargosAutomaticosSection } from './CargosAutomaticos';
@@ -245,6 +246,7 @@ export function SettingsModal({
               <MeuAniversario />
               <MeusIdiomas />
               <AoAbrir />
+              <QuemVisita />
               {/* O selo e os bloqueios são escolhas da PESSOA, não da comunidade: por isso moram na
                   aba da conta, junto com o resto do que só diz respeito a ela. */}
               <EscolherSelo />

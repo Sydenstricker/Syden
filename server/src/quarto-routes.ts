@@ -1,10 +1,10 @@
 /**
  * O quarto de cada pessoa: guardar a própria arrumação e VISITAR a de outra (ver quarto.ts).
  *
- * Quem visita: QUALQUER CONTA (decisão dele, 15/10/2026), menos quando há bloqueio entre as duas, em qualquer sentido.
- * O bloqueio fecha toda porta entre duas pessoas (bloqueio.test.ts), e o quarto mostra o estado de quem mora nele
- * (dormindo, em call). A resposta de quem foi bloqueado é a MESMA de "essa pessoa não arrumou o quarto": quem foi
- * bloqueado não descobre que foi.
+ * Quem visita: desde 03/11/2026, quem o DONO deixa (público, amigos ou privado com convidados; podeVisitarQuarto, em
+ * trofeus-routes.ts). Era qualquer conta (15/10/2026) até a estante de troféus mostrar a quem visita contra quem a pessoa
+ * jogou. O bloqueio fecha a porta em qualquer modo, e a resposta é a MESMA de "não está aberto": quem foi bloqueado não
+ * descobre que foi. Quem pode entrar num quarto que nunca foi arrumado vê o de fábrica (arrumacao: null).
  *
  * A visita é por id, nunca por nome: procurar conta pelo nome é a porta de varrer a lista de contas (amigos-routes.ts),
  * e quem visita chega ao quarto a partir de onde já viu a pessoa (o cartão dela). Mesmo assim há um freio, porque os
@@ -15,6 +15,7 @@ import * as db from './db.js';
 import { Freio } from './freio.js';
 import { requireUser } from './routes.js';
 import { ACEITA_COPIAS, MAX_BYTES, validarArrumacao } from './quarto.js';
+import { podeVisitarQuarto } from './trofeus-routes.js';
 
 /** Sessenta visitas por hora, por conta: folgado para gente, apertado para varrer ids. */
 const freioDeVisitas = new Freio(60, 60 * 60_000);
@@ -46,11 +47,10 @@ export function registerQuartoRoutes(app: FastifyInstance) {
         return reply.code(429).send({ error: 'Muitas visitas seguidas. Tente de novo daqui a pouco.' });
       }
       const nada = { error: 'Este quarto não está aberto para visita.' };
-      const pessoa = db.findUserById(dono);
-      if (!pessoa || db.ehContaDoSistema(dono) || db.haBloqueio(request.user.id, dono)) return reply.code(404).send(nada);
+      if (!podeVisitarQuarto(request.user.id, dono)) return reply.code(404).send(nada);
+      const pessoa = db.findUserById(dono)!;
       const q = db.lerQuarto(dono);
-      if (!q) return reply.code(404).send(nada);
-      return { dono: { id: pessoa.id, username: pessoa.username, nomeDeExibicao: pessoa.nomeDeExibicao }, arrumacao: JSON.parse(q.arrumacao), em: q.em };
+      return { dono: { id: pessoa.id, username: pessoa.username, nomeDeExibicao: pessoa.nomeDeExibicao }, arrumacao: q ? JSON.parse(q.arrumacao) : null, em: q?.em ?? null };
     });
   });
 }

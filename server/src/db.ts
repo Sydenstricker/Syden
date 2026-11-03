@@ -756,12 +756,32 @@ db.exec(`
   );
 
   -- O QUARTO de cada pessoa (15/10/2026): onde ela pôs cada móvel, a cadeira, a janela. Mora no servidor, e não no
-  -- navegador, porque outra pessoa pode VISITAR (decisão dele: qualquer conta, menos quem tem bloqueio com o dono) e
-  -- tem de ver igual, inclusive onde a cadeira parou. O conteúdo é validado em quarto.ts antes de entrar.
+  -- navegador, porque outra pessoa pode VISITAR e tem de ver igual, inclusive onde a cadeira parou. O conteúdo é
+  -- validado em quarto.ts antes de entrar. Quem visita: ver quarto_acesso.
   CREATE TABLE IF NOT EXISTS quartos (
     user_id    INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
     arrumacao  TEXT NOT NULL,
     updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+  );
+
+  -- QUEM ENTRA NO QUARTO (03/11/2026, decisão dele, como o perfil da Steam; as regras em trofeus-routes.ts): 'publico',
+  -- 'amigos' ou 'privado'. Sem linha, 'amigos'. Os convidados entram em qualquer modo.
+  CREATE TABLE IF NOT EXISTS quarto_acesso (
+    user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    modo    TEXT NOT NULL CHECK (modo IN ('publico', 'amigos', 'privado'))
+  );
+  CREATE TABLE IF NOT EXISTS quarto_convidados (
+    dono_id      INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    convidado_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    em           TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    PRIMARY KEY (dono_id, convidado_id)
+  );
+
+  -- O DESTAQUE DA ESTANTE DE TROFÉUS (03/11/2026): o que a pessoa escolheu mostrar a quem visita o quarto, em ordem
+  -- ("t:<id do troféu>" ou "c:<comunidade>:<conquista>"), em JSON. O que deixou de existir some na leitura.
+  CREATE TABLE IF NOT EXISTS trofeus_destaque (
+    user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    itens   TEXT NOT NULL
   );
 
   -- A CORRIDA DOS COELHOS (03/11/2026): o melhor tempo de cada pessoa em cada pista, com as voltas e o FANTASMA (as
@@ -4277,6 +4297,42 @@ export function guardarQuarto(userId: number, arrumacao: string) {
   ).run(userId, arrumacao);
 }
 
+// ---------- Quem entra no quarto, e o destaque da estante de troféus (trofeus-routes.ts) ----------
+
+export function acessoDoQuarto(userId: number): 'publico' | 'amigos' | 'privado' {
+  const l = db.prepare('SELECT modo FROM quarto_acesso WHERE user_id = ?').get(userId) as { modo: 'publico' | 'amigos' | 'privado' } | undefined;
+  return l?.modo ?? 'amigos';
+}
+
+export function mudarAcessoDoQuarto(userId: number, modo: 'publico' | 'amigos' | 'privado') {
+  db.prepare('INSERT INTO quarto_acesso (user_id, modo) VALUES (?, ?) ON CONFLICT(user_id) DO UPDATE SET modo = excluded.modo').run(userId, modo);
+}
+
+export function convidadosDoQuarto(dono: number): number[] {
+  return (db.prepare('SELECT convidado_id AS id FROM quarto_convidados WHERE dono_id = ? ORDER BY em').all(dono) as { id: number }[]).map((l) => l.id);
+}
+
+export function foiConvidadoAoQuarto(dono: number, convidado: number): boolean {
+  return !!db.prepare('SELECT 1 FROM quarto_convidados WHERE dono_id = ? AND convidado_id = ?').get(dono, convidado);
+}
+
+export function convidarAoQuarto(dono: number, convidado: number) {
+  db.prepare('INSERT OR IGNORE INTO quarto_convidados (dono_id, convidado_id) VALUES (?, ?)').run(dono, convidado);
+}
+
+export function desconvidarDoQuarto(dono: number, convidado: number) {
+  db.prepare('DELETE FROM quarto_convidados WHERE dono_id = ? AND convidado_id = ?').run(dono, convidado);
+}
+
+export function destaqueDe(userId: number): string[] {
+  const l = db.prepare('SELECT itens FROM trofeus_destaque WHERE user_id = ?').get(userId) as { itens: string } | undefined;
+  return l ? (JSON.parse(l.itens) as string[]) : [];
+}
+
+export function guardarDestaque(userId: number, itens: string[]) {
+  db.prepare('INSERT INTO trofeus_destaque (user_id, itens) VALUES (?, ?) ON CONFLICT(user_id) DO UPDATE SET itens = excluded.itens').run(userId, JSON.stringify(itens));
+}
+
 // ---------- A Corrida dos coelhos ----------
 
 export interface RecordeDaCorrida {
@@ -4577,6 +4633,8 @@ export function aceitarAmizade(quemAceita: number, oOutro: number): boolean {
 /** Serve para recusar um pedido e para desfazer uma amizade: nos dois casos a linha some. */
 export function desfazerAmizade(a: number, b: number): boolean {
   const [menor, maior] = par(a, b);
+  // o convite para o quarto vem da lista de amigos, e acaba com a amizade (trofeus-routes.ts)
+  db.prepare('DELETE FROM quarto_convidados WHERE (dono_id = ? AND convidado_id = ?) OR (dono_id = ? AND convidado_id = ?)').run(a, b, b, a);
   return db.prepare('DELETE FROM friendships WHERE menor_id = ? AND maior_id = ?').run(menor, maior).changes > 0;
 }
 
@@ -4791,6 +4849,7 @@ export function bloquear(quemBloqueou: number, bloqueado: number): boolean {
     );
     const [menor, maior] = quemBloqueou < bloqueado ? [quemBloqueou, bloqueado] : [bloqueado, quemBloqueou];
     db.prepare('DELETE FROM friendships WHERE menor_id = ? AND maior_id = ?').run(menor, maior);
+    db.prepare('DELETE FROM quarto_convidados WHERE (dono_id = ? AND convidado_id = ?) OR (dono_id = ? AND convidado_id = ?)').run(quemBloqueou, bloqueado, bloqueado, quemBloqueou);
     db.exec('COMMIT');
     return true;
   } catch (error) {

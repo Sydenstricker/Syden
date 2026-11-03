@@ -2,8 +2,8 @@
  * O quarto de cada pessoa: a arrumação mora no servidor, e outra conta pode VISITAR (decisão dele, 15/10/2026).
  *
  *   1. Cada um guarda e lê o SEU; o que entra é validado (é desenhado na tela de quem visita).
- *   2. Qualquer conta visita e vê IGUAL, inclusive onde a cadeira parou.
- *   3. Com bloqueio, em qualquer sentido, a porta fecha — e a resposta é a mesma de "não arrumou o quarto".
+ *   2. Quem pode entrar (trofeus.test.ts) vê IGUAL, inclusive onde a cadeira parou.
+ *   3. Com bloqueio, em qualquer sentido, a porta fecha — e a resposta é a mesma de quem não existe.
  */
 import assert from 'node:assert/strict';
 import { after, before, describe, it } from 'node:test';
@@ -108,29 +108,35 @@ describe('o meu quarto', () => {
 });
 
 describe('visitar', () => {
-  it('qualquer conta vê o quarto IGUAL ao do dono', async () => {
+  // Quem entra (público, amigos, privado) está em trofeus.test.ts; aqui, os quartos abertos a todos.
+  before(async () => {
+    await ana('PUT', '/api/quarto-acesso', { modo: 'publico' });
+    await zeca('PUT', '/api/quarto-acesso', { modo: 'publico' });
+  });
+
+  it('quem pode entrar vê o quarto IGUAL ao do dono', async () => {
     const r = await zeca('GET', `/api/quarto/${anaId}`);
     assert.equal(r.statusCode, 200);
     assert.deepEqual(r.json().arrumacao, ARRUMACAO);
     assert.equal(r.json().dono.username, 'ana');
   });
 
-  it('quem não arrumou o quarto: não há o que visitar', async () => {
-    assert.equal((await ana('GET', `/api/quarto/${zecaId}`)).statusCode, 404);
+  it('quem não arrumou o quarto: quem visita vê o de fábrica', async () => {
+    const r = await ana('GET', `/api/quarto/${zecaId}`);
+    assert.equal(r.statusCode, 200);
+    assert.equal(r.json().arrumacao, null);
   });
 
-  it('id que não existe: a mesma resposta', async () => {
-    const r = await ana('GET', '/api/quarto/999999');
-    assert.equal(r.statusCode, 404);
-    assert.deepEqual(r.json(), (await ana('GET', `/api/quarto/${zecaId}`)).json());
+  it('id que não existe: 404', async () => {
+    assert.equal((await ana('GET', '/api/quarto/999999')).statusCode, 404);
   });
 
-  it('COM BLOQUEIO, em qualquer sentido, a porta fecha — com a resposta de "não arrumou"', async () => {
-    const semQuarto = (await ana('GET', `/api/quarto/${zecaId}`)).json();
+  it('COM BLOQUEIO, em qualquer sentido, a porta fecha — com a resposta de quem não existe', async () => {
+    const naoExiste = (await ana('GET', '/api/quarto/999999')).json();
     assert.equal((await ana('POST', '/api/me/bloqueios', { userId: zecaId })).statusCode, 200);
     const bloqueado = await zeca('GET', `/api/quarto/${anaId}`);
     assert.equal(bloqueado.statusCode, 404);
-    assert.deepEqual(bloqueado.json(), semQuarto, 'quem foi bloqueado não descobre que foi');
+    assert.deepEqual(bloqueado.json(), naoExiste, 'quem foi bloqueado não descobre que foi');
     await zeca('PUT', '/api/quarto', ARRUMACAO);
     assert.equal((await ana('GET', `/api/quarto/${zecaId}`)).statusCode, 404, 'quem bloqueou também não entra');
     assert.equal((await rui('GET', `/api/quarto/${anaId}`)).statusCode, 200, 'o resto continua visitando');

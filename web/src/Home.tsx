@@ -11,7 +11,7 @@ import { getTheme, toggleTheme } from './theme';
 import type { Channel, Community, VoiceMember } from './types';
 import { Farol, atividadeAgora } from './Farol';
 import { type AcoesDoQuarto, Quarto } from './Quarto';
-import { TrofeusDaCorrida } from './TrofeusDaCorrida';
+import { Trofeus } from './Trofeus';
 import { usarCenaNova } from './cenaNova';
 import { ENDERECO_DO_QUARTO, type EstadoNoQuarto, QuartoNovo } from './QuartoNovo';
 import { loadMyStatus } from './presenceStatus';
@@ -208,7 +208,7 @@ export function Home({
     cortica: { rotulo: t('Tem uma ideia para o Syden?'), onClick: () => ideiasRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) },
     abajur: { rotulo: t('Dia e noite'), onClick: alternarLuz },
     // a estante de troféus: o pódio das corridas na sala (os troféus do quarto, decisão dele de 03/11/2026)
-    trofeu: { rotulo: t('Troféus'), sub: t('Do pódio dos jogos com a turma'), onClick: () => setTrofeusAbertos(true) },
+    trofeu: { rotulo: t('Troféus'), sub: t('Os pódios e as conquistas da turma'), onClick: () => setTrofeusAbertos(true) },
     computador: {
       rotulo: t('Mini-games'),
       sub: t('Jogar com a turma'),
@@ -391,7 +391,7 @@ export function Home({
       </div>
 
       <Farol atividade={atividade} aoIr={aoIrParaComunidade} />
-      {trofeusAbertos && <TrofeusDaCorrida aoFechar={() => setTrofeusAbertos(false)} />}
+      {trofeusAbertos && <Trofeus aoFechar={() => setTrofeusAbertos(false)} />}
       {siteAberto && <SiteEmbutido nome={siteAberto.nome} endereco={siteAberto.endereco} aoFechar={() => setSiteAberto(null)} />}
       {soloAberto && (
         <div className="minijogo-no-quarto">

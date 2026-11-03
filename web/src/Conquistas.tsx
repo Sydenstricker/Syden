@@ -62,6 +62,16 @@ const TEXTOS: Record<string, { nome: string; sobre: string }> = {
 /** "A turma do jogo": o nome é o do próprio jogo, que já está traduzido (minijogos.ts). */
 const SOBRE_O_JOGO = chave('Partidas deste jogo em grupo.');
 
+/** O nome de uma conquista, já traduzido (também a estante de troféus do quarto, Trofeus.tsx, usa). */
+export function nomeDaConquista(t: (texto: string) => string, id: string, jogo?: string) {
+  if (jogo) {
+    const j = JOGOS.find((x) => x.id === jogo);
+    return j ? t(j.nome) : jogo;
+  }
+  const tx = TEXTOS[id];
+  return tx ? t(tx.nome) : id;
+}
+
 /** Um degrau alcançado nos últimos 7 dias ganha a marca de novo. */
 const NOVO = 7 * 24 * 3600_000;
 

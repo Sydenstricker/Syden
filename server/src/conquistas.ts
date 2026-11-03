@@ -28,7 +28,9 @@ const ENCONTRO_ANTES = 15 * 60_000;
 const ENCONTRO_DEPOIS = HORA;
 
 /** Os jogos que existem (server/src/minijogos-routes.ts, JOGOS): "Repertório" completo é jogar todos. */
-export const JOGOS_DAS_CONQUISTAS = ['tamanho', 'stop', 'sudoku', 'gomoku', 'mancala', 'xadrez', 'lobisomem', 'desenho', 'palavra'] as const;
+// Os seis do fliperama de 03/11/2026 entraram no mesmo dia (decisão dele). A corrida fica de fora: o troféu coletivo dela é
+// a Copa da turma. Os quizzes também (ver CLAUDE.md).
+export const JOGOS_DAS_CONQUISTAS = ['tamanho', 'stop', 'sudoku', 'gomoku', 'mancala', 'xadrez', 'lobisomem', 'desenho', 'palavra', 'festa', 'golfe', 'tabuleiro', 'blocos', 'plataforma', 'briga'] as const;
 
 export interface Conquista {
   id: string;
@@ -45,7 +47,8 @@ export const CONQUISTAS: Conquista[] = [
   { id: 'cinema', grupo: 'voz', degraus: [5, 25, 100] },
   { id: 'muitas-vozes', grupo: 'voz', degraus: [5, 15, 40] },
   { id: 'mesa-de-jogo', grupo: 'jogos', degraus: [10, 50, 200, 500] },
-  { id: 'repertorio', grupo: 'jogos', degraus: [3, 6, JOGOS_DAS_CONQUISTAS.length] },
+  // (o 9 era o topo antes dos jogos do fliperama: continua um degrau, para quem o alcançou não o ver sumir)
+  { id: 'repertorio', grupo: 'jogos', degraus: [3, 6, 9, JOGOS_DAS_CONQUISTAS.length] },
   { id: 'vila-completa', grupo: 'jogos', degraus: [6, 8, 10] },
   { id: 'todo-mundo-joga', grupo: 'jogos', degraus: [5, 15, 30] },
   // O TROFÉU COLETIVO DA CORRIDA (03/11/2026, decisão dele): cada Copa da Cenoura que a turma correu até o fim, com 2 ou mais

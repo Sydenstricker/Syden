@@ -1,4 +1,4 @@
-import { Check, MessageSquare, Pencil, UserPlus } from 'lucide-react';
+import { BedDouble, Check, MessageSquare, Pencil, UserPlus } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ApiError, api } from './api';
@@ -11,6 +11,7 @@ import { Vitrine, legendaDaVitrine } from './Vitrine';
 import { useNota } from './notas';
 import { classeDoFundo, corDoNome, efeitoDoNome, letraDoNome } from './profileStyles';
 import type { CommunityMember, PresenceStatus } from './types';
+import { visitarQuarto } from './VisitaAoQuarto';
 import { chave, useT } from './i18n';
 
 const CARGO: Record<string, string> = {
@@ -113,6 +114,37 @@ function BotaoDeAmizade({ userId, username }: { userId: number; username: string
  * O cartão que aparece ao clicar em alguém: o fundo escolhido pela pessoa, o avatar por cima e o nome
  * na cor dela. É aqui que os enfeites de perfil ganham um lugar de verdade para aparecer.
  */
+/**
+ * VISITAR O QUARTO (03/11/2026, decisão dele: como o perfil da Steam). O botão só aparece quando o servidor diz que dá
+ * (o modo do quarto e os convites, trofeus-routes.ts): a tela não oferece uma porta fechada.
+ */
+function BotaoDeVisita({ userId, nome, aoAbrir }: { userId: number; nome: string; aoAbrir: () => void }) {
+  const t = useT();
+  const [pode, setPode] = useState(false);
+  useEffect(() => {
+    let vivo = true;
+    api<{ podeVisitar: boolean }>(`/api/quarto/${userId}/acesso`)
+      .then((r) => vivo && setPode(r.podeVisitar))
+      .catch(() => {});
+    return () => {
+      vivo = false;
+    };
+  }, [userId]);
+  if (!pode) return null;
+  return (
+    <button
+      className="perfil-acao"
+      onClick={() => {
+        aoAbrir();
+        visitarQuarto({ id: userId, nome });
+      }}
+    >
+      <BedDouble size={16} aria-hidden="true" />
+      {t('Visitar o quarto')}
+    </button>
+  );
+}
+
 export function ProfileCard({
   membro: doClique,
   status,
@@ -255,6 +287,7 @@ export function ProfileCard({
             </button>
           )}
           {!isSelf && <BotaoDeAmizade userId={membro.id} username={membro.username} />}
+          {!isSelf && <BotaoDeVisita userId={membro.id} nome={nomeDe(membro)} aoAbrir={onClose} />}
         </div>
       </div>
     </div>,

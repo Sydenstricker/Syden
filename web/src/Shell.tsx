@@ -10,6 +10,7 @@ import { type ConviteRecebido, ConviteParaVoz } from './ConviteParaVoz';
 import { type ChamadaTocando, ChamadaRecebida, TEMPO_DO_TOQUE_MS } from './ChamadaRecebida';
 import { ParabensDoSyden } from './ParabensDoSyden';
 import { AniversarioDoSyden } from './AniversarioDoSyden';
+import { VisitasAoQuarto } from './VisitaAoQuarto';
 import { ehAniversarioDoSyden } from './diaDoSyden';
 import { ehAniversarioHoje } from './aniversarioHoje';
 import { CommunityDialog, CommunityRail } from './CommunityRail';
@@ -1464,6 +1465,7 @@ export function Shell({
       {/* as festas, uma de cada vez: a ideia acolhida, o aniversário da pessoa, o do Syden, e as insígnias */}
       {festasConferidas && !comemorar[0] && aniversarioHoje && <ParabensDoSyden nome={nomeDe(me ?? loggedUser)} aoFechar={fecharParabens} />}
       {festasConferidas && !comemorar[0] && !aniversarioHoje && festaDoSyden && <AniversarioDoSyden aoFechar={fecharFestaDoSyden} />}
+      <VisitasAoQuarto />
       {festasConferidas && !comemorar[0] && !aniversarioHoje && !festaDoSyden && porRevelar[0] && <Revelacao codigo={porRevelar[0]} aoResgatar={() => resgatar(porRevelar[0])} />}
 
       {settingsOpen !== null && (

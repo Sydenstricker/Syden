@@ -573,6 +573,15 @@ compra), quem saiu da sala é pulado, e com menos de 2 a partida acaba sem trof�
 estante do quarto (`pista: 'tabuleiro'`, os pontos são as douradas). Sem bifurcação no caminho, por enquanto. Testes:
 `server/test/minijogos-tabuleiro-da-turma.test.ts` e `e2e/tabuleiro.mjs` (escrito, NÃO rodado).
 
+**A ESTANTE DE TROFÉUS VIROU O HUB (03/11/2026, pedido dele: "um hub para todos os troféus em mini-games, todas as
+conquistas; o jogador pode escolher o que deixa em destaque"):** a estante do quarto (`web/src/Trofeus.tsx`) junta os pódios de
+todos os jogos, agrupados pelo jogo, e as conquistas da turma de cada comunidade da pessoa (o degrau mais alto); a estrela põe
+até 6 em DESTAQUE (`trofeus_destaque`), e é o destaque que quem visita o quarto vê, **com tudo, inclusive contra quem**
+(decisão dele: "se ele permitiu a visita, presumo que não seja um problema contra quem ele ganhou"). Foi isso que fechou a
+visita a qualquer conta (ver o quarto, acima). O rival que tem bloqueio com quem visita não aparece para essa pessoa. **Os seis
+jogos do fliperama (Festa, golfe, tabuleiro, blocos, pulo e briga) contam no Repertório e na "A turma do jogo"** desde o mesmo
+dia; a corrida continua de fora (o troféu coletivo dela é a Copa da turma), e os quizzes também.
+
 **A sondagem de jogos dele (12/10/2026), avaliada:** os campeões de receita (Coin Master, Candy Crush, Sheep a Sheep)
 são solo e se pagam com anúncio, vidas e roleta. **Decisão dele: clonar só a MECÂNICA DE JOGO** (empilhar e combinar
 peças, parafusos, setas, combinar três) — nunca a de cassino nem a de "volte todo dia". Integração, nenhuma. Party game de ação (Mario Party, Overcooked) tem aderência
@@ -699,10 +708,13 @@ ficou combinado:
   FÍSICA de verdade (rola, perde força no atrito, bate e quica nos móveis), não só o desenho mudando.
 - **VISITAR o quarto de outra pessoa (feito em 15/10/2026, ideia dele).** A arrumação mora no servidor (`quartos`,
   `server/src/quarto.ts`: só posições e códigos, validados porque são desenhados na tela de quem visita), e quem visita vê
-  igual, inclusive onde a cadeira parou. **Quem visita: QUALQUER CONTA** (decisão dele), menos quando há bloqueio em
-  qualquer sentido, com a resposta de "não arrumou o quarto". Visita é por id, nunca por nome. **Por enquanto só na
-  página de teste** (conta numa API de teste; `visita.mjs` testa): o quarto novo entra no app quando substituir o atual
-  (decisão dele: "quando eu lançar, ele vai substituir o quarto atual").
+  igual, inclusive onde a cadeira parou. ~~Quem visita: qualquer conta~~ — **MUDOU em 03/11/2026 (decisão dele, como o
+  perfil da Steam): quem mora decide.** Público, amigos (o de fábrica) ou privado, em que nem os amigos entram, só os
+  convidados (Minha conta → "Quem visita o seu quarto"; `server/src/trofeus-routes.ts`). Antes dos 18, o público não
+  existe e o convite é só para amigos. O bloqueio fecha a porta em qualquer modo, com a resposta de quem não existe.
+  Visita é por id, nunca por nome. **No app desde 03/11/2026:** "Visitar o quarto" no cartão de perfil, que só aparece
+  quando a porta está aberta (`VisitaAoQuarto.tsx`; a página do quarto em modo de só olhar, `visitaNoApp` em montar.mjs);
+  teste `e2e/quarto-visita.mjs`.
 - **As camas para desbloquear já têm 4 candidatas** (`avulsos/cama-casal-1..4.png`, madeiras e cabeceiras diferentes);
   a 2 é a de fábrica. **Decisão dele (20/10/2026): as quatro vêm LIBERADAS de uma vez**, sem conquista; pacote temático
   (o de Halloween, da caixa de correio) é para o futuro. Falta a arte: só a 2 tem os giros (`cama-casal-giros`), e cama

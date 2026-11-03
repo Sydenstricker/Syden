@@ -120,7 +120,7 @@ coelho junto. Ver e2e/pixel-art/personagem/README.md.</p>
   <button id="falando" aria-pressed="false">Falando</button>
 </div>
 <details id="conta" class="barra"><summary>Conta no servidor (teste) e visitas</summary>
-  <p>O quarto de cada pessoa mora no servidor, e qualquer conta pode visitar (decisão dele, 15/10/2026). Aqui, numa API de
+  <p>O quarto de cada pessoa mora no servidor, e quem ela deixar pode visitar (público, amigos ou convidados; 03/11/2026). Aqui, numa API de
   teste: entre com uma conta, e a arrumação passa a ser guardada lá; ponha o número de outra conta para visitar o quarto
   dela (só olhar: nada se arrasta nem se guarda). <span id="quem"></span></p>
   <input id="api" value="http://localhost:3099" aria-label="Endereço da API" size="22">
@@ -258,6 +258,9 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // A VISITA (15/10/2026): visitando o quarto de outra pessoa, nada se arrasta nem se guarda. E, entrando numa conta, cada
   // mudança vai também para o servidor (enviar, definido lá embaixo, com a conta).
   let soVer = false, enviar = () => {}, comecarPan = () => {};
+  // A VISITA NO APP (03/11/2026, VisitaAoQuarto.tsx): só olhar, mas a estante de troféus (a única função que o app manda)
+  // abre o destaque de quem mora no quarto.
+  let visitaNoApp = false;
   // AS OPÇÕES DE GRÁFICOS (pedido dele, 15/10/2026: "as partículas e a sombra deveriam estar num menu para ligar e
   // desligar; aqui está pesando, imagine em PC mais modesto"). Moram no navegador ('syden:graficos'), as mesmas no quarto
   // e no salão; no app, quem as escolhe são as Configurações (Aparência), e a página percebe na hora pelo evento storage
@@ -3730,7 +3733,7 @@ void main() {
   const rotulo = document.getElementById('rotulo');
   function funcaoEm(k) {
     // No salão, quem não administra só olha a arrumação, mas USA o salão: as funções valem para todo mundo.
-    if (!FUNCOES || EDITANDO || (soVer && CENA !== 'salao')) return null;
+    if (!FUNCOES || EDITANDO || (soVer && CENA !== 'salao' && !visitaNoApp)) return null;
     const ip = naParede[k];
     if (ip && !dono[k]) { const f = ITENS_PAREDE[ordemDaParede[ip - 1]].funcao; return f && FUNCOES[f] ? f : null; }
     if (dono[k]) { const f = FUNCAO_DO_MOVEL[dono[k]]; return f && FUNCOES[f] ? f : null; }
@@ -4414,7 +4417,7 @@ void main() {
       const j = await pedir('GET', '/api/quarto/' + encodeURIComponent(campo('visitar-id').value.trim()));
       if (!soVer) meu = retrato();
       const quem = j.dono.nomeDeExibicao || j.dono.username;
-      modoVisita(quem); vestir(j.arrumacao); modoVisita(quem);
+      modoVisita(quem); if (j.arrumacao) vestir(j.arrumacao); else document.getElementById('inicial').onclick(); modoVisita(quem);
       dizer('Visitando o quarto de ' + quem + ' (só olhar).');
     } catch (e) { dizer('Não deu para visitar: ' + e.message); }
   };
@@ -4829,7 +4832,15 @@ void main() {
       if (d.comando === 'desfazer') desfazer();
       if (typeof d.noite === 'boolean' && (modo === 'noite') !== d.noite) botoes[d.noite ? 'noite' : 'dia'].click();
       if (d.estado) document.querySelector('[data-estado="' + d.estado + '"]')?.click();
-      if (d.conta && !conta) {
+      if (d.conta && !conta && d.conta.visitar) {
+        // A VISITA NO APP: o quarto de outra pessoa, como ela deixou (ou o de fábrica, se nunca arrumou). Nada se guarda.
+        conta = d.conta; visitaNoApp = true;
+        modoVisita('visita');
+        pedir('GET', '/api/quarto/' + encodeURIComponent(d.conta.visitar))
+          .then((j) => { if (j.arrumacao) vestir(j.arrumacao); else document.getElementById('inicial').onclick(); modoVisita(j.dono.nomeDeExibicao || j.dono.username); })
+          .catch(() => window.parent.postMessage({ syden: 'quarto', visitaFalhou: true }, location.origin))
+          .finally(() => { desenhar(); window.parent.postMessage({ syden: 'quarto', arrumado: true }, location.origin); });
+      } else if (d.conta && !conta) {
         conta = d.conta;
         // O SALÃO: a arrumação da comunidade, e só quem administra mexe (o servidor confere; aqui é só não deixar tentar).
         if (d.conta.rota) ROTA = d.conta.rota;

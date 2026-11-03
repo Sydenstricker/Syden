@@ -146,5 +146,5 @@ test('a rota: membro vê, quem não participa recebe 404, e o degrau fica gravad
     cresce.alcancados.map((a: { degrau: number }) => a.degrau),
     [5],
   );
-  assert.equal(r.json().conquistas.length, 29);
+  assert.equal(r.json().conquistas.length, 35);
 });
