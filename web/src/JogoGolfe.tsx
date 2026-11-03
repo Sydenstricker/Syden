@@ -39,6 +39,11 @@ const ARRASTE_TOTAL = 40;
 const FORCA_MINIMA = 0.05;
 /** O Espaço segurado enche a força neste tempo (e volta, se continuar segurado). */
 const CARGA_MS = 1400;
+/**
+ * Nos últimos instantes do buraco a tela já não deixa bater: a tacada chegaria ao servidor depois do fim (a rede, ~200 ms),
+ * seria recusada, e a bola que rolou aqui voltaria. A tela não mostra uma tacada que não vai valer.
+ */
+const MARGEM_DO_FIM_MS = 300;
 
 /** O vetor da tacada em inteiros, sem passar da força toda depois de arredondar. */
 function vetorDaTacada(ux: number, uy: number, forca: number) {
@@ -70,12 +75,27 @@ export function JogoGolfe({
 }) {
   const t = useT();
   if (estado.terminada || estado.fase === 'fim') {
-    // menos tacadas na frente; empatados dividem a posição, como no troféu
+    // menos tacadas na frente; a posição (e a medalha) é só de quem ficou até o fim, a mesma conta do troféu, e quem saiu
+    // aparece embaixo, sem posição
+    const ficaram = estado.placar.filter((l) => l.posicao !== null);
+    const sairam = estado.placar.filter((l) => l.posicao === null);
     return (
-      <Placar
-        eu={eu}
-        linhas={estado.placar.map((l) => ({ ...l, valor: String(l.pontos), posicao: 1 + estado.placar.filter((o) => o.pontos < l.pontos).length }))}
-      />
+      <>
+        <Placar eu={eu} linhas={ficaram.map((l) => ({ ...l, valor: String(l.pontos), posicao: l.posicao ?? undefined }))} />
+        {sairam.length > 0 && (
+          <ul className="minijogo-placar golfe-sairam">
+            {sairam.map((l) => (
+              <li key={l.userId} className={l.userId === eu ? 'eu' : ''}>
+                <span className="minijogo-medalha" aria-hidden="true">
+                  –
+                </span>
+                <span className="minijogo-nome">{l.username}</span>
+                <span className="minijogo-pontos">{l.pontos}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </>
     );
   }
   if (estado.fase === 'placar') {
@@ -93,7 +113,7 @@ export function JogoGolfe({
           <tbody>
             {estado.placar.map((l) => (
               <tr key={l.userId} className={l.userId === eu ? 'eu' : undefined}>
-                <td className="golfe-placar-posicao">{1 + estado.placar.filter((o) => o.pontos < l.pontos).length}</td>
+                <td className="golfe-placar-posicao">{l.posicao ?? '–'}</td>
                 <td className="minijogo-nome">{l.username}</td>
                 <td>{l.buraco ?? '–'}</td>
                 <td>
@@ -158,7 +178,7 @@ function MesaDoGolfe({
   const cores = useRef(new Map<number, string>());
   estado.bolas.forEach((b, i) => cores.current.set(b.userId, CORES_DAS_BOLAS[i % CORES_DAS_BOLAS.length]));
 
-  const jogando = estado.fase === 'jogando' && !estado.terminada;
+  const jogando = estado.fase === 'jogando' && !estado.terminada && !estado.fechando;
   const jogandoRef = useRef(jogando);
   jogandoRef.current = jogando;
 
@@ -183,7 +203,12 @@ function MesaDoGolfe({
   const teclas = useRef({ esquerda: false, direita: false, cima: false, baixo: false, espaco: false, cargaDesde: 0 });
   const angulo = useRef<{ ux: number; uy: number } | null>(null);
 
-  const podeBater = () => souJogador && jogandoRef.current && !bola.current.andando && !acabouOBuraco(bola.current) && inicio.current !== null && Date.now() >= inicio.current;
+  const duracaoMs = estado.duracaoMs;
+  const podeBater = () => {
+    if (!souJogador || !jogandoRef.current || bola.current.andando || acabouOBuraco(bola.current) || inicio.current === null) return false;
+    const agoraMs = Date.now();
+    return agoraMs >= inicio.current && agoraMs < inicio.current + duracaoMs - MARGEM_DO_FIM_MS;
+  };
 
   const baterAgora = (ux: number, uy: number, forca: number) => {
     if (!podeBater() || forca < FORCA_MINIMA || inicio.current === null) return;
