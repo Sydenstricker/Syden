@@ -15969,3 +15969,463 @@ body.arrastando-barra {
   font-size: 0.85rem;
   overflow-wrap: anywhere;
 }
+
+/* A FESTA DOS COELHOS (03/11/2026, JogoFesta.tsx): cinco microjogos, cada um na própria tela. As cores do desenho são as do
+   quarto (quentes, pouco saturadas); a moldura segue o tema. */
+.minijogo.jogando-festa {
+  width: min(600px, 94vw);
+}
+
+.festa {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.festa-nome {
+  font-size: calc(20px * var(--escala-do-texto));
+  color: var(--text-strong);
+}
+
+.festa-nome.pequeno {
+  font-size: calc(15px * var(--escala-do-texto));
+}
+
+.festa-preparo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 12px;
+  text-align: center;
+}
+
+.festa-preparo p {
+  margin: 0;
+  max-width: 420px;
+  color: var(--text);
+}
+
+.festa-contagem {
+  font-size: calc(44px * var(--escala-do-texto));
+  font-weight: 700;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.festa-palco {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.festa-mostrador {
+  font-size: calc(22px * var(--escala-do-texto));
+  font-weight: 700;
+  color: var(--text-strong);
+  font-variant-numeric: tabular-nums;
+}
+
+.festa-mostrador.grande {
+  font-size: calc(56px * var(--escala-do-texto));
+  min-width: 4ch;
+  text-align: center;
+}
+
+.festa-mostrador.escondido {
+  color: var(--text-muted);
+}
+
+/* O saque: a área inteira é o botão. */
+.festa-saque {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  aspect-ratio: 3 / 2;
+  border: none;
+  border-radius: 14px;
+  background: #4e4260;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.festa-saque.sinal {
+  background: #c8553d;
+}
+
+.festa-saque.cedo {
+  background: #3e3a44;
+}
+
+.festa-saque svg {
+  width: 70%;
+  height: 70%;
+}
+
+.festa-saque-texto {
+  position: absolute;
+  bottom: 12px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: calc(20px * var(--escala-do-texto));
+  font-weight: 700;
+  color: #f4ead8;
+}
+
+.festa-ponto {
+  animation: festa-ponto 1s ease-in-out infinite;
+}
+
+@keyframes festa-ponto {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* A força: a barra de pé, com a marca dos 100% em cima. */
+.festa-forca {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.festa-forca-barra {
+  position: relative;
+  width: 46px;
+  height: 220px;
+  border-radius: 10px;
+  background: var(--bg-input);
+  border: 2px solid var(--border);
+  overflow: hidden;
+}
+
+.festa-forca-cheia {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to top, #7fae8a, #e3b45a 70%, #c8553d);
+}
+
+.festa-forca-topo {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 4px;
+  background: var(--text-strong);
+}
+
+.festa-forca-lado,
+.festa-relogio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.festa-meta {
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.festa-forca .btn-primary,
+.festa-relogio .btn-primary {
+  min-width: 140px;
+  min-height: 44px;
+}
+
+/* Os copos. */
+.festa-copos {
+  width: 100%;
+  max-width: 480px;
+  height: auto;
+}
+
+.festa-copo.escolhe {
+  cursor: pointer;
+}
+
+.festa-copo.escolhe:hover path:first-child {
+  fill: #c8854b;
+}
+
+/* Siga o coelho: a cruz de setas, com o coelho no meio. */
+.festa-siga {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.festa-siga-pontos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 5px;
+  min-height: 10px;
+}
+
+.festa-siga-pontos span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--bg-active);
+}
+
+.festa-siga-pontos span.feita {
+  background: var(--green);
+}
+
+.festa-siga-cruz {
+  display: grid;
+  grid-template-columns: repeat(3, 72px);
+  grid-template-rows: repeat(3, 72px);
+  gap: 6px;
+}
+
+.festa-seta {
+  border: none;
+  border-radius: 12px;
+  background: var(--bg-raised);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+}
+
+.festa-seta:disabled {
+  cursor: default;
+}
+
+.festa-seta svg {
+  width: 100%;
+  height: 100%;
+}
+
+.festa-seta.s0 {
+  grid-area: 1 / 2;
+}
+
+.festa-seta.s1 {
+  grid-area: 2 / 3;
+}
+
+.festa-seta.s2 {
+  grid-area: 3 / 2;
+}
+
+.festa-seta.s3 {
+  grid-area: 2 / 1;
+}
+
+.festa-seta.acesa {
+  background: #e3b45a;
+  color: #4e3a24;
+}
+
+.festa-seta.errada {
+  background: var(--red);
+  color: #fff6ee;
+}
+
+.festa-siga.sua-vez .festa-seta {
+  color: var(--text-strong);
+}
+
+.festa-siga-coelho {
+  grid-area: 2 / 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.festa-siga-coelho svg {
+  width: 54px;
+  height: 54px;
+}
+
+/* Tiro ao alvo: a grade 3 × 3. */
+.festa-alvo {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.festa-alvo-topo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.festa-alvo-tempo {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--bg-input);
+  overflow: hidden;
+}
+
+.festa-alvo-tempo span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+
+.festa-alvo-grade {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.festa-alvo-casa {
+  position: relative;
+  aspect-ratio: 1;
+  border: none;
+  border-radius: 10px;
+  background: #62964a;
+  cursor: crosshair;
+  padding: 8%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.festa-alvo-casa:disabled {
+  cursor: default;
+}
+
+.festa-alvo-casa small {
+  position: absolute;
+  top: 4px;
+  left: 7px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.festa-cenoura {
+  width: 100%;
+  height: 100%;
+  animation: festa-surge 0.15s ease-out;
+}
+
+@keyframes festa-surge {
+  from {
+    transform: translateY(30%) scale(0.6);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .festa-cenoura,
+  .festa-ponto {
+    animation: none;
+  }
+}
+
+/* Quem já terminou, durante a rodada. */
+.festa-prontos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  font-size: calc(13px * var(--escala-do-texto));
+}
+
+.festa-prontos li {
+  display: flex;
+  gap: 6px;
+  max-width: 180px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--bg-raised);
+  color: var(--text-muted);
+}
+
+.festa-prontos li.pronto {
+  color: var(--text-strong);
+}
+
+.festa-prontos .minijogo-nome,
+.festa-revelacao .minijogo-nome {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* A revelação da rodada: a posição (sem medalha: só o fim tem medalha), o resultado e os pontos. */
+.festa-revelacao {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.festa-revelacao li {
+  display: grid;
+  grid-template-columns: 2ch minmax(0, 1fr) auto 4ch;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: var(--bg-raised);
+}
+
+.festa-revelacao li.eu {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.festa-revelacao li.fora {
+  color: var(--text-muted);
+}
+
+.festa-posicao {
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.festa-valor {
+  font-variant-numeric: tabular-nums;
+}
+
+.festa-pontos {
+  text-align: right;
+  color: var(--text-strong);
+}
+
+@media (max-width: 480px) {
+  .festa-siga-cruz {
+    grid-template-columns: repeat(3, 62px);
+    grid-template-rows: repeat(3, 62px);
+  }
+
+  .festa-forca-barra {
+    height: 180px;
+  }
+}

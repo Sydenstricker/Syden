@@ -11,6 +11,8 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
   switch (jogo) {
     case 'corrida':
       return <CapaCorrida />;
+    case 'festa':
+      return <CapaFesta />;
     case 'tamanho':
       return <CapaQualEMaior />;
     case 'stop':
@@ -54,6 +56,49 @@ function CapaCorrida() {
       <svg x="48" y="44" width="72" height="72" viewBox="180 0 60 60" style={{ imageRendering: 'pixelated' }}>
         <image href={`${import.meta.env.BASE_URL}corrida/coelho-kart.png`} width="1440" height="60" />
       </svg>
+    </svg>
+  );
+}
+
+/**
+ * A Festa dos coelhos: as bandeirinhas da festa em cima, o alvo de um lado e os três copos do outro, com a cenoura
+ * aparecendo debaixo de um deles — três dos microjogos numa capa só.
+ */
+function CapaFesta() {
+  const bandeiras = ['#d9774f', '#e3b45a', '#7fae8a', '#7d93c4', '#c98aa8', '#d9774f', '#e3b45a', '#7fae8a'];
+  const confete: [number, number, string][] = [
+    [18, 40, '#e3b45a'],
+    [70, 30, '#c98aa8'],
+    [142, 38, '#7fae8a'],
+    [96, 48, '#7d93c4'],
+    [30, 104, '#c98aa8'],
+    [150, 108, '#e3b45a'],
+  ];
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#4e4260" />
+      <path d="M0 10 Q80 26 160 10" fill="none" stroke="#e8d9c0" strokeWidth="1.5" />
+      {bandeiras.map((cor, i) => {
+        const x = 6 + i * 20;
+        const y = 10 + Math.sin((x / 160) * Math.PI) * 8;
+        return <path key={i} d={`M${x} ${y} L${x + 14} ${y + 1} L${x + 7} ${y + 13} Z`} fill={cor} />;
+      })}
+      {confete.map(([x, y, cor], i) => (
+        <rect key={i} x={x} y={y} width="4" height="4" fill={cor} transform={`rotate(${i * 25} ${x + 2} ${y + 2})`} />
+      ))}
+      <circle cx="46" cy="74" r="26" fill="#e8d9c0" />
+      <circle cx="46" cy="74" r="19" fill="#c4463e" />
+      <circle cx="46" cy="74" r="12" fill="#e8d9c0" />
+      <circle cx="46" cy="74" r="5" fill="#c4463e" />
+      <path d="M106 90 L118 90 L112 101 Z" fill="#e07a2e" />
+      <path d="M110 90 L107 86 M112 90 L112 85 M114 90 L117 86" stroke="#6fa356" strokeWidth="2" strokeLinecap="round" />
+      {[88, 112, 136].map((x, i) => (
+        <g key={x} transform={i === 1 ? 'translate(0 -16)' : undefined}>
+          <path d={`M${x - 11} 100 L${x - 8} 74 L${x + 8} 74 L${x + 11} 100 Z`} fill="#b8743f" />
+          <rect x={x - 12} y="98" width="24" height="4" rx="1" fill="#8e5530" />
+          <rect x={x - 8} y="73" width="16" height="3" rx="1" fill="#d39a62" />
+        </g>
+      ))}
     </svg>
   );
 }

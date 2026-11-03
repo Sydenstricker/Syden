@@ -299,7 +299,46 @@ export interface EstadoPalavra {
   placar: LinhaDoPlacar[];
 }
 
-export type IdDoJogo = 'corrida' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'xadrez' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
+/** A Festa dos coelhos (server/src/minijogo-festa.ts): 5 rodadas, um microjogo sorteado em cada. */
+export type Microjogo = 'saque' | 'forca' | 'relogio' | 'copos' | 'siga' | 'alvo';
+
+export interface LinhaDaFesta {
+  userId: number;
+  username: string;
+  valor: number | null;
+  /** Por que não pontuou: antes do sinal, errou, não valeu, ou não respondeu. */
+  motivo: 'cedo' | 'errou' | 'invalido' | 'nada' | null;
+  posicao: number | null;
+  pontos: number;
+}
+
+export interface EstadoFesta {
+  fase: 'preparando' | 'jogando' | 'revelando' | 'fim';
+  rodada: number;
+  rodadas: number;
+  microjogo: Microjogo;
+  /** Os dados prontos do microjogo (as trocas dos copos, as setas, os alvos…), iguais para todos. */
+  dados: {
+    periodoMs?: number;
+    inicial?: number;
+    trocas?: [number, number][];
+    passos?: number[];
+    setas?: number[];
+    alvos?: { t: number; casa: number }[];
+  } | null;
+  duracaoMs: number;
+  /** O saque: o sinal já saiu. */
+  sinal: boolean;
+  meu: { motivo: LinhaDaFesta['motivo']; valor: number | null } | null;
+  prontos: number[];
+  jogadores: { userId: number; username: string }[];
+  /** Os copos: onde estava a cenoura (só na revelação). */
+  resposta: number | null;
+  linhas: LinhaDaFesta[] | null;
+  placar: LinhaDoPlacar[];
+}
+
+export type IdDoJogo = 'corrida' | 'festa' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'xadrez' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
 
 /**
  * As duas abas da estante (pedido dele, 14/10/2026). SOLO: a partida é só de quem joga, começa sem convite, não ocupa
@@ -322,6 +361,13 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
     id: 'corrida',
     nome: chave('Corrida dos coelhos'),
     dica: chave('Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.'),
+    abas: ['solo', 'coletivo'],
+  },
+  {
+    // Os microjogos de festa (JogoFesta.tsx, server/src/minijogo-festa.ts): cada um na própria tela, o resultado comparado.
+    id: 'festa',
+    nome: chave('Festa dos coelhos'),
+    dica: chave('Cinco rodadas de jogos rápidos, cada um na própria tela: reflexo, pontaria, memória e olho. Quem for melhor em cada rodada ganha mais pontos.'),
     abas: ['solo', 'coletivo'],
   },
   {
