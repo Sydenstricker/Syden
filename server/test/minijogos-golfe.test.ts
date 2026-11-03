@@ -9,7 +9,7 @@ import { comToken, criarConta, servidorDeTeste } from './ajuda.js';
 const { app, fechar } = await servidorDeTeste();
 const golfeMod = await import('../src/minijogo-golfe.js');
 const fisica = await import('../src/golfe-fisica.js');
-const { criarGolfe, PREPARO_MS, PLACAR_ENTRE_MS, BURACO_MS, DEPOIS_DE_PARAR_MS } = golfeMod;
+const { criarGolfe, PREPARO_MS, PLACAR_ENTRE_MS, BURACO_MS, DEPOIS_DE_PARAR_MS, ATRASO_MAX_MS } = golfeMod;
 const { BURACOS, TACADAS_MAX, novaBola, bater, rolarAteParar, melhorTacada, mapaDeDistancia } = fisica;
 type Bola = ReturnType<typeof novaBola>;
 after(fechar);
@@ -22,6 +22,8 @@ const bia = await criarConta(app, 'bia-golfe');
 const idDe = async (token: string) => (await comToken(app, token)('GET', '/api/me')).json().id as number;
 const anaId = await idDe(ana.token);
 const biaId = await idDe(bia.token);
+const cris = await criarConta(app, 'cris-golfe');
+const crisId = await idDe(cris.token);
 const comunidade = (await comToken(app, ana.token)('POST', '/api/communities', { name: 'Turma do golfe' })).json() as { id: number };
 
 function comecar(naSala: number[] | (() => number[]), comunidadeId = 0) {
@@ -33,7 +35,7 @@ function comecar(naSala: number[] | (() => number[]), comunidadeId = 0) {
     avisar: () => {},
     terminar: () => (terminou = true),
     naSala: sala,
-    nome: (id: number) => (id === anaId ? 'ana' : 'bia'),
+    nome: (id: number) => (id === anaId ? 'ana' : id === crisId ? 'cris' : 'bia'),
     comunidade: comunidadeId,
   };
   const jogo = criarGolfe({ agora: () => agora }).comecar(ctx, { naSala: sala(), criadaPor: sala()[0], corpo: {} });
@@ -117,6 +119,23 @@ test('a tacada não vale com a bola andando, no futuro, muito no passado, forte 
   assert.equal(m.jogo.acao(999, { tipo: 'tacada', passo: passoDeAgora(m.inicio()), dx: 300, dy: 0 }), 'Você está assistindo esta partida.');
 });
 
+test('a janela para trás do passo é bem menor que uma volta da tábua: não dá para escolher onde ela está', () => {
+  const comMovel = BURACOS.filter((b) => b.movel);
+  assert.ok(comMovel.length > 0);
+  for (const b of comMovel) {
+    const voltaMs = (b.movel!.periodo * 1000) / 60;
+    assert.ok(ATRASO_MAX_MS <= voltaMs / 2, `${ATRASO_MAX_MS} ms de janela, a volta é de ${voltaMs} ms`);
+  }
+  assert.ok(ATRASO_MAX_MS >= 500, 'e cobre a rede (~200 ms) com folga');
+  const m = comecar([anaId, biaId]);
+  m.andar();
+  agora += 3000;
+  const p = passoDeAgora(m.inicio());
+  // 0,7 s atrás ainda vale (a rede); 0,9 s atrás, não
+  assert.equal(m.jogo.acao(anaId, { tipo: 'tacada', passo: p - 54, dx: 0, dy: 300 }), 'Tacada inválida.', '0,9 s atrás');
+  assert.equal(m.jogo.acao(anaId, { tipo: 'tacada', passo: p - 42, dx: 0, dy: 300 }), null, '0,7 s atrás');
+});
+
 test('a água devolve a bola para onde estava, com uma tacada a mais', () => {
   const b = BURACOS[3];
   assert.equal(b.tema, 'lago');
@@ -140,6 +159,7 @@ test('o buraco fecha quando todo mundo terminou, só depois de a última bola pa
     assert.equal(m.jogo.acao(biaId, { tipo: 'tacada', passo: passoDeAgora(m.inicio()), dx: 0, dy: 40 }), null);
   }
   assert.equal(m.jogo.acao(biaId, { tipo: 'tacada', passo: passoDeAgora(m.inicio()) + 30, dx: 0, dy: 40 }), 'Esta rodada já acabou.');
+  assert.equal(m.jogo.publico(biaId).fechando, true, 'a tela sabe que já não dá para bater');
   assert.equal(m.jogo.publico(anaId).fase, 'jogando', 'a última bola ainda rola na tela de quem bateu');
   assert.ok(m.relogio[0].ms <= 2000 && m.relogio[0].ms >= DEPOIS_DE_PARAR_MS - 400, `fecha em ${m.relogio[0].ms} ms`);
   m.andar();
@@ -198,6 +218,43 @@ test('quem fica sozinho na sala não ganha o pódio "com a turma"', async () => 
   assert.equal(m.jogo.publico(anaId).fase, 'fim');
   const depois = (await comToken(app, ana.token)('GET', '/api/corrida-trofeus')).json().trofeus.length;
   assert.equal(depois, antes, 'sem troféu');
+});
+
+test('o placar final classifica só quem ficou até o fim, como o troféu; quem saiu aparece sem posição', async () => {
+  let naSala = [anaId, biaId, crisId];
+  const m = comecar(() => naSala, comunidade.id);
+  for (let i = 0; i < BURACOS.length; i++) {
+    m.andar();
+    if (i === 0) jogarBuraco(m, crisId); // a Cris joga bem o primeiro buraco...
+    if (i === 1) naSala = [anaId, biaId]; // ...e sai no segundo
+    jogarBuraco(m, anaId);
+    // a Bia não joga: fica com 7 em todos
+    while (m.jogo.publico(anaId).fase === 'jogando') m.andar();
+    if (i < BURACOS.length - 1) m.andar();
+  }
+  assert.equal(m.jogo.publico(anaId).fase, 'fim');
+  const placar = m.jogo.publico(anaId).placar as { userId: number; pontos: number; posicao: number | null }[];
+  const da = (id: number) => placar.find((l) => l.userId === id)!;
+  assert.ok(da(crisId).pontos < da(biaId).pontos, 'a Cris, que saiu, tem menos tacadas que a Bia');
+  assert.deepEqual(
+    placar.map((l) => [l.userId, l.posicao]),
+    [
+      [anaId, 1],
+      [biaId, 2],
+      [crisId, null],
+    ],
+    'quem saiu vem depois, sem posição',
+  );
+  const daCris = (await comToken(app, cris.token)('GET', '/api/corrida-trofeus')).json().trofeus;
+  assert.equal(daCris.filter((t: { pista: string }) => t.pista === 'golfe').length, 0, 'quem saiu não ganha troféu');
+});
+
+test('empatados dividem a posição no placar', () => {
+  const m = comecar([anaId, biaId]);
+  m.andar();
+  m.andar(); // o tempo acaba: as duas com 7
+  const placar = m.jogo.publico(anaId).placar as { posicao: number | null }[];
+  assert.deepEqual(placar.map((l) => l.posicao), [1, 1]);
 });
 
 test('o pontinho dos outros: só números dentro da mesa, carimbados, e não mais que 20 por segundo', () => {

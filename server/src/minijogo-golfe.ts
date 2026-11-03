@@ -13,8 +13,10 @@
  * simulação dele que diz onde a bola parou, se caiu na água e se entrou. Ele confere também:
  * - a força e os números (golfe-fisica.ts, tacadaInvalida);
  * - que a bola estava PARADA: o passo da tacada não vem antes do passo em que a tacada anterior parou;
- * - o relógio: o passo dito não está à frente do que o servidor viu passar (com a folga da rede), nem mais de 2,5 s atrás
- *   (assim não dá para escolher depois a posição da tábua da porteira);
+ * - o relógio: o passo dito não está à frente do que o servidor viu passar (com a folga da rede), nem mais de 0,8 s atrás.
+ *   A tábua da porteira dá uma volta em 2,5 s (150 passos, golfe-fisica.ts): com 0,8 s de janela, quem mexe no passo pelo
+ *   console escolhe só entre as posições de um trecho de um terço da volta, e não a posição que quiser (a janela precisa
+ *   ficar BEM abaixo de uma volta; a rede, ~200 ms, cabe com folga);
  * - no máximo uma tacada a cada 150 ms.
  * O QUE CONTINUA POSSÍVEL (jogo entre amigos, conferência razoável): como a física é conhecida, um programa pode calcular a
  * tacada perfeita e mandá-la pelo console — um "bot de mira". O servidor só garante que a tacada é uma tacada possível, na
@@ -38,8 +40,8 @@ export const BURACO_SOLO_MS = 120_000;
 export const PLACAR_ENTRE_MS = 6000;
 /** A tacada não pode dizer um passo à frente do relógio do servidor, mais isto. */
 export const FOLGA_FUTURO_MS = 400;
-/** Nem um passo mais atrás do que isto. */
-export const ATRASO_MAX_MS = 2500;
+/** Nem um passo mais atrás do que isto: bem menos que uma volta da tábua (2,5 s), e com folga para os ~200 ms da rede. */
+export const ATRASO_MAX_MS = 800;
 export const INTERVALO_MIN_MS = 150;
 /** Depois que a última bola para, o tempo de vê-la entrar antes do placar. */
 export const DEPOIS_DE_PARAR_MS = 900;
@@ -55,6 +57,8 @@ interface LinhaDoGolfe {
   pontos: number;
   /** As tacadas do último buraco jogado (null antes do primeiro). */
   buraco: number | null;
+  /** A posição entre quem ficou (empatados dividem); null para quem saiu, que aparece sem posição nem medalha. */
+  posicao: number | null;
 }
 
 export const golfe: Definicao = criarGolfe();
@@ -112,8 +116,10 @@ export function criarGolfe({ agora = Date.now }: { agora?: () => number } = {}):
         fechando = true;
         const ultimaParada = Math.max(0, ...presentes().map((id) => msDoPasso(bolas.get(id)!.passo)));
         const espera = ultimaParada + DEPOIS_DE_PARAR_MS - (agora() - inicio);
-        if (espera > 0) ctx.agendar(espera, contar);
-        else contar();
+        if (espera > 0) {
+          ctx.agendar(espera, contar);
+          ctx.avisar(); // a tela de cada um fica sabendo que já não dá para bater
+        } else contar();
       };
 
       const contar = () => {
@@ -137,21 +143,27 @@ export function criarGolfe({ agora = Date.now }: { agora?: () => number } = {}):
         ctx.avisar();
       };
 
-      /** O placar em ordem: MENOS tacadas primeiro, e o nome desempata. */
-      const placar = (): LinhaDoGolfe[] =>
-        inscritos
-          .map((userId) => ({ userId, username: ctx.nome(userId), pontos: pontos.get(userId) ?? 0, buraco: doBuraco.get(userId) ?? null }))
-          .sort((a, b) => a.pontos - b.pontos || a.username.localeCompare(b.username));
+      /**
+       * O placar em ordem: MENOS tacadas primeiro, e o nome desempata. A posição é só de quem ficou (na sala no fim de todos
+       * os buracos até aqui; antes do primeiro, quem está na sala), a mesma conta do troféu; quem saiu vem depois, sem posição.
+       */
+      const placar = (): LinhaDoGolfe[] => {
+        const contam = ficaram ?? new Set(presentes());
+        const linhas = inscritos
+          .map((userId) => ({ userId, username: ctx.nome(userId), pontos: pontos.get(userId) ?? 0, buraco: doBuraco.get(userId) ?? null, posicao: null as number | null }))
+          .sort((a, b) => Number(contam.has(b.userId)) - Number(contam.has(a.userId)) || a.pontos - b.pontos || a.username.localeCompare(b.username));
+        for (const l of linhas) if (contam.has(l.userId)) l.posicao = 1 + linhas.filter((o) => contam.has(o.userId) && o.pontos < l.pontos).length;
+        return linhas;
+      };
 
       const terminar = () => {
         fase = 'fim';
         const turma = ficaram ?? new Set<number>();
         if (turma.size >= 2) {
-          const ordem = placar().filter((l) => turma.has(l.userId));
-          for (const l of ordem) {
-            // empatados dividem a posição; menos tacadas é melhor
-            const posicao = 1 + ordem.filter((o) => o.pontos < l.pontos).length;
-            if (posicao > 3 || !acertaram.has(l.userId)) continue;
+          // a posição do placar já é só entre quem ficou (empatados dividem; menos tacadas é melhor): a tela e o troféu batem
+          for (const l of placar()) {
+            const posicao = l.posicao;
+            if (posicao === null || posicao > 3 || !acertaram.has(l.userId)) continue;
             db.guardarTrofeu({
               userId: l.userId,
               evento,
@@ -189,6 +201,8 @@ export function criarGolfe({ agora = Date.now }: { agora?: () => number } = {}):
             duracaoMs: duracao,
             /** Quanto do buraco já passou (jogando): o relógio da tela de cada um sai daqui. */
             decorridoMs: fase === 'jogando' ? agora() - inicio : null,
+            /** O buraco já não aceita tacada (o tempo acabou, ou todos terminaram): a tela para de deixar bater. */
+            fechando,
             tacadasMax: TACADAS_MAX,
             bolas: inscritos.map((userId) => {
               const b = bolas.get(userId)!;

@@ -385,12 +385,17 @@ export interface EstadoGolfe {
   duracaoMs: number;
   /** Quanto do buraco já passou, no servidor (só jogando). */
   decorridoMs: number | null;
+  /** O buraco já não aceita tacada (o tempo acabou, ou todos terminaram): a tela não deixa bater. */
+  fechando: boolean;
   tacadasMax: number;
   bolas: { userId: number; username: string; x: number; y: number; tacadas: number; dentro: boolean; acabou: boolean }[];
   /** A minha bola, como o servidor a simulou. */
   meu: import('./golfe/fisica').Bola | null;
-  /** Em ordem: menos tacadas primeiro. `buraco`: as tacadas do último buraco jogado. */
-  placar: { userId: number; username: string; pontos: number; buraco: number | null }[];
+  /**
+   * Em ordem: menos tacadas primeiro. `buraco`: as tacadas do último buraco jogado. `posicao`: só entre quem ficou até o fim
+   * (empatados dividem, como no troféu); null para quem saiu, que vem no fim, sem posição nem medalha.
+   */
+  placar: { userId: number; username: string; pontos: number; buraco: number | null; posicao: number | null }[];
   partidaId: string;
 }
 
