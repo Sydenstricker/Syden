@@ -509,6 +509,23 @@ tela, mas nunca abaixo de 100 ms nem muito abaixo do que o servidor viu passar).
 de troféus do quarto (`pista: 'festa'`). Microjogo novo é uma entrada nos dois lados; a estante de troféus serve a qualquer
 jogo da sala. Testes: `server/test/minijogos-festa.test.ts` e `e2e/festa.mjs` (com o LiveKit).
 
+**O PULO DO COELHO está feito (03/11/2026, o item 3: a corrida de plataforma com fantasmas, no motor do kart):**
+`web/src/plataforma/`, `web/src/JogoPlataforma.tsx`, `server/src/plataforma.ts`, `server/src/minijogo-plataforma.ts`, nas duas
+abas. Três fases curtas POR CÓDIGO (Prado, Toca e Galhos, ~35 s cada; `fases.ts` monta a grade de blocos por um roteiro):
+correr, pulo mais alto segurando, a folga da beirada (coiote) e o pulo guardado, molas, plataformas que andam (só pelo passo,
+então todos as veem no mesmo lugar), buracos e espinhos que voltam ao último posto. O coelho é o mascote 3D de TRÊS QUARTOS (o
+sudeste: de perfil, a câmera alta o mostra de costas), reduzido por `web/scripts/plataforma-coelho.py`. Como no kart: passos
+fixos de 1/60 s, o tempo é o número de passos, o fantasma é uma posição a cada 4 passos; no Solo, contra o relógio e os
+fantasmas dos amigos (`plataforma_recordes`, só amigos aceitos veem); na sala, uma fase ou a **Copa do Pulo** (as três), o
+servidor dá o verde, repassa as posições e classifica pelo tempo de cada um, e o pódio vai à estante de troféus. Sem itens, a
+fase da sala que bate o recorde da pessoa vira o recorde. O servidor não conhece os blocos: confere a largada, a chegada, a
+velocidade por amostra (a corrida, e mais a da plataforma só nos trechos dela), a volta ao posto só para um posto já
+alcançado, e o relógio desde o verde; atravessar parede pelo console continua possível, e ganha uns 2 s (escrito em
+`plataforma.ts`). Fase nova é id novo e as medidas dela em `FASES_DO_PULO`. O piloto automático PLANEJA (busca em feixe sobre a
+física, `piloto.ts`): serve aos testes e ao e2e (`window.plataformaPilotoAutomatico`, só no site de desenvolvimento). Testes:
+`web/test/plataforma.test.ts`, `server/test/plataforma.test.ts`, `server/test/minijogos-plataforma.test.ts`; `e2e/plataforma.mjs`
+escrito, NÃO rodado. Sem som.
+
 **A sondagem de jogos dele (12/10/2026), avaliada:** os campeões de receita (Coin Master, Candy Crush, Sheep a Sheep)
 são solo e se pagam com anúncio, vidas e roleta. **Decisão dele: clonar só a MECÂNICA DE JOGO** (empilhar e combinar
 peças, parafusos, setas, combinar três) — nunca a de cassino nem a de "volte todo dia". Integração, nenhuma. Party game de ação (Mario Party, Overcooked) tem aderência

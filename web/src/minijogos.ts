@@ -338,7 +338,7 @@ export interface EstadoFesta {
   placar: LinhaDoPlacar[];
 }
 
-export type IdDoJogo = 'corrida' | 'festa' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'xadrez' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
+export type IdDoJogo = 'corrida' | 'festa' | 'plataforma' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'xadrez' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
 
 /**
  * As duas abas da estante (pedido dele, 14/10/2026). SOLO: a partida é só de quem joga, começa sem convite, não ocupa
@@ -368,6 +368,14 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
     id: 'festa',
     nome: chave('Festa dos coelhos'),
     dica: chave('Cinco rodadas de jogos rápidos, cada um na própria tela: reflexo, pontaria, memória e olho. Quem for melhor em cada rodada ganha mais pontos.'),
+    abas: ['solo', 'coletivo'],
+  },
+  {
+    // A corrida de plataforma (JogoPlataforma.tsx). Como a de kart: no Solo, contra o relógio e os fantasmas dos amigos, sem
+    // partida no servidor; no Coletivo, a turma corre a mesma fase ao vivo (server/src/minijogo-plataforma.ts).
+    id: 'plataforma',
+    nome: chave('Pulo do coelho'),
+    dica: chave('Uma corrida de plataforma: correr, pular e não cair. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, numa fase ou nas três.'),
     abas: ['solo', 'coletivo'],
   },
   {
