@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { mediaUrl } from './api';
 import { useDirectory } from './directory';
 import { EMOJI_GROUPS, emojiLabel, searchEmojis } from './emojiData';
+import { nomeDeEmoji } from './nomeDoEmoji';
 import { useT } from './i18n';
 
 const RECENT_KEY = 'syden.recentEmojis';
@@ -73,7 +74,7 @@ export function EmojiPicker({
       apenasDoTeclado
         ? []
         : search
-          ? emojis.filter((emoji) => emoji.name.includes(search.toLowerCase().replace(/[^a-z0-9_]/g, '')))
+          ? emojis.filter((emoji) => emoji.name.includes(nomeDeEmoji(search)))
           : emojis,
     [apenasDoTeclado, emojis, search],
   );

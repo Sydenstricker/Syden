@@ -1,5 +1,6 @@
 // Prepara arquivos escolhidos pelo usuário antes de enviar: reduz imagens no próprio navegador
 // (o envio fica leve) e confere o tamanho e a duração dos sons.
+import { nomeDeEmoji } from './nomeDoEmoji';
 
 const KB = 1024;
 
@@ -226,12 +227,5 @@ export async function prepareAttachment(file: File): Promise<PreparedFile> {
 
 /** "Coração Feliz.png" → "coracao_feliz" (o mesmo formato que o servidor aceita). */
 export function emojiNameFromFile(fileName: string) {
-  return fileName
-    .replace(/\.[^.]+$/, '')
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/[^a-z0-9_]+/g, '_')
-    .replace(/^_+|_+$/g, '')
-    .slice(0, 32);
+  return nomeDeEmoji(fileName.replace(/\.[^.]+$/, ''));
 }

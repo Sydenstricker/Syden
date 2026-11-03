@@ -6,6 +6,7 @@ import { entregarArquivo } from './entregar.js';
 import { restorePack } from './expressions.js';
 import { parseMedia, parseMediaConferida, sniffMime } from './media.js';
 import { communityRoom } from './realtime.js';
+import { nomeDeEmoji } from './nome-do-emoji.js';
 import { cotaEsgotada, manages, requireUser, roleIn } from './routes.js';
 
 /**
@@ -26,16 +27,7 @@ const LIMITS = { avatar: 2048 * KB, capa: 4096 * KB, emoji: 512 * KB, sound: 102
 const UPLOAD_BODY_LIMIT = 6 * 1024 * KB; // base64 ocupa ~33% a mais que o arquivo, e a capa vai a 4 MB
 
 /** "Coração Feliz" → "coracao_feliz", o formato usado em :nome: nas mensagens. */
-function emojiName(raw: unknown): string | null {
-  const name = String(raw ?? '')
-    .trim()
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/[^a-z0-9_]+/g, '_')
-    .replace(/^_+|_+$/g, '');
-  return name.length >= 2 && name.length <= 32 ? name : null;
-}
+const emojiName = nomeDeEmoji;
 
 export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
   // Imagens e áudios são públicos: <img> e <audio> não conseguem mandar o token de login.

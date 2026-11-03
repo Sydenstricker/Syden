@@ -16,6 +16,7 @@ import { PollCard } from './PollCard';
 import { formatBytes } from './upload';
 import type { Attachment, Citacao, Message, Poll, Reaction, ThreadSummary } from './types';
 import { chave, idiomaAtual, t as traduzir, useT } from './i18n';
+import { nomeDeEmoji } from './nomeDoEmoji';
 import { gifDaMensagem } from './gifs';
 
 /** Caixa máxima de uma imagem no chat; o resto encolhe proporcionalmente. */
@@ -413,7 +414,8 @@ export function MessageItem({
 }
 
 const URL_RE = /(https?:\/\/[^\s<]+)/g;
-const EMOJI_TOKEN_RE = /:([a-z0-9_]{2,32}):/g;
+// (com acento e maiúscula também: ":Coração:" acha o emoji "coracao", pela regra de nomeDoEmoji.ts)
+const EMOJI_TOKEN_RE = /:([\p{L}\p{N}_]{2,32}):/gu;
 // Caracteres que não contam como "texto" para decidir se a mensagem é só de emojis.
 const UNICODE_EMOJI_RE = /[\p{Extended_Pictographic}‍️\s]/gu;
 const JUMBO_LIMIT = 27; // como no Discord: até 27 emojis sem texto aparecem grandes
@@ -444,7 +446,7 @@ export function MessageText({ content }: { content: string }) {
   // Troca :nome: pela imagem quando o emoji existe; nomes desconhecidos ficam como texto.
   const withEmojis = (text: string, keyPrefix: string) =>
     text.split(EMOJI_TOKEN_RE).map((part, i) => {
-      const emoji = i % 2 === 1 ? emojisByName.get(part) : undefined;
+      const emoji = i % 2 === 1 ? emojisByName.get(nomeDeEmoji(part)) : undefined;
       if (i % 2 === 1 && !emoji) return `:${part}:`;
       return emoji ? (
         <img key={`${keyPrefix}-${i}`} className="emoji" src={mediaUrl.emoji(emoji.id)} alt={`:${part}:`} title={`:${part}:`} />
@@ -453,8 +455,8 @@ export function MessageText({ content }: { content: string }) {
       );
     });
 
-  const customCount = [...content.matchAll(EMOJI_TOKEN_RE)].filter((m) => emojisByName.has(m[1])).length;
-  const rest = content.replace(EMOJI_TOKEN_RE, (token, name) => (emojisByName.has(name) ? '' : token)).replace(UNICODE_EMOJI_RE, '');
+  const customCount = [...content.matchAll(EMOJI_TOKEN_RE)].filter((m) => emojisByName.has(nomeDeEmoji(m[1]))).length;
+  const rest = content.replace(EMOJI_TOKEN_RE, (token, name) => (emojisByName.has(nomeDeEmoji(name)) ? '' : token)).replace(UNICODE_EMOJI_RE, '');
   const unicodeCount = [...content.matchAll(/\p{Extended_Pictographic}/gu)].length;
   const jumbo = rest === '' && customCount + unicodeCount > 0 && customCount + unicodeCount <= JUMBO_LIMIT;
 

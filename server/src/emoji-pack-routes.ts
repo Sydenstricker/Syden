@@ -4,6 +4,7 @@ import * as db from './db.js';
 import { entregarArquivo } from './entregar.js';
 import { parseMedia } from './media.js';
 import { communityRoom } from './realtime.js';
+import { nomeDeEmoji } from './nome-do-emoji.js';
 import { requireUser } from './routes.js';
 
 // Catálogo de pacotes de emoji. A diferença para os pacotes de som é de quem instala: som é coisa de
@@ -33,15 +34,8 @@ function icon(raw: unknown, fallback: string): string {
 }
 
 /** O mesmo nome que vale para emoji de comunidade: é assim que ele vai ser escrito na mensagem. */
-function emojiName(raw: unknown): string | null {
-  const name = String(raw ?? '')
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9_]/g, '_')
-    .replace(/_+/g, '_')
-    .replace(/^_|_$/g, '');
-  return name.length >= 2 && name.length <= 32 ? name : null;
-}
+// a mesma regra dos emojis da comunidade (antes, "coração" virava "cora_o" aqui e "coracao" lá)
+const emojiName = nomeDeEmoji;
 
 /** O que um desenho guardado no pacote traz de volta, ou a mensagem de erro se não deu. */
 type EmojiGuardado = { name: string; mime: string; data: Buffer };

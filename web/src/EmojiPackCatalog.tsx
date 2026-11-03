@@ -4,6 +4,7 @@ import { api, mediaUrl } from './api';
 import type { Community, EmojiPack, EmojiPackItem, User } from './types';
 import { prepareImage } from './upload';
 import { EditarPacote } from './EditarPacote';
+import { nomeDeEmoji } from './nomeDoEmoji';
 import { useT } from './i18n';
 
 // Catálogo de pacotes de emoji. A diferença para o de sons: som cada um instala no seu soundboard, emoji
@@ -15,13 +16,7 @@ const KB = 1024;
 
 /** Nome de emoji a partir do arquivo: "Pepe Triste.png" vira "pepe_triste". */
 function nomeDoArquivo(arquivo: string): string {
-  return arquivo
-    .replace(/\.[^.]+$/, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9_]/g, '_')
-    .replace(/_+/g, '_')
-    .replace(/^_|_$/g, '')
-    .slice(0, 32);
+  return nomeDeEmoji(arquivo.replace(/\.[^.]+$/, ''));
 }
 
 function Stars({ pack, onRate }: { pack: EmojiPack; onRate: (stars: number) => void }) {
