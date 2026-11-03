@@ -70,11 +70,13 @@ export const tabuleiroDaTurma: Definicao = criarTabuleiro();
 export function criarTabuleiro({ agora = Date.now, aleatorio = Math.random, cenourasIniciais = CENOURAS_INICIAIS, dourada: douradaDoTeste, microjogos }: OpcoesDoTabuleiro = {}): Definicao {
   return {
     minimo: 2,
+    // passando de 8, as rotas deixam jogar os primeiros que aceitaram; o resto assiste e não conta como quem jogou
+    maximo: MAXIMO_DO_TABULEIRO,
     comecar(ctx, { naSala, corpo }) {
       if (naSala.length < 2) return 'Ainda falta gente para começar.';
       const rodadas = RODADAS_DO_TABULEIRO.includes(Number(corpo.rodadas)) ? Number(corpo.rodadas) : 10;
       const inteiro = (n: number) => Math.floor(aleatorio() * n);
-      // a ordem da vez é sorteada; passando de 8, os primeiros que aceitaram jogam e o resto assiste
+      // a ordem da vez é sorteada (o corte em 8 já vem das rotas, pelo `maximo`; este é só a garantia)
       const ordem = embaralhar(naSala.slice(0, MAXIMO_DO_TABULEIRO), aleatorio);
       const pecas = new Map<number, Peca>(ordem.map((userId) => [userId, { userId, pos: 0, cenouras: cenourasIniciais, douradas: 0 }]));
       const avatares = new Map(ordem.map((id) => [id, db.findUserById(id)?.avatarPronto ?? null]));
@@ -95,7 +97,19 @@ export function criarTabuleiro({ agora = Date.now, aleatorio = Math.random, ceno
       /** A loja já apareceu nesta vez (uma por vez: a dourada que muda para a frente não se compra de novo), e se comprou. */
       let lojaFeita = false;
       let comprou = false;
-      let ultimo: { id: number; userId: number; dado: number; caminho: number[]; efeito: Efeito | null; comprou: boolean } | null = null;
+      /**
+       * O último andar. `antes` é o tabuleiro de quando a peça saiu (as contas, as posições e a dourada): a tela mostra isso
+       * enquanto a peça anda, e só o resultado quando ela chega (senão o placar e a dourada correriam na frente da peça).
+       */
+      let ultimo: {
+        id: number;
+        userId: number;
+        dado: number;
+        caminho: number[];
+        efeito: Efeito | null;
+        comprou: boolean;
+        antes: { dourada: number; pecas: { userId: number; pos: number; cenouras: number; douradas: number }[] };
+      } | null = null;
       let idDoUltimo = 0;
       let mini: RodadaDeFesta | null = null;
       let saco: Microjogo[] = microjogos ? [...microjogos] : [];
@@ -142,6 +156,7 @@ export function criarTabuleiro({ agora = Date.now, aleatorio = Math.random, ceno
 
       /** Anda `passos` casas a partir da peça; para na dourada se der para comprar. */
       const andar = (peca: Peca, passos: number, dado: number) => {
+        const antes = { dourada, pecas: ordem.map((id) => ({ ...pecas.get(id)! })) };
         const caminho = [peca.pos];
         let resta = passos;
         while (resta > 0) {
@@ -150,7 +165,7 @@ export function criarTabuleiro({ agora = Date.now, aleatorio = Math.random, ceno
           resta--;
           if (peca.pos === dourada && !lojaFeita && peca.cenouras >= PRECO_DA_DOURADA) {
             pendente = resta;
-            ultimo = { id: ++idDoUltimo, userId: peca.userId, dado, caminho, efeito: null, comprou: false };
+            ultimo = { id: ++idDoUltimo, userId: peca.userId, dado, caminho, efeito: null, comprou: false, antes };
             fase = 'loja';
             ctx.agendar(caminho.length * PASSO_MS + TEMPO_DA_LOJA, () => decidir(peca.userId, true));
             ctx.avisar();
@@ -159,7 +174,7 @@ export function criarTabuleiro({ agora = Date.now, aleatorio = Math.random, ceno
         }
         // chegou: a casa age (quem para na casa da dourada, comprando ou não, não ganha nem perde)
         const efeito: Efeito = peca.pos === dourada || (passos === 0 && lojaFeita) ? { tipo: 'nada' } : agirCasa(peca);
-        ultimo = { id: ++idDoUltimo, userId: peca.userId, dado, caminho, efeito, comprou };
+        ultimo = { id: ++idDoUltimo, userId: peca.userId, dado, caminho, efeito, comprou, antes };
         fase = 'andando';
         ctx.agendar((caminho.length - 1) * PASSO_MS + EFEITO_MS, proximaVez);
         ctx.avisar();
@@ -173,7 +188,8 @@ export function criarTabuleiro({ agora = Date.now, aleatorio = Math.random, ceno
           case '-': {
             const perdeu = Math.min(PERDA, peca.cenouras);
             peca.cenouras -= perdeu;
-            return { tipo: 'menos', valor: perdeu };
+            // sem cenouras, não há o que perder: nada de "−0" na tela
+            return perdeu ? { tipo: 'menos', valor: perdeu } : { tipo: 'nada' };
           }
           case '?': {
             const outros = presentes().filter((id) => id !== peca.userId);
@@ -251,6 +267,21 @@ export function criarTabuleiro({ agora = Date.now, aleatorio = Math.random, ceno
           .sort((a, b) => a.posicao - b.posicao || ctx.nome(a.userId).localeCompare(ctx.nome(b.userId)));
       };
 
+      /**
+       * A classificação que a tela mostra. No fim, só quem ficou até o fim tem posição (as mesmas dos troféus), e quem saiu
+       * vem depois, sem posição; na partida interrompida, ninguém tem posição. Durante a partida, todos.
+       */
+      const classificacaoPublica = () => {
+        const linha = (l: Peca, posicao: number | null) => ({ userId: l.userId, username: ctx.nome(l.userId), douradas: l.douradas, cenouras: l.cenouras, posicao });
+        if (fase !== 'fim') return classificacao(ordem).map((l) => linha(l, l.posicao));
+        // (com menos de 2 que ficaram, não há pódio: o mesmo corte dos troféus)
+        const turma = interrompida ? [] : ordem.filter((id) => ficaram.has(id));
+        const comPosicao = turma.length >= 2 ? turma : [];
+        const ranking = comPosicao.length ? classificacao(comPosicao).map((l) => linha(l, l.posicao)) : [];
+        const resto = classificacao(ordem.filter((id) => !comPosicao.includes(id))).map((l) => linha(l, null));
+        return [...ranking, ...resto];
+      };
+
       const terminar = () => {
         if (fase === 'fim') return;
         fase = 'fim';
@@ -274,7 +305,8 @@ export function criarTabuleiro({ agora = Date.now, aleatorio = Math.random, ceno
             }
           }
         }
-        ctx.terminar();
+        // a interrompida não conta como partida completa no painel de uso
+        ctx.terminar(!interrompida);
       };
 
       comecarVez();
@@ -297,7 +329,7 @@ export function criarTabuleiro({ agora = Date.now, aleatorio = Math.random, ceno
             ultimo,
             // o microjogo: a rodada da Festa, com o número da rodada do tabuleiro (a tela é montada de novo a cada uma)
             mini: mini ? { ...mini.publico(quem), rodada } : null,
-            classificacao: classificacao(ordem).map((l) => ({ userId: l.userId, username: ctx.nome(l.userId), douradas: l.douradas, cenouras: l.cenouras, posicao: l.posicao })),
+            classificacao: classificacaoPublica(),
             interrompida,
             partidaId: evento,
           };

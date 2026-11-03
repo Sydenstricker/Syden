@@ -16551,7 +16551,7 @@ body.arrastando-barra {
   width: min(680px, 94vw);
 }
 
-.tab {
+.tabuleiro-jogo {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -16720,4 +16720,16 @@ body.arrastando-barra {
   .tab-peca.vez {
     animation: none;
   }
+}
+
+/* O fim do Tabuleiro da turma: quem saiu antes do fim (ou todos, na partida interrompida) aparece sem posição. */
+.tabuleiro-jogo .minijogo-fim,
+.tabuleiro-sem-posicao {
+  align-self: stretch;
+}
+
+.tabuleiro-saiu {
+  color: var(--text-muted);
+  font-size: calc(12px * var(--escala-do-texto));
+  white-space: nowrap;
 }

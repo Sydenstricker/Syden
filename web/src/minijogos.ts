@@ -353,11 +353,23 @@ export interface EstadoTabuleiro {
   preco: number;
   vez: number | null;
   participantes: { userId: number; username: string; avatar: number | null; pos: number; cenouras: number; douradas: number; presente: boolean }[];
-  /** O último andar: o dado, as casas por onde passou (a primeira é a de onde saiu) e o que a casa fez. */
-  ultimo: { id: number; userId: number; dado: number; caminho: number[]; efeito: EfeitoDaCasa | null; comprou: boolean } | null;
+  /**
+   * O último andar: o dado, as casas por onde passou (a primeira é a de onde saiu) e o que a casa fez. `antes`: as contas, as
+   * posições e a dourada de quando a peça saiu, para a tela não mostrar o resultado antes de ela chegar.
+   */
+  ultimo: {
+    id: number;
+    userId: number;
+    dado: number;
+    caminho: number[];
+    efeito: EfeitoDaCasa | null;
+    comprou: boolean;
+    antes: { dourada: number; pecas: { userId: number; pos: number; cenouras: number; douradas: number }[] };
+  } | null;
   /** O microjogo entre as rodadas: a rodada da Festa. */
   mini: (Omit<EstadoFesta, 'rodadas' | 'jogadores' | 'placar' | 'fase'> & { fase: 'preparando' | 'jogando' | 'revelando' }) | null;
-  classificacao: { userId: number; username: string; douradas: number; cenouras: number; posicao: number }[];
+  /** No fim, só quem ficou até o fim tem posição; quem saiu (e todos, na partida interrompida) vem com null. */
+  classificacao: { userId: number; username: string; douradas: number; cenouras: number; posicao: number | null }[];
   /** Faltou gente: acabou antes do fim, sem troféu. */
   interrompida: boolean;
   partidaId: string;

@@ -230,7 +230,7 @@ function textoDoEfeito(efeito: EfeitoDaCasa | null, nome: string, nomeDe: (id: n
     case 'mais':
       return `+${efeito.valor} 🥕`;
     case 'menos':
-      return `−${efeito.valor} 🥕`;
+      return efeito.valor ? `−${efeito.valor} 🥕` : null;
     case 'chuva':
       return t('Chuva na horta: todo mundo ganha {n} cenouras.', { n: efeito.valor });
     case 'achado':
@@ -265,21 +265,52 @@ export function JogoTabuleiro({
     andando.current = { id: ultimo.id, em: estado.recebidaEm };
   }
   const duracao = ultimo ? (ultimo.caminho.length - 1) * PASSO_MS : 0;
-  const animando = andando.current !== null && ultimo !== null && andando.current.id === ultimo.id && Date.now() - andando.current.em < duracao;
+  const inicio = andando.current && ultimo && andando.current.id === ultimo.id ? andando.current.em : null;
+  const animando = inicio !== null && Date.now() - inicio < duracao;
   const agora = useAgora(animando);
-  const passo = andando.current && ultimo && andando.current.id === ultimo.id ? Math.floor((agora - andando.current.em) / PASSO_MS) : Infinity;
+  // fora da animação, a peça já chegou (inclusive o andar de zero casas, o resto depois da loja)
+  const passo = animando ? Math.floor((Math.max(agora, inicio) - inicio) / PASSO_MS) : Infinity;
+  const chegou = !ultimo || passo >= ultimo.caminho.length - 1;
+  // ENQUANTO A PEÇA ANDA, o tabuleiro é o de quando ela saiu: as contas, as outras peças e a dourada só mudam quando ela chega
+  const antes = ultimo && !chegou ? new Map(ultimo.antes.pecas.map((p) => [p.userId, p])) : null;
+  const vista: EstadoTabuleiro & Partida = antes
+    ? {
+        ...estado,
+        dourada: ultimo!.antes.dourada,
+        participantes: estado.participantes.map((p) => {
+          const a = antes.get(p.userId);
+          return a ? { ...p, pos: a.pos, cenouras: a.cenouras, douradas: a.douradas } : p;
+        }),
+      }
+    : estado;
   const posDe = (userId: number) => {
-    const p = estado.participantes.find((x) => x.userId === userId)!;
-    if (ultimo && ultimo.userId === userId && passo < ultimo.caminho.length - 1) return ultimo.caminho[Math.max(0, passo)];
+    const p = vista.participantes.find((x) => x.userId === userId)!;
+    if (ultimo && ultimo.userId === userId && !chegou) return ultimo.caminho[Math.max(0, passo)];
     return p.pos;
   };
-  const chegou = passo >= (ultimo?.caminho.length ?? 1) - 1;
 
   if (estado.terminada || estado.fase === 'fim') {
+    // Só quem ficou até o fim tem posição e medalha (as mesmas dos troféus); quem saiu vem depois, sem posição. Na partida
+    // interrompida, ninguém: nem medalha, nem "Fim de jogo!".
+    const valor = (l: { douradas: number; cenouras: number }) => `★ ${l.douradas} · 🥕 ${l.cenouras}`;
+    const comPosicao = estado.interrompida ? [] : estado.classificacao.filter((l) => l.posicao !== null);
+    const semPosicao = estado.classificacao.filter((l) => !comPosicao.includes(l));
     return (
-      <div className="tab">
+      <div className="tabuleiro-jogo">
         {estado.interrompida && <p className="minijogo-situacao">{t('Faltou gente: a partida acabou antes do fim, sem troféus.')}</p>}
-        <Placar eu={eu} linhas={estado.classificacao.map((l) => ({ ...l, valor: `★ ${l.douradas} · 🥕 ${l.cenouras}` }))} />
+        {comPosicao.length > 0 && <Placar eu={eu} linhas={comPosicao.map((l) => ({ ...l, posicao: l.posicao ?? undefined, valor: valor(l) }))} />}
+        {semPosicao.length > 0 && (
+          <ol className="minijogo-placar tabuleiro-sem-posicao">
+            {semPosicao.map((l) => (
+              <li key={l.userId} className={l.userId === eu ? 'eu' : ''}>
+                <span className="minijogo-medalha" aria-hidden="true" />
+                <span className="minijogo-nome">{l.username}</span>
+                {!estado.interrompida && <span className="tabuleiro-saiu">{t('Saiu antes do fim')}</span>}
+                <span className="minijogo-pontos">{valor(l)}</span>
+              </li>
+            ))}
+          </ol>
+        )}
       </div>
     );
   }
@@ -295,7 +326,7 @@ export function JogoTabuleiro({
   const quemJoga = estado.vez !== null ? nomeDe(estado.vez) : '';
   const placar = (
     <ol className="tab-placar">
-      {estado.participantes.map((p, i) => {
+      {vista.participantes.map((p, i) => {
         const cores = coresDe(p.avatar, i);
         return (
           <li key={p.userId} className={`${p.userId === eu ? 'eu' : ''}${p.userId === estado.vez ? ' vez' : ''}${p.presente ? '' : ' fora'}`}>
@@ -313,7 +344,7 @@ export function JogoTabuleiro({
 
   if (estado.fase === 'minijogo' && estado.mini) {
     return (
-      <div className="tab">
+      <div className="tabuleiro-jogo">
         {placar}
         <div className={`festa festa-jogo-${estado.mini.microjogo}`}>
           <RodadaDaFesta
@@ -335,9 +366,9 @@ export function JogoTabuleiro({
   }
 
   return (
-    <div className="tab">
+    <div className="tabuleiro-jogo">
       {placar}
-      <Tabuleiro estado={estado} posDe={posDe} />
+      <Tabuleiro estado={vista} posDe={posDe} />
       <div className="tab-vez" aria-live="polite">
         {estado.fase === 'vez' && (
           <>
@@ -355,9 +386,13 @@ export function JogoTabuleiro({
             <Dado n={ultimo.dado} />
             <span className="minijogo-nome">{nomeDe(ultimo.userId)}</span>
             {estado.fase === 'andando' && chegou && (
-              <strong className="tab-efeito">
-                {ultimo.comprou ? t('{nome} comprou a cenoura dourada!', { nome: nomeDe(ultimo.userId) }) : textoDoEfeito(ultimo.efeito, nomeDe(ultimo.userId), nomeDe, t)}
-              </strong>
+              <>
+                {/* comprou E parou numa casa que age: as duas coisas aconteceram, e a tela diz as duas */}
+                {ultimo.comprou && <strong className="tab-efeito">{t('{nome} comprou a cenoura dourada!', { nome: nomeDe(ultimo.userId) })}</strong>}
+                {textoDoEfeito(ultimo.efeito, nomeDe(ultimo.userId), nomeDe, t) && (
+                  <strong className="tab-efeito">{textoDoEfeito(ultimo.efeito, nomeDe(ultimo.userId), nomeDe, t)}</strong>
+                )}
+              </>
             )}
           </div>
         )}

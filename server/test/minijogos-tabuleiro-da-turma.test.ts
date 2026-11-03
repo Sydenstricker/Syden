@@ -34,9 +34,15 @@ type Estado = {
   vez: number | null;
   dourada: number;
   participantes: Participante[];
-  ultimo: { dado: number; caminho: number[]; efeito: { tipo: string; valor?: number } | null; comprou: boolean } | null;
+  ultimo: {
+    dado: number;
+    caminho: number[];
+    efeito: { tipo: string; valor?: number } | null;
+    comprou: boolean;
+    antes: { dourada: number; pecas: Participante[] };
+  } | null;
   mini: { fase: string; microjogo: string; linhas: { userId: number; pontos: number }[] | null } | null;
-  classificacao: { userId: number; posicao: number; douradas: number }[];
+  classificacao: { userId: number; posicao: number | null; douradas: number }[];
   interrompida: boolean;
 };
 
@@ -44,10 +50,14 @@ function comecar(opcoes: Parameters<typeof criarTabuleiro>[0] = {}, inicio = [an
   const sala = { ids: [...inicio] };
   const relogio: { ms: number; depois: () => void }[] = [];
   let terminou = false;
+  let completa: boolean | undefined;
   const ctx = {
     agendar: (ms: number, depois: () => void) => relogio.splice(0, relogio.length, { ms, depois }),
     avisar: () => {},
-    terminar: () => (terminou = true),
+    terminar: (c?: boolean) => {
+      terminou = true;
+      completa = c;
+    },
     naSala: () => sala.ids,
     nome: (id: number) => (id === anaId ? 'ana' : id === biaId ? 'bia' : 'caio'),
     comunidade: comunidade.id,
@@ -59,6 +69,8 @@ function comecar(opcoes: Parameters<typeof criarTabuleiro>[0] = {}, inicio = [an
     sala,
     relogio,
     terminou: () => terminou,
+    /** O que a partida disse ao terminar: completa (true/omitido) ou interrompida (false). */
+    completa: () => completa,
     estado: (quem = anaId) => jogo.publico(quem) as unknown as Estado,
     /** Dispara o relógio marcado, andando o tempo junto. */
     andar() {
@@ -126,6 +138,8 @@ test('com menos de 2 na sala, a partida acaba sem troféu', async () => {
   assert.equal(m.estado().fase, 'fim');
   assert.equal(m.estado().interrompida, true);
   assert.equal(m.terminou(), true);
+  assert.equal(m.completa(), false, 'no painel de uso, a interrompida não conta como completa');
+  assert.ok(m.estado().classificacao.every((l) => l.posicao === null), 'na interrompida, ninguém tem posição');
   const depois = (await comToken(app, ana.token)('GET', '/api/corrida-trofeus')).json().trofeus.length;
   assert.equal(depois, antes);
 });
@@ -208,6 +222,12 @@ test('a partida inteira: o pódio pelas douradas vai para a estante, e quem saiu
   assert.equal(e.interrompida, false);
   assert.ok(de(e, anaId).douradas >= 1);
   assert.equal(e.classificacao[0].userId, anaId);
+  assert.notEqual(m.completa(), false, 'a partida inteira conta como completa');
+  // só quem ficou até o fim tem posição (as mesmas dos troféus); o Caio, que saiu, vem por último sem posição
+  assert.deepEqual(e.classificacao.map((l) => l.userId).slice(0, 2).sort(), [anaId, biaId].sort());
+  assert.ok(e.classificacao.slice(0, 2).every((l) => l.posicao !== null));
+  assert.equal(e.classificacao[2].userId, caioId);
+  assert.equal(e.classificacao[2].posicao, null);
   const daAna = (await comToken(app, ana.token)('GET', '/api/corrida-trofeus')).json().trofeus;
   assert.deepEqual([daAna[0].pista, daAna[0].posicao, daAna[0].pontos, daAna[0].tempoMs], ['tabuleiro', 1, de(e, anaId).douradas, null]);
   assert.deepEqual(daAna[0].rivais.map((r: { userId: number }) => r.userId), [biaId], 'contra quem ficou até o fim');
@@ -218,4 +238,31 @@ test('a partida inteira: o pódio pelas douradas vai para a estante, e quem saiu
 test('pela rota: o tabuleiro não se joga sozinho', async () => {
   const r = await comToken(app, ana.token)('POST', '/api/minijogo-solo', { jogo: 'tabuleiro' });
   assert.equal(r.statusCode, 400);
+});
+
+test('sem cenouras, a casa de −3 não tira nada (e não diz "−0")', () => {
+  sorte = 0.4; // o dado 3: a casa 3 é de perder
+  assert.equal(CASAS[3], '-');
+  const m = comecar({ cenourasIniciais: 0, dourada: 20 });
+  const vez = m.estado().vez!;
+  m.jogo.acao(vez, { tipo: 'dado' });
+  const e = m.estado();
+  assert.equal(e.ultimo!.dado, 3);
+  assert.deepEqual(e.ultimo!.efeito, { tipo: 'nada' });
+  assert.equal(de(e, vez).cenouras, 0);
+});
+
+test('o andar guarda o tabuleiro de quando a peça saiu (a tela mostra o resultado só na chegada)', () => {
+  sorte = 0.5;
+  const m = comecar({ cenourasIniciais: 25, dourada: 2 });
+  m.jogo.acao(anaId, { tipo: 'dado' });
+  m.jogo.acao(anaId, { tipo: 'comprar', sim: true });
+  const e = m.estado();
+  assert.equal(e.ultimo!.comprou, true);
+  assert.equal(e.ultimo!.efeito!.tipo, 'mais', 'comprou E a casa de chegada agiu');
+  // o segundo trecho sai da casa da dourada, já comprada: as contas de antes dele têm a compra, sem o +3 da chegada
+  const antesDaAna = e.ultimo!.antes.pecas.find((p) => p.userId === anaId)!;
+  assert.equal(antesDaAna.douradas, 1);
+  assert.equal(antesDaAna.cenouras, 25 - PRECO_DA_DOURADA);
+  assert.equal(de(e, anaId).cenouras, 25 - PRECO_DA_DOURADA + 3);
 });

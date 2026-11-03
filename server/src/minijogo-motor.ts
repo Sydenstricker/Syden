@@ -13,8 +13,11 @@ export interface Contexto {
   agendar(ms: number, depois: () => void): void;
   /** Avisa a comunidade de que a partida mudou: quem está na sala busca o estado de novo. */
   avisar(): void;
-  /** A partida acabou: o placar fica na tela por um tempo e some sozinho. */
-  terminar(): void;
+  /**
+   * A partida acabou: o placar fica na tela por um tempo e some sozinho. `completa` (true se omitido) diz se ela chegou ao
+   * fim de verdade; a que acaba no meio por falta de gente passa false, e o painel de uso a conta como interrompida.
+   */
+  terminar(completa?: boolean): void;
   /**
    * Quem JOGA e está na sala agora. Com o convite, só quem aceitou: quem está na sala transmitindo ou só conversando
    * não segura a rodada de ninguém (relato de 13/10/2026, com três pessoas transmitindo).
@@ -45,6 +48,11 @@ export interface Jogo {
 export interface Definicao {
   /** Quantos jogadores, no mínimo, para começar (o convite só deixa começar com eles). */
   minimo?: number;
+  /**
+   * Quantos jogam, no máximo. Na largada, passando disso, jogam os primeiros que aceitaram, e o resto assiste: só quem
+   * joga entra em `naSala` e na estatística da partida.
+   */
+  maximo?: number;
   /**
    * Jogo de MESA, de duas pessoas (Cinco em linha, Mancala): começa na hora, porque a mesa já é o convite — quem
    * começa senta e espera, e quem aceitar senta do outro lado (a ação 'sentar').

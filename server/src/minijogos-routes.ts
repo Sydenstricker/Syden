@@ -152,9 +152,9 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
     const ctx: Contexto = {
       agendar: (ms, depois) => agendar(p, ms, depois),
       avisar: () => avisar(p),
-      terminar: () => {
+      terminar: (completa = true) => {
         p.terminada = true;
-        if (p.registro !== null) db.fecharPartida(p.registro, true);
+        if (p.registro !== null) db.fecharPartida(p.registro, completa);
         agendar(p, PLACAR_MS, () => encerrar(p));
         avisar(p);
       },
@@ -166,7 +166,14 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
     if (p.relogio) clearTimeout(p.relogio);
     p.relogio = null;
     p.ate = 0;
-    const naSala = presentes(p);
+    let naSala = presentes(p);
+    // Passando do máximo do jogo, jogam os primeiros que aceitaram (o Set guarda a ordem do aceite), e o resto assiste.
+    const maximo = JOGOS[p.jogo].maximo;
+    const cortou = !!maximo && naSala.length > maximo;
+    if (cortou) {
+      const aceite = p.jogadores ? [...p.jogadores] : naSala;
+      naSala = aceite.filter((id) => naSala.includes(id)).slice(0, maximo);
+    }
     const instancia = JOGOS[p.jogo].comecar(ctx, { naSala, criadaPor: p.criadaPor, corpo });
     if (typeof instancia === 'string') {
       if (p.relogio) clearTimeout(p.relogio);
@@ -177,6 +184,8 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
     }
     p.instancia = instancia;
     p.convite = null;
+    // Quem passou do máximo deixa de ser jogador: assiste, e não conta como quem jogou.
+    if (cortou) p.jogadores = new Set(naSala);
     // A partida solo não entra na estatística: ela é da turma (conquistas, painel de uso), e conta gente junta.
     if (!p.solo) p.registro = db.registrarPartida(p.jogo, p.communityId, p.channelId, p.criadaPor, naSala);
     return null;
