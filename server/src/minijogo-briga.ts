@@ -25,7 +25,10 @@
  * O que continua possível pelo console, entre amigos: mentir a própria posição dentro do limite de velocidade (fugir dos
  * golpes indo e voltando rápido), e mandar acertos que a tela não mostrou mas que a distância permite (bater um pouco mais
  * longe que o desenho, dentro da folga de 10 px). Não dá para bater em quem está do outro lado da tela, nem mais rápido que
- * o combo, nem num inimigo caído ou morto, nem fazer o especial sem pagar a vida.
+ * o combo, nem num inimigo caído ou morto, nem fazer o especial sem pagar a vida. A altura também é conferida (revisão de
+ * 03/11/2026): o pulo tem teto e tempo de ar, o soco é de quem está no chão, e a voadora é uma por pulo de verdade, com um
+ * balde por cima. Ainda possível: emendar pulos de 1 s com uma posição no chão entre eles (no ar ~95% do tempo, contra
+ * ~90% de quem aperta o pulo sem parar no site), o que escapa de golpes inimigos como no site; e cada voadora custa um pulo.
  *
  * OS TROFÉUS: com a fase vencida e 2 pessoas ou mais que ficaram até o fim, o pódio (até o 3º, empatados dividem, só quem
  * fez ponto) vai para a estante do quarto (corrida_trofeus, "pista" 'briga', com os pontos). Perder a fase não dá troféu. No
@@ -83,6 +86,25 @@ export const VOLTA_MS = 3000;
 export const FASE_MAX_MS = 8 * 60_000;
 /** O tempo do "Vencemos!"/"Fim" antes do placar. */
 export const FIM_MS = 3500;
+
+/**
+ * O PULO, conferido pelo servidor (revisão de 03/11/2026: o `z` não era conferido, e quem mandava `z: 59` para sempre não
+ * apanhava nunca e ainda batia em quem estava no chão). O pulo do site sobe a 215 px/s com gravidade de 720: ~32 px de
+ * altura e ~0,6 s no ar (apanhar no ar dá um pouco mais). O servidor aceita até Z_MAX, e por no máximo AR_MAX_MS contados
+ * da primeira posição no ar que chegou (com folga para a rede); a altura permitida cai a zero entre AR_TETO_MS e AR_MAX_MS
+ * (a gravidade). Passou disso, o coelho está no chão para o servidor até mandar uma posição no chão de verdade.
+ */
+export const Z_MAX = 38;
+export const AR_TETO_MS = 550;
+export const AR_MAX_MS = 1000;
+/** O mínimo de ar de verdade para o pulo contar como pulo (e liberar a próxima voadora): o do site é ~600 ms. */
+export const AR_MIN_MS = 350;
+/** A altura até onde um golpe de chão (soco, especial) ainda vale. */
+export const Z_DO_CHAO = 4;
+/** A folga de velocidade: o coelho anda a VEL_X/VEL_Y; aceita-se FOLGA_VEL vezes isso, com um acúmulo pequeno para a rede. */
+export const FOLGA_VEL = 1.3;
+export const ACUMULO_X = 16;
+export const ACUMULO_Y = 10;
 
 export const PONTOS_NOCAUTE: Record<TipoDeInimigo, number> = { raposa: 50, corvo: 40, texugo: 300 };
 
@@ -164,7 +186,14 @@ interface Jogador {
   ultimoEspecial: number;
   /** Desde a última voadora, ele já pôs o pé no chão? */
   pisou: boolean;
-  baldes: { pos: Balde; golpe: Balde; socos: Balde };
+  /** Desde quando ele está no ar (a primeira posição com z > 0), ou null no chão. */
+  noArDesde: number | null;
+  /** O pulo passou do tempo: até mandar uma posição no chão, o z é 0. */
+  precisaPisar: boolean;
+  /** O quanto ele ainda pode andar além do normal (px), que se acumula com o tempo até ACUMULO_X/ACUMULO_Y. */
+  creditoX: number;
+  creditoY: number;
+  baldes: { pos: Balde; golpe: Balde; socos: Balde; voadora: Balde };
 }
 
 interface Balde {
@@ -207,6 +236,8 @@ export function criarBriga({
 }: OpcoesDaBriga = {}): Definicao {
   return {
     minimo: 2,
+    // quatro coelhos: o quinto que aceitar assiste (e não conta como quem jogou)
+    maximo: 4,
     comecar(ctx: Contexto, { naSala }) {
       const inscritos = [...naSala].slice(0, 4);
       if (inscritos.length === 0) return 'Ninguém para jogar.';
@@ -270,15 +301,21 @@ export function criarBriga({
             ultimoAtaque: 0,
             ultimoEspecial: -Infinity,
             pisou: true,
-            // a posição vem ~15 por segundo, e o acerto, no máximo alguns por golpe
-            baldes: { pos: balde(10, 24), golpe: balde(10, 14), socos: balde(3, 4.5) },
+            noArDesde: null,
+            precisaPisar: false,
+            creditoX: ACUMULO_X,
+            creditoY: ACUMULO_Y,
+            // a posição vem ~15 por segundo, e o acerto, no máximo alguns por golpe; a voadora, uma por pulo de ~0,6 s
+            baldes: { pos: balde(10, 24), golpe: balde(10, 14), socos: balde(3, 4.5), voadora: balde(2, 1.7) },
           },
         ]),
       );
 
       const evento_ = (...e: unknown[]) => eventos.push([proximoEvento++, ...e]);
       const presentes = () => new Set(ctx.naSala());
-      const emPe = () => [...jogadores.values()].filter((j) => j.estado === 'em-pe' && presentes().has(j.userId));
+      /** Quem está na sala, lido UMA vez por passo (o naSala percorre a voz do servidor inteiro). */
+      let naSalaAgora = presentes();
+      const emPe = () => [...jogadores.values()].filter((j) => j.estado === 'em-pe' && naSalaAgora.has(j.userId));
 
       // ---------------- AS ONDAS ----------------
       const comecarOnda = (k: number) => {
@@ -600,7 +637,15 @@ export function criarBriga({
         const t = agora();
         const dt = PASSO_MS / 1000;
         passo++;
+        naSalaAgora = presentes();
         if (fase === 'lutando' || fase === 'avancando') {
+          // NINGUÉM DA TURMA NA SALA (nem que fique alguém assistindo): a fase acaba, perdida e sem troféu. Sem isso o passo
+          // seguia 20 vezes por segundo por até 8 minutos, e a sala ficava presa em "já tem uma partida acontecendo".
+          if (![...jogadores.keys()].some((id) => naSalaAgora.has(id))) return acabar(false, true);
+          for (const j of jogadores.values()) {
+            // o pulo que passou do tempo acaba, mesmo calado
+            if (j.noArDesde !== null && t - j.noArDesde > AR_MAX_MS) pousar(j, t, true);
+          }
           // os inimigos entram aos poucos
           if (fase === 'lutando' && fila.length && t >= proximaEntrada && naTela() < maxNaTela()) {
             entrar(fila.shift()!);
@@ -629,6 +674,8 @@ export function criarBriga({
               j.x = arena[0] + 30;
               j.y = PROF / 2;
               j.z = 0;
+              j.noArDesde = null;
+              j.precisaPisar = false;
               j.invulAte = t + 2000;
               j.livreAte = t + 1500;
               j.historia = [];
@@ -646,8 +693,7 @@ export function criarBriga({
             comecarOnda(onda + 1);
           }
           // todo mundo fora, sem vidas: acabou
-          const naSala = presentes();
-          const daTurma = [...jogadores.values()].filter((j) => naSala.has(j.userId));
+          const daTurma = [...jogadores.values()].filter((j) => naSalaAgora.has(j.userId));
           if (daTurma.length && daTurma.every((j) => j.estado === 'sem-vidas')) return acabar(false);
           if (t - inicio > FASE_MAX_MS) return acabar(false);
         }
@@ -692,12 +738,14 @@ export function criarBriga({
         eventos = [];
       };
 
-      const acabar = (venceu: boolean) => {
+      /** `vazia`: a turma inteira saiu (a partida conta como interrompida; o relógio do motor a encerra se a sala esvaziou). */
+      const acabar = (venceu: boolean, vazia = false) => {
         if (fase === 'vitoria' || fase === 'derrota' || fase === 'fim') return;
         fase = venceu ? 'vitoria' : 'derrota';
         difundir();
         ctx.avisar();
-        ctx.agendar(FIM_MS, () => terminar(venceu));
+        if (vazia) parar();
+        ctx.agendar(FIM_MS, () => terminar(venceu, !vazia));
       };
 
       const parar = () => {
@@ -706,7 +754,7 @@ export function criarBriga({
       };
 
       let resultado: { userId: number; username: string; pontos: number; golpes: number; nocautes: number }[] | null = null;
-      const terminar = (venceu: boolean) => {
+      const terminar = (venceu: boolean, completa = true) => {
         parar();
         fase = 'fim';
         const p = presentes();
@@ -733,11 +781,40 @@ export function criarBriga({
           }
         }
         venceuAFase = venceu;
-        ctx.terminar();
+        ctx.terminar(completa);
       };
 
       // ---------------- O QUE A PESSOA MANDA (tempo real) ----------------
       const numero = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
+
+      /**
+       * O pé no chão. `forcado`: o pulo passou de AR_MAX_MS (o servidor o põe no chão, e ele só pula de novo depois de mandar
+       * uma posição no chão). A voadora só se libera depois de um pulo com AR_MIN_MS de ar de verdade.
+       */
+      const pousar = (j: Jogador, t: number, forcado: boolean) => {
+        if (j.noArDesde !== null && t - j.noArDesde >= AR_MIN_MS) j.pisou = true;
+        j.noArDesde = null;
+        j.z = 0;
+        if (forcado) j.precisaPisar = true;
+      };
+
+      /** A altura que o servidor aceita: a de um pulo (até Z_MAX, caindo a zero entre AR_TETO_MS e AR_MAX_MS). */
+      const alturaDoPulo = (j: Jogador, z: number, t: number): number => {
+        if (z <= 0) {
+          pousar(j, t, false);
+          j.precisaPisar = false;
+          return 0;
+        }
+        if (j.precisaPisar) return 0;
+        if (j.noArDesde === null) j.noArDesde = t;
+        const ar = t - j.noArDesde;
+        if (ar > AR_MAX_MS) {
+          pousar(j, t, true);
+          return 0;
+        }
+        const teto = ar <= AR_TETO_MS ? Z_MAX : (Z_MAX * (AR_MAX_MS - ar)) / (AR_MAX_MS - AR_TETO_MS);
+        return Math.min(z, teto);
+      };
 
       const registrarAtaque = (j: Jogador, id: unknown, g: unknown, z: number): void => {
         if (!numero(id) || !Number.isInteger(id) || id <= j.ultimoAtaque || id > j.ultimoAtaque + 1000) return;
@@ -747,14 +824,18 @@ export function criarBriga({
         const ultimos = j.ataques;
         const anterior = ultimos.find((a) => a.id === id - 1);
         const antes = ultimos.find((a) => a.id === id - 2);
+        // o soco e o especial são de quem está no chão; a voadora, de quem está num pulo de verdade
+        if (golpe !== 'voadora' && (z > Z_DO_CHAO || j.noArDesde !== null)) return;
         if (golpe === 'soco1' || golpe === 'soco2' || golpe === 'soco3') {
           // o combo na ordem e no ritmo: o 2º logo depois do 1º, o 3º fecha os dois
           if (golpe === 'soco2' && (!anterior || anterior.golpe !== 'soco1' || t - anterior.em > 1000)) return;
           if (golpe === 'soco3' && (!anterior || anterior.golpe !== 'soco2' || !antes || antes.golpe !== 'soco1' || t - antes.em > 1800)) return;
           if (!gastar(j.baldes.socos)) return;
         } else if (golpe === 'voadora') {
-          // no ar, e uma por pulo
-          if (z <= 0 || !j.pisou) return;
+          // no ar, uma por pulo (e o pulo só conta com AR_MIN_MS de ar: ver `pousar`), e com um balde por cima: alternar
+          // z=0/z=5 dava ~12 voadoras por segundo
+          if (z <= 0 || j.noArDesde === null || !j.pisou) return;
+          if (!gastar(j.baldes.voadora)) return;
           j.pisou = false;
         } else {
           // o especial custa vida (o servidor cobra), e não dá para repetir de seguida
@@ -774,19 +855,21 @@ export function criarBriga({
         const t = agora();
         let nx = Math.max(arena[0] - 8, Math.min(arena[1] + 8, x as number));
         let ny = Math.max(0, Math.min(PROF, y as number));
-        const nz = Math.max(0, Math.min(60, z as number));
-        // não mais rápido que o coelho anda (com folga de rede); o empurrão e a volta dão um tempo livre
+        const nz = alturaDoPulo(j, z as number, t);
+        // não mais rápido que o coelho anda: o que se pode andar se acumula com o tempo (FOLGA_VEL × a velocidade), até um
+        // teto pequeno para a rede (duas posições que chegam juntas); o empurrão e a volta dão um tempo livre
+        const dt = Math.max(0, (t - j.ultimaEm) / 1000);
+        j.creditoX = Math.min(ACUMULO_X, j.creditoX + VEL_X * FOLGA_VEL * dt);
+        j.creditoY = Math.min(ACUMULO_Y, j.creditoY + VEL_Y * FOLGA_VEL * dt);
         if (t > j.livreAte) {
-          const dt = Math.min(0.3, (t - j.ultimaEm) / 1000);
-          const maxX = VEL_X * dt * 1.4 + 12;
-          const maxY = VEL_Y * dt * 1.4 + 8;
-          nx = j.x + Math.max(-maxX, Math.min(maxX, nx - j.x));
-          ny = j.y + Math.max(-maxY, Math.min(maxY, ny - j.y));
+          nx = j.x + Math.max(-j.creditoX, Math.min(j.creditoX, nx - j.x));
+          ny = j.y + Math.max(-j.creditoY, Math.min(j.creditoY, ny - j.y));
+          j.creditoX -= Math.abs(nx - j.x);
+          j.creditoY -= Math.abs(ny - j.y);
         }
         j.x = nx;
         j.y = ny;
         j.z = nz;
-        if (nz === 0) j.pisou = true;
         j.lado = lado === -1 ? -1 : 1;
         j.acao = numero(acao) && acao >= 0 && acao < ACOES.length ? Math.floor(acao) : 0;
         j.tAcao = numero(ta) ? Math.max(0, Math.min(5000, Math.round(ta))) : 0;
@@ -816,11 +899,16 @@ export function criarBriga({
         const { x, y, z } = d;
         if (![x, y, z].every(numero)) return 'números';
         // quem bateu estava perto de onde o servidor o viu
-        if (Math.abs((x as number) - j.x) > 30 || Math.abs((y as number) - j.y) > 16 || Math.abs((z as number) - j.z) > 40) return 'longe de si';
+        if (Math.abs((x as number) - j.x) > 30 || Math.abs((y as number) - j.y) > 16 || Math.abs((z as number) - j.z) > 20) return 'longe de si';
+        // A ALTURA: o golpe de chão é de quem está no chão (e o servidor o viu no chão); a voadora pega o que está na altura
+        // dela (a mesma conta do site, `encosta`, com folga), e no chão só enquanto o pulo dura
+        const zz = Math.max(0, Math.min(Z_MAX, z as number));
+        if (ataque.golpe !== 'voadora' && (zz > Z_DO_CHAO || j.z > Z_DO_CHAO)) return 'alto demais';
         const lado = j.lado;
         const [a0, a1] = g.alcance;
         const perto = i.historia.some((h) => {
           if (h.t < t - HISTORIA_MS) return false;
+          if (ataque.golpe === 'voadora' ? Math.abs(h.z - zz) >= 26 + 6 : h.z >= 24) return false;
           const dx = (h.x - (x as number)) * (ataque.golpe === 'especial' ? 1 : lado);
           const w = CORPO[i.tipo];
           return dx + w >= a0 - FOLGA_ACERTO && dx - w <= a1 + FOLGA_ACERTO && Math.abs(h.y - (y as number)) <= g.fundo + 4;

@@ -208,6 +208,10 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
   }, 4000);
   conferencia.unref?.();
   app.addHook('onClose', async () => clearInterval(conferencia));
+  // o servidor fechando: os jogos com relógio próprio (o passo da Briga) desligam o deles
+  app.addHook('onClose', async () => {
+    for (const p of [...partidas.values(), ...solos.values()]) p.instancia?.parar?.();
+  });
 
   // O que precisa chegar NA HORA (o traço do desenho) vem pelo socket e vai direto a quem está na sala,
   // sem o "mudou, busque de novo" das rotas. O jogo decide o que aceita (ver `tempoReal` no motor).
