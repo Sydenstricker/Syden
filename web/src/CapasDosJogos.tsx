@@ -13,6 +13,8 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
       return <CapaCorrida />;
     case 'festa':
       return <CapaFesta />;
+    case 'tabuleiro':
+      return <CapaTabuleiro />;
     case 'tamanho':
       return <CapaQualEMaior />;
     case 'stop':
@@ -533,6 +535,51 @@ function CapaMancala() {
       {[0, 1, 2, 3, 4, 5, 6].map((k) => (
         <circle key={k} cx={132 + (k % 2) * 6} cy={46 + k * 4} r="2.3" fill={sementes[k % sementes.length]} />
       ))}
+    </svg>
+  );
+}
+
+/**
+ * O Tabuleiro da turma: a volta de casas coloridas em cima da grama, o dado no meio e a cenoura dourada numa das casas. Pixels
+ * grandes, como o tabuleiro do jogo (JogoTabuleiro.tsx).
+ */
+function CapaTabuleiro() {
+  const cores = ['#8fb86a', '#8fb86a', '#c46a52', '#8fb86a', '#8e7cc3'];
+  const casas: [number, number][] = [];
+  for (let c = 0; c < 7; c++) casas.push([c, 0]);
+  for (let l = 1; l < 4; l++) casas.push([6, l]);
+  for (let c = 6; c >= 0; c--) casas.push([c, 4]);
+  for (let l = 3; l > 0; l--) casas.push([0, l]);
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true" shapeRendering="crispEdges">
+      <rect width="160" height="120" fill="#4a6438" />
+      <rect x="10" y="12" width="140" height="100" fill="#62804a" />
+      {casas.map(([c, l], i) => (
+        <g key={i}>
+          <rect x={13 + c * 20} y={15 + l * 20} width="18" height="18" fill="#3e3428" />
+          <rect x={14 + c * 20} y={16 + l * 20} width="16" height="14" fill={i === 0 ? '#e8d9c0' : cores[i % cores.length]} />
+        </g>
+      ))}
+      {/* o dado */}
+      <rect x="60" y="44" width="34" height="34" fill="#a89276" />
+      <rect x="60" y="42" width="34" height="32" fill="#f3ead8" />
+      {[
+        [66, 48],
+        [82, 48],
+        [74, 56],
+        [66, 64],
+        [82, 64],
+      ].map(([x, y], i) => (
+        <rect key={i} x={x} y={y} width="6" height="6" fill="#5a3a2a" />
+      ))}
+      {/* a cenoura dourada, numa casa de cima */}
+      <rect x="96" y="2" width="4" height="8" fill="#7fae5a" />
+      <rect x="102" y="4" width="4" height="6" fill="#7fae5a" />
+      <rect x="92" y="10" width="16" height="6" fill="#f2c46a" />
+      <rect x="94" y="16" width="12" height="6" fill="#e3a640" />
+      <rect x="96" y="22" width="8" height="4" fill="#d08e2c" />
+      <rect x="98" y="26" width="4" height="4" fill="#b8741e" />
+      <rect x="94" y="12" width="4" height="2" fill="#fff1c8" />
     </svg>
   );
 }

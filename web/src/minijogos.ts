@@ -338,7 +338,32 @@ export interface EstadoFesta {
   placar: LinhaDoPlacar[];
 }
 
-export type IdDoJogo = 'corrida' | 'festa' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'xadrez' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
+/** O Tabuleiro da turma (server/src/minijogo-tabuleiro-da-turma.ts). As casas: 'i' a largada, '+' ganha, '-' perde, '?' evento. */
+export type EfeitoDaCasa =
+  | { tipo: 'mais' | 'menos' | 'chuva' | 'achado'; valor: number }
+  | { tipo: 'troca'; com: number }
+  | { tipo: 'nada' };
+
+export interface EstadoTabuleiro {
+  fase: 'vez' | 'loja' | 'andando' | 'minijogo' | 'fim';
+  rodada: number;
+  rodadas: number;
+  casas: ('i' | '+' | '-' | '?')[];
+  dourada: number;
+  preco: number;
+  vez: number | null;
+  participantes: { userId: number; username: string; avatar: number | null; pos: number; cenouras: number; douradas: number; presente: boolean }[];
+  /** O último andar: o dado, as casas por onde passou (a primeira é a de onde saiu) e o que a casa fez. */
+  ultimo: { id: number; userId: number; dado: number; caminho: number[]; efeito: EfeitoDaCasa | null; comprou: boolean } | null;
+  /** O microjogo entre as rodadas: a rodada da Festa. */
+  mini: (Omit<EstadoFesta, 'rodadas' | 'jogadores' | 'placar' | 'fase'> & { fase: 'preparando' | 'jogando' | 'revelando' }) | null;
+  classificacao: { userId: number; username: string; douradas: number; cenouras: number; posicao: number }[];
+  /** Faltou gente: acabou antes do fim, sem troféu. */
+  interrompida: boolean;
+  partidaId: string;
+}
+
+export type IdDoJogo = 'corrida' | 'festa' | 'tabuleiro' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'xadrez' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
 
 /**
  * As duas abas da estante (pedido dele, 14/10/2026). SOLO: a partida é só de quem joga, começa sem convite, não ocupa
@@ -440,6 +465,14 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
     abas: ['coletivo'],
     // As palavras são do dicionário do servidor, que por enquanto só existe em português.
     idioma: 'pt',
+  },
+  {
+    // O tabuleiro de festa (JogoTabuleiro.tsx, server/src/minijogo-tabuleiro-da-turma.ts): dado, casas, a cenoura dourada e
+    // um microjogo da Festa depois de cada rodada. Só com a turma.
+    id: 'tabuleiro',
+    nome: chave('Tabuleiro da turma'),
+    dica: chave('Cada um joga o dado na sua vez e anda pela horta. Junte cenouras para comprar a cenoura dourada, e depois de cada rodada a turma joga um microjogo. Ganha quem tiver mais cenouras douradas.'),
+    abas: ['coletivo'],
   },
 ];
 

@@ -96,6 +96,47 @@ export function JogoFesta({
   restante: number;
   agir: (corpo: Record<string, unknown>) => unknown;
 }) {
+  if (estado.terminada || estado.fase === 'fim') {
+    // empatados dividem a posição, como no troféu (revisão de 03/11/2026: a tela dava ouro e prata a quem empatou)
+    return (
+      <Placar
+        eu={eu}
+        linhas={estado.placar.map((l) => ({ ...l, valor: String(l.pontos), posicao: 1 + estado.placar.filter((o) => o.pontos > l.pontos).length }))}
+      />
+    );
+  }
+  return (
+    <div className={`festa festa-jogo-${estado.microjogo}`}>
+      <PlacarAoVivo eu={eu} linhas={estado.placar} />
+      <RodadaDaFesta estado={{ ...estado, fase: estado.fase }} eu={eu} jogador={jogador} restante={restante} agir={agir} />
+    </div>
+  );
+}
+
+/** Uma rodada de microjogo, como o servidor a manda (rodadaDeFesta, em server/src/minijogo-festa.ts), com o relógio da partida. */
+export type EstadoDaRodada = Pick<EstadoFesta, 'rodada' | 'microjogo' | 'dados' | 'duracaoMs' | 'sinal' | 'meu' | 'prontos' | 'jogadores' | 'resposta' | 'linhas'> & {
+  fase: 'preparando' | 'jogando' | 'revelando';
+  recebidaEm: number;
+  restanteMs: number;
+};
+
+/**
+ * UMA RODADA DE MICROJOGO (o "prepare-se", o jogo e a revelação), sem o placar da partida: a Festa encadeia cinco, e o
+ * Tabuleiro da turma joga uma entre as rodadas dele (JogoTabuleiro.tsx). Vai dentro de um `festa festa-jogo-<microjogo>`.
+ */
+export function RodadaDaFesta({
+  estado,
+  eu,
+  jogador,
+  restante,
+  agir,
+}: {
+  estado: EstadoDaRodada;
+  eu: number;
+  jogador: boolean;
+  restante: number;
+  agir: (corpo: Record<string, unknown>) => unknown;
+}) {
   const t = useT();
   const formatos = useFormatos();
   const inicio = useRef<{ rodada: number; em: number } | null>(null);
@@ -106,16 +147,6 @@ export function JogoFesta({
   if (estado.fase === 'preparando') inicio.current = { rodada: estado.rodada, em: estado.recebidaEm + estado.restanteMs };
   else if (estado.fase === 'jogando' && inicio.current?.rodada !== estado.rodada) {
     inicio.current = { rodada: estado.rodada, em: estado.recebidaEm + estado.restanteMs - estado.duracaoMs };
-  }
-
-  if (estado.terminada || estado.fase === 'fim') {
-    // empatados dividem a posição, como no troféu (revisão de 03/11/2026: a tela dava ouro e prata a quem empatou)
-    return (
-      <Placar
-        eu={eu}
-        linhas={estado.placar.map((l) => ({ ...l, valor: String(l.pontos), posicao: 1 + estado.placar.filter((o) => o.pontos > l.pontos).length }))}
-      />
-    );
   }
 
   const souJogador = jogador && estado.jogadores.some((j) => j.userId === eu);
@@ -135,8 +166,7 @@ export function JogoFesta({
   const mostrarJogo = (estado.fase === 'jogando' && souJogador) || (estado.fase === 'revelando' && estado.microjogo === 'copos');
 
   return (
-    <div className={`festa festa-jogo-${estado.microjogo}`}>
-      <PlacarAoVivo eu={eu} linhas={estado.placar} />
+    <>
       {estado.fase === 'preparando' && (
         <div className="festa-preparo">
           <strong className="festa-nome">{t(nome.nome)}</strong>
@@ -185,7 +215,7 @@ export function JogoFesta({
           ))}
         </ol>
       )}
-    </div>
+    </>
   );
 }
 

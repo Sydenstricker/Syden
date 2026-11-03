@@ -11,6 +11,7 @@ import { catalogo, criarQuiz, TEMAS } from './minijogo-quiz.js';
 import { stop } from './minijogo-stop.js';
 import { sudoku } from './minijogo-sudoku.js';
 import { gomoku, mancala } from './minijogo-tabuleiro.js';
+import { tabuleiroDaTurma } from './minijogo-tabuleiro-da-turma.js';
 import { xadrez } from './minijogo-xadrez.js';
 import { PLACAR_MS, tamanho } from './minijogos.js';
 import { communityRoom, emitToUser, quemEstaNaSala, salaDeVozDe } from './realtime.js';
@@ -45,6 +46,7 @@ export const JOGOS: Record<string, Definicao> = {
   palavra,
   corrida,
   festa,
+  tabuleiro: tabuleiroDaTurma,
   // Os quizzes de adivinhar (minijogo-quiz.ts): um jogo por tema, todos no mesmo motor.
   ...Object.fromEntries(Object.entries(TEMAS).map(([id, tema]) => [id, criarQuiz(tema)])),
 };

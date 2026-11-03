@@ -21,7 +21,7 @@
  * (corrida_trofeus, com a "pista" 'festa' e os pontos; o site dá o nome).
  */
 import * as db from './db.js';
-import { embaralhar, placar, type Definicao } from './minijogo-motor.js';
+import { embaralhar, placar, type Contexto, type Definicao } from './minijogo-motor.js';
 
 export const MICROJOGOS = ['saque', 'forca', 'relogio', 'copos', 'siga', 'alvo'] as const;
 export type Microjogo = (typeof MICROJOGOS)[number];
@@ -170,13 +170,235 @@ interface Resultado {
 }
 
 /** O que alguém viu numa rodada, para a tela: a ordem e os pontos. */
-interface LinhaDaRodada {
+export interface LinhaDaRodada {
   userId: number;
   username: string;
   valor: number | null;
   motivo: 'cedo' | 'errou' | 'invalido' | 'nada' | null;
   posicao: number | null;
   pontos: number;
+}
+
+/**
+ * UMA RODADA DE MICROJOGO, sozinha (03/11/2026): o "prepare-se", o jogo e a revelação, com toda a conferência. A Festa
+ * encadeia cinco; o Tabuleiro da turma (minijogo-tabuleiro-da-turma.ts) joga uma entre as rodadas do tabuleiro. Ela usa o
+ * relógio do contexto (um só): enquanto ela corre, quem a chamou não marca outro.
+ */
+export interface RodadaDeFesta {
+  readonly microjogo: Microjogo;
+  /** O que `quem` vê desta rodada. */
+  publico(quem: number): {
+    fase: 'preparando' | 'jogando' | 'revelando';
+    microjogo: Microjogo;
+    dados: Dados;
+    duracaoMs: number;
+    sinal: boolean;
+    meu: { motivo: Resultado['motivo']; valor: number | null } | null;
+    prontos: number[];
+    resposta: number | null;
+    linhas: LinhaDaRodada[] | null;
+  };
+  /** 'resultado' ou 'acerto' de um inscrito (as mesmas mensagens de erro da Festa). */
+  acao(quem: number, corpo: Record<string, unknown>): string | null;
+  /** Alguém pode ter saído: a rodada que só esperava essa pessoa revela. */
+  conferir(): void;
+}
+
+export interface OpcoesDaRodada {
+  ctx: Pick<Contexto, 'agendar' | 'avisar' | 'naSala' | 'nome'>;
+  microjogo: Microjogo;
+  /** Quem joga (os que não estão na sala na hora não seguram ninguém, e não aparecem na revelação). */
+  inscritos: number[];
+  agora: () => number;
+  aleatorio: () => number;
+  /** Os pontos pela posição (empatados dividem a posição e os pontos dela). */
+  pontos: number[];
+  /** Na revelação: as linhas (com os pontos de cada um) e quem estava na sala naquela hora. */
+  aoRevelar?: (linhas: LinhaDaRodada[], presentes: Set<number>) => void;
+  /** Depois da revelação. */
+  aoAcabar: () => void;
+}
+
+export function rodadaDeFesta({ ctx, microjogo: m, inscritos, agora, aleatorio, pontos, aoRevelar, aoAcabar }: OpcoesDaRodada): RodadaDeFesta {
+  let fase: 'preparando' | 'jogando' | 'revelando' = 'preparando';
+  const dados: Dados = gerarDados(m, aleatorio);
+  let inicio = 0;
+  /** O saque: quando o sinal saiu (relógio do servidor), ou null. */
+  let sinalEm: number | null = null;
+  const resultados = new Map<number, Resultado>();
+  /** Tiro ao alvo: cada acerto chega na hora, e o servidor confere no relógio dele (revisão de 03/11/2026: a lista inteira
+   * mandada no fim deixava o console acertar todos). */
+  const acertosDoAlvo = new Map<number, Set<number>>();
+  let linhas: LinhaDaRodada[] | null = null;
+
+  const jogar = () => {
+    fase = 'jogando';
+    inicio = agora();
+    if (m === 'saque') {
+      const espera = SAQUE_ESPERA_MIN + Math.floor(aleatorio() * (SAQUE_ESPERA_MAX - SAQUE_ESPERA_MIN));
+      ctx.agendar(espera, () => {
+        sinalEm = agora();
+        ctx.agendar(SAQUE_DEPOIS_MS, revelar);
+        ctx.avisar();
+      });
+    } else {
+      ctx.agendar(duracaoDe(m, dados), revelar);
+    }
+    ctx.avisar();
+  };
+
+  const revelar = () => {
+    if (fase !== 'jogando') return;
+    const presentes = new Set(ctx.naSala());
+    // no alvo, quem acertou alguma e não chegou a mandar o fim conta pelo que o servidor viu
+    if (m === 'alvo') {
+      for (const [userId, acertos] of acertosDoAlvo) {
+        if (!resultados.has(userId) && acertos.size) resultados.set(userId, { motivo: null, valor: acertos.size, chave: [-acertos.size] });
+      }
+    }
+    const validos = [...resultados.entries()].filter(([, r]) => r.motivo === null);
+    const menor = (a: number[], b: number[]) => {
+      for (let i = 0; i < Math.max(a.length, b.length); i++) if ((a[i] ?? 0) !== (b[i] ?? 0)) return (a[i] ?? 0) - (b[i] ?? 0);
+      return 0;
+    };
+    validos.sort(([, a], [, b]) => menor(a.chave, b.chave));
+    const nova: LinhaDaRodada[] = validos.map(([userId, r]) => {
+      // empatados dividem a posição (e os pontos dela)
+      const posicao = 1 + validos.filter(([, o]) => menor(o.chave, r.chave) < 0).length;
+      const p = pontos[posicao - 1] ?? 0;
+      return { userId, username: ctx.nome(userId), valor: r.valor, motivo: null, posicao, pontos: p };
+    });
+    for (const [userId, r] of resultados) {
+      if (r.motivo !== null) nova.push({ userId, username: ctx.nome(userId), valor: r.valor, motivo: r.motivo, posicao: null, pontos: 0 });
+    }
+    for (const userId of inscritos) {
+      if (!resultados.has(userId) && presentes.has(userId)) nova.push({ userId, username: ctx.nome(userId), valor: null, motivo: 'nada', posicao: null, pontos: 0 });
+    }
+    linhas = nova;
+    fase = 'revelando';
+    aoRevelar?.(nova, presentes);
+    ctx.agendar(REVELACAO_MS, aoAcabar);
+    ctx.avisar();
+  };
+
+  const todosResponderam = () => {
+    const presentes = ctx.naSala().filter((id) => inscritos.includes(id));
+    return presentes.every((id) => resultados.has(id));
+  };
+
+  const numero = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
+
+  /** Confere o resultado mandado e o transforma no que conta. */
+  const avaliar = (quem: number, corpo: Record<string, unknown>): Resultado => {
+    const agoraMs = agora();
+    const passou = agoraMs - inicio;
+    const invalido: Resultado = { motivo: 'invalido', valor: null, chave: [] };
+    switch (m) {
+      case 'saque': {
+        if (corpo.cedo === true || sinalEm === null) return { motivo: 'cedo', valor: null, chave: [] };
+        if (!numero(corpo.reacaoMs)) return invalido;
+        if (corpo.reacaoMs < REACAO_MINIMA) return { motivo: 'cedo', valor: null, chave: [] };
+        // a reação não fica muito abaixo do que o servidor viu passar desde o sinal
+        const reacao = Math.round(Math.max(corpo.reacaoMs, agoraMs - sinalEm - FOLGA_SAQUE));
+        return { motivo: null, valor: reacao, chave: [reacao] };
+      }
+      case 'forca': {
+        const t = corpo.t;
+        // o tempo dito tem de ser o de agora (com a folga da rede): não vale calcular o perfeito e mandar depois
+        if (!numero(t) || t < 0 || t > FORCA_MS || t > passou + FOLGA_MS || t < passou - FOLGA_SAQUE) return invalido;
+        const v = Math.round(valorDaForca((dados as DadosForca).periodoMs, t) * 10) / 10;
+        return { motivo: null, valor: v, chave: [100 - v] };
+      }
+      case 'relogio': {
+        const t = corpo.t;
+        if (!numero(t) || t < 0 || t > RELOGIO_MS || t > passou + FOLGA_MS || t < passou - FOLGA_SAQUE) return invalido;
+        const ms = Math.round(t);
+        return { motivo: null, valor: ms, chave: [Math.abs(ms - RELOGIO_ALVO)] };
+      }
+      case 'copos': {
+        const d = dados as DadosCopos;
+        const anim = animacaoDosCopos(d);
+        if (!numero(corpo.copo) || !numero(corpo.ms) || corpo.ms < 0) return invalido;
+        // não se escolhe antes de os copos pararem
+        if (passou < anim - FOLGA_MS) return invalido;
+        if (corpo.copo !== copoFinal(d)) return { motivo: 'errou', valor: null, chave: [] };
+        const ms = Math.round(Math.max(corpo.ms, REACAO_MINIMA, passou - anim - FOLGA_SAQUE));
+        return { motivo: null, valor: ms, chave: [ms] };
+      }
+      case 'siga': {
+        const setas = (dados as DadosSiga).setas;
+        const n = corpo.acertos;
+        const digitadas = corpo.setas;
+        if (!numero(n) || !Number.isInteger(n) || n < 0 || n > setas.length || !Array.isArray(digitadas)) return invalido;
+        if (digitadas.length < n || digitadas.length > n + 1) return invalido;
+        // a última sequência completa bate com a do servidor
+        for (let i = 0; i < n; i++) if (digitadas[i] !== setas[i]) return invalido;
+        // e houve tempo de ver todas as sequências até ela
+        if (passou + FOLGA_MS < minimoDaSiga(n)) return invalido;
+        if (n === 0) return { motivo: 'errou', valor: 0, chave: [] };
+        // o tempo não fica abaixo do mínimo de ver as setas, nem muito abaixo do que o servidor viu passar
+        const minimo = Math.max(minimoDaSiga(n), passou - FOLGA_SAQUE);
+        const ms = numero(corpo.ms) ? Math.round(Math.min(Math.max(corpo.ms, minimo), passou + FOLGA_MS)) : passou;
+        return { motivo: null, valor: n, chave: [-n, ms] };
+      }
+      case 'alvo': {
+        // o que vale é o que o servidor viu acertar, um a um (acao 'acerto')
+        const n = acertosDoAlvo.get(quem)?.size ?? 0;
+        if (n === 0) return { motivo: 'errou', valor: 0, chave: [] };
+        return { motivo: null, valor: n, chave: [-n] };
+      }
+    }
+  };
+
+  // o "prepare-se": o nome e a instrução na tela
+  ctx.agendar(PREPARO_MS, jogar);
+  ctx.avisar();
+
+  return {
+    microjogo: m,
+    publico(quem) {
+      const meu = resultados.get(quem);
+      return {
+        fase,
+        microjogo: m,
+        dados,
+        duracaoMs: duracaoDe(m, dados),
+        sinal: sinalEm !== null,
+        meu: meu ? { motivo: meu.motivo, valor: meu.valor } : null,
+        prontos: [...resultados.keys()],
+        // a resposta certa dos copos só na revelação (as trocas, todo mundo vê)
+        resposta: fase === 'revelando' && m === 'copos' ? copoFinal(dados as DadosCopos) : null,
+        linhas: fase === 'revelando' ? linhas : null,
+      };
+    },
+    acao(quem, corpo) {
+      if (corpo.tipo !== 'resultado' && corpo.tipo !== 'acerto') return 'Ação desconhecida.';
+      if (!inscritos.includes(quem)) return 'Você está assistindo esta partida.';
+      if (fase !== 'jogando') return 'Esta rodada já acabou.';
+      if (corpo.tipo === 'acerto') {
+        // TIRO AO ALVO: um acerto vale se o alvo estava na tela AGORA (no relógio do servidor, com a folga da rede)
+        if (m !== 'alvo' || resultados.has(quem)) return null;
+        const alvos = (dados as DadosAlvo).alvos;
+        const i = corpo.i;
+        if (!numero(i) || !Number.isInteger(i) || i < 0 || i >= alvos.length) return null;
+        const passou = agora() - inicio;
+        if (passou < alvos[i].t - FOLGA_MS || passou > alvos[i].t + ALVO_VIDA_MS + FOLGA_SAQUE) return null;
+        const meus = acertosDoAlvo.get(quem) ?? new Set<number>();
+        meus.add(i);
+        acertosDoAlvo.set(quem, meus);
+        return null;
+      }
+      // o primeiro resultado é o que vale (o Enter apertado duas vezes não troca nada)
+      if (resultados.has(quem)) return null;
+      resultados.set(quem, avaliar(quem, corpo));
+      if (todosResponderam()) revelar();
+      else ctx.avisar();
+      return null;
+    },
+    conferir() {
+      if (fase === 'jogando' && todosResponderam()) revelar();
+    },
+  };
 }
 
 export const festa: Definicao = criarFesta();
@@ -197,90 +419,34 @@ export function criarFesta({ agora = Date.now, aleatorio = Math.random, ordem: o
       const evento = `festa-${ctx.comunidade ?? 0}-${agora()}`;
       const pontos = new Map<number, number>(inscritos.map((id) => [id, 0]));
       let rodada = 1;
-      let fase: 'preparando' | 'jogando' | 'revelando' | 'fim' = 'preparando';
-      let dados: Dados = {};
-      let inicio = 0;
-      /** O saque: quando o sinal saiu (relógio do servidor), ou null. */
-      let sinalEm: number | null = null;
-      const resultados = new Map<number, Resultado>();
-      /** Tiro ao alvo: cada acerto chega na hora, e o servidor confere no relógio dele (revisão de 03/11/2026: a lista inteira
-       * mandada no fim deixava o console acertar todos). */
-      const acertosDoAlvo = new Map<number, Set<number>>();
+      let terminada = false;
       /** Quem estava na sala em TODAS as revelações: só eles são "a turma" do pódio (revisão de 03/11/2026: quem ficava
        * sozinho ganhava o troféu, e quem tinha saído também). */
       let ficaram: Set<number> | null = null;
-      let linhas: LinhaDaRodada[] | null = null;
-      const micro = () => ordem[rodada - 1];
 
-      const preparar = () => {
-        fase = 'preparando';
-        dados = gerarDados(micro(), aleatorio);
-        resultados.clear();
-        acertosDoAlvo.clear();
-        linhas = null;
-        sinalEm = null;
-        ctx.agendar(PREPARO_MS, jogar);
-        ctx.avisar();
-      };
-
-      const jogar = () => {
-        fase = 'jogando';
-        inicio = agora();
-        if (micro() === 'saque') {
-          const espera = SAQUE_ESPERA_MIN + Math.floor(aleatorio() * (SAQUE_ESPERA_MAX - SAQUE_ESPERA_MIN));
-          ctx.agendar(espera, () => {
-            sinalEm = agora();
-            ctx.agendar(SAQUE_DEPOIS_MS, revelar);
-            ctx.avisar();
-          });
-        } else {
-          ctx.agendar(duracaoDe(micro(), dados), revelar);
-        }
-        ctx.avisar();
-      };
-
-      const revelar = () => {
-        if (fase !== 'jogando') return;
-        const presentes = new Set(ctx.naSala());
-        const agoraNaSala = inscritos.filter((id) => presentes.has(id));
-        ficaram = new Set((ficaram ? [...ficaram] : inscritos).filter((id) => agoraNaSala.includes(id)));
-        // no alvo, quem acertou alguma e não chegou a mandar o fim conta pelo que o servidor viu
-        if (micro() === 'alvo') {
-          for (const [userId, acertos] of acertosDoAlvo) {
-            if (!resultados.has(userId) && acertos.size) resultados.set(userId, { motivo: null, valor: acertos.size, chave: [-acertos.size] });
-          }
-        }
-        const validos = [...resultados.entries()].filter(([, r]) => r.motivo === null);
-        const menor = (a: number[], b: number[]) => {
-          for (let i = 0; i < Math.max(a.length, b.length); i++) if ((a[i] ?? 0) !== (b[i] ?? 0)) return (a[i] ?? 0) - (b[i] ?? 0);
-          return 0;
-        };
-        validos.sort(([, a], [, b]) => menor(a.chave, b.chave));
-        const nova: LinhaDaRodada[] = validos.map(([userId, r]) => {
-          // empatados dividem a posição (e os pontos dela)
-          const posicao = 1 + validos.filter(([, o]) => menor(o.chave, r.chave) < 0).length;
-          const p = PONTOS_FESTA[posicao - 1] ?? 0;
-          pontos.set(userId, (pontos.get(userId) ?? 0) + p);
-          return { userId, username: ctx.nome(userId), valor: r.valor, motivo: null, posicao, pontos: p };
+      const nova = (): RodadaDeFesta =>
+        rodadaDeFesta({
+          ctx,
+          microjogo: ordem[rodada - 1],
+          inscritos,
+          agora,
+          aleatorio,
+          pontos: PONTOS_FESTA,
+          aoRevelar: (linhas, presentes) => {
+            const agoraNaSala = inscritos.filter((id) => presentes.has(id));
+            ficaram = new Set((ficaram ? [...ficaram] : inscritos).filter((id) => agoraNaSala.includes(id)));
+            for (const l of linhas) if (l.pontos) pontos.set(l.userId, (pontos.get(l.userId) ?? 0) + l.pontos);
+          },
+          aoAcabar: () => {
+            if (rodada >= ordem.length) return terminar();
+            rodada++;
+            atual = nova();
+          },
         });
-        for (const [userId, r] of resultados) {
-          if (r.motivo !== null) nova.push({ userId, username: ctx.nome(userId), valor: r.valor, motivo: r.motivo, posicao: null, pontos: 0 });
-        }
-        for (const userId of inscritos) {
-          if (!resultados.has(userId) && presentes.has(userId)) nova.push({ userId, username: ctx.nome(userId), valor: null, motivo: 'nada', posicao: null, pontos: 0 });
-        }
-        linhas = nova;
-        fase = 'revelando';
-        ctx.agendar(REVELACAO_MS, () => {
-          if (rodada >= ordem.length) return terminar();
-          rodada++;
-          preparar();
-        });
-        ctx.avisar();
-      };
+      let atual = nova();
 
       const terminar = () => {
-        fase = 'fim';
+        terminada = true;
         // O PÓDIO, com 2 pessoas ou mais que ficaram até o fim: até o 3º lugar (empatados dividem), e só quem fez algum ponto.
         const turma = ficaram ?? new Set<number>();
         if (turma.size >= 2) {
@@ -303,101 +469,17 @@ export function criarFesta({ agora = Date.now, aleatorio = Math.random, ordem: o
         ctx.terminar();
       };
 
-      const todosResponderam = () => {
-        const presentes = ctx.naSala().filter((id) => inscritos.includes(id));
-        return presentes.every((id) => resultados.has(id));
-      };
-
-      const conferir = () => {
-        if (fase === 'jogando' && todosResponderam()) revelar();
-      };
-
-      preparar();
-
-      const numero = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
-
-      /** Confere o resultado mandado e o transforma no que conta. */
-      let quemAvalia = 0;
-      const avaliar = (corpo: Record<string, unknown>): Resultado => {
-        const agoraMs = agora();
-        const passou = agoraMs - inicio;
-        const invalido: Resultado = { motivo: 'invalido', valor: null, chave: [] };
-        switch (micro()) {
-          case 'saque': {
-            if (corpo.cedo === true || sinalEm === null) return { motivo: 'cedo', valor: null, chave: [] };
-            if (!numero(corpo.reacaoMs)) return invalido;
-            if (corpo.reacaoMs < REACAO_MINIMA) return { motivo: 'cedo', valor: null, chave: [] };
-            // a reação não fica muito abaixo do que o servidor viu passar desde o sinal
-            const reacao = Math.round(Math.max(corpo.reacaoMs, agoraMs - sinalEm - FOLGA_SAQUE));
-            return { motivo: null, valor: reacao, chave: [reacao] };
-          }
-          case 'forca': {
-            const t = corpo.t;
-            // o tempo dito tem de ser o de agora (com a folga da rede): não vale calcular o perfeito e mandar depois
-            if (!numero(t) || t < 0 || t > FORCA_MS || t > passou + FOLGA_MS || t < passou - FOLGA_SAQUE) return invalido;
-            const v = Math.round(valorDaForca((dados as DadosForca).periodoMs, t) * 10) / 10;
-            return { motivo: null, valor: v, chave: [100 - v] };
-          }
-          case 'relogio': {
-            const t = corpo.t;
-            if (!numero(t) || t < 0 || t > RELOGIO_MS || t > passou + FOLGA_MS || t < passou - FOLGA_SAQUE) return invalido;
-            const ms = Math.round(t);
-            return { motivo: null, valor: ms, chave: [Math.abs(ms - RELOGIO_ALVO)] };
-          }
-          case 'copos': {
-            const d = dados as DadosCopos;
-            const anim = animacaoDosCopos(d);
-            if (!numero(corpo.copo) || !numero(corpo.ms) || corpo.ms < 0) return invalido;
-            // não se escolhe antes de os copos pararem
-            if (passou < anim - FOLGA_MS) return invalido;
-            if (corpo.copo !== copoFinal(d)) return { motivo: 'errou', valor: null, chave: [] };
-            const ms = Math.round(Math.max(corpo.ms, REACAO_MINIMA, passou - anim - FOLGA_SAQUE));
-            return { motivo: null, valor: ms, chave: [ms] };
-          }
-          case 'siga': {
-            const setas = (dados as DadosSiga).setas;
-            const n = corpo.acertos;
-            const digitadas = corpo.setas;
-            if (!numero(n) || !Number.isInteger(n) || n < 0 || n > setas.length || !Array.isArray(digitadas)) return invalido;
-            if (digitadas.length < n || digitadas.length > n + 1) return invalido;
-            // a última sequência completa bate com a do servidor
-            for (let i = 0; i < n; i++) if (digitadas[i] !== setas[i]) return invalido;
-            // e houve tempo de ver todas as sequências até ela
-            if (passou + FOLGA_MS < minimoDaSiga(n)) return invalido;
-            if (n === 0) return { motivo: 'errou', valor: 0, chave: [] };
-            // o tempo não fica abaixo do mínimo de ver as setas, nem muito abaixo do que o servidor viu passar
-            const minimo = Math.max(minimoDaSiga(n), passou - FOLGA_SAQUE);
-            const ms = numero(corpo.ms) ? Math.round(Math.min(Math.max(corpo.ms, minimo), passou + FOLGA_MS)) : passou;
-            return { motivo: null, valor: n, chave: [-n, ms] };
-          }
-          case 'alvo': {
-            // o que vale é o que o servidor viu acertar, um a um (acao 'acerto')
-            const n = acertosDoAlvo.get(quemAvalia)?.size ?? 0;
-            if (n === 0) return { motivo: 'errou', valor: 0, chave: [] };
-            return { motivo: null, valor: n, chave: [-n] };
-          }
-        }
-      };
-
       return {
         publico(quem) {
-          const m = micro();
-          const meu = resultados.get(quem);
-          // a resposta certa dos copos só na revelação (as trocas, todo mundo vê)
-          const resposta = fase === 'revelando' && m === 'copos' ? copoFinal(dados as DadosCopos) : null;
+          const r = atual.publico(quem);
           return {
-            fase,
+            ...r,
+            fase: terminada ? 'fim' : r.fase,
             rodada,
             rodadas: ordem.length,
-            microjogo: m,
-            dados: fase === 'fim' ? null : dados,
-            duracaoMs: duracaoDe(m, dados),
-            sinal: sinalEm !== null,
-            meu: meu ? { motivo: meu.motivo, valor: meu.valor } : null,
-            prontos: [...resultados.keys()],
+            dados: terminada ? null : r.dados,
             jogadores: inscritos.map((userId) => ({ userId, username: ctx.nome(userId) })),
-            resposta,
-            linhas: fase === 'revelando' || fase === 'fim' ? linhas : null,
+            resposta: terminada ? null : r.resposta,
             placar: placar(pontos, ctx.nome),
             // a partida (o site monta a tela de novo a cada uma: o "Jogar de novo" do Solo não herda a rodada 5 da anterior)
             partidaId: evento,
@@ -406,29 +488,12 @@ export function criarFesta({ agora = Date.now, aleatorio = Math.random, ordem: o
         acao(quem, corpo) {
           if (corpo.tipo !== 'resultado' && corpo.tipo !== 'acerto') return 'Ação desconhecida.';
           if (!inscritos.includes(quem)) return 'Você está assistindo esta partida.';
-          if (fase !== 'jogando') return 'Esta rodada já acabou.';
-          if (corpo.tipo === 'acerto') {
-            // TIRO AO ALVO: um acerto vale se o alvo estava na tela AGORA (no relógio do servidor, com a folga da rede)
-            if (micro() !== 'alvo' || resultados.has(quem)) return null;
-            const alvos = (dados as DadosAlvo).alvos;
-            const i = corpo.i;
-            if (!numero(i) || !Number.isInteger(i) || i < 0 || i >= alvos.length) return null;
-            const passou = agora() - inicio;
-            if (passou < alvos[i].t - FOLGA_MS || passou > alvos[i].t + ALVO_VIDA_MS + FOLGA_SAQUE) return null;
-            const meus = acertosDoAlvo.get(quem) ?? new Set<number>();
-            meus.add(i);
-            acertosDoAlvo.set(quem, meus);
-            return null;
-          }
-          // o primeiro resultado é o que vale (o Enter apertado duas vezes não troca nada)
-          if (resultados.has(quem)) return null;
-          quemAvalia = quem;
-          resultados.set(quem, avaliar(corpo));
-          if (todosResponderam()) revelar();
-          else ctx.avisar();
-          return null;
+          if (terminada) return 'Esta rodada já acabou.';
+          return atual.acao(quem, corpo);
         },
-        conferir,
+        conferir() {
+          if (!terminada) atual.conferir();
+        },
       };
     },
   };

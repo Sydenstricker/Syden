@@ -509,6 +509,17 @@ tela, mas nunca abaixo de 100 ms nem muito abaixo do que o servidor viu passar).
 de troféus do quarto (`pista: 'festa'`). Microjogo novo é uma entrada nos dois lados; a estante de troféus serve a qualquer
 jogo da sala. Testes: `server/test/minijogos-festa.test.ts` e `e2e/festa.mjs` (com o LiveKit).
 
+**O TABULEIRO DA TURMA está feito (03/11/2026, o item 5):** `server/src/minijogo-tabuleiro-da-turma.ts`, `web/src/JogoTabuleiro.tsx`,
+só no Coletivo (2 a 8). Uma volta de 30 casas em volta de uma horta, desenhada por código; 5, 10 ou 15 rodadas. Na vez, cada
+um pede o dado (QUEM SORTEIA É O SERVIDOR), a peça anda na tela casa a casa, e a casa age: +3 cenouras, −3, ou um evento
+(chuva na horta, trocar de lugar, cenouras escondidas). Passar pela cenoura dourada com 20 cenouras deixa comprá-la, e ela muda
+de casa. Depois que todos andaram, a turma joga um microjogo da Festa, que é a MESMA rodada (`rodadaDeFesta` em
+`minijogo-festa.ts`, `RodadaDaFesta` em `JogoFesta.tsx`, com a mesma conferência), e a posição dá 10, 6, 4 e 2 cenouras.
+Ganha quem tem mais douradas, depois mais cenouras. Ninguém segura a turma: a vez tem 20 s (o dado sai sozinho; na loja,
+compra), quem saiu da sala é pulado, e com menos de 2 a partida acaba sem troféu. O pódio de quem ficou até o fim vai para a
+estante do quarto (`pista: 'tabuleiro'`, os pontos são as douradas). Sem bifurcação no caminho, por enquanto. Testes:
+`server/test/minijogos-tabuleiro-da-turma.test.ts` e `e2e/tabuleiro.mjs` (escrito, NÃO rodado).
+
 **A sondagem de jogos dele (12/10/2026), avaliada:** os campeões de receita (Coin Master, Candy Crush, Sheep a Sheep)
 são solo e se pagam com anúncio, vidas e roleta. **Decisão dele: clonar só a MECÂNICA DE JOGO** (empilhar e combinar
 peças, parafusos, setas, combinar três) — nunca a de cassino nem a de "volte todo dia". Integração, nenhuma. Party game de ação (Mario Party, Overcooked) tem aderência

@@ -14,6 +14,7 @@ import { CATEGORIAS_DO_QUIZ, ehQuiz, type EstadoQuiz } from './quiz';
 import { EscolhaDaPista, JogoCorrida, JogoCorridaNaSala, type EstadoCorrida } from './JogoCorrida';
 import { JogoStop } from './JogoStop';
 import { JogoSudoku } from './JogoSudoku';
+import { EscolhaDasRodadas, JogoTabuleiro } from './JogoTabuleiro';
 import { EscolhaDeCategoria, JogoTamanho } from './JogoTamanho';
 import { JogoXadrez } from './JogoXadrez';
 import {
@@ -30,6 +31,7 @@ import {
   type EstadoPalavra,
   type EstadoStop,
   type EstadoSudoku,
+  type EstadoTabuleiro,
   type EstadoTamanho,
   type EstadoXadrez,
   type GrupoDoJogo,
@@ -174,7 +176,7 @@ export function PainelDoMinijogo({
   const restante = partida ? Math.max(0, partida.restanteMs - (agora - partida.recebidaEm)) : 0;
   const naEspera = Boolean(partida?.convite);
   const rodada =
-    partida && !naEspera && (partida.jogo === 'tamanho' || partida.jogo === 'stop' || partida.jogo === 'xadrez' || partida.jogo === 'palavra' || partida.jogo === 'festa' || ehQuiz(partida.jogo)) && !partida.terminada
+    partida && !naEspera && (partida.jogo === 'tamanho' || partida.jogo === 'stop' || partida.jogo === 'xadrez' || partida.jogo === 'palavra' || partida.jogo === 'festa' || partida.jogo === 'tabuleiro' || ehQuiz(partida.jogo)) && !partida.terminada
       ? (partida as unknown as EstadoTamanho)
       : null;
   // Quem não aceitou o convite vê a partida, mas não mexe nela (a mesa cuida de quem senta).
@@ -222,6 +224,12 @@ export function PainelDoMinijogo({
           aoVoltar={() => setEscolhendo(null)}
         />
       )}
+      {!partida && escolhendo === 'tabuleiro' && (
+        <EscolhaDasRodadas
+          aoEscolher={(rodadas) => tentar(() => aoComecar('tabuleiro', { rodadas }, false).then(() => setEscolhendo(null)))}
+          aoVoltar={() => setEscolhendo(null)}
+        />
+      )}
       {!partida && escolhendo === 'tamanho' && (
         <EscolhaDeCategoria
           aoEscolher={(categoria) => tentar(() => aoComecar('tamanho', { categoria }, aba === 'solo').then(() => setEscolhendoCategoria(false)))}
@@ -242,7 +250,7 @@ export function PainelDoMinijogo({
                     ? aba === 'solo'
                       ? setCorrendo(true)
                       : setEscolhendo('corrida')
-                    : pedeCategoria(jogo.id)
+                    : jogo.id === 'tabuleiro' || pedeCategoria(jogo.id)
                       ? setEscolhendo(jogo.id)
                       : tentar(() => aoComecar(jogo.id, {}, aba === 'solo'))
                 }
@@ -310,6 +318,11 @@ export function PainelDoMinijogo({
           key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
           estado={jogoNaTela as unknown as EstadoFesta & Partida} eu={eu} jogador={souJogador(partida)} restante={restante} agir={agir} />
       )}
+      {jogoNaTela?.jogo === 'tabuleiro' && (
+        <JogoTabuleiro
+          key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
+          estado={jogoNaTela as unknown as EstadoTabuleiro & Partida} eu={eu} jogador={souJogador(partida)} restante={restante} agir={agir} />
+      )}
       {jogoNaTela?.jogo === 'lobisomem' && <JogoLobisomem estado={jogoNaTela as unknown as EstadoLobisomem & Partida} eu={eu} restante={restante} agir={agir} />}
       {(jogoNaTela?.jogo === 'gomoku' || jogoNaTela?.jogo === 'mancala') && (
         <JogoDuelo jogo={jogoNaTela.jogo} estado={jogoNaTela as unknown as EstadoDuelo & Partida} eu={eu} restante={restante} agir={agir} />
@@ -321,7 +334,15 @@ export function PainelDoMinijogo({
           <button
             type="button"
             className="btn-primary"
-            onClick={() => tentar(() => aoComecar(partida.jogo, partida.categoria ? { categoria: partida.categoria } : {}, partida.solo === true))}
+            onClick={() =>
+              tentar(() =>
+                aoComecar(
+                  partida.jogo,
+                  partida.categoria ? { categoria: partida.categoria } : partida.jogo === 'tabuleiro' ? { rodadas: partida.rodadas } : {},
+                  partida.solo === true,
+                ),
+              )
+            }
           >
             {t('Jogar de novo')}
           </button>
