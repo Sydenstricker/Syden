@@ -2338,7 +2338,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Κούρσα καρτ. Ατομικά, με το χρονόμετρο και τα φαντάσματα των φίλων σου· με την παρέα, ζωντανά, με αντικείμενα και το Κύπελλο του Καρότου.',
   'Pomar': 'Οπωρώνας',
   'Copa da Cenoura': 'Κύπελλο του Καρότου',
-  'As três pistas seguidas, com pontos por posição.': 'Οι τρεις πίστες στη σειρά, με βαθμούς ανάλογα με τη θέση.',
   'contra {nomes}': 'εναντίον {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Κανένα τρόπαιο ακόμα. Τερμάτισε στο βάθρο σε μια κούρσα στο δωμάτιο, με την παρέα.',
   'Usar o item': 'Χρήση αντικειμένου',
@@ -2346,4 +2345,7 @@ export default {
   'Copa da turma': 'Το κύπελλο της παρέας',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Κύπελλα του Καρότου που η παρέα έτρεξε ως το τέλος, στην Κούρσα κουνελιών.',
   'Do pódio da Corrida dos coelhos': 'Από το βάθρο της Κούρσας κουνελιών',
+  'Bosque': 'Δάσος',
+  'Cânion': 'Φαράγγι',
+  'Copa do Repolho': 'Κύπελλο του Λάχανου',
 } satisfies Record<string, string>;

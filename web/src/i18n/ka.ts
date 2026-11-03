@@ -2420,7 +2420,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'კარტინგის რბოლა. მარტო — დროზე და მეგობრების მოჩვენებებთან; ჯგუფთან ერთად — პირდაპირ, ნივთებით და სტაფილოს თასით.',
   'Pomar': 'ხეხილის ბაღი',
   'Copa da Cenoura': 'სტაფილოს თასი',
-  'As três pistas seguidas, com pontos por posição.': 'სამი ტრასა ზედიზედ, ქულებით ადგილის მიხედვით.',
   'contra {nomes}': 'მეტოქეები: {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'თასები ჯერ არ არის. ოთახში, ჯგუფთან ერთად რბოლაში პოდიუმზე ადი.',
   'Usar o item': 'ნივთის გამოყენება',
@@ -2428,4 +2427,7 @@ export default {
   'Copa da turma': 'ჯგუფის თასი',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'სტაფილოს თასები, რომლებიც ჯგუფმა ბოლომდე გაიარა კურდღლების რბოლაში.',
   'Do pódio da Corrida dos coelhos': 'კურდღლების რბოლის პოდიუმიდან',
+  'Bosque': 'ტყე',
+  'Cânion': 'კანიონი',
+  'Copa do Repolho': 'კომბოსტოს თასი',
 } satisfies Record<string, string>;

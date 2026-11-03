@@ -26,7 +26,12 @@ import type { Definicao } from './minijogo-motor.js';
 
 const VOLTAS = 3;
 export const COPA = 'copa-da-cenoura';
-export const PISTAS_DA_COPA = ['horta-1', 'pomar-1', 'praia-1'];
+/** As copas: três pistas seguidas (o site tem a mesma lista: web/src/corrida/pista.ts, COPAS). */
+export const COPAS: Record<string, string[]> = {
+  [COPA]: ['horta-1', 'pomar-1', 'praia-1'],
+  'copa-do-repolho': ['bosque-1', 'neve-1', 'canion-1'],
+};
+export const PISTAS_DA_COPA = COPAS[COPA];
 /** A contagem da largada: 3 s de semáforo, mais 1 s para todo mundo abrir a tela. */
 export const LARGADA_MS = 4000;
 /** Quanto os outros têm depois da primeira chegada. */
@@ -75,8 +80,8 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
     comecar(ctx, { naSala, corpo }) {
       // a pista (ou a copa); "categoria" é o nome que o "Jogar de novo" do painel manda de volta
       const pedida = typeof corpo.pista === 'string' ? corpo.pista : typeof corpo.categoria === 'string' ? corpo.categoria : 'horta-1';
-      const copa = pedida === COPA;
-      const corridas = copa ? PISTAS_DA_COPA : [PISTAS[pedida] ? pedida : 'horta-1'];
+      const copa = COPAS[pedida] !== undefined;
+      const corridas = copa ? COPAS[pedida] : [PISTAS[pedida] ? pedida : 'horta-1'];
       const evento = `${ctx.comunidade ?? 0}-${agora()}`;
       let indice = 0;
       let fase: 'largada' | 'correndo' | 'intervalo' | 'fim' = 'largada';
@@ -84,6 +89,8 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
       let prazoAberto = false;
       /** Quem começou a partida: só eles correm (a copa inteira), e quem sai da sala fica sem pontos dali em diante. */
       const inscritos = [...naSala];
+      /** O coelho de cada um (o avatar pronto), lido uma vez: cada kart corre com as cores do seu. */
+      const avatares = new Map(inscritos.map((id) => [id, db.findUserById(id)?.avatarPronto ?? null]));
       let pilotos = new Map<number, Piloto>();
       /** Os itens desta corrida que o servidor carimbou, e os que já acertaram alguém: "acertou" só vale para um item de
        * verdade, uma vez (revisão de 03/11/2026: um "acertou" inventado sumia com o item dos outros). */
@@ -192,7 +199,7 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
         // o fim da copa: o pódio pelos pontos, e a copa da turma
         const turma = correramTodas ?? new Set<number>();
         const placar = placarDaCopa().filter((l) => turma.has(l.userId));
-        darTrofeus(COPA, placar.map((l) => ({ userId: l.userId, tempoMs: l.soma, pontos: l.pontos, chegou: l.pontos > 0 })));
+        darTrofeus(pedida, placar.map((l) => ({ userId: l.userId, tempoMs: l.soma, pontos: l.pontos, chegou: l.pontos > 0 })));
         if (turma.size >= 2) db.registrarCopa(ctx.comunidade ?? 0, turma.size);
         fase = 'fim';
         ctx.terminar();
@@ -212,14 +219,14 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
       return {
         publico: () => ({
           fase,
-          categoria: copa ? COPA : corridas[0],
+          categoria: copa ? pedida : corridas[0],
           pista: corridas[indice],
           copa,
           corrida: indice + 1,
           corridas: corridas.length,
           voltasDaCorrida: VOLTAS,
           itens: true,
-          pilotos: classificacao().map(({ userId, username, tempoMs, voltas }) => ({ userId, username, tempoMs, voltas })),
+          pilotos: classificacao().map(({ userId, username, tempoMs, voltas }) => ({ userId, username, tempoMs, voltas, avatar: avatares.get(userId) ?? null })),
           placarDaCopa: copa ? placarDaCopa().map(({ userId, username, pontos: p }) => ({ userId, username, pontos: p })) : null,
           ultima: resultados.length ? resultados[resultados.length - 1].pilotos.map(({ userId, username, tempoMs }) => ({ userId, username, tempoMs })) : null,
           prazo: prazoAberto,

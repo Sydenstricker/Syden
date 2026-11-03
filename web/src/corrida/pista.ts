@@ -16,7 +16,7 @@ export const MUNDO = 1024;
 export const RES = 2048;
 const K = RES / MUNDO;
 
-export const Chao = { Asfalto: 0, Zebra: 1, Grama: 2, Turbo: 3, Parede: 4, Terra: 5 } as const;
+export const Chao = { Asfalto: 0, Zebra: 1, Grama: 2, Turbo: 3, Parede: 4, Terra: 5, Gelo: 6 } as const;
 export type Chao = (typeof Chao)[keyof typeof Chao];
 
 export interface DefinicaoDaPista {
@@ -33,6 +33,8 @@ export interface DefinicaoDaPista {
   semente: number;
   /** As caixas de item (só na corrida da sala): uma fileira atravessando a pista em cada fração da volta. */
   caixas: number[];
+  /** As placas de gelo no asfalto (a Neve): [começo, fim] em fração da volta. O kart escorrega nelas. */
+  gelos?: [number, number][];
   tema: Tema;
 }
 
@@ -45,7 +47,9 @@ export interface Tema {
   /** Fora do asfalto é areia (segura como a grama), e não grama. */
   areia: boolean;
   /** A árvore desta pista (o desenho, em render.ts). */
-  arvore: 'arvore' | 'laranjeira' | 'coqueiro';
+  arvore: 'arvore' | 'laranjeira' | 'coqueiro' | 'pinheiro' | 'pinheiro-neve' | 'cacto';
+  /** O asfalto desta pista, se não for o de sempre (três tons). */
+  asfalto?: [number, number, number];
   /** Os canteiros de cenoura entre as árvores. */
   canteiros: boolean;
   ceu: { topo: [number, number, number]; meio: [number, number, number]; baixo: [number, number, number] };
@@ -133,16 +137,100 @@ export const PRAIA: DefinicaoDaPista = {
   },
 };
 
-/** As pistas, na ordem da copa. */
-export const PISTAS = [HORTA, POMAR, PRAIA];
+/** O BOSQUE (03/11/2026): pinheiros fechando a pista, mais estreita, e muitas curvas. */
+export const BOSQUE: DefinicaoDaPista = {
+  id: 'bosque-1',
+  pontos: [
+    [200, 200], [420, 140], [640, 220], [800, 140], [900, 300], [780, 420], [880, 560], [820, 760], [640, 860],
+    [520, 700], [380, 840], [200, 780], [260, 600], [140, 460],
+  ],
+  meiaLargura: 26,
+  voltas: 3,
+  turbos: [[0.24, 0.26], [0.66, 0.68]],
+  lagos: [[560, 470, 60]],
+  semente: 45,
+  caixas: [0.35, 0.78],
+  tema: {
+    grama: [rgb(70, 112, 62), rgb(64, 104, 58)],
+    gramaPonto: rgb(104, 140, 70),
+    gramaEscura: rgb(52, 84, 48),
+    cerca: [rgb(40, 66, 42), rgb(34, 56, 36)],
+    areia: false,
+    arvore: 'pinheiro',
+    canteiros: false,
+    ceu: { topo: [70, 84, 130], meio: [190, 130, 120], baixo: [214, 168, 140] },
+    morros: [[120, 110, 130], [104, 96, 118], [52, 86, 60], [44, 74, 52]],
+  },
+};
+
+/** A NEVE (03/11/2026): neve fora do asfalto e PLACAS DE GELO na pista, onde o kart escorrega. */
+export const NEVE: DefinicaoDaPista = {
+  id: 'neve-1',
+  pontos: [
+    [260, 160], [560, 130], [820, 180], [880, 400], [700, 500], [520, 420], [400, 520], [560, 640], [820, 660],
+    [860, 860], [560, 900], [260, 860], [140, 640], [200, 400],
+  ],
+  meiaLargura: 32,
+  voltas: 3,
+  turbos: [[0.12, 0.14], [0.58, 0.6]],
+  lagos: [[300, 300, 50]],
+  semente: 57,
+  caixas: [0.3, 0.74],
+  gelos: [[0.36, 0.42], [0.8, 0.86]],
+  tema: {
+    grama: [rgb(232, 236, 244), rgb(222, 228, 238)],
+    gramaPonto: rgb(250, 252, 255),
+    gramaEscura: rgb(196, 204, 220),
+    cerca: [rgb(110, 122, 150), rgb(96, 108, 136)],
+    areia: true,
+    arvore: 'pinheiro-neve',
+    canteiros: false,
+    asfalto: [rgb(110, 112, 128), rgb(116, 118, 134), rgb(104, 106, 122)],
+    ceu: { topo: [120, 150, 200], meio: [200, 210, 232], baixo: [236, 238, 246] },
+    morros: [[214, 220, 236], [190, 198, 220], [150, 164, 190], [132, 146, 174]],
+  },
+};
+
+/** O CÂNION (03/11/2026): a rocha vermelha, cactos, e a areia do deserto fora do asfalto. */
+export const CANION: DefinicaoDaPista = {
+  id: 'canion-1',
+  pontos: [
+    [220, 180], [480, 220], [640, 140], [860, 200], [880, 420], [700, 380], [600, 520], [760, 640], [860, 820],
+    [620, 900], [420, 800], [260, 880], [140, 700], [240, 520], [140, 340],
+  ],
+  meiaLargura: 30,
+  voltas: 3,
+  turbos: [[0.2, 0.22], [0.7, 0.72]],
+  lagos: [[420, 520, 60]],
+  semente: 69,
+  caixas: [0.33, 0.76],
+  tema: {
+    grama: [rgb(214, 150, 96), rgb(204, 140, 88)],
+    gramaPonto: rgb(232, 178, 120),
+    gramaEscura: rgb(170, 108, 70),
+    cerca: [rgb(140, 70, 50), rgb(122, 60, 44)],
+    areia: true,
+    arvore: 'cacto',
+    canteiros: false,
+    ceu: { topo: [100, 140, 200], meio: [236, 180, 130], baixo: [246, 210, 160] },
+    morros: [[200, 120, 90], [176, 100, 76], [150, 80, 60], [130, 68, 52]],
+  },
+};
+
+/** As pistas, na ordem das copas. */
+export const PISTAS = [HORTA, POMAR, PRAIA, BOSQUE, NEVE, CANION];
 export const pistaPorId = (id: string) => PISTAS.find((p) => p.id === id) ?? HORTA;
-/** A Copa da Cenoura: as três, seguidas. */
+/** As copas: três pistas seguidas (o servidor tem a mesma lista: server/src/minijogo-corrida.ts, COPAS). */
 export const COPA = 'copa-da-cenoura';
+export const COPAS: Record<string, string[]> = {
+  [COPA]: ['horta-1', 'pomar-1', 'praia-1'],
+  'copa-do-repolho': ['bosque-1', 'neve-1', 'canion-1'],
+};
 
 export interface Objeto {
   x: number;
   y: number;
-  tipo: 'arvore' | 'laranjeira' | 'coqueiro' | 'cenoura' | 'flor';
+  tipo: Tema['arvore'] | 'cenoura' | 'flor';
   /** Raio sólido (0 = atravessa). */
   raio: number;
 }
@@ -203,6 +291,8 @@ const COR = {
   sulco: rgb(112, 76, 48),
   agua: [rgb(70, 128, 168), rgb(84, 144, 182)],
   aguaBorda: rgb(196, 182, 140),
+  gelo: [rgb(176, 214, 236), rgb(166, 204, 228)],
+  geloRisco: rgb(236, 248, 255),
   turbo: rgb(244, 176, 60),
   turboFundo: rgb(150, 70, 40),
   quadrado: [rgb(30, 26, 32), rgb(236, 230, 216)],
@@ -267,7 +357,7 @@ export function montarPista(def: DefinicaoDaPista = HORTA): Pista {
         cor = T.cerca[(((tx >> 3) + (ty >> 3)) & 1)];
       } else if (d < hw) {
         tipo = Chao.Asfalto;
-        cor = COR.asfalto[r3];
+        cor = (T.asfalto ?? COR.asfalto)[r3];
         // a faixa do meio, tracejada
         if (d < 0.75 && Math.floor(s / 10) % 2 === 0) cor = COR.faixa;
         // a faixa da largada: quadriculada de lado a lado
@@ -275,6 +365,13 @@ export function montarPista(def: DefinicaoDaPista = HORTA): Pista {
           cor = COR.quadrado[(Math.floor(s / 2.5) + Math.floor((x + y) / 2.5)) & 1];
         }
         const f = s / comprimento;
+        // o gelo: a pista inteira de lado a lado, azulado e liso, com os riscos claros
+        for (const [a, b] of def.gelos ?? []) {
+          if (f >= a && f <= b) {
+            tipo = Chao.Gelo;
+            cor = ((tx * 7 + ty * 3) & 31) === 0 ? COR.geloRisco : COR.gelo[((tx >> 3) + (ty >> 4)) & 1];
+          }
+        }
         for (const [a, b] of def.turbos) {
           if (f >= a && f <= b && d < hw * 0.55) {
             tipo = Chao.Turbo;
@@ -301,7 +398,10 @@ export function montarPista(def: DefinicaoDaPista = HORTA): Pista {
   }
 
   // OS LAGOS: água na grama, com a areia em volta, e parede para o kart
+  // (só sobre a grama ou a areia: um lago mal posto não vira parede no meio do asfalto)
   for (const [cx, cy, r] of def.lagos) pintarCirculo(chao, textura, cx, cy, r, (d, tx, ty) => {
+    const k = ty * RES + tx;
+    if (chao[k] !== FORA) return [chao[k] as Chao, textura[k]];
     if (d > r - 3) return [Chao.Terra, COR.aguaBorda];
     return [Chao.Parede, COR.agua[((tx >> 2) + (ty >> 4)) & 1]];
   });

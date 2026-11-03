@@ -2331,7 +2331,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Een kartrace. In je eentje tegen de klok en de geesten van je vrienden; met de groep live, met items en de Wortelcup.',
   'Pomar': 'Boomgaard',
   'Copa da Cenoura': 'Wortelcup',
-  'As três pistas seguidas, com pontos por posição.': 'De drie circuits achter elkaar, met punten per positie.',
   'contra {nomes}': 'tegen {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Nog geen trofeeën. Eindig op het podium van een race in de kamer, met de groep.',
   'Usar o item': 'Item gebruiken',
@@ -2339,4 +2338,7 @@ export default {
   'Copa da turma': 'Cup van de groep',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Wortelcups die de groep tot het einde heeft gereden, in de Konijnenrace.',
   'Do pódio da Corrida dos coelhos': 'Van het podium van de Konijnenrace',
+  'Bosque': 'Bos',
+  'Cânion': 'Canyon',
+  'Copa do Repolho': 'Koolcup',
 } satisfies Record<string, string>;

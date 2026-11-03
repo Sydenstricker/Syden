@@ -2371,7 +2371,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'ကတ်ကားပြိုင်ပွဲ။ တစ်ယောက်တည်း အချိန်နှင့် သူငယ်ချင်းများ၏ သရဲများကို ယှဉ်ပြိုင်ပါ၊ အဖွဲ့နှင့်အတူ တိုက်ရိုက်၊ ပစ္စည်းများနှင့် မုန်လာဥနီဖလားဖြင့်။',
   'Pomar': 'သစ်သီးခြံ',
   'Copa da Cenoura': 'မုန်လာဥနီဖလား',
-  'As três pistas seguidas, com pontos por posição.': 'လမ်းကြောင်းသုံးခုကို ဆက်တိုက်၊ အဆင့်အလိုက် အမှတ်များဖြင့်။',
   'contra {nomes}': '{nomes} နှင့် ယှဉ်ပြိုင်',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'ဆုဖလား မရှိသေးပါ။ အခန်းထဲရှိ ပြိုင်ပွဲတွင် အဖွဲ့နှင့်အတူ ဆုတင်စင်ပေါ် တက်ပါ။',
   'Usar o item': 'ပစ္စည်းကို သုံးရန်',
@@ -2379,4 +2378,7 @@ export default {
   'Copa da turma': 'အဖွဲ့၏ ဖလား',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'ယုန်ကားပြိုင်ပွဲတွင် အဖွဲ့က အဆုံးထိ ပြိုင်ခဲ့သော မုန်လာဥနီဖလားများ။',
   'Do pódio da Corrida dos coelhos': 'ယုန်ကားပြိုင်ပွဲ ဆုတင်စင်မှ',
+  'Bosque': 'တောအုပ်',
+  'Cânion': 'ချောက်ကြီး',
+  'Copa do Repolho': 'ဂေါ်ဖီထုပ်ဖလား',
 } satisfies Record<string, string>;

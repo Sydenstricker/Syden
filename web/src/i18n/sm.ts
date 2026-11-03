@@ -2336,7 +2336,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'O se tuuga kart. Na o oe, faasaga i le taimi ma aitu o au uo; ma le vaega, ola, ma mea faaaoga ma le Ipu o le Karoti.',
   'Pomar': 'Faatoaga Fualaau Aina',
   'Copa da Cenoura': 'Ipu o le Karoti',
-  'As três pistas seguidas, com pontos por posição.': 'O auala e tolu sosoo, ma togi e tusa ma le tulaga.',
   'contra {nomes}': 'faasaga ia {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'E leai se ipu manumalo i le taimi nei. Ia i luga o le tulaga o le au manumalo i se tuuga i le potu, ma le vaega.',
   'Usar o item': 'Faaaoga le mea',
@@ -2344,4 +2343,7 @@ export default {
   'Copa da turma': 'Ipu a le vaega',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'O Ipu o le Karoti na tuuga ai le vaega seia oo i le iuga, i le Tuuga a Lapiti.',
   'Do pódio da Corrida dos coelhos': 'Mai le tulaga manumalo o le Tuuga a Lapiti',
+  'Bosque': 'Vaomatua',
+  'Cânion': 'Vanu',
+  'Copa do Repolho': 'Ipu o le Kapisi',
 } satisfies Record<string, string>;

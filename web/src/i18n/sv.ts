@@ -2394,7 +2394,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Ett gokartrace. Själv mot klockan och vännernas spöken; med gänget live, med föremål och Morotscupen.',
   'Pomar': 'Fruktträdgården',
   'Copa da Cenoura': 'Morotscupen',
-  'As três pistas seguidas, com pontos por posição.': 'Alla tre banorna i rad, med poäng efter placering.',
   'contra {nomes}': 'mot {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Inga troféer än. Ta en pallplats i ett race i rummet, med gänget.',
   'Usar o item': 'Använd föremålet',
@@ -2402,4 +2401,7 @@ export default {
   'Copa da turma': 'Gängets cup',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Morotscuper som gänget har kört till slutet, i Kaninracet.',
   'Do pódio da Corrida dos coelhos': 'Från pallen i Kaninracet',
+  'Bosque': 'Skogen',
+  'Cânion': 'Kanjonen',
+  'Copa do Repolho': 'Kålcupen',
 } satisfies Record<string, string>;

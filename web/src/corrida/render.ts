@@ -1,3 +1,4 @@
+import { CORES_DOS_AVATARES, MOLETOM_DO_MASCOTE, PELO_DO_MASCOTE } from './coresDosAvatares';
 import { MUNDO, RES, sorteio, type Pista, type Tema } from './pista';
 
 /**
@@ -60,6 +61,9 @@ export function prepararDesenho(canvas: HTMLCanvasElement, tema: Tema): Desenho 
     figuras: {
       arvore: arvore(),
       laranjeira: laranjeira(),
+      pinheiro: pinheiro(false),
+      'pinheiro-neve': pinheiro(true),
+      cacto: cacto(),
       coqueiro: coqueiro(),
       cenoura: cenoura(),
       flor: flor(),
@@ -189,6 +193,58 @@ function laranjeira() {
       '.......kkkkkk.......',
     ],
     { k: '#2a1e14', G: '#6e8a3a', g: '#8eaa4a', d: '#4e6a2a', o: '#f08a3a', T: '#8a5a36', t: '#6a4428' },
+  );
+}
+
+/** O pinheiro do Bosque (e o da Neve, com a neve nos galhos). */
+function pinheiro(neve: boolean) {
+  return figura(
+    [
+      '.........kk.........',
+      '........kGGk........',
+      '.......kGNGGk.......',
+      '......kGGGGgGk......',
+      '.....kNGGgGGGGk.....',
+      '......kkGGGGkk......',
+      '.....kGGGNGGGGk.....',
+      '....kGGgGGGGgGGk....',
+      '...kNGGGGgGGGGNGk...',
+      '....kkkGGGGGGkkk....',
+      '....kGGGGNGGGGGk....',
+      '...kGGgGGGGGgGGGk...',
+      '..kGNGGGGgGGGGGNGk..',
+      '.kGGGGGgGGGGGgGGGGk.',
+      '..kkkkkkkTTkkkkkkk..',
+      '........kTtk........',
+      '........kTtk........',
+      '.......kkkkkk.......',
+    ],
+    neve
+      ? { k: '#1e2a2e', G: '#3e6e5a', g: '#5a8a70', N: '#f4f8ff', T: '#7a5236', t: '#5a3c28' }
+      : { k: '#1a261c', G: '#2e5e3e', g: '#4a7a50', N: '#2e5e3e', T: '#7a5236', t: '#5a3c28' },
+  );
+}
+
+/** O cacto do Cânion. */
+function cacto() {
+  return figura(
+    [
+      '.......kkk.......',
+      '......kGgGk......',
+      '......kGgGk......',
+      '.kk...kGgGk......',
+      'kGgk..kGgGk...kk.',
+      'kGgk..kGgGk..kGgk',
+      'kGgk..kGgGk..kGgk',
+      'kGgGkkkGgGk..kGgk',
+      '.kGgGGGGgGkkkGgGk',
+      '..kkkkkGgGGGGGgk.',
+      '......kGgGkkkkk..',
+      '......kGgGk......',
+      '......kGgGk......',
+      '.....kkkkkkk.....',
+    ],
+    { k: '#1e2a1e', G: '#5a8a4a', g: '#7aaa5e' },
   );
 }
 
@@ -377,7 +433,7 @@ export function kartNaTela(
   ky: number,
   angulo: number,
   pulo: number,
-  opcoes: { fantasma?: boolean; sombra?: boolean; tremor?: number; nome?: string } = {},
+  opcoes: { fantasma?: boolean; sombra?: boolean; tremor?: number; nome?: string; avatar?: number | null } = {},
 ): Figura | null {
   const pr = projetar(cam, kx, ky);
   if (!pr || !d.coelho) return null;
@@ -386,7 +442,7 @@ export function kartNaTela(
   const w = LADO_DO_KART * e;
   if (w < 2 || pr.sx + w < 0 || pr.sx - w > W) return null;
   const x = pr.sx - PE_X * e, y = pr.sy - PE_Y * e - pulo * e * 2.2 + (opcoes.tremor ?? 0);
-  const img = d.coelho;
+  const img = folhaDoAvatar(d.coelho, opcoes.avatar ?? null);
   return {
     z: pr.z,
     desenhar: (ctx) => {
@@ -413,6 +469,50 @@ export function kartNaTela(
       }
     },
   };
+}
+
+/**
+ * O COELHO DE CADA UM NO KART (03/11/2026): a mesma folha (o mascote 3D), com o pelo e o moletom trocados pelas cores do
+ * avatar pronto da pessoa — a troca de paleta dos jogos do Super Nintendo. As cores de cada avatar saem de
+ * web/scripts/cores-dos-avatares.py (coresDosAvatares.ts). Sem avatar pronto (foto, ou nenhum), o mascote como é.
+ */
+const folhas = new Map<number, HTMLCanvasElement>();
+const lum = (r: number, g: number, b: number) => 0.3 * r + 0.59 * g + 0.11 * b;
+export function folhaDoAvatar(base: HTMLImageElement, avatar: number | null): CanvasImageSource {
+  const cores = avatar !== null ? CORES_DOS_AVATARES[avatar] : undefined;
+  if (!cores || !base.complete || !base.naturalWidth) return base;
+  const pronta = folhas.get(avatar!);
+  if (pronta) return pronta;
+  const c = document.createElement('canvas');
+  c.width = base.naturalWidth;
+  c.height = base.naturalHeight;
+  const g = c.getContext('2d')!;
+  g.drawImage(base, 0, 0);
+  const img = g.getImageData(0, 0, c.width, c.height);
+  const px = img.data;
+  const chave = (r: number, gg: number, b: number) => (r << 16) | (gg << 8) | b;
+  const pelo = new Set(PELO_DO_MASCOTE.map(([r, gg, b]) => chave(r, gg, b)));
+  const moletom = new Set(MOLETOM_DO_MASCOTE.map(([r, gg, b]) => chave(r, gg, b)));
+  const peloBase = lum(227, 205, 227), moletomBase = lum(61, 43, 54);
+  for (let i = 0; i < px.length; i += 4) {
+    if (!px[i + 3]) continue;
+    const k = chave(px[i], px[i + 1], px[i + 2]);
+    let alvo: [number, number, number] | null = null, f = 1;
+    if (pelo.has(k)) {
+      alvo = cores.pelo;
+      f = lum(px[i], px[i + 1], px[i + 2]) / peloBase;
+    } else if (moletom.has(k)) {
+      alvo = cores.roupa;
+      f = 0.72 + (0.28 * lum(px[i], px[i + 1], px[i + 2])) / moletomBase;
+    }
+    if (!alvo) continue;
+    px[i] = Math.min(255, Math.round(alvo[0] * f));
+    px[i + 1] = Math.min(255, Math.round(alvo[1] * f));
+    px[i + 2] = Math.min(255, Math.round(alvo[2] * f));
+  }
+  g.putImageData(img, 0, 0);
+  folhas.set(avatar!, c);
+  return c;
 }
 
 /** As faíscas da derrapagem, atrás das rodas: azuis no primeiro nível, laranja no segundo, brancas carregando. */

@@ -2340,7 +2340,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Ọsọ kart. Naanị gị, megide oge na mmụọ ndị enyi gị; ya na otu, ozugbo, ya na ihe na Iko Karọt.',
   'Pomar': 'Ubi mkpụrụ osisi',
   'Copa da Cenoura': 'Iko Karọt',
-  'As três pistas seguidas, com pontos por posição.': 'Ụzọ ọsọ atọ ahụ n\'usoro, ya na akara dịka ọnọdụ si dị.',
   'contra {nomes}': 'megide {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Enweghị iko mmeri ka. Rute n\'elu ikpo mmeri n\'ọsọ dị n\'ime ụlọ, ya na otu.',
   'Usar o item': 'Jiri ihe ahụ',
@@ -2348,4 +2347,7 @@ export default {
   'Copa da turma': 'Iko otu',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Iko Karọt ndị otu ahụ gbara ọsọ ruo na njedebe, n\'Ọsọ oke bekee.',
   'Do pódio da Corrida dos coelhos': 'Site n\'ikpo mmeri nke Ọsọ oke bekee',
+  'Bosque': 'Ọhịa',
+  'Cânion': 'Ndagwurugwu',
+  'Copa do Repolho': 'Iko Kabeeji',
 } satisfies Record<string, string>;

@@ -4271,6 +4271,8 @@ export interface RecordeDaCorrida {
   userId: number;
   username: string;
   nomeDeExibicao: string | null;
+  /** O coelho pronto que a pessoa usa de avatar (1 a 16), para correr com as cores dele; null = o mascote. */
+  avatarPronto: number | null;
   tempoMs: number;
   voltas: number[];
   em: string;
@@ -4280,7 +4282,7 @@ export interface RecordeDaCorrida {
 export function recordesDaCorrida(userId: number, pista: string): RecordeDaCorrida[] {
   const linhas = db
     .prepare(
-      `SELECT r.user_id AS userId, u.username AS username, u.nome_exibicao AS nomeDeExibicao, r.tempo_ms AS tempoMs,
+      `SELECT r.user_id AS userId, u.username AS username, u.nome_exibicao AS nomeDeExibicao, u.avatar_pronto AS avatarPronto, r.tempo_ms AS tempoMs,
               r.voltas AS voltas, r.em AS em
        FROM corrida_recordes r JOIN users u ON u.id = r.user_id
        WHERE r.pista = ? AND (r.user_id = ? OR r.user_id IN (

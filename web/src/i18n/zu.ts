@@ -2403,7 +2403,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Umjaho wekhati. Uwedwa, ubhekene nesikhathi nezipoki zabangane; neqembu, bukhoma, nezinto neNdebe Yesanqante.',
   'Pomar': 'Ingadi Yezithelo',
   'Copa da Cenoura': 'Indebe Yesanqante',
-  'As três pistas seguidas, com pontos por posição.': 'Imizila emithathu ilandelana, namaphuzu ngokwendawo.',
   'contra {nomes}': 'ubhekene no-{nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Akukabi khona indebe. Fika esiteji sabanqobi emjahweni osegumbini, neqembu.',
   'Usar o item': 'Sebenzisa into',
@@ -2411,4 +2410,7 @@ export default {
   'Copa da turma': 'Indebe yeqembu',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Izindebe Zesanqante iqembu eligijime kuzo kwaze kwaba sekugcineni, kuMjaho Wonogwaja.',
   'Do pódio da Corrida dos coelhos': 'Kusukela esiteji soMjaho Wonogwaja',
+  'Bosque': 'Ihlathi',
+  'Cânion': 'Umhosha',
+  'Copa do Repolho': 'Indebe Yeklabishi',
 } satisfies Record<string, string>;

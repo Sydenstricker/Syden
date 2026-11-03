@@ -2401,7 +2401,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Motokárový závod. Sólo proti času a duchům přátel; s partou naživo, s předměty a Mrkvovým pohárem.',
   'Pomar': 'Sad',
   'Copa da Cenoura': 'Mrkvový pohár',
-  'As três pistas seguidas, com pontos por posição.': 'Tři tratě za sebou, s body podle umístění.',
   'contra {nomes}': 'proti {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Zatím žádné trofeje. Dojeď na stupně vítězů v závodě v místnosti, s partou.',
   'Usar o item': 'Použít předmět',
@@ -2409,4 +2408,7 @@ export default {
   'Copa da turma': 'Pohár party',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Mrkvové poháry, které parta odjela až do konce, v Králičím závodě.',
   'Do pódio da Corrida dos coelhos': 'Ze stupňů vítězů Králičího závodu',
+  'Bosque': 'Les',
+  'Cânion': 'Kaňon',
+  'Copa do Repolho': 'Zelný pohár',
 } satisfies Record<string, string>;

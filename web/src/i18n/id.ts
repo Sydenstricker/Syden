@@ -2329,7 +2329,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Balap gokart. Sendiri, melawan waktu dan hantu teman-temanmu; bersama geng, langsung, dengan item dan Piala Wortel.',
   'Pomar': 'Kebun Buah',
   'Copa da Cenoura': 'Piala Wortel',
-  'As três pistas seguidas, com pontos por posição.': 'Tiga lintasan berturut-turut, dengan poin menurut posisi.',
   'contra {nomes}': 'melawan {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Belum ada trofi. Naik podium di balapan di ruang, bersama geng.',
   'Usar o item': 'Pakai item',
@@ -2337,4 +2336,7 @@ export default {
   'Copa da turma': 'Piala geng',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Piala Wortel yang dibalap geng sampai selesai, di Balap Kelinci.',
   'Do pódio da Corrida dos coelhos': 'Dari podium Balap Kelinci',
+  'Bosque': 'Hutan',
+  'Cânion': 'Ngarai',
+  'Copa do Repolho': 'Piala Kubis',
 } satisfies Record<string, string>;

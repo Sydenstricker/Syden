@@ -2332,7 +2332,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'የካርት ውድድር። ብቻዎን፣ ከሰዓቱ እና ከጓደኞችዎ መናፍስት ጋር፤ ከቡድኑ ጋር፣ በቀጥታ፣ ከዕቃዎች እና ከካሮት ዋንጫ ጋር።',
   'Pomar': 'የፍራፍሬ እርሻ',
   'Copa da Cenoura': 'የካሮት ዋንጫ',
-  'As três pistas seguidas, com pontos por posição.': 'ሦስቱ መንገዶች በተከታታይ፣ በደረጃ ነጥብ።',
   'contra {nomes}': 'ተፎካካሪዎች፦ {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'እስካሁን ዋንጫ የለም። በክፍሉ ውስጥ ከቡድኑ ጋር በሚደረግ ውድድር መድረክ ላይ ይውጡ።',
   'Usar o item': 'ዕቃውን መጠቀም',
@@ -2340,4 +2339,7 @@ export default {
   'Copa da turma': 'የቡድኑ ዋንጫ',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'ቡድኑ በየጥንቸሎች ውድድር እስከ መጨረሻ የሮጠባቸው የካሮት ዋንጫዎች።',
   'Do pódio da Corrida dos coelhos': 'ከየጥንቸሎች ውድድር መድረክ',
+  'Bosque': 'ጫካ',
+  'Cânion': 'ካንየን',
+  'Copa do Repolho': 'የጎመን ዋንጫ',
 } satisfies Record<string, string>;

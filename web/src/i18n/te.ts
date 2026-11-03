@@ -2314,7 +2314,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'కార్ట్ రేస్. ఒంటరిగా, సమయంతో, స్నేహితుల దెయ్యాలతో; బృందంతో, ప్రత్యక్షంగా, వస్తువులతో, క్యారెట్ కప్‌తో.',
   'Pomar': 'పండ్ల తోట',
   'Copa da Cenoura': 'క్యారెట్ కప్',
-  'As três pistas seguidas, com pontos por posição.': 'మూడు ట్రాక్‌లు వరుసగా, స్థానాన్ని బట్టి పాయింట్లతో.',
   'contra {nomes}': 'ప్రత్యర్థులు: {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'ఇంకా ట్రోఫీలు లేవు. గదిలో బృందంతో జరిగే రేస్‌లో పోడియంపై నిలువు.',
   'Usar o item': 'వస్తువును వాడు',
@@ -2322,4 +2321,7 @@ export default {
   'Copa da turma': 'బృందం కప్',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'కుందేళ్ల పందెంలో బృందం చివరి వరకు నడిపిన క్యారెట్ కప్‌లు.',
   'Do pódio da Corrida dos coelhos': 'కుందేళ్ల పందెం పోడియం నుంచి',
+  'Bosque': 'అడవి',
+  'Cânion': 'లోయ',
+  'Copa do Repolho': 'క్యాబేజీ కప్',
 } satisfies Record<string, string>;

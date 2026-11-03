@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { api } from './api';
 import { useT } from './i18n';
 import { tempoLegivel } from './corrida/fisica';
-import { nomeDaPista } from './corrida/nomes';
+import { nomeDaPistaEm } from './corrida/nomes';
 
 /**
  * OS TROFÉUS DA CORRIDA, no quarto de quem ganhou (03/11/2026, decisão dele: "um registro do momento entre amigos"). Cada
@@ -76,7 +76,7 @@ export function TrofeusDaCorrida({ aoFechar }: { aoFechar: () => void }) {
                   {MEDALHA[tr.posicao] ?? tr.posicao}
                 </span>
                 <div>
-                  <strong>{t(nomeDaPista(tr.pista))}</strong>
+                  <strong>{nomeDaPistaEm(t, tr.pista)}</strong>
                   <span className="trofeu-detalhe">
                     {tr.tempoMs !== null && <span className="corrida-relogio">{tempoLegivel(tr.tempoMs)}</span>}
                     {tr.pontos !== null && <span>{t('Placar')}: {tr.pontos}</span>}

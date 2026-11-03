@@ -2403,7 +2403,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'ການແຂ່ງລົດໂກຄາດ. ຄົນດຽວ ແຂ່ງກັບເວລາ ແລະ ຜີຂອງໝູ່; ກັບກຸ່ມ ແບບສົດ ມີໄອເທັມ ແລະ ຖ້ວຍກາລົດ.',
   'Pomar': 'ສວນໝາກໄມ້',
   'Copa da Cenoura': 'ຖ້ວຍກາລົດ',
-  'As três pistas seguidas, com pontos por posição.': 'ສາມເສັ້ນທາງຕິດກັນ ມີຄະແນນຕາມອັນດັບ.',
   'contra {nomes}': 'ແຂ່ງກັບ {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'ຍັງບໍ່ມີຖ້ວຍລາງວັນ. ຂຶ້ນແທ່ນຮັບລາງວັນໃນການແຂ່ງໃນຫ້ອງ ກັບກຸ່ມ.',
   'Usar o item': 'ໃຊ້ໄອເທັມ',
@@ -2411,4 +2410,7 @@ export default {
   'Copa da turma': 'ຖ້ວຍຂອງກຸ່ມ',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'ຖ້ວຍກາລົດທີ່ກຸ່ມແຂ່ງຈົນຈົບ ໃນການແຂ່ງກະຕ່າຍ.',
   'Do pódio da Corrida dos coelhos': 'ຈາກແທ່ນຮັບລາງວັນຂອງການແຂ່ງກະຕ່າຍ',
+  'Bosque': 'ປ່າ',
+  'Cânion': 'ຫຸບເຂົາ',
+  'Copa do Repolho': 'ຖ້ວຍກະລໍ່າປີ',
 } satisfies Record<string, string>;

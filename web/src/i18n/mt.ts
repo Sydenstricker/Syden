@@ -2348,7 +2348,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Tiġrija tal-kart. Waħdek, kontra l-ħin u l-fatati tal-ħbieb; mal-grupp, live, b\'oġġetti u t-Tazza tal-Karrotta.',
   'Pomar': 'Il-Bustan',
   'Copa da Cenoura': 'It-Tazza tal-Karrotta',
-  'As três pistas seguidas, com pontos por posição.': 'It-tliet korsiji wara xulxin, b\'punti skont il-pożizzjoni.',
   'contra {nomes}': 'kontra {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Għad m\'hemm l-ebda trofew. Spiċċa fuq il-podju ta\' tiġrija fis-sala, mal-grupp.',
   'Usar o item': 'Uża l-oġġett',
@@ -2356,4 +2355,7 @@ export default {
   'Copa da turma': 'It-Tazza tal-grupp',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Tazzi tal-Karrotta li l-grupp ġera sal-aħħar, fit-Tiġrija tal-Fniek.',
   'Do pódio da Corrida dos coelhos': 'Mill-podju tat-Tiġrija tal-Fniek',
+  'Bosque': 'Il-Bosk',
+  'Cânion': 'Il-Kanjon',
+  'Copa do Repolho': 'It-Tazza tal-Kaboċċa',
 } satisfies Record<string, string>;

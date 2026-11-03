@@ -2338,7 +2338,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Ko ha lova kā. Toko taha, fakafepakiʻi ʻa e taimi mo e ngaahi tēvolo ʻa e kaungāmeʻá; mo e kulupú, tuʻu hangatonu, mo e ngaahi meʻa mo e Ipu Kāloti.',
   'Pomar': 'Ngoue Fuaʻiʻakau',
   'Copa da Cenoura': 'Ipu Kāloti',
-  'As três pistas seguidas, com pontos por posição.': 'Ko e ngaahi hala ʻe tolu hokohoko, mo e ngaahi poini ʻo fakatatau ki he tuʻunga.',
   'contra {nomes}': 'fakafepakiʻi ʻa {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'ʻOku teʻeki ai ha ipu. Tuʻu ʻi he funga ikuna ʻi ha lova ʻi he lokí, mo e kulupú.',
   'Usar o item': 'Ngāueʻaki ʻa e meʻa',
@@ -2346,4 +2345,7 @@ export default {
   'Copa da turma': 'Ipu ʻa e kulupú',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Ngaahi Ipu Kāloti naʻe lova ai ʻa e kulupú ʻo aʻu ki he ngataʻangá, ʻi he Lova ʻa e Lāpisi.',
   'Do pódio da Corrida dos coelhos': 'Mei he funga ikuna ʻo e Lova ʻa e Lāpisi',
+  'Bosque': 'Vao',
+  'Cânion': 'Teleʻa',
+  'Copa do Repolho': 'Ipu Kāpisi',
 } satisfies Record<string, string>;

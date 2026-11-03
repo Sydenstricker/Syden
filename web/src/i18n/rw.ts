@@ -2343,7 +2343,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Isiganwa rya kart. Wenyine, uhanganye n\'igihe n\'imyuka y\'inshuti; uri kumwe n\'itsinda, imbonankubone, hari ibintu n\'Igikombe cya Karoti.',
   'Pomar': 'Umurima w\'imbuto',
   'Copa da Cenoura': 'Igikombe cya Karoti',
-  'As três pistas seguidas, com pontos por posição.': 'Imihanda itatu ikurikiranye, hamwe n\'amanota bitewe n\'umwanya.',
   'contra {nomes}': 'uhanganye na {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Nta gikombe urabona. Gera kuri podiyumu mu isiganwa ryo mu cyumba, uri kumwe n\'itsinda.',
   'Usar o item': 'Koresha ikintu',
@@ -2351,4 +2350,7 @@ export default {
   'Copa da turma': 'Igikombe cy\'itsinda',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Ibikombe bya Karoti itsinda ryasiganwe kugeza ku iherezo, mu Isiganwa ry\'inkwavu.',
   'Do pódio da Corrida dos coelhos': 'Bivuye kuri podiyumu y\'Isiganwa ry\'inkwavu',
+  'Bosque': 'Ishyamba',
+  'Cânion': 'Umuhora',
+  'Copa do Repolho': 'Igikombe cy'Ishu',
 } satisfies Record<string, string>;

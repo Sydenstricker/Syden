@@ -2331,7 +2331,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Mbio za kart. Peke yako, dhidi ya saa na mizimu ya marafiki; pamoja na kundi, mubashara, na vitu na Kombe la Karoti.',
   'Pomar': 'Bustani ya Matunda',
   'Copa da Cenoura': 'Kombe la Karoti',
-  'As três pistas seguidas, com pontos por posição.': 'Njia zote tatu mfululizo, na pointi kwa nafasi.',
   'contra {nomes}': 'dhidi ya {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Bado hakuna kombe. Maliza kwenye jukwaa la washindi katika mbio chumbani, pamoja na kundi.',
   'Usar o item': 'Tumia kitu',
@@ -2339,4 +2338,7 @@ export default {
   'Copa da turma': 'Kombe la kundi',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Makombe ya Karoti ambayo kundi lilikimbia hadi mwisho, katika Mbio za Sungura.',
   'Do pódio da Corrida dos coelhos': 'Kutoka jukwaa la washindi la Mbio za Sungura',
+  'Bosque': 'Msitu',
+  'Cânion': 'Korongo',
+  'Copa do Repolho': 'Kombe la Kabichi',
 } satisfies Record<string, string>;

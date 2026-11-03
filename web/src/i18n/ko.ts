@@ -2320,7 +2320,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': '카트 레이스. 혼자서는 타임 어택으로 친구들의 고스트와, 다 같이는 실시간으로 아이템과 당근 컵까지.',
   'Pomar': '과수원',
   'Copa da Cenoura': '당근 컵',
-  'As três pistas seguidas, com pontos por posição.': '세 코스를 연달아, 순위별 점수.',
   'contra {nomes}': '상대: {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': '아직 트로피가 없어요. 방에서 다 같이 하는 레이스에서 시상대에 올라 보세요.',
   'Usar o item': '아이템 사용',
@@ -2328,4 +2327,7 @@ export default {
   'Copa da turma': '다 같이 컵',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': '토끼 레이스에서 다 같이 끝까지 달린 당근 컵.',
   'Do pódio da Corrida dos coelhos': '토끼 레이스 시상대에서',
+  'Bosque': '숲',
+  'Cânion': '협곡',
+  'Copa do Repolho': '양배추 컵',
 } satisfies Record<string, string>;

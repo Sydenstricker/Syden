@@ -2412,7 +2412,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Yon kous kart. Pou kont ou, kont lè a ak fantòm zanmi ou yo; ak gwoup la, an dirèk, ak objè ak Koup Kawòt la.',
   'Pomar': 'Vèje',
   'Copa da Cenoura': 'Koup Kawòt',
-  'As três pistas seguidas, com pontos por posição.': 'Twa pis yo youn apre lòt, ak pwen selon plas.',
   'contra {nomes}': 'kont {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Poko gen twofe. Monte sou podyòm nan yon kous nan sal la, ak gwoup la.',
   'Usar o item': 'Sèvi ak objè a',
@@ -2420,4 +2419,7 @@ export default {
   'Copa da turma': 'Koup gwoup la',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Koup Kawòt gwoup la kouri jiska lafen, nan Kous lapen yo.',
   'Do pódio da Corrida dos coelhos': 'Soti nan podyòm Kous lapen yo',
+  'Bosque': 'Forè',
+  'Cânion': 'Kanyon',
+  'Copa do Repolho': 'Koup Chou',
 } satisfies Record<string, string>;

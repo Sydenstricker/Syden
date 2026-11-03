@@ -2410,7 +2410,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Kart poygasi. Yolgʻiz — vaqtga va doʻstlar arvohlariga qarshi; jamoa bilan — jonli, buyumlar va Sabzi kubogi bilan.',
   'Pomar': 'Mevazor',
   'Copa da Cenoura': 'Sabzi kubogi',
-  'As três pistas seguidas, com pontos por posição.': 'Uchala trassa ketma-ket, oʻrin boʻyicha ochkolar bilan.',
   'contra {nomes}': 'raqiblar: {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Hali kubok yoʻq. Xonadagi poygada jamoa bilan shohsupaga chiqing.',
   'Usar o item': 'Buyumni ishlatish',
@@ -2418,4 +2417,7 @@ export default {
   'Copa da turma': 'Jamoa kubogi',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Jamoa Quyonlar poygasida oxirigacha haydagan Sabzi kuboklari.',
   'Do pódio da Corrida dos coelhos': 'Quyonlar poygasi shohsupasidan',
+  'Bosque': 'Oʻrmon',
+  'Cânion': 'Kanyon',
+  'Copa do Repolho': 'Karam kubogi',
 } satisfies Record<string, string>;

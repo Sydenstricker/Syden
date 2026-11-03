@@ -2404,7 +2404,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Kartingo lenktynės. Solo – prieš laiką ir draugų vaiduoklius; su kompanija – gyvai, su daiktais ir Morkų taure.',
   'Pomar': 'Sodas',
   'Copa da Cenoura': 'Morkų taurė',
-  'As três pistas seguidas, com pontos por posição.': 'Visos trys trasos iš eilės, su taškais pagal vietą.',
   'contra {nomes}': 'prieš {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Trofėjų dar nėra. Patek ant pakylos per lenktynes kambaryje, su kompanija.',
   'Usar o item': 'Naudoti daiktą',
@@ -2412,4 +2411,7 @@ export default {
   'Copa da turma': 'Kompanijos taurė',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Morkų taurės, kurias kompanija nuvažiavo iki galo Triušių lenktynėse.',
   'Do pódio da Corrida dos coelhos': 'Nuo Triušių lenktynių pakylos',
+  'Bosque': 'Miškas',
+  'Cânion': 'Kanjonas',
+  'Copa do Repolho': 'Kopūstų taurė',
 } satisfies Record<string, string>;

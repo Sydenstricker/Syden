@@ -2403,7 +2403,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Kartkappakstur. Sóló, við klukkuna og drauga vinanna; með hópnum, í beinni, með hlutum og Gulrótarbikarnum.',
   'Pomar': 'Aldingarður',
   'Copa da Cenoura': 'Gulrótarbikarinn',
-  'As três pistas seguidas, com pontos por posição.': 'Brautirnar þrjár í röð, með stigum eftir sæti.',
   'contra {nomes}': 'gegn {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Engir bikarar enn. Komdu þér á verðlaunapall í kappakstri í herberginu, með hópnum.',
   'Usar o item': 'Nota hlutinn',
@@ -2411,4 +2410,7 @@ export default {
   'Copa da turma': 'Bikar hópsins',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Gulrótarbikarar sem hópurinn keyrði til enda, í Kanínukapphlaupi.',
   'Do pódio da Corrida dos coelhos': 'Af verðlaunapalli Kanínukapphlaupsins',
+  'Bosque': 'Skógurinn',
+  'Cânion': 'Gljúfrið',
+  'Copa do Repolho': 'Kálbikarinn',
 } satisfies Record<string, string>;

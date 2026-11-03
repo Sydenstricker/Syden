@@ -2415,7 +2415,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'ཀཱརཊི་རྒྱུག་འགྲན། རང་རྐྱང་ ཆུ་ཚོད་དང་ ཆ་རོགས་ཚུ་གི་འདྲེ་དང་འགྲན། སྡེ་ཚན་དང་མཉམ་ ཐད་ཀར་ དངོས་པོ་དང་ ག་ཇར་ཊོ་ཕི་དང་གཅིག་ཁར།',
   'Pomar': 'ཤིང་ཏོག་ཚལ།',
   'Copa da Cenoura': 'ག་ཇར་ཊོ་ཕི།',
-  'As três pistas seguidas, com pontos por posição.': 'རྒྱུག་ལམ་གསུམ་ རིམ་བཞིན་ གནས་ཚད་ལྟར་སྐུགས་ཡོདཔ།',
   'contra {nomes}': '{nomes} དང་འགྲན།',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'ད་ལྟོ་ཚུན་ ཊོ་ཕི་མེད། ཁང་མིག་ནང་ སྡེ་ཚན་དང་མཉམ་ རྒྱུག་འགྲན་ཅིག་ནང་ རྒྱལ་ཁའི་སྟེགས་བུ་གུ་ལྡེབ།',
   'Usar o item': 'དངོས་པོ་ལག་ལེན་འཐབ།',
@@ -2423,4 +2422,7 @@ export default {
   'Copa da turma': 'སྡེ་ཚན་གྱི་ཊོ་ཕི།',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'རི་བོང་གི་རྒྱུག་འགྲན་ནང་ སྡེ་ཚན་གྱིས་མཇུག་ཚུན་རྒྱུག་མི་ ག་ཇར་ཊོ་ཕི་ཚུ།',
   'Do pódio da Corrida dos coelhos': 'རི་བོང་གི་རྒྱུག་འགྲན་གྱི་རྒྱལ་ཁའི་སྟེགས་བུ་ལས།',
+  'Bosque': 'ནགས་ཚལ།',
+  'Cânion': 'རོང་།',
+  'Copa do Repolho': 'བན་ཀོ་པི་ཊོ་ཕི།',
 } satisfies Record<string, string>;

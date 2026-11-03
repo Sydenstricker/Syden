@@ -2372,7 +2372,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Fiigicha kaartii. Kophaa, sa\'aatii fi hafuurota hiriyyootaa wajjin; garee wajjin, kallattiin, meeshaalee fi Kuubaa Kaarotii wajjin.',
   'Pomar': 'Mukkeen Fuduraa',
   'Copa da Cenoura': 'Kuubaa Kaarotii',
-  'As três pistas seguidas, com pontos por posição.': 'Daandiiwwan sadan walitti aansuun, qabxii sadarkaan.',
   'contra {nomes}': 'faallaa {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Ammallee waancaan hin jiru. Fiigicha kutaa keessatti garee wajjin waltajjii injifattootaa irra ga\'i.',
   'Usar o item': 'Meeshaa fayyadami',
@@ -2380,4 +2379,7 @@ export default {
   'Copa da turma': 'Kuubaa Garee',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Kuubaa Kaarotii gareen hanga dhumaatti fiigan, Fiigicha Hilleensotaa keessatti.',
   'Do pódio da Corrida dos coelhos': 'Waltajjii Fiigicha Hilleensotaa irraa',
+  'Bosque': 'Bosona',
+  'Cânion': 'Sulula',
+  'Copa do Repolho': 'Kuubaa Raafuu',
 } satisfies Record<string, string>;

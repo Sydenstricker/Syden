@@ -25,7 +25,7 @@ export function registerCorridaRoutes(app: FastifyInstance) {
     authed.get<{ Params: { pista: string } }>('/api/corrida/:pista', async (request, reply) => {
       const { pista } = request.params;
       if (!PISTAS[pista]) return reply.code(404).send({ error: 'Pista desconhecida.' });
-      return { recordes: db.recordesDaCorrida(request.user.id, pista) };
+      return { recordes: db.recordesDaCorrida(request.user.id, pista), meuAvatar: db.findUserById(request.user.id)?.avatarPronto ?? null };
     });
 
     /** O fantasma de alguém: o meu, ou o de um amigo aceito. */

@@ -2398,7 +2398,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Una cursa de karts. En solitari, contra rellotge i els fantasmes dels amics; amb la colla, en directe, amb objectes i la Copa de la Pastanaga.',
   'Pomar': 'Pomar',
   'Copa da Cenoura': 'Copa de la Pastanaga',
-  'As três pistas seguidas, com pontos por posição.': 'Les tres pistes seguides, amb punts per posició.',
   'contra {nomes}': 'contra {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Encara no hi ha cap trofeu. Queda al podi d\'una cursa a la sala, amb la colla.',
   'Usar o item': 'Fes servir l\'objecte',
@@ -2406,4 +2405,7 @@ export default {
   'Copa da turma': 'La copa de la colla',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Copes de la Pastanaga que la colla ha corregut fins al final, a la Cursa de conills.',
   'Do pódio da Corrida dos coelhos': 'Del podi de la Cursa de conills',
+  'Bosque': 'Bosc',
+  'Cânion': 'Canyó',
+  'Copa do Repolho': 'Copa de la Col',
 } satisfies Record<string, string>;

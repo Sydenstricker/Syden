@@ -5,8 +5,8 @@ import { api } from './api';
 import { useT } from './i18n';
 import { passosEmMs, tempoLegivel, type Comandos } from './corrida/fisica';
 import { pistaDaCorrida, rodarCorrida, type EventoDeItem, type Item, type LinhaDaOrdem, type PosicaoDoRival, type Rival } from './corrida/laco';
-import { nomeDaPista } from './corrida/nomes';
-import { COPA, HORTA, PISTAS, pistaPorId, type DefinicaoDaPista } from './corrida/pista';
+import { nomeDaPistaEm } from './corrida/nomes';
+import { COPAS, HORTA, PISTAS, pistaPorId, type DefinicaoDaPista } from './corrida/pista';
 import { H, mapaDaPista, pontoNoMapa, W } from './corrida/render';
 import type { Agir } from './Minijogo';
 import type { Partida } from './minijogos';
@@ -29,6 +29,7 @@ interface Recorde {
   userId: number;
   username: string;
   nomeDeExibicao: string | null;
+  avatarPronto?: number | null;
   tempoMs: number;
   voltas: number[];
 }
@@ -196,19 +197,21 @@ export function EscolhaDaPista({ aoEscolher, aoVoltar }: { aoEscolher: (pista: s
           <li key={def.id}>
             <button type="button" className="corrida-pista-botao" onClick={() => aoEscolher(def.id)}>
               <MapaDaPista def={def} lado={72} />
-              <strong>{t(nomeDaPista(def.id))}</strong>
+              <strong>{nomeDaPistaEm(t, def.id)}</strong>
             </button>
           </li>
         ))}
-        <li>
-          <button type="button" className="corrida-pista-botao copa" onClick={() => aoEscolher(COPA)}>
-            <span className="corrida-copa-mapas" aria-hidden="true">
-              <Trophy size={40} />
-            </span>
-            <strong>{t(nomeDaPista(COPA))}</strong>
-            <small>{t('As três pistas seguidas, com pontos por posição.')}</small>
-          </button>
-        </li>
+        {Object.entries(COPAS).map(([copa, pistas]) => (
+          <li key={copa}>
+            <button type="button" className="corrida-pista-botao copa" onClick={() => aoEscolher(copa)}>
+              <span className="corrida-copa-mapas" aria-hidden="true">
+                <Trophy size={40} />
+              </span>
+              <strong>{nomeDaPistaEm(t, copa)}</strong>
+              <small>{pistas.map((p) => nomeDaPistaEm(t, p)).join(' · ')}</small>
+            </button>
+          </li>
+        ))}
       </ul>
       <div className="minijogo-acoes">
         <button type="button" className="btn-secondary" onClick={aoVoltar}>
@@ -233,6 +236,8 @@ export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void
   const [erro, setErro] = useState<string | null>(null);
   const [placar, setPlacar] = usePlacar();
   const [vendoTrofeus, setVendoTrofeus] = useState(false);
+  /** O meu avatar pronto (o servidor diz junto dos recordes): as cores do meu kart. */
+  const [meuAvatar, setMeuAvatar] = useState<number | null>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const controles = useControles(fase === 'correndo');
   /** Cada "Jogar de novo" é uma corrida nova, sem voltar à tela da largada. */
@@ -241,9 +246,10 @@ export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void
   const pista = def.id;
 
   const lerRecordes = (id = pista) =>
-    api<{ recordes: Recorde[] }>(`/api/corrida/${id}`)
+    api<{ recordes: Recorde[]; meuAvatar?: number | null }>(`/api/corrida/${id}`)
       .then((r) => {
         setRecordes(r.recordes);
+        setMeuAvatar(r.meuAvatar ?? null);
         return r.recordes;
       })
       .catch(() => {
@@ -274,11 +280,11 @@ export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void
         await Promise.all(
           [...escolhidos].map((id) =>
             api<{ amostras: number[] }>(`/api/corrida/${pista}/fantasma/${id}`)
-              .then((r) => r.amostras)
+              .then((r) => ({ amostras: r.amostras, avatar: recordes?.find((x) => x.userId === id)?.avatarPronto ?? null }))
               .catch(() => null),
           ),
         )
-      ).filter((a): a is number[] => a !== null);
+      ).filter((a): a is { amostras: number[]; avatar: number | null } => a !== null);
       if (!vivo || !canvas.current) return;
       parar = rodarCorrida({
         canvas: canvas.current,
@@ -286,6 +292,7 @@ export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void
         pista: def,
         piloto: true,
         eu,
+        meuAvatar,
         fantasmas,
         contagem: CONTAGEM,
         aoPlacar: setPlacar,
@@ -339,7 +346,7 @@ export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void
                   onClick={() => setDef(p)}
                 >
                   <MapaDaPista def={p} lado={72} />
-                  <strong>{t(nomeDaPista(p.id))}</strong>
+                  <strong>{nomeDaPistaEm(t, p.id)}</strong>
                 </button>
               </li>
             ))}
@@ -438,13 +445,15 @@ export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void
 // NA SALA (a turma corre junto)
 // =====================================================================================================================
 
-type LinhaDaCorrida = { userId: number; username: string; tempoMs: number | null; voltas?: number[] };
+type LinhaDaCorrida = { userId: number; username: string; tempoMs: number | null; voltas?: number[]; avatar?: number | null };
 
 /** A corrida da sala, como o servidor a manda (server/src/minijogo-corrida.ts). */
 export interface EstadoCorrida {
   fase: 'largada' | 'correndo' | 'intervalo' | 'fim';
   /** A pista desta corrida (na copa, a da vez). */
   pista: string;
+  /** A pista avulsa, ou a copa (o id dela). */
+  categoria?: string;
   copa?: boolean;
   /** Na copa: qual corrida é esta (1 a 3), de quantas. */
   corrida?: number;
@@ -475,9 +484,9 @@ export function JogoCorridaNaSala(props: {
   const copa = estado.copa === true;
   const cabecalho = copa && (
     <div className="corrida-copa-topo">
-      <strong>{t(nomeDaPista(COPA))}</strong>
+      <strong>{nomeDaPistaEm(t, estado.categoria ?? '')}</strong>
       <span>
-        {t('Rodada {n} de {total}', { n: estado.corrida ?? 1, total: estado.corridas ?? 3 })} · {t(nomeDaPista(estado.pista))}
+        {t('Rodada {n} de {total}', { n: estado.corrida ?? 1, total: estado.corridas ?? 3 })} · {nomeDaPistaEm(t, estado.pista)}
       </span>
     </div>
   );
@@ -559,7 +568,7 @@ function CorridaDaSala({
     if (p.userId === eu) continue;
     const r = rivais.current.get(p.userId);
     if (r) r.nome = p.username;
-    else rivais.current.set(p.userId, { nome: p.username, posicoes: [] });
+    else rivais.current.set(p.userId, { nome: p.username, avatar: p.avatar ?? null, posicoes: [] });
   }
 
   // AS POSIÇÕES E OS ITENS DOS OUTROS chegam pelo socket, já com quem mandou (o servidor carimba)
@@ -607,6 +616,7 @@ function CorridaDaSala({
       pista: def,
       piloto,
       eu,
+      meuAvatar: estado.pilotos.find((p) => p.userId === eu)?.avatar ?? null,
       rivais: rivais.current,
       itens: estado.itens === false ? undefined : { eventos: eventos.current, aoEvento: enviar, aoItem: setItem },
       contagem,

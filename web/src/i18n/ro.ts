@@ -2332,7 +2332,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'O cursă de karting. Solo, contra cronometru și a fantomelor prietenilor; cu gașca, în direct, cu obiecte și Cupa Morcovului.',
   'Pomar': 'Livada',
   'Copa da Cenoura': 'Cupa Morcovului',
-  'As três pistas seguidas, com pontos por posição.': 'Toate cele trei piste la rând, cu puncte după poziție.',
   'contra {nomes}': 'contra {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Niciun trofeu încă. Urcă pe podium într-o cursă în cameră, cu gașca.',
   'Usar o item': 'Folosește obiectul',
@@ -2340,4 +2339,7 @@ export default {
   'Copa da turma': 'Cupa găștii',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Cupele Morcovului pe care gașca le-a terminat, în Cursa iepurașilor.',
   'Do pódio da Corrida dos coelhos': 'De pe podiumul Cursei iepurașilor',
+  'Bosque': 'Pădurea',
+  'Cânion': 'Canionul',
+  'Copa do Repolho': 'Cupa Verzei',
 } satisfies Record<string, string>;

@@ -2345,7 +2345,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'แข่งโกคาร์ต เล่นคนเดียวแข่งกับเวลาและผีของเพื่อน ๆ เล่นกับก๊วนแบบสด ๆ มีไอเท็มและถ้วยแครอท',
   'Pomar': 'สวนผลไม้',
   'Copa da Cenoura': 'ถ้วยแครอท',
-  'As três pistas seguidas, com pontos por posição.': 'สามสนามต่อกัน ได้คะแนนตามอันดับ',
   'contra {nomes}': 'แข่งกับ {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'ยังไม่มีถ้วยรางวัล ลองติดโพเดียมในการแข่งในห้องพร้อมก๊วนดู',
   'Usar o item': 'ใช้ไอเท็ม',
@@ -2353,4 +2352,7 @@ export default {
   'Copa da turma': 'ถ้วยของก๊วน',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'ถ้วยแครอทที่ก๊วนแข่งจนจบในแข่งรถกระต่าย',
   'Do pódio da Corrida dos coelhos': 'จากโพเดียมแข่งรถกระต่าย',
+  'Bosque': 'ป่า',
+  'Cânion': 'หุบเขา',
+  'Copa do Repolho': 'ถ้วยกะหล่ำปลี',
 } satisfies Record<string, string>;

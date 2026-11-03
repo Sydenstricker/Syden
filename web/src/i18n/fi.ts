@@ -2402,7 +2402,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Karting-kisa. Yksin aikaa ja kavereiden haamuja vastaan; porukan kanssa livenä, esineiden ja Porkkanacupin kera.',
   'Pomar': 'Hedelmätarha',
   'Copa da Cenoura': 'Porkkanacup',
-  'As três pistas seguidas, com pontos por posição.': 'Kolme rataa peräkkäin, pisteet sijoituksen mukaan.',
   'contra {nomes}': 'vastassa {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Ei vielä pokaaleja. Aja palkintokorokkeelle kisassa huoneessa porukan kanssa.',
   'Usar o item': 'Käytä esine',
@@ -2410,4 +2409,7 @@ export default {
   'Copa da turma': 'Porukan cup',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Porkkanacupit, jotka porukka ajoi loppuun asti Kanikisassa.',
   'Do pódio da Corrida dos coelhos': 'Kanikisan palkintokorokkeelta',
+  'Bosque': 'Metsä',
+  'Cânion': 'Kanjoni',
+  'Copa do Repolho': 'Kaalicup',
 } satisfies Record<string, string>;

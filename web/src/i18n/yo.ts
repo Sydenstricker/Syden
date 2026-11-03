@@ -2347,7 +2347,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Ìdíje kart. Ìwọ nìkan, láti borí aago àti àwọn iwin àwọn ọ̀rẹ́; pẹ̀lú ẹgbẹ́, ní tààràtà, pẹ̀lú àwọn ohun èlò àti Ife Kárọ́ọ̀tì.',
   'Pomar': 'Ọgbà Èso',
   'Copa da Cenoura': 'Ife Kárọ́ọ̀tì',
-  'As três pistas seguidas, com pontos por posição.': 'Àwọn ọ̀nà mẹ́tẹ̀ẹ̀ta léraléra, pẹ̀lú àmì ní ìbámu pẹ̀lú ipò.',
   'contra {nomes}': 'lòdì sí {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Kò sí ife-ẹ̀yẹ kankan síbẹ̀. Dé orí pèpéle àwọn aṣẹ́gun nínú ìdíje kan nínú yàrá, pẹ̀lú ẹgbẹ́.',
   'Usar o item': 'Lo ohun èlò náà',
@@ -2355,4 +2354,7 @@ export default {
   'Copa da turma': 'Ife ẹgbẹ́',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Àwọn Ife Kárọ́ọ̀tì tí ẹgbẹ́ sá dé òpin, nínú Ìdíje Ehoro.',
   'Do pódio da Corrida dos coelhos': 'Láti orí pèpéle Ìdíje Ehoro',
+  'Bosque': 'Igbó',
+  'Cânion': 'Àfonífojì',
+  'Copa do Repolho': 'Ife Kábéèjì',
 } satisfies Record<string, string>;

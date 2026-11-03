@@ -2402,7 +2402,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Tartan kart. Adiga oo keligaa, saacadda iyo rooxaanta saaxiibbada; kooxda la jirta, toos, alaabo iyo Koobka Karootada.',
   'Pomar': 'Beerta Midhaha',
   'Copa da Cenoura': 'Koobka Karootada',
-  'As três pistas seguidas, com pontos por posição.': 'Saddexda waddo oo isku xiga, dhibco ku saleysan kaalinta.',
   'contra {nomes}': 'ka soo horjeeda {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Weli koob ma jiro. Gal masraxa guuleystayaasha ee tartan qolka ka dhaca, adiga iyo kooxda.',
   'Usar o item': 'Isticmaal alaabta',
@@ -2410,4 +2409,7 @@ export default {
   'Copa da turma': 'Koobka kooxda',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Koobabka Karootada ee kooxdu ku ordday ilaa dhammaadka, Tartanka Bakaylaha.',
   'Do pódio da Corrida dos coelhos': 'Masraxa guusha ee Tartanka Bakaylaha',
+  'Bosque': 'Kaynta',
+  'Cânion': 'Dooxada',
+  'Copa do Repolho': 'Koobka Kaabajka',
 } satisfies Record<string, string>;

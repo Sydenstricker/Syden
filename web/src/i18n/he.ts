@@ -2382,7 +2382,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'מרוץ קארטינג. לבד, נגד השעון ורוחות הרפאים של החברים; עם החבר׳ה, בשידור חי, עם פריטים וגביע הגזר.',
   'Pomar': 'פרדס',
   'Copa da Cenoura': 'גביע הגזר',
-  'As três pistas seguidas, com pontos por posição.': 'שלושת המסלולים ברצף, עם נקודות לפי מיקום.',
   'contra {nomes}': 'נגד {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'עדיין אין גביעים. גביעים מקבלים על מקום בפודיום במרוץ בחדר, עם החבר׳ה.',
   'Usar o item': 'שימוש בפריט',
@@ -2390,4 +2389,7 @@ export default {
   'Copa da turma': 'הגביע של החבר׳ה',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'גביעי גזר שהחבר׳ה השלימו עד הסוף במרוץ הארנבים.',
   'Do pódio da Corrida dos coelhos': 'מהפודיום של מרוץ הארנבים',
+  'Bosque': 'היער',
+  'Cânion': 'הקניון',
+  'Copa do Repolho': 'גביע הכרוב',
 } satisfies Record<string, string>;

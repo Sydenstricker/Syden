@@ -2403,7 +2403,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Пойгаи карт. Танҳо, бар зидди вақт ва арвоҳи дӯстон; бо гурӯҳ, мустақим, бо ашёҳо ва Ҷоми Сабзӣ.',
   'Pomar': 'Боғи мева',
   'Copa da Cenoura': 'Ҷоми Сабзӣ',
-  'As três pistas seguidas, com pontos por posição.': 'Ҳар се роҳ пай дар пай, бо холҳо аз рӯи ҷой.',
   'contra {nomes}': 'бар зидди {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Ҳоло ягон ҷом нест. Дар пойгаи ҳуҷра бо гурӯҳ ба шоҳсупа баро.',
   'Usar o item': 'Ашёро истифода бар',
@@ -2411,4 +2410,7 @@ export default {
   'Copa da turma': 'Ҷоми гурӯҳ',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Ҷомҳои Сабзӣ, ки гурӯҳ дар Пойгаи харгӯшҳо то охир давонд.',
   'Do pódio da Corrida dos coelhos': 'Аз шоҳсупаи Пойгаи харгӯшҳо',
+  'Bosque': 'Ҷангал',
+  'Cânion': 'Дара',
+  'Copa do Repolho': 'Ҷоми Карам',
 } satisfies Record<string, string>;

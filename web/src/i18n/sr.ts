@@ -2399,7 +2399,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Карт трка. Соло, против сата и духова пријатеља; са екипом, уживо, са предметима и Купом шаргарепе.',
   'Pomar': 'Воћњак',
   'Copa da Cenoura': 'Куп шаргарепе',
-  'As três pistas seguidas, com pontos por posição.': 'Све три стазе заредом, са бодовима према пласману.',
   'contra {nomes}': 'против {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Још нема трофеја. Попни се на постоље у трци у соби, са екипом.',
   'Usar o item': 'Употреби предмет',
@@ -2407,4 +2406,7 @@ export default {
   'Copa da turma': 'Куп екипе',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Купови шаргарепе које је екипа одвезла до краја, у Трци зечева.',
   'Do pódio da Corrida dos coelhos': 'Са постоља Трке зечева',
+  'Bosque': 'Шума',
+  'Cânion': 'Кањон',
+  'Copa do Repolho': 'Куп купуса',
 } satisfies Record<string, string>;

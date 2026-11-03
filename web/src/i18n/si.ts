@@ -2402,7 +2402,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'කාට් තරඟයක්. තනිවම, ඔරලෝසුවට සහ මිතුරන්ගේ හොල්මන්වලට එරෙහිව; කණ්ඩායම සමඟ, සජීවීව, භාණ්ඩ සහ කැරට් කුසලානය සමඟ.',
   'Pomar': 'පලතුරු වත්ත',
   'Copa da Cenoura': 'කැරට් කුසලානය',
-  'As três pistas seguidas, com pontos por posição.': 'පීලි තුනම අනුපිළිවෙලින්, ස්ථානය අනුව ලකුණු සමඟ.',
   'contra {nomes}': '{nomes} ට එරෙහිව',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'තවම කුසලාන නැත. කාමරයේ තරඟයක, කණ්ඩායම සමඟ, ජයග්‍රාහක වේදිකාවට නගින්න.',
   'Usar o item': 'භාණ්ඩය භාවිත කරන්න',
@@ -2410,4 +2409,7 @@ export default {
   'Copa da turma': 'කණ්ඩායමේ කුසලානය',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'හාවුන්ගේ තරඟයේදී කණ්ඩායම අවසානය දක්වා දිව ගිය කැරට් කුසලාන.',
   'Do pódio da Corrida dos coelhos': 'හාවුන්ගේ තරඟයේ ජයග්‍රාහක වේදිකාවෙන්',
+  'Bosque': 'වනාන්තරය',
+  'Cânion': 'කැනියනය',
+  'Copa do Repolho': 'ගෝවා කුසලානය',
 } satisfies Record<string, string>;

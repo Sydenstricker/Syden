@@ -97,3 +97,10 @@ test('os itens: o repolho anda pela linha do meio, some depois de 4 s, e o sorte
   };
   assert.ok(conta(3) > conta(0) * 3, `o último ganha mais cenoura (${conta(3)}) que o primeiro (${conta(0)})`);
 });
+
+test('as copas do site e do servidor são as mesmas, e toda pista delas existe', async () => {
+  const { COPAS } = await import('../src/corrida/pista');
+  const { COPAS: NO_SERVIDOR } = await import('../../server/src/minijogo-corrida.ts');
+  assert.deepEqual(COPAS, NO_SERVIDOR);
+  for (const pistas of Object.values(COPAS)) for (const id of pistas) assert.ok(PISTAS.some((p) => p.id === id), id);
+});

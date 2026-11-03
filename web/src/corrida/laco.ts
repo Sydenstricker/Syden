@@ -78,6 +78,8 @@ export interface PosicaoDoRival {
 
 export interface Rival {
   nome: string;
+  /** O avatar pronto (as cores do kart), ou null. */
+  avatar?: number | null;
   /** Em ordem de passo; o laço lê, quem recebe do socket acrescenta. */
   posicoes: PosicaoDoRival[];
 }
@@ -113,8 +115,10 @@ export interface OpcoesDoLaco {
   /** Sem kart (quem assiste): a câmera vai atrás de quem está na frente. */
   piloto: boolean;
   eu: number;
-  /** Os fantasmas (amostras do servidor) do contra o relógio. */
-  fantasmas?: number[][];
+  /** O meu avatar pronto (as cores do meu kart), ou null. */
+  meuAvatar?: number | null;
+  /** Os fantasmas (amostras do servidor) do contra o relógio, com o avatar de quem é. */
+  fantasmas?: { amostras: number[]; avatar: number | null }[];
   /** Os rivais da sala, por id. */
   rivais?: Map<number, Rival>;
   /** Os itens (só na sala). */
@@ -310,10 +314,10 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
 
     /** Os rivais no passo `n`, com o nome. */
     const rivaisEm = (n: number) => {
-      const lista: { id: number; nome: string; pos: PosicaoDoRival }[] = [];
+      const lista: { id: number; nome: string; avatar: number | null; pos: PosicaoDoRival }[] = [];
       for (const [id, r] of o.rivais ?? []) {
         const pos = rivalEm(r.posicoes, n);
-        if (pos) lista.push({ id, nome: r.nome, pos });
+        if (pos) lista.push({ id, nome: r.nome, avatar: r.avatar ?? null, pos });
       }
       return lista;
     };
@@ -355,18 +359,18 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
           if (f) figuras.push(f);
         }
       }
-      for (const amostras of o.fantasmas ?? []) {
-        const g = fantasmaEm(amostras, n);
+      for (const fa of o.fantasmas ?? []) {
+        const g = fantasmaEm(fa.amostras, n);
         if (!g) continue;
-        const f = kartNaTela(d, cam, g.x, g.y, g.angulo, 0, { fantasma: true });
+        const f = kartNaTela(d, cam, g.x, g.y, g.angulo, 0, { fantasma: true, avatar: fa.avatar });
         if (f) figuras.push(f);
       }
       for (const r of rivais) {
-        const f = kartNaTela(d, cam, r.pos.x, r.pos.y, r.pos.a, 0, { nome: r.nome });
+        const f = kartNaTela(d, cam, r.pos.x, r.pos.y, r.pos.a, 0, { nome: r.nome, avatar: r.avatar });
         if (f) figuras.push(f);
       }
       if (o.piloto) {
-        const meu = kartNaTela(d, cam, kart.x, kart.y, kart.angulo, kart.pulo, { tremor: tremor > 0 ? (tremor % 2 ? 1 : -1) : 0 });
+        const meu = kartNaTela(d, cam, kart.x, kart.y, kart.angulo, kart.pulo, { tremor: tremor > 0 ? (tremor % 2 ? 1 : -1) : 0, avatar: o.meuAvatar ?? null });
         if (meu) figuras.push({ ...meu, z: meu.z - 0.01 });
       }
       figuras.sort((a, b) => b.z - a.z);
@@ -380,8 +384,8 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
       d.ctx.globalAlpha = 0.85;
       d.ctx.drawImage(mapa, W - 60, H - 60);
       d.ctx.globalAlpha = 1;
-      for (const amostras of o.fantasmas ?? []) {
-        const g = fantasmaEm(amostras, n);
+      for (const fa of o.fantasmas ?? []) {
+        const g = fantasmaEm(fa.amostras, n);
         if (g) pontoNoMapa(d.ctx, W - 60, H - 60, 56, g.x, g.y, '#c8c0cc');
       }
       for (const r of rivais) pontoNoMapa(d.ctx, W - 60, H - 60, 56, r.pos.x, r.pos.y, '#7ab8ff');

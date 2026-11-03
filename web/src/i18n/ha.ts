@@ -2334,7 +2334,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Tseren kart. Ɗaiɗaiku, da agogo da fatalwowin abokanku; tare da ƙungiya, kai tsaye, da abubuwa da Kofin Karas.',
   'Pomar': 'Lambun itatuwa',
   'Copa da Cenoura': 'Kofin Karas',
-  'As três pistas seguidas, com pontos por posição.': 'Hanyoyi uku a jere, da maki bisa matsayi.',
   'contra {nomes}': 'da {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Babu kofi tukuna. Ku hau dakalin nasara a tsere a cikin ɗaki, tare da ƙungiya.',
   'Usar o item': 'Yi amfani da abu',
@@ -2342,4 +2341,7 @@ export default {
   'Copa da turma': 'Kofin ƙungiya',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Kofin Karas da ƙungiya ta yi tsere har ƙarshe, a Tseren zomaye.',
   'Do pódio da Corrida dos coelhos': 'Daga dakalin nasara na Tseren zomaye',
+  'Bosque': 'Kurmi',
+  'Cânion': 'Kwazazzabo',
+  'Copa do Repolho': 'Kofin Kabeji',
 } satisfies Record<string, string>;

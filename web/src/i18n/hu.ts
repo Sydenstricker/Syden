@@ -2404,7 +2404,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Gokartverseny. Egyedül az idő és a barátaid szellemei ellen; a csapattal élőben, tárgyakkal és a Répakupával.',
   'Pomar': 'Gyümölcsös',
   'Copa da Cenoura': 'Répakupa',
-  'As três pistas seguidas, com pontos por posição.': 'A három pálya egymás után, helyezés szerinti pontokkal.',
   'contra {nomes}': 'ellenfelek: {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Még nincs trófea. Érj dobogóra egy versenyen a szobában, a csapattal.',
   'Usar o item': 'Tárgy használata',
@@ -2412,4 +2411,7 @@ export default {
   'Copa da turma': 'A csapat kupája',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Répakupák, amelyeket a csapat végigversenyzett a Nyuszifutamban.',
   'Do pódio da Corrida dos coelhos': 'A Nyuszifutam dobogójáról',
+  'Bosque': 'Erdő',
+  'Cânion': 'Kanyon',
+  'Copa do Repolho': 'Káposztakupa',
 } satisfies Record<string, string>;

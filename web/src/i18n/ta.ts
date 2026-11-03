@@ -2317,7 +2317,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'கார்ட் பந்தயம். தனியாக, கடிகாரத்துக்கும் நண்பர்களின் பேய்களுக்கும் எதிராக; குழுவுடன், நேரலையில், பொருட்களுடனும் கேரட் கோப்பையுடனும்.',
   'Pomar': 'பழத்தோட்டம்',
   'Copa da Cenoura': 'கேரட் கோப்பை',
-  'As três pistas seguidas, com pontos por posição.': 'மூன்று பாதைகளும் தொடர்ச்சியாக, இடத்துக்கேற்ற புள்ளிகளுடன்.',
   'contra {nomes}': 'எதிராக: {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'இன்னும் கோப்பை இல்லை. அறையில் குழுவுடன் ஒரு பந்தயத்தில் மேடையில் இடம் பிடி.',
   'Usar o item': 'பொருளைப் பயன்படுத்து',
@@ -2325,4 +2324,7 @@ export default {
   'Copa da turma': 'குழுவின் கோப்பை',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'முயல் பந்தயத்தில் குழு இறுதிவரை ஓட்டிய கேரட் கோப்பைகள்.',
   'Do pódio da Corrida dos coelhos': 'முயல் பந்தய மேடையிலிருந்து',
+  'Bosque': 'காடு',
+  'Cânion': 'பள்ளத்தாக்கு',
+  'Copa do Repolho': 'முட்டைக்கோஸ் கோப்பை',
 } satisfies Record<string, string>;

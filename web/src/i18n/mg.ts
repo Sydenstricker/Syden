@@ -2402,7 +2402,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Hazakazaka kart. Irery, manohitra ny fotoana sy ny matoatoan\'ny namana; miaraka amin\'ny tarika, mivantana, misy zavatra sy ny Amboaran\'ny Karoty.',
   'Pomar': 'Tanimboly voankazo',
   'Copa da Cenoura': 'Amboaran\'ny Karoty',
-  'As três pistas seguidas, com pontos por posição.': 'Ireo lalana telo misesy, misy isa araka ny laharana.',
   'contra {nomes}': 'manohitra {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Mbola tsy misy amboara. Midira amin\'ny podium amin\'ny hazakazaka ao amin\'ny efitrano, miaraka amin\'ny tarika.',
   'Usar o item': 'Ampiasao ilay zavatra',
@@ -2410,4 +2409,7 @@ export default {
   'Copa da turma': 'Amboaran\'ny tarika',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Amboaran\'ny Karoty novitain\'ny tarika hatramin\'ny farany, tao amin\'ny Hazakazaky ny bitro.',
   'Do pódio da Corrida dos coelhos': 'Avy amin\'ny podium-n\'ny Hazakazaky ny bitro',
+  'Bosque': 'Ala',
+  'Cânion': 'Hantsana',
+  'Copa do Repolho': 'Amboaran'ny Laisoa',
 } satisfies Record<string, string>;

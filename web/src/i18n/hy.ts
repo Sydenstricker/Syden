@@ -2421,7 +2421,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Կարտինգի մրցավազք։ Մենակ՝ ժամանակի և ընկերներիդ ուրվականների դեմ, խմբի հետ՝ ուղիղ եթերով, առարկաներով և Գազարի գավաթով։',
   'Pomar': 'Պտղատու այգի',
   'Copa da Cenoura': 'Գազարի գավաթ',
-  'As três pistas seguidas, com pontos por posição.': 'Երեք ուղիները իրար հետևից, միավորներով՝ ըստ տեղի։',
   'contra {nomes}': 'ընդդեմ {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Դեռ գավաթներ չկան։ Բարձրացիր պատվանդան սենյակում խմբի հետ մրցավազքում։',
   'Usar o item': 'Օգտագործել առարկան',
@@ -2429,4 +2428,7 @@ export default {
   'Copa da turma': 'Խմբի գավաթ',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Գազարի գավաթներ, որոնք խումբը վազել է մինչև վերջ՝ Ճագարների մրցավազքում։',
   'Do pódio da Corrida dos coelhos': 'Ճագարների մրցավազքի պատվանդանից',
+  'Bosque': 'Անտառ',
+  'Cânion': 'Կիրճ',
+  'Copa do Repolho': 'Կաղամբի գավաթ',
 } satisfies Record<string, string>;

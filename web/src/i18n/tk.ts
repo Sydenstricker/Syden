@@ -2404,7 +2404,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Kart ýaryşy. Ýeke özüň, wagta we dostlaryň arwahlaryna garşy; topar bilen, göni ýaýlymda, zatlar we Käşir kubogy bilen.',
   'Pomar': 'Miweli bag',
   'Copa da Cenoura': 'Käşir kubogy',
-  'As três pistas seguidas, com pontos por posição.': 'Üç ýol yzygiderli, orun boýunça utuklar bilen.',
   'contra {nomes}': 'garşydaşlar: {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Entek kubok ýok. Otagdaky ýaryşda topar bilen podiuma çyk.',
   'Usar o item': 'Zady ulan',
@@ -2412,4 +2411,7 @@ export default {
   'Copa da turma': 'Toparyň kubogy',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Towşanlaryň ýaryşynda toparyň ahyryna çenli süren Käşir kuboklary.',
   'Do pódio da Corrida dos coelhos': 'Towşanlaryň ýaryşynyň podiumyndan',
+  'Bosque': 'Tokaý',
+  'Cânion': 'Kanýon',
+  'Copa do Repolho': 'Kelem kubogy',
 } satisfies Record<string, string>;

@@ -2319,7 +2319,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'کارٹ ریس۔ اکیلے، گھڑی اور دوستوں کے بھوتوں کے خلاف؛ گروپ کے ساتھ، براہِ راست، آئٹمز اور گاجر کپ کے ساتھ۔',
   'Pomar': 'پھلوں کا باغ',
   'Copa da Cenoura': 'گاجر کپ',
-  'As três pistas seguidas, com pontos por posição.': 'تینوں ٹریک لگاتار، پوزیشن کے حساب سے پوائنٹس کے ساتھ۔',
   'contra {nomes}': '{nomes} کے خلاف',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'ابھی کوئی ٹرافی نہیں۔ کمرے میں گروپ کے ساتھ کسی ریس میں پوڈیم پر آئیں۔',
   'Usar o item': 'آئٹم استعمال کریں',
@@ -2327,4 +2326,7 @@ export default {
   'Copa da turma': 'گروپ کا کپ',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'خرگوشوں کی دوڑ میں گروپ کے آخر تک دوڑے گئے گاجر کپ۔',
   'Do pódio da Corrida dos coelhos': 'خرگوشوں کی دوڑ کے پوڈیم سے',
+  'Bosque': 'جنگل',
+  'Cânion': 'گھاٹی',
+  'Copa do Repolho': 'بند گوبھی کپ',
 } satisfies Record<string, string>;

@@ -2334,7 +2334,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Halai kart. Mesak, kontra tempu no fantasma husi maluk sira; ho grupu, ao vivu, ho objetu no Kopa Senoura.',
   'Pomar': 'To\'os ai-fuan',
   'Copa da Cenoura': 'Kopa Senoura',
-  'As três pistas seguidas, com pontos por posição.': 'Dalan tolu tuir malu, ho pontu tuir pozisaun.',
   'contra {nomes}': 'kontra {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Seidauk iha troféu. Hakat ba pódiu iha halai ida iha sala, ho grupu.',
   'Usar o item': 'Uza objetu',
@@ -2342,4 +2341,7 @@ export default {
   'Copa da turma': 'Kopa grupu nian',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Kopa Senoura sira-ne\'ebé grupu halai to\'o rohan, iha Halai Koelu.',
   'Do pódio da Corrida dos coelhos': 'Husi pódiu Halai Koelu nian',
+  'Bosque': 'Ai-laran',
+  'Cânion': 'Kanyon',
+  'Copa do Repolho': 'Kopa Repolhu',
 } satisfies Record<string, string>;

@@ -2331,7 +2331,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'E dua na veicici ni kart. O iko ga, vata kei na gauna kei na yalo ni nomu itokani; kei na ilawalawa, ena gauna dina, kei na iyaya kei na Tiroba ni Kareti.',
   'Pomar': 'Were vuanikau',
   'Copa da Cenoura': 'Tiroba ni Kareti',
-  'As três pistas seguidas, com pontos por posição.': 'Na sala e tolu vakatautauvata, kei na maka me vaka na itutu.',
   'contra {nomes}': 'sasaga kei {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Se bera ni dua na tiroba. Mo tiko ena itutu ni qaqa ena dua na veicici ena rumu, kei na ilawalawa.',
   'Usar o item': 'Vakayagataka na iyaya',
@@ -2339,4 +2338,7 @@ export default {
   'Copa da turma': 'Na tiroba ni ilawalawa',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Na Tiroba ni Kareti era cici kina na ilawalawa me yacova na kena itinitini, ena Veicici ni rabeti.',
   'Do pódio da Corrida dos coelhos': 'Mai na itutu ni qaqa ni Veicici ni rabeti',
+  'Bosque': 'Veikau',
+  'Cânion': 'Buca Titobu',
+  'Copa do Repolho': 'Tiroba ni Kaveti',
 } satisfies Record<string, string>;

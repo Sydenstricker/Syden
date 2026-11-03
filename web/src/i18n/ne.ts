@@ -2404,7 +2404,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'कार्ट दौड। एक्लै, घडी र साथीहरूका भूतहरूविरुद्ध; टोलीसँग, प्रत्यक्ष, सामानहरू र गाजर कपसहित।',
   'Pomar': 'फलफूल बगैंचा',
   'Copa da Cenoura': 'गाजर कप',
-  'As três pistas seguidas, com pontos por posição.': 'तीनै ट्र्याक लगातार, स्थानअनुसार अङ्कसहित।',
   'contra {nomes}': '{nomes} विरुद्ध',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'अहिलेसम्म कुनै ट्रफी छैन। कोठामा टोलीसँगको दौडमा पोडियममा पुग।',
   'Usar o item': 'सामान प्रयोग गर',
@@ -2412,4 +2411,7 @@ export default {
   'Copa da turma': 'टोलीको कप',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'खरायो दौडमा टोलीले अन्त्यसम्म दौडेका गाजर कपहरू।',
   'Do pódio da Corrida dos coelhos': 'खरायो दौडको पोडियमबाट',
+  'Bosque': 'जङ्गल',
+  'Cânion': 'खोंच',
+  'Copa do Repolho': 'बन्दा कप',
 } satisfies Record<string, string>;

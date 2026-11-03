@@ -2320,7 +2320,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'مسابقهٔ کارت. به‌تنهایی، در برابر زمان و شبح دوستانتان؛ با جمع، زنده، با آیتم‌ها و جام هویج.',
   'Pomar': 'باغ میوه',
   'Copa da Cenoura': 'جام هویج',
-  'As três pistas seguidas, com pontos por posição.': 'سه پیست پشت سر هم، با امتیاز بر اساس رتبه.',
   'contra {nomes}': 'در برابر {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'هنوز جامی نیست. در یک مسابقه در اتاق، با جمع، روی سکو بایستید.',
   'Usar o item': 'استفاده از آیتم',
@@ -2328,4 +2327,7 @@ export default {
   'Copa da turma': 'جام جمع',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'جام‌های هویج که جمع در مسابقهٔ خرگوش‌ها تا پایان رانده است.',
   'Do pódio da Corrida dos coelhos': 'از سکوی مسابقهٔ خرگوش‌ها',
+  'Bosque': 'جنگل',
+  'Cânion': 'دره',
+  'Copa do Repolho': 'جام کلم',
 } satisfies Record<string, string>;

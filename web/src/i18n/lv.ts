@@ -2404,7 +2404,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Kartinga sacīkstes. Solo — pret laiku un draugu spokiem; ar kompāniju — tiešraidē, ar priekšmetiem un Burkānu kausu.',
   'Pomar': 'Augļu dārzs',
   'Copa da Cenoura': 'Burkānu kauss',
-  'As três pistas seguidas, com pontos por posição.': 'Visas trīs trases pēc kārtas, ar punktiem par vietu.',
   'contra {nomes}': 'pret {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Vēl nav nevienas trofejas. Iekļūsti uz pjedestāla sacīkstēs istabā kopā ar kompāniju.',
   'Usar o item': 'Izmantot priekšmetu',
@@ -2412,4 +2411,7 @@ export default {
   'Copa da turma': 'Kompānijas kauss',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Burkānu kausi, ko kompānija nobraukusi līdz galam Zaķu sacīkstēs.',
   'Do pódio da Corrida dos coelhos': 'No Zaķu sacīkšu pjedestāla',
+  'Bosque': 'Mežs',
+  'Cânion': 'Kanjons',
+  'Copa do Repolho': 'Kāpostu kauss',
 } satisfies Record<string, string>;

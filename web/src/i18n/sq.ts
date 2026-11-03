@@ -2394,7 +2394,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Një garë karting. Vetëm, kundër kohës dhe fantazmave të miqve; me grupin, drejtpërdrejt, me objekte dhe Kupën e Karotës.',
   'Pomar': 'Pemishtja',
   'Copa da Cenoura': 'Kupa e Karotës',
-  'As três pistas seguidas, com pontos por posição.': 'Të tri pistat me radhë, me pikë sipas vendit.',
   'contra {nomes}': 'kundër {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Ende asnjë trofe. Dil në podium në një garë në dhomë, me grupin.',
   'Usar o item': 'Përdor objektin',
@@ -2402,4 +2401,7 @@ export default {
   'Copa da turma': 'Kupa e grupit',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Kupat e Karotës që grupi i vrapoi deri në fund, në Garën e lepujve.',
   'Do pódio da Corrida dos coelhos': 'Nga podiumi i Garës së lepujve',
+  'Bosque': 'Pylli',
+  'Cânion': 'Kanioni',
+  'Copa do Repolho': 'Kupa e Lakrës',
 } satisfies Record<string, string>;

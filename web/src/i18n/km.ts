@@ -2401,7 +2401,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'ការប្រណាំងរថយន្តខាត។ ម្នាក់ឯង ប្រឆាំងនឹងនាឡិកា និងខ្មោចរបស់មិត្តភក្តិ ជាមួយក្រុម ផ្សាយផ្ទាល់ មានវត្ថុ និងពានការ៉ុត។',
   'Pomar': 'ចម្ការផ្លែឈើ',
   'Copa da Cenoura': 'ពានការ៉ុត',
-  'As três pistas seguidas, com pontos por posição.': 'ផ្លូវប្រណាំងទាំងបីជាប់ៗគ្នា មានពិន្ទុតាមចំណាត់ថ្នាក់។',
   'contra {nomes}': 'ទល់នឹង {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'មិនទាន់មានពានរង្វាន់នៅឡើយទេ។ ឡើងវេទិកាជ័យលាភីក្នុងការប្រណាំងនៅក្នុងបន្ទប់ ជាមួយក្រុម។',
   'Usar o item': 'ប្រើវត្ថុ',
@@ -2409,4 +2408,7 @@ export default {
   'Copa da turma': 'ពានរបស់ក្រុម',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'ពានការ៉ុតដែលក្រុមបានប្រណាំងរហូតដល់ចប់ ក្នុងការប្រណាំងទន្សាយ។',
   'Do pódio da Corrida dos coelhos': 'ពីវេទិកាជ័យលាភីនៃការប្រណាំងទន្សាយ',
+  'Bosque': 'ព្រៃ',
+  'Cânion': 'ជ្រលងភ្នំ',
+  'Copa do Repolho': 'ពានស្ពៃក្តោប',
 } satisfies Record<string, string>;

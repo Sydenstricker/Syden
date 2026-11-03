@@ -225,3 +225,16 @@ test('o troféu não mostra, no lugar de quem excluiu a conta, quem ganhou o mes
   const depois = (await comToken(app, ana.token)('GET', '/api/corrida-trofeus')).json().trofeus[0];
   assert.deepEqual([depois.rivais.length, depois.excluidos], [0, 1]);
 });
+
+test('a Copa do Repolho começa no Bosque, e cada piloto vem com o avatar dele', async () => {
+  const conta = comToken(app, ana.token);
+  const r = await conta('PUT', '/api/me/avatar-pronto', { numero: 7 });
+  assert.ok(r.statusCode < 300, 'escolher o avatar pronto: ' + r.body);
+  const m = contexto([anaId, biaId], comunidade.id);
+  const jogo = corrida.comecar(m.ctx, { naSala: [anaId, biaId], criadaPor: anaId, corpo: { pista: 'copa-do-repolho' } });
+  assert.ok(typeof jogo !== 'string');
+  const p = jogo.publico(anaId) as { pista: string; categoria: string; corridas: number; pilotos: { userId: number; avatar: number | null }[] };
+  assert.deepEqual([p.pista, p.categoria, p.corridas], ['bosque-1', 'copa-do-repolho', 3]);
+  if (r.statusCode < 300) assert.equal(p.pilotos.find((l) => l.userId === anaId)?.avatar, 7);
+  assert.ok(p.pilotos.every((l) => 'avatar' in l));
+});

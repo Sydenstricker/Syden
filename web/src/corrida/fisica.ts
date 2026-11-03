@@ -158,7 +158,9 @@ export function passo(k: Kart, c: Comandos, p: Pista): void {
   }
   k.angulo += giro * dt;
   // o rumo segue o ângulo: rápido no asfalto, devagar na derrapagem (o kart escorrega)
-  k.rumo = giraPara(k.rumo, k.angulo, (k.deriva !== 0 ? 2.6 : naGrama ? 7 : 13) * dt);
+  // no gelo, o rumo segue o ângulo bem devagar: o kart escorrega na direção em que vinha
+  const noGelo = chao === Chao.Gelo;
+  k.rumo = giraPara(k.rumo, k.angulo, (noGelo ? 1.6 : k.deriva !== 0 ? 2.6 : naGrama ? 7 : 13) * dt);
 
   // ANDAR, com as batidas: na parede, não passa e volta um pouco; na árvore, é empurrado para fora dela
   const nx = k.x + Math.cos(k.rumo) * k.v * dt;

@@ -2352,7 +2352,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'سباق كارت. فرديًا، ضد الساعة وأشباح الأصدقاء؛ ومع الجماعة، مباشرةً، مع الأدوات وكأس الجزرة.',
   'Pomar': 'البستان',
   'Copa da Cenoura': 'كأس الجزرة',
-  'As três pistas seguidas, com pontos por posição.': 'الحلبات الثلاث على التوالي، مع نقاط حسب المركز.',
   'contra {nomes}': 'ضد {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'لا توجد كؤوس بعد. تُنال الكؤوس بالوصول إلى منصة التتويج في سباق داخل الغرفة، مع الجماعة.',
   'Usar o item': 'استخدام الأداة',
@@ -2360,4 +2359,7 @@ export default {
   'Copa da turma': 'كأس الجماعة',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'كؤوس الجزرة التي أكملتها الجماعة حتى النهاية في سباق الأرانب.',
   'Do pódio da Corrida dos coelhos': 'من منصة تتويج سباق الأرانب',
+  'Bosque': 'الغابة',
+  'Cânion': 'الأخدود',
+  'Copa do Repolho': 'كأس الملفوف',
 } satisfies Record<string, string>;

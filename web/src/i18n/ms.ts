@@ -2332,7 +2332,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Lumba kart. Bersendirian, melawan masa dan hantu rakan-rakan; bersama geng, secara langsung, dengan item dan Piala Lobak Merah.',
   'Pomar': 'Dusun',
   'Copa da Cenoura': 'Piala Lobak Merah',
-  'As três pistas seguidas, com pontos por posição.': 'Ketiga-tiga litar berturut-turut, dengan mata mengikut kedudukan.',
   'contra {nomes}': 'menentang {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Belum ada trofi. Naik podium dalam perlumbaan di bilik, bersama geng.',
   'Usar o item': 'Guna item',
@@ -2340,4 +2339,7 @@ export default {
   'Copa da turma': 'Piala geng',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Piala Lobak Merah yang dilumba geng hingga habis, dalam Lumba Arnab.',
   'Do pódio da Corrida dos coelhos': 'Dari podium Lumba Arnab',
+  'Bosque': 'Hutan',
+  'Cânion': 'Ngarai',
+  'Copa do Repolho': 'Piala Kubis',
 } satisfies Record<string, string>;

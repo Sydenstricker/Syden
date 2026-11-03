@@ -2313,7 +2313,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'カートレース。ひとりならタイムアタックでフレンドのゴーストと勝負。みんなとならライブで、アイテムありのにんじんカップも。',
   'Pomar': '果樹園',
   'Copa da Cenoura': 'にんじんカップ',
-  'As três pistas seguidas, com pontos por posição.': '3つのコースを続けて走り、順位でポイント。',
   'contra {nomes}': '対戦：{nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'トロフィーはまだありません。ルームでみんなとレースして、表彰台に上ろう。',
   'Usar o item': 'アイテムを使う',
@@ -2321,4 +2320,7 @@ export default {
   'Copa da turma': 'みんなのカップ',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'うさぎレースで、みんなが最後まで走りきったにんじんカップ。',
   'Do pódio da Corrida dos coelhos': 'うさぎレースの表彰台から',
+  'Bosque': '森',
+  'Cânion': '渓谷',
+  'Copa do Repolho': 'キャベツカップ',
 } satisfies Record<string, string>;

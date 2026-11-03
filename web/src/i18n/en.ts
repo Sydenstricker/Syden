@@ -2327,7 +2327,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'A kart race. Solo, against the clock and your friends\' ghosts; with the group, live, with items and the Carrot Cup.',
   'Pomar': 'Orchard',
   'Copa da Cenoura': 'Carrot Cup',
-  'As três pistas seguidas, com pontos por posição.': 'The three tracks in a row, with points by position.',
   'contra {nomes}': 'against {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'No trophies yet. Finish on the podium of a race in the room, with the group.',
   'Usar o item': 'Use item',
@@ -2335,4 +2334,7 @@ export default {
   'Copa da turma': 'The group\'s cup',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Carrot Cups the group raced to the end, in Bunny Race.',
   'Do pódio da Corrida dos coelhos': 'From the Bunny Race podium',
+  'Bosque': 'Woods',
+  'Cânion': 'Canyon',
+  'Copa do Repolho': 'Cabbage Cup',
 } satisfies Record<string, string>;

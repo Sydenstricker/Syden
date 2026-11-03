@@ -2302,7 +2302,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Một cuộc đua kart. Chơi một mình, đua với thời gian và bóng ma của bạn bè; cùng nhóm, trực tiếp, có vật phẩm và Cúp Cà Rốt.',
   'Pomar': 'Vườn cây ăn quả',
   'Copa da Cenoura': 'Cúp Cà Rốt',
-  'As três pistas seguidas, com pontos por posição.': 'Cả ba đường đua liên tiếp, tính điểm theo thứ hạng.',
   'contra {nomes}': 'đấu với {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Chưa có cúp nào. Hãy lên bục trong một cuộc đua ở phòng, cùng nhóm.',
   'Usar o item': 'Dùng vật phẩm',
@@ -2310,4 +2309,7 @@ export default {
   'Copa da turma': 'Cúp của nhóm',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Những Cúp Cà Rốt mà nhóm đã đua đến cuối, trong Đua thỏ.',
   'Do pódio da Corrida dos coelhos': 'Từ bục vinh quang Đua thỏ',
+  'Bosque': 'Rừng',
+  'Cânion': 'Hẻm Núi',
+  'Copa do Repolho': 'Cúp Bắp Cải',
 } satisfies Record<string, string>;

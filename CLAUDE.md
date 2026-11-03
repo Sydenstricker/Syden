@@ -478,6 +478,19 @@ desde o verde do servidor (+3 s de folga). Pista nova precisa da linha dela em `
   pistas: medidas iguais às do servidor, sem trecho encostado, o fantasma honesto passando; o repolho e o sorteio),
   `e2e/corrida-na-sala.mjs` (a copa inteira, ~5 min; `SO_HORTA=1` faz uma corrida só) e `e2e/corrida.mjs`.
 
+**Mais pistas e o coelho de cada um (03/11/2026, pedido dele: "fazer mais mapas, usar os diferentes avatares"):**
+- **Seis pistas e duas copas.** Além das três da Copa da Cenoura, a **Copa do Repolho**: o **Bosque** (pinheiros, pista mais
+  estreita), a **Neve** (neve fora do asfalto e PLACAS DE GELO na pista: o rumo segue o kart devagar, e ele escorrega;
+  `Chao.Gelo`) e o **Cânion** (rocha vermelha, cactos, areia). Copa nova é uma linha em `COPAS`, no site e no servidor (o
+  teste confere que são iguais). O lago só cobre grama ou areia: posto errado, não vira parede no asfalto.
+- **Cada um corre com o próprio coelho**, por TROCA DE PALETA (como os jogos do Super Nintendo): a folha do kart é uma só (o
+  mascote 3D), e o pelo e o moletom viram as cores do avatar pronto da pessoa (`web/scripts/cores-dos-avatares.py` tira de
+  cada corpo a cor do pelo e a da roupa e gera `coresDosAvatares.ts`; a conferência é
+  `e2e/pixel-art/personagem/blender/meshy/t/kart-avatares.png`). Bonés, gorros, óculos e fones NÃO aparecem: pediriam um
+  modelo 3D por coelho (o caminho já decidido para os 16, quando o Meshy voltar). Sem avatar pronto (foto), o mascote.
+- **"Praia" e "Neve" são também palavras do Desenha e adivinha**, cuja tradução guarda as alternativas aceitas com "|": o nome
+  da pista na tela é a primeira (`nomeDaPistaEm`). Nome de pista que coincidir com palavra do desenho passa por ele.
+
 **A sondagem de jogos dele (12/10/2026), avaliada:** os campeões de receita (Coin Master, Candy Crush, Sheep a Sheep)
 são solo e se pagam com anúncio, vidas e roleta. **Decisão dele: clonar só a MECÂNICA DE JOGO** (empilhar e combinar
 peças, parafusos, setas, combinar três) — nunca a de cassino nem a de "volte todo dia". Integração, nenhuma. Party game de ação (Mario Party, Overcooked) tem aderência

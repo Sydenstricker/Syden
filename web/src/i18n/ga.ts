@@ -2338,7 +2338,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Rás cairte. Leat féin, in aghaidh an chloig agus taibhsí do chairde; leis an mbuíon, beo, le míreanna agus Corn an Chairéid.',
   'Pomar': 'Úllord',
   'Copa da Cenoura': 'Corn an Chairéid',
-  'As três pistas seguidas, com pontos por posição.': 'Na trí chúrsa i ndiaidh a chéile, le pointí de réir áite.',
   'contra {nomes}': 'in aghaidh {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Gan chorn fós. Bí ar an ardán i rás sa seomra, leis an mbuíon.',
   'Usar o item': 'Úsáid an mhír',
@@ -2346,4 +2345,7 @@ export default {
   'Copa da turma': 'Corn na buíne',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Cornaí an Chairéid a rith an bhuíon go deireadh, i Rás na gCoiníní.',
   'Do pódio da Corrida dos coelhos': 'Ó ardán Rás na gCoiníní',
+  'Bosque': 'An Choill',
+  'Cânion': 'An Cainneon',
+  'Copa do Repolho': 'Corn an Chabáiste',
 } satisfies Record<string, string>;

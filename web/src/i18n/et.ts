@@ -2399,7 +2399,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Kardivõidusõit. Üksi aja ja sõprade kummituste vastu; seltskonnaga otse, esemete ja Porgandikarikaga.',
   'Pomar': 'Viljapuuaed',
   'Copa da Cenoura': 'Porgandikarikas',
-  'As três pistas seguidas, com pontos por posição.': 'Kolm rada järjest, punktid koha järgi.',
   'contra {nomes}': '{nomes} vastu',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Karikaid veel pole. Jõua toas seltskonnaga sõidetud võidusõidus poodiumile.',
   'Usar o item': 'Kasuta eset',
@@ -2407,4 +2406,7 @@ export default {
   'Copa da turma': 'Seltskonna karikas',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Porgandikarikad, mille seltskond Jäneste võidusõidus lõpuni sõitis.',
   'Do pódio da Corrida dos coelhos': 'Jäneste võidusõidu poodiumilt',
+  'Bosque': 'Mets',
+  'Cânion': 'Kanjon',
+  'Copa do Repolho': 'Kapsakarikas',
 } satisfies Record<string, string>;

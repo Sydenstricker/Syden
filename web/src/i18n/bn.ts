@@ -2329,7 +2329,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'একটা কার্ট রেস। একা, ঘড়ি আর বন্ধুদের ভূতের বিরুদ্ধে; দলের সঙ্গে, সরাসরি, আইটেম আর গাজর কাপ নিয়ে।',
   'Pomar': 'ফলবাগান',
   'Copa da Cenoura': 'গাজর কাপ',
-  'As três pistas seguidas, com pontos por posição.': 'পরপর তিনটি ট্র্যাক, অবস্থান অনুযায়ী পয়েন্ট।',
   'contra {nomes}': '{nomes}-এর বিরুদ্ধে',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'এখনও কোনো ট্রফি নেই। ঘরে দলের সঙ্গে একটা রেসে পোডিয়ামে ওঠো।',
   'Usar o item': 'আইটেম ব্যবহার করো',
@@ -2337,4 +2336,7 @@ export default {
   'Copa da turma': 'দলের কাপ',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'খরগোশের দৌড়ে দল শেষ পর্যন্ত যে গাজর কাপগুলো দৌড়েছে।',
   'Do pódio da Corrida dos coelhos': 'খরগোশের দৌড়ের পোডিয়াম থেকে',
+  'Bosque': 'বন',
+  'Cânion': 'গিরিখাত',
+  'Copa do Repolho': 'বাঁধাকপি কাপ',
 } satisfies Record<string, string>;

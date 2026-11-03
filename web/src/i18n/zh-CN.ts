@@ -2319,7 +2319,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': '卡丁车比赛。单人时，与时间和好友的幽灵比拼；和伙伴们一起时，实时对战，有道具，还有胡萝卜杯。',
   'Pomar': '果园',
   'Copa da Cenoura': '胡萝卜杯',
-  'As três pistas seguidas, com pontos por posição.': '三条赛道连续进行，按名次计分。',
   'contra {nomes}': '对手：{nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': '还没有奖杯。和伙伴们在房间里比赛，登上领奖台吧。',
   'Usar o item': '使用道具',
@@ -2327,4 +2326,7 @@ export default {
   'Copa da turma': '伙伴们的杯赛',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': '伙伴们在兔子赛车中跑完全程的胡萝卜杯。',
   'Do pódio da Corrida dos coelhos': '来自兔子赛车的领奖台',
+  'Bosque': '森林',
+  'Cânion': '峡谷',
+  'Copa do Repolho': '卷心菜杯',
 } satisfies Record<string, string>;

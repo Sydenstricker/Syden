@@ -2366,7 +2366,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Kart yarışı. Təkbaşına, saata və dostlarının xəyalətlərinə qarşı; dəstə ilə, canlı, əşyalar və Kök Kuboku ilə.',
   'Pomar': 'Meyvə bağı',
   'Copa da Cenoura': 'Kök Kuboku',
-  'As três pistas seguidas, com pontos por posição.': 'Üç pist ardıcıl, mövqeyə görə xallarla.',
   'contra {nomes}': 'rəqiblər: {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Hələ kubok yoxdur. Otaqda, dəstə ilə yarışda podiuma çıx.',
   'Usar o item': 'Əşyanı istifadə et',
@@ -2374,4 +2373,7 @@ export default {
   'Copa da turma': 'Dəstənin kuboku',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Dəstənin Dovşan yarışında sona qədər sürdüyü Kök Kubokları.',
   'Do pódio da Corrida dos coelhos': 'Dovşan yarışının podiumundan',
+  'Bosque': 'Meşə',
+  'Cânion': 'Kanyon',
+  'Copa do Repolho': 'Kələm Kuboku',
 } satisfies Record<string, string>;

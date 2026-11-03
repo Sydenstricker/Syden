@@ -2356,7 +2356,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Ein Kartrennen. Allein gegen die Uhr und die Geister deiner Freunde; mit der Gruppe live, mit Items und dem Karottenpokal.',
   'Pomar': 'Obstgarten',
   'Copa da Cenoura': 'Karottenpokal',
-  'As três pistas seguidas, com pontos por posição.': 'Die drei Strecken hintereinander, mit Punkten nach Platzierung.',
   'contra {nomes}': 'gegen {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Noch keine Pokale. Fahr in einem Rennen im Raum, mit der Gruppe, aufs Podest.',
   'Usar o item': 'Item benutzen',
@@ -2364,4 +2363,7 @@ export default {
   'Copa da turma': 'Pokal der Gruppe',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Karottenpokale, die die Gruppe im Hasenrennen bis zum Ende gefahren ist.',
   'Do pódio da Corrida dos coelhos': 'Vom Podest des Hasenrennens',
+  'Bosque': 'Wald',
+  'Cânion': 'Canyon',
+  'Copa do Repolho': 'Kohlpokal',
 } satisfies Record<string, string>;

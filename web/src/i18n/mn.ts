@@ -2416,7 +2416,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Карт уралдаан. Ганцаараа бол цагтай болон найзуудын сүнстэй; багтайгаа бол шууд, эд зүйлстэй, Луувангийн цомын төлөө.',
   'Pomar': 'Жимсний цэцэрлэг',
   'Copa da Cenoura': 'Луувангийн цом',
-  'As três pistas seguidas, com pontos por posição.': 'Гурван замыг дараалан, байрын дагуу оноотой.',
   'contra {nomes}': 'эсрэг: {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Цом алга байна. Өрөөн дэх уралдаанд багтайгаа индэрт гараарай.',
   'Usar o item': 'Эд зүйлийг ашиглах',
@@ -2424,4 +2423,7 @@ export default {
   'Copa da turma': 'Багийн цом',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Туулайн уралдаанд баг эцэс хүртэл уралдсан Луувангийн цомууд.',
   'Do pódio da Corrida dos coelhos': 'Туулайн уралдааны индэрээс',
+  'Bosque': 'Ой',
+  'Cânion': 'Хавцал',
+  'Copa do Repolho': 'Байцааны цом',
 } satisfies Record<string, string>;

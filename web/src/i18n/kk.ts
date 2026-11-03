@@ -2398,7 +2398,6 @@ export default {
   'Uma corrida de kart. Sozinho, contra o relógio e os fantasmas dos amigos; com a turma, ao vivo, com itens e a Copa da Cenoura.': 'Карт жарысы. Жалғыз — сағатқа және достарыңыздың елестеріне қарсы; топпен — тікелей, заттармен және Сәбіз кубогымен.',
   'Pomar': 'Жеміс бағы',
   'Copa da Cenoura': 'Сәбіз кубогы',
-  'As três pistas seguidas, com pontos por posição.': 'Үш трасса қатарынан, орынға қарай ұпаймен.',
   'contra {nomes}': 'қарсыластар: {nomes}',
   'Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.': 'Әзірге кубок жоқ. Бөлмеде топпен жарыста тұғырға шығыңыз.',
   'Usar o item': 'Затты қолдану',
@@ -2406,4 +2405,7 @@ export default {
   'Copa da turma': 'Топтың кубогы',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Топ Қояндар жарысында соңына дейін жүрген Сәбіз кубоктары.',
   'Do pódio da Corrida dos coelhos': 'Қояндар жарысының тұғырынан',
+  'Bosque': 'Орман',
+  'Cânion': 'Шатқал',
+  'Copa do Repolho': 'Қырыққабат кубогы',
 } satisfies Record<string, string>;

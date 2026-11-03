@@ -17,6 +17,9 @@ export const PISTAS: Record<string, { voltas: number; comprimento: number; linha
   'horta-1': { voltas: 3, comprimento: 3008, linha: [250, 190], caixas: 2 },
   'pomar-1': { voltas: 3, comprimento: 2987, linha: [220, 300], caixas: 2 },
   'praia-1': { voltas: 3, comprimento: 3191, linha: [230, 230], caixas: 2 },
+  'bosque-1': { voltas: 3, comprimento: 2891, linha: [200, 200], caixas: 2 },
+  'neve-1': { voltas: 3, comprimento: 3458, linha: [260, 160], caixas: 2 },
+  'canion-1': { voltas: 3, comprimento: 3204, linha: [220, 180], caixas: 2 },
 };
 
 /** Quanto de cada volta o kart tem de andar, no mínimo (o resto é o atalho que se aceita). */
