@@ -118,7 +118,8 @@ try {
   await duda.locator('.minijogo-jogo', { hasText: 'Pulo do coelho' }).click();
   await duda.locator('.corrida-escolha').waitFor({ timeout: 5000 });
   await foto(duda, 'escolha');
-  await duda.locator('.corrida-pista-botao', { hasText: 'Toca' }).click();
+  // (exato: o botão da Copa do Pulo também diz "Toca", na lista das fases dela)
+  await duda.locator('.corrida-escolha').getByRole('button', { name: 'Toca', exact: true }).click();
   await edu.locator('.minijogo-convite').waitFor({ timeout: 10000 });
   await edu.locator('.minijogo-convite').getByRole('button', { name: 'Jogar' }).click();
   await duda.locator('.minijogo-espera-lista li', { hasText: 'edu' + s }).waitFor({ timeout: 5000 });

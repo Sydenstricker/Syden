@@ -71,10 +71,14 @@ try {
   await edu.locator('.blocos-tela').waitFor({ timeout: 10000 });
   ok('a pilha apareceu para os dois');
   (await duda.locator('.blocos-outros li', { hasText: 'edu' + s }).count()) === 1 ? ok('a pilha pequena do Edu está ao lado da da Duda') : falhou('sem a pilha do Edu');
-  await duda.waitForTimeout(9000);
+  // o piloto automático pode levar uns segundos para achar a primeira combinação (com o intervalo mínimo entre trocas)
+  let pontos = 0;
+  for (let i = 0; i < 25 && pontos === 0; i++) {
+    await duda.waitForTimeout(1000);
+    pontos = Number((await duda.locator('.blocos-topo strong').first().innerText()).replace(/\D/g, ''));
+  }
   await foto(duda, 'jogando');
-  const pontos = Number((await duda.locator('.blocos-topo strong').first().innerText()).replace(/\D/g, ''));
-  pontos > 0 ? ok(`a Duda já fez ${pontos} pontos`) : falhou('o piloto não fez ponto nenhum em 6 s');
+  pontos > 0 ? ok(`a Duda já fez ${pontos} pontos`) : falhou('o piloto não fez ponto nenhum em 25 s');
 
   // o Edu não joga: a pilha dele sobe até o topo (uns 35 s, menos com os caixotes)
   // (a frase "Sua pilha chegou ao topo." do Edu dura só até o servidor ver o mesmo: com um vivo só, a partida acaba)
