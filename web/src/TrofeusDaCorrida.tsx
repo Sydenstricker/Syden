@@ -66,7 +66,7 @@ export function TrofeusDaCorrida({ aoFechar }: { aoFechar: () => void }) {
         </div>
         {erro && <p className="form-error">{erro}</p>}
         {trofeus && trofeus.length === 0 && (
-          <p className="settings-hint">{t('Nenhum troféu ainda. Fique no pódio de uma corrida na sala, com a turma.')}</p>
+          <p className="settings-hint">{t('Nenhum troféu ainda. Fique no pódio de um jogo na sala, com a turma.')}</p>
         )}
         {trofeus && trofeus.length > 0 && (
           <ul className="trofeus-lista">

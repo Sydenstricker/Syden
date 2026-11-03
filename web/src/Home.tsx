@@ -208,7 +208,7 @@ export function Home({
     cortica: { rotulo: t('Tem uma ideia para o Syden?'), onClick: () => ideiasRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }) },
     abajur: { rotulo: t('Dia e noite'), onClick: alternarLuz },
     // a estante de troféus: o pódio das corridas na sala (os troféus do quarto, decisão dele de 03/11/2026)
-    trofeu: { rotulo: t('Troféus'), sub: t('Do pódio da Corrida dos coelhos'), onClick: () => setTrofeusAbertos(true) },
+    trofeu: { rotulo: t('Troféus'), sub: t('Do pódio dos jogos com a turma'), onClick: () => setTrofeusAbertos(true) },
     computador: {
       rotulo: t('Mini-games'),
       sub: t('Jogar com a turma'),

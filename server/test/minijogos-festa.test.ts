@@ -148,10 +148,13 @@ test('a força e o relógio: o servidor calcula a partir do tempo, e empatados d
   const { jogo, andar } = comecar(['forca', 'relogio'], [anaId, biaId, caioId]);
   const periodo = (jogo.publico(anaId).dados as { periodoMs: number }).periodoMs;
   andar();
-  agora += 7950;
-  // no meio do período a barra está em 100
+  const largou = agora;
+  // no meio do período a barra está em 100 (cada um manda na hora em que parou)
+  agora = largou + periodo / 2;
   assert.equal(jogo.acao(anaId, { tipo: 'resultado', t: periodo / 2 }), null);
+  agora = largou + periodo * 1.5;
   assert.equal(jogo.acao(biaId, { tipo: 'resultado', t: periodo * 1.5 }), null);
+  agora = largou + 7950;
   assert.equal(jogo.acao(caioId, { tipo: 'resultado', t: 7900 }), null);
   let linhas = jogo.publico(anaId).linhas as Linha[];
   assert.deepEqual(linhas.slice(0, 2).map((l) => [l.valor, l.posicao, l.pontos]), [
@@ -168,7 +171,7 @@ test('a força e o relógio: o servidor calcula a partir do tempo, e empatados d
   agora += 2000;
   assert.equal(jogo.acao(anaId, { tipo: 'resultado', t: 10_000 }), null, 'parar em 10 s com só 2 s de jogo…');
   assert.equal((jogo.publico(anaId).meu as { motivo: string }).motivo, 'invalido', '…não vale');
-  agora += 9000;
+  agora += 8050;
   jogo.acao(biaId, { tipo: 'resultado', t: 10_050 });
   jogo.acao(caioId, { tipo: 'resultado', t: 9_800 });
   linhas = jogo.publico(anaId).linhas as Linha[];
@@ -179,20 +182,58 @@ test('a força e o relógio: o servidor calcula a partir do tempo, e empatados d
   ]);
 });
 
-test('tiro ao alvo: só conta alvo que já apareceu, sem repetir', () => {
+test('tiro ao alvo: cada acerto vale se o alvo estava na tela naquela hora, no relógio do servidor', () => {
   const { jogo, andar } = comecar(['alvo']);
   const alvos = (jogo.publico(anaId).dados as { alvos: { t: number; casa: number }[] }).alvos;
   assert.ok(alvos.length >= 20);
   andar();
-  agora += 5000;
-  const jaVistos = alvos.map((a, i) => [a, i] as const).filter(([a]) => a.t < 4000).map(([, i]) => i);
-  assert.equal(jogo.acao(anaId, { tipo: 'resultado', acertos: jaVistos }), null);
-  assert.equal(jogo.acao(biaId, { tipo: 'resultado', acertos: [0, 0, alvos.length - 1] }), null);
+  const largou = agora;
+  // a Ana acerta os três primeiros, cada um na hora em que está na tela
+  for (const i of [0, 1, 2]) {
+    agora = largou + alvos[i].t + 200;
+    jogo.acao(anaId, { tipo: 'acerto', i });
+  }
+  // a Bia, pelo console, "acerta" todos de uma vez agora (só valem os que estão na tela neste momento)
+  for (let i = 0; i < alvos.length; i++) jogo.acao(biaId, { tipo: 'acerto', i });
+  agora = largou + 20_500;
+  assert.equal(jogo.acao(anaId, { tipo: 'resultado' }), null);
+  assert.equal(jogo.acao(biaId, { tipo: 'resultado' }), null);
   const linhas = jogo.publico(anaId).linhas as Linha[];
-  assert.deepEqual(linhas.map((l) => [l.userId, l.valor, l.motivo]), [
-    [anaId, jaVistos.length, null],
-    [biaId, null, 'invalido'],
-  ]);
+  const daAna = linhas.find((l) => l.userId === anaId)!;
+  const daBia = linhas.find((l) => l.userId === biaId)!;
+  assert.equal(daAna.valor, 3);
+  assert.ok((daBia.valor ?? 0) <= 6 && alvos.length > 15, `a lista inteira mandada de uma vez vale só o que estava na tela: ${daBia.valor} de ${alvos.length}`);
+});
+
+test('quem fica sozinho na sala não ganha o pódio "com a turma"', async () => {
+  let naSala = [anaId, biaId];
+  const relogio: { ms: number; depois: () => void }[] = [];
+  const ctx = {
+    agendar: (ms: number, depois: () => void) => relogio.splice(0, relogio.length, { ms, depois }),
+    avisar: () => {},
+    terminar: () => {},
+    naSala: () => naSala,
+    nome: (id: number) => `p${id}`,
+    comunidade: comunidade.id,
+  };
+  const antes = (await comToken(app, ana.token)('GET', '/api/corrida-trofeus')).json().trofeus.length;
+  const jogo = criarFesta({ agora: () => agora, ordem: ['relogio', 'relogio', 'relogio', 'relogio', 'relogio'] }).comecar(ctx, {
+    naSala: [anaId, biaId],
+    criadaPor: anaId,
+    corpo: {},
+  });
+  assert.ok(typeof jogo !== 'string');
+  for (let r = 1; r <= 5; r++) {
+    relogio[0].depois(); // começa
+    if (r === 2) naSala = [anaId]; // a Bia sai depois da primeira rodada
+    agora += 10_000;
+    jogo.acao(anaId, { tipo: 'resultado', t: 10_000 });
+    if (jogo.publico(anaId).fase === 'jogando') relogio[0].depois();
+    relogio[0].depois(); // a revelação acaba
+  }
+  assert.equal(jogo.publico(anaId).fase, 'fim');
+  const depois = (await comToken(app, ana.token)('GET', '/api/corrida-trofeus')).json().trofeus.length;
+  assert.equal(depois, antes, 'sem troféu');
 });
 
 test('a partida inteira: 5 rodadas sem repetir, o placar somado, e o troféu do pódio', async () => {
@@ -213,7 +254,7 @@ test('a partida inteira: 5 rodadas sem repetir, o placar somado, e o troféu do 
       agora += 300;
       jogo.acao(anaId, { tipo: 'resultado', reacaoMs: 250 });
     } else if (micro === 'forca') {
-      agora += 2000;
+      agora += 1000;
       jogo.acao(anaId, { tipo: 'resultado', t: 1000 });
     } else if (micro === 'relogio') {
       agora += 10_200;
@@ -225,8 +266,9 @@ test('a partida inteira: 5 rodadas sem repetir, o placar somado, e o troféu do 
       agora += 5000;
       jogo.acao(anaId, { tipo: 'resultado', acertos: 1, setas: [(d as { setas: number[] }).setas[0]] });
     } else {
-      agora += 3000;
-      jogo.acao(anaId, { tipo: 'resultado', acertos: [0] });
+      agora += (d as { alvos: { t: number }[] }).alvos[0].t + 100;
+      jogo.acao(anaId, { tipo: 'acerto', i: 0 });
+      jogo.acao(anaId, { tipo: 'resultado' });
     }
     // a Bia não respondeu: o relógio fecha a rodada
     if (jogo.publico(anaId).fase === 'jogando') m.andar();

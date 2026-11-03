@@ -306,7 +306,9 @@ export function PainelDoMinijogo({
         />
       )}
       {jogoNaTela?.jogo === 'festa' && (
-        <JogoFesta estado={jogoNaTela as unknown as EstadoFesta & Partida} eu={eu} jogador={souJogador(partida)} restante={restante} agir={agir} />
+        <JogoFesta
+          key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
+          estado={jogoNaTela as unknown as EstadoFesta & Partida} eu={eu} jogador={souJogador(partida)} restante={restante} agir={agir} />
       )}
       {jogoNaTela?.jogo === 'lobisomem' && <JogoLobisomem estado={jogoNaTela as unknown as EstadoLobisomem & Partida} eu={eu} restante={restante} agir={agir} />}
       {(jogoNaTela?.jogo === 'gomoku' || jogoNaTela?.jogo === 'mancala') && (
@@ -494,7 +496,7 @@ export function PlacarAoVivo({ linhas, eu }: { linhas: { userId: number; usernam
 }
 
 /** O placar final, com medalha para os três primeiros. `valor` é o que aparece à direita de cada nome. */
-export function Placar({ linhas, eu }: { linhas: { userId: number; username: string; valor: string }[]; eu: number }) {
+export function Placar({ linhas, eu }: { linhas: { userId: number; username: string; valor: string; posicao?: number }[]; eu: number }) {
   const t = useT();
   return (
     <div className="minijogo-fim">
@@ -504,7 +506,7 @@ export function Placar({ linhas, eu }: { linhas: { userId: number; username: str
       <ol className="minijogo-placar">
         {linhas.map((linha, i) => (
           <li key={linha.userId} className={linha.userId === eu ? 'eu' : ''}>
-            <span className="minijogo-medalha">{MEDALHAS[i] ?? `${i + 1}.`}</span>
+            <span className="minijogo-medalha">{MEDALHAS[(linha.posicao ?? i + 1) - 1] ?? `${linha.posicao ?? i + 1}.`}</span>
             <span className="minijogo-nome">{linha.username}</span>
             <span className="minijogo-pontos">{linha.valor}</span>
           </li>

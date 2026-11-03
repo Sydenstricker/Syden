@@ -491,6 +491,24 @@ desde o verde do servidor (+3 s de folga). Pista nova precisa da linha dela em `
 - **"Praia" e "Neve" são também palavras do Desenha e adivinha**, cuja tradução guarda as alternativas aceitas com "|": o nome
   da pista na tela é a primeira (`nomeDaPistaEm`). Nome de pista que coincidir com palavra do desenho passa por ele.
 
+**O FLIPERAMA COMO HUB DE JOGOS DE 16 BITS (pedido dele, 03/11/2026): "mini jogos nossos, inspirados em Super Nintendo e
+minijogos de Mario Party", integrados à estante que já existe.** A varredura (só a mecânica; nada de nome, personagem, arte ou
+som de ninguém; o Tetris é o perigo: a empresa já ganhou na justiça pelo formato das peças e da grade): o que cabe na rede é o
+que cada um joga NA PRÓPRIA TELA e compara, ou por turnos; o que pede contato ao vivo entre jogadores (empurrar, a mesma bola)
+fica de fora. A ordem proposta: (1) os microjogos de festa, (2) minigolfe, (3) corrida de plataforma com fantasmas (o motor do
+kart), (4) blocos que caem em versus (trocar e combinar, como Panel de Pon/Puyo, NÃO Tetris), (5) por último o TABULEIRO estilo
+Mario Party (dado, casas, um microjogo entre as rodadas), quando houver uns dez microjogos. Arena de bombas, em observação.
+Ritmo, fora até haver música licenciada.
+
+**A FESTA DOS COELHOS está feita (03/11/2026, o item 1, em paralelo ao kart):** `server/src/minijogo-festa.ts`,
+`web/src/JogoFesta.tsx`, nas duas abas. Cinco rodadas, cada uma um microjogo sorteado sem repetir — Saque rápido (o sinal sai
+entre 2 e 5 s; antes dele, está fora), Medidor de força, Parar o relógio (10 s, os números somem depois de 3), Jogo dos copos,
+Siga o coelho e Tiro ao alvo —, com o "prepare-se", o jogo e a revelação; 10, 8, 6… pela posição, e as medalhas só no fim. O
+servidor é dono do relógio e das respostas (o sinal do saque só vai quando sai, e a reação conta de quando apareceu em cada
+tela, mas nunca abaixo de 100 ms nem muito abaixo do que o servidor viu passar). No Coletivo, o pódio vai para a mesma estante
+de troféus do quarto (`pista: 'festa'`). Microjogo novo é uma entrada nos dois lados; a estante de troféus serve a qualquer
+jogo da sala. Testes: `server/test/minijogos-festa.test.ts` e `e2e/festa.mjs` (com o LiveKit).
+
 **A sondagem de jogos dele (12/10/2026), avaliada:** os campeões de receita (Coin Master, Candy Crush, Sheep a Sheep)
 são solo e se pagam com anúncio, vidas e roleta. **Decisão dele: clonar só a MECÂNICA DE JOGO** (empilhar e combinar
 peças, parafusos, setas, combinar três) — nunca a de cassino nem a de "volte todo dia". Integração, nenhuma. Party game de ação (Mario Party, Overcooked) tem aderência

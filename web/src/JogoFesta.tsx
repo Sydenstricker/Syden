@@ -79,6 +79,8 @@ interface PropsDoMicro {
   /** Valendo: sou jogador, a rodada está correndo e ainda não mandei. */
   ativo: boolean;
   enviar: (corpo: Record<string, unknown>) => void;
+  /** Tiro ao alvo: cada acerto, na hora (o servidor confere no relógio dele). */
+  marcar?: (i: number) => void;
 }
 
 export function JogoFesta({
@@ -107,7 +109,13 @@ export function JogoFesta({
   }
 
   if (estado.terminada || estado.fase === 'fim') {
-    return <Placar eu={eu} linhas={estado.placar.map((l) => ({ ...l, valor: String(l.pontos) }))} />;
+    // empatados dividem a posição, como no troféu (revisão de 03/11/2026: a tela dava ouro e prata a quem empatou)
+    return (
+      <Placar
+        eu={eu}
+        linhas={estado.placar.map((l) => ({ ...l, valor: String(l.pontos), posicao: 1 + estado.placar.filter((o) => o.pontos > l.pontos).length }))}
+      />
+    );
   }
 
   const souJogador = jogador && estado.jogadores.some((j) => j.userId === eu);
@@ -121,11 +129,13 @@ export function JogoFesta({
   };
   const nome = NOMES[estado.microjogo];
   const props: PropsDoMicro | null =
-    estado.dados && inicio.current ? { dados: estado.dados, inicio: inicio.current.em, ativo, enviar } : null;
+    estado.dados && inicio.current
+      ? { dados: estado.dados, inicio: inicio.current.em, ativo, enviar, marcar: (i: number) => void agir({ tipo: 'acerto', i }) }
+      : null;
   const mostrarJogo = (estado.fase === 'jogando' && souJogador) || (estado.fase === 'revelando' && estado.microjogo === 'copos');
 
   return (
-    <div className={`festa festa-${estado.microjogo}`}>
+    <div className={`festa festa-jogo-${estado.microjogo}`}>
       <PlacarAoVivo eu={eu} linhas={estado.placar} />
       {estado.fase === 'preparando' && (
         <div className="festa-preparo">
@@ -553,7 +563,7 @@ function Siga({ dados, inicio, ativo, enviar }: PropsDoMicro) {
 }
 
 /** Tiro ao alvo: as cenouras aparecem numa grade 3 × 3; clique, toque, ou as teclas 1 a 9 na ordem de leitura. */
-function Alvo({ dados, inicio, ativo, enviar }: PropsDoMicro) {
+function Alvo({ dados, inicio, ativo, enviar, marcar }: PropsDoMicro) {
   const alvos = dados.alvos ?? [];
   const [acertos, setAcertos] = useState<number[]>([]);
   const agora = useRelogio(ativo);
@@ -563,10 +573,13 @@ function Alvo({ dados, inicio, ativo, enviar }: PropsDoMicro) {
   const acertar = (casa: number) => {
     if (!ativo || Date.now() - inicio >= ALVO_MS) return;
     const i = naCasa(casa);
-    if (i >= 0) setAcertos((a) => (a.includes(i) ? a : [...a, i]));
+    if (i < 0) return;
+    setAcertos((a) => (a.includes(i) ? a : [...a, i]));
+    // cada acerto vai na hora: o servidor confere no relógio dele que o alvo estava na tela
+    marcar?.(i);
   };
   useEffect(() => {
-    if (ativo && e >= ALVO_MS) enviar({ acertos });
+    if (ativo && e >= ALVO_MS) enviar({});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ativo, e >= ALVO_MS]);
   useTeclas(ativo, (ev) => {

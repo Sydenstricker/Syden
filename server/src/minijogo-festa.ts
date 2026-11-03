@@ -43,7 +43,7 @@ export const REACAO_MINIMA = 100;
  * O que a reação declarada pode ficar abaixo do que o SERVIDOR viu passar desde o sinal: o sinal chega pelo socket, o
  * site busca o estado e desenha (~2 idas e voltas), e o aperto volta (~1). Com menos que isso, o servidor sobe a reação.
  */
-export const FOLGA_SAQUE = 1500;
+export const FOLGA_SAQUE = 900;
 /** Folga do relógio para os outros: o site não pode dizer que passou mais tempo do que o servidor viu, mais isto. */
 export const FOLGA_MS = 500;
 
@@ -116,7 +116,9 @@ export function copoFinal(d: DadosCopos): number {
 }
 
 /** O mínimo que leva ver as sequências de 1 a n setas (sem contar o tempo de repetir). */
-export const minimoDaSiga = (n: number) => ((n * (n + 1)) / 2) * SIGA_PASSO_MS;
+export const minimoDaSiga = (n: number) => ((n * (n + 1)) / 2) * SIGA_PASSO_MS + Math.max(0, n - 1) * SIGA_PAUSA_MS;
+/** A pausa da tela entre um nível e o próximo (web/src/JogoFesta.tsx, Siga). */
+export const SIGA_PAUSA_MS = 400;
 
 /** Sorteia os dados de um microjogo. `aleatorio` é trocável para o teste. */
 export function gerarDados(m: Microjogo, aleatorio: () => number): Dados {
@@ -201,6 +203,12 @@ export function criarFesta({ agora = Date.now, aleatorio = Math.random, ordem: o
       /** O saque: quando o sinal saiu (relógio do servidor), ou null. */
       let sinalEm: number | null = null;
       const resultados = new Map<number, Resultado>();
+      /** Tiro ao alvo: cada acerto chega na hora, e o servidor confere no relógio dele (revisão de 03/11/2026: a lista inteira
+       * mandada no fim deixava o console acertar todos). */
+      const acertosDoAlvo = new Map<number, Set<number>>();
+      /** Quem estava na sala em TODAS as revelações: só eles são "a turma" do pódio (revisão de 03/11/2026: quem ficava
+       * sozinho ganhava o troféu, e quem tinha saído também). */
+      let ficaram: Set<number> | null = null;
       let linhas: LinhaDaRodada[] | null = null;
       const micro = () => ordem[rodada - 1];
 
@@ -208,6 +216,7 @@ export function criarFesta({ agora = Date.now, aleatorio = Math.random, ordem: o
         fase = 'preparando';
         dados = gerarDados(micro(), aleatorio);
         resultados.clear();
+        acertosDoAlvo.clear();
         linhas = null;
         sinalEm = null;
         ctx.agendar(PREPARO_MS, jogar);
@@ -233,6 +242,14 @@ export function criarFesta({ agora = Date.now, aleatorio = Math.random, ordem: o
       const revelar = () => {
         if (fase !== 'jogando') return;
         const presentes = new Set(ctx.naSala());
+        const agoraNaSala = inscritos.filter((id) => presentes.has(id));
+        ficaram = new Set((ficaram ? [...ficaram] : inscritos).filter((id) => agoraNaSala.includes(id)));
+        // no alvo, quem acertou alguma e não chegou a mandar o fim conta pelo que o servidor viu
+        if (micro() === 'alvo') {
+          for (const [userId, acertos] of acertosDoAlvo) {
+            if (!resultados.has(userId) && acertos.size) resultados.set(userId, { motivo: null, valor: acertos.size, chave: [-acertos.size] });
+          }
+        }
         const validos = [...resultados.entries()].filter(([, r]) => r.motivo === null);
         const menor = (a: number[], b: number[]) => {
           for (let i = 0; i < Math.max(a.length, b.length); i++) if ((a[i] ?? 0) !== (b[i] ?? 0)) return (a[i] ?? 0) - (b[i] ?? 0);
@@ -264,9 +281,10 @@ export function criarFesta({ agora = Date.now, aleatorio = Math.random, ordem: o
 
       const terminar = () => {
         fase = 'fim';
-        // O PÓDIO, com 2 pessoas ou mais: até o 3º lugar (empatados dividem), e só quem fez algum ponto.
-        if (inscritos.length >= 2) {
-          const ordemFinal = placar(pontos, ctx.nome);
+        // O PÓDIO, com 2 pessoas ou mais que ficaram até o fim: até o 3º lugar (empatados dividem), e só quem fez algum ponto.
+        const turma = ficaram ?? new Set<number>();
+        if (turma.size >= 2) {
+          const ordemFinal = placar(new Map([...pontos].filter(([id]) => turma.has(id))), ctx.nome);
           for (const l of ordemFinal) {
             const posicao = 1 + ordemFinal.filter((o) => o.pontos > l.pontos).length;
             if (posicao > 3 || l.pontos <= 0) continue;
@@ -278,7 +296,7 @@ export function criarFesta({ agora = Date.now, aleatorio = Math.random, ordem: o
               posicao,
               tempoMs: null,
               pontos: l.pontos,
-              rivais: inscritos.filter((id) => id !== l.userId),
+              rivais: [...turma].filter((id) => id !== l.userId),
             });
           }
         }
@@ -299,6 +317,7 @@ export function criarFesta({ agora = Date.now, aleatorio = Math.random, ordem: o
       const numero = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
 
       /** Confere o resultado mandado e o transforma no que conta. */
+      let quemAvalia = 0;
       const avaliar = (corpo: Record<string, unknown>): Resultado => {
         const agoraMs = agora();
         const passou = agoraMs - inicio;
@@ -314,13 +333,14 @@ export function criarFesta({ agora = Date.now, aleatorio = Math.random, ordem: o
           }
           case 'forca': {
             const t = corpo.t;
-            if (!numero(t) || t < 0 || t > FORCA_MS || t > passou + FOLGA_MS) return invalido;
+            // o tempo dito tem de ser o de agora (com a folga da rede): não vale calcular o perfeito e mandar depois
+            if (!numero(t) || t < 0 || t > FORCA_MS || t > passou + FOLGA_MS || t < passou - FOLGA_SAQUE) return invalido;
             const v = Math.round(valorDaForca((dados as DadosForca).periodoMs, t) * 10) / 10;
             return { motivo: null, valor: v, chave: [100 - v] };
           }
           case 'relogio': {
             const t = corpo.t;
-            if (!numero(t) || t < 0 || t > RELOGIO_MS || t > passou + FOLGA_MS) return invalido;
+            if (!numero(t) || t < 0 || t > RELOGIO_MS || t > passou + FOLGA_MS || t < passou - FOLGA_SAQUE) return invalido;
             const ms = Math.round(t);
             return { motivo: null, valor: ms, chave: [Math.abs(ms - RELOGIO_ALVO)] };
           }
@@ -345,22 +365,16 @@ export function criarFesta({ agora = Date.now, aleatorio = Math.random, ordem: o
             // e houve tempo de ver todas as sequências até ela
             if (passou + FOLGA_MS < minimoDaSiga(n)) return invalido;
             if (n === 0) return { motivo: 'errou', valor: 0, chave: [] };
-            const ms = numero(corpo.ms) ? Math.max(0, Math.round(Math.min(corpo.ms, passou + FOLGA_MS))) : passou;
+            // o tempo não fica abaixo do mínimo de ver as setas, nem muito abaixo do que o servidor viu passar
+            const minimo = Math.max(minimoDaSiga(n), passou - FOLGA_SAQUE);
+            const ms = numero(corpo.ms) ? Math.round(Math.min(Math.max(corpo.ms, minimo), passou + FOLGA_MS)) : passou;
             return { motivo: null, valor: n, chave: [-n, ms] };
           }
           case 'alvo': {
-            const alvos = (dados as DadosAlvo).alvos;
-            const lista = corpo.acertos;
-            if (!Array.isArray(lista) || lista.length > alvos.length) return invalido;
-            const vistos = new Set<number>();
-            for (const i of lista) {
-              if (!numero(i) || !Number.isInteger(i) || i < 0 || i >= alvos.length || vistos.has(i)) return invalido;
-              // não se acerta um alvo que ainda não tinha aparecido
-              if (alvos[i].t > passou + FOLGA_MS) return invalido;
-              vistos.add(i);
-            }
-            if (vistos.size === 0) return { motivo: 'errou', valor: 0, chave: [] };
-            return { motivo: null, valor: vistos.size, chave: [-vistos.size] };
+            // o que vale é o que o servidor viu acertar, um a um (acao 'acerto')
+            const n = acertosDoAlvo.get(quemAvalia)?.size ?? 0;
+            if (n === 0) return { motivo: 'errou', valor: 0, chave: [] };
+            return { motivo: null, valor: n, chave: [-n] };
           }
         }
       };
@@ -385,14 +399,30 @@ export function criarFesta({ agora = Date.now, aleatorio = Math.random, ordem: o
             resposta,
             linhas: fase === 'revelando' || fase === 'fim' ? linhas : null,
             placar: placar(pontos, ctx.nome),
+            // a partida (o site monta a tela de novo a cada uma: o "Jogar de novo" do Solo não herda a rodada 5 da anterior)
+            partidaId: evento,
           };
         },
         acao(quem, corpo) {
-          if (corpo.tipo !== 'resultado') return 'Ação desconhecida.';
+          if (corpo.tipo !== 'resultado' && corpo.tipo !== 'acerto') return 'Ação desconhecida.';
           if (!inscritos.includes(quem)) return 'Você está assistindo esta partida.';
           if (fase !== 'jogando') return 'Esta rodada já acabou.';
+          if (corpo.tipo === 'acerto') {
+            // TIRO AO ALVO: um acerto vale se o alvo estava na tela AGORA (no relógio do servidor, com a folga da rede)
+            if (micro() !== 'alvo' || resultados.has(quem)) return null;
+            const alvos = (dados as DadosAlvo).alvos;
+            const i = corpo.i;
+            if (!numero(i) || !Number.isInteger(i) || i < 0 || i >= alvos.length) return null;
+            const passou = agora() - inicio;
+            if (passou < alvos[i].t - FOLGA_MS || passou > alvos[i].t + ALVO_VIDA_MS + FOLGA_SAQUE) return null;
+            const meus = acertosDoAlvo.get(quem) ?? new Set<number>();
+            meus.add(i);
+            acertosDoAlvo.set(quem, meus);
+            return null;
+          }
           // o primeiro resultado é o que vale (o Enter apertado duas vezes não troca nada)
           if (resultados.has(quem)) return null;
+          quemAvalia = quem;
           resultados.set(quem, avaliar(corpo));
           if (todosResponderam()) revelar();
           else ctx.avisar();
