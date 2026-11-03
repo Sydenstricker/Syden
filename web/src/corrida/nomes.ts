@@ -13,6 +13,11 @@ export const NOMES_DAS_PISTAS: Record<string, string> = {
   'copa-do-repolho': chave('Copa do Repolho'),
   // o pódio da Festa dos coelhos mora na mesma estante (server/src/minijogo-festa.ts)
   festa: chave('Festa dos coelhos'),
+  // as fases e a copa do Pulo do coelho (server/src/plataforma.ts), que também dão troféu na sala
+  'prado-1': chave('Prado'),
+  'toca-1': chave('Toca'),
+  'copas-1': chave('Galhos'),
+  'copa-do-pulo': chave('Copa do Pulo'),
   // e o do Minigolfe da toca (server/src/minijogo-golfe.ts): os pontos são o total de tacadas, e MENOS é melhor
   golfe: chave('Minigolfe da toca'),
   // e o do Tabuleiro da turma (server/src/minijogo-tabuleiro-da-turma.ts)

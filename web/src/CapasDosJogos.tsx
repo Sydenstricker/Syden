@@ -13,6 +13,8 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
       return <CapaCorrida />;
     case 'festa':
       return <CapaFesta />;
+    case 'plataforma':
+      return <CapaPlataforma />;
     case 'golfe':
       return <CapaGolfe />;
     case 'tabuleiro':
@@ -103,6 +105,34 @@ function CapaFesta() {
           <rect x={x - 8} y="73" width="16" height="3" rx="1" fill="#d39a62" />
         </g>
       ))}
+    </svg>
+  );
+}
+
+/**
+ * O Pulo do coelho: o mascote no meio do pulo, entre duas plataformas de grama sobre um buraco, com a mola e as nuvens. O
+ * coelho é o quadro de passo largo da folha web/public/plataforma/coelho.png (o terceiro, de 17 x 31).
+ */
+function CapaPlataforma() {
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#ecc8a6" />
+      <path d="M0 92 Q30 66 64 86 T128 80 T160 84 L160 120 L0 120 Z" fill="#b8a6b8" />
+      <rect x="18" y="20" width="22" height="6" rx="3" fill="#f6ead8" />
+      <rect x="108" y="14" width="30" height="7" rx="3" fill="#f6ead8" />
+      <rect x="0" y="88" width="52" height="32" fill="#8c6248" />
+      <rect x="0" y="88" width="52" height="5" fill="#78a85a" />
+      <rect x="104" y="72" width="56" height="48" fill="#8c6248" />
+      <rect x="104" y="72" width="56" height="5" fill="#78a85a" />
+      <rect x="58" y="60" width="34" height="6" fill="#b88a5c" />
+      <rect x="58" y="64" width="34" height="2" fill="#8a6040" />
+      <rect x="24" y="80" width="14" height="3" fill="#d46a4e" />
+      <path d="M26 84 H36 M25 86 H37" stroke="#c8bca8" strokeWidth="1" />
+      <path d="M112 66 L116 58 L120 66 Z M122 66 L126 58 L130 66 Z" fill="#d8d0c4" />
+      <path d="M66 34 Q74 30 80 34" fill="none" stroke="#f6ead8" strokeWidth="2" strokeDasharray="2 3" />
+      <svg x="62" y="16" width="34" height="62" viewBox="34 0 17 31" style={{ imageRendering: 'pixelated' }}>
+        <image href={`${import.meta.env.BASE_URL}plataforma/coelho.png`} width="153" height="31" />
+      </svg>
     </svg>
   );
 }

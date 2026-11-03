@@ -10,6 +10,7 @@ import { JogoFesta } from './JogoFesta';
 import { JogoGolfe } from './JogoGolfe';
 import { JogoLobisomem } from './JogoLobisomem';
 import { JogoPalavra } from './JogoPalavra';
+import { EscolhaDaFase, JogoPlataforma, JogoPlataformaNaSala, type EstadoPlataforma } from './JogoPlataforma';
 import { EscolhaDoQuiz, JogoQuiz } from './JogoQuiz';
 import { CATEGORIAS_DO_QUIZ, ehQuiz, type EstadoQuiz } from './quiz';
 import { EscolhaDaPista, JogoCorrida, JogoCorridaNaSala, type EstadoCorrida } from './JogoCorrida';
@@ -129,7 +130,10 @@ export function PainelDoMinijogo({
   const [correndo, setCorrendo] = useState(false);
   // Correndo sozinho, o jogo da sala fica fora da tela (revisão de 03/11/2026: um convite de outra pessoa derrubava a corrida
   // no meio). O convite continua chegando pelo aviso pequeno da sala; ao sair da corrida, o jogo da sala aparece.
-  const partida = correndo ? null : partidaDaSala;
+  /** O Pulo do coelho aberto no Solo: como a corrida, roda aqui, fora da `partida`. */
+  const [pulando, setPulando] = useState(false);
+  const sozinho = correndo || pulando;
+  const partida = sozinho ? null : partidaDaSala;
   const setEscolhendoCategoria = (sim: boolean) => setEscolhendo(sim ? 'tamanho' : null);
   /** Os jogos que pedem categoria: clicar na capa abre a escolha, e não a partida. */
   const pedeCategoria = (jogo: IdDoJogo) => jogo === 'tamanho' || (ehQuiz(jogo) && CATEGORIAS_DO_QUIZ[jogo] !== undefined);
@@ -157,6 +161,7 @@ export function PainelDoMinijogo({
     if (!comecarCom || partida || comecou.current) return;
     comecou.current = true;
     if (comecarCom === 'corrida') setCorrendo(true);
+    else if (comecarCom === 'plataforma') setPulando(true);
     else if (pedeCategoria(comecarCom)) setEscolhendo(comecarCom);
     else void tentar(() => aoComecar(comecarCom, {}, true));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -187,16 +192,16 @@ export function PainelDoMinijogo({
 
   return (
     <div
-      className={`minijogo${partida ? ` jogando-${partida.jogo}` : correndo ? ' jogando-corrida' : ' na-estante'}`}
+      className={`minijogo${partida ? ` jogando-${partida.jogo}` : correndo ? ' jogando-corrida' : pulando ? ' jogando-plataforma' : ' na-estante'}`}
       role="dialog"
-      aria-label={partida ? t(nomeDoJogo(partida.jogo)) : correndo ? t(nomeDoJogo('corrida')) : t('Mini-games')}
+      aria-label={partida ? t(nomeDoJogo(partida.jogo)) : correndo ? t(nomeDoJogo('corrida')) : pulando ? t(nomeDoJogo('plataforma')) : t('Mini-games')}
     >
       <div className="minijogo-topo">
         <strong>
-          <Gamepad2 size={16} aria-hidden="true" /> {partida ? t(nomeDoJogo(partida.jogo)) : correndo ? t(nomeDoJogo('corrida')) : t('Mini-games')}
+          <Gamepad2 size={16} aria-hidden="true" /> {partida ? t(nomeDoJogo(partida.jogo)) : correndo ? t(nomeDoJogo('corrida')) : pulando ? t(nomeDoJogo('plataforma')) : t('Mini-games')}
         </strong>
         {/* As abas da estante (pedido dele, 14/10/2026): o que se joga sozinho e o que é da turma. */}
-        {!partida && !escolhendoCategoria && !correndo && !soSolo && (
+        {!partida && !escolhendoCategoria && !sozinho && !soSolo && (
           <div className="minijogo-abas" role="tablist" aria-label={t('Mini-games')}>
             {(['solo', 'coletivo'] as const).map((grupo) => (
               <button key={grupo} type="button" role="tab" aria-selected={aba === grupo} className={aba === grupo ? 'ativa' : ''} onClick={() => escolherAba(grupo)}>
@@ -238,8 +243,15 @@ export function PainelDoMinijogo({
           aoVoltar={() => setEscolhendoCategoria(false)}
         />
       )}
+      {!partida && escolhendo === 'plataforma' && (
+        <EscolhaDaFase
+          aoEscolher={(fase) => tentar(() => aoComecar('plataforma', { pista: fase }, false).then(() => setEscolhendo(null)))}
+          aoVoltar={() => setEscolhendo(null)}
+        />
+      )}
       {!partida && correndo && <JogoCorrida eu={eu} aoVoltar={() => setCorrendo(false)} />}
-      {!partida && !escolhendoCategoria && !correndo && (
+      {!partida && pulando && <JogoPlataforma eu={eu} aoVoltar={() => setPulando(false)} />}
+      {!partida && !escolhendoCategoria && !sozinho && (
         <ul className="minijogo-estante">
           {JOGOS.filter((jogo) => jogo.abas.includes(aba)).map((jogo) => (
             <li key={jogo.id}>
@@ -252,6 +264,10 @@ export function PainelDoMinijogo({
                     ? aba === 'solo'
                       ? setCorrendo(true)
                       : setEscolhendo('corrida')
+                    : jogo.id === 'plataforma'
+                      ? aba === 'solo'
+                        ? setPulando(true)
+                        : setEscolhendo('plataforma')
                     : jogo.id === 'tabuleiro' || pedeCategoria(jogo.id)
                       ? setEscolhendo(jogo.id)
                       : tentar(() => aoComecar(jogo.id, {}, aba === 'solo'))
@@ -319,6 +335,17 @@ export function PainelDoMinijogo({
         <JogoFesta
           key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
           estado={jogoNaTela as unknown as EstadoFesta & Partida} eu={eu} jogador={souJogador(partida)} restante={restante} agir={agir} />
+      )}
+      {jogoNaTela?.jogo === 'plataforma' && (
+        <JogoPlataformaNaSala
+          estado={jogoNaTela as unknown as EstadoPlataforma & Partida}
+          eu={eu}
+          jogador={souJogador(partida)}
+          restante={restante}
+          agir={agir}
+          socket={socket}
+          channelId={channelId}
+        />
       )}
       {jogoNaTela?.jogo === 'golfe' && (
         <JogoGolfe

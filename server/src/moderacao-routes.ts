@@ -211,6 +211,8 @@ export function registerModeracaoRoutes(app: FastifyInstance, io: IOServer) {
           corrida: db.corridasDe(eu.id),
           // os troféus da corrida, com os ids de contra quem foi (ver corrida_trofeus em db.ts)
           trofeusDaCorrida: db.trofeusParaLevar(eu.id),
+          // os recordes do Pulo do coelho, com o fantasma (ver plataforma-routes.ts)
+          puloDoCoelho: db.pulosDe(eu.id),
         },
         // Os cargos personalizados e os pontos de nível também são dados sobre a pessoa, e vão junto.
         comunidades: db.listCommunitiesForUser(eu.id).map((c) => {

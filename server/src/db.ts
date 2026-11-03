@@ -805,6 +805,18 @@ db.exec(`
     em           TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
   );
 
+  -- O PULO DO COELHO (03/11/2026): o melhor tempo de cada pessoa em cada fase de plataforma, com o FANTASMA (as posições
+  -- do coelho, 15 por segundo, para os amigos correrem contra). Só o melhor; quem vê: a própria pessoa e os amigos aceitos
+  -- (plataforma-routes.ts), como na Corrida dos coelhos.
+  CREATE TABLE IF NOT EXISTS plataforma_recordes (
+    user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    fase       TEXT NOT NULL,
+    tempo_ms   INTEGER NOT NULL,
+    amostras   TEXT NOT NULL,
+    em         TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    PRIMARY KEY (user_id, fase)
+  );
+
   -- O SALÃO de cada comunidade (15/10/2026): a arrumação do salão isométrico, no mesmo formato do quarto (quarto.ts).
   -- É da TURMA: todo membro vê igual, e mexe quem administra ou tem um cargo que arruma o salão (salao-routes.ts).
   CREATE TABLE IF NOT EXISTS saloes (
@@ -4373,6 +4385,68 @@ export function registrarCopa(communityId: number, jogadores: number) {
 
 export function copasDaComunidade(communityId: number): number {
   return (db.prepare('SELECT COUNT(*) AS n FROM corrida_copas WHERE community_id = ? AND jogadores >= 2').get(communityId) as { n: number }).n;
+}
+
+// ---------- O Pulo do coelho (a corrida de plataforma) ----------
+
+export interface RecordeDoPulo {
+  userId: number;
+  username: string;
+  nomeDeExibicao: string | null;
+  tempoMs: number;
+  em: string;
+}
+
+/** O recorde da pessoa e o dos amigos aceitos dela, nesta fase, do mais rápido ao mais lento (sem o fantasma). */
+export function recordesDoPulo(userId: number, fase: string): RecordeDoPulo[] {
+  return db
+    .prepare(
+      `SELECT r.user_id AS userId, u.username AS username, u.nome_exibicao AS nomeDeExibicao, r.tempo_ms AS tempoMs, r.em AS em
+       FROM plataforma_recordes r JOIN users u ON u.id = r.user_id
+       WHERE r.fase = ? AND (r.user_id = ? OR r.user_id IN (
+         SELECT CASE WHEN menor_id = ? THEN maior_id ELSE menor_id END FROM friendships
+         WHERE ? IN (menor_id, maior_id) AND situacao = 'aceita'))
+       ORDER BY r.tempo_ms LIMIT 30`,
+    )
+    .all(fase, userId, userId, userId) as unknown as RecordeDoPulo[];
+}
+
+export function recordeDoPulo(userId: number, fase: string): { tempoMs: number; amostras: string } | null {
+  const linha = db
+    .prepare('SELECT tempo_ms AS tempoMs, amostras FROM plataforma_recordes WHERE user_id = ? AND fase = ?')
+    .get(userId, fase) as { tempoMs: number; amostras: string } | undefined;
+  return linha ?? null;
+}
+
+/** Os recordes da pessoa em todas as fases, com o fantasma (para o "Levar seus dados"). */
+export function pulosDe(userId: number) {
+  const linhas = db
+    .prepare('SELECT fase, tempo_ms AS tempoMs, amostras, em FROM plataforma_recordes WHERE user_id = ? ORDER BY fase')
+    .all(userId) as { fase: string; tempoMs: number; amostras: string; em: string }[];
+  return linhas.map((l) => ({ fase: l.fase, tempoMs: l.tempoMs, em: l.em, fantasma: JSON.parse(l.amostras) as number[] }));
+}
+
+/** Guarda se for o melhor da pessoa nesta fase. Devolve o tempo que valia antes (null se não havia). */
+export function guardarPulo(userId: number, fase: string, tempoMs: number, amostras: string): { anterior: number | null; recorde: boolean } {
+  const antes = recordeDoPulo(userId, fase);
+  if (antes && antes.tempoMs <= tempoMs) return { anterior: antes.tempoMs, recorde: false };
+  db.prepare(
+    `INSERT INTO plataforma_recordes (user_id, fase, tempo_ms, amostras, em)
+     VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+     ON CONFLICT(user_id, fase) DO UPDATE SET tempo_ms = excluded.tempo_ms, amostras = excluded.amostras, em = excluded.em`,
+  ).run(userId, fase, tempoMs, amostras);
+  return { anterior: antes?.tempoMs ?? null, recorde: true };
+}
+
+/** Uma fase do contra o relógio corrida até o fim, para o painel de uso (como registrarCorrida, com o jogo 'plataforma'). */
+export function registrarPulo(userId: number, tempoMs: number) {
+  const { lastInsertRowid } = db
+    .prepare(
+      `INSERT INTO minijogo_partidas (jogo, community_id, channel_id, criada_por, jogadores, comecou_em, terminou_em, completa)
+       VALUES ('plataforma', 0, 0, ?, 1, strftime('%Y-%m-%dT%H:%M:%fZ', 'now', ?), strftime('%Y-%m-%dT%H:%M:%fZ', 'now'), 1)`,
+    )
+    .run(userId, `-${Math.round(tempoMs / 1000)} seconds`);
+  db.prepare('INSERT OR IGNORE INTO minijogo_jogadores (partida_id, user_id) VALUES (?, ?)').run(Number(lastInsertRowid), userId);
 }
 
 // ---------- O salão de cada comunidade ----------
