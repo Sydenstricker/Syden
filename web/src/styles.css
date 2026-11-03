@@ -16429,3 +16429,173 @@ body.arrastando-barra {
     height: 180px;
   }
 }
+
+/* ---------- A BRIGA NA HORTA (JogoBriga.tsx) ---------- */
+.briga {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  width: 100%;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.briga-hud {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 6px;
+}
+
+.briga-hud li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 2px 8px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: var(--bg-raised);
+  font-size: 0.8rem;
+}
+
+.briga-hud li.eu {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.briga-hud strong {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-strong);
+}
+
+.briga-vida {
+  display: block;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--bg-hover);
+  overflow: hidden;
+}
+
+.briga-vida > span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+
+.briga-vidas {
+  color: var(--red);
+  letter-spacing: 1px;
+  font-size: 0.7rem;
+}
+
+.briga-tela {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #1e1822;
+}
+
+.briga-tela canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  image-rendering: pixelated;
+}
+
+.briga-aviso {
+  position: absolute;
+  left: 50%;
+  top: 38%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: #1e1822d0;
+  color: #fbf3e4;
+  font-weight: 700;
+  text-align: center;
+  pointer-events: none;
+}
+
+.briga-desfecho {
+  margin: 0;
+  text-align: center;
+  font-weight: 700;
+  color: var(--text-strong);
+}
+
+.briga-dica {
+  margin: 0;
+  text-align: center;
+}
+
+.briga-toque {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.briga-direcional {
+  display: grid;
+  grid-template-columns: repeat(3, 44px);
+  grid-template-rows: repeat(3, 40px);
+  gap: 2px;
+}
+
+.briga-toque button {
+  border: none;
+  border-radius: 10px;
+  background: var(--bg-raised);
+  color: var(--text-strong);
+  font-size: 1.1rem;
+  touch-action: none;
+}
+
+.briga-cima {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.briga-esq {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.briga-dir {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+.briga-baixo {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+.briga-botoes {
+  display: flex;
+  gap: 8px;
+}
+
+.briga-botoes button {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+}
+
+/* com mouse e teclado, os botões de toque ficam de fora (as teclas estão na dica) */
+@media (hover: hover) and (pointer: fine) {
+  .briga-toque {
+    display: none;
+  }
+}
+
+@media (pointer: coarse) {
+  .briga-dica {
+    display: none;
+  }
+}

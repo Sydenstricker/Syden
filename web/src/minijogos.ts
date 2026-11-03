@@ -338,7 +338,18 @@ export interface EstadoFesta {
   placar: LinhaDoPlacar[];
 }
 
-export type IdDoJogo = 'corrida' | 'festa' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'xadrez' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
+/** A Briga na horta (server/src/minijogo-briga.ts): o estado lento; o rápido vem no quadro do tempo real (briga/regras.ts). */
+export interface EstadoBriga {
+  fase: 'lutando' | 'avancando' | 'vitoria' | 'derrota' | 'fim';
+  onda: number;
+  ondas: number;
+  venceu: boolean;
+  jogadores: { userId: number; username: string; avatar: number | null; pontos: number; vidas: number }[];
+  resultado: { userId: number; username: string; pontos: number; golpes: number; nocautes: number }[] | null;
+  partidaId: string;
+}
+
+export type IdDoJogo = 'briga' | 'corrida' | 'festa' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'xadrez' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
 
 /**
  * As duas abas da estante (pedido dele, 14/10/2026). SOLO: a partida é só de quem joga, começa sem convite, não ocupa
@@ -368,6 +379,13 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
     id: 'festa',
     nome: chave('Festa dos coelhos'),
     dica: chave('Cinco rodadas de jogos rápidos, cada um na própria tela: reflexo, pontaria, memória e olho. Quem for melhor em cada rodada ganha mais pontos.'),
+    abas: ['solo', 'coletivo'],
+  },
+  {
+    // A briga de rua de lado (JogoBriga.tsx, server/src/minijogo-briga.ts): a turma contra os mesmos inimigos.
+    id: 'briga',
+    nome: chave('Briga na horta'),
+    dica: chave('Os coelhos defendem a horta de raposas, corvos e um texugo. Andem juntos, batam em combo e cuidem uns dos outros: de 1 a 4 pessoas.'),
     abas: ['solo', 'coletivo'],
   },
   {

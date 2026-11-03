@@ -23,6 +23,12 @@ export interface Contexto {
   nome(userId: number): string;
   /** A comunidade da sala (0 na partida solo): o que a turma faz junta conta nela (a Copa da Cenoura, 03/11/2026). */
   comunidade?: number;
+  /**
+   * O SERVIDOR FALA PRIMEIRO, na hora (a Briga na horta, 03/11/2026: os inimigos são do servidor, e o quadro deles vai 20
+   * vezes por segundo): manda `dados` a quem está na sala (ou a quem joga o Solo) pelo mesmo 'minijogo:tempo-real' do
+   * traço do desenho, sem o "mudou, busque de novo".
+   */
+  difundir?(dados: unknown): void;
 }
 
 export interface Jogo {
@@ -40,6 +46,11 @@ export interface Jogo {
    * chamam de tempos em tempos (revisão de 16/10/2026: a rodada ficava presa até o relógio de 3 minutos).
    */
   conferir?(): void;
+  /**
+   * A partida saiu da memória (acabou, foi encerrada, ou trocada por outra): o jogo que tem relógio PRÓPRIO além do do motor
+   * (o passo de 20 por segundo da Briga) o desliga aqui. Pode ser chamado mais de uma vez.
+   */
+  parar?(): void;
 }
 
 export interface Definicao {

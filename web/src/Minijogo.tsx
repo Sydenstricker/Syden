@@ -4,6 +4,7 @@ import type { Socket } from 'socket.io-client';
 import { CapaDoJogo, CapaPalavraDoDia } from './CapasDosJogos';
 import { IconButton } from './IconButton';
 import { idiomaAtual, useT } from './i18n';
+import { JogoBriga } from './JogoBriga';
 import { JogoDesenho } from './JogoDesenho';
 import { JogoDuelo } from './JogoDuelo';
 import { JogoFesta } from './JogoFesta';
@@ -23,6 +24,7 @@ import {
   nomeDoJogo,
   souJogador,
   SITES_PARA_TRANSMITIR,
+  type EstadoBriga,
   type EstadoDesenho,
   type EstadoDuelo,
   type EstadoFesta,
@@ -309,6 +311,16 @@ export function PainelDoMinijogo({
         <JogoFesta
           key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
           estado={jogoNaTela as unknown as EstadoFesta & Partida} eu={eu} jogador={souJogador(partida)} restante={restante} agir={agir} />
+      )}
+      {jogoNaTela?.jogo === 'briga' && (
+        <JogoBriga
+          key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
+          estado={jogoNaTela as unknown as EstadoBriga & Partida}
+          eu={eu}
+          jogador={souJogador(partida)}
+          socket={socket}
+          channelId={channelId}
+        />
       )}
       {jogoNaTela?.jogo === 'lobisomem' && <JogoLobisomem estado={jogoNaTela as unknown as EstadoLobisomem & Partida} eu={eu} restante={restante} agir={agir} />}
       {(jogoNaTela?.jogo === 'gomoku' || jogoNaTela?.jogo === 'mancala') && (

@@ -3,6 +3,7 @@ import type { Server as IOServer, Socket } from 'socket.io';
 import * as db from './db.js';
 import { corrida } from './minijogo-corrida.js';
 import { desenho } from './minijogo-desenho.js';
+import { briga } from './minijogo-briga.js';
 import { festa } from './minijogo-festa.js';
 import type { Contexto, Definicao, Jogo } from './minijogo-motor.js';
 import { lobisomem } from './minijogo-lobisomem.js';
@@ -45,6 +46,7 @@ export const JOGOS: Record<string, Definicao> = {
   palavra,
   corrida,
   festa,
+  briga,
   // Os quizzes de adivinhar (minijogo-quiz.ts): um jogo por tema, todos no mesmo motor.
   ...Object.fromEntries(Object.entries(TEMAS).map(([id, tema]) => [id, criarQuiz(tema)])),
 };
@@ -55,7 +57,7 @@ export const JOGOS: Record<string, Definicao> = {
  * ocupa a sala (a turma continua podendo começar o jogo dela), não pede chamada (dá para jogar pelo computador do
  * quarto) e não conta nas conquistas da turma, que medem gente junta.
  */
-export const JOGOS_SOLO = new Set(['tamanho', 'xadrez', 'sudoku', 'festa', ...Object.keys(TEMAS)]);
+export const JOGOS_SOLO = new Set(['tamanho', 'xadrez', 'sudoku', 'festa', 'briga', ...Object.keys(TEMAS)]);
 
 interface Partida {
   channelId: number;
@@ -118,6 +120,7 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
 
   function encerrar(p: Partida) {
     if (p.relogio) clearTimeout(p.relogio);
+    p.instancia?.parar?.();
     // Encerrada antes do placar final (se já tinha terminado, a linha já está fechada e nada muda).
     if (p.registro !== null) db.fecharPartida(p.registro, false);
     if (p.solo) {
@@ -157,6 +160,10 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
       naSala: () => presentes(p),
       nome: (userId) => nomeNa(p, userId),
       comunidade: p.communityId,
+      difundir: (dados) => {
+        if (p.solo) return emitToUser(io, p.criadaPor, 'minijogo-solo:tempo-real', { dados });
+        for (const id of quemEstaNaSala(p.channelId)) emitToUser(io, id, 'minijogo:tempo-real', { channelId: p.channelId, dados });
+      },
     };
     // O relógio do convite sai antes: um jogo que não marca relógio ao começar herdaria o fim do convite.
     if (p.relogio) clearTimeout(p.relogio);
@@ -198,6 +205,14 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
       for (const id of quemEstaNaSala(channelId)) {
         if (id !== userId) emitToUser(io, id, 'minijogo:tempo-real', { channelId, dados: repassar });
       }
+    });
+    // O Solo também tem tempo real (a Briga na horta: os inimigos são do servidor mesmo sozinho). Não há a quem repassar:
+    // o jogo responde pelo `difundir`.
+    socket.on('minijogo-solo:tempo-real', (dados: { dados?: unknown }) => {
+      const userId = (socket.data.user as { id: number } | undefined)?.id;
+      const p = userId ? solos.get(userId) : undefined;
+      if (!userId || !p?.instancia?.tempoReal || p.terminada) return;
+      p.instancia.tempoReal(userId, dados?.dados);
     });
   });
 
@@ -291,6 +306,7 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
         if (atual && !atual.terminada && atual.convite && !estaNaSala(atual.criadaPor, canal.id)) encerrar(atual);
         else if (atual && !atual.terminada) return reply.code(409).send({ error: 'Já tem uma partida acontecendo nesta sala.' });
         if (atual?.relogio) clearTimeout(atual.relogio);
+        atual?.instancia?.parar?.();
 
         const convidar = request.body?.convidar === true;
         const { convidar: _, ...corpo } = request.body ?? {};

@@ -13,6 +13,8 @@ export const NOMES_DAS_PISTAS: Record<string, string> = {
   'copa-do-repolho': chave('Copa do Repolho'),
   // o pódio da Festa dos coelhos mora na mesma estante (server/src/minijogo-festa.ts)
   festa: chave('Festa dos coelhos'),
+  // o pódio da Briga na horta, com a fase vencida (server/src/minijogo-briga.ts)
+  briga: chave('Briga na horta'),
 };
 
 export const nomeDaPista = (id: string) => NOMES_DAS_PISTAS[id] ?? id;

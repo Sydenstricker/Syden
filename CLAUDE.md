@@ -509,6 +509,18 @@ tela, mas nunca abaixo de 100 ms nem muito abaixo do que o servidor viu passar).
 de troféus do quarto (`pista: 'festa'`). Microjogo novo é uma entrada nos dois lados; a estante de troféus serve a qualquer
 jogo da sala. Testes: `server/test/minijogos-festa.test.ts` e `e2e/festa.mjs` (com o LiveKit).
 
+**A BRIGA NA HORTA está feita, como PILOTO (03/11/2026, pedido dele: a nostalgia dos fliperamas de briga de quatro do começo
+dos anos 90; só a mecânica):** `server/src/minijogo-briga.ts`, `web/src/JogoBriga.tsx`, `web/src/briga/`, nas duas abas (1 a 4
+pessoas). Uma fase de ~2 min na horta, de lado (andar também para o fundo), 4 ondas de raposas e corvos e o texugo no fim;
+combo de três socos, pulo, voadora, o especial que gasta vida, cair e levantar piscando, 3 vidas. **É o único jogo em que a
+turma divide os mesmos inimigos**, e a rede decidiu assim: os inimigos são do SERVIDOR (passo próprio de 20 por segundo, o
+quadro pelo `difundir`, que o motor ganhou; e o `parar`, que desliga o passo); cada coelho anda no computador de quem joga;
+**quem bate tem razão** (o acerto como a tela mostrou, conferido pelo passado do inimigo) e **quem apanha tem folga** (o golpe
+inimigo só é decidido 200 ms depois, e quem saiu da área nessa janela escapa; as preparações são longas de propósito). O
+coelho é o mascote 3D de lado (`briga.py`/`briga-pos.py`, com a troca de paleta do avatar). Troféu só com a fase vencida
+(`pista: 'briga'`). Testes: `server/test/minijogos-briga.test.ts`, `web/test/briga.test.ts` (o piloto automático vence a
+fase contra o servidor de verdade, com 200 ms de atraso) e `e2e/briga.mjs` (escrito, não rodado).
+
 **A sondagem de jogos dele (12/10/2026), avaliada:** os campeões de receita (Coin Master, Candy Crush, Sheep a Sheep)
 são solo e se pagam com anúncio, vidas e roleta. **Decisão dele: clonar só a MECÂNICA DE JOGO** (empilhar e combinar
 peças, parafusos, setas, combinar três) — nunca a de cassino nem a de "volte todo dia". Integração, nenhuma. Party game de ação (Mario Party, Overcooked) tem aderência
