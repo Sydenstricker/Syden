@@ -91,11 +91,11 @@ try {
   // As abas (14/10/2026; desde 24/10/2026 os seis que se jogam sozinho estão nas duas): Coletivo com os 12, Solo com os 6
   // e o Termo.
   const coletivos = await duda.locator('.minijogo-jogo:not(.minijogo-parceiro)').count();
-  coletivos === 12 ? ok('a Duda caiu na sala com a estante aberta, na aba Coletivo: 12 jogos') : falhou(`a aba Coletivo tem ${coletivos} jogos`);
+  coletivos === 19 ? ok('a Duda caiu na sala com a estante aberta, na aba Coletivo: 19 jogos') : falhou(`a aba Coletivo tem ${coletivos} jogos`);
   await duda.locator('.minijogo-abas').getByRole('tab', { name: 'Solo' }).click();
   const solos = await duda.locator('.minijogo-jogo:not(.minijogo-parceiro)').count();
   const parceiros = await duda.locator('.minijogo-parceiro').count();
-  solos === 6 && parceiros === 1 ? ok('a aba Solo tem 6 jogos e o Termo') : falhou(`a aba Solo tem ${solos} jogos e ${parceiros} parceiros`);
+  solos === 12 && parceiros === 1 ? ok('a aba Solo tem 12 jogos e o Termo') : falhou(`a aba Solo tem ${solos} jogos e ${parceiros} parceiros`);
   await foto(duda, 'estante-solo');
   // O Termo também está na estante da sala: abre NO PALCO (o lugar do vídeo), só para quem clicou, e a barra da call
   // continua à vista embaixo (desenho do Sydenstricker).
