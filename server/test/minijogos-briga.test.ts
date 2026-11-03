@@ -8,7 +8,7 @@ import { comToken, criarConta, servidorDeTeste } from './ajuda.js';
 
 const { app, fechar } = await servidorDeTeste();
 const mod = await import('../src/minijogo-briga.js');
-const { criarBriga, GRACA_MS, PASSO_MS, ONDAS, ONDAS_X, VOLTA_MS, CUSTO_ESPECIAL, FIM_MS } = mod;
+const { criarBriga, briga, GRACA_MS, PASSO_MS, ONDAS, ONDAS_X, VOLTA_MS, CUSTO_ESPECIAL, FIM_MS, Z_MAX, AR_MAX_MS } = mod;
 after(fechar);
 
 let agora = 9_000_000;
@@ -54,13 +54,17 @@ function comecar(naSala = [anaId, biaId], comunidadeId = comunidade.id, aleatori
   let passo: (() => void) | null = null;
   let limpo = 0;
   let terminou = false;
+  let completa: boolean | null = null;
   const quadros: Record<string, unknown>[] = [];
   const relogio: { ms: number; depois: () => void }[] = [];
   let sala = [...naSala];
   const ctx = {
     agendar: (ms: number, depois: () => void) => relogio.splice(0, relogio.length, { ms, depois }),
     avisar: () => {},
-    terminar: () => (terminou = true),
+    terminar: (c = true) => {
+      terminou = true;
+      completa = c;
+    },
     naSala: () => sala,
     nome: (id: number) => (id === anaId ? 'ana' : 'bia'),
     comunidade: comunidadeId,
@@ -83,6 +87,8 @@ function comecar(naSala = [anaId, biaId], comunidadeId = comunidade.id, aleatori
     quadros,
     relogio,
     terminou: () => terminou,
+    completa: () => completa,
+    entrar: (id: number) => sala.push(id),
     limpo: () => limpo,
     temPasso: () => passo !== null,
     sair: (id: number) => (sala = sala.filter((s) => s !== id)),
@@ -423,4 +429,111 @@ test('sozinho: começa pela rota do Solo, sem pódio, e encerrar desliga o passo
   assert.equal(r.json().partida.fase, 'lutando');
   await comAna('DELETE', '/api/minijogo-solo');
   assert.equal((await comAna('GET', '/api/minijogo-solo')).json().partida, null);
+});
+
+// ---------------- A revisão de 03/11/2026 ----------------
+
+test('a altura é a de um pulo: z alto para sempre volta ao chão, e o soco no ar não vale', () => {
+  const m = comecar();
+  const r = umaRaposa(m);
+  m.andar(500);
+  const j = m.interno._jogadores.get(anaId)!;
+  teleportar(m, anaId, r.x - 20, r.y);
+  // z: 59 sem parar: o servidor corta no teto e, passado o tempo de um pulo, põe no chão
+  m.pos(anaId, { x: j.x, y: j.y, z: 59 });
+  assert.ok(j.z <= Z_MAX, `z ${j.z}`);
+  let maior = 0;
+  for (let t = 0; t < AR_MAX_MS + 500; t += PASSO_MS) {
+    m.andar(PASSO_MS);
+    m.pos(anaId, { x: j.x, y: j.y, z: 59 });
+    if (t > AR_MAX_MS + 100) maior = Math.max(maior, j.z);
+  }
+  assert.equal(maior, 0, 'depois do tempo de um pulo, o z é 0 até pisar de novo');
+  assert.equal(j.z, 0);
+  // o soco começado no ar (num pulo novo, depois de pisar) não começa
+  j.livreAte = agora + 1000;
+  m.pos(anaId, { x: r.x - 20, y: r.y, z: 0 });
+  m.pos(anaId, { x: r.x - 20, y: r.y, z: 20, ataque: { id: 1, g: 'soco1' } });
+  assert.equal(j.z, 20, 'pisou: pode pular de novo');
+  assert.equal(m.golpe(anaId, { a: 1, inimigo: r.id, x: r.x - 20, y: r.y, z: 0 }), 'golpe que não começou');
+  // no chão, começa; mas dizer no acerto que estava no alto não vale
+  m.pos(anaId, { x: r.x - 20, y: r.y, z: 0 });
+  m.pos(anaId, { x: r.x - 20, y: r.y, z: 0, ataque: { id: 2, g: 'soco1' } });
+  assert.equal(m.golpe(anaId, { a: 2, inimigo: r.id, x: r.x - 20, y: r.y, z: 15 }), 'alto demais');
+  assert.equal(m.golpe(anaId, { a: 2, inimigo: r.id, x: r.x - 20, y: r.y, z: 0 }), null);
+  m.jogo.parar!();
+});
+
+test('quem diz estar no ar para sempre volta a apanhar', () => {
+  const m = comecar([anaId], comunidade.id);
+  umaRaposa(m);
+  const j = m.interno._jogadores.get(anaId)!;
+  const hp = j.hp;
+  for (let k = 0; k < 800 && j.hp === hp; k++) {
+    j.invulAte = 0;
+    j.livreAte = agora + 1000;
+    m.pos(anaId, { x: 160, y: 28, z: 40 });
+    m.andar(PASSO_MS);
+  }
+  assert.ok(j.hp < hp, 'a raposa acertou quem dizia estar no ar');
+  m.jogo.parar!();
+});
+
+test('a voadora: uma por pulo de verdade, e alternar z=0/z=5 não a repete', () => {
+  const m = comecar();
+  m.andar(500);
+  const j = m.interno._jogadores.get(anaId)!;
+  let id = 0;
+  let comecadas = 0;
+  const voadora = (z: number) => {
+    m.pos(anaId, { x: j.x, y: j.y, z, ataque: { id: ++id, g: 'voadora' } });
+    if (m.golpe(anaId, { a: id, inimigo: 999, x: j.x, y: j.y, z: j.z }) !== 'golpe que não começou') comecadas++;
+  };
+  // 2 s alternando chão e ar a cada passo
+  for (let k = 0; k < 40; k++) {
+    j.livreAte = agora + 1000;
+    if (k % 2) voadora(5);
+    else m.pos(anaId, { x: j.x, y: j.y, z: 0 });
+    m.andar(PASSO_MS);
+  }
+  assert.equal(comecadas, 1, `começou ${comecadas} voadoras pulando 50 ms`);
+  // pulos de verdade (~0,6 s no ar): uma em cada
+  comecadas = 0;
+  for (let p = 0; p < 4; p++) {
+    for (let t = 0; t < 600; t += PASSO_MS) {
+      j.livreAte = agora + 1000;
+      if (t === 100) voadora(20);
+      else m.pos(anaId, { x: j.x, y: j.y, z: 20 });
+      m.andar(PASSO_MS);
+    }
+    m.pos(anaId, { x: j.x, y: j.y, z: 0 });
+    m.andar(PASSO_MS);
+  }
+  assert.ok(comecadas >= 3 && comecadas <= 4, `voadoras em 4 pulos: ${comecadas}`);
+  m.jogo.parar!();
+});
+
+test('a turma inteira sai: a fase acaba perdida, o passo desliga, sem troféu (e com alguém só assistindo também)', async () => {
+  const antes = (await trofeus(ana.token)).length;
+  for (const assistindo of [false, true]) {
+    const m = comecar();
+    m.andar(1000);
+    m.sair(anaId);
+    m.sair(biaId);
+    if (assistindo) m.entrar(424242);
+    m.andar(PASSO_MS);
+    assert.equal(m.quadros.at(-1)!.f, 'derrota');
+    assert.ok(m.limpo() >= 1, 'o passo desligou na hora');
+    m.disparar();
+    assert.equal(m.terminou(), true);
+    assert.equal(m.completa(), false, 'conta como interrompida');
+  }
+  assert.equal((await trofeus(ana.token)).length, antes);
+});
+
+test('quatro coelhos no máximo', () => {
+  assert.equal(briga.maximo, 4);
+  const m = comecar([anaId, biaId, 7001, 7002, 7003]);
+  assert.equal(m.interno._jogadores.size, 4);
+  m.jogo.parar!();
 });
