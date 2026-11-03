@@ -67,3 +67,14 @@ em 18/10. `MODELO=t` no ambiente, no `rodar.ps1` e no `pos.py`, faz tudo com ela
 - **As mãos continuam sem se encontrar na frente:** o braço ficou mais comprido, mas os dois ombros só alcançam o mesmo
   ponto 1,2 à frente do eixo do corpo, e a barriga sai 1,8. O varrer continua com uma mão.
 - O braço baixado vai até perto dos joelhos: o desenho tem a mão na barra do moletom.
+
+## O coelho no kart (`kart.py`, 03/11/2026)
+
+Para a Corrida dos coelhos: o mascote da malha em T sentado num kart em forma de cenoura (carroceria laranja com os
+anéis, a rama de aerofólio, rodas, volante), feito de peças do Blender por script e preso ao esqueleto, em **24 ângulos**
+de 15 em 15 graus (0 = de costas, 6 = virado para a direita da tela, 12 = de frente), câmera a 24°. As pernas, que no
+sentado ficavam dentro do moletom, aqui somem dentro do kart.
+
+`MODELO=t KART=1` no `rodar.ps1` (~1 min; `SO_K=0,6,12` faz só alguns) e depois `python kart-pos.py`: a paleta do mascote
+mais os tons do kart, o contorno, e a folha `web/public/corrida/coelho-kart.png` (24 × 60 px, o pé em 30, 48), com a
+conferência em `t/kart-folha.png`. Outro coelho no kart é a mesma receita com a malha dele.

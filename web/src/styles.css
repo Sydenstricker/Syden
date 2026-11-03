@@ -15581,3 +15581,188 @@ body.arrastando-barra {
 .composer-resposta-texto {
   flex: 1;
 }
+
+/* A CORRIDA DOS COELHOS (03/11/2026, JogoCorrida.tsx): a tela pequena de 320 × 180 ampliada com os pixels nítidos. */
+.minijogo.jogando-corrida {
+  width: min(760px, 94vw);
+}
+
+.corrida {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.corrida-largada {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.corrida-pista {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.corrida-pista canvas {
+  flex: none;
+  width: 112px;
+  height: 112px;
+  border-radius: 8px;
+  background: #62964a;
+  image-rendering: pixelated;
+}
+
+.corrida-pista-nome {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.corrida-pista-nome .settings-hint {
+  margin: 0;
+}
+
+.corrida-pista-nome strong {
+  font-size: 1.1rem;
+}
+
+.corrida-pista-nome span,
+.corrida-tempo,
+.corrida-relogio {
+  font-variant-numeric: tabular-nums;
+}
+
+.corrida-fantasmas {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 0;
+}
+
+.corrida-fantasmas legend {
+  padding: 0 4px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.corrida-fantasmas ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.corrida-fantasmas label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.corrida-quem {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.corrida-tela {
+  position: relative;
+  outline: none;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #1e1822;
+}
+
+.corrida-tela canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  image-rendering: pixelated;
+}
+
+.corrida-placar {
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  right: 8px;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+  color: #fbf3e4;
+  font-weight: 700;
+  font-size: clamp(0.85rem, 2.4vw, 1.15rem);
+  text-shadow: 0 2px 0 #2a1e2c, 2px 0 0 #2a1e2c, -2px 0 0 #2a1e2c, 0 -2px 0 #2a1e2c;
+}
+
+/* os botões de toque: só onde o dedo é o controle */
+.corrida-toque {
+  display: none;
+}
+
+@media (pointer: coarse) {
+  .corrida-toque {
+    position: absolute;
+    inset: auto 0 0 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+    gap: 8px;
+  }
+  .corrida-toque button {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 2px solid rgba(251, 243, 228, 0.6);
+    background: rgba(30, 24, 34, 0.45);
+    color: #fbf3e4;
+    font-size: 1.4rem;
+    touch-action: none;
+    user-select: none;
+  }
+  .corrida-toque button:nth-child(2) {
+    margin-left: auto;
+  }
+}
+
+.corrida-fim {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px;
+  background: rgba(30, 22, 34, 0.72);
+  color: #fbf3e4;
+  text-align: center;
+}
+
+.corrida-fim .settings-hint {
+  color: #e6d8c6;
+}
+
+.corrida-recorde {
+  color: #ffd27a;
+  font-size: 1.2rem;
+}
+
+.corrida-relogio.grande {
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  font-weight: 800;
+}
+
+.corrida-voltas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.9rem;
+}

@@ -401,6 +401,38 @@ Wikidata). Franquia de terceiro entra como mais um tema SÓ com licença por esc
 4.0 aceita "qualquer maneira razoável", e o parágrafo do SRD em inglês no meio do quiz era ruído. Material livre novo
 (dados, figuras, fontes) ganha a linha dele lá, nas duas línguas; se foi traduzido ou adaptado, a linha diz isso.
 
+**A CORRIDA DOS COELHOS (ideia dele, 03/11/2026): kart de 16 bits, com o Super Mario Kart de referência.** O que ficou
+decidido na conversa, antes do código:
+- **Da referência, só a MECÂNICA** (a regra da sondagem): câmera em perspectiva estilo Mode 7, derrapagem que carrega
+  turbo, placas de turbo, copas de pistas. Nada da Nintendo: nem casco, nem banana com aquele desenho, nem o juiz nas
+  nuvens, nem nome que lembre. Os itens, quando vierem, são do tema do coelho (cenoura turbo, repolho que rola).
+- **Música: a regra do "nunca fazer a nossa" vale aqui.** Sai com efeitos sintetizados, ou com música de terceiro
+  licenciada; corrida é onde dá vontade de compor uma trilha, e é exatamente o que não se faz.
+- **O problema é a rede, não a arte:** servidor na Alemanha, turma no Brasil, ~200 ms de ida e volta. Na corrida ao vivo,
+  cada um dirige o próprio kart no próprio computador, os outros chegam suavizados, sem batida física entre karts, e o
+  servidor decide os itens e a chegada com folga a favor de quem joga.
+- **Os degraus:** (1) contra o relógio, solo, com os FANTASMAS dos recordes dos amigos; (2) a corrida ao vivo na sala, sem
+  itens; (3) itens, copas e troféus. O degrau 1 é também o teste de qualidade: se a direção não convencer, para ali.
+- **OS TROFÉUS (decisão dele, mesma conversa): os dois.** O do QUARTO é de quem ganhou, atrelado à POSIÇÃO numa corrida de
+  verdade, e diz quando, contra quem, a pista e o tempo: "um registro do momento entre amigos". O COLETIVO é do salão, da
+  turma (completar uma copa juntos). É a primeira conquista individual do Syden, e por decisão dele; as conquistas da
+  turma continuam contando só gente junta.
+
+**O degrau 1 está feito (03/11/2026):** a aba Solo tem a **Corrida dos coelhos** (`web/src/JogoCorrida.tsx`,
+`web/src/corrida/`). A pista "Horta" é desenhada POR CÓDIGO a partir da linha do meio (`pista.ts`: asfalto, zebra, grama,
+placas de turbo, um lago, árvores, canteiros de cenoura); a câmera é o Mode 7 numa tela de 320 × 180 ampliada (`render.ts`);
+a física anda em passos fixos de 1/60 s, e **o tempo é o número de passos**, não o relógio (`fisica.ts`): o mesmo comando dá
+o mesmo tempo, e a janela sem foco PAUSA a corrida. **O coelho no kart é o mascote 3D** sentado num kart-cenoura feito no
+Blender por script (`e2e/pixel-art/personagem/blender/meshy/kart.py`, 24 ângulos, `kart-pos.py` → `web/public/corrida/
+coelho-kart.png`): as pernas da malha, que estragavam o sentado, somem dentro do kart. O servidor guarda só o MELHOR tempo
+de cada pessoa por pista, com as voltas e o fantasma (`corrida_recordes`, `server/src/corrida.ts`), e **só os amigos
+aceitos veem** (o fantasma é o caminho que alguém fez). Ele confere o que dá sem conhecer a pista (uma posição a cada 4
+passos, nenhum salto maior que o turbo, volta de 8 s ou mais); cortar pela grama continua possível, e é corrida entre
+amigos. Cada corrida até o fim entra no painel de uso (é o único jogo só do Solo). Pista nova é id novo ("horta-1"):
+mudar o traçado não mistura fantasmas. Testes: `web/test/corrida.test.ts` (o piloto automático fecha as voltas),
+`server/test/corrida.test.ts` e `e2e/corrida.mjs` (o piloto automático liga por `window.corridaPilotoAutomatico`, só no site
+de desenvolvimento). Sem som por enquanto.
+
 **A sondagem de jogos dele (12/10/2026), avaliada:** os campeões de receita (Coin Master, Candy Crush, Sheep a Sheep)
 são solo e se pagam com anúncio, vidas e roleta. **Decisão dele: clonar só a MECÂNICA DE JOGO** (empilhar e combinar
 peças, parafusos, setas, combinar três) — nunca a de cassino nem a de "volte todo dia". Integração, nenhuma. Party game de ação (Mario Party, Overcooked) tem aderência

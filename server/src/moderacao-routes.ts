@@ -207,6 +207,8 @@ export function registerModeracaoRoutes(app: FastifyInstance, io: IOServer) {
           idadeDoWindows: db.protecaoDe(eu.id)?.faixaWindows ?? null,
           // o tempo transmitindo com 2 ou mais assistindo, por comunidade e dia (a "Sessão de cinema" das conquistas)
           transmissaoAssistida: db.cinemaDe(eu.id),
+          // os recordes da Corrida dos coelhos, com as voltas e o fantasma (ver corrida-routes.ts)
+          corrida: db.corridasDe(eu.id),
         },
         // Os cargos personalizados e os pontos de nível também são dados sobre a pessoa, e vão junto.
         comunidades: db.listCommunitiesForUser(eu.id).map((c) => {

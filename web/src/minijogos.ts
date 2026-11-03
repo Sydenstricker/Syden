@@ -299,7 +299,7 @@ export interface EstadoPalavra {
   placar: LinhaDoPlacar[];
 }
 
-export type IdDoJogo = 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'xadrez' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
+export type IdDoJogo = 'corrida' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'xadrez' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
 
 /**
  * As duas abas da estante (pedido dele, 14/10/2026). SOLO: a partida é só de quem joga, começa sem convite, não ocupa
@@ -315,6 +315,14 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
     nome: chave('Qual é o tamanho?'),
     dica: chave('Ao lado de um objeto de tamanho conhecido aparece outro, e cada um aumenta ou diminui esse outro até achar o tamanho certo. Quem chegar mais perto ganha mais pontos.'),
     abas: ['solo', 'coletivo'],
+  },
+  {
+    // A corrida de kart contra o relógio (JogoCorrida.tsx): roda no computador de quem joga, sem partida no servidor,
+    // e só por isso fica só no Solo. A corrida ao vivo da sala é o degrau 2.
+    id: 'corrida',
+    nome: chave('Corrida dos coelhos'),
+    dica: chave('Uma corrida de kart contra o relógio, com os fantasmas dos recordes dos seus amigos correndo junto.'),
+    abas: ['solo'],
   },
   {
     id: 'stop',

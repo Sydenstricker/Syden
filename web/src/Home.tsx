@@ -313,7 +313,7 @@ export function Home({
               <h4>
                 <Gamepad2 size={16} aria-hidden="true" /> {t('Na sala de voz, com a turma')}
               </h4>
-              <p>{JOGOS.map((jogo) => t(jogo.nome)).join(' · ')}</p>
+              <p>{JOGOS.filter((jogo) => jogo.abas.includes('coletivo')).map((jogo) => t(jogo.nome)).join(' · ')}</p>
               {salas.length === 0 ? (
                 <p className="vila-painel-vazio">
                   {comunidade ? t('Esta comunidade ainda não tem sala de voz.') : t('Entre numa comunidade para ver as salas.')}

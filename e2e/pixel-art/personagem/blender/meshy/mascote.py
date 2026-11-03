@@ -433,6 +433,8 @@ try:
     if os.environ.get('POSES'):   # o conjunto do motor (poses.py), no lugar das três animações do piloto
         exec(open(os.path.join(AQUI, 'poses.py'), encoding='utf-8').read())
         ANIMACOES = {}
+    if os.environ.get('KART'):   # o coelho no kart da Corrida dos coelhos (kart.py), em 24 ângulos
+        exec(open(os.path.join(AQUI, 'kart.py'), encoding='utf-8').read())
     for nome, n in ANIMACOES.items():
         if SO and nome != SO:
             continue
@@ -452,7 +454,7 @@ try:
     if ANIMACOES:
         with open(os.path.join(SAIDA, 'animacoes.json'), 'w') as f:
             json.dump(ANIMACOES, f)
-    if not os.environ.get('POSES'):
+    if not os.environ.get('POSES') and not os.environ.get('KART'):
         bpy.ops.wm.save_as_mainfile(filepath=os.path.join(AQUI, VARIANTE, 'mascote.blend'))
     print('FIM')
 except Exception:

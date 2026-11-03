@@ -9,6 +9,8 @@ import { tamanhoLegivel, type IdDoJogo } from './minijogos';
  */
 export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
   switch (jogo) {
+    case 'corrida':
+      return <CapaCorrida />;
     case 'tamanho':
       return <CapaQualEMaior />;
     case 'stop':
@@ -34,6 +36,26 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
     case 'mitologia':
       return <CapaMitologia />;
   }
+}
+
+/**
+ * A Corrida dos coelhos: a pista em perspectiva, com a zebra, e o próprio coelho no kart (um dos 24 desenhos da folha
+ * web/public/corrida/coelho-kart.png, de três quartos).
+ */
+function CapaCorrida() {
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#e8b49a" />
+      <rect y="34" width="160" height="10" fill="#9c869a" />
+      <rect y="40" width="160" height="80" fill="#62964a" />
+      <path d="M70 40 L90 40 L150 120 L10 120 Z" fill="#c4463e" />
+      <path d="M72 40 L88 40 L140 120 L20 120 Z" fill="#6a626c" />
+      <path d="M79.5 44 L80.5 44 L81 52 L79 52 Z M79 60 L81 60 L82 74 L78 74 Z M77.5 86 L82.5 86 L84 108 L76 108 Z" fill="#ded6c4" />
+      <svg x="48" y="44" width="72" height="72" viewBox="180 0 60 60" style={{ imageRendering: 'pixelated' }}>
+        <image href={`${import.meta.env.BASE_URL}corrida/coelho-kart.png`} width="1440" height="60" />
+      </svg>
+    </svg>
+  );
 }
 
 /**

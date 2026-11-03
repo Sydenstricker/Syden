@@ -764,6 +764,19 @@ db.exec(`
     updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
   );
 
+  -- A CORRIDA DOS COELHOS (03/11/2026): o melhor tempo de cada pessoa em cada pista, com as voltas e o FANTASMA (as
+  -- posições do kart, 15 por segundo, para os amigos correrem contra). Só o melhor: uma corrida pior não substitui.
+  -- Quem vê: a própria pessoa e os amigos aceitos (corrida-routes.ts).
+  CREATE TABLE IF NOT EXISTS corrida_recordes (
+    user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    pista      TEXT NOT NULL,
+    tempo_ms   INTEGER NOT NULL,
+    voltas     TEXT NOT NULL,
+    amostras   TEXT NOT NULL,
+    em         TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    PRIMARY KEY (user_id, pista)
+  );
+
   -- O SALÃO de cada comunidade (15/10/2026): a arrumação do salão isométrico, no mesmo formato do quarto (quarto.ts).
   -- É da TURMA: todo membro vê igual, e mexe quem administra ou tem um cargo que arruma o salão (salao-routes.ts).
   CREATE TABLE IF NOT EXISTS saloes (
@@ -4105,6 +4118,21 @@ export function registrarPartida(jogo: string, communityId: number, channelId: n
   return id;
 }
 
+/**
+ * Uma corrida da Corrida dos coelhos que chegou ao fim, para o painel de uso (03/11/2026). As partidas solo dos outros
+ * jogos não entram aqui; a corrida entra porque é o único jogo só da aba Solo, e sem isto o painel diria para sempre que
+ * ninguém a jogou. Uma pessoa só (não conta nas conquistas, que pedem 2 ou mais), sem comunidade nem sala.
+ */
+export function registrarCorrida(userId: number, tempoMs: number) {
+  const { lastInsertRowid } = db
+    .prepare(
+      `INSERT INTO minijogo_partidas (jogo, community_id, channel_id, criada_por, jogadores, comecou_em, terminou_em, completa)
+       VALUES ('corrida', 0, 0, ?, 1, strftime('%Y-%m-%dT%H:%M:%fZ', 'now', ?), strftime('%Y-%m-%dT%H:%M:%fZ', 'now'), 1)`,
+    )
+    .run(userId, `-${Math.round(tempoMs / 1000)} seconds`);
+  db.prepare('INSERT OR IGNORE INTO minijogo_jogadores (partida_id, user_id) VALUES (?, ?)').run(Number(lastInsertRowid), userId);
+}
+
 /** A partida acabou: `completa` diz se chegou ao placar final ou foi encerrada no meio. */
 export function fecharPartida(id: number, completa: boolean) {
   db.prepare(
@@ -4207,6 +4235,61 @@ export function guardarQuarto(userId: number, arrumacao: string) {
     `INSERT INTO quartos (user_id, arrumacao, updated_at) VALUES (?, ?, strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
      ON CONFLICT(user_id) DO UPDATE SET arrumacao = excluded.arrumacao, updated_at = excluded.updated_at`,
   ).run(userId, arrumacao);
+}
+
+// ---------- A Corrida dos coelhos ----------
+
+export interface RecordeDaCorrida {
+  userId: number;
+  username: string;
+  nomeDeExibicao: string | null;
+  tempoMs: number;
+  voltas: number[];
+  em: string;
+}
+
+/** O recorde da pessoa e o dos amigos aceitos dela, nesta pista, do mais rápido ao mais lento (sem o fantasma). */
+export function recordesDaCorrida(userId: number, pista: string): RecordeDaCorrida[] {
+  const linhas = db
+    .prepare(
+      `SELECT r.user_id AS userId, u.username AS username, u.nome_exibicao AS nomeDeExibicao, r.tempo_ms AS tempoMs,
+              r.voltas AS voltas, r.em AS em
+       FROM corrida_recordes r JOIN users u ON u.id = r.user_id
+       WHERE r.pista = ? AND (r.user_id = ? OR r.user_id IN (
+         SELECT CASE WHEN menor_id = ? THEN maior_id ELSE menor_id END FROM friendships
+         WHERE ? IN (menor_id, maior_id) AND situacao = 'aceita'))
+       ORDER BY r.tempo_ms LIMIT 30`,
+    )
+    .all(pista, userId, userId, userId) as unknown as (Omit<RecordeDaCorrida, 'voltas'> & { voltas: string })[];
+  return linhas.map((l) => ({ ...l, voltas: JSON.parse(l.voltas) as number[] }));
+}
+
+export function recordeDaCorrida(userId: number, pista: string): { tempoMs: number; amostras: string } | null {
+  const linha = db
+    .prepare('SELECT tempo_ms AS tempoMs, amostras FROM corrida_recordes WHERE user_id = ? AND pista = ?')
+    .get(userId, pista) as { tempoMs: number; amostras: string } | undefined;
+  return linha ?? null;
+}
+
+/** Os recordes da pessoa em todas as pistas, com o fantasma (para o "Levar seus dados"). */
+export function corridasDe(userId: number) {
+  const linhas = db
+    .prepare('SELECT pista, tempo_ms AS tempoMs, voltas, amostras, em FROM corrida_recordes WHERE user_id = ? ORDER BY pista')
+    .all(userId) as { pista: string; tempoMs: number; voltas: string; amostras: string; em: string }[];
+  return linhas.map((l) => ({ ...l, voltas: JSON.parse(l.voltas) as number[], fantasma: JSON.parse(l.amostras) as number[], amostras: undefined }));
+}
+
+/** Guarda se for o melhor da pessoa nesta pista. Devolve o tempo que valia antes (null se não havia). */
+export function guardarCorrida(userId: number, pista: string, tempoMs: number, voltas: number[], amostras: string): { anterior: number | null; recorde: boolean } {
+  const antes = recordeDaCorrida(userId, pista);
+  if (antes && antes.tempoMs <= tempoMs) return { anterior: antes.tempoMs, recorde: false };
+  db.prepare(
+    `INSERT INTO corrida_recordes (user_id, pista, tempo_ms, voltas, amostras, em)
+     VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+     ON CONFLICT(user_id, pista) DO UPDATE SET tempo_ms = excluded.tempo_ms, voltas = excluded.voltas,
+       amostras = excluded.amostras, em = excluded.em`,
+  ).run(userId, pista, tempoMs, JSON.stringify(voltas), amostras);
+  return { anterior: antes?.tempoMs ?? null, recorde: true };
 }
 
 // ---------- O salão de cada comunidade ----------

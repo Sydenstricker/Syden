@@ -10,6 +10,7 @@ import { JogoLobisomem } from './JogoLobisomem';
 import { JogoPalavra } from './JogoPalavra';
 import { EscolhaDoQuiz, JogoQuiz } from './JogoQuiz';
 import { CATEGORIAS_DO_QUIZ, ehQuiz, type EstadoQuiz } from './quiz';
+import { JogoCorrida } from './JogoCorrida';
 import { JogoStop } from './JogoStop';
 import { JogoSudoku } from './JogoSudoku';
 import { EscolhaDeCategoria, JogoTamanho } from './JogoTamanho';
@@ -118,6 +119,8 @@ export function PainelDoMinijogo({
   /** O jogo que pede a categoria antes de começar ("Qual é o tamanho?", a mitologia), enquanto ela é escolhida. */
   const [escolhendo, setEscolhendo] = useState<IdDoJogo | null>(null);
   const escolhendoCategoria = escolhendo !== null;
+  /** A Corrida dos coelhos aberta: ela não é partida do servidor (roda aqui), então mora fora da `partida`. */
+  const [correndo, setCorrendo] = useState(false);
   const setEscolhendoCategoria = (sim: boolean) => setEscolhendo(sim ? 'tamanho' : null);
   /** Os jogos que pedem categoria: clicar na capa abre a escolha, e não a partida. */
   const pedeCategoria = (jogo: IdDoJogo) => jogo === 'tamanho' || (ehQuiz(jogo) && CATEGORIAS_DO_QUIZ[jogo] !== undefined);
@@ -144,7 +147,8 @@ export function PainelDoMinijogo({
   useEffect(() => {
     if (!comecarCom || partida || comecou.current) return;
     comecou.current = true;
-    if (pedeCategoria(comecarCom)) setEscolhendo(comecarCom);
+    if (comecarCom === 'corrida') setCorrendo(true);
+    else if (pedeCategoria(comecarCom)) setEscolhendo(comecarCom);
     else void tentar(() => aoComecar(comecarCom, {}, true));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [comecarCom]);
@@ -173,13 +177,17 @@ export function PainelDoMinijogo({
   const jogoNaTela = partida && !naEspera ? partida : null;
 
   return (
-    <div className={`minijogo${partida ? ` jogando-${partida.jogo}` : ' na-estante'}`} role="dialog" aria-label={partida ? t(nomeDoJogo(partida.jogo)) : t('Mini-games')}>
+    <div
+      className={`minijogo${partida ? ` jogando-${partida.jogo}` : correndo ? ' jogando-corrida' : ' na-estante'}`}
+      role="dialog"
+      aria-label={partida ? t(nomeDoJogo(partida.jogo)) : correndo ? t(nomeDoJogo('corrida')) : t('Mini-games')}
+    >
       <div className="minijogo-topo">
         <strong>
-          <Gamepad2 size={16} aria-hidden="true" /> {partida ? t(nomeDoJogo(partida.jogo)) : t('Mini-games')}
+          <Gamepad2 size={16} aria-hidden="true" /> {partida ? t(nomeDoJogo(partida.jogo)) : correndo ? t(nomeDoJogo('corrida')) : t('Mini-games')}
         </strong>
         {/* As abas da estante (pedido dele, 14/10/2026): o que se joga sozinho e o que é da turma. */}
-        {!partida && !escolhendoCategoria && !soSolo && (
+        {!partida && !escolhendoCategoria && !correndo && !soSolo && (
           <div className="minijogo-abas" role="tablist" aria-label={t('Mini-games')}>
             {(['solo', 'coletivo'] as const).map((grupo) => (
               <button key={grupo} type="button" role="tab" aria-selected={aba === grupo} className={aba === grupo ? 'ativa' : ''} onClick={() => escolherAba(grupo)}>
@@ -209,7 +217,8 @@ export function PainelDoMinijogo({
           aoVoltar={() => setEscolhendoCategoria(false)}
         />
       )}
-      {!partida && !escolhendoCategoria && (
+      {!partida && correndo && <JogoCorrida eu={eu} aoVoltar={() => setCorrendo(false)} />}
+      {!partida && !escolhendoCategoria && !correndo && (
         <ul className="minijogo-estante">
           {JOGOS.filter((jogo) => jogo.abas.includes(aba)).map((jogo) => (
             <li key={jogo.id}>
@@ -217,7 +226,13 @@ export function PainelDoMinijogo({
                 type="button"
                 className="minijogo-jogo"
                 title={t(jogo.dica)}
-                onClick={() => (pedeCategoria(jogo.id) ? setEscolhendo(jogo.id) : tentar(() => aoComecar(jogo.id, {}, aba === 'solo')))}
+                onClick={() =>
+                  jogo.id === 'corrida'
+                    ? setCorrendo(true)
+                    : pedeCategoria(jogo.id)
+                      ? setEscolhendo(jogo.id)
+                      : tentar(() => aoComecar(jogo.id, {}, aba === 'solo'))
+                }
               >
                 <CapaDoJogo jogo={jogo.id} />
                 <span>
