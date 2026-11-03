@@ -2501,4 +2501,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'ຄວາມສຳເລັດຂອງກຸ່ມ: {comunidade}',
   'O quarto de {nome}': 'ຫ້ອງຂອງ {nome}',
   'Este quarto não está aberto para visita.': 'ຫ້ອງນີ້ບໍ່ໄດ້ເປີດໃຫ້ຢ້ຽມຊົມ.',
+  '{quem} chama você para visitar o quarto': '{quem} ເຊີນເຈົ້າມາຢ້ຽມຊົມຫ້ອງ',
+  'Convite para o quarto': 'ຄຳເຊີນເຂົ້າຫ້ອງ',
 } satisfies Record<string, string>;

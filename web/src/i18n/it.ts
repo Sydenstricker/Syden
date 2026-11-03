@@ -2429,4 +2429,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Traguardi del gruppo: {comunidade}',
   'O quarto de {nome}': 'La stanza di {nome}',
   'Este quarto não está aberto para visita.': 'Questa stanza non è aperta alle visite.',
+  '{quem} chama você para visitar o quarto': '{quem} ti invita a visitare la stanza',
+  'Convite para o quarto': 'Invito nella stanza',
 } satisfies Record<string, string>;

@@ -2424,4 +2424,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Grubun başarımları: {comunidade}',
   'O quarto de {nome}': 'Oda: {nome}',
   'Este quarto não está aberto para visita.': 'Bu oda ziyarete açık değil.',
+  '{quem} chama você para visitar o quarto': '{quem} seni odayı ziyaret etmeye davet ediyor',
+  'Convite para o quarto': 'Oda daveti',
 } satisfies Record<string, string>;

@@ -2432,4 +2432,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Grupu nia konkista sira: {comunidade}',
   'O quarto de {nome}': 'Kuartu {nome} nian',
   'Este quarto não está aberto para visita.': 'Kuartu ne’e la loke ba vizita.',
+  '{quem} chama você para visitar o quarto': '{quem} konvida ó atu vizita kuartu',
+  'Convite para o quarto': 'Konvite ba kuartu',
 } satisfies Record<string, string>;

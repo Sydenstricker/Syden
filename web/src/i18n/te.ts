@@ -2412,4 +2412,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'బృందం విజయాలు: {comunidade}',
   'O quarto de {nome}': 'గది: {nome}',
   'Este quarto não está aberto para visita.': 'ఈ గది సందర్శనకు తెరిచి లేదు.',
+  '{quem} chama você para visitar o quarto': '{quem} నిన్ను గదిని సందర్శించడానికి ఆహ్వానిస్తున్నారు',
+  'Convite para o quarto': 'గది ఆహ్వానం',
 } satisfies Record<string, string>;

@@ -2438,4 +2438,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Mmeri otu: {comunidade}',
   'O quarto de {nome}': 'Ụlọ {nome}',
   'Este quarto não está aberto para visita.': 'Ụlọ a emegheghị maka nleta.',
+  '{quem} chama você para visitar o quarto': '{quem} na-akpọ gị òkù ileta ụlọ ahụ',
+  'Convite para o quarto': 'Òkù ileta ụlọ',
 } satisfies Record<string, string>;

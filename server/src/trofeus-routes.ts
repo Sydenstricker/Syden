@@ -21,10 +21,12 @@
  * quem é amigo dele (o nome de um adolescente não vai a desconhecidos pelo quarto de outra pessoa).
  */
 import type { FastifyInstance } from 'fastify';
+import type { Server } from 'socket.io';
 import { CONQUISTAS, conquistasDaComunidade } from './conquistas.js';
 import * as db from './db.js';
 import { Freio } from './freio.js';
 import { ehMenor, faixaDaConta } from './protecao.js';
+import { salaDaPessoa } from './realtime.js';
 import { requireUser } from './routes.js';
 
 export const DESTAQUES_MAX = 6;
@@ -108,7 +110,7 @@ function destaqueResolvido(userId: number, visitante: number) {
 /** Visitas e o que se pergunta sobre um quarto: o mesmo freio das visitas (ids sequenciais diriam quem tem quarto). */
 const freioDeConsultas = new Freio(120, 60 * 60_000);
 
-export function registerTrofeusRoutes(app: FastifyInstance) {
+export function registerTrofeusRoutes(app: FastifyInstance, io: Server) {
   app.register(async (authed) => {
     authed.addHook('preHandler', requireUser);
 
@@ -131,6 +133,19 @@ export function registerTrofeusRoutes(app: FastifyInstance) {
       if (!unicos.every((k) => trofeus.has(k) || conquistas.has(k))) return reply.code(400).send({ error: 'Esse troféu não é seu.' });
       db.guardarDestaque(eu, unicos);
       return { destaque: unicos };
+    });
+
+    /**
+     * Os quartos dos meus amigos em que eu posso entrar, e quem me convidou (a tela de Amigos: é o lugar onde quem estava
+     * fora quando foi convidado acha o convite, já que o aviso na hora só chega a quem está com o Syden aberto).
+     */
+    authed.get('/api/quartos-abertos', async (request) => {
+      const eu = request.user.id;
+      const quartos = db
+        .listarAmizades(eu)
+        .filter((a) => a.situacao === 'aceita' && podeVisitarQuarto(eu, a.userId))
+        .map((a) => ({ id: a.userId, convidou: db.foiConvidadoAoQuarto(a.userId, eu) && modoDoQuarto(a.userId) === 'privado' }));
+      return { quartos };
     });
 
     /** Se dá para visitar o quarto de alguém (o cartão de perfil só mostra "Visitar o quarto" quando dá). */
@@ -186,7 +201,12 @@ export function registerTrofeusRoutes(app: FastifyInstance) {
       // quem não é amigo, e não descobre nada.
       if (!saoAmigos(eu, quem)) return reply.code(400).send({ error: 'Convide alguém da sua lista de amigos.' });
       if (db.convidadosDoQuarto(eu).length >= CONVIDADOS_MAX) return reply.code(400).send({ error: `Cabem até ${CONVIDADOS_MAX} convidados.` });
-      db.convidarAoQuarto(eu, quem);
+      // O AVISO: só no convite novo, e só se o quarto está mesmo fechado (no modo amigos, o convite não muda nada para
+      // quem recebe). Vai como o convite para a voz: um cartão no canto, sem som e sem roubar o foco (Shell.tsx).
+      if (db.convidarAoQuarto(eu, quem) && modoDoQuarto(eu) === 'privado') {
+        const u = db.findUserById(eu)!;
+        io.to(salaDaPessoa(quem)).emit('quarto:convite', { de: { id: u.id, username: u.username, nomeDeExibicao: u.nomeDeExibicao } });
+      }
       return { ok: true };
     });
 

@@ -2411,4 +2411,6 @@ export default {
   'Conquistas da turma: {comunidade}': '仲間の実績：{comunidade}',
   'O quarto de {nome}': '{nome}の部屋',
   'Este quarto não está aberto para visita.': 'この部屋は訪問を受け付けていません。',
+  '{quem} chama você para visitar o quarto': '{quem}さんが部屋に招待しています',
+  'Convite para o quarto': '部屋への招待',
 } satisfies Record<string, string>;

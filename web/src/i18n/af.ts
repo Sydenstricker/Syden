@@ -2494,4 +2494,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Die groep se prestasies: {comunidade}',
   'O quarto de {nome}': '{nome} se kamer',
   'Este quarto não está aberto para visita.': 'Hierdie kamer is nie oop vir besoekers nie.',
+  '{quem} chama você para visitar o quarto': '{quem} nooi jou om die kamer te besoek',
+  'Convite para o quarto': 'Uitnodiging na die kamer',
 } satisfies Record<string, string>;

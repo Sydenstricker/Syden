@@ -2502,4 +2502,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Dosežki druščine: {comunidade}',
   'O quarto de {nome}': 'Soba: {nome}',
   'Este quarto não está aberto para visita.': 'Ta soba ni odprta za obiske.',
+  '{quem} chama você para visitar o quarto': '{quem} te vabi na obisk sobe',
+  'Convite para o quarto': 'Povabilo v sobo',
 } satisfies Record<string, string>;

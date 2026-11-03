@@ -2430,4 +2430,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Realizările găștii: {comunidade}',
   'O quarto de {nome}': 'Camera: {nome}',
   'Este quarto não está aberto para visita.': 'Această cameră nu este deschisă pentru vizite.',
+  '{quem} chama você para visitar o quarto': '{quem} te invită să vizitezi camera',
+  'Convite para o quarto': 'Invitație în cameră',
 } satisfies Record<string, string>;

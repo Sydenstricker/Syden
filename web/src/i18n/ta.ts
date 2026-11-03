@@ -2415,4 +2415,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'குழுவின் சாதனைகள்: {comunidade}',
   'O quarto de {nome}': 'அறை: {nome}',
   'Este quarto não está aberto para visita.': 'இந்த அறை பார்வையாளர்களுக்குத் திறந்திருக்கவில்லை.',
+  '{quem} chama você para visitar o quarto': '{quem} உன்னை அறையைப் பார்வையிட அழைக்கிறார்',
+  'Convite para o quarto': 'அறை அழைப்பு',
 } satisfies Record<string, string>;

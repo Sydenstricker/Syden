@@ -40,15 +40,19 @@ const conferir = (ok, oque) => { console.log((ok ? 'ok  ' : 'FALHOU ') + oque); 
 
 // A Ana arruma: a janela para a parede da esquerda e o tipo em arco.
 const pa = await abrirComo(ana);
+// (a página cresceu desde 15/10, e o quarto começa abaixo da dobra: sem rolar, o arraste acontecia fora da tela)
+await pa.locator('#tela').scrollIntoViewIfNeeded();
 const r = await pa.locator('#tela').boundingBox();
 const em = (x, y) => [r.x + x * r.width / 512, r.y + y * r.height / 512];
-await pa.mouse.move(...em(455, 220)); await pa.mouse.down();
-for (let i = 1; i <= 20; i++) { await pa.mouse.move(...em(455 - i * 20, 220)); await pa.waitForTimeout(25); }
+// (onde a janela está, e não um ponto fixo: a estante de troféus, de fábrica desde 03/11/2026, cobria o ponto de antes)
+const [jx, jy] = await pa.evaluate(() => window.ondeDaJanela());
+await pa.mouse.move(...em(jx, jy)); await pa.mouse.down();
+for (let i = 1; i <= 20; i++) { await pa.mouse.move(...em(jx + (55 - jx) * i / 20, jy + (220 - jy) * i / 20)); await pa.waitForTimeout(25); } // até a parede da esquerda
 await pa.mouse.up(); await pa.waitForTimeout(400);
 await pa.click('#tipo-janela'); await pa.waitForTimeout(1500); // o envio espera 0,7 s
 const daAna = await pa.evaluate(() => window.visitaDoTeste().retrato);
 conferir(daAna.janela.parede === 'esquerda' && daAna.janela.tipo === 'arco', 'a Ana pôs a janela em arco na parede da esquerda');
-const guardado = await (await fetch(API + '/api/quarto/' + ana.id, { headers: { authorization: 'Bearer ' + (await pa.evaluate(() => JSON.parse(localStorage.getItem('syden-quarto-conta')).token)) } })).json();
+const guardado = await (await fetch(API + '/api/quarto/' + ana.id, { headers: { authorization: 'Bearer ' + (await pa.evaluate(() => JSON.parse(localStorage.getItem('syden-teste-conta')).token)) } })).json();
 conferir(JSON.stringify(guardado.arrumacao.janela) === JSON.stringify(daAna.janela), 'o servidor guardou a janela dela');
 await pa.locator('#tela').screenshot({ path: path.join(FOTOS, 'visita-ana.png') });
 
@@ -71,7 +75,7 @@ for (let i = 1; i <= 20; i++) { await pz.mouse.move(...emZ(56 + i * 20, 220)); a
 await pz.mouse.up(); await pz.waitForTimeout(1200);
 conferir(JSON.stringify((await pz.evaluate(() => window.visitaDoTeste().retrato)).janela) === JSON.stringify(daAna.janela), 'visitando, a janela não sai do lugar');
 conferir(await pz.locator('#tipo-janela').isDisabled(), 'visitando, o botão de tipo fica desligado');
-const daAnaDepois = await (await fetch(API + '/api/quarto/' + ana.id, { headers: { authorization: 'Bearer ' + (await pz.evaluate(() => JSON.parse(localStorage.getItem('syden-quarto-conta')).token)) } })).json();
+const daAnaDepois = await (await fetch(API + '/api/quarto/' + ana.id, { headers: { authorization: 'Bearer ' + (await pz.evaluate(() => JSON.parse(localStorage.getItem('syden-teste-conta')).token)) } })).json();
 conferir(JSON.stringify(daAnaDepois.arrumacao) === JSON.stringify(guardado.arrumacao), 'a visita não mudou o quarto da Ana no servidor');
 // E volta ao dele, como estava.
 await pz.click('#voltar'); await pz.waitForTimeout(600);

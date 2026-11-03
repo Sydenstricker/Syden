@@ -2510,4 +2510,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'ގްރޫޕްގެ ކާމިޔާބީތައް: {comunidade}',
   'O quarto de {nome}': '{nome} ގެ ކޮޓަރި',
   'Este quarto não está aberto para visita.': 'މި ކޮޓަރި ޒިޔާރަތަށް ހުޅުވާލާފައެއް ނުވޭ.',
+  '{quem} chama você para visitar o quarto': '{quem} ކޮޓަރިއަށް ޒިޔާރަތްކުރުމަށް ދަޢުވަތު ދެއްވައިފި',
+  'Convite para o quarto': 'ކޮޓަރިއަށް ދަޢުވަތު',
 } satisfies Record<string, string>;

@@ -10,7 +10,8 @@ import { type ConviteRecebido, ConviteParaVoz } from './ConviteParaVoz';
 import { type ChamadaTocando, ChamadaRecebida, TEMPO_DO_TOQUE_MS } from './ChamadaRecebida';
 import { ParabensDoSyden } from './ParabensDoSyden';
 import { AniversarioDoSyden } from './AniversarioDoSyden';
-import { VisitasAoQuarto } from './VisitaAoQuarto';
+import { VisitasAoQuarto, visitarQuarto } from './VisitaAoQuarto';
+import { ConviteParaQuarto, type ConviteDeQuarto } from './ConviteParaQuarto';
 import { ehAniversarioDoSyden } from './diaDoSyden';
 import { ehAniversarioHoje } from './aniversarioHoje';
 import { CommunityDialog, CommunityRail } from './CommunityRail';
@@ -160,6 +161,7 @@ export function Shell({
   const [comemorar, setComemorar] = useState<{ id: number; content: string }[]>([]);
   // Alguém chamou você para a voz (ver ConviteParaVoz.tsx): o último convite, até entrar, recusar ou ele perder o sentido.
   const [conviteVoz, setConviteVoz] = useState<ConviteRecebido | null>(null);
+  const [conviteQuarto, setConviteQuarto] = useState<ConviteDeQuarto | null>(null);
   // AS CHAMADAS DAS CONVERSAS PRIVADAS (02/11/2026): quem está em cada uma ('chamada:estado'), e a que está tocando agora.
   const [chamadas, setChamadas] = useState<Record<number, VoiceMember[]>>({});
   const [tocando, setTocando] = useState<ChamadaTocando | null>(null);
@@ -568,6 +570,11 @@ export function Shell({
     // Chamaram você para a voz: o cartão no canto e, com o Syden atrás de outra janela, a notificação do sistema — que só
     // traz o Syden para a frente; entrar é no botão do cartão, de propósito (a voz precisa do clique para tocar o som).
     // Em "ocupado", só o cartão.
+    // Convidaram você para um quarto privado: o cartão no canto, e a tela de Amigos relê (é lá que o convite fica).
+    s.on('quarto:convite', (convite: ConviteDeQuarto) => {
+      setConviteQuarto(convite);
+      window.dispatchEvent(new Event('syden:amigos'));
+    });
     s.on('voice:convite', (convite: ConviteRecebido) => {
       setConviteVoz(convite);
       if (document.hasFocus() || loadMyStatus() === 'ocupado' || !getSettings().notifications) return;
@@ -1466,6 +1473,16 @@ export function Shell({
       {festasConferidas && !comemorar[0] && aniversarioHoje && <ParabensDoSyden nome={nomeDe(me ?? loggedUser)} aoFechar={fecharParabens} />}
       {festasConferidas && !comemorar[0] && !aniversarioHoje && festaDoSyden && <AniversarioDoSyden aoFechar={fecharFestaDoSyden} />}
       <VisitasAoQuarto />
+      {conviteQuarto && !conviteVoz && (
+        <ConviteParaQuarto
+          convite={conviteQuarto}
+          aoVisitar={() => {
+            visitarQuarto({ id: conviteQuarto.de.id, nome: nomeDe(conviteQuarto.de) });
+            setConviteQuarto(null);
+          }}
+          aoFechar={() => setConviteQuarto(null)}
+        />
+      )}
       {festasConferidas && !comemorar[0] && !aniversarioHoje && !festaDoSyden && porRevelar[0] && <Revelacao codigo={porRevelar[0]} aoResgatar={() => resgatar(porRevelar[0])} />}
 
       {settingsOpen !== null && (

@@ -2418,4 +2418,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'دستاوردهای جمع: {comunidade}',
   'O quarto de {nome}': 'اتاق {nome}',
   'Este quarto não está aberto para visita.': 'این اتاق برای بازدید باز نیست.',
+  '{quem} chama você para visitar o quarto': '{quem} تو را به دیدن اتاق دعوت می‌کند',
+  'Convite para o quarto': 'دعوت به اتاق',
 } satisfies Record<string, string>;

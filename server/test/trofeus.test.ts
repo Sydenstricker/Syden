@@ -100,6 +100,18 @@ describe('quem entra no quarto', () => {
     assert.equal((await duda('GET', '/api/quarto-acesso')).json().modo, 'amigos');
   });
 
+  it('a tela de Amigos sabe em quais quartos dá para entrar, e quem convidou', async () => {
+    const abertos = async () => (await bia('GET', '/api/quartos-abertos')).json().quartos;
+    await ana('PUT', '/api/quarto-acesso', { modo: 'amigos' });
+    assert.deepEqual(await abertos(), [{ id: anaId, convidou: false }]);
+    await ana('PUT', '/api/quarto-acesso', { modo: 'privado' });
+    assert.deepEqual(await abertos(), []);
+    await ana('POST', `/api/quarto-acesso/convidados/${biaId}`);
+    assert.deepEqual(await abertos(), [{ id: anaId, convidou: true }]);
+    await ana('DELETE', `/api/quarto-acesso/convidados/${biaId}`);
+    await ana('PUT', '/api/quarto-acesso', { modo: 'amigos' });
+  });
+
   it('o convite acaba com a amizade (e com o bloqueio, que a desfaz)', async () => {
     await ana('PUT', '/api/quarto-acesso', { modo: 'privado' });
     assert.equal((await ana('POST', `/api/quarto-acesso/convidados/${biaId}`)).statusCode, 200);

@@ -2497,4 +2497,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Seltskonna saavutused: {comunidade}',
   'O quarto de {nome}': 'Kasutaja {nome} tuba',
   'Este quarto não está aberto para visita.': 'See tuba pole külastamiseks avatud.',
+  '{quem} chama você para visitar o quarto': '{quem} kutsub sind tuba külastama',
+  'Convite para o quarto': 'Kutse tuppa',
 } satisfies Record<string, string>;

@@ -2500,4 +2500,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Porukan saavutukset: {comunidade}',
   'O quarto de {nome}': 'Käyttäjän {nome} huone',
   'Este quarto não está aberto para visita.': 'Tämä huone ei ole avoinna vierailuille.',
+  '{quem} chama você para visitar o quarto': '{quem} kutsuu sinut vierailemaan huoneessa',
+  'Convite para o quarto': 'Kutsu huoneeseen',
 } satisfies Record<string, string>;

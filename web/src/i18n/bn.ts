@@ -2427,4 +2427,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'দলের অর্জন: {comunidade}',
   'O quarto de {nome}': '{nome}-এর ঘর',
   'Este quarto não está aberto para visita.': 'এই ঘর অতিথিদের জন্য খোলা নেই।',
+  '{quem} chama você para visitar o quarto': '{quem} তোমাকে ঘর দেখতে ডাকছে',
+  'Convite para o quarto': 'ঘরের আমন্ত্রণ',
 } satisfies Record<string, string>;

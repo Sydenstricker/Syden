@@ -2502,4 +2502,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'A csapat teljesítményei: {comunidade}',
   'O quarto de {nome}': '{nome} szobája',
   'Este quarto não está aberto para visita.': 'Ez a szoba nem látogatható.',
+  '{quem} chama você para visitar o quarto': '{quem} meghív, hogy meglátogasd a szobát',
+  'Convite para o quarto': 'Meghívás a szobába',
 } satisfies Record<string, string>;

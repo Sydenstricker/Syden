@@ -2432,4 +2432,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Nasarorin abokai: {comunidade}',
   'O quarto de {nome}': 'Ɗakin {nome}',
   'Este quarto não está aberto para visita.': 'Ba a buɗe wannan ɗakin don ziyara ba.',
+  '{quem} chama você para visitar o quarto': '{quem} na gayyatar ku ziyarar ɗakin',
+  'Convite para o quarto': 'Gayyata zuwa ɗakin',
 } satisfies Record<string, string>;

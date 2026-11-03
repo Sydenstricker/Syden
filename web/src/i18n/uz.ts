@@ -2508,4 +2508,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Guruh yutuqlari: {comunidade}',
   'O quarto de {nome}': '{nome} xonasi',
   'Este quarto não está aberto para visita.': 'Bu xona tashrif uchun ochiq emas.',
+  '{quem} chama você para visitar o quarto': '{quem} seni xonaga mehmonga taklif qilmoqda',
+  'Convite para o quarto': 'Xonaga taklif',
 } satisfies Record<string, string>;

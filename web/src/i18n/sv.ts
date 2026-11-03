@@ -2492,4 +2492,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Gängets bedrifter: {comunidade}',
   'O quarto de {nome}': 'Rummet: {nome}',
   'Este quarto não está aberto para visita.': 'Det här rummet är inte öppet för besök.',
+  '{quem} chama você para visitar o quarto': '{quem} bjuder in dig att besöka rummet',
+  'Convite para o quarto': 'Inbjudan till rummet',
 } satisfies Record<string, string>;

@@ -1,8 +1,9 @@
 import { nomeDe } from './directory';
 import { useCallback, useEffect, useState } from 'react';
-import { Check, UserPlus, UserX, X } from 'lucide-react';
+import { Check, UserPlus, UserX, X, BedDouble } from 'lucide-react';
 import { ApiError, api } from './api';
 import { Avatar } from './Avatar';
+import { visitarQuarto } from './VisitaAoQuarto';
 import { useT } from './i18n';
 
 interface Amigo {
@@ -59,12 +60,17 @@ export function TelaDeAmigos({ aoConversar }: { aoConversar?: (userId: number) =
   const [erro, setErro] = useState<string | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
   const [ocupado, setOcupado] = useState(false);
+  // O QUARTO DE CADA AMIGO (03/11/2026): quem tem a porta aberta para você, e se foi convite (o quarto privado).
+  const [quartos, setQuartos] = useState<Map<number, boolean>>(new Map());
 
   const carregar = useCallback(async () => {
     try {
       const dados = await api<{ amigos: Amigo[]; sugestoes: Sugestao[] }>('/api/amigos');
       setAmigos(dados.amigos);
       setSugestoes(dados.sugestoes);
+      // os quartos dos amigos em que dá para entrar, e quem convidou (trofeus-routes.ts)
+      const abertos = await api<{ quartos: { id: number; convidou: boolean }[] }>('/api/quartos-abertos').catch(() => null);
+      if (abertos) setQuartos(new Map(abertos.quartos.map((q) => [q.id, q.convidou])));
     } catch {
       // Sem rede, a tela fica com o que já tinha em vez de esvaziar na cara de quem olha.
     }
@@ -141,7 +147,15 @@ export function TelaDeAmigos({ aoConversar }: { aoConversar?: (userId: number) =
           {aceitos.map((a) => (
             <li key={a.userId}>
               <Avatar name={nomeDe(a)} userId={a.userId} size={36} />
-              <span className="amigos-nome">{nomeDe(a)}</span>
+              <span className="amigos-nome">
+                {nomeDe(a)}
+                {quartos.get(a.userId) && <small className="amigos-convite-quarto">{t('Convite para o quarto')}</small>}
+              </span>
+              {quartos.has(a.userId) && (
+                <button className="btn-sutil" onClick={() => visitarQuarto({ id: a.userId, nome: nomeDe(a) })}>
+                  <BedDouble size={15} aria-hidden="true" /> {t('Visitar o quarto')}
+                </button>
+              )}
               {aoConversar && (
                 <button className="btn-sutil" onClick={() => aoConversar(a.userId)}>
                   {t('Conversar')}

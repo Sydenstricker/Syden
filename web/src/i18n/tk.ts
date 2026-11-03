@@ -2502,4 +2502,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Toparyň üstünlikleri: {comunidade}',
   'O quarto de {nome}': 'Otag: {nome}',
   'Este quarto não está aberto para visita.': 'Bu otag myhmanlar üçin açyk däl.',
+  '{quem} chama você para visitar o quarto': '{quem} seni otaga myhmançylyga çagyrýar',
+  'Convite para o quarto': 'Otaga çakylyk',
 } satisfies Record<string, string>;

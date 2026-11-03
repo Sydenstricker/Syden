@@ -2446,4 +2446,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Il-kisbiet tal-grupp: {comunidade}',
   'O quarto de {nome}': 'Il-kamra ta’ {nome}',
   'Este quarto não está aberto para visita.': 'Din il-kamra mhix miftuħa għaż-żjarat.',
+  '{quem} chama você para visitar o quarto': 'Stedina biex iżżur il-kamra minn {quem}',
+  'Convite para o quarto': 'Stedina għall-kamra',
 } satisfies Record<string, string>;

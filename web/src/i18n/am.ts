@@ -2430,4 +2430,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'የቡድኑ ስኬቶች፦ {comunidade}',
   'O quarto de {nome}': 'የ{nome} ክፍል',
   'Este quarto não está aberto para visita.': 'ይህ ክፍል ለጉብኝት ክፍት አይደለም።',
+  '{quem} chama você para visitar o quarto': '{quem} ክፍሉን እንዲጎበኙ ይጋብዝዎታል',
+  'Convite para o quarto': 'የክፍል ግብዣ',
 } satisfies Record<string, string>;

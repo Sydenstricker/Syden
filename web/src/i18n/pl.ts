@@ -2495,4 +2495,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Osiągnięcia ekipy: {comunidade}',
   'O quarto de {nome}': 'Pokój: {nome}',
   'Este quarto não está aberto para visita.': 'Ten pokój nie jest otwarty dla odwiedzających.',
+  '{quem} chama você para visitar o quarto': '{quem} zaprasza cię do odwiedzenia pokoju',
+  'Convite para o quarto': 'Zaproszenie do pokoju',
 } satisfies Record<string, string>;

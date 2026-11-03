@@ -2436,4 +2436,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Éachtaí an ghrúpa: {comunidade}',
   'O quarto de {nome}': 'Seomra {nome}',
   'Este quarto não está aberto para visita.': 'Níl an seomra seo oscailte do chuairteoirí.',
+  '{quem} chama você para visitar o quarto': 'Tá {quem} ag tabhairt cuireadh duit cuairt a thabhairt ar an seomra',
+  'Convite para o quarto': 'Cuireadh chuig an seomra',
 } satisfies Record<string, string>;

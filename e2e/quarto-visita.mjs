@@ -5,7 +5,7 @@
 //   dos jogos já fazem). Ela abre a estante pelo quarto e põe o troféu em destaque pela estrela.
 // - O Edu, que não é amigo, não vê "Visitar o quarto" no cartão dela (o de fábrica é só amigos).
 // - Amigos, o botão aparece; a visita abre o quarto dela, e a estante mostra o destaque, com contra quem.
-// - Privado: o botão some de novo, até ela convidar o Edu em Minha conta.
+// - Privado: o botão some de novo, até ela convidar o Edu em Minha conta — e o convite chega a ele na hora, num cartão.
 //
 //   BANCO=<o banco da API de teste> node e2e/quarto-visita.mjs   (API de teste na 3099 e site na 5174)
 import fs from 'node:fs';
@@ -141,6 +141,37 @@ try {
     : falhou('no privado, o amigo continuou vendo a visita');
   await edu.keyboard.press('Escape');
   await duda.locator('.quem-visita-lista label', { hasText: 'edu' + s }).locator('input').check();
+  // o Edu, com o Syden aberto, recebe o convite na hora: o cartão no canto, com "Visitar o quarto"
+  await edu
+    .locator('.convite-voz', { hasText: 'duda' + s })
+    .getByRole('button', { name: 'Visitar o quarto' })
+    .waitFor({ timeout: 10000 })
+    .then(
+      () => ok('o convidado recebe o cartão do convite na hora'),
+      () => falhou('o cartão do convite não chegou ao Edu'),
+    );
+  await edu.screenshot({ path: path.join(FOTOS, 'quarto-visita-convite.png') });
+  const abertos = (await pedir(edu, 'GET', '/api/quartos-abertos')).corpo.quartos;
+  abertos.length === 1 && abertos[0].convidou ? ok('e a tela de Amigos sabe do convite') : falhou(`quartos abertos: ${JSON.stringify(abertos)}`);
+  // quem estava fora acha o convite na tela de Amigos (o quadro de fotos do quarto), com o botão de visitar
+  await edu.locator('.convite-voz').getByRole('button', { name: 'Agora não' }).click();
+  await edu.locator('.rail-logo').click();
+  const quartoDoEdu = await (await edu.waitForSelector('.quarto-novo iframe', { timeout: 30000 })).contentFrame();
+  await quartoDoEdu.waitForFunction(() => typeof window.visitaDoTeste === 'function', null, { timeout: 60000 });
+  await edu.waitForTimeout(1000);
+  await quartoDoEdu.evaluate(() => parent.postMessage({ syden: 'quarto', acao: 'quadro' }, location.origin));
+  const linha = edu.locator('.amigos-lista li', { hasText: 'duda' + s });
+  await linha.getByText('Convite para o quarto').waitFor({ timeout: 10000 }).then(
+    () => ok('na tela de Amigos, a Duda aparece com o convite para o quarto'),
+    () => falhou('a tela de Amigos não mostrou o convite'),
+  );
+  await edu.locator('.amigos').screenshot({ path: path.join(FOTOS, 'quarto-visita-amigos.png') });
+  await linha.getByRole('button', { name: 'Visitar o quarto' }).click();
+  await edu.locator('.dialog.visita-quarto').waitFor({ timeout: 10000 }).then(
+    () => ok('e o botão de lá abre a visita'),
+    () => falhou('o botão da tela de Amigos não abriu a visita'),
+  );
+  await edu.keyboard.press('Escape');
   await duda.waitForTimeout(800);
   await duda.locator('.quem-visita').screenshot({ path: path.join(FOTOS, 'quarto-visita-privado.png') });
   cartao = await abrirCartaoDaDuda();

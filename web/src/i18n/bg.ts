@@ -2497,4 +2497,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Постижения на групата: {comunidade}',
   'O quarto de {nome}': 'Стая: {nome}',
   'Este quarto não está aberto para visita.': 'Тази стая не е отворена за посещения.',
+  '{quem} chama você para visitar o quarto': '{quem} те кани да посетиш стаята',
+  'Convite para o quarto': 'Покана за стаята',
 } satisfies Record<string, string>;

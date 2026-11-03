@@ -2445,4 +2445,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Àwọn àṣeyọrí àwọn ọ̀rẹ́: {comunidade}',
   'O quarto de {nome}': 'Yàrá {nome}',
   'Este quarto não está aberto para visita.': 'Yàrá yìí kò ṣí sílẹ̀ fún àbẹ̀wò.',
+  '{quem} chama você para visitar o quarto': '{quem} ń pè ọ́ láti ṣèbẹ̀wò sí yàrá',
+  'Convite para o quarto': 'Ìpè sí yàrá',
 } satisfies Record<string, string>;

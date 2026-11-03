@@ -2429,4 +2429,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Rawaka ni ilawalawa: {comunidade}',
   'O quarto de {nome}': 'Na rumu i {nome}',
   'Este quarto não está aberto para visita.': 'Na rumu oqo e sega ni dola me sikovi.',
+  '{quem} chama você para visitar o quarto': 'E sureti iko o {quem} mo sikova na rumu',
+  'Convite para o quarto': 'Sureti ki na rumu',
 } satisfies Record<string, string>;

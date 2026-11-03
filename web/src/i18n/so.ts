@@ -2500,4 +2500,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Guulaha kooxda: {comunidade}',
   'O quarto de {nome}': 'Qolka {nome}',
   'Este quarto não está aberto para visita.': 'Qolkan uma furna booqasho.',
+  '{quem} chama você para visitar o quarto': 'Casuumaad booqasho qolka oo ka timid {quem}',
+  'Convite para o quarto': 'Casuumaad qolka',
 } satisfies Record<string, string>;

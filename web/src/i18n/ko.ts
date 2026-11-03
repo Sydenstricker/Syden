@@ -2418,4 +2418,6 @@ export default {
   'Conquistas da turma: {comunidade}': '친구들의 업적: {comunidade}',
   'O quarto de {nome}': '{nome}의 방',
   'Este quarto não está aberto para visita.': '이 방은 방문할 수 없어요.',
+  '{quem} chama você para visitar o quarto': '{quem} 님이 방 구경에 초대했어요',
+  'Convite para o quarto': '방 초대',
 } satisfies Record<string, string>;

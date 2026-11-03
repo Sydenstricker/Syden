@@ -2430,4 +2430,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Pencapaian kumpulan: {comunidade}',
   'O quarto de {nome}': 'Bilik {nome}',
   'Este quarto não está aberto para visita.': 'Bilik ini tidak dibuka untuk lawatan.',
+  '{quem} chama você para visitar o quarto': '{quem} menjemput kamu melawat bilik',
+  'Convite para o quarto': 'Jemputan ke bilik',
 } satisfies Record<string, string>;

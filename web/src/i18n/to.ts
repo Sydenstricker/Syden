@@ -2436,4 +2436,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Ngaahi lavameʻa ʻa e kulupu: {comunidade}',
   'O quarto de {nome}': 'Ko e loki ʻo {nome}',
   'Este quarto não está aberto para visita.': 'ʻOku ʻikai fakaava ʻa e loki ko ʻeni ki he kau ʻaʻahi.',
+  '{quem} chama você para visitar o quarto': 'ʻOku fakaafeʻi koe ʻe {quem} ke ʻaʻahi ki he loki',
+  'Convite para o quarto': 'Fakaafe ki he loki',
 } satisfies Record<string, string>;

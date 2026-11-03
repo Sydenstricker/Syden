@@ -2500,4 +2500,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Zava-bitan’ny vondrona: {comunidade}',
   'O quarto de {nome}': 'Ny efitranon’i {nome}',
   'Este quarto não está aberto para visita.': 'Tsy misokatra ho an’ny mpitsidika ity efitrano ity.',
+  '{quem} chama você para visitar o quarto': 'Manasa anao hitsidika ny efitrano i {quem}',
+  'Convite para o quarto': 'Fanasana any amin’ny efitrano',
 } satisfies Record<string, string>;

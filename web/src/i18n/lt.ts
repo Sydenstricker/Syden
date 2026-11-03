@@ -2502,4 +2502,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Kompanijos pasiekimai: {comunidade}',
   'O quarto de {nome}': 'Kambarys: {nome}',
   'Este quarto não está aberto para visita.': 'Šis kambarys neatviras lankymui.',
+  '{quem} chama você para visitar o quarto': '{quem} kviečia tave aplankyti kambarį',
+  'Convite para o quarto': 'Kvietimas į kambarį',
 } satisfies Record<string, string>;

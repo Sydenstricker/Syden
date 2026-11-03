@@ -2500,4 +2500,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'කණ්ඩායමේ ජයග්‍රහණ: {comunidade}',
   'O quarto de {nome}': 'කාමරය: {nome}',
   'Este quarto não está aberto para visita.': 'මෙම කාමරය අමුත්තන් සඳහා විවෘත නැත.',
+  '{quem} chama você para visitar o quarto': '{quem} ඔයාට කාමරයට එන්න ආරාධනා කරනවා',
+  'Convite para o quarto': 'කාමරයට ආරාධනාව',
 } satisfies Record<string, string>;

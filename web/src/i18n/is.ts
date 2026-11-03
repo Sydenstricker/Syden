@@ -2501,4 +2501,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Afrek hópsins: {comunidade}',
   'O quarto de {nome}': 'Herbergi: {nome}',
   'Este quarto não está aberto para visita.': 'Þetta herbergi er ekki opið fyrir heimsóknir.',
+  '{quem} chama você para visitar o quarto': '{quem} býður þér að heimsækja herbergið',
+  'Convite para o quarto': 'Boð í herbergið',
 } satisfies Record<string, string>;

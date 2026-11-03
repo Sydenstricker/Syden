@@ -2470,4 +2470,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Milkaa’ina garee: {comunidade}',
   'O quarto de {nome}': 'Kutaa {nome}',
   'Este quarto não está aberto para visita.': 'Kutaan kun daawwannaaf hin banamne.',
+  '{quem} chama você para visitar o quarto': 'Afeerraa kutaa daawwachuu {quem} irraa',
+  'Convite para o quarto': 'Afeerraa kutaa',
 } satisfies Record<string, string>;

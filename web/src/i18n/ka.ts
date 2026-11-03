@@ -2518,4 +2518,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'ჯგუფის მიღწევები: {comunidade}',
   'O quarto de {nome}': 'ოთახი: {nome}',
   'Este quarto não está aberto para visita.': 'ეს ოთახი სტუმრებისთვის ღია არ არის.',
+  '{quem} chama você para visitar o quarto': '{quem} გეპატიჟება ოთახის მოსანახულებლად',
+  'Convite para o quarto': 'ოთახში მოწვევა',
 } satisfies Record<string, string>;

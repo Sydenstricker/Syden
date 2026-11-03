@@ -2425,4 +2425,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Group achievements: {comunidade}',
   'O quarto de {nome}': '{nome}\'s room',
   'Este quarto não está aberto para visita.': 'This room isn\'t open to visitors.',
+  '{quem} chama você para visitar o quarto': '{quem} invites you to visit the room',
+  'Convite para o quarto': 'Room invite',
 } satisfies Record<string, string>;

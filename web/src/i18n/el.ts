@@ -2436,4 +2436,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Επιτεύγματα της παρέας: {comunidade}',
   'O quarto de {nome}': 'Δωμάτιο: {nome}',
   'Este quarto não está aberto para visita.': 'Αυτό το δωμάτιο δεν είναι ανοιχτό για επισκέψεις.',
+  '{quem} chama você para visitar o quarto': '{quem} σε καλεί να επισκεφτείς το δωμάτιο',
+  'Convite para o quarto': 'Πρόσκληση στο δωμάτιο',
 } satisfies Record<string, string>;

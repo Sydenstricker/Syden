@@ -4316,8 +4316,9 @@ export function foiConvidadoAoQuarto(dono: number, convidado: number): boolean {
   return !!db.prepare('SELECT 1 FROM quarto_convidados WHERE dono_id = ? AND convidado_id = ?').get(dono, convidado);
 }
 
-export function convidarAoQuarto(dono: number, convidado: number) {
-  db.prepare('INSERT OR IGNORE INTO quarto_convidados (dono_id, convidado_id) VALUES (?, ?)').run(dono, convidado);
+/** Devolve se o convite é NOVO (o aviso só vai na primeira vez). */
+export function convidarAoQuarto(dono: number, convidado: number): boolean {
+  return db.prepare('INSERT OR IGNORE INTO quarto_convidados (dono_id, convidado_id) VALUES (?, ?)').run(dono, convidado).changes > 0;
 }
 
 export function desconvidarDoQuarto(dono: number, convidado: number) {

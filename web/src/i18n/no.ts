@@ -2500,4 +2500,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Gjengens bragder: {comunidade}',
   'O quarto de {nome}': 'Rommet til {nome}',
   'Este quarto não está aberto para visita.': 'Dette rommet er ikke åpent for besøk.',
+  '{quem} chama você para visitar o quarto': '{quem} inviterer deg til å besøke rommet',
+  'Convite para o quarto': 'Invitasjon til rommet',
 } satisfies Record<string, string>;

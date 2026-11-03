@@ -578,7 +578,12 @@ conquistas; o jogador pode escolher o que deixa em destaque"):** a estante do qu
 todos os jogos, agrupados pelo jogo, e as conquistas da turma de cada comunidade da pessoa (o degrau mais alto); a estrela põe
 até 6 em DESTAQUE (`trofeus_destaque`), e é o destaque que quem visita o quarto vê, **com tudo, inclusive contra quem**
 (decisão dele: "se ele permitiu a visita, presumo que não seja um problema contra quem ele ganhou"). Foi isso que fechou a
-visita a qualquer conta (ver o quarto, acima). O rival que tem bloqueio com quem visita não aparece para essa pessoa. **Os seis
+visita a qualquer conta (ver o quarto, acima). O rival que tem bloqueio com quem visita não aparece para essa pessoa, e
+**o rival MENOR DE IDADE só aparece para quem é amigo dele** (achado da revisão; mantido por decisão dele, 03/11/2026: o nome de
+um adolescente não vai a desconhecidos pelo quarto de outra pessoa). O convite para o quarto privado é só para amigos, acaba
+com a amizade, e CHEGA a quem foi convidado: na hora, um cartão no canto como o do convite para a voz (`ConviteParaQuarto.tsx`,
+'quarto:convite'), e para quem estava fora, na tela de Amigos ("Convite para o quarto" e "Visitar o quarto" ao lado do nome,
+`/api/quartos-abertos`). **Os seis
 jogos do fliperama (Festa, golfe, tabuleiro, blocos, pulo e briga) contam no Repertório e na "A turma do jogo"** desde o mesmo
 dia; a corrida continua de fora (o troféu coletivo dela é a Copa da turma), e os quizzes também.
 

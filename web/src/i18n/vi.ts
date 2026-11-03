@@ -2400,4 +2400,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Thành tựu của cả nhóm: {comunidade}',
   'O quarto de {nome}': 'Phòng của {nome}',
   'Este quarto não está aberto para visita.': 'Phòng này không mở cho khách ghé thăm.',
+  '{quem} chama você para visitar o quarto': '{quem} mời bạn ghé thăm phòng',
+  'Convite para o quarto': 'Lời mời vào phòng',
 } satisfies Record<string, string>;

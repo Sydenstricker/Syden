@@ -2492,4 +2492,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Arritjet e shoqërisë: {comunidade}',
   'O quarto de {nome}': 'Dhoma e {nome}',
   'Este quarto não está aberto para visita.': 'Kjo dhomë nuk është e hapur për vizita.',
+  '{quem} chama você para visitar o quarto': '{quem} të fton të vizitosh dhomën',
+  'Convite para o quarto': 'Ftesë në dhomë',
 } satisfies Record<string, string>;

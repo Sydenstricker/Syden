@@ -2499,4 +2499,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'សមិទ្ធផលរបស់ក្រុម៖ {comunidade}',
   'O quarto de {nome}': 'បន្ទប់របស់ {nome}',
   'Este quarto não está aberto para visita.': 'បន្ទប់នេះមិនបើកឱ្យទស្សនាទេ។',
+  '{quem} chama você para visitar o quarto': '{quem} អញ្ជើញអ្នកមកទស្សនាបន្ទប់',
+  'Convite para o quarto': 'ការអញ្ជើញមកបន្ទប់',
 } satisfies Record<string, string>;

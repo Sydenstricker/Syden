@@ -2502,4 +2502,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'टोलीका उपलब्धिहरू: {comunidade}',
   'O quarto de {nome}': '{nome} को कोठा',
   'Este quarto não está aberto para visita.': 'यो कोठा भेटघाटका लागि खुला छैन।',
+  '{quem} chama você para visitar o quarto': '{quem} ले तपाईंलाई कोठा हेर्न बोलाउँदै हुनुहुन्छ',
+  'Convite para o quarto': 'कोठाको निम्तो',
 } satisfies Record<string, string>;

@@ -2441,4 +2441,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Ibyagezweho n’itsinda: {comunidade}',
   'O quarto de {nome}': 'Icyumba cya {nome}',
   'Este quarto não está aberto para visita.': 'Iki cyumba ntigifunguriye abashyitsi.',
+  '{quem} chama você para visitar o quarto': '{quem} aragutumira gusura icyumba',
+  'Convite para o quarto': 'Ubutumire mu cyumba',
 } satisfies Record<string, string>;

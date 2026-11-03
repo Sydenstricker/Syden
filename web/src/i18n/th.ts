@@ -2443,4 +2443,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'ความสำเร็จของแก๊ง: {comunidade}',
   'O quarto de {nome}': 'ห้องของ {nome}',
   'Este quarto não está aberto para visita.': 'ห้องนี้ไม่ได้เปิดให้เยี่ยมชม',
+  '{quem} chama você para visitar o quarto': '{quem} เชิญคุณมาเยี่ยมชมห้อง',
+  'Convite para o quarto': 'คำเชิญเข้าห้อง',
 } satisfies Record<string, string>;

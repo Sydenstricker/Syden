@@ -2417,4 +2417,6 @@ export default {
   'Conquistas da turma: {comunidade}': '大家的成就：{comunidade}',
   'O quarto de {nome}': '{nome} 的房间',
   'Este quarto não está aberto para visita.': '这个房间不对外开放参观。',
+  '{quem} chama você para visitar o quarto': '{quem} 邀请你来房间看看',
+  'Convite para o quarto': '房间邀请',
 } satisfies Record<string, string>;

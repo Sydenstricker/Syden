@@ -2501,4 +2501,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Дастовардҳои гурӯҳ: {comunidade}',
   'O quarto de {nome}': 'Ҳуҷра: {nome}',
   'Este quarto não está aberto para visita.': 'Ин ҳуҷра барои меҳмонон кушода нест.',
+  '{quem} chama você para visitar o quarto': '{quem} туро ба дидани ҳуҷра даъват мекунад',
+  'Convite para o quarto': 'Даъват ба ҳуҷра',
 } satisfies Record<string, string>;

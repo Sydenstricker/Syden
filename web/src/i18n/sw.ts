@@ -2429,4 +2429,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Mafanikio ya kundi: {comunidade}',
   'O quarto de {nome}': 'Chumba cha {nome}',
   'Este quarto não está aberto para visita.': 'Chumba hiki hakiko wazi kwa wageni.',
+  '{quem} chama você para visitar o quarto': '{quem} anakualika kutembelea chumba',
+  'Convite para o quarto': 'Mwaliko wa chumba',
 } satisfies Record<string, string>;

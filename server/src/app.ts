@@ -85,7 +85,7 @@ export async function buildApp({ background = true } = {}): Promise<{ app: Fasti
   registerSocialRoutes(app);
   registerAmigosRoutes(app, io);
   registerQuartoRoutes(app);
-  registerTrofeusRoutes(app);
+  registerTrofeusRoutes(app, io);
   registerCorridaRoutes(app);
   registerPlataformaRoutes(app);
   registerSalaoRoutes(app, io);

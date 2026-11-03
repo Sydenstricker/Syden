@@ -2510,4 +2510,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'Reyalizasyon gwoup la: {comunidade}',
   'O quarto de {nome}': 'Chanm {nome}',
   'Este quarto não está aberto para visita.': 'Chanm sa a pa louvri pou vizit.',
+  '{quem} chama você para visitar o quarto': '{quem} ap envite w vizite chanm nan',
+  'Convite para o quarto': 'Envitasyon nan chanm nan',
 } satisfies Record<string, string>;

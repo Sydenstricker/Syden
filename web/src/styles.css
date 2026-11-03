@@ -17187,3 +17187,10 @@ body.arrastando-barra {
   font-size: calc(12px * var(--escala-do-texto));
   white-space: nowrap;
 }
+
+/* O convite para o quarto, ao lado do nome do amigo (TelaDeAmigos.tsx). */
+.amigos-convite-quarto {
+  display: block;
+  color: var(--accent);
+  font-size: 0.8rem;
+}
