@@ -2411,5 +2411,5 @@ export default {
   'Do pódio da Corrida dos coelhos': 'Avy amin\'ny podium-n\'ny Hazakazaky ny bitro',
   'Bosque': 'Ala',
   'Cânion': 'Hantsana',
-  'Copa do Repolho': 'Amboaran'ny Laisoa',
+  'Copa do Repolho': 'Amboaran\'ny Laisoa',
 } satisfies Record<string, string>;

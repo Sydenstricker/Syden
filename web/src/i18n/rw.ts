@@ -2352,5 +2352,5 @@ export default {
   'Do pódio da Corrida dos coelhos': 'Bivuye kuri podiyumu y\'Isiganwa ry\'inkwavu',
   'Bosque': 'Ishyamba',
   'Cânion': 'Umuhora',
-  'Copa do Repolho': 'Igikombe cy'Ishu',
+  'Copa do Repolho': 'Igikombe cy\'Ishu',
 } satisfies Record<string, string>;
