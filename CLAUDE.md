@@ -509,6 +509,18 @@ tela, mas nunca abaixo de 100 ms nem muito abaixo do que o servidor viu passar).
 de troféus do quarto (`pista: 'festa'`). Microjogo novo é uma entrada nos dois lados; a estante de troféus serve a qualquer
 jogo da sala. Testes: `server/test/minijogos-festa.test.ts` e `e2e/festa.mjs` (com o LiveKit).
 
+**A BRIGA NA HORTA está feita, como PILOTO (03/11/2026, pedido dele: a nostalgia dos fliperamas de briga de quatro do começo
+dos anos 90; só a mecânica):** `server/src/minijogo-briga.ts`, `web/src/JogoBriga.tsx`, `web/src/briga/`, nas duas abas (1 a 4
+pessoas). Uma fase de ~2 min na horta, de lado (andar também para o fundo), 4 ondas de raposas e corvos e o texugo no fim;
+combo de três socos, pulo, voadora, o especial que gasta vida, cair e levantar piscando, 3 vidas. **É o único jogo em que a
+turma divide os mesmos inimigos**, e a rede decidiu assim: os inimigos são do SERVIDOR (passo próprio de 20 por segundo, o
+quadro pelo `difundir`, que o motor ganhou; e o `parar`, que desliga o passo); cada coelho anda no computador de quem joga;
+**quem bate tem razão** (o acerto como a tela mostrou, conferido pelo passado do inimigo) e **quem apanha tem folga** (o golpe
+inimigo só é decidido 200 ms depois, e quem saiu da área nessa janela escapa; as preparações são longas de propósito). O
+coelho é o mascote 3D de lado (`briga.py`/`briga-pos.py`, com a troca de paleta do avatar). Troféu só com a fase vencida
+(`pista: 'briga'`). Testes: `server/test/minijogos-briga.test.ts`, `web/test/briga.test.ts` (o piloto automático vence a
+fase contra o servidor de verdade, com 200 ms de atraso) e `e2e/briga.mjs` (escrito, não rodado).
+
 **A HORTA EM CASCATA está feita (03/11/2026, o item 4):** trocar e combinar com a pilha subindo, 6 × 12 (NÃO é Tetris: nada
 cai do alto em forma de peça), com seis legumes desenhados por código. Cadeia (o que cai e combina) e combo (4 ou mais)
 valem mais e, na sala, mandam CAIXOTES ao próximo adversário vivo, em roda; o caixote vira legume quando algo some do lado.

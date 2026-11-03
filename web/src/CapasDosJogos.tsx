@@ -13,6 +13,8 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
       return <CapaCorrida />;
     case 'festa':
       return <CapaFesta />;
+    case 'briga':
+      return <CapaBriga />;
     case 'blocos':
       return <CapaBlocos />;
     case 'plataforma':
@@ -46,6 +48,40 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
     case 'mitologia':
       return <CapaMitologia />;
   }
+}
+
+/**
+ * A Briga na horta: a cerca, os canteiros, e o coelho (o primeiro desenho do soco da folha web/public/briga/coelho.png)
+ * diante de uma raposa desenhada como no jogo.
+ */
+function CapaBriga() {
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#ecc9a8" />
+      <path d="M0 60 Q40 40 80 56 T160 50 V80 H0 Z" fill="#8e9a6c" />
+      <rect y="70" width="160" height="14" fill="#7a8f58" />
+      <rect y="73" width="160" height="2" fill="#b08a62" />
+      <rect y="79" width="160" height="2" fill="#b08a62" />
+      <rect y="84" width="160" height="36" fill="#8a6a4c" />
+      <rect y="92" width="160" height="7" fill="#94735a" />
+      <rect y="106" width="160" height="7" fill="#7e5f44" />
+      <g fill="#cf7440">
+        <rect x="104" y="66" width="15" height="22" />
+        <rect x="106" y="54" width="14" height="12" />
+      </g>
+      <rect x="106" y="49" width="4" height="5" fill="#a85a32" />
+      <rect x="113" y="49" width="4" height="5" fill="#a85a32" />
+      <rect x="110" y="70" width="6" height="14" fill="#f3e6d4" />
+      <rect x="99" y="58" width="6" height="5" fill="#cf7440" />
+      <rect x="108" y="88" width="3" height="8" fill="#4e3428" />
+      <rect x="115" y="88" width="3" height="8" fill="#4e3428" />
+      <rect x="117" y="76" width="9" height="5" fill="#a85a32" />
+      <path d="M96 60 l4 -4 l1 5 l5 -1 l-4 4 l3 4 l-5 -1 l-2 5 l-1 -5 l-5 0 z" fill="#fff6c8" />
+      <svg x="30" y="30" width="76" height="76" viewBox="1040 0 80 80" style={{ imageRendering: 'pixelated' }}>
+        <image href={`${import.meta.env.BASE_URL}briga/coelho.png`} width="2560" height="80" />
+      </svg>
+    </svg>
+  );
 }
 
 /**
