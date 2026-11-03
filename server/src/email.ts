@@ -33,8 +33,19 @@ export function ondeAnotar(fn: (linha: string) => void) {
 
 export const envioConfigurado = () => Boolean(config.email.resendKey);
 
+/**
+ * ENDEREÇO DE TESTE NUNCA SAI (03/11/2026). Os testes de tela rodam contra o servidor de desenvolvimento, que lê o
+ * server/.env — e lá mora a chave de verdade do Resend. Zerar a chave pela variável não basta: no PowerShell,
+ * `$env:RESEND_API_KEY = ''` APAGA a variável, e o valor do .env volta. Cada cadastro de teste mandava a confirmação
+ * para "@exemplo.test" e gastava a cota do dia (100 no plano grátis), que é a MESMA da produção: num dia de muitos
+ * testes, quem se cadastrasse de verdade ficava sem o e-mail. Os domínios reservados para teste (RFC 2606 e 6761), e
+ * os nossos de teste, ficam em rascunho com qualquer chave.
+ */
+const DE_TESTE = /\.(test|teste|example|invalid|localhost|local)$|(^|\.)(example|exemplo)\.(com|net|org)$/i;
+export const enderecoDeTeste = (para: string) => DE_TESTE.test(para.split('@').pop()?.trim() ?? '');
+
 export async function enviarEmail(mensagem: Mensagem): Promise<ResultadoDoEnvio> {
-  if (!envioConfigurado()) {
+  if (!envioConfigurado() || enderecoDeTeste(mensagem.para)) {
     // Modo rascunho: o link vai para o registro, para dar para seguir o fluxo sem provedor nenhum.
     anotar(
       `[e-mail em rascunho — nada foi enviado]\n  para: ${mensagem.para}\n  assunto: ${mensagem.assunto}\n${mensagem.texto
