@@ -54,7 +54,10 @@ test('desenho: sozinho não dá; a dois, quem desenha escolhe, risca, e os chute
   assert.equal(daVez.opcoes.length, 3);
   assert.equal((await chuta('GET', rota)).json().partida.opcoes, null, 'as opções são só de quem desenha');
 
-  const escolhida = (await desenha('POST', `${rota}/acao`, { tipo: 'escolher', id: daVez.opcoes[0], texto: 'Água-viva' })).json().partida;
+  // Nunca a "polvo": o chute errado do teste é "polvo", e o id da palavra também vale como acerto — sorteada em primeiro
+  // (1 vez em ~260), ela fazia o chute errado acertar, e o teste falhava ao acaso (o Actions de 04/11/2026).
+  const id = daVez.opcoes.find((o: string) => o !== 'polvo');
+  const escolhida = (await desenha('POST', `${rota}/acao`, { tipo: 'escolher', id, texto: 'Água-viva' })).json().partida;
   assert.equal(escolhida.fase, 'desenhando');
   const paraQuemChuta = (await chuta('GET', rota)).json().partida;
   assert.equal(paraQuemChuta.palavra, null, 'quem chuta não vê a palavra');
