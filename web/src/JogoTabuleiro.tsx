@@ -43,13 +43,13 @@ const COR_DA_CASA: Record<string, [string, string]> = {
 /** As cores de quem não tem avatar pronto: uma por lugar na ordem. */
 const CORES_SEM_AVATAR = ['#d9774f', '#7d93c4', '#7fae8a', '#c98aa8', '#e3b45a', '#5fa8a0', '#b8743f', '#9c86c0'];
 const hex = ([r, g, b]: [number, number, number]) => 'rgb(' + [r, g, b].join(',') + ')';
-function coresDe(avatar: number | null, i: number) {
+export function coresDe(avatar: number | null, i: number) {
   const a = avatar !== null ? CORES_DOS_AVATARES[avatar] : undefined;
   return a ? { pelo: hex(a.pelo), roupa: hex(a.roupa) } : { pelo: '#e8dccb', roupa: CORES_SEM_AVATAR[i % CORES_SEM_AVATAR.length] };
 }
 
 /** A peça: um coelho de frente, de pixels grandes, com a roupa embaixo. */
-function Peca({ pelo, roupa, x, y, vez }: { pelo: string; roupa: string; x: number; y: number; vez: boolean }) {
+export function Peca({ pelo, roupa, x, y, vez }: { pelo: string; roupa: string; x: number; y: number; vez: boolean }) {
   return (
     <g transform={`translate(${x} ${y})`}>
       <g className={vez ? 'tab-peca vez' : 'tab-peca'}>
@@ -105,7 +105,7 @@ export function Dado({ n, tamanho = 40 }: { n: number; tamanho?: number }) {
 }
 
 /** O relógio da tela, a cada quadro, enquanto ligado. */
-function useAgora(ligado: boolean) {
+export function useAgora(ligado: boolean) {
   const [agora, setAgora] = useState(Date.now);
   useEffect(() => {
     if (!ligado) return;

@@ -23,6 +23,8 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
       return <CapaGolfe />;
     case 'tabuleiro':
       return <CapaTabuleiro />;
+    case 'cidades':
+      return <CapaCidades />;
     case 'tamanho':
       return <CapaQualEMaior />;
     case 'stop':
@@ -712,6 +714,42 @@ function CapaTabuleiro() {
       <rect x="96" y="22" width="8" height="4" fill="#d08e2c" />
       <rect x="98" y="26" width="4" height="4" fill="#b8741e" />
       <rect x="94" y="12" width="4" height="2" fill="#fff1c8" />
+    </svg>
+  );
+}
+
+/**
+ * Cidades à venda: um pedaço da volta de casas nas cores das regiões, uma delas com a borda do dono e dois prédios, a
+ * moeda e os dois dados no meio.
+ */
+function CapaCidades() {
+  const cores = ['#6fa86a', '#3f8a72', '#e0b04a', '#d98448', '#b8743f', '#6d8fc4', '#9a72b8'];
+  const casas: [number, number][] = [];
+  for (let c = 0; c < 6; c++) casas.push([c, 0]);
+  for (let l = 1; l < 4; l++) casas.push([5, l]);
+  for (let c = 4; c >= 0; c--) casas.push([c, 3]);
+  for (let l = 2; l > 0; l--) casas.push([0, l]);
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true" shapeRendering="crispEdges">
+      <rect width="160" height="120" fill="#22382c" />
+      <rect x="8" y="8" width="144" height="104" fill="#2f4a3a" />
+      {casas.map(([c, l], i) => (
+        <rect key={i} x={12 + c * 23} y={12 + l * 24} width="21" height="22" fill={i % 4 === 0 ? '#e8dcc4' : cores[i % cores.length]} />
+      ))}
+      {/* a cidade com dono e prédios */}
+      <rect x="59" y="13" width="19" height="20" fill="none" stroke="#f3ead8" strokeWidth="2" />
+      <rect x="62" y="24" width="5" height="5" fill="#f3ead8" />
+      <rect x="69" y="24" width="5" height="5" fill="#f3ead8" />
+      {/* os dois dados */}
+      {[52, 82].map((x, k) => (
+        <g key={x}>
+          <rect x={x} y="50" width="24" height="24" fill="#a89276" />
+          <rect x={x} y="48" width="24" height="23" fill="#f3ead8" />
+          {(k === 0 ? [[5, 5], [15, 15]] : [[5, 5], [10, 10], [15, 15]]).map(([dx, dy], i) => (
+            <rect key={i} x={x + dx} y={48 + dy} width="4" height="4" fill="#5a3a2a" />
+          ))}
+        </g>
+      ))}
     </svg>
   );
 }

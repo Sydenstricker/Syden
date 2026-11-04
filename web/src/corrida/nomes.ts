@@ -26,6 +26,8 @@ export const NOMES_DAS_PISTAS: Record<string, string> = {
   golfe: chave('Minigolfe da toca'),
   // e o do Tabuleiro da turma (server/src/minijogo-tabuleiro-da-turma.ts)
   tabuleiro: chave('Tabuleiro da turma'),
+  // e o de Cidades à venda (server/src/minijogo-cidades.ts): os pontos são o patrimônio
+  cidades: chave('Cidades à venda'),
 };
 
 export const nomeDaPista = (id: string) => NOMES_DAS_PISTAS[id] ?? id;

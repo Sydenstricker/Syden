@@ -375,6 +375,58 @@ export interface EstadoTabuleiro {
   partidaId: string;
 }
 
+/** Cidades à venda (server/src/minijogo-cidades.ts): o tabuleiro vem do servidor, que é quem decide tudo. */
+export type TipoDaCasaDasCidades = 'largada' | 'cidade' | 'transporte' | 'noticia' | 'pedagio' | 'engarrafamento' | 'feriado';
+export type CartaDasCidades =
+  | 'quadrilha' | 'bolso' | 'feira' | 'carro' | 'multa' | 'largada' | 'carona' | 'onibus-errado' | 'chuva' | 'reforma' | 'aniversario' | 'festa' | 'passagem';
+export type OcorridoDasCidades = { id: number } & (
+  | { tipo: 'salario'; userId: number; valor: number }
+  | { tipo: 'aluguel'; de: number; para: number; casa: number; valor: number }
+  | { tipo: 'comprou'; userId: number; casa: number; valor: number }
+  | { tipo: 'leilao'; userId: number | null; casa: number; valor: number }
+  | { tipo: 'carta'; userId: number; carta: CartaDasCidades; valor: number | null }
+  | { tipo: 'pedagio'; userId: number; valor: number }
+  | { tipo: 'engarrafado'; userId: number }
+  | { tipo: 'perdeu-vez'; userId: number }
+  | { tipo: 'vendeu-para-pagar'; userId: number; valor: number }
+  | { tipo: 'faliu'; userId: number; credor: number | null }
+  | { tipo: 'troca'; de: number; para: number; aceita: boolean }
+  | { tipo: 'construiu' | 'vendeu-predio' | 'hipotecou' | 'resgatou'; userId: number; casa: number }
+);
+export interface PropostaDasCidades {
+  de: number;
+  para: number;
+  darCasas: number[];
+  darDinheiro: number;
+  pedirCasas: number[];
+  pedirDinheiro: number;
+}
+export interface EstadoCidades {
+  fase: 'vez' | 'andando' | 'compra' | 'leilao' | 'acoes' | 'troca' | 'fim';
+  modo: 'rodadas' | 'falencia';
+  rodada: number;
+  rodadas: number | null;
+  casas: { tipo: TipoDaCasaDasCidades; nome?: string; uf?: string; grupo?: number; preco?: number; aluguel?: number; custo?: number; valor?: number }[];
+  salario: number;
+  multiplicador: number[];
+  aluguelDoTransporte: number[];
+  jurosDoResgate: number;
+  lanceMinimo: number;
+  vez: number | null;
+  jogadores: { userId: number; username: string; avatar: number | null; pos: number; dinheiro: number; patrimonio: number; falido: boolean; parado: number; presente: boolean }[];
+  posses: { casa: number; dono: number; predios: number; hipotecada: boolean; aluguel: number }[];
+  /** O último andar: os dados (null quando foi uma notícia que moveu) e as casas por onde passou (a primeira é a de onde saiu). */
+  ultimo: { id: number; userId: number; dados: [number, number] | null; caminho: number[] } | null;
+  leilao: { casa: number; lance: number; lider: number | null } | null;
+  troca: PropostaDasCidades | null;
+  trocasRestantes: number;
+  historico: OcorridoDasCidades[];
+  /** No fim, só quem ficou até o fim tem posição; quem saiu (e todos, na interrompida) vem com null. */
+  classificacao: { userId: number; username: string; patrimonio: number; falido: boolean; posicao: number | null; saiu: boolean }[];
+  interrompida: boolean;
+  partidaId: string;
+}
+
 /** O Minigolfe da toca (server/src/minijogo-golfe.ts): seis buracos, menos tacadas ganha. */
 export interface EstadoGolfe {
   fase: 'preparando' | 'jogando' | 'placar' | 'fim';
@@ -435,7 +487,7 @@ export interface EstadoBriga {
   partidaId: string;
 }
 
-export type IdDoJogo = 'corrida' | 'festa' | 'tabuleiro' | 'golfe' | 'plataforma' | 'blocos' | 'briga' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'xadrez' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
+export type IdDoJogo = 'corrida' | 'festa' | 'tabuleiro' | 'cidades' | 'golfe' | 'plataforma' | 'blocos' | 'briga' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'xadrez' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
 
 /**
  * As duas abas da estante (pedido dele, 14/10/2026). SOLO: a partida é só de quem joga, começa sem convite, não ocupa
@@ -573,6 +625,14 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
     id: 'tabuleiro',
     nome: chave('Tabuleiro da turma'),
     dica: chave('Cada um joga o dado na sua vez e anda pela horta. Junte cenouras para comprar a cenoura dourada, e depois de cada rodada a turma joga um microjogo. Ganha quem tiver mais cenouras douradas.'),
+    abas: ['coletivo'],
+  },
+  {
+    // O jogo de comprar cidades e cobrar aluguel (JogoCidades.tsx, server/src/minijogo-cidades.ts): só a mecânica, com
+    // capitais do Brasil. Só com a turma.
+    id: 'cidades',
+    nome: chave('Cidades à venda'),
+    dica: chave('Ande pelas capitais do Brasil, compre cidades e cobre aluguel de quem parar nelas. Com uma região inteira, dá para construir prédios. Troque, dispute nos leilões e não fique sem dinheiro.'),
     abas: ['coletivo'],
   },
 ];

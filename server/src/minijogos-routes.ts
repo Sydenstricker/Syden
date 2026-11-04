@@ -11,6 +11,7 @@ import type { Contexto, Definicao, Jogo } from './minijogo-motor.js';
 import { lobisomem } from './minijogo-lobisomem.js';
 import { palavra } from './minijogo-palavra.js';
 import { plataforma } from './minijogo-plataforma.js';
+import { cidades } from './minijogo-cidades.js';
 import { catalogo, criarQuiz, TEMAS } from './minijogo-quiz.js';
 import { stop } from './minijogo-stop.js';
 import { sudoku } from './minijogo-sudoku.js';
@@ -55,6 +56,7 @@ export const JOGOS: Record<string, Definicao> = {
   plataforma,
   golfe,
   tabuleiro: tabuleiroDaTurma,
+  cidades,
   // Os quizzes de adivinhar (minijogo-quiz.ts): um jogo por tema, todos no mesmo motor.
   ...Object.fromEntries(Object.entries(TEMAS).map(([id, tema]) => [id, criarQuiz(tema)])),
 };

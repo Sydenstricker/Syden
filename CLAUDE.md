@@ -575,6 +575,18 @@ compra), quem saiu da sala é pulado, e com menos de 2 a partida acaba sem trof�
 estante do quarto (`pista: 'tabuleiro'`, os pontos são as douradas). Sem bifurcação no caminho, por enquanto. Testes:
 `server/test/minijogos-tabuleiro-da-turma.test.ts` e `e2e/tabuleiro.mjs` (escrito, NÃO rodado).
 
+**CIDADES À VENDA (04/11/2026, pedido dele: "eu queria um monopoly para jogarmos"):** comprar cidades e cobrar aluguel, SÓ A
+MECÂNICA. Nada de nome, ruas, cartas, cantos ou visual de Monopoly nem de Banco Imobiliário (marcas da Hasbro e da Estrela).
+`server/src/minijogo-cidades.ts`, `web/src/JogoCidades.tsx`, só no Coletivo (2 a 6). Uma volta de 32 casas com 20 capitais em 7
+grupos por região (a sigla do estado na casa, a cor da região), 4 transportes diferentes (o aluguel sobe com quantos o dono tem),
+notícias nossas (festa junina, carona, ônibus errado…), pedágio, engarrafamento (perde a próxima vez) e feriado. **O que ele
+escolheu:** quem começa escolhe 10, 20 ou 30 rodadas (ganha o maior patrimônio) ou ATÉ SOBRAR UM; quem fica sem dinheiro SAI E
+ASSISTE; há TROCA (na própria vez, até 3 propostas) e LEILÃO (quem parou não comprou: todos dão lance, cada lance devolve 8 s).
+Construir pede a região inteira e sem hipoteca (até 4 prédios). **Quem deve mais do que tem não administra nada:** o servidor
+vende os prédios e hipoteca as cidades sozinho; não cobrindo, a pessoa fale e o que tinha vai ao credor (ou ao banco). A casa só
+age quando a peça CHEGA (a fase 'andando' segura o dinheiro). Troféu com `pista: 'cidades'`, os pontos são o patrimônio. NÃO entrou
+nas conquistas da turma (Repertório / "A turma do jogo"): decisão dele. Testes: `server/test/minijogos-cidades.test.ts`. Sem e2e.
+
 **A ESTANTE DE TROFÉUS VIROU O HUB (03/11/2026, pedido dele: "um hub para todos os troféus em mini-games, todas as
 conquistas; o jogador pode escolher o que deixa em destaque"):** a estante do quarto (`web/src/Trofeus.tsx`) junta os pódios de
 todos os jogos, agrupados pelo jogo, e as conquistas da turma de cada comunidade da pessoa (o degrau mais alto); a estrela põe
@@ -1177,6 +1189,13 @@ anunciar como ponta a ponta seria enganoso. Ficaram três degraus, e ele escolhe
 **Nenhuma lei brasileira exige ponta a ponta.** A LGPD (art. 46) pede segurança adequada; o degrau 1 é o que mais
 pesa nela (e num incidente, dado cifrado conta como risco menor). Estar em dia com a lei é o conjunto (proteção de
 adolescentes, Marco Civil, política) e o advogado, não a criptografia.
+
+## O recado geral tem foto, e ela só é pública enquanto for a do recado
+
+**Feito em 04/11/2026, pedido dele.** O aviso de Uso do servidor ganhou uma foto: miniatura na faixa, grande ao clicar. Ela sobe
+pelo funil das imagens (`PUT /api/aviso/imagem`: tipo, tamanho, Shield) e é servida SEM CONTA (a faixa aparece na tela de
+entrada) por `GET /api/aviso/imagem/:sha`, que só entrega o sha da foto do aviso guardado — qualquer outro dá 404, para a rota
+não virar um jeito de baixar arquivo de ninguém. A vassoura de órfãos e a reconferência do Shield conhecem o kv `aviso-geral`.
 
 ## A caixa-preta: exclusão apaga, mas 90 dias ficam para a justiça
 

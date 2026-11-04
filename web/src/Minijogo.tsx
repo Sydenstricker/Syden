@@ -19,6 +19,7 @@ import { EscolhaDaPista, JogoCorrida, JogoCorridaNaSala, type EstadoCorrida } fr
 import { JogoStop } from './JogoStop';
 import { JogoSudoku } from './JogoSudoku';
 import { EscolhaDasRodadas, JogoTabuleiro } from './JogoTabuleiro';
+import { EscolhaDasCidades, JogoCidades } from './JogoCidades';
 import { EscolhaDeCategoria, JogoTamanho } from './JogoTamanho';
 import { JogoXadrez } from './JogoXadrez';
 import {
@@ -39,6 +40,7 @@ import {
   type EstadoStop,
   type EstadoSudoku,
   type EstadoTabuleiro,
+  type EstadoCidades,
   type EstadoTamanho,
   type EstadoXadrez,
   type GrupoDoJogo,
@@ -243,6 +245,12 @@ export function PainelDoMinijogo({
           aoVoltar={() => setEscolhendo(null)}
         />
       )}
+      {!partida && escolhendo === 'cidades' && (
+        <EscolhaDasCidades
+          aoEscolher={(corpo) => tentar(() => aoComecar('cidades', corpo, false).then(() => setEscolhendo(null)))}
+          aoVoltar={() => setEscolhendo(null)}
+        />
+      )}
       {!partida && escolhendo === 'tamanho' && (
         <EscolhaDeCategoria
           aoEscolher={(categoria) => tentar(() => aoComecar('tamanho', { categoria }, aba === 'solo').then(() => setEscolhendoCategoria(false)))}
@@ -280,7 +288,7 @@ export function PainelDoMinijogo({
                       ? aba === 'solo'
                         ? setPulando(true)
                         : setEscolhendo('plataforma')
-                    : jogo.id === 'tabuleiro' || pedeCategoria(jogo.id, aba === 'solo')
+                    : jogo.id === 'tabuleiro' || jogo.id === 'cidades' || pedeCategoria(jogo.id, aba === 'solo')
                       ? setEscolhendo(jogo.id)
                       : tentar(() => aoComecar(jogo.id, {}, aba === 'solo'))
                 }
@@ -394,6 +402,11 @@ export function PainelDoMinijogo({
           key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
           estado={jogoNaTela as unknown as EstadoTabuleiro & Partida} eu={eu} jogador={souJogador(partida)} restante={restante} agir={agir} />
       )}
+      {jogoNaTela?.jogo === 'cidades' && (
+        <JogoCidades
+          key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
+          estado={jogoNaTela as unknown as EstadoCidades & Partida} eu={eu} jogador={souJogador(partida)} restante={restante} agir={agir} />
+      )}
       {jogoNaTela?.jogo === 'lobisomem' && <JogoLobisomem estado={jogoNaTela as unknown as EstadoLobisomem & Partida} eu={eu} restante={restante} agir={agir} />}
       {(jogoNaTela?.jogo === 'gomoku' || jogoNaTela?.jogo === 'mancala') && (
         <JogoDuelo jogo={jogoNaTela.jogo} estado={jogoNaTela as unknown as EstadoDuelo & Partida} eu={eu} restante={restante} agir={agir} />
@@ -409,7 +422,7 @@ export function PainelDoMinijogo({
               tentar(() =>
                 aoComecar(
                   partida.jogo,
-                  partida.categoria ? { categoria: partida.categoria } : partida.jogo === 'tabuleiro' ? { rodadas: partida.rodadas } : {},
+                  partida.categoria ? { categoria: partida.categoria } : partida.jogo === 'tabuleiro' ? { rodadas: partida.rodadas } : partida.jogo === 'cidades' ? { modo: partida.modo, rodadas: partida.rodadas } : {},
                   partida.solo === true,
                 ),
               )
