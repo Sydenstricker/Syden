@@ -1149,6 +1149,7 @@ export default {
   'Clique para ativar o áudio': 'Klikni pro zapnutí zvuku',
   'Focar em uma transmissão': 'Soustředit se na jeden přenos',
   'Ver as {n} transmissões lado a lado': 'Všechny přenosy vedle sebe ({n})',
+  'Todos do mesmo tamanho': 'Vše stejně velké',
   'Tela inteira': 'Celá obrazovka',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Všechno, co je na obrazovce. Zvuk počítače jde s tím, už bez hlasů z tohoto hovoru.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Všechno, co je na obrazovce. Aby šel i zvuk, zaškrtni „Sdílet zvuk systému“ v okénku prohlížeče.',

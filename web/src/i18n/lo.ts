@@ -1151,6 +1151,7 @@ export default {
   'Clique para ativar o áudio': 'ຄລິກເພື່ອເປີດສຽງ',
   'Focar em uma transmissão': 'ເບິ່ງເທື່ອລະສະຕຣີມ',
   'Ver as {n} transmissões lado a lado': 'ເບິ່ງທັງ {n} ສະຕຣີມຄຽງກັນ',
+  'Todos do mesmo tamanho': 'ທັງໝົດຂະໜາດດຽວກັນ',
   'Tela inteira': 'ທັງໜ້າຈໍ',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'ທຸກຢ່າງໃນໜ້າຈໍ ສຽງຂອງຄອມພິວເຕີຈະໄປນຳ ໂດຍຕັດສຽງເວົ້າຂອງການໂທນີ້ອອກແລ້ວ',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'ທຸກຢ່າງໃນໜ້າຈໍ ຖ້າຢາກໃຫ້ມີສຽງ ໃຫ້ໝາຍ “ແບ່ງປັນສຽງຂອງລະບົບ” ໃນໜ້າຕ່າງນ້ອຍຂອງບຣາວເຊີ',

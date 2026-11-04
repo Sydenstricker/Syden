@@ -1080,6 +1080,7 @@ export default {
   'Clique para ativar o áudio': 'Dă clic ca să pornești sunetul',
   'Focar em uma transmissão': 'Concentrează-te pe o transmisiune',
   'Ver as {n} transmissões lado a lado': 'Vezi cele {n} transmisiuni una lângă alta',
+  'Todos do mesmo tamanho': 'Toate de aceeași mărime',
   'Tela inteira': 'Tot ecranul',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Tot ce e pe ecran. Sunetul calculatorului merge și el, deja fără vocile din acest apel.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Tot ce e pe ecran. Ca să meargă și sunetul, bifează „Distribuie conținutul audio al sistemului” în fereastra mică a browserului.',

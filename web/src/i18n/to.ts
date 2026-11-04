@@ -1086,6 +1086,7 @@ export default {
   'Clique para ativar o áudio': 'Lomiʻi ke fakaʻaonga ʻa e ongo',
   'Focar em uma transmissão': 'Tokangataha ki ha fakamafola ʻe taha',
   'Ver as {n} transmissões lado a lado': 'Vakai ki he fakamafola ʻe {n} ʻi he tafaʻaki ʻe taha',
+  'Todos do mesmo tamanho': 'Kotoa ʻi he lahi tatau',
   'Tela inteira': 'Sikilini kakato',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Ko e meʻa kotoa ʻi he sikilini. ʻOku ʻalu fakataha mo e ongo ʻo e komipiuta, ʻo ʻikai ai ʻa e leʻo ʻo e ui ko ʻeni.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Ko e meʻa kotoa ʻi he sikilini. Ke ʻalu mo e ongo, fili ʻa e "vahevahe ʻa e ongo ʻo e sisitemi" ʻi he kiʻi matapā ʻo e palausa.',

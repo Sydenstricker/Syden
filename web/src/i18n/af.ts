@@ -1144,6 +1144,7 @@ export default {
   'Clique para ativar o áudio': 'Klik om klank aan te skakel',
   'Focar em uma transmissão': 'Fokus op een uitsending',
   'Ver as {n} transmissões lado a lado': 'Sien al {n} uitsendings langs mekaar',
+  'Todos do mesmo tamanho': 'Almal ewe groot',
   'Tela inteira': 'Hele skerm',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Alles op die skerm. Die rekenaar se klank gaan saam, reeds sonder die stemme van hierdie oproep.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Alles op die skerm. Om klank saam te stuur, merk “Deel ook stelselklank” in die blaaier se venstertjie.',

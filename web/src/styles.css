@@ -1940,12 +1940,49 @@ textarea {
   transition: opacity 0.15s;
 }
 
-.stage-main:hover .fullscreen-button {
+/* Um botão só, no canto do palco: a tela cheia leva o palco inteiro (ver BotaoTelaCheia, em VoiceStage.tsx). */
+.stage > .fullscreen-button {
+  z-index: 6;
+}
+
+.stage:hover > .fullscreen-button,
+.stage > .fullscreen-button:focus-visible,
+.stage:fullscreen > .fullscreen-button {
   opacity: 1;
 }
 
-.stage-main:fullscreen .tile > .lk-participant-tile {
-  border-radius: 0;
+/* Em tela cheia o palco não está mais ao lado da conversa: a faixa de câmeras volta ao tamanho dela, em vez da
+   miniatura do modo sessão (.palco-e-conversa.sessao). */
+.palco-e-conversa .stage:fullscreen .stage-strip,
+.stage:fullscreen .stage-strip {
+  height: 120px;
+  padding: 0;
+  gap: 8px;
+}
+
+.palco-e-conversa .stage:fullscreen .stage-strip .tile,
+.stage:fullscreen .stage-strip .tile {
+  width: 200px;
+  height: auto;
+}
+
+/* Todos do mesmo tamanho: transmissões e câmeras na mesma grade, que rola quando a sala enche. */
+.stage-mosaico {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  overflow-y: auto;
+}
+
+.stage-mosaico > .stage-main {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 100%;
+  align-self: center;
+}
+
+/* O pop-out da transmissão aceso, na fileira dos controles dela. */
+.stream-info-button.ativo {
+  background: var(--accent);
+  color: var(--accent-texto);
 }
 
 /* O "i" de formato, na câmera das pessoas: discreto, só aparece ao passar o mouse no quadro. */

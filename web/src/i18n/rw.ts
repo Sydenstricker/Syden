@@ -1091,6 +1091,7 @@ export default {
   'Clique para ativar o áudio': 'Kanda ufungure amajwi',
   'Focar em uma transmissão': 'Ibanda ku itambutsa rimwe',
   'Ver as {n} transmissões lado a lado': 'Reba amatambutsa yose ({n}) ari iruhande rw\'ayandi',
+  'Todos do mesmo tamanho': 'Byose bingana',
   'Tela inteira': 'Ekara yose',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Ibiri kuri ekara byose. Ijwi rya mudasobwa rijyana na byo, ritarimo amajwi y\'iri hamagara.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Ibiri kuri ekara byose. Kugira ngo ijwi rijyemo, hitamo "sangiza amajwi ya sisitemu" mu idirishya rito rya mushakisha.',

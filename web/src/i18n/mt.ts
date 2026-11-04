@@ -1096,6 +1096,7 @@ export default {
   'Clique para ativar o áudio': 'Ikklikkja biex tixgħel l-awdjo',
   'Focar em uma transmissão': 'Iffoka fuq xandira waħda',
   'Ver as {n} transmissões lado a lado': 'Ara x-xandiriet ħdejn xulxin ({n})',
+  'Todos do mesmo tamanho': 'Kollox l-istess daqs',
   'Tela inteira': 'Skrin sħiħ',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Kull ma hemm fuq l-iskrin. Il-ħoss tal-kompjuter imur miegħu, diġà mingħajr il-vuċijiet ta\' din is-sejħa.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Kull ma hemm fuq l-iskrin. Biex imur bil-ħoss, immarka "aqsam l-awdjo tas-sistema" fit-tieqa żgħira tal-browser.',

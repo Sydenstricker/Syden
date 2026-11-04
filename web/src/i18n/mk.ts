@@ -1150,6 +1150,7 @@ export default {
   'Clique para ativar o áudio': 'Кликни за да го вклучиш звукот',
   'Focar em uma transmissão': 'Гледај еден пренос',
   'Ver as {n} transmissões lado a lado': 'Сите преноси еден до друг ({n})',
+  'Todos do mesmo tamanho': 'Сите со иста големина',
   'Tela inteira': 'Цел екран',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Сè што е на екранот. Звукот на компјутерот оди заедно, веќе без гласовите од овој повик.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Сè што е на екранот. За да оди со звук, штиклирај „Сподели системски звук“ во прозорчето на прелистувачот.',

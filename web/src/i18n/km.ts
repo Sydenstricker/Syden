@@ -1149,6 +1149,7 @@ export default {
   'Clique para ativar o áudio': 'ចុចដើម្បីបើកសំឡេង',
   'Focar em uma transmissão': 'ផ្តោតលើការផ្សាយមួយ',
   'Ver as {n} transmissões lado a lado': 'មើលការផ្សាយទាំង {n} ទន្ទឹមគ្នា',
+  'Todos do mesmo tamanho': 'ទាំងអស់ទំហំស្មើគ្នា',
   'Tela inteira': 'អេក្រង់ទាំងមូល',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'អ្វីៗទាំងអស់នៅលើអេក្រង់។ សំឡេងកុំព្យូទ័រទៅជាមួយដែរ ដោយគ្មានសំឡេងនិយាយក្នុងការហៅនេះ។',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'អ្វីៗទាំងអស់នៅលើអេក្រង់។ ដើម្បីឱ្យមានសំឡេង សូមគូសធីក “ចែករំលែកសំឡេងប្រព័ន្ធ” នៅក្នុងបង្អួចតូចរបស់កម្មវិធីរុករក។',

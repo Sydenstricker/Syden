@@ -1144,6 +1144,7 @@ export default {
   'Clique para ativar o áudio': 'Klik for at slå lyden til',
   'Focar em uma transmissão': 'Fokuser på én udsendelse',
   'Ver as {n} transmissões lado a lado': 'Se alle {n} udsendelser side om side',
+  'Todos do mesmo tamanho': 'Alle i samme størrelse',
   'Tela inteira': 'Hele skærmen',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Alt på skærmen. Computerens lyd kommer med, allerede uden stemmerne fra dette opkald.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Alt på skærmen. Vil du have lyd med, så sæt flueben i »Del systemlyd« i browserens lille vindue.',

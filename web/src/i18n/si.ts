@@ -1150,6 +1150,7 @@ export default {
   'Clique para ativar o áudio': 'ශ්‍රව්‍ය සක්‍රිය කිරීමට ක්ලික් කරන්න',
   'Focar em uma transmissão': 'එක් විකාශනයකට අවධානය යොමු කරන්න',
   'Ver as {n} transmissões lado a lado': 'විකාශන {n} පැත්තෙන් පැත්තට බලන්න',
+  'Todos do mesmo tamanho': 'සියල්ල එකම ප්‍රමාණයෙන්',
   'Tela inteira': 'සම්පූර්ණ තිරය',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'තිරයේ ඇති සියල්ල. මෙම ඇමතුමේ හඬ නොමැතිව, පරිගණකයේ ශබ්දයද යයි.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'තිරයේ ඇති සියල්ල. ශබ්දය සමඟ යැවීමට, බ්‍රවුසරයේ කුඩා කවුළුවේ “පද්ධති ශ්‍රව්‍ය බෙදාගන්න” සලකුණු කරන්න.',

@@ -1147,6 +1147,7 @@ export default {
   'Clique para ativar o áudio': 'Кликни да укључиш звук',
   'Focar em uma transmissão': 'Фокусирај један пренос',
   'Ver as {n} transmissões lado a lado': 'Сви преноси један поред другог ({n})',
+  'Todos do mesmo tamanho': 'Све исте величине',
   'Tela inteira': 'Цео екран',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Све што је на екрану. Звук рачунара иде заједно, већ без гласова из овог позива.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Све што је на екрану. Да би ишао и звук, означи „Дели системски звук” у прозорчићу прегледача.',

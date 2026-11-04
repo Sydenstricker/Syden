@@ -1062,6 +1062,7 @@ export default {
   'Clique para ativar o áudio': 'ఆడియోను ఆన్ చేయడానికి క్లిక్ చేయండి',
   'Focar em uma transmissão': 'ఒక స్క్రీన్ షేర్‌పై దృష్టి పెట్టు',
   'Ver as {n} transmissões lado a lado': '{n} స్క్రీన్ షేర్‌లను పక్కపక్కనే చూడు',
+  'Todos do mesmo tamanho': 'అన్నీ ఒకే పరిమాణంలో',
   'Tela inteira': 'పూర్తి స్క్రీన్',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'తెరపై ఉన్నదంతా. కంప్యూటర్ శబ్దం కూడా వెళ్తుంది, ఈ కాల్‌లోని గొంతులు లేకుండా.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'తెరపై ఉన్నదంతా. శబ్దంతో పంపడానికి, బ్రౌజర్ చిన్న కిటికీలో “సిస్టమ్ ఆడియోను షేర్ చేయి” గుర్తు పెట్టండి.',

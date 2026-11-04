@@ -1168,6 +1168,7 @@ export default {
   'Clique para ativar o áudio': 'დააწკაპუნე ხმის ჩასართავად',
   'Focar em uma transmissão': 'ერთ ტრანსლაციაზე ფოკუსირება',
   'Ver as {n} transmissões lado a lado': '{n} ტრანსლაციის გვერდიგვერდ ნახვა',
+  'Todos do mesmo tamanho': 'ყველა ერთი ზომით',
   'Tela inteira': 'მთელი ეკრანი',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'ყველაფერი, რაც ეკრანზეა. კომპიუტერის ხმაც თან მიჰყვება, ამ ზარის ხმების გარეშე.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'ყველაფერი, რაც ეკრანზეა. ხმით რომ წავიდეს, ბრაუზერის პატარა ფანჯარაში მონიშნე „სისტემის აუდიოს გაზიარება“.',

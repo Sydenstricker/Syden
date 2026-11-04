@@ -1098,6 +1098,7 @@ export default {
   'Clique para ativar o áudio': 'Нажми, чтобы включить звук',
   'Focar em uma transmissão': 'Смотреть одну трансляцию',
   'Ver as {n} transmissões lado a lado': 'Все трансляции рядом ({n})',
+  'Todos do mesmo tamanho': 'Все одного размера',
   'Tela inteira': 'Весь экран',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Всё, что на экране. Звук компьютера тоже передаётся, уже без голосов из этого звонка.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Всё, что на экране. Чтобы передать звук, отметь «Также предоставить доступ к системным звукам» в окошке браузера.',

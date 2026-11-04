@@ -1093,6 +1093,7 @@ export default {
   'Clique para ativar o áudio': 'คลิกเพื่อเปิดเสียง',
   'Focar em uma transmissão': 'ดูการถ่ายทอดทีละรายการ',
   'Ver as {n} transmissões lado a lado': 'ดูการถ่ายทอดทั้ง {n} รายการเคียงกัน',
+  'Todos do mesmo tamanho': 'ทั้งหมดขนาดเท่ากัน',
   'Tela inteira': 'ทั้งหน้าจอ',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'ทุกอย่างบนหน้าจอ เสียงของคอมพิวเตอร์จะไปด้วย โดยตัดเสียงพูดในสายนี้ออกแล้ว',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'ทุกอย่างบนหน้าจอ ถ้าอยากให้มีเสียง ให้ติ๊ก “แชร์เสียงของระบบ” ในหน้าต่างเล็กของเบราว์เซอร์',

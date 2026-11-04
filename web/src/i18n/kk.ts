@@ -1146,6 +1146,7 @@ export default {
   'Clique para ativar o áudio': 'Дыбысты қосу үшін басыңыз',
   'Focar em uma transmissão': 'Бір трансляцияға назар аудару',
   'Ver as {n} transmissões lado a lado': '{n} трансляцияны қатар көру',
+  'Todos do mesmo tamanho': 'Барлығы бірдей өлшемде',
   'Tela inteira': 'Бүкіл экран',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Экрандағының бәрі. Компьютер дыбысы да бірге жіберіледі, бұл қоңыраудағы дауыстарсыз.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Экрандағының бәрі. Дыбыспен жіберу үшін браузер терезесінде «Жүйелік аудионы бөлісу» белгісін қойыңыз.',

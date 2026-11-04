@@ -1068,6 +1068,7 @@ export default {
   'Clique para ativar o áudio': 'برای روشن شدن صدا کلیک کنید',
   'Focar em uma transmissão': 'تمرکز روی یک اشتراک صفحه',
   'Ver as {n} transmissões lado a lado': 'دیدن {n} اشتراک صفحه کنار هم',
+  'Todos do mesmo tamanho': 'همه در یک اندازه',
   'Tela inteira': 'کل صفحه',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'هر چه روی صفحه است. صدای کامپیوتر هم همراهش می‌رود، بدون صداهای این تماس.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'هر چه روی صفحه است. برای فرستادن صدا، در پنجرهٔ کوچک مرورگر گزینهٔ «هم‌رسانی صدای سیستم» را تیک بزنید.',

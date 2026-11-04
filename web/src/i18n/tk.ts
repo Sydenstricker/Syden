@@ -1152,6 +1152,7 @@ export default {
   'Clique para ativar o áudio': 'Owazy açmak üçin bas',
   'Focar em uma transmissão': 'Bir ýaýlyma ünsi jemle',
   'Ver as {n} transmissões lado a lado': '{n} ýaýlymy ýanaşyk gör',
+  'Todos do mesmo tamanho': 'Hemmesi deň ölçegde',
   'Tela inteira': 'Tutuş ekran',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Ekrandaky ähli zat. Kompýuteriň owazy hem gidýär, bu jaňdaky sesler bolmazdan.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Ekrandaky ähli zat. Owaz bilen gitmegi üçin brauzeriň kiçi penjiresinde «Ulgam owazyny hem paýlaş» diýen ýeri belle.',

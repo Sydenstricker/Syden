@@ -1079,6 +1079,7 @@ export default {
   'Clique para ativar o áudio': 'Klik om het geluid aan te zetten',
   'Focar em uma transmissão': 'Op één uitzending focussen',
   'Ver as {n} transmissões lado a lado': 'De {n} uitzendingen naast elkaar bekijken',
+  'Todos do mesmo tamanho': 'Alles even groot',
   'Tela inteira': 'Hele scherm',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Alles wat op het scherm staat. Het computergeluid gaat mee, al zonder de stemmen uit dit gesprek.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Alles wat op het scherm staat. Wil je geluid, vink dan ‘Systeemaudio delen’ aan in het venstertje van de browser.',

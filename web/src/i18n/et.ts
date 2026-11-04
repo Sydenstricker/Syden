@@ -1147,6 +1147,7 @@ export default {
   'Clique para ativar o áudio': 'Klõpsa, et heli sisse lülitada',
   'Focar em uma transmissão': 'Keskendu ühele ülekandele',
   'Ver as {n} transmissões lado a lado': 'Vaata kõiki {n} ülekannet kõrvuti',
+  'Todos do mesmo tamanho': 'Kõik ühesuurused',
   'Tela inteira': 'Kogu ekraan',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Kõik, mis on ekraanil. Arvuti heli tuleb kaasa, juba ilma selle kõne häälteta.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Kõik, mis on ekraanil. Heli kaasa saamiseks märgi brauseri väikeses aknas „Jaga süsteemi heli”.',

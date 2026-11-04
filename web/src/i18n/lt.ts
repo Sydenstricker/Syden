@@ -1152,6 +1152,7 @@ export default {
   'Clique para ativar o áudio': 'Spustelėk, kad įjungtum garsą',
   'Focar em uma transmissão': 'Rodyti vieną transliaciją',
   'Ver as {n} transmissões lado a lado': 'Rodyti visas transliacijas greta ({n})',
+  'Todos do mesmo tamanho': 'Visi vienodo dydžio',
   'Tela inteira': 'Visas ekranas',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Viskas, kas yra ekrane. Kompiuterio garsas eina kartu, jau be šio skambučio balsų.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Viskas, kas yra ekrane. Kad būtų ir garsas, naršyklės langelyje pažymėk „Bendrinti sistemos garsą“.',

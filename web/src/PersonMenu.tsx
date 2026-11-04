@@ -34,6 +34,7 @@ import { getUserVolume, isLocallyMuted, setLocalMute, setUserVolume, TETO_DA_VOZ
 import type { Channel, Role } from './types';
 import type { Voice } from './useVoice';
 import { chave, useT } from './i18n';
+import { useLugarDosPortais } from './lugarDosPortais';
 
 /**
  * Menu do botão direito em cima de alguém, como no Discord: abrir o perfil, mencionar, mandar mensagem,
@@ -153,6 +154,7 @@ export function PersonMenu({
 }) {
   const t = useT();
   const { members, cargos } = useDirectory();
+  const lugarDosPortais = useLugarDosPortais();
   const membro = members.get(target.userId);
   // O nome que se vê (apelido, nome de exibição, nome da conta). O `username` fica para mencionar: é a identidade.
   const nomeVisto = nomeNaComunidade(target.userId, target.username);
@@ -609,6 +611,6 @@ export function PersonMenu({
       )}
       {error && <p className="form-error small">{error}</p>}
     </div>,
-    document.body,
+    lugarDosPortais,
   );
 }

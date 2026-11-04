@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { Flag } from 'lucide-react';
 import { api } from './api';
 import { useT } from './i18n';
+import { useLugarDosPortais } from './lugarDosPortais';
 
 /**
  * A caixa de denúncia. Fica disponível para qualquer pessoa, e não só para quem modera — é justamente
@@ -28,6 +29,7 @@ export function DialogoDeDenuncia({
 }) {
   const t = useT();
   const [motivo, setMotivo] = useState('');
+  const lugarDosPortais = useLugarDosPortais();
   // "Envolve risco a criança ou adolescente": vai para o topo, com prazo para remover e comunicar às autoridades.
   const [grave, setGrave] = useState(false);
   const [comImagem, setComImagem] = useState(true);
@@ -106,6 +108,6 @@ export function DialogoDeDenuncia({
         )}
       </div>
     </div>,
-    document.body,
+    lugarDosPortais,
   );
 }

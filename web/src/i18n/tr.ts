@@ -1074,6 +1074,7 @@ export default {
   'Clique para ativar o áudio': 'Sesi açmak için tıkla',
   'Focar em uma transmissão': 'Tek yayına odaklan',
   'Ver as {n} transmissões lado a lado': '{n} yayını yan yana gör',
+  'Todos do mesmo tamanho': 'Hepsi aynı boyutta',
   'Tela inteira': 'Tüm ekran',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Ekrandaki her şey. Bilgisayarın sesi de gider, bu görüşmedeki sesler olmadan.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Ekrandaki her şey. Sesli gitmesi için tarayıcının küçük penceresinde “Sistem sesini de paylaş” kutusunu işaretle.',

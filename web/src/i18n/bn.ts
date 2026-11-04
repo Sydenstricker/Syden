@@ -1077,6 +1077,7 @@ export default {
   'Clique para ativar o áudio': 'অডিও চালু করতে ক্লিক করো',
   'Focar em uma transmissão': 'একটা স্ট্রিমে ফোকাস করো',
   'Ver as {n} transmissões lado a lado': '{n}টি স্ট্রিম পাশাপাশি দেখো',
+  'Todos do mesmo tamanho': 'সব একই মাপে',
   'Tela inteira': 'পুরো স্ক্রিন',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'স্ক্রিনে যা কিছু আছে। কম্পিউটারের শব্দও সাথে যায়, এই কলের কণ্ঠগুলো ছাড়া।',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'স্ক্রিনে যা কিছু আছে। শব্দসহ পাঠাতে ব্রাউজারের ছোট জানালায় “সিস্টেম অডিও শেয়ার করুন”-এ টিক দাও।',

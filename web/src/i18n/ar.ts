@@ -1100,6 +1100,7 @@ export default {
   'Clique para ativar o áudio': 'تشغيل الصوت بنقرة',
   'Focar em uma transmissão': 'التركيز على بث واحد',
   'Ver as {n} transmissões lado a lado': 'عرض كل البثوث جنبًا إلى جنب ({n})',
+  'Todos do mesmo tamanho': 'الكل بالحجم نفسه',
   'Tela inteira': 'الشاشة كاملة',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'كل ما على الشاشة. يُرسَل صوت الكمبيوتر معها، من دون أصوات هذه المكالمة.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'كل ما على الشاشة. لإرسال الصوت، يجب التأشير على «مشاركة صوت النظام أيضًا» في نافذة المتصفح الصغيرة.',

@@ -85,6 +85,8 @@ export async function destacarVideo(
   origem: HTMLVideoElement,
   titulo: string,
   aoFechar?: () => void,
+  /** A faixa do LiveKit, quando houver: a janela nova é ligada a ela por `attach` (ver abaixo). */
+  faixa?: { attach(elemento: HTMLVideoElement): HTMLMediaElement; detach(elemento: HTMLVideoElement): HTMLMediaElement },
 ): Promise<JanelaAberta | null> {
   const pip = api();
   if (!pip?.requestWindow) return null;
@@ -109,7 +111,14 @@ export async function destacarVideo(
   // Mudo de propósito: o som continua saindo pela janela principal, onde o volume de cada pessoa já é
   // ajustável. Dois elementos tocando o mesmo áudio dariam eco.
   video.muted = true;
-  video.srcObject = origem.srcObject;
+  // LIGADA PELO LIVEKIT, E NÃO SÓ PELO srcObject (04/11/2026). O LiveKit só baixa a camada do tamanho em que o
+  // vídeo aparece, e pausa o vídeo que não está à vista (adaptiveStream, em useVoice.ts). Com a cópia por
+  // fora, ele só enxergava o quadro da janela principal: a transmissão destacada vinha na camada pequena
+  // quando o quadro de origem estava na faixa de baixo, e CONGELAVA quando a janela principal era minimizada,
+  // que é o uso de quem destaca. Ligado por `attach`, o elemento da janela nova entra na conta dele (o LiveKit
+  // reconhece o Document Picture-in-Picture). Sem faixa (a própria câmera), a cópia de sempre.
+  if (faixa) faixa.attach(video);
+  else video.srcObject = origem.srcObject;
 
   const rotulo = janela.document.createElement('span');
   rotulo.className = 'janela-destacada-nome';
@@ -122,6 +131,7 @@ export async function destacarVideo(
   });
 
   janela.addEventListener('pagehide', () => {
+    if (faixa) faixa.detach(video);
     video.srcObject = null;
     aoFechar?.();
   });

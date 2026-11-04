@@ -1086,6 +1086,7 @@ export default {
   'Clique para ativar o áudio': 'Πάτησε για να ενεργοποιηθεί ο ήχος',
   'Focar em uma transmissão': 'Εστίαση σε μία μετάδοση',
   'Ver as {n} transmissões lado a lado': 'Όλες οι {n} μεταδόσεις δίπλα δίπλα',
+  'Todos do mesmo tamanho': 'Όλα στο ίδιο μέγεθος',
   'Tela inteira': 'Ολόκληρη η οθόνη',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Ό,τι υπάρχει στην οθόνη. Ο ήχος του υπολογιστή πηγαίνει μαζί, ήδη χωρίς τις φωνές αυτής της κλήσης.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Ό,τι υπάρχει στην οθόνη. Για να πάει και ήχος, τσέκαρε «Κοινή χρήση ήχου συστήματος» στο παραθυράκι του περιηγητή.',

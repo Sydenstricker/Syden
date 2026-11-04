@@ -1158,6 +1158,7 @@ export default {
   'Clique para ativar o áudio': 'Ovozni yoqish uchun bosing',
   'Focar em uma transmissão': 'Bitta translyatsiyaga eʼtibor qaratish',
   'Ver as {n} transmissões lado a lado': '{n} ta translyatsiyani yonma-yon koʻrish',
+  'Todos do mesmo tamanho': 'Hammasi bir xil oʻlchamda',
   'Tela inteira': 'Butun ekran',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Ekrandagi hamma narsa. Kompyuter ovozi ham birga ketadi, bu qoʻngʻiroqdagi ovozlarsiz.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Ekrandagi hamma narsa. Ovoz bilan ketishi uchun brauzerning kichik oynasida “Tizim ovozini ham ulashish”ni belgilang.',

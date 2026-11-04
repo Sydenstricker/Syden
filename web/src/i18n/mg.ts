@@ -1150,6 +1150,7 @@ export default {
   'Clique para ativar o áudio': 'Tsindrio hampandehanana ny feo',
   'Focar em uma transmissão': 'Hifantoka amin’ny fandefasana iray',
   'Ver as {n} transmissões lado a lado': 'Hijery ny fandefasana {n} mifanila',
+  'Todos do mesmo tamanho': 'Mitovy habe avokoa',
   'Tela inteira': 'Efijery manontolo',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Izay rehetra eo amin’ny efijery. Miaraka aminy ny feon’ny solosaina, tsy misy ny feon’ny olona ao amin’ity antso ity.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Izay rehetra eo amin’ny efijery. Raha tianao hiaraka amin’ny feo, mariho ny “Zarao ny feon’ny rafitra” ao amin’ny varavarankely kelin’ny mpitety.',

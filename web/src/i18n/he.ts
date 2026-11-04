@@ -1130,6 +1130,7 @@ export default {
   'Clique para ativar o áudio': 'לחיצה להפעלת השמע',
   'Focar em uma transmissão': 'להתמקד בשידור אחד',
   'Ver as {n} transmissões lado a lado': 'לראות את {n} השידורים זה לצד זה',
+  'Todos do mesmo tamanho': 'הכול באותו גודל',
   'Tela inteira': 'כל המסך',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'כל מה שעל המסך. הקול של המחשב נשלח איתו, כבר בלי הקולות של השיחה הזאת.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'כל מה שעל המסך. כדי לשלוח גם קול, יש לסמן "שיתוף גם של אודיו המערכת" בחלונית של הדפדפן.',

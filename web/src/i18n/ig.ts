@@ -1088,6 +1088,7 @@ export default {
   'Clique para ativar o áudio': 'Pịa iji gbanye ụda',
   'Focar em uma transmissão': 'Lekwasị anya n\'otu mgbasa',
   'Ver as {n} transmissões lado a lado': 'Hụ mgbasa {n} niile n\'akụkụ ibe ha',
+  'Todos do mesmo tamanho': 'Ha niile otu nha',
   'Tela inteira': 'Ihuenyo dum',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Ihe niile dị n\'ihuenyo. Ụda kọmputa gị na-esokwa, na-enweghị olu ndị nọ n\'oku a.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Ihe niile dị n\'ihuenyo. Iji tinye ụda, kara “Share system audio” na windo ihe nchọgharị ahụ na-emepe.',

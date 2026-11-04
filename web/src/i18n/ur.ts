@@ -1067,6 +1067,7 @@ export default {
   'Clique para ativar o áudio': 'آواز چلانے کے لیے کلک کریں',
   'Focar em uma transmissão': 'ایک اسکرین شیئر پر توجہ',
   'Ver as {n} transmissões lado a lado': 'تمام {n} اسکرین شیئر ساتھ ساتھ دیکھیں',
+  'Todos do mesmo tamanho': 'سب ایک ہی سائز میں',
   'Tela inteira': 'پوری اسکرین',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'اسکرین پر جو کچھ ہے۔ کمپیوٹر کی آواز بھی ساتھ جاتی ہے، اس کال کی آوازوں کے بغیر۔',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'اسکرین پر جو کچھ ہے۔ آواز بھیجنے کے لیے براؤزر کی چھوٹی ونڈو میں “سسٹم آڈیو بھی شیئر کریں” پر نشان لگائیں۔',

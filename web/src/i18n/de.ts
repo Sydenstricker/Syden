@@ -1104,6 +1104,7 @@ export default {
   'Clique para ativar o áudio': 'Klick, um den Ton einzuschalten',
   'Focar em uma transmissão': 'Auf eine Übertragung konzentrieren',
   'Ver as {n} transmissões lado a lado': 'Alle {n} Übertragungen nebeneinander',
+  'Todos do mesmo tamanho': 'Alle gleich groß',
   'Tela inteira': 'Gesamter Bildschirm',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Alles auf dem Bildschirm. Der Computerton geht mit, schon ohne die Stimmen aus diesem Gespräch.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Alles auf dem Bildschirm. Für Ton setz im kleinen Browserfenster den Haken bei „Systemaudio teilen“.',

@@ -13,6 +13,7 @@ import { classeDoFundo, corDoNome, efeitoDoNome, letraDoNome } from './profileSt
 import type { CommunityMember, PresenceStatus } from './types';
 import { visitarQuarto } from './VisitaAoQuarto';
 import { chave, useT } from './i18n';
+import { useLugarDosPortais } from './lugarDosPortais';
 
 const CARGO: Record<string, string> = {
   owner: chave('Dono da comunidade'),
@@ -171,6 +172,7 @@ export function ProfileCard({
 }) {
   const t = useT();
   const [editando, setEditando] = useState(false);
+  const lugarDosPortais = useLugarDosPortais();
   // A pessoa vem do DIRETÓRIO, e não da cópia tirada no clique: é o que faz o cartão ser a prévia
   // enquanto você veste — o "user:updated" que chega depois de salvar atualiza o diretório.
   const { members } = useDirectory();
@@ -291,6 +293,6 @@ export function ProfileCard({
         </div>
       </div>
     </div>,
-    document.body,
+    lugarDosPortais,
   );
 }

@@ -1151,6 +1151,7 @@ export default {
   'Clique para ativar o áudio': 'Барои фаъол кардани садо клик кунед',
   'Focar em uma transmissão': 'Тамаркуз ба як пахш',
   'Ver as {n} transmissões lado a lado': 'Ҳамаи {n} пахш дар паҳлӯи ҳам',
+  'Todos do mesmo tamanho': 'Ҳама бо як андоза',
   'Tela inteira': 'Тамоми экран',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Ҳама чизе, ки дар экран аст. Садои компютер ҳам меравад, аллакай бе овозҳои ин занг.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Ҳама чизе, ки дар экран аст. Барои бо садо фиристодан, дар равзанаи браузер «Мубодилаи садои система»-ро қайд кунед.',

@@ -1068,6 +1068,7 @@ export default {
   'Clique para ativar o áudio': '클릭해서 소리 켜기',
   'Focar em uma transmissão': '방송 하나만 보기',
   'Ver as {n} transmissões lado a lado': '방송 {n}개 나란히 보기',
+  'Todos do mesmo tamanho': '모두 같은 크기로',
   'Tela inteira': '전체 화면',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': '화면에 보이는 모든 것. 컴퓨터 소리도 같이 가요. 이 통화의 목소리는 빼고요.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': '화면에 보이는 모든 것. 소리도 보내려면 브라우저 작은 창에서 “시스템 오디오 공유”를 체크하세요.',

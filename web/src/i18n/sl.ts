@@ -1152,6 +1152,7 @@ export default {
   'Clique para ativar o áudio': 'Klikni za vklop zvoka',
   'Focar em uma transmissão': 'Pokaži en prenos',
   'Ver as {n} transmissões lado a lado': 'Prikaži vse prenose drug ob drugem ({n})',
+  'Todos do mesmo tamanho': 'Vse enake velikosti',
   'Tela inteira': 'Celoten zaslon',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Vse, kar je na zaslonu. Zvok računalnika gre zraven, že brez glasov iz tega klica.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Vse, kar je na zaslonu. Za zvok v brskalnikovem okencu obkljukaj „Deli sistemski zvok“.',

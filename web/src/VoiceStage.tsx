@@ -10,12 +10,13 @@ import {
   useTracks,
   VideoTrack,
 } from '@livekit/components-react';
-import { type LocalTrackPublication, type Participant, type Room, RoomEvent, Track, type TrackPublication } from 'livekit-client';
+import { type LocalTrackPublication, type Participant, type RemoteVideoTrack, type Room, RoomEvent, Track, type TrackPublication } from 'livekit-client';
 import {
   AudioLines,
   HeadphoneOff,
   Headphones,
   Info,
+  Grid2x2,
   LayoutGrid,
   Maximize,
   Minimize,
@@ -53,7 +54,7 @@ import { IconButton } from './IconButton';
 import { MobileBackButton } from './MobileBackButton';
 import { ClipButton, PreviaDoClipe, useClipe } from './ClipButton';
 import type { Socket } from 'socket.io-client';
-import { BotaoDestacar } from './BotaoDestacar';
+import { BotaoDestacar, JanelasDestacadas } from './BotaoDestacar';
 import { BotaoApresentacao, FaixaDoPalco, usarPalco } from './Palco';
 import { quemAssiste } from './assistindo';
 import { Karaoke, pegarPedidoDeKaraoke } from './Karaoke';
@@ -267,7 +268,9 @@ function PersonTile({
       )}
       {/* Destacar só faz sentido com imagem, e só para a de OUTRA pessoa: pôr a própria câmera numa
           janela à parte é olhar para si mesmo em dobro. */}
-      {hasVideo && !trackRef.participant.isLocal && <BotaoDestacar nome={name} />}
+      {hasVideo && !trackRef.participant.isLocal && (
+        <BotaoDestacar nome={name} chave={trackKey(trackRef)} faixa={trackRef.publication?.track as RemoteVideoTrack | undefined} />
+      )}
       <div className="tile-name">
         {member?.deafened ? <HeadphoneOff size={14} /> : member?.muted && <MicOff size={14} />}
         <span>{name}</span>
@@ -917,6 +920,12 @@ function ConviteDeTransmissao({
  * não faz nada. Quem não conhecia o Esc ficava preso numa tela sem saída visível, com o único botão
  * da tela parecendo quebrado. Um botão que liga precisa desligar.
  *
+ * O ALVO É O PALCO INTEIRO, e não o quadro da transmissão (04/11/2026, relato: "a tela cheia do Syden não mostra
+ * as webcams da chamada"). Antes ia para a tela cheia só o quadro grande, e com ele ficavam de fora as câmeras
+ * da faixa de baixo e os botões da chamada: quem queria ver a turma reagindo tinha de sair da tela cheia. Agora
+ * vai o palco como ele está (o destaque com a faixa, ou todos do mesmo tamanho), e os menus que abrem dele vêm
+ * junto (lugarDosPortais.ts).
+ *
  * O estado vem do EVENTO do navegador, e não do nosso clique: sair pelo Esc, pelo F11 ou pelo gesto
  * do sistema também tem de trocar o ícone, e nenhum deles passa por aqui.
  */
@@ -1023,10 +1032,9 @@ function FocusPane({
   children: ReactNode;
 }) {
   const t = useT();
-  const ref = useRef<HTMLDivElement>(null);
 
   return (
-    <div className="stage-main" ref={ref}>
+    <div className="stage-main">
       {children}
       {/*
         O QUE ESTÁ SENDO TRANSMITIDO, escrito em cima da transmissão.
@@ -1044,6 +1052,16 @@ function FocusPane({
         <div className="stream-controls">
           <StreamInfoBadge publication={trackRef.publication} local={trackRef.participant.isLocal} />
           <StreamAudio voice={voice} publisher={trackRef.participant} />
+          {/* A janela à parte, como o pop-out do Discord (04/11/2026): a transmissão numa janela que se leva para o outro
+              monitor. A sua própria não: seria olhar para a própria tela em dobro. */}
+          {!trackRef.participant.isLocal && isTrackReference(trackRef) && (
+            <BotaoDestacar
+              nome={membro?.screenName || nomeNaComunidade(Number(trackRef.participant.identity), trackRef.participant.name || trackRef.participant.identity)}
+              chave={trackKey(trackRef)}
+              faixa={trackRef.publication.track as RemoteVideoTrack | undefined}
+              classe="stream-info-button"
+            />
+          )}
           {/* Fechar corta o download na hora: dá para continuar na conversa sem gastar internet com a tela. */}
           {!trackRef.participant.isLocal && (
             <button
@@ -1077,7 +1095,6 @@ function FocusPane({
           )}
         </div>
       )}
-      <BotaoTelaCheia alvo={ref} />
     </div>
   );
 }
@@ -1254,6 +1271,10 @@ export function Stage({
   });
   const [pinned, setPinned] = useState<string | null>(null);
   const [split, setSplit] = useState(false);
+  // TODOS DO MESMO TAMANHO (04/11/2026, pedido "como no Meet"): transmissões abertas e câmeras lado a lado, numa grade,
+  // em vez de uma grande e as outras na faixa de baixo. Clicar num quadro volta ao destaque com ele.
+  const [mosaico, setMosaico] = useState(false);
+  const palco = useRef<HTMLDivElement>(null);
   const [soundboardOpen, setSoundboardOpen] = useState(false);
   // O karaokê abre sozinho para todo mundo quando alguém põe uma música.
   const [karaokeOpen, setKaraokeOpen] = useState(false);
@@ -1285,11 +1306,26 @@ export function Stage({
   const abertas = screens.filter(aberta);
   // Só faz sentido dividir a tela quando há mais de uma transmissão aberta.
   const splitting = split && abertas.length > 1;
+  // Só faz sentido igualar quando há o que destacar: sem transmissão aberta e sem ninguém fixado, a sala já é a grade
+  // de cartões do mesmo tamanho.
+  const fixado = tracks.find((t) => trackKey(t) === pinned && (t.source !== Track.Source.ScreenShare || aberta(t)));
+  const podeIgualar = tracks.length > 1 && (abertas.length > 0 || fixado !== undefined);
+  const igualando = mosaico && podeIgualar;
+  // Acabou o que igualar (a transmissão terminou, quem estava fixado saiu): a escolha não fica guardada para voltar
+  // sozinha, de surpresa, na próxima transmissão.
+  useEffect(() => {
+    if (mosaico && !podeIgualar) setMosaico(false);
+  }, [mosaico, podeIgualar]);
 
   // Foco: o que o usuário fixou; senão, a primeira transmissão ABERTA. Sem nenhuma aberta não há foco, e a
   // sala fica na grade de cartões — é lá que o convite de cada transmissão aparece.
-  const focused = splitting ? undefined : (tracks.find((t) => trackKey(t) === pinned && aberta(t)) ?? abertas[0]);
-  const others = splitting ? tracks.filter((t) => !abertas.includes(t)) : focused ? tracks.filter((t) => t !== focused) : tracks;
+  //
+  // A CÂMERA DOS OUTROS NÃO SE FIXAVA (corrigido em 04/11/2026). A conta usava `aberta`, que é a regra das
+  // TRANSMISSÕES (a sua, ou a que você abriu); para uma câmera, ela só valia para a sua ou para a de quem você
+  // estava assistindo a tela. O clique na câmera de qualquer outra pessoa não fazia nada, e a transmissão
+  // continuava grande. Agora qualquer quadro se fixa; só a transmissão que você não abriu continua sendo convite.
+  const focused = splitting || igualando ? undefined : (fixado ?? abertas[0]);
+  const others = igualando ? [] : splitting ? tracks.filter((t) => !abertas.includes(t)) : focused ? tracks.filter((t) => t !== focused) : tracks;
   const card = cardSize(tracks.length);
   // O clipe segue o que está grande na tela; com a tela dividida, a primeira transmissão.
   const paraClipar = (focused?.source === Track.Source.ScreenShare ? focused : undefined) ?? abertas[0];
@@ -1305,8 +1341,9 @@ export function Stage({
 
   /** Clicar num quadro fixa ou solta o foco; no modo dividido, volta para o foco naquela tela. */
   const togglePin = (ref: TrackReferenceOrPlaceholder) => {
-    if (splitting) {
+    if (splitting || igualando) {
       setSplit(false);
+      setMosaico(false);
       setPinned(trackKey(ref));
       return;
     }
@@ -1392,9 +1429,32 @@ export function Stage({
   };
 
   return (
-    <div className="stage" data-lk-theme="default">
+    <JanelasDestacadas chavesQueExistem={tracks.filter((t) => t.source === Track.Source.Camera || aberta(t)).map(trackKey)}>
+    <div className="stage" ref={palco} data-lk-theme="default">
       {siteNoPalco ? (
         <SiteNoPalco nome={siteNoPalco.nome} endereco={siteNoPalco.endereco} aoFechar={() => setSiteNoPalco(null)} />
+      ) : igualando ? (
+        // Todos do mesmo tamanho: as transmissões abertas primeiro, depois as câmeras, e os convites no fim.
+        <div className="stage-focus">
+          <div className="stage-split stage-mosaico">
+            {[...abertas, ...tracks.filter((t) => !abertas.includes(t))].map((ref) =>
+              abertas.includes(ref) ? (
+                <FocusPane
+                  key={trackKey(ref)}
+                  trackRef={ref}
+                  voice={voice}
+                  membro={members.find((m) => String(m.userId) === ref.participant.identity)}
+                >
+                  {tile(ref, 80)}
+                </FocusPane>
+              ) : (
+                <div key={trackKey(ref)} className="stage-main">
+                  {tile(ref, 64)}
+                </div>
+              ),
+            )}
+          </div>
+        </div>
       ) : splitting ? (
         // Todas as transmissões do mesmo tamanho, lado a lado.
         <div className="stage-focus">
@@ -1429,6 +1489,8 @@ export function Stage({
           {tracks.map((ref) => tile(ref, card.avatar))}
         </div>
       )}
+
+      {!siteNoPalco && <BotaoTelaCheia alvo={palco} />}
 
       <CamadaDeEfeitos disparo={voice.disparoVisual} />
 
@@ -1499,11 +1561,19 @@ export function Stage({
         */}
         {!simples && abertas.length > 1 && (
           <IconButton
-            label={split ? t('Focar em uma transmissão') : t('Ver as {n} transmissões lado a lado', { n: abertas.length })}
-            active={split}
-            onClick={() => setSplit(!split)}
+            label={splitting && !igualando ? t('Focar em uma transmissão') : t('Ver as {n} transmissões lado a lado', { n: abertas.length })}
+            active={splitting && !igualando}
+            onClick={() => {
+              setMosaico(false);
+              setSplit(!(splitting && !igualando));
+            }}
           >
             <LayoutGrid />
+          </IconButton>
+        )}
+        {!simples && podeIgualar && (
+          <IconButton label={t('Todos do mesmo tamanho')} active={igualando} onClick={() => setMosaico(!igualando)}>
+            <Grid2x2 />
           </IconButton>
         )}
 
@@ -1620,5 +1690,6 @@ export function Stage({
         />
       )}
     </div>
+    </JanelasDestacadas>
   );
 }

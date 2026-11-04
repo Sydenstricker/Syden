@@ -1075,6 +1075,7 @@ export default {
   'Clique para ativar o áudio': 'Click to turn on audio',
   'Focar em uma transmissão': 'Focus on one stream',
   'Ver as {n} transmissões lado a lado': 'See all {n} streams side by side',
+  'Todos do mesmo tamanho': 'All the same size',
   'Tela inteira': 'Entire screen',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Everything on the screen. Your computer\'s sound goes too, already without the voices from this call.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Everything on the screen. To include sound, tick “Share system audio” in the browser\'s pop-up.',

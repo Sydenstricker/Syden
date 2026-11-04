@@ -19,6 +19,7 @@ import { IconButton } from './IconButton';
 import type { Channel } from './types';
 import { formatBytes, readAsDataUrl } from './upload';
 import { useT } from './i18n';
+import { useLugarDosPortais } from './lugarDosPortais';
 
 // O botão de clipe e a janelinha que abre depois dele. A gravação em si mora em clips.ts; aqui é só a
 // parte que a pessoa vê: um botão que fica aceso enquanto há o que clipar, e uma prévia com dois
@@ -523,6 +524,7 @@ export function ClipButton({ clipe }: { clipe: EstadoDoClipe }) {
  * tira a dúvida: o diálogo é filho do `body`, como os outros do Syden.
  */
 export function PreviaDoClipe({ clipe, de, canais }: { clipe: EstadoDoClipe; de: string; canais: Channel[] }) {
+  const lugarDosPortais = useLugarDosPortais();
   // O AVISO ERA UM <p> SOLTO NO FIM DO BODY, e isso é um defeito que eu mesmo pus aqui: sem
   // posicionamento nenhum, ele era desenhado depois de toda a aplicação, fora da tela, invisível.
   // Um aviso que não se vê é a mesma coisa que não avisar — e o sintoma é idêntico ao do botão
@@ -532,7 +534,7 @@ export function PreviaDoClipe({ clipe, de, canais }: { clipe: EstadoDoClipe; de:
       <div className="clipe-aviso" role="status">
         {clipe.erro}
       </div>,
-      document.body,
+      lugarDosPortais,
     );
   }
   if (!clipe.clipe) return null;
@@ -545,6 +547,6 @@ export function PreviaDoClipe({ clipe, de, canais }: { clipe: EstadoDoClipe; de:
       canais={canais}
       onFechar={clipe.fechar}
     />,
-    document.body,
+    lugarDosPortais,
   );
 }

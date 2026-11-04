@@ -1079,6 +1079,7 @@ export default {
   'Clique para ativar o áudio': 'Bofya ili kuwasha sauti',
   'Focar em uma transmissão': 'Lenga matangazo moja',
   'Ver as {n} transmissões lado a lado': 'Tazama matangazo {n} kando kwa kando',
+  'Todos do mesmo tamanho': 'Zote kwa ukubwa mmoja',
   'Tela inteira': 'Skrini yote',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Kila kitu kilicho kwenye skrini. Sauti ya kompyuta inaenda pamoja, tayari bila sauti za simu hii.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Kila kitu kilicho kwenye skrini. Ili iende na sauti, weka alama kwenye “Shiriki sauti ya mfumo” katika dirisha dogo la kivinjari.',

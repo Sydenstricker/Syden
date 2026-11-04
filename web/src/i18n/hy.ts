@@ -1169,6 +1169,7 @@ export default {
   'Clique para ativar o áudio': 'Սեղմիր՝ ձայնը միացնելու համար',
   'Focar em uma transmissão': 'Կենտրոնանալ մեկ հեռարձակման վրա',
   'Ver as {n} transmissões lado a lado': 'Տեսնել {n} հեռարձակումները կողք կողքի',
+  'Todos do mesmo tamanho': 'Բոլորը նույն չափով',
   'Tela inteira': 'Ամբողջ էկրանը',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Այն ամենը, ինչ էկրանին է։ Համակարգչի ձայնը գնում է հետը՝ արդեն առանց այս զանգի ձայների։',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Այն ամենը, ինչ էկրանին է։ Որ ձայնով գնա, դիտարկիչի փոքր պատուհանում նշիր «Կիսվել համակարգի աուդիոյով»։',

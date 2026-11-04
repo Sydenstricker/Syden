@@ -1142,6 +1142,7 @@ export default {
   'Clique para ativar o áudio': 'Kliko për të ndezur audion',
   'Focar em uma transmissão': 'Fokusohu te një transmetim',
   'Ver as {n} transmissões lado a lado': 'Shiko të {n} transmetimet krah për krah',
+  'Todos do mesmo tamanho': 'Të gjitha me të njëjtën madhësi',
   'Tela inteira': 'I gjithë ekrani',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Gjithçka që është në ekran. Tingulli i kompjuterit shkon bashkë, tashmë pa zërat e kësaj thirrjeje.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Gjithçka që është në ekran. Që të shkojë edhe tingulli, shëno “Ndaj audion e sistemit” në dritaren e vogël të shfletuesit.',

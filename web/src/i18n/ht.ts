@@ -1160,6 +1160,7 @@ export default {
   'Clique para ativar o áudio': 'Klike pou limen son an',
   'Focar em uma transmissão': 'Konsantre sou yon sèl difizyon',
   'Ver as {n} transmissões lado a lado': 'Gade {n} difizyon yo kòt a kòt',
+  'Todos do mesmo tamanho': 'Tout menm gwosè',
   'Tela inteira': 'Tout ekran an',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Tout sa ki sou ekran an. Son òdinatè a ale tou, deja san vwa moun ki nan apèl sa a.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Tout sa ki sou ekran an. Pou son an ale tou, tcheke “pataje son sistèm nan” nan ti fenèt navigatè a.',

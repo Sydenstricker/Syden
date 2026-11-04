@@ -1151,6 +1151,7 @@ export default {
   'Clique para ativar o áudio': 'Chofoza ukuze uvule umsindo',
   'Focar em uma transmissão': 'Gxila ekusakazeni okukodwa',
   'Ver as {n} transmissões lado a lado': 'Buka ukusakaza okungu-{n} eceleni kokunye',
+  'Todos do mesmo tamanho': 'Konke ngosayizi ofanayo',
   'Tela inteira': 'Isikrini sonke',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Konke okusesikrinini. Umsindo wekhompyutha uhamba nakho, ngaphandle kwamazwi ale kholi.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Konke okusesikrinini. Ukuze kuhambe nomsindo, maka “Yabelana nomsindo wesistimu” ewindini elincane lesiphequluli.',

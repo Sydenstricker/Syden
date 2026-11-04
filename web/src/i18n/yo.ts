@@ -1095,6 +1095,7 @@ export default {
   'Clique para ativar o áudio': 'Ẹ tẹ̀ ẹ́ láti tan ohùn',
   'Focar em uma transmissão': 'Dojú kọ ìfihàn kan',
   'Ver as {n} transmissões lado a lado': 'Wo àwọn ìfihàn {n} lẹ́gbẹ̀ẹ́ ara wọn',
+  'Todos do mesmo tamanho': 'Gbogbo rẹ̀ ní ìwọ̀n kan náà',
   'Tela inteira': 'Gbogbo ojú ìwé',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Gbogbo ohun tó wà lójú ìwé. Ohùn kọ̀ǹpútà yóò lọ pẹ̀lú rẹ̀, láìsí ohùn àwọn tó wà nínú ìpè yìí.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Gbogbo ohun tó wà lójú ìwé. Kí ó lè lọ pẹ̀lú ohùn, ẹ sàmì sí “pín ohùn ẹ̀rọ” nínú fèrèsé kékeré awáròyìn.',

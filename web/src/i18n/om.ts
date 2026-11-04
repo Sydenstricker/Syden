@@ -1120,6 +1120,7 @@ export default {
   'Clique para ativar o áudio': 'Sagalee banuuf cuqaasi',
   'Focar em uma transmissão': 'Tamsaasa tokko irratti xiyyeeffadhu',
   'Ver as {n} transmissões lado a lado': 'Tamsaasa {n} cinaa cinaatti ilaali',
+  'Todos do mesmo tamanho': 'Hundumtuu hamma tokko',
   'Tela inteira': 'Iskiriinii hunda',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Wanta iskiriinii irra jiru hunda. Sagaleen kompiitaraa waliin deema, sagalee waamicha kanaa malee.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Wanta iskiriinii irra jiru hunda. Sagaleen akka waliin deemuuf, foddaa xiqqaa brawuzarii keessatti “sagalee sirnaa qoodi” mallatteessi.',

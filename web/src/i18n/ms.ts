@@ -1080,6 +1080,7 @@ export default {
   'Clique para ativar o áudio': 'Klik untuk menghidupkan audio',
   'Focar em uma transmissão': 'Fokus pada satu siaran',
   'Ver as {n} transmissões lado a lado': 'Lihat {n} siaran bersebelahan',
+  'Todos do mesmo tamanho': 'Semua sama saiz',
   'Tela inteira': 'Seluruh skrin',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Semua yang ada pada skrin. Bunyi komputer turut dihantar, tanpa suara panggilan ini.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Semua yang ada pada skrin. Untuk menghantar bunyi, tandakan “Kongsi audio sistem” pada tetingkap kecil pelayar.',

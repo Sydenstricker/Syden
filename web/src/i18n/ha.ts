@@ -1082,6 +1082,7 @@ export default {
   'Clique para ativar o áudio': 'Danna don kunna sauti',
   'Focar em uma transmissão': 'Mai da hankali kan watsawa ɗaya',
   'Ver as {n} transmissões lado a lado': 'Duba watsawa {n} gefe da gefe',
+  'Todos do mesmo tamanho': 'Duka a girma ɗaya',
   'Tela inteira': 'Dukan allo',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Duk abin da ke kan allo. Sautin kwamfuta yana tafiya tare, ba tare da muryoyin wannan kiran ba.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Duk abin da ke kan allo. Don ya tafi da sauti, ku zaɓi “raba sautin tsarin” a ƙaramar tagar burauza.',

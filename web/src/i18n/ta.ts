@@ -1065,6 +1065,7 @@ export default {
   'Clique para ativar o áudio': 'ஒலியை இயக்கக் கிளிக் செய்யுங்கள்',
   'Focar em uma transmissão': 'ஒரு திரைப் பகிர்வில் கவனம் செலுத்து',
   'Ver as {n} transmissões lado a lado': '{n} திரைப் பகிர்வுகளையும் அருகருகே பார்',
+  'Todos do mesmo tamanho': 'அனைத்தும் ஒரே அளவில்',
   'Tela inteira': 'முழுத் திரை',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'திரையில் உள்ள அனைத்தும். கணினியின் ஒலியும் கூடவே செல்லும், இந்த அழைப்பின் குரல்கள் இல்லாமல்.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'திரையில் உள்ள அனைத்தும். ஒலியுடன் அனுப்ப, உலாவியின் சிறு சாளரத்தில் “சிஸ்டம் ஆடியோவையும் பகிர்” என்பதைக் குறியுங்கள்.',

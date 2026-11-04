@@ -1084,6 +1084,7 @@ export default {
   'Clique para ativar o áudio': 'Kiliki e ki ai le leo',
   'Focar em uma transmissão': 'Taulaʻi i le faʻasalalauga e tasi',
   'Ver as {n} transmissões lado a lado': 'Vaʻai faʻasalalauga uma ({n}) i tafatafa o le tasi ma le isi',
+  'Todos do mesmo tamanho': 'Uma e tutusa le lapopoa',
   'Tela inteira': 'Sikirini atoa',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'O mea uma i le sikirini. E alu faʻatasi le leo o le komepiuta, ua aveese ai leo o lenei valaʻau.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'O mea uma i le sikirini. Ina ia alu ma le leo, filifili “Share system audio” i le faʻamalama laʻititi o le polokalame suʻe.',

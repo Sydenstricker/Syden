@@ -1050,6 +1050,7 @@ export default {
   'Clique para ativar o áudio': 'Nhấn để bật âm thanh',
   'Focar em uma transmissão': 'Chỉ xem một màn hình chia sẻ',
   'Ver as {n} transmissões lado a lado': 'Xem {n} màn hình chia sẻ cạnh nhau',
+  'Todos do mesmo tamanho': 'Tất cả cùng kích thước',
   'Tela inteira': 'Toàn bộ màn hình',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Mọi thứ trên màn hình. Âm thanh của máy tính cũng được gửi kèm, đã bỏ giọng nói của cuộc gọi này.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Mọi thứ trên màn hình. Muốn có tiếng, hãy tích “Chia sẻ âm thanh hệ thống” trong cửa sổ nhỏ của trình duyệt.',

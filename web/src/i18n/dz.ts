@@ -1163,6 +1163,7 @@ export default {
   'Clique para ativar o áudio': 'སྒྲ་ཤུགས་ཅན་བཟོ་ནིའི་དོན་ལུ་ ཨེབ།',
   'Focar em uma transmissão': 'བརྒྱུད་སྤེལ་གཅིག་རྐྱངམ་ཅིག་བལྟ།',
   'Ver as {n} transmissões lado a lado': 'བརྒྱུད་སྤེལ་ {n} ཆ་ར་ ཟུང་སྒྲིག་སྦེ་བལྟ།',
+  'Todos do mesmo tamanho': 'ཆ་མཉམ་ ཚད་གཅིག་ནང་།',
   'Tela inteira': 'གསལ་གཞི་ཧྲིལ་བུ།',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'གསལ་གཞི་གུ་ཡོད་མི་ཆ་མཉམ། གློག་རིག་གི་སྒྲ་ཡང་མཉམ་དུ་འགྱོ་ ཁ་པར་འདི་གི་སྐད་མ་བཅས་པར།',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'གསལ་གཞི་གུ་ཡོད་མི་ཆ་མཉམ། སྒྲ་དང་མཉམ་དུ་གཏང་ནི་ལུ་ བརའུ་ཟར་གྱི་སྒོ་སྒྲིག་ཆུང་ཀུ་ནང་ «རིམ་ལུགས་ཀྱི་སྒྲ་བགོ་བཤའ» ལུ་རྟགས་བཀལ།',

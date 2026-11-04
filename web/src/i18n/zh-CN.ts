@@ -1067,6 +1067,7 @@ export default {
   'Clique para ativar o áudio': '点击开启声音',
   'Focar em uma transmissão': '只看一个直播',
   'Ver as {n} transmissões lado a lado': '并排看 {n} 个直播',
+  'Todos do mesmo tamanho': '全部一样大',
   'Tela inteira': '整个屏幕',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': '屏幕上的所有内容。电脑的声音会一起发送，而且已经去掉了这次通话里的人声。',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': '屏幕上的所有内容。要带上声音，请在浏览器的小窗口里勾选“共享系统音频”。',

@@ -1080,6 +1080,7 @@ export default {
   'Clique para ativar o áudio': 'ድምፁን ለማብራት ጠቅ ያድርጉ',
   'Focar em uma transmissão': 'በአንድ ስርጭት ላይ አተኩር',
   'Ver as {n} transmissões lado a lado': '{n} ስርጭቶችን ጎን ለጎን ተመልከት',
+  'Todos do mesmo tamanho': 'ሁሉም በእኩል መጠን',
   'Tela inteira': 'መላው ማያ',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'በማያው ላይ ያለው ሁሉ። የኮምፒውተሩ ድምፅ አብሮ ይሄዳል፣ ያለዚህ ጥሪ ድምፆች።',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'በማያው ላይ ያለው ሁሉ። ከድምፅ ጋር እንዲሄድ፣ በአሳሹ ትንሽ መስኮት ላይ “የሥርዓት ድምፅንም አጋራ” የሚለውን ምልክት ያድርጉ።',

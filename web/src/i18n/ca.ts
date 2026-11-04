@@ -1146,6 +1146,7 @@ export default {
   'Clique para ativar o áudio': 'Fes clic per activar l’àudio',
   'Focar em uma transmissão': 'Centrar-se en una transmissió',
   'Ver as {n} transmissões lado a lado': 'Veure les {n} transmissions una al costat de l’altra',
+  'Todos do mesmo tamanho': 'Tot de la mateixa mida',
   'Tela inteira': 'Tota la pantalla',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Tot el que hi ha a la pantalla. El so de l’ordinador també hi va, ja sense les veus d’aquesta trucada.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Tot el que hi ha a la pantalla. Perquè hi vagi el so, marca «Comparteix l’àudio del sistema» a la finestreta del navegador.',

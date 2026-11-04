@@ -1119,6 +1119,7 @@ export default {
   'Clique para ativar o áudio': 'အသံဖွင့်ရန် နှိပ်ပါ',
   'Focar em uma transmissão': 'ထုတ်လွှင့်မှု တစ်ခုတည်းကို ကြည့်ရန်',
   'Ver as {n} transmissões lado a lado': 'ထုတ်လွှင့်မှု {n} ခုကို ဘေးချင်းယှဉ် ကြည့်ရန်',
+  'Todos do mesmo tamanho': 'အားလုံး အရွယ်အစားတူ',
   'Tela inteira': 'မျက်နှာပြင် တစ်ခုလုံး',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'မျက်နှာပြင်ပေါ်က အားလုံး။ ဒီခေါ်ဆိုမှုထဲက အသံတွေ မပါဘဲ ကွန်ပျူတာအသံလည်း လိုက်ပါသွားပါတယ်။',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'မျက်နှာပြင်ပေါ်က အားလုံး။ အသံပါ ပို့ချင်ရင် ဘရောက်ဇာရဲ့ ဝင်းဒိုးလေးမှာ “စနစ်အသံ မျှဝေရန်” ကို အမှတ်ခြစ်ပါ။',

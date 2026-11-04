@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { avancar, criarParticulas, juntar, quantasCabem, type EfeitoVisualId, type Particula } from './efeitosVisuais';
 import { useSettings } from './settings';
+import { useLugarDosPortais } from './lugarDosPortais';
 
 // A camada onde os efeitos da chamada são desenhados: um canvas só, por cima de tudo, que não recebe
 // clique nenhum. O confete, os fogos e os corações de TODO MUNDO da sala caem aqui dentro.
@@ -58,6 +59,7 @@ export function CamadaDeEfeitos({ disparo }: { disparo: DisparoVisual | null }) 
   // mesma lista, em vez de apagar o que estava na tela.
   const particulas = useRef<Particula[]>([]);
   const ligado = useSettings().efeitosVisuais;
+  const lugarDosPortais = useLugarDosPortais();
 
   useEffect(() => {
     if (!disparo || !ligado) return;
@@ -106,5 +108,5 @@ export function CamadaDeEfeitos({ disparo }: { disparo: DisparoVisual | null }) 
   }, [disparo, ligado]);
 
   if (!ligado) return null;
-  return createPortal(<canvas ref={canvasRef} className="efeitos-visuais" aria-hidden="true" />, document.body);
+  return createPortal(<canvas ref={canvasRef} className="efeitos-visuais" aria-hidden="true" />, lugarDosPortais);
 }

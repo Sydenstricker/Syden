@@ -1152,6 +1152,7 @@ export default {
   'Clique para ativar o áudio': 'अडियो खोल्न क्लिक गर्नुहोस्',
   'Focar em uma transmissão': 'एउटा स्ट्रिममा ध्यान दिनुहोस्',
   'Ver as {n} transmissões lado a lado': 'सबै {n} स्ट्रिम छेउछेउमा हेर्नुहोस्',
+  'Todos do mesmo tamanho': 'सबै एउटै आकारमा',
   'Tela inteira': 'सम्पूर्ण स्क्रिन',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'स्क्रिनमा भएको सबै। कम्प्युटरको अडियो पनि सँगै जान्छ, यो कलका आवाजहरू बिना।',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'स्क्रिनमा भएको सबै। अडियोसहित पठाउन ब्राउजरको सानो विन्डोमा “सिस्टम अडियो पनि सेयर गर्नुहोस्” मा चिन्ह लगाउनुहोस्।',

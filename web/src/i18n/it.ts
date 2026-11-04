@@ -1079,6 +1079,7 @@ export default {
   'Clique para ativar o áudio': 'Clicca per attivare l’audio',
   'Focar em uma transmissão': 'Concentrati su una trasmissione',
   'Ver as {n} transmissões lado a lado': 'Vedi le {n} trasmissioni affiancate',
+  'Todos do mesmo tamanho': 'Tutto della stessa dimensione',
   'Tela inteira': 'Tutto lo schermo',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Tutto ciò che è sullo schermo. L’audio del computer va insieme, già senza le voci di questa chiamata.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Tutto ciò che è sullo schermo. Per avere l’audio, spunta “Condividi l’audio di sistema” nella finestrella del browser.',

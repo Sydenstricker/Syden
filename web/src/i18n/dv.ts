@@ -1160,6 +1160,7 @@ export default {
   'Clique para ativar o áudio': 'އޯޑިއޯ ހުޅުވަން ކްލިކްކުރޭ',
   'Focar em uma transmissão': 'އެއް ސްޓްރީމަކަށް ފޯކަސްކުރޭ',
   'Ver as {n} transmissões lado a lado': '{n} ސްޓްރީމް ކައިރިކައިރީގައި ބަލާ',
+  'Todos do mesmo tamanho': 'ހުރިހާ އެއްޗެއް އެއް ބޮޑުމިނުގައި',
   'Tela inteira': 'މުޅި ސްކްރީން',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'ސްކްރީނުގައި ހުރިހާ އެއްޗެއް. ކޮމްޕިއުޓަރުގެ އޯޑިއޯވެސް ދާނެ، މި ކޯލުގެ އަޑުތައް ނުލައި.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'ސްކްރީނުގައި ހުރިހާ އެއްޗެއް. އޯޑިއޯއާއެކު ފޮނުވަން، ބްރައުޒަރުގެ ކުޑަ ވިންޑޯގައި "ސިސްޓަމް އޯޑިއޯވެސް ޝެއާކުރޭ" ފާހަގަކުރޭ.',

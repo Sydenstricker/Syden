@@ -1082,6 +1082,7 @@ export default {
   'Clique para ativar o áudio': 'Klike atu loke áudiu',
   'Focar em uma transmissão': 'Fokus iha transmisaun ida',
   'Ver as {n} transmissões lado a lado': 'Haree transmisaun {n} sorin-ba-sorin',
+  'Todos do mesmo tamanho': 'Hotu ho medida hanesan',
   'Tela inteira': 'Ekrán tomak',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Buat hotu ne\'ebé iha ekrán. Son komputadór nian bá hamutuk, ona la ho lian husi xamada ne\'e.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Buat hotu ne\'ebé iha ekrán. Atu bá ho son, marka "fahe áudiu sistema nian" iha navegadór nia janela ki\'ik.',

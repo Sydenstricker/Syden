@@ -1151,6 +1151,7 @@ export default {
   'Clique para ativar o áudio': 'Smelltu til að kveikja á hljóði',
   'Focar em uma transmissão': 'Einblína á eina útsendingu',
   'Ver as {n} transmissões lado a lado': 'Sjá allar útsendingarnar hlið við hlið ({n})',
+  'Todos do mesmo tamanho': 'Allt jafnstórt',
   'Tela inteira': 'Allur skjárinn',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Allt sem er á skjánum. Hljóð tölvunnar fylgir með, þegar án raddanna úr þessu símtali.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Allt sem er á skjánum. Til að fá hljóð með skaltu haka við „Deila kerfishljóði“ í litla glugga vafrans.',

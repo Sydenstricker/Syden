@@ -1164,6 +1164,7 @@ export default {
   'Clique para ativar o áudio': 'Дууг асаахын тулд дар',
   'Focar em uma transmissão': 'Нэг дамжуулалт дээр төвлөрөх',
   'Ver as {n} transmissões lado a lado': '{n} дамжуулалтыг зэрэгцүүлж үзэх',
+  'Todos do mesmo tamanho': 'Бүгдийг ижил хэмжээгээр',
   'Tela inteira': 'Бүтэн дэлгэц',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Дэлгэц дээрх бүх зүйл. Компьютерын дуу хамт явна, энэ дуудлагын хоолойнуудгүйгээр.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Дэлгэц дээрх бүх зүйл. Дуутай явуулахын тулд хөтчийн цонхонд «Системийн аудиог хуваалцах»-ыг тэмдэглэ.',

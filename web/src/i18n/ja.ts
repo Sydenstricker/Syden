@@ -1061,6 +1061,7 @@ export default {
   'Clique para ativar o áudio': 'クリックして音声をオンにする',
   'Focar em uma transmissão': '1つの画面共有に集中',
   'Ver as {n} transmissões lado a lado': '{n}件の画面共有を並べて表示',
+  'Todos do mesmo tamanho': 'すべて同じ大きさ',
   'Tela inteira': '画面全体',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': '画面に映っているものすべて。パソコンの音も一緒に送られます（この通話の声は除きます）。',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': '画面に映っているものすべて。音も送るには、ブラウザの小窓で「システム音声を共有」にチェックを入れてください。',

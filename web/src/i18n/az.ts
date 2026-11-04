@@ -1114,6 +1114,7 @@ export default {
   'Clique para ativar o áudio': 'Səsi açmaq üçün klikə',
   'Focar em uma transmissão': 'Bir yayıma fokuslan',
   'Ver as {n} transmissões lado a lado': '{n} yayımı yan-yana gör',
+  'Todos do mesmo tamanho': 'Hamısı eyni ölçüdə',
   'Tela inteira': 'Bütün ekran',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Ekrandakı hər şey. Kompüterin səsi də gedir, bu zəngdəki danışıqlar olmadan.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Ekrandakı hər şey. Səslə getməsi üçün brauzerin pəncərəsində “Sistem səsini paylaş” seçimini işarələ.',

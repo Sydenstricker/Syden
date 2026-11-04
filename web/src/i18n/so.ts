@@ -1150,6 +1150,7 @@ export default {
   'Clique para ativar o áudio': 'Guji si aad u shido codka',
   'Focar em uma transmissão': 'Diiradda saar hal baahin',
   'Ver as {n} transmissões lado a lado': 'Eeg {n} baahinood dhinac dhinac',
+  'Todos do mesmo tamanho': 'Dhammaan isku cabbir',
   'Tela inteira': 'Shaashadda oo dhan',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Wax kasta oo shaashadda ku jira. Dhawaaqa kombiyuutarku wuu la socdaa, iyadoo aan lahayn codadka wicitaankan.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Wax kasta oo shaashadda ku jira. Si dhawaaqu ula socdo, calaamadee “wadaag codka nidaamka” daaqadda yar ee biraawsarka.',

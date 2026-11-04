@@ -1086,6 +1086,7 @@ export default {
   'Clique para ativar o áudio': 'Cliceáil chun an fhuaim a chasadh air',
   'Focar em uma transmissão': 'Dírigh ar chraoladh amháin',
   'Ver as {n} transmissões lado a lado': 'Féach ar na craoltaí taobh le taobh ({n})',
+  'Todos do mesmo tamanho': 'Iad uile ar an méid céanna',
   'Tela inteira': 'An scáileán ar fad',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Gach a bhfuil ar an scáileán. Téann fuaim an ríomhaire leis, gan guthanna an ghlao seo.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Gach a bhfuil ar an scáileán. Le fuaim a chur leis, marcáil “comhroinn fuaim an chórais” i bhfuinneog bheag an bhrabhsálaí.',

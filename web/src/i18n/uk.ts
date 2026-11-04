@@ -1130,6 +1130,7 @@ export default {
   'Clique para ativar o áudio': 'Натисни, щоб увімкнути звук',
   'Focar em uma transmissão': 'Дивитися одну трансляцію',
   'Ver as {n} transmissões lado a lado': 'Усі трансляції поруч ({n})',
+  'Todos do mesmo tamanho': 'Усі однакового розміру',
   'Tela inteira': 'Увесь екран',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Усе, що на екрані. Звук комп’ютера йде разом, уже без голосів цього дзвінка.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Усе, що на екрані. Щоб передати звук, познач «Також надати доступ до системного аудіо» у віконці браузера.',

@@ -1152,6 +1152,7 @@ export default {
   'Clique para ativar o áudio': 'Noklikšķini, lai ieslēgtu skaņu',
   'Focar em uma transmissão': 'Rādīt vienu translāciju',
   'Ver as {n} transmissões lado a lado': 'Skatīt visas translācijas blakus ({n})',
+  'Todos do mesmo tamanho': 'Visi vienādā izmērā',
   'Tela inteira': 'Viss ekrāns',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Viss, kas ir ekrānā. Datora skaņa nāk līdzi, jau bez šī zvana balsīm.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Viss, kas ir ekrānā. Lai būtu arī skaņa, pārlūka lodziņā atzīmē „Kopīgot sistēmas audio”.',

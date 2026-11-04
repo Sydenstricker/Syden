@@ -1079,6 +1079,7 @@ export default {
   'Clique para ativar o áudio': 'Tabaka mo vakabula na rorogo',
   'Focar em uma transmissão': 'Raica e dua ga na vakaraitaki',
   'Ver as {n} transmissões lado a lado': 'Raica na {n} na vakaraitaki veiyasai',
+  'Todos do mesmo tamanho': 'Me vakatale kece na levu',
   'Tela inteira': 'Sikirini taucoko',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Na ka kece ena sikirini. E lako vata na rorogo ni kompiuta, ka sa kauti tani kina na domo ni veiqiri oqo.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Na ka kece ena sikirini. Me lako vata na rorogo, vakatakilakilataka na “Share system audio” ena katubaleka lailai ni browser.',

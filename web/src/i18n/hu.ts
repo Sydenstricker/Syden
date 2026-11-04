@@ -1152,6 +1152,7 @@ export default {
   'Clique para ativar o áudio': 'Kattints a hang bekapcsolásához',
   'Focar em uma transmissão': 'Egy közvetítés kiemelése',
   'Ver as {n} transmissões lado a lado': 'Az összes közvetítés egymás mellett ({n})',
+  'Todos do mesmo tamanho': 'Mind egyforma méretben',
   'Tela inteira': 'Teljes képernyő',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Minden, ami a képernyőn van. A számítógép hangja is megy, már a hívás hangjai nélkül.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Minden, ami a képernyőn van. Ha hangot is szeretnél, jelöld be a „Rendszerhang megosztása” lehetőséget a böngésző kis ablakában.',

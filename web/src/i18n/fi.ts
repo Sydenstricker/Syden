@@ -1150,6 +1150,7 @@ export default {
   'Clique para ativar o áudio': 'Napsauta ottaaksesi äänen käyttöön',
   'Focar em uma transmissão': 'Keskity yhteen lähetykseen',
   'Ver as {n} transmissões lado a lado': 'Näytä kaikki {n} lähetystä rinnakkain',
+  'Todos do mesmo tamanho': 'Kaikki samankokoisina',
   'Tela inteira': 'Koko näyttö',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Kaikki, mitä näytöllä on. Tietokoneen ääni tulee mukaan, jo ilman tämän puhelun puheita.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Kaikki, mitä näytöllä on. Jos haluat äänen mukaan, valitse ”Jaa järjestelmän ääni” selaimen pienessä ikkunassa.',

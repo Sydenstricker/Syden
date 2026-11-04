@@ -1142,6 +1142,7 @@ export default {
   'Clique para ativar o áudio': 'Klicka för att slå på ljudet',
   'Focar em uma transmissão': 'Fokusera på en sändning',
   'Ver as {n} transmissões lado a lado': 'Visa alla {n} sändningar sida vid sida',
+  'Todos do mesmo tamanho': 'Alla lika stora',
   'Tela inteira': 'Hela skärmen',
   'Tudo o que está na tela. O som do computador vai junto, já sem as vozes desta chamada.': 'Allt som syns på skärmen. Datorns ljud följer med, redan utan rösterna från det här samtalet.',
   'Tudo o que está na tela. Para ir com som, marque "compartilhar áudio do sistema" na janelinha do navegador.': 'Allt som syns på skärmen. För att få med ljud, kryssa i ”Dela systemljud” i webbläsarens lilla fönster.',
