@@ -233,6 +233,8 @@ export default {
   'Sem imagem, a comunidade aparece com as iniciais do nome.': 'Ọ bụrụ na enweghị foto, ọgbakọ na-egosi mkpụrụ akwụkwọ mbụ nke aha ya.',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG ma ọ bụ WEBP, nha ọ bụla: ị na-ahọrọ ebe a ga-egbu. GIF na-emegharị agaghị agbanwe, ruo 2 MB.',
   'O GIF do avatar pode ter até 2 MB.': 'GIF nke foto profaịlụ nwere ike iru 2 MB.',
+  'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Ma ọ bụ mado njikọ GIF ma ọ bụ onyonyo, site na Tenor na GIPHY kwa. Syden na-ebudata otu mbipụta ma debe ya.',
+  'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Peeji ahụ enweghị onyonyo a ga-eji. Detuo njikọ onyonyo ahụ.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.': 'PNG, JPG, WEBP ma ọ bụ GIF na-emegharị ahụ, ruo 512 KB. A na-edozi foto ahụ ka ọ bụrụ 128×128.',
   'Texto (até 4 caracteres)': 'Ederede (ruo mkpụrụ akwụkwọ 4)',
   'Tipos de cosmético': 'Ụdị ihe ịchọ mma',

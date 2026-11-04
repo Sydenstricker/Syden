@@ -725,6 +725,8 @@ export default {
   'Pessoas das suas comunidades': 'คนจากชุมชนของคุณ',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG หรือ WEBP ขนาดใดก็ได้ คุณเลือกกรอบตัดเอง GIF เคลื่อนไหวจะใช้ตามเดิม ไม่เกิน 2 MB',
   'O GIF do avatar pode ter até 2 MB.': 'GIF รูปโปรไฟล์มีขนาดได้ไม่เกิน 2 MB',
+  'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'หรือวางลิงก์ของ GIF หรือรูปภาพ จาก Tenor และ GIPHY ก็ได้ Syden จะดาวน์โหลดสำเนาเก็บไว้',
+  'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'หน้านั้นไม่มีรูปที่ใช้ได้ คัดลอกลิงก์ของรูปแทน',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.': 'PNG, JPG, WEBP หรือ GIF เคลื่อนไหว ไม่เกิน 512 KB ภาพจะถูกย่อเป็น 128×128',
   'Poeira de estrelas, roxa e azul.': 'ฝุ่นดาว สีม่วงและน้ำเงิน',
   'Poente': 'ตะวันตกดิน',

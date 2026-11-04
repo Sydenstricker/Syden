@@ -813,6 +813,8 @@ export default {
   'Pessoas das suas comunidades': 'Personer från dina gemenskaper',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG eller WEBP, i valfri storlek: du väljer beskärningen. Animerade GIF:ar går som de är, upp till 2 MB.',
   'O GIF do avatar pode ter até 2 MB.': 'Avatar-GIF:en får vara upp till 2 MB.',
+  'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Eller klistra in länken till en GIF eller en bild, även från Tenor och GIPHY. Syden laddar ner en kopia och sparar den.',
+  'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Den sidan har ingen bild att använda. Kopiera bildens länk.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP eller animerad GIF, upp till 512 KB. Bilden anpassas till 128×128.',
   'Poeira de estrelas, roxa e azul.': 'Stjärnstoft, lila och blått.',

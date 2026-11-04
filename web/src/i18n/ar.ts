@@ -627,6 +627,8 @@ export default {
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.':
     'PNG أو JPG أو WEBP، بأي حجم: والاقتصاص باختيارك. صور GIF المتحركة تُرسَل كما هي، حتى 2 MB.',
   'O GIF do avatar pode ter até 2 MB.': 'يمكن أن يصل حجم GIF الصورة الرمزية إلى 2 MB.',
+  'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'أو يمكن لصق رابط GIF أو صورة، من Tenor وGIPHY أيضًا. يُنزّل Syden نسخة ويحتفظ بها.',
+  'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'هذه الصفحة لا تحتوي على صورة لاستخدامها. يُرجى نسخ رابط الصورة.',
   Pacotes: 'الحزم',
   'Nome do pacote': 'اسم الحزمة',
   'O que tem dentro': 'ما بداخلها',

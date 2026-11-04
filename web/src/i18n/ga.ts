@@ -231,6 +231,8 @@ export default {
   'Sem imagem, a comunidade aparece com as iniciais do nome.': 'Gan íomhá, taispeántar túslitreacha ainm an phobail.',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG nó WEBP, d\'aon mhéid: roghnaíonn tusa an chuid a choinneofar. Téann GIFanna beoite mar atá siad, suas le 2 MB.',
   'O GIF do avatar pode ter até 2 MB.': 'Is féidir le GIF an abhatáir a bheith suas le 2 MB.',
+  'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Nó greamaigh nasc chuig GIF nó íomhá, ó Tenor agus GIPHY freisin. Íoslódálann Syden cóip agus coinníonn sé í.',
+  'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Níl íomhá ar an leathanach sin le húsáid. Cóipeáil nasc na híomhá.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.': 'PNG, JPG, WEBP nó GIF beochana, suas le 512 KB. Cuirtear an íomhá in oiriúint do 128×128.',
   'Texto (até 4 caracteres)': 'Téacs (suas le 4 charachtar)',
   'Tipos de cosmético': 'Cineálacha maisiúcháin',

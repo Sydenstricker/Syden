@@ -718,6 +718,8 @@ export default {
   'Pessoas das suas comunidades': 'Persoane din comunitățile tale',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG sau WEBP, de orice mărime: tu alegi decupajul. GIF-urile animate merg întregi, până la 2 MB.',
   'O GIF do avatar pode ter até 2 MB.': 'GIF-ul avatarului poate avea până la 2 MB.',
+  'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Sau lipește linkul unui GIF sau al unei imagini, și de pe Tenor și GIPHY. Syden descarcă o copie și o păstrează.',
+  'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Pagina aceea nu are o imagine de folosit. Copiază linkul imaginii.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.': 'PNG, JPG, WEBP sau GIF animat, până la 512 KB. Imaginea e ajustată la 128×128.',
   'Poeira de estrelas, roxa e azul.': 'Praf de stele, mov și albastru.',
   'Poente': 'Apus',

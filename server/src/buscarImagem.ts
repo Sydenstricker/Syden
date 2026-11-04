@@ -221,6 +221,85 @@ export async function baixarImagem(cru: unknown, maxBytes: number): Promise<stri
 }
 
 /**
+ * O GIPHY MONTA A PÁGINA POR JAVASCRIPT, e o HTML que o servidor recebe não traz o GIF da página (medido em 04/11/2026: só
+ * GIFs de outras sugestões). Mas o endereço do arquivo sai do link: giphy.com/gifs/nome-ID → media.giphy.com/media/ID/200.gif
+ * (o de 200 px de altura: o avatar aparece com 80 no máximo, e o original passa dos 2 MB à toa).
+ */
+export function arquivoDoGiphy(cru: string): string | null {
+  let endereco: URL;
+  try {
+    endereco = new URL(cru.trim());
+  } catch {
+    return null;
+  }
+  if (!/(^|\.)giphy\.com$/i.test(endereco.hostname)) return null;
+  const pagina =
+    /^\/(?:gifs|stickers|clips)\/(?:[^/]*-)?([A-Za-z0-9]{6,})\/?$/.exec(endereco.pathname) ??
+    /^\/media\/([A-Za-z0-9]{6,})(?:\/|$)/.exec(endereco.pathname);
+  return pagina ? `https://media.giphy.com/media/${pagina[1]}/200.gif` : null;
+}
+
+/** O endereço da imagem de prévia que a página declara (og:image, ou twitter:image), como o Tenor faz. */
+export function imagemDaPagina(html: string, base: string): string | null {
+  for (const nome of ['og:image', 'og:image:url', 'twitter:image']) {
+    for (const meta of html.match(/<meta\b[^>]*>/gi) ?? []) {
+      const chave = /\b(?:property|name)\s*=\s*["']([^"']+)["']/i.exec(meta)?.[1]?.toLowerCase();
+      if (chave !== nome) continue;
+      const conteudo = /\bcontent\s*=\s*["']([^"']+)["']/i.exec(meta)?.[1];
+      if (!conteudo) continue;
+      try {
+        return new URL(conteudo.replace(/&amp;/g, '&'), base).toString();
+      } catch {
+        // endereço quebrado na página: tenta a próxima
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * O TENOR GUARDA O MESMO GIF EM VÁRIOS TAMANHOS, e o código do formato está no fim do identificador
+ * (media.tenor.com/m/<id>AAAA<formato>/nome.gif). O que a página declara passa dos 2 MB (medido em 04/11/2026: 3,9 MB e
+ * 18,8 MB); o "tinygif" (M) tem ~0,8 MB e uns 220 px, que sobram para um avatar.
+ */
+export function gifPequenoDoTenor(cru: string): string {
+  try {
+    const endereco = new URL(cru);
+    if (!/(^|\.)tenor\.com$/i.test(endereco.hostname)) return cru;
+    const formato = /^(\/m\/[A-Za-z0-9_-]+AAAA)[A-Za-z0-9](\/[^/]+?)(?:\.[a-z0-9]+)?$/.exec(endereco.pathname);
+    if (!formato) return cru;
+    endereco.pathname = `${formato[1]}M${formato[2]}.gif`;
+    return endereco.toString();
+  } catch {
+    return cru;
+  }
+}
+
+/** O limite para ler uma PÁGINA (não a imagem): a do Tenor tem ~120 KB; 3 MB é folga sem virar porta para arquivo grande. */
+const LIMITE_DA_PAGINA = 3 * 1024 * 1024;
+
+/**
+ * A imagem de um link que a pessoa colou, que pode ser o ARQUIVO ou a PÁGINA dele (pedido dele, 04/11/2026: "tentei colocar
+ * link de gif para avatar"). Quem copia um GIF do Tenor quase sempre copia o link da página: lida a página, vale a imagem que
+ * ela declara para prévia. O GIPHY vai direto ao arquivo (arquivoDoGiphy). Cada busca passa pela mesma conferência de saltos
+ * de baixar(), e o tipo continua decidido pelos bytes, no parseMedia.
+ */
+export async function baixarImagemOuDaPagina(cru: unknown, maxBytes: number): Promise<string> {
+  const original = String(cru ?? '').trim();
+  const endereco = arquivoDoGiphy(original) ?? gifPequenoDoTenor(original);
+  const dados = await baixar(endereco, Math.max(maxBytes, LIMITE_DA_PAGINA), IMAGEM);
+  if (typeof dados === 'string') return dados;
+  const inicio = dados.subarray(0, 512).toString('latin1').trimStart().toLowerCase();
+  if (inicio.startsWith('<!doctype html') || inicio.startsWith('<html') || inicio.includes('<head')) {
+    const imagem = imagemDaPagina(dados.toString('utf8'), endereco);
+    if (!imagem) return 'Essa página não tem uma imagem para usar. Copie o link da imagem.';
+    return baixarImagem(gifPequenoDoTenor(imagem), maxBytes);
+  }
+  if (dados.length > maxBytes) return `A imagem passa do limite de ${Math.round(maxBytes / 1024)} KB.`;
+  return `data:image/png;base64,${dados.toString('base64')}`;
+}
+
+/**
  * A PÁGINA DE UM SOM NO MYINSTANTS NÃO SE DEIXA LER POR SERVIDOR: ela fica atrás da checagem
  * anti-robô da Cloudflare ("Just a moment..."), medido em 03/10/2026. O ARQUIVO, em /media/sounds/,
  * não fica. E o nome do arquivo costuma ser o da página sem o número do fim:

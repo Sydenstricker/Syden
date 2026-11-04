@@ -834,6 +834,8 @@ export default {
   'Pessoas das suas comunidades': 'ཁྱོད་ཀྱི་མི་སྡེ་ནང་གི་མི།',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG ཡང་ན་ WEBP ཚད་ག་ཅི་ཡང་། གཏུབ་ས་ ཁྱོད་ཀྱིས་གདམ། འགུལ་བའི་ GIF ཧྲིལ་བུ་འགྱོཝ་ཨིན། MB 2 ཚུན།',
   'O GIF do avatar pode ter até 2 MB.': 'ཨ་ཝ་ཊར་གྱི་ GIF འདི་ MB 2 ཚུན་ཨིན་དགོ།',
+  'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'ཡང་ན་ GIF ཡང་ན་ པར་གྱི་འབྲེལ་ལམ་སྦྱར། Tenor དང་ GIPHY ལས་ཡང་ཆོག Syden གིས་ འདྲ་བཤུས་ཅིག་ཕབ་ལེན་འབད་དེ་ བཞག་འོང་།',
+  'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'ཤོག་ལེབ་དེ་ནང་ ལག་ལེན་འཐབ་ནིའི་པར་མེད། པར་གྱི་འབྲེལ་ལམ་འདྲ་བཤུས་རྐྱབ།',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP ཡང་ན་ འགུལ་བའི་ GIF, 512 KB ཚུན། པར་འདི་ 128×128 ལུ་བདེ་སྒྲིག་འབདཝ་ཨིན།',
   'Poeira de estrelas, roxa e azul.': 'སྐར་མའི་ཐལ་བ། རྒྱ་སྨུག་དང་སྔོནམ།',

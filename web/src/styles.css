@@ -3243,6 +3243,9 @@ textarea {
 .avatar img {
   width: 100%;
   height: 100%;
+  /* O avatar é uma grade, e o height: 100% dela não vale para quem está dentro: sem isto, foto que não é quadrada (o GIF,
+     que não passa pela tela de recorte) fica oval, mais alta que o círculo. */
+  aspect-ratio: 1 / 1;
   border-radius: 50%;
   object-fit: cover;
 }
@@ -3252,6 +3255,7 @@ textarea {
   display: block;
   width: 100%;
   height: 100%;
+  aspect-ratio: 1 / 1;
   border-radius: 50%;
 }
 

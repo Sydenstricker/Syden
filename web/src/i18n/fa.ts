@@ -700,6 +700,8 @@ export default {
   'Pessoas das suas comunidades': 'آدم‌های انجمن‌هایتان',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG، JPG یا WEBP، در هر اندازه‌ای: برش را خودتان انتخاب می‌کنید. GIF متحرک همان‌طور که هست می‌رود، تا ۲ مگابایت.',
   'O GIF do avatar pode ter até 2 MB.': 'GIF تصویر پروفایل می‌تواند تا ۲ مگابایت باشد.',
+  'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'یا لینک یک GIF یا تصویر را بچسبان، از Tenor و GIPHY هم می‌شود. Syden یک نسخه دانلود می‌کند و نگه می‌دارد.',
+  'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'آن صفحه تصویری برای استفاده ندارد. لینک خود تصویر را کپی کن.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.': 'PNG، JPG، WEBP یا GIF متحرک، تا 512 KB. تصویر به 128×128 درمی‌آید.',
   'Poeira de estrelas, roxa e azul.': 'غبار ستاره، بنفش و آبی.',
   'Poente': 'غروب',

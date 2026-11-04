@@ -817,6 +817,8 @@ export default {
   'Pessoas das suas comunidades': 'Қауымдастықтарыңыздағы адамдар',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'Кез келген өлшемдегі PNG, JPG немесе WEBP: кесіндіні өзіңіз таңдайсыз. Анимациялы GIF толығымен кетеді, 2 МБ-ға дейін.',
   'O GIF do avatar pode ter até 2 MB.': 'Аватар GIF-і 2 МБ-ға дейін бола алады.',
+  'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Немесе GIF не сурет сілтемесін қой, Tenor мен GIPHY-ден де болады. Syden көшірмесін жүктеп алып, сақтайды.',
+  'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Ол бетте пайдалануға болатын сурет жоқ. Суреттің сілтемесін көшір.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP немесе анимациялық GIF, 512 KB дейін. Сурет 128×128 өлшеміне келтіріледі.',
   'Poeira de estrelas, roxa e azul.': 'Күлгін және көк жұлдыз шаңы.',

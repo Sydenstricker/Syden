@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { baixarImagem, enderecoInterno } from '../src/buscarImagem.js';
+import { arquivoDoGiphy, baixarImagem, baixarImagemOuDaPagina, enderecoInterno, gifPequenoDoTenor, imagemDaPagina } from '../src/buscarImagem.js';
 
 // ===================================================================================================
 // PEDIR AO SERVIDOR QUE BUSQUE UM ENDEREÇO É DAR A ELE UMA ORDEM DE REDE.
@@ -94,5 +94,36 @@ describe('endereços malformados', () => {
   it('nome que não resolve é recusado, não aceito', async () => {
     const r = await recusa('https://nao-existe-mesmo-syden-teste.invalid/a.gif');
     assert.equal(r, 'Esse endereço não pode ser buscado.');
+  });
+});
+
+// O avatar por link (04/11/2026): quem copia um GIF quase sempre copia o link da PÁGINA dele. Nada daqui sai para a rede.
+describe('o link da página do GIF', () => {
+  it('a página do GIPHY vira o arquivo dela, no tamanho pequeno', () => {
+    assert.equal(arquivoDoGiphy('https://giphy.com/gifs/cat-JIX9t2j0ZTN9S'), 'https://media.giphy.com/media/JIX9t2j0ZTN9S/200.gif');
+    assert.equal(arquivoDoGiphy('https://giphy.com/gifs/JIX9t2j0ZTN9S'), 'https://media.giphy.com/media/JIX9t2j0ZTN9S/200.gif');
+    assert.equal(arquivoDoGiphy('https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif'), 'https://media.giphy.com/media/JIX9t2j0ZTN9S/200.gif');
+    assert.equal(arquivoDoGiphy('https://giphy.com.exemplo.net/gifs/x-JIX9t2j0ZTN9S'), null, 'só o GIPHY de verdade');
+    assert.equal(arquivoDoGiphy('https://tenor.com/view/x'), null);
+  });
+
+  it('a página que declara a imagem de prévia (o Tenor) entrega o endereço dela', () => {
+    const html = '<html><head><meta class="dynamic" property="og:image:type" content="image/gif">' +
+      '<meta class="dynamic" property="og:image" content="https://media1.tenor.com/m/-vNmSjQbj5MAAAAd/gato.gif"></head></html>';
+    assert.equal(imagemDaPagina(html, 'https://tenor.com/view/gato-123'), 'https://media1.tenor.com/m/-vNmSjQbj5MAAAAd/gato.gif');
+    assert.equal(imagemDaPagina('<meta content="/a.png" name="twitter:image">', 'https://site.com/p'), 'https://site.com/a.png', 'a ordem dos atributos não importa');
+    assert.equal(imagemDaPagina('<html><body>nada</body></html>', 'https://site.com/'), null);
+  });
+
+  it('o GIF do Tenor é pedido no tamanho pequeno (o grande passa dos 2 MB)', () => {
+    assert.equal(gifPequenoDoTenor('https://media1.tenor.com/m/-vNmSjQbj5MAAAAd/gato.gif'), 'https://media1.tenor.com/m/-vNmSjQbj5MAAAAM/gato.gif');
+    assert.equal(gifPequenoDoTenor('https://media1.tenor.com/m/-vNmSjQbj5MAAAA1/gato.webp'), 'https://media1.tenor.com/m/-vNmSjQbj5MAAAAM/gato.gif');
+    assert.equal(gifPequenoDoTenor('https://tenor.com/view/gato-123'), 'https://tenor.com/view/gato-123', 'a página fica como está');
+    assert.equal(gifPequenoDoTenor('https://exemplo.com/m/xAAAAd/a.gif'), 'https://exemplo.com/m/xAAAAd/a.gif');
+  });
+
+  it('o link de página passa pelas mesmas recusas', async () => {
+    assert.match(await baixarImagemOuDaPagina('http://tenor.com/view/x', LIMITE), /https/);
+    assert.match(await baixarImagemOuDaPagina('https://127.0.0.1/view/x', LIMITE), /não pode ser buscado/);
   });
 });

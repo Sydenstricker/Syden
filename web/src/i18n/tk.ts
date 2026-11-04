@@ -823,6 +823,8 @@ export default {
   'Pessoas das suas comunidades': 'Jemgyýetleriňdäki adamlar',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'Islendik ölçegdäki PNG, JPG ýa-da WEBP: kesilýän ýerini sen saýlaýarsyň. Hereketli GIF bolşy ýaly gidýär, 2 MB-a çenli.',
   'O GIF do avatar pode ter até 2 MB.': 'Awataryň GIF-i 2 MB-a çenli bolup biler.',
+  'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Ýa-da GIF-iň ýa suratyň salgysyny goý, Tenor bilen GIPHY-den hem bolýar. Syden onuň nusgasyny göçürip saklaýar.',
+  'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Ol sahypada ulanar ýaly surat ýok. Suratyň salgysyny göçür.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP ýa-da hereketli GIF, 512 KB çenli. Surat 128×128 ölçege getirilýär.',
   'Poeira de estrelas, roxa e azul.': 'Ýyldyz tozy, benewşe we gök.',

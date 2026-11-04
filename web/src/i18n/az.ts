@@ -773,6 +773,8 @@ export default {
   'Pessoas das suas comunidades': 'İcmalarından adamlar',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG və ya WEBP, istənilən ölçüdə: kəsimi sən seçirsən. Animasiyalı GIF olduğu kimi gedir, 2 MB-a qədər.',
   'O GIF do avatar pode ter até 2 MB.': 'Avatar GIF-i 2 MB-a qədər ola bilər.',
+  'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Ya da GIF-in və ya şəklin linkini yapışdır, Tenor və GIPHY-dən də olar. Syden bir nüsxəsini yükləyib saxlayır.',
+  'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'O səhifədə istifadə üçün şəkil yoxdur. Şəklin linkini kopyala.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.': 'PNG, JPG, WEBP və ya animasiyalı GIF, 512 KB-a qədər. Şəkil 128×128-ə uyğunlaşdırılır.',
   'Poeira de estrelas, roxa e azul.': 'Bənövşəyi və mavi ulduz tozu.',
   'Poente': 'Gün batımı',

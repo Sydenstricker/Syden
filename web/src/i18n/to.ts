@@ -231,6 +231,8 @@ export default {
   'Sem imagem, a comunidade aparece com as iniciais do nome.': 'Kapau ʻoku ʻikai ha ʻīmisi, ʻe ʻasi ʻa e kulupu ʻaki ʻa e ʻuluaki mataʻitohi ʻo hono hingoa.',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG pe WEBP, ʻi ha lahi pē: ko koe te ke fili e kongá. Ko e GIF ʻoku ngaue ʻoku ʻalu pē ʻo hangē ko iá, ʻo aʻu ki he 2 MB.',
   'O GIF do avatar pode ter até 2 MB.': 'ʻE lava ke aʻu ʻa e GIF ʻo e ʻavata ki he 2 MB.',
+  'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Pe pipiki ha link ki ha GIF pe ha tā, mei Tenor mo GIPHY foki. ʻOku download ʻe Syden ha tatau ʻo tauhi.',
+  'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'ʻOku ʻikai ha tā ʻi he peesi ko iá ke ngāueʻaki. Hiki ʻa e link ʻo e tā.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.': 'PNG, JPG, WEBP pe GIF ngaue, aʻu ki he 512 KB. ʻE fakatatau ʻa e ʻīmisi ki he 128×128.',
   'Texto (até 4 caracteres)': 'Tohi (aʻu ki he mataʻitohi ʻe 4)',
   'Tipos de cosmético': 'Ngaahi faʻahinga teuteu',

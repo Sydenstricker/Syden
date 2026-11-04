@@ -821,6 +821,8 @@ export default {
   'Pessoas das suas comunidades': 'ඔබේ ප්‍රජාවන්හි අය',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'ඕනෑම ප්‍රමාණයක PNG, JPG හෝ WEBP: කැපීම ඔබ තෝරයි. චලන GIF එක තිබෙන ලෙසම යයි, 2 MB දක්වා.',
   'O GIF do avatar pode ter até 2 MB.': 'අවතාර GIF එක 2 MB දක්වා විය හැක.',
+  'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'නැත්නම් GIF එකක හෝ රූපයක සබැඳිය අලවන්න, Tenor සහ GIPHY වලින් ද. Syden පිටපතක් බාගෙන තබා ගනී.',
+  'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'එම පිටුවේ භාවිත කළ හැකි රූපයක් නැත. රූපයේ සබැඳිය පිටපත් කරන්න.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP හෝ සජීවිකරණ GIF, 512 KB දක්වා. රූපය 128×128 ට ගළපනු ලැබේ.',
   'Poeira de estrelas, roxa e azul.': 'දම් සහ නිල් තරු දූවිලි.',

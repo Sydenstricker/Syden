@@ -820,6 +820,8 @@ export default {
   'Pessoas das suas comunidades': 'Lidé z tvých komunit',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG nebo WEBP v jakékoli velikosti: výřez si vybereš. Animovaný GIF jde celý, až 2 MB.',
   'O GIF do avatar pode ter até 2 MB.': 'GIF avatara může mít nejvýš 2 MB.',
+  'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Nebo vlož odkaz na GIF či obrázek, i z Tenoru a GIPHY. Syden si stáhne kopii a uloží ji.',
+  'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Ta stránka nemá obrázek, který by šel použít. Zkopíruj odkaz na obrázek.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP nebo animovaný GIF, až 512 KB. Obrázek se upraví na 128×128.',
   'Poeira de estrelas, roxa e azul.': 'Hvězdný prach, fialový a modrý.',

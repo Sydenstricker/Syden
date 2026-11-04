@@ -70,5 +70,28 @@ await mensagem.hover();
 await page.waitForTimeout(300);
 (await naMensagem()) === 'CANVAS' ? ok('com "menos movimento", nem o mouse anima') : falhou('com "menos movimento", o GIF animou');
 
+// ---------- por link: o da PÁGINA do Tenor (que é o que se copia), baixado e guardado pelo servidor ----------
+await page.emulateMedia({ reducedMotion: 'no-preference' });
+const TENOR = 'https://tenor.com/view/clapping-black-cat-handshake-cat-memes-cat-gif-18082909397710507923';
+const antes = await page.evaluate(() => document.querySelector('.message .avatar .avatar-foto')?.getAttribute('src') ?? null);
+await page.locator('button[aria-label="Configurações"]').first().click();
+await page.locator('.settings-tab', { hasText: /Minha conta/ }).first().click();
+await page.locator('.capa-endereco input[type=url]').fill(TENOR);
+await page.locator('.capa-endereco button').click();
+const mudou = await page.waitForFunction(
+  (antes) => {
+    const img = document.querySelector('.account-card .avatar img.avatar-foto');
+    return img && img.getAttribute('src') !== antes && img.complete && img.naturalWidth > 0;
+  },
+  antes,
+  { timeout: 30_000 },
+).then(() => true, () => false);
+mudou ? ok('o link da página do Tenor virou o avatar') : falhou(`o link do Tenor não virou o avatar: ${await page.locator('.form-error').innerText().catch(() => '(sem erro na tela)')}`);
+await page.locator('.capa-endereco input[type=url]').fill('https://example.com/');
+await page.locator('.capa-endereco button').click();
+const erro = await page.locator('.form-error').innerText({ timeout: 20_000 }).catch(() => '');
+/não tem uma imagem/.test(erro) ? ok('uma página sem imagem diz o que fazer') : falhou(`a página sem imagem deu: "${erro}"`);
+await page.screenshot({ path: path.join(FOTOS, 'avatar-gif-link.png') });
+
 await browser.close();
 resumo('avatar em GIF');

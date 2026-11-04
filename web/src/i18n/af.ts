@@ -815,6 +815,8 @@ export default {
   'Pessoas das suas comunidades': 'Mense uit jou gemeenskappe',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG of WEBP, enige grootte: jy kies die uitsnit. Geanimeerde GIF\'s gaan soos hulle is, tot 2 MB.',
   'O GIF do avatar pode ter até 2 MB.': 'Die avatar-GIF kan tot 2 MB wees.',
+  'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Of plak \'n skakel na \'n GIF of \'n beeld, ook van Tenor en GIPHY. Syden laai \'n kopie af en hou dit.',
+  'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Daardie bladsy het nie \'n beeld om te gebruik nie. Kopieer die beeld se skakel.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP of geanimeerde GIF, tot 512 KB. Die prent word na 128×128 aangepas.',
   'Poeira de estrelas, roxa e azul.': 'Sterrestof, pers en blou.',

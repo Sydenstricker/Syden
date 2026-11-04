@@ -693,6 +693,8 @@ export default {
   'Pessoas das suas comunidades': 'あなたのコミュニティの人',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG・JPG・WEBP、大きさは自由です。切り取る範囲は自分で選べます。アニメーションGIFはそのまま使われます（2 MBまで）。',
   'O GIF do avatar pode ter até 2 MB.': 'プロフィール画像のGIFは2 MBまでです。',
+  'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'GIFや画像のリンクを貼り付けることもできます（TenorやGIPHYもOK）。Sydenがコピーをダウンロードして保存します。',
+  'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'そのページには使える画像がありません。画像そのもののリンクをコピーしてください。',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.': 'PNG・JPG・WEBP・アニメーションGIF、512 KBまで。画像は128×128に合わせられます。',
   'Poeira de estrelas, roxa e azul.': '星屑。紫と青。',
   'Poente': '夕暮れ',

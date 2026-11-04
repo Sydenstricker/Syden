@@ -557,6 +557,8 @@ export default {
   'Pessoas das suas comunidades': '你社区里的人',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG、JPG 或 WEBP，任意尺寸：裁剪由你决定。动图 GIF 原样上传，最大 2 MB。',
   'O GIF do avatar pode ter até 2 MB.': '头像 GIF 最大 2 MB。',
+  'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': '也可以粘贴 GIF 或图片的链接，Tenor 和 GIPHY 的也行。Syden 会下载一份副本并保存。',
+  'Essa página não tem uma imagem para usar. Copie o link da imagem.': '那个页面里没有可用的图片。请复制图片本身的链接。',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG、JPG、WEBP 或动态 GIF，最大 512 KB。图片会被调整为 128×128。',
   'Poeira de estrelas, roxa e azul.': '星尘，紫色和蓝色。',

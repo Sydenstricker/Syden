@@ -76,6 +76,20 @@ export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
       return user;
     });
 
+    // O avatar por LINK (04/11/2026): o servidor baixa e guarda, como a capa (o porquê está no alto de buscarImagem.ts), e
+    // aceita o link da página do GIF (Tenor, GIPHY), não só o do arquivo. Vai inteiro, como o GIF enviado do computador.
+    authed.put<{ Body: { url?: string } }>('/api/me/avatar/endereco', async (request, reply) => {
+      if (cotaEsgotada(request, reply)) return reply;
+      const { baixarImagemOuDaPagina } = await import('./buscarImagem.js');
+      const baixada = await baixarImagemOuDaPagina(request.body?.url, LIMITS.avatar);
+      if (!baixada.startsWith('data:')) return reply.code(400).send({ error: baixada });
+      const media = await parseMediaConferida(baixada, 'image', LIMITS.avatar, 'avatar', request.user.id);
+      if (typeof media === 'string') return reply.code(400).send({ error: media });
+      const user = db.setAvatar(request.user.id, media);
+      io.emit('user:updated', user);
+      return user;
+    });
+
     // O coelho pronto: só o número, sem imagem nenhuma subindo (o desenho já mora no site).
     authed.put<{ Body: { numero?: unknown } }>('/api/me/avatar-pronto', async (request, reply) => {
       const numero = request.body?.numero;

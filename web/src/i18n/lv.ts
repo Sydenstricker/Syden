@@ -823,6 +823,8 @@ export default {
   'Pessoas das suas comunidades': 'Cilvēki no tavām kopienām',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG vai WEBP jebkurā izmērā: izgriezumu izvēlies tu. Animēts GIF tiek augšupielādēts vesels, līdz 2 MB.',
   'O GIF do avatar pode ter até 2 MB.': 'Avatāra GIF var būt līdz 2 MB.',
+  'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Vai ielīmē GIF vai attēla saiti, arī no Tenor un GIPHY. Syden lejupielādē kopiju un to saglabā.',
+  'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Tajā lapā nav attēla, ko izmantot. Nokopē attēla saiti.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP vai animēts GIF, līdz 512 KB. Attēls tiek pielāgots 128×128.',
   'Poeira de estrelas, roxa e azul.': 'Zvaigžņu putekļi, violeti un zili.',

@@ -718,6 +718,8 @@ export default {
   'Pessoas das suas comunidades': 'ከማህበረሰቦችዎ ሰዎች',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG፣ JPG ወይም WEBP፣ በማንኛውም መጠን፦ የሚቆረጠውን እርስዎ ይመርጣሉ። ተንቀሳቃሽ GIF እንዳለ ይሄዳል፣ እስከ 2 MB።',
   'O GIF do avatar pode ter até 2 MB.': 'የመገለጫ ፎቶው GIF እስከ 2 MB ሊሆን ይችላል።',
+  'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'ወይም የGIF ወይም የምስል ማገናኛ ይለጥፉ፣ ከTenor እና ከGIPHY ጭምር። Syden ቅጂ አውርዶ ያስቀምጣል።',
+  'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'ያ ገጽ የሚጠቀሙበት ምስል የለውም። የምስሉን ማገናኛ ይቅዱ።',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.': 'PNG፣ JPG፣ WEBP ወይም እንቅስቃሴ ያለው GIF፣ እስከ 512 KB። ምስሉ ወደ 128×128 ይስተካከላል።',
   'Poeira de estrelas, roxa e azul.': 'የከዋክብት ትቢያ፣ ወይን ጠጅና ሰማያዊ።',
   'Poente': 'የፀሐይ መጥለቂያ',

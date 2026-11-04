@@ -1666,6 +1666,22 @@ function AvatarEditor({ user }: { user: User }) {
     await upload(await readAsDataUrl(arquivo));
   }
 
+  // O avatar por LINK (04/11/2026, pedido dele): o servidor baixa e guarda, como a capa, e entende o link da PÁGINA do GIF
+  // (Tenor, GIPHY), que é o que quem copia um GIF costuma copiar. Vai inteiro, como o GIF do computador.
+  const [endereco, setEndereco] = useState('');
+  async function usarEndereco(event: FormEvent) {
+    event.preventDefault();
+    setBusy(true);
+    setError(null);
+    try {
+      await api('/api/me/avatar/endereco', { method: 'PUT', body: { url: endereco.trim() } });
+      setEndereco('');
+    } catch (e) {
+      setError((e as Error).message);
+    }
+    setBusy(false);
+  }
+
   async function escolherPronto(numero: number) {
     setBusy(true);
     setError(null);
@@ -1702,6 +1718,13 @@ function AvatarEditor({ user }: { user: User }) {
         </div>
       </div>
       {error ? <p className="form-error">{error}</p> : <p className="settings-hint">{t('PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.')}</p>}
+      <form className="capa-endereco" onSubmit={usarEndereco}>
+        <input type="url" value={endereco} onChange={(e) => setEndereco(e.target.value)} aria-label={t('Endereço')} disabled={busy} />
+        <button className="btn-secondary" disabled={busy || !endereco.trim()}>
+          {t('Usar')}
+        </button>
+      </form>
+      <p className="settings-hint">{t('Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.')}</p>
       <CoelhosProntos disabled={busy} escolhido={eu?.avatarPronto ?? null} onEscolher={escolherPronto} />
       {cropping && (
         <ImageCropper file={cropping} title={t('Ajustar o avatar')} shape="circle" onCancel={() => setCropping(null)} onDone={upload} />

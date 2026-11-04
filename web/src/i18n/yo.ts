@@ -733,6 +733,8 @@ export default {
   'Pessoas das suas comunidades': 'Àwọn ènìyàn láti inú àwùjọ yín',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG tàbí WEBP, ní ìwọ̀n yòówù: ẹ ló ń yan apá tí ẹ fẹ́. GIF tó ń rìn ń lọ bí ó ṣe wà, títí dé 2 MB.',
   'O GIF do avatar pode ter até 2 MB.': 'GIF àwòrán profaili lè tó 2 MB.',
+  'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Tàbí lẹ ìjápọ̀ GIF tàbí àwòrán kan, láti Tenor àti GIPHY pẹ̀lú. Syden máa ń gba ẹ̀dà kan sílẹ̀, ó sì ń tọ́jú rẹ̀.',
+  'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Ojú-ìwé yẹn kò ní àwòrán tí a lè lò. Ṣe ẹ̀dà ìjápọ̀ àwòrán náà.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.': 'PNG, JPG, WEBP tàbí GIF alárìnrìn, dé 512 KB. A ó ṣàtúnṣe àwòrán náà sí 128×128.',
   'Poeira de estrelas, roxa e azul.': 'Erùpẹ̀ ìràwọ̀, àlùkò àti búlúù.',
   'Poente': 'Ìwọ̀ oòrùn',

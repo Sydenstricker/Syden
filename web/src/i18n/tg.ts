@@ -822,6 +822,8 @@ export default {
   'Pessoas das suas comunidades': 'Одамон аз анҷуманҳои шумо',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG ё WEBP бо ҳар андоза: буришро шумо интихоб мекунед. GIF-и аниматсионӣ пурра меравад, то 2 МБ.',
   'O GIF do avatar pode ter até 2 MB.': 'GIF-и аватар метавонад то 2 МБ бошад.',
+  'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Ё пайванди GIF ё тасвирро гузор, аз Tenor ва GIPHY ҳам мешавад. Syden нусхаеро боргирӣ карда, нигоҳ медорад.',
+  'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Дар он саҳифа тасвире барои истифода нест. Пайванди худи тасвирро нусха бардор.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP ё GIF-и ҳаракатнок, то 512 KB. Тасвир ба 128×128 мутобиқ карда мешавад.',
   'Poeira de estrelas, roxa e azul.': 'Гарди ситораҳо, бунафш ва кабуд.',

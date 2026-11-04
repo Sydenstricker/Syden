@@ -201,6 +201,8 @@ export default {
   'Sem imagem, a comunidade aparece com as iniciais do nome.': 'Sin imagen, la comunidad aparece con las iniciales del nombre.',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG o WEBP, de cualquier tamaño: tú eliges el recorte. Los GIF animados van enteros, hasta 2 MB.',
   'O GIF do avatar pode ter até 2 MB.': 'El GIF del avatar puede tener hasta 2 MB.',
+  'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'O pega el enlace de un GIF o de una imagen, también de Tenor y GIPHY. Syden descarga una copia y la guarda.',
+  'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Esa página no tiene una imagen para usar. Copia el enlace de la imagen.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.': 'PNG, JPG, WEBP o GIF animado, hasta 512 KB. La imagen se ajusta a 128×128.',
   'Texto (até 4 caracteres)': 'Texto (hasta 4 caracteres)',
   'Tipos de cosmético': 'Tipos de cosmético',

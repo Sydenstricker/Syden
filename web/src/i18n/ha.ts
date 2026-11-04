@@ -714,6 +714,8 @@ export default {
   'Pessoas das suas comunidades': 'Mutanen ƙungiyoyinku',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG ko WEBP, na kowane girma: ku ke zaɓar yankin. GIF mai motsi yana tafiya yadda yake, har zuwa 2 MB.',
   'O GIF do avatar pode ter até 2 MB.': 'GIF na hoton martaba zai iya kai 2 MB.',
+  'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Ko ku liƙa mahaɗin GIF ko hoto, daga Tenor da GIPHY ma. Syden yana sauke kwafi ya ajiye.',
+  'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Wannan shafin ba shi da hoton da za a yi amfani da shi. Ku kwafi mahaɗin hoton.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.': 'PNG, JPG, WEBP ko GIF mai motsi, har 512 KB. Ana daidaita hoton zuwa 128×128.',
   'Poeira de estrelas, roxa e azul.': 'Ƙurar taurari, shunayya da shuɗi.',
   'Poente': 'Faɗuwar rana',

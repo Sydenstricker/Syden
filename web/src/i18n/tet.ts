@@ -227,6 +227,8 @@ export default {
   'Sem imagem, a comunidade aparece com as iniciais do nome.': 'Se la iha imajen, komunidade mosu ho letra inisiál husi naran.',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG ka WEBP, ho tamañu saida de\'it: ó mak hili koti. GIF ne\'ebé book ba hanesan nia iha, to\'o 2 MB.',
   'O GIF do avatar pode ter até 2 MB.': 'GIF avatar bele to\'o 2 MB.',
+  'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Ka kola link husi GIF ka imajen ida, husi Tenor no GIPHY mós. Syden download kópia ida no rai.',
+  'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Pájina ne\'e la iha imajen atu uza. Kopia imajen nia link.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.': 'PNG, JPG, WEBP ka GIF animadu, to\'o 512 KB. Imajen sei ajusta ba 128×128.',
   'Texto (até 4 caracteres)': 'Testu (to\'o karakter 4)',
   'Tipos de cosmético': 'Tipu kosmétiku',

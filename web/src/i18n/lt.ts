@@ -823,6 +823,8 @@ export default {
   'Pessoas das suas comunidades': 'Žmonės iš tavo bendruomenių',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG arba WEBP bet kokio dydžio: iškarpą pasirenki tu. Animuotas GIF keliamas visas, iki 2 MB.',
   'O GIF do avatar pode ter até 2 MB.': 'Avataro GIF gali būti iki 2 MB.',
+  'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Arba įklijuok GIF ar paveikslėlio nuorodą, ir iš Tenor bei GIPHY. Syden atsisiunčia kopiją ir ją pasilieka.',
+  'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Tame puslapyje nėra paveikslėlio, kurį būtų galima naudoti. Nukopijuok paveikslėlio nuorodą.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP arba animuotas GIF, iki 512 KB. Paveikslėlis pritaikomas iki 128×128.',
   'Poeira de estrelas, roxa e azul.': 'Žvaigždžių dulkės, violetinės ir mėlynos.',

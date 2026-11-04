@@ -829,6 +829,8 @@ export default {
   'Pessoas das suas comunidades': 'Hamjamiyatlaringizdagi odamlar',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'Istalgan oʻlchamdagi PNG, JPG yoki WEBP: qirqimni oʻzingiz tanlaysiz. Animatsiyali GIF butunligicha ketadi, 2 MB gacha.',
   'O GIF do avatar pode ter até 2 MB.': 'Avatar GIF’i 2 MB gacha bo‘lishi mumkin.',
+  'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Yoki GIF yoki rasm havolasini qo‘y, Tenor va GIPHY’dan ham bo‘ladi. Syden nusxasini yuklab olib, saqlab qo‘yadi.',
+  'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'U sahifada ishlatish uchun rasm yo‘q. Rasmning havolasini nusxala.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP yoki animatsiyali GIF, 512 KB gacha. Rasm 128×128 ga moslanadi.',
   'Poeira de estrelas, roxa e azul.': 'Binafsha va koʻk yulduz changi.',

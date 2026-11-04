@@ -682,6 +682,8 @@ export default {
   'Pessoas das suas comunidades': 'Người trong các cộng đồng của bạn',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG hoặc WEBP, cỡ nào cũng được: bạn chọn phần cắt. GIF động được giữ nguyên, tối đa 2 MB.',
   'O GIF do avatar pode ter até 2 MB.': 'GIF ảnh đại diện có thể tối đa 2 MB.',
+  'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Hoặc dán đường dẫn của một GIF hay một hình ảnh, cả từ Tenor và GIPHY. Syden tải về một bản sao và giữ lại.',
+  'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Trang đó không có hình ảnh nào để dùng. Hãy sao chép đường dẫn của hình ảnh.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.': 'PNG, JPG, WEBP hoặc GIF động, tối đa 512 KB. Ảnh sẽ được đưa về 128×128.',
   'Poeira de estrelas, roxa e azul.': 'Bụi sao, tím và xanh.',
   'Poente': 'Hoàng hôn',

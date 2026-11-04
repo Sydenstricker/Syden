@@ -822,6 +822,8 @@ export default {
   'Pessoas das suas comunidades': 'Abantu basemiphakathini yakho',
   'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'I-PNG, JPG noma WEBP, yanoma yimuphi usayizi: ukhetha ingxenye ozoyisika. I-GIF egqwayizayo ihamba injalo, kuze kufike ku-2 MB.',
   'O GIF do avatar pode ter até 2 MB.': 'I-GIF ye-avatar ingaba kuze kube ngu-2 MB.',
+  'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Noma unamathisele isixhumanisi se-GIF noma sesithombe, nakuTenor naku-GIPHY. I-Syden ilanda ikhophi bese iyigcina.',
+  'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Lelo khasi alinaso isithombe sokusebenzisa. Kopisha isixhumanisi sesithombe.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'I-PNG, JPG, WEBP noma i-GIF enyakazayo, kufika ku-512 KB. Isithombe silungiselwa ku-128×128.',
   'Poeira de estrelas, roxa e azul.': 'Uthuli lwezinkanyezi, olunsomi noluhlaza okwesibhakabhaka.',

@@ -1208,7 +1208,10 @@ quadros): pula falando, cochila esmaecida com o "z" ausente, balança ocupada (`
 INTEIRO**, sem a tela de recorte (que o redesenharia num canvas), até os 2 MB do servidor, que marca `users.avatar_animado`. **Como o
 Discord, para não virar pisca-pisca** (palavras dele): nas mensagens e nas listas o GIF fica PARADO, no primeiro quadro desenhado num
 canvas, e anima enquanto o mouse está na LINHA dele (a mensagem, a pessoa); de 80 px para cima (Minha conta, o cartão de perfil) anima
-sempre. Com "menos movimento" no sistema, nada disso se mexe. De graça para todos: "sem assinatura" é promessa. Testes:
+sempre. Com "menos movimento" no sistema, nada disso se mexe. De graça para todos: "sem assinatura" é promessa. **Também por LINK**
+(pedido dele, mesmo dia): o servidor baixa e guarda, como a capa (`PUT /api/me/avatar/endereco`, `baixarImagemOuDaPagina`), e entende
+o link da PÁGINA, que é o que se copia: a do Tenor pela imagem de prévia que ela declara (og:image), pedida no tamanho pequeno (o
+código de formato M: a original passava de 2 MB), e a do GIPHY pelo endereço do arquivo, que sai do próprio link. Testes:
 `server/test/avatar-animado.test.ts` e `e2e/avatar-gif.mjs` (passou).
 
 ## As figurinhas são da pessoa, e mandá-las é um anexo marcado
