@@ -1,5 +1,7 @@
+import { lookup as lookupDeCallback, type LookupAddress } from 'node:dns';
 import { lookup } from 'node:dns/promises';
-import { isIPv4 } from 'node:net';
+import { request } from 'node:https';
+import { isIPv4, type LookupFunction } from 'node:net';
 
 /**
  * BAIXAR UMA IMAGEM DE UM ENDEREÇO QUE O USUÁRIO COLOU.
@@ -120,30 +122,67 @@ async function apontaParaFora(host: string): Promise<boolean> {
   }
 }
 
+/**
+ * A CONFERÊNCIA NA HORA DE CONECTAR (04/11/2026, ao abrir o avatar por link a todo mundo). Conferir o nome e DEPOIS pedir ao
+ * fetch deixava uma fresta: o fetch resolve o nome de novo, e um DNS de quem quer atacar pode responder "público" na
+ * conferência e "127.0.0.1" um instante depois (o "DNS rebinding"). Aqui a resposta do DNS que é conferida é a MESMA que a
+ * conexão usa: se qualquer endereço dela for interno, a conexão nem sai.
+ */
+export const lookupConferido: LookupFunction = (host, opcoes, pronto) => {
+  lookupDeCallback(host, { ...opcoes, all: true }, (erro, achados: LookupAddress[]) => {
+    if (erro) return pronto(erro, '', 0);
+    if (!achados.length || achados.some(({ address }) => ehInterno(address))) {
+      return pronto(Object.assign(new Error('endereço interno'), { code: 'EENDERECOINTERNO' }), '', 0);
+    }
+    if (opcoes.all) return (pronto as unknown as (e: null, a: LookupAddress[]) => void)(null, achados);
+    pronto(null, achados[0].address, achados[0].family);
+  });
+};
+
+interface Resposta {
+  status: number;
+  location: string | null;
+  corpo: import('node:http').IncomingMessage;
+}
+
+/** Um pedido GET por https, com a conferência na conexão, sem seguir redirecionamento e com prazo. */
+function pedir(endereco: URL, accept: string): Promise<Resposta> {
+  return new Promise((ok, falha) => {
+    const pedido = request(endereco, { method: 'GET', headers: { accept, 'user-agent': 'Syden (imagem por link)' }, lookup: lookupConferido, timeout: PRAZO_MS }, (resposta) =>
+      ok({ status: resposta.statusCode ?? 0, location: resposta.headers.location ?? null, corpo: resposta }),
+    );
+    pedido.on('timeout', () => pedido.destroy(new Error('prazo')));
+    pedido.on('error', falha);
+    pedido.end();
+  });
+}
+
 /** Lê o corpo parando no limite, em vez de aceitar tudo e medir depois. */
-async function lerAteOLimite(resposta: Response, maxBytes: number): Promise<Buffer | null> {
+async function lerAteOLimite(resposta: Resposta, maxBytes: number): Promise<Buffer | null> {
   // O tamanho declarado é só um atalho: um servidor pode mentir nele, e por isso a conta real é
   // feita pedaço a pedaço logo abaixo.
-  const declarado = Number(resposta.headers.get('content-length') ?? 0);
-  if (declarado > maxBytes) return null;
-
-  const leitor = resposta.body?.getReader();
-  if (!leitor) return null;
+  const declarado = Number(resposta.corpo.headers['content-length'] ?? 0);
+  if (declarado > maxBytes) {
+    resposta.corpo.destroy();
+    return null;
+  }
   const pedacos: Buffer[] = [];
   let total = 0;
-  for (;;) {
-    const { done, value } = await leitor.read();
-    if (done) break;
-    total += value.byteLength;
-    if (total > maxBytes) {
-      await leitor.cancel().catch(() => {});
-      return null;
+  const prazo = setTimeout(() => resposta.corpo.destroy(new Error('prazo')), PRAZO_MS);
+  try {
+    for await (const pedaco of resposta.corpo) {
+      total += (pedaco as Buffer).length;
+      if (total > maxBytes) {
+        resposta.corpo.destroy();
+        return null;
+      }
+      pedacos.push(pedaco as Buffer);
     }
-    pedacos.push(Buffer.from(value));
+  } finally {
+    clearTimeout(prazo);
   }
   return Buffer.concat(pedacos);
 }
-
 
 /** O que muda entre baixar uma imagem e um áudio: só o que se pede e como se fala dele no erro. */
 interface Tipo {
@@ -180,21 +219,18 @@ async function baixar(cru: unknown, maxBytes: number, tipo: Tipo): Promise<Buffe
     if (endereco.username || endereco.password) return 'Endereço inválido.';
     if (!(await apontaParaFora(endereco.hostname))) return 'Esse endereço não pode ser buscado.';
 
-    let resposta: Response;
+    // O redirecionamento NÃO é seguido sozinho: seguir pularia a conferência do salto seguinte, e um redirecionamento para
+    // 127.0.0.1 é a forma clássica de contornar tudo o que está acima. E a conexão confere o DNS de novo (lookupConferido).
+    let resposta: Resposta;
     try {
-      resposta = await fetch(endereco, {
-        // MANUAL, e não automático: seguir sozinho pularia a conferência do salto seguinte, e um
-        // redirecionamento para 127.0.0.1 é a forma clássica de contornar tudo o que está acima.
-        redirect: 'manual',
-        headers: { accept: tipo.accept },
-        signal: AbortSignal.timeout(PRAZO_MS),
-      });
-    } catch {
-      return `Não deu para buscar ${tipo.esse}.`;
+      resposta = await pedir(endereco, tipo.accept);
+    } catch (erro) {
+      return (erro as { code?: string }).code === 'EENDERECOINTERNO' ? 'Esse endereço não pode ser buscado.' : `Não deu para buscar ${tipo.esse}.`;
     }
 
     if (resposta.status >= 300 && resposta.status < 400) {
-      const destino = resposta.headers.get('location');
+      resposta.corpo.resume();
+      const destino = resposta.location;
       if (!destino) return `Não deu para buscar ${tipo.esse}.`;
       try {
         endereco = new URL(destino, endereco);
@@ -204,7 +240,10 @@ async function baixar(cru: unknown, maxBytes: number, tipo: Tipo): Promise<Buffe
       continue;
     }
 
-    if (!resposta.ok) return `Não deu para buscar ${tipo.esse}.`;
+    if (resposta.status < 200 || resposta.status >= 300) {
+      resposta.corpo.resume();
+      return `Não deu para buscar ${tipo.esse}.`;
+    }
 
     const dados = await lerAteOLimite(resposta, maxBytes).catch(() => null);
     if (!dados) return `${tipo.oNome} passa do limite de ${Math.round(maxBytes / 1024)} KB.`;

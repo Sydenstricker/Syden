@@ -699,6 +699,7 @@ export default {
   'O GIF do avatar pode ter até 2 MB.': 'சுயவிவரப் பட GIF அதிகபட்சம் 2 MB இருக்கலாம்.',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'அல்லது ஒரு GIF அல்லது படத்தின் இணைப்பை ஒட்டு, Tenor, GIPHY-இலிருந்தும் சரி. Syden ஒரு நகலைப் பதிவிறக்கி வைத்துக்கொள்ளும்.',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'அந்தப் பக்கத்தில் பயன்படுத்தப் படம் இல்லை. படத்தின் இணைப்பை நகலெடு.',
+  'Muitos links seguidos. Tente de novo daqui a pouco.': 'தொடர்ந்து பல இணைப்புகள். சிறிது நேரம் கழித்து மீண்டும் முயற்சி செய்.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.': 'PNG, JPG, WEBP அல்லது அசையும் GIF — 512 KB வரை. படம் 128×128க்குச் சரிசெய்யப்படும்.',
   'Poeira de estrelas, roxa e azul.': 'நட்சத்திரத் தூசி — ஊதாவும் நீலமும்.',
   'Poente': 'அந்தி',

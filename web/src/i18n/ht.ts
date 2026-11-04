@@ -834,6 +834,7 @@ export default {
   'O GIF do avatar pode ter até 2 MB.': 'GIF avatar a ka rive jiska 2 MB.',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Oswa kole lyen yon GIF oswa yon imaj, menm sou Tenor ak GIPHY. Syden telechaje yon kopi epi li kenbe l.',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Paj sa a pa gen okenn imaj pou itilize. Kopye lyen imaj la.',
+  'Muitos links seguidos. Tente de novo daqui a pouco.': 'Twòp lyen youn dèyè lòt. Eseye ankò talè.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP oswa GIF anime, jiska 512 KB. Imaj la ajiste pou 128×128.',
   'Poeira de estrelas, roxa e azul.': 'Pousyè zetwal, vyolèt ak ble.',

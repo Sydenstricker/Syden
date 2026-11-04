@@ -782,6 +782,7 @@ export default {
   'O GIF do avatar pode ter até 2 MB.': 'ပရိုဖိုင်ပုံ GIF သည် 2 MB အထိ ဖြစ်နိုင်သည်။',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'သို့မဟုတ် GIF သို့မဟုတ် ပုံ၏ လင့်ခ်ကို ကူးထည့်ပါ၊ Tenor နှင့် GIPHY မှလည်း ရသည်။ Syden က မိတ္တူတစ်ခု ဒေါင်းလုဒ်လုပ်ပြီး သိမ်းထားသည်။',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'ထိုစာမျက်နှာတွင် သုံးစရာပုံ မရှိပါ။ ပုံ၏ လင့်ခ်ကို ကူးယူပါ။',
+  'Muitos links seguidos. Tente de novo daqui a pouco.': 'လင့်ခ်များ ဆက်တိုက် အလွန်များနေသည်။ ခဏနေမှ ထပ်စမ်းကြည့်ပါ။',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.': 'PNG၊ JPG၊ WEBP သို့မဟုတ် လှုပ်ရှား GIF၊ 512 KB အထိ။ ပုံကို 128×128 သို့ ချိန်ညှိပါမယ်။',
   'Poeira de estrelas, roxa e azul.': 'ခရမ်းနဲ့ အပြာ ကြယ်မှုန့်။',
   'Poente': 'နေဝင်ချိန်',

@@ -203,6 +203,7 @@ export default {
   'O GIF do avatar pode ter até 2 MB.': 'The avatar GIF can be up to 2 MB.',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Or paste a link to a GIF or an image, from Tenor and GIPHY too. Syden downloads a copy and keeps it.',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'That page has no image to use. Copy the image\'s link.',
+  'Muitos links seguidos. Tente de novo daqui a pouco.': 'Too many links in a row. Try again in a moment.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.': 'PNG, JPG, WEBP or animated GIF, up to 512 KB. The image is fitted to 128×128.',
   'Texto (até 4 caracteres)': 'Text (up to 4 characters)',
   'Tipos de cosmético': 'Kinds of cosmetic',

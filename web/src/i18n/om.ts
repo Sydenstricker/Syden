@@ -783,6 +783,7 @@ export default {
   'O GIF do avatar pode ter até 2 MB.': 'GIF suuraa piroofaayilii hanga 2 MB ta\'uu danda\'a.',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Yookiin geessituu GIF ykn suuraa maxxansi, Tenor fi GIPHY irraas. Syden garagalcha tokko buusee kuusa.',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Fuulli sun suuraa itti fayyadaman hin qabu. Geessituu suuraa garagalchi.',
+  'Muitos links seguidos. Tente de novo daqui a pouco.': 'Geessituuwwan baay\'een walitti aananii. Yeroo muraasa booda irra deebi\'ii yaali.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.': 'PNG, JPG, WEBP ykn GIF sochii qabu, hanga 512 KB. Suuraan 128×128tti sirreeffama.',
   'Poeira de estrelas, roxa e azul.': 'Biyyoo urjii, diimaa-cuquliisaa fi cuquliisa.',
   'Poente': 'Lixa aduu',

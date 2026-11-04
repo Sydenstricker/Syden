@@ -696,6 +696,7 @@ export default {
   'O GIF do avatar pode ter até 2 MB.': 'ప్రొఫైల్ చిత్రం GIF గరిష్టంగా 2 MB ఉండొచ్చు.',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'లేదా GIF లేదా చిత్రం లింక్‌ను అతికించు, Tenor, GIPHY నుండి కూడా. Syden ఒక కాపీని డౌన్‌లోడ్ చేసి ఉంచుకుంటుంది.',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'ఆ పేజీలో వాడటానికి చిత్రం లేదు. చిత్రం లింక్‌ను కాపీ చెయ్యి.',
+  'Muitos links seguidos. Tente de novo daqui a pouco.': 'వరుసగా చాలా లింక్‌లు. కాసేపటి తర్వాత మళ్ళీ ప్రయత్నించు.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.': 'PNG, JPG, WEBP లేదా కదిలే GIF — 512 KB వరకు. చిత్రం 128×128కు సర్దుబాటు అవుతుంది.',
   'Poeira de estrelas, roxa e azul.': 'నక్షత్ర ధూళి — ఊదా, నీలం.',
   'Poente': 'సంధ్య',

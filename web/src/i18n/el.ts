@@ -726,6 +726,7 @@ export default {
   'O GIF do avatar pode ter até 2 MB.': 'Το GIF του άβαταρ μπορεί να είναι έως 2 MB.',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Ή επικόλλησε τον σύνδεσμο ενός GIF ή μιας εικόνας, και από το Tenor και το GIPHY. Το Syden κατεβάζει ένα αντίγραφο και το κρατά.',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Αυτή η σελίδα δεν έχει εικόνα για χρήση. Αντίγραψε τον σύνδεσμο της εικόνας.',
+  'Muitos links seguidos. Tente de novo daqui a pouco.': 'Πάρα πολλοί σύνδεσμοι στη σειρά. Δοκίμασε ξανά σε λίγο.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.': 'PNG, JPG, WEBP ή κινούμενο GIF, έως 512 KB. Η εικόνα προσαρμόζεται σε 128×128.',
   'Poeira de estrelas, roxa e azul.': 'Αστρόσκονη, μοβ και μπλε.',
   'Poente': 'Ηλιοβασίλεμα',

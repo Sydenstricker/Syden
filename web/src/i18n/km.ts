@@ -822,6 +822,7 @@ export default {
   'O GIF do avatar pode ter até 2 MB.': 'GIF រូបតំណាងអាចមានទំហំរហូតដល់ 2 MB។',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'ឬបិទភ្ជាប់តំណ GIF ឬរូបភាព ពី Tenor និង GIPHY ក៏បាន។ Syden ទាញយកច្បាប់ចម្លងមួយ ហើយរក្សាទុក។',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'ទំព័រនោះគ្មានរូបភាពសម្រាប់ប្រើទេ។ ចម្លងតំណរបស់រូបភាព។',
+  'Muitos links seguidos. Tente de novo daqui a pouco.': 'តំណច្រើនពេកជាប់ៗគ្នា។ សាកម្តងទៀតបន្តិចទៀត។',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP ឬ GIF មានចលនា រហូតដល់ 512 KB។ រូបភាពត្រូវបានកែតម្រូវទៅ 128×128។',
   'Poeira de estrelas, roxa e azul.': 'ធូលីផ្កាយ ពណ៌ស្វាយ និងខៀវ។',

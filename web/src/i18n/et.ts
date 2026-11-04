@@ -820,6 +820,7 @@ export default {
   'O GIF do avatar pode ter até 2 MB.': 'Avatari GIF võib olla kuni 2 MB.',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Või kleebi GIF-i või pildi link, ka Tenorist ja GIPHY-st. Syden laadib koopia alla ja hoiab selle alles.',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Sellel lehel pole pilti, mida kasutada. Kopeeri pildi link.',
+  'Muitos links seguidos. Tente de novo daqui a pouco.': 'Liiga palju linke järjest. Proovi natukese aja pärast uuesti.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP või animeeritud GIF, kuni 512 KB. Pilt sobitatakse suurusele 128×128.',
   'Poeira de estrelas, roxa e azul.': 'Tähetolm, lilla ja sinine.',

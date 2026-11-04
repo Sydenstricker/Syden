@@ -627,6 +627,7 @@ export default {
   'O GIF do avatar pode ter até 2 MB.': 'GIF для аватара может весить до 2 МБ.',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Или вставь ссылку на GIF или картинку, можно и с Tenor и GIPHY. Syden скачает копию и сохранит её.',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'На этой странице нет картинки, которую можно взять. Скопируй ссылку на саму картинку.',
+  'Muitos links seguidos. Tente de novo daqui a pouco.': 'Слишком много ссылок подряд. Попробуй ещё раз чуть позже.',
   Pacotes: 'Наборы',
   'Nome do pacote': 'Название набора',
   'O que tem dentro': 'Что внутри',

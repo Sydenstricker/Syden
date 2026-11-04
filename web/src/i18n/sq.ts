@@ -815,6 +815,7 @@ export default {
   'O GIF do avatar pode ter até 2 MB.': 'GIF-i i avatarit mund të jetë deri në 2 MB.',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Ose ngjit lidhjen e një GIF-i ose të një imazhi, edhe nga Tenor dhe GIPHY. Syden shkarkon një kopje dhe e ruan.',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Ajo faqe nuk ka imazh për t\'u përdorur. Kopjo lidhjen e imazhit.',
+  'Muitos links seguidos. Tente de novo daqui a pouco.': 'Shumë lidhje njëra pas tjetrës. Provo përsëri pas pak.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP ose GIF i animuar, deri në 512 KB. Imazhi përshtatet në 128×128.',
   'Poeira de estrelas, roxa e azul.': 'Pluhur yjesh, vjollcë dhe blu.',

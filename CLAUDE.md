@@ -1211,7 +1211,10 @@ canvas, e anima enquanto o mouse está na LINHA dele (a mensagem, a pessoa); de 
 sempre. Com "menos movimento" no sistema, nada disso se mexe. De graça para todos: "sem assinatura" é promessa. **Também por LINK**
 (pedido dele, mesmo dia): o servidor baixa e guarda, como a capa (`PUT /api/me/avatar/endereco`, `baixarImagemOuDaPagina`), e entende
 o link da PÁGINA, que é o que se copia: a do Tenor pela imagem de prévia que ela declara (og:image), pedida no tamanho pequeno (o
-código de formato M: a original passava de 2 MB), e a do GIPHY pelo endereço do arquivo, que sai do próprio link. Testes:
+código de formato M: a original passava de 2 MB), e a do GIPHY pelo endereço do arquivo, que sai do próprio link. **Ao abrir o link a
+todo mundo, duas defesas entraram** (pergunta dele: "isso não abre espaço para links maliciosos?"): o DNS é conferido NA CONEXÃO
+(`lookupConferido`: antes, um nome podia responder público na conferência e interno um instante depois) e cada pessoa pede no
+máximo 5 links por minuto (`muitosLinks`, também na capa). Testes:
 `server/test/avatar-animado.test.ts` e `e2e/avatar-gif.mjs` (passou).
 
 ## As figurinhas são da pessoa, e mandá-las é um anexo marcado

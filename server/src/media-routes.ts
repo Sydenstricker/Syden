@@ -29,6 +29,25 @@ const UPLOAD_BODY_LIMIT = 6 * 1024 * KB; // base64 ocupa ~33% a mais que o arqui
 /** "Coração Feliz" → "coracao_feliz", o formato usado em :nome: nas mensagens. */
 const emojiName = nomeDeEmoji;
 
+/**
+ * QUANTAS IMAGENS POR LINK uma pessoa pede ao servidor buscar (04/11/2026, ao abrir o avatar por link a todo mundo): cada
+ * pedido faz o servidor baixar até 3 MB de um site qualquer. Sem um teto, uma conta só faria o Syden buscar sem parar — gastando
+ * a internet do servidor e usando-o para bater em sites de terceiros. Cinco por minuto sobram para quem está escolhendo.
+ */
+const LINKS_POR_MINUTO = 5;
+const linksPedidos = new Map<number, number[]>();
+export function muitosLinks(userId: number, agora = Date.now()): boolean {
+  const recentes = (linksPedidos.get(userId) ?? []).filter((t) => agora - t < 60_000);
+  if (recentes.length >= LINKS_POR_MINUTO) {
+    linksPedidos.set(userId, recentes);
+    return true;
+  }
+  recentes.push(agora);
+  linksPedidos.set(userId, recentes);
+  return false;
+}
+const MUITOS_LINKS = 'Muitos links seguidos. Tente de novo daqui a pouco.';
+
 export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
   // Imagens e áudios são públicos: <img> e <audio> não conseguem mandar o token de login.
   app.get<{ Params: { id: string } }>('/api/users/:id/avatar', async (request, reply) =>
@@ -80,6 +99,7 @@ export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
     // aceita o link da página do GIF (Tenor, GIPHY), não só o do arquivo. Vai inteiro, como o GIF enviado do computador.
     authed.put<{ Body: { url?: string } }>('/api/me/avatar/endereco', async (request, reply) => {
       if (cotaEsgotada(request, reply)) return reply;
+      if (muitosLinks(request.user.id)) return reply.code(429).send({ error: MUITOS_LINKS });
       const { baixarImagemOuDaPagina } = await import('./buscarImagem.js');
       const baixada = await baixarImagemOuDaPagina(request.body?.url, LIMITS.avatar);
       if (!baixada.startsWith('data:')) return reply.code(400).send({ error: baixada });
@@ -164,6 +184,7 @@ export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
         if (!access) return reply;
         if (!manages(access.role)) return reply.code(403).send({ error: 'Só quem administra a comunidade pode trocar a capa.' });
 
+        if (muitosLinks(request.user.id)) return reply.code(429).send({ error: MUITOS_LINKS });
         const { baixarImagem } = await import('./buscarImagem.js');
         const baixada = await baixarImagem(request.body?.url, LIMITS.capa);
         if (!baixada.startsWith('data:')) return reply.code(400).send({ error: baixada });

@@ -226,6 +226,7 @@ export default {
   'O GIF do avatar pode ter até 2 MB.': 'Na GIF ni avatar e rawa ni yacova na 2 MB.',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Se vakacurua na isema ni GIF se itaba, mai Tenor kei GIPHY talega. E lavetaka o Syden e dua na ilavelave ka maroroya.',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Na tabana oqo e sega ni tiko kina e dua na itaba me vakayagataki. Kopitaka na isema ni itaba.',
+  'Muitos links seguidos. Tente de novo daqui a pouco.': 'E levu sara na isema vakaveitarataki. Tovolea tale e muri vakalailai.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.': 'PNG, JPG, WEBP se GIF yavala, me yacova na 512 KB. Na iyaloyalo e vakarautaki me 128×128.',
   'Texto (até 4 caracteres)': 'Vola (me yacova na 4 na matanivola)',
   'Tipos de cosmético': 'Mataqali iukuuku',

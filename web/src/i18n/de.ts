@@ -631,6 +631,7 @@ export default {
   'O GIF do avatar pode ter até 2 MB.': 'Das Avatar-GIF darf bis zu 2 MB groß sein.',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Oder füge den Link zu einem GIF oder Bild ein, auch von Tenor und GIPHY. Syden lädt eine Kopie herunter und speichert sie.',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Diese Seite hat kein Bild, das sich verwenden lässt. Kopiere den Link des Bildes.',
+  'Muitos links seguidos. Tente de novo daqui a pouco.': 'Zu viele Links hintereinander. Versuch es gleich noch mal.',
   Pacotes: 'Pakete',
   'Nome do pacote': 'Name des Pakets',
   'O que tem dentro': 'Was drin ist',

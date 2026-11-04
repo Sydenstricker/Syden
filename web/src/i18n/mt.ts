@@ -243,6 +243,7 @@ export default {
   'O GIF do avatar pode ter até 2 MB.': 'Il-GIF tal-avatar jista\' jkun sa 2 MB.',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Jew waħħal il-link ta\' GIF jew ta\' immaġni, minn Tenor u GIPHY ukoll. Syden iniżżel kopja u jżommha.',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Dik il-paġna m\'għandhiex immaġni x\'tuża. Ikkopja l-link tal-immaġni.',
+  'Muitos links seguidos. Tente de novo daqui a pouco.': 'Wisq links wara xulxin. Erġa\' pprova ftit wara.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.': 'PNG, JPG, WEBP jew GIF animat, sa 512 KB. L-istampa tiġi aġġustata għal 128×128.',
   'Texto (até 4 caracteres)': 'Test (sa 4 karattri)',
   'Tipos de cosmético': 'Tipi ta\' kożmetiku',

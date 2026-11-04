@@ -23,6 +23,7 @@ import { chave } from './i18n';
 export const ERROS_TRADUZIDOS = [
   // o avatar por link (server/src/buscarImagem.ts, 04/11/2026)
   chave('Essa página não tem uma imagem para usar. Copie o link da imagem.'),
+  chave('Muitos links seguidos. Tente de novo daqui a pouco.'),
   // as figurinhas (server/src/figurinhas-routes.ts, 04/11/2026)
   chave('Figurinha não encontrada.'),
   chave('A sua coleção de figurinhas está cheia. Tire alguma para pôr outra.'),

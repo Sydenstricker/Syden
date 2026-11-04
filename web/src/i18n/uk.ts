@@ -793,6 +793,7 @@ export default {
   'O GIF do avatar pode ter até 2 MB.': 'GIF для аватара може мати до 2 МБ.',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Або встав посилання на GIF чи зображення, можна й з Tenor і GIPHY. Syden завантажить копію і збереже її.',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'На цій сторінці немає зображення, яке можна взяти. Скопіюй посилання на саме зображення.',
+  'Muitos links seguidos. Tente de novo daqui a pouco.': 'Забагато посилань поспіль. Спробуй ще раз трохи згодом.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.': 'PNG, JPG, WEBP або анімований GIF, до 512 KB. Зображення підганяється до 128×128.',
   'Poeira de estrelas, roxa e azul.': 'Зоряний пил, фіолетовий і синій.',
   'Poente': 'Захід сонця',

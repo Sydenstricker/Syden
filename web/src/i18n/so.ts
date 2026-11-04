@@ -823,6 +823,7 @@ export default {
   'O GIF do avatar pode ter até 2 MB.': 'GIF-ka sawirka astaanta wuxuu noqon karaa ilaa 2 MB.',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Ama dheji xiriirka GIF ama sawir, xitaa Tenor iyo GIPHY. Syden wuxuu soo dejiyaa nuqul oo kaydiyaa.',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Boggaas ma laha sawir la isticmaalo. Koobi xiriirka sawirka.',
+  'Muitos links seguidos. Tente de novo daqui a pouco.': 'Xiriiro aad u badan oo isku xiga. Mar kale isku day wax yar kadib.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP ama GIF dhaqaaqaya, ilaa 512 KB. Sawirka waxaa loo habeeyaa 128×128.',
   'Poeira de estrelas, roxa e azul.': 'Boodhka xiddigaha, guduud iyo buluug.',

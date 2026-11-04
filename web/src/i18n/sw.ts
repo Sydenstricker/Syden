@@ -556,6 +556,7 @@ export default {
   'O GIF do avatar pode ter até 2 MB.': 'GIF ya avatar inaweza kuwa hadi MB 2.',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Au bandika kiungo cha GIF au picha, hata kutoka Tenor na GIPHY. Syden hupakua nakala na kuihifadhi.',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Ukurasa huo hauna picha ya kutumia. Nakili kiungo cha picha.',
+  'Muitos links seguidos. Tente de novo daqui a pouco.': 'Viungo vingi mno mfululizo. Jaribu tena baada ya muda mfupi.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP au GIF inayosogea, hadi KB 512. Picha hurekebishwa kuwa 128×128.',
   'Poeira de estrelas, roxa e azul.': 'Vumbi la nyota, zambarau na buluu.',

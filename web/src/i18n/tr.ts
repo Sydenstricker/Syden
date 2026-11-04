@@ -565,6 +565,7 @@ export default {
   'O GIF do avatar pode ter até 2 MB.': 'Avatar GIF\'i en fazla 2 MB olabilir.',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Ya da bir GIF\'in veya görüntünün bağlantısını yapıştır, Tenor ve GIPHY\'den de olur. Syden bir kopyasını indirip saklar.',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'O sayfada kullanılacak bir görüntü yok. Görüntünün bağlantısını kopyala.',
+  'Muitos links seguidos. Tente de novo daqui a pouco.': 'Arka arkaya çok fazla bağlantı. Biraz sonra tekrar dene.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP ya da hareketli GIF, en fazla 512 KB. Görsel 128×128 boyutuna getirilir.',
   'Poeira de estrelas, roxa e azul.': 'Yıldız tozu, mor ve mavi.',

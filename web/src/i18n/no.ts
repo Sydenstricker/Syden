@@ -823,6 +823,7 @@ export default {
   'O GIF do avatar pode ter até 2 MB.': 'Avatar-GIF-en kan være opptil 2 MB.',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Eller lim inn lenken til en GIF eller et bilde, også fra Tenor og GIPHY. Syden laster ned en kopi og tar vare på den.',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Den siden har ikke noe bilde å bruke. Kopier lenken til bildet.',
+  'Muitos links seguidos. Tente de novo daqui a pouco.': 'For mange lenker på rad. Prøv igjen om litt.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP eller animert GIF, opptil 512 KB. Bildet tilpasses til 128×128.',
   'Poeira de estrelas, roxa e azul.': 'Stjernestøv, lilla og blått.',

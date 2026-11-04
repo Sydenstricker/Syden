@@ -235,6 +235,7 @@ export default {
   'O GIF do avatar pode ter até 2 MB.': 'GIF nke foto profaịlụ nwere ike iru 2 MB.',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Ma ọ bụ mado njikọ GIF ma ọ bụ onyonyo, site na Tenor na GIPHY kwa. Syden na-ebudata otu mbipụta ma debe ya.',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Peeji ahụ enweghị onyonyo a ga-eji. Detuo njikọ onyonyo ahụ.',
+  'Muitos links seguidos. Tente de novo daqui a pouco.': 'Njikọ dị ukwuu n\'usoro. Nwaa ọzọ n\'oge na-adịghị anya.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.': 'PNG, JPG, WEBP ma ọ bụ GIF na-emegharị ahụ, ruo 512 KB. A na-edozi foto ahụ ka ọ bụrụ 128×128.',
   'Texto (até 4 caracteres)': 'Ederede (ruo mkpụrụ akwụkwọ 4)',
   'Tipos de cosmético': 'Ụdị ihe ịchọ mma',

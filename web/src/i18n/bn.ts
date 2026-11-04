@@ -568,6 +568,7 @@ export default {
   'O GIF do avatar pode ter até 2 MB.': 'অবতারের GIF সর্বোচ্চ 2 MB হতে পারে।',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'অথবা একটা GIF বা ছবির লিংক পেস্ট করো, Tenor আর GIPHY থেকেও। Syden একটা কপি নামিয়ে রেখে দেয়।',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'ওই পেজে ব্যবহার করার মতো কোনো ছবি নেই। ছবির লিংকটা কপি করো।',
+  'Muitos links seguidos. Tente de novo daqui a pouco.': 'পরপর অনেক লিংক। একটু পরে আবার চেষ্টা করো।',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP বা চলমান GIF, ৫১২ KB পর্যন্ত। ছবিটা ১২৮×১২৮-এ বসিয়ে দেওয়া হয়।',
   'Poeira de estrelas, roxa e azul.': 'তারার ধুলো, বেগুনি আর নীল।',

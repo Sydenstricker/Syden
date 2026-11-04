@@ -808,6 +808,7 @@ export default {
   'O GIF do avatar pode ter até 2 MB.': 'GIF awatara może mieć do 2 MB.',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Albo wklej link do GIF-a lub obrazu, także z Tenora i GIPHY. Syden pobiera kopię i ją zachowuje.',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Na tej stronie nie ma obrazu do użycia. Skopiuj link do obrazu.',
+  'Muitos links seguidos. Tente de novo daqui a pouco.': 'Za dużo linków pod rząd. Spróbuj ponownie za chwilę.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.': 'PNG, JPG, WEBP lub animowany GIF, do 512 KB. Obraz jest dopasowywany do 128×128.',
   'Poeira de estrelas, roxa e azul.': 'Gwiezdny pył, fioletowy i niebieski.',
   'Poente': 'Zachód słońca',

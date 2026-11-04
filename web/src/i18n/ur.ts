@@ -701,6 +701,7 @@ export default {
   'O GIF do avatar pode ter até 2 MB.': 'پروفائل تصویر کا GIF زیادہ سے زیادہ 2 MB ہو سکتا ہے۔',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'یا کسی GIF یا تصویر کا لنک چسپاں کریں، Tenor اور GIPHY سے بھی۔ Syden ایک نقل ڈاؤن لوڈ کر کے رکھ لیتا ہے۔',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'اس صفحے پر استعمال کے لیے کوئی تصویر نہیں ہے۔ تصویر کا لنک کاپی کریں۔',
+  'Muitos links seguidos. Tente de novo daqui a pouco.': 'لگاتار بہت زیادہ لنکس۔ تھوڑی دیر بعد دوبارہ کوشش کریں۔',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.': 'PNG، JPG، WEBP یا متحرک GIF، زیادہ سے زیادہ 512 KB۔ تصویر 128×128 پر لائی جاتی ہے۔',
   'Poeira de estrelas, roxa e azul.': 'ستاروں کی دھول، ارغوانی اور نیلی۔',
   'Poente': 'غروب آفتاب',

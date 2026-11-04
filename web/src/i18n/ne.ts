@@ -825,6 +825,7 @@ export default {
   'O GIF do avatar pode ter até 2 MB.': 'अवतारको GIF बढीमा 2 MB हुन सक्छ।',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'वा कुनै GIF वा तस्बिरको लिंक टाँस्नुहोस्, Tenor र GIPHY बाट पनि। Syden ले एउटा प्रति डाउनलोड गरेर राख्छ।',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'त्यो पेजमा प्रयोग गर्न मिल्ने तस्बिर छैन। तस्बिरको लिंक कपी गर्नुहोस्।',
+  'Muitos links seguidos. Tente de novo daqui a pouco.': 'लगातार धेरै लिंक। केही बेरपछि फेरि प्रयास गर्नुहोस्।',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP वा एनिमेटेड GIF, 512 KB सम्म। तस्बिर 128×128 मा मिलाइन्छ।',
   'Poeira de estrelas, roxa e azul.': 'बैजनी र नीलो ताराको धुलो।',

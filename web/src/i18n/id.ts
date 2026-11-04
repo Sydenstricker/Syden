@@ -568,6 +568,7 @@ export default {
   'O GIF do avatar pode ter até 2 MB.': 'GIF avatar bisa sampai 2 MB.',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Atau tempel tautan GIF atau gambar, dari Tenor dan GIPHY juga. Syden mengunduh salinannya dan menyimpannya.',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Halaman itu tidak punya gambar yang bisa dipakai. Salin tautan gambarnya.',
+  'Muitos links seguidos. Tente de novo daqui a pouco.': 'Terlalu banyak tautan berturut-turut. Coba lagi sebentar lagi.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP atau GIF bergerak, maksimal 512 KB. Gambarnya disesuaikan jadi 128×128.',
   'Poeira de estrelas, roxa e azul.': 'Debu bintang, ungu dan biru.',

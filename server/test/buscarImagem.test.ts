@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { arquivoDoGiphy, baixarImagem, baixarImagemOuDaPagina, enderecoInterno, gifPequenoDoTenor, imagemDaPagina } from '../src/buscarImagem.js';
+import { arquivoDoGiphy, baixarImagem, baixarImagemOuDaPagina, enderecoInterno, gifPequenoDoTenor, imagemDaPagina, lookupConferido } from '../src/buscarImagem.js';
 
 // ===================================================================================================
 // PEDIR AO SERVIDOR QUE BUSQUE UM ENDEREÇO É DAR A ELE UMA ORDEM DE REDE.
@@ -125,5 +125,38 @@ describe('o link da página do GIF', () => {
   it('o link de página passa pelas mesmas recusas', async () => {
     assert.match(await baixarImagemOuDaPagina('http://tenor.com/view/x', LIMITE), /https/);
     assert.match(await baixarImagemOuDaPagina('https://127.0.0.1/view/x', LIMITE), /não pode ser buscado/);
+  });
+});
+
+// O "DNS rebinding": o nome responde público na conferência e interno na conexão. A defesa é conferir NA CONEXÃO, com a
+// mesma resposta do DNS que ela usa (lookupConferido). "localhost" resolve sem rede, para dentro.
+describe('a conferência na hora de conectar', () => {
+  const resolver = (host: string, all: boolean) =>
+    new Promise<{ erro: (Error & { code?: string }) | null; endereco: unknown }>((ok) =>
+      lookupConferido(host, { all }, (erro, endereco) => ok({ erro, endereco })),
+    );
+
+  it('um nome que resolve para dentro não conecta, nem pedindo um endereço só nem todos', async () => {
+    for (const all of [false, true]) {
+      const { erro } = await resolver('localhost', all);
+      assert.equal(erro?.code, 'EENDERECOINTERNO');
+    }
+  });
+
+  it('um endereço público escrito como número conecta', async () => {
+    const { erro, endereco } = await resolver('8.8.8.8', false);
+    assert.equal(erro, null);
+    assert.equal(endereco, '8.8.8.8');
+  });
+});
+
+describe('quantos links por pessoa', () => {
+  it('cinco por minuto; o sexto espera, e cada pessoa tem a sua conta', async () => {
+    const { muitosLinks } = await import('../src/media-routes.js');
+    const t = 1_000_000;
+    for (let i = 0; i < 5; i++) assert.equal(muitosLinks(901, t + i), false);
+    assert.equal(muitosLinks(901, t + 10), true, 'o sexto no mesmo minuto');
+    assert.equal(muitosLinks(902, t + 10), false, 'outra pessoa não paga pela primeira');
+    assert.equal(muitosLinks(901, t + 61_000), false, 'passado o minuto, volta');
   });
 });

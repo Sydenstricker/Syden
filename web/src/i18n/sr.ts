@@ -820,6 +820,7 @@ export default {
   'O GIF do avatar pode ter até 2 MB.': 'GIF за аватар може да има до 2 MB.',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Или налепи линк GIF-а или слике, и са Tenor-а и GIPHY-ја. Syden преузима копију и чува је.',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Та страница нема слику за коришћење. Копирај линк слике.',
+  'Muitos links seguidos. Tente de novo daqui a pouco.': 'Превише линкова заредом. Покушај поново мало касније.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP или анимирани GIF, до 512 KB. Слика се прилагођава на 128×128.',
   'Poeira de estrelas, roxa e azul.': 'Звездана прашина, љубичаста и плава.',

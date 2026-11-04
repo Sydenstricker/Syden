@@ -838,6 +838,7 @@ export default {
   'O GIF do avatar pode ter até 2 MB.': 'Аватарын GIF 2 MB хүртэл байж болно.',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Эсвэл GIF эсвэл зургийн холбоосыг буулга, Tenor болон GIPHY-ээс ч болно. Syden хуулбарыг татаж аваад хадгална.',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Тэр хуудсанд ашиглах зураг алга. Зургийн холбоосыг хуулаарай.',
+  'Muitos links seguidos. Tente de novo daqui a pouco.': 'Дараалан хэт олон холбоос. Хэсэг хугацааны дараа дахин оролдоорой.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP эсвэл хөдөлгөөнт GIF, 512 KB хүртэл. Зургийг 128×128 болгон тохируулна.',
   'Poeira de estrelas, roxa e azul.': 'Одны тоос, нил ягаан ба цэнхэр.',

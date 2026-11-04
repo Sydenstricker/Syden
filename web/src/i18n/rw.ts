@@ -238,6 +238,7 @@ export default {
   'O GIF do avatar pode ter até 2 MB.': 'GIF y\'ifoto y\'umwirondoro ishobora kugera kuri 2 MB.',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Cyangwa omeka umurongo wa GIF cyangwa w\'ifoto, no kuri Tenor na GIPHY. Syden ikuramo kopi ikayibika.',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Iyo paji nta foto ifite yo gukoresha. Koporora umurongo w\'ifoto.',
+  'Muitos links seguidos. Tente de novo daqui a pouco.': 'Imirongo myinshi cyane ikurikiranye. Ongera ugerageze nyuma gato.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.': 'PNG, JPG, WEBP cyangwa GIF igenda, kugeza kuri 512 KB. Ishusho ihindurwa ikaba 128×128.',
   'Texto (até 4 caracteres)': 'Inyandiko (inyuguti zitarenze 4)',
   'Tipos de cosmético': 'Ubwoko bw\'imitako',

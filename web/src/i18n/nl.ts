@@ -568,6 +568,7 @@ export default {
   'O GIF do avatar pode ter até 2 MB.': 'De avatar-GIF mag tot 2 MB zijn.',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Of plak de link van een GIF of afbeelding, ook van Tenor en GIPHY. Syden downloadt een kopie en bewaart die.',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Die pagina heeft geen afbeelding om te gebruiken. Kopieer de link van de afbeelding.',
+  'Muitos links seguidos. Tente de novo daqui a pouco.': 'Te veel links achter elkaar. Probeer het zo meteen opnieuw.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP of bewegende GIF, tot 512 KB. De afbeelding wordt naar 128×128 gebracht.',
   'Poeira de estrelas, roxa e azul.': 'Sterrenstof, paars en blauw.',

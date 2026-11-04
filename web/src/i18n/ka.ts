@@ -842,6 +842,7 @@ export default {
   'O GIF do avatar pode ter até 2 MB.': 'ავატარის GIF შეიძლება იყოს 2 MB-მდე.',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'ან ჩასვი GIF-ის ან სურათის ბმული, Tenor-იდან და GIPHY-დანაც. Syden ჩამოტვირთავს ასლს და შეინახავს.',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'ამ გვერდზე გამოსაყენებელი სურათი არ არის. დააკოპირე სურათის ბმული.',
+  'Muitos links seguidos. Tente de novo daqui a pouco.': 'ზედიზედ ძალიან ბევრი ბმულია. ცოტა ხანში სცადე ხელახლა.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP ან ანიმაციური GIF, 512 KB-მდე. სურათი 128×128-ზე მორგდება.',
   'Poeira de estrelas, roxa e azul.': 'ვარსკვლავური მტვერი, იისფერი და ლურჯი.',

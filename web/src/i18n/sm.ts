@@ -231,6 +231,7 @@ export default {
   'O GIF do avatar pode ter até 2 MB.': 'E mafai ona oo i le 2 MB le GIF o le avatar.',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Pe faapipii le sootaga o se GIF po o se ata, mai Tenor ma GIPHY foi. E la\'u mai e Syden se kopi ma teu ai.',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'E leai se ata e faaaogā i lena itulau. Kopi le sootaga o le ata.',
+  'Muitos links seguidos. Tente de novo daqui a pouco.': 'Ua tele naua sootaga i le taimi e tasi. Toe taumafai mulimuli ane.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.': 'PNG, JPG, WEBP pe GIF gaoioi, e oʻo i le 512 KB. E faʻafetaui le ata i le 128×128.',
   'Texto (até 4 caracteres)': 'Tusitusiga (e oʻo i mataitusi e 4)',
   'Tipos de cosmético': 'Ituaiga teuga',

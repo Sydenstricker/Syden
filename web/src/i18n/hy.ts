@@ -843,6 +843,7 @@ export default {
   'O GIF do avatar pode ter até 2 MB.': 'Ավատարի GIF-ը կարող է լինել մինչև 2 ՄԲ։',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Կամ տեղադրիր GIF-ի կամ պատկերի հղումը, նաև Tenor-ից և GIPHY-ից։ Syden-ը ներբեռնում է պատճենը և պահում։',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Այդ էջում օգտագործելու պատկեր չկա։ Պատճենիր պատկերի հղումը։',
+  'Muitos links seguidos. Tente de novo daqui a pouco.': 'Չափազանց շատ հղումներ իրար հետևից։ Փորձիր նորից մի քիչ հետո։',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP կամ անիմացիոն GIF՝ մինչև 512 ԿԲ։ Պատկերը հարմարեցվում է 128×128 չափին։',
   'Poeira de estrelas, roxa e azul.': 'Աստղափոշի՝ մանուշակագույն և կապույտ։',

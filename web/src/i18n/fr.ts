@@ -623,6 +623,7 @@ export default {
   'O GIF do avatar pode ter até 2 MB.': 'Le GIF de l\'avatar peut faire jusqu\'à 2 Mo.',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Ou colle le lien d\'un GIF ou d\'une image, de Tenor et GIPHY aussi. Syden en télécharge une copie et la garde.',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Cette page n\'a pas d\'image à utiliser. Copie le lien de l\'image.',
+  'Muitos links seguidos. Tente de novo daqui a pouco.': 'Trop de liens d\'affilée. Réessaie dans un moment.',
   Pacotes: 'Packs',
   'Nome do pacote': 'Nom du pack',
   'O que tem dentro': 'Ce qu’il y a dedans',
