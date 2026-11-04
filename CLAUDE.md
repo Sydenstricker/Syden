@@ -1197,6 +1197,22 @@ pelo funil das imagens (`PUT /api/aviso/imagem`: tipo, tamanho, Shield) e é ser
 entrada) por `GET /api/aviso/imagem/:sha`, que só entrega o sha da foto do aviso guardado — qualquer outro dá 404, para a rota
 não virar um jeito de baixar arquivo de ninguém. A vassoura de órfãos e a reconferência do Shield conhecem o kv `aviso-geral`.
 
+## As figurinhas são da pessoa, e mandá-las é um anexo marcado
+
+**Feito em 04/11/2026, pedido dele ("as figurinhas criadas pelos usuários, como no WhatsApp").** A coleção é DE CADA PESSOA
+(até 200), não da comunidade: quem cria manda em qualquer canal ou conversa privada, e quem recebe salva na própria coleção
+pelo "Salvar figurinha" (a chave do anexo prova que recebeu). Sem tela de recorte: a imagem vai inteira, com a transparência,
+reduzida a 512 px em WEBP (GIF passa como veio). `server/src/figurinhas-routes.ts`, `web/src/SeletorDeFigurinhas.tsx`, a
+figurinha na conversa em `MessageItem.tsx`.
+
+**Mandar é um ANEXO MARCADO (`attachments.figurinha = 1`) que aponta para o mesmo arquivo pelo sha** — por isso ela herda a
+chave secreta no endereço, a caixa-preta, a vassoura de órfãos (que lê também `figurinhas`) e a cota (que conta a figurinha uma
+vez, na coleção). O Shield confere UMA vez, ao criar; positivo na reconferência tira de todas as coleções. **Quem sobe responde**
+(a regra dos emojis e dos sons): a retirada por direito autoral de um anexo-figurinha leva também as cópias guardadas nas
+coleções; as já mandadas em conversa privada ficam, pela regra de que a busca não olha o privado. Na busca do painel, o nome do
+anexo é "figurinha". Política nas duas línguas desde o mesmo dia. Testes: `server/test/figurinhas.test.ts` e
+`e2e/figurinhas.mjs` (passou).
+
 ## A caixa-preta: exclusão apaga, mas 90 dias ficam para a justiça
 
 **Decidido em 02/10/2026, pelo Sydenstricker.** O Syden apagava tudo de quem excluía a conta — o que

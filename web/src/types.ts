@@ -211,6 +211,8 @@ export interface Attachment {
   height: number | null;
   /** Recados em vídeo somem sozinhos; nos outros anexos isto vem null. */
   expiresAt?: string | null;
+  /** 1 quando é uma figurinha (figurinhas.ts): aparece grande, sem moldura, e dá para salvar. */
+  figurinha?: number;
 }
 
 export interface PollOption {

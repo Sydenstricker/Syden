@@ -1,4 +1,4 @@
-import { BarChart3, FileText, Film, ImageUp, MonitorPlay, Plus, Reply, Smile, X, Timer } from 'lucide-react';
+import { BarChart3, FileText, Film, ImageUp, MonitorPlay, Plus, Reply, Smile, Sticker, X, Timer } from 'lucide-react';
 import { duracaoCurta } from './Moderacao';
 import { silencioVale } from './ModeracaoDaPessoa';
 import {
@@ -17,6 +17,8 @@ import { api } from './api';
 import { podeGravarTela, ScreenMessage } from './ScreenMessage';
 import { EmojiPicker } from './EmojiPicker';
 import { GifPicker } from './GifPicker';
+import { mandarFigurinha, type Figurinha } from './figurinhas';
+import { SeletorDeFigurinhas } from './SeletorDeFigurinhas';
 import { type Gif, gifsDisponiveis } from './gifs';
 import { PollDialog } from './PollDialog';
 import { MAX_ATTACHMENT_BYTES, formatBytes, prepareAttachment, type PreparedFile } from './upload';
@@ -62,6 +64,7 @@ export const Composer = forwardRef<ComposerHandle, {
   const [error, setError] = useState<string | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [gifOpen, setGifOpen] = useState(false);
+  const [figurinhasOpen, setFigurinhasOpen] = useState(false);
   // Perguntado uma vez por sessão: sem chave do GIPHY configurada, o botão não existe. Ver web/src/gifs.ts.
   const [temGif, setTemGif] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -139,6 +142,20 @@ export const Composer = forwardRef<ComposerHandle, {
       setError(result.ok ? null : (result.error ?? 'Falha ao enviar.'));
       if (!result.ok && citada) devolverResposta?.(citada);
     });
+    respondida();
+    onSent?.();
+  }
+
+  /** A figurinha vai sozinha, sem o texto da caixa (que fica onde está, como no WhatsApp). */
+  function mandarAFigurinha(f: Figurinha) {
+    setFigurinhasOpen(false);
+    const citada = respondendo;
+    mandarFigurinha(channelId, f.id, threadId, replyTo)
+      .then(() => setError(null))
+      .catch((e) => {
+        setError((e as Error).message);
+        if (citada) devolverResposta?.(citada);
+      });
     respondida();
     onSent?.();
   }
@@ -382,6 +399,19 @@ export const Composer = forwardRef<ComposerHandle, {
             {gifOpen && <GifPicker onPick={mandarGif} onClose={() => setGifOpen(false)} />}
           </div>
         )}
+
+        <div className="composer-emoji">
+          <button
+            className={`icon-plain composer-emoji-button${figurinhasOpen ? ' active' : ''}`}
+            title={t('Figurinhas')}
+            aria-label={t('Figurinhas')}
+            onPointerDown={(e) => e.stopPropagation()}
+            onClick={() => setFigurinhasOpen(!figurinhasOpen)}
+          >
+            <Sticker size={22} />
+          </button>
+          {figurinhasOpen && <SeletorDeFigurinhas onPick={mandarAFigurinha} onClose={() => setFigurinhasOpen(false)} />}
+        </div>
 
         <div className="composer-emoji">
           <button

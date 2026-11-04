@@ -39,7 +39,7 @@ function lerImagem(sha: string): { mime: string; dados: Buffer } | null {
   return mime?.startsWith('image/') ? { mime, dados } : null;
 }
 
-const QUEM_SUBIU: Record<string, boolean> = { avatar: true, anexo: true };
+const QUEM_SUBIU: Record<string, boolean> = { avatar: true, anexo: true, figurinha: true };
 const DA_COMUNIDADE: Record<string, boolean> = { 'icone-comunidade': true, 'capa-comunidade': true, emoji: true };
 
 /** A denúncia grave de UMA conta que subiu o arquivo, e a prova ligada a ela. */

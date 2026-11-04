@@ -17556,14 +17556,14 @@ body.arrastando-barra {
 }
 
 .cid-cartao-tabela th {
-  text-align: left;
+  text-align: start;
   font-weight: 400;
   color: var(--text-muted);
   padding: 1px 12px 1px 0;
 }
 
 .cid-cartao-tabela td {
-  text-align: right;
+  text-align: end;
 }
 
 .cid-cartao-tabela tr.agora th,
@@ -17579,4 +17579,143 @@ body.arrastando-barra {
   margin-right: 2px;
   background: #f3ead8;
   border: 1px solid #3a2e2a;
+}
+
+/* As figurinhas (04/11/2026, SeletorDeFigurinhas.tsx e a figurinha na conversa, em MessageItem.tsx). O seletor fica onde o
+   de GIFs fica; a figurinha na conversa vai sem moldura nem fundo (a transparência é o que a faz parecer figurinha). */
+.figurinhas-seletor {
+  position: absolute;
+  inset-inline-end: 0;
+  bottom: calc(100% + 8px);
+  z-index: 50;
+  width: 360px;
+  max-width: calc(100vw - 32px);
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-sidebar);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px var(--shadow);
+}
+
+.figurinhas-topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px 6px;
+}
+
+.figurinhas-rolagem {
+  max-height: 340px;
+  overflow-y: auto;
+  padding: 0 10px 10px;
+}
+
+.figurinhas-grade {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.figurinhas-item {
+  position: relative;
+}
+
+.figurinhas-nova,
+.figurinhas-figura {
+  width: 100%;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.figurinhas-nova {
+  border: 2px dashed var(--border);
+  color: var(--text-muted);
+}
+
+.figurinhas-nova:hover:not(:disabled),
+.figurinhas-figura:hover:not(:disabled) {
+  background: var(--bg-hover);
+}
+
+.figurinhas-nova:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.figurinhas-figura img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.figurinhas-tirar {
+  position: absolute;
+  top: -4px;
+  inset-inline-end: -4px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  background: var(--red);
+  color: #fff;
+  cursor: pointer;
+}
+
+.figurinhas-vazio,
+.figurinhas-erro {
+  margin: 8px 2px 0;
+  font-size: calc(13px * var(--escala-do-texto));
+  color: var(--text-muted);
+}
+
+.figurinhas-erro {
+  color: var(--red);
+}
+
+.figurinha-na-conversa {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.figurinha-na-conversa img {
+  display: block;
+  max-width: 160px;
+  max-height: 160px;
+  height: auto;
+  object-fit: contain;
+}
+
+.figurinha-salvar {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text-muted);
+  font-size: calc(12px * var(--escala-do-texto));
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.figurinha-na-conversa:hover .figurinha-salvar,
+.figurinha-salvar:focus-visible,
+.figurinha-salvar:disabled {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .figurinha-salvar {
+    opacity: 1;
+  }
 }

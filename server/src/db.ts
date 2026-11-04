@@ -174,6 +174,8 @@ export interface Attachment {
   height: number | null;
   /** Quando o arquivo some sozinho (recados em vídeo), ou null quando fica para sempre. */
   expiresAt?: string | null;
+  /** 1 quando é uma figurinha (aparece grande, sem moldura, e dá para salvar na coleção). */
+  figurinha?: number;
 }
 
 export interface PollOption {
@@ -1809,7 +1811,9 @@ export function espacoUsado(userId: number): number {
     'SELECT COALESCE(SUM(COALESCE(bytes, length(data))), 0) AS n FROM sounds WHERE created_by = ?',
     'SELECT COALESCE(SUM(COALESCE(bytes, length(data))), 0) AS n FROM karaoke_songs WHERE created_by = ?',
     `SELECT COALESCE(SUM(COALESCE(a.bytes, length(a.data))), 0) AS n
-     FROM attachments a JOIN messages m ON m.id = a.message_id WHERE m.user_id = ?`,
+     FROM attachments a JOIN messages m ON m.id = a.message_id WHERE m.user_id = ? AND a.figurinha = 0`,
+    // a figurinha conta uma vez, na coleção: mandá-la de novo não ocupa disco (é o mesmo arquivo)
+    'SELECT COALESCE(SUM(bytes), 0) AS n FROM figurinhas WHERE user_id = ?',
   ];
   return somas.reduce((total, sql) => total + (db.prepare(sql).get(userId) as { n: number }).n, 0);
 }
@@ -3407,7 +3411,7 @@ function hydrate(messages: Message[], viewerId: number): Message[] {
 
   const files = db
     .prepare(
-      `SELECT id, message_id AS messageId, key, name, mime, size, width, height, expires_at AS expiresAt
+      `SELECT id, message_id AS messageId, key, name, mime, size, width, height, expires_at AS expiresAt, figurinha
        FROM attachments WHERE message_id IN (${ids}) ORDER BY id`,
     )
     .all() as unknown as (Attachment & { messageId: number })[];
@@ -5137,6 +5141,9 @@ export function retirarPeloShield(sha: string): RetiradoPeloShield {
     r.emojis = db.prepare('SELECT id, community_id AS communityId FROM emojis WHERE sha = ?').all(sha) as RetiradoPeloShield['emojis'];
     db.prepare('DELETE FROM emojis WHERE sha = ?').run(sha);
     db.prepare('DELETE FROM emoji_pack_items WHERE sha = ?').run(sha);
+    // as figurinhas (04/11/2026): de todas as coleções, e quem guardou conta como quem subiu (não há outra pista)
+    for (const { quem } of db.prepare('SELECT user_id AS quem FROM figurinhas WHERE sha = ?').all(sha) as { quem: number }[]) autores.add(quem);
+    db.prepare('DELETE FROM figurinhas WHERE sha = ?').run(sha);
     const anexos = db
       .prepare('SELECT a.id, a.message_id AS messageId, m.channel_id AS channelId FROM attachments a JOIN messages m ON m.id = a.message_id WHERE a.sha = ?')
       .all(sha) as { id: number; messageId: number; channelId: number }[];
@@ -6441,6 +6448,9 @@ export function retirarComCopias(conteudo: ConteudoRetiravel): RetiradoDe[] {
         if (vazia) db.prepare('DELETE FROM messages WHERE id = ?').run(l.messageId);
         saiu.push({ tipo: 'anexo', id: l.id, communityId: l.communityId, packId: null, messageId: l.messageId, channelId: l.channelId, mensagemApagada: vazia });
       }
+      // A FIGURINHA RETIRADA SAI TAMBÉM DAS COLEÇÕES (04/11/2026): senão quem a salvou continuaria mandando, e a retirada
+      // não retiraria nada. As já mandadas em conversa privada ficam, pela regra de sempre (a busca não olha o privado).
+      if (sha) db.prepare('DELETE FROM figurinhas WHERE sha = ?').run(sha);
     }
     db.exec('COMMIT');
   } catch (erro) {
@@ -7114,4 +7124,93 @@ export function guardarConquistas(communityId: number, novos: { conquista: strin
     db.exec('ROLLBACK');
     throw e;
   }
+}
+
+// ---------------------------------------------------------------------------------------------------
+// AS FIGURINHAS (04/11/2026, pedido dele: "as figurinhas criadas pelos usuários, como no WhatsApp"). A coleção é DE CADA
+// PESSOA, não da comunidade: quem cria manda em qualquer canal ou conversa privada, e quem recebe pode salvar a figurinha
+// na própria coleção.
+//
+// MANDAR UMA FIGURINHA É UM ANEXO MARCADO (`attachments.figurinha`), apontando para o MESMO arquivo pelo sha. Por isso
+// ela herda tudo o que o anexo já tem: a chave secreta no endereço, a retirada por direito autoral (que leva também as
+// cópias guardadas nas coleções), a vassoura de órfãos, a caixa-preta e a cota. A conferência do Shield acontece UMA vez,
+// ao criar (parseMediaConferida); mandar e salvar copiam o sha, e o arquivo não muda.
+// ---------------------------------------------------------------------------------------------------
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS figurinhas (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    -- a parte secreta do endereço, como no anexo: <img> não manda o login
+    key        TEXT NOT NULL,
+    sha        TEXT NOT NULL,
+    mime       TEXT NOT NULL,
+    bytes      INTEGER NOT NULL,
+    width      INTEGER,
+    height     INTEGER,
+    created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    UNIQUE (user_id, sha)
+  );
+  CREATE INDEX IF NOT EXISTS idx_figurinhas_sha ON figurinhas(sha);
+`);
+addColumnIfMissing('attachments', 'figurinha', 'INTEGER NOT NULL DEFAULT 0');
+
+export interface Figurinha {
+  id: number;
+  key: string;
+  mime: string;
+  width: number | null;
+  height: number | null;
+}
+
+/** A coleção da pessoa, da mais nova para a mais antiga. */
+export function listarFigurinhas(userId: number): Figurinha[] {
+  return db.prepare('SELECT id, key, mime, width, height FROM figurinhas WHERE user_id = ? ORDER BY id DESC').all(userId) as unknown as Figurinha[];
+}
+
+export function contarFigurinhas(userId: number): number {
+  return (db.prepare('SELECT COUNT(*) AS n FROM figurinhas WHERE user_id = ?').get(userId) as { n: number }).n;
+}
+
+/** Guarda na coleção (a mesma imagem duas vezes é uma só). Devolve a figurinha, nova ou a que já estava. */
+export function guardarFigurinha(userId: number, arquivo: Guardavel, mime: string, width: number | null, height: number | null): Figurinha {
+  const no = aoDisco(arquivo);
+  db.prepare('INSERT OR IGNORE INTO figurinhas (user_id, key, sha, mime, bytes, width, height) VALUES (?, ?, ?, ?, ?, ?, ?)').run(userId, randomBytes(12).toString('hex'), no.sha, mime, no.bytes, width, height);
+  return db.prepare('SELECT id, key, mime, width, height FROM figurinhas WHERE user_id = ? AND sha = ?').get(userId, no.sha) as unknown as Figurinha;
+}
+
+export function tirarFigurinha(userId: number, id: number): boolean {
+  return db.prepare('DELETE FROM figurinhas WHERE id = ? AND user_id = ?').run(id, userId).changes > 0;
+}
+
+/** O arquivo de uma figurinha da coleção, pelo id e a chave (só quem tem a coleção conhece a chave; a mandada abre pelo anexo). */
+export function arquivoDaFigurinha(id: number, key: string) {
+  return db.prepare('SELECT mime, sha, bytes FROM figurinhas WHERE id = ? AND key = ?').get(id, key) as ArquivoDaFigurinha | undefined;
+}
+type ArquivoDaFigurinha = { mime: string; sha: string; bytes: number };
+
+const EXTENSAO_DA_FIGURINHA: Record<string, string> = { 'image/webp': 'webp', 'image/png': 'png', 'image/gif': 'gif', 'image/jpeg': 'jpg' };
+
+/** Põe a figurinha na mensagem: um anexo marcado, apontando para o mesmo arquivo. */
+export function anexarFigurinha(messageId: number, userId: number, figurinhaId: number): Attachment | null {
+  const f = db.prepare('SELECT sha, mime, bytes, width, height FROM figurinhas WHERE id = ? AND user_id = ?').get(figurinhaId, userId) as
+    | { sha: string; mime: string; bytes: number; width: number | null; height: number | null }
+    | undefined;
+  if (!f) return null;
+  const key = randomBytes(12).toString('hex');
+  const name = `figurinha.${EXTENSAO_DA_FIGURINHA[f.mime] ?? 'png'}`;
+  const r = db
+    .prepare(
+      `INSERT INTO attachments (message_id, key, name, mime, size, width, height, data, sha, bytes, expires_at, figurinha)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, 1)`,
+    )
+    .run(messageId, key, name, f.mime, f.bytes, f.width, f.height, SEM_BYTES, f.sha, f.bytes);
+  return { id: Number(r.lastInsertRowid), key, name, mime: f.mime, size: f.bytes, width: f.width, height: f.height, expiresAt: null, figurinha: 1 };
+}
+
+/** A figurinha de um anexo que a pessoa recebeu (a chave prova que ela o viu), para salvar na coleção. */
+export function figurinhaDoAnexo(id: number, key: string) {
+  return db.prepare('SELECT sha, mime, bytes, width, height FROM attachments WHERE id = ? AND key = ? AND figurinha = 1 AND sha IS NOT NULL').get(id, key) as
+    | { sha: string; mime: string; bytes: number; width: number | null; height: number | null }
+    | undefined;
 }

@@ -15,6 +15,7 @@ import { EmojiPicker } from './EmojiPicker';
 import { PollCard } from './PollCard';
 import { formatBytes } from './upload';
 import type { Attachment, Citacao, Message, Poll, Reaction, ThreadSummary } from './types';
+import { salvarFigurinha } from './figurinhas';
 import { chave, idiomaAtual, t as traduzir, useT } from './i18n';
 import { nomeDeEmoji } from './nomeDoEmoji';
 import { gifDaMensagem } from './gifs';
@@ -37,12 +38,44 @@ function quandoSome(quando: string | null | undefined, t: ReturnType<typeof useT
   return t('Some em {n} dias', { n: dias });
 }
 
+/**
+ * A FIGURINHA NA CONVERSA (04/11/2026): grande, sem moldura (o fundo transparente é o que a faz parecer figurinha), e com o
+ * "Salvar" para pôr na própria coleção. A dimensão vai no estilo para a conversa não pular quando a imagem chega.
+ */
+function FigurinhaNaConversa({ file, url }: { file: Attachment; url: string }) {
+  const t = useT();
+  const [estado, setEstado] = useState<'parado' | 'salvando' | 'salva' | 'erro'>('parado');
+  const lado = 160;
+  const escala = file.width && file.height ? Math.min(1, lado / Math.max(file.width, file.height)) : 1;
+  const largura = file.width ? Math.round(file.width * escala) : lado;
+  const altura = file.height ? Math.round(file.height * escala) : lado;
+  return (
+    <div className="figurinha-na-conversa">
+      <img src={url} alt={t('Figurinha')} width={largura} height={altura} loading="lazy" draggable={false} />
+      <button
+        type="button"
+        className="figurinha-salvar"
+        disabled={estado === 'salvando' || estado === 'salva'}
+        onClick={() => {
+          setEstado('salvando');
+          salvarFigurinha(file.id, file.key)
+            .then(() => setEstado('salva'))
+            .catch(() => setEstado('erro'));
+        }}
+      >
+        {estado === 'salva' ? t('Salva nas suas figurinhas') : estado === 'erro' ? t('Não deu para salvar') : t('Salvar figurinha')}
+      </button>
+    </div>
+  );
+}
+
 function Attachments({ files }: { files: Attachment[] }) {
   const t = useT();
   return (
     <div className="attachments">
       {files.map((file) => {
         const url = mediaUrl.attachment(file.id, file.key);
+        if (file.figurinha) return <FigurinhaNaConversa key={file.id} file={file} url={url} />;
         if (file.mime.startsWith('image/')) {
           const size = imageSize(file);
           return (

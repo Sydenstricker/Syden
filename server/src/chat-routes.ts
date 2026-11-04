@@ -192,6 +192,33 @@ export function registerChatRoutes(app: FastifyInstance, io: IOServer) {
       return publish(where.channel, message);
     });
 
+    // ---------- Figurinha (04/11/2026, ver figurinhas-routes.ts) ----------
+    //
+    // Uma mensagem sem texto com um anexo marcado, apontando para o arquivo da coleção de quem manda. Não passa pelo Shield
+    // de novo (passou ao entrar na coleção) nem pela cota (não ocupa disco: é o mesmo arquivo).
+
+    authed.post<{ Params: { id: string }; Body: { figurinhaId?: number; threadId?: number; replyTo?: number } }>(
+      '/api/channels/:id/figurinha',
+      async (request, reply) => {
+        const where = destination(request, reply, request.body?.threadId);
+        if (!where) return reply;
+        const figurinhaId = Number(request.body?.figurinhaId);
+        if (!db.listarFigurinhas(request.user.id).some((f) => f.id === figurinhaId)) return reply.code(404).send({ error: 'Figurinha não encontrada.' });
+        // a moderação automática (o modo lento, sobretudo) vale para a figurinha como para qualquer mensagem
+        const barrada = barrarMensagem(where.channel, request.user.id, '');
+        if (barrada) return reply.code(400).send({ error: barrada });
+        const replyTo = request.body?.replyTo === undefined || request.body.replyTo === null ? null : Number(request.body.replyTo);
+        if (replyTo !== null && (!Number.isInteger(replyTo) || !db.podeResponderA(replyTo, where.channel.id, where.threadId, request.user.id))) {
+          return reply.code(400).send({ error: 'A mensagem que você está respondendo não existe mais.' });
+        }
+        const message = db.createMessage(where.channel.id, request.user.id, '', where.threadId, replyTo);
+        const anexo = db.anexarFigurinha(message.id, request.user.id, figurinhaId);
+        if (anexo) message.attachments.push(anexo);
+        if (where.channel.communityId !== null) pontuarMensagem(io, where.channel.communityId, request.user.id);
+        return publish(where.channel, message);
+      },
+    );
+
     // ---------- Enquetes ----------
 
     authed.post<{ Params: { id: string }; Body: { question?: string; options?: string[]; multiple?: boolean; threadId?: number } }>(
