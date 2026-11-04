@@ -21,6 +21,28 @@ import { chave } from './i18n';
 // ===================================================================================================
 
 export const ERROS_TRADUZIDOS = [
+  // as figurinhas (server/src/figurinhas-routes.ts, 04/11/2026)
+  chave('Figurinha não encontrada.'),
+  chave('A sua coleção de figurinhas está cheia. Tire alguma para pôr outra.'),
+  // Cidades à venda (server/src/minijogo-cidades.ts, 04/11/2026)
+  chave('Dinheiro insuficiente.'),
+  chave('A troca está vazia.'),
+  chave('Essa cidade não é de quem a troca diz.'),
+  chave('Venda os prédios do grupo antes de trocar.'),
+  chave('Essa cidade não é sua.'),
+  chave('Só se constrói em cidade.'),
+  chave('Para construir, é preciso ter todas as cidades do grupo.'),
+  chave('Resgate as cidades hipotecadas do grupo antes de construir.'),
+  chave('Essa cidade já tem o máximo de prédios.'),
+  chave('Essa cidade não tem prédio.'),
+  chave('Essa cidade já está hipotecada.'),
+  chave('Venda os prédios do grupo antes de hipotecar.'),
+  chave('Essa cidade não está hipotecada.'),
+  chave('Não há leilão agora.'),
+  chave('O lance precisa ser maior que o atual.'),
+  chave('Não há troca agora.'),
+  chave('Essa troca não é com você.'),
+  chave('Chega de trocas nesta vez.'),
   // a corrida dos coelhos, a estante de troféus e quem visita o quarto (auditoria de 03/11/2026)
   chave('Corrida inválida.'),
   chave('Muitas corridas seguidas. Tente de novo daqui a pouco.'),
