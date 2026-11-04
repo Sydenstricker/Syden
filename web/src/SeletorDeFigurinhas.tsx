@@ -1,7 +1,8 @@
-import { Plus, X } from 'lucide-react';
+import { ClipboardPaste, Plus, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { criarFigurinha, type Figurinha, listarFigurinhas, prepararFigurinha, tirarFigurinha, urlDaFigurinha } from './figurinhas';
 import { useT } from './i18n';
+import { imageFromClipboard, imageFromClipboardEvent } from './upload';
 
 /**
  * O SELETOR DE FIGURINHAS (04/11/2026), acima do campo de mensagem, como o de GIFs: a coleção da pessoa numa grade, o "+"
@@ -45,7 +46,21 @@ export function SeletorDeFigurinhas({ onPick, onClose }: { onPick: (f: Figurinha
       });
   }, []);
 
-  async function criar(arquivos: FileList | null) {
+  // Ctrl+V com o seletor aberto cria a figurinha. Na fase de CAPTURA e parando ali: senão o campo de mensagem, que está
+  // com o foco, receberia a mesma imagem como anexo.
+  useEffect(() => {
+    const aoColar = (evento: ClipboardEvent) => {
+      const arquivo = imageFromClipboardEvent(evento);
+      if (!arquivo) return;
+      evento.preventDefault();
+      evento.stopPropagation();
+      void criar([arquivo]);
+    };
+    window.addEventListener('paste', aoColar, true);
+    return () => window.removeEventListener('paste', aoColar, true);
+  });
+
+  async function criar(arquivos: FileList | File[] | null) {
     if (!arquivos?.length) return;
     setErro(null);
     setEnviando(true);
@@ -82,6 +97,14 @@ export function SeletorDeFigurinhas({ onPick, onClose }: { onPick: (f: Figurinha
     <div className="figurinhas-seletor" ref={ref} role="dialog" aria-label={t('Figurinhas')}>
       <div className="figurinhas-topo">
         <strong>{t('Figurinhas')}</strong>
+        <button
+          type="button"
+          className="link-button"
+          disabled={enviando || cheia}
+          onClick={() => imageFromClipboard().then((f) => criar([f]), (e: Error) => setErro(t(e.message)))}
+        >
+          <ClipboardPaste size={14} aria-hidden="true" /> {t('Colar imagem')}
+        </button>
         {!!figurinhas?.length && (
           <button type="button" className="link-button" onClick={() => setArrumando(!arrumando)}>
             {arrumando ? t('Pronto') : t('Arrumar')}

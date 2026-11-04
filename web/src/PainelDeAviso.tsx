@@ -1,8 +1,9 @@
-import { Megaphone } from 'lucide-react';
+import { ClipboardPaste, Megaphone } from 'lucide-react';
 import { type FormEvent, useEffect, useState } from 'react';
 import { api } from './api';
 import { type AvisoDoServidor, enderecoDaFotoDoAviso } from './AvisoGeral';
 import { useT } from './i18n';
+import { imageFromClipboard, imageFromClipboardEvent } from './upload';
 
 // Onde quem administra escreve o recado que todo mundo vê — inclusive quem ainda nem entrou.
 //
@@ -103,6 +104,19 @@ export function PainelDeAviso() {
       setSubindoFoto(false);
     }
   }
+
+  // Ctrl+V em qualquer lugar do painel: quem copiou a imagem (do navegador, de um recorte da tela) não precisa salvar
+  // arquivo antes. Só a imagem é tomada; colar TEXTO no campo do recado continua colando texto.
+  useEffect(() => {
+    const aoColar = (evento: ClipboardEvent) => {
+      const arquivo = imageFromClipboardEvent(evento);
+      if (!arquivo) return;
+      evento.preventDefault();
+      void escolherFoto(arquivo);
+    };
+    window.addEventListener('paste', aoColar);
+    return () => window.removeEventListener('paste', aoColar);
+  });
 
   function receber(resposta: { aviso: AvisoDoServidor | null; valendo: boolean }) {
     setImagem(resposta.aviso?.imagem?.sha ?? null);
@@ -211,6 +225,14 @@ export function PainelDeAviso() {
               }}
             />
           </label>
+          <button
+            type="button"
+            className="link-button"
+            disabled={subindoFoto}
+            onClick={() => imageFromClipboard().then(escolherFoto, (e: Error) => setErro(t(e.message)))}
+          >
+            <ClipboardPaste size={14} aria-hidden="true" /> {t('Colar imagem')}
+          </button>
           {imagem && (
             <button type="button" className="link" disabled={subindoFoto} onClick={() => {
                 setImagem(null);
