@@ -170,3 +170,29 @@ test('com o servidor de verdade e 200 ms de atraso, o piloto automático vence a
   assert.equal(terminou, true);
   assert.ok((jogo.publico(7) as { resultado: { pontos: number }[] }).resultado[0].pontos > 300);
 });
+
+// ---------------- A revisão independente de 03/11/2026 ----------------
+
+test('a página recarregada continua a conta dos golpes do servidor (o quadro leva o último aceito)', () => {
+  const c = novoCoelho(40, 20);
+  regras.contarDesde(c, 20);
+  const cmd = comandosVazios();
+  cmd.soco = true;
+  const novo = passoDoCoelho(c, cmd, DT, [0, 320]);
+  assert.equal(novo.comecou?.id, 21, 'o primeiro golpe depois de recarregar passa do último que o servidor aceitou');
+  // e nunca volta para trás (um quadro velho, com o número de antes, não desfaz o que a tela já contou)
+  regras.contarDesde(c, 3);
+  assert.equal(c.ataque, 21);
+});
+
+test('a medalha do fim é a do troféu: fase vencida, fora do Solo, 2 ou mais que ficaram, com ponto', () => {
+  const m = regras.marcaDoLugar;
+  assert.equal(m(1, 50, { venceu: true, solo: false, ficaram: 2 }), '🥇');
+  assert.equal(m(3, 10, { venceu: true, solo: false, ficaram: 4 }), '🥉');
+  assert.equal(m(4, 10, { venceu: true, solo: false, ficaram: 4 }), '4.');
+  assert.equal(m(1, 50, { venceu: false, solo: false, ficaram: 2 }), '1.', 'perdida: sem medalha');
+  assert.equal(m(1, 50, { venceu: true, solo: true, ficaram: 1 }), '1.', 'no Solo: sem medalha');
+  assert.equal(m(1, 50, { venceu: true, solo: false, ficaram: 1 }), '1.', 'só um ficou: sem medalha');
+  assert.equal(m(2, 0, { venceu: true, solo: false, ficaram: 2 }), '2.', 'sem ponto: sem medalha');
+  assert.equal(m(null, 30, { venceu: true, solo: false, ficaram: 2 }), '–', 'quem saiu: sem posição');
+});

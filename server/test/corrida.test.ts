@@ -3,7 +3,7 @@ import { after, test } from 'node:test';
 import { comToken, criarConta, servidorDeTeste } from './ajuda.js';
 
 const { app, fechar } = await servidorDeTeste();
-const { validarCorrida } = await import('../src/corrida.js');
+const { PISTAS, validarCorrida } = await import('../src/corrida.js');
 after(fechar);
 
 const ana = await criarConta(app, 'ana');
@@ -17,16 +17,28 @@ const anaId = await idDe(comoAna);
 const biaId = await idDe(comoBia);
 
 /**
- * Uma corrida de mentira, mas coerente: 3 voltas de `porVolta` passos, num círculo que passa pela linha de chegada da
- * horta-1 (250, 190), com o centro em (500, 500): ~2500 unidades por volta, mais que os 70% da pista que se exige.
+ * Uma corrida de mentira, mas coerente: 3 voltas de `porVolta` passos pelo polígono da linha de chegada e dos marcos da
+ * pista (o que o servidor confere: andar 70% da pista, acabar na linha, passar pelos marcos em ordem).
  */
-function corrida(porVolta: number) {
+function corrida(porVolta: number, pista = 'horta-1') {
+  const { linha, marcos } = PISTAS[pista];
+  const pontos = [linha, ...marcos];
+  const trechos = pontos.map((a, i) => {
+    const b = pontos[(i + 1) % pontos.length];
+    return { a, b, l: Math.hypot(b[0] - a[0], b[1] - a[1]) };
+  });
+  const total = trechos.reduce((s, t) => s + t.l, 0);
   const voltas = [porVolta, porVolta * 2, porVolta * 3];
-  const r = Math.hypot(250 - 500, 190 - 500), a0 = Math.atan2(190 - 500, 250 - 500);
   const amostras: number[] = [];
   for (let p = 1; p <= voltas[2]; p += 4) {
-    const a = a0 + (2 * Math.PI * (p - 1)) / porVolta;
-    amostras.push(Math.round((500 + Math.cos(a) * r) * 10), Math.round((500 + Math.sin(a) * r) * 10), Math.round(a * 1000));
+    let s = (((p - 1) % porVolta) / porVolta) * total;
+    let t = trechos[0];
+    for (t of trechos) {
+      if (s <= t.l) break;
+      s -= t.l;
+    }
+    const f = s / t.l;
+    amostras.push(Math.round((t.a[0] + (t.b[0] - t.a[0]) * f) * 10), Math.round((t.a[1] + (t.b[1] - t.a[1]) * f) * 10), Math.round(Math.atan2(t.b[1] - t.a[1], t.b[0] - t.a[0]) * 1000));
   }
   return { voltas, amostras };
 }
@@ -49,6 +61,18 @@ test('a conferência recusa o que não fecha: tempo sem caminho, volta curta dem
   const longe = corrida(1200);
   longe.amostras = longe.amostras.map((v, i) => (i % 3 === 0 ? v + 800 : v));
   assert.ok('erro' in validarCorrida('horta-1', longe), 'o fim da volta tem de cair na linha');
+});
+
+test('o fantasma em zigue-zague sobre a linha de chegada não vira recorde (revisão independente, 03/11/2026)', () => {
+  // ±6 unidades para lá e para cá, em cima da linha: anda os 70% da pista em ~12 s por volta, sem ir a lugar nenhum
+  const porVolta = 720;
+  const voltas = [porVolta, porVolta * 2, porVolta * 3];
+  const amostras: number[] = [];
+  for (let p = 1, i = 0; p <= voltas[2]; p += 4, i++) amostras.push((250 + (i % 2 ? 6 : -6)) * 10, 190 * 10, 0);
+  const sem = validarCorrida('horta-1', { voltas, amostras });
+  assert.ok('erro' in sem, 'sem passar pelos marcos da pista, não fecha volta');
+  // todas as pistas aceitam o polígono dos próprios marcos
+  for (const id of Object.keys(PISTAS)) assert.ok('ok' in validarCorrida(id, corrida(1300, id)), id);
 });
 
 test('só o melhor tempo fica, e quem não é amigo não vê o recorde nem o fantasma', async () => {

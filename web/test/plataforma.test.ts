@@ -131,3 +131,17 @@ test('a largada e os postos estão em cima de chão', () => {
     }
   }
 });
+
+// ---------------- A revisão independente de 03/11/2026 ----------------
+
+test('as posições de um rival: a velha some, e a corrida nova dele (o passo voltando muito) recomeça a lista', async () => {
+  const { guardarPosicaoDoRival } = await import('../src/plataforma/laco');
+  const r = { nome: 'bia', posicoes: [] as { n: number; x: number; y: number; j: number; andou: number }[] };
+  const p = (n: number, x: number) => ({ n, x, y: 176, j: 1, andou: 0 });
+  guardarPosicaoDoRival(r, p(1, 56));
+  guardarPosicaoDoRival(r, p(600, 1200));
+  guardarPosicaoDoRival(r, p(596, 1190));
+  assert.deepEqual(r.posicoes.map((q) => q.n), [1, 600], 'a que chegou fora de ordem, por pouco, fica de fora');
+  guardarPosicaoDoRival(r, p(5, 60));
+  assert.deepEqual(r.posicoes.map((q) => q.n), [5], 'recarregou: a lista recomeça, e o coelho dela não fica congelado');
+});

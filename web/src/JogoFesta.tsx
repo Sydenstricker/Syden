@@ -83,6 +83,17 @@ interface PropsDoMicro {
   marcar?: (i: number) => void;
 }
 
+/** Uma linha da classificação do fim (server/src/minijogo-festa.ts, classificacaoFinal): posição só para quem ficou até o fim. */
+interface LinhaFinal {
+  userId: number;
+  username: string;
+  pontos: number;
+  posicao: number | null;
+  saiu: boolean;
+}
+// (o tipo de minijogos.ts ainda não tem este campo: vai aqui até ele ganhar)
+type EstadoFinal = EstadoFesta & { classificacao?: LinhaFinal[] | null };
+
 export function JogoFesta({
   estado,
   eu,
@@ -96,13 +107,34 @@ export function JogoFesta({
   restante: number;
   agir: (corpo: Record<string, unknown>) => unknown;
 }) {
+  const t = useT();
   if (estado.terminada || estado.fase === 'fim') {
-    // empatados dividem a posição, como no troféu (revisão de 03/11/2026: a tela dava ouro e prata a quem empatou)
+    // A CLASSIFICAÇÃO DO SERVIDOR, a mesma dos troféus (revisão independente, 03/11/2026: a tela dava medalha pelo placar de
+    // todos, inclusive a quem tinha saído, e ao único que ficou): só quem ficou até o fim, com 2 ou mais, tem posição e
+    // medalha (empatados dividem); quem saiu vem depois, sem posição. Sem pódio, os pontos sem medalha.
+    const classificacao: LinhaFinal[] =
+      (estado as EstadoFinal).classificacao ?? estado.placar.map((l) => ({ ...l, posicao: null, saiu: false }));
+    const comPosicao = classificacao.filter((l) => l.posicao !== null);
+    const semPosicao = classificacao.filter((l) => l.posicao === null);
     return (
-      <Placar
-        eu={eu}
-        linhas={estado.placar.map((l) => ({ ...l, valor: String(l.pontos), posicao: 1 + estado.placar.filter((o) => o.pontos > l.pontos).length }))}
-      />
+      <div className="tabuleiro-jogo">
+        {comPosicao.length > 0 && <Placar eu={eu} linhas={comPosicao.map((l) => ({ ...l, valor: String(l.pontos), posicao: l.posicao ?? undefined }))} />}
+        {comPosicao.length === 0 && estado.jogadores.length > 1 && (
+          <p className="minijogo-situacao">{t('Menos de duas pessoas ficaram até o fim: desta vez, sem pódio.')}</p>
+        )}
+        {semPosicao.length > 0 && (
+          <ol className="minijogo-placar tabuleiro-sem-posicao">
+            {semPosicao.map((l) => (
+              <li key={l.userId} className={l.userId === eu ? 'eu' : ''}>
+                <span className="minijogo-medalha" aria-hidden="true" />
+                <span className="minijogo-nome">{l.username}</span>
+                {l.saiu && <span className="tabuleiro-saiu">{t('Saiu antes do fim')}</span>}
+                <span className="minijogo-pontos">{l.pontos}</span>
+              </li>
+            ))}
+          </ol>
+        )}
+      </div>
     );
   }
   return (
@@ -118,6 +150,8 @@ export type EstadoDaRodada = Pick<EstadoFesta, 'rodada' | 'microjogo' | 'dados' 
   fase: 'preparando' | 'jogando' | 'revelando';
   recebidaEm: number;
   restanteMs: number;
+  /** A medida da rede (só no "prepare-se"): devolvido na hora pela ação 'eco', o servidor sabe a ida e volta de cada um. */
+  eco?: number | null;
 };
 
 /**
@@ -150,6 +184,18 @@ export function RodadaDaFesta({
   }
 
   const souJogador = jogador && estado.jogadores.some((j) => j.userId === eu);
+
+  // O ECO (revisão independente, 03/11/2026): o servidor mede a ida e volta de cada um devolvendo o número do estado NA HORA,
+  // e a folga que ele dá ao tempo de cada um é essa. Cada número volta uma vez só (o StrictMode roda o efeito duas vezes).
+  const ecosDevolvidos = useRef(new Set<number>());
+  const eco = estado.fase === 'preparando' && souJogador ? (estado.eco ?? null) : null;
+  useEffect(() => {
+    if (eco === null || ecosDevolvidos.current.has(eco)) return;
+    ecosDevolvidos.current.add(eco);
+    void agir({ tipo: 'eco', eco });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [eco]);
+
   const jaMandei = estado.meu !== null || enviei === estado.rodada;
   const ativo = souJogador && estado.fase === 'jogando' && !jaMandei;
   const enviar = (corpo: Record<string, unknown>) => {
@@ -327,14 +373,16 @@ function Forca({ dados, inicio, ativo, enviar }: PropsDoMicro) {
   const periodo = dados.periodoMs ?? 1400;
   const tempo = Math.min(FORCA_MS, Math.max(0, agora - inicio));
   const valor = parado ?? (agora < inicio ? 0 : valorDaForca(periodo, tempo));
+  // os 8 s da barra acabaram: ela para, e o aperto já não conta (o servidor espera um pouco mais só pela rede)
+  const acabou = agora - inicio >= FORCA_MS;
   const parar = () => {
-    if (!ativo || parado !== null || Date.now() < inicio) return;
-    const ms = Math.min(FORCA_MS, Date.now() - inicio);
+    if (!ativo || parado !== null || Date.now() < inicio || Date.now() - inicio > FORCA_MS) return;
+    const ms = Date.now() - inicio;
     const v = valorDaForca(periodo, ms);
     setParado(v);
     enviar({ t: Math.round(ms) });
   };
-  useTeclas(ativo && parado === null, (e) => {
+  useTeclas(ativo && parado === null && !acabou, (e) => {
     if (!ehAperto(e)) return false;
     parar();
     return true;
@@ -347,7 +395,7 @@ function Forca({ dados, inicio, ativo, enviar }: PropsDoMicro) {
       </div>
       <div className="festa-forca-lado">
         <span className="festa-mostrador">{f.pct.format((parado ?? valor) / 100)}</span>
-        <button type="button" className="btn-primary" disabled={!ativo || parado !== null} onPointerDown={(e) => (e.preventDefault(), parar())}>
+        <button type="button" className="btn-primary" disabled={!ativo || parado !== null || acabou} onPointerDown={(e) => (e.preventDefault(), parar())}>
           {t('Parar')}
         </button>
       </div>

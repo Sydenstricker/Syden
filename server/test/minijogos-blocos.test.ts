@@ -393,3 +393,11 @@ test('o placar do fim: a posição é só de quem ficou; quem saiu, mesmo tendo 
   const daCarla = (await comToken(app, carla.token)('GET', '/api/corrida-trofeus')).json().trofeus;
   assert.equal(daCarla.length, 0);
 });
+
+// ---------------- A revisão independente de 03/11/2026 ----------------
+
+test('oito no máximo: o motor sabe (o nono assiste, e não conta como quem jogou)', async () => {
+  const { blocos, MAX_JOGADORES } = await import('../src/minijogo-blocos.js');
+  assert.equal(MAX_JOGADORES, 8);
+  assert.equal(blocos.maximo, MAX_JOGADORES);
+});

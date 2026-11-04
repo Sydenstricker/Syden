@@ -203,3 +203,38 @@ test('a copa: quem sai no meio aparece no placar sem posição; com uma só que 
   assert.deepEqual(placar.map((l) => [l.userId, l.posicao]), [[anaId, 1], [biaId, null]], 'quem saiu vem depois, sem posição');
   assert.equal((await trofeus(ana.token)).length, antes, 'sozinha, a Ana não ganha troféu');
 });
+
+// ---------------- A revisão independente de 03/11/2026 ----------------
+
+test('quem recomeça no meio da fase (a página recarregada, com o relógio limpo) não tem a chegada aceita', () => {
+  const m = contexto(() => [anaId, biaId]);
+  const jogo = plataforma.comecar(m.ctx, { naSala: [anaId, biaId], criadaPor: anaId, corpo: {} });
+  assert.ok(typeof jogo !== 'string');
+  m.relogio[0].depois();
+  // a Ana corre 20 s e recarrega: a corrida nova começa do passo 1, na largada
+  for (let n = 1; n <= 1200; n += 4) {
+    agora += 66;
+    jogo.tempoReal!(anaId, { x: 56 + n * 1.5, y: 176, n, j: 1 });
+  }
+  agora += 2000;
+  assert.ok(jogo.tempoReal!(anaId, { x: 56, y: 176, n: 1, j: 1 }), 'a posição continua indo aos outros');
+  agora += 36_000;
+  assert.equal(jogo.acao(anaId, pulo('prado-1', 2160)), 'Corrida inválida.', 'os 36 s da corrida nova não contam o que ela já tinha corrido');
+  // a Bia, que correu direto, chega
+  assert.equal(jogo.acao(biaId, pulo('prado-1', 2400)), null);
+});
+
+test('o quanto andou de quem não chega não pula mais que o coelho corre (o console mandando x na chegada)', () => {
+  const m = contexto(() => [anaId, biaId]);
+  const jogo = plataforma.comecar(m.ctx, { naSala: [anaId, biaId], criadaPor: anaId, corpo: {} });
+  assert.ok(typeof jogo !== 'string');
+  m.relogio[0].depois();
+  agora += 10_000;
+  // a Bia corre de verdade até o x 1200 em 10 s; a Ana manda do nada o x de perto da chegada
+  for (let n = 1; n <= 600; n += 4) jogo.tempoReal!(biaId, { x: 56 + n * 1.9, y: 176, n, j: 1 });
+  jogo.tempoReal!(anaId, { x: 56, y: 176, n: 1, j: 1 });
+  jogo.tempoReal!(anaId, { x: 3380, y: 176, n: 5, j: 1 });
+  m.relogio[0].depois();
+  assert.equal(m.terminou(), true);
+  assert.deepEqual((jogo.publico(anaId).pilotos as { userId: number }[]).map((p) => p.userId), [biaId, anaId], 'o salto não passou a Ana na frente');
+});

@@ -48,6 +48,34 @@ export const PONTOS = [10, 8, 6, 5, 4, 3, 2, 1];
  * não atrapalha: a janela sem foco para os passos, e o relógio de verdade só fica maior.
  */
 export const FOLGA_MS = 3000;
+/** O passo da posição ao vivo pode estar até isto à frente do relógio do servidor desde o verde (3 s). */
+export const PASSOS_DE_FOLGA = 180;
+/**
+ * O QUANTO O KART ANDA POR PASSO, no máximo: o turbo (185 por segundo), com a folga da árvore que empurra. A posição ao vivo
+ * não pode estar mais longe da anterior do que isto vezes os passos entre elas (revisão independente, 03/11/2026: pelo
+ * console, a pessoa "aparecia" do lado do líder e soltava a lama ali, porque o item é conferido contra essa posição).
+ */
+const ANDA_POR_PASSO = (185 / 60) * 1.1;
+/** Folga fixa da conferência da posição (o arredondamento do que o site manda, a largada três pontos antes da linha). */
+const FOLGA_DA_POSICAO = 8;
+/** Quem diz ter sido atingido pela lama estava a no máximo isto dela (o raio do acerto é 8, mais o kart andando 4 passos). */
+const PERTO_DA_LAMA = 22;
+/** O repolho: o quanto da linha do meio separa quem diz ter sido atingido do lugar onde ele estava naquele passo. */
+const PERTO_DO_REPOLHO = 60;
+/** O repolho anda 230 por segundo pela linha do meio, por 4 s (web/src/corrida/laco.ts). */
+const VELOCIDADE_DO_REPOLHO = 230;
+const VIDA_DO_REPOLHO = 4 * 60;
+const VIDA_DA_LAMA = 30 * 60;
+/** De quantos em quantos passos o site manda a posição (web/src/corrida/fisica.ts, AMOSTRA). */
+const AMOSTRA_DA_POSICAO = 4;
+/** A primeira posição sai da largada: perto da linha de chegada (o kart larga três pontos antes dela). */
+const PERTO_DA_LINHA_NA_LARGADA = 60;
+
+/** A distância entre dois pontos da linha do meio, dando a volta (o fim da volta encosta no começo). */
+function distanciaNaVolta(a: number, b: number, comprimento: number) {
+  const d = (((a - b) % comprimento) + comprimento) % comprimento;
+  return Math.min(d, comprimento - d);
+}
 
 interface Piloto {
   /** O tempo da chegada (em ms, pelos passos), quando chegou. */
@@ -59,8 +87,14 @@ interface Piloto {
   itens: number;
   ultimoItem: number;
   acertos: number;
-  /** A última posição que a pessoa mandou: o item só sai de perto dela (revisão de 03/11/2026). */
-  ultima: { x: number; y: number; n: number; andou: number } | null;
+  /**
+   * A última posição ACEITA (a que o servidor repassou): o item só sai de perto dela (revisão de 03/11/2026), e a próxima
+   * só é aceita se o kart pudesse ter ido de uma à outra (revisão independente, 03/11/2026). `em` é o relógio do servidor
+   * quando ela chegou.
+   */
+  ultima: { x: number; y: number; n: number; andou: number; em: number } | null;
+  /** Passou pela metade da volta desde a última vez que cruzou a linha (como o kart do site: sem isso, não conta volta). */
+  meio: boolean;
 }
 
 interface Linha {
@@ -69,6 +103,26 @@ interface Linha {
   tempoMs: number | null;
   voltas: number[];
   andou: number;
+  /** A posição entre quem ficou até o fim (empatados dividem); null para quem saiu, que vem depois, sem posição nem medalha. */
+  posicao: number | null;
+}
+
+/** Um item que o servidor carimbou: o que é preciso para conferir o "acertou" de quem diz ter sido atingido. */
+type ItemCarimbado = { dono: number; n: number } & ({ tipo: 'repolho'; s: number } | { tipo: 'lama'; x: number; y: number });
+
+/**
+ * A posição de cada linha, só entre `contam` (quem ficou): 1 + quantos dos que contam ficaram na frente dela, então
+ * empatados dividem. As linhas voltam com quem conta primeiro, na ordem dada, e quem saiu depois, com a posição null.
+ * É a MESMA conta da tela e do troféu (revisão independente, 03/11/2026: a tela dava a medalha pela ordem da lista, com
+ * quem saiu dentro dela, e o troféu era outro; a conta é a mesma do Pulo do coelho, copiada e não importada, para um jogo
+ * não depender do outro).
+ */
+export function comPosicoes<L extends { userId: number }>(linhas: L[], contam: Set<number>, naFrente: (o: L, l: L) => boolean): (L & { posicao: number | null })[] {
+  const ficou = linhas.filter((l) => contam.has(l.userId));
+  return [
+    ...ficou.map((l) => ({ ...l, posicao: 1 + ficou.filter((o) => naFrente(o, l)).length })),
+    ...linhas.filter((l) => !contam.has(l.userId)).map((l) => ({ ...l, posicao: null })),
+  ];
 }
 
 export const corrida: Definicao = criarCorrida();
@@ -94,7 +148,7 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
       let pilotos = new Map<number, Piloto>();
       /** Os itens desta corrida que o servidor carimbou, e os que já acertaram alguém: "acertou" só vale para um item de
        * verdade, uma vez (revisão de 03/11/2026: um "acertou" inventado sumia com o item dos outros). */
-      let itensDaCorrida = new Set<string>();
+      let itensDaCorrida = new Map<string, ItemCarimbado>();
       let itensQueAcertaram = new Set<string>();
       /** Quem correu cada corrida da copa até o fim dela, presente: só eles contam como "a turma" no troféu e na copa. */
       let correramTodas: Set<number> | null = null;
@@ -102,9 +156,15 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
       /** A soma dos tempos na copa: desempata os pontos (quem não chegou numa corrida não tem soma). */
       const somas = new Map<number, number | null>(inscritos.map((id) => [id, 0]));
       const resultados: { pista: string; pilotos: Linha[] }[] = [];
+      /** Quem estava na sala ao fechar a corrida atual (null enquanto ela corre: aí contam os presentes). */
+      let ficaramNaCorrida: Set<number> | null = null;
 
-      const classificacao = (): Linha[] =>
-        [...pilotos.entries()]
+      /** `o` ficou na frente de `l`: chegou com menos tempo; quem chegou fica na frente de quem não chegou; senão, andou mais. */
+      const naFrenteNaCorrida = (o: { tempoMs: number | null; andou: number }, l: { tempoMs: number | null; andou: number }) =>
+        o.tempoMs !== null && l.tempoMs !== null ? o.tempoMs < l.tempoMs : o.tempoMs !== null ? true : l.tempoMs === null && o.andou > l.andou;
+
+      const classificacao = (): Linha[] => {
+        const linhas = [...pilotos.entries()]
           .map(([userId, p]) => ({ userId, username: ctx.nome(userId), tempoMs: p.tempoMs, voltas: p.voltas, andou: p.andou }))
           .sort((a, b) =>
             a.tempoMs !== null && b.tempoMs !== null
@@ -115,17 +175,29 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
                   ? 1
                   : b.andou - a.andou,
           );
+        return comPosicoes(linhas, ficaramNaCorrida ?? new Set(ctx.naSala()), naFrenteNaCorrida);
+      };
 
+      /** Na copa: mais pontos na frente, e no empate a soma menor dos tempos (quem não chegou numa corrida não tem soma). */
+      const naFrenteNaCopa = (o: { pontos: number; soma: number | null }, l: { pontos: number; soma: number | null }) =>
+        o.pontos > l.pontos || (o.pontos === l.pontos && (o.soma ?? Infinity) < (l.soma ?? Infinity));
+
+      /** A posição é só de quem correu todas as corridas até aqui, presente (antes da primeira fechar, quem está na sala). */
       const placarDaCopa = () =>
-        inscritos
-          .map((userId) => ({ userId, username: ctx.nome(userId), pontos: pontos.get(userId) ?? 0, soma: somas.get(userId) ?? null }))
-          .sort((a, b) => b.pontos - a.pontos || (a.soma ?? Infinity) - (b.soma ?? Infinity) || a.username.localeCompare(b.username));
+        comPosicoes(
+          inscritos
+            .map((userId) => ({ userId, username: ctx.nome(userId), pontos: pontos.get(userId) ?? 0, soma: somas.get(userId) ?? null }))
+            .sort((a, b) => b.pontos - a.pontos || (a.soma ?? Infinity) - (b.soma ?? Infinity) || a.username.localeCompare(b.username)),
+          correramTodas ?? new Set(ctx.naSala()),
+          naFrenteNaCopa,
+        );
 
       const largar = () => {
         const presentes = ctx.naSala().filter((id) => inscritos.includes(id));
-        pilotos = new Map(presentes.map((id) => [id, { tempoMs: null, voltas: [], andou: 0, itens: 0, ultimoItem: 0, acertos: 0, ultima: null }]));
-        itensDaCorrida = new Set();
+        pilotos = new Map(presentes.map((id) => [id, { tempoMs: null, voltas: [], andou: 0, itens: 0, ultimoItem: 0, acertos: 0, ultima: null, meio: false }]));
+        itensDaCorrida = new Map();
         itensQueAcertaram = new Set();
+        ficaramNaCorrida = null;
         fase = 'largada';
         prazoAberto = false;
         ctx.agendar(LARGADA_MS, () => {
@@ -137,51 +209,52 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
       };
 
       /**
-       * OS TROFÉUS: o pódio (até 3), com 2 pessoas ou mais, para quem chegou ao pódio de verdade. `ordem` já vem só com quem
-       * correu até o fim, presente (revisão de 03/11/2026: quem ficava sozinho na sala ganhava o troféu "com a turma").
+       * OS TROFÉUS: o pódio (até 3), com 2 pessoas ou mais que ficaram até o fim, e só de quem tem resultado de verdade. A
+       * posição é a que a tela mostra (comPosicoes: empatados dividem, quem saiu não tem): a tela e o troféu não discordam
+       * (revisão independente, 03/11/2026; a revisão anterior, do mesmo dia, já tinha tirado quem ficava sozinho na sala).
        */
-      const darTrofeus = (pista: string, ordem: { userId: number; tempoMs: number | null; pontos: number | null; chegou: boolean }[]) => {
-        if (ordem.length < 2) return;
-        const todos = ordem.map((l) => l.userId);
-        ordem.slice(0, 3).forEach((l, posicao) => {
-          if (!l.chegou) return;
+      const darTrofeus = (pista: string, linhas: { userId: number; posicao: number | null; tempoMs: number | null; pontos: number | null; chegou: boolean }[]) => {
+        const ficou = linhas.filter((l) => l.posicao !== null);
+        if (ficou.length < 2) return;
+        const todos = ficou.map((l) => l.userId);
+        for (const l of ficou) {
+          if (!l.chegou || l.posicao === null || l.posicao > 3) continue;
           db.guardarTrofeu({
             userId: l.userId,
             evento,
             communityId: ctx.comunidade ?? 0,
             pista,
-            posicao: posicao + 1,
+            posicao: l.posicao,
             tempoMs: l.tempoMs,
             pontos: l.pontos,
             rivais: todos.filter((id) => id !== l.userId),
           });
-        });
+        }
       };
 
       const fecharCorrida = () => {
         if (fase !== 'correndo' && fase !== 'largada') return;
+        // quem correu esta corrida e ainda está na sala no fim dela: só eles têm posição, pontos e troféu
+        const naSalaAgora = new Set(ctx.naSala());
+        const ficaram = new Set([...pilotos.keys()].filter((id) => naSalaAgora.has(id)));
+        ficaramNaCorrida = ficaram;
         const ordem = classificacao();
         resultados.push({ pista: corridas[indice], pilotos: ordem });
-        // quem correu esta corrida e ainda está na sala no fim dela
-        const naSalaAgora = new Set(ctx.naSala());
-        const ficaram = new Set(ordem.map((l) => l.userId).filter((id) => naSalaAgora.has(id)));
         correramTodas = correramTodas === null ? ficaram : new Set([...correramTodas].filter((id) => ficaram.has(id)));
-        ordem.forEach((l, i) => {
-          if (l.tempoMs === null) {
+        for (const l of ordem) {
+          // quem saiu não soma pontos nem tempo; empatados no tempo ganham os mesmos pontos (os do lugar que dividem)
+          if (l.tempoMs === null || l.posicao === null) {
             somas.set(l.userId, null);
-            return;
+            continue;
           }
-          pontos.set(l.userId, (pontos.get(l.userId) ?? 0) + (PONTOS[i] ?? 0));
+          pontos.set(l.userId, (pontos.get(l.userId) ?? 0) + (PONTOS[l.posicao - 1] ?? 0));
           const s = somas.get(l.userId);
           if (s !== null && s !== undefined) somas.set(l.userId, s + l.tempoMs);
-        });
+        }
         // quem não correu esta (saiu da sala) também fica sem soma
         for (const id of inscritos) if (!pilotos.has(id)) somas.set(id, null);
         if (!copa) {
-          darTrofeus(
-            corridas[0],
-            ordem.filter((l) => ficaram.has(l.userId)).map((l) => ({ userId: l.userId, tempoMs: l.tempoMs, pontos: null, chegou: l.tempoMs !== null })),
-          );
+          darTrofeus(corridas[0], ordem.map((l) => ({ userId: l.userId, posicao: l.posicao, tempoMs: l.tempoMs, pontos: null, chegou: l.tempoMs !== null })));
           fase = 'fim';
           ctx.terminar();
           return;
@@ -196,10 +269,9 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
           ctx.avisar();
           return;
         }
-        // o fim da copa: o pódio pelos pontos, e a copa da turma
+        // o fim da copa: o pódio pelos pontos, entre quem correu todas, e a copa da turma
         const turma = correramTodas ?? new Set<number>();
-        const placar = placarDaCopa().filter((l) => turma.has(l.userId));
-        darTrofeus(pedida, placar.map((l) => ({ userId: l.userId, tempoMs: l.soma, pontos: l.pontos, chegou: l.pontos > 0 })));
+        darTrofeus(pedida, placarDaCopa().map((l) => ({ userId: l.userId, posicao: l.posicao, tempoMs: l.soma, pontos: l.pontos, chegou: l.pontos > 0 })));
         if (turma.size >= 2) db.registrarCopa(ctx.comunidade ?? 0, turma.size);
         fase = 'fim';
         ctx.terminar();
@@ -216,6 +288,42 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
 
       const numero = (v: unknown) => typeof v === 'number' && Number.isFinite(v);
 
+      /**
+       * A POSIÇÃO AO VIVO TEM DE SER UMA QUE O KART ALCANÇA (revisão independente, 03/11/2026). O servidor não conhece o chão,
+       * mas sabe o quanto o kart anda por passo, no máximo:
+       * - o passo `n` só cresce, e não passa do relógio do servidor desde o verde (mais a folga da largada de cada um);
+       * - a primeira sai da largada, perto da linha de chegada; as outras, no máximo ANDA_POR_PASSO por passo desde a anterior,
+       *   e os passos contados são também no máximo os do relógio do servidor desde que a anterior chegou, mais 1 s (sem isso,
+       *   quem mandasse `n` atrasado juntaria passos para "pular" depois);
+       * - o quanto andou na volta (`andou`) acompanha o caminho: a fração da volta não anda mais que o dobro do que o kart
+       *   andou (por dentro da curva a linha do meio é mais longa), e a volta inteira só sobe de um em um, cruzando a linha
+       *   para a frente, depois de ter passado pela metade (a mesma regra do kart do site).
+       * A posição recusada não é repassada nem vira a "última": a próxima é conferida contra a última aceita.
+       */
+      const posicaoPossivel = (p: Piloto, x: number, y: number, n: number, andou: number) => {
+        const def = PISTAS[corridas[indice]];
+        if (!def || !Number.isInteger(n) || n < 1) return false;
+        if (n > ((agora() - verdeEm) * 60) / 1000 + PASSOS_DE_FOLGA) return false;
+        const u = p.ultima;
+        if (!u) {
+          if (Math.floor(andou) !== 0) return false;
+          return Math.hypot(x - def.linha[0], y - def.linha[1]) <= PERTO_DA_LINHA_NA_LARGADA + n * ANDA_POR_PASSO;
+        }
+        if (n <= u.n) return false;
+        const passos = Math.min(n - u.n, ((agora() - u.em) * 60) / 1000 + 60);
+        const alcance = passos * ANDA_POR_PASSO + FOLGA_DA_POSICAO;
+        if (Math.hypot(x - u.x, y - u.y) > alcance) return false;
+        if (distanciaNaVolta((andou % 1) * def.comprimento, (u.andou % 1) * def.comprimento, def.comprimento) > 2 * alcance + 40) return false;
+        const volta = Math.floor(andou) - Math.floor(u.andou);
+        const fracao = andou % 1;
+        if (volta !== 0) {
+          if (volta !== 1 || !p.meio || u.andou % 1 < 0.5 || fracao >= 0.5) return false;
+          p.meio = false;
+        }
+        if (fracao >= 0.3 && fracao <= 0.7) p.meio = true;
+        return true;
+      };
+
       return {
         publico: () => ({
           fase,
@@ -226,9 +334,9 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
           corridas: corridas.length,
           voltasDaCorrida: VOLTAS,
           itens: true,
-          pilotos: classificacao().map(({ userId, username, tempoMs, voltas }) => ({ userId, username, tempoMs, voltas, avatar: avatares.get(userId) ?? null })),
-          placarDaCopa: copa ? placarDaCopa().map(({ userId, username, pontos: p }) => ({ userId, username, pontos: p })) : null,
-          ultima: resultados.length ? resultados[resultados.length - 1].pilotos.map(({ userId, username, tempoMs }) => ({ userId, username, tempoMs })) : null,
+          pilotos: classificacao().map(({ userId, username, tempoMs, voltas, posicao }) => ({ userId, username, tempoMs, voltas, posicao, avatar: avatares.get(userId) ?? null })),
+          placarDaCopa: copa ? placarDaCopa().map(({ userId, username, pontos: p, posicao }) => ({ userId, username, pontos: p, posicao })) : null,
+          ultima: resultados.length ? resultados[resultados.length - 1].pilotos.map(({ userId, username, tempoMs, posicao }) => ({ userId, username, tempoMs, posicao })) : null,
           prazo: prazoAberto,
         }),
         acao(quem, corpo) {
@@ -272,24 +380,38 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
             if (d.tipo === 'repolho') {
               if (!numero(d.s) || !numero(d.lado) || Math.abs(d.lado as number) > 60 || (d.s as number) < 0 || (d.s as number) > 20000) return null;
               const comprimento = PISTAS[corridas[indice]]?.comprimento ?? 3000;
-              const onde = (u.andou % 1) * comprimento;
-              const dist = Math.abs((((d.s as number) - onde) % comprimento + comprimento * 1.5) % comprimento - comprimento / 2);
-              if (dist > 80) return null;
+              if (distanciaNaVolta(d.s as number, (u.andou % 1) * comprimento, comprimento) > 80) return null;
               p.itens++;
               p.ultimoItem = agora();
-              itensDaCorrida.add(id);
+              itensDaCorrida.set(id, { tipo: 'repolho', dono: quem, n: Math.round(d.n as number), s: d.s as number });
               return { tipo: 'repolho', id, dono: quem, n: Math.round(d.n as number), s: d.s, lado: d.lado };
             }
             if (!numero(d.x) || !numero(d.y) || (d.x as number) < 0 || (d.y as number) < 0 || (d.x as number) > 1024 || (d.y as number) > 1024) return null;
             if (Math.hypot((d.x as number) - u.x, (d.y as number) - u.y) > 30) return null;
             p.itens++;
             p.ultimoItem = agora();
-            itensDaCorrida.add(id);
+            itensDaCorrida.set(id, { tipo: 'lama', dono: quem, n: Math.round(d.n as number), x: d.x as number, y: d.y as number });
             return { tipo: 'lama', id, dono: quem, n: Math.round(d.n as number), x: d.x, y: d.y };
           }
           if (d.tipo === 'acertou') {
             // quem foi atingido avisa, para o item sumir para todos
-            if (typeof d.id !== 'string' || !itensDaCorrida.has(d.id) || itensQueAcertaram.has(d.id) || p.acertos >= 40) return null;
+            if (typeof d.id !== 'string' || itensQueAcertaram.has(d.id) || p.acertos >= 40) return null;
+            const item = itensDaCorrida.get(d.id);
+            if (!item) return null;
+            // E SÓ QUEM PODIA TER SIDO ATINGIDO (revisão independente, 03/11/2026: um script que respondia "acertou" a todo
+            // item sumia com todos): não o dono, e só quem estava perto do item, pela última posição aceita dele. O site
+            // manda a posição a cada 4 passos, antes de conferir os itens, então ela é de no máximo 3 passos antes do acerto.
+            const u = p.ultima;
+            if (item.dono === quem || !u) return null;
+            if (item.tipo === 'lama') {
+              if (u.n < item.n - AMOSTRA_DA_POSICAO || u.n - item.n > VIDA_DA_LAMA + AMOSTRA_DA_POSICAO) return null;
+              if (Math.hypot(u.x - item.x, u.y - item.y) > PERTO_DA_LAMA) return null;
+            } else {
+              if (u.n < item.n - AMOSTRA_DA_POSICAO || u.n - item.n > VIDA_DO_REPOLHO + AMOSTRA_DA_POSICAO) return null;
+              const comprimento = PISTAS[corridas[indice]]?.comprimento ?? 3000;
+              const onde = item.s + (VELOCIDADE_DO_REPOLHO * Math.max(0, u.n - item.n)) / 60;
+              if (distanciaNaVolta(onde, (u.andou % 1) * comprimento, comprimento) > PERTO_DO_REPOLHO) return null;
+            }
             p.acertos++;
             itensQueAcertaram.add(d.id);
             return { tipo: 'acertou', id: d.id };
@@ -298,8 +420,9 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
           if (![x, y, a, n, andou].every(numero)) return null;
           if ((x as number) < 0 || (y as number) < 0 || (x as number) > 1024 || (y as number) > 1024) return null;
           if ((andou as number) < 0 || (andou as number) > VOLTAS) return null;
+          if (!posicaoPossivel(p, x as number, y as number, n as number, andou as number)) return null;
           if (p.tempoMs === null) p.andou = andou as number;
-          p.ultima = { x: x as number, y: y as number, n: n as number, andou: andou as number };
+          p.ultima = { x: x as number, y: y as number, n: n as number, andou: andou as number, em: agora() };
           return { userId: quem, x, y, a, n, andou };
         },
         conferir,

@@ -208,3 +208,51 @@ test('segurar o "subir" não enche o ritmo: ele só é gravado quando faz efeito
   const subidas = s.jogadas.filter((j) => j[1] === 1).length;
   assert.ok(subidas < s.e.passo / 8, `${subidas} "subir" em ${s.e.passo} passos`);
 });
+
+// ---------------- A revisão independente de 03/11/2026 ----------------
+
+test('o servidor recusou um lote: as trocas feitas enquanto ele ia continuam, depois da lista aceita, e esperam envio', async () => {
+  const { acertarComOServidor } = await import('../src/blocos/acerto.ts');
+  // aceitas antes: [10]; o lote em voo levou [20] e [30] (o 30 foi recusado); depois dele, aqui, [40] e [44]
+  const local = {
+    jogadas: [[10, 0, 5, 1], [20, 0, 5, 2], [30, 0, 5, 3], [40, 0, 6, 1], [44, 0, 6, 2]] as Sim.Jogada[],
+    enviadasIdx: 1,
+    deBase: 1,
+    versao: 0,
+    pronto: true,
+  };
+  const meu = { recebidas: 3, versao: 1, passo: 35, jogadas: [[10, 0, 5, 1], [20, 0, 5, 2]] as Sim.Jogada[] };
+  const r = acertarComOServidor(local, meu);
+  assert.ok(r.refazer);
+  assert.equal(r.recusada, true, 'a tela diz que uma jogada não valeu');
+  assert.deepEqual(r.jogadas.map((j) => j[0]), [10, 20, 40, 44], 'as feitas depois do lote ficam');
+  assert.equal(r.enviadasIdx, 2, 'e vão no próximo lote');
+  assert.equal(r.deBase, 3);
+  // uma troca de antes do passo do servidor não pode mais entrar: ela fica de fora, e não as outras
+  const r2 = acertarComOServidor({ ...local, jogadas: [...local.jogadas.slice(0, 3), [33, 0, 6, 1], [40, 0, 6, 2]] }, meu);
+  assert.deepEqual(r2.jogadas.map((j) => j[0]), [10, 20, 40]);
+  // sem recusa, só anda o que o servidor já leu
+  const r3 = acertarComOServidor(local, { recebidas: 3, versao: 0, passo: 35, jogadas: null });
+  assert.deepEqual([r3.refazer, r3.enviadasIdx, r3.deBase, r3.recusada], [false, 3, 3, false]);
+  // o painel aberto de novo (ainda sem a lista): pega a do servidor, sem dizer que algo não valeu
+  const r4 = acertarComOServidor({ jogadas: [], enviadasIdx: 0, deBase: 0, versao: 0, pronto: false }, meu);
+  assert.deepEqual([r4.refazer, r4.recusada, r4.jogadas.length, r4.enviadasIdx], [true, false, 2, 2]);
+});
+
+test('a sincronia do painel aberto de novo é pedida uma vez só (o efeito duplo do modo estrito não a pede de novo)', async () => {
+  const { pedirSincroniaUmaVez } = await import('../src/blocos/acerto.ts');
+  const g = { pediuSincronia: false };
+  let pedidos = 0;
+  pedirSincroniaUmaVez(g, () => pedidos++);
+  pedirSincroniaUmaVez(g, () => pedidos++);
+  assert.equal(pedidos, 1);
+});
+
+test('fora da partida no servidor: a tela para, e diz se foi o topo ou a saída da sala', async () => {
+  const { foraDoJogo } = await import('../src/blocos/acerto.ts');
+  const jogadores = [{ userId: 1, saiu: true }, { userId: 2, saiu: false }];
+  assert.equal(foraDoJogo({ meu: { fim: false }, jogadores }, 2), null);
+  assert.equal(foraDoJogo({ meu: { fim: true }, jogadores }, 1), 'saiu');
+  assert.equal(foraDoJogo({ meu: { fim: true }, jogadores }, 2), 'topo');
+  assert.equal(foraDoJogo({ meu: null, jogadores }, 2), null);
+});

@@ -36,6 +36,20 @@ export interface Rival {
   posicoes: PosicaoDoRival[];
 }
 
+/**
+ * Guarda a posição que chegou de um rival. A de passo menor que a última fica de fora (chegou velha), MENOS quando o passo
+ * volta muito: é a corrida nova dele (revisão independente, 03/11/2026: a página recarregada recomeçava do passo 0, e esta
+ * tela descartava tudo dali em diante, com o coelho dele congelado). Aí a lista recomeça. A mesma medida do servidor
+ * (RECOMECO_PASSOS, em server/src/minijogo-plataforma.ts).
+ */
+export function guardarPosicaoDoRival(r: Rival, p: PosicaoDoRival) {
+  const ultima = r.posicoes.at(-1);
+  if (ultima && p.n < ultima.n - 60) r.posicoes = [];
+  else if (ultima && ultima.n >= p.n) return;
+  r.posicoes.push(p);
+  if (r.posicoes.length > 2000) r.posicoes.splice(0, 1000);
+}
+
 /** Onde um rival estava no passo `n`, entre duas posições; depois da última, a última (sem adivinhar o pulo dele). */
 export function rivalEm(posicoes: PosicaoDoRival[], n: number): PosicaoDoRival | null {
   if (posicoes.length === 0) return null;

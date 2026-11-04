@@ -214,7 +214,16 @@ export function registerModeracaoRoutes(app: FastifyInstance, io: IOServer) {
           // os recordes do Pulo do coelho, com o fantasma (ver plataforma-routes.ts)
           puloDoCoelho: db.pulosDe(eu.id),
           // quem entra no quarto, os convidados (ids) e o destaque da estante de troféus (ver trofeus-routes.ts)
-          quarto: { quemVisita: db.acessoDoQuarto(eu.id), convidados: db.convidadosDoQuarto(eu.id), destaqueDosTrofeus: db.destaqueDe(eu.id) },
+          // (com a arrumação: a política diz que ela é guardada, e faltava aqui — auditoria de 03/11/2026)
+          quarto: {
+            arrumacao: (() => {
+              const q = db.lerQuarto(eu.id);
+              return q ? { ...JSON.parse(q.arrumacao), guardadaEm: q.em } : null;
+            })(),
+            quemVisita: db.acessoDoQuarto(eu.id),
+            convidados: db.convidadosDoQuarto(eu.id),
+            destaqueDosTrofeus: db.destaqueDe(eu.id),
+          },
         },
         // Os cargos personalizados e os pontos de nível também são dados sobre a pessoa, e vão junto.
         comunidades: db.listCommunitiesForUser(eu.id).map((c) => {

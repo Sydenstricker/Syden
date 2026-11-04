@@ -33,10 +33,26 @@ export const FOLGA_MS = 3000;
 /** O passo da posição ao vivo pode estar até isto à frente do relógio do servidor (3 s). */
 export const PASSOS_DE_FOLGA = 180;
 
+/**
+ * O mais rápido que um coelho anda por passo, levado pela plataforma mais rápida (a corrida, 110/s, mais a plataforma,
+ * 145/s: as mesmas medidas de plataforma.ts), e um tanto para o arredondamento.
+ */
+const PX_POR_PASSO = (110 + 145) / 60;
+const FOLGA_PX = 2;
+/** O passo que cai mais que isto (1 s) de uma posição para a outra é uma corrida nova: a página recarregada. */
+export const RECOMECO_PASSOS = 60;
+
 interface Corredor {
   tempoMs: number | null;
-  /** O quanto andou (0 a 1), pelo que a pessoa mandou por último: ordena quem não chegou. */
+  /** O quanto andou (0 a 1), pelo que a pessoa mandou por último (limitado: ver o tempo real): ordena quem não chegou. */
   andou: number;
+  /** O maior passo que chegou dela nesta fase. */
+  maiorN: number;
+  /** O x (já limitado) e o passo da última posição que contou para o quanto andou. */
+  refX: number;
+  refN: number;
+  /** Recomeçou no meio da fase (o passo voltou muito): a chegada dela nesta fase não vale. */
+  recomecou: boolean;
 }
 
 interface Linha {
@@ -122,7 +138,8 @@ export function criarPlataforma(agora: () => number = Date.now): Definicao {
 
       const largar = () => {
         const presentes = ctx.naSala().filter((id) => inscritos.includes(id));
-        corredores = new Map(presentes.map((id) => [id, { tempoMs: null, andou: 0 }]));
+        const largadaX = FASES_DO_PULO[fases[indice]].largada[0];
+        corredores = new Map(presentes.map((id) => [id, { tempoMs: null, andou: 0, maiorN: 0, refX: largadaX, refN: 0, recomecou: false }]));
         ficaramNaFase = null;
         fase = 'largada';
         prazoAberto = false;
@@ -228,6 +245,10 @@ export function criarPlataforma(agora: () => number = Date.now): Definicao {
           if (corpo.tipo !== 'chegada') return 'Ação desconhecida.';
           if (fase !== 'correndo') return 'A corrida não está andando.';
           if (c.tempoMs !== null) return null;
+          // QUEM RECOMEÇOU NO MEIO (revisão independente, 03/11/2026): a página recarregada corria de novo do passo 0, com o
+          // relógio limpo, e o tempo dela só era conferido contra o verde, que fica bem antes; uma corrida nova valia como a
+          // primeira. O site, aberto no meio da fase, assiste; e aqui a chegada de quem recomeçou não vale.
+          if (c.recomecou) return 'Corrida inválida.';
           const v = validarPulo(fases[indice], corpo);
           if ('erro' in v) return v.erro;
           if (v.ok.tempoMs > agora() - verdeEm + FOLGA_MS) return 'Corrida inválida.';
@@ -257,8 +278,19 @@ export function criarPlataforma(agora: () => number = Date.now): Definicao {
           if (!numero(x) || !numero(y) || !numero(n) || !numero(j)) return null;
           const passoMaximo = ((agora() - verdeEm) * 60) / 1000 + PASSOS_DE_FOLGA;
           if (x < 0 || x > def.largura || y < -64 || y > 260 || n < 0 || n > passoMaximo || ![-2, -1, 1, 2].includes(j)) return null;
-          const andou = Math.round(Math.max(0, Math.min(1, (x - def.largada[0]) / (def.chegada - def.largada[0]))) * 1000) / 1000;
-          if (c.tempoMs === null) c.andou = andou;
+          const progresso = (px: number) => Math.round(Math.max(0, Math.min(1, (px - def.largada[0]) / (def.chegada - def.largada[0]))) * 1000) / 1000;
+          // o passo que volta muito é uma corrida nova (ver a chegada)
+          if (n < c.maiorN - RECOMECO_PASSOS) c.recomecou = true;
+          c.maiorN = Math.max(c.maiorN, n);
+          // O QUANTO ANDOU, PARA A ORDEM DE QUEM NÃO CHEGA, não pula mais que o coelho corre desde a posição anterior (revisão
+          // independente, 03/11/2026: o console mandava o x da chegada e ficava na frente de todos os que não chegaram). Para
+          // trás pode (a volta ao posto). O que vai aos outros é o x de verdade: é onde o coelho deles é desenhado.
+          if (c.tempoMs === null && !c.recomecou) {
+            c.refX = Math.min(x, c.refX + Math.max(0, n - c.refN) * PX_POR_PASSO + FOLGA_PX);
+            c.refN = Math.max(c.refN, n);
+            c.andou = progresso(c.refX);
+          }
+          const andou = progresso(x);
           return { userId: quem, x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10, n: Math.round(n), j, andou };
         },
         conferir,

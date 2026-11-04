@@ -294,7 +294,7 @@ export default {
   'Convidar para voz': 'ወደ ድምፅ መጋበዝ',
   'Convite enviado': 'ግብዣ ተልኳል',
   'Não deu para convidar essa pessoa.': 'ይህን ሰው መጋበዝ አልተቻለም።',
-  '{quem} chama você para a voz': '{quem} ወደ ድምፅ ይጋብዝዎታል',
+  '{quem} chama você para a voz': '{quem} ወደ ድምፅ ይጋብዙዎታል',
   'Enviado. Confira a sua caixa.': 'ተልኳል። የመልእክት ሳጥንዎን ይመልከቱ።',
   'Enviando…': 'በመላክ ላይ…',
   'Enviar': 'ላክ',
@@ -2430,6 +2430,6 @@ export default {
   'Conquistas da turma: {comunidade}': 'የቡድኑ ስኬቶች፦ {comunidade}',
   'O quarto de {nome}': 'የ{nome} ክፍል',
   'Este quarto não está aberto para visita.': 'ይህ ክፍል ለጉብኝት ክፍት አይደለም።',
-  '{quem} chama você para visitar o quarto': '{quem} ክፍሉን እንዲጎበኙ ይጋብዝዎታል',
+  '{quem} chama você para visitar o quarto': '{quem} ክፍሉን እንዲጎበኙ ይጋብዙዎታል',
   'Convite para o quarto': 'የክፍል ግብዣ',
 } satisfies Record<string, string>;

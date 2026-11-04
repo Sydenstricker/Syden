@@ -315,9 +315,15 @@ export function criarBriga({
       const presentes = () => new Set(ctx.naSala());
       /** Quem está na sala, lido UMA vez por passo (o naSala percorre a voz do servidor inteiro). */
       let naSalaAgora = presentes();
+      /** Quem estava na sala no passo anterior: quem volta é posto na arena de agora (ver o passo). */
+      let naSalaAntes = naSalaAgora;
       const emPe = () => [...jogadores.values()].filter((j) => j.estado === 'em-pe' && naSalaAgora.has(j.userId));
 
       // ---------------- AS ONDAS ----------------
+      /** O x do coelho dentro da arena, como o site o prende (passoDoCoelho: a arena menos 8 de cada lado). */
+      const prenderNaArena = (j: Jogador) => {
+        j.x = Math.max(arena[0] + 8, Math.min(arena[1] - 8, j.x));
+      };
       const comecarOnda = (k: number) => {
         onda = k;
         fase = 'lutando';
@@ -333,6 +339,10 @@ export function criarBriga({
         // a turma desta onda: quem estava na sala quando ela começou
         const p = presentes();
         ficaram = new Set([...ficaram].filter((id) => p.has(id)));
+        // TODO MUNDO PARA DENTRO DA ARENA NOVA (revisão independente, 03/11/2026): o site prende o coelho nela na hora, mas o
+        // servidor o levava andando pelo crédito de velocidade, e por alguns segundos todo acerto dava "longe de si" e os
+        // inimigos corriam atrás de um lugar onde ele já não estava. Aqui ele vai para o mesmo lugar em que a tela o põe.
+        for (const j of jogadores.values()) prenderNaArena(j);
         ctx.avisar();
       };
 
@@ -637,7 +647,17 @@ export function criarBriga({
         const t = agora();
         const dt = PASSO_MS / 1000;
         passo++;
+        naSalaAntes = naSalaAgora;
         naSalaAgora = presentes();
+        // QUEM VOLTA À SALA (revisão independente, 03/11/2026): a posição dele no servidor é a de quando saiu, talvez numa
+        // arena que já ficou para trás; vai para dentro da de agora, com o tempo livre da volta (o site o põe onde o
+        // servidor disser, e anda dali)
+        for (const j of jogadores.values()) {
+          if (naSalaAgora.has(j.userId) && !naSalaAntes.has(j.userId)) {
+            prenderNaArena(j);
+            j.livreAte = t + 1500;
+          }
+        }
         if (fase === 'lutando' || fase === 'avancando') {
           // NINGUÉM DA TURMA NA SALA (nem que fique alguém assistindo): a fase acaba, perdida e sem troféu. Sem isso o passo
           // seguia 20 vezes por segundo por até 8 minutos, e a sala ficava presa em "já tem uma partida acontecendo".
@@ -732,6 +752,9 @@ export function criarBriga({
             j.pontos,
             j.estado === 'em-pe' ? 0 : j.estado === 'fora' ? 1 : 2,
             j.avatar ?? 0,
+            // o último golpe que o servidor aceitou: a página recarregada continua a contar dali (revisão independente,
+            // 03/11/2026: ela recomeçava do 1, e nenhum golpe valia até passar da conta de antes)
+            j.ultimoAtaque,
           ]),
           e: eventos,
         });
@@ -753,21 +776,29 @@ export function criarBriga({
         relogio = null;
       };
 
-      let resultado: { userId: number; username: string; pontos: number; golpes: number; nocautes: number }[] | null = null;
+      let resultado: { userId: number; username: string; pontos: number; golpes: number; nocautes: number; posicao: number | null }[] | null = null;
       const terminar = (venceu: boolean, completa = true) => {
         parar();
         fase = 'fim';
         const p = presentes();
         const turma = new Set([...ficaram].filter((id) => p.has(id)));
-        resultado = [...jogadores.values()]
+        const linhas = [...jogadores.values()]
           .map((j) => ({ userId: j.userId, username: ctx.nome(j.userId), pontos: j.pontos, golpes: j.golpes, nocautes: j.nocautes }))
           .sort((a, b) => b.pontos - a.pontos || a.username.localeCompare(b.username));
+        // A POSIÇÃO vai daqui, só entre a turma (quem estava no começo de toda onda e no fim; empatados dividem), e null para
+        // quem saiu, que vem depois (revisão independente, 03/11/2026: a tela dava medalha a todas as linhas, inclusive
+        // depois de perder e no Solo, e o troféu não). A medalha, a tela só põe com a fase vencida, fora do Solo e com 2 ou
+        // mais que ficaram: a mesma regra do pódio, logo abaixo.
+        const daTurma = linhas.filter((l) => turma.has(l.userId));
+        resultado = [
+          ...daTurma.map((l) => ({ ...l, posicao: 1 + daTurma.filter((o) => o.pontos > l.pontos).length })),
+          ...linhas.filter((l) => !turma.has(l.userId)).map((l) => ({ ...l, posicao: null })),
+        ];
         // O PÓDIO: fase vencida, 2 pessoas ou mais que ficaram até o fim, até o 3º (empatados dividem), só quem fez ponto
         if (venceu && !solo && turma.size >= 2) {
-          const daTurma = resultado.filter((l) => turma.has(l.userId));
-          for (const l of daTurma) {
-            const posicao = 1 + daTurma.filter((o) => o.pontos > l.pontos).length;
-            if (posicao > 3 || l.pontos <= 0) continue;
+          for (const l of resultado) {
+            const posicao = l.posicao;
+            if (posicao === null || posicao > 3 || l.pontos <= 0) continue;
             db.guardarTrofeu({
               userId: l.userId,
               evento,

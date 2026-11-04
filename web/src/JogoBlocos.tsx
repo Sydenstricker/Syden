@@ -2,6 +2,7 @@ import { ChevronsUp, Infinity as SemFim, Timer } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { ALTURA, desenharMiniatura, desenharTabuleiro, LARGURA, PECA, type Enfeites } from './blocos/desenho';
 import { MAX_NA_FILA, registrarEntrada, type Entrada } from './blocos/entrada';
+import { acertarComOServidor, foraDoJogo, pedirSincroniaUmaVez } from './blocos/acerto';
 import { escolherJogada } from './blocos/piloto';
 import * as Sim from './blocos/sim';
 import { useT } from './i18n';
@@ -41,6 +42,8 @@ interface Caixa {
   pronto: boolean;
   /** Até quando (Date.now) a tela diz que uma jogada não valeu (o servidor a recusou). */
   recusadaAte: number;
+  /** Já pediu ao servidor a lista do que ele leu (o painel aberto de novo no meio): uma vez só. */
+  pediuSincronia: boolean;
 }
 
 
@@ -78,7 +81,7 @@ export function JogoBlocos({ estado, eu, jogador, aoAgir }: { estado: EstadoBloc
   const outros = estado.jogadores.filter((j) => j.userId !== eu || !joga);
   return (
     <div className="blocos">
-      {joga && <MeuTabuleiro estado={estado} aoAgir={aoAgir} />}
+      {joga && <MeuTabuleiro estado={estado} eu={eu} aoAgir={aoAgir} />}
       {outros.length > 0 && (
         <ul className={`blocos-outros${joga ? '' : ' grandes'}`}>
           {outros.map((j) => (
@@ -138,7 +141,7 @@ const tempoLegivel = (passos: number) => {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 };
 
-function MeuTabuleiro({ estado, aoAgir }: { estado: EstadoBlocos & Partida; aoAgir: Agir }) {
+function MeuTabuleiro({ estado, eu, aoAgir }: { estado: EstadoBlocos & Partida; eu: number; aoAgir: Agir }) {
   const t = useT();
   const tela = useRef<HTMLCanvasElement>(null);
   const atual = useRef(estado);
@@ -173,6 +176,7 @@ function MeuTabuleiro({ estado, aoAgir }: { estado: EstadoBlocos & Partida; aoAg
     // o painel aberto de novo no meio da partida: espera a lista de jogadas do servidor antes de andar
     pronto: !estado.meu || estado.meu.recebidas === 0,
     recusadaAte: 0,
+    pediuSincronia: false,
   }));
   const [painel, setPainel] = useState({ pontos: 0, passo: 0, fim: false, lixos: 0, recusada: false });
 
@@ -181,24 +185,17 @@ function MeuTabuleiro({ estado, aoAgir }: { estado: EstadoBlocos & Partida; aoAg
     const g = caixa;
     const meu = estado.meu;
     if (!meu) return;
-    let refazer = false;
-    let jogadas = g.s.jogadas;
-    // a lista do servidor (quando ele já recusou alguma) tem de ser o começo da daqui; senão, vale a dele
-    const igual = (a: Sim.Jogada, b: readonly number[]) => a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3];
-    const divergiu = meu.jogadas !== null && (meu.jogadas.length > g.s.jogadas.length || meu.jogadas.some((j, i) => !igual(g.s.jogadas[i], j)));
-    if (meu.jogadas && (meu.versao > g.versao || divergiu)) {
-      // o servidor recusou alguma jogada daqui (e não foi só o painel aberto de novo): a tela diz, em vez de sumir com ela
-      if (g.pronto && meu.versao > g.versao) g.recusadaAte = Date.now() + 2500;
-      g.versao = meu.versao;
-      jogadas = meu.jogadas.map((j) => [...j] as Sim.Jogada);
-      g.enviadasIdx = jogadas.length;
-      g.deBase = meu.recebidas;
-      g.pronto = true;
-      refazer = true;
-    } else if (meu.recebidas > g.deBase) {
-      g.enviadasIdx = Math.min(g.s.jogadas.length, g.enviadasIdx + (meu.recebidas - g.deBase));
-      g.deBase = meu.recebidas;
-    }
+    // a lista do servidor (quando ele já recusou alguma) tem de ser o começo da daqui; senão, vale a dele, com as trocas
+    // daqui que ele ainda não leu depois dela (blocos/acerto.ts)
+    const a = acertarComOServidor({ jogadas: g.s.jogadas, enviadasIdx: g.enviadasIdx, deBase: g.deBase, versao: g.versao, pronto: g.pronto }, meu);
+    // o servidor recusou alguma jogada daqui (e não foi só o painel aberto de novo): a tela diz, em vez de sumir com ela
+    if (a.recusada) g.recusadaAte = Date.now() + 2500;
+    g.enviadasIdx = a.enviadasIdx;
+    g.deBase = a.deBase;
+    g.versao = a.versao;
+    g.pronto = a.pronto;
+    let refazer = a.refazer;
+    const jogadas = a.jogadas;
     const conhecidos = new Set(g.s.lixos.map((l) => l.id));
     const novos = meu.lixos.filter((l) => !conhecidos.has(l.id));
     if (novos.some((l) => l.n < g.s.e.passo)) refazer = true;
@@ -253,7 +250,8 @@ function MeuTabuleiro({ estado, aoAgir }: { estado: EstadoBlocos & Partida; aoAg
       id = requestAnimationFrame(quadroDoJogo);
       const e = atual.current;
       const auto = import.meta.env.DEV && (window as { blocosPilotoAutomatico?: boolean }).blocosPilotoAutomatico;
-      if (e.fase === 'jogando' && !g.s.e.fim && g.pronto) {
+      // fora da partida no servidor (a pilha dele chegou ao topo, ou a pessoa saiu da sala), a daqui para: ela não conta mais
+      if (e.fase === 'jogando' && !g.s.e.fim && g.pronto && !e.meu?.fim) {
         const ate = alvo();
         for (let k = 0; g.s.e.passo < ate && !g.s.e.fim && k < 600; k++) {
           const n = g.s.e.passo;
@@ -273,14 +271,15 @@ function MeuTabuleiro({ estado, aoAgir }: { estado: EstadoBlocos & Partida; aoAg
       for (const a of g.avisos) a.idade++;
       g.avisos = g.avisos.filter((a) => a.idade < 60);
       const contagem = e.fase === 'largada' && inicio.current !== null ? Math.max(1, Math.ceil((inicio.current - Date.now()) / 1000)) : null;
-      desenharTabuleiro(ctx, g.s.e, { cursor: g.cursor, escolhida: g.escolhida, avisos: g.avisos, contagem, apagado: g.s.e.fim !== null });
+      const fim = g.s.e.fim !== null || e.meu?.fim === true;
+      desenharTabuleiro(ctx, g.s.e, { cursor: g.cursor, escolhida: g.escolhida, avisos: g.avisos, contagem, apagado: fim });
       if (++quadro % 6 === 0) {
         const lixos = g.s.e.fila.reduce((a, l) => a + l.altura, 0) + g.s.lixos.filter((l) => l.n >= g.s.e.passo).reduce((a, l) => a + l.altura, 0);
         const recusada = Date.now() < g.recusadaAte;
         setPainel((p) =>
-          p.pontos === g.s.e.pontos && p.passo === g.s.e.passo && p.fim === (g.s.e.fim !== null) && p.lixos === lixos && p.recusada === recusada
+          p.pontos === g.s.e.pontos && p.passo === g.s.e.passo && p.fim === fim && p.lixos === lixos && p.recusada === recusada
             ? p
-            : { pontos: g.s.e.pontos, passo: g.s.e.passo, fim: g.s.e.fim !== null, lixos, recusada },
+            : { pontos: g.s.e.pontos, passo: g.s.e.passo, fim, lixos, recusada },
         );
       }
     };
@@ -309,7 +308,8 @@ function MeuTabuleiro({ estado, aoAgir }: { estado: EstadoBlocos & Partida; aoAg
     };
     const lotes = setInterval(enviar, 150);
     // aberto no meio: pede ao servidor a lista do que ele já leu (ela vem no estado seguinte)
-    if (!g.pronto) void agirRef.current({ tipo: 'sincronizar' }).catch(() => {});
+    // (uma vez só: o modo estrito roda este efeito duas vezes, e a segunda sincronia virava um falso "Uma jogada não valeu.")
+    if (!g.pronto) pedirSincroniaUmaVez(g, () => void agirRef.current({ tipo: 'sincronizar' }).catch(() => {}));
 
     // A PAUSA (só no Solo) e as teclas soltas quando a janela perde o foco
     const conferirFoco = () => {
@@ -423,6 +423,7 @@ function MeuTabuleiro({ estado, aoAgir }: { estado: EstadoBlocos & Partida; aoAg
   };
 
   const restante = estado.modo === 'dois-minutos' ? Sim.DOIS_MINUTOS - painel.passo : painel.passo;
+  const fora = foraDoJogo(estado, eu);
   return (
     <div className="blocos-jogo">
       <div className="blocos-topo">
@@ -449,7 +450,11 @@ function MeuTabuleiro({ estado, aoAgir }: { estado: EstadoBlocos & Partida; aoAg
         onPointerCancel={soltar}
         onLostPointerCapture={soltar}
       />
-      {painel.fim && versus && <p className="minijogo-situacao">{t('Sua pilha chegou ao topo.')}</p>}
+      {fora === 'saiu' ? (
+        <p className="minijogo-situacao">{t('Você saiu da sala, e a partida continuou sem você.')}</p>
+      ) : (
+        painel.fim && versus && <p className="minijogo-situacao">{t('Sua pilha chegou ao topo.')}</p>
+      )}
       {painel.recusada && !painel.fim && (
         <p className="minijogo-situacao blocos-recusada" role="status">
           {t('Uma jogada não valeu.')}

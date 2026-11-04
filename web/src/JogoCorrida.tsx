@@ -4,10 +4,10 @@ import type { Socket } from 'socket.io-client';
 import { api } from './api';
 import { useT } from './i18n';
 import { passosEmMs, tempoLegivel, type Comandos } from './corrida/fisica';
-import { pistaDaCorrida, rodarCorrida, type EventoDeItem, type Item, type LinhaDaOrdem, type PosicaoDoRival, type Rival } from './corrida/laco';
+import { rodarCorrida, type EventoDeItem, type Item, type LinhaDaOrdem, type PosicaoDoRival, type Rival } from './corrida/laco';
 import { nomeDaPistaEm } from './corrida/nomes';
-import { COPAS, HORTA, PISTAS, pistaPorId, type DefinicaoDaPista } from './corrida/pista';
-import { H, mapaDaPista, pontoNoMapa, W } from './corrida/render';
+import { COPAS, HORTA, linhaDaPista, MUNDO, PISTAS, pistaPorId, type DefinicaoDaPista } from './corrida/pista';
+import { H, pontoNoMapa, W } from './corrida/render';
 import type { Agir } from './Minijogo';
 import type { Partida } from './minijogos';
 import { Trofeus } from './Trofeus';
@@ -164,20 +164,33 @@ function usePlacar() {
   return [placar, atualizar] as const;
 }
 
-/** O mapa de uma pista, desenhado quando a pista fica pronta (montar cada uma leva uns 300 ms, uma vez por página). */
+/**
+ * O mapa pequeno de uma pista, na escolha: SÓ A LINHA DO MEIO, com a largura do asfalto e a zebra em volta, nas cores do
+ * mapa da corrida. Montar a pista inteira (o chão e a textura) para isto custava ~300 ms e ~24 MB por pista, e a escolha
+ * mostra as seis (revisão independente, 03/11/2026).
+ */
 function MapaDaPista({ def, lado }: { def: DefinicaoDaPista; lado: number }) {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
-    const quadro = requestAnimationFrame(() => {
-      const p = pistaDaCorrida(def);
-      const alvo = ref.current?.getContext('2d');
-      if (!alvo) return;
-      alvo.imageSmoothingEnabled = false;
-      alvo.clearRect(0, 0, lado, lado);
-      alvo.drawImage(mapaDaPista(p, lado), 0, 0);
-      pontoNoMapa(alvo, 0, 0, lado, p.largada.x, p.largada.y, '#ffa24a');
-    });
-    return () => cancelAnimationFrame(quadro);
+    const alvo = ref.current?.getContext('2d');
+    if (!alvo) return;
+    const { lx, ly } = linhaDaPista(def);
+    const k = lado / MUNDO;
+    alvo.clearRect(0, 0, lado, lado);
+    alvo.lineJoin = alvo.lineCap = 'round';
+    const tracar = (cor: string, largura: number) => {
+      alvo.beginPath();
+      for (let i = 0; i < lx.length; i++) alvo[i ? 'lineTo' : 'moveTo'](lx[i] * k, ly[i] * k);
+      alvo.closePath();
+      alvo.strokeStyle = cor;
+      alvo.lineWidth = largura;
+      alvo.stroke();
+    };
+    tracar('rgb(214, 104, 92)', (2 * def.meiaLargura + 8) * k);
+    tracar('rgb(236, 228, 214)', 2 * def.meiaLargura * k);
+    // a largada fica três pontos antes da linha, como em montarPista
+    const i0 = lx.length - 3;
+    pontoNoMapa(alvo, 0, 0, lado, lx[i0], ly[i0], '#ffa24a');
   }, [def, lado]);
   return <canvas ref={ref} width={lado} height={lado} aria-hidden="true" style={{ background: corDoFundo(def) }} />;
 }
@@ -445,7 +458,16 @@ export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void
 // NA SALA (a turma corre junto)
 // =====================================================================================================================
 
-type LinhaDaCorrida = { userId: number; username: string; tempoMs: number | null; voltas?: number[]; avatar?: number | null };
+/**
+ * `posicao` vem do servidor: só entre quem ficou até o fim (empatados dividem, a mesma conta do troféu); null para quem
+ * saiu, que vem depois, sem posição nem medalha (revisão independente, 03/11/2026: a tela dava a medalha pela ordem da
+ * lista, com quem saiu dentro dela, e o troféu guardado era outro).
+ */
+type LinhaDaCorrida = { userId: number; username: string; tempoMs: number | null; voltas?: number[]; avatar?: number | null; posicao?: number | null };
+
+/** A marca do lugar no fim: a medalha só para quem tem resultado, entre 2 ou mais que ficaram (como o troféu); senão o número. */
+const marcaDoLugar = (posicao: number | null | undefined, comResultado: boolean, ficaram: number) =>
+  posicao === null || posicao === undefined ? '–' : comResultado && ficaram >= 2 && posicao <= 3 ? MEDALHAS[posicao - 1] : posicao;
 
 /** A corrida da sala, como o servidor a manda (server/src/minijogo-corrida.ts). */
 export interface EstadoCorrida {
@@ -463,7 +485,7 @@ export interface EstadoCorrida {
   /** Em ordem: quem chegou, pelo tempo; depois quem não chegou, pelo quanto andou. */
   pilotos: LinhaDaCorrida[];
   /** Na copa: os pontos somados, do primeiro ao último. */
-  placarDaCopa?: { userId: number; username: string; pontos: number }[] | null;
+  placarDaCopa?: { userId: number; username: string; pontos: number; posicao?: number | null }[] | null;
   /** A classificação da corrida que acabou de acabar (no intervalo e no fim). */
   ultima?: LinhaDaCorrida[] | null;
   prazo: boolean;
@@ -493,15 +515,16 @@ export function JogoCorridaNaSala(props: {
 
   // entre as corridas da copa: a última corrida e o placar somado
   if (estado.fase === 'intervalo' || (fim && copa)) {
+    const ficaram = (estado.placarDaCopa ?? []).filter((l) => l.posicao !== null && l.posicao !== undefined).length;
     return (
       <div className="corrida">
         {cabecalho}
         <div className="corrida-tela corrida-placar-da-copa">
           <div className="corrida-fim">
             <ol className="corrida-classificacao">
-              {(estado.placarDaCopa ?? []).map((p, i) => (
+              {(estado.placarDaCopa ?? []).map((p) => (
                 <li key={p.userId} className={p.userId === eu ? 'eu' : undefined}>
-                  <span className="corrida-posicao">{fim && i < 3 && p.pontos > 0 ? MEDALHAS[i] : i + 1}</span>
+                  <span className="corrida-posicao">{fim ? marcaDoLugar(p.posicao, p.pontos > 0, ficaram) : (p.posicao ?? '–')}</span>
                   <span className="corrida-quem">{p.username}</span>
                   <span className="corrida-pontos">{p.pontos}</span>
                 </li>
@@ -509,9 +532,9 @@ export function JogoCorridaNaSala(props: {
             </ol>
             {estado.ultima && (
               <ol className="corrida-voltas corrida-ultima">
-                {estado.ultima.map((p, i) => (
+                {estado.ultima.map((p) => (
                   <li key={p.userId}>
-                    {i + 1}. {p.username} · {p.tempoMs !== null ? tempoLegivel(p.tempoMs) : '—'}
+                    {p.posicao ?? '–'}. {p.username} · {p.tempoMs !== null ? tempoLegivel(p.tempoMs) : '—'}
                   </li>
                 ))}
               </ol>
@@ -637,6 +660,7 @@ function CorridaDaSala({
   const nomeDe = (id: number) => estado.pilotos.find((p) => p.userId === id)?.username ?? '';
   // depois da minha chegada (e no fim), a lista que vale é a do servidor, com os tempos
   const comTempos = chegou || fim;
+  const ficaram = estado.pilotos.filter((p) => p.posicao !== null && p.posicao !== undefined).length;
 
   return (
     <>
@@ -656,10 +680,10 @@ function CorridaDaSala({
         {comTempos && (
           <div className="corrida-fim">
             <ol className="corrida-classificacao">
-              {estado.pilotos.map((p, i) => (
+              {estado.pilotos.map((p) => (
                 <li key={p.userId} className={p.userId === eu ? 'eu' : undefined}>
                   {/* a posição só no fim: antes, quem ainda corre pode fazer um tempo menor (a tela não afirma o que não é) */}
-                  <span className="corrida-posicao">{!fim ? '' : p.tempoMs !== null && i < 3 ? MEDALHAS[i] : i + 1}</span>
+                  <span className="corrida-posicao">{!fim ? '' : marcaDoLugar(p.posicao, p.tempoMs !== null, ficaram)}</span>
                   <span className="corrida-quem">{p.username}</span>
                   <span className="corrida-relogio">{p.tempoMs !== null ? tempoLegivel(p.tempoMs) : fim ? '—' : '…'}</span>
                 </li>

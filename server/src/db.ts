@@ -4373,7 +4373,7 @@ export function recordeDaCorrida(userId: number, pista: string): { tempoMs: numb
 /** Os troféus da pessoa (para o "Levar seus dados"): só os ids de contra quem, como estão guardados. */
 export function trofeusParaLevar(userId: number) {
   return (db
-    .prepare('SELECT pista, posicao, tempo_ms AS tempoMs, pontos, rivais, em FROM corrida_trofeus WHERE user_id = ? ORDER BY em')
+    .prepare('SELECT id, evento, community_id AS communityId, pista, posicao, tempo_ms AS tempoMs, pontos, rivais, em FROM corrida_trofeus WHERE user_id = ? ORDER BY em')
     .all(userId) as { rivais: string }[]).map((l) => ({ ...l, rivais: JSON.parse(l.rivais) as number[] }));
 }
 

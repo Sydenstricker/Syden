@@ -86,6 +86,9 @@ export interface OpcoesDosBlocos {
 export function criarBlocos({ agora = Date.now, aleatorio = Math.random }: OpcoesDosBlocos = {}): Definicao {
   return {
     minimo: 2,
+    // oito pilhas: o nono que aceitar assiste. Sem o `maximo`, o motor o registrava como quem jogou (nas contas e nas
+    // conquistas) e aqui ele virava espectador calado (revisão independente, 03/11/2026)
+    maximo: MAX_JOGADORES,
     comecar(ctx, { naSala, corpo }) {
       const inscritos = naSala.slice(0, MAX_JOGADORES);
       const pedido = corpo.modo ?? corpo.categoria;

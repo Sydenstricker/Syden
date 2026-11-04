@@ -8,7 +8,7 @@ import { comToken, criarConta, servidorDeTeste } from './ajuda.js';
 
 const { app, fechar } = await servidorDeTeste();
 const festaMod = await import('../src/minijogo-festa.js');
-const { criarFesta, PREPARO_MS, REVELACAO_MS, copoFinal, animacaoDosCopos, valorDaForca, minimoDaSiga, FOLGA_SAQUE } = festaMod;
+const { criarFesta, PREPARO_MS, REVELACAO_MS, copoFinal, animacaoDosCopos, valorDaForca, minimoDaSiga, ATRASO_MAXIMO, FOLGA_DA_REDE } = festaMod;
 type Microjogo = (typeof festaMod.MICROJOGOS)[number];
 after(fechar);
 
@@ -91,7 +91,7 @@ test('o saque: reação abaixo de 100 ms é chute, e a reação declarada não f
   assert.equal(jogo.acao(caioId, { tipo: 'resultado', reacaoMs: 2000 }), null);
   const linhas = jogo.publico(anaId).linhas as Linha[];
   const daAna = linhas.find((l) => l.userId === anaId)!;
-  assert.equal(daAna.valor, 3000 - FOLGA_SAQUE, 'a reação sobe ao que o relógio permite');
+  assert.equal(daAna.valor, 3000 - ATRASO_MAXIMO - FOLGA_DA_REDE, 'a reação sobe ao que o relógio permite');
   assert.equal(linhas.find((l) => l.userId === biaId)!.motivo, 'cedo', '60 ms não é reação');
   assert.equal(linhas[0].userId, anaId);
   assert.equal(linhas[1].userId, caioId);
@@ -302,4 +302,266 @@ test('sozinho: a festa começa pela rota do Solo, e sem pódio', async () => {
   assert.equal(p.fase, 'preparando');
   assert.equal(p.rodadas, 5);
   await comAna('DELETE', '/api/minijogo-solo');
+});
+
+/* ---------------------------------------------- revisão independente (03/11/2026) ---------------------------------------------- */
+
+/**
+ * A largada com a MEDIDA DA REDE de cada um: no "prepare-se" o servidor manda um `eco` no estado, e o site o devolve na hora
+ * (a ação 'eco'): o que levou é a ida e volta daquela pessoa. Aqui o eco de cada um volta `rtt` ms depois. O jogo começa no
+ * instante marcado (o relógio da partida), e o que cada um diz que mediu chega ao servidor `rtt` ms depois disso.
+ */
+function comecarComRede(ordem: Microjogo[], rtts: Map<number, number>) {
+  const naSala = [...rtts.keys()];
+  const m = comecar(ordem, naSala);
+  const marcado = agora + PREPARO_MS;
+  const t0 = agora;
+  const ecos = new Map(naSala.map((id) => [id, (m.jogo.publico(id) as { eco: number | null }).eco]));
+  for (const [id, rtt] of [...rtts].sort((a, b) => a[1] - b[1])) {
+    agora = t0 + rtt;
+    assert.equal(m.jogo.acao(id, { tipo: 'eco', eco: ecos.get(id) }), null, 'o eco não é erro');
+  }
+  agora = marcado;
+  m.relogio[0].depois(); // começa
+  return { ...m, largou: marcado };
+}
+
+test('a classificação final só dá posição a quem ficou até o fim, como os troféus', () => {
+  let naSala = [anaId, biaId, caioId];
+  const relogio: { ms: number; depois: () => void }[] = [];
+  const ctx = {
+    agendar: (ms: number, depois: () => void) => relogio.splice(0, relogio.length, { ms, depois }),
+    avisar: () => {},
+    terminar: () => {},
+    naSala: () => naSala,
+    nome: (id: number) => (id === anaId ? 'ana' : id === biaId ? 'bia' : 'caio'),
+    comunidade: comunidade.id,
+  };
+  const jogo = criarFesta({ agora: () => agora, aleatorio: meio, ordem: ['relogio', 'relogio'] }).comecar(ctx, { naSala, criadaPor: anaId, corpo: {} });
+  assert.ok(typeof jogo !== 'string');
+  const andar = () => {
+    const r = relogio[0];
+    agora += r.ms;
+    r.depois();
+  };
+  andar();
+  agora += 10_000;
+  jogo.acao(anaId, { tipo: 'resultado', t: 10_000 }); // a Ana ganha a primeira…
+  jogo.acao(caioId, { tipo: 'resultado', t: 9_900 });
+  jogo.acao(biaId, { tipo: 'resultado', t: 9_800 });
+  naSala = [biaId, caioId]; // …e sai
+  andar();
+  andar();
+  agora += 10_000;
+  jogo.acao(biaId, { tipo: 'resultado', t: 9_800 });
+  jogo.acao(caioId, { tipo: 'resultado', t: 10_000 });
+  andar();
+  const p = jogo.publico(biaId) as { fase: string; classificacao: { userId: number; posicao: number | null; saiu: boolean; pontos: number }[] };
+  assert.equal(p.fase, 'fim');
+  assert.deepEqual(
+    p.classificacao.map((l) => [l.userId, l.posicao, l.saiu, l.pontos]),
+    [
+      [caioId, 1, false, 18],
+      [biaId, 2, false, 14],
+      [anaId, null, true, 10],
+    ],
+    'a Ana pontuou, mas saiu: sem posição (e sem medalha)',
+  );
+});
+
+test('a classificação final sem pódio: com menos de 2 até o fim, ninguém tem posição, e só quem saiu "saiu"', () => {
+  let naSala = [anaId, biaId];
+  const relogio: { ms: number; depois: () => void }[] = [];
+  const ctx = {
+    agendar: (ms: number, depois: () => void) => relogio.splice(0, relogio.length, { ms, depois }),
+    avisar: () => {},
+    terminar: () => {},
+    naSala: () => naSala,
+    nome: (id: number) => (id === anaId ? 'ana' : 'bia'),
+    comunidade: 0,
+  };
+  const jogo = criarFesta({ agora: () => agora, aleatorio: meio, ordem: ['relogio'] }).comecar(ctx, { naSala, criadaPor: anaId, corpo: {} });
+  assert.ok(typeof jogo !== 'string');
+  relogio[0].depois();
+  naSala = [anaId];
+  agora += 10_000;
+  jogo.acao(anaId, { tipo: 'resultado', t: 10_000 });
+  relogio[0].depois();
+  const p = jogo.publico(anaId) as { fase: string; classificacao: { userId: number; posicao: number | null; saiu: boolean }[] };
+  assert.equal(p.fase, 'fim');
+  assert.deepEqual(p.classificacao.map((l) => [l.userId, l.posicao, l.saiu]), [
+    [anaId, null, false],
+    [biaId, null, true],
+  ]);
+});
+
+test('o medidor de força: o servidor dá a folga da rede antes de revelar, e o aperto no fim da barra conta', () => {
+  const { jogo, relogio } = comecarComRede(['forca'], new Map([[anaId, 300], [biaId, 300]]));
+  assert.equal(relogio[0].ms, festaMod.FORCA_MS + 1500, 'a revelação espera os 8 s da barra e mais a folga');
+  agora += 7900 + 300; // a Ana parou em 7,9 s na tela dela; o aperto chega 300 ms depois
+  assert.equal(jogo.acao(anaId, { tipo: 'resultado', t: 7900 }), null);
+  assert.equal((jogo.publico(anaId).meu as { motivo: string | null }).motivo, null, 'valeu');
+});
+
+test('a rede de cada um: quem joga honesto com 200 a 300 ms de ida e volta passa em todos', () => {
+  const rede = new Map([[anaId, 200], [biaId, 300]]);
+  // relógio
+  {
+    const { jogo, largou } = comecarComRede(['relogio'], rede);
+    agora = largou + 10_020 + 200;
+    jogo.acao(anaId, { tipo: 'resultado', t: 10_020 });
+    agora = largou + 9_950 + 300;
+    jogo.acao(biaId, { tipo: 'resultado', t: 9_950 });
+    const linhas = jogo.publico(anaId).linhas as Linha[];
+    assert.ok(linhas.every((l) => l.motivo === null), JSON.stringify(linhas));
+  }
+  // força
+  {
+    const { jogo, largou } = comecarComRede(['forca'], rede);
+    agora = largou + 3_000 + 200;
+    jogo.acao(anaId, { tipo: 'resultado', t: 3_000 });
+    agora = largou + 5_000 + 300 + 150; // a internet da Bia engasgou um pouco neste aperto
+    jogo.acao(biaId, { tipo: 'resultado', t: 5_000 });
+    const linhas = jogo.publico(anaId).linhas as Linha[];
+    assert.ok(linhas.every((l) => l.motivo === null), JSON.stringify(linhas));
+  }
+  // saque: o sinal sai, cada um busca o estado (meia ida e volta para chegar), reage e manda
+  {
+    const { jogo, andar } = comecarComRede(['saque'], rede);
+    andar(); // o sinal
+    const sinal = agora;
+    agora = sinal + 100; // a Ana busca o estado com o sinal
+    jogo.publico(anaId);
+    agora = sinal + 150;
+    jogo.publico(biaId);
+    agora = sinal + 100 + 200 + 230; // a Ana reagiu em 230 ms
+    jogo.acao(anaId, { tipo: 'resultado', reacaoMs: 230 });
+    agora = sinal + 150 + 300 + 260;
+    jogo.acao(biaId, { tipo: 'resultado', reacaoMs: 260 });
+    const linhas = jogo.publico(anaId).linhas as Linha[];
+    assert.deepEqual(linhas.map((l) => [l.userId, l.valor]), [
+      [anaId, 230],
+      [biaId, 260],
+    ]);
+  }
+  // copos
+  {
+    const { jogo, largou } = comecarComRede(['copos'], rede);
+    const d = jogo.publico(anaId).dados as never;
+    const anim = animacaoDosCopos(d);
+    agora = largou + anim + 600 + 200;
+    jogo.acao(anaId, { tipo: 'resultado', copo: copoFinal(d), ms: 600 });
+    agora = largou + anim + 900 + 300;
+    jogo.acao(biaId, { tipo: 'resultado', copo: copoFinal(d), ms: 900 });
+    const linhas = jogo.publico(anaId).linhas as Linha[];
+    assert.deepEqual(linhas.map((l) => [l.userId, l.valor]), [
+      [anaId, 600],
+      [biaId, 900],
+    ]);
+  }
+  // siga
+  {
+    const { jogo, largou } = comecarComRede(['siga'], rede);
+    const setas = (jogo.publico(anaId).dados as { setas: number[] }).setas;
+    agora = largou + 9_000 + 200;
+    jogo.acao(anaId, { tipo: 'resultado', acertos: 3, setas: setas.slice(0, 3).concat((setas[3] + 1) % 4), ms: 9_000 });
+    agora = largou + 12_000 + 300;
+    jogo.acao(biaId, { tipo: 'resultado', acertos: 4, setas: setas.slice(0, 4).concat((setas[4] + 1) % 4), ms: 12_000 });
+    const linhas = jogo.publico(anaId).linhas as Linha[];
+    assert.ok(linhas.every((l) => l.motivo === null), JSON.stringify(linhas));
+  }
+  // alvo: a Ana acerta logo que aparece, a Bia no último instante da cenoura na tela
+  {
+    const { jogo, largou } = comecarComRede(['alvo'], rede);
+    const alvos = (jogo.publico(anaId).dados as { alvos: { t: number }[] }).alvos;
+    for (const i of [0, 1, 2]) {
+      agora = largou + alvos[i].t + 50 + 200;
+      jogo.acao(anaId, { tipo: 'acerto', i });
+      agora = largou + alvos[i].t + 1_050 + 300;
+      jogo.acao(biaId, { tipo: 'acerto', i });
+    }
+    agora = largou + 20_500;
+    jogo.acao(anaId, { tipo: 'resultado' });
+    jogo.acao(biaId, { tipo: 'resultado' });
+    const linhas = jogo.publico(anaId).linhas as Linha[];
+    assert.deepEqual(linhas.map((l) => l.valor), [3, 3]);
+  }
+});
+
+test('a rede de cada um: o console não manda o resultado perfeito fora da hora', () => {
+  const rede = new Map([[anaId, 250], [biaId, 250]]);
+  // relógio: os 10 s exatos ditos antes de o servidor ver 10 s, ou bem depois do que a rede da pessoa explica
+  {
+    const { jogo, largou } = comecarComRede(['relogio'], rede);
+    agora = largou + 9_800;
+    jogo.acao(anaId, { tipo: 'resultado', t: 10_000 });
+    agora = largou + 10_000 + 250 + festaMod.FOLGA_DA_REDE + 100;
+    jogo.acao(biaId, { tipo: 'resultado', t: 10_000 });
+    const linhas = jogo.publico(anaId).linhas as Linha[];
+    assert.deepEqual(linhas.map((l) => l.motivo), ['invalido', 'invalido']);
+  }
+  // força: a janela é mais estreita que o período, então nem sempre há um pico ao alcance
+  {
+    const { jogo, largou } = comecarComRede(['forca'], rede);
+    const periodo = (jogo.publico(anaId).dados as { periodoMs: number }).periodoMs;
+    const largura = 250 + festaMod.FOLGA_DA_REDE + festaMod.FOLGA_ACIMA;
+    assert.ok(largura < periodo, `a janela (${largura} ms) cabe no período (${periodo} ms)`);
+    const semMedida = festaMod.ATRASO_MAXIMO + festaMod.FOLGA_DA_REDE + festaMod.FOLGA_ACIMA;
+    assert.ok(semMedida < 1100, `e também a de quem não mediu a rede (${semMedida} ms), contra o menor período`);
+    // logo depois de um pico sair da janela: ele ficou para trás demais, e o próximo ainda não chegou
+    const pico = periodo / 2 + periodo;
+    agora = largou + pico + 250 + festaMod.FOLGA_DA_REDE + 1;
+    jogo.acao(anaId, { tipo: 'resultado', t: pico });
+    assert.equal((jogo.publico(anaId).meu as { motivo: string }).motivo, 'invalido');
+    jogo.acao(anaId, { tipo: 'resultado', t: pico + periodo });
+    assert.equal((jogo.publico(anaId).meu as { motivo: string }).motivo, 'invalido', 'o primeiro resultado é o que vale');
+  }
+  // saque: a reação dita maior que o tempo desde que o sinal foi servido não existe; a menor sobe ao que a rede explica
+  {
+    const { jogo, andar } = comecarComRede(['saque'], rede);
+    andar();
+    const sinal = agora;
+    agora = sinal + 120;
+    jogo.publico(anaId);
+    jogo.publico(biaId);
+    agora = sinal + 120 + 1_500;
+    jogo.acao(anaId, { tipo: 'resultado', reacaoMs: 100 });
+    agora = sinal + 120 + 200;
+    jogo.acao(biaId, { tipo: 'resultado', reacaoMs: 400 });
+    const linhas = jogo.publico(anaId).linhas as Linha[];
+    const daAna = linhas.find((l) => l.userId === anaId)!;
+    assert.equal(daAna.valor, 1_500 - 250 - festaMod.FOLGA_DA_REDE, 'a Ana diz 100 ms, mas o servidor viu 1,5 s');
+    assert.equal(linhas.find((l) => l.userId === biaId)!.motivo, 'invalido', '400 ms de reação em 200 ms não cabem');
+  }
+  // copos: o tempo dito não passa do que o servidor viu
+  {
+    const { jogo, largou } = comecarComRede(['copos'], rede);
+    const d = jogo.publico(anaId).dados as never;
+    const anim = animacaoDosCopos(d);
+    agora = largou + anim + 100;
+    jogo.acao(anaId, { tipo: 'resultado', copo: copoFinal(d), ms: 900 });
+    assert.equal((jogo.publico(anaId).meu as { motivo: string }).motivo, 'invalido');
+  }
+  // alvo: o acerto antes de a cenoura aparecer não vale (a folga era de meio segundo), nem o que chega tarde demais
+  {
+    const { jogo, largou } = comecarComRede(['alvo'], rede);
+    const alvos = (jogo.publico(anaId).dados as { alvos: { t: number }[] }).alvos;
+    agora = largou + alvos[5].t - 300;
+    jogo.acao(anaId, { tipo: 'acerto', i: 5 });
+    agora = largou + alvos[5].t + 1_100 + 250 + festaMod.FOLGA_DA_REDE + 100;
+    jogo.acao(biaId, { tipo: 'acerto', i: 5 });
+    agora = largou + 20_500;
+    jogo.acao(anaId, { tipo: 'resultado' });
+    jogo.acao(biaId, { tipo: 'resultado' });
+    const linhas = jogo.publico(anaId).linhas as Linha[];
+    assert.deepEqual(linhas.map((l) => l.valor), [0, 0]);
+  }
+});
+
+test('a medida da rede: segurar o eco não alarga a folga além do teto, e eco desconhecido não é erro', () => {
+  const { jogo, largou } = comecarComRede(['relogio'], new Map([[anaId, 3_000], [biaId, 200]]));
+  agora = largou + 10_000 + festaMod.ATRASO_MAXIMO + festaMod.FOLGA_DA_REDE + 50;
+  jogo.acao(anaId, { tipo: 'resultado', t: 10_000 });
+  assert.equal((jogo.publico(anaId).meu as { motivo: string }).motivo, 'invalido');
+  assert.equal(jogo.acao(biaId, { tipo: 'eco', eco: 999 }), null, 'eco desconhecido, ou fora do "prepare-se": ignorado, sem erro');
 });

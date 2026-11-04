@@ -1,4 +1,4 @@
-import { X } from 'lucide-react';
+import { Trophy, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { API_URL, loadToken } from './api';
@@ -19,7 +19,8 @@ export function VisitaAoQuarto({ dono, aoFechar }: { dono: { id: number; nome: s
   const [pronto, setPronto] = useState(false);
   const [arrumado, setArrumado] = useState(false);
   const [trofeus, setTrofeus] = useState(false);
-  const [erro, setErro] = useState(false);
+  // 'fechado': o servidor disse que a porta está fechada; 'falhou': não deu para abrir agora (rede, freio, a página)
+  const [erro, setErro] = useState<null | 'fechado' | 'falhou'>(null);
 
   const enviar = (msg: Record<string, unknown>) => ref.current?.contentWindow?.postMessage({ syden: 'quarto', ...msg }, location.origin);
 
@@ -28,7 +29,7 @@ export function VisitaAoQuarto({ dono, aoFechar }: { dono: { id: number; nome: s
       if (e.origin !== location.origin || e.source !== ref.current?.contentWindow || e.data?.syden !== 'quarto') return;
       if (e.data.pronto) setPronto(true);
       if (e.data.arrumado) setArrumado(true);
-      if (e.data.visitaFalhou) setErro(true);
+      if (e.data.visitaFalhou) setErro(e.data.visitaFalhou === 'fechado' ? 'fechado' : 'falhou');
       if (e.data.acao === 'trofeu') setTrofeus(true);
     };
     window.addEventListener('message', ouvir);
@@ -45,7 +46,7 @@ export function VisitaAoQuarto({ dono, aoFechar }: { dono: { id: number; nome: s
   // A página do quarto não respondeu (ela não carregou, ou foi barrada): diz, em vez de esperar para sempre.
   useEffect(() => {
     if (arrumado) return;
-    const prazo = setTimeout(() => setErro(true), 25_000);
+    const prazo = setTimeout(() => setErro((antes) => antes ?? 'falhou'), 25_000);
     return () => clearTimeout(prazo);
   }, [arrumado]);
 
@@ -60,12 +61,16 @@ export function VisitaAoQuarto({ dono, aoFechar }: { dono: { id: number; nome: s
       <div className="dialog visita-quarto" role="dialog" aria-modal="true" aria-labelledby="visita-titulo">
         <div className="conquistas-topo">
           <h2 id="visita-titulo">{t('O quarto de {nome}', { nome: dono.nome })}</h2>
+          {/* a estante também no topo: quem mora pode ter tirado da parede o objeto dos troféus */}
+          <button type="button" className="btn-sutil visita-quarto-trofeus" onClick={() => setTrofeus(true)}>
+            <Trophy size={15} aria-hidden="true" /> {t('Troféus')}
+          </button>
           <button type="button" className="icon-plain" onClick={aoFechar} aria-label={t('Fechar')} title={t('Fechar')} autoFocus>
             <X size={18} />
           </button>
         </div>
         {erro ? (
-          <p className="form-error">{t('Este quarto não está aberto para visita.')}</p>
+          <p className="form-error">{erro === 'fechado' ? t('Este quarto não está aberto para visita.') : t('Não deu para abrir o quarto agora.')}</p>
         ) : (
           <div className="quarto-novo-caixa">
             {!arrumado && (

@@ -272,7 +272,16 @@ export function criarTabuleiro({ agora = Date.now, aleatorio = Math.random, ceno
        * vem depois, sem posição; na partida interrompida, ninguém tem posição. Durante a partida, todos.
        */
       const classificacaoPublica = () => {
-        const linha = (l: Peca, posicao: number | null) => ({ userId: l.userId, username: ctx.nome(l.userId), douradas: l.douradas, cenouras: l.cenouras, posicao });
+        // `saiu` é por linha (revisão independente, 03/11/2026): com menos de 2 até o fim, a tela dizia "Saiu antes do fim" de
+        // todo mundo, inclusive de quem nunca saiu
+        const linha = (l: Peca, posicao: number | null) => ({
+          userId: l.userId,
+          username: ctx.nome(l.userId),
+          douradas: l.douradas,
+          cenouras: l.cenouras,
+          posicao,
+          saiu: fase === 'fim' && !interrompida && !ficaram.has(l.userId),
+        });
         if (fase !== 'fim') return classificacao(ordem).map((l) => linha(l, l.posicao));
         // (com menos de 2 que ficaram, não há pódio: o mesmo corte dos troféus)
         const turma = interrompida ? [] : ordem.filter((id) => ficaram.has(id));
@@ -336,6 +345,8 @@ export function criarTabuleiro({ agora = Date.now, aleatorio = Math.random, ceno
         },
         acao(quem, corpo) {
           if (!ordem.includes(quem)) return 'Você está assistindo esta partida.';
+          // o eco é a medida da rede do microjogo (minijogo-festa.ts): nunca é erro, nem fora dele
+          if (corpo.tipo === 'eco') return fase === 'minijogo' && mini ? mini.acao(quem, corpo) : null;
           if (corpo.tipo === 'resultado' || corpo.tipo === 'acerto') {
             if (fase !== 'minijogo' || !mini) return 'Esta rodada já acabou.';
             return mini.acao(quem, corpo);

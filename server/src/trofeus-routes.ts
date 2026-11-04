@@ -124,7 +124,7 @@ export function registerTrofeusRoutes(app: FastifyInstance, io: Server) {
       const eu = request.user.id;
       const itens = request.body?.itens;
       if (!Array.isArray(itens) || itens.length > DESTAQUES_MAX || !itens.every((i) => typeof i === 'string' && i.length <= 40)) {
-        return reply.code(400).send({ error: `Escolha até ${DESTAQUES_MAX} para o destaque.` });
+        return reply.code(400).send({ error: 'Escolha até 6 para o destaque.' }); // (o texto inteiro, para a tradução achar; DESTAQUES_MAX)
       }
       const unicos = [...new Set(itens as string[])];
       const trofeus = new Set(db.trofeusDe(eu).map((t) => `t:${t.id}`));
@@ -200,7 +200,7 @@ export function registerTrofeusRoutes(app: FastifyInstance, io: Server) {
       // Só amigos (a tela só mostra os amigos). O bloqueio desfaz a amizade, então quem bloqueou recebe a mesma resposta de
       // quem não é amigo, e não descobre nada.
       if (!saoAmigos(eu, quem)) return reply.code(400).send({ error: 'Convide alguém da sua lista de amigos.' });
-      if (db.convidadosDoQuarto(eu).length >= CONVIDADOS_MAX) return reply.code(400).send({ error: `Cabem até ${CONVIDADOS_MAX} convidados.` });
+      if (db.convidadosDoQuarto(eu).length >= CONVIDADOS_MAX) return reply.code(400).send({ error: 'Cabem até 100 convidados.' }); // (o texto inteiro, para a tradução achar; CONVIDADOS_MAX)
       // O AVISO: só no convite novo, e só se o quarto está mesmo fechado (no modo amigos, o convite não muda nada para
       // quem recebe). Vai como o convite para a voz: um cartão no canto, sem som e sem roubar o foco (Shell.tsx).
       if (db.convidarAoQuarto(eu, quem) && modoDoQuarto(eu) === 'privado') {

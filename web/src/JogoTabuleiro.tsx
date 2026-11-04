@@ -292,12 +292,18 @@ export function JogoTabuleiro({
   if (estado.terminada || estado.fase === 'fim') {
     // Só quem ficou até o fim tem posição e medalha (as mesmas dos troféus); quem saiu vem depois, sem posição. Na partida
     // interrompida, ninguém: nem medalha, nem "Fim de jogo!".
+    // `saiu` vem por linha do servidor (revisão independente, 03/11/2026: sem pódio, a tela dizia "Saiu antes do fim" de todo
+    // mundo, inclusive de quem nunca saiu). O tipo de minijogos.ts ainda não tem o campo: vai aqui até ele ganhar.
+    const classificacao = estado.classificacao as (EstadoTabuleiro['classificacao'][number] & { saiu?: boolean })[];
     const valor = (l: { douradas: number; cenouras: number }) => `★ ${l.douradas} · 🥕 ${l.cenouras}`;
-    const comPosicao = estado.interrompida ? [] : estado.classificacao.filter((l) => l.posicao !== null);
-    const semPosicao = estado.classificacao.filter((l) => !comPosicao.includes(l));
+    const comPosicao = estado.interrompida ? [] : classificacao.filter((l) => l.posicao !== null);
+    const semPosicao = classificacao.filter((l) => !comPosicao.includes(l));
     return (
       <div className="tabuleiro-jogo">
         {estado.interrompida && <p className="minijogo-situacao">{t('Faltou gente: a partida acabou antes do fim, sem troféus.')}</p>}
+        {!estado.interrompida && comPosicao.length === 0 && (
+          <p className="minijogo-situacao">{t('Menos de duas pessoas ficaram até o fim: desta vez, sem pódio.')}</p>
+        )}
         {comPosicao.length > 0 && <Placar eu={eu} linhas={comPosicao.map((l) => ({ ...l, posicao: l.posicao ?? undefined, valor: valor(l) }))} />}
         {semPosicao.length > 0 && (
           <ol className="minijogo-placar tabuleiro-sem-posicao">
@@ -305,7 +311,7 @@ export function JogoTabuleiro({
               <li key={l.userId} className={l.userId === eu ? 'eu' : ''}>
                 <span className="minijogo-medalha" aria-hidden="true" />
                 <span className="minijogo-nome">{l.username}</span>
-                {!estado.interrompida && <span className="tabuleiro-saiu">{t('Saiu antes do fim')}</span>}
+                {!estado.interrompida && l.saiu && <span className="tabuleiro-saiu">{t('Saiu antes do fim')}</span>}
                 <span className="minijogo-pontos">{valor(l)}</span>
               </li>
             ))}

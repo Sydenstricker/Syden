@@ -132,6 +132,15 @@ function comecarGolpe(c: Coelho, golpe: Golpe): Novidade {
   return { comecou: { id: c.ataque, golpe } };
 }
 
+/**
+ * A conta dos golpes continua de onde o servidor está (revisão independente, 03/11/2026): ele só aceita golpe com número
+ * maior que o último aceito, e a página recarregada (ou o painel montado de novo) recomeçava do 1 — nenhum golpe valia até
+ * passar da conta de antes. O quadro leva o último aceito de cada um; a conta daqui nunca anda para trás.
+ */
+export function contarDesde(c: Coelho, ultimoNoServidor: number) {
+  if (Number.isInteger(ultimoNoServidor) && ultimoNoServidor > c.ataque) c.ataque = ultimoNoServidor;
+}
+
 /** O próximo soco do combo (o servidor confere a mesma ordem e o mesmo ritmo). */
 function proximoSoco(c: Coelho): Golpe {
   const u = c.ultimoSoco;
@@ -304,9 +313,22 @@ export interface Quadro {
   a: [number, number];
   /** [id, tipo, x, y, z, estado, lado, hp%, passos no estado, faixa] */
   i: number[][];
-  /** [userId, x, y, z, lado, ação, ms da ação, hp, vidas, pontos, estado (0 em pé, 1 fora, 2 sem vidas), avatar] */
+  /** [userId, x, y, z, lado, ação, ms da ação, hp, vidas, pontos, estado (0 em pé, 1 fora, 2 sem vidas), avatar, último golpe aceito] */
   j: number[][];
   e: unknown[][];
+}
+
+const MEDALHAS = ['🥇', '🥈', '🥉'];
+
+/**
+ * O que vai no lugar da posição no placar do fim (revisão independente, 03/11/2026: a tela dava medalha a todas as linhas,
+ * até depois de perder e no Solo). A posição vem do servidor, só entre quem ficou (null para quem saiu: "–"); a medalha, só
+ * quando o troféu também sai: fase vencida, fora do Solo, 2 ou mais que ficaram, até o 3º, e com ponto.
+ */
+export function marcaDoLugar(posicao: number | null, pontos: number, o: { venceu: boolean; solo: boolean; ficaram: number }): string {
+  if (posicao === null) return '–';
+  if (o.venceu && !o.solo && o.ficaram >= 2 && posicao <= 3 && pontos > 0) return MEDALHAS[posicao - 1];
+  return `${posicao}.`;
 }
 
 export const ehQuadro = (d: unknown): d is Quadro => {

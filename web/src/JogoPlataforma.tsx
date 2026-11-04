@@ -10,7 +10,7 @@ import type { Partida } from './minijogos';
 import { H, W } from './plataforma/desenho';
 import { COPAS_DO_PULO, FASES, fasePorId, type Fase } from './plataforma/fases';
 import { passosEmMs, type Comandos } from './plataforma/fisica';
-import { rodarFase, type LinhaDaOrdem, type PosicaoDoRival, type Rival } from './plataforma/laco';
+import { guardarPosicaoDoRival, rodarFase, type LinhaDaOrdem, type PosicaoDoRival, type Rival } from './plataforma/laco';
 import { Trofeus } from './Trofeus';
 
 /**
@@ -522,7 +522,13 @@ function FaseDaSala({
   const [placar, setPlacar] = usePlacar();
   const [ordem, setOrdem] = useState<LinhaDaOrdem[]>([]);
   const [chegou, setChegou] = useState(false);
-  const piloto = jogador && estado.pilotos.some((p) => p.userId === eu);
+  // ABERTA NO MEIO DA FASE (a página recarregada, o painel aberto depois do verde): esta fase a pessoa ASSISTE (revisão
+  // independente, 03/11/2026). Antes ela corria de novo do passo 0, com o relógio limpo, como se fosse a primeira vez; o
+  // servidor não aceita mais essa chegada, e a tela não finge que ela conta. Na copa, a fase seguinte monta de novo, na
+  // largada, e ela corre.
+  const [abriuNoMeio] = useState(() => estado.fase === 'correndo');
+  const inscrito = jogador && estado.pilotos.some((p) => p.userId === eu);
+  const piloto = inscrito && !abriuNoMeio;
   const controles = useControles(piloto && !chegou && !fim);
   const rivais = useRef(new Map<number, Rival>());
   const def = fasePorId(estado.pista);
@@ -542,10 +548,7 @@ function FaseDaSala({
       const r = rivais.current.get(m.dados.userId);
       const { n, x, y, j, andou } = m.dados as unknown as PosicaoDoRival;
       if (!r || ![n, x, y, j, andou].every((v) => typeof v === 'number')) return;
-      const ultima = r.posicoes.at(-1);
-      if (ultima && ultima.n >= n) return;
-      r.posicoes.push({ n, x, y, j, andou });
-      if (r.posicoes.length > 2000) r.posicoes.splice(0, 1000);
+      guardarPosicaoDoRival(r, { n, x, y, j, andou });
     };
     socket.on('minijogo:tempo-real', chegada);
     return () => {
@@ -622,6 +625,7 @@ function FaseDaSala({
           </div>
         )}
       </div>
+      {inscrito && abriuNoMeio && !fim && <p className="settings-hint corrida-dica">{t('Esta fase já tinha começado quando você abriu: você assiste.')}</p>}
       {piloto && !fim && <p className="settings-hint corrida-dica">{t('Setas para correr, Espaço para pular (segure para ir mais alto).')}</p>}
     </>
   );

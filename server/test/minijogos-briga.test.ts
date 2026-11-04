@@ -537,3 +537,69 @@ test('quatro coelhos no máximo', () => {
   assert.equal(m.interno._jogadores.size, 4);
   m.jogo.parar!();
 });
+
+// ---------------- A revisão independente de 03/11/2026 ----------------
+
+test('o quadro leva o último golpe aceito de cada um: a página recarregada continua a conta dali', () => {
+  const m = comecar();
+  const r = umaRaposa(m);
+  m.andar(400);
+  for (let id = 1; id <= 5; id++) {
+    teleportar(m, anaId, r.x - 20, r.y);
+    m.pos(anaId, { x: r.x - 20, y: r.y, ataque: { id, g: 'soco1' } });
+    m.andar(400);
+  }
+  const linha = (m.quadros.at(-1)!.j as number[][]).find((l) => l[0] === anaId)!;
+  assert.equal(linha[12], 5, 'a coluna 12 é o último golpe que o servidor aceitou');
+  // a página continua do 6 (o site semeia a conta pelo quadro): o golpe vale
+  teleportar(m, anaId, r.x - 20, r.y);
+  m.pos(anaId, { x: r.x - 20, y: r.y, ataque: { id: linha[12] + 1, g: 'soco1' } });
+  assert.equal(m.golpe(anaId, { a: linha[12] + 1, inimigo: r.id, x: r.x - 20, y: r.y }), null);
+  m.jogo.parar!();
+});
+
+test('a onda nova põe todo mundo dentro da arena dela, como a tela põe', () => {
+  const m = comecar();
+  for (let k = 0; k < 400 && m.quadros.at(-1)?.f !== 'avancando'; k++) {
+    m.interno._inimigos.clear();
+    m.andar(PASSO_MS);
+  }
+  assert.equal(m.quadros.at(-1)!.f, 'avancando');
+  const bia_ = m.interno._jogadores.get(biaId)!;
+  teleportar(m, anaId, ONDAS_X[1] + 100, 20);
+  m.andar(PASSO_MS);
+  assert.equal(m.interno._arena()[0], ONDAS_X[1], 'a onda 2 começou');
+  const xTela = ONDAS_X[1] + 8;
+  assert.equal(bia_.x, xTela, 'a Bia, que ficou para trás, está na borda da arena nova');
+  // e a posição que a tela dela manda (presa na borda) bate com a do servidor
+  m.andar(66);
+  m.pos(biaId, { x: xTela, y: bia_.y });
+  assert.equal(bia_.x, xTela);
+  m.jogo.parar!();
+});
+
+test('quem volta à sala é posto na arena de agora', () => {
+  const m = comecar();
+  m.sair(biaId);
+  for (let k = 0; k < 400 && m.quadros.at(-1)?.f !== 'avancando'; k++) {
+    m.interno._inimigos.clear();
+    m.andar(PASSO_MS);
+  }
+  teleportar(m, anaId, ONDAS_X[1] + 100, 20);
+  m.andar(PASSO_MS);
+  const bia_ = m.interno._jogadores.get(biaId)!;
+  m.entrar(biaId);
+  m.andar(PASSO_MS);
+  assert.ok(bia_.x >= ONDAS_X[1] + 8, `a Bia voltou em ${bia_.x}`);
+  assert.ok(bia_.livreAte > agora, 'com o tempo livre da volta');
+  m.jogo.parar!();
+});
+
+test('o resultado diz a posição só da turma (null para quem saiu), a mesma do troféu', () => {
+  const m = comecar();
+  vencer(m, true);
+  const pub = m.jogo.publico(anaId) as { resultado: { userId: number; posicao: number | null }[] };
+  assert.equal(pub.resultado.find((l) => l.userId === anaId)!.posicao, 1);
+  assert.equal(pub.resultado.find((l) => l.userId === biaId)!.posicao, null, 'a Bia saiu no meio: sem posição');
+  assert.equal(pub.resultado.at(-1)!.userId, biaId, 'quem saiu vem depois');
+});

@@ -21,6 +21,19 @@ import { chave } from './i18n';
 // ===================================================================================================
 
 export const ERROS_TRADUZIDOS = [
+  // a corrida dos coelhos, a estante de troféus e quem visita o quarto (auditoria de 03/11/2026)
+  chave('Corrida inválida.'),
+  chave('Muitas corridas seguidas. Tente de novo daqui a pouco.'),
+  chave('A corrida não está andando.'),
+  chave('Você não está nesta corrida.'),
+  chave('Pista desconhecida.'),
+  chave('Fantasma não encontrado.'),
+  chave('Esse troféu não é seu.'),
+  chave('Convide alguém da sua lista de amigos.'),
+  chave('Antes dos 18, o quarto abre só para amigos e convidados.'),
+  chave('Escolha até 6 para o destaque.'),
+  chave('Cabem até 100 convidados.'),
+  chave('Este quarto não está aberto para visita.'),
   chave('A senha está incorreta.'),
   chave('A senha atual está incorreta.'),
   chave('A senha precisa ter pelo menos 6 caracteres.'),

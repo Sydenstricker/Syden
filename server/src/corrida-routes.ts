@@ -12,8 +12,9 @@ import { PISTAS, validarCorrida } from './corrida.js';
 import { Freio } from './freio.js';
 import { requireUser } from './routes.js';
 
-/** Trinta corridas guardadas por hora, por conta (uma corrida leva mais de 30 s). */
-const freioDeCorridas = new Freio(30, 60 * 60_000);
+/** Sessenta corridas guardadas por hora, por conta: uma corrida leva ~1 min, e quem treina seguido não esbarra nisto
+ * (revisão independente, 03/11/2026: eram 30). */
+const freioDeCorridas = new Freio(60, 60 * 60_000);
 
 export function registerCorridaRoutes(app: FastifyInstance) {
   app.register(async (authed) => {

@@ -13,6 +13,16 @@
  * (a reação não tem menos de 100 ms nem menos do que passou desde o sinal, menos uma folga; o copo é o certo; as setas
  * batem com a sequência; os alvos já tinham aparecido). É jogo entre amigos: conferência razoável, não perfeita.
  *
+ * A FOLGA É A REDE DE CADA UM (revisão independente, 03/11/2026: a folga fixa, de 0,5 s para cima e 0,9 s para baixo, deixava
+ * o console mandar os 10 s exatos do relógio em qualquer instante de 9,5 a 10,9 s, e a janela da força era mais larga que o
+ * período da barra, então o pico estava sempre ao alcance). O que o site mede começa no instante marcado mais o tempo de o
+ * estado chegar, e chega ao servidor depois de mais uma ida: o tempo HONESTO nunca passa do que o servidor viu (só um fio,
+ * FOLGA_ACIMA), e fica abaixo dele no máximo uma ida e volta. A ida e volta de cada um é medida no "prepare-se" pelo eco
+ * (`eco` no estado, devolvido pela ação 'eco'): vale a MENOR medida, porque segurar o eco só a aumenta, com um teto
+ * (ATRASO_MAXIMO), que é também o de quem não mediu; e mais FOLGA_DA_REDE, para a internet que engasga num aperto.
+ * O que sobra, e não tem conserto pelo relógio: um programa que espere a hora certa e mande o perfeito ainda passa, como
+ * passaria um dedo perfeito. A conferência estreita a janela; não adivinha quem apertou.
+ *
  * Os dados de cada microjogo vão PRONTOS ao site (as trocas dos copos, as setas, os alvos), e não uma semente: assim o site
  * não precisa do mesmo sorteador, e todo mundo vê a mesma coisa. O sinal do saque é a exceção: ele só vai quando sai, e a
  * reação é medida na tela de cada um, a partir do momento em que o sinal apareceu ali — quem tem internet pior não perde.
@@ -39,13 +49,14 @@ export const SAQUE_ESPERA_MAX = 5000;
 export const SAQUE_DEPOIS_MS = 3000;
 /** Menos que isto não é reação, é chute: conta como antes do sinal. */
 export const REACAO_MINIMA = 100;
-/**
- * O que a reação declarada pode ficar abaixo do que o SERVIDOR viu passar desde o sinal: o sinal chega pelo socket, o
- * site busca o estado e desenha (~2 idas e voltas), e o aperto volta (~1). Com menos que isso, o servidor sobe a reação.
- */
-export const FOLGA_SAQUE = 900;
-/** Folga do relógio para os outros: o site não pode dizer que passou mais tempo do que o servidor viu, mais isto. */
-export const FOLGA_MS = 500;
+/** O tempo dito pode passar do que o servidor viu só por isto (o arredondamento e o relógio de cada lado). */
+export const FOLGA_ACIMA = 50;
+/** Para baixo, além da ida e volta medida de cada um: a internet que engasga num aperto. */
+export const FOLGA_DA_REDE = 300;
+/** O teto da ida e volta medida (quem segura o eco não ganha mais folga que isto), e a de quem não mediu. */
+export const ATRASO_MAXIMO = 600;
+/** Quantos ecos por rodada: três idas e voltas cabem com folga no "prepare-se". */
+export const ECOS_POR_RODADA = 3;
 
 export const FORCA_MS = 8000;
 export const RELOGIO_MS = 15000;
@@ -66,7 +77,9 @@ export function duracaoDe(m: Microjogo, dados: Dados): number {
     case 'saque':
       return SAQUE_ESPERA_MAX + SAQUE_DEPOIS_MS;
     case 'forca':
-      return FORCA_MS;
+      // a mesma folga da siga e do alvo (revisão independente, 03/11/2026): sem ela, o aperto honesto no fim da barra, que a
+      // tela deu como feito, chegava depois da revelação e não contava
+      return FORCA_MS + 1500;
     case 'relogio':
       return RELOGIO_MS;
     case 'copos':
@@ -189,6 +202,8 @@ export interface RodadaDeFesta {
   /** O que `quem` vê desta rodada. */
   publico(quem: number): {
     fase: 'preparando' | 'jogando' | 'revelando';
+    /** A medida da rede: o site devolve este número na hora, pela ação 'eco' (só no "prepare-se"). */
+    eco: number | null;
     microjogo: Microjogo;
     dados: Dados;
     duracaoMs: number;
@@ -198,7 +213,7 @@ export interface RodadaDeFesta {
     resposta: number | null;
     linhas: LinhaDaRodada[] | null;
   };
-  /** 'resultado' ou 'acerto' de um inscrito (as mesmas mensagens de erro da Festa). */
+  /** 'resultado', 'acerto' ou 'eco' de um inscrito (as mesmas mensagens de erro da Festa; o 'eco' nunca dá erro). */
   acao(quem: number, corpo: Record<string, unknown>): string | null;
   /** Alguém pode ter saído: a rodada que só esperava essa pessoa revela. */
   conferir(): void;
@@ -231,9 +246,26 @@ export function rodadaDeFesta({ ctx, microjogo: m, inscritos, agora, aleatorio, 
   const acertosDoAlvo = new Map<number, Set<number>>();
   let linhas: LinhaDaRodada[] | null = null;
 
+  /**
+   * A REDE DE CADA UM (revisão independente, 03/11/2026): os ecos mandados no "prepare-se" (o número e quando saiu), quantos
+   * voltaram, e a menor ida e volta vista. E, no saque, quando o estado com o sinal foi servido a cada um: a reação honesta
+   * começa depois disso.
+   */
+  const ecosMandados = new Map<number, Map<number, number>>();
+  const ecosVoltaram = new Map<number, number>();
+  const idaEVolta = new Map<number, number>();
+  const sinalServidoEm = new Map<number, number>();
+  let proximoEco = 1;
+  /** O que o tempo honesto de `quem` pode ficar abaixo do que o servidor viu passar. */
+  const folgaParaBaixo = (quem: number) => Math.min(idaEVolta.get(quem) ?? ATRASO_MAXIMO, ATRASO_MAXIMO) + FOLGA_DA_REDE;
+
+  /** O instante marcado para o jogo começar: é dele que o site conta (o restanteMs do relógio da partida), e não de quando o
+   * relógio do servidor de fato disparou, que pode atrasar uns milissegundos. */
+  const comecaEm = agora() + PREPARO_MS;
+
   const jogar = () => {
     fase = 'jogando';
-    inicio = agora();
+    inicio = Math.min(comecaEm, agora());
     if (m === 'saque') {
       const espera = SAQUE_ESPERA_MIN + Math.floor(aleatorio() * (SAQUE_ESPERA_MAX - SAQUE_ESPERA_MIN));
       ctx.agendar(espera, () => {
@@ -293,25 +325,31 @@ export function rodadaDeFesta({ ctx, microjogo: m, inscritos, agora, aleatorio, 
     const agoraMs = agora();
     const passou = agoraMs - inicio;
     const invalido: Resultado = { motivo: 'invalido', valor: null, chave: [] };
+    const abaixo = folgaParaBaixo(quem);
+    /** O tempo dito (desde o começo) cabe no que o servidor viu: nunca depois, e antes no máximo a rede da pessoa. */
+    const cabe = (t: number) => t <= passou + FOLGA_ACIMA && t >= passou - abaixo;
     switch (m) {
       case 'saque': {
         if (corpo.cedo === true || sinalEm === null) return { motivo: 'cedo', valor: null, chave: [] };
         if (!numero(corpo.reacaoMs)) return invalido;
         if (corpo.reacaoMs < REACAO_MINIMA) return { motivo: 'cedo', valor: null, chave: [] };
-        // a reação não fica muito abaixo do que o servidor viu passar desde o sinal
-        const reacao = Math.round(Math.max(corpo.reacaoMs, agoraMs - sinalEm - FOLGA_SAQUE));
+        // a reação conta de quando o sinal apareceu na tela, e ele só aparece depois de o estado com ele ser servido: ela não
+        // passa do que o servidor viu desde então, e não fica abaixo disso mais do que a rede da pessoa (aí, o servidor a sobe)
+        const desde = agoraMs - (sinalServidoEm.get(quem) ?? sinalEm);
+        if (corpo.reacaoMs > desde + FOLGA_ACIMA) return invalido;
+        const reacao = Math.round(Math.max(corpo.reacaoMs, desde - abaixo));
         return { motivo: null, valor: reacao, chave: [reacao] };
       }
       case 'forca': {
         const t = corpo.t;
         // o tempo dito tem de ser o de agora (com a folga da rede): não vale calcular o perfeito e mandar depois
-        if (!numero(t) || t < 0 || t > FORCA_MS || t > passou + FOLGA_MS || t < passou - FOLGA_SAQUE) return invalido;
+        if (!numero(t) || t < 0 || t > FORCA_MS || !cabe(t)) return invalido;
         const v = Math.round(valorDaForca((dados as DadosForca).periodoMs, t) * 10) / 10;
         return { motivo: null, valor: v, chave: [100 - v] };
       }
       case 'relogio': {
         const t = corpo.t;
-        if (!numero(t) || t < 0 || t > RELOGIO_MS || t > passou + FOLGA_MS || t < passou - FOLGA_SAQUE) return invalido;
+        if (!numero(t) || t < 0 || t > RELOGIO_MS || !cabe(t)) return invalido;
         const ms = Math.round(t);
         return { motivo: null, valor: ms, chave: [Math.abs(ms - RELOGIO_ALVO)] };
       }
@@ -319,10 +357,10 @@ export function rodadaDeFesta({ ctx, microjogo: m, inscritos, agora, aleatorio, 
         const d = dados as DadosCopos;
         const anim = animacaoDosCopos(d);
         if (!numero(corpo.copo) || !numero(corpo.ms) || corpo.ms < 0) return invalido;
-        // não se escolhe antes de os copos pararem
-        if (passou < anim - FOLGA_MS) return invalido;
+        // não se escolhe antes de os copos pararem, nem se diz que levou mais do que o servidor viu
+        if (anim + corpo.ms > passou + FOLGA_ACIMA) return invalido;
         if (corpo.copo !== copoFinal(d)) return { motivo: 'errou', valor: null, chave: [] };
-        const ms = Math.round(Math.max(corpo.ms, REACAO_MINIMA, passou - anim - FOLGA_SAQUE));
+        const ms = Math.round(Math.max(corpo.ms, REACAO_MINIMA, passou - anim - abaixo));
         return { motivo: null, valor: ms, chave: [ms] };
       }
       case 'siga': {
@@ -334,11 +372,11 @@ export function rodadaDeFesta({ ctx, microjogo: m, inscritos, agora, aleatorio, 
         // a última sequência completa bate com a do servidor
         for (let i = 0; i < n; i++) if (digitadas[i] !== setas[i]) return invalido;
         // e houve tempo de ver todas as sequências até ela
-        if (passou + FOLGA_MS < minimoDaSiga(n)) return invalido;
+        if (passou + FOLGA_ACIMA < minimoDaSiga(n)) return invalido;
         if (n === 0) return { motivo: 'errou', valor: 0, chave: [] };
-        // o tempo não fica abaixo do mínimo de ver as setas, nem muito abaixo do que o servidor viu passar
-        const minimo = Math.max(minimoDaSiga(n), passou - FOLGA_SAQUE);
-        const ms = numero(corpo.ms) ? Math.round(Math.min(Math.max(corpo.ms, minimo), passou + FOLGA_MS)) : passou;
+        // o tempo (que só desempata) não fica abaixo do mínimo de ver as setas, nem fora do que o servidor viu passar
+        const minimo = Math.max(minimoDaSiga(n), passou - abaixo);
+        const ms = numero(corpo.ms) ? Math.round(Math.min(Math.max(corpo.ms, minimo), passou + FOLGA_ACIMA)) : passou;
         return { motivo: null, valor: n, chave: [-n, ms] };
       }
       case 'alvo': {
@@ -358,7 +396,20 @@ export function rodadaDeFesta({ ctx, microjogo: m, inscritos, agora, aleatorio, 
     microjogo: m,
     publico(quem) {
       const meu = resultados.get(quem);
+      // o estado com o sinal servido a esta pessoa pela primeira vez: a reação dela começa daqui
+      if (fase === 'jogando' && sinalEm !== null && !sinalServidoEm.has(quem)) sinalServidoEm.set(quem, agora());
+      // o eco do "prepare-se": um número novo a cada estado, até ECOS_POR_RODADA voltarem (o site devolve na hora)
+      let eco: number | null = null;
+      if (fase === 'preparando' && inscritos.includes(quem) && (ecosVoltaram.get(quem) ?? 0) < ECOS_POR_RODADA) {
+        eco = proximoEco++;
+        const meus = ecosMandados.get(quem) ?? new Map<number, number>();
+        meus.set(eco, agora());
+        // só os últimos poucos (quem busca o estado muitas vezes não enche a memória)
+        if (meus.size > 8) meus.delete(meus.keys().next().value!);
+        ecosMandados.set(quem, meus);
+      }
       return {
+        eco,
         fase,
         microjogo: m,
         dados,
@@ -372,6 +423,15 @@ export function rodadaDeFesta({ ctx, microjogo: m, inscritos, agora, aleatorio, 
       };
     },
     acao(quem, corpo) {
+      if (corpo.tipo === 'eco') {
+        // a medida da rede: nunca é erro (o eco que chega tarde, ou repetido, só não conta)
+        const em = numero(corpo.eco) ? ecosMandados.get(quem)?.get(corpo.eco) : undefined;
+        if (em === undefined || fase !== 'preparando') return null;
+        ecosMandados.get(quem)!.delete(corpo.eco as number);
+        ecosVoltaram.set(quem, (ecosVoltaram.get(quem) ?? 0) + 1);
+        idaEVolta.set(quem, Math.min(idaEVolta.get(quem) ?? Infinity, agora() - em));
+        return null;
+      }
       if (corpo.tipo !== 'resultado' && corpo.tipo !== 'acerto') return 'Ação desconhecida.';
       if (!inscritos.includes(quem)) return 'Você está assistindo esta partida.';
       if (fase !== 'jogando') return 'Esta rodada já acabou.';
@@ -382,7 +442,9 @@ export function rodadaDeFesta({ ctx, microjogo: m, inscritos, agora, aleatorio, 
         const i = corpo.i;
         if (!numero(i) || !Number.isInteger(i) || i < 0 || i >= alvos.length) return null;
         const passou = agora() - inicio;
-        if (passou < alvos[i].t - FOLGA_MS || passou > alvos[i].t + ALVO_VIDA_MS + FOLGA_SAQUE) return null;
+        // a cenoura aparece na tela no instante dela (mais o tempo de o estado ter chegado), e o acerto chega depois: nunca
+        // antes do instante, e no máximo a rede da pessoa depois de ela sumir
+        if (passou < alvos[i].t - FOLGA_ACIMA || passou > alvos[i].t + ALVO_VIDA_MS + folgaParaBaixo(quem)) return null;
         const meus = acertosDoAlvo.get(quem) ?? new Set<number>();
         meus.add(i);
         acertosDoAlvo.set(quem, meus);
@@ -469,11 +531,30 @@ export function criarFesta({ agora = Date.now, aleatorio = Math.random, ordem: o
         ctx.terminar();
       };
 
+      /**
+       * A classificação do fim, a mesma dos troféus (revisão independente, 03/11/2026: a tela dava medalha pelo placar de
+       * todos, inclusive de quem tinha saído, e ao único que ficou): posição só para quem ficou até o fim, e só com 2 ou mais;
+       * quem saiu vem depois, sem posição, marcado.
+       */
+      const classificacaoFinal = () => {
+        const turma = ficaram ?? new Set<number>();
+        const comPodio = turma.size >= 2;
+        const ordemFinal = placar(pontos, ctx.nome);
+        const ranking = comPodio ? ordemFinal.filter((l) => turma.has(l.userId)) : [];
+        const resto = ordemFinal.filter((l) => !ranking.includes(l));
+        return [
+          ...ranking.map((l) => ({ ...l, posicao: 1 + ranking.filter((o) => o.pontos > l.pontos).length, saiu: false })),
+          ...resto.map((l) => ({ ...l, posicao: null, saiu: !turma.has(l.userId) })),
+        ];
+      };
+
       return {
         publico(quem) {
           const r = atual.publico(quem);
           return {
             ...r,
+            eco: terminada ? null : r.eco,
+            classificacao: terminada ? classificacaoFinal() : null,
             fase: terminada ? 'fim' : r.fase,
             rodada,
             rodadas: ordem.length,
@@ -486,6 +567,7 @@ export function criarFesta({ agora = Date.now, aleatorio = Math.random, ordem: o
           };
         },
         acao(quem, corpo) {
+          if (corpo.tipo === 'eco') return terminada ? null : atual.acao(quem, corpo);
           if (corpo.tipo !== 'resultado' && corpo.tipo !== 'acerto') return 'Ação desconhecida.';
           if (!inscritos.includes(quem)) return 'Você está assistindo esta partida.';
           if (terminada) return 'Esta rodada já acabou.';

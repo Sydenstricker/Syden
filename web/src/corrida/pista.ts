@@ -299,13 +299,42 @@ const COR = {
   flor: [rgb(236, 120, 150), rgb(246, 214, 96), rgb(236, 236, 230)],
 };
 
-export function montarPista(def: DefinicaoDaPista = HORTA): Pista {
+/**
+ * Só a LINHA DO MEIO, sem o chão nem a textura: alguns pontos e uma soma, contra os ~300 ms e as dezenas de MB da pista
+ * inteira. É o que basta para o mapa pequeno da escolha da pista e para os marcos que o servidor confere (revisão
+ * independente, 03/11/2026).
+ */
+export function linhaDaPista(def: DefinicaoDaPista): Pick<Pista, 'lx' | 'ly' | 'la' | 'comprimento'> {
   const { xs, ys } = linhaDoMeio(def.pontos, 24);
   const n = xs.length;
   const lx = Float32Array.from(xs), ly = Float32Array.from(ys);
   const la = new Float32Array(n + 1);
   for (let i = 0; i < n; i++) la[i + 1] = la[i] + Math.hypot(lx[(i + 1) % n] - lx[i], ly[(i + 1) % n] - ly[i]);
-  const comprimento = la[n];
+  return { lx, ly, la, comprimento: la[n] };
+}
+
+/**
+ * OS MARCOS DA VOLTA: `quantos` pontos da linha do meio, igualmente espaçados entre uma passagem pela linha de chegada e a
+ * seguinte. O servidor tem a mesma lista (server/src/corrida.ts, PISTAS) e exige que cada volta passe perto de todos, em
+ * ordem (revisão independente, 03/11/2026: um fantasma em zigue-zague sobre a linha de chegada virava recorde de 0:26).
+ */
+export function marcosDaPista(def: DefinicaoDaPista, quantos: number): [number, number][] {
+  const { lx, ly, la, comprimento } = linhaDaPista(def);
+  const n = lx.length;
+  const marcos: [number, number][] = [];
+  for (let k = 1; k <= quantos; k++) {
+    const s = (k / (quantos + 1)) * comprimento;
+    let i = 0;
+    while (i < n - 1 && la[i + 1] <= s) i++;
+    const t = (s - la[i]) / (la[i + 1] - la[i] || 1), j = (i + 1) % n;
+    marcos.push([lx[i] + (lx[j] - lx[i]) * t, ly[i] + (ly[j] - ly[i]) * t]);
+  }
+  return marcos;
+}
+
+export function montarPista(def: DefinicaoDaPista = HORTA): Pista {
+  const { lx, ly, la, comprimento } = linhaDaPista(def);
+  const n = lx.length;
 
   // A DISTÂNCIA até a linha do meio e o quanto se andou nela, ponto a ponto, até MAX além do asfalto: cada trecho
   // pinta só a caixa em volta dele (bem mais barato que medir cada ponto contra a linha inteira).

@@ -8,6 +8,7 @@ import { comToken, criarConta, servidorDeTeste } from './ajuda.js';
 
 const { app, fechar } = await servidorDeTeste();
 const { criarCorrida, FOLGA_MS } = await import('../src/minijogo-corrida.js');
+const { PISTAS } = await import('../src/corrida.js');
 /** O relógio da corrida, na mão: cada teste anda com ele. */
 let agora = 1_000_000;
 const corrida = criarCorrida(() => agora);
@@ -20,33 +21,34 @@ const anaId = await idDe(ana.token);
 const biaId = await idDe(bia.token);
 const comunidade = (await comToken(app, ana.token)('POST', '/api/communities', { name: 'Turma do kart' })).json() as { id: number };
 
-/** Como em corrida.test.ts: um círculo que passa pela linha de chegada da horta-1. */
-function corridaDe(porVolta: number) {
+/**
+ * Como em corrida.test.ts: 3 voltas pelo polígono da linha de chegada e dos marcos da pista (o que o servidor confere desde
+ * a revisão independente de 03/11/2026: andar 70% da pista, acabar na linha, passar pelos marcos em ordem).
+ */
+function corridaDe(porVolta: number, pista = 'horta-1') {
+  const { linha, marcos } = PISTAS[pista];
+  const pontos = [linha, ...marcos];
+  const trechos = pontos.map((a, i) => {
+    const b = pontos[(i + 1) % pontos.length];
+    return { a, b, l: Math.hypot(b[0] - a[0], b[1] - a[1]) };
+  });
+  const total = trechos.reduce((s, t) => s + t.l, 0);
   const voltas = [porVolta, porVolta * 2, porVolta * 3];
-  const r = Math.hypot(250 - 500, 190 - 500), a0 = Math.atan2(190 - 500, 250 - 500);
   const amostras: number[] = [];
   for (let p = 1; p <= voltas[2]; p += 4) {
-    const a = a0 + (2 * Math.PI * (p - 1)) / porVolta;
-    amostras.push(Math.round((500 + Math.cos(a) * r) * 10), Math.round((500 + Math.sin(a) * r) * 10), Math.round(a * 1000));
+    let s = (((p - 1) % porVolta) / porVolta) * total;
+    let t = trechos[0];
+    for (t of trechos) {
+      if (s <= t.l) break;
+      s -= t.l;
+    }
+    const f = s / t.l;
+    amostras.push(Math.round((t.a[0] + (t.b[0] - t.a[0]) * f) * 10), Math.round((t.a[1] + (t.b[1] - t.a[1]) * f) * 10), Math.round(Math.atan2(t.b[1] - t.a[1], t.b[0] - t.a[0]) * 1000));
   }
   return { tipo: 'chegada', voltas, amostras };
 }
-
-/** Um círculo que passa pela linha de chegada de outra pista (o centro em (520, 520), o raio até a linha). */
-function corridaPela(linha: [number, number]) {
-  return (porVolta: number) => {
-    const voltas = [porVolta, porVolta * 2, porVolta * 3];
-    const r = Math.hypot(linha[0] - 520, linha[1] - 520), a0 = Math.atan2(linha[1] - 520, linha[0] - 520);
-    const amostras: number[] = [];
-    for (let p = 1; p <= voltas[2]; p += 4) {
-      const a = a0 + (2 * Math.PI * (p - 1)) / porVolta;
-      amostras.push(Math.round((520 + Math.cos(a) * r) * 10), Math.round((520 + Math.sin(a) * r) * 10), Math.round(a * 1000));
-    }
-    return { tipo: 'chegada', voltas, amostras };
-  };
-}
-const corridaNoPomar = corridaPela([220, 300]);
-const corridaNaPraia = corridaPela([230, 230]);
+const corridaNoPomar = (porVolta: number) => corridaDe(porVolta, 'pomar-1');
+const corridaNaPraia = (porVolta: number) => corridaDe(porVolta, 'praia-1');
 
 /** O motor de mentira: o relógio é chamado na mão. */
 function contexto(naSala: number[], comunidade = 0) {
@@ -100,8 +102,8 @@ test('fantasma que não fecha é recusado; quem não chega fica atrás, pelo qua
   assert.ok(jogo.acao(anaId, torta), 'o salto de posição é recusado');
   assert.equal(jogo.tempoReal!(biaId, { x: 2000, y: 1, a: 0, n: 1, andou: 1 }), null, 'posição fora do mapa não é repassada');
   assert.equal(jogo.tempoReal!(biaId, { x: 10, y: 20, a: 0, n: 2, andou: 3.5 }), null, 'nem quem diz ter andado mais que a corrida');
-  assert.deepEqual(jogo.tempoReal!(biaId, { x: 10, y: 20, a: 0.5, n: 40, andou: 1.4 }), { userId: biaId, x: 10, y: 20, a: 0.5, n: 40, andou: 1.4 });
-  jogo.tempoReal!(anaId, { x: 10, y: 20, a: 0.5, n: 40, andou: 0.8 });
+  assert.deepEqual(jogo.tempoReal!(biaId, { x: 245, y: 190, a: 0.5, n: 40, andou: 0.99 }), { userId: biaId, x: 245, y: 190, a: 0.5, n: 40, andou: 0.99 });
+  assert.ok(jogo.tempoReal!(anaId, { x: 248, y: 190, a: 0.5, n: 40, andou: 0.8 }));
   m.relogio[0].depois(); // a corrida passou de 5 min
   assert.equal(m.terminou(), true);
   const pilotos = jogo.publico(anaId).pilotos as { userId: number; tempoMs: number | null }[];
@@ -163,25 +165,29 @@ test('os itens: o servidor carimba o dono, só aceita perto de quem usa, e não 
   assert.ok(typeof jogo !== 'string');
   assert.equal(jogo.tempoReal!(anaId, { tipo: 'repolho', n: 10, s: 100, lado: 3 }), null, 'antes do verde, não');
   m.relogio[0].depois();
+  agora += 5000;
   assert.equal(jogo.tempoReal!(anaId, { tipo: 'repolho', n: 300, s: 100, lado: 3 }), null, 'sem posição nenhuma, não');
-  // a Ana está a 1/30 da volta (~100 unidades da largada), em (10, 10)
-  jogo.tempoReal!(anaId, { x: 10, y: 10, a: 0, n: 297, andou: 100 / 3008 });
+  // a Ana está a 1/30 da volta (~100 unidades da largada), em (260, 190)
+  assert.ok(jogo.tempoReal!(anaId, { x: 260, y: 190, a: 0, n: 297, andou: 100 / 3008 }));
   const r = jogo.tempoReal!(anaId, { tipo: 'repolho', n: 300, s: 116, lado: 3, dono: biaId });
   assert.deepEqual(r, { tipo: 'repolho', id: `${anaId}-300`, dono: anaId, n: 300, s: 116, lado: 3 }, 'o dono é quem mandou');
   agora += 2000;
   assert.equal(jogo.tempoReal!(anaId, { tipo: 'repolho', n: 320, s: 1500, lado: 3 }), null, 'o repolho do outro lado da pista, não');
   assert.equal(jogo.tempoReal!(anaId, { tipo: 'lama', n: 320, x: 500, y: 500 }), null, 'a lama longe de quem a soltou, não');
-  assert.equal(jogo.tempoReal!(anaId, { tipo: 'lama', n: 900, x: 10, y: 10 }), null, 'num passo longe do último, não');
-  assert.ok(jogo.tempoReal!(anaId, { tipo: 'lama', n: 320, x: 12, y: 8 }), 'a lama atrás do kart, sim');
-  assert.equal(jogo.tempoReal!(anaId, { tipo: 'lama', n: 321, x: 10, y: 10 }), null, 'dois no mesmo segundo, não');
+  assert.equal(jogo.tempoReal!(anaId, { tipo: 'lama', n: 900, x: 260, y: 190 }), null, 'num passo longe do último, não');
+  assert.ok(jogo.tempoReal!(anaId, { tipo: 'lama', n: 320, x: 262, y: 188 }), 'a lama atrás do kart, sim');
+  assert.equal(jogo.tempoReal!(anaId, { tipo: 'lama', n: 321, x: 260, y: 190 }), null, 'dois no mesmo segundo, não');
   let usados = 2;
   for (let i = 0; i < 20; i++) {
     agora += 2000;
-    if (jogo.tempoReal!(anaId, { tipo: 'lama', n: 300 + i, x: 10, y: 10 })) usados++;
+    if (jogo.tempoReal!(anaId, { tipo: 'lama', n: 300 + i, x: 260, y: 190 })) usados++;
   }
   assert.equal(usados, 7, 'duas fileiras de caixas por volta, três voltas, e uma de folga');
   assert.equal(jogo.tempoReal!(biaId, { tipo: 'acertou', id: 'x; DROP' }), null);
   assert.equal(jogo.tempoReal!(biaId, { tipo: 'acertou', id: `${anaId}-999` }), null, 'um item que não existe não some');
+  assert.equal(jogo.tempoReal!(biaId, { tipo: 'acertou', id: `${anaId}-300` }), null, 'sem posição, a Bia não pode ter sido atingida');
+  // a Bia, 4 passos depois de o repolho sair, onde ele estava: 116 + 230 × 4/60 unidades da largada
+  assert.ok(jogo.tempoReal!(biaId, { x: 255, y: 190, a: 0, n: 304, andou: (116 + (230 * 4) / 60) / 3008 }));
   assert.deepEqual(jogo.tempoReal!(biaId, { tipo: 'acertou', id: `${anaId}-300` }), { tipo: 'acertou', id: `${anaId}-300` });
   assert.equal(jogo.tempoReal!(biaId, { tipo: 'acertou', id: `${anaId}-300` }), null, 'e só uma vez');
 });
@@ -237,4 +243,79 @@ test('a Copa do Repolho começa no Bosque, e cada piloto vem com o avatar dele',
   assert.deepEqual([p.pista, p.categoria, p.corridas], ['bosque-1', 'copa-do-repolho', 3]);
   if (r.statusCode < 300) assert.equal(p.pilotos.find((l) => l.userId === anaId)?.avatar, 7);
   assert.ok(p.pilotos.every((l) => 'avatar' in l));
+});
+
+test('a posição ao vivo tem de ser alcançável: sem pular para o lado do líder (revisão independente, 03/11/2026)', () => {
+  const m = contexto([anaId, biaId], comunidade.id);
+  const jogo = corrida.comecar(m.ctx, { naSala: [anaId, biaId], criadaPor: anaId, corpo: {} });
+  assert.ok(typeof jogo !== 'string');
+  m.relogio[0].depois();
+  agora += 10_000;
+  assert.equal(jogo.tempoReal!(anaId, { x: 800, y: 800, a: 0, n: 5, andou: 0.5 }), null, 'a primeira posição sai da largada');
+  assert.ok(jogo.tempoReal!(anaId, { x: 260, y: 190, a: 0, n: 297, andou: 100 / 3008 }));
+  assert.equal(jogo.tempoReal!(anaId, { x: 260, y: 190, a: 0, n: 297, andou: 100 / 3008 }), null, 'o passo só cresce');
+  assert.equal(jogo.tempoReal!(anaId, { x: 860, y: 760, a: 0, n: 301, andou: 0.5 }), null, 'em 4 passos não se atravessa a pista');
+  assert.equal(jogo.tempoReal!(anaId, { tipo: 'lama', n: 302, x: 860, y: 760 }), null, 'e a lama não cai lá');
+  assert.equal(jogo.tempoReal!(anaId, { x: 270, y: 190, a: 0, n: 30_000, andou: 110 / 3008 }), null, 'nem o passo passa do relógio');
+  // passos "guardados" (o n atrasado) não viram pulo: o alcance é também o do relógio desde a última posição
+  assert.equal(jogo.tempoReal!(anaId, { x: 860, y: 760, a: 0, n: 800, andou: 0.5 }), null, 'sem tempo de verdade para isso');
+  assert.equal(jogo.tempoReal!(anaId, { x: 266, y: 190, a: 0, n: 301, andou: 1 + 106 / 3008 }), null, 'a volta não sobe sem passar pela metade');
+  assert.ok(jogo.tempoReal!(anaId, { x: 266, y: 190, a: 0, n: 301, andou: 106 / 3008 }), 'e o kart que anda de verdade passa');
+});
+
+test('"acertou" só de quem podia ter sido atingido: nem o dono, nem quem estava longe (revisão independente, 03/11/2026)', () => {
+  const m = contexto([anaId, biaId], comunidade.id);
+  const jogo = corrida.comecar(m.ctx, { naSala: [anaId, biaId], criadaPor: anaId, corpo: {} });
+  assert.ok(typeof jogo !== 'string');
+  m.relogio[0].depois();
+  agora += 10_000;
+  assert.ok(jogo.tempoReal!(anaId, { x: 260, y: 190, a: 0, n: 297, andou: 100 / 3008 }));
+  const lama = jogo.tempoReal!(anaId, { tipo: 'lama', n: 300, x: 262, y: 188 }) as { id: string };
+  assert.ok(lama);
+  assert.equal(jogo.tempoReal!(anaId, { tipo: 'acertou', id: lama.id }), null, 'a dona da lama não "leva" a própria');
+  assert.ok(jogo.tempoReal!(biaId, { x: 200, y: 200, a: 0, n: 280, andou: 0.98 }));
+  assert.equal(jogo.tempoReal!(biaId, { tipo: 'acertou', id: lama.id }), null, 'a Bia estava a 60 unidades dela');
+  assert.ok(jogo.tempoReal!(biaId, { x: 255, y: 190, a: 0, n: 320, andou: 0.01 }));
+  assert.deepEqual(jogo.tempoReal!(biaId, { tipo: 'acertou', id: lama.id }), { tipo: 'acertou', id: lama.id }, 'em cima da lama, sim');
+  // o repolho: quem diz ter levado tem de estar onde ele estava naquele passo, pela linha do meio
+  agora += 2000;
+  assert.ok(jogo.tempoReal!(anaId, { x: 270, y: 190, a: 0, n: 301, andou: 110 / 3008 }));
+  const repolho = jogo.tempoReal!(anaId, { tipo: 'repolho', n: 302, s: 126, lado: 0 }) as { id: string };
+  assert.ok(repolho);
+  assert.ok(jogo.tempoReal!(biaId, { x: 262, y: 190, a: 0, n: 324, andou: 0.02 }));
+  assert.equal(jogo.tempoReal!(biaId, { tipo: 'acertou', id: repolho.id }), null, 'o repolho já ia 80 unidades à frente');
+  agora += 1300;
+  assert.ok(jogo.tempoReal!(biaId, { x: 480, y: 160, a: 0, n: 400, andou: (126 + (230 * 98) / 60) / 3008 }));
+  assert.deepEqual(jogo.tempoReal!(biaId, { tipo: 'acertou', id: repolho.id }), { tipo: 'acertou', id: repolho.id });
+});
+
+test('a medalha da tela é a do troféu: quem saiu não tem posição, e empate divide (revisão independente, 03/11/2026)', async () => {
+  const caio = await criarConta(app, 'caio-da-largada');
+  const caioId = await idDe(caio.token);
+  let naSala = [anaId, biaId, caioId];
+  const relogio: { ms: number; depois: () => void }[] = [];
+  const ctx = {
+    agendar: (ms: number, depois: () => void) => relogio.splice(0, relogio.length, { ms, depois }),
+    avisar: () => {},
+    terminar: () => {},
+    naSala: () => naSala,
+    nome: (id: number) => (id === anaId ? 'ana' : id === biaId ? 'bia' : 'caio'),
+    comunidade: comunidade.id,
+  };
+  const jogo = corrida.comecar(ctx, { naSala, criadaPor: anaId, corpo: {} });
+  assert.ok(typeof jogo !== 'string');
+  relogio[0].depois();
+  agora += 120_000;
+  assert.equal(jogo.acao(caioId, corridaDe(1100)), null, 'o Caio chega primeiro...');
+  naSala = [anaId, biaId]; // ...e sai
+  assert.equal(jogo.acao(anaId, corridaDe(1200)), null);
+  assert.equal(jogo.acao(biaId, corridaDe(1200)), null, 'e a Ana e a Bia empatam');
+  relogio[0].depois(); // o prazo
+  const pilotos = jogo.publico(anaId).pilotos as { userId: number; posicao: number | null }[];
+  assert.deepEqual(pilotos.map((p) => [p.userId, p.posicao]), [[anaId, 1], [biaId, 1], [caioId, null]]);
+  const trofeu = async (token: string) =>
+    ((await comToken(app, token)('GET', '/api/corrida-trofeus')).json().trofeus as { evento: string; posicao: number; pista: string }[])[0];
+  assert.equal((await trofeu(ana.token)).posicao, 1);
+  assert.equal((await trofeu(bia.token)).posicao, 1, 'o empate dá o primeiro lugar às duas');
+  assert.equal(await trofeu(caio.token), undefined, 'quem saiu não ganha troféu');
 });

@@ -26,11 +26,13 @@ import {
   apanhavel,
   ARENA_L,
   comandosVazios,
+  contarDesde,
   encosta,
   ESTADOS,
   ehQuadro,
   golpeAtivo,
   LinhaDoTempo,
+  marcaDoLugar,
   misturar,
   novoCoelho,
   ONDAS_X,
@@ -42,8 +44,8 @@ import {
   type InimigoNaTela,
   type Quadro,
 } from './briga/regras';
+import { Trophy } from 'lucide-react';
 import { useT } from './i18n';
-import { Placar } from './Minijogo';
 import type { EstadoBriga, Partida } from './minijogos';
 
 /**
@@ -131,12 +133,30 @@ export function JogoBriga({
 }) {
   const t = useT();
   if (estado.terminada || estado.fase === 'fim') {
-    const linhas = estado.resultado ?? estado.jogadores.map((j) => ({ ...j, golpes: 0, nocautes: 0 }));
+    // A POSIÇÃO É A DO SERVIDOR (só entre quem ficou até o fim; empatados dividem; null para quem saiu), e a medalha só sai
+    // quando o troféu também sai (marcaDoLugar). Sem o resultado (a partida caiu antes), a ordem dos pontos, sem medalha.
+    const doServidor = estado.resultado as (NonNullable<EstadoBriga['resultado']>[number] & { posicao?: number | null })[] | null;
+    const linhas = doServidor
+      ? doServidor.map((l) => ({ ...l, posicao: l.posicao ?? null }))
+      : estado.jogadores.map((j) => ({ ...j, posicao: 1 + estado.jogadores.filter((o) => o.pontos > j.pontos).length }));
+    const regra = { venceu: !!doServidor && estado.venceu, solo: estado.solo === true, ficaram: linhas.filter((l) => l.posicao !== null).length };
     return (
       <div className="briga">
         <p className="briga-desfecho">{estado.venceu ? t('A horta está salva!') : t('A horta caiu.')}</p>
-        {/* empatados dividem a posição, como no troféu */}
-        <Placar eu={eu} linhas={linhas.map((l) => ({ ...l, valor: String(l.pontos), posicao: 1 + linhas.filter((o) => o.pontos > l.pontos).length }))} />
+        <div className="minijogo-fim">
+          <p className="minijogo-fim-titulo">
+            <Trophy size={20} aria-hidden="true" /> {t('Fim de jogo!')}
+          </p>
+          <ol className="minijogo-placar">
+            {linhas.map((l) => (
+              <li key={l.userId} className={l.userId === eu ? 'eu' : ''}>
+                <span className="minijogo-medalha">{marcaDoLugar(l.posicao, l.pontos, regra)}</span>
+                <span className="minijogo-nome">{l.username}</span>
+                <span className="minijogo-pontos">{l.pontos}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
       </div>
     );
   }
@@ -215,6 +235,8 @@ function Palco({
       const meu = q.j.find((l) => l[0] === eu);
       if (meu) {
         eu_.hp = meu[7];
+        // a conta dos golpes continua da do servidor (a página recarregada recomeçava do 1, e nada valia)
+        contarDesde(eu_, meu[12]);
         // a primeira vez: o coelho começa onde o servidor o pôs
         if (!posicionado) {
           posicionado = true;

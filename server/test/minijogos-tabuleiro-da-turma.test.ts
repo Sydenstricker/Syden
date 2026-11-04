@@ -235,6 +235,25 @@ test('a partida inteira: o pódio pelas douradas vai para a estante, e quem saiu
   assert.equal(doCaio.filter((t: { pista: string }) => t.pista === 'tabuleiro').length, 0, 'quem saiu não leva');
 });
 
+test('sem pódio por falta de quem ficou: só quem saiu de fato vem marcado como "saiu" (revisão independente, 03/11/2026)', () => {
+  sorte = 0.5;
+  const m = comecar({}, [anaId, biaId, caioId], { rodadas: 5 });
+  let voltas = 0;
+  while (m.estado().fase !== 'fim' && voltas++ < 500) {
+    const e = m.estado();
+    // o Caio sai na rodada 2; na 3, a Bia sai e o Caio volta: sempre dois na sala, mas só a Ana ficou o tempo todo
+    if (e.rodada === 2) m.sala.ids = [anaId, biaId];
+    if (e.rodada >= 3) m.sala.ids = [anaId, caioId];
+    m.andar();
+  }
+  const e = m.estado() as Estado & { classificacao: { userId: number; posicao: number | null; saiu: boolean }[] };
+  assert.equal(e.fase, 'fim');
+  assert.equal(e.interrompida, false);
+  assert.ok(e.classificacao.every((l) => l.posicao === null), 'sem pódio');
+  const saiu = new Map(e.classificacao.map((l) => [l.userId, l.saiu]));
+  assert.deepEqual([saiu.get(anaId), saiu.get(biaId), saiu.get(caioId)], [false, true, true]);
+});
+
 test('pela rota: o tabuleiro não se joga sozinho', async () => {
   const r = await comToken(app, ana.token)('POST', '/api/minijogo-solo', { jogo: 'tabuleiro' });
   assert.equal(r.statusCode, 400);

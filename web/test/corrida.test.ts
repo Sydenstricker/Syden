@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { AMOSTRA, amostrar, fantasmaEm, novoKart, passo, passosEmMs, pilotoAutomatico, tempoLegivel } from '../src/corrida/fisica';
+import { AMOSTRA, amostrar, fantasmaEm, novoKart, passo, passosEmMs, pilotoAutomatico, progresso, tempoLegivel } from '../src/corrida/fisica';
 import { pontoNaLinha, repolhoEm, sortearItem } from '../src/corrida/laco';
-import { Chao, chaoEm, HORTA, montarPista, PISTAS, type Pista } from '../src/corrida/pista';
+import { Chao, chaoEm, HORTA, marcosDaPista, montarPista, PISTAS, type Pista } from '../src/corrida/pista';
+import { PASSO_MAXIMO } from '../../server/src/corrida.ts';
 
 const pista = montarPista(HORTA);
 
@@ -34,7 +35,7 @@ test('o piloto automático fecha as 3 voltas, e o fantasma tem o formato que o s
   assert.equal(caminho.length, 3 * (Math.floor((passos - 1) / AMOSTRA) + 1), 'uma amostra a cada 4 passos, até a chegada');
   for (let i = 0; i < 3; i++) assert.ok(k.voltas[i] - (i ? k.voltas[i - 1] : 0) >= 8 * 60, 'volta com menos de 8 s');
   for (let i = 3; i < caminho.length; i += 3) {
-    assert.ok(Math.hypot(caminho[i] - caminho[i - 3], caminho[i + 1] - caminho[i - 2]) <= 160, 'salto maior do que o servidor aceita');
+    assert.ok(Math.hypot(caminho[i] - caminho[i - 3], caminho[i + 1] - caminho[i - 2]) <= PASSO_MAXIMO, 'salto maior do que o servidor aceita');
   }
   console.log('tempo do piloto automático:', tempoLegivel(passosEmMs(passos)), k.voltas.map((v, i) => tempoLegivel(passosEmMs(v - (i ? k.voltas[i - 1] : 0)))));
   const meio = fantasmaEm(caminho, 401);
@@ -63,6 +64,13 @@ test('em cada pista, o fantasma do piloto automático passa na conferência do s
     assert.ok(Math.abs(s.comprimento - p.comprimento) < 2, `${def.id}: comprimento do servidor ${s.comprimento}, do site ${p.comprimento}`);
     assert.deepEqual(s.linha, [Math.round(p.lx[0]), Math.round(p.ly[0])], `${def.id}: a linha de chegada`);
     assert.equal(s.voltas, def.voltas);
+    assert.equal(s.meiaLargura, def.meiaLargura, `${def.id}: a meia largura`);
+    // os marcos que o servidor exige em cada volta são os da linha do meio do site (revisão independente, 03/11/2026)
+    const marcos = marcosDaPista(def, s.marcos.length);
+    assert.ok(s.marcos.length >= 6 && s.marcos.length <= 10, `${def.id}: ${s.marcos.length} marcos`);
+    marcos.forEach(([x, y], i) => {
+      assert.ok(Math.hypot(s.marcos[i][0] - x, s.marcos[i][1] - y) < 1.5, `${def.id}: o marco ${i} do servidor ${s.marcos[i]}, do site ${[x, y].map(Math.round)}`);
+    });
     assert.equal(s.caixas, def.caixas.length, `${def.id}: as fileiras de caixas (o servidor limita os itens por elas)`);
     assert.equal(chaoEm(p, p.largada.x, p.largada.y), Chao.Asfalto, `${def.id}: a largada é no asfalto`);
     // nenhum trecho do asfalto encosta em outro (a pista não passa perto dela mesma)
@@ -103,4 +111,38 @@ test('as copas do site e do servidor são as mesmas, e toda pista delas existe',
   const { COPAS: NO_SERVIDOR } = await import('../../server/src/minijogo-corrida.ts');
   assert.deepEqual(COPAS, NO_SERVIDOR);
   for (const pistas of Object.values(COPAS)) for (const id of pistas) assert.ok(PISTAS.some((p) => p.id === id), id);
+});
+
+test('na sala, toda posição do piloto automático honesto passa na conferência do servidor, nas seis pistas', async () => {
+  // a revisão independente de 03/11/2026 fez o servidor recusar a posição que o kart não alcança: a honesta tem de passar
+  const { criarCorrida } = await import('../../server/src/minijogo-corrida.ts');
+  for (const def of PISTAS) {
+    let agora = 1_000_000;
+    const relogio: (() => void)[] = [];
+    const ctx = {
+      agendar: (_ms: number, depois: () => void) => relogio.splice(0, relogio.length, depois),
+      avisar: () => {},
+      terminar: () => {},
+      naSala: () => [1, 2],
+      nome: (id: number) => `p${id}`,
+      comunidade: 0,
+    };
+    const jogo = criarCorrida(() => agora).comecar(ctx, { naSala: [1, 2], criadaPor: 1, corpo: { pista: def.id } });
+    assert.ok(typeof jogo !== 'string');
+    relogio[0]();
+    agora += 500; // a rede: o verde chega meio segundo depois
+    const p = montarPista(def);
+    const k = novoKart(p);
+    let recusadas = 0, mandadas = 0;
+    while (!k.terminou && k.passos < 60 * 60 * 5) {
+      passo(k, pilotoAutomatico(k, p, true), p);
+      agora += 1000 / 60;
+      if (!k.terminou && (k.passos - 1) % AMOSTRA === 0) {
+        mandadas++;
+        const pos = { n: k.passos, x: +k.x.toFixed(1), y: +k.y.toFixed(1), a: +k.angulo.toFixed(3), andou: +progresso(k, p).toFixed(3) };
+        if (jogo.tempoReal!(1, pos) === null) recusadas++;
+      }
+    }
+    assert.equal(recusadas, 0, `${def.id}: ${recusadas} de ${mandadas} posições recusadas`);
+  }
 });

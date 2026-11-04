@@ -44,17 +44,18 @@ import {
  * se foi atingido é o computador de quem leva — que vê o item chegando, e avisa os outros para ele sumir.
  */
 
-const pistas = new Map<string, Pista>();
+let pistaGuardada: Pista | null = null;
 let coelhoPronto: HTMLImageElement | null = null;
 
-/** A pista, montada uma vez por página (são uns 300 ms de conta, e 20 MB que não mudam). */
+/**
+ * A pista da corrida que vai rodar (uns 300 ms de conta e ~24 MB). Fica guardada SÓ A ÚLTIMA: "Jogar de novo" e o
+ * StrictMode, que monta duas vezes, não a refazem, e a da corrida anterior da copa é solta quando a próxima chega. Antes
+ * ficavam todas, para sempre, e a escolha da pista montava as seis só para os mapas pequenos (revisão independente,
+ * 03/11/2026: ~2 s travando a tela e ~143 MB presos); o mapa da escolha sai agora só da linha do meio (MapaDaPista).
+ */
 export function pistaDaCorrida(def: DefinicaoDaPista = HORTA): Pista {
-  let p = pistas.get(def.id);
-  if (!p) {
-    p = montarPista(def);
-    pistas.set(def.id, p);
-  }
-  return p;
+  if (pistaGuardada?.def.id !== def.id) pistaGuardada = montarPista(def);
+  return pistaGuardada;
 }
 
 async function coelho(): Promise<HTMLImageElement> {
