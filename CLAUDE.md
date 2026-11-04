@@ -300,7 +300,11 @@ esqueleto, e anúncio só se mede com o navegador rodando.
 - **Varredura de 04/11/2026** (pedido dele: jogos que outros mantêm, para não gerar conteúdo nem manter), o mesmo método
   (12 s num Chrome) e mais o cabeçalho de embutir da página. **Sem anúncio e o cabeçalho deixa embutir:** JKLM.fun,
   OGS (online-go.com), Wikitrivia, PlayStrategy, Lidraughts (damas), Lishogi, PyChess, Codenames (codenames.game, o
-  oficial), horsepaste, Drawphone, playingcards.io, Wikispeedruns, Geotastic. **Sem anúncio, mas não embute:** Lichess,
+  oficial), horsepaste, Drawphone, playingcards.io e Lidraughts. **A varredura de 12 s ERROU dois, no mesmo dia, lendo o
+  texto da página:** o Geotastic TEM anúncio ("Ad network: Publift", pelo html-load.cc, que a lista de domínios não
+  pegava; e funções travadas até o pagamento de 3 €), e o Wikispeedruns também ("Viewing these ads supports us"). Lição:
+  ler o texto da página junto com os domínios. E o JKLM.fun NÃO roda numa moldura de outro site ("Could not load games
+  list", 400), apesar do cabeçalho. **Sem anúncio, mas não embute:** Lichess,
   Clues by Sam, chess.com. **Com anúncio:** Broken Picturephone, netgames.io, Colonist, Buddy Board Games, Semantle,
   The Wiki Game, OpenGuessr, Spyfall (o site), Sandspiel, ZType, Drawasaurus, Sketchful, papergames, Travle, Keymash,
   Monkeytype, e Board Game Arena (que também não embute). Neal.fun, Secret Hitler e TETR.IO barraram o Chrome de teste
