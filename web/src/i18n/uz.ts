@@ -2661,6 +2661,12 @@ export default {
   'Tirar o fundo': 'Fonni olib tashlash',
   'Contorno': 'Kontur',
   'O fundo não é de uma cor só, e ficou como veio.': 'Fon bir rangli emas, shuning uchun avvalgidek qoldi.',
+  'Recortar qualquer fundo (fotos, desenhos): baixa {tamanho} uma vez, e a imagem não sai do seu computador.': 'Istalgan fonni olib tashlash (suratlar, rasmlar): {tamanho} bir marta yuklab olinadi, rasm esa hech qachon kompyuteringdan chiqmaydi.',
+  'Baixar o recorte': 'Fonni olib tashlash vositasini yuklab olish',
+  'Baixando… {porcento}%': 'Yuklab olinmoqda… {porcento}%',
+  'Não deu para baixar o recorte. Tente de novo.': 'Fonni olib tashlash vositasini yuklab bo‘lmadi. Qayta urinib ko‘r.',
+  'No app do Syden, o recorte funciona com qualquer fundo.': 'Syden ilovasida istalgan fonni olib tashlash mumkin.',
+  'O recorte com o modelo falhou, e ficou o recorte simples.': 'Model bilan olib tashlash bo‘lmadi, shuning uchun oddiy usul ishlatildi.',
   'Mandar figurinha': 'Stiker yuborish',
   'Tirar figurinha': 'Stikerni olib tashlash',
   'Crie figurinhas com as suas imagens, ou salve as que receber numa conversa.':

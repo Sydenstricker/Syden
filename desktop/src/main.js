@@ -4,6 +4,7 @@ const path = require('node:path');
 const config = require('../app.config.json');
 const { setupScreenAudio, screenAudioAvailable, stopScreenAudio, escolherFonteDoSom, programaDaFonte } = require('./screen-audio');
 const { setupRuido, pararRuido } = require('./ruido');
+const { setupRecorte, pararRecorte } = require('./recorte');
 const { anotarQuemAbriu, lerQuemAbriu, mesmaInstalacao, recadoDeDoisSydens } = require('./duas-instalacoes');
 
 // O app carrega o próprio site: melhorias publicadas no GitHub Pages chegam sem reinstalar.
@@ -176,6 +177,7 @@ if (!app.requestSingleInstanceLock(ESTA_INSTALACAO)) {
     quitting = true;
     stopScreenAudio();
     pararRuido();
+    pararRecorte();
   });
   app.whenReady().then(() => {
     /*
@@ -197,6 +199,7 @@ if (!app.requestSingleInstanceLock(ESTA_INSTALACAO)) {
     setupScreenShare();
     setupScreenAudio();
     setupRuido();
+    setupRecorte();
     // O site avisa quando a pessoa troca de tema, para a faixa do Windows acompanhar.
     ipcMain.on('app:title-bar', (_event, cores) => {
       if (!mainWindow || typeof cores?.color !== 'string' || typeof cores?.symbolColor !== 'string') return;

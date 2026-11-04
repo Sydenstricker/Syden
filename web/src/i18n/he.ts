@@ -2625,6 +2625,12 @@ export default {
   'Tirar o fundo': 'להסיר את הרקע',
   'Contorno': 'קו מתאר',
   'O fundo não é de uma cor só, e ficou como veio.': 'הרקע אינו בצבע אחד, ולכן נשאר כמו שהיה.',
+  'Recortar qualquer fundo (fotos, desenhos): baixa {tamanho} uma vez, e a imagem não sai do seu computador.': 'להסיר כל רקע (תמונות, ציורים): הורדה חד־פעמית של {tamanho}, והתמונה אף פעם לא יוצאת מהמחשב.',
+  'Baixar o recorte': 'להוריד את הסרת הרקע',
+  'Baixando… {porcento}%': 'הורדה… {porcento}%',
+  'Não deu para baixar o recorte. Tente de novo.': 'לא ניתן היה להוריד את הסרת הרקע. אפשר לנסות שוב.',
+  'No app do Syden, o recorte funciona com qualquer fundo.': 'באפליקציה של Syden, ההסרה עובדת עם כל רקע.',
+  'O recorte com o modelo falhou, e ficou o recorte simples.': 'ההסרה עם המודל נכשלה, ולכן נעשתה ההסרה הפשוטה.',
   'Mandar figurinha': 'לשלוח מדבקה',
   'Tirar figurinha': 'להסיר מדבקה',
   'Crie figurinhas com as suas imagens, ou salve as que receber numa conversa.':

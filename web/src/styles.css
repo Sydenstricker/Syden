@@ -1329,8 +1329,82 @@ textarea {
   }
 }
 
+/* A foto própria nos mesmos estados do coelho pronto: a foto inteira se mexe, porque não tem quadros. Falando, pula no
+   ritmo da fala do coelho (1,2 s, quatro pulinhos); ausente, cochila (esmaecida, respirando devagar, com o zzz do lado);
+   ocupada, balança devagar de um lado para o outro. */
+.avatar-foto[data-estado='falando'] {
+  animation: avatar-foto-fala 0.3s ease-in-out infinite alternate;
+}
+
+.avatar-foto[data-estado='ausente'] {
+  filter: saturate(0.55) brightness(0.85);
+  animation: avatar-foto-cochilo 3.2s ease-in-out infinite;
+}
+
+/* O zzz: em em do avatar (o .avatar tem o tamanho dele no style), para ficar proporcional do 24 ao 96 px. */
+.avatar-foto-zzz {
+  position: absolute;
+  top: -12%;
+  right: -4%;
+  font-weight: 800;
+  font-size: 11px;
+  line-height: 1;
+  color: var(--text);
+  text-shadow: 0 0 3px var(--bg-darkest, #000);
+  animation: avatar-foto-zzz 3.2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.avatar-foto[data-estado='ocupado'] {
+  animation: avatar-foto-ocupado 2.4s ease-in-out infinite;
+}
+
+@keyframes avatar-foto-fala {
+  from {
+    transform: translateY(0) scale(1);
+  }
+  to {
+    transform: translateY(-5%) scale(1.04);
+  }
+}
+
+@keyframes avatar-foto-cochilo {
+  50% {
+    transform: scale(0.96) rotate(-4deg);
+  }
+}
+
+@keyframes avatar-foto-zzz {
+  0%,
+  20% {
+    opacity: 0;
+    transform: translate(0, 30%);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(30%, -40%);
+  }
+}
+
+@keyframes avatar-foto-ocupado {
+  25% {
+    transform: rotate(-5deg);
+  }
+  75% {
+    transform: rotate(5deg);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .avatar-pronto-faixa {
+  .avatar-pronto-faixa,
+  .avatar-foto {
+    animation: none !important;
+  }
+
+  .avatar-foto-zzz {
     animation: none;
   }
 }
@@ -17790,6 +17864,15 @@ body.arrastando-barra {
   align-items: center;
   gap: 8px;
   cursor: pointer;
+}
+
+.figurinhas-previa-recorte {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  margin-inline-start: 26px;
+  color: var(--text-muted);
 }
 
 .figurinhas-previa-botoes {

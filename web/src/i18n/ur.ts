@@ -2563,6 +2563,12 @@ export default {
   'Tirar o fundo': 'پس منظر ہٹائیں',
   'Contorno': 'کنارہ',
   'O fundo não é de uma cor só, e ficou como veio.': 'پس منظر ایک رنگ کا نہیں ہے، اس لیے جیسا تھا ویسا ہی رہا۔',
+  'Recortar qualquer fundo (fotos, desenhos): baixa {tamanho} uma vez, e a imagem não sai do seu computador.': 'کوئی بھی پس منظر ہٹائیں (تصاویر، ڈرائنگ): {tamanho} ایک بار ڈاؤن لوڈ ہوتا ہے، اور تصویر کبھی آپ کے کمپیوٹر سے باہر نہیں جاتی۔',
+  'Baixar o recorte': 'پس منظر ہٹانے کا ٹول ڈاؤن لوڈ کریں',
+  'Baixando… {porcento}%': 'ڈاؤن لوڈ ہو رہا ہے… {porcento}%',
+  'Não deu para baixar o recorte. Tente de novo.': 'پس منظر ہٹانے کا ٹول ڈاؤن لوڈ نہیں ہو سکا۔ دوبارہ کوشش کریں۔',
+  'No app do Syden, o recorte funciona com qualquer fundo.': 'Syden ایپ میں کوئی بھی پس منظر ہٹایا جا سکتا ہے۔',
+  'O recorte com o modelo falhou, e ficou o recorte simples.': 'ماڈل سے ہٹانا ناکام رہا، اس لیے سادہ طریقہ استعمال ہوا۔',
   'Mandar figurinha': 'اسٹیکر بھیجیں',
   'Tirar figurinha': 'اسٹیکر ہٹائیں',
   'Crie figurinhas com as suas imagens, ou salve as que receber numa conversa.':

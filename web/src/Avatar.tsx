@@ -174,7 +174,17 @@ export function Avatar({
       style={{ width: size, height: size }}
     >
       {version !== null ? (
-        <img src={mediaUrl.avatar(userId!, version)} alt="" draggable={false} />
+        // A FOTO PRÓPRIA também mostra o momento (pedido dele, 04/11/2026: "o mesmo comportamento das do Syden"): o
+        // desenho de uma foto não se anima quadro a quadro como o coelho, então é a foto inteira que se mexe — pula de
+        // leve falando, cochila (esmaecida, com o zzz) ausente, e balança devagar ocupada. Ver .avatar-foto em styles.css.
+        <>
+          <img className="avatar-foto" data-estado={estadoDoPronto ?? undefined} src={mediaUrl.avatar(userId!, version)} alt="" draggable={false} />
+          {estadoDoPronto === 'ausente' && (
+            <span className="avatar-foto-zzz" aria-hidden="true">
+              z
+            </span>
+          )}
+        </>
       ) : pronto !== null ? (
         <CoelhoPronto numero={pronto} estado={estadoDoPronto} />
       ) : (

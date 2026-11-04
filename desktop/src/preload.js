@@ -128,6 +128,22 @@ contextBridge.exposeInMainWorld('sydenDesktop', {
     disponivel: () => ipcRenderer.invoke('ruido:disponivel'),
     abrir: () => ipcRenderer.send('ruido:abrir'),
   },
+  /**
+   * O recorte de fundo das figurinhas (o BiRefNet, nativo, num processo à parte) — ver desktop/src/recorte/index.js.
+   * O modelo só é baixado quando a pessoa pede; a imagem não sai do computador.
+   */
+  recorte: {
+    estado: () => ipcRenderer.invoke('recorte:estado'),
+    baixar: (endereco) => ipcRenderer.invoke('recorte:baixar', String(endereco)),
+    preparar: () => ipcRenderer.invoke('recorte:preparar'),
+    /** pixels: Uint8Array RGBA de 512 × 512. Devolve a máscara, um Uint8Array de 512 × 512. */
+    recortar: (pixels) => ipcRenderer.invoke('recorte:recortar', pixels),
+    onProgresso: (callback) => {
+      const handler = (_event, fracao) => callback(Number(fracao));
+      ipcRenderer.on('recorte:progresso', handler);
+      return () => ipcRenderer.off('recorte:progresso', handler);
+    },
+  },
   /** Recebe 'mute' ou 'deafen' quando a tecla de atalho global é pressionada; devolve a função que desliga. */
   onShortcut: (callback) => {
     const handler = (_event, action) => callback(action);

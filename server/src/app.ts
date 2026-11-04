@@ -17,6 +17,7 @@ import { registerModeracaoRoutes } from './moderacao-routes.js';
 import { registerProtecaoRoutes } from './protecao-routes.js';
 import { registerDireitoAutoralRoutes } from './direito-autoral-routes.js';
 import { registerFigurinhasRoutes } from './figurinhas-routes.js';
+import { registerRecorteRoutes } from './recorte-routes.js';
 import { registerPackRoutes } from './pack-routes.js';
 import { registerRoutes } from './routes.js';
 import { registerSocialRoutes } from './social-routes.js';
@@ -84,6 +85,7 @@ export async function buildApp({ background = true } = {}): Promise<{ app: Fasti
   registerProtecaoRoutes(app, io);
   registerDireitoAutoralRoutes(app, io);
   registerFigurinhasRoutes(app);
+  registerRecorteRoutes(app);
   registerSocialRoutes(app);
   registerAmigosRoutes(app, io);
   registerQuartoRoutes(app);

@@ -2651,6 +2651,12 @@ export default {
   'Tirar o fundo': 'Тоза кардани пасзамина',
   'Contorno': 'Канора',
   'O fundo não é de uma cor só, e ficou como veio.': 'Пасзамина якранг нест, бинобар ин ҳамон тавре ки буд, монд.',
+  'Recortar qualquer fundo (fotos, desenhos): baixa {tamanho} uma vez, e a imagem não sai do seu computador.': 'Тоза кардани ҳар гуна пасзамина (суратҳо, расмҳо): {tamanho} як бор боргирӣ мешавад, ва тасвир ҳеҷ гоҳ аз компютери ту берун намеравад.',
+  'Baixar o recorte': 'Боргирии асбоби тоза кардани пасзамина',
+  'Baixando… {porcento}%': 'Боргирӣ… {porcento}%',
+  'Não deu para baixar o recorte. Tente de novo.': 'Асбоби тоза кардани пасзамина боргирӣ нашуд. Боз кӯшиш кун.',
+  'No app do Syden, o recorte funciona com qualquer fundo.': 'Дар барномаи Syden ҳар гуна пасзаминаро тоза кардан мумкин аст.',
+  'O recorte com o modelo falhou, e ficou o recorte simples.': 'Тоза кардан бо модел нашуд, бинобар ин усули содда истифода шуд.',
   'Mandar figurinha': 'Фиристодани стикер',
   'Tirar figurinha': 'Хориҷ кардани стикер',
   'Crie figurinhas com as suas imagens, ou salve as que receber numa conversa.':

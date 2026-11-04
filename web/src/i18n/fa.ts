@@ -2564,6 +2564,12 @@ export default {
   'Tirar o fundo': 'حذف پس‌زمینه',
   'Contorno': 'دورخط',
   'O fundo não é de uma cor só, e ficou como veio.': 'پس‌زمینه یک‌رنگ نیست و همان‌طور که بود ماند.',
+  'Recortar qualquer fundo (fotos, desenhos): baixa {tamanho} uma vez, e a imagem não sai do seu computador.': 'حذف هر پس‌زمینه‌ای (عکس، نقاشی): یک بار {tamanho} دانلود می‌شود، و تصویر هرگز از کامپیوترت بیرون نمی‌رود.',
+  'Baixar o recorte': 'دانلود ابزار حذف پس‌زمینه',
+  'Baixando… {porcento}%': 'در حال دانلود… {porcento}%',
+  'Não deu para baixar o recorte. Tente de novo.': 'ابزار حذف پس‌زمینه دانلود نشد. دوباره امتحان کن.',
+  'No app do Syden, o recorte funciona com qualquer fundo.': 'در اپ Syden، حذف پس‌زمینه با هر پس‌زمینه‌ای کار می‌کند.',
+  'O recorte com o modelo falhou, e ficou o recorte simples.': 'حذف با مدل ناموفق بود، و حذف ساده به کار رفت.',
   'Mandar figurinha': 'فرستادن استیکر',
   'Tirar figurinha': 'برداشتن استیکر',
   'Crie figurinhas com as suas imagens, ou salve as que receber numa conversa.':

@@ -1216,8 +1216,17 @@ mais os pedacinhos soltos que sobram); fundo de foto ou desenhado avisa e fica c
 sumir junto — é para isso a prévia. O contorno é a silhueta engrossada em branco (~3% do lado) com uma sombra leve. GIF não passa
 pela prévia (o canvas mataria a animação). **O passo 2, MEDIDO (mesmo dia, `e2e/recorte-de-fundo/README.md`):** o BiRefNet lite
 512 (MIT) ganhou do U²-Net e do IS-Net (Apache 2.0) nas 9 imagens; em meia precisão, 98 MB, ~1,5 s na placa e ~3 s no
-processador, pelo onnxruntime-web 1.30 (as versões antigas davam resultado errado calado na placa). Falta a decisão dele de pôr no
-Syden. Fora: a biblioteca pronta mais usada no navegador (AGPL) e o RMBG (não comercial).
+processador, pelo onnxruntime-web 1.30 (as versões antigas davam resultado errado calado na placa). Fora: a biblioteca pronta mais
+usada no navegador (AGPL) e o RMBG (não comercial).
+**NO APP, SÓ NO APP (decisão dele, mesmo dia: no site o modelo pediria WebAssembly e o 'wasm-unsafe-eval' que ele não dá):**
+`desktop/src/recorte/` roda o BiRefNet nativo (o onnxruntime-node que o ruído já leva), num processo à parte, com prioridade baixa,
+metade dos núcleos e saída depois de 3 min sem uso (~7,7 s para abrir, que começa ao abrir as figurinhas; ~2,3 s por imagem; pico de
+~2 GB com o reservatório de memória desligado — ligado, 3,8). **O modelo não vai no pacote:** a prévia oferece "Baixar o recorte"
+dizendo os 98 MB, e o app baixa do NOSSO servidor (`/api/recorte-de-fundo/modelo`, `server/src/recorte-routes.ts`), que o busca
+uma vez na revisão fixa da conversão medida e guarda ao lado do banco; os dois conferem o sha256 (o teste do app confere que os dois
+esperam o mesmo). A imagem não sai do computador. No site, o fundo não liso diz que no app funciona. Se o modelo falhar, fica o
+recorte simples e a prévia diz. Chega com a versão do app depois da 0.1.8 (o site sem ela segue com o passo 1). A conversão de 512
+é de terceiro (MIT); converter a nossa pede Python, que esta máquina não tem. Teste: `e2e/recorte-no-app.mjs` (passou).
 
 **Mandar é um ANEXO MARCADO (`attachments.figurinha = 1`) que aponta para o mesmo arquivo pelo sha** — por isso ela herda a
 chave secreta no endereço, a caixa-preta, a vassoura de órfãos (que lê também `figurinhas`) e a cota (que conta a figurinha uma

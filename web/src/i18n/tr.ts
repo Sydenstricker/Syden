@@ -2573,6 +2573,12 @@ export default {
   'Tirar o fundo': 'Arka planı kaldır',
   'Contorno': 'Kenar çizgisi',
   'O fundo não é de uma cor só, e ficou como veio.': 'Arka plan tek renk değil, bu yüzden olduğu gibi bırakıldı.',
+  'Recortar qualquer fundo (fotos, desenhos): baixa {tamanho} uma vez, e a imagem não sai do seu computador.': 'Her türlü arka planı kaldır (fotoğraflar, çizimler): {tamanho} bir kez indirilir ve görüntü bilgisayarından hiç çıkmaz.',
+  'Baixar o recorte': 'Arka plan kaldırıcıyı indir',
+  'Baixando… {porcento}%': 'İndiriliyor… %{porcento}',
+  'Não deu para baixar o recorte. Tente de novo.': 'Arka plan kaldırıcı indirilemedi. Tekrar dene.',
+  'No app do Syden, o recorte funciona com qualquer fundo.': 'Syden uygulamasında her türlü arka plan kaldırılabilir.',
+  'O recorte com o modelo falhou, e ficou o recorte simples.': 'Modelle kaldırma başarısız oldu, bu yüzden basit kaldırma kullanıldı.',
   'Mandar figurinha': 'Çıkartma gönder',
   'Tirar figurinha': 'Çıkartmayı kaldır',
   'Crie figurinhas com as suas imagens, ou salve as que receber numa conversa.':

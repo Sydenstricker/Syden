@@ -2652,6 +2652,12 @@ export default {
   'Tirar o fundo': 'Fony aýyr',
   'Contorno': 'Kontur',
   'O fundo não é de uma cor só, e ficou como veio.': 'Fon bir reňkli däl, şonuň üçin bolşy ýaly galdy.',
+  'Recortar qualquer fundo (fotos, desenhos): baixa {tamanho} uma vez, e a imagem não sai do seu computador.': 'Islendik fony aýyr (suratlar, çyzgylar): {tamanho} bir gezek göçürilýär, surat bolsa kompýuteriňden hiç haçan çykmaýar.',
+  'Baixar o recorte': 'Fon aýyryjyny göçür',
+  'Baixando… {porcento}%': 'Göçürilýär… {porcento}%',
+  'Não deu para baixar o recorte. Tente de novo.': 'Fon aýyryjyny göçürip bolmady. Täzeden synanyş.',
+  'No app do Syden, o recorte funciona com qualquer fundo.': 'Syden programmasynda islendik fony aýryp bolýar.',
+  'O recorte com o modelo falhou, e ficou o recorte simples.': 'Model bilen aýyrmak başartmady, şonuň üçin ýönekeý aýyrmak ulanyldy.',
   'Mandar figurinha': 'Stiker iber',
   'Tirar figurinha': 'Stikeri aýyr',
   'Crie figurinhas com as suas imagens, ou salve as que receber numa conversa.':

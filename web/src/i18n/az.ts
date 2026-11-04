@@ -2612,6 +2612,12 @@ export default {
   'Tirar o fundo': 'Fonu sil',
   'Contorno': 'Kontur',
   'O fundo não é de uma cor só, e ficou como veio.': 'Fon tək rəngli deyil, olduğu kimi qaldı.',
+  'Recortar qualquer fundo (fotos, desenhos): baixa {tamanho} uma vez, e a imagem não sai do seu computador.': 'İstənilən fonu sil (fotolar, rəsmlər): {tamanho} bir dəfə yüklənir, şəkil isə kompüterindən çıxmır.',
+  'Baixar o recorte': 'Fon silməni yüklə',
+  'Baixando… {porcento}%': 'Yüklənir… {porcento}%',
+  'Não deu para baixar o recorte. Tente de novo.': 'Fon silməni yükləmək alınmadı. Yenidən cəhd et.',
+  'No app do Syden, o recorte funciona com qualquer fundo.': 'Syden tətbiqində istənilən fon silinir.',
+  'O recorte com o modelo falhou, e ficou o recorte simples.': 'Model ilə silmə alınmadı, sadə silmə istifadə olundu.',
   'Mandar figurinha': 'Stiker göndər',
   'Tirar figurinha': 'Stikeri çıxar',
   'Crie figurinhas com as suas imagens, ou salve as que receber numa conversa.':

@@ -39,9 +39,36 @@ const lerComoDataUrl = (arquivo: Blob) =>
 export interface EfeitosDaFigurinha {
   tirarFundo: boolean;
   contorno: boolean;
+  /**
+   * O recorte com o modelo (só no app, recorteDeFundo.ts): recebe a imagem esticada a 512 × 512 (RGBA) e devolve a máscara
+   * do objeto, 512 × 512. Sem ele, o fundo que sai é só o liso.
+   */
+  recortar?: (pixels: Uint8Array) => Promise<Uint8Array>;
 }
 
-export type FigurinhaPronta = { image: string; width: number; height: number; fundo: ResultadoDoFundo | null };
+/** 'ia': o modelo recortou; 'ia-falhou': ele falhou, e ficou o recorte do fundo liso no lugar. */
+export type FundoDaFigurinha = ResultadoDoFundo | 'ia' | 'ia-falhou';
+export type FigurinhaPronta = { image: string; width: number; height: number; fundo: FundoDaFigurinha | null };
+
+/** Passa a máscara do modelo (512 × 512) para a imagem do tamanho dela, multiplicando a transparência. */
+function aplicarMascara(pixels: Pixels, mascara: Uint8Array) {
+  const quadrada = document.createElement('canvas');
+  quadrada.width = quadrada.height = 512;
+  const cinza = new ImageData(512, 512);
+  for (let p = 0; p < 512 * 512; p++) {
+    cinza.data[p * 4] = mascara[p];
+    cinza.data[p * 4 + 3] = 255;
+  }
+  quadrada.getContext('2d')!.putImageData(cinza, 0, 0);
+  const doTamanho = document.createElement('canvas');
+  doTamanho.width = pixels.width;
+  doTamanho.height = pixels.height;
+  const ctx = doTamanho.getContext('2d')!;
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(quadrada, 0, 0, pixels.width, pixels.height);
+  const a = ctx.getImageData(0, 0, pixels.width, pixels.height).data;
+  for (let p = 0; p < pixels.width * pixels.height; p++) pixels.data[p * 4 + 3] = Math.round((pixels.data[p * 4 + 3] * a[p * 4]) / 255);
+}
 
 /**
  * A imagem escolhida vira a figurinha: reduzida até 512 px no lado maior e em WEBP, com o fundo liso tirado e o contorno
@@ -72,12 +99,30 @@ export async function prepararFigurinha(
   ctx.drawImage(bitmap, 0, 0, width, height);
   bitmap.close();
 
-  let fundo: ResultadoDoFundo | null = null;
+  let fundo: FundoDaFigurinha | null = null;
   if (efeitos.tirarFundo || efeitos.contorno) {
     const lido = ctx.getImageData(0, 0, width, height);
     let pixels: Pixels = { data: lido.data, width, height };
+    if (efeitos.tirarFundo && efeitos.recortar) {
+      try {
+        const quadrada = document.createElement('canvas');
+        quadrada.width = quadrada.height = 512;
+        const q = quadrada.getContext('2d')!;
+        q.imageSmoothingQuality = 'high';
+        q.drawImage(canvas, 0, 0, 512, 512);
+        const px = q.getImageData(0, 0, 512, 512).data;
+        aplicarMascara(pixels, await efeitos.recortar(new Uint8Array(px.buffer, px.byteOffset, px.byteLength)));
+        fundo = 'ia';
+      } catch {
+        // o modelo falhou: fica o recorte do fundo liso, e a prévia DIZ que foi isso
+        fundo = 'ia-falhou';
+      }
+    }
     if (efeitos.tirarFundo) {
-      fundo = tirarFundoLiso(pixels);
+      if (fundo !== 'ia') {
+        const liso = tirarFundoLiso(pixels);
+        if (fundo !== 'ia-falhou') fundo = liso;
+      }
       pixels = aparar(pixels) ?? pixels;
     }
     if (efeitos.contorno) pixels = contornar(pixels);
