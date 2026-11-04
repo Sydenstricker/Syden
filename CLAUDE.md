@@ -584,8 +584,8 @@ escolheu:** quem começa escolhe 10, 20 ou 30 rodadas (ganha o maior patrimônio
 ASSISTE; há TROCA (na própria vez, até 3 propostas) e LEILÃO (quem parou não comprou: todos dão lance, cada lance devolve 8 s).
 Construir pede a região inteira e sem hipoteca (até 4 prédios). **Quem deve mais do que tem não administra nada:** o servidor
 vende os prédios e hipoteca as cidades sozinho; não cobrindo, a pessoa fale e o que tinha vai ao credor (ou ao banco). A casa só
-age quando a peça CHEGA (a fase 'andando' segura o dinheiro). Troféu com `pista: 'cidades'`, os pontos são o patrimônio. NÃO entrou
-nas conquistas da turma (Repertório / "A turma do jogo"): decisão dele. Testes: `server/test/minijogos-cidades.test.ts`. Sem e2e.
+age quando a peça CHEGA (a fase 'andando' segura o dinheiro). Troféu com `pista: 'cidades'`, os pontos são o patrimônio. Conta nas conquistas da
+turma (Repertório e "A turma do jogo", decisão dele em 04/11/2026: o Repertório completo passou de 15 para 16 jogos). Testes: `server/test/minijogos-cidades.test.ts`. Sem e2e.
 
 **A ESTANTE DE TROFÉUS VIROU O HUB (03/11/2026, pedido dele: "um hub para todos os troféus em mini-games, todas as
 conquistas; o jogador pode escolher o que deixa em destaque"):** a estante do quarto (`web/src/Trofeus.tsx`) junta os pódios de
