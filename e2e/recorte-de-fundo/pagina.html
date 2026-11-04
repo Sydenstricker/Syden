@@ -1,0 +1,156 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Recorte de fundo</title>
+<!-- A página de medida: medir.mjs a abre e chama window.medir(). Os modelos rodam aqui, no navegador, pelo onnxruntime-web
+     (MIT), como rodariam no Syden. -->
+<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.30.0/dist/ort.webgpu.min.js"></script>
+<script type="module">
+  import { aparar, contornar, tirarFundoLiso } from './efeitos.js';
+
+  const IMAGENET = { media: [0.485, 0.456, 0.406], desvio: [0.229, 0.224, 0.225] };
+  // As medidas de entrada de cada modelo são as do rembg (github.com/danielgatis/rembg, sessions/*.py).
+  const MODELOS = {
+    u2netp: { arquivo: 'u2netp.onnx', lado: 320, ...IMAGENET, sigmoide: false },
+    isnet: { arquivo: 'isnet-general-use.onnx', lado: 1024, media: [0.5, 0.5, 0.5], desvio: [1, 1, 1], sigmoide: false },
+    birefnet: { arquivo: 'birefnet-lite.onnx', lado: 1024, ...IMAGENET, sigmoide: true },
+    'birefnet-512': { arquivo: 'birefnet-lite-512.onnx', lado: 512, ...IMAGENET, sigmoide: true },
+    'birefnet-512-meia': { arquivo: 'birefnet-lite-512-fp16.onnx', lado: 512, ...IMAGENET, sigmoide: true },
+  };
+
+  ort.env.wasm.numThreads = Math.max(1, Math.floor(navigator.hardwareConcurrency / 2));
+
+  // float32 → float16 (para o modelo em meia precisão que pede entrada em meia precisão)
+  const f32 = new Float32Array(1);
+  const u32 = new Uint32Array(f32.buffer);
+  function paraMeia(v) {
+    f32[0] = v;
+    const x = u32[0];
+    const sinal = (x >>> 16) & 0x8000;
+    let exp = ((x >>> 23) & 0xff) - 127 + 15;
+    const man = x & 0x7fffff;
+    if (exp <= 0) return sinal;
+    if (exp >= 31) return sinal | 0x7c00;
+    return sinal | (exp << 10) | (man >>> 13);
+  }
+  function deMeia(h) {
+    const sinal = h & 0x8000 ? -1 : 1;
+    const exp = (h >> 10) & 0x1f;
+    const man = h & 0x3ff;
+    if (exp === 0) return sinal * 2 ** -14 * (man / 1024);
+    if (exp === 31) return man ? NaN : sinal * Infinity;
+    return sinal * 2 ** (exp - 15) * (1 + man / 1024);
+  }
+
+  const sessoes = {};
+  window.abrirModelo = async (nome, provedor) => {
+    const inicio = performance.now();
+    const sessao = await ort.InferenceSession.create('modelos/' + MODELOS[nome].arquivo, { executionProviders: [provedor] });
+    sessoes[nome + '/' + provedor] = sessao;
+    return { ms: performance.now() - inicio, entradas: sessao.inputNames, saidas: sessao.outputNames };
+  };
+
+  async function carregar(arquivo, recorte) {
+    const img = new Image();
+    img.src = 'imagens/' + arquivo;
+    await img.decode();
+    const [x, y, w, h] = recorte ?? [0, 0, img.naturalWidth, img.naturalHeight];
+    const escala = Math.min(1, 1024 / Math.max(w, h));
+    const c = document.createElement('canvas');
+    c.width = Math.round(w * escala);
+    c.height = Math.round(h * escala);
+    c.getContext('2d').drawImage(img, x, y, w, h, 0, 0, c.width, c.height);
+    return c;
+  }
+
+  async function mascara(nome, provedor, origem) {
+    const m = MODELOS[nome];
+    const sessao = sessoes[nome + '/' + provedor];
+    const c = document.createElement('canvas');
+    c.width = c.height = m.lado;
+    const ctx = c.getContext('2d');
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(origem, 0, 0, m.lado, m.lado);
+    const px = ctx.getImageData(0, 0, m.lado, m.lado).data;
+    let maior = 1e-6;
+    for (let i = 0; i < px.length; i += 4) maior = Math.max(maior, px[i], px[i + 1], px[i + 2]);
+    const n = m.lado * m.lado;
+    const entrada = new Float32Array(3 * n);
+    for (let p = 0; p < n; p++)
+      for (let k = 0; k < 3; k++) entrada[k * n + p] = (px[p * 4 + k] / maior - m.media[k]) / m.desvio[k];
+    const nomeDaEntrada = sessao.inputNames[0];
+    const inicio = performance.now();
+    let saidas;
+    try {
+      saidas = await sessao.run({ [nomeDaEntrada]: new ort.Tensor('float32', entrada, [1, 3, m.lado, m.lado]) });
+    } catch (e) {
+      if (!String(e).includes('float16')) throw e;
+      const meia = new Uint16Array(entrada.length);
+      for (let i = 0; i < entrada.length; i++) meia[i] = paraMeia(entrada[i]);
+      saidas = await sessao.run({ [nomeDaEntrada]: new ort.Tensor('float16', meia, [1, 3, m.lado, m.lado]) });
+    }
+    const ms = performance.now() - inicio;
+    const saida = saidas[sessao.outputNames[0]];
+    let valores = saida.data;
+    if (saida.type === 'float16') valores = Float32Array.from(valores, deMeia);
+    // a primeira fatia (o primeiro canal) é a máscara; normalizada entre o menor e o maior, como no rembg
+    const v = new Float32Array(n);
+    for (let p = 0; p < n; p++) v[p] = m.sigmoide ? 1 / (1 + Math.exp(-valores[p])) : valores[p];
+    let mi = Infinity;
+    let ma = -Infinity;
+    for (const x of v) {
+      if (x < mi) mi = x;
+      if (x > ma) ma = x;
+    }
+    const cinza = ctx.createImageData(m.lado, m.lado);
+    for (let p = 0; p < n; p++) {
+      const a = Math.round(((v[p] - mi) / (ma - mi || 1)) * 255);
+      cinza.data.set([a, a, a, 255], p * 4);
+    }
+    ctx.putImageData(cinza, 0, 0);
+    return { canvas: c, ms };
+  }
+
+  /** A figurinha como o Syden a guardaria: o recorte (ou nada), aparado, com o contorno, até 512 px. */
+  function figurinha(origem, mascaraCanvas, passo1) {
+    const w = origem.width;
+    const h = origem.height;
+    const ctx = origem.getContext('2d');
+    const img = ctx.getImageData(0, 0, w, h);
+    let pixels = { data: new Uint8ClampedArray(img.data), width: w, height: h };
+    if (mascaraCanvas) {
+      const c = document.createElement('canvas');
+      c.width = w;
+      c.height = h;
+      const cx = c.getContext('2d');
+      cx.imageSmoothingQuality = 'high';
+      cx.drawImage(mascaraCanvas, 0, 0, w, h);
+      const a = cx.getImageData(0, 0, w, h).data;
+      for (let p = 0; p < w * h; p++) pixels.data[p * 4 + 3] = Math.round((pixels.data[p * 4 + 3] * a[p * 4]) / 255);
+    }
+    let fundo = null;
+    if (passo1) fundo = tirarFundoLiso(pixels);
+    pixels = aparar(pixels) ?? pixels;
+    pixels = contornar(pixels);
+    const c = document.createElement('canvas');
+    c.width = pixels.width;
+    c.height = pixels.height;
+    c.getContext('2d').putImageData(new ImageData(pixels.data, pixels.width, pixels.height), 0, 0);
+    const escala = Math.min(1, 512 / Math.max(c.width, c.height));
+    const f = document.createElement('canvas');
+    f.width = Math.round(c.width * escala);
+    f.height = Math.round(c.height * escala);
+    const fx = f.getContext('2d');
+    fx.imageSmoothingQuality = 'high';
+    fx.drawImage(c, 0, 0, f.width, f.height);
+    return { url: f.toDataURL('image/png'), fundo };
+  }
+
+  window.passo1 = async (arquivo, recorte) => figurinha(await carregar(arquivo, recorte), null, true);
+
+  window.recortar = async (nome, provedor, arquivo, recorte) => {
+    const origem = await carregar(arquivo, recorte);
+    const { canvas, ms } = await mascara(nome, provedor, origem);
+    return { ms, url: figurinha(origem, canvas, false).url };
+  };
+  window.pronto = true;
+</script>

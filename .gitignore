@@ -74,3 +74,9 @@ e2e/fotos/*.webm
 
 # Modelos do tradutor local (e2e/tradutor-local/baixar.mjs baixa de novo): 36-70 MB cada
 e2e/tradutor-local/modelos/
+
+# Modelos do teste de recorte de fundo (e2e/recorte-de-fundo/baixar.mjs baixa de novo): 5-180 MB cada
+e2e/recorte-de-fundo/modelos/
+e2e/recorte-de-fundo/efeitos.js
+e2e/recorte-de-fundo/imagens/
+e2e/recorte-de-fundo/resultados/
