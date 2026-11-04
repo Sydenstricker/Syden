@@ -33,3 +33,18 @@ test('o GIF marca o avatar como animado, e trocar por outra imagem tira a marca'
   const semFoto = await como('DELETE', '/api/me/avatar');
   assert.equal(semFoto.json().avatarAnimado, false);
 });
+
+test('o GIF do avatar vai até 5 MB (eram 2), e o ícone da comunidade continua em 2', async () => {
+  const como = comToken(app, (await criarConta(app, 'gifgrande')).token);
+  // o GIF de 1 × 1 com um enchimento depois do fim (o decodificador para no fim, e o arquivo fica do tamanho que se quer)
+  const deTamanho = (bytes: number) => {
+    const base = Buffer.from(gif.split(',')[1], 'base64');
+    return 'data:image/gif;base64,' + Buffer.concat([base, Buffer.alloc(bytes - base.length, 0)]).toString('base64');
+  };
+  const quatro = await como('PUT', '/api/me/avatar', { image: deTamanho(4 * 1024 * 1024) });
+  assert.equal(quatro.statusCode, 200, quatro.body);
+  assert.equal(quatro.json().avatarAnimado, true);
+  assert.equal((await como('PUT', '/api/me/avatar', { image: deTamanho(6 * 1024 * 1024) })).statusCode >= 400, true, 'passou dos 5 MB');
+  const comunidade = (await como('POST', '/api/communities', { name: 'Ícone grande' })).json() as { id: number };
+  assert.equal((await como('PUT', `/api/communities/${comunidade.id}/icon`, { image: deTamanho(3 * 1024 * 1024) })).statusCode, 400, 'o ícone fica nos 2 MB');
+});

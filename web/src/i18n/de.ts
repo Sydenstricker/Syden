@@ -626,9 +626,9 @@ export default {
     'Zwei Emojis mit demselben Namen: Jedes braucht seinen eigenen.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP oder animiertes GIF, bis 512 KB. Das Bild wird auf 128×128 angepasst.',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.':
-    'PNG, JPG oder WEBP, in jeder Größe: Du wählst den Ausschnitt. Animierte GIFs bleiben, wie sie sind, bis 2 MB.',
-  'O GIF do avatar pode ter até 2 MB.': 'Das Avatar-GIF darf bis zu 2 MB groß sein.',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 5 MB.':
+    'PNG, JPG oder WEBP, in jeder Größe: Du wählst den Ausschnitt. Animierte GIFs bleiben, wie sie sind, bis 5 MB.',
+  'O GIF do avatar pode ter até 5 MB.': 'Das Avatar-GIF darf bis zu 5 MB groß sein.',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Oder füge den Link zu einem GIF oder Bild ein, auch von Tenor und GIPHY. Syden lädt eine Kopie herunter und speichert sie.',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'Diese Seite hat kein Bild, das sich verwenden lässt. Kopiere den Link des Bildes.',
   'Muitos links seguidos. Tente de novo daqui a pouco.': 'Zu viele Links hintereinander. Versuch es gleich noch mal.',

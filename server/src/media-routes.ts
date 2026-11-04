@@ -23,8 +23,10 @@ const KB = 1024;
 // A CAPA É A MAIOR DE TODAS, e com motivo: ela é uma faixa larga que a pessoa olha de perto, e
 // comprimir uma foto de 960 pixels de largura até caber em 2 MB deixa artefato visível. Quatro
 // megabytes é o teto do que o navegador manda depois de redimensionar (ver web/src/upload.ts).
-const LIMITS = { avatar: 2048 * KB, capa: 4096 * KB, emoji: 512 * KB, sound: 1024 * KB }; // avatar maior por causa de GIF animado
-const UPLOAD_BODY_LIMIT = 6 * 1024 * KB; // base64 ocupa ~33% a mais que o arquivo, e a capa vai a 4 MB
+// O avatar vai a 5 MB por causa do GIF animado (pedido dele, 04/11/2026: "o limite de 2 MB pegou vários GIFs entre 2 e 3 MB");
+// o ícone da comunidade fica nos 2 de antes.
+const LIMITS = { avatar: 5120 * KB, icone: 2048 * KB, capa: 4096 * KB, emoji: 512 * KB, sound: 1024 * KB };
+const UPLOAD_BODY_LIMIT = 7 * 1024 * KB; // base64 ocupa ~33% a mais que o arquivo, e o avatar vai a 5 MB
 
 /** "Coração Feliz" → "coracao_feliz", o formato usado em :nome: nas mensagens. */
 const emojiName = nomeDeEmoji;
@@ -136,7 +138,7 @@ export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
         const access = requireRole(request, reply);
         if (!access) return reply;
         if (!manages(access.role)) return reply.code(403).send({ error: 'Só quem administra a comunidade pode trocar a imagem.' });
-        const media = await parseMediaConferida(request.body?.image, 'image', LIMITS.avatar, 'icone-comunidade', access.communityId);
+        const media = await parseMediaConferida(request.body?.image, 'image', LIMITS.icone, 'icone-comunidade', access.communityId);
         if (typeof media === 'string') return reply.code(400).send({ error: media });
         const community = db.setCommunityIcon(access.communityId, media);
         io.to(communityRoom(community.id)).emit('community:updated', community);

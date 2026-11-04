@@ -1662,7 +1662,7 @@ function AvatarEditor({ user }: { user: User }) {
   // o meio dele, e nas listas ele fica parado até o mouse passar (Avatar.tsx). O teto é o do servidor.
   async function escolher(arquivo: File) {
     if (arquivo.type !== 'image/gif') return setCropping(arquivo);
-    if (arquivo.size > 2048 * 1024) return setError(t('O GIF do avatar pode ter até 2 MB.'));
+    if (arquivo.size > 5120 * 1024) return setError(t('O GIF do avatar pode ter até 5 MB.'));
     await upload(await readAsDataUrl(arquivo));
   }
 
@@ -1717,7 +1717,7 @@ function AvatarEditor({ user }: { user: User }) {
           )}
         </div>
       </div>
-      {error ? <p className="form-error">{error}</p> : <p className="settings-hint">{t('PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.')}</p>}
+      {error ? <p className="form-error">{error}</p> : <p className="settings-hint">{t('PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 5 MB.')}</p>}
       <form className="capa-endereco" onSubmit={usarEndereco}>
         <input type="url" value={endereco} onChange={(e) => setEndereco(e.target.value)} aria-label={t('Endereço')} disabled={busy} />
         <button className="btn-secondary" disabled={busy || !endereco.trim()}>

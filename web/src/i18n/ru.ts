@@ -622,9 +622,9 @@ export default {
   'Dois emojis com o mesmo nome: cada um precisa do seu.': 'Два эмодзи с одинаковым именем: у каждого должно быть своё.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP или анимированный GIF, до 512 КБ. Изображение подгоняется под 128×128.',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.':
-    'PNG, JPG или WEBP любого размера: кадрирование выбираешь ты. Анимированный GIF загружается целиком, до 2 МБ.',
-  'O GIF do avatar pode ter até 2 MB.': 'GIF для аватара может весить до 2 МБ.',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 5 MB.':
+    'PNG, JPG или WEBP любого размера: кадрирование выбираешь ты. Анимированный GIF загружается целиком, до 5 МБ.',
+  'O GIF do avatar pode ter até 5 MB.': 'GIF для аватара может весить до 5 МБ.',
   'Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.': 'Или вставь ссылку на GIF или картинку, можно и с Tenor и GIPHY. Syden скачает копию и сохранит её.',
   'Essa página não tem uma imagem para usar. Copie o link da imagem.': 'На этой странице нет картинки, которую можно взять. Скопируй ссылку на саму картинку.',
   'Muitos links seguidos. Tente de novo daqui a pouco.': 'Слишком много ссылок подряд. Попробуй ещё раз чуть позже.',

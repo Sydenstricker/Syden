@@ -1205,7 +1205,7 @@ texto|sha): voltar a cada abertura seria insistir. É a exceção escolhida por 
 
 **Feito em 04/11/2026, pedidos dele.** A foto própria tem os estados dos coelhos prontos, mexendo a foto inteira (ela não tem
 quadros): pula falando, cochila esmaecida com o "z" ausente, balança ocupada (`.avatar-foto` em styles.css). **O GIF animado vai
-INTEIRO**, sem a tela de recorte (que o redesenharia num canvas), até os 2 MB do servidor, que marca `users.avatar_animado`. **Como o
+INTEIRO**, sem a tela de recorte (que o redesenharia num canvas), até 5 MB (eram 2, e pegavam vários GIFs de 2 a 3 MB: pedido dele, mesmo dia; o ícone da comunidade segue em 2), e o servidor marca `users.avatar_animado`. **Como o
 Discord, para não virar pisca-pisca** (palavras dele): nas mensagens e nas listas o GIF fica PARADO, no primeiro quadro desenhado num
 canvas, e anima enquanto o mouse está na LINHA dele (a mensagem, a pessoa); de 80 px para cima (Minha conta, o cartão de perfil) anima
 sempre. Com "menos movimento" no sistema, nada disso se mexe. De graça para todos: "sem assinatura" é promessa. **Também por LINK**
