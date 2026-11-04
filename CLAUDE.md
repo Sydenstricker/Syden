@@ -1214,9 +1214,10 @@ antes de guardar, a PRÉVIA, com "Tirar o fundo" e "Contorno" ligados de fábric
 computador de quem cria). Este é o PASSO 1: o fundo que sai é o LISO (a cor dominante da borda, apagada da borda para dentro,
 mais os pedacinhos soltos que sobram); fundo de foto ou desenhado avisa e fica como veio, e o que se parece com o fundo pode
 sumir junto — é para isso a prévia. O contorno é a silhueta engrossada em branco (~3% do lado) com uma sombra leve. GIF não passa
-pela prévia (o canvas mataria a animação). **O passo 2, pendente:** um modelo que recorta qualquer fundo, rodando no aparelho;
-medir dois ou três de licença livre lado a lado antes (U²-Net e IS-Net seriam Apache 2.0, a conferir; a biblioteca pronta mais
-usada no navegador é AGPL e o RMBG proíbe uso comercial: fora).
+pela prévia (o canvas mataria a animação). **O passo 2, MEDIDO (mesmo dia, `e2e/recorte-de-fundo/README.md`):** o BiRefNet lite
+512 (MIT) ganhou do U²-Net e do IS-Net (Apache 2.0) nas 9 imagens; em meia precisão, 98 MB, ~1,5 s na placa e ~3 s no
+processador, pelo onnxruntime-web 1.30 (as versões antigas davam resultado errado calado na placa). Falta a decisão dele de pôr no
+Syden. Fora: a biblioteca pronta mais usada no navegador (AGPL) e o RMBG (não comercial).
 
 **Mandar é um ANEXO MARCADO (`attachments.figurinha = 1`) que aponta para o mesmo arquivo pelo sha** — por isso ela herda a
 chave secreta no endereço, a caixa-preta, a vassoura de órfãos (que lê também `figurinhas`) e a cota (que conta a figurinha uma
