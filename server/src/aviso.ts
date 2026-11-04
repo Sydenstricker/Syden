@@ -13,7 +13,10 @@
  * O texto vai para QUEM NÃO TEM CONTA também (a tela de entrada), então nunca pode conter nada de
  * ninguém: quem escreve é quem administra o Syden, e o que ele escrever aparece para o mundo.
  */
+import { closeSync, openSync, readSync } from 'node:fs';
+import { arquivoExiste, caminhoDe } from './arquivos.js';
 import * as db from './db.js';
+import { sniffMime } from './media.js';
 
 const CHAVE = 'aviso-geral';
 
@@ -33,6 +36,19 @@ export interface Aviso {
   ate: string | null;
   /** Quando começa a aparecer (ISO), ou null para já. Serve para avisar de véspera. */
   de: string | null;
+  /**
+   * A FOTO DO RECADO (pedido dele, 04/11/2026: "quero colocar uma foto para que todos vejam"), ou null. Mora no disco como
+   * qualquer arquivo (pelo sha, ver arquivos.ts), subida por `PUT /api/aviso/imagem`, que passa pelo mesmo funil das
+   * imagens (parseMediaConferida: tipo, tamanho, pixels e o Shield). Aparece como miniatura na faixa, e clicar abre grande.
+   * É servida a quem NÃO tem conta, mas só enquanto é a foto do recado (`imagemDoAviso`): a rota não abre arquivo nenhum
+   * além dela.
+   */
+  imagem?: ImagemDoAviso | null;
+}
+
+export interface ImagemDoAviso {
+  sha: string;
+  mime: string;
 }
 
 export const TONS: TomDoAviso[] = ['manutencao', 'problema', 'recado'];
@@ -64,7 +80,52 @@ export function lerAviso(corpo: unknown): { aviso: Aviso } | { erro: string } {
   // achando que avisou.
   if (de.ok && ate.ok && ate.ok <= de.ok) return { erro: 'A hora de terminar tem que ser depois da de começar.' };
 
-  return { aviso: { texto, tom: tom as TomDoAviso, de: de.ok, ate: ate.ok } };
+  // A foto vem só pelo sha (o que a subida devolveu). O TIPO NÃO VEM DO PEDIDO: é lido dos bytes no disco, para um sha de
+  // outro arquivo (um PDF de anexo) não virar "imagem" na faixa de todo mundo.
+  let imagem: ImagemDoAviso | null = null;
+  const sha = (c as { imagem?: unknown } | null)?.imagem;
+  if (sha !== null && sha !== undefined && sha !== '') {
+    if (typeof sha !== 'string' || !/^[0-9a-f]{64}$/.test(sha) || !arquivoExiste(sha)) return { erro: 'A foto do recado não foi encontrada. Envie de novo.' };
+    const mime = tipoDaImagem(sha);
+    if (!mime) return { erro: 'Use uma imagem PNG, JPG, GIF ou WEBP.' };
+    imagem = { sha, mime };
+  }
+
+  return { aviso: { texto, tom: tom as TomDoAviso, de: de.ok, ate: ate.ok, imagem } };
+}
+
+/** O tipo da imagem pelos primeiros bytes do arquivo, ou null se não for imagem. */
+function tipoDaImagem(sha: string): string | null {
+  const cabeca = Buffer.alloc(32);
+  try {
+    const fd = openSync(caminhoDe(sha), 'r');
+    try {
+      readSync(fd, cabeca, 0, 32, 0);
+    } finally {
+      closeSync(fd);
+    }
+  } catch {
+    return null;
+  }
+  const mime = sniffMime(cabeca);
+  return mime?.startsWith('image/') ? mime : null;
+}
+
+/**
+ * A foto que pode ser entregue a quem pedir pelo sha: a do recado guardado (valendo ou ainda por começar: quem administra
+ * confere a foto do recado de véspera, e o sha não se adivinha). Qualquer outro sha dá null.
+ */
+export function imagemDoAviso(sha: string): ImagemDoAviso | null {
+  const imagem = avisoGuardado()?.imagem;
+  return imagem && imagem.sha === sha ? imagem : null;
+}
+
+/** O Shield reconheceu a imagem depois (a reconferência): ela sai do recado, e o texto fica. */
+export function tirarImagemDoAviso(sha: string): boolean {
+  const aviso = avisoGuardado();
+  if (!aviso?.imagem || aviso.imagem.sha !== sha) return false;
+  guardarAviso({ ...aviso, imagem: null });
+  return true;
 }
 
 /** O aviso que está valendo NESTE instante, ou null. Vencido some sozinho, sem ninguém precisar apagar. */

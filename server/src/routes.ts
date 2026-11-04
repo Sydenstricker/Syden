@@ -32,7 +32,10 @@ import { healthReport, recordClientError } from './health.js';
 import { INSIGNIAS, LIMITE_DA_VITRINE, conferirPresentes } from './presentes.js';
 import { pessoaDeVerdade, turnstileLigado } from './turnstile.js';
 import { providerMetrics } from './provider.js';
-import { apagarAviso, avisoDeAgora, avisoGuardado, guardarAviso, lerAviso } from './aviso.js';
+import { apagarAviso, avisoDeAgora, avisoGuardado, guardarAviso, imagemDoAviso, lerAviso } from './aviso.js';
+import { guardarArquivo } from './arquivos.js';
+import { entregarArquivo } from './entregar.js';
+import { parseMediaConferida } from './media.js';
 import { lerServidor, type ServidorDeJogo, TETO_POR_COMUNIDADE } from './jogos.js';
 import { esquecerServidor, jogandoNaComunidade, marcarJogando, tirarJogando, varrerJogando } from './jogando-agora.js';
 import { CATALOGO, podeVestir } from './guardaRoupa.js';
@@ -315,6 +318,14 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
     social: provedoresLigados(),
   }));
 
+  // A FOTO DO RECADO, sem conta: <img> não manda token, e a tela de entrada é justamente de quem não entrou. Só o sha da
+  // foto do recado guardado abre (imagemDoAviso); qualquer outro é 404, e esta rota não vira porta para os arquivos dos
+  // outros. O sha muda com a foto, então o "guardar para sempre" do entregarArquivo vale.
+  app.get<{ Params: { sha: string } }>('/api/aviso/imagem/:sha', async (request, reply) => {
+    const imagem = imagemDoAviso(String(request.params.sha));
+    return entregarArquivo(request, reply, imagem ? { mime: imagem.mime, sha: imagem.sha } : undefined);
+  });
+
   // Freios das portas caras. O de endereço protege o SERVIDOR: conferir uma senha custa ~0,1 s de
   // processador de propósito, então uma enxurrada de tentativas engasga a voz de quem está em chamada.
   // O de conta protege UMA PESSOA de quem tenta adivinhar a senha dela a partir de vários lugares —
@@ -536,6 +547,16 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       guardarAviso(lido.aviso);
       poderDeOperador(request.user, 'aviso.escrito', { detail: lido.aviso.texto });
       return { aviso: lido.aviso, valendo: avisoDeAgora() !== null };
+    });
+
+    // A foto sobe antes, e o recado a cita pelo sha ao ser guardado. Passa pelo funil de toda imagem (parseMediaConferida:
+    // tipo pelos bytes, tamanho, pixels e o Shield); a que sobe e não chega a ser usada vira órfã, e a vassoura a leva.
+    authed.put<{ Body: { image?: string } }>('/api/aviso/imagem', { bodyLimit: 6 * 1024 * 1024 }, async (request, reply) => {
+      if (soQuemAdministra(request, reply)) return reply;
+      const media = await parseMediaConferida(request.body?.image, 'image', 4 * 1024 * 1024, 'aviso', 0);
+      if (typeof media === 'string') return reply.code(400).send({ error: media });
+      const { sha } = guardarArquivo(media.data);
+      return { imagem: { sha, mime: media.mime } };
     });
 
     authed.delete('/api/aviso', async (request, reply) => {

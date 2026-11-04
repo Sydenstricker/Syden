@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import type { FastifyBaseLogger } from 'fastify';
 import type { Server as IOServer } from 'socket.io';
 import { arquivoExiste, caminhoDe } from './arquivos.js';
+import { tirarImagemDoAviso } from './aviso.js';
 import * as db from './db.js';
 import { sniffMime } from './media.js';
 import { channelRoom, communityRoom, emitToUser } from './realtime.js';
@@ -71,6 +72,8 @@ function denunciar(log: FastifyBaseLogger, item: db.NaFila, resultado: Resultado
 
 function positivo(io: IOServer, log: FastifyBaseLogger, item: db.NaFila, resultado: Resultado) {
   const saiu = db.retirarPeloShield(item.sha256);
+  // a foto do recado geral não mora em tabela (fica no kv, ver aviso.ts): sai daqui, e o texto do recado fica
+  tirarImagemDoAviso(item.sha256);
   // UMA DENÚNCIA POR CONTA QUE SUBIU o arquivo: o mesmo material no avatar de duas pessoas são duas contas a rever.
   const autores: (number | null)[] = saiu.autores.length ? saiu.autores : QUEM_SUBIU[item.onde] ? [item.alvoId] : [null];
   for (const autorId of autores) denunciar(log, item, resultado, autorId);

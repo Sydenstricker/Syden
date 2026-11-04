@@ -1,7 +1,7 @@
 import { Megaphone } from 'lucide-react';
 import { type FormEvent, useEffect, useState } from 'react';
 import { api } from './api';
-import type { AvisoDoServidor } from './AvisoGeral';
+import { type AvisoDoServidor, enderecoDaFotoDoAviso } from './AvisoGeral';
 import { useT } from './i18n';
 
 // Onde quem administra escreve o recado que todo mundo vê — inclusive quem ainda nem entrou.
@@ -25,6 +25,46 @@ function paraCampo(iso: string | null): string {
   return local.toISOString().slice(0, 16);
 }
 
+/** O teto do servidor para a foto do recado (PUT /api/aviso/imagem). */
+const FOTO_MAXIMA = 4 * 1024 * 1024;
+/** O lado maior da foto: é uma foto para ver grande, mas não precisa passar disso numa tela. */
+const LADO_MAXIMO = 1600;
+
+const comoDataUrl = (blob: Blob) =>
+  new Promise<string>((resolve, reject) => {
+    const leitor = new FileReader();
+    leitor.onload = () => resolve(String(leitor.result));
+    leitor.onerror = () => reject(new Error('Não foi possível abrir essa imagem.'));
+    leitor.readAsDataURL(blob);
+  });
+
+/**
+ * A foto escolhida, pronta para subir: INTEIRA (sem recorte, ao contrário da capa: é uma foto para ser vista), reduzida
+ * até 1600 px no lado maior, em WEBP. O GIF passa como veio, para não perder a animação.
+ */
+async function prepararFoto(file: File): Promise<string> {
+  if (!file.type.startsWith('image/')) throw new Error('Escolha um arquivo de imagem.');
+  if (file.type === 'image/gif') {
+    if (file.size > FOTO_MAXIMA) throw new Error('Cada arquivo pode ter até 4 MB.');
+    return comoDataUrl(file);
+  }
+  const bitmap = await createImageBitmap(file).catch(() => {
+    throw new Error('Não foi possível abrir essa imagem.');
+  });
+  const escala = Math.min(1, LADO_MAXIMO / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.round(bitmap.width * escala);
+  canvas.height = Math.round(bitmap.height * escala);
+  const ctx = canvas.getContext('2d')!;
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/webp', 0.86));
+  if (!blob) throw new Error('Não foi possível processar essa imagem.');
+  if (blob.size > FOTO_MAXIMA) throw new Error('Cada arquivo pode ter até 4 MB.');
+  return comoDataUrl(blob);
+}
+
 /** Daqui a tantos minutos, no formato do campo. Os atalhos de "termina em…". */
 function daquiA(minutos: number): string {
   return paraCampo(new Date(Date.now() + minutos * 60_000).toISOString());
@@ -41,8 +81,32 @@ export function PainelDeAviso() {
   const [estado, setEstado] = useState<'lendo' | 'parado' | 'salvando'>('lendo');
   const [erro, setErro] = useState<string | null>(null);
   const [salvo, setSalvo] = useState(false);
+  // A foto do recado: o sha que vai no recado ao salvar (a subida acontece ao escolher), ou null.
+  const [imagem, setImagem] = useState<string | null>(null);
+  const [subindoFoto, setSubindoFoto] = useState(false);
+  // A prévia da foto recém-escolhida vem da cópia local: a rota pública só abre a foto do recado JÁ salvo.
+  const [previa, setPrevia] = useState<string | null>(null);
+
+  async function escolherFoto(file: File | undefined) {
+    if (!file) return;
+    setErro(null);
+    setSalvo(false);
+    setSubindoFoto(true);
+    try {
+      const image = await prepararFoto(file);
+      const resposta = await api<{ imagem: { sha: string } }>('/api/aviso/imagem', { method: 'PUT', body: { image } });
+      setImagem(resposta.imagem.sha);
+      setPrevia(image);
+    } catch (e) {
+      setErro((e as Error).message);
+    } finally {
+      setSubindoFoto(false);
+    }
+  }
 
   function receber(resposta: { aviso: AvisoDoServidor | null; valendo: boolean }) {
+    setImagem(resposta.aviso?.imagem?.sha ?? null);
+    setPrevia(null);
     setExiste(resposta.aviso !== null);
     setValendo(resposta.valendo);
     setTexto(resposta.aviso?.texto ?? '');
@@ -77,6 +141,7 @@ export function PainelDeAviso() {
             tom,
             de: de ? new Date(de).toISOString() : null,
             ate: ate ? new Date(ate).toISOString() : null,
+            imagem,
           },
         }),
       );
@@ -129,6 +194,33 @@ export function PainelDeAviso() {
           />
           <small>{300 - texto.length} letras restantes</small>
         </label>
+
+        {/* A foto: aparece como miniatura na faixa, e clicar nela abre grande para quem vê. */}
+        <div className="painel-aviso-foto">
+          {imagem && <img src={previa ?? enderecoDaFotoDoAviso(imagem)} alt={t('Foto do recado')} />}
+          <label className="btn-secondary">
+            {subindoFoto ? t('Enviando…') : imagem ? t('Trocar a foto') : t('Pôr uma foto')}
+            <input
+              type="file"
+              accept="image/png,image/jpeg,image/gif,image/webp"
+              hidden
+              disabled={subindoFoto}
+              onChange={(e) => {
+                void escolherFoto(e.target.files?.[0]);
+                e.target.value = '';
+              }}
+            />
+          </label>
+          {imagem && (
+            <button type="button" className="link" disabled={subindoFoto} onClick={() => {
+                setImagem(null);
+                setPrevia(null);
+              }}>
+              {t('Tirar a foto')}
+            </button>
+          )}
+          <small className="settings-hint">{t('A foto só aparece depois de salvar o recado.')}</small>
+        </div>
 
         <div className="painel-aviso-tons" role="radiogroup" aria-label="Tipo do recado">
           {TONS.map((opcao) => (

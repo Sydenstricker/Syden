@@ -47,6 +47,16 @@ try {
   // Banco anterior à caixa-preta: nada a somar.
 }
 
+// A FOTO DO RECADO GERAL também não tem coluna sha: mora no JSON do aviso, no kv (ver server/src/aviso.ts). Sem isto, a
+// vassoura apagaria a foto que está na faixa de todo mundo, e a faixa mostraria uma imagem quebrada.
+try {
+  const aviso = db.prepare("SELECT value FROM kv WHERE key = 'aviso-geral'").get();
+  const sha = aviso?.value ? JSON.parse(aviso.value)?.imagem?.sha : null;
+  if (sha) vivos.add(sha);
+} catch {
+  // Sem kv, ou aviso torto: nada a somar.
+}
+
 for (const tabela of TABELAS) {
   try {
     for (const linha of db.prepare(`SELECT DISTINCT sha FROM ${tabela} WHERE sha IS NOT NULL`).all()) vivos.add(linha.sha);

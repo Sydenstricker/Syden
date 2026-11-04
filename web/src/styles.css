@@ -9255,6 +9255,78 @@ textarea {
   opacity: 0.8;
 }
 
+/* A foto do recado: uma miniatura que não engorda a faixa (a altura é a da linha de texto, com folga). */
+.aviso-geral-foto {
+  flex: none;
+  display: block;
+  width: 40px;
+  height: 28px;
+  padding: 0;
+  margin: -4px 0;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.15);
+  cursor: zoom-in;
+}
+
+.aviso-geral-foto img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.aviso-geral-foto:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* A foto grande: por cima de tudo, fecha com Esc ou clicando fora. */
+.aviso-geral-visor {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  background: rgba(0, 0, 0, 0.82);
+  cursor: zoom-out;
+}
+
+.aviso-geral-visor img {
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 6px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  cursor: default;
+}
+
+.aviso-geral-visor .icon-plain {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  color: #fff;
+}
+
+/* No painel: a prévia da foto e os botões de trocar e tirar. */
+.painel-aviso-foto {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0;
+}
+
+.painel-aviso-foto img {
+  width: 120px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: var(--radius);
+  background: var(--overlay);
+}
+
 /* ---------- Onde o recado é escrito ---------- */
 
 .painel-aviso {
@@ -17230,4 +17302,281 @@ body.arrastando-barra {
   display: block;
   color: var(--accent);
   font-size: 0.8rem;
+}
+
+/* Cidades à venda (04/11/2026, JogoCidades.tsx): o placar de dinheiro, o tabuleiro de 32 casas e, ao lado, a vez, o cartão da
+   cidade escolhida e o que aconteceu. Em tela estreita, o lado desce para baixo do tabuleiro. */
+.minijogo.jogando-cidades {
+  width: min(980px, 96vw);
+}
+
+.cidades-jogo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.cid-topo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.cid-rodada {
+  color: var(--text-muted);
+  font-size: calc(12px * var(--escala-do-texto));
+}
+
+.cid-placar {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.cid-placar li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: var(--bg-raised);
+  font-size: calc(13px * var(--escala-do-texto));
+  min-width: 0;
+}
+
+.cid-placar li.vez {
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.cid-placar li.eu .minijogo-nome {
+  color: var(--text-strong);
+  font-weight: 600;
+}
+
+.cid-placar li.fora,
+.cid-placar li.falido {
+  opacity: 0.5;
+}
+
+.cid-placar .minijogo-nome {
+  max-width: 12ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cid-placar-dinheiro {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-strong);
+}
+
+.cid-corpo {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(220px, 2fr);
+  gap: 12px;
+  align-items: start;
+}
+
+@media (max-width: 720px) {
+  .cid-corpo {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.cid-tabuleiro {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  display: block;
+}
+
+.cid-casa {
+  cursor: pointer;
+}
+
+.cid-casa.escolhida rect:first-child {
+  stroke: #fff4d6;
+  stroke-width: 2;
+}
+
+.cid-uf {
+  font: 700 13px system-ui, sans-serif;
+  fill: #1f2a22;
+}
+
+.cid-preco {
+  font: 500 8px system-ui, sans-serif;
+  fill: #1f2a22;
+  opacity: 0.75;
+}
+
+.cid-icone {
+  font: 16px system-ui, sans-serif;
+}
+
+.cid-dados-meio {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.cid-lado {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.cid-vez {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 8px;
+  background: var(--bg-raised);
+}
+
+.cid-vez .minijogo-situacao {
+  margin: 0;
+}
+
+.cid-vez .minijogo-acoes {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.cid-lance {
+  margin: 0;
+  font-size: calc(18px * var(--escala-do-texto));
+  font-weight: 700;
+  color: var(--text-strong);
+  font-variant-numeric: tabular-nums;
+}
+
+.cid-cartao {
+  padding: 10px;
+  border-radius: 8px;
+  background: var(--bg-raised);
+  font-size: calc(13px * var(--escala-do-texto));
+}
+
+.cid-cartao p {
+  margin: 0 0 6px;
+}
+
+.cid-cartao-nome {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cid-cartao-uf {
+  color: var(--text-muted);
+}
+
+.cid-cartao-cor {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex: none;
+}
+
+.cid-cartao-alugueis {
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.cid-troca {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cid-troca-lados {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.cid-troca-lista {
+  list-style: none;
+  margin: 4px 0;
+  padding: 0;
+  max-height: 140px;
+  overflow-y: auto;
+  font-size: calc(13px * var(--escala-do-texto));
+}
+
+.cid-troca-lista label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cid-troca input[type='number'] {
+  width: 7ch;
+}
+
+.cid-troca-vazia {
+  color: var(--text-muted);
+  font-size: calc(12px * var(--escala-do-texto));
+}
+
+.cid-troca-resumo p {
+  margin: 0 0 4px;
+  font-size: calc(13px * var(--escala-do-texto));
+}
+
+.cid-historico {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: calc(12px * var(--escala-do-texto));
+  color: var(--text-muted);
+}
+
+.cid-historico li:first-child {
+  color: var(--text-strong);
+}
+
+.cid-cartao-tabela {
+  border-collapse: collapse;
+  margin: 0 0 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+.cid-cartao-tabela th {
+  text-align: left;
+  font-weight: 400;
+  color: var(--text-muted);
+  padding: 1px 12px 1px 0;
+}
+
+.cid-cartao-tabela td {
+  text-align: right;
+}
+
+.cid-cartao-tabela tr.agora th,
+.cid-cartao-tabela tr.agora td {
+  color: var(--text-strong);
+  font-weight: 600;
+}
+
+.cid-predio {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 2px;
+  background: #f3ead8;
+  border: 1px solid #3a2e2a;
 }

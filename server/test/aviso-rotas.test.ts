@@ -61,3 +61,68 @@ test('escrever e apagar ficam registrados na auditoria', async () => {
   assert.ok(acoes.includes('aviso.escrito'), 'escrever o recado é uso de poder e tem que ficar registrado');
   assert.ok(acoes.includes('aviso.apagado'));
 });
+
+// A FOTO DO RECADO (04/11/2026): sobe pelo funil das imagens, vai no recado pelo sha, e chega a quem nem conta tem — mas
+// a rota pública só abre a foto do recado, e nenhum outro arquivo.
+const png = (recheio: number) => Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]), Buffer.alloc(600, recheio)]);
+const comoDataUrl = (dados: Buffer) => 'data:image/png;base64,' + dados.toString('base64');
+
+test('só quem administra sobe a foto do recado', async () => {
+  assert.equal((await amiga('PUT', '/api/aviso/imagem', { image: comoDataUrl(png(7)) })).statusCode, 403);
+  assert.equal((await dona('PUT', '/api/aviso/imagem', { image: 'data:image/png;base64,aGVsbG8=' })).statusCode, 400, 'o que não é imagem não sobe');
+});
+
+test('a foto vai no recado e chega a quem nem conta tem', async () => {
+  const subida = await dona('PUT', '/api/aviso/imagem', { image: comoDataUrl(png(8)) });
+  assert.equal(subida.statusCode, 200);
+  const { sha } = subida.json().imagem as { sha: string };
+  assert.match(sha, /^[0-9a-f]{64}$/);
+
+  // antes de entrar no recado, a foto não é de ninguém: a rota pública não a entrega
+  assert.equal((await app.inject({ method: 'GET', url: `/api/aviso/imagem/${sha}` })).statusCode, 404);
+
+  assert.equal((await dona('PUT', '/api/aviso', { ...RECADO, imagem: sha })).statusCode, 200);
+  const inicio = (await app.inject({ method: 'GET', url: '/api/inicio' })).json();
+  assert.deepEqual(inicio.aviso.imagem, { sha, mime: 'image/png' });
+
+  const foto = await app.inject({ method: 'GET', url: `/api/aviso/imagem/${sha}` });
+  assert.equal(foto.statusCode, 200);
+  assert.equal(foto.headers['content-type'], 'image/png');
+  assert.equal(foto.headers['x-content-type-options'], 'nosniff');
+});
+
+test('a rota pública não abre outro arquivo do disco', async () => {
+  // um arquivo que existe (o avatar de alguém), mas não é a foto do recado
+  const avatar = png(9);
+  await amiga('PUT', '/api/me/avatar', { image: comoDataUrl(avatar) });
+  const { shaDeArquivo } = await import('../src/arquivos.js');
+  assert.equal((await app.inject({ method: 'GET', url: `/api/aviso/imagem/${shaDeArquivo(avatar)}` })).statusCode, 404);
+  assert.equal((await app.inject({ method: 'GET', url: '/api/aviso/imagem/..%2F..%2Fbanco' })).statusCode, 404);
+});
+
+test('o recado não aceita foto que não subiu, nem arquivo que não é imagem', async () => {
+  assert.equal((await dona('PUT', '/api/aviso', { ...RECADO, imagem: 'a'.repeat(64) })).statusCode, 400);
+  assert.equal((await dona('PUT', '/api/aviso', { ...RECADO, imagem: '../x' })).statusCode, 400);
+  const { guardarArquivo } = await import('../src/arquivos.js');
+  const { sha: pdf } = guardarArquivo(Buffer.from('%PDF-1.4 um anexo qualquer'));
+  assert.equal((await dona('PUT', '/api/aviso', { ...RECADO, imagem: pdf })).statusCode, 400);
+});
+
+test('tirar a foto deixa o texto, e a foto antiga para de abrir', async () => {
+  const { sha } = (await dona('PUT', '/api/aviso/imagem', { image: comoDataUrl(png(10)) })).json().imagem as { sha: string };
+  await dona('PUT', '/api/aviso', { ...RECADO, imagem: sha });
+  assert.equal((await dona('PUT', '/api/aviso', { ...RECADO, imagem: null })).statusCode, 200);
+  const inicio = (await app.inject({ method: 'GET', url: '/api/inicio' })).json();
+  assert.equal(inicio.aviso.texto, RECADO.texto);
+  assert.equal(inicio.aviso.imagem, null);
+  assert.equal((await app.inject({ method: 'GET', url: `/api/aviso/imagem/${sha}` })).statusCode, 404);
+});
+
+test('o Shield que reconhece a foto depois a tira do recado', async () => {
+  const { sha } = (await dona('PUT', '/api/aviso/imagem', { image: comoDataUrl(png(11)) })).json().imagem as { sha: string };
+  await dona('PUT', '/api/aviso', { ...RECADO, imagem: sha });
+  const { tirarImagemDoAviso, avisoGuardado } = await import('../src/aviso.js');
+  assert.equal(tirarImagemDoAviso(sha), true);
+  assert.equal(avisoGuardado()?.imagem, null);
+  assert.equal(avisoGuardado()?.texto, RECADO.texto);
+});
