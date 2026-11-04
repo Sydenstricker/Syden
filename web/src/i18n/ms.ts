@@ -566,7 +566,8 @@ export default {
   Pessoa: 'Orang',
   Pessoas: 'Orang',
   'Pessoas das suas comunidades': 'Orang daripada komuniti anda',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG atau WEBP, apa-apa saiz: anda pilih keratannya.',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG atau WEBP, apa-apa saiz: anda pilih keratannya. GIF animasi dihantar seadanya, sehingga 2 MB.',
+  'O GIF do avatar pode ter até 2 MB.': 'GIF avatar boleh sehingga 2 MB.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP atau GIF beranimasi, sehingga 512 KB. Imej disesuaikan kepada 128×128.',
   'Poeira de estrelas, roxa e azul.': 'Debu bintang, ungu dan biru.',

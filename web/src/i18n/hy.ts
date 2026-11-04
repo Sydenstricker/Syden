@@ -839,7 +839,8 @@ export default {
   'Pessoas': 'Մարդիկ',
   'Pessoas bloqueadas': 'Արգելափակված մարդիկ',
   'Pessoas das suas comunidades': 'Մարդիկ քո համայնքներից',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG կամ WEBP՝ ցանկացած չափի․ կտրվածքը դու ես ընտրում։',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG կամ WEBP՝ ցանկացած չափի․ կտրվածքը դու ես ընտրում։ Անիմացիոն GIF-ը գնում է ամբողջությամբ՝ մինչև 2 ՄԲ։',
+  'O GIF do avatar pode ter até 2 MB.': 'Ավատարի GIF-ը կարող է լինել մինչև 2 ՄԲ։',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP կամ անիմացիոն GIF՝ մինչև 512 ԿԲ։ Պատկերը հարմարեցվում է 128×128 չափին։',
   'Poeira de estrelas, roxa e azul.': 'Աստղափոշի՝ մանուշակագույն և կապույտ։',

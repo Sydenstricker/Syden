@@ -818,7 +818,8 @@ export default {
   'Pessoas': 'មនុស្ស',
   'Pessoas bloqueadas': 'មនុស្សដែលបានទប់ស្កាត់',
   'Pessoas das suas comunidades': 'មនុស្សនៅក្នុងសហគមន៍របស់អ្នក',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG ឬ WEBP ទំហំណាក៏បាន៖ អ្នកជ្រើសរើសផ្នែកដែលត្រូវកាត់។',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG ឬ WEBP ទំហំណាក៏បាន៖ អ្នកជ្រើសរើសផ្នែកដែលត្រូវកាត់។ GIF មានចលនា ទៅទាំងមូល រហូតដល់ 2 MB។',
+  'O GIF do avatar pode ter até 2 MB.': 'GIF រូបតំណាងអាចមានទំហំរហូតដល់ 2 MB។',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP ឬ GIF មានចលនា រហូតដល់ 512 KB។ រូបភាពត្រូវបានកែតម្រូវទៅ 128×128។',
   'Poeira de estrelas, roxa e azul.': 'ធូលីផ្កាយ ពណ៌ស្វាយ និងខៀវ។',

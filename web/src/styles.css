@@ -3247,6 +3247,14 @@ textarea {
   object-fit: cover;
 }
 
+/* O GIF do avatar parado (o primeiro quadro, desenhado em Avatar.tsx): no lugar e do tamanho do <img>. */
+.avatar canvas.avatar-foto {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
 /* ---------- Emojis no chat ---------- */
 
 .emoji {

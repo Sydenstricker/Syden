@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { mediaUrl } from './api';
 import { useDirectory } from './directory';
 import type { PresenceStatus } from './types';
@@ -93,6 +93,116 @@ function useMomentoDaConversa(ativo: boolean, folgaMs = FOLGA_MS): 'parado' | 'b
   return momento;
 }
 
+/** Onde passar o mouse anima o GIF do avatar: a linha inteira (a mensagem, a pessoa na lista), como no Discord. */
+const LINHA_DO_AVATAR = ['.message', 'button', '[role="button"]', 'a', 'li'].join(', ');
+/** Daqui para cima o avatar é o destaque (o cartão de perfil, Minha conta): o GIF anima sempre. */
+const AVATAR_GRANDE = 80;
+
+/** O GIF decodificado, um por endereço: dez mensagens da mesma pessoa não baixam nem decodificam dez vezes. */
+const gifs = new Map<string, Promise<HTMLImageElement>>();
+function carregarGif(src: string) {
+  let promessa = gifs.get(src);
+  if (!promessa) {
+    promessa = new Promise((ok, falha) => {
+      const img = new Image();
+      img.onload = () => ok(img);
+      img.onerror = falha;
+      img.src = src;
+    });
+    gifs.set(src, promessa);
+  }
+  return promessa;
+}
+
+function useMenosMovimento() {
+  const [menos, setMenos] = useState(() => typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches);
+  useEffect(() => {
+    if (typeof matchMedia === 'undefined') return;
+    const consulta = matchMedia('(prefers-reduced-motion: reduce)');
+    const mudou = () => setMenos(consulta.matches);
+    consulta.addEventListener('change', mudou);
+    return () => consulta.removeEventListener('change', mudou);
+  }, []);
+  return menos;
+}
+
+/**
+ * A FOTO DO AVATAR, e o GIF ANIMADO (pedido dele, 04/11/2026: "como o Discord faz na lista, para não virar um pisca-pisca"):
+ * nas listas e nas mensagens o GIF aparece PARADO, no primeiro quadro (desenhado num canvas, porque um <img> de GIF não
+ * para), e anima enquanto o mouse está na linha dele. Grande (o cartão de perfil, Minha conta), anima sempre. Com "menos
+ * movimento" no sistema, nunca anima.
+ */
+function FotoDoAvatar({ src, animado, estado, size }: { src: string; animado: boolean; estado: EstadoDoPronto | null; size: number }) {
+  const menosMovimento = useMenosMovimento();
+  const sempre = size >= AVATAR_GRANDE;
+  const [linha, setLinha] = useState<Element | null>(null);
+  const [mouseNaLinha, setMouseNaLinha] = useState(false);
+  const canvas = useRef<HTMLCanvasElement | null>(null);
+
+  // a linha é achada pelo próprio elemento, uma vez: o avatar não sabe onde foi posto
+  const guardar = (el: Element | null) => {
+    if (!el || linha) return;
+    const avatar = el.closest('.avatar');
+    setLinha(avatar?.parentElement?.closest(LINHA_DO_AVATAR) ?? avatar?.parentElement ?? null);
+  };
+
+  useEffect(() => {
+    if (!animado || sempre || !linha) return;
+    const entrou = () => setMouseNaLinha(true);
+    const saiu = () => setMouseNaLinha(false);
+    linha.addEventListener('mouseenter', entrou);
+    linha.addEventListener('mouseleave', saiu);
+    linha.addEventListener('focusin', entrou);
+    linha.addEventListener('focusout', saiu);
+    return () => {
+      linha.removeEventListener('mouseenter', entrou);
+      linha.removeEventListener('mouseleave', saiu);
+      linha.removeEventListener('focusin', entrou);
+      linha.removeEventListener('focusout', saiu);
+    };
+  }, [animado, sempre, linha]);
+
+  const parado = animado && (menosMovimento || (!sempre && !mouseNaLinha));
+
+  // o primeiro quadro, recortado no meio como o object-fit: cover do <img>
+  useEffect(() => {
+    if (!parado) return;
+    let vivo = true;
+    void carregarGif(src).then(
+      (img) => {
+        const c = canvas.current;
+        if (!vivo || !c) return;
+        const lado = Math.round(size * (window.devicePixelRatio || 1));
+        c.width = c.height = lado;
+        const ctx = c.getContext('2d');
+        if (!ctx) return;
+        const menor = Math.min(img.naturalWidth, img.naturalHeight);
+        ctx.imageSmoothingQuality = 'high';
+        ctx.drawImage(img, (img.naturalWidth - menor) / 2, (img.naturalHeight - menor) / 2, menor, menor, 0, 0, lado, lado);
+      },
+      () => {},
+    );
+    return () => {
+      vivo = false;
+    };
+  }, [parado, src, size]);
+
+  if (parado) {
+    return (
+      <canvas
+        ref={(el) => {
+          canvas.current = el;
+          guardar(el);
+        }}
+        className="avatar-foto"
+        data-estado={estado ?? undefined}
+        aria-hidden="true"
+      />
+    );
+  }
+  return <img ref={guardar} className="avatar-foto" data-estado={estado ?? undefined} src={src} alt="" draggable={false} />;
+}
+
 /**
  * Foto de perfil quando a pessoa enviou uma; senão, o coelho do Syden na pose do status dela. Quando
  * ela fala ou digita, o coelho vira o balão do D4 (barras ou três pontos) e volta depois — o mascote é
@@ -178,7 +288,7 @@ export function Avatar({
         // desenho de uma foto não se anima quadro a quadro como o coelho, então é a foto inteira que se mexe — pula de
         // leve falando, cochila (esmaecida, com o zzz) ausente, e balança devagar ocupada. Ver .avatar-foto em styles.css.
         <>
-          <img className="avatar-foto" data-estado={estadoDoPronto ?? undefined} src={mediaUrl.avatar(userId!, version)} alt="" draggable={false} />
+          <FotoDoAvatar src={mediaUrl.avatar(userId!, version)} animado={!!membro?.avatarAnimado} estado={estadoDoPronto} size={size} />
           {estadoDoPronto === 'ausente' && (
             <span className="avatar-foto-zzz" aria-hidden="true">
               z

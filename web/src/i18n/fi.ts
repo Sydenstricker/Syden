@@ -819,7 +819,8 @@ export default {
   'Pessoas': 'Ihmiset',
   'Pessoas bloqueadas': 'Estetyt henkilöt',
   'Pessoas das suas comunidades': 'Ihmisiä yhteisöistäsi',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG tai WEBP, minkä kokoinen tahansa: sinä valitset rajauksen.',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG tai WEBP, minkä kokoinen tahansa: sinä valitset rajauksen. Animoidut GIFit menevät sellaisinaan, enintään 2 Mt.',
+  'O GIF do avatar pode ter até 2 MB.': 'Avatarin GIF saa olla enintään 2 Mt.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP tai animoitu GIF, enintään 512 kt. Kuva sovitetaan kokoon 128×128.',
   'Poeira de estrelas, roxa e azul.': 'Tähtipölyä, violettia ja sinistä.',

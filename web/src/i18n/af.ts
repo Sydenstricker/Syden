@@ -813,7 +813,8 @@ export default {
   'Pessoas': 'Mense',
   'Pessoas bloqueadas': 'Geblokkeerde mense',
   'Pessoas das suas comunidades': 'Mense uit jou gemeenskappe',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG of WEBP, enige grootte: jy kies die uitsnit.',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG of WEBP, enige grootte: jy kies die uitsnit. Geanimeerde GIF\'s gaan soos hulle is, tot 2 MB.',
+  'O GIF do avatar pode ter até 2 MB.': 'Die avatar-GIF kan tot 2 MB wees.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP of geanimeerde GIF, tot 512 KB. Die prent word na 128×128 aangepas.',
   'Poeira de estrelas, roxa e azul.': 'Sterrestof, pers en blou.',

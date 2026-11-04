@@ -821,7 +821,8 @@ export default {
   'Pessoas': 'Cilvēki',
   'Pessoas bloqueadas': 'Bloķētie cilvēki',
   'Pessoas das suas comunidades': 'Cilvēki no tavām kopienām',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG vai WEBP jebkurā izmērā: izgriezumu izvēlies tu.',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG vai WEBP jebkurā izmērā: izgriezumu izvēlies tu. Animēts GIF tiek augšupielādēts vesels, līdz 2 MB.',
+  'O GIF do avatar pode ter até 2 MB.': 'Avatāra GIF var būt līdz 2 MB.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP vai animēts GIF, līdz 512 KB. Attēls tiek pielāgots 128×128.',
   'Poeira de estrelas, roxa e azul.': 'Zvaigžņu putekļi, violeti un zili.',

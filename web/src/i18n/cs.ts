@@ -818,7 +818,8 @@ export default {
   'Pessoas': 'Lidé',
   'Pessoas bloqueadas': 'Zablokovaní lidé',
   'Pessoas das suas comunidades': 'Lidé z tvých komunit',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG nebo WEBP v jakékoli velikosti: výřez si vybereš.',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG nebo WEBP v jakékoli velikosti: výřez si vybereš. Animovaný GIF jde celý, až 2 MB.',
+  'O GIF do avatar pode ter até 2 MB.': 'GIF avatara může mít nejvýš 2 MB.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP nebo animovaný GIF, až 512 KB. Obrázek se upraví na 128×128.',
   'Poeira de estrelas, roxa e azul.': 'Hvězdný prach, fialový a modrý.',

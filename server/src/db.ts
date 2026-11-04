@@ -60,6 +60,8 @@ export interface User {
   /** O dono (o primeiro cadastro) também é administrador e é quem dá e tira o cargo de administrador. */
   isOwner: boolean;
   avatarVersion: number | null;
+  /** A foto do avatar é um GIF animado (04/11/2026): o site a mostra parada nas listas e animada ao passar o mouse. */
+  avatarAnimado: boolean;
   /** O coelho pronto escolhido (1 a 16, web/public/avatares/), ou null. Exclui a foto: é um OU outro. */
   avatarPronto: number | null;
   /** Nome da cor escolhida para o nome, ou null para a cor padrão do cargo. */
@@ -93,7 +95,7 @@ export type UserRef = Pick<User, 'id' | 'username'> & {
 /** O que todos precisam saber de cada usuário para desenhar nome e avatar. */
 export type PublicUser = Pick<
   User,
-  'id' | 'username' | 'nomeDeExibicao' | 'avatarVersion' | 'avatarPronto' | 'isAdmin' | 'isOwner' | 'moldura' | 'nameEffect' | 'nameFont' | 'vitrine' | 'acceptedIdeas' | 'selo'
+  'id' | 'username' | 'nomeDeExibicao' | 'avatarVersion' | 'avatarAnimado' | 'avatarPronto' | 'isAdmin' | 'isOwner' | 'moldura' | 'nameEffect' | 'nameFont' | 'vitrine' | 'acceptedIdeas' | 'selo'
 >;
 
 /** Alguém dentro de uma comunidade: os dados públicos mais o cargo que tem ali. */
@@ -1025,6 +1027,8 @@ addColumnIfMissing('users', 'is_admin', 'INTEGER NOT NULL DEFAULT 0');
 addColumnIfMissing('channels', 'created_by', 'INTEGER');
 // Muda a cada troca de avatar; entra na URL da imagem para o navegador buscar a nova. null = sem avatar.
 addColumnIfMissing('users', 'avatar_version', 'INTEGER');
+// O avatar é um GIF animado (04/11/2026): o site o mostra parado nas listas e animado ao passar o mouse, como o Discord.
+addColumnIfMissing('users', 'avatar_animado', 'INTEGER NOT NULL DEFAULT 0');
 // O coelho pronto (10/10/2026): guarda-se o NÚMERO, e não a imagem, para o app desenhar o coelho na pose do
 // estado (dormindo, falando, ocupado). Uma foto enviada não tem pose; um coelho conhecido tem.
 addColumnIfMissing('users', 'avatar_pronto', 'INTEGER');
@@ -1614,7 +1618,7 @@ export function removeMember(communityId: number, userId: number) {
 export function listCommunityMembers(communityId: number): CommunityMember[] {
   const rows = db
     .prepare(
-      `SELECT u.id, u.username, u.nome_exibicao AS nomeDeExibicao, u.is_admin AS isAdmin, u.is_owner AS isOwner, u.avatar_version AS avatarVersion, u.avatar_pronto AS avatarPronto,
+      `SELECT u.id, u.username, u.nome_exibicao AS nomeDeExibicao, u.is_admin AS isAdmin, u.is_owner AS isOwner, u.avatar_version AS avatarVersion, u.avatar_animado AS avatarAnimado, u.avatar_pronto AS avatarPronto,
               u.name_color AS nameColor, u.banner, u.moldura, u.name_effect AS nameEffect, u.name_font AS nameFont, u.vitrine, u.accepted_ideas AS acceptedIdeas, m.role, m.silenciado_ate AS silenciadoAte, m.apelido
        FROM community_members m JOIN users u ON u.id = m.user_id
        WHERE m.community_id = ? ORDER BY u.id`,
@@ -1640,7 +1644,7 @@ export function communityIdsForUser(userId: number): number[] {
 }
 
 const userColumns =
-  'id, username, nome_exibicao AS nomeDeExibicao, is_admin AS isAdmin, is_owner AS isOwner, avatar_version AS avatarVersion, avatar_pronto AS avatarPronto, name_color AS nameColor, banner, moldura, name_effect AS nameEffect, name_font AS nameFont, vitrine, accepted_ideas AS acceptedIdeas, temporario_ate AS temporarioAte, ' +
+  'id, username, nome_exibicao AS nomeDeExibicao, is_admin AS isAdmin, is_owner AS isOwner, avatar_version AS avatarVersion, avatar_animado AS avatarAnimado, avatar_pronto AS avatarPronto, name_color AS nameColor, banner, moldura, name_effect AS nameEffect, name_font AS nameFont, vitrine, accepted_ideas AS acceptedIdeas, temporario_ate AS temporarioAte, ' +
   // O selo vestido, resolvido aqui mesmo. Guarda-se o NÚMERO da comunidade e não uma cópia do selo:
   // quando ela troca o dela, o de quem veste troca junto, sem ninguém precisar reescolher.
   '(SELECT selo_texto FROM communities c WHERE c.id = users.selo_comunidade) AS seloTexto, ' +
@@ -1654,6 +1658,7 @@ type UserRow = {
   isAdmin: number;
   isOwner: number;
   avatarVersion: number | null;
+  avatarAnimado: number | null;
   avatarPronto: number | null;
   nameColor: string | null;
   banner: string | null;
@@ -1677,6 +1682,7 @@ function toUser(row: UserRow | undefined): User | undefined {
       isAdmin: row.isAdmin === 1,
       isOwner: row.isOwner === 1,
       avatarVersion: row.avatarVersion,
+      avatarAnimado: row.avatarVersion !== null && row.avatarAnimado === 1,
       avatarPronto: row.avatarPronto ?? null,
       nameColor: row.nameColor,
       banner: row.banner,
@@ -2147,7 +2153,7 @@ export function setAvatar(userId: number, avatar: { mime: string; data: Buffer }
       `INSERT INTO avatars (user_id, mime, data, sha, bytes) VALUES (?, ?, ?, ?, ?)
        ON CONFLICT(user_id) DO UPDATE SET mime = excluded.mime, data = excluded.data, sha = excluded.sha, bytes = excluded.bytes`,
     ).run(userId, avatar.mime, SEM_BYTES, no.sha, no.bytes);
-    db.prepare('UPDATE users SET avatar_version = ?, avatar_pronto = NULL WHERE id = ?').run(Date.now(), userId);
+    db.prepare('UPDATE users SET avatar_version = ?, avatar_animado = ?, avatar_pronto = NULL WHERE id = ?').run(Date.now(), avatar.mime === 'image/gif' ? 1 : 0, userId);
   } else {
     db.prepare('DELETE FROM avatars WHERE user_id = ?').run(userId);
     db.prepare('UPDATE users SET avatar_version = NULL, avatar_pronto = NULL WHERE id = ?').run(userId);

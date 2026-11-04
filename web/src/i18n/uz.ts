@@ -827,7 +827,8 @@ export default {
   'Pessoas': 'Odamlar',
   'Pessoas bloqueadas': 'Bloklangan odamlar',
   'Pessoas das suas comunidades': 'Hamjamiyatlaringizdagi odamlar',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'Istalgan oʻlchamdagi PNG, JPG yoki WEBP: qirqimni oʻzingiz tanlaysiz.',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'Istalgan oʻlchamdagi PNG, JPG yoki WEBP: qirqimni oʻzingiz tanlaysiz. Animatsiyali GIF butunligicha ketadi, 2 MB gacha.',
+  'O GIF do avatar pode ter até 2 MB.': 'Avatar GIF’i 2 MB gacha bo‘lishi mumkin.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP yoki animatsiyali GIF, 512 KB gacha. Rasm 128×128 ga moslanadi.',
   'Poeira de estrelas, roxa e azul.': 'Binafsha va koʻk yulduz changi.',

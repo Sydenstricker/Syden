@@ -834,7 +834,8 @@ export default {
   'Pessoas': 'Хүмүүс',
   'Pessoas bloqueadas': 'Блоклосон хүмүүс',
   'Pessoas das suas comunidades': 'Чиний нийгэмлэгүүдийн хүмүүс',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG эсвэл WEBP, ямар ч хэмжээтэй: тайралтыг чи сонгоно.',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG эсвэл WEBP, ямар ч хэмжээтэй: тайралтыг чи сонгоно. Хөдөлгөөнт GIF бүтнээрээ явна, 2 MB хүртэл.',
+  'O GIF do avatar pode ter até 2 MB.': 'Аватарын GIF 2 MB хүртэл байж болно.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP эсвэл хөдөлгөөнт GIF, 512 KB хүртэл. Зургийг 128×128 болгон тохируулна.',
   'Poeira de estrelas, roxa e azul.': 'Одны тоос, нил ягаан ба цэнхэр.',

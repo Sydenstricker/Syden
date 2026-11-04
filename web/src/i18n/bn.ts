@@ -564,7 +564,8 @@ export default {
   Pessoa: 'জন',
   Pessoas: 'লোকজন',
   'Pessoas das suas comunidades': 'তোমার কমিউনিটির লোকজন',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG বা WEBP, যেকোনো মাপে: কোন অংশটা কাটবে তুমি ঠিক করবে।',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG বা WEBP, যেকোনো মাপে: কোন অংশটা কাটবে তুমি ঠিক করবে। অ্যানিমেটেড GIF পুরোটাই যায়, 2 MB পর্যন্ত।',
+  'O GIF do avatar pode ter até 2 MB.': 'অবতারের GIF সর্বোচ্চ 2 MB হতে পারে।',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP বা চলমান GIF, ৫১২ KB পর্যন্ত। ছবিটা ১২৮×১২৮-এ বসিয়ে দেওয়া হয়।',
   'Poeira de estrelas, roxa e azul.': 'তারার ধুলো, বেগুনি আর নীল।',

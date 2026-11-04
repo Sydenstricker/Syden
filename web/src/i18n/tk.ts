@@ -821,7 +821,8 @@ export default {
   'Pessoas': 'Adamlar',
   'Pessoas bloqueadas': 'Bloklanan adamlar',
   'Pessoas das suas comunidades': 'Jemgyýetleriňdäki adamlar',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'Islendik ölçegdäki PNG, JPG ýa-da WEBP: kesilýän ýerini sen saýlaýarsyň.',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'Islendik ölçegdäki PNG, JPG ýa-da WEBP: kesilýän ýerini sen saýlaýarsyň. Hereketli GIF bolşy ýaly gidýär, 2 MB-a çenli.',
+  'O GIF do avatar pode ter até 2 MB.': 'Awataryň GIF-i 2 MB-a çenli bolup biler.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP ýa-da hereketli GIF, 512 KB çenli. Surat 128×128 ölçege getirilýär.',
   'Poeira de estrelas, roxa e azul.': 'Ýyldyz tozy, benewşe we gök.',

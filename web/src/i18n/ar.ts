@@ -624,8 +624,9 @@ export default {
   'Dois emojis com o mesmo nome: cada um precisa do seu.': 'رمزان بالاسم نفسه: لكل واحد اسمه.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG أو JPG أو WEBP أو GIF متحرك، حتى 512 كيلوبايت. تُضبط الصورة على 128×128.',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.':
-    'PNG أو JPG أو WEBP، بأي حجم: والاقتصاص باختيارك.',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.':
+    'PNG أو JPG أو WEBP، بأي حجم: والاقتصاص باختيارك. صور GIF المتحركة تُرسَل كما هي، حتى 2 MB.',
+  'O GIF do avatar pode ter até 2 MB.': 'يمكن أن يصل حجم GIF الصورة الرمزية إلى 2 MB.',
   Pacotes: 'الحزم',
   'Nome do pacote': 'اسم الحزمة',
   'O que tem dentro': 'ما بداخلها',

@@ -830,7 +830,8 @@ export default {
   'Pessoas': 'Moun',
   'Pessoas bloqueadas': 'Moun ki bloke',
   'Pessoas das suas comunidades': 'Moun nan kominote ou yo',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG oswa WEBP, nenpòt gwosè: se ou ki chwazi kote pou koupe.',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG oswa WEBP, nenpòt gwosè: se ou ki chwazi kote pou koupe. GIF anime yo ale jan yo ye, jiska 2 MB.',
+  'O GIF do avatar pode ter até 2 MB.': 'GIF avatar a ka rive jiska 2 MB.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP oswa GIF anime, jiska 512 KB. Imaj la ajiste pou 128×128.',
   'Poeira de estrelas, roxa e azul.': 'Pousyè zetwal, vyolèt ak ble.',

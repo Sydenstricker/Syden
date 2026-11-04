@@ -815,7 +815,8 @@ export default {
   'Pessoas': 'Persones',
   'Pessoas bloqueadas': 'Persones bloquejades',
   'Pessoas das suas comunidades': 'Persones de les teves comunitats',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG o WEBP, de qualsevol mida: tu tries el retall.',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG o WEBP, de qualsevol mida: tu tries el retall. Els GIF animats van sencers, fins a 2 MB.',
+  'O GIF do avatar pode ter até 2 MB.': 'El GIF de l\'avatar pot tenir fins a 2 MB.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP o GIF animat, fins a 512 KB. La imatge s’ajusta a 128×128.',
   'Poeira de estrelas, roxa e azul.': 'Pols d’estels, morada i blava.',

@@ -815,7 +815,8 @@ export default {
   'Pessoas': 'Адамдар',
   'Pessoas bloqueadas': 'Бұғатталған адамдар',
   'Pessoas das suas comunidades': 'Қауымдастықтарыңыздағы адамдар',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'Кез келген өлшемдегі PNG, JPG немесе WEBP: кесіндіні өзіңіз таңдайсыз.',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'Кез келген өлшемдегі PNG, JPG немесе WEBP: кесіндіні өзіңіз таңдайсыз. Анимациялы GIF толығымен кетеді, 2 МБ-ға дейін.',
+  'O GIF do avatar pode ter até 2 MB.': 'Аватар GIF-і 2 МБ-ға дейін бола алады.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP немесе анимациялық GIF, 512 KB дейін. Сурет 128×128 өлшеміне келтіріледі.',
   'Poeira de estrelas, roxa e azul.': 'Күлгін және көк жұлдыз шаңы.',

@@ -819,7 +819,8 @@ export default {
   'Pessoas': 'පුද්ගලයින්',
   'Pessoas bloqueadas': 'අවහිර කළ අය',
   'Pessoas das suas comunidades': 'ඔබේ ප්‍රජාවන්හි අය',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'ඕනෑම ප්‍රමාණයක PNG, JPG හෝ WEBP: කැපීම ඔබ තෝරයි.',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'ඕනෑම ප්‍රමාණයක PNG, JPG හෝ WEBP: කැපීම ඔබ තෝරයි. චලන GIF එක තිබෙන ලෙසම යයි, 2 MB දක්වා.',
+  'O GIF do avatar pode ter até 2 MB.': 'අවතාර GIF එක 2 MB දක්වා විය හැක.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP හෝ සජීවිකරණ GIF, 512 KB දක්වා. රූපය 128×128 ට ගළපනු ලැබේ.',
   'Poeira de estrelas, roxa e azul.': 'දම් සහ නිල් තරු දූවිලි.',

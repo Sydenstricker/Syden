@@ -622,8 +622,9 @@ export default {
   'Dois emojis com o mesmo nome: cada um precisa do seu.': 'Два эмодзи с одинаковым именем: у каждого должно быть своё.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP или анимированный GIF, до 512 КБ. Изображение подгоняется под 128×128.',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.':
-    'PNG, JPG или WEBP любого размера: кадрирование выбираешь ты.',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.':
+    'PNG, JPG или WEBP любого размера: кадрирование выбираешь ты. Анимированный GIF загружается целиком, до 2 МБ.',
+  'O GIF do avatar pode ter até 2 MB.': 'GIF для аватара может весить до 2 МБ.',
   Pacotes: 'Наборы',
   'Nome do pacote': 'Название набора',
   'O que tem dentro': 'Что внутри',

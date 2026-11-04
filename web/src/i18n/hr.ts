@@ -818,7 +818,8 @@ export default {
   'Pessoas': 'Osobe',
   'Pessoas bloqueadas': 'Blokirane osobe',
   'Pessoas das suas comunidades': 'Osobe iz tvojih zajednica',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG ili WEBP bilo koje veličine: izrez biraš ti.',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG ili WEBP bilo koje veličine: izrez biraš ti. Animirani GIF ide cijeli, do 2 MB.',
+  'O GIF do avatar pode ter até 2 MB.': 'GIF za avatar može imati do 2 MB.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP ili animirani GIF, do 512 KB. Slika se prilagođava na 128×128.',
   'Poeira de estrelas, roxa e azul.': 'Zvjezdana prašina, ljubičasta i plava.',

@@ -830,7 +830,8 @@ export default {
   'Pessoas': 'މީހުން',
   'Pessoas bloqueadas': 'ބްލޮކްކުރި މީހުން',
   'Pessoas das suas comunidades': 'ތިބާގެ ކޮމިއުނިޓީތަކުގެ މީހުން',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG، JPG ނުވަތަ WEBP، ކޮންމެ ސައިޒެއްގައިވެސް: ކަނޑާ ބައި ހޮވަނީ ތިބާ.',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG، JPG ނުވަތަ WEBP، ކޮންމެ ސައިޒެއްގައިވެސް: ކަނޑާ ބައި ހޮވަނީ ތިބާ. އެނިމޭޓެޑް GIF އޮތް ގޮތަށް ދާނެ، 2 MB އަށް.',
+  'O GIF do avatar pode ter até 2 MB.': 'އަވަތާރުގެ GIF 2 MB އަށް ވެދާނެ.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG، JPG، WEBP ނުވަތަ އެނިމޭޓެޑް GIF، 512 KB އާ ހަމައަށް. ފޮޓޯ 128×128 އަށް ހަމަޖެހޭނެ.',
   'Poeira de estrelas, roxa e azul.': 'ތަރިތަކުގެ ވެލި، ވައިލެޓާއި ނޫ.',

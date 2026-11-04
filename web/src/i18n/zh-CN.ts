@@ -555,7 +555,8 @@ export default {
   Pessoa: '人',
   Pessoas: '成员',
   'Pessoas das suas comunidades': '你社区里的人',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG、JPG 或 WEBP，任意尺寸：裁剪由你决定。',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG、JPG 或 WEBP，任意尺寸：裁剪由你决定。动图 GIF 原样上传，最大 2 MB。',
+  'O GIF do avatar pode ter até 2 MB.': '头像 GIF 最大 2 MB。',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG、JPG、WEBP 或动态 GIF，最大 512 KB。图片会被调整为 128×128。',
   'Poeira de estrelas, roxa e azul.': '星尘，紫色和蓝色。',

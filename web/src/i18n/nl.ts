@@ -564,7 +564,8 @@ export default {
   Pessoa: 'Persoon',
   Pessoas: 'Mensen',
   'Pessoas das suas comunidades': 'Mensen uit jouw communities',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG of WEBP, elk formaat: jij kiest de uitsnede.',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG of WEBP, elk formaat: jij kiest de uitsnede. Geanimeerde GIF\'s gaan zoals ze zijn, tot 2 MB.',
+  'O GIF do avatar pode ter até 2 MB.': 'De avatar-GIF mag tot 2 MB zijn.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP of bewegende GIF, tot 512 KB. De afbeelding wordt naar 128×128 gebracht.',
   'Poeira de estrelas, roxa e azul.': 'Sterrenstof, paars en blauw.',

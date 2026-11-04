@@ -566,7 +566,8 @@ export default {
   Pessoa: 'व्यक्ति',
   Pessoas: 'लोग',
   'Pessoas das suas comunidades': 'तुम्हारे समुदायों के लोग',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG या WEBP, किसी भी आकार में: कटाई तुम चुनोगे।',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG या WEBP, किसी भी आकार में: कटाई तुम चुनोगे। एनिमेटेड GIF पूरा जाता है, 2 MB तक।',
+  'O GIF do avatar pode ter até 2 MB.': 'अवतार का GIF ज़्यादा से ज़्यादा 2 MB का हो सकता है।',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP या चलती-फिरती GIF, 512 KB तक। तस्वीर 128×128 पर ढाल दी जाती है।',
   'Poeira de estrelas, roxa e azul.': 'तारों की धूल, बैंगनी और नीली।',

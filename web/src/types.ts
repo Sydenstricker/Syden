@@ -7,6 +7,8 @@ export interface User {
   /** O dono do servidor é quem dá e tira o cargo de administrador. */
   isOwner: boolean;
   avatarVersion: number | null;
+  /** A foto é um GIF animado: parada nas listas, animada ao passar o mouse (Avatar.tsx). Servidores antigos não mandam. */
+  avatarAnimado?: boolean;
   /** O coelho pronto escolhido (1 a 16, public/avatares/), ou null. Exclui a foto: é um ou outro. */
   avatarPronto?: number | null;
   /** Nome da cor escolhida para o nome (ver profileStyles), ou null para a cor do cargo. */
@@ -54,6 +56,7 @@ export type PublicUser = Pick<
   | 'username'
   | 'nomeDeExibicao'
   | 'avatarVersion'
+  | 'avatarAnimado'
   | 'avatarPronto'
   | 'isAdmin'
   | 'isOwner'

@@ -811,7 +811,8 @@ export default {
   'Pessoas': 'Personer',
   'Pessoas bloqueadas': 'Blockerade personer',
   'Pessoas das suas comunidades': 'Personer från dina gemenskaper',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG eller WEBP, i valfri storlek: du väljer beskärningen.',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG eller WEBP, i valfri storlek: du väljer beskärningen. Animerade GIF:ar går som de är, upp till 2 MB.',
+  'O GIF do avatar pode ter até 2 MB.': 'Avatar-GIF:en får vara upp till 2 MB.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP eller animerad GIF, upp till 512 KB. Bilden anpassas till 128×128.',
   'Poeira de estrelas, roxa e azul.': 'Stjärnstoft, lila och blått.',

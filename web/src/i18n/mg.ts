@@ -819,7 +819,8 @@ export default {
   'Pessoas': 'Olona',
   'Pessoas bloqueadas': 'Olona voasakana',
   'Pessoas das suas comunidades': 'Olona ao amin’ireo fiarahamoninao',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG na WEBP, na inona na inona habeny: ianao no misafidy ny ampahany hotapahina.',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG na WEBP, na inona na inona habeny: ianao no misafidy ny ampahany hotapahina. Ny GIF mihetsika dia mandeha toy izy, hatramin\'ny 2 MB.',
+  'O GIF do avatar pode ter até 2 MB.': 'Ny GIF an\'ny avatar dia mety hatramin\'ny 2 MB.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP na GIF mihetsika, hatramin’ny 512 KB. Ampifanarahina amin’ny 128×128 ny sary.',
   'Poeira de estrelas, roxa e azul.': 'Vovoka kintana, volomparasy sy manga.',

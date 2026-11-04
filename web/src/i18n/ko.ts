@@ -557,7 +557,8 @@ export default {
   Pessoa: '사람',
   Pessoas: '사람들',
   'Pessoas das suas comunidades': '내 커뮤니티의 사람들',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG 또는 WEBP, 크기는 상관없어요. 자르는 건 직접 고릅니다.',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG 또는 WEBP, 크기는 상관없어요. 자르는 건 직접 고릅니다. 움직이는 GIF는 그대로 올라가요(최대 2MB).',
+  'O GIF do avatar pode ter até 2 MB.': '아바타 GIF는 최대 2MB까지 돼요.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP 또는 움직이는 GIF, 512 KB까지. 사진은 128×128로 맞춰집니다.',
   'Poeira de estrelas, roxa e azul.': '별 먼지, 보라와 파랑.',

@@ -626,8 +626,9 @@ export default {
     'Zwei Emojis mit demselben Namen: Jedes braucht seinen eigenen.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP oder animiertes GIF, bis 512 KB. Das Bild wird auf 128×128 angepasst.',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.':
-    'PNG, JPG oder WEBP, in jeder Größe: Du wählst den Ausschnitt.',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.':
+    'PNG, JPG oder WEBP, in jeder Größe: Du wählst den Ausschnitt. Animierte GIFs bleiben, wie sie sind, bis 2 MB.',
+  'O GIF do avatar pode ter até 2 MB.': 'Das Avatar-GIF darf bis zu 2 MB groß sein.',
   Pacotes: 'Pakete',
   'Nome do pacote': 'Name des Pakets',
   'O que tem dentro': 'Was drin ist',

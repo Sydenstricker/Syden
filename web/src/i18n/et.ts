@@ -816,7 +816,8 @@ export default {
   'Pessoas': 'Inimesed',
   'Pessoas bloqueadas': 'Blokeeritud inimesed',
   'Pessoas das suas comunidades': 'Inimesed sinu kogukondadest',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG või WEBP, mis tahes suuruses: kärpe valid sina.',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG või WEBP, mis tahes suuruses: kärpe valid sina. Animeeritud GIF läheb tervena, kuni 2 MB.',
+  'O GIF do avatar pode ter até 2 MB.': 'Avatari GIF võib olla kuni 2 MB.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP või animeeritud GIF, kuni 512 KB. Pilt sobitatakse suurusele 128×128.',
   'Poeira de estrelas, roxa e azul.': 'Tähetolm, lilla ja sinine.',

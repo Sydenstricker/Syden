@@ -838,7 +838,8 @@ export default {
   'Pessoas': 'ადამიანები',
   'Pessoas bloqueadas': 'დაბლოკილი ადამიანები',
   'Pessoas das suas comunidades': 'ადამიანები შენი საზოგადოებებიდან',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG ან WEBP, ნებისმიერი ზომის: ამონაჭერს შენ ირჩევ.',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG ან WEBP, ნებისმიერი ზომის: ამონაჭერს შენ ირჩევ. ანიმაციური GIF მიდის მთლიანად, 2 MB-მდე.',
+  'O GIF do avatar pode ter até 2 MB.': 'ავატარის GIF შეიძლება იყოს 2 MB-მდე.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP ან ანიმაციური GIF, 512 KB-მდე. სურათი 128×128-ზე მორგდება.',
   'Poeira de estrelas, roxa e azul.': 'ვარსკვლავური მტვერი, იისფერი და ლურჯი.',

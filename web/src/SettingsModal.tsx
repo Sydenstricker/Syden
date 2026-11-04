@@ -83,7 +83,7 @@ import { ImageCropper } from './ImageCropper';
 import { playSoundboard } from './soundboard';
 import { sounds } from './sounds';
 import type { Community, CommunityMember, Emoji, Role, Sound, User } from './types';
-import { MAX_SOUND_SECONDS, emojiNameFromFile, imageFromClipboard, imageFromClipboardEvent, prepareBanner, prepareImage, prepareSound } from './upload';
+import { MAX_SOUND_SECONDS, emojiNameFromFile, imageFromClipboard, imageFromClipboardEvent, prepareBanner, prepareImage, prepareSound, readAsDataUrl } from './upload';
 import { type Voice } from './useVoice';
 import { EmojiPackCatalog } from './EmojiPackCatalog';
 import { PackCatalog } from './PackCatalog';
@@ -1658,6 +1658,14 @@ function AvatarEditor({ user }: { user: User }) {
     setBusy(false);
   }
 
+  // O GIF animado vai INTEIRO (04/11/2026): a tela de recorte o redesenharia num canvas e mataria a animação. O círculo mostra
+  // o meio dele, e nas listas ele fica parado até o mouse passar (Avatar.tsx). O teto é o do servidor.
+  async function escolher(arquivo: File) {
+    if (arquivo.type !== 'image/gif') return setCropping(arquivo);
+    if (arquivo.size > 2048 * 1024) return setError(t('O GIF do avatar pode ter até 2 MB.'));
+    await upload(await readAsDataUrl(arquivo));
+  }
+
   async function escolherPronto(numero: number) {
     setBusy(true);
     setError(null);
@@ -1682,10 +1690,10 @@ function AvatarEditor({ user }: { user: User }) {
           
         </div>
         <div className="account-actions">
-          <FilePicker accept="image/png,image/jpeg,image/webp,image/gif" disabled={busy} onFile={setCropping}>
+          <FilePicker accept="image/png,image/jpeg,image/webp,image/gif" disabled={busy} onFile={(f) => void escolher(f)}>
             {busy ? 'Enviando…' : hasAvatar ? t('Trocar avatar') : t('Enviar avatar')}
           </FilePicker>
-          <PasteImage onImage={setCropping} onError={setError} />
+          <PasteImage onImage={(f) => void escolher(f)} onError={setError} />
           {hasAvatar && (
             <button className="link-button" onClick={remove} disabled={busy}>
               {t('Remover')}
@@ -1693,7 +1701,7 @@ function AvatarEditor({ user }: { user: User }) {
           )}
         </div>
       </div>
-      {error ? <p className="form-error">{error}</p> : <p className="settings-hint">{t('PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.')}</p>}
+      {error ? <p className="form-error">{error}</p> : <p className="settings-hint">{t('PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.')}</p>}
       <CoelhosProntos disabled={busy} escolhido={eu?.avatarPronto ?? null} onEscolher={escolherPronto} />
       {cropping && (
         <ImageCropper file={cropping} title={t('Ajustar o avatar')} shape="circle" onCancel={() => setCropping(null)} onDone={upload} />

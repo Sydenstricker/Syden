@@ -821,7 +821,8 @@ export default {
   'Pessoas': 'मान्छेहरू',
   'Pessoas bloqueadas': 'ब्लक गरिएका मान्छेहरू',
   'Pessoas das suas comunidades': 'तपाईंका समुदायका मान्छेहरू',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'जुनसुकै आकारको PNG, JPG वा WEBP: काट्ने भाग तपाईं छान्नुहुन्छ।',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'जुनसुकै आकारको PNG, JPG वा WEBP: काट्ने भाग तपाईं छान्नुहुन्छ। एनिमेटेड GIF पूरै जान्छ, 2 MB सम्म।',
+  'O GIF do avatar pode ter até 2 MB.': 'अवतारको GIF बढीमा 2 MB हुन सक्छ।',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP वा एनिमेटेड GIF, 512 KB सम्म। तस्बिर 128×128 मा मिलाइन्छ।',
   'Poeira de estrelas, roxa e azul.': 'बैजनी र नीलो ताराको धुलो।',

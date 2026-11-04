@@ -561,7 +561,8 @@ export default {
   Pessoa: 'Kişi',
   Pessoas: 'Kişiler',
   'Pessoas das suas comunidades': 'Topluluklarındaki kişiler',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG ya da WEBP, herhangi bir boyutta: kırpmayı sen seçersin.',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG ya da WEBP, herhangi bir boyutta: kırpmayı sen seçersin. Hareketli GIF olduğu gibi gider, 2 MB\'a kadar.',
+  'O GIF do avatar pode ter até 2 MB.': 'Avatar GIF\'i en fazla 2 MB olabilir.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP ya da hareketli GIF, en fazla 512 KB. Görsel 128×128 boyutuna getirilir.',
   'Poeira de estrelas, roxa e azul.': 'Yıldız tozu, mor ve mavi.',

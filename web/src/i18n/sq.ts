@@ -811,7 +811,8 @@ export default {
   'Pessoas': 'Njerëz',
   'Pessoas bloqueadas': 'Njerëz të bllokuar',
   'Pessoas das suas comunidades': 'Njerëz nga komunitetet e tua',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG ose WEBP, në çdo madhësi: prerjen e zgjedh ti.',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG ose WEBP, në çdo madhësi: prerjen e zgjedh ti. GIF-et e animuara shkojnë të plota, deri në 2 MB.',
+  'O GIF do avatar pode ter até 2 MB.': 'GIF-i i avatarit mund të jetë deri në 2 MB.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP ose GIF i animuar, deri në 512 KB. Imazhi përshtatet në 128×128.',
   'Poeira de estrelas, roxa e azul.': 'Pluhur yjesh, vjollcë dhe blu.',

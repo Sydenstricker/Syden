@@ -819,7 +819,8 @@ export default {
   'Pessoas': 'Луѓе',
   'Pessoas bloqueadas': 'Блокирани луѓе',
   'Pessoas das suas comunidades': 'Луѓе од твоите заедници',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG или WEBP со каква било големина: исечокот го избираш ти.',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG или WEBP со каква било големина: исечокот го избираш ти. Анимираниот GIF оди цел, до 2 MB.',
+  'O GIF do avatar pode ter até 2 MB.': 'GIF-от за аватар може да има до 2 MB.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP или анимиран GIF, до 512 KB. Сликата се прилагодува на 128×128.',
   'Poeira de estrelas, roxa e azul.': 'Ѕвездена прашина, виолетова и сина.',

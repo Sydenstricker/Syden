@@ -564,7 +564,8 @@ export default {
   Pessoa: 'Persona',
   Pessoas: 'Persone',
   'Pessoas das suas comunidades': 'Persone delle tue comunità',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG o WEBP, di qualunque dimensione: scegli tu il ritaglio.',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG o WEBP, di qualunque dimensione: scegli tu il ritaglio. Le GIF animate vanno intere, fino a 2 MB.',
+  'O GIF do avatar pode ter até 2 MB.': 'La GIF dell\'avatar può arrivare a 2 MB.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP o GIF animata, fino a 512 KB. L’immagine viene adattata a 128×128.',
   'Poeira de estrelas, roxa e azul.': 'Polvere di stelle, viola e blu.',

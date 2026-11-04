@@ -820,7 +820,8 @@ export default {
   'Pessoas': 'Fólk',
   'Pessoas bloqueadas': 'Útilokað fólk',
   'Pessoas das suas comunidades': 'Fólk úr samfélögunum þínum',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG eða WEBP í hvaða stærð sem er: þú velur skurðinn.',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG eða WEBP í hvaða stærð sem er: þú velur skurðinn. Hreyfi-GIF fara eins og þau eru, allt að 2 MB.',
+  'O GIF do avatar pode ter até 2 MB.': 'GIF notandamyndarinnar má vera allt að 2 MB.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP eða hreyfð GIF-mynd, allt að 512 KB. Myndin er löguð að 128×128.',
   'Poeira de estrelas, roxa e azul.': 'Stjörnuryk, fjólublátt og blátt.',

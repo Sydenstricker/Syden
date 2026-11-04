@@ -552,7 +552,8 @@ export default {
   Pessoa: 'Mtu',
   Pessoas: 'Watu',
   'Pessoas das suas comunidades': 'Watu wa jumuiya zako',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG au WEBP, ukubwa wowote: wewe unachagua sehemu ya kukata.',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG au WEBP, ukubwa wowote: wewe unachagua sehemu ya kukata. GIF inayosonga inaenda kama ilivyo, hadi MB 2.',
+  'O GIF do avatar pode ter até 2 MB.': 'GIF ya avatar inaweza kuwa hadi MB 2.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP au GIF inayosogea, hadi KB 512. Picha hurekebishwa kuwa 128×128.',
   'Poeira de estrelas, roxa e azul.': 'Vumbi la nyota, zambarau na buluu.',

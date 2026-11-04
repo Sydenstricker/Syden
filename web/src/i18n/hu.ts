@@ -820,7 +820,8 @@ export default {
   'Pessoas': 'Emberek',
   'Pessoas bloqueadas': 'Letiltott emberek',
   'Pessoas das suas comunidades': 'Emberek a közösségeidből',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG vagy WEBP, bármilyen méretben: a kivágást te választod.',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG vagy WEBP, bármilyen méretben: a kivágást te választod. Az animált GIF egészben megy, legfeljebb 2 MB.',
+  'O GIF do avatar pode ter até 2 MB.': 'Az avatar GIF legfeljebb 2 MB lehet.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP vagy animált GIF, legfeljebb 512 KB. A kép 128×128-ra igazodik.',
   'Poeira de estrelas, roxa e azul.': 'Csillagpor, lila és kék.',

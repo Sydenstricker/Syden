@@ -820,7 +820,8 @@ export default {
   'Pessoas': 'Одамон',
   'Pessoas bloqueadas': 'Одамони басташуда',
   'Pessoas das suas comunidades': 'Одамон аз анҷуманҳои шумо',
-  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte.': 'PNG, JPG ё WEBP бо ҳар андоза: буришро шумо интихоб мекунед.',
+  'PNG, JPG ou WEBP, de qualquer tamanho: você escolhe o recorte. GIF animado vai inteiro, até 2 MB.': 'PNG, JPG ё WEBP бо ҳар андоза: буришро шумо интихоб мекунед. GIF-и аниматсионӣ пурра меравад, то 2 МБ.',
+  'O GIF do avatar pode ter até 2 MB.': 'GIF-и аватар метавонад то 2 МБ бошад.',
   'PNG, JPG, WEBP ou GIF animado, até 512 KB. A imagem é ajustada para 128×128.':
     'PNG, JPG, WEBP ё GIF-и ҳаракатнок, то 512 KB. Тасвир ба 128×128 мутобиқ карда мешавад.',
   'Poeira de estrelas, roxa e azul.': 'Гарди ситораҳо, бунафш ва кабуд.',
