@@ -11,6 +11,29 @@ import { idiomaAtual, useT } from './i18n';
 //
 // A FOTO DO RECADO (pedido dele, 04/11/2026: "quero colocar uma foto para que todos vejam"): uma miniatura na faixa, que
 // continua fina; clicar abre a foto grande, que fecha com Esc ou clicando fora.
+//
+// O RECADO EM DESTAQUE (pedido dele, 04/11/2026, com o desenho: "o fundo fica desfocado e o aviso aparece no primeiro
+// plano em destaque, seja texto ou imagem"): cada recado NOVO aparece uma vez no meio da tela, com o resto desfocado
+// atrás; fechado, fica a faixa, e clicar nela o abre de novo. "Uma vez" é por aparelho (o navegador lembra a marca do
+// último recado visto): sem isso, o destaque voltaria a cada vez que o Syden abre, o que seria insistir.
+
+const CHAVE_DO_VISTO = 'syden.avisoVisto';
+
+function jaViu(marca: string): boolean {
+  try {
+    return localStorage.getItem(CHAVE_DO_VISTO) === marca;
+  } catch {
+    return false;
+  }
+}
+
+function marcarVisto(marca: string) {
+  try {
+    localStorage.setItem(CHAVE_DO_VISTO, marca);
+  } catch {
+    // Sem armazenamento (janela anônima, bloqueio): o destaque só aparece de novo na próxima abertura.
+  }
+}
 
 export interface AvisoDoServidor {
   texto: string;
@@ -50,7 +73,7 @@ export function AvisoGeral() {
   // Fechado fica fechado só para ESTE recado: um recado novo volta a aparecer mesmo para quem fechou o
   // anterior. Sem isso, quem fechou a faixa de uma vez nunca mais veria aviso nenhum.
   const [fechado, setFechado] = useState<string | null>(null);
-  const [fotoAberta, setFotoAberta] = useState(false);
+  const [destaque, setDestaque] = useState(false);
 
   useEffect(() => {
     let vivo = true;
@@ -68,18 +91,25 @@ export function AvisoGeral() {
     };
   }, []);
 
-  // A foto grande fecha com Esc (e clicando fora, no próprio visor).
+  // "Este recado" é o texto E a foto: trocar só a foto também é recado novo.
+  const marca = aviso ? `${aviso.texto}|${aviso.imagem?.sha ?? ''}` : null;
+
+  // Recado que este aparelho ainda não viu: abre em destaque, e já fica marcado como visto.
   useEffect(() => {
-    if (!fotoAberta) return;
+    if (!marca || jaViu(marca)) return;
+    marcarVisto(marca);
+    setDestaque(true);
+  }, [marca]);
+
+  // O destaque fecha com Esc (e clicando fora dele).
+  useEffect(() => {
+    if (!destaque) return;
     const tecla = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setFotoAberta(false);
+      if (e.key === 'Escape') setDestaque(false);
     };
     window.addEventListener('keydown', tecla);
     return () => window.removeEventListener('keydown', tecla);
-  }, [fotoAberta]);
-
-  // "Este recado" é o texto E a foto: trocar só a foto também é recado novo.
-  const marca = aviso ? `${aviso.texto}|${aviso.imagem?.sha ?? ''}` : null;
+  }, [destaque]);
   if (!aviso || fechado === marca) return null;
   const Icone = ICONE[aviso.tom] ?? Megaphone;
   const foto = aviso.imagem ? enderecoDaFotoDoAviso(aviso.imagem.sha) : null;
@@ -89,11 +119,11 @@ export function AvisoGeral() {
       <p className={`aviso-geral ${aviso.tom}`} role="status">
         <Icone size={16} aria-hidden="true" />
         {foto && (
-          <button type="button" className="aviso-geral-foto" onClick={() => setFotoAberta(true)} aria-label={t('Ver a foto do recado')}>
+          <button type="button" className="aviso-geral-foto" onClick={() => setDestaque(true)} aria-label={t('Ver a foto do recado')}>
             <img src={foto} alt="" />
           </button>
         )}
-        <span>
+        <span className="aviso-geral-texto" onClick={() => setDestaque(true)}>
           {aviso.texto}
           {ateQuando(aviso.ate, t)}
         </span>
@@ -101,12 +131,29 @@ export function AvisoGeral() {
           ✕
         </button>
       </p>
-      {foto && fotoAberta && (
-        <div className="aviso-geral-visor" role="dialog" aria-modal="true" aria-label={t('Foto do recado')} onClick={() => setFotoAberta(false)}>
-          <img src={foto} alt={aviso.texto} onClick={(e) => e.stopPropagation()} />
-          <button type="button" className="icon-plain" aria-label={t('Fechar')} onClick={() => setFotoAberta(false)}>
-            <X size={22} />
-          </button>
+      {destaque && (
+        <div className="aviso-destaque" onClick={() => setDestaque(false)}>
+          <div
+            className={`aviso-destaque-cartao ${aviso.tom}`}
+            role="dialog"
+            aria-modal="true"
+            aria-label={aviso.texto || t('Foto do recado')}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button type="button" className="icon-plain aviso-destaque-fechar" aria-label={t('Fechar')} onClick={() => setDestaque(false)}>
+              <X size={20} />
+            </button>
+            {foto && <img className="aviso-destaque-foto" src={foto} alt="" />}
+            {(aviso.texto || aviso.ate) && (
+              <p className="aviso-destaque-texto">
+                <Icone size={20} aria-hidden="true" />
+                <span>
+                  {aviso.texto}
+                  {ateQuando(aviso.ate, t)}
+                </span>
+              </p>
+            )}
+          </div>
         </div>
       )}
     </>

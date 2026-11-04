@@ -1197,6 +1197,10 @@ pelo funil das imagens (`PUT /api/aviso/imagem`: tipo, tamanho, Shield) e é ser
 entrada) por `GET /api/aviso/imagem/:sha`, que só entrega o sha da foto do aviso guardado — qualquer outro dá 404, para a rota
 não virar um jeito de baixar arquivo de ninguém. A vassoura de órfãos e a reconferência do Shield conhecem o kv `aviso-geral`.
 
+**O recado aparece EM DESTAQUE (decisão dele, 04/11/2026, com o desenho):** cada recado NOVO (texto ou foto) abre uma vez no meio da
+tela, com o resto desfocado atrás, e fechado fica a faixa (clicar nela reabre). "Uma vez" é por aparelho (`syden.avisoVisto`, a marca
+texto|sha): voltar a cada abertura seria insistir. É a exceção escolhida por ele ao "não interrompa", e só para o recado de quem cuida do Syden.
+
 ## As figurinhas são da pessoa, e mandá-las é um anexo marcado
 
 **Feito em 04/11/2026, pedido dele ("as figurinhas criadas pelos usuários, como no WhatsApp").** A coleção é DE CADA PESSOA

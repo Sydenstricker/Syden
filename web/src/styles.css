@@ -9282,8 +9282,13 @@ textarea {
   outline-offset: 2px;
 }
 
-/* A foto grande: por cima de tudo, fecha com Esc ou clicando fora. */
-.aviso-geral-visor {
+.aviso-geral-texto {
+  cursor: pointer;
+}
+
+/* O recado em destaque: o resto da tela desfocado atrás, e o recado (foto, texto ou os dois) no meio. Fecha com Esc,
+   no X ou clicando fora. */
+.aviso-destaque {
   position: fixed;
   inset: 0;
   z-index: 10000;
@@ -9291,22 +9296,76 @@ textarea {
   align-items: center;
   justify-content: center;
   padding: 24px 16px;
-  background: rgba(0, 0, 0, 0.82);
-  cursor: zoom-out;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  animation: aviso-destaque-entra 0.18s ease-out;
 }
 
-.aviso-geral-visor img {
-  max-width: 100%;
+@keyframes aviso-destaque-entra {
+  from {
+    opacity: 0;
+  }
+}
+
+.aviso-destaque-cartao {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-width: min(760px, 100%);
   max-height: 100%;
-  border-radius: 6px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-  cursor: default;
+  overflow: hidden;
+  border-radius: 12px;
+  border-top: 6px solid #faa61a;
+  background: var(--bg-secondary, #1e1f22);
+  color: var(--text, #f2f3f5);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55);
 }
 
-.aviso-geral-visor .icon-plain {
+.aviso-destaque-cartao.problema {
+  border-top-color: #c8102e;
+}
+
+.aviso-destaque-cartao.recado {
+  border-top-color: #4a8fd8;
+}
+
+.aviso-destaque-foto {
+  display: block;
+  min-height: 0;
+  max-width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+  background: #fff;
+}
+
+.aviso-destaque-texto {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0;
+  padding: 18px 48px 20px 20px;
+  font-size: calc(18px * var(--escala-do-texto));
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.aviso-destaque-foto + .aviso-destaque-texto {
+  padding-right: 20px;
+}
+
+.aviso-destaque-texto svg {
+  flex: none;
+  margin-top: 3px;
+}
+
+.aviso-destaque-fechar {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 8px;
+  inset-inline-end: 8px;
+  z-index: 1;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
   color: #fff;
 }
 
