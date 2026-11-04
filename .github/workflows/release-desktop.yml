@@ -57,6 +57,10 @@ jobs:
             echo '```' >> "$GITHUB_STEP_SUMMARY"
           fi
           exit "$codigo"
+      # O modelo do recorte de fundo das figurinhas vai dentro do app, mas não mora no git (98 MB): o script o baixa da
+      # revisão fixa e confere o sha256. Sem ele, o app sairia sem o recorte.
+      - run: node scripts/baixar-recorte.js
+        working-directory: desktop
       - run: npx electron-builder --win --publish never
         working-directory: desktop
       - name: Conferir que o módulo de som entrou no instalador

@@ -80,3 +80,6 @@ e2e/recorte-de-fundo/modelos/
 e2e/recorte-de-fundo/efeitos.js
 e2e/recorte-de-fundo/imagens/
 e2e/recorte-de-fundo/resultados/
+
+# O modelo do recorte de fundo do app (desktop/scripts/baixar-recorte.js o põe antes de gerar o pacote): 98 MB
+desktop/recorte-modelo/*.onnx

@@ -42,11 +42,9 @@ interface DesktopBridge {
   };
   /** O recorte de fundo das figurinhas (BiRefNet nativo, desde 04/11/2026; ver desktop/src/recorte). Versões antigas do app não têm. */
   recorte?: {
-    estado(): Promise<{ disponivel: boolean; baixado: boolean; tamanho: number }>;
-    baixar(endereco: string): Promise<void>;
+    disponivel(): Promise<boolean>;
     preparar(): Promise<boolean>;
     recortar(pixels: Uint8Array): Promise<Uint8Array>;
-    onProgresso(callback: (fracao: number) => void): () => void;
   };
   /** Som do computador sem o do próprio Syden; só existe no Windows, com o módulo nativo. */
   screenAudio?: {

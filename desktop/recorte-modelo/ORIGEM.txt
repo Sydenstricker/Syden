@@ -1,0 +1,10 @@
+Recorte de fundo das figurinhas no app de desktop — de onde vêm os arquivos desta pasta
+
+birefnet-lite-512-fp16.onnx  (NÃO está no git: desktop/scripts/baixar-recorte.js o põe aqui antes de gerar o pacote)
+  O BiRefNet lite (Zheng Peng et al., "Bilateral Reference for High-Resolution Dichotomous Image Segmentation", CAAI AIR
+  2024; https://github.com/ZhengPeng7/BiRefNet e https://huggingface.co/ZhengPeng7/BiRefNet_lite), convertido para ONNX
+  com entrada fixa de 512 × 512 e pesos em meia precisão por https://huggingface.co/shozebDev/birefnet-lite-512-onnx
+  (revisão a1ef059c89d8982b4b5f801915024d8e2d55ea87, onnx/model_fp16.onnx, sha256 cdcc278ab17011c8…).
+  Licença MIT, a do original, em BIREFNET-LICENSE.txt.
+
+Por que este modelo: e2e/recorte-de-fundo/README.md (medido contra o U²-Net e o IS-Net). Como roda: desktop/src/recorte/.

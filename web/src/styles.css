@@ -17866,15 +17866,6 @@ body.arrastando-barra {
   cursor: pointer;
 }
 
-.figurinhas-previa-recorte {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 6px;
-  margin-inline-start: 26px;
-  color: var(--text-muted);
-}
-
 .figurinhas-previa-botoes {
   display: flex;
   justify-content: flex-end;

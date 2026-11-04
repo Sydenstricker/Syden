@@ -1221,12 +1221,14 @@ usada no navegador (AGPL) e o RMBG (não comercial).
 **NO APP, SÓ NO APP (decisão dele, mesmo dia: no site o modelo pediria WebAssembly e o 'wasm-unsafe-eval' que ele não dá):**
 `desktop/src/recorte/` roda o BiRefNet nativo (o onnxruntime-node que o ruído já leva), num processo à parte, com prioridade baixa,
 metade dos núcleos e saída depois de 3 min sem uso (~7,7 s para abrir, que começa ao abrir as figurinhas; ~2,3 s por imagem; pico de
-~2 GB com o reservatório de memória desligado — ligado, 3,8). **O modelo não vai no pacote:** a prévia oferece "Baixar o recorte"
-dizendo os 98 MB, e o app baixa do NOSSO servidor (`/api/recorte-de-fundo/modelo`, `server/src/recorte-routes.ts`), que o busca
-uma vez na revisão fixa da conversão medida e guarda ao lado do banco; os dois conferem o sha256 (o teste do app confere que os dois
-esperam o mesmo). A imagem não sai do computador. No site, o fundo não liso diz que no app funciona. Se o modelo falhar, fica o
-recorte simples e a prévia diz. Chega com a versão do app depois da 0.1.8 (o site sem ela segue com o passo 1). A conversão de 512
-é de terceiro (MIT); converter a nossa pede Python, que esta máquina não tem. Teste: `e2e/recorte-no-app.mjs` (passou).
+~2 GB com o reservatório de memória desligado — ligado, 3,8). **O modelo vai DENTRO do app** (decisão dele, mesmo dia: "pra que esse
+atrito inicial?"; a primeira versão o baixava quando a pessoa pedia, pela regra do tradutor, que era para modelos de 2 GB), em
+`desktop/recorte-modelo/`, fora do asar como o do ruído. Não mora no git (98 MB): `desktop/scripts/baixar-recorte.js` o põe lá antes
+de gerar o pacote (predist, predist:loja e o passo do Actions), da revisão fixa da conversão medida e só se o sha256 conferir. A
+imagem não sai do computador. No site, o fundo não liso diz que no app funciona. Se o modelo falhar, fica o recorte simples e a
+prévia diz. O crédito (MIT) está nos termos, seção 10. Chega com a versão do app depois da 0.1.8 (o site sem ela segue com o passo
+1). A conversão de 512 é de terceiro (MIT); converter a nossa pede Python, que esta máquina não tem. Teste:
+`e2e/recorte-no-app.mjs` (passou no app de desenvolvimento e no EMPACOTADO).
 
 **Mandar é um ANEXO MARCADO (`attachments.figurinha = 1`) que aponta para o mesmo arquivo pelo sha** — por isso ela herda a
 chave secreta no endereço, a caixa-preta, a vassoura de órfãos (que lê também `figurinhas`) e a cota (que conta a figurinha uma

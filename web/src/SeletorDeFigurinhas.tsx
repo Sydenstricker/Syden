@@ -11,7 +11,7 @@ import {
   urlDaFigurinha,
 } from './figurinhas';
 import { useT } from './i18n';
-import { baixarRecorte, type EstadoDoRecorte, estadoDoRecorte, prepararRecorte, recortarComModelo } from './recorteDeFundo';
+import { prepararRecorte, recortarComModelo, recorteDisponivel } from './recorteDeFundo';
 import { imageFromClipboard, imageFromClipboardEvent } from './upload';
 
 /**
@@ -77,36 +77,21 @@ export function SeletorDeFigurinhas({ onPick, onClose }: { onPick: (f: Figurinha
   const [previa, setPrevia] = useState<FigurinhaPronta | null>(null);
   const daVez = fila[0] ?? null;
 
-  // O recorte de qualquer fundo (só no app): null no navegador. Baixado, ele abre o modelo já ao abrir as figurinhas, para a
-  // primeira imagem não esperar os ~8 s de abrir.
-  const [recorte, setRecorte] = useState<EstadoDoRecorte | null>(null);
-  const [baixandoRecorte, setBaixandoRecorte] = useState<number | null>(null);
+  // O recorte de qualquer fundo (só no app, com o modelo dentro dele): false no navegador. Ele abre o modelo já ao abrir as
+  // figurinhas, para a primeira imagem não esperar os ~8 s de abrir.
+  const [recorte, setRecorte] = useState(false);
   useEffect(() => {
-    void estadoDoRecorte().then((estado) => {
-      setRecorte(estado);
-      if (estado?.baixado) prepararRecorte();
+    void recorteDisponivel().then((tem) => {
+      setRecorte(tem);
+      if (tem) prepararRecorte();
     });
   }, []);
-
-  async function baixarORecorte() {
-    setErro(null);
-    setBaixandoRecorte(0);
-    try {
-      await baixarRecorte(setBaixandoRecorte);
-      setRecorte((antes) => (antes ? { ...antes, baixado: true } : antes));
-      prepararRecorte();
-    } catch {
-      setErro(t('Não deu para baixar o recorte. Tente de novo.'));
-    } finally {
-      setBaixandoRecorte(null);
-    }
-  }
 
   useEffect(() => {
     setPrevia(null);
     if (!daVez) return;
     let vivo = true;
-    void prepararFigurinha(daVez, { ...efeitos, recortar: recorte?.baixado ? recortarComModelo : undefined }).then((pronta) => {
+    void prepararFigurinha(daVez, { ...efeitos, recortar: recorte ? recortarComModelo : undefined }).then((pronta) => {
       if (!vivo) return;
       if ('erro' in pronta) {
         setErro(mensagemDoErro(pronta.erro));
@@ -116,7 +101,7 @@ export function SeletorDeFigurinhas({ onPick, onClose }: { onPick: (f: Figurinha
     return () => {
       vivo = false;
     };
-  }, [daVez, efeitos, recorte?.baixado]);
+  }, [daVez, efeitos, recorte]);
 
   const mensagemDoErro = (erro: 'tipo' | 'grande') =>
     erro === 'grande' ? t('Essa imagem é grande demais para virar figurinha (até 1 MB).') : t('Use uma imagem PNG, JPG, GIF ou WEBP.');
@@ -205,14 +190,6 @@ export function SeletorDeFigurinhas({ onPick, onClose }: { onPick: (f: Figurinha
             <input type="checkbox" checked={efeitos.tirarFundo} onChange={(e) => setEfeitos({ ...efeitos, tirarFundo: e.target.checked })} />
             {t('Tirar o fundo')}
           </label>
-          {recorte && !recorte.baixado && efeitos.tirarFundo && (
-            <div className="figurinhas-previa-recorte">
-              <small>{t('Recortar qualquer fundo (fotos, desenhos): baixa {tamanho} uma vez, e a imagem não sai do seu computador.', { tamanho: `${Math.round(recorte.tamanho / 1e6)} MB` })}</small>
-              <button type="button" className="btn-secondary" disabled={baixandoRecorte !== null} onClick={() => void baixarORecorte()}>
-                {baixandoRecorte === null ? t('Baixar o recorte') : t('Baixando… {porcento}%', { porcento: Math.round(baixandoRecorte * 100) })}
-              </button>
-            </div>
-          )}
           <label className="figurinhas-previa-chave">
             <input type="checkbox" checked={efeitos.contorno} onChange={(e) => setEfeitos({ ...efeitos, contorno: e.target.checked })} />
             {t('Contorno')}

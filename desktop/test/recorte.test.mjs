@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
@@ -7,19 +8,14 @@ import { fileURLToPath } from 'node:url';
 
 const require = createRequire(import.meta.url);
 const AQUI = dirname(fileURLToPath(import.meta.url));
-const RAIZ = join(AQUI, '..', '..');
 
-// O modelo não mora no git: o teste do recorte de verdade só roda depois de `node e2e/recorte-de-fundo/baixar.mjs`.
-const MODELO = join(RAIZ, 'e2e', 'recorte-de-fundo', 'modelos', 'birefnet-lite-512-fp16.onnx');
+// O modelo não mora no git: desktop/scripts/baixar-recorte.js o põe em desktop/recorte-modelo/ (o que vai no pacote).
+const MODELO = join(AQUI, '..', 'recorte-modelo', 'birefnet-lite-512-fp16.onnx');
 
-test('o app e o servidor esperam o MESMO arquivo (sha256 e tamanho)', () => {
-  const app = readFileSync(join(AQUI, '..', 'src', 'recorte', 'index.js'), 'utf8');
-  const servidor = readFileSync(join(RAIZ, 'server', 'src', 'recorte-routes.ts'), 'utf8');
-  const sha = (texto) => texto.match(/[0-9a-f]{64}/)?.[0];
-  const tamanho = (texto) => texto.match(/(?:TAMANHO_DO_MODELO = |tamanho: )([\d_]+)/)?.[1];
-  assert.ok(sha(app));
-  assert.equal(sha(app), sha(servidor));
-  assert.equal(tamanho(app), tamanho(servidor));
+test('o modelo que vai no pacote é o medido (o sha256 do script)', { skip: !existsSync(MODELO) && 'rode node scripts/baixar-recorte.js' }, () => {
+  const script = readFileSync(join(AQUI, '..', 'scripts', 'baixar-recorte.js'), 'utf8');
+  const esperado = script.match(/sha256: '([0-9a-f]{64})'/)[1];
+  assert.equal(createHash('sha256').update(readFileSync(MODELO)).digest('hex'), esperado);
 });
 
 test('o BiRefNet acha o objeto e apaga o fundo', { skip: !existsSync(MODELO) && 'sem o modelo baixado' }, async () => {

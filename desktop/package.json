@@ -16,7 +16,9 @@
     "test": "node --test test/*.test.mjs",
     "dist": "electron-builder --win",
     "build:native": "node scripts/build-native.js",
-    "dist:loja": "electron-builder --win appx"
+    "dist:loja": "electron-builder --win appx",
+    "predist": "node scripts/baixar-recorte.js",
+    "predist:loja": "node scripts/baixar-recorte.js"
   },
   "build": {
     "appId": "chat.syden.app",
@@ -32,6 +34,7 @@
       "package.json",
       "native/build/Release/*.node",
       "ruido/**",
+      "recorte-modelo/**",
       "!**/node_modules/onnxruntime-node/bin/napi-v*/{darwin,linux}/**",
       "!**/node_modules/onnxruntime-node/bin/napi-v*/win32/arm64/**",
       "!**/node_modules/onnxruntime-node/bin/napi-v*/win32/x64/{DirectML.dll,dxcompiler.dll,dxil.dll}"
@@ -72,6 +75,7 @@
     "asarUnpack": [
       "native/build/Release/*.node",
       "ruido/**",
+      "recorte-modelo/**",
       "**/node_modules/onnxruntime-node/bin/**"
     ],
     "appx": {
