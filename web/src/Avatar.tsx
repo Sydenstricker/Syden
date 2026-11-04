@@ -131,6 +131,10 @@ function useMenosMovimento() {
  * nas listas e nas mensagens o GIF aparece PARADO, no primeiro quadro (desenhado num canvas, porque um <img> de GIF não
  * para), e anima enquanto o mouse está na linha dele. Grande (o cartão de perfil, Minha conta), anima sempre. Com "menos
  * movimento" no sistema, nunca anima.
+ *
+ * E ANIMA ENQUANTO A PESSOA FALA (sugestão de quem usa, 04/11/2026, como o Discord: muita gente põe o GIF de um personagem
+ * abrindo e fechando a boca, e na chamada parece que o avatar fala). O sinal é o mesmo que mexe a boca do coelho pronto,
+ * com a folga curta da fala (FOLGA_DA_FALA_MS), para o GIF não parar e recomeçar entre uma palavra e outra.
  */
 function FotoDoAvatar({ src, animado, estado, size }: { src: string; animado: boolean; estado: EstadoDoPronto | null; size: number }) {
   const menosMovimento = useMenosMovimento();
@@ -162,7 +166,8 @@ function FotoDoAvatar({ src, animado, estado, size }: { src: string; animado: bo
     };
   }, [animado, sempre, linha]);
 
-  const parado = animado && (menosMovimento || (!sempre && !mouseNaLinha));
+  const falando = estado === 'falando';
+  const parado = animado && (menosMovimento || (!sempre && !mouseNaLinha && !falando));
 
   // o primeiro quadro, recortado no meio como o object-fit: cover do <img>
   useEffect(() => {
@@ -200,7 +205,17 @@ function FotoDoAvatar({ src, animado, estado, size }: { src: string; animado: bo
       />
     );
   }
-  return <img ref={guardar} className="avatar-foto" data-estado={estado ?? undefined} src={src} alt="" draggable={false} />;
+  return (
+    <img
+      ref={guardar}
+      className="avatar-foto"
+      data-estado={estado ?? undefined}
+      data-gif={animado ? '' : undefined}
+      src={src}
+      alt=""
+      draggable={false}
+    />
+  );
 }
 
 /**

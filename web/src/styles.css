@@ -1336,6 +1336,11 @@ textarea {
   animation: avatar-foto-fala 0.3s ease-in-out infinite alternate;
 }
 
+/* O GIF falando não pula: quem fala é o próprio GIF (a boca que abre e fecha), e o pulo por cima atrapalharia o efeito. */
+.avatar-foto[data-gif][data-estado='falando'] {
+  animation: none;
+}
+
 .avatar-foto[data-estado='ausente'] {
   filter: saturate(0.55) brightness(0.85);
   animation: avatar-foto-cochilo 3.2s ease-in-out infinite;
