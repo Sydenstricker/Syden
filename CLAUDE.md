@@ -1209,6 +1209,15 @@ pelo "Salvar figurinha" (a chave do anexo prova que recebeu). Sem tela de recort
 reduzida a 512 px em WEBP (GIF passa como veio). `server/src/figurinhas-routes.ts`, `web/src/SeletorDeFigurinhas.tsx`, a
 figurinha na conversa em `MessageItem.tsx`.
 
+**Tirar o fundo e o contorno (pedido dele, mesmo dia: "remova o fundo e adicione um contorno mais forte, como no WhatsApp"):**
+antes de guardar, a PRÉVIA, com "Tirar o fundo" e "Contorno" ligados de fábrica (`web/src/figurinhaEfeitos.ts`, só código, no
+computador de quem cria). Este é o PASSO 1: o fundo que sai é o LISO (a cor dominante da borda, apagada da borda para dentro,
+mais os pedacinhos soltos que sobram); fundo de foto ou desenhado avisa e fica como veio, e o que se parece com o fundo pode
+sumir junto — é para isso a prévia. O contorno é a silhueta engrossada em branco (~3% do lado) com uma sombra leve. GIF não passa
+pela prévia (o canvas mataria a animação). **O passo 2, pendente:** um modelo que recorta qualquer fundo, rodando no aparelho;
+medir dois ou três de licença livre lado a lado antes (U²-Net e IS-Net seriam Apache 2.0, a conferir; a biblioteca pronta mais
+usada no navegador é AGPL e o RMBG proíbe uso comercial: fora).
+
 **Mandar é um ANEXO MARCADO (`attachments.figurinha = 1`) que aponta para o mesmo arquivo pelo sha** — por isso ela herda a
 chave secreta no endereço, a caixa-preta, a vassoura de órfãos (que lê também `figurinhas`) e a cota (que conta a figurinha uma
 vez, na coleção). O Shield confere UMA vez, ao criar; positivo na reconferência tira de todas as coleções. **Quem sobe responde**

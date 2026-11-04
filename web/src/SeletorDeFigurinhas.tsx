@@ -1,6 +1,15 @@
 import { ClipboardPaste, Plus, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
-import { criarFigurinha, type Figurinha, listarFigurinhas, prepararFigurinha, tirarFigurinha, urlDaFigurinha } from './figurinhas';
+import {
+  criarFigurinha,
+  type EfeitosDaFigurinha,
+  type Figurinha,
+  type FigurinhaPronta,
+  listarFigurinhas,
+  prepararFigurinha,
+  tirarFigurinha,
+  urlDaFigurinha,
+} from './figurinhas';
 import { useT } from './i18n';
 import { imageFromClipboard, imageFromClipboardEvent } from './upload';
 
@@ -60,25 +69,70 @@ export function SeletorDeFigurinhas({ onPick, onClose }: { onPick: (f: Figurinha
     return () => window.removeEventListener('paste', aoColar, true);
   });
 
+  // AS IMAGENS À ESPERA DA PRÉVIA (04/11/2026): cada uma passa pela prévia, com "Tirar o fundo" e "Contorno" ligados de
+  // fábrica, e a pessoa vê o resultado antes de guardar. GIF não passa (o efeito mataria a animação): vai direto.
+  const [fila, setFila] = useState<File[]>([]);
+  const [efeitos, setEfeitos] = useState<EfeitosDaFigurinha>({ tirarFundo: true, contorno: true });
+  const [previa, setPrevia] = useState<FigurinhaPronta | null>(null);
+  const daVez = fila[0] ?? null;
+
+  useEffect(() => {
+    setPrevia(null);
+    if (!daVez) return;
+    let vivo = true;
+    void prepararFigurinha(daVez, efeitos).then((pronta) => {
+      if (!vivo) return;
+      if ('erro' in pronta) {
+        setErro(mensagemDoErro(pronta.erro));
+        setFila((antes) => antes.slice(1));
+      } else setPrevia(pronta);
+    });
+    return () => {
+      vivo = false;
+    };
+  }, [daVez, efeitos]);
+
+  const mensagemDoErro = (erro: 'tipo' | 'grande') =>
+    erro === 'grande' ? t('Essa imagem é grande demais para virar figurinha (até 1 MB).') : t('Use uma imagem PNG, JPG, GIF ou WEBP.');
+
+  async function guardar(pronta: { image: string; width: number; height: number }) {
+    const nova = await criarFigurinha({ image: pronta.image, width: pronta.width, height: pronta.height });
+    setFigurinhas((antes) => [nova, ...(antes ?? []).filter((f) => f.id !== nova.id)]);
+  }
+
   async function criar(arquivos: FileList | File[] | null) {
     if (!arquivos?.length) return;
     setErro(null);
+    const lista = [...arquivos];
+    if (entrada.current) entrada.current.value = '';
+    setFila((antes) => [...antes, ...lista.filter((a) => a.type !== 'image/gif')]);
+    const gifs = lista.filter((a) => a.type === 'image/gif');
+    if (!gifs.length) return;
     setEnviando(true);
     try {
-      for (const arquivo of [...arquivos]) {
+      for (const arquivo of gifs) {
         const pronta = await prepararFigurinha(arquivo);
-        if ('erro' in pronta) {
-          setErro(pronta.erro === 'grande' ? t('Essa imagem é grande demais para virar figurinha (até 1 MB).') : t('Use uma imagem PNG, JPG, GIF ou WEBP.'));
-          continue;
-        }
-        const nova = await criarFigurinha(pronta);
-        setFigurinhas((antes) => [nova, ...(antes ?? []).filter((f) => f.id !== nova.id)]);
+        if ('erro' in pronta) setErro(mensagemDoErro(pronta.erro));
+        else await guardar(pronta);
       }
     } catch (e) {
       setErro((e as Error).message);
     } finally {
       setEnviando(false);
-      if (entrada.current) entrada.current.value = '';
+    }
+  }
+
+  async function confirmar() {
+    if (!previa) return;
+    setErro(null);
+    setEnviando(true);
+    try {
+      await guardar(previa);
+      setFila((antes) => antes.slice(1));
+    } catch (e) {
+      setErro((e as Error).message);
+    } finally {
+      setEnviando(false);
     }
   }
 
@@ -111,6 +165,29 @@ export function SeletorDeFigurinhas({ onPick, onClose }: { onPick: (f: Figurinha
           </button>
         )}
       </div>
+      {daVez ? (
+        <div className="figurinhas-previa">
+          <div className="figurinhas-previa-figura">{previa ? <img src={previa.image} alt="" /> : <span className="figurinhas-previa-processando" />}</div>
+          {previa?.fundo === 'nao-liso' && <p className="figurinhas-previa-aviso">{t('O fundo não é de uma cor só, e ficou como veio.')}</p>}
+          <label className="figurinhas-previa-chave">
+            <input type="checkbox" checked={efeitos.tirarFundo} onChange={(e) => setEfeitos({ ...efeitos, tirarFundo: e.target.checked })} />
+            {t('Tirar o fundo')}
+          </label>
+          <label className="figurinhas-previa-chave">
+            <input type="checkbox" checked={efeitos.contorno} onChange={(e) => setEfeitos({ ...efeitos, contorno: e.target.checked })} />
+            {t('Contorno')}
+          </label>
+          {erro && <p className="figurinhas-erro">{erro}</p>}
+          <div className="figurinhas-previa-botoes">
+            <button type="button" className="btn-secondary" disabled={enviando} onClick={() => setFila((antes) => antes.slice(1))}>
+              {t('Cancelar')}
+            </button>
+            <button type="button" className="btn-primary" disabled={!previa || enviando} onClick={() => void confirmar()}>
+              {t('Criar figurinha')}
+            </button>
+          </div>
+        </div>
+      ) : (
       <div className="figurinhas-rolagem">
         {figurinhas === null ? null : (
           <div className="figurinhas-grade">
@@ -141,6 +218,7 @@ export function SeletorDeFigurinhas({ onPick, onClose }: { onPick: (f: Figurinha
         {figurinhas?.length === 0 && !erro && <p className="figurinhas-vazio">{t('Crie figurinhas com as suas imagens, ou salve as que receber numa conversa.')}</p>}
         {erro && <p className="figurinhas-erro">{erro}</p>}
       </div>
+      )}
       <input ref={entrada} type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden onChange={(e) => void criar(e.target.files)} />
     </div>
   );

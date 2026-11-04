@@ -17741,6 +17741,63 @@ body.arrastando-barra {
   color: var(--red);
 }
 
+/* A prévia da figurinha nova: o resultado sobre um xadrez (para ver o que ficou transparente) e as duas chaves. */
+.figurinhas-previa {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 12px 12px;
+}
+
+.figurinhas-previa-figura {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 220px;
+  border-radius: var(--radius);
+  background: repeating-conic-gradient(rgba(127, 127, 127, 0.28) 0 25%, transparent 0 50%) 0 0 / 16px 16px;
+}
+
+.figurinhas-previa-figura img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.figurinhas-previa-processando {
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--text-muted, #888);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: figurinhas-girar 0.8s linear infinite;
+}
+
+@keyframes figurinhas-girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.figurinhas-previa-aviso {
+  margin: 0;
+  font-size: 0.85em;
+  color: var(--text-muted, #aaa);
+}
+
+.figurinhas-previa-chave {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.figurinhas-previa-botoes {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
 .figurinha-na-conversa {
   display: inline-flex;
   flex-direction: column;

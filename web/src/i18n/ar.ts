@@ -2592,6 +2592,9 @@ export default {
   'Use uma imagem PNG, JPG, GIF ou WEBP.': 'يُرجى استخدام صورة PNG أو JPG أو GIF أو WEBP.',
   'Arrumar': 'تعديل',
   'Criar figurinha': 'إنشاء ملصق',
+  'Tirar o fundo': 'إزالة الخلفية',
+  'Contorno': 'الحد الخارجي',
+  'O fundo não é de uma cor só, e ficou como veio.': 'الخلفية ليست بلون واحد، فتُركت كما هي.',
   'Mandar figurinha': 'إرسال الملصق',
   'Tirar figurinha': 'إزالة الملصق',
   'Crie figurinhas com as suas imagens, ou salve as que receber numa conversa.':

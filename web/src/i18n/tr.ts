@@ -2570,6 +2570,9 @@ export default {
   'Use uma imagem PNG, JPG, GIF ou WEBP.': 'PNG, JPG, GIF veya WEBP görsel kullan.',
   'Arrumar': 'Düzenle',
   'Criar figurinha': 'Çıkartma oluştur',
+  'Tirar o fundo': 'Arka planı kaldır',
+  'Contorno': 'Kenar çizgisi',
+  'O fundo não é de uma cor só, e ficou como veio.': 'Arka plan tek renk değil, bu yüzden olduğu gibi bırakıldı.',
   'Mandar figurinha': 'Çıkartma gönder',
   'Tirar figurinha': 'Çıkartmayı kaldır',
   'Crie figurinhas com as suas imagens, ou salve as que receber numa conversa.':

@@ -2649,6 +2649,9 @@ export default {
   'Use uma imagem PNG, JPG, GIF ou WEBP.': 'PNG, JPG, GIF ýa-da WEBP suratyny ulanyň.',
   'Arrumar': 'Üýtget',
   'Criar figurinha': 'Stiker döret',
+  'Tirar o fundo': 'Fony aýyr',
+  'Contorno': 'Kontur',
+  'O fundo não é de uma cor só, e ficou como veio.': 'Fon bir reňkli däl, şonuň üçin bolşy ýaly galdy.',
   'Mandar figurinha': 'Stiker iber',
   'Tirar figurinha': 'Stikeri aýyr',
   'Crie figurinhas com as suas imagens, ou salve as que receber numa conversa.':

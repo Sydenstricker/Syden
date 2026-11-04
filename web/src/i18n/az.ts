@@ -2609,6 +2609,9 @@ export default {
   'Use uma imagem PNG, JPG, GIF ou WEBP.': 'PNG, JPG, GIF və ya WEBP şəkli istifadə et.',
   'Arrumar': 'Redaktə et',
   'Criar figurinha': 'Stiker yarat',
+  'Tirar o fundo': 'Fonu sil',
+  'Contorno': 'Kontur',
+  'O fundo não é de uma cor só, e ficou como veio.': 'Fon tək rəngli deyil, olduğu kimi qaldı.',
   'Mandar figurinha': 'Stiker göndər',
   'Tirar figurinha': 'Stikeri çıxar',
   'Crie figurinhas com as suas imagens, ou salve as que receber numa conversa.':

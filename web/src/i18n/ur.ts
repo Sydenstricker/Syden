@@ -2560,6 +2560,9 @@ export default {
   'Use uma imagem PNG, JPG, GIF ou WEBP.': 'PNG، JPG، GIF یا WEBP تصویر استعمال کریں۔',
   'Arrumar': 'ترمیم',
   'Criar figurinha': 'اسٹیکر بنائیں',
+  'Tirar o fundo': 'پس منظر ہٹائیں',
+  'Contorno': 'کنارہ',
+  'O fundo não é de uma cor só, e ficou como veio.': 'پس منظر ایک رنگ کا نہیں ہے، اس لیے جیسا تھا ویسا ہی رہا۔',
   'Mandar figurinha': 'اسٹیکر بھیجیں',
   'Tirar figurinha': 'اسٹیکر ہٹائیں',
   'Crie figurinhas com as suas imagens, ou salve as que receber numa conversa.':

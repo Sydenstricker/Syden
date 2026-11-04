@@ -2642,6 +2642,9 @@ export default {
   'Use uma imagem PNG, JPG, GIF ou WEBP.': 'PNG, JPG, GIF немесе WEBP суретін қолдан.',
   'Arrumar': 'Өңдеу',
   'Criar figurinha': 'Стикер жасау',
+  'Tirar o fundo': 'Фонды алып тастау',
+  'Contorno': 'Контур',
+  'O fundo não é de uma cor só, e ficou como veio.': 'Фон бір түсті емес, сондықтан сол күйінде қалды.',
   'Mandar figurinha': 'Стикер жіберу',
   'Tirar figurinha': 'Стикерді алып тастау',
   'Crie figurinhas com as suas imagens, ou salve as que receber numa conversa.':

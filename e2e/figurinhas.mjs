@@ -33,6 +33,10 @@ ok('o seletor abre, vazio, dizendo como criar');
 // ---------- criar: uma imagem com fundo transparente ----------
 const imagem = fs.readFileSync(path.join('web', 'public', 'tamanho', 'coelho.png'));
 await page.locator('.figurinhas-seletor input[type=file]').setInputFiles({ name: 'coelho.png', mimeType: 'image/png', buffer: imagem });
+// a prévia, com Tirar o fundo e Contorno ligados: a foto dela e o botão de criar
+await page.locator('.figurinhas-previa-figura img').waitFor({ timeout: 10000 });
+if (process.env.FOTO_DA_PREVIA) await page.screenshot({ path: process.env.FOTO_DA_PREVIA });
+await page.locator('.figurinhas-previa .btn-primary').click();
 await page.locator('.figurinhas-figura img').first().waitFor({ timeout: 10000 });
 const carregou = await page.locator('.figurinhas-figura img').first().evaluate((img) => img.complete && img.naturalWidth > 0);
 carregou ? ok('a figurinha criada aparece na coleção') : falhou('a figurinha da coleção não carregou (endereço com a chave?)');

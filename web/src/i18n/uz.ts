@@ -2658,6 +2658,9 @@ export default {
   'Use uma imagem PNG, JPG, GIF ou WEBP.': 'PNG, JPG, GIF yoki WEBP suratdan foydalaning.',
   'Arrumar': 'Tahrirlash',
   'Criar figurinha': 'Stiker yaratish',
+  'Tirar o fundo': 'Fonni olib tashlash',
+  'Contorno': 'Kontur',
+  'O fundo não é de uma cor só, e ficou como veio.': 'Fon bir rangli emas, shuning uchun avvalgidek qoldi.',
   'Mandar figurinha': 'Stiker yuborish',
   'Tirar figurinha': 'Stikerni olib tashlash',
   'Crie figurinhas com as suas imagens, ou salve as que receber numa conversa.':

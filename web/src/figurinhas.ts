@@ -1,4 +1,5 @@
 import { api, API_URL } from './api';
+import { aparar, contornar, type Pixels, type ResultadoDoFundo, tirarFundoLiso } from './figurinhaEfeitos';
 
 /**
  * AS FIGURINHAS (04/11/2026, server/src/figurinhas-routes.ts): a coleção de cada pessoa, como no WhatsApp. Este arquivo é a
@@ -35,33 +36,70 @@ const lerComoDataUrl = (arquivo: Blob) =>
     leitor.readAsDataURL(arquivo);
   });
 
+export interface EfeitosDaFigurinha {
+  tirarFundo: boolean;
+  contorno: boolean;
+}
+
+export type FigurinhaPronta = { image: string; width: number; height: number; fundo: ResultadoDoFundo | null };
+
 /**
- * A imagem escolhida vira a figurinha: inteira, sem recorte, com o fundo transparente preservado, reduzida até 512 px no
- * lado maior e em WEBP. GIF passa como veio (reduzir no canvas mataria a animação), se couber no limite.
+ * A imagem escolhida vira a figurinha: reduzida até 512 px no lado maior e em WEBP, com o fundo liso tirado e o contorno
+ * branco, se pedidos (figurinhaEfeitos.ts). O fundo transparente que já vier é preservado. GIF passa como veio, sem efeito
+ * nenhum (redesenhar no canvas mataria a animação), se couber no limite. `fundo` diz o que aconteceu ao tentar tirar o
+ * fundo, para a prévia avisar quando ele não é liso.
  */
-export async function prepararFigurinha(arquivo: File): Promise<{ image: string; width: number; height: number } | { erro: 'tipo' | 'grande' }> {
+export async function prepararFigurinha(
+  arquivo: File,
+  efeitos: EfeitosDaFigurinha = { tirarFundo: false, contorno: false },
+): Promise<FigurinhaPronta | { erro: 'tipo' | 'grande' }> {
   if (!/^image\/(png|jpeg|webp|gif)$/.test(arquivo.type)) return { erro: 'tipo' };
   const bitmap = await createImageBitmap(arquivo).catch(() => null);
   if (!bitmap) return { erro: 'tipo' };
   const escala = Math.min(1, LADO_DA_FIGURINHA / Math.max(bitmap.width, bitmap.height));
-  const width = Math.max(1, Math.round(bitmap.width * escala));
-  const height = Math.max(1, Math.round(bitmap.height * escala));
+  let width = Math.max(1, Math.round(bitmap.width * escala));
+  let height = Math.max(1, Math.round(bitmap.height * escala));
   if (arquivo.type === 'image/gif') {
     bitmap.close();
     if (arquivo.size > LIMITE_DA_FIGURINHA) return { erro: 'grande' };
-    return { image: await lerComoDataUrl(arquivo), width, height };
+    return { image: await lerComoDataUrl(arquivo), width, height, fundo: null };
   }
   const canvas = document.createElement('canvas');
   canvas.width = width;
   canvas.height = height;
-  const ctx = canvas.getContext('2d')!;
+  let ctx = canvas.getContext('2d')!;
   ctx.imageSmoothingQuality = 'high';
   ctx.drawImage(bitmap, 0, 0, width, height);
   bitmap.close();
+
+  let fundo: ResultadoDoFundo | null = null;
+  if (efeitos.tirarFundo || efeitos.contorno) {
+    const lido = ctx.getImageData(0, 0, width, height);
+    let pixels: Pixels = { data: lido.data, width, height };
+    if (efeitos.tirarFundo) {
+      fundo = tirarFundoLiso(pixels);
+      pixels = aparar(pixels) ?? pixels;
+    }
+    if (efeitos.contorno) pixels = contornar(pixels);
+    // O contorno faz a imagem crescer: ela volta para dentro dos 512.
+    const encolher = Math.min(1, LADO_DA_FIGURINHA / Math.max(pixels.width, pixels.height));
+    const cru = document.createElement('canvas');
+    cru.width = pixels.width;
+    cru.height = pixels.height;
+    cru.getContext('2d')!.putImageData(new ImageData(pixels.data as Uint8ClampedArray<ArrayBuffer>, pixels.width, pixels.height), 0, 0);
+    width = Math.max(1, Math.round(pixels.width * encolher));
+    height = Math.max(1, Math.round(pixels.height * encolher));
+    canvas.width = width;
+    canvas.height = height;
+    ctx = canvas.getContext('2d')!;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(cru, 0, 0, width, height);
+  }
+
   const blob = await new Promise<Blob | null>((resolver) => canvas.toBlob(resolver, 'image/webp', 0.9));
   // navegador sem WEBP no canvas devolve PNG (o toBlob cai no padrão); os dois servem
   const final = blob ?? (await new Promise<Blob | null>((resolver) => canvas.toBlob(resolver, 'image/png')));
   if (!final) return { erro: 'tipo' };
   if (final.size > LIMITE_DA_FIGURINHA) return { erro: 'grande' };
-  return { image: await lerComoDataUrl(final), width, height };
+  return { image: await lerComoDataUrl(final), width, height, fundo };
 }

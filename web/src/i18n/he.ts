@@ -2622,6 +2622,9 @@ export default {
   'Use uma imagem PNG, JPG, GIF ou WEBP.': 'צריך תמונה מסוג PNG, JPG, GIF או WEBP.',
   'Arrumar': 'עריכה',
   'Criar figurinha': 'ליצור מדבקה',
+  'Tirar o fundo': 'להסיר את הרקע',
+  'Contorno': 'קו מתאר',
+  'O fundo não é de uma cor só, e ficou como veio.': 'הרקע אינו בצבע אחד, ולכן נשאר כמו שהיה.',
   'Mandar figurinha': 'לשלוח מדבקה',
   'Tirar figurinha': 'להסיר מדבקה',
   'Crie figurinhas com as suas imagens, ou salve as que receber numa conversa.':

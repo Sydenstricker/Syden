@@ -2561,6 +2561,9 @@ export default {
   'Use uma imagem PNG, JPG, GIF ou WEBP.': 'از تصویر PNG، JPG، GIF یا WEBP استفاده کن.',
   'Arrumar': 'ویرایش',
   'Criar figurinha': 'ساختن استیکر',
+  'Tirar o fundo': 'حذف پس‌زمینه',
+  'Contorno': 'دورخط',
+  'O fundo não é de uma cor só, e ficou como veio.': 'پس‌زمینه یک‌رنگ نیست و همان‌طور که بود ماند.',
   'Mandar figurinha': 'فرستادن استیکر',
   'Tirar figurinha': 'برداشتن استیکر',
   'Crie figurinhas com as suas imagens, ou salve as que receber numa conversa.':

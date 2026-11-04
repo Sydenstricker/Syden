@@ -2648,6 +2648,9 @@ export default {
   'Use uma imagem PNG, JPG, GIF ou WEBP.': 'Акси PNG, JPG, GIF ё WEBP истифода баред.',
   'Arrumar': 'Таҳрир',
   'Criar figurinha': 'Сохтани стикер',
+  'Tirar o fundo': 'Тоза кардани пасзамина',
+  'Contorno': 'Канора',
+  'O fundo não é de uma cor só, e ficou como veio.': 'Пасзамина якранг нест, бинобар ин ҳамон тавре ки буд, монд.',
   'Mandar figurinha': 'Фиристодани стикер',
   'Tirar figurinha': 'Хориҷ кардани стикер',
   'Crie figurinhas com as suas imagens, ou salve as que receber numa conversa.':
