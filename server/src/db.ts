@@ -7220,3 +7220,31 @@ export function figurinhaDoAnexo(id: number, key: string) {
     | { sha: string; mime: string; bytes: number; width: number | null; height: number | null }
     | undefined;
 }
+
+// ---------------------------------------------------------------------------------------------------
+// A CAÇA ÀS PRAGAS DA HORTA (04/11/2026): o recorde de cada pessoa no Solo (a melhor partida inteira, as cinco ondas).
+// Só o melhor: uma partida pior não substitui. É da pessoa, e só ela o vê (minijogo-caca.ts).
+// ---------------------------------------------------------------------------------------------------
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS caca_recordes (
+    user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    pontos  INTEGER NOT NULL,
+    em      TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+  );
+`);
+
+export function recordeDaCaca(userId: number): number | null {
+  return (db.prepare('SELECT pontos FROM caca_recordes WHERE user_id = ?').get(userId) as { pontos: number } | undefined)?.pontos ?? null;
+}
+
+/** Guarda se for o melhor da pessoa. Devolve true se virou recorde. */
+export function guardarRecordeDaCaca(userId: number, pontos: number): boolean {
+  const atual = recordeDaCaca(userId);
+  if (atual !== null && atual >= pontos) return false;
+  db.prepare(
+    `INSERT INTO caca_recordes (user_id, pontos) VALUES (?, ?)
+     ON CONFLICT(user_id) DO UPDATE SET pontos = excluded.pontos, em = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')`,
+  ).run(userId, pontos);
+  return true;
+}

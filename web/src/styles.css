@@ -17921,3 +17921,69 @@ body.arrastando-barra {
     opacity: 1;
   }
 }
+
+/* ---------- A Caça às pragas da horta (JogoCaca.tsx) ---------- */
+
+.caca {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* a mira é desenhada na tela: o cursor do sistema sai de cima dela */
+.caca-tela.caca-mirando {
+  cursor: none;
+  touch-action: none;
+}
+
+.caca-municao {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  align-items: center;
+  max-width: 60%;
+}
+
+/* uma cenoura por tiro que sobra, desenhada em CSS */
+.caca-cenoura {
+  display: inline-block;
+  width: 7px;
+  height: 14px;
+  background: linear-gradient(#4f9a3a 0 25%, #e07a2a 25% 100%);
+  clip-path: polygon(20% 0, 80% 0, 80% 25%, 100% 25%, 50% 100%, 0 25%, 20% 25%);
+}
+
+.caca-placa {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+}
+
+.caca-marca {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--text-muted);
+  opacity: 0.6;
+}
+
+.caca-marca.gafanhoto {
+  border-radius: 2px;
+}
+
+.caca-marca.abatida {
+  background: var(--green);
+  border-color: var(--green);
+  opacity: 1;
+}
+
+.caca-marca.fugiu {
+  border-style: dashed;
+  opacity: 0.3;
+}
+
+.caca-recorde {
+  font-weight: 700;
+  color: var(--green);
+}

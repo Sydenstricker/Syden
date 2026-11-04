@@ -21,6 +21,8 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
       return <CapaPlataforma />;
     case 'golfe':
       return <CapaGolfe />;
+    case 'caca':
+      return <CapaCaca />;
     case 'tabuleiro':
       return <CapaTabuleiro />;
     case 'cidades':
@@ -750,6 +752,55 @@ function CapaCidades() {
           ))}
         </g>
       ))}
+    </svg>
+  );
+}
+
+/**
+ * A Caça às pragas da horta: o céu sobre a cerca e a horta, um corvo de asas abertas no meio da mira, e um gafanhoto pulando.
+ */
+function CapaCaca() {
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#a9d3ea" />
+      <rect y="0" width="160" height="40" fill="#8fc2e2" />
+      <circle cx="136" cy="20" r="9" fill="#fff3c4" />
+      <path d="M0 86 Q40 70 80 82 T160 78 V96 H0 Z" fill="#7fb36a" />
+      <rect y="88" width="160" height="3" fill="#b98a5a" />
+      <rect y="94" width="160" height="3" fill="#b98a5a" />
+      {[6, 30, 54, 78, 102, 126, 150].map((x) => (
+        <rect key={x} x={x} y="84" width="4" height="16" fill="#a77a4c" />
+      ))}
+      <rect y="100" width="160" height="20" fill="#7a5236" />
+      {[12, 36, 60, 84, 108, 132].map((x) => (
+        <g key={x}>
+          <rect x={x} y="106" width="4" height="5" fill="#e07a2a" />
+          <rect x={x - 1} y="101" width="2" height="5" fill="#4f9a3a" />
+          <rect x={x + 3} y="100" width="2" height="6" fill="#4f9a3a" />
+        </g>
+      ))}
+      {/* o corvo, de asas abertas */}
+      <g transform="translate(78 46)">
+        <path d="M-4 -2 L-22 -16 L-2 2 Z" fill="#2c2a33" />
+        <path d="M2 -2 L18 -18 L6 2 Z" fill="#3d3a47" />
+        <ellipse cx="0" cy="0" rx="13" ry="7" fill="#2c2a33" />
+        <path d="M-11 -2 L-19 -6 L-19 5 L-11 3 Z" fill="#2c2a33" />
+        <circle cx="11" cy="-3" r="5.5" fill="#2c2a33" />
+        <path d="M15 -5 L22 -2 L15 0 Z" fill="#e8a33a" />
+        <rect x="11" y="-6" width="2" height="2" fill="#f5f2e8" />
+      </g>
+      {/* a mira */}
+      <g stroke="#fff3e0" strokeWidth="2" fill="none">
+        <circle cx="80" cy="46" r="17" />
+        <path d="M53 46 H70 M90 46 H107 M80 19 V36 M80 56 V73" />
+      </g>
+      {/* o gafanhoto */}
+      <g transform="translate(124 70)">
+        <ellipse cx="0" cy="0" rx="9" ry="4" fill="#5f9e2f" />
+        <circle cx="8" cy="-2" r="3.5" fill="#7cbf45" />
+        <path d="M-3 0 L-9 -8 L-6 6" stroke="#4a8526" strokeWidth="2" fill="none" />
+        <path d="M9 -5 L15 -12 M8 -5 L12 -13" stroke="#3f6f1f" strokeWidth="1" />
+      </g>
     </svg>
   );
 }

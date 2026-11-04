@@ -7,6 +7,7 @@ import { desenho } from './minijogo-desenho.js';
 import { briga } from './minijogo-briga.js';
 import { festa } from './minijogo-festa.js';
 import { golfe } from './minijogo-golfe.js';
+import { caca } from './minijogo-caca.js';
 import type { Contexto, Definicao, Jogo } from './minijogo-motor.js';
 import { lobisomem } from './minijogo-lobisomem.js';
 import { palavra } from './minijogo-palavra.js';
@@ -55,6 +56,7 @@ export const JOGOS: Record<string, Definicao> = {
   blocos,
   plataforma,
   golfe,
+  caca,
   tabuleiro: tabuleiroDaTurma,
   cidades,
   // Os quizzes de adivinhar (minijogo-quiz.ts): um jogo por tema, todos no mesmo motor.
@@ -67,7 +69,7 @@ export const JOGOS: Record<string, Definicao> = {
  * ocupa a sala (a turma continua podendo começar o jogo dela), não pede chamada (dá para jogar pelo computador do
  * quarto) e não conta nas conquistas da turma, que medem gente junta.
  */
-export const JOGOS_SOLO = new Set(['tamanho', 'xadrez', 'sudoku', 'festa', 'briga', 'blocos', 'golfe', ...Object.keys(TEMAS)]);
+export const JOGOS_SOLO = new Set(['tamanho', 'xadrez', 'sudoku', 'festa', 'briga', 'blocos', 'golfe', 'caca', ...Object.keys(TEMAS)]);
 
 interface Partida {
   channelId: number;

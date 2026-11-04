@@ -427,6 +427,24 @@ export interface EstadoCidades {
   partidaId: string;
 }
 
+/** A Caça às pragas da horta (server/src/minijogo-caca.ts): cinco ondas de corvos e gafanhotos, mais pontos ganha. */
+export interface EstadoCaca {
+  fase: 'preparando' | 'jogando' | 'placar' | 'fim';
+  onda: number;
+  ondas: number;
+  /** As pragas da onda (as trajetórias, caca/voo.ts); vazio fora da onda. */
+  pragas: import('./caca/voo').Praga[];
+  duracaoMs: number;
+  /** Quanto da onda já passou, no servidor (só jogando). */
+  decorridoMs: number | null;
+  meu: { pontos: number; daOnda: number; municao: number; abatidas: number[] } | null;
+  /** Mais pontos primeiro; a posição só entre quem ficou (empatados dividem). */
+  placar: { userId: number; username: string; pontos: number; daOnda: number; acertos: number; posicao: number | null }[];
+  /** No Solo: o recorde de antes, e se esta partida virou o novo. */
+  recorde: { antes: number | null; novo: boolean } | null;
+  partidaId: string;
+}
+
 /** O Minigolfe da toca (server/src/minijogo-golfe.ts): seis buracos, menos tacadas ganha. */
 export interface EstadoGolfe {
   fase: 'preparando' | 'jogando' | 'placar' | 'fim';
@@ -487,7 +505,7 @@ export interface EstadoBriga {
   partidaId: string;
 }
 
-export type IdDoJogo = 'corrida' | 'festa' | 'tabuleiro' | 'cidades' | 'golfe' | 'plataforma' | 'blocos' | 'briga' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'xadrez' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
+export type IdDoJogo = 'corrida' | 'festa' | 'tabuleiro' | 'cidades' | 'golfe' | 'caca' | 'plataforma' | 'blocos' | 'briga' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'xadrez' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
 
 /**
  * As duas abas da estante (pedido dele, 14/10/2026). SOLO: a partida é só de quem joga, começa sem convite, não ocupa
@@ -617,6 +635,13 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
     id: 'golfe',
     nome: chave('Minigolfe da toca'),
     dica: chave('Seis buracos de minigolfe, todos jogando o mesmo ao mesmo tempo. Puxe a bola para trás e solte para dar a tacada. Ganha quem somar menos tacadas.'),
+    abas: ['solo', 'coletivo'],
+  },
+  {
+    // A caça (JogoCaca.tsx, server/src/minijogo-caca.ts): as mesmas pragas para todos, cada um mirando na própria tela.
+    id: 'caca',
+    nome: chave('Caça às pragas da horta'),
+    dica: chave('Corvos e gafanhotos atacam a horta. Mire e clique para acertar antes que fujam: a munição é contada, e cada onda vem mais rápida. Ganha quem fizer mais pontos.'),
     abas: ['solo', 'coletivo'],
   },
   {

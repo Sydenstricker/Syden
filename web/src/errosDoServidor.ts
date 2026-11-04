@@ -21,6 +21,9 @@ import { chave } from './i18n';
 // ===================================================================================================
 
 export const ERROS_TRADUZIDOS = [
+  // a Caça às pragas da horta (server/src/minijogo-caca.ts, 04/11/2026)
+  chave('Tiro inválido.'),
+  chave('Acabou a munição desta onda.'),
   // o avatar por link (server/src/buscarImagem.ts, 04/11/2026)
   chave('Essa página não tem uma imagem para usar. Copie o link da imagem.'),
   chave('Muitos links seguidos. Tente de novo daqui a pouco.'),

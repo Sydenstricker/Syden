@@ -24,6 +24,8 @@ export const NOMES_DAS_PISTAS: Record<string, string> = {
   'copa-do-pulo': chave('Copa do Pulo'),
   // e o do Minigolfe da toca (server/src/minijogo-golfe.ts): os pontos são o total de tacadas, e MENOS é melhor
   golfe: chave('Minigolfe da toca'),
+  // e o da Caça às pragas da horta (server/src/minijogo-caca.ts): os pontos, e MAIS é melhor
+  caca: chave('Caça às pragas da horta'),
   // e o do Tabuleiro da turma (server/src/minijogo-tabuleiro-da-turma.ts)
   tabuleiro: chave('Tabuleiro da turma'),
   // e o de Cidades à venda (server/src/minijogo-cidades.ts): os pontos são o patrimônio

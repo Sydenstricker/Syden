@@ -10,6 +10,7 @@ import { JogoDesenho } from './JogoDesenho';
 import { JogoDuelo } from './JogoDuelo';
 import { JogoFesta } from './JogoFesta';
 import { JogoGolfe } from './JogoGolfe';
+import { JogoCaca } from './JogoCaca';
 import { JogoLobisomem } from './JogoLobisomem';
 import { JogoPalavra } from './JogoPalavra';
 import { EscolhaDaFase, JogoPlataforma, JogoPlataformaNaSala, type EstadoPlataforma } from './JogoPlataforma';
@@ -35,6 +36,7 @@ import {
   type EstadoDuelo,
   type EstadoFesta,
   type EstadoGolfe,
+  type EstadoCaca,
   type EstadoLobisomem,
   type EstadoPalavra,
   type EstadoStop,
@@ -191,7 +193,7 @@ export function PainelDoMinijogo({
   const restante = partida ? Math.max(0, partida.restanteMs - (agora - partida.recebidaEm)) : 0;
   const naEspera = Boolean(partida?.convite);
   const rodada =
-    partida && !naEspera && (partida.jogo === 'tamanho' || partida.jogo === 'stop' || partida.jogo === 'xadrez' || partida.jogo === 'palavra' || partida.jogo === 'festa' || partida.jogo === 'tabuleiro' || partida.jogo === 'golfe' || ehQuiz(partida.jogo)) && !partida.terminada
+    partida && !naEspera && (partida.jogo === 'tamanho' || partida.jogo === 'stop' || partida.jogo === 'xadrez' || partida.jogo === 'palavra' || partida.jogo === 'festa' || partida.jogo === 'tabuleiro' || partida.jogo === 'golfe' || partida.jogo === 'caca' || ehQuiz(partida.jogo)) && !partida.terminada
       ? (partida as unknown as EstadoTamanho)
       : null;
   // Quem não aceitou o convite vê a partida, mas não mexe nela (a mesa cuida de quem senta).
@@ -384,6 +386,15 @@ export function PainelDoMinijogo({
           agir={agir}
           socket={socket}
           channelId={channelId}
+        />
+      )}
+      {jogoNaTela?.jogo === 'caca' && (
+        <JogoCaca
+          key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
+          estado={jogoNaTela as unknown as EstadoCaca & Partida}
+          eu={eu}
+          jogador={souJogador(partida)}
+          agir={agir}
         />
       )}
       {jogoNaTela?.jogo === 'golfe' && (

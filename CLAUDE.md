@@ -587,6 +587,19 @@ vende os prédios e hipoteca as cidades sozinho; não cobrindo, a pessoa fale e 
 age quando a peça CHEGA (a fase 'andando' segura o dinheiro). Troféu com `pista: 'cidades'`, os pontos são o patrimônio. Conta nas conquistas da
 turma (Repertório e "A turma do jogo", decisão dele em 04/11/2026: o Repertório completo passou de 15 para 16 jogos). Testes: `server/test/minijogos-cidades.test.ts`. Sem e2e.
 
+**A CAÇA ÀS PRAGAS DA HORTA (04/11/2026, pedido dele: "temos algum jogo tipo Duck Hunt?"):** o gênero dos jogos de mira, SÓ A
+MECÂNICA (nada de pato, cachorro, arte ou som da Nintendo). Corvos e gafanhotos atravessam a horta, e quem joga mira e clica (ou
+toca); cinco ondas, cada uma mais cheia e mais rápida, com a munição contada em cenouras (~1,5 por praga). `server/src/minijogo-caca.ts`,
+`web/src/JogoCaca.tsx`, `web/src/caca/`, nas duas abas. **A rede decidiu como no golfe:** a turma caça AS MESMAS pragas, cada um a
+SUA cópia (a que eu acertei some só para mim), e ninguém disputa a mesma praga pela internet. **O voo é um arquivo só, em duas cópias
+iguais byte a byte** (`server/src/caca-voo.ts` e `web/src/caca/voo.ts`; o teste do servidor confere): o servidor sorteia as pragas, o
+site as desenha com a mesma conta, e cada tiro vai com o lugar e o instante da onda — o servidor refaz a conta e decide (relógio com
+0,4 s de folga para a frente e 0,8 s para trás, munição, um tiro a cada 120 ms). O que sobra possível: as trajetórias vão ao site, e
+um programa poderia mirar sozinho. Pontos: 100 o corvo, 150 o gafanhoto (menor), mais até 50 pela rapidez. Pódio com 2 ou mais
+(`pista: 'caca'`); no Solo, o RECORDE da pessoa (`caca_recordes`). Tudo desenhado por código. Testes:
+`server/test/minijogos-caca.test.ts` e `e2e/caca.mjs` (passou, pelo Solo do computador do quarto, com o piloto automático
+`window.cacaPilotoAutomatico`). Ainda NÃO conta nas conquistas da turma (decisão dele, como foi com Cidades à venda).
+
 **A ESTANTE DE TROFÉUS VIROU O HUB (03/11/2026, pedido dele: "um hub para todos os troféus em mini-games, todas as
 conquistas; o jogador pode escolher o que deixa em destaque"):** a estante do quarto (`web/src/Trofeus.tsx`) junta os pódios de
 todos os jogos, agrupados pelo jogo, e as conquistas da turma de cada comunidade da pessoa (o degrau mais alto); a estrela põe
