@@ -297,6 +297,17 @@ esqueleto, e anúncio só se mede com o navegador rodando.
   dá para lançar sem pedir é conteúdo LIVRE (o SRD 5.1 do D&D em CC BY 4.0, folclore e mitologia em domínio público,
   países e bandeiras, as figuras Fluent que o "Qual é o tamanho?" já usa).
 - Ressalva: só a página de entrada foi medida. Anúncio pode aparecer no meio da partida.
+- **Varredura de 04/11/2026** (pedido dele: jogos que outros mantêm, para não gerar conteúdo nem manter), o mesmo método
+  (12 s num Chrome) e mais o cabeçalho de embutir da página. **Sem anúncio e o cabeçalho deixa embutir:** JKLM.fun,
+  OGS (online-go.com), Wikitrivia, PlayStrategy, Lidraughts (damas), Lishogi, PyChess, Codenames (codenames.game, o
+  oficial), horsepaste, Drawphone, playingcards.io, Wikispeedruns, Geotastic. **Sem anúncio, mas não embute:** Lichess,
+  Clues by Sam, chess.com. **Com anúncio:** Broken Picturephone, netgames.io, Colonist, Buddy Board Games, Semantle,
+  The Wiki Game, OpenGuessr, Spyfall (o site), Sandspiel, ZType, Drawasaurus, Sketchful, papergames, Travle, Keymash,
+  Monkeytype, e Board Game Arena (que também não embute). Neal.fun, Secret Hitler e TETR.IO barraram o Chrome de teste
+  (403): sem medida. O cabeçalho deixar não prova que roda no iframe (cookie de terceiro, site que se recusa por
+  script): só o teste dentro do Syden prova. Licenças, para hospedar: Drawphone, Wikitrivia, Spyfall, 2048,
+  boardgame.io e Sandspiel são MIT, Scribble.rs BSD-3; OpenFront AGPL e o Codenames do horsepaste SEM licença (e a
+  marca é da CGE): não.
 - **A promessa da lista é "sem anúncio", não "sem rastreio"** (decisão dele, 13/10/2026: "sem anúncio é honesto"). O
   rastreio de um site que a pessoa abre por vontade própria é entre ela e o site. Por isso o **Termo** entrou (só Google
   Analytics).
