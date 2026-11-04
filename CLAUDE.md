@@ -450,7 +450,9 @@ e `e2e/corrida-na-sala.mjs` (três pessoas, uma assistindo, com o LiveKit).
 **A revisão independente (03/11/2026, antes do push do degrau 2) achou que o servidor confiava demais no fantasma**, e
 virou regra: um kart PARADO passava e virava recorde de 0:24 — agora cada volta tem de andar 70% da pista e acabar na
 linha de chegada (`PISTAS` em `server/src/corrida.ts` guarda o comprimento e a linha; `web/test/corrida.test.ts` confere
-que batem com a pista do site e que o fantasma honesto passa); e, na sala, um fantasma guardado mandado pelo console um
+que batem com a pista do site e que o fantasma honesto passa) — e, desde a auditoria de 03/11/2026, passar pelos 10 MARCOS da pista, na ordem (um
+fantasma inventado, indo e voltando na linha de chegada, fazia 0:26.8 contra 1:00.5 honesto; os marcos saem de `marcosDaPista` no
+site, e o teste confere que batem); e, na sala, um fantasma guardado mandado pelo console um
 segundo depois do verde ganhava e fechava o prazo de todos — agora a chegada não pode declarar mais tempo do que passou
 desde o verde do servidor (+3 s de folga). Pista nova precisa da linha dela em `PISTAS`.
 
