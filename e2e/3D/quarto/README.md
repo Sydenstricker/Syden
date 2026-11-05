@@ -9,9 +9,10 @@ vai para o Syden.
 | arquivo | o que é |
 |---|---|
 | `fotos/dia.png`, `fotos/noite.png` | **abrir primeiro:** o quarto de fábrica, de dia e de noite |
+| `fotos.mjs` | refaz as seis fotos (com o vite no ar: `ENDERECO=http://localhost:5200/ node e2e/3D/quarto/fotos.mjs`; `SO_HORA=1` só dia e noite) |
 | `fotos/deitado.png`, `sentado-sofa.png`, `sentado-poltrona.png`, `no-computador.png` | o coelho usando os móveis, com as poses de verdade |
 | `main.ts` | a cena inteira (three.js 0.186, o mesmo do tabuleiro do Cidades) |
-| `modelos/` | o KayKit Bits Bundle 1 (Kay Lousberg, CC0, `LICENCA-KayKit-Bundle.txt`): os móveis inteiros do Furniture Bits (com as 3 texturas de cor em `texturas/`) e as paredes, a janela e a porta do Restaurant Bits (`restaurante/`); e o `coelho-animado.glb` |
+| `modelos/` | o KayKit Bits Bundle 1 (Kay Lousberg, CC0, `LICENCA-KayKit-Bundle.txt`): os móveis inteiros do Furniture Bits (com as 3 texturas de cor em `texturas/`) e as paredes, a janela e a porta do Restaurant Bits (`restaurante/`); o Kenney Furniture Kit (CC0, `kenney/`, `LICENCA-Kenney-Furniture-Kit.txt`); e o `coelho-animado.glb` |
 
 ## A segunda rodada (05/11/2026, à tarde)
 
@@ -25,6 +26,38 @@ só "Walking" e "Running"). `e2e/pixel-art/personagem/blender/meshy/glb.py` grav
 animações de um GLB (`:MODELO='t'; :GLB='1'; powershell -File rodar.ps1`, ~10 s): parado, andando, falando, sentado,
 sentado no sofá, poltrona, banqueta, computador, dormindo, largado e lendo. Ele anda de verdade, senta na poltrona, no sofá e na
 cadeira do computador (com as mãos no teclado) e deita na cama. Sai em `web/public/cidades3d/coelho-animado.glb` (650 KB).
+
+## A terceira rodada: o Kenney Furniture Kit junto (05/11/2026, à noite)
+
+Ele baixou o Kenney Furniture Kit (CC0, 140 peças) para deixar o quarto mais rico. **Os dois pacotes foram misturados, mas só
+nas peças em que combinam** — o que se mediu:
+
+- **O que entrou do Kenney (12 peças, em `modelos/kenney/`):** a estante aberta com os livros nas prateleiras (`bookcaseClosedWide`
+  + `books`, o rádio e duas plantinhas), o guarda-roupa (`bookcaseClosedDoors`), a planta grande debaixo da janela
+  (`pottedPlant`), as plantinhas `plantSmall1–3` (na estante, na prateleira da mesa e no banquinho), o tapete redondo em
+  terracota no canto da leitura (`rugRound`), o capacho da porta (`rugDoormat`), o pufe da poltrona (`loungeSofaOttoman`, a 75%)
+  e a caixa de papelão aberta no canto (`cardboardBoxOpen`).
+- **A escala:** o Kenney entra com 2 (a mesa dele tem 0,38 de altura, a do KayKit em 0,75 tem 0,75), e as alturas batem.
+- **As cores do Kenney são trocadas pelas do KayKit, pelo nome do material** (`PALETA_KENNEY` em `main.ts`): o estofado e o tapete
+  dele vêm vermelho-vivo e a planta verde-menta, que brigavam com o amarelo, o azul-claro e o verde do KayKit. A madeira ficou
+  um tom do KayKit, e o brilho de metal saiu. Cada peça ainda troca as suas (`cores`: a terracota do tapete, os livros).
+- **O que saiu de novo, por não combinar: tudo o que é REDONDO no Kenney.** O ursinho na cama e a arandela da parede foram
+  testados e tirados: o Kenney é facetado (faces chapadas, sem o chanfro macio do KayKit), e numa peça curva a faceta aparece
+  — o ursinho virou um bloco marrom de arestas, e a arandela, um papel dobrado. Nas peças de caixa (estante, armário, tapete,
+  caixa, pufe) a diferença quase não se vê. As almofadas do Kenney também saíram: no sofá e na poltrona do KayKit elas já vêm.
+- **Feito por código, porque nenhum dos dois tem:** a **cortiça** (Caixa de ideias) com quatro bilhetes e tachinhas, as **fotos
+  no quadro** de Amigos (quatro fotos de papel desenhadas, sem foto de ninguém: o branco da moldura do KayKit era uma tela vazia)
+  e as **luzinhas** no alto das duas paredes (o fio do salão de pixel art), acesas à noite, com uma luz por parede.
+- **As funções do quarto do app estão nos móveis:** tocar no guarda-roupa, na mesa (Mini-games; o fone no abajur dela, Salas), no
+  quadro (Amigos), na cortiça (ideias), na janela (Explorar) ou no abajur (Dia e noite) leva o coelho até lá, e a barra diz qual
+  seria a função. Só diz: o piloto não abre nada.
+- **A poltrona virou de frente** (na segunda rodada ela ficava de costas para a câmera e escondia o coelho sentado), com o pufe,
+  o tapete redondo, a luminária e o banquinho em volta. A cômoda e a prateleira da parede do fundo saíram para a estante e o
+  guarda-roupa caberem ao lado da porta.
+- **O fundo da página** é o roxo escuro e quente da barra, no lugar do preto.
+- **Medido (Chrome sem placa, depois de os shaders compilarem):** ~2 a 3 ms por quadro, de dia e de noite, 205 chamadas e
+  ~48 mil triângulos (eram 82 chamadas: cada livro do Kenney tem 4 materiais). As lâmpadas das luzinhas são 3 malhas
+  instanciadas, não 60; `?sem-luz-das-luzinhas` tira as duas luzes delas para medir (a diferença não apareceu).
 
 ## O que o piloto faz
 
@@ -46,9 +79,15 @@ cadeira do computador (com as mãos no teclado) e deita na cama. Sai em `web/pub
 ## O que falta, e é o que decide
 
 1. **O coelho já tem esqueleto e poses** (a segunda rodada). Falta o andar pelo caminho de verdade até o lado certo da cama.
-2. **Faltam peças com função no quarto:** guarda-roupa, porta, fone, quadro de fotos, cortiça e tapetes nas cores dele. A
-   versão "Extra" do pacote (US$ 2 a 4) traz mais 20 peças e 3 texturas de cor, mas não se sabe quais.
+2. **As peças com função já estão todas** (terceira rodada), mas o fone continua no abajur da mesa, e não pendurado na parede
+   como no quarto de pixel art: nenhum dos dois pacotes tem um fone de gancho. Também faltam o ventilador (o `ceilingFan` do
+   Kenney pede teto, e a vista isométrica não tem), um gato, e as camas para trocar. Os tapetes nas cores do quarto (sálvia,
+   terracota, azul, mostarda) saem de graça, trocando a cor do material do Kenney.
 3. **Os dois estilos não se misturam:** os móveis têm cor chapada, e o coelho do Meshy tem textura detalhada. Ao lado dos
-   móveis isso aparece pouco, mas aparece.
+   móveis isso aparece pouco, mas aparece. **Entre os dois pacotes**, o Kenney serve para o que é caixa (estante, armário,
+   tapete, caixa) e não para o que é curvo (bicho, luminária, almofada), pela faceta. Se um dia for ao app, o KayKit é a base, e o
+   Kenney entra só onde falta peça.
 4. **Uma skin é manter dois quartos.** A arrumação, o editor, a visita e as funções dos móveis teriam de ser refeitos aqui,
    e cada peça nova passaria a existir nos dois.
+5. **À noite, a estante e o guarda-roupa ficam escuros** (estão longe do abajur e das luzes das luzinhas); uma luz a mais ali custaria
+   em todo pixel do quarto.
