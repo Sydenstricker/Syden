@@ -2732,4 +2732,7 @@ export default {
   Xadrez: 'Skaak',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': "'n Volle skaakspel, met al die reëls. Wie begin, speel met wit. Die kamer kyk toe.",
   'Xeque!': 'Skaak!',
+  Dama: 'Koningin',
+  Torre: 'Toring',
+  Bispo: 'Loper',
 } satisfies Record<string, string>;

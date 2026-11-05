@@ -2748,4 +2748,7 @@ export default {
   Xadrez: 'ޗެސް',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'ހުރިހާ ގަވާއިދުތަކާއެކު ފުރިހަމަ ޗެސް ކުޅުމެއް. ފަށާ މީހާ ކުޅެނީ ހުދުން. ރޫމު ބަލަނީ.',
   'Xeque!': 'ޗެކް!',
+  Dama: 'ވަޒީރު',
+  Torre: 'ރުކް',
+  Bispo: 'ބިޝަޕް',
 } satisfies Record<string, string>;

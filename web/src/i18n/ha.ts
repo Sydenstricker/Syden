@@ -2670,4 +2670,7 @@ export default {
   Xadrez: 'Dara',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Cikakken wasan dara, da duk dokoki. Wanda ya fara yana wasa da farare. Ɗakin yana kallo.',
   'Xeque!': 'Cak!',
+  Dama: 'Sarauniya',
+  Torre: 'Hasumiya',
+  Bispo: 'Bishop',
 } satisfies Record<string, string>;

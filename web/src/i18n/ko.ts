@@ -2656,4 +2656,7 @@ export default {
   Xadrez: '체스',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': '모든 규칙을 갖춘 체스 한 판. 먼저 시작하는 사람이 백을 잡아요. 방 사람들이 지켜봐요.',
   'Xeque!': '체크!',
+  Dama: '퀸',
+  Torre: '룩',
+  Bispo: '비숍',
 } satisfies Record<string, string>;

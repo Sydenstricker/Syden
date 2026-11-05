@@ -2709,4 +2709,7 @@ export default {
   Xadrez: 'Şahmat',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Bütün qaydaları ilə tam şahmat oyunu. Başlayan ağlarla oynayır. Otaq izləyir.',
   'Xeque!': 'Şah!',
+  Dama: 'Vəzir',
+  Torre: 'Top',
+  Bispo: 'Fil',
 } satisfies Record<string, string>;

@@ -2684,4 +2684,7 @@ export default {
   Xadrez: 'Ċess',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Logħba ċess sħiħa, bir-regoli kollha. Min jibda jilgħab bl-abjad. Il-kamra tara.',
   'Xeque!': 'Ċekk!',
+  Dama: 'Reġina',
+  Torre: 'Torri',
+  Bispo: 'Isqof',
 } satisfies Record<string, string>;

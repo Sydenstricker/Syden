@@ -2740,4 +2740,7 @@ export default {
   Xadrez: 'चेस',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'सबै नियमसहितको पूरा चेस खेल। जसले सुरु गर्छ उसले सेतो खेल्छ। कोठाले हेर्छ।',
   'Xeque!': 'चेक!',
+  Dama: 'रानी',
+  Torre: 'हात्ती',
+  Bispo: 'ऊँट',
 } satisfies Record<string, string>;

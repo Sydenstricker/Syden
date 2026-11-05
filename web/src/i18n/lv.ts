@@ -2740,4 +2740,7 @@ export default {
   Xadrez: 'Šahs',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Pilna šaha partija ar visiem noteikumiem. Kas sāk, spēlē ar baltajiem. Istaba vēro.',
   'Xeque!': 'Šahs!',
+  Dama: 'Dāma',
+  Torre: 'Tornis',
+  Bispo: 'Laidnis',
 } satisfies Record<string, string>;

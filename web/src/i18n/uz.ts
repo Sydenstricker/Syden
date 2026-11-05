@@ -2758,4 +2758,7 @@ export default {
   Xadrez: 'Shaxmat',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': "Barcha qoidalari bilan to'liq shaxmat o'yini. Boshlagan oq bilan o'ynaydi. Xona tomosha qiladi.",
   'Xeque!': 'Shoh!',
+  Dama: 'Farzin',
+  Torre: 'Ruh',
+  Bispo: 'Fil',
 } satisfies Record<string, string>;

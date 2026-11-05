@@ -2683,4 +2683,7 @@ export default {
   Xadrez: 'Ayò chess',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Ere chess pípé, pẹ̀lú gbogbo òfin. Ẹni tó bẹ̀rẹ̀ ló ń fi funfun ṣeré. Iyàrá ń wò ó.',
   'Xeque!': 'Chẹ́ẹ̀kì!',
+  Dama: 'Ayaba',
+  Torre: 'Ilé-gogoro',
+  Bispo: 'Bíṣọ́ọ̀bù',
 } satisfies Record<string, string>;

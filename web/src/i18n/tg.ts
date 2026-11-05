@@ -2748,4 +2748,7 @@ export default {
   Xadrez: 'Шоҳмот',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Бозии пурраи шоҳмот бо ҳамаи қоидаҳо. Касе ки оғоз мекунад, бо сафед бозӣ мекунад. Ҳуҷра тамошо мекунад.',
   'Xeque!': 'Кишт!',
+  Dama: 'Фарзин',
+  Torre: 'Рух',
+  Bispo: 'Фил',
 } satisfies Record<string, string>;

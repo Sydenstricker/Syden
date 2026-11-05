@@ -2667,4 +2667,7 @@ export default {
   Xadrez: 'Jesi',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'E dua na qito ni jesi taucoko, kei na lawa kece. O koya e tekivu e qito ena vulavula. E sarava na rumu.',
   'Xeque!': 'Jeke!',
+  Dama: 'Ranadi',
+  Torre: 'Vale',
+  Bispo: 'Bisopi',
 } satisfies Record<string, string>;

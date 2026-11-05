@@ -19270,3 +19270,32 @@ body.arrastando-barra {
   height: 100%;
   cursor: pointer;
 }
+
+/* A promoção no xadrez: as quatro peças para escolher, por cima do tabuleiro (pedido dele, 05/11/2026). */
+.xadrez-promocao {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 8px auto 0;
+}
+.xadrez-promocao button {
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
+  border: 2px solid var(--accent);
+  background: #ecd5b0;
+  cursor: pointer;
+  font-size: 2rem;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+}
+.xadrez-promocao button:hover {
+  background: #f6e6c8;
+}
+.xadrez-promocao .xadrez-promocao-voltar {
+  border-color: transparent;
+  background: var(--bg-raised);
+  color: var(--text-strong);
+  font-size: 1rem;
+}

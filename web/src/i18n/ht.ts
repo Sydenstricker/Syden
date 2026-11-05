@@ -2748,4 +2748,7 @@ export default {
   Xadrez: 'Echèk',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Yon pati echèk konplè, ak tout règ yo. Moun ki kòmanse jwe ak blan. Sal la ap gade.',
   'Xeque!': 'Echèk!',
+  Dama: 'Rèn',
+  Torre: 'Tou',
+  Bispo: 'Fou',
 } satisfies Record<string, string>;

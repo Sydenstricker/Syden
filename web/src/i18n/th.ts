@@ -2681,4 +2681,7 @@ export default {
   Xadrez: 'หมากรุกสากล',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'หมากรุกเต็มเกมพร้อมกติกาครบ คนที่เริ่มเล่นฝ่ายขาว ทั้งห้องดูอยู่',
   'Xeque!': 'รุก!',
+  Dama: 'ควีน',
+  Torre: 'เรือ',
+  Bispo: 'บิชอป',
 } satisfies Record<string, string>;

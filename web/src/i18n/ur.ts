@@ -2660,4 +2660,7 @@ export default {
   Xadrez: 'شطرنج',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'تمام اصولوں کے ساتھ شطرنج کی پوری بازی۔ جو شروع کرے وہ سفید سے کھیلتا ہے۔ کمرہ دیکھتا ہے۔',
   'Xeque!': 'شہ!',
+  Dama: 'وزیر',
+  Torre: 'رخ',
+  Bispo: 'فیل',
 } satisfies Record<string, string>;

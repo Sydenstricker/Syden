@@ -2735,4 +2735,7 @@ export default {
   Xadrez: 'Male',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Terve malepartii kõigi reeglitega. Kes alustab, mängib valgetega. Tuba vaatab.',
   'Xeque!': 'Tuli!',
+  Dama: 'Lipp',
+  Torre: 'Vanker',
+  Bispo: 'Oda',
 } satisfies Record<string, string>;

@@ -2738,4 +2738,7 @@ export default {
   Xadrez: 'චෙස්',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'සියලු නීති සහිත සම්පූර්ණ චෙස් තරගයක්. ආරම්භ කරන්නා සුදු පැත්තෙන් ක්‍රීඩා කරයි. කාමරය බලා සිටියි.',
   'Xeque!': 'චෙක්!',
+  Dama: 'රැජින',
+  Torre: 'රථය',
+  Bispo: 'ඇතා',
 } satisfies Record<string, string>;

@@ -2650,4 +2650,7 @@ export default {
   Xadrez: 'చదరంగం',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'అన్ని నియమాలతో పూర్తి చదరంగం ఆట. మొదలుపెట్టినవారు తెల్లవాటితో ఆడతారు. గది చూస్తుంది.',
   'Xeque!': 'చెక్!',
+  Dama: 'రాణి',
+  Torre: 'ఏనుగు',
+  Bispo: 'శకటం',
 } satisfies Record<string, string>;

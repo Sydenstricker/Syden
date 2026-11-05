@@ -2752,4 +2752,7 @@ export default {
   Xadrez: 'Шатар',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Бүх дүрэмтэй бүтэн шатрын тоглолт. Эхэлсэн нь цагаанаар тоглоно. Өрөө харж байна.',
   'Xeque!': 'Шаг!',
+  Dama: 'Бэрс',
+  Torre: 'Тэрэг',
+  Bispo: 'Тэмээ',
 } satisfies Record<string, string>;

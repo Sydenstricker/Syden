@@ -2738,4 +2738,7 @@ export default {
   Xadrez: 'Shakki',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Kokonainen shakkipeli kaikilla säännöillä. Aloittaja pelaa valkeilla. Huone katsoo.',
   'Xeque!': 'Shakki!',
+  Dama: 'Kuningatar',
+  Torre: 'Torni',
+  Bispo: 'Lähetti',
 } satisfies Record<string, string>;

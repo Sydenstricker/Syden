@@ -2722,4 +2722,7 @@ export default {
   Xadrez: 'שחמט',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'משחק שחמט שלם, עם כל החוקים. מי שפותח משחק בלבן. החדר צופה.',
   'Xeque!': 'שח!',
+  Dama: 'מלכה',
+  Torre: 'צריח',
+  Bispo: 'רץ',
 } satisfies Record<string, string>;

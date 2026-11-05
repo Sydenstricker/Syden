@@ -2756,4 +2756,7 @@ export default {
   Xadrez: 'ჭადრაკი',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'სრული ჭადრაკის პარტია, ყველა წესით. ვინც იწყებს, თეთრებით თამაშობს. ოთახი უყურებს.',
   'Xeque!': 'ქიში!',
+  Dama: 'ლაზიერი',
+  Torre: 'ეტლი',
+  Bispo: 'კუ',
 } satisfies Record<string, string>;

@@ -2692,4 +2692,7 @@ export default {
   Xadrez: 'الشطرنج',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'مباراة شطرنج كاملة بكل القواعد. من يبدأ يلعب بالأبيض. الغرفة تشاهد.',
   'Xeque!': 'كش!',
+  Dama: 'الوزير',
+  Torre: 'الرخ',
+  Bispo: 'الفيل',
 } satisfies Record<string, string>;

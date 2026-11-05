@@ -2665,4 +2665,7 @@ export default {
   Xadrez: 'দাবা',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'সব নিয়মসহ পুরো একটি দাবা খেলা। যে শুরু করে সে সাদা নিয়ে খেলে। ঘর দেখে।',
   'Xeque!': 'কিস্তি!',
+  Dama: 'মন্ত্রী',
+  Torre: 'নৌকা',
+  Bispo: 'গজ',
 } satisfies Record<string, string>;

@@ -2674,4 +2674,7 @@ export default {
   Xadrez: 'Σκάκι',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Μια ολόκληρη παρτίδα σκάκι, με όλους τους κανόνες. Όποιος ξεκινά παίζει με τα λευκά. Η αίθουσα παρακολουθεί.',
   'Xeque!': 'Σαχ!',
+  Dama: 'Βασίλισσα',
+  Torre: 'Πύργος',
+  Bispo: 'Αξιωματικός',
 } satisfies Record<string, string>;

@@ -7,8 +7,9 @@ import { duelo, type Lado } from './minijogo-tabuleiro.js';
  * licença que o CLAUDE.md já tinha conferido): roque, en passant, promoção, xeque-mate, afogamento, as três repetições, os
  * 50 lances e o material que não dá mate.
  *
- * O SERVIDOR GERA OS LANCES e manda a lista a quem tem a vez (como nas Damas): o site só escolhe um. A promoção é sempre a
- * dama, de propósito: é o que se escolhe em quase toda partida, e evita uma pergunta na tela.
+ * O SERVIDOR GERA OS LANCES e manda a lista a quem tem a vez (como nas Damas): o site só escolhe um. Na PROMOÇÃO, a pessoa
+ * escolhe a peça (pedido dele, 05/11/2026: "o jogador pode querer um cavalo ou alguma peça pior para brincar"): o lance vem
+ * marcado com `promocao`, e o site mostra as quatro peças; sem escolha (o robô), é a dama.
  *
  * As casas: `linha * 8 + coluna`, com a linha 0 no alto (a fileira 8, das pretas) e a coluna 0 na coluna a.
  */
@@ -16,6 +17,8 @@ import { duelo, type Lado } from './minijogo-tabuleiro.js';
 export interface LanceDoXadrez {
   de: number;
   para: number;
+  /** O peão chega à última fileira: a pessoa escolhe a peça (dama, torre, bispo ou cavalo). */
+  promocao?: true;
 }
 
 export interface EstadoDaPartida {
@@ -45,7 +48,7 @@ export function lancesDe(jogo: Chess): LanceDoXadrez[] {
     const chave = m.from + m.to;
     if (vistos.has(chave)) continue;
     vistos.add(chave);
-    lista.push({ de: casaDe(m.from), para: casaDe(m.to) });
+    lista.push(m.promotion ? { de: casaDe(m.from), para: casaDe(m.to), promocao: true } : { de: casaDe(m.from), para: casaDe(m.to) });
   }
   return lista;
 }
@@ -149,7 +152,8 @@ export const partidaDeXadrez = duelo<EstadoDaPartida>({
     if (jogo.turn() !== corDoLado(estado, lado)) return 'Espere a sua vez.';
     const legal = (jogo.moves({ verbose: true }) as Move[]).find((m) => m.from === nomeDe(de) && m.to === nomeDe(para));
     if (!legal) return 'Esse lance não vale.';
-    jogo.move({ from: legal.from, to: legal.to, promotion: legal.promotion ? 'q' : undefined });
+    const escolha = typeof corpo.promocao === 'string' && ['q', 'r', 'b', 'n'].includes(corpo.promocao) ? corpo.promocao : 'q';
+    jogo.move({ from: legal.from, to: legal.to, promotion: legal.promotion ? escolha : undefined });
     estado.ultimo = { de, para };
     const outro: Lado = lado === 0 ? 1 : 0;
     if (jogo.isCheckmate()) {

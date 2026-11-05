@@ -2676,4 +2676,7 @@ export default {
   Xadrez: 'Chess',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Egwuregwu chess zuru oke, na iwu niile. Onye malitere na-eji ọcha egwu. Ọnụ ụlọ na-ele.',
   'Xeque!': 'Chekụ!',
+  Dama: 'Eze nwanyị',
+  Torre: 'Ụlọ elu',
+  Bispo: 'Bishọp',
 } satisfies Record<string, string>;

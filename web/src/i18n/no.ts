@@ -2738,4 +2738,7 @@ export default {
   Xadrez: 'Sjakk',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Et helt parti sjakk med alle reglene. Den som starter, spiller hvit. Rommet ser på.',
   'Xeque!': 'Sjakk!',
+  Dama: 'Dronning',
+  Torre: 'Tårn',
+  Bispo: 'Løper',
 } satisfies Record<string, string>;

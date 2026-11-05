@@ -2670,4 +2670,7 @@ export default {
   Xadrez: 'Satranç',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Tüm kurallarıyla eksiksiz bir satranç oyunu. Başlayan beyazlarla oynar. Oda izler.',
   'Xeque!': 'Şah!',
+  Dama: 'Vezir',
+  Torre: 'Kale',
+  Bispo: 'Fil',
 } satisfies Record<string, string>;

@@ -2738,4 +2738,7 @@ export default {
   Xadrez: 'Шах',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Цела партија шах, со сите правила. Кој почнува игра со белите. Собата гледа.',
   'Xeque!': 'Шах!',
+  Dama: 'Кралица',
+  Torre: 'Топ',
+  Bispo: 'Ловец',
 } satisfies Record<string, string>;

@@ -2739,4 +2739,7 @@ export default {
   Xadrez: 'I-chess',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Umdlalo ophelele we-chess, nayo yonke imithetho. Oqalayo udlala ngokumhlophe. Igumbi liyabuka.',
   'Xeque!': 'Cheki!',
+  Dama: 'Indlovukazi',
+  Torre: 'Inqaba',
+  Bispo: 'Umbhishobhi',
 } satisfies Record<string, string>;

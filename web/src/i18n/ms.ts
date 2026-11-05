@@ -2668,4 +2668,7 @@ export default {
   Xadrez: 'Catur',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Satu permainan catur penuh, dengan semua peraturan. Yang memulakan bermain putih. Bilik menonton.',
   'Xeque!': 'Sah!',
+  Dama: 'Permaisuri',
+  Torre: 'Tir',
+  Bispo: 'Gajah',
 } satisfies Record<string, string>;

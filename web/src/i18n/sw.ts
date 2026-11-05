@@ -2667,4 +2667,7 @@ export default {
   Xadrez: 'Chesi',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Mchezo kamili wa chesi, wenye sheria zote. Anayeanza anacheza na nyeupe. Chumba kinatazama.',
   'Xeque!': 'Cheki!',
+  Dama: 'Malkia',
+  Torre: 'Ngome',
+  Bispo: 'Askofu',
 } satisfies Record<string, string>;

@@ -2649,4 +2649,7 @@ export default {
   Xadrez: 'チェス',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'すべてのルールでの本格的なチェス。先手が白を持ちます。部屋のみんなが見守ります。',
   'Xeque!': 'チェック！',
+  Dama: 'クイーン',
+  Torre: 'ルーク',
+  Bispo: 'ビショップ',
 } satisfies Record<string, string>;

@@ -97,3 +97,23 @@ test('no Solo, o robô senta na hora e responde ao lance da pessoa', () => {
   const depois = m.jogo.publico(1) as { lances: unknown[] };
   assert.ok(depois.lances.length > 0, 'o robô jogou, e a vez voltou');
 });
+
+test('a promoção: o lance vem marcado, e a pessoa escolhe a peça (um cavalo, por exemplo)', () => {
+  const m = mesa();
+  m.jogo.acao(2, { tipo: 'sentar' });
+  const v = m.jogo.publico(1) as { brancas: 0 | 1 };
+  const brancas = v.brancas === 0 ? 1 : 2;
+  const pretas = brancas === 1 ? 2 : 1;
+  const lance = (quem: number, de: string, para: string, promocao?: string) => m.jogo.acao(quem, { tipo: 'jogada', de: casaDe(de), para: casaDe(para), promocao });
+  // o peão de a branco vai comendo até a sétima fileira
+  for (const [q, de, para] of [
+    [brancas, 'a2', 'a4'], [pretas, 'b7', 'b5'], [brancas, 'a4', 'b5'], [pretas, 'a7', 'a6'],
+    [brancas, 'b5', 'a6'], [pretas, 'c8', 'b7'], [brancas, 'a6', 'b7'], [pretas, 'h7', 'h6'],
+  ] as const)
+    assert.equal(lance(q, de, para), null, `${de}-${para}`);
+  const vez = m.jogo.publico(brancas) as { lances: { de: number; para: number; promocao?: true }[]; casas: string[] };
+  const promove = vez.lances.find((l) => l.de === casaDe('b7') && l.para === casaDe('a8'));
+  assert.ok(promove?.promocao, 'o lance de promoção vem marcado');
+  assert.equal(lance(brancas, 'b7', 'a8', 'n'), null);
+  assert.equal((m.jogo.publico(1) as { casas: string[] }).casas[casaDe('a8')], 'N', 'virou cavalo');
+});

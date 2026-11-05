@@ -2670,4 +2670,7 @@ export default {
   Xadrez: 'Xadrés',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': "Jogu xadrés kompletu ida, ho regra hotu. Ema ne'ebé hahú halimar ho mutin. Sala haree.",
   'Xeque!': 'Xeke!',
+  Dama: 'Rainha',
+  Torre: 'Torre',
+  Bispo: 'Bispu',
 } satisfies Record<string, string>;

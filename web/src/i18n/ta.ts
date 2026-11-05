@@ -2653,4 +2653,7 @@ export default {
   Xadrez: 'சதுரங்கம்',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'எல்லா விதிகளுடனும் ஒரு முழுச் சதுரங்க ஆட்டம். தொடங்குபவர் வெள்ளையுடன் ஆடுவார். அறை பார்க்கிறது.',
   'Xeque!': 'செக்!',
+  Dama: 'ராணி',
+  Torre: 'கோட்டை',
+  Bispo: 'மந்திரி',
 } satisfies Record<string, string>;

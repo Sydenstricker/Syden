@@ -2757,4 +2757,7 @@ export default {
   Xadrez: 'Շախմատ',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Ամբողջական շախմատային պարտիա՝ բոլոր կանոններով։ Ով սկսում է, խաղում է սպիտակներով։ Սենյակը դիտում է։',
   'Xeque!': 'Շախ!',
+  Dama: 'Թագուհի',
+  Torre: 'Նավակ',
+  Bispo: 'Փիղ',
 } satisfies Record<string, string>;

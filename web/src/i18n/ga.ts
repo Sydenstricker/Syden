@@ -2674,4 +2674,7 @@ export default {
   Xadrez: 'Ficheall',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Cluiche iomlán fichille, leis na rialacha go léir. An té a thosaíonn imríonn sé le bán. Breathnaíonn an seomra.',
   'Xeque!': 'Sáinn!',
+  Dama: 'Banríon',
+  Torre: 'Caisleán',
+  Bispo: 'Easpag',
 } satisfies Record<string, string>;

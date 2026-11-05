@@ -22,8 +22,8 @@ export interface EstadoPartidaDeXadrez {
   ultimo: { de: number; para: number } | null;
   xeque: boolean;
   fimPor: 'mate' | 'afogado' | 'repeticao' | 'cinquenta' | 'material' | null;
-  /** Só para quem tem a vez. */
-  lances: { de: number; para: number }[];
+  /** Só para quem tem a vez; `promocao` no peão que chega à última fileira. */
+  lances: { de: number; para: number; promocao?: true }[];
 }
 
 /**
@@ -53,8 +53,13 @@ export function JogoPartidaDeXadrez({
   const lances = minhaVez ? (estado.lances ?? []) : [];
   const girado = sentado && meuLado !== estado.brancas;
   const [escolhida, setEscolhida] = useState<number | null>(null);
+  /** O peão que chega à última fileira: a pessoa escolhe a peça (pedido dele, 05/11/2026: "pode querer um cavalo"). */
+  const [promovendo, setPromovendo] = useState<{ de: number; para: number } | null>(null);
   const assinatura = JSON.stringify(lances);
-  useEffect(() => setEscolhida(null), [assinatura]);
+  useEffect(() => {
+    setEscolhida(null);
+    setPromovendo(null);
+  }, [assinatura]);
 
   const origens = new Set(lances.map((l) => l.de));
   const destinos = escolhida === null ? [] : lances.filter((l) => l.de === escolhida).map((l) => l.para);
@@ -62,6 +67,7 @@ export function JogoPartidaDeXadrez({
     if (!minhaVez) return;
     if (origens.has(i)) return setEscolhida(i === escolhida ? null : i);
     if (escolhida !== null && destinos.includes(i)) {
+      if (lances.some((l) => l.de === escolhida && l.para === i && l.promocao)) return setPromovendo({ de: escolhida, para: i });
       agir({ tipo: 'jogada', de: escolhida, para: i });
       setEscolhida(null);
     }
@@ -124,6 +130,35 @@ export function JogoPartidaDeXadrez({
         ))}
       </div>
       <Tabuleiro3D dados={{ casas: estado.casas, girado, escolhida, destinos, ultimo: estado.ultimo, xequeEm }} aoClicar={clicar} reserva={tabuleiro} />
+      {promovendo && (
+        <div className="xadrez-promocao" role="group" aria-label={t('Xadrez')}>
+          {(
+            [
+              ['q', t('Dama')],
+              ['r', t('Torre')],
+              ['b', t('Bispo')],
+              ['n', t('Cavalo')],
+            ] as const
+          ).map(([p, nomeDaPeca]) => (
+            <button
+              key={p}
+              type="button"
+              aria-label={nomeDaPeca}
+              title={nomeDaPeca}
+              onClick={() => {
+                agir({ tipo: 'jogada', ...promovendo, promocao: p });
+                setPromovendo(null);
+                setEscolhida(null);
+              }}
+            >
+              <span className={`xadrez-peca ${girado ? 'preta' : 'branca'}`}>{peca(p)}</span>
+            </button>
+          ))}
+          <button type="button" className="xadrez-promocao-voltar" aria-label={t('Voltar')} onClick={() => setPromovendo(null)}>
+            ✕
+          </button>
+        </div>
+      )}
       <p className={`minijogo-situacao${minhaVez ? ' minha-vez' : ''}`} role="status">
         {situacao}
       </p>

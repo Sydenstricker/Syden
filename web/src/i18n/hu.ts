@@ -2740,4 +2740,7 @@ export default {
   Xadrez: 'Sakk',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Egy teljes sakkjátszma, minden szabállyal. Aki kezd, világossal játszik. A szoba nézi.',
   'Xeque!': 'Sakk!',
+  Dama: 'Vezér',
+  Torre: 'Bástya',
+  Bispo: 'Futó',
 } satisfies Record<string, string>;

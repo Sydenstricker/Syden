@@ -2738,4 +2738,7 @@ export default {
   Xadrez: 'Jees',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Ciyaar jees oo dhammaystiran, oo leh dhammaan xeerarka. Kii bilaaba wuxuu ku ciyaaraa caddaanka. Qolku wuu daawanayaa.',
   'Xeque!': 'Jeeg!',
+  Dama: 'Boqorad',
+  Torre: 'Qalcad',
+  Bispo: 'Wasiir',
 } satisfies Record<string, string>;

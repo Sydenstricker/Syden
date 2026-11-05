@@ -2668,4 +2668,7 @@ export default {
   Xadrez: 'ቼዝ',
   'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'ሙሉ የቼዝ ጨዋታ፣ ከሁሉም ሕጎቹ ጋር። የሚጀምር ነጩን ይይዛል። ክፍሉ ይመለከታል።',
   'Xeque!': 'ቼክ!',
+  Dama: 'ንግሥት',
+  Torre: 'ግንብ',
+  Bispo: 'ጳጳስ',
 } satisfies Record<string, string>;
