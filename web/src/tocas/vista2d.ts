@@ -73,7 +73,8 @@ export class Vista2D implements Vista {
     g.setTransform(k, 0, 0, k, 0, 0);
     const w = this.caixa.clientWidth;
     const h = this.caixa.clientHeight;
-    g.fillStyle = '#3d4a33';
+    // fora do mapa é preto
+    g.fillStyle = '#000000';
     g.fillRect(0, 0, w, h);
     const e = this.escala;
     const j = this.sim.jogadores[this.eu];
@@ -168,6 +169,25 @@ export class Vista2D implements Vista {
       g.strokeStyle = s.ataque ? `rgba(224,82,82,${1 - f2})` : `rgba(127,224,127,${1 - f2})`;
       g.lineWidth = 2;
       g.stroke();
+    }
+    // o ponto de reunião do MEU prédio escolhido: a bandeirinha (por cima da névoa: o lugar pode estar fora da vista)
+    if (this.selecao.size === 1) {
+      const p = this.sim.porId.get([...this.selecao][0]);
+      if (p && 'reuniao' in p && p.dono === this.eu && p.reuniao) {
+        const s = this.paraTela(p.reuniao.x, p.reuniao.y);
+        g.strokeStyle = '#efe3c8';
+        g.lineWidth = 2;
+        g.beginPath();
+        g.moveTo(s.x, s.y);
+        g.lineTo(s.x, s.y - e * 0.9);
+        g.stroke();
+        g.fillStyle = CORES[this.eu];
+        g.beginPath();
+        g.moveTo(s.x, s.y - e * 0.9);
+        g.lineTo(s.x + e * 0.45, s.y - e * 0.75);
+        g.lineTo(s.x, s.y - e * 0.6);
+        g.fill();
+      }
     }
   }
 

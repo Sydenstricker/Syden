@@ -163,6 +163,12 @@ export interface Predio {
   recarga: number;
   /** A era em que ficou pronto (a tela escolhe o modelo). */
   era: 1 | 2;
+  /**
+   * O PONTO DE REUNIÃO (05/11/2026, pedido dele: "clicar com o direito deveria alterar o local de geração da unidade"): quem
+   * nasce aqui vai para lá sozinho. Com `alvo` (uma fonte, a fazenda, um inimigo), quem nasce recebe o mesmo clique direito
+   * sobre ele (o trabalhador vai coletar, o soldado atacar). Null: fica na porta.
+   */
+  reuniao: { x: number; y: number; alvo?: number } | null;
 }
 
 export interface Fonte {
@@ -206,6 +212,8 @@ export type Comando =
   | { t: 'muralha'; ids: number[]; gx0: number; gy0: number; gx1: number; gy1: number }
   | { t: 'treinar'; predio: number; unidade: TipoUnidade }
   | { t: 'cancelar'; predio: number }
+  /** O ponto de reunião do prédio: no chão, ou em cima de algo (`alvo`). */
+  | { t: 'reuniao'; predio: number; x: number; y: number; alvo?: number }
   | { t: 'era'; predio: number }
   | { t: 'parar'; ids: number[] };
 
@@ -410,6 +418,7 @@ function novoPredio(sim: Sim, dono: Dono, tipo: TipoPredio, gx: number, gy: numb
     pesquisa: 0,
     recarga: 0,
     era,
+    reuniao: null,
   };
   sim.predios.push(p);
   sim.porId.set(p.id, p);
@@ -793,6 +802,15 @@ function aplicar(sim: Sim, dono: Dono, c: Comando) {
       p.fila.push(c.unidade);
       return;
     }
+    case 'reuniao': {
+      const p = sim.porId.get(c.predio);
+      if (!ePredio(p) || p.dono !== dono || typeof c.x !== 'number' || typeof c.y !== 'number' || !Number.isFinite(c.x) || !Number.isFinite(c.y)) return;
+      const x = Math.min(TAMANHO - 0.5, Math.max(0.5, c.x));
+      const y = Math.min(TAMANHO - 0.5, Math.max(0.5, c.y));
+      const alvo = typeof c.alvo === 'number' && sim.porId.has(c.alvo) && c.alvo !== p.id ? c.alvo : undefined;
+      p.reuniao = alvo === undefined ? { x, y } : { x, y, alvo };
+      return;
+    }
     case 'cancelar': {
       const p = sim.porId.get(c.predio);
       if (!ePredio(p) || p.dono !== dono) return;
@@ -863,6 +881,12 @@ function predioPensa(sim: Sim, p: Predio) {
         p.fila.shift();
         p.treino = 0;
         sim.eventos.push({ t: 'treinou', id: u.id, dono: p.dono, tipo });
+        // quem nasce vai ao ponto de reunião (o alvo que sumiu vira só o lugar)
+        const r = p.reuniao;
+        if (r) {
+          if (r.alvo !== undefined && sim.porId.has(r.alvo)) aplicar(sim, p.dono, { t: 'alvo', ids: [u.id], alvo: r.alvo });
+          else aplicar(sim, p.dono, { t: 'mover', ids: [u.id], x: r.x, y: r.y });
+        }
       }
     }
   }

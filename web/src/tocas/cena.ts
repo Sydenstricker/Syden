@@ -222,6 +222,8 @@ interface Tiro {
 
 export class CenaDasTocas implements Vista {
   selecao = new Set<number>();
+  /** A bandeira do ponto de reunião do prédio escolhido (feita na primeira vez). */
+  private bandeiraDaReuniao: THREE.Group | null = null;
   fantasma: Vista['fantasma'] = null;
   private renderer: THREE.WebGLRenderer;
   private cena = new THREE.Scene();
@@ -329,7 +331,8 @@ export class CenaDasTocas implements Vista {
 
   private montarMundo() {
     const cena = this.cena;
-    cena.background = new THREE.Color('#9fc6d8');
+    // fora do mapa é preto (pedido dele, 05/11/2026: "a área impossível de ser jogada deveria ser preta")
+    cena.background = new THREE.Color('#000000');
     cena.add(new THREE.HemisphereLight('#fff4e2', '#4a5a3a', 1.5));
     const sol = new THREE.DirectionalLight('#fff0d8', 2.2);
     sol.position.set(T / 2 - 14, 30, T / 2 + 10);
@@ -378,7 +381,7 @@ export class CenaDasTocas implements Vista {
     chao.name = 'chao';
     cena.add(chao);
     // a borda do mundo: terra escura em volta, sem névoa (fica igual em todo canto)
-    const borda = new THREE.Mesh(new THREE.PlaneGeometry(T * 4, T * 4), new THREE.MeshBasicMaterial({ color: '#3d4a33' }));
+    const borda = new THREE.Mesh(new THREE.PlaneGeometry(T * 4, T * 4), new THREE.MeshBasicMaterial({ color: '#000000' }));
     borda.rotation.x = -Math.PI / 2;
     borda.position.set(T / 2, -0.02, T / 2);
     cena.add(borda);
@@ -754,6 +757,34 @@ export class CenaDasTocas implements Vista {
         const tam = ePredio(e) ? e.tam : 1;
         a.position.set(e.gx + tam / 2, 0.03, e.gy + tam / 2);
         a.scale.setScalar(tam * 1.75);
+      }
+    }
+    // o ponto de reunião do MEU prédio escolhido: uma bandeirinha na cor do time
+    let reuniao: { x: number; y: number } | null = null;
+    if (this.selecao.size === 1) {
+      const e = this.sim.porId.get([...this.selecao][0]);
+      if (ePredio(e) && e.dono === this.eu && e.reuniao) reuniao = e.reuniao;
+    }
+    if (reuniao && !this.bandeiraDaReuniao) {
+      const b = new THREE.Group();
+      const mastro = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.9, 6), new THREE.MeshStandardMaterial({ color: '#6b4a2e' }));
+      mastro.position.y = 0.45;
+      const forma = new THREE.Shape();
+      forma.moveTo(0, 0);
+      forma.lineTo(0.42, -0.13);
+      forma.lineTo(0, -0.26);
+      const pano = new THREE.Mesh(new THREE.ShapeGeometry(forma), new THREE.MeshStandardMaterial({ color: CORES[this.eu], side: THREE.DoubleSide }));
+      pano.position.set(0.02, 0.88, 0);
+      b.add(mastro, pano);
+      this.descartaveis.push(mastro.geometry, mastro.material as THREE.Material, pano.geometry, pano.material as THREE.Material);
+      this.cena.add(b);
+      this.bandeiraDaReuniao = b;
+    }
+    if (this.bandeiraDaReuniao) {
+      this.bandeiraDaReuniao.visible = !!reuniao;
+      if (reuniao) {
+        this.bandeiraDaReuniao.position.set(reuniao.x, 0, reuniao.y);
+        this.bandeiraDaReuniao.rotation.y = Math.sin(this.tempo * 2) * 0.15;
       }
     }
     // as barras de vida: de quem está ferido ou escolhido, e visível

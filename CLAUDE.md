@@ -622,9 +622,21 @@ estratégia (o pacote Ultimate Fantasy RTS do Quaternius, CC0, em glTF) é o pr�
   Watercraft Pack) como opção de aparência de cada um. Não há navio de guerra moderno em pacote livre nenhum que temos.
 - **Reações na chamada** (`reacoes.ts`): os balões do Kenney Emotes Pack em cima do quadro, pelo canal de dados do LiveKit (cifrado,
   nada no servidor). **No salão, não**: quem está fora da chamada não recebe o canal, e levar ao salão pede o servidor repassar.
-- **O coelho 3D é um módulo só** (`web/src/coelho3d.ts`): todo jogo 3D novo carrega o coelho por ele. A "massa sem textura" é a
-  textura do Meshy, quase lisa; o módulo disfarça (cores do avatar, luz de borda, contorno), mas o conserto de verdade é uma textura
-  nova do coelho.
+- **O coelho 3D é um módulo só** (`web/src/coelho3d.ts`): todo jogo 3D novo carrega o coelho por ele. **A "massa sem textura" era
+  LUZ, não textura** (medido lado a lado em 05/11/2026, relato dele: "a animação que baixei tem textura"): o arquivo animado do Meshy
+  é byte a byte o `mascote-t.glb`, a mesma pintura; o visualizador dele tem luz de AMBIENTE, e os jogos só sol e céu chapado. A luz
+  de ambiente agora vai no material do coelho (um céu pequeno pintado por código, só nele: as peças dos jogos continuam com a luz
+  delas), e o relevo do Meshy volta à parte do GLB (`cidades3d/coelho-relevo.jpg`, 1024).
+- **Minigolfe 3D, a tacada por cima** (pedido dele: "a bola sempre vai linear ao solo"): a tacada leva `dy` e a bola voa por cima
+  das bordas baixas (0,147) e dos fossos; castelo e moinho são torres. Mudou a física nas duas cópias: servidor e site sobem juntos.
+  Tecla Q ou o botão; a mira vira o arco de verdade. **O cenário** ganhou céu em degradê, nuvens, morros e o parque (Coaster Kit da
+  Kenney, CC0, crédito nos termos).
+- **Tocas e Torres, a segunda rodada (pedidos dele, mesmo dia):** a janela larga e da altura da tela; o painel e os recursos DENTRO
+  da janela do jogo, com altura fixa (a barra de rolagem que aparecia ao escolher algo mudava a largura, e o 3D redimensionado
+  piscava preto e pulava a câmera); fora do mapa é preto; os ícones são os próprios modelos dos recursos fotografados em PNG
+  (`web/public/tocas/icones/`); a taxa "+x" é o que chegou no último minuto da partida; **o ponto de reunião** (botão direito com o
+  prédio escolhido; em cima de uma fonte, quem nasce vai coletar); e o treino que não sai diz o porquê (falta recurso, fila cheia,
+  "Falta casa").
 
 **O TABULEIRO DA TURMA está feito (03/11/2026, o item 5):** `server/src/minijogo-tabuleiro-da-turma.ts`, `web/src/JogoTabuleiro.tsx`,
 só no Coletivo (2 a 8). Uma volta de 30 casas em volta de uma horta, desenhada por código; 5, 10 ou 15 rodadas. Na vez, cada

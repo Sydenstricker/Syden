@@ -8,11 +8,40 @@
   min-width: 0;
 }
 
+/* O jogo pede tela (pedido dele, 05/11/2026: "a tela deveria ser maior"): o painel dos mini-games fica largo, e nunca rola
+   por dentro — uma barra de rolagem aparecendo mudava a largura, e o 3D redimensionado piscava preto e pulava a câmera. */
+.minijogo.jogando-tocas {
+  width: min(1440px, 98vw);
+  overflow: hidden;
+}
+
+/* O PAINEL MORA DENTRO DA JANELA DO JOGO, por cima do mapa e com altura fixa (pedido dele: "os recursos devem aparecer dentro
+   da HUD do jogo"): escolher alguém muda os botões, nunca o tamanho do mapa. Sempre escuro, nos dois temas. */
+.tocas-topo,
+.tocas-baixo {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  z-index: 2;
+  border-radius: 10px;
+  background: rgba(14, 18, 24, 0.8);
+  backdrop-filter: blur(3px);
+  --text-strong: #ffffff;
+  --text: #e6eaf0;
+  --text-muted: #b4bcc8;
+  --border: rgba(255, 255, 255, 0.18);
+  --bg-input: rgba(255, 255, 255, 0.07);
+  --bg-active: rgba(255, 255, 255, 0.14);
+  --bg-hover: rgba(255, 255, 255, 0.16);
+  color: var(--text);
+}
 .tocas-topo {
+  top: 8px;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px 12px;
+  gap: 4px 14px;
+  padding: 4px 10px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   color: var(--text-strong);
@@ -22,15 +51,28 @@
   align-items: center;
   gap: 4px;
 }
-.tocas-recurso::before,
-.tocas-custo > span::before {
-  content: '';
-  display: inline-block;
-  width: 0.7em;
-  height: 0.7em;
-  border-radius: 50%;
-  background: var(--tocas-cor, #b5bcc8);
-  margin-right: 2px;
+.tocas-recurso img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.5));
+}
+.tocas-recurso-taxa {
+  font-size: 0.78em;
+  font-weight: 600;
+  color: #9ef0a8;
+}
+.tocas-recurso.cheia .tocas-recurso-qtd {
+  color: #ffb36b;
+}
+.tocas-custo img {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  margin-right: 1px;
+}
+.tocas-custo > .falta {
+  color: #ff9b8a;
 }
 .tocas-rec-comida {
   --tocas-cor: #e2604c;
@@ -74,12 +116,14 @@
 .tocas-moldura {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
-  max-height: 64vh;
-  min-height: 240px;
+  /* a altura da tela menos o cabeçalho do painel e os comandos (na sala, o painel fica em cima da barra da chamada) */
+  height: clamp(300px, calc(100vh - 300px), 920px);
   border-radius: 10px;
   overflow: hidden;
-  background: #3d4a33;
+  background: #000;
+}
+.minijogo-no-quarto .tocas-moldura {
+  height: clamp(300px, calc(100vh - 190px), 920px);
 }
 .tocas-caixa {
   position: absolute;
@@ -108,7 +152,8 @@
 }
 .tocas-aviso {
   position: absolute;
-  top: 10px;
+  z-index: 3;
+  top: 56px;
   left: 50%;
   transform: translateX(-50%);
   max-width: calc(100% - 24px);
@@ -134,14 +179,29 @@
 }
 
 .tocas-baixo {
+  bottom: 8px;
+  height: 150px;
+  padding: 8px;
+  box-sizing: border-box;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) minmax(0, 1.4fr);
+  grid-template-columns: auto minmax(0, 1fr) minmax(0, 1.6fr);
   gap: 10px;
-  align-items: start;
+  align-items: stretch;
+}
+.tocas-info,
+.tocas-acoes {
+  overflow-y: auto;
+  min-height: 0;
 }
 @media (max-width: 640px) {
   .tocas-baixo {
+    height: 190px;
     grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+  .tocas-mapa {
+    width: 96px !important;
+    height: 96px !important;
   }
   .tocas-acoes {
     grid-column: 1 / -1;
@@ -214,6 +274,9 @@
   background: var(--bg-active);
   font-size: 0.85em;
 }
+.tocas-fila-item.esperando {
+  color: #ffb36b;
+}
 .tocas-cancelar,
 .tocas-atalho {
   font: inherit;
@@ -227,7 +290,7 @@
 }
 .tocas-acoes {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
   gap: 6px;
   align-content: start;
 }

@@ -228,3 +228,37 @@ test('a Maravilha de pé por 2 minutos ganha a partida', () => {
   assert.equal(sim.vencedor, 0);
   assert.equal(sim.motivo, 'maravilha');
 });
+
+test('o ponto de reunião: quem nasce no prédio vai sozinho para lá, ou coleta a fonte marcada', () => {
+  const sim = novaPartida(11);
+  const centro = sim.predios.find((p) => p.dono === 0 && p.tipo === 'centro')!;
+  sim.jogadores[0].recursos.comida = 1000;
+  // de outro dono, nada muda
+  comandar(sim, 1, { t: 'reuniao', predio: centro.id, x: 5, y: 5 });
+  passo(sim);
+  assert.equal(centro.reuniao, null);
+  const fonte = sim.fontes.find((f) => f.tipo === 'arvore')!;
+  comandar(sim, 0, { t: 'reuniao', predio: centro.id, x: fonte.gx + 0.5, y: fonte.gy + 0.5, alvo: fonte.id });
+  comandar(sim, 0, { t: 'treinar', predio: centro.id, unidade: 'trabalhador' });
+  let nasceu: number | null = null;
+  for (let k = 0; k < UNIDADES.trabalhador.tempo + 5 && nasceu === null; k++) {
+    passo(sim);
+    for (const e of sim.eventos) if (e.t === 'treinou' && e.dono === 0) nasceu = e.id;
+  }
+  assert.ok(nasceu !== null, 'nasceu');
+  const u = sim.unidades.find((x) => x.id === nasceu)!;
+  assert.equal(u.ordem.tipo, 'coletar');
+  assert.equal(u.ordem.alvo, fonte.id);
+  // no chão: vai até o lugar
+  comandar(sim, 0, { t: 'reuniao', predio: centro.id, x: centro.gx + 6.5, y: centro.gy + 1.5 });
+  comandar(sim, 0, { t: 'treinar', predio: centro.id, unidade: 'trabalhador' });
+  let outro: number | null = null;
+  for (let k = 0; k < UNIDADES.trabalhador.tempo + 5 && outro === null; k++) {
+    passo(sim);
+    for (const e of sim.eventos) if (e.t === 'treinou' && e.dono === 0) outro = e.id;
+  }
+  const v = sim.unidades.find((x) => x.id === outro)!;
+  assert.equal(v.ordem.tipo, 'mover');
+  for (let k = 0; k < 120; k++) passo(sim);
+  assert.ok(Math.hypot(v.x - (centro.gx + 6.5), v.y - (centro.gy + 1.5)) < 1.2, `chegou: ${v.x.toFixed(1)}, ${v.y.toFixed(1)}`);
+});

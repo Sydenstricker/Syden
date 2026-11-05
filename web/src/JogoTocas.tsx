@@ -81,6 +81,14 @@ const NOME: Record<TipoUnidade | TipoPredio, string> = {
   maravilha: chave('Maravilha'),
 };
 const NOME_DO_RECURSO: Record<Recurso, string> = { comida: chave('Comida'), madeira: chave('Madeira'), ouro: chave('Ouro') };
+/**
+ * Os ÍCONES do painel (05/11/2026, pedido dele: "temos os recursos com assets, não podemos usá-los como UI?"): os próprios
+ * modelos da KayKit (Resource Bits) e a casa do Quaternius, fotografados uma vez em PNG transparente (web/public/tocas/icones/),
+ * para valerem também no 2D.
+ */
+const ICONE = (nome: Recurso | 'populacao') => `${import.meta.env.BASE_URL}tocas/icones/${nome}.png`;
+/** A taxa "+x" de cada recurso: o que chegou ao estoque no último minuto da partida (o tempo da simulação, que pausa junto). */
+const JANELA_DA_TAXA = 60 * PASSOS_POR_SEGUNDO;
 const CONSTRUIVEIS: TipoPredio[] = ['casa', 'fazenda', 'quartel', 'arquearia', 'torre', 'muralha', 'portao', 'maravilha'];
 
 const relogio = (passos: number) => {
@@ -130,6 +138,8 @@ declare global {
 
 interface Painel {
   recursos: Record<Recurso, number>;
+  /** Quanto entrou de cada um por minuto (a média do último minuto). */
+  taxa: Record<Recurso, number>;
   pop: { usada: number; max: number };
   era: 1 | 2;
   passo: number;
@@ -154,7 +164,9 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
   const selRef = useRef<number[]>([]);
   const [colocando, setColocando] = useState<Colocando | null>(null);
   const colocandoRef = useRef<Colocando | null>(null);
-  const [painel, setPainel] = useState<Painel>(() => lerPainel(sim, 0));
+  /** O que chegou ao estoque, com o passo: a conta da taxa. */
+  const entregas = useRef<{ passo: number; rec: Recurso; qtd: number }[]>([]);
+  const [painel, setPainel] = useState<Painel>(() => lerPainel(sim, 0, []));
   const [aviso, setAviso] = useState<string | null>(null);
   const [acabou, setAcabou] = useState(false);
   const teclas = useRef(new Set<string>());
@@ -227,7 +239,10 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
             if (e.dono === 0) som('acerto', 300);
             break;
           case 'entregou':
-            if (e.dono === 0) som('moeda', 1500);
+            if (e.dono === 0) {
+              som('moeda', 1500);
+              entregas.current.push({ passo: sim.passo, rec: e.rec, qtd: e.qtd });
+            }
             break;
           case 'golpe':
             if (vis[Math.floor(e.y1) * TAMANHO + Math.floor(e.x1)]) som(e.arma === 'corpo' ? 'soco' : 'tiro', 220);
@@ -260,6 +275,7 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
       let acumulado = 0;
       let ultimoPainel = 0;
       let ultimoMapa = 0;
+      let avisouCasa = false;
       const quadro = () => {
         if (!viva || !vista) return;
         id = requestAnimationFrame(quadro);
@@ -299,7 +315,12 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
           // quem morreu sai da seleção
           const vivos = selRef.current.filter((x) => sim.porId.has(x));
           if (vivos.length !== selRef.current.length) escolher(vivos);
-          setPainel(lerPainel(sim, Math.floor(agora / 200)));
+          entregas.current = entregas.current.filter((x) => x.passo > sim.passo - JANELA_DA_TAXA);
+          setPainel(lerPainel(sim, Math.floor(agora / 200), entregas.current));
+          // quem terminou o treino e não sai por falta de casa: avisa uma vez por vez que trava
+          const travado = sim.predios.some((p) => p.dono === 0 && p.fila.length > 0 && p.pesquisa === 0 && p.treino >= UNIDADES[p.fila[0]].tempo);
+          if (travado && !avisouCasa) avisar(t('A população está no máximo: construa uma Casa.'));
+          avisouCasa = travado;
         }
         if (agora - ultimoMapa > 250) {
           ultimoMapa = agora;
@@ -357,10 +378,30 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
   const minhasUnidades = () => selRef.current.map((x) => sim.porId.get(x)).filter(eUnidade).filter((u) => u.dono === 0);
   const trabalhadoresEscolhidos = () => minhasUnidades().filter((u) => u.tipo === 'trabalhador').map((u) => u.id);
 
+  /** O meu prédio escolhido que treina alguém (o centro, o quartel, a arquearia), pronto. */
+  const predioQueTreina = () => {
+    if (selRef.current.length !== 1) return null;
+    const p = sim.porId.get(selRef.current[0]);
+    if (!ePredio(p) || p.dono !== 0 || !p.pronto) return null;
+    return (Object.keys(UNIDADES) as TipoUnidade[]).some((k) => UNIDADES[k].de === p.tipo) ? p : null;
+  };
   const mandar = (px: number, py: number) => {
     const v = vistaRef.current;
     const us = minhasUnidades();
-    if (!v || !us.length) return;
+    if (!v) return;
+    const quemTreina = !us.length ? predioQueTreina() : null;
+    if (quemTreina) {
+      // o ponto de reunião: em cima de algo (a fonte, a fazenda, o inimigo) ou no chão
+      const alvo = v.pegar(px, py);
+      const e = alvo !== null ? sim.porId.get(alvo) : undefined;
+      const p = e && e.id !== quemTreina.id ? centroDe(e) : v.chao(px, py);
+      if (!p) return;
+      comandar(sim, 0, { t: 'reuniao', predio: quemTreina.id, x: p.x, y: p.y, ...(e && e.id !== quemTreina.id ? { alvo: e.id } : {}) });
+      v.sinal(p.x, p.y, false);
+      tocar('clique');
+      return;
+    }
+    if (!us.length) return;
     const ids = us.map((u) => u.id);
     const alvo = v.pegar(px, py);
     const e = alvo !== null ? sim.porId.get(alvo) : undefined;
@@ -516,7 +557,7 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
       const e2 = id !== null ? sim.porId.get(id) : undefined;
       const minha = e2 && (eUnidade(e2) || ePredio(e2)) && e2.dono === 0;
       if (minha) return escolher([id!]);
-      if (minhasUnidades().length) return mandar(p.x, p.y);
+      if (minhasUnidades().length || predioQueTreina()) return mandar(p.x, p.y);
       return escolher(id !== null ? [id] : []);
     }
     if (g.modo === 'caixa') {
@@ -581,7 +622,8 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
   const custo = (c: Custo) => (
     <span className="tocas-custo">
       {RECURSOS.filter((k) => c[k]).map((k) => (
-        <span key={k} className={`tocas-rec-${k}`}>
+        <span key={k} className={`tocas-rec-${k}${(c[k] ?? 0) > painel.recursos[k] ? ' falta' : ''}`}>
+          <img src={ICONE(k)} alt="" />
           {c[k]}
         </span>
       ))}
@@ -624,7 +666,17 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
         aria-disabled={!pode}
         title={travado ? t('Pede a era 2') : undefined}
         onClick={() => {
-          if (!pode || !predio) return void tocar('erro');
+          if (!predio) return;
+          if (!pode) {
+            tocar('erro');
+            // o que impede, dito (antes, o clique sem recurso não fazia nada à vista: "cliquei no cavaleiro e não saiu")
+            if (predio.fila.length >= 5) avisar(t('A fila está cheia.'));
+            else {
+              const falta = RECURSOS.filter((k) => (d.custo[k] ?? 0) > sim.jogadores[0].recursos[k]);
+              avisar(t('Falta: {lista}', { lista: falta.map((k) => t(NOME_DO_RECURSO[k])).join(', ') }));
+            }
+            return;
+          }
           comandar(sim, 0, { t: 'treinar', predio: predio.id, unidade: tipo });
           tocar('clique');
         }}
@@ -638,14 +690,20 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
   const maravilha = painel.maravilha;
   return (
     <div className="tocas">
+      <div className="tocas-moldura">
       <div className="tocas-topo">
         {RECURSOS.map((k) => (
           <span key={k} className={`tocas-recurso tocas-rec-${k}`} title={t(NOME_DO_RECURSO[k])}>
-            <span className="tocas-recurso-nome">{t(NOME_DO_RECURSO[k])}</span> {Math.floor(painel.recursos[k])}
+            <img src={ICONE(k)} alt={t(NOME_DO_RECURSO[k])} />
+            <span className="tocas-recurso-qtd">{Math.floor(painel.recursos[k])}</span>
+            <span className="tocas-recurso-taxa">+{painel.taxa[k]}</span>
           </span>
         ))}
-        <span className="tocas-recurso" title={t('População')}>
-          <span className="tocas-recurso-nome">{t('População')}</span> {painel.pop.usada}/{painel.pop.max}
+        <span className={`tocas-recurso${painel.pop.usada >= painel.pop.max ? ' cheia' : ''}`} title={t('População')}>
+          <img src={ICONE('populacao')} alt={t('População')} />
+          <span className="tocas-recurso-qtd">
+            {painel.pop.usada}/{painel.pop.max}
+          </span>
         </span>
         <span className="tocas-era">{t('Era {n}', { n: painel.era })}</span>
         <span className="tocas-relogio">{relogio(painel.passo)}</span>
@@ -655,7 +713,6 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
           {t('Desistir')}
         </button>
       </div>
-      <div className="tocas-moldura">
         <div
           ref={caixa}
           className={`tocas-caixa${pronta ? '' : ' carregando'}${colocando ? ' colocando' : ''}`}
@@ -673,7 +730,6 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
         {acabou && (
           <div className="tocas-acabou">{sim.vencedor === 0 ? t('Vitória!') : t('Derrota')}</div>
         )}
-      </div>
       <div className="tocas-baixo">
         <canvas ref={mapa} className="tocas-mapa" width={TAMANHO * 3} height={TAMANHO * 3} onPointerDown={aoTocarNoMapa} onPointerMove={(e) => e.buttons === 1 && aoTocarNoMapa(e)} onContextMenu={(e) => e.preventDefault()} />
         <div className="tocas-info">
@@ -707,9 +763,9 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
                     </span>
                   ) : (
                     predio.fila.map((u, i) => (
-                      <span key={i} className="tocas-fila-item">
+                      <span key={i} className={`tocas-fila-item${i === 0 && predio.treino >= UNIDADES[u].tempo ? ' esperando' : ''}`}>
                         {t(NOME[u])}
-                        {i === 0 && ` ${Math.floor((predio.treino / UNIDADES[u].tempo) * 100)}%`}
+                        {i === 0 && (predio.treino >= UNIDADES[u].tempo ? ` · ${t('Falta casa')}` : ` ${Math.floor((predio.treino / UNIDADES[u].tempo) * 100)}%`)}
                       </span>
                     ))
                   )}
@@ -780,7 +836,9 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
             </>
           )}
           {colocando?.tipo === 'muralha' && <p className="tocas-dica">{colocando.inicio ? t('Agora a outra ponta da muralha.') : t('Escolha onde a muralha começa.')}</p>}
+          {predioQueTreina() && !colocando && <p className="tocas-dica">{t('Botão direito no mapa: para onde vai quem nasce aqui.')}</p>}
         </div>
+      </div>
       </div>
       <ComandosDoJogo
         itens={[
@@ -807,10 +865,16 @@ function vezes(c: Custo, n: number): Custo {
   return r;
 }
 
-function lerPainel(sim: Sim, versao: number): Painel {
+function lerPainel(sim: Sim, versao: number, entregas: { passo: number; rec: Recurso; qtd: number }[]): Painel {
   const j = sim.jogadores[0];
+  const taxa: Record<Recurso, number> = { comida: 0, madeira: 0, ouro: 0 };
+  for (const e of entregas) if (e.passo > sim.passo - JANELA_DA_TAXA) taxa[e.rec] += e.qtd;
+  // no primeiro minuto, a média do que já passou (senão a taxa começaria pequena demais)
+  const passou = Math.max(PASSOS_POR_SEGUNDO * 10, Math.min(JANELA_DA_TAXA, sim.passo));
+  for (const k of RECURSOS) taxa[k] = Math.round((taxa[k] * JANELA_DA_TAXA) / passou);
   return {
     recursos: { ...j.recursos },
+    taxa,
     pop: populacao(sim, 0),
     era: j.era,
     passo: sim.passo,
