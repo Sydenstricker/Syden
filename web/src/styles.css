@@ -4229,9 +4229,26 @@ textarea {
  * passar o tamanho da caixa de mão em mão pela árvore inteira de componentes.
  */
 .stream-invite .avatar {
-  width: clamp(22px, 26cqh, 44px) !important;
-  height: clamp(22px, 26cqh, 44px) !important;
-  font-size: clamp(10px, 11cqh, 19px) !important;
+  width: clamp(14px, 14cqh, 24px) !important;
+  height: clamp(14px, 14cqh, 24px) !important;
+  font-size: clamp(7px, 6cqh, 11px) !important;
+}
+
+/* O monitor no lugar do avatar grande, com o avatar pequeno no canto de baixo (é a tela de alguém, não a pessoa). */
+.stream-invite-tela {
+  position: relative;
+  display: inline-flex;
+  color: var(--text-muted);
+}
+.stream-invite-tela > svg {
+  width: clamp(26px, 30cqh, 52px);
+  height: clamp(26px, 30cqh, 52px);
+}
+.stream-invite-tela .avatar {
+  position: absolute;
+  right: -30%;
+  bottom: 0;
+  box-shadow: 0 0 0 2px var(--bg-sidebar);
 }
 
 .stream-invite-name {

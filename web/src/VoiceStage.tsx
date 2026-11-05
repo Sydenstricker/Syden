@@ -24,6 +24,7 @@ import {
   Mic,
   MicOff,
   Music,
+  Monitor,
   MonitorOff,
   PhoneOff,
   Play,
@@ -899,7 +900,12 @@ function ConviteDeTransmissao({
 
   return (
     <div className="stream-invite">
-      <Avatar name={nome} userId={Number(trackRef.participant.identity)} size={44} />
+      {/* A TELA, e não a pessoa (05/11/2026, relato dele: "parece que tem dois Rafinhas na sala"): o quadro da pessoa já
+          tem o avatar grande; aqui o desenho é um monitor, com o coelho pequeno no canto dizendo de quem é a tela */}
+      <span className="stream-invite-tela" aria-hidden="true">
+        <Monitor />
+        <Avatar name={nome} userId={Number(trackRef.participant.identity)} size={44} />
+      </span>
       <strong className="stream-invite-name">{nome}</strong>
       <span className="stream-invite-what">{oQue ? t('está transmitindo {oque}', { oque: oQue }) : t('está transmitindo')}</span>
       <button
