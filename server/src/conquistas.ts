@@ -28,9 +28,9 @@ const ENCONTRO_ANTES = 15 * 60_000;
 const ENCONTRO_DEPOIS = HORA;
 
 /** Os jogos que existem (server/src/minijogos-routes.ts, JOGOS): "Repertório" completo é jogar todos. */
-// Os seis do fliperama de 03/11/2026 entraram no mesmo dia (decisão dele), e Cidades à venda em 04/11/2026 (também dele). A corrida fica de fora: o troféu coletivo dela é
+// Os seis do fliperama de 03/11/2026 entraram no mesmo dia (decisão dele), e Cidades à venda em 04/11/2026 (também dele), e no mesmo dia a Caça às pragas e os quatro clássicos de mesa (dele: "elas devem contar"). A corrida fica de fora: o troféu coletivo dela é
 // a Copa da turma. Os quizzes também (ver CLAUDE.md).
-export const JOGOS_DAS_CONQUISTAS = ['tamanho', 'stop', 'sudoku', 'gomoku', 'mancala', 'xadrez', 'lobisomem', 'desenho', 'palavra', 'festa', 'golfe', 'tabuleiro', 'cidades', 'blocos', 'plataforma', 'briga'] as const;
+export const JOGOS_DAS_CONQUISTAS = ['tamanho', 'stop', 'sudoku', 'gomoku', 'mancala', 'xadrez', 'lobisomem', 'desenho', 'palavra', 'festa', 'golfe', 'tabuleiro', 'cidades', 'blocos', 'plataforma', 'briga', 'caca', 'domino', 'truco', 'damas', 'naval'] as const;
 
 export interface Conquista {
   id: string;

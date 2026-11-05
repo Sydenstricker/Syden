@@ -613,7 +613,7 @@ site as desenha com a mesma conta, e cada tiro vai com o lugar e o instante da o
 um programa poderia mirar sozinho. Pontos: 100 o corvo, 150 o gafanhoto (menor), mais até 50 pela rapidez. Pódio com 2 ou mais
 (`pista: 'caca'`); no Solo, o RECORDE da pessoa (`caca_recordes`). Tudo desenhado por código. Testes:
 `server/test/minijogos-caca.test.ts` e `e2e/caca.mjs` (passou, pelo Solo do computador do quarto, com o piloto automático
-`window.cacaPilotoAutomatico`). Ainda NÃO conta nas conquistas da turma (decisão dele, como foi com Cidades à venda).
+`window.cacaPilotoAutomatico`). Conta nas conquistas da turma desde o mesmo dia (decisão dele, junto com os clássicos de mesa).
 
 **OS CLÁSSICOS DE MESA (04/11/2026, pedido dele, depois da pesquisa de jogos sem manutenção):** Dominó, Truco, Damas e
 Batalha naval, só no Coletivo. Regra pública e nenhum conteúdo para manter. **Damas e Batalha naval são de MESA**, no `duelo`
@@ -627,8 +627,8 @@ encostar nem na diagonal, acertou atira de novo. **Dominó e Truco vão pelo con
 com 2 ou 3, com compra), 6-6 começa a primeira mão, batida e jogo trancado levam os pontos das mãos dos outros, até 50; o
 **Truco é o paulista**, em 2 ou em 4 (duplas), com vira e manilha (zap, copas, espadas, ouros), carta coberta da segunda
 rodada em diante, truco/seis/nove/doze, mão de onze e mão de ferro (sem a variante de cartas às cegas), até 12. Nos dois, a
-vez tem 30 s e o servidor joga por quem demora ou saiu da sala. **Sem troféus e fora das conquistas da turma** por enquanto
-(a mesma pergunta aberta da Caça). Testes: `server/test/minijogos-{damas,naval,domino,truco}.test.ts` e
+vez tem 30 s e o servidor joga por quem demora ou saiu da sala. **Contam nas conquistas da turma** (decisão dele, mesmo dia:
+"elas devem contar"; o Repertório completo passou a 21 jogos, com a Caça). Troféus da estante, ainda não. Testes: `server/test/minijogos-{damas,naval,domino,truco}.test.ts` e
 `e2e/classicos.mjs` (passou: duas pessoas na sala de voz jogando os quatro pela tela, numa tela estreita).
 
 **A ESTANTE DE TROFÉUS VIROU O HUB (03/11/2026, pedido dele: "um hub para todos os troféus em mini-games, todas as
