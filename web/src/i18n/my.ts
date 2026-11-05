@@ -2411,6 +2411,7 @@ export default {
   'Galhos': 'သစ်ကိုင်းများ',
   'Copa do Pulo': 'ခုန်ခြင်းဖလား',
   'Minigolfe da toca': 'တွင်းထဲ မီနီဂေါက်',
+  'Tacada por cima': 'မြင့်မြင့် ရိုက်ချက်',
   'Navios': 'သင်္ဘောများ',
   'Navios piratas': 'ပင်လယ်ဓားပြ သင်္ဘောများ',
   'Navios modernos': 'ခေတ်မီ သင်္ဘောများ',

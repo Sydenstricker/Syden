@@ -2444,6 +2444,7 @@ export default {
   'Galhos': 'Ágak',
   'Copa do Pulo': 'Ugrókupa',
   'Minigolfe da toca': 'Minigolf az üregben',
+  'Tacada por cima': 'Emelt ütés',
   'Navios': 'Hajók',
   'Navios piratas': 'Kalózhajók',
   'Navios modernos': 'Modern hajók',

@@ -2412,6 +2412,7 @@ export default {
   'Galhos': 'Damee',
   'Copa do Pulo': 'Kuubaa Utaalchaa',
   'Minigolfe da toca': 'Minigoolfii Boollaa',
+  'Tacada por cima': 'Rukuttaa ol-aanaa',
   'Navios': 'Doonii',
   'Navios piratas': 'Doonii saamtotaa',
   'Navios modernos': 'Doonii ammayyaa',

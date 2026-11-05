@@ -2439,6 +2439,7 @@ export default {
   'Galhos': 'Oksad',
   'Copa do Pulo': 'Hüppekarikas',
   'Minigolfe da toca': 'Urus minigolf',
+  'Tacada por cima': 'Kõrge löök',
   'Navios': 'Laevad',
   'Navios piratas': 'Piraadilaevad',
   'Navios modernos': 'Moodsad laevad',

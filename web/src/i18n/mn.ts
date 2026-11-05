@@ -2456,6 +2456,7 @@ export default {
   'Galhos': 'Мөчрүүд',
   'Copa do Pulo': 'Үсрэлтийн цом',
   'Minigolfe da toca': 'Нүхэн дэх мини гольф',
+  'Tacada por cima': 'Өндөр цохилт',
   'Navios': 'Хөлөг онгоц',
   'Navios piratas': 'Далайн дээрэмчдийн хөлөг',
   'Navios modernos': 'Орчин үеийн хөлөг',

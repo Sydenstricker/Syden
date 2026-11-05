@@ -2371,6 +2371,7 @@ export default {
   'Galhos': 'Tabana ni kau',
   'Copa do Pulo': 'Tiroba ni Rika',
   'Minigolfe da toca': 'Minigolf ena qara',
+  'Tacada por cima': 'Vana cere',
   'Navios': 'Waqa',
   'Navios piratas': 'Waqa ni daubutako',
   'Navios modernos': 'Waqa vou',

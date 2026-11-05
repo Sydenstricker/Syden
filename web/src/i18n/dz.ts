@@ -2455,6 +2455,7 @@ export default {
   'Galhos': 'ཡལ་ག',
   'Copa do Pulo': 'མཆོང་ལྡིང་ཊོ་ཕི།',
   'Minigolfe da toca': 'ཕུག་གི་ མི་ནི་གོལཕ།',
+  'Tacada por cima': 'མཐོ་བའི་རྡུང་།',
   'Navios': 'གྲུ།',
   'Navios piratas': 'ཇག་པའི་གྲུ།',
   'Navios modernos': 'དེང་སང་གི་གྲུ།',

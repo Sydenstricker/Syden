@@ -2437,6 +2437,7 @@ export default {
   'Galhos': 'Gałęzie',
   'Copa do Pulo': 'Puchar Skoku',
   'Minigolfe da toca': 'Minigolf w norze',
+  'Tacada por cima': 'Uderzenie górą',
   'Navios': 'Statki',
   'Navios piratas': 'Statki pirackie',
   'Navios modernos': 'Nowoczesne statki',

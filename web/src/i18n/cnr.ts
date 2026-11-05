@@ -2441,6 +2441,7 @@ export default {
   'Galhos': 'Grane',
   'Copa do Pulo': 'Kup skoka',
   'Minigolfe da toca': 'Minigolf u jazbini',
+  'Tacada por cima': 'Visoki udarac',
   'Navios': 'Brodovi',
   'Navios piratas': 'Gusarski brodovi',
   'Navios modernos': 'Moderni brodovi',

@@ -2372,6 +2372,7 @@ export default {
   'Galhos': 'Dahan',
   'Copa do Pulo': 'Piala Lompat',
   'Minigolfe da toca': 'Minigolf Lubang',
+  'Tacada por cima': 'Pukulan tinggi',
   'Navios': 'Kapal',
   'Navios piratas': 'Kapal lanun',
   'Navios modernos': 'Kapal moden',

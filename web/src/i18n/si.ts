@@ -2442,6 +2442,7 @@ export default {
   'Galhos': 'අතු',
   'Copa do Pulo': 'පැනීමේ කුසලානය',
   'Minigolfe da toca': 'ගුහාවේ මිනිගොල්ෆ්',
+  'Tacada por cima': 'උඩින් පහරක්',
   'Navios': 'නැව්',
   'Navios piratas': 'මුහුදු කොල්ලකරුවන්ගේ නැව්',
   'Navios modernos': 'නවීන නැව්',

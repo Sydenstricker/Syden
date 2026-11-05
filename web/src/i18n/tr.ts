@@ -2366,6 +2366,7 @@ export default {
   'Galhos': 'Dallar',
   'Copa do Pulo': 'Zıplama Kupası',
   'Minigolfe da toca': 'Yuvada Minigolf',
+  'Tacada por cima': 'Havadan vuruş',
   'Navios': 'Gemiler',
   'Navios piratas': 'Korsan gemileri',
   'Navios modernos': 'Modern gemiler',

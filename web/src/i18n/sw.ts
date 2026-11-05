@@ -2371,6 +2371,7 @@ export default {
   'Galhos': 'Matawi',
   'Copa do Pulo': 'Kombe la Kuruka',
   'Minigolfe da toca': 'Minigofu ya Shimoni',
+  'Tacada por cima': 'Pigo la juu',
   'Navios': 'Meli',
   'Navios piratas': 'Meli za maharamia',
   'Navios modernos': 'Meli za kisasa',

@@ -12,6 +12,11 @@
  * chão ou para fora da pista devolve a bola, com uma tacada a mais. As paredes são polígonos (retângulos e arcos), medidos nos
  * próprios modelos (a casa tem 1 de lado; o chão fica a 0,0633 e a parede vai de 0,4 a 0,5 do centro).
  *
+ * A TACADA POR CIMA (05/11/2026, pedido dele: "a bola sempre vai linear ao solo"): a tacada leva também `dy`, a parte para o
+ * alto, e a bola VOA (sem atrito, com a gravidade) por cima das bordas baixas, dos fossos e dos montes; ao cair, quica e volta a
+ * rolar. As paredes têm ALTURA (as do kit vão a 0,147 da base; as do castelo e do moinho, muito mais): no ar, só bate na parede
+ * quem está abaixo do topo dela. Cair fora da pista continua devolvendo a bola, com uma tacada a mais.
+ *
  * DETERMINISMO, como no golfe da toca: só + − × ÷ e Math.sqrt (mais floor, ceil e abs, que são exatos). Nada de seno nem
  * cosseno: os giros são de quartos de volta (0 e ±1), e os arcos saem de uma parametrização racional do círculo.
  */
@@ -41,6 +46,18 @@ const PEDACO = RAIO_BOLA / 2;
 export const PASSOS_MAX_DA_TACADA = 60 * 20;
 /** O limite de tacadas no buraco (cair fora conta uma). Quem chega nele sem acertar fica com TACADAS_MAX + 1. */
 export const TACADAS_MAX = 6;
+/** A gravidade no ar, em casas por passo ao quadrado. */
+export const GRAVIDADE_NO_AR = 0.004;
+/** A parte para o alto não passa disto (a tacada mais alta sobe a uns 45°). */
+export const DY_MAX = 700;
+/** Ao cair, a bola guarda isto da velocidade para cima e da para a frente. */
+export const QUIQUE_CHAO = 0.4;
+export const ATRITO_DO_QUIQUE = 0.75;
+/** Abaixo desta velocidade de queda, a bola não quica mais: assenta e rola. */
+export const ASSENTA = 0.012;
+/** A altura das paredes do kit acima da base da peça; as do castelo e do moinho são torres. */
+export const TOPO_DA_PAREDE = 0.147;
+const TOPO_DA_TORRE = 0.65;
 
 export type Peca =
   | 'reta'
@@ -319,7 +336,7 @@ export interface Montado {
   colunas: number;
   linhas: number;
   casas: (CasaMontada | null)[];
-  /** Os segmentos das paredes (x1, z1, x2, z2) que interessam a cada casa (dela e das vizinhas). */
+  /** Os segmentos das paredes (x1, z1, x2, z2, topo) que interessam a cada casa (dela e das vizinhas); o topo é a altura. */
   perto: number[][];
   /** Todas as paredes, já no buraco (para o desenho e o piloto). */
   paredes: number[][];
@@ -346,6 +363,7 @@ export function montar(b: Buraco): Montado {
   const linhas = z1 - z0 + 1;
   const casas: (CasaMontada | null)[] = new Array(colunas * linhas).fill(null);
   const segmentosDaCasa: number[][] = casas.map(() => []);
+  const topos: number[] = casas.map(() => 0);
   const paredes: number[][] = [];
   let buraco: [number, number] = [b.inicio[0], b.inicio[1]];
   for (const [peca, cx, cz, giro, base] of b.casas) {
@@ -367,6 +385,8 @@ export function montar(b: Buraco): Montado {
       }
     }
     if (f.buraco) buraco = [cx, cz];
+    const topo = base + (peca === 'castelo' || peca === 'moinho' || peca === 'tunel' ? TOPO_DA_TORRE : TOPO_DA_PAREDE);
+    topos[i] = topo;
   }
   const perto: number[][] = casas.map((_, i) => {
     const col = i % colunas;
@@ -377,7 +397,8 @@ export function montar(b: Buraco): Montado {
         const cc = col + dc;
         const ll = lin + dl;
         if (cc < 0 || ll < 0 || cc >= colunas || ll >= linhas) continue;
-        s.push(...segmentosDaCasa[ll * colunas + cc]);
+        const seg = segmentosDaCasa[ll * colunas + cc];
+        for (let k = 0; k < seg.length; k += 4) s.push(seg[k], seg[k + 1], seg[k + 2], seg[k + 3], topos[ll * colunas + cc]);
       }
     return s;
   });
@@ -436,6 +457,8 @@ export interface Tacada {
   passo: number;
   dx: number;
   dz: number;
+  /** A parte para o alto (0, ou sem ela, é rasteira). */
+  dy?: number;
 }
 
 export interface Bola {
@@ -443,6 +466,10 @@ export interface Bola {
   z: number;
   vx: number;
   vz: number;
+  /** No ar: a altura do fundo da bola e a velocidade para cima. No chão, `y` não vale nada. */
+  noAr: boolean;
+  y: number;
+  vy: number;
   passo: number;
   tacadaEm: number;
   andando: boolean;
@@ -453,13 +480,15 @@ export interface Bola {
 }
 
 export function novaBola(b: Buraco): Bola {
-  return { x: b.inicio[0], z: b.inicio[1], vx: 0, vz: 0, passo: 0, tacadaEm: 0, andando: false, dentro: false, tacadas: 0, ultimaX: b.inicio[0], ultimaZ: b.inicio[1] };
+  return { x: b.inicio[0], z: b.inicio[1], vx: 0, vz: 0, noAr: false, y: 0, vy: 0, passo: 0, tacadaEm: 0, andando: false, dentro: false, tacadas: 0, ultimaX: b.inicio[0], ultimaZ: b.inicio[1] };
 }
 
 export const acabouOBuraco = (bola: Bola) => bola.dentro || (!bola.andando && bola.tacadas >= TACADAS_MAX);
 export const pontosDoBuraco = (bola: Bola) => (bola.dentro ? bola.tacadas : TACADAS_MAX + 1);
 
-function baterNoSegmento(bola: Bola, ax: number, az: number, bx: number, bz: number) {
+function baterNoSegmento(bola: Bola, ax: number, az: number, bx: number, bz: number, topo: number) {
+  // no ar, acima do topo da parede, passa por cima
+  if (bola.noAr && bola.y >= topo) return;
   const sx = bx - ax;
   const sz = bz - az;
   const l2 = sx * sx + sz * sz;
@@ -495,6 +524,8 @@ function baterNoSegmento(bola: Bola, ax: number, az: number, bx: number, bz: num
 function parar(bola: Bola) {
   bola.vx = 0;
   bola.vz = 0;
+  bola.vy = 0;
+  bola.noAr = false;
   bola.andando = false;
 }
 
@@ -502,9 +533,11 @@ function parar(bola: Bola) {
 export function tacadaInvalida(bola: Bola, t: Tacada): string | null {
   if (bola.andando) return 'andando';
   if (acabouOBuraco(bola)) return 'acabou';
-  if (!Number.isInteger(t.passo) || !Number.isInteger(t.dx) || !Number.isInteger(t.dz)) return 'numeros';
+  const dy = t.dy ?? 0;
+  if (!Number.isInteger(t.passo) || !Number.isInteger(t.dx) || !Number.isInteger(t.dz) || !Number.isInteger(dy)) return 'numeros';
+  if (dy < 0 || dy > DY_MAX) return 'forca';
   if (t.passo < bola.passo) return 'cedo';
-  const f2 = t.dx * t.dx + t.dz * t.dz;
+  const f2 = t.dx * t.dx + t.dz * t.dz + dy * dy;
   if (f2 < FORCA_MIN * FORCA_MIN || f2 > FORCA_MAX * FORCA_MAX) return 'forca';
   return null;
 }
@@ -517,6 +550,11 @@ export function bater(bola: Bola, t: Tacada) {
   // (+ 0 tira o -0 do Math.round: o JSON o manda como 0, e as duas pontas precisam começar iguais)
   bola.vx = ((t.dx + 0) / FORCA_MAX) * VELOCIDADE_MAX;
   bola.vz = ((t.dz + 0) / FORCA_MAX) * VELOCIDADE_MAX;
+  const dy = t.dy ?? 0;
+  bola.noAr = dy > 0;
+  bola.vy = bola.noAr ? (dy / FORCA_MAX) * VELOCIDADE_MAX : 0;
+  // a altura de partida sai do chão no primeiro passo do voo (aqui o buraco não é conhecido)
+  bola.y = 0;
   bola.andando = true;
   bola.tacadas++;
 }
@@ -532,6 +570,10 @@ export function avancar(b: Buraco, bola: Bola) {
   if (!bola.andando) return;
   const m = montar(b);
   bola.passo++;
+  if (bola.noAr) {
+    if (bola.passo - bola.tacadaEm === 1) bola.y = relevo(b, bola.x, bola.z)[0];
+    return voar(b, m, bola);
+  }
   // a ladeira: empurra para baixo, na direção da inclinação
   const [, gx, gz] = relevo(b, bola.x, bola.z);
   bola.vx -= GRAVIDADE * gx;
@@ -562,7 +604,7 @@ export function avancar(b: Buraco, bola: Bola) {
     const i = indiceDaCasa(m, bola.x, bola.z);
     if (i >= 0) {
       const s = m.perto[i];
-      for (let k = 0; k < s.length; k += 4) baterNoSegmento(bola, s[k], s[k + 1], s[k + 2], s[k + 3]);
+      for (let k = 0; k < s.length; k += 5) baterNoSegmento(bola, s[k], s[k + 1], s[k + 2], s[k + 3], s[k + 4]);
     }
     // fora da pista ou num buraco do chão: volta para onde estava, com uma tacada a mais
     if (!temChao(b, bola.x, bola.z)) {
@@ -577,6 +619,52 @@ export function avancar(b: Buraco, bola: Bola) {
       bola.z = m.buraco[1];
       bola.dentro = true;
       return parar(bola);
+    }
+  }
+}
+
+/** Um passo da bola NO AR: sem atrito, a gravidade puxa; por cima das paredes baixas; ao chegar ao chão, quica ou assenta. */
+function voar(b: Buraco, m: Montado, bola: Bola) {
+  if (bola.passo - bola.tacadaEm > PASSOS_MAX_DA_TACADA) return parar(bola);
+  bola.vy -= GRAVIDADE_NO_AR;
+  const vh = Math.sqrt(bola.vx * bola.vx + bola.vz * bola.vz);
+  const maior = vh > (bola.vy < 0 ? -bola.vy : bola.vy) ? vh : bola.vy < 0 ? -bola.vy : bola.vy;
+  const pedacos = Math.max(1, Math.ceil(maior / PEDACO));
+  for (let p = 0; p < pedacos; p++) {
+    bola.x += bola.vx / pedacos;
+    bola.z += bola.vz / pedacos;
+    bola.y += bola.vy / pedacos;
+    const i = indiceDaCasa(m, bola.x, bola.z);
+    if (i >= 0) {
+      const s = m.perto[i];
+      for (let k = 0; k < s.length; k += 5) baterNoSegmento(bola, s[k], s[k + 1], s[k + 2], s[k + 3], s[k + 4]);
+    }
+    const chao = relevo(b, bola.x, bola.z)[0];
+    if (bola.y > chao) continue;
+    // chegou à altura do chão: sem chão aqui (fora da pista, um fosso), caiu
+    if (!temChao(b, bola.x, bola.z)) {
+      bola.x = bola.ultimaX;
+      bola.z = bola.ultimaZ;
+      bola.tacadas++;
+      return parar(bola);
+    }
+    bola.y = chao;
+    if (bola.vy < -ASSENTA / QUIQUE_CHAO) {
+      bola.vy = -bola.vy * QUIQUE_CHAO;
+      bola.vx *= ATRITO_DO_QUIQUE;
+      bola.vz *= ATRITO_DO_QUIQUE;
+    } else {
+      // assentou: rola dali (e cai no buraco, se assentou nele devagar)
+      bola.noAr = false;
+      bola.vy = 0;
+      const v2 = bola.vx * bola.vx + bola.vz * bola.vz;
+      if (noBuraco(m, bola) && v2 < CAPTURA * CAPTURA) {
+        bola.x = m.buraco[0];
+        bola.z = m.buraco[1];
+        bola.dentro = true;
+        return parar(bola);
+      }
+      return;
     }
   }
 }
@@ -619,7 +707,7 @@ export function mapaDeDistancia(b: Buraco): (x: number, z: number) => number {
       let ok = temChao(b, x, z) && !m.paredes.some((p) => dentroDoPoligono(p, x, z));
       const i = indiceDaCasa(m, x, z);
       const s = i >= 0 ? m.perto[i] : [];
-      for (let k = 0; ok && k < s.length; k += 4) if (distancia2(x, z, s[k], s[k + 1], s[k + 2], s[k + 3]) < RAIO_BOLA * RAIO_BOLA) ok = false;
+      for (let k = 0; ok && k < s.length; k += 5) if (distancia2(x, z, s[k], s[k + 1], s[k + 2], s[k + 3]) < RAIO_BOLA * RAIO_BOLA) ok = false;
       livre[cy * cw + cx] = ok ? 1 : 0;
     }
   }

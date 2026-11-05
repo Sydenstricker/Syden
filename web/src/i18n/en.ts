@@ -2367,6 +2367,7 @@ export default {
   'Galhos': 'Branches',
   'Copa do Pulo': 'Hop Cup',
   'Minigolfe da toca': 'Burrow Mini Golf',
+  'Tacada por cima': 'Lofted shot',
   'Navios': 'Ships',
   'Navios piratas': 'Pirate ships',
   'Navios modernos': 'Modern ships',

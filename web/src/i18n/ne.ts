@@ -2444,6 +2444,7 @@ export default {
   'Galhos': 'हाँगाहरू',
   'Copa do Pulo': 'उफ्राइ कप',
   'Minigolfe da toca': 'दुलोको मिनीगल्फ',
+  'Tacada por cima': 'माथिबाट हान्ने',
   'Navios': 'जहाजहरू',
   'Navios piratas': 'समुद्री डाकु जहाज',
   'Navios modernos': 'आधुनिक जहाज',

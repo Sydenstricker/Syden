@@ -2444,6 +2444,7 @@ export default {
   'Galhos': 'Šakos',
   'Copa do Pulo': 'Šuolių taurė',
   'Minigolfe da toca': 'Urvo minigolfas',
+  'Tacada por cima': 'Aukštas smūgis',
   'Navios': 'Laivai',
   'Navios piratas': 'Piratų laivai',
   'Navios modernos': 'Modernūs laivai',

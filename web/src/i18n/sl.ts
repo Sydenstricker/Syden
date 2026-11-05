@@ -2444,6 +2444,7 @@ export default {
   'Galhos': 'Veje',
   'Copa do Pulo': 'Pokal skoka',
   'Minigolfe da toca': 'Minigolf v brlogu',
+  'Tacada por cima': 'Visok udarec',
   'Navios': 'Ladje',
   'Navios piratas': 'Piratske ladje',
   'Navios modernos': 'Sodobne ladje',

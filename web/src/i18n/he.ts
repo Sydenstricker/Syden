@@ -2422,6 +2422,7 @@ export default {
   'Galhos': 'ענפים',
   'Copa do Pulo': 'גביע הקפיצה',
   'Minigolfe da toca': 'מיני גולף במחילה',
+  'Tacada por cima': 'מכה גבוהה',
   'Navios': 'ספינות',
   'Navios piratas': 'ספינות פיראטים',
   'Navios modernos': 'ספינות מודרניות',

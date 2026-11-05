@@ -188,8 +188,10 @@ export function criarGolfe3D({ agora = Date.now }: { agora?: () => number } = {}
           if (fase !== 'jogando' || fechando) return 'Esta rodada já acabou.';
           const bola = bolas.get(quem)!;
           const { passo, dx, dz } = corpo;
-          if (!numero(passo) || !numero(dx) || !numero(dz)) return 'Tacada inválida.';
-          const tacada = { passo, dx, dz };
+          // a parte para o alto (a tacada por cima) é opcional: sem ela, rasteira
+          const dy = corpo.dy === undefined ? 0 : corpo.dy;
+          if (!numero(passo) || !numero(dx) || !numero(dz) || !numero(dy)) return 'Tacada inválida.';
+          const tacada = { passo, dx, dz, dy };
           if (tacadaInvalida(bola, tacada)) return 'Tacada inválida.';
           const agoraMs = agora();
           const passou = agoraMs - inicio;

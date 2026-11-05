@@ -2380,6 +2380,7 @@ export default {
   'Galhos': 'Alaka',
   'Copa do Pulo': 'Iko Mwụli',
   'Minigolfe da toca': 'Minigolf n’ọgba',
+  'Tacada por cima': 'Ọkụkụ elu',
   'Navios': 'Ụgbọ mmiri',
   'Navios piratas': 'Ụgbọ mmiri ndị ohi',
   'Navios modernos': 'Ụgbọ mmiri ọgbara ọhụrụ',

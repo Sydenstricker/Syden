@@ -4,6 +4,8 @@ import { test } from 'node:test';
 import {
   BURACOS,
   CHAO,
+  DY_MAX,
+  avancar,
   FORMAS,
   TACADAS_MAX,
   acabouOBuraco,
@@ -153,4 +155,55 @@ test('as regras da tacada, e seis tacadas sem acertar acabam o buraco com 7', ()
   const c = copiarBola(fraca);
   c.tacadas = 0;
   assert.equal(fraca.tacadas, TACADAS_MAX);
+});
+
+test('a tacada por cima: voa por cima do buraco do chão e da borda baixa', () => {
+  // o buraco do chão (a lacuna): rasteira cai; por cima, passa e assenta do outro lado
+  const b = BURACOS.find((x) => x.casas.some(([peca]) => peca === 'lacuna'))!;
+  const [, lx, lz] = b.casas.find(([peca]) => peca === 'lacuna')!;
+  const rasteira = novaBola(b);
+  rasteira.x = lx;
+  rasteira.z = lz - 0.4;
+  bater(rasteira, { passo: 0, dx: 0, dz: 200 });
+  rolarAteParar(b, rasteira);
+  assert.equal(rasteira.tacadas, 2, 'rasteira cai no buraco do chão');
+  const alta = novaBola(b);
+  alta.x = lx;
+  alta.z = lz - 0.4;
+  bater(alta, { passo: 0, dx: 0, dz: 260, dy: 300 });
+  let voou = false;
+  let subiu = 0;
+  while (alta.andando) {
+    avancar(b, alta);
+    if (alta.noAr) {
+      voou = true;
+      subiu = Math.max(subiu, alta.y - CHAO);
+    }
+  }
+  assert.ok(voou && subiu > 0.05, `voou ${subiu.toFixed(3)}`);
+  assert.equal(alta.tacadas, 1, 'por cima, não caiu');
+  assert.ok(alta.z > lz + 0.22, 'assentou depois do buraco do chão');
+  // a borda baixa (0,147): uma tacada alta de lado passa por cima dela e cai fora da pista
+  const r = BURACOS[0];
+  const lado = novaBola(r);
+  lado.z = 1;
+  bater(lado, { passo: 0, dx: 400, dz: 0, dy: 450 });
+  rolarAteParar(r, lado);
+  assert.equal(lado.tacadas, 2, 'pulou a borda e caiu fora');
+  // e a rasteira de lado bate na borda e fica
+  const lado2 = novaBola(r);
+  lado2.z = 1;
+  bater(lado2, { passo: 0, dx: 400, dz: 0 });
+  rolarAteParar(r, lado2);
+  assert.equal(lado2.tacadas, 1);
+});
+
+test('a tacada por cima tem limite para o alto e conta a força inteira', () => {
+  const b = BURACOS[0];
+  const bola = novaBola(b);
+  assert.equal(tacadaInvalida(bola, { passo: 0, dx: 0, dz: 300, dy: DY_MAX + 1 }), 'forca');
+  assert.equal(tacadaInvalida(bola, { passo: 0, dx: 0, dz: 800, dy: 700 }), 'forca');
+  assert.equal(tacadaInvalida(bola, { passo: 0, dx: 0, dz: 300, dy: -1 }), 'forca');
+  assert.equal(tacadaInvalida(bola, { passo: 0, dx: 0, dz: 300, dy: 1.5 }), 'numeros');
+  assert.equal(tacadaInvalida(bola, { passo: 0, dx: 0, dz: 300, dy: 300 }), null);
 });

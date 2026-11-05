@@ -2452,6 +2452,7 @@ export default {
   'Galhos': 'Branch',
   'Copa do Pulo': 'Koup Sote a',
   'Minigolfe da toca': 'Minigòlf nan tanyè a',
+  'Tacada por cima': 'Kou anlè',
   'Navios': 'Bato',
   'Navios piratas': 'Bato pirat',
   'Navios modernos': 'Bato modèn',

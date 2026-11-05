@@ -2378,6 +2378,7 @@ export default {
   'Galhos': 'Ngaahi Vaʻa',
   'Copa do Pulo': 'Ipu ʻo e Puna',
   'Minigolfe da toca': 'Minigolf ʻi he Ava',
+  'Tacada por cima': 'Taaʻi māʻolunga',
   'Navios': 'Vaka',
   'Navios piratas': 'Vaka kaihaʻa',
   'Navios modernos': 'Vaka fakaonopooni',

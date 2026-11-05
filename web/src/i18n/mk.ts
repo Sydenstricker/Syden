@@ -2442,6 +2442,7 @@ export default {
   'Galhos': 'Гранки',
   'Copa do Pulo': 'Купот на скокот',
   'Minigolfe da toca': 'Мини-голф во дувлото',
+  'Tacada por cima': 'Висок удар',
   'Navios': 'Бродови',
   'Navios piratas': 'Пиратски бродови',
   'Navios modernos': 'Модерни бродови',

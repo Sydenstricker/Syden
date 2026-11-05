@@ -104,6 +104,8 @@ test('a tacada não vale com a bola andando, no futuro, muito no passado, forte 
   assert.equal(m.jogo.acao(anaId, { tipo: 'tacada', passo: p, dx: 10, dz: 0 }), 'Tacada inválida.', 'força de menos');
   assert.equal(m.jogo.acao(anaId, { tipo: 'tacada', passo: p, dx: 500.5, dz: 0 }), 'Tacada inválida.', 'só inteiros');
   assert.equal(m.jogo.acao(anaId, { tipo: 'tacada', passo: 'x', dx: 500, dz: 0 }), 'Tacada inválida.');
+  assert.equal(m.jogo.acao(anaId, { tipo: 'tacada', passo: p, dx: 0, dz: 300, dy: '9' }), 'Tacada inválida.', 'o alto, só número');
+  assert.equal(m.jogo.acao(anaId, { tipo: 'tacada', passo: p, dx: 0, dz: 300, dy: 900 }), 'Tacada inválida.', 'alto demais');
   assert.equal(m.jogo.acao(anaId, { tipo: 'tacada', passo: p, dx: 0, dz: 300 }), null);
   const parou = meu(m.jogo, anaId).passo;
   assert.ok(parou > p + 10, 'a bola rola uns passos');

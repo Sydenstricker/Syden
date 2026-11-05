@@ -2444,6 +2444,7 @@ export default {
   'Galhos': 'Zari',
   'Copa do Pulo': 'Lēcienu kauss',
   'Minigolfe da toca': 'Alas minigolfs',
+  'Tacada por cima': 'Augsts sitiens',
   'Navios': 'Kuģi',
   'Navios piratas': 'Pirātu kuģi',
   'Navios modernos': 'Mūsdienu kuģi',

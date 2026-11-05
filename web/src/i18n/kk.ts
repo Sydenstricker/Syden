@@ -2438,6 +2438,7 @@ export default {
   'Galhos': 'Бұтақтар',
   'Copa do Pulo': 'Секіру кубогы',
   'Minigolfe da toca': 'Індегі миниголф',
+  'Tacada por cima': 'Биік соққы',
   'Navios': 'Кемелер',
   'Navios piratas': 'Қарақшы кемелері',
   'Navios modernos': 'Заманауи кемелер',

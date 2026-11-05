@@ -23,6 +23,12 @@ import type { User } from './types';
  */
 
 export const URL_DO_COELHO = `${import.meta.env.BASE_URL}cidades3d/coelho-animado.glb`;
+/**
+ * O RELEVO do Meshy (as dobras e as costuras do moletom), reduzido a 1024 e à parte do GLB: o glb.py, ao exportar, fica só
+ * com a cor. A pintura é a mesma do arquivo do Meshy (o mesmo desenho das UVs), então o mapa serve como está; sem ele, o
+ * coelho só perde as dobras.
+ */
+const URL_DO_RELEVO = `${import.meta.env.BASE_URL}cidades3d/coelho-relevo.jpg`;
 
 // As regiões da malha em T, no shader (de 0 a 8,4 de altura, a frente no +z; medidas no GLB): o rosto vai de 4,1 a 5,4 na
 // frente (z > 1); acima de 5,4, as orelhas. Fora do rosto, o escuro é o moletom (o capuz incluído).
@@ -31,7 +37,24 @@ let carregando: Promise<GLTF> | null = null;
 /** O GLB, uma vez por página (a geometria e a textura servem a todas as cópias). */
 export function carregarCoelho(): Promise<GLTF> {
   if (!carregando) {
-    carregando = new GLTFLoader().loadAsync(URL_DO_COELHO);
+    carregando = Promise.all([
+      new GLTFLoader().loadAsync(URL_DO_COELHO),
+      new THREE.TextureLoader().loadAsync(URL_DO_RELEVO).catch(() => null),
+    ]).then(([g, relevo]) => {
+      if (relevo) {
+        relevo.flipY = false;
+        relevo.colorSpace = THREE.NoColorSpace;
+        g.scene.traverse((o) => {
+          const m = (o as THREE.Mesh).material as THREE.MeshStandardMaterial | undefined;
+          if (!(o as THREE.Mesh).isMesh || !m || m.normalMap) return;
+          m.normalMap = relevo;
+          // sem tangentes no GLB, o three.js tira a direção das derivadas, e o verde do glTF fica invertido
+          m.normalScale.set(1, -1);
+          m.needsUpdate = true;
+        });
+      }
+      return g;
+    });
     carregando.catch(() => (carregando = null));
   }
   return carregando;
@@ -80,6 +103,45 @@ export interface MaterialDoCoelho {
   uOpaco: { value: number };
   /** Troca as cores na hora (os uniforms; o shader é o mesmo). */
   pintar(cores: CoresDoCoelho): void;
+}
+
+let ambiente: THREE.Texture | null = null;
+/**
+ * A LUZ DE AMBIENTE DO COELHO (05/11/2026, relato dele: "o minigolfe usa o coelho sem textura; a animação que baixei tem
+ * textura"). O arquivo do Meshy é o MESMO modelo, com a mesma pintura: o que o visualizador dele tem e os nossos jogos não
+ * tinham é luz de AMBIENTE (o reflexo do lugar em volta, em todas as direções). Só com o sol e o céu chapado, o pelo ficava
+ * cinza e o moletom um borrão; com ela, o volume e as dobras aparecem (conferido lado a lado). É um céu pequeno pintado por
+ * código (claro em cima, o horizonte quente, o chão esverdeado e duas manchas de luz), posto SÓ no material do coelho: as
+ * peças dos jogos continuam com a luz delas. O three.js transforma a imagem no reflexo sozinho, uma vez.
+ */
+function ambienteDoCoelho(): THREE.Texture {
+  if (ambiente) return ambiente;
+  const c = document.createElement('canvas');
+  c.width = 256;
+  c.height = 128;
+  const g = c.getContext('2d')!;
+  const fundo = g.createLinearGradient(0, 0, 0, 128);
+  fundo.addColorStop(0, '#f4f1ff');
+  fundo.addColorStop(0.45, '#fff4e4');
+  fundo.addColorStop(0.55, '#c9c2b0');
+  fundo.addColorStop(1, '#6f8a62');
+  g.fillStyle = fundo;
+  g.fillRect(0, 0, 256, 128);
+  for (const [x, y, r, a] of [
+    [70, 30, 34, 0.95],
+    [190, 40, 46, 0.6],
+  ] as const) {
+    const l = g.createRadialGradient(x, y, 0, x, y, r);
+    l.addColorStop(0, `rgba(255,255,255,${a})`);
+    l.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = l;
+    g.fillRect(0, 0, 256, 128);
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.mapping = THREE.EquirectangularReflectionMapping;
+  t.colorSpace = THREE.SRGBColorSpace;
+  ambiente = t;
+  return t;
 }
 
 /**
@@ -143,6 +205,10 @@ export function materialDoCoelho(base: THREE.MeshStandardMaterial, cores: CoresD
       );
   };
   m.customProgramCacheKey = () => 'coelho3d-paleta';
+  if (typeof document !== 'undefined') {
+    m.envMap = ambienteDoCoelho();
+    m.envMapIntensity = 1;
+  }
   const pintar = (c: CoresDoCoelho) => {
     uTrocaPelo.value = c.pelo ? 1 : 0;
     if (c.pelo) uPelo.value.set(c.pelo);

@@ -2436,6 +2436,7 @@ export default {
   'Galhos': 'Grene',
   'Copa do Pulo': 'Hoppepokalen',
   'Minigolfe da toca': 'Minigolf i hulen',
+  'Tacada por cima': 'Højt slag',
   'Navios': 'Skibe',
   'Navios piratas': 'Piratskibe',
   'Navios modernos': 'Moderne skibe',

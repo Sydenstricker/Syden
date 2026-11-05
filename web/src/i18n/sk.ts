@@ -2442,6 +2442,7 @@ export default {
   'Galhos': 'Konáre',
   'Copa do Pulo': 'Pohár skoku',
   'Minigolfe da toca': 'Minigolf v nore',
+  'Tacada por cima': 'Úder vrchom',
   'Navios': 'Lode',
   'Navios piratas': 'Pirátske lode',
   'Navios modernos': 'Moderné lode',

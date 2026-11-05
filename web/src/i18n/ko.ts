@@ -2360,6 +2360,7 @@ export default {
   'Galhos': '나뭇가지',
   'Copa do Pulo': '점프 컵',
   'Minigolfe da toca': '굴 미니골프',
+  'Tacada por cima': '띄우는 샷',
   'Navios': '배',
   'Navios piratas': '해적선',
   'Navios modernos': '현대식 배',

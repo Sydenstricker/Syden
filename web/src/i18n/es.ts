@@ -2367,6 +2367,7 @@ export default {
   'Galhos': 'Ramas',
   'Copa do Pulo': 'Copa del Salto',
   'Minigolfe da toca': 'Minigolf de la madriguera',
+  'Tacada por cima': 'Golpe por arriba',
   'Navios': 'Barcos',
   'Navios piratas': 'Barcos piratas',
   'Navios modernos': 'Barcos modernos',

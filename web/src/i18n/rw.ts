@@ -2383,6 +2383,7 @@ export default {
   'Galhos': 'Amashami',
   'Copa do Pulo': 'Igikombe cyo Gusimbuka',
   'Minigolfe da toca': 'Minigolf yo mu mwobo',
+  'Tacada por cima': 'Gukubita hejuru',
   'Navios': 'Amato',
   'Navios piratas': 'Amato y\'abambuzi',
   'Navios modernos': 'Amato agezweho',

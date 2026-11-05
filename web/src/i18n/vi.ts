@@ -2342,6 +2342,7 @@ export default {
   'Galhos': 'Cành cây',
   'Copa do Pulo': 'Cúp Nhảy',
   'Minigolfe da toca': 'Minigolf trong hang',
+  'Tacada por cima': 'Cú đánh bổng',
   'Navios': 'Tàu',
   'Navios piratas': 'Tàu cướp biển',
   'Navios modernos': 'Tàu hiện đại',

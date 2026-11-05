@@ -2442,6 +2442,7 @@ export default {
   'Galhos': 'Rantsana',
   'Copa do Pulo': 'Amboaran\'ny Fitsambikinana',
   'Minigolfe da toca': 'Minigolf ao an-davaka',
+  'Tacada por cima': 'Kapoka avo',
   'Navios': 'Sambo',
   'Navios piratas': 'Sambon-jiolahy an-dranomasina',
   'Navios modernos': 'Sambo maoderina',

@@ -2385,6 +2385,7 @@ export default {
   'Galhos': 'กิ่งไม้',
   'Copa do Pulo': 'ถ้วยกระโดด',
   'Minigolfe da toca': 'มินิกอล์ฟในโพรง',
+  'Tacada por cima': 'ตีลอย',
   'Navios': 'เรือ',
   'Navios piratas': 'เรือโจรสลัด',
   'Navios modernos': 'เรือสมัยใหม่',

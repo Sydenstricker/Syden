@@ -29,7 +29,8 @@
   white-space: nowrap;
 }
 
-.golfe3d-de-cima {
+.golfe3d-de-cima,
+.golfe3d-por-cima {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -42,11 +43,13 @@
   color: var(--text-muted);
   cursor: pointer;
 }
-.golfe3d-de-cima[aria-pressed='true'] {
+.golfe3d-de-cima[aria-pressed="true"],
+.golfe3d-por-cima[aria-pressed="true"] {
   color: var(--accent);
   border-color: var(--accent);
 }
-.golfe3d-de-cima svg {
+.golfe3d-de-cima svg,
+.golfe3d-por-cima svg {
   width: 18px;
   height: 18px;
 }

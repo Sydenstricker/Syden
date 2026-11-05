@@ -2450,6 +2450,7 @@ export default {
   'Galhos': 'Shoxlar',
   'Copa do Pulo': 'Sakrash kubogi',
   'Minigolfe da toca': 'Uyadagi minigolf',
+  'Tacada por cima': 'Baland zarba',
   'Navios': 'Kemalar',
   'Navios piratas': 'Qaroqchi kemalari',
   'Navios modernos': 'Zamonaviy kemalar',

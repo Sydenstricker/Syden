@@ -9,6 +9,7 @@ import { tocar } from './somDosJogos';
 import type { CenaDoGolfe3D } from './golfe3d/cena';
 import {
   BURACOS,
+  DY_MAX,
   FORCA_MAX,
   acabouOBuraco,
   avancar,
@@ -65,14 +66,34 @@ const VISTA_DO_COMECO_MS = 1200;
 /** O arraste para baixo que dá a força toda, em fração da altura da tela. */
 const ARRASTE_TOTAL = 0.4;
 
-function vetorDaTacada(ux: number, uz: number, forca: number) {
+/** A tacada por cima sai a uns 37° do chão: 4/5 da força para a frente e 3/5 para o alto. */
+const FRENTE_POR_CIMA = 0.8;
+const ALTO_POR_CIMA = 0.6;
+
+function vetorDaTacada(ux: number, uz: number, forca: number, porCima = false) {
   let f = Math.min(1, forca) * FORCA_MAX;
   for (;;) {
-    const dx = Math.round(ux * f);
-    const dz = Math.round(uz * f);
-    if (dx * dx + dz * dz <= FORCA_MAX * FORCA_MAX) return { dx, dz };
+    const frente = porCima ? f * FRENTE_POR_CIMA : f;
+    const dx = Math.round(ux * frente);
+    const dz = Math.round(uz * frente);
+    const dy = porCima ? Math.min(DY_MAX, Math.round(f * ALTO_POR_CIMA)) : 0;
+    if (dx * dx + dz * dz + dy * dy <= FORCA_MAX * FORCA_MAX) return { dx, dz, dy };
     f -= 1;
   }
+}
+
+/** O caminho da bola no ar, simulado com a mesma física: os pontos até ela tocar o chão pela primeira vez. */
+function arcoDaTacada(b: (typeof BURACOS)[number], bola: Bola, t: Tacada): [number, number, number][] {
+  const teste = copiarBola(bola);
+  bater(teste, t);
+  const pontos: [number, number, number][] = [];
+  for (let k = 0; k < 240 && teste.andando && teste.noAr; k++) {
+    const vyAntes = teste.vy;
+    avancar(b, teste);
+    if (!teste.noAr || teste.vy > vyAntes) break;
+    pontos.push([teste.x, teste.y, teste.z]);
+  }
+  return pontos;
 }
 
 const passoDe = (inicio: number, agora: number) => Math.max(0, Math.floor(((agora - inicio) * 60) / 1000));
@@ -171,10 +192,14 @@ function BuracoEm3D({ estado, eu, jogador, agir, socket, channelId }: Props) {
   const deCimaRef = useRef(deCima);
   deCimaRef.current = deCima;
   const [forcaNaTela, setForcaNaTela] = useState<number | null>(null);
+  /** A tacada por cima (o botão, ou a tecla Q): a bola voa por cima das bordas baixas e dos buracos do chão. */
+  const [porCima, setPorCima] = useState(false);
+  const porCimaRef = useRef(porCima);
+  porCimaRef.current = porCima;
 
   const outrosDoServidor = useRef(estado.bolas);
   outrosDoServidor.current = estado.bolas;
-  const pontinhos = useRef(new Map<number, { x: number; z: number; em: number }>());
+  const pontinhos = useRef(new Map<number, { x: number; z: number; y: number | null; em: number }>());
   const cores = useRef(new Map<number, string>());
   estado.bolas.forEach((b, i) => cores.current.set(b.userId, coresDe(b.avatar, i).roupa));
   const meuIndice = Math.max(0, estado.bolas.findIndex((b) => b.userId === eu));
@@ -201,9 +226,9 @@ function BuracoEm3D({ estado, eu, jogador, agir, socket, channelId }: Props) {
     if (!socket || !naSala) return;
     const chegou = (m: { channelId?: number; dados?: Record<string, unknown> }) => {
       if (m.channelId !== channelId || !m.dados) return;
-      const { userId, x, z, buraco: n } = m.dados;
+      const { userId, x, z, y, buraco: n } = m.dados;
       if (typeof userId !== 'number' || typeof x !== 'number' || typeof z !== 'number' || n !== estado.buraco || userId === eu) return;
-      pontinhos.current.set(userId, { x, z, em: Date.now() });
+      pontinhos.current.set(userId, { x, z, y: typeof y === 'number' && Number.isFinite(y) ? y : null, em: Date.now() });
     };
     socket.on('minijogo:tempo-real', chegou);
     return () => {
@@ -248,8 +273,8 @@ function BuracoEm3D({ estado, eu, jogador, agir, socket, channelId }: Props) {
 
   const baterAgora = (ux: number, uz: number, f: number) => {
     if (!podeBater() || f < FORCA_MINIMA || inicio.current === null) return;
-    const { dx, dz } = vetorDaTacada(ux, uz, f);
-    const tacada: Tacada = { passo: Math.max(bola.current.passo, passoDe(inicio.current, Date.now())), dx, dz };
+    const { dx, dz, dy } = vetorDaTacada(ux, uz, f, porCimaRef.current);
+    const tacada: Tacada = { passo: Math.max(bola.current.passo, passoDe(inicio.current, Date.now())), dx, dz, ...(dy ? { dy } : {}) };
     if (tacadaInvalida(bola.current, tacada)) return;
     bater(bola.current, tacada);
     tocar('tacada');
@@ -311,7 +336,7 @@ function BuracoEm3D({ estado, eu, jogador, agir, socket, channelId }: Props) {
       // a minha bola para os outros, enquanto anda (e uma vez quando para)
       if (naSala && socket && souJogador && (bola.current.andando || estavaAndando) && agoraMs - enviadoEm >= 100) {
         enviadoEm = agoraMs;
-        socket.emit('minijogo:tempo-real', { channelId, dados: { x: bola.current.x, z: bola.current.z } });
+        socket.emit('minijogo:tempo-real', { channelId, dados: { x: bola.current.x, z: bola.current.z, ...(bola.current.noAr ? { y: bola.current.y } : {}) } });
         estavaAndando = bola.current.andando;
       }
       // a mira pelas teclas
@@ -329,6 +354,7 @@ function BuracoEm3D({ estado, eu, jogador, agir, socket, channelId }: Props) {
         if (!pilotoEm) pilotoEm = agoraMs + 600;
         else if (agoraMs >= pilotoEm) {
           pilotoEm = 0;
+          porCimaRef.current = false;
           const tc = melhorTacada(buraco, bola.current, Math.max(bola.current.passo, passoAgora), distancia.current);
           const f = Math.sqrt(tc.dx * tc.dx + tc.dz * tc.dz);
           angulo.current = Math.atan2(tc.dz, tc.dx);
@@ -340,16 +366,22 @@ function BuracoEm3D({ estado, eu, jogador, agir, socket, channelId }: Props) {
         if (o.userId === eu) continue;
         const p = pontinhos.current.get(o.userId);
         const usar = p && agoraMs - p.em < 1500 ? p : o;
-        outras.push({ x: usar.x, z: usar.z, cor: cores.current.get(o.userId) ?? '#d9774f', dentro: o.dentro && usar === o });
+        outras.push({ x: usar.x, z: usar.z, y: usar === p ? p.y : null, cor: cores.current.get(o.userId) ?? '#d9774f', dentro: o.dentro && usar === o });
       }
       const pode = podeBater();
       const ux = Math.cos(angulo.current);
       const uz = Math.sin(angulo.current);
       const comeco = inicio.current === null || agoraMs < inicio.current + VISTA_DO_COMECO_MS || faseRef.current === 'preparando';
+      // na tacada por cima, a mira é o arco de verdade (a mesma física), com a força de agora (ou a metade, antes de puxar)
+      let arco: [number, number, number][] | undefined;
+      if (pode && porCimaRef.current && !deCimaRef.current && !comeco) {
+        const { dx, dz, dy } = vetorDaTacada(ux, uz, Math.max(FORCA_MINIMA, forca.current || 0.5), true);
+        arco = arcoDaTacada(buraco, bola.current, { passo: bola.current.passo, dx, dz, dy });
+      }
       cena.current?.quadro({
-        minha: souJogador ? { x: bola.current.x, z: bola.current.z, dentro: bola.current.dentro, andando: bola.current.andando } : null,
+        minha: souJogador ? { x: bola.current.x, z: bola.current.z, y: bola.current.noAr ? bola.current.y : null, dentro: bola.current.dentro, andando: bola.current.andando } : null,
         outras,
-        mira: pode ? { ux, uz, forca: forca.current ?? 0 } : null,
+        mira: pode ? { ux, uz, forca: forca.current ?? 0, arco } : null,
         rumo: { ux, uz },
         deCima: deCimaRef.current || comeco,
         tacadas: bola.current.tacadas,
@@ -382,6 +414,11 @@ function BuracoEm3D({ estado, eu, jogador, agir, socket, channelId }: Props) {
     const desce = (e: KeyboardEvent) => {
       const alvo = e.target as HTMLElement | null;
       if (alvo && (alvo.tagName === 'INPUT' || alvo.tagName === 'TEXTAREA' || alvo.isContentEditable)) return;
+      if ((e.key === 'q' || e.key === 'Q') && !e.ctrlKey && !e.metaKey && !e.altKey && !e.repeat) {
+        e.preventDefault();
+        setPorCima((v) => !v);
+        return;
+      }
       const n = nome(e);
       if (!n || e.ctrlKey || e.metaKey || e.altKey || !podeBater()) return;
       e.preventDefault();
@@ -427,6 +464,22 @@ function BuracoEm3D({ estado, eu, jogador, agir, socket, channelId }: Props) {
       <div className="golfe3d-topo">
         {souJogador && <span className="golfe3d-tacadas">{t('Tacadas: {n}', { n: tacadas })}</span>}
         {estado.fase === 'jogando' ? <Relogio restante={restante} total={estado.duracaoMs} /> : <span className="minijogo-tempo" />}
+        {souJogador && (
+          <button
+            type="button"
+            className="golfe3d-por-cima"
+            aria-pressed={porCima}
+            title={t('Tacada por cima') + ' (Q)'}
+            aria-label={t('Tacada por cima')}
+            onClick={() => setPorCima((v) => !v)}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M3 19c3-11 15-11 18 0" strokeDasharray={porCima ? undefined : '2 3'} />
+              <circle cx="4" cy="19" r="1.6" fill="currentColor" />
+              <path d="M2 21h20" />
+            </svg>
+          </button>
+        )}
         <button type="button" className="golfe3d-de-cima" aria-pressed={deCima} title={t('Ver o buraco de cima')} aria-label={t('Ver o buraco de cima')} onClick={() => setDeCima((v) => !v)}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" />
@@ -483,6 +536,7 @@ function BuracoEm3D({ estado, eu, jogador, agir, socket, channelId }: Props) {
             { teclas: ['mouse-arrastar'], toque: 'toque-arrastar', rotulo: t('Mirar') + ' · ' + t('Força') },
             { teclas: ['setas-lado'], rotulo: t('Mirar') },
             { teclas: ['espaco'], rotulo: t('Força') },
+            { teclas: ['q'], rotulo: t('Tacada por cima') },
           ]}
         />
       )}

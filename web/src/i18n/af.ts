@@ -2436,6 +2436,7 @@ export default {
   'Galhos': 'Takke',
   'Copa do Pulo': 'Springbeker',
   'Minigolfe da toca': 'Minigholf in die hol',
+  'Tacada por cima': 'Hoë hou',
   'Navios': 'Skepe',
   'Navios piratas': 'Seerowerskepe',
   'Navios modernos': 'Moderne skepe',

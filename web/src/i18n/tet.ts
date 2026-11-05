@@ -2374,6 +2374,7 @@ export default {
   'Galhos': 'Sanak',
   'Copa do Pulo': 'Kopa Salta',
   'Minigolfe da toca': 'Minigolfe iha kuak',
+  'Tacada por cima': 'Baku ba leten',
   'Navios': 'Ró',
   'Navios piratas': 'Ró piratas',
   'Navios modernos': 'Ró modernu',

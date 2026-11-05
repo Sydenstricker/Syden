@@ -2369,6 +2369,7 @@ export default {
   'Galhos': 'ডালপালা',
   'Copa do Pulo': 'লাফ কাপ',
   'Minigolfe da toca': 'গর্তের মিনি গলফ',
+  'Tacada por cima': 'উঁচু শট',
   'Navios': 'জাহাজ',
   'Navios piratas': 'জলদস্যু জাহাজ',
   'Navios modernos': 'আধুনিক জাহাজ',

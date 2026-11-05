@@ -15,6 +15,20 @@ import { RAIO_BOLA, RAIO_BURACO, montar, relevo, type Buraco, type Peca } from '
 
 const BASE = `${import.meta.env.BASE_URL}golfe3d/`;
 const ARVORES = ['suburbio/tree-large.glb', 'suburbio/tree-small.glb'].map((a) => `${import.meta.env.BASE_URL}cidades3d/${a}`);
+/** O parque em volta da pista (Coaster Kit da Kenney, CC0, golfe3d/parque/License.txt). */
+const PARQUE = ['flowers', 'grass', 'bench', 'tree', 'tree-large', 'stall-drinks', 'stall-food', 'trash'] as const;
+type PecaDoParque = (typeof PARQUE)[number];
+/** As cores do céu: o alto, o horizonte (que é também a névoa) e o chão ao longe. */
+const CEU_ALTO = '#3f8edb';
+const CEU_HORIZONTE = '#d9eef6';
+/** Um sorteio sempre igual (o cenário é o mesmo em toda tela e toda vez), só para o desenho: não entra na física. */
+function sorteio(semente: number) {
+  let s = semente >>> 0 || 1;
+  return () => {
+    s = (s * 1664525 + 1013904223) >>> 0;
+    return s / 4294967296;
+  };
+}
 const ALTURA_DO_COELHO = 0.5;
 /** O coelho fica ao lado da bola, a esta distância, virado para ela. */
 const AO_LADO = 0.2;
@@ -63,6 +77,8 @@ function carregar(url: string): Promise<GLTF> {
 export interface BolaNaCena {
   x: number;
   z: number;
+  /** No ar, a altura do fundo da bola; no chão, null (ela segue o chão). */
+  y: number | null;
   cor: string;
   dentro: boolean;
 }
@@ -70,10 +86,10 @@ export interface BolaNaCena {
 /** O que a página passa a cada quadro. */
 export interface QuadroDoGolfe {
   /** A minha bola (null para quem só assiste). */
-  minha: { x: number; z: number; dentro: boolean; andando: boolean } | null;
+  minha: { x: number; z: number; y: number | null; dentro: boolean; andando: boolean } | null;
   outras: BolaNaCena[];
   /** A mira: a direção (unitária, no plano) e a força de 0 a 1; null sem mira à vista. */
-  mira: { ux: number; uz: number; forca: number } | null;
+  mira: { ux: number; uz: number; forca: number; arco?: [number, number, number][] } | null;
   /** Para onde a câmera olha (a mira, ou o rumo do buraco). */
   rumo: { ux: number; uz: number };
   /** A vista de cima do buraco inteiro (o começo, ou o botão). */
@@ -85,7 +101,7 @@ export interface QuadroDoGolfe {
 export class CenaDoGolfe3D {
   private renderer: THREE.WebGLRenderer;
   private cena = new THREE.Scene();
-  private camera = new THREE.PerspectiveCamera(50, 1, 0.03, 80);
+  private camera = new THREE.PerspectiveCamera(50, 1, 0.03, 120);
   private observador: ResizeObserver;
   private morta = false;
   private sombras = false;
@@ -101,6 +117,9 @@ export class CenaDoGolfe3D {
   private bandeira = new THREE.Group();
   private matsDaBandeira: THREE.MeshStandardMaterial[] = [];
 
+  private ceu: THREE.Mesh | null = null;
+  private queda: THREE.Mesh | null = null;
+  private nuvens = new THREE.Group();
   private coelho = new THREE.Group();
   private corpo: THREE.Object3D | null = null;
   private mixer: THREE.AnimationMixer | null = null;
@@ -190,24 +209,27 @@ export class CenaDoGolfe3D {
   /** Carrega os modelos e monta o buraco. Rejeita se algo falhar (quem chama mostra o aviso). */
   async montar(): Promise<void> {
     const nomes = [...new Set(this.buraco.casas.map(([p]) => MODELO[p])), 'flag-red', 'club-green', 'supports-low'];
-    const [coelho, arvores, lista] = await Promise.all([
+    const [coelho, arvores, lista, parque] = await Promise.all([
       carregarCoelho(),
       Promise.all(ARVORES.map((a) => carregar(a).catch(() => null))),
       Promise.all(nomes.map((n) => carregar(`${BASE}${n}.glb`))),
+      // o enfeite do parque: sem ele, a pista abre do mesmo jeito
+      Promise.all(PARQUE.map((n) => carregar(`${BASE}parque/${n}.glb`).catch(() => null))),
     ]);
     if (this.morta) return;
     const modelos = new Map(nomes.map((n, i) => [n, lista[i]]));
     this.montarCenario(modelos, arvores.filter((a): a is GLTF => a !== null));
+    this.montarParque(new Map(PARQUE.map((n, i) => [n, parque[i]] as const).filter((p): p is [PecaDoParque, GLTF] => p[1] !== null)));
     this.montarCoelho(coelho, modelos.get('club-green')!);
   }
 
   private montarCenario(modelos: Map<string, GLTF>, arvores: GLTF[]) {
-    this.cena.background = new THREE.Color('#bfe3ef');
+    this.cena.background = new THREE.Color(CEU_HORIZONTE);
     const m = montar(this.buraco);
     const [x0, z0, x1, z1] = m.limites;
     this.centro.set((x0 + x1) / 2, 0, (z0 + z1) / 2);
     this.tamanho = Math.max(x1 - x0, z1 - z0);
-    this.cena.fog = new THREE.Fog('#bfe3ef', 8 + this.tamanho, 22 + this.tamanho * 2);
+    this.cena.fog = new THREE.Fog(CEU_HORIZONTE, 12 + this.tamanho, 48 + this.tamanho * 2);
 
     this.cena.add(new THREE.HemisphereLight('#fff6ea', '#5e7a52', 1.5));
     const sol = new THREE.DirectionalLight('#fff1dc', 2.2);
@@ -223,12 +245,18 @@ export class CenaDoGolfe3D {
     }
     this.cena.add(sol, sol.target);
 
-    // o gramado em volta, um tom mais escuro que a pista
-    const chao = new THREE.Mesh(this.proprio(new THREE.CircleGeometry(30, 48)), this.proprio(new THREE.MeshStandardMaterial({ color: '#8fbf72', roughness: 1 })));
+    // o gramado em volta: a grama cortada em faixas, com o pontilhado das folhas (uma textura pequena, repetida)
+    const grama = this.proprio(new THREE.CanvasTexture(texturaDaGrama()));
+    grama.wrapS = grama.wrapT = THREE.RepeatWrapping;
+    grama.repeat.set(30, 30);
+    grama.colorSpace = THREE.SRGBColorSpace;
+    grama.anisotropy = 4;
+    const chao = new THREE.Mesh(this.proprio(new THREE.CircleGeometry(60, 64)), this.proprio(new THREE.MeshStandardMaterial({ map: grama, roughness: 1 })));
     chao.rotation.x = -Math.PI / 2;
     chao.position.set(this.centro.x, -0.002, this.centro.z);
     chao.receiveShadow = this.sombras;
     this.cena.add(chao);
+    this.montarCeu();
 
     // as peças, cada uma na casa dela, com o giro e a altura da base (e os pilares embaixo de quem está no alto)
     for (const [peca, cx, cz, giro, base] of this.buraco.casas) {
@@ -272,7 +300,7 @@ export class CenaDoGolfe3D {
 
     // umas árvores em volta, fora da pista, sempre nos mesmos lugares (uma conta, sem sorteio)
     if (arvores.length) {
-      const raio = this.tamanho / 2 + 1.6;
+      const raio = this.tamanho / 2 + 2.6;
       for (let k = 0; k < 14; k++) {
         const a = (k / 14) * Math.PI * 2 + 0.3;
         const r = raio + ((k * 7) % 5) * 0.45;
@@ -299,6 +327,12 @@ export class CenaDoGolfe3D {
     // a mira: pontinhos no chão
     const geoPonto = this.proprio(new THREE.CircleGeometry(0.012, 10));
     const matPonto = this.proprio(new THREE.MeshBasicMaterial({ color: '#fffbe8', transparent: true, opacity: 0.9, depthWrite: false }));
+    // onde a tacada por cima cai: um anel no chão
+    this.queda = new THREE.Mesh(this.proprio(new THREE.RingGeometry(0.035, 0.05, 24)), matPonto);
+    this.queda.rotation.x = -Math.PI / 2;
+    this.queda.renderOrder = 2;
+    this.queda.visible = false;
+    this.cena.add(this.queda);
     for (let i = 0; i < 16; i++) {
       const p = new THREE.Mesh(geoPonto, matPonto);
       p.rotation.x = -Math.PI / 2;
@@ -306,6 +340,160 @@ export class CenaDoGolfe3D {
       p.visible = false;
       this.mira.push(p);
       this.cena.add(p);
+    }
+  }
+
+  /**
+   * O CÉU (05/11/2026, relato dele: "o céu azul está simples demais"): a cúpula em degradê (azul em cima, o horizonte claro que é
+   * a mesma cor da névoa, um brilho quente do lado do sol), o sol, nuvens fofas de bolas achatadas que andam devagar, e uma
+   * roda de morros ao longe, que a névoa apaga no horizonte.
+   */
+  private montarCeu() {
+    const sol = new THREE.Vector3(-0.45, 0.55, 0.7).normalize();
+    const cupula = new THREE.Mesh(
+      this.proprio(new THREE.SphereGeometry(70, 32, 16)),
+      this.proprio(
+        new THREE.ShaderMaterial({
+          side: THREE.BackSide,
+          depthWrite: false,
+          fog: false,
+          uniforms: { uAlto: { value: new THREE.Color(CEU_ALTO) }, uHorizonte: { value: new THREE.Color(CEU_HORIZONTE) }, uSol: { value: sol } },
+          vertexShader: 'varying vec3 vDir; void main() { vDir = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }',
+          fragmentShader: `uniform vec3 uAlto; uniform vec3 uHorizonte; uniform vec3 uSol; varying vec3 vDir;
+            void main() {
+              float h = max(vDir.y, 0.0);
+              vec3 c = mix(uHorizonte, uAlto, pow(h, 0.4));
+              float s = max(dot(vDir, uSol), 0.0);
+              c += vec3(1.0, 0.86, 0.6) * pow(s, 6.0) * 0.22;
+              c = mix(c, vec3(1.0, 0.98, 0.9), smoothstep(0.9975, 0.999, s));
+              gl_FragColor = vec4(c, 1.0);
+              #include <colorspace_fragment>
+            }`,
+        }),
+      ),
+    );
+    cupula.renderOrder = -10;
+    cupula.position.copy(this.centro);
+    cupula.frustumCulled = false;
+    this.ceu = cupula;
+    this.cena.add(cupula);
+
+    // as nuvens: bolas achatadas, cada nuvem de 4 a 7, num anel alto que gira devagar
+    const geoNuvem = this.proprio(new THREE.IcosahedronGeometry(1, 2));
+    const matNuvem = this.proprio(new THREE.MeshLambertMaterial({ color: '#ffffff', emissive: '#c9d9ea', emissiveIntensity: 0.35, fog: false }));
+    const r = sorteio(7);
+    this.nuvens.position.copy(this.centro);
+    for (let k = 0; k < 11; k++) {
+      const nuvem = new THREE.Group();
+      const n = 4 + Math.floor(r() * 4);
+      for (let i = 0; i < n; i++) {
+        const bola = new THREE.Mesh(geoNuvem, matNuvem);
+        const t = 0.7 + r() * 0.8;
+        bola.scale.set(t * 1.3, t * 0.75, t);
+        bola.position.set((i - n / 2) * 1.1 + r() * 0.5, r() * 0.5, r() * 0.8);
+        nuvem.add(bola);
+      }
+      const a = (k / 11) * Math.PI * 2 + r() * 0.4;
+      const d = 34 + r() * 14;
+      nuvem.position.set(Math.cos(a) * d, 4.5 + r() * 5, Math.sin(a) * d);
+      nuvem.lookAt(0, nuvem.position.y, 0);
+      nuvem.scale.setScalar(0.9 + r() * 0.9);
+      this.nuvens.add(nuvem);
+    }
+    this.cena.add(this.nuvens);
+
+    // os morros ao longe: meias bolas baixas, de verdes diferentes, sem sombra
+    const geoMorro = this.proprio(new THREE.SphereGeometry(1, 20, 10, 0, Math.PI * 2, 0, Math.PI / 2));
+    const verdes = ['#7fae5e', '#6f9f52', '#8dba6a', '#5f8f4a'].map((c) => this.proprio(new THREE.MeshLambertMaterial({ color: c, flatShading: true })));
+    for (let k = 0; k < 16; k++) {
+      const a = (k / 16) * Math.PI * 2 + r() * 0.3;
+      const d = 30 + r() * 10;
+      const morro = new THREE.Mesh(geoMorro, verdes[k % verdes.length]);
+      const largo = 8 + r() * 9;
+      morro.scale.set(largo, 1.6 + r() * 2.6, largo * (0.6 + r() * 0.5));
+      morro.position.set(this.centro.x + Math.cos(a) * d, -0.05, this.centro.z + Math.sin(a) * d);
+      morro.rotation.y = r() * Math.PI;
+      this.cena.add(morro);
+    }
+  }
+
+  /**
+   * O PARQUE em volta da pista: flores e tufos de grama rente às bordas, um laguinho, e mais longe os bancos, as lixeiras e as
+   * barraquinhas de suco e de lanche, virados para a pista. Sempre nos mesmos lugares (o sorteio tem semente fixa por buraco), e
+   * nunca em cima de uma casa da pista.
+   */
+  private montarParque(pecas: Map<PecaDoParque, GLTF>) {
+    const casas = this.buraco.casas.map(([, x, z]) => [x, z] as const);
+    const longeDaPista = (x: number, z: number, folga: number) => casas.every(([cx, cz]) => Math.max(Math.abs(x - cx), Math.abs(z - cz)) > 0.5 + folga);
+    const r = sorteio(this.buraco.casas.length * 131 + this.buraco.par * 17 + casas[0][0] * 7 + casas[casas.length - 1][1] * 3);
+    const [x0, z0, x1, z1] = montar(this.buraco).limites;
+    const por = (nome: PecaDoParque, x: number, z: number, escala: number, giro: number) => {
+      const g = pecas.get(nome);
+      if (!g) return;
+      const o = this.clonar(g);
+      o.position.set(x, 0, z);
+      o.scale.setScalar(escala);
+      o.rotation.y = giro;
+      this.cena.add(o);
+    };
+    // as flores e a grama, coladas na pista (até ~1,2 casa das bordas)
+    for (let k = 0, postos = 0; k < 400 && postos < 46; k++) {
+      const x = x0 - 1.2 + r() * (x1 - x0 + 2.4);
+      const z = z0 - 1.2 + r() * (z1 - z0 + 2.4);
+      if (!longeDaPista(x, z, 0.12) || longeDaPista(x, z, 1.3)) continue;
+      por(postos % 3 === 0 ? 'flowers' : 'grass', x, z, 0.2 + r() * 0.16, r() * Math.PI * 2);
+      postos++;
+    }
+    // o laguinho, num lado livre
+    const agua = this.proprio(new THREE.MeshStandardMaterial({ color: '#6fb9d8', roughness: 0.15, metalness: 0.1, transparent: true, opacity: 0.92 }));
+    const margem = this.proprio(new THREE.MeshStandardMaterial({ color: '#c9b48a', roughness: 1 }));
+    for (let k = 0; k < 40; k++) {
+      const lado = k % 2 ? 1 : -1;
+      const x = (lado > 0 ? x1 + 2.2 : x0 - 2.2) + (r() - 0.5);
+      const z = z0 + r() * (z1 - z0);
+      if (!longeDaPista(x, z, 1.6)) continue;
+      const borda = new THREE.Mesh(this.proprio(new THREE.CircleGeometry(1.25, 28)), margem);
+      borda.rotation.x = -Math.PI / 2;
+      borda.scale.set(1, 0.7, 1);
+      borda.position.set(x, 0.004, z);
+      const lago = new THREE.Mesh(this.proprio(new THREE.CircleGeometry(1.05, 28)), agua);
+      lago.rotation.x = -Math.PI / 2;
+      lago.scale.set(1, 0.7, 1);
+      lago.position.set(x, 0.008, z);
+      this.cena.add(borda, lago);
+      for (let i = 0; i < 6; i++) {
+        const a = (i / 6) * Math.PI * 2 + r();
+        por('grass', x + Math.cos(a) * 1.25, z + Math.sin(a) * 0.9, 0.25 + r() * 0.12, r() * 6);
+      }
+      break;
+    }
+    // os bancos, as lixeiras e as barraquinhas, um pouco mais longe, olhando para a pista
+    const centro = this.centro;
+    const olhar = (x: number, z: number) => Math.atan2(centro.x - x, centro.z - z);
+    const itens: [PecaDoParque, number][] = [
+      ['bench', 0.6],
+      ['bench', 0.6],
+      ['trash', 0.55],
+      ['stall-drinks', 0.75],
+      ['stall-food', 0.75],
+      ['bench', 0.6],
+      ['tree', 0.9],
+      ['tree-large', 0.8],
+      ['tree', 0.75],
+      ['tree-large', 0.9],
+    ];
+    const postos: [number, number][] = [];
+    for (const [nome, escala] of itens) {
+      for (let k = 0; k < 60; k++) {
+        const a = r() * Math.PI * 2;
+        const d = this.tamanho / 2 + 1.4 + r() * 1.6;
+        const x = centro.x + Math.cos(a) * d;
+        const z = centro.z + Math.sin(a) * d;
+        if (!longeDaPista(x, z, 0.7) || postos.some(([px, pz]) => Math.hypot(px - x, pz - z) < 1.3)) continue;
+        postos.push([x, z]);
+        por(nome, x, z, escala, nome.startsWith('tree') ? r() * 6 : olhar(x, z));
+        break;
+      }
     }
   }
 
@@ -355,12 +543,15 @@ export class CenaDoGolfe3D {
     return relevo(this.buraco, x, z)[0];
   }
 
-  private porBola(bola: THREE.Mesh, sombra: THREE.Mesh, x: number, z: number, dentro: boolean) {
+  private porBola(bola: THREE.Mesh, sombra: THREE.Mesh, x: number, z: number, dentro: boolean, y: number | null = null) {
     const h = this.altura(x, z);
     bola.visible = !dentro;
     sombra.visible = !dentro && !this.sombras;
-    bola.position.set(x, h + RAIO_BOLA, z);
+    // no ar, a bola sobe; a sombra fica no chão, menor quanto mais alto
+    const alto = y === null ? 0 : Math.max(0, y - h);
+    bola.position.set(x, h + alto + RAIO_BOLA, z);
     sombra.position.set(x + 0.006, h + 0.002, z + 0.006);
+    sombra.scale.setScalar(1 / (1 + alto * 2.5));
   }
 
   /** Um quadro: a página chama a cada requestAnimationFrame. Sem foco ou escondida, não desenha. */
@@ -372,7 +563,7 @@ export class CenaDoGolfe3D {
     const agora = performance.now();
 
     // as bolas
-    if (q.minha) this.porBola(this.bolaMinha, this.sombraMinha, q.minha.x, q.minha.z, q.minha.dentro);
+    if (q.minha) this.porBola(this.bolaMinha, this.sombraMinha, q.minha.x, q.minha.z, q.minha.dentro, q.minha.y);
     else {
       this.bolaMinha.visible = false;
       this.sombraMinha.visible = false;
@@ -392,7 +583,7 @@ export class CenaDoGolfe3D {
         return;
       }
       (o.bola.material as THREE.MeshStandardMaterial).color.set(b.cor);
-      this.porBola(o.bola, o.sombra, b.x, b.z, b.dentro);
+      this.porBola(o.bola, o.sombra, b.x, b.z, b.dentro, b.y);
     });
 
     // a mira: os pontinhos na direção da tacada, mais longe com mais força, seguindo o chão
@@ -404,6 +595,22 @@ export class CenaDoGolfe3D {
         p.visible = false;
         continue;
       }
+      const arco = q.mira.arco;
+      if (arco) {
+        // por cima: os pontinhos no arco de verdade, até onde a bola toca o chão
+        const k = arco.length ? Math.round((i / (this.mira.length - 1)) * (arco.length - 1)) : -1;
+        if (k < 0) {
+          p.visible = false;
+          continue;
+        }
+        p.visible = true;
+        p.position.set(arco[k][0], arco[k][1] + RAIO_BOLA, arco[k][2]);
+        // no ar, o pontinho olha para a câmera (deitado, de trás, ele some)
+        p.quaternion.copy(this.camera.quaternion);
+        p.scale.setScalar(1.1 - (i / this.mira.length) * 0.3);
+        continue;
+      }
+      p.rotation.set(-Math.PI / 2, 0, 0);
       const alcance = 0.3 + q.mira.forca * 1.3;
       const d = 0.06 + (i / (this.mira.length - 1)) * alcance;
       const x = q.minha.x + q.mira.ux * d;
@@ -413,10 +620,18 @@ export class CenaDoGolfe3D {
       p.scale.setScalar(1 - (i / this.mira.length) * 0.5);
     }
 
+    const fim = mostrarMira && q.mira?.arco?.length ? q.mira.arco[q.mira.arco.length - 1] : null;
+    if (this.queda) {
+      this.queda.visible = !!fim;
+      if (fim) this.queda.position.set(fim[0], this.altura(fim[0], fim[2]) + 0.005, fim[2]);
+    }
+
     this.atualizarCoelho(q, dt, agora);
 
     // as pás do moinho giram (só o desenho: elas não chegam ao chão)
     if (!this.calmo) for (const p of this.pas) p.rotation.z += dt * 1.2;
+    // as nuvens andam devagar
+    if (!this.calmo) this.nuvens.rotation.y += dt * 0.006;
 
     this.atualizarCamera(q, dt);
     this.mixer?.update(this.calmo ? 0 : dt);
@@ -570,4 +785,22 @@ export class CenaDoGolfe3D {
     this.renderer.dispose();
     this.renderer.domElement.remove();
   }
+}
+
+/** A grama cortada: faixas claras e escuras (a marca do cortador) com o pontilhado das folhas, numa textura de 128 que se repete. */
+function texturaDaGrama(): HTMLCanvasElement {
+  const c = document.createElement('canvas');
+  c.width = c.height = 128;
+  const g = c.getContext('2d')!;
+  g.fillStyle = '#8cc06c';
+  g.fillRect(0, 0, 128, 128);
+  g.fillStyle = '#82b764';
+  g.fillRect(0, 0, 128, 64);
+  const r = sorteio(3);
+  for (let i = 0; i < 900; i++) {
+    const claro = r() < 0.5;
+    g.fillStyle = claro ? 'rgba(186,222,140,0.55)' : 'rgba(84,136,66,0.45)';
+    g.fillRect(Math.floor(r() * 128), Math.floor(r() * 128), 1, 1 + Math.floor(r() * 2));
+  }
+  return c;
 }

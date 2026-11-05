@@ -2360,6 +2360,7 @@ export default {
   'Galhos': 'شاخه‌ها',
   'Copa do Pulo': 'جام پرش',
   'Minigolfe da toca': 'مینی‌گلف لانه',
+  'Tacada por cima': 'ضربه‌ی بلند',
   'Navios': 'کشتی‌ها',
   'Navios piratas': 'کشتی‌های دزدان دریایی',
   'Navios modernos': 'کشتی‌های مدرن',

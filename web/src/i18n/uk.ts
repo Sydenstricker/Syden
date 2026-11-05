@@ -2422,6 +2422,7 @@ export default {
   'Galhos': 'Гілки',
   'Copa do Pulo': 'Кубок Стрибка',
   'Minigolfe da toca': 'Міні-гольф у норі',
+  'Tacada por cima': 'Удар навісом',
   'Navios': 'Кораблі',
   'Navios piratas': 'Піратські кораблі',
   'Navios modernos': 'Сучасні кораблі',

@@ -2357,6 +2357,7 @@ export default {
   'Galhos': 'கிளைகள்',
   'Copa do Pulo': 'தாவல் கோப்பை',
   'Minigolfe da toca': 'வளையில் மினிகோல்ஃப்',
+  'Tacada por cima': 'உயர்த்தி அடி',
   'Navios': 'கப்பல்கள்',
   'Navios piratas': 'கடற்கொள்ளையர் கப்பல்கள்',
   'Navios modernos': 'நவீன கப்பல்கள்',

@@ -2371,6 +2371,7 @@ export default {
   'Galhos': 'डालियाँ',
   'Copa do Pulo': 'छलांग कप',
   'Minigolfe da toca': 'बिल का मिनी गोल्फ़',
+  'Tacada por cima': 'ऊँचा शॉट',
   'Navios': 'जहाज़',
   'Navios piratas': 'समुद्री डाकू जहाज़',
   'Navios modernos': 'आधुनिक जहाज़',

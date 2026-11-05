@@ -2443,6 +2443,7 @@ export default {
   'Galhos': 'Шохаҳо',
   'Copa do Pulo': 'Ҷоми Ҷаҳиш',
   'Minigolfe da toca': 'Миниголфи лона',
+  'Tacada por cima': 'Зарбаи баланд',
   'Navios': 'Киштиҳо',
   'Navios piratas': 'Киштиҳои роҳзанон',
   'Navios modernos': 'Киштиҳои муосир',

@@ -2372,6 +2372,7 @@ export default {
   'Galhos': 'ቅርንጫፎች',
   'Copa do Pulo': 'የዝላይ ዋንጫ',
   'Minigolfe da toca': 'የዋሻው ሚኒ ጎልፍ',
+  'Tacada por cima': 'ከፍ ያለ ምት',
   'Navios': 'መርከቦች',
   'Navios piratas': 'የወንበዴ መርከቦች',
   'Navios modernos': 'ዘመናዊ መርከቦች',

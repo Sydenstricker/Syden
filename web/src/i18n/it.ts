@@ -2371,6 +2371,7 @@ export default {
   'Galhos': 'Rami',
   'Copa do Pulo': 'Coppa del Salto',
   'Minigolfe da toca': 'Minigolf della tana',
+  'Tacada por cima': 'Colpo alto',
   'Navios': 'Navi',
   'Navios piratas': 'Navi pirata',
   'Navios modernos': 'Navi moderne',

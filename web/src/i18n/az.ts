@@ -2406,6 +2406,7 @@ export default {
   'Galhos': 'Budaqlar',
   'Copa do Pulo': 'Tullanma Kuboku',
   'Minigolfe da toca': 'Yuvada minigolf',
+  'Tacada por cima': 'Hündür zərbə',
   'Navios': 'Gəmilər',
   'Navios piratas': 'Pirat gəmiləri',
   'Navios modernos': 'Müasir gəmilər',

@@ -2441,6 +2441,7 @@ export default {
   'Galhos': 'មែកឈើ',
   'Copa do Pulo': 'ពានលោត',
   'Minigolfe da toca': 'មីនីហ្គោលក្នុងរូង',
+  'Tacada por cima': 'វាយឱ្យហោះ',
   'Navios': 'កប៉ាល់',
   'Navios piratas': 'កប៉ាល់ចោរសមុទ្រ',
   'Navios modernos': 'កប៉ាល់ទំនើប',

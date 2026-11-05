@@ -2442,6 +2442,7 @@ export default {
   'Galhos': 'Greiner',
   'Copa do Pulo': 'Hoppecupen',
   'Minigolfe da toca': 'Minigolf i hula',
+  'Tacada por cima': 'Høyt slag',
   'Navios': 'Skip',
   'Navios piratas': 'Piratskip',
   'Navios modernos': 'Moderne skip',

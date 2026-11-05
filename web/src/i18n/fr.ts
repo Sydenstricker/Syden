@@ -2394,6 +2394,7 @@ export default {
   'Galhos': 'Branches',
   'Copa do Pulo': 'Coupe du Saut',
   'Minigolfe da toca': 'Minigolf du terrier',
+  'Tacada por cima': 'Coup en hauteur',
   'Navios': 'Navires',
   'Navios piratas': 'Navires pirates',
   'Navios modernos': 'Navires modernes',

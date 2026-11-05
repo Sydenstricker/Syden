@@ -2441,6 +2441,7 @@ export default {
   'Galhos': 'Větve',
   'Copa do Pulo': 'Skokanský pohár',
   'Minigolfe da toca': 'Minigolf v noře',
+  'Tacada por cima': 'Úder vrchem',
   'Navios': 'Lodě',
   'Navios piratas': 'Pirátské lodě',
   'Navios modernos': 'Moderní lodě',

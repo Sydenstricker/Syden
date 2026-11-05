@@ -2442,6 +2442,7 @@ export default {
   'Galhos': 'Laamo',
   'Copa do Pulo': 'Koobka Booditaanka',
   'Minigolfe da toca': 'Minigolf-ka Godka',
+  'Tacada por cima': 'Garaac sare',
   'Navios': 'Maraakiib',
   'Navios piratas': 'Maraakiibta burcad-badeedda',
   'Navios modernos': 'Maraakiib casri ah',

@@ -2443,6 +2443,7 @@ export default {
   'Galhos': 'ກິ່ງໄມ້',
   'Copa do Pulo': 'ຖ້ວຍກະໂດດ',
   'Minigolfe da toca': 'ມິນິກອຟໃນໂພງ',
+  'Tacada por cima': 'ຕີລອຍ',
   'Navios': 'ເຮືອ',
   'Navios piratas': 'ເຮືອໂຈນສະຫຼັດ',
   'Navios modernos': 'ເຮືອທັນສະໄໝ',

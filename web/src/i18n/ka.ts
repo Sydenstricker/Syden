@@ -2460,6 +2460,7 @@ export default {
   'Galhos': 'ტოტები',
   'Copa do Pulo': 'ნახტომის თასი',
   'Minigolfe da toca': 'მინიგოლფი სოროში',
+  'Tacada por cima': 'მაღალი დარტყმა',
   'Navios': 'გემები',
   'Navios piratas': 'მეკობრეების გემები',
   'Navios modernos': 'თანამედროვე გემები',

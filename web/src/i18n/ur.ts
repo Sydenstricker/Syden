@@ -2359,6 +2359,7 @@ export default {
   'Galhos': 'شاخیں',
   'Copa do Pulo': 'چھلانگ کپ',
   'Minigolfe da toca': 'بِل کا منی گالف',
+  'Tacada por cima': 'اونچی ضرب',
   'Navios': 'جہاز',
   'Navios piratas': 'بحری قزاقوں کے جہاز',
   'Navios modernos': 'جدید جہاز',

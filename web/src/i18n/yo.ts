@@ -2387,6 +2387,7 @@ export default {
   'Galhos': 'Ẹ̀ka Igi',
   'Copa do Pulo': 'Ife Fífò',
   'Minigolfe da toca': 'Minigolf Inú Ihò',
+  'Tacada por cima': 'Ìlù gíga',
   'Navios': 'Ọkọ̀ ojú omi',
   'Navios piratas': 'Ọkọ̀ àwọn ajalèlókun',
   'Navios modernos': 'Ọkọ̀ òde-òní',

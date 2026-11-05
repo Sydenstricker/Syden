@@ -2442,6 +2442,7 @@ export default {
   'Galhos': 'Oksat',
   'Copa do Pulo': 'Hyppycup',
   'Minigolfe da toca': 'Kolon minigolf',
+  'Tacada por cima': 'Korkea lyönti',
   'Navios': 'Laivat',
   'Navios piratas': 'Merirosvolaivat',
   'Navios modernos': 'Modernit laivat',

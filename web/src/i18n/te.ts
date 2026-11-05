@@ -2354,6 +2354,7 @@ export default {
   'Galhos': 'కొమ్మలు',
   'Copa do Pulo': 'దూకుడు కప్',
   'Minigolfe da toca': 'బొరియలో మినీగోల్ఫ్',
+  'Tacada por cima': 'పైకి కొట్టే షాట్',
   'Navios': 'ఓడలు',
   'Navios piratas': 'సముద్రపు దొంగల ఓడలు',
   'Navios modernos': 'ఆధునిక ఓడలు',

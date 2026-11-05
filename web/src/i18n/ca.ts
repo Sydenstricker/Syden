@@ -2438,6 +2438,7 @@ export default {
   'Galhos': 'Branques',
   'Copa do Pulo': 'Copa del Salt',
   'Minigolfe da toca': 'Minigolf del cau',
+  'Tacada por cima': 'Cop per dalt',
   'Navios': 'Vaixells',
   'Navios piratas': 'Vaixells pirates',
   'Navios modernos': 'Vaixells moderns',

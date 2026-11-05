@@ -2434,6 +2434,7 @@ export default {
   'Galhos': 'Degë',
   'Copa do Pulo': 'Kupa e Kërcimit',
   'Minigolfe da toca': 'Minigolf në strofull',
+  'Tacada por cima': 'Goditje lart',
   'Navios': 'Anije',
   'Navios piratas': 'Anije piratësh',
   'Navios modernos': 'Anije moderne',

@@ -2376,6 +2376,7 @@ export default {
   'Galhos': 'Lālā',
   'Copa do Pulo': 'Ipu o le Oso',
   'Minigolfe da toca': 'Minigolf i le Lua',
+  'Tacada por cima': 'Tā maualuga',
   'Navios': 'Vaʻa',
   'Navios piratas': 'Vaʻa a faomea',
   'Navios modernos': 'Vaʻa faʻaonaponei',

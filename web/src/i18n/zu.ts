@@ -2443,6 +2443,7 @@ export default {
   'Galhos': 'Amagatsha',
   'Copa do Pulo': 'Indebe Yokugxuma',
   'Minigolfe da toca': 'I-minigolf Yomgodi',
+  'Tacada por cima': 'Ukushaya phezulu',
   'Navios': 'Imikhumbi',
   'Navios piratas': 'Imikhumbi yabaphangi',
   'Navios modernos': 'Imikhumbi yesimanje',

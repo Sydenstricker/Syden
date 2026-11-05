@@ -2439,6 +2439,7 @@ export default {
   'Galhos': 'Клони',
   'Copa do Pulo': 'Купа на скока',
   'Minigolfe da toca': 'Миниголф в леговището',
+  'Tacada por cima': 'Висок удар',
   'Navios': 'Кораби',
   'Navios piratas': 'Пиратски кораби',
   'Navios modernos': 'Модерни кораби',

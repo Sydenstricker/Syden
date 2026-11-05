@@ -2378,6 +2378,7 @@ export default {
   'Galhos': 'Craobhacha',
   'Copa do Pulo': 'Corn an Léime',
   'Minigolfe da toca': 'Mionghalf an Phoill',
+  'Tacada por cima': 'Buille ard',
   'Navios': 'Longa',
   'Navios piratas': 'Longa foghlaithe mara',
   'Navios modernos': 'Longa nua-aimseartha',

@@ -2374,6 +2374,7 @@ export default {
   'Galhos': 'Rassa',
   'Copa do Pulo': 'Kofin Tsalle',
   'Minigolfe da toca': 'Ƙaramin golf na kogo',
+  'Tacada por cima': 'Bugu sama',
   'Navios': 'Jiragen ruwa',
   'Navios piratas': 'Jiragen \'yan fashin teku',
   'Navios modernos': 'Jiragen zamani',

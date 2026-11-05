@@ -2353,6 +2353,7 @@ export default {
   'Galhos': '枝の上',
   'Copa do Pulo': 'ジャンプカップ',
   'Minigolfe da toca': '巣穴のミニゴルフ',
+  'Tacada por cima': '浮かせるショット',
   'Navios': '船',
   'Navios piratas': '海賊船',
   'Navios modernos': '現代の船',

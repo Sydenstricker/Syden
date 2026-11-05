@@ -2444,6 +2444,7 @@ export default {
   'Galhos': 'Şahalar',
   'Copa do Pulo': 'Bökmek kubogy',
   'Minigolfe da toca': 'Hindäki minigolf',
+  'Tacada por cima': 'Ýokary urgy',
   'Navios': 'Gämiler',
   'Navios piratas': 'Garakçy gämileri',
   'Navios modernos': 'Döwrebap gämiler',

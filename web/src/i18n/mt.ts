@@ -2388,6 +2388,7 @@ export default {
   'Galhos': 'Friegħi',
   'Copa do Pulo': 'It-Tazza tal-Qabża',
   'Minigolfe da toca': 'Minigolf tal-għar',
+  'Tacada por cima': 'Daqqa għolja',
   'Navios': 'Vapuri',
   'Navios piratas': 'Vapuri tal-pirati',
   'Navios modernos': 'Vapuri moderni',

@@ -2443,6 +2443,7 @@ export default {
   'Galhos': 'Greinar',
   'Copa do Pulo': 'Hoppbikarinn',
   'Minigolfe da toca': 'Mínígolf í holunni',
+  'Tacada por cima': 'Hátt högg',
   'Navios': 'Skip',
   'Navios piratas': 'Sjóræningjaskip',
   'Navios modernos': 'Nútímaskip',

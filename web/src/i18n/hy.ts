@@ -2461,6 +2461,7 @@ export default {
   'Galhos': 'Ճյուղեր',
   'Copa do Pulo': 'Ցատկի գավաթ',
   'Minigolfe da toca': 'Մինիգոլֆ որջում',
+  'Tacada por cima': 'Բարձր հարված',
   'Navios': 'Նավեր',
   'Navios piratas': 'Ծովահենների նավեր',
   'Navios modernos': 'Ժամանակակից նավեր',

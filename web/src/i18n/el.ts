@@ -2378,6 +2378,7 @@ export default {
   'Galhos': 'Κλαδιά',
   'Copa do Pulo': 'Κύπελλο του Άλματος',
   'Minigolfe da toca': 'Μίνι γκολφ στο λαγούμι',
+  'Tacada por cima': 'Ψηλό χτύπημα',
   'Navios': 'Πλοία',
   'Navios piratas': 'Πειρατικά πλοία',
   'Navios modernos': 'Σύγχρονα πλοία',

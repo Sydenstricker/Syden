@@ -2372,6 +2372,7 @@ export default {
   'Galhos': 'Crengi',
   'Copa do Pulo': 'Cupa Săriturii',
   'Minigolfe da toca': 'Minigolf în vizuină',
+  'Tacada por cima': 'Lovitură pe sus',
   'Navios': 'Nave',
   'Navios piratas': 'Nave de pirați',
   'Navios modernos': 'Nave moderne',

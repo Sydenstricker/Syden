@@ -2359,6 +2359,7 @@ export default {
   'Galhos': '树枝',
   'Copa do Pulo': '跳跃杯',
   'Minigolfe da toca': '兔子洞迷你高尔夫',
+  'Tacada por cima': '挑高击球',
   'Navios': '船只',
   'Navios piratas': '海盗船',
   'Navios modernos': '现代船只',

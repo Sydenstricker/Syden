@@ -2396,6 +2396,7 @@ export default {
   'Galhos': 'Äste',
   'Copa do Pulo': 'Hüpfpokal',
   'Minigolfe da toca': 'Minigolf im Bau',
+  'Tacada por cima': 'Hoher Schlag',
   'Navios': 'Schiffe',
   'Navios piratas': 'Piratenschiffe',
   'Navios modernos': 'Moderne Schiffe',

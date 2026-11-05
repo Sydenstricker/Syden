@@ -2390,6 +2390,7 @@ export default {
   'Galhos': 'Ветки',
   'Copa do Pulo': 'Кубок Прыжка',
   'Minigolfe da toca': 'Мини-гольф в норе',
+  'Tacada por cima': 'Удар навесом',
   'Navios': 'Корабли',
   'Navios piratas': 'Пиратские корабли',
   'Navios modernos': 'Современные корабли',

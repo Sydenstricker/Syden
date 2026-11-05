@@ -2392,6 +2392,7 @@ export default {
   'Galhos': 'الأغصان',
   'Copa do Pulo': 'كأس القفز',
   'Minigolfe da toca': 'غولف الجحر المصغّر',
+  'Tacada por cima': 'ضربة عالية',
   'Navios': 'السفن',
   'Navios piratas': 'سفن القراصنة',
   'Navios modernos': 'سفن حديثة',
