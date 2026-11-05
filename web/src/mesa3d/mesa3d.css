@@ -1,0 +1,89 @@
+/* As mesas em 3D (mesa3d/): Damas, Truco e Dominó. A cena cobre a caixa; o 2D fica por baixo, à mostra enquanto ela carrega
+   e, pronta, só para o teclado e o leitor de tela (mesa3d-so-leitor). */
+.mesa3d-tabuleiro {
+  position: relative;
+  width: min(100%, 60vh, 440px);
+  aspect-ratio: 1 / 0.86;
+  margin: 0 auto;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.mesa3d-caixa,
+.mesa3d-reserva {
+  position: absolute;
+  inset: 0;
+}
+.mesa3d-caixa.escondida {
+  visibility: hidden;
+}
+.mesa3d-tela {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: manipulation;
+}
+.mesa3d-so-leitor {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* O Truco: a cena é o fundo da mesa de feltro; os nomes e o grito continuam em HTML por cima. As cartas desenhadas em HTML
+   (as de costas dos outros, o monte, a vira, a mesa e a minha mão) saem dos olhos e ficam para o teclado e o leitor. */
+.truco-mesa.mesa3d-truco {
+  aspect-ratio: 1 / 0.95;
+  background: #1f5a39;
+}
+.truco-mesa.mesa3d-truco > .mesa3d-caixa {
+  z-index: 0;
+}
+.truco-mesa.mesa3d-truco > .truco-lugar,
+.truco-mesa.mesa3d-truco > .truco-grito {
+  z-index: 1;
+  pointer-events: none;
+}
+.truco-mesa.mesa3d-truco > .truco-lugar.baixo {
+  left: 12px;
+  transform: none;
+}
+.truco-mesa.mesa3d-truco .truco-lugar-cartas,
+.truco-mesa.mesa3d-truco .truco-monte,
+.truco-mesa.mesa3d-truco .truco-centro,
+.truco-mao.mesa3d-truco-mao {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* O Dominó: a mesa de feltro com a corrente, a mão e as pedras dos outros. */
+.mesa3d-domino {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 0.72;
+  min-height: 260px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #1f5a39;
+}
+.mesa3d-domino.escondida {
+  display: none;
+}
+.domino-jogo.mesa3d-com-cena .dom-costas,
+.domino-jogo.mesa3d-com-cena .dom-mesa,
+.domino-jogo.mesa3d-com-cena .dom-minha-mao {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

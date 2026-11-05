@@ -2,6 +2,13 @@ import { useState } from 'react';
 import { useT } from './i18n';
 import { Relogio } from './Minijogo';
 import type { Partida } from './minijogos';
+import type { DominoDaCena } from './mesa3d/domino';
+import { useCena3D } from './mesa3d/useCena3D';
+
+const importarDomino = () => import('./mesa3d/domino').then((m) => m.criarDomino3D);
+/** Os alvos das duas pontas na cena (os mesmos de mesa3d/domino.ts; daqui, para o three.js não vir junto). */
+const PONTA_ESQUERDA = -1;
+const PONTA_DIREITA = -2;
 
 /**
  * O DOMINÓ (04/11/2026, server/src/minijogo-domino.ts): o duplo-seis de sempre, de 2 a 4 (com 4, em duplas). As pedras são
@@ -167,11 +174,29 @@ export function JogoDomino({ estado: bruto, eu, jogador, restante, agir }: { est
     }
   };
 
+  // a mesa em 3D (mesa3d/domino.ts): a corrente, a minha mão e as dos outros; as de HTML ficam para o teclado e o leitor de tela
+  const mao = jogador ? estado.minhaMao : [];
+  const { caixa, estado: cena } = useCena3D<DominoDaCena>(
+    importarDomino,
+    {
+      mesa: estado.mesa,
+      mao,
+      servem: minhaVez ? mao.flatMap((p, k) => (estado.jogaveis.some((x) => mesma(x.pedra, p)) ? [k] : [])) : [],
+      escolhida: escolhida && mao.some((p) => mesma(p, escolhida)) ? mao.findIndex((p) => mesma(p, escolhida)) : null,
+      outros: outros.map((l) => l.pedras),
+    },
+    (alvo) => {
+      if (alvo === PONTA_ESQUERDA || alvo === PONTA_DIREITA) {
+        if (escolhida) jogar(escolhida, alvo === PONTA_ESQUERDA ? 'esquerda' : 'direita');
+      } else if (mao[alvo]) tocar(mao[alvo]);
+    },
+  );
+
   const r = estado.resultado;
   const aberto = estado.fase !== 'jogando' && r;
 
   return (
-    <div className="domino-jogo">
+    <div className={`domino-jogo${cena === 'pronta' ? ' mesa3d-com-cena' : ''}`}>
       <div className="dom-topo">
         <ol className="dom-placar" aria-label={t('Placar')}>
           {estado.placar.map((p) => (
@@ -200,6 +225,12 @@ export function JogoDomino({ estado: bruto, eu, jogador, restante, agir }: { est
           </li>
         ))}
       </ul>
+
+      {cena !== 'falhou' && (
+        <div className={`mesa3d-domino${cena === 'pronta' ? '' : ' escondida'}`}>
+          <div ref={caixa} className="mesa3d-caixa" />
+        </div>
+      )}
 
       <div className="dom-mesa" dir="ltr" role="img" aria-label={estado.mesa.map(rotulo).join(' · ') || t('Dominó')}>
         {estado.mesa.map((p, i) => {

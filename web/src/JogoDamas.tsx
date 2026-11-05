@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { useT } from './i18n';
 import { Relogio } from './Minijogo';
 import type { Partida } from './minijogos';
+import type { DamasDaCena } from './mesa3d/damas';
+import { useCena3D } from './mesa3d/useCena3D';
 
 const JOGADA_MS = 90_000;
 const COLUNAS = 'abcdefgh';
@@ -144,37 +146,53 @@ export function JogoDamas({
         ))}
       </div>
 
-      <div className="damas">
-        {Array.from({ length: 64 }, (_, d) => {
-          const i = girado ? 63 - d : d;
-          const linha = Math.floor(i / 8);
-          const coluna = i % 8;
-          const escura = (linha + coluna) % 2 === 1;
-          const peca = estado.casas[i] ?? 0;
-          const classes = ['damas-casa', escura ? 'escura' : 'clara'];
-          if (ultimoCaminho.has(i)) classes.push('ultimo');
-          if (ultimasComidas.has(i) && !peca) classes.push('comida');
-          if (sel === i) classes.push('escolhida');
-          else if (minhaVez && obrigatorias.has(i)) classes.push('obrigatoria');
-          if (prefixo.includes(i)) classes.push('no-caminho');
-          if (proximos.has(i)) classes.push('destino');
-          if (aComer.has(i)) classes.push('a-comer');
-          const clicavel = minhaVez && (origens.includes(i) || proximos.has(i) || sel !== null);
-          return (
-            <button
-              key={i}
-              type="button"
-              className={classes.join(' ')}
-              disabled={!escura || !clicavel}
-              aria-label={`${COLUNAS[coluna]}${8 - linha}`}
-              aria-pressed={sel === i || undefined}
-              onClick={() => clicar(i)}
-            >
-              {peca > 0 && <Peca peca={peca} />}
-            </button>
-          );
-        })}
-      </div>
+      <TabuleiroDasDamas
+        dados={{
+          casas: estado.casas,
+          girado,
+          escolhida: sel,
+          obrigatorias: minhaVez ? [...obrigatorias] : [],
+          prefixo,
+          destinos: [...proximos],
+          aComer: [...aComer],
+          clicaveis: minhaVez ? Array.from({ length: 64 }, (_, i) => i).filter((i) => (Math.floor(i / 8) + (i % 8)) % 2 === 1 && (origens.includes(i) || proximos.has(i) || sel !== null)) : [],
+          ultimo: estado.ultimo,
+        }}
+        aoClicar={clicar}
+        reserva={
+          <div className="damas">
+            {Array.from({ length: 64 }, (_, d) => {
+              const i = girado ? 63 - d : d;
+              const linha = Math.floor(i / 8);
+              const coluna = i % 8;
+              const escura = (linha + coluna) % 2 === 1;
+              const peca = estado.casas[i] ?? 0;
+              const classes = ['damas-casa', escura ? 'escura' : 'clara'];
+              if (ultimoCaminho.has(i)) classes.push('ultimo');
+              if (ultimasComidas.has(i) && !peca) classes.push('comida');
+              if (sel === i) classes.push('escolhida');
+              else if (minhaVez && obrigatorias.has(i)) classes.push('obrigatoria');
+              if (prefixo.includes(i)) classes.push('no-caminho');
+              if (proximos.has(i)) classes.push('destino');
+              if (aComer.has(i)) classes.push('a-comer');
+              const clicavel = minhaVez && (origens.includes(i) || proximos.has(i) || sel !== null);
+              return (
+                <button
+                  key={i}
+                  type="button"
+                  className={classes.join(' ')}
+                  disabled={!escura || !clicavel}
+                  aria-label={`${COLUNAS[coluna]}${8 - linha}`}
+                  aria-pressed={sel === i || undefined}
+                  onClick={() => clicar(i)}
+                >
+                  {peca > 0 && <Peca peca={peca} />}
+                </button>
+              );
+            })}
+          </div>
+        }
+      />
 
       <p className={`minijogo-situacao${minhaVez ? ' minha-vez' : ''}`} role="status">
         {situacao}
@@ -191,6 +209,20 @@ export function JogoDamas({
           {t('Desistir')}
         </button>
       )}
+    </div>
+  );
+}
+
+const importarDamas = () => import('./mesa3d/damas').then((m) => m.criarDamas3D);
+
+/** O tabuleiro em 3D (mesa3d/damas.ts), com o de botões por baixo: à mostra até a cena ficar pronta (ou para sempre, no estilo 2D). */
+function TabuleiroDasDamas({ dados, aoClicar, reserva }: { dados: DamasDaCena; aoClicar: (i: number) => void; reserva: ReactNode }) {
+  const { caixa, estado } = useCena3D(importarDamas, dados, aoClicar);
+  if (estado === 'falhou') return <>{reserva}</>;
+  return (
+    <div className="mesa3d-tabuleiro">
+      <div ref={caixa} className={`mesa3d-caixa${estado === 'pronta' ? '' : ' escondida'}`} />
+      <div className={estado === 'pronta' ? 'mesa3d-so-leitor' : 'mesa3d-reserva'}>{reserva}</div>
     </div>
   );
 }

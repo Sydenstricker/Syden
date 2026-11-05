@@ -2,6 +2,10 @@ import { useState } from 'react';
 import { useT } from './i18n';
 import { Relogio } from './Minijogo';
 import type { Partida } from './minijogos';
+import type { TrucoDaCena } from './mesa3d/truco';
+import { useCena3D } from './mesa3d/useCena3D';
+
+const importarTruco = () => import('./mesa3d/truco').then((m) => m.criarTruco3D);
 
 /**
  * O TRUCO PAULISTA (04/11/2026): a mesa de feltro, os lugares em volta (eu embaixo; em quatro, o parceiro em cima e os
@@ -85,6 +89,26 @@ export function JogoTruco({ estado: partida, eu, jogador, restante, agir }: { es
   const t = useT();
   const estado = partida as unknown as EstadoTruco;
   const [coberta, setCoberta] = useState(false);
+  const minhaVez3d = jogador && estado.fase === 'jogando' && estado.vez === eu;
+  const mao3d = jogador && Array.isArray(estado.mao) ? estado.mao : [];
+  // a mesa em 3D (mesa3d/truco.ts): as cartas na cena, e as de HTML só para o teclado e o leitor de tela
+  const { caixa, estado: cena } = useCena3D<TrucoDaCena>(
+    importarTruco,
+    {
+      n: Array.isArray(estado.lugares) ? estado.lugares.length : 2,
+      base: estado.meuLugar ?? 0,
+      lugares: Array.isArray(estado.lugares) ? estado.lugares.map((l) => ({ lugar: l.lugar, cartas: l.cartas })) : [],
+      mao: mao3d,
+      maoClicavel: minhaVez3d,
+      manilha: estado.manilha,
+      vira: estado.vira,
+      mesa: Array.isArray(estado.mesa) ? estado.mesa : [],
+    },
+    (k) => {
+      const carta = mao3d[k];
+      if (carta && minhaVez3d) jogarCarta(carta);
+    },
+  );
   if (!Array.isArray(estado.lugares)) return null;
   const n = estado.lugares.length;
   const base = estado.meuLugar ?? 0;
@@ -140,7 +164,8 @@ export function JogoTruco({ estado: partida, eu, jogador, restante, agir }: { es
         </span>
       </div>
 
-      <div className={`truco-mesa jogadores-${n}`}>
+      <div className={`truco-mesa jogadores-${n}${cena === 'pronta' ? ' mesa3d-truco' : ''}`}>
+        {cena !== 'falhou' && <div ref={caixa} className={`mesa3d-caixa${cena === 'pronta' ? '' : ' escondida'}`} />}
         {estado.lugares.map((l) => {
           const pos = posicaoDe(l.lugar);
           return (
@@ -271,7 +296,7 @@ export function JogoTruco({ estado: partida, eu, jogador, restante, agir }: { es
       </div>
 
       {jogador && estado.mao.length > 0 && (
-        <div className={`truco-mao${coberta && estado.possoCobrir ? ' cobrindo' : ''}`}>
+        <div className={`truco-mao${coberta && estado.possoCobrir ? ' cobrindo' : ''}${cena === 'pronta' ? ' mesa3d-truco-mao' : ''}`}>
           {estado.mao.map((c) => (
             <Carta key={c} carta={c} manilha={estado.manilha} onClick={() => jogarCarta(c)} desligada={!minhaVez} />
           ))}

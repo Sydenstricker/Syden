@@ -581,17 +581,11 @@ export function JogoCidades({
             corDe: (id) => corDe(id).roupa,
             cores: COR_DO_GRUPO,
             icones: ICONE,
+            // os dados rolam na cena (cidades3d/cena.ts); no desenho de reserva, continuam no meio
+            dados: estado.ultimo?.dados ? { id: estado.ultimo.id, valores: estado.ultimo.dados } : null,
           }}
           rotulo={t('Cidades à venda')}
           aoEscolher={(i) => setEscolhida(i === escolhida ? null : i)}
-          meio={
-            estado.ultimo?.dados && (
-              <div className="cid-dados-meio">
-                <Dado n={estado.ultimo.dados[0]} tamanho={36} />
-                <Dado n={estado.ultimo.dados[1]} tamanho={36} />
-              </div>
-            )
-          }
           reserva={<Tabuleiro estado={estado} posDe={posDe} corDe={corDe} escolhida={escolhida} aoEscolher={(i) => setEscolhida(i === escolhida ? null : i)} />}
         />
         <div className="cid-lado">

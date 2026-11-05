@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
+import { carregarModelo as carregarDaMesa } from '../mesa3d/base';
 
 /**
  * O TABULEIRO 3D DO CIDADES À VENDA (05/11/2026, pedido dele: "3D cartoon fofo, similar ao Mario Party, com os assets da
@@ -51,6 +52,8 @@ export interface DadosDaCena {
   corDe: (userId: number) => string;
   cores: string[];
   icones: Record<string, string>;
+  /** Os dados da última jogada (o id troca a cada jogada: o mesmo par duas vezes rola de novo), ou null. */
+  dados?: { id: number; valores: [number, number] } | null;
 }
 
 const BASE = `${import.meta.env.BASE_URL}cidades3d/`;
@@ -249,6 +252,23 @@ function materialDoCoelho(base: THREE.MeshStandardMaterial, pelo: string, roupa:
  */
 const PESCOCO = 3.6;
 
+/** O dado do KayKit tem 0,75 de lado; no meio do tabuleiro, um pouco menor que uma casa. */
+const ESCALA_DO_DADO = 0.6;
+const DURACAO_DO_DADO = 950;
+const PARADA_DO_DADO = [new THREE.Vector3(-0.3, 0.03 + 0.375 * ESCALA_DO_DADO, 0.2), new THREE.Vector3(0.34, 0.03 + 0.375 * ESCALA_DO_DADO, 0.08)];
+/**
+ * O giro que põe cada número para cima (o +y). Medido no modelo D6_A (foto de conferência das seis faces): o 6 está no +y, o 1
+ * no -y, o 2 no +x, o 5 no -x, o 3 no +z e o 4 no -z.
+ */
+const FACE_PARA_CIMA: Record<number, THREE.Quaternion> = {
+  1: new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.PI, 0, 0)),
+  2: new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, Math.PI / 2)),
+  3: new THREE.Quaternion().setFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0)),
+  4: new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.PI / 2, 0, 0)),
+  5: new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, -Math.PI / 2)),
+  6: new THREE.Quaternion(),
+};
+
 interface Peca {
   raiz: THREE.Group;
   corpo: THREE.Object3D;
@@ -292,6 +312,9 @@ export class CenaDasCidades {
   private apertou: { x: number; y: number } | null = null;
   private descartaveis: { dispose(): void }[] = [];
   private morta = false;
+  private dadosNaMesa: THREE.Object3D[] = [];
+  private rolagem: { id: number; inicio: number; de: THREE.Vector3[]; qFim: THREE.Quaternion[]; eixo: THREE.Vector3[] } | null = null;
+  private dadoVisto: number | null | undefined = undefined;
   /** Para a foto de conferência: olhar de perto um ponto do tabuleiro (x, z) a uma fração da distância. */
   focoDeTeste: { x: number; z: number; perto: number } | null = null;
 
@@ -327,10 +350,21 @@ export class CenaDasCidades {
 
   /** Carrega os modelos e monta o que não muda. Rejeita se algo falhar (a tela fica no desenho de reserva). */
   async montar(): Promise<void> {
-    const lista = await Promise.all(TODOS.map((a) => carregar(a).then((g) => [a, g] as const)));
+    const [lista, dado] = await Promise.all([Promise.all(TODOS.map((a) => carregar(a).then((g) => [a, g] as const))), carregarDaMesa('D6_A')]);
     if (this.morta) return;
     for (const [a, g] of lista) this.modelos.set(a, g);
     this.montarFixo();
+    // os dois dados do meio (KayKit Board Game Bits, CC0, em web/public/mesa3d/)
+    for (let k = 0; k < 2; k++) {
+      const o = dado.scene.clone(true);
+      o.scale.setScalar(ESCALA_DO_DADO);
+      o.visible = false;
+      o.traverse((m) => {
+        if ((m as THREE.Mesh).isMesh) m.castShadow = this.sombras;
+      });
+      this.cena.add(o);
+      this.dadosNaMesa.push(o);
+    }
     this.renderer.setAnimationLoop(this.desenhar);
   }
 
@@ -542,6 +576,55 @@ export class CenaDasCidades {
       this.construir(i, casa, p, d);
     });
     this.atualizarPecas(d);
+    this.atualizarDados(d);
+  }
+
+  /** Os dados: na jogada nova, rolam do lado da câmera e param com a face do servidor para cima; senão, ficam onde pararam. */
+  private atualizarDados(d: DadosDaCena) {
+    if (this.dadosNaMesa.length < 2) return;
+    const id = d.dados ? d.dados.id : null;
+    if (id === this.dadoVisto) return;
+    const primeira = this.dadoVisto === undefined;
+    this.dadoVisto = id;
+    if (!d.dados) {
+      this.rolagem = null;
+      for (const o of this.dadosNaMesa) o.visible = false;
+      return;
+    }
+    const valores = d.dados.valores;
+    const qFim = valores.map((v, k) => new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), (Math.random() - 0.5) * 1.2 + k * 0.5).multiply(FACE_PARA_CIMA[v] ?? new THREE.Quaternion()));
+    this.dadosNaMesa.forEach((o, k) => {
+      o.visible = true;
+      o.position.copy(PARADA_DO_DADO[k]);
+      o.quaternion.copy(qFim[k]);
+    });
+    if (primeira || this.calmo) {
+      this.rolagem = null;
+      return;
+    }
+    this.rolagem = {
+      id: d.dados.id,
+      inicio: performance.now(),
+      de: PARADA_DO_DADO.map((p, k) => p.clone().add(new THREE.Vector3(-1.4 + k * 0.5, 0, 2.3))),
+      qFim,
+      eixo: [0, 1].map(() => new THREE.Vector3(Math.random() - 0.5, Math.random() * 0.4, Math.random() - 0.5).normalize()),
+    };
+  }
+
+  private rolarDados(agora: number) {
+    const r = this.rolagem;
+    if (!r) return;
+    const f = Math.min(1, (agora - r.inicio) / DURACAO_DO_DADO);
+    const e = 1 - (1 - f) * (1 - f);
+    this.dadosNaMesa.forEach((o, k) => {
+      const f2 = Math.min(1, f * (1 + k * 0.08));
+      const e2 = 1 - (1 - f2) * (1 - f2);
+      o.position.lerpVectors(r.de[k], PARADA_DO_DADO[k], e2);
+      // dois quiques e o pouso
+      o.position.y += 1.6 * Math.pow(1 - f2, 1.5) * Math.abs(Math.cos(Math.PI * 2.5 * f2));
+      o.quaternion.setFromAxisAngle(r.eixo[k], (1 - e) * Math.PI * 5).multiply(r.qFim[k]);
+    });
+    if (f >= 1) this.rolagem = null;
   }
 
   private construir(i: number, casa: CasaDaCena, p: PosseDaCena | undefined, d: DadosDaCena) {
@@ -756,6 +839,8 @@ export class CenaDasCidades {
       this.tocar(p, this.calmo ? 'parado' : f < 1 && longe > 0.3 ? 'andando' : p.raiz.userData.vez ? 'falando' : 'parado');
       p.mixer.update(this.calmo ? 0 : dt);
     }
+
+    this.rolarDados(agora);
 
     // o trem
     if (this.trilho && this.trem.length) {
