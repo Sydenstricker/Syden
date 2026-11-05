@@ -19421,3 +19421,45 @@ body.arrastando-barra {
   color: var(--text-strong);
   font-size: 1rem;
 }
+
+/* O FICHÁRIO DE GÊNEROS (FicharioDeGeneros.tsx): as fichas como as orelhas de um fichário, em cima da estante; a escolhida
+   fica de frente, colada na estante. Numa tela estreita, a fileira rola de lado em vez de quebrar. */
+.fichario {
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 0 2px;
+  margin: 4px 0 0;
+  border-bottom: 2px solid var(--accent);
+}
+.fichario::-webkit-scrollbar {
+  display: none;
+}
+.fichario-ficha {
+  flex: none;
+  padding: 5px 10px 4px;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
+  border-bottom: none;
+  border-radius: 9px 9px 0 0;
+  background: var(--bg-sidebar);
+  color: var(--text-muted);
+  font: inherit;
+  font-size: calc(12.5px * var(--escala-do-texto));
+  white-space: nowrap;
+  cursor: pointer;
+  transform: translateY(2px);
+}
+.fichario-ficha:hover {
+  color: var(--text-strong);
+}
+.fichario-ficha.ativa {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg-main, #14101a);
+  font-weight: 700;
+  transform: none;
+}
+.jogos-painel .fichario {
+  margin-bottom: 6px;
+}

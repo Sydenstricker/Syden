@@ -170,7 +170,7 @@ function Tabuleiro({
     .forEach((j) => porCasa.set(posDe(j.userId), [...(porCasa.get(posDe(j.userId)) ?? []), j.userId]));
   const dados = estado.ultimo?.dados;
   return (
-    <svg className="cid-tabuleiro" viewBox={`0 0 ${largura} ${altura}`} role="img" aria-label={t('Cidades à venda')}>
+    <svg className="cid-tabuleiro" viewBox={`0 0 ${largura} ${altura}`} role="img" aria-label={t('Capitais')}>
       <rect width={largura} height={altura} fill="#2f4a3a" />
       {/* o meio: o mapa de estradas, os dados da última jogada */}
       <rect x={CASA} y={CASA} width={CASA * 8} height={CASA * 6} fill="#3b5a46" />
@@ -584,7 +584,7 @@ export function JogoCidades({
             // os dados rolam na cena (cidades3d/cena.ts); no desenho de reserva, continuam no meio
             dados: estado.ultimo?.dados ? { id: estado.ultimo.id, valores: estado.ultimo.dados } : null,
           }}
-          rotulo={t('Cidades à venda')}
+          rotulo={t('Capitais')}
           aoEscolher={(i) => setEscolhida(i === escolhida ? null : i)}
           reserva={<Tabuleiro estado={estado} posDe={posDe} corDe={corDe} escolhida={escolhida} aoEscolher={(i) => setEscolhida(i === escolhida ? null : i)} />}
         />

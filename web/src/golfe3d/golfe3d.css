@@ -1,0 +1,161 @@
+/* O MINIGOLFE 3D (JogoGolfe3D.tsx): a cena em 3D com o placar e a força por cima. O irmão em pixel art (o Minigolfe da toca)
+   tem o dele em styles.css; aqui é tudo à parte, para os dois poderem mudar sem um mexer no outro. */
+
+.golfe3d {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.golfe3d-topo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.golfe3d-topo .minijogo-tempo {
+  flex: 1;
+}
+
+.golfe3d-tacadas {
+  color: var(--text-strong);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.golfe3d-de-cima {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-raised);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.golfe3d-de-cima[aria-pressed='true'] {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+.golfe3d-de-cima svg {
+  width: 18px;
+  height: 18px;
+}
+
+.golfe3d-moldura {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  max-height: 68vh;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: #bfe3ef;
+}
+
+.golfe3d-caixa {
+  position: absolute;
+  inset: 0;
+  touch-action: none;
+  cursor: grab;
+}
+.golfe3d-caixa.mirando {
+  cursor: grabbing;
+}
+.golfe3d-tela {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* A força, de baixo para cima, no canto: aparece só enquanto se puxa ou se segura o Espaço. */
+.golfe3d-forca {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  width: 12px;
+  height: 38%;
+  border-radius: 6px;
+  background: rgba(20, 30, 24, 0.35);
+  overflow: hidden;
+  pointer-events: none;
+}
+.golfe3d-forca > span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 6px;
+  background: linear-gradient(to top, #8fd46a, #f2c14e 60%, #e5674b);
+}
+
+.golfe3d-contagem {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(48px * var(--escala-do-texto));
+  font-weight: 700;
+  color: #fffbe8;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+.golfe3d-aviso {
+  color: var(--amber);
+}
+
+.golfe3d-placar {
+  width: 100%;
+  max-width: 460px;
+  border-collapse: separate;
+  border-spacing: 0 5px;
+}
+.golfe3d-placar th {
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: calc(12px * var(--escala-do-texto));
+  text-align: right;
+  padding: 0 12px;
+}
+.golfe3d-placar td {
+  padding: 6px 12px;
+  background: var(--bg-raised);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.golfe3d-placar td:first-child {
+  border-radius: 8px 0 0 8px;
+  color: var(--text-muted);
+  text-align: left;
+  width: 2ch;
+}
+.golfe3d-placar td:last-child {
+  border-radius: 0 8px 8px 0;
+  color: var(--text-strong);
+}
+.golfe3d-placar td.minijogo-nome {
+  text-align: left;
+  max-width: 0;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.golfe3d-placar tr.eu td {
+  box-shadow: inset 0 2px 0 var(--accent), inset 0 -2px 0 var(--accent);
+}
+
+.golfe3d-sairam {
+  opacity: 0.6;
+}

@@ -905,7 +905,7 @@ function ConviteDeTransmissao({
 
   return (
     <div className="stream-invite">
-      {/* A TELA, e não a pessoa (05/11/2026, relato dele: "parece que tem dois Rafinhas na sala"): o quadro da pessoa já
+      {/* A TELA, e não a pessoa (05/11/2026, relato dele de dois Rafinhas na sala, que parecia bug): o quadro da pessoa já
           tem o avatar grande; aqui o desenho é um monitor, com o coelho pequeno no canto dizendo de quem é a tela */}
       <span className="stream-invite-tela" aria-hidden="true">
         <Monitor />

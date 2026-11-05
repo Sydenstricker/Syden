@@ -507,7 +507,7 @@ export interface EstadoBriga {
   partidaId: string;
 }
 
-export type IdDoJogo = 'corrida' | 'festa' | 'tabuleiro' | 'cidades' | 'golfe' | 'caca' | 'plataforma' | 'blocos' | 'briga' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'damas' | 'naval' | 'domino' | 'truco' | 'xadrez' | 'partida-de-xadrez' | 'cozinha' | 'skate' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
+export type IdDoJogo = 'corrida' | 'festa' | 'tabuleiro' | 'cidades' | 'golfe' | 'caca' | 'plataforma' | 'blocos' | 'briga' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'damas' | 'naval' | 'domino' | 'truco' | 'xadrez' | 'partida-de-xadrez' | 'cozinha' | 'skate' | 'futebol' | 'golfe3d' | 'tocas' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
 
 /**
  * As duas abas da estante (pedido dele, 14/10/2026). SOLO: a partida é só de quem joga, começa sem convite, não ocupa
@@ -693,6 +693,29 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
     abas: ['solo', 'coletivo'],
   },
   {
+    // Tocas e Torres (JogoTocas.tsx, web/src/tocas/, server/src/minijogo-tocas.ts): o gênero da estratégia em tempo real, só a
+    // mecânica. Contra o computador; a sala (lockstep: só comandos na rede) é o degrau seguinte.
+    id: 'tocas',
+    nome: chave('Tocas e Torres'),
+    dica: chave('Estratégia em tempo real contra o computador: colete comida, madeira e ouro, construa a vila, avance de era e treine o exército. Ganha quem derrubar o centro da vila do outro, ou construir a Maravilha e mantê-la de pé por 2 minutos.'),
+    abas: ['solo'],
+  },
+  {
+    // O minigolfe em 3D (JogoGolfe3D.tsx, server/src/minijogo-golfe3d.ts): as peças do Kenney Minigolf Kit, a mesma regra do da toca.
+    // Os dois ficam na estante para a turma dizer qual prefere (pedido dele, 05/11/2026).
+    id: 'golfe3d',
+    nome: chave('Minigolfe 3D'),
+    dica: chave('Oito buracos em 3D, com rampas, castelo e moinho, todos jogando o mesmo ao mesmo tempo. Arraste para mirar e dar a força, e solte. Ganha quem somar menos tacadas.'),
+    abas: ['solo', 'coletivo'],
+  },
+  {
+    // O futebol (JogoFutebol.tsx, server/src/minijogo-futebol.ts): na sala, a bola mora no servidor; no Solo, tudo no navegador.
+    id: 'futebol',
+    nome: chave('Futebol dos coelhos'),
+    dica: chave('Futebol de campo pequeno, visto de cima. Encoste na bola para conduzir, segure Espaço para chutar mais forte e passe com X. Na sala, os times se completam com robôs.'),
+    abas: ['solo', 'coletivo'],
+  },
+  {
     // A caça (JogoCaca.tsx, server/src/minijogo-caca.ts): as mesmas pragas para todos, cada um mirando na própria tela.
     id: 'caca',
     nome: chave('Caça às pragas da horta'),
@@ -711,7 +734,7 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
     // O jogo de comprar cidades e cobrar aluguel (JogoCidades.tsx, server/src/minijogo-cidades.ts): só a mecânica, com
     // capitais do Brasil. Com a turma, ou no Solo contra 1 a 5 adversários do computador (pedido dele, 05/11/2026).
     id: 'cidades',
-    nome: chave('Cidades à venda'),
+    nome: chave('Capitais'),
     dica: chave('Ande pelas capitais do Brasil, compre cidades e cobre aluguel de quem parar nelas. Com uma região inteira, dá para construir prédios. Troque, dispute nos leilões e não fique sem dinheiro.'),
     abas: ['solo', 'coletivo'],
   },

@@ -16,6 +16,10 @@ import { JogoNaval } from './JogoNaval';
 import { JogoTruco } from './JogoTruco';
 import { JogoFesta } from './JogoFesta';
 import { JogoGolfe } from './JogoGolfe';
+import { FicharioDeGeneros, naFicha, useFicha } from './FicharioDeGeneros';
+import { JogoGolfe3D, type EstadoGolfe3D } from './JogoGolfe3D';
+import { JogoFutebol, type EstadoFutebol } from './JogoFutebol';
+import { JogoTocas, type EstadoTocas } from './JogoTocas';
 import { JogoCaca } from './JogoCaca';
 import { JogoCozinha, type EstadoCozinha } from './JogoCozinha';
 import { JogoSkate, type EstadoSkate } from './JogoSkate';
@@ -170,6 +174,7 @@ export function PainelDoMinijogo({
   const pedeCategoria = (jogo: IdDoJogo, solo = true) =>
     jogo === 'tamanho' || (jogo === 'blocos' && solo) || (ehQuiz(jogo) && CATEGORIAS_DO_QUIZ[jogo] !== undefined);
   /** A aba da estante: a última escolhida volta na próxima vez (só neste navegador). */
+  const [ficha, setFicha] = useFicha();
   const [abaEscolhida, setAba] = useState<GrupoDoJogo>(() => {
     try {
       return localStorage.getItem('syden:aba-dos-minijogos') === 'solo' ? 'solo' : 'coletivo';
@@ -239,7 +244,7 @@ export function PainelDoMinijogo({
   const restante = partida ? Math.max(0, partida.restanteMs - (agora - partida.recebidaEm)) : 0;
   const naEspera = Boolean(partida?.convite);
   const rodada =
-    partida && !naEspera && (partida.jogo === 'tamanho' || partida.jogo === 'stop' || partida.jogo === 'xadrez' || partida.jogo === 'palavra' || partida.jogo === 'festa' || partida.jogo === 'tabuleiro' || partida.jogo === 'golfe' || partida.jogo === 'caca' || ehQuiz(partida.jogo)) && !partida.terminada
+    partida && !naEspera && (partida.jogo === 'tamanho' || partida.jogo === 'stop' || partida.jogo === 'xadrez' || partida.jogo === 'palavra' || partida.jogo === 'festa' || partida.jogo === 'tabuleiro' || partida.jogo === 'golfe' || partida.jogo === 'golfe3d' || partida.jogo === 'caca' || ehQuiz(partida.jogo)) && !partida.terminada
       ? (partida as unknown as EstadoTamanho)
       : null;
   // Quem não aceitou o convite vê a partida, mas não mexe nela (a mesa cuida de quem senta).
@@ -335,8 +340,11 @@ export function PainelDoMinijogo({
       {!partida && correndo && <JogoCorrida eu={eu} aoVoltar={() => setCorrendo(false)} />}
       {!partida && pulando && <JogoPlataforma eu={eu} aoVoltar={() => setPulando(false)} />}
       {!partida && !escolhendoCategoria && !sozinho && (
+        <FicharioDeGeneros jogos={JOGOS.filter((jogo) => jogo.abas.includes(aba)).map((j) => j.id)} ficha={ficha} aoEscolher={setFicha} />
+      )}
+      {!partida && !escolhendoCategoria && !sozinho && (
         <ul className="minijogo-estante">
-          {JOGOS.filter((jogo) => jogo.abas.includes(aba)).map((jogo) => (
+          {naFicha(JOGOS.filter((jogo) => jogo.abas.includes(aba)), ficha).map((jogo) => (
             <li key={jogo.id}>
               <button
                 type="button"
@@ -468,6 +476,31 @@ export function PainelDoMinijogo({
         <JogoGolfe
           key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
           estado={jogoNaTela as unknown as EstadoGolfe & Partida}
+          eu={eu}
+          jogador={souJogador(partida)}
+          agir={agir}
+          socket={socket}
+          channelId={channelId}
+        />
+      )}
+      {jogoNaTela?.jogo === 'golfe3d' && (
+        <JogoGolfe3D
+          key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
+          estado={jogoNaTela as unknown as EstadoGolfe3D & Partida}
+          eu={eu}
+          jogador={souJogador(partida)}
+          agir={agir}
+          socket={socket}
+          channelId={channelId}
+        />
+      )}
+      {jogoNaTela?.jogo === 'tocas' && (
+        <JogoTocas key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')} estado={jogoNaTela as unknown as EstadoTocas & Partida} eu={eu} jogador={souJogador(partida)} agir={agir} />
+      )}
+      {jogoNaTela?.jogo === 'futebol' && (
+        <JogoFutebol
+          key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
+          estado={jogoNaTela as unknown as EstadoFutebol & Partida}
           eu={eu}
           jogador={souJogador(partida)}
           agir={agir}

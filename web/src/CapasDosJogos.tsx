@@ -21,6 +21,12 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
       return <CapaPlataforma />;
     case 'golfe':
       return <CapaGolfe />;
+    case 'golfe3d':
+      return <CapaGolfe3D />;
+    case 'futebol':
+      return <CapaFutebol />;
+    case 'tocas':
+      return <CapaTocas />;
     case 'caca':
       return <CapaCaca />;
     case 'cozinha':
@@ -699,13 +705,19 @@ function pontosDoDomino(n: number, x: number, y: number, l: number, chave: strin
   ));
 }
 
-/** O Dominó: a mesa verde e uma fileira de pedras encaixadas, com uma carroça (a pedra dobrada) atravessada no meio. */
+/**
+ * O Dominó (refeita em 05/11/2026, pedido dele, no jeito da mesa 3D): o feltro com a borda de madeira em perspectiva, as
+ * pedras com espessura (a lateral mais escura) e sombra, uma carroça atravessada, e duas pedras em pé, de quem joga.
+ */
 function CapaDomino() {
+  const l = 18;
   const pedra = (x: number, y: number, a: number, b: number, deitada: boolean, chave: string) => {
-    const l = 20;
+    const w = deitada ? l * 2 : l, h = deitada ? l : l * 2;
     return (
       <g key={chave}>
-        <rect x={x} y={y} width={deitada ? l * 2 : l} height={deitada ? l : l * 2} rx="3" fill="#f6f1e4" stroke="#c9bfa6" strokeWidth="1.2" />
+        <rect x={x + 2} y={y + 5} width={w} height={h} rx="3" fill="rgba(0,0,0,0.3)" />
+        <rect x={x} y={y + 3} width={w} height={h} rx="3" fill="#c9bfa6" />
+        <rect x={x} y={y} width={w} height={h} rx="3" fill="#fbf6ea" stroke="#d8cdb2" strokeWidth="0.8" />
         {deitada ? (
           <line x1={x + l} y1={y + 3} x2={x + l} y2={y + l - 3} stroke="#c9bfa6" strokeWidth="1.2" />
         ) : (
@@ -718,13 +730,17 @@ function CapaDomino() {
   };
   return (
     <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
-      <rect width="160" height="120" fill="#1f6b46" />
-      {pedra(6, 50, 2, 5, true, 'p1')}
-      {pedra(48, 40, 5, 5, false, 'p2')}
-      {pedra(70, 50, 5, 3, true, 'p3')}
-      {pedra(112, 50, 3, 6, true, 'p4')}
-      {pedra(18, 92, 4, 1, true, 'm1')}
-      {pedra(100, 8, 6, 6, true, 'm2')}
+      <rect width="160" height="120" fill="#3a2616" />
+      <path d="M14 8 H146 L158 112 H2 Z" fill="#5a3b22" />
+      <path d="M20 14 H140 L150 106 H10 Z" fill="#2a6e46" />
+      <path d="M20 14 H140 L142 30 H18 Z" fill="#2f7a4f" opacity="0.6" />
+      {pedra(14, 44, 2, 5, true, 'p1')}
+      {pedra(52, 35, 5, 5, false, 'p2')}
+      {pedra(72, 44, 5, 3, true, 'p3')}
+      {pedra(112, 44, 3, 6, true, 'p4')}
+      {/* as minhas, em pé na frente */}
+      <g transform="rotate(-6 58 96)">{pedra(46, 82, 6, 1, false, 'm1')}</g>
+      <g transform="rotate(5 86 96)">{pedra(74, 82, 4, 4, false, 'm2')}</g>
     </svg>
   );
 }
@@ -802,28 +818,47 @@ function CapaDamas() {
   );
 }
 
-/** A Batalha naval: o mar em grade, um navio visto de cima com um acerto (o fogo), um tiro na água e a mira. */
+/**
+ * A Batalha naval (refeita em 05/11/2026, pedido dele, no jeito do mar 3D com os navios do Pirate Kit): o mar em grade com
+ * as ondas, um galeão de velas brancas atingido (o fogo e a fumaça), o respingo de um tiro na água e a mira.
+ */
 function CapaNaval() {
   const grade = [];
-  for (let i = 1; i < 8; i++) grade.push(<line key={`v${i}`} x1={i * 20} y1="0" x2={i * 20} y2="120" stroke="#9fd0ea" strokeWidth="0.8" opacity="0.5" />);
-  for (let j = 1; j < 6; j++) grade.push(<line key={`h${j}`} x1="0" y1={j * 20} x2="160" y2={j * 20} stroke="#9fd0ea" strokeWidth="0.8" opacity="0.5" />);
+  for (let i = 1; i < 8; i++) grade.push(<line key={`v${i}`} x1={i * 20} y1="0" x2={i * 20} y2="120" stroke="#cfeefa" strokeWidth="0.6" opacity="0.45" />);
+  for (let j = 1; j < 6; j++) grade.push(<line key={`h${j}`} x1="0" y1={j * 20} x2="160" y2={j * 20} stroke="#cfeefa" strokeWidth="0.6" opacity="0.45" />);
   return (
     <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
-      <rect width="160" height="120" fill="#2b7fb8" />
+      <rect width="160" height="120" fill="#3a9bd0" />
       {grade}
-      <path d="M22 46 H96 L104 50 L96 54 H22 L18 50 Z" fill="#7d8a96" stroke="#55606b" strokeWidth="1.5" />
-      <rect x="40" y="46.5" width="14" height="7" rx="1.5" fill="#5f6b77" />
-      <rect x="62" y="47.5" width="10" height="5" rx="1" fill="#5f6b77" />
-      <circle cx="84" cy="50" r="2.5" fill="#55606b" />
-      <circle cx="68" cy="50" r="8" fill="#ff8a2a" opacity="0.85" />
-      <circle cx="68" cy="48" r="4.5" fill="#ffd66b" />
-      <g stroke="#e9f6ff" strokeWidth="2" fill="none">
-        <circle cx="130" cy="90" r="6" />
-        <circle cx="130" cy="90" r="11" opacity="0.5" />
+      {[18, 46, 74, 102].map((y, k) => (
+        <path key={y} d={`M${k % 2 ? 8 : 0} ${y} q6 -4 12 0 t12 0 t12 0`} fill="none" stroke="#e8f8ff" strokeWidth="1.2" opacity="0.5" />
+      ))}
+      {/* o galeão: o casco de madeira, o castelo de popa, os mastros e as velas */}
+      <ellipse cx="62" cy="86" rx="40" ry="7" fill="#1f6f9c" opacity="0.6" />
+      <path d="M24 72 L100 72 L92 88 L32 88 Z" fill="#a8683a" />
+      <path d="M24 72 L100 72 L98 76 L26 76 Z" fill="#c98a52" />
+      <path d="M78 64 H100 V72 H78 Z" fill="#8a5430" />
+      <rect x="36" y="78" width="4" height="3" fill="#3a2616" />
+      <rect x="50" y="78" width="4" height="3" fill="#3a2616" />
+      <rect x="64" y="78" width="4" height="3" fill="#3a2616" />
+      <rect x="44" y="30" width="2.4" height="42" fill="#6a4428" />
+      <rect x="66" y="24" width="2.4" height="48" fill="#6a4428" />
+      <path d="M32 36 Q45 30 58 36 L56 54 Q45 50 34 54 Z" fill="#f6f1e6" />
+      <path d="M54 30 Q67 24 80 30 L78 52 Q67 48 56 52 Z" fill="#fbf8f0" />
+      <path d="M67 18 L78 21 L67 24 Z" fill="#e3453a" />
+      {/* o acerto: fogo e fumaça */}
+      <circle cx="40" cy="70" r="7" fill="#ff8a2a" opacity="0.9" />
+      <circle cx="40" cy="68" r="4" fill="#ffd66b" />
+      <circle cx="36" cy="58" r="5" fill="#5d6670" opacity="0.6" />
+      <circle cx="31" cy="50" r="4" fill="#5d6670" opacity="0.4" />
+      {/* o tiro na água: o respingo */}
+      <g fill="#ffffff">
+        <ellipse cx="128" cy="96" rx="9" ry="2.6" opacity="0.7" />
+        <path d="M122 96 L124 84 L127 95 L129 80 L131 95 L134 86 L135 96 Z" opacity="0.9" />
       </g>
       <g stroke="#ff4d4d" strokeWidth="2" fill="none">
-        <circle cx="130" cy="30" r="9" />
-        <path d="M118 30 H142 M130 18 V42" />
+        <circle cx="130" cy="34" r="9" />
+        <path d="M118 34 H142 M130 22 V46" />
       </g>
     </svg>
   );
@@ -1039,6 +1074,95 @@ function CapaCaca() {
  * O Minigolfe da toca: a grama em faixas vista de cima, a borda de madeira, um cogumelo, o buraco com a bandeira e a bola
  * chegando, com o rastro pontilhado da tacada.
  */
+/** O Minigolfe 3D: uma pista em perspectiva, com as paredes iluminadas de um lado, a rampa, a bandeira no buraco e a bola. */
+function CapaGolfe3D() {
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#bfe4f2" />
+      <rect y="76" width="160" height="44" fill="#8fc46a" />
+      <path d="M20 104 L62 58 L138 58 L118 104 Z" fill="#4fae5a" />
+      <path d="M20 104 L62 58 L62 64 L24 108 Z" fill="#e8dcc0" />
+      <path d="M24 108 L20 104 L118 104 L122 108 Z" fill="#c9b48a" />
+      <path d="M118 104 L138 58 L142 60 L122 108 Z" fill="#b39c72" />
+      <path d="M62 58 L138 58 L138 54 L62 54 Z" fill="#f0e6cc" />
+      <path d="M40 98 L58 78 L80 78 L66 98 Z" fill="#3e9450" />
+      <path d="M40 98 L66 98 L66 92 L44 92 Z" fill="#2f7a40" opacity="0.6" />
+      <ellipse cx="112" cy="66" rx="6" ry="2.6" fill="#22301e" />
+      <rect x="111" y="40" width="2" height="26" fill="#f4ecdc" />
+      <path d="M113 40 L128 45 L113 50 Z" fill="#e3453a" />
+      <circle cx="54" cy="88" r="4" fill="#fffaf0" />
+      <ellipse cx="54" cy="92" rx="4" ry="1.2" fill="#1e3a20" opacity="0.35" />
+    </svg>
+  );
+}
+
+/** Tocas e Torres: a vila no morro com a torre e a bandeira azul, a muralha com o portão, a catapulta e a pedra voando. */
+function CapaTocas() {
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#bfe4f2" />
+      <path d="M0 70 Q40 52 90 62 T160 58 V120 H0 Z" fill="#7fbf5a" />
+      <path d="M0 96 Q60 84 160 92 V120 H0 Z" fill="#6aa84c" />
+      {/* a muralha com o portão */}
+      <rect x="8" y="74" width="62" height="14" fill="#b9a58c" />
+      {[8, 18, 28, 48, 58].map((x) => (
+        <rect key={x} x={x} y="70" width="6" height="5" fill="#b9a58c" />
+      ))}
+      <path d="M33 88 V80 Q38 74 43 80 V88 Z" fill="#6a4428" />
+      {/* a torre com o telhado e a bandeira */}
+      <rect x="86" y="38" width="20" height="40" fill="#d8c9b0" />
+      <rect x="86" y="38" width="20" height="4" fill="#bfae94" />
+      <path d="M82 38 L96 20 L110 38 Z" fill="#c4553a" />
+      <rect x="95" y="8" width="1.6" height="14" fill="#5a3b22" />
+      <path d="M96.6 8 L108 12 L96.6 16 Z" fill="#3a6fc4" />
+      <rect x="93" y="50" width="6" height="8" rx="3" fill="#5a3b22" />
+      {/* uma casinha */}
+      <rect x="116" y="62" width="18" height="14" fill="#e8dcc4" />
+      <path d="M113 62 L125 52 L137 62 Z" fill="#c4553a" />
+      {/* a catapulta e a pedra */}
+      <rect x="22" y="100" width="22" height="5" fill="#8a5a36" />
+      <circle cx="25" cy="106" r="3" fill="#5a3b22" />
+      <circle cx="41" cy="106" r="3" fill="#5a3b22" />
+      <path d="M33 100 L47 88" stroke="#8a5a36" strokeWidth="3" strokeLinecap="round" />
+      <path d="M50 84 Q68 56 80 50" fill="none" stroke="#ffffff" strokeWidth="1.5" strokeDasharray="3 3" />
+      <circle cx="80" cy="50" r="3.4" fill="#7d7a78" />
+    </svg>
+  );
+}
+
+/** O Futebol dos coelhos: o campo visto de cima, o círculo do meio, a rede e a bola rolando ao gol, com um coelho de orelhas. */
+function CapaFutebol() {
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#3fa457" />
+      {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
+        <rect key={i} x={i * 20} width="10" height="120" fill="#47b05f" />
+      ))}
+      <rect x="6" y="6" width="148" height="108" fill="none" stroke="#f4f8f0" strokeWidth="2" />
+      <line x1="80" y1="6" x2="80" y2="114" stroke="#f4f8f0" strokeWidth="2" />
+      <circle cx="80" cy="60" r="16" fill="none" stroke="#f4f8f0" strokeWidth="2" />
+      <rect x="132" y="38" width="22" height="44" fill="none" stroke="#f4f8f0" strokeWidth="2" />
+      <rect x="154" y="48" width="6" height="24" fill="#e8eef0" />
+      {[50, 54, 58, 62, 66, 70].map((y) => (
+        <line key={y} x1="154" y1={y} x2="160" y2={y} stroke="#9aa6aa" strokeWidth="0.8" />
+      ))}
+      <g transform="translate(56 66)">
+        <ellipse cx="0" cy="0" rx="9" ry="7" fill="#3a6fc4" />
+        <circle cx="0" cy="0" r="5" fill="#f4e7d6" />
+        <path d="M-3 -4 L-6 -16 L-1 -5 Z" fill="#f4e7d6" />
+        <path d="M3 -4 L6 -16 L1 -5 Z" fill="#f4e7d6" />
+        <path d="M-3.5 -6 L-5 -13 L-2 -6 Z" fill="#e8a0b4" />
+        <path d="M3.5 -6 L5 -13 L2 -6 Z" fill="#e8a0b4" />
+      </g>
+      {[0, 1, 2, 3, 4].map((i) => (
+        <circle key={i} cx={74 + i * 9} cy={64 - i * 0.5} r="1.3" fill="#ffffff" opacity={0.3 + i * 0.12} />
+      ))}
+      <circle cx="122" cy="61" r="5" fill="#ffffff" />
+      <path d="M120 59 L124 59 L123 63 L121 63 Z" fill="#1e1e22" />
+    </svg>
+  );
+}
+
 function CapaGolfe() {
   return (
     <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true" shapeRendering="crispEdges">

@@ -1,0 +1,306 @@
+/* TOCAS E TORRES (JogoTocas.tsx): o mapa em 3D (ou 2D), a faixa dos recursos em cima, e o painel embaixo: o minimapa, o que
+   está escolhido e os botões de construir e treinar. */
+
+.tocas {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.tocas-topo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-strong);
+}
+.tocas-recurso {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.tocas-recurso::before,
+.tocas-custo > span::before {
+  content: '';
+  display: inline-block;
+  width: 0.7em;
+  height: 0.7em;
+  border-radius: 50%;
+  background: var(--tocas-cor, #b5bcc8);
+  margin-right: 2px;
+}
+.tocas-rec-comida {
+  --tocas-cor: #e2604c;
+}
+.tocas-rec-madeira {
+  --tocas-cor: #a8733f;
+}
+.tocas-rec-ouro {
+  --tocas-cor: #f0c93a;
+}
+.tocas-recurso-nome {
+  font-weight: 500;
+  color: var(--text-muted);
+}
+.tocas-era {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--bg-active);
+}
+.tocas-relogio {
+  margin-left: auto;
+}
+.tocas-maravilha {
+  color: #9ef0a8;
+}
+.tocas-maravilha.inimiga {
+  color: #ff9b8a;
+}
+.tocas-desistir {
+  font: inherit;
+  font-weight: 500;
+  font-size: 0.85em;
+  padding: 3px 10px;
+  border-radius: var(--radius, 8px);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.tocas-moldura {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 64vh;
+  min-height: 240px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #3d4a33;
+}
+.tocas-caixa {
+  position: absolute;
+  inset: 0;
+  touch-action: none;
+  user-select: none;
+  cursor: default;
+}
+.tocas-caixa.colocando {
+  cursor: crosshair;
+}
+.tocas-caixa.carregando .tocas-tela {
+  visibility: hidden;
+}
+.tocas-tela {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.tocas-selecao {
+  display: none;
+  position: absolute;
+  border: 1px solid #ffffff;
+  background: rgba(255, 255, 255, 0.12);
+  pointer-events: none;
+}
+.tocas-aviso {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: calc(100% - 24px);
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(20, 24, 32, 0.82);
+  color: #fff;
+  font-weight: 700;
+  text-align: center;
+  pointer-events: none;
+}
+.tocas-acabou {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: calc(40px * var(--escala-do-texto, 1));
+  font-weight: 800;
+  color: #fff;
+  background: rgba(10, 14, 20, 0.45);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
+.tocas-baixo {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: 10px;
+  align-items: start;
+}
+@media (max-width: 640px) {
+  .tocas-baixo {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+  .tocas-acoes {
+    grid-column: 1 / -1;
+  }
+}
+.tocas-mapa {
+  width: 132px;
+  height: 132px;
+  border-radius: 6px;
+  image-rendering: pixelated;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  touch-action: none;
+}
+.tocas-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.tocas-info-nome {
+  margin: 0;
+  font-weight: 700;
+  color: var(--text-strong);
+}
+.tocas-inimigo {
+  color: #ff9b8a;
+  font-weight: 500;
+}
+.tocas-info-linha {
+  margin: 0;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.tocas-vida {
+  position: relative;
+  height: 14px;
+  border-radius: 7px;
+  background: var(--bg-input);
+  overflow: hidden;
+}
+.tocas-vida span {
+  position: absolute;
+  inset: 0;
+  transform-origin: left;
+  transform: scaleX(var(--vida, 1));
+  background: #4fbf5a;
+}
+.tocas-vida small {
+  position: relative;
+  display: block;
+  text-align: center;
+  font-size: 11px;
+  line-height: 14px;
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+.tocas-fila,
+.tocas-grupo,
+.tocas-atalhos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+.tocas-fila-item,
+.tocas-grupo-item {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--bg-active);
+  font-size: 0.85em;
+}
+.tocas-cancelar,
+.tocas-atalho {
+  font: inherit;
+  font-size: 0.85em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text);
+  cursor: pointer;
+}
+.tocas-acoes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 6px;
+  align-content: start;
+}
+.tocas-botao {
+  font: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 6px 8px;
+  border-radius: var(--radius, 8px);
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text-strong);
+  cursor: pointer;
+  text-align: left;
+  min-width: 0;
+}
+.tocas-botao:hover:not(:disabled) {
+  background: var(--bg-hover);
+  border-color: var(--accent);
+}
+.tocas-botao.ativo {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent) inset;
+}
+.tocas-botao[aria-disabled='true'] {
+  opacity: 0.6;
+}
+.tocas-botao:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.tocas-botao.era {
+  border-color: var(--accent);
+}
+.tocas-botao-nome {
+  font-weight: 700;
+  font-size: 0.9em;
+  overflow-wrap: anywhere;
+}
+.tocas-custo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 0.8em;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.tocas-custo > span {
+  display: inline-flex;
+  align-items: center;
+}
+.tocas-dica {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9em;
+}
+
+.tocas-fim {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 18px 0;
+}
+.tocas-fim-titulo {
+  margin: 0;
+  font-size: calc(30px * var(--escala-do-texto, 1));
+  font-weight: 800;
+  color: #ff9b8a;
+}
+.tocas-fim-titulo.venceu {
+  color: #9ef0a8;
+}

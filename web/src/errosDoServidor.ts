@@ -21,6 +21,17 @@ import { chave } from './i18n';
 // ===================================================================================================
 
 export const ERROS_TRADUZIDOS = [
+  // o futebol dos coelhos (server/src/minijogo-futebol.ts, 05/11/2026; o segundo também é da Briga)
+  chave('Partida inválida.'),
+  chave('Ninguém para jogar.'),
+  // Tocas e Torres (server/src/minijogo-tocas.ts, 05/11/2026)
+  chave('Este jogo não se joga na sala.'),
+  // a montagem da frota na Batalha naval (server/src/minijogo-naval.ts, 05/11/2026)
+  chave('Sua frota já está pronta.'),
+  chave('Ponha todos os navios antes.'),
+  chave('Escolha um navio.'),
+  chave('O navio não cabe aí.'),
+  chave('Os navios não podem encostar um no outro.'),
   // os clássicos de mesa (server/src/minijogo-damas.ts, -naval, -domino, -truco; 04/11/2026)
   chave('Escolha uma casa do mar.'),
   chave('Você já atirou nessa casa.'),

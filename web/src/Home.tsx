@@ -1,5 +1,6 @@
 import { ExternalLink, Gamepad2, Lightbulb, Send, Volume2 } from 'lucide-react';
 import { Mascote } from './Mascote';
+import { FicharioDeGeneros, naFicha, useFicha } from './FicharioDeGeneros';
 import { type IdDoJogo, JOGOS, nomeDoIdioma, pedirParaAbrirAoEntrar, SITES_PARA_TRANSMITIR, usarMinijogoSolo } from './minijogos';
 import { PainelDoMinijogo } from './Minijogo';
 import type { Socket } from 'socket.io-client';
@@ -172,6 +173,7 @@ export function Home({
   const [periodo, setPeriodo] = useState<Periodo>(() => (getTheme() === 'light' ? periodoClaro() : 'noite'));
   const [salasAbertas, setSalasAbertas] = useState(false);
   const [jogosAbertos, setJogosAbertos] = useState(false);
+  const [ficha, setFicha] = useFicha();
   /** Os troféus da Corrida dos coelhos, na estante de troféus do quarto (03/11/2026). */
   const [trofeusAbertos, setTrofeusAbertos] = useState(false);
   // JOGAR SOZINHO PELO COMPUTADOR DO QUARTO (24/10/2026): os jogos da aba Solo, sem entrar em sala nenhuma.
@@ -293,8 +295,9 @@ export function Home({
               <h4>
                 <Gamepad2 size={16} aria-hidden="true" /> {t('Solo')}
               </h4>
+              <FicharioDeGeneros jogos={JOGOS.filter((jogo) => jogo.abas.includes('solo')).map((j) => j.id)} ficha={ficha} aoEscolher={setFicha} />
               <ul>
-                {JOGOS.filter((jogo) => jogo.abas.includes('solo')).map((jogo) => (
+                {naFicha(JOGOS.filter((jogo) => jogo.abas.includes('solo')), ficha).map((jogo) => (
                   <li key={jogo.id}>
                     <button
                       title={t(jogo.dica)}
