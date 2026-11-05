@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Quarto low poly</title>
+    <style>
+      :root {
+        --fundo: #2b2430;
+        --texto: #f3ead8;
+        --botao: #4a3d4f;
+        --botao-ativo: #c98a5a;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: var(--fundo);
+        color: var(--texto);
+        font: 14px system-ui, sans-serif;
+      }
+      #tela {
+        position: fixed;
+        inset: 0;
+      }
+      #tela canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+      #barra {
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        right: 12px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+        pointer-events: none;
+      }
+      #barra button {
+        pointer-events: auto;
+        border: 0;
+        border-radius: 8px;
+        padding: 7px 12px;
+        background: var(--botao);
+        color: var(--texto);
+        font: inherit;
+        cursor: pointer;
+      }
+      #barra button.ativo {
+        background: var(--botao-ativo);
+        color: #2b2430;
+      }
+      #situacao {
+        pointer-events: none;
+        margin-left: 8px;
+        opacity: 0.85;
+      }
+      #medida {
+        position: fixed;
+        right: 12px;
+        bottom: 10px;
+        opacity: 0.6;
+        font-variant-numeric: tabular-nums;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="tela"></div>
+    <div id="barra">
+      <button id="passear" class="ativo">Passear</button>
+      <button id="arrumar">Arrumar</button>
+      <button id="girar" title="R">Girar o móvel</button>
+      <button id="noite">Noite</button>
+      <button id="sombras" class="ativo">Sombras</button>
+      <span id="situacao"></span>
+    </div>
+    <div id="medida"></div>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
