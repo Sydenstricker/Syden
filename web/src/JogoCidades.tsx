@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { idiomaAtual, useT } from './i18n';
 import { Placar, Relogio } from './Minijogo';
 import { coresDe, Dado, Peca, useAgora } from './JogoTabuleiro';
+import { Tabuleiro3D } from './cidades3d/Tabuleiro3D';
 import type { CartaDasCidades, EstadoCidades, OcorridoDasCidades, Partida, PropostaDasCidades } from './minijogos';
 
 /**
@@ -569,7 +570,30 @@ export function JogoCidades({
         </span>
       </div>
       <div className="cid-corpo">
-        <Tabuleiro estado={estado} posDe={posDe} corDe={corDe} escolhida={escolhida} aoEscolher={(i) => setEscolhida(i === escolhida ? null : i)} />
+        <Tabuleiro3D
+          dados={{
+            casas: estado.casas,
+            posses: estado.posses,
+            pecas: estado.jogadores
+              .filter((j) => !j.falido)
+              .map((j) => ({ userId: j.userId, pos: posDe(j.userId), ...corDe(j.userId), vez: j.userId === estado.vez, presente: j.presente })),
+            escolhida,
+            corDe: (id) => corDe(id).roupa,
+            cores: COR_DO_GRUPO,
+            icones: ICONE,
+          }}
+          rotulo={t('Cidades à venda')}
+          aoEscolher={(i) => setEscolhida(i === escolhida ? null : i)}
+          meio={
+            estado.ultimo?.dados && (
+              <div className="cid-dados-meio">
+                <Dado n={estado.ultimo.dados[0]} tamanho={36} />
+                <Dado n={estado.ultimo.dados[1]} tamanho={36} />
+              </div>
+            )
+          }
+          reserva={<Tabuleiro estado={estado} posDe={posDe} corDe={corDe} escolhida={escolhida} aoEscolher={(i) => setEscolhida(i === escolhida ? null : i)} />}
+        />
         <div className="cid-lado">
           <div className="cid-vez" aria-live="polite">
             {estado.fase === 'vez' && (

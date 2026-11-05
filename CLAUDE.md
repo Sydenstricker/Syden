@@ -610,6 +610,23 @@ igual nos grupos inteiros, resgatam hipoteca com folga, e aceitam a troca que lh
 de quem propõe vale 2,5 vezes). Eles NÃO propõem trocas. Agem depois de uma pausa (`PAUSA_DO_ROBO`, 1,2 s) para a pessoa ver o que
 fizeram; o leilão guarda a hora de fechar e os robôs disputam dentro dela. A pessoa que faliu encerra a partida. Contra o computador
 não há troféu nem conquista (o Solo não conta).
+**O TABULEIRO EM 3D (05/11/2026, pedido dele: "3D cartoon fofo, similar ao Mario Party, com os assets da pasta assets; o nosso
+coelho 3D como personagem jogável"):** `web/src/cidades3d/` (three.js 0.186, num pedaço à parte que só carrega com o jogo). Ilha de
+grama, as casas em blocos com a sigla e o preço pintados por código, e o que se constrói FORA da volta (casinha e a bandeira do dono;
+1–2 prédios baixos, 3 alto, 4 arranha-céu), com um trem de enfeite no miolo. Os modelos são da Kenney (CC0: City Kit Commercial,
+Suburban e Train Kit, de `e2e/3D/Assets/`), copiados para `web/public/cidades3d/` com a licença; o crédito nos termos, seção 10. Cada
+pessoa é o MASCOTE 3D (`web/scripts/cidades3d-coelho.py` tira do `mascote.glb` uma versão de 380 KB), com pelo e moletom trocados
+pelas cores dela no shader (o escuro abaixo do pescoço é moletom: os olhos ficam), e ele PULA casa a casa. Sem foco na janela, não
+desenha; sombras de verdade só com "Sombras" em Gráficos. O desenho em SVG continua de reserva: sem WebGL, ou enquanto carrega.
+Os PNG das texturas da Kenney pedem `git add -f` (o .gitignore pega `*.png`).
+**Os outros coletivos no Solo (05/11/2026, pedido dele: "outros jogos coletivos com opção de jogar sozinho contra IA"):** Cinco em
+linha, Mancala, Damas, Batalha naval, Dominó, Truco e Tabuleiro da turma, pelo módulo comum `server/src/minijogo-robos.ts` (os nomes,
+a pausa, `comRobos` para os jogos de convite contarem os robôs como gente na sala). Nas mesas (`duelo`), o robô senta na hora e
+`Regras.robo` dá a jogada pelo mesmo caminho da pessoa, que no Solo não perde pelo tempo; Mancala e Damas olham 5 e 4 lances à frente,
+o Cinco em linha pontua ameaças, a Batalha naval caça com o que a pessoa no lugar dele veria. Dominó e Truco de 1 a 3 robôs (com 3, em
+duplas, com um robô de parceiro, e no Truco quem responde pela dupla é a pessoa); no Tabuleiro, os robôs ganham resultados plausíveis
+nos microjogos da Festa (`resultadoDoRobo`). Ficaram de fora Stop, Desenha e adivinha, Lobisomem e Palavra secreta: robô ali pediria
+dicionário, desenho ou conversa. Teste: `server/test/minijogos-robos.test.ts`.
 
 **A CAÇA ÀS PRAGAS DA HORTA (04/11/2026, pedido dele: "temos algum jogo tipo Duck Hunt?"):** o gênero dos jogos de mira, SÓ A
 MECÂNICA (nada de pato, cachorro, arte ou som da Nintendo). Corvos e gafanhotos atravessam a horta, e quem joga mira e clica (ou
