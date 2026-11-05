@@ -2729,4 +2729,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Šis kauliukas netinka prie jokio galo.',
   'Escolha a ponta.': 'Pasirink galą.',
   'Essa pedra não encaixa nessa ponta.': 'Šis kauliukas netinka prie šio galo.',
+  'Quantos adversários?': 'Kiek varžovų?',
 } satisfies Record<string, string>;

@@ -2627,4 +2627,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Quân này không nối được vào bàn.',
   'Escolha a ponta.': 'Chọn đầu.',
   'Essa pedra não encaixa nessa ponta.': 'Quân này không nối được vào đầu đó.',
+  'Quantos adversários?': 'Bao nhiêu đối thủ?',
 } satisfies Record<string, string>;

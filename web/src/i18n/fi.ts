@@ -2727,4 +2727,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Laatta ei sovi pöytään.',
   'Escolha a ponta.': 'Valitse pää.',
   'Essa pedra não encaixa nessa ponta.': 'Laatta ei sovi tähän päähän.',
+  'Quantos adversários?': 'Montako vastustajaa?',
 } satisfies Record<string, string>;

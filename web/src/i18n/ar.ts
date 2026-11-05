@@ -2681,4 +2681,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'هذه القطعة لا تناسب الطاولة.',
   'Escolha a ponta.': 'يُرجى اختيار الطرف.',
   'Essa pedra não encaixa nessa ponta.': 'هذه القطعة لا تناسب هذا الطرف.',
+  'Quantos adversários?': 'كم عدد الخصوم؟',
 } satisfies Record<string, string>;

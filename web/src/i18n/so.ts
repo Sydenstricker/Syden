@@ -2727,4 +2727,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Dhagaxaasi kuma habboona miiska.',
   'Escolha a ponta.': 'Dooro darafka.',
   'Essa pedra não encaixa nessa ponta.': 'Dhagaxaasi kuma habboona darafkaas.',
+  'Quantos adversários?': 'Immisa ka soo horjeedayaal ah?',
 } satisfies Record<string, string>;

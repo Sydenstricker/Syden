@@ -2737,4 +2737,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Wòch sa a pa antre sou tab la.',
   'Escolha a ponta.': 'Chwazi pwent lan.',
   'Essa pedra não encaixa nessa ponta.': 'Wòch sa a pa antre nan pwent sa a.',
+  'Quantos adversários?': 'Konbyen advèsè?',
 } satisfies Record<string, string>;

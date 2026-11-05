@@ -9,7 +9,7 @@ import { comToken, criarConta, servidorDeTeste } from './ajuda.js';
 
 const { app, fechar } = await servidorDeTeste();
 const mod = await import('../src/minijogo-cidades.js');
-const { criarCidades, CASAS, DINHEIRO_INICIAL, TEMPO_DA_VEZ, TEMPO_DA_COMPRA, TEMPO_APOS_LANCE, TEMPO_DA_TROCA, SALARIO, MULTIPLICADOR } = mod;
+const { criarCidades, CASAS, DINHEIRO_INICIAL, TEMPO_DA_VEZ, TEMPO_DA_COMPRA, TEMPO_APOS_LANCE, TEMPO_DA_TROCA, SALARIO, MULTIPLICADOR, PAUSA_DO_ROBO } = mod;
 after(fechar);
 
 let agora = 5_000_000;
@@ -41,7 +41,7 @@ type Estado = {
   interrompida: boolean;
 };
 
-function comecar(opcoes: Parameters<typeof criarCidades>[0] = {}, inicio = [anaId, biaId], corpo: Record<string, unknown> = {}) {
+function comecar(opcoes: Parameters<typeof criarCidades>[0] = {}, inicio = [anaId, biaId], corpo: Record<string, unknown> = {}, solo = false) {
   const sala = { ids: [...inicio] };
   const relogio: { ms: number; depois: () => void }[] = [];
   let terminou = false;
@@ -55,7 +55,8 @@ function comecar(opcoes: Parameters<typeof criarCidades>[0] = {}, inicio = [anaI
     },
     naSala: () => sala.ids,
     nome: (id: number) => (id === anaId ? 'ana' : id === biaId ? 'bia' : 'caio'),
-    comunidade: comunidade.id,
+    comunidade: solo ? 0 : comunidade.id,
+    solo,
   };
   const jogo = criarCidades({ agora: () => agora, aleatorio, ...opcoes }).comecar(ctx, { naSala: inicio, criadaPor: inicio[0], corpo });
   assert.ok(typeof jogo !== 'string');
@@ -321,4 +322,89 @@ test('com rodadas fixas, a partida acaba sozinha e ganha o maior patrimônio', (
   assert.ok(a.patrimonio >= b.patrimonio);
   // a volta tem 32 casas e cada um anda 8: em 10 rodadas, passou pela largada 2 vezes
   assert.ok(e.historico.some((o) => o.tipo === 'salario' && o.valor === SALARIO) || e.jogadores.every((j) => j.patrimonio >= DINHEIRO_INICIAL));
+});
+
+// ---- OS ADVERSÁRIOS DO COMPUTADOR (05/11/2026): só no Solo. ----
+
+test('robôs só no Solo: na sala, pedir robôs não deixa começar sozinho', () => {
+  const ctx = {
+    agendar: () => {},
+    avisar: () => {},
+    terminar: () => {},
+    naSala: () => [anaId],
+    nome: () => 'ana',
+    comunidade: comunidade.id,
+  };
+  const r = criarCidades({ agora: () => agora, aleatorio }).comecar(ctx, { naSala: [anaId], criadaPor: anaId, corpo: { robos: 3 } });
+  assert.equal(typeof r, 'string');
+});
+
+test('no Solo, os robôs entram com nome e 🤖, jogam a vez sozinhos e dão lance no leilão', () => {
+  const p = comecar({}, [anaId], { robos: 1, modo: 'rodadas', rodadas: 10 }, true);
+  let e = p.estado();
+  assert.equal(e.jogadores.length, 2);
+  const robo = e.jogadores.find((j) => j.userId < 0)!;
+  assert.ok(robo);
+  assert.match((robo as unknown as { username: string }).username, /^🤖 /);
+  assert.equal((robo as unknown as { robo: boolean }).robo, true);
+  assert.equal(e.vez, anaId);
+  // a Ana anda até Belém (4 + 4) e não compra: vai a leilão, e o robô cobre
+  assert.equal(p.jogo.acao(anaId, { tipo: 'dados' }), null);
+  p.andar();
+  assert.equal(p.estado().fase, 'compra');
+  assert.equal(p.jogo.acao(anaId, { tipo: 'comprar', sim: false }), null);
+  assert.equal(p.estado().fase, 'leilao');
+  assert.equal(p.relogio[0].ms, PAUSA_DO_ROBO);
+  p.andar();
+  e = p.estado();
+  assert.equal(e.leilao!.lider, robo.userId);
+  assert.ok(e.leilao!.lance > 0 && e.leilao!.lance <= CASAS[8].preco! * 1.2);
+  // ninguém cobre: fecha no prazo de sempre
+  assert.equal(p.relogio[0].ms, TEMPO_APOS_LANCE);
+  p.andar();
+  e = p.estado();
+  assert.equal(posse(e, 8)?.dono, robo.userId);
+  assert.equal(p.jogo.acao(anaId, { tipo: 'terminar' }), null);
+  // a vez do robô: dados, andar, e passar a vez, cada um numa pausa curta
+  e = p.estado();
+  assert.equal(e.vez, robo.userId);
+  assert.equal(p.relogio[0].ms, PAUSA_DO_ROBO);
+});
+
+test('no Solo, a partida contra os robôs vai até o fim sem ninguém mexer, e não dá troféu', async () => {
+  let s = 42;
+  const sorteio = () => ((s = (s * 1103515245 + 12345) % 2147483648) / 2147483648);
+  const antes = (await comToken(app, ana.token)('GET', '/api/corrida-trofeus')).json().trofeus.length;
+  const p = comecar({ aleatorio: sorteio }, [anaId], { robos: 3, modo: 'rodadas', rodadas: 10 }, true);
+  for (let k = 0; k < 5000 && !p.terminou(); k++) p.andar();
+  assert.ok(p.terminou());
+  assert.equal(p.completa(), true);
+  const e = p.estado();
+  assert.equal(e.jogadores.length, 4);
+  // os robôs compraram alguma coisa (a Ana, parada, nunca compra: a dela vai a leilão)
+  assert.ok(e.posses.some((x) => x.dono < 0));
+  assert.ok(e.classificacao.every((l) => l.posicao !== null));
+  const depois = (await comToken(app, ana.token)('GET', '/api/corrida-trofeus')).json().trofeus.length;
+  assert.equal(depois, antes);
+});
+
+test('o robô aceita a troca que lhe é boa e recusa a que fecha o grupo de quem propõe', () => {
+  // Boa Vista (1) e Macapá (3) são o grupo do Norte; a Ana tem Boa Vista, o robô tem Macapá
+  const p = comecar({ posses: [[1, anaId], [3, -1], [10, -1]] }, [anaId], { robos: 1 }, true);
+  assert.equal(p.jogo.acao(anaId, { tipo: 'dados' }), null);
+  p.andar();
+  if (p.estado().fase === 'compra') p.jogo.acao(anaId, { tipo: 'comprar', sim: true });
+  assert.equal(p.estado().fase, 'acoes');
+  // pedir Macapá pelo preço: fecharia o grupo da Ana, ele recusa
+  assert.equal(p.jogo.acao(anaId, { tipo: 'propor', para: -1, pedirCasas: [3], darDinheiro: 130 }), null);
+  assert.equal(p.relogio[0].ms, PAUSA_DO_ROBO);
+  p.andar();
+  let e = p.estado();
+  assert.equal(posse(e, 3)?.dono, -1);
+  assert.equal(e.historico.at(-1)?.aceita, false);
+  // pedir Teresina (10, que não fecha nada) pagando bem: ele aceita
+  assert.equal(p.jogo.acao(anaId, { tipo: 'propor', para: -1, pedirCasas: [10], darDinheiro: 300 }), null);
+  p.andar();
+  e = p.estado();
+  assert.equal(posse(e, 10)?.dono, anaId);
 });

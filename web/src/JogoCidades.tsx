@@ -711,23 +711,45 @@ export function JogoCidades({
   );
 }
 
-/** Antes do convite: rodadas fixas (10, 20 ou 30) ou até sobrar um. */
-export function EscolhaDasCidades({ aoEscolher, aoVoltar }: { aoEscolher: (corpo: Record<string, unknown>) => void; aoVoltar: () => void }) {
+/** Quantos adversários do computador o Solo deixa escolher (os mesmos do servidor, MAXIMO_DE_ROBOS). */
+const ROBOS = [1, 2, 3, 4, 5];
+
+/**
+ * Antes do convite: rodadas fixas (10, 20 ou 30) ou até sobrar um. No Solo, antes disso, quantos adversários do computador
+ * (pedido dele, 05/11/2026); eles aparecem com 🤖 no nome.
+ */
+export function EscolhaDasCidades({ solo = false, aoEscolher, aoVoltar }: { solo?: boolean; aoEscolher: (corpo: Record<string, unknown>) => void; aoVoltar: () => void }) {
   const t = useT();
+  const [robos, setRobos] = useState(3);
+  const comRobos = (corpo: Record<string, unknown>) => aoEscolher(solo ? { ...corpo, robos } : corpo);
   return (
     <div className="tab-escolha">
+      {solo && (
+        <>
+          <p className="minijogo-situacao">{t('Quantos adversários?')}</p>
+          <ul className="tab-rodadas cid-robos">
+            {ROBOS.map((n) => (
+              <li key={n}>
+                <button type="button" className={`cid-robos-botao${robos === n ? ' escolhido' : ''}`} aria-pressed={robos === n} onClick={() => setRobos(n)}>
+                  <span aria-hidden="true">🤖</span> {n}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
       <p className="minijogo-situacao">{t('Até quando?')}</p>
       <ul className="tab-rodadas">
         {[10, 20, 30].map((n) => (
           <li key={n}>
-            <button type="button" className="tab-rodadas-botao" onClick={() => aoEscolher({ modo: 'rodadas', rodadas: n })}>
+            <button type="button" className="tab-rodadas-botao" onClick={() => comRobos({ modo: 'rodadas', rodadas: n })}>
               <strong>{n}</strong>
               <span>{t('rodadas')}</span>
             </button>
           </li>
         ))}
         <li>
-          <button type="button" className="tab-rodadas-botao" onClick={() => aoEscolher({ modo: 'falencia' })}>
+          <button type="button" className="tab-rodadas-botao" onClick={() => comRobos({ modo: 'falencia' })}>
             <strong>1</strong>
             <span>{t('Até sobrar um')}</span>
           </button>

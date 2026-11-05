@@ -2638,4 +2638,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'その牌は場につながりません。',
   'Escolha a ponta.': '端を選ぼう。',
   'Essa pedra não encaixa nessa ponta.': 'その牌はその端につながりません。',
+  'Quantos adversários?': '対戦相手は何人？',
 } satisfies Record<string, string>;

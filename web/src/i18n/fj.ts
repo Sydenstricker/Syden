@@ -2656,4 +2656,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'E sega ni rauta na vatu oqo ena teveli.',
   'Escolha a ponta.': 'Digitaka na yasana.',
   'Essa pedra não encaixa nessa ponta.': 'E sega ni rauta na vatu oqo ena yasana oqo.',
+  'Quantos adversários?': 'E le vica na dau veiqati?',
 } satisfies Record<string, string>;

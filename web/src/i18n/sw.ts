@@ -2656,4 +2656,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Kipande hicho hakitoshei mezani.',
   'Escolha a ponta.': 'Chagua ncha.',
   'Essa pedra não encaixa nessa ponta.': 'Kipande hicho hakitoshei kwenye ncha hiyo.',
+  'Quantos adversários?': 'Wapinzani wangapi?',
 } satisfies Record<string, string>;

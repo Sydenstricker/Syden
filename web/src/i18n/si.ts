@@ -2727,4 +2727,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'ඒ කැටය මේසයට ගැළපෙන්නේ නැහැ.',
   'Escolha a ponta.': 'කෙළවර තෝරන්න.',
   'Essa pedra não encaixa nessa ponta.': 'ඒ කැටය ඒ කෙළවරට ගැළපෙන්නේ නැහැ.',
+  'Quantos adversários?': 'ප්‍රතිවාදීන් කී දෙනෙක්ද?',
 } satisfies Record<string, string>;

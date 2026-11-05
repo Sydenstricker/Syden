@@ -2659,4 +2659,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Wannan dutsen bai dace da teburin ba.',
   'Escolha a ponta.': 'Ku zaɓi gefe.',
   'Essa pedra não encaixa nessa ponta.': 'Wannan dutsen bai dace da wannan gefen ba.',
+  'Quantos adversários?': 'Abokan hamayya nawa?',
 } satisfies Record<string, string>;

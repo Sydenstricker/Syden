@@ -2728,4 +2728,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Lelo tshe alingeni etafuleni.',
   'Escolha a ponta.': 'Khetha umkhawulo.',
   'Essa pedra não encaixa nessa ponta.': 'Lelo tshe alingeni kulowo mkhawulo.',
+  'Quantos adversários?': 'Bangaki abaphikisi?',
 } satisfies Record<string, string>;

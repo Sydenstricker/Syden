@@ -2679,4 +2679,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Ce domino ne va pas sur la table.',
   'Escolha a ponta.': 'Choisis l\'extrémité.',
   'Essa pedra não encaixa nessa ponta.': 'Ce domino ne va pas à cette extrémité.',
+  'Quantos adversários?': 'Combien d’adversaires ?',
 } satisfies Record<string, string>;

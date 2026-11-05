@@ -601,6 +601,15 @@ Construir pede a região inteira e sem hipoteca (até 4 prédios). **Quem deve m
 vende os prédios e hipoteca as cidades sozinho; não cobrindo, a pessoa fale e o que tinha vai ao credor (ou ao banco). A casa só
 age quando a peça CHEGA (a fase 'andando' segura o dinheiro). Troféu com `pista: 'cidades'`, os pontos são o patrimônio. Conta nas conquistas da
 turma (Repertório e "A turma do jogo", decisão dele em 04/11/2026: o Repertório completo passou de 15 para 16 jogos). Testes: `server/test/minijogos-cidades.test.ts`. Sem e2e.
+**No SOLO, contra o computador (05/11/2026, pedido dele: "opção de jogar sozinho, contra IA"):** a pessoa escolhe de 1 a 5
+adversários, que entram como jogadores de id NEGATIVO, sempre "na sala", com nome próprio e o 🤖 na frente (`NOMES_DOS_ROBOS`:
+sem tradução e sem fingir que é gente). Só no Solo (`ctx.solo`): na sala, a turma é a graça. Não é modelo de linguagem: são regras
+de quem joga com cuidado, e eles só veem o que a pessoa vê. Guardam uma reserva, compram o que fecha o grupo deles ou o de outro,
+pagam no leilão até o valor que a casa tem para eles (cada um com o seu "jeito", de 0,8 a 1,15), sobem aos saltos, constroem por
+igual nos grupos inteiros, resgatam hipoteca com folga, e aceitam a troca que lhes dá uns 15% a mais (a cidade que fecha o grupo
+de quem propõe vale 2,5 vezes). Eles NÃO propõem trocas. Agem depois de uma pausa (`PAUSA_DO_ROBO`, 1,2 s) para a pessoa ver o que
+fizeram; o leilão guarda a hora de fechar e os robôs disputam dentro dela. A pessoa que faliu encerra a partida. Contra o computador
+não há troféu nem conquista (o Solo não conta).
 
 **A CAÇA ÀS PRAGAS DA HORTA (04/11/2026, pedido dele: "temos algum jogo tipo Duck Hunt?"):** o gênero dos jogos de mira, SÓ A
 MECÂNICA (nada de pato, cachorro, arte ou som da Nintendo). Corvos e gafanhotos atravessam a horta, e quem joga mira e clica (ou

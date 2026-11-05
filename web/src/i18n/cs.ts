@@ -2726,4 +2726,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Tahle kostka nikam nepasuje.',
   'Escolha a ponta.': 'Vyber konec.',
   'Essa pedra não encaixa nessa ponta.': 'Tahle kostka k tomuto konci nepasuje.',
+  'Quantos adversários?': 'Kolik soupeřů?',
 } satisfies Record<string, string>;

@@ -78,7 +78,7 @@ export const JOGOS: Record<string, Definicao> = {
  * ocupa a sala (a turma continua podendo começar o jogo dela), não pede chamada (dá para jogar pelo computador do
  * quarto) e não conta nas conquistas da turma, que medem gente junta.
  */
-export const JOGOS_SOLO = new Set(['tamanho', 'xadrez', 'sudoku', 'festa', 'briga', 'blocos', 'golfe', 'caca', ...Object.keys(TEMAS)]);
+export const JOGOS_SOLO = new Set(['tamanho', 'xadrez', 'sudoku', 'festa', 'briga', 'blocos', 'golfe', 'caca', 'cidades', ...Object.keys(TEMAS)]);
 
 interface Partida {
   channelId: number;
@@ -181,6 +181,7 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
       naSala: () => presentes(p),
       nome: (userId) => nomeNa(p, userId),
       comunidade: p.communityId,
+      solo: p.solo,
       difundir: (dados) => {
         if (p.solo) return emitToUser(io, p.criadaPor, 'minijogo-solo:tempo-real', { dados });
         for (const id of quemEstaNaSala(p.channelId)) emitToUser(io, id, 'minijogo:tempo-real', { channelId: p.channelId, dados });

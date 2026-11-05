@@ -2657,4 +2657,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Piesa asta nu se potrivește pe masă.',
   'Escolha a ponta.': 'Alege capătul.',
   'Essa pedra não encaixa nessa ponta.': 'Piesa asta nu se potrivește la capătul acesta.',
+  'Quantos adversários?': 'Câți adversari?',
 } satisfies Record<string, string>;

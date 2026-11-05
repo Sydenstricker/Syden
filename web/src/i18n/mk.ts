@@ -2727,4 +2727,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Таа плочка не одговара никаде на масата.',
   'Escolha a ponta.': 'Избери крај.',
   'Essa pedra não encaixa nessa ponta.': 'Таа плочка не одговара на тој крај.',
+  'Quantos adversários?': 'Колку противници?',
 } satisfies Record<string, string>;

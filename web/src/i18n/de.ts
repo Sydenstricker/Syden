@@ -2681,4 +2681,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Dieser Stein passt nirgends an.',
   'Escolha a ponta.': 'Wähl ein Ende.',
   'Essa pedra não encaixa nessa ponta.': 'Dieser Stein passt nicht an dieses Ende.',
+  'Quantos adversários?': 'Wie viele Gegner?',
 } satisfies Record<string, string>;

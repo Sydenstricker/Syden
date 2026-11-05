@@ -2741,4 +2741,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Энэ чулуу ширээнд таарахгүй.',
   'Escolha a ponta.': 'Үзүүрээ сонго.',
   'Essa pedra não encaixa nessa ponta.': 'Энэ чулуу энэ үзүүрт таарахгүй.',
+  'Quantos adversários?': 'Хэдэн өрсөлдөгч?',
 } satisfies Record<string, string>;

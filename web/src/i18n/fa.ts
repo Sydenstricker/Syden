@@ -2650,4 +2650,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'این مهره به میز جور نمی‌شود.',
   'Escolha a ponta.': 'سر را انتخاب کنید.',
   'Essa pedra não encaixa nessa ponta.': 'این مهره به این سر جور نمی‌شود.',
+  'Quantos adversários?': 'چند حریف؟',
 } satisfies Record<string, string>;

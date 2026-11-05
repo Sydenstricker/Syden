@@ -2697,4 +2697,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Dhagaan sun minjaala irratti wal hin simu.',
   'Escolha a ponta.': 'Fiixee filadhu.',
   'Essa pedra não encaixa nessa ponta.': 'Dhagaan sun fiixee sana irratti wal hin simu.',
+  'Quantos adversários?': 'Morkattoota meeqa?',
 } satisfies Record<string, string>;

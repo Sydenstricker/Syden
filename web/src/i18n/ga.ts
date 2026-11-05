@@ -2663,4 +2663,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Ní oireann an píosa sin ar an mbord.',
   'Escolha a ponta.': 'Roghnaigh an foirceann.',
   'Essa pedra não encaixa nessa ponta.': 'Ní oireann an píosa sin ag an bhfoirceann sin.',
+  'Quantos adversários?': 'Cé mhéad céile comhraic?',
 } satisfies Record<string, string>;

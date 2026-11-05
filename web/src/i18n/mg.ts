@@ -2727,4 +2727,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Tsy mifanaraka amin\'ny latabatra io vato io.',
   'Escolha a ponta.': 'Mifidiana tendrony.',
   'Essa pedra não encaixa nessa ponta.': 'Tsy mifanaraka amin\'io tendrony io io vato io.',
+  'Quantos adversários?': 'Mpifanandrina firy?',
 } satisfies Record<string, string>;

@@ -176,7 +176,7 @@ export function PainelDoMinijogo({
     comecou.current = true;
     if (comecarCom === 'corrida') setCorrendo(true);
     else if (comecarCom === 'plataforma') setPulando(true);
-    else if (pedeCategoria(comecarCom)) setEscolhendo(comecarCom);
+    else if (pedeCategoria(comecarCom) || comecarCom === 'cidades') setEscolhendo(comecarCom);
     else void tentar(() => aoComecar(comecarCom, {}, true));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [comecarCom]);
@@ -253,7 +253,8 @@ export function PainelDoMinijogo({
       )}
       {!partida && escolhendo === 'cidades' && (
         <EscolhaDasCidades
-          aoEscolher={(corpo) => tentar(() => aoComecar('cidades', corpo, false).then(() => setEscolhendo(null)))}
+          solo={aba === 'solo'}
+          aoEscolher={(corpo) => tentar(() => aoComecar('cidades', corpo, aba === 'solo').then(() => setEscolhendo(null)))}
           aoVoltar={() => setEscolhendo(null)}
         />
       )}
@@ -450,7 +451,7 @@ export function PainelDoMinijogo({
               tentar(() =>
                 aoComecar(
                   partida.jogo,
-                  partida.categoria ? { categoria: partida.categoria } : partida.jogo === 'tabuleiro' ? { rodadas: partida.rodadas } : partida.jogo === 'cidades' ? { modo: partida.modo, rodadas: partida.rodadas } : {},
+                  partida.categoria ? { categoria: partida.categoria } : partida.jogo === 'tabuleiro' ? { rodadas: partida.rodadas } : partida.jogo === 'cidades' ? { modo: partida.modo, rodadas: partida.rodadas, robos: partida.robos } : {},
                   partida.solo === true,
                 ),
               )

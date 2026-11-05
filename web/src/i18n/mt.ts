@@ -2673,4 +2673,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Dik il-biċċa ma taqbilx fuq il-mejda.',
   'Escolha a ponta.': 'Agħżel it-tarf.',
   'Essa pedra não encaixa nessa ponta.': 'Dik il-biċċa ma taqbilx f\'dak it-tarf.',
+  'Quantos adversários?': 'Kemm-il avversarju?',
 } satisfies Record<string, string>;

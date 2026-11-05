@@ -413,7 +413,7 @@ export interface EstadoCidades {
   jurosDoResgate: number;
   lanceMinimo: number;
   vez: number | null;
-  jogadores: { userId: number; username: string; avatar: number | null; pos: number; dinheiro: number; patrimonio: number; falido: boolean; parado: number; presente: boolean }[];
+  jogadores: { userId: number; username: string; avatar: number | null; pos: number; dinheiro: number; patrimonio: number; falido: boolean; parado: number; presente: boolean; robo?: boolean }[];
   posses: { casa: number; dono: number; predios: number; hipotecada: boolean; aluguel: number }[];
   /** O último andar: os dados (null quando foi uma notícia que moveu) e as casas por onde passou (a primeira é a de onde saiu). */
   ultimo: { id: number; userId: number; dados: [number, number] | null; caminho: number[] } | null;
@@ -425,6 +425,8 @@ export interface EstadoCidades {
   classificacao: { userId: number; username: string; patrimonio: number; falido: boolean; posicao: number | null; saiu: boolean }[];
   interrompida: boolean;
   partidaId: string;
+  /** Quantos adversários do computador (só no Solo; 0 com a turma). */
+  robos?: number;
 }
 
 /** A Caça às pragas da horta (server/src/minijogo-caca.ts): cinco ondas de corvos e gafanhotos, mais pontos ganha. */
@@ -684,11 +686,11 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
   },
   {
     // O jogo de comprar cidades e cobrar aluguel (JogoCidades.tsx, server/src/minijogo-cidades.ts): só a mecânica, com
-    // capitais do Brasil. Só com a turma.
+    // capitais do Brasil. Com a turma, ou no Solo contra 1 a 5 adversários do computador (pedido dele, 05/11/2026).
     id: 'cidades',
     nome: chave('Cidades à venda'),
     dica: chave('Ande pelas capitais do Brasil, compre cidades e cobre aluguel de quem parar nelas. Com uma região inteira, dá para construir prédios. Troque, dispute nos leilões e não fique sem dinheiro.'),
-    abas: ['coletivo'],
+    abas: ['solo', 'coletivo'],
   },
 ];
 

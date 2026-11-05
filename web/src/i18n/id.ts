@@ -2654,4 +2654,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Kartu itu tidak cocok di meja.',
   'Escolha a ponta.': 'Pilih ujungnya.',
   'Essa pedra não encaixa nessa ponta.': 'Kartu itu tidak cocok di ujung itu.',
+  'Quantos adversários?': 'Berapa lawan?',
 } satisfies Record<string, string>;

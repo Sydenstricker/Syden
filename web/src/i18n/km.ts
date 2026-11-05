@@ -2726,4 +2726,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'បន្ទះនេះមិនត្រូវនឹងតុទេ។',
   'Escolha a ponta.': 'ជ្រើសរើសចុង។',
   'Essa pedra não encaixa nessa ponta.': 'បន្ទះនេះមិនត្រូវនឹងចុងនេះទេ។',
+  'Quantos adversários?': 'គូប្រកួតប៉ុន្មាននាក់?',
 } satisfies Record<string, string>;

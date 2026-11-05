@@ -2675,4 +2675,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Эту кость некуда приставить.',
   'Escolha a ponta.': 'Выбери конец.',
   'Essa pedra não encaixa nessa ponta.': 'Эта кость не подходит к этому концу.',
+  'Quantos adversários?': 'Сколько соперников?',
 } satisfies Record<string, string>;

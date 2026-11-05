@@ -19013,3 +19013,25 @@ body.arrastando-barra {
     inset: 24% 20%;
   }
 }
+
+/* Cidades à venda no Solo: quantos adversários do computador (JogoCidades.tsx, EscolhaDasCidades). */
+.cid-robos {
+  margin-bottom: 12px;
+}
+.cid-robos-botao {
+  min-width: 56px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 2px solid var(--border);
+  background: var(--bg-raised);
+  color: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.cid-robos-botao:hover {
+  border-color: var(--accent);
+}
+.cid-robos-botao.escolhido {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 18%, var(--bg-raised));
+}

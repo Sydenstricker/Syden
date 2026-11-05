@@ -2668,4 +2668,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Iryo buye ntirikwira ku meza.',
   'Escolha a ponta.': 'Hitamo impera.',
   'Essa pedra não encaixa nessa ponta.': 'Iryo buye ntirikwira kuri iyo mpera.',
+  'Quantos adversários?': 'Abo muhanganye bangahe?',
 } satisfies Record<string, string>;

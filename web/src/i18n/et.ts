@@ -2724,4 +2724,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'See kivi ei sobi lauale.',
   'Escolha a ponta.': 'Vali ots.',
   'Essa pedra não encaixa nessa ponta.': 'See kivi ei sobi sellesse otsa.',
+  'Quantos adversários?': 'Mitu vastast?',
 } satisfies Record<string, string>;

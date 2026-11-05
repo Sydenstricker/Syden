@@ -2737,4 +2737,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'އެ ގަލު މޭޒުގައި ނުގުޅޭ.',
   'Escolha a ponta.': 'ކޮޅު ހޮވާ.',
   'Essa pedra não encaixa nessa ponta.': 'އެ ގަލު މި ކޮޅުގައި ނުގުޅޭ.',
+  'Quantos adversários?': 'ދެކޮޅު ކުޅުންތެރިން ކިތައް؟',
 } satisfies Record<string, string>;

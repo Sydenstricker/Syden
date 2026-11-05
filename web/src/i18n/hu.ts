@@ -2729,4 +2729,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Ez a kő sehova sem illik.',
   'Escolha a ponta.': 'Válassz véget.',
   'Essa pedra não encaixa nessa ponta.': 'Ez a kő nem illik erre a végre.',
+  'Quantos adversários?': 'Hány ellenfél?',
 } satisfies Record<string, string>;

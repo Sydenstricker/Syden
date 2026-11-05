@@ -2656,4 +2656,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'यह गोटी मेज़ पर नहीं लगती।',
   'Escolha a ponta.': 'सिरा चुनो।',
   'Essa pedra não encaixa nessa ponta.': 'यह गोटी इस सिरे पर नहीं लगती।',
+  'Quantos adversários?': 'कितने प्रतिद्वंद्वी?',
 } satisfies Record<string, string>;

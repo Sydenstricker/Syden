@@ -2663,4 +2663,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Αυτό το πλακίδιο δεν ταιριάζει στο τραπέζι.',
   'Escolha a ponta.': 'Διάλεξε άκρη.',
   'Essa pedra não encaixa nessa ponta.': 'Αυτό το πλακίδιο δεν ταιριάζει σε αυτή την άκρη.',
+  'Quantos adversários?': 'Πόσοι αντίπαλοι;',
 } satisfies Record<string, string>;

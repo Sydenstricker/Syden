@@ -2661,4 +2661,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'E lē fetaui lena maʻa i le laulau.',
   'Escolha a ponta.': 'Filifili le pito.',
   'Essa pedra não encaixa nessa ponta.': 'E lē fetaui lena maʻa i lena pito.',
+  'Quantos adversários?': 'E toʻafia ni fili?',
 } satisfies Record<string, string>;

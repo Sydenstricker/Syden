@@ -2656,4 +2656,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Die steen past nergens op tafel.',
   'Escolha a ponta.': 'Kies een uiteinde.',
   'Essa pedra não encaixa nessa ponta.': 'Die steen past niet aan dat uiteinde.',
+  'Quantos adversários?': 'Hoeveel tegenstanders?',
 } satisfies Record<string, string>;

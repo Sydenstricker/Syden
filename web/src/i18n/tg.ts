@@ -2737,4 +2737,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Ин санг ба миз мувофиқ намеояд.',
   'Escolha a ponta.': 'Нӯгро интихоб кунед.',
   'Essa pedra não encaixa nessa ponta.': 'Ин санг ба ин нӯг мувофиқ намеояд.',
+  'Quantos adversários?': 'Чанд рақиб?',
 } satisfies Record<string, string>;

@@ -2639,4 +2639,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'ఈ రాయి బల్ల మీద సరిపోదు.',
   'Escolha a ponta.': 'చివరను ఎంచుకో.',
   'Essa pedra não encaixa nessa ponta.': 'ఈ రాయి ఈ చివరకు సరిపోదు.',
+  'Quantos adversários?': 'ఎంతమంది ప్రత్యర్థులు?',
 } satisfies Record<string, string>;

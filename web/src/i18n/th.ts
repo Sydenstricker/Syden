@@ -2670,4 +2670,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'ตัวนี้ต่อบนโต๊ะไม่ได้',
   'Escolha a ponta.': 'เลือกปลาย',
   'Essa pedra não encaixa nessa ponta.': 'ตัวนี้ต่อที่ปลายนี้ไม่ได้',
+  'Quantos adversários?': 'จำนวนคู่แข่ง',
 } satisfies Record<string, string>;

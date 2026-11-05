@@ -2723,4 +2723,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Aquesta fitxa no encaixa a la taula.',
   'Escolha a ponta.': 'Tria l\'extrem.',
   'Essa pedra não encaixa nessa ponta.': 'Aquesta fitxa no encaixa en aquest extrem.',
+  'Quantos adversários?': 'Quants rivals?',
 } satisfies Record<string, string>;

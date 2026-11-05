@@ -2696,4 +2696,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'ဤတုံးသည် စားပွဲပေါ်တွင် မကိုက်ပါ။',
   'Escolha a ponta.': 'အစွန်းကို ရွေးပါ။',
   'Essa pedra não encaixa nessa ponta.': 'ဤတုံးသည် ဤအစွန်းတွင် မကိုက်ပါ။',
+  'Quantos adversários?': 'ပြိုင်ဘက် ဘယ်နှယောက်လဲ?',
 } satisfies Record<string, string>;

@@ -2665,4 +2665,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Nkume ahụ adabaghị na tebụl.',
   'Escolha a ponta.': 'Họrọ isi.',
   'Essa pedra não encaixa nessa ponta.': 'Nkume ahụ adabaghị n\'isi ahụ.',
+  'Quantos adversários?': 'Ndị mmegide ole?',
 } satisfies Record<string, string>;

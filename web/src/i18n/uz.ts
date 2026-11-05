@@ -2747,4 +2747,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Bu tosh stolga mos kelmaydi.',
   'Escolha a ponta.': 'Uchni tanlang.',
   'Essa pedra não encaixa nessa ponta.': 'Bu tosh bu uchga mos kelmaydi.',
+  'Quantos adversários?': 'Nechta raqib?',
 } satisfies Record<string, string>;

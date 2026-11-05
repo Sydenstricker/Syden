@@ -2728,4 +2728,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Þessi kubbur passar ekki á borðið.',
   'Escolha a ponta.': 'Veldu enda.',
   'Essa pedra não encaixa nessa ponta.': 'Þessi kubbur passar ekki við þennan enda.',
+  'Quantos adversários?': 'Hversu margir andstæðingar?',
 } satisfies Record<string, string>;

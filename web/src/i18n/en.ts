@@ -2652,4 +2652,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'That tile doesn\'t fit on the table.',
   'Escolha a ponta.': 'Choose an end.',
   'Essa pedra não encaixa nessa ponta.': 'That tile doesn\'t fit at that end.',
+  'Quantos adversários?': 'How many opponents?',
 } satisfies Record<string, string>;

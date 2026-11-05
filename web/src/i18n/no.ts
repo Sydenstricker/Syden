@@ -2727,4 +2727,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Den brikken passer ikke på bordet.',
   'Escolha a ponta.': 'Velg en ende.',
   'Essa pedra não encaixa nessa ponta.': 'Den brikken passer ikke i den enden.',
+  'Quantos adversários?': 'Hvor mange motstandere?',
 } satisfies Record<string, string>;

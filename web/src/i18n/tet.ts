@@ -2659,4 +2659,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Fatuk ne\'e la tama iha meza.',
   'Escolha a ponta.': 'Hili ponta.',
   'Essa pedra não encaixa nessa ponta.': 'Fatuk ne\'e la tama iha ponta ne\'e.',
+  'Quantos adversários?': "Adversáriu na'in hira?",
 } satisfies Record<string, string>;

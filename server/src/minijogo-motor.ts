@@ -26,6 +26,8 @@ export interface Contexto {
   nome(userId: number): string;
   /** A comunidade da sala (0 na partida solo): o que a turma faz junta conta nela (a Copa da Cenoura, 03/11/2026). */
   comunidade?: number;
+  /** A partida é do Solo (só de quem a começou): o Cidades à venda, por exemplo, só aceita adversários do computador nela. */
+  solo?: boolean;
   /**
    * O SERVIDOR FALA PRIMEIRO, na hora (a Briga na horta, 03/11/2026: os inimigos são do servidor, e o quadro deles vai 20
    * vezes por segundo): manda `dados` a quem está na sala (ou a quem joga o Solo) pelo mesmo 'minijogo:tempo-real' do

@@ -2656,4 +2656,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Questa tessera non si attacca sul tavolo.',
   'Escolha a ponta.': 'Scegli l\'estremità.',
   'Essa pedra não encaixa nessa ponta.': 'Questa tessera non si attacca a quell\'estremità.',
+  'Quantos adversários?': 'Quanti avversari?',
 } satisfies Record<string, string>;

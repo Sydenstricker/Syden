@@ -113,6 +113,16 @@ export const JUROS_DO_RESGATE = 1.1;
 export const LANCE_MINIMO = 10;
 export const RODADAS_DAS_CIDADES = [10, 20, 30];
 export const MAXIMO_DAS_CIDADES = 6;
+/**
+ * OS ADVERSÁRIOS DO COMPUTADOR (pedido dele, 05/11/2026: "opção de jogar sozinho, contra IA"). Só no Solo: a pessoa escolhe
+ * de 1 a 5, e eles entram na ordem como jogadores de id NEGATIVO (nenhuma conta tem id negativo), sempre "na sala". O nome é
+ * próprio, para não pedir tradução, e o 🤖 na frente diz em qualquer língua que é o computador (a tela não mente).
+ */
+export const NOMES_DOS_ROBOS = ['Tico', 'Lola', 'Bento', 'Nina', 'Juca'];
+export const MAXIMO_DE_ROBOS = NOMES_DOS_ROBOS.length;
+/** Quanto o robô espera antes de agir: o bastante para a pessoa ver o que ele fez. */
+export const PAUSA_DO_ROBO = 1_200;
+const ehRobo = (id: number) => id < 0;
 /** Trocas propostas por vez: cada uma dá um relógio novo, e sem limite uma pessoa seguraria a turma. */
 export const TROCAS_POR_VEZ = 3;
 
@@ -211,13 +221,19 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
     minimo: 2,
     maximo: MAXIMO_DAS_CIDADES,
     comecar(ctx, { naSala, corpo }) {
-      if (naSala.length < 2) return 'Ainda falta gente para começar.';
+      // os robôs só no Solo: na sala, a turma é a graça (e o troféu é de gente contra gente)
+      const robos = ctx.solo ? Math.min(MAXIMO_DE_ROBOS, Math.max(0, Math.floor(Number(corpo.robos) || 0))) : 0;
+      if (naSala.length + robos < 2) return 'Ainda falta gente para começar.';
       const modo: 'rodadas' | 'falencia' = corpo.modo === 'falencia' ? 'falencia' : 'rodadas';
       const rodadas = modo === 'rodadas' ? (RODADAS_DAS_CIDADES.includes(Number(corpo.rodadas)) ? Number(corpo.rodadas) : 20) : null;
       const inteiro = (n: number) => Math.floor(aleatorio() * n);
-      const ordem = embaralhar(naSala.slice(0, MAXIMO_DAS_CIDADES), aleatorio);
+      const idsDosRobos = Array.from({ length: robos }, (_, k) => -(k + 1));
+      const ordem = embaralhar([...naSala.slice(0, MAXIMO_DAS_CIDADES - robos), ...idsDosRobos], aleatorio);
       const jogadores = new Map<number, Jogador>(ordem.map((userId) => [userId, { userId, pos: 0, dinheiro: dinheiroInicial, falido: false, parado: 0 }]));
-      const avatares = new Map(ordem.map((id) => [id, db.findUserById(id)?.avatarPronto ?? null]));
+      const avatares = new Map(ordem.map((id) => [id, ehRobo(id) ? null : (db.findUserById(id)?.avatarPronto ?? null)]));
+      const nome = (id: number) => (ehRobo(id) ? `🤖 ${NOMES_DOS_ROBOS[-id - 1]}` : ctx.nome(id));
+      /** O jeito de cada robô: uns pagam mais caro que outros no leilão (de 0,8 a 1,15 do preço). */
+      const jeito = new Map(idsDosRobos.map((id) => [id, 0.8 + aleatorio() * 0.35]));
       const posses = new Map<number, Posse>(
         possesDoTeste.filter(([, dono]) => jogadores.has(dono)).map(([casa, dono, predios = 0]) => [casa, { dono, predios, hipotecada: false }]),
       );
@@ -248,7 +264,7 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
       const daVez = () => ordem[indice];
       const presentes = () => {
         const sala = new Set(ctx.naSala());
-        return ordem.filter((id) => sala.has(id));
+        return ordem.filter((id) => ehRobo(id) || sala.has(id));
       };
       const anotarAusentes = (aqui: number[]) => {
         for (const id of [...ficaram]) if (!aqui.includes(id) && !jogadores.get(id)!.falido) ficaram.delete(id);
@@ -270,7 +286,8 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
       /** Acabou? Sobrou um que não faliu (fim de verdade), ou menos de 2 que jogam na sala (interrompida). */
       const conferirFim = (aqui = presentes()) => {
         if (fase === 'fim') return true;
-        if (ativos().length <= 1) {
+        // contra o computador, a pessoa que faliu não fica assistindo os robôs jogarem entre si
+        if (ativos().length <= 1 || (robos > 0 && !ativos().some((id) => !ehRobo(id)))) {
           terminar();
           return true;
         }
@@ -382,7 +399,7 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
           trocasNaVez = 0;
           troca = null;
           leilao = null;
-          ctx.agendar(TEMPO_DA_VEZ, () => jogarDados(j.userId));
+          ctx.agendar(ehRobo(j.userId) ? PAUSA_DO_ROBO : TEMPO_DA_VEZ, () => jogarDados(j.userId));
           ctx.avisar();
           return;
         }
@@ -430,7 +447,13 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
         if (conferirFim()) return;
         if (jogadores.get(quem)!.falido) return proximaVez();
         fase = 'acoes';
-        ctx.agendar(TEMPO_DAS_ACOES, proximaVez);
+        if (ehRobo(quem))
+          ctx.agendar(PAUSA_DO_ROBO, () => {
+            if (fase !== 'acoes' || daVez() !== quem) return;
+            roboAdministra(quem);
+            proximaVez();
+          });
+        else ctx.agendar(TEMPO_DAS_ACOES, proximaVez);
         ctx.avisar();
       };
 
@@ -455,7 +478,13 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
             const p = posses.get(j.pos);
             if (!p) {
               fase = 'compra';
-              ctx.agendar(TEMPO_DA_COMPRA, () => abrirLeilao(j.pos));
+              const casaDaCompra = j.pos;
+              if (ehRobo(userId))
+                ctx.agendar(PAUSA_DO_ROBO, () => {
+                  if (fase !== 'compra') return;
+                  if (!roboCompra(userId, casaDaCompra) || comprar(userId) !== null) abrirLeilao(casaDaCompra);
+                });
+              else ctx.agendar(TEMPO_DA_COMPRA, () => abrirLeilao(casaDaCompra));
               ctx.avisar();
               return;
             }
@@ -543,13 +572,42 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
       };
 
       /** Quem pode dar lance: quem joga, não faliu e está na sala. */
-      const podeDarLance = (quem: number) => jogadores.has(quem) && !jogadores.get(quem)!.falido && ctx.naSala().includes(quem);
+      const podeDarLance = (quem: number) => jogadores.has(quem) && !jogadores.get(quem)!.falido && (ehRobo(quem) || ctx.naSala().includes(quem));
+
+      /** Quando o leilão fecha, se ninguém mais der lance (hora do relógio da partida). */
+      let leilaoFechaEm = 0;
+
+      /**
+       * O relógio do leilão. Se algum robô quer cobrir o lance, ele dá o lance depois de uma pausa; senão, o relógio vai até
+       * o fechamento. Um lance de gente (ou de robô) chama de novo, e é assim que os robôs disputam entre si e com a pessoa.
+       */
+      const agendarLeilao = () => {
+        if (fase !== 'leilao' || !leilao) return;
+        const falta = Math.max(0, leilaoFechaEm - agora());
+        if (roboQueCobre() && falta > PAUSA_DO_ROBO) {
+          ctx.agendar(PAUSA_DO_ROBO, () => {
+            if (fase !== 'leilao' || !leilao) return;
+            const quem = roboQueCobre();
+            if (quem) darLance(quem.id, quem.valor);
+            else agendarLeilao();
+          });
+        } else ctx.agendar(falta, fecharLeilao);
+      };
+
+      const darLance = (quem: number, valor: number) => {
+        leilao!.lance = valor;
+        leilao!.lider = quem;
+        leilaoFechaEm = agora() + TEMPO_APOS_LANCE;
+        agendarLeilao();
+        ctx.avisar();
+      };
 
       const abrirLeilao = (casa: number) => {
         if (fase !== 'compra') return;
         fase = 'leilao';
         leilao = { casa, lance: 0, lider: null };
-        ctx.agendar(TEMPO_DO_LEILAO, fecharLeilao);
+        leilaoFechaEm = agora() + TEMPO_DO_LEILAO;
+        agendarLeilao();
         ctx.avisar();
       };
 
@@ -572,7 +630,7 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
         const de = jogadores.get(t.de);
         const para = jogadores.get(t.para);
         if (!de || !para || t.de === t.para || de.falido || para.falido) return 'Escolha alguém que ainda está no jogo.';
-        if (!ctx.naSala().includes(t.para)) return 'Escolha alguém que ainda está no jogo.';
+        if (!ehRobo(t.para) && !ctx.naSala().includes(t.para)) return 'Escolha alguém que ainda está no jogo.';
         if (!t.darCasas.length && !t.pedirCasas.length && !t.darDinheiro && !t.pedirDinheiro) return 'A troca está vazia.';
         if (t.darDinheiro > de.dinheiro || t.pedirDinheiro > para.dinheiro) return 'Dinheiro insuficiente.';
         for (const [casas, dono] of [[t.darCasas, t.de], [t.pedirCasas, t.para]] as const) {
@@ -663,6 +721,90 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
         return 'Ação desconhecida.';
       };
 
+      // ---- A CABEÇA DOS ROBÔS: regras simples, de quem joga com cuidado, sem trapaça (eles veem só o que a pessoa vê). ----
+
+      /** O dinheiro que o robô guarda para não falir no primeiro aluguel. */
+      const RESERVA = 150;
+      const arred10 = (n: number) => Math.floor(n / 10) * 10;
+
+      /** Com esta casa (e as que vão chegar junto), `dono` fecha o grupo inteiro? */
+      const fechaGrupo = (dono: number, casa: number, chegando: number[] = []) => {
+        const c = CASAS[casa];
+        if (c.tipo !== 'cidade') return false;
+        const vem = new Set([casa, ...chegando]);
+        return grupoInteiro(c.grupo!).every((k) => vem.has(k) || posses.get(k)?.dono === dono);
+      };
+      /** Alguém que não é `quem` fecharia o grupo com esta casa? (o robô compra para atrapalhar) */
+      const fechariaDeOutro = (quem: number, casa: number) => ativos().some((o) => o !== quem && fechaGrupo(o, casa));
+      const transportesDe = (dono: number) => CASAS.filter((c, k) => c.tipo === 'transporte' && posses.get(k)?.dono === dono).length;
+
+      /** Quanto a casa vale para o robô: o preço, mais se fecha o grupo dele, se atrapalha o de outro, ou se junta transportes. */
+      const valorPara = (quem: number, casa: number) => {
+        const c = CASAS[casa];
+        let v = c.preco!;
+        if (c.tipo === 'transporte') v *= 1 + 0.25 * transportesDe(quem);
+        else if (fechaGrupo(quem, casa)) v *= 1.6;
+        else if (fechariaDeOutro(quem, casa)) v *= 1.3;
+        else if (grupoInteiro(c.grupo!).some((k) => posses.get(k)?.dono === quem)) v *= 1.15;
+        return v;
+      };
+
+      const roboCompra = (quem: number, casa: number) => {
+        const j = jogadores.get(quem)!;
+        const preco = CASAS[casa].preco!;
+        if (j.dinheiro < preco) return false;
+        // o que fecha um grupo (o dele ou de outro) compra mesmo apertado; o resto, só sobrando a reserva
+        if (fechaGrupo(quem, casa) || fechariaDeOutro(quem, casa)) return true;
+        return j.dinheiro - preco >= RESERVA;
+      };
+
+      /** O robô que cobre o lance de agora, e com quanto; ou null. O que paga mais é o primeiro a cobrir. */
+      const roboQueCobre = (): { id: number; valor: number } | null => {
+        if (!leilao) return null;
+        const minimo = Math.max(LANCE_MINIMO, leilao.lance + LANCE_MINIMO);
+        let melhor: { id: number; valor: number; teto: number } | null = null;
+        for (const id of idsDosRobos) {
+          const j = jogadores.get(id)!;
+          if (j.falido || leilao.lider === id) continue;
+          const teto = Math.min(arred10(valorPara(id, leilao.casa) * jeito.get(id)!), arred10(j.dinheiro - RESERVA / 3));
+          if (teto < minimo || (melhor && melhor.teto >= teto)) continue;
+          // sobe aos saltos (metade do que falta até o teto), para a disputa não levar um lance de cada vez
+          const valor = Math.min(teto, Math.max(minimo, arred10(leilao.lance + (teto - leilao.lance) / 2)));
+          melhor = { id, valor, teto };
+        }
+        return melhor && { id: melhor.id, valor: melhor.valor };
+      };
+
+      /** Na vez dele, depois de andar: resgata o que hipotecou, e constrói nos grupos inteiros, por igual. */
+      const roboAdministra = (quem: number) => {
+        const j = jogadores.get(quem)!;
+        const minhas = () => [...posses.entries()].filter(([, p]) => p.dono === quem);
+        for (const [i, p] of minhas()) {
+          if (!p.hipotecada) continue;
+          const preco = Math.ceil(Math.floor(CASAS[i].preco! / 2) * JUROS_DO_RESGATE);
+          if (j.dinheiro - preco >= RESERVA * 2) mexer(quem, 'resgatar', i);
+        }
+        for (let guarda = 0; guarda < 40; guarda++) {
+          const podem = minhas()
+            .filter(([i, p]) => CASAS[i].tipo === 'cidade' && p.predios < MAXIMO_DE_PREDIOS && temOGrupo(quem, CASAS[i].grupo!))
+            .filter(([i]) => !grupoInteiro(CASAS[i].grupo!).some((k) => posses.get(k)!.hipotecada))
+            .filter(([i]) => j.dinheiro - CASAS[i].custo! >= RESERVA)
+            .sort((a, b) => a[1].predios - b[1].predios || CASAS[a[0]].custo! - CASAS[b[0]].custo!);
+          if (!podem.length || mexer(quem, 'construir', podem[0][0]) !== null) break;
+        }
+      };
+
+      /**
+       * A troca que a pessoa propõe ao robô: ele aceita se sai ganhando uns 15%. Cidade que fecha o grupo de quem propõe
+       * vale bem mais (é dela que vem o aluguel alto); a que fecha o dele, também. A hipotecada vale a metade.
+       */
+      const roboAceita = (t: Proposta) => {
+        const preco = (i: number) => (posses.get(i)?.hipotecada ? CASAS[i].preco! / 2 : CASAS[i].preco!);
+        const recebe = t.darDinheiro + t.darCasas.reduce((s, i) => s + preco(i) * (fechaGrupo(t.para, i, t.darCasas) ? 2 : 1), 0);
+        const da = t.pedirDinheiro + t.pedirCasas.reduce((s, i) => s + preco(i) * (fechaGrupo(t.de, i, t.pedirCasas) ? 2.5 : 1), 0);
+        return recebe > 0 && recebe >= da * 1.15;
+      };
+
       /**
        * A ordem final. Quem não faliu, pelo patrimônio (empatados dividem); depois quem faliu, de quem faliu por último para
        * quem faliu primeiro.
@@ -671,7 +813,7 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
         const vivos = ids.filter((id) => !jogadores.get(id)!.falido).map((id) => ({ userId: id, patrimonio: patrimonio(id) }));
         const linhas = vivos
           .map((v) => ({ ...v, falido: false, posicao: 1 + vivos.filter((o) => o.patrimonio > v.patrimonio).length }))
-          .sort((a, b) => a.posicao - b.posicao || ctx.nome(a.userId).localeCompare(ctx.nome(b.userId)));
+          .sort((a, b) => a.posicao - b.posicao || nome(a.userId).localeCompare(nome(b.userId)));
         const caidos = [...falencias].reverse().filter((id) => ids.includes(id));
         caidos.forEach((id, k) => linhas.push({ userId: id, patrimonio: 0, falido: true, posicao: vivos.length + k + 1 }));
         return linhas;
@@ -680,7 +822,7 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
       const classificacaoPublica = () => {
         const linha = (l: { userId: number; patrimonio: number; falido: boolean }, posicao: number | null) => ({
           userId: l.userId,
-          username: ctx.nome(l.userId),
+          username: nome(l.userId),
           patrimonio: l.patrimonio,
           falido: l.falido,
           posicao,
@@ -700,7 +842,8 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
         leilao = null;
         troca = null;
         chegada = null;
-        if (!interrompida) {
+        // contra o computador não há troféu: o troféu é um registro de um momento entre amigos
+        if (!interrompida && !robos) {
           anotarAusentes(presentes());
           const turma = ordem.filter((id) => ficaram.has(id));
           if (turma.length >= 2) {
@@ -743,14 +886,15 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
               const j = jogadores.get(userId)!;
               return {
                 userId,
-                username: ctx.nome(userId),
+                username: nome(userId),
                 avatar: avatares.get(userId) ?? null,
                 pos: j.pos,
                 dinheiro: j.dinheiro,
                 patrimonio: patrimonio(userId),
                 falido: j.falido,
                 parado: j.parado,
-                presente: sala.has(userId),
+                presente: ehRobo(userId) || sala.has(userId),
+                robo: ehRobo(userId),
               };
             }),
             posses: [...posses.entries()].map(([casa, p]) => ({ casa, ...p, aluguel: aluguelDe(casa) })),
@@ -762,6 +906,7 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
             classificacao: classificacaoPublica(),
             interrompida,
             partidaId: evento,
+            robos,
           };
         },
         acao(quem, corpo) {
@@ -775,10 +920,7 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
             const valor = Number(corpo.valor);
             if (!Number.isInteger(valor) || valor < Math.max(LANCE_MINIMO, leilao.lance + LANCE_MINIMO)) return 'O lance precisa ser maior que o atual.';
             if (valor > jogadores.get(quem)!.dinheiro) return 'Dinheiro insuficiente.';
-            leilao.lance = valor;
-            leilao.lider = quem;
-            ctx.agendar(TEMPO_APOS_LANCE, fecharLeilao);
-            ctx.avisar();
+            darLance(quem, valor);
             return null;
           }
           if (tipo === 'responder') {
@@ -820,7 +962,8 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
             trocasNaVez++;
             troca = proposta;
             fase = 'troca';
-            ctx.agendar(TEMPO_DA_TROCA, () => fecharTroca(false));
+            if (ehRobo(proposta.para)) ctx.agendar(PAUSA_DO_ROBO, () => fecharTroca(roboAceita(proposta)));
+            else ctx.agendar(TEMPO_DA_TROCA, () => fecharTroca(false));
             ctx.avisar();
             return null;
           }

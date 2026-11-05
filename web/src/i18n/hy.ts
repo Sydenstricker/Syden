@@ -2746,4 +2746,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Այս քարը սեղանին չի համապատասխանում։',
   'Escolha a ponta.': 'Ընտրիր ծայրը։',
   'Essa pedra não encaixa nessa ponta.': 'Այս քարը չի համապատասխանում այս ծայրին։',
+  'Quantos adversários?': 'Քանի՞ մրցակից։',
 } satisfies Record<string, string>;

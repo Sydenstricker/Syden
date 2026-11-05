@@ -2719,4 +2719,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Ky gur nuk përshtatet në tryezë.',
   'Escolha a ponta.': 'Zgjidh skajin.',
   'Essa pedra não encaixa nessa ponta.': 'Ky gur nuk përshtatet në këtë skaj.',
+  'Quantos adversários?': 'Sa kundërshtarë?',
 } satisfies Record<string, string>;

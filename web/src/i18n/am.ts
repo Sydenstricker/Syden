@@ -2657,4 +2657,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'ያ ድንጋይ ከጠረጴዛው ጋር አይገጥምም።',
   'Escolha a ponta.': 'ጫፉን ይምረጡ።',
   'Essa pedra não encaixa nessa ponta.': 'ያ ድንጋይ ከዚያ ጫፍ ጋር አይገጥምም።',
+  'Quantos adversários?': 'ስንት ተፎካካሪዎች?',
 } satisfies Record<string, string>;

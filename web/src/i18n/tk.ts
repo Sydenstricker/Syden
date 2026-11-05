@@ -2738,4 +2738,5 @@ export default {
   'Essa pedra não encaixa na mesa.': 'Bu daş stola gabat gelmeýär.',
   'Escolha a ponta.': 'Ujy saýla.',
   'Essa pedra não encaixa nessa ponta.': 'Bu daş bu uja gabat gelmeýär.',
+  'Quantos adversários?': 'Näçe garşydaş?',
 } satisfies Record<string, string>;

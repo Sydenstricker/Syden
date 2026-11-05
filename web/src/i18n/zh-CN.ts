@@ -2644,4 +2644,5 @@ export default {
   'Essa pedra não encaixa na mesa.': '这张牌接不上桌面。',
   'Escolha a ponta.': '选择一端。',
   'Essa pedra não encaixa nessa ponta.': '这张牌接不上这一端。',
+  'Quantos adversários?': '几个对手？',
 } satisfies Record<string, string>;
