@@ -1,0 +1,124 @@
+/* A ESQUADRILHA DA TOCA (05/11/2026): a tela em pé, ampliada em pixels inteiros, e o placar em cima. */
+
+.nave {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.nave-topo {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  width: 100%;
+  max-width: 420px;
+}
+
+.nave-topo .minijogo-tempo {
+  flex: 1;
+  min-width: 80px;
+}
+
+.nave-esquadrilha {
+  color: var(--text-muted);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.nave-vidas,
+.nave-bombas {
+  display: inline-flex;
+  gap: 3px;
+  align-items: center;
+}
+
+/* uma vida: o aviãozinho de cenoura em miniatura, em CSS */
+.nave-vida {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  background:
+    linear-gradient(#f08a24, #f08a24) center / 4px 12px no-repeat,
+    linear-gradient(#e0b06a, #e0b06a) center 55% / 12px 3px no-repeat;
+}
+
+.nave-bomba-icone {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff3c4 0 15%, #e2483d 20% 100%);
+  box-shadow: 0 0 0 1px #2b2633;
+}
+
+/* a tela fica em pé: o lado maior é a altura, sem passar da altura da janela */
+.nave-moldura {
+  position: relative;
+  width: min(100%, 420px, calc((100vh - 220px) * 0.75));
+  min-width: 180px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: #86b25f;
+}
+
+.nave-tela {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 4;
+  image-rendering: pixelated;
+  touch-action: none;
+}
+
+.nave-botao-bomba {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid var(--text-strong);
+  background: rgba(43, 38, 51, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+}
+
+.nave-botao-bomba .nave-bomba-icone {
+  width: 20px;
+  height: 20px;
+}
+
+.nave-fim {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.nave-desfecho {
+  margin: 0;
+  font-weight: 700;
+  font-size: calc(18px * var(--escala-do-texto, 1));
+  color: var(--text-strong);
+}
+
+.nave-esquadrilha-total {
+  margin: 0;
+  color: var(--text-strong);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.nave-recorde {
+  color: var(--accent);
+  font-weight: 700;
+}

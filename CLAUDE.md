@@ -637,6 +637,24 @@ estratégia (o pacote Ultimate Fantasy RTS do Quaternius, CC0, em glTF) é o pr�
   (`web/public/tocas/icones/`); a taxa "+x" é o que chegou no último minuto da partida; **o ponto de reunião** (botão direito com o
   prédio escolhido; em cima de uma fonte, quem nasce vai coletar); e o treino que não sai diz o porquê (falta recurso, fila cheia,
   "Falta casa").
+- **Os três de 16 bits pedidos depois do sucesso do kart (05/11/2026, ele aprovou os três):**
+  - **Esquadrilha da toca** (`nave`, `minijogo-nave.ts`, `nave-sim.ts` ↔ `web/src/nave/sim.ts`): navinha de rolagem vertical com a
+    rede da Caça. A turma voa as MESMAS ondas, cada um na própria tela; o servidor refaz cada acerto pela "Ficha" (passo no relógio,
+    cadência, arma que a pessoa tem, nave sem teleporte). O golpe que a nave LEVA é quem leva que diz (a regra do repolho). Solo
+    com recorde (`nave_recordes`), Coletivo com o pódio e o placar somado da esquadrilha. Tudo desenhado por código.
+  - **Estoura-balão** (`balao`, `minijogo-balao.ts`, `balao-sim.ts` ↔ `web/src/balao/sim.ts`): o modo arena do kart, sobre o motor
+    da corrida (só importa de `web/src/corrida/`). Três balões, os itens do kart estouram, quem fica sem sai. **Contra quem nunca se
+    declara atingido:** o caminho do repolho e a lama são contas iguais nos dois lados, e o servidor refaz cada posição que chega
+    contra os itens vivos; quem passou por um e não avisou perde o balão do mesmo jeito, e quem fica calado 1,5 s fica "parado" na
+    última posição. Sobra possível: mandar posições inventadas que desviam (e são o kart que a turma vê). Solo contra 1 a 5 robôs.
+  - **Coelhos a jato** (`jato`, `minijogo-jato.ts`, `server/src/jato.ts`, `web/src/jato/`): a corrida futurista, o dobro da
+    velocidade do kart, com a energia que é vida e turbo. Uma CÓPIA do que precisou da corrida (`jato/util.ts`), sem mexer nela.
+    11 naves do computador completam a pista (não entram na classificação nem no troféu). Recordes e fantasmas como o kart
+    (`jato_recordes`, só amigos aceitos veem; na política desde o mesmo dia, com os recordes da Caça e da Esquadrilha, que faltavam).
+  - Nenhum dos três tem e2e com a sala de verdade (LiveKit e duas pessoas): os Coletivos estão cobertos só pelos testes do servidor.
+    Ficam fora das conquistas da turma até ele decidir, como os outros novos.
+  - O levantamento do Mario Party 3 (o pedido dele: "um de caça que eu adorava, Aces High") está em `docs/mario-party-3.md`: o
+    Aces High vira o "Duelo de aviõezinhos" sobre a rede dos itens do kart, e uns 34 minijogos cabem como microjogo da Festa.
 
 **O TABULEIRO DA TURMA está feito (03/11/2026, o item 5):** `server/src/minijogo-tabuleiro-da-turma.ts`, `web/src/JogoTabuleiro.tsx`,
 só no Coletivo (2 a 8). Uma volta de 30 casas em volta de uma horta, desenhada por código; 5, 10 ou 15 rodadas. Na vez, cada

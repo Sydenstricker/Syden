@@ -13,13 +13,15 @@ import type { IdDoJogo } from './minijogos';
  */
 export type Genero = 'mesa' | 'esporte' | 'acao' | 'raciocinio' | 'palavras' | 'festa' | 'estrategia';
 
+// A ordem é a do fichário: a festa primeiro (pedido dele, 05/11/2026: "uma aba como party-games, outra esportes"). A cor de cada
+// ficha mora no CSS (.ficha-<id>), para a aba e a estante embaixo dela serem da mesma cor, como a divisória de um fichário.
 export const GENEROS: { id: Genero; emoji: string; nome: string }[] = [
-  { id: 'mesa', emoji: '🎲', nome: chave('Mesa e cartas') },
+  { id: 'festa', emoji: '🎉', nome: chave('Festa e tabuleiro') },
   { id: 'esporte', emoji: '🏁', nome: chave('Corrida e esporte') },
   { id: 'acao', emoji: '⚡', nome: chave('Ação') },
+  { id: 'mesa', emoji: '🎲', nome: chave('Mesa e cartas') },
   { id: 'raciocinio', emoji: '🧩', nome: chave('Raciocínio') },
   { id: 'palavras', emoji: '💬', nome: chave('Palavras e perguntas') },
-  { id: 'festa', emoji: '🎉', nome: chave('Festa e tabuleiro') },
   { id: 'estrategia', emoji: '🏰', nome: chave('Estratégia') },
 ];
 
@@ -32,6 +34,8 @@ export const GENEROS_DOS_JOGOS: Partial<Record<IdDoJogo | string, Genero[]>> = {
   mancala: ['mesa'],
   naval: ['mesa'],
   corrida: ['esporte'],
+  balao: ['esporte', 'acao'],
+  jato: ['esporte'],
   golfe: ['esporte'],
   golfe3d: ['esporte'],
   futebol: ['esporte'],
@@ -39,6 +43,7 @@ export const GENEROS_DOS_JOGOS: Partial<Record<IdDoJogo | string, Genero[]>> = {
   briga: ['acao'],
   plataforma: ['acao'],
   caca: ['acao'],
+  nave: ['acao'],
   cozinha: ['acao'],
   sudoku: ['raciocinio'],
   xadrez: ['raciocinio'],
@@ -83,18 +88,33 @@ export function useFicha() {
   return [ficha, escolher] as const;
 }
 
+/** A ficha que vale de verdade: a escolhida, se ela tem jogo aqui; senão, "Tudo" (null). */
+export function fichaQueVale(jogos: string[], ficha: Genero | null): Genero | null {
+  return ficha && jogos.some((j) => generosDe(j).includes(ficha)) ? ficha : null;
+}
+
+/** A classe da cor da ficha (a aba e a estante embaixo dela). */
+export const classeDaFicha = (ficha: Genero | null) => `ficha-${ficha ?? 'tudo'}`;
+
 /** As fichas: "Tudo" e os gêneros que têm algum dos `jogos`. Se a ficha guardada não tem jogo aqui, vale "Tudo". */
 export function FicharioDeGeneros({ jogos, ficha, aoEscolher }: { jogos: string[]; ficha: Genero | null; aoEscolher: (g: Genero | null) => void }) {
   const t = useT();
   const comJogo = GENEROS.filter((g) => jogos.some((j) => generosDe(j).includes(g.id)));
-  const atual = ficha && comJogo.some((g) => g.id === ficha) ? ficha : null;
+  const atual = fichaQueVale(jogos, ficha);
   const ficha_ = (id: Genero | null, rotulo: string, emoji: string) => (
-    <button key={id ?? 'tudo'} type="button" role="tab" aria-selected={atual === id} className={`fichario-ficha${atual === id ? ' ativa' : ''}`} onClick={() => aoEscolher(id)}>
+    <button
+      key={id ?? 'tudo'}
+      type="button"
+      role="tab"
+      aria-selected={atual === id}
+      className={`fichario-ficha ${classeDaFicha(id)}${atual === id ? ' ativa' : ''}`}
+      onClick={() => aoEscolher(id)}
+    >
       <span aria-hidden="true">{emoji}</span> {rotulo}
     </button>
   );
   return (
-    <div className="fichario" role="tablist" aria-label={t('Gêneros')}>
+    <div className={`fichario ${classeDaFicha(atual)}`} role="tablist" aria-label={t('Gêneros')}>
       {ficha_(null, t('Tudo'), '📚')}
       {comJogo.map((g) => ficha_(g.id, t(g.nome), g.emoji))}
     </div>

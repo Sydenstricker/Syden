@@ -1,0 +1,279 @@
+/* OS COELHOS A JATO (05/11/2026): a tela da corrida, a escolha da pista, os fantasmas e a classificação. */
+.jato {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.jato-pistas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 8px;
+}
+
+.jato-pista-botao {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px;
+  border-radius: 10px;
+  border: 2px solid var(--border);
+  background: var(--bg-raised);
+  color: inherit;
+  cursor: pointer;
+  text-align: center;
+}
+
+.jato-pista-botao:hover,
+.jato-pista-botao.escolhida {
+  border-color: var(--accent);
+}
+
+.jato-pista-botao canvas {
+  width: 72px;
+  height: 72px;
+  border-radius: 6px;
+}
+
+.jato-pista-botao small {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.jato-escolha {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.jato-pista-nome {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.jato-pista-nome .settings-hint {
+  margin: 0;
+}
+
+.jato-relogio {
+  font-variant-numeric: tabular-nums;
+}
+
+.jato-fantasmas {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 0;
+}
+
+.jato-fantasmas legend {
+  padding: 0 4px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.jato-fantasmas ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.jato-fantasmas label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.jato-quem {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.jato-topo {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.jato-tela {
+  position: relative;
+  outline: none;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #0e0a1a;
+}
+
+.jato-tela canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  image-rendering: pixelated;
+}
+
+.jato-placar {
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  right: 8px;
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  pointer-events: none;
+  color: #f6f0ff;
+  font-weight: 700;
+  font-size: clamp(0.85rem, 2.4vw, 1.15rem);
+  text-shadow: 0 2px 0 #140e1c, 2px 0 0 #140e1c, -2px 0 0 #140e1c, 0 -2px 0 #140e1c;
+}
+
+.jato-toque {
+  display: none;
+}
+
+@media (pointer: coarse) {
+  .jato-toque {
+    position: absolute;
+    inset: auto 0 0 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+    gap: 8px;
+  }
+  .jato-toque button {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 2px solid rgba(246, 240, 255, 0.6);
+    background: rgba(20, 14, 28, 0.45);
+    color: #f6f0ff;
+    font-size: 1.4rem;
+    touch-action: none;
+    user-select: none;
+  }
+  .jato-toque button:nth-child(2) {
+    margin-left: auto;
+  }
+}
+
+.jato-fim,
+.jato-fim-solo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px;
+  text-align: center;
+}
+
+.jato-fim {
+  position: absolute;
+  inset: 0;
+  background: rgba(16, 10, 26, 0.74);
+  color: #f6f0ff;
+}
+
+.jato-fim-solo {
+  border-radius: 8px;
+  background: var(--bg-raised);
+}
+
+.jato-recorde {
+  color: #e8a020;
+  font-size: 1.2rem;
+}
+
+.jato-explodiu {
+  color: #e0505a;
+}
+
+.jato-relogio.grande {
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  font-weight: 800;
+}
+
+.jato-voltas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.9rem;
+}
+
+.jato-ordem {
+  position: absolute;
+  top: 27%;
+  left: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 40%;
+  color: #f6f0ff;
+  font-weight: 700;
+  font-size: clamp(0.7rem, 1.9vw, 0.9rem);
+  text-shadow: 0 1px 0 #140e1c, 1px 0 0 #140e1c, -1px 0 0 #140e1c, 0 -1px 0 #140e1c;
+}
+
+.jato-ordem li {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.jato-ordem li span {
+  display: inline-block;
+  min-width: 1.2em;
+}
+
+.jato-ordem li.eu {
+  color: #ffc46a;
+}
+
+.jato-classificacao {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: min(320px, 90%);
+}
+
+.jato-classificacao li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(246, 240, 255, 0.08);
+}
+
+.jato-classificacao li.eu {
+  background: rgba(255, 196, 106, 0.22);
+}
+
+.jato-posicao {
+  min-width: 1.6em;
+  text-align: center;
+  font-weight: 800;
+}
+
+.jato-classificacao .jato-quem {
+  text-align: left;
+}

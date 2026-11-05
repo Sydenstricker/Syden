@@ -7276,3 +7276,101 @@ export function guardarRecordeDoSkate(userId: number, pontos: number): boolean {
   ).run(userId, pontos);
   return true;
 }
+
+// ---------------------------------------------------------------------------------------------------
+// A ESQUADRILHA DA TOCA (a navinha, 05/11/2026): o recorde de cada pessoa no Solo (a melhor partida inteira, até o chefe).
+// Só o melhor: uma partida pior não substitui. É da pessoa, e só ela o vê (minijogo-nave.ts).
+// ---------------------------------------------------------------------------------------------------
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS nave_recordes (
+    user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    pontos  INTEGER NOT NULL,
+    em      TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+  );
+`);
+
+export function recordeDaNave(userId: number): number | null {
+  return (db.prepare('SELECT pontos FROM nave_recordes WHERE user_id = ?').get(userId) as { pontos: number } | undefined)?.pontos ?? null;
+}
+
+/** Guarda se for o melhor da pessoa. Devolve true se virou recorde. */
+export function guardarRecordeDaNave(userId: number, pontos: number): boolean {
+  const atual = recordeDaNave(userId);
+  if (atual !== null && atual >= pontos) return false;
+  db.prepare(
+    `INSERT INTO nave_recordes (user_id, pontos) VALUES (?, ?)
+     ON CONFLICT(user_id) DO UPDATE SET pontos = excluded.pontos, em = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')`,
+  ).run(userId, pontos);
+  return true;
+}
+
+// ---------------------------------------------------------------------------------------------------
+// OS COELHOS A JATO (05/11/2026): o melhor tempo de cada pessoa em cada pista, com as voltas e o FANTASMA (as posições da
+// nave, 15 por segundo, para os amigos correrem contra), como corrida_recordes. Só o melhor: uma corrida pior não
+// substitui. Quem vê: a própria pessoa e os amigos aceitos (minijogo-jato.ts).
+// ---------------------------------------------------------------------------------------------------
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS jato_recordes (
+    user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    pista      TEXT NOT NULL,
+    tempo_ms   INTEGER NOT NULL,
+    voltas     TEXT NOT NULL,
+    amostras   TEXT NOT NULL,
+    em         TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    PRIMARY KEY (user_id, pista)
+  );
+`);
+
+export interface RecordeDoJato {
+  userId: number;
+  username: string;
+  nomeDeExibicao: string | null;
+  avatarPronto: number | null;
+  tempoMs: number;
+  em: string;
+}
+
+/** O recorde da pessoa e o dos amigos aceitos dela, nesta pista, do mais rápido ao mais lento (sem o fantasma). */
+export function recordesDoJato(userId: number, pista: string): RecordeDoJato[] {
+  return db
+    .prepare(
+      `SELECT r.user_id AS userId, u.username AS username, u.nome_exibicao AS nomeDeExibicao, u.avatar_pronto AS avatarPronto,
+              r.tempo_ms AS tempoMs, r.em AS em
+       FROM jato_recordes r JOIN users u ON u.id = r.user_id
+       WHERE r.pista = ? AND (r.user_id = ? OR r.user_id IN (
+         SELECT CASE WHEN menor_id = ? THEN maior_id ELSE menor_id END FROM friendships
+         WHERE ? IN (menor_id, maior_id) AND situacao = 'aceita'))
+       ORDER BY r.tempo_ms LIMIT 30`,
+    )
+    .all(pista, userId, userId, userId) as unknown as RecordeDoJato[];
+}
+
+export function recordeDoJato(userId: number, pista: string): { tempoMs: number; amostras: string } | null {
+  const linha = db
+    .prepare('SELECT tempo_ms AS tempoMs, amostras FROM jato_recordes WHERE user_id = ? AND pista = ?')
+    .get(userId, pista) as { tempoMs: number; amostras: string } | undefined;
+  return linha ?? null;
+}
+
+/** Guarda se for o melhor da pessoa nesta pista. Devolve o tempo que valia antes (null se não havia). */
+export function guardarJato(userId: number, pista: string, tempoMs: number, voltas: number[], amostras: string): { anterior: number | null; recorde: boolean } {
+  const antes = recordeDoJato(userId, pista);
+  if (antes && antes.tempoMs <= tempoMs) return { anterior: antes.tempoMs, recorde: false };
+  db.prepare(
+    `INSERT INTO jato_recordes (user_id, pista, tempo_ms, voltas, amostras, em)
+     VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+     ON CONFLICT(user_id, pista) DO UPDATE SET tempo_ms = excluded.tempo_ms, voltas = excluded.voltas,
+       amostras = excluded.amostras, em = excluded.em`,
+  ).run(userId, pista, tempoMs, JSON.stringify(voltas), amostras);
+  return { anterior: antes?.tempoMs ?? null, recorde: true };
+}
+
+/** Os recordes da pessoa em todas as pistas, com o fantasma (para o "Levar seus dados"). */
+export function jatosDe(userId: number) {
+  const linhas = db
+    .prepare('SELECT pista, tempo_ms AS tempoMs, voltas, amostras, em FROM jato_recordes WHERE user_id = ? ORDER BY pista')
+    .all(userId) as { pista: string; tempoMs: number; voltas: string; amostras: string; em: string }[];
+  return linhas.map((l) => ({ pista: l.pista, tempoMs: l.tempoMs, em: l.em, voltas: JSON.parse(l.voltas) as number[], fantasma: JSON.parse(l.amostras) as number[] }));
+}

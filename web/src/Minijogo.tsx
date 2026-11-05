@@ -16,11 +16,14 @@ import { JogoNaval } from './JogoNaval';
 import { JogoTruco } from './JogoTruco';
 import { JogoFesta } from './JogoFesta';
 import { JogoGolfe } from './JogoGolfe';
-import { FicharioDeGeneros, naFicha, useFicha } from './FicharioDeGeneros';
+import { FicharioDeGeneros, naFicha, useFicha, classeDaFicha, fichaQueVale } from './FicharioDeGeneros';
 import { JogoGolfe3D, type EstadoGolfe3D } from './JogoGolfe3D';
 import { JogoFutebol, type EstadoFutebol } from './JogoFutebol';
 import { JogoTocas, type EstadoTocas } from './JogoTocas';
 import { JogoCaca } from './JogoCaca';
+import { JogoNave, type EstadoNave } from './JogoNave';
+import { EscolhaDaArena, JogoBalao, type EstadoBalao } from './JogoBalao';
+import { EscolhaDaPistaDoJato, JogoJato, type EstadoJato } from './JogoJato';
 import { JogoCozinha, type EstadoCozinha } from './JogoCozinha';
 import { JogoSkate, type EstadoSkate } from './JogoSkate';
 import { JogoLobisomem } from './JogoLobisomem';
@@ -295,6 +298,18 @@ export function PainelDoMinijogo({
           aoVoltar={() => setEscolhendo(null)}
         />
       )}
+      {!partida && escolhendo === 'jato' && (
+        <EscolhaDaPistaDoJato
+          aoEscolher={(pista) => tentar(() => aoComecar('jato', { pista }, false).then(() => setEscolhendo(null)))}
+          aoVoltar={() => setEscolhendo(null)}
+        />
+      )}
+      {!partida && escolhendo === 'balao' && (
+        <EscolhaDaArena
+          aoEscolher={(arena) => tentar(() => aoComecar('balao', { arena }, false).then(() => setEscolhendo(null)))}
+          aoVoltar={() => setEscolhendo(null)}
+        />
+      )}
       {!partida && escolhendo === 'tabuleiro' && (
         <EscolhaDasRodadas
           solo={aba === 'solo'}
@@ -343,7 +358,7 @@ export function PainelDoMinijogo({
         <FicharioDeGeneros jogos={JOGOS.filter((jogo) => jogo.abas.includes(aba)).map((j) => j.id)} ficha={ficha} aoEscolher={setFicha} />
       )}
       {!partida && !escolhendoCategoria && !sozinho && (
-        <ul className="minijogo-estante">
+        <ul className={`minijogo-estante no-fichario ${classeDaFicha(fichaQueVale(JOGOS.filter((jogo) => jogo.abas.includes(aba)).map((j) => j.id), ficha))}`}>
           {naFicha(JOGOS.filter((jogo) => jogo.abas.includes(aba)), ficha).map((jogo) => (
             <li key={jogo.id}>
               <button
@@ -359,6 +374,8 @@ export function PainelDoMinijogo({
                       ? aba === 'solo'
                         ? setPulando(true)
                         : setEscolhendo('plataforma')
+                    : (jogo.id === 'balao' || jogo.id === 'jato') && aba === 'coletivo'
+                      ? setEscolhendo(jogo.id)
                     : jogo.id === 'tabuleiro' || jogo.id === 'cidades' || (aba === 'solo' && ROBOS_NO_SOLO[jogo.id]) || pedeCategoria(jogo.id, aba === 'solo')
                       ? setEscolhendo(jogo.id)
                       : tentar(() => aoComecar(jogo.id, {}, aba === 'solo'))
@@ -426,6 +443,39 @@ export function PainelDoMinijogo({
         <JogoFesta
           key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
           estado={jogoNaTela as unknown as EstadoFesta & Partida} eu={eu} jogador={souJogador(partida)} restante={restante} agir={agir} />
+      )}
+      {jogoNaTela?.jogo === 'jato' && (
+        <JogoJato
+          key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
+          estado={jogoNaTela as unknown as EstadoJato & Partida}
+          eu={eu}
+          jogador={souJogador(partida)}
+          restante={restante}
+          agir={agir}
+          socket={socket}
+          channelId={channelId}
+        />
+      )}
+      {jogoNaTela?.jogo === 'balao' && (
+        <JogoBalao
+          key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
+          estado={jogoNaTela as unknown as EstadoBalao & Partida}
+          eu={eu}
+          jogador={souJogador(partida)}
+          agir={agir}
+          socket={socket}
+          channelId={channelId}
+        />
+      )}
+      {jogoNaTela?.jogo === 'nave' && (
+        <JogoNave
+          key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
+          estado={jogoNaTela as unknown as EstadoNave & Partida}
+          eu={eu}
+          jogador={souJogador(partida)}
+          socket={socket}
+          channelId={channelId}
+        />
       )}
       {jogoNaTela?.jogo === 'briga' && (
         <JogoBriga

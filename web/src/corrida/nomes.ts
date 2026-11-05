@@ -30,6 +30,10 @@ export const NOMES_DAS_PISTAS: Record<string, string> = {
   tabuleiro: chave('Tabuleiro da turma'),
   // e o de Capitais, o antigo Cidades à venda (server/src/minijogo-cidades.ts): os pontos são o patrimônio
   cidades: chave('Capitais'),
+  // e o do Estoura-balão (server/src/minijogo-balao.ts): os pontos são os balões que sobraram
+  balao: chave('Estoura-balão'),
+  // e o dos Coelhos a jato (server/src/minijogo-jato.ts)
+  jato: chave('Coelhos a jato'),
 };
 
 export const nomeDaPista = (id: string) => NOMES_DAS_PISTAS[id] ?? id;

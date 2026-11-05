@@ -15933,7 +15933,9 @@ body.arrastando-barra {
 }
 
 /* A CORRIDA DOS COELHOS (03/11/2026, JogoCorrida.tsx): a tela pequena de 320 × 180 ampliada com os pixels nítidos. */
-.minijogo.jogando-corrida {
+.minijogo.jogando-corrida,
+.minijogo.jogando-balao,
+.minijogo.jogando-jato {
   width: min(760px, 94vw);
 }
 
@@ -19424,41 +19426,78 @@ body.arrastando-barra {
 
 /* O FICHÁRIO DE GÊNEROS (FicharioDeGeneros.tsx): as fichas como as orelhas de um fichário, em cima da estante; a escolhida
    fica de frente, colada na estante. Numa tela estreita, a fileira rola de lado em vez de quebrar. */
+/* O FICHÁRIO (05/11/2026, pedido dele, com o desenho: "abas como um fichário"): cada gênero com a sua cor, a aba grande, e a
+   escolhida se liga à estante embaixo, da mesma cor, como a divisória de um fichário de verdade. */
+.ficha-tudo {
+  --cor-da-ficha: #8d97ab;
+}
+.ficha-festa {
+  --cor-da-ficha: #f29a38;
+}
+.ficha-esporte {
+  --cor-da-ficha: #3fb27f;
+}
+.ficha-acao {
+  --cor-da-ficha: #e5564c;
+}
+.ficha-mesa {
+  --cor-da-ficha: #3f8fd8;
+}
+.ficha-raciocinio {
+  --cor-da-ficha: #9b6ee0;
+}
+.ficha-palavras {
+  --cor-da-ficha: #1fb6c8;
+}
+.ficha-estrategia {
+  --cor-da-ficha: #c9a23a;
+}
 .fichario {
   display: flex;
-  gap: 2px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  padding: 0 2px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 4px;
+  padding: 6px 2px 0;
   margin: 4px 0 0;
-  border-bottom: 2px solid var(--accent);
+  border-bottom: 4px solid var(--cor-da-ficha);
 }
 .fichario::-webkit-scrollbar {
   display: none;
 }
 .fichario-ficha {
   flex: none;
-  padding: 5px 10px 4px;
-  border: 1px solid var(--border, rgba(255, 255, 255, 0.12));
-  border-bottom: none;
-  border-radius: 9px 9px 0 0;
-  background: var(--bg-sidebar);
-  color: var(--text-muted);
+  padding: 7px 14px 6px;
+  border: none;
+  border-top: 4px solid var(--cor-da-ficha);
+  border-radius: 10px 10px 0 0;
+  background: color-mix(in srgb, var(--cor-da-ficha) 18%, var(--bg-sidebar));
+  color: var(--text);
   font: inherit;
-  font-size: calc(12.5px * var(--escala-do-texto));
+  font-size: calc(13.5px * var(--escala-do-texto));
+  font-weight: 600;
   white-space: nowrap;
   cursor: pointer;
-  transform: translateY(2px);
+  transition: padding 0.12s ease, background 0.12s ease;
 }
 .fichario-ficha:hover {
   color: var(--text-strong);
+  background: color-mix(in srgb, var(--cor-da-ficha) 32%, var(--bg-sidebar));
 }
 .fichario-ficha.ativa {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--bg-main, #14101a);
-  font-weight: 700;
-  transform: none;
+  padding-top: 11px;
+  background: var(--cor-da-ficha);
+  color: #15111c;
+  font-weight: 800;
+}
+.minijogo-estante.no-fichario {
+  padding: 12px 10px 10px;
+  border-radius: 0 0 12px 12px;
+  background: color-mix(in srgb, var(--cor-da-ficha) 9%, transparent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .fichario-ficha {
+    transition: none;
+  }
 }
 .jogos-painel .fichario {
   margin-bottom: 6px;

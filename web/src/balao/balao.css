@@ -1,0 +1,104 @@
+/* O ESTOURA-BALÃO (05/11/2026): por cima das classes da corrida (corrida-tela, corrida-placar, corrida-toque). */
+
+.balao-escolha {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.balao-quantos {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.balao-quantos button {
+  min-width: 2.6em;
+}
+
+/* os balões de todos, no canto de cima à direita (os meus, desenhados, ficam no canto da esquerda) */
+.balao-todos {
+  position: absolute;
+  top: 34px;
+  right: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  max-width: 45%;
+  color: #fbf3e4;
+  font-weight: 700;
+  font-size: clamp(0.7rem, 1.9vw, 0.9rem);
+  text-shadow: 0 1px 0 #2a1e2c, 1px 0 0 #2a1e2c, -1px 0 0 #2a1e2c, 0 -1px 0 #2a1e2c;
+}
+
+.balao-todos li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+}
+
+.balao-todos li.eu {
+  color: #ffc46a;
+}
+
+.balao-todos li.fora {
+  opacity: 0.55;
+  text-decoration: line-through;
+}
+
+.balao-nome {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.balao-bolinhas {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.balao-bolinhas i {
+  display: inline-block;
+  width: 0.62em;
+  height: 0.75em;
+  border-radius: 50%;
+  background: #5a5060;
+  box-shadow: 0 0 0 1px #1e1822;
+}
+
+.balao-placar {
+  left: auto;
+}
+
+.balao-aviso {
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: #1e1822cc;
+  color: #fbf3e4;
+  font-weight: 600;
+  font-size: clamp(0.75rem, 2vw, 0.95rem);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.balao-fim-solo {
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .balao-todos li {
+    transition: none;
+  }
+}

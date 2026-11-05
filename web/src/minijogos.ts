@@ -507,7 +507,7 @@ export interface EstadoBriga {
   partidaId: string;
 }
 
-export type IdDoJogo = 'corrida' | 'festa' | 'tabuleiro' | 'cidades' | 'golfe' | 'caca' | 'plataforma' | 'blocos' | 'briga' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'damas' | 'naval' | 'domino' | 'truco' | 'xadrez' | 'partida-de-xadrez' | 'cozinha' | 'skate' | 'futebol' | 'golfe3d' | 'tocas' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
+export type IdDoJogo = 'corrida' | 'festa' | 'tabuleiro' | 'cidades' | 'golfe' | 'caca' | 'nave' | 'balao' | 'jato' | 'plataforma' | 'blocos' | 'briga' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'damas' | 'naval' | 'domino' | 'truco' | 'xadrez' | 'partida-de-xadrez' | 'cozinha' | 'skate' | 'futebol' | 'golfe3d' | 'tocas' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
 
 /**
  * As duas abas da estante (pedido dele, 14/10/2026). SOLO: a partida é só de quem joga, começa sem convite, não ocupa
@@ -720,6 +720,30 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
     id: 'caca',
     nome: chave('Caça às pragas da horta'),
     dica: chave('Corvos e gafanhotos atacam a horta. Mire e clique para acertar antes que fujam: a munição é contada, e cada onda vem mais rápida. Ganha quem fizer mais pontos.'),
+    abas: ['solo', 'coletivo'],
+  },
+  {
+    // A corrida futurista (JogoJato.tsx, server/src/minijogo-jato.ts, server/src/jato.ts): a técnica do kart, muito mais rápida, com a
+    // energia que é vida e turbo (pedido dele, 05/11/2026). Sem itens: a corrida da sala também vira recorde.
+    id: 'jato',
+    nome: chave('Coelhos a jato'),
+    dica: chave('Corrida de naves-cenoura numa pista suspensa, muito mais rápida que o kart. A energia é a vida e o turbo: bater na borda gasta, a faixa cor-de-rosa recarrega, e sair da pista é cair. No Solo, contra o relógio e os fantasmas dos amigos.'),
+    abas: ['solo', 'coletivo'],
+  },
+  {
+    // A batalha de balões (JogoBalao.tsx, server/src/minijogo-balao.ts, balao-sim.ts ↔ balao/sim.ts): o modo arena do kart,
+    // com o motor da corrida (pedido dele, 05/11/2026, depois da boa recepção do kart).
+    id: 'balao',
+    nome: chave('Estoura-balão'),
+    dica: chave('Os karts numa arena fechada, cada um com três balões. Pegue as caixas e use os itens para estourar os balões dos outros: quem fica sem balão sai, e ganha quem sobrar.'),
+    abas: ['solo', 'coletivo'],
+  },
+  {
+    // A navinha (JogoNave.tsx, server/src/minijogo-nave.ts, nave-sim.ts ↔ nave/sim.ts): as mesmas ondas para a turma, cada um
+    // na própria tela, como a Caça (pedido dele, 05/11/2026).
+    id: 'nave',
+    nome: chave('Esquadrilha da toca'),
+    dica: chave('Aviõezinhos de cenoura contra a praga da horta: desvie das sementes, pegue os reforços e derrube o espantalho mecânico no fim. A turma voa as mesmas ondas, e a esquadrilha soma os pontos.'),
     abas: ['solo', 'coletivo'],
   },
   {

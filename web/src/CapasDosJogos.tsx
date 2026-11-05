@@ -29,6 +29,12 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
       return <CapaTocas />;
     case 'caca':
       return <CapaCaca />;
+    case 'nave':
+      return <CapaNave />;
+    case 'balao':
+      return <CapaBalao />;
+    case 'jato':
+      return <CapaJato />;
     case 'cozinha':
       return <CapaCozinha />;
     case 'skate':
@@ -1020,6 +1026,158 @@ function CapaCozinha() {
       {[66, 80, 94].map((x, k) => (
         <path key={x} d={`M${x} 30 q -5 -7 0 -14 q 5 -7 0 -14`} fill="none" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" opacity={0.75 - k * 0.12} />
       ))}
+    </svg>
+  );
+}
+
+/** Os Coelhos a jato: a cidade à noite, a pista suspensa em perspectiva com as bordas de energia e a nave-cenoura com o rastro. */
+function CapaJato() {
+  const predios = [
+    [0, 20, 30], [16, 14, 40], [28, 18, 24], [44, 12, 46], [54, 20, 34], [72, 14, 52], [84, 18, 28], [100, 12, 44], [110, 20, 36],
+    [128, 14, 48], [140, 20, 30],
+  ];
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#1b1533" />
+      <rect y="30" width="160" height="34" fill="#2a1f47" />
+      {[[12, 8], [40, 16], [70, 6], [96, 12], [124, 4], [150, 14], [58, 22], [140, 26]].map(([x, y]) => (
+        <rect key={x + ',' + y} x={x} y={y} width="1.5" height="1.5" fill="#fff6d8" />
+      ))}
+      {predios.map(([x, w, h]) => (
+        <g key={x}>
+          <rect x={x} y={64 - h} width={w} height={h} fill="#130f26" />
+          {Array.from({ length: Math.floor(h / 7) }, (_, j) => (
+            <rect key={j} x={x + 3} y={64 - h + 4 + j * 7} width={w - 6} height="2" fill={j % 3 ? '#f6c14a' : '#7a6a9a'} opacity="0.75" />
+          ))}
+        </g>
+      ))}
+      <rect y="64" width="160" height="56" fill="#3a2a55" />
+      {/* a pista em perspectiva, com as bordas de energia */}
+      <path d="M68 64 L92 64 L150 120 L10 120 Z" fill="#3b3f52" />
+      <path d="M68 64 L10 120 L4 120 L66 64 Z" fill="#ff5fb8" />
+      <path d="M92 64 L150 120 L156 120 L94 64 Z" fill="#4fe0ff" />
+      <path d="M79 70 L81 70 L82 78 L78 78 Z M77 86 L83 86 L84 98 L76 98 Z" fill="#c9cfe0" opacity="0.7" />
+      <path d="M40 92 H120" stroke="#4fe0ff" strokeWidth="1.5" opacity="0.8" />
+      {/* a faixa de recarga */}
+      <path d="M58 76 L102 76 L106 80 L54 80 Z" fill="#ff9bd8" opacity="0.6" />
+      {/* a nave-cenoura, com o rastro */}
+      <g transform="translate(80 104)">
+        <path d="M-6 6 L6 6 L10 16 L-10 16 Z" fill="#4fe0ff" opacity="0.45" />
+        <path d="M-16 2 L-4 -4 L4 -4 L16 2 L10 6 L-10 6 Z" fill="#4f9a3a" />
+        <path d="M0 -14 L7 -2 L5 6 L-5 6 L-7 -2 Z" fill="#ec7f2b" />
+        <path d="M-4 -2 H4 M-5 2 H5" stroke="#c45f1c" strokeWidth="1" />
+        <circle cx="0" cy="-8" r="3.5" fill="#f6efe4" />
+        <path d="M-2 -11 L-3 -18 M2 -11 L3 -18" stroke="#f6efe4" strokeWidth="2" strokeLinecap="round" />
+      </g>
+      {/* os riscos de vento */}
+      <path d="M22 100 L34 90 M136 98 L126 88 M28 112 L42 100" stroke="#ffffff" strokeWidth="1" opacity="0.5" />
+    </svg>
+  );
+}
+
+/** O Estoura-balão: a arena de terra cercada de feno, dois karts com os balões presos atrás, e um balão estourando. */
+function CapaBalao() {
+  const balao = (x: number, y: number, cor: string) => (
+    <g key={x + ',' + y}>
+      <path d={`M${x} ${y + 9} q 2 6 -1 12`} stroke="#f3ecdc" strokeWidth="1" fill="none" />
+      <ellipse cx={x} cy={y} rx="6" ry="7.5" fill={cor} />
+      <ellipse cx={x - 2} cy={y - 3} rx="1.6" ry="2.4" fill="#ffffff" opacity="0.6" />
+      <path d={`M${x - 1.5} ${y + 7.5} h3 l-1.5 2 z`} fill={cor} />
+    </g>
+  );
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#9fd0ea" />
+      <rect y="40" width="160" height="80" fill="#c99c62" />
+      <path d="M0 40 H160 V48 H0 Z" fill="#7fb36a" />
+      {[8, 34, 60, 86, 112, 138].map((x) => (
+        <rect key={x} x={x} y="34" width="18" height="10" rx="2" fill="#e8c35a" stroke="#b8902e" strokeWidth="1" />
+      ))}
+      <ellipse cx="80" cy="84" rx="60" ry="22" fill="#b98a52" />
+      {/* o kart azul, à esquerda, com dois balões */}
+      <g transform="translate(46 88)">
+        <rect x="-16" y="-6" width="32" height="12" rx="4" fill="#3f74d8" />
+        <circle cx="-10" cy="7" r="4" fill="#2c2a33" />
+        <circle cx="10" cy="7" r="4" fill="#2c2a33" />
+        <circle cx="0" cy="-10" r="6" fill="#f2ecf7" />
+        <path d="M-3 -15 l-2 -10 l3 0 z M3 -15 l2 -10 l-3 0 z" fill="#f2ecf7" />
+      </g>
+      {balao(30, 56, '#e2604c')}
+      {balao(22, 64, '#f0c93a')}
+      {/* o kart vermelho, à direita, com um balão e um estourando */}
+      <g transform="translate(116 82)">
+        <rect x="-16" y="-6" width="32" height="12" rx="4" fill="#d8483c" />
+        <circle cx="-10" cy="7" r="4" fill="#2c2a33" />
+        <circle cx="10" cy="7" r="4" fill="#2c2a33" />
+        <circle cx="0" cy="-10" r="6" fill="#d9c2a0" />
+        <path d="M-3 -15 l-2 -10 l3 0 z M3 -15 l2 -10 l-3 0 z" fill="#d9c2a0" />
+      </g>
+      {balao(134, 52, '#5bb35a')}
+      <g transform="translate(140 66)" stroke="#fff3c4" strokeWidth="2" strokeLinecap="round">
+        <path d="M0 -8 V-4 M0 4 V8 M-8 0 H-4 M4 0 H8 M-6 -6 L-3 -3 M3 3 L6 6 M6 -6 L3 -3 M-3 3 L-6 6" />
+      </g>
+      {/* o repolho rolando */}
+      <circle cx="84" cy="96" r="6" fill="#6fae4a" />
+      <path d="M80 94 q4 -3 8 0 M80 98 q4 3 8 0" stroke="#4a8a30" strokeWidth="1.2" fill="none" />
+    </svg>
+  );
+}
+
+/** A Esquadrilha da toca: a horta vista de cima, o aviãozinho de cenoura atirando, um corvo e o espantalho lá no alto. */
+function CapaNave() {
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#86b862" />
+      <rect y="52" width="160" height="9" fill="#cfa86a" />
+      {[
+        [14, 70, 44, 34],
+        [104, 66, 42, 40],
+        [16, 6, 34, 30],
+      ].map(([x, y, w, h]) => (
+        <g key={x + ',' + y}>
+          <rect x={x} y={y} width={w} height={h} fill="#7a5236" />
+          {Array.from({ length: Math.floor(w / 8) }, (_, i) =>
+            Array.from({ length: Math.floor(h / 8) }, (_, j) => <rect key={i + '-' + j} x={x + 3 + i * 8} y={y + 3 + j * 8} width="3" height="3" fill={j % 2 ? '#4f9a3a' : '#e07a2a'} />),
+          )}
+        </g>
+      ))}
+      <circle cx="132" cy="22" r="11" fill="#4c8f3e" />
+      <circle cx="129" cy="19" r="6" fill="#62a74f" />
+      {/* a nuvem e a sombra dela */}
+      <ellipse cx="74" cy="44" rx="22" ry="8" fill="#2f4a2a" opacity="0.25" />
+      <g fill="#f4f6f8">
+        <circle cx="62" cy="34" r="9" />
+        <circle cx="74" cy="30" r="11" />
+        <circle cx="86" cy="35" r="8" />
+      </g>
+      {/* o espantalho, de chapéu, no alto */}
+      <g transform="translate(80 12)">
+        <rect x="-14" y="-2" width="28" height="3" fill="#d9a64a" />
+        <rect x="-7" y="-8" width="14" height="7" fill="#e3b65a" />
+        <rect x="-5" y="1" width="10" height="8" fill="#f1d9b0" />
+        <rect x="-3" y="3" width="2" height="2" fill="#d23c3c" />
+        <rect x="1" y="3" width="2" height="2" fill="#d23c3c" />
+      </g>
+      {/* o corvo */}
+      <g transform="translate(112 46)">
+        <path d="M-2 0 L-12 -7 L-1 3 Z" fill="#2c2a33" />
+        <path d="M2 0 L12 -7 L1 3 Z" fill="#3d3a47" />
+        <ellipse cx="0" cy="1" rx="5" ry="7" fill="#2c2a33" />
+        <path d="M-1 8 L0 11 L1 8 Z" fill="#e8a33a" />
+      </g>
+      {/* os tiros */}
+      {[66, 76, 86, 96].map((y, k) => (
+        <rect key={y} x={k % 2 ? 83 : 75} y={y - 20} width="2" height="6" fill="#ffd34d" />
+      ))}
+      {/* o aviãozinho de cenoura */}
+      <g transform="translate(80 98)">
+        <path d="M0 -14 L5 -4 L4 10 L-4 10 L-5 -4 Z" fill="#ec7f2b" />
+        <path d="M-1 -14 L1 -14 L0 -18 Z" fill="#4f9a3a" />
+        <rect x="-20" y="-2" width="40" height="6" rx="2" fill="#f2a24a" />
+        <rect x="-8" y="9" width="16" height="3" fill="#f2a24a" />
+        <circle cx="0" cy="-4" r="3" fill="#f6efe4" />
+        <path d="M-2 -7 L-3 -12 M2 -7 L3 -12" stroke="#f6efe4" strokeWidth="2" />
+      </g>
     </svg>
   );
 }

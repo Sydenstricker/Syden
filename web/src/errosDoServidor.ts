@@ -89,6 +89,7 @@ export const ERROS_TRADUZIDOS = [
   chave('Corrida inválida.'),
   chave('Muitas corridas seguidas. Tente de novo daqui a pouco.'),
   chave('A corrida não está andando.'),
+  chave('A corrida está andando.'),
   chave('Você não está nesta corrida.'),
   chave('Pista desconhecida.'),
   chave('Fantasma não encontrado.'),

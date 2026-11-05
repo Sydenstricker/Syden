@@ -213,6 +213,10 @@ export function registerModeracaoRoutes(app: FastifyInstance, io: IOServer) {
           trofeusDaCorrida: db.trofeusParaLevar(eu.id),
           // os recordes do Pulo do coelho, com o fantasma (ver plataforma-routes.ts)
           puloDoCoelho: db.pulosDe(eu.id),
+          // os recordes dos Coelhos a jato, com o fantasma, e as maiores pontuações da Caça e da Esquadrilha (05/11/2026)
+          coelhosAJato: db.jatosDe(eu.id),
+          recordeDaCaca: db.recordeDaCaca(eu.id),
+          recordeDaEsquadrilha: db.recordeDaNave(eu.id),
           // quem entra no quarto, os convidados (ids) e o destaque da estante de troféus (ver trofeus-routes.ts)
           // (com a arrumação: a política diz que ela é guardada, e faltava aqui — auditoria de 03/11/2026)
           quarto: {
