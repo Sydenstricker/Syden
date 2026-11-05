@@ -2712,4 +2712,5 @@ export default {
   'Escolha a ponta.': 'צריך לבחור קצה.',
   'Essa pedra não encaixa nessa ponta.': 'האבן הזאת לא מתאימה לקצה הזה.',
   'Quantos adversários?': 'כמה יריבים?',
+  'Estilo visual': 'סגנון חזותי',
 } satisfies Record<string, string>;

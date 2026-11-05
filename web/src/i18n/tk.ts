@@ -2739,4 +2739,5 @@ export default {
   'Escolha a ponta.': 'Ujy saýla.',
   'Essa pedra não encaixa nessa ponta.': 'Bu daş bu uja gabat gelmeýär.',
   'Quantos adversários?': 'Näçe garşydaş?',
+  'Estilo visual': 'Wizual stil',
 } satisfies Record<string, string>;

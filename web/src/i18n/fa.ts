@@ -2651,4 +2651,5 @@ export default {
   'Escolha a ponta.': 'سر را انتخاب کنید.',
   'Essa pedra não encaixa nessa ponta.': 'این مهره به این سر جور نمی‌شود.',
   'Quantos adversários?': 'چند حریف؟',
+  'Estilo visual': 'سبک تصویری',
 } satisfies Record<string, string>;

@@ -619,6 +619,14 @@ pessoa é o MASCOTE 3D (`web/scripts/cidades3d-coelho.py` tira do `mascote.glb` 
 pelas cores dela no shader (o escuro abaixo do pescoço é moletom: os olhos ficam), e ele PULA casa a casa. Sem foco na janela, não
 desenha; sombras de verdade só com "Sombras" em Gráficos. O desenho em SVG continua de reserva: sem WebGL, ou enquanto carrega.
 Os PNG das texturas da Kenney pedem `git add -f` (o .gitignore pega `*.png`).
+**2D OU 3D, QUEM ESCOLHE É A PESSOA (05/11/2026, pedido dele: "quero ter material 2D pixel art e 3D low poly; que o usuário possa
+escolher o que ele mais gosta"):** Configurações → Gráficos → "Estilo visual: 2D | 3D" (`estiloVisual()` em `web/src/Graficos.tsx`,
+em 'syden:graficos'). Hoje só o tabuleiro do Cidades tem as duas versões; o que não tem 3D continua em 2D. De fábrica é 3D, porque
+hoje só muda o Cidades, que ele pediu em 3D: quando o quarto 3D for ao app, o padrão é decisão dele de novo. **O quarto low poly** é
+um piloto (`e2e/3D/quarto/`, KayKit Bits Bundle 1, CC0), e **o coelho 3D com o NOSSO esqueleto** sai de
+`e2e/pixel-art/personagem/blender/meshy/glb.py` (as poses do motor do pixel art viram animações de um GLB,
+`web/public/cidades3d/coelho-animado.glb`). O arquivo "animated_mixamo" do Meshy é o mesmo `mascote-t.glb`: esqueleto de gente, sem
+orelhas, e só Walking e Running.
 **Os outros coletivos no Solo (05/11/2026, pedido dele: "outros jogos coletivos com opção de jogar sozinho contra IA"):** Cinco em
 linha, Mancala, Damas, Batalha naval, Dominó, Truco e Tabuleiro da turma, pelo módulo comum `server/src/minijogo-robos.ts` (os nomes,
 a pausa, `comRobos` para os jogos de convite contarem os robôs como gente na sala). Nas mesas (`duelo`), o robô senta na hora e

@@ -2674,4 +2674,5 @@ export default {
   'Escolha a ponta.': 'Agħżel it-tarf.',
   'Essa pedra não encaixa nessa ponta.': 'Dik il-biċċa ma taqbilx f\'dak it-tarf.',
   'Quantos adversários?': 'Kemm-il avversarju?',
+  'Estilo visual': 'Stil viżiv',
 } satisfies Record<string, string>;

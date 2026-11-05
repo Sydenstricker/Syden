@@ -2728,4 +2728,5 @@ export default {
   'Escolha a ponta.': 'කෙළවර තෝරන්න.',
   'Essa pedra não encaixa nessa ponta.': 'ඒ කැටය ඒ කෙළවරට ගැළපෙන්නේ නැහැ.',
   'Quantos adversários?': 'ප්‍රතිවාදීන් කී දෙනෙක්ද?',
+  'Estilo visual': 'දෘශ්‍ය විලාසය',
 } satisfies Record<string, string>;

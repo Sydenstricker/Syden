@@ -2660,4 +2660,5 @@ export default {
   'Escolha a ponta.': 'Ucu seç.',
   'Essa pedra não encaixa nessa ponta.': 'Bu taş bu uca uymuyor.',
   'Quantos adversários?': 'Kaç rakip?',
+  'Estilo visual': 'Görsel stil',
 } satisfies Record<string, string>;

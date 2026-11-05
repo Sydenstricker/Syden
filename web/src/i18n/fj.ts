@@ -2657,4 +2657,5 @@ export default {
   'Escolha a ponta.': 'Digitaka na yasana.',
   'Essa pedra não encaixa nessa ponta.': 'E sega ni rauta na vatu oqo ena yasana oqo.',
   'Quantos adversários?': 'E le vica na dau veiqati?',
+  'Estilo visual': 'Ivakarau ni rairai',
 } satisfies Record<string, string>;

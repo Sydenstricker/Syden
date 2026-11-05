@@ -2653,4 +2653,5 @@ export default {
   'Escolha a ponta.': 'Choose an end.',
   'Essa pedra não encaixa nessa ponta.': 'That tile doesn\'t fit at that end.',
   'Quantos adversários?': 'How many opponents?',
+  'Estilo visual': 'Visual style',
 } satisfies Record<string, string>;

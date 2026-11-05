@@ -2657,4 +2657,5 @@ export default {
   'Escolha a ponta.': 'Kies een uiteinde.',
   'Essa pedra não encaixa nessa ponta.': 'Die steen past niet aan dat uiteinde.',
   'Quantos adversários?': 'Hoeveel tegenstanders?',
+  'Estilo visual': 'Visuele stijl',
 } satisfies Record<string, string>;

@@ -2658,4 +2658,5 @@ export default {
   'Escolha a ponta.': 'ጫፉን ይምረጡ።',
   'Essa pedra não encaixa nessa ponta.': 'ያ ድንጋይ ከዚያ ጫፍ ጋር አይገጥምም።',
   'Quantos adversários?': 'ስንት ተፎካካሪዎች?',
+  'Estilo visual': 'የእይታ ስልት',
 } satisfies Record<string, string>;

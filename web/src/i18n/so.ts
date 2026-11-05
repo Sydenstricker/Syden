@@ -2728,4 +2728,5 @@ export default {
   'Escolha a ponta.': 'Dooro darafka.',
   'Essa pedra não encaixa nessa ponta.': 'Dhagaxaasi kuma habboona darafkaas.',
   'Quantos adversários?': 'Immisa ka soo horjeedayaal ah?',
+  'Estilo visual': 'Qaabka muuqaalka',
 } satisfies Record<string, string>;

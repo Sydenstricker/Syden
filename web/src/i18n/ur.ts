@@ -2650,4 +2650,5 @@ export default {
   'Escolha a ponta.': 'سرا چنیں۔',
   'Essa pedra não encaixa nessa ponta.': 'یہ گوٹی اس سرے پر نہیں لگتی۔',
   'Quantos adversários?': 'کتنے حریف؟',
+  'Estilo visual': 'بصری انداز',
 } satisfies Record<string, string>;

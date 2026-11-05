@@ -2728,4 +2728,5 @@ export default {
   'Escolha a ponta.': 'Vyber koniec.',
   'Essa pedra não encaixa nessa ponta.': 'Táto kocka k tomuto koncu nepasuje.',
   'Quantos adversários?': 'Koľko súperov?',
+  'Estilo visual': 'Vizuálny štýl',
 } satisfies Record<string, string>;

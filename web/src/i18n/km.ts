@@ -2727,4 +2727,5 @@ export default {
   'Escolha a ponta.': 'ជ្រើសរើសចុង។',
   'Essa pedra não encaixa nessa ponta.': 'បន្ទះនេះមិនត្រូវនឹងចុងនេះទេ។',
   'Quantos adversários?': 'គូប្រកួតប៉ុន្មាននាក់?',
+  'Estilo visual': 'រចនាប័ទ្មរូបភាព',
 } satisfies Record<string, string>;

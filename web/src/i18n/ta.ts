@@ -2643,4 +2643,5 @@ export default {
   'Escolha a ponta.': 'முனையைத் தேர்ந்தெடு.',
   'Essa pedra não encaixa nessa ponta.': 'இந்தக் கல் இந்த முனையில் பொருந்தவில்லை.',
   'Quantos adversários?': 'எத்தனை எதிராளிகள்?',
+  'Estilo visual': 'காட்சி பாணி',
 } satisfies Record<string, string>;

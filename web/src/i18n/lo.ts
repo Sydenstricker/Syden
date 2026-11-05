@@ -2729,4 +2729,5 @@ export default {
   'Escolha a ponta.': 'ເລືອກປາຍ.',
   'Essa pedra não encaixa nessa ponta.': 'ໂຕນີ້ຕໍ່ທີ່ປາຍນີ້ບໍ່ໄດ້.',
   'Quantos adversários?': 'ຄູ່ແຂ່ງຈັກຄົນ?',
+  'Estilo visual': 'ຮູບແບບການສະແດງຜົນ',
 } satisfies Record<string, string>;

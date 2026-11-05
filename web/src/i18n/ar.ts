@@ -2682,4 +2682,5 @@ export default {
   'Escolha a ponta.': 'يُرجى اختيار الطرف.',
   'Essa pedra não encaixa nessa ponta.': 'هذه القطعة لا تناسب هذا الطرف.',
   'Quantos adversários?': 'كم عدد الخصوم؟',
+  'Estilo visual': 'النمط المرئي',
 } satisfies Record<string, string>;

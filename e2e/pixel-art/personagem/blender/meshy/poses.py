@@ -245,35 +245,37 @@ CADEIAS = {
     'transicoes/bracos': [p_sentado, p_poltrona],
 }
 
-SO_POSE = os.environ.get('SO')
-VASS.hide_render = True
-ik(0)
-raiz_poses = os.path.join(SAIDA, 'poses')
-for pasta_, (dirs, n, f, livro, cam_) in GRAVAR.items():
-    if SO_POSE and SO_POSE not in pasta_:
-        continue
-    destino = os.path.join(raiz_poses, *pasta_.split('/'))
-    os.makedirs(destino, exist_ok=True)
-    vassoura = pasta_.endswith('/varrendo')
-    VASS.hide_render = not vassoura
-    ik(1 if vassoura else 0)
-    if f is None:
-        quadro_t = transicao(CADEIAS[pasta_], n)
-        f = lambda i, n, q=quadro_t: q(i)
-    for d in dirs:
-        for i in range(n):
-            # deitando: a câmera vai da de pé à do deitado junto com o corpo
-            k = 1.0 if cam_ == 'deitado' else (i + 1) / n if cam_ == 'deitando' else 0.0
-            camera(DE_PE[0] + (DEITADO[0] - DE_PE[0]) * k)
-            ARM.rotation_euler = (0, 0, math.radians(giro_da(d, DE_PE[1] + (DEITADO[1] - DE_PE[1]) * k)))
-            f(i, n)
-            LIVRO.hide_render = not (livro is True or (livro == 'fim' and i >= n - 2))
-            bpy.context.view_layer.update()
-            renderizar(os.path.join(destino, f'{d}-{i}.png'))
-    print('ok', pasta_)
-LIVRO.hide_render = True
-VASS.hide_render = True
-ik(0)
-camera(DE_PE[0])
-with open(os.path.join(SAIDA, 'poses.json'), 'w') as f_:
-    json.dump({p: {'direcoes': list(d), 'desenhos': n} for p, (d, n, _, _, _) in GRAVAR.items()}, f_, indent=1)
+# GLB=1 (glb.py) só quer as funções das poses: o render abaixo fica de fora
+if not os.environ.get('GLB'):
+    SO_POSE = os.environ.get('SO')
+    VASS.hide_render = True
+    ik(0)
+    raiz_poses = os.path.join(SAIDA, 'poses')
+    for pasta_, (dirs, n, f, livro, cam_) in GRAVAR.items():
+        if SO_POSE and SO_POSE not in pasta_:
+            continue
+        destino = os.path.join(raiz_poses, *pasta_.split('/'))
+        os.makedirs(destino, exist_ok=True)
+        vassoura = pasta_.endswith('/varrendo')
+        VASS.hide_render = not vassoura
+        ik(1 if vassoura else 0)
+        if f is None:
+            quadro_t = transicao(CADEIAS[pasta_], n)
+            f = lambda i, n, q=quadro_t: q(i)
+        for d in dirs:
+            for i in range(n):
+                # deitando: a câmera vai da de pé à do deitado junto com o corpo
+                k = 1.0 if cam_ == 'deitado' else (i + 1) / n if cam_ == 'deitando' else 0.0
+                camera(DE_PE[0] + (DEITADO[0] - DE_PE[0]) * k)
+                ARM.rotation_euler = (0, 0, math.radians(giro_da(d, DE_PE[1] + (DEITADO[1] - DE_PE[1]) * k)))
+                f(i, n)
+                LIVRO.hide_render = not (livro is True or (livro == 'fim' and i >= n - 2))
+                bpy.context.view_layer.update()
+                renderizar(os.path.join(destino, f'{d}-{i}.png'))
+        print('ok', pasta_)
+    LIVRO.hide_render = True
+    VASS.hide_render = True
+    ik(0)
+    camera(DE_PE[0])
+    with open(os.path.join(SAIDA, 'poses.json'), 'w') as f_:
+        json.dump({p: {'direcoes': list(d), 'desenhos': n} for p, (d, n, _, _, _) in GRAVAR.items()}, f_, indent=1)

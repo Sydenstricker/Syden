@@ -9,10 +9,22 @@ vai para o Syden.
 | arquivo | o que é |
 |---|---|
 | `fotos/dia.png`, `fotos/noite.png` | **abrir primeiro:** o quarto de fábrica, de dia e de noite |
-| `fotos/arrumado-sentado.png` | a poltrona arrastada e girada pelo Arrumar, com o coelho sentado nela |
-| `fotos/deitado.png` | o coelho deitado na cama |
+| `fotos/deitado.png`, `sentado-sofa.png`, `sentado-poltrona.png`, `no-computador.png` | o coelho usando os móveis, com as poses de verdade |
 | `main.ts` | a cena inteira (three.js 0.186, o mesmo do tabuleiro do Cidades) |
-| `modelos/` | os 53 móveis do KayKit Furniture Bits grátis (Kay Lousberg, CC0, `LICENCA-KayKit.txt`) e o `coelho.glb` (o mascote, de `web/scripts/cidades3d-coelho.py`) |
+| `modelos/` | o KayKit Bits Bundle 1 (Kay Lousberg, CC0, `LICENCA-KayKit-Bundle.txt`): os móveis inteiros do Furniture Bits (com as 3 texturas de cor em `texturas/`) e as paredes, a janela e a porta do Restaurant Bits (`restaurante/`); e o `coelho-animado.glb` |
+
+## A segunda rodada (05/11/2026, à tarde)
+
+Ele baixou o pacote completo ("use eles para compor o quarto com maior qualidade"). O quarto foi refeito com ele: as paredes, a
+janela com cortina e a porta são peças do Restaurant Bits, e entraram a mesa de computador completa (monitor, teclado, mouse, o
+abajur de mesa com o fone, o porta-lápis), o sofá, a mesa de centro com o videogame e a caneca, e a cômoda. A luz ficou mais clara
+e macia, como nas fotos do pacote, e o sol vem do alto, do lado aberto. O quarto continua com ~1 ms por quadro.
+
+**O coelho agora tem o NOSSO esqueleto** (o arquivo do Meshy que ele baixou é o mesmo `mascote-t.glb`, com o esqueleto de gente e
+só "Walking" e "Running"). `e2e/pixel-art/personagem/blender/meshy/glb.py` grava as poses do motor do quarto de pixel art como
+animações de um GLB (`:MODELO='t'; :GLB='1'; powershell -File rodar.ps1`, ~10 s): parado, andando, falando, sentado,
+sentado no sofá, poltrona, banqueta, computador, dormindo, largado e lendo. Ele anda de verdade, senta na poltrona, no sofá e na
+cadeira do computador (com as mãos no teclado) e deita na cama. Sai em `web/public/cidades3d/coelho-animado.glb` (650 KB).
 
 ## O que o piloto faz
 
@@ -33,9 +45,7 @@ vai para o Syden.
 
 ## O que falta, e é o que decide
 
-1. **O coelho não tem esqueleto aqui.** Deitar e sentar são o corpo inteiro posto no lugar, como peça de tabuleiro. Deitado
-   passa, mas sentado ele está de pé dentro da poltrona. Para ficar bom, é preciso a malha com o NOSSO esqueleto (a do
-   `blender/meshy/t/mascote.blend`) exportada com as animações, e a malha sentada que já estava pendente.
+1. **O coelho já tem esqueleto e poses** (a segunda rodada). Falta o andar pelo caminho de verdade até o lado certo da cama.
 2. **Faltam peças com função no quarto:** guarda-roupa, porta, fone, quadro de fotos, cortiça e tapetes nas cores dele. A
    versão "Extra" do pacote (US$ 2 a 4) traz mais 20 peças e 3 texturas de cor, mas não se sabe quais.
 3. **Os dois estilos não se misturam:** os móveis têm cor chapada, e o coelho do Meshy tem textura detalhada. Ao lado dos

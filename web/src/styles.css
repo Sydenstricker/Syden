@@ -19067,3 +19067,26 @@ body.arrastando-barra {
   pointer-events: none;
   filter: drop-shadow(0 3px 4px rgba(30, 40, 30, 0.35));
 }
+
+/* O estilo visual (Gráficos): 2D ou 3D, dois botões lado a lado. */
+.estilo-visual {
+  display: inline-flex;
+  gap: 4px;
+  margin-left: auto;
+}
+.estilo-visual button {
+  min-width: 48px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border, rgba(127, 127, 127, 0.4));
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.estilo-visual button.escolhido {
+  background: var(--accent, #c98a5a);
+  border-color: transparent;
+  color: var(--accent-texto, #14161b);
+}

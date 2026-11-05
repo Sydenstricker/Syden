@@ -2708,4 +2708,5 @@ export default {
   'Escolha a ponta.': 'Вибери кінець.',
   'Essa pedra não encaixa nessa ponta.': 'Ця кістка не підходить до цього кінця.',
   'Quantos adversários?': 'Скільки суперників?',
+  'Estilo visual': 'Візуальний стиль',
 } satisfies Record<string, string>;

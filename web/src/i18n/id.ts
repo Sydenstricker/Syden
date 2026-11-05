@@ -2655,4 +2655,5 @@ export default {
   'Escolha a ponta.': 'Pilih ujungnya.',
   'Essa pedra não encaixa nessa ponta.': 'Kartu itu tidak cocok di ujung itu.',
   'Quantos adversários?': 'Berapa lawan?',
+  'Estilo visual': 'Gaya visual',
 } satisfies Record<string, string>;

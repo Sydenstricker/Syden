@@ -2664,4 +2664,5 @@ export default {
   'Escolha a ponta.': 'Διάλεξε άκρη.',
   'Essa pedra não encaixa nessa ponta.': 'Αυτό το πλακίδιο δεν ταιριάζει σε αυτή την άκρη.',
   'Quantos adversários?': 'Πόσοι αντίπαλοι;',
+  'Estilo visual': 'Οπτικό στιλ',
 } satisfies Record<string, string>;

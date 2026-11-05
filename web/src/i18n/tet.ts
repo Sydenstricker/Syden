@@ -2660,4 +2660,5 @@ export default {
   'Escolha a ponta.': 'Hili ponta.',
   'Essa pedra não encaixa nessa ponta.': 'Fatuk ne\'e la tama iha ponta ne\'e.',
   'Quantos adversários?': "Adversáriu na'in hira?",
+  'Estilo visual': 'Estilu vizuál',
 } satisfies Record<string, string>;

@@ -2730,4 +2730,5 @@ export default {
   'Escolha a ponta.': 'Válassz véget.',
   'Essa pedra não encaixa nessa ponta.': 'Ez a kő nem illik erre a végre.',
   'Quantos adversários?': 'Hány ellenfél?',
+  'Estilo visual': 'Vizuális stílus',
 } satisfies Record<string, string>;

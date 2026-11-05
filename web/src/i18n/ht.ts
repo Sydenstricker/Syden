@@ -2738,4 +2738,5 @@ export default {
   'Escolha a ponta.': 'Chwazi pwent lan.',
   'Essa pedra não encaixa nessa ponta.': 'Wòch sa a pa antre nan pwent sa a.',
   'Quantos adversários?': 'Konbyen advèsè?',
+  'Estilo visual': 'Stil vizyèl',
 } satisfies Record<string, string>;

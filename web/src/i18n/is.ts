@@ -2729,4 +2729,5 @@ export default {
   'Escolha a ponta.': 'Veldu enda.',
   'Essa pedra não encaixa nessa ponta.': 'Þessi kubbur passar ekki við þennan enda.',
   'Quantos adversários?': 'Hversu margir andstæðingar?',
+  'Estilo visual': 'Sjónrænn stíll',
 } satisfies Record<string, string>;

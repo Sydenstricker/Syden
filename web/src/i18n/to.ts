@@ -2664,4 +2664,5 @@ export default {
   'Escolha a ponta.': 'Fili ʻa e ngataʻanga.',
   'Essa pedra não encaixa nessa ponta.': 'ʻOku ʻikai feʻunga ʻa e maka ko iá ʻi he ngataʻanga ko iá.',
   'Quantos adversários?': 'Ko e toko fiha ʻa e kau fakafepaki?',
+  'Estilo visual': 'Fōtunga ʻo e sio',
 } satisfies Record<string, string>;

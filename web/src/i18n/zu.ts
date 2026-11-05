@@ -2729,4 +2729,5 @@ export default {
   'Escolha a ponta.': 'Khetha umkhawulo.',
   'Essa pedra não encaixa nessa ponta.': 'Lelo tshe alingeni kulowo mkhawulo.',
   'Quantos adversários?': 'Bangaki abaphikisi?',
+  'Estilo visual': 'Isitayela esibonakalayo',
 } satisfies Record<string, string>;

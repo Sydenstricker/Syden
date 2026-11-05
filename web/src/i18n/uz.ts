@@ -2748,4 +2748,5 @@ export default {
   'Escolha a ponta.': 'Uchni tanlang.',
   'Essa pedra não encaixa nessa ponta.': 'Bu tosh bu uchga mos kelmaydi.',
   'Quantos adversários?': 'Nechta raqib?',
+  'Estilo visual': 'Vizual uslub',
 } satisfies Record<string, string>;

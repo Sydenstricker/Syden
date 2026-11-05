@@ -2671,4 +2671,5 @@ export default {
   'Escolha a ponta.': 'เลือกปลาย',
   'Essa pedra não encaixa nessa ponta.': 'ตัวนี้ต่อที่ปลายนี้ไม่ได้',
   'Quantos adversários?': 'จำนวนคู่แข่ง',
+  'Estilo visual': 'รูปแบบการแสดงผล',
 } satisfies Record<string, string>;

@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 
 /**
  * O PILOTO DO QUARTO EM LOW POLY (05/11/2026, pedido dele: "crie uma versão piloto do quarto em low poly e use o coelho 3D
@@ -21,6 +22,11 @@ const N = 8;
 const S = 0.75;
 const ALTURA_DO_COELHO = 1.1;
 const ALTURA_DA_PAREDE = 3;
+/** Onde o coelho fica nos móveis, em fração da altura do móvel (acertado pelas fotos, 05/11/2026). */
+const DEITADO_ALTURA = 0.45;
+const DEITADO_AVANCO = 0.55;
+const ASSENTO_POLTRONA = 0.36;
+const ASSENTO_CADEIRA = 0.37;
 
 type Lado = 0 | 1 | 2 | 3;
 interface Movel {
@@ -38,36 +44,71 @@ interface Movel {
 }
 
 const ARRUMACAO: Movel[] = [
-  { id: 'cama', arquivo: 'bed_double_A', x: 0, z: 0, lado: 0, uso: 'deitar' },
-  { id: 'criado', arquivo: 'cabinet_small', x: 2, z: 0, lado: 0, cima: [{ arquivo: 'lamp_table', dx: 0, dz: 0 }], uso: 'luz' },
-  { id: 'tapete', arquivo: 'rug_rectangle_stripes_A', x: 3, z: 3, lado: 0, chao: true },
+  // a parede do fundo: a cama com a cabeceira nela, o criado-mudo, a porta no meio (livre), a cômoda
+  { id: 'cama', arquivo: 'bed_double_B', x: 0, z: 0, lado: 0, uso: 'deitar' },
+  {
+    id: 'criado',
+    arquivo: 'cabinet_small',
+    x: 2,
+    z: 0,
+    lado: 0,
+    cima: [
+      { arquivo: 'lamp_table', dx: -0.12, dz: 0 },
+      { arquivo: 'pictureframe_standing_A', dx: 0.2, dz: 0.05 },
+    ],
+    uso: 'luz',
+  },
+  { id: 'comoda', arquivo: 'cabinet_medium_decorated', x: 6, z: 0, lado: 0 },
+  // a parede da esquerda: o sofá debaixo da janela, a mesa de centro, e o computador no canto
+  { id: 'tapete', arquivo: 'rug_oval_B', x: 1, z: 2, lado: 1, chao: true },
+  { id: 'sofa', arquivo: 'couch_pillows', x: 0, z: 2, lado: 3, uso: 'sentar' },
+  { id: 'mesinha', arquivo: 'table_low', x: 2, z: 2, lado: 3, cima: [{ arquivo: 'gameconsole_handheld', dx: 0.15, dz: 0.1, giro: 0.4 }, { arquivo: 'mug_A', dx: -0.4, dz: -0.05 }] },
   {
     id: 'mesa',
-    arquivo: 'table_medium',
+    arquivo: 'desk',
     x: 0,
     z: 5,
-    lado: 1,
+    lado: 3,
     cima: [
-      { arquivo: 'monitor', dx: -0.15, dz: 0 },
-      { arquivo: 'cactus_small_A', dx: 0.28, dz: 0.3 },
+      { arquivo: 'monitor', dx: 0, dz: -0.28 },
+      { arquivo: 'keyboard', dx: -0.05, dz: 0.12 },
+      { arquivo: 'mousepad_A', dx: 0.45, dz: 0.14 },
+      { arquivo: 'mouse', dx: 0.45, dz: 0.14 },
+      { arquivo: 'lamp_desk_headphones', dx: -0.78, dz: -0.15 },
+      { arquivo: 'cup_pencils', dx: 0.82, dz: -0.25 },
     ],
   },
-  { id: 'cadeira', arquivo: 'chair_A', x: 2, z: 5, lado: 3, uso: 'sentar' },
-  { id: 'armario', arquivo: 'cabinet_medium_decorated', x: 5, z: 0, lado: 0 },
-  { id: 'poltrona', arquivo: 'armchair_pillows', x: 6, z: 5, lado: 3, uso: 'sentar' },
-  { id: 'mesinha', arquivo: 'table_low', x: 4, z: 6, lado: 0, cima: [{ arquivo: 'book_set', dx: 0, dz: 0 }] },
-  { id: 'luminaria', arquivo: 'lamp_standing', x: 7, z: 3, lado: 0, uso: 'luz' },
-  { id: 'cacto', arquivo: 'cactus_medium_A', x: 7, z: 0, lado: 0 },
+  { id: 'cadeira', arquivo: 'chair_desk_A', x: 1, z: 5, lado: 1, uso: 'sentar' },
+  // o canto da leitura, do outro lado
+  { id: 'tapete2', arquivo: 'rug_rectangle_B', x: 4, z: 4, lado: 0, chao: true },
+  { id: 'poltrona', arquivo: 'armchair_pillows', x: 6, z: 5, lado: 1, uso: 'sentar' },
+  { id: 'banquinho', arquivo: 'table_small', x: 7, z: 4, lado: 0, cima: [{ arquivo: 'book_set', dx: 0, dz: 0 }] },
+  { id: 'luminaria', arquivo: 'lamp_standing', x: 7, z: 6, lado: 0, uso: 'luz' },
+  { id: 'cacto', arquivo: 'cactus_medium_B', x: 7, z: 2, lado: 0 },
+  { id: 'cacto2', arquivo: 'cactus_small_B', x: 0, z: 7, lado: 0 },
 ];
 
-/** O que se pendura: na parede do fundo (z = 0) ou na da esquerda (x = 0), em `u` casas ao longo dela e `y` de altura. */
+/** O que se pendura: na parede do fundo (z = 0) ou na da esquerda (x = 0), em u casas ao longo dela e y de altura. */
 const NA_PAREDE: { arquivo: string; parede: 'fundo' | 'esquerda'; u: number; y: number }[] = [
-  { arquivo: 'shelf_B_large_decorated', parede: 'esquerda', u: 5.4, y: 1.55 },
-  { arquivo: 'pictureframe_large_A', parede: 'fundo', u: 1.1, y: 1.75 },
-  { arquivo: 'pictureframe_small_A', parede: 'fundo', u: 2.0, y: 1.95 },
-  { arquivo: 'pictureframe_small_B', parede: 'fundo', u: 2.05, y: 1.45 },
-  { arquivo: 'pictureframe_medium', parede: 'fundo', u: 6.3, y: 1.8 },
-  { arquivo: 'shelf_A_big', parede: 'esquerda', u: 1.4, y: 1.7 },
+  { arquivo: 'pictureframe_large_B', parede: 'fundo', u: 1.0, y: 1.85 },
+  { arquivo: 'shelf_B_small_decorated', parede: 'fundo', u: 6.9, y: 1.45 },
+  { arquivo: 'pictureframe_small_A', parede: 'fundo', u: 6.1, y: 2.0 },
+  { arquivo: 'shelf_A_big', parede: 'esquerda', u: 6.0, y: 1.95 },
+  { arquivo: 'pictureframe_medium', parede: 'esquerda', u: 7.3, y: 1.7 },
+  { arquivo: 'pictureframe_small_C', parede: 'esquerda', u: 1.1, y: 1.9 },
+];
+
+/**
+ * AS PAREDES do KayKit Restaurant Bits (CC0): peças de 4 × 4 com o rodapé verde-água, 3 por parede. A grade é a de 8 do
+ * quarto de pixel art, então cada peça fica um pouco mais estreita (8/12 na largura, 3/4 na altura).
+ */
+const PAREDES: { arquivo: string; parede: 'fundo' | 'esquerda'; i: number }[] = [
+  { arquivo: 'restaurante/wall', parede: 'fundo', i: 0 },
+  { arquivo: 'restaurante/wall_doorway', parede: 'fundo', i: 1 },
+  { arquivo: 'restaurante/wall', parede: 'fundo', i: 2 },
+  { arquivo: 'restaurante/wall', parede: 'esquerda', i: 0 },
+  { arquivo: 'restaurante/wall_window_closed_curtains_green', parede: 'esquerda', i: 1 },
+  { arquivo: 'restaurante/wall', parede: 'esquerda', i: 2 },
 ];
 
 // ---- a cena ----
@@ -101,17 +142,18 @@ new ResizeObserver(medir).observe(tela);
 medir();
 
 // as luzes
-const ceu = new THREE.HemisphereLight('#fff3e0', '#8a6a55', 1.1);
-const sol = new THREE.DirectionalLight('#ffe2b8', 3.2);
-sol.position.set(-9, 7, 3.2);
-sol.target.position.set(3, 0, 3.4);
+const ceu = new THREE.HemisphereLight('#fffaf0', '#c9a88a', 1.7);
+const sol = new THREE.DirectionalLight('#fff0d8', 2.3);
+// do alto, do lado aberto do quarto: as sombras caem para as paredes, como nas fotos do KayKit
+sol.position.set(6, 12, 9);
+sol.target.position.set(3.5, 0, 3.5);
 sol.castShadow = true;
 sol.shadow.mapSize.set(2048, 2048);
 Object.assign(sol.shadow.camera, { left: -8, right: 8, top: 8, bottom: -8, near: 1, far: 30 });
 sol.shadow.bias = -0.0006;
 sol.shadow.normalBias = 0.03;
 cena.add(ceu, sol, sol.target);
-const preenche = new THREE.DirectionalLight('#d8e4ff', 0.5);
+const preenche = new THREE.DirectionalLight('#dfe8ff', 0.7);
 preenche.position.set(10, 8, 10);
 cena.add(preenche);
 
@@ -145,57 +187,15 @@ chao.receiveShadow = true;
 chao.userData.chao = true;
 cena.add(chao);
 
-const corDaParede = new THREE.MeshStandardMaterial({ color: '#e9d2b4', roughness: 0.95 });
-const corDoLambri = new THREE.MeshStandardMaterial({ color: '#a8735a', roughness: 0.8 });
-const corDoRodape = new THREE.MeshStandardMaterial({ color: '#7a5040', roughness: 0.8 });
-function bloco(w: number, h: number, d: number, mat: THREE.Material, x: number, y: number, z: number, sombra = true) {
-  const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
-  m.position.set(x, y, z);
-  m.castShadow = sombra;
-  m.receiveShadow = true;
-  cena.add(m);
-  return m;
-}
-const E = 0.2; // espessura
-// a parede do fundo (z = 0), inteira
-bloco(N + E, ALTURA_DA_PAREDE, E, corDaParede, N / 2 - E / 2, ALTURA_DA_PAREDE / 2, -E / 2);
-bloco(N, 0.9, 0.04, corDoLambri, N / 2, 0.45, 0.02, false);
-bloco(N, 0.08, 0.06, corDoRodape, N / 2, 0.92, 0.03, false);
-// a parede da esquerda (x = 0), com o VÃO da janela: o sol entra por ele
-const J = { z0: 2.6, z1: 4.2, y0: 1.05, y1: 2.35 };
-bloco(E, ALTURA_DA_PAREDE, J.z0, corDaParede, -E / 2, ALTURA_DA_PAREDE / 2, J.z0 / 2);
-bloco(E, ALTURA_DA_PAREDE, N - J.z1, corDaParede, -E / 2, ALTURA_DA_PAREDE / 2, (J.z1 + N) / 2);
-bloco(E, J.y0, J.z1 - J.z0, corDaParede, -E / 2, J.y0 / 2, (J.z0 + J.z1) / 2);
-bloco(E, ALTURA_DA_PAREDE - J.y1, J.z1 - J.z0, corDaParede, -E / 2, (J.y1 + ALTURA_DA_PAREDE) / 2, (J.z0 + J.z1) / 2);
-bloco(0.04, 0.9, J.z0, corDoLambri, 0.02, 0.45, J.z0 / 2, false);
-bloco(0.04, 0.9, N - J.z1, corDoLambri, 0.02, 0.45, (J.z1 + N) / 2, false);
-bloco(0.04, 0.9, J.z1 - J.z0, corDoLambri, 0.02, 0.45, (J.z0 + J.z1) / 2, false);
-bloco(0.06, 0.08, N, corDoRodape, 0.03, 0.92, N / 2, false);
-// a janela: moldura, cruz, peitoril, e o vidro (o céu lá fora)
-const madeira = new THREE.MeshStandardMaterial({ color: '#f1e6d2', roughness: 0.7 });
-const meioZ = (J.z0 + J.z1) / 2;
-const meioY = (J.y0 + J.y1) / 2;
-bloco(0.16, 0.08, J.z1 - J.z0 + 0.16, madeira, 0, J.y1 + 0.04, meioZ);
-bloco(0.24, 0.07, J.z1 - J.z0 + 0.3, madeira, 0.04, J.y0 - 0.035, meioZ);
-bloco(0.16, J.y1 - J.y0, 0.08, madeira, 0, meioY, J.z0 - 0.04);
-bloco(0.16, J.y1 - J.y0, 0.08, madeira, 0, meioY, J.z1 + 0.04);
-bloco(0.06, J.y1 - J.y0, 0.05, madeira, -0.02, meioY, meioZ);
-bloco(0.06, 0.05, J.z1 - J.z0, madeira, -0.02, meioY, meioZ);
-const vidro = new THREE.Mesh(
-  new THREE.PlaneGeometry(J.z1 - J.z0, J.y1 - J.y0),
-  new THREE.MeshBasicMaterial({ color: '#bfe6ff', transparent: true, opacity: 0.25, depthWrite: false }),
-);
-vidro.rotation.y = Math.PI / 2;
-vidro.position.set(-0.03, meioY, meioZ);
-cena.add(vidro);
-// lá fora: um céu e um morro, atrás da janela
-const fora = new THREE.Mesh(new THREE.PlaneGeometry(J.z1 - J.z0 + 0.6, J.y1 - J.y0 + 0.6), new THREE.MeshBasicMaterial({ color: '#a8dcf5' }));
+// lá fora: um céu atrás da janela da esquerda
+const JANELA = { z: N / 2, y: 1.75 };
+const fora = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 1.5), new THREE.MeshBasicMaterial({ color: '#a8dcf5' }));
 fora.rotation.y = Math.PI / 2;
-fora.position.set(-0.6, meioY, meioZ);
+fora.position.set(-0.7, JANELA.y, JANELA.z);
 cena.add(fora);
 const morro = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 12), new THREE.MeshBasicMaterial({ color: '#86c06a' }));
-morro.scale.set(0.05, 0.55, 1.1);
-morro.position.set(-0.5, J.y0 - 0.1, meioZ + 0.3);
+morro.scale.set(0.05, 0.6, 1.4);
+morro.position.set(-0.6, JANELA.y - 0.9, JANELA.z + 0.4);
 cena.add(morro);
 
 // ---- os modelos ----
@@ -205,29 +205,6 @@ const modelo = (nome: string) => {
   if (!cache.has(nome)) cache.set(nome, carregador.loadAsync(`${MODELOS}${nome}${nome.endsWith('.glb') ? '' : '.gltf'}`));
   return cache.get(nome)!;
 };
-
-/** O monitor do computador, que o pacote não tem: caixas na cor dele. */
-function monitor(): THREE.Object3D {
-  const g = new THREE.Group();
-  const escuro = new THREE.MeshStandardMaterial({ color: '#3d3540', roughness: 0.6 });
-  const tela = new THREE.MeshStandardMaterial({ color: '#2a3550', emissive: '#6fb6ff', emissiveIntensity: 0.15 });
-  const pe = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.02, 0.12), escuro);
-  const haste = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.16, 0.03), escuro);
-  haste.position.set(0, 0.09, -0.03);
-  const caixa = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.3, 0.04), escuro);
-  caixa.position.set(0, 0.3, -0.02);
-  const vidro = new THREE.Mesh(new THREE.PlaneGeometry(0.42, 0.26), tela);
-  vidro.position.set(0, 0.3, 0.001);
-  vidro.userData.tela = true;
-  const teclado = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.02, 0.1), new THREE.MeshStandardMaterial({ color: '#e8e0d4' }));
-  teclado.position.set(0, 0.01, 0.17);
-  g.add(pe, haste, caixa, vidro, teclado);
-  g.traverse((o) => {
-    o.castShadow = true;
-    o.receiveShadow = true;
-  });
-  return g;
-}
 
 interface Pronto {
   m: Movel;
@@ -278,8 +255,7 @@ async function montarMovel(m: Movel): Promise<Pronto> {
   const p: Pronto = { m, raiz, giro, w, d, altura: tam.y, materiais: mats };
   for (const c2 of m.cima ?? []) {
     let peca: THREE.Object3D;
-    if (c2.arquivo === 'monitor') peca = monitor();
-    else {
+    {
       const x = copia(await modelo(c2.arquivo));
       x.o.scale.setScalar(S);
       const b = caber(x.o);
@@ -332,25 +308,50 @@ interface Coelho {
   rumo: number;
   pose: 'pe' | 'deitado' | 'sentado';
   depois: (() => void) | null;
+  mixer: THREE.AnimationMixer;
+  acoes: Map<string, THREE.AnimationAction>;
+  tocando: string;
 }
 let coelho: Coelho | null = null;
 
+/**
+ * O coelho COM O NOSSO ESQUELETO (web/public/cidades3d/coelho-animado.glb, de e2e/pixel-art/personagem/blender/meshy/glb.py):
+ * as poses do motor do quarto de pixel art, as mesmas, como animações. Andar, sentar e deitar são de verdade.
+ */
 async function montarCoelho() {
-  const g = await modelo('coelho.glb');
-  const o = g.scene.clone(true);
+  const g = await modelo('coelho-animado.glb');
+  const o = SkeletonUtils.clone(g.scene);
   const { caixa, tam } = caber(o);
-  o.scale.setScalar(ALTURA_DO_COELHO / tam.y);
-  const c = caixa.getCenter(new THREE.Vector3()).multiplyScalar(ALTURA_DO_COELHO / tam.y);
-  o.position.set(-c.x, -caixa.min.y * (ALTURA_DO_COELHO / tam.y), -c.z);
+  const k = ALTURA_DO_COELHO / tam.y;
+  o.scale.setScalar(k);
+  o.position.set(0, -caixa.min.y * k, 0);
   o.traverse((x) => {
-    if ((x as THREE.Mesh).isMesh) x.castShadow = x.receiveShadow = true;
+    const m = x as THREE.Mesh;
+    if (m.isMesh) {
+      m.castShadow = m.receiveShadow = true;
+      m.frustumCulled = false;
+    }
   });
   const corpo = new THREE.Group().add(o);
   const raiz = new THREE.Group().add(corpo);
   const casa: [number, number] = [3, 6];
   raiz.position.set(casa[0] + 0.5, 0, casa[1] + 0.5);
   cena.add(raiz);
-  coelho = { raiz, corpo, casa, caminho: [], de: raiz.position.clone(), para: raiz.position.clone(), inicio: 0, duracao: 0, arco: 0, rumo: 0, pose: 'pe', depois: null };
+  const mixer = new THREE.AnimationMixer(o);
+  const acoes = new Map(g.animations.map((a) => [a.name, mixer.clipAction(a)]));
+  coelho = { raiz, corpo, casa, caminho: [], de: raiz.position.clone(), para: raiz.position.clone(), inicio: 0, duracao: 0, arco: 0, rumo: 0, pose: 'pe', depois: null, mixer, acoes, tocando: '' };
+  tocar('parado');
+}
+/** Troca de animação com uma passagem curta (as poses de um quadro só ficam paradas nele). */
+function tocar(nome: string) {
+  const c = coelho!;
+  if (c.tocando === nome) return;
+  const nova = c.acoes.get(nome);
+  if (!nova) return;
+  const velha = c.acoes.get(c.tocando);
+  nova.reset().play();
+  if (velha) velha.crossFadeTo(nova, 0.25, false);
+  c.tocando = nome;
 }
 
 /** As casas ocupadas (o tapete não conta). */
@@ -422,10 +423,10 @@ function irPara(alvo: [number, number], depois: (() => void) | null) {
   const cheias = ocupadas();
   if (c.pose !== 'pe') {
     c.pose = 'pe';
-    c.corpo.rotation.set(0, 0, 0);
     const sai = livreMaisPerto(c.raiz.position.x, c.raiz.position.z, cheias)!;
     c.casa = sai;
-    pular(new THREE.Vector3(sai[0] + 0.5, 0, sai[1] + 0.5), 420, 0.5);
+    pular(new THREE.Vector3(sai[0] + 0.5, 0, sai[1] + 0.5), 420, 0.35);
+    tocar('parado');
   }
   const r = caminho(c.casa, alvo, cheias);
   c.caminho = r ?? [];
@@ -458,17 +459,20 @@ function usar(p: Pronto) {
     const rumo = -p.m.lado * (Math.PI / 2);
     if (p.m.uso === 'deitar') {
       // em cima do colchão, de barriga para cima, a cabeça no travesseiro (a cabeceira é o fundo do móvel)
-      const alto = p.altura * 0.62;
-      const ponto = new THREE.Vector3(cx, alto, cz).add(new THREE.Vector3(frente[0], 0, frente[1]).multiplyScalar(0.42));
-      pular(ponto, 520, 0.6);
+      const ponto = new THREE.Vector3(cx, p.altura * DEITADO_ALTURA, cz).add(new THREE.Vector3(frente[0], 0, frente[1]).multiplyScalar(DEITADO_AVANCO));
+      pular(ponto, 520, 0.45);
+      tocar('dormindo');
       c.pose = 'deitado';
       // de costas: o pé para o lado da frente da cama, a cabeça cai para a cabeceira
       c.rumo = rumo;
       situacao('Deitou.');
     } else {
-      const assento = p.m.arquivo.startsWith('armchair') ? 0.33 : 0.4;
-      const ponto = new THREE.Vector3(cx, assento * S * 1.55, cz).add(new THREE.Vector3(frente[0], 0, frente[1]).multiplyScalar(0.05));
-      pular(ponto, 420, 0.4);
+      // a pose pelo móvel: afundado na poltrona, as pernas penduradas no sofá, as mãos no teclado na cadeira da mesa
+      const poltrona = p.m.arquivo.startsWith('armchair') || p.m.arquivo.startsWith('couch');
+      const pose = p.m.arquivo.startsWith('armchair') ? 'poltrona' : p.m.arquivo.startsWith('couch') ? 'sentado-sofa' : p.m.arquivo.startsWith('chair_desk') ? 'computador' : 'sentado';
+      const ponto = new THREE.Vector3(cx, p.altura * (poltrona ? ASSENTO_POLTRONA : ASSENTO_CADEIRA), cz).add(new THREE.Vector3(frente[0], 0, frente[1]).multiplyScalar(poltrona ? 0.08 : 0.02));
+      pular(ponto, 420, 0.3);
+      tocar(pose);
       c.pose = 'sentado';
       c.rumo = rumo;
       situacao('Sentou.');
@@ -611,7 +615,6 @@ let medias = 0;
 let quadros = 0;
 function quadro() {
   relogio.update();
-  const t = relogio.getElapsed();
   const agora = performance.now();
   const c = coelho;
   if (c) {
@@ -619,28 +622,22 @@ function quadro() {
     if (f >= 1 && c.caminho.length) {
       const [x, z] = c.caminho.shift()!;
       c.casa = [x, z];
-      pular(new THREE.Vector3(x + 0.5, 0, z + 0.5), 230, 0.16);
+      pular(new THREE.Vector3(x + 0.5, 0, z + 0.5), 360, 0);
+      tocar('andando');
     } else if (f >= 1 && c.depois) {
       const d = c.depois;
       c.depois = null;
       d();
-    }
+    } else if (f >= 1 && c.pose === 'pe' && c.tocando === 'andando') tocar('parado');
     const g = c.duracao ? Math.min(1, (agora - c.inicio) / c.duracao) : 1;
-    const e = g * g * (3 - 2 * g);
+    // andando é em linha reta e com velocidade igual; o pulo (subir na cama, na poltrona) amacia
+    const e = c.arco > 0 ? g * g * (3 - 2 * g) : g;
     c.raiz.position.lerpVectors(c.de, c.para, e);
-    const alt = g < 1 ? Math.sin(Math.PI * g) * c.arco : 0;
-    c.raiz.position.y += alt;
-    const pouso = g >= 1 ? Math.max(0, 1 - (agora - c.inicio - c.duracao) / 150) : 0;
-    const respira = Math.sin(t * 2.2) * 0.015;
-    const estica = g < 1 && c.arco > 0 ? 0.1 * Math.sin(Math.PI * g) : -0.14 * pouso + respira;
-    c.corpo.scale.set(1 - estica * 0.5, 1 + estica, 1 - estica * 0.5);
+    c.raiz.position.y += g < 1 ? Math.sin(Math.PI * g) * c.arco : 0;
     let delta = c.rumo - c.corpo.rotation.y;
     delta = Math.atan2(Math.sin(delta), Math.cos(delta));
     c.corpo.rotation.y += delta * 0.25;
-    // deitado: o corpo inteiro de costas, a cabeça para o fundo do móvel
-    const quer = c.pose === 'deitado' && g > 0.6 ? -Math.PI / 2 : c.pose === 'sentado' && g > 0.6 ? -0.12 : 0;
-    c.corpo.rotation.x += (quer - c.corpo.rotation.x) * 0.2;
-    c.corpo.rotation.order = 'YXZ';
+    c.mixer.update(relogio.getDelta());
   }
   if (!document.hidden) renderer.render(cena, camera);
   const ms = performance.now() - agora;
@@ -656,6 +653,27 @@ function quadro() {
 (async () => {
   situacao('Carregando…');
   for (const m of ARRUMACAO) moveis.push(await montarMovel(m));
+  for (const q of PAREDES) {
+    const { o } = copia(await modelo(q.arquivo));
+    // um tico mais largas: as pontas arredondadas se sobrepõem e a emenda some
+    o.scale.set(S * (8 / 9) * 1.06, S, S);
+    const g = new THREE.Group().add(o);
+    const meio = (q.i + 0.5) * (N / 3);
+    // a face de dentro rente à grade: a peça tem 0,5 de espessura (0,375 aqui), centrada
+    if (q.parede === 'fundo') g.position.set(meio, 0, -0.19);
+    else {
+      g.rotation.y = Math.PI / 2;
+      g.position.set(-0.19, 0, meio);
+    }
+    cena.add(g);
+  }
+  // a porta, fechada, no vão da parede do fundo (a dobradiça é a ponta x = 0 da peça)
+  {
+    const { o } = copia(await modelo('restaurante/door_A'));
+    o.scale.set(S * (8 / 9), S, S);
+    o.position.set(N / 2 - 0.71, 0, -0.17);
+    cena.add(o);
+  }
   for (const q of NA_PAREDE) {
     const { o } = copia(await modelo(q.arquivo));
     o.scale.setScalar(S);

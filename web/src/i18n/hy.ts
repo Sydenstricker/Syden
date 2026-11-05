@@ -2747,4 +2747,5 @@ export default {
   'Escolha a ponta.': 'Ընտրիր ծայրը։',
   'Essa pedra não encaixa nessa ponta.': 'Այս քարը չի համապատասխանում այս ծայրին։',
   'Quantos adversários?': 'Քանի՞ մրցակից։',
+  'Estilo visual': 'Տեսողական ոճ',
 } satisfies Record<string, string>;

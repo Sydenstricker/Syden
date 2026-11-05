@@ -2728,4 +2728,5 @@ export default {
   'Escolha a ponta.': 'Избери крај.',
   'Essa pedra não encaixa nessa ponta.': 'Таа плочка не одговара на тој крај.',
   'Quantos adversários?': 'Колку противници?',
+  'Estilo visual': 'Визуелен стил',
 } satisfies Record<string, string>;

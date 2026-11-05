@@ -2698,4 +2698,5 @@ export default {
   'Escolha a ponta.': 'Fiixee filadhu.',
   'Essa pedra não encaixa nessa ponta.': 'Dhagaan sun fiixee sana irratti wal hin simu.',
   'Quantos adversários?': 'Morkattoota meeqa?',
+  'Estilo visual': "Akkaataa mul'ataa",
 } satisfies Record<string, string>;

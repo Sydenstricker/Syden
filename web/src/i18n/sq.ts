@@ -2720,4 +2720,5 @@ export default {
   'Escolha a ponta.': 'Zgjidh skajin.',
   'Essa pedra não encaixa nessa ponta.': 'Ky gur nuk përshtatet në këtë skaj.',
   'Quantos adversários?': 'Sa kundërshtarë?',
+  'Estilo visual': 'Stili vizual',
 } satisfies Record<string, string>;

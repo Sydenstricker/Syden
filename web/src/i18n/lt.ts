@@ -2730,4 +2730,5 @@ export default {
   'Escolha a ponta.': 'Pasirink galą.',
   'Essa pedra não encaixa nessa ponta.': 'Šis kauliukas netinka prie šio galo.',
   'Quantos adversários?': 'Kiek varžovų?',
+  'Estilo visual': 'Vizualinis stilius',
 } satisfies Record<string, string>;

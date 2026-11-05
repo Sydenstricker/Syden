@@ -2639,4 +2639,5 @@ export default {
   'Escolha a ponta.': '端を選ぼう。',
   'Essa pedra não encaixa nessa ponta.': 'その牌はその端につながりません。',
   'Quantos adversários?': '対戦相手は何人？',
+  'Estilo visual': 'ビジュアルスタイル',
 } satisfies Record<string, string>;

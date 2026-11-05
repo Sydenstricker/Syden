@@ -2732,4 +2732,5 @@ export default {
   'Escolha a ponta.': 'Ұшты таңдаңыз.',
   'Essa pedra não encaixa nessa ponta.': 'Бұл тас бұл ұшқа сәйкес келмейді.',
   'Quantos adversários?': 'Қанша қарсылас?',
+  'Estilo visual': 'Көрнекі стиль',
 } satisfies Record<string, string>;

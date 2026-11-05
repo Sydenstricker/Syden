@@ -2640,4 +2640,5 @@ export default {
   'Escolha a ponta.': 'చివరను ఎంచుకో.',
   'Essa pedra não encaixa nessa ponta.': 'ఈ రాయి ఈ చివరకు సరిపోదు.',
   'Quantos adversários?': 'ఎంతమంది ప్రత్యర్థులు?',
+  'Estilo visual': 'దృశ్య శైలి',
 } satisfies Record<string, string>;

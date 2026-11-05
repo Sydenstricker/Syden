@@ -2669,4 +2669,5 @@ export default {
   'Escolha a ponta.': 'Hitamo impera.',
   'Essa pedra não encaixa nessa ponta.': 'Iryo buye ntirikwira kuri iyo mpera.',
   'Quantos adversários?': 'Abo muhanganye bangahe?',
+  'Estilo visual': 'Imiterere igaragara',
 } satisfies Record<string, string>;

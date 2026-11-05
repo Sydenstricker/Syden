@@ -2666,4 +2666,5 @@ export default {
   'Escolha a ponta.': 'Họrọ isi.',
   'Essa pedra não encaixa nessa ponta.': 'Nkume ahụ adabaghị n\'isi ahụ.',
   'Quantos adversários?': 'Ndị mmegide ole?',
+  'Estilo visual': 'Ụdị ihe ngosi',
 } satisfies Record<string, string>;

@@ -2724,4 +2724,5 @@ export default {
   'Escolha a ponta.': 'Tria l\'extrem.',
   'Essa pedra não encaixa nessa ponta.': 'Aquesta fitxa no encaixa en aquest extrem.',
   'Quantos adversários?': 'Quants rivals?',
+  'Estilo visual': 'Estil visual',
 } satisfies Record<string, string>;

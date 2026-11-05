@@ -2746,4 +2746,5 @@ export default {
   'Escolha a ponta.': 'აირჩიე ბოლო.',
   'Essa pedra não encaixa nessa ponta.': 'ეს ქვა ამ ბოლოს არ ერგება.',
   'Quantos adversários?': 'რამდენი მეტოქე?',
+  'Estilo visual': 'ვიზუალური სტილი',
 } satisfies Record<string, string>;

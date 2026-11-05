@@ -2742,4 +2742,5 @@ export default {
   'Escolha a ponta.': 'Үзүүрээ сонго.',
   'Essa pedra não encaixa nessa ponta.': 'Энэ чулуу энэ үзүүрт таарахгүй.',
   'Quantos adversários?': 'Хэдэн өрсөлдөгч?',
+  'Estilo visual': 'Харагдах загвар',
 } satisfies Record<string, string>;

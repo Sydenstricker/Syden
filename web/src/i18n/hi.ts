@@ -2657,4 +2657,5 @@ export default {
   'Escolha a ponta.': 'सिरा चुनो।',
   'Essa pedra não encaixa nessa ponta.': 'यह गोटी इस सिरे पर नहीं लगती।',
   'Quantos adversários?': 'कितने प्रतिद्वंद्वी?',
+  'Estilo visual': 'दृश्य शैली',
 } satisfies Record<string, string>;

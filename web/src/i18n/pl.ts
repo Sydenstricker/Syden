@@ -2723,4 +2723,5 @@ export default {
   'Escolha a ponta.': 'Wybierz koniec.',
   'Essa pedra não encaixa nessa ponta.': 'Ta kostka nie pasuje do tego końca.',
   'Quantos adversários?': 'Ilu przeciwników?',
+  'Estilo visual': 'Styl wizualny',
 } satisfies Record<string, string>;

@@ -2697,4 +2697,5 @@ export default {
   'Escolha a ponta.': 'အစွန်းကို ရွေးပါ။',
   'Essa pedra não encaixa nessa ponta.': 'ဤတုံးသည် ဤအစွန်းတွင် မကိုက်ပါ။',
   'Quantos adversários?': 'ပြိုင်ဘက် ဘယ်နှယောက်လဲ?',
+  'Estilo visual': 'မြင်ကွင်းပုံစံ',
 } satisfies Record<string, string>;

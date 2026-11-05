@@ -2655,4 +2655,5 @@ export default {
   'Escolha a ponta.': 'প্রান্ত বেছে নাও।',
   'Essa pedra não encaixa nessa ponta.': 'এই ঘুঁটি এই প্রান্তে মেলে না।',
   'Quantos adversários?': 'কতজন প্রতিপক্ষ?',
+  'Estilo visual': 'দৃশ্যমান শৈলী',
 } satisfies Record<string, string>;

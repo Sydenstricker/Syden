@@ -2646,4 +2646,5 @@ export default {
   'Escolha a ponta.': '끝을 고르세요.',
   'Essa pedra não encaixa nessa ponta.': '그 패는 그 끝에 맞지 않아요.',
   'Quantos adversários?': '상대는 몇 명?',
+  'Estilo visual': '비주얼 스타일',
 } satisfies Record<string, string>;

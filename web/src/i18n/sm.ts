@@ -2662,4 +2662,5 @@ export default {
   'Escolha a ponta.': 'Filifili le pito.',
   'Essa pedra não encaixa nessa ponta.': 'E lē fetaui lena maʻa i lena pito.',
   'Quantos adversários?': 'E toʻafia ni fili?',
+  'Estilo visual': 'Faiga o foliga vaaia',
 } satisfies Record<string, string>;

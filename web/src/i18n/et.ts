@@ -2725,4 +2725,5 @@ export default {
   'Escolha a ponta.': 'Vali ots.',
   'Essa pedra não encaixa nessa ponta.': 'See kivi ei sobi sellesse otsa.',
   'Quantos adversários?': 'Mitu vastast?',
+  'Estilo visual': 'Visuaalne stiil',
 } satisfies Record<string, string>;

@@ -2728,4 +2728,5 @@ export default {
   'Escolha a ponta.': 'Velg en ende.',
   'Essa pedra não encaixa nessa ponta.': 'Den brikken passer ikke i den enden.',
   'Quantos adversários?': 'Hvor mange motstandere?',
+  'Estilo visual': 'Visuell stil',
 } satisfies Record<string, string>;

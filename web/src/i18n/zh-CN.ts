@@ -2645,4 +2645,5 @@ export default {
   'Escolha a ponta.': '选择一端。',
   'Essa pedra não encaixa nessa ponta.': '这张牌接不上这一端。',
   'Quantos adversários?': '几个对手？',
+  'Estilo visual': '视觉风格',
 } satisfies Record<string, string>;

@@ -2660,4 +2660,5 @@ export default {
   'Escolha a ponta.': 'Ku zaɓi gefe.',
   'Essa pedra não encaixa nessa ponta.': 'Wannan dutsen bai dace da wannan gefen ba.',
   'Quantos adversários?': 'Abokan hamayya nawa?',
+  'Estilo visual': 'Salon gani',
 } satisfies Record<string, string>;

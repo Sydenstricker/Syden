@@ -2728,4 +2728,5 @@ export default {
   'Escolha a ponta.': 'Mifidiana tendrony.',
   'Essa pedra não encaixa nessa ponta.': 'Tsy mifanaraka amin\'io tendrony io io vato io.',
   'Quantos adversários?': 'Mpifanandrina firy?',
+  'Estilo visual': 'Endrika hita maso',
 } satisfies Record<string, string>;

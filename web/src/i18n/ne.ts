@@ -2730,4 +2730,5 @@ export default {
   'Escolha a ponta.': 'छेउ छान्नुहोस्।',
   'Essa pedra não encaixa nessa ponta.': 'यो गोटी यो छेउमा मिल्दैन।',
   'Quantos adversários?': 'कति प्रतिद्वन्द्वी?',
+  'Estilo visual': 'दृश्य शैली',
 } satisfies Record<string, string>;

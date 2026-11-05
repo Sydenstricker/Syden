@@ -2673,4 +2673,5 @@ export default {
   'Escolha a ponta.': 'Yan ìpẹ̀kun.',
   'Essa pedra não encaixa nessa ponta.': 'Òkúta yẹn kò bá ìpẹ̀kun yẹn mu.',
   'Quantos adversários?': 'Alátakò mélòó?',
+  'Estilo visual': 'Àṣà ìrísí',
 } satisfies Record<string, string>;
