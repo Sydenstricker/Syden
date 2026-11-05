@@ -1,0 +1,219 @@
+/* O ROLÊ DO COELHO (JogoSkate.tsx): a pista em 3D e o painel por cima, como nos jogos de skate de fliperama. */
+
+.skate {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skate-moldura {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  max-height: 70vh;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #bfe0ee;
+}
+
+.skate-caixa {
+  position: absolute;
+  inset: 0;
+}
+.skate-caixa.escondida {
+  visibility: hidden;
+}
+.skate-tela {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.skate-painel {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  color: #fff;
+  font-weight: 800;
+  text-shadow:
+    0 2px 0 rgba(20, 28, 40, 0.55),
+    0 0 6px rgba(20, 28, 40, 0.35);
+  font-variant-numeric: tabular-nums;
+}
+
+.skate-pontos {
+  position: absolute;
+  top: 10px;
+  left: 14px;
+  font-size: calc(26px * var(--escala-do-texto, 1));
+}
+
+.skate-relogio {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  font-size: calc(22px * var(--escala-do-texto, 1));
+}
+.skate-relogio.acabando {
+  color: #ffd166;
+}
+
+.skate-combo {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 18%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 0 12px;
+  text-align: center;
+}
+.skate-manobras {
+  font-size: calc(17px * var(--escala-do-texto, 1));
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.skate-valor {
+  font-size: calc(22px * var(--escala-do-texto, 1));
+  color: #ffe08a;
+}
+.skate-valor small {
+  font-size: 0.75em;
+  opacity: 0.9;
+}
+
+.skate-placas {
+  position: absolute;
+  top: 26%;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.skate-placa {
+  font-size: calc(30px * var(--escala-do-texto, 1));
+  color: #9ef0a8;
+  animation: skate-placa 1.8s ease-out both;
+}
+.skate-placa.queda {
+  color: #ff9b8a;
+}
+.skate-placa s {
+  font-size: 0.6em;
+  opacity: 0.85;
+}
+@keyframes skate-placa {
+  0% {
+    transform: translateY(8px) scale(0.85);
+    opacity: 0;
+  }
+  12% {
+    transform: none;
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-14px);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skate-placa {
+    animation: none;
+  }
+}
+
+/* o equilíbrio do grind (deitado) e do manual (de pé): a bolinha anda de um lado ao outro, e passar da ponta é cair */
+.skate-equilibrio {
+  --equilibrio: 0;
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  width: 160px;
+  height: 10px;
+  margin-left: -80px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #ff8a7a, #ffd166 25%, #9ef0a8 42%, #9ef0a8 58%, #ffd166 75%, #ff8a7a);
+  box-shadow: 0 0 0 2px rgba(20, 28, 40, 0.45);
+}
+.skate-equilibrio span {
+  position: absolute;
+  top: -4px;
+  left: calc(50% + var(--equilibrio) * 50% - 4px);
+  width: 8px;
+  height: 18px;
+  border-radius: 3px;
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(20, 28, 40, 0.6);
+}
+.skate-equilibrio[data-eixo='vertical'] {
+  left: auto;
+  right: 18%;
+  top: 30%;
+  width: 10px;
+  height: 120px;
+  margin-left: 0;
+  background: linear-gradient(180deg, #ff8a7a, #ffd166 25%, #9ef0a8 42%, #9ef0a8 58%, #ffd166 75%, #ff8a7a);
+}
+.skate-equilibrio[data-eixo='vertical'] span {
+  top: calc(50% + var(--equilibrio) * 50% - 4px);
+  left: -4px;
+  width: 18px;
+  height: 8px;
+}
+
+.skate-contagem {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(56px * var(--escala-do-texto, 1));
+  color: #ffe08a;
+}
+
+.skate-fim {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.skate-fim-pontos {
+  margin: 0;
+  font-size: calc(24px * var(--escala-do-texto, 1));
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.skate-recorde {
+  color: var(--accent);
+  font-weight: 700;
+}
+.skate-placar {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  min-width: min(320px, 100%);
+}
+.skate-placar li {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.skate-placar li.eu {
+  background: var(--bg-soft, rgba(127, 127, 127, 0.12));
+}
+.skate-placar .minijogo-nome {
+  flex: 1;
+}
+.skate-placar-pos {
+  min-width: 1.5em;
+  font-variant-numeric: tabular-nums;
+}

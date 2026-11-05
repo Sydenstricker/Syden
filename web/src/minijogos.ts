@@ -507,7 +507,7 @@ export interface EstadoBriga {
   partidaId: string;
 }
 
-export type IdDoJogo = 'corrida' | 'festa' | 'tabuleiro' | 'cidades' | 'golfe' | 'caca' | 'plataforma' | 'blocos' | 'briga' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'damas' | 'naval' | 'domino' | 'truco' | 'xadrez' | 'partida-de-xadrez' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
+export type IdDoJogo = 'corrida' | 'festa' | 'tabuleiro' | 'cidades' | 'golfe' | 'caca' | 'plataforma' | 'blocos' | 'briga' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'damas' | 'naval' | 'domino' | 'truco' | 'xadrez' | 'partida-de-xadrez' | 'cozinha' | 'skate' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
 
 /**
  * As duas abas da estante (pedido dele, 14/10/2026). SOLO: a partida é só de quem joga, começa sem convite, não ocupa
@@ -646,6 +646,21 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
     id: 'partida-de-xadrez',
     nome: chave('Xadrez'),
     dica: chave('Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.'),
+    abas: ['solo', 'coletivo'],
+  },
+  {
+    // O skate (JogoSkate.tsx, server/src/minijogo-skate.ts): dois minutos de manobras e combos. Só no Solo por enquanto: a sala
+    // existe no servidor, mas não foi testada na tela.
+    id: 'skate',
+    nome: chave('Rolê do coelho'),
+    dica: chave('Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.'),
+    abas: ['solo'],
+  },
+  {
+    // A cozinha (JogoCozinha.tsx, server/src/minijogo-cozinha.ts): cada um na própria cozinha, os mesmos pedidos para todos.
+    id: 'cozinha',
+    nome: chave('Cozinha da toca'),
+    dica: chave('Pegue os ingredientes nos caixotes, pique na tábua, cozinhe no fogão e no forno sem queimar, monte no prato e entregue na janela. Todos recebem os mesmos pedidos: ganha quem entregar mais pratos em 3 minutos.'),
     abas: ['solo', 'coletivo'],
   },
   {

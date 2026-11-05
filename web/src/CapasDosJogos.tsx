@@ -23,6 +23,10 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
       return <CapaGolfe />;
     case 'caca':
       return <CapaCaca />;
+    case 'cozinha':
+      return <CapaCozinha />;
+    case 'skate':
+      return <CapaSkate />;
     case 'tabuleiro':
       return <CapaTabuleiro />;
     case 'cidades':
@@ -940,6 +944,51 @@ function CapaCidades() {
 /**
  * A Caça às pragas da horta: o céu sobre a cerca e a horta, um corvo de asas abertas no meio da mira, e um gafanhoto pulando.
  */
+/** O rolê do coelho: o skate no ar sobre a rampa, as rodinhas para cima, e o rastro do pulo. */
+function CapaSkate() {
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#bfe4f2" />
+      <rect y="92" width="160" height="28" fill="#8a8f9e" />
+      <path d="M0 92 L0 52 Q0 92 52 92 Z" fill="#6f7385" />
+      <rect x="0" y="48" width="6" height="44" fill="#e8743a" />
+      <path d="M38 70 Q70 18 112 40" fill="none" stroke="#ffffff" strokeWidth="3" strokeDasharray="5 5" strokeLinecap="round" />
+      <g transform="rotate(-24 112 44)">
+        <rect x="88" y="40" width="48" height="7" rx="3.5" fill="#d9774f" />
+        <rect x="92" y="47" width="40" height="2" fill="#7a4a30" />
+        <circle cx="96" cy="52" r="3.5" fill="#f4ecdc" />
+        <circle cx="128" cy="52" r="3.5" fill="#f4ecdc" />
+      </g>
+      <rect x="60" y="96" width="70" height="4" rx="2" fill="#3a6fc4" />
+      <rect x="66" y="100" width="3" height="8" fill="#3a6fc4" />
+      <rect x="121" y="100" width="3" height="8" fill="#3a6fc4" />
+    </svg>
+  );
+}
+
+/** A cozinha da toca: o fogão com a frigideira e o hambúrguer, a chama embaixo e o vapor subindo. */
+function CapaCozinha() {
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#f3e3c4" />
+      <rect y="78" width="160" height="42" fill="#2fae8f" />
+      <rect y="76" width="160" height="6" fill="#d9774f" />
+      <rect x="40" y="58" width="80" height="20" rx="3" fill="#b9b4ae" />
+      <rect x="46" y="62" width="10" height="4" rx="1" fill="#e3453a" />
+      <ellipse cx="80" cy="56" rx="30" ry="6" fill="#3d3540" />
+      <rect x="108" y="52" width="26" height="5" rx="2" fill="#3d3540" />
+      <ellipse cx="80" cy="50" rx="18" ry="5" fill="#c98a4a" />
+      <ellipse cx="80" cy="47" rx="18" ry="5" fill="#8a4a2a" />
+      <ellipse cx="80" cy="43" rx="18" ry="6" fill="#e9a94a" />
+      <circle cx="74" cy="41" r="1.2" fill="#fff3d0" />
+      <circle cx="84" cy="40" r="1.2" fill="#fff3d0" />
+      {[66, 80, 94].map((x, k) => (
+        <path key={x} d={`M${x} 30 q -5 -7 0 -14 q 5 -7 0 -14`} fill="none" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" opacity={0.75 - k * 0.12} />
+      ))}
+    </svg>
+  );
+}
+
 function CapaCaca() {
   return (
     <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">

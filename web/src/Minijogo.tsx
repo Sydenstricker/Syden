@@ -17,6 +17,8 @@ import { JogoTruco } from './JogoTruco';
 import { JogoFesta } from './JogoFesta';
 import { JogoGolfe } from './JogoGolfe';
 import { JogoCaca } from './JogoCaca';
+import { JogoCozinha, type EstadoCozinha } from './JogoCozinha';
+import { JogoSkate, type EstadoSkate } from './JogoSkate';
 import { JogoLobisomem } from './JogoLobisomem';
 import { JogoPalavra } from './JogoPalavra';
 import { EscolhaDaFase, JogoPlataforma, JogoPlataformaNaSala, type EstadoPlataforma } from './JogoPlataforma';
@@ -446,6 +448,12 @@ export function PainelDoMinijogo({
           socket={socket}
           channelId={channelId}
         />
+      )}
+      {jogoNaTela?.jogo === 'skate' && (
+        <JogoSkate key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')} estado={jogoNaTela as unknown as EstadoSkate & Partida} eu={eu} jogador={souJogador(partida)} agir={agir} />
+      )}
+      {jogoNaTela?.jogo === 'cozinha' && (
+        <JogoCozinha key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')} estado={jogoNaTela as unknown as EstadoCozinha & Partida} eu={eu} jogador={souJogador(partida)} agir={agir} />
       )}
       {jogoNaTela?.jogo === 'caca' && (
         <JogoCaca

@@ -1,0 +1,146 @@
+/* A Cozinha da toca (JogoCozinha.tsx): a cozinha em 3D, a fila de pedidos por cima, no canto, e o relógio em cima. */
+
+.cozinha {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  width: 100%;
+}
+
+.cozinha-topo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.cozinha-topo .minijogo-tempo {
+  flex: 1;
+}
+
+.cozinha-pratos {
+  color: var(--text-strong);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.cozinha-palco {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: #f3e2c7;
+}
+
+.cozinha-palco > .minijogo-situacao {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  text-align: center;
+}
+
+.cozinha-3d {
+  position: absolute;
+  inset: 0;
+}
+
+.cozinha-3d.carregando {
+  visibility: hidden;
+}
+
+.cozinha-3d-tela {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+/* A fila: um cartão por pedido, o desenho do prato e, embaixo, de quais caixotes tirar. O primeiro, maior. */
+.cozinha-fila {
+  display: flex;
+  min-height: clamp(66px, 12vw, 96px);
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  pointer-events: none;
+}
+
+.cozinha-fila li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 6px;
+  border-radius: 10px;
+  background: #fffaf0;
+  box-shadow: 0 2px 6px rgb(60 40 20 / 0.25);
+}
+
+.cozinha-fila li.primeiro {
+  outline: 3px solid var(--accent);
+}
+
+.cozinha-fila .cozinha-prato {
+  width: clamp(40px, 9vw, 72px);
+  height: clamp(40px, 9vw, 72px);
+  font-size: clamp(28px, 6vw, 48px);
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cozinha-ingredientes {
+  display: flex;
+  gap: 1px;
+  min-height: 18px;
+}
+
+.cozinha-ingredientes img {
+  width: clamp(16px, 3vw, 24px);
+  height: clamp(16px, 3vw, 24px);
+}
+
+.cozinha-fila.recusou {
+  animation: cozinha-balanca 0.4s ease;
+}
+
+@keyframes cozinha-balanca {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-6px);
+  }
+  75% {
+    transform: translateX(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cozinha-fila.recusou {
+    animation: none;
+    outline: 2px solid #e0533c;
+  }
+}
+
+.cozinha-contagem {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(56px * var(--escala-do-texto, 1));
+  font-weight: 700;
+  color: var(--accent);
+  text-shadow: 0 2px 8px rgb(0 0 0 / 0.35);
+  pointer-events: none;
+}

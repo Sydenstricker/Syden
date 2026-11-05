@@ -38,6 +38,8 @@ SFX/
 !web/public/avatares/*.png
 # As figuras do "Qual é o tamanho?" (web/scripts/figuras-do-tamanho.mjs).
 !web/public/tamanho/*.png
+# A textura da Cozinha da toca (os modelos da KayKit em web/public/cozinha/, que a pedem pelo nome).
+!web/public/cozinha/*.png
 !web/site/lobby/*.png
 !web/site/buy-me-a-coffee.png
 !web/site/capturas/compartilhar.png

@@ -144,6 +144,7 @@ export const ERROS_TRADUZIDOS = [
   chave('Escreva uma palavra de 5 letras.'),
   chave('Essa palavra não está na lista.'),
   chave('Esta rodada já acabou.'),
+  chave('Este prato não é o pedido.'),
   chave('O Lobisomem precisa de pelo menos 4 pessoas na sala.'),
   chave('Esta partida começou sem você. Espere a próxima.'),
   chave('Quem saiu do jogo só assiste.'),

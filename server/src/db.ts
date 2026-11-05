@@ -7248,3 +7248,31 @@ export function guardarRecordeDaCaca(userId: number, pontos: number): boolean {
   ).run(userId, pontos);
   return true;
 }
+
+// ---------------------------------------------------------------------------------------------------
+// O ROLÊ DO COELHO (o skate, 05/11/2026): o recorde de cada pessoa no Solo (a melhor sessão de 2 minutos).
+// Só o melhor: uma sessão pior não substitui. É da pessoa, e só ela o vê (minijogo-skate.ts).
+// ---------------------------------------------------------------------------------------------------
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS skate_recordes (
+    user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    pontos  INTEGER NOT NULL,
+    em      TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+  );
+`);
+
+export function recordeDoSkate(userId: number): number | null {
+  return (db.prepare('SELECT pontos FROM skate_recordes WHERE user_id = ?').get(userId) as { pontos: number } | undefined)?.pontos ?? null;
+}
+
+/** Guarda se for o melhor da pessoa. Devolve true se virou recorde. */
+export function guardarRecordeDoSkate(userId: number, pontos: number): boolean {
+  const atual = recordeDoSkate(userId);
+  if (atual !== null && atual >= pontos) return false;
+  db.prepare(
+    `INSERT INTO skate_recordes (user_id, pontos) VALUES (?, ?)
+     ON CONFLICT(user_id) DO UPDATE SET pontos = excluded.pontos, em = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')`,
+  ).run(userId, pontos);
+  return true;
+}
