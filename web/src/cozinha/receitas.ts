@@ -6,9 +6,26 @@
  * Um ITEM é um ingrediente num estado: cru (como sai do caixote), picado (passou pela tábua; a massa, aberta), cozido (no
  * fogão ou no forno) ou queimado (passou do ponto). A massa aberta leva as coberturas em `com`, e a casquinha, o sabor.
  * O prato é a lista dos itens em cima dele; a ordem não importa.
+ *
+ * MAIS PRATOS (05/11/2026, com o Food Kit da Kenney, CC0): a salsicha, o ovo, o arroz e o peixe vão ao fogão como a carne
+ * (o peixe também passa pela tábua, cru, para o sushi). Cachorro-quente, pão com ovo, x-egg, sushi, peixe com arroz e o
+ * prato feito, todos nas mesmas estações.
  */
 
-export type Ingrediente = 'pao' | 'carne' | 'queijo' | 'alface' | 'tomate' | 'massa' | 'calabresa' | 'cogumelo' | 'casquinha';
+export type Ingrediente =
+  | 'pao'
+  | 'carne'
+  | 'queijo'
+  | 'alface'
+  | 'tomate'
+  | 'massa'
+  | 'calabresa'
+  | 'cogumelo'
+  | 'casquinha'
+  | 'salsicha'
+  | 'ovo'
+  | 'arroz'
+  | 'peixe';
 export type Sabor = 'chocolate' | 'morango' | 'baunilha';
 export type Estado = 'cru' | 'picado' | 'cozido' | 'queimado';
 
@@ -19,18 +36,38 @@ export interface Item {
   com?: string[];
 }
 
-export const INGREDIENTES: readonly Ingrediente[] = ['pao', 'carne', 'queijo', 'alface', 'tomate', 'massa', 'calabresa', 'cogumelo', 'casquinha'];
+export const INGREDIENTES: readonly Ingrediente[] = [
+  'pao',
+  'carne',
+  'queijo',
+  'alface',
+  'tomate',
+  'massa',
+  'calabresa',
+  'cogumelo',
+  'casquinha',
+  'salsicha',
+  'ovo',
+  'arroz',
+  'peixe',
+];
 export const SABORES: readonly Sabor[] = ['chocolate', 'morango', 'baunilha'];
 
 /** O que passa pela tábua (a massa, para abrir). */
-export const PICAVEIS: readonly Ingrediente[] = ['queijo', 'alface', 'tomate', 'calabresa', 'cogumelo', 'massa'];
+export const PICAVEIS: readonly Ingrediente[] = ['queijo', 'alface', 'tomate', 'calabresa', 'cogumelo', 'massa', 'peixe'];
+/** O que vai ao fogão, cru (ou já no ponto, para continuar), e sai cozido. */
+export const DO_FOGAO: readonly Ingrediente[] = ['carne', 'salsicha', 'ovo', 'arroz', 'peixe'];
 /** O que vai em cima da massa aberta, já picado. */
 export const COBERTURAS: readonly Ingrediente[] = ['tomate', 'queijo', 'calabresa', 'cogumelo'];
 /** Quanto tempo de tábua até picar. */
 export const TEMPO_DE_PICAR_MS = 1600;
-/** O fogão (a carne) e o forno (a massa aberta): quando fica pronto, e quando queima. */
-export const PONTO: Record<'carne' | 'massa', { pronto: number; queima: number }> = {
+/** O fogão (DO_FOGAO) e o forno (a massa aberta): quando fica pronto, e quando queima. */
+export const PONTO: Partial<Record<Ingrediente, { pronto: number; queima: number }>> = {
   carne: { pronto: 4500, queima: 11500 },
+  salsicha: { pronto: 3500, queima: 10500 },
+  ovo: { pronto: 3000, queima: 10000 },
+  arroz: { pronto: 5000, queima: 13000 },
+  peixe: { pronto: 4500, queima: 11500 },
   massa: { pronto: 6000, queima: 15000 },
 };
 /** Quantos itens cabem num prato. */
@@ -50,7 +87,13 @@ export type IdDaReceita =
   | 'x-salada'
   | 'pizza-queijo'
   | 'pizza-calabresa'
-  | 'pizza-cogumelo';
+  | 'pizza-cogumelo'
+  | 'cachorro-quente'
+  | 'pao-com-ovo'
+  | 'x-egg'
+  | 'sushi'
+  | 'peixe-com-arroz'
+  | 'prato-feito';
 
 /** O que vai no prato (as chaves, ver `chave`) e quanto vale. */
 export const RECEITAS: Record<IdDaReceita, { itens: string[]; pontos: number; peso: number }> = {
@@ -64,6 +107,12 @@ export const RECEITAS: Record<IdDaReceita, { itens: string[]; pontos: number; pe
   'pizza-queijo': { itens: ['massa:cozido[queijo,tomate]'], pontos: 30, peso: 1.2 },
   'pizza-calabresa': { itens: ['massa:cozido[calabresa,queijo,tomate]'], pontos: 35, peso: 1 },
   'pizza-cogumelo': { itens: ['massa:cozido[cogumelo,queijo,tomate]'], pontos: 35, peso: 1 },
+  'cachorro-quente': { itens: ['pao:cru', 'salsicha:cozido'], pontos: 15, peso: 1.4 },
+  'pao-com-ovo': { itens: ['pao:cru', 'ovo:cozido'], pontos: 15, peso: 1 },
+  'x-egg': { itens: ['pao:cru', 'carne:cozido', 'ovo:cozido', 'queijo:picado'], pontos: 30, peso: 0.9 },
+  sushi: { itens: ['arroz:cozido', 'peixe:picado'], pontos: 20, peso: 1.2 },
+  'peixe-com-arroz': { itens: ['peixe:cozido', 'arroz:cozido', 'alface:picado'], pontos: 30, peso: 0.9 },
+  'prato-feito': { itens: ['arroz:cozido', 'carne:cozido', 'ovo:cozido'], pontos: 30, peso: 0.8 },
 };
 export const IDS_DAS_RECEITAS = Object.keys(RECEITAS) as IdDaReceita[];
 
@@ -116,7 +165,7 @@ export function normalizarPrato(x: unknown): Item[] | null {
  * primeiros são dos rápidos, para a partida começar andando; depois, pelo peso de cada receita, sem três iguais seguidos.
  */
 export function sortearPedidos(aleatorio: () => number, n: number): IdDaReceita[] {
-  const rapidos: IdDaReceita[] = ['sorvete-chocolate', 'sorvete-morango', 'sorvete-baunilha', 'hamburguer', 'salada'];
+  const rapidos: IdDaReceita[] = ['sorvete-chocolate', 'sorvete-morango', 'sorvete-baunilha', 'hamburguer', 'salada', 'cachorro-quente', 'pao-com-ovo'];
   const lista: IdDaReceita[] = [];
   const total = IDS_DAS_RECEITAS.reduce((s, id) => s + RECEITAS[id].peso, 0);
   while (lista.length < n) {

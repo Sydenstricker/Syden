@@ -1,14 +1,14 @@
-import { COBERTURAS, MAXIMO_NO_PRATO, PICAVEIS, PONTO, TEMPO_DE_PICAR_MS, chave, type Ingrediente, type Item, type Sabor } from './receitas';
+import { COBERTURAS, DO_FOGAO, MAXIMO_NO_PRATO, PICAVEIS, PONTO, TEMPO_DE_PICAR_MS, chave, type Ingrediente, type Item, type Sabor } from './receitas';
 
 /**
  * A COZINHA DE CADA UM (05/11/2026): as regras do que se faz na cozinha, sem desenho nenhum (a cena só lê isto). O servidor
  * não conhece nada daqui: ele confere só o prato entregue (receitas.ts). Por isso a cozinha roda inteira na tela de quem
  * joga, e o mesmo código serve ao teclado, ao clique e ao piloto automático.
  *
- * A PLANTA, vista de cima (c = coluna, l = linha; a casa tem 2 unidades, como os balcões da KayKit): uma volta de 22 estações
- * em torno do chão livre (as colunas 1 a 6, as linhas 1 a 3). Atrás, os fogões, a janela de entrega entre dois balcões, as
- * tábuas e o forno; à esquerda, os caixotes do hambúrguer; à direita, os da pizza; na frente, a lixeira, os pratos, as
- * casquinhas e os sorvetes. O coelho anda só no chão livre, e por isso não há caminho a procurar: a estação mais perto do
+ * A PLANTA, vista de cima (c = coluna, l = linha; a casa tem 2 unidades, como os balcões da KayKit): uma volta de 26 estações
+ * em torno do chão livre (as colunas 1 a 8, as linhas 1 a 3). Atrás, o arroz, os fogões, a janela de entrega entre dois
+ * balcões, as tábuas, o forno e o peixe; à esquerda, os caixotes do lanche; à direita, os da pizza; na frente, a lixeira, o
+ * ovo, a alface, os pratos, as casquinhas, os sorvetes, o queijo e o cogumelo. O coelho anda só no chão livre, e por isso não há caminho a procurar: a estação mais perto do
  * que ele tem à frente é a que ele usa.
  */
 
@@ -59,36 +59,40 @@ export type Evento =
   | { tipo: 'recusado' };
 
 export const CASA = 2;
-export const COLUNAS = 8;
+export const COLUNAS = 10;
 export const LINHAS = 5;
 export const RAIO = 0.55;
 export const VELOCIDADE = 6.2;
 /** O chão livre (o miolo da planta). */
-export const CHAO = { x0: -6, x1: 6, z0: -3, z1: 3 };
+export const CHAO = { x0: -8, x1: 8, z0: -3, z1: 3 };
 
 const PLANTA: [number, number, TipoDeEstacao, (Ingrediente | Sabor)?][] = [
-  [0, 0, 'fogao'],
+  [0, 0, 'caixote', 'arroz'],
   [1, 0, 'fogao'],
-  [2, 0, 'balcao'],
-  [3, 0, 'entrega'],
-  [4, 0, 'balcao'],
-  [5, 0, 'tabua'],
+  [2, 0, 'fogao'],
+  [3, 0, 'balcao'],
+  [4, 0, 'entrega'],
+  [5, 0, 'balcao'],
   [6, 0, 'tabua'],
-  [7, 0, 'forno'],
+  [7, 0, 'tabua'],
+  [8, 0, 'forno'],
+  [9, 0, 'caixote', 'peixe'],
   [0, 1, 'caixote', 'pao'],
   [0, 2, 'caixote', 'carne'],
-  [0, 3, 'caixote', 'queijo'],
-  [7, 1, 'caixote', 'massa'],
-  [7, 2, 'caixote', 'tomate'],
-  [7, 3, 'caixote', 'calabresa'],
+  [0, 3, 'caixote', 'salsicha'],
+  [9, 1, 'caixote', 'massa'],
+  [9, 2, 'caixote', 'tomate'],
+  [9, 3, 'caixote', 'calabresa'],
   [0, 4, 'lixeira'],
-  [1, 4, 'caixote', 'alface'],
-  [2, 4, 'pratos'],
-  [3, 4, 'caixote', 'casquinha'],
-  [4, 4, 'sorvete', 'chocolate'],
-  [5, 4, 'sorvete', 'morango'],
-  [6, 4, 'sorvete', 'baunilha'],
-  [7, 4, 'caixote', 'cogumelo'],
+  [1, 4, 'caixote', 'ovo'],
+  [2, 4, 'caixote', 'alface'],
+  [3, 4, 'pratos'],
+  [4, 4, 'caixote', 'casquinha'],
+  [5, 4, 'sorvete', 'chocolate'],
+  [6, 4, 'sorvete', 'morango'],
+  [7, 4, 'sorvete', 'baunilha'],
+  [8, 4, 'caixote', 'queijo'],
+  [9, 4, 'caixote', 'cogumelo'],
 ];
 
 export const centroDaCasa = (c: number, l: number) => ({ x: (c - (COLUNAS - 1) / 2) * CASA, z: (l - (LINHAS - 1) / 2) * CASA });
@@ -152,14 +156,14 @@ function cabeNaMassa(massa: Item, i: Item): boolean {
 /** O que a estação aceita em cima. */
 function aceita(e: Estacao, c: Coisa): boolean {
   if (e.tipo === 'balcao' || e.tipo === 'tabua') return true;
-  if (e.tipo === 'fogao') return c.tipo === 'item' && c.item.ing === 'carne';
+  if (e.tipo === 'fogao') return c.tipo === 'item' && DO_FOGAO.includes(c.item.ing) && c.item.estado !== 'picado';
   if (e.tipo === 'forno') return c.tipo === 'item' && c.item.ing === 'massa' && c.item.estado !== 'cru';
   return false;
 }
 
 /** O tempo de fogo que um item já tem (quem tira do fogo no ponto e põe de novo continua de onde parou). */
 function tempoDoFogo(i: Item): number {
-  const p = i.ing === 'carne' ? PONTO.carne : i.ing === 'massa' ? PONTO.massa : null;
+  const p = PONTO[i.ing];
   if (!p) return 0;
   return i.estado === 'cozido' ? p.pronto : i.estado === 'queimado' ? p.queima : 0;
 }
@@ -338,7 +342,7 @@ export function passo(k: Cozinha, dir: Direcao, dt: number, aceitaEntrega: (iten
   for (const e of k.estacoes) {
     if ((e.tipo !== 'fogao' && e.tipo !== 'forno') || e.em?.tipo !== 'item') continue;
     const i = e.em.item;
-    const p = i.ing === 'carne' ? PONTO.carne : i.ing === 'massa' ? PONTO.massa : null;
+    const p = PONTO[i.ing];
     if (!p) continue;
     const antes = e.tempo;
     e.tempo += ms;
@@ -360,7 +364,7 @@ export function progresso(e: Estacao): { f: number; perigo: boolean } | null {
   const i = e.em.item;
   if (e.tipo === 'tabua') return e.tempo > 0 && i.estado === 'cru' ? { f: e.tempo / TEMPO_DE_PICAR_MS, perigo: false } : null;
   if (e.tipo === 'fogao' || e.tipo === 'forno') {
-    const p = i.ing === 'carne' ? PONTO.carne : i.ing === 'massa' ? PONTO.massa : null;
+    const p = PONTO[i.ing];
     if (!p || i.estado === 'queimado') return null;
     if (e.tempo < p.pronto) return { f: e.tempo / p.pronto, perigo: false };
     return { f: (e.tempo - p.pronto) / (p.queima - p.pronto), perigo: true };

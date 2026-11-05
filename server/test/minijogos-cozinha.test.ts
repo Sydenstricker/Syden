@@ -86,6 +86,21 @@ test('as receitas: o prato confere em qualquer ordem, e nem mais nem menos', () 
   // as coberturas da pizza, em qualquer ordem
   assert.ok(r.confere('pizza-calabresa', [{ ing: 'massa', estado: 'cozido', com: ['tomate', 'calabresa', 'queijo'] }]));
   assert.ok(!r.confere('pizza-calabresa', [{ ing: 'massa', estado: 'picado', com: ['tomate', 'calabresa', 'queijo'] }]));
+  // os pratos do Food Kit: o peixe do sushi é picado, o do peixe com arroz é cozido; o ovo e a salsicha, do fogão
+  assert.ok(r.confere('sushi', [{ ing: 'peixe', estado: 'picado' }, { ing: 'arroz', estado: 'cozido' }]));
+  assert.ok(!r.confere('sushi', [{ ing: 'peixe', estado: 'cozido' }, { ing: 'arroz', estado: 'cozido' }]));
+  assert.ok(!r.confere('sushi', [{ ing: 'peixe', estado: 'picado' }, { ing: 'arroz', estado: 'cru' }]));
+  assert.ok(r.confere('cachorro-quente', [{ ing: 'salsicha', estado: 'cozido' }, { ing: 'pao', estado: 'cru' }]));
+  assert.ok(!r.confere('cachorro-quente', [{ ing: 'salsicha', estado: 'queimado' }, { ing: 'pao', estado: 'cru' }]));
+  assert.ok(r.confere('prato-feito', [...pratoDe('prato-feito')].reverse()));
+  assert.ok(!r.confere('x-egg', pratoDe('x-burguer')));
+  // tudo o que a receita pede o fogão, a tábua ou o forno sabem fazer
+  for (const id of r.IDS_DAS_RECEITAS)
+    for (const i of pratoDe(id)) {
+      if (i.estado === 'picado') assert.ok(r.PICAVEIS.includes(i.ing), `${id}: ${i.ing} picado`);
+      if (i.estado === 'cozido') assert.ok(r.DO_FOGAO.includes(i.ing) || i.ing === 'massa', `${id}: ${i.ing} cozido`);
+      if (i.estado === 'cozido') assert.ok(r.PONTO[i.ing], `${id}: o ponto de ${i.ing}`);
+    }
   // o que vem de fora é conferido
   assert.equal(r.normalizarPrato('x'), null);
   assert.equal(r.normalizarPrato([]), null);

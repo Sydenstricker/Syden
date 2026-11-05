@@ -79,7 +79,7 @@ function ingredientesDe(id: IdDaReceita): string[] {
   return lista;
 }
 /** Enquanto os desenhos não ficam prontos. */
-const RESERVA: Record<string, string> = { sorvete: '🍦', salada: '🥗', pizza: '🍕', hamburguer: '🍔', x: '🍔' };
+const RESERVA: Record<string, string> = { sorvete: '🍦', salada: '🥗', pizza: '🍕', hamburguer: '🍔', x: '🍔', cachorro: '🌭', pao: '🍳', sushi: '🍣', peixe: '🐟', prato: '🍛' };
 const reservaDe = (id: string) => RESERVA[id.split('-')[0]] ?? '🍽️';
 
 function CozinhaNaTela({ estado, eu, jogador, agir }: { estado: EstadoCozinha & Partida; eu: number; jogador: boolean; agir: (corpo: Record<string, unknown>) => unknown }) {

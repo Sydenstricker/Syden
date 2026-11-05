@@ -2,12 +2,14 @@ import * as THREE from 'three';
 import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { alvo, assinatura, progresso, type Coisa, type Cozinha, type Estacao } from './cozinha';
-import { IDS_DAS_RECEITAS, RECEITAS, itemDaChave, type Ingrediente, type Item } from './receitas';
+import { IDS_DAS_RECEITAS, INGREDIENTES, RECEITAS, confere, itemDaChave, type IdDaReceita, type Ingrediente, type Item } from './receitas';
 
 /**
  * A COZINHA EM 3D (05/11/2026). Só a TELA: as regras moram em cozinha.ts, e esta cena só lê a cozinha a cada quadro. Os
  * móveis, a comida e a louça são do Restaurant Bits da KayKit (CC0, web/public/cozinha/License.txt; o crédito nos termos,
- * seção 10); o cozinheiro é o NOSSO coelho 3D, com o nosso esqueleto (o mesmo das Cidades à venda).
+ * seção 10); o cozinheiro é o NOSSO coelho 3D, com o nosso esqueleto (o mesmo das Cidades à venda). A salsicha, o ovo, o
+ * arroz, o peixe, o cachorro-quente e o sushi são do Food Kit da Kenney (CC0, web/public/cozinha/License-kenney-food.txt),
+ * em web/public/cozinha/kenney/, com a textura deles (um material por kit).
  *
  * - A câmera é fixa, de cima e da frente, mostrando a cozinha inteira (os jogos de cozinha de festa são assim: tudo à vista).
  * - O que está em cima de cada estação e na mão do coelho é montado com os modelos do kit pelo ESTADO do item: a carne crua,
@@ -91,7 +93,19 @@ const MODELOS = [
   'food_icecream_cone_strawberry',
   'food_icecream_cone_vanilla',
 ] as const;
-type Modelo = (typeof MODELOS)[number];
+/** Os do Food Kit da Kenney (GLB, com a textura ao lado, em kenney/Textures/). */
+const MODELOS_KENNEY = ['hot-dog-raw', 'meat-sausage', 'hot-dog', 'egg', 'egg-cooked', 'fish', 'meat-raw', 'rice-ball', 'bag-flat', 'sushi-salmon'] as const;
+type Modelo = (typeof MODELOS)[number] | (typeof MODELOS_KENNEY)[number];
+
+/** O prato pronto que tem um modelo inteiro no kit (no lugar das partes lado a lado). */
+const PRONTOS: Partial<Record<IdDaReceita, Modelo>> = { 'cachorro-quente': 'hot-dog', sushi: 'sushi-salmon' };
+/** O ingrediente do Food Kit: cru, picado (o peixe) e cozido (com a cor, se for tingido); o queimado é o cozido escurecido. */
+const KENNEY: Partial<Record<Ingrediente, { cru: [Modelo, number]; picado?: [Modelo, number, string?]; cozido: [Modelo, number, string?] }>> = {
+  salsicha: { cru: ['hot-dog-raw', 0.62], cozido: ['meat-sausage', 0.64] },
+  ovo: { cru: ['egg', 0.3], cozido: ['egg-cooked', 0.62] },
+  arroz: { cru: ['bag-flat', 0.6], cozido: ['rice-ball', 0.4] },
+  peixe: { cru: ['fish', 0.72], picado: ['meat-raw', 0.55, '#f6a07c'], cozido: ['fish', 0.8, '#e8a860'] },
+};
 
 const CAIXOTE: Record<Ingrediente, Modelo | null> = {
   pao: 'crate_buns',
@@ -103,6 +117,10 @@ const CAIXOTE: Record<Ingrediente, Modelo | null> = {
   calabresa: 'crate_pepperoni',
   cogumelo: 'crate_mushrooms',
   casquinha: null,
+  salsicha: null,
+  ovo: null,
+  arroz: null,
+  peixe: null,
 };
 const SABOR_DO_KIT: Record<string, string> = { chocolate: 'chocolate', morango: 'strawberry', baunilha: 'vanilla' };
 /** O ingrediente inteiro, picado sozinho, e picado no prato (a fatia do lanche) ou na pizza. */
@@ -114,7 +132,7 @@ const VISUAL: Partial<Record<Ingrediente, { cru: Modelo; picado: Modelo; noPrato
   cogumelo: { cru: 'food_ingredient_mushroom', picado: 'food_ingredient_mushroom_chopped', noPrato: 'food_ingredient_mushroom_chopped', naPizza: 'food_ingredient_mushroom_pieces' },
 };
 /** A ordem das camadas do lanche, de baixo para cima (o pão de cima é o último). */
-const CAMADAS: Ingrediente[] = ['carne', 'queijo', 'alface', 'tomate', 'calabresa', 'cogumelo'];
+const CAMADAS: Ingrediente[] = ['carne', 'salsicha', 'ovo', 'queijo','alface', 'tomate', 'calabresa', 'cogumelo'];
 const ORDEM_DA_PIZZA: Ingrediente[] = ['tomate', 'queijo', 'calabresa', 'cogumelo'];
 
 const carregados = new Map<string, Promise<GLTF>>();
@@ -139,7 +157,8 @@ export class CenaDaCozinha {
   private cena = new THREE.Scene();
   private camera = new THREE.PerspectiveCamera(36, 1.6, 0.1, 200);
   private modelos = new Map<Modelo, THREE.Object3D>();
-  private material: THREE.Material | null = null;
+  /** Um material por kit (a KayKit e a Kenney têm cada uma a sua textura). */
+  private materiais = new Map<string, THREE.Material>();
   private tingidos = new Map<string, THREE.Material>();
   private coelhoGltf: GLTF | null = null;
   private coelho: { raiz: THREE.Group; corpo: THREE.Object3D; mixer: THREE.AnimationMixer; acoes: Map<string, THREE.AnimationAction>; tocando: string; mao: THREE.Group; sinal: string } | null = null;
@@ -201,18 +220,19 @@ export class CenaDaCozinha {
 
   /** Carrega os modelos, monta a cozinha e desenha os ícones dos pedidos. Rejeita se algo falhar. */
   async montar(): Promise<Icones> {
-    const [lista, coelho] = await Promise.all([
-      Promise.all(MODELOS.map((m) => carregar(`${this.base}cozinha/${m}.gltf`).then((g) => [m, g] as const))),
+    const [kaykit, kenney, coelho] = await Promise.all([
+      Promise.all(MODELOS.map((m) => carregar(`${this.base}cozinha/${m}.gltf`).then((g) => [m as Modelo, g, 'kaykit'] as const))),
+      Promise.all(MODELOS_KENNEY.map((m) => carregar(`${this.base}cozinha/kenney/${m}.glb`).then((g) => [m as Modelo, g, 'kenney'] as const))),
       carregar(`${this.base}cidades3d/coelho-animado.glb`),
     ]);
     if (this.morta) return { receitas: {}, ingredientes: {} };
-    for (const [m, g] of lista) {
-      // todos os modelos do kit usam o mesmo material e a mesma textura: um só, para a placa guardar a imagem uma vez
+    for (const [m, g, kit] of [...kaykit, ...kenney]) {
+      // os modelos de cada kit usam o mesmo material e a mesma textura: um só por kit, para a placa guardar a imagem uma vez
       g.scene.traverse((o) => {
         const mesh = o as THREE.Mesh;
         if (!mesh.isMesh) return;
-        this.material ??= mesh.material as THREE.Material;
-        mesh.material = this.material;
+        if (!this.materiais.has(kit)) this.materiais.set(kit, mesh.material as THREE.Material);
+        mesh.material = this.materiais.get(kit)!;
       });
       this.modelos.set(m, g.scene);
     }
@@ -235,7 +255,7 @@ export class CenaDaCozinha {
     this.renderer.setSize(w, h, false);
     this.camera.aspect = w / h;
     // longe o bastante para caber a cozinha inteira, na largura e na altura
-    this.distancia = Math.max(1, 1.55 / this.camera.aspect);
+    this.distancia = Math.max(1, 1.7 / this.camera.aspect);
     this.camera.updateProjectionMatrix();
   }
 
@@ -257,6 +277,8 @@ export class CenaDaCozinha {
   /** O modelo com a base no chão e o meio no centro, com `largura` no maior lado do chão (sem largura, o tamanho dele). */
   private copia(m: Modelo, largura?: number): THREE.Group {
     const o = this.bruto(m);
+    // o peixe do kit vem nadando (de pé): no prato e no fogão, deitado de lado
+    if (m === 'fish') o.rotation.set(0, Math.PI / 2, Math.PI / 2);
     const caixa = new THREE.Box3().setFromObject(o);
     const tam = caixa.getSize(new THREE.Vector3());
     const centro = caixa.getCenter(new THREE.Vector3());
@@ -299,8 +321,8 @@ export class CenaDaCozinha {
       sol.castShadow = true;
       sol.shadow.mapSize.set(2048, 2048);
       const s = sol.shadow.camera;
-      s.left = -12;
-      s.right = 12;
+      s.left = -14;
+      s.right = 14;
       s.top = 10;
       s.bottom = -10;
       s.near = 1;
@@ -311,13 +333,13 @@ export class CenaDaCozinha {
     c.add(sol);
 
     // o chão de ladrilho
-    for (const x of [-6, -2, 2, 6])
+    for (const x of [-8, -4, 0, 4, 8])
       for (const z of [-3, 1]) {
         const p = this.bruto('floor_kitchen');
         p.position.set(x, 0, z);
         c.add(p);
       }
-    for (let x = -7; x <= 7; x += 2) {
+    for (let x = -9; x <= 9; x += 2) {
       const p = this.bruto('floor_kitchen_small');
       p.position.set(x, 0, 4);
       c.add(p);
@@ -327,11 +349,13 @@ export class CenaDaCozinha {
     const entrega = k0?.estacoes.find((e) => e.tipo === 'entrega');
     const xJanela = entrega?.x ?? -1;
     const paredes: [Modelo, number][] = [
+      ['wall', xJanela - 12],
       ['wall', xJanela - 8],
       ['wall', xJanela - 4],
       ['wall_orderwindow', xJanela],
       ['wall', xJanela + 4],
       ['wall', xJanela + 8],
+      ['wall', xJanela + 12],
     ];
     for (const [m, x] of paredes) {
       const p = this.copia(m);
@@ -378,6 +402,22 @@ export class CenaDaCozinha {
         } else {
           const m = CAIXOTE[e.ing!];
           if (m) giro.add(this.copia(m, 1.9));
+          const kn = KENNEY[e.ing!];
+          if (!m && kn) {
+            // o caixote vazio da KayKit com o ingrediente do Food Kit em cima
+            const cx = this.copia('crate', 1.9);
+            giro.add(cx);
+            const y = cx.userData.altura * 0.82;
+            const [modelo, largura] = kn.cru;
+            for (const [dx, dz, giroY] of [
+              [-0.42, 0.18, 0.5],
+              [0.4, 0.2, -0.7],
+              [0, -0.3, 1.6],
+            ] as const) {
+              const o = emCima(modelo, Math.max(0.5, largura * 1.15), y, dx, dz);
+              o.rotation.y = giroY;
+            }
+          }
         }
         break;
       }
@@ -482,6 +522,16 @@ export class CenaDaCozinha {
       g.add(this.copia('food_ingredient_bun', 0.68));
       return g;
     }
+    const kn = KENNEY[i.ing];
+    if (kn) {
+      // o tamanho de cada um está em KENNEY; a `largura` pedida só o aumenta ou diminui (0,85 é o normal)
+      const [modelo, tamanho, cor] = i.estado === 'cru' ? kn.cru : i.estado === 'picado' && kn.picado ? kn.picado : kn.cozido;
+      const o = this.copia(modelo, (tamanho * largura) / 0.85);
+      if (i.estado === 'queimado') this.tingir(o, '#4a3a32');
+      else if (cor && i.estado !== 'cru') this.tingir(o, cor);
+      g.add(o);
+      return g;
+    }
     if (i.ing === 'carne') {
       g.add(this.copia(i.estado === 'cozido' ? 'food_ingredient_burger_cooked' : i.estado === 'queimado' ? 'food_ingredient_burger_trash' : 'food_ingredient_burger_uncooked', 0.68));
       return g;
@@ -497,7 +547,27 @@ export class CenaDaCozinha {
     const prato = this.copia('plate', 0.95);
     g.add(prato);
     let y = 0.07;
-    const lanche = itens.some((i) => i.ing === 'pao' || i.ing === 'carne');
+    // o prato pronto que o kit tem inteiro (o cachorro-quente, o sushi)
+    const pronto = (Object.keys(PRONTOS) as IdDaReceita[]).find((id) => confere(id, itens));
+    if (pronto === 'sushi') {
+      // duas peças, atravessadas
+      for (const dz of [-0.13, 0.13]) {
+        const m = this.copia('sushi-salmon', 0.44);
+        m.rotation.y = Math.PI / 2;
+        m.position.set(0, y, dz);
+        g.add(m);
+      }
+      return g;
+    }
+    if (pronto) {
+      const m = this.copia(PRONTOS[pronto]!, 0.72);
+      m.position.y = y;
+      g.add(m);
+      return g;
+    }
+    const tem = (ing: Ingrediente) => itens.some((i) => i.ing === ing);
+    // o lanche em camadas (com pão, ou a carne sozinha); o prato feito e o resto, lado a lado
+    const lanche = tem('pao') || (tem('carne') && !tem('arroz') && !tem('ovo'));
     if (lanche) {
       const pao = itens.find((i) => i.ing === 'pao');
       const pilha = (m: THREE.Group) => {
@@ -509,15 +579,16 @@ export class CenaDaCozinha {
       for (const ing of CAMADAS) {
         const i = itens.find((x) => x.ing === ing);
         if (!i) continue;
-        if (ing === 'carne') pilha(this.modeloDoItem(i));
+        // o ovo, maior que o pão, para a clara aparecer
+        if (ing === 'carne' || ing === 'salsicha' || ing === 'ovo') pilha(this.modeloDoItem(i, ing === 'ovo' && i.estado !== 'cru' ? 1.1 : 0.85));
         else {
           const v = VISUAL[ing];
           if (v) pilha(i.estado === 'cru' ? this.copia(v.cru, 0.5) : this.copia(v.noPrato, 0.66));
         }
       }
       if (pao) pilha(this.copia('food_ingredient_bun_top', 0.68));
-      // o que não é do lanche (a massa, a casquinha) vai ao lado
-      const resto = itens.filter((i) => i.ing === 'massa' || i.ing === 'casquinha');
+      // o que não é do lanche (a massa, a casquinha, o arroz, o peixe) vai ao lado
+      const resto = itens.filter((i) => i.ing !== 'pao' && !CAMADAS.includes(i.ing));
       resto.forEach((i, n) => {
         const m = this.modeloDoItem(i, 0.4);
         m.position.set(0.3, 0.07, 0.3 - n * 0.3);
@@ -526,13 +597,22 @@ export class CenaDaCozinha {
       return g;
     }
     const pequenos = itens.length > 1;
-    itens.forEach((i, n) => {
+    // no prato feito, o ovo vai em cima da carne (a clara sumiria no prato branco)
+    const carne = itens.find((i) => i.ing === 'carne');
+    const ovo = carne ? itens.find((i) => i.ing === 'ovo') : undefined;
+    const lado = itens.filter((i) => i !== ovo);
+    lado.forEach((i, n) => {
       const m = this.modeloDoItem(i, pequenos ? 0.52 : 0.8);
       if (pequenos) {
-        const a = (n / itens.length) * Math.PI * 2 + Math.PI / 4;
+        const a = (n / lado.length) * Math.PI * 2 + Math.PI / 4;
         m.position.set(Math.cos(a) * 0.2, y, Math.sin(a) * 0.2);
       } else m.position.y = y;
       g.add(m);
+      if (ovo && i === carne) {
+        const o = this.modeloDoItem(ovo, 0.85);
+        o.position.set(m.position.x, y + m.userData.altura * 0.9, m.position.z);
+        g.add(o);
+      }
     });
     return g;
   }
@@ -625,7 +705,7 @@ export class CenaDaCozinha {
       receitas[id] = foto(this.modeloDoPrato(itens));
     }
     const ingredientes: Record<string, string> = {};
-    for (const ing of ['pao', 'carne', 'queijo', 'alface', 'tomate', 'massa', 'calabresa', 'cogumelo', 'casquinha'] as Ingrediente[])
+    for (const ing of INGREDIENTES)
       ingredientes[ing] = foto(this.modeloDoItem({ ing, estado: 'cru' }));
     this.renderer.setPixelRatio(razao);
     return { receitas, ingredientes };
@@ -700,7 +780,7 @@ export class CenaDaCozinha {
       }
     }
     // a câmera, de cima e da frente
-    const d = 19.5 * this.distancia;
+    const d = 21.5 * this.distancia;
     this.camera.position.set(0, d * 0.88, d * 0.6);
     this.camera.lookAt(0, 0, 0.25);
     this.renderer.render(this.cena, this.camera);

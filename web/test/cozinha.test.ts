@@ -35,7 +35,7 @@ for (const id of IDS_DAS_RECEITAS) {
 
 test('vários pedidos seguidos, na mesma cozinha (o que sobrou de um não trava o outro)', () => {
   const k = novaCozinha();
-  for (const id of ['x-salada', 'pizza-calabresa', 'sorvete-morango', 'hamburguer', 'pizza-cogumelo', 'salada'] as IdDaReceita[]) {
+  for (const id of ['x-salada', 'pizza-calabresa', 'sorvete-morango', 'hamburguer', 'pizza-cogumelo', 'salada', 'prato-feito', 'sushi', 'peixe-com-arroz', 'cachorro-quente', 'x-egg', 'pao-com-ovo'] as IdDaReceita[]) {
     assert.ok(cozinhar(id, k).entregue, id);
   }
 });
@@ -84,4 +84,27 @@ test('a tábua só pica com o coelho lá; as setas param a faca', () => {
   assert.equal(k.coelho.mao?.tipo, 'prato');
   assert.deepEqual(espaco(k, () => true)[0].tipo, 'entregue');
   assert.equal(k.coelho.mao, null);
+});
+
+test('o fogão aceita o que é dele cru, e não o peixe já picado (o do sushi)', () => {
+  const k = novaCozinha();
+  const nada = () => false;
+  const fogao = k.estacoes.find((e) => e.tipo === 'fogao')!;
+  const ir = (id: number) => {
+    irPara(k, id, 'espaco');
+    for (let n = 0; n < 400 && k.coelho.destino; n++) passo(k, null, DT, nada);
+  };
+  k.coelho.mao = { tipo: 'item', item: { ing: 'peixe', estado: 'picado' } };
+  ir(fogao.id);
+  assert.equal(fogao.em, null);
+  for (const ing of ['salsicha', 'ovo', 'arroz', 'peixe'] as const) {
+    k.coelho.mao = { tipo: 'item', item: { ing, estado: 'cru' } };
+    ir(fogao.id);
+    assert.equal((fogao.em as { item: Item } | null)?.item.ing, ing);
+    for (let ms = 0; ms < PONTO[ing]!.pronto + 50; ms += 1000 * DT) passo(k, null, DT, nada);
+    assert.equal((fogao.em as { item: Item }).item.estado, 'cozido', ing);
+    k.coelho.mao = null;
+    espaco(k, nada);
+    assert.equal(fogao.em, null);
+  }
 });

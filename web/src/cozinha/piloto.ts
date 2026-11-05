@@ -1,11 +1,11 @@
 import { irPara, type Acao, type Coisa, type Cozinha, type Estacao } from './cozinha';
-import { COBERTURAS, PICAVEIS, RECEITAS, chave, confere, itemDaChave, type IdDaReceita, type Ingrediente, type Item } from './receitas';
+import { COBERTURAS, DO_FOGAO, PICAVEIS, RECEITAS, chave, confere, itemDaChave, type IdDaReceita, type Ingrediente, type Item } from './receitas';
 
 /**
  * O PILOTO AUTOMÁTICO DA COZINHA (para os testes e o e2e: `window.cozinhaPilotoAutomatico`, só no site de desenvolvimento).
  * Ele cozinha o primeiro pedido da fila como uma pessoa faria, pelas MESMAS regras do teclado e do clique (irPara + Espaço/E),
  * olhando a cozinha a cada vez que fica parado: o prato mora no balcão ao lado da janela, o que precisa de tábua vai à tábua,
- * a carne ao fogão, a pizza aberta recebe as coberturas na tábua e vai ao forno. O que não serve vai para a lixeira.
+ * o que é do fogão (a carne, a salsicha, o ovo, o arroz, o peixe) vai ao fogão — e só se busca com um fogão livre, a pizza aberta recebe as coberturas na tábua e vai ao forno. O que não serve vai para a lixeira.
  */
 
 type Passo = { estacao: number; acao: Acao } | null;
@@ -28,8 +28,8 @@ function comparar(itens: Item[], receita: IdDaReceita) {
 export function decidir(k: Cozinha, receita: IdDaReceita): Passo {
   const E = k.estacoes;
   const de = (tipo: Estacao['tipo']) => E.filter((e) => e.tipo === tipo);
-  const montagem = E.find((e) => e.tipo === 'balcao' && e.c === 2)!;
   const entrega = de('entrega')[0];
+  const montagem = E.find((e) => e.tipo === 'balcao' && e.l === entrega.l && e.c === entrega.c - 1)!;
   const lixeira = de('lixeira')[0];
   const pratos = de('pratos')[0];
   const forno = de('forno')[0];
@@ -62,7 +62,7 @@ export function decidir(k: Cozinha, receita: IdDaReceita): Passo {
     const i = mao.item;
     const k2 = chave(i);
     if (precisa(k2)) return prato || montagem.em === null ? vai(montagem) : vai(lixeira);
-    if (i.ing === 'carne' && i.estado === 'cru' && precisa('carne:cozido')) {
+    if (DO_FOGAO.includes(i.ing) && i.estado === 'cru' && precisa(`${i.ing}:cozido`)) {
       const f = fogoes.find((e) => e.em === null);
       return f ? vai(f) : null;
     }
@@ -91,6 +91,8 @@ export function decidir(k: Cozinha, receita: IdDaReceita): Passo {
   if (prato && falta.length === 0) return vai(montagem);
   // o que queimou, para a lixeira
   for (const e of [...fogoes, forno]) if (ehItem(e.em) && e.em.item.estado === 'queimado') return vai(e);
+  // o que está no fogão e não serve a este pedido (sobrou de outro), para a lixeira, para o fogão não ficar ocupado
+  for (const e of fogoes) if (ehItem(e.em) && !precisa(`${e.em.item.ing}:cozido`)) return vai(e);
   // o que está pronto no fogo
   for (const e of [...fogoes, forno]) if (ehItem(e.em) && precisa(chave(e.em.item))) return prato ? vai(e) : vai(pratos);
   if (!prato) return vai(pratos);
@@ -110,9 +112,11 @@ export function decidir(k: Cozinha, receita: IdDaReceita): Passo {
   // o que ainda falta, e ninguém está fazendo
   for (const f of falta) {
     const alvoItem = itemDaChave(f);
-    if (alvoItem.ing === 'carne') {
-      if (fogoes.some((e) => ehItem(e.em) && e.em.item.ing === 'carne')) continue;
-      return vai(caixote('carne'));
+    if (alvoItem.estado === 'cozido' && DO_FOGAO.includes(alvoItem.ing)) {
+      if (fogoes.some((e) => ehItem(e.em) && e.em.item.ing === alvoItem.ing)) continue;
+      // sem fogão livre, espera: com o cru na mão e o fogão cheio, ele travaria
+      if (!fogoes.some((e) => e.em === null)) continue;
+      return vai(caixote(alvoItem.ing));
     }
     if (alvoItem.ing === 'massa') {
       if (ehItem(forno.em) && forno.em.item.ing === 'massa') continue;
