@@ -1,5 +1,6 @@
 import { useT } from './i18n';
 import { Relogio } from './Minijogo';
+import { Mar3D } from './naval3d/Mar3D';
 import type { Partida } from './minijogos';
 
 const JOGADA_MS = 90_000;
@@ -168,6 +169,10 @@ function MarDaTela({
   return (
     <section className={`naval-mar${meu ? ' meu' : ''}${alvo ? ' alvo' : ''}${daVez ? ' na-mira' : ''}`}>
       <h4 className="naval-titulo">{titulo}</h4>
+      <Mar3D
+        dados={{ tiros: mar.tiros, navios: mar.navios, meu, podeAtirar, ultima }}
+        aoAtirar={atirar}
+        grade={
       <div className="naval-grade">
         {mar.navios.map((navio) => {
           const casas = [...navio.casas].sort((a, b) => a - b);
@@ -199,6 +204,8 @@ function MarDaTela({
           />
         ))}
       </div>
+        }
+      />
       <div className="naval-restam" aria-hidden="true">
         {restam.map((tamanho, k) => (
           <span key={k} className="naval-silhueta" style={{ width: `${tamanho * 7}px` }} />

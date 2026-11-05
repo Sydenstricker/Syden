@@ -19193,3 +19193,39 @@ body.arrastando-barra {
   box-shadow: 0 0 0 2px rgba(30, 22, 34, 0.55);
   opacity: 0.92;
 }
+
+/* A Batalha naval em 3D (naval3d/): o mar na mesma proporção da grade; a grade de botões fica embaixo, só para o teclado e o
+   leitor de tela, quando a cena está pronta. */
+.naval-3d {
+  position: relative;
+  width: min(100%, 52vh, 340px);
+  aspect-ratio: 1 / 0.9;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.naval-3d-caixa {
+  position: absolute;
+  inset: 0;
+}
+.naval-3d-caixa.escondida {
+  visibility: hidden;
+}
+.naval-3d-tela {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: manipulation;
+}
+.naval-3d-grade-reserva {
+  position: absolute;
+  inset: 0;
+}
+.naval-3d-grade-acessivel {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
