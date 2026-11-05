@@ -2338,6 +2338,7 @@ export default {
   'Copa da Cenoura': 'Tiroba ni Kareti',
   'contra {nomes}': 'sasaga kei {nomes}',
   'Usar o item': 'Vakayagataka na iyaya',
+  'Olhar para trás': 'Raica i muri',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Na vakatakilakila ni sala mo vodoka kina, na Space mo dirifiti kina, na E mo vakayagataka kina na iyaya.',
   'Copa da turma': 'Na tiroba ni ilawalawa',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Na Tiroba ni Kareti era cici kina na ilawalawa me yacova na kena itinitini, ena Veicici ni rabeti.',

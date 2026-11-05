@@ -2378,6 +2378,7 @@ export default {
   'Copa da Cenoura': 'မုန်လာဥနီဖလား',
   'contra {nomes}': '{nomes} နှင့် ယှဉ်ပြိုင်',
   'Usar o item': 'ပစ္စည်းကို သုံးရန်',
+  'Olhar para trás': 'နောက်ကို ကြည့်ရန်',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'မြှားခလုတ်များဖြင့် ကွေ့ပါ၊ နေရာလွတ်ခလုတ်ဖြင့် ဘေးချော်ပါ၊ E ဖြင့် ပစ္စည်းကို သုံးပါ။',
   'Copa da turma': 'အဖွဲ့၏ ဖလား',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'ယုန်ကားပြိုင်ပွဲတွင် အဖွဲ့က အဆုံးထိ ပြိုင်ခဲ့သော မုန်လာဥနီဖလားများ။',

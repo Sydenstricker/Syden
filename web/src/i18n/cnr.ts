@@ -2408,6 +2408,7 @@ export default {
   'Copa da Cenoura': 'Kup šargarepe',
   'contra {nomes}': 'protiv {nomes}',
   'Usar o item': 'Iskoristi predmet',
+  'Olhar para trás': 'Pogledaj nazad',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Strelice za upravljanje, Razmaknica za drift, E za predmet.',
   'Copa da turma': 'Kup društva',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Kupovi šargarepe koje je društvo odvozilo do kraja, u Zečjoj trci.',

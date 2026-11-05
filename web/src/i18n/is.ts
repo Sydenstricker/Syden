@@ -2410,6 +2410,7 @@ export default {
   'Copa da Cenoura': 'Gulrótarbikarinn',
   'contra {nomes}': 'gegn {nomes}',
   'Usar o item': 'Nota hlutinn',
+  'Olhar para trás': 'Líta aftur fyrir',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Örvar til að stýra, bilslá til að renna, E til að nota hlutinn.',
   'Copa da turma': 'Bikar hópsins',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Gulrótarbikarar sem hópurinn keyrði til enda, í Kanínukapphlaupi.',

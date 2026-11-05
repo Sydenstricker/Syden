@@ -2354,6 +2354,7 @@ export default {
   'Copa da Cenoura': 'Ife Kárọ́ọ̀tì',
   'contra {nomes}': 'lòdì sí {nomes}',
   'Usar o item': 'Lo ohun èlò náà',
+  'Olhar para trás': 'Wo ẹ̀yìn',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Àwọn bọ́tìnì ọfà láti darí, Space láti yọ̀, E láti lo ohun èlò náà.',
   'Copa da turma': 'Ife ẹgbẹ́',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Àwọn Ife Kárọ́ọ̀tì tí ẹgbẹ́ sá dé òpin, nínú Ìdíje Ehoro.',

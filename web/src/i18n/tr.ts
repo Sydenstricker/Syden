@@ -2333,6 +2333,7 @@ export default {
   'Copa da Cenoura': 'Havuç Kupası',
   'contra {nomes}': 'rakipler: {nomes}',
   'Usar o item': 'Eşyayı kullan',
+  'Olhar para trás': 'Arkaya bak',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Yön tuşlarıyla sür, Boşluk ile drift at, E ile eşyayı kullan.',
   'Copa da turma': 'Ekibin kupası',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Ekibin Tavşan Yarışı\'nda sonuna kadar koştuğu Havuç Kupaları.',

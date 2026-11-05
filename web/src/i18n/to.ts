@@ -2345,6 +2345,7 @@ export default {
   'Copa da Cenoura': 'Ipu Kāloti',
   'contra {nomes}': 'fakafepakiʻi ʻa {nomes}',
   'Usar o item': 'Ngāueʻaki ʻa e meʻa',
+  'Olhar para trás': 'Sio ki mui',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Ngaahi kī kahaʻu ke tataki, Space ke heke, E ke ngāueʻaki ʻa e meʻa.',
   'Copa da turma': 'Ipu ʻa e kulupú',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Ngaahi Ipu Kāloti naʻe lova ai ʻa e kulupú ʻo aʻu ki he ngataʻangá, ʻi he Lova ʻa e Lāpisi.',

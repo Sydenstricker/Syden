@@ -2408,6 +2408,7 @@ export default {
   'Copa da Cenoura': 'Mrkvin kup',
   'contra {nomes}': 'protiv {nomes}',
   'Usar o item': 'Iskoristi predmet',
+  'Olhar para trás': 'Pogledaj iza',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Strelice za upravljanje, Razmaknica za drift, E za predmet.',
   'Copa da turma': 'Kup ekipe',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Mrkvini kupovi koje je ekipa odvozila do kraja, u Zečjoj utrci.',

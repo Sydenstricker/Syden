@@ -2409,6 +2409,7 @@ export default {
   'Copa da Cenoura': 'Porkkanacup',
   'contra {nomes}': 'vastassa {nomes}',
   'Usar o item': 'Käytä esine',
+  'Olhar para trás': 'Katso taakse',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Nuolilla ohjaat, välilyönnillä driftaat, E:llä käytät esineen.',
   'Copa da turma': 'Porukan cup',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Porkkanacupit, jotka porukka ajoi loppuun asti Kanikisassa.',

@@ -2411,6 +2411,7 @@ export default {
   'Copa da Cenoura': 'गाजर कप',
   'contra {nomes}': '{nomes} विरुद्ध',
   'Usar o item': 'सामान प्रयोग गर',
+  'Olhar para trás': 'पछाडि हेर',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'घुमाउन तीर कुञ्जीहरू, ड्रिफ्ट गर्न स्पेस, सामान प्रयोग गर्न E।',
   'Copa da turma': 'टोलीको कप',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'खरायो दौडमा टोलीले अन्त्यसम्म दौडेका गाजर कपहरू।',

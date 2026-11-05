@@ -2409,6 +2409,7 @@ export default {
   'Copa da Cenoura': 'Koobka Karootada',
   'contra {nomes}': 'ka soo horjeeda {nomes}',
   'Usar o item': 'Isticmaal alaabta',
+  'Olhar para trás': 'Gadaal eeg',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Fallaarayaasha si aad u wadato, Space si aad u siibato, E si aad alaabta u isticmaasho.',
   'Copa da turma': 'Koobka kooxda',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Koobabka Karootada ee kooxdu ku ordday ilaa dhammaadka, Tartanka Bakaylaha.',

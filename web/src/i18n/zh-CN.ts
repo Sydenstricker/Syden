@@ -2326,6 +2326,7 @@ export default {
   'Copa da Cenoura': '胡萝卜杯',
   'contra {nomes}': '对手：{nomes}',
   'Usar o item': '使用道具',
+  'Olhar para trás': '向后看',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': '方向键转向，空格键漂移，E 键使用道具。',
   'Copa da turma': '伙伴们的杯赛',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': '伙伴们在兔子赛车中跑完全程的胡萝卜杯。',

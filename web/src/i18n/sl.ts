@@ -2411,6 +2411,7 @@ export default {
   'Copa da Cenoura': 'Korenčkov pokal',
   'contra {nomes}': 'proti {nomes}',
   'Usar o item': 'Uporabi predmet',
+  'Olhar para trás': 'Poglej nazaj',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Puščice za krmiljenje, preslednica za drsenje, E za uporabo predmeta.',
   'Copa da turma': 'Pokal skupine',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Korenčkovi pokali, ki jih je skupina odpeljala do konca, v Zajčji dirki.',

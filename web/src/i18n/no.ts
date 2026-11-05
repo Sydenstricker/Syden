@@ -2409,6 +2409,7 @@ export default {
   'Copa da Cenoura': 'Gulrotcupen',
   'contra {nomes}': 'mot {nomes}',
   'Usar o item': 'Bruk gjenstanden',
+  'Olhar para trás': 'Se bakover',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Piltaster for å styre, mellomrom for å skli, E for å bruke gjenstanden.',
   'Copa da turma': 'Gjengens cup',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Gulrotcuper gjengen kjørte til mål, i Kaninløpet.',

@@ -2363,6 +2363,7 @@ export default {
   'Copa da Cenoura': 'Karottenpokal',
   'contra {nomes}': 'gegen {nomes}',
   'Usar o item': 'Item benutzen',
+  'Olhar para trás': 'Nach hinten schauen',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Pfeiltasten zum Lenken, Leertaste zum Driften, E für das Item.',
   'Copa da turma': 'Pokal der Gruppe',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Karottenpokale, die die Gruppe im Hasenrennen bis zum Ende gefahren ist.',

@@ -2410,6 +2410,7 @@ export default {
   'Copa da Cenoura': 'Indebe Yesanqante',
   'contra {nomes}': 'ubhekene no-{nomes}',
   'Usar o item': 'Sebenzisa into',
+  'Olhar para trás': 'Bheka emuva',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Imicibisholo ukuze ushayele, i-Space ukuze ushelele, u-E ukuze usebenzise into.',
   'Copa da turma': 'Indebe yeqembu',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Izindebe Zesanqante iqembu eligijime kuzo kwaze kwaba sekugcineni, kuMjaho Wonogwaja.',

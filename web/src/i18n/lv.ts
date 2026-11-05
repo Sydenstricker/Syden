@@ -2411,6 +2411,7 @@ export default {
   'Copa da Cenoura': 'Burkānu kauss',
   'contra {nomes}': 'pret {nomes}',
   'Usar o item': 'Izmantot priekšmetu',
+  'Olhar para trás': 'Skatīties atpakaļ',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Ar bultiņām stūrē, ar atstarpi slīdi sānis, ar E izmanto priekšmetu.',
   'Copa da turma': 'Kompānijas kauss',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Burkānu kausi, ko kompānija nobraukusi līdz galam Zaķu sacīkstēs.',

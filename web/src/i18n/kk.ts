@@ -2405,6 +2405,7 @@ export default {
   'Copa da Cenoura': 'Сәбіз кубогы',
   'contra {nomes}': 'қарсыластар: {nomes}',
   'Usar o item': 'Затты қолдану',
+  'Olhar para trás': 'Артқа қарау',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Басқару үшін көрсеткілер, дрифт үшін Бос орын, затты қолдану үшін E.',
   'Copa da turma': 'Топтың кубогы',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Топ Қояндар жарысында соңына дейін жүрген Сәбіз кубоктары.',

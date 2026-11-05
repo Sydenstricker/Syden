@@ -2409,6 +2409,7 @@ export default {
   'Copa da Cenoura': 'Купот на морковот',
   'contra {nomes}': 'против {nomes}',
   'Usar o item': 'Користи го предметот',
+  'Olhar para trás': 'Погледни назад',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Стрелки за управување, копчето за празно место за лизгање, E за користење на предметот.',
   'Copa da turma': 'Купот на друштвото',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Куповите на морковот што друштвото ги возеше до крај, во Трката на зајаците.',

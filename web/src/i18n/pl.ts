@@ -2404,6 +2404,7 @@ export default {
   'Copa da Cenoura': 'Puchar Marchewki',
   'contra {nomes}': 'przeciw {nomes}',
   'Usar o item': 'Użyj przedmiotu',
+  'Olhar para trás': 'Spójrz do tyłu',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Strzałki do kierowania, spacja do driftu, E, by użyć przedmiotu.',
   'Copa da turma': 'Puchar ekipy',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Puchary Marchewki, które ekipa przejechała do końca, w Wyścigu królików.',

@@ -2336,6 +2336,7 @@ export default {
   'Copa da Cenoura': 'Piala Wortel',
   'contra {nomes}': 'melawan {nomes}',
   'Usar o item': 'Pakai item',
+  'Olhar para trás': 'Lihat ke belakang',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Panah untuk menyetir, Spasi untuk drift, E untuk memakai item.',
   'Copa da turma': 'Piala geng',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Piala Wortel yang dibalap geng sampai selesai, di Balap Kelinci.',

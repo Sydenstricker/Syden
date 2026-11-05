@@ -2339,6 +2339,7 @@ export default {
   'Copa da Cenoura': 'Piala Lobak Merah',
   'contra {nomes}': 'menentang {nomes}',
   'Usar o item': 'Guna item',
+  'Olhar para trás': 'Lihat ke belakang',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Kekunci anak panah untuk mengemudi, Space untuk menggelongsor, E untuk guna item.',
   'Copa da turma': 'Piala geng',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Piala Lobak Merah yang dilumba geng hingga habis, dalam Lumba Arnab.',

@@ -2334,6 +2334,7 @@ export default {
   'Copa da Cenoura': 'Carrot Cup',
   'contra {nomes}': 'against {nomes}',
   'Usar o item': 'Use item',
+  'Olhar para trás': 'Look back',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Arrows to steer, Space to drift, E to use the item.',
   'Copa da turma': 'The group\'s cup',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Carrot Cups the group raced to the end, in Bunny Race.',

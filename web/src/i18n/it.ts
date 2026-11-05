@@ -2338,6 +2338,7 @@ export default {
   'Copa da Cenoura': 'Coppa Carota',
   'contra {nomes}': 'contro {nomes}',
   'Usar o item': 'Usa l\'oggetto',
+  'Olhar para trás': 'Guarda dietro',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Frecce per sterzare, Spazio per derapare, E per usare l\'oggetto.',
   'Copa da turma': 'La coppa del gruppo',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Coppe Carota che il gruppo ha corso fino alla fine, nella Corsa dei conigli.',

@@ -2423,6 +2423,7 @@ export default {
   'Copa da Cenoura': 'Луувангийн цом',
   'contra {nomes}': 'эсрэг: {nomes}',
   'Usar o item': 'Эд зүйлийг ашиглах',
+  'Olhar para trás': 'Хойшоо харах',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Сумнуудаар жолоодож, хоосон зайн товчоор гулгаж, E товчоор эд зүйлийг ашиглана.',
   'Copa da turma': 'Багийн цом',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Туулайн уралдаанд баг эцэс хүртэл уралдсан Луувангийн цомууд.',

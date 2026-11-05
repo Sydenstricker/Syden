@@ -2320,6 +2320,7 @@ export default {
   'Copa da Cenoura': 'にんじんカップ',
   'contra {nomes}': '対戦：{nomes}',
   'Usar o item': 'アイテムを使う',
+  'Olhar para trás': '後ろを見る',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': '矢印キーでハンドル、スペースでドリフト、Eでアイテム。',
   'Copa da turma': 'みんなのカップ',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'うさぎレースで、みんなが最後まで走りきったにんじんカップ。',

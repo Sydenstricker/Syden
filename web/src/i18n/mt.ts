@@ -2355,6 +2355,7 @@ export default {
   'Copa da Cenoura': 'It-Tazza tal-Karrotta',
   'contra {nomes}': 'kontra {nomes}',
   'Usar o item': 'Uża l-oġġett',
+  'Olhar para trás': 'Ħares lura',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Il-vleġeġ biex issuq, l-Ispazju biex tiżżerżaq, E biex tuża l-oġġett.',
   'Copa da turma': 'It-Tazza tal-grupp',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Tazzi tal-Karrotta li l-grupp ġera sal-aħħar, fit-Tiġrija tal-Fniek.',

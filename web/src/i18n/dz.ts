@@ -2422,6 +2422,7 @@ export default {
   'Copa da Cenoura': 'ག་ཇར་ཊོ་ཕི།',
   'contra {nomes}': '{nomes} དང་འགྲན།',
   'Usar o item': 'དངོས་པོ་ལག་ལེན་འཐབ།',
+  'Olhar para trás': 'རྒྱབ་ལུ་བལྟ།',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'ཁ་ལོ་བསྐྱར་ནི་ལུ་མདའ་རྟགས་ འདྲེད་ནི་ལུ་ བར་སྟོང་ དངོས་པོ་ལག་ལེན་འཐབ་ནི་ལུ་ E།',
   'Copa da turma': 'སྡེ་ཚན་གྱི་ཊོ་ཕི།',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'རི་བོང་གི་རྒྱུག་འགྲན་ནང་ སྡེ་ཚན་གྱིས་མཇུག་ཚུན་རྒྱུག་མི་ ག་ཇར་ཊོ་ཕི་ཚུ།',

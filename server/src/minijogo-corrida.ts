@@ -66,6 +66,11 @@ const PERTO_DO_REPOLHO = 60;
 const VELOCIDADE_DO_REPOLHO = 230;
 const VIDA_DO_REPOLHO = 4 * 60;
 const VIDA_DA_LAMA = 30 * 60;
+/** O repolho-roxo: 290 por segundo pela linha do meio, por 6 s, e só pega o alvo (web/src/corrida/laco.ts). */
+const VELOCIDADE_DO_ROXO = 290;
+const VIDA_DO_ROXO = 6 * 60;
+/** Os itens que não andam nem ficam no chão: o escudo de alface, a toca e o regador (o servidor só carimba e conta). */
+const ITENS_DO_KART = ['alface', 'toca', 'regador'] as const;
 /** De quantos em quantos passos o site manda a posição (web/src/corrida/fisica.ts, AMOSTRA). */
 const AMOSTRA_DA_POSICAO = 4;
 /** A primeira posição sai da largada: perto da linha de chegada (o kart larga três pontos antes dela). */
@@ -108,7 +113,12 @@ interface Linha {
 }
 
 /** Um item que o servidor carimbou: o que é preciso para conferir o "acertou" de quem diz ter sido atingido. */
-type ItemCarimbado = { dono: number; n: number } & ({ tipo: 'repolho'; s: number } | { tipo: 'lama'; x: number; y: number });
+type ItemCarimbado = { dono: number; n: number } & (
+  | { tipo: 'repolho'; s: number }
+  | { tipo: 'repolho-roxo'; s: number; alvo: number | null }
+  | { tipo: 'lama'; x: number; y: number }
+  | { tipo: (typeof ITENS_DO_KART)[number] }
+);
 
 /**
  * A posição de cada linha, só entre `contam` (quem ficou): 1 + quantos dos que contam ficaram na frente dela, então
@@ -367,7 +377,8 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
           const p = pilotos.get(quem);
           if (!p || fase !== 'correndo' || !dados || typeof dados !== 'object') return null;
           const d = dados as Record<string, unknown>;
-          if (d.tipo === 'repolho' || d.tipo === 'lama') {
+          const ehItem = d.tipo === 'repolho' || d.tipo === 'repolho-roxo' || d.tipo === 'lama' || (ITENS_DO_KART as readonly unknown[]).includes(d.tipo);
+          if (ehItem) {
             if (p.tempoMs !== null || !numero(d.n) || (d.n as number) < 0) return null;
             // não mais itens que as caixas da pista dão (uma fileira por volta, cada uma), nem dois no mesmo segundo
             const maximo = (PISTAS[corridas[indice]]?.caixas ?? 2) * VOLTAS + 1;
@@ -377,27 +388,50 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
             const u = p.ultima;
             if (!u || Math.abs((d.n as number) - u.n) > 60) return null;
             const id = `${quem}-${Math.round(d.n as number)}`;
-            if (d.tipo === 'repolho') {
+            const n = Math.round(d.n as number);
+            if (d.tipo === 'repolho' || d.tipo === 'repolho-roxo') {
               if (!numero(d.s) || !numero(d.lado) || Math.abs(d.lado as number) > 60 || (d.s as number) < 0 || (d.s as number) > 20000) return null;
               const comprimento = PISTAS[corridas[indice]]?.comprimento ?? 3000;
               if (distanciaNaVolta(d.s as number, (u.andou % 1) * comprimento, comprimento) > 80) return null;
+              // o alvo do roxo é alguém desta corrida, que não quem o soltou (ou ninguém)
+              const alvo = d.tipo === 'repolho-roxo' && typeof d.alvo === 'number' && d.alvo !== quem && pilotos.has(d.alvo) ? d.alvo : null;
               p.itens++;
               p.ultimoItem = agora();
-              itensDaCorrida.set(id, { tipo: 'repolho', dono: quem, n: Math.round(d.n as number), s: d.s as number });
-              return { tipo: 'repolho', id, dono: quem, n: Math.round(d.n as number), s: d.s, lado: d.lado };
+              if (d.tipo === 'repolho') {
+                itensDaCorrida.set(id, { tipo: 'repolho', dono: quem, n, s: d.s as number });
+                return { tipo: 'repolho', id, dono: quem, n, s: d.s, lado: d.lado };
+              }
+              itensDaCorrida.set(id, { tipo: 'repolho-roxo', dono: quem, n, s: d.s as number, alvo });
+              return { tipo: 'repolho-roxo', id, dono: quem, n, s: d.s, lado: d.lado, alvo };
+            }
+            if (d.tipo !== 'lama') {
+              // a alface, a toca e o regador: o servidor só carimba o dono e conta (o efeito é em quem usa, ou quem leva decide)
+              const tipo = d.tipo as (typeof ITENS_DO_KART)[number];
+              p.itens++;
+              p.ultimoItem = agora();
+              itensDaCorrida.set(id, { tipo, dono: quem, n });
+              return { tipo, id, dono: quem, n };
             }
             if (!numero(d.x) || !numero(d.y) || (d.x as number) < 0 || (d.y as number) < 0 || (d.x as number) > 1024 || (d.y as number) > 1024) return null;
             if (Math.hypot((d.x as number) - u.x, (d.y as number) - u.y) > 30) return null;
             p.itens++;
             p.ultimoItem = agora();
-            itensDaCorrida.set(id, { tipo: 'lama', dono: quem, n: Math.round(d.n as number), x: d.x as number, y: d.y as number });
-            return { tipo: 'lama', id, dono: quem, n: Math.round(d.n as number), x: d.x, y: d.y };
+            itensDaCorrida.set(id, { tipo: 'lama', dono: quem, n, x: d.x as number, y: d.y as number });
+            return { tipo: 'lama', id, dono: quem, n, x: d.x, y: d.y };
+          }
+          if (d.tipo === 'gastou') {
+            // o escudo de alface segurou um item e acabou: só o dono do escudo diz isso, uma vez
+            if (typeof d.id !== 'string') return null;
+            const escudo = itensDaCorrida.get(d.id);
+            if (!escudo || escudo.tipo !== 'alface' || escudo.dono !== quem || itensQueAcertaram.has(d.id)) return null;
+            itensQueAcertaram.add(d.id);
+            return { tipo: 'gastou', id: d.id };
           }
           if (d.tipo === 'acertou') {
             // quem foi atingido avisa, para o item sumir para todos
             if (typeof d.id !== 'string' || itensQueAcertaram.has(d.id) || p.acertos >= 40) return null;
             const item = itensDaCorrida.get(d.id);
-            if (!item) return null;
+            if (!item || (item.tipo !== 'repolho' && item.tipo !== 'repolho-roxo' && item.tipo !== 'lama')) return null;
             // E SÓ QUEM PODIA TER SIDO ATINGIDO (revisão independente, 03/11/2026: um script que respondia "acertou" a todo
             // item sumia com todos): não o dono, e só quem estava perto do item, pela última posição aceita dele. O site
             // manda a posição a cada 4 passos, antes de conferir os itens, então ela é de no máximo 3 passos antes do acerto.
@@ -407,9 +441,12 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
               if (u.n < item.n - AMOSTRA_DA_POSICAO || u.n - item.n > VIDA_DA_LAMA + AMOSTRA_DA_POSICAO) return null;
               if (Math.hypot(u.x - item.x, u.y - item.y) > PERTO_DA_LAMA) return null;
             } else {
-              if (u.n < item.n - AMOSTRA_DA_POSICAO || u.n - item.n > VIDA_DO_REPOLHO + AMOSTRA_DA_POSICAO) return null;
+              // o roxo com alvo só pega o alvo
+              if (item.tipo === 'repolho-roxo' && item.alvo !== null && item.alvo !== quem) return null;
+              const roxo = item.tipo === 'repolho-roxo';
+              if (u.n < item.n - AMOSTRA_DA_POSICAO || u.n - item.n > (roxo ? VIDA_DO_ROXO : VIDA_DO_REPOLHO) + AMOSTRA_DA_POSICAO) return null;
               const comprimento = PISTAS[corridas[indice]]?.comprimento ?? 3000;
-              const onde = item.s + (VELOCIDADE_DO_REPOLHO * Math.max(0, u.n - item.n)) / 60;
+              const onde = item.s + ((roxo ? VELOCIDADE_DO_ROXO : VELOCIDADE_DO_REPOLHO) * Math.max(0, u.n - item.n)) / 60;
               if (distanciaNaVolta(onde, (u.andou % 1) * comprimento, comprimento) > PERTO_DO_REPOLHO) return null;
             }
             p.acertos++;

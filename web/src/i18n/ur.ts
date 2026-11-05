@@ -2326,6 +2326,7 @@ export default {
   'Copa da Cenoura': 'گاجر کپ',
   'contra {nomes}': '{nomes} کے خلاف',
   'Usar o item': 'آئٹم استعمال کریں',
+  'Olhar para trás': 'پیچھے دیکھیں',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'موڑنے کے لیے تیر والی کلیدیں، پھسلنے کے لیے اسپیس، آئٹم استعمال کرنے کے لیے E۔',
   'Copa da turma': 'گروپ کا کپ',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'خرگوشوں کی دوڑ میں گروپ کے آخر تک دوڑے گئے گاجر کپ۔',

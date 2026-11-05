@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { AMOSTRA, amostrar, fantasmaEm, novoKart, passo, passosEmMs, pilotoAutomatico, progresso, tempoLegivel } from '../src/corrida/fisica';
-import { pontoNaLinha, repolhoEm, sortearItem } from '../src/corrida/laco';
+import { AMOSTRA, amostrar, atingir, fantasmaEm, novoKart, passo, passosEmMs, pilotoAutomatico, progresso, TEMPO_DA_TOCA, tempoLegivel } from '../src/corrida/fisica';
+import { pontoNaLinha, repolhoEm, roxoAlcancou, roxoEm, sortearItem } from '../src/corrida/laco';
 import { Chao, chaoEm, HORTA, marcosDaPista, montarPista, PISTAS, type Pista } from '../src/corrida/pista';
 import { PASSO_MAXIMO } from '../../server/src/corrida.ts';
 
@@ -98,12 +98,64 @@ test('os itens: o repolho anda pela linha do meio, some depois de 4 s, e o sorte
   assert.ok(Math.hypot(r1.x - depois.x, r1.y - depois.y) < 0.01, 'um segundo depois, 230 unidades à frente');
   assert.equal(repolhoEm(pista, { n: 100, s: 100, lado: 0 }, 100 + 4 * 60 + 1), null);
   assert.equal(repolhoEm(pista, { n: 100, s: 100, lado: 0 }, 99), null, 'antes de sair, não está');
-  const conta = (posicao: number) => {
-    let cenouras = 0;
-    for (let i = 0; i < 1000; i++) if (sortearItem(posicao, 4, () => i / 1000) === 'cenoura') cenouras++;
-    return cenouras;
+  const sorteados = (posicao: number, total = 4) => {
+    const vezes = new Map<string, number>();
+    for (let i = 0; i < 1000; i++) {
+      const item = sortearItem(posicao, total, () => i / 1000);
+      vezes.set(item, (vezes.get(item) ?? 0) + 1);
+    }
+    return (item: string) => vezes.get(item) ?? 0;
   };
-  assert.ok(conta(3) > conta(0) * 3, `o último ganha mais cenoura (${conta(3)}) que o primeiro (${conta(0)})`);
+  const primeiro = sorteados(0), ultimo = sorteados(3);
+  const turbos = (v: (i: string) => number) => v('cenoura') + v('cenouras');
+  assert.ok(turbos(ultimo) > turbos(primeiro) * 3, `o último ganha mais cenoura (${turbos(ultimo)}) que o primeiro (${turbos(primeiro)})`);
+  assert.ok(primeiro('lama') + primeiro('alface') > ultimo('lama') + ultimo('alface'), 'o primeiro ganha mais lama e alface');
+  assert.equal(primeiro('repolho-roxo'), 0, 'o líder não ganha o roxo: não há ninguém à frente');
+  assert.equal(primeiro('regador'), 0, 'nem o regador');
+  assert.ok(ultimo('regador') > 0, 'o último ganha o regador');
+  assert.equal(sorteados(1, 2)('regador'), 0, 'com dois na corrida, não há regador');
+  for (const item of ['cenoura', 'cenouras', 'repolho', 'repolho-roxo', 'lama', 'alface', 'toca', 'regador']) {
+    assert.ok(sorteados(1)(item) + sorteados(2)(item) + ultimo(item) + primeiro(item) > 0, `${item} sai de alguma posição`);
+  }
+});
+
+test('o repolho-roxo vai atrás do alvo pela linha do meio, e o alcança quando andou o quanto ele estava à frente', () => {
+  const e = { n: 0, s: 100, lado: 20 };
+  assert.equal(roxoAlcancou(pista, e, 60, 500), false, 'em 1 s andou 290: o alvo a 400 ainda não');
+  assert.equal(roxoAlcancou(pista, e, 83, 500), true, 'em ~1,4 s, sim');
+  assert.equal(roxoAlcancou(pista, e, 200, 500), false, 'muito depois de passar, não (já teria pegado ou sumido)');
+  assert.equal(roxoAlcancou(pista, e, 6 * 60 + 1, 100 + 1741), false, 'depois de 6 s, acabou');
+  // perto do fim da volta, o alvo já na volta seguinte: a distância dá a volta
+  const fim = { n: 0, s: pista.comprimento - 50, lado: 0 };
+  assert.equal(roxoAlcancou(pista, fim, 30, 80), true, 'o alvo 130 à frente, do outro lado da linha de chegada');
+  const r0 = roxoEm(pista, e, 0)!, r1 = roxoEm(pista, e, 60)!;
+  const q0 = pontoNaLinha(pista, 100), q1 = pontoNaLinha(pista, 390);
+  assert.ok(Math.hypot(r0.x - q0.x, r0.y - q0.y) > 15, 'sai da faixa de quem soltou');
+  assert.ok(Math.hypot(r1.x - q1.x, r1.y - q1.y) < 0.01, 'e em 1 s está no meio da pista');
+});
+
+test('a toca passa pela grama sem frear e não é atingida; a chuva faz escorregar', () => {
+  const naGrama = (toca: number) => {
+    const k = novoKart(pista);
+    // um kart na grama, em linha reta
+    let x = 0, y = 0;
+    for (let yy = 0; yy < 1024 && !x; yy += 4) for (let xx = 0; xx < 1024; xx += 4) if (chaoEm(pista, xx, yy) === Chao.Grama && chaoEm(pista, xx + 40, yy) === Chao.Grama) { x = xx; y = yy; break; }
+    Object.assign(k, { x, y, angulo: 0, rumo: 0, v: 100, toca });
+    for (let i = 0; i < 20; i++) passo(k, { acelera: true, freia: false, vira: 0, derrapa: false }, pista);
+    return k;
+  };
+  assert.ok(naGrama(TEMPO_DA_TOCA).v > naGrama(0).v + 20, 'na toca a grama não segura');
+  const k = naGrama(TEMPO_DA_TOCA);
+  atingir(k);
+  assert.equal(k.rodando, 0, 'debaixo da terra, nada pega');
+  const seco = novoKart(pista), molhado = novoKart(pista);
+  molhado.chuva = 3;
+  for (const kk of [seco, molhado]) {
+    for (let i = 0; i < 120; i++) passo(kk, pilotoAutomatico(kk, pista), pista);
+    for (let i = 0; i < 20; i++) passo(kk, { acelera: true, freia: false, vira: 1, derrapa: false }, pista);
+  }
+  const deriva = (kk: typeof seco) => Math.abs(kk.angulo - kk.rumo);
+  assert.ok(deriva(molhado) > deriva(seco) * 2, `na chuva o kart escorrega (${deriva(molhado).toFixed(3)} contra ${deriva(seco).toFixed(3)})`);
 });
 
 test('as copas do site e do servidor são as mesmas, e toda pista delas existe', async () => {

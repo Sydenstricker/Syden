@@ -2403,6 +2403,7 @@ export default {
   'Copa da Cenoura': 'Gulerodspokalen',
   'contra {nomes}': 'mod {nomes}',
   'Usar o item': 'Brug genstanden',
+  'Olhar para trás': 'Kig bagud',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Piletaster for at styre, mellemrum for at drifte, E for at bruge genstanden.',
   'Copa da turma': 'Holdets pokal',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Gulerodspokaler, som holdet har kørt til ende, i Kaninræs.',

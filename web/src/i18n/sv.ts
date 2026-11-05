@@ -2401,6 +2401,7 @@ export default {
   'Copa da Cenoura': 'Morotscupen',
   'contra {nomes}': 'mot {nomes}',
   'Usar o item': 'Använd föremålet',
+  'Olhar para trás': 'Titta bakåt',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Piltangenterna för att styra, mellanslag för att sladda, E för att använda föremålet.',
   'Copa da turma': 'Gängets cup',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Morotscuper som gänget har kört till slutet, i Kaninracet.',

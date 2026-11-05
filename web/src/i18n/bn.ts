@@ -2336,6 +2336,7 @@ export default {
   'Copa da Cenoura': 'গাজর কাপ',
   'contra {nomes}': '{nomes}-এর বিরুদ্ধে',
   'Usar o item': 'আইটেম ব্যবহার করো',
+  'Olhar para trás': 'পেছনে তাকাও',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'চালাতে তীর চিহ্ন, ড্রিফট করতে স্পেস, আইটেম ব্যবহার করতে E।',
   'Copa da turma': 'দলের কাপ',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'খরগোশের দৌড়ে দল শেষ পর্যন্ত যে গাজর কাপগুলো দৌড়েছে।',

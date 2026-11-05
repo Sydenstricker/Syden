@@ -2352,6 +2352,7 @@ export default {
   'Copa da Cenoura': 'ถ้วยแครอท',
   'contra {nomes}': 'แข่งกับ {nomes}',
   'Usar o item': 'ใช้ไอเท็ม',
+  'Olhar para trás': 'มองข้างหลัง',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'ใช้ปุ่มลูกศรเลี้ยว กดเว้นวรรคเพื่อดริฟต์ กด E เพื่อใช้ไอเท็ม',
   'Copa da turma': 'ถ้วยของก๊วน',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'ถ้วยแครอทที่ก๊วนแข่งจนจบในแข่งรถกระต่าย',

@@ -2408,6 +2408,7 @@ export default {
   'Copa da Cenoura': 'Mrkvový pohár',
   'contra {nomes}': 'proti {nomes}',
   'Usar o item': 'Použít předmět',
+  'Olhar para trás': 'Podívat se dozadu',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Šipkami řídíš, mezerníkem driftuješ, E použiješ předmět.',
   'Copa da turma': 'Pohár party',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Mrkvové poháry, které parta odjela až do konce, v Králičím závodě.',

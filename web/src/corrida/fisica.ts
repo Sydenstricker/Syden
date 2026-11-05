@@ -18,9 +18,13 @@ export const AMOSTRA = 4;
 /** Quanto dura a rodada de quem foi atingido (s): uma volta inteira do kart. */
 export const RODADA = 1;
 
-/** O kart atingido por um item começa a rodar (a lama é mais curta). */
+/** Quanto dura a TOCA (o coelho cava e anda por baixo da terra) e a CHUVA do regador, em segundos. */
+export const TEMPO_DA_TOCA = 3;
+export const TEMPO_DA_CHUVA = 3;
+
+/** O kart atingido por um item começa a rodar (a lama é mais curta). Debaixo da terra, nada o alcança. */
 export function atingir(k: Kart, quanto = RODADA) {
-  if (k.rodando > 0 || k.terminou) return;
+  if (k.rodando > 0 || k.terminou || k.toca > 0) return;
   k.rodando = quanto;
 }
 
@@ -33,6 +37,8 @@ export interface Comandos {
   derrapa: boolean;
   /** Usar o item (só na corrida da sala; quem lê é o laço, na hora em que a tecla desce). */
   usa?: boolean;
+  /** Segurando o "olhar para trás": a câmera vira para trás (só o desenho; a física não lê). */
+  olha?: boolean;
 }
 
 export interface Kart {
@@ -67,13 +73,17 @@ export interface Kart {
   bateu: boolean;
   /** Atingido por um item: quanto falta da rodada (s). Gira, perde velocidade e não obedece o direcional. */
   rodando: number;
+  /** Na TOCA (s que faltam): debaixo da terra, a grama não segura, as árvores não batem e os itens não pegam. */
+  toca: number;
+  /** Debaixo da CHUVA do regador (s que faltam): o asfalto escorrega como o gelo, e o teto cai um pouco. */
+  chuva: number;
 }
 
 export function novoKart(p: Pista): Kart {
   const { x, y, angulo } = p.largada;
   return {
     x, y, angulo, rumo: angulo, v: 0, deriva: 0, carga: 0, turbo: 0, pulo: 0, vpulo: 0,
-    indice: p.lx.length - 3, volta: 0, meio: false, voltas: [], passos: 0, terminou: false, chao: Chao.Asfalto, bateu: false, rodando: 0,
+    indice: p.lx.length - 3, volta: 0, meio: false, voltas: [], passos: 0, terminou: false, chao: Chao.Asfalto, bateu: false, rodando: 0, toca: 0, chuva: 0,
   };
 }
 
@@ -98,7 +108,12 @@ export function passo(k: Kart, c: Comandos, p: Pista): void {
   const chao = chaoEm(p, k.x, k.y);
   k.chao = chao;
   if (chao === Chao.Turbo && k.turbo < 0.9) k.turbo = 0.9;
-  const naGrama = chao === Chao.Grama || chao === Chao.Terra;
+  const naToca = k.toca > 0;
+  if (naToca) k.toca = Math.max(0, k.toca - dt);
+  const naChuva = k.chuva > 0;
+  if (naChuva) k.chuva = Math.max(0, k.chuva - dt);
+  // por baixo da terra, a grama não segura
+  const naGrama = !naToca && (chao === Chao.Grama || chao === Chao.Terra);
   // ATINGIDO (o repolho, a lama): a rodada de um segundo, sem direção nem acelerador, e a volta inteira no desenho
   if (k.rodando > 0) {
     k.rodando = Math.max(0, k.rodando - dt);
@@ -111,7 +126,7 @@ export function passo(k: Kart, c: Comandos, p: Pista): void {
   }
 
   // A VELOCIDADE: o teto depende do chão e do turbo; acelerar aproxima do teto, frear desce, soltar perde um pouco.
-  const teto = k.turbo > 0 ? (naGrama ? VMAX_GRAMA + 50 : VTURBO) : naGrama ? VMAX_GRAMA : VMAX;
+  const teto = (k.turbo > 0 ? (naGrama ? VMAX_GRAMA + 50 : VTURBO) : naGrama ? VMAX_GRAMA : VMAX) * (naChuva ? 0.85 : 1);
   if (k.turbo > 0) k.turbo = Math.max(0, k.turbo - dt);
   if (c.acelera && !c.freia) {
     if (k.v < teto) k.v += (teto - k.v) * (k.turbo > 0 ? 3.5 : 1.15) * dt + (k.v < 20 ? 30 * dt : 0);
@@ -159,7 +174,7 @@ export function passo(k: Kart, c: Comandos, p: Pista): void {
   k.angulo += giro * dt;
   // o rumo segue o ângulo: rápido no asfalto, devagar na derrapagem (o kart escorrega)
   // no gelo, o rumo segue o ângulo bem devagar: o kart escorrega na direção em que vinha
-  const noGelo = chao === Chao.Gelo;
+  const noGelo = chao === Chao.Gelo || naChuva;
   k.rumo = giraPara(k.rumo, k.angulo, (noGelo ? 1.6 : k.deriva !== 0 ? 2.6 : naGrama ? 7 : 13) * dt);
 
   // ANDAR, com as batidas: na parede, não passa e volta um pouco; na árvore, é empurrado para fora dela
@@ -177,7 +192,7 @@ export function passo(k: Kart, c: Comandos, p: Pista): void {
     k.y = ny;
   }
   for (const o of p.objetos) {
-    if (!o.raio) continue;
+    if (!o.raio || naToca) continue;
     const dx = k.x - o.x, dy = k.y - o.y, d = Math.hypot(dx, dy), min = o.raio + 4;
     if (d < min && d > 0) {
       k.x = o.x + (dx / d) * min;

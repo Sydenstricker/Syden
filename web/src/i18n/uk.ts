@@ -2389,6 +2389,7 @@ export default {
   'Copa da Cenoura': 'Морквяний кубок',
   'contra {nomes}': 'проти {nomes}',
   'Usar o item': 'Використати предмет',
+  'Olhar para trás': 'Подивитися назад',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Стрілки — кермо, пробіл — занос, E — предмет.',
   'Copa da turma': 'Кубок компанії',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Морквяні кубки, які компанія пройшла до кінця, у Кролячих перегонах.',

@@ -2359,6 +2359,7 @@ export default {
   'Copa da Cenoura': 'كأس الجزرة',
   'contra {nomes}': 'ضد {nomes}',
   'Usar o item': 'استخدام الأداة',
+  'Olhar para trás': 'النظر إلى الخلف',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'الأسهم للتوجيه، ومفتاح المسافة للانزلاق، وE لاستخدام الأداة.',
   'Copa da turma': 'كأس الجماعة',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'كؤوس الجزرة التي أكملتها الجماعة حتى النهاية في سباق الأرانب.',

@@ -2410,6 +2410,7 @@ export default {
   'Copa da Cenoura': 'ຖ້ວຍກາລົດ',
   'contra {nomes}': 'ແຂ່ງກັບ {nomes}',
   'Usar o item': 'ໃຊ້ໄອເທັມ',
+  'Olhar para trás': 'ເບິ່ງຫຼັງ',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'ລູກສອນເພື່ອບັງຄັບ, ຍະຫວ່າງເພື່ອດຣິຟ, E ເພື່ອໃຊ້ໄອເທັມ.',
   'Copa da turma': 'ຖ້ວຍຂອງກຸ່ມ',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'ຖ້ວຍກາລົດທີ່ກຸ່ມແຂ່ງຈົນຈົບ ໃນການແຂ່ງກະຕ່າຍ.',

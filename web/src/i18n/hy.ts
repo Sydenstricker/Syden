@@ -2428,6 +2428,7 @@ export default {
   'Copa da Cenoura': 'Գազարի գավաթ',
   'contra {nomes}': 'ընդդեմ {nomes}',
   'Usar o item': 'Օգտագործել առարկան',
+  'Olhar para trás': 'Նայել ետ',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Սլաքներով վարում ես, բացատով սահում, E-ով օգտագործում առարկան։',
   'Copa da turma': 'Խմբի գավաթ',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Գազարի գավաթներ, որոնք խումբը վազել է մինչև վերջ՝ Ճագարների մրցավազքում։',

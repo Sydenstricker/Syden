@@ -15989,6 +15989,9 @@ body.arrastando-barra {
   .corrida-toque button:nth-child(2) {
     margin-left: auto;
   }
+  .corrida-toque button small {
+    font-size: 0.7rem;
+  }
 }
 
 .corrida-fim {

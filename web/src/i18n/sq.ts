@@ -2401,6 +2401,7 @@ export default {
   'Copa da Cenoura': 'Kupa e Karotës',
   'contra {nomes}': 'kundër {nomes}',
   'Usar o item': 'Përdor objektin',
+  'Olhar para trás': 'Shiko pas',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Shigjetat për të drejtuar, Hapësira për të rrëshqitur, E për të përdorur objektin.',
   'Copa da turma': 'Kupa e grupit',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Kupat e Karotës që grupi i vrapoi deri në fund, në Garën e lepujve.',

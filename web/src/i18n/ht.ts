@@ -2419,6 +2419,7 @@ export default {
   'Copa da Cenoura': 'Koup Kawòt',
   'contra {nomes}': 'kont {nomes}',
   'Usar o item': 'Sèvi ak objè a',
+  'Olhar para trás': 'Gade dèyè',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Flèch pou dirije, Espas pou glise, E pou sèvi ak objè a.',
   'Copa da turma': 'Koup gwoup la',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Koup Kawòt gwoup la kouri jiska lafen, nan Kous lapen yo.',

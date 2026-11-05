@@ -2345,6 +2345,7 @@ export default {
   'Copa da Cenoura': 'Corn an Chairéid',
   'contra {nomes}': 'in aghaidh {nomes}',
   'Usar o item': 'Úsáid an mhír',
+  'Olhar para trás': 'Féach siar',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Saigheada chun stiúradh, Spás chun sciorradh, E chun an mhír a úsáid.',
   'Copa da turma': 'Corn na buíne',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Cornaí an Chairéid a rith an bhuíon go deireadh, i Rás na gCoiníní.',

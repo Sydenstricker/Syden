@@ -2347,6 +2347,7 @@ export default {
   'Copa da Cenoura': 'Iko Karọt',
   'contra {nomes}': 'megide {nomes}',
   'Usar o item': 'Jiri ihe ahụ',
+  'Olhar para trás': 'Lee azụ',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Akụ iji duzie, Oghere iji mịpụ, E iji jiri ihe ahụ.',
   'Copa da turma': 'Iko otu',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Iko Karọt ndị otu ahụ gbara ọsọ ruo na njedebe, n\'Ọsọ oke bekee.',

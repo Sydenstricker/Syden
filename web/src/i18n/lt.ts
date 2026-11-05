@@ -2411,6 +2411,7 @@ export default {
   'Copa da Cenoura': 'Morkų taurė',
   'contra {nomes}': 'prieš {nomes}',
   'Usar o item': 'Naudoti daiktą',
+  'Olhar para trás': 'Žiūrėti atgal',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Rodyklėmis vairuoji, tarpo klavišu driftini, E naudoji daiktą.',
   'Copa da turma': 'Kompanijos taurė',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Morkų taurės, kurias kompanija nuvažiavo iki galo Triušių lenktynėse.',

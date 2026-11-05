@@ -2403,6 +2403,7 @@ export default {
   'Copa da Cenoura': 'Wortelbeker',
   'contra {nomes}': 'teen {nomes}',
   'Usar o item': 'Gebruik die item',
+  'Olhar para trás': 'Kyk agtertoe',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Pyltjies om te stuur, Spasie om te gly, E om die item te gebruik.',
   'Copa da turma': 'Die groep se beker',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Wortelbekers wat die groep tot die einde gejaag het, in Haaswedren.',

@@ -10,6 +10,8 @@ import {
   passosEmMs,
   pilotoAutomatico,
   progresso,
+  TEMPO_DA_CHUVA,
+  TEMPO_DA_TOCA,
   type Comandos,
   type Kart,
 } from './fisica';
@@ -24,6 +26,7 @@ import {
   mapaDaPista,
   pontoNoMapa,
   prepararDesenho,
+  projetar,
   W,
   type Desenho,
   type Figura,
@@ -91,22 +94,40 @@ export interface LinhaDaOrdem {
   eu: boolean;
 }
 
-export type Item = 'cenoura' | 'repolho' | 'lama';
+/**
+ * OS ITENS (03/11/2026 os três primeiros; 05/11/2026, pedido dele, mais cinco). Só a mecânica, no tema do coelho:
+ * - cenoura: um turbo; cenouras: três turbos, um por aperto;
+ * - repolho: rola pela linha do meio por 4 s e derruba quem pega;
+ * - repolho-roxo: mais rápido, e SEGUE até o kart que estava logo à frente de quem o soltou (só ele pode ser derrubado);
+ * - lama: fica 30 s onde caiu;
+ * - alface: um escudo de folhas por 12 s, que segura o próximo repolho ou lama;
+ * - toca: o coelho cava e anda 3 s por baixo da terra (nada o pega, a grama não segura, as árvores não batem);
+ * - regador: chove 3 s em quem está na frente de quem o usou (o kart escorrega como no gelo). Só cai para os de trás.
+ */
+export type Item = 'cenoura' | 'cenouras' | 'repolho' | 'repolho-roxo' | 'lama' | 'alface' | 'toca' | 'regador';
 
 /** O que um item fez, no passo `n` da corrida de quem o usou. O servidor carimba o `dono`. */
 export type EventoDeItem =
   | { tipo: 'repolho'; id: string; dono: number; n: number; s: number; lado: number }
+  | { tipo: 'repolho-roxo'; id: string; dono: number; n: number; s: number; lado: number; alvo: number | null }
   | { tipo: 'lama'; id: string; dono: number; n: number; x: number; y: number }
-  | { tipo: 'acertou'; id: string };
+  | { tipo: 'alface' | 'toca' | 'regador'; id: string; dono: number; n: number }
+  /** O item pegou alguém (ou bateu num escudo) e sumiu para todos. */
+  | { tipo: 'acertou'; id: string }
+  /** O escudo de alface `id` segurou um item e acabou. */
+  | { tipo: 'gastou'; id: string };
 
 export interface Itens {
   /** Todos os eventos da corrida, os meus e os que chegaram: o laço lê, quem recebe do socket acrescenta. */
   eventos: EventoDeItem[];
   /** Um evento meu, para mandar aos outros (o laço já o pôs em `eventos`). */
-  aoEvento: (e: Exclude<EventoDeItem, { tipo: 'acertou' }> | { tipo: 'acertou'; id: string }) => void;
-  /** O item na mão mudou (para o botão de toque). */
-  aoItem?: (item: Item | null) => void;
+  aoEvento: (e: EventoDeItem) => void;
+  /** O item na mão mudou (para o botão de toque), e quantos usos ele ainda tem (as três cenouras). */
+  aoItem?: (item: Item | null, usos: number) => void;
 }
+
+/** Os tipos de evento que o servidor repassa (o site confere o que chega pelo socket contra esta lista). */
+export const TIPOS_DE_EVENTO = ['repolho', 'repolho-roxo', 'lama', 'alface', 'toca', 'regador', 'acertou', 'gastou'] as const;
 
 export interface OpcoesDoLaco {
   canvas: HTMLCanvasElement;
@@ -183,13 +204,59 @@ export function repolhoEm(p: Pista, e: { n: number; s: number; lado: number }, m
   return { x: q.x - q.dy * e.lado, y: q.y + q.dx * e.lado };
 }
 
-/** O item que sai da caixa, pela posição (0 = na frente) entre `total`. */
+/** O repolho-roxo: 290 unidades por segundo, por 6 s, atrás do kart que estava à frente de quem o soltou. */
+export const VELOCIDADE_DO_ROXO = 290;
+export const VIDA_DO_ROXO = 6 * 60;
+/** O escudo de alface dura 12 s (ou até segurar um item); a toca e a chuva, 3 s (em passos, para o desenho dos outros). */
+export const VIDA_DA_ALFACE = 12 * 60;
+export const PASSOS_DA_TOCA = 3 * 60;
+export const PASSOS_DA_CHUVA = 3 * 60;
+
+/** Onde está o repolho-roxo no passo `m` (null se ainda não saiu ou já acabou): pela linha do meio, indo ao centro. */
+export function roxoEm(p: Pista, e: { n: number; s: number; lado: number }, m: number) {
+  const dt = m - e.n;
+  if (dt < 0 || dt > VIDA_DO_ROXO) return null;
+  const q = pontoNaLinha(p, e.s + (VELOCIDADE_DO_ROXO * dt) / 60);
+  const lado = e.lado * Math.max(0, 1 - dt / 60);
+  return { x: q.x - q.dy * lado, y: q.y + q.dx * lado };
+}
+
+/**
+ * O repolho-roxo alcançou quem está em `sVitima` (o ponto da linha do meio dela) no passo `m`? Quem decide é o alvo, como
+ * nos outros itens: o repolho anda pela linha do meio, e alcança quando já andou o quanto o alvo estava à frente dele.
+ */
+export function roxoAlcancou(p: Pista, e: { n: number; s: number }, m: number, sVitima: number): boolean {
+  const dt = m - e.n;
+  if (dt < 0 || dt > VIDA_DO_ROXO) return false;
+  const andou = (VELOCIDADE_DO_ROXO * dt) / 60;
+  const distancia = (((sVitima - e.s) % p.comprimento) + p.comprimento) % p.comprimento;
+  return andou >= distancia - 6 && andou - distancia < 60;
+}
+
+/**
+ * O item que sai da caixa, pela posição (0 = na frente) entre `total`. Quem está atrás ganha mais cenoura, toca e regador;
+ * quem está na frente, mais lama, alface e repolho. O líder nunca ganha o roxo (não há ninguém à frente) nem o regador, e o
+ * regador só existe com 3 ou mais na corrida, para os do último terço.
+ */
 export function sortearItem(posicao: number, total: number, sorte = Math.random): Item {
-  const atras = total > 1 ? posicao / (total - 1) : 0.5;
-  // na frente: 10% cenoura, 30% repolho, 60% lama; atrás: 50% cenoura, 40% repolho, 10% lama
-  const cenoura = 0.1 + 0.4 * atras, repolho = 0.3 + 0.1 * atras;
-  const r = sorte();
-  return r < cenoura ? 'cenoura' : r < cenoura + repolho ? 'repolho' : 'lama';
+  const a = total > 1 ? posicao / (total - 1) : 0.5;
+  const pesos: [Item, number][] = [
+    ['cenoura', 0.08 + 0.17 * a],
+    ['cenouras', 0.2 * a],
+    ['repolho', 0.25 - 0.1 * a],
+    ['repolho-roxo', posicao === 0 ? 0 : 0.18 * (1 - Math.abs(2 * a - 1)) + 0.04],
+    ['lama', 0.35 - 0.3 * a],
+    ['alface', 0.25 - 0.15 * a],
+    ['toca', 0.02 + 0.13 * a],
+    ['regador', total >= 3 && a > 0.6 ? (0.15 * (a - 0.6)) / 0.4 : 0],
+  ];
+  const soma = pesos.reduce((s, [, w]) => s + w, 0);
+  let r = sorte() * soma;
+  for (const [item, w] of pesos) {
+    if (r < w) return item;
+    r -= w;
+  }
+  return 'cenoura';
 }
 
 export function rodarCorrida(o: OpcoesDoLaco): () => void {
@@ -228,14 +295,24 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
         })
       : [];
     let meuItem: Item | null = null;
+    /** Quantos usos o item na mão ainda tem (as três cenouras; os outros, 1). */
+    let usos = 0;
     let usavaAntes = false;
     const acertados = new Set<string>();
+    /** O meu escudo de alface: o id do evento e até que passo ele vale (0 = sem escudo). */
+    let meuEscudo: { id: string; ate: number } | null = null;
+    /** Os regadores que já choveram (ou não) em mim, e o quanto o dono tinha andado quando o usou (para o desenho). */
+    const regadoresVistos = new Set<string>();
+    const andouDoDono = new Map<string, number>();
+    /** Quem está logo à frente de mim agora (o alvo do repolho-roxo), pela ordem da corrida. */
+    let aFrente: number | null = null;
     const pegarItem = (item: Item | null) => {
       meuItem = item;
+      usos = item === 'cenouras' ? 3 : item ? 1 : 0;
       // o botão de toque some com o item antes de o dedo levantar: a tecla "usar" volta sozinha, senão o próximo item
       // precisaria de dois toques (revisão de 03/11/2026)
       if (item === null) comandos.usa = false;
-      o.itens?.aoItem?.(item);
+      o.itens?.aoItem?.(item, usos);
     };
     const lancar = (e: EventoDeItem) => {
       o.itens!.eventos.push(e);
@@ -280,28 +357,67 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
       const usa = c.usa === true;
       if (usa && !usavaAntes && meuItem !== null) {
         const id = `${o.eu}-${n}`;
-        if (meuItem === 'cenoura') kart.turbo = Math.max(kart.turbo, 1.1);
-        else if (meuItem === 'repolho') {
-          // sai na frente do kart, na faixa em que ele está
-          const q = pontoNaLinha(p, p.la[kart.indice]);
-          const lado = -(kart.x - q.x) * q.dy + (kart.y - q.y) * q.dx;
-          lancar({ tipo: 'repolho', id, dono: o.eu, n, s: +(p.la[kart.indice] + 16).toFixed(1), lado: +lado.toFixed(1) });
-        } else {
+        // sai na frente do kart, na faixa em que ele está
+        const q = pontoNaLinha(p, p.la[kart.indice]);
+        const lado = +(-(kart.x - q.x) * q.dy + (kart.y - q.y) * q.dx).toFixed(1);
+        const s = +(p.la[kart.indice] + 16).toFixed(1);
+        if (meuItem === 'cenoura' || meuItem === 'cenouras') kart.turbo = Math.max(kart.turbo, 1.1);
+        else if (meuItem === 'repolho') lancar({ tipo: 'repolho', id, dono: o.eu, n, s, lado });
+        else if (meuItem === 'repolho-roxo') lancar({ tipo: 'repolho-roxo', id, dono: o.eu, n, s, lado, alvo: aFrente });
+        else if (meuItem === 'lama') {
           lancar({ tipo: 'lama', id, dono: o.eu, n, x: +(kart.x - Math.cos(kart.angulo) * 12).toFixed(1), y: +(kart.y - Math.sin(kart.angulo) * 12).toFixed(1) });
+        } else {
+          if (meuItem === 'alface') meuEscudo = { id, ate: n + VIDA_DA_ALFACE };
+          else if (meuItem === 'toca') kart.toca = TEMPO_DA_TOCA;
+          else andouDoDono.set(id, progresso(kart, p));
+          lancar({ tipo: meuItem, id, dono: o.eu, n });
         }
-        pegarItem(null);
+        usos--;
+        if (usos <= 0) pegarItem(null);
+        else o.itens?.aoItem?.(meuItem, usos);
       }
       usavaAntes = usa;
+      if (meuEscudo && n >= meuEscudo.ate) meuEscudo = null;
       // fui atingido? (quem decide é quem leva). O item que já acertou alguém sumiu para todos, e não acerta mais ninguém
       // (revisão de 03/11/2026: o repolho invisível seguia derrubando quem vinha atrás)
       const sumiram = new Set(o.itens!.eventos.filter((e) => e.tipo === 'acertou').map((e) => e.id));
       for (const e of o.itens!.eventos) {
-        if (e.tipo === 'acertou' || acertados.has(e.id) || sumiram.has(e.id) || e.dono === o.eu || kart.rodando > 0) continue;
-        const alvo = e.tipo === 'repolho' ? repolhoEm(p, e, n) : n >= e.n && n - e.n < VIDA_DA_LAMA ? e : null;
-        if (alvo && Math.hypot(alvo.x - kart.x, alvo.y - kart.y) < (e.tipo === 'repolho' ? 9 : 8)) {
+        if (e.tipo === 'acertou' || e.tipo === 'gastou' || e.dono === o.eu) continue;
+        // O REGADOR: chove em mim se eu estava na frente de quem o usou, no passo em que ele usou
+        if (e.tipo === 'regador') {
+          if (regadoresVistos.has(e.id) || n < e.n) continue;
+          const dono = o.rivais?.get(e.dono);
+          const pos = dono ? rivalEm(dono.posicoes, e.n) : null;
+          if (!pos) continue;
+          regadoresVistos.add(e.id);
+          andouDoDono.set(e.id, pos.andou);
+          if (progresso(kart, p) > pos.andou && kart.toca === 0 && n - e.n < PASSOS_DA_CHUVA) kart.chuva = TEMPO_DA_CHUVA;
+          continue;
+        }
+        if (e.tipo === 'alface' || e.tipo === 'toca') continue;
+        if (acertados.has(e.id) || sumiram.has(e.id) || kart.rodando > 0 || kart.toca > 0) continue;
+        let pegou = false;
+        if (e.tipo === 'repolho-roxo') {
+          // o roxo só pega o alvo dele; sem alvo (quem soltou ia na frente), pega quem estiver no caminho
+          if (e.alvo === o.eu) pegou = roxoAlcancou(p, e, n, p.la[kart.indice]);
+          else if (e.alvo === null) {
+            const r = roxoEm(p, e, n);
+            pegou = !!r && Math.hypot(r.x - kart.x, r.y - kart.y) < 9;
+          }
+        } else {
+          const alvo = e.tipo === 'repolho' ? repolhoEm(p, e, n) : e.tipo === 'lama' && n >= e.n && n - e.n < VIDA_DA_LAMA ? e : null;
+          pegou = !!alvo && Math.hypot(alvo.x - kart.x, alvo.y - kart.y) < (e.tipo === 'repolho' ? 9 : 8);
+        }
+        if (!pegou) continue;
+        acertados.add(e.id);
+        lancar({ tipo: 'acertou', id: e.id });
+        if (meuEscudo) {
+          // a alface segura o item, e acaba
+          lancar({ tipo: 'gastou', id: meuEscudo.id });
+          meuEscudo = null;
+          tremor = 4;
+        } else {
           atingir(kart, e.tipo === 'lama' ? 0.7 : 1);
-          acertados.add(e.id);
-          lancar({ tipo: 'acertou', id: e.id });
         }
       }
     };
@@ -337,8 +453,34 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
           foco = p.largada;
         }
       }
-      const cam = cameraAtras(foco.x, foco.y, camAngulo);
+      // OLHAR PARA TRÁS (05/11/2026, pedido dele): segurando a tecla, a câmera vai à frente do kart e olha para trás. Só o
+      // desenho: a física e o volante continuam os mesmos
+      const olhando = o.piloto && comandos.olha === true && contagem === 0 && !kart.terminou;
+      const cam = olhando ? cameraAtras(kart.x, kart.y, camAngulo + Math.PI) : cameraAtras(foco.x, foco.y, camAngulo);
       desenharChao(d, p, cam);
+      // o que cada evento de item está fazendo agora (para o desenho dos karts)
+      const eventos = o.itens?.eventos ?? [];
+      const gastos = new Set(eventos.filter((e) => e.tipo === 'gastou').map((e) => e.id));
+      const ativo = (dono: number, tipo: 'alface' | 'toca', vida: number) =>
+        eventos.some((e) => e.tipo === tipo && e.dono === dono && n >= e.n && n - e.n < vida && !gastos.has(e.id));
+      /** Quem está na chuva, pelo que eu vejo: na frente do dono do regador, nos 3 s depois dele. */
+      const naChuva = (andou: number) =>
+        eventos.some((e) => e.tipo === 'regador' && n >= e.n && n - e.n < PASSOS_DA_CHUVA && andou > (andouDoDono.get(e.id) ?? Infinity));
+      /** Os enfeites de um kart: a toca no lugar dele, a alface em volta, a nuvem em cima. */
+      const enfeites = (x: number, y: number, z: number, escudo: boolean, chuva: boolean) => {
+        if (escudo) {
+          const f = figuraNoChao(d, cam, 'escudo', x, y, 1.9);
+          if (f) figuras.push({ ...f, z: z - 0.02 });
+        }
+        if (chuva) {
+          const pr = projetar(cam, x, y);
+          const nv = d.figuras.nuvem;
+          if (pr) {
+            const w = Math.round(nv.width * 1.6 * pr.escala), h = Math.round(nv.height * 1.6 * pr.escala);
+            figuras.push({ z: z - 0.03, desenhar: (ctx) => ctx.drawImage(nv, Math.round(pr.sx - w / 2), Math.round(pr.sy - h - 62 * pr.escala), w, h) });
+          }
+        }
+      };
       const figuras: Figura[] = [];
       for (const ob of p.objetos) {
         const f = figuraNoChao(d, cam, ob.tipo, ob.x, ob.y, ob.raio > 0 ? 2.6 : ob.tipo === 'cenoura' ? 1 : 0.8);
@@ -351,12 +493,13 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
         if (f) figuras.push(f);
       }
       if (o.itens) {
-        const sumiram = new Set(o.itens.eventos.filter((e) => e.tipo === 'acertou').map((e) => e.id));
-        for (const e of o.itens.eventos) {
-          if (e.tipo === 'acertou' || sumiram.has(e.id)) continue;
-          const pos = e.tipo === 'repolho' ? repolhoEm(p, e, n) : n >= e.n && n - e.n < VIDA_DA_LAMA ? e : null;
+        const sumiram = new Set(eventos.filter((e) => e.tipo === 'acertou').map((e) => e.id));
+        for (const e of eventos) {
+          if (e.tipo !== 'repolho' && e.tipo !== 'repolho-roxo' && e.tipo !== 'lama') continue;
+          if (sumiram.has(e.id)) continue;
+          const pos = e.tipo === 'repolho' ? repolhoEm(p, e, n) : e.tipo === 'repolho-roxo' ? roxoEm(p, e, n) : n >= e.n && n - e.n < VIDA_DA_LAMA ? e : null;
           if (!pos) continue;
-          const f = figuraNoChao(d, cam, e.tipo, pos.x, pos.y, e.tipo === 'repolho' ? 1.2 : 1.4);
+          const f = figuraNoChao(d, cam, e.tipo, pos.x, pos.y, e.tipo === 'lama' ? 1.4 : 1.2);
           if (f) figuras.push(f);
         }
       }
@@ -367,20 +510,35 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
         if (f) figuras.push(f);
       }
       for (const r of rivais) {
-        const f = kartNaTela(d, cam, r.pos.x, r.pos.y, r.pos.a, 0, { nome: r.nome, avatar: r.avatar });
-        if (f) figuras.push(f);
+        // na toca, o kart some e fica o monte de terra andando, com as orelhas de fora
+        const f = ativo(r.id, 'toca', PASSOS_DA_TOCA)
+          ? figuraNoChao(d, cam, 'toca', r.pos.x, r.pos.y, 1.5)
+          : kartNaTela(d, cam, r.pos.x, r.pos.y, r.pos.a, 0, { nome: r.nome, avatar: r.avatar });
+        if (!f) continue;
+        figuras.push(f);
+        enfeites(r.pos.x, r.pos.y, f.z, ativo(r.id, 'alface', VIDA_DA_ALFACE), naChuva(r.pos.andou));
       }
       if (o.piloto) {
-        const meu = kartNaTela(d, cam, kart.x, kart.y, kart.angulo, kart.pulo, { tremor: tremor > 0 ? (tremor % 2 ? 1 : -1) : 0, avatar: o.meuAvatar ?? null });
-        if (meu) figuras.push({ ...meu, z: meu.z - 0.01 });
+        const meu = kart.toca > 0
+          ? figuraNoChao(d, cam, 'toca', kart.x, kart.y, 1.5)
+          : kartNaTela(d, cam, kart.x, kart.y, kart.angulo, kart.pulo, { tremor: tremor > 0 ? (tremor % 2 ? 1 : -1) : 0, avatar: o.meuAvatar ?? null });
+        if (meu) {
+          figuras.push({ ...meu, z: meu.z - 0.01 });
+          // a minha chuva é a da tela inteira (a nuvem em cima do meu kart parecia boiar na pista)
+          enfeites(kart.x, kart.y, meu.z - 0.01, meuEscudo !== null, false);
+        }
       }
       figuras.sort((a, b) => b.z - a.z);
       for (const f of figuras) f.desenhar(d.ctx);
-      if (o.piloto && (kart.deriva !== 0 || kart.turbo > 0)) {
+      if (o.piloto && !olhando && kart.toca === 0 && (kart.deriva !== 0 || kart.turbo > 0)) {
         faiscas(d.ctx, W / 2, 168, kart.turbo > 0 ? 2 : nivelDaCarga(kart), performance.now() / 1000, kart.deriva);
       }
+      // a chuva na tela de quem está debaixo dela
+      if (o.piloto && kart.chuva > 0) chuvaNaTela(d.ctx, performance.now() / 1000);
+      // olhando para trás: a moldura do retrovisor, para não confundir com a corrida andando ao contrário
+      if (olhando) retrovisor(d.ctx);
       // o item na mão: um quadro no alto, no meio (como nos jogos da época)
-      if (o.itens && o.piloto && contagem === 0 && !kart.terminou) quadroDoItem(d, meuItem);
+      if (o.itens && o.piloto && contagem === 0 && !kart.terminou) quadroDoItem(d, meuItem, usos);
       // o mapa pequeno no canto: os fantasmas em cinza, os rivais em azul, a pessoa em laranja
       d.ctx.globalAlpha = 0.85;
       d.ctx.drawImage(mapa, W - 60, H - 60);
@@ -409,6 +567,7 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
         linhas.sort((a, b) => b.andou - a.andou);
         minhaPosicao = Math.max(0, linhas.findIndex((l) => l.eu));
         quantos = linhas.length;
+        aFrente = minhaPosicao > 0 ? linhas[minhaPosicao - 1].id : null;
         const chave = linhas.map((l) => l.id).join(',');
         if (chave !== ordemAntes && o.aoOrdem) {
           ordemAntes = chave;
@@ -457,8 +616,8 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
   };
 }
 
-/** O quadro do item, no alto e no meio: vazio, ou com a figura do item. */
-function quadroDoItem(d: Desenho, item: Item | null) {
+/** O quadro do item, no alto e no meio: vazio, ou com a figura do item (as cenouras, uma por uso que falta). */
+function quadroDoItem(d: Desenho, item: Item | null, usos: number) {
   const ctx = d.ctx;
   const x = W / 2 - 13, y = 6;
   ctx.fillStyle = '#1e1822';
@@ -468,10 +627,50 @@ function quadroDoItem(d: Desenho, item: Item | null) {
   ctx.fillStyle = '#fbf3e4';
   ctx.fillRect(x + 1, y + 1, 24, 1);
   if (!item) return;
-  const fig = d.figuras[item];
-  const escala = item === 'lama' ? 1.2 : 1.6;
-  const w = Math.round(fig.width * escala), h = Math.round(fig.height * escala);
-  ctx.drawImage(fig, Math.round(x + 13 - w / 2), Math.round(y + 11 - h / 2), w, h);
+  const desenhar = (nome: string, escala: number, cx: number, cy: number) => {
+    const fig = d.figuras[nome];
+    const w = Math.round(fig.width * escala), h = Math.round(fig.height * escala);
+    ctx.drawImage(fig, Math.round(cx - w / 2), Math.round(cy - h / 2), w, h);
+  };
+  if (item === 'cenouras') {
+    for (let i = 0; i < usos; i++) desenhar('cenoura', 1, x + 6 + i * 7, y + 11 + (i % 2 ? 2 : -2));
+    return;
+  }
+  const figura = item === 'alface' ? 'escudo' : item === 'regador' ? 'regador' : item;
+  desenhar(figura, item === 'lama' ? 1.2 : item === 'alface' || item === 'toca' ? 0.9 : 1.6, x + 13, y + 11);
+}
+
+/** As gotas da chuva do regador, caindo na tela inteira de quem está debaixo dela. */
+function chuvaNaTela(ctx: CanvasRenderingContext2D, tempo: number) {
+  ctx.fillStyle = '#9cc8f0';
+  for (let i = 0; i < 70; i++) {
+    const x = (i * 47 + Math.floor(tempo * 40) * (i % 3)) % W;
+    const y = (i * 29 + tempo * 260) % H;
+    ctx.fillRect(Math.round(x), Math.round(y), 1, 4);
+  }
+  ctx.fillStyle = '#4a6a9022';
+  ctx.fillRect(0, 0, W, H);
+}
+
+/** A moldura do retrovisor: olhando para trás, a tela ganha a borda e o espelhinho no alto. */
+function retrovisor(ctx: CanvasRenderingContext2D) {
+  ctx.fillStyle = '#1e1822';
+  ctx.fillRect(0, 0, W, 3);
+  ctx.fillRect(0, H - 3, W, 3);
+  ctx.fillRect(0, 0, 3, H);
+  ctx.fillRect(W - 3, 0, 3, H);
+  ctx.fillStyle = '#c8c0cc';
+  ctx.fillRect(3, 3, W - 6, 1);
+  // o espelhinho: um retângulo arredondado com a seta para trás
+  const x = 8, y = 8;
+  ctx.fillStyle = '#1e1822';
+  ctx.fillRect(x, y, 22, 12);
+  ctx.fillStyle = '#9cc8f0';
+  ctx.fillRect(x + 1, y + 1, 20, 10);
+  ctx.fillStyle = '#1e1822';
+  ctx.fillRect(x + 6, y + 5, 10, 2);
+  ctx.fillRect(x + 6, y + 3, 2, 6);
+  ctx.fillRect(x + 4, y + 4, 2, 4);
 }
 
 /** O semáforo da largada: três luzes vermelhas que acendem uma a uma, e as três verdes na hora de sair. */

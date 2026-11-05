@@ -69,7 +69,12 @@ export function prepararDesenho(canvas: HTMLCanvasElement, tema: Tema): Desenho 
       flor: flor(),
       caixa: caixa(),
       repolho: repolho(),
+      'repolho-roxo': repolhoRoxo(),
       lama: lama(),
+      escudo: escudo(),
+      toca: toca(),
+      regador: regador(),
+      nuvem: nuvem(),
     },
     coelho: null,
   };
@@ -303,6 +308,88 @@ function repolho() {
   return figura(
     ['...kkkk...', '..kGgGGk..', '.kGgGGgGk.', 'kGGgGgGGgk', 'kgGGgGGgGk', 'kGgGGgGgGk', '.kGGgGGGk.', '..kgGGgk..', '...kkkk...'],
     { k: '#1e2a1e', G: '#86c06a', g: '#5e9a4c' },
+  );
+}
+
+/** O repolho-roxo (o que segue o kart da frente): o mesmo desenho, em roxo, com o brilho. */
+function repolhoRoxo() {
+  return figura(
+    ['...kkkk...', '..kPpPPk..', '.kPpPPpPk.', 'kPPpPwPPpk', 'kpPPpPPpPk', 'kPpPPpPpPk', '.kPPpPPPk.', '..kpPPpk..', '...kkkk...'],
+    { k: '#22142a', P: '#a868c8', p: '#7a3e9a', w: '#f0d8ff' },
+  );
+}
+
+/** O escudo de alface: as folhas em roda, abertas no meio (o kart aparece por dentro). */
+function escudo() {
+  return figura(
+    [
+      '.....kkkkkkkk.....',
+      '...kkGgGGgGGgkk...',
+      '..kGgGk....kGgGk..',
+      '.kGgk........kgGk.',
+      'kGgk..........kGgk',
+      'kgGk..........kgGk',
+      'kGgk..........kGgk',
+      '.kGgk........kgGk.',
+      '..kGgGk....kGgGk..',
+      '...kkGgGGgGGgkk...',
+      '.....kkkkkkkk.....',
+    ],
+    { k: '#2a4a1e', G: '#9ad070', g: '#c8ec98' },
+  );
+}
+
+/** A toca: o monte de terra andando por baixo da pista, com as duas orelhas de fora. */
+function toca() {
+  return figura(
+    [
+      '.....kk..kk.......',
+      '....kWWk.kWWk.....',
+      '....kWpk.kWpk.....',
+      '....kWpk.kWpk.....',
+      '.....kWk.kWk......',
+      '...kkkkkkkkkkkk...',
+      '..kTTtTTTTtTTTTk..',
+      '.kTtTTTTtTTTTtTTk.',
+      'kTTTTtTTTTTtTTTTTk',
+      'kkkkkkkkkkkkkkkkkk',
+    ],
+    { k: '#2a1a14', T: '#8a6038', t: '#a87a4a', W: '#f4ece8', p: '#e8a0b4' },
+  );
+}
+
+/** O regador (o item que faz chover em quem está na frente). */
+function regador() {
+  return figura(
+    [
+      '......kkkk....',
+      '.....k....k...',
+      'k...kkkkkkkk..',
+      'kk..kBBBBBBk..',
+      '.kk.kBbBBBBkk.',
+      '..kkkBBBBBBk.k',
+      '...kBBBbBBBk.k',
+      '....kBBBBBBkk.',
+      '....kkkkkkkk..',
+    ],
+    { k: '#1e2a3a', B: '#5a9ad0', b: '#a8d0f0' },
+  );
+}
+
+/** A nuvenzinha da chuva, em cima de quem está debaixo dela. */
+function nuvem() {
+  return figura(
+    [
+      '....kkkk......',
+      '..kkNNNNkkk...',
+      '.kNNnNNNNNNk..',
+      'kNNNNNNnNNNNk.',
+      'kNnNNNNNNNNNNk',
+      '.kkkkkkkkkkkk.',
+      '..b...b...b...',
+      '.b...b...b....',
+    ],
+    { k: '#4a5a6a', N: '#d8e0ea', n: '#ffffff', b: '#7ab4ec' },
   );
 }
 

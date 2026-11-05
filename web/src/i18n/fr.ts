@@ -2361,6 +2361,7 @@ export default {
   'Copa da Cenoura': 'Coupe Carotte',
   'contra {nomes}': 'contre {nomes}',
   'Usar o item': 'Utiliser l\'objet',
+  'Olhar para trás': 'Regarder derrière',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Flèches pour diriger, Espace pour déraper, E pour utiliser l\'objet.',
   'Copa da turma': 'La coupe de la bande',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Coupes Carotte que la bande a courues jusqu\'au bout, dans la Course des lapins.',

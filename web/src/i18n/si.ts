@@ -2409,6 +2409,7 @@ export default {
   'Copa da Cenoura': 'කැරට් කුසලානය',
   'contra {nomes}': '{nomes} ට එරෙහිව',
   'Usar o item': 'භාණ්ඩය භාවිත කරන්න',
+  'Olhar para trás': 'පිටුපස බලන්න',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'හැරවීමට ඊතල යතුරු, ලිස්සීමට හිස්තැන් යතුර, භාණ්ඩය භාවිතයට E.',
   'Copa da turma': 'කණ්ඩායමේ කුසලානය',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'හාවුන්ගේ තරඟයේදී කණ්ඩායම අවසානය දක්වා දිව ගිය කැරට් කුසලාන.',

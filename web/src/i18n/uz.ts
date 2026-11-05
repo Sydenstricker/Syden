@@ -2417,6 +2417,7 @@ export default {
   'Copa da Cenoura': 'Sabzi kubogi',
   'contra {nomes}': 'raqiblar: {nomes}',
   'Usar o item': 'Buyumni ishlatish',
+  'Olhar para trás': 'Orqaga qarash',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Boshqarish uchun strelkalar, sirpanish uchun Probel, buyumni ishlatish uchun E.',
   'Copa da turma': 'Jamoa kubogi',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Jamoa Quyonlar poygasida oxirigacha haydagan Sabzi kuboklari.',

@@ -2410,6 +2410,7 @@ export default {
   'Copa da Cenoura': 'Ҷоми Сабзӣ',
   'contra {nomes}': 'бар зидди {nomes}',
   'Usar o item': 'Ашёро истифода бар',
+  'Olhar para trás': 'Ба қафо нигоҳ кун',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Тирчаҳо барои идора, фосила барои лағжидан, E барои истифодаи ашё.',
   'Copa da turma': 'Ҷоми гурӯҳ',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Ҷомҳои Сабзӣ, ки гурӯҳ дар Пойгаи харгӯшҳо то охир давонд.',

@@ -2327,6 +2327,7 @@ export default {
   'Copa da Cenoura': 'جام هویج',
   'contra {nomes}': 'در برابر {nomes}',
   'Usar o item': 'استفاده از آیتم',
+  'Olhar para trás': 'نگاه به عقب',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'کلیدهای جهت‌نما برای فرمان، کلید فاصله برای دریفت، E برای استفاده از آیتم.',
   'Copa da turma': 'جام جمع',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'جام‌های هویج که جمع در مسابقهٔ خرگوش‌ها تا پایان رانده است.',

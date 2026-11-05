@@ -289,6 +289,40 @@ test('"acertou" só de quem podia ter sido atingido: nem o dono, nem quem estava
   assert.deepEqual(jogo.tempoReal!(biaId, { tipo: 'acertou', id: repolho.id }), { tipo: 'acertou', id: repolho.id });
 });
 
+test('os itens de 05/11/2026: o roxo só pega o alvo, a alface só o dono gasta, e a toca e o regador só são carimbados', () => {
+  const m = contexto([anaId, biaId], comunidade.id);
+  const jogo = corrida.comecar(m.ctx, { naSala: [anaId, biaId], criadaPor: anaId, corpo: {} });
+  assert.ok(typeof jogo !== 'string');
+  m.relogio[0].depois();
+  agora += 10_000;
+  assert.ok(jogo.tempoReal!(anaId, { x: 260, y: 190, a: 0, n: 297, andou: 100 / 3008 }));
+  // o roxo: o alvo inventado (quem não corre) vira "sem alvo"; o alvo é a Bia
+  const semAlvo = jogo.tempoReal!(anaId, { tipo: 'repolho-roxo', n: 300, s: 116, lado: 0, alvo: 999999 }) as { alvo: unknown };
+  assert.equal(semAlvo.alvo, null);
+  agora += 1100;
+  const roxo = jogo.tempoReal!(anaId, { tipo: 'repolho-roxo', n: 301, s: 116, lado: 0, alvo: biaId, dono: biaId }) as { id: string; dono: number; alvo: number };
+  assert.deepEqual([roxo.dono, roxo.alvo], [anaId, biaId], 'o dono é quem mandou, o alvo é quem ele disse');
+  // a Bia, 1 s depois, onde o roxo estava: 116 + 290
+  agora += 1000;
+  assert.ok(jogo.tempoReal!(biaId, { x: 255, y: 190, a: 0, n: 300, andou: 0.01 }));
+  agora += 1000;
+  assert.ok(jogo.tempoReal!(biaId, { x: 400, y: 170, a: 0, n: 361, andou: 406 / 3008 }));
+  assert.deepEqual(jogo.tempoReal!(biaId, { tipo: 'acertou', id: roxo.id }), { tipo: 'acertou', id: roxo.id });
+  // a alface, a toca e o regador: carimbados com o dono, contando no limite de itens; a toca não "acerta" ninguém
+  agora += 1100;
+  const alface = jogo.tempoReal!(anaId, { tipo: 'alface', n: 310 }) as { id: string; dono: number };
+  assert.deepEqual(alface, { tipo: 'alface', id: `${anaId}-310`, dono: anaId, n: 310 });
+  assert.equal(jogo.tempoReal!(biaId, { tipo: 'gastou', id: alface.id }), null, 'só a dona gasta o escudo');
+  assert.equal(jogo.tempoReal!(biaId, { tipo: 'acertou', id: alface.id }), null, 'o escudo não "acerta" ninguém');
+  assert.deepEqual(jogo.tempoReal!(anaId, { tipo: 'gastou', id: alface.id }), { tipo: 'gastou', id: alface.id });
+  assert.equal(jogo.tempoReal!(anaId, { tipo: 'gastou', id: alface.id }), null, 'uma vez só');
+  agora += 1100;
+  assert.equal(jogo.tempoReal!(anaId, { tipo: 'toca', n: 330 })?.constructor, Object);
+  assert.equal(jogo.tempoReal!(anaId, { tipo: 'regador', n: 331 }), null, 'dois no mesmo segundo, não');
+  agora += 1100;
+  assert.deepEqual(jogo.tempoReal!(anaId, { tipo: 'regador', n: 340 }), { tipo: 'regador', id: `${anaId}-340`, dono: anaId, n: 340 });
+});
+
 test('a medalha da tela é a do troféu: quem saiu não tem posição, e empate divide (revisão independente, 03/11/2026)', async () => {
   const caio = await criarConta(app, 'caio-da-largada');
   const caioId = await idDe(caio.token);

@@ -2409,6 +2409,7 @@ export default {
   'Copa da Cenoura': 'Amboaran\'ny Karoty',
   'contra {nomes}': 'manohitra {nomes}',
   'Usar o item': 'Ampiasao ilay zavatra',
+  'Olhar para trás': 'Hijery any aoriana',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Ny zana-tsipika hitondrana, ny Espace hisolasolana, ny E hampiasana ilay zavatra.',
   'Copa da turma': 'Amboaran\'ny tarika',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Amboaran\'ny Karoty novitain\'ny tarika hatramin\'ny farany, tao amin\'ny Hazakazaky ny bitro.',

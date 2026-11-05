@@ -2338,6 +2338,7 @@ export default {
   'Copa da Cenoura': 'Wortelcup',
   'contra {nomes}': 'tegen {nomes}',
   'Usar o item': 'Item gebruiken',
+  'Olhar para trás': 'Achteruit kijken',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Pijltjestoetsen om te sturen, spatiebalk om te driften, E om het item te gebruiken.',
   'Copa da turma': 'Cup van de groep',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Wortelcups die de groep tot het einde heeft gereden, in de Konijnenrace.',

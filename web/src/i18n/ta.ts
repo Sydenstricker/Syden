@@ -2324,6 +2324,7 @@ export default {
   'Copa da Cenoura': 'கேரட் கோப்பை',
   'contra {nomes}': 'எதிராக: {nomes}',
   'Usar o item': 'பொருளைப் பயன்படுத்து',
+  'Olhar para trás': 'பின்னால் பார்',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'திருப்ப அம்புக்குறி விசைகள், சறுக்க ஸ்பேஸ், பொருளைப் பயன்படுத்த E.',
   'Copa da turma': 'குழுவின் கோப்பை',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'முயல் பந்தயத்தில் குழு இறுதிவரை ஓட்டிய கேரட் கோப்பைகள்.',

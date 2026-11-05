@@ -2427,6 +2427,7 @@ export default {
   'Copa da Cenoura': 'სტაფილოს თასი',
   'contra {nomes}': 'მეტოქეები: {nomes}',
   'Usar o item': 'ნივთის გამოყენება',
+  'Olhar para trás': 'უკან ყურება',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'ისრები საჭისთვის, ჰარი დრიფტისთვის, E ნივთისთვის.',
   'Copa da turma': 'ჯგუფის თასი',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'სტაფილოს თასები, რომლებიც ჯგუფმა ბოლომდე გაიარა კურდღლების რბოლაში.',

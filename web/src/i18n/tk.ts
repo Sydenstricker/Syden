@@ -2411,6 +2411,7 @@ export default {
   'Copa da Cenoura': 'Käşir kubogy',
   'contra {nomes}': 'garşydaşlar: {nomes}',
   'Usar o item': 'Zady ulan',
+  'Olhar para trás': 'Yza seret',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Sürmek üçin oklar, süýşmek üçin Boşluk, zady ulanmak üçin E.',
   'Copa da turma': 'Toparyň kubogy',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Towşanlaryň ýaryşynda toparyň ahyryna çenli süren Käşir kuboklary.',

@@ -2339,6 +2339,7 @@ export default {
   'Copa da Cenoura': 'Cupa Morcovului',
   'contra {nomes}': 'contra {nomes}',
   'Usar o item': 'Folosește obiectul',
+  'Olhar para trás': 'Privește în spate',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Săgețile pentru a vira, Spațiu pentru drift, E pentru a folosi obiectul.',
   'Copa da turma': 'Cupa găștii',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Cupele Morcovului pe care gașca le-a terminat, în Cursa iepurașilor.',

@@ -2350,6 +2350,7 @@ export default {
   'Copa da Cenoura': 'Igikombe cya Karoti',
   'contra {nomes}': 'uhanganye na {nomes}',
   'Usar o item': 'Koresha ikintu',
+  'Olhar para trás': 'Reba inyuma',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Utwambi two kuyobora, Space yo kunyerera, E yo gukoresha ikintu.',
   'Copa da turma': 'Igikombe cy\'itsinda',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Ibikombe bya Karoti itsinda ryasiganwe kugeza ku iherezo, mu Isiganwa ry\'inkwavu.',

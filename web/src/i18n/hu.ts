@@ -2411,6 +2411,7 @@ export default {
   'Copa da Cenoura': 'Répakupa',
   'contra {nomes}': 'ellenfelek: {nomes}',
   'Usar o item': 'Tárgy használata',
+  'Olhar para trás': 'Hátranézés',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Nyilakkal kormányzol, szóközzel driftelsz, E-vel használod a tárgyat.',
   'Copa da turma': 'A csapat kupája',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Répakupák, amelyeket a csapat végigversenyzett a Nyuszifutamban.',

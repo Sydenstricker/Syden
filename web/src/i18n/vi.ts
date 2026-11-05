@@ -2309,6 +2309,7 @@ export default {
   'Copa da Cenoura': 'Cúp Cà Rốt',
   'contra {nomes}': 'đấu với {nomes}',
   'Usar o item': 'Dùng vật phẩm',
+  'Olhar para trás': 'Nhìn ra sau',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Phím mũi tên để lái, phím cách để trượt, E để dùng vật phẩm.',
   'Copa da turma': 'Cúp của nhóm',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Những Cúp Cà Rốt mà nhóm đã đua đến cuối, trong Đua thỏ.',

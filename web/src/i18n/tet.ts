@@ -2341,6 +2341,7 @@ export default {
   'Copa da Cenoura': 'Kopa Senoura',
   'contra {nomes}': 'kontra {nomes}',
   'Usar o item': 'Uza objetu',
+  'Olhar para trás': 'Haree ba kotuk',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Xave seta atu kondús, Space atu desliza, E atu uza objetu.',
   'Copa da turma': 'Kopa grupu nian',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Kopa Senoura sira-ne\'ebé grupu halai to\'o rohan, iha Halai Koelu.',

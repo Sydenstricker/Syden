@@ -2343,6 +2343,7 @@ export default {
   'Copa da Cenoura': 'Ipu o le Karoti',
   'contra {nomes}': 'faasaga ia {nomes}',
   'Usar o item': 'Faaaoga le mea',
+  'Olhar para trás': 'Vaai i tua',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Ki o aū e ave ai, Space e see ai, E e faaaoga ai le mea.',
   'Copa da turma': 'Ipu a le vaega',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'O Ipu o le Karoti na tuuga ai le vaega seia oo i le iuga, i le Tuuga a Lapiti.',

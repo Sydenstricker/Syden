@@ -2373,6 +2373,7 @@ export default {
   'Copa da Cenoura': 'Kök Kuboku',
   'contra {nomes}': 'rəqiblər: {nomes}',
   'Usar o item': 'Əşyanı istifadə et',
+  'Olhar para trás': 'Arxaya bax',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'İdarə etmək üçün oxlar, sürüşmək üçün Boşluq, əşyanı istifadə etmək üçün E.',
   'Copa da turma': 'Dəstənin kuboku',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Dəstənin Dovşan yarışında sona qədər sürdüyü Kök Kubokları.',

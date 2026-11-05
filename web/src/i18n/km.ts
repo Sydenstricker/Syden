@@ -2408,6 +2408,7 @@ export default {
   'Copa da Cenoura': 'ពានការ៉ុត',
   'contra {nomes}': 'ទល់នឹង {nomes}',
   'Usar o item': 'ប្រើវត្ថុ',
+  'Olhar para trás': 'មើលទៅក្រោយ',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'ព្រួញសម្រាប់បើកបរ ដកឃ្លាសម្រាប់រអិល E សម្រាប់ប្រើវត្ថុ។',
   'Copa da turma': 'ពានរបស់ក្រុម',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'ពានការ៉ុតដែលក្រុមបានប្រណាំងរហូតដល់ចប់ ក្នុងការប្រណាំងទន្សាយ។',

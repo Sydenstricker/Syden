@@ -2334,6 +2334,7 @@ export default {
   'Copa da Cenoura': 'Copa Zanahoria',
   'contra {nomes}': 'contra {nomes}',
   'Usar o item': 'Usar el objeto',
+  'Olhar para trás': 'Mirar atrás',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Flechas para girar, Espacio para derrapar, E para usar el objeto.',
   'Copa da turma': 'La copa del grupo',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Copas Zanahoria que el grupo corrió hasta el final, en Carrera de conejos.',

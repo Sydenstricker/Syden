@@ -2405,6 +2405,7 @@ export default {
   'Copa da Cenoura': 'Copa de la Pastanaga',
   'contra {nomes}': 'contra {nomes}',
   'Usar o item': 'Fes servir l\'objecte',
+  'Olhar para trás': 'Mira enrere',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Fletxes per conduir, Espai per derrapar, E per fer servir l\'objecte.',
   'Copa da turma': 'La copa de la colla',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Copes de la Pastanaga que la colla ha corregut fins al final, a la Cursa de conills.',

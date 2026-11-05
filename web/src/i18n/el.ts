@@ -2345,6 +2345,7 @@ export default {
   'Copa da Cenoura': 'Κύπελλο του Καρότου',
   'contra {nomes}': 'εναντίον {nomes}',
   'Usar o item': 'Χρήση αντικειμένου',
+  'Olhar para trás': 'Κοίτα πίσω',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Βέλη για οδήγηση, Διάστημα για ντριφτ, E για το αντικείμενο.',
   'Copa da turma': 'Το κύπελλο της παρέας',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Κύπελλα του Καρότου που η παρέα έτρεξε ως το τέλος, στην Κούρσα κουνελιών.',

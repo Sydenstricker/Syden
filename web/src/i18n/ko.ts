@@ -2327,6 +2327,7 @@ export default {
   'Copa da Cenoura': '당근 컵',
   'contra {nomes}': '상대: {nomes}',
   'Usar o item': '아이템 사용',
+  'Olhar para trás': '뒤 보기',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': '방향키로 조종, 스페이스로 드리프트, E로 아이템 사용.',
   'Copa da turma': '다 같이 컵',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': '토끼 레이스에서 다 같이 끝까지 달린 당근 컵.',

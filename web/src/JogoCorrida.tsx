@@ -5,7 +5,7 @@ import type { Socket } from 'socket.io-client';
 import { api } from './api';
 import { useT } from './i18n';
 import { passosEmMs, tempoLegivel, type Comandos } from './corrida/fisica';
-import { rodarCorrida, type EventoDeItem, type Item, type LinhaDaOrdem, type PosicaoDoRival, type Rival } from './corrida/laco';
+import { rodarCorrida, TIPOS_DE_EVENTO, type EventoDeItem, type Item, type LinhaDaOrdem, type PosicaoDoRival, type Rival } from './corrida/laco';
 import { nomeDaPistaEm } from './corrida/nomes';
 import { COPAS, HORTA, linhaDaPista, MUNDO, PISTAS, pistaPorId, type DefinicaoDaPista } from './corrida/pista';
 import { H, pontoNoMapa, W } from './corrida/render';
@@ -47,11 +47,11 @@ const CONTAGEM = 3 * 60;
 const MEDALHAS = ['🥇', '🥈', '🥉'];
 
 /**
- * O TECLADO E O TOQUE: setas ou WASD, Espaço (ou Shift) derrapa, E (ou Ctrl) usa o item. Só enquanto `ativo`, e sem rolar
- * a página.
+ * O TECLADO E O TOQUE: setas ou WASD, Espaço (ou Shift) derrapa, E (ou Ctrl) usa o item, Q segurado olha para trás. Só
+ * enquanto `ativo`, e sem rolar a página.
  */
 function useControles(ativo: boolean) {
-  const comandos = useRef<Comandos>({ acelera: false, freia: false, vira: 0, derrapa: false, usa: false });
+  const comandos = useRef<Comandos>({ acelera: false, freia: false, vira: 0, derrapa: false, usa: false, olha: false });
   const lados = useRef({ esquerda: false, direita: false, toqueEsquerda: false, toqueDireita: false });
   const virar = () => {
     const l = lados.current;
@@ -72,6 +72,7 @@ function useControles(ativo: boolean) {
       else if (k === 'arrowright' || k === 'd') lados.current.direita = apertada;
       else if (k === ' ' || k === 'shift') c.derrapa = apertada;
       else if (k === 'e' || k === 'control') c.usa = apertada;
+      else if (k === 'q') c.olha = apertada;
       else usou = false;
       virar();
       if (usou) e.preventDefault();
@@ -81,7 +82,7 @@ function useControles(ativo: boolean) {
     // trocou de janela com a tecla apertada: o "soltar" vai para a outra janela, e o kart seguiria virando sozinho
     const soltarTudo = () => {
       const toque = window.matchMedia?.('(pointer: coarse)').matches ?? false;
-      Object.assign(c, { acelera: toque, freia: false, vira: 0, derrapa: false, usa: false });
+      Object.assign(c, { acelera: toque, freia: false, vira: 0, derrapa: false, usa: false, olha: false });
       Object.assign(lados.current, { esquerda: false, direita: false, toqueEsquerda: false, toqueDireita: false });
     };
     const escondeu = () => document.hidden && soltarTudo();
@@ -96,7 +97,7 @@ function useControles(ativo: boolean) {
       window.removeEventListener('keyup', sobe);
       window.removeEventListener('blur', soltarTudo);
       document.removeEventListener('visibilitychange', escondeu);
-      Object.assign(c, { acelera: false, freia: false, vira: 0, derrapa: false, usa: false });
+      Object.assign(c, { acelera: false, freia: false, vira: 0, derrapa: false, usa: false, olha: false });
     };
   }, [ativo]);
   const tocar = (lado: 'toqueEsquerda' | 'toqueDireita', apertado: boolean) => {
@@ -106,7 +107,19 @@ function useControles(ativo: boolean) {
   return { comandos, tocar };
 }
 
-function BotoesDeToque({ controles, item }: { controles: ReturnType<typeof useControles>; item?: Item | null }) {
+/** A figura do item no botão de toque (as três cenouras com quantas faltam). */
+const EMOJI_DO_ITEM: Record<Item, string> = {
+  cenoura: '🥕',
+  cenouras: '🥕',
+  repolho: '🥬',
+  'repolho-roxo': '🟣',
+  lama: '🟤',
+  alface: '🥗',
+  toca: '🕳️',
+  regador: '🌧️',
+};
+
+function BotoesDeToque({ controles, item, usos = 1 }: { controles: ReturnType<typeof useControles>; item?: Item | null; usos?: number }) {
   const t = useT();
   const { comandos, tocar } = controles;
   const lado = (qual: 'toqueEsquerda' | 'toqueDireita') => ({
@@ -128,9 +141,20 @@ function BotoesDeToque({ controles, item }: { controles: ReturnType<typeof useCo
           onPointerUp={() => (comandos.current.usa = false)}
           onPointerCancel={() => (comandos.current.usa = false)}
         >
-          {item === 'cenoura' ? '🥕' : item === 'repolho' ? '🥬' : '🟤'}
+          {EMOJI_DO_ITEM[item]}
+          {usos > 1 && <small>×{usos}</small>}
         </button>
       )}
+      <button
+        type="button"
+        aria-label={t('Olhar para trás')}
+        onPointerDown={() => (comandos.current.olha = true)}
+        onPointerUp={() => (comandos.current.olha = false)}
+        onPointerCancel={() => (comandos.current.olha = false)}
+        onPointerLeave={() => (comandos.current.olha = false)}
+      >
+        👀
+      </button>
       <button
         type="button"
         aria-label={t('Derrapar')}
@@ -367,7 +391,7 @@ export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void
           </ul>
           <div className="corrida-pista-nome">
             {meu && <span>{t('Seu recorde: {tempo}', { tempo: tempoLegivel(meu.tempoMs) })}</span>}
-            <ComandosDoJogo itens={[{ teclas: ['setas'], rotulo: t('Dirigir') }, { teclas: ['espaco'], rotulo: t('Derrapar') }]} />
+            <ComandosDoJogo itens={[{ teclas: ['setas'], rotulo: t('Dirigir') }, { teclas: ['espaco'], rotulo: t('Derrapar') }, { teclas: ['q'], rotulo: t('Olhar para trás') }]} />
             <p className="settings-hint">{t('Setas para dirigir, Espaço para derrapar e carregar o turbo.')}</p>
           </div>
           {recordes !== null && (
@@ -581,7 +605,7 @@ function CorridaDaSala({
   const [placar, setPlacar] = usePlacar();
   const [ordem, setOrdem] = useState<LinhaDaOrdem[]>([]);
   const [chegou, setChegou] = useState(false);
-  const [item, setItem] = useState<Item | null>(null);
+  const [item, setItem] = useState<{ item: Item | null; usos: number }>({ item: null, usos: 0 });
   const piloto = jogador && estado.pilotos.some((p) => p.userId === eu);
   const controles = useControles(piloto && !chegou && !fim);
   const rivais = useRef(new Map<number, Rival>());
@@ -602,7 +626,7 @@ function CorridaDaSala({
     const chegada = (m: { channelId?: number; dados?: Record<string, unknown> }) => {
       if (m.channelId !== channelId || !m.dados) return;
       const d = m.dados;
-      if (d.tipo === 'repolho' || d.tipo === 'lama' || d.tipo === 'acertou') {
+      if ((TIPOS_DE_EVENTO as readonly unknown[]).includes(d.tipo)) {
         if (typeof d.id === 'string' && !eventos.current.some((e) => e.id === d.id && e.tipo === d.tipo)) eventos.current.push(d as unknown as EventoDeItem);
         return;
       }
@@ -643,7 +667,7 @@ function CorridaDaSala({
       eu,
       meuAvatar: estado.pilotos.find((p) => p.userId === eu)?.avatar ?? null,
       rivais: rivais.current,
-      itens: estado.itens === false ? undefined : { eventos: eventos.current, aoEvento: enviar, aoItem: setItem },
+      itens: estado.itens === false ? undefined : { eventos: eventos.current, aoEvento: enviar, aoItem: (i, usos) => setItem({ item: i, usos }) },
       contagem,
       aoPlacar: setPlacar,
       aoOrdem: setOrdem,
@@ -678,7 +702,7 @@ function CorridaDaSala({
             ))}
           </ol>
         )}
-        {!fim && piloto && !chegou && <BotoesDeToque controles={controles} item={item} />}
+        {!fim && piloto && !chegou && <BotoesDeToque controles={controles} item={item.item} usos={item.usos} />}
         {comTempos && (
           <div className="corrida-fim">
             <ol className="corrida-classificacao">
@@ -700,6 +724,7 @@ function CorridaDaSala({
             { teclas: ['setas'], rotulo: t('Dirigir') },
             { teclas: ['espaco'], rotulo: t('Derrapar') },
             { teclas: ['e'], rotulo: t('Usar o item') },
+            { teclas: ['q'], rotulo: t('Olhar para trás') },
           ]}
         />
       )}

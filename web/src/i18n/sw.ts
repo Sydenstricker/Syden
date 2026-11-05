@@ -2338,6 +2338,7 @@ export default {
   'Copa da Cenoura': 'Kombe la Karoti',
   'contra {nomes}': 'dhidi ya {nomes}',
   'Usar o item': 'Tumia kitu',
+  'Olhar para trás': 'Tazama nyuma',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Mishale kuendesha, Space kuteleza, E kutumia kitu.',
   'Copa da turma': 'Kombe la kundi',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Makombe ya Karoti ambayo kundi lilikimbia hadi mwisho, katika Mbio za Sungura.',

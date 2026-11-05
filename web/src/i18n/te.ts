@@ -2321,6 +2321,7 @@ export default {
   'Copa da Cenoura': 'క్యారెట్ కప్',
   'contra {nomes}': 'ప్రత్యర్థులు: {nomes}',
   'Usar o item': 'వస్తువును వాడు',
+  'Olhar para trás': 'వెనక్కి చూడు',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'తిప్పడానికి బాణం కీలు, జారడానికి స్పేస్, వస్తువు వాడడానికి E.',
   'Copa da turma': 'బృందం కప్',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'కుందేళ్ల పందెంలో బృందం చివరి వరకు నడిపిన క్యారెట్ కప్‌లు.',

@@ -2379,6 +2379,7 @@ export default {
   'Copa da Cenoura': 'Kuubaa Kaarotii',
   'contra {nomes}': 'faallaa {nomes}',
   'Usar o item': 'Meeshaa fayyadami',
+  'Olhar para trás': 'Duuba ilaali',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Qajeelchuuf furtuuwwan xiyyaa, dhiiqamuuf Space, meeshaa fayyadamuuf E.',
   'Copa da turma': 'Kuubaa Garee',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Kuubaa Kaarotii gareen hanga dhumaatti fiigan, Fiigicha Hilleensotaa keessatti.',

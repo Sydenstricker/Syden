@@ -2389,6 +2389,7 @@ export default {
   'Copa da Cenoura': 'גביע הגזר',
   'contra {nomes}': 'נגד {nomes}',
   'Usar o item': 'שימוש בפריט',
+  'Olhar para trás': 'הסתכלות אחורה',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'חצים להיגוי, רווח לסחרור, E לשימוש בפריט.',
   'Copa da turma': 'הגביע של החבר׳ה',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'גביעי גזר שהחבר׳ה השלימו עד הסוף במרוץ הארנבים.',

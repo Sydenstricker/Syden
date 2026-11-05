@@ -2339,6 +2339,7 @@ export default {
   'Copa da Cenoura': 'የካሮት ዋንጫ',
   'contra {nomes}': 'ተፎካካሪዎች፦ {nomes}',
   'Usar o item': 'ዕቃውን መጠቀም',
+  'Olhar para trás': 'ወደ ኋላ መመልከት',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'ለመንዳት ቀስቶች፣ ለመንሸራተት ስፔስ፣ ዕቃውን ለመጠቀም E።',
   'Copa da turma': 'የቡድኑ ዋንጫ',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'ቡድኑ በየጥንቸሎች ውድድር እስከ መጨረሻ የሮጠባቸው የካሮት ዋንጫዎች።',

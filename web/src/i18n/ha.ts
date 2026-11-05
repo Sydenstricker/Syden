@@ -2341,6 +2341,7 @@ export default {
   'Copa da Cenoura': 'Kofin Karas',
   'contra {nomes}': 'da {nomes}',
   'Usar o item': 'Yi amfani da abu',
+  'Olhar para trás': 'Duba baya',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Kibiyoyi don tuƙi, Sarari don zamewa, E don amfani da abu.',
   'Copa da turma': 'Kofin ƙungiya',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Kofin Karas da ƙungiya ta yi tsere har ƙarshe, a Tseren zomaye.',

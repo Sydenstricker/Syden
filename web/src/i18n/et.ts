@@ -2406,6 +2406,7 @@ export default {
   'Copa da Cenoura': 'Porgandikarikas',
   'contra {nomes}': '{nomes} vastu',
   'Usar o item': 'Kasuta eset',
+  'Olhar para trás': 'Vaata taha',
   'Setas para dirigir, Espaço para derrapar, E para usar o item.': 'Nooled juhtimiseks, tühik libisemiseks, E eseme kasutamiseks.',
   'Copa da turma': 'Seltskonna karikas',
   'Copas da Cenoura que a turma correu até o fim, na Corrida dos coelhos.': 'Porgandikarikad, mille seltskond Jäneste võidusõidus lõpuni sõitis.',
