@@ -604,6 +604,28 @@ prato pela receita. O **Rolê do coelho** (`minijogo-skate.ts`, `JogoSkate.tsx`;
 mecânica (nada de Tony Hawk); só no Solo até a sala ser testada na tela. No xadrez, a promoção deixa escolher a peça. O jogo de
 estratégia (o pacote Ultimate Fantasy RTS do Quaternius, CC0, em glTF) é o próximo, contra o computador primeiro.
 
+**O LOTE DA TARDE DE 05/11/2026 (pedidos dele):**
+- **Tocas e Torres** (`JogoTocas.tsx`, `web/src/tocas/`, `minijogo-tocas.ts`): o RTS, só no Solo. O nome é dele; **"Age of Bunny" foi
+  recusado** por imitar o "Age of" da marca da Microsoft. A simulação é determinística em passo fixo, pronta para a sala por lockstep
+  (o degrau seguinte). O painel é pequeno para o gênero: abrir maior é pendência.
+- **Futebol dos coelhos** (`minijogo-futebol.ts`, `futebol-sim.ts` ↔ `web/src/futebol/sim.ts`): **ele escolheu a partida AO VIVO na
+  sala**, aceitando o atraso, contra a regra de "a mesma bola ao vivo fica de fora": a bola mora no servidor, "quem chuta tem razão"
+  pelo passado de 300 ms, e os times se completam com robôs. No Solo roda no navegador, sem atraso.
+- **Minigolfe 3D** (`golfe3d`, Kenney Minigolf Kit): ao lado do Minigolfe da toca, **de propósito**, para a turma dizer qual prefere;
+  um não substitui o outro até ele decidir.
+- **Capitais** é o nome novo do Cidades à venda (escolha dele); o id continua `cidades`.
+- **O fichário de gêneros** (`FicharioDeGeneros.tsx`): jogo novo precisa da linha dele em `GENEROS_DOS_JOGOS` (o teste cobra).
+- **Os jogos em 3D abrem direto no 3D**: enquanto a cena carrega, a caixa mostra a cor do fundo dela, e o 2D fica só para o teclado
+  e o leitor de tela ("carrega primeiro a versão 2D depois a 3D" era o relato).
+- **Truco:** "Aceitou!" e "Correu!" grandes na mesa; a carta sai no clique (o servidor só confirma).
+- **Batalha naval:** a montagem da frota antes do primeiro tiro (`Regras.montagem` no duelo), e a **frota moderna** (navios civis do
+  Watercraft Pack) como opção de aparência de cada um. Não há navio de guerra moderno em pacote livre nenhum que temos.
+- **Reações na chamada** (`reacoes.ts`): os balões do Kenney Emotes Pack em cima do quadro, pelo canal de dados do LiveKit (cifrado,
+  nada no servidor). **No salão, não**: quem está fora da chamada não recebe o canal, e levar ao salão pede o servidor repassar.
+- **O coelho 3D é um módulo só** (`web/src/coelho3d.ts`): todo jogo 3D novo carrega o coelho por ele. A "massa sem textura" é a
+  textura do Meshy, quase lisa; o módulo disfarça (cores do avatar, luz de borda, contorno), mas o conserto de verdade é uma textura
+  nova do coelho.
+
 **O TABULEIRO DA TURMA está feito (03/11/2026, o item 5):** `server/src/minijogo-tabuleiro-da-turma.ts`, `web/src/JogoTabuleiro.tsx`,
 só no Coletivo (2 a 8). Uma volta de 30 casas em volta de uma horta, desenhada por código; 5, 10 ou 15 rodadas. Na vez, cada
 um pede o dado (QUEM SORTEIA É O SERVIDOR), a peça anda na tela casa a casa, e a casa age: +3 cenouras, −3, ou um evento
