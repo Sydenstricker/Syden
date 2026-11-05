@@ -2684,4 +2684,9 @@ export default {
   'Quantos adversários?': 'Wie viele Gegner?',
   'Estilo visual': 'Visueller Stil',
   'C para trocar na vertical.': 'C zum senkrechten Tauschen.',
+  Dirigir: 'Lenken',
+  Trocar: 'Tauschen',
+  'Trocar na vertical': 'Senkrecht tauschen',
+  Mirar: 'Zielen',
+  Atirar: 'Schießen',
 } satisfies Record<string, string>;

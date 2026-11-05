@@ -2645,4 +2645,9 @@ export default {
   'Quantos adversários?': 'எத்தனை எதிராளிகள்?',
   'Estilo visual': 'காட்சி பாணி',
   'C para trocar na vertical.': 'C செங்குத்தாக மாற்ற.',
+  Dirigir: 'ஓட்டு',
+  Trocar: 'மாற்று',
+  'Trocar na vertical': 'செங்குத்தாக மாற்று',
+  Mirar: 'குறி வை',
+  Atirar: 'சுடு',
 } satisfies Record<string, string>;

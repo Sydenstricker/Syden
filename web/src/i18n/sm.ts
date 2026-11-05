@@ -2664,4 +2664,9 @@ export default {
   'Quantos adversários?': 'E toʻafia ni fili?',
   'Estilo visual': 'Faiga o foliga vaaia',
   'C para trocar na vertical.': 'C e fesuiaʻi faʻasaʻo.',
+  Dirigir: 'Faʻauli',
+  Trocar: 'Fesuiaʻi',
+  'Trocar na vertical': 'Fesuiaʻi faʻasaʻo',
+  Mirar: 'Taulaʻi',
+  Atirar: 'Fana',
 } satisfies Record<string, string>;

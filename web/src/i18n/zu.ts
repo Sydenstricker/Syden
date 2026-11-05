@@ -2731,4 +2731,9 @@ export default {
   'Quantos adversários?': 'Bangaki abaphikisi?',
   'Estilo visual': 'Isitayela esibonakalayo',
   'C para trocar na vertical.': 'C ukushintsha ngokuqondile.',
+  Dirigir: 'Shayela',
+  Trocar: 'Shintsha',
+  'Trocar na vertical': 'Shintsha ngokuqondile',
+  Mirar: 'Hlosa',
+  Atirar: 'Dubula',
 } satisfies Record<string, string>;

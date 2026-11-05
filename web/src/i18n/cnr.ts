@@ -2729,4 +2729,9 @@ export default {
   'Quantos adversários?': 'Koliko protivnika?',
   'Estilo visual': 'Vizuelni stil',
   'C para trocar na vertical.': 'C za zamjenu po vertikali.',
+  Dirigir: 'Vožnja',
+  Trocar: 'Zamjena',
+  'Trocar na vertical': 'Zamjena po vertikali',
+  Mirar: 'Nišanjenje',
+  Atirar: 'Pucanje',
 } satisfies Record<string, string>;

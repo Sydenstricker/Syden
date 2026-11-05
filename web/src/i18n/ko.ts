@@ -2648,4 +2648,9 @@ export default {
   'Quantos adversários?': '상대는 몇 명?',
   'Estilo visual': '비주얼 스타일',
   'C para trocar na vertical.': 'C로 세로로 바꾸기.',
+  Dirigir: '조종',
+  Trocar: '바꾸기',
+  'Trocar na vertical': '세로로 바꾸기',
+  Mirar: '조준',
+  Atirar: '쏘기',
 } satisfies Record<string, string>;

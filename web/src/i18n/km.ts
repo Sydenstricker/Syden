@@ -2729,4 +2729,9 @@ export default {
   'Quantos adversários?': 'គូប្រកួតប៉ុន្មាននាក់?',
   'Estilo visual': 'រចនាប័ទ្មរូបភាព',
   'C para trocar na vertical.': 'C ដើម្បីប្ដូរតាមបញ្ឈរ។',
+  Dirigir: 'បើកបរ',
+  Trocar: 'ប្ដូរ',
+  'Trocar na vertical': 'ប្ដូរតាមបញ្ឈរ',
+  Mirar: 'តម្រង់',
+  Atirar: 'បាញ់',
 } satisfies Record<string, string>;

@@ -2740,4 +2740,9 @@ export default {
   'Quantos adversários?': 'Konbyen advèsè?',
   'Estilo visual': 'Stil vizyèl',
   'C para trocar na vertical.': 'C pou chanje vètikalman.',
+  Dirigir: 'Kondui',
+  Trocar: 'Chanje',
+  'Trocar na vertical': 'Chanje vètikalman',
+  Mirar: 'Vize',
+  Atirar: 'Tire',
 } satisfies Record<string, string>;

@@ -2657,4 +2657,9 @@ export default {
   'Quantos adversários?': 'কতজন প্রতিপক্ষ?',
   'Estilo visual': 'দৃশ্যমান শৈলী',
   'C para trocar na vertical.': 'C উল্লম্বভাবে বদলাতে।',
+  Dirigir: 'চালানো',
+  Trocar: 'বদলানো',
+  'Trocar na vertical': 'উল্লম্বে বদলানো',
+  Mirar: 'তাক করা',
+  Atirar: 'ছোড়া',
 } satisfies Record<string, string>;

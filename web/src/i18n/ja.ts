@@ -2641,4 +2641,9 @@ export default {
   'Quantos adversários?': '対戦相手は何人？',
   'Estilo visual': 'ビジュアルスタイル',
   'C para trocar na vertical.': 'Cで縦に入れ替え。',
+  Dirigir: 'ハンドル',
+  Trocar: '入れ替え',
+  'Trocar na vertical': '縦に入れ替え',
+  Mirar: 'ねらう',
+  Atirar: '撃つ',
 } satisfies Record<string, string>;

@@ -2741,4 +2741,9 @@ export default {
   'Quantos adversários?': 'Näçe garşydaş?',
   'Estilo visual': 'Wizual stil',
   'C para trocar na vertical.': 'C dikligine çalyşmak üçin.',
+  Dirigir: 'Sür',
+  Trocar: 'Çalyş',
+  'Trocar na vertical': 'Dikligine çalyş',
+  Mirar: 'Nyşana al',
+  Atirar: 'At',
 } satisfies Record<string, string>;

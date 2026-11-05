@@ -2676,4 +2676,9 @@ export default {
   'Quantos adversários?': 'Kemm-il avversarju?',
   'Estilo visual': 'Stil viżiv',
   'C para trocar na vertical.': 'C biex tibdel vertikalment.',
+  Dirigir: 'Sewqan',
+  Trocar: 'Ibdel',
+  'Trocar na vertical': 'Ibdel vertikalment',
+  Mirar: 'Immira',
+  Atirar: 'Spara',
 } satisfies Record<string, string>;

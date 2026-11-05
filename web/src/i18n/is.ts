@@ -2731,4 +2731,9 @@ export default {
   'Quantos adversários?': 'Hversu margir andstæðingar?',
   'Estilo visual': 'Sjónrænn stíll',
   'C para trocar na vertical.': 'C til að skipta lóðrétt.',
+  Dirigir: 'Stýra',
+  Trocar: 'Skipta',
+  'Trocar na vertical': 'Skipta lóðrétt',
+  Mirar: 'Miða',
+  Atirar: 'Skjóta',
 } satisfies Record<string, string>;

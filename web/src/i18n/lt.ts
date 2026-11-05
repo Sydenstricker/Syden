@@ -2732,4 +2732,9 @@ export default {
   'Quantos adversários?': 'Kiek varžovų?',
   'Estilo visual': 'Vizualinis stilius',
   'C para trocar na vertical.': 'C sukeisti vertikaliai.',
+  Dirigir: 'Vairuoti',
+  Trocar: 'Sukeisti',
+  'Trocar na vertical': 'Sukeisti vertikaliai',
+  Mirar: 'Taikytis',
+  Atirar: 'Šauti',
 } satisfies Record<string, string>;

@@ -2668,4 +2668,9 @@ export default {
   'Quantos adversários?': 'Ndị mmegide ole?',
   'Estilo visual': 'Ụdị ihe ngosi',
   'C para trocar na vertical.': "C iji gbanwee n'ogologo.",
+  Dirigir: 'Nya',
+  Trocar: 'Gbanwee',
+  'Trocar na vertical': "Gbanwee n'ogologo",
+  Mirar: 'Lekwasị anya',
+  Atirar: 'Gbaa',
 } satisfies Record<string, string>;

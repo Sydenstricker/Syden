@@ -2652,4 +2652,9 @@ export default {
   'Quantos adversários?': 'کتنے حریف؟',
   'Estilo visual': 'بصری انداز',
   'C para trocar na vertical.': 'C عمودی طور پر بدلنے کے لیے۔',
+  Dirigir: 'چلانا',
+  Trocar: 'بدلنا',
+  'Trocar na vertical': 'عمودی بدلنا',
+  Mirar: 'نشانہ',
+  Atirar: 'فائر',
 } satisfies Record<string, string>;

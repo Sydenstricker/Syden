@@ -2662,4 +2662,9 @@ export default {
   'Quantos adversários?': 'Abokan hamayya nawa?',
   'Estilo visual': 'Salon gani',
   'C para trocar na vertical.': 'C don musanya a tsaye.',
+  Dirigir: 'Tuƙi',
+  Trocar: 'Musanya',
+  'Trocar na vertical': 'Musanya a tsaye',
+  Mirar: 'Nufa',
+  Atirar: 'Harba',
 } satisfies Record<string, string>;

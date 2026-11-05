@@ -2630,4 +2630,9 @@ export default {
   'Quantos adversários?': 'Bao nhiêu đối thủ?',
   'Estilo visual': 'Phong cách hình ảnh',
   'C para trocar na vertical.': 'C để đổi theo chiều dọc.',
+  Dirigir: 'Lái',
+  Trocar: 'Đổi',
+  'Trocar na vertical': 'Đổi theo chiều dọc',
+  Mirar: 'Ngắm',
+  Atirar: 'Bắn',
 } satisfies Record<string, string>;

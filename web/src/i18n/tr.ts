@@ -2662,4 +2662,9 @@ export default {
   'Quantos adversários?': 'Kaç rakip?',
   'Estilo visual': 'Görsel stil',
   'C para trocar na vertical.': 'Dikey değiştirmek için C.',
+  Dirigir: 'Sür',
+  Trocar: 'Değiştir',
+  'Trocar na vertical': 'Dikey değiştir',
+  Mirar: 'Nişan al',
+  Atirar: 'Ateş',
 } satisfies Record<string, string>;

@@ -2684,4 +2684,9 @@ export default {
   'Quantos adversários?': 'كم عدد الخصوم؟',
   'Estilo visual': 'النمط المرئي',
   'C para trocar na vertical.': 'C للتبديل عموديًا.',
+  Dirigir: 'القيادة',
+  Trocar: 'تبديل',
+  'Trocar na vertical': 'تبديل عمودي',
+  Mirar: 'التصويب',
+  Atirar: 'إطلاق',
 } satisfies Record<string, string>;

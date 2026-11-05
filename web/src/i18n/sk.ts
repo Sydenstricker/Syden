@@ -2730,4 +2730,9 @@ export default {
   'Quantos adversários?': 'Koľko súperov?',
   'Estilo visual': 'Vizuálny štýl',
   'C para trocar na vertical.': 'C na výmenu zvislo.',
+  Dirigir: 'Riadiť',
+  Trocar: 'Vymeniť',
+  'Trocar na vertical': 'Vymeniť zvislo',
+  Mirar: 'Mieriť',
+  Atirar: 'Strieľať',
 } satisfies Record<string, string>;

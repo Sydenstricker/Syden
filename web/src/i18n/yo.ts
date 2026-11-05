@@ -2675,4 +2675,9 @@ export default {
   'Quantos adversários?': 'Alátakò mélòó?',
   'Estilo visual': 'Àṣà ìrísí',
   'C para trocar na vertical.': 'C láti pààrọ̀ ní ìdúró.',
+  Dirigir: 'Wakọ̀',
+  Trocar: 'Pààrọ̀',
+  'Trocar na vertical': 'Pààrọ̀ ní ìdúró',
+  Mirar: 'Fojú sí',
+  Atirar: 'Yìn',
 } satisfies Record<string, string>;

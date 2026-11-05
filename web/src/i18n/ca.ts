@@ -2726,4 +2726,8 @@ export default {
   'Quantos adversários?': 'Quants rivals?',
   'Estilo visual': 'Estil visual',
   'C para trocar na vertical.': 'C per intercanviar en vertical.',
+  Dirigir: 'Conduir',
+  Trocar: 'Intercanviar',
+  'Trocar na vertical': 'Intercanviar en vertical',
+  Atirar: 'Disparar',
 } satisfies Record<string, string>;

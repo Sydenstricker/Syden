@@ -2722,4 +2722,9 @@ export default {
   'Quantos adversários?': 'Hur många motståndare?',
   'Estilo visual': 'Visuell stil',
   'C para trocar na vertical.': 'C för att byta lodrätt.',
+  Dirigir: 'Styr',
+  Trocar: 'Byt',
+  'Trocar na vertical': 'Byt lodrätt',
+  Mirar: 'Sikta',
+  Atirar: 'Skjut',
 } satisfies Record<string, string>;

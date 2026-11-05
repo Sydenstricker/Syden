@@ -2671,4 +2671,9 @@ export default {
   'Quantos adversários?': 'Abo muhanganye bangahe?',
   'Estilo visual': 'Imiterere igaragara',
   'C para trocar na vertical.': 'C guhinduranya uhagaze.',
+  Dirigir: 'Gutwara',
+  Trocar: 'Guhinduranya',
+  'Trocar na vertical': 'Guhinduranya uhagaze',
+  Mirar: 'Kwerekeza',
+  Atirar: 'Kurasa',
 } satisfies Record<string, string>;

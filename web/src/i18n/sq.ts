@@ -2722,4 +2722,9 @@ export default {
   'Quantos adversários?': 'Sa kundërshtarë?',
   'Estilo visual': 'Stili vizual',
   'C para trocar na vertical.': 'C për të ndërruar vertikalisht.',
+  Dirigir: 'Drejto',
+  Trocar: 'Ndërro',
+  'Trocar na vertical': 'Ndërro vertikalisht',
+  Mirar: 'Shënjo',
+  Atirar: 'Qëllo',
 } satisfies Record<string, string>;

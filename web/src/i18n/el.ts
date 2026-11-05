@@ -2666,4 +2666,9 @@ export default {
   'Quantos adversários?': 'Πόσοι αντίπαλοι;',
   'Estilo visual': 'Οπτικό στιλ',
   'C para trocar na vertical.': 'C για κάθετη εναλλαγή.',
+  Dirigir: 'Οδήγηση',
+  Trocar: 'Εναλλαγή',
+  'Trocar na vertical': 'Κάθετη εναλλαγή',
+  Mirar: 'Σημάδι',
+  Atirar: 'Βολή',
 } satisfies Record<string, string>;

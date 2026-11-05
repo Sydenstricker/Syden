@@ -1,3 +1,4 @@
+import { ComandosDoJogo } from './ComandosDosJogos';
 import { tocar } from './somDosJogos';
 import { ChevronsUp, Infinity as SemFim, Timer } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
@@ -492,6 +493,14 @@ function MeuTabuleiro({ estado, eu, aoAgir }: { estado: EstadoBlocos & Partida; 
           <ChevronsUp size={20} aria-hidden="true" />
         </button>
       )}
+      <ComandosDoJogo
+        itens={[
+          { teclas: ['setas'], rotulo: t('Mover') },
+          { teclas: ['espaco', 'mouse-arrastar'], toque: 'toque-arrastar', rotulo: t('Trocar') },
+          { teclas: ['c'], rotulo: t('Trocar na vertical') },
+          { teclas: ['x'], toque: 'toque-segurar', rotulo: t('Subir a pilha') },
+        ]}
+      />
       <p className="settings-hint blocos-dica">
         {t('Setas para mover, Espaço para trocar, X para subir a pilha.')} {t('C para trocar na vertical.')}
       </p>

@@ -2750,4 +2750,9 @@ export default {
   'Quantos adversários?': 'Nechta raqib?',
   'Estilo visual': 'Vizual uslub',
   'C para trocar na vertical.': 'C — vertikal almashtirish.',
+  Dirigir: 'Boshqarish',
+  Trocar: 'Almashtirish',
+  'Trocar na vertical': 'Vertikal almashtirish',
+  Mirar: 'Nishonga olish',
+  Atirar: 'Otish',
 } satisfies Record<string, string>;

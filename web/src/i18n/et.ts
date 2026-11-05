@@ -2727,4 +2727,9 @@ export default {
   'Quantos adversários?': 'Mitu vastast?',
   'Estilo visual': 'Visuaalne stiil',
   'C para trocar na vertical.': 'C vertikaalseks vahetamiseks.',
+  Dirigir: 'Juhi',
+  Trocar: 'Vaheta',
+  'Trocar na vertical': 'Vaheta vertikaalselt',
+  Mirar: 'Siht',
+  Atirar: 'Tulista',
 } satisfies Record<string, string>;

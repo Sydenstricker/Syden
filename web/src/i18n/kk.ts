@@ -2734,4 +2734,9 @@ export default {
   'Quantos adversários?': 'Қанша қарсылас?',
   'Estilo visual': 'Көрнекі стиль',
   'C para trocar na vertical.': 'C — тігінен ауыстыру.',
+  Dirigir: 'Басқару',
+  Trocar: 'Ауыстыру',
+  'Trocar na vertical': 'Тігінен ауыстыру',
+  Mirar: 'Көздеу',
+  Atirar: 'Ату',
 } satisfies Record<string, string>;

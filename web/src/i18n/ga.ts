@@ -2666,4 +2666,9 @@ export default {
   'Quantos adversários?': 'Cé mhéad céile comhraic?',
   'Estilo visual': 'Stíl amhairc',
   'C para trocar na vertical.': 'C chun malartú go hingearach.',
+  Dirigir: 'Stiúradh',
+  Trocar: 'Malartú',
+  'Trocar na vertical': 'Malartú ingearach',
+  Mirar: 'Aimsiú',
+  Atirar: 'Lámhach',
 } satisfies Record<string, string>;

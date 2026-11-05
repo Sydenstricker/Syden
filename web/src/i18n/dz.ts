@@ -2743,4 +2743,9 @@ export default {
   'Quantos adversários?': 'འགྲན་ཟླ་ག་དེམ་ཅིག?',
   'Estilo visual': 'མཐོང་སྣང་གི་བཟོ་ལུགས།',
   'C para trocar na vertical.': 'C གིས་ཀེར་ཐིག་ཏུ་བརྗེ་ནི།',
+  Dirigir: 'གཏང་ནི།',
+  Trocar: 'བརྗེ་ནི།',
+  'Trocar na vertical': 'ཀེར་ཐིག་ཏུ་བརྗེ་ནི།',
+  Mirar: 'དམིགས་ནི།',
+  Atirar: 'འཕེན་ནི།',
 } satisfies Record<string, string>;

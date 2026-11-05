@@ -2662,4 +2662,9 @@ export default {
   'Quantos adversários?': "Adversáriu na'in hira?",
   'Estilo visual': 'Estilu vizuál',
   'C para trocar na vertical.': 'C atu troka vertikál.',
+  Dirigir: "Hala'o",
+  Trocar: 'Troka',
+  'Trocar na vertical': 'Troka vertikál',
+  Mirar: 'Mira',
+  Atirar: 'Tiru',
 } satisfies Record<string, string>;

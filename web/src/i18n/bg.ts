@@ -2727,4 +2727,9 @@ export default {
   'Quantos adversários?': 'Колко противници?',
   'Estilo visual': 'Визуален стил',
   'C para trocar na vertical.': 'C за размяна по вертикала.',
+  Dirigir: 'Шофиране',
+  Trocar: 'Размяна',
+  'Trocar na vertical': 'Размяна по вертикала',
+  Mirar: 'Прицелване',
+  Atirar: 'Стрелба',
 } satisfies Record<string, string>;

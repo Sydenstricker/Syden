@@ -2732,4 +2732,9 @@ export default {
   'Quantos adversários?': 'कति प्रतिद्वन्द्वी?',
   'Estilo visual': 'दृश्य शैली',
   'C para trocar na vertical.': 'C ठाडो साट्न।',
+  Dirigir: 'चलाउनु',
+  Trocar: 'साट्नु',
+  'Trocar na vertical': 'ठाडो साट्नु',
+  Mirar: 'निसाना',
+  Atirar: 'हान्नु',
 } satisfies Record<string, string>;

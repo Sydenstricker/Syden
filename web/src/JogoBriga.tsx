@@ -1,3 +1,4 @@
+import { ComandosDoJogo } from './ComandosDosJogos';
 import { tocar } from './somDosJogos';
 import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
@@ -452,49 +453,17 @@ function Palco({
         {aviso && <p className="briga-aviso">{aviso}</p>}
       </div>
       {jogador && <Toque cmd={cmd} />}
-      {jogador && <TeclasDaBriga />}
+      {jogador && (
+        <ComandosDoJogo
+          itens={[
+            { teclas: ['setas'], rotulo: t('Andar') },
+            { teclas: ['z'], rotulo: t('Pular') },
+            { teclas: ['x'], rotulo: t('Bater') },
+            { teclas: ['c'], rotulo: t('Especial') },
+          ]}
+        />
+      )}
       {jogador && <p className="settings-hint briga-dica">{t('Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.')}</p>}
-    </div>
-  );
-}
-
-/**
- * AS TECLAS, DESENHADAS (pedido dele, 05/11/2026: "deixe os comandos claros, as setas e ZXC"): cada tecla como uma tecla de
- * verdade, com o que ela faz embaixo, na ordem do teclado (Z, X, C). A frase com os detalhes (o combo, o especial que gasta
- * vida) continua logo abaixo. Na tela de toque não aparece: lá os botões já são os comandos.
- */
-function TeclasDaBriga() {
-  const t = useT();
-  const tecla = (k: string, largo = false) => (
-    <kbd className={`briga-tecla${largo ? ' larga' : ''}`} key={k}>
-      {k}
-    </kbd>
-  );
-  return (
-    <div className="briga-teclas" aria-hidden="true">
-      <div className="briga-teclas-grupo">
-        <div className="briga-setas">
-          <span />
-          {tecla('↑')}
-          <span />
-          {tecla('←')}
-          {tecla('↓')}
-          {tecla('→')}
-        </div>
-        <span className="briga-teclas-nome">{t('Andar')}</span>
-      </div>
-      <div className="briga-teclas-grupo">
-        {tecla('Z')}
-        <span className="briga-teclas-nome">{t('Pular')}</span>
-      </div>
-      <div className="briga-teclas-grupo">
-        {tecla('X')}
-        <span className="briga-teclas-nome">{t('Bater')}</span>
-      </div>
-      <div className="briga-teclas-grupo">
-        {tecla('C')}
-        <span className="briga-teclas-nome">{t('Especial')}</span>
-      </div>
     </div>
   );
 }

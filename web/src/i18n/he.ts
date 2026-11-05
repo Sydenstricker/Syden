@@ -2714,4 +2714,9 @@ export default {
   'Quantos adversários?': 'כמה יריבים?',
   'Estilo visual': 'סגנון חזותי',
   'C para trocar na vertical.': 'C להחלפה אנכית.',
+  Dirigir: 'היגוי',
+  Trocar: 'החלפה',
+  'Trocar na vertical': 'החלפה אנכית',
+  Mirar: 'כיוון',
+  Atirar: 'ירי',
 } satisfies Record<string, string>;

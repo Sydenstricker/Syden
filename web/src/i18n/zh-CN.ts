@@ -2647,4 +2647,9 @@ export default {
   'Quantos adversários?': '几个对手？',
   'Estilo visual': '视觉风格',
   'C para trocar na vertical.': 'C 竖向交换。',
+  Dirigir: '转向',
+  Trocar: '交换',
+  'Trocar na vertical': '竖向交换',
+  Mirar: '瞄准',
+  Atirar: '射击',
 } satisfies Record<string, string>;

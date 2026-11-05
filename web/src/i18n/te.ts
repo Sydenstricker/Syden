@@ -2642,4 +2642,9 @@ export default {
   'Quantos adversários?': 'ఎంతమంది ప్రత్యర్థులు?',
   'Estilo visual': 'దృశ్య శైలి',
   'C para trocar na vertical.': 'C నిలువుగా మార్చడానికి.',
+  Dirigir: 'నడుపు',
+  Trocar: 'మార్చు',
+  'Trocar na vertical': 'నిలువుగా మార్చు',
+  Mirar: 'గురి పెట్టు',
+  Atirar: 'కాల్చు',
 } satisfies Record<string, string>;

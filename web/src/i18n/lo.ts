@@ -2731,4 +2731,9 @@ export default {
   'Quantos adversários?': 'ຄູ່ແຂ່ງຈັກຄົນ?',
   'Estilo visual': 'ຮູບແບບການສະແດງຜົນ',
   'C para trocar na vertical.': 'C ເພື່ອສັບປ່ຽນຕາມແນວຕັ້ງ.',
+  Dirigir: 'ຂັບ',
+  Trocar: 'ສັບປ່ຽນ',
+  'Trocar na vertical': 'ສັບປ່ຽນຕາມແນວຕັ້ງ',
+  Mirar: 'ເລັງ',
+  Atirar: 'ຍິງ',
 } satisfies Record<string, string>;

@@ -2659,4 +2659,9 @@ export default {
   'Quantos adversários?': 'Wapinzani wangapi?',
   'Estilo visual': 'Mtindo wa mwonekano',
   'C para trocar na vertical.': 'C kubadilisha wima.',
+  Dirigir: 'Endesha',
+  Trocar: 'Badilisha',
+  'Trocar na vertical': 'Badilisha wima',
+  Mirar: 'Lenga',
+  Atirar: 'Piga',
 } satisfies Record<string, string>;

@@ -2732,4 +2732,9 @@ export default {
   'Quantos adversários?': 'Cik pretinieku?',
   'Estilo visual': 'Vizuālais stils',
   'C para trocar na vertical.': 'C, lai samainītu vertikāli.',
+  Dirigir: 'Stūrēt',
+  Trocar: 'Samainīt',
+  'Trocar na vertical': 'Samainīt vertikāli',
+  Mirar: 'Mērķēt',
+  Atirar: 'Šaut',
 } satisfies Record<string, string>;

@@ -2701,4 +2701,9 @@ export default {
   'Quantos adversários?': 'Neçə rəqib?',
   'Estilo visual': 'Vizual üslub',
   'C para trocar na vertical.': 'C şaquli dəyişmək üçün.',
+  Dirigir: 'Sür',
+  Trocar: 'Dəyiş',
+  'Trocar na vertical': 'Şaquli dəyiş',
+  Mirar: 'Nişan al',
+  Atirar: 'Atəş',
 } satisfies Record<string, string>;

@@ -2729,4 +2729,9 @@ export default {
   'Quantos adversários?': 'Kolik soupeřů?',
   'Estilo visual': 'Vizuální styl',
   'C para trocar na vertical.': 'C pro prohození svisle.',
+  Dirigir: 'Řízení',
+  Trocar: 'Prohodit',
+  'Trocar na vertical': 'Prohodit svisle',
+  Mirar: 'Mířit',
+  Atirar: 'Střílet',
 } satisfies Record<string, string>;

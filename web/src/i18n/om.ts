@@ -2700,4 +2700,9 @@ export default {
   'Quantos adversários?': 'Morkattoota meeqa?',
   'Estilo visual': "Akkaataa mul'ataa",
   'C para trocar na vertical.': 'C gara olii fi gadiitti jijjiiruuf.',
+  Dirigir: 'Oofuu',
+  Trocar: 'Jijjiiruu',
+  'Trocar na vertical': 'Ol fi gadi jijjiiruu',
+  Mirar: 'Xiyyeeffachuu',
+  Atirar: 'Dhukaasuu',
 } satisfies Record<string, string>;

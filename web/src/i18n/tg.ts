@@ -2740,4 +2740,9 @@ export default {
   'Quantos adversários?': 'Чанд рақиб?',
   'Estilo visual': 'Услуби визуалӣ',
   'C para trocar na vertical.': 'C — иваз кардан амудӣ.',
+  Dirigir: 'Рондан',
+  Trocar: 'Иваз кардан',
+  'Trocar na vertical': 'Амудӣ иваз кардан',
+  Mirar: 'Нишон гирифтан',
+  Atirar: 'Тир задан',
 } satisfies Record<string, string>;

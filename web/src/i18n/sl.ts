@@ -2732,4 +2732,9 @@ export default {
   'Quantos adversários?': 'Koliko nasprotnikov?',
   'Estilo visual': 'Vizualni slog',
   'C para trocar na vertical.': 'C za zamenjavo navpično.',
+  Dirigir: 'Krmiljenje',
+  Trocar: 'Zamenjaj',
+  'Trocar na vertical': 'Zamenjaj navpično',
+  Mirar: 'Meri',
+  Atirar: 'Streljaj',
 } satisfies Record<string, string>;

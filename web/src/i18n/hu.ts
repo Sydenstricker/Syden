@@ -2732,4 +2732,9 @@ export default {
   'Quantos adversários?': 'Hány ellenfél?',
   'Estilo visual': 'Vizuális stílus',
   'C para trocar na vertical.': 'C a függőleges cseréhez.',
+  Dirigir: 'Kormányzás',
+  Trocar: 'Csere',
+  'Trocar na vertical': 'Függőleges csere',
+  Mirar: 'Célzás',
+  Atirar: 'Lövés',
 } satisfies Record<string, string>;

@@ -2660,4 +2660,9 @@ export default {
   'Quantos adversários?': 'Berapa lawan?',
   'Estilo visual': 'Gaya visual',
   'C para trocar na vertical.': 'C untuk menukar secara menegak.',
+  Dirigir: 'Pandu',
+  Trocar: 'Tukar',
+  'Trocar na vertical': 'Tukar menegak',
+  Mirar: 'Bidik',
+  Atirar: 'Tembak',
 } satisfies Record<string, string>;

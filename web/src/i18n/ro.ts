@@ -2660,4 +2660,9 @@ export default {
   'Quantos adversários?': 'Câți adversari?',
   'Estilo visual': 'Stil vizual',
   'C para trocar na vertical.': 'C pentru a schimba pe verticală.',
+  Dirigir: 'Condu',
+  Trocar: 'Schimbă',
+  'Trocar na vertical': 'Schimbă pe verticală',
+  Mirar: 'Țintește',
+  Atirar: 'Trage',
 } satisfies Record<string, string>;

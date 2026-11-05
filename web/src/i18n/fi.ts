@@ -2730,4 +2730,9 @@ export default {
   'Quantos adversários?': 'Montako vastustajaa?',
   'Estilo visual': 'Visuaalinen tyyli',
   'C para trocar na vertical.': 'C vaihtaa pystysuunnassa.',
+  Dirigir: 'Ohjaa',
+  Trocar: 'Vaihda',
+  'Trocar na vertical': 'Vaihda pystysuunnassa',
+  Mirar: 'Tähtää',
+  Atirar: 'Ammu',
 } satisfies Record<string, string>;

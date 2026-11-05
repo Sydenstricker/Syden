@@ -2730,4 +2730,9 @@ export default {
   'Quantos adversários?': 'ප්‍රතිවාදීන් කී දෙනෙක්ද?',
   'Estilo visual': 'දෘශ්‍ය විලාසය',
   'C para trocar na vertical.': 'C සිරස් අතට මාරු කිරීමට.',
+  Dirigir: 'පදවන්න',
+  Trocar: 'මාරු කරන්න',
+  'Trocar na vertical': 'සිරස් අතට මාරු කරන්න',
+  Mirar: 'ඉලක්ක කරන්න',
+  Atirar: 'වෙඩි තබන්න',
 } satisfies Record<string, string>;

@@ -2724,4 +2724,9 @@ export default {
   'Quantos adversários?': 'Hoeveel teenstanders?',
   'Estilo visual': 'Visuele styl',
   'C para trocar na vertical.': 'C om vertikaal te ruil.',
+  Dirigir: 'Bestuur',
+  Trocar: 'Ruil',
+  'Trocar na vertical': 'Ruil vertikaal',
+  Mirar: 'Mik',
+  Atirar: 'Skiet',
 } satisfies Record<string, string>;

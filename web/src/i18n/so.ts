@@ -2730,4 +2730,9 @@ export default {
   'Quantos adversários?': 'Immisa ka soo horjeedayaal ah?',
   'Estilo visual': 'Qaabka muuqaalka',
   'C para trocar na vertical.': 'C si aad isu beddesho si toos ah.',
+  Dirigir: 'Wad',
+  Trocar: 'Beddel',
+  'Trocar na vertical': 'Si toos ah u beddel',
+  Mirar: 'Beegso',
+  Atirar: 'Toogo',
 } satisfies Record<string, string>;

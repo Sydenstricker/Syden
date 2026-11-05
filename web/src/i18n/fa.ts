@@ -2653,4 +2653,9 @@ export default {
   'Quantos adversários?': 'چند حریف؟',
   'Estilo visual': 'سبک تصویری',
   'C para trocar na vertical.': 'C برای جابه‌جایی عمودی.',
+  Dirigir: 'رانندگی',
+  Trocar: 'جابه‌جایی',
+  'Trocar na vertical': 'جابه‌جایی عمودی',
+  Mirar: 'نشانه‌گیری',
+  Atirar: 'شلیک',
 } satisfies Record<string, string>;

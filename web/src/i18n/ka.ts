@@ -2748,4 +2748,9 @@ export default {
   'Quantos adversários?': 'რამდენი მეტოქე?',
   'Estilo visual': 'ვიზუალური სტილი',
   'C para trocar na vertical.': 'C ვერტიკალურად გასაცვლელად.',
+  Dirigir: 'მართვა',
+  Trocar: 'გაცვლა',
+  'Trocar na vertical': 'ვერტიკალურად გაცვლა',
+  Mirar: 'დამიზნება',
+  Atirar: 'სროლა',
 } satisfies Record<string, string>;

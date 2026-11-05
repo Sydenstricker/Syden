@@ -2730,4 +2730,9 @@ export default {
   'Quantos adversários?': 'Mpifanandrina firy?',
   'Estilo visual': 'Endrika hita maso',
   'C para trocar na vertical.': 'C hanakalo mitsangana.',
+  Dirigir: 'Mitondra',
+  Trocar: 'Manakalo',
+  'Trocar na vertical': 'Manakalo mitsangana',
+  Mirar: 'Mikendry',
+  Atirar: 'Mitifitra',
 } satisfies Record<string, string>;

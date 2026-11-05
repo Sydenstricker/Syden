@@ -2710,4 +2710,9 @@ export default {
   'Quantos adversários?': 'Скільки суперників?',
   'Estilo visual': 'Візуальний стиль',
   'C para trocar na vertical.': 'C — поміняти по вертикалі.',
+  Dirigir: 'Кермо',
+  Trocar: 'Поміняти',
+  'Trocar na vertical': 'Поміняти по вертикалі',
+  Mirar: 'Цілитися',
+  Atirar: 'Стріляти',
 } satisfies Record<string, string>;

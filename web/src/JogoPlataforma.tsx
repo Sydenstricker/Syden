@@ -1,3 +1,4 @@
+import { ComandosDoJogo } from './ComandosDosJogos';
 import { Trophy } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
@@ -320,6 +321,7 @@ export function JogoPlataforma({ eu, aoVoltar }: { eu: number; aoVoltar: () => v
           </ul>
           <div className="corrida-pista-nome">
             {meu && <span>{t('Seu recorde: {tempo}', { tempo: tempoLegivel(meu.tempoMs) })}</span>}
+            <ComandosDoJogo itens={[{ teclas: ['setas-lado'], rotulo: t('Correr') }, { teclas: ['espaco'], rotulo: t('Pular') }]} />
             <p className="settings-hint">{t('Setas para correr, Espaço para pular (segure para ir mais alto).')}</p>
           </div>
           {recordes !== null && (
@@ -663,6 +665,7 @@ function FaseDaSala({
         )}
       </div>
       {inscrito && abriuNoMeio && !fim && <p className="settings-hint corrida-dica">{t('Esta fase já tinha começado quando você abriu: você assiste.')}</p>}
+      {piloto && !fim && <ComandosDoJogo itens={[{ teclas: ['setas-lado'], rotulo: t('Correr') }, { teclas: ['espaco'], rotulo: t('Pular') }]} />}
       {piloto && !fim && <p className="settings-hint corrida-dica">{t('Setas para correr, Espaço para pular (segure para ir mais alto).')}</p>}
     </>
   );

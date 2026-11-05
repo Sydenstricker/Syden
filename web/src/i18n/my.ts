@@ -2699,4 +2699,9 @@ export default {
   'Quantos adversários?': 'ပြိုင်ဘက် ဘယ်နှယောက်လဲ?',
   'Estilo visual': 'မြင်ကွင်းပုံစံ',
   'C para trocar na vertical.': 'C ဖြင့် ဒေါင်လိုက်လဲရန်။',
+  Dirigir: 'မောင်း',
+  Trocar: 'လဲ',
+  'Trocar na vertical': 'ဒေါင်လိုက်လဲ',
+  Mirar: 'ချိန်',
+  Atirar: 'ပစ်',
 } satisfies Record<string, string>;

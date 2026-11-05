@@ -2659,4 +2659,9 @@ export default {
   'Quantos adversários?': 'E le vica na dau veiqati?',
   'Estilo visual': 'Ivakarau ni rairai',
   'C para trocar na vertical.': 'C me veisau cake kei ra.',
+  Dirigir: 'Draiva',
+  Trocar: 'Veisau',
+  'Trocar na vertical': 'Veisau cake kei ra',
+  Mirar: 'Vakatotoka',
+  Atirar: 'Vana',
 } satisfies Record<string, string>;

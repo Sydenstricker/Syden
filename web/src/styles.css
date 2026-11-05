@@ -19091,52 +19091,6 @@ body.arrastando-barra {
   color: var(--accent-texto, #14161b);
 }
 
-/* As teclas da Briga na horta, desenhadas como teclas (só com teclado: no toque, os botões já são os comandos). */
-.briga-teclas {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: flex-end;
-  gap: 18px;
-  margin-top: 10px;
-}
-.briga-teclas-grupo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-.briga-setas {
-  display: grid;
-  grid-template-columns: repeat(3, auto);
-  gap: 3px;
-}
-.briga-tecla {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 30px;
-  height: 30px;
-  padding: 0 6px;
-  border-radius: 6px;
-  background: var(--bg-raised);
-  color: var(--text-strong);
-  border: 1px solid rgba(150, 150, 160, 0.45);
-  border-bottom-width: 3px;
-  font-weight: 700;
-  font-size: 0.95rem;
-  line-height: 1;
-}
-.briga-teclas-nome {
-  font-size: 0.8rem;
-  color: var(--text-muted, inherit);
-}
-@media (pointer: coarse) {
-  .briga-teclas {
-    display: none;
-  }
-}
-
 /* O Pulo do coelho, depois de chegar: a tela de quem ainda corre, com o nome em cima e as setas para trocar de amigo; os
    tempos vão para o canto, pequenos, em vez de cobrir a fase. */
 .pulo-assistindo {
@@ -19228,4 +19182,55 @@ body.arrastando-barra {
   clip: rect(0 0 0 0);
   clip-path: inset(50%);
   white-space: nowrap;
+}
+
+/* Os comandos dos mini-games em figuras (ComandosDosJogos.tsx): as teclas e o mouse com teclado; os gestos na tela de toque. */
+.jogo-comandos {
+  margin-top: 10px;
+}
+.jogo-comandos ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.jogo-comandos li {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.jogo-comando-figuras {
+  display: inline-flex;
+  gap: 1px;
+}
+.jogo-comando-icone {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+}
+.jogo-comando-icone svg {
+  display: block;
+}
+.jogo-comando-icone.largo {
+  width: 46px;
+  height: 46px;
+  margin: -8px 0;
+}
+.jogo-comando-rotulo {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+.jogo-comandos-toque {
+  display: none !important;
+}
+@media (pointer: coarse) {
+  .jogo-comandos-teclado {
+    display: none !important;
+  }
+  .jogo-comandos-toque {
+    display: flex !important;
+  }
 }

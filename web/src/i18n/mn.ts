@@ -2744,4 +2744,9 @@ export default {
   'Quantos adversários?': 'Хэдэн өрсөлдөгч?',
   'Estilo visual': 'Харагдах загвар',
   'C para trocar na vertical.': 'C босоо байдлаар солих.',
+  Dirigir: 'Жолоодох',
+  Trocar: 'Солих',
+  'Trocar na vertical': 'Босоо солих',
+  Mirar: 'Онилох',
+  Atirar: 'Буудах',
 } satisfies Record<string, string>;

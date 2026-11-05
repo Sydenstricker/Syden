@@ -1,3 +1,4 @@
+import { ComandosDoJogo } from './ComandosDosJogos';
 import { tocar } from './somDosJogos';
 import { useEffect, useRef, useState } from 'react';
 import { useT } from './i18n';
@@ -238,6 +239,7 @@ function Horta({ estado, eu, jogador, agir }: { estado: EstadoCaca & Partida; eu
       </div>
       {souJogador && estado.fase === 'preparando' && <p className="minijogo-situacao">{t('Mire e clique nas pragas antes que fujam. Cada tiro gasta uma cenoura.')}</p>}
       {souJogador && jogando && municao === 0 && <p className="minijogo-situacao">{t('Acabou a munição desta onda.')}</p>}
+      {souJogador && <ComandosDoJogo itens={[{ teclas: ['mouse-clique'], toque: 'toque', rotulo: t('Atirar') }]} />}
     </div>
   );
 }

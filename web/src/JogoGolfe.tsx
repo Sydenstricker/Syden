@@ -1,3 +1,4 @@
+import { ComandosDoJogo } from './ComandosDosJogos';
 import { tocar } from './somDosJogos';
 import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
@@ -508,6 +509,15 @@ function MesaDoGolfe({
       </div>
       {souJogador && estado.fase === 'preparando' && <p className="minijogo-situacao">{t('Puxe a bola para trás e solte. No teclado: as setas miram, e o Espaço segurado dá a força.')}</p>}
       {souJogador && jogandoComBola(estado.fase, acabou, molhou, bola.current.dentro, t)}
+      {souJogador && (
+        <ComandosDoJogo
+          itens={[
+            { teclas: ['mouse-arrastar'], toque: 'toque-arrastar', rotulo: t('Mirar') + ' · ' + t('Força') },
+            { teclas: ['setas-lado'], rotulo: t('Mirar') },
+            { teclas: ['espaco'], rotulo: t('Força') },
+          ]}
+        />
+      )}
     </div>
   );
 }

@@ -2673,4 +2673,9 @@ export default {
   'Quantos adversários?': 'จำนวนคู่แข่ง',
   'Estilo visual': 'รูปแบบการแสดงผล',
   'C para trocar na vertical.': 'C เพื่อสลับแนวตั้ง',
+  Dirigir: 'บังคับ',
+  Trocar: 'สลับ',
+  'Trocar na vertical': 'สลับแนวตั้ง',
+  Mirar: 'เล็ง',
+  Atirar: 'ยิง',
 } satisfies Record<string, string>;

@@ -2659,4 +2659,9 @@ export default {
   'Quantos adversários?': 'Hoeveel tegenstanders?',
   'Estilo visual': 'Visuele stijl',
   'C para trocar na vertical.': 'C om verticaal te wisselen.',
+  Dirigir: 'Sturen',
+  Trocar: 'Wisselen',
+  'Trocar na vertical': 'Verticaal wisselen',
+  Mirar: 'Mikken',
+  Atirar: 'Schieten',
 } satisfies Record<string, string>;

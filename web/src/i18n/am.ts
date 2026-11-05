@@ -2660,4 +2660,9 @@ export default {
   'Quantos adversários?': 'ስንት ተፎካካሪዎች?',
   'Estilo visual': 'የእይታ ስልት',
   'C para trocar na vertical.': 'C በአቀባዊ ለመለዋወጥ።',
+  Dirigir: 'መንዳት',
+  Trocar: 'መለዋወጥ',
+  'Trocar na vertical': 'በአቀባዊ መለዋወጥ',
+  Mirar: 'ማነጣጠር',
+  Atirar: 'መተኮስ',
 } satisfies Record<string, string>;
