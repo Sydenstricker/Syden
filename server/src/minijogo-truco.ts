@@ -32,6 +32,7 @@
  */
 import { embaralhar, type Definicao, type Jogo } from './minijogo-motor.js';
 import { comRobos, ehRobo, idsDosRobos, PAUSA_DO_ROBO, quantosRobos } from './minijogo-robos.js';
+import { JOGADA_SOLO_MS } from './minijogo-tabuleiro.js';
 
 export const VALORES = ['4', '5', '6', '7', 'Q', 'J', 'K', 'A', '2', '3'] as const;
 /** Na ordem das manilhas: ouros, espadas, copas, paus (o zap). */
@@ -131,6 +132,9 @@ export function criarTruco({ agora = Date.now, aleatorio = Math.random, baralhos
     minimo: 2,
     maximo: 4,
     comecar(ctxDaSala, { naSala: naSalaDaSala, corpo }) {
+      // no Solo, a vez de quem joga não corre em 30 s (revisão independente, 05/11/2026): pensar sozinho não segura ninguém, e o
+      // Syden jogava (no Truco, corria) pela pessoa, como faz pela turma. O relógio longo é o das mesas (JOGADA_SOLO_MS).
+      const tempoDaDecisao = ctxDaSala.solo ? JOGADA_SOLO_MS : TEMPO_DA_DECISAO;
       // os robôs só no Solo (1 ou 3), e estão sempre na sala
       const pedidos = quantosRobos(ctxDaSala, corpo, 3);
       const robos = idsDosRobos(pedidos >= 2 ? 3 : pedidos);
@@ -206,7 +210,7 @@ export function criarTruco({ agora = Date.now, aleatorio = Math.random, baralhos
           return;
         }
         prazoCurto = !presente(vez);
-        ctx.agendar(prazoCurto ? TEMPO_DO_AUSENTE : TEMPO_DA_DECISAO, () => {
+        ctx.agendar(prazoCurto ? TEMPO_DO_AUSENTE : tempoDaDecisao, () => {
           if (conferirFim()) return;
           if (fase !== 'jogando') return;
           // o tempo acabou: a carta mais fraca, aberta
@@ -245,7 +249,7 @@ export function criarTruco({ agora = Date.now, aleatorio = Math.random, baralhos
           const time = onze;
           if (membros(time).every(ehRobo)) ctx.agendar(PAUSA_DO_ROBO, () => onzeDoRobo(time));
           else
-            ctx.agendar(TEMPO_DA_DECISAO, () => {
+            ctx.agendar(tempoDaDecisao, () => {
               if (conferirFim()) return;
               decidirOnze(null, true);
             });
@@ -342,7 +346,7 @@ export function criarTruco({ agora = Date.now, aleatorio = Math.random, baralhos
           ctx.agendar(PAUSA_DO_ROBO, () => respostaDoRobo(robo));
           return;
         }
-        ctx.agendar(TEMPO_DA_DECISAO, () => {
+        ctx.agendar(tempoDaDecisao, () => {
           if (conferirFim()) return;
           if (fase === 'truco' && pedido) correr(null);
         });
@@ -350,7 +354,10 @@ export function criarTruco({ agora = Date.now, aleatorio = Math.random, baralhos
 
       const correr = (lugar: number | null) => {
         const p = pedido!;
-        const quemCorreu = lugar ?? lugares.findIndex((_, s) => timeDe(s) !== p.time && presente(s));
+        // quem correu por tempo: a PESSOA do time, não o robô parceiro (que está sempre presente e não responde por ela)
+        const doTime = (s: number) => timeDe(s) !== p.time && presente(s);
+        const pessoa = lugares.findIndex((id, s) => doTime(s) && !ehRobo(id));
+        const quemCorreu = lugar ?? (pessoa >= 0 ? pessoa : lugares.findIndex((_, s) => doTime(s)));
         contar({ tipo: 'correu', lugar: quemCorreu < 0 ? (p.lugar + 1) % n : quemCorreu, time: (1 - p.time) as 0 | 1, pontos: p.anterior });
         fecharMao(p.time, p.anterior);
       };

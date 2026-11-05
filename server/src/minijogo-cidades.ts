@@ -30,6 +30,9 @@ import * as db from './db.js';
 import { embaralhar, type Definicao } from './minijogo-motor.js';
 import { ehRobo, MAXIMO_DE_ROBOS, NOMES_DOS_ROBOS, PAUSA_DO_ROBO } from './minijogo-robos.js';
 
+/** As rodadas, no máximo, do 'até sobrar um' contra o computador. */
+export const TETO_ATE_SOBRAR_UM_COM_ROBOS = 60;
+
 export type TipoDaCasa = 'largada' | 'cidade' | 'transporte' | 'noticia' | 'pedagio' | 'engarrafamento' | 'feriado';
 
 export interface Casa {
@@ -223,6 +226,10 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
       if (naSala.length + robos < 2) return 'Ainda falta gente para começar.';
       const modo: 'rodadas' | 'falencia' = corpo.modo === 'falencia' ? 'falencia' : 'rodadas';
       const rodadas = modo === 'rodadas' ? (RODADAS_DAS_CIDADES.includes(Number(corpo.rodadas)) ? Number(corpo.rodadas) : 20) : null;
+      // 'Até sobrar um' contra o computador tem teto (revisão independente, 05/11/2026): os robôs não propõem trocas, então com as
+      // cidades espalhadas ninguém fecha região, ninguém fale, e a partida seguia para sempre na memória do servidor. No teto,
+      // ganha o maior patrimônio, como no modo de rodadas.
+      const teto = rodadas ?? (robos > 0 ? TETO_ATE_SOBRAR_UM_COM_ROBOS : null);
       const inteiro = (n: number) => Math.floor(aleatorio() * n);
       const idsDosRobos = Array.from({ length: robos }, (_, k) => -(k + 1));
       const ordem = embaralhar([...naSala.slice(0, MAXIMO_DAS_CIDADES - robos), ...idsDosRobos], aleatorio);
@@ -377,7 +384,7 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
           anotarAusentes(aqui);
           if (conferirFim(aqui)) return;
           if (indice >= ordem.length) {
-            if (rodadas !== null && rodada >= rodadas) return terminar();
+            if (teto !== null && rodada >= teto) return terminar();
             rodada++;
             indice = 0;
           }

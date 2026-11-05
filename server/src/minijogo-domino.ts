@@ -31,6 +31,7 @@
  */
 import { embaralhar, type Definicao, type Jogo } from './minijogo-motor.js';
 import { comRobos, ehRobo, idsDosRobos, PAUSA_DO_ROBO, quantosRobos } from './minijogo-robos.js';
+import { JOGADA_SOLO_MS } from './minijogo-tabuleiro.js';
 
 /** Uma pedra: as duas metades, a menor primeiro (na mesa, a ordem é a do encaixe). */
 export type Pedra = [number, number];
@@ -90,6 +91,9 @@ export function criarDomino({ agora = Date.now, aleatorio = Math.random, distrib
     minimo: 2,
     maximo: MAXIMO_DO_DOMINO,
     comecar(ctxDaSala, { naSala: naSalaDaSala, corpo }) {
+      // no Solo, a vez de quem joga não corre em 30 s (revisão independente, 05/11/2026): pensar sozinho não segura ninguém, e o
+      // Syden jogava (no Truco, corria) pela pessoa, como faz pela turma. O relógio longo é o das mesas (JOGADA_SOLO_MS).
+      const tempoDaVez = ctxDaSala.solo ? JOGADA_SOLO_MS : TEMPO_DA_VEZ;
       // os robôs só no Solo, e estão sempre na sala
       const robos = idsDosRobos(quantosRobos(ctxDaSala, corpo, MAXIMO_DO_DOMINO - 1));
       const ctx = comRobos(ctxDaSala, robos);
@@ -244,7 +248,7 @@ export function criarDomino({ agora = Date.now, aleatorio = Math.random, distrib
             return;
           }
           relogioDoAusente = !ctx.naSala().includes(ordem[vez]);
-          ctx.agendar(relogioDoAusente ? TEMPO_DO_AUSENTE : TEMPO_DA_VEZ, jogarSozinho);
+          ctx.agendar(relogioDoAusente ? TEMPO_DO_AUSENTE : tempoDaVez, jogarSozinho);
           ctx.avisar();
           return;
         }
@@ -385,7 +389,7 @@ export function criarDomino({ agora = Date.now, aleatorio = Math.random, distrib
             if (!podeComprar()) return 'Não há pedras para comprar.';
             comprar(lugar, false);
             relogioDoAusente = false;
-            ctx.agendar(TEMPO_DA_VEZ, jogarSozinho);
+            ctx.agendar(tempoDaVez, jogarSozinho);
             ctx.avisar();
             return null;
           }

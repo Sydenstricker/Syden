@@ -244,7 +244,7 @@ export interface OpcoesDaRodada {
  * a força de 60 a 98, o relógio a até ~0,8 s dos 10 s, o copo certo três vezes em quatro…). O robô não vê a tela: o servidor
  * só inventa um resultado plausível, sem precisar de conferência.
  */
-export function resultadoDoRobo(m: Microjogo, dados: Dados, aleatorio: () => number): Resultado {
+export function resultadoDoRobo(m: Microjogo, dados: Dados, aleatorio: () => number, passouMs = Infinity): Resultado {
   switch (m) {
     case 'saque': {
       if (aleatorio() < 0.08) return { motivo: 'cedo', valor: null, chave: [] };
@@ -265,8 +265,12 @@ export function resultadoDoRobo(m: Microjogo, dados: Dados, aleatorio: () => num
       return { motivo: null, valor: ms, chave: [ms] };
     }
     case 'siga': {
-      const n = 3 + Math.floor(aleatorio() * 7);
-      const ms = Math.round(minimoDaSiga(n) + 1500 + aleatorio() * 3000);
+      // nunca mais sequências do que dava para repetir no tempo que a rodada durou (revisão independente, 05/11/2026: a pessoa
+      // que responde logo revela a rodada, e o robô dizia ter feito 9 em 30 s)
+      let n = 3 + Math.floor(aleatorio() * 7);
+      while (n > 0 && minimoDaSiga(n) + 1500 > passouMs) n--;
+      if (n === 0) return { motivo: null, valor: 0, chave: [0, Math.round(passouMs)] };
+      const ms = Math.round(Math.min(passouMs, minimoDaSiga(n) + 1500 + aleatorio() * 3000));
       return { motivo: null, valor: n, chave: [-n, ms] };
     }
     case 'alvo': {
@@ -326,7 +330,7 @@ export function rodadaDeFesta({ ctx, microjogo: m, inscritos, agora, aleatorio, 
     if (fase !== 'jogando') return;
     const presentes = new Set([...ctx.naSala(), ...robos]);
     // os robôs (o Solo): o resultado deles sai agora, junto com o de quem joga
-    for (const id of robos) if (!resultados.has(id)) resultados.set(id, resultadoDoRobo(m, dados, aleatorio));
+    for (const id of robos) if (!resultados.has(id)) resultados.set(id, resultadoDoRobo(m, dados, aleatorio, agora() - inicio));
     // no alvo, quem acertou alguma e não chegou a mandar o fim conta pelo que o servidor viu
     if (m === 'alvo') {
       for (const [userId, acertos] of acertosDoAlvo) {

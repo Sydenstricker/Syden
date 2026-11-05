@@ -561,7 +561,13 @@ export class CenaDasCidades {
     c.chave = chave;
     if (c.obj) {
       this.cena.remove(c.obj);
-      c.obj.traverse((o) => (o as THREE.Mesh).isMesh && (o as THREE.Mesh).geometry !== undefined && o.userData.bandeira && (o as THREE.Mesh).geometry.dispose());
+      c.obj.traverse((o) => {
+        const m = o as THREE.Mesh;
+        if (!m.isMesh || !(m.userData.bandeira || m.userData.proprio)) return;
+        // o que é só desta construção: a bandeira (geometria e material) e o material escurecido da hipoteca
+        if (m.userData.bandeira) m.geometry.dispose();
+        (m.material as THREE.Material).dispose();
+      });
       c.obj = null;
     }
     const g = arquivo ? this.modelos.get(arquivo) : undefined;
@@ -591,6 +597,7 @@ export class CenaDasCidades {
           const mat = (m.material as THREE.MeshStandardMaterial).clone();
           mat.color.multiplyScalar(0.55);
           m.material = mat;
+          m.userData.proprio = true;
         }
       });
     this.cena.add(raiz);
@@ -604,6 +611,8 @@ export class CenaDasCidades {
     for (const [id, p] of this.pecas)
       if (!vivos.has(id)) {
         this.cena.remove(p.raiz);
+        p.mat.m.dispose();
+        p.mixer.stopAllAction();
         this.pecas.delete(id);
       }
     // quantas peças por casa, para dividir o lugar
@@ -613,7 +622,11 @@ export class CenaDasCidades {
     for (const info of d.pecas) {
       let p = this.pecas.get(info.userId);
       if (!p || p.pelo !== info.pelo || p.roupa !== info.roupa) {
-        if (p) this.cena.remove(p.raiz);
+        if (p) {
+          this.cena.remove(p.raiz);
+          p.mat.m.dispose();
+          p.mixer.stopAllAction();
+        }
         p = this.novaPeca(coelho, info);
         this.pecas.set(info.userId, p);
       }
@@ -803,7 +816,7 @@ export class CenaDasCidades {
       const m = o as THREE.Mesh;
       if (!m.isMesh) return;
       // a geometria e as texturas dos modelos são do cache (servem à próxima partida); as nossas vão embora
-      if (m.userData.casa !== undefined || m.userData.bandeira) {
+      if (m.userData.casa !== undefined || m.userData.bandeira || m.userData.proprio) {
         const mats = Array.isArray(m.material) ? m.material : [m.material];
         for (const mat of mats) {
           (mat as THREE.MeshStandardMaterial).map?.dispose();
@@ -813,6 +826,7 @@ export class CenaDasCidades {
     });
     for (const d of this.descartaveis) d.dispose();
     for (const p of this.pecas.values()) p.mat.m.dispose();
+    this.renderer.forceContextLoss();
     this.renderer.dispose();
     canvas.remove();
   }

@@ -279,3 +279,31 @@ test('Tabuleiro da turma no Solo: os robôs jogam o dado, compram a dourada, jog
   const depois = (await comToken(app, ana.token)('GET', '/api/corrida-trofeus')).json().trofeus.length;
   assert.equal(depois, antes);
 });
+
+test('Cidades até sobrar um contra o computador tem teto de rodadas: a partida acaba com a pessoa parada (revisão de 05/11/2026)', async () => {
+  const { criarCidades, TETO_ATE_SOBRAR_UM_COM_ROBOS } = await import('../src/minijogo-cidades.js');
+  // a semente que, sem o teto, passava da rodada 22 mil
+  for (const s of [2, 5]) {
+    let relogio: { ms: number; depois: () => void } | null = null;
+    let acabou = false;
+    const ctx = {
+      agendar: (ms: number, depois: () => void) => (relogio = { ms, depois }),
+      avisar() {},
+      terminar() {
+        acabou = true;
+      },
+      naSala: () => [anaId],
+      nome: () => 'ana',
+      comunidade: 0,
+      solo: true,
+    } as unknown as Contexto;
+    const jogo = criarCidades({ aleatorio: semente(s * 31 + 5) }).comecar(ctx, { naSala: [anaId], criadaPor: anaId, corpo: { robos: 5, modo: 'falencia' } }) as Jogo;
+    for (let i = 0; i < 200_000 && !acabou && relogio; i++) {
+      const r: { ms: number; depois: () => void } = relogio;
+      relogio = null;
+      r.depois();
+    }
+    assert.ok(acabou, `semente ${s}: a partida não acabou`);
+    assert.ok((jogo.publico(anaId).rodada as number) <= TETO_ATE_SOBRAR_UM_COM_ROBOS);
+  }
+});
