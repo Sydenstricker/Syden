@@ -26,6 +26,7 @@ import { api } from './api';
 import { getDirectory } from './directory';
 import { type ScreenQuality, getSettings, updateSettings } from './settings';
 import { playSoundboard, stopAllSounds } from './soundboard';
+import { DURACAO_DA_REACAO_MS, ehReacao, type Reacao } from './reacoes';
 import { nomeDaTransmissao } from './streamName';
 import { aoMudarEconomia, aplicarTetoEmTodas } from './qualidadeQueRecebo';
 import { applyAllVolumes, idsComVolumeAjustado, trocarSaidaDoReforco } from './voiceVolumes';
@@ -140,6 +141,8 @@ const SOUNDBOARD_TOPIC = 'soundboard';
 const KARAOKE_TOPIC = 'karaoke';
 // Confete, fogos e corações. Vão pelo mesmo caminho do soundboard: aviso pequeno, cada um desenha o seu.
 const EFEITO_TOPIC = 'efeito-visual';
+/** As reações (web/src/reacoes.ts): o balãozinho em cima do quadro de quem reagiu. */
+const REACAO_TOPIC = 'reacao';
 const SEND_COOLDOWN_MS = 1500;
 const RECEIVE_COOLDOWN_MS = 1000;
 const SOUND_BADGE_MS = 2500;
@@ -527,6 +530,23 @@ export function useVoice(socket: Socket | null) {
   const [karaoke, setKaraoke] = useState<{ songId: number; quem: string; comecouEm: number } | null>(null);
   const lastSentRef = useRef(0);
   const lastHeardRef = useRef(new Map<string, number>());
+  // As reações: o balão de cada pessoa, por alguns segundos. Freio próprio (não divide com o soundboard: reagir logo
+  // depois de tocar um som é normal), de 0,7 s para mandar e 0,5 s para receber da mesma pessoa.
+  const [reacoes, setReacoes] = useState<Map<string, { reacao: Reacao; key: number }>>(new Map());
+  const ultimaReacaoRef = useRef(0);
+  const reacaoOuvidaRef = useRef(new Map<string, number>());
+  const mostrarReacao = useCallback((identity: string, reacao: Reacao) => {
+    const key = Date.now() + Math.random();
+    setReacoes((map) => new Map(map).set(identity, { reacao, key }));
+    setTimeout(() => {
+      setReacoes((map) => {
+        if (map.get(identity)?.key !== key) return map;
+        const next = new Map(map);
+        next.delete(identity);
+        return next;
+      });
+    }, DURACAO_DA_REACAO_MS);
+  }, []);
 
   const showSound = useCallback((identity: string, icon: string) => {
     const key = Date.now() + Math.random();
@@ -552,6 +572,18 @@ export function useVoice(socket: Socket | null) {
             setKaraoke({ songId: aviso.songId, quem: participant.name || participant.identity, comecouEm: Date.now() });
           }
           if (aviso?.acao === 'parar') setKaraoke(null);
+        } catch {
+          // aviso torto: ignora
+        }
+        return;
+      }
+      if (topic === REACAO_TOPIC && participant) {
+        const quando = Date.now();
+        if (quando - (reacaoOuvidaRef.current.get(participant.identity) ?? 0) < 500) return;
+        reacaoOuvidaRef.current.set(participant.identity, quando);
+        try {
+          const aviso = JSON.parse(new TextDecoder().decode(payload));
+          if (ehReacao(aviso?.reacao)) mostrarReacao(participant.identity, aviso.reacao);
         } catch {
           // aviso torto: ignora
         }
@@ -598,7 +630,22 @@ export function useVoice(socket: Socket | null) {
     return () => {
       room.off(RoomEvent.DataReceived, onData);
     };
-  }, [room, showSound]);
+  }, [room, showSound, mostrarReacao]);
+
+  /** Reage na chamada: o balão aparece na hora no meu quadro, e vai aos outros pelo canal de dados. */
+  const reagir = useCallback(
+    async (reacao: Reacao) => {
+      if (channelRef.current === null) return;
+      const agora = Date.now();
+      if (agora - ultimaReacaoRef.current < 700) return;
+      ultimaReacaoRef.current = agora;
+      mostrarReacao(room.localParticipant.identity, reacao);
+      await room.localParticipant
+        .publishData(new TextEncoder().encode(JSON.stringify({ reacao })), { reliable: true, topic: REACAO_TOPIC })
+        .catch(console.error);
+    },
+    [room, mostrarReacao],
+  );
 
   const playSound = useCallback(
     async (soundId: number) => {
@@ -1929,6 +1976,9 @@ export function useVoice(socket: Socket | null) {
       !!protecaoRef.current?.regras.assistirSoAmigos && !protecaoRef.current.amigos.has(identity),
     recentSounds,
     playSound,
+    /** O balão de reação de cada pessoa agora (pela identidade do LiveKit), e reagir. */
+    reacoes,
+    reagir,
     stopSounds,
     karaoke,
     comandarKaraoke,

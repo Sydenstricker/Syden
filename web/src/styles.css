@@ -3600,6 +3600,79 @@ textarea {
   }
 }
 
+/* A REAÇÃO (web/src/reacoes.ts): o balãozinho em pixel art saindo de cima da cabeça de quem reagiu, ampliado sem borrar. */
+.tile-reacao {
+  position: absolute;
+  top: 10%;
+  left: calc(50% + clamp(18px, 6%, 48px));
+  width: clamp(36px, 14%, 64px);
+  height: auto;
+  aspect-ratio: 1;
+  image-rendering: pixelated;
+  pointer-events: none;
+  z-index: 2;
+  transform-origin: bottom left;
+  animation: reacao-pop 3.5s ease forwards;
+  filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.35));
+}
+
+@keyframes reacao-pop {
+  0% {
+    transform: translateY(8px) scale(0.3);
+    opacity: 0;
+  }
+  10% {
+    transform: translateY(-4px) scale(1.15);
+    opacity: 1;
+  }
+  18% {
+    transform: translateY(0) scale(1);
+  }
+  85% {
+    transform: translateY(-6px);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tile-reacao {
+    animation: none;
+  }
+}
+
+/* A grade das reações, no menu do botão de reagir. */
+.screenshare-menu.reacoes-grade {
+  display: grid;
+  grid-template-columns: repeat(5, 40px);
+  gap: 4px;
+  padding: 8px;
+  width: max-content;
+}
+
+.reacoes-botao {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.reacoes-botao:hover,
+.reacoes-botao:focus-visible {
+  background: var(--bg-hover, rgba(255, 255, 255, 0.08));
+}
+
+.reacoes-botao img {
+  image-rendering: pixelated;
+}
+
 /* ---------- Configurações: avatar, emojis e sons ---------- */
 
 .settings-lead {

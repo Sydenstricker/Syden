@@ -65,6 +65,7 @@ import { SiteNoPalco } from './SiteEmbutido';
 import { convitePendente, pegarPedidoDeAbrir, souJogador, usarMinijogo, usarMinijogoSolo } from './minijogos';
 import { CamadaDeEfeitos } from './CamadaDeEfeitos';
 import { EfeitoVisualButton } from './EfeitoVisualButton';
+import { BalaoDeReacao, BotaoDeReacao } from './BotaoDeReacao';
 import { MaisNaChamada } from './MaisNaChamada';
 import { VoiceEffectButton } from './VoiceEffectButton';
 import { updateSettings, useSettings } from './settings';
@@ -232,6 +233,7 @@ function PersonTile({
   member,
   avatarSize,
   sound,
+  reacao,
   musica,
   assistindo,
 }: {
@@ -244,6 +246,8 @@ function PersonTile({
   assistindo?: boolean;
   /** Som do soundboard que a pessoa acabou de tocar. */
   sound?: { icon: string; key: number };
+  /** A reação que a pessoa acabou de mandar (o balãozinho em cima do avatar). */
+  reacao?: Parameters<typeof BalaoDeReacao>[0]['reacao'];
 }) {
   const speaking = useIsSpeaking(trackRef.participant);
   const cameraMuted = useIsMuted(trackRef);
@@ -276,6 +280,7 @@ function PersonTile({
         {member?.deafened ? <HeadphoneOff size={14} /> : member?.muted && <MicOff size={14} />}
         <span>{name}</span>
       </div>
+      <BalaoDeReacao reacao={reacao} />
       {sound && (
         <span key={sound.key} className="tile-sound" aria-hidden="true">
           {sound.icon}
@@ -1403,6 +1408,7 @@ export function Stage({
           member={members.find((m) => String(m.userId) === ref.participant.identity)}
           avatarSize={avatarSize}
           sound={voice.recentSounds.get(ref.participant.identity)}
+          reacao={voice.reacoes.get(ref.participant.identity)}
           musica={voice.karaoke !== null}
           assistindo={plateia.has(Number(ref.participant.identity))}
         />
@@ -1559,6 +1565,7 @@ export function Stage({
           {voice.media.video ? <Video /> : <VideoOff />}
         </IconButton>
         {!simples && <ScreenShareButton voice={voice} />}
+        {!simples && <BotaoDeReacao voice={voice} />}
         {!simples && !privada && <BotaoMinijogo partida={solo.partida ?? minijogo.partida} aberto={minijogoAberto} aoAlternar={() => setMinijogoAberto(!minijogoAberto)} />}
         {/*
           Ver lado a lado fica FORA do menu: só aparece quando há mais de uma transmissão aberta, e
