@@ -2658,4 +2658,7 @@ export default {
   'Trocar na vertical': 'جابه‌جایی عمودی',
   Mirar: 'نشانه‌گیری',
   Atirar: 'شلیک',
+  Xadrez: 'شطرنج',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'یک بازی کامل شطرنج با همه قوانین. هر که شروع کند با سفید بازی می‌کند. اتاق تماشا می‌کند.',
+  'Xeque!': 'کیش!',
 } satisfies Record<string, string>;

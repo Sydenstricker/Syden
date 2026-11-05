@@ -2730,4 +2730,7 @@ export default {
   'Trocar na vertical': 'Zamień w pionie',
   Mirar: 'Celuj',
   Atirar: 'Strzelaj',
+  Xadrez: 'Szachy',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Cała partia szachów ze wszystkimi zasadami. Kto zaczyna, gra białymi. Pokój patrzy.',
+  'Xeque!': 'Szach!',
 } satisfies Record<string, string>;

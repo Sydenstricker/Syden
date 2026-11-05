@@ -2745,4 +2745,7 @@ export default {
   'Trocar na vertical': 'Chanje vètikalman',
   Mirar: 'Vize',
   Atirar: 'Tire',
+  Xadrez: 'Echèk',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Yon pati echèk konplè, ak tout règ yo. Moun ki kòmanse jwe ak blan. Sal la ap gade.',
+  'Xeque!': 'Echèk!',
 } satisfies Record<string, string>;

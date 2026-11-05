@@ -2754,4 +2754,7 @@ export default {
   'Trocar na vertical': 'Ուղղահայաց փոխել',
   Mirar: 'Նշան բռնել',
   Atirar: 'Կրակել',
+  Xadrez: 'Շախմատ',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Ամբողջական շախմատային պարտիա՝ բոլոր կանոններով։ Ով սկսում է, խաղում է սպիտակներով։ Սենյակը դիտում է։',
+  'Xeque!': 'Շախ!',
 } satisfies Record<string, string>;

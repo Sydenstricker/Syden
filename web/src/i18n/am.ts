@@ -2665,4 +2665,7 @@ export default {
   'Trocar na vertical': 'በአቀባዊ መለዋወጥ',
   Mirar: 'ማነጣጠር',
   Atirar: 'መተኮስ',
+  Xadrez: 'ቼዝ',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'ሙሉ የቼዝ ጨዋታ፣ ከሁሉም ሕጎቹ ጋር። የሚጀምር ነጩን ይይዛል። ክፍሉ ይመለከታል።',
+  'Xeque!': 'ቼክ!',
 } satisfies Record<string, string>;

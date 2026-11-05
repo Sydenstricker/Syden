@@ -2735,4 +2735,7 @@ export default {
   'Trocar na vertical': 'Vaihda pystysuunnassa',
   Mirar: 'Tähtää',
   Atirar: 'Ammu',
+  Xadrez: 'Shakki',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Kokonainen shakkipeli kaikilla säännöillä. Aloittaja pelaa valkeilla. Huone katsoo.',
+  'Xeque!': 'Shakki!',
 } satisfies Record<string, string>;

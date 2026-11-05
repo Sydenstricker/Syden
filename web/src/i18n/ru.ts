@@ -2683,4 +2683,7 @@ export default {
   'Trocar na vertical': 'Поменять по вертикали',
   Mirar: 'Прицелиться',
   Atirar: 'Стрелять',
+  Xadrez: 'Шахматы',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Полная партия в шахматы со всеми правилами. Кто начинает, играет белыми. Комната смотрит.',
+  'Xeque!': 'Шах!',
 } satisfies Record<string, string>;

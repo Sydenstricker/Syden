@@ -2715,4 +2715,7 @@ export default {
   'Trocar na vertical': 'Поміняти по вертикалі',
   Mirar: 'Цілитися',
   Atirar: 'Стріляти',
+  Xadrez: 'Шахи',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Повна партія в шахи з усіма правилами. Хто починає, грає білими. Кімната дивиться.',
+  'Xeque!': 'Шах!',
 } satisfies Record<string, string>;

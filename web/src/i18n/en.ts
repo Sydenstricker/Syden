@@ -2660,4 +2660,7 @@ export default {
   'Trocar na vertical': 'Swap vertically',
   Mirar: 'Aim',
   Atirar: 'Shoot',
+  Xadrez: 'Chess',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'A full game of chess, with every rule. Whoever starts plays white. The room watches.',
+  'Xeque!': 'Check!',
 } satisfies Record<string, string>;

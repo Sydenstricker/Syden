@@ -2678,4 +2678,7 @@ export default {
   'Trocar na vertical': 'สลับแนวตั้ง',
   Mirar: 'เล็ง',
   Atirar: 'ยิง',
+  Xadrez: 'หมากรุกสากล',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'หมากรุกเต็มเกมพร้อมกติกาครบ คนที่เริ่มเล่นฝ่ายขาว ทั้งห้องดูอยู่',
+  'Xeque!': 'รุก!',
 } satisfies Record<string, string>;

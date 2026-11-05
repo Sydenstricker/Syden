@@ -2734,4 +2734,7 @@ export default {
   'Trocar na vertical': 'ប្ដូរតាមបញ្ឈរ',
   Mirar: 'តម្រង់',
   Atirar: 'បាញ់',
+  Xadrez: 'អុកអន្តរជាតិ',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'ការប្រកួតអុកពេញលេញ ជាមួយច្បាប់ទាំងអស់។ អ្នកចាប់ផ្ដើមលេងពណ៌ស។ បន្ទប់មើល។',
+  'Xeque!': 'អុក!',
 } satisfies Record<string, string>;

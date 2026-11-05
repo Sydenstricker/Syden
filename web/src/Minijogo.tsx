@@ -10,6 +10,7 @@ import { EscolhaDosBlocos, JogoBlocos } from './JogoBlocos';
 import { JogoDesenho } from './JogoDesenho';
 import { JogoDuelo } from './JogoDuelo';
 import { JogoDamas } from './JogoDamas';
+import { JogoPartidaDeXadrez } from './JogoPartidaDeXadrez';
 import { JogoDomino } from './JogoDomino';
 import { JogoNaval } from './JogoNaval';
 import { JogoTruco } from './JogoTruco';
@@ -89,7 +90,7 @@ const MEDALHAS = ['🥇', '🥈', '🥉'];
  * Cidades à venda e o Tabuleiro da turma perguntam junto com as rodadas.
  */
 /** Os jogos de vez, em que cada jogada é um clique na tela (o som dela toca aqui). */
-const JOGOS_DE_VEZ = new Set<string>(['gomoku', 'mancala', 'damas', 'naval', 'cidades', 'tabuleiro', 'xadrez', 'lobisomem']);
+const JOGOS_DE_VEZ = new Set<string>(['gomoku', 'mancala', 'damas', 'naval', 'partida-de-xadrez', 'cidades', 'tabuleiro', 'xadrez', 'lobisomem']);
 
 const ROBOS_NO_SOLO: Partial<Record<IdDoJogo, OpcaoDeRobos[]>> = {
   domino: [cadaUmPorSi(1), cadaUmPorSi(2), EM_DUPLAS],
@@ -486,6 +487,9 @@ export function PainelDoMinijogo({
       )}
       {jogoNaTela?.jogo === 'truco' && (
         <JogoTruco key={String(jogoNaTela.partidaId ?? '')} estado={jogoNaTela} eu={eu} jogador={souJogador(partida)} restante={restante} agir={agir} />
+      )}
+      {jogoNaTela?.jogo === 'partida-de-xadrez' && (
+        <JogoPartidaDeXadrez key={String(jogoNaTela.partidaId ?? '')} estado={jogoNaTela} eu={eu} jogador={souJogador(partida)} restante={restante} agir={agir} />
       )}
       {jogoNaTela?.jogo === 'damas' && (
         <JogoDamas key={String(jogoNaTela.partidaId ?? '')} estado={jogoNaTela} eu={eu} jogador={souJogador(partida)} restante={restante} agir={agir} />

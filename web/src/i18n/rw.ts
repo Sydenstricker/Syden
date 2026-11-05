@@ -2676,4 +2676,7 @@ export default {
   'Trocar na vertical': 'Guhinduranya uhagaze',
   Mirar: 'Kwerekeza',
   Atirar: 'Kurasa',
+  Xadrez: 'Echecs',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Umukino wuzuye wa echecs, ufite amategeko yose. Utangiye akina abera. Icyumba kirareba.',
+  'Xeque!': 'Echec!',
 } satisfies Record<string, string>;

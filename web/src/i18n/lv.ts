@@ -2737,4 +2737,7 @@ export default {
   'Trocar na vertical': 'Samainīt vertikāli',
   Mirar: 'Mērķēt',
   Atirar: 'Šaut',
+  Xadrez: 'Šahs',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Pilna šaha partija ar visiem noteikumiem. Kas sāk, spēlē ar baltajiem. Istaba vēro.',
+  'Xeque!': 'Šahs!',
 } satisfies Record<string, string>;

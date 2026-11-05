@@ -2635,4 +2635,7 @@ export default {
   'Trocar na vertical': 'Đổi theo chiều dọc',
   Mirar: 'Ngắm',
   Atirar: 'Bắn',
+  Xadrez: 'Cờ vua',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Một ván cờ vua đầy đủ, với mọi luật chơi. Ai đi trước cầm quân trắng. Cả phòng xem.',
+  'Xeque!': 'Chiếu!',
 } satisfies Record<string, string>;

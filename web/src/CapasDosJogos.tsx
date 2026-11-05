@@ -47,6 +47,8 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
       return <CapaNaval />;
     case 'xadrez':
       return <CapaXadrez />;
+    case 'partida-de-xadrez':
+      return <CapaPartidaDeXadrez />;
     case 'lobisomem':
       return <CapaLobisomem />;
     case 'desenho':
@@ -436,6 +438,31 @@ function CapaLobisomem() {
           <path d={`M${x - 9} ${y} L${x} ${y - 9} L${x + 9} ${y} V${y + 10} H${x - 9} Z`} fill="#1b1a33" />
           <rect x={x - 3} y={y + 2} width="6" height="5" fill="#f2b84b" />
         </g>
+      ))}
+    </svg>
+  );
+}
+
+/** A partida de xadrez: o tabuleiro de lado, com o rei e a dama de cada cor frente a frente. */
+function CapaPartidaDeXadrez() {
+  const lado = 15;
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#2b2430" />
+      {Array.from({ length: 64 }, (_, i) => {
+        const c = i % 8;
+        const l = Math.floor(i / 8);
+        return <rect key={i} x={20 + c * lado} y={0 + l * lado} width={lado} height={lado} fill={(c + l) % 2 ? '#a5734f' : '#ecd5b0'} />;
+      })}
+      {(['♜', '♞', '♝', '♛', '♚', '♝', '♞', '♜'] as const).map((p, c) => (
+        <text key={'p' + c} x={20 + c * lado + lado / 2} y={lado - 3} fontSize="13" textAnchor="middle" fill="#2a2024">
+          {p + '︎'}
+        </text>
+      ))}
+      {(['♜', '♞', '♝', '♛', '♚', '♝', '♞', '♜'] as const).map((p, c) => (
+        <text key={'b' + c} x={20 + c * lado + lado / 2} y={8 * lado - 3} fontSize="13" textAnchor="middle" fill="#fffaf0" stroke="#2a2024" strokeWidth="0.6">
+          {p + '︎'}
+        </text>
       ))}
     </svg>
   );

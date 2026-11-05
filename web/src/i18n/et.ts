@@ -2732,4 +2732,7 @@ export default {
   'Trocar na vertical': 'Vaheta vertikaalselt',
   Mirar: 'Siht',
   Atirar: 'Tulista',
+  Xadrez: 'Male',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Terve malepartii kõigi reeglitega. Kes alustab, mängib valgetega. Tuba vaatab.',
+  'Xeque!': 'Tuli!',
 } satisfies Record<string, string>;

@@ -2746,4 +2746,7 @@ export default {
   'Trocar na vertical': 'Dikligine çalyş',
   Mirar: 'Nyşana al',
   Atirar: 'At',
+  Xadrez: 'Küşt',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Ähli düzgünleri bilen doly küşt oýny. Başlan ak bilen oýnaýar. Otag tomaşa edýär.',
+  'Xeque!': 'Şa!',
 } satisfies Record<string, string>;

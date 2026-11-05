@@ -2753,4 +2753,7 @@ export default {
   'Trocar na vertical': 'ვერტიკალურად გაცვლა',
   Mirar: 'დამიზნება',
   Atirar: 'სროლა',
+  Xadrez: 'ჭადრაკი',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'სრული ჭადრაკის პარტია, ყველა წესით. ვინც იწყებს, თეთრებით თამაშობს. ოთახი უყურებს.',
+  'Xeque!': 'ქიში!',
 } satisfies Record<string, string>;

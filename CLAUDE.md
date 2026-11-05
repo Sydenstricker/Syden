@@ -591,6 +591,12 @@ tacada perfeita. Troféu com `pista: 'golfe'`, os pontos sendo o total de tacada
   silenciar (lembrado no aparelho; "Desativar áudio" da chamada também cala). **Música, não:** a regra do "nunca fazer a nossa"
   vale; entra quando houver trilha de terceiro com licença, e o mesmo botão já a silencia.
 
+**O XADREZ (05/11/2026, pedido dele: "adicione xadrez também, com os assets"):** a partida inteira, ao lado dos Problemas de
+xadrez, na mesa de duas pessoas e no Solo contra o robô (`server/src/minijogo-partida-de-xadrez.ts`, id `partida-de-xadrez`). As
+regras são do chess.js (BSD-2): o servidor gera os lances e o site só escolhe; a promoção é sempre a dama. O robô olha o lance dele
+e a resposta, mais as capturas que sobram (abaixo de 1,5 s; o teste confere). Em 3D com o tabuleiro e as peças do KayKit Board
+Game Bits (`web/src/xadrez3d/`), o tabuleiro de botões por baixo. Fora das conquistas da turma até ele decidir.
+
 **O TABULEIRO DA TURMA está feito (03/11/2026, o item 5):** `server/src/minijogo-tabuleiro-da-turma.ts`, `web/src/JogoTabuleiro.tsx`,
 só no Coletivo (2 a 8). Uma volta de 30 casas em volta de uma horta, desenhada por código; 5, 10 ou 15 rodadas. Na vez, cada
 um pede o dado (QUEM SORTEIA É O SERVIDOR), a peça anda na tela casa a casa, e a casa age: +3 cenouras, −3, ou um evento

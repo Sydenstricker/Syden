@@ -2664,4 +2664,7 @@ export default {
   'Trocar na vertical': 'Verticaal wisselen',
   Mirar: 'Mikken',
   Atirar: 'Schieten',
+  Xadrez: 'Schaken',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Een volledige partij schaak, met alle regels. Wie begint, speelt met wit. De kamer kijkt mee.',
+  'Xeque!': 'Schaak!',
 } satisfies Record<string, string>;

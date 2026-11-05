@@ -2735,4 +2735,7 @@ export default {
   'Trocar na vertical': 'Si toos ah u beddel',
   Mirar: 'Beegso',
   Atirar: 'Toogo',
+  Xadrez: 'Jees',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Ciyaar jees oo dhammaystiran, oo leh dhammaan xeerarka. Kii bilaaba wuxuu ku ciyaaraa caddaanka. Qolku wuu daawanayaa.',
+  'Xeque!': 'Jeeg!',
 } satisfies Record<string, string>;

@@ -2680,4 +2680,7 @@ export default {
   'Trocar na vertical': 'Pààrọ̀ ní ìdúró',
   Mirar: 'Fojú sí',
   Atirar: 'Yìn',
+  Xadrez: 'Ayò chess',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Ere chess pípé, pẹ̀lú gbogbo òfin. Ẹni tó bẹ̀rẹ̀ ló ń fi funfun ṣeré. Iyàrá ń wò ó.',
+  'Xeque!': 'Chẹ́ẹ̀kì!',
 } satisfies Record<string, string>;

@@ -2736,4 +2736,7 @@ export default {
   'Trocar na vertical': 'Shintsha ngokuqondile',
   Mirar: 'Hlosa',
   Atirar: 'Dubula',
+  Xadrez: 'I-chess',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Umdlalo ophelele we-chess, nayo yonke imithetho. Oqalayo udlala ngokumhlophe. Igumbi liyabuka.',
+  'Xeque!': 'Cheki!',
 } satisfies Record<string, string>;

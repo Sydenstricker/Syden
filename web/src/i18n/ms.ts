@@ -2665,4 +2665,7 @@ export default {
   'Trocar na vertical': 'Tukar menegak',
   Mirar: 'Bidik',
   Atirar: 'Tembak',
+  Xadrez: 'Catur',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Satu permainan catur penuh, dengan semua peraturan. Yang memulakan bermain putih. Bilik menonton.',
+  'Xeque!': 'Sah!',
 } satisfies Record<string, string>;

@@ -2737,4 +2737,7 @@ export default {
   'Trocar na vertical': 'Zamenjaj navpično',
   Mirar: 'Meri',
   Atirar: 'Streljaj',
+  Xadrez: 'Šah',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Cela šahovska partija z vsemi pravili. Kdor začne, igra z belimi. Soba gleda.',
+  'Xeque!': 'Šah!',
 } satisfies Record<string, string>;

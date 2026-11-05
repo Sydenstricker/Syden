@@ -2736,4 +2736,7 @@ export default {
   'Trocar na vertical': 'ສັບປ່ຽນຕາມແນວຕັ້ງ',
   Mirar: 'ເລັງ',
   Atirar: 'ຍິງ',
+  Xadrez: 'ໝາກຮຸກສາກົນ',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'ເກມໝາກຮຸກເຕັມຮູບແບບ ພ້ອມກົດທັງໝົດ. ຜູ້ເລີ່ມຫຼິ້ນຝ່າຍຂາວ. ຫ້ອງເບິ່ງຢູ່.',
+  'Xeque!': 'ຮຸກ!',
 } satisfies Record<string, string>;

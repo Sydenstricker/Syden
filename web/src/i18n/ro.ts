@@ -2665,4 +2665,7 @@ export default {
   'Trocar na vertical': 'Schimbă pe verticală',
   Mirar: 'Țintește',
   Atirar: 'Trage',
+  Xadrez: 'Șah',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'O partidă de șah întreagă, cu toate regulile. Cine începe joacă cu albele. Camera urmărește.',
+  'Xeque!': 'Șah!',
 } satisfies Record<string, string>;

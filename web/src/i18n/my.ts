@@ -2704,4 +2704,7 @@ export default {
   'Trocar na vertical': 'ဒေါင်လိုက်လဲ',
   Mirar: 'ချိန်',
   Atirar: 'ပစ်',
+  Xadrez: 'စစ်တုရင်',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'စည်းမျဉ်းအားလုံးပါ စစ်တုရင်တစ်ပွဲ အပြည့်။ စတင်သူက အဖြူဘက်က ကစားသည်။ အခန်းက ကြည့်နေသည်။',
+  'Xeque!': 'ချက်!',
 } satisfies Record<string, string>;

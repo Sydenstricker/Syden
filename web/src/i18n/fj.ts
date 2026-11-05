@@ -2664,4 +2664,7 @@ export default {
   'Trocar na vertical': 'Veisau cake kei ra',
   Mirar: 'Vakatotoka',
   Atirar: 'Vana',
+  Xadrez: 'Jesi',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'E dua na qito ni jesi taucoko, kei na lawa kece. O koya e tekivu e qito ena vulavula. E sarava na rumu.',
+  'Xeque!': 'Jeke!',
 } satisfies Record<string, string>;

@@ -2647,4 +2647,7 @@ export default {
   'Trocar na vertical': 'నిలువుగా మార్చు',
   Mirar: 'గురి పెట్టు',
   Atirar: 'కాల్చు',
+  Xadrez: 'చదరంగం',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'అన్ని నియమాలతో పూర్తి చదరంగం ఆట. మొదలుపెట్టినవారు తెల్లవాటితో ఆడతారు. గది చూస్తుంది.',
+  'Xeque!': 'చెక్!',
 } satisfies Record<string, string>;

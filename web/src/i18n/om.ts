@@ -2705,4 +2705,7 @@ export default {
   'Trocar na vertical': 'Ol fi gadi jijjiiruu',
   Mirar: 'Xiyyeeffachuu',
   Atirar: 'Dhukaasuu',
+  Xadrez: 'Chess',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Taphataa chess guutuu, seerota hundaa waliin. Kan jalqabu adiidhaan taphata. Kutaan ilaala.',
+  'Xeque!': 'Cheek!',
 } satisfies Record<string, string>;

@@ -14,6 +14,7 @@ import { palavra } from './minijogo-palavra.js';
 import { plataforma } from './minijogo-plataforma.js';
 import { cidades } from './minijogo-cidades.js';
 import { damas } from './minijogo-damas.js';
+import { partidaDeXadrez } from './minijogo-partida-de-xadrez.js';
 import { domino } from './minijogo-domino.js';
 import { naval } from './minijogo-naval.js';
 import { truco } from './minijogo-truco.js';
@@ -68,6 +69,8 @@ export const JOGOS: Record<string, Definicao> = {
   truco,
   damas,
   naval,
+  // a partida de xadrez inteira (05/11/2026), ao lado dos problemas
+  'partida-de-xadrez': partidaDeXadrez,
   // Os quizzes de adivinhar (minijogo-quiz.ts): um jogo por tema, todos no mesmo motor.
   ...Object.fromEntries(Object.entries(TEMAS).map(([id, tema]) => [id, criarQuiz(tema)])),
 };
@@ -82,7 +85,7 @@ export const JOGOS: Record<string, Definicao> = {
 // Tabuleiro da turma; os robôs vêm de minijogo-robos.ts)
 export const JOGOS_SOLO = new Set([
   'tamanho', 'xadrez', 'sudoku', 'festa', 'briga', 'blocos', 'golfe', 'caca',
-  'cidades', 'gomoku', 'mancala', 'damas', 'naval', 'domino', 'truco', 'tabuleiro',
+  'cidades', 'gomoku', 'mancala', 'damas', 'naval', 'domino', 'truco', 'tabuleiro', 'partida-de-xadrez',
   ...Object.keys(TEMAS),
 ]);
 

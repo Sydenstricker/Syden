@@ -2719,4 +2719,7 @@ export default {
   'Trocar na vertical': 'החלפה אנכית',
   Mirar: 'כיוון',
   Atirar: 'ירי',
+  Xadrez: 'שחמט',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'משחק שחמט שלם, עם כל החוקים. מי שפותח משחק בלבן. החדר צופה.',
+  'Xeque!': 'שח!',
 } satisfies Record<string, string>;

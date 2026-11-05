@@ -2652,4 +2652,7 @@ export default {
   'Trocar na vertical': '竖向交换',
   Mirar: '瞄准',
   Atirar: '射击',
+  Xadrez: '国际象棋',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': '一局完整的国际象棋，所有规则都在。先走的一方执白。房间里的人一起看。',
+  'Xeque!': '将军！',
 } satisfies Record<string, string>;

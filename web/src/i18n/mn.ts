@@ -2749,4 +2749,7 @@ export default {
   'Trocar na vertical': 'Босоо солих',
   Mirar: 'Онилох',
   Atirar: 'Буудах',
+  Xadrez: 'Шатар',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Бүх дүрэмтэй бүтэн шатрын тоглолт. Эхэлсэн нь цагаанаар тоглоно. Өрөө харж байна.',
+  'Xeque!': 'Шаг!',
 } satisfies Record<string, string>;

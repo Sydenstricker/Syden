@@ -2667,4 +2667,7 @@ export default {
   'Trocar na vertical': 'Musanya a tsaye',
   Mirar: 'Nufa',
   Atirar: 'Harba',
+  Xadrez: 'Dara',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Cikakken wasan dara, da duk dokoki. Wanda ya fara yana wasa da farare. Ɗakin yana kallo.',
+  'Xeque!': 'Cak!',
 } satisfies Record<string, string>;

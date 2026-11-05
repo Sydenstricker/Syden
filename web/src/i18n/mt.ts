@@ -2681,4 +2681,7 @@ export default {
   'Trocar na vertical': 'Ibdel vertikalment',
   Mirar: 'Immira',
   Atirar: 'Spara',
+  Xadrez: 'Ċess',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Logħba ċess sħiħa, bir-regoli kollha. Min jibda jilgħab bl-abjad. Il-kamra tara.',
+  'Xeque!': 'Ċekk!',
 } satisfies Record<string, string>;

@@ -2664,4 +2664,7 @@ export default {
   'Trocar na vertical': 'Badilisha wima',
   Mirar: 'Lenga',
   Atirar: 'Piga',
+  Xadrez: 'Chesi',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Mchezo kamili wa chesi, wenye sheria zote. Anayeanza anacheza na nyeupe. Chumba kinatazama.',
+  'Xeque!': 'Cheki!',
 } satisfies Record<string, string>;

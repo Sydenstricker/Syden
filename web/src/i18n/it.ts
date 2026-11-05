@@ -2664,4 +2664,7 @@ export default {
   'Trocar na vertical': 'Scambiare in verticale',
   Mirar: 'Mirare',
   Atirar: 'Sparare',
+  Xadrez: 'Scacchi',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Una partita a scacchi intera, con tutte le regole. Chi apre gioca con il bianco. La stanza guarda.',
+  'Xeque!': 'Scacco!',
 } satisfies Record<string, string>;

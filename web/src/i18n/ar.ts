@@ -2689,4 +2689,7 @@ export default {
   'Trocar na vertical': 'تبديل عمودي',
   Mirar: 'التصويب',
   Atirar: 'إطلاق',
+  Xadrez: 'الشطرنج',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'مباراة شطرنج كاملة بكل القواعد. من يبدأ يلعب بالأبيض. الغرفة تشاهد.',
+  'Xeque!': 'كش!',
 } satisfies Record<string, string>;

@@ -2671,4 +2671,7 @@ export default {
   'Trocar na vertical': 'Κάθετη εναλλαγή',
   Mirar: 'Σημάδι',
   Atirar: 'Βολή',
+  Xadrez: 'Σκάκι',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Μια ολόκληρη παρτίδα σκάκι, με όλους τους κανόνες. Όποιος ξεκινά παίζει με τα λευκά. Η αίθουσα παρακολουθεί.',
+  'Xeque!': 'Σαχ!',
 } satisfies Record<string, string>;

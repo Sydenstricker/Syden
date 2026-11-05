@@ -149,7 +149,7 @@ export interface PartidaPublica {
 export const souJogador = (p: PartidaPublica | null) => p !== null && p.souJogador !== false;
 
 /** Os jogos de MESA, de duas pessoas: começam na hora, e sentar é aceitar o convite. */
-export const JOGOS_DE_MESA: readonly IdDoJogo[] = ['gomoku', 'mancala', 'damas', 'naval'];
+export const JOGOS_DE_MESA: readonly IdDoJogo[] = ['gomoku', 'mancala', 'damas', 'naval', 'partida-de-xadrez'];
 
 /**
  * O convite está esperando a MINHA resposta? Antes da largada (ou, na mesa, enquanto ninguém sentou do outro lado),
@@ -507,7 +507,7 @@ export interface EstadoBriga {
   partidaId: string;
 }
 
-export type IdDoJogo = 'corrida' | 'festa' | 'tabuleiro' | 'cidades' | 'golfe' | 'caca' | 'plataforma' | 'blocos' | 'briga' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'damas' | 'naval' | 'domino' | 'truco' | 'xadrez' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
+export type IdDoJogo = 'corrida' | 'festa' | 'tabuleiro' | 'cidades' | 'golfe' | 'caca' | 'plataforma' | 'blocos' | 'briga' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'damas' | 'naval' | 'domino' | 'truco' | 'xadrez' | 'partida-de-xadrez' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
 
 /**
  * As duas abas da estante (pedido dele, 14/10/2026). SOLO: a partida é só de quem joga, começa sem convite, não ocupa
@@ -639,6 +639,13 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
     id: 'damas',
     nome: chave('Damas'),
     dica: chave('As damas brasileiras: comer é obrigatório, para a frente e para trás, e a dama anda a diagonal inteira. A sala assiste.'),
+    abas: ['solo', 'coletivo'],
+  },
+  {
+    // JogoPartidaDeXadrez.tsx, server/src/minijogo-partida-de-xadrez.ts (05/11/2026): a partida inteira, ao lado dos problemas
+    id: 'partida-de-xadrez',
+    nome: chave('Xadrez'),
+    dica: chave('Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.'),
     abas: ['solo', 'coletivo'],
   },
   {

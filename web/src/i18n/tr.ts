@@ -2667,4 +2667,7 @@ export default {
   'Trocar na vertical': 'Dikey değiştir',
   Mirar: 'Nişan al',
   Atirar: 'Ateş',
+  Xadrez: 'Satranç',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Tüm kurallarıyla eksiksiz bir satranç oyunu. Başlayan beyazlarla oynar. Oda izler.',
+  'Xeque!': 'Şah!',
 } satisfies Record<string, string>;

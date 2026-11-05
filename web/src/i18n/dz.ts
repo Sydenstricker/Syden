@@ -2748,4 +2748,7 @@ export default {
   'Trocar na vertical': 'ཀེར་ཐིག་ཏུ་བརྗེ་ནི།',
   Mirar: 'དམིགས་ནི།',
   Atirar: 'འཕེན་ནི།',
+  Xadrez: 'ཅེས་རྩེད།',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'ཁྲིམས་ཆ་མཉམ་དང་བཅས་པའི་ཅེས་རྩེད་ཧྲིལ་པོ་ཅིག། འགོ་བཙུགས་མི་གིས་དཀརཔོ་རྩེདཔ་ཨིན། ཁང་མིག་གིས་བལྟཝ་ཨིན།',
+  'Xeque!': 'ཅེཀ!',
 } satisfies Record<string, string>;

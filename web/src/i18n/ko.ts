@@ -2653,4 +2653,7 @@ export default {
   'Trocar na vertical': '세로로 바꾸기',
   Mirar: '조준',
   Atirar: '쏘기',
+  Xadrez: '체스',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': '모든 규칙을 갖춘 체스 한 판. 먼저 시작하는 사람이 백을 잡아요. 방 사람들이 지켜봐요.',
+  'Xeque!': '체크!',
 } satisfies Record<string, string>;

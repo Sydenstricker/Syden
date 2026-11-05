@@ -2667,4 +2667,7 @@ export default {
   'Trocar na vertical': 'Troka vertikál',
   Mirar: 'Mira',
   Atirar: 'Tiru',
+  Xadrez: 'Xadrés',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': "Jogu xadrés kompletu ida, ho regra hotu. Ema ne'ebé hahú halimar ho mutin. Sala haree.",
+  'Xeque!': 'Xeke!',
 } satisfies Record<string, string>;

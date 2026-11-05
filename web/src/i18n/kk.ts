@@ -2739,4 +2739,7 @@ export default {
   'Trocar na vertical': 'Тігінен ауыстыру',
   Mirar: 'Көздеу',
   Atirar: 'Ату',
+  Xadrez: 'Шахмат',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Барлық ережелерімен толық шахмат ойыны. Бастаған ақпен ойнайды. Бөлме қарап отырады.',
+  'Xeque!': 'Шах!',
 } satisfies Record<string, string>;

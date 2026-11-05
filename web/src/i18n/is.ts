@@ -2736,4 +2736,7 @@ export default {
   'Trocar na vertical': 'Skipta lóðrétt',
   Mirar: 'Miða',
   Atirar: 'Skjóta',
+  Xadrez: 'Skák',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Heil skák með öllum reglunum. Sá sem byrjar teflir með hvítu. Herbergið horfir á.',
+  'Xeque!': 'Skák!',
 } satisfies Record<string, string>;

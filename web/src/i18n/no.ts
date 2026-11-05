@@ -2735,4 +2735,7 @@ export default {
   'Trocar na vertical': 'Bytt loddrett',
   Mirar: 'Sikt',
   Atirar: 'Skyt',
+  Xadrez: 'Sjakk',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Et helt parti sjakk med alle reglene. Den som starter, spiller hvit. Rommet ser på.',
+  'Xeque!': 'Sjakk!',
 } satisfies Record<string, string>;

@@ -2737,4 +2737,7 @@ export default {
   'Trocar na vertical': 'ठाडो साट्नु',
   Mirar: 'निसाना',
   Atirar: 'हान्नु',
+  Xadrez: 'चेस',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'सबै नियमसहितको पूरा चेस खेल। जसले सुरु गर्छ उसले सेतो खेल्छ। कोठाले हेर्छ।',
+  'Xeque!': 'चेक!',
 } satisfies Record<string, string>;

@@ -2727,4 +2727,7 @@ export default {
   'Trocar na vertical': 'Ndërro vertikalisht',
   Mirar: 'Shënjo',
   Atirar: 'Qëllo',
+  Xadrez: 'Shah',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Një lojë e plotë shahu, me të gjitha rregullat. Kush hap luan me të bardhat. Dhoma shikon.',
+  'Xeque!': 'Shah!',
 } satisfies Record<string, string>;

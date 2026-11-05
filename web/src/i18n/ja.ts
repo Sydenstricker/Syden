@@ -2646,4 +2646,7 @@ export default {
   'Trocar na vertical': '縦に入れ替え',
   Mirar: 'ねらう',
   Atirar: '撃つ',
+  Xadrez: 'チェス',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'すべてのルールでの本格的なチェス。先手が白を持ちます。部屋のみんなが見守ります。',
+  'Xeque!': 'チェック！',
 } satisfies Record<string, string>;

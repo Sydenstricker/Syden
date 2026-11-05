@@ -2755,4 +2755,7 @@ export default {
   'Trocar na vertical': 'Vertikal almashtirish',
   Mirar: 'Nishonga olish',
   Atirar: 'Otish',
+  Xadrez: 'Shaxmat',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': "Barcha qoidalari bilan to'liq shaxmat o'yini. Boshlagan oq bilan o'ynaydi. Xona tomosha qiladi.",
+  'Xeque!': 'Shoh!',
 } satisfies Record<string, string>;

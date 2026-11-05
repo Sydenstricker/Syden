@@ -2729,4 +2729,7 @@ export default {
   'Trocar na vertical': 'Byt lodret',
   Mirar: 'Sigt',
   Atirar: 'Skyd',
+  Xadrez: 'Skak',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Et helt parti skak med alle reglerne. Den, der starter, spiller hvid. Rummet ser med.',
+  'Xeque!': 'Skak!',
 } satisfies Record<string, string>;

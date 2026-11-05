@@ -2732,4 +2732,7 @@ export default {
   'Trocar na vertical': 'Замена вертикално',
   Mirar: 'Нишањење',
   Atirar: 'Пуцање',
+  Xadrez: 'Шах',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Цела партија шаха, са свим правилима. Ко отвара игра белима. Соба гледа.',
+  'Xeque!': 'Шах!',
 } satisfies Record<string, string>;

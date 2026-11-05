@@ -14491,6 +14491,7 @@ body.arrastando-barra {
 }
 
 .xadrez-casa {
+  position: relative;
   display: grid;
   place-items: center;
   padding: 0;
@@ -19233,4 +19234,39 @@ body.arrastando-barra {
   .jogo-comandos-toque {
     display: flex !important;
   }
+}
+
+/* A partida de xadrez (JogoPartidaDeXadrez.tsx): o tabuleiro dos problemas, com as casas para onde a peça vai e o rei em
+   xeque; e a versão 3D (xadrez3d/), na mesma proporção. */
+.xadrez-casa.destino::after {
+  content: '';
+  position: absolute;
+  inset: 36%;
+  border-radius: 50%;
+  background: rgba(63, 178, 127, 0.75);
+}
+.xadrez-casa.xeque {
+  box-shadow: inset 0 0 0 3px #e2453a;
+}
+.xadrez-3d {
+  position: relative;
+  width: min(100%, 60vh, 440px);
+  aspect-ratio: 1 / 0.86;
+  margin: 0 auto;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.xadrez-3d-caixa,
+.xadrez-3d-reserva {
+  position: absolute;
+  inset: 0;
+}
+.xadrez-3d-caixa.escondida {
+  visibility: hidden;
+}
+.xadrez-3d-tela {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
 }

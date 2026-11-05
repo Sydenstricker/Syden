@@ -2706,4 +2706,7 @@ export default {
   'Trocar na vertical': 'Şaquli dəyiş',
   Mirar: 'Nişan al',
   Atirar: 'Atəş',
+  Xadrez: 'Şahmat',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Bütün qaydaları ilə tam şahmat oyunu. Başlayan ağlarla oynayır. Otaq izləyir.',
+  'Xeque!': 'Şah!',
 } satisfies Record<string, string>;

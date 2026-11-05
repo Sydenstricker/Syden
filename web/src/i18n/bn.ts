@@ -2662,4 +2662,7 @@ export default {
   'Trocar na vertical': 'উল্লম্বে বদলানো',
   Mirar: 'তাক করা',
   Atirar: 'ছোড়া',
+  Xadrez: 'দাবা',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'সব নিয়মসহ পুরো একটি দাবা খেলা। যে শুরু করে সে সাদা নিয়ে খেলে। ঘর দেখে।',
+  'Xeque!': 'কিস্তি!',
 } satisfies Record<string, string>;

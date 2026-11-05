@@ -2669,4 +2669,7 @@ export default {
   'Trocar na vertical': 'Fesuiaʻi faʻasaʻo',
   Mirar: 'Taulaʻi',
   Atirar: 'Fana',
+  Xadrez: 'Sesi',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'O se taʻaloga sesi atoa, ma tulafono uma. O lē amata e taʻalo i le paʻepaʻe. E matamata le potu.',
+  'Xeque!': 'Siaki!',
 } satisfies Record<string, string>;

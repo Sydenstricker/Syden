@@ -2737,4 +2737,7 @@ export default {
   'Trocar na vertical': 'Függőleges csere',
   Mirar: 'Célzás',
   Atirar: 'Lövés',
+  Xadrez: 'Sakk',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': 'Egy teljes sakkjátszma, minden szabállyal. Aki kezd, világossal játszik. A szoba nézi.',
+  'Xeque!': 'Sakk!',
 } satisfies Record<string, string>;

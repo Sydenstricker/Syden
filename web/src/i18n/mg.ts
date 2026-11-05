@@ -2735,4 +2735,7 @@ export default {
   'Trocar na vertical': 'Manakalo mitsangana',
   Mirar: 'Mikendry',
   Atirar: 'Mitifitra',
+  Xadrez: 'Echecs',
+  'Uma partida de xadrez inteira, com todas as regras. Quem abre fica com as brancas. A sala assiste.': "Lalao echecs feno, miaraka amin'ny fitsipika rehetra. Izay manomboka no milalao fotsy. Mijery ny efitra.",
+  'Xeque!': 'Echec!',
 } satisfies Record<string, string>;
