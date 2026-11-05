@@ -1,6 +1,6 @@
 import * as THREE from 'three';
+import { copiarCoelho, minhasCoresDoCoelho, type CoelhoCopiado } from '../coelho3d';
 import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { alvo, assinatura, progresso, type Coisa, type Cozinha, type Estacao } from './cozinha';
 import { IDS_DAS_RECEITAS, INGREDIENTES, RECEITAS, confere, itemDaChave, type IdDaReceita, type Ingrediente, type Item } from './receitas';
 
@@ -161,6 +161,7 @@ export class CenaDaCozinha {
   private materiais = new Map<string, THREE.Material>();
   private tingidos = new Map<string, THREE.Material>();
   private coelhoGltf: GLTF | null = null;
+  private copiaDoCoelho: CoelhoCopiado | null = null;
   private coelho: { raiz: THREE.Group; corpo: THREE.Object3D; mixer: THREE.AnimationMixer; acoes: Map<string, THREE.AnimationAction>; tocando: string; mao: THREE.Group; sinal: string } | null = null;
   private emCima = new Map<number, { grupo: THREE.Group; sinal: string }>();
   private barras = new Map<number, { grupo: THREE.Group; cheio: THREE.Mesh; mat: THREE.MeshBasicMaterial }>();
@@ -625,20 +626,11 @@ export class CenaDaCozinha {
 
   private novoCoelho() {
     const g = this.coelhoGltf!;
-    const corpo = SkeletonUtils.clone(g.scene);
-    const caixa = new THREE.Box3().setFromObject(corpo);
-    const k = ALTURA_DO_COELHO / (caixa.max.y - caixa.min.y);
-    corpo.scale.setScalar(k);
-    corpo.position.y = -caixa.min.y * k;
-    corpo.traverse((o) => {
-      const m = o as THREE.Mesh;
-      if (m.isMesh) {
-        m.castShadow = this.sombras;
-        m.frustumCulled = false;
-      }
-    });
-    const mixer = new THREE.AnimationMixer(corpo);
-    const acoes = new Map(g.animations.map((a) => [a.name, mixer.clipAction(a)]));
+    // a paleta do MEU avatar, a borda e o contorno (coelho3d.ts, o mesmo coelho de todos os jogos 3D)
+    const copia = copiarCoelho(g, { altura: ALTURA_DO_COELHO, sombras: this.sombras });
+    this.copiaDoCoelho = copia;
+    void minhasCoresDoCoelho().then((cores) => copia.material.pintar(cores));
+    const { corpo, mixer, acoes } = copia;
     const raiz = new THREE.Group();
     const giro = new THREE.Group();
     giro.add(corpo);
@@ -865,7 +857,7 @@ export class CenaDaCozinha {
     // a geometria e a textura dos modelos são do cache (servem à próxima partida); as nossas vão embora
     for (const d of this.descartaveis) d.dispose();
     for (const m of this.tingidos.values()) m.dispose();
-    this.coelho?.mixer.stopAllAction();
+    this.copiaDoCoelho?.descartar();
     this.renderer.forceContextLoss();
     this.renderer.dispose();
     canvas.remove();

@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
+import { carregarCoelho, copiarCoelho, minhasCoresDoCoelho, type CoelhoCopiado } from '../coelho3d';
 import { PASSO, type Skatista } from './fisica';
-import { altura, alturaDaPeca, LARGURA, PECAS, PROFUNDIDADE } from './pista';
+import { altura, alturaDaPeca, LARGURA, pecaEm, PECAS, PROFUNDIDADE } from './pista';
 
 /**
  * A CENA DO SKATE (05/11/2026): a pista de pista.ts com as peças do Mini Skate da Kenney (CC0, web/public/skate/License.txt),
@@ -14,7 +14,6 @@ import { altura, alturaDaPeca, LARGURA, PECAS, PROFUNDIDADE } from './pista';
  */
 
 const BASE = `${import.meta.env.BASE_URL}skate/`;
-const COELHO = `${import.meta.env.BASE_URL}cidades3d/coelho-animado.glb`;
 const ALTURA_DO_COELHO = 0.62;
 /** O tampo da prancha, medido no skateboard.glb. */
 const TAMPO = 0.15;
@@ -32,6 +31,29 @@ function carregar(url: string): Promise<GLTF> {
 
 /** O ângulo (em torno do eixo vertical) de um vetor no chão, como o `rotation.y` do three.js o entende (o modelo olha para +z). */
 const anguloDe = (x: number, z: number) => Math.atan2(x, z);
+
+const CIMA = new THREE.Vector3(0, 1, 0);
+/** O disco da sombra nasce de pé (no plano xy): este giro o deita. */
+const SOMBRA_DEITADA = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), -Math.PI / 2);
+
+/**
+ * A normal do chão da peça `i` no ponto (pela diferença de alturas, nos dois eixos). No quarter ela deita até quase a
+ * horizontal; o mínimo de y segura a parede de pé (o patamar do quarter é um degrau, e a diferença ali seria infinita).
+ */
+function normalDoChao(i: number, x: number, z: number, saida: THREE.Vector3): THREE.Vector3 {
+  const e = 0.04;
+  const dx = (alturaDaPeca(i, x + e, z) - alturaDaPeca(i, x - e, z)) / (2 * e);
+  const dz = (alturaDaPeca(i, x, z + e) - alturaDaPeca(i, x, z - e)) / (2 * e);
+  saida.set(-dx, 1, -dz).normalize();
+  if (saida.y < 0.12) {
+    saida.y = 0.12;
+    const h = Math.hypot(saida.x, saida.z) || 1;
+    const k = Math.sqrt(1 - 0.12 * 0.12) / h;
+    saida.x *= k;
+    saida.z *= k;
+  }
+  return saida;
+}
 
 function aproximarAngulo(atual: number, alvo: number, k: number): number {
   let d = alvo - atual;
@@ -54,12 +76,18 @@ export class CenaDoSkate {
   private inclina = new THREE.Group();
   private prancha = new THREE.Group();
   private coelho = new THREE.Group();
+  private copia: CoelhoCopiado | null = null;
   private mixer: THREE.AnimationMixer | null = null;
   private acoes = new Map<string, THREE.AnimationAction>();
   private tocando = '';
   private sombra: THREE.Mesh;
 
   private anguloDaPrancha = 0;
+  /** O giro que deita o skatista no chão (de cima para a normal dele), amortecido: no quarter, ele fica de pé NA PAREDE. */
+  private noChao = new THREE.Quaternion();
+  private aux = { n: new THREE.Vector3(), q: new THREE.Quaternion(), giro: new THREE.Quaternion(), foco: new THREE.Vector3(), pos: new THREE.Vector3() };
+  /** A altura que a câmera segue (amortecida à parte: na rampa ela sobe junto, sem tranco). */
+  private camY = 0;
   private anguloDaCamera = Math.PI;
   private camAlvo = new THREE.Vector3();
   private quadro = 0;
@@ -91,7 +119,7 @@ export class CenaDoSkate {
       new THREE.CircleGeometry(0.3, 20),
       new THREE.MeshBasicMaterial({ color: '#1d2420', transparent: true, opacity: 0.3, depthWrite: false }),
     );
-    this.sombra.rotation.x = -Math.PI / 2;
+    this.sombra.quaternion.copy(SOMBRA_DEITADA);
     this.sombra.userData.proprio = true;
   }
 
@@ -106,7 +134,7 @@ export class CenaDoSkate {
   /** Carrega os modelos e monta a pista. Rejeita se algo falhar (quem chama mostra o aviso). */
   async montar(): Promise<void> {
     const nomes = [...new Set(PECAS.map((p) => p.modelo)), 'floor-concrete', 'fence', 'skateboard'];
-    const [coelho, ...lista] = await Promise.all([carregar(COELHO), ...nomes.map((n) => carregar(`${BASE}${n}.glb`))]);
+    const [coelho, ...lista] = await Promise.all([carregarCoelho(), ...nomes.map((n) => carregar(`${BASE}${n}.glb`))]);
     if (this.morta) return;
     const modelos = new Map(nomes.map((n, i) => [n, lista[i]]));
     this.montarPista(modelos);
@@ -185,21 +213,13 @@ export class CenaDoSkate {
   }
 
   private montarSkatista(g: GLTF, prancha: GLTF) {
-    // o coelho com o NOSSO esqueleto: a cópia leva o esqueleto junto (como em cidades3d/cena.ts)
-    const corpo = SkeletonUtils.clone(g.scene);
-    const caixa = new THREE.Box3().setFromObject(corpo);
-    const k = ALTURA_DO_COELHO / (caixa.max.y - caixa.min.y);
-    corpo.scale.setScalar(k);
-    corpo.position.y = -caixa.min.y * k;
-    corpo.traverse((o) => {
-      const m = o as THREE.Mesh;
-      if (m.isMesh) {
-        m.castShadow = this.sombras;
-        m.frustumCulled = false;
-      }
-    });
-    this.mixer = new THREE.AnimationMixer(corpo);
-    for (const a of g.animations) this.acoes.set(a.name, this.mixer.clipAction(a));
+    // o coelho com o NOSSO esqueleto, pintado com as cores do MEU avatar (coelho3d.ts: a paleta, a borda e o contorno)
+    const c = copiarCoelho(g, { altura: ALTURA_DO_COELHO, sombras: this.sombras });
+    this.copia = c;
+    void minhasCoresDoCoelho().then((cores) => !this.morta && c.material.pintar(cores));
+    const corpo = c.corpo;
+    this.mixer = c.mixer;
+    this.acoes = c.acoes;
     this.coelho.add(corpo);
     this.coelho.position.y = TAMPO;
     const tabua = this.clonar(prancha);
@@ -244,22 +264,25 @@ export class CenaDoSkate {
       alvo += Math.PI * p * p * (3 - 2 * p);
     }
     this.anguloDaPrancha = this.quadro < 3 ? alvo : aproximarAngulo(this.anguloDaPrancha, alvo, Math.min(1, dt * 18));
-    this.raiz.rotation.y = this.anguloDaPrancha;
+    // A INCLINAÇÃO DO CHÃO sob a prancha (relato dele, 05/11/2026: "ele sobe como um elevador"): antes só o pitch na direção
+    // da prancha; subindo o quarter na diagonal, a parede deitava para o lado e o coelho seguia de pé. Agora o skatista inteiro
+    // (a prancha e o corpo) se alinha à NORMAL do chão: a raiz é o giro de cima para a normal vezes o rumo. No ar, volta a ficar
+    // de pé devagar; no grind, o trilho é reto.
+    const a_ = this.aux;
+    if (k.modo === 'chao' || k.modo === 'manual') normalDoChao(k.peca, x, z, a_.n);
+    else a_.n.copy(CIMA);
+    a_.q.setFromUnitVectors(CIMA, a_.n);
+    if (this.quadro < 3) this.noChao.copy(a_.q);
+    else this.noChao.slerp(a_.q, Math.min(1, dt * (k.modo === 'ar' ? 3.5 : 16)));
+    a_.giro.setFromAxisAngle(CIMA, this.anguloDaPrancha);
+    this.raiz.quaternion.copy(this.noChao).multiply(a_.giro);
 
-    // a inclinação do chão sob a prancha (no quarter, ele fica quase de pé na parede)
+    // por cima da inclinação do chão: o manual levanta o bico, o grind balança
     let pitch = 0;
     let roll = 0;
-    if (k.modo === 'chao' || k.modo === 'manual') {
-      const e = 0.05;
-      const fx = Math.sin(this.anguloDaPrancha);
-      const fz = Math.cos(this.anguloDaPrancha);
-      const i = k.peca;
-      const s = (alturaDaPeca(i, x + fx * e, z + fz * e) - alturaDaPeca(i, x - fx * e, z - fz * e)) / (2 * e);
-      pitch = -Math.atan(s);
-    }
     if (k.modo === 'grind') roll = k.equilibrio * 0.35;
-    if (k.modo === 'manual') pitch += -0.32 + k.equilibrio * 0.25;
-    this.inclina.rotation.x = this.inclina.rotation.x + (pitch - this.inclina.rotation.x) * Math.min(1, dt * (k.modo === 'ar' ? 4 : 14));
+    if (k.modo === 'manual') pitch = -0.32 + k.equilibrio * 0.25;
+    this.inclina.rotation.x = this.inclina.rotation.x + (pitch - this.inclina.rotation.x) * Math.min(1, dt * 14);
     this.inclina.rotation.z = roll;
 
     // o kickflip: a prancha dá uma volta em torno do comprimento, subindo um tico
@@ -292,7 +315,10 @@ export class CenaDoSkate {
     // a sombra no chão, menor e mais clara com a altura
     const chao = altura(x, z);
     const alto = Math.max(0, y - chao);
-    this.sombra.position.set(x, chao + 0.012, z);
+    const ondeCai = pecaEm(x, z);
+    normalDoChao(ondeCai, x, z, a_.n);
+    this.sombra.position.set(x + a_.n.x * 0.012, chao + a_.n.y * 0.012, z + a_.n.z * 0.012);
+    this.sombra.quaternion.setFromUnitVectors(CIMA, a_.n).multiply(SOMBRA_DEITADA);
     this.sombra.scale.setScalar(1 - Math.min(0.5, alto * 0.4));
     (this.sombra.material as THREE.MeshBasicMaterial).opacity = 0.3 * (1 - Math.min(0.7, alto * 0.5));
 
@@ -301,13 +327,19 @@ export class CenaDoSkate {
       const quer = anguloDe(k.rx, k.rz);
       this.anguloDaCamera = this.quadro < 3 ? quer : aproximarAngulo(this.anguloDaCamera, quer, Math.min(1, dt * 3));
     }
+    // A ALTURA DA CÂMERA segue o skatista inteira (antes, 60–70%: na rampa ele subia pela tela como num elevador, com a câmera
+    // parada embaixo), amortecida à parte; no ar, ela sobe só metade do voo, para o pouso continuar à vista.
+    const alvoY = k.modo === 'ar' ? Math.max(chao, this.saidaY + (y - this.saidaY) * 0.5) : y;
+    this.camY = this.quadro < 3 ? alvoY : this.camY + (alvoY - this.camY) * Math.min(1, dt * (k.modo === 'ar' ? 2.5 : 6));
     const ca = this.anguloDaCamera;
     const fx = Math.sin(ca);
     const fz = Math.cos(ca);
-    const foco = new THREE.Vector3(x + fx * 1.1, Math.max(y, chao) * 0.6 + 0.35, z + fz * 1.1);
-    const pos = new THREE.Vector3(x - fx * 2.5, Math.max(y * 0.7, 0) + 1.35, z - fz * 2.5);
-    const debaixo = altura(Math.min(LARGURA, Math.max(0, pos.x)), Math.min(PROFUNDIDADE, Math.max(0, pos.z)));
-    pos.y = Math.max(pos.y, debaixo + 0.6);
+    // olha um pouco à frente e um pouco acima do coelho (na parede do quarter, o alto dela fica à vista)
+    const foco = a_.foco.set(x + fx * 1.1, (y + this.camY) * 0.5 + 0.4, z + fz * 1.1);
+    const pos = a_.pos.set(x - fx * 2.5, this.camY + 1.3, z - fz * 2.5);
+    // sem atravessar o chão: acima do que houver embaixo dela, e no meio do caminho até o coelho
+    const debaixo = (px: number, pz: number) => altura(Math.min(LARGURA, Math.max(0, px)), Math.min(PROFUNDIDADE, Math.max(0, pz)));
+    pos.y = Math.max(pos.y, debaixo(pos.x, pos.z) + 0.6, debaixo(x - fx * 1.25, z - fz * 1.25) + 0.5);
     // para a foto de conferência (só no site de desenvolvimento): a câmera em volta do skatista, de perto
     const teste = import.meta.env.DEV ? (window as { skateCameraDeTeste?: { giro: number; dist: number; alt: number } }).skateCameraDeTeste : undefined;
     if (teste) {
@@ -324,7 +356,7 @@ export class CenaDoSkate {
   destruir() {
     this.morta = true;
     this.observador.disconnect();
-    this.mixer?.stopAllAction();
+    this.copia?.descartar();
     this.cena.traverse((o) => {
       const m = o as THREE.Mesh;
       if (!m.isMesh) return;
