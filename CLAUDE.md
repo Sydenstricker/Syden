@@ -597,6 +597,13 @@ regras são do chess.js (BSD-2): o servidor gera os lances e o site só escolhe;
 e a resposta, mais as capturas que sobram (abaixo de 1,5 s; o teste confere). Em 3D com o tabuleiro e as peças do KayKit Board
 Game Bits (`web/src/xadrez3d/`), o tabuleiro de botões por baixo. Fora das conquistas da turma até ele decidir.
 
+**MAIS 3D E DOIS JOGOS NOVOS (05/11/2026, pedidos dele):** Damas, Truco, Dominó e os dados do Cidades em 3D (`web/src/mesa3d/`, a base
+comum e o gancho `useCena3D`; KayKit Board Game Bits). A **Cozinha da toca** (`minijogo-cozinha.ts`, `JogoCozinha.tsx`; KayKit Restaurant
+Bits): CADA UM NA PRÓPRIA COZINHA, os mesmos pedidos (a abordagem aprovada por ele, pela lição do Overcooked acima); o servidor confere cada
+prato pela receita. O **Rolê do coelho** (`minijogo-skate.ts`, `JogoSkate.tsx`; Kenney Mini Skate): skate de 2 minutos com combos, só a
+mecânica (nada de Tony Hawk); só no Solo até a sala ser testada na tela. No xadrez, a promoção deixa escolher a peça. O jogo de
+estratégia (o pacote Ultimate Fantasy RTS do Quaternius, CC0, em glTF) é o próximo, contra o computador primeiro.
+
 **O TABULEIRO DA TURMA está feito (03/11/2026, o item 5):** `server/src/minijogo-tabuleiro-da-turma.ts`, `web/src/JogoTabuleiro.tsx`,
 só no Coletivo (2 a 8). Uma volta de 30 casas em volta de uma horta, desenhada por código; 5, 10 ou 15 rodadas. Na vez, cada
 um pede o dado (QUEM SORTEIA É O SERVIDOR), a peça anda na tela casa a casa, e a casa age: +3 cenouras, −3, ou um evento
