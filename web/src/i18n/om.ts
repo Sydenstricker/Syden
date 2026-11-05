@@ -2699,4 +2699,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Dhagaan sun fiixee sana irratti wal hin simu.',
   'Quantos adversários?': 'Morkattoota meeqa?',
   'Estilo visual': "Akkaataa mul'ataa",
+  'C para trocar na vertical.': 'C gara olii fi gadiitti jijjiiruuf.',
 } satisfies Record<string, string>;

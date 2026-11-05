@@ -2728,4 +2728,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'បន្ទះនេះមិនត្រូវនឹងចុងនេះទេ។',
   'Quantos adversários?': 'គូប្រកួតប៉ុន្មាននាក់?',
   'Estilo visual': 'រចនាប័ទ្មរូបភាព',
+  'C para trocar na vertical.': 'C ដើម្បីប្ដូរតាមបញ្ឈរ។',
 } satisfies Record<string, string>;

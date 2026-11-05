@@ -2665,4 +2665,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Ní oireann an píosa sin ag an bhfoirceann sin.',
   'Quantos adversários?': 'Cé mhéad céile comhraic?',
   'Estilo visual': 'Stíl amhairc',
+  'C para trocar na vertical.': 'C chun malartú go hingearach.',
 } satisfies Record<string, string>;

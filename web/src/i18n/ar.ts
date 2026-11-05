@@ -2683,4 +2683,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'هذه القطعة لا تناسب هذا الطرف.',
   'Quantos adversários?': 'كم عدد الخصوم؟',
   'Estilo visual': 'النمط المرئي',
+  'C para trocar na vertical.': 'C للتبديل عموديًا.',
 } satisfies Record<string, string>;

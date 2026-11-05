@@ -2681,4 +2681,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Ce domino ne va pas à cette extrémité.',
   'Quantos adversários?': 'Combien d’adversaires ?',
   'Estilo visual': 'Style visuel',
+  'C para trocar na vertical.': 'C pour échanger à la verticale.',
 } satisfies Record<string, string>;

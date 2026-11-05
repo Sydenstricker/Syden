@@ -2721,4 +2721,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Ky gur nuk përshtatet në këtë skaj.',
   'Quantos adversários?': 'Sa kundërshtarë?',
   'Estilo visual': 'Stili vizual',
+  'C para trocar na vertical.': 'C për të ndërruar vertikalisht.',
 } satisfies Record<string, string>;

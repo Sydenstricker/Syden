@@ -2739,4 +2739,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Ин санг ба ин нӯг мувофиқ намеояд.',
   'Quantos adversários?': 'Чанд рақиб?',
   'Estilo visual': 'Услуби визуалӣ',
+  'C para trocar na vertical.': 'C — иваз кардан амудӣ.',
 } satisfies Record<string, string>;

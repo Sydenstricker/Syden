@@ -2726,4 +2726,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'See kivi ei sobi sellesse otsa.',
   'Quantos adversários?': 'Mitu vastast?',
   'Estilo visual': 'Visuaalne stiil',
+  'C para trocar na vertical.': 'C vertikaalseks vahetamiseks.',
 } satisfies Record<string, string>;

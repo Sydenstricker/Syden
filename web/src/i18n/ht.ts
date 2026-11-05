@@ -2739,4 +2739,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Wòch sa a pa antre nan pwent sa a.',
   'Quantos adversários?': 'Konbyen advèsè?',
   'Estilo visual': 'Stil vizyèl',
+  'C para trocar na vertical.': 'C pou chanje vètikalman.',
 } satisfies Record<string, string>;

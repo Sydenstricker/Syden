@@ -2647,4 +2647,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': '그 패는 그 끝에 맞지 않아요.',
   'Quantos adversários?': '상대는 몇 명?',
   'Estilo visual': '비주얼 스타일',
+  'C para trocar na vertical.': 'C로 세로로 바꾸기.',
 } satisfies Record<string, string>;

@@ -2667,4 +2667,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Nkume ahụ adabaghị n\'isi ahụ.',
   'Quantos adversários?': 'Ndị mmegide ole?',
   'Estilo visual': 'Ụdị ihe ngosi',
+  'C para trocar na vertical.': "C iji gbanwee n'ogologo.",
 } satisfies Record<string, string>;

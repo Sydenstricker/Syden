@@ -2698,4 +2698,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'ဤတုံးသည် ဤအစွန်းတွင် မကိုက်ပါ။',
   'Quantos adversários?': 'ပြိုင်ဘက် ဘယ်နှယောက်လဲ?',
   'Estilo visual': 'မြင်ကွင်းပုံစံ',
+  'C para trocar na vertical.': 'C ဖြင့် ဒေါင်လိုက်လဲရန်။',
 } satisfies Record<string, string>;

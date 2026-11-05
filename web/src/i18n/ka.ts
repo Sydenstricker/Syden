@@ -2747,4 +2747,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'ეს ქვა ამ ბოლოს არ ერგება.',
   'Quantos adversários?': 'რამდენი მეტოქე?',
   'Estilo visual': 'ვიზუალური სტილი',
+  'C para trocar na vertical.': 'C ვერტიკალურად გასაცვლელად.',
 } satisfies Record<string, string>;

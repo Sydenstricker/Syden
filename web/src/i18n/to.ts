@@ -2665,4 +2665,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'ʻOku ʻikai feʻunga ʻa e maka ko iá ʻi he ngataʻanga ko iá.',
   'Quantos adversários?': 'Ko e toko fiha ʻa e kau fakafepaki?',
   'Estilo visual': 'Fōtunga ʻo e sio',
+  'C para trocar na vertical.': 'C ke fetongiʻi fakatuʻu.',
 } satisfies Record<string, string>;

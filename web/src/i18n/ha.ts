@@ -2661,4 +2661,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Wannan dutsen bai dace da wannan gefen ba.',
   'Quantos adversários?': 'Abokan hamayya nawa?',
   'Estilo visual': 'Salon gani',
+  'C para trocar na vertical.': 'C don musanya a tsaye.',
 } satisfies Record<string, string>;

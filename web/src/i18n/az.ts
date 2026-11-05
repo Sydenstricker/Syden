@@ -2700,4 +2700,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Bu daş bu uca uyğun gəlmir.',
   'Quantos adversários?': 'Neçə rəqib?',
   'Estilo visual': 'Vizual üslub',
+  'C para trocar na vertical.': 'C şaquli dəyişmək üçün.',
 } satisfies Record<string, string>;

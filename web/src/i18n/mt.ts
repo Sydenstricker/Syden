@@ -2675,4 +2675,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Dik il-biċċa ma taqbilx f\'dak it-tarf.',
   'Quantos adversários?': 'Kemm-il avversarju?',
   'Estilo visual': 'Stil viżiv',
+  'C para trocar na vertical.': 'C biex tibdel vertikalment.',
 } satisfies Record<string, string>;

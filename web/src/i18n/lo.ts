@@ -2730,4 +2730,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'ໂຕນີ້ຕໍ່ທີ່ປາຍນີ້ບໍ່ໄດ້.',
   'Quantos adversários?': 'ຄູ່ແຂ່ງຈັກຄົນ?',
   'Estilo visual': 'ຮູບແບບການສະແດງຜົນ',
+  'C para trocar na vertical.': 'C ເພື່ອສັບປ່ຽນຕາມແນວຕັ້ງ.',
 } satisfies Record<string, string>;

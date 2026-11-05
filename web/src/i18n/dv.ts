@@ -2739,4 +2739,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'އެ ގަލު މި ކޮޅުގައި ނުގުޅޭ.',
   'Quantos adversários?': 'ދެކޮޅު ކުޅުންތެރިން ކިތައް؟',
   'Estilo visual': 'ފެންނަ ސްޓައިލް',
+  'C para trocar na vertical.': 'C އިން ދަށްމައްޗަށް ބަދަލުކުރުމަށް.',
 } satisfies Record<string, string>;

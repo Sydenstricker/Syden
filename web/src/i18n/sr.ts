@@ -2726,4 +2726,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Та плочица не одговара на том крају.',
   'Quantos adversários?': 'Колико противника?',
   'Estilo visual': 'Визуелни стил',
+  'C para trocar na vertical.': 'C за замену вертикално.',
 } satisfies Record<string, string>;

@@ -2640,4 +2640,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'その牌はその端につながりません。',
   'Quantos adversários?': '対戦相手は何人？',
   'Estilo visual': 'ビジュアルスタイル',
+  'C para trocar na vertical.': 'Cで縦に入れ替え。',
 } satisfies Record<string, string>;

@@ -2729,4 +2729,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Tsy mifanaraka amin\'io tendrony io io vato io.',
   'Quantos adversários?': 'Mpifanandrina firy?',
   'Estilo visual': 'Endrika hita maso',
+  'C para trocar na vertical.': 'C hanakalo mitsangana.',
 } satisfies Record<string, string>;

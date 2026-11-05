@@ -2729,4 +2729,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Den brikken passer ikke i den enden.',
   'Quantos adversários?': 'Hvor mange motstandere?',
   'Estilo visual': 'Visuell stil',
+  'C para trocar na vertical.': 'C for å bytte loddrett.',
 } satisfies Record<string, string>;

@@ -2729,4 +2729,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'ඒ කැටය ඒ කෙළවරට ගැළපෙන්නේ නැහැ.',
   'Quantos adversários?': 'ප්‍රතිවාදීන් කී දෙනෙක්ද?',
   'Estilo visual': 'දෘශ්‍ය විලාසය',
+  'C para trocar na vertical.': 'C සිරස් අතට මාරු කිරීමට.',
 } satisfies Record<string, string>;

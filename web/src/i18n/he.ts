@@ -2713,4 +2713,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'האבן הזאת לא מתאימה לקצה הזה.',
   'Quantos adversários?': 'כמה יריבים?',
   'Estilo visual': 'סגנון חזותי',
+  'C para trocar na vertical.': 'C להחלפה אנכית.',
 } satisfies Record<string, string>;

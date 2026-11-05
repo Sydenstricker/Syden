@@ -2658,4 +2658,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Questa tessera non si attacca a quell\'estremità.',
   'Quantos adversários?': 'Quanti avversari?',
   'Estilo visual': 'Stile visivo',
+  'C para trocar na vertical.': 'C per scambiare in verticale.',
 } satisfies Record<string, string>;

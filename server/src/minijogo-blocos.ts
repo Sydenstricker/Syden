@@ -305,13 +305,13 @@ export function criarBlocos({ agora = Date.now, aleatorio = Math.random }: Opcoe
               x[0] <= ate &&
               (!ultima || x[0] >= ultima[0]) &&
               cabeNoRitmo(j.s.jogadas, x[0]) &&
-              (x[1] !== 0 || trocaNoIntervalo(j.s.jogadas, x[0]));
+              (x[1] === 1 || trocaNoIntervalo(j.s.jogadas, x[0]));
             if (!ok) {
               j.versao++;
               continue;
             }
             j.s.jogadas.push(x as Jogada);
-            if ((x as Jogada)[1] === 0) j.jogou = true;
+            if ((x as Jogada)[1] !== 1) j.jogou = true;
           }
           let forte = j.s.e.passo < ate && andar(j, ate);
           if (arrumar()) forte = true;

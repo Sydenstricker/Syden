@@ -2658,4 +2658,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Kipande hicho hakitoshei kwenye ncha hiyo.',
   'Quantos adversários?': 'Wapinzani wangapi?',
   'Estilo visual': 'Mtindo wa mwonekano',
+  'C para trocar na vertical.': 'C kubadilisha wima.',
 } satisfies Record<string, string>;

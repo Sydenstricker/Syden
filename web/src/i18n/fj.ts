@@ -2658,4 +2658,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'E sega ni rauta na vatu oqo ena yasana oqo.',
   'Quantos adversários?': 'E le vica na dau veiqati?',
   'Estilo visual': 'Ivakarau ni rairai',
+  'C para trocar na vertical.': 'C me veisau cake kei ra.',
 } satisfies Record<string, string>;

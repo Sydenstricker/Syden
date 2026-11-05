@@ -2723,4 +2723,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Daardie steen pas nie by daardie punt nie.',
   'Quantos adversários?': 'Hoeveel teenstanders?',
   'Estilo visual': 'Visuele styl',
+  'C para trocar na vertical.': 'C om vertikaal te ruil.',
 } satisfies Record<string, string>;

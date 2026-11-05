@@ -2729,4 +2729,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Dhagaxaasi kuma habboona darafkaas.',
   'Quantos adversários?': 'Immisa ka soo horjeedayaal ah?',
   'Estilo visual': 'Qaabka muuqaalka',
+  'C para trocar na vertical.': 'C si aad isu beddesho si toos ah.',
 } satisfies Record<string, string>;

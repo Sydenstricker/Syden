@@ -349,6 +349,11 @@ function MeuTabuleiro({ estado, eu, aoAgir }: { estado: EstadoBlocos & Partida; 
         case 'Z':
           if (!ev.repeat) g.fila.push({ tipo: 'troca', l: c.l, c: c.c });
           break;
+        case 'c':
+        case 'C':
+          // na vertical: a casa da esquerda do cursor com a de baixo
+          if (!ev.repeat) g.fila.push({ tipo: 'troca', l: c.l, c: c.c, vertical: true });
+          break;
         case 'x':
         case 'X':
           g.subindo = true;
@@ -377,7 +382,7 @@ function MeuTabuleiro({ estado, eu, aoAgir }: { estado: EstadoBlocos & Partida; 
     };
   }, [caixa, versus]);
 
-  // O TOQUE E O MOUSE: tocar numa peça e depois na vizinha, ou arrastar para o lado
+  // O TOQUE E O MOUSE: tocar numa peça e depois na vizinha, ou arrastar para o lado, para cima ou para baixo
   const casaDo = (ev: React.PointerEvent): Casa | null => {
     const r = tela.current?.getBoundingClientRect();
     if (!r || r.width === 0) return null;
@@ -389,6 +394,8 @@ function MeuTabuleiro({ estado, eu, aoAgir }: { estado: EstadoBlocos & Partida; 
     return { l, c };
   };
   const trocar = (l: number, a: number, b: number) => caixa.fila.push({ tipo: 'troca', l, c: Math.min(a, b) });
+  const trocarNaVertical = (c: number, a: number, b: number) => caixa.fila.push({ tipo: 'troca', l: Math.min(a, b), c, vertical: true });
+  const vizinhaNaVertical = (a: Casa, b: Casa) => a.c === b.c && Math.abs(a.l - b.l) === 1;
   const apertar = (ev: React.PointerEvent<HTMLCanvasElement>) => {
     const casa = casaDo(ev);
     if (!casa) return;
@@ -401,6 +408,12 @@ function MeuTabuleiro({ estado, eu, aoAgir }: { estado: EstadoBlocos & Partida; 
       g.arrasto = null;
       return;
     }
+    if (g.escolhida && vizinhaNaVertical(g.escolhida, casa)) {
+      trocarNaVertical(casa.c, casa.l, g.escolhida.l);
+      g.escolhida = null;
+      g.arrasto = null;
+      return;
+    }
     g.escolhida = casa;
     g.arrasto = { ...casa, moveu: false };
   };
@@ -408,8 +421,10 @@ function MeuTabuleiro({ estado, eu, aoAgir }: { estado: EstadoBlocos & Partida; 
     const g = caixa;
     if (!g.arrasto) return;
     const casa = casaDo(ev);
-    if (!casa || casa.l !== g.arrasto.l || Math.abs(casa.c - g.arrasto.c) !== 1) return;
-    trocar(casa.l, casa.c, g.arrasto.c);
+    if (!casa) return;
+    if (vizinhaNaVertical(casa, g.arrasto)) trocarNaVertical(casa.c, casa.l, g.arrasto.l);
+    else if (casa.l === g.arrasto.l && Math.abs(casa.c - g.arrasto.c) === 1) trocar(casa.l, casa.c, g.arrasto.c);
+    else return;
     g.arrasto = { l: casa.l, c: casa.c, moveu: true };
     g.escolhida = { l: casa.l, c: casa.c };
   };
@@ -475,7 +490,9 @@ function MeuTabuleiro({ estado, eu, aoAgir }: { estado: EstadoBlocos & Partida; 
           <ChevronsUp size={20} aria-hidden="true" />
         </button>
       )}
-      <p className="settings-hint blocos-dica">{t('Setas para mover, Espaço para trocar, X para subir a pilha.')}</p>
+      <p className="settings-hint blocos-dica">
+        {t('Setas para mover, Espaço para trocar, X para subir a pilha.')} {t('C para trocar na vertical.')}
+      </p>
     </div>
   );
 }

@@ -145,7 +145,9 @@ test('sem jogar, a pilha sobe e chega ao topo; no contra o relógio, acaba no te
 test('as jogadas: o formato e o ritmo de uma mão', () => {
   assert.equal(Sim.jogadaValida([0, 0, 11, 4]), true);
   assert.equal(Sim.jogadaValida([0, 0, 11, 5]), false, 'não há casa à direita da última coluna');
-  assert.equal(Sim.jogadaValida([0, 2, 0, 0]), false);
+  assert.equal(Sim.jogadaValida([0, 3, 0, 0]), false, 'não há jogada do tipo 3');
+  assert.equal(Sim.jogadaValida([0, 2, 10, 5]), true, 'na vertical, a última coluna vale');
+  assert.equal(Sim.jogadaValida([0, 2, 11, 0]), false, 'na vertical, não há casa abaixo da última linha');
   assert.equal(Sim.jogadaValida([1.5, 0, 0, 0]), false);
   assert.equal(Sim.jogadaValida([-1, 0, 0, 0]), false);
   assert.equal(Sim.jogadaValida('0,0,0,0'), false);
@@ -255,4 +257,18 @@ test('fora da partida no servidor: a tela para, e diz se foi o topo ou a saída 
   assert.equal(foraDoJogo({ meu: { fim: true }, jogadores }, 1), 'saiu');
   assert.equal(foraDoJogo({ meu: { fim: true }, jogadores }, 2), 'topo');
   assert.equal(foraDoJogo({ meu: null, jogadores }, 2), null);
+});
+
+test('trocar na vertical (pedido dele, 05/11/2026): a casa com a de baixo, e três iguais em pé também somem', () => {
+  const n = Sim.LINHAS - 1;
+  // na coluna 0, de cima para baixo: 1, 1, 0, 1. Trocar o 0 com o 1 de baixo deixa três 1 em pé, e eles somem
+  const e = montar(['1.....', '1.....', '0.....', '1.....']);
+  assert.equal(Sim.podeTrocarNaVertical(e, n - 1, 0), true);
+  const r = Sim.passo(e, [[0, 2, n - 1, 0]]);
+  assert.equal(r.combo, 3, 'os três 1 em pé somem');
+  // com o vazio não troca (seria só a gravidade), nem com o caixote
+  const g = montar(['......', 'x.....', '12....']);
+  assert.equal(Sim.podeTrocarNaVertical(g, n - 1, 1), false, 'em cima do 2 está vazio');
+  assert.equal(Sim.podeTrocarNaVertical(g, n - 1, 0), false, 'em cima do 1 está o caixote');
+  assert.equal(Sim.podeTrocarNaVertical(g, n, 0), false, 'abaixo da última linha não há casa');
 });

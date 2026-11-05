@@ -2661,4 +2661,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Fatuk ne\'e la tama iha ponta ne\'e.',
   'Quantos adversários?': "Adversáriu na'in hira?",
   'Estilo visual': 'Estilu vizuál',
+  'C para trocar na vertical.': 'C atu troka vertikál.',
 } satisfies Record<string, string>;

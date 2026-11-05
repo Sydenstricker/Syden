@@ -2733,4 +2733,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Бұл тас бұл ұшқа сәйкес келмейді.',
   'Quantos adversários?': 'Қанша қарсылас?',
   'Estilo visual': 'Көрнекі стиль',
+  'C para trocar na vertical.': 'C — тігінен ауыстыру.',
 } satisfies Record<string, string>;

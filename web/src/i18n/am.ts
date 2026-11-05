@@ -2659,4 +2659,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'ያ ድንጋይ ከዚያ ጫፍ ጋር አይገጥምም።',
   'Quantos adversários?': 'ስንት ተፎካካሪዎች?',
   'Estilo visual': 'የእይታ ስልት',
+  'C para trocar na vertical.': 'C በአቀባዊ ለመለዋወጥ።',
 } satisfies Record<string, string>;

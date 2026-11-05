@@ -2651,4 +2651,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'یہ گوٹی اس سرے پر نہیں لگتی۔',
   'Quantos adversários?': 'کتنے حریف؟',
   'Estilo visual': 'بصری انداز',
+  'C para trocar na vertical.': 'C عمودی طور پر بدلنے کے لیے۔',
 } satisfies Record<string, string>;

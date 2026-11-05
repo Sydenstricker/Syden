@@ -48,7 +48,10 @@ export const CAINDO = 1;
 export const LIMPANDO = 2;
 export const VIRANDO = 3;
 
-/** Uma jogada: [passo, tipo (0 trocar, 1 subir a pilha), linha, coluna]. A troca é da casa (linha, coluna) com a da direita. */
+/**
+ * Uma jogada: [passo, tipo, linha, coluna]. Tipo 0: troca a casa (linha, coluna) com a da DIREITA; 1: sobe a pilha; 2: troca a
+ * casa com a de BAIXO (pedido dele, 05/11/2026: "precisa ter como trocar na horizontal e também na vertical").
+ */
 export type Jogada = [number, number, number, number];
 /** Um caixote que chega, no passo dito pelo servidor. */
 export interface Lixo {
@@ -207,6 +210,7 @@ export function ataquesDe(combo: number, cadeia: number): Ataque[] {
 export function jogadaValida(j: unknown): j is Jogada {
   if (!Array.isArray(j) || j.length !== 4 || !j.every((v) => Number.isInteger(v))) return false;
   const [n, t, l, c] = j as number[];
+  if (t === 2) return n >= 0 && l >= 0 && l < LINHAS - 1 && c >= 0 && c < COLUNAS;
   return n >= 0 && (t === 0 || t === 1) && l >= 0 && l < LINHAS && c >= 0 && c < COLUNAS - 1;
 }
 
@@ -222,7 +226,7 @@ export const INTERVALO_DA_TROCA = 4;
 
 /** Uma troca no passo n respeita o intervalo desde a troca anterior? (`jogadas` em ordem.) */
 export function trocaNoIntervalo(jogadas: readonly Jogada[], n: number): boolean {
-  for (let i = jogadas.length - 1; i >= 0 && jogadas[i][0] > n - INTERVALO_DA_TROCA; i--) if (jogadas[i][1] === 0) return false;
+  for (let i = jogadas.length - 1; i >= 0 && jogadas[i][0] > n - INTERVALO_DA_TROCA; i--) if (jogadas[i][1] !== 1) return false;
   return true;
 }
 
@@ -247,6 +251,18 @@ export function podeTrocar(e: Estado, l: number, c: number): boolean {
   // o que está caindo logo acima de uma casa vazia vai ocupá-la: não se troca por baixo dele
   for (const k of [i, i + 1]) if (e.tipo[k] === VAZIO && l > 0 && e.estado[k - COLUNAS] === CAINDO && e.tipo[k - COLUNAS] !== VAZIO) return false;
   return true;
+}
+
+/**
+ * A troca NA VERTICAL é possível agora? (A casa com a de baixo, as duas paradas, sem caixote, e com legume nas duas: trocar
+ * com o vazio de cima ou de baixo seria só a gravidade, que já faz isso sozinha.)
+ */
+export function podeTrocarNaVertical(e: Estado, l: number, c: number): boolean {
+  if (l < 0 || l >= LINHAS - 1 || c < 0 || c >= COLUNAS) return false;
+  const i = l * COLUNAS + c;
+  const j = i + COLUNAS;
+  const firme = (k: number) => e.tipo[k] !== VAZIO && e.tipo[k] !== CAIXA && e.estado[k] === PARADO;
+  return firme(i) && firme(j);
 }
 
 const mover = (e: Estado, de: number, para: number) => {
@@ -276,9 +292,9 @@ export function passo(e: Estado, jogadas: readonly Jogada[] = NADA, lixos: reado
       if (!e.forcando) e.forcando = true;
       continue;
     }
-    if (!podeTrocar(e, l, c)) continue;
+    if (t === 2 ? !podeTrocarNaVertical(e, l, c) : !podeTrocar(e, l, c)) continue;
     const i = l * C + c;
-    const j = i + 1;
+    const j = t === 2 ? i + C : i + 1;
     [e.tipo[i], e.tipo[j]] = [e.tipo[j], e.tipo[i]];
     e.estado[i] = e.estado[j] = PARADO;
     e.timer[i] = e.timer[j] = 0;

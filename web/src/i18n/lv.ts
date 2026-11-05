@@ -2731,4 +2731,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Šis kauliņš neder šajā galā.',
   'Quantos adversários?': 'Cik pretinieku?',
   'Estilo visual': 'Vizuālais stils',
+  'C para trocar na vertical.': 'C, lai samainītu vertikāli.',
 } satisfies Record<string, string>;

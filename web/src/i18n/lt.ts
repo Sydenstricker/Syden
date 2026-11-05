@@ -2731,4 +2731,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Šis kauliukas netinka prie šio galo.',
   'Quantos adversários?': 'Kiek varžovų?',
   'Estilo visual': 'Vizualinis stilius',
+  'C para trocar na vertical.': 'C sukeisti vertikaliai.',
 } satisfies Record<string, string>;

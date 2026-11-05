@@ -2659,4 +2659,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Buah itu tidak sesuai di hujung itu.',
   'Quantos adversários?': 'Berapa lawan?',
   'Estilo visual': 'Gaya visual',
+  'C para trocar na vertical.': 'C untuk menukar secara menegak.',
 } satisfies Record<string, string>;

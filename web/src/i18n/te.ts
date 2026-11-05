@@ -2641,4 +2641,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'ఈ రాయి ఈ చివరకు సరిపోదు.',
   'Quantos adversários?': 'ఎంతమంది ప్రత్యర్థులు?',
   'Estilo visual': 'దృశ్య శైలి',
+  'C para trocar na vertical.': 'C నిలువుగా మార్చడానికి.',
 } satisfies Record<string, string>;

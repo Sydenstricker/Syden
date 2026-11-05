@@ -2629,4 +2629,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Quân này không nối được vào đầu đó.',
   'Quantos adversários?': 'Bao nhiêu đối thủ?',
   'Estilo visual': 'Phong cách hình ảnh',
+  'C para trocar na vertical.': 'C để đổi theo chiều dọc.',
 } satisfies Record<string, string>;

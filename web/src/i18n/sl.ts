@@ -2731,4 +2731,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Ta ploščica ne ustreza temu koncu.',
   'Quantos adversários?': 'Koliko nasprotnikov?',
   'Estilo visual': 'Vizualni slog',
+  'C para trocar na vertical.': 'C za zamenjavo navpično.',
 } satisfies Record<string, string>;

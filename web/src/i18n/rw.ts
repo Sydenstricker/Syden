@@ -2670,4 +2670,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Iryo buye ntirikwira kuri iyo mpera.',
   'Quantos adversários?': 'Abo muhanganye bangahe?',
   'Estilo visual': 'Imiterere igaragara',
+  'C para trocar na vertical.': 'C guhinduranya uhagaze.',
 } satisfies Record<string, string>;

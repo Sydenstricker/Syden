@@ -2646,4 +2646,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': '这张牌接不上这一端。',
   'Quantos adversários?': '几个对手？',
   'Estilo visual': '视觉风格',
+  'C para trocar na vertical.': 'C 竖向交换。',
 } satisfies Record<string, string>;

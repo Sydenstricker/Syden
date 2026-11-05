@@ -2729,4 +2729,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Táto kocka k tomuto koncu nepasuje.',
   'Quantos adversários?': 'Koľko súperov?',
   'Estilo visual': 'Vizuálny štýl',
+  'C para trocar na vertical.': 'C na výmenu zvislo.',
 } satisfies Record<string, string>;

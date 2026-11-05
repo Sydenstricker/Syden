@@ -2731,4 +2731,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Ez a kő nem illik erre a végre.',
   'Quantos adversários?': 'Hány ellenfél?',
   'Estilo visual': 'Vizuális stílus',
+  'C para trocar na vertical.': 'C a függőleges cseréhez.',
 } satisfies Record<string, string>;

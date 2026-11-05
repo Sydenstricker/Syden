@@ -2644,4 +2644,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'இந்தக் கல் இந்த முனையில் பொருந்தவில்லை.',
   'Quantos adversários?': 'எத்தனை எதிராளிகள்?',
   'Estilo visual': 'காட்சி பாணி',
+  'C para trocar na vertical.': 'C செங்குத்தாக மாற்ற.',
 } satisfies Record<string, string>;

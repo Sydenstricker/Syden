@@ -2749,4 +2749,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Bu tosh bu uchga mos kelmaydi.',
   'Quantos adversários?': 'Nechta raqib?',
   'Estilo visual': 'Vizual uslub',
+  'C para trocar na vertical.': 'C — vertikal almashtirish.',
 } satisfies Record<string, string>;

@@ -2709,4 +2709,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Ця кістка не підходить до цього кінця.',
   'Quantos adversários?': 'Скільки суперників?',
   'Estilo visual': 'Візуальний стиль',
+  'C para trocar na vertical.': 'C — поміняти по вертикалі.',
 } satisfies Record<string, string>;

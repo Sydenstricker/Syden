@@ -2659,4 +2659,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Piesa asta nu se potrivește la capătul acesta.',
   'Quantos adversários?': 'Câți adversari?',
   'Estilo visual': 'Stil vizual',
+  'C para trocar na vertical.': 'C pentru a schimba pe verticală.',
 } satisfies Record<string, string>;

@@ -2730,4 +2730,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Þessi kubbur passar ekki við þennan enda.',
   'Quantos adversários?': 'Hversu margir andstæðingar?',
   'Estilo visual': 'Sjónrænn stíll',
+  'C para trocar na vertical.': 'C til að skipta lóðrétt.',
 } satisfies Record<string, string>;

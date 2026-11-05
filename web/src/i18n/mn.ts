@@ -2743,4 +2743,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Энэ чулуу энэ үзүүрт таарахгүй.',
   'Quantos adversários?': 'Хэдэн өрсөлдөгч?',
   'Estilo visual': 'Харагдах загвар',
+  'C para trocar na vertical.': 'C босоо байдлаар солих.',
 } satisfies Record<string, string>;

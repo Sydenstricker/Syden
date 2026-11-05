@@ -4,7 +4,7 @@
  */
 import * as Sim from './sim';
 
-export type Entrada = { tipo: 'troca'; l: number; c: number } | { tipo: 'subir' };
+export type Entrada = { tipo: 'troca'; l: number; c: number; vertical?: boolean } | { tipo: 'subir' };
 
 /** No máximo tantas trocas esperando a vez (o intervalo entre trocas, ou o ritmo): mais que isso não é mão de gente. */
 export const MAX_NA_FILA = 12;
@@ -28,8 +28,9 @@ export function registrarEntrada(s: Sim.Simulacao, x: Entrada, n: number): boole
     if (Sim.subirFazEfeito(s.e) && noUltimoSegundo(s.jogadas, n) < RESERVA_DO_SUBIR) s.jogadas.push([n, 1, 0, 0]);
     return true;
   }
-  if (!Sim.podeTrocar(s.e, x.l, x.c)) return true; // a regra não deixa (a peça está caindo, ou some): não é troca
+  // a regra não deixa (a peça está caindo, ou some): não é troca
+  if (x.vertical ? !Sim.podeTrocarNaVertical(s.e, x.l, x.c) : !Sim.podeTrocar(s.e, x.l, x.c)) return true;
   if (!Sim.cabeNoRitmo(s.jogadas, n) || !Sim.trocaNoIntervalo(s.jogadas, n)) return false;
-  s.jogadas.push([n, 0, x.l, x.c]);
+  s.jogadas.push([n, x.vertical ? 2 : 0, x.l, x.c]);
   return true;
 }

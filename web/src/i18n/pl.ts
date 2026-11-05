@@ -2724,4 +2724,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Ta kostka nie pasuje do tego końca.',
   'Quantos adversários?': 'Ilu przeciwników?',
   'Estilo visual': 'Styl wizualny',
+  'C para trocar na vertical.': 'C, aby zamienić w pionie.',
 } satisfies Record<string, string>;

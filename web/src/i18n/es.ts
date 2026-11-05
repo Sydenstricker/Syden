@@ -2654,4 +2654,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Esa ficha no encaja en ese extremo.',
   'Quantos adversários?': '¿Cuántos rivales?',
   'Estilo visual': 'Estilo visual',
+  'C para trocar na vertical.': 'C para cambiar en vertical.',
 } satisfies Record<string, string>;

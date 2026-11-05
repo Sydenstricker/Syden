@@ -2729,4 +2729,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Laatta ei sovi tähän päähän.',
   'Quantos adversários?': 'Montako vastustajaa?',
   'Estilo visual': 'Visuaalinen tyyli',
+  'C para trocar na vertical.': 'C vaihtaa pystysuunnassa.',
 } satisfies Record<string, string>;

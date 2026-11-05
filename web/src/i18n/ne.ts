@@ -2731,4 +2731,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'यो गोटी यो छेउमा मिल्दैन।',
   'Quantos adversários?': 'कति प्रतिद्वन्द्वी?',
   'Estilo visual': 'दृश्य शैली',
+  'C para trocar na vertical.': 'C ठाडो साट्न।',
 } satisfies Record<string, string>;

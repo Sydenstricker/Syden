@@ -2748,4 +2748,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Այս քարը չի համապատասխանում այս ծայրին։',
   'Quantos adversários?': 'Քանի՞ մրցակից։',
   'Estilo visual': 'Տեսողական ոճ',
+  'C para trocar na vertical.': 'C՝ ուղղահայաց փոխելու համար։',
 } satisfies Record<string, string>;

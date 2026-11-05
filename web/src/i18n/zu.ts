@@ -2730,4 +2730,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Lelo tshe alingeni kulowo mkhawulo.',
   'Quantos adversários?': 'Bangaki abaphikisi?',
   'Estilo visual': 'Isitayela esibonakalayo',
+  'C para trocar na vertical.': 'C ukushintsha ngokuqondile.',
 } satisfies Record<string, string>;

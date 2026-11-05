@@ -2721,4 +2721,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Den brickan passar inte i den änden.',
   'Quantos adversários?': 'Hur många motståndare?',
   'Estilo visual': 'Visuell stil',
+  'C para trocar na vertical.': 'C för att byta lodrätt.',
 } satisfies Record<string, string>;

@@ -2654,4 +2654,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'That tile doesn\'t fit at that end.',
   'Quantos adversários?': 'How many opponents?',
   'Estilo visual': 'Visual style',
+  'C para trocar na vertical.': 'C to swap vertically.',
 } satisfies Record<string, string>;

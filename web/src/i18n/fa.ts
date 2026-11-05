@@ -2652,4 +2652,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'این مهره به این سر جور نمی‌شود.',
   'Quantos adversários?': 'چند حریف؟',
   'Estilo visual': 'سبک تصویری',
+  'C para trocar na vertical.': 'C برای جابه‌جایی عمودی.',
 } satisfies Record<string, string>;

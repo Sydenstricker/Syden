@@ -2656,4 +2656,5 @@ export default {
   'Essa pedra não encaixa nessa ponta.': 'Kartu itu tidak cocok di ujung itu.',
   'Quantos adversários?': 'Berapa lawan?',
   'Estilo visual': 'Gaya visual',
+  'C para trocar na vertical.': 'C untuk menukar secara vertikal.',
 } satisfies Record<string, string>;
