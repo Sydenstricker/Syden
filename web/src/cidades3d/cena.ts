@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
+import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 
 /**
  * O TABULEIRO 3D DO CIDADES À VENDA (05/11/2026, pedido dele: "3D cartoon fofo, similar ao Mario Party, com os assets da
@@ -13,7 +14,7 @@ import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeom
  *   bandeira do dono; com prédios, os prédios da cidade (1 e 2 baixos, 3 alto, 4 arranha-céu). Os modelos são da Kenney
  *   (CC0, web/public/cidades3d/<kit>/License.txt; o crédito nos termos, seção 10).
  * - No meio, um trem dá a volta numa linha, só de enfeite (parado com "menos movimento" no sistema).
- * - Cada pessoa é o MASCOTE 3D (web/scripts/cidades3d-coelho.py), com o pelo e o moletom trocados pelas cores dela — a troca
+ * - Cada pessoa é o MASCOTE 3D com o NOSSO esqueleto (coelho-animado.glb, de e2e/pixel-art/personagem/blender/meshy/glb.py), com o pelo e o moletom trocados pelas cores dela — a troca
  *   de paleta do kart, aqui no shader. Ele PULA casa a casa, como peça de festa.
  * - A câmera mostra o tabuleiro inteiro e chega perto de quem anda. Sem foco na janela, nada é desenhado (o uso principal é
  *   com um jogo aberto); as sombras de verdade só com "Sombras" ligado em Gráficos, e senão uma sombra redonda por coelho.
@@ -66,7 +67,7 @@ const PREDIO_ALTO = ['comercio/building-skyscraper-c.glb'];
 const ARRANHA_CEU = ['comercio/building-skyscraper-a.glb', 'comercio/building-skyscraper-b.glb'];
 const ARVORES = ['suburbio/tree-large.glb', 'suburbio/tree-small.glb'];
 const TODOS = [
-  'coelho.glb',
+  'coelho-animado.glb',
   ...CASAS_DO_SUBURBIO,
   ...PREDIO_BAIXO,
   ...PREDIO_MEDIO,
@@ -242,8 +243,11 @@ function materialDoCoelho(base: THREE.MeshStandardMaterial, pelo: string, roupa:
   m.customProgramCacheKey = () => 'coelho-paleta';
   return { m, uPelo, uRoupa, uOpaco };
 }
-/** Onde acaba o moletom, na altura do modelo (de -0,48 a 0,48): abaixo disso, o escuro é roupa; acima, olho e focinho. */
-const PESCOCO = 0.02;
+/**
+ * Onde acaba o moletom, na altura da malha em T (de 0 a 8,4, a do mascote.py; o pescoço das MEDIDAS dela é 3,65): abaixo
+ * disso, o escuro é roupa; acima, olho e focinho.
+ */
+const PESCOCO = 3.6;
 
 interface Peca {
   raiz: THREE.Group;
@@ -259,6 +263,9 @@ interface Peca {
   rumo: number;
   pelo: string;
   roupa: string;
+  mixer: THREE.AnimationMixer;
+  acoes: Map<string, THREE.AnimationAction>;
+  tocando: string;
 }
 
 export class CenaDasCidades {
@@ -591,7 +598,7 @@ export class CenaDasCidades {
   }
 
   private atualizarPecas(d: DadosDaCena) {
-    const coelho = this.modelos.get('coelho.glb');
+    const coelho = this.modelos.get('coelho-animado.glb');
     if (!coelho) return;
     const vivos = new Set(d.pecas.map((p) => p.userId));
     for (const [id, p] of this.pecas)
@@ -637,10 +644,21 @@ export class CenaDasCidades {
   }
 
   private novaPeca(g: GLTF, info: PecaDaCena): Peca {
-    const corpo = copia(g, 1, this.sombras);
-    // a altura certa (o modelo é mais alto que largo)
+    // o coelho com o NOSSO esqueleto (e2e/pixel-art/personagem/blender/meshy/glb.py): a cópia tem de levar o esqueleto junto
+    const corpo = SkeletonUtils.clone(g.scene);
     const caixa = new THREE.Box3().setFromObject(corpo);
-    corpo.scale.multiplyScalar(ALTURA_DO_COELHO / (caixa.max.y - caixa.min.y));
+    const k = ALTURA_DO_COELHO / (caixa.max.y - caixa.min.y);
+    corpo.scale.setScalar(k);
+    corpo.position.y = -caixa.min.y * k;
+    corpo.traverse((o) => {
+      const m = o as THREE.Mesh;
+      if (m.isMesh) {
+        m.castShadow = this.sombras;
+        m.frustumCulled = false;
+      }
+    });
+    const mixer = new THREE.AnimationMixer(corpo);
+    const acoes = new Map(g.animations.map((a) => [a.name, mixer.clipAction(a)]));
     let base: THREE.MeshStandardMaterial | null = null;
     corpo.traverse((o) => {
       const m = o as THREE.Mesh;
@@ -669,7 +687,18 @@ export class CenaDasCidades {
     const c = centroDaCasa(info.pos);
     raiz.position.copy(c);
     this.cena.add(raiz);
-    return { raiz, corpo: pulo, sombra, marca, mat, casa: info.pos, de: c.clone(), para: c.clone(), inicio: 0, duracao: 0, rumo: 0, pelo: info.pelo, roupa: info.roupa };
+    return { raiz, corpo: pulo, sombra, marca, mat, casa: info.pos, de: c.clone(), para: c.clone(), inicio: 0, duracao: 0, rumo: 0, pelo: info.pelo, roupa: info.roupa, mixer, acoes, tocando: '' };
+  }
+
+  /** Troca de animação com uma passagem curta. */
+  private tocar(p: Peca, nome: string) {
+    if (p.tocando === nome) return;
+    const nova = p.acoes.get(nome);
+    if (!nova) return;
+    const velha = p.acoes.get(p.tocando);
+    nova.reset().play();
+    if (velha) velha.crossFadeTo(nova, 0.2, false);
+    p.tocando = nome;
   }
 
   private desenhar = () => {
@@ -710,6 +739,9 @@ export class CenaDasCidades {
       p.marca.rotation.y = tempo * 2;
       p.marca.position.y = ALTURA_DO_COELHO + 0.22 + altura + (this.calmo ? 0 : Math.sin(tempo * 3) * 0.04);
       if (f < 1 && longe > 0.3) andando = p.raiz.position;
+      // andando entre as casas; na vez, gesticulando; à toa, parado (com menos movimento, sempre parado)
+      this.tocar(p, this.calmo ? 'parado' : f < 1 && longe > 0.3 ? 'andando' : p.raiz.userData.vez ? 'falando' : 'parado');
+      p.mixer.update(this.calmo ? 0 : dt);
     }
 
     // o trem
@@ -730,7 +762,7 @@ export class CenaDasCidades {
     const k = 1 - Math.exp(-dt * 2.2);
     this.alvo.lerp(foco, k);
     this.olhando.lerp(this.alvo, k);
-    const d = 14.8 * this.distancia * longe;
+    const d = 16.2 * this.distancia * longe;
     const balanco = this.calmo ? 0 : Math.sin(tempo * 0.25) * 0.35;
     const pos = new THREE.Vector3(this.olhando.x + balanco, d * 0.8, this.olhando.z + d * 0.7);
     this.camera.position.lerp(pos, this.quadro < 3 ? 1 : k);

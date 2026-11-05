@@ -615,7 +615,7 @@ coelho 3D como personagem jogável"):** `web/src/cidades3d/` (three.js 0.186, nu
 grama, as casas em blocos com a sigla e o preço pintados por código, e o que se constrói FORA da volta (casinha e a bandeira do dono;
 1–2 prédios baixos, 3 alto, 4 arranha-céu), com um trem de enfeite no miolo. Os modelos são da Kenney (CC0: City Kit Commercial,
 Suburban e Train Kit, de `e2e/3D/Assets/`), copiados para `web/public/cidades3d/` com a licença; o crédito nos termos, seção 10. Cada
-pessoa é o MASCOTE 3D (`web/scripts/cidades3d-coelho.py` tira do `mascote.glb` uma versão de 380 KB), com pelo e moletom trocados
+pessoa é o MASCOTE 3D com o NOSSO esqueleto (`coelho-animado.glb`, de `glb.py`; anda entre as casas e gesticula na vez), com pelo e moletom trocados
 pelas cores dela no shader (o escuro abaixo do pescoço é moletom: os olhos ficam), e ele PULA casa a casa. Sem foco na janela, não
 desenha; sombras de verdade só com "Sombras" em Gráficos. O desenho em SVG continua de reserva: sem WebGL, ou enquanto carrega.
 Os PNG das texturas da Kenney pedem `git add -f` (o .gitignore pega `*.png`).
