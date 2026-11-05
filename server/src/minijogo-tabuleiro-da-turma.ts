@@ -17,10 +17,15 @@
  *
  * OS TROFÉUS: o pódio (até o 3º, empatados dividem) de quem esteve na sala em todas as vezes e microjogos até o fim, com 2 ou
  * mais, vai para a estante do quarto (corrida_trofeus, "pista" 'tabuleiro', os pontos são as cenouras douradas).
+ *
+ * NO SOLO, CONTRA O COMPUTADOR (pedido dele, 05/11/2026): de 1 a 5 robôs (minijogo-robos.ts). Na vez, o robô joga o dado
+ * depois de uma pausa curta e compra a dourada sempre que pode; no microjogo, o resultado dele é sorteado numa faixa de quem
+ * joga bem (resultadoDoRobo, em minijogo-festa.ts). Contra o computador não há troféu.
  */
 import * as db from './db.js';
 import { rodadaDeFesta, MICROJOGOS, type Microjogo, type RodadaDeFesta } from './minijogo-festa.js';
 import { embaralhar, type Definicao } from './minijogo-motor.js';
+import { comRobos, ehRobo, idsDosRobos, PAUSA_DO_ROBO, quantosRobos } from './minijogo-robos.js';
 
 /** As casas, na ordem da volta: 'i' a largada, '+' ganha 3, '-' perde 3, '?' um evento. */
 export const CASAS = 'i++-+?++-+?+++-?++-++?++-+?+-+'.split('') as ('i' | '+' | '-' | '?')[];
@@ -72,14 +77,18 @@ export function criarTabuleiro({ agora = Date.now, aleatorio = Math.random, ceno
     minimo: 2,
     // passando de 8, as rotas deixam jogar os primeiros que aceitaram; o resto assiste e não conta como quem jogou
     maximo: MAXIMO_DO_TABULEIRO,
-    comecar(ctx, { naSala, corpo }) {
+    comecar(ctxDaSala, { naSala: naSalaDaSala, corpo }) {
+      // os robôs só no Solo, e estão sempre na sala
+      const robos = idsDosRobos(quantosRobos(ctxDaSala, corpo));
+      const ctx = comRobos(ctxDaSala, robos);
+      const naSala = [...naSalaDaSala.slice(0, MAXIMO_DO_TABULEIRO - robos.length), ...robos];
       if (naSala.length < 2) return 'Ainda falta gente para começar.';
       const rodadas = RODADAS_DO_TABULEIRO.includes(Number(corpo.rodadas)) ? Number(corpo.rodadas) : 10;
       const inteiro = (n: number) => Math.floor(aleatorio() * n);
       // a ordem da vez é sorteada (o corte em 8 já vem das rotas, pelo `maximo`; este é só a garantia)
       const ordem = embaralhar(naSala.slice(0, MAXIMO_DO_TABULEIRO), aleatorio);
       const pecas = new Map<number, Peca>(ordem.map((userId) => [userId, { userId, pos: 0, cenouras: cenourasIniciais, douradas: 0 }]));
-      const avatares = new Map(ordem.map((id) => [id, db.findUserById(id)?.avatarPronto ?? null]));
+      const avatares = new Map(ordem.map((id) => [id, ehRobo(id) ? null : (db.findUserById(id)?.avatarPronto ?? null)]));
       const evento = `tabuleiro-${ctx.comunidade ?? 0}-${agora()}`;
       /** Uma casa nova para a dourada: nunca a largada, nunca a de agora. */
       const novaDourada = (antes: number) => {
@@ -145,7 +154,8 @@ export function criarTabuleiro({ agora = Date.now, aleatorio = Math.random, ceno
         lojaFeita = false;
         comprou = false;
         pendente = 0;
-        ctx.agendar(TEMPO_DA_VEZ, () => jogarDado(daVez()));
+        const quem = daVez();
+        ctx.agendar(ehRobo(quem) ? PAUSA_DO_ROBO : TEMPO_DA_VEZ, () => jogarDado(quem));
         ctx.avisar();
       };
 
@@ -167,7 +177,8 @@ export function criarTabuleiro({ agora = Date.now, aleatorio = Math.random, ceno
             pendente = resta;
             ultimo = { id: ++idDoUltimo, userId: peca.userId, dado, caminho, efeito: null, comprou: false, antes };
             fase = 'loja';
-            ctx.agendar(caminho.length * PASSO_MS + TEMPO_DA_LOJA, () => decidir(peca.userId, true));
+            // o robô compra sempre que pode, depois de a peça chegar e de uma pausa
+            ctx.agendar(caminho.length * PASSO_MS + (ehRobo(peca.userId) ? PAUSA_DO_ROBO : TEMPO_DA_LOJA), () => decidir(peca.userId, true));
             ctx.avisar();
             return;
           }
@@ -244,6 +255,7 @@ export function criarTabuleiro({ agora = Date.now, aleatorio = Math.random, ceno
           agora,
           aleatorio,
           pontos: CENOURAS_DO_MICROJOGO,
+          robos,
           aoRevelar: (linhas, sala) => {
             anotarAusentes(ordem.filter((id) => sala.has(id)));
             for (const l of linhas) if (l.pontos) pecas.get(l.userId)!.cenouras += l.pontos;
@@ -295,7 +307,8 @@ export function criarTabuleiro({ agora = Date.now, aleatorio = Math.random, ceno
         if (fase === 'fim') return;
         fase = 'fim';
         mini = null;
-        if (!interrompida) {
+        // contra o computador não há troféu: o troféu é um registro de um momento entre amigos
+        if (!interrompida && !robos.length) {
           anotarAusentes(presentes());
           const turma = ordem.filter((id) => ficaram.has(id));
           if (turma.length >= 2) {
@@ -341,6 +354,8 @@ export function criarTabuleiro({ agora = Date.now, aleatorio = Math.random, ceno
             classificacao: classificacaoPublica(),
             interrompida,
             partidaId: evento,
+            // quantos robôs (o "Jogar de novo" do Solo pede os mesmos)
+            robos: robos.length,
           };
         },
         acao(quem, corpo) {

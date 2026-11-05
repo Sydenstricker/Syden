@@ -25,6 +25,7 @@ import { JogoStop } from './JogoStop';
 import { JogoSudoku } from './JogoSudoku';
 import { EscolhaDasRodadas, JogoTabuleiro } from './JogoTabuleiro';
 import { EscolhaDasCidades, JogoCidades } from './JogoCidades';
+import { cadaUmPorSi, EM_DUPLAS, EscolhaDosRobos, type OpcaoDeRobos } from './EscolhaDosRobos';
 import { EscolhaDeCategoria, JogoTamanho } from './JogoTamanho';
 import { JogoXadrez } from './JogoXadrez';
 import {
@@ -80,6 +81,16 @@ export function BotaoMinijogo({
 }
 
 const MEDALHAS = ['🥇', '🥈', '🥉'];
+
+/**
+ * Os jogos da turma que, no Solo, só pedem quantos adversários do computador (pedido dele, 05/11/2026; os robôs em
+ * server/src/minijogo-robos.ts). Os de mesa (Cinco em linha, Mancala, Damas, Batalha naval) começam direto contra um robô; o
+ * Cidades à venda e o Tabuleiro da turma perguntam junto com as rodadas.
+ */
+const ROBOS_NO_SOLO: Partial<Record<IdDoJogo, OpcaoDeRobos[]>> = {
+  domino: [cadaUmPorSi(1), cadaUmPorSi(2), EM_DUPLAS],
+  truco: [cadaUmPorSi(1), EM_DUPLAS],
+};
 
 /** Um pedido ao servidor; o erro dele aparece no painel. */
 interface Acao {
@@ -176,7 +187,7 @@ export function PainelDoMinijogo({
     comecou.current = true;
     if (comecarCom === 'corrida') setCorrendo(true);
     else if (comecarCom === 'plataforma') setPulando(true);
-    else if (pedeCategoria(comecarCom) || comecarCom === 'cidades') setEscolhendo(comecarCom);
+    else if (pedeCategoria(comecarCom) || comecarCom === 'cidades' || comecarCom === 'tabuleiro' || ROBOS_NO_SOLO[comecarCom]) setEscolhendo(comecarCom);
     else void tentar(() => aoComecar(comecarCom, {}, true));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [comecarCom]);
@@ -247,7 +258,18 @@ export function PainelDoMinijogo({
       )}
       {!partida && escolhendo === 'tabuleiro' && (
         <EscolhaDasRodadas
-          aoEscolher={(rodadas) => tentar(() => aoComecar('tabuleiro', { rodadas }, false).then(() => setEscolhendo(null)))}
+          solo={aba === 'solo'}
+          aoEscolher={(rodadas, robos) =>
+            tentar(() => aoComecar('tabuleiro', aba === 'solo' ? { rodadas, robos } : { rodadas }, aba === 'solo').then(() => setEscolhendo(null)))
+          }
+          aoVoltar={() => setEscolhendo(null)}
+        />
+      )}
+      {/* O Dominó e o Truco no Solo: só quantos robôs (pedido dele, 05/11/2026). */}
+      {!partida && escolhendo !== null && ROBOS_NO_SOLO[escolhendo] && (
+        <EscolhaDosRobos
+          opcoes={ROBOS_NO_SOLO[escolhendo]!}
+          aoEscolher={(robos) => tentar(() => aoComecar(escolhendo, { robos }, true).then(() => setEscolhendo(null)))}
           aoVoltar={() => setEscolhendo(null)}
         />
       )}
@@ -295,7 +317,7 @@ export function PainelDoMinijogo({
                       ? aba === 'solo'
                         ? setPulando(true)
                         : setEscolhendo('plataforma')
-                    : jogo.id === 'tabuleiro' || jogo.id === 'cidades' || pedeCategoria(jogo.id, aba === 'solo')
+                    : jogo.id === 'tabuleiro' || jogo.id === 'cidades' || (aba === 'solo' && ROBOS_NO_SOLO[jogo.id]) || pedeCategoria(jogo.id, aba === 'solo')
                       ? setEscolhendo(jogo.id)
                       : tentar(() => aoComecar(jogo.id, {}, aba === 'solo'))
                 }
@@ -451,7 +473,15 @@ export function PainelDoMinijogo({
               tentar(() =>
                 aoComecar(
                   partida.jogo,
-                  partida.categoria ? { categoria: partida.categoria } : partida.jogo === 'tabuleiro' ? { rodadas: partida.rodadas } : partida.jogo === 'cidades' ? { modo: partida.modo, rodadas: partida.rodadas, robos: partida.robos } : {},
+                  partida.categoria
+                    ? { categoria: partida.categoria }
+                    : partida.jogo === 'tabuleiro'
+                      ? { rodadas: partida.rodadas, robos: partida.robos }
+                      : partida.jogo === 'cidades'
+                        ? { modo: partida.modo, rodadas: partida.rodadas, robos: partida.robos }
+                        : ROBOS_NO_SOLO[partida.jogo]
+                          ? { robos: partida.robos }
+                          : {},
                   partida.solo === true,
                 ),
               )

@@ -179,7 +179,8 @@ export function JogoDamas({
       <p className={`minijogo-situacao${minhaVez ? ' minha-vez' : ''}`} role="status">
         {situacao}
       </p>
-      {jogando && <Relogio restante={restante} total={JOGADA_MS} />}
+      {/* no Solo, contra o computador, pensar não tem prazo */}
+      {jogando && !partida.solo && <Relogio restante={restante} total={JOGADA_MS} />}
       {estado.fase === 'esperando' && meuLado < 0 && (
         <button type="button" className="btn-primary duelo-sentar" onClick={() => agir({ tipo: 'sentar' })}>
           {t('Jogar')}

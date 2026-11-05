@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { CORES_DOS_AVATARES } from './corrida/coresDosAvatares';
+import { BotoesDosRobos, cadaUmPorSi } from './EscolhaDosRobos';
 import { useT } from './i18n';
 import { RodadaDaFesta } from './JogoFesta';
 import { Placar, Relogio } from './Minijogo';
@@ -430,15 +431,26 @@ export function JogoTabuleiro({
 }
 
 /** Antes do convite: quantas rodadas (5, 10 ou 15). */
-export function EscolhaDasRodadas({ aoEscolher, aoVoltar }: { aoEscolher: (rodadas: number) => void; aoVoltar: () => void }) {
+export function EscolhaDasRodadas({
+  solo = false,
+  aoEscolher,
+  aoVoltar,
+}: {
+  /** No Solo, antes das rodadas, quantos adversários do computador (pedido dele, 05/11/2026). */
+  solo?: boolean;
+  aoEscolher: (rodadas: number, robos?: number) => void;
+  aoVoltar: () => void;
+}) {
   const t = useT();
+  const [robos, setRobos] = useState(3);
   return (
     <div className="tab-escolha">
+      {solo && <BotoesDosRobos opcoes={[1, 2, 3, 4, 5].map(cadaUmPorSi)} escolhida={robos} aoEscolher={setRobos} />}
       <p className="minijogo-situacao">{t('Quantas rodadas?')}</p>
       <ul className="tab-rodadas">
         {[5, 10, 15].map((n) => (
           <li key={n}>
-            <button type="button" className="tab-rodadas-botao" onClick={() => aoEscolher(n)}>
+            <button type="button" className="tab-rodadas-botao" onClick={() => aoEscolher(n, solo ? robos : undefined)}>
               <span className="tab-rodadas-dados" aria-hidden="true">
                 {Array.from({ length: n / 5 }, (_, i) => (
                   <Dado key={i} n={6 - i * 2} tamanho={26} />

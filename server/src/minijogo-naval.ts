@@ -98,6 +98,63 @@ function marPublico(mar: Mar, verTudo: boolean): MarPublico {
 /** Os tamanhos dos navios que ainda boiam (é o que o jogo de papel conta em voz alta). */
 const restam = (mar: Mar) => mar.navios.filter((navio) => !afundado(mar, navio)).map((navio) => navio.length);
 
+/**
+ * O ROBÔ DA BATALHA NAVAL (o Solo, 05/11/2026): mira só com o que a pessoa no lugar dele veria do mar do outro (`marPublico`
+ * sem os navios escondidos). Com fogo num navio que ainda não afundou, ele CAÇA: segue a linha dos acertos, ou tenta as
+ * quatro vizinhas. Sem fogo, PROCURA em xadrez (todo navio tem 2 casas ou mais, então metade das casas basta), longe dos navios
+ * afundados: pela regra, nenhum navio encosta em outro, nem na diagonal, e a diagonal de um acerto também fica de fora.
+ */
+export function tiroDoRobo(mar: MarPublico, aleatorio: () => number = Math.random): number {
+  const n = LADO_DO_MAR;
+  const dentro = (l: number, c: number) => l >= 0 && l < n && c >= 0 && c < n;
+  const afundadas = new Set(mar.navios.filter((x) => x.afundado).flatMap((x) => x.casas));
+  // as casas onde não pode haver navio: em volta dos afundados, e na diagonal de qualquer fogo
+  const vedada = new Array<boolean>(CASAS_DO_MAR).fill(false);
+  for (let i = 0; i < CASAS_DO_MAR; i++) {
+    if (mar.tiros[i] !== 2) continue;
+    const l = Math.floor(i / n);
+    const c = i % n;
+    for (let dl = -1; dl <= 1; dl++) {
+      for (let dc = -1; dc <= 1; dc++) {
+        if (!dentro(l + dl, c + dc)) continue;
+        if (afundadas.has(i) || (dl !== 0 && dc !== 0)) vedada[(l + dl) * n + c + dc] = true;
+      }
+    }
+  }
+  const livre = (l: number, c: number) => dentro(l, c) && mar.tiros[l * n + c] === 0 && !vedada[l * n + c];
+  const sortear = (lista: number[]) => lista[Math.min(lista.length - 1, Math.floor(aleatorio() * lista.length))];
+
+  // CAÇAR: o fogo num navio que ainda boia
+  const fogo = [...mar.tiros.keys()].filter((i) => mar.tiros[i] === 2 && !afundadas.has(i));
+  if (fogo.length) {
+    const alvos: number[] = [];
+    if (fogo.length >= 2) {
+      // a linha já se sabe: as duas pontas dela
+      const deitado = Math.floor(fogo[0] / n) === Math.floor(fogo[1] / n);
+      const [dl, dc] = deitado ? [0, 1] : [1, 0];
+      const primeiro = fogo[0];
+      const ultimo = fogo[fogo.length - 1];
+      const antes = [Math.floor(primeiro / n) - dl, (primeiro % n) - dc];
+      const depois = [Math.floor(ultimo / n) + dl, (ultimo % n) + dc];
+      for (const [l, c] of [antes, depois]) if (livre(l, c)) alvos.push(l * n + c);
+    }
+    if (!alvos.length) {
+      for (const i of fogo) {
+        const l = Math.floor(i / n);
+        const c = i % n;
+        for (const [dl, dc] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) if (livre(l + dl, c + dc)) alvos.push((l + dl) * n + c + dc);
+      }
+    }
+    if (alvos.length) return sortear(alvos);
+  }
+  // PROCURAR: em xadrez; sem casa assim, qualquer livre; e, por garantia, qualquer uma sem tiro
+  const livres = [...mar.tiros.keys()].filter((i) => livre(Math.floor(i / n), i % n));
+  const xadrez = livres.filter((i) => (Math.floor(i / n) + (i % n)) % 2 === 0);
+  if (xadrez.length) return sortear(xadrez);
+  if (livres.length) return sortear(livres);
+  return mar.tiros.findIndex((t) => t === 0);
+}
+
 export function criarNaval(aleatorio: () => number = Math.random): Definicao {
   return {
     mesa: true,
@@ -134,6 +191,8 @@ export function criarNaval(aleatorio: () => number = Math.random): Definicao {
             meu.navios = sortearFrota(aleatorio);
             return null;
           },
+          // o robô mira só pelo que se vê do mar do outro: os tiros, o fogo e os navios já afundados
+          robo: (e, lado, sorte) => ({ casa: tiroDoRobo(marPublico(e.mares[lado === 0 ? 1 : 0], false), sorte) }),
           publico(e, lado) {
             const mares = [0, 1].map((l) => marPublico(e.mares[l], e.revelado || l === lado));
             return {

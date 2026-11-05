@@ -28,6 +28,7 @@
  */
 import * as db from './db.js';
 import { embaralhar, type Definicao } from './minijogo-motor.js';
+import { ehRobo, MAXIMO_DE_ROBOS, NOMES_DOS_ROBOS, PAUSA_DO_ROBO } from './minijogo-robos.js';
 
 export type TipoDaCasa = 'largada' | 'cidade' | 'transporte' | 'noticia' | 'pedagio' | 'engarrafamento' | 'feriado';
 
@@ -115,14 +116,10 @@ export const RODADAS_DAS_CIDADES = [10, 20, 30];
 export const MAXIMO_DAS_CIDADES = 6;
 /**
  * OS ADVERSÁRIOS DO COMPUTADOR (pedido dele, 05/11/2026: "opção de jogar sozinho, contra IA"). Só no Solo: a pessoa escolhe
- * de 1 a 5, e eles entram na ordem como jogadores de id NEGATIVO (nenhuma conta tem id negativo), sempre "na sala". O nome é
- * próprio, para não pedir tradução, e o 🤖 na frente diz em qualquer língua que é o computador (a tela não mente).
+ * de 1 a 5, e eles entram na ordem como jogadores de id NEGATIVO. As constantes são as de todos os jogos com robôs
+ * (minijogo-robos.ts).
  */
-export const NOMES_DOS_ROBOS = ['Tico', 'Lola', 'Bento', 'Nina', 'Juca'];
-export const MAXIMO_DE_ROBOS = NOMES_DOS_ROBOS.length;
-/** Quanto o robô espera antes de agir: o bastante para a pessoa ver o que ele fez. */
-export const PAUSA_DO_ROBO = 1_200;
-const ehRobo = (id: number) => id < 0;
+export { NOMES_DOS_ROBOS, MAXIMO_DE_ROBOS, PAUSA_DO_ROBO };
 /** Trocas propostas por vez: cada uma dá um relógio novo, e sem limite uma pessoa seguraria a turma. */
 export const TROCAS_POR_VEZ = 3;
 

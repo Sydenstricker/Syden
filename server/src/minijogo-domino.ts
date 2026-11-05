@@ -24,8 +24,13 @@
  *
  * O QUE O CONSOLE CONSEGUE: nada além de jogar na própria vez. A mão de cada um só vai a ele (as dos outros só na revelação
  * do fim da mão), a compra é do servidor, e cada jogada confere a vez, a pedra na mão e a ponta.
+ *
+ * NO SOLO, CONTRA O COMPUTADOR (pedido dele, 05/11/2026): de 1 a 3 robôs (minijogo-robos.ts); com 3 a mesa é de quatro, em
+ * duplas, com um robô de parceiro. O robô joga na vez dele depois de uma pausa curta, pela mesma `acao` de quem joga: compra
+ * pedra a pedra quando precisa, e escolhe a pedra que livra mais pontos sem deixar na mesa uma ponta que ele não tem.
  */
-import { embaralhar, type Definicao } from './minijogo-motor.js';
+import { embaralhar, type Definicao, type Jogo } from './minijogo-motor.js';
+import { comRobos, ehRobo, idsDosRobos, PAUSA_DO_ROBO, quantosRobos } from './minijogo-robos.js';
 
 /** Uma pedra: as duas metades, a menor primeiro (na mesa, a ordem é a do encaixe). */
 export type Pedra = [number, number];
@@ -84,7 +89,11 @@ export function criarDomino({ agora = Date.now, aleatorio = Math.random, distrib
   return {
     minimo: 2,
     maximo: MAXIMO_DO_DOMINO,
-    comecar(ctx, { naSala }) {
+    comecar(ctxDaSala, { naSala: naSalaDaSala, corpo }) {
+      // os robôs só no Solo, e estão sempre na sala
+      const robos = idsDosRobos(quantosRobos(ctxDaSala, corpo, MAXIMO_DO_DOMINO - 1));
+      const ctx = comRobos(ctxDaSala, robos);
+      const naSala = [...naSalaDaSala.slice(0, MAXIMO_DO_DOMINO - robos.length), ...robos];
       if (naSala.length < 2) return 'Ainda falta gente para começar.';
       const ordem = embaralhar(naSala.slice(0, MAXIMO_DO_DOMINO), aleatorio);
       const duplas = ordem.length === 4;
@@ -227,6 +236,13 @@ export function criarDomino({ agora = Date.now, aleatorio = Math.random, distrib
             vez = (vez + 1) % ordem.length;
             continue;
           }
+          if (ehRobo(ordem[vez])) {
+            const robo = ordem[vez];
+            relogioDoAusente = true;
+            ctx.agendar(PAUSA_DO_ROBO, () => vezDoRobo(robo));
+            ctx.avisar();
+            return;
+          }
           relogioDoAusente = !ctx.naSala().includes(ordem[vez]);
           ctx.agendar(relogioDoAusente ? TEMPO_DO_AUSENTE : TEMPO_DA_VEZ, jogarSozinho);
           ctx.avisar();
@@ -287,9 +303,39 @@ export function criarDomino({ agora = Date.now, aleatorio = Math.random, distrib
         return [Math.min(a, b), Math.max(a, b)];
       };
 
+      /**
+       * A VEZ DO ROBÔ: compra (uma pedra por pausa, como na mesa) até ter o que jogar, e joga a pedra que vale mais para ele:
+       * a mais pesada (livra pontos se a mão trancar ou alguém bater), a dupla (difícil de encaixar depois), e a que deixa na
+       * mesa uma ponta que ele ainda tem na mão (para não ficar sem jogo na próxima).
+       */
+      function vezDoRobo(quem: number) {
+        if (fase !== 'jogando' || ordem[vez] !== quem) return;
+        const lugar = vez;
+        if (!podeJogar(lugar)) {
+          if (!podeComprar()) return void jogo.acao(quem, { tipo: 'passar' });
+          jogo.acao(quem, { tipo: 'comprar' });
+          ctx.agendar(PAUSA_DO_ROBO / 2, () => vezDoRobo(quem));
+          return;
+        }
+        const e = pontas();
+        let melhor: { pedra: Pedra; ponta: Ponta | null; valor: number } | null = null;
+        for (const p of maos[lugar]) {
+          for (const ponta of ondeServe(p)) {
+            const resto = maos[lugar].filter((q) => q !== p);
+            // a ponta que fica na mesa depois desta pedra (na mesa vazia, as duas metades)
+            const encaixe = !e ? null : ponta === 'esquerda' ? e.esquerda : e.direita;
+            const fica = encaixe === null ? [p[0], p[1]] : [p[0] === encaixe ? p[1] : p[0]];
+            const tenho = resto.filter((q) => fica.some((n) => q[0] === n || q[1] === n)).length;
+            const valor = p[0] + p[1] + (p[0] === p[1] ? 4 : 0) + Math.min(tenho, 2) * 3 + aleatorio();
+            if (!melhor || valor > melhor.valor) melhor = { pedra: p, ponta, valor };
+          }
+        }
+        jogo.acao(quem, { tipo: 'jogar', pedra: melhor!.pedra, ponta: melhor!.ponta });
+      }
+
       novaMao();
 
-      return {
+      const jogo: Jogo = {
         publico(quem) {
           const sala = new Set(ctx.naSala());
           const meuLugar = ordem.indexOf(quem);
@@ -323,6 +369,8 @@ export function criarDomino({ agora = Date.now, aleatorio = Math.random, distrib
             resultado: aberto ? resultado : null,
             vencedor: fase === 'fim' && vencedor !== null ? { lado: vencedor, membros: membros(vencedor) } : null,
             interrompida,
+            // quantos robôs (o "Jogar de novo" do Solo pede os mesmos)
+            robos: robos.length,
           };
         },
         acao(quem, corpo) {
@@ -376,6 +424,7 @@ export function criarDomino({ agora = Date.now, aleatorio = Math.random, distrib
           }
         },
       };
+      return jogo;
     },
   };
 }

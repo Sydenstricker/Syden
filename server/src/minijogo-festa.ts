@@ -173,7 +173,7 @@ export function gerarDados(m: Microjogo, aleatorio: () => number): Dados {
 }
 
 /** O resultado de alguém numa rodada. */
-interface Resultado {
+export interface Resultado {
   /** Desclassificado (antes do sinal), errou (o copo) ou nada que conte: zero ponto. */
   motivo: 'cedo' | 'errou' | 'invalido' | null;
   /** O que aparece na revelação: a reação, a força, o tempo, quanto levou, as setas, os alvos. */
@@ -232,9 +232,52 @@ export interface OpcoesDaRodada {
   aoRevelar?: (linhas: LinhaDaRodada[], presentes: Set<number>) => void;
   /** Depois da revelação. */
   aoAcabar: () => void;
+  /**
+   * Os inscritos que são do computador (o Tabuleiro da turma no Solo, 05/11/2026). Eles não seguram a rodada: o resultado
+   * deles é sorteado na revelação (`resultadoDoRobo`), e só ela espera a pessoa.
+   */
+  robos?: number[];
 }
 
-export function rodadaDeFesta({ ctx, microjogo: m, inscritos, agora, aleatorio, pontos, aoRevelar, aoAcabar }: OpcoesDaRodada): RodadaDeFesta {
+/**
+ * O RESULTADO DE UM ROBÔ num microjogo: sorteado numa faixa de quem joga bem, mas não perfeito (uma reação de 230 a 450 ms,
+ * a força de 60 a 98, o relógio a até ~0,8 s dos 10 s, o copo certo três vezes em quatro…). O robô não vê a tela: o servidor
+ * só inventa um resultado plausível, sem precisar de conferência.
+ */
+export function resultadoDoRobo(m: Microjogo, dados: Dados, aleatorio: () => number): Resultado {
+  switch (m) {
+    case 'saque': {
+      if (aleatorio() < 0.08) return { motivo: 'cedo', valor: null, chave: [] };
+      const reacao = Math.round(230 + aleatorio() * 220);
+      return { motivo: null, valor: reacao, chave: [reacao] };
+    }
+    case 'forca': {
+      const v = Math.round((60 + aleatorio() * 38) * 10) / 10;
+      return { motivo: null, valor: v, chave: [100 - v] };
+    }
+    case 'relogio': {
+      const ms = Math.round(RELOGIO_ALVO + (aleatorio() * 2 - 1) * (120 + aleatorio() * 700));
+      return { motivo: null, valor: ms, chave: [Math.abs(ms - RELOGIO_ALVO)] };
+    }
+    case 'copos': {
+      if (aleatorio() < 0.25) return { motivo: 'errou', valor: null, chave: [] };
+      const ms = Math.round(400 + aleatorio() * 1000);
+      return { motivo: null, valor: ms, chave: [ms] };
+    }
+    case 'siga': {
+      const n = 3 + Math.floor(aleatorio() * 7);
+      const ms = Math.round(minimoDaSiga(n) + 1500 + aleatorio() * 3000);
+      return { motivo: null, valor: n, chave: [-n, ms] };
+    }
+    case 'alvo': {
+      const total = (dados as DadosAlvo).alvos.length;
+      const n = Math.max(1, Math.round(total * (0.35 + aleatorio() * 0.35)));
+      return { motivo: null, valor: n, chave: [-n] };
+    }
+  }
+}
+
+export function rodadaDeFesta({ ctx, microjogo: m, inscritos, agora, aleatorio, pontos, aoRevelar, aoAcabar, robos = [] }: OpcoesDaRodada): RodadaDeFesta {
   let fase: 'preparando' | 'jogando' | 'revelando' = 'preparando';
   const dados: Dados = gerarDados(m, aleatorio);
   let inicio = 0;
@@ -281,7 +324,9 @@ export function rodadaDeFesta({ ctx, microjogo: m, inscritos, agora, aleatorio, 
 
   const revelar = () => {
     if (fase !== 'jogando') return;
-    const presentes = new Set(ctx.naSala());
+    const presentes = new Set([...ctx.naSala(), ...robos]);
+    // os robôs (o Solo): o resultado deles sai agora, junto com o de quem joga
+    for (const id of robos) if (!resultados.has(id)) resultados.set(id, resultadoDoRobo(m, dados, aleatorio));
     // no alvo, quem acertou alguma e não chegou a mandar o fim conta pelo que o servidor viu
     if (m === 'alvo') {
       for (const [userId, acertos] of acertosDoAlvo) {
@@ -314,7 +359,8 @@ export function rodadaDeFesta({ ctx, microjogo: m, inscritos, agora, aleatorio, 
   };
 
   const todosResponderam = () => {
-    const presentes = ctx.naSala().filter((id) => inscritos.includes(id));
+    // os robôs não seguram a rodada (o resultado deles sai na revelação)
+    const presentes = ctx.naSala().filter((id) => inscritos.includes(id) && !robos.includes(id));
     return presentes.every((id) => resultados.has(id));
   };
 

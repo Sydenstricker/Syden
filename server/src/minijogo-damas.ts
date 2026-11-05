@@ -210,4 +210,71 @@ export const regrasDasDamas: Regras<EstadoDasDamas> = {
   },
 };
 
-export const damas = duelo<EstadoDasDamas>(regrasDasDamas);
+/** Quantos lances (somando os dois lados) o robô das Damas olha à frente. */
+export const PROFUNDIDADE_DAS_DAMAS = 4;
+
+/**
+ * O que a posição vale para `cor`: a pedra vale 1, a dama 3, e a pedra que avançou ganha um pouco (ela está mais perto de
+ * virar dama).
+ */
+function valorDaPosicao(casas: number[], cor: Cor): number {
+  let v = 0;
+  for (let i = 0; i < 64; i++) {
+    const p = casas[i];
+    const dona = corDa(p);
+    if (dona === null) continue;
+    const avanco = dona === 0 ? 7 - linhaDe(i) : linhaDe(i);
+    const pedaco = eDama(p) ? 3 : 1 + avanco * 0.04;
+    v += dona === cor ? pedaco : -pedaco;
+  }
+  return v;
+}
+
+/**
+ * O ROBÔ DAS DAMAS: minimax com poda, PROFUNDIDADE_DAS_DAMAS lances à frente, sobre os mesmos lances que o servidor gera
+ * para a pessoa (comer obrigatório, lei da maioria: ele não tem regra própria). Conta o material; quem fica sem lance perde.
+ * Um tantinho de sorte desempata os lances iguais. Devolve o índice do lance na lista de quem tem a vez.
+ */
+export function lanceDoRobo(casas: number[], cor: Cor, aleatorio: () => number = Math.random, profundidade = PROFUNDIDADE_DAS_DAMAS): number {
+  const lances = lancesDe(casas, cor);
+  const outra: Cor = cor === 0 ? 1 : 0;
+  const busca = (tab: number[], vezDe: Cor, falta: number, alfa: number, beta: number): number => {
+    const opcoes = lancesDe(tab, vezDe);
+    // sem lance, quem tem a vez perde (quanto mais cedo, pior ou melhor)
+    if (!opcoes.length) return vezDe === cor ? -1000 - falta : 1000 + falta;
+    if (falta === 0) return valorDaPosicao(tab, cor);
+    let melhor = vezDe === cor ? -Infinity : Infinity;
+    for (const l of opcoes) {
+      const copia = tab.slice();
+      aplicar(copia, l);
+      const v = busca(copia, vezDe === 0 ? 1 : 0, falta - 1, alfa, beta);
+      if (vezDe === cor) {
+        melhor = Math.max(melhor, v);
+        alfa = Math.max(alfa, v);
+      } else {
+        melhor = Math.min(melhor, v);
+        beta = Math.min(beta, v);
+      }
+      if (beta <= alfa) break;
+    }
+    return melhor;
+  };
+  let escolha = 0;
+  let melhorValor = -Infinity;
+  lances.forEach((l, k) => {
+    const copia = casas.slice();
+    aplicar(copia, l);
+    const v = busca(copia, outra, profundidade - 1, -Infinity, Infinity) + aleatorio() * 0.05;
+    if (v > melhorValor) {
+      melhorValor = v;
+      escolha = k;
+    }
+  });
+  return escolha;
+}
+
+export const damas = duelo<EstadoDasDamas>({
+  ...regrasDasDamas,
+  // o tabuleiro das damas é aberto: o robô vê o mesmo que a pessoa
+  robo: (estado, _lado, aleatorio) => ({ lance: lanceDoRobo(estado.casas, estado.vezDaCor, aleatorio) }),
+});

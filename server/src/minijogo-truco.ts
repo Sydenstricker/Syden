@@ -23,8 +23,15 @@
  * a partida acaba sem vencedor.
  *
  * O CONSOLE NÃO CONSEGUE NADA: as cartas são do servidor, e cada um recebe só a própria mão (o teste confere).
+ *
+ * NO SOLO, CONTRA O COMPUTADOR (pedido dele, 05/11/2026): 1 robô (um contra um) ou 3 (duplas, com um robô de parceiro), de
+ * minijogo-robos.ts. O robô age depois de uma pausa curta, pela mesma `acao` de quem joga, e vê só a própria mão e a mesa:
+ * joga a carta mais fraca que ganha a rodada (ou a mais fraca de todas, se não ganha ou se o parceiro já está ganhando), pede
+ * truco com mão forte (e às vezes blefa), aceita ou aumenta pela força da mão e pelas rodadas já feitas, e decide a mão de
+ * onze do mesmo jeito. Na dupla com a pessoa, quem responde ao truco e decide a mão de onze é ELA, nunca o robô parceiro.
  */
-import { embaralhar, type Definicao } from './minijogo-motor.js';
+import { embaralhar, type Definicao, type Jogo } from './minijogo-motor.js';
+import { comRobos, ehRobo, idsDosRobos, PAUSA_DO_ROBO, quantosRobos } from './minijogo-robos.js';
 
 export const VALORES = ['4', '5', '6', '7', 'Q', 'J', 'K', 'A', '2', '3'] as const;
 /** Na ordem das manilhas: ouros, espadas, copas, paus (o zap). */
@@ -123,7 +130,12 @@ export function criarTruco({ agora = Date.now, aleatorio = Math.random, baralhos
   return {
     minimo: 2,
     maximo: 4,
-    comecar(ctx, { naSala }) {
+    comecar(ctxDaSala, { naSala: naSalaDaSala, corpo }) {
+      // os robôs só no Solo (1 ou 3), e estão sempre na sala
+      const pedidos = quantosRobos(ctxDaSala, corpo, 3);
+      const robos = idsDosRobos(pedidos >= 2 ? 3 : pedidos);
+      const ctx = comRobos(ctxDaSala, robos);
+      const naSala = [...naSalaDaSala.slice(0, 4 - robos.length), ...robos];
       if (naSala.length !== 2 && naSala.length !== 4) return 'O truco é jogado em 2 ou em 4.';
       const n = naSala.length;
       /** Os lugares em roda: os pares (0 e 2) contra os ímpares (1 e 3); em quatro, o parceiro fica em frente. */
@@ -187,6 +199,12 @@ export function criarTruco({ agora = Date.now, aleatorio = Math.random, baralhos
       /** O relógio da vez de jogar: 30 s, ou 2 s para quem saiu da sala. */
       let prazoCurto = false;
       const marcarVez = () => {
+        if (ehRobo(lugares[vez])) {
+          prazoCurto = true;
+          const robo = lugares[vez];
+          ctx.agendar(PAUSA_DO_ROBO, () => vezDoRobo(robo));
+          return;
+        }
         prazoCurto = !presente(vez);
         ctx.agendar(prazoCurto ? TEMPO_DO_AUSENTE : TEMPO_DA_DECISAO, () => {
           if (conferirFim()) return;
@@ -223,10 +241,14 @@ export function criarTruco({ agora = Date.now, aleatorio = Math.random, baralhos
           onze = com11[0];
           semTruco = true;
           fase = 'mao-de-onze';
-          ctx.agendar(TEMPO_DA_DECISAO, () => {
-            if (conferirFim()) return;
-            decidirOnze(null, true);
-          });
+          // a dupla só de robôs decide sozinha; com a pessoa nela, quem decide é ela
+          const time = onze;
+          if (membros(time).every(ehRobo)) ctx.agendar(PAUSA_DO_ROBO, () => onzeDoRobo(time));
+          else
+            ctx.agendar(TEMPO_DA_DECISAO, () => {
+              if (conferirFim()) return;
+              decidirOnze(null, true);
+            });
         } else {
           fase = 'jogando';
           marcarVez();
@@ -313,6 +335,13 @@ export function criarTruco({ agora = Date.now, aleatorio = Math.random, baralhos
       };
 
       const marcarResposta = () => {
+        // quem responde é a dupla de quem não pediu: se ela é só de robôs, um deles responde; com a pessoa nela, é ela
+        const responde = pedido ? membros((1 - pedido.time) as 0 | 1) : [];
+        if (responde.length && responde.every(ehRobo)) {
+          const robo = responde[0];
+          ctx.agendar(PAUSA_DO_ROBO, () => respostaDoRobo(robo));
+          return;
+        }
         ctx.agendar(TEMPO_DA_DECISAO, () => {
           if (conferirFim()) return;
           if (fase === 'truco' && pedido) correr(null);
@@ -326,9 +355,74 @@ export function criarTruco({ agora = Date.now, aleatorio = Math.random, baralhos
         fecharMao(p.time, p.anterior);
       };
 
+      // ---- A CABEÇA DOS ROBÔS: só a própria mão, a mesa e as rodadas (o que a pessoa no lugar dele veria). ----
+
+      /** A força de uma carta para o robô: o valor (0 a 9), e as manilhas acima de tudo (12 a 15). */
+      const forcaParaORobo = (c: Carta) => {
+        const f = forca(c, manilha);
+        return f >= 100 ? 12 + (f - 100) : f;
+      };
+      /**
+       * O quanto o robô confia na mão: a média das duas melhores cartas que restam, mais 4 por rodada que a dupla fez e menos 4
+       * por rodada que perdeu. Com 3 e 2 dá uns 8,5; com uma manilha e um ás, 9,5; com dama e valete, 4,5.
+       */
+      const confianca = (lugar: number) => {
+        const fs = maos[lugar].map(forcaParaORobo).sort((a, b) => b - a).slice(0, 2);
+        const media = fs.length ? fs.reduce((a, b) => a + b, 0) / fs.length : 0;
+        const time = timeDe(lugar);
+        const feitas = resultados.filter((r) => r === time).length;
+        const perdidas = resultados.filter((r) => r !== 'empate' && r !== time).length;
+        return media + 4 * feitas - 4 * perdidas;
+      };
+
+      /** A carta do robô: a mais fraca que ganha a rodada; a mais fraca de todas se o parceiro já ganha ou se nada ganha. */
+      const cartaDoRobo = (lugar: number): Carta => {
+        const f = (c: Carta) => forca(c, manilha);
+        const ordenadas = [...maos[lugar]].sort((a, b) => f(a) - f(b));
+        if (!mesa.length) {
+          // abrindo a primeira rodada, a do meio (guarda a mais forte); depois, a mais forte, para fechar a mão
+          return resultados.length === 0 && ordenadas.length === 3 ? ordenadas[1] : ordenadas[ordenadas.length - 1];
+        }
+        const time = timeDe(lugar);
+        const naMesa = (m: NaMesa) => (m.coberta ? -1 : f(m.carta));
+        const deles = Math.max(-1, ...mesa.filter((m) => timeDe(m.lugar) !== time).map(naMesa));
+        const nossa = Math.max(-1, ...mesa.filter((m) => timeDe(m.lugar) === time).map(naMesa));
+        if (nossa > deles) return ordenadas[0];
+        return ordenadas.find((c) => f(c) > deles) ?? ordenadas[0];
+      };
+
+      /** A vez do robô: pede truco com mão forte (e às vezes blefa), senão joga a carta. */
+      function vezDoRobo(robo: number) {
+        if (fase !== 'jogando' || lugares[vez] !== robo) return;
+        const lugar = vez;
+        const time = timeDe(lugar);
+        const podePedir = !semTruco && pedido === null && proximoValor(valor) !== null && (podeAumentar === null || podeAumentar === time);
+        if (podePedir && ((confianca(lugar) >= 10.5 && aleatorio() < 0.7) || aleatorio() < 0.04)) {
+          if (jogo.acao(robo, { tipo: 'truco' }) === null) return;
+        }
+        jogo.acao(robo, { tipo: 'jogar', carta: cartaDoRobo(lugar) });
+      }
+
+      /** O robô responde ao truco (e ao seis, ao nove, ao doze): corre, aceita ou aumenta, pela confiança na mão. */
+      function respostaDoRobo(robo: number) {
+        if (fase !== 'truco' || !pedido) return;
+        const c = confianca(lugarDe(robo));
+        const exige = 5.5 + (pedido.valor >= 6 ? 1.5 : 0) + (pedido.valor >= 9 ? 1.5 : 0);
+        if (proximoValor(pedido.valor) !== null && c >= exige + 4 && aleatorio() < 0.6) jogo.acao(robo, { tipo: 'aumentar' });
+        else jogo.acao(robo, { tipo: c >= exige ? 'aceitar' : 'correr' });
+      }
+
+      /** A mão de onze da dupla de robôs: eles veem as cartas da dupla, e jogam se ela for boa. */
+      function onzeDoRobo(time: 0 | 1) {
+        if (fase !== 'mao-de-onze' || onze !== time) return;
+        const quem = membros(time);
+        const media = quem.reduce((n, id) => n + confianca(lugarDe(id)), 0) / quem.length;
+        jogo.acao(quem[0], { tipo: 'onze', jogar: media >= 6 });
+      }
+
       darAsCartas();
 
-      return {
+      const jogo: Jogo = {
         publico(quem) {
           const meu = lugarDe(quem);
           const meuTime = meu >= 0 ? timeDe(meu) : null;
@@ -376,6 +470,8 @@ export function criarTruco({ agora = Date.now, aleatorio = Math.random, baralhos
             vencedor,
             interrompida,
             ultimo,
+            // quantos robôs (o "Jogar de novo" do Solo pede os mesmos)
+            robos: robos.length,
           };
         },
         acao(quem, corpo) {
@@ -441,6 +537,7 @@ export function criarTruco({ agora = Date.now, aleatorio = Math.random, baralhos
           if (fase === 'jogando' && !prazoCurto && !presente(vez)) marcarVez();
         },
       };
+      return jogo;
     },
   };
 }

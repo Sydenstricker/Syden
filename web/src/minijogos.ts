@@ -609,43 +609,44 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
     id: 'gomoku',
     nome: chave('Cinco em linha'),
     dica: chave('Duas pessoas põem pedras no tabuleiro, uma de cada vez. Vence quem fizer cinco seguidas. A sala assiste.'),
-    abas: ['coletivo'],
+    abas: ['solo', 'coletivo'],
   },
   {
     id: 'mancala',
     nome: chave('Mancala'),
     dica: chave('O jogo de semear: pegue as sementes de uma casa e espalhe uma por casa. Vence quem guardar mais no depósito. A sala assiste.'),
-    abas: ['coletivo'],
+    abas: ['solo', 'coletivo'],
   },
   // OS CLÁSSICOS DE MESA (04/11/2026, pedido dele): regra pública, sem conteúdo para manter. Dominó e Truco com a turma (o
-  // convite), Damas e Batalha naval na mesa de duas pessoas, com a sala assistindo.
+  // convite), Damas e Batalha naval na mesa de duas pessoas, com a sala assistindo. No Solo (05/11/2026, pedido dele), contra
+  // o computador, como os outros jogos da turma que estão nas duas abas (os robôs: server/src/minijogo-robos.ts).
   {
     // JogoDomino.tsx, server/src/minijogo-domino.ts
     id: 'domino',
     nome: chave('Dominó'),
     dica: chave('O dominó de sempre, de 2 a 4 pessoas (com 4, em duplas). Encaixe as pedras pelas pontas, e quem bater primeiro leva os pontos das mãos dos outros.'),
-    abas: ['coletivo'],
+    abas: ['solo', 'coletivo'],
   },
   {
     // JogoTruco.tsx, server/src/minijogo-truco.ts
     id: 'truco',
     nome: chave('Truco'),
     dica: chave('O truco paulista, com vira e manilha, em 2 ou em duplas de 4. Peça truco, aumente para seis, nove e doze, ou corra. Ganha quem fizer 12 pontos.'),
-    abas: ['coletivo'],
+    abas: ['solo', 'coletivo'],
   },
   {
     // JogoDamas.tsx, server/src/minijogo-damas.ts
     id: 'damas',
     nome: chave('Damas'),
     dica: chave('As damas brasileiras: comer é obrigatório, para a frente e para trás, e a dama anda a diagonal inteira. A sala assiste.'),
-    abas: ['coletivo'],
+    abas: ['solo', 'coletivo'],
   },
   {
     // JogoNaval.tsx, server/src/minijogo-naval.ts
     id: 'naval',
     nome: chave('Batalha naval'),
     dica: chave('Cada um esconde a sua frota e atira no mar do outro. Acertou, atira de novo. Vence quem afundar a frota inteira primeiro. A sala assiste.'),
-    abas: ['coletivo'],
+    abas: ['solo', 'coletivo'],
   },
   {
     id: 'palavra',
@@ -678,11 +679,11 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
   },
   {
     // O tabuleiro de festa (JogoTabuleiro.tsx, server/src/minijogo-tabuleiro-da-turma.ts): dado, casas, a cenoura dourada e
-    // um microjogo da Festa depois de cada rodada. Só com a turma.
+    // um microjogo da Festa depois de cada rodada. Com a turma, ou no Solo contra 1 a 5 adversários do computador.
     id: 'tabuleiro',
     nome: chave('Tabuleiro da turma'),
     dica: chave('Cada um joga o dado na sua vez e anda pela horta. Junte cenouras para comprar a cenoura dourada, e depois de cada rodada a turma joga um microjogo. Ganha quem tiver mais cenouras douradas.'),
-    abas: ['coletivo'],
+    abas: ['solo', 'coletivo'],
   },
   {
     // O jogo de comprar cidades e cobrar aluguel (JogoCidades.tsx, server/src/minijogo-cidades.ts): só a mecânica, com

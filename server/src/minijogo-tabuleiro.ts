@@ -1,4 +1,5 @@
 import type { Definicao } from './minijogo-motor.js';
+import { ehRobo, nomeDoRobo, PAUSA_DO_ROBO } from './minijogo-robos.js';
 
 /**
  * OS JOGOS DE DUAS PESSOAS, COM A SALA ASSISTINDO: Cinco em linha (Gomoku) e Mancala. São clássicos de
@@ -7,10 +8,17 @@ import type { Definicao } from './minijogo-motor.js';
  * Quem começa senta à mesa e espera; o primeiro da sala que apertar "Jogar" senta do outro lado. O resto
  * assiste, com o tabuleiro na tela — e é aí que a conversa acontece ("não, ali não!"). Cada jogada tem
  * prazo: quem some no meio perde a partida em vez de prender a sala.
+ *
+ * NO SOLO, CONTRA O COMPUTADOR (pedido dele, 05/11/2026): o robô (id -1, minijogo-robos.ts) senta na hora e a partida
+ * começa; na vez dele, ele joga depois de uma pausa curta, pela mesma `jogar` das regras (a jogada dele passa pela mesma
+ * conferência). A pessoa não perde pelo prazo de 90 s: pensar sozinho não segura ninguém (só a mesa esquecida por meia hora
+ * acaba).
  */
 
 export const ESPERANDO_MS = 3 * 60_000;
 export const JOGADA_MS = 90_000;
+/** No Solo, a vez da pessoa: só a mesa esquecida acaba. */
+export const JOGADA_SOLO_MS = 30 * 60_000;
 
 export type Lado = 0 | 1;
 
@@ -30,6 +38,11 @@ export interface Regras<T> {
   livre?(estado: T, lado: Lado, corpo: Record<string, unknown>): string | null;
   /** O segundo sentou e a vez foi sorteada: `primeiro` é quem abre (nas Damas, quem fica com as peças claras). */
   aoComecar?(estado: T, primeiro: Lado): void;
+  /**
+   * A jogada do COMPUTADOR no lado `lado` (o Solo, 05/11/2026): o corpo da 'jogada', escolhido só com o que esse lado vê (na
+   * Batalha naval, sem olhar a frota escondida). O jogo sem `robo` não tem Solo contra o computador.
+   */
+  robo?(estado: T, lado: Lado, aleatorio: () => number): Record<string, unknown>;
 }
 
 /** A mesa de duas pessoas (sentar, a vez, o prazo, desistir) em volta das regras de um jogo. */
@@ -43,6 +56,9 @@ export function duelo<T>(regras: Regras<T>, aleatorio = Math.random): Definicao 
       let vencedor: Lado | 'empate' | null = null;
       let motivo: 'jogo' | 'tempo' | 'desistiu' | null = null;
       const estado = regras.inicio();
+      // no Solo, contra o computador: ele senta do outro lado na hora
+      const contraORobo = ctx.solo === true && regras.robo !== undefined;
+      const nome = (id: number) => (ehRobo(id) ? nomeDoRobo(id) : ctx.nome(id));
 
       const acabar = (quem: Lado | 'empate' | null, porque: typeof motivo) => {
         fase = 'fim';
@@ -50,20 +66,55 @@ export function duelo<T>(regras: Regras<T>, aleatorio = Math.random): Definicao 
         motivo = porque;
         ctx.terminar();
       };
-      // Ninguém sentou do outro lado: a mesa se desfaz sozinha, sem vencedor.
-      ctx.agendar(ESPERANDO_MS, () => acabar(null, null));
 
-      const prazo = () =>
-        ctx.agendar(JOGADA_MS, () => {
+      /** A vez de agora: o robô joga depois da pausa; gente tem o prazo (no Solo, só o da mesa esquecida). */
+      const prazo = () => {
+        if (ehRobo(lugares[vez] ?? 0)) return ctx.agendar(PAUSA_DO_ROBO, jogarORobo);
+        ctx.agendar(contraORobo ? JOGADA_SOLO_MS : JOGADA_MS, () => {
           if (fase === 'jogando') acabar(vez === 0 ? 1 : 0, 'tempo');
         });
+      };
+
+      const sentar = (quem: number) => {
+        lugares.push(quem);
+        fase = 'jogando';
+        // Quem começa é sorteado: começar dá vantagem nos dois jogos.
+        vez = aleatorio() < 0.5 ? 0 : 1;
+        regras.aoComecar?.(estado, vez);
+        prazo();
+      };
+
+      const jogada = (lado: Lado, corpo: Record<string, unknown>): string | null => {
+        const r = regras.jogar(estado, lado, corpo);
+        if (typeof r === 'string') return r;
+        if (r.vencedor !== undefined) {
+          acabar(r.vencedor, 'jogo');
+          return null;
+        }
+        vez = r.proximo;
+        prazo();
+        ctx.avisar();
+        return null;
+      };
+
+      function jogarORobo() {
+        if (fase !== 'jogando' || !ehRobo(lugares[vez])) return;
+        const lado = vez;
+        // a jogada do robô passa pela mesma conferência; se as regras a recusassem (não deveria), ele desiste em vez de
+        // prender a mesa
+        if (jogada(lado, { ...regras.robo!(estado, lado, aleatorio), tipo: 'jogada' }) !== null) acabar(lado === 0 ? 1 : 0, 'desistiu');
+      }
+
+      if (contraORobo) sentar(-1);
+      // Ninguém sentou do outro lado: a mesa se desfaz sozinha, sem vencedor.
+      else ctx.agendar(ESPERANDO_MS, () => acabar(null, null));
 
       return {
         publico(quem) {
           const lado = lugares.indexOf(quem);
           return {
             fase,
-            jogadores: lugares.map((userId) => ({ userId, username: ctx.nome(userId) })),
+            jogadores: lugares.map((userId) => ({ userId, username: nome(userId) })),
             vez,
             vencedor,
             motivo,
@@ -74,12 +125,7 @@ export function duelo<T>(regras: Regras<T>, aleatorio = Math.random): Definicao 
           if (corpo.tipo === 'sentar') {
             if (fase !== 'esperando') return 'A mesa já está cheia.';
             if (lugares.includes(quem)) return 'Você já está na mesa.';
-            lugares.push(quem);
-            fase = 'jogando';
-            // Quem começa é sorteado: começar dá vantagem nos dois jogos.
-            vez = aleatorio() < 0.5 ? 0 : 1;
-            regras.aoComecar?.(estado, vez);
-            prazo();
+            sentar(quem);
             ctx.avisar();
             return null;
           }
@@ -101,16 +147,7 @@ export function duelo<T>(regras: Regras<T>, aleatorio = Math.random): Definicao 
             if (fase !== 'jogando') return 'A partida não está em andamento.';
             if (lado < 0) return 'Você está assistindo esta partida.';
             if (lado !== vez) return 'Espere a sua vez.';
-            const r = regras.jogar(estado, lado as Lado, corpo);
-            if (typeof r === 'string') return r;
-            if (r.vencedor !== undefined) {
-              acabar(r.vencedor, 'jogo');
-              return null;
-            }
-            vez = r.proximo;
-            prazo();
-            ctx.avisar();
-            return null;
+            return jogada(lado as Lado, corpo);
           }
           return 'Ação desconhecida.';
         },
@@ -169,7 +206,79 @@ export const gomoku = duelo<{ casas: number[]; ultima: number | null; linha: num
     return { proximo: lado === 0 ? 1 : 0 };
   },
   publico: (estado) => ({ lado: LADO_DO_GOMOKU, casas: estado.casas, ultima: estado.ultima, linha: estado.linha }),
+  robo: (estado, lado, aleatorio) => ({ casa: jogadaDoGomoku(estado.casas, lado + 1, aleatorio) }),
 });
+
+/**
+ * O que uma casa vale para a cor `cor`: por direção, quantas pedras dela ficam seguidas com a casa, e quantas pontas abertas
+ * sobram. Cinco ganha; quatro aberta (duas pontas) já é vitória na jogada seguinte; e assim por diante.
+ */
+function valorDaCasa(casas: number[], casa: number, cor: number, n = LADO_DO_GOMOKU): number {
+  const l0 = Math.floor(casa / n);
+  const c0 = casa % n;
+  let total = 0;
+  for (const [dl, dc] of [
+    [0, 1],
+    [1, 0],
+    [1, 1],
+    [1, -1],
+  ]) {
+    let seguidas = 1;
+    let abertas = 0;
+    for (const sentido of [1, -1]) {
+      let l = l0 + dl * sentido;
+      let c = c0 + dc * sentido;
+      while (l >= 0 && l < n && c >= 0 && c < n && casas[l * n + c] === cor) {
+        seguidas++;
+        l += dl * sentido;
+        c += dc * sentido;
+      }
+      if (l >= 0 && l < n && c >= 0 && c < n && casas[l * n + c] === 0) abertas++;
+    }
+    if (seguidas >= 5) total += 1_000_000;
+    else if (abertas === 0) continue;
+    else if (seguidas === 4) total += abertas === 2 ? 50_000 : 6_000;
+    else if (seguidas === 3) total += abertas === 2 ? 3_000 : 300;
+    else if (seguidas === 2) total += abertas === 2 ? 120 : 25;
+    else total += abertas === 2 ? 8 : 2;
+  }
+  return total;
+}
+
+/**
+ * O ROBÔ DO CINCO EM LINHA: olha as casas vazias perto das pedras e soma o que cada uma vale para ele (atacar) e para a
+ * pessoa (bloquear, um pouco menos). Assim: fecha o cinco dele antes de tudo, bloqueia o cinco dela, faz a quatro aberta,
+ * bloqueia a três aberta… Um tantinho de sorte desempata e deixa o jogo menos previsível. Joga bem, mas dá para ganhar dele.
+ */
+export function jogadaDoGomoku(casas: number[], cor: number, aleatorio: () => number = Math.random, n = LADO_DO_GOMOKU): number {
+  const outra = cor === 1 ? 2 : 1;
+  const ocupadas = casas.some((x) => x);
+  const centro = Math.floor(n / 2) * n + Math.floor(n / 2);
+  if (!ocupadas) return centro;
+  let melhor = -1;
+  let melhorValor = -Infinity;
+  for (let i = 0; i < casas.length; i++) {
+    if (casas[i]) continue;
+    const l = Math.floor(i / n);
+    const c = i % n;
+    // só as casas a até 2 de alguma pedra
+    let perto = false;
+    for (let dl = -2; dl <= 2 && !perto; dl++) {
+      for (let dc = -2; dc <= 2 && !perto; dc++) {
+        const ll = l + dl;
+        const cc = c + dc;
+        if (ll >= 0 && ll < n && cc >= 0 && cc < n && casas[ll * n + cc]) perto = true;
+      }
+    }
+    if (!perto) continue;
+    const valor = valorDaCasa(casas, i, cor, n) + 0.9 * valorDaCasa(casas, i, outra, n) + aleatorio() * 6;
+    if (valor > melhorValor) {
+      melhorValor = valor;
+      melhor = i;
+    }
+  }
+  return melhor >= 0 ? melhor : casas.findIndex((x) => !x);
+}
 
 // ---------------------------------------------------------------------------------------------------
 // MANCALA (a regra Kalah, a mais jogada): seis casas de cada lado com quatro sementes e um depósito na
@@ -233,4 +342,49 @@ export const mancala = duelo<{ casas: number[]; ultima: number | null }>({
     return { proximo };
   },
   publico: (estado) => ({ casas: estado.casas, ultima: estado.ultima }),
+  robo: (estado, lado, aleatorio) => ({ casa: jogadaDaMancala(estado.casas, lado, aleatorio) }),
 });
+
+/** Quantas jogadas à frente o robô da Mancala olha (as jogadas de novo contam como uma a mais). */
+export const PROFUNDIDADE_DA_MANCALA = 5;
+
+/**
+ * O ROBÔ DA MANCALA: minimax curto (PROFUNDIDADE_DA_MANCALA jogadas, com poda), contando a diferença dos depósitos. Ele vê
+ * o mesmo tabuleiro aberto que a pessoa. A jogada que dá a vez de novo continua do mesmo lado, como na regra. Empatando,
+ * sorteia: o mesmo tabuleiro nem sempre dá a mesma jogada.
+ */
+export function jogadaDaMancala(casas: number[], lado: Lado, aleatorio: () => number = Math.random, profundidade = PROFUNDIDADE_DA_MANCALA): number {
+  const avaliar = (c: number[]) => c[deposito(lado)] - c[deposito(lado === 0 ? 1 : 0)];
+  const busca = (c: number[], quem: Lado, falta: number, alfa: number, beta: number): number => {
+    const opcoes = casasDe(quem).filter((k) => c[k] > 0);
+    if (falta === 0 || !opcoes.length) return avaliar(c);
+    let melhor = quem === lado ? -Infinity : Infinity;
+    for (const k of opcoes) {
+      const copia = c.slice();
+      const { proximo, acabou } = semear(copia, quem, k);
+      const v = acabou ? avaliar(copia) * 100 : busca(copia, proximo, falta - 1, alfa, beta);
+      if (quem === lado) {
+        melhor = Math.max(melhor, v);
+        alfa = Math.max(alfa, v);
+      } else {
+        melhor = Math.min(melhor, v);
+        beta = Math.min(beta, v);
+      }
+      if (beta <= alfa) break;
+    }
+    return melhor;
+  };
+  let escolha = -1;
+  let melhorValor = -Infinity;
+  for (const k of casasDe(lado)) {
+    if (!casas[k]) continue;
+    const copia = casas.slice();
+    const { proximo, acabou } = semear(copia, lado, k);
+    const v = (acabou ? avaliar(copia) * 100 : busca(copia, proximo, profundidade - 1, -Infinity, Infinity)) + aleatorio() * 0.5;
+    if (v > melhorValor) {
+      melhorValor = v;
+      escolha = k;
+    }
+  }
+  return escolha;
+}

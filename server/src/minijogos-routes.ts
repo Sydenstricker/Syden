@@ -78,7 +78,13 @@ export const JOGOS: Record<string, Definicao> = {
  * ocupa a sala (a turma continua podendo começar o jogo dela), não pede chamada (dá para jogar pelo computador do
  * quarto) e não conta nas conquistas da turma, que medem gente junta.
  */
-export const JOGOS_SOLO = new Set(['tamanho', 'xadrez', 'sudoku', 'festa', 'briga', 'blocos', 'golfe', 'caca', 'cidades', ...Object.keys(TEMAS)]);
+// (os jogos da turma com adversários do computador, pedido dele de 05/11/2026: Cidades à venda, os de mesa, Dominó, Truco e o
+// Tabuleiro da turma; os robôs vêm de minijogo-robos.ts)
+export const JOGOS_SOLO = new Set([
+  'tamanho', 'xadrez', 'sudoku', 'festa', 'briga', 'blocos', 'golfe', 'caca',
+  'cidades', 'gomoku', 'mancala', 'damas', 'naval', 'domino', 'truco', 'tabuleiro',
+  ...Object.keys(TEMAS),
+]);
 
 interface Partida {
   channelId: number;

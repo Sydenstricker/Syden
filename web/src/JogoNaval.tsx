@@ -122,7 +122,8 @@ export function JogoNaval({
         {situacao}
         {resultado && <span className={`naval-resultado ${ultimo?.resultado}`}> {resultado}</span>}
       </p>
-      {jogando && <Relogio restante={restante} total={JOGADA_MS} />}
+      {/* no Solo, contra o computador, pensar não tem prazo */}
+      {jogando && !estado.solo && <Relogio restante={restante} total={JOGADA_MS} />}
       {jogando && sentado && estado.podeSortear && (
         <button type="button" className="link-button naval-sortear" onClick={() => agir({ tipo: 'livre', acao: 'sortear' })}>
           {t('Sortear de novo')}
