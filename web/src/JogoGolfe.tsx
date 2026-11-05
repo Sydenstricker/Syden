@@ -5,6 +5,7 @@ import { useT } from './i18n';
 import { Placar, Relogio } from './Minijogo';
 import type { EstadoGolfe, Partida } from './minijogos';
 import { CORES_DAS_BOLAS, desenhar, pintarMesa } from './golfe/desenho';
+import { cameraAtrasDaBola, desenharChao3, desenharFiguras3, H3, prepararDesenho3, W3 } from './golfe/mode7';
 import {
   ALTURA,
   BURACOS,
@@ -149,6 +150,8 @@ function MesaDoGolfe({
   const t = useT();
   const buraco = BURACOS[estado.buraco] ?? BURACOS[0];
   const canvas = useRef<HTMLCanvasElement>(null);
+  /** A visão em perspectiva (golfe/mode7.ts): a principal; a mesa de cima vira o mapa do canto. */
+  const canvas3 = useRef<HTMLCanvasElement>(null);
   const souJogador = jogador && estado.bolas.some((b) => b.userId === eu);
   const naSala = !estado.solo;
 
@@ -203,6 +206,9 @@ function MesaDoGolfe({
   const arraste = useRef<{ id: number } | null>(null);
   const teclas = useRef({ esquerda: false, direita: false, cima: false, baixo: false, espaco: false, cargaDesde: 0 });
   const angulo = useRef<{ ux: number; uy: number } | null>(null);
+  /** O ângulo em que a câmera da perspectiva está agora (para o arraste mirar a partir dele). */
+  const camAtual = useRef(0);
+  const arraste3 = useRef<{ id: number; x: number; y: number; ang: number } | null>(null);
 
   const duracaoMs = estado.duracaoMs;
   const podeBater = () => {
@@ -231,9 +237,15 @@ function MesaDoGolfe({
   // O LAÇO: a bola anda no passo do relógio, e a tela é desenhada a cada quadro
   useEffect(() => {
     const tela = canvas.current;
-    const ctx = tela?.getContext('2d');
+    // lida a cada quadro para o chão da perspectiva: a leitura frequente pede o canvas na memória comum
+    const ctx = tela?.getContext('2d', { willReadFrequently: true });
     if (!tela || !ctx) return;
     const mesa = pintarMesa(buraco);
+    const d3 = canvas3.current ? prepararDesenho3(canvas3.current) : null;
+    // a câmera segue a bola e vira devagar para onde se mira (ou, sem mira, para o buraco)
+    let camX = bola.current.x;
+    let camY = bola.current.y;
+    let camAng = Math.atan2(buraco.buraco[1] - bola.current.y, buraco.buraco[0] - bola.current.x);
     const distancia = import.meta.env.DEV ? mapaDeDistancia(buraco) : null;
     let pilotoEm = 0;
     let id = 0;
@@ -296,7 +308,7 @@ function MesaDoGolfe({
         }
         const carga = k.espaco ? ((agoraMs - k.cargaDesde) % (CARGA_MS * 2)) / CARGA_MS : 0;
         mira.current = { ...angulo.current, forca: k.espaco ? (carga <= 1 ? carga : 2 - carga) : 0.35 };
-      } else if (!arraste.current && !k.espaco) {
+      } else if (!arraste.current && !arraste3.current && !k.espaco) {
         mira.current = null;
       }
       // o piloto automático do e2e (só no site de desenvolvimento)
@@ -317,14 +329,32 @@ function MesaDoGolfe({
         const usar = p && agoraMs - p.em < 1500 ? p : o;
         outros.push({ x: usar.x, y: usar.y, cor: cores.current.get(o.userId) ?? CORES_DAS_BOLAS[0], dentro: o.dentro && usar === o });
       }
+      const miraAgora = souJogador && podeBater() ? mira.current : null;
       desenhar(ctx, {
         buraco,
         mesa,
         passo: bola.current.andando ? bola.current.passo : passoAgora,
         minha: souJogador ? { x: bola.current.x, y: bola.current.y, dentro: bola.current.dentro } : null,
         outros,
-        mira: souJogador && podeBater() ? mira.current : null,
+        mira: miraAgora,
       });
+      if (d3) {
+        // quem só assiste vai atrás da primeira bola que ainda joga
+        const alvo = souJogador ? bola.current : (outros.find((o) => !o.dentro) ?? bola.current);
+        const quer = miraAgora ? Math.atan2(miraAgora.uy, miraAgora.ux) : angulo.current ? Math.atan2(angulo.current.uy, angulo.current.ux) : Math.atan2(buraco.buraco[1] - alvo.y, buraco.buraco[0] - alvo.x);
+        let dA = quer - camAng;
+        dA = Math.atan2(Math.sin(dA), Math.cos(dA));
+        camAng += dA * (miraAgora ? 0.35 : 0.06);
+        camX += (alvo.x - camX) * 0.25;
+        camY += (alvo.y - camY) * 0.25;
+        const cam = cameraAtrasDaBola(camX, camY, camAng);
+        const pixels = new Uint32Array(ctx.getImageData(0, 0, LARGURA, ALTURA).data.buffer);
+        desenharChao3(d3, pixels, cam);
+        const bolas = outros.filter((o) => !o.dentro).map((o) => ({ x: o.x, y: o.y, cor: o.cor, minha: false }));
+        if (souJogador && !bola.current.dentro) bolas.push({ x: bola.current.x, y: bola.current.y, cor: '#f4ecdc', minha: true });
+        desenharFiguras3(d3, cam, buraco, bolas, miraAgora ? { x: bola.current.x, y: bola.current.y, ...miraAgora } : null, bola.current.dentro || outros.some((o) => o.dentro));
+        camAtual.current = camAng;
+      }
       if (agoraMs - ultimoRelogio > 250) {
         ultimoRelogio = agoraMs;
         setAgora(agoraMs);
@@ -410,10 +440,43 @@ function MesaDoGolfe({
         {souJogador && <span className="golfe-tacadas">{t('Tacadas: {n}', { n: tacadas })}</span>}
         {estado.fase === 'jogando' && <Relogio restante={restante} total={estado.duracaoMs} />}
       </div>
-      <div className="golfe-moldura">
+      <div className="golfe-moldura golfe-moldura-3d">
+        <canvas
+          ref={canvas3}
+          className="golfe-tela-3d"
+          width={W3}
+          height={H3}
+          onPointerDown={(e) => {
+            if (!podeBater() || e.button > 0) return;
+            e.currentTarget.setPointerCapture(e.pointerId);
+            arraste3.current = { id: e.pointerId, x: e.clientX, y: e.clientY, ang: camAtual.current };
+          }}
+          onPointerMove={(e) => {
+            const a = arraste3.current;
+            if (a?.id !== e.pointerId) return;
+            // na perspectiva: puxar para BAIXO dá a força, e para o lado vira a mira
+            const r = e.currentTarget.getBoundingClientRect();
+            const dx = ((e.clientX - a.x) * W3) / r.width;
+            const dy = ((e.clientY - a.y) * H3) / r.height;
+            const ang = a.ang + dx * 0.012;
+            mira.current = { ux: Math.cos(ang), uy: Math.sin(ang), forca: Math.max(0, Math.min(1, dy / 70)) };
+            angulo.current = { ux: Math.cos(ang), uy: Math.sin(ang) };
+          }}
+          onPointerUp={(e) => {
+            if (arraste3.current?.id !== e.pointerId) return;
+            arraste3.current = null;
+            const m = mira.current;
+            mira.current = null;
+            if (m && m.forca > 0) baterRef.current(m.ux, m.uy, m.forca);
+          }}
+          onPointerCancel={() => {
+            arraste3.current = null;
+            mira.current = null;
+          }}
+        />
         <canvas
           ref={canvas}
-          className="golfe-tela"
+          className="golfe-tela golfe-mapa"
           width={LARGURA}
           height={ALTURA}
           onPointerDown={(e) => {
