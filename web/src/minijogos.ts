@@ -149,7 +149,7 @@ export interface PartidaPublica {
 export const souJogador = (p: PartidaPublica | null) => p !== null && p.souJogador !== false;
 
 /** Os jogos de MESA, de duas pessoas: começam na hora, e sentar é aceitar o convite. */
-export const JOGOS_DE_MESA: readonly IdDoJogo[] = ['gomoku', 'mancala'];
+export const JOGOS_DE_MESA: readonly IdDoJogo[] = ['gomoku', 'mancala', 'damas', 'naval'];
 
 /**
  * O convite está esperando a MINHA resposta? Antes da largada (ou, na mesa, enquanto ninguém sentou do outro lado),
@@ -505,7 +505,7 @@ export interface EstadoBriga {
   partidaId: string;
 }
 
-export type IdDoJogo = 'corrida' | 'festa' | 'tabuleiro' | 'cidades' | 'golfe' | 'caca' | 'plataforma' | 'blocos' | 'briga' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'xadrez' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
+export type IdDoJogo = 'corrida' | 'festa' | 'tabuleiro' | 'cidades' | 'golfe' | 'caca' | 'plataforma' | 'blocos' | 'briga' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'damas' | 'naval' | 'domino' | 'truco' | 'xadrez' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
 
 /**
  * As duas abas da estante (pedido dele, 14/10/2026). SOLO: a partida é só de quem joga, começa sem convite, não ocupa
@@ -613,6 +613,36 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
     id: 'mancala',
     nome: chave('Mancala'),
     dica: chave('O jogo de semear: pegue as sementes de uma casa e espalhe uma por casa. Vence quem guardar mais no depósito. A sala assiste.'),
+    abas: ['coletivo'],
+  },
+  // OS CLÁSSICOS DE MESA (04/11/2026, pedido dele): regra pública, sem conteúdo para manter. Dominó e Truco com a turma (o
+  // convite), Damas e Batalha naval na mesa de duas pessoas, com a sala assistindo.
+  {
+    // JogoDomino.tsx, server/src/minijogo-domino.ts
+    id: 'domino',
+    nome: chave('Dominó'),
+    dica: chave('O dominó de sempre, de 2 a 4 pessoas (com 4, em duplas). Encaixe as pedras pelas pontas, e quem bater primeiro leva os pontos das mãos dos outros.'),
+    abas: ['coletivo'],
+  },
+  {
+    // JogoTruco.tsx, server/src/minijogo-truco.ts
+    id: 'truco',
+    nome: chave('Truco'),
+    dica: chave('O truco paulista, com vira e manilha, em 2 ou em duplas de 4. Peça truco, aumente para seis, nove e doze, ou corra. Ganha quem fizer 12 pontos.'),
+    abas: ['coletivo'],
+  },
+  {
+    // JogoDamas.tsx, server/src/minijogo-damas.ts
+    id: 'damas',
+    nome: chave('Damas'),
+    dica: chave('As damas brasileiras: comer é obrigatório, para a frente e para trás, e a dama anda a diagonal inteira. A sala assiste.'),
+    abas: ['coletivo'],
+  },
+  {
+    // JogoNaval.tsx, server/src/minijogo-naval.ts
+    id: 'naval',
+    nome: chave('Batalha naval'),
+    dica: chave('Cada um esconde a sua frota e atira no mar do outro. Acertou, atira de novo. Vence quem afundar a frota inteira primeiro. A sala assiste.'),
     abas: ['coletivo'],
   },
   {

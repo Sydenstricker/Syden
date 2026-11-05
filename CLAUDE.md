@@ -615,6 +615,22 @@ um programa poderia mirar sozinho. Pontos: 100 o corvo, 150 o gafanhoto (menor),
 `server/test/minijogos-caca.test.ts` e `e2e/caca.mjs` (passou, pelo Solo do computador do quarto, com o piloto automático
 `window.cacaPilotoAutomatico`). Ainda NÃO conta nas conquistas da turma (decisão dele, como foi com Cidades à venda).
 
+**OS CLÁSSICOS DE MESA (04/11/2026, pedido dele, depois da pesquisa de jogos sem manutenção):** Dominó, Truco, Damas e
+Batalha naval, só no Coletivo. Regra pública e nenhum conteúdo para manter. **Damas e Batalha naval são de MESA**, no `duelo`
+de `minijogo-tabuleiro.ts`, que ganhou a vista POR LADO (`publico(estado, lado)`: na Batalha naval cada um vê só a própria
+frota, e quem assiste só os navios afundados), a ação fora da vez (`livre`: sortear a frota de novo enquanto ninguém atirou
+no seu mar) e o `aoComecar` (nas Damas, quem abre fica com as claras). **As damas são as brasileiras:** comer é obrigatório
+para a frente e para trás, a lei da maioria, a dama voadora, a peça comida sai só no fim do lance e a pedra só vira dama
+terminando na última fileira; o servidor gera os lances e o site só escolhe (`lances`). Empate: 20 lances seguidos só de
+damas sem captura (os finais específicos da CBD ficaram de fora). **Batalha naval:** 10 × 10, frota 5, 4, 3, 3, 2 sem
+encostar nem na diagonal, acertou atira de novo. **Dominó e Truco vão pelo convite:** o Dominó de 2 a 4 (com 4, em duplas;
+com 2 ou 3, com compra), 6-6 começa a primeira mão, batida e jogo trancado levam os pontos das mãos dos outros, até 50; o
+**Truco é o paulista**, em 2 ou em 4 (duplas), com vira e manilha (zap, copas, espadas, ouros), carta coberta da segunda
+rodada em diante, truco/seis/nove/doze, mão de onze e mão de ferro (sem a variante de cartas às cegas), até 12. Nos dois, a
+vez tem 30 s e o servidor joga por quem demora ou saiu da sala. **Sem troféus e fora das conquistas da turma** por enquanto
+(a mesma pergunta aberta da Caça). Testes: `server/test/minijogos-{damas,naval,domino,truco}.test.ts` e
+`e2e/classicos.mjs` (passou: duas pessoas na sala de voz jogando os quatro pela tela, numa tela estreita).
+
 **A ESTANTE DE TROFÉUS VIROU O HUB (03/11/2026, pedido dele: "um hub para todos os troféus em mini-games, todas as
 conquistas; o jogador pode escolher o que deixa em destaque"):** a estante do quarto (`web/src/Trofeus.tsx`) junta os pódios de
 todos os jogos, agrupados pelo jogo, e as conquistas da turma de cada comunidade da pessoa (o degrau mais alto); a estrela põe

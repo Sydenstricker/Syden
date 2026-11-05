@@ -21,6 +21,31 @@ import { chave } from './i18n';
 // ===================================================================================================
 
 export const ERROS_TRADUZIDOS = [
+  // os clássicos de mesa (server/src/minijogo-damas.ts, -naval, -domino, -truco; 04/11/2026)
+  chave('Escolha uma casa do mar.'),
+  chave('Você já atirou nessa casa.'),
+  chave('Já atiraram no seu mar: a frota não muda mais.'),
+  chave('Esse lance não vale.'),
+  chave('Esse lance não vale mais.'),
+  chave('O truco é jogado em 2 ou em 4.'),
+  chave('Não há mão de onze agora.'),
+  chave('Quem decide a mão de onze é quem tem 11.'),
+  chave('Não há pedido de truco agora.'),
+  chave('Quem responde é o outro lado.'),
+  chave('Não dá para aumentar mais.'),
+  chave('Espere a resposta do truco.'),
+  chave('Agora não dá para pedir truco.'),
+  chave('Essa carta não está na sua mão.'),
+  chave('A carta coberta só vale da segunda rodada em diante.'),
+  chave('Espere a próxima mão.'),
+  chave('Você tem uma pedra que serve.'),
+  chave('Não há pedras para comprar.'),
+  chave('Compre uma pedra antes de passar.'),
+  chave('Essa pedra não está na sua mão.'),
+  chave('A primeira pedra é outra.'),
+  chave('Essa pedra não encaixa na mesa.'),
+  chave('Escolha a ponta.'),
+  chave('Essa pedra não encaixa nessa ponta.'),
   // a Caça às pragas da horta (server/src/minijogo-caca.ts, 04/11/2026)
   chave('Tiro inválido.'),
   chave('Acabou a munição desta onda.'),

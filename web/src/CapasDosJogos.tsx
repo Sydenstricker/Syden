@@ -37,6 +37,14 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
       return <CapaCincoEmLinha />;
     case 'mancala':
       return <CapaMancala />;
+    case 'domino':
+      return <CapaDomino />;
+    case 'truco':
+      return <CapaTruco />;
+    case 'damas':
+      return <CapaDamas />;
+    case 'naval':
+      return <CapaNaval />;
     case 'xadrez':
       return <CapaXadrez />;
     case 'lobisomem':
@@ -644,6 +652,152 @@ function CapaCincoEmLinha() {
 }
 
 /** A Mancala: o tabuleiro de madeira com as duas fileiras de casas, os depósitos e as sementes. */
+/** Os pontos de uma metade da pedra de dominó (0 a 6), num quadrado de lado `l` com o canto em (x, y). */
+function pontosDoDomino(n: number, x: number, y: number, l: number, chave: string) {
+  const posicoes: Record<number, [number, number][]> = {
+    0: [],
+    1: [[1, 1]],
+    2: [[0, 0], [2, 2]],
+    3: [[0, 0], [1, 1], [2, 2]],
+    4: [[0, 0], [2, 0], [0, 2], [2, 2]],
+    5: [[0, 0], [2, 0], [1, 1], [0, 2], [2, 2]],
+    6: [[0, 0], [2, 0], [0, 1], [2, 1], [0, 2], [2, 2]],
+  };
+  return posicoes[n].map(([i, j], k) => (
+    <circle key={`${chave}${k}`} cx={x + (l * (i + 1)) / 4} cy={y + (l * (j + 1)) / 4} r={l / 11} fill="#1d2433" />
+  ));
+}
+
+/** O Dominó: a mesa verde e uma fileira de pedras encaixadas, com uma carroça (a pedra dobrada) atravessada no meio. */
+function CapaDomino() {
+  const pedra = (x: number, y: number, a: number, b: number, deitada: boolean, chave: string) => {
+    const l = 20;
+    return (
+      <g key={chave}>
+        <rect x={x} y={y} width={deitada ? l * 2 : l} height={deitada ? l : l * 2} rx="3" fill="#f6f1e4" stroke="#c9bfa6" strokeWidth="1.2" />
+        {deitada ? (
+          <line x1={x + l} y1={y + 3} x2={x + l} y2={y + l - 3} stroke="#c9bfa6" strokeWidth="1.2" />
+        ) : (
+          <line x1={x + 3} y1={y + l} x2={x + l - 3} y2={y + l} stroke="#c9bfa6" strokeWidth="1.2" />
+        )}
+        {pontosDoDomino(a, x, y, l, `${chave}a`)}
+        {pontosDoDomino(b, deitada ? x + l : x, deitada ? y : y + l, l, `${chave}b`)}
+      </g>
+    );
+  };
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#1f6b46" />
+      {pedra(6, 50, 2, 5, true, 'p1')}
+      {pedra(48, 40, 5, 5, false, 'p2')}
+      {pedra(70, 50, 5, 3, true, 'p3')}
+      {pedra(112, 50, 3, 6, true, 'p4')}
+      {pedra(18, 92, 4, 1, true, 'm1')}
+      {pedra(100, 8, 6, 6, true, 'm2')}
+    </svg>
+  );
+}
+
+/** O Truco: o feltro, três cartas abertas em leque e o baralho atravessado, com o grito de truco em cima. */
+function CapaTruco() {
+  const carta = (x: number, y: number, giro: number, valor: string, naipe: string, cor: string, chave: string) => (
+    <g key={chave} transform={`rotate(${giro} ${x + 15} ${y + 44})`}>
+      <rect x={x} y={y} width="30" height="44" rx="3.5" fill="#fbf8f0" stroke="#cfc7b3" strokeWidth="1" />
+      <text x={x + 4} y={y + 11} fontSize="9" fontWeight="700" fill={cor}>
+        {valor}
+      </text>
+      <text x={x + 15} y={y + 30} fontSize="16" textAnchor="middle" fill={cor}>
+        {naipe}
+      </text>
+    </g>
+  );
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#8c2f2a" />
+      <ellipse cx="80" cy="64" rx="74" ry="50" fill="#a23a33" />
+      <g transform="rotate(90 36 58)">
+        <rect x="22" y="40" width="28" height="40" rx="3" fill="#2f4d8f" stroke="#e7dcc2" strokeWidth="1.5" />
+        <path d="M27 45 L45 75 M45 45 L27 75" stroke="#e7dcc2" strokeWidth="1" opacity="0.6" />
+      </g>
+      {carta(64, 46, -18, '7', '♦', '#c0392b', 'c1')}
+      {carta(80, 40, 0, 'A', '♠', '#1d2433', 'c2')}
+      {carta(96, 46, 18, '4', '♣', '#1d2433', 'c3')}
+      <text x="118" y="28" fontSize="16" fontWeight="800" fill="#ffd66b" textAnchor="middle" transform="rotate(-8 118 28)">
+        3!
+      </text>
+    </svg>
+  );
+}
+
+/** As Damas: um pedaço do tabuleiro, peças claras e escuras, e uma dama (com a coroa). */
+function CapaDamas() {
+  const casas = [];
+  for (let l = 0; l < 6; l++) {
+    for (let c = 0; c < 8; c++) {
+      casas.push(<rect key={`${l}-${c}`} x={c * 20} y={l * 20} width="20" height="20" fill={(l + c) % 2 ? '#7a4f2c' : '#e8d3ae'} />);
+    }
+  }
+  const peca = (c: number, l: number, clara: boolean, dama = false) => {
+    const cx = c * 20 + 10;
+    const cy = l * 20 + 10;
+    return (
+      <g key={`p${c}-${l}`}>
+        <circle cx={cx} cy={cy + 1.5} r="8" fill="rgba(0,0,0,0.35)" />
+        <circle cx={cx} cy={cy} r="8" fill={clara ? '#f4ecdc' : '#2b2230'} stroke={clara ? '#c9b98f' : '#14101a'} strokeWidth="1.2" />
+        <circle cx={cx} cy={cy} r="5" fill="none" stroke={clara ? '#d8c9a3' : '#463a4f'} strokeWidth="1" />
+        {dama && (
+          <path
+            d={`M${cx - 4} ${cy + 2} L${cx - 4} ${cy - 3} L${cx - 2} ${cy} L${cx} ${cy - 4} L${cx + 2} ${cy} L${cx + 4} ${cy - 3} L${cx + 4} ${cy + 2} Z`}
+            fill="#e5b53b"
+          />
+        )}
+      </g>
+    );
+  };
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      {casas}
+      {peca(1, 0, false)}
+      {peca(3, 0, false)}
+      {peca(0, 1, false)}
+      {peca(4, 1, false)}
+      {peca(3, 2, false)}
+      {peca(2, 3, true, true)}
+      {peca(5, 4, true)}
+      {peca(1, 4, true)}
+      {peca(7, 4, true)}
+      {peca(6, 5, true)}
+    </svg>
+  );
+}
+
+/** A Batalha naval: o mar em grade, um navio visto de cima com um acerto (o fogo), um tiro na água e a mira. */
+function CapaNaval() {
+  const grade = [];
+  for (let i = 1; i < 8; i++) grade.push(<line key={`v${i}`} x1={i * 20} y1="0" x2={i * 20} y2="120" stroke="#9fd0ea" strokeWidth="0.8" opacity="0.5" />);
+  for (let j = 1; j < 6; j++) grade.push(<line key={`h${j}`} x1="0" y1={j * 20} x2="160" y2={j * 20} stroke="#9fd0ea" strokeWidth="0.8" opacity="0.5" />);
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#2b7fb8" />
+      {grade}
+      <path d="M22 46 H96 L104 50 L96 54 H22 L18 50 Z" fill="#7d8a96" stroke="#55606b" strokeWidth="1.5" />
+      <rect x="40" y="46.5" width="14" height="7" rx="1.5" fill="#5f6b77" />
+      <rect x="62" y="47.5" width="10" height="5" rx="1" fill="#5f6b77" />
+      <circle cx="84" cy="50" r="2.5" fill="#55606b" />
+      <circle cx="68" cy="50" r="8" fill="#ff8a2a" opacity="0.85" />
+      <circle cx="68" cy="48" r="4.5" fill="#ffd66b" />
+      <g stroke="#e9f6ff" strokeWidth="2" fill="none">
+        <circle cx="130" cy="90" r="6" />
+        <circle cx="130" cy="90" r="11" opacity="0.5" />
+      </g>
+      <g stroke="#ff4d4d" strokeWidth="2" fill="none">
+        <circle cx="130" cy="30" r="9" />
+        <path d="M118 30 H142 M130 18 V42" />
+      </g>
+    </svg>
+  );
+}
+
 function CapaMancala() {
   const sementes = ['#e5484d', '#f2b84b', '#4f7df5', '#3fb27f', '#c86bd9'];
   const casa = (cx: number, cy: number, n: number, chave: string) => (

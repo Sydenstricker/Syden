@@ -13,6 +13,10 @@ import { lobisomem } from './minijogo-lobisomem.js';
 import { palavra } from './minijogo-palavra.js';
 import { plataforma } from './minijogo-plataforma.js';
 import { cidades } from './minijogo-cidades.js';
+import { damas } from './minijogo-damas.js';
+import { domino } from './minijogo-domino.js';
+import { naval } from './minijogo-naval.js';
+import { truco } from './minijogo-truco.js';
 import { catalogo, criarQuiz, TEMAS } from './minijogo-quiz.js';
 import { stop } from './minijogo-stop.js';
 import { sudoku } from './minijogo-sudoku.js';
@@ -59,6 +63,11 @@ export const JOGOS: Record<string, Definicao> = {
   caca,
   tabuleiro: tabuleiroDaTurma,
   cidades,
+  // Os clássicos de mesa (04/11/2026, pedido dele): de regra pública, sem conteúdo para manter.
+  domino,
+  truco,
+  damas,
+  naval,
   // Os quizzes de adivinhar (minijogo-quiz.ts): um jogo por tema, todos no mesmo motor.
   ...Object.fromEntries(Object.entries(TEMAS).map(([id, tema]) => [id, criarQuiz(tema)])),
 };

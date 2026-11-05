@@ -12,17 +12,28 @@ import type { Definicao } from './minijogo-motor.js';
 export const ESPERANDO_MS = 3 * 60_000;
 export const JOGADA_MS = 90_000;
 
-type Lado = 0 | 1;
+export type Lado = 0 | 1;
 
-interface Regras<T> {
+export interface Regras<T> {
   inicio(): T;
   /** A jogada de `lado`. Devolve o erro, ou quem joga em seguida e, se acabou, quem venceu. */
   jogar(estado: T, lado: Lado, corpo: Record<string, unknown>): string | { proximo: Lado; vencedor?: Lado | 'empate' };
-  publico(estado: T): Record<string, unknown>;
+  /**
+   * O que se vê da mesa. `lado` é o de quem pede (null: quem assiste). Na Batalha naval (04/11/2026) cada um vê só a
+   * própria frota, e por isso a vista é por lado; os jogos de tabuleiro aberto ignoram o lado.
+   */
+  publico(estado: T, lado: Lado | null): Record<string, unknown>;
+  /**
+   * Uma ação FORA DA VEZ, de quem está sentado e com a partida em andamento (a Batalha naval: sortear a frota de novo
+   * antes do primeiro tiro). Vem com `tipo: 'livre'`. Devolve o erro, ou null.
+   */
+  livre?(estado: T, lado: Lado, corpo: Record<string, unknown>): string | null;
+  /** O segundo sentou e a vez foi sorteada: `primeiro` é quem abre (nas Damas, quem fica com as peças claras). */
+  aoComecar?(estado: T, primeiro: Lado): void;
 }
 
 /** A mesa de duas pessoas (sentar, a vez, o prazo, desistir) em volta das regras de um jogo. */
-function duelo<T>(regras: Regras<T>, aleatorio = Math.random): Definicao {
+export function duelo<T>(regras: Regras<T>, aleatorio = Math.random): Definicao {
   return {
     mesa: true,
     comecar(ctx, { criadaPor }) {
@@ -48,14 +59,15 @@ function duelo<T>(regras: Regras<T>, aleatorio = Math.random): Definicao {
         });
 
       return {
-        publico() {
+        publico(quem) {
+          const lado = lugares.indexOf(quem);
           return {
             fase,
             jogadores: lugares.map((userId) => ({ userId, username: ctx.nome(userId) })),
             vez,
             vencedor,
             motivo,
-            ...regras.publico(estado),
+            ...regras.publico(estado, lado === 0 || lado === 1 ? lado : null),
           };
         },
         acao(quem, corpo) {
@@ -66,6 +78,7 @@ function duelo<T>(regras: Regras<T>, aleatorio = Math.random): Definicao {
             fase = 'jogando';
             // Quem começa é sorteado: começar dá vantagem nos dois jogos.
             vez = aleatorio() < 0.5 ? 0 : 1;
+            regras.aoComecar?.(estado, vez);
             prazo();
             ctx.avisar();
             return null;
@@ -74,6 +87,14 @@ function duelo<T>(regras: Regras<T>, aleatorio = Math.random): Definicao {
           if (corpo.tipo === 'desistir') {
             if (fase !== 'jogando' || lado < 0) return 'Você não está jogando.';
             acabar(lado === 0 ? 1 : 0, 'desistiu');
+            return null;
+          }
+          if (corpo.tipo === 'livre' && regras.livre) {
+            if (fase !== 'jogando') return 'A partida não está em andamento.';
+            if (lado < 0) return 'Você está assistindo esta partida.';
+            const erro = regras.livre(estado, lado as Lado, corpo);
+            if (erro) return erro;
+            ctx.avisar();
             return null;
           }
           if (corpo.tipo === 'jogada') {

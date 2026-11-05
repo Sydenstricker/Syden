@@ -8,6 +8,10 @@ import { JogoBriga } from './JogoBriga';
 import { EscolhaDosBlocos, JogoBlocos } from './JogoBlocos';
 import { JogoDesenho } from './JogoDesenho';
 import { JogoDuelo } from './JogoDuelo';
+import { JogoDamas } from './JogoDamas';
+import { JogoDomino } from './JogoDomino';
+import { JogoNaval } from './JogoNaval';
+import { JogoTruco } from './JogoTruco';
 import { JogoFesta } from './JogoFesta';
 import { JogoGolfe } from './JogoGolfe';
 import { JogoCaca } from './JogoCaca';
@@ -421,6 +425,19 @@ export function PainelDoMinijogo({
       {jogoNaTela?.jogo === 'lobisomem' && <JogoLobisomem estado={jogoNaTela as unknown as EstadoLobisomem & Partida} eu={eu} restante={restante} agir={agir} />}
       {(jogoNaTela?.jogo === 'gomoku' || jogoNaTela?.jogo === 'mancala') && (
         <JogoDuelo jogo={jogoNaTela.jogo} estado={jogoNaTela as unknown as EstadoDuelo & Partida} eu={eu} restante={restante} agir={agir} />
+      )}
+      {/* Os clássicos de mesa (04/11/2026): cada um com a sua tela; a chave da partida zera o estado local entre partidas. */}
+      {jogoNaTela?.jogo === 'domino' && (
+        <JogoDomino key={String(jogoNaTela.partidaId ?? '')} estado={jogoNaTela} eu={eu} jogador={souJogador(partida)} restante={restante} agir={agir} />
+      )}
+      {jogoNaTela?.jogo === 'truco' && (
+        <JogoTruco key={String(jogoNaTela.partidaId ?? '')} estado={jogoNaTela} eu={eu} jogador={souJogador(partida)} restante={restante} agir={agir} />
+      )}
+      {jogoNaTela?.jogo === 'damas' && (
+        <JogoDamas key={String(jogoNaTela.partidaId ?? '')} estado={jogoNaTela} eu={eu} jogador={souJogador(partida)} restante={restante} agir={agir} />
+      )}
+      {jogoNaTela?.jogo === 'naval' && (
+        <JogoNaval key={String(jogoNaTela.partidaId ?? '')} estado={jogoNaTela} eu={eu} jogador={souJogador(partida)} restante={restante} agir={agir} />
       )}
       </div>
 
