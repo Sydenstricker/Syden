@@ -1,11 +1,13 @@
 /**
  * Batalha naval (minijogo-naval.ts): a frota sorteada (tamanhos, dentro do mar, nenhum navio encostado, nem na diagonal),
  * sortear de novo só antes do primeiro tiro, água passa a vez e fogo não, afundar, a casa repetida, a vitória, e o que cada
- * um vê — o navio escondido do outro nunca aparece, nem para quem assiste, até o fim. O sorteio e o relógio aqui são de mão.
+ * um vê — o navio escondido do outro nunca aparece, nem para quem assiste, até o fim — e a montagem (05/11/2026): pôr, girar,
+ * mudar de lugar, sortear, "Pronto", o tempo que sorteia o que falta e o robô pronto na hora. O sorteio e o relógio aqui são de mão.
  */
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { CASAS_DO_MAR, FROTA, LADO_DO_MAR, criarNaval, sortearFrota, type MarPublico } from '../src/minijogo-naval.js';
+import { CASAS_DO_MAR, FROTA, LADO_DO_MAR, MONTAGEM_MS, casasDoNavio, criarNaval, encosta, sortearFrota, type MarPublico } from '../src/minijogo-naval.js';
+import { JOGADA_MS, JOGADA_SOLO_MS } from '../src/minijogo-tabuleiro.js';
 
 /** Um gerador com semente (mulberry32), para o sorteio se repetir. */
 function semente(s: number) {
@@ -26,7 +28,7 @@ type Vista = {
   mares: [MarPublico, MarPublico];
   restam: [number[], number[]];
   ultimo: { lado: number; casa: number; resultado: string } | null;
-  podeSortear: boolean;
+  montagem: { navios: (number[] | null)[] | null; prontos: [boolean, boolean] };
 };
 
 const ANA = 1;
@@ -55,10 +57,15 @@ function comecar(s = 7) {
   };
 }
 
-/** Com a mesa cheia: devolve o jogo, quem atira primeiro e o outro. */
+/** Com a mesa cheia e as duas frotas sorteadas na montagem: devolve o jogo, quem atira primeiro e o outro. */
 function sentados(s = 7) {
   const p = comecar(s);
   assert.equal(p.jogo.acao(BIA, { tipo: 'sentar' }), null);
+  for (const quem of [ANA, BIA]) {
+    assert.equal(p.jogo.acao(quem, { tipo: 'montar', acao: 'sortear' }), null);
+    assert.equal(p.jogo.acao(quem, { tipo: 'montar', acao: 'pronto' }), null);
+  }
+  assert.equal(p.vista(ANA).fase, 'jogando');
   const vez = p.vista(ANA).vez;
   const ids = [ANA, BIA];
   return { ...p, primeiro: ids[vez], segundo: ids[1 - vez], ladoDoPrimeiro: vez };
@@ -113,8 +120,6 @@ test('cada um começa com uma frota válida, e quem está sentado vê a própria
   const p = sentados(3);
   conferirFrota(frotaDe(p, ANA, 0));
   conferirFrota(frotaDe(p, BIA, 1));
-  assert.equal(p.vista(ANA).podeSortear, true);
-  assert.equal(p.vista(CAIO).podeSortear, false);
 });
 
 test('a frota se sorteia de novo, fora da vez, só até o primeiro tiro no seu mar', () => {
@@ -132,10 +137,8 @@ test('a frota se sorteia de novo, fora da vez, só até o primeiro tiro no seu m
 
   // O primeiro atira no mar do segundo: daí em diante, a frota do segundo fica.
   assert.equal(p.jogo.acao(p.primeiro, { tipo: 'jogada', casa: 0 }), null);
-  assert.equal(p.vista(p.segundo).podeSortear, false);
   assert.equal(p.jogo.acao(p.segundo, { tipo: 'livre', acao: 'sortear' }), 'Já atiraram no seu mar: a frota não muda mais.');
   // E o primeiro, que ainda não levou tiro, continua podendo.
-  assert.equal(p.vista(p.primeiro).podeSortear, true);
   assert.equal(p.jogo.acao(p.primeiro, { tipo: 'livre', acao: 'sortear' }), null);
 });
 
@@ -241,10 +244,179 @@ test('a mesa: sentar, cheia, e ninguém atira antes de o outro sentar', () => {
   assert.equal(p.vista(ANA).fase, 'esperando');
   assert.equal(p.jogo.acao(ANA, { tipo: 'jogada', casa: 0 }), 'A partida não está em andamento.');
   assert.equal(p.jogo.acao(ANA, { tipo: 'livre', acao: 'sortear' }), 'A partida não está em andamento.');
+  assert.equal(p.jogo.acao(ANA, { tipo: 'montar', acao: 'sortear' }), 'A partida não está em andamento.');
   assert.equal(p.jogo.acao(ANA, { tipo: 'sentar' }), 'Você já está na mesa.');
   // Esperando, quem está na sala não vê a frota de quem sentou.
   assert.deepEqual(p.vista(BIA).mares[0].navios, []);
   assert.equal(p.jogo.acao(BIA, { tipo: 'sentar' }), null);
   assert.equal(p.jogo.acao(CAIO, { tipo: 'sentar' }), 'A mesa já está cheia.');
-  assert.equal(p.vista(ANA).fase, 'jogando');
+  assert.equal(p.vista(ANA).fase, 'montando', 'com a mesa cheia, cada um põe os navios');
+});
+
+// ---- A MONTAGEM (05/11/2026): cada um põe os próprios navios antes do primeiro tiro ----
+
+/** Uma frota posta à mão, dentro da regra: os cinco deitados, em linhas alternadas. */
+const FROTA_DE_MAO: { casa: number; deitado: boolean }[] = [
+  { casa: 0, deitado: true }, // 5: A1–E1
+  { casa: 20, deitado: true }, // 4: A3–D3
+  { casa: 40, deitado: true }, // 3: A5–C5
+  { casa: 60, deitado: true }, // 3: A7–C7
+  { casa: 80, deitado: true }, // 2: A9–B9
+];
+
+test('a montagem: pôr, mudar de lugar, girar e tirar navios, dentro da regra', () => {
+  const p = comecar(31);
+  assert.equal(p.jogo.acao(BIA, { tipo: 'sentar' }), null);
+  let v = p.vista(ANA);
+  assert.equal(v.fase, 'montando');
+  assert.equal(p.relogio[0].ms, MONTAGEM_MS);
+  assert.deepEqual(v.montagem.navios, [null, null, null, null, null], 'começa com o mar vazio');
+  assert.deepEqual(v.montagem.prontos, [false, false]);
+  const montar = (corpo: Record<string, unknown>) => p.jogo.acao(ANA, { tipo: 'montar', ...corpo });
+
+  // o de 5, deitado, em A1
+  assert.equal(montar({ acao: 'por', navio: 0, casa: 0, deitado: true }), null);
+  assert.deepEqual(p.vista(ANA).montagem.navios![0], [0, 1, 2, 3, 4]);
+  // muda de lugar e gira: em pé, a partir de J1
+  assert.equal(montar({ acao: 'por', navio: 0, casa: 9, deitado: false }), null);
+  assert.deepEqual(p.vista(ANA).montagem.navios![0], [9, 19, 29, 39, 49]);
+  // o que não cabe no mar, o que encosta (também na diagonal) e o que cai em cima
+  assert.equal(montar({ acao: 'por', navio: 1, casa: 7, deitado: true }), 'O navio não cabe aí.');
+  assert.equal(montar({ acao: 'por', navio: 1, casa: 70, deitado: false }), 'O navio não cabe aí.');
+  assert.equal(montar({ acao: 'por', navio: 1, casa: -1, deitado: true }), 'O navio não cabe aí.');
+  assert.equal(montar({ acao: 'por', navio: 1, casa: 100, deitado: true }), 'O navio não cabe aí.');
+  assert.equal(montar({ acao: 'por', navio: 1, casa: 5, deitado: true }), 'Os navios não podem encostar um no outro.');
+  assert.equal(montar({ acao: 'por', navio: 1, casa: 55, deitado: true }), 'Os navios não podem encostar um no outro.', 'na diagonal de J5');
+  assert.equal(montar({ acao: 'por', navio: 1, casa: 16, deitado: true }), 'Os navios não podem encostar um no outro.', 'em cima');
+  assert.equal(montar({ acao: 'por', navio: 5, casa: 0, deitado: true }), 'Escolha um navio.');
+  assert.equal(montar({ acao: 'por', navio: 'x', casa: 0, deitado: true }), 'Escolha um navio.');
+  assert.equal(montar({ acao: 'qualquer' }), 'Ação desconhecida.');
+  // pronto sem todos os navios não vale
+  assert.equal(montar({ acao: 'pronto' }), 'Ponha todos os navios antes.');
+  // o próprio navio não encosta nele mesmo: mudar uma casa para o lado vale
+  assert.equal(montar({ acao: 'por', navio: 0, casa: 8, deitado: false }), null);
+  // tirar
+  assert.equal(montar({ acao: 'tirar', navio: 0 }), null);
+  assert.equal(p.vista(ANA).montagem.navios![0], null);
+  // a frota inteira, à mão
+  FROTA_DE_MAO.forEach((x, i) => assert.equal(montar({ acao: 'por', navio: i, ...x }), null));
+  conferirFrota(p.vista(ANA).montagem.navios as number[][]);
+  assert.equal(montar({ acao: 'pronto' }), null);
+  v = p.vista(ANA);
+  assert.deepEqual(v.montagem.prontos, [true, false]);
+  assert.equal(v.fase, 'montando', 'falta a Bia');
+  // pronto não mexe mais; os tiros esperam os dois
+  assert.equal(montar({ acao: 'por', navio: 0, casa: 9, deitado: false }), 'Sua frota já está pronta.');
+  assert.equal(p.jogo.acao(ANA, { tipo: 'jogada', casa: 0 }), 'A partida não está em andamento.');
+  assert.equal(p.jogo.acao(CAIO, { tipo: 'montar', acao: 'sortear' }), 'Você está assistindo esta partida.');
+});
+
+test('na montagem, ninguém vê a frota do outro, nem quem assiste', () => {
+  const p = comecar(33);
+  assert.equal(p.jogo.acao(BIA, { tipo: 'sentar' }), null);
+  FROTA_DE_MAO.forEach((x, i) => assert.equal(p.jogo.acao(ANA, { tipo: 'montar', acao: 'por', navio: i, ...x }), null));
+  assert.equal(p.jogo.acao(BIA, { tipo: 'montar', acao: 'sortear' }), null);
+  assert.equal(p.jogo.acao(BIA, { tipo: 'montar', acao: 'pronto' }), null);
+  const daAna = p.vista(ANA);
+  const daBia = p.vista(BIA);
+  const doCaio = p.vista(CAIO);
+  assert.equal(daAna.mares[0].navios.length, FROTA.length);
+  assert.deepEqual(daAna.mares[1].navios, [], 'a Ana não vê a frota da Bia');
+  assert.deepEqual(daBia.mares[0].navios, [], 'a Bia não vê a frota da Ana');
+  assert.equal(daBia.mares[1].navios.length, FROTA.length);
+  assert.deepEqual(doCaio.mares[0].navios, []);
+  assert.deepEqual(doCaio.mares[1].navios, []);
+  assert.equal(doCaio.montagem.navios, null, 'quem assiste não recebe frota nenhuma');
+  // a montagem de cada um traz só a própria frota
+  assert.deepEqual(daAna.montagem.navios, FROTA_DE_MAO.map((x, i) => casasDoNavio(x.casa, FROTA[i], x.deitado)));
+  assert.deepEqual(daBia.montagem.navios, daBia.mares[1].navios.map((n) => n.casas));
+  // e quem ainda não está pronto não fica sabendo de nada além do "pronto" do outro
+  assert.deepEqual(daAna.montagem.prontos, [false, true]);
+});
+
+test('os dois prontos: os tiros começam, com a frota que cada um pôs', () => {
+  const p = comecar(35);
+  assert.equal(p.jogo.acao(BIA, { tipo: 'sentar' }), null);
+  FROTA_DE_MAO.forEach((x, i) => assert.equal(p.jogo.acao(ANA, { tipo: 'montar', acao: 'por', navio: i, ...x }), null));
+  assert.equal(p.jogo.acao(ANA, { tipo: 'montar', acao: 'pronto' }), null);
+  assert.equal(p.jogo.acao(BIA, { tipo: 'montar', acao: 'sortear' }), null);
+  assert.equal(p.jogo.acao(BIA, { tipo: 'montar', acao: 'pronto' }), null);
+  const v = p.vista(ANA);
+  assert.equal(v.fase, 'jogando');
+  assert.equal(p.relogio[0].ms, JOGADA_MS, 'o prazo da jogada');
+  const minha = FROTA_DE_MAO.map((x, i) => casasDoNavio(x.casa, FROTA[i], x.deitado));
+  assert.deepEqual(v.mares[0].navios.map((n) => n.casas), minha);
+  assert.equal(p.jogo.acao(ANA, { tipo: 'montar', acao: 'sortear' }), 'A partida não está em andamento.');
+  // o tiro cai no navio que a Ana pôs: C1 é do de 5
+  if (v.vez === 1) {
+    assert.equal(p.jogo.acao(BIA, { tipo: 'jogada', casa: 2 }), null);
+    assert.equal(p.vista(BIA).mares[0].tiros[2], 2);
+  }
+});
+
+test('acabou o tempo da montagem: o servidor sorteia o que falta, mantendo o que já foi posto, e começa', () => {
+  const p = comecar(37);
+  assert.equal(p.jogo.acao(BIA, { tipo: 'sentar' }), null);
+  // a Ana pôs dois; a Bia, nenhum
+  assert.equal(p.jogo.acao(ANA, { tipo: 'montar', acao: 'por', navio: 0, casa: 0, deitado: true }), null);
+  assert.equal(p.jogo.acao(ANA, { tipo: 'montar', acao: 'por', navio: 4, casa: 98, deitado: true }), null);
+  assert.equal(p.relogio[0].ms, MONTAGEM_MS);
+  p.relogio[0].depois();
+  const v = p.vista(ANA);
+  assert.equal(v.fase, 'jogando');
+  assert.deepEqual(v.montagem.prontos, [true, true]);
+  const minha = v.mares[0].navios.map((n) => n.casas);
+  conferirFrota(minha);
+  assert.deepEqual(minha[0], [0, 1, 2, 3, 4]);
+  assert.deepEqual(minha[4], [98, 99]);
+  conferirFrota(p.vista(BIA).mares[1].navios.map((n) => n.casas));
+  assert.equal(p.relogio[0].ms, JOGADA_MS, 'e o prazo da primeira jogada já corre');
+});
+
+test('a frota completada em volta dos navios postos é sempre válida', () => {
+  for (let s = 1; s <= 300; s++) {
+    const r = semente(s);
+    const fixos: (number[] | null)[] = FROTA.map(() => null);
+    // um ou dois navios postos em lugares sorteados (válidos)
+    for (const i of [Math.floor(r() * 5), Math.floor(r() * 5)]) {
+      const casas = casasDoNavio(Math.floor(r() * CASAS_DO_MAR), FROTA[i], r() < 0.5);
+      if (casas && !encosta(casas, fixos.filter((_, k) => k !== i))) fixos[i] = casas;
+    }
+    const frota = sortearFrota(r, fixos);
+    conferirFrota(frota);
+    fixos.forEach((x, i) => x && assert.deepEqual(frota[i], x));
+  }
+});
+
+test('quem desiste na montagem perde', () => {
+  const p = comecar(39);
+  assert.equal(p.jogo.acao(BIA, { tipo: 'sentar' }), null);
+  assert.equal(p.jogo.acao(BIA, { tipo: 'desistir' }), null);
+  const v = p.vista(CAIO);
+  assert.equal(v.fase, 'fim');
+  assert.equal(v.motivo, 'desistiu');
+  assert.equal(v.vencedor, 0);
+});
+
+test('no Solo, o computador fica pronto na hora, com a frota sorteada, e espera a pessoa', () => {
+  const relogio: { ms: number; depois: () => void }[] = [];
+  const ctx = {
+    agendar: (ms: number, depois: () => void) => relogio.splice(0, relogio.length, { ms, depois }),
+    avisar: () => {},
+    terminar: () => {},
+    naSala: () => [ANA],
+    nome: () => 'ana',
+    solo: true,
+  };
+  const jogo = criarNaval(semente(41)).comecar(ctx, { naSala: [ANA], criadaPor: ANA, corpo: {} });
+  assert.ok(typeof jogo !== 'string');
+  let v = jogo.publico(ANA) as unknown as Vista;
+  assert.equal(v.fase, 'montando');
+  assert.deepEqual(v.montagem.prontos, [false, true]);
+  assert.deepEqual(v.mares[1].navios, [], 'a frota do robô não aparece');
+  assert.equal(relogio[0].ms, JOGADA_SOLO_MS, 'no Solo, pensar sozinho não tem o prazo da sala');
+  assert.equal(jogo.acao(ANA, { tipo: 'montar', acao: 'sortear' }), null);
+  assert.equal(jogo.acao(ANA, { tipo: 'montar', acao: 'pronto' }), null);
+  v = jogo.publico(ANA) as unknown as Vista;
+  assert.equal(v.fase, 'jogando');
 });

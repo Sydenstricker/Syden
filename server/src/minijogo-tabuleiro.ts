@@ -43,6 +43,20 @@ export interface Regras<T> {
    * Batalha naval, sem olhar a frota escondida). O jogo sem `robo` não tem Solo contra o computador.
    */
   robo?(estado: T, lado: Lado, aleatorio: () => number): Record<string, unknown>;
+  /**
+   * Uma fase de MONTAGEM antes do primeiro lance (a Batalha naval, 05/11/2026: cada um põe os próprios navios). Com ela, o
+   * segundo sentar leva a mesa à fase 'montando' em vez de 'jogando': cada lado manda ações `tipo: 'montar'` até ficar
+   * pronto, e os lances começam quando os dois estão prontos. O lado do computador fica pronto na hora (`completar`), e quem
+   * não ficar pronto em `ms` (no Solo, no prazo da mesa esquecida) é completado pelo servidor. Jogo sem ela não muda nada.
+   */
+  montagem?: {
+    ms: number;
+    /** Uma ação de montar de `lado`. Devolve o erro, ou null. */
+    montar(estado: T, lado: Lado, corpo: Record<string, unknown>): string | null;
+    pronto(estado: T, lado: Lado): boolean;
+    /** O tempo acabou, ou o lado é do computador: completa o que falta e o dá por pronto. */
+    completar(estado: T, lado: Lado): void;
+  };
 }
 
 /** A mesa de duas pessoas (sentar, a vez, o prazo, desistir) em volta das regras de um jogo. */
@@ -50,7 +64,7 @@ export function duelo<T>(regras: Regras<T>, aleatorio = Math.random): Definicao 
   return {
     mesa: true,
     comecar(ctx, { criadaPor }) {
-      let fase: 'esperando' | 'jogando' | 'fim' = 'esperando';
+      let fase: 'esperando' | 'montando' | 'jogando' | 'fim' = 'esperando';
       const lugares: number[] = [criadaPor];
       let vez: Lado = 0;
       let vencedor: Lado | 'empate' | null = null;
@@ -75,13 +89,28 @@ export function duelo<T>(regras: Regras<T>, aleatorio = Math.random): Definicao 
         });
       };
 
-      const sentar = (quem: number) => {
-        lugares.push(quem);
+      const comecarOsLances = () => {
         fase = 'jogando';
-        // Quem começa é sorteado: começar dá vantagem nos dois jogos.
-        vez = aleatorio() < 0.5 ? 0 : 1;
         regras.aoComecar?.(estado, vez);
         prazo();
+      };
+
+      const sentar = (quem: number) => {
+        lugares.push(quem);
+        // Quem começa é sorteado: começar dá vantagem nos dois jogos.
+        vez = aleatorio() < 0.5 ? 0 : 1;
+        const montagem = regras.montagem;
+        if (!montagem) return comecarOsLances();
+        fase = 'montando';
+        for (const l of [0, 1] as Lado[]) if (ehRobo(lugares[l])) montagem.completar(estado, l);
+        if (montagem.pronto(estado, 0) && montagem.pronto(estado, 1)) return comecarOsLances();
+        // quem não ficou pronto a tempo: o servidor completa o que falta, e os lances começam
+        ctx.agendar(contraORobo ? JOGADA_SOLO_MS : montagem.ms, () => {
+          if (fase !== 'montando') return;
+          for (const l of [0, 1] as Lado[]) if (!montagem.pronto(estado, l)) montagem.completar(estado, l);
+          comecarOsLances();
+          ctx.avisar();
+        });
       };
 
       const jogada = (lado: Lado, corpo: Record<string, unknown>): string | null => {
@@ -131,7 +160,7 @@ export function duelo<T>(regras: Regras<T>, aleatorio = Math.random): Definicao 
           }
           const lado = lugares.indexOf(quem);
           if (corpo.tipo === 'desistir') {
-            if (fase !== 'jogando' || lado < 0) return 'Você não está jogando.';
+            if ((fase !== 'jogando' && fase !== 'montando') || lado < 0) return 'Você não está jogando.';
             acabar(lado === 0 ? 1 : 0, 'desistiu');
             return null;
           }
@@ -140,6 +169,15 @@ export function duelo<T>(regras: Regras<T>, aleatorio = Math.random): Definicao 
             if (lado < 0) return 'Você está assistindo esta partida.';
             const erro = regras.livre(estado, lado as Lado, corpo);
             if (erro) return erro;
+            ctx.avisar();
+            return null;
+          }
+          if (corpo.tipo === 'montar' && regras.montagem) {
+            if (fase !== 'montando') return 'A partida não está em andamento.';
+            if (lado < 0) return 'Você está assistindo esta partida.';
+            const erro = regras.montagem.montar(estado, lado as Lado, corpo);
+            if (erro) return erro;
+            if (regras.montagem.pronto(estado, 0) && regras.montagem.pronto(estado, 1)) comecarOsLances();
             ctx.avisar();
             return null;
           }

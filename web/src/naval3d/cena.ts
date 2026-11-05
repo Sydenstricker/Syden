@@ -10,15 +10,34 @@ import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js'
  */
 
 const LADO = 10;
-const BASE = `${import.meta.env.BASE_URL}naval3d/pirata/`;
-/** O navio de cada tamanho (a frota é 5, 4, 3, 3 e 2). */
-const NAVIO: Record<number, string> = {
-  5: 'ship-pirate-large.glb',
-  4: 'ship-pirate-medium.glb',
-  3: 'ship-pirate-small.glb',
-  2: 'boat-row-large.glb',
+const BASE = `${import.meta.env.BASE_URL}naval3d/`;
+/**
+ * AS DUAS FROTAS (05/11/2026, pedido dele: "uma opção com navios civis modernos"): só a aparência, escolhida por cada pessoa no
+ * próprio aparelho (JogoNaval.tsx). O navio de cada tamanho (a frota é 5, 4, 3, 3 e 2); com mais de um modelo, os navios do
+ * mesmo tamanho vão pegando um de cada vez, na ordem em que vêm. A moderna é do Watercraft Kit da Kenney (CC0,
+ * web/public/naval3d/moderna/License.txt).
+ */
+export type FrotaDaCena = 'piratas' | 'moderna';
+const FROTAS: Record<FrotaDaCena, Record<number, string[]>> = {
+  piratas: {
+    5: ['pirata/ship-pirate-large.glb'],
+    4: ['pirata/ship-pirate-medium.glb'],
+    3: ['pirata/ship-pirate-small.glb'],
+    2: ['pirata/boat-row-large.glb'],
+  },
+  moderna: {
+    5: ['moderna/ship-ocean-liner.glb'],
+    4: ['moderna/ship-cargo-a.glb'],
+    3: ['moderna/boat-tug-a.glb', 'moderna/boat-fishing-small.glb'],
+    2: ['moderna/boat-speed-a.glb'],
+  },
 };
-const TODOS = [...new Set(Object.values(NAVIO))];
+/** O modelo do `k`-ésimo navio de `tamanho` na frota. */
+const modeloDe = (frota: FrotaDaCena, tamanho: number, k = 0) => {
+  const lista = FROTAS[frota][tamanho] ?? FROTAS[frota][3];
+  return lista[k % lista.length];
+};
+const todosDa = (frota: FrotaDaCena) => [...new Set(Object.values(FROTAS[frota]).flat())];
 
 const cache = new Map<string, Promise<GLTF>>();
 const carregar = (a: string) => {
@@ -38,6 +57,25 @@ export interface MarDaCena {
   meu: boolean;
   podeAtirar: boolean;
   ultima: number | null;
+  /** A frota que a pessoa escolheu ver (de fábrica, a pirata). */
+  frota?: FrotaDaCena;
+  /**
+   * A MONTAGEM (05/11/2026: cada um põe os navios antes do primeiro tiro): o navio-fantasma onde o navio escolhido vai cair
+   * (verde se cabe, vermelho se não) e as casas do navio escolhido. Com ela, a cena manda os toques (passar, apertar, soltar)
+   * em vez de atirar.
+   */
+  montagem?: {
+    /** `ordem`: entre os navios do mesmo tamanho, qual é (o modelo dele, na frota que tem dois). */
+    fantasma: { casas: number[]; ok: boolean; ordem?: number } | null;
+    escolhido: number[] | null;
+  };
+}
+
+/** Os toques na cena durante a montagem: a casa sob o ponteiro (null fora do mar). */
+export interface ToquesDaMontagem {
+  passar(casa: number | null): void;
+  apertar(casa: number): void;
+  soltar(casa: number | null): void;
 }
 
 const centro = (casa: number) => new THREE.Vector3((casa % LADO) - (LADO - 1) / 2, 0, Math.floor(casa / LADO) - (LADO - 1) / 2);
@@ -52,6 +90,8 @@ function navio(g: GLTF, tamanho: number): THREE.Object3D {
   const s = (tamanho * 0.92) / t.z;
   const largura = Math.min(s, 0.95 / t.x) * 1.15;
   const raiz = new THREE.Group();
+  // a geometria é a do modelo no cache: ninguém a descarta ao destruir a cena
+  raiz.userData.doModelo = true;
   raiz.add(o);
   raiz.scale.set(largura, s * 0.7, s);
   o.traverse((m) => {
@@ -83,10 +123,16 @@ export class MarNaval3D {
   private calmo: boolean;
   private fogos: { obj: THREE.Object3D; fase: number }[] = [];
   private respingo: { obj: THREE.Mesh; inicio: number } | null = null;
+  /** O fantasma da montagem e o realce do navio escolhido, refeitos quando mudam. */
+  private fantasma = new THREE.Group();
+  private chaveDoFantasma = '';
+  private casaGeo = new THREE.PlaneGeometry(0.94, 0.94);
+  private sobre: number | null = null;
 
   constructor(
     private caixa: HTMLElement,
     private aoAtirar: (casa: number) => void,
+    private toques?: ToquesDaMontagem,
   ) {
     this.renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'low-power' });
     this.renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.75));
@@ -141,7 +187,10 @@ export class MarNaval3D {
     this.mira.position.y = 0.05;
     this.mira.visible = false;
     c.add(this.mira);
+    c.add(this.fantasma);
 
+    tela.addEventListener('pointerdown', this.aoApertar);
+    tela.addEventListener('pointerup', this.aoSoltar);
     tela.addEventListener('pointermove', this.aoPassar);
     tela.addEventListener('pointerleave', this.aoSair);
     tela.addEventListener('click', this.aoClicar);
@@ -149,11 +198,27 @@ export class MarNaval3D {
   }
 
   async montar() {
-    const lista = await Promise.all(TODOS.map((a) => carregar(a).then((g) => [a, g] as const)));
+    await this.garantir(this.dados?.frota ?? 'piratas');
     if (this.morta) return;
-    for (const [a, g] of lista) this.modelos.set(a, g);
     if (this.dados) this.atualizar(this.dados);
     this.renderer.setAnimationLoop(this.desenhar);
+  }
+
+  /** Os modelos de uma frota, carregados (a outra frota só é baixada quando a pessoa a escolhe). */
+  private async garantir(frota: FrotaDaCena) {
+    const lista = await Promise.all(todosDa(frota).map((a) => carregar(a).then((g) => [a, g] as const)));
+    if (this.morta) return;
+    for (const [a, g] of lista) this.modelos.set(a, g);
+  }
+  private frotaPronta = (frota: FrotaDaCena) => todosDa(frota).every((a) => this.modelos.has(a));
+
+  /** Tira um navio da cena, com os materiais dele (a geometria é do cache). */
+  private tirar(obj: THREE.Object3D) {
+    this.cena.remove(obj);
+    obj.traverse((o) => {
+      const m = o as THREE.Mesh;
+      if (m.isMesh) (Array.isArray(m.material) ? m.material : [m.material]).forEach((x) => x.dispose());
+    });
   }
 
   private medir() {
@@ -169,16 +234,33 @@ export class MarNaval3D {
   atualizar(d: MarDaCena) {
     this.dados = d;
     if (!this.modelos.size) return;
-    // os navios
+    const frota = d.frota ?? 'piratas';
+    if (!this.frotaPronta(frota)) {
+      // a outra frota ainda não veio: baixa, e desenha de novo quando chegar
+      void this.garantir(frota).then(() => {
+        if (!this.morta && this.dados) this.atualizar(this.dados);
+      }).catch(() => {});
+    }
+    // os navios (a chave leva o modelo: trocar de frota refaz todos)
     const vivos = new Set<string>();
+    const doTamanho = new Map<number, number>();
     for (const n of d.navios) {
-      const chave = [...n.casas].sort((a, b) => a - b).join(',');
+      const k = doTamanho.get(n.casas.length) ?? 0;
+      doTamanho.set(n.casas.length, k + 1);
+      const modelo = modeloDe(frota, n.casas.length, k);
+      const chave = modelo + ':' + [...n.casas].sort((a, b) => a - b).join(',');
       vivos.add(chave);
       const ja = this.navios.get(chave);
       if (ja && ja.afundado === n.afundado) continue;
-      if (ja) this.cena.remove(ja.obj);
-      const g = this.modelos.get(NAVIO[n.casas.length] ?? NAVIO[3]);
-      if (!g) continue;
+      if (ja) {
+        this.tirar(ja.obj);
+        this.navios.delete(chave);
+      }
+      const g = this.modelos.get(modelo);
+      if (!g) {
+        vivos.delete(chave);
+        continue;
+      }
       const obj = navio(g, n.casas.length);
       const casas = [...n.casas].sort((a, b) => a - b);
       const meio = centro(casas[0]).add(centro(casas[casas.length - 1])).multiplyScalar(0.5);
@@ -196,7 +278,7 @@ export class MarNaval3D {
     }
     for (const [chave, n] of this.navios)
       if (!vivos.has(chave)) {
-        this.cena.remove(n.obj);
+        this.tirar(n.obj);
         this.navios.delete(chave);
       }
     // os tiros
@@ -219,7 +301,52 @@ export class MarNaval3D {
       if (casa === d.ultima) this.estourar(casa, tiro === 2);
     });
     this.mira.visible = this.mira.visible && d.podeAtirar;
-    this.renderer.domElement.style.cursor = d.podeAtirar ? 'crosshair' : '';
+    this.renderer.domElement.style.cursor = d.podeAtirar ? 'crosshair' : d.montagem ? 'pointer' : '';
+    this.montarFantasma(d);
+  }
+
+  /** O navio-fantasma (casas verdes ou vermelhas, e o navio meio transparente quando cabe) e o realce do escolhido. */
+  private montarFantasma(d: MarDaCena) {
+    const f = d.montagem?.fantasma ?? null;
+    const e = d.montagem?.escolhido ?? null;
+    const chave = JSON.stringify([f, e, d.frota, this.modelos.size]);
+    if (chave === this.chaveDoFantasma) return;
+    this.chaveDoFantasma = chave;
+    for (const filho of [...this.fantasma.children]) {
+      this.fantasma.remove(filho);
+      filho.traverse((o) => {
+        const m = o as THREE.Mesh;
+        if (!m.isMesh) return;
+        const mats = Array.isArray(m.material) ? m.material : [m.material];
+        for (const mat of mats) mat.dispose();
+      });
+    }
+    const casa = (c: number, cor: string, opacidade: number, y: number) => {
+      const p = new THREE.Mesh(this.casaGeo, new THREE.MeshBasicMaterial({ color: cor, transparent: true, opacity: opacidade, depthWrite: false }));
+      p.rotation.x = -Math.PI / 2;
+      p.position.set(centro(c).x, y, centro(c).z);
+      this.fantasma.add(p);
+    };
+    if (e) for (const c of e) casa(c, '#ffe08a', 0.5, 0.06);
+    if (!f) return;
+    for (const c of f.casas) casa(c, f.ok ? '#5bd16a' : '#e5484d', 0.55, 0.08);
+    const g = this.modelos.get(modeloDe(d.frota ?? 'piratas', f.casas.length, f.ordem ?? 0));
+    if (!f.ok || !g) return;
+    const obj = navio(g, f.casas.length);
+    const casas = [...f.casas].sort((a, b) => a - b);
+    obj.position.copy(centro(casas[0]).add(centro(casas[casas.length - 1])).multiplyScalar(0.5));
+    obj.position.y = 0.04;
+    obj.rotation.y = casas.length > 1 && casas[1] - casas[0] === 1 ? Math.PI / 2 : 0;
+    obj.traverse((o) => {
+      const m = o as THREE.Mesh;
+      if (!m.isMesh) return;
+      const mat = m.material as THREE.MeshStandardMaterial;
+      mat.transparent = true;
+      mat.opacity = 0.55;
+      mat.depthWrite = false;
+      m.castShadow = false;
+    });
+    this.fantasma.add(obj);
   }
 
   /** Na água: uma boia de espuma branca, que fica. */
@@ -271,8 +398,28 @@ export class MarNaval3D {
     const l = Math.floor(p.z + LADO / 2);
     return c >= 0 && l >= 0 && c < LADO && l < LADO ? l * LADO + c : null;
   }
+  private aoApertar = (e: PointerEvent) => {
+    if (!this.dados?.montagem || !this.toques || e.button > 0) return;
+    const casa = this.casaNoPonto(e);
+    if (casa === null) return;
+    // o soltar chega aqui mesmo fora da tela (arrastar um navio para fora do mar cancela)
+    this.renderer.domElement.setPointerCapture?.(e.pointerId);
+    this.toques.apertar(casa);
+  };
+  private aoSoltar = (e: PointerEvent) => {
+    if (!this.dados?.montagem || !this.toques) return;
+    this.toques.soltar(this.casaNoPonto(e));
+  };
   private aoPassar = (e: PointerEvent) => {
     const d = this.dados;
+    if (d?.montagem && this.toques) {
+      const casa = this.casaNoPonto(e);
+      if (casa !== this.sobre) {
+        this.sobre = casa;
+        this.toques.passar(casa);
+      }
+      return;
+    }
     const casa = d?.podeAtirar ? this.casaNoPonto(e) : null;
     if (casa === null || !d || d.tiros[casa] !== 0) {
       this.mira.visible = false;
@@ -283,10 +430,14 @@ export class MarNaval3D {
   };
   private aoSair = () => {
     this.mira.visible = false;
+    if (this.dados?.montagem && this.toques && this.sobre !== null) {
+      this.sobre = null;
+      this.toques.passar(null);
+    }
   };
   private aoClicar = (e: MouseEvent) => {
     const d = this.dados;
-    if (!d?.podeAtirar) return;
+    if (!d?.podeAtirar || d.montagem) return;
     const casa = this.casaNoPonto(e);
     if (casa !== null && d.tiros[casa] === 0) this.aoAtirar(casa);
   };
@@ -340,6 +491,8 @@ export class MarNaval3D {
     this.renderer.setAnimationLoop(null);
     this.observador.disconnect();
     const tela = this.renderer.domElement;
+    tela.removeEventListener('pointerdown', this.aoApertar);
+    tela.removeEventListener('pointerup', this.aoSoltar);
     tela.removeEventListener('pointermove', this.aoPassar);
     tela.removeEventListener('pointerleave', this.aoSair);
     tela.removeEventListener('click', this.aoClicar);
@@ -356,7 +509,7 @@ export class MarNaval3D {
     tela.remove();
   }
   private ehDoModelo(o: THREE.Object3D): boolean {
-    for (let p: THREE.Object3D | null = o; p; p = p.parent) for (const n of this.navios.values()) if (n.obj === p) return true;
+    for (let p: THREE.Object3D | null = o; p; p = p.parent) if (p.userData.doModelo) return true;
     return false;
   }
 }

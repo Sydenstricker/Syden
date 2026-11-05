@@ -81,9 +81,11 @@ test('os robôs só no Solo: fora dele, o pedido de robôs é ignorado', () => {
  * Uma partida inteira de mesa contra o robô, com a pessoa jogando qualquer lance válido (`minha`): o robô joga sempre na
  * pausa curta, e a partida acaba pelo jogo (nunca porque o robô mandou um lance que as regras recusaram).
  */
-function mesaInteira(def: Definicao, minha: (vista: Record<string, unknown>, sorte: () => number) => Record<string, unknown>, s: number) {
+function mesaInteira(def: Definicao, minha: (vista: Record<string, unknown>, sorte: () => number) => Record<string, unknown>, s: number, preparar?: (jogo: Jogo) => void) {
   const sorte = semente(s);
   const p = partida(def);
+  // a Batalha naval passa antes pela montagem (o robô já está pronto)
+  preparar?.(p.jogo as Jogo);
   let v = p.ver();
   assert.equal(v.fase, 'jogando', 'no Solo, a partida começa na hora');
   assert.equal(v.jogadores.length, 2);
@@ -166,6 +168,10 @@ test('Batalha naval contra o robô: ele mira só pelo que vê, caça depois do f
       return { casa: sortearDe([...tiros.keys()].filter((i) => tiros[i] === 0), sorte) };
     },
     3,
+    (jogo) => {
+      assert.equal(jogo.acao(anaId, { tipo: 'montar', acao: 'sortear' }), null);
+      assert.equal(jogo.acao(anaId, { tipo: 'montar', acao: 'pronto' }), null);
+    },
   );
   // depois de um fogo num navio que boia, o tiro é numa vizinha
   const tiros = new Array<number>(CASAS_DO_MAR).fill(0);

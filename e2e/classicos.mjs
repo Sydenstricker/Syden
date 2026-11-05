@@ -113,17 +113,16 @@ try {
   // ---- Batalha naval ----
   await comecar('Batalha naval');
   await edu.locator('.minijogo-convite').getByRole('button', { name: 'Sentar' }).click();
+  // a montagem (05/11/2026): cada um sorteia a frota e aperta Pronto; os tiros começam com os dois prontos
+  for (const p of [duda, edu]) {
+    await p.locator('.naval-montagem').waitFor({ timeout: 10000 });
+    await p.locator('.naval-botoes button', { hasText: 'Sortear a frota' }).click();
+    await p.locator('.naval-botoes .btn-primary:not([disabled])').click();
+  }
   await duda.locator('.naval-mares').waitFor({ timeout: 10000 });
   const navios = await duda.locator('.naval-mar.meu .naval-navio').count();
   const naviosDoOutro = await duda.locator('.naval-mar.alvo .naval-navio').count();
   navios === 5 && naviosDoOutro === 0 ? ok('Batalha naval: a Duda vê os 5 navios dela e nenhum do Edu') : falhou(`Batalha naval: ${navios} meus, ${naviosDoOutro} do outro à vista`);
-  // Quem não tem a vez sorteia a frota de novo.
-  const atirador = await daVez('.duelo-naval .minijogo-situacao.minha-vez');
-  const quemEspera = atirador === duda ? edu : duda;
-  const antes = await quemEspera.locator('.naval-mar.meu').innerHTML();
-  await quemEspera.locator('.naval-sortear').click();
-  await quemEspera.waitForTimeout(600);
-  ((await quemEspera.locator('.naval-mar.meu').innerHTML()) !== antes ? ok : falhou)('Batalha naval: "Sortear de novo" troca a frota antes do primeiro tiro');
   let tiros = 0;
   for (let k = 0; k < 6; k++) {
     const p = await daVez('.duelo-naval .minijogo-situacao.minha-vez');

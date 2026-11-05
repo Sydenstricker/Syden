@@ -1,0 +1,159 @@
+/* A MONTAGEM DA BATALHA NAVAL (JogoNaval.tsx, 05/11/2026): o próprio mar, a fila dos cinco navios e os botões. */
+
+.naval-montagem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.naval-montagem .naval-mar {
+  width: 100%;
+}
+
+/* arrastar um navio pelo dedo não rola a página */
+.naval-grade-montagem,
+.naval-montagem .naval-3d-tela {
+  touch-action: none;
+}
+
+.naval-montagem .naval-grade-montagem {
+  width: min(100%, 52vh, 320px);
+}
+
+.naval-grade-montagem .naval-casa {
+  cursor: pointer;
+}
+
+.naval-grade-montagem .naval-casa.fantasma-ok {
+  background: rgba(91, 209, 106, 0.55);
+}
+
+.naval-grade-montagem .naval-casa.fantasma-ruim {
+  background: rgba(229, 72, 77, 0.6);
+}
+
+.naval-grade-montagem .naval-casa.do-escolhido {
+  box-shadow: inset 0 0 0 2px #ffe08a;
+}
+
+.naval-navio.escolhido {
+  background: linear-gradient(#ffe7a3, #d9b45a);
+}
+
+.naval-navio.em-pe.escolhido {
+  background: linear-gradient(90deg, #ffe7a3, #d9b45a);
+}
+
+.duelo-naval .naval-pronto {
+  color: #3fae54;
+  font-weight: 700;
+}
+
+.naval-frota {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+.naval-frota-navio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 34px;
+  padding: 6px 8px;
+  border: 1px solid var(--border, rgba(127, 127, 127, 0.35));
+  border-radius: 6px;
+  background: var(--bg-secondary, transparent);
+  cursor: pointer;
+}
+
+.naval-frota-navio.escolhido {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.naval-frota-navio:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.naval-frota-casco {
+  display: block;
+  height: 10px;
+  border-radius: 40% 999px 999px 40% / 50%;
+  background: linear-gradient(#b9c2cc, #7d8894);
+}
+
+/* o navio já posto fica apagado na fila: o que falta pôr salta aos olhos */
+.naval-frota-navio.posto .naval-frota-casco {
+  opacity: 0.4;
+}
+
+.naval-frota-navio.escolhido .naval-frota-casco {
+  opacity: 1;
+  background: linear-gradient(#ffe7a3, #d9b45a);
+}
+
+.naval-dica {
+  margin: 0;
+  font-size: calc(0.8rem * var(--escala-do-texto, 1));
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.naval-botoes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.naval-botoes kbd {
+  margin-left: 4px;
+  padding: 0 4px;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  font-size: 0.75em;
+  opacity: 0.7;
+}
+
+@media (hover: none) {
+  .naval-botoes kbd {
+    display: none;
+  }
+}
+
+/* A FROTA QUE SE VÊ NO 3D (05/11/2026): pirata ou moderna, duas figuras pequenas acima dos mares. */
+.naval-frotas {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.naval-frotas-opcao {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 6px;
+  border: 1px solid var(--border, rgba(127, 127, 127, 0.35));
+  border-radius: 6px;
+  background: var(--bg-secondary, transparent);
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.naval-frotas-opcao.escolhida {
+  opacity: 1;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.naval-frotas-opcao:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}

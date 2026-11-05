@@ -57,6 +57,12 @@ try {
     const texto = await duda.locator('body').innerText();
     texto.includes('🤖') ? ok(`${jogo.nome}: os adversários do computador estão na mesa`) : falhou(`${jogo.nome}: nenhum 🤖 na tela`);
 
+    // a Batalha naval passa antes pela montagem da frota (05/11/2026): sortear e Pronto
+    if (jogo.id === 'naval') {
+      await duda.locator('.naval-botoes button', { hasText: 'Sortear a frota' }).click();
+      await duda.locator('.naval-botoes .btn-primary:not([disabled])').click();
+      await duda.locator('.naval-mares').waitFor({ timeout: 8000 });
+    }
     if (jogo.casa) {
       // a vez pode ser do robô primeiro: espera a minha casa ficar livre e joga
       const casa = duda.locator(jogo.casa).first();

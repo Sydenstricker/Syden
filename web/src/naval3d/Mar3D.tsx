@@ -1,18 +1,31 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { estiloVisual } from '../Graficos';
-import type { MarDaCena, MarNaval3D } from './cena';
+import type { MarDaCena, MarNaval3D, ToquesDaMontagem } from './cena';
 
 /**
  * Um mar da Batalha naval em 3D (cena.ts), com o three.js num pedaço à parte. A grade de botões do 2D (`grade`) fica sempre
  * na página: à mostra até a cena ficar pronta (ou para sempre, sem WebGL ou no estilo 2D), e depois escondida só dos olhos,
  * para o teclado e o leitor de tela continuarem atirando por ela.
  */
-export function Mar3D({ dados, aoAtirar, grade }: { dados: MarDaCena; aoAtirar: (casa: number) => void; grade: ReactNode }) {
+export function Mar3D({
+  dados,
+  aoAtirar,
+  toques,
+  grade,
+}: {
+  dados: MarDaCena;
+  aoAtirar: (casa: number) => void;
+  /** Na montagem: os toques na cena (passar, apertar, soltar), que a tela transforma em pôr e mudar navios de lugar. */
+  toques?: ToquesDaMontagem;
+  grade: ReactNode;
+}) {
   const caixa = useRef<HTMLDivElement>(null);
   const cena = useRef<MarNaval3D | null>(null);
   const [estado, setEstado] = useState<'carregando' | 'pronta' | 'falhou'>(() => (estiloVisual() === '3d' && temWebGL() ? 'carregando' : 'falhou'));
   const atirar = useRef(aoAtirar);
   atirar.current = aoAtirar;
+  const toquesAgora = useRef(toques);
+  toquesAgora.current = toques;
   const ultimo = useRef(dados);
   ultimo.current = dados;
 
@@ -23,7 +36,11 @@ export function Mar3D({ dados, aoAtirar, grade }: { dados: MarDaCena; aoAtirar: 
     import('./cena')
       .then(async ({ MarNaval3D }) => {
         if (!viva || !caixa.current) return;
-        criada = new MarNaval3D(caixa.current, (casa) => atirar.current(casa));
+        criada = new MarNaval3D(caixa.current, (casa) => atirar.current(casa), {
+          passar: (casa) => toquesAgora.current?.passar(casa),
+          apertar: (casa) => toquesAgora.current?.apertar(casa),
+          soltar: (casa) => toquesAgora.current?.soltar(casa),
+        });
         criada.atualizar(ultimo.current);
         await criada.montar();
         if (!viva) return;
