@@ -579,6 +579,18 @@ simulação (só + − × ÷ e raiz, que dão o mesmo número em qualquer navega
 tacada perfeita. Troféu com `pista: 'golfe'`, os pontos sendo o total de tacadas. Testes: `server/test/minijogos-golfe.test.ts`,
 `web/test/golfe.test.ts` e `e2e/golfe.mjs`.
 
+**OS AJUSTES DO FLIPERAMA DE 05/11/2026 (pedidos dele, no mesmo dia):**
+- **O Minigolfe em perspectiva**, como a corrida (`web/src/golfe/mode7.ts`): a câmera atrás da bola, o chão é a mesa de cima lida
+  a cada quadro, a bandeira e as bolas de pé; a mesa de cima vira o mapa do canto. Na perspectiva, puxar para baixo é a força e
+  para o lado é a mira. A física não mudou.
+- **A Horta em cascata troca também na VERTICAL** (a jogada de tipo 2: a casa com a de baixo, só entre dois legumes parados; tecla C,
+  ou tocar e arrastar para cima ou para baixo). Mudou a regra nas duas cópias: servidor e site sobem juntos.
+- **A Briga mostra as teclas desenhadas** (as setas, Z, X, C) embaixo da fase; no toque, não.
+- **No Pulo, quem chegou assiste a quem ainda corre** (`seguir`/`aoAssistir` em `plataforma/laco.ts`), com ◀ ▶ para trocar.
+- **Efeitos sonoros em todos** (`web/src/somDosJogos.ts`, sintetizados, sem arquivo) e o alto-falante no cabeçalho do painel para
+  silenciar (lembrado no aparelho; "Desativar áudio" da chamada também cala). **Música, não:** a regra do "nunca fazer a nossa"
+  vale; entra quando houver trilha de terceiro com licença, e o mesmo botão já a silencia.
+
 **O TABULEIRO DA TURMA está feito (03/11/2026, o item 5):** `server/src/minijogo-tabuleiro-da-turma.ts`, `web/src/JogoTabuleiro.tsx`,
 só no Coletivo (2 a 8). Uma volta de 30 casas em volta de uma horta, desenhada por código; 5, 10 ou 15 rodadas. Na vez, cada
 um pede o dado (QUEM SORTEIA É O SERVIDOR), a peça anda na tela casa a casa, e a casa age: +3 cenouras, −3, ou um evento
