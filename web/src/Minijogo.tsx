@@ -1,4 +1,5 @@
-import { Gamepad2, Trophy, X } from 'lucide-react';
+import { Gamepad2, Trophy, Volume2, VolumeX, X } from 'lucide-react';
+import { aoMudarSomDosJogos, silenciarJogos, somDosJogosMudo, tocar } from './somDosJogos';
 import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { CapaDoJogo, CapaPalavraDoDia } from './CapasDosJogos';
@@ -87,6 +88,9 @@ const MEDALHAS = ['🥇', '🥈', '🥉'];
  * server/src/minijogo-robos.ts). Os de mesa (Cinco em linha, Mancala, Damas, Batalha naval) começam direto contra um robô; o
  * Cidades à venda e o Tabuleiro da turma perguntam junto com as rodadas.
  */
+/** Os jogos de vez, em que cada jogada é um clique na tela (o som dela toca aqui). */
+const JOGOS_DE_VEZ = new Set<string>(['gomoku', 'mancala', 'damas', 'naval', 'cidades', 'tabuleiro', 'xadrez', 'lobisomem']);
+
 const ROBOS_NO_SOLO: Partial<Record<IdDoJogo, OpcaoDeRobos[]>> = {
   domino: [cadaUmPorSi(1), cadaUmPorSi(2), EM_DUPLAS],
   truco: [cadaUmPorSi(1), EM_DUPLAS],
@@ -204,7 +208,31 @@ export function PainelDoMinijogo({
     setErro(null);
     return acao().catch((e) => setErro((e as Error).message));
   };
-  const agir = (corpo: Record<string, unknown>) => tentar(() => aoAgir(corpo));
+  // nos jogos de vez (de mesa, de cartas, de tabuleiro), cada jogada tem o seu som; nos de tempo real, quem toca é o jogo
+  const agir = (corpo: Record<string, unknown>) => {
+    const jogo = partida?.jogo;
+    if (jogo === 'truco' || jogo === 'domino') tocar('carta');
+    else if (jogo && JOGOS_DE_VEZ.has(jogo)) tocar('clique');
+    return tentar(() => aoAgir(corpo));
+  };
+  // O SOM DOS JOGOS (somDosJogos.ts): o botão de silenciar do cabeçalho, e os sons que todo jogo tem em comum — a vez que
+  // chega a mim, os dados que rolam, e o fim da partida. Os de cada jogo (o pulo, a tacada, o tiro) tocam no próprio jogo.
+  const [mudo, setMudo] = useState(somDosJogosMudo);
+  useEffect(() => aoMudarSomDosJogos(setMudo), []);
+  const p = partida as (Partida & { vez?: number | null; ultimo?: { id?: number; dados?: unknown } | null }) | null;
+  const minhaVez = !!p && !p.terminada && p.vez === eu;
+  const lances = p?.ultimo?.dados ? p.ultimo.id : undefined;
+  const terminou = !!p?.terminada;
+  const antes = useRef({ minhaVez, lances, terminou, id: p?.partidaId });
+  useEffect(() => {
+    const a = antes.current;
+    if (a.id === p?.partidaId) {
+      if (terminou && !a.terminou) tocar('fim');
+      else if (lances !== undefined && lances !== a.lances) tocar('dado');
+      else if (minhaVez && !a.minhaVez) tocar('vez');
+    }
+    antes.current = { minhaVez, lances, terminou, id: p?.partidaId };
+  }, [minhaVez, lances, terminou, p?.partidaId]);
   const restante = partida ? Math.max(0, partida.restanteMs - (agora - partida.recebidaEm)) : 0;
   const naEspera = Boolean(partida?.convite);
   const rodada =
@@ -236,6 +264,9 @@ export function PainelDoMinijogo({
           </div>
         )}
         {rodada && <span className="minijogo-rodada">{t('Rodada {n} de {total}', { n: rodada.rodada, total: rodada.rodadas })}</span>}
+        <button type="button" className="icon-plain" aria-label={t('Silenciar')} aria-pressed={mudo} title={t('Silenciar')} onClick={() => silenciarJogos(!mudo)}>
+          {mudo ? <VolumeX size={16} /> : <Volume2 size={16} />}
+        </button>
         <button type="button" className="icon-plain" aria-label={t('Fechar')} onClick={aoFechar}>
           <X size={16} />
         </button>

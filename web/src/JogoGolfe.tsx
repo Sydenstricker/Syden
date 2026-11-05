@@ -1,3 +1,4 @@
+import { tocar } from './somDosJogos';
 import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { useT } from './i18n';
@@ -216,6 +217,7 @@ function MesaDoGolfe({
     const tacada: Tacada = { passo: Math.max(bola.current.passo, passoDe(inicio.current, Date.now())), dx, dy };
     if (tacadaInvalida(bola.current, tacada)) return;
     bater(bola.current, tacada);
+    tocar('tacada');
     pendentes.current++;
     void Promise.resolve(agir({ tipo: 'tacada', ...tacada })).finally(() => {
       pendentes.current--;
@@ -251,7 +253,9 @@ function MesaDoGolfe({
       // a simulação alcança o relógio (com um teto por quadro, para a aba que volta de muito tempo parada)
       for (let k = 0; k < 900 && b.andando && b.passo < passoAgora; k++) avancar(buraco, b);
       if (!b.andando && tacadasAoRolar !== null) {
+        if (b.dentro) tocar('buraco');
         if (b.tacadas > tacadasAoRolar) {
+          tocar('agua');
           setMolhou(true);
           clearTimeout(avisoDaAgua);
           avisoDaAgua = setTimeout(() => setMolhou(false), 2200);

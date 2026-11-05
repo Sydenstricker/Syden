@@ -1,3 +1,4 @@
+import { tocar } from './somDosJogos';
 import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import {
@@ -309,6 +310,7 @@ function Palco({
         if (novo.comecou) {
           // o golpe que começou vai na hora, antes de qualquer acerto dele
           mandarPosicao(novo.comecou);
+          tocar(novo.comecou.golpe === 'especial' ? 'combo' : 'soco');
           if (novo.comecou.golpe === 'especial') efeitos.push({ tipo: 'giro', x: eu_.x, y: eu_.y, z: 0, em: agoraMs });
         }
         if (golpeAtivo(eu_) && eu_.golpe) {

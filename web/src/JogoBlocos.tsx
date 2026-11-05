@@ -1,3 +1,4 @@
+import { tocar } from './somDosJogos';
 import { ChevronsUp, Infinity as SemFim, Timer } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { ALTURA, desenharMiniatura, desenharTabuleiro, LARGURA, PECA, type Enfeites } from './blocos/desenho';
@@ -244,6 +245,7 @@ function MeuTabuleiro({ estado, eu, aoAgir }: { estado: EstadoBlocos & Partida; 
           }
         }
         if (n) g.avisos.push({ texto: r.cadeia >= 2 ? 'x' + r.cadeia : String(r.combo), x: x / n, y: y / n, idade: 0 });
+        if (n) tocar(r.cadeia >= 2 || r.combo >= 4 ? 'combo' : 'acerto');
       }
     };
     const quadroDoJogo = () => {

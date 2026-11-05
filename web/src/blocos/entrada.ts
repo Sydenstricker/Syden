@@ -1,3 +1,4 @@
+import { tocar } from '../somDosJogos';
 /**
  * HORTA EM CASCATA: as entradas da tela (a troca, o "subir") viram jogadas gravadas na partida, com as regras que o servidor
  * também confere (minijogo-blocos.ts): o ritmo e o intervalo entre trocas. Fica fora do componente para ser testado.
@@ -32,5 +33,6 @@ export function registrarEntrada(s: Sim.Simulacao, x: Entrada, n: number): boole
   if (x.vertical ? !Sim.podeTrocarNaVertical(s.e, x.l, x.c) : !Sim.podeTrocar(s.e, x.l, x.c)) return true;
   if (!Sim.cabeNoRitmo(s.jogadas, n) || !Sim.trocaNoIntervalo(s.jogadas, n)) return false;
   s.jogadas.push([n, x.vertical ? 2 : 0, x.l, x.c]);
+  tocar('clique');
   return true;
 }

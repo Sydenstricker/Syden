@@ -1,3 +1,4 @@
+import { tocar } from './somDosJogos';
 import { useEffect, useRef, useState } from 'react';
 import { useT } from './i18n';
 import { Placar, Relogio } from './Minijogo';
@@ -113,8 +114,10 @@ function Horta({ estado, eu, jogador, agir }: { estado: EstadoCaca & Partida; eu
     if (ultimoTiro.current && agoraMs - ultimoTiro.current.em < INTERVALO_MS) return;
     ultimoTiro.current = { x, y, em: agoraMs };
     setMunicao((n) => n - 1);
+    tocar('tiro');
     const i = pragaAtingida(pragas, abatidas.current, x, y, ms);
     if (i >= 0) {
+      tocar('acerto');
       abatidas.current.add(i);
       const p = pragas[i];
       const pos = posicao(p, ms)!;

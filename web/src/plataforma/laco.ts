@@ -1,3 +1,4 @@
+import { tocar } from '../somDosJogos';
 import { ALTURA, T, type Fase } from './fases';
 import { barraDoCaminho, H, pintar, prepararPintura, semaforo, W, type Figura } from './desenho';
 import { AMOSTRA, amostrar, fantasmaEm, novoCoelho, PASSO, passo, progresso, type Coelho, type Comandos } from './fisica';
@@ -128,7 +129,13 @@ export function rodarFase(o: OpcoesDoLaco): () => void {
       if (auto && !plano) plano = planejar(f, k) ?? [];
       const c = auto && plano ? (plano.shift() ?? { esquerda: false, direita: true, pula: false }) : o.comandos;
       const jaTinha = k.terminou;
+      const noChaoAntes = k.noChao;
+      const quedasAntes = k.quedas;
       passo(k, c, f);
+      if (k.molou) tocar('mola');
+      else if (noChaoAntes && !k.noChao && k.vy < 0) tocar('pulo');
+      if (k.quedas > quedasAntes) tocar('queda');
+      if (k.terminou && !jaTinha) tocar('chegada');
       if (!jaTinha) {
         amostrar(k, caminho);
         if ((k.passos - 1) % AMOSTRA === 0) {
