@@ -85,6 +85,13 @@ export interface OpcoesDoLaco {
   aoPosicao?: (p: PosicaoDoRival) => void;
   /** Um pouco depois de cruzar a chegada: os passos e o caminho inteiro. */
   aoChegar?: (passos: number, caminho: number[]) => void;
+  /**
+   * QUEM JÁ CHEGOU ASSISTE A QUEM AINDA CORRE (pedido dele, 05/11/2026: "quando o jogador terminar, seria legal ele ver a tela do
+   * amigo"): a câmera vai para o coelho de `seguir.id` (ou, sem escolha, para quem está mais adiante entre os que correm), e
+   * `aoAssistir` diz quem é e quem mais ainda corre (para trocar). Quando ninguém mais corre, volta para o próprio coelho.
+   */
+  seguir?: { id: number | null };
+  aoAssistir?: (alvo: { id: number; nome: string } | null, correndo: { id: number; nome: string }[]) => void;
 }
 
 export function rodarFase(o: OpcoesDoLaco): () => void {
@@ -107,6 +114,7 @@ export function rodarFase(o: OpcoesDoLaco): () => void {
     let pausado = false;
     let ordemAntes = '';
     let nAssistindo = 0;
+    let assistindoAntes = '';
     // o piloto automático (só no site de desenvolvimento, para o e2e): planeja a fase inteira uma vez
     let plano: Comandos[] | null = null;
 
@@ -145,6 +153,17 @@ export function rodarFase(o: OpcoesDoLaco): () => void {
       if (!o.piloto) {
         const lider = [...rivais].sort((a, b) => b.pos.andou - a.pos.andou)[0];
         foco = lider ? lider.pos : f.largada;
+      }
+      if (o.piloto && k.terminou && o.rivais && o.aoAssistir) {
+        const correndo = rivais.filter((r) => r.pos.andou < 0.999).sort((a, b) => b.pos.andou - a.pos.andou);
+        const alvo = correndo.find((r) => r.id === o.seguir?.id) ?? correndo[0];
+        if (alvo) foco = alvo.pos;
+        if (o.seguir) o.seguir.id = alvo?.id ?? null;
+        const chave = (alvo?.id ?? '') + '|' + correndo.map((r) => r.id).join(',');
+        if (chave !== assistindoAntes) {
+          assistindoAntes = chave;
+          o.aoAssistir(alvo ? { id: alvo.id, nome: alvo.nome } : null, correndo.map((r) => ({ id: r.id, nome: r.nome })));
+        }
       }
       // a câmera: o coelho um pouco à esquerda do meio (vê-se o que vem), e no alto só o que a fase tem
       const alvoX = Math.max(0, Math.min(f.colunas * T - W, foco.x - 130));

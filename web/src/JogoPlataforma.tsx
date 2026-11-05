@@ -522,6 +522,15 @@ function FaseDaSala({
   const [placar, setPlacar] = usePlacar();
   const [ordem, setOrdem] = useState<LinhaDaOrdem[]>([]);
   const [chegou, setChegou] = useState(false);
+  // depois de chegar, a câmera vai para quem ainda corre (o laço escolhe; as setas e os botões trocam)
+  const seguir = useRef<{ id: number | null }>({ id: null });
+  const [assistindo, setAssistindo] = useState<{ alvo: { id: number; nome: string } | null; correndo: { id: number; nome: string }[] }>({ alvo: null, correndo: [] });
+  const trocarDeAmigo = (passo: number) => {
+    const lista = assistindo.correndo;
+    if (lista.length < 2) return;
+    const i = Math.max(0, lista.findIndex((r) => r.id === assistindo.alvo?.id));
+    seguir.current.id = lista[(i + passo + lista.length) % lista.length].id;
+  };
   // ABERTA NO MEIO DA FASE (a página recarregada, o painel aberto depois do verde): esta fase a pessoa ASSISTE (revisão
   // independente, 03/11/2026). Antes ela corria de novo do passo 0, com o relógio limpo, como se fosse a primeira vez; o
   // servidor não aceita mais essa chegada, e a tela não finge que ela conta. Na copa, a fase seguinte monta de novo, na
@@ -579,6 +588,8 @@ function FaseDaSala({
       aoPlacar: setPlacar,
       aoOrdem: setOrdem,
       aoPosicao: enviar,
+      seguir: seguir.current,
+      aoAssistir: (alvo, correndo) => setAssistindo({ alvo, correndo }),
       aoChegar: (passos, caminho) => {
         if (acabou.current) return;
         setChegou(true);
@@ -592,6 +603,17 @@ function FaseDaSala({
 
   const nomeDe = (id: number) => estado.pilotos.find((p) => p.userId === id)?.username ?? '';
   const comTempos = chegou || fim;
+  // chegou e há amigo correndo: a tela é a dele, e os tempos vão para o canto
+  const vendoAmigo = chegou && !fim && assistindo.alvo !== null;
+  useEffect(() => {
+    if (!vendoAmigo) return;
+    const tecla = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') trocarDeAmigo(-1);
+      else if (e.key === 'ArrowRight') trocarDeAmigo(1);
+    };
+    window.addEventListener('keydown', tecla);
+    return () => window.removeEventListener('keydown', tecla);
+  });
   const ficaram = estado.pilotos.filter((p) => p.posicao !== null).length;
 
   return (
@@ -609,8 +631,23 @@ function FaseDaSala({
           </ol>
         )}
         {!fim && piloto && !chegou && <BotoesDeToque controles={controles} />}
+        {vendoAmigo && (
+          <div className="pulo-assistindo">
+            {assistindo.correndo.length > 1 && (
+              <button type="button" aria-label="◀" onClick={() => trocarDeAmigo(-1)}>
+                ◀
+              </button>
+            )}
+            <span>{t('Assistindo {pessoa}', { pessoa: assistindo.alvo!.nome })}</span>
+            {assistindo.correndo.length > 1 && (
+              <button type="button" aria-label="▶" onClick={() => trocarDeAmigo(1)}>
+                ▶
+              </button>
+            )}
+          </div>
+        )}
         {comTempos && (
-          <div className="corrida-fim">
+          <div className={vendoAmigo ? 'corrida-fim pulo-fim-no-canto' : 'corrida-fim'}>
             <ol className="corrida-classificacao">
               {estado.pilotos.map((p) => (
                 <li key={p.userId} className={[p.userId === eu ? 'eu' : '', fim && p.posicao === null ? 'pulo-saiu' : ''].join(' ').trim() || undefined}>
