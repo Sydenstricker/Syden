@@ -196,7 +196,7 @@ export function JogoDomino({ estado: bruto, eu, jogador, restante, agir }: { est
   const aberto = estado.fase !== 'jogando' && r;
 
   return (
-    <div className={`domino-jogo${cena === 'pronta' ? ' mesa3d-com-cena' : ''}`}>
+    <div className={`domino-jogo${cena !== 'falhou' ? ' mesa3d-com-cena' : ''}`}>
       <div className="dom-topo">
         <ol className="dom-placar" aria-label={t('Placar')}>
           {estado.placar.map((p) => (
@@ -227,7 +227,7 @@ export function JogoDomino({ estado: bruto, eu, jogador, restante, agir }: { est
       </ul>
 
       {cena !== 'falhou' && (
-        <div className={`mesa3d-domino${cena === 'pronta' ? '' : ' escondida'}`}>
+        <div className="mesa3d-domino">
           <div ref={caixa} className="mesa3d-caixa" />
         </div>
       )}

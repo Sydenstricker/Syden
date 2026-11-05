@@ -2621,6 +2621,8 @@ export default {
   'Mão de ferro: sem truco.': 'የብረት እጅ፦ ትሩኮ የለም።',
   'Jogar coberta': 'ተገልብጦ መጫወት',
   'Esperando a resposta.': 'መልሱን በመጠበቅ ላይ።',
+  'Aceitou!': 'ተቀብሏል!',
+  'Correu!': 'ሸሸ!',
   '{nome} jogou {pedra}.': '{nome} {pedra} ተጫውተዋል።',
   '{nome} comprou uma pedra.': '{nome} አንድ ድንጋይ ወስደዋል።',
   '{nome} passou.': '{nome} አሳልፈዋል።',

@@ -221,7 +221,7 @@ function Tabuleiro3D({ dados, aoClicar, reserva }: { dados: XadrezDaCena; aoClic
   return (
     <div className="xadrez-3d">
       <div ref={caixa} className={`xadrez-3d-caixa${estado === 'pronta' ? '' : ' escondida'}`} />
-      <div className={estado === 'pronta' ? 'naval-3d-grade-acessivel' : 'xadrez-3d-reserva'}>{reserva}</div>
+      <div className="naval-3d-grade-acessivel">{reserva}</div>
     </div>
   );
 }

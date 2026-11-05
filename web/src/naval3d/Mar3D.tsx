@@ -52,7 +52,7 @@ export function Mar3D({ dados, aoAtirar, grade }: { dados: MarDaCena; aoAtirar: 
   return (
     <div className="naval-3d">
       <div ref={caixa} className={`naval-3d-caixa${estado === 'pronta' ? '' : ' escondida'}`} />
-      <div className={estado === 'pronta' ? 'naval-3d-grade-acessivel' : 'naval-3d-grade-reserva'}>{grade}</div>
+      <div className="naval-3d-grade-acessivel">{grade}</div>
     </div>
   );
 }

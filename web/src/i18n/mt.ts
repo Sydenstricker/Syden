@@ -2637,6 +2637,8 @@ export default {
   'Mão de ferro: sem truco.': 'Id tal-ħadid: bla truco.',
   'Jogar coberta': 'Ilgħab mgħottija',
   'Esperando a resposta.': 'Qed nistennew it-tweġiba.',
+  'Aceitou!': 'Aċċettat!',
+  'Correu!': 'Ħarab!',
   '{nome} jogou {pedra}.': '{nome} lagħab {pedra}.',
   '{nome} comprou uma pedra.': '{nome} ġibed biċċa.',
   '{nome} passou.': '{nome} għadda.',

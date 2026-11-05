@@ -2691,6 +2691,8 @@ export default {
   'Mão de ferro: sem truco.': 'Rautakäsi: ei trucoa.',
   'Jogar coberta': 'Pelaa kuvapuoli alas',
   'Esperando a resposta.': 'Odotetaan vastausta.',
+  'Aceitou!': 'Hyväksytty!',
+  'Correu!': 'Pakeni!',
   '{nome} jogou {pedra}.': '{nome} pelasi {pedra}.',
   '{nome} comprou uma pedra.': '{nome} nosti laatan.',
   '{nome} passou.': '{nome} passasi.',

@@ -2620,6 +2620,8 @@ export default {
   'Mão de ferro: sem truco.': 'Mkono wa chuma: hakuna truco.',
   'Jogar coberta': 'Cheza imefunikwa',
   'Esperando a resposta.': 'Tunasubiri jibu.',
+  'Aceitou!': 'Amekubali!',
+  'Correu!': 'Amekimbia!',
   '{nome} jogou {pedra}.': '{nome} amecheza {pedra}.',
   '{nome} comprou uma pedra.': '{nome} amechukua kipande.',
   '{nome} passou.': '{nome} amepita.',

@@ -2603,6 +2603,8 @@ export default {
   'Mão de ferro: sem truco.': 'ఇనుప చేయి: ట్రూకో లేదు.',
   'Jogar coberta': 'బోర్లించి ఆడు',
   'Esperando a resposta.': 'జవాబు కోసం ఎదురుచూస్తోంది.',
+  'Aceitou!': 'అంగీకరించారు!',
+  'Correu!': 'పారిపోయారు!',
   '{nome} jogou {pedra}.': '{nome} {pedra} వేశారు.',
   '{nome} comprou uma pedra.': '{nome} ఒక రాయి తీసుకున్నారు.',
   '{nome} passou.': '{nome} పాస్ చేశారు.',

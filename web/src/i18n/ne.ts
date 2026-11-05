@@ -2693,6 +2693,8 @@ export default {
   'Mão de ferro: sem truco.': 'फलामे हात: ट्रुको छैन।',
   'Jogar coberta': 'पत्ती घोप्टो खेल्नुहोस्',
   'Esperando a resposta.': 'जवाफ पर्खँदै।',
+  'Aceitou!': 'स्वीकार!',
+  'Correu!': 'भाग्यो!',
   '{nome} jogou {pedra}.': '{nome}ले {pedra} खेले।',
   '{nome} comprou uma pedra.': '{nome}ले एउटा गोटी उठाए।',
   '{nome} passou.': '{nome}ले पालो छाडे।',

@@ -2693,6 +2693,8 @@ export default {
   'Mão de ferro: sem truco.': 'Vasleosztás: nincs truco.',
   'Jogar coberta': 'Lefordítva játszom',
   'Esperando a resposta.': 'Válaszra várunk.',
+  'Aceitou!': 'Elfogadva!',
+  'Correu!': 'Megfutamodott!',
   '{nome} jogou {pedra}.': '{nome} letette: {pedra}.',
   '{nome} comprou uma pedra.': '{nome} húzott egy követ.',
   '{nome} passou.': '{nome} passzolt.',

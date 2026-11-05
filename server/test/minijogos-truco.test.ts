@@ -271,6 +271,8 @@ test('o truco: aceitar vale 3, e só quem aceitou aumenta depois', () => {
   assert.equal(j.acao(A, { tipo: 'aceitar' }), 'Quem responde é o outro lado.');
   assert.equal(j.acao(A, { tipo: 'jogar', carta: '3o' }), 'Espere a resposta do truco.');
   j.ok(B, { tipo: 'aceitar' });
+  // a tela anuncia quem aceitou e quanto vale (05/11/2026)
+  assert.deepEqual({ ...(j.estado(A).ultimo as object), id: 0 }, { tipo: 'aceitou', lugar: 1, valor: 3, id: 0 });
   assert.equal(j.estado(A).valor, 3);
   assert.equal(j.estado(A).fase, 'jogando');
   // A pediu: agora só B (que aceitou) pode aumentar

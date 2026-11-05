@@ -2620,6 +2620,8 @@ export default {
   'Mão de ferro: sem truco.': 'IJzeren hand: geen truco.',
   'Jogar coberta': 'Gedekt spelen',
   'Esperando a resposta.': 'Wachten op het antwoord.',
+  'Aceitou!': 'Geaccepteerd!',
+  'Correu!': 'Gevlucht!',
   '{nome} jogou {pedra}.': '{nome} legde {pedra}.',
   '{nome} comprou uma pedra.': '{nome} pakte een steen.',
   '{nome} passou.': '{nome} paste.',

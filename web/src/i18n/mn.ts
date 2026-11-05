@@ -2705,6 +2705,8 @@ export default {
   'Mão de ferro: sem truco.': 'Төмөр гар: трукогүй.',
   'Jogar coberta': 'Далд тоглох',
   'Esperando a resposta.': 'Хариу хүлээж байна.',
+  'Aceitou!': 'Зөвшөөрлөө!',
+  'Correu!': 'Зугтлаа!',
   '{nome} jogou {pedra}.': '{nome} {pedra} чулуу тавилаа.',
   '{nome} comprou uma pedra.': '{nome} нэг чулуу авлаа.',
   '{nome} passou.': '{nome} өнжлөө.',

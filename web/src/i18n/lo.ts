@@ -2692,6 +2692,8 @@ export default {
   'Mão de ferro: sem truco.': 'ມືເຫຼັກ: ຫ້າມທຣູໂກ.',
   'Jogar coberta': 'ຫຼິ້ນແບບຄວ່ຳ',
   'Esperando a resposta.': 'ກຳລັງລໍຖ້າຄຳຕອບ.',
+  'Aceitou!': 'ຮັບ!',
+  'Correu!': 'ແລ່ນໜີ!',
   '{nome} jogou {pedra}.': '{nome} ລົງ {pedra}.',
   '{nome} comprou uma pedra.': '{nome} ຈົກໂດມິໂນ 1 ໂຕ.',
   '{nome} passou.': '{nome} ຜ່ານ.',

@@ -2621,6 +2621,8 @@ export default {
   'Mão de ferro: sem truco.': 'Pusingan besi: tiada truco.',
   'Jogar coberta': 'Main tertutup',
   'Esperando a resposta.': 'Menunggu jawapan.',
+  'Aceitou!': 'Diterima!',
+  'Correu!': 'Lari!',
   '{nome} jogou {pedra}.': '{nome} main {pedra}.',
   '{nome} comprou uma pedra.': '{nome} ambil satu buah.',
   '{nome} passou.': '{nome} lepas giliran.',

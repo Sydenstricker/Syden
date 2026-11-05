@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useT } from './i18n';
 import { Relogio } from './Minijogo';
 import type { Partida } from './minijogos';
@@ -49,6 +49,7 @@ export interface EstadoTruco {
         | { tipo: 'mao'; time: 0 | 1 | null; pontos: number }
         | { tipo: 'correu' | 'onze-correu'; lugar: number | null; time: 0 | 1; pontos: number }
         | { tipo: 'onze-jogar'; lugar: number | null }
+        | { tipo: 'aceitou'; lugar: number; valor: number }
       ))
     | null;
 }
@@ -85,12 +86,45 @@ function Carta({ carta, manilha, coberta, pequena, onClick, desligada }: { carta
   );
 }
 
+/**
+ * O ANÚNCIO DA RESPOSTA (05/11/2026, pedido dele: "aparecer na tela se ele aceitou ou correu, para dar mais dinamismo"): o nome
+ * e "Aceitou!" ou "Correu!", grande no meio da mesa como o grito, por 2,2 s. Vem do `ultimo` do servidor, pelo id: cada
+ * resposta aparece uma vez, e quem abre a mesa depois não vê a velha.
+ */
+function useAnuncio(ultimo: EstadoTruco['ultimo']) {
+  const [anuncio, setAnuncio] = useState<{ id: number; lugar: number | null; tipo: 'aceitou' | 'correu' } | null>(null);
+  const [visto] = useState(() => ultimo?.id ?? 0);
+  const id = ultimo?.id ?? 0;
+  useEffect(() => {
+    if (!ultimo || id <= visto) return;
+    if (ultimo.tipo !== 'aceitou' && ultimo.tipo !== 'correu' && ultimo.tipo !== 'onze-correu') return;
+    setAnuncio({ id, lugar: ultimo.lugar, tipo: ultimo.tipo === 'aceitou' ? 'aceitou' : 'correu' });
+    const fim = setTimeout(() => setAnuncio((a) => (a?.id === id ? null : a)), 2200);
+    return () => clearTimeout(fim);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+  return anuncio;
+}
+
 export function JogoTruco({ estado: partida, eu, jogador, restante, agir }: { estado: Partida; eu: number; jogador: boolean; restante: number; agir: (corpo: Record<string, unknown>) => void }) {
   const t = useT();
   const estado = partida as unknown as EstadoTruco;
   const [coberta, setCoberta] = useState(false);
-  const minhaVez3d = jogador && estado.fase === 'jogando' && estado.vez === eu;
-  const mao3d = jogador && Array.isArray(estado.mao) ? estado.mao : [];
+  const anuncio = useAnuncio(estado.ultimo);
+  // A CARTA SAI NA HORA DO CLIQUE (05/11/2026, relato dele: "demora para aparecer a carta jogada"): a cena já a põe na mesa
+  // antes de o servidor responder (~200 ms até a Alemanha); a resposta só confirma. Se ele recusar, a próxima mudança do
+  // estado a devolve à mão.
+  const [jogada, setJogada] = useState<{ carta: string; coberta: boolean; versao: string } | null>(null);
+  const versao = JSON.stringify([estado.mesa, estado.mao, estado.fase]);
+  useEffect(() => {
+    if (jogada && jogada.versao !== versao) setJogada(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [versao]);
+  const minhaVez3d = jogador && estado.fase === 'jogando' && estado.vez === eu && !jogada;
+  const maoDoServidor = jogador && Array.isArray(estado.mao) ? estado.mao : [];
+  const mao3d = jogada ? maoDoServidor.filter((c) => c !== jogada.carta) : maoDoServidor;
+  const mesaDoServidor = Array.isArray(estado.mesa) ? estado.mesa : [];
+  const mesa3d = jogada && estado.meuLugar !== null ? [...mesaDoServidor, { lugar: estado.meuLugar, carta: jogada.carta, coberta: jogada.coberta }] : mesaDoServidor;
   // a mesa em 3D (mesa3d/truco.ts): as cartas na cena, e as de HTML só para o teclado e o leitor de tela
   const { caixa, estado: cena } = useCena3D<TrucoDaCena>(
     importarTruco,
@@ -102,7 +136,7 @@ export function JogoTruco({ estado: partida, eu, jogador, restante, agir }: { es
       maoClicavel: minhaVez3d,
       manilha: estado.manilha,
       vira: estado.vira,
-      mesa: Array.isArray(estado.mesa) ? estado.mesa : [],
+      mesa: mesa3d,
     },
     (k) => {
       const carta = mao3d[k];
@@ -131,7 +165,9 @@ export function JogoTruco({ estado: partida, eu, jogador, restante, agir }: { es
   const fim = estado.fase === 'fim';
 
   const jogarCarta = (carta: string) => {
-    agir({ tipo: 'jogar', carta, coberta: coberta && estado.possoCobrir });
+    const cobre = coberta && estado.possoCobrir;
+    setJogada({ carta, coberta: cobre, versao });
+    agir({ tipo: 'jogar', carta, coberta: cobre });
     setCoberta(false);
   };
 
@@ -164,7 +200,7 @@ export function JogoTruco({ estado: partida, eu, jogador, restante, agir }: { es
         </span>
       </div>
 
-      <div className={`truco-mesa jogadores-${n}${cena === 'pronta' ? ' mesa3d-truco' : ''}`}>
+      <div className={`truco-mesa jogadores-${n}${cena !== 'falhou' ? ' mesa3d-truco' : ''}`}>
         {cena !== 'falhou' && <div ref={caixa} className={`mesa3d-caixa${cena === 'pronta' ? '' : ' escondida'}`} />}
         {estado.lugares.map((l) => {
           const pos = posicaoDe(l.lugar);
@@ -198,6 +234,12 @@ export function JogoTruco({ estado: partida, eu, jogador, restante, agir }: { es
           ))}
         </div>
 
+        {anuncio && !(estado.fase === 'truco' && estado.pedido) && (
+          <div key={anuncio.id} className={`truco-grito truco-anuncio ${anuncio.tipo}`} aria-live="assertive">
+            <span className="minijogo-nome">{nomeDe(anuncio.lugar)}</span>
+            <strong>{anuncio.tipo === 'aceitou' ? t('Aceitou!') : t('Correu!')}</strong>
+          </div>
+        )}
         {estado.fase === 'truco' && estado.pedido && (
           <div className="truco-grito" aria-live="assertive">
             <span className="minijogo-nome">{nomeDe(estado.pedido.lugar)}</span>
@@ -296,7 +338,7 @@ export function JogoTruco({ estado: partida, eu, jogador, restante, agir }: { es
       </div>
 
       {jogador && estado.mao.length > 0 && (
-        <div className={`truco-mao${coberta && estado.possoCobrir ? ' cobrindo' : ''}${cena === 'pronta' ? ' mesa3d-truco-mao' : ''}`}>
+        <div className={`truco-mao${coberta && estado.possoCobrir ? ' cobrindo' : ''}${cena !== 'falhou' ? ' mesa3d-truco-mao' : ''}`}>
           {estado.mao.map((c) => (
             <Carta key={c} carta={c} manilha={estado.manilha} onClick={() => jogarCarta(c)} desligada={!minhaVez} />
           ))}

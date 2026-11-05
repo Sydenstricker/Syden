@@ -2691,6 +2691,8 @@ export default {
   'Mão de ferro: sem truco.': 'යකඩ අත: ට්‍රූකෝ නැත.',
   'Jogar coberta': 'යටිකුරු කර දමන්න',
   'Esperando a resposta.': 'පිළිතුර බලාපොරොත්තුවෙන්.',
+  'Aceitou!': 'පිළිගත්තා!',
+  'Correu!': 'පැනගත්තා!',
   '{nome} jogou {pedra}.': '{nome} {pedra} දැම්මා.',
   '{nome} comprou uma pedra.': '{nome} කැටයක් ගත්තා.',
   '{nome} passou.': '{nome} පාස් කළා.',

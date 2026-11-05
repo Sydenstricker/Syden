@@ -2692,6 +2692,8 @@ export default {
   'Mão de ferro: sem truco.': 'Járnhönd: ekkert truco.',
   'Jogar coberta': 'Spila á hvolfi',
   'Esperando a resposta.': 'Beðið eftir svari.',
+  'Aceitou!': 'Samþykkt!',
+  'Correu!': 'Flúið!',
   '{nome} jogou {pedra}.': '{nome} lagði {pedra}.',
   '{nome} comprou uma pedra.': '{nome} dró kubb.',
   '{nome} passou.': '{nome} sagði pass.',

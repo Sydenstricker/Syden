@@ -2661,6 +2661,8 @@ export default {
   'Mão de ferro: sem truco.': 'Harka sibiilaa: truco hin jiru.',
   'Jogar coberta': 'Haguugamee taphadhu',
   'Esperando a resposta.': 'Deebii eegaa jirra.',
+  'Aceitou!': 'Fudhate!',
+  'Correu!': 'Baqate!',
   '{nome} jogou {pedra}.': '{nome}: {pedra} taphatame.',
   '{nome} comprou uma pedra.': '{nome}: dhagaan tokko fudhatame.',
   '{nome} passou.': 'Darbuu: {nome}.',

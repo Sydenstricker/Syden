@@ -2620,6 +2620,8 @@ export default {
   'Mão de ferro: sem truco.': 'Mano di ferro: niente truco.',
   'Jogar coberta': 'Gioca coperta',
   'Esperando a resposta.': 'In attesa della risposta.',
+  'Aceitou!': 'Accettato!',
+  'Correu!': 'Fuga!',
   '{nome} jogou {pedra}.': '{nome} ha giocato {pedra}.',
   '{nome} comprou uma pedra.': '{nome} ha pescato una tessera.',
   '{nome} passou.': '{nome} ha passato.',

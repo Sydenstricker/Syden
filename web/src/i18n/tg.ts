@@ -2701,6 +2701,8 @@ export default {
   'Mão de ferro: sem truco.': 'Дасти оҳанин: бе труко.',
   'Jogar coberta': 'Пӯшида бозӣ кардан',
   'Esperando a resposta.': 'Интизори ҷавоб.',
+  'Aceitou!': 'Қабул шуд!',
+  'Correu!': 'Гурехт!',
   '{nome} jogou {pedra}.': '{nome} санги {pedra}-ро гузошт.',
   '{nome} comprou uma pedra.': '{nome} як санг гирифт.',
   '{nome} passou.': '{nome} гузашт.',

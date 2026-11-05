@@ -2683,6 +2683,8 @@ export default {
   'Mão de ferro: sem truco.': 'Dora e hekurt: pa truco.',
   'Jogar coberta': 'Luaj përmbys',
   'Esperando a resposta.': 'Në pritje të përgjigjes.',
+  'Aceitou!': 'Pranuar!',
+  'Correu!': 'Iku!',
   '{nome} jogou {pedra}.': '{nome} luajti {pedra}.',
   '{nome} comprou uma pedra.': '{nome} tërhoqi një gur.',
   '{nome} passou.': '{nome} kaloi.',

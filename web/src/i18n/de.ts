@@ -2645,6 +2645,8 @@ export default {
   'Mão de ferro: sem truco.': 'Eiserne Hand: kein Truco.',
   'Jogar coberta': 'Verdeckt spielen',
   'Esperando a resposta.': 'Warten auf die Antwort.',
+  'Aceitou!': 'Angenommen!',
+  'Correu!': 'Abgehauen!',
   '{nome} jogou {pedra}.': '{nome} hat {pedra} gelegt.',
   '{nome} comprou uma pedra.': '{nome} hat einen Stein gezogen.',
   '{nome} passou.': '{nome} hat gepasst.',

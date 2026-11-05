@@ -2627,6 +2627,8 @@ export default {
   'Mão de ferro: sem truco.': 'Nima ukamea: ʻikai ha truco.',
   'Jogar coberta': 'Vaʻinga fakafulifulihi',
   'Esperando a resposta.': 'ʻOku tatali ki he tali.',
+  'Aceitou!': 'Tali!',
+  'Correu!': 'Hola!',
   '{nome} jogou {pedra}.': 'Kuo vaʻinga ʻa {nome} ʻaki ʻa e {pedra}.',
   '{nome} comprou uma pedra.': 'Kuo toʻo ʻe {nome} ha maka.',
   '{nome} passou.': 'Kuo pāsi ʻa {nome}.',

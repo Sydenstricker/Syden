@@ -2639,6 +2639,8 @@ export default {
   'Mão de ferro: sem truco.': 'Железная рука: без труко.',
   'Jogar coberta': 'Играть рубашкой вверх',
   'Esperando a resposta.': 'Ждём ответа.',
+  'Aceitou!': 'Принято!',
+  'Correu!': 'Побег!',
   '{nome} jogou {pedra}.': '{nome} кладёт {pedra}.',
   '{nome} comprou uma pedra.': '{nome} берёт кость из базара.',
   '{nome} passou.': '{nome}: пас.',

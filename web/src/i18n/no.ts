@@ -2691,6 +2691,8 @@ export default {
   'Mão de ferro: sem truco.': 'Jernhånd: ingen truco.',
   'Jogar coberta': 'Spill skjult',
   'Esperando a resposta.': 'Venter på svaret.',
+  'Aceitou!': 'Godtatt!',
+  'Correu!': 'Løp!',
   '{nome} jogou {pedra}.': '{nome} la {pedra}.',
   '{nome} comprou uma pedra.': '{nome} trakk en brikke.',
   '{nome} passou.': '{nome} meldte pass.',

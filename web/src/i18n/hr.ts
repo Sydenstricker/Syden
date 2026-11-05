@@ -2690,6 +2690,8 @@ export default {
   'Mão de ferro: sem truco.': 'Željezna ruka: bez truca.',
   'Jogar coberta': 'Igraj pokriveno',
   'Esperando a resposta.': 'Čeka se odgovor.',
+  'Aceitou!': 'Prihvaćeno!',
+  'Correu!': 'Bijeg!',
   '{nome} jogou {pedra}.': '{nome} igra {pedra}.',
   '{nome} comprou uma pedra.': '{nome} vuče pločicu.',
   '{nome} passou.': '{nome} preskače.',

@@ -19041,6 +19041,32 @@ body.arrastando-barra {
   }
 }
 
+/* O nome em cima do grito: sem o flex: 1 de .minijogo-nome, que numa coluna esticava o nome e mandava o grito ao pé da mesa. */
+.truco-grito .minijogo-nome {
+  flex: none;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.5);
+}
+
+/* O anúncio da resposta (aceitou / correu): o mesmo grito, em verde ou vermelho, e some sozinho no fim. */
+.truco-anuncio {
+  animation:
+    truco-grito 0.35s cubic-bezier(0.2, 1.6, 0.4, 1),
+    truco-anuncio-sai 0.4s ease-in 1.8s forwards;
+}
+.truco-anuncio.aceitou strong {
+  color: #8fe07a;
+}
+.truco-anuncio.correu strong {
+  color: #ff8a7a;
+}
+@keyframes truco-anuncio-sai {
+  to {
+    opacity: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .truco-grito,
   .truco-jogada {
@@ -19250,6 +19276,8 @@ body.arrastando-barra {
   aspect-ratio: 1 / 0.9;
   border-radius: 8px;
   overflow: hidden;
+  /* a cor do céu da cena: enquanto ela carrega, a caixa já é o mar, e não o 2D piscando antes */
+  background: #bfe4f2;
 }
 .naval-3d-caixa {
   position: absolute;
@@ -19348,6 +19376,7 @@ body.arrastando-barra {
   margin: 0 auto;
   border-radius: 10px;
   overflow: hidden;
+  background: #2b2430;
 }
 .xadrez-3d-caixa,
 .xadrez-3d-reserva {

@@ -2675,6 +2675,8 @@ export default {
   'Mão de ferro: sem truco.': 'יד ברזל: בלי טרוקו.',
   'Jogar coberta': 'לשחק הפוך',
   'Esperando a resposta.': 'מחכים לתשובה.',
+  'Aceitou!': 'התקבל!',
+  'Correu!': 'בריחה!',
   '{nome} jogou {pedra}.': 'התור של {nome}: {pedra}.',
   '{nome} comprou uma pedra.': 'אבן חדשה ל־{nome}.',
   '{nome} passou.': '{nome}: פס.',

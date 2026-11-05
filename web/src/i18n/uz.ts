@@ -2711,6 +2711,8 @@ export default {
   'Mão de ferro: sem truco.': 'Temir qoʻl: truco yoʻq.',
   'Jogar coberta': 'Yopiq oʻynash',
   'Esperando a resposta.': 'Javob kutilmoqda.',
+  'Aceitou!': 'Qabul qildi!',
+  'Correu!': 'Qochdi!',
   '{nome} jogou {pedra}.': '{nome} {pedra} toshini qoʻydi.',
   '{nome} comprou uma pedra.': '{nome} bitta tosh oldi.',
   '{nome} passou.': '{nome} oʻtkazib yubordi.',

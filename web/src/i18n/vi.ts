@@ -2591,6 +2591,8 @@ export default {
   'Mão de ferro: sem truco.': 'Ván sắt: không được gọi truco.',
   'Jogar coberta': 'Đánh úp',
   'Esperando a resposta.': 'Đang chờ trả lời.',
+  'Aceitou!': 'Chấp nhận!',
+  'Correu!': 'Bỏ chạy!',
   '{nome} jogou {pedra}.': '{nome} đã đánh {pedra}.',
   '{nome} comprou uma pedra.': '{nome} đã bốc một quân.',
   '{nome} passou.': '{nome} bỏ lượt.',

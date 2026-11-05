@@ -2686,6 +2686,8 @@ export default {
   'Mão de ferro: sem truco.': 'Żelazna ręka: bez truco.',
   'Jogar coberta': 'Zagraj zakrytą',
   'Esperando a resposta.': 'Czekamy na odpowiedź.',
+  'Aceitou!': 'Przyjęte!',
+  'Correu!': 'Ucieczka!',
   '{nome} jogou {pedra}.': '{nome} kładzie {pedra}.',
   '{nome} comprou uma pedra.': '{nome} dobiera kostkę.',
   '{nome} passou.': '{nome} pasuje.',

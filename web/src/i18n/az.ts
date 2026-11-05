@@ -2662,6 +2662,8 @@ export default {
   'Mão de ferro: sem truco.': 'Dəmir əl: truco yoxdur.',
   'Jogar coberta': 'Üzüqoylu oyna',
   'Esperando a resposta.': 'Cavab gözlənilir.',
+  'Aceitou!': 'Qəbul etdi!',
+  'Correu!': 'Qaçdı!',
   '{nome} jogou {pedra}.': '{nome} {pedra} daşını qoydu.',
   '{nome} comprou uma pedra.': '{nome} bir daş götürdü.',
   '{nome} passou.': '{nome} keçdi.',

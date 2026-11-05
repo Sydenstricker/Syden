@@ -2695,6 +2695,8 @@ export default {
   'Mão de ferro: sem truco.': 'Темір қол: трукосыз.',
   'Jogar coberta': 'Жабық ойнау',
   'Esperando a resposta.': 'Жауап күтілуде.',
+  'Aceitou!': 'Қабылдады!',
+  'Correu!': 'Қашты!',
   '{nome} jogou {pedra}.': '{nome} {pedra} тасын қойды.',
   '{nome} comprou uma pedra.': '{nome} бір тас алды.',
   '{nome} passou.': '{nome} өткізіп жіберді.',

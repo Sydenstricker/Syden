@@ -2636,6 +2636,8 @@ export default {
   'Mão de ferro: sem truco.': 'Ọwọ́ irin: kò sí truco.',
   'Jogar coberta': 'Ṣeré ní dídojúbolẹ̀',
   'Esperando a resposta.': 'À ń dúró de ìdáhùn.',
+  'Aceitou!': 'Ó gbà á!',
+  'Correu!': 'Ó sá!',
   '{nome} jogou {pedra}.': '{nome} ti ta {pedra}.',
   '{nome} comprou uma pedra.': '{nome} ti mú òkúta kan.',
   '{nome} passou.': '{nome} ti kọjá.',

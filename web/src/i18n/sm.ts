@@ -2625,6 +2625,8 @@ export default {
   'Mão de ferro: sem truco.': 'Lima uʻamea: leai se truco.',
   'Jogar coberta': 'Taʻalo faʻafao',
   'Esperando a resposta.': 'Faʻatali i le tali.',
+  'Aceitou!': 'Talia!',
+  'Correu!': 'Sola!',
   '{nome} jogou {pedra}.': 'Ua taʻalo {nome} le {pedra}.',
   '{nome} comprou uma pedra.': 'Ua aumai e {nome} se maʻa.',
   '{nome} passou.': 'Ua pasi {nome}.',

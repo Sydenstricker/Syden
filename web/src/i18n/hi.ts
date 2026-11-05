@@ -2620,6 +2620,8 @@ export default {
   'Mão de ferro: sem truco.': 'लोहे का हाथ: ट्रूको नहीं।',
   'Jogar coberta': 'पत्ता उल्टा खेलो',
   'Esperando a resposta.': 'जवाब का इंतज़ार।',
+  'Aceitou!': 'मंज़ूर!',
+  'Correu!': 'भाग गया!',
   '{nome} jogou {pedra}.': '{nome} ने {pedra} खेली।',
   '{nome} comprou uma pedra.': '{nome} ने एक गोटी उठाई।',
   '{nome} passou.': '{nome} ने बारी छोड़ी।',

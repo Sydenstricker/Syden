@@ -2634,6 +2634,8 @@ export default {
   'Mão de ferro: sem truco.': 'มือเหล็ก: ห้ามทรูโก',
   'Jogar coberta': 'เล่นคว่ำ',
   'Esperando a resposta.': 'กำลังรอคำตอบ',
+  'Aceitou!': 'รับ!',
+  'Correu!': 'หนี!',
   '{nome} jogou {pedra}.': '{nome} ลง {pedra}',
   '{nome} comprou uma pedra.': '{nome} จั่วโดมิโน 1 ตัว',
   '{nome} passou.': '{nome} ผ่าน',

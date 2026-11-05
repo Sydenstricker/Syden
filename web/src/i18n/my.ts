@@ -2660,6 +2660,8 @@ export default {
   'Mão de ferro: sem truco.': 'သံလက်- ထရူကို မရ။',
   'Jogar coberta': 'မှောက်၍ကစားရန်',
   'Esperando a resposta.': 'အဖြေကို စောင့်နေသည်။',
+  'Aceitou!': 'လက်ခံပြီ!',
+  'Correu!': 'ပြေးပြီ!',
   '{nome} jogou {pedra}.': '{nome} က {pedra} ကို ချလိုက်သည်။',
   '{nome} comprou uma pedra.': '{nome} က တုံးတစ်တုံး ယူလိုက်သည်။',
   '{nome} passou.': '{nome} ကျော်လိုက်သည်။',

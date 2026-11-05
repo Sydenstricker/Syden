@@ -2688,6 +2688,8 @@ export default {
   'Mão de ferro: sem truco.': 'Желязна ръка: без труко.',
   'Jogar coberta': 'Играй с гърба нагоре',
   'Esperando a resposta.': 'Чака се отговор.',
+  'Aceitou!': 'Прието!',
+  'Correu!': 'Бягство!',
   '{nome} jogou {pedra}.': '{nome} игра {pedra}.',
   '{nome} comprou uma pedra.': '{nome} тегли плочка.',
   '{nome} passou.': '{nome} пасува.',

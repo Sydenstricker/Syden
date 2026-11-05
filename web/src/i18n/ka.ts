@@ -2709,6 +2709,8 @@ export default {
   'Mão de ferro: sem truco.': 'რკინის ხელი: ტრუკოს გარეშე.',
   'Jogar coberta': 'დახურულად თამაში',
   'Esperando a resposta.': 'პასუხს ველოდებით.',
+  'Aceitou!': 'მიიღო!',
+  'Correu!': 'გაიქცა!',
   '{nome} jogou {pedra}.': '{nome}-მ ჩამოდო {pedra}.',
   '{nome} comprou uma pedra.': '{nome}-მ ქვა აიღო.',
   '{nome} passou.': '{nome}-მ გაატარა.',

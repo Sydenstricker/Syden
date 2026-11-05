@@ -2627,6 +2627,8 @@ export default {
   'Mão de ferro: sem truco.': 'Lámh iarainn: gan truco.',
   'Jogar coberta': 'Imir bunoscionn',
   'Esperando a resposta.': 'Ag fanacht leis an bhfreagra.',
+  'Aceitou!': 'Glactha!',
+  'Correu!': 'Teitheadh!',
   '{nome} jogou {pedra}.': 'D\'imir {nome} {pedra}.',
   '{nome} comprou uma pedra.': 'Tharraing {nome} píosa.',
   '{nome} passou.': 'Chuaigh {nome} thar a sheal.',

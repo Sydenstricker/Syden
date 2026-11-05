@@ -2621,6 +2621,8 @@ export default {
   'Mão de ferro: sem truco.': 'Mâna de fier: fără truco.',
   'Jogar coberta': 'Joacă cu fața în jos',
   'Esperando a resposta.': 'Se așteaptă răspunsul.',
+  'Aceitou!': 'Acceptat!',
+  'Correu!': 'Fuga!',
   '{nome} jogou {pedra}.': '{nome} a jucat {pedra}.',
   '{nome} comprou uma pedra.': '{nome} a tras o piesă.',
   '{nome} passou.': '{nome} a trecut.',

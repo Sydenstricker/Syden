@@ -2632,6 +2632,8 @@ export default {
   'Mão de ferro: sem truco.': 'Ukuboko kw\'icyuma: nta truco.',
   'Jogar coberta': 'Kina ikarita yubitse',
   'Esperando a resposta.': 'Dutegereje igisubizo.',
+  'Aceitou!': 'Byemewe!',
+  'Correu!': 'Yahunze!',
   '{nome} jogou {pedra}.': '{nome} yakinnye {pedra}.',
   '{nome} comprou uma pedra.': '{nome} yafashe ibuye.',
   '{nome} passou.': '{nome} yarenze.',

@@ -2627,6 +2627,8 @@ export default {
   'Mão de ferro: sem truco.': 'Σιδερένιο χέρι: χωρίς τρούκο.',
   'Jogar coberta': 'Παίξε κλειστό',
   'Esperando a resposta.': 'Αναμονή για απάντηση.',
+  'Aceitou!': 'Δεκτό!',
+  'Correu!': 'Φυγή!',
   '{nome} jogou {pedra}.': '{nome}: έπαιξε {pedra}.',
   '{nome} comprou uma pedra.': '{nome}: τράβηξε πλακίδιο.',
   '{nome} passou.': '{nome}: πάσο.',

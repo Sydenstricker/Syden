@@ -222,7 +222,7 @@ function TabuleiroDasDamas({ dados, aoClicar, reserva }: { dados: DamasDaCena; a
   return (
     <div className="mesa3d-tabuleiro">
       <div ref={caixa} className={`mesa3d-caixa${estado === 'pronta' ? '' : ' escondida'}`} />
-      <div className={estado === 'pronta' ? 'mesa3d-so-leitor' : 'mesa3d-reserva'}>{reserva}</div>
+      <div className="mesa3d-so-leitor">{reserva}</div>
     </div>
   );
 }

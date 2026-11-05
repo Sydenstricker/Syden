@@ -2710,6 +2710,8 @@ export default {
   'Mão de ferro: sem truco.': 'Երկաթե ձեռք․ առանց տրուկոյի։',
   'Jogar coberta': 'Խաղալ փակ',
   'Esperando a resposta.': 'Սպասում ենք պատասխանին։',
+  'Aceitou!': 'Ընդունված է!',
+  'Correu!': 'Փախավ!',
   '{nome} jogou {pedra}.': '{nome}-ը խաղաց {pedra}։',
   '{nome} comprou uma pedra.': '{nome}-ը վերցրեց մեկ քար։',
   '{nome} passou.': '{nome}-ը բաց թողեց։',

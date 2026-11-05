@@ -2623,6 +2623,8 @@ export default {
   'Mão de ferro: sem truco.': 'Mão de ferro: la iha truco.',
   'Jogar coberta': 'Halimar taka',
   'Esperando a resposta.': 'Hein hela resposta.',
+  'Aceitou!': 'Simu!',
+  'Correu!': 'Halai!',
   '{nome} jogou {pedra}.': '{nome} tau {pedra}.',
   '{nome} comprou uma pedra.': '{nome} foti fatuk ida.',
   '{nome} passou.': '{nome} pasa.',

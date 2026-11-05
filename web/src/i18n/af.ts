@@ -2685,6 +2685,8 @@ export default {
   'Mão de ferro: sem truco.': 'Ysterhand: geen truco nie.',
   'Jogar coberta': 'Speel toe',
   'Esperando a resposta.': 'Wag vir die antwoord.',
+  'Aceitou!': 'Aanvaar!',
+  'Correu!': 'Weggehardloop!',
   '{nome} jogou {pedra}.': '{nome} het {pedra} gespeel.',
   '{nome} comprou uma pedra.': '{nome} het ’n steen getrek.',
   '{nome} passou.': '{nome} het gepas.',

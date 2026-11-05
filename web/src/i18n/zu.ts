@@ -2692,6 +2692,8 @@ export default {
   'Mão de ferro: sem truco.': 'Isandla sensimbi: ayikho i-truco.',
   'Jogar coberta': 'Dlala limboziwe',
   'Esperando a resposta.': 'Silinde impendulo.',
+  'Aceitou!': 'Kwamukelwa!',
+  'Correu!': 'Kubalekwa!',
   '{nome} jogou {pedra}.': '{nome} udlale {pedra}.',
   '{nome} comprou uma pedra.': '{nome} uthathe itshe.',
   '{nome} passou.': '{nome} udlulile.',

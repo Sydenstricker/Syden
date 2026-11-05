@@ -2683,6 +2683,8 @@ export default {
   'Mão de ferro: sem truco.': 'Järnhand: ingen truco.',
   'Jogar coberta': 'Spela dolt',
   'Esperando a resposta.': 'Väntar på svaret.',
+  'Aceitou!': 'Accepterat!',
+  'Correu!': 'Sprang!',
   '{nome} jogou {pedra}.': '{nome} lade {pedra}.',
   '{nome} comprou uma pedra.': '{nome} drog en bricka.',
   '{nome} passou.': '{nome} stod över.',

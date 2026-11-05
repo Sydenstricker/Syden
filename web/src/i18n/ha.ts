@@ -2623,6 +2623,8 @@ export default {
   'Mão de ferro: sem truco.': 'Hannun ƙarfe: babu truco.',
   'Jogar coberta': 'Buga a rufe',
   'Esperando a resposta.': 'Ana jiran amsa.',
+  'Aceitou!': 'An karɓa!',
+  'Correu!': 'An gudu!',
   '{nome} jogou {pedra}.': '{nome}: an buga {pedra}.',
   '{nome} comprou uma pedra.': '{nome}: an ɗauki dutse.',
   '{nome} passou.': '{nome}: an wuce.',

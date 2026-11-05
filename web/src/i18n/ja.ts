@@ -2602,6 +2602,8 @@ export default {
   'Mão de ferro: sem truco.': '鉄の手：トゥルーコなし。',
   'Jogar coberta': '伏せて出す',
   'Esperando a resposta.': '返事を待っています。',
+  'Aceitou!': '受けた!',
+  'Correu!': '逃げた!',
   '{nome} jogou {pedra}.': '{nome} さんが {pedra} を出しました。',
   '{nome} comprou uma pedra.': '{nome} さんが牌を 1 枚引きました。',
   '{nome} passou.': '{nome} さんがパスしました。',

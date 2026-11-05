@@ -2606,6 +2606,8 @@ export default {
   'Mão de ferro: sem truco.': 'இரும்புக் கை: ட்ரூக்கோ இல்லை.',
   'Jogar coberta': 'கவிழ்த்து விளையாடு',
   'Esperando a resposta.': 'பதிலுக்காகக் காத்திருக்கிறது.',
+  'Aceitou!': 'ஏற்றுக்கொண்டது!',
+  'Correu!': 'ஓடியது!',
   '{nome} jogou {pedra}.': '{nome} {pedra} ஐ இறக்கினார்.',
   '{nome} comprou uma pedra.': '{nome} ஒரு கல் எடுத்தார்.',
   '{nome} passou.': '{nome} தவிர்த்தார்.',

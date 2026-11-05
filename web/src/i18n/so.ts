@@ -2691,6 +2691,8 @@ export default {
   'Mão de ferro: sem truco.': 'Gacanta birta: truco ma jiro.',
   'Jogar coberta': 'Ku ciyaar daboolan',
   'Esperando a resposta.': 'Waxaa la sugayaa jawaabta.',
+  'Aceitou!': 'La aqbalay!',
+  'Correu!': 'La cararay!',
   '{nome} jogou {pedra}.': '{nome}: {pedra} ayaa la ciyaaray.',
   '{nome} comprou uma pedra.': '{nome}: dhagax ayaa la qaatay.',
   '{nome} passou.': '{nome}: waa la dhaafay.',

@@ -51,7 +51,7 @@ export function Tabuleiro3D({ dados, aoEscolher, reserva, meio, rotulo }: { dado
   if (estado === 'falhou') return <>{reserva}</>;
   return (
     <div className="cid-tabuleiro-3d" role="img" aria-label={rotulo}>
-      {estado !== 'pronta' && <div className="cid-tabuleiro-3d-reserva">{reserva}</div>}
+      {estado !== 'pronta' && <div className="naval-3d-grade-acessivel">{reserva}</div>}
       <div ref={caixa} className={`cid-tabuleiro-3d-caixa${estado === 'pronta' ? '' : ' escondida'}`} />
       {estado === 'pronta' && meio && <div className="cid-tabuleiro-3d-meio">{meio}</div>}
     </div>

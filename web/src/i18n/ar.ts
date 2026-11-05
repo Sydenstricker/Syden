@@ -2645,6 +2645,8 @@ export default {
   'Mão de ferro: sem truco.': 'اليد الحديدية: بلا تروكو.',
   'Jogar coberta': 'اللعب بورقة مقلوبة',
   'Esperando a resposta.': 'في انتظار الرد.',
+  'Aceitou!': 'قبول!',
+  'Correu!': 'انسحاب!',
   '{nome} jogou {pedra}.': 'لُعبت {pedra} من {nome}.',
   '{nome} comprou uma pedra.': 'قطعة جديدة لـ{nome}.',
   '{nome} passou.': 'تمرير {nome}.',

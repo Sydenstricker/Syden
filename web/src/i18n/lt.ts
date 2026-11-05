@@ -2693,6 +2693,8 @@ export default {
   'Mão de ferro: sem truco.': 'Geležinė ranka: be truko.',
   'Jogar coberta': 'Žaisti užverstą',
   'Esperando a resposta.': 'Laukiama atsakymo.',
+  'Aceitou!': 'Priimta!',
+  'Correu!': 'Pabėgo!',
   '{nome} jogou {pedra}.': '{nome} padėjo {pedra}.',
   '{nome} comprou uma pedra.': '{nome} paėmė kauliuką.',
   '{nome} passou.': '{nome} praleido.',

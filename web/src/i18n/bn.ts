@@ -2618,6 +2618,8 @@ export default {
   'Mão de ferro: sem truco.': 'লোহার হাত: ট্রুকো নেই।',
   'Jogar coberta': 'উল্টো করে খেলো',
   'Esperando a resposta.': 'উত্তরের অপেক্ষা।',
+  'Aceitou!': 'রাজি!',
+  'Correu!': 'পালাল!',
   '{nome} jogou {pedra}.': '{nome} {pedra} খেলেছে।',
   '{nome} comprou uma pedra.': '{nome} একটা ঘুঁটি তুলেছে।',
   '{nome} passou.': '{nome} পাস দিয়েছে।',

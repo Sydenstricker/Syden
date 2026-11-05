@@ -2671,6 +2671,8 @@ export default {
   'Mão de ferro: sem truco.': 'Залізна рука: без труко.',
   'Jogar coberta': 'Грати сорочкою догори',
   'Esperando a resposta.': 'Чекаємо на відповідь.',
+  'Aceitou!': 'Прийнято!',
+  'Correu!': 'Втеча!',
   '{nome} jogou {pedra}.': '{nome} кладе {pedra}.',
   '{nome} comprou uma pedra.': '{nome} бере кістку з базару.',
   '{nome} passou.': '{nome}: пас.',

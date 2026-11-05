@@ -2620,6 +2620,8 @@ export default {
   'Mão de ferro: sem truco.': 'Liga kaukamea: sega na truco.',
   'Jogar coberta': 'Qito ni vunitaki',
   'Esperando a resposta.': 'Waraka tiko na isau.',
+  'Aceitou!': 'Ciqoma!',
+  'Correu!': 'Drovaki!',
   '{nome} jogou {pedra}.': 'E biuta o {nome} na {pedra}.',
   '{nome} comprou uma pedra.': 'E taura e dua na vatu o {nome}.',
   '{nome} passou.': 'E pasi o {nome}.',

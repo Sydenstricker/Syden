@@ -67,8 +67,10 @@ interface Lugar {
 export class Truco3D extends MesaBase<TrucoDaCena> {
   private modelo: GLTF | null = null;
   private cartas = new Map<string, Carta>();
-  private geoBrilho = new THREE.PlaneGeometry(LARGURA * 1.16, ALTURA * 1.12);
-  private matBrilho = new THREE.MeshBasicMaterial({ color: '#ffd45a', transparent: true, opacity: 0.85, depthWrite: false });
+  private geoBrilho = new THREE.PlaneGeometry(LARGURA * 1.12, ALTURA * 1.08);
+  /** O meio da carta no modelo (ele não é centrado na origem), medido uma vez. */
+  private meioDaCarta: THREE.Vector3 | null = null;
+  private matBrilho = new THREE.MeshBasicMaterial({ color: '#ffc531', depthWrite: false });
   private monte = new THREE.Group();
 
   protected async carregarTudo() {
@@ -128,7 +130,10 @@ export class Truco3D extends MesaBase<TrucoDaCena> {
     });
     const brilho = new THREE.Mesh(this.geoBrilho, this.matBrilho);
     brilho.rotation.x = -Math.PI / 2;
-    brilho.position.y = -0.006;
+    // NO MEIO DA CARTA, e não na origem do modelo (05/11/2026, relato dele: "uma barra verde tampando a parte de baixo das
+    // cartas"): o modelo não é centrado, e o brilho da manilha sobrava para um lado e para baixo, como uma barra.
+    if (!this.meioDaCarta) this.meioDaCarta = new THREE.Box3().setFromObject(corpo).getCenter(new THREE.Vector3());
+    brilho.position.set(this.meioDaCarta.x, -0.006, this.meioDaCarta.z);
     brilho.visible = false;
     obj.add(corpo, brilho);
     return { obj, frente: frente ?? new THREE.MeshStandardMaterial(), brilho, face: null, alvo: null, onde: '' };

@@ -2691,6 +2691,8 @@ export default {
   'Mão de ferro: sem truco.': 'Tanana vy: tsy misy truco.',
   'Jogar coberta': 'Milalao miafina',
   'Esperando a resposta.': 'Miandry ny valiny.',
+  'Aceitou!': 'Nekena!',
+  'Correu!': 'Nandositra!',
   '{nome} jogou {pedra}.': 'Nilalao {pedra} i {nome}.',
   '{nome} comprou uma pedra.': 'Naka vato i {nome}.',
   '{nome} passou.': 'Nandalo i {nome}.',

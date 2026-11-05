@@ -2629,6 +2629,8 @@ export default {
   'Mão de ferro: sem truco.': 'Aka ígwè: enweghị truco.',
   'Jogar coberta': 'Gwuo ya kpuchie',
   'Esperando a resposta.': 'A na-eche azịza.',
+  'Aceitou!': 'Ọ nabatara!',
+  'Correu!': 'Ọ gbapụrụ!',
   '{nome} jogou {pedra}.': '{nome} gwuru {pedra}.',
   '{nome} comprou uma pedra.': '{nome} weere otu nkume.',
   '{nome} passou.': '{nome} gafere.',

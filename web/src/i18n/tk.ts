@@ -2702,6 +2702,8 @@ export default {
   'Mão de ferro: sem truco.': 'Demir el: truco ýok.',
   'Jogar coberta': 'Ýapyk oýna',
   'Esperando a resposta.': 'Jogaba garaşylýar.',
+  'Aceitou!': 'Kabul edildi!',
+  'Correu!': 'Gaçdy!',
   '{nome} jogou {pedra}.': '{nome} {pedra} daşyny goýdy.',
   '{nome} comprou uma pedra.': '{nome} bir daş aldy.',
   '{nome} passou.': '{nome} geçdi.',

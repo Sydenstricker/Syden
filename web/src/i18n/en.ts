@@ -2616,6 +2616,8 @@ export default {
   'Mão de ferro: sem truco.': 'Iron hand: no truco.',
   'Jogar coberta': 'Play face down',
   'Esperando a resposta.': 'Waiting for the answer.',
+  'Aceitou!': 'Accepted!',
+  'Correu!': 'Ran!',
   '{nome} jogou {pedra}.': '{nome} played {pedra}.',
   '{nome} comprou uma pedra.': '{nome} drew a tile.',
   '{nome} passou.': '{nome} passed.',

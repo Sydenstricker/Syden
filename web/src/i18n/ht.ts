@@ -2701,6 +2701,8 @@ export default {
   'Mão de ferro: sem truco.': 'Men fè: pa gen truco.',
   'Jogar coberta': 'Jwe kouvri',
   'Esperando a resposta.': 'N ap tann repons lan.',
+  'Aceitou!': 'Aksepte!',
+  'Correu!': 'Kouri!',
   '{nome} jogou {pedra}.': '{nome} jwe {pedra}.',
   '{nome} comprou uma pedra.': '{nome} pran yon wòch.',
   '{nome} passou.': '{nome} pase.',

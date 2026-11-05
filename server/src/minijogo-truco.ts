@@ -113,6 +113,8 @@ export type Ocorrido =
   | { tipo: 'rodada'; resultado: Resultado; lugar: number | null }
   | { tipo: 'mao'; time: 0 | 1 | null; pontos: number }
   | { tipo: 'correu'; lugar: number; time: 0 | 1; pontos: number }
+  /** O truco (ou o seis, o nove, o doze) foi aceito: a tela anuncia, para dar ritmo (pedido dele, 05/11/2026). */
+  | { tipo: 'aceitou'; lugar: number; valor: number }
   | { tipo: 'onze-jogar'; lugar: number | null }
   | { tipo: 'onze-correu'; lugar: number | null; time: 0 | 1; pontos: number };
 
@@ -501,6 +503,7 @@ export function criarTruco({ agora = Date.now, aleatorio = Math.random, baralhos
               return null;
             }
             if (tipo === 'aceitar') {
+              contar({ tipo: 'aceitou', lugar: meu, valor: pedido.valor });
               valor = pedido.valor;
               podeAumentar = meuTime;
               pedido = null;

@@ -2693,6 +2693,8 @@ export default {
   'Mão de ferro: sem truco.': 'Dzelzs roka: bez truko.',
   'Jogar coberta': 'Spēlēt aizklātu',
   'Esperando a resposta.': 'Gaida atbildi.',
+  'Aceitou!': 'Pieņemts!',
+  'Correu!': 'Aizbēga!',
   '{nome} jogou {pedra}.': '{nome} izlika {pedra}.',
   '{nome} comprou uma pedra.': '{nome} paņēma kauliņu.',
   '{nome} passou.': '{nome} izlaida gājienu.',

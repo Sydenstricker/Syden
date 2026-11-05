@@ -2701,6 +2701,8 @@ export default {
   'Mão de ferro: sem truco.': 'ދަގަނޑު އަތް: ޓްރޫކޯ ނެތް.',
   'Jogar coberta': 'ފުރޮޅާލައިގެން ކުޅޭ',
   'Esperando a resposta.': 'ޖަވާބަށް އިންތިޒާރުކުރަނީ.',
+  'Aceitou!': 'ގަބޫލުކުރި!',
+  'Correu!': 'ދުވެފި!',
   '{nome} jogou {pedra}.': '{nome} {pedra} ކުޅެފި.',
   '{nome} comprou uma pedra.': '{nome} ގަލެއް ނެގީ.',
   '{nome} passou.': '{nome} ފާސްކޮށްފި.',

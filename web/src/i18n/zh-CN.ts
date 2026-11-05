@@ -2608,6 +2608,8 @@ export default {
   'Mão de ferro: sem truco.': '铁局：不能喊特鲁科。',
   'Jogar coberta': '扣牌出',
   'Esperando a resposta.': '等待回应。',
+  'Aceitou!': '接受!',
+  'Correu!': '认输!',
   '{nome} jogou {pedra}.': '{nome} 出了 {pedra}。',
   '{nome} comprou uma pedra.': '{nome} 摸了一张牌。',
   '{nome} passou.': '{nome} 过了。',

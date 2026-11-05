@@ -2688,6 +2688,8 @@ export default {
   'Mão de ferro: sem truco.': 'Raudne käsi: trucot ei saa.',
   'Jogar coberta': 'Mängi kinniselt',
   'Esperando a resposta.': 'Oodatakse vastust.',
+  'Aceitou!': 'Vastu võetud!',
+  'Correu!': 'Põgenes!',
   '{nome} jogou {pedra}.': '{nome} käis {pedra}.',
   '{nome} comprou uma pedra.': '{nome} võttis kivi.',
   '{nome} passou.': '{nome} jättis vahele.',

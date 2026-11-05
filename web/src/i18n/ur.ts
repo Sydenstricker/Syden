@@ -2613,6 +2613,8 @@ export default {
   'Mão de ferro: sem truco.': 'لوہے کا ہاتھ: ٹروکو نہیں۔',
   'Jogar coberta': 'پتا الٹا کھیلیں',
   'Esperando a resposta.': 'جواب کا انتظار ہے۔',
+  'Aceitou!': 'قبول!',
+  'Correu!': 'فرار!',
   '{nome} jogou {pedra}.': '{nome} نے {pedra} کھیلی۔',
   '{nome} comprou uma pedra.': '{nome} نے ایک گوٹی اٹھائی۔',
   '{nome} passou.': '{nome} نے باری چھوڑی۔',

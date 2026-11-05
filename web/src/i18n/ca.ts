@@ -2687,6 +2687,8 @@ export default {
   'Mão de ferro: sem truco.': 'Mà de ferro: sense truco.',
   'Jogar coberta': 'Jugar tapada',
   'Esperando a resposta.': 'Esperant la resposta.',
+  'Aceitou!': 'Accepta!',
+  'Correu!': 'Fuig!',
   '{nome} jogou {pedra}.': '{nome} ha jugat {pedra}.',
   '{nome} comprou uma pedra.': '{nome} ha robat una fitxa.',
   '{nome} passou.': '{nome} ha passat.',

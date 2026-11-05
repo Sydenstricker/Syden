@@ -2690,6 +2690,8 @@ export default {
   'Mão de ferro: sem truco.': 'ដៃដែក៖ គ្មានទ្រូកូ។',
   'Jogar coberta': 'លេងបិទមុខ',
   'Esperando a resposta.': 'កំពុងរង់ចាំចម្លើយ។',
+  'Aceitou!': 'ទទួល!',
+  'Correu!': 'រត់!',
   '{nome} jogou {pedra}.': '{nome} បានចុះ {pedra}។',
   '{nome} comprou uma pedra.': '{nome} បានទាញបន្ទះមួយ។',
   '{nome} passou.': '{nome} បានរំលង។',

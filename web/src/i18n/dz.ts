@@ -2704,6 +2704,8 @@ export default {
   'Mão de ferro: sem truco.': 'ལྕགས་ཀྱི་ལག་པ། ཊུ་ཀོ་མེད།',
   'Jogar coberta': 'ཁ་བུབ་སྦེ་རྩེ།',
   'Esperando a resposta.': 'ལན་ལུ་བསྒུག་དོ།',
+  'Aceitou!': 'ངོས་ལེན་འབད་ཡི!',
+  'Correu!': 'བྲོས་ཡི!',
   '{nome} jogou {pedra}.': '{nome} གིས་ {pedra} བཙུགས་ཅི།',
   '{nome} comprou uma pedra.': '{nome} གིས་ ཌོ་མི་ནོ་གཅིག་ལེན་ཅི།',
   '{nome} passou.': '{nome} གིས་ བརྒལ་ཅི།',

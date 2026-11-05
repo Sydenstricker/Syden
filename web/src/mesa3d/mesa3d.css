@@ -1,5 +1,6 @@
-/* As mesas em 3D (mesa3d/): Damas, Truco e Dominó. A cena cobre a caixa; o 2D fica por baixo, à mostra enquanto ela carrega
-   e, pronta, só para o teclado e o leitor de tela (mesa3d-so-leitor). */
+/* As mesas em 3D (mesa3d/): Damas, Truco e Dominó. A cena cobre a caixa; o 2D fica por baixo SÓ para o teclado e o leitor
+   de tela (mesa3d-so-leitor). Enquanto a cena carrega, a caixa mostra a cor do fundo dela, e não o 2D (pedido dele, 05/11/2026:
+   "carrega primeiro a versão 2D depois a 3D"); o 2D aparece aos olhos só no estilo 2D, sem WebGL ou se a cena falhar. */
 .mesa3d-tabuleiro {
   position: relative;
   width: min(100%, 60vh, 440px);
@@ -7,6 +8,7 @@
   margin: 0 auto;
   border-radius: 10px;
   overflow: hidden;
+  background: #2b2430;
 }
 .mesa3d-caixa,
 .mesa3d-reserva {

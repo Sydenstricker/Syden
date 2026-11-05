@@ -2643,6 +2643,8 @@ export default {
   'Mão de ferro: sem truco.': 'Main de fer : pas de truco.',
   'Jogar coberta': 'Jouer face cachée',
   'Esperando a resposta.': 'En attente de la réponse.',
+  'Aceitou!': 'Accepté !',
+  'Correu!': 'Fuite !',
   '{nome} jogou {pedra}.': '{nome} a joué {pedra}.',
   '{nome} comprou uma pedra.': '{nome} a pioché un domino.',
   '{nome} passou.': '{nome} a passé.',

@@ -2614,6 +2614,8 @@ export default {
   'Mão de ferro: sem truco.': 'دست آهنی: بدون تروکو.',
   'Jogar coberta': 'بازی با کارت به پشت',
   'Esperando a resposta.': 'در انتظار پاسخ.',
+  'Aceitou!': 'قبول!',
+  'Correu!': 'فرار!',
   '{nome} jogou {pedra}.': '{nome} {pedra} را بازی کرد.',
   '{nome} comprou uma pedra.': '{nome} یک مهره برداشت.',
   '{nome} passou.': '{nome} پاس داد.',

@@ -2616,6 +2616,8 @@ export default {
   'Mão de ferro: sem truco.': 'Mano de hierro: sin truco.',
   'Jogar coberta': 'Jugar tapada',
   'Esperando a resposta.': 'Esperando la respuesta.',
+  'Aceitou!': '¡Quiero!',
+  'Correu!': '¡No quiero!',
   '{nome} jogou {pedra}.': '{nome} jugó {pedra}.',
   '{nome} comprou uma pedra.': '{nome} robó una ficha.',
   '{nome} passou.': '{nome} pasó.',

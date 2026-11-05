@@ -2690,6 +2690,8 @@ export default {
   'Mão de ferro: sem truco.': 'Železná ruka: bez truca.',
   'Jogar coberta': 'Hrát zakrytě',
   'Esperando a resposta.': 'Čeká se na odpověď.',
+  'Aceitou!': 'Přijato!',
+  'Correu!': 'Útěk!',
   '{nome} jogou {pedra}.': '{nome} hraje {pedra}.',
   '{nome} comprou uma pedra.': '{nome} si bere kostku.',
   '{nome} passou.': '{nome} pasuje.',

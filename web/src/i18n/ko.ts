@@ -2609,6 +2609,8 @@ export default {
   'Mão de ferro: sem truco.': '철의 판: 트루코 없음.',
   'Jogar coberta': '뒤집어서 내기',
   'Esperando a resposta.': '대답을 기다리는 중.',
+  'Aceitou!': '수락!',
+  'Correu!': '포기!',
   '{nome} jogou {pedra}.': '{nome}님이 {pedra}을(를) 냈어요.',
   '{nome} comprou uma pedra.': '{nome}님이 패를 한 장 가져갔어요.',
   '{nome} passou.': '{nome}님이 패스했어요.',
