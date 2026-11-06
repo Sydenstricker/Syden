@@ -3104,7 +3104,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Socodka bakayle',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Laba daqiiqo oo ku jira beerta skate-ka. Bood, wareeg, grind ku samee birahaa oo isku xidh xeeladaha combo: xeelad kasta oo dheeraad ah waxay laba jibaarisaa dhibcaha, laakiin dhicista waxay lumisaa combo-ga oo dhan.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Hal daqiiqo oo ku jira beerta skate-ka. Bood, wareeg, grind ku samee birahaa oo isku xidh xeeladaha combo: xeelad kasta oo dheeraad ah waxay laba jibaarisaa dhibcaha, laakiin dhicista waxay lumisaa combo-ga oo dhan.',
+  Pausar: 'Hakad',
   'Caiu!': 'Dhacay!',
   'Melhor combo: {n}': 'Combo-ga ugu fiican: {n}',
 } satisfies Record<string, string>;

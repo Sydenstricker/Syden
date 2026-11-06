@@ -3034,7 +3034,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Tura iepurașului',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Două minute în skatepark. Sari, învârte-te, fă grind pe balustrade și leagă trucurile într-un combo: fiecare truc în plus înmulțește punctele, dar căzătura pierde tot combo-ul.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Un minut în skatepark. Sari, învârte-te, fă grind pe balustrade și leagă trucurile într-un combo: fiecare truc în plus înmulțește punctele, dar căzătura pierde tot combo-ul.',
+  Pausar: 'Pauză',
   'Caiu!': 'Ai căzut!',
   'Melhor combo: {n}': 'Cel mai bun combo: {n}',
 } satisfies Record<string, string>;

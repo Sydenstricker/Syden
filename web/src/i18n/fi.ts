@@ -3104,7 +3104,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Pupun sessio',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Kaksi minuuttia skeittiparkissa. Hyppää, pyöri, grindaa kaiteilla ja ketjuta temput komboksi: jokainen lisätemppu kertoo pisteet, mutta kaatuminen vie koko kombon.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Minuutti skeittiparkissa. Hyppää, pyöri, grindaa kaiteilla ja ketjuta temput komboksi: jokainen lisätemppu kertoo pisteet, mutta kaatuminen vie koko kombon.',
+  Pausar: 'Tauko',
   'Caiu!': 'Kaatui!',
   'Melhor combo: {n}': 'Paras kombo: {n}',
 } satisfies Record<string, string>;

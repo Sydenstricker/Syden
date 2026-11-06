@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { tempoLegivel } from './corrida/fisica';
 import { useT } from './i18n';
+import { comandoDaPausa, TelaDePausa, usePausaComEsc } from './pausaDosJogos';
 import type { Agir } from './Minijogo';
 import type { Partida } from './minijogos';
 import { H, W } from './plataforma/desenho';
@@ -142,11 +143,11 @@ function Placar({ placar }: { placar: { ms: number; quedas: number } }) {
   );
 }
 
-function Comandos() {
+function Comandos({ solo = false }: { solo?: boolean }) {
   const t = useT();
   return (
     <>
-      <ComandosDoJogo itens={[{ teclas: ['setas-lado'], rotulo: t('Andar') }, { teclas: ['espaco'], rotulo: t('Pular') }]} />
+      <ComandosDoJogo itens={[{ teclas: ['setas-lado'], rotulo: t('Andar') }, { teclas: ['espaco'], rotulo: t('Pular') }, ...(solo ? [comandoDaPausa(t)] : [])]} />
       <p className="settings-hint">{t('Suba até o cata-vento. O que cai e os corvos levam de volta ao último andar.')}</p>
     </>
   );
@@ -261,7 +262,7 @@ function TorreSolo({ estado, eu, agir }: { estado: EstadoTorre & Partida; eu: nu
         </ul>
         <div className="corrida-pista-nome">
           {meu && <span>{t('Seu recorde: {tempo}', { tempo: tempoLegivel(meu.tempoMs) })}</span>}
-          <Comandos />
+          <Comandos solo />
         </div>
         <fieldset className="corrida-fantasmas">
           <legend>{t('Subir contra')}</legend>
@@ -312,7 +313,7 @@ function TorreSolo({ estado, eu, agir }: { estado: EstadoTorre & Partida; eu: nu
           </div>
         )}
       </div>
-      {estado.fase === 'correndo' && <Comandos />}
+      {estado.fase === 'correndo' && <Comandos solo />}
       {erro && <p className="form-error small">{erro}</p>}
     </div>
   );
@@ -335,6 +336,8 @@ function SubidaSolo({
   const [placar, setPlacar] = usePlacar();
   const [acabou, setAcabou] = useState(false);
   const controles = useControles(estado.fase === 'correndo' && !acabou);
+  // ESC pausa (só aqui, no Solo: na sala o relógio é o de todos)
+  const { pausa, pausado, continuar } = usePausaComEsc(estado.fase === 'correndo' && !acabou);
   const quedas = useRef(0);
   useEffect(() => {
     if (!canvas.current) return;
@@ -344,6 +347,7 @@ function SubidaSolo({
       comandos: controles.comandos.current,
       torre: def,
       piloto: true,
+        pausa,
       eu: 0,
       meuAvatar: estado.meuAvatar ?? null,
       fantasmas: (estado.fantasmas ?? []).map((f) => ({ amostras: f.amostras, avatar: f.avatar })),
@@ -367,6 +371,7 @@ function SubidaSolo({
       <canvas ref={canvas} width={W} height={H} />
       {!acabou && <Placar placar={placar} />}
       {!acabou && <BotoesDeToque controles={controles} />}
+          {!acabou && pausado && <TelaDePausa aoContinuar={continuar} icone={false} />}
     </>
   );
 }

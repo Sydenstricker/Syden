@@ -3049,7 +3049,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Ìrìn ehoro',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Ìṣẹ́jú méjì ní pápá skate. Fò, yí, ṣe grind lórí irin ẹ̀gbẹ́ kí o sì so àwọn ọgbọ́n pọ̀ sínú combo: ọgbọ́n àfikún kọ̀ọ̀kan ń sọ àmì di púpọ̀, ṣùgbọ́n ìṣubú ń pàdánù gbogbo combo.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Ìṣẹ́jú kan ní pápá skate. Fò, yí, ṣe grind lórí irin ẹ̀gbẹ́ kí o sì so àwọn ọgbọ́n pọ̀ sínú combo: ọgbọ́n àfikún kọ̀ọ̀kan ń sọ àmì di púpọ̀, ṣùgbọ́n ìṣubú ń pàdánù gbogbo combo.',
+  Pausar: 'Dánudúró',
   'Caiu!': 'Ó ṣubú!',
   'Melhor combo: {n}': 'Combo tó dára jù: {n}',
 } satisfies Record<string, string>;

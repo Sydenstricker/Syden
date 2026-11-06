@@ -3033,7 +3033,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Na voqa ni rapiti',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Rua na miniti ena rara ni skate. Rika, wiliraki, grind ena ruku ni bai ka sema vata na veivakaraitaki me combo: na veivakaraitaki kece e vakalevutaka na maka, ia na bale e vakayalia na combo taucoko.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Dua na miniti ena rara ni skate. Rika, wiliraki, grind ena ruku ni bai ka sema vata na veivakaraitaki me combo: na veivakaraitaki kece e vakalevutaka na maka, ia na bale e vakayalia na combo taucoko.',
+  Pausar: 'Vakacegu',
   'Caiu!': 'Bale!',
   'Melhor combo: {n}': 'Combo vinaka duadua: {n}',
 } satisfies Record<string, string>;

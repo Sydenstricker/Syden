@@ -3118,7 +3118,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Туулайн аялал',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Скейт паркад хоёр минут. Үсэр, эргэ, хашлага дээр гулс, мэхнүүдээ комбо болгон холбо: нэмэлт мэх бүр оноог үржүүлдэг ч унавал бүх комбо алга болно.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Скейт паркад нэг минут. Үсэр, эргэ, хашлага дээр гулс, мэхнүүдээ комбо болгон холбо: нэмэлт мэх бүр оноог үржүүлдэг ч унавал бүх комбо алга болно.',
+  Pausar: 'Түр зогсоох',
   'Caiu!': 'Унав!',
   'Melhor combo: {n}': 'Шилдэг комбо: {n}',
 } satisfies Record<string, string>;

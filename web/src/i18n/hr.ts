@@ -3103,7 +3103,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Zečja vožnja',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Dvije minute u skate parku. Skači, vrti se, grindaj po ogradama i spajaj trikove u kombo: svaki dodatni trik množi bodove, ali pad gubi cijeli kombo.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Jedna minuta u skate parku. Skači, vrti se, grindaj po ogradama i spajaj trikove u kombo: svaki dodatni trik množi bodove, ali pad gubi cijeli kombo.',
+  Pausar: 'Pauza',
   'Caiu!': 'Pao!',
   'Melhor combo: {n}': 'Najbolji kombo: {n}',
 } satisfies Record<string, string>;

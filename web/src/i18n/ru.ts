@@ -3052,7 +3052,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Заячий заезд',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Две минуты в скейт-парке. Прыгай, крутись, делай грайнд по перилам и связывай трюки в комбо: каждый новый трюк умножает очки, но падение стирает всё комбо.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Одна минута в скейт-парке. Прыгай, крутись, делай грайнд по перилам и связывай трюки в комбо: каждый новый трюк умножает очки, но падение стирает всё комбо.',
+  Pausar: 'Пауза',
   'Caiu!': 'Упал!',
   'Melhor combo: {n}': 'Лучшее комбо: {n}',
 } satisfies Record<string, string>;

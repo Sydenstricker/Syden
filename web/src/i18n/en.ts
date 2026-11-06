@@ -3029,7 +3029,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Bunny session',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Two minutes at the skate park. Jump, spin, grind the rails and chain tricks into a combo: every extra trick multiplies the points, but bailing loses the whole combo.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'One minute at the skate park. Jump, spin, grind the rails and chain tricks into a combo: every extra trick multiplies the points, but bailing loses the whole combo.',
+  Pausar: 'Pause',
   'Caiu!': 'Bail!',
   'Melhor combo: {n}': 'Best combo: {n}',
 } satisfies Record<string, string>;

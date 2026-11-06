@@ -3098,7 +3098,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Kaninens tur',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'To minutter i skateparken. Hop, drej, grind på gelænderne og kæd tricks sammen i en kombo: hvert ekstra trick ganger pointene, men falder du, mister du hele komboen.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Ét minut i skateparken. Hop, drej, grind på gelænderne og kæd tricks sammen i en kombo: hvert ekstra trick ganger pointene, men falder du, mister du hele komboen.',
+  Pausar: 'Pause',
   'Caiu!': 'Faldt!',
   'Melhor combo: {n}': 'Bedste kombo: {n}',
 } satisfies Record<string, string>;

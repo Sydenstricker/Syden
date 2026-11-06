@@ -3042,7 +3042,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Njem oke bekee',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': "Nkeji abụọ n'ogige skate. Wụpụ, gbagharịa, mee grind n'elu ígwè ma jikọta aghụghọ n'ime combo: aghụghọ ọ bụla ọzọ na-amụba akara, mana ịda na-efunahụ combo niile.",
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': "Otu nkeji n'ogige skate. Wụpụ, gbagharịa, mee grind n'elu ígwè ma jikọta aghụghọ n'ime combo: aghụghọ ọ bụla ọzọ na-amụba akara, mana ịda na-efunahụ combo niile.",
+  Pausar: 'Kwụsịtụ',
   'Caiu!': 'Dara!',
   'Melhor combo: {n}': 'Combo kacha mma: {n}',
 } satisfies Record<string, string>;

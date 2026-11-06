@@ -3073,7 +3073,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'ယုန်လေး၏ အပတ်',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'စကိတ်ပန်းခြံတွင် နှစ်မိနစ်။ ခုန်၊ လှည့်၊ လက်ရန်းပေါ်တွင် grind လုပ်ပြီး လှည့်ကွက်များကို combo အဖြစ် ဆက်ပါ- လှည့်ကွက်တစ်ခုတိုးတိုင်း အမှတ်များ မြှောက်တိုးသော်လည်း လဲကျပါက combo တစ်ခုလုံး ပျောက်သည်။',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'စကိတ်ပန်းခြံတွင် တစ်မိနစ်။ ခုန်၊ လှည့်၊ လက်ရန်းပေါ်တွင် grind လုပ်ပြီး လှည့်ကွက်များကို combo အဖြစ် ဆက်ပါ- လှည့်ကွက်တစ်ခုတိုးတိုင်း အမှတ်များ မြှောက်တိုးသော်လည်း လဲကျပါက combo တစ်ခုလုံး ပျောက်သည်။',
+  Pausar: 'ခဏရပ်',
   'Caiu!': 'လဲကျပြီ!',
   'Melhor combo: {n}': 'အကောင်းဆုံး combo: {n}',
 } satisfies Record<string, string>;

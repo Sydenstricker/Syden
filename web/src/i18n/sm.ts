@@ -3038,7 +3038,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Le savaliga a le lapiti',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Lua minute i le paka skate. Oso, taamilo, grind i luga o pa ma fesoʻotaʻi faiga i se combo: o faiga faaopoopo uma e faateleina ai togi, ae o le paʻu e leiloa ai le combo atoa.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Tasi le minute i le paka skate. Oso, taamilo, grind i luga o pa ma fesoʻotaʻi faiga i se combo: o faiga faaopoopo uma e faateleina ai togi, ae o le paʻu e leiloa ai le combo atoa.',
+  Pausar: 'Mālōlō',
   'Caiu!': 'Paʻū!',
   'Melhor combo: {n}': 'Combo sili: {n}',
 } satisfies Record<string, string>;

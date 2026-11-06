@@ -2,6 +2,7 @@ import { ComandosDoJogo } from './ComandosDosJogos';
 import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { useT } from './i18n';
+import { comandoDaPausa, TelaDePausa, usePausaComEsc } from './pausaDosJogos';
 import { tempoLegivel } from './jato/util';
 import type { ComandosDoJato } from './jato/fisica';
 import { rodarJato, type LinhaDaOrdem, type PosicaoNaSala, type RivalDoJato } from './jato/laco';
@@ -148,7 +149,7 @@ function Placar({ placar, voltas }: { placar: { volta: number; ms: number }; vol
 
 const menosMovimento = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 
-function Comandos() {
+function Comandos({ solo = false }: { solo?: boolean }) {
   const t = useT();
   return (
     <ComandosDoJogo
@@ -156,6 +157,7 @@ function Comandos() {
         { teclas: ['setas'], rotulo: t('Pilotar') },
         { teclas: ['espaco'], rotulo: t('Turbo (da segunda volta em diante)') },
         { teclas: ['z'], rotulo: t('Freio de ar') },
+        ...(solo ? [comandoDaPausa(t)] : []),
       ]}
     />
   );
@@ -277,7 +279,7 @@ function JatoSolo({ estado, eu, agir }: { estado: EstadoJato & Partida; eu: numb
         </ul>
         <div className="jato-pista-nome">
           {meu && <span>{t('Seu recorde: {tempo}', { tempo: tempoLegivel(meu.tempoMs) })}</span>}
-          <Comandos />
+          <Comandos solo />
           <p className="settings-hint">{t('A energia é a vida e o turbo: bater na borda gasta, a faixa cor-de-rosa recarrega.')}</p>
         </div>
         <fieldset className="jato-fantasmas">
@@ -363,6 +365,8 @@ function CorridaSolo({
   const [placar, setPlacar] = usePlacar();
   const [acabou, setAcabou] = useState(false);
   const controles = useControles(estado.fase === 'correndo' && !acabou);
+  // ESC pausa (só aqui, no Solo: na sala o relógio é o de todos)
+  const { pausa, pausado, continuar } = usePausaComEsc(estado.fase === 'correndo' && !acabou);
   useEffect(() => {
     if (!canvas.current) return;
     tela.current?.focus();
@@ -371,6 +375,7 @@ function CorridaSolo({
       comandos: controles.comandos.current,
       pista: def,
       piloto: true,
+        pausa,
       meuAvatar: estado.meuAvatar ?? null,
       fantasmas: (estado.fantasmas ?? []).map((f) => ({ amostras: f.amostras, avatar: f.avatar })),
       robos: estado.robos,
@@ -395,6 +400,7 @@ function CorridaSolo({
       <canvas ref={canvas} width={W} height={H} />
       {!acabou && <Placar placar={placar} voltas={def.voltas} />}
       {!acabou && <BotoesDeToque controles={controles} />}
+          {!acabou && pausado && <TelaDePausa aoContinuar={continuar} icone={false} />}
     </div>
   );
 }

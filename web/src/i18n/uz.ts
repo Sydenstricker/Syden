@@ -3124,7 +3124,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Quyonning sayri',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Skeyt parkda ikki daqiqa. Sakrang, aylaning, panjaralarda grind qiling va tryuklarni komboga ulang: har bir qo‘shimcha tryuk ochkolarni ko‘paytiradi, lekin yiqilish butun komboni yo‘qotadi.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Skeyt parkda bir daqiqa. Sakrang, aylaning, panjaralarda grind qiling va tryuklarni komboga ulang: har bir qo‘shimcha tryuk ochkolarni ko‘paytiradi, lekin yiqilish butun komboni yo‘qotadi.',
+  Pausar: 'Pauza',
   'Caiu!': 'Yiqildi!',
   'Melhor combo: {n}': 'Eng yaxshi kombo: {n}',
 } satisfies Record<string, string>;

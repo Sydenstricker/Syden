@@ -3033,7 +3033,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Il giro del coniglio',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Due minuti allo skatepark. Salta, gira, fai grind sulle ringhiere e concatena i trick in una combo: ogni trick in più moltiplica i punti, ma cadere fa perdere tutta la combo.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Un minuto allo skatepark. Salta, gira, fai grind sulle ringhiere e concatena i trick in una combo: ogni trick in più moltiplica i punti, ma cadere fa perdere tutta la combo.',
+  Pausar: 'Pausa',
   'Caiu!': 'Caduto!',
   'Melhor combo: {n}': 'Miglior combo: {n}',
 } satisfies Record<string, string>;

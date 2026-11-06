@@ -3015,7 +3015,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'うさぎのセッション',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'スケートパークで2分間。ジャンプして回って、手すりでグラインドし、トリックをつなげてコンボに。トリックが増えるほど点数は倍増、でも転ぶとコンボはまるごと消えます。',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'スケートパークで1分間。ジャンプして回って、手すりでグラインドし、トリックをつなげてコンボに。トリックが増えるほど点数は倍増、でも転ぶとコンボはまるごと消えます。',
+  Pausar: '一時停止',
   'Caiu!': '転んだ！',
   'Melhor combo: {n}': 'ベストコンボ：{n}',
 } satisfies Record<string, string>;

@@ -3122,7 +3122,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'კურდღლის სეირნობა',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'ორი წუთი სკეიტპარკში. ხტუნავე, ტრიალე, მოაჯირებზე გაასრიალე და ხრიკები კომბოდ შეაერთე: ყოველი დამატებითი ხრიკი ქულებს ამრავლებს, მაგრამ დაცემით მთელ კომბოს კარგავ.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'ერთი წუთი სკეიტპარკში. ხტუნავე, ტრიალე, მოაჯირებზე გაასრიალე და ხრიკები კომბოდ შეაერთე: ყოველი დამატებითი ხრიკი ქულებს ამრავლებს, მაგრამ დაცემით მთელ კომბოს კარგავ.',
+  Pausar: 'პაუზა',
   'Caiu!': 'დაეცა!',
   'Melhor combo: {n}': 'საუკეთესო კომბო: {n}',
 } satisfies Record<string, string>;

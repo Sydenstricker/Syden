@@ -3104,7 +3104,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'හාවාගේ වටය',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'ස්කේට් උද්‍යානයේ මිනිත්තු දෙකක්. පනින්න, කරකැවෙන්න, වැටවල් මත ග්‍රයින්ඩ් කරන්න, උපක්‍රම කොම්බෝවකට එකතු කරන්න: එක් එක් අමතර උපක්‍රමය ලකුණු ගුණ කරයි, නමුත් වැටීමෙන් මුළු කොම්බෝවම නැති වේ.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'ස්කේට් උද්‍යානයේ මිනිත්තුවක්. පනින්න, කරකැවෙන්න, වැටවල් මත ග්‍රයින්ඩ් කරන්න, උපක්‍රම කොම්බෝවකට එකතු කරන්න: එක් එක් අමතර උපක්‍රමය ලකුණු ගුණ කරයි, නමුත් වැටීමෙන් මුළු කොම්බෝවම නැති වේ.',
+  Pausar: 'විරාමය',
   'Caiu!': 'වැටුණා!',
   'Melhor combo: {n}': 'හොඳම කොම්බෝව: {n}',
 } satisfies Record<string, string>;

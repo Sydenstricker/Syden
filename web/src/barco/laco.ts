@@ -75,6 +75,8 @@ export interface OpcoesDoLaco {
   contagem: number;
   /** Menos movimento: sem o balanço das ondas e sem o tremor. */
   calmo?: boolean;
+  /** A pausa do ESC (pausaDosJogos.tsx), só no Solo: lida a cada quadro, como a janela sem foco. */
+  pausa?: { readonly ativa: boolean };
   aoPlacar: (p: { volta: number; ms: number; pausado: boolean }) => void;
   aoOrdem?: (ordem: LinhaDaOrdem[]) => void;
   aoPosicao?: (p: PosicaoNaSala) => void;
@@ -280,6 +282,7 @@ export function rodarBarco(o: OpcoesDoLaco): () => void {
     pausado = document.hidden || !document.hasFocus();
     // o piloto automático dos testes roda também sem foco (o navegador sem janela dos testes não tem foco)
     if (auto()) pausado = document.hidden;
+    if (o.pausa?.ativa) pausado = true;
     if (!pausado || !o.piloto) {
       acumulado += dt;
       while (acumulado >= PASSO) {

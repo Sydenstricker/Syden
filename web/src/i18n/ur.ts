@@ -3026,7 +3026,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'خرگوش کا چکر',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'اسکیٹ پارک میں دو منٹ۔ کودیں، گھومیں، ریلنگ پر گرائنڈ کریں اور کرتبوں کو جوڑ کر کومبو بنائیں: ہر اضافی کرتب پوائنٹس کو ضرب دیتا ہے، لیکن گرنے سے پورا کومبو ضائع ہو جاتا ہے۔',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'اسکیٹ پارک میں ایک منٹ۔ کودیں، گھومیں، ریلنگ پر گرائنڈ کریں اور کرتبوں کو جوڑ کر کومبو بنائیں: ہر اضافی کرتب پوائنٹس کو ضرب دیتا ہے، لیکن گرنے سے پورا کومبو ضائع ہو جاتا ہے۔',
+  Pausar: 'روکیں',
   'Caiu!': 'گر گئے!',
   'Melhor combo: {n}': 'بہترین کومبو: {n}',
 } satisfies Record<string, string>;

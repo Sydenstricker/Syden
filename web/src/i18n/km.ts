@@ -3103,7 +3103,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'ដំណើរកំសាន្តរបស់ទន្សាយ',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'ពីរនាទីនៅសួនស្គេត។ លោត បង្វិល រអិលលើរបង ហើយភ្ជាប់ល្បិចជាខមបូ៖ ល្បិចបន្ថែមនីមួយៗគុណពិន្ទុ ប៉ុន្តែការដួលបាត់ខមបូទាំងមូល។',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'មួយនាទីនៅសួនស្គេត។ លោត បង្វិល រអិលលើរបង ហើយភ្ជាប់ល្បិចជាខមបូ៖ ល្បិចបន្ថែមនីមួយៗគុណពិន្ទុ ប៉ុន្តែការដួលបាត់ខមបូទាំងមូល។',
+  Pausar: 'ផ្អាក',
   'Caiu!': 'ដួលហើយ!',
   'Melhor combo: {n}': 'ខមបូល្អបំផុត៖ {n}',
 } satisfies Record<string, string>;

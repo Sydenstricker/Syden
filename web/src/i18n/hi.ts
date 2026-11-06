@@ -3033,7 +3033,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'खरगोश की सैर',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'स्केट पार्क में दो मिनट। कूदो, घूमो, रेलिंग पर ग्राइंड करो और करतबों को जोड़कर कॉम्बो बनाओ: हर अतिरिक्त करतब अंक गुणा करता है, पर गिरने से पूरा कॉम्बो चला जाता है।',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'स्केट पार्क में एक मिनट। कूदो, घूमो, रेलिंग पर ग्राइंड करो और करतबों को जोड़कर कॉम्बो बनाओ: हर अतिरिक्त करतब अंक गुणा करता है, पर गिरने से पूरा कॉम्बो चला जाता है।',
+  Pausar: 'रोकें',
   'Caiu!': 'गिर गए!',
   'Melhor combo: {n}': 'सबसे अच्छा कॉम्बो: {n}',
 } satisfies Record<string, string>;

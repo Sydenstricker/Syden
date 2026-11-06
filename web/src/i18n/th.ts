@@ -3047,7 +3047,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'เซสชันของกระต่าย',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'สองนาทีในสวนสเก็ต กระโดด หมุน ไถลบนราว แล้วต่อท่าเป็นคอมโบ ท่าที่เพิ่มขึ้นแต่ละท่าจะคูณคะแนน แต่ถ้าล้มจะเสียคอมโบทั้งหมด',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'หนึ่งนาทีในสวนสเก็ต กระโดด หมุน ไถลบนราว แล้วต่อท่าเป็นคอมโบ ท่าที่เพิ่มขึ้นแต่ละท่าจะคูณคะแนน แต่ถ้าล้มจะเสียคอมโบทั้งหมด',
+  Pausar: 'หยุดชั่วคราว',
   'Caiu!': 'ล้ม!',
   'Melhor combo: {n}': 'คอมโบที่ดีที่สุด: {n}',
 } satisfies Record<string, string>;

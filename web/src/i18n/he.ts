@@ -3088,7 +3088,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'הסיבוב של הארנב',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'שתי דקות בסקייטפארק. קפצו, הסתובבו, עשו גריינד על המעקות ושרשרו טריקים לקומבו: כל טריק נוסף מכפיל את הנקודות, אבל נפילה מאבדת את כל הקומבו.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'דקה אחת בסקייטפארק. קפצו, הסתובבו, עשו גריינד על המעקות ושרשרו טריקים לקומבו: כל טריק נוסף מכפיל את הנקודות, אבל נפילה מאבדת את כל הקומבו.',
+  Pausar: 'השהיה',
   'Caiu!': 'נפל!',
   'Melhor combo: {n}': 'הקומבו הטוב ביותר: {n}',
 } satisfies Record<string, string>;

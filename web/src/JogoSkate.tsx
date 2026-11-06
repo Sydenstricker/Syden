@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ComandosDoJogo } from './ComandosDosJogos';
 import { useT } from './i18n';
+import { comandoDaPausa, TelaDePausa, usePausaComEsc } from './pausaDosJogos';
 import { tocar } from './somDosJogos';
 import { comboAberto, NADA, novoSkatista, PASSO, passo, PASSOS_DA_SESSAO, valorDoCombo, type Comandos, type Evento, type Manobra, type Skatista } from './skate/fisica';
 import { criarPiloto } from './skate/piloto';
@@ -70,7 +71,8 @@ export function JogoSkate({ estado, eu, jogador, agir }: Props) {
     );
   }
   if (!jogador || !meu) return <p className="minijogo-situacao">…</p>;
-  return <Sessao key={estado.partidaId} aoTerminar={(k) => void agir({ tipo: 'fim', pontos: k.pontos, passos: k.passo, melhorCombo: k.melhorCombo })} />;
+  // ESC pausa só no Solo (o recorde é dele): na sala, o relógio é o de todos
+  return <Sessao key={estado.partidaId} solo={estado.recorde !== null} aoTerminar={(k) => void agir({ tipo: 'fim', pontos: k.pontos, passos: k.passo, melhorCombo: k.melhorCombo })} />;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -144,7 +146,7 @@ declare global {
 
 const CONTAGEM_MS = 3000;
 
-export function Sessao({ aoTerminar }: { aoTerminar: (k: Skatista) => void }) {
+export function Sessao({ aoTerminar, solo = false }: { aoTerminar: (k: Skatista) => void; solo?: boolean }) {
   const t = useT();
   const caixa = useRef<HTMLDivElement>(null);
   const medidor = useRef<HTMLDivElement>(null);
@@ -154,6 +156,7 @@ export function Sessao({ aoTerminar }: { aoTerminar: (k: Skatista) => void }) {
   const [placas, setPlacas] = useState<Placa[]>([]);
   const terminar = useRef(aoTerminar);
   terminar.current = aoTerminar;
+  const { pausa, pausado, continuar } = usePausaComEsc(solo && estado === 'pronta');
 
   useEffect(() => {
     if (estado === 'falhou' || !caixa.current) return;
@@ -217,8 +220,8 @@ export function Sessao({ aoTerminar }: { aoTerminar: (k: Skatista) => void }) {
           const agora = performance.now();
           const dt = Math.min(0.1, (agora - ultimo) / 1000);
           ultimo = agora;
-          // sem foco (o jogo de verdade, outra janela) ou escondida: nem física, nem desenho, e a contagem espera
-          if (document.hidden || !document.hasFocus()) {
+          // sem foco (o jogo de verdade, outra janela), escondida ou pausada (ESC): nem física, nem desenho, e a contagem espera
+          if (document.hidden || !document.hasFocus() || pausa.ativa) {
             if (largada > agora) largada += dt * 1000;
             return;
           }
@@ -319,6 +322,7 @@ export function Sessao({ aoTerminar }: { aoTerminar: (k: Skatista) => void }) {
             {painel.contagem !== null && <span className="skate-contagem">{painel.contagem}</span>}
           </div>
         )}
+        {pausado && <TelaDePausa aoContinuar={continuar} />}
       </div>
       <ComandosDoJogo
         itens={[
@@ -328,6 +332,7 @@ export function Sessao({ aoTerminar }: { aoTerminar: (k: Skatista) => void }) {
           { teclas: ['z'], rotulo: t('Kickflip') },
           { teclas: ['x'], rotulo: t('Grab') },
           { teclas: ['c'], rotulo: t('Manual') },
+          ...(solo ? [comandoDaPausa(t)] : []),
         ]}
       />
     </div>

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { api } from './api';
 import { useT } from './i18n';
+import { comandoDaPausa, TelaDePausa, usePausaComEsc } from './pausaDosJogos';
 import { passosEmMs, tempoLegivel, type Comandos } from './corrida/fisica';
 import { rodarCorrida, TIPOS_DE_EVENTO, type EventoDeItem, type Item, type LinhaDaOrdem, type PosicaoDoRival, type Rival } from './corrida/laco';
 import { nomeDaPistaEm } from './corrida/nomes';
@@ -278,6 +279,8 @@ export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void
   const [meuAvatar, setMeuAvatar] = useState<number | null>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const controles = useControles(fase === 'correndo');
+  // ESC pausa (só aqui, no Solo: na sala o relógio é o de todos)
+  const { pausa, pausado, continuar } = usePausaComEsc(fase === 'correndo');
   /** Cada "Jogar de novo" é uma corrida nova, sem voltar à tela da largada. */
   const [rodada, setRodada] = useState(0);
   const tela = useRef<HTMLDivElement>(null);
@@ -329,6 +332,7 @@ export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void
         comandos: controles.comandos.current,
         pista: def,
         piloto: true,
+        pausa,
         eu,
         meuAvatar,
         fantasmas,
@@ -391,7 +395,7 @@ export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void
           </ul>
           <div className="corrida-pista-nome">
             {meu && <span>{t('Seu recorde: {tempo}', { tempo: tempoLegivel(meu.tempoMs) })}</span>}
-            <ComandosDoJogo itens={[{ teclas: ['setas'], rotulo: t('Dirigir') }, { teclas: ['espaco'], rotulo: t('Derrapar') }, { teclas: ['q'], rotulo: t('Olhar para trás') }]} />
+            <ComandosDoJogo itens={[{ teclas: ['setas'], rotulo: t('Dirigir') }, { teclas: ['espaco'], rotulo: t('Derrapar') }, { teclas: ['q'], rotulo: t('Olhar para trás') }, comandoDaPausa(t)]} />
             <p className="settings-hint">{t('Setas para dirigir, Espaço para derrapar e carregar o turbo.')}</p>
           </div>
           {recordes !== null && (
@@ -437,6 +441,7 @@ export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void
           <canvas ref={canvas} width={W} height={H} />
           {fase === 'correndo' && <Placar placar={placar} voltas={def.voltas} />}
           {fase === 'correndo' && <BotoesDeToque controles={controles} />}
+          {fase === 'correndo' && pausado && <TelaDePausa aoContinuar={continuar} icone={false} />}
           {fase === 'fim' && resultado && (
             <div className="corrida-fim">
               {resultado.recorde && <strong className="corrida-recorde">{t('Novo recorde!')}</strong>}

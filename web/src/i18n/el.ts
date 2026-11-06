@@ -3040,7 +3040,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Η βόλτα του κουνελιού',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Δύο λεπτά στο skatepark. Πήδα, γύρνα, κάνε grind στα κάγκελα και δέσε τα κόλπα σε κόμπο: κάθε επιπλέον κόλπο πολλαπλασιάζει τους πόντους, αλλά αν πέσεις χάνεις όλο το κόμπο.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Ένα λεπτό στο skatepark. Πήδα, γύρνα, κάνε grind στα κάγκελα και δέσε τα κόλπα σε κόμπο: κάθε επιπλέον κόλπο πολλαπλασιάζει τους πόντους, αλλά αν πέσεις χάνεις όλο το κόμπο.',
+  Pausar: 'Παύση',
   'Caiu!': 'Έπεσες!',
   'Melhor combo: {n}': 'Καλύτερο κόμπο: {n}',
 } satisfies Record<string, string>;

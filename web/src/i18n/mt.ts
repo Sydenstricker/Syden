@@ -3050,7 +3050,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Id-dawra tal-fenek',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': "Żewġ minuti fil-park tal-iskejt. Aqbeż, dur, agħmel grind fuq il-poġġamani u għaqqad it-tricks f'kombo: kull trick żejjed jimmultiplika l-punti, imma jekk taqa' titlef il-kombo kollha.",
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': "Minuta waħda fil-park tal-iskejt. Aqbeż, dur, agħmel grind fuq il-poġġamani u għaqqad it-tricks f'kombo: kull trick żejjed jimmultiplika l-punti, imma jekk taqa' titlef il-kombo kollha.",
+  Pausar: 'Pawsa',
   'Caiu!': "Waqa'!",
   'Melhor combo: {n}': 'L-aqwa kombo: {n}',
 } satisfies Record<string, string>;

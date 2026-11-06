@@ -3058,7 +3058,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'جولة الأرنب',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'دقيقتان في حديقة التزلج. اقفز ودُر وانزلق على القضبان واربط الحركات في سلسلة: كل حركة إضافية تضاعف النقاط، لكن السقوط يُضيّع السلسلة كلها.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'دقيقة واحدة في حديقة التزلج. اقفز ودُر وانزلق على القضبان واربط الحركات في سلسلة: كل حركة إضافية تضاعف النقاط، لكن السقوط يُضيّع السلسلة كلها.',
+  Pausar: 'إيقاف مؤقت',
   'Caiu!': 'سقط!',
   'Melhor combo: {n}': 'أفضل سلسلة: {n}',
 } satisfies Record<string, string>;

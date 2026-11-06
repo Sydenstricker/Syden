@@ -3036,7 +3036,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Tavşanın turu',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Kaykay parkında iki dakika. Zıpla, dön, korkuluklarda grind yap ve hareketleri bir kombo halinde bağla: her ek hareket puanları katlar ama düşmek bütün komboyu kaybettirir.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Kaykay parkında bir dakika. Zıpla, dön, korkuluklarda grind yap ve hareketleri bir kombo halinde bağla: her ek hareket puanları katlar ama düşmek bütün komboyu kaybettirir.',
+  Pausar: 'Duraklat',
   'Caiu!': 'Düştü!',
   'Melhor combo: {n}': 'En iyi kombo: {n}',
 } satisfies Record<string, string>;

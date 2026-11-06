@@ -45,6 +45,8 @@ export interface OpcoesDoBalao {
   enviar?: (dados: Record<string, unknown>) => void;
   /** O Solo pausa com a janela sem foco; a sala não. */
   pausaSemFoco: boolean;
+  /** A pausa do ESC (pausaDosJogos.tsx), só no Solo: lida a cada quadro, como a janela sem foco. */
+  pausa?: { readonly ativa: boolean };
   aoItem?: (item: ItemDoBalao | null) => void;
   /** A cada quadro: o tempo que falta (ms) e se está pausado. */
   aoPlacar?: (p: { restanteMs: number; pausado: boolean }) => void;
@@ -240,7 +242,8 @@ export function rodarBalao(o: OpcoesDoBalao): () => void {
       const dt = Math.min(0.25, (agora - antes) / 1000);
       antes = agora;
       const semFoco = document.hidden || !document.hasFocus();
-      pausado = o.pausaSemFoco && semFoco && partida.n > 0 && !partida.acabou;
+      // o ESC pausa até a contagem (o verde vai para a frente junto); a janela sem foco, só depois dela
+      pausado = o.pausaSemFoco && ((semFoco && partida.n > 0) || !!o.pausa?.ativa) && !partida.acabou;
       // no Solo, a pausa empurra o sinal verde para a frente: o relógio da partida para junto
       if (pausado) o.verdeEm += dt * 1000;
       const alvo = Math.min(DURACAO_PASSOS + 60, Math.floor(((agora - o.verdeEm) * PASSOS_POR_SEGUNDO) / 1000));

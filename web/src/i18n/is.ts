@@ -3105,7 +3105,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Kanínuferðin',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Tvær mínútur í hjólabrettagarðinum. Stökktu, snúðu þér, grindaðu á handriðunum og tengdu brögðin í kombó: hvert aukabragð margfaldar stigin, en fall tapar öllu kombóinu.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Ein mínúta í hjólabrettagarðinum. Stökktu, snúðu þér, grindaðu á handriðunum og tengdu brögðin í kombó: hvert aukabragð margfaldar stigin, en fall tapar öllu kombóinu.',
+  Pausar: 'Hlé',
   'Caiu!': 'Datt!',
   'Melhor combo: {n}': 'Besta kombó: {n}',
 } satisfies Record<string, string>;

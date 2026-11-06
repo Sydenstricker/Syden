@@ -3114,7 +3114,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'ފަޓާސްގެ ދަތުރު',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'ސްކޭޓް ޕާކުގައި ދެ މިނެޓު. ފުންމާ، އެނބުރި، ރޭލުތަކުގައި ގްރައިންޑްކޮށް، ކަރުތަބުތައް ކޮމްބޯއަކަށް ގުޅާ: ކޮންމެ އިތުރު ކަރުތަބަކުން ޕޮއިންޓު ގުނަ ކުރޭ، ނަމަވެސް ވެއްޓުނީމަ މުޅި ކޮމްބޯ ގެއްލޭ.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'ސްކޭޓް ޕާކުގައި އެއް މިނެޓު. ފުންމާ، އެނބުރި، ރޭލުތަކުގައި ގްރައިންޑްކޮށް، ކަރުތަބުތައް ކޮމްބޯއަކަށް ގުޅާ: ކޮންމެ އިތުރު ކަރުތަބަކުން ޕޮއިންޓު ގުނަ ކުރޭ، ނަމަވެސް ވެއްޓުނީމަ މުޅި ކޮމްބޯ ގެއްލޭ.',
+  Pausar: 'ވަގުތީގޮތުން ހުއްޓާލާ',
   'Caiu!': 'ވެއްޓުނު!',
   'Melhor combo: {n}': 'އެންމެ ރަނގަޅު ކޮމްބޯ: {n}',
 } satisfies Record<string, string>;

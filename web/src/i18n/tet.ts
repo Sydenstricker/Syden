@@ -3036,7 +3036,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Laó-rai koelu nian',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Minutu rua iha parke skate. Haksoit, fila, halo grind iha besi no liga trik sira iha kombo: trik ida-idak tan multiplika pontu, maibé monu lakon kombo tomak.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Minutu ida iha parke skate. Haksoit, fila, halo grind iha besi no liga trik sira iha kombo: trik ida-idak tan multiplika pontu, maibé monu lakon kombo tomak.',
+  Pausar: 'Para',
   'Caiu!': 'Monu!',
   'Melhor combo: {n}': "Kombo di'ak liu: {n}",
 } satisfies Record<string, string>;

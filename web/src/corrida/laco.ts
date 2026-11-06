@@ -147,6 +147,8 @@ export interface OpcoesDoLaco {
   itens?: Itens;
   /** Passos de semáforo antes do verde (3 s = 180). */
   contagem: number;
+  /** A pausa do ESC (pausaDosJogos.tsx), só no Solo: lida a cada quadro, como a janela sem foco. */
+  pausa?: { readonly ativa: boolean };
   aoPlacar: (p: { volta: number; ms: number; pausado: boolean }) => void;
   /** A ordem de quem está na frente (só com rivais): muda pouco, e só é avisada quando muda. */
   aoOrdem?: (ordem: LinhaDaOrdem[]) => void;
@@ -580,7 +582,7 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
       if (!vivo) return;
       const dt = Math.min(0.1, (agora - antes) / 1000);
       antes = agora;
-      pausado = document.hidden || !document.hasFocus();
+      pausado = document.hidden || !document.hasFocus() || !!o.pausa?.ativa;
       if (!pausado || !o.piloto) {
         acumulado += dt;
         while (acumulado >= PASSO) {

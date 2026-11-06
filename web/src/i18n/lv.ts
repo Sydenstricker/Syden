@@ -3106,7 +3106,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Truša izbrauciens',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Divas minūtes skeitparkā. Lec, griezies, slīdi pa margām un savieno trikus kombo: katrs papildu triks pavairo punktus, bet kritiens zaudē visu kombo.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Viena minūte skeitparkā. Lec, griezies, slīdi pa margām un savieno trikus kombo: katrs papildu triks pavairo punktus, bet kritiens zaudē visu kombo.',
+  Pausar: 'Pauze',
   'Caiu!': 'Nokrita!',
   'Melhor combo: {n}': 'Labākais kombo: {n}',
 } satisfies Record<string, string>;

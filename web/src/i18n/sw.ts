@@ -3033,7 +3033,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Mzunguko wa sungura',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Dakika mbili kwenye bustani ya skate. Ruka, zunguka, fanya grind kwenye reli na unganisha mbinu ziwe kombo: kila mbinu ya ziada inazidisha alama, lakini kuanguka kunapoteza kombo nzima.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Dakika moja kwenye bustani ya skate. Ruka, zunguka, fanya grind kwenye reli na unganisha mbinu ziwe kombo: kila mbinu ya ziada inazidisha alama, lakini kuanguka kunapoteza kombo nzima.',
+  Pausar: 'Sitisha',
   'Caiu!': 'Umeanguka!',
   'Melhor combo: {n}': 'Kombo bora: {n}',
 } satisfies Record<string, string>;

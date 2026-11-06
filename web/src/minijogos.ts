@@ -656,7 +656,7 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
     // existe no servidor, mas não foi testada na tela.
     id: 'skate',
     nome: chave('Rolê do coelho'),
-    dica: chave('Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.'),
+    dica: chave('Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.'),
     abas: ['solo'],
   },
   {

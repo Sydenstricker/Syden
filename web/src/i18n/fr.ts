@@ -3056,7 +3056,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'La virée du lapin',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Deux minutes au skatepark. Saute, tourne, grinde sur les rampes et enchaîne les figures en combo : chaque figure en plus multiplie les points, mais une chute fait perdre tout le combo.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Une minute au skatepark. Saute, tourne, grinde sur les rampes et enchaîne les figures en combo : chaque figure en plus multiplie les points, mais une chute fait perdre tout le combo.',
+  Pausar: 'Pause',
   'Caiu!': 'Chute !',
   'Melhor combo: {n}': 'Meilleur combo : {n}',
 } satisfies Record<string, string>;

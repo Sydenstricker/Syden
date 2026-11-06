@@ -3016,7 +3016,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'కుందేలు చక్కర్',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'స్కేట్ పార్క్‌లో రెండు నిమిషాలు. దూకండి, తిరగండి, రెయిలింగ్‌లపై గ్రైండ్ చేయండి, ట్రిక్కులను కలిపి కాంబో చేయండి: ప్రతి అదనపు ట్రిక్ పాయింట్లను గుణిస్తుంది, కానీ పడితే మొత్తం కాంబో పోతుంది.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'స్కేట్ పార్క్‌లో ఒక నిమిషం. దూకండి, తిరగండి, రెయిలింగ్‌లపై గ్రైండ్ చేయండి, ట్రిక్కులను కలిపి కాంబో చేయండి: ప్రతి అదనపు ట్రిక్ పాయింట్లను గుణిస్తుంది, కానీ పడితే మొత్తం కాంబో పోతుంది.',
+  Pausar: 'పాజ్',
   'Caiu!': 'పడిపోయారు!',
   'Melhor combo: {n}': 'ఉత్తమ కాంబో: {n}',
 } satisfies Record<string, string>;

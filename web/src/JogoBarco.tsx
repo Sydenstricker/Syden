@@ -2,6 +2,7 @@ import { ComandosDoJogo } from './ComandosDosJogos';
 import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { useT } from './i18n';
+import { comandoDaPausa, TelaDePausa, usePausaComEsc } from './pausaDosJogos';
 import { tempoLegivel } from './jato/util';
 import type { ComandosDoBarco } from './barco/fisica';
 import { rodarBarco, type LinhaDaOrdem, type PosicaoNaSala, type RivalDoBarco } from './barco/laco';
@@ -143,12 +144,13 @@ function Placar({ placar, voltas }: { placar: { volta: number; ms: number }; vol
 
 const menosMovimento = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 
-function Comandos() {
+function Comandos({ solo = false }: { solo?: boolean }) {
   const t = useT();
   return (
     <ComandosDoJogo
       itens={[
         { teclas: ['setas'], rotulo: t('Pilotar (para trás, freia e dá ré)') },
+        ...(solo ? [comandoDaPausa(t)] : []),
       ]}
     />
   );
@@ -266,7 +268,7 @@ function BarcoSolo({ estado, eu, agir }: { estado: EstadoBarco & Partida; eu: nu
         </ul>
         <div className="barco-pista-nome">
           {meu && <span>{t('Seu recorde: {tempo}', { tempo: tempoLegivel(meu.tempoMs) })}</span>}
-          <Comandos />
+          <Comandos solo />
           <p className="settings-hint">{t('O barco desliza: tire o pé antes da curva. As argolas laranja dão um empurrão.')}</p>
         </div>
         <fieldset className="barco-fantasmas">
@@ -333,6 +335,8 @@ function CorridaSolo({ estado, def, agir, aoErro }: { estado: EstadoBarco & Part
   const [placar, setPlacar] = usePlacar();
   const [acabou, setAcabou] = useState(false);
   const controles = useControles(estado.fase === 'correndo' && !acabou);
+  // ESC pausa (só aqui, no Solo: na sala o relógio é o de todos)
+  const { pausa, pausado, continuar } = usePausaComEsc(estado.fase === 'correndo' && !acabou);
   useEffect(() => {
     if (!canvas.current) return;
     tela.current?.focus();
@@ -341,6 +345,7 @@ function CorridaSolo({ estado, def, agir, aoErro }: { estado: EstadoBarco & Part
       comandos: controles.comandos.current,
       pista: def,
       piloto: true,
+        pausa,
       meuAvatar: estado.meuAvatar ?? null,
       fantasmas: (estado.fantasmas ?? []).map((f) => ({ amostras: f.amostras, avatar: f.avatar })),
       contagem: CONTAGEM,
@@ -359,6 +364,7 @@ function CorridaSolo({ estado, def, agir, aoErro }: { estado: EstadoBarco & Part
       <canvas ref={canvas} width={W} height={H} />
       {!acabou && <Placar placar={placar} voltas={def.voltas} />}
       {!acabou && <BotoesDeToque controles={controles} />}
+          {!acabou && pausado && <TelaDePausa aoContinuar={continuar} icone={false} />}
     </div>
   );
 }

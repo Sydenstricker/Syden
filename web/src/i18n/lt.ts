@@ -3106,7 +3106,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Triušio važinėjimas',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Dvi minutės riedlenčių parke. Šokinėk, sukis, slysk turėklais ir jungk triukus į kombo: kiekvienas papildomas triukas daugina taškus, bet nugriuvęs prarandi visą kombo.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Viena minutė riedlenčių parke. Šokinėk, sukis, slysk turėklais ir jungk triukus į kombo: kiekvienas papildomas triukas daugina taškus, bet nugriuvęs prarandi visą kombo.',
+  Pausar: 'Pauzė',
   'Caiu!': 'Nugriuvo!',
   'Melhor combo: {n}': 'Geriausias kombo: {n}',
 } satisfies Record<string, string>;

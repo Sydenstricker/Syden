@@ -3074,7 +3074,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Deemsa hilleensaa',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': "Daqiiqaa lama paarkii skate keessatti. Utaali, naannessi, haala irratti grind godhi tooftaalee combo keessatti walitti hidhi: tooftaan dabalataa hundi qabxii ni baay'isa, garuu kufuun combo guutuu dhabsiisa.",
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': "Daqiiqaa tokko paarkii skate keessatti. Utaali, naannessi, haala irratti grind godhi tooftaalee combo keessatti walitti hidhi: tooftaan dabalataa hundi qabxii ni baay'isa, garuu kufuun combo guutuu dhabsiisa.",
+  Pausar: 'Dhaabi',
   'Caiu!': 'Kufe!',
   'Melhor combo: {n}': 'Combo isa gaarii: {n}',
 } satisfies Record<string, string>;

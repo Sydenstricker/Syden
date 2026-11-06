@@ -3108,7 +3108,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Қоянның серуені',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Скейт-паркте екі минут. Секір, айнал, қоршауларда грайнд жаса және трюктерді комбоға жалға: әр қосымша трюк ұпайды еселейді, бірақ құлау бүкіл комбоны жоғалтады.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Скейт-паркте бір минут. Секір, айнал, қоршауларда грайнд жаса және трюктерді комбоға жалға: әр қосымша трюк ұпайды еселейді, бірақ құлау бүкіл комбоны жоғалтады.',
+  Pausar: 'Кідірту',
   'Caiu!': 'Құлады!',
   'Melhor combo: {n}': 'Ең үздік комбо: {n}',
 } satisfies Record<string, string>;

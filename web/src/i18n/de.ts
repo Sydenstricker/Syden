@@ -3058,7 +3058,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Die Hasenrunde',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Zwei Minuten im Skatepark. Spring, dreh dich, grinde über die Geländer und verbinde die Tricks zu einer Kombo: Jeder weitere Trick vervielfacht die Punkte, aber ein Sturz kostet die ganze Kombo.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Eine Minute im Skatepark. Spring, dreh dich, grinde über die Geländer und verbinde die Tricks zu einer Kombo: Jeder weitere Trick vervielfacht die Punkte, aber ein Sturz kostet die ganze Kombo.',
+  Pausar: 'Pause',
   'Caiu!': 'Gestürzt!',
   'Melhor combo: {n}': 'Beste Kombo: {n}',
 } satisfies Record<string, string>;

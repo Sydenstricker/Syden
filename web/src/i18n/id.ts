@@ -3031,7 +3031,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Jalan-jalan kelinci',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Dua menit di taman skate. Lompat, putar, grind di pegangan dan sambungkan trik jadi kombo: tiap trik tambahan melipatgandakan poin, tapi jatuh menghilangkan seluruh kombo.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Satu menit di taman skate. Lompat, putar, grind di pegangan dan sambungkan trik jadi kombo: tiap trik tambahan melipatgandakan poin, tapi jatuh menghilangkan seluruh kombo.',
+  Pausar: 'Jeda',
   'Caiu!': 'Jatuh!',
   'Melhor combo: {n}': 'Kombo terbaik: {n}',
 } satisfies Record<string, string>;

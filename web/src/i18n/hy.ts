@@ -3123,7 +3123,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Ճագարի զբոսանքը',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Երկու րոպե սքեյթ այգում։ Ցատկիր, պտտվիր, գրայնդ արա բազրիքներին և հնարքները միացրու կոմբոյի մեջ. յուրաքանչյուր լրացուցիչ հնարք բազմապատկում է միավորները, բայց ընկնելով կորցնում ես ամբողջ կոմբոն։',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Մեկ րոպե սքեյթ այգում։ Ցատկիր, պտտվիր, գրայնդ արա բազրիքներին և հնարքները միացրու կոմբոյի մեջ. յուրաքանչյուր լրացուցիչ հնարք բազմապատկում է միավորները, բայց ընկնելով կորցնում ես ամբողջ կոմբոն։',
+  Pausar: 'Դադար',
   'Caiu!': 'Ընկավ։',
   'Melhor combo: {n}': 'Լավագույն կոմբո՝ {n}',
 } satisfies Record<string, string>;

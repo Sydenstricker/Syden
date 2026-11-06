@@ -3106,7 +3106,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'A nyuszi menete',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Két perc a gördeszkaparkban. Ugorj, pörögj, grindelj a korlátokon, és fűzd kombóba a trükköket: minden további trükk megsokszorozza a pontokat, de egy esés elviszi az egész kombót.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Egy perc a gördeszkaparkban. Ugorj, pörögj, grindelj a korlátokon, és fűzd kombóba a trükköket: minden további trükk megsokszorozza a pontokat, de egy esés elviszi az egész kombót.',
+  Pausar: 'Szünet',
   'Caiu!': 'Elesett!',
   'Melhor combo: {n}': 'Legjobb kombó: {n}',
 } satisfies Record<string, string>;

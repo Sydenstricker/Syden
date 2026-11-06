@@ -3114,7 +3114,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Pwomnad lapen an',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'De minit nan pak skate la. Sote, vire, fè grind sou balistrad yo epi makonnen trik yo nan yon kombo: chak trik anplis miltipliye pwen yo, men si ou tonbe ou pèdi tout kombo a.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Yon minit nan pak skate la. Sote, vire, fè grind sou balistrad yo epi makonnen trik yo nan yon kombo: chak trik anplis miltipliye pwen yo, men si ou tonbe ou pèdi tout kombo a.',
+  Pausar: 'Poz',
   'Caiu!': 'Tonbe!',
   'Melhor combo: {n}': 'Pi bon kombo: {n}',
 } satisfies Record<string, string>;

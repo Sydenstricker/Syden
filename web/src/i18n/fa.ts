@@ -3027,7 +3027,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'چرخِ خرگوش',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'دو دقیقه در پارک اسکیت. بپر، بچرخ، روی نرده‌ها گرایند کن و حرکت‌ها را در یک کمبو به هم وصل کن: هر حرکت اضافه امتیاز را چند برابر می‌کند، اما افتادن کل کمبو را از بین می‌برد.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'یک دقیقه در پارک اسکیت. بپر، بچرخ، روی نرده‌ها گرایند کن و حرکت‌ها را در یک کمبو به هم وصل کن: هر حرکت اضافه امتیاز را چند برابر می‌کند، اما افتادن کل کمبو را از بین می‌برد.',
+  Pausar: 'توقف',
   'Caiu!': 'افتاد!',
   'Melhor combo: {n}': 'بهترین کمبو: {n}',
 } satisfies Record<string, string>;

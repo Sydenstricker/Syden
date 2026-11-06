@@ -3105,7 +3105,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'ການຫຼິ້ນຂອງກະຕ່າຍ',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'ສອງນາທີໃນສວນສະເກັດ. ກະໂດດ, ໝຸນ, ຖູໄປຕາມຮາວ ແລະ ຕໍ່ທ່າໃຫ້ເປັນຄອມໂບ: ທຸກທ່າທີ່ເພີ່ມຈະຄູນຄະແນນ, ແຕ່ຖ້າລົ້ມຈະເສຍຄອມໂບທັງໝົດ.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'ໜຶ່ງນາທີໃນສວນສະເກັດ. ກະໂດດ, ໝຸນ, ຖູໄປຕາມຮາວ ແລະ ຕໍ່ທ່າໃຫ້ເປັນຄອມໂບ: ທຸກທ່າທີ່ເພີ່ມຈະຄູນຄະແນນ, ແຕ່ຖ້າລົ້ມຈະເສຍຄອມໂບທັງໝົດ.',
+  Pausar: 'ຢຸດຊົ່ວຄາວ',
   'Caiu!': 'ລົ້ມແລ້ວ!',
   'Melhor combo: {n}': 'ຄອມໂບດີທີ່ສຸດ: {n}',
 } satisfies Record<string, string>;

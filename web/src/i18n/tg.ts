@@ -3114,7 +3114,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Сайри харгӯш',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Ду дақиқа дар боғи скейт. Ҷаҳед, чарх занед, дар панҷараҳо грайнд кунед ва ҳилаҳоро ба комбо пайваст кунед: ҳар ҳилаи иловагӣ холҳоро зарб мекунад, вале афтидан тамоми комборо гум мекунад.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Як дақиқа дар боғи скейт. Ҷаҳед, чарх занед, дар панҷараҳо грайнд кунед ва ҳилаҳоро ба комбо пайваст кунед: ҳар ҳилаи иловагӣ холҳоро зарб мекунад, вале афтидан тамоми комборо гум мекунад.',
+  Pausar: 'Таваққуф',
   'Caiu!': 'Афтод!',
   'Melhor combo: {n}': 'Беҳтарин комбо: {n}',
 } satisfies Record<string, string>;

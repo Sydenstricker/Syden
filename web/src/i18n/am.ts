@@ -3034,7 +3034,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'የጥንቸሉ ሽርሽር',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'በስኬት ሜዳ ሁለት ደቂቃ። ዝለል፣ ዙር፣ በብረቶቹ ላይ ተንሸራተት እና ትርኢቶቹን አገናኝ፦ እያንዳንዱ ተጨማሪ ትርኢት ነጥቡን ያባዛል፣ መውደቅ ግን ሙሉውን ኮምቦ ያሳጣል።',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'በስኬት ሜዳ አንድ ደቂቃ። ዝለል፣ ዙር፣ በብረቶቹ ላይ ተንሸራተት እና ትርኢቶቹን አገናኝ፦ እያንዳንዱ ተጨማሪ ትርኢት ነጥቡን ያባዛል፣ መውደቅ ግን ሙሉውን ኮምቦ ያሳጣል።',
+  Pausar: 'ለአፍታ አቁም',
   'Caiu!': 'ወደቀ!',
   'Melhor combo: {n}': 'ምርጥ ኮምቦ፦ {n}',
 } satisfies Record<string, string>;

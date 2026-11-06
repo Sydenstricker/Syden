@@ -49,6 +49,8 @@ export interface OpcoesDaTorre {
   rivais?: Map<number, Rival & { avatar?: number | null }>;
   contagem: number;
   calmo?: boolean;
+  /** A pausa do ESC (pausaDosJogos.tsx), só no Solo: lida a cada quadro, como a janela sem foco. */
+  pausa?: { readonly ativa: boolean };
   aoPlacar: (p: { ms: number; pausado: boolean; quedas: number }) => void;
   aoOrdem?: (ordem: LinhaDaOrdem[]) => void;
   aoPosicao?: (p: PosicaoDoRival) => void;
@@ -186,7 +188,7 @@ export function rodarTorre(o: OpcoesDaTorre): () => void {
       if (!vivo) return;
       const dt = Math.min(0.1, (agora - antes) / 1000);
       antes = agora;
-      pausado = document.hidden || !document.hasFocus();
+      pausado = document.hidden || !document.hasFocus() || !!o.pausa?.ativa;
       if (!pausado || !o.piloto) {
         acumulado += dt;
         while (acumulado >= PASSO) {

@@ -3098,7 +3098,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Die haas se rit',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': "Twee minute in die skaatspark. Spring, draai, grind op die relings en ryg die toertjies aaneen in 'n kombo: elke ekstra toertjie vermenigvuldig die punte, maar val en jy verloor die hele kombo.",
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': "Een minuut in die skaatspark. Spring, draai, grind op die relings en ryg die toertjies aaneen in 'n kombo: elke ekstra toertjie vermenigvuldig die punte, maar val en jy verloor die hele kombo.",
+  Pausar: 'Pouse',
   'Caiu!': 'Geval!',
   'Melhor combo: {n}': 'Beste kombo: {n}',
 } satisfies Record<string, string>;

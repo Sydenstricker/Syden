@@ -3004,7 +3004,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Vòng trượt của thỏ',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Hai phút ở công viên trượt ván. Nhảy, xoay, grind trên lan can và nối các động tác thành combo: mỗi động tác thêm sẽ nhân điểm, nhưng ngã thì mất cả combo.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Một phút ở công viên trượt ván. Nhảy, xoay, grind trên lan can và nối các động tác thành combo: mỗi động tác thêm sẽ nhân điểm, nhưng ngã thì mất cả combo.',
+  Pausar: 'Tạm dừng',
   'Caiu!': 'Ngã rồi!',
   'Melhor combo: {n}': 'Combo tốt nhất: {n}',
 } satisfies Record<string, string>;

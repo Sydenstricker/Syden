@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { ComandosDoJogo } from './ComandosDosJogos';
 import { useT } from './i18n';
+import { comandoDaPausa, TelaDePausa, usePausaComEsc } from './pausaDosJogos';
 import { Placar } from './Minijogo';
 import { tocar } from './somDosJogos';
 import type { Comandos } from './corrida/fisica';
@@ -342,7 +343,7 @@ function BaloesDeTodos({ participantes, baloes, eu }: { participantes: Participa
   );
 }
 
-function Comandos_({ piloto }: { piloto: boolean }) {
+function Comandos_({ piloto, solo = false }: { piloto: boolean; solo?: boolean }) {
   const t = useT();
   if (!piloto) return null;
   return (
@@ -352,6 +353,7 @@ function Comandos_({ piloto }: { piloto: boolean }) {
         { teclas: ['espaco'], rotulo: t('Derrapar') },
         { teclas: ['e'], rotulo: t('Usar o item') },
         { teclas: ['q'], rotulo: t('Olhar para trás') },
+        ...(solo ? [comandoDaPausa(t)] : []),
       ]}
     />
   );
@@ -379,6 +381,8 @@ function PartidaSolo({
   const tela = useRef<HTMLDivElement>(null);
   const [acabou, setAcabou] = useState(false);
   const controles = useControles(!acabou);
+  // ESC pausa (só aqui, no Solo: na sala o relógio é o de todos)
+  const { pausa, pausado, continuar } = usePausaComEsc(!acabou);
   const [item, setItem] = useState<ItemDoBalao | null>(null);
   const [restante, setRestante] = useState({ restanteMs: 0, pausado: false });
   const [baloes, setBaloes] = useState(new Map<number, number>());
@@ -396,6 +400,7 @@ function PartidaSolo({
       arena,
       eu,
       piloto: true,
+        pausa,
       participantes: lista,
       robos: lista.filter((q) => q.id !== eu).map((q) => q.id),
       semente: Math.floor(Math.random() * 2 ** 31),
@@ -434,8 +439,9 @@ function PartidaSolo({
         </div>
         <BaloesDeTodos participantes={participantes.current} baloes={baloes} eu={eu} />
         {!acabou && <BotoesDeToque controles={controles} item={item} />}
+          {!acabou && pausado && <TelaDePausa aoContinuar={continuar} icone={false} />}
       </div>
-      <Comandos_ piloto={!acabou} />
+      <Comandos_ piloto={!acabou} solo />
       {!acabou && <p className="settings-hint corrida-dica">{t('Pegue as caixas e estoure os balões dos outros. Quem fica sem balão sai.')}</p>}
     </div>
   );

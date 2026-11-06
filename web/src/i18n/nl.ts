@@ -3033,7 +3033,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'De konijnenronde',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Twee minuten in het skatepark. Spring, draai, grind over de leuningen en rijg de trucs aan elkaar tot een combo: elke extra truc vermenigvuldigt de punten, maar vallen kost de hele combo.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Eén minuut in het skatepark. Spring, draai, grind over de leuningen en rijg de trucs aan elkaar tot een combo: elke extra truc vermenigvuldigt de punten, maar vallen kost de hele combo.',
+  Pausar: 'Pauze',
   'Caiu!': 'Gevallen!',
   'Melhor combo: {n}': 'Beste combo: {n}',
 } satisfies Record<string, string>;

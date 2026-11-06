@@ -3021,7 +3021,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': '兔子滑一圈',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': '在滑板公园滑两分钟。跳跃、旋转、在栏杆上磨杆，把招式连成连招：每多一个招式分数就翻倍，但摔倒会丢掉整个连招。',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': '在滑板公园滑一分钟。跳跃、旋转、在栏杆上磨杆，把招式连成连招：每多一个招式分数就翻倍，但摔倒会丢掉整个连招。',
+  Pausar: '暂停',
   'Caiu!': '摔倒了！',
   'Melhor combo: {n}': '最佳连招：{n}',
 } satisfies Record<string, string>;

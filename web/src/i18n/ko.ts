@@ -3022,7 +3022,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': '토끼의 한 바퀴',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': '스케이트 파크에서 2분. 점프하고, 돌고, 난간에서 그라인드하고, 기술을 이어 콤보로 만드세요. 기술이 하나 늘 때마다 점수가 곱해지지만, 넘어지면 콤보가 통째로 사라져요.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': '스케이트 파크에서 1분. 점프하고, 돌고, 난간에서 그라인드하고, 기술을 이어 콤보로 만드세요. 기술이 하나 늘 때마다 점수가 곱해지지만, 넘어지면 콤보가 통째로 사라져요.',
+  Pausar: '일시정지',
   'Caiu!': '넘어졌다!',
   'Melhor combo: {n}': '최고 콤보: {n}',
 } satisfies Record<string, string>;

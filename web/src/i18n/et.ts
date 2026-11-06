@@ -3101,7 +3101,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Jänese sõit',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Kaks minutit rulapargis. Hüppa, keeruta, grindi piiretel ja ühenda trikid komboks: iga lisatrikk korrutab punkte, aga kukkumine kaotab kogu kombo.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Üks minut rulapargis. Hüppa, keeruta, grindi piiretel ja ühenda trikid komboks: iga lisatrikk korrutab punkte, aga kukkumine kaotab kogu kombo.',
+  Pausar: 'Paus',
   'Caiu!': 'Kukkus!',
   'Melhor combo: {n}': 'Parim kombo: {n}',
 } satisfies Record<string, string>;

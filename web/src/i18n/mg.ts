@@ -3104,7 +3104,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': "Fitsangatsanganan'ny bitro",
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': "Roa minitra ao amin'ny kianja skate. Mitsambikina, mihodina, manao grind amin'ny fefy ary ampifandraiso ho combo ireo hetsika: mampitombo ny isa ny hetsika fanampiny tsirairay, fa raha lavo dia very ny combo manontolo.",
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': "Iray minitra ao amin'ny kianja skate. Mitsambikina, mihodina, manao grind amin'ny fefy ary ampifandraiso ho combo ireo hetsika: mampitombo ny isa ny hetsika fanampiny tsirairay, fa raha lavo dia very ny combo manontolo.",
+  Pausar: 'Ajanony',
   'Caiu!': 'Lavo!',
   'Melhor combo: {n}': 'Combo tsara indrindra: {n}',
 } satisfies Record<string, string>;

@@ -3019,7 +3019,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'முயலின் சுற்று',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'ஸ்கேட் பூங்காவில் இரண்டு நிமிடம். குதி, சுழல், கைப்பிடிகளில் கிரைண்ட் செய், சாகசங்களை காம்போவாக இணை: ஒவ்வொரு கூடுதல் சாகசமும் புள்ளிகளைப் பெருக்கும், ஆனால் விழுந்தால் முழு காம்போவும் போகும்.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'ஸ்கேட் பூங்காவில் ஒரு நிமிடம். குதி, சுழல், கைப்பிடிகளில் கிரைண்ட் செய், சாகசங்களை காம்போவாக இணை: ஒவ்வொரு கூடுதல் சாகசமும் புள்ளிகளைப் பெருக்கும், ஆனால் விழுந்தால் முழு காம்போவும் போகும்.',
+  Pausar: 'இடைநிறுத்து',
   'Caiu!': 'விழுந்தது!',
   'Melhor combo: {n}': 'சிறந்த காம்போ: {n}',
 } satisfies Record<string, string>;

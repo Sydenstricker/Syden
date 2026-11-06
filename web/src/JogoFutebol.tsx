@@ -4,6 +4,7 @@ import { Trophy } from 'lucide-react';
 import { ComandosDoJogo } from './ComandosDosJogos';
 import { CORES_DOS_AVATARES } from './corrida/coresDosAvatares';
 import { useT } from './i18n';
+import { comandoDaPausa, TelaDePausa, usePausaComEsc } from './pausaDosJogos';
 import { tocar } from './somDosJogos';
 import { carregarFolhas, COR_DO_TIME, desenharBola, desenharCampo, desenharJogador, desenharNome, type Folhas, type JogadorNaTela } from './futebol/desenho';
 import { ClienteDaSala, type EventoDaTela, type Quadro } from './futebol/sala';
@@ -314,7 +315,7 @@ function ControlesDeToque({ entrada }: { entrada: React.RefObject<Entrada> }) {
   );
 }
 
-function Comandos() {
+function Comandos({ solo = false }: { solo?: boolean }) {
   const t = useT();
   return (
     <ComandosDoJogo
@@ -322,6 +323,7 @@ function Comandos() {
         { teclas: ['setas'], toque: 'toque-arrastar', rotulo: t('Andar') },
         { teclas: ['espaco'], toque: 'toque-segurar', rotulo: t('Chutar (segure para mais força)') },
         { teclas: ['x', 'z'], toque: 'toque', rotulo: t('Passe') },
+        ...(solo ? [comandoDaPausa(t)] : []),
       ]}
     />
   );
@@ -350,13 +352,15 @@ interface Motor {
   destruir?(): void;
 }
 
-function Palco({ criar, deps }: { criar: (aoGol: (g: Painel['gol']) => void) => Motor; deps: unknown[] }) {
+/** `pausavel`: o Solo, contra o computador (ESC pausa); na sala, a partida é do servidor e segue. */
+function Palco({ criar, deps, pausavel = false }: { criar: (aoGol: (g: Painel['gol']) => void) => Motor; deps: unknown[]; pausavel?: boolean }) {
   const t = useT();
   const canvas = useRef<HTMLCanvasElement>(null);
   const [painel, setPainel] = useState<Painel>({ placar: [0, 0], restante: PARTIDA_PASSOS, contagem: null, gol: null });
   const [toque] = useState(ehToque);
   const criarRef = useRef(criar);
   criarRef.current = criar;
+  const { pausa, pausado, continuar } = usePausaComEsc(pausavel && painel.restante > 0);
 
   useEffect(() => {
     const c = canvas.current;
@@ -378,8 +382,8 @@ function Palco({ criar, deps }: { criar: (aoGol: (g: Painel['gol']) => void) => 
       const agora = performance.now();
       const dt = Math.min(0.1, (agora - ultimo) / 1000);
       ultimo = agora;
-      // sem foco (o jogo de verdade, outra janela) ou escondida: não se desenha (e o Solo pausa)
-      if (document.hidden || !document.hasFocus()) {
+      // sem foco (o jogo de verdade, outra janela) ou escondida: não se desenha (e o Solo pausa); o ESC pausa o Solo
+      if (document.hidden || !document.hasFocus() || pausa.ativa) {
         if (!motor.pausaSemFoco) acumulado = 0;
         return;
       }
@@ -432,8 +436,9 @@ function Palco({ criar, deps }: { criar: (aoGol: (g: Painel['gol']) => void) => 
             </span>
           )}
         </div>
+        {pausado && <TelaDePausa aoContinuar={continuar} />}
       </div>
-      {toque ? null : <Comandos />}
+      {toque ? null : <Comandos solo={pausavel} />}
     </div>
   );
 }
@@ -525,6 +530,7 @@ function PartidaSolo({
   return (
     <>
       <Palco
+        pausavel
         deps={[formato]}
         criar={(aoGol) => {
           // a pessoa e (formato − 1) robôs contra (formato) robôs: -1, -2… do meu lado primeiro

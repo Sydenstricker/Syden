@@ -3104,7 +3104,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Zajačia jazda',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Dve minúty v skateparku. Skáč, toč sa, grinduj po zábradliach a spájaj triky do komba: každý ďalší trik násobí body, ale pád stratí celé kombo.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Jedna minúta v skateparku. Skáč, toč sa, grinduj po zábradliach a spájaj triky do komba: každý ďalší trik násobí body, ale pád stratí celé kombo.',
+  Pausar: 'Pozastaviť',
   'Caiu!': 'Spadol!',
   'Melhor combo: {n}': 'Najlepšie kombo: {n}',
 } satisfies Record<string, string>;

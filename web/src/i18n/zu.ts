@@ -3105,7 +3105,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Uhambo lukanogwaja',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Imizuzu emibili epaki ye-skate. Gxuma, jikeleza, yenza i-grind ezinsimbini bese uxhumanisa amaqhinga abe yikhombo: iqhinga ngalinye elengeziwe liphindaphinda amaphuzu, kodwa ukuwa kulahlekisa ikhombo yonke.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Umzuzu owodwa epaki ye-skate. Gxuma, jikeleza, yenza i-grind ezinsimbini bese uxhumanisa amaqhinga abe yikhombo: iqhinga ngalinye elengeziwe liphindaphinda amaphuzu, kodwa ukuwa kulahlekisa ikhombo yonke.',
+  Pausar: 'Misa okwesikhashana',
   'Caiu!': 'Uwile!',
   'Melhor combo: {n}': 'Ikhombo engcono kakhulu: {n}',
 } satisfies Record<string, string>;

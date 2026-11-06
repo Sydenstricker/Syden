@@ -3115,7 +3115,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Towşanyň aýlawy',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Skeýt parkda iki minut. Böküň, aýlanyň, gabalarda graýnd ediň we tilsimleri kombo birleşdiriň: her goşmaça tilsim ballary köpeldýär, ýöne ýykylsaň ähli kombo ýitýär.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Skeýt parkda bir minut. Böküň, aýlanyň, gabalarda graýnd ediň we tilsimleri kombo birleşdiriň: her goşmaça tilsim ballary köpeldýär, ýöne ýykylsaň ähli kombo ýitýär.',
+  Pausar: 'Arakesme',
   'Caiu!': 'Ýykyldy!',
   'Melhor combo: {n}': 'Iň gowy kombo: {n}',
 } satisfies Record<string, string>;

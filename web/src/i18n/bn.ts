@@ -3031,7 +3031,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'খরগোশের চক্কর',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'স্কেট পার্কে দুই মিনিট। লাফাও, ঘোরো, রেলিংয়ে গ্রাইন্ড করো আর কৌশলগুলো জুড়ে কম্বো বানাও: প্রতিটি বাড়তি কৌশল পয়েন্ট গুণ করে, কিন্তু পড়ে গেলে পুরো কম্বো হারাবে।',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'স্কেট পার্কে এক মিনিট। লাফাও, ঘোরো, রেলিংয়ে গ্রাইন্ড করো আর কৌশলগুলো জুড়ে কম্বো বানাও: প্রতিটি বাড়তি কৌশল পয়েন্ট গুণ করে, কিন্তু পড়ে গেলে পুরো কম্বো হারাবে।',
+  Pausar: 'বিরতি',
   'Caiu!': 'পড়ে গেছে!',
   'Melhor combo: {n}': 'সেরা কম্বো: {n}',
 } satisfies Record<string, string>;

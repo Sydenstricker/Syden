@@ -6,6 +6,7 @@ import { api } from './api';
 import { tempoLegivel } from './corrida/fisica';
 import { nomeDaPistaEm } from './corrida/nomes';
 import { useT } from './i18n';
+import { comandoDaPausa, TelaDePausa, usePausaComEsc } from './pausaDosJogos';
 import type { Agir } from './Minijogo';
 import type { Partida } from './minijogos';
 import { H, W } from './plataforma/desenho';
@@ -211,6 +212,8 @@ export function JogoPlataforma({ eu, aoVoltar }: { eu: number; aoVoltar: () => v
   const canvas = useRef<HTMLCanvasElement>(null);
   const tela = useRef<HTMLDivElement>(null);
   const controles = useControles(fase === 'correndo');
+  // ESC pausa (só aqui, no Solo: na sala o relógio é o de todos)
+  const { pausa, pausado, continuar } = usePausaComEsc(fase === 'correndo');
   /** Cada "Jogar de novo" é uma corrida nova. */
   const [rodada, setRodada] = useState(0);
   const quedas = useRef(0);
@@ -260,6 +263,7 @@ export function JogoPlataforma({ eu, aoVoltar }: { eu: number; aoVoltar: () => v
         comandos: controles.comandos.current,
         fase: def,
         piloto: true,
+        pausa,
         eu,
         fantasmas,
         contagem: CONTAGEM,
@@ -321,7 +325,7 @@ export function JogoPlataforma({ eu, aoVoltar }: { eu: number; aoVoltar: () => v
           </ul>
           <div className="corrida-pista-nome">
             {meu && <span>{t('Seu recorde: {tempo}', { tempo: tempoLegivel(meu.tempoMs) })}</span>}
-            <ComandosDoJogo itens={[{ teclas: ['setas-lado'], rotulo: t('Correr') }, { teclas: ['espaco'], rotulo: t('Pular') }]} />
+            <ComandosDoJogo itens={[{ teclas: ['setas-lado'], rotulo: t('Correr') }, { teclas: ['espaco'], rotulo: t('Pular') }, comandoDaPausa(t)]} />
             <p className="settings-hint">{t('Setas para correr, Espaço para pular (segure para ir mais alto).')}</p>
           </div>
           {recordes !== null && (
@@ -367,6 +371,7 @@ export function JogoPlataforma({ eu, aoVoltar }: { eu: number; aoVoltar: () => v
           <canvas key={rodada} ref={canvas} width={W} height={H} />
           {fase === 'correndo' && <Placar placar={placar} />}
           {fase === 'correndo' && <BotoesDeToque controles={controles} />}
+          {fase === 'correndo' && pausado && <TelaDePausa aoContinuar={continuar} icone={false} />}
           {fase === 'fim' && resultado && (
             <div className="corrida-fim">
               {resultado.recorde && <strong className="corrida-recorde">{t('Novo recorde!')}</strong>}

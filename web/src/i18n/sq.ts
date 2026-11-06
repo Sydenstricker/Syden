@@ -3096,7 +3096,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Xhiro e lepurit',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Dy minuta në parkun e skejtit. Kërce, rrotullohu, bëj grind në parmakë dhe lidh truket në një kombo: çdo truk më shumë i shumëzon pikët, por rënia e humb gjithë kombon.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Një minutë në parkun e skejtit. Kërce, rrotullohu, bëj grind në parmakë dhe lidh truket në një kombo: çdo truk më shumë i shumëzon pikët, por rënia e humb gjithë kombon.',
+  Pausar: 'Pauzë',
   'Caiu!': 'Ra!',
   'Melhor combo: {n}': 'Kombo më e mirë: {n}',
 } satisfies Record<string, string>;

@@ -3040,7 +3040,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Turas an choinín',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Dhá nóiméad sa pháirc scátála. Léim, cas, déan grind ar na ráillí agus ceangail na cleasanna i gcombo: méadaíonn gach cleas breise na pointí, ach má thiteann tú cailleann tú an combo ar fad.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Nóiméad amháin sa pháirc scátála. Léim, cas, déan grind ar na ráillí agus ceangail na cleasanna i gcombo: méadaíonn gach cleas breise na pointí, ach má thiteann tú cailleann tú an combo ar fad.',
+  Pausar: 'Sos',
   'Caiu!': 'Thit!',
   'Melhor combo: {n}': 'An combo is fearr: {n}',
 } satisfies Record<string, string>;

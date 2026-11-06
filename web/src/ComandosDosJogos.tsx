@@ -14,6 +14,7 @@ export type Figura =
   | 'c'
   | 'e'
   | 'q'
+  | 'esc'
   | 'mouse-clique'
   | 'mouse-direito'
   | 'mouse-arrastar'
@@ -30,6 +31,7 @@ const ARQUIVO: Record<Figura, string> = {
   c: 'keyboard_c',
   e: 'keyboard_e',
   q: 'keyboard_q',
+  esc: 'keyboard_escape',
   'mouse-clique': 'mouse_left',
   'mouse-direito': 'mouse_right',
   'mouse-arrastar': 'mouse_move',

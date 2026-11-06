@@ -3099,7 +3099,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Króliczy przejazd',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Dwie minuty w skateparku. Skacz, kręć się, grinduj po poręczach i łącz triki w combo: każdy kolejny trik mnoży punkty, ale upadek zabiera całe combo.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Jedna minuta w skateparku. Skacz, kręć się, grinduj po poręczach i łącz triki w combo: każdy kolejny trik mnoży punkty, ale upadek zabiera całe combo.',
+  Pausar: 'Pauza',
   'Caiu!': 'Upadek!',
   'Melhor combo: {n}': 'Najlepsze combo: {n}',
 } satisfies Record<string, string>;

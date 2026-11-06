@@ -3036,7 +3036,8 @@ export default {
   Grab: 'Grab',
   Manual: 'Manual',
   'Rolê do coelho': 'Zagayar zomo',
-  'Dois minutos na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Minti biyu a filin skate. Tsalle, juya, yi grind a kan dogayen ƙarfe kuma ka haɗa dabaru cikin combo: kowace ƙarin dabara tana ninka maki, amma faɗuwa tana rasa duk combon.',
+  'Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.': 'Minti ɗaya a filin skate. Tsalle, juya, yi grind a kan dogayen ƙarfe kuma ka haɗa dabaru cikin combo: kowace ƙarin dabara tana ninka maki, amma faɗuwa tana rasa duk combon.',
+  Pausar: 'Dakata',
   'Caiu!': 'Ya faɗi!',
   'Melhor combo: {n}': 'Mafi kyawun combo: {n}',
 } satisfies Record<string, string>;
