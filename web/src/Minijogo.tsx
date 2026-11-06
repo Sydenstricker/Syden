@@ -43,6 +43,7 @@ import { JogoSudoku } from './JogoSudoku';
 import { EscolhaDasRodadas, JogoTabuleiro } from './JogoTabuleiro';
 import { EscolhaDasCidades, JogoCidades } from './JogoCidades';
 import { cadaUmPorSi, EM_DUPLAS, EscolhaDosRobos, type OpcaoDeRobos } from './EscolhaDosRobos';
+import { IconeDeHud } from './iconesDeHud';
 import { EscolhaDeCategoria, JogoTamanho } from './JogoTamanho';
 import { JogoXadrez } from './JogoXadrez';
 import {
@@ -281,6 +282,7 @@ export function PainelDoMinijogo({
           <div className="minijogo-abas" role="tablist" aria-label={t('Mini-games')}>
             {(['solo', 'coletivo'] as const).map((grupo) => (
               <button key={grupo} type="button" role="tab" aria-selected={aba === grupo} className={aba === grupo ? 'ativa' : ''} onClick={() => escolherAba(grupo)}>
+                <IconeDeHud nome={grupo === 'solo' ? 'singleplayer' : 'multiplayer'} />
                 {grupo === 'solo' ? t('Solo') : t('Coletivo')}
               </button>
             ))}

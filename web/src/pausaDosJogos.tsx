@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Pause, Play } from 'lucide-react';
+import { Play } from 'lucide-react';
 import type { Comando } from './ComandosDosJogos';
 import { useT } from './i18n';
+import { IconeDeHud } from './iconesDeHud';
 import './pausaDosJogos.css';
 
 /**
@@ -57,7 +58,11 @@ export function TelaDePausa({ aoContinuar, icone = true }: { aoContinuar: () => 
   const t = useT();
   return (
     <div className={`pausa-do-jogo${icone ? '' : ' sem-icone'}`}>
-      {icone && <Pause className="pausa-do-jogo-icone" size={56} fill="currentColor" aria-hidden="true" />}
+      {icone && (
+        <span className="pausa-do-jogo-icone">
+          <IconeDeHud nome="pausa" tamanho={64} />
+        </span>
+      )}
       <button type="button" className="btn-primary" autoFocus onClick={aoContinuar}>
         <Play size={14} aria-hidden="true" /> {t('Continuar')}
       </button>

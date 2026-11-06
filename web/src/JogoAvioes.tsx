@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { ComandosDoJogo } from './ComandosDosJogos';
+import { BotoesDosRobos, cadaUmPorSi } from './EscolhaDosRobos';
 import { useT } from './i18n';
 import { Placar, Relogio } from './Minijogo';
 import { tocar } from './somDosJogos';
@@ -138,14 +139,7 @@ function EscolhaDoSolo({ aoEscolher }: { aoEscolher: (n: number) => void }) {
   };
   return (
     <div className="aviao-fim-solo">
-      <p className="minijogo-situacao">{t('Quantos adversários do computador?')}</p>
-      <div className="minijogo-acoes">
-        {[1, 2, 3].map((k) => (
-          <button key={k} type="button" className={k === n ? 'btn-primary' : 'btn-secondary'} aria-pressed={k === n} onClick={() => setN(k)}>
-            {k}
-          </button>
-        ))}
-      </div>
+      <BotoesDosRobos opcoes={[1, 2, 3].map(cadaUmPorSi)} escolhida={n} aoEscolher={setN} pergunta={t('Quantos adversários do computador?')} />
       <div className="minijogo-acoes">
         <button type="button" className="btn-primary" onClick={comecar}>
           {t('Começar')}

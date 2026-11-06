@@ -1,0 +1,37 @@
+/* Os ícones de HUD (iconesDeHud.tsx): o PNG da Kenney é a máscara, e a cor é a do texto. */
+.icone-hud {
+  display: inline-block;
+  flex: none;
+  vertical-align: -0.15em;
+  background-color: currentColor;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+/* A mesa contra o computador (EscolhaDosRobos.tsx): os lados lado a lado, "você" no destaque e o "×" entre eles. */
+.mesa-dos-robos {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.mesa-dos-robos-lado {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+}
+.mesa-dos-robos-voce {
+  color: var(--accent);
+}
+.mesa-dos-robos-contra {
+  opacity: 0.7;
+  font-weight: 700;
+}
+
+/* As abas da estante com a figura antes do nome. */
+.minijogo-abas .icone-hud {
+  margin-right: 5px;
+}

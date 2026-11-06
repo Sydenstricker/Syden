@@ -50,7 +50,8 @@ try {
     await botao.click();
     // a escolha dos adversários e, quando pergunta, a das rodadas
     const robos = duda.locator('.cid-robos-botao').first();
-    if (await robos.isVisible({ timeout: 3000 }).catch(() => false)) await robos.click();
+    // (isVisible não espera: a escolha chega um instante depois do clique, e o 🤖 dela, quando era emoji, passava no lugar da mesa)
+    if (await robos.waitFor({ timeout: 3000 }).then(() => true, () => false)) await robos.click();
     const rodadas = duda.locator('.tab-rodadas-botao').first();
     if (await rodadas.isVisible({ timeout: 1500 }).catch(() => false)) await rodadas.click();
     await duda.waitForTimeout(2500);

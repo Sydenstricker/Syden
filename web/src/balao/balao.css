@@ -6,17 +6,6 @@
   gap: 10px;
 }
 
-.balao-quantos {
-  display: flex;
-  gap: 6px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.balao-quantos button {
-  min-width: 2.6em;
-}
-
 /* os balões de todos, no canto de cima à direita (os meus, desenhados, ficam no canto da esquerda) */
 .balao-todos {
   position: absolute;

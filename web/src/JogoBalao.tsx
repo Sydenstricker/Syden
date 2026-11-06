@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { ComandosDoJogo } from './ComandosDosJogos';
+import { BotoesDosRobos, cadaUmPorSi } from './EscolhaDosRobos';
 import { useT } from './i18n';
 import { comandoDaPausa, TelaDePausa, usePausaComEsc } from './pausaDosJogos';
 import { Placar } from './Minijogo';
@@ -197,14 +198,7 @@ function EscolhaDoSolo({ aoEscolher }: { aoEscolher: (e: { arena: string; robos:
           </li>
         ))}
       </ul>
-      <p className="minijogo-situacao">{t('Quantos adversários do computador?')}</p>
-      <div className="balao-quantos">
-        {[1, 2, 3, 4, 5].map((n) => (
-          <button key={n} type="button" className={n === robos ? 'btn-primary' : 'btn-secondary'} aria-pressed={n === robos} onClick={() => setRobos(n)}>
-            {n}
-          </button>
-        ))}
-      </div>
+      <BotoesDosRobos opcoes={[1, 2, 3, 4, 5].map(cadaUmPorSi)} escolhida={robos} aoEscolher={setRobos} pergunta={t('Quantos adversários do computador?')} />
       <div className="minijogo-acoes">
         <button type="button" className="btn-primary" onClick={comecar}>
           {t('Começar')}

@@ -17,6 +17,7 @@ import { usarCenaNova } from './cenaNova';
 import { ENDERECO_DO_QUARTO, type EstadoNoQuarto, QuartoNovo } from './QuartoNovo';
 import { loadMyStatus } from './presenceStatus';
 import { idiomaAtual, useT } from './i18n';
+import { IconeDeHud } from './iconesDeHud';
 
 // Tela inicial do Syden: o quarto do coelho (Quarto.tsx). Um lugar para chegar, dar uma olhada no que mudou e cutucar
 // o coelho antes de entrar numa sala. Os objetos não são enfeite: cada um leva a uma parte de verdade do app. Até
@@ -293,7 +294,7 @@ export function Home({
             {/* Sozinho, aqui mesmo: a partida é só sua, e não precisa de sala nem de chamada. */}
             <section className="jogos-do-syden jogos-solo">
               <h4>
-                <Gamepad2 size={16} aria-hidden="true" /> {t('Solo')}
+                <IconeDeHud nome="singleplayer" /> {t('Solo')}
               </h4>
               <FicharioDeGeneros jogos={JOGOS.filter((jogo) => jogo.abas.includes('solo')).map((j) => j.id)} ficha={ficha} aoEscolher={setFicha} />
               <ul>
@@ -319,7 +320,7 @@ export function Home({
             </section>
             <section className="jogos-do-syden">
               <h4>
-                <Gamepad2 size={16} aria-hidden="true" /> {t('Na sala de voz, com a turma')}
+                <IconeDeHud nome="multiplayer" /> {t('Na sala de voz, com a turma')}
               </h4>
               <p>{JOGOS.filter((jogo) => jogo.abas.includes('coletivo')).map((jogo) => t(jogo.nome)).join(' · ')}</p>
               {salas.length === 0 ? (

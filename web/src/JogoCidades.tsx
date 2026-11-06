@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { idiomaAtual, useT } from './i18n';
 import { Placar, Relogio } from './Minijogo';
 import { coresDe, Dado, Peca, useAgora } from './JogoTabuleiro';
+import { BotoesDosRobos, cadaUmPorSi } from './EscolhaDosRobos';
 import { Tabuleiro3D } from './cidades3d/Tabuleiro3D';
 import type { CartaDasCidades, EstadoCidades, OcorridoDasCidades, Partida, PropostaDasCidades } from './minijogos';
 
@@ -734,7 +735,7 @@ const ROBOS = [1, 2, 3, 4, 5];
 
 /**
  * Antes do convite: rodadas fixas (10, 20 ou 30) ou até sobrar um. No Solo, antes disso, quantos adversários do computador
- * (pedido dele, 05/11/2026); eles aparecem com 🤖 no nome.
+ * (pedido dele, 05/11/2026), na mesa de ícones comum (EscolhaDosRobos.tsx); eles aparecem com 🤖 no nome.
  */
 export function EscolhaDasCidades({ solo = false, aoEscolher, aoVoltar }: { solo?: boolean; aoEscolher: (corpo: Record<string, unknown>) => void; aoVoltar: () => void }) {
   const t = useT();
@@ -742,20 +743,7 @@ export function EscolhaDasCidades({ solo = false, aoEscolher, aoVoltar }: { solo
   const comRobos = (corpo: Record<string, unknown>) => aoEscolher(solo ? { ...corpo, robos } : corpo);
   return (
     <div className="tab-escolha">
-      {solo && (
-        <>
-          <p className="minijogo-situacao">{t('Quantos adversários?')}</p>
-          <ul className="tab-rodadas cid-robos">
-            {ROBOS.map((n) => (
-              <li key={n}>
-                <button type="button" className={`cid-robos-botao${robos === n ? ' escolhido' : ''}`} aria-pressed={robos === n} onClick={() => setRobos(n)}>
-                  <span aria-hidden="true">🤖</span> {n}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
+      {solo && <BotoesDosRobos opcoes={ROBOS.map(cadaUmPorSi)} escolhida={robos} aoEscolher={setRobos} />}
       <p className="minijogo-situacao">{t('Até quando?')}</p>
       <ul className="tab-rodadas">
         {[10, 20, 30].map((n) => (
