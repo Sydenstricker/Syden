@@ -7649,3 +7649,74 @@ export function carrinhosDe(userId: number) {
     .all(userId) as { pista: string; tempoMs: number; voltas: string; entradas: string; em: string }[];
   return linhas.map((l) => ({ pista: l.pista, tempoMs: l.tempoMs, em: l.em, voltas: JSON.parse(l.voltas) as number[], acelerador: JSON.parse(l.entradas) as number[] }));
 }
+
+// ---------------------------------------------------------------------------------------------------
+// A GINCANA DA TOCA (06/11/2026): o melhor tempo de cada pessoa em cada percurso, contra o relógio, com as quedas e o
+// FANTASMA, que aqui são os COMANDOS de cada passo em trechos (o site refaz o percurso do amigo com gincana-sim.ts). Só o
+// melhor: um tempo pior não substitui. Quem vê: a própria pessoa e os amigos aceitos (minijogo-gincana.ts).
+// ---------------------------------------------------------------------------------------------------
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS gincana_recordes (
+    user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    percurso   TEXT NOT NULL,
+    tempo_ms   INTEGER NOT NULL,
+    quedas     INTEGER NOT NULL,
+    entradas   TEXT NOT NULL,
+    em         TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    PRIMARY KEY (user_id, percurso)
+  );
+`);
+
+export interface RecordeDaGincana {
+  userId: number;
+  username: string;
+  nomeDeExibicao: string | null;
+  avatarPronto: number | null;
+  percurso: string;
+  tempoMs: number;
+  em: string;
+}
+
+/** Os recordes da pessoa e os dos amigos aceitos dela, em todos os percursos, do mais rápido ao mais lento (sem o fantasma). */
+export function recordesDaGincana(userId: number): RecordeDaGincana[] {
+  return db
+    .prepare(
+      `SELECT r.user_id AS userId, u.username AS username, u.nome_exibicao AS nomeDeExibicao, u.avatar_pronto AS avatarPronto,
+              r.percurso AS percurso, r.tempo_ms AS tempoMs, r.em AS em
+       FROM gincana_recordes r JOIN users u ON u.id = r.user_id
+       WHERE r.user_id = ? OR r.user_id IN (
+         SELECT CASE WHEN menor_id = ? THEN maior_id ELSE menor_id END FROM friendships
+         WHERE ? IN (menor_id, maior_id) AND situacao = 'aceita')
+       ORDER BY r.percurso, r.tempo_ms LIMIT 120`,
+    )
+    .all(userId, userId, userId) as unknown as RecordeDaGincana[];
+}
+
+export function recordeDaGincana(userId: number, percurso: string): { tempoMs: number; entradas: string } | null {
+  const linha = db
+    .prepare('SELECT tempo_ms AS tempoMs, entradas FROM gincana_recordes WHERE user_id = ? AND percurso = ?')
+    .get(userId, percurso) as { tempoMs: number; entradas: string } | undefined;
+  return linha ?? null;
+}
+
+/** Guarda se for o melhor da pessoa neste percurso. Devolve o tempo que valia antes (null se não havia). */
+export function guardarGincana(userId: number, percurso: string, tempoMs: number, quedas: number, entradas: string): { anterior: number | null; recorde: boolean } {
+  const antes = recordeDaGincana(userId, percurso);
+  if (antes && antes.tempoMs <= tempoMs) return { anterior: antes.tempoMs, recorde: false };
+  db.prepare(
+    `INSERT INTO gincana_recordes (user_id, percurso, tempo_ms, quedas, entradas, em)
+     VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+     ON CONFLICT(user_id, percurso) DO UPDATE SET tempo_ms = excluded.tempo_ms, quedas = excluded.quedas,
+       entradas = excluded.entradas, em = excluded.em`,
+  ).run(userId, percurso, tempoMs, quedas, entradas);
+  return { anterior: antes?.tempoMs ?? null, recorde: true };
+}
+
+/** Os recordes da pessoa, com o fantasma (para o "Levar seus dados"). */
+export function gincanaDe(userId: number) {
+  const linhas = db
+    .prepare('SELECT percurso, tempo_ms AS tempoMs, quedas, entradas, em FROM gincana_recordes WHERE user_id = ? ORDER BY percurso')
+    .all(userId) as { percurso: string; tempoMs: number; quedas: number; entradas: string; em: string }[];
+  return linhas.map((l) => ({ percurso: l.percurso, tempoMs: l.tempoMs, quedas: l.quedas, em: l.em, comandos: JSON.parse(l.entradas) as number[] }));
+}
