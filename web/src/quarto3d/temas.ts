@@ -42,11 +42,10 @@ export interface PecaDoTema {
   giro?: number;
   cores?: Record<string, string>;
   partes?: Parte[];
-  /** Sentar: a animação do coelho e a altura do assento (fração da altura da peça); deitar: a altura e o avanço. */
+  /** Sentar: a animação do coelho e a altura do assento (fração da altura da peça). Deitar não pede número: a cama é medida no modelo (pontoDeDeitar, em cena.ts). */
   pose?: string;
   assento?: number;
   avanco?: number;
-  deitar?: [number, number];
   /** O tampo, para os objetos de cima, em fração da altura da peça (sem ela, o alto da caixa da peça, sem as partes). */
   tampo?: number;
 }
@@ -97,7 +96,7 @@ export const TEMAS: Record<string, Tema> = {
     chao: {},
     parede: { reta: 'restaurante/wall', largura: 4, janela: 'restaurante/wall_window_closed_curtains_green', base: [232, 220, 196], topo: '#5c4a3d' },
     moveis: {
-      cama: { arquivo: 'bed_double_B', encostar: true, deitar: [0.45, 0.55] },
+      cama: { arquivo: 'bed_double_B', encostar: true },
       abajur: {
         arquivo: 'cabinet_small',
         encostar: true,
@@ -203,7 +202,6 @@ export const TEMAS: Record<string, Tema> = {
         arquivo: T + 'bed_blue',
         escala: 1.15,
         encostar: true,
-        deitar: [0.42, 0.7],
         partes: [{ arquivo: T + 'teddy_bear', dx: 0.42, dz: 1.0, dy: 0.5, giro: -0.5, escala: 0.75 }],
       },
       abajur: {

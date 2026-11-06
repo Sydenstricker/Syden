@@ -152,6 +152,8 @@ export class CenaDoQuarto3D {
   private sombras: boolean;
   private calmo: boolean;
   private raio = new THREE.Raycaster();
+  /** A caixa do coelho DEITADO (a pose 'dormindo'), em relação à raiz dele e sem giro: medida uma vez, ao montá-lo. */
+  private deitado: THREE.Box3 | null = null;
   private ponteiro = new THREE.Vector2();
   private planoDoChao = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
   private observador: ResizeObserver;
@@ -313,7 +315,24 @@ export class CenaDoQuarto3D {
       moveis: this.moveis.map((p) => ({ id: p.id, x: +p.centro.x.toFixed(2), z: +p.centro.z.toFixed(2), rumo: +p.rumo.toFixed(2) })),
       juntas: this.juntas,
       coelho: c ? { x: +c.raiz.position.x.toFixed(2), y: +c.raiz.position.y.toFixed(2), z: +c.raiz.position.z.toFixed(2) } : null,
+      naCama: c?.pose === 'deitado' && c.em ? this.conferirDeitado(c.em) : null,
     };
+  }
+
+  /** O teste de tela: o corpo deitado cabe na caixa da cama (de cima), fica acima do chão, e a cabeça está do lado da cabeceira. */
+  private conferirDeitado(p: Pronto) {
+    const c = this.coelho!;
+    const corpo = new THREE.Box3().setFromObject(c.copia.corpo, true);
+    const cama = new THREE.Box3().setFromObject(p.base);
+    const folga = 0.05;
+    const dentro =
+      corpo.min.x >= cama.min.x - folga && corpo.max.x <= cama.max.x + folga && corpo.min.z >= cama.min.z - folga && corpo.max.z <= cama.max.z + folga;
+    const f = new THREE.Vector3(Math.sin(p.rumo), 0, Math.cos(p.rumo));
+    const meio = cama.getCenter(new THREE.Vector3());
+    const cabeca = c.copia.corpo.getObjectByName('cabeca')?.getWorldPosition(new THREE.Vector3());
+    // a cabeça na metade de trás da cama (a frente é o lado dos pés)
+    const naCabeceira = cabeca ? cabeca.clone().sub(meio).dot(f) < 0 : null;
+    return { dentro, acimaDoChao: corpo.min.y > cama.max.y * 0.25, naCabeceira };
   }
 
   destruir() {
@@ -1100,7 +1119,48 @@ export class CenaDoQuarto3D {
       depois: null,
       tocando: '',
     };
+    // a pose deitada não deixa o corpo onde fica a raiz (a raiz é o pé de pé; deitado, o corpo sobe e se estende para os dois
+    // lados): mede-se a caixa dela uma vez, para a cama pôr o corpo em cima do colchão e as orelhas no travesseiro
+    const dormindo = copia.acoes.get('dormindo');
+    if (dormindo) {
+      dormindo.reset().play();
+      copia.mixer.update(0);
+      raiz.updateMatrixWorld(true);
+      this.deitado = new THREE.Box3().setFromObject(copia.corpo, true).translate(raiz.position.clone().negate());
+      dormindo.stop();
+    }
     this.tocar('parado');
+  }
+
+  /** A altura da superfície de uma peça no ponto (x, z), pelo raio de cima para baixo; null, se o raio não pega nela. */
+  private superficie(o: THREE.Object3D, x: number, z: number): number | null {
+    this.raio.set(new THREE.Vector3(x, 50, z), new THREE.Vector3(0, -1, 0));
+    const r = this.raio.intersectObject(o, true)[0];
+    return r ? r.point.y : null;
+  }
+
+  /**
+   * Onde a raiz do coelho fica para ele deitar NA CAMA: medido no MODELO 3D (o pé do pixel é maior que a cama do pacote, e a
+   * cama encostada fica no fundo dele). O corpo em cima do colchão (a altura pelo raio, no meio da cama), no meio da largura,
+   * e as orelhas junto da cabeceira, que é o lado oposto à frente da cama (encostar põe as costas da peça no fundo do pé).
+   */
+  private pontoDeDeitar(p: Pronto): THREE.Vector3 {
+    const d = this.deitado!;
+    const caixa = new THREE.Box3().setFromObject(p.base);
+    const tam = caixa.getSize(new THREE.Vector3());
+    const meio = caixa.getCenter(new THREE.Vector3());
+    // a frente (para os pés) e o lado, no giro da cama; o coelho deitado olha para a frente dela, as orelhas para trás
+    const f = new THREE.Vector3(Math.sin(p.rumo), 0, Math.cos(p.rumo));
+    const l = new THREE.Vector3(Math.cos(p.rumo), 0, -Math.sin(p.rumo));
+    const comprido = Math.abs(f.x) * tam.x + Math.abs(f.z) * tam.z;
+    // a cabeceira tem espessura: as orelhas começam um tanto para dentro dela
+    const cabeceira = -comprido / 2 + comprido * 0.07;
+    const aoLongo = cabeceira - d.min.z;
+    const aoLado = -(d.min.x + d.max.x) / 2;
+    const colchao = this.superficie(p.base, meio.x + f.x * comprido * 0.15, meio.z + f.z * comprido * 0.15) ?? caixa.max.y * 0.5;
+    // afunda um pouco no colchão (o cobertor é macio, e a caixa do corpo pega a ponta das costas)
+    const y = colchao - d.min.y - 0.04;
+    return new THREE.Vector3(meio.x, y, meio.z).addScaledVector(f, aoLongo).addScaledVector(l, aoLado);
   }
 
   // ---- dia e noite, sombras ----
@@ -1287,8 +1347,9 @@ export class CenaDoQuarto3D {
         const instantaneo = imediato || this.calmo;
         const frente = new THREE.Vector3(fx, 0, fz);
         if (p.uso === 'deitar') {
-          const [alto, avanco] = p.spec.deitar ?? [0.45, 0.55];
-          const ponto = new THREE.Vector3(p.centro.x, p.altura * alto, p.centro.z).add(frente.multiplyScalar(avanco));
+          const ponto = this.deitado
+            ? this.pontoDeDeitar(p)
+            : new THREE.Vector3(p.centro.x, p.altura * 0.45, p.centro.z).add(frente.multiplyScalar(0.55));
           this.pular(ponto, instantaneo ? 0 : 520, 0.45);
           this.tocar('dormindo');
           c.pose = 'deitado';

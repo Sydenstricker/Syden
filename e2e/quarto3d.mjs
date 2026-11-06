@@ -22,6 +22,8 @@ const vigiar = (p) => {
   });
   return p;
 };
+// deitado EM CIMA do colchão (a caixa do corpo dentro da da cama), acima do chão e com a cabeça do lado da cabeceira
+const naCama = (m) => m.naCama?.dentro && m.naCama.acimaDoChao && m.naCama.naCabeceira;
 const foto = (p, nome) => p.screenshot({ path: path.join(FOTOS, nome + '.png') });
 
 const { browser } = await abrirNavegador({ viewport: { width: 1300, height: 950 } });
@@ -152,6 +154,9 @@ try {
   const deitado = await p.evaluate(() => window.quarto3dDoTeste.medida());
   if (deitado.pose === 'deitado' && deitado.em === 'cama') ok(`${tema}: ausente, dorme na cama`);
   else falhou('ausente: ' + JSON.stringify(deitado));
+  // EM CIMA do colchão, e não na beira (06/11/2026: o ponto de deitar era o do pé do pixel, e não o da cama do pacote)
+  if (naCama(deitado)) ok(`${tema}: deitado em cima da cama, com a cabeça na cabeceira`);
+  else falhou(`${tema}: deitado fora da cama: ` + JSON.stringify(deitado.naCama));
   await foto(p, tema + '-7-ausente');
   await p.evaluate(() => window.quarto3dDoTeste.definirEstado('atoa'));
   };
@@ -197,10 +202,22 @@ try {
   if (l.planta === 'l' && cama && Math.abs(cama.x - 6.5) < 0.6 && Math.abs(cama.z - 6) < 0.8 && Math.abs(Math.abs(cama.rumo) - Math.PI) < 0.01) ok(`a arrumação do pixel no 3D: a planta em L e a cama em (${cama.x}, ${cama.z}), virada`);
   else falhou('a arrumação do pixel não veio: ' + JSON.stringify({ planta: l.planta, cama }));
   await foto(p, 'colorido-l');
+  // a cama virada, noutro lugar: ele deita nela do mesmo jeito
+  const conferirL = async (t) => {
+    await p.evaluate(() => window.quarto3dDoTeste.definirEstado('ausente'));
+    await p.waitForTimeout(7000);
+    const m = await p.evaluate(() => window.quarto3dDoTeste.medida());
+    if (m.em === 'cama' && naCama(m)) ok(`${t}: na planta em L, com a cama virada, deita em cima dela`);
+    else falhou(`${t}: na L, fora da cama: ` + JSON.stringify({ em: m.em, naCama: m.naCama }));
+    await foto(p, t + '-l-ausente');
+    await p.evaluate(() => window.quarto3dDoTeste.definirEstado('atoa'));
+  };
+  await conferirL('colorido');
   await p.locator('.quarto-tema-botao').click();
   await p.waitForFunction(() => window.quarto3dDoTeste?.medida().tema === 'classico', null, { timeout: 30_000 });
   await p.waitForTimeout(800);
   await foto(p, 'classico-l');
+  await conferirL('classico');
 
   // 7. Volta ao pixel art, e a escolha persiste ao recarregar
   await p.locator('.quarto-estilo-botao').click();
