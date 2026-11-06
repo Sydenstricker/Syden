@@ -1,6 +1,8 @@
 import * as THREE from 'three';
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { carregarModelo, carregarTextura, giro, iluminar, MesaBase } from './base';
+import { fundoAconchegante, mesaDeFeltro } from './ambiente';
+import { carregarModelo, giro, iluminar, MesaBase } from './base';
+import { desenhoDaFrente, desenhoDoGrao, desenhoDoVerso, materialDaCarta, texturaDaCarta } from './cartas';
 
 /**
  * O TRUCO EM 3D (05/11/2026, pedido dele): a mesa de feltro com as cartas do KayKit (o baralho francês de 52, do qual o
@@ -33,6 +35,16 @@ const ESCALA = 0.22;
 const LARGURA = 4.31 * ESCALA;
 const ALTURA = 6 * ESCALA;
 const MAO_Z = 2.2;
+/**
+ * A ALTURA da minha mão em pé. Inclinada 0,95 rad, a carta desce 0,54 abaixo do meio dela: em 0,42 a borda de baixo afundava
+ * no feltro (06/11/2026, relato dele: "a mesa está atravessando as cartas").
+ */
+const MAO_Y = 0.6;
+/** A grossura da carta (o modelo tem 0,05) e o passo entre duas empilhadas, com folga para não se cortarem. */
+const GROSSURA = 0.05 * ESCALA;
+const PILHA = GROSSURA + 0.004;
+/** O meio da carta mais baixa deitada no feltro (y = 0): meia grossura e uma folga. */
+const CHAO = GROSSURA / 2 + 0.004;
 
 /** Para onde fica cada lugar, a partir do centro: embaixo, à direita, em cima, à esquerda. */
 const DIRECAO = [new THREE.Vector3(0, 0, 1), new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 0, -1), new THREE.Vector3(-1, 0, 0)];
@@ -48,7 +60,7 @@ function sorte(chave: string) {
 
 interface Carta {
   obj: THREE.Group;
-  frente: THREE.MeshStandardMaterial;
+  frente: THREE.MeshPhysicalMaterial;
   brilho: THREE.Mesh;
   face: string | null;
   alvo: number | null;
@@ -72,24 +84,26 @@ export class Truco3D extends MesaBase<TrucoDaCena> {
   private meioDaCarta: THREE.Vector3 | null = null;
   private matBrilho = new THREE.MeshBasicMaterial({ color: '#ffc531', depthWrite: false });
   private monte = new THREE.Group();
+  /** O grão do papel (o relevo de todas as cartas) e o verso do Syden, um material só para todas. */
+  private relevo: THREE.Texture | null = null;
+  private matVerso: THREE.MeshPhysicalMaterial | null = null;
+  /** As frentes já desenhadas nesta cena, pelo arquivo. */
+  private frentes = new Map<string, Promise<THREE.Texture>>();
 
   protected async carregarTudo() {
     this.modelo = await carregarModelo('card_base');
     this.descartaveis.push(this.geoBrilho, this.matBrilho);
-    this.cena.background = new THREE.Color('#3a2616');
+    this.relevo = texturaDaCarta(desenhoDoGrao(), false);
+    const verso = texturaDaCarta(desenhoDoVerso());
+    this.matVerso = materialDaCarta(verso, this.relevo);
+    this.descartaveis.push(this.relevo, verso, this.matVerso);
+    fundoAconchegante(this.cena, this.descartaveis);
     iluminar(this.cena, this.sombras, 5);
-    // o feltro e a borda de madeira
-    const borda = new THREE.Mesh(new THREE.BoxGeometry(9.4, 0.4, 8.6), new THREE.MeshStandardMaterial({ color: '#5a3b22', roughness: 0.7 }));
-    borda.position.y = -0.21;
-    const feltro = new THREE.Mesh(new THREE.BoxGeometry(8.6, 0.4, 7.8), new THREE.MeshStandardMaterial({ color: '#2a6e46', roughness: 1 }));
-    feltro.position.y = -0.199;
-    feltro.receiveShadow = this.sombras;
-    for (const m of [borda, feltro]) this.descartaveis.push(m.geometry, m.material as THREE.Material);
-    this.cena.add(borda, feltro);
-    // o monte: umas cartas de costas, empilhadas
+    mesaDeFeltro(this.cena, 8.6, 7.8, this.sombras, this.descartaveis);
+    // o monte: umas cartas de costas, empilhadas EM CIMA da vira (que fica por baixo, atravessada e meio para fora)
     for (let k = 0; k < 4; k++) {
       const c = this.novaCarta();
-      c.obj.position.set(0, 0.012 + k * 0.012, 0);
+      c.obj.position.set(0, CHAO + (k + 1) * PILHA, 0);
       c.obj.quaternion.copy(this.deitada(0.05 * k, false));
       this.monte.add(c.obj);
     }
@@ -115,38 +129,55 @@ export class Truco3D extends MesaBase<TrucoDaCena> {
     const corpo = this.modelo!.scene.clone(true);
     corpo.scale.setScalar(ESCALA);
     corpo.rotation.x = -Math.PI / 2;
-    let frente: THREE.MeshStandardMaterial | null = null;
+    let frente: THREE.MeshPhysicalMaterial | null = null;
     corpo.traverse((o) => {
       const m = o as THREE.Mesh;
       if (!m.isMesh) return;
       m.castShadow = this.sombras;
       const mat = m.material as THREE.MeshStandardMaterial;
       if (mat.name === 'card_front') {
-        frente = mat.clone();
-        frente.color.set('#ffffff');
+        // sem face ainda, o papel liso (a cor do papel, para a carta não piscar branca antes da arte)
+        frente = materialDaCarta(null, this.relevo!);
+        frente.color.set('#f5ecd8');
         m.material = frente;
         this.descartaveis.push(frente);
-      }
+      } else if (this.matVerso) m.material = this.matVerso;
     });
     const brilho = new THREE.Mesh(this.geoBrilho, this.matBrilho);
     brilho.rotation.x = -Math.PI / 2;
     // NO MEIO DA CARTA, e não na origem do modelo (05/11/2026, relato dele: "uma barra verde tampando a parte de baixo das
     // cartas"): o modelo não é centrado, e o brilho da manilha sobrava para um lado e para baixo, como uma barra.
     if (!this.meioDaCarta) this.meioDaCarta = new THREE.Box3().setFromObject(corpo).getCenter(new THREE.Vector3());
-    brilho.position.set(this.meioDaCarta.x, -0.006, this.meioDaCarta.z);
+    brilho.position.set(this.meioDaCarta.x, -(GROSSURA / 2 + 0.002), this.meioDaCarta.z);
     brilho.visible = false;
     obj.add(corpo, brilho);
-    return { obj, frente: frente ?? new THREE.MeshStandardMaterial(), brilho, face: null, alvo: null, onde: '' };
+    return { obj, frente: frente ?? materialDaCarta(null, this.relevo!), brilho, face: null, alvo: null, onde: '' };
+  }
+
+  private frenteDa(face: string) {
+    const arquivo = arquivoDa(face);
+    let p = this.frentes.get(arquivo);
+    if (!p) {
+      p = desenhoDaFrente(arquivo).then((cv) => {
+        const t = texturaDaCarta(cv);
+        this.descartaveis.push(t);
+        return t;
+      });
+      this.frentes.set(arquivo, p);
+      p.catch(() => this.frentes.delete(arquivo));
+    }
+    return p;
   }
 
   private mostrarFace(c: Carta, face: string | null) {
     if (c.face === face) return;
     c.face = face;
     if (!face) return;
-    void carregarTextura(arquivoDa(face))
+    void this.frenteDa(face)
       .then((t) => {
         if (c.face !== face) return;
         c.frente.map = t;
+        c.frente.color.set('#ffffff');
         c.frente.needsUpdate = true;
         this.pedirDesenho();
       })
@@ -165,7 +196,7 @@ export class Truco3D extends MesaBase<TrucoDaCena> {
     const quer = new Map<string, Lugar>();
 
     // a vira, ao lado do monte
-    if (d.vira) quer.set(`v:${d.vira}`, { pos: monte.clone().add(new THREE.Vector3(0.78, 0.02, 0.14)), q: this.deitada(-0.32, true), face: d.vira, alvo: null, manilha: false });
+    if (d.vira) quer.set(`v:${d.vira}`, { pos: monte.clone().add(new THREE.Vector3(0.78, CHAO, 0.14)), q: this.deitada(-0.32, true), face: d.vira, alvo: null, manilha: false });
 
     // as jogadas, na frente de quem jogou
     d.mesa.forEach((m, k) => {
@@ -175,7 +206,7 @@ export class Truco3D extends MesaBase<TrucoDaCena> {
       const pos = DIRECAO[i].clone().multiplyScalar(longe);
       const torto = (sorte(chave) - 0.5) * 0.5;
       pos.x += (sorte(chave + 'x') - 0.5) * 0.12;
-      pos.y = 0.012 + k * 0.006;
+      pos.y = CHAO + k * PILHA;
       const deFrente = !!m.carta && !m.coberta;
       // de pé para quem olha, para ler (só o tortinho de quem jogou)
       quer.set(chave, { pos, q: this.deitada(torto, deFrente), face: m.carta, alvo: null, manilha: deFrente && m.carta!.slice(0, -1) === d.manilha });
@@ -187,10 +218,13 @@ export class Truco3D extends MesaBase<TrucoDaCena> {
       const meio = k - (nm - 1) / 2;
       const clicavel = d.maoClicavel;
       const sobe = clicavel && this.sobre === k ? 0.2 : 0;
-      const pos = new THREE.Vector3(meio * (LARGURA + 0.12), 0.42 + sobe + Math.abs(meio) * -0.03, MAO_Z + Math.abs(meio) * 0.06);
+      const pos = new THREE.Vector3(meio * (LARGURA + 0.12), MAO_Y + sobe + Math.abs(meio) * -0.03, MAO_Z + Math.abs(meio) * 0.06);
       const q = giro(0, -meio * 0.1, 0).multiply(giro(0.95, 0, 0));
       quer.set(`c:${carta}`, { pos, q, face: carta, alvo: clicavel ? k : null, manilha: carta.slice(0, -1) === d.manilha });
+      // o lugar do clique fica onde a carta DESCANSA, maior que ela no comprimento para cobrir também a carta erguida
+      if (clicavel) this.alvoFixo(k, pos.clone().setY(pos.y - sobe), q, LARGURA + 0.12, ALTURA + 0.45);
     });
+    this.soAlvosFixos(d.maoClicavel ? d.mao.map((_, k) => k) : []);
 
     // as mãos dos outros, de costas (e a de baixo também, para quem só assiste)
     for (const l of d.lugares) {
@@ -200,7 +234,7 @@ export class Truco3D extends MesaBase<TrucoDaCena> {
         const meio = k - (l.cartas - 1) / 2;
         const ao = DIRECAO[i].clone().multiplyScalar(i % 2 === 0 ? 2.55 : 2.8);
         const lado = new THREE.Vector3(-DIRECAO[i].z, 0, DIRECAO[i].x).multiplyScalar(meio * LARGURA * 0.55);
-        const pos = ao.add(lado).setY(0.012 + k * 0.008);
+        const pos = ao.add(lado).setY(CHAO + k * PILHA);
         quer.set(`h:${l.lugar}:${k}`, { pos, q: this.deitada(RUMO[i] + meio * 0.12, false), face: null, alvo: null, manilha: false });
       }
     }

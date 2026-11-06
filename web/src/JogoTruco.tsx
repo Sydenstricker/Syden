@@ -124,7 +124,10 @@ export function JogoTruco({ estado: partida, eu, jogador, restante, agir }: { es
   const maoDoServidor = jogador && Array.isArray(estado.mao) ? estado.mao : [];
   const mao3d = jogada ? maoDoServidor.filter((c) => c !== jogada.carta) : maoDoServidor;
   const mesaDoServidor = Array.isArray(estado.mesa) ? estado.mesa : [];
-  const mesa3d = jogada && estado.meuLugar !== null ? [...mesaDoServidor, { lugar: estado.meuLugar, carta: jogada.carta, coberta: jogada.coberta }] : mesaDoServidor;
+  // a jogada otimista só entra enquanto o servidor ainda não a pôs na mesa: no quadro em que a resposta chega, ela estaria
+  // duas vezes, e a carta pulava para o alto da pilha e voltava
+  const jaNaMesa = !!jogada && mesaDoServidor.some((m) => m.carta === jogada.carta);
+  const mesa3d = jogada && !jaNaMesa && estado.meuLugar !== null ? [...mesaDoServidor, { lugar: estado.meuLugar, carta: jogada.carta, coberta: jogada.coberta }] : mesaDoServidor;
   // a mesa em 3D (mesa3d/truco.ts): as cartas na cena, e as de HTML só para o teclado e o leitor de tela
   const { caixa, estado: cena } = useCena3D<TrucoDaCena>(
     importarTruco,

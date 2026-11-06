@@ -8,7 +8,7 @@
   margin: 0 auto;
   border-radius: 10px;
   overflow: hidden;
-  background: #2b2430;
+  background: #2f1d12;
 }
 .mesa3d-caixa,
 .mesa3d-reserva {
@@ -88,4 +88,13 @@
   clip: rect(0 0 0 0);
   clip-path: inset(50%);
   white-space: nowrap;
+}
+
+/* O LUGAR DOS BOTÕES DO TRUCO NÃO MUDA DE ALTURA (06/11/2026, relato dele: "a tela fica flipando quando uso as cartas"). A
+   janela do jogo fica no meio da tela: quando o "Truco!" e o "Jogar coberta" apareciam na minha vez e sumiam ao jogar, a
+   faixa de baixo mudava de 38 para 76 px e a janela INTEIRA subia e descia ~19 px a cada carta (medido). Reservar a altura
+   da vez com botões deixa a mesa parada. */
+.truco > .truco-acoes {
+  min-height: 4.75rem;
+  justify-content: flex-start;
 }

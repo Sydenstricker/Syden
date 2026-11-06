@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { fundoAconchegante, mesaDeFeltro } from './ambiente';
 import { carregarModelo, copiaDe, giro, iluminar, MesaBase } from './base';
 
 /**
@@ -66,15 +67,10 @@ export class Domino3D extends MesaBase<DominoDaCena> {
     const lista = await Promise.all(nomes.map((n) => carregarModelo(`domino_tile_${n}`).then((g) => [n, g] as const)));
     for (const [n, g] of lista) this.modelos.set(n, g);
     this.descartaveis.push(this.geoLuz, this.matPonta);
-    this.cena.background = new THREE.Color('#3a2616');
+    // a mesma mesa do Truco (ambiente.ts): o feltro com textura, a borda de madeira, o fundo de sala e a luz do pendente
+    fundoAconchegante(this.cena, this.descartaveis);
     iluminar(this.cena, this.sombras, 6);
-    const borda = new THREE.Mesh(new THREE.BoxGeometry(10.2, 0.4, 7.9), new THREE.MeshStandardMaterial({ color: '#5a3b22', roughness: 0.7 }));
-    borda.position.y = -0.21;
-    const feltro = new THREE.Mesh(new THREE.BoxGeometry(9.5, 0.4, 7.2), new THREE.MeshStandardMaterial({ color: '#2a6e46', roughness: 1 }));
-    feltro.position.y = -0.199;
-    feltro.receiveShadow = this.sombras;
-    for (const m of [borda, feltro]) this.descartaveis.push(m.geometry, m.material as THREE.Material);
-    this.cena.add(borda, feltro);
+    mesaDeFeltro(this.cena, 9.5, 7.2, this.sombras, this.descartaveis);
     for (const alvo of [PONTA_ESQUERDA, PONTA_DIREITA]) {
       const m = new THREE.Mesh(this.geoLuz, this.matPonta);
       m.rotation.x = -Math.PI / 2;
@@ -151,8 +147,12 @@ export class Domino3D extends MesaBase<DominoDaCena> {
       const meio = k - (nm - 1) / 2;
       const serve = d.servem.includes(k);
       const sobe = (serve && this.sobre === k) || d.escolhida === k ? 0.22 : serve ? 0.08 : 0;
-      quer.set(chaveDa(p), { pos: new THREE.Vector3(meio * largura, 0.5 + sobe, 2.45), q: giro(0, -meio * 0.04, 0).multiply(DE_PE), alvo: serve ? k : null, escala: NA_MAO, acesa: serve });
+      const q = giro(0, -meio * 0.04, 0).multiply(DE_PE);
+      quer.set(chaveDa(p), { pos: new THREE.Vector3(meio * largura, 0.5 + sobe, 2.45), q, alvo: serve ? k : null, escala: NA_MAO, acesa: serve });
+      // o clique onde a pedra DESCANSA (base.ts, alvoFixo): a pedra que sobe ao passar o mouse não sai de baixo dele
+      if (serve) this.alvoFixo(k, new THREE.Vector3(meio * largura, 0.5 + (d.escolhida === k ? 0.22 : 0.08), 2.45), q, Math.min(largura, CURTO * NA_MAO + 0.1), LONGO * NA_MAO + 0.45);
     });
+    this.soAlvosFixos(d.servem);
     // as dos outros, de costas, em fila no alto
     const total = d.outros.reduce((s, n) => s + n, 0) + Math.max(0, d.outros.length - 1) * 1.2;
     let x = (-total * (CURTO + 0.05)) / 2;

@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { fundoAconchegante, materialDeMadeira } from './ambiente';
 import { carregarModelo, copiaDe, iluminar, marcaPlana, MesaBase } from './base';
 import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
@@ -51,10 +52,10 @@ export class Damas3D extends MesaBase<DamasDaCena> {
     const [tab, ...pecas] = await Promise.all([carregarModelo('board_A'), ...[1, 2, 3, 4].map((v) => carregarModelo(ARQUIVO[v]))]);
     pecas.forEach((g, k) => this.modelos.set(k + 1, g));
     this.descartaveis.push(this.geoCasa, this.geoPonto);
-    this.cena.background = new THREE.Color('#2b2430');
+    fundoAconchegante(this.cena, this.descartaveis);
     iluminar(this.cena, this.sombras);
     const mesaGeo = new THREE.CylinderGeometry(9, 9, 0.6, 48);
-    const mesaMat = new THREE.MeshStandardMaterial({ color: '#8a5a3c', roughness: 0.8 });
+    const mesaMat = materialDeMadeira(this.descartaveis, [2, 8]);
     this.descartaveis.push(mesaGeo, mesaMat);
     const mesa = new THREE.Mesh(mesaGeo, mesaMat);
     mesa.position.y = -0.3;

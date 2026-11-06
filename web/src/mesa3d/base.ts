@@ -82,6 +82,10 @@ export abstract class MesaBase<D> {
   /** O que é desta cena (materiais e geometrias próprios): vai embora no fim. Os modelos são do cache. */
   protected descartaveis: { dispose(): void }[] = [];
   private movimentos: Movimento[] = [];
+  /** Os lugares de clique PARADOS (ver alvoFixo), pelo número do alvo. */
+  private alvosFixos = new Map<number, THREE.Mesh>();
+  private geoAlvo = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
+  private matAlvo = new THREE.MeshBasicMaterial({ visible: false });
   private agendados: { quando: number; fn: () => void }[] = [];
   private observador: ResizeObserver;
   private apertou: { x: number; y: number } | null = null;
@@ -148,6 +152,35 @@ export abstract class MesaBase<D> {
     return false;
   }
 
+  /**
+   * O LUGAR DE CLIQUE de um alvo, PARADO onde a peça descansa: um retângulo invisível deitado no plano XZ do giro `q`, um
+   * pouco maior que a peça. É ele que o mouse testa, e não a peça. Sem isso, a carta que SOBE ao passar o mouse saía de baixo
+   * dele, descia, voltava a ficar sob o mouse e subia de novo, a cada movimento (06/11/2026, relato dele: "a tela fica
+   * flipando quando uso as cartas"; medido: o cursor trocava 19 vezes em 30 passos na beirada da carta).
+   */
+  protected alvoFixo(alvo: number, pos: THREE.Vector3, q: THREE.Quaternion, largura: number, comprimento: number) {
+    let m = this.alvosFixos.get(alvo);
+    if (!m) {
+      m = new THREE.Mesh(this.geoAlvo, this.matAlvo);
+      m.userData.alvo = alvo;
+      this.alvosFixos.set(alvo, m);
+      this.cena.add(m);
+    }
+    m.position.copy(pos);
+    m.quaternion.copy(q);
+    m.scale.set(largura, 1, comprimento);
+    m.updateMatrixWorld(true);
+  }
+  /** Tira os lugares de clique parados que não estão em `manter`. */
+  protected soAlvosFixos(manter: Iterable<number>) {
+    const fica = new Set(manter);
+    for (const [k, m] of this.alvosFixos)
+      if (!fica.has(k)) {
+        this.cena.remove(m);
+        this.alvosFixos.delete(k);
+      }
+  }
+
   protected pedirDesenho() {
     this.sujo = true;
   }
@@ -187,6 +220,10 @@ export abstract class MesaBase<D> {
   private alvoNoPonto(e: PointerEvent): number | null {
     const r = this.renderer.domElement.getBoundingClientRect();
     this.raio.setFromCamera(new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1), this.camera);
+    if (this.alvosFixos.size) {
+      const fixo = this.raio.intersectObjects([...this.alvosFixos.values()], false)[0];
+      if (fixo) return fixo.object.userData.alvo as number;
+    }
     return this.alvoNoRaio(this.raio);
   }
   private aoApertar = (e: PointerEvent) => {
@@ -264,16 +301,26 @@ export abstract class MesaBase<D> {
     tela.removeEventListener('pointermove', this.aoPassar);
     tela.removeEventListener('pointerleave', this.aoSair);
     for (const d of this.descartaveis) d.dispose();
+    this.geoAlvo.dispose();
+    this.matAlvo.dispose();
     this.renderer.forceContextLoss();
     this.renderer.dispose();
     tela.remove();
   }
 }
 
-/** A luz de mesa de sempre: o céu claro e um sol de cima, com a sombra só com "Sombras" ligado em Gráficos. */
+/**
+ * A luz de mesa: um PENDENTE quente bem em cima do meio (a poça de luz que escurece para as bordas, como a lâmpada de uma
+ * mesa de carteado; 06/11/2026, pedido dele: "mais aconchegante"), o ambiente quente e uma luz de frente mais fraca, com a
+ * sombra só com "Sombras" ligado em Gráficos (a mesma luz de sempre faz a sombra; o pendente não, para não pesar).
+ */
 export function iluminar(cena: THREE.Scene, sombras: boolean, alcance = 7) {
-  cena.add(new THREE.HemisphereLight('#fff6ea', '#5a4636', 1.6));
-  const sol = new THREE.DirectionalLight('#fff1dc', 2.1);
+  cena.add(new THREE.HemisphereLight('#ffe8cc', '#3d2a1c', 1.05));
+  const pendente = new THREE.SpotLight('#ffc98a', 2.8, 0, 0.46, 0.9, 0);
+  pendente.position.set(0, 11, 0.6);
+  pendente.target.position.set(0, 0, 0.4);
+  cena.add(pendente, pendente.target);
+  const sol = new THREE.DirectionalLight('#fff1dc', 1.1);
   sol.position.set(-4, 12, 6);
   if (sombras) {
     sol.castShadow = true;
