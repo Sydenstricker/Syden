@@ -3142,4 +3142,13 @@ export default {
   'Quadrado': 'གྲུ་བཞི',
   'Em L': 'L དབྱིབས',
   'Cubículo': 'ཁང་མིག་ཆུང་ཀུ',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'ཕུག་གི་ཟམ།',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'ཤིང་དང་ལྕགས་ཀྱིས་ཟམ་ཅིག་བཟོ་ནི་ལུ་སྐར་ཆ་སུམ་ཅུ། འགྲུལ་འཁོར་གནས་གོང་ཉུང་ཤོས་ཐོག་ལས་ཕ་རོལ་ལུ་སྐྱེལ་མི་དེ་རྒྱལ།',
+  'Pista': 'ལམ།',
+  'Aço': 'ལྕགས།',
+  'Testar': 'བརྟག་ཞིབ།',
+  'Montar': 'བཟོ་ནི།',
+  'Passou!': 'ལེགས་གྲུབ!',
+  '{n}% do caminho': 'ལམ་གྱི་ {n}%',
 } satisfies Record<string, string>;

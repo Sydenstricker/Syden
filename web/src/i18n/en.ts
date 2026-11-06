@@ -3054,4 +3054,13 @@ export default {
   'Quadrado': 'Square',
   'Em L': 'L-shaped',
   'Cubículo': 'Cubicle',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Burrow Bridge',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Thirty seconds to build a bridge out of wood and steel. Whoever gets the traffic across for the least wins.',
+  'Pista': 'Road',
+  'Aço': 'Steel',
+  'Testar': 'Test',
+  'Montar': 'Build',
+  'Passou!': 'Made it!',
+  '{n}% do caminho': '{n}% of the way',
 } satisfies Record<string, string>;

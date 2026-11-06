@@ -3129,4 +3129,13 @@ export default {
   'Quadrado': 'Efamira',
   'Em L': 'Endrika L',
   'Cubículo': 'Efitrano kely',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Tetezan’ny lavaka',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Telopolo segondra hanorenana tetezana hazo sy vy. Izay mitondra ny fifamoivoizana any ampitany amin’ny vidiny kely indrindra no mandresy.',
+  'Pista': 'Lalana',
+  'Aço': 'Vy',
+  'Testar': 'Andrana',
+  'Montar': 'Fanorenana',
+  'Passou!': 'Tafita!',
+  '{n}% do caminho': '{n}% amin’ny lalana',
 } satisfies Record<string, string>;

@@ -31,6 +31,9 @@ export type Efeito =
   | 'combo'
   | 'chegada'
   | 'derrapa'
+  | 'encaixe'
+  | 'rangido'
+  | 'quebra'
   | 'fim';
 
 const CHAVE = 'syden:somDosJogos';
@@ -184,6 +187,20 @@ export function tocar(efeito: Efeito) {
     case 'derrapa':
       ruido(a, 0.16, 2600, 0.35, 0, 'bandpass');
       nota(a, 'sawtooth', 1500, 1100, 0.14, 0.08);
+      break;
+    // a Ponte da toca (06/11/2026): a peça que encaixa (um toc de madeira), a ponte que range sob o peso e a que quebra
+    case 'encaixe':
+      nota(a, 'sine', 420, 260, 0.07, 0.7);
+      ruido(a, 0.025, 1800, 0.5, 0, 'bandpass');
+      break;
+    case 'rangido':
+      nota(a, 'sawtooth', 95, 70, 0.32, 0.14);
+      nota(a, 'sawtooth', 101, 82, 0.28, 0.1, 0.05);
+      break;
+    case 'quebra':
+      ruido(a, 0.09, 3200, 0.9, 0, 'highpass');
+      ruido(a, 0.25, 500, 0.7, 0.02);
+      nota(a, 'triangle', 200, 60, 0.25, 0.5);
       break;
     case 'fim':
       [784, 659, 784, 1047].forEach((f, i) => nota(a, 'triangle', f, f, i === 3 ? 0.4 : 0.14, 0.45, i * 0.13));

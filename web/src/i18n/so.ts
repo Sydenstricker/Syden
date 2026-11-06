@@ -3129,4 +3129,13 @@ export default {
   'Quadrado': 'Laba jibbaaran',
   'Em L': 'Qaab L ah',
   'Cubículo': 'Qol yar',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Buundada Godka',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Soddon ilbiriqsi oo lagu dhiso buundo alwaax iyo bir ah. Waxaa guuleysta qofka gaadiidka ugu gudbiya dhinaca kale kharashka ugu yar.',
+  'Pista': 'Waddo',
+  'Aço': 'Bir',
+  'Testar': 'Tijaabo',
+  'Montar': 'Dhisid',
+  'Passou!': 'Waa la gudbay!',
+  '{n}% do caminho': '{n}% jidka',
 } satisfies Record<string, string>;

@@ -3065,4 +3065,13 @@ export default {
   'Quadrado': 'Sikuea',
   'Em L': 'Fōtunga L',
   'Cubículo': 'Loki siʻi',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Ko e Halakavakava ʻo e Ava',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Sekoni ʻe tolungofulu ke langa ha halakavakava ʻaki ʻa e papa mo e ukamea. ʻOku ikuna ʻa ia ʻoku ne ʻave ʻa e ngaahi meʻalele ki he tafaʻaki ʻe tahá ʻi he totongi siʻisiʻi taha.',
+  'Pista': 'Hala',
+  'Aço': 'Ukamea',
+  'Testar': 'Sivi',
+  'Montar': 'Langa',
+  'Passou!': 'Lavaʻi!',
+  '{n}% do caminho': '{n}% ʻo e hala',
 } satisfies Record<string, string>;

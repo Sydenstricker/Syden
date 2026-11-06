@@ -3130,4 +3130,13 @@ export default {
   'Quadrado': 'ສີ່ຫຼ່ຽມ',
   'Em L': 'ຮູບ L',
   'Cubículo': 'ຫ້ອງນ້ອຍ',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'ຂົວໂພງ',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'ສາມສິບວິນາທີເພື່ອສ້າງຂົວດ້ວຍໄມ້ ແລະ ເຫຼັກກ້າ. ຜູ້ທີ່ພາການຈະລາຈອນໄປຮອດອີກຝັ່ງໂດຍໃຊ້ຈ່າຍໜ້ອຍທີ່ສຸດ ເປັນຜູ້ຊະນະ.',
+  'Pista': 'ທາງ',
+  'Aço': 'ເຫຼັກກ້າ',
+  'Testar': 'ທົດລອງ',
+  'Montar': 'ສ້າງ',
+  'Passou!': 'ຂ້າມໄດ້!',
+  '{n}% do caminho': '{n}% ຂອງທາງ',
 } satisfies Record<string, string>;

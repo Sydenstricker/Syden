@@ -3130,4 +3130,13 @@ export default {
   'Quadrado': 'Ferningslaga',
   'Em L': 'L-laga',
   'Cubículo': 'Kompa',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Holubrúin',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Þrjátíu sekúndur til að smíða brú úr timbri og stáli. Sá vinnur sem kemur umferðinni yfir á ódýrastan hátt.',
+  'Pista': 'Akbraut',
+  'Aço': 'Stál',
+  'Testar': 'Prófa',
+  'Montar': 'Smíða',
+  'Passou!': 'Það tókst!',
+  '{n}% do caminho': '{n}% af leiðinni',
 } satisfies Record<string, string>;

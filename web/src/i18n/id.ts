@@ -3056,4 +3056,13 @@ export default {
   'Quadrado': 'Persegi',
   'Em L': 'Bentuk L',
   'Cubículo': 'Bilik',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Jembatan Liang',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Tiga puluh detik untuk membangun jembatan dari kayu dan baja. Yang membawa lalu lintas ke seberang dengan biaya paling kecil menang.',
+  'Pista': 'Jalan',
+  'Aço': 'Baja',
+  'Testar': 'Uji',
+  'Montar': 'Bangun',
+  'Passou!': 'Berhasil!',
+  '{n}% do caminho': '{n}% perjalanan',
 } satisfies Record<string, string>;

@@ -3121,4 +3121,13 @@ export default {
   'Quadrado': 'Kvadratiskt',
   'Em L': 'L-format',
   'Cubículo': 'Kyffe',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Hålans bro',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Trettio sekunder att bygga en bro av trä och stål. Den som får över trafiken billigast vinner.',
+  'Pista': 'Körbana',
+  'Aço': 'Stål',
+  'Testar': 'Testa',
+  'Montar': 'Bygg',
+  'Passou!': 'Det gick!',
+  '{n}% do caminho': '{n} % av vägen',
 } satisfies Record<string, string>;

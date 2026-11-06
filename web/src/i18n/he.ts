@@ -3113,4 +3113,13 @@ export default {
   'Quadrado': 'מרובע',
   'Em L': 'בצורת L',
   'Cubículo': 'חדרון',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'הגשר של המחילה',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'שלושים שניות לבניית גשר מעץ ומפלדה. מנצח מי שמעביר את התנועה לצד השני בעלות הנמוכה ביותר.',
+  'Pista': 'כביש',
+  'Aço': 'פלדה',
+  'Testar': 'בדיקה',
+  'Montar': 'בנייה',
+  'Passou!': 'הצלחה!',
+  '{n}% do caminho': '{n}% מהדרך',
 } satisfies Record<string, string>;

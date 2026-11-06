@@ -3129,4 +3129,13 @@ export default {
   'Quadrado': 'Štvorcová',
   'Em L': 'V tvare L',
   'Cubículo': 'Komôrka',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Most pri nore',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Tridsať sekúnd na stavbu mosta z dreva a ocele. Vyhráva ten, kto dostane premávku na druhý breh najlacnejšie.',
+  'Pista': 'Vozovka',
+  'Aço': 'Oceľ',
+  'Testar': 'Vyskúšať',
+  'Montar': 'Stavať',
+  'Passou!': 'Podarilo sa!',
+  '{n}% do caminho': '{n} % cesty',
 } satisfies Record<string, string>;

@@ -3061,4 +3061,13 @@ export default {
   'Quadrado': 'Murabba\'i',
   'Em L': 'Siffar L',
   'Cubículo': 'Ƙaramin daki',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Gadar kogo',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Daƙiƙa talatin don gina gada da itace da ƙarfe. Wanda ya kai ababen hawa ɗaya gefen da mafi ƙarancin kuɗi shi ne ya ci nasara.',
+  'Pista': 'Hanya',
+  'Aço': 'Ƙarfe',
+  'Testar': 'Gwaji',
+  'Montar': 'Gini',
+  'Passou!': 'An yi nasara!',
+  '{n}% do caminho': '{n}% na hanya',
 } satisfies Record<string, string>;

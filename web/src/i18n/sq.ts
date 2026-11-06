@@ -3121,4 +3121,13 @@ export default {
   'Quadrado': 'Katrore',
   'Em L': 'Në formë L',
   'Cubículo': 'Dhomëz',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Ura e strofullës',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Tridhjetë sekonda për të ndërtuar një urë prej druri dhe çeliku. Fiton ai që e kalon trafikun në anën tjetër me koston më të ulët.',
+  'Pista': 'Rruga',
+  'Aço': 'Çelik',
+  'Testar': 'Provo',
+  'Montar': 'Ndërto',
+  'Passou!': 'Ia doli!',
+  '{n}% do caminho': '{n}% e rrugës',
 } satisfies Record<string, string>;

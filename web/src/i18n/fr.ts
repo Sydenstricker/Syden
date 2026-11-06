@@ -3081,4 +3081,13 @@ export default {
   'Quadrado': 'Carrée',
   'Em L': 'En L',
   'Cubículo': 'Cagibi',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Pont du terrier',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Trente secondes pour monter un pont en bois et en acier. La victoire va à qui fait traverser la circulation au moindre coût.',
+  'Pista': 'Tablier',
+  'Aço': 'Acier',
+  'Testar': 'Tester',
+  'Montar': 'Construire',
+  'Passou!': 'Ça passe !',
+  '{n}% do caminho': '{n} % du trajet',
 } satisfies Record<string, string>;

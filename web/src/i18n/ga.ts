@@ -3065,4 +3065,13 @@ export default {
   'Quadrado': 'Cearnach',
   'Em L': 'I gcruth L',
   'Cubículo': 'Cillín',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Droichead an Phoill',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Tríocha soicind chun droichead adhmaid agus cruach a thógáil. Buann an té a thugann an trácht trasna is saoire.',
+  'Pista': 'Bóthar',
+  'Aço': 'Cruach',
+  'Testar': 'Tástáil',
+  'Montar': 'Tógáil',
+  'Passou!': 'D’éirigh leis!',
+  '{n}% do caminho': '{n}% den bhealach',
 } satisfies Record<string, string>;

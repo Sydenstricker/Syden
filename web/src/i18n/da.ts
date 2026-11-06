@@ -3123,4 +3123,13 @@ export default {
   'Quadrado': 'Kvadratisk',
   'Em L': 'L-formet',
   'Cubículo': 'Lille rum',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Hulens bro',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Tredive sekunder til at bygge en bro af træ og stål. Den, der får trafikken over til den anden side billigst, vinder.',
+  'Pista': 'Vejbane',
+  'Aço': 'Stål',
+  'Testar': 'Test',
+  'Montar': 'Byg',
+  'Passou!': 'Det lykkedes!',
+  '{n}% do caminho': '{n} % af vejen',
 } satisfies Record<string, string>;

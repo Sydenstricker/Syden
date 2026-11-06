@@ -3075,4 +3075,13 @@ export default {
   'Quadrado': 'Kwadra',
   'Em L': 'Forma ta\' L',
   'Cubículo': 'Kamra żgħira',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Il-Pont tal-Għar',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Tletin sekonda biex tibni pont tal-injam u tal-azzar. Jirbaħ min iwassal it-traffiku għan-naħa l-oħra bl-inqas spiża.',
+  'Pista': 'Triq',
+  'Aço': 'Azzar',
+  'Testar': 'Ipprova',
+  'Montar': 'Ibni',
+  'Passou!': 'Irnexxa!',
+  '{n}% do caminho': '{n}% tat-triq',
 } satisfies Record<string, string>;

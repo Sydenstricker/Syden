@@ -3059,4 +3059,13 @@ export default {
   'Quadrado': 'ካሬ',
   'Em L': 'የL ቅርጽ',
   'Cubículo': 'ትንሽ ክፍል',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'የዋሻው ድልድይ',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'ከእንጨትና ከብረት ድልድይ ለመሥራት ሠላሳ ሰከንድ። ትራፊኩን በትንሹ ወጪ ወደ ሌላኛው ጎን ያደረሰ ያሸንፋል።',
+  'Pista': 'መንገድ',
+  'Aço': 'ብረት',
+  'Testar': 'መሞከር',
+  'Montar': 'መሥራት',
+  'Passou!': 'ተሳክቷል!',
+  '{n}% do caminho': 'የመንገዱ {n}%',
 } satisfies Record<string, string>;

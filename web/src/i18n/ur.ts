@@ -3051,4 +3051,13 @@ export default {
   'Quadrado': 'مربع',
   'Em L': 'L شکل',
   'Cubículo': 'چھوٹا کمرہ',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'بِل کا پُل',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'لکڑی اور اسٹیل سے پُل بنانے کے لیے تیس سیکنڈ۔ جو سب سے کم خرچ میں ٹریفک کو پار پہنچائے، وہی جیتتا ہے۔',
+  'Pista': 'سڑک',
+  'Aço': 'اسٹیل',
+  'Testar': 'جانچ',
+  'Montar': 'تعمیر',
+  'Passou!': 'پار ہو گیا!',
+  '{n}% do caminho': 'راستے کا {n}%',
 } satisfies Record<string, string>;

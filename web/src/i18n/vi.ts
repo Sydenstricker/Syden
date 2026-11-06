@@ -3029,4 +3029,13 @@ export default {
   'Quadrado': 'Vuông',
   'Em L': 'Hình chữ L',
   'Cubículo': 'Phòng nhỏ',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Cây cầu hang thỏ',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Ba mươi giây để dựng một cây cầu bằng gỗ và thép. Ai đưa xe qua bờ bên kia với chi phí thấp nhất sẽ thắng.',
+  'Pista': 'Mặt đường',
+  'Aço': 'Thép',
+  'Testar': 'Thử',
+  'Montar': 'Xây',
+  'Passou!': 'Qua được rồi!',
+  '{n}% do caminho': '{n}% quãng đường',
 } satisfies Record<string, string>;

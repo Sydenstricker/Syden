@@ -3072,4 +3072,13 @@ export default {
   'Quadrado': 'สี่เหลี่ยม',
   'Em L': 'รูปตัว L',
   'Cubículo': 'ห้องเล็ก',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'สะพานโพรงกระต่าย',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'สามสิบวินาทีสำหรับสร้างสะพานด้วยไม้และเหล็กกล้า ใครพารถข้ามไปอีกฝั่งได้โดยใช้งบน้อยที่สุดชนะ',
+  'Pista': 'ถนน',
+  'Aço': 'เหล็กกล้า',
+  'Testar': 'ทดสอบ',
+  'Montar': 'สร้าง',
+  'Passou!': 'ข้ามได้!',
+  '{n}% do caminho': '{n}% ของทาง',
 } satisfies Record<string, string>;

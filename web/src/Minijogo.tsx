@@ -34,6 +34,7 @@ import { JogoCozinha, type EstadoCozinha } from './JogoCozinha';
 import { JogoSkate, type EstadoSkate } from './JogoSkate';
 import { JogoCarrinhos, type EstadoCarrinhos } from './JogoCarrinhos';
 import { JogoTransito, type EstadoTransito } from './JogoTransito';
+import { EscolhaDaPonte, JogoPonte, type EstadoPonte } from './JogoPonte';
 import { JogoLobisomem } from './JogoLobisomem';
 import { JogoPalavra } from './JogoPalavra';
 import { EscolhaDaFase, JogoPlataforma, JogoPlataformaNaSala, type EstadoPlataforma } from './JogoPlataforma';
@@ -217,7 +218,7 @@ export function PainelDoMinijogo({
     comecou.current = true;
     if (comecarCom === 'corrida') setCorrendo(true);
     else if (comecarCom === 'plataforma') setPulando(true);
-    else if (pedeCategoria(comecarCom) || comecarCom === 'briga' || comecarCom === 'cidades' || comecarCom === 'tabuleiro' || ROBOS_NO_SOLO[comecarCom]) setEscolhendo(comecarCom);
+    else if (pedeCategoria(comecarCom) || comecarCom === 'briga' || comecarCom === 'ponte' || comecarCom === 'cidades' || comecarCom === 'tabuleiro' || ROBOS_NO_SOLO[comecarCom]) setEscolhendo(comecarCom);
     else void tentar(() => aoComecar(comecarCom, {}, true));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [comecarCom]);
@@ -380,6 +381,13 @@ export function PainelDoMinijogo({
           aoVoltar={() => setEscolhendo(null)}
         />
       )}
+      {/* A Ponte da toca: a fase (no Solo, cada uma tem o seu recorde; na sala, a mesma para a turma). */}
+      {!partida && escolhendo === 'ponte' && (
+        <EscolhaDaPonte
+          aoEscolher={(fase) => tentar(() => aoComecar('ponte', { fase }, aba === 'solo').then(() => setEscolhendo(null)))}
+          aoVoltar={() => setEscolhendo(null)}
+        />
+      )}
       {!partida && escolhendo === 'plataforma' && (
         <EscolhaDaFase
           aoEscolher={(fase) => tentar(() => aoComecar('plataforma', { pista: fase }, false).then(() => setEscolhendo(null)))}
@@ -410,7 +418,7 @@ export function PainelDoMinijogo({
                         : setEscolhendo('plataforma')
                     : (jogo.id === 'balao' || jogo.id === 'jato' || jogo.id === 'barco' || jogo.id === 'torre') && aba === 'coletivo'
                       ? setEscolhendo(jogo.id)
-                    : jogo.id === 'briga' || jogo.id === 'tabuleiro' || jogo.id === 'cidades' || (aba === 'solo' && ROBOS_NO_SOLO[jogo.id]) || pedeCategoria(jogo.id, aba === 'solo')
+                    : jogo.id === 'briga' || jogo.id === 'ponte' || jogo.id === 'tabuleiro' || jogo.id === 'cidades' || (aba === 'solo' && ROBOS_NO_SOLO[jogo.id]) || pedeCategoria(jogo.id, aba === 'solo')
                       ? setEscolhendo(jogo.id)
                       : tentar(() => aoComecar(jogo.id, {}, aba === 'solo'))
                 }
@@ -588,6 +596,9 @@ export function PainelDoMinijogo({
       )}
       {jogoNaTela?.jogo === 'skate' && (
         <JogoSkate key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')} estado={jogoNaTela as unknown as EstadoSkate & Partida} eu={eu} jogador={souJogador(partida)} agir={agir} />
+      )}
+      {jogoNaTela?.jogo === 'ponte' && (
+        <JogoPonte key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')} estado={jogoNaTela as unknown as EstadoPonte & Partida} eu={eu} jogador={souJogador(partida)} agir={agir} />
       )}
       {jogoNaTela?.jogo === 'transito' && (
         <JogoTransito key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')} estado={jogoNaTela as unknown as EstadoTransito & Partida} eu={eu} jogador={souJogador(partida)} agir={agir} />

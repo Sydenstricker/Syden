@@ -3065,4 +3065,13 @@ export default {
   'Quadrado': 'Τετράγωνο',
   'Em L': 'Σε σχήμα Γ',
   'Cubículo': 'Δωματιάκι',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Γέφυρα στο λαγούμι',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Τριάντα δευτερόλεπτα για μια γέφυρα από ξύλο και ατσάλι. Κερδίζει όποιος περάσει την κίνηση απέναντι με το μικρότερο κόστος.',
+  'Pista': 'Οδόστρωμα',
+  'Aço': 'Ατσάλι',
+  'Testar': 'Δοκιμή',
+  'Montar': 'Κατασκευή',
+  'Passou!': 'Πέρασε!',
+  '{n}% do caminho': '{n}% της διαδρομής',
 } satisfies Record<string, string>;

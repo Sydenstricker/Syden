@@ -3047,4 +3047,13 @@ export default {
   'Quadrado': '정사각형',
   'Em L': 'L자형',
   'Cubículo': '작은 방',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': '굴 다리 놓기',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': '나무와 강철로 다리를 놓는 데 30초. 가장 적은 비용으로 차들을 건너편까지 보낸 사람이 이겨요.',
+  'Pista': '도로',
+  'Aço': '강철',
+  'Testar': '테스트',
+  'Montar': '짓기',
+  'Passou!': '건넜다!',
+  '{n}% do caminho': '길의 {n}%',
 } satisfies Record<string, string>;

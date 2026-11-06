@@ -3129,4 +3129,13 @@ export default {
   'Quadrado': 'සමචතුරස්‍ර',
   'Em L': 'L හැඩය',
   'Cubículo': 'කුඩා කාමරය',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'ගුහාවේ පාලම',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'ලී සහ වානේ වලින් පාලමක් තැනීමට තත්පර තිහක්. අඩුම වියදමින් රථවාහන අනෙක් පැත්තට ගෙන යන අය ජය ගනී.',
+  'Pista': 'මාර්ගය',
+  'Aço': 'වානේ',
+  'Testar': 'පරීක්ෂාව',
+  'Montar': 'තැනීම',
+  'Passou!': 'පාර පැන්නා!',
+  '{n}% do caminho': 'මාර්ගයෙන් {n}%',
 } satisfies Record<string, string>;

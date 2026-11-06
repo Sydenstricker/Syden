@@ -3098,4 +3098,13 @@ export default {
   'Quadrado': 'စတုရန်း',
   'Em L': 'L ပုံ',
   'Cubículo': 'အခန်းကျဉ်း',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'တွင်း တံတား',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'သစ်သားနှင့် သံမဏိဖြင့် တံတားဆောက်ရန် စက္ကန့်သုံးဆယ်။ ယာဉ်များကို အနည်းဆုံးကုန်ကျစရိတ်ဖြင့် တစ်ဖက်ကမ်းသို့ ရောက်စေသူ နိုင်သည်။',
+  'Pista': 'လမ်း',
+  'Aço': 'သံမဏိ',
+  'Testar': 'စမ်းသပ်',
+  'Montar': 'ဆောက်',
+  'Passou!': 'ဖြတ်ကျော်နိုင်ပြီ!',
+  '{n}% do caminho': 'လမ်း၏ {n}%',
 } satisfies Record<string, string>;

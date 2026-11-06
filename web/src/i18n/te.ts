@@ -3041,4 +3041,13 @@ export default {
   'Quadrado': 'చతురస్రం',
   'Em L': 'L ఆకారం',
   'Cubículo': 'చిన్న గది',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'బొరియ వంతెన',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'చెక్క, ఉక్కుతో వంతెన కట్టడానికి ముప్పై సెకన్లు. అతి తక్కువ ఖర్చుతో ట్రాఫిక్‌ను అవతలి ఒడ్డుకు చేర్చినవారు గెలుస్తారు.',
+  'Pista': 'రోడ్డు',
+  'Aço': 'ఉక్కు',
+  'Testar': 'పరీక్ష',
+  'Montar': 'నిర్మాణం',
+  'Passou!': 'దాటింది!',
+  '{n}% do caminho': 'దారిలో {n}%',
 } satisfies Record<string, string>;

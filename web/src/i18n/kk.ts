@@ -3133,4 +3133,13 @@ export default {
   'Quadrado': 'Шаршы',
   'Em L': 'L пішінді',
   'Cubículo': 'Шағын бөлме',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Ін көпірі',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Ағаш пен болаттан көпір салуға отыз секунд. Көлікті арғы бетке ең аз шығынмен жеткізген жеңеді.',
+  'Pista': 'Жол',
+  'Aço': 'Болат',
+  'Testar': 'Сынау',
+  'Montar': 'Салу',
+  'Passou!': 'Өтті!',
+  '{n}% do caminho': 'Жолдың {n}%-ы',
 } satisfies Record<string, string>;

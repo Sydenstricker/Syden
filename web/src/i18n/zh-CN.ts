@@ -3046,4 +3046,13 @@ export default {
   'Quadrado': '方形',
   'Em L': 'L 形',
   'Cubículo': '小隔间',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': '兔子洞造桥',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': '用三十秒拿木头和钢材搭一座桥。以最低花费把车辆送到对岸的人获胜。',
+  'Pista': '路面',
+  'Aço': '钢材',
+  'Testar': '试一试',
+  'Montar': '搭建',
+  'Passou!': '过桥了！',
+  '{n}% do caminho': '走了 {n}%',
 } satisfies Record<string, string>;

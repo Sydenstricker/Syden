@@ -3126,4 +3126,13 @@ export default {
   'Quadrado': 'Ruudukujuline',
   'Em L': 'L-kujuline',
   'Cubículo': 'Kamber',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Uru sild',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Kolmkümmend sekundit, et ehitada puust ja terasest sild. Võidab see, kes viib liikluse teisele poole kõige odavamalt.',
+  'Pista': 'Sõidutee',
+  'Aço': 'Teras',
+  'Testar': 'Proovi',
+  'Montar': 'Ehita',
+  'Passou!': 'Õnnestus!',
+  '{n}% do caminho': '{n}% teest',
 } satisfies Record<string, string>;

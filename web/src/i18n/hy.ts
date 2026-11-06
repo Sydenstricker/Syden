@@ -3148,4 +3148,13 @@ export default {
   'Quadrado': 'Քառակուսի',
   'Em L': 'L-աձև',
   'Cubículo': 'Խցիկ',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Որջի կամուրջ',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Երեսուն վայրկյան՝ փայտից և պողպատից կամուրջ կառուցելու համար։ Հաղթում է նա, ով երթևեկությունն ամենաէժան կերպով կհասցնի մյուս ափ։',
+  'Pista': 'Ճանապարհ',
+  'Aço': 'Պողպատ',
+  'Testar': 'Փորձել',
+  'Montar': 'Կառուցել',
+  'Passou!': 'Ստացվեց!',
+  '{n}% do caminho': 'Ճանապարհի {n}%-ը',
 } satisfies Record<string, string>;

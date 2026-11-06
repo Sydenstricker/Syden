@@ -46,6 +46,8 @@ export const NOMES_DAS_PISTAS: Record<string, string> = {
   barco: chave('Regata da toca'),
   // e o dos Carrinhos da toca (server/src/minijogo-carrinhos.ts)
   carrinhos: chave('Carrinhos da toca'),
+  // e o da Ponte da toca (server/src/minijogo-ponte.ts): os pontos são o custo da ponte, e MENOS é melhor
+  ponte: chave('Ponte da toca'),
   // e o do Chefe da turma (server/src/minijogo-chefe.ts): os pontos são o dano dado
   chefe: chave('O chefe da turma'),
   // e o do Duelo de aviõezinhos (server/src/minijogo-duelo.ts): os pontos são as vidas que sobraram

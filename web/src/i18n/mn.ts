@@ -3143,4 +3143,13 @@ export default {
   'Quadrado': 'Дөрвөлжин',
   'Em L': 'L хэлбэртэй',
   'Cubículo': 'Жижиг өрөө',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Нүхний гүүр',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Мод, гангаар гүүр барих гучин секунд. Хөдөлгөөнийг хамгийн бага зардлаар нөгөө эрэгт гаргасан нь ялна.',
+  'Pista': 'Зам',
+  'Aço': 'Ган',
+  'Testar': 'Туршилт',
+  'Montar': 'Барих',
+  'Passou!': 'Гарлаа!',
+  '{n}% do caminho': 'Замын {n}%',
 } satisfies Record<string, string>;

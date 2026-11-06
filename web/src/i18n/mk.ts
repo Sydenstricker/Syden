@@ -3129,4 +3129,13 @@ export default {
   'Quadrado': 'Квадратна',
   'Em L': 'Во форма на Л',
   'Cubículo': 'Собичка',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Мост кај дувлото',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Триесет секунди за мост од дрво и челик. Победува тој што ќе го пренесе сообраќајот на другата страна со најмал трошок.',
+  'Pista': 'Коловоз',
+  'Aço': 'Челик',
+  'Testar': 'Проба',
+  'Montar': 'Градба',
+  'Passou!': 'Успеа!',
+  '{n}% do caminho': '{n}% од патот',
 } satisfies Record<string, string>;

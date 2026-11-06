@@ -3044,4 +3044,13 @@ export default {
   'Quadrado': 'சதுரம்',
   'Em L': 'L வடிவம்',
   'Cubículo': 'சிறிய அறை',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'வளைப் பாலம்',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'மரமும் எஃகும் கொண்டு பாலம் கட்ட முப்பது வினாடிகள். குறைந்த செலவில் போக்குவரத்தை மறுகரைக்குக் கொண்டு சேர்ப்பவர் வெல்வார்.',
+  'Pista': 'சாலை',
+  'Aço': 'எஃகு',
+  'Testar': 'சோதனை',
+  'Montar': 'கட்டுதல்',
+  'Passou!': 'கடந்தது!',
+  '{n}% do caminho': 'வழியில் {n}%',
 } satisfies Record<string, string>;

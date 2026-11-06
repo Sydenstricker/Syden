@@ -3040,4 +3040,13 @@ export default {
   'Quadrado': '正方形',
   'Em L': 'L字型',
   'Cubículo': '小部屋',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': '巣穴の橋づくり',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': '木と鋼で橋をかける時間は30秒。いちばん安く車を向こう岸まで渡せた人の勝ち。',
+  'Pista': '道路',
+  'Aço': '鋼',
+  'Testar': 'テスト',
+  'Montar': '組み立て',
+  'Passou!': '渡れた!',
+  '{n}% do caminho': '道のり{n}%',
 } satisfies Record<string, string>;

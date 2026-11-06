@@ -3061,4 +3061,13 @@ export default {
   'Quadrado': 'Kare',
   'Em L': 'L biçimli',
   'Cubículo': 'Odacık',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Yuva Köprüsü',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Ahşap ve çelikten bir köprü kurmak için otuz saniye. Trafiği karşıya en ucuza geçiren kazanır.',
+  'Pista': 'Yol',
+  'Aço': 'Çelik',
+  'Testar': 'Dene',
+  'Montar': 'Kur',
+  'Passou!': 'Başardı!',
+  '{n}% do caminho': 'Yolun %{n} kadarı',
 } satisfies Record<string, string>;

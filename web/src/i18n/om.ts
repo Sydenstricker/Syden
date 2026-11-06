@@ -3099,4 +3099,13 @@ export default {
   'Quadrado': 'Iskuweerii',
   'Em L': 'Bifa L',
   'Cubículo': 'Kutaa xiqqaa',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Riqicha Boollaa',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Riqicha mukaa fi sibiilaa ijaaruuf sekondii soddoma. Kan tiraafika gara gama kaaniitti baasii xiqqaadhaan geessu ni moʼata.',
+  'Pista': 'Daandii',
+  'Aço': 'Sibiila',
+  'Testar': 'Yaalii',
+  'Montar': 'Ijaarsa',
+  'Passou!': 'Milkaaʼe!',
+  '{n}% do caminho': 'Karaa {n}%',
 } satisfies Record<string, string>;

@@ -3128,4 +3128,13 @@ export default {
   'Quadrado': 'ការ៉េ',
   'Em L': 'រាងអក្សរ L',
   'Cubículo': 'បន្ទប់តូច',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'ស្ពានរូង',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'សាមសិបវិនាទីដើម្បីសង់ស្ពានពីឈើ និងដែកថែប។ អ្នកដែលនាំចរាចរទៅត្រើយម្ខាងដោយចំណាយតិចបំផុត ជាអ្នកឈ្នះ។',
+  'Pista': 'ផ្លូវ',
+  'Aço': 'ដែកថែប',
+  'Testar': 'សាកល្បង',
+  'Montar': 'សង់',
+  'Passou!': 'ឆ្លងផុត!',
+  '{n}% do caminho': '{n}% នៃផ្លូវ',
 } satisfies Record<string, string>;

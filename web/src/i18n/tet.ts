@@ -3061,4 +3061,13 @@ export default {
   'Quadrado': 'Kuadradu',
   'Em L': 'Forma L',
   'Cubículo': 'Kuartu ki\'ik',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Ponte kuak nian',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Segundu tolunulu atu harii ponte ho ai no besi-asu. Ema neʼebé lori tráfiku ba sorin seluk ho gastu kiʼik liu mak manán.',
+  'Pista': 'Dalan',
+  'Aço': 'Besi-asu',
+  'Testar': 'Koko',
+  'Montar': 'Harii',
+  'Passou!': 'Liu ona!',
+  '{n}% do caminho': 'Dalan nia {n}%',
 } satisfies Record<string, string>;

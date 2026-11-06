@@ -3074,4 +3074,13 @@ export default {
   'Quadrado': 'Onígun mẹ́rin',
   'Em L': 'Bí L',
   'Cubículo': 'Yàrá kékeré',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Afárá Ihò',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Ọgbọ̀n ìṣẹ́jú-àáyá láti kọ́ afárá igi àti irin. Ẹni tó bá mú ọkọ̀ dé òdìkejì pẹ̀lú ìnáwó tó kéré jù ló borí.',
+  'Pista': 'Ọ̀nà',
+  'Aço': 'Irin',
+  'Testar': 'Ìdánwò',
+  'Montar': 'Kíkọ́',
+  'Passou!': 'Ó kọjá!',
+  '{n}% do caminho': '{n}% ọ̀nà',
 } satisfies Record<string, string>;

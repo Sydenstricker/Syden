@@ -31,6 +31,8 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
       return <CapaCaca />;
     case 'transito':
       return <CapaTransito />;
+    case 'ponte':
+      return <CapaPonte />;
     case 'nave':
       return <CapaNave />;
     case 'balao':
@@ -1371,6 +1373,50 @@ function CapaNave() {
 }
 
 /** O trânsito da toca: o cruzamento em isométrico, com prédios nos cantos, dois carros esperando e um passando. */
+/** A Ponte da toca: o vão com o rio, a treliça de madeira com o banzo de aço, e a carroça do coelho atravessando. */
+function CapaPonte() {
+  // a ponte vai de x = 30 a x = 130, com a pista em y = 64
+  const nos = [30, 50, 70, 90, 110, 130];
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#9fd0e8" />
+      <circle cx="132" cy="20" r="9" fill="#fff3c8" />
+      <path d="M0 70 Q40 44 80 62 T160 56 V120 H0 Z" fill="#a9cf98" />
+      <rect x="30" y="88" width="100" height="32" fill="#4f9fc4" />
+      <path d="M36 96 h12 M70 104 h14 M104 94 h12" stroke="#d6eef8" strokeWidth="2" strokeLinecap="round" />
+      <rect x="0" y="64" width="30" height="56" fill="#a77a4f" />
+      <rect x="130" y="64" width="30" height="56" fill="#a77a4f" />
+      <rect x="0" y="61" width="30" height="5" fill="#79b35a" />
+      <rect x="130" y="61" width="30" height="5" fill="#79b35a" />
+      {/* a treliça: as diagonais de madeira e o banzo de cima de aço */}
+      <g stroke="#5d3a1f" strokeWidth="1">
+        {nos.slice(0, -1).map((x) => (
+          <g key={x}>
+            <line x1={x} y1="64" x2={x + 10} y2="44" stroke="#c08a50" strokeWidth="3.5" />
+            <line x1={x + 10} y1="44" x2={x + 20} y2="64" stroke="#c08a50" strokeWidth="3.5" />
+          </g>
+        ))}
+        <line x1="40" y1="44" x2="120" y2="44" stroke="#8796a5" strokeWidth="3.5" />
+      </g>
+      <rect x="30" y="62" width="100" height="5" fill="#9a6438" stroke="#4e2f18" strokeWidth="1" />
+      {nos.map((x) => (
+        <circle key={x} cx={x} cy="64.5" r="2" fill={x === 30 || x === 130 ? '#d0524c' : '#3a3530'} />
+      ))}
+      {/* a carroça com o coelho */}
+      <g transform="translate(78 62)">
+        <rect x="-11" y="-11" width="18" height="6" fill="#b4773f" stroke="#3a2a1c" strokeWidth="0.8" />
+        <path d="M-8 -11 l1.5 -4 l1.5 4 M-3 -11 l1.5 -4 l1.5 4" fill="#ee8a2c" />
+        <ellipse cx="5" cy="-19" rx="1.3" ry="4" fill="#f7f3ec" />
+        <ellipse cx="7.5" cy="-19.5" rx="1.3" ry="4" fill="#f7f3ec" />
+        <circle cx="6" cy="-13" r="3.4" fill="#f7f3ec" stroke="#3a2a1c" strokeWidth="0.6" />
+        <circle cx="7.6" cy="-13.6" r="0.6" fill="#2b2622" />
+        <circle cx="-6" cy="-3.5" r="3.4" fill="#3a3530" />
+        <circle cx="4" cy="-3.5" r="3.4" fill="#3a3530" />
+      </g>
+    </svg>
+  );
+}
+
 function CapaTransito() {
   // a grade isométrica da capa: (x, y) da cidade → o ponto da tela
   const p = (x: number, y: number): [number, number] => [80 + (x - y) * 15, 14 + (x + y) * 7.5];

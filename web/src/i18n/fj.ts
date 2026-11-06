@@ -3058,4 +3058,13 @@ export default {
   'Quadrado': 'Lewe va',
   'Em L': 'Vaka na L',
   'Cubículo': 'Rumu lailai',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Na wavu ena qara',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Tolusagavulu na sekodi me tara kina e dua na wavu vakaivakau kei na kaukamea. E qaqa o koya e kauta na veivoli ki na yasana kadua ena isau lailai duadua.',
+  'Pista': 'Sala',
+  'Aço': 'Kaukamea',
+  'Testar': 'Vakatovolea',
+  'Montar': 'Tara',
+  'Passou!': 'E rawa!',
+  '{n}% do caminho': '{n}% ni sala',
 } satisfies Record<string, string>;

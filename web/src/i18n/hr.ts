@@ -3128,4 +3128,13 @@ export default {
   'Quadrado': 'Kvadratna',
   'Em L': 'U obliku slova L',
   'Cubículo': 'Sobica',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Most kod jazbine',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Trideset sekundi za gradnju mosta od drva i čelika. Pobjeđuje onaj tko promet prevede na drugu stranu uz najmanji trošak.',
+  'Pista': 'Kolnik',
+  'Aço': 'Čelik',
+  'Testar': 'Proba',
+  'Montar': 'Gradnja',
+  'Passou!': 'Uspjelo je!',
+  '{n}% do caminho': '{n} % puta',
 } satisfies Record<string, string>;

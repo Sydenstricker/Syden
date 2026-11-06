@@ -3131,4 +3131,13 @@ export default {
   'Quadrado': 'Négyzetes',
   'Em L': 'L alakú',
   'Cubículo': 'Kuckó',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Üregi híd',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Harminc másodperc egy fából és acélból készült híd megépítésére. Az nyer, aki a legolcsóbban juttatja át a forgalmat a túlpartra.',
+  'Pista': 'Útpálya',
+  'Aço': 'Acél',
+  'Testar': 'Próba',
+  'Montar': 'Építés',
+  'Passou!': 'Sikerült!',
+  '{n}% do caminho': 'Az út {n}%-a',
 } satisfies Record<string, string>;

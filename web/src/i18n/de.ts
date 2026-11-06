@@ -3083,4 +3083,13 @@ export default {
   'Quadrado': 'Quadratisch',
   'Em L': 'L-förmig',
   'Cubículo': 'Kämmerchen',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Bau-Brücke',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Dreißig Sekunden, um eine Brücke aus Holz und Stahl zu bauen. Wer den Verkehr am günstigsten ans andere Ufer bringt, gewinnt.',
+  'Pista': 'Fahrbahn',
+  'Aço': 'Stahl',
+  'Testar': 'Testen',
+  'Montar': 'Bauen',
+  'Passou!': 'Geschafft!',
+  '{n}% do caminho': '{n} % des Weges',
 } satisfies Record<string, string>;

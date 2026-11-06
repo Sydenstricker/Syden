@@ -3139,4 +3139,13 @@ export default {
   'Quadrado': 'Kare',
   'Em L': 'An fòm L',
   'Cubículo': 'Ti chanm',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Pon tanyè a',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Trant segonn pou monte yon pon an bwa ak an asye. Moun ki fè trafik la travèse ak mwens lajan an genyen.',
+  'Pista': 'Wout',
+  'Aço': 'Asye',
+  'Testar': 'Teste',
+  'Montar': 'Monte',
+  'Passou!': 'Li pase!',
+  '{n}% do caminho': '{n}% chemen an',
 } satisfies Record<string, string>;

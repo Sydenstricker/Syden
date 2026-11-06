@@ -3129,4 +3129,13 @@ export default {
   'Quadrado': 'Neliö',
   'Em L': 'L-muotoinen',
   'Cubículo': 'Koppi',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Kolon silta',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Kolmekymmentä sekuntia sillan rakentamiseen puusta ja teräksestä. Voittaja on se, joka saa liikenteen toiselle puolelle halvimmalla.',
+  'Pista': 'Ajorata',
+  'Aço': 'Teräs',
+  'Testar': 'Kokeile',
+  'Montar': 'Rakenna',
+  'Passou!': 'Onnistui!',
+  '{n}% do caminho': '{n} % matkasta',
 } satisfies Record<string, string>;

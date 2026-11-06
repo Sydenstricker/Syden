@@ -3056,4 +3056,13 @@ export default {
   'Quadrado': 'বর্গাকার',
   'Em L': 'L আকৃতির',
   'Cubículo': 'ছোট ঘর',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'গর্তের সেতু',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'কাঠ আর ইস্পাত দিয়ে সেতু বানাতে ত্রিশ সেকেন্ড। সবচেয়ে কম খরচে যানবাহনকে অন্য পাড়ে পৌঁছে দিলেই জয়।',
+  'Pista': 'রাস্তা',
+  'Aço': 'ইস্পাত',
+  'Testar': 'পরীক্ষা',
+  'Montar': 'নির্মাণ',
+  'Passou!': 'পেরিয়ে গেছে!',
+  '{n}% do caminho': 'পথের {n}%',
 } satisfies Record<string, string>;

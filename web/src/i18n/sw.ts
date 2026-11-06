@@ -3058,4 +3058,13 @@ export default {
   'Quadrado': 'Mraba',
   'Em L': 'Umbo la L',
   'Cubículo': 'Chumba kidogo',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Daraja la Shimoni',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Sekunde thelathini za kujenga daraja la mbao na chuma. Anayevusha magari ng’ambo kwa gharama ndogo zaidi ndiye mshindi.',
+  'Pista': 'Barabara',
+  'Aço': 'Chuma',
+  'Testar': 'Jaribu',
+  'Montar': 'Jenga',
+  'Passou!': 'Imevuka!',
+  '{n}% do caminho': '{n}% ya njia',
 } satisfies Record<string, string>;

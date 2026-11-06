@@ -3058,4 +3058,13 @@ export default {
   'Quadrado': 'चौकोर',
   'Em L': 'L आकार',
   'Cubículo': 'छोटा कमरा',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'बिल का पुल',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'लकड़ी और स्टील से पुल बनाने के लिए तीस सेकंड। जो सबसे कम ख़र्च में ट्रैफ़िक को उस पार पहुँचाए, वही जीतता है।',
+  'Pista': 'सड़क',
+  'Aço': 'स्टील',
+  'Testar': 'परीक्षण',
+  'Montar': 'निर्माण',
+  'Passou!': 'पार हो गया!',
+  '{n}% do caminho': 'रास्ते का {n}%',
 } satisfies Record<string, string>;

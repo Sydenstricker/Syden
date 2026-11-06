@@ -3130,4 +3130,13 @@ export default {
   'Quadrado': 'Isikwele',
   'Em L': 'Isimo esingu-L',
   'Cubículo': 'Igumbi elincane',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Ibhuloho Lomgodi',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Imizuzwana engamashumi amathathu yokwakha ibhuloho ngezingodo nensimbi. Owinayo yilowo oweqisa izimoto ngezindleko eziphansi kakhulu.',
+  'Pista': 'Umgwaqo',
+  'Aço': 'Insimbi',
+  'Testar': 'Ukuhlola',
+  'Montar': 'Ukwakha',
+  'Passou!': 'Kuphumelele!',
+  '{n}% do caminho': '{n}% wendlela',
 } satisfies Record<string, string>;

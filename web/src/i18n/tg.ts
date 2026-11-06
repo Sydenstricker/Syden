@@ -3139,4 +3139,13 @@ export default {
   'Quadrado': 'Мураббаъ',
   'Em L': 'Шакли L',
   'Cubículo': 'Ҳуҷраи хурд',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Пули лона',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Сӣ сония барои сохтани пул аз чӯб ва пӯлод. Касе ғолиб мешавад, ки ҳаракатро бо камтарин харҷ ба тарафи дигар гузаронад.',
+  'Pista': 'Роҳ',
+  'Aço': 'Пӯлод',
+  'Testar': 'Санҷиш',
+  'Montar': 'Сохтан',
+  'Passou!': 'Гузашт!',
+  '{n}% do caminho': '{n}% роҳ',
 } satisfies Record<string, string>;

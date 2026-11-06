@@ -3147,4 +3147,13 @@ export default {
   'Quadrado': 'კვადრატული',
   'Em L': 'L-ის ფორმის',
   'Cubículo': 'ოთახუნა',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'სოროს ხიდი',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'ოცდაათი წამი ხისა და ფოლადის ხიდის ასაშენებლად. იმარჯვებს ის, ვინც მოძრაობას ყველაზე იაფად გადაიყვანს მეორე მხარეს.',
+  'Pista': 'გზა',
+  'Aço': 'ფოლადი',
+  'Testar': 'გამოცდა',
+  'Montar': 'აშენება',
+  'Passou!': 'გამოვიდა!',
+  '{n}% do caminho': 'გზის {n}%',
 } satisfies Record<string, string>;

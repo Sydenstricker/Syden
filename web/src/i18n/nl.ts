@@ -3058,4 +3058,13 @@ export default {
   'Quadrado': 'Vierkant',
   'Em L': 'L-vormig',
   'Cubículo': 'Hokje',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Holbrug',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Dertig seconden om een brug van hout en staal te bouwen. Wie het verkeer het goedkoopst naar de overkant krijgt, wint.',
+  'Pista': 'Wegdek',
+  'Aço': 'Staal',
+  'Testar': 'Testen',
+  'Montar': 'Bouwen',
+  'Passou!': 'Gelukt!',
+  '{n}% do caminho': '{n}% van de weg',
 } satisfies Record<string, string>;

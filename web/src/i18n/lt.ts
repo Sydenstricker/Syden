@@ -3131,4 +3131,13 @@ export default {
   'Quadrado': 'Kvadratinis',
   'Em L': 'L formos',
   'Cubículo': 'Kambarėlis',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Urvo tiltas',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Trisdešimt sekundžių pastatyti tiltą iš medžio ir plieno. Laimi tas, kas pigiausiai perkelia eismą į kitą pusę.',
+  'Pista': 'Važiuojamoji dalis',
+  'Aço': 'Plienas',
+  'Testar': 'Išbandyti',
+  'Montar': 'Statyti',
+  'Passou!': 'Pavyko!',
+  '{n}% do caminho': '{n} % kelio',
 } satisfies Record<string, string>;

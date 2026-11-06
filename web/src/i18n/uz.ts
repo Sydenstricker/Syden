@@ -3149,4 +3149,13 @@ export default {
   'Quadrado': 'Kvadrat',
   'Em L': 'L shaklida',
   'Cubículo': 'Kichik xona',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Uya koʻprigi',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Yogʻoch va poʻlatdan koʻprik qurish uchun oʻttiz soniya. Transportni narigi tomonga eng arzon olib oʻtgan gʻolib boʻladi.',
+  'Pista': 'Yoʻl',
+  'Aço': 'Poʻlat',
+  'Testar': 'Sinash',
+  'Montar': 'Qurish',
+  'Passou!': 'Oʻtdi!',
+  '{n}% do caminho': 'Yoʻlning {n}%',
 } satisfies Record<string, string>;

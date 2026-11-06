@@ -3067,4 +3067,13 @@ export default {
   'Quadrado': 'Square',
   'Em L': 'Ụdị L',
   'Cubículo': 'Obere ọnụ ụlọ',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Àkwà mmiri ọgba',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Sekọnd iri atọ iji wuo àkwà mmiri site n’osisi na ígwè. Onye bugara ụgbọ ala n’akụkụ nke ọzọ na ọnụ ahịa kacha nta na-emeri.',
+  'Pista': 'Ụzọ',
+  'Aço': 'Ígwè',
+  'Testar': 'Nwalee',
+  'Montar': 'Wuo',
+  'Passou!': 'O gara nke ọma!',
+  '{n}% do caminho': '{n}% nke ụzọ',
 } satisfies Record<string, string>;

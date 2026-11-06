@@ -3063,4 +3063,13 @@ export default {
   'Quadrado': 'Sikuea',
   'Em L': 'Foliga L',
   'Cubículo': 'Potu laitiiti',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Le Alalaupapa o le Lua',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Tolusefulu sekone e fau ai se alalaupapa i laau ma uamea. E manumalo le na te ave taavale i le isi itu i le tau aupito maualalo.',
+  'Pista': 'Auala',
+  'Aço': 'Uamea',
+  'Testar': 'Faataitai',
+  'Montar': 'Fau',
+  'Passou!': 'Ua mafai!',
+  '{n}% do caminho': '{n}% o le ala',
 } satisfies Record<string, string>;

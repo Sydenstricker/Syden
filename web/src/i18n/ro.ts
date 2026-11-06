@@ -3059,4 +3059,13 @@ export default {
   'Quadrado': 'Pătrată',
   'Em L': 'În L',
   'Cubículo': 'Cămăruță',
+  // a Ponte da toca (06/11/2026)
+  'Ponte da toca': 'Podul vizuinii',
+  'Trinta segundos para montar uma ponte de madeira e aço. Ganha quem levar o tráfego até o outro lado gastando menos.': 'Treizeci de secunde pentru a construi un pod din lemn și oțel. Câștigă cine duce traficul pe malul celălalt cel mai ieftin.',
+  'Pista': 'Carosabil',
+  'Aço': 'Oțel',
+  'Testar': 'Testează',
+  'Montar': 'Construiește',
+  'Passou!': 'A reușit!',
+  '{n}% do caminho': '{n}% din drum',
 } satisfies Record<string, string>;

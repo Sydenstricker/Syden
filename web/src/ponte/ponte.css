@@ -1,0 +1,287 @@
+/* A PONTE DA TOCA (JogoPonte.tsx): o vão num canvas de lado, o painel por cima, e as peças e os botões embaixo. */
+
+/* O vão pede tela: o painel dos mini-games fica largo enquanto se joga. */
+.minijogo.jogando-ponte {
+  width: min(1000px, 96vw);
+}
+
+.ponte {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ponte-moldura {
+  position: relative;
+  width: 100%;
+  max-width: calc(64vh * 16 / 9);
+  margin: 0 auto;
+  border-radius: 10px;
+  overflow: hidden;
+  background: linear-gradient(#86c3e3, #f4e6c6);
+}
+
+.ponte-tela {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  touch-action: none;
+  cursor: crosshair;
+}
+.ponte-tela.apagando {
+  cursor: not-allowed;
+}
+.ponte-fim .ponte-tela {
+  cursor: default;
+}
+
+.ponte-painel {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  color: #fff;
+  font-weight: 800;
+  text-shadow:
+    0 2px 0 rgba(20, 28, 40, 0.55),
+    0 0 6px rgba(20, 28, 40, 0.35);
+  font-variant-numeric: tabular-nums;
+}
+.ponte-painel svg {
+  vertical-align: -0.12em;
+  filter: drop-shadow(0 2px 0 rgba(20, 28, 40, 0.55));
+}
+
+.ponte-relogio {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  font-size: calc(24px * var(--escala-do-texto, 1));
+}
+.ponte-relogio.acabando {
+  color: #ffd166;
+}
+
+.ponte-custo {
+  position: absolute;
+  top: 10px;
+  left: 14px;
+  font-size: calc(22px * var(--escala-do-texto, 1));
+}
+
+.ponte-de-quem {
+  position: absolute;
+  top: 10px;
+  left: 14px;
+  font-size: calc(18px * var(--escala-do-texto, 1));
+}
+
+.ponte-resultado {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+  font-size: calc(18px * var(--escala-do-texto, 1));
+}
+.ponte-resultado.passou {
+  background: rgba(46, 125, 72, 0.85);
+}
+.ponte-resultado.caiu {
+  background: rgba(176, 58, 46, 0.85);
+}
+
+.ponte-contagem {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  color: #ffe08a;
+  font-weight: 800;
+  font-size: calc(60px * var(--escala-do-texto, 1));
+  text-shadow: 0 3px 0 rgba(20, 28, 40, 0.55);
+}
+
+.ponte-barra {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.ponte-pecas,
+.ponte-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ponte-peca-botao {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 2px solid var(--border);
+  background: var(--bg-raised);
+  color: inherit;
+  cursor: pointer;
+  font-weight: 600;
+}
+.ponte-peca-botao:hover:not(:disabled),
+.ponte-peca-botao.escolhida {
+  border-color: var(--accent);
+}
+.ponte-peca-botao:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.ponte-peca-botao small {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.ponte-peca-botao kbd {
+  font: inherit;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0 4px;
+}
+@media (pointer: coarse) {
+  .ponte-peca-botao kbd {
+    display: none;
+  }
+}
+
+/* as amostras das peças, com a mesma cor do desenho */
+.ponte-amostra {
+  display: inline-block;
+  width: 26px;
+  border-radius: 2px;
+  border: 1px solid rgba(40, 25, 12, 0.6);
+}
+.ponte-amostra.tipo-0 {
+  height: 9px;
+  background: repeating-linear-gradient(90deg, #c99560 0 6px, #6d4223 6px 7px);
+}
+.ponte-amostra.tipo-1 {
+  height: 6px;
+  background: linear-gradient(#d9a96d 40%, #c08a50 40%);
+}
+.ponte-amostra.tipo-2 {
+  height: 5px;
+  background: radial-gradient(circle, #5f6d7a 1.2px, transparent 1.6px) 0 0 / 7px 5px, linear-gradient(#b9c5d0 40%, #8796a5 40%);
+}
+
+.ponte-acoes button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.ponte-vazia {
+  background: linear-gradient(#86c3e3, #f4e6c6);
+}
+
+.ponte-recorde {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.ponte-placar {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+  width: min(380px, 100%);
+}
+.ponte-placar button {
+  width: 100%;
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  padding: 5px 8px;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.ponte-placar button:disabled {
+  cursor: default;
+}
+.ponte-placar li.eu button {
+  background: var(--bg-soft, rgba(127, 127, 127, 0.12));
+}
+.ponte-placar button[aria-pressed='true'] {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+.ponte-placar .minijogo-nome {
+  flex: 1;
+}
+.ponte-placar strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-variant-numeric: tabular-nums;
+}
+.ponte-placar-pos {
+  min-width: 1.5em;
+  font-variant-numeric: tabular-nums;
+}
+.ponte-placar-caiu {
+  color: var(--text-muted);
+}
+
+/* a escolha da fase: o desenho de cada vão e o número */
+.ponte-escolha {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ponte-fases {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+}
+.ponte-fase-botao {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  border-radius: 10px;
+  border: 2px solid var(--border);
+  background: var(--bg-raised);
+  color: inherit;
+  cursor: pointer;
+  font-size: 1.05rem;
+}
+.ponte-fase-botao:hover,
+.ponte-fase-botao:focus-visible {
+  border-color: var(--accent);
+}
+.ponte-miniatura {
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
