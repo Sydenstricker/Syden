@@ -658,6 +658,14 @@ estratégia (o pacote Ultimate Fantasy RTS do Quaternius, CC0, em glTF) é o pr�
   (`web/public/tocas/icones/`); a taxa "+x" é o que chegou no último minuto da partida; **o ponto de reunião** (botão direito com o
   prédio escolhido; em cima de uma fonte, quem nasce vai coletar); e o treino que não sai diz o porquê (falta recurso, fila cheia,
   "Falta casa").
+- **Tocas e Torres num estilo só, o Medieval Hexagon da KayKit (06/11/2026, pedido dele):** saíram o Quaternius e o Kenney do jogo.
+  Os prédios vêm por TIME (o pacote traz o arquivo azul e o vermelho, as nossas duas cores; `{cor}` nos nomes de `cena.ts`), a
+  Maravilha é o castelo, a muralha é o trecho do pacote encolhido e engrossado (torrezinha do time nas quinas), a obra tem três etapas
+  (canteiro, paredes, andaime), o prédio derrubado vira ruína e a catapulta tomba; armas, flechas, a bola da catapulta, bandeiras,
+  árvores (com o toco que fica), pedras e a mina (rocha + pepitas do Resource Bits) são do pacote. **Só a tela mudou**: a catapulta e
+  os tiros já existiam na simulação. Os LADRILHOS hexagonais ficaram de fora (a grade é quadrada); o trigo é hexagonal, e passa.
+  Cada pacote da KayKit pinta com UMA textura: os modelos dividem um material por pacote. Cavaleiro a cavalo (o pacote tem o
+  cavalo) pediria a pose do coelho montado. Modelo novo: `web/scripts/tocas-modelos.mjs`.
 - **Os três de 16 bits pedidos depois do sucesso do kart (05/11/2026, ele aprovou os três):**
   - **Esquadrilha da toca** (`nave`, `minijogo-nave.ts`, `nave-sim.ts` ↔ `web/src/nave/sim.ts`): navinha de rolagem vertical com a
     rede da Caça. A turma voa as MESMAS ondas, cada um na própria tela; o servidor refaz cada acerto pela "Ficha" (passo no relógio,
