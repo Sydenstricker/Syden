@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { estiloVisual } from '../Graficos';
 import './mesa3d.css';
 
 /** O que a página precisa de uma cena de mesa (base.ts): nascer numa caixa, receber o estado e ir embora. */
@@ -12,13 +11,14 @@ export type CriarCena<D> = (caixa: HTMLElement, aoClicar: (alvo: number) => void
 
 /**
  * A cena 3D de uma mesa (Damas, Truco, Dominó), com o three.js num pedaço à parte (`importar` é o `import()` da cena). O
- * estado é 'falhou' de saída no estilo 2D (Gráficos) ou sem WebGL, e também se a cena não carregar: aí a página mostra o 2D.
+ * estado é 'falhou' de saída sem WebGL, e também se a cena não carregar: aí a página mostra o 2D. NÃO segue o Estilo visual de
+ * Gráficos (decisão dele, 06/11/2026: "para os mini jogos, é uma estética única"; o estilo é do quarto e do salão).
  * Enquanto carrega, a página mostra o 2D também; pronta, o 2D fica só para o teclado e o leitor de tela.
  */
 export function useCena3D<D>(importar: () => Promise<CriarCena<D>>, dados: D, aoClicar: (alvo: number) => void) {
   const caixa = useRef<HTMLDivElement>(null);
   const cena = useRef<CenaDeMesa<D> | null>(null);
-  const [estado, setEstado] = useState<'carregando' | 'pronta' | 'falhou'>(() => (estiloVisual() === '3d' && temWebGL() ? 'carregando' : 'falhou'));
+  const [estado, setEstado] = useState<'carregando' | 'pronta' | 'falhou'>(() => (temWebGL() ? 'carregando' : 'falhou'));
   const clicar = useRef(aoClicar);
   clicar.current = aoClicar;
   const ultimo = useRef(dados);

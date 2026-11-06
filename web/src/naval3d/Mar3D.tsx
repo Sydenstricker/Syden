@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { estiloVisual } from '../Graficos';
 import type { MarDaCena, MarNaval3D, ToquesDaMontagem } from './cena';
 
 /**
@@ -21,7 +20,7 @@ export function Mar3D({
 }) {
   const caixa = useRef<HTMLDivElement>(null);
   const cena = useRef<MarNaval3D | null>(null);
-  const [estado, setEstado] = useState<'carregando' | 'pronta' | 'falhou'>(() => (estiloVisual() === '3d' && temWebGL() ? 'carregando' : 'falhou'));
+  const [estado, setEstado] = useState<'carregando' | 'pronta' | 'falhou'>(() => (temWebGL() ? 'carregando' : 'falhou'));
   const atirar = useRef(aoAtirar);
   atirar.current = aoAtirar;
   const toquesAgora = useRef(toques);

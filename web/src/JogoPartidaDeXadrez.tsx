@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { estiloVisual } from './Graficos';
 import { useT } from './i18n';
 import { Relogio } from './Minijogo';
 import type { Partida } from './minijogos';
@@ -181,7 +180,7 @@ export function JogoPartidaDeXadrez({
 function Tabuleiro3D({ dados, aoClicar, reserva }: { dados: XadrezDaCena; aoClicar: (i: number) => void; reserva: ReactNode }) {
   const caixa = useRef<HTMLDivElement>(null);
   const cena = useRef<Xadrez3D | null>(null);
-  const [estado, setEstado] = useState<'carregando' | 'pronta' | 'falhou'>(() => (estiloVisual() === '3d' && temWebGL() ? 'carregando' : 'falhou'));
+  const [estado, setEstado] = useState<'carregando' | 'pronta' | 'falhou'>(() => (temWebGL() ? 'carregando' : 'falhou'));
   const clicar = useRef(aoClicar);
   clicar.current = aoClicar;
   const ultimo = useRef(dados);

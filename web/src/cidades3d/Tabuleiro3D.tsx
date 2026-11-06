@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type { CenaDasCidades, DadosDaCena } from './cena';
-import { estiloVisual } from '../Graficos';
 
 /**
  * A caixa do tabuleiro 3D (cena.ts). O three.js vem num pedaço à parte, só quando o Cidades abre. Enquanto a cena não
@@ -10,7 +9,7 @@ import { estiloVisual } from '../Graficos';
 export function Tabuleiro3D({ dados, aoEscolher, reserva, meio, rotulo }: { dados: DadosDaCena; aoEscolher: (i: number) => void; reserva: ReactNode; meio?: ReactNode; rotulo: string }) {
   const caixa = useRef<HTMLDivElement>(null);
   const cena = useRef<CenaDasCidades | null>(null);
-  const [estado, setEstado] = useState<'carregando' | 'pronta' | 'falhou'>(() => (estiloVisual() === '3d' && temWebGL() ? 'carregando' : 'falhou'));
+  const [estado, setEstado] = useState<'carregando' | 'pronta' | 'falhou'>(() => (temWebGL() ? 'carregando' : 'falhou'));
   const escolher = useRef(aoEscolher);
   escolher.current = aoEscolher;
   const ultimo = useRef(dados);

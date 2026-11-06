@@ -784,10 +784,11 @@ um piloto (`e2e/3D/quarto/`, KayKit Bits Bundle 1, CC0), e **o coelho 3D com o N
 `e2e/pixel-art/personagem/blender/meshy/glb.py` (as poses do motor do pixel art viram animações de um GLB,
 `web/public/cidades3d/coelho-animado.glb`). O arquivo "animated_mixamo" do Meshy é o mesmo `mascote-t.glb`: esqueleto de gente, sem
 orelhas, e só Walking e Running.
-**UMA ESCOLHA SÓ PARA O QUARTO E OS JOGOS (decisão dele, 06/11/2026):** perguntado se o botão do quarto devia valer só para o
-quarto (hoje, quem põe o quarto em pixel art põe também o Truco, o Dominó, as Damas e o Cidades em 2D), ele disse que não:
-"o importante é ter consistência, como o Mario 3D que vira 2D no Paper Mario; contanto que o personagem compartilhe da estética
-do minijogo, tudo bem". Fica tudo junto, para dar mais opções; separar só com retorno de quem usa.
+**O ESTILO É DO QUARTO E DO SALÃO; CADA JOGO TEM A SUA ESTÉTICA (decisão dele, 06/11/2026, corrigindo um mal-entendido do
+mesmo dia):** "uma escolha para tudo" quer dizer que a POSIÇÃO de cada peça no quarto 2D tem o OBJETO EQUIVALENTE 3D na MESMA
+POSIÇÃO — a arrumação é uma só, e o 2D e o 3D são dois jeitos de desenhá-la. "Para os mini jogos, é uma estética única": os jogos
+NÃO seguem o Estilo visual (Truco, Dominó, Damas, Xadrez, Batalha naval, Capitais, Tocas e Torres abrem sempre em 3D; o 2D só sem
+WebGL, se o 3D falhar, e para o teclado e o leitor de tela). Antes disso, o botão do quarto em pixel art passava esses jogos para 2D.
 **O QUARTO 3D FOI AO APP (06/11/2026, pedido dele: "quero esse quarto 3D low poly como PILOTO da nossa funcionalidade de variação
 estética; um ícone no quarto que alterne entre 3D e Pixel Art; não implemente no salão ainda"):** `web/src/quarto3d/` (a cena num
 pedaço à parte, os modelos em `web/public/quarto3d/`) e `web/src/QuartoComEstilo.tsx` (o botão do canto: o xadrezinho de pixels e o
