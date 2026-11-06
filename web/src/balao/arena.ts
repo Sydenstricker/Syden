@@ -1,5 +1,5 @@
 import { Chao, HORTA, MUNDO, NEVE, PRAIA, RES, sorteio, type DefinicaoDaPista, type Pista, type Tema } from '../corrida/pista';
-import { arenaPorId, centroDa, naParede, type Arena } from './sim';
+import { arenaPorId, centroDa, MARGEM_DO_KART, naParede, type Arena } from './sim';
 
 /**
  * AS ARENAS DO ESTOURA-BALÃO, PINTADAS (05/11/2026). A forma de cada uma está em números em sim.ts (o servidor também a
@@ -31,9 +31,111 @@ export interface Enfeite {
   tamanho: number;
 }
 
+/**
+ * Um obstáculo DE PÉ (06/11/2026): o contorno no chão, em pedaços curtos (cada pedaço é uma figura, para os karts entrarem na
+ * frente e atrás dele na ordem certa), a altura e as cores. Com tampa é um bloco cheio (a pedra, o fardo, o caixote); sem
+ * tampa, uma mureta (a beira do lago, o canteiro, a cerca), que se vê dos dois lados.
+ */
+export interface Solido {
+  pedacos: PedacoDeSolido[];
+  /** O meio do contorno (a ponta dos triângulos da tampa). */
+  cx: number;
+  cy: number;
+  altura: number;
+  tampa: boolean;
+  cores: CoresDoSolido;
+}
+
+export interface PedacoDeSolido {
+  ax: number;
+  ay: number;
+  bx: number;
+  by: number;
+  /** Para fora do sólido (a face que se vê de fora). */
+  nx: number;
+  ny: number;
+  /** A face de fora e a de dentro, já com a luz (que vem do noroeste). */
+  fora: string;
+  dentro: string;
+  /** Começa num canto do contorno (o desenho marca a aresta de pé). */
+  canto: boolean;
+}
+
+interface CoresDoSolido {
+  face: [number, number, number];
+  topo: string;
+  linha: string;
+  /** O que se risca na face: as cordas do fardo (de pé, a cada pedaço), a tábua do caixote e o travessão da cerca (deitados). */
+  risco?: { cor: string; tipo: 'pe' | 'deitado' };
+}
+
 export interface ArenaPintada extends Pista {
   arena: Arena;
   enfeites: Enfeite[];
+  solidos: Solido[];
+}
+
+/** Um ponto de uma figura (de render.ts) mede isto no mundo, com tamanho 1: a lente da câmera (ATRAS / FOCO). */
+const PIXEL_DA_FIGURA = 38 / 172;
+
+const SOLIDO: Record<'pedra' | 'feno' | 'caixote' | 'margem' | 'canteiro' | 'cerca', CoresDoSolido> = {
+  pedra: { face: [150, 142, 138], topo: '#c4bcb6', linha: '#2a2428' },
+  feno: { face: [222, 184, 92], topo: '#f0d48a', linha: '#4a3018', risco: { cor: '#96603a', tipo: 'pe' } },
+  caixote: { face: [176, 124, 70], topo: '#cfa068', linha: '#2a1a14', risco: { cor: '#6e4626', tipo: 'deitado' } },
+  margem: { face: [196, 182, 140], topo: '#e0d4ac', linha: '#5a5040' },
+  canteiro: { face: [150, 98, 56], topo: '#c08a52', linha: '#3a2414' },
+  cerca: { face: [196, 150, 98], topo: '#e0bc88', linha: '#3a2618', risco: { cor: '#7a5434', tipo: 'deitado' } },
+};
+
+/** A luz vem do noroeste (de cima e da esquerda no mapa): a face virada para ela é a clara. */
+const LUZ = [-0.6, -0.8];
+const sombreado = (c: [number, number, number], nx: number, ny: number) => {
+  const f = 0.6 + 0.4 * Math.max(0, nx * LUZ[0] + ny * LUZ[1]);
+  return `rgb(${Math.round(c[0] * f)}, ${Math.round(c[1] * f)}, ${Math.round(c[2] * f)})`;
+};
+
+/** Um contorno redondo de `lados` lados. */
+function circulo(cx: number, cy: number, r: number, lados: number): [number, number][] {
+  return Array.from({ length: lados }, (_, i) => [cx + Math.cos((i / lados) * Math.PI * 2) * r, cy + Math.sin((i / lados) * Math.PI * 2) * r]);
+}
+
+/** O sólido de um contorno (convexo, em qualquer sentido), cortado em pedaços de no máximo `passo`. */
+function solido(contorno: [number, number][], altura: number, tampa: boolean, cores: CoresDoSolido, passo = 10): Solido {
+  const cx = contorno.reduce((s, p) => s + p[0], 0) / contorno.length;
+  const cy = contorno.reduce((s, p) => s + p[1], 0) / contorno.length;
+  const pedacos: PedacoDeSolido[] = [];
+  for (let i = 0; i < contorno.length; i++) {
+    const [ax, ay] = contorno[i], [bx, by] = contorno[(i + 1) % contorno.length];
+    const len = Math.hypot(bx - ax, by - ay);
+    let nx = (by - ay) / len, ny = -(bx - ax) / len;
+    // para fora: o lado oposto ao meio
+    if (nx * ((ax + bx) / 2 - cx) + ny * ((ay + by) / 2 - cy) < 0) {
+      nx = -nx;
+      ny = -ny;
+    }
+    const n = Math.max(1, Math.ceil(len / passo));
+    for (let j = 0; j < n; j++) {
+      pedacos.push({
+        ax: ax + ((bx - ax) * j) / n,
+        ay: ay + ((by - ay) * j) / n,
+        bx: ax + ((bx - ax) * (j + 1)) / n,
+        by: ay + ((by - ay) * (j + 1)) / n,
+        nx,
+        ny,
+        fora: sombreado(cores.face, nx, ny),
+        dentro: sombreado(cores.face, -nx, -ny),
+        canto: j === 0 && contorno.length <= 8,
+      });
+    }
+  }
+  return { pedacos, cx, cy, altura, tampa, cores };
+}
+
+/** A sombra no chão: a cor mais escura. */
+function escurecer(cor: number) {
+  const f = 0.7;
+  const r = cor & 0xff, g = (cor >> 8) & 0xff, b = (cor >> 16) & 0xff;
+  return rgb(Math.round(r * f), Math.round(g * f), Math.round(b * f));
 }
 
 const K = RES / MUNDO;
@@ -104,16 +206,17 @@ export function montarArena(a: Arena): ArenaPintada {
           cor = T.grama[Math.floor((x + y * 0.6) / 28) & 1];
           if (((ruido >>> 4) & 0x3f) === 0) cor = T.gramaPonto;
         }
-      } else if (borda < 5) {
-        tipo = Chao.Zebra;
+      } else if (borda < MARGEM_DO_KART + 5) {
+        // a zebra ao pé da cerca; a faixa da margem, encostada nela, é parede, na sombra da cerca
+        tipo = borda < MARGEM_DO_KART ? Chao.Parede : Chao.Zebra;
         const s = a.circulo ? Math.atan2(y - a.circulo[1], x - a.circulo[0]) * a.circulo[2] : x + y;
         cor = Math.floor(s / 9) % 2 === 0 ? COR.zebraA : COR.zebraB;
+        if (tipo === Chao.Parede) cor = escurecer(cor);
       } else {
         tipo = Chao.Asfalto;
         // o piso de jogar: em placas grandes, com os riscos das rodas
         cor = visual.piso[(Math.floor(x / 48) + Math.floor(y / 48)) & 1];
         if (((ruido >>> 6) & 0x7f) === 0) cor = visual.risco;
-        if (borda < 9) cor = T.gramaEscura;
       }
       chao[k] = tipo;
       textura[k] = cor;
@@ -132,33 +235,51 @@ export function montarArena(a: Arena): ArenaPintada {
     });
   }
 
-  // OS OBSTÁCULOS: paredes para o kart (a física bate nelas), com o desenho de cada um no chão; o que fica de pé por cima
-  // (a árvore, a pedra, as cenouras do canteiro) é um enfeite, desenhado como figura
+  // OS OBSTÁCULOS (refeitos em 06/11/2026: "os elementos no cenário não ficaram claros, são várias áreas que não podem ser
+  // ultrapassadas"). Cada um é parede no chão para a física, com o desenho dele, e um SÓLIDO de pé (render.ts levanta as
+  // faces em perspectiva): a pedra, o fardo e o caixote são blocos com tampa; o lago e o canteiro têm uma mureta em volta; a
+  // arena tem a cerca. Em volta de cada um, a faixa de MARGEM_DO_KART é parede também, pintada como a sombra dele: o centro
+  // do kart para ali, e o desenho do kart encosta no do obstáculo. A árvore é a figura de pé, com a copa da largura da
+  // sombra (e do que bloqueia).
   const enfeites: Enfeite[] = [];
+  const solidos: Solido[] = [];
+  const M = MARGEM_DO_KART;
   for (const [ox, oy, r, qual] of a.circulos) {
-    pintarCirculo(chao, textura, ox, oy, r, (d, tx, ty) => {
+    pintarCirculo(chao, textura, ox, oy, r + M, (d, tx, ty) => {
+      const k = ty * RES + tx;
+      if (d > r) return [Chao.Parede, chao[k] === Chao.Parede ? textura[k] : escurecer(textura[k])];
       if (qual === 'agua') return [Chao.Parede, d > r - 3 ? COR.aguaBorda : COR.agua[((tx >> 2) + (ty >> 4)) & 1]];
       if (qual === 'canteiro') return [Chao.Parede, d > r - 3 ? COR.caixoteBorda : (ty >> 2) % 2 ? COR.sulco : COR.terra[tx & 1]];
       if (qual === 'pedra') return [Chao.Parede, COR.pedra[((tx >> 2) + (ty >> 2)) & 1]];
       // a árvore: a sombra da copa no chão, e a figura de pé
       return [Chao.Parede, T.gramaEscura];
     });
-    if (qual === 'arvore') enfeites.push({ x: ox, y: oy, figura: T.arvore, tamanho: 2.6 });
-    if (qual === 'pedra') enfeites.push({ x: ox, y: oy + r * 0.4, figura: 'pedra', tamanho: r / 7 });
+    if (qual === 'arvore') enfeites.push({ x: ox, y: oy, figura: T.arvore, tamanho: (2 * r) / (20 * PIXEL_DA_FIGURA) });
+    if (qual === 'pedra') solidos.push(solido(circulo(ox, oy, r, 14), Math.min(14, Math.round(r * 0.75)), true, SOLIDO.pedra));
+    if (qual === 'agua') solidos.push(solido(circulo(ox, oy, r, 24), 3, false, SOLIDO.margem));
     if (qual === 'canteiro') {
+      solidos.push(solido(circulo(ox, oy, r, 24), 6, false, SOLIDO.canteiro));
       for (let i = 0; i < 9; i++) {
         const ang = (i / 9) * Math.PI * 2 + sorte();
-        const rr = r * (0.25 + 0.5 * sorte());
+        const rr = r * (0.2 + 0.5 * sorte());
         enfeites.push({ x: ox + Math.cos(ang) * rr, y: oy + Math.sin(ang) * rr, figura: 'cenoura', tamanho: 1.1 });
       }
     }
   }
   for (const [x0, y0, x1, y1, qual] of a.muros) {
-    for (let ty = Math.floor(y0 * K); ty < Math.ceil(y1 * K); ty++) {
-      for (let tx = Math.floor(x0 * K); tx < Math.ceil(x1 * K); tx++) {
+    for (let ty = Math.floor((y0 - M) * K); ty < Math.ceil((y1 + M) * K); ty++) {
+      for (let tx = Math.floor((x0 - M) * K); tx < Math.ceil((x1 + M) * K); tx++) {
         const k = ty * RES + tx;
-        const bx = tx / K - x0, by = ty / K - y0;
-        const naBorda = bx < 1.5 || by < 1.5 || x1 - tx / K < 1.5 || y1 - ty / K < 1.5;
+        const x = (tx + 0.5) / K, y = (ty + 0.5) / K;
+        if (x <= x0 - M || x >= x1 + M || y <= y0 - M || y >= y1 + M) continue;
+        if (x <= x0 || x >= x1 || y <= y0 || y >= y1) {
+          // a sombra (só uma vez onde duas se cruzam)
+          if (chao[k] !== Chao.Parede) textura[k] = escurecer(textura[k]);
+          chao[k] = Chao.Parede;
+          continue;
+        }
+        const bx = x - x0, by = y - y0;
+        const naBorda = bx < 1.5 || by < 1.5 || x1 - x < 1.5 || y1 - y < 1.5;
         chao[k] = Chao.Parede;
         textura[k] =
           qual === 'feno'
@@ -170,27 +291,15 @@ export function montarArena(a: Arena): ArenaPintada {
               : COR.caixote[(tx >> 3) & 1];
       }
     }
-    // o muro de pé: um bloco de figuras ao longo do lado de cima, para ele ter altura na câmera
-    const fig = qual === 'feno' ? 'feno' : 'caixote';
-    const passos = Math.max(1, Math.round((x1 - x0) / 14));
-    for (let i = 0; i < passos; i++) {
-      for (let jj = 0; jj < Math.max(1, Math.round((y1 - y0) / 14)); jj++) {
-        enfeites.push({ x: x0 + ((i + 0.5) * (x1 - x0)) / passos, y: y0 + (jj + 0.9) * 14, figura: fig, tamanho: 1.15 });
-      }
-    }
+    const contorno: [number, number][] = [[x0, y0], [x1, y0], [x1, y1], [x0, y1]];
+    solidos.push(qual === 'feno' ? solido(contorno, 9, true, SOLIDO.feno) : solido(contorno, 12, true, SOLIDO.caixote));
   }
-  // a cerca de fora, de pé: postes em volta da borda (só o desenho; a parede é o chão)
-  const postes: Enfeite[] = [];
-  if (a.circulo) {
-    const [ccx, ccy, r] = a.circulo;
-    const n = Math.round((2 * Math.PI * r) / 40);
-    for (let i = 0; i < n; i++) postes.push({ x: ccx + Math.cos((i / n) * Math.PI * 2) * (r + 3), y: ccy + Math.sin((i / n) * Math.PI * 2) * (r + 3), figura: 'poste', tamanho: 1 });
-  } else {
+  // A CERCA de fora, de pé, em cima da borda (a parede é o chão de fora e a faixa da margem)
+  if (a.circulo) solidos.push(solido(circulo(a.circulo[0], a.circulo[1], a.circulo[2], 96), 6, false, SOLIDO.cerca, 20));
+  else {
     const [x0, y0, x1, y1] = a.retangulo!;
-    for (let x = x0; x <= x1; x += 40) postes.push({ x, y: y0 - 3, figura: 'poste', tamanho: 1 }, { x, y: y1 + 3, figura: 'poste', tamanho: 1 });
-    for (let y = y0 + 40; y < y1; y += 40) postes.push({ x: x0 - 3, y, figura: 'poste', tamanho: 1 }, { x: x1 + 3, y, figura: 'poste', tamanho: 1 });
+    solidos.push(solido([[x0, y0], [x1, y0], [x1, y1], [x0, y1]], 6, false, SOLIDO.cerca, 20));
   }
-  enfeites.push(...postes);
   // e as árvores de fora da arena, longe da cerca, para o horizonte não ficar vazio
   for (let i = 0, tent = 0; i < 70 && tent < 3000; tent++) {
     const x = 30 + sorte() * (MUNDO - 60), y = 30 + sorte() * (MUNDO - 60);
@@ -212,6 +321,7 @@ export function montarArena(a: Arena): ArenaPintada {
     textura,
     objetos: [],
     enfeites,
+    solidos,
     largada: { x: lx0, y: ly0, angulo: Math.atan2(cy - ly0, cx - lx0) },
   };
 }
@@ -243,5 +353,5 @@ export function largadaDa(a: Arena, i: number): { x: number; y: number; angulo: 
   return { x, y, angulo: Math.atan2(cy - y, cx - x) };
 }
 
-/** O ponto é livre para o kart (para os testes e os robôs). */
-export const livre = (a: Arena, x: number, y: number) => !naParede(a, x, y, -1);
+/** O ponto é livre para o kart (para os testes e os robôs): fora das paredes e da margem do kart. */
+export const livre = (a: Arena, x: number, y: number) => !naParede(a, x, y, -MARGEM_DO_KART - 1);

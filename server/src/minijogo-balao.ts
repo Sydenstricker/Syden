@@ -19,7 +19,14 @@
  *
  * O SERVIDOR CARIMBA O DONO DE CADA ITEM e LIMITA OS ITENS PELAS CAIXAS: cada caixa pega (perto dela, pela posição conferida)
  * dá um item, um na mão de cada vez, e o item é o do sorteio que os dois lados fazem (itemDaCaixa): usar outro não vale. Um
- * balão nunca volta. Batida entre karts continua fora, como na corrida: com 200 ms, cada um veria a batida num lugar.
+ * balão nunca volta.
+ *
+ * A BATIDA ENTRE KARTS (06/11/2026, pedido dele): quem vem rápido (só o turbo passa de VELOCIDADE_DA_BATIDA) e encosta em quem
+ * não vem estoura um balão dele. Sem empurrão (com 200 ms, cada um veria o empurrão num lugar): só o balão e a rodada. A
+ * mesma regra dos itens: quem LEVA avisa ('batida', com quem bateu), conferido pelas posições recentes do outro (perto, e
+ * rápido); e o servidor confere sozinho cada trecho que chega contra as posições que os outros já mandaram, para quem nunca
+ * avisa. O que sobra possível: andar sempre no limite do turbo pelo console (é o mesmo limite das posições), e o mesmo de
+ * antes, desviar com posições inventadas.
  *
  * O SOLO: contra coelhos do computador, a partida inteira roda no navegador (web/src/balao/), e aqui só se guarda o fim, sem
  * troféu (o troféu é um registro entre amigos).
@@ -29,6 +36,7 @@ import {
   ARENAS,
   arenaPorId,
   BALOES,
+  BATIDA_DE_NOVO,
   caminhoDoRepolho,
   DURACAO_PASSOS,
   INVULNERAVEL,
@@ -37,12 +45,15 @@ import {
   lamaPegou,
   naParede,
   PASSOS_POR_SEGUNDO,
+  quemPerde,
+  RAIO_DA_BATIDA,
   RAIO_DA_CAIXA,
   RAIO_DA_LAMA,
   RAIO_DO_REPOLHO,
   repolhoNoPasso,
   repolhoPegou,
   VIDA_DA_ALFACE,
+  VELOCIDADE_DA_BATIDA,
   VIDA_DA_LAMA,
   VOLTA_DA_CAIXA,
   type Arena,
@@ -70,6 +81,19 @@ const INTERVALO_DO_ITEM_MS = 300;
 const PERTO_DO_ACERTO = 18;
 /** A conferência do próprio servidor usa um raio um pouco MENOR que o do site: entre duas amostras, o caminho é uma reta. */
 const RAIO_DO_SERVIDOR = 1;
+/**
+ * A BATIDA AVISADA por quem levou: o outro estava, pelas posições dele, a no máximo isto dela (o raio, mais o atraso de quem a
+ * viu chegar), e a pelo menos esta fração da velocidade da batida (a reta entre duas amostras encurta a curva). Quem avisa
+ * perde o próprio balão: a conferência só impede de dar o estouro a quem não estava ali.
+ */
+const PERTO_DA_BATIDA = RAIO_DA_BATIDA + 18;
+const RAPIDO_NO_AVISO = 0.8;
+/** Quantas posições de cada um o servidor guarda para conferir as batidas (uma a cada 4 passos: uns 2,7 s). */
+const RASTRO = 40;
+
+/** A velocidade (por segundo) entre duas posições. */
+const velocidade = (a: { n: number; x: number; y: number }, b: { n: number; x: number; y: number }) =>
+  b.n > a.n ? (Math.hypot(b.x - a.x, b.y - a.y) * PASSOS_POR_SEGUNDO) / (b.n - a.n) : 0;
 
 interface Jogador {
   largada: number;
@@ -92,6 +116,8 @@ interface Jogador {
   /** A última posição aceita (em = relógio do servidor quando chegou), e o passo até onde os itens já foram conferidos. */
   ultima: { n: number; x: number; y: number; em: number };
   conferidoAte: number;
+  /** As últimas posições aceitas (para as batidas). */
+  rastro: { n: number; x: number; y: number }[];
 }
 
 type ItemVivo =
@@ -143,6 +169,7 @@ export function criarBalao({ agora = Date.now, aleatorio = Math.random }: { agor
               escudo: null,
               ultima: { n: 0, x, y, em: 0 },
               conferidoAte: 0,
+              rastro: [{ n: 0, x, y }],
             },
           ];
         }),
@@ -243,26 +270,89 @@ export function criarBalao({ agora = Date.now, aleatorio = Math.random }: { agor
         if (s < j.ultimoEstouro + INVULNERAVEL) return false;
         gastos.add(item.id);
         itens.delete(item.id);
+        estourar(quem, item.dono, item.id, s);
+        return true;
+      };
+
+      /** O balão de `quem` estoura no passo `s`, por obra de `doDono` (o item, ou o kart que bateu); o escudo segura antes. */
+      const estourar = (quem: number, doDono: number, id: string, s: number) => {
+        const j = jogadores.get(quem)!;
         if (j.escudo && s >= j.escudo.n && s < j.escudo.n + VIDA_DA_ALFACE) {
           const escudo = j.escudo.id;
           j.escudo = null;
-          difundir({ tipo: 'segurou', alvo: quem, id: item.id, escudo });
-          return true;
+          difundir({ tipo: 'segurou', alvo: quem, id, escudo });
+          return;
         }
         j.baloes--;
         j.levou++;
         j.ultimoEstouro = s;
-        const dono = jogadores.get(item.dono);
+        const dono = jogadores.get(doDono);
         if (dono) dono.estouros++;
         if (j.baloes <= 0) {
           j.baloes = 0;
           j.vivo = false;
           j.saiuNa = ++saidas;
         }
-        difundir({ tipo: 'estourou', alvo: quem, id: item.id, dono: item.dono, baloes: j.baloes, n: s });
+        difundir({ tipo: 'estourou', alvo: quem, id, dono: doDono, baloes: j.baloes, n: s });
         ctx.avisar();
         conferirFim();
+      };
+
+      /**
+       * A BATIDA: `atacante` veio rápido e encostou em `vitima` no passo `s`. Vale uma por par a cada BATIDA_DE_NOVO, e nada
+       * dentro dos 2 s de quem acabou de perder um balão (o contato que continua não leva outro).
+       */
+      const ultimaBatida = new Map<string, number>();
+      const bater = (vitima: number, atacante: number, s: number): boolean => {
+        const j = jogadores.get(vitima), a = jogadores.get(atacante);
+        if (!j || !a || !j.vivo || !a.vivo || vitima === atacante) return false;
+        if (s < j.ultimoEstouro + INVULNERAVEL) return false;
+        const par = vitima < atacante ? `${vitima}:${atacante}` : `${atacante}:${vitima}`;
+        if (s < (ultimaBatida.get(par) ?? -Infinity) + BATIDA_DE_NOVO) return false;
+        ultimaBatida.set(par, s);
+        estourar(vitima, atacante, `batida-${atacante}-${vitima}-${s}`, s);
         return true;
+      };
+
+      /**
+       * Onde `quem` estava no passo `s`, e a que velocidade (por segundo), pelas posições que ela mandou: entre duas, a reta;
+       * depois da última, só se ela está calada (parada ali, a 0); antes da mais velha guardada, não se sabe (null).
+       */
+      const ondeEstava = (quem: number, s: number): { x: number; y: number; v: number } | null => {
+        const j = jogadores.get(quem)!;
+        const r = j.rastro;
+        const ult = r[r.length - 1];
+        if (s >= ult.n) return s === ult.n || agora() - j.ultima.em >= SILENCIO_MS ? { x: ult.x, y: ult.y, v: s === ult.n && r.length > 1 ? velocidade(r[r.length - 2], ult) : 0 } : null;
+        for (let i = r.length - 2; i >= 0; i--) {
+          const a = r[i], b = r[i + 1];
+          if (s < a.n) continue;
+          const t = (s - a.n) / (b.n - a.n);
+          return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t, v: velocidade(a, b) };
+        }
+        return null;
+      };
+
+      /**
+       * O SERVIDOR CONFERE AS BATIDAS SOZINHO, como os itens: o trecho que `quem` acabou de mandar, passo a passo, contra o que
+       * os outros já mandaram (ou contra o lugar onde estão parados, os calados). O trecho que chega depois confere contra este:
+       * cada passo de cada par é visto quando chega a segunda das duas posições. O raio aqui é um pouco menor que o do site.
+       */
+      const conferirBatidas = (quem: number, de: { n: number; x: number; y: number }, ate: { n: number; x: number; y: number }) => {
+        if (ate.n <= de.n) return;
+        const v = velocidade(de, ate);
+        for (const [outro, o] of jogadores) {
+          if (outro === quem || !o.vivo) continue;
+          for (let s = de.n + 1; s <= ate.n; s++) {
+            const p = ondeEstava(outro, s);
+            if (!p) continue;
+            const t = (s - de.n) / (ate.n - de.n);
+            const x = de.x + (ate.x - de.x) * t, y = de.y + (ate.y - de.y) * t;
+            if (Math.hypot(p.x - x, p.y - y) >= RAIO_DA_BATIDA - RAIO_DO_SERVIDOR) continue;
+            const perde = quemPerde(v, p.v);
+            if (perde && bater(perde === 'a' ? quem : outro, perde === 'a' ? outro : quem, s)) break;
+          }
+          if (!jogadores.get(quem)!.vivo) return;
+        }
       };
 
       /** Confere o caminho de `quem` entre duas posições (uma reta, passo a passo) contra os itens vivos. */
@@ -325,7 +415,10 @@ export function criarBalao({ agora = Date.now, aleatorio = Math.random }: { agor
         if (Math.hypot(x - j.ultima.x, y - j.ultima.y) > passos * ANDA_POR_PASSO + FOLGA_DA_POSICAO) return false;
         const antes = j.ultima;
         j.ultima = { n, x, y, em: agora() };
+        j.rastro.push({ n, x, y });
+        if (j.rastro.length > RASTRO) j.rastro.shift();
         conferirCaminho(quem, antes, j.ultima);
+        if (j.vivo) conferirBatidas(quem, antes, j.ultima);
         return true;
       };
 
@@ -374,6 +467,21 @@ export function criarBalao({ agora = Date.now, aleatorio = Math.random }: { agor
             const p = item.tipo === 'repolho' ? repolhoNoPasso(item.caminho, item.n, u.n) : u.n >= item.n && u.n < item.fim ? [item.x, item.y] : null;
             if (!p || Math.hypot(p[0] - u.x, p[1] - u.y) > PERTO_DO_ACERTO) return null;
             acertar(quem, item, Math.max(item.n, Math.round(d.n)));
+            return null;
+          }
+          // A BATIDA DE QUEM LEVOU (quem leva é quem diz): o outro estava ali, pelas posições dele, e rápido
+          if (d.tipo === 'batida') {
+            if (!numero(d.de) || !numero(d.n) || Math.abs(u.n - d.n) > 8) return null;
+            const de = d.de;
+            const o = jogadores.get(de);
+            if (!o || de === quem || !o.vivo) return null;
+            const s = Math.round(d.n);
+            const r = o.rastro, ult = r[r.length - 1];
+            // depois da última posição dele (a que ainda vem pela rede), vale a última, com o quanto ele pode ter andado
+            const p = s > ult.n ? (s - ult.n <= 30 ? { x: ult.x, y: ult.y, v: r.length > 1 ? velocidade(r[r.length - 2], ult) : 0 } : null) : ondeEstava(de, s);
+            const folga = s > ult.n ? (s - ult.n) * ANDA_POR_PASSO : 0;
+            if (!p || Math.hypot(p.x - u.x, p.y - u.y) > PERTO_DA_BATIDA + folga || p.v < VELOCIDADE_DA_BATIDA * RAPIDO_NO_AVISO) return null;
+            bater(quem, de, s);
             return null;
           }
           // UM ITEM USADO: o da mão, e o do sorteio (quem usa outro, não usa)

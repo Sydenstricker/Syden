@@ -7,13 +7,13 @@ import {
   baloesNaTela,
   corDoBalao,
   estouroNaTela,
-  figurasDaArena,
   mapaDaArena,
   meusBaloes,
   pontoNoMapaDaArena,
   quadroDoItem,
   retrovisor,
   semaforo,
+  solidosNaTela,
 } from './render';
 import { BALOES, DURACAO_PASSOS, INVULNERAVEL, PASSOS_POR_SEGUNDO, repolhoNoPasso, VIDA_DA_LAMA, type ItemDoBalao } from './sim';
 
@@ -78,7 +78,6 @@ export function rodarBalao(o: OpcoesDoBalao): () => void {
   let quadro = 0;
   let pararExtra = () => {};
   const d: Desenho = prepararDesenho(o.canvas, temaDaArena(o.arena));
-  figurasDaArena(d);
 
   void (async () => {
     d.coelho = await coelho();
@@ -126,7 +125,8 @@ export function rodarBalao(o: OpcoesDoBalao): () => void {
 
     const umPasso = () => {
       partida.passo();
-      if (meu && temBalao(meu.id)) seguir(meu.kart.rumo + (meu.kart.angulo - meu.kart.rumo) * 0.35);
+      // RODANDO (perdeu um balão), a câmera fica parada no rumo de antes: é o kart que gira na frente dela, e não o mundo
+      if (meu && temBalao(meu.id) && meu.kart.rodando === 0) seguir(meu.kart.rumo + (meu.kart.angulo - meu.kart.rumo) * 0.35);
       if (tremor > 0) tremor--;
     };
 
@@ -155,7 +155,7 @@ export function rodarBalao(o: OpcoesDoBalao): () => void {
       const cam = cameraAtras(foco.x, foco.y, camAngulo + (olhando ? Math.PI : 0));
       desenharChao(d, p, cam);
 
-      const figuras: Figura[] = [];
+      const figuras: Figura[] = solidosNaTela(cam, p.solidos);
       for (const e of p.enfeites) {
         const f = figuraNoChao(d, cam, e.figura, e.x, e.y, e.tamanho);
         if (f) figuras.push(f);
@@ -163,7 +163,8 @@ export function rodarBalao(o: OpcoesDoBalao): () => void {
       // as caixas: as que estão lá para mim (quem assiste vê todas)
       for (let i = 0; i < arena.caixas.length; i++) {
         if (euJogo && meu!.caixaVolta[i] > n) continue;
-        const f = figuraNoChao(d, cam, 'caixa', arena.caixas[i][0], arena.caixas[i][1], 1.1 + 0.06 * Math.sin(tempo * 3.8));
+        // do tamanho de quase um kart (3,4: uns 9 de largura no mundo), e a área de pegar acompanha (RAIO_DA_CAIXA)
+        const f = figuraNoChao(d, cam, 'caixa', arena.caixas[i][0], arena.caixas[i][1], 3.4 + 0.15 * Math.sin(tempo * 3.8));
         if (f) figuras.push(f);
       }
       // os itens no chão e rolando

@@ -1,73 +1,124 @@
-import { H, projetar, W, type Camera, type Desenho, type Figura } from '../corrida/render';
+import { H, HORIZONTE, projetar, W, type Camera, type Desenho, type Figura } from '../corrida/render';
 import { MUNDO } from '../corrida/pista';
+import type { Solido } from './arena';
 import type { Arena } from './sim';
 
 /**
  * O DESENHO DO ESTOURA-BALÃO, por cima do da corrida (corrida/render.ts: a câmera, o chão em perspectiva, o coelho no kart):
- * as figuras que a arena tem e a pista não (a pedra, o fardo de feno, o caixote, o poste da cerca), os BALÕES presos atrás
+ * os obstáculos de pé (a pedra, o fardo de feno, o caixote, a mureta do lago e do canteiro, a cerca), os BALÕES presos atrás
  * de cada kart, o estouro e o mapa pequeno da arena. Tudo à mão, em código.
  */
 
-function figura(mapa: string[], cores: Record<string, string>): HTMLCanvasElement {
-  const c = document.createElement('canvas');
-  c.width = mapa[0].length;
-  c.height = mapa.length;
-  const g = c.getContext('2d')!;
-  mapa.forEach((linha, y) => {
-    [...linha].forEach((ch, x) => {
-      if (cores[ch]) {
-        g.fillStyle = cores[ch];
-        g.fillRect(x, y, 1, 1);
-      }
-    });
-  });
-  return c;
+/**
+ * OS OBSTÁCULOS DE PÉ (06/11/2026): o chão do Mode 7 é chato, e uma pedra só pintada nele parecia chão de andar. Aqui cada
+ * sólido da arena (arena.ts) sobe em perspectiva: a face de cada pedaço do contorno, da altura dele, com a luz já posta, o
+ * contorno escuro em cima e no pé, e a tampa (nos blocos cheios) em triângulos até o meio. Cada pedaço é uma figura com a
+ * distância dele: o kart que passa atrás de um fardo some atrás dele, e o que passa na frente o cobre.
+ */
+let FOCO = 0;
+let ALTURA = 0;
+/** A lente da câmera da corrida, medida pelo próprio projetar (para não copiar os números de corrida/render.ts). */
+function lente() {
+  if (FOCO) return;
+  const p = projetar({ x: 0, y: 0, angulo: 0 }, 100, 10)!;
+  FOCO = (p.sx - W / 2) * 10;
+  ALTURA = ((p.sy - HORIZONTE) * 100) / FOCO;
 }
 
-/** Acrescenta as figuras da arena às do desenho da corrida. */
-export function figurasDaArena(d: Desenho) {
-  d.figuras.pedra = figura(
-    [
-      '....kkkkkk....',
-      '..kkPPPpPPkk..',
-      '.kPPpPPPPPpPk.',
-      'kPPPPPPpPPPPdk',
-      'kPpPPPPPPPpddk',
-      'kPPPPpPPPPdddk',
-      '.kdPPPPPPddddk',
-      '..kkddddddkkk.',
-    ],
-    { k: '#2a2428', P: '#a49a96', p: '#c4bcb6', d: '#7a706e' },
-  );
-  d.figuras.feno = figura(
-    [
-      'kkkkkkkkkkkkkk',
-      'kFfFFcFFfFcFFk',
-      'kFFfFcFfFFcfFk',
-      'kfFFFcFFFfcFFk',
-      'kFFfFcfFFFcFfk',
-      'kFfFFcFFfFcFFk',
-      'kddddcdddddddk',
-      'kkkkkkkkkkkkkk',
-    ],
-    { k: '#4a3018', F: '#e2be60', f: '#f4d888', c: '#96603a', d: '#b8924a' },
-  );
-  d.figuras.caixote = figura(
-    [
-      'kkkkkkkkkkkk',
-      'kMmmmmmmmmMk',
-      'kmMk....kMmk',
-      'km.kM..Mk.mk',
-      'km..kMMk..mk',
-      'km..kMMk..mk',
-      'km.kM..Mk.mk',
-      'kmMk....kMmk',
-      'kMmmmmmmmmMk',
-      'kkkkkkkkkkkk',
-    ],
-    { k: '#2a1a14', M: '#b8844c', m: '#a06e3e', '.': '#c89a62' },
-  );
-  d.figuras.poste = figura(['kk', 'Tt', 'Tt', 'Tt', 'Tt', 'Tt', 'kk'], { k: '#3a2618', T: '#a87848', t: '#86603a' });
+/** Perto disto da câmera, o pedaço sai da tela por baixo (e a conta explodiria): não se desenha. */
+const PERTO = 6;
+
+export function solidosNaTela(cam: Camera, solidos: Solido[]): Figura[] {
+  lente();
+  const fx = Math.cos(cam.angulo), fy = Math.sin(cam.angulo);
+  const figuras: Figura[] = [];
+  /** Um ponto (x, y) à altura h na tela: [sx, sy, z]. */
+  const ver = (x: number, y: number, h: number): [number, number, number] => {
+    const dx = x - cam.x, dy = y - cam.y;
+    const z = dx * fx + dy * fy;
+    const lado = -dx * fy + dy * fx;
+    return [W / 2 + (lado * FOCO) / z, HORIZONTE + ((ALTURA - h) * FOCO) / z, z];
+  };
+  for (const s of solidos) {
+    const h = s.altura;
+    const c = s.tampa ? ver(s.cx, s.cy, h) : null;
+    const tampa = c && c[2] >= PERTO ? c : null;
+    for (const p of s.pedacos) {
+      const a0 = ver(p.ax, p.ay, 0), b0 = ver(p.bx, p.by, 0);
+      if (a0[2] < PERTO || b0[2] < PERTO) continue;
+      if ((a0[0] < -8 && b0[0] < -8) || (a0[0] > W + 8 && b0[0] > W + 8)) continue;
+      const a1 = ver(p.ax, p.ay, h), b1 = ver(p.bx, p.by, h);
+      // a face de fora aparece quando a câmera está do lado de fora dela
+      const deFora = p.nx * (cam.x - p.ax) + p.ny * (cam.y - p.ay) > 0;
+      const cores = s.cores;
+      figuras.push({
+        z: (a0[2] + b0[2]) / 2,
+        desenhar: (ctx) => {
+          ctx.lineWidth = 1;
+          if (s.tampa) {
+            // a tampa (o triângulo deste pedaço até o meio), da cor dela também no traço, para não ficar fresta entre eles
+            if (tampa) {
+              ctx.fillStyle = ctx.strokeStyle = cores.topo;
+              ctx.beginPath();
+              ctx.moveTo(a1[0], a1[1]);
+              ctx.lineTo(b1[0], b1[1]);
+              ctx.lineTo(tampa[0], tampa[1]);
+              ctx.closePath();
+              ctx.fill();
+              ctx.stroke();
+            }
+            if (!deFora) {
+              // o lado de trás do bloco: só a beira da tampa
+              ctx.strokeStyle = cores.linha;
+              ctx.beginPath();
+              ctx.moveTo(a1[0], a1[1]);
+              ctx.lineTo(b1[0], b1[1]);
+              ctx.stroke();
+              return;
+            }
+          }
+          // a face (num bloco, só a de fora; na mureta, a que estiver virada para a câmera)
+          ctx.fillStyle = ctx.strokeStyle = deFora ? p.fora : p.dentro;
+          ctx.beginPath();
+          ctx.moveTo(a0[0], a0[1]);
+          ctx.lineTo(b0[0], b0[1]);
+          ctx.lineTo(b1[0], b1[1]);
+          ctx.lineTo(a1[0], a1[1]);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+          if (cores.risco) {
+            ctx.strokeStyle = cores.risco.cor;
+            ctx.beginPath();
+            if (cores.risco.tipo === 'pe') {
+              // a corda do fardo, no meio do pedaço
+              const mx0 = (a0[0] + b0[0]) / 2, my0 = (a0[1] + b0[1]) / 2, mx1 = (a1[0] + b1[0]) / 2, my1 = (a1[1] + b1[1]) / 2;
+              ctx.moveTo(mx0, my0);
+              ctx.lineTo(mx1, my1);
+            } else {
+              // a tábua (ou o travessão da cerca), a meia altura
+              ctx.moveTo((a0[0] + a1[0]) / 2, (a0[1] + a1[1]) / 2);
+              ctx.lineTo((b0[0] + b1[0]) / 2, (b0[1] + b1[1]) / 2);
+            }
+            ctx.stroke();
+          }
+          // o contorno: a beira de cima, o pé e as arestas dos cantos (na cerca, os postes)
+          ctx.strokeStyle = cores.linha;
+          ctx.beginPath();
+          ctx.moveTo(a1[0], a1[1]);
+          ctx.lineTo(b1[0], b1[1]);
+          ctx.moveTo(a0[0], a0[1]);
+          ctx.lineTo(b0[0], b0[1]);
+          if (p.canto) {
+            ctx.moveTo(a0[0], a0[1]);
+            ctx.lineTo(a1[0], a1[1]);
+          }
+          ctx.stroke();
+        },
+      });
+    }
+  }
+  return figuras;
 }
 
 /** As cores dos balões: uma por lugar na largada (até oito), quentes e alegres, nunca o preto nem o branco puro. */

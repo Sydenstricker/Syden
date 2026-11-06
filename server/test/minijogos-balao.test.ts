@@ -68,6 +68,8 @@ function comecar(v: number, arena = 'horta', comunidade = 0) {
     [biaId, { x: a.largadas[1][0], y: a.largadas[1][1] }],
   ]);
   const alvos = new Map<number, { x: number; y: number }>();
+  /** Quanto cada um anda a cada 4 passos: 8 (120 por segundo, abaixo da batida) se não disser outra coisa. */
+  const velocidades = new Map<number, number>();
   const calados = new Set<number>();
   const recusadas: number[] = [];
   const t = {
@@ -75,6 +77,7 @@ function comecar(v: number, arena = 'horta', comunidade = 0) {
     difundidos,
     pos,
     alvos,
+    velocidades,
     calados,
     recusadas,
     terminou: () => terminou,
@@ -83,7 +86,7 @@ function comecar(v: number, arena = 'horta', comunidade = 0) {
     },
     estado: () => jogo.publico(anaId) as { fase: string; semente: number; jogadores: Linha[] },
     linha: (id: number) => (jogo.publico(anaId) as { jogadores: Linha[] }).jogadores.find((l) => l.userId === id)!,
-    /** Anda `passos` passos: cada um vai ao alvo dele (a 3 por passo, abaixo do turbo) e manda a posição a cada 4. */
+    /** Anda `passos` passos: cada um vai ao alvo dele (a 2 por passo, ou o que `velocidades` disser) e manda a posição a cada 4. */
     andar(passos: number) {
       for (let i = 0; i < passos; i += 4) {
         N += 4;
@@ -92,7 +95,8 @@ function comecar(v: number, arena = 'horta', comunidade = 0) {
           const p = pos.get(id)!, alvo = alvos.get(id);
           if (alvo) {
             const dx = alvo.x - p.x, dy = alvo.y - p.y, d = Math.hypot(dx, dy);
-            const k = d > 12 ? 12 / d : 1;
+            const v = velocidades.get(id) ?? 8;
+            const k = d > v ? v / d : 1;
             p.x += dx * k;
             p.y += dy * k;
           }
@@ -228,7 +232,10 @@ test('o escudo de alface segura um item, e depois de um estouro há 2 s sem perd
   t.mandar(anaId, { tipo: 'lama', n: t.N, x: 366, y: 380 });
   t.mandar(biaId, { tipo: 'acertou', id: `${anaId}-${t.N}`, n: t.N });
   assert.equal(t.linha(biaId).baloes, sim.BALOES - 1);
-  // e a próxima, logo depois, não leva outro (os 2 s), mas a lama continua lá
+  // e a próxima, logo depois, não leva outro (os 2 s), mas a lama continua lá (as duas vão depressa, para caber nos 2 s,
+  // e passam a mais de RAIO_DA_BATIDA uma da outra)
+  t.velocidades.set(anaId, 12);
+  t.velocidades.set(biaId, 12);
   t.ir(anaId, 420, 512);
   t.ir(biaId, 436, 512);
   t.mandar(anaId, { tipo: 'caixa', i: 0, n: t.N });
@@ -297,4 +304,63 @@ test('o Solo só guarda o fim que cabe no relógio', () => {
   assert.equal(jogo.acao(anaId, { tipo: 'fim', posicao: 2, total: 4, baloes: 0, estouros: 2, passos: 7200 }), null);
   assert.equal(terminou, true);
   assert.deepEqual((jogo.publico(anaId) as { resultadoDoSolo: unknown }).resultadoDoSolo, { posicao: 2, total: 4, baloes: 0, estouros: 2 });
+});
+
+test('a batida: quem vem no turbo e encosta em quem está parado estoura um balão dele, MESMO SEM ELE AVISAR; uma por contato', () => {
+  const t = comecar(0.5);
+  t.ir(biaId, 630, 340);
+  t.ir(anaId, 560, 340);
+  // a Ana passa por cima da Bia a 180 por segundo (12 a cada 4 passos: só o turbo anda assim)
+  t.velocidades.set(anaId, 12);
+  t.ir(anaId, 700, 340);
+  const estouros = t.difundidos.filter((d) => d.tipo === 'estourou');
+  assert.equal(estouros.length, 1, JSON.stringify(estouros));
+  assert.equal(estouros[0].alvo, biaId);
+  assert.equal(estouros[0].dono, anaId);
+  assert.match(String(estouros[0].id), /^batida-/);
+  assert.equal(t.linha(biaId).baloes, sim.BALOES - 1);
+  assert.equal(t.linha(anaId).estouros, 1);
+  assert.equal(t.linha(anaId).baloes, sim.BALOES, 'quem bate não perde nada');
+  assert.deepEqual(t.recusadas, []);
+  t.jogo.parar?.();
+});
+
+test('a batida: devagar, encostar não estoura nada', () => {
+  const t = comecar(0.5);
+  t.ir(biaId, 630, 340);
+  t.ir(anaId, 560, 340);
+  t.ir(anaId, 700, 340);
+  assert.equal(t.difundidos.filter((d) => d.tipo === 'estourou').length, 0);
+  assert.equal(t.linha(biaId).baloes, sim.BALOES);
+  t.jogo.parar?.();
+});
+
+test('a batida avisada por quem levou: vale com o outro perto e rápido pelas posições dele; de longe, ou devagar, não', () => {
+  const t = comecar(0.5);
+  t.ir(biaId, 630, 340);
+  t.ir(anaId, 560, 351.5);
+  // a Ana longe: o aviso não vale
+  t.mandar(biaId, { tipo: 'batida', de: anaId, n: t.N });
+  assert.equal(t.linha(biaId).baloes, sim.BALOES);
+  // a Ana chega rápido ao lado da Bia, a 11,5 (perto para o site, um fio longe demais para o servidor ver sozinho)
+  t.velocidades.set(anaId, 12);
+  t.ir(anaId, 630, 351.5);
+  assert.equal(t.linha(biaId).baloes, sim.BALOES, 'o servidor sozinho não viu');
+  t.mandar(biaId, { tipo: 'batida', de: anaId, n: t.N });
+  assert.equal(t.linha(biaId).baloes, sim.BALOES - 1);
+  const e = t.difundidos.find((d) => d.tipo === 'estourou')!;
+  assert.equal(e.dono, anaId);
+  // de novo, logo: o mesmo par não bate antes de BATIDA_DE_NOVO
+  t.andar(sim.INVULNERAVEL + 8);
+  t.mandar(biaId, { tipo: 'batida', de: anaId, n: t.N });
+  assert.equal(t.linha(biaId).baloes, sim.BALOES - 1);
+  // e quem avisa contra si mesma, ou contra quem anda devagar, não ganha nada
+  t.mandar(biaId, { tipo: 'batida', de: biaId, n: t.N });
+  t.velocidades.set(anaId, 8);
+  t.ir(anaId, 560, 351.5);
+  t.ir(anaId, 630, 351.5);
+  t.andar(sim.BATIDA_DE_NOVO);
+  t.mandar(biaId, { tipo: 'batida', de: anaId, n: t.N });
+  assert.equal(t.linha(biaId).baloes, sim.BALOES - 1);
+  t.jogo.parar?.();
 });

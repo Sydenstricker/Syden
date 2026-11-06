@@ -647,6 +647,12 @@ estratégia (o pacote Ultimate Fantasy RTS do Quaternius, CC0, em glTF) é o pr�
     declara atingido:** o caminho do repolho e a lama são contas iguais nos dois lados, e o servidor refaz cada posição que chega
     contra os itens vivos; quem passou por um e não avisou perde o balão do mesmo jeito, e quem fica calado 1,5 s fica "parado" na
     última posição. Sobra possível: mandar posições inventadas que desviam (e são o kart que a turma vê). Solo contra 1 a 5 robôs.
+    **Os ajustes de 06/11/2026 (pedidos dele):** quem perde balão RODOPIA (duas voltas em 1 s, com a câmera parada); os
+    obstáculos ficam DE PÉ (blocos com tampa, muretas no lago e no canteiro, a cerca; `solidosNaTela`), e a faixa de
+    `MARGEM_DO_KART` (4) em volta de cada um é parede, pintada como a sombra: o kart bate onde o desenho bate; a caixa é quase
+    do tamanho do kart (`RAIO_DA_CAIXA` 12 → 16); e a **BATIDA**: quem vem a 150/s ou mais (só o turbo: o normal é 140) e
+    encosta (a menos de 12) em quem não vem estoura um balão dele, uma por par a cada 3 s, sem empurrão. Quem leva avisa
+    ('batida'), e o servidor confere sozinho pelas posições dos dois, como os itens. Os robôs usam a cenoura para bater.
   - **Coelhos a jato** (`jato`, `minijogo-jato.ts`, `server/src/jato.ts`, `web/src/jato/`): a corrida futurista, o dobro da
     velocidade do kart, com a energia que é vida e turbo. Uma CÓPIA do que precisou da corrida (`jato/util.ts`), sem mexer nela.
     11 naves do computador completam a pista (não entram na classificação nem no troféu). Recordes e fantasmas como o kart

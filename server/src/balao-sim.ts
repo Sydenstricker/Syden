@@ -31,9 +31,36 @@ export const VIDA_DA_ALFACE = 10 * PASSOS_POR_SEGUNDO;
 /** A que distância do centro do kart o item pega. */
 export const RAIO_DO_REPOLHO = 10;
 export const RAIO_DA_LAMA = 9;
-/** A caixa: pega-se passando a menos disto, e ela volta (para quem pegou) 6 s depois. */
-export const RAIO_DA_CAIXA = 12;
+/**
+ * A caixa: pega-se passando a menos disto, e ela volta (para quem pegou) 6 s depois. Era 12; é 16 desde 06/11/2026, com a
+ * caixa desenhada quase do tamanho do kart: a área de pegar acompanha o que se vê.
+ */
+export const RAIO_DA_CAIXA = 16;
 export const VOLTA_DA_CAIXA = 6 * PASSOS_POR_SEGUNDO;
+
+/**
+ * A BATIDA ENTRE KARTS (06/11/2026): quem vem RÁPIDO (a VELOCIDADE_DA_BATIDA ou mais, que só o turbo alcança: o normal é 140
+ * por segundo, o turbo 185) e encosta num kart que NÃO está rápido (centro a centro a menos de RAIO_DA_BATIDA; o kart tem uns
+ * 13 de largura) estoura um balão dele. Os dois rápidos, ou os dois devagar, só passam (não há empurrão: cada um dirige no
+ * próprio computador). O mesmo par não bate de novo antes de BATIDA_DE_NOVO, e quem perdeu o balão ainda tem os 2 s de
+ * INVULNERAVEL. O escudo de alface segura a batida como segura um item.
+ */
+export const VELOCIDADE_DA_BATIDA = 150;
+export const RAIO_DA_BATIDA = 12;
+export const BATIDA_DE_NOVO = 3 * PASSOS_POR_SEGUNDO;
+
+/** Quem perde na batida entre um kart a `va` por segundo e outro a `vb`: 'a', 'b' ou ninguém (null). */
+export function quemPerde(va: number, vb: number): 'a' | 'b' | null {
+  const ra = va >= VELOCIDADE_DA_BATIDA, rb = vb >= VELOCIDADE_DA_BATIDA;
+  return ra === rb ? null : ra ? 'b' : 'a';
+}
+
+/**
+ * A MARGEM DO KART (06/11/2026): para a física o kart é um ponto, mas o desenho dele tem uns 13 de largura. Por isso o centro
+ * dele para a esta distância de cada obstáculo e da cerca: o site pinta essa faixa como parede, escurecida (a sombra do
+ * obstáculo de pé), e o kart bate onde o desenho bate. O repolho continua quicando na forma exata: ele é pequeno.
+ */
+export const MARGEM_DO_KART = 4;
 
 export type ItemDoBalao = 'cenoura' | 'repolho' | 'lama' | 'alface';
 export const ITENS_DO_BALAO: readonly ItemDoBalao[] = ['cenoura', 'repolho', 'lama', 'alface'];

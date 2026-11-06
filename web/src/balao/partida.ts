@@ -1,15 +1,19 @@
-import { atingir, novoKart, passo, type Comandos, type Kart } from '../corrida/fisica';
+import { atingir, novoKart, PASSO, passo, type Comandos, type Kart } from '../corrida/fisica';
 import { rivalEm, type Rival } from '../corrida/laco';
 import { largadaDa, type ArenaPintada } from './arena';
 import { comandoDoRobo, novaMemoria, type MemoriaDoRobo } from './robo';
 import {
   BALOES,
+  BATIDA_DE_NOVO,
   caminhoDoRepolho,
   DURACAO_PASSOS,
   INVULNERAVEL,
   itemDaCaixa,
   lamaPegou,
   naParede,
+  PASSOS_POR_SEGUNDO,
+  quemPerde,
+  RAIO_DA_BATIDA,
   RAIO_DA_CAIXA,
   repolhoPegou,
   VIDA_DA_ALFACE,
@@ -26,6 +30,13 @@ import {
  * some na hora, o "acertou" vai ao servidor, e a verdade dele chega pelo evento "estourou"); NO SOLO, a decisão é daqui,
  * para todo mundo, com a mesma regra do servidor (2 s sem perder outro balão, o escudo segura um item).
  */
+
+/**
+ * O RODOPIO de quem perde um balão (06/11/2026, pedido dele: "reforçar o fracasso"): a rodada da corrida (atingir: 1 s sem
+ * direção nem acelerador, uma volta) e mais uma volta por cima, só aqui; a câmera fica parada enquanto isso (laco.ts), e o
+ * kart gira na frente dela.
+ */
+const RODOPIO_A_MAIS = 2 * Math.PI;
 
 export type EventoDoBalao =
   | { tipo: 'repolho'; id: string; dono: number; n: number; x: number; y: number; dx: number; dy: number }
@@ -182,7 +193,9 @@ export function criarPartida(o: OpcoesDaPartida) {
         if (onde) o.aoEstouro?.(e.alvo, onde.x, onde.y);
         // na sala, o estouro que eu não tinha visto (o servidor viu pelo meu caminho): a tela se acerta
         if (l && !solo) {
-          if (l.previstos.has(e.id)) l.previstos.delete(e.id);
+          // a batida que eu previ pode chegar com outro passo (o servidor a viu antes do meu aviso): é a mesma
+          const prevista = l.previstos.has(e.id) ? e.id : e.id.startsWith('batida-') ? [...l.previstos.keys()].find((id) => id.startsWith(`batida-${e.dono}-`)) : undefined;
+          if (prevista) l.previstos.delete(prevista);
           else {
             atingir(l.kart);
             l.ultimoEstouro = e.n;
@@ -237,6 +250,7 @@ export function criarPartida(o: OpcoesDaPartida) {
     } else c = o.comandos;
     if (acabou || n > DURACAO_PASSOS) c = { acelera: false, freia: false, vira: 0, derrapa: false };
     passo(k, c, p);
+    if (k.rodando > 0) k.angulo += RODOPIO_A_MAIS * PASSO;
     if (l === meu && k.bateu) o.aoTremor?.(6);
 
     // A CAIXA: passando perto, com a mão vazia; o item é o do sorteio que o servidor também faz
@@ -294,6 +308,8 @@ export function criarPartida(o: OpcoesDaPartida) {
     l.usavaAntes = usa;
     if (l.escudo && n >= l.escudo.n + VIDA_DA_ALFACE) l.escudo = null;
 
+    if (!solo && l === meu) baterNaSala(l);
+
     // FUI ATINGIDO? (quem decide é quem leva; na sala, o servidor confere)
     if (n < l.ultimoEstouro + INVULNERAVEL) return;
     lerEventos();
@@ -311,20 +327,71 @@ export function criarPartida(o: OpcoesDaPartida) {
         mandarPosicao(l);
         mandar({ tipo: 'acertou', id: e.id, n });
         gastos.add(e.id);
-        if (l.escudo && n < l.escudo.n + VIDA_DA_ALFACE) {
-          escudosGastos.add(l.escudo.id);
-          l.escudo = null;
-        } else {
-          l.previstos.set(e.id, n);
-          l.ultimoEstouro = n;
-          atingir(k);
-          if (l === meu) o.aoTremor?.(8);
-          const onde = posicaoDe(l.id, n);
-          if (onde) o.aoEstouro?.(l.id, onde.x, onde.y);
-        }
-        avisarBaloes();
+        preverEstouro(l, e.id);
       }
       break;
+    }
+  };
+
+  /** NA SALA, a previsão do que eu levei (o item ou a batida): o escudo segura, ou o balão estoura; o servidor confirma (ou corrige). */
+  const preverEstouro = (l: KartLocal, id: string) => {
+    if (l.escudo && n < l.escudo.n + VIDA_DA_ALFACE) {
+      escudosGastos.add(l.escudo.id);
+      l.escudo = null;
+    } else {
+      l.previstos.set(id, n);
+      l.ultimoEstouro = n;
+      atingir(l.kart);
+      if (l === meu) o.aoTremor?.(8);
+      const onde = posicaoDe(l.id, n);
+      if (onde) o.aoEstouro?.(l.id, onde.x, onde.y);
+    }
+    avisarBaloes();
+  };
+
+  /** As batidas que já valeram, por par (o mesmo par só bate de novo depois de BATIDA_DE_NOVO). */
+  const batidas = new Map<string, number>();
+  const parDe = (a: number, b: number) => (a < b ? `${a}:${b}` : `${b}:${a}`);
+  const batidaLivre = (a: number, b: number) => n >= (batidas.get(parDe(a, b)) ?? -Infinity) + BATIDA_DE_NOVO;
+
+  /**
+   * NA SALA, A BATIDA QUE EU LEVO (quem leva é quem diz): um kart dos outros, rápido, encostou no meu, que não estava. A
+   * velocidade dele sai das posições que chegaram (os últimos 4 passos); o aviso vai ao servidor, que confere pelas dele.
+   */
+  const baterNaSala = (l: KartLocal) => {
+    if (n < l.ultimoEstouro + INVULNERAVEL) return;
+    const k = l.kart;
+    for (const q of o.participantes) {
+      if (q.id === l.id || !temBalao(q.id) || !batidaLivre(l.id, q.id)) continue;
+      const r = o.rivais.get(q.id);
+      const ali = r ? rivalEm(r.posicoes, n) : null;
+      const antes = r ? rivalEm(r.posicoes, n - 4) : null;
+      if (!ali || !antes || Math.hypot(ali.x - k.x, ali.y - k.y) >= RAIO_DA_BATIDA) continue;
+      const v = (Math.hypot(ali.x - antes.x, ali.y - antes.y) * PASSOS_POR_SEGUNDO) / 4;
+      if (quemPerde(Math.abs(k.v), v) !== 'a') continue;
+      batidas.set(parDe(l.id, q.id), n);
+      mandarPosicao(l);
+      mandar({ tipo: 'batida', de: q.id, n });
+      preverEstouro(l, `batida-${q.id}-${l.id}-${n}`);
+      return;
+    }
+  };
+
+  /** NO SOLO, as batidas entre os karts daqui (todos andam aqui), com a regra do servidor. */
+  const baterNoSolo = () => {
+    for (let i = 0; i < locais.length; i++) {
+      for (let j = i + 1; j < locais.length; j++) {
+        const A = locais[i], B = locais[j];
+        if (!temBalao(A.id) || !temBalao(B.id) || !batidaLivre(A.id, B.id)) continue;
+        if (Math.hypot(A.kart.x - B.kart.x, A.kart.y - B.kart.y) >= RAIO_DA_BATIDA) continue;
+        const perde = quemPerde(Math.abs(A.kart.v), Math.abs(B.kart.v));
+        if (!perde) continue;
+        const [vitima, atacante] = perde === 'a' ? [A, B] : [B, A];
+        if (n < vitima.ultimoEstouro + INVULNERAVEL) continue;
+        batidas.set(parDe(A.id, B.id), n);
+        acertarAqui(vitima, `batida-${atacante.id}-${vitima.id}-${n}`, atacante.id, n);
+        lerEventos();
+      }
     }
   };
 
@@ -364,6 +431,7 @@ export function criarPartida(o: OpcoesDaPartida) {
       n++;
       lerEventos();
       for (const l of locais) andarKart(l);
+      if (solo) baterNoSolo();
       if (meu && temBalao(meu.id) && n % 4 === 0) mandarPosicao(meu);
       for (const l of locais) {
         for (const [id, m] of l.previstos) {

@@ -5,7 +5,8 @@ import { naParede, type Arena, type ItemDoBalao } from './sim';
  * OS COELHOS DO COMPUTADOR DO ESTOURA-BALÃO (05/11/2026): regras, não modelo de linguagem, como os robôs do resto do Solo
  * (server/src/minijogo-robos.ts). Sem item, vão à caixa mais perto; com item, atrás de quem está mais perto. Desviam das
  * paredes olhando à frente, dão ré quando empacam, e usam o item quando faz sentido: o repolho com o alvo na mira, a lama
- * com alguém atrás, a alface e a cenoura logo. Cada um tem o seu "jeito" (a mira mais ou menos cuidadosa), e eles veem só o
+ * com alguém atrás, a alface logo, e a cenoura para BATER (com alguém perto e na frente: o turbo estoura o balão de quem é
+ * alcançado). Cada um tem o seu "jeito" (a mira mais ou menos cuidadosa), e eles veem só o
  * que uma pessoa no lugar deles veria.
  *
  * O mesmo cérebro é o PILOTO AUTOMÁTICO dos testes (window.balaoPilotoAutomatico, só no site de desenvolvimento).
@@ -102,7 +103,12 @@ export function comandoDoRobo(k: Kart, v: VisaoDoRobo, m: MemoriaDoRobo): Comand
   const mira = 0.1 + 0.25 * (1 - m.jeito);
   const espera = 20 + Math.round(60 * m.jeito);
   if (v.item && m.segurando > espera) {
-    if (v.item === 'alface' || v.item === 'cenoura') usa = v.item === 'alface' || rival.distancia > 140 || m.segurando > 300;
+    if (v.item === 'alface') usa = true;
+    else if (v.item === 'cenoura' && rival.alvo) {
+      // a cenoura é para BATER (o turbo estoura o balão de quem é alcançado): com alguém perto e na frente
+      const a = Math.atan2(rival.alvo.y - k.y, rival.alvo.x - k.x);
+      usa = (rival.distancia < 110 && Math.abs(diferenca(a, k.angulo)) < mira * 2) || m.segurando > 300;
+    } else if (v.item === 'cenoura') usa = m.segurando > 300;
     else if (v.item === 'repolho' && rival.alvo) {
       const a = Math.atan2(rival.alvo.y - k.y, rival.alvo.x - k.x);
       usa = rival.distancia < 220 && Math.abs(diferenca(a, k.angulo)) < mira;
