@@ -1,11 +1,11 @@
-// OS MODELOS DE "TOCAS E TORRES" (05/11/2026). Tira de e2e/3D/Assets SÓ o que o jogo usa e grava em web/public/tocas/, com a
-// licença de cada pacote ao lado (todos CC0):
-//  - quaternius/: os prédios por era, as árvores, o ouro e as montanhas do Ultimate Fantasy RTS (Quaternius). Os .gltf de lá
-//    trazem o buffer em base64 dentro do texto; aqui viram .glb (o mesmo conteúdo, ~25% menor, um arquivo só).
-//  - castelo/: a muralha, o portão, a torre do canto e a catapulta (inteira e destruída) do Castle Kit (Kenney), copiados como
-//    estão, com a textura de cores (Textures/colormap.png) que eles apontam.
-//  - recursos/: as pilhas de comida, madeira e ouro e o que o trabalhador carrega, do Resource Bits (KayKit). Os .gltf + .bin
-//    viram .glb, e a textura comum (resource_bits_texture.png) fica ao lado, apontada por eles.
+// OS MODELOS DE "TOCAS E TORRES" (05/11/2026; o conjunto trocado em 06/11/2026). Tira de e2e/3D/Assets SÓ o que o jogo usa e
+// grava em web/public/tocas/, com a licença de cada pacote ao lado (todos CC0):
+//  - medieval/: os prédios por time (azul e vermelho), a muralha e o portão, as obras, as ruínas, a catapulta, as armas, as
+//    flechas, a pedra da catapulta, as bandeiras, as árvores e as pedras do Medieval Hexagon Pack (KayKit). Os .gltf + .bin
+//    viram .glb, e a textura comum (hexagons_medieval.png, uma paleta só para o pacote inteiro) fica ao lado, apontada por eles.
+//    Os ladrilhos hexagonais do pacote NÃO entram: a grade do jogo é quadrada.
+//  - recursos/: as pilhas de comida, madeira e ouro, o que o trabalhador carrega e as pepitas da mina, do Resource Bits
+//    (KayKit), do mesmo jeito.
 //
 //   node web/scripts/tocas-modelos.mjs
 //
@@ -18,28 +18,17 @@ const RAIZ = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '.
 const ASSETS = path.join(RAIZ, 'e2e', '3D', 'Assets');
 const SAIDA = path.join(RAIZ, 'web', 'public', 'tocas');
 
-const QUATERNIUS = [
-  'TowerHouse_FirstAge',
-  'TowerHouse_SecondAge',
-  'Houses_FirstAge_1_Level3',
-  'Houses_SecondAge_1_Level3',
-  'Farm_FirstAge_Level3',
-  'Farm_FirstAge_Level3_Wheat',
-  'Farm_SecondAge_Level3_Wheat',
-  'Barracks_FirstAge_Level3',
-  'Barracks_SecondAge_Level3',
-  'Archery_FirstAge_Level3',
-  'Archery_SecondAge_Level3',
-  'WatchTower_FirstAge_Level3',
-  'WatchTower_SecondAge_Level1',
-  'Wonder_SecondAge_Level3',
-  'Resource_Tree1',
-  'Resource_Tree2',
-  'Resource_PineTree',
-  'Resource_Gold_1',
-  'Mountain_Single',
+/** Do Medieval Hexagon (caminho dentro de Assets/gltf, sem extensão); "{cor}" vira um arquivo por time. */
+const MEDIEVAL = [
+  ...['townhall', 'castle', 'home_A', 'home_B', 'barracks', 'archeryrange', 'tower_A', 'tower_B', 'tower_base', 'windmill'].map((n) => `buildings/{cor}/building_${n}_{cor}`),
+  ...['catapult', 'banner', 'projectile_arrow', 'spear', 'bow', 'sword', 'shield'].map((n) => `units/{cor}/${n}_{cor}_accent`),
+  'decoration/props/flag_{cor}',
+  ...['building_grain', 'wall_straight', 'wall_straight_gate', 'building_stage_A', 'building_stage_B', 'building_stage_C', 'building_destroyed'].map((n) => `buildings/neutral/${n}`),
+  'units/neutral/catapult',
+  'units/neutral/projectile_catapult',
+  ...['tree_single_A', 'tree_single_B', 'trees_A_small', 'tree_single_A_cut', 'mountain_A', 'rock_single_D', 'rock_single_E'].map((n) => `decoration/nature/${n}`),
 ];
-const KENNEY = ['wall', 'wall-doorway', 'tower-base', 'siege-catapult', 'siege-catapult-demolished'];
+const CORES = ['blue', 'red'];
 const KAYKIT = [
   'Wood_Log_A',
   'Wood_Log_Stack',
@@ -53,6 +42,7 @@ const KAYKIT = [
   'Food_Crate_Small_Berries',
   'Food_Crate_Large_Apples',
   'Food_Pile_Large',
+  'Gold_Nuggets',
 ];
 
 /** Um .gltf (buffers em base64 ou em .bin ao lado) vira .glb: um JSON e um BIN, alinhados em 4. As imagens continuam por uri. */
@@ -104,14 +94,12 @@ function gravar(destino, dados) {
 }
 
 let soma = 0;
-const quat = path.join(ASSETS, 'Age of Empires', 'glTF');
-for (const n of QUATERNIUS) soma += gravar(path.join(SAIDA, 'quaternius', `${n}.glb`), paraGlb(path.join(quat, `${n}.gltf`)));
-soma += gravar(path.join(SAIDA, 'License-quaternius.txt'), fs.readFileSync(path.join(ASSETS, 'Age of Empires', 'License.txt')));
-
-const ken = path.join(ASSETS, 'kenney_castle-kit', 'Models', 'GLB format');
-for (const n of KENNEY) soma += gravar(path.join(SAIDA, 'castelo', `${n}.glb`), fs.readFileSync(path.join(ken, `${n}.glb`)));
-soma += gravar(path.join(SAIDA, 'castelo', 'Textures', 'colormap.png'), fs.readFileSync(path.join(ken, 'Textures', 'colormap.png')));
-soma += gravar(path.join(SAIDA, 'License-kenney-castle.txt'), fs.readFileSync(path.join(ASSETS, 'kenney_castle-kit', 'License.txt')));
+const mh = path.join(ASSETS, 'KayKit_Medieval_Hexagon_Pack_1.0_EXTRA', 'KayKit_Medieval_Hexagon_Pack_1.0_EXTRA');
+for (const n of MEDIEVAL)
+  for (const cor of n.includes('{cor}') ? CORES : [''])
+    soma += gravar(path.join(SAIDA, 'medieval', `${path.basename(n).replaceAll('{cor}', cor)}.glb`), paraGlb(path.join(mh, 'Assets', 'gltf', `${n.replaceAll('{cor}', cor)}.gltf`)));
+soma += gravar(path.join(SAIDA, 'medieval', 'hexagons_medieval.png'), fs.readFileSync(path.join(mh, 'Textures', 'hexagons_medieval.png')));
+soma += gravar(path.join(SAIDA, 'License-kaykit-medieval.txt'), fs.readFileSync(path.join(mh, 'License.txt')));
 
 const kk = path.join(ASSETS, 'KayKit_ResourceBits_1.0_EXTRA', 'KayKit_ResourceBits_1.0_EXTRA');
 for (const n of KAYKIT) soma += gravar(path.join(SAIDA, 'recursos', `${n}.glb`), paraGlb(path.join(kk, 'Assets', 'gltf', `${n}.gltf`)));

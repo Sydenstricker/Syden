@@ -37,7 +37,7 @@ import './tocas/tocas.css';
 /**
  * TOCAS E TORRES (05/11/2026): estratégia em tempo real, SÓ A MECÂNICA do gênero (coletar, construir, treinar, avançar de era,
  * atacar), numa partida de 10 a 15 minutos contra o computador. Nada de nome, arte, texto ou som de jogo nenhum; os modelos são
- * CC0 (Quaternius, Kenney, KayKit) e os coelhos são o nosso coelho 3D. Sem música (a regra do "nunca fazer a nossa"); os
+ * CC0 (KayKit: Medieval Hexagon e Resource Bits) e os coelhos são o nosso coelho 3D. Sem música (a regra do "nunca fazer a nossa"); os
  * efeitos são os de somDosJogos.ts.
  *
  * A PARTIDA É DESTE COMPUTADOR: a simulação (tocas/sim.ts) anda em passos fixos de 1/10 s, separada da tela, e o computador
@@ -83,7 +83,7 @@ const NOME: Record<TipoUnidade | TipoPredio, string> = {
 const NOME_DO_RECURSO: Record<Recurso, string> = { comida: chave('Comida'), madeira: chave('Madeira'), ouro: chave('Ouro') };
 /**
  * Os ÍCONES do painel (05/11/2026, pedido dele: "temos os recursos com assets, não podemos usá-los como UI?"): os próprios
- * modelos da KayKit (Resource Bits) e a casa do Quaternius, fotografados uma vez em PNG transparente (web/public/tocas/icones/),
+ * modelos da KayKit (Resource Bits, e a casa do Medieval Hexagon), fotografados uma vez em PNG transparente (web/public/tocas/icones/),
  * para valerem também no 2D.
  */
 const ICONE = (nome: Recurso | 'populacao') => `${import.meta.env.BASE_URL}tocas/icones/${nome}.png`;
