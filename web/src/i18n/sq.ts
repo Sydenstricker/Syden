@@ -3136,4 +3136,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Bjer kambanën: të gjithë punëtorët brenda qendrës së fshatit',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Bjer kambanën përsëri: të gjithë përsëri në punë',
   'Este lugar já está cheio.': 'Ky vend është tashmë plot.',
+  'Clássico': 'Klasik',
+  'Colorido': 'Shumëngjyrësh',
 } satisfies Record<string, string>;

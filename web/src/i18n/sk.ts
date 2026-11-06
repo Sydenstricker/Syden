@@ -3144,4 +3144,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Zazvoň na zvon: všetci robotníci dnu do centra dediny',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Zazvoň znova: všetci späť do práce',
   'Este lugar já está cheio.': 'Toto miesto je už plné.',
+  'Clássico': 'Klasický',
+  'Colorido': 'Farebný',
 } satisfies Record<string, string>;

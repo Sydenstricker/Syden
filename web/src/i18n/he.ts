@@ -3128,4 +3128,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'צלצול בפעמון: כל הפועלים פנימה למרכז הכפר',
   'Tocar o sino de novo: todos de volta ao trabalho': 'צלצול נוסף בפעמון: כולם חוזרים לעבודה',
   'Este lugar já está cheio.': 'המקום הזה כבר מלא.',
+  'Clássico': 'קלאסי',
+  'Colorido': 'צבעוני',
 } satisfies Record<string, string>;

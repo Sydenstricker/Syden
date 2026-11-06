@@ -1,33 +1,32 @@
 import * as THREE from 'three';
 import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { carregarCoelho, CORES_DO_MASCOTE, copiarCoelho, type CoelhoCopiado, type CoresDoCoelho } from '../coelho3d';
+import { FUNCAO_DA_PAREDE, FUNCAO_DO_MOVEL, N, noMundo, type ArrumacaoDoPixel, type NaParedeNoMundo, type QuartoNoMundo } from './arrumacao';
+import { TEMAS, type Parte, type PecaDaParede, type PecaDoTema, type Tema } from './temas';
 
 /**
  * O QUARTO EM 3D LOW POLY NO APP (06/11/2026, pedido dele: "quero esse quarto 3D low poly como PILOTO da nossa
- * funcionalidade de variação estética para o usuário"). É o piloto de e2e/3D/quarto/main.ts trazido para o app, com o que o
- * quarto de pixel art faz na home:
+ * funcionalidade de variação estética para o usuário").
  *
- * - AS FUNÇÕES NOS OBJETOS, as mesmas do quarto de pixel art (o id é o de `AcoesDoQuarto`, em Home.tsx): o guarda-roupa →
- *   Guarda-roupa ('gavetas'), a mesa com o computador → Mini-games ('computador'), o fone no abajur da mesa → Salas ('fone'),
- *   o quadro de fotos → Amigos ('quadro'), a cortiça → ideias ('cortica'), a janela → Explorar ('janela'), o abajur do
- *   criado-mudo → Dia e noite ('abajur') e a estante, com um troféu em cima → Troféus ('trofeu'). A ANIMAÇÃO VEM ANTES DA
- *   FUNÇÃO: o coelho anda até o objeto (na mesa, senta ao computador), e só então ela abre. Passar o mouse realça o objeto.
+ * - A ARRUMAÇÃO É A DO PIXEL ART (decisão dele, 06/11/2026: "a POSIÇÃO do item no quarto 2D terá o OBJETO EQUIVALENTE 3D na
+ *   MESMA POSIÇÃO"): a planta (o de sempre, em L, o cubículo), os móveis na casa e no giro deles, a cadeira onde parou, a
+ *   janela, os objetos da parede, os de cima, as cores do Cômodo e do tapete — tudo lido da arrumação que o servidor guarda e
+ *   traduzido por arrumacao.ts. Arrumar é no pixel art (o Editar); o 3D desenha.
+ * - O TEMA (temas.ts) diz qual modelo desenha cada peça: o "clássico" (KayKit e Kenney) ou o "colorido" (Tiny Treats).
+ * - AS FUNÇÕES NOS OBJETOS, as mesmas do pixel (o id é o de `AcoesDoQuarto`, em Home.tsx): o guarda-roupa → Guarda-roupa
+ *   ('gavetas'), a mesa → Mini-games ('computador'), o fone da parede → Salas ('fone'), o quadro de fotos → Amigos ('quadro'),
+ *   a cortiça → ideias ('cortica'), a janela → Explorar ('janela'), o criado-mudo com o abajur → Dia e noite ('abajur') e a
+ *   prateleira dos troféus → Troféus ('trofeu'). A cópia de um móvel ("cama~2") não tem função, como no pixel. A ANIMAÇÃO VEM
+ *   ANTES DA FUNÇÃO: o coelho anda até o objeto (na mesa, senta na cadeira), e só então ela abre. Passar o mouse realça.
  * - O COELHO é o de coelho3d.ts, com as cores do avatar, e segue o ESTADO DE VERDADE: ausente dorme na cama, em chamada senta
- *   ao computador, senão fica à toa. Depois de usar uma função, ele volta ao lugar do estado.
- * - DIA E NOITE são os do app (o mesmo relógio e o mesmo abajur do quarto de pixel art); as SOMBRAS, a opção de Gráficos.
- * - SEM FOCO OU ESCONDIDA, NÃO DESENHA (a regra de janelaComFoco.ts). Com a janela à vista, no máximo 30 quadros por segundo.
- * - A ARRUMAÇÃO é a de fábrica do piloto: no 3D, por ora, não se edita (o Editar é do quarto de pixel art).
- *
- * Os móveis são do KayKit (Furniture Bits e Restaurant Bits, do Bits Bundle 1, Kay Lousberg) e do Kenney Furniture Kit, todos
- * CC0, em web/public/quarto3d/ com as licenças. O que nenhum dos dois tem (o chão, a cortiça, as fotos do quadro, as luzinhas, o
- * troféu) é feito aqui por código.
+ *   na cadeira, senão fica à toa. Depois de usar uma função, ele volta ao lugar do estado.
+ * - DIA E NOITE são os do app; as SOMBRAS, a opção de Gráficos. SEM FOCO OU ESCONDIDA, NÃO DESENHA (a regra de
+ *   janelaComFoco.ts). Com a janela à vista, no máximo 30 quadros por segundo.
  */
 
 const MODELOS = `${import.meta.env.BASE_URL}quarto3d/`;
-const N = 8;
-/** O tamanho dos móveis do KayKit na grade (a mesa dele tem 2 de lado; aqui, uma casa e pouco). */
-const S = 0.75;
-/** O tamanho das peças do Kenney: com 2, a mesa, a cadeira e a cama dele ficam da altura das do KayKit. */
+/** O tamanho das peças do Kenney (o Furniture Kit e o Food Kit): com 2, a mesa, a cadeira e a cama dele ficam da altura das do KayKit. */
 const K = 2;
 /** As cores do Kenney trocadas pelas do KayKit, pelo nome do material (o vermelho-vivo e o verde-menta dele brigavam). */
 const PALETA_KENNEY: Record<string, string> = {
@@ -47,13 +46,9 @@ const PALETA_KENNEY: Record<string, string> = {
   _defaultMat: '#ecdcc4',
 };
 const ehKenney = (nome: string) => nome.startsWith('kenney/');
+const ehGlb = (nome: string) => nome.startsWith('kenney/') || nome.startsWith('comida/');
 const ALTURA_DO_COELHO = 1.1;
 const ALTURA_DA_PAREDE = 3;
-/** Onde o coelho fica nos móveis, em fração da altura do móvel (acertado pelas fotos do piloto). */
-const DEITADO_ALTURA = 0.45;
-const DEITADO_AVANCO = 0.55;
-const ASSENTO_POLTRONA = 0.36;
-const ASSENTO_CADEIRA = 0.37;
 /** Depois de usar uma função, o coelho volta ao lugar do estado (a cama, o computador) em tanto tempo. */
 const VOLTA_AO_ESTADO_MS = 8000;
 /** O realce de quem está sob o mouse: uma luz própria, morna, por cima da cor. */
@@ -61,282 +56,13 @@ const REALCE = new THREE.Color('#4a3418');
 /** No máximo 30 quadros por segundo: o quarto é calmo, e o resto do tempo é de quem joga. */
 const INTERVALO_MS = 1000 / 31;
 
-type Lado = 0 | 1 | 2 | 3;
-interface DeCima {
-  arquivo: string;
-  dx: number;
-  dz: number;
-  dy?: number;
-  giro?: number;
-  escala?: number;
-  cores?: Record<string, string>;
-  /** A função deste objeto, e não a do móvel (o fone no abajur da mesa). */
-  funcao?: string;
-}
-interface Movel {
-  id: string;
-  arquivo: string;
-  x: number;
-  z: number;
-  lado: Lado;
-  cima?: DeCima[];
-  /** Não ocupa a casa (o tapete): o coelho pisa. */
-  chao?: boolean;
-  uso?: 'deitar' | 'sentar' | 'luz';
-  /** O id da função do quarto (o de AcoesDoQuarto). */
-  funcao?: string;
-  cores?: Record<string, string>;
-  escala?: number;
-}
-
-const TERRACOTA = { carpet: '#c9714f', carpetDarker: '#a5573b' };
-
-/** A arrumação de fábrica do piloto (e2e/3D/quarto/main.ts, terceira rodada). */
-const ARRUMACAO: Movel[] = [
-  { id: 'cama', arquivo: 'bed_double_B', x: 0, z: 0, lado: 0, uso: 'deitar' },
-  {
-    id: 'criado',
-    arquivo: 'cabinet_small',
-    x: 2,
-    z: 0,
-    lado: 0,
-    cima: [
-      { arquivo: 'lamp_table', dx: -0.12, dz: 0 },
-      { arquivo: 'pictureframe_standing_A', dx: 0.2, dz: 0.05 },
-    ],
-    uso: 'luz',
-    funcao: 'abajur',
-  },
-  {
-    id: 'capacho',
-    arquivo: 'kenney/rugDoormat',
-    x: 3.5,
-    z: 0.15,
-    lado: 0,
-    chao: true,
-    cores: { wood: '#a9774a' },
-  },
-  {
-    id: 'estante',
-    arquivo: 'kenney/bookcaseClosedWide',
-    x: 5,
-    z: 0,
-    lado: 0,
-    funcao: 'trofeu',
-    cima: [
-      {
-        arquivo: 'kenney/books',
-        dx: -0.45,
-        dz: 0,
-        dy: 0.14,
-        escala: 1.4,
-        cores: { carpetDarker: '#b8574a', plant: '#5f9a8c' },
-      },
-      {
-        arquivo: 'kenney/books',
-        dx: -0.02,
-        dz: 0,
-        dy: 0.14,
-        escala: 1.4,
-        giro: Math.PI,
-        cores: { carpetDarker: '#6f8fb5' },
-      },
-      { arquivo: 'kenney/radio', dx: 0.42, dz: 0.02, dy: 0.62, escala: 0.9 },
-      {
-        arquivo: 'kenney/books',
-        dx: -0.42,
-        dz: 0,
-        dy: 0.62,
-        escala: 1.4,
-        cores: { carpetDarker: '#d29a3e' },
-      },
-      { arquivo: 'book_set', dx: 0.25, dz: 0, dy: 1.1 },
-      { arquivo: 'kenney/plantSmall2', dx: -0.45, dz: 0, dy: 1.1 },
-      { arquivo: 'kenney/plantSmall1', dx: 0.5, dz: 0, dy: 1.58 },
-      {
-        arquivo: 'kenney/books',
-        dx: -0.15,
-        dz: 0,
-        dy: 1.58,
-        escala: 1.2,
-        giro: 1.2,
-        cores: { carpetDarker: '#7d9a5a' },
-      },
-    ],
-  },
-  {
-    id: 'guarda-roupa',
-    arquivo: 'kenney/bookcaseClosedDoors',
-    x: 7,
-    z: 0,
-    lado: 0,
-    funcao: 'gavetas',
-  },
-  { id: 'tapete', arquivo: 'rug_oval_B', x: 1, z: 2, lado: 1, chao: true },
-  { id: 'sofa', arquivo: 'couch_pillows', x: 0, z: 2, lado: 3, uso: 'sentar' },
-  {
-    id: 'mesinha',
-    arquivo: 'table_low',
-    x: 2,
-    z: 2,
-    lado: 3,
-    cima: [
-      { arquivo: 'gameconsole_handheld', dx: 0.15, dz: 0.1, giro: 0.4 },
-      { arquivo: 'mug_A', dx: -0.4, dz: -0.05 },
-    ],
-  },
-  {
-    id: 'planta',
-    arquivo: 'kenney/pottedPlant',
-    x: 0,
-    z: 4,
-    lado: 1,
-    cores: { wood: '#c9714f' },
-  },
-  // A MESA EM L COM TRÊS MONITORES (pedido dele, 06/11/2026, pela imagem do pacote): o braço comprido (desk_large) na parede
-  // da janela, com dois monitores, e o curto (desk) saindo dela, com o terceiro virado para a câmera; a cadeira no canto de
-  // dentro do L. As duas abrem o computador.
-  {
-    id: 'mesa',
-    arquivo: 'desk_large',
-    x: 0,
-    z: 5,
-    lado: 3,
-    funcao: 'computador',
-    cima: [
-      { arquivo: 'monitor', dx: -0.55, dz: -0.28, giro: 0.12 },
-      { arquivo: 'monitor', dx: 0.55, dz: -0.28, giro: -0.12 },
-      { arquivo: 'keyboard', dx: -0.05, dz: 0.12 },
-      { arquivo: 'mousepad_A', dx: 0.5, dz: 0.16 },
-      { arquivo: 'mouse', dx: 0.5, dz: 0.16 },
-      { arquivo: 'lamp_desk_headphones', dx: 1.15, dz: -0.15, funcao: 'fone' },
-      { arquivo: 'mug_A', dx: -1.15, dz: 0.05 },
-    ],
-  },
-  {
-    id: 'mesa2',
-    arquivo: 'desk',
-    x: 1,
-    z: 5,
-    lado: 0,
-    funcao: 'computador',
-    cima: [
-      { arquivo: 'monitor', dx: -0.1, dz: -0.28 },
-      { arquivo: 'cup_pencils', dx: 0.62, dz: -0.2 },
-      { arquivo: 'book_set', dx: 0.6, dz: 0.18, giro: 0.3 },
-    ],
-  },
-  {
-    id: 'cadeira',
-    arquivo: 'chair_desk_A',
-    x: 1,
-    z: 6,
-    lado: 1,
-    uso: 'sentar',
-  },
-  {
-    id: 'tapete2',
-    arquivo: 'kenney/rugRound',
-    x: 4.5,
-    z: 4.3,
-    lado: 0,
-    chao: true,
-    cores: TERRACOTA,
-  },
-  {
-    id: 'pufe',
-    arquivo: 'kenney/loungeSofaOttoman',
-    x: 5,
-    z: 5,
-    lado: 0,
-    escala: 0.75,
-  },
-  {
-    id: 'poltrona',
-    arquivo: 'armchair_pillows',
-    x: 5,
-    z: 4,
-    lado: 0,
-    uso: 'sentar',
-  },
-  {
-    id: 'banquinho',
-    arquivo: 'table_small',
-    x: 6,
-    z: 4,
-    lado: 0,
-    cima: [
-      { arquivo: 'book_set', dx: 0, dz: 0 },
-      { arquivo: 'kenney/plantSmall3', dx: 0.22, dz: -0.2 },
-    ],
-  },
-  {
-    id: 'luminaria',
-    arquivo: 'lamp_standing',
-    x: 4,
-    z: 4,
-    lado: 0,
-    uso: 'luz',
-  },
-  { id: 'caixa', arquivo: 'kenney/cardboardBoxOpen', x: 7, z: 2, lado: 3 },
-  { id: 'cacto2', arquivo: 'cactus_small_B', x: 1, z: 7, lado: 0 },
-  { id: 'cacto', arquivo: 'cactus_medium_B', x: 7, z: 6, lado: 0 },
-];
-
-/** O que se pendura: na parede do fundo (z = 0) ou na da esquerda (x = 0), u casas ao longo dela e y de altura. */
-const NA_PAREDE: {
-  arquivo: string;
-  parede: 'fundo' | 'esquerda';
-  u: number;
-  y: number;
-  funcao?: string;
-  fotos?: boolean;
-}[] = [
-  {
-    arquivo: 'pictureframe_large_B',
-    parede: 'fundo',
-    u: 1.0,
-    y: 1.85,
-    funcao: 'quadro',
-    fotos: true,
-  },
-  { arquivo: 'pictureframe_small_A', parede: 'fundo', u: 5.5, y: 2.2 },
-  { arquivo: 'pictureframe_small_B', parede: 'fundo', u: 6.3, y: 2.35 },
-  {
-    arquivo: 'cortica',
-    parede: 'esquerda',
-    u: 1.15,
-    y: 1.35,
-    funcao: 'cortica',
-  },
-  { arquivo: 'shelf_A_big', parede: 'esquerda', u: 7.0, y: 1.95 },
-  { arquivo: 'kenney/plantSmall3', parede: 'esquerda', u: 7.45, y: 2.03 },
-  { arquivo: 'kenney/books', parede: 'esquerda', u: 6.75, y: 2.03 },
-  { arquivo: 'kenney/books', parede: 'esquerda', u: 6.45, y: 2.03 },
-  { arquivo: 'pictureframe_small_C', parede: 'esquerda', u: 1.75, y: 2.45 },
-];
-
-/** As paredes do Restaurant Bits: peças de 4 × 4 com o rodapé verde-água, 3 por parede. */
-const PAREDES: { arquivo: string; parede: 'fundo' | 'esquerda'; i: number }[] = [
-  { arquivo: 'restaurante/wall', parede: 'fundo', i: 0 },
-  { arquivo: 'restaurante/wall_doorway', parede: 'fundo', i: 1 },
-  { arquivo: 'restaurante/wall', parede: 'fundo', i: 2 },
-  { arquivo: 'restaurante/wall', parede: 'esquerda', i: 0 },
-  {
-    arquivo: 'restaurante/wall_window_closed_curtains_green',
-    parede: 'esquerda',
-    i: 1,
-  },
-  { arquivo: 'restaurante/wall', parede: 'esquerda', i: 2 },
-];
-
-// Os modelos, uma vez por página: abrir o quarto de novo não baixa nada (a geometria e as texturas ficam no cache).
+// Os modelos, uma vez por página: abrir o quarto de novo (ou trocar de tema) não baixa nada outra vez.
 const carregador = new GLTFLoader();
 const cache = new Map<string, Promise<GLTF>>();
 const modelo = (nome: string) => {
   let p = cache.get(nome);
   if (!p) {
-    p = carregador.loadAsync(`${MODELOS}${nome}${ehKenney(nome) ? '.glb' : '.gltf'}`);
+    p = carregador.loadAsync(`${MODELOS}${nome}${ehGlb(nome) ? '.glb' : '.gltf'}`);
     p.catch(() => cache.delete(nome));
     cache.set(nome, p);
   }
@@ -344,14 +70,25 @@ const modelo = (nome: string) => {
 };
 
 interface Pronto {
-  m: Movel;
+  id: string;
+  tipo: string;
   raiz: THREE.Group;
-  giro: THREE.Group;
-  w: number;
-  d: number;
+  /** O modelo da peça, sem as partes (o que se mede para sentar, deitar e pôr coisas em cima). */
+  base: THREE.Object3D;
+  /** Para onde a frente olha (o giro em y) e o centro do desenho, no mundo. */
+  rumo: number;
+  centro: THREE.Vector3;
+  /** O alto da peça e o do tampo, no mundo. */
   altura: number;
+  tampo: number;
+  /** O pé na grade (o do pixel); a cadeira, que gira solta, ocupa a casa dela. */
+  pe: { x0: number; x1: number; z0: number; z1: number };
+  spec: PecaDoTema;
+  funcao?: string;
+  uso?: 'deitar' | 'sentar';
+  chao?: boolean;
   luz?: THREE.PointLight;
-  /** A luz foi apagada ou acesa à mão (a luminária): vale até o dia e a noite do app mudarem. */
+  /** A luz foi apagada à mão: vale até o dia e a noite do app mudarem. */
   luzAMao?: boolean;
 }
 
@@ -401,13 +138,14 @@ export class CenaDoQuarto3D {
   private ceu = new THREE.HemisphereLight('#fffaf0', '#c9a88a', 1.7);
   private sol = new THREE.DirectionalLight('#fff0d8', 2.3);
   private preenche = new THREE.DirectionalLight('#dfe8ff', 0.7);
-  private fora!: THREE.Mesh;
-  private morro!: THREE.Mesh;
+  private fora: THREE.Mesh[] = [];
+  private morro: THREE.Mesh[] = [];
   private moveis: Pronto[] = [];
   private daParede: THREE.Object3D[] = [];
   private arandelas: THREE.PointLight[] = [];
   private lampadinhas: THREE.MeshStandardMaterial[] = [];
   private lampadas: THREE.MeshStandardMaterial[] = [];
+  private brilham: THREE.MeshStandardMaterial[] = [];
   private coelho: Coelho | null = null;
   private noite = false;
   private estado: EstadoDoCoelho = 'atoa';
@@ -430,12 +168,19 @@ export class CenaDoQuarto3D {
   /** O medidor: o tempo de cada quadro desenhado (os últimos 60) e quantos foram desenhados. */
   private tempos: number[] = [];
   desenhados = 0;
+  private tema: Tema;
+  private mundo: QuartoNoMundo = noMundo(null);
+  /** O que vai virar uma malha só (o tema que junta): as peças paradas, as paredes e o chão. */
+  private paraJuntar: THREE.Object3D[] = [];
+  private juntas = 0;
 
   constructor(
     private caixa: HTMLElement,
     private opcoes: OpcoesDoQuarto3D,
     private cores: CoresDoCoelho = CORES_DO_MASCOTE,
+    tema = 'classico',
   ) {
+    this.tema = TEMAS[tema] ?? TEMAS.classico;
     this.renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
@@ -471,14 +216,7 @@ export class CenaDoQuarto3D {
     this.sol.target.position.set(3.5, 0, 3.5);
     this.sol.castShadow = true;
     this.sol.shadow.mapSize.set(1024, 1024);
-    Object.assign(this.sol.shadow.camera, {
-      left: -8,
-      right: 8,
-      top: 8,
-      bottom: -8,
-      near: 1,
-      far: 30,
-    });
+    Object.assign(this.sol.shadow.camera, { left: -8, right: 8, top: 8, bottom: -8, near: 1, far: 30 });
     this.sol.shadow.bias = -0.0006;
     this.sol.shadow.normalBias = 0.03;
     this.preenche.position.set(10, 8, 10);
@@ -486,22 +224,34 @@ export class CenaDoQuarto3D {
     if (import.meta.env.DEV) (window as unknown as { quarto3dDoTeste?: CenaDoQuarto3D }).quarto3dDoTeste = this;
   }
 
-  /** Carrega os modelos e monta o quarto. Rejeita se algo falhar (quem mostra volta ao pixel art). */
-  async montar(): Promise<void> {
+  /** Carrega os modelos e monta o quarto com a arrumação do pixel (null: a de fábrica). Rejeita se algo falhar. */
+  async montar(arrumacao: ArrumacaoDoPixel | null = null): Promise<void> {
+    const mundo = noMundo(arrumacao);
+    this.mundo = mundo;
+    const tema = this.tema;
     // tudo em paralelo (o cache junta os repetidos)
-    const nomes = new Set<string>(['restaurante/door_A']);
-    for (const m of ARRUMACAO) {
-      nomes.add(m.arquivo);
-      for (const c of m.cima ?? []) nomes.add(c.arquivo);
-    }
-    for (const q of NA_PAREDE) if (q.arquivo !== 'cortica') nomes.add(q.arquivo);
-    for (const q of PAREDES) nomes.add(q.arquivo);
+    const nomes = new Set<string>([tema.parede.reta, tema.parede.janela, ...(tema.parede.janelaTres ?? [])]);
+    if (tema.chao.arquivo) nomes.add(tema.chao.arquivo);
+    if (tema.parede.cortina) nomes.add(tema.parede.cortina.arquivo);
+    const daPeca = (p: { arquivo: string; partes?: Parte[] }) => {
+      nomes.add(p.arquivo);
+      for (const c of p.partes ?? []) nomes.add(c.arquivo);
+    };
+    for (const m of mundo.moveis) daPeca(tema.moveis[m.tipo]);
+    daPeca(tema.cadeira);
+    for (const q of mundo.naParede) daPeca(tema.naParede[q.tipo]);
+    for (const o of mundo.deCima) if (tema.deCima[o.tipo]) nomes.add(tema.deCima[o.tipo].arquivo);
+    for (const n of [...nomes]) if (n.startsWith('codigo:')) nomes.delete(n);
     const [g] = await Promise.all([carregarCoelho(), ...[...nomes].map(modelo)]);
     if (this.morta) return;
-    this.montarChao();
-    for (const m of ARRUMACAO) this.moveis.push(await this.montarMovel({ ...m, cima: m.cima?.map((c) => ({ ...c })) }));
+    await this.montarChao();
+    for (const m of mundo.moveis) this.moveis.push(await this.montarMovel(m));
+    this.moveis.push(await this.montarCadeira());
+    for (const o of mundo.deCima) await this.montarDeCima(o);
     await this.montarParedes();
-    this.luzinhas();
+    for (const q of mundo.naParede) await this.montarNaParede(q);
+    if (tema.luzinhas) this.luzinhas();
+    if (tema.juntar) this.juntar();
     if (this.morta) return;
     this.montarCoelho(g);
     this.aplicarHora();
@@ -549,13 +299,20 @@ export class CenaDoQuarto3D {
   medida() {
     const i = this.renderer.info.render;
     const ms = this.tempos.length ? this.tempos.reduce((a, b) => a + b, 0) / this.tempos.length : 0;
+    const c = this.coelho;
     return {
       ms,
       chamadas: i.calls,
       triangulos: i.triangles,
       desenhados: this.desenhados,
-      pose: this.coelho?.pose,
-      animacao: this.coelho?.tocando,
+      pose: c?.pose,
+      animacao: c?.tocando,
+      em: c?.em?.id ?? null,
+      tema: this.tema.id,
+      planta: this.mundo.planta,
+      moveis: this.moveis.map((p) => ({ id: p.id, x: +p.centro.x.toFixed(2), z: +p.centro.z.toFixed(2), rumo: +p.rumo.toFixed(2) })),
+      juntas: this.juntas,
+      coelho: c ? { x: +c.raiz.position.x.toFixed(2), y: +c.raiz.position.y.toFixed(2), z: +c.raiz.position.z.toFixed(2) } : null,
     };
   }
 
@@ -596,12 +353,7 @@ export class CenaDoQuarto3D {
     const a = w / h;
     // o quarto inteiro (o chão e as duas paredes) cabendo na caixa quadrada da home
     const meia = a >= 1 ? 6.1 : 6.1 / a;
-    Object.assign(this.camera, {
-      left: -meia * a,
-      right: meia * a,
-      top: meia + 0.35,
-      bottom: -meia + 0.35,
-    });
+    Object.assign(this.camera, { left: -meia * a, right: meia * a, top: meia + 0.35, bottom: -meia + 0.35 });
     this.camera.updateProjectionMatrix();
     this.ultimoQuadro = 0;
   }
@@ -619,43 +371,90 @@ export class CenaDoQuarto3D {
     return t;
   }
 
-  private montarChao() {
-    const tabuas = this.textura(
-      (g, L) => {
-        const cores = ['#b9845a', '#b07c53', '#c08d62', '#a9764f'];
-        const n = 8;
-        for (let i = 0; i < n; i++) {
-          g.fillStyle = cores[i % cores.length];
-          g.fillRect(0, (i * L) / n, L, L / n);
-          g.fillStyle = 'rgba(70,40,25,0.35)';
-          g.fillRect(0, ((i + 1) * L) / n - 3, L, 3);
-          const corte = ((i * 197) % 5) * (L / 5);
-          g.fillRect(corte, (i * L) / n, 3, L / n);
-        }
-      },
-      512,
-      2,
-    );
-    const geo = new THREE.BoxGeometry(N, 0.2, N);
-    this.descartaveis.push(geo);
-    const chao = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ map: tabuas, roughness: 0.85 }));
-    chao.position.set(N / 2, -0.1, N / 2);
-    chao.receiveShadow = true;
-    this.cena.add(chao);
-    // lá fora: um céu e um morro atrás da janela da esquerda
-    const planoFora = new THREE.PlaneGeometry(2.2, 1.5);
-    const bola = new THREE.SphereGeometry(1, 24, 12);
-    this.descartaveis.push(planoFora, bola);
-    this.fora = new THREE.Mesh(planoFora, new THREE.MeshBasicMaterial({ color: '#a8dcf5' }));
-    this.fora.rotation.y = Math.PI / 2;
-    this.fora.position.set(-0.7, 1.75, N / 2);
-    this.morro = new THREE.Mesh(bola, new THREE.MeshBasicMaterial({ color: '#86c06a' }));
-    this.morro.scale.set(0.05, 0.6, 1.4);
-    this.morro.position.set(-0.6, 0.85, N / 2 + 0.4);
-    this.cena.add(this.fora, this.morro);
+  private geo<G extends THREE.BufferGeometry>(g: G): G {
+    this.descartaveis.push(g);
+    return g;
   }
 
-  /** Uma cópia com materiais próprios (para realçar só esta). No Kenney, as cores viram as do KayKit. */
+  /** A cor do Cômodo (parede ou piso) num material: a razão entre a escolhida e a de fábrica, como a página faz na casca. */
+  private tingir(mat: THREE.MeshStandardMaterial, cor: [number, number, number] | undefined, base: [number, number, number]) {
+    if (!cor) return;
+    mat.color.setRGB(Math.min(1.4, cor[0] / base[0]), Math.min(1.4, cor[1] / base[1]), Math.min(1.4, cor[2] / base[2]), THREE.SRGBColorSpace);
+  }
+
+  /** As casas de chão em retângulos (o L são dois, o cubículo um menor). */
+  private retangulosDoChao(): [number, number, number, number][] {
+    const r: [number, number, number, number][] = [];
+    const feito = new Set<string>();
+    for (let z = 0; z < N; z++)
+      for (let x = 0; x < N; x++) {
+        if (feito.has(`${x},${z}`) || !this.mundo.chao(x + 0.5, z + 0.5)) continue;
+        let x1 = x;
+        while (x1 + 1 < N && this.mundo.chao(x1 + 1.5, z + 0.5) && !feito.has(`${x1 + 1},${z}`)) x1++;
+        let z1 = z;
+        const linha = (zz: number) => {
+          for (let i = x; i <= x1; i++) if (!this.mundo.chao(i + 0.5, zz + 0.5) || feito.has(`${i},${zz}`)) return false;
+          return true;
+        };
+        while (z1 + 1 < N && linha(z1 + 1)) z1++;
+        for (let i = x; i <= x1; i++) for (let k = z; k <= z1; k++) feito.add(`${i},${k}`);
+        r.push([x, x1 + 1, z, z1 + 1]);
+      }
+    return r;
+  }
+
+  private async montarChao() {
+    const tema = this.tema;
+    const rets = this.retangulosDoChao();
+    if (tema.chao.arquivo) {
+      // as placas do pacote, uma a cada "casas" casas
+      const c = tema.chao.casas ?? 2;
+      const g = await modelo(tema.chao.arquivo);
+      for (const [x0, x1, z0, z1] of rets)
+        for (let x = x0; x < x1; x += c)
+          for (let z = z0; z < z1; z += c) {
+            const o = this.copia(g, tema.chao.arquivo);
+            o.scale.set(c / 2, tema.escala, c / 2);
+            o.position.set(x + c / 2, 0, z + c / 2);
+            o.traverse((m) => (m as THREE.Mesh).isMesh && this.tingir((m as THREE.Mesh).material as THREE.MeshStandardMaterial, this.mundo.cores.piso, [176, 120, 80]));
+            this.cena.add(o);
+            this.paraJuntar.push(o);
+          }
+    } else {
+      for (const [x0, x1, z0, z1] of rets) {
+        const L = x1 - x0;
+        const P = z1 - z0;
+        const tabuas = this.textura((g, T) => {
+          const cores = ['#b9845a', '#b07c53', '#c08d62', '#a9764f'];
+          const n = 8;
+          for (let i = 0; i < n; i++) {
+            g.fillStyle = cores[i % cores.length];
+            g.fillRect(0, (i * T) / n, T, T / n);
+            g.fillStyle = 'rgba(70,40,25,0.35)';
+            g.fillRect(0, ((i + 1) * T) / n - 3, T, 3);
+            const corte = ((i * 197) % 5) * (T / 5);
+            g.fillRect(corte, (i * T) / n, 3, T / n);
+          }
+        }, 512);
+        tabuas.repeat.set(L / 4, P / 4);
+        const mat = new THREE.MeshStandardMaterial({ map: tabuas, roughness: 0.85 });
+        this.tingir(mat, this.mundo.cores.piso, [176, 120, 80]);
+        const chao = new THREE.Mesh(this.geo(new THREE.BoxGeometry(L, 0.2, P)), mat);
+        chao.position.set(x0 + L / 2, -0.1, z0 + P / 2);
+        chao.receiveShadow = true;
+        this.cena.add(chao);
+      }
+    }
+    // o alto do pilar do L (o que a planta tira do chão e fica entre as paredes)
+    if (this.mundo.planta === 'l')
+      for (const s of this.mundo.solidos) {
+        const tampa = new THREE.Mesh(this.geo(new THREE.BoxGeometry(s.x1 - s.x0, 0.08, s.z1 - s.z0)), new THREE.MeshStandardMaterial({ color: tema.parede.topo, roughness: 0.9 }));
+        tampa.position.set((s.x0 + s.x1) / 2, ALTURA_DA_PAREDE - 0.02, (s.z0 + s.z1) / 2);
+        this.cena.add(tampa);
+      }
+  }
+
+  /** Uma cópia com materiais próprios (para realçar só esta). No Kenney de móveis, as cores viram as do KayKit. */
   private copia(g: GLTF, nome = '', cores: Record<string, string> = {}) {
     const o = g.scene.clone(true);
     const kenney = ehKenney(nome);
@@ -669,7 +468,9 @@ export class CenaDoQuarto3D {
         mat.metalness = 0;
         mat.roughness = 0.9;
         if (mat.name === 'lamp') this.lampadas.push(mat);
-      }
+      } else if (cores[mat.name]) mat.color.set(cores[mat.name]);
+      // a moldura do Tiny Treats traz uma imagem de exemplo: no lugar dela, uma foto desenhada
+      if (mat.name.includes('CUSTOMIMAGE')) mat.map = this.foto();
       m.material = mat;
       m.castShadow = true;
       m.receiveShadow = true;
@@ -677,120 +478,297 @@ export class CenaDoQuarto3D {
     return o;
   }
 
-  /** A peça no tamanho do pacote, centrada na própria pegada e com a base em y = 0. */
-  private async peca(nome: string, cores?: Record<string, string>, escala = 1) {
-    const o = this.copia(await modelo(nome), nome, cores);
-    o.scale.setScalar((ehKenney(nome) ? K : S) * escala);
+  /** O tamanho de base de um arquivo: o do Kenney é outro. */
+  private escalaDe(nome: string) {
+    return ehGlb(nome) ? K : this.tema.escala;
+  }
+
+  /** A peça no tamanho do pacote, centrada na própria pegada e com a base em y = 0 (ou um objeto feito por código). */
+  private async peca(nome: string, cores?: Record<string, string>, escala = 1): Promise<{ g: THREE.Group; tam: THREE.Vector3 }> {
+    let o: THREE.Object3D;
+    if (nome.startsWith('codigo:')) o = this.feitoPorCodigo(nome.slice(7));
+    else {
+      o = this.copia(await modelo(nome), nome, cores);
+      o.scale.setScalar(this.escalaDe(nome));
+    }
+    o.scale.multiplyScalar(escala);
     const caixa = new THREE.Box3().setFromObject(o);
     const tam = caixa.getSize(new THREE.Vector3());
     const c = caixa.getCenter(new THREE.Vector3());
-    o.position.set(-c.x, -caixa.min.y, -c.z);
+    o.position.set(o.position.x - c.x, o.position.y - caixa.min.y, o.position.z - c.z);
     return { g: new THREE.Group().add(o), tam };
   }
 
-  private async montarMovel(m: Movel): Promise<Pronto> {
-    const { g: o, tam } = await this.peca(m.arquivo, m.cores, m.escala);
-    const giro = new THREE.Group().add(o);
-    const raiz = new THREE.Group().add(giro);
-    raiz.userData.movel = m.id;
-    if (m.funcao) raiz.userData.funcao = m.funcao;
-    const p: Pronto = {
-      m,
-      raiz,
-      giro,
-      w: Math.max(1, Math.round(tam.x)),
-      d: Math.max(1, Math.round(tam.z)),
-      altura: tam.y,
-    };
-    for (const c of m.cima ?? []) {
-      const x = await this.peca(c.arquivo, c.cores, c.escala);
-      const item = x.g;
-      item.position.set(c.dx, c.dy ?? tam.y, c.dz);
-      item.rotation.y = c.giro ?? 0;
-      if (c.funcao) item.userData.funcao = c.funcao;
-      giro.add(item);
-      if (c.arquivo === 'lamp_table') {
+  /** As partes de uma peça (o abajur no criado-mudo, os monitores na mesa), em cima dela; a parte com luz, a lâmpada. */
+  private async partes(corpo: THREE.Group, partes: Parte[] | undefined, alto: number): Promise<THREE.PointLight | undefined> {
+    let luz: THREE.PointLight | undefined;
+    for (const c of partes ?? []) {
+      const { g, tam } = await this.peca(c.arquivo, c.cores, c.escala);
+      g.position.set(c.dx ?? 0, c.dy ?? alto, c.dz ?? 0);
+      g.rotation.y = c.giro ?? 0;
+      corpo.add(g);
+      if (c.luz) {
         // sem sombra: a de luz pontual são seis desenhos a mais por quadro (medido no piloto: 20 ms de noite)
-        p.luz = new THREE.PointLight('#ffc477', 0, 5, 1.6);
-        p.luz.position.set(c.dx, tam.y + 0.42, c.dz);
-        giro.add(p.luz);
+        luz = new THREE.PointLight('#ffc477', 0, 5, 1.6);
+        luz.position.set(c.dx ?? 0, (c.dy ?? alto) + tam.y * 0.6, c.dz ?? 0);
+        corpo.add(luz);
       }
     }
-    if (m.id === 'estante') giro.add(this.trofeu(tam.y));
-    if (m.arquivo === 'lamp_standing') {
-      p.luz = new THREE.PointLight('#ffcf8a', 0, 6, 1.5);
-      p.luz.position.set(0, tam.y - 0.15, 0);
-      giro.add(p.luz);
-    }
+    return luz;
+  }
+
+  private async montarMovel(m: QuartoNoMundo['moveis'][number]): Promise<Pronto> {
+    const spec = this.tema.moveis[m.tipo];
+    const { g: base, tam } = await this.peca(spec.arquivo, m.tipo === 'tapete' ? undefined : spec.cores, spec.escala);
+    if (spec.giro) base.rotation.y = spec.giro;
+    // o tapete com a cor escolhida: lisa, no lugar da textura do pacote (a cor por cima dela misturava as duas: o rosa no tapete
+    // azul do KayKit saía cinza)
+    if (m.tipo === 'tapete' && this.mundo.cores.tapete)
+      base.traverse((x) => {
+        const mat = (x as THREE.Mesh).material as THREE.MeshStandardMaterial | undefined;
+        if (!(x as THREE.Mesh).isMesh || !mat) return;
+        mat.map = null;
+        mat.color.set(this.mundo.cores.tapete!);
+        mat.needsUpdate = true;
+      });
+    // cabe no pé do pixel (no referencial da peça: a largura em x e o fundo em z)
+    const cabe = spec.cabe ?? 'encolher';
+    const ajuste = cabe === 'livre' ? 1 : Math.min(m.largura / tam.x, m.fundo / tam.z);
+    const s = cabe === 'encher' ? ajuste : Math.min(1, ajuste);
+    const corpo = new THREE.Group().add(base);
+    corpo.scale.setScalar(s);
+    const luz = await this.partes(corpo, spec.partes, tam.y);
+    // encostada: as costas no fundo do pé
+    if (spec.encostar) corpo.position.z = -m.fundo / 2 + (tam.z * s) / 2;
+    const giro = new THREE.Group().add(corpo);
+    const rumo = -m.lado * (Math.PI / 2);
+    giro.rotation.y = rumo;
+    const raiz = new THREE.Group().add(giro);
+    raiz.position.set(m.x, 0, m.z);
+    raiz.userData.movel = m.id;
+    // a função é do original; a cópia ("cama~2") é só o móvel
+    const funcao = m.id === m.tipo ? FUNCAO_DO_MOVEL[m.tipo] : undefined;
+    if (funcao) raiz.userData.funcao = funcao;
+    if (luz) luz.intensity = 0;
     this.cena.add(raiz);
-    const { w, d } = this.pegada(p);
-    raiz.position.set(m.x + w / 2, 0, m.z + d / 2);
-    giro.rotation.y = -m.lado * (Math.PI / 2);
+    raiz.updateMatrixWorld(true);
+    const caixa = new THREE.Box3().setFromObject(base);
+    const uso = m.tipo === 'cama' ? 'deitar' : spec.pose ? 'sentar' : undefined;
+    const p: Pronto = {
+      id: m.id,
+      tipo: m.tipo,
+      raiz,
+      base,
+      rumo,
+      centro: caixa.getCenter(new THREE.Vector3()),
+      altura: caixa.max.y,
+      tampo: spec.tampo !== undefined ? caixa.max.y * spec.tampo : caixa.max.y,
+      pe: m.pe,
+      spec,
+      funcao,
+      uso,
+      chao: m.tipo === 'tapete',
+      luz,
+    };
+    // o que não tem função nem uso fica parado: vai para a malha só (no tema que junta), o tapete com cor fica à parte
+    if (!funcao && !uso && !luz && !(m.tipo === 'tapete' && this.mundo.cores.tapete)) this.paraJuntar.push(raiz);
     return p;
   }
 
-  private pegada(p: Pronto) {
-    return p.m.lado % 2 ? { w: p.d, d: p.w } : { w: p.w, d: p.d };
+  /** A cadeira do computador, solta: onde parou no pixel, virada para onde ela gira. */
+  private async montarCadeira(): Promise<Pronto> {
+    const spec = this.tema.cadeira;
+    const { g: base } = await this.peca(spec.arquivo, spec.cores, spec.escala);
+    const { x, z, giro: th } = this.mundo.cadeira;
+    const giro = new THREE.Group().add(base);
+    giro.rotation.y = th;
+    const raiz = new THREE.Group().add(giro);
+    raiz.position.set(Math.max(0.5, Math.min(N - 0.5, x)), 0, Math.max(0.5, Math.min(N - 0.5, z)));
+    raiz.userData.movel = 'cadeira';
+    this.cena.add(raiz);
+    raiz.updateMatrixWorld(true);
+    const caixa = new THREE.Box3().setFromObject(base);
+    const cx = Math.floor(raiz.position.x);
+    const cz = Math.floor(raiz.position.z);
+    return {
+      id: 'cadeira',
+      tipo: 'cadeira',
+      raiz,
+      base,
+      rumo: th,
+      centro: caixa.getCenter(new THREE.Vector3()),
+      altura: caixa.max.y,
+      tampo: caixa.max.y,
+      pe: { x0: cx, x1: cx + 1, z0: cz, z1: cz + 1 },
+      spec,
+      uso: 'sentar',
+    };
   }
 
+  /** Um objeto de cima (a caneca, os livros…) no tampo do móvel, na posição que ele tem no pixel. */
+  private async montarDeCima(o: QuartoNoMundo['deCima'][number]) {
+    const spec = this.tema.deCima[o.tipo];
+    const p = this.moveis.find((m) => m.id === o.em);
+    if (!spec || !p) return;
+    const { g, tam } = await this.peca(spec.arquivo);
+    g.scale.setScalar(spec.alto / Math.max(0.01, tam.y));
+    const r = 0.18;
+    let fx = Math.min(1, Math.max(0, o.fx));
+    let fz = Math.min(1, Math.max(0, o.fz));
+    // no criado-mudo, o abajur está no meio: o que cair ali vai para a borda (foraDoQueEstaEmPe, na página)
+    if (p.tipo === 'abajur') {
+      const dx = fx - 0.5;
+      const dz = fz - 0.5;
+      const d = Math.hypot(dx, dz);
+      if (d < 0.36) [fx, fz] = d < 1e-3 ? [0.86, 0.86] : [0.5 + (dx / d) * 0.36, 0.5 + (dz / d) * 0.36];
+    }
+    const caixa = new THREE.Box3().setFromObject(p.base);
+    const x = THREE.MathUtils.clamp(p.pe.x0 + fx * (p.pe.x1 - p.pe.x0), caixa.min.x + r, caixa.max.x - r);
+    const z = THREE.MathUtils.clamp(p.pe.z0 + fz * (p.pe.z1 - p.pe.z0), caixa.min.z + r, caixa.max.z - r);
+    g.position.set(x, p.tampo, z);
+    g.rotation.y = p.rumo - o.lado * (Math.PI / 2);
+    this.cena.add(g);
+    // vai com o móvel (para o realce e para o clique)
+    p.raiz.attach(g);
+  }
+
+  /** As paredes de cada trecho da planta, com a janela no trecho dela (a peça de janela do pacote no vão do pixel). */
   private async montarParedes() {
-    for (const q of PAREDES) {
-      const o = this.copia(await modelo(q.arquivo));
-      // um tico mais largas: as pontas arredondadas se sobrepõem e a emenda some
-      o.scale.set(S * (8 / 9) * 1.06, S, S);
-      const g = new THREE.Group().add(o);
-      const meio = (q.i + 0.5) * (N / 3);
-      if (q.parede === 'fundo') g.position.set(meio, 0, -0.19);
-      else {
-        g.rotation.y = Math.PI / 2;
-        g.position.set(-0.19, 0, meio);
+    const tema = this.tema;
+    const j = this.mundo.janela;
+    for (const t of this.mundo.trechos) {
+      const temJanela = j.parede === t.parede && Math.abs(j.recuo - t.recuo) < 0.01 && j.a > t.de && j.a < t.ate;
+      const pedacos: [number, number][] = temJanela
+        ? [
+            [t.de, j.a - j.largura / 2],
+            [j.a + j.largura / 2, t.ate],
+          ]
+        : [[t.de, t.ate]];
+      for (const [de, ate] of pedacos) {
+        const L = ate - de;
+        if (L < 0.02) continue;
+        const n = Math.max(1, Math.round(L / (tema.parede.largura * tema.escala)));
+        for (let i = 0; i < n; i++) {
+          const o = await this.pecaDeParede(tema.parede.reta, L / n);
+          this.porNaParede(o, t.parede, de + (i + 0.5) * (L / n), t.recuo);
+          this.paraJuntar.push(o);
+        }
       }
-      if (q.arquivo.includes('window')) {
-        g.userData.funcao = 'janela';
-        this.daParede.push(g);
+      if (!temJanela) continue;
+      // a janela: uma peça, ou a de três (as pontas e o meio repetido), na largura do vão do pixel
+      const jan = new THREE.Group();
+      const n = tema.parede.janelaTres ? Math.max(1, Math.round(j.largura / (tema.parede.largura * tema.escala))) : 1;
+      for (let i = 0; i < n; i++) {
+        const tres = tema.parede.janelaTres;
+        const arq = n === 1 || !tres ? tema.parede.janela : i === 0 ? tres[0] : i === n - 1 ? tres[2] : tres[1];
+        const o = await this.pecaDeParede(arq, j.largura / n);
+        o.position.x = -j.largura / 2 + (i + 0.5) * (j.largura / n);
+        jan.add(o);
       }
-      this.cena.add(g);
-    }
-    const porta = this.copia(await modelo('restaurante/door_A'));
-    porta.scale.set(S * (8 / 9), S, S);
-    porta.position.set(N / 2 - 0.71, 0, -0.17);
-    this.cena.add(porta);
-    for (const q of NA_PAREDE) {
-      let g: THREE.Group;
-      if (q.arquivo === 'cortica') g = this.cortica();
-      else if (ehKenney(q.arquivo)) {
-        const x = await this.peca(q.arquivo);
-        x.g.children[0].position.z += x.tam.z / 2;
-        g = x.g;
-      } else {
-        const o = this.copia(await modelo(q.arquivo));
-        o.scale.setScalar(S);
-        g = new THREE.Group().add(o);
-        if (q.fotos) g.add(this.fotosDoQuadro());
-      }
-      const quadro = new THREE.Group().add(g);
-      if (q.parede === 'fundo') quadro.position.set(q.u, q.y, 0.01);
-      else {
-        quadro.rotation.y = Math.PI / 2;
-        quadro.position.set(0.01, q.y, q.u);
-      }
-      if (q.funcao) {
-        quadro.userData.funcao = q.funcao;
-        this.daParede.push(quadro);
-      }
-      this.cena.add(quadro);
+      this.porNaParede(jan, t.parede, j.a, t.recuo);
+      jan.userData.funcao = 'janela';
+      this.daParede.push(jan);
+      this.foraDaJanela(j);
     }
   }
 
-  /** A cortiça (Caixa de ideias), feita por código: moldura, a cortiça pontilhada, quatro bilhetes e as tachinhas. */
+  /** Uma peça de parede do pacote na largura pedida (um tico mais larga: as pontas se sobrepõem e a emenda some). */
+  private async pecaDeParede(arquivo: string, largura: number) {
+    const o = this.copia(await modelo(arquivo), arquivo);
+    const e = this.tema.escala;
+    o.scale.set((largura / this.tema.parede.largura) * 1.04, e, e);
+    o.traverse((m) => (m as THREE.Mesh).isMesh && this.tingir((m as THREE.Mesh).material as THREE.MeshStandardMaterial, this.mundo.cores.parede, this.tema.parede.base));
+    return new THREE.Group().add(o);
+  }
+
+  /** Põe na parede: a do fundo (z = recuo, ao longo de x) ou a da esquerda (x = recuo, ao longo de z, virada para +x). */
+  private porNaParede(o: THREE.Object3D, parede: 'fundo' | 'esquerda', a: number, recuo: number, y = 0) {
+    if (parede === 'fundo') o.position.set(a, y, recuo - 0.19);
+    else {
+      o.rotation.y = Math.PI / 2;
+      o.position.set(recuo - 0.19, y, a);
+    }
+    this.cena.add(o);
+  }
+
+  /** Lá fora: um céu e um morro atrás da janela. */
+  private foraDaJanela(j: NaParedeNoMundo) {
+    const ceu = new THREE.Mesh(this.geo(new THREE.PlaneGeometry(j.largura + 0.3, 1.7)), new THREE.MeshBasicMaterial({ color: '#a8dcf5' }));
+    const morro = new THREE.Mesh(this.geo(new THREE.SphereGeometry(1, 24, 12)), new THREE.MeshBasicMaterial({ color: '#86c06a' }));
+    morro.scale.set(j.largura * 0.42, 0.6, 0.05);
+    if (j.parede === 'fundo') {
+      ceu.position.set(j.a, 1.55, j.recuo - 0.45);
+      morro.position.set(j.a + 0.1, 0.85, j.recuo - 0.42);
+    } else {
+      ceu.rotation.y = Math.PI / 2;
+      ceu.position.set(j.recuo - 0.45, 1.55, j.a);
+      morro.rotation.y = Math.PI / 2;
+      morro.position.set(j.recuo - 0.42, 0.85, j.a + 0.1);
+    }
+    this.cena.add(ceu, morro);
+    this.fora.push(ceu);
+    this.morro.push(morro);
+  }
+
+  /** Um objeto da parede: centrado onde o pixel o pintou (ao longo da parede e na altura), com as costas na parede. */
+  private async montarNaParede(q: NaParedeNoMundo) {
+    const spec: PecaDaParede = this.tema.naParede[q.tipo];
+    const g = new THREE.Group();
+    const vezes = spec.repetir ?? [[0, 0]];
+    for (const [dx, dy] of vezes) {
+      const { g: base, tam } = await this.peca(spec.arquivo, undefined, spec.escala);
+      if (spec.fotos === 'kaykit') base.add(this.fotos(tam));
+      base.position.x += dx;
+      base.position.y += dy;
+      g.add(base);
+      await this.partes(base, spec.partes, tam.y);
+    }
+    // centrada no meio da caixa, as costas em z = 0
+    const caixa = new THREE.Box3().setFromObject(g);
+    const c = caixa.getCenter(new THREE.Vector3());
+    for (const filho of g.children) filho.position.sub(new THREE.Vector3(c.x, c.y, caixa.min.z));
+    // mais larga que o lugar do pixel: encolhe
+    const largura = caixa.max.x - caixa.min.x;
+    const altura = caixa.max.y - caixa.min.y;
+    const s = Math.min(1, (q.largura * 1.05) / largura, (q.altura * 1.15) / altura);
+    g.scale.setScalar(s);
+    const quadro = new THREE.Group().add(g);
+    const y = q.chao ? (altura * s) / 2 : q.y;
+    this.porNaParede(quadro, q.parede, q.a, q.recuo + 0.24, y);
+    const funcao = q.id === q.tipo ? FUNCAO_DA_PAREDE[q.tipo] : undefined;
+    if (funcao) {
+      quadro.userData.funcao = funcao;
+      this.daParede.push(quadro);
+      // a caixa inteira pega o clique (o fone é um arco com o vão no meio, e o clique no vão passava pela parede)
+      const alvo = new THREE.Mesh(this.geo(new THREE.BoxGeometry(largura, altura, Math.max(0.1, caixa.max.z - caixa.min.z))), new THREE.MeshBasicMaterial());
+      alvo.visible = false;
+      alvo.position.z = (caixa.max.z - caixa.min.z) / 2;
+      g.add(alvo);
+    } else if (!spec.arquivo.startsWith('codigo:') && !spec.fotos && !spec.partes?.some((p) => p.arquivo.startsWith('codigo:'))) this.paraJuntar.push(quadro);
+  }
+
+  // ---- o que nenhum pacote tem, feito por código ----
+
+  private feitoPorCodigo(nome: string): THREE.Object3D {
+    if (nome === 'cortica') return this.cortica();
+    if (nome === 'trofeu') return this.trofeu();
+    if (nome === 'fone') return this.fone();
+    if (nome === 'neon') return this.neon();
+    if (nome === 'violao') return this.violao();
+    if (nome === 'relogio') return this.relogioDeParede();
+    return new THREE.Group();
+  }
+
+  private material(cor: string, extra: THREE.MeshStandardMaterialParameters = {}) {
+    return new THREE.MeshStandardMaterial({ color: cor, roughness: 0.75, ...extra });
+  }
+
+  /** A cortiça (Caixa de ideias): moldura, a cortiça pontilhada, quatro bilhetes e as tachinhas. */
   private cortica() {
     const L = 1.15;
     const A = 0.8;
     const g = new THREE.Group();
-    const madeira = new THREE.MeshStandardMaterial({
-      color: '#9a5d36',
-      roughness: 0.85,
-    });
+    const madeira = this.material('#9a5d36', { roughness: 0.85 });
     const pontos = this.textura((c, t) => {
       c.fillStyle = '#c99a63';
       c.fillRect(0, 0, t, t);
@@ -799,11 +777,7 @@ export class CenaDoQuarto3D {
         c.fillRect((i * 97) % t, (i * 61 + (i >> 3) * 13) % t, 3, 3);
       }
     }, 128);
-    const caixa = (w: number, h: number, d: number) => {
-      const geo = new THREE.BoxGeometry(w, h, d);
-      this.descartaveis.push(geo);
-      return geo;
-    };
+    const caixa = (w: number, h: number, d: number) => this.geo(new THREE.BoxGeometry(w, h, d));
     const fundo = new THREE.Mesh(caixa(L, A, 0.04), new THREE.MeshStandardMaterial({ map: pontos, roughness: 1 }));
     fundo.position.set(0, A / 2, 0.02);
     g.add(fundo);
@@ -816,12 +790,8 @@ export class CenaDoQuarto3D {
     ripa(L + 0.08, 0.06, 0, A);
     ripa(0.06, A, -L / 2, A / 2);
     ripa(0.06, A, L / 2, A / 2);
-    const bolinha = new THREE.SphereGeometry(0.022, 8, 6);
-    this.descartaveis.push(bolinha);
-    const vermelho = new THREE.MeshStandardMaterial({
-      color: '#c9473d',
-      roughness: 0.5,
-    });
+    const bolinha = this.geo(new THREE.SphereGeometry(0.022, 8, 6));
+    const vermelho = this.material('#c9473d', { roughness: 0.5 });
     const bilhetes: [string, number, number, number, number][] = [
       ['#f4e1a1', -0.3, 0.52, 0.28, -0.08],
       ['#9cc8d6', 0.12, 0.55, 0.24, 0.1],
@@ -829,7 +799,7 @@ export class CenaDoQuarto3D {
       ['#e9a38a', -0.12, 0.24, 0.3, 0.06],
     ];
     for (const [cor, x, y, t, giro] of bilhetes) {
-      const b = new THREE.Mesh(caixa(t, t * 0.85, 0.008), new THREE.MeshStandardMaterial({ color: cor, roughness: 0.95 }));
+      const b = new THREE.Mesh(caixa(t, t * 0.85, 0.008), this.material(cor, { roughness: 0.95 }));
       b.position.set(x, y, 0.045);
       b.rotation.z = giro;
       b.castShadow = true;
@@ -842,17 +812,27 @@ export class CenaDoQuarto3D {
     return g;
   }
 
-  /** As fotos do quadro de Amigos: quatro fotos de papel desenhadas (um morro, o mar, o pôr do sol), sem foto de ninguém. */
-  private fotosDoQuadro() {
+  /** As cenas das fotos (um morro, o mar, o pôr do sol, a areia), sem foto de ninguém: o céu e o chão de cada uma. */
+  private static CENAS: [string, string][] = [
+    ['#a8dcf5', '#86c06a'],
+    ['#f2b27a', '#d0705a'],
+    ['#9cc8d6', '#3f8fb0'],
+    ['#f3ead8', '#c99566'],
+  ];
+  private fotosFeitas = 0;
+
+  /** As fotos do quadro de Amigos do KayKit: quatro fotos de papel desenhadas, num plano na frente da moldura. */
+  private fotos(tam: THREE.Vector3): THREE.Object3D {
     const t = this.textura((c, L) => {
       c.clearRect(0, 0, L, L);
-      const cenas: [number, number, number, string, string][] = [
-        [0.2, 0.3, -0.08, '#a8dcf5', '#86c06a'],
-        [0.47, 0.62, 0.06, '#f2b27a', '#d0705a'],
-        [0.74, 0.32, 0.1, '#9cc8d6', '#3f8fb0'],
-        [0.83, 0.7, -0.05, '#f3ead8', '#c99566'],
+      const lugares: [number, number, number][] = [
+        [0.2, 0.3, -0.08],
+        [0.47, 0.62, 0.06],
+        [0.74, 0.32, 0.1],
+        [0.83, 0.7, -0.05],
       ];
-      for (const [x, y, giro, ceu, chao] of cenas) {
+      lugares.forEach(([x, y, giro], i) => {
+        const [ceu, chao] = CenaDoQuarto3D.CENAS[i];
         c.save();
         c.translate(x * L, y * L);
         c.rotate(giro);
@@ -867,34 +847,38 @@ export class CenaDoQuarto3D {
         c.ellipse(0, L * 0.07, L * 0.12, L * 0.07, 0, Math.PI, 0);
         c.fill();
         c.restore();
-      }
+      });
     }, 256);
     t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping;
-    const geo = new THREE.PlaneGeometry(1.25, 0.68);
-    this.descartaveis.push(geo);
-    const m = new THREE.Mesh(
-      geo,
-      new THREE.MeshStandardMaterial({
-        map: t,
-        transparent: true,
-        roughness: 0.9,
-      }),
-    );
-    m.position.set(0, 0, 0.118);
+    const m = new THREE.Mesh(this.geo(new THREE.PlaneGeometry(1.25, 0.68)), new THREE.MeshStandardMaterial({ map: t, transparent: true, roughness: 0.9 }));
+    m.position.set(0, tam.y / 2, tam.z / 2 - 0.032);
     return m;
   }
 
-  /** O troféu em cima da estante (a estante é a dos Troféus): uma taça dourada feita por código, nenhum pacote tem uma. */
-  private trofeu(alturaDaEstante: number) {
-    const ouro = new THREE.MeshStandardMaterial({
-      color: '#e2b53e',
-      roughness: 0.35,
-      metalness: 0.3,
-    });
-    const base = new THREE.MeshStandardMaterial({
-      color: '#6b4430',
-      roughness: 0.8,
-    });
+  /** Uma foto inteira (as molduras do Tiny Treats: a imagem de exemplo do pacote vira uma destas). */
+  private foto(): THREE.Texture {
+    const [ceu, chao] = CenaDoQuarto3D.CENAS[this.fotosFeitas++ % CenaDoQuarto3D.CENAS.length];
+    const t = this.textura((c, L) => {
+      c.fillStyle = ceu;
+      c.fillRect(0, 0, L, L);
+      c.fillStyle = 'rgba(255,255,255,0.55)';
+      c.beginPath();
+      c.arc(L * 0.72, L * 0.28, L * 0.11, 0, Math.PI * 2);
+      c.fill();
+      c.fillStyle = chao;
+      c.beginPath();
+      c.ellipse(L * 0.45, L * 0.95, L * 0.7, L * 0.42, 0, Math.PI, 0);
+      c.fill();
+    }, 128);
+    t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping;
+    t.flipY = false;
+    return t;
+  }
+
+  /** Um troféu: uma taça dourada (nenhum pacote tem uma). */
+  private trofeu() {
+    const ouro = this.material('#e2b53e', { roughness: 0.35, metalness: 0.3 });
+    const base = this.material('#6b4430', { roughness: 0.8 });
     const g = new THREE.Group();
     const partes: [THREE.BufferGeometry, THREE.Material, number][] = [
       [new THREE.BoxGeometry(0.2, 0.07, 0.2), base, 0.035],
@@ -902,76 +886,201 @@ export class CenaDoQuarto3D {
       [new THREE.CylinderGeometry(0.11, 0.04, 0.16, 14), ouro, 0.27],
     ];
     for (const [geo, mat, y] of partes) {
-      this.descartaveis.push(geo);
-      const m = new THREE.Mesh(geo, mat);
+      const m = new THREE.Mesh(this.geo(geo), mat);
       m.position.y = y;
       m.castShadow = true;
       g.add(m);
     }
-    const alca = new THREE.TorusGeometry(0.05, 0.012, 6, 12, Math.PI);
-    this.descartaveis.push(alca);
+    const alca = this.geo(new THREE.TorusGeometry(0.05, 0.012, 6, 12, Math.PI));
     for (const lado of [-1, 1]) {
       const a = new THREE.Mesh(alca, ouro);
       a.position.set(lado * 0.11, 0.28, 0);
       a.rotation.z = lado > 0 ? -Math.PI / 2 : Math.PI / 2;
       g.add(a);
     }
-    g.position.set(0.05, alturaDaEstante, 0);
     return g;
   }
 
-  /** As luzinhas do alto das duas paredes: o fio em arcos e as lâmpadas, acesas à noite (uma luz por parede, sem sombra). */
+  /** O fone de Salas: pendurado num gancho de madeira na parede (o arco, as duas conchas e as almofadas). */
+  private fone() {
+    const g = new THREE.Group();
+    const tons = this.tema.id === 'colorido' ? ['#5aa0d8', '#f0d36a', '#3c4a63'] : ['#3c3a40', '#c98c3c', '#26252a'];
+    const corpo = this.material(tons[0], { roughness: 0.5 });
+    const almofada = this.material(tons[2], { roughness: 0.9 });
+    const madeira = this.material('#9a5d36', { roughness: 0.85 });
+    const gancho = new THREE.Mesh(this.geo(new THREE.BoxGeometry(0.16, 0.06, 0.18)), madeira);
+    gancho.position.set(0, 0.62, 0.09);
+    const pino = new THREE.Mesh(this.geo(new THREE.CylinderGeometry(0.025, 0.025, 0.2, 8)), madeira);
+    pino.rotation.x = Math.PI / 2;
+    pino.position.set(0, 0.6, 0.16);
+    const arco = new THREE.Mesh(this.geo(new THREE.TorusGeometry(0.22, 0.03, 8, 20, Math.PI)), corpo);
+    arco.position.set(0, 0.4, 0.2);
+    g.add(gancho, pino, arco);
+    for (const lado of [-1, 1]) {
+      const concha = new THREE.Mesh(this.geo(new THREE.CylinderGeometry(0.1, 0.1, 0.08, 16)), corpo);
+      concha.rotation.z = Math.PI / 2;
+      concha.position.set(lado * 0.22, 0.36, 0.2);
+      const mola = new THREE.Mesh(this.geo(new THREE.CylinderGeometry(0.075, 0.075, 0.03, 14)), almofada);
+      mola.rotation.z = Math.PI / 2;
+      mola.position.set(lado * 0.17, 0.36, 0.2);
+      const detalhe = new THREE.Mesh(this.geo(new THREE.CylinderGeometry(0.05, 0.05, 0.02, 12)), this.material(tons[1], { roughness: 0.4 }));
+      detalhe.rotation.z = Math.PI / 2;
+      detalhe.position.set(lado * 0.265, 0.36, 0.2);
+      g.add(concha, mola, detalhe);
+    }
+    g.traverse((o) => ((o as THREE.Mesh).castShadow = true));
+    return g;
+  }
+
+  /** O neon: um coração em tubo de luz (aceso de noite), numa placa escura. */
+  private neon() {
+    const g = new THREE.Group();
+    const placa = new THREE.Mesh(this.geo(new THREE.BoxGeometry(1.0, 0.8, 0.04)), this.material('#2b2433', { roughness: 0.6 }));
+    placa.position.set(0, 0.4, 0.02);
+    const luz = this.material('#ff7fb8', { emissive: '#ff5aa0', emissiveIntensity: 0.6, roughness: 0.3 });
+    this.brilham.push(luz);
+    const pts: THREE.Vector3[] = [];
+    for (let i = 0; i <= 48; i++) {
+      const t = (i / 48) * Math.PI * 2;
+      pts.push(new THREE.Vector3(0.016 * 16 * Math.sin(t) ** 3, 0.42 + 0.016 * (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)), 0.07));
+    }
+    const tubo = new THREE.Mesh(this.geo(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, true), 64, 0.022, 6, true)), luz);
+    g.add(placa, tubo);
+    return g;
+  }
+
+  /** O violão: o corpo em dois círculos, o braço e a boca, pendurado. */
+  private violao() {
+    const g = new THREE.Group();
+    const madeira = this.material('#c98a4b', { roughness: 0.6 });
+    const escura = this.material('#5b3a22', { roughness: 0.7 });
+    for (const [r, y] of [
+      [0.22, 0.25],
+      [0.17, 0.52],
+    ] as const) {
+      const c = new THREE.Mesh(this.geo(new THREE.CylinderGeometry(r, r, 0.1, 20)), madeira);
+      c.rotation.x = Math.PI / 2;
+      c.position.set(0, y, 0.06);
+      g.add(c);
+    }
+    const boca = new THREE.Mesh(this.geo(new THREE.CylinderGeometry(0.07, 0.07, 0.11, 16)), escura);
+    boca.rotation.x = Math.PI / 2;
+    boca.position.set(0, 0.4, 0.07);
+    const braco = new THREE.Mesh(this.geo(new THREE.BoxGeometry(0.07, 0.55, 0.04)), escura);
+    braco.position.set(0, 0.95, 0.07);
+    const cabeca = new THREE.Mesh(this.geo(new THREE.BoxGeometry(0.1, 0.14, 0.04)), escura);
+    cabeca.position.set(0, 1.28, 0.07);
+    g.add(boca, braco, cabeca);
+    g.traverse((o) => ((o as THREE.Mesh).castShadow = true));
+    return g;
+  }
+
+  /** O relógio de parede do clássico: o aro, o mostrador e os ponteiros. */
+  private relogioDeParede() {
+    const g = new THREE.Group();
+    const aro = new THREE.Mesh(this.geo(new THREE.CylinderGeometry(0.32, 0.32, 0.08, 24)), this.material('#9a5d36', { roughness: 0.8 }));
+    aro.rotation.x = Math.PI / 2;
+    aro.position.set(0, 0.32, 0.04);
+    const mostrador = new THREE.Mesh(this.geo(new THREE.CylinderGeometry(0.27, 0.27, 0.085, 24)), this.material('#f3ead8', { roughness: 0.9 }));
+    mostrador.rotation.x = Math.PI / 2;
+    mostrador.position.set(0, 0.32, 0.045);
+    const preto = this.material('#3a2d26');
+    const h = new THREE.Mesh(this.geo(new THREE.BoxGeometry(0.03, 0.15, 0.01)), preto);
+    h.position.set(0, 0.39, 0.095);
+    const m = new THREE.Mesh(this.geo(new THREE.BoxGeometry(0.2, 0.025, 0.01)), preto);
+    m.position.set(0.09, 0.32, 0.095);
+    g.add(aro, mostrador, h, m);
+    return g;
+  }
+
+  /** As luzinhas do alto de cada trecho de parede: o fio em arcos e as lâmpadas, acesas à noite (uma luz por parede inteira). */
   private luzinhas() {
     const fio = new THREE.LineBasicMaterial({ color: '#4a3a30' });
     this.descartaveis.push(fio);
     const tons = ['#ffcf7a', '#ffb070', '#ffe3a8'].map((c) => {
-      const m = new THREE.MeshStandardMaterial({
-        color: c,
-        emissive: c,
-        emissiveIntensity: 0.35,
-        roughness: 0.4,
-      });
+      const m = new THREE.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: 0.35, roughness: 0.4 });
       this.lampadinhas.push(m);
       return m;
     });
-    const bolinha = new THREE.SphereGeometry(0.045, 8, 6);
-    this.descartaveis.push(bolinha);
+    const bolinha = this.geo(new THREE.SphereGeometry(0.045, 8, 6));
     const Y = ALTURA_DA_PAREDE - 0.32;
-    for (const parede of ['fundo', 'esquerda'] as const) {
+    const porTom: THREE.Vector3[][] = tons.map(() => []);
+    let k = 0;
+    for (const t of this.mundo.trechos) {
+      const L = t.ate - t.de;
+      const arcos = Math.max(1, Math.round(L / 2.7));
       const ponto = (u: number) => {
-        const f = (u / N) * 3;
+        const f = ((u - t.de) / L) * arcos;
         const y = Y - Math.sin(Math.PI * (f - Math.floor(f))) * 0.18;
-        return parede === 'fundo' ? new THREE.Vector3(u, y, 0.06) : new THREE.Vector3(0.06, y, u);
+        return t.parede === 'fundo' ? new THREE.Vector3(u, y, t.recuo + 0.06) : new THREE.Vector3(t.recuo + 0.06, y, u);
       };
       const pontos: THREE.Vector3[] = [];
-      for (let u = 0.15; u <= N - 0.05; u += 0.05) pontos.push(ponto(u));
-      const geo = new THREE.BufferGeometry().setFromPoints(pontos);
-      this.descartaveis.push(geo);
-      this.cena.add(new THREE.Line(geo, fio));
-      const porTom: THREE.Vector3[][] = tons.map(() => []);
-      let i = 0;
-      for (let u = 0.35; u < N - 0.1; u += 0.4) porTom[i++ % tons.length].push(ponto(u).add(new THREE.Vector3(0, -0.05, 0)));
-      porTom.forEach((lugares, t) => {
-        const inst = new THREE.InstancedMesh(bolinha, tons[t], lugares.length);
-        lugares.forEach((p, k) => inst.setMatrixAt(k, new THREE.Matrix4().makeTranslation(p.x, p.y, p.z)));
-        this.cena.add(inst);
+      for (let u = t.de + 0.15; u <= t.ate - 0.05; u += 0.05) pontos.push(ponto(u));
+      this.cena.add(new THREE.Line(this.geo(new THREE.BufferGeometry().setFromPoints(pontos)), fio));
+      for (let u = t.de + 0.35; u < t.ate - 0.1; u += 0.4) porTom[k++ % tons.length].push(ponto(u).add(new THREE.Vector3(0, -0.05, 0)));
+      // uma luz por trecho grande (o L tem quatro trechos pequenos: só os de fora, de 4 casas, ganham)
+      if (L >= 4) {
+        const l = new THREE.PointLight('#ffc37a', 0, 5, 1.6);
+        l.position.copy(ponto((t.de + t.ate) / 2)).add(t.parede === 'fundo' ? new THREE.Vector3(0, -0.2, 0.5) : new THREE.Vector3(0.5, -0.2, 0));
+        this.cena.add(l);
+        this.arandelas.push(l);
+      }
+    }
+    porTom.forEach((lugares, i) => {
+      if (!lugares.length) return;
+      const inst = new THREE.InstancedMesh(bolinha, tons[i], lugares.length);
+      lugares.forEach((p, j) => inst.setMatrixAt(j, new THREE.Matrix4().makeTranslation(p.x, p.y, p.z)));
+      this.cena.add(inst);
+    });
+  }
+
+  /**
+   * AS PEÇAS PARADAS NUMA MALHA SÓ (o tema que junta: o Tiny Treats usa uma textura de paleta para quase tudo). O chão, as
+   * paredes, as plantas, o tapete e os objetos da parede sem função viram uma malha por material; os originais ficam
+   * invisíveis no lugar (o clique continua parando neles, como antes) e o desenho cai de dezenas de chamadas para poucas.
+   */
+  private juntar() {
+    const grupos = new Map<string, { mat: THREE.Material; geos: THREE.BufferGeometry[]; donos: THREE.Mesh[] }>();
+    for (const o of this.paraJuntar) {
+      o.updateMatrixWorld(true);
+      o.traverse((x) => {
+        const m = x as THREE.Mesh;
+        if (!m.isMesh || Array.isArray(m.material)) return;
+        const mat = m.material as THREE.MeshStandardMaterial;
+        const chave = `${mat.name}|${mat.color.getHexString()}|${mat.map ? (mat.map.name || mat.map.uuid) + (mat.map.image as { width?: number } | null)?.width : ''}|${mat.transparent}`;
+        let gr = grupos.get(chave);
+        if (!gr) grupos.set(chave, (gr = { mat, geos: [], donos: [] }));
+        const geo = m.geometry.clone().applyMatrix4(m.matrixWorld);
+        // a malha só precisa das mesmas listas em todas: posição, normal e textura
+        for (const nome of Object.keys(geo.attributes)) if (!['position', 'normal', 'uv'].includes(nome)) geo.deleteAttribute(nome);
+        gr.geos.push(geo);
+        gr.donos.push(m);
       });
-      const l = new THREE.PointLight('#ffc37a', 0, 5, 1.6);
-      l.position.copy(ponto(N * 0.5)).add(parede === 'fundo' ? new THREE.Vector3(0, -0.2, 0.5) : new THREE.Vector3(0.5, -0.2, 0));
-      this.cena.add(l);
-      this.arandelas.push(l);
+    }
+    for (const gr of grupos.values()) {
+      if (gr.geos.length < 2) {
+        for (const g of gr.geos) g.dispose();
+        continue;
+      }
+      const indexadas = gr.geos.every((g) => g.index);
+      const geos = indexadas ? gr.geos : gr.geos.map((g) => (g.index ? g.toNonIndexed() : g));
+      const junta = geos.every((g) => g.attributes.uv) || geos.every((g) => !g.attributes.uv) ? mergeGeometries(geos) : null;
+      for (const g of gr.geos) g.dispose();
+      if (!junta) continue;
+      this.descartaveis.push(junta);
+      const malha = new THREE.Mesh(junta, gr.mat.clone());
+      malha.castShadow = malha.receiveShadow = true;
+      this.cena.add(malha);
+      for (const d of gr.donos) d.visible = false;
+      this.juntas++;
     }
   }
 
   private montarCoelho(g: GLTF) {
-    const copia = copiarCoelho(g, {
-      altura: ALTURA_DO_COELHO,
-      sombras: true,
-      cores: this.cores,
-    });
+    const copia = copiarCoelho(g, { altura: ALTURA_DO_COELHO, sombras: true, cores: this.cores });
     const corpo = new THREE.Group().add(copia.corpo);
     const raiz = new THREE.Group().add(corpo);
-    const casa: [number, number] = [3, 6];
+    const casa = this.livreMaisPerto(N / 2 + 0.5, N / 2 + 1.5, this.ocupadas()) ?? [4, 5];
     raiz.position.set(casa[0] + 0.5, 0, casa[1] + 0.5);
     this.cena.add(raiz);
     this.coelho = {
@@ -1004,11 +1113,13 @@ export class CenaDoQuarto3D {
     this.sol.color.set(noite ? '#9fb4ff' : '#ffe2b8');
     this.sol.intensity = noite ? 0.7 : 3.2;
     this.preenche.intensity = noite ? 0.12 : 0.5;
-    (this.fora.material as THREE.MeshBasicMaterial).color.set(noite ? '#1f2850' : '#a8dcf5');
-    (this.morro.material as THREE.MeshBasicMaterial).color.set(noite ? '#243a32' : '#86c06a');
-    for (const p of this.moveis) if (p.luz && !p.luzAMao) p.luz.intensity = noite ? 6 : 0;
+    for (const f of this.fora) (f.material as THREE.MeshBasicMaterial).color.set(noite ? '#1f2850' : '#a8dcf5');
+    for (const m of this.morro) (m.material as THREE.MeshBasicMaterial).color.set(noite ? '#243a32' : '#86c06a');
+    // o abajur apagado no pixel (o botão direito nele) fica apagado à noite também
+    for (const p of this.moveis) if (p.luz && !p.luzAMao) p.luz.intensity = noite && !(p.tipo === 'abajur' && this.mundo.abajurApagado) ? 6 : 0;
     for (const l of this.arandelas) l.intensity = noite ? 1.6 : 0;
     for (const m of this.lampadinhas) m.emissiveIntensity = noite ? 2.2 : 0.35;
+    for (const m of this.brilham) m.emissiveIntensity = noite ? 2.4 : 0.6;
     for (const m of this.lampadas) {
       m.emissive.set('#ffcf7a');
       m.emissiveIntensity = noite ? 1.6 : 0;
@@ -1041,12 +1152,14 @@ export class CenaDoQuarto3D {
     c.tocando = nome;
   }
 
+  /** As casas em que não se anda: os móveis (menos o tapete), a cadeira, e o que não é chão na planta. */
   private ocupadas(): Set<string> {
     const s = new Set<string>();
+    for (let x = 0; x < N; x++) for (let z = 0; z < N; z++) if (!this.mundo.chao(x + 0.5, z + 0.5)) s.add(`${x},${z}`);
     for (const p of this.moveis) {
-      if (p.m.chao) continue;
-      const { w, d } = this.pegada(p);
-      for (let x = p.m.x; x < p.m.x + w; x++) for (let z = p.m.z; z < p.m.z + d; z++) s.add(`${Math.floor(x)},${Math.floor(z)}`);
+      if (p.chao) continue;
+      const { x0, x1, z0, z1 } = p.pe;
+      for (let x = Math.floor(x0 + 0.01); x < Math.ceil(x1 - 0.01); x++) for (let z = Math.floor(z0 + 0.01); z < Math.ceil(z1 - 0.01); z++) s.add(`${x},${z}`);
     }
     return s;
   }
@@ -1138,27 +1251,20 @@ export class CenaDoQuarto3D {
     }
   }
 
-  /** A frente de um móvel, pelo lado (0 olha para +z), e o centro dele. */
+  /** A frente de um móvel (para onde ele olha) e quanto ele se estende nessa direção a partir do centro do desenho. */
   private frenteDe(p: Pronto) {
-    const { w, d } = this.pegada(p);
-    const frente = (
-      [
-        [0, 1],
-        [-1, 0],
-        [0, -1],
-        [1, 0],
-      ] as const
-    )[p.m.lado];
-    const cx = p.m.x + w / 2;
-    const cz = p.m.z + d / 2;
-    return { frente, cx, cz, w, d };
+    const fx = Math.sin(p.rumo);
+    const fz = Math.cos(p.rumo);
+    const meio = Math.abs(fx) > Math.abs(fz) ? (p.pe.x1 - p.pe.x0) / 2 : (p.pe.z1 - p.pe.z0) / 2;
+    return { fx, fz, meio: p.id === 'cadeira' ? 0.3 : meio };
   }
 
   /** Vai até a frente do móvel; chegando, olha para ele e faz `depois`. */
   private irAoMovel(p: Pronto, depois: () => void, imediato = false) {
     const c = this.coelho!;
-    const { frente, cx, cz, w, d } = this.frenteDe(p);
-    const chegada = this.livreMaisPerto(cx + frente[0] * (w / 2 + 0.5), cz + frente[1] * (d / 2 + 0.5), this.ocupadas());
+    const { fx, fz, meio } = this.frenteDe(p);
+    const { x: cx, z: cz } = p.centro;
+    const chegada = this.livreMaisPerto(cx + fx * (meio + 0.5), cz + fz * (meio + 0.5), this.ocupadas());
     if (!chegada) return depois();
     this.irPara(
       chegada,
@@ -1170,40 +1276,31 @@ export class CenaDoQuarto3D {
     );
   }
 
-  /** Deita na cama ou senta (poltrona, sofá, cadeira); `depois`, já sentado. */
+  /** Deita na cama ou senta (a cadeira, a poltrona, o pufe); `depois`, já sentado. */
   private usar(p: Pronto, depois: (() => void) | null = null, imediato = false) {
     const c = this.coelho!;
     if (c.em === p) return depois?.();
     this.irAoMovel(
       p,
       () => {
-        const { frente, cx, cz } = this.frenteDe(p);
-        const rumo = -p.m.lado * (Math.PI / 2);
+        const { fx, fz } = this.frenteDe(p);
         const instantaneo = imediato || this.calmo;
-        if (p.m.uso === 'deitar') {
-          const ponto = new THREE.Vector3(cx, p.altura * DEITADO_ALTURA, cz).add(new THREE.Vector3(frente[0], 0, frente[1]).multiplyScalar(DEITADO_AVANCO));
+        const frente = new THREE.Vector3(fx, 0, fz);
+        if (p.uso === 'deitar') {
+          const [alto, avanco] = p.spec.deitar ?? [0.45, 0.55];
+          const ponto = new THREE.Vector3(p.centro.x, p.altura * alto, p.centro.z).add(frente.multiplyScalar(avanco));
           this.pular(ponto, instantaneo ? 0 : 520, 0.45);
           this.tocar('dormindo');
           c.pose = 'deitado';
         } else {
-          const poltrona = p.m.arquivo.startsWith('armchair') || p.m.arquivo.startsWith('couch');
-          const pose = p.m.arquivo.startsWith('armchair')
-            ? 'poltrona'
-            : p.m.arquivo.startsWith('couch')
-              ? 'sentado-sofa'
-              : p.m.arquivo.startsWith('chair_desk')
-                ? 'computador'
-                : 'sentado';
-          const ponto = new THREE.Vector3(cx, p.altura * (poltrona ? ASSENTO_POLTRONA : ASSENTO_CADEIRA), cz).add(
-            new THREE.Vector3(frente[0], 0, frente[1]).multiplyScalar(poltrona ? 0.08 : 0.02),
-          );
+          const ponto = new THREE.Vector3(p.centro.x, p.altura * (p.spec.assento ?? 0.37), p.centro.z).add(frente.multiplyScalar(p.spec.avanco ?? 0.02));
           this.pular(ponto, instantaneo ? 0 : 420, 0.3);
-          this.tocar(pose);
+          this.tocar(p.spec.pose ?? 'sentado');
           c.pose = 'sentado';
         }
         c.em = p;
-        c.rumo = rumo;
-        if (instantaneo) c.corpo.rotation.y = rumo;
+        c.rumo = p.rumo;
+        if (instantaneo) c.corpo.rotation.y = p.rumo;
         if (depois) {
           // a função abre quando ele já sentou (o pulo para o assento leva ~0,4 s)
           if (instantaneo) depois();
@@ -1214,19 +1311,19 @@ export class CenaDoQuarto3D {
     );
   }
 
-  /** O coelho no lugar do estado de verdade: ausente, dorme na cama; em chamada, ao computador; à toa, de pé no quarto. */
+  /** O coelho no lugar do estado de verdade: ausente, dorme na cama; em chamada, na cadeira; à toa, de pé no quarto. */
   private aplicarEstado(imediato: boolean) {
     const c = this.coelho;
     if (!c) return;
     this.voltarEm = 0;
-    const movel = (id: string) => this.moveis.find((p) => p.m.id === id);
+    const movel = (id: string) => this.moveis.find((p) => p.id === id);
     if (this.estado === 'ausente') {
       const cama = movel('cama');
       if (cama) this.usar(cama, null, imediato);
     } else if (this.estado === 'call') {
       const cadeira = movel('cadeira');
       if (cadeira) this.usar(cadeira, null, imediato);
-    } else if (c.pose !== 'pe' && (c.em?.m.id === 'cama' || c.em?.m.id === 'cadeira')) {
+    } else if (c.pose !== 'pe' && (c.em?.id === 'cama' || c.em?.id === 'cadeira')) {
       // acordou ou saiu da chamada: levanta e fica de pé ali perto
       const sai = this.livreMaisPerto(c.raiz.position.x, c.raiz.position.z, this.ocupadas());
       if (sai) this.irPara(sai, null, imediato);
@@ -1236,30 +1333,10 @@ export class CenaDoQuarto3D {
   // ---- os cliques ----
 
   private alvoDaFuncao(id: string): Alvo | null {
-    const p = this.moveis.find((m) => m.m.funcao === id);
-    if (p)
-      return {
-        funcao: id,
-        movel: p,
-        realce: p.raiz,
-        ponto: p.raiz.position.clone(),
-      };
-    for (const p2 of this.moveis)
-      for (const filho of p2.giro.children)
-        if (filho.userData.funcao === id)
-          return {
-            funcao: id,
-            movel: p2,
-            realce: filho,
-            ponto: new THREE.Vector3().setFromMatrixPosition(filho.matrixWorld),
-          };
+    const p = this.moveis.find((m) => m.funcao === id);
+    if (p) return { funcao: id, movel: p, realce: p.raiz, ponto: p.centro.clone() };
     const naParede = this.daParede.find((o) => o.userData.funcao === id);
-    if (naParede)
-      return {
-        funcao: id,
-        realce: naParede,
-        ponto: new THREE.Vector3().setFromMatrixPosition(naParede.matrixWorld),
-      };
+    if (naParede) return { funcao: id, realce: naParede, ponto: new THREE.Box3().setFromObject(naParede).getCenter(new THREE.Vector3()) };
     return null;
   }
 
@@ -1282,15 +1359,11 @@ export class CenaDoQuarto3D {
         o = o.parent;
       }
       const movel = raiz ? this.moveis.find((p) => p.raiz === raiz) : undefined;
-      if (funcao)
-        return {
-          funcao: funcao.userData.funcao,
-          movel,
-          realce: funcao,
-          ponto: h.point,
-        };
-      if (movel?.m.uso) return { movel, realce: movel.raiz, ponto: h.point };
-      // um móvel sem nada (a mesinha, a caixa) fica na frente do que está atrás: o clique para nele
+      if (funcao) return { funcao: funcao.userData.funcao, movel, realce: funcao, ponto: h.point };
+      if (movel?.uso) return { movel, realce: movel.raiz, ponto: h.point };
+      // o tapete fica no chão: o clique passa por ele
+      if (movel?.chao) continue;
+      // um móvel sem nada fica na frente do que está atrás: o clique para nele
       if (movel) return null;
     }
     return null;
@@ -1301,7 +1374,7 @@ export class CenaDoQuarto3D {
     if (!this.raio.ray.intersectPlane(this.planoDoChao, p)) return null;
     const x = Math.floor(p.x);
     const z = Math.floor(p.z);
-    return x >= 0 && z >= 0 && x < N && z < N ? [x, z] : null;
+    return x >= 0 && z >= 0 && x < N && z < N && this.mundo.chao(x + 0.5, z + 0.5) ? [x, z] : null;
   }
 
   /** O que o clique (ou o teclado) faz com um alvo: a animação primeiro, a função depois. */
@@ -1316,30 +1389,16 @@ export class CenaDoQuarto3D {
     };
     this.voltarEm = 0;
     if (id === 'computador') {
-      // senta ao computador, e então os Mini-games
-      const cadeira = this.moveis.find((p) => p.m.id === 'cadeira');
+      // senta na cadeira, e então os Mini-games
+      const cadeira = this.moveis.find((p) => p.id === 'cadeira');
       if (cadeira) return this.usar(cadeira, abrir);
     }
-    if (alvo.movel && (id || alvo.movel.m.uso === 'luz')) {
-      return this.irAoMovel(alvo.movel, () => {
-        if (!id) {
-          // a luminária: acende e apaga só ela, à mão
-          const p = alvo.movel!;
-          if (p.luz) {
-            p.luz.intensity = p.luz.intensity > 0 ? 0 : this.noite ? 6 : 2.5;
-            p.luzAMao = true;
-            this.ultimoQuadro = 0;
-          }
-          return;
-        }
-        abrir();
-      });
-    }
-    if (alvo.movel?.m.uso) return this.usar(alvo.movel);
+    if (alvo.movel && id) return this.irAoMovel(alvo.movel, abrir);
+    if (alvo.movel?.uso) return this.usar(alvo.movel);
     if (id) {
       // o que está na parede (o quadro, a cortiça, a janela): ele vai até a parede, olha para ela, e a função abre
       const ponto = alvo.ponto;
-      const casa = this.livreMaisPerto(Math.max(0.5, ponto.x), Math.max(0.5, ponto.z), this.ocupadas());
+      const casa = this.livreMaisPerto(ponto.x + (ponto.x < ponto.z ? 0.8 : 0), ponto.z + (ponto.z <= ponto.x ? 0.8 : 0), this.ocupadas());
       if (!casa) return abrir();
       this.irPara(casa, () => {
         c.rumo = Math.atan2(ponto.x - c.raiz.position.x, ponto.z - c.raiz.position.z);
@@ -1394,10 +1453,7 @@ export class CenaDoQuarto3D {
       if (!(x as THREE.Mesh).isMesh || !m?.emissive || this.emissivos.has(m)) return;
       // o que já brilha (as lâmpadas à noite) continua brilhando; o resto ganha o realce
       if (m.emissive.getHex() !== 0 && m.emissiveIntensity > 0) return;
-      this.emissivos.set(m, {
-        cor: m.emissive.clone(),
-        intensidade: m.emissiveIntensity,
-      });
+      this.emissivos.set(m, { cor: m.emissive.clone(), intensidade: m.emissiveIntensity });
       m.emissive.copy(REALCE);
       m.emissiveIntensity = 1;
     });

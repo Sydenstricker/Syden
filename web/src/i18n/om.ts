@@ -3114,4 +3114,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Bilbila rukuti: hojjettoonni hundi wiirtuu gandaa keessa haa galan',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Ammas bilbila rukuti: hundi gara hojiitti haa deebi’an',
   'Este lugar já está cheio.': 'Bakki kun duraan guutameera.',
+  'Clássico': 'Kilaasikii',
+  'Colorido': 'Halluu qabeessa',
 } satisfies Record<string, string>;

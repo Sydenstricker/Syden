@@ -3146,4 +3146,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Kongasd meg a harangot: minden munkás be a faluközpontba',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Kongasd meg újra: mindenki vissza dolgozni',
   'Este lugar já está cheio.': 'Ez a hely már megtelt.',
+  'Clássico': 'Klasszikus',
+  'Colorido': 'Színes',
 } satisfies Record<string, string>;

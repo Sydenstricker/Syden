@@ -3087,4 +3087,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'ตีระฆัง: คนงานทุกคนเข้าไปในศูนย์กลางหมู่บ้าน',
   'Tocar o sino de novo: todos de volta ao trabalho': 'ตีระฆังอีกครั้ง: ทุกคนกลับไปทำงาน',
   'Este lugar já está cheio.': 'ที่นี่เต็มแล้ว',
+  'Clássico': 'คลาสสิก',
+  'Colorido': 'หลากสี',
 } satisfies Record<string, string>;

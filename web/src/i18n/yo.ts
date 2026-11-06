@@ -3089,4 +3089,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Lu agogo: gbogbo òṣìṣẹ́ wọ inú àárín abúlé',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Tún lu agogo: gbogbo ènìyàn padà sí iṣẹ́',
   'Este lugar já está cheio.': 'Ibí yìí ti kún tẹ́lẹ̀.',
+  'Clássico': 'Àtijọ́',
+  'Colorido': 'Aláwọ̀ púpọ̀',
 } satisfies Record<string, string>;

@@ -3098,4 +3098,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Läute die Glocke: alle Arbeiter ins Dorfzentrum',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Läute die Glocke noch mal: alle zurück an die Arbeit',
   'Este lugar já está cheio.': 'Dieser Ort ist schon voll.',
+  'Clássico': 'Klassisch',
+  'Colorido': 'Farbenfroh',
 } satisfies Record<string, string>;

@@ -3158,4 +3158,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Хонх цохих: бүх ажилчин тосгоны төв рүү орно',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Хонхыг дахин цохих: бүгд ажилдаа буцна',
   'Este lugar já está cheio.': 'Энэ газар аль хэдийн дүүрсэн.',
+  'Clássico': 'Сонгодог',
+  'Colorido': 'Өнгөлөг',
 } satisfies Record<string, string>;

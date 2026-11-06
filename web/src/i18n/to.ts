@@ -3080,4 +3080,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Tā ʻa e fafangu: ko e kau ngāue kotoa ki loto ʻi he senita ʻo e kolo',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Toe tā ʻa e fafangu: foki kotoa ki he ngāue',
   'Este lugar já está cheio.': 'Kuo ʻosi fonu ʻa e feituʻu ni.',
+  'Clássico': 'Motuʻa',
+  'Colorido': 'Lanu kehekehe',
 } satisfies Record<string, string>;

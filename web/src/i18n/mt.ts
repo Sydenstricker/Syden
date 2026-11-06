@@ -3090,4 +3090,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Doqq il-qanpiena: il-ħaddiema kollha ġewwa ċ-ċentru tar-raħal',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Erġa’ doqq il-qanpiena: kulħadd lura għax-xogħol',
   'Este lugar já está cheio.': 'Dan il-post diġà mimli.',
+  'Clássico': 'Klassiku',
+  'Colorido': 'Ikkulurit',
 } satisfies Record<string, string>;

@@ -3071,4 +3071,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'ঘণ্টা বাজাও: সব শ্রমিক গ্রাম-কেন্দ্রের ভেতরে',
   'Tocar o sino de novo: todos de volta ao trabalho': 'আবার ঘণ্টা বাজাও: সবাই আবার কাজে',
   'Este lugar já está cheio.': 'এই জায়গাটি ইতিমধ্যে পূর্ণ।',
+  'Clássico': 'ক্লাসিক',
+  'Colorido': 'রঙিন',
 } satisfies Record<string, string>;

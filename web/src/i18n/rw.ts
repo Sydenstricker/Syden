@@ -3085,4 +3085,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Vuza inzogera: abakozi bose binjire mu kigo cy’umudugudu',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Ongera uvuze inzogera: bose basubire ku kazi',
   'Este lugar já está cheio.': 'Aha hantu harashize kuzura.',
+  'Clássico': 'Gakondo',
+  'Colorido': 'Amabara menshi',
 } satisfies Record<string, string>;

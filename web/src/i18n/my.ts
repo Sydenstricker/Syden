@@ -3113,4 +3113,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'ခေါင်းလောင်းထိုး- အလုပ်သမားအားလုံး ရွာဗဟိုထဲဝင်',
   'Tocar o sino de novo: todos de volta ao trabalho': 'ခေါင်းလောင်းထပ်ထိုး- အားလုံး အလုပ်ပြန်ဆင်း',
   'Este lugar já está cheio.': 'ဒီနေရာ ပြည့်နေပြီ။',
+  'Clássico': 'ဂန္ထဝင်',
+  'Colorido': 'ရောင်စုံ',
 } satisfies Record<string, string>;

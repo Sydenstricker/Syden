@@ -3066,4 +3066,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'گھنٹی بجاؤ: سب مزدور گاؤں کے مرکز کے اندر',
   'Tocar o sino de novo: todos de volta ao trabalho': 'پھر سے گھنٹی بجاؤ: سب واپس کام پر',
   'Este lugar já está cheio.': 'یہ جگہ پہلے ہی بھری ہوئی ہے۔',
+  'Clássico': 'کلاسیکی',
+  'Colorido': 'رنگین',
 } satisfies Record<string, string>;

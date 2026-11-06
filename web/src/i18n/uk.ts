@@ -3124,4 +3124,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Удар у дзвін: усі робітники всередину центру села',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Удар у дзвін знову: усі назад до роботи',
   'Este lugar já está cheio.': 'Це місце вже заповнене.',
+  'Clássico': 'Класичний',
+  'Colorido': 'Яскравий',
 } satisfies Record<string, string>;

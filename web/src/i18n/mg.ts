@@ -3144,4 +3144,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Andeho ny lakolosy: ny mpiasa rehetra hiditra ao amin’ny afovoan-tanàna',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Andeho indray ny lakolosy: hiverina hiasa ny rehetra',
   'Este lugar já está cheio.': 'Efa feno io toerana io.',
+  'Clássico': 'Klasika',
+  'Colorido': 'Miloko',
 } satisfies Record<string, string>;

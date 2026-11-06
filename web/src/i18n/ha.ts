@@ -3076,4 +3076,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Buga ƙararrawa: duk ma’aikata su shiga cibiyar ƙauye',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Sake buga ƙararrawa: kowa ya koma bakin aiki',
   'Este lugar já está cheio.': 'Wannan wurin ya riga ya cika.',
+  'Clássico': 'Na gargajiya',
+  'Colorido': 'Mai launi',
 } satisfies Record<string, string>;

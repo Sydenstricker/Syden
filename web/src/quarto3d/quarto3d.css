@@ -68,7 +68,8 @@
   width: min(100%, 640px, 78vh);
   margin: 0 auto;
 }
-.quarto-estilo-botao {
+.quarto-estilo-botao,
+.quarto-tema-botao {
   position: absolute;
   top: 6px;
   right: 6px;
@@ -84,17 +85,26 @@
   opacity: 0.85;
 }
 .quarto-estilo-botao:hover,
-.quarto-estilo-botao:focus-visible {
+.quarto-estilo-botao:focus-visible,
+.quarto-tema-botao:hover,
+.quarto-tema-botao:focus-visible {
   opacity: 1;
 }
-.quarto-estilo-botao span {
+.quarto-estilo-botao span,
+.quarto-tema-botao span {
   display: grid;
   place-items: center;
   width: 26px;
   height: 26px;
   border-radius: 7px;
 }
-.quarto-estilo-botao span.aceso {
+.quarto-estilo-botao span.aceso,
+.quarto-tema-botao span.aceso {
   background: var(--bg-active, #4a3d4f);
   color: var(--text-strong, #fff);
+}
+
+/* O botão do TEMA do 3D (os modelos: o clássico e o colorido), à esquerda do botão do estilo, só no 3D. */
+.quarto-tema-botao {
+  right: 74px;
 }

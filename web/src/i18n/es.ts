@@ -3069,4 +3069,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Tocar la campana: todos los trabajadores dentro del centro urbano',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Tocar la campana otra vez: todos de vuelta al trabajo',
   'Este lugar já está cheio.': 'Este lugar ya está lleno.',
+  'Clássico': 'Clásico',
+  'Colorido': 'Colorido',
 } satisfies Record<string, string>;

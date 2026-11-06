@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
+import { api } from '../api';
 import { Mascote } from '../Mascote';
 import type { AcoesDoQuarto } from '../Quarto';
+import type { ArrumacaoDoPixel } from './arrumacao';
 import type { CenaDoQuarto3D, EstadoDoCoelho } from './cena';
 import './quarto3d.css';
 
@@ -9,6 +11,9 @@ import './quarto3d.css';
  * abre. Enquanto carrega, o mascote espera (sem texto, como toda espera do Syden). Se não puder existir (sem WebGL, um modelo
  * que não veio, o contexto da placa perdido, ou 20 s sem ficar pronto), `aoFalhar`: quem mostra volta ao pixel art, e a tela
  * nunca fica preta.
+ *
+ * A ARRUMAÇÃO é a do pixel art, a que o servidor guarda (a minha, /api/quarto, ou a de quem se visita, /api/quarto/:id); sem
+ * nenhuma (ou sem resposta), a de fábrica. O TEMA (os modelos) é o escolhido neste aparelho (temas.ts).
  *
  * As funções são as mesmas do quarto de pixel art (`acoes`, de Home.tsx): a cena só diz qual objeto foi usado, depois de o
  * coelho chegar a ele, e a ação mora aqui fora. Para o teclado e o leitor de tela, as mesmas funções em botões escondidos.
@@ -20,6 +25,8 @@ export function Quarto3D({
   avatar,
   titulo,
   aoFalhar,
+  dono,
+  tema,
 }: {
   noite: boolean;
   acoes: AcoesDoQuarto;
@@ -28,6 +35,10 @@ export function Quarto3D({
   avatar?: number | null;
   titulo: string;
   aoFalhar: () => void;
+  /** Na visita, o id de quem mora: a arrumação dele. */
+  dono?: number;
+  /** O conjunto de modelos (temas.ts). Trocar monta a cena de novo. */
+  tema: string;
 }) {
   const caixa = useRef<HTMLDivElement>(null);
   const cena = useRef<CenaDoQuarto3D | null>(null);
@@ -46,6 +57,8 @@ export function Quarto3D({
 
   useEffect(() => {
     if (!caixa.current) return;
+    setPronta(false);
+    setEtiqueta(null);
     let viva = true;
     let criada: CenaDoQuarto3D | null = null;
     const desistir = (motivo?: unknown) => {
@@ -62,6 +75,11 @@ export function Quarto3D({
       return;
     }
     const prazo = setTimeout(() => desistir('20 s sem ficar pronto'), 20_000);
+    // a arrumação e a cena em paralelo; sem a arrumação (a rede, o freio), a de fábrica
+    const arrumacao = api<{ arrumacao: ArrumacaoDoPixel | null }>(dono ? `/api/quarto/${dono}` : '/api/quarto').then(
+      (r) => r.arrumacao,
+      () => null,
+    );
     import('./cena')
       .then(async (m) => {
         if (!viva || !caixa.current) return;
@@ -73,13 +91,14 @@ export function Quarto3D({
             temFuncao: (id) => !!acoesRef.current[id],
           },
           agora.current.avatar !== undefined ? m.coresDoAvatar(agora.current.avatar) : undefined,
+          tema,
         );
         criada.definirNoite(agora.current.noite);
         criada.definirEstado(agora.current.estado);
         // a placa pode largar o contexto (o motorista reiniciou, a memória acabou): de volta ao pixel art
         caixa.current.querySelector('canvas')?.addEventListener('webglcontextlost', () => desistir('a placa perdeu o contexto'));
         if (agora.current.avatar === undefined) void m.minhasCoresDoCoelho().then((c) => viva && criada?.definirCores(c));
-        await criada.montar();
+        await criada.montar(await arrumacao);
         if (!viva) return;
         clearTimeout(prazo);
         cena.current = criada;
@@ -92,7 +111,8 @@ export function Quarto3D({
       criada?.destruir();
       cena.current = null;
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tema, dono]);
 
   useEffect(() => cena.current?.definirNoite(noite), [noite, pronta]);
   useEffect(() => cena.current?.definirEstado(estado), [estado, pronta]);

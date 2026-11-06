@@ -3138,4 +3138,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Ring med klokken: alle arbejdere ind i bycentret',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Ring med klokken igen: alle tilbage på arbejde',
   'Este lugar já está cheio.': 'Dette sted er allerede fuldt.',
+  'Clássico': 'Klassisk',
+  'Colorido': 'Farverig',
 } satisfies Record<string, string>;

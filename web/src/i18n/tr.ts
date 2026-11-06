@@ -3076,4 +3076,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Çanı çal: bütün işçiler köy merkezinin içine',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Çanı yine çal: herkes işe geri',
   'Este lugar já está cheio.': 'Burası zaten dolu.',
+  'Clássico': 'Klasik',
+  'Colorido': 'Renkli',
 } satisfies Record<string, string>;

@@ -3073,4 +3073,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Qiqi na lali: o ira kece na dauvakacakacaka me ra curu ki na uluni koro',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Qiqi tale na lali: era lesu kece ki na cakacaka',
   'Este lugar já está cheio.': 'Sa vakasinaiti oti na vanua oqo.',
+  'Clássico': 'Vakamakawa',
+  'Colorido': 'Vakaroka',
 } satisfies Record<string, string>;

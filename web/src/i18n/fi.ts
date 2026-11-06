@@ -3144,4 +3144,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Soita kelloa: kaikki työläiset kyläkeskuksen sisään',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Soita kelloa uudestaan: kaikki takaisin töihin',
   'Este lugar já está cheio.': 'Tämä paikka on jo täynnä.',
+  'Clássico': 'Klassinen',
+  'Colorido': 'Värikäs',
 } satisfies Record<string, string>;

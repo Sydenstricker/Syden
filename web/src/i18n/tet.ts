@@ -3076,4 +3076,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Baku sinu: traballadór hotu tama ba sentru knua',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Baku fali sinu: ema hotu fila ba servisu',
   'Este lugar já está cheio.': 'Fatin ne’e nakonu ona.',
+  'Clássico': 'Klásiku',
+  'Colorido': 'Kór-kór',
 } satisfies Record<string, string>;

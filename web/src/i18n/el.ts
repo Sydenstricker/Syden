@@ -3080,4 +3080,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Χτύπα την καμπάνα: όλοι οι εργάτες μέσα στο κέντρο του χωριού',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Χτύπα ξανά την καμπάνα: όλοι πίσω στη δουλειά',
   'Este lugar já está cheio.': 'Αυτό το μέρος είναι ήδη γεμάτο.',
+  'Clássico': 'Κλασικό',
+  'Colorido': 'Πολύχρωμο',
 } satisfies Record<string, string>;

@@ -3143,4 +3143,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'វាយកណ្ដឹង៖ កម្មករទាំងអស់ចូលក្នុងមជ្ឈមណ្ឌលភូមិ',
   'Tocar o sino de novo: todos de volta ao trabalho': 'វាយកណ្ដឹងម្ដងទៀត៖ ទាំងអស់គ្នាត្រឡប់ទៅធ្វើការវិញ',
   'Este lugar já está cheio.': 'កន្លែងនេះពេញហើយ។',
+  'Clássico': 'បុរាណ',
+  'Colorido': 'ចម្រុះពណ៌',
 } satisfies Record<string, string>;

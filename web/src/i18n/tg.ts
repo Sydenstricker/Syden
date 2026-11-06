@@ -3154,4 +3154,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Зангро зан: ҳамаи коргарон ба дохили маркази деҳа',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Зангро боз зан: ҳама ба кор баргарданд',
   'Este lugar já está cheio.': 'Ин ҷой аллакай пур аст.',
+  'Clássico': 'Классикӣ',
+  'Colorido': 'Рангоранг',
 } satisfies Record<string, string>;

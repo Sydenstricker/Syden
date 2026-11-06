@@ -3157,4 +3157,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'ཅང་ཏིང་བརྡུང་། ལཱ་གཡོག་པ་ཆ་མཉམ་གཡུས་ཀྱི་ལྟེ་བའི་ནང་ན།',
   'Tocar o sino de novo: todos de volta ao trabalho': 'ཅང་ཏིང་ལོག་བརྡུང་། ཆ་མཉམ་ལཱ་ལུ་ལོག།',
   'Este lugar já está cheio.': 'ས་གནས་འདི་ཧེ་མ་ལས་གང་ཡི།',
+  'Clássico': 'སྔར་སྲོལ།',
+  'Colorido': 'ཚོས་གཞི་ཅན།',
 } satisfies Record<string, string>;

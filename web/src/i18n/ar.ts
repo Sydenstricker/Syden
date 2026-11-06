@@ -3098,4 +3098,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'قرع الجرس: كل العمال إلى داخل مركز القرية',
   'Tocar o sino de novo: todos de volta ao trabalho': 'قرع الجرس مرة أخرى: عودة الجميع إلى العمل',
   'Este lugar já está cheio.': 'هذا المكان ممتلئ بالفعل.',
+  'Clássico': 'كلاسيكي',
+  'Colorido': 'ملوّن',
 } satisfies Record<string, string>;

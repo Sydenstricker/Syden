@@ -3059,4 +3059,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'மணியை அடி: எல்லாத் தொழிலாளிகளும் கிராம மையத்துக்குள்',
   'Tocar o sino de novo: todos de volta ao trabalho': 'மீண்டும் மணியை அடி: எல்லாரும் மீண்டும் வேலைக்கு',
   'Este lugar já está cheio.': 'இந்த இடம் ஏற்கனவே நிரம்பிவிட்டது.',
+  'Clássico': 'கிளாசிக்',
+  'Colorido': 'வண்ணமயம்',
 } satisfies Record<string, string>;

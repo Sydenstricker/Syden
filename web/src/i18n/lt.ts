@@ -3146,4 +3146,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Skambink varpu: visi darbininkai į kaimo centrą',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Skambink dar kartą: visi atgal į darbą',
   'Este lugar já está cheio.': 'Ši vieta jau pilna.',
+  'Clássico': 'Klasikinis',
+  'Colorido': 'Spalvingas',
 } satisfies Record<string, string>;

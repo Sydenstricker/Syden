@@ -3073,4 +3073,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Piga kengele: wafanyakazi wote waingie ndani ya kitovu cha kijiji',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Piga kengele tena: wote warudi kazini',
   'Este lugar já está cheio.': 'Mahali hapa pameshajaa.',
+  'Clássico': 'Asili',
+  'Colorido': 'Yenye rangi',
 } satisfies Record<string, string>;

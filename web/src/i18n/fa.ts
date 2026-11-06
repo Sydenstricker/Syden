@@ -3067,4 +3067,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'زنگ را بزن: همه‌ی کارگرها به داخل مرکز روستا',
   'Tocar o sino de novo: todos de volta ao trabalho': 'دوباره زنگ را بزن: همه برگردند سر کار',
   'Este lugar já está cheio.': 'این‌جا دیگر پر است.',
+  'Clássico': 'کلاسیک',
+  'Colorido': 'رنگارنگ',
 } satisfies Record<string, string>;

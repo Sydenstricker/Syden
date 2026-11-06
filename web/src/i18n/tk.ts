@@ -3155,4 +3155,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Jaňy kak: ähli işçiler oba merkeziniň içine',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Jaňy ýene kak: hemmeler işe gaýtsyn',
   'Este lugar já está cheio.': 'Bu ýer eýýäm doly.',
+  'Clássico': 'Klassiki',
+  'Colorido': 'Reňkli',
 } satisfies Record<string, string>;

@@ -3140,4 +3140,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Toca la campana: tots els treballadors dins del centre del poble',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Torna a tocar la campana: tothom de tornada a la feina',
   'Este lugar já está cheio.': 'Aquest lloc ja és ple.',
+  'Clássico': 'Clàssic',
+  'Colorido': 'Colorit',
 } satisfies Record<string, string>;

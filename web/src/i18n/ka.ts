@@ -3162,4 +3162,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'ზარის დარეკვა: ყველა მუშა სოფლის ცენტრში შედის',
   'Tocar o sino de novo: todos de volta ao trabalho': 'ზარის ხელახლა დარეკვა: ყველა სამუშაოს უბრუნდება',
   'Este lugar já está cheio.': 'ეს ადგილი უკვე სავსეა.',
+  'Clássico': 'კლასიკური',
+  'Colorido': 'ფერადი',
 } satisfies Record<string, string>;

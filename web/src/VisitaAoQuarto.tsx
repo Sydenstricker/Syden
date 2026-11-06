@@ -26,8 +26,9 @@ export function VisitaAoQuarto({ dono, aoFechar }: { dono: { id: number; nome: s
   const [erro, setErro] = useState<null | 'fechado' | 'falhou'>(null);
 
   const enviar = (msg: Record<string, unknown>) => ref.current?.contentWindow?.postMessage({ syden: 'quarto', ...msg }, location.origin);
-  // O ESTILO DE QUEM VISITA (06/11/2026): no 3D, o quarto é o de fábrica do piloto (a arrumação de quem mora é a do pixel art), com o
-  // coelho nas cores do avatar de quem mora, se ele está na comunidade aberta (senão, o mascote). A porta é conferida do mesmo jeito.
+  // O ESTILO DE QUEM VISITA (06/11/2026): no 3D, a arrumação de quem mora (a mesma do pixel art, lida pelo Quarto3D com o dono), no
+  // tema de quem visita, com o coelho nas cores do avatar de quem mora, se ele está na comunidade aberta (senão, o mascote). A porta
+  // é conferida do mesmo jeito.
   const estilo = useEstiloDoQuarto();
   const avatar = useDirectory().members.get(dono.id)?.avatarPronto ?? null;
   useEffect(() => {
@@ -98,6 +99,7 @@ export function VisitaAoQuarto({ dono, aoFechar }: { dono: { id: number; nome: s
             acoes={{ trofeu: { rotulo: t('Troféus'), sub: t('Em destaque'), onClick: () => setTrofeus(true) } }}
             estado="atoa"
             avatar={avatar}
+            dono={dono.id}
             titulo={t('O quarto de {nome}', { nome: dono.nome })}
           >
             <div className="quarto-novo-caixa">

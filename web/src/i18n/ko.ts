@@ -3062,4 +3062,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': '종 울리기: 일꾼 모두 마을 회관 안으로',
   'Tocar o sino de novo: todos de volta ao trabalho': '종 다시 울리기: 모두 다시 일하러',
   'Este lugar já está cheio.': '이 자리는 이미 꽉 찼어요.',
+  'Clássico': '클래식',
+  'Colorido': '컬러풀',
 } satisfies Record<string, string>;

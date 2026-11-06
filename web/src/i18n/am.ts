@@ -3074,4 +3074,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'ደወሉን መደወል፦ ሁሉም ሠራተኞች ወደ መንደር ማዕከሉ ውስጥ',
   'Tocar o sino de novo: todos de volta ao trabalho': 'ደወሉን እንደገና መደወል፦ ሁሉም ወደ ሥራ ይመለሱ',
   'Este lugar já está cheio.': 'ይህ ቦታ ቀድሞውኑ ሞልቷል።',
+  'Clássico': 'ክላሲክ',
+  'Colorido': 'ባለቀለም',
 } satisfies Record<string, string>;

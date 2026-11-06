@@ -3061,4 +3061,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': '敲钟：所有工人进入村庄中心',
   'Tocar o sino de novo: todos de volta ao trabalho': '再次敲钟：所有人回去干活',
   'Este lugar já está cheio.': '这里已经满了。',
+  'Clássico': '经典',
+  'Colorido': '多彩',
 } satisfies Record<string, string>;

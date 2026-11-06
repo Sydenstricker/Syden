@@ -3074,4 +3074,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Bate clopotul: toți muncitorii în centrul satului',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Bate clopotul din nou: toată lumea înapoi la muncă',
   'Este lugar já está cheio.': 'Locul acesta e deja plin.',
+  'Clássico': 'Clasic',
+  'Colorido': 'Colorat',
 } satisfies Record<string, string>;

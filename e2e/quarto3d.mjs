@@ -1,12 +1,15 @@
 // O QUARTO 3D NO APP (06/11/2026): o quarto abre em pixel art, o botão do canto vai ao 3D, as funções abrem pelos objetos do
-// 3D (o coelho anda até lá antes), o botão volta ao pixel art, e a escolha fica guardada. Mede o custo do quadro e confere que
-// sem foco ele não desenha. Por último, sem WebGL, quem escolheu o 3D vê o pixel art (e não uma tela preta).
+// 3D (o coelho anda até lá antes) NOS DOIS TEMAS (o clássico e o colorido, pelo botão dos móveis), o botão volta ao pixel art, e
+// as escolhas ficam guardadas. O 3D desenha a ARRUMAÇÃO DO PIXEL (a do servidor): a cama mudada de lugar e a planta em L
+// aparecem lá. Mede o custo do quadro e confere que sem foco ele não desenha. Por último, sem WebGL, quem escolheu o 3D vê o
+// pixel art (e não uma tela preta).
 //
-//   node e2e/quarto3d.mjs   (API de teste na 3099 e site de desenvolvimento na 5174; FOTOS=pasta para as fotos)
+//   node e2e/quarto3d.mjs   (API de teste na 3099 e site de desenvolvimento na 5174; API=, SITE= trocam; FOTOS=pasta das fotos)
 import fs from 'node:fs';
 import path from 'node:path';
 import { abrirNavegador, cadastrar, dispensarPresentes, falhou, ok, resumo } from './ajuda.mjs';
 
+const API = process.env.API ?? 'http://localhost:3099';
 const FOTOS = process.env.FOTOS ?? path.join('e2e', 'fotos', 'quarto3d');
 fs.mkdirSync(FOTOS, { recursive: true });
 const s = Date.now().toString().slice(-5);
@@ -75,15 +78,16 @@ try {
   await p.evaluate(() => delete document.hasFocus);
 
   // 5. As funções pelos objetos: hover dá o nome; o clique leva o coelho e abre a função
-  const caixa = await p.locator('.quarto3d-caixa').boundingBox();
-  const clicar = async (id) => {
-    const pt = await p.evaluate((i) => window.quarto3dDoTeste.pontoDaFuncao(i), id);
-    if (!pt) return falhou('sem o objeto de ' + id);
-    await p.mouse.move(caixa.x + pt.x, caixa.y + pt.y);
-    await p.waitForTimeout(150);
-    const etiqueta = await p.locator('.quarto3d-etiqueta').textContent().catch(() => null);
-    await p.mouse.click(caixa.x + pt.x, caixa.y + pt.y);
-    return etiqueta;
+  const funcoes = async (tema) => {
+    const caixa = await p.locator('.quarto3d-caixa').boundingBox();
+    const clicar = async (id) => {
+      const pt = await p.evaluate((i) => window.quarto3dDoTeste.pontoDaFuncao(i), id);
+      if (!pt) return falhou('sem o objeto de ' + id);
+      await p.mouse.move(caixa.x + pt.x, caixa.y + pt.y);
+      await p.waitForTimeout(150);
+      const etiqueta = await p.locator('.quarto3d-etiqueta').textContent().catch(() => null);
+      await p.mouse.click(caixa.x + pt.x, caixa.y + pt.y);
+      return etiqueta;
   };
   let et = await clicar('fone');
   if (et) ok(`ao passar o mouse no fone: "${et}"`);
@@ -94,7 +98,7 @@ try {
     () => ok(`o fone abre as Salas${cedo ? '' : ', depois de o coelho chegar'}`),
     () => falhou('o fone não abriu as Salas'),
   );
-  await foto(p, '3-fone-salas');
+  await foto(p, tema + '-3-fone-salas');
   await p.locator('.vila-painel-fechar').first().click();
 
   et = await clicar('computador');
@@ -103,9 +107,9 @@ try {
     () => falhou('a mesa não abriu os Mini-games'),
   );
   const pose = await p.evaluate(() => window.quarto3dDoTeste.medida());
-  if (pose.pose === 'sentado' && pose.animacao === 'computador') ok('o coelho sentou ao computador antes da função');
+  if (pose.pose === 'sentado' && pose.animacao === 'computador' && pose.em === 'cadeira') ok(`${tema}: o coelho sentou na cadeira antes da função`);
   else falhou('pose no computador: ' + JSON.stringify(pose));
-  await foto(p, '4-mesa-minigames');
+  await foto(p, tema + '-4-mesa-minigames');
   await p.locator('.jogos-painel .vila-painel-fechar').click();
 
   const temaAntes = await p.evaluate(() => document.documentElement.dataset.theme ?? document.documentElement.className);
@@ -119,7 +123,7 @@ try {
   await p.waitForTimeout(1500);
   const m2 = await p.evaluate(() => window.quarto3dDoTeste.medida());
   console.log(`   depois do abajur: ${m2.ms.toFixed(2)} ms por quadro · ${m2.chamadas} chamadas`);
-  await foto(p, '5-3d-depois-do-abajur');
+  await foto(p, tema + '-5-3d-depois-do-abajur');
 
   // o quadro leva aos Amigos (sai da home) e o guarda-roupa abre as Configurações (uma janela por cima)
   await clicar('quadro');
@@ -127,7 +131,7 @@ try {
     () => ok('o quadro leva aos Amigos'),
     () => falhou('o quadro não levou aos Amigos'),
   );
-  await foto(p, '6-quadro-amigos');
+  await foto(p, tema + '-6-quadro-amigos');
   await p.getByRole('button', { name: /Voltar/ }).first().click();
   await p.locator('.quarto3d-caixa:not(.escondida) canvas').waitFor({ timeout: 30_000 });
   await p.waitForTimeout(800);
@@ -136,7 +140,7 @@ try {
     () => ok('o guarda-roupa abre o Guarda-roupa'),
     () => falhou('o guarda-roupa não abriu'),
   );
-  await foto(p, '6-guarda-roupa');
+  await foto(p, tema + '-6-guarda-roupa');
   await p.keyboard.press('Escape');
   await p.waitForTimeout(600);
   if (await p.locator('[role="dialog"]').count()) await p.getByRole('button', { name: 'Fechar' }).first().click().catch(() => {});
@@ -146,9 +150,57 @@ try {
   await p.evaluate(() => window.quarto3dDoTeste.definirEstado('ausente'));
   await p.waitForTimeout(7000);
   const deitado = await p.evaluate(() => window.quarto3dDoTeste.medida());
-  if (deitado.pose === 'deitado') ok('ausente: dorme na cama');
+  if (deitado.pose === 'deitado' && deitado.em === 'cama') ok(`${tema}: ausente, dorme na cama`);
   else falhou('ausente: ' + JSON.stringify(deitado));
-  await foto(p, '7-ausente');
+  await foto(p, tema + '-7-ausente');
+  await p.evaluate(() => window.quarto3dDoTeste.definirEstado('atoa'));
+  };
+  await funcoes('classico');
+
+  // 6b. O TEMA: o botão dos móveis troca o clássico pelo colorido (a mesma arrumação), guardado no aparelho
+  const tema = p.locator('.quarto-tema-botao');
+  if ((await p.evaluate(() => window.quarto3dDoTeste.medida().tema)) === 'classico' && (await tema.count())) ok('de fábrica, o tema clássico, e o botão dos móveis está lá');
+  else falhou('o tema de fábrica não é o clássico');
+  const antes = await p.evaluate(() => window.quarto3dDoTeste.medida().moveis);
+  await tema.click();
+  await p.waitForFunction(() => window.quarto3dDoTeste?.medida().tema === 'colorido' && window.quarto3dDoTeste.desenhados > 3, null, { timeout: 30_000 }).then(
+    () => ok('o botão troca para o tema colorido (Tiny Treats), sem recarregar'),
+    () => falhou('o tema não trocou'),
+  );
+  // (os primeiros quadros do tema novo montam os shaders: a média vale depois de uns segundos)
+  await p.waitForTimeout(3000);
+  const depois = await p.evaluate(() => window.quarto3dDoTeste.medida());
+  const mesmos = antes.every((m) => depois.moveis.some((d) => d.id === m.id && Math.abs(d.rumo - m.rumo) < 0.01));
+  if (mesmos && antes.length === depois.moveis.length) ok(`os mesmos ${antes.length} móveis nos mesmos giros, nos dois temas`);
+  else falhou('os móveis mudaram com o tema: ' + JSON.stringify({ antes, depois: depois.moveis }));
+  console.log(`   colorido: ${depois.ms.toFixed(2)} ms por quadro · ${depois.chamadas} chamadas · ${depois.triangulos} triângulos · ${depois.juntas} malha(s) juntada(s)`);
+  if ((await p.evaluate(() => localStorage.getItem('syden:quarto3d-tema'))) === 'colorido') ok('o tema ficou guardado no aparelho');
+  else falhou('o tema não foi guardado');
+  await p.waitForTimeout(800);
+  await foto(p, 'colorido-0');
+  await funcoes('colorido');
+
+  // 6c. A ARRUMAÇÃO É A DO PIXEL: a cama noutro lugar e a planta em L, guardadas no servidor, aparecem no 3D
+  const token = await p.evaluate(() => localStorage.getItem('janja.token'));
+  const r = await fetch(API + '/api/quarto', {
+    method: 'PUT',
+    headers: { authorization: 'Bearer ' + token, 'content-type': 'application/json' },
+    body: JSON.stringify({ moveis: { cama: { c: [6, 6.5], lado: 2 } }, planta: 'l', guardados: ['poltrona'] }),
+  });
+  if (!r.ok) falhou('não guardou a arrumação de teste: ' + r.status);
+  await p.reload();
+  await p.locator('.quarto3d-caixa:not(.escondida) canvas').waitFor({ timeout: 30_000 });
+  await p.waitForTimeout(1200);
+  const l = await p.evaluate(() => window.quarto3dDoTeste.medida());
+  const cama = l.moveis.find((m) => m.id === 'cama');
+  // no pixel, (u, v) = (6, 6,5) e o lado 2; no 3D, x = v e z = u, e o lado 2 olha para −z
+  if (l.planta === 'l' && cama && Math.abs(cama.x - 6.5) < 0.6 && Math.abs(cama.z - 6) < 0.8 && Math.abs(Math.abs(cama.rumo) - Math.PI) < 0.01) ok(`a arrumação do pixel no 3D: a planta em L e a cama em (${cama.x}, ${cama.z}), virada`);
+  else falhou('a arrumação do pixel não veio: ' + JSON.stringify({ planta: l.planta, cama }));
+  await foto(p, 'colorido-l');
+  await p.locator('.quarto-tema-botao').click();
+  await p.waitForFunction(() => window.quarto3dDoTeste?.medida().tema === 'classico', null, { timeout: 30_000 });
+  await p.waitForTimeout(800);
+  await foto(p, 'classico-l');
 
   // 7. Volta ao pixel art, e a escolha persiste ao recarregar
   await p.locator('.quarto-estilo-botao').click();

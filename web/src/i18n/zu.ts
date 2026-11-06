@@ -3145,4 +3145,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Shaya insimbi: zonke izisebenzi zingene esikhungweni sedolobhana',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Shaya insimbi futhi: bonke babuyele emsebenzini',
   'Este lugar já está cheio.': 'Le ndawo isigcwele.',
+  'Clássico': 'Okudala',
+  'Colorido': 'Okunemibala',
 } satisfies Record<string, string>;

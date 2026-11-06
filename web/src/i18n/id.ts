@@ -3071,4 +3071,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Bunyikan lonceng: semua pekerja masuk ke pusat desa',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Bunyikan lonceng lagi: semua kembali bekerja',
   'Este lugar já está cheio.': 'Tempat ini sudah penuh.',
+  'Clássico': 'Klasik',
+  'Colorido': 'Berwarna',
 } satisfies Record<string, string>;

@@ -26,14 +26,14 @@ const PAGINAS = [
   {
     arquivo: 'termos.html',
     data: '6 de novembro de 2026',
-    resumo: '0bd78aa9f731c01a',
-    traducao: { arquivo: 'en/terms.html', data: 'November 6, 2026', resumo: '56d1206aee9e4e01' },
+    resumo: 'a6ed2bc7fc5ca7de',
+    traducao: { arquivo: 'en/terms.html', data: 'November 6, 2026', resumo: 'ff0c083590d2d501' },
   },
   {
     arquivo: 'privacidade.html',
     data: '6 de novembro de 2026',
-    resumo: 'b7f18d711a45c6cb',
-    traducao: { arquivo: 'en/privacy.html', data: 'November 6, 2026', resumo: '2618508debe3f955' },
+    resumo: '69aa526270465b8e',
+    traducao: { arquivo: 'en/privacy.html', data: 'November 6, 2026', resumo: '0bca1892c45ebfc6' },
   },
 ];
 

@@ -3144,4 +3144,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'සීනුව නාද කරන්න: සියලු කම්කරුවන් ගම් මධ්‍යස්ථානය ඇතුළට',
   'Tocar o sino de novo: todos de volta ao trabalho': 'නැවත සීනුව නාද කරන්න: සියල්ලෝම නැවත වැඩට',
   'Este lugar já está cheio.': 'මෙම ස්ථානය දැනටමත් පිරී ඇත.',
+  'Clássico': 'සම්භාව්‍ය',
+  'Colorido': 'වර්ණවත්',
 } satisfies Record<string, string>;

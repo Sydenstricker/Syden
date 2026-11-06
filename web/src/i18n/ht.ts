@@ -3154,4 +3154,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Sonnen klòch la: tout travayè antre nan sant vilaj la',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Sonnen klòch la ankò: tout moun tounen nan travay',
   'Este lugar já está cheio.': 'Kote sa a deja plen.',
+  'Clássico': 'Klasik',
+  'Colorido': 'Koloré',
 } satisfies Record<string, string>;

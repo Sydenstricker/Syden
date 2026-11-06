@@ -3164,4 +3164,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Qo‘ng‘iroqni chal: barcha ishchilar qishloq markazi ichiga',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Qo‘ng‘iroqni yana chal: hamma ishga qaytsin',
   'Este lugar já está cheio.': 'Bu joy allaqachon to‘lgan.',
+  'Clássico': 'Klassik',
+  'Colorido': 'Rang-barang',
 } satisfies Record<string, string>;

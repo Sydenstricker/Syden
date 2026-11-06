@@ -3163,4 +3163,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Հնչեցրու զանգը. բոլոր բանվորները՝ գյուղի կենտրոնի ներս',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Կրկին հնչեցրու զանգը. բոլորը՝ վերադարձ աշխատանքի',
   'Este lugar já está cheio.': 'Այս տեղն արդեն լիքն է։',
+  'Clássico': 'Դասական',
+  'Colorido': 'Գունավոր',
 } satisfies Record<string, string>;

@@ -3144,4 +3144,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Garaac gambaleelka: shaqaalaha oo dhan gudaha xarunta tuulada',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Mar kale garaac gambaleelka: dhammaan dib ugu laabta shaqada',
   'Este lugar já está cheio.': 'Meeshan horey ayay u buuxday.',
+  'Clássico': 'Caadi',
+  'Colorido': 'Midab badan',
 } satisfies Record<string, string>;

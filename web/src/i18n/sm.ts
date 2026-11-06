@@ -3078,4 +3078,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Tatā le logo: o tagata faigaluega uma i totonu o le ogatotonu o le nuu',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Toe tatā le logo: toe foʻi uma i le galuega',
   'Este lugar já está cheio.': 'Ua uma ona tumu lenei nofoaga.',
+  'Clássico': 'Masani',
+  'Colorido': 'Lanu eseese',
 } satisfies Record<string, string>;

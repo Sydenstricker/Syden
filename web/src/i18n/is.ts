@@ -3145,4 +3145,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Hringdu bjöllunni: allir verkamenn inn í þorpsmiðjuna',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Hringdu aftur: allir aftur til vinnu',
   'Este lugar já está cheio.': 'Þessi staður er þegar fullur.',
+  'Clássico': 'Klassískt',
+  'Colorido': 'Litríkt',
 } satisfies Record<string, string>;

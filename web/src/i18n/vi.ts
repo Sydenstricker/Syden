@@ -3044,4 +3044,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Rung chuông: mọi nhân công vào trong trung tâm làng',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Rung chuông lần nữa: mọi người quay lại làm việc',
   'Este lugar já está cheio.': 'Chỗ này đã đầy rồi.',
+  'Clássico': 'Cổ điển',
+  'Colorido': 'Nhiều màu',
 } satisfies Record<string, string>;

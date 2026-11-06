@@ -3056,4 +3056,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'గంట మోగించు: కూలీలందరూ గ్రామ కేంద్రం లోపలికి',
   'Tocar o sino de novo: todos de volta ao trabalho': 'మళ్ళీ గంట మోగించు: అందరూ మళ్ళీ పనికి',
   'Este lugar já está cheio.': 'ఈ చోటు ఇప్పటికే నిండిపోయింది.',
+  'Clássico': 'క్లాసిక్',
+  'Colorido': 'రంగురంగుల',
 } satisfies Record<string, string>;

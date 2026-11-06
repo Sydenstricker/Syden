@@ -3145,4 +3145,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'ຕີລະຄັງ: ກຳມະກອນທຸກຄົນເຂົ້າໄປໃນສູນກາງບ້ານ',
   'Tocar o sino de novo: todos de volta ao trabalho': 'ຕີລະຄັງອີກ: ທຸກຄົນກັບໄປເຮັດວຽກ',
   'Este lugar já está cheio.': 'ບ່ອນນີ້ເຕັມແລ້ວ.',
+  'Clássico': 'ຄລາສສິກ',
+  'Colorido': 'ຫຼາກສີ',
 } satisfies Record<string, string>;

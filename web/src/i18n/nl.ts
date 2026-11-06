@@ -3073,4 +3073,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Luid de klok: alle arbeiders het dorpscentrum in',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Luid de klok nog eens: iedereen weer aan het werk',
   'Este lugar já está cheio.': 'Deze plek is al vol.',
+  'Clássico': 'Klassiek',
+  'Colorido': 'Kleurrijk',
 } satisfies Record<string, string>;

@@ -3069,4 +3069,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Ring the bell: every worker into the town center',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Ring the bell again: everyone back to work',
   'Este lugar já está cheio.': 'This place is already full.',
+  'Clássico': 'Classic',
+  'Colorido': 'Colorful',
 } satisfies Record<string, string>;

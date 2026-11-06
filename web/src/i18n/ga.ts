@@ -3080,4 +3080,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Buail an clog: na hoibrithe go léir isteach i lár an tsráidbhaile',
   'Tocar o sino de novo: todos de volta ao trabalho': 'Buail an clog arís: gach duine ar ais ag obair',
   'Este lugar já está cheio.': 'Tá an áit seo lán cheana.',
+  'Clássico': 'Clasaiceach',
+  'Colorido': 'Ildaite',
 } satisfies Record<string, string>;

@@ -3055,4 +3055,6 @@ export default {
   'Tocar o sino: todos os trabalhadores para dentro do centro da vila': '鐘を鳴らす：労働者全員を村の中心の中へ',
   'Tocar o sino de novo: todos de volta ao trabalho': 'もう一度鐘を鳴らす：全員仕事に戻る',
   'Este lugar já está cheio.': 'ここはもう満員です。',
+  'Clássico': 'クラシック',
+  'Colorido': 'カラフル',
 } satisfies Record<string, string>;
