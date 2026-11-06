@@ -1026,6 +1026,34 @@ ficou combinado:
   - **O coelho sentado no sofá do salão, por lugar** (16/10/2026, relato dele: "os coelhos continuam flutuando"): com o
     sofá de frente, eles ficam por cima do encosto; de costas, o encosto já os cobre (`atras`), mas não basta. Pede uma
     pose sentada para cada posição do sofá e a CAMADA DA FRENTE do assento à parte, como a poltrona do quarto.
+  - **Da auditoria de 06/11/2026** (ver abaixo): a noite com a luz do abajur PINTADA nas plantas em L e no cubículo (lá a luz
+    é a por código, com as faixas); a peça avulsa da janela original (ela traz uma faixa de parede creme entre a cortina e
+    o caixilho, que não muda com a cor da parede); as folhas da planta alta passam da quina do quarto (até ~100 px no
+    canto da frente).
+- **A AUDITORIA, A COR DA PAREDE E DO PISO E AS PLANTAS (06/11/2026, pedidos dele).**
+  - **O livro em cima do armário cortava** (o relato): a vista de um móvel começava no canto (0, 0) do quadro dela, e o que
+    o objeto de cima passava da linha 0 não era desenhado. Os móveis com tampo começam com uma MARGEM no quadro
+    (`MARGEM_DO_TAMPO`). A auditoria (`window.auditoriaDoTeste`: pixels do desenho, os que entraram na peça e os vistos)
+    rodou cada objeto em cada móvel com tampo, em cada giro e em 9 lugares do tampo: 2.160 casos, nenhum cortado. E mais
+    três: a caneca de costas virava um contorno vazio (a página tirava "a sombra pintada", a cor mais comum do pé, e nos
+    objetos essa cor é o corpo deles: agora não nos objetos de cima), o objeto podia ficar com meio corpo fora do tampo
+    (o pé dele, um círculo do tamanho da base do desenho, fica dentro), e o lugar no tampo era o pé da GRADE, maior que o
+    desenho (agora o pé medido). Sem defeito: a luz na placa e no processador (de dia iguais, de noite ±1 em ~400 canais),
+    os objetos da parede em todo trecho e altura (nunca saem da tela), os móveis nas bordas (só as folhas da planta alta).
+  - **A cor da parede e do piso**, no Editar → Cômodo, em figuras: 8 paredes (creme de fábrica, sálvia, terracota, azul,
+    lavanda, mostarda, rosa, cinza) e 6 pisos (mel de fábrica, carvalho, nogueira, cerejeira, cinza, pinho). Por código, como
+    o tapete: cada pixel do reboco (claro e pouco saturado, fora do chão; não o rodapé nem a cornija) e do chão vezes a razão
+    entre a cor escolhida e a média dele na casca, a mesma de dia e de noite (`pintarRegioes`, na montagem da cena). A
+    luz das peças continua lida da casca SEM cor. Mora em `cores` ("parede", "piso"), que o servidor já conferia. O que
+    o recorte do pufe e do tapete trouxe de chão ganha a cor do piso. Só no quarto: no salão (tijolo) pediria outra máscara.
+  - **As plantas** (Editar → Cômodo): o quarto de sempre, **em L** (o canto do fundo é um pilar de 4 × 4 casas; as faces dele
+    são as paredes do fundo trazidas 4 casas para a frente) e o **cubículo** (6 × 6, as paredes 2 casas à frente). As
+    cascas saem por código (`janelas/plantas.py`), a grade continua a de 8 × 8 e a planta diz quais casas são chão
+    (`PLANTAS`) e os TRECHOS de parede (de, até, recuo): a janela e os objetos da parede vão num trecho só. A janela grande
+    só cabe na parede inteira: nas outras plantas a de fábrica é a "com cortinas". Cada planta tem a arrumação de fábrica
+    dela (`INICIAIS`, `PAREDE_DA_PLANTA`); trocar de planta mantém o que continua no chão, leva o que caiu fora para a
+    casa livre mais perto (ou guarda; o móvel de função vai para o lugar de fábrica), e quem não mexeu na de fábrica recebe
+    a da planta nova. O servidor guarda `planta` (código); quem visita vê igual. Testes: `comodo.mjs` (no app).
 - **Feito em 11/10/2026:** a caixa de ideias dizia "aqui embaixo da vila"; agora diz "do quarto", nos 70 idiomas.
 - Saldo em 08/10/2026: PixelLab 493 de 2.000 gerações restando (plano Tier 1, US$ 12/mês; a repintura nova
   `inpaint-v3` exige o Tier 2), Retro Diffusion US$ 3,28.
