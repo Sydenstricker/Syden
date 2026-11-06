@@ -26,8 +26,8 @@ const PAGINAS = [
   {
     arquivo: 'termos.html',
     data: '6 de novembro de 2026',
-    resumo: 'ba88205ffe41ff63',
-    traducao: { arquivo: 'en/terms.html', data: 'November 6, 2026', resumo: '7d548df14738c91b' },
+    resumo: 'cad50637e13a0117',
+    traducao: { arquivo: 'en/terms.html', data: 'November 6, 2026', resumo: 'aea19051d2c79cb1' },
   },
   {
     arquivo: 'privacidade.html',

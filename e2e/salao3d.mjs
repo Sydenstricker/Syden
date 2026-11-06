@@ -3,15 +3,16 @@
 // do quadro; sem foco, não desenha. Depois, o NATAL na pré-visualização (?natal, só no site de desenvolvimento): a árvore, o trem
 // andando e o coelho do recado sentado na poltrona vermelha.
 //
-//   API de teste na 3099 (INVITE_CODE=teste, CORS_ORIGIN=http://localhost:5174) e o site de desenvolvimento na 5174.
+//   API de teste na 3099 (INVITE_CODE=teste, CORS_ORIGIN=http://localhost:5174) e o site de desenvolvimento na 5174
+//   (API= e APP= trocam os endereços, para rodar ao lado de outros testes).
 //   node e2e/salao3d.mjs   (FOTOS=pasta para as fotos; padrão e2e/fotos/salao3d)
 import fs from 'node:fs';
 import path from 'node:path';
 import { io } from 'socket.io-client';
 import { abrirNavegador, falhou, ok, resumo } from './ajuda.mjs';
 
-const API = 'http://localhost:3099';
-const APP = 'http://localhost:5174/app/';
+const API = process.env.API ?? 'http://localhost:3099';
+const APP = process.env.APP ?? 'http://localhost:5174/app/';
 const FOTOS = process.env.FOTOS ?? path.join('e2e', 'fotos', 'salao3d');
 fs.mkdirSync(FOTOS, { recursive: true });
 const sufixo = Date.now().toString(36).slice(-5);
@@ -140,6 +141,37 @@ try {
   const q1 = (await p.evaluate(() => window.salao3dDoTeste.medida())).desenhados;
   if ((q1 - q0) / 2 <= 32) ok(`no máximo ~30 quadros por segundo (${((q1 - q0) / 2).toFixed(0)})`);
   else falhou('quadros demais: ' + (q1 - q0) / 2);
+
+  // 4b. O BANHEIRO do canto do fundo: o patinho boia com foco e para sem foco; com a call cheia (12), ninguém cai dentro dele
+  const px0 = (await p.evaluate(() => window.salao3dDoTeste.medida())).patinho;
+  await p.waitForTimeout(1200);
+  const px1 = (await p.evaluate(() => window.salao3dDoTeste.medida())).patinho;
+  if (px0 !== null && px1 !== px0) ok(`o patinho boia na banheira (${px0.toFixed(3)} → ${px1.toFixed(3)})`);
+  else falhou('o patinho não boiou: ' + px0 + ' ' + px1);
+  await p.evaluate(() => (document.hasFocus = () => false));
+  const pf0 = (await p.evaluate(() => window.salao3dDoTeste.medida())).patinho;
+  await p.waitForTimeout(1000);
+  const pf1 = (await p.evaluate(() => window.salao3dDoTeste.medida())).patinho;
+  if (pf0 === pf1) ok('sem foco, o patinho para');
+  else falhou('sem foco, o patinho mexeu');
+  await p.evaluate(() => delete document.hasFocus);
+  const cheia = await p.evaluate(() => {
+    const s = window.salao3dDoTeste;
+    const cores = { pelo: '#f3ede4', roupa: '#5a7d8c' };
+    s.definirPessoas(Array.from({ length: 12 }, (_, i) => ({ id: 9000 + i, nome: 'p' + i, papel: i === 0 ? 'transmitindo' : i === 1 ? 'jogando' : 'call', cores })));
+    return s.medida().pessoas;
+  });
+  const noBanheiro = cheia.filter((x) => x.x < 4.35 && x.z < 2.85);
+  if (cheia.length === 12 && !noBanheiro.length) ok('com 12 na call, todos acham lugar fora do banheiro');
+  else falhou('a call cheia: ' + cheia.length + ' pessoas, ' + noBanheiro.length + ' no banheiro');
+  await p.locator('.salao3d').screenshot({ path: path.join(FOTOS, '2-3d-call-cheia.png') });
+  await p.evaluate(() => window.salao3dDoTeste.definirNoite(true));
+  await p.waitForTimeout(500);
+  await p.locator('.salao3d').screenshot({ path: path.join(FOTOS, '2-3d-noite.png') });
+  await p.evaluate(() => window.salao3dDoTeste.definirNoite(false));
+  // esvazia (a lista de verdade volta quando a call mudar): o resto do teste não depende dela
+  await p.evaluate(() => window.salao3dDoTeste.definirPessoas([]));
+  await p.waitForTimeout(300);
 
   // 5. As funções pelos objetos
   const caixa = await p.locator('.salao3d-caixa').boundingBox();

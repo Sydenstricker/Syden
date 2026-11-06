@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { carregarCoelho, CORES_DO_MASCOTE, copiarCoelho, type CoelhoCopiado, type CoresDoCoelho } from '../coelho3d';
 import type { Epoca } from './epocas';
 
@@ -22,7 +23,8 @@ import type { Epoca } from './epocas';
  * - SEM FOCO OU ESCONDIDA, NÃO DESENHA; no máximo 30 quadros por segundo; com "menos movimento", o trem para e as luzes ficam acesas.
  *
  * Os modelos: KayKit (Furniture Bits e Restaurant Bits, já em web/public/quarto3d/; Holiday Bits em web/public/salao3d/natal/) e o
- * Furniture Kit do Kenney, todos CC0, com as licenças ao lado. O que nenhum tem (as paredes de tijolo, o fliperama, a jukebox, o
+ * Furniture Kit do Kenney e o banheiro do Tiny Treats (Bubbly Bathroom, de Isa Lousberg, em web/public/salao3d/banheiro/), todos
+ * CC0, com as licenças ao lado. O que nenhum tem (as paredes de tijolo, o fliperama, a jukebox, o
  * microfone, o troféu, a janela, as telas) é feito aqui por código.
  */
 
@@ -50,9 +52,13 @@ const PALETA_KENNEY: Record<string, string> = {
   metalDark: '#4b5451',
 };
 
-/** O endereço de um modelo pelo prefixo: q (quarto3d, KayKit), qk (quarto3d, Kenney), r (Restaurant Bits), k (salao3d, Kenney), n (o Natal). */
+/**
+ * O endereço de um modelo pelo prefixo: q (quarto3d, KayKit), qk (quarto3d, Kenney), r (Restaurant Bits), k (salao3d, Kenney),
+ * b (o banheiro, Tiny Treats), n (o Natal).
+ */
 function urlDe(nome: string) {
   const [p, arq] = nome.split(':') as [string, string];
+  if (p === 'b') return `${BASE}salao3d/banheiro/${arq}.gltf`;
   if (p === 'q') return `${BASE}quarto3d/${arq}.gltf`;
   if (p === 'qk') return `${BASE}quarto3d/kenney/${arq}.glb`;
   if (p === 'r') return `${BASE}quarto3d/restaurante/${arq}.gltf`;
@@ -94,30 +100,31 @@ interface Item {
 const PI = Math.PI;
 /** A arrumação de fábrica, pelo layout do salão de pixel art (o canto da TV, o bar no fundo, o fliperama e o karaokê). */
 const ARRUMACAO: Item[] = [
-  // o canto da TV: a TV na parede da esquerda, o sofá de frente, a mesinha no meio e as poltronas dos lados
-  { id: 'tapete', arquivo: 'q:rug_oval_B', x: 3.0, z: 4.6, giro: PI / 2, escala: 1.35 },
-  { id: 'rack', arquivo: 'k:cabinetTelevision', x: 0.35, z: 4.6, giro: PI / 2, escala: 1.25 },
-  { id: 'tv', arquivo: 'k:televisionModern', x: 0.42, z: 4.6, giro: PI / 2, escala: 1.55, funcao: 'tv' },
-  { id: 'sofa', arquivo: 'q:couch_pillows', x: 4.7, z: 4.6, giro: -PI / 2, uso: 'sofa' },
-  { id: 'mesinha', arquivo: 'q:table_low', x: 2.75, z: 4.6, giro: PI / 2, escala: 0.8 },
-  { arquivo: 'q:mug_A', x: 2.6, z: 4.3, y: 0.3 },
-  { id: 'poltrona-1', arquivo: 'q:armchair_pillows', x: 2.9, z: 2.3, giro: 0, uso: 'poltrona' },
-  { id: 'poltrona-2', arquivo: 'q:armchair_pillows', x: 2.9, z: 6.9, giro: PI, uso: 'poltrona' },
-  // o fundo: a planta, a estante (os canais), o quadro, a janela, o bar com as banquetas e a geladeira
-  { arquivo: 'qk:pottedPlant', x: 0.45, z: 0.45, escala: 1.5 },
-  { id: 'estante', arquivo: 'qk:bookcaseClosedWide', x: 1.85, z: 0.3, funcao: 'estante', escala: 1.1 },
-  { arquivo: 'qk:books', x: 1.45, z: 0.3, y: 1.74, escala: 1.4 },
-  { arquivo: 'qk:plantSmall2', x: 2.35, z: 0.3, y: 1.74 },
+  // o canto da TV: a TV na parede da esquerda, o sofá de frente, a mesinha no meio e as poltronas dos lados (desde o banheiro,
+  // 1,1 mais para a frente: o fundo da parede da esquerda é o banheiro e a passagem até a porta dele)
+  { id: 'tapete', arquivo: 'q:rug_oval_B', x: 3.0, z: 5.7, giro: PI / 2, escala: 1.35 },
+  { id: 'rack', arquivo: 'k:cabinetTelevision', x: 0.35, z: 5.7, giro: PI / 2, escala: 1.25 },
+  { id: 'tv', arquivo: 'k:televisionModern', x: 0.42, z: 5.7, giro: PI / 2, escala: 1.55, funcao: 'tv' },
+  { id: 'sofa', arquivo: 'q:couch_pillows', x: 4.7, z: 5.7, giro: -PI / 2, uso: 'sofa' },
+  { id: 'mesinha', arquivo: 'q:table_low', x: 2.75, z: 5.7, giro: PI / 2, escala: 0.8 },
+  { arquivo: 'q:mug_A', x: 2.6, z: 5.4, y: 0.3 },
+  { id: 'poltrona-1', arquivo: 'q:armchair_pillows', x: 2.9, z: 3.55, giro: 0, uso: 'poltrona' },
+  { id: 'poltrona-2', arquivo: 'q:armchair_pillows', x: 2.9, z: 7.85, giro: PI, uso: 'poltrona' },
+  // o fundo, depois do banheiro: o abajur no canto, a estante (os canais), a janela, o bar com as banquetas e a geladeira
+  { arquivo: 'q:lamp_standing', x: 4.85, z: 0.5 },
+  { id: 'estante', arquivo: 'qk:bookcaseClosedWide', x: 6.1, z: 0.3, funcao: 'estante', escala: 1.1 },
+  { arquivo: 'qk:books', x: 5.7, z: 0.3, y: 1.74, escala: 1.4 },
+  { arquivo: 'qk:plantSmall2', x: 6.6, z: 0.3, y: 1.74 },
   { id: 'balcao', arquivo: '@balcao', x: 8.6, z: 1.9, funcao: 'balcao' },
   { arquivo: 'k:kitchenCoffeeMachine', x: 7.5, z: 1.85, y: 0.86 },
   { id: 'banqueta-1', arquivo: 'k:stoolBar', x: 7.5, z: 2.85, giro: PI, uso: 'banqueta' },
   { id: 'banqueta-2', arquivo: 'k:stoolBar', x: 8.6, z: 2.85, giro: PI, uso: 'banqueta' },
   { id: 'banqueta-3', arquivo: 'k:stoolBar', x: 9.7, z: 2.85, giro: PI, uso: 'banqueta' },
   { arquivo: 'k:kitchenFridgeLarge', x: 11.3, z: 0.45 },
-  { arquivo: 'q:lamp_standing', x: 5.15, z: 0.55 },
+  { arquivo: 'qk:pottedPlant', x: 11.5, z: 2.75, escala: 1.5 },
   // o canto do fliperama e do karaokê, na parede da TV
-  { id: 'fliperama', arquivo: '@fliperama', x: 0.5, z: 8.0, giro: PI / 2, funcao: 'fliperama' },
-  { id: 'jukebox', arquivo: '@jukebox', x: 0.45, z: 9.7, giro: PI / 2, funcao: 'jukebox' },
+  { id: 'fliperama', arquivo: '@fliperama', x: 0.5, z: 8.3, giro: PI / 2, funcao: 'fliperama' },
+  { id: 'jukebox', arquivo: '@jukebox', x: 0.45, z: 9.85, giro: PI / 2, funcao: 'jukebox' },
   { id: 'microfone', arquivo: '@microfone', x: 1.7, z: 10.6, giro: PI / 2, funcao: 'microfone' },
   { arquivo: 'k:speaker', x: 0.35, z: 10.9, giro: PI / 2 },
   // a mesa de jogos na frente (no Natal, ela dá lugar à árvore)
@@ -177,16 +184,64 @@ interface DaParede {
   escala?: number;
 }
 const NA_PAREDE: DaParede[] = [
-  { arquivo: 'q:pictureframe_large_B', parede: 'fundo', u: 4.1, y: 1.95, funcao: 'quadro' },
-  { arquivo: '@trofeu', parede: 'fundo', u: 8.6, y: 2.35, funcao: 'trofeu' },
+  { arquivo: 'q:pictureframe_large_B', parede: 'esquerda', u: 9.1, y: 2.3, funcao: 'quadro' },
+  { arquivo: '@trofeu', parede: 'fundo', u: 9.7, y: 2.35, funcao: 'trofeu' },
   { arquivo: 'n:wreath', parede: 'esquerda', u: 11.05, y: 2.75, natal: 'so', escala: 0.6 },
-  { arquivo: 'n:bell_decorated', parede: 'fundo', u: 6.35, y: 2.85, natal: 'so', escala: 0.5 },
-  { arquivo: 'n:wreath', parede: 'fundo', u: 1.85, y: 2.65, natal: 'so', escala: 0.45 },
+  { arquivo: 'n:bell_decorated', parede: 'fundo', u: 7.95, y: 2.85, natal: 'so', escala: 0.5 },
+  { arquivo: 'n:wreath', parede: 'fundo', u: 6.1, y: 2.75, natal: 'so', escala: 0.45 },
 ];
 /** A janela do fundo (ambientação): de fora, o céu da hora. */
-const JANELA = { u: 6.35, y: 1.75, w: 1.5, h: 1.3 };
+const JANELA = { u: 7.95, y: 1.75, w: 1.5, h: 1.3 };
 /** A porta, na parede da esquerda, perto da frente (por onde a turma chega). */
 const PORTA_U = 11.05;
+
+/**
+ * O BANHEIRO (06/11/2026, pedido dele, pela foto do Bubbly Bathroom do Tiny Treats): no canto do fundo, entre a parede do fundo e
+ * a da esquerda, as duas de verdade do salão (por dentro, de azulejo); dos lados da sala, MURETAS baixas, para a câmera ver dentro
+ * (o corte das casas de boneca). A porta, aberta, encostada na parede da esquerda por dentro, na passagem da mureta da frente.
+ * É ambientação: nenhum objeto dele tem função (a tela não mente), e por isso ele também não acende ao passar o mouse.
+ * As peças paradas viram UMA malha só (todas usam a mesma textura do pacote): uma chamada de desenho para o banheiro inteiro;
+ * só o patinho, que boia, fica à parte.
+ */
+const BANHEIRO = { largura: 4.2, fundo: 2.7, espessura: 0.12, mureta: 0.5, porta: 1.2, piso: 0.03 };
+interface DoBanheiro {
+  arquivo: string;
+  x: number;
+  z: number;
+  y?: number;
+  giro?: number;
+  escala?: number;
+  /** Da parede: a origem do pacote fica onde está (a peça já nasce com as costas em z = 0), sem centrar a pegada. */
+  parede?: boolean;
+}
+const B = BANHEIRO;
+const PECAS_DO_BANHEIRO: DoBanheiro[] = [
+  // a pia no balcão azul, com o espelho em cima, e o que fica nela
+  { arquivo: 'b:cabinet_bathroom', x: 0.8, z: 0.6 },
+  { arquivo: 'b:mirror', x: 0.8, z: 0.01, y: 2.3, parede: true },
+  { arquivo: 'b:container_bathroom_D_blue', x: 1.32, z: 0.32, y: 0.98, giro: -0.4 },
+  { arquivo: 'b:soap_dish_blue', x: 1.3, z: 0.75, y: 0.98, giro: 0.3 },
+  { arquivo: 'b:toothbrush_cup_decorated', x: 0.25, z: 0.3, y: 0.98 },
+  { arquivo: 'b:container_bathroom_C_yellow', x: 0.28, z: 0.72, y: 0.98 },
+  // a banheira com a espuma (o patinho é à parte), e a prateleira de madeira em cima, com a vela, a planta e as toalhas
+  { arquivo: 'b:bath', x: 2.85, z: 0.8, giro: PI / 2 },
+  { arquivo: 'b:wall_shelf', x: 2.85, z: 0.01, y: 2.15, parede: true },
+  { arquivo: 'b:candle', x: 2.3, z: 0.25, y: 2.15 },
+  { arquivo: 'b:plant', x: 2.95, z: 0.26, y: 2.15, escala: 0.8 },
+  { arquivo: 'b:container_bathroom_A_blue', x: 3.45, z: 0.24, y: 2.15 },
+  { arquivo: 'b:container_bathroom_B_pink', x: 3.68, z: 0.26, y: 2.15 },
+  // o vaso encostado na mureta do lado, o papel e o lixinho
+  { arquivo: 'b:toilet', x: 3.7, z: 1.98, giro: -PI / 2 },
+  { arquivo: 'b:toilet_roll_holder', x: B.largura, z: 2.5, y: 0.62, giro: -PI / 2, parede: true },
+  { arquivo: 'b:toilet_roll_stack', x: 3.85, z: 2.52, giro: -0.3 },
+  { arquivo: 'b:bin', x: 3.2, z: 2.48 },
+  // o tapete rosa na frente da banheira, com os chinelos, e a pilha de toalhas
+  { arquivo: 'b:mat', x: 2.45, z: 1.95 },
+  { arquivo: 'b:slippers', x: 2.3, z: 2.0, y: 0.075, giro: 0.35 },
+  { arquivo: 'b:towel_stacked', x: 1.42, z: 1.62, escala: 0.8, giro: 0.2 },
+  // a porta, aberta para dentro, encostada na parede da esquerda
+  { arquivo: 'b:door_modular', x: 0, z: B.fundo, giro: PI / 2, parede: true },
+];
 
 export interface PessoaNoSalao3D {
   id: number;
@@ -244,6 +299,7 @@ export class CenaDoSalao3D {
   private gltfDoCoelho: GLTF | null = null;
   private trem: { carros: THREE.Object3D[]; s: number; perimetro: number; ponto: (s: number) => { x: number; z: number; giro: number } } | null = null;
   private neve: THREE.Points | null = null;
+  private patinho: { g: THREE.Group; x: number; y: number; z: number } | null = null;
   private noite = false;
   private sombras: boolean;
   private particulas: boolean;
@@ -321,7 +377,7 @@ export class CenaDoSalao3D {
   /** Carrega os modelos e monta o salão. Rejeita se algo falhar (quem mostra volta ao pixel art). */
   async montar(): Promise<void> {
     const itens = [...ARRUMACAO, ...NATAL].filter((i) => this.vale(i));
-    const nomes = new Set<string>(['r:door_A']);
+    const nomes = new Set<string>(['r:door_A', 'b:floor_tiled', 'b:ducky', ...PECAS_DO_BANHEIRO.map((p) => p.arquivo)]);
     for (const i of itens) if (!i.arquivo.startsWith('@')) nomes.add(i.arquivo);
     for (const q of NA_PAREDE) if (this.vale(q) && !q.arquivo.startsWith('@')) nomes.add(q.arquivo);
     if (this.natal)
@@ -333,6 +389,7 @@ export class CenaDoSalao3D {
     this.montarCasca();
     for (const i of itens) this.moveis.push(await this.montarItem(i));
     await this.montarParede();
+    await this.montarBanheiro();
     this.luzinhas();
     if (this.natal) {
       await this.montarTrem();
@@ -413,9 +470,10 @@ export class CenaDoSalao3D {
       triangulos: i.triangles,
       desenhados: this.desenhados,
       natal: this.natal,
-      pessoas: [...this.pessoas.values()].map((c) => ({ nome: c.p.nome, anim: c.tocando, roupa: c.p.cores.roupa })),
+      pessoas: [...this.pessoas.values()].map((c) => ({ nome: c.p.nome, anim: c.tocando, roupa: c.p.cores.roupa, x: c.raiz.position.x, z: c.raiz.position.z })),
       recado: this.recado?.tocando,
       trem: this.trem ? this.trem.s : null,
+      patinho: this.patinho ? this.patinho.g.position.x : null,
     };
   }
 
@@ -973,6 +1031,136 @@ export class CenaDoSalao3D {
     return g;
   }
 
+  /** O banheiro do canto do fundo (BANHEIRO, lá em cima): o piso, os azulejos, as muretas, as peças numa malha só e o patinho. */
+  private async montarBanheiro() {
+    const { largura: L, fundo: P, espessura: E, mureta: H, porta, piso } = BANHEIRO;
+    // o piso de ladrilho verde-água do pacote (3 × 2 placas, esticadas um tanto para cobrir o banheiro), um dedo acima das tábuas
+    const pecas: { nome: string; o: THREE.Object3D }[] = [];
+    for (let i = 0; i < 3; i++)
+      for (let k = 0; k < 2; k++) {
+        const o = (await modelo('b:floor_tiled')).scene.clone(true);
+        o.scale.set(L / 3 / 2, 0.2, P / 2 / 2);
+        o.position.set((L / 3) * (i + 0.5), piso, (P / 2) * (k + 0.5));
+        pecas.push({ nome: 'b:floor_tiled', o });
+      }
+    for (const d of PECAS_DO_BANHEIRO) {
+      const o = (await modelo(d.arquivo)).scene.clone(true);
+      o.scale.setScalar(S * (d.escala ?? 1));
+      const g = new THREE.Group().add(o);
+      if (!d.parede) {
+        const caixa = new THREE.Box3().setFromObject(o);
+        const c = caixa.getCenter(new THREE.Vector3());
+        o.position.set(-c.x, -caixa.min.y, -c.z);
+      }
+      g.position.set(d.x, (d.y ?? 0) + piso, d.z);
+      g.rotation.y = d.giro ?? 0;
+      pecas.push({ nome: d.arquivo, o: g });
+    }
+    // tudo numa malha só: as peças usam o mesmo material (a textura de paleta do pacote)
+    let material: THREE.MeshStandardMaterial | null = null;
+    const geos: THREE.BufferGeometry[] = [];
+    for (const { o } of pecas) {
+      o.updateMatrixWorld(true);
+      o.traverse((x) => {
+        const m = x as THREE.Mesh;
+        if (!m.isMesh) return;
+        material ??= (m.material as THREE.MeshStandardMaterial).clone();
+        geos.push(m.geometry.clone().applyMatrix4(m.matrixWorld));
+      });
+    }
+    const junta = mergeGeometries(geos);
+    for (const g of geos) g.dispose();
+    if (!junta || !material) throw new Error('o banheiro não juntou');
+    this.descartaveis.push(junta);
+    const mat = material as THREE.MeshStandardMaterial;
+    mat.roughness = 0.75;
+    const banheiro = new THREE.Mesh(junta, mat);
+    banheiro.castShadow = banheiro.receiveShadow = true;
+    this.cena.add(banheiro);
+    // o patinho, boiando na espuma da banheira (anda no laço, devagar)
+    const banheira = PECAS_DO_BANHEIRO.find((p) => p.arquivo === 'b:bath')!;
+    const pato = this.copia(await modelo('b:ducky'), 'b:ducky');
+    pato.scale.setScalar(S * 0.9);
+    const caixaDoPato = new THREE.Box3().setFromObject(pato);
+    const centro = caixaDoPato.getCenter(new THREE.Vector3());
+    pato.position.set(-centro.x, -caixaDoPato.min.y, -centro.z);
+    this.patinho = { g: new THREE.Group().add(pato), x: banheira.x + 0.35, y: piso + 0.62, z: banheira.z - 0.05 };
+    this.patinho.g.position.set(this.patinho.x, this.patinho.y, this.patinho.z);
+    this.patinho.g.rotation.y = 0.6;
+    this.cena.add(this.patinho.g);
+
+    // os azulejos por dentro das paredes de verdade (brancos até 1,5, a pintura em cima) e as muretas dos lados da sala
+    const lado = 0.3;
+    const azulejo = this.textura(
+      (g, W) => {
+        g.fillStyle = '#cfd8d6';
+        g.fillRect(0, 0, W, W);
+        const n = 4;
+        const t = W / n;
+        for (let i = 0; i < n; i++)
+          for (let k = 0; k < n; k++) {
+            const grad = g.createLinearGradient(i * t, k * t, (i + 1) * t, (k + 1) * t);
+            grad.addColorStop(0, '#fbfaf5');
+            grad.addColorStop(1, '#e9ebe6');
+            g.fillStyle = grad;
+            g.fillRect(i * t + 3, k * t + 3, t - 6, t - 6);
+          }
+      },
+      256,
+    );
+    const azul = (w: number, h: number) => {
+      const t = azulejo.clone();
+      t.repeat.set(w / (lado * 4), h / (lado * 4));
+      this.descartaveis.push(t);
+      return new THREE.MeshStandardMaterial({ map: t, roughness: 0.55 });
+    };
+    const pintura = new THREE.MeshStandardMaterial({ color: '#f0d48c', roughness: 0.9 });
+    const tampo = new THREE.MeshStandardMaterial({ color: '#e7ecec', roughness: 0.6 });
+    const BAIXO = 1.5;
+    const placa = (w: number, h: number, m: THREE.Material, x: number, y: number, z: number, giro: number) => {
+      const p = new THREE.Mesh(this.caixaGeo(w, h, 0.02), m);
+      p.position.set(x, y, z);
+      p.rotation.y = giro;
+      p.receiveShadow = true;
+      this.cena.add(p);
+    };
+    placa(L, BAIXO, azul(L, BAIXO), L / 2, BAIXO / 2, 0.011, 0);
+    placa(L, ALTURA_DA_PAREDE - BAIXO, pintura, L / 2, (ALTURA_DA_PAREDE + BAIXO) / 2, 0.011, 0);
+    placa(P, BAIXO, azul(P, BAIXO), 0.011, BAIXO / 2, P / 2, PI / 2);
+    placa(P, ALTURA_DA_PAREDE - BAIXO, pintura, 0.011, (ALTURA_DA_PAREDE + BAIXO) / 2, P / 2, PI / 2);
+    // as muretas: a do lado (x = L, de ponta a ponta) e a da frente (z = P, com a passagem da porta junto da parede)
+    const mureta = (w: number, x: number, z: number, giro: number) => {
+      // um material só (uma chamada): as pontas, estreitas, levam o mesmo azulejo, e o tampo cobre o alto
+      const m = new THREE.Mesh(this.caixaGeo(w, H, E), azul(w, H));
+      m.position.set(x, H / 2, z);
+      m.rotation.y = giro;
+      m.castShadow = m.receiveShadow = true;
+      this.cena.add(m);
+      const t = new THREE.Mesh(this.caixaGeo(w + 0.04, 0.05, E + 0.06), tampo);
+      t.position.set(x, H + 0.025, z);
+      t.rotation.y = giro;
+      t.castShadow = true;
+      this.cena.add(t);
+    };
+    mureta(P + E, L + E / 2, (P + E) / 2, PI / 2);
+    mureta(L - porta, porta + (L - porta) / 2, P + E / 2, 0);
+    // de noite, a vela da prateleira acende uma luz morna no banheiro
+    const vela = new THREE.PointLight('#ffc27a', 0, 4.5, 1.6);
+    vela.position.set(2.3, 2.6, 0.55);
+    this.cena.add(vela);
+    this.luzes.push(vela);
+  }
+
+  /** O patinho boia: sobe e desce um tico e gira devagar (com "menos movimento" ou sem foco, para; o laço nem desenha). */
+  private boiarPatinho() {
+    const p = this.patinho!;
+    p.g.position.y = p.y + Math.sin(this.t * 1.7) * 0.018;
+    p.g.position.x = p.x + Math.sin(this.t * 0.35) * 0.22;
+    p.g.position.z = p.z + Math.sin(this.t * 0.5) * 0.12;
+    p.g.rotation.y = 0.6 + Math.sin(this.t * 0.3) * 0.5;
+    p.g.rotation.z = Math.sin(this.t * 1.7 + 0.8) * 0.06;
+  }
+
   /** As luzinhas do alto das duas paredes (como as do salão de pixel art). */
   private luzinhas() {
     const fio = new THREE.LineBasicMaterial({ color: '#3a2a22' });
@@ -1189,20 +1377,20 @@ export class CenaDoSalao3D {
     }
     // de pé, quando os lugares acabam: em volta do tapete, virados para a TV
     for (const [x, z] of [
-      [5.9, 3.6],
-      [5.9, 5.6],
-      [4.6, 7.4],
-      [4.6, 1.9],
+      [5.9, 4.7],
+      [5.9, 6.7],
+      [4.6, 8.5],
+      [5.3, 3.2],
     ])
       sentar.push({ pos: new THREE.Vector3(x, 0, z), giro: -PI / 2, anim: 'parado' });
     const frenteDaTv: Lugar[] = [
-      { pos: new THREE.Vector3(1.55, 0, 3.35), giro: PI / 2, anim: 'falando' },
-      { pos: new THREE.Vector3(1.55, 0, 5.85), giro: PI / 2, anim: 'falando' },
+      { pos: new THREE.Vector3(1.55, 0, 4.45), giro: PI / 2, anim: 'falando' },
+      { pos: new THREE.Vector3(1.55, 0, 6.95), giro: PI / 2, anim: 'falando' },
     ];
     const fliperama: Lugar[] = [
-      { pos: new THREE.Vector3(1.45, 0, 8.0), giro: -PI / 2, anim: 'parado' },
-      { pos: new THREE.Vector3(1.55, 0, 7.15), giro: -PI / 2 - 0.5, anim: 'parado' },
-      { pos: new THREE.Vector3(1.55, 0, 8.85), giro: -PI / 2 + 0.5, anim: 'parado' },
+      { pos: new THREE.Vector3(1.45, 0, 8.3), giro: -PI / 2, anim: 'parado' },
+      { pos: new THREE.Vector3(1.55, 0, 7.45), giro: -PI / 2 - 0.5, anim: 'parado' },
+      { pos: new THREE.Vector3(1.55, 0, 9.15), giro: -PI / 2 + 0.5, anim: 'parado' },
     ];
     for (const p of this.listaDePessoas) {
       let c = this.pessoas.get(p.id);
@@ -1354,6 +1542,7 @@ export class CenaDoSalao3D {
     this.passarAgora();
     if (!this.calmo) {
       if (this.trem) this.andarTrem(dt);
+      if (this.patinho) this.boiarPatinho();
       // as luzes da árvore e do poste piscam DEVAGAR (um ciclo de ~5 s), nunca apagam
       if (this.brilhos.length) {
         const base = this.noite ? 1.6 : 0.8;
