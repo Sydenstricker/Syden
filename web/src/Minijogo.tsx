@@ -17,7 +17,7 @@ import { JogoTruco } from './JogoTruco';
 import { JogoFesta } from './JogoFesta';
 import { JogoGolfe } from './JogoGolfe';
 import { canalDoSocket, ligarCanalDaFesta } from './festa/comum';
-import { FicharioDeGeneros, naFicha, useFicha, classeDaFicha, fichaQueVale } from './FicharioDeGeneros';
+import { FicharioDeGeneros, naFicha, useFicha, classeDaFicha, fichaQueVale, emOrdemAlfabetica } from './FicharioDeGeneros';
 import { JogoGolfe3D, type EstadoGolfe3D } from './JogoGolfe3D';
 import { JogoFutebol, type EstadoFutebol } from './JogoFutebol';
 import { JogoTocas, type EstadoTocas } from './JogoTocas';
@@ -409,7 +409,7 @@ export function PainelDoMinijogo({
       )}
       {!partida && !escolhendoCategoria && !sozinho && (
         <ul className={`minijogo-estante no-fichario ${classeDaFicha(fichaQueVale(JOGOS.filter((jogo) => jogo.abas.includes(aba)).map((j) => j.id), ficha))}`}>
-          {naFicha(JOGOS.filter((jogo) => jogo.abas.includes(aba)), ficha).map((jogo) => (
+          {emOrdemAlfabetica(naFicha(JOGOS.filter((jogo) => jogo.abas.includes(aba)), ficha), t).map((jogo) => (
             <li key={jogo.id}>
               <button
                 type="button"

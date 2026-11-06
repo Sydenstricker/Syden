@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { chave, useT } from './i18n';
+import { chave, idiomaAtual, useT } from './i18n';
 import type { IdDoJogo } from './minijogos';
 
 /**
@@ -134,4 +134,18 @@ export function naFicha<J extends { id: string }>(jogos: J[], ficha: Genero | nu
   if (!ficha) return jogos;
   const filtrados = jogos.filter((j) => generosDe(j.id).includes(ficha));
   return filtrados.length ? filtrados : jogos;
+}
+
+/**
+ * A estante em ORDEM ALFABÉTICA pelo nome na língua de quem lê (pedido dele, 06/11/2026: "iria me facilitar"), com as regras
+ * de ordenação dessa língua (acentos, e escritas que não são latinas).
+ */
+export function emOrdemAlfabetica<J extends { nome: string }>(jogos: J[], traduzir: (texto: string) => string): J[] {
+  let comparar: (a: string, b: string) => number;
+  try {
+    comparar = new Intl.Collator(idiomaAtual(), { sensitivity: 'base', numeric: true }).compare;
+  } catch {
+    comparar = (a, b) => a.localeCompare(b);
+  }
+  return [...jogos].sort((a, b) => comparar(traduzir(a.nome), traduzir(b.nome)));
 }

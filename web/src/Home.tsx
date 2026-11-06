@@ -1,6 +1,6 @@
 import { ExternalLink, Gamepad2, Lightbulb, Send, Volume2 } from 'lucide-react';
 import { Mascote } from './Mascote';
-import { FicharioDeGeneros, naFicha, useFicha } from './FicharioDeGeneros';
+import { emOrdemAlfabetica, FicharioDeGeneros, naFicha, useFicha } from './FicharioDeGeneros';
 import { type IdDoJogo, JOGOS, nomeDoIdioma, pedirParaAbrirAoEntrar, SITES_PARA_TRANSMITIR, usarMinijogoSolo } from './minijogos';
 import { PainelDoMinijogo } from './Minijogo';
 import type { Socket } from 'socket.io-client';
@@ -302,7 +302,7 @@ export function Home({
               </h4>
               <FicharioDeGeneros jogos={JOGOS.filter((jogo) => jogo.abas.includes('solo')).map((j) => j.id)} ficha={ficha} aoEscolher={setFicha} />
               <ul>
-                {naFicha(JOGOS.filter((jogo) => jogo.abas.includes('solo')), ficha).map((jogo) => (
+                {emOrdemAlfabetica(naFicha(JOGOS.filter((jogo) => jogo.abas.includes('solo')), ficha), t).map((jogo) => (
                   <li key={jogo.id}>
                     <button
                       title={t(jogo.dica)}
@@ -326,7 +326,7 @@ export function Home({
               <h4>
                 <IconeDeHud nome="multiplayer" /> {t('Na sala de voz, com a turma')}
               </h4>
-              <p>{JOGOS.filter((jogo) => jogo.abas.includes('coletivo')).map((jogo) => t(jogo.nome)).join(' · ')}</p>
+              <p>{emOrdemAlfabetica(JOGOS.filter((jogo) => jogo.abas.includes('coletivo')), t).map((jogo) => t(jogo.nome)).join(' · ')}</p>
               {salas.length === 0 ? (
                 <p className="vila-painel-vazio">
                   {comunidade ? t('Esta comunidade ainda não tem sala de voz.') : t('Entre numa comunidade para ver as salas.')}
