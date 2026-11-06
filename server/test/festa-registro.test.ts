@@ -14,8 +14,14 @@ const ids = (texto: string) => [...texto.matchAll(/^export \{ default as (\w+) \
 test('cada microjogo tem o id do nome dele, e o site registra os mesmos', () => {
   for (const [nome, m] of Object.entries(registro)) assert.equal(m.id, nome, `o export ${nome} tem o id ${m.id}`);
   assert.ok(MICROJOGOS.every((id) => /^[a-z0-9]+$/.test(id)));
-  const doServidor = ids(readFileSync(new URL('../src/festa/registro.ts', import.meta.url), 'utf8'));
-  const doSite = ids(readFileSync(new URL('../../web/src/festa/registro.ts', import.meta.url), 'utf8'));
+  // o registro e os lotes (export * from './loteN'), dos dois lados
+  const lerTudo = (pasta: string) =>
+    ['registro', 1, 2, 3, 4, 5, 6]
+      .map((n) => (n === 'registro' ? 'registro.ts' : `lote${n}.ts`))
+      .map((arq) => readFileSync(new URL(pasta + arq, import.meta.url), 'utf8'))
+      .join('\n');
+  const doServidor = ids(lerTudo('../src/festa/'));
+  const doSite = ids(lerTudo('../../web/src/festa/'));
   for (const [nome, arquivo] of [...doServidor, ...doSite]) assert.equal(nome, arquivo, `${nome} mora em ${nome}.ts(x)`);
   assert.deepEqual(doSite.map(([n]) => n).sort(), doServidor.map(([n]) => n).sort(), 'os dois registros têm os mesmos microjogos');
   assert.deepEqual([...MICROJOGOS].sort(), doServidor.map(([n]) => n).sort());

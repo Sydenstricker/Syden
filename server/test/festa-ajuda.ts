@@ -1,3 +1,5 @@
+import { jogadaHonestaDoLote1 } from './festa-lote1-ajuda.js';
+import { jogadaHonestaDoLote2 } from './festa-lote2-ajuda.js';
 /**
  * AJUDA PARA TESTAR UM MICROJOGO DA FESTA (05/11/2026): monta UMA rodada (festa/rodada.ts) sem banco e sem servidor, com o
  * relógio e o sorteio de mão, a rede de cada um medida pelo eco como na sala de verdade, e já dá a largada. Veja o guia em
@@ -98,6 +100,18 @@ export function rodadaDeTeste(id: string, { rede = new Map([[1, 200], [2, 300]])
  * festa/ que precisa de mais que um 'resultado' diz aqui como se joga. `andar` dispara o relógio da partida; `avancar` anda o
  * tempo. Começa logo depois da largada.
  */
+/**
+ * OS LOTES DO MARIO PARA 3 (05/11/2026): cada lote entrega a jogada honesta dos seus microjogos em server/test/festa-loteN-ajuda.ts,
+ * `jogadaHonestaDoLoteN(micro, jogo, quem, { andar, avancar }): boolean` (true se o id é dele). Assim nenhum lote mexe aqui.
+ */
+type JogadaDoLote = (
+  micro: string,
+  jogo: { publico(quem: number): Record<string, unknown>; acao(quem: number, corpo: Record<string, unknown>): string | null },
+  quem: number,
+  relogio: { andar: () => void; avancar: (ms: number) => void },
+) => boolean;
+const LOTES: JogadaDoLote[] = [jogadaHonestaDoLote1, jogadaHonestaDoLote2];
+
 export function jogadaHonesta(
   micro: string,
   jogo: { publico(quem: number): Record<string, unknown>; acao(quem: number, corpo: Record<string, unknown>): string | null },
@@ -135,7 +149,7 @@ export function jogadaHonesta(
       andar();
     }
     assert.fail('a flor não saiu');
-  } else {
+  } else if (!LOTES.some((lote) => lote(micro, jogo, quem, { andar, avancar }))) {
     assert.fail(`sem jogada honesta para ${micro}`);
   }
 }
