@@ -3,7 +3,11 @@ import { test } from 'node:test';
 import { criarIA, PERFIS } from '../src/tocas/ia';
 import {
   assinatura,
+  CAPACIDADE,
   CENTRO_DE,
+  FLECHAS_DO_SINO,
+  lugarDeColeta,
+  ocupantes,
   comandar,
   novaPartida,
   passo,
@@ -174,6 +178,8 @@ function meusModelo(sim: Sim) {
     trabalho: 0,
     acao: 'parado' as const,
     atacadoPor: 0,
+    abrigado: 0,
+    antesDoSino: null,
     _sim: sim.passo,
   };
 }
@@ -261,4 +267,135 @@ test('o ponto de reunião: quem nasce no prédio vai sozinho para lá, ou coleta
   assert.equal(v.ordem.tipo, 'mover');
   for (let k = 0; k < 120; k++) passo(sim);
   assert.ok(Math.hypot(v.x - (centro.gx + 6.5), v.y - (centro.gy + 1.5)) < 1.2, `chegou: ${v.x.toFixed(1)}, ${v.y.toFixed(1)}`);
+});
+
+/** Mais um trabalhador (ou outra unidade) do dono, copiado de um que a partida criou, parado em (x, y). */
+function clonar(sim: Sim, dono: Dono, tipo: TipoUnidade, x: number, y: number) {
+  const base = sim.unidades.find((u) => u.dono === dono)!;
+  const u = { ...base, id: sim.proximoId++, tipo, x, y, ax: x, ay: y, ordem: { tipo: 'parado' as const }, caminho: [], carga: null, abrigado: 0, antesDoSino: null };
+  u.vida = u.vidaMax = UNIDADES[tipo].vida;
+  sim.unidades.push(u);
+  sim.porId.set(u.id, u);
+  return u;
+}
+
+/** Uma fazenda pronta do dono 0 ao lado do centro (construída de verdade, e terminada à mão). */
+function fazendaPronta(sim: Sim, ids: number[], longe = 4) {
+  const c = centroDe(sim, 0);
+  sim.jogadores[0].recursos.madeira += 500;
+  let lugar: { gx: number; gy: number } | null = null;
+  for (let gy = c.gy - 5; gy < c.gy + 6 && !lugar; gy++) for (let gx = c.gx + longe; gx < c.gx + longe + 6 && !lugar; gx++) if (podeConstruir(sim, 0, 'fazenda', gx, gy)) lugar = { gx, gy };
+  assert.ok(lugar, 'lugar da fazenda');
+  comandar(sim, 0, { t: 'construir', ids, tipo: 'fazenda', gx: lugar.gx, gy: lugar.gy });
+  passo(sim);
+  const f = sim.predios.filter((p) => p.tipo === 'fazenda' && p.dono === 0).at(-1)!;
+  f.progresso = PREDIOS.fazenda.tempo - 1;
+  return f;
+}
+
+test('a capacidade: a fazenda é de um só trabalhador', () => {
+  const sim = novaPartida(3);
+  const ids = meus(sim, 0, 'trabalhador').map((u) => u.id);
+  const f = fazendaPronta(sim, ids);
+  for (let i = 0; i < 200 && !f.pronto; i++) passo(sim);
+  assert.ok(f.pronto);
+  passo(sim);
+  const chave = lugarDeColeta(sim, f.id)!.chave;
+  assert.equal(lugarDeColeta(sim, f.id)!.cap, CAPACIDADE.fazenda);
+  // os três a construíram; só um ficou colhendo
+  assert.equal(ocupantes(sim, 0, chave), 1);
+  // os três mandados para ela: um só fica, e a tela é avisada de que estava cheia
+  comandar(sim, 0, { t: 'alvo', ids, alvo: f.id });
+  passo(sim);
+  assert.equal(ocupantes(sim, 0, chave), 1);
+  assert.ok(sim.eventos.some((e) => e.t === 'cheio' && e.dono === 0 && e.id === f.id), 'avisou que estava cheia');
+  // com uma segunda fazenda perto, quem sobra vai a ela
+  const g = fazendaPronta(sim, [ids[1]], 7);
+  for (let i = 0; i < 200 && !g.pronto; i++) passo(sim);
+  comandar(sim, 0, { t: 'alvo', ids, alvo: f.id });
+  passo(sim);
+  assert.equal(ocupantes(sim, 0, chave), 1);
+  assert.equal(ocupantes(sim, 0, lugarDeColeta(sim, g.id)!.chave), 1);
+  // e o computador (o outro dono) tem a vaga dele: a contagem é por dono
+  assert.equal(ocupantes(sim, 1, chave), 0);
+});
+
+test('a capacidade: a mina é o bloco de ouro inteiro, com 5 vagas por dono', () => {
+  const sim = novaPartida(3);
+  const ouros = sim.fontes.filter((f) => f.tipo === 'ouro');
+  // três minas: a de cada base (2 × 3 casas) e a do meio (2 × 2)
+  const minas = new Map<number, number>();
+  for (const f of ouros) minas.set(sim.minaDe.get(f.id)!, (minas.get(sim.minaDe.get(f.id)!) ?? 0) + 1);
+  assert.deepEqual([...minas.values()].sort(), [4, 6, 6]);
+  const casa = ouros.find((f) => f.gx === 13 && f.gy === 29)!;
+  const lugar = lugarDeColeta(sim, casa.id)!;
+  assert.equal(lugar.cap, CAPACIDADE.mina);
+  const c = centroDe(sim, 0);
+  while (meus(sim, 0, 'trabalhador').length < 8) clonar(sim, 0, 'trabalhador', c.gx + 4.5, c.gy + 1.5);
+  const ids = meus(sim, 0, 'trabalhador').map((u) => u.id);
+  comandar(sim, 0, { t: 'alvo', ids, alvo: casa.id });
+  passo(sim);
+  assert.equal(ocupantes(sim, 0, lugar.chave), 5);
+  // os 3 que sobraram foram à mina do meio, a mais perto com vaga
+  const meio = lugarDeColeta(sim, ouros.find((f) => f.gx === 21 && f.gy === 21)!.id)!;
+  assert.equal(ocupantes(sim, 0, meio.chave), 3);
+  // e trabalham de verdade: a mina de casa entrega ouro
+  const ouro = sim.jogadores[0].recursos.ouro;
+  for (let i = 0; i < 600; i++) passo(sim);
+  assert.ok(sim.jogadores[0].recursos.ouro > ouro + 40, `ouro: ${sim.jogadores[0].recursos.ouro}`);
+  assert.ok(ocupantes(sim, 0, lugar.chave) <= 5);
+});
+
+test('o sino: todos os trabalhadores se abrigam no centro, que atira mais; o segundo toque os devolve ao trabalho', () => {
+  const rodar = () => {
+    const sim = novaPartida(3);
+    const c = centroDe(sim, 0);
+    const arvore = sim.fontes.filter((f) => f.tipo === 'arvore').sort((p, q) => Math.abs(p.gx - 7) + Math.abs(p.gy - 35) - (Math.abs(q.gx - 7) + Math.abs(q.gy - 35)))[0];
+    while (meus(sim, 0, 'trabalhador').length < 5) clonar(sim, 0, 'trabalhador', c.gx + 4.5, c.gy + 1.5);
+    const ids = meus(sim, 0, 'trabalhador').map((u) => u.id);
+    comandar(sim, 0, { t: 'alvo', ids, alvo: arvore.id });
+    for (let i = 0; i < 150; i++) passo(sim);
+    // de outro dono, nada
+    comandar(sim, 1, { t: 'sino', predio: c.id });
+    passo(sim);
+    assert.equal(c.sino, false);
+    comandar(sim, 0, { t: 'sino', predio: c.id });
+    passo(sim);
+    assert.equal(c.sino, true);
+    assert.ok(sim.eventos.some((e) => e.t === 'sino' && e.tocado));
+    for (let i = 0; i < 300 && meus(sim, 0, 'trabalhador').some((u) => !u.abrigado); i++) passo(sim);
+    for (const u of meus(sim, 0, 'trabalhador')) {
+      assert.equal(u.abrigado, c.id, 'abrigado');
+      assert.equal(u.carga, null, 'a carga ficou no estoque');
+    }
+    // abrigado não recebe ordem
+    comandar(sim, 0, { t: 'mover', ids, x: 20, y: 20 });
+    passo(sim);
+    assert.ok(meus(sim, 0, 'trabalhador').every((u) => u.abrigado === c.id));
+    // três lanceiros do computador na porta: com 5 dentro, cada rajada sai com 1 + 2 flechas
+    for (let k = 0; k < 3; k++) clonar(sim, 1, 'lanceiro', c.gx + 1.5 + k * 0.6, c.gy + 4.6);
+    let rajada = 0;
+    for (let i = 0; i < 40 && !rajada; i++) {
+      passo(sim);
+      rajada = sim.eventos.filter((e) => e.t === 'golpe' && e.de === c.id).length;
+    }
+    assert.equal(rajada, 1 + Math.min(FLECHAS_DO_SINO.max, Math.floor(5 / FLECHAS_DO_SINO.cada)));
+    // e ninguém de fora acerta quem está dentro
+    assert.ok(meus(sim, 0, 'trabalhador').every((u) => u.vida === u.vidaMax));
+    for (const u of meus(sim, 1, 'lanceiro')) u.vida = 0;
+    passo(sim);
+    // o segundo toque: saem pela porta e voltam à árvore
+    comandar(sim, 0, { t: 'sino', predio: c.id });
+    passo(sim);
+    assert.equal(c.sino, false);
+    for (const u of meus(sim, 0, 'trabalhador')) {
+      assert.equal(u.abrigado, 0);
+      assert.equal(u.ordem.tipo, 'coletar', `ordem: ${u.ordem.tipo}`);
+      assert.ok(u.x < c.gx || u.x > c.gx + 3 || u.y < c.gy || u.y > c.gy + 3, 'saiu do centro');
+    }
+    for (let i = 0; i < 300; i++) passo(sim);
+    return assinatura(sim);
+  };
+  // determinístico (pronto para o lockstep): a mesma partida com o sino dá o mesmo resultado
+  assert.equal(rodar(), rodar());
 });

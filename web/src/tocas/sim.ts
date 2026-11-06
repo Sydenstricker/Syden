@@ -26,6 +26,15 @@ export const PASSOS_DA_MARAVILHA = 2 * 60 * PASSOS_POR_SEGUNDO;
 export const POP_MAX = 60;
 /** Quanto um trabalhador leva de uma vez. */
 export const CARGA = 10;
+/**
+ * A CAPACIDADE DE CADA LUGAR DE COLETA (06/11/2026, pedido dele: "Fazenda 0/1, mina 0/5"): quantos trabalhadores de UM dono
+ * cabem nele ao mesmo tempo. A fazenda é de um só; a MINA é o bloco de ouro inteiro (as casas de ouro encostadas, `minaDe`), e
+ * cabem 5 de cada lado. A árvore não tem limite (o bosque já se limita pelas casas livres em volta). Quem passa do limite vai a
+ * outro lugar igual com vaga, perto; sem nenhum, fica parado ao lado (e aparece como trabalhador parado).
+ */
+export const CAPACIDADE = { fazenda: 1, mina: 5 } as const;
+/** O sino com gente dentro: o centro solta uma flecha a mais a cada 2 abrigados, até 5 a mais. */
+export const FLECHAS_DO_SINO = { cada: 2, max: 5 } as const;
 
 export type Dono = 0 | 1;
 export type Recurso = 'comida' | 'madeira' | 'ouro';
@@ -105,7 +114,7 @@ const OURO_DA_PEDRA = 350;
 const DIAG = 1.4142135623730951;
 
 export interface Ordem {
-  tipo: 'parado' | 'mover' | 'atacar' | 'coletar' | 'entregar' | 'construir';
+  tipo: 'parado' | 'mover' | 'atacar' | 'coletar' | 'entregar' | 'construir' | 'abrigar';
   x?: number;
   y?: number;
   /** Mover atacando quem aparecer no caminho. */
@@ -143,6 +152,10 @@ export interface Unidade {
   acao: 'parado' | 'andando' | 'trabalhando' | 'atacando';
   /** Quem bateu por último (para revidar), e quando. */
   atacadoPor: number;
+  /** O SINO: o id do centro onde está abrigado (0 fora). Abrigado, não aparece, não se mexe, não apanha e não recebe ordem. */
+  abrigado: number;
+  /** O que fazia quando o sino tocou (o segundo toque devolve). */
+  antesDoSino: Ordem | null;
 }
 
 export interface Predio {
@@ -169,6 +182,8 @@ export interface Predio {
    * sobre ele (o trabalhador vai coletar, o soldado atacar). Null: fica na porta.
    */
   reuniao: { x: number; y: number; alvo?: number } | null;
+  /** O SINO do centro (06/11/2026, pedido dele): tocado, todos os trabalhadores do dono vão para dentro; tocado de novo, voltam. */
+  sino: boolean;
 }
 
 export interface Fonte {
@@ -199,6 +214,9 @@ export type Evento =
   | { t: 'era'; dono: Dono }
   | { t: 'maravilha'; dono: Dono }
   | { t: 'atacado'; dono: Dono; x: number; y: number }
+  /** Mandou trabalhador a um lugar cheio (a fazenda, a mina) e não havia outro com vaga perto. */
+  | { t: 'cheio'; dono: Dono; id: number }
+  | { t: 'sino'; dono: Dono; tocado: boolean }
   | { t: 'fim'; vencedor: Dono; motivo: Motivo };
 
 export type Motivo = 'centro' | 'maravilha' | 'tempo';
@@ -215,6 +233,8 @@ export type Comando =
   /** O ponto de reunião do prédio: no chão, ou em cima de algo (`alvo`). */
   | { t: 'reuniao'; predio: number; x: number; y: number; alvo?: number }
   | { t: 'era'; predio: number }
+  /** O sino do centro: o primeiro toque abriga todos os trabalhadores, o segundo os devolve ao que faziam. */
+  | { t: 'sino'; predio: number }
   | { t: 'parar'; ids: number[] };
 
 export interface Sim {
@@ -238,6 +258,8 @@ export interface Sim {
   rnd: () => number;
   /** O que era cada fonte que acabou (quem voltava a ela acha uma parecida perto). */
   acabadas: Map<number, { tipo: Fonte['tipo']; gx: number; gy: number }>;
+  /** A mina (o bloco de ouro encostado) de cada casa de ouro, pelo id da fonte; não se apaga quando a casa acaba. */
+  minaDe: Map<number, number>;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -286,8 +308,10 @@ export function novaPartida(semente: number): Sim {
     avisoEm: [-999, -999],
     rnd: aleatorio(semente),
     acabadas: new Map(),
+    minaDe: new Map(),
   };
   gerarMapa(sim);
+  juntarMinas(sim);
   for (const d of [0, 1] as Dono[]) {
     const c = CENTRO_DE[d];
     const p = novoPredio(sim, d, 'centro', c.gx, c.gy);
@@ -365,6 +389,30 @@ function gerarMapa(sim: Sim) {
   for (let i = 0; i < 26; i++) par(Math.floor(r() * TAMANHO), Math.floor(r() * TAMANHO), arvore, 5);
 }
 
+/** As casas de ouro encostadas (nas 8 direções) viram uma mina só, numerada de 1 na ordem das fontes. */
+function juntarMinas(sim: Sim) {
+  const ouros = sim.fontes.filter((f) => f.tipo === 'ouro');
+  const porCasa = new Map(ouros.map((f) => [ind(f.gx, f.gy), f]));
+  let n = 0;
+  for (const f of ouros) {
+    if (sim.minaDe.has(f.id)) continue;
+    n++;
+    const pilha = [f];
+    sim.minaDe.set(f.id, n);
+    while (pilha.length) {
+      const a = pilha.pop()!;
+      for (let dy = -1; dy <= 1; dy++)
+        for (let dx = -1; dx <= 1; dx++) {
+          if (!dentro(a.gx + dx, a.gy + dy)) continue;
+          const b = porCasa.get(ind(a.gx + dx, a.gy + dy));
+          if (!b || sim.minaDe.has(b.id)) continue;
+          sim.minaDe.set(b.id, n);
+          pilha.push(b);
+        }
+    }
+  }
+}
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Criar e achar
 // ---------------------------------------------------------------------------------------------------------------------
@@ -392,6 +440,8 @@ function novaUnidade(sim: Sim, dono: Dono, tipo: TipoUnidade, x: number, y: numb
     trabalho: 0,
     acao: 'parado',
     atacadoPor: 0,
+    abrigado: 0,
+    antesDoSino: null,
   };
   sim.unidades.push(u);
   sim.porId.set(u.id, u);
@@ -419,6 +469,7 @@ function novoPredio(sim: Sim, dono: Dono, tipo: TipoPredio, gx: number, gy: numb
     recarga: 0,
     era,
     reuniao: null,
+    sino: false,
   };
   sim.predios.push(p);
   sim.porId.set(p.id, p);
@@ -477,6 +528,70 @@ export function populacao(sim: Sim, dono: Dono): { usada: number; max: number } 
   let max = 0;
   for (const p of sim.predios) if (p.dono === dono && p.pronto) max += PREDIOS[p.tipo].pop ?? 0;
   return { usada, max: Math.min(POP_MAX, max) };
+}
+
+/**
+ * O LUGAR DE COLETA de um alvo: a chave (o id da fazenda, ou o número da mina com o sinal trocado) e quantos cabem; null para o
+ * que não tem limite (a árvore) ou não é lugar de coleta.
+ */
+export function lugarDeColeta(sim: Sim, id: number): { chave: number; cap: number } | null {
+  const mina = sim.minaDe.get(id);
+  if (mina !== undefined) return { chave: -mina, cap: CAPACIDADE.mina };
+  const e = sim.porId.get(id);
+  if (ePredio(e) && e.tipo === 'fazenda') return { chave: e.id, cap: CAPACIDADE.fazenda };
+  return null;
+}
+
+/** A chave do lugar em que o trabalhador está colhendo (indo, colhendo ou levando a carga para voltar), ou null. */
+function chaveDoTrabalho(sim: Sim, u: Unidade): number | null {
+  if (u.tipo !== 'trabalhador' || u.abrigado || u.vida <= 0) return null;
+  const o = u.ordem;
+  const id = o.tipo === 'coletar' ? o.alvo : o.tipo === 'entregar' ? o.volta : undefined;
+  if (id === undefined) return null;
+  return lugarDeColeta(sim, id)?.chave ?? null;
+}
+
+/** Quantos trabalhadores do dono estão no lugar de coleta (a chave de `lugarDeColeta`), sem contar `fora`. */
+export function ocupantes(sim: Sim, dono: Dono, chave: number, fora = 0): number {
+  let n = 0;
+  for (const u of sim.unidades) if (u.dono === dono && u.id !== fora && chaveDoTrabalho(sim, u) === chave) n++;
+  return n;
+}
+
+/** Cabe mais este trabalhador (`quem`) no lugar do alvo? Sem limite, sempre. */
+export function temVaga(sim: Sim, dono: Dono, alvo: number, quem = 0): boolean {
+  const l = lugarDeColeta(sim, alvo);
+  return !l || ocupantes(sim, dono, l.chave, quem) < l.cap;
+}
+
+/** Outro lugar igual com vaga, perto do alvo cheio: outra fazenda pronta do dono, ou uma casa de ouro de outra mina. */
+function vagaPerto(sim: Sim, u: Unidade, alvo: number): number {
+  const e = sim.porId.get(alvo);
+  if (!e) return 0;
+  const c = centroDe(e);
+  let melhor = 0;
+  let dist = 12 * 12;
+  const ver = (id: number, x: number, y: number) => {
+    const q = (x - c.x) * (x - c.x) + (y - c.y) * (y - c.y);
+    if (q < dist && temVaga(sim, u.dono, id, u.id)) {
+      dist = q;
+      melhor = id;
+    }
+  };
+  if (ePredio(e) && e.tipo === 'fazenda') {
+    for (const p of sim.predios) if (p.dono === u.dono && p.tipo === 'fazenda' && p.pronto && p.id !== e.id) ver(p.id, p.gx + 1, p.gy + 1);
+  } else if (eFonte(e) && e.tipo === 'ouro') {
+    for (const f of sim.fontes) if (f.tipo === 'ouro' && acessivel(sim, f, u.dono)) ver(f.id, f.gx + 0.5, f.gy + 0.5);
+  }
+  return melhor;
+}
+
+/** Manda colher no alvo respeitando a capacidade (ou noutro igual com vaga, perto); sem nenhum, false e nada muda. */
+function irColetar(sim: Sim, u: Unidade, alvo: number): boolean {
+  const onde = temVaga(sim, u.dono, alvo, u.id) ? alvo : vagaPerto(sim, u, alvo);
+  if (!onde) return false;
+  u.ordem = { tipo: 'coletar', alvo: onde, volta: onde };
+  return true;
 }
 
 export function podePagar(sim: Sim, dono: Dono, custo: Custo): boolean {
@@ -677,7 +792,7 @@ function minhas(sim: Sim, dono: Dono, ids: number[]): Unidade[] {
     if (vistos.has(id)) continue;
     vistos.add(id);
     const u = sim.porId.get(id);
-    if (eUnidade(u) && u.dono === dono) lista.push(u);
+    if (eUnidade(u) && u.dono === dono && !u.abrigado) lista.push(u);
   }
   return lista;
 }
@@ -739,18 +854,28 @@ function aplicar(sim: Sim, dono: Dono, c: Comando) {
       return;
     case 'alvo': {
       const alvo = sim.porId.get(c.alvo);
-      if (!alvo) return;
+      if (!alvo || (eUnidade(alvo) && alvo.abrigado)) return;
+      let cheio = false;
       for (const u of minhas(sim, dono, c.ids)) {
         u.caminho = [];
         u.achouEm = -99;
         if (eFonte(alvo)) {
-          if (u.tipo === 'trabalhador') u.ordem = { tipo: 'coletar', alvo: alvo.id };
-          else u.ordem = { tipo: 'mover', x: alvo.gx + 0.5, y: alvo.gy + 0.5 };
+          if (u.tipo !== 'trabalhador') u.ordem = { tipo: 'mover', x: alvo.gx + 0.5, y: alvo.gy + 0.5 };
+          else if (!irColetar(sim, u, alvo.id)) {
+            // a mina cheia, e nenhuma com vaga perto: vai até ela e fica parado ao lado
+            u.ordem = { tipo: 'mover', x: alvo.gx + 0.5, y: alvo.gy + 0.5 };
+            cheio = true;
+          }
         } else if (alvo.dono !== dono) {
           u.ordem = { tipo: 'atacar', alvo: alvo.id };
         } else if (ePredio(alvo) && u.tipo === 'trabalhador') {
           if (!alvo.pronto) u.ordem = { tipo: 'construir', alvo: alvo.id };
-          else if (alvo.tipo === 'fazenda') u.ordem = { tipo: 'coletar', alvo: alvo.id };
+          else if (alvo.tipo === 'fazenda') {
+            if (!irColetar(sim, u, alvo.id)) {
+              u.ordem = { tipo: 'mover', x: centroDe(alvo).x, y: alvo.gy + alvo.tam + 0.5 };
+              cheio = true;
+            }
+          }
           else if (alvo.tipo === 'centro' && u.carga) u.ordem = { tipo: 'entregar' };
           else u.ordem = { tipo: 'mover', x: centroDe(alvo).x, y: alvo.gy + alvo.tam + 0.5 };
         } else {
@@ -758,6 +883,23 @@ function aplicar(sim: Sim, dono: Dono, c: Comando) {
           u.ordem = { tipo: 'mover', x: p.x, y: p.y };
         }
       }
+      if (cheio) sim.eventos.push({ t: 'cheio', dono, id: alvo.id });
+      return;
+    }
+    case 'sino': {
+      const p = sim.porId.get(c.predio);
+      if (!ePredio(p) || p.dono !== dono || p.tipo !== 'centro' || !p.pronto) return;
+      if (!p.sino) {
+        p.sino = true;
+        for (const u of sim.unidades) {
+          if (u.dono !== dono || u.tipo !== 'trabalhador' || u.abrigado || u.vida <= 0) continue;
+          if (u.ordem.tipo !== 'abrigar') u.antesDoSino = u.ordem;
+          u.ordem = { tipo: 'abrigar', alvo: p.id };
+          u.caminho = [];
+          u.achouEm = -99;
+        }
+      } else soltarDoSino(sim, p);
+      sim.eventos.push({ t: 'sino', dono, tocado: p.sino });
       return;
     }
     case 'construir': {
@@ -895,23 +1037,49 @@ function predioPensa(sim: Sim, p: Predio) {
     if (p.recarga > 0) p.recarga--;
     else {
       const c = centroDe(p);
-      let alvo: Unidade | null = null;
-      let melhor = Infinity;
+      const perto: { u: Unidade; dist: number }[] = [];
       for (const u of sim.unidades) {
-        if (u.dono === p.dono || u.vida <= 0) continue;
+        if (u.dono === p.dono || u.vida <= 0 || u.abrigado) continue;
         const dist = distancia(u.x, u.y, p);
-        if (dist <= d.alcance! && dist < melhor) {
-          melhor = dist;
-          alvo = u;
-        }
+        if (dist <= d.alcance!) perto.push({ u, dist });
       }
-      if (alvo) {
+      if (perto.length) {
+        perto.sort((a, b) => a.dist - b.dist || a.u.id - b.u.id);
+        // o sino: quem está abrigado no centro atira junto (uma flecha a mais a cada 2, até 5 a mais), nos mais perto, em roda
+        let dentro = 0;
+        if (p.tipo === 'centro') for (const u of sim.unidades) if (u.abrigado === p.id) dentro++;
+        const flechas = 1 + Math.min(FLECHAS_DO_SINO.max, Math.floor(dentro / FLECHAS_DO_SINO.cada));
         const dano = d.ataque * (j.era === 2 ? ERA2.ataque : 1);
-        ferir(sim, alvo, dano, p.id);
-        sim.eventos.push({ t: 'golpe', de: p.id, alvo: alvo.id, dono: p.dono, arma: 'flecha', x0: c.x, y0: c.y, x1: alvo.x, y1: alvo.y });
+        for (let k = 0; k < flechas; k++) {
+          const alvo = perto[k % perto.length].u;
+          ferir(sim, alvo, dano, p.id);
+          sim.eventos.push({ t: 'golpe', de: p.id, alvo: alvo.id, dono: p.dono, arma: 'flecha', x0: c.x, y0: c.y, x1: alvo.x, y1: alvo.y });
+        }
         p.recarga = d.recarga!;
       }
     }
+  }
+}
+
+/** O segundo toque do sino (ou o centro que caiu): quem está dentro sai pela porta e volta ao que fazia; quem ia, também. */
+function soltarDoSino(sim: Sim, p: Predio) {
+  p.sino = false;
+  let k = 0;
+  for (const u of sim.unidades) {
+    const dentro = u.abrigado === p.id;
+    const indo = u.ordem.tipo === 'abrigar' && u.ordem.alvo === p.id;
+    if (!dentro && !indo) continue;
+    if (dentro) {
+      u.abrigado = 0;
+      const c = casaLivrePerto(sim, p.gx, p.gy, p.tam, u.dono, u.id + k++);
+      u.x = u.ax = c.x + 0.5;
+      u.y = u.ay = c.y + 0.5;
+    }
+    const antes = u.antesDoSino;
+    u.antesDoSino = null;
+    u.ordem = antes && antes.tipo !== 'abrigar' ? antes : { tipo: 'parado' };
+    u.caminho = [];
+    u.achouEm = -99;
   }
 }
 
@@ -968,7 +1136,7 @@ function procurarInimigo(sim: Sim, u: Unidade, raio: number): number {
   let melhorP = 0;
   let distP = Infinity;
   for (const o of sim.unidades) {
-    if (o.dono === u.dono || o.vida <= 0) continue;
+    if (o.dono === u.dono || o.vida <= 0 || o.abrigado) continue;
     const dx = o.x - u.x;
     const dy = o.y - u.y;
     const q = dx * dx + dy * dy;
@@ -1092,6 +1260,10 @@ function retangulo(e: Unidade | Predio | Fonte): [number, number, number, number
 
 function pensar(sim: Sim, u: Unidade) {
   const d = UNIDADES[u.tipo];
+  if (u.abrigado) {
+    u.acao = 'parado';
+    return;
+  }
   if (u.recarga > 0) u.recarga--;
   const o = u.ordem;
   u.acao = 'parado';
@@ -1147,7 +1319,7 @@ function pensar(sim: Sim, u: Unidade) {
     }
     case 'atacar': {
       const alvo = sim.porId.get(o.alvo!);
-      if (!alvo || eFonte(alvo) || alvo.vida <= 0 || alvo.dono === u.dono) {
+      if (!alvo || eFonte(alvo) || alvo.vida <= 0 || alvo.dono === u.dono || (eUnidade(alvo) && alvo.abrigado)) {
         u.ordem = o.depois ?? { tipo: 'parado' };
         u.caminho = [];
         return;
@@ -1244,8 +1416,8 @@ function pensar(sim: Sim, u: Unidade) {
       }
       if (alvo.pronto) {
         // a fazenda que acabou de ficar pronta: quem a fez já começa a colher; senão, a próxima obra perto
-        if (alvo.tipo === 'fazenda') u.ordem = { tipo: 'coletar', alvo: alvo.id, volta: alvo.id };
-        else {
+        // (a fazenda é de um só: quem ajudou a construir e chegou depois vai a outra com vaga, ou à próxima obra)
+        if (alvo.tipo !== 'fazenda' || !irColetar(sim, u, alvo.id)) {
           const prox = obraPerto(sim, u);
           u.ordem = prox ? { tipo: 'construir', alvo: prox } : { tipo: 'parado' };
         }
@@ -1267,6 +1439,31 @@ function pensar(sim: Sim, u: Unidade) {
           sim.eventos.push({ t: 'pronto', id: alvo.id, dono: alvo.dono, tipo: alvo.tipo });
           if (alvo.tipo === 'maravilha') sim.eventos.push({ t: 'maravilha', dono: alvo.dono });
         }
+        return;
+      }
+      seguir(sim, u, alvo);
+      return;
+    }
+    case 'abrigar': {
+      const alvo = sim.porId.get(o.alvo!);
+      if (!ePredio(alvo) || alvo.dono !== u.dono || alvo.vida <= 0 || !alvo.sino) {
+        u.ordem = u.antesDoSino ?? { tipo: 'parado' };
+        u.antesDoSino = null;
+        return;
+      }
+      if (distancia(u.x, u.y, alvo) <= 0.8) {
+        // entra: a carga vai para o estoque, e ele some do mapa
+        if (u.carga) {
+          sim.jogadores[u.dono].recursos[u.carga.rec] += u.carga.qtd;
+          sim.eventos.push({ t: 'entregou', dono: u.dono, rec: u.carga.rec, qtd: u.carga.qtd });
+          u.carga = null;
+        }
+        const c = centroDe(alvo);
+        u.x = u.ax = c.x;
+        u.y = u.ay = c.y;
+        u.caminho = [];
+        u.trabalho = 0;
+        u.abrigado = alvo.id;
         return;
       }
       seguir(sim, u, alvo);
@@ -1301,7 +1498,7 @@ function fonteParecida(sim: Sim, u: Unidade, id: number): number {
   let melhor = 0;
   let dist = 10 * 10;
   for (const f of sim.fontes) {
-    if (f.tipo !== antes.tipo || !acessivel(sim, f, u.dono)) continue;
+    if (f.tipo !== antes.tipo || !acessivel(sim, f, u.dono) || !temVaga(sim, u.dono, f.id, u.id)) continue;
     const dx = f.gx - antes.gx;
     const dy = f.gy - antes.gy;
     const q = dx * dx + dy * dy;
@@ -1347,8 +1544,10 @@ function separar(sim: Sim) {
   const R = 0.42;
   for (let a = 0; a < us.length; a++) {
     const u = us[a];
+    if (u.abrigado) continue;
     for (let b = a + 1; b < us.length; b++) {
       const v = us[b];
+      if (v.abrigado) continue;
       const dx = v.x - u.x;
       const dy = v.y - u.y;
       if (dx > R || dx < -R || dy > R || dy < -R) continue;
@@ -1401,6 +1600,8 @@ function limparMortos(sim: Sim) {
         sim.eventos.push({ t: 'morte', id: p.id, dono: p.dono, tipo: p.tipo, predio: true, x: c.x, y: c.y });
         // quem estava nele perde o que fazia
         if (p.pesquisa > 0) p.pesquisa = 0;
+        // quem estava abrigado no centro que caiu sai pela porta
+        if (p.tipo === 'centro') soltarDoSino(sim, p);
       }
     sim.predios = sim.predios.filter((p) => p.vida > 0);
   }
@@ -1478,6 +1679,7 @@ export function assinatura(sim: Sim): string {
     mais(u.x);
     mais(u.y);
     mais(u.vida);
+    mais(u.abrigado);
   }
   for (const p of sim.predios) {
     mais(p.id);

@@ -32,6 +32,7 @@ import {
   alcancavel,
   passavel,
   acessivel,
+  temVaga,
 } from './sim';
 
 export interface Perfil {
@@ -224,9 +225,13 @@ function recursoDe(sim: Sim, u: Unidade): Recurso | null {
 function fontePerto(sim: Sim, tipo: 'arvore' | 'ouro', x: number, y: number, dono: Dono): number {
   let melhor = 0;
   let dist = Infinity;
+  // a mina de casa cheia (a capacidade, sim.ts): quem sobra vai a outro recurso, e não à do meio (a de quem chegar, longe e
+  // no caminho do inimigo). A do meio só quando a de casa acabou.
+  const temCasa = tipo === 'ouro' && sim.fontes.some((f) => f.tipo === 'ouro' && (f.gx + 0.5 - x) ** 2 + (f.gy + 0.5 - y) ** 2 < 14 * 14);
   for (const f of sim.fontes) {
-    if (f.tipo !== tipo || !acessivel(sim, f, dono)) continue;
+    if (f.tipo !== tipo || !acessivel(sim, f, dono) || !temVaga(sim, dono, f.id)) continue;
     const d = (f.gx + 0.5 - x) * (f.gx + 0.5 - x) + (f.gy + 0.5 - y) * (f.gy + 0.5 - y);
+    if (temCasa && d >= 14 * 14) continue;
     if (d < dist) {
       dist = d;
       melhor = f.id;
