@@ -3130,4 +3130,7 @@ export default {
   'Montar': 'Bygg',
   'Passou!': 'Det gick!',
   '{n}% do caminho': '{n} % av vägen',
+  'Gincana da toca': 'Hålans hinderbana',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'En hinderbana i 3D: spring, hoppa och håll balansen över plattformar, rullband, sågar och svepande armar fram till flaggan. Ramlar du ner går du tillbaka till senaste flaggan. I solo mot klockan och dina vänners spöken.',
+  'Quedas: {n}': 'Fall: {n}',
 } satisfies Record<string, string>;

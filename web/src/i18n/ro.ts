@@ -3068,4 +3068,7 @@ export default {
   'Montar': 'Construiește',
   'Passou!': 'A reușit!',
   '{n}% do caminho': '{n}% din drum',
+  'Gincana da toca': 'Traseul cu obstacole al vizuinii',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Un traseu cu obstacole în 3D: aleargă, sari și ține-ți echilibrul pe platforme, benzi, printre fierăstraie și brațe rotitoare până la steag. Dacă pici, te întorci la ultimul steag. În Solo, contra cronometrului și a fantomelor prietenilor.',
+  'Quedas: {n}': 'Căderi: {n}',
 } satisfies Record<string, string>;

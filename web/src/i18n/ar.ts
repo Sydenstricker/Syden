@@ -3092,4 +3092,7 @@ export default {
   'Montar': 'بناء',
   'Passou!': 'نجاح!',
   '{n}% do caminho': '{n}% من الطريق',
+  'Gincana da toca': 'سباق عقبات الجحر',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'سباق عقبات ثلاثي الأبعاد: الجري والقفز والتوازن فوق المنصات والسيور والمناشير والأذرع الدوّارة حتى العلم. عند السقوط، العودة إلى آخر علم. في اللعب الفردي: ضد الساعة وأشباح الأصدقاء.',
+  'Quedas: {n}': 'السقطات: {n}',
 } satisfies Record<string, string>;

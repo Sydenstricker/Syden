@@ -3138,4 +3138,7 @@ export default {
   'Montar': 'Rakenna',
   'Passou!': 'Onnistui!',
   '{n}% do caminho': '{n} % matkasta',
+  'Gincana da toca': 'Kolon esterata',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Esterata 3D:nä: juokse, hyppää ja pidä tasapaino tasoilla, liukuhihnoilla, sahojen ja pyörivien puomien keskellä lippuun asti. Jos putoat, palaat viimeiseen lippuun. Soolona kelloa ja kavereiden haamuja vastaan.',
+  'Quedas: {n}': 'Putoamisia: {n}',
 } satisfies Record<string, string>;

@@ -3137,4 +3137,7 @@ export default {
   'Montar': 'Gradnja',
   'Passou!': 'Uspjelo je!',
   '{n}% do caminho': '{n}% puta',
+  'Gincana da toca': 'Poligon s preprekama iz jazbine',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Trka s preprekama u 3D: trči, skači i drži ravnotežu po platformama, trakama, testerama i rotirajućim šipkama do zastave. Pad znači povratak na posljednju zastavu. U solo igri protiv sata i duhova prijatelja.',
+  'Quedas: {n}': 'Padovi: {n}',
 } satisfies Record<string, string>;

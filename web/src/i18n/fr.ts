@@ -3090,4 +3090,7 @@ export default {
   'Montar': 'Construire',
   'Passou!': 'Ça passe !',
   '{n}% do caminho': '{n} % du trajet',
+  'Gincana da toca': 'Parcours du terrier',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Un parcours d\'obstacles en 3D : cours, saute et garde l\'équilibre sur des plateformes, des tapis roulants, des scies et des balayeurs jusqu\'au drapeau. Si tu tombes, tu repars du dernier drapeau. En Solo, contre la montre et les fantômes de tes amis.',
+  'Quedas: {n}': 'Chutes : {n}',
 } satisfies Record<string, string>;

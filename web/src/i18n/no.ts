@@ -3138,4 +3138,7 @@ export default {
   'Montar': 'Bygg',
   'Passou!': 'Det gikk!',
   '{n}% do caminho': '{n} % av veien',
+  'Gincana da toca': 'Hulens hinderløype',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'En hinderløype i 3D: løp, hopp og hold balansen over plattformer, transportbånd, sager og feiearmer til flagget. Faller du, går du tilbake til det siste flagget. I solo mot klokka og vennenes spøkelser.',
+  'Quedas: {n}': 'Fall: {n}',
 } satisfies Record<string, string>;

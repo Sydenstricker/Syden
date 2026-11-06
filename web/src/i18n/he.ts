@@ -3122,4 +3122,7 @@ export default {
   'Montar': 'בנייה',
   'Passou!': 'הצלחה!',
   '{n}% do caminho': '{n}% מהדרך',
+  'Gincana da toca': 'מסלול המכשולים של המחילה',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'מסלול מכשולים בתלת־ממד: לרוץ, לקפוץ ולשמור על שיווי משקל על משטחים, מסועים, מסורים וזרועות מסתובבות עד הדגל. נפילה מחזירה לדגל האחרון. ביחיד, נגד השעון ונגד רוחות הרפאים של החברים.',
+  'Quedas: {n}': 'נפילות: {n}',
 } satisfies Record<string, string>;

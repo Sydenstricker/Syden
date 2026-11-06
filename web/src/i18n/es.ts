@@ -3063,4 +3063,7 @@ export default {
   'Montar': 'Montar',
   'Passou!': '¡Pasó!',
   '{n}% do caminho': '{n}% del camino',
+  'Gincana da toca': 'Gincana de la madriguera',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Una carrera de obstáculos en 3D: corre, salta y mantén el equilibrio por plataformas, cintas, sierras y barredoras hasta la bandera. Si caes, vuelves a la última bandera. En Solo, contra el reloj y los fantasmas de tus amigos.',
+  'Quedas: {n}': 'Caídas: {n}',
 } satisfies Record<string, string>;

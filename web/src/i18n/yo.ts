@@ -3083,4 +3083,7 @@ export default {
   'Montar': 'Kíkọ́',
   'Passou!': 'Ó kọjá!',
   '{n}% do caminho': '{n}% ọ̀nà',
+  'Gincana da toca': 'Eré ìdíwọ́ Ihò',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Eré ìdíwọ́ 3D: sáré, fò, kí o sì dúró déédéé lórí pèpéle, bẹ́líìtì tí ń rìn, ayùn àti apá tí ń yí títí dé àsíá. Tí o bá ṣubú, wàá padà sí àsíá tó kẹ́yìn. Nínú Solo, lòdì sí aago àti iwin àwọn ọ̀rẹ́.',
+  'Quedas: {n}': 'Ìṣubú: {n}',
 } satisfies Record<string, string>;

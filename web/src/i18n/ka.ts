@@ -3156,4 +3156,7 @@ export default {
   'Montar': 'აშენება',
   'Passou!': 'გამოვიდა!',
   '{n}% do caminho': 'გზის {n}%',
+  'Gincana da toca': 'სოროს დაბრკოლებების გზა',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'დაბრკოლებების გზა 3D-ში: ირბინე, ხტუნე და შეინარჩუნე წონასწორობა პლატფორმებზე, ლენტებზე, ხერხებსა და მბრუნავ ღეროებზე დროშამდე. ჩავარდნისას — ბოლო დროშასთან დაბრუნება. სოლოში საათისა და მეგობრების მოჩვენებების წინააღმდეგ.',
+  'Quedas: {n}': 'ვარდნები: {n}',
 } satisfies Record<string, string>;

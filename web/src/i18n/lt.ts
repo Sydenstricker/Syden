@@ -3140,4 +3140,7 @@ export default {
   'Montar': 'Statyti',
   'Passou!': 'Pavyko!',
   '{n}% do caminho': '{n} % kelio',
+  'Gincana da toca': 'Urvo kliūčių ruožas',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Kliūčių ruožas 3D: bėk, šok ir išlaikyk pusiausvyrą ant platformų, juostų, tarp pjūklų ir besisukančių strypų iki vėliavos. Nukritus grįžtama prie paskutinės vėliavos. Solo žaidime prieš laikrodį ir draugų vaiduoklius.',
+  'Quedas: {n}': 'Kritimai: {n}',
 } satisfies Record<string, string>;

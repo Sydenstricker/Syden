@@ -3067,4 +3067,7 @@ export default {
   'Montar': 'Jenga',
   'Passou!': 'Imevuka!',
   '{n}% do caminho': '{n}% ya njia',
+  'Gincana da toca': 'Mbio za vikwazo za Shimoni',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Mbio za vikwazo za 3D: kimbia, ruka na shika usawa juu ya majukwaa, mikanda inayosogea, misumeno na mikono inayozunguka hadi kwenye bendera. Ukianguka, unarudi kwenye bendera ya mwisho. Katika Solo, dhidi ya saa na mizimu ya marafiki.',
+  'Quedas: {n}': 'Kuanguka: {n}',
 } satisfies Record<string, string>;

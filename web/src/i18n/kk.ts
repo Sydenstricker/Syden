@@ -3142,4 +3142,7 @@ export default {
   'Montar': 'Салу',
   'Passou!': 'Өтті!',
   '{n}% do caminho': 'Жолдың {n}%-ы',
+  'Gincana da toca': 'Ін кедергі жолы',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': '3D кедергі жолы: туға дейін платформалар, таспалар, аралар мен айналмалы тұтқалар үстімен жүгір, секір және тепе-теңдікті сақта. Құласаң, соңғы туға ораласың. Солода сағатқа және достардың елестеріне қарсы.',
+  'Quedas: {n}': 'Құлаулар: {n}',
 } satisfies Record<string, string>;

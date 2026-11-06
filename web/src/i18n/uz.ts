@@ -3158,4 +3158,7 @@ export default {
   'Montar': 'Qurish',
   'Passou!': 'Oʻtdi!',
   '{n}% do caminho': 'Yoʻlning {n}%',
+  'Gincana da toca': 'Uya toʻsiqli yoʻlagi',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': '3D toʻsiqli yoʻlak: bayroqqacha platformalar, lentalar, arralar va aylanuvchi tutqichlar ustidan yugur, sakra va muvozanatni saqla. Yiqilsang, oxirgi bayroqqa qaytasan. Soloda soatga va doʻstlarning arvohlariga qarshi.',
+  'Quedas: {n}': 'Yiqilishlar: {n}',
 } satisfies Record<string, string>;

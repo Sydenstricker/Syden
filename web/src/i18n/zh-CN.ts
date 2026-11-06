@@ -3055,4 +3055,7 @@ export default {
   'Montar': '搭建',
   'Passou!': '过桥了！',
   '{n}% do caminho': '走了 {n}%',
+  'Gincana da toca': '兔子洞障碍赛',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': '3D 障碍赛：在平台、传送带、电锯和旋转杆之间奔跑、跳跃、保持平衡，一路冲到旗子。掉下去就回到最后一面旗。单人模式下挑战时间和好友的幽灵。',
+  'Quedas: {n}': '掉落：{n}',
 } satisfies Record<string, string>;

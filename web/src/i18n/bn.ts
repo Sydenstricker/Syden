@@ -3065,4 +3065,7 @@ export default {
   'Montar': 'নির্মাণ',
   'Passou!': 'পেরিয়ে গেছে!',
   '{n}% do caminho': 'পথের {n}%',
+  'Gincana da toca': 'গর্তের বাধা দৌড়',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': '3D বাধা দৌড়: পতাকা পর্যন্ত প্ল্যাটফর্ম, কনভেয়র, করাত আর ঘূর্ণি বাহুর উপর দিয়ে দৌড়াও, লাফাও আর ভারসাম্য রাখো। পড়ে গেলে শেষ পতাকায় ফিরে যাবে। সোলোতে ঘড়ি আর বন্ধুদের ভূতের বিপক্ষে।',
+  'Quedas: {n}': 'পড়া: {n}',
 } satisfies Record<string, string>;

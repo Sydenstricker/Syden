@@ -3081,4 +3081,7 @@ export default {
   'Montar': 'สร้าง',
   'Passou!': 'ข้ามได้!',
   '{n}% do caminho': '{n}% ของทาง',
+  'Gincana da toca': 'ด่านอุปสรรคโพรงกระต่าย',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'ด่านอุปสรรคแบบ 3D: วิ่ง กระโดด และทรงตัวบนแท่น สายพาน เลื่อย และแขนหมุน จนถึงธงเส้นชัย ตกลงไปจะกลับไปที่ธงล่าสุด ในโหมดเดี่ยว แข่งกับเวลาและเงาของเพื่อน',
+  'Quedas: {n}': 'ตก: {n}',
 } satisfies Record<string, string>;

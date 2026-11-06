@@ -3107,4 +3107,7 @@ export default {
   'Montar': 'ဆောက်',
   'Passou!': 'ဖြတ်ကျော်နိုင်ပြီ!',
   '{n}% do caminho': 'လမ်း၏ {n}%',
+  'Gincana da toca': 'တွင်း အတားအဆီး ပြေးပွဲ',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': '3D အတားအဆီး ပြေးပွဲ- အလံအထိ ပလက်ဖောင်း၊ ခါးပတ်ရွေ့၊ လွှနှင့် လှည့်လက်တံများပေါ်တွင် ပြေး၊ ခုန်ပြီး ချိန်ခွင်လျှာ ထိန်းပါ။ ပြုတ်ကျလျှင် နောက်ဆုံးအလံသို့ ပြန်သွားမည်။ Solo တွင် နာရီနှင့် သူငယ်ချင်းများ၏ သရဲပုံရိပ်များကို ယှဉ်ပါ။',
+  'Quedas: {n}': 'ပြုတ်ကျမှု- {n}',
 } satisfies Record<string, string>;

@@ -3067,4 +3067,7 @@ export default {
   'Montar': 'Bouwen',
   'Passou!': 'Gelukt!',
   '{n}% do caminho': '{n}% van de weg',
+  'Gincana da toca': 'Holparcours',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Een hindernisparcours in 3D: ren, spring en bewaar je evenwicht over platforms, lopende banden, zagen en zwaaiarmen tot aan de vlag. Val je eraf, dan ga je terug naar de laatste vlag. In Solo tegen de klok en de geesten van je vrienden.',
+  'Quedas: {n}': 'Vallen: {n}',
 } satisfies Record<string, string>;

@@ -3148,4 +3148,7 @@ export default {
   'Montar': 'Сохтан',
   'Passou!': 'Гузашт!',
   '{n}% do caminho': '{n}% роҳ',
+  'Gincana da toca': 'Пайроҳаи монеаҳои лона',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Пайроҳаи монеаҳо дар 3D: то парчам дар болои платформаҳо, тасмаҳо, байни арраҳо ва дастаҳои чархзананда дав, ҷаҳ ва мувозинатро нигоҳ дор. Агар афтӣ, ба парчами охирин бармегардӣ. Дар соло бар зидди соат ва арвоҳи дӯстон.',
+  'Quedas: {n}': 'Афтиданҳо: {n}',
 } satisfies Record<string, string>;

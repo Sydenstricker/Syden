@@ -3137,4 +3137,7 @@ export default {
   'Montar': 'សង់',
   'Passou!': 'ឆ្លងផុត!',
   '{n}% do caminho': '{n}% នៃផ្លូវ',
+  'Gincana da toca': 'ការប្រណាំងឧបសគ្គរូង',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'ការប្រណាំងឧបសគ្គ 3D៖ រត់ លោត និងរក្សាលំនឹងលើវេទិកា ខ្សែក្រវាត់ រណារ និងដៃបង្វិល រហូតដល់ទង់។ បើធ្លាក់ ត្រឡប់ទៅទង់ចុងក្រោយ។ ក្នុង Solo ប្រកួតនឹងនាឡិកា និងខ្មោចមិត្តភក្តិ។',
+  'Quedas: {n}': 'ការធ្លាក់៖ {n}',
 } satisfies Record<string, string>;

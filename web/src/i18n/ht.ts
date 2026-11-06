@@ -3148,4 +3148,7 @@ export default {
   'Montar': 'Monte',
   'Passou!': 'Li pase!',
   '{n}% do caminho': '{n}% chemen an',
+  'Gincana da toca': 'Kous obstak tanyè a',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Yon kous obstak an 3D: kouri, sote epi kenbe ekilib ou sou platfòm, tapi woulan, si ak bra k ap vire jiska drapo a. Si ou tonbe, ou retounen nan dènye drapo a. An Solo, kont revèy la ak fantòm zanmi ou yo.',
+  'Quedas: {n}': 'Tonbe: {n}',
 } satisfies Record<string, string>;

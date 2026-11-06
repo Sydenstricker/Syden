@@ -3072,4 +3072,7 @@ export default {
   'Montar': 'Fau',
   'Passou!': 'Ua mafai!',
   '{n}% do caminho': '{n}% o le ala',
+  'Gincana da toca': 'Tuuga faʻalavelave o le Lua',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'O se tuuga faʻalavelave i le 3D: tamoʻe, oso ma taofi lou paleni i luga o tulaga, fusi feʻaveaʻi, ili ma lima taʻamilo seʻia oʻo i le fuʻa. Afai e te paʻu, e te toe foʻi i le fuʻa mulimuli. I le Solo, faasaga i le uati ma aitu o au uo.',
+  'Quedas: {n}': 'Paʻu: {n}',
 } satisfies Record<string, string>;

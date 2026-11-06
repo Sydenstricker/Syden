@@ -3138,4 +3138,7 @@ export default {
   'Montar': 'තැනීම',
   'Passou!': 'පාර පැන්නා!',
   '{n}% do caminho': 'මාර්ගයෙන් {n}%',
+  'Gincana da toca': 'ගුහාවේ බාධක ධාවනය',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': '3D බාධක ධාවනයක්: කොඩිය දක්වා වේදිකා, වාහක පටි, කියත් සහ කැරකෙන බාහු මතින් දුවන්න, පනින්න, සමබරතාව රකින්න. වැටුණොත් අවසන් කොඩියට ආපසු. Solo හි ඔරලෝසුවට සහ මිතුරන්ගේ හොල්මන්වලට එරෙහිව.',
+  'Quedas: {n}': 'වැටීම්: {n}',
 } satisfies Record<string, string>;

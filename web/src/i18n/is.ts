@@ -3139,4 +3139,7 @@ export default {
   'Montar': 'Smíða',
   'Passou!': 'Það tókst!',
   '{n}% do caminho': '{n}% af leiðinni',
+  'Gincana da toca': 'Hindrunarbraut holunnar',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Hindrunarbraut í 3D: hlauptu, hoppaðu og haltu jafnvægi á pöllum, færiböndum, sögum og snúningsörmum að fánanum. Ef þú dettur ferðu aftur að síðasta fána. Í einspilun gegn klukkunni og draugum vinanna.',
+  'Quedas: {n}': 'Föll: {n}',
 } satisfies Record<string, string>;

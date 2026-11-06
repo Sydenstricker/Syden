@@ -3109,4 +3109,7 @@ export default {
   'Montar': 'Tikinti',
   'Passou!': 'Alındı!',
   '{n}% do caminho': 'Yolun {n}%-i',
+  'Gincana da toca': 'Yuva maneə yarışı',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': '3D maneə yarışı: bayrağa qədər platformalar, lentlər, mişarlar və fırlanan qollar üzərində qaç, tullan və tarazlığını saxla. Yıxılsan, son bayrağa qayıdırsan. Solo rejimdə saata və dostlarının xəyallarına qarşı.',
+  'Quedas: {n}': 'Yıxılmalar: {n}',
 } satisfies Record<string, string>;

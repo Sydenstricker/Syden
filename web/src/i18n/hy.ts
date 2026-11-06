@@ -3157,4 +3157,7 @@ export default {
   'Montar': 'Կառուցել',
   'Passou!': 'Ստացվեց!',
   '{n}% do caminho': 'Ճանապարհի {n}%-ը',
+  'Gincana da toca': 'Որջի խոչընդոտների արշավ',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Խոչընդոտների արշավ 3D-ով․ վազիր, ցատկիր և պահիր հավասարակշռությունդ հարթակների, ժապավենների, սղոցների և պտտվող ձողերի վրայով մինչև դրոշը։ Ընկնելու դեպքում՝ վերադարձ վերջին դրոշին։ Մենախաղում՝ ժամացույցի և ընկերների ուրվականների դեմ։',
+  'Quedas: {n}': 'Ընկնելներ՝ {n}',
 } satisfies Record<string, string>;

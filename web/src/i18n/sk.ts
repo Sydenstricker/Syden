@@ -3138,4 +3138,7 @@ export default {
   'Montar': 'Stavať',
   'Passou!': 'Podarilo sa!',
   '{n}% do caminho': '{n} % cesty',
+  'Gincana da toca': 'Prekážková dráha z nory',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Prekážková dráha v 3D: bež, skáč a udrž rovnováhu na plošinách, pásoch, pri pílach a otočných ramenách až k vlajke. Pád znamená návrat k poslednej vlajke. V sóle proti času a duchom priateľov.',
+  'Quedas: {n}': 'Pády: {n}',
 } satisfies Record<string, string>;

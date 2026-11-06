@@ -3050,4 +3050,7 @@ export default {
   'Montar': 'నిర్మాణం',
   'Passou!': 'దాటింది!',
   '{n}% do caminho': 'దారిలో {n}%',
+  'Gincana da toca': 'బొరియ అడ్డంకుల పరుగు',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': '3D అడ్డంకుల పరుగు: జెండా వరకు వేదికలు, కన్వేయర్లు, రంపాలు, తిరిగే చేతుల మీదుగా పరుగెత్తు, దూకు, సమతుల్యం కాపాడుకో. పడితే చివరి జెండాకు తిరిగి వెళ్తావు. సోలోలో గడియారం, స్నేహితుల దెయ్యాలతో పోటీ.',
+  'Quedas: {n}': 'పడిపోవడం: {n}',
 } satisfies Record<string, string>;

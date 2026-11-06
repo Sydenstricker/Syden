@@ -3061,4 +3061,7 @@ export default {
   'Montar': 'ساختن',
   'Passou!': 'رد شد!',
   '{n}% do caminho': '{n}٪ از مسیر',
+  'Gincana da toca': 'مسابقهٔ موانع لانه',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'یک مسابقهٔ موانع سه‌بعدی: روی سکوها، تسمه‌ها، اره‌ها و بازوهای چرخان تا پرچم بدو، بپر و تعادلت را نگه دار. اگر بیفتی، به آخرین پرچم برمی‌گردی. در تک‌نفره، در برابر ساعت و شبح دوستانت.',
+  'Quedas: {n}': 'افتادن‌ها: {n}',
 } satisfies Record<string, string>;

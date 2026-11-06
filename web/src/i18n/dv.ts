@@ -3148,4 +3148,7 @@ export default {
   'Montar': 'ހެދުން',
   'Passou!': 'ކާމިޔާބު!',
   '{n}% do caminho': 'މަގުގެ {n}%',
+  'Gincana da toca': 'ގޯޅީގެ ހުރަސް ދުވުން',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': '3D ހުރަސް ދުވުމެއް: ދިދައާ ހަމައަށް ޕްލެޓްފޯމްތަކާއި، ބެލްޓްތަކާއި، ކިރުތަކާއި، އަނބުރާ ދަނޑިތަކުގެ މަތިން ދުވެ، ފުންމައި، ބެލެންސް ހިފަހައްޓާ. ވެއްޓިއްޖެނަމަ ފަހު ދިދައަށް އެނބުރި ދެވޭނެ. ސޯލޯގައި ގަޑިއާއި ރަހުމަތްތެރިންގެ ހިޔަނިތަކާ ދެކޮޅަށް.',
+  'Quedas: {n}': 'ވެއްޓުން: {n}',
 } satisfies Record<string, string>;

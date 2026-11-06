@@ -3130,4 +3130,7 @@ export default {
   'Montar': 'Ndërto',
   'Passou!': 'Ia doli!',
   '{n}% do caminho': '{n}% e rrugës',
+  'Gincana da toca': 'Pista me pengesa e strofullës',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Një pistë me pengesa në 3D: vrapo, kërce dhe mbaj ekuilibrin mbi platforma, rripa lëvizës, sharra dhe krahë rrotullues deri te flamuri. Po rrëzove, kthehesh te flamuri i fundit. Në Solo, kundër orës dhe fantazmave të shokëve.',
+  'Quedas: {n}': 'Rrëzime: {n}',
 } satisfies Record<string, string>;

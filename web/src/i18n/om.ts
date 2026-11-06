@@ -3108,4 +3108,7 @@ export default {
   'Montar': 'Ijaarsa',
   'Passou!': 'Milkaaʼe!',
   '{n}% do caminho': 'Karaa {n}%',
+  'Gincana da toca': 'Fiigicha gufuu boollaa',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Fiigicha gufuu 3D: hanga alaabaatti waltajjii, sabbata sochootu, magaazii fi harka marsu irra fiigi, utaali, madaallii kee eegi. Yoo kufte, gara alaabaa dhumaatti deebita. Solo keessatti sa’aatii fi ekeraa hiriyootaa irratti.',
+  'Quedas: {n}': 'Kufaatii: {n}',
 } satisfies Record<string, string>;

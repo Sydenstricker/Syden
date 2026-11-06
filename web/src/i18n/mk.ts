@@ -3138,4 +3138,7 @@ export default {
   'Montar': 'Градба',
   'Passou!': 'Успеа!',
   '{n}% do caminho': '{n}% од патот',
+  'Gincana da toca': 'Полигон со пречки од дувлото',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Трка со пречки во 3D: трчај, скокај и држи рамнотежа на платформи, ленти, пили и вртливи краци до знамето. При паѓање — назад до последното знаме. Во соло, против часовникот и духовите на пријателите.',
+  'Quedas: {n}': 'Паѓања: {n}',
 } satisfies Record<string, string>;

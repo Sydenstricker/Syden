@@ -3140,4 +3140,7 @@ export default {
   'Montar': 'Építés',
   'Passou!': 'Sikerült!',
   '{n}% do caminho': 'Az út {n}%-a',
+  'Gincana da toca': 'Üregi akadálypálya',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Akadálypálya 3D-ben: fuss, ugorj és tartsd az egyensúlyt platformokon, futószalagokon, fűrészek és forgó karok között a zászlóig. Ha leesel, az utolsó zászlótól folytatod. Szólóban az óra és a barátaid szellemei ellen.',
+  'Quedas: {n}': 'Esések: {n}',
 } satisfies Record<string, string>;

@@ -3118,4 +3118,7 @@ export default {
   'Montar': 'Будувати',
   'Passou!': 'Вдалося!',
   '{n}% do caminho': '{n}% шляху',
+  'Gincana da toca': 'Смуга перешкод біля нори',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Смуга перешкод у 3D: біжи, стрибай і тримай рівновагу на платформах, стрічках, серед пилок і обертових важелів до прапора. Після падіння — назад до останнього прапора. У соло — проти годинника й привидів друзів.',
+  'Quedas: {n}': 'Падіння: {n}',
 } satisfies Record<string, string>;

@@ -3060,4 +3060,7 @@ export default {
   'Montar': 'تعمیر',
   'Passou!': 'پار ہو گیا!',
   '{n}% do caminho': 'راستے کا {n}%',
+  'Gincana da toca': 'بِل کی رکاوٹ دوڑ',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': '3D رکاوٹ دوڑ: جھنڈے تک پلیٹ فارموں، کنویئر پٹیوں، آریوں اور گھومتے بازوؤں پر سے دوڑو، کودو اور توازن برقرار رکھو۔ گرنے پر آخری جھنڈے پر واپسی۔ سولو میں گھڑی اور دوستوں کے بھوتوں کے خلاف۔',
+  'Quedas: {n}': 'گرنا: {n}',
 } satisfies Record<string, string>;

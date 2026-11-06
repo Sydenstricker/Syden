@@ -3074,4 +3074,7 @@ export default {
   'Montar': 'Tógáil',
   'Passou!': 'D’éirigh leis!',
   '{n}% do caminho': '{n}% den bhealach',
+  'Gincana da toca': 'Cúrsa constaicí an Phoill',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Cúrsa constaicí 3D: rith, léim agus coinnigh do chothromaíocht ar ardáin, criosanna iompair, sábha agus scuabairí go dtí an bhratach. Má thiteann tú, fillfidh tú ar an mbratach dheireanach. Sa Solo, in aghaidh an chloig agus taibhsí do chairde.',
+  'Quedas: {n}': 'Titimí: {n}',
 } satisfies Record<string, string>;

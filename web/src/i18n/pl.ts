@@ -3133,4 +3133,7 @@ export default {
   'Montar': 'Budowa',
   'Passou!': 'Udało się!',
   '{n}% do caminho': '{n}% drogi',
+  'Gincana da toca': 'Tor przeszkód z nory',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Tor przeszkód w 3D: biegnij, skacz i utrzymuj równowagę na platformach, taśmach, wśród pił i obrotowych ramion aż do flagi. Upadek oznacza powrót do ostatniej flagi. W solo przeciw zegarowi i duchom znajomych.',
+  'Quedas: {n}': 'Upadki: {n}',
 } satisfies Record<string, string>;

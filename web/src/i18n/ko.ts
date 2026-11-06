@@ -3056,4 +3056,7 @@ export default {
   'Montar': '짓기',
   'Passou!': '건넜다!',
   '{n}% do caminho': '길의 {n}%',
+  'Gincana da toca': '굴 장애물 코스',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': '3D 장애물 코스: 깃발까지 발판, 컨베이어, 톱날, 회전 막대 위를 달리고 뛰고 균형을 잡아요. 떨어지면 마지막 깃발로 돌아가요. 솔로에서는 시간과 친구들의 고스트와 겨뤄요.',
+  'Quedas: {n}': '낙하: {n}',
 } satisfies Record<string, string>;

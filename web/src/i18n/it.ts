@@ -3067,4 +3067,7 @@ export default {
   'Montar': 'Costruire',
   'Passou!': 'Ce l’ha fatta!',
   '{n}% do caminho': '{n}% del percorso',
+  'Gincana da toca': 'Percorso a ostacoli della tana',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Un percorso a ostacoli in 3D: corri, salta e tieni l\'equilibrio su piattaforme, nastri, seghe e bracci rotanti fino alla bandiera. Se cadi, torni all\'ultima bandiera. In Solo, contro il tempo e i fantasmi degli amici.',
+  'Quedas: {n}': 'Cadute: {n}',
 } satisfies Record<string, string>;

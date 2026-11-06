@@ -3086,4 +3086,7 @@ export default {
   'Montar': 'Строить',
   'Passou!': 'Получилось!',
   '{n}% do caminho': '{n}% пути',
+  'Gincana da toca': 'Полоса препятствий у норы',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Полоса препятствий в 3D: беги, прыгай и держи равновесие на платформах, лентах, среди пил и вращающихся рычагов до флага. При падении — назад к последнему флагу. В соло — против часов и призраков друзей.',
+  'Quedas: {n}': 'Падения: {n}',
 } satisfies Record<string, string>;

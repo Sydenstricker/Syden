@@ -3074,4 +3074,7 @@ export default {
   'Montar': 'Κατασκευή',
   'Passou!': 'Πέρασε!',
   '{n}% do caminho': '{n}% της διαδρομής',
+  'Gincana da toca': 'Στίβος εμποδίων του λαγουμιού',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Ένας στίβος εμποδίων σε 3D: τρέξε, πήδα και κράτα ισορροπία σε πλατφόρμες, ιμάντες, πριόνια και περιστρεφόμενους βραχίονες ως τη σημαία. Αν πέσεις, γυρνάς στην τελευταία σημαία. Στο σόλο, κόντρα στο χρονόμετρο και στα φαντάσματα των φίλων.',
+  'Quedas: {n}': 'Πτώσεις: {n}',
 } satisfies Record<string, string>;

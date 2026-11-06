@@ -3065,4 +3065,7 @@ export default {
   'Montar': 'Bangun',
   'Passou!': 'Berhasil!',
   '{n}% do caminho': '{n}% perjalanan',
+  'Gincana da toca': 'Lintasan Rintangan Liang',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Lintasan rintangan 3D: lari, lompat, dan jaga keseimbangan di atas platform, ban berjalan, gergaji, dan lengan putar sampai ke bendera. Kalau jatuh, kembali ke bendera terakhir. Di Solo, melawan waktu dan hantu teman-temanmu.',
+  'Quedas: {n}': 'Jatuh: {n}',
 } satisfies Record<string, string>;

@@ -3038,4 +3038,7 @@ export default {
   'Montar': 'Xây',
   'Passou!': 'Qua được rồi!',
   '{n}% do caminho': '{n}% quãng đường',
+  'Gincana da toca': 'Vượt chướng ngại hang thỏ',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Đường đua vượt chướng ngại 3D: chạy, nhảy và giữ thăng bằng trên bục, băng chuyền, giữa lưỡi cưa và cần quay cho tới lá cờ. Rơi xuống thì quay về lá cờ gần nhất. Ở chế độ Solo, đua với đồng hồ và bóng ma của bạn bè.',
+  'Quedas: {n}': 'Lần rơi: {n}',
 } satisfies Record<string, string>;

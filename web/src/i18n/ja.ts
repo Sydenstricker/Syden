@@ -3049,4 +3049,7 @@ export default {
   'Montar': '組み立て',
   'Passou!': '渡れた!',
   '{n}% do caminho': '道のり{n}%',
+  'Gincana da toca': '巣穴のアスレチック',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': '3Dのアスレチックコース：足場、ベルトコンベア、ノコギリ、回転バーを走って跳んでバランスを取りながら旗まで進もう。落ちたら最後の旗に戻る。ソロではタイムと友だちのゴーストと勝負。',
+  'Quedas: {n}': '落下：{n}',
 } satisfies Record<string, string>;

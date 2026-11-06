@@ -3139,4 +3139,7 @@ export default {
   'Montar': 'ສ້າງ',
   'Passou!': 'ຂ້າມໄດ້!',
   '{n}% do caminho': '{n}% ຂອງທາງ',
+  'Gincana da toca': 'ການແລ່ນຂ້າມອຸປະສັກໂພງ',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'ການແລ່ນຂ້າມອຸປະສັກ 3D: ແລ່ນ, ໂດດ ແລະ ຮັກສາການຊົງຕົວເທິງແທ່ນ, ສາຍພານ, ເລື່ອຍ ແລະ ແຂນໝູນ ຈົນເຖິງທຸງ. ຖ້າຕົກ ຈະກັບໄປທຸງສຸດທ້າຍ. ໃນ Solo ແຂ່ງກັບໂມງ ແລະ ຜີຂອງໝູ່.',
+  'Quedas: {n}': 'ການຕົກ: {n}',
 } satisfies Record<string, string>;

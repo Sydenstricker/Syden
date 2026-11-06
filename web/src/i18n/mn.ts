@@ -3152,4 +3152,7 @@ export default {
   'Montar': 'Барих',
   'Passou!': 'Гарлаа!',
   '{n}% do caminho': 'Замын {n}%',
+  'Gincana da toca': 'Нүхний саадтай зам',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': '3D саадтай зам: туг хүртэл тавцан, туузан дамжуулга, хөрөө, эргэдэг гарын дээгүүр гүй, үсэр, тэнцвэрээ хадгал. Унавал сүүлийн туг руу буцна. Солод цаг болон найзуудын сүнсний эсрэг.',
+  'Quedas: {n}': 'Уналт: {n}',
 } satisfies Record<string, string>;

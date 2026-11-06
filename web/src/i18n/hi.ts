@@ -3067,4 +3067,7 @@ export default {
   'Montar': 'निर्माण',
   'Passou!': 'पार हो गया!',
   '{n}% do caminho': 'रास्ते का {n}%',
+  'Gincana da toca': 'बिल की बाधा दौड़',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': '3D बाधा दौड़: झंडे तक प्लेटफ़ॉर्म, कन्वेयर, आरी और घूमती बाँहों के ऊपर से दौड़ो, कूदो और संतुलन बनाए रखो। गिरने पर आख़िरी झंडे पर वापसी। सोलो में घड़ी और दोस्तों के भूतों के ख़िलाफ़।',
+  'Quedas: {n}': 'गिरना: {n}',
 } satisfies Record<string, string>;

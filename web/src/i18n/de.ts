@@ -3092,4 +3092,7 @@ export default {
   'Montar': 'Bauen',
   'Passou!': 'Geschafft!',
   '{n}% do caminho': '{n} % des Weges',
+  'Gincana da toca': 'Bau-Parcours',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Ein Hindernisparcours in 3D: Lauf, spring und halt das Gleichgewicht auf Plattformen, Laufbändern, Sägen und Drehbalken bis zur Flagge. Fällst du runter, geht es zurück zur letzten Flagge. Im Solo gegen die Uhr und die Geister deiner Freunde.',
+  'Quedas: {n}': 'Stürze: {n}',
 } satisfies Record<string, string>;

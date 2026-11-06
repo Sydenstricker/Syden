@@ -3139,4 +3139,7 @@ export default {
   'Montar': 'Ukwakha',
   'Passou!': 'Kuphumelele!',
   '{n}% do caminho': '{n}% wendlela',
+  'Gincana da toca': 'Umjaho wezithiyo womgodi',
+  'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Umjaho wezithiyo we-3D: gijima, gxuma futhi ubambe ibhalansi phezu kwezinkundla, amabhande ahambayo, amasaha nezingalo ezizungezayo kuze kube sefulegini. Uma uwa, ubuyela efulegini lokugcina. Ku-Solo, ubhekene newashi nezipoki zabangane.',
+  'Quedas: {n}': 'Ukuwa: {n}',
 } satisfies Record<string, string>;
