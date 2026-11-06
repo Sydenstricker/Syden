@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { alvo, espaco, irPara, novaCozinha, passo, usar, type Cozinha, type Evento } from '../src/cozinha/cozinha';
+import { alvo, espaco, irPara, novaCozinha, passo, progresso, usar, type Cozinha, type Evento } from '../src/cozinha/cozinha';
 import { pilotar } from '../src/cozinha/piloto';
-import { IDS_DAS_RECEITAS, PONTO, confere, type IdDaReceita, type Item } from '../src/cozinha/receitas';
+import { ESTACOES_DE_FOGO, IDS_DAS_RECEITAS, INGREDIENTES, PONTO, confere, type IdDaReceita, type Item } from '../src/cozinha/receitas';
 
 /**
  * A Cozinha da toca (web/src/cozinha/): as regras da cozinha e o piloto automático, sem desenho. O piloto usa os mesmos
@@ -35,7 +35,7 @@ for (const id of IDS_DAS_RECEITAS) {
 
 test('vários pedidos seguidos, na mesma cozinha (o que sobrou de um não trava o outro)', () => {
   const k = novaCozinha();
-  for (const id of ['x-salada', 'pizza-calabresa', 'sorvete-morango', 'hamburguer', 'pizza-cogumelo', 'salada', 'prato-feito', 'sushi', 'peixe-com-arroz', 'cachorro-quente', 'x-egg', 'pao-com-ovo'] as IdDaReceita[]) {
+  for (const id of ['x-salada', 'pizza-calabresa', 'sorvete-morango', 'hamburguer', 'pizza-cogumelo', 'salada', 'prato-feito', 'sushi', 'peixe-com-arroz', 'cachorro-quente', 'x-egg', 'pao-com-ovo', 'cafe-da-manha', 'x-bacon', 'bife-com-arroz', 'bife-com-salada'] as IdDaReceita[]) {
     assert.ok(cozinhar(id, k).entregue, id);
   }
 });
@@ -97,7 +97,7 @@ test('o fogão aceita o que é dele cru, e não o peixe já picado (o do sushi)'
   k.coelho.mao = { tipo: 'item', item: { ing: 'peixe', estado: 'picado' } };
   ir(fogao.id);
   assert.equal(fogao.em, null);
-  for (const ing of ['salsicha', 'ovo', 'arroz', 'peixe'] as const) {
+  for (const ing of ['salsicha', 'ovo', 'arroz', 'peixe', 'bacon', 'bife'] as const) {
     k.coelho.mao = { tipo: 'item', item: { ing, estado: 'cru' } };
     ir(fogao.id);
     assert.equal((fogao.em as { item: Item } | null)?.item.ing, ing);
@@ -107,4 +107,42 @@ test('o fogão aceita o que é dele cru, e não o peixe já picado (o do sushi)'
     espaco(k, nada);
     assert.equal(fogao.em, null);
   }
+});
+
+test('as estações de fogo que o servidor conhece (ESTACOES_DE_FOGO) são as da planta', () => {
+  const k = novaCozinha();
+  const daPlanta = Object.fromEntries(k.estacoes.filter((e) => e.tipo === 'fogao' || e.tipo === 'forno').map((e) => [e.id, e.tipo]));
+  assert.deepEqual(daPlanta, { ...ESTACOES_DE_FOGO });
+  // todo ingrediente tem caixote
+  for (const ing of INGREDIENTES) assert.ok(k.estacoes.some((e) => e.tipo === 'caixote' && e.ing === ing), ing);
+});
+
+test('o fogo avisa o servidor (pus, tirei) e mede pelo relógio, mesmo sem passo (a janela sem foco)', () => {
+  const k = novaCozinha();
+  const nada = () => false;
+  const fogao = k.estacoes.find((e) => e.tipo === 'fogao')!;
+  const ir = (id: number) => {
+    irPara(k, id, 'espaco');
+    const ev: Evento[] = [];
+    for (let n = 0; n < 400 && k.coelho.destino; n++) ev.push(...passo(k, null, DT, nada));
+    return ev;
+  };
+  k.coelho.mao = { tipo: 'item', item: { ing: 'bacon', estado: 'cru' } };
+  const pus = ir(fogao.id).find((e) => e.tipo === 'fogo');
+  assert.deepEqual(pus, { tipo: 'fogo', estacao: fogao.id, pos: { ing: 'bacon', estado: 'cru', com: undefined } });
+  // a janela ficou sem foco: nenhum passo, mas o relógio andou; ao voltar, o bacon queimou
+  const p = PONTO.bacon!;
+  let ev = passo(k, null, DT, nada, k.relogio + p.pronto);
+  assert.ok(ev.some((e) => e.tipo === 'pronto'));
+  ev = passo(k, null, DT, nada, k.relogio + (p.queima - p.pronto) * 0.7);
+  assert.ok(ev.some((e) => e.tipo === 'queimando'));
+  const pr = progresso(fogao);
+  assert.equal(pr?.tipo === 'fogo' && pr.fase, 'queimando');
+  ev = passo(k, null, DT, nada, k.relogio + p.queima);
+  assert.ok(ev.some((e) => e.tipo === 'queimou'));
+  // tirar com a mão vazia avisa o servidor
+  k.coelho.mao = null;
+  const tirou = espaco(k, nada);
+  assert.ok(tirou.some((e) => e.tipo === 'fogo' && e.pos === null));
+  assert.equal((k.coelho.mao as { item: Item } | null)?.item.estado, 'queimado');
 });

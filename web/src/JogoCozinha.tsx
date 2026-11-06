@@ -5,7 +5,7 @@ import { useT } from './i18n';
 import { Placar, PlacarAoVivo, Relogio } from './Minijogo';
 import type { Partida } from './minijogos';
 import type { CenaDaCozinha, Icones } from './cozinha/cena';
-import { irPara, novaCozinha, passo, espaco, usar, type Cozinha, type Evento } from './cozinha/cozinha';
+import { irPara, novaCozinha, passo, espaco, progresso, usar, type Cozinha, type Evento } from './cozinha/cozinha';
 import { pilotar } from './cozinha/piloto';
 import { RECEITAS, confere, itemDaChave, type IdDaReceita, type Item } from './cozinha/receitas';
 import './cozinha.css';
@@ -34,6 +34,11 @@ export interface EstadoCozinha {
  *
  * O RELÓGIO DA PARTIDA, neste computador, como no golfe e na Caça: o começo é quando o "prepare-se" acaba (restanteMs) ou,
  * para quem chega no meio, o que o servidor diz que já passou (decorridoMs).
+ *
+ * O PONTO É DO SERVIDOR (06/11/2026): o que entra e sai do fogo vai ao servidor na hora (o evento 'fogo' da cozinha), e ele
+ * mede pelo relógio dele. Por isso tudo o que vai ao servidor sai em FILA, um depois do outro: o "tirei" nunca chega antes
+ * do "pus", nem o prato antes do "tirei". O fogo daqui anda pela hora de verdade (Date.now), como o de lá; sem foco, nada
+ * se desenha, mas o fogo continua. Não há pausa: o relógio da partida é do servidor, também no Solo.
  */
 export function JogoCozinha({ estado, eu, jogador, agir }: { estado: EstadoCozinha & Partida; eu: number; jogador: boolean; agir: (corpo: Record<string, unknown>) => unknown }) {
   if (estado.terminada || estado.fase === 'fim') {
@@ -61,6 +66,7 @@ const SOM: Partial<Record<Evento['tipo'], Parameters<typeof tocar>[0]>> = {
   faca: 'carta',
   picou: 'acerto',
   pronto: 'vez',
+  queimando: 'chiado',
   queimou: 'erro',
   'jogou-fora': 'queda',
   entregue: 'chegada',
@@ -79,13 +85,17 @@ function ingredientesDe(id: IdDaReceita): string[] {
   return lista;
 }
 /** Enquanto os desenhos não ficam prontos. */
-const RESERVA: Record<string, string> = { sorvete: '🍦', salada: '🥗', pizza: '🍕', hamburguer: '🍔', x: '🍔', cachorro: '🌭', pao: '🍳', sushi: '🍣', peixe: '🐟', prato: '🍛' };
+const RESERVA: Record<string, string> = { sorvete: '🍦', salada: '🥗', pizza: '🍕', hamburguer: '🍔', x: '🍔', cachorro: '🌭', pao: '🍳', sushi: '🍣', peixe: '🐟', prato: '🍛', cafe: '🥓', bife: '🥩' };
 const reservaDe = (id: string) => RESERVA[id.split('-')[0]] ?? '🍽️';
 
 function CozinhaNaTela({ estado, eu, jogador, agir }: { estado: EstadoCozinha & Partida; eu: number; jogador: boolean; agir: (corpo: Record<string, unknown>) => unknown }) {
   const t = useT();
   const caixa = useRef<HTMLDivElement>(null);
-  const k = useRef<Cozinha>(novaCozinha());
+  const k = useRef<Cozinha>(null as unknown as Cozinha);
+  if (!k.current) {
+    k.current = novaCozinha();
+    k.current.relogio = Date.now();
+  }
   const [carga, setCarga] = useState<'carregando' | 'pronta' | 'falhou'>(() => (temWebGL() ? 'carregando' : 'falhou'));
   const [icones, setIcones] = useState<Icones | null>(null);
   const souJogador = jogador && estado.meu !== null && estado.placar.some((l) => l.userId === eu);
@@ -118,6 +128,7 @@ function CozinhaNaTela({ estado, eu, jogador, agir }: { estado: EstadoCozinha & 
     for (const i of [...entregues.current.keys()]) if (!naFila.has(i)) entregues.current.delete(i);
   }, [estado.meu]);
   const ultimaEntrega = useRef(0);
+  const ultimoChiado = useRef(0);
   const [recusado, setRecusado] = useState(0);
 
   const jogando = () => estado.fase === 'jogando' || (inicio.current !== null && Date.now() >= inicio.current);
@@ -135,18 +146,25 @@ function CozinhaNaTela({ estado, eu, jogador, agir }: { estado: EstadoCozinha & 
   aceitaRef.current = aceitaEntrega;
   const aceita = (itens: Item[]) => aceitaRef.current(itens);
 
+  /** O que vai ao servidor, em fila: cada um sai quando o anterior respondeu. */
+  const envio = useRef<Promise<unknown>>(Promise.resolve());
+  const enviar = (corpo: Record<string, unknown>) => {
+    envio.current = envio.current.then(() => agir(corpo)).catch(() => {});
+  };
+
   const tratar = (eventos: Evento[]) => {
     for (const e of eventos) {
       const som = SOM[e.tipo];
       if (som) tocar(som);
       if (e.tipo === 'recusado') setRecusado(Date.now());
+      if (e.tipo === 'fogo') enviar(e.pos ? { tipo: 'fogo', estacao: e.estacao, item: e.pos } : { tipo: 'fogo', estacao: e.estacao, tirou: true });
       if (e.tipo === 'entregue' && pedidoDaEntrega.current !== null) {
         const pedido = pedidoDaEntrega.current;
         pedidoDaEntrega.current = null;
         entregues.current.set(pedido, Date.now());
         ultimaEntrega.current = Date.now();
         setAgora(Date.now());
-        void agir({ tipo: 'entregar', pedido, prato: e.itens.map((i) => ({ ...i, com: i.com ? [...i.com] : undefined })) });
+        enviar({ tipo: 'entregar', pedido, prato: e.itens.map((i) => ({ ...i, com: i.com ? [...i.com] : undefined })) });
       }
     }
   };
@@ -169,6 +187,7 @@ function CozinhaNaTela({ estado, eu, jogador, agir }: { estado: EstadoCozinha & 
       } else if (e.code === 'Space' || e.code === 'KeyE') {
         e.preventDefault();
         if (e.repeat || !jogando()) return;
+        k.current.relogio = Date.now();
         tratarRef.current(e.code === 'Space' ? espaco(k.current, aceita) : usar(k.current, aceita));
       }
     };
@@ -202,7 +221,7 @@ function CozinhaNaTela({ estado, eu, jogador, agir }: { estado: EstadoCozinha & 
         });
         criada.usar(k.current);
         // a cozinha à mão do e2e (só no site de desenvolvimento)
-        if (import.meta.env.DEV) (window as { cozinhaDoTeste?: Cozinha }).cozinhaDoTeste = k.current;
+        if (import.meta.env.DEV) Object.assign(window, { cozinhaDoTeste: k.current, cenaDaCozinhaDoTeste: criada });
         criada.aoQuadro = (dt) => {
           if (!jogando() || !souJogador) return;
           let x = 0;
@@ -213,7 +232,15 @@ function CozinhaNaTela({ estado, eu, jogador, agir }: { estado: EstadoCozinha & 
           }
           // o piloto automático do e2e (só no site de desenvolvimento): cozinha o primeiro pedido da fila
           if (import.meta.env.DEV && (window as { cozinhaPilotoAutomatico?: boolean }).cozinhaPilotoAutomatico) pilotar(k.current, filaRef.current[0]?.receita);
-          tratarRef.current(passo(k.current, x || z ? { x, z } : null, dt, aceita));
+          tratarRef.current(passo(k.current, x || z ? { x, z } : null, dt, aceita, Date.now()));
+          // o chiado de quem passa do ponto, enquanto não sai do fogo
+          if (Date.now() - ultimoChiado.current > 1400 && k.current.estacoes.some((e) => {
+            const p = progresso(e);
+            return p?.tipo === 'fogo' && (p.fase === 'queimando' || p.fase === 'queimado');
+          })) {
+            ultimoChiado.current = Date.now();
+            tocar('chiado');
+          }
         };
         const desenhos = await criada.montar();
         if (!viva) return;

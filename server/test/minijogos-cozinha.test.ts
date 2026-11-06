@@ -62,10 +62,26 @@ function comecar(naSala: number[], { comunidade = 0, solo = false } = {}) {
 /** O prato certo para a receita. */
 const pratoDe = (id: IdDaReceita) => receitas.RECEITAS[id].itens.map(receitas.itemDaChave);
 
-/** Entrega o primeiro pedido da fila de `quem`, certo. */
+/** O fogão e o forno da planta (as estações de fogo que o servidor conhece). */
+const FOGAO = Number(Object.entries(receitas.ESTACOES_DE_FOGO).find(([, t]) => t === 'fogao')![0]);
+const FORNO = Number(Object.entries(receitas.ESTACOES_DE_FOGO).find(([, t]) => t === 'forno')![0]);
+
+/** Põe no fogo como a tela poria (o item cru, ou a massa aberta), espera `ms` no relógio do servidor e tira. */
+function cozinhar(p: ReturnType<typeof comecar>, quem: number, cozido: import('../src/cozinha-receitas.js').Item, ms?: number) {
+  const ponto = receitas.PONTO[cozido.ing]!;
+  const entra = { ...cozido, estado: cozido.ing === 'massa' ? 'picado' : 'cru' };
+  const estacao = cozido.ing === 'massa' ? FORNO : FOGAO;
+  const pus = p.jogo.acao(quem, { tipo: 'fogo', estacao, item: entra });
+  agora += ms ?? (ponto.pronto + ponto.queima) / 2;
+  const tirou = p.jogo.acao(quem, { tipo: 'fogo', estacao, tirou: true });
+  return { pus, tirou };
+}
+
+/** Entrega o primeiro pedido da fila de `quem`, certo (cozinhando no servidor o que a receita pede cozido). */
 function entregarCerto(p: ReturnType<typeof comecar>, quem: number) {
   agora += INTERVALO_MIN_MS;
   const pedido = p.estado(quem).meu!.fila[0];
+  for (const i of pratoDe(pedido.receita)) if (i.estado === 'cozido') assert.deepEqual(cozinhar(p, quem, i), { pus: null, tirou: null });
   return { pedido, erro: p.jogo.acao(quem, { tipo: 'entregar', pedido: pedido.indice, prato: pratoDe(pedido.receita) }) };
 }
 
@@ -203,4 +219,96 @@ test('no Solo, sem troféu; e quem saiu da sala não sobe ao pódio', () => {
   const placar = p.estado(anaId).placar;
   assert.equal(placar.find((l) => l.userId === biaId)!.posicao, null);
   assert.equal(db.trofeusDe(anaId).length, antes);
+});
+
+test('o ponto é do servidor: pelo relógio dele, com a folga da rede, e o queimado não serve', () => {
+  const p = comecar([anaId, biaId]);
+  p.andar();
+  const carne = { ing: 'carne' as const, estado: 'cozido' as const };
+  const pc = receitas.PONTO.carne!;
+  const hamburguer = [{ ing: 'pao' as const, estado: 'cru' as const }, carne];
+  const pedidoDe = (quem: number) => p.estado(quem).meu!.fila.find((f) => f.receita === 'hamburguer');
+  // a fila precisa de um hambúrguer: troca o primeiro pedido pela conta (a sequência é sorteada), procurando um
+  let pedido = pedidoDe(anaId);
+  for (let n = 0; !pedido && n < 60; n++) {
+    entregarCerto(p, anaId);
+    pedido = pedidoDe(anaId);
+  }
+  assert.ok(pedido, 'nenhum hambúrguer na fila');
+  agora += INTERVALO_MIN_MS;
+  // sem ter passado pelo fogo do servidor, a carne "cozida" da tela não vale
+  assert.equal(p.jogo.acao(anaId, { tipo: 'entregar', pedido: pedido.indice, prato: hamburguer }), 'Este prato não é o pedido.');
+  // tirada cedo demais (antes do ponto, além da folga): continua crua para o servidor
+  cozinhar(p, anaId, carne, pc.pronto - receitas.FOLGA_DO_FOGO_MS - 100);
+  assert.equal(p.jogo.acao(anaId, { tipo: 'entregar', pedido: pedido.indice, prato: hamburguer }), 'Este prato não é o pedido.');
+  // tirada depois de queimar (além da folga): queimada
+  cozinhar(p, anaId, carne, pc.queima + receitas.FOLGA_DO_FOGO_MS + 100);
+  assert.equal(p.jogo.acao(anaId, { tipo: 'entregar', pedido: pedido.indice, prato: hamburguer }), 'Este prato não é o pedido.');
+  // um pouco antes do ponto, dentro da folga (a rede atrasou o "pus"): vale
+  cozinhar(p, anaId, carne, pc.pronto - receitas.FOLGA_DO_FOGO_MS + 50);
+  const antes = p.estado(anaId).meu!.pratos;
+  assert.equal(p.jogo.acao(anaId, { tipo: 'entregar', pedido: pedido.indice, prato: hamburguer }), null);
+  assert.equal(p.estado(anaId).meu!.pratos, antes + 1);
+  // a ficha foi gasta: o mesmo prato de novo não passa sem cozinhar outra carne
+  const outro = pedidoDe(anaId);
+  if (outro) {
+    agora += INTERVALO_MIN_MS;
+    assert.equal(p.jogo.acao(anaId, { tipo: 'entregar', pedido: outro.indice, prato: hamburguer }), 'Este prato não é o pedido.');
+  }
+  // a ficha é de quem cozinhou: a Bia não usa a carne da Ana
+  cozinhar(p, anaId, carne);
+  const daBia = p.estado(biaId).meu!.fila[0];
+  agora += INTERVALO_MIN_MS;
+  const pratoDaBia = pratoDe(daBia.receita);
+  if (pratoDaBia.some((i) => i.estado === 'cozido'))
+    assert.equal(p.jogo.acao(biaId, { tipo: 'entregar', pedido: daBia.indice, prato: pratoDaBia }), 'Este prato não é o pedido.');
+});
+
+test('o fogo recusa o que não faz sentido: tirar antes de pôr, estação que não é de fogo, o que não vai ao fogo', () => {
+  const p = comecar([anaId], { solo: true });
+  p.andar();
+  const carne = { ing: 'carne', estado: 'cru' };
+  assert.equal(p.jogo.acao(anaId, { tipo: 'fogo', estacao: FOGAO, tirou: true }), 'Lance inválido.');
+  assert.equal(p.jogo.acao(anaId, { tipo: 'fogo', estacao: 0, item: carne }), 'Lance inválido.');
+  assert.equal(p.jogo.acao(anaId, { tipo: 'fogo', estacao: 'x', item: carne }), 'Lance inválido.');
+  assert.equal(p.jogo.acao(anaId, { tipo: 'fogo', estacao: FOGAO, item: { ing: 'alface', estado: 'cru' } }), 'Lance inválido.');
+  assert.equal(p.jogo.acao(anaId, { tipo: 'fogo', estacao: FORNO, item: carne }), 'Lance inválido.');
+  assert.equal(p.jogo.acao(anaId, { tipo: 'fogo', estacao: FORNO, item: { ing: 'massa', estado: 'cru' } }), 'Lance inválido.');
+  // pôr "já cozida" sem a ficha dela, não
+  assert.equal(p.jogo.acao(anaId, { tipo: 'fogo', estacao: FOGAO, item: { ing: 'carne', estado: 'cozido' } }), 'Lance inválido.');
+  // duas coisas na mesma panela, não
+  assert.equal(p.jogo.acao(anaId, { tipo: 'fogo', estacao: FOGAO, item: carne }), null);
+  assert.equal(p.jogo.acao(anaId, { tipo: 'fogo', estacao: FOGAO, item: carne }), 'Lance inválido.');
+  // tirou no ponto, pôs de novo (gasta a ficha e continua do ponto), e passou: queimou, sem ficha
+  agora += receitas.PONTO.carne!.pronto;
+  assert.equal(p.jogo.acao(anaId, { tipo: 'fogo', estacao: FOGAO, tirou: true }), null);
+  assert.equal(p.jogo.acao(anaId, { tipo: 'fogo', estacao: FOGAO, item: { ing: 'carne', estado: 'cozido' } }), null);
+  assert.equal(p.jogo.acao(anaId, { tipo: 'fogo', estacao: FOGAO + 1, item: { ing: 'carne', estado: 'cozido' } }), 'Lance inválido.');
+  agora += receitas.PONTO.carne!.queima;
+  assert.equal(p.jogo.acao(anaId, { tipo: 'fogo', estacao: FOGAO, tirou: true }), null);
+  assert.equal(p.jogo.acao(anaId, { tipo: 'fogo', estacao: FOGAO, item: { ing: 'carne', estado: 'cozido' } }), 'Lance inválido.');
+  // o mesmo na pizza: a massa aberta com as coberturas, no forno, e a ficha guarda as coberturas
+  const pizza = { ing: 'massa' as const, estado: 'cozido' as const, com: ['queijo', 'tomate'] };
+  assert.deepEqual(cozinhar(p, anaId, pizza), { pus: null, tirou: null });
+  assert.equal(p.jogo.acao(anaId, { tipo: 'fogo', estacao: FORNO, item: { ...pizza, com: ['calabresa', 'queijo', 'tomate'] } }), 'Lance inválido.');
+  assert.equal(p.jogo.acao(anaId, { tipo: 'fogo', estacao: FORNO, item: pizza }), null);
+  // quem assiste não cozinha
+  assert.equal(p.jogo.acao(999, { tipo: 'fogo', estacao: FOGAO, item: carne }), 'Você está assistindo esta partida.');
+});
+
+test('as receitas novas do fogo: café da manhã, x-bacon e os bifes', () => {
+  const r = receitas;
+  assert.ok(r.confere('cafe-da-manha', [{ ing: 'bacon', estado: 'cozido' }, { ing: 'ovo', estado: 'cozido' }]));
+  assert.ok(!r.confere('cafe-da-manha', [{ ing: 'bacon', estado: 'queimado' }, { ing: 'ovo', estado: 'cozido' }]));
+  assert.ok(!r.confere('bife-com-arroz', [{ ing: 'bife', estado: 'cru' }, { ing: 'arroz', estado: 'cozido' }]));
+  assert.ok(r.confere('x-bacon', [...pratoDe('x-bacon')].reverse()));
+  for (const ing of ['bacon', 'bife'] as const) {
+    const p = r.PONTO[ing]!;
+    assert.equal(r.estadoNoFogo({ ing, estado: 'cru' }, p.pronto - 1), 'cru');
+    assert.equal(r.estadoNoFogo({ ing, estado: 'cru' }, p.pronto), 'cozido');
+    assert.equal(r.estadoNoFogo({ ing, estado: 'cru' }, p.queima), 'queimado');
+    assert.equal(r.estadoNoFogo({ ing, estado: 'cru' }, p.queima, r.FOLGA_DO_FOGO_MS), 'cozido');
+  }
+  // a massa aberta continua aberta até o ponto
+  assert.equal(r.estadoNoFogo({ ing: 'massa', estado: 'picado', com: ['queijo'] }, 100), 'picado');
 });

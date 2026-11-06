@@ -34,6 +34,7 @@ export type Efeito =
   | 'encaixe'
   | 'rangido'
   | 'quebra'
+  | 'chiado'
   | 'fim';
 
 const CHAVE = 'syden:somDosJogos';
@@ -201,6 +202,11 @@ export function tocar(efeito: Efeito) {
       ruido(a, 0.09, 3200, 0.9, 0, 'highpass');
       ruido(a, 0.25, 500, 0.7, 0.02);
       nota(a, 'triangle', 200, 60, 0.25, 0.5);
+      break;
+    // a Cozinha da toca (06/11/2026): o que passou do ponto e está queimando na chapa
+    case 'chiado':
+      ruido(a, 0.45, 5200, 0.35, 0, 'highpass');
+      ruido(a, 0.3, 2400, 0.25, 0.12, 'bandpass');
       break;
     case 'fim':
       [784, 659, 784, 1047].forEach((f, i) => nota(a, 'triangle', f, f, i === 3 ? 0.4 : 0.14, 0.45, i * 0.13));

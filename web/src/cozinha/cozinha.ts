@@ -1,14 +1,33 @@
-import { COBERTURAS, DO_FOGAO, MAXIMO_NO_PRATO, PICAVEIS, PONTO, TEMPO_DE_PICAR_MS, chave, type Ingrediente, type Item, type Sabor } from './receitas';
+import {
+  AVISO_DE_QUEIMA,
+  COBERTURAS,
+  MAXIMO_NO_PRATO,
+  PICAVEIS,
+  PONTO,
+  TEMPO_DE_PICAR_MS,
+  chave,
+  estadoNoFogo,
+  tempoInicialNoFogo,
+  vaiAoFogo,
+  type Ingrediente,
+  type Item,
+  type Sabor,
+} from './receitas';
 
 /**
  * A COZINHA DE CADA UM (05/11/2026): as regras do que se faz na cozinha, sem desenho nenhum (a cena só lê isto). O servidor
  * não conhece nada daqui: ele confere só o prato entregue (receitas.ts). Por isso a cozinha roda inteira na tela de quem
  * joga, e o mesmo código serve ao teclado, ao clique e ao piloto automático.
  *
- * A PLANTA, vista de cima (c = coluna, l = linha; a casa tem 2 unidades, como os balcões da KayKit): uma volta de 26 estações
- * em torno do chão livre (as colunas 1 a 8, as linhas 1 a 3). Atrás, o arroz, os fogões, a janela de entrega entre dois
- * balcões, as tábuas, o forno e o peixe; à esquerda, os caixotes do lanche; à direita, os da pizza; na frente, a lixeira, o
- * ovo, a alface, os pratos, as casquinhas, os sorvetes, o queijo e o cogumelo. O coelho anda só no chão livre, e por isso não há caminho a procurar: a estação mais perto do
+ * A PLANTA, vista de cima (c = coluna, l = linha; a casa tem 2 unidades, como os balcões da KayKit): uma volta de 30 estações
+ * em torno do chão livre (as colunas 1 a 10, as linhas 1 a 3). Atrás, o arroz, os três fogões, a janela de entrega entre dois
+ * balcões, as tábuas, um balcão, o forno e o peixe; à esquerda, os caixotes do lanche; à direita, os da pizza; na frente, a
+ * lixeira, o ovo, o bacon, o bife, a alface, os pratos, as casquinhas, os sorvetes, o queijo e o cogumelo.
+ *
+ * O FOGO ANDA PELO RELÓGIO DE VERDADE (06/11/2026): o servidor mede o ponto pelo relógio dele (receitas.ts), e por isso a
+ * tela também: `relogio` é a hora (Date.now() no jogo; os testes o andam com o passo), e o que está no fogo guarda `desde`.
+ * Com a janela sem foco nada é desenhado, mas o fogo continua, como no servidor. Cada vez que algo entra ou sai do fogo,
+ * sai o evento 'fogo', que a tela manda ao servidor. O coelho anda só no chão livre, e por isso não há caminho a procurar: a estação mais perto do
  * que ele tem à frente é a que ele usa.
  */
 
@@ -31,6 +50,8 @@ export interface Estacao {
   em: Coisa | null;
   /** O tempo de fogo (fogão, forno) ou de tábua do que está em cima, em ms. */
   tempo: number;
+  /** No fogo: quando (no relógio da cozinha) o tempo de fogo começou a contar. */
+  desde: number;
 }
 
 export type Acao = 'espaco' | 'usar';
@@ -51,48 +72,59 @@ export interface Coelho {
 export interface Cozinha {
   estacoes: Estacao[];
   coelho: Coelho;
+  /** A hora da cozinha, em ms (o fogo mede por ela). */
+  relogio: number;
 }
 
 export type Evento =
   | { tipo: 'pegou' | 'largou' | 'juntou' | 'picou' | 'faca' | 'pronto' | 'queimou' | 'jogou-fora' | 'nada' }
   | { tipo: 'entregue'; itens: Item[] }
+  /** Algo entrou no fogo (`pos`, como entrou) ou saiu dele (`pos` null): a tela avisa o servidor. */
+  | { tipo: 'fogo'; estacao: number; pos: Item | null }
+  /** Passou do ponto e está queimando (a fumaça e o chiado). */
+  | { tipo: 'queimando' }
   | { tipo: 'recusado' };
 
 export const CASA = 2;
-export const COLUNAS = 10;
+export const COLUNAS = 12;
 export const LINHAS = 5;
 export const RAIO = 0.55;
 export const VELOCIDADE = 6.2;
 /** O chão livre (o miolo da planta). */
-export const CHAO = { x0: -8, x1: 8, z0: -3, z1: 3 };
+export const CHAO = { x0: -10, x1: 10, z0: -3, z1: 3 };
 
+/** A ordem é o id de cada estação: as de fogo estão também em ESTACOES_DE_FOGO (receitas.ts), que o servidor usa. */
 const PLANTA: [number, number, TipoDeEstacao, (Ingrediente | Sabor)?][] = [
   [0, 0, 'caixote', 'arroz'],
   [1, 0, 'fogao'],
   [2, 0, 'fogao'],
-  [3, 0, 'balcao'],
-  [4, 0, 'entrega'],
-  [5, 0, 'balcao'],
-  [6, 0, 'tabua'],
+  [3, 0, 'fogao'],
+  [4, 0, 'balcao'],
+  [5, 0, 'entrega'],
+  [6, 0, 'balcao'],
   [7, 0, 'tabua'],
-  [8, 0, 'forno'],
-  [9, 0, 'caixote', 'peixe'],
+  [8, 0, 'tabua'],
+  [9, 0, 'balcao'],
+  [10, 0, 'forno'],
+  [11, 0, 'caixote', 'peixe'],
   [0, 1, 'caixote', 'pao'],
   [0, 2, 'caixote', 'carne'],
   [0, 3, 'caixote', 'salsicha'],
-  [9, 1, 'caixote', 'massa'],
-  [9, 2, 'caixote', 'tomate'],
-  [9, 3, 'caixote', 'calabresa'],
+  [11, 1, 'caixote', 'massa'],
+  [11, 2, 'caixote', 'tomate'],
+  [11, 3, 'caixote', 'calabresa'],
   [0, 4, 'lixeira'],
   [1, 4, 'caixote', 'ovo'],
-  [2, 4, 'caixote', 'alface'],
-  [3, 4, 'pratos'],
-  [4, 4, 'caixote', 'casquinha'],
-  [5, 4, 'sorvete', 'chocolate'],
-  [6, 4, 'sorvete', 'morango'],
-  [7, 4, 'sorvete', 'baunilha'],
-  [8, 4, 'caixote', 'queijo'],
-  [9, 4, 'caixote', 'cogumelo'],
+  [2, 4, 'caixote', 'bacon'],
+  [3, 4, 'caixote', 'bife'],
+  [4, 4, 'caixote', 'alface'],
+  [5, 4, 'pratos'],
+  [6, 4, 'caixote', 'casquinha'],
+  [7, 4, 'sorvete', 'chocolate'],
+  [8, 4, 'sorvete', 'morango'],
+  [9, 4, 'sorvete', 'baunilha'],
+  [10, 4, 'caixote', 'queijo'],
+  [11, 4, 'caixote', 'cogumelo'],
 ];
 
 export const centroDaCasa = (c: number, l: number) => ({ x: (c - (COLUNAS - 1) / 2) * CASA, z: (l - (LINHAS - 1) / 2) * CASA });
@@ -100,12 +132,12 @@ export const centroDaCasa = (c: number, l: number) => ({ x: (c - (COLUNAS - 1) /
 export function novaCozinha(): Cozinha {
   const estacoes = PLANTA.map(([c, l, tipo, extra], id): Estacao => {
     const { x, z } = centroDaCasa(c, l);
-    const e: Estacao = { id, tipo, c, l, x, z, em: null, tempo: 0 };
+    const e: Estacao = { id, tipo, c, l, x, z, em: null, tempo: 0, desde: 0 };
     if (tipo === 'caixote') e.ing = extra as Ingrediente;
     if (tipo === 'sorvete') e.sabor = extra as Sabor;
     return e;
   });
-  return { estacoes, coelho: { x: 0, z: 0.5, rumo: Math.PI, mao: null, picando: null, destino: null, andando: false } };
+  return { estacoes, relogio: 0, coelho: { x: 0, z: 0.5, rumo: Math.PI, mao: null, picando: null, destino: null, andando: false } };
 }
 
 const limitar = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
@@ -156,16 +188,40 @@ function cabeNaMassa(massa: Item, i: Item): boolean {
 /** O que a estação aceita em cima. */
 function aceita(e: Estacao, c: Coisa): boolean {
   if (e.tipo === 'balcao' || e.tipo === 'tabua') return true;
-  if (e.tipo === 'fogao') return c.tipo === 'item' && DO_FOGAO.includes(c.item.ing) && c.item.estado !== 'picado';
-  if (e.tipo === 'forno') return c.tipo === 'item' && c.item.ing === 'massa' && c.item.estado !== 'cru';
+  if (e.tipo === 'fogao' || e.tipo === 'forno') return c.tipo === 'item' && vaiAoFogo(e.tipo, c.item);
   return false;
 }
 
-/** O tempo de fogo que um item já tem (quem tira do fogo no ponto e põe de novo continua de onde parou). */
-function tempoDoFogo(i: Item): number {
+const ehFogo = (e: Estacao) => e.tipo === 'fogao' || e.tipo === 'forno';
+
+/** O fogo da estação na hora da cozinha: o tempo e o estado do que está nele (o mesmo cálculo do servidor, sem a folga). */
+function atualizarFogo(k: Cozinha, e: Estacao): Evento[] {
+  if (!ehFogo(e) || e.em?.tipo !== 'item') return [];
+  const i = e.em.item;
   const p = PONTO[i.ing];
-  if (!p) return 0;
-  return i.estado === 'cozido' ? p.pronto : i.estado === 'queimado' ? p.queima : 0;
+  if (!p) return [];
+  const antes = i.estado;
+  const tempoAntes = e.tempo;
+  e.tempo = Math.max(0, k.relogio - e.desde);
+  i.estado = estadoNoFogo(i, e.tempo);
+  const ev: Evento[] = [];
+  if (antes !== 'cozido' && antes !== 'queimado' && i.estado !== antes) ev.push({ tipo: 'pronto' });
+  const aviso = p.queima - (p.queima - p.pronto) * AVISO_DE_QUEIMA;
+  if (tempoAntes < aviso && e.tempo >= aviso && i.estado === 'cozido') ev.push({ tipo: 'queimando' });
+  if (antes !== 'queimado' && i.estado === 'queimado') ev.push({ tipo: 'queimou' });
+  return ev;
+}
+
+/** O que sai da estação (a mão pegou, ou o prato levou): do fogo, com o estado da hora, e o aviso ao servidor. */
+function tirar(k: Cozinha, e: Estacao, ev: Evento[]): Coisa {
+  if (ehFogo(e) && e.em?.tipo === 'item') {
+    atualizarFogo(k, e);
+    ev.push({ tipo: 'fogo', estacao: e.id, pos: null });
+  }
+  const c = e.em!;
+  e.em = null;
+  e.tempo = 0;
+  return c;
 }
 
 /**
@@ -218,24 +274,30 @@ export function espaco(k: Cozinha, aceitaEntrega: (itens: Item[]) => boolean): E
   // balcão, tábua, fogão, forno
   if (!mao) {
     if (!e.em) return [{ tipo: 'nada' }];
-    c.mao = e.em;
-    e.em = null;
-    e.tempo = 0;
-    return [{ tipo: 'pegou' }];
+    const ev: Evento[] = [{ tipo: 'pegou' }];
+    c.mao = tirar(k, e, ev);
+    return ev;
   }
   if (!e.em) {
     if (!aceita(e, mao)) return [{ tipo: 'nada' }];
     e.em = mao;
     c.mao = null;
-    e.tempo = e.tipo === 'fogao' || e.tipo === 'forno' ? tempoDoFogo((mao as { item: Item }).item) : 0;
+    e.tempo = 0;
+    if (ehFogo(e)) {
+      const i = (mao as { item: Item }).item;
+      e.tempo = tempoInicialNoFogo(i);
+      e.desde = k.relogio - e.tempo;
+      return [{ tipo: 'largou' }, { tipo: 'fogo', estacao: e.id, pos: { ...i, com: i.com ? [...i.com] : undefined } }];
+    }
     return [{ tipo: 'largou' }];
   }
   const la = e.em;
   if (mao.tipo === 'prato' && la.tipo === 'item' && cabeNoPrato(mao.itens, la.item)) {
-    mao.itens.push(la.item);
-    e.em = null;
-    e.tempo = 0;
-    return [{ tipo: 'juntou' }];
+    // o prato leva do fogo com o estado da hora (o mesmo ingrediente, cozido ou queimado: cabe igual)
+    const ev: Evento[] = [{ tipo: 'juntou' }];
+    const levado = tirar(k, e, ev) as { tipo: 'item'; item: Item };
+    mao.itens.push(levado.item);
+    return ev;
   }
   if (mao.tipo === 'item' && la.tipo === 'prato' && cabeNoPrato(la.itens, mao.item)) {
     la.itens.push(mao.item);
@@ -248,7 +310,7 @@ export function espaco(k: Cozinha, aceitaEntrega: (itens: Item[]) => boolean): E
       c.mao = null;
       return [{ tipo: 'juntou' }];
     }
-    if (cabeNaMassa(mao.item, la.item)) {
+    if (cabeNaMassa(mao.item, la.item) && !ehFogo(e)) {
       mao.item.com = [...(mao.item.com ?? []), la.item.ing];
       e.em = null;
       e.tempo = 0;
@@ -285,8 +347,10 @@ export type Direcao = { x: number; z: number } | null;
  * UM PASSO DA COZINHA: o coelho anda (pelas setas ou até o destino do clique), a tábua pica enquanto ele fica lá, e o fogo
  * cozinha o que está no fogão e no forno — no ponto, e depois queimando. Devolve o que aconteceu (para os sons).
  */
-export function passo(k: Cozinha, dir: Direcao, dt: number, aceitaEntrega: (itens: Item[]) => boolean): Evento[] {
+export function passo(k: Cozinha, dir: Direcao, dt: number, aceitaEntrega: (itens: Item[]) => boolean, agora?: number): Evento[] {
   const eventos: Evento[] = [];
+  // o relógio: a hora de verdade, quando a tela a dá; nos testes, o passo
+  k.relogio = agora ?? k.relogio + dt * 1000;
   const c = k.coelho;
   const ms = dt * 1000;
   c.andando = false;
@@ -338,36 +402,29 @@ export function passo(k: Cozinha, dir: Direcao, dt: number, aceitaEntrega: (iten
     }
   }
 
-  // o fogo
-  for (const e of k.estacoes) {
-    if ((e.tipo !== 'fogao' && e.tipo !== 'forno') || e.em?.tipo !== 'item') continue;
-    const i = e.em.item;
-    const p = PONTO[i.ing];
-    if (!p) continue;
-    const antes = e.tempo;
-    e.tempo += ms;
-    if (antes < p.pronto && e.tempo >= p.pronto) {
-      i.estado = 'cozido';
-      eventos.push({ tipo: 'pronto' });
-    }
-    if (antes < p.queima && e.tempo >= p.queima) {
-      i.estado = 'queimado';
-      eventos.push({ tipo: 'queimou' });
-    }
-  }
+  // o fogo, pelo relógio
+  for (const e of k.estacoes) eventos.push(...atualizarFogo(k, e));
   return eventos;
 }
 
-/** Quanto falta do que está acontecendo na estação, de 0 a 1 (a barrinha em cima dela), e se já passou do ponto. */
-export function progresso(e: Estacao): { f: number; perigo: boolean } | null {
+/**
+ * O que a barrinha em cima da estação mostra. Na tábua, quanto falta para picar (`f`, de 0 a 1). No fogo, o MEDIDOR DO PONTO:
+ * `f` é o tempo de fogo sobre o tempo de queimar, `pronto` e `aviso` são onde começam o ponto e o "queimando" na mesma
+ * régua, e `fase` diz em qual o item está.
+ */
+export type Progresso =
+  | { tipo: 'tabua'; f: number }
+  | { tipo: 'fogo'; f: number; pronto: number; aviso: number; fase: 'cru' | 'ponto' | 'queimando' | 'queimado' };
+export function progresso(e: Estacao): Progresso | null {
   if (e.em?.tipo !== 'item') return null;
   const i = e.em.item;
-  if (e.tipo === 'tabua') return e.tempo > 0 && i.estado === 'cru' ? { f: e.tempo / TEMPO_DE_PICAR_MS, perigo: false } : null;
-  if (e.tipo === 'fogao' || e.tipo === 'forno') {
+  if (e.tipo === 'tabua') return e.tempo > 0 && i.estado === 'cru' ? { tipo: 'tabua', f: e.tempo / TEMPO_DE_PICAR_MS } : null;
+  if (ehFogo(e)) {
     const p = PONTO[i.ing];
-    if (!p || i.estado === 'queimado') return null;
-    if (e.tempo < p.pronto) return { f: e.tempo / p.pronto, perigo: false };
-    return { f: (e.tempo - p.pronto) / (p.queima - p.pronto), perigo: true };
+    if (!p) return null;
+    const aviso = p.queima - (p.queima - p.pronto) * AVISO_DE_QUEIMA;
+    const fase = i.estado === 'queimado' ? 'queimado' : e.tempo < p.pronto ? 'cru' : e.tempo < aviso ? 'ponto' : 'queimando';
+    return { tipo: 'fogo', f: Math.min(1, e.tempo / p.queima), pronto: p.pronto / p.queima, aviso: aviso / p.queima, fase };
   }
   return null;
 }

@@ -9,13 +9,16 @@ import { IDS_DAS_RECEITAS, INGREDIENTES, RECEITAS, confere, itemDaChave, type Id
  * móveis, a comida e a louça são do Restaurant Bits da KayKit (CC0, web/public/cozinha/License.txt; o crédito nos termos,
  * seção 10); o cozinheiro é o NOSSO coelho 3D, com o nosso esqueleto (o mesmo das Cidades à venda). A salsicha, o ovo, o
  * arroz, o peixe, o cachorro-quente e o sushi são do Food Kit da Kenney (CC0, web/public/cozinha/License-kenney-food.txt),
- * em web/public/cozinha/kenney/, com a textura deles (um material por kit).
+ * em web/public/cozinha/kenney/, com a textura deles (um material por kit). O bacon, o bife e o ovo (cru, frito e queimado)
+ * são do pacote de comida da Quaternius (CC0, web/public/cozinha/License-quaternius-food.txt), convertidos de OBJ para GLB por
+ * e2e/3D/cozinha-quaternius/converter.py, em web/public/cozinha/quaternius/: cores chapadas, sem textura, um material por cor.
  *
  * - A câmera é fixa, de cima e da frente, mostrando a cozinha inteira (os jogos de cozinha de festa são assim: tudo à vista).
  * - O que está em cima de cada estação e na mão do coelho é montado com os modelos do kit pelo ESTADO do item: a carne crua,
  *   no ponto ou queimada; a alface inteira ou picada; a massa em bola, aberta com as coberturas, assada (tingida) ou
  *   queimada. O prato monta o lanche em camadas, do pão de baixo ao de cima, como o desenho do pedido.
- * - A estação que o coelho tem à frente acende; a tábua e o fogo têm a barrinha do tempo (vermelha passando do ponto).
+ * - A estação que o coelho tem à frente acende; a tábua tem a barrinha do tempo, e o fogo, o MEDIDOR DO PONTO: a régua cru,
+ *   ponto (verde) e queimando (vermelha), com a agulha andando nela; passando do ponto sobe fumaça clara, e queimado, escura.
  * - Os desenhos dos pedidos (os ícones da fila) saem destes mesmos modelos, desenhados uma vez ao abrir.
  * - Sem foco na janela, nada é desenhado nem anda (o uso principal é com um jogo aberto); as sombras de verdade só com
  *   "Sombras" ligado em Gráficos.
@@ -95,14 +98,21 @@ const MODELOS = [
 ] as const;
 /** Os do Food Kit da Kenney (GLB, com a textura ao lado, em kenney/Textures/). */
 const MODELOS_KENNEY = ['hot-dog-raw', 'meat-sausage', 'hot-dog', 'egg', 'egg-cooked', 'fish', 'meat-raw', 'rice-ball', 'bag-flat', 'sushi-salmon'] as const;
-type Modelo = (typeof MODELOS)[number] | (typeof MODELOS_KENNEY)[number];
+/** Os do pacote de comida da Quaternius (GLB sem textura, em quaternius/). */
+const MODELOS_QUATERNIUS = ['Bacon_Uncooked', 'Bacon_Cooked', 'Bacon_Burned', 'Steak', 'Steak_burned', 'Egg_Fried', 'Egg_Burned'] as const;
+type Modelo = (typeof MODELOS)[number] | (typeof MODELOS_KENNEY)[number] | (typeof MODELOS_QUATERNIUS)[number];
 
 /** O prato pronto que tem um modelo inteiro no kit (no lugar das partes lado a lado). */
 const PRONTOS: Partial<Record<IdDaReceita, Modelo>> = { 'cachorro-quente': 'hot-dog', sushi: 'sushi-salmon' };
-/** O ingrediente do Food Kit: cru, picado (o peixe) e cozido (com a cor, se for tingido); o queimado é o cozido escurecido. */
-const KENNEY: Partial<Record<Ingrediente, { cru: [Modelo, number]; picado?: [Modelo, number, string?]; cozido: [Modelo, number, string?] }>> = {
+/**
+ * O ingrediente do Food Kit e da Quaternius: cru, picado (o peixe), cozido (com a cor, se for tingido) e queimado (o modelo
+ * queimado do pacote; sem ele, o cozido escurecido).
+ */
+const KENNEY: Partial<Record<Ingrediente, { cru: [Modelo, number]; picado?: [Modelo, number, string?]; cozido: [Modelo, number, string?]; queimado?: [Modelo, number] }>> = {
   salsicha: { cru: ['hot-dog-raw', 0.62], cozido: ['meat-sausage', 0.64] },
-  ovo: { cru: ['egg', 0.3], cozido: ['egg-cooked', 0.62] },
+  ovo: { cru: ['egg', 0.3], cozido: ['Egg_Fried', 0.7], queimado: ['Egg_Burned', 0.7] },
+  bacon: { cru: ['Bacon_Uncooked', 0.8], cozido: ['Bacon_Cooked', 0.8], queimado: ['Bacon_Burned', 0.8] },
+  bife: { cru: ['Steak', 0.7], cozido: ['Steak', 0.7], queimado: ['Steak_burned', 0.7] },
   arroz: { cru: ['bag-flat', 0.6], cozido: ['rice-ball', 0.4] },
   peixe: { cru: ['fish', 0.72], picado: ['meat-raw', 0.55, '#f6a07c'], cozido: ['fish', 0.8, '#e8a860'] },
 };
@@ -121,7 +131,11 @@ const CAIXOTE: Record<Ingrediente, Modelo | null> = {
   ovo: null,
   arroz: null,
   peixe: null,
+  bacon: null,
+  bife: null,
 };
+/** O bife cru: o mesmo modelo, com a carne vermelha e a gordura rosada (as cores do pacote pelo nome do material). */
+const BIFE_CRU: Record<string, string> = { DarkRed: '#b8423a', White: '#f2d6cf' };
 const SABOR_DO_KIT: Record<string, string> = { chocolate: 'chocolate', morango: 'strawberry', baunilha: 'vanilla' };
 /** O ingrediente inteiro, picado sozinho, e picado no prato (a fatia do lanche) ou na pizza. */
 const VISUAL: Partial<Record<Ingrediente, { cru: Modelo; picado: Modelo; noPrato: Modelo; naPizza?: Modelo }>> = {
@@ -132,7 +146,7 @@ const VISUAL: Partial<Record<Ingrediente, { cru: Modelo; picado: Modelo; noPrato
   cogumelo: { cru: 'food_ingredient_mushroom', picado: 'food_ingredient_mushroom_chopped', noPrato: 'food_ingredient_mushroom_chopped', naPizza: 'food_ingredient_mushroom_pieces' },
 };
 /** A ordem das camadas do lanche, de baixo para cima (o pão de cima é o último). */
-const CAMADAS: Ingrediente[] = ['carne', 'salsicha', 'ovo', 'queijo','alface', 'tomate', 'calabresa', 'cogumelo'];
+const CAMADAS: Ingrediente[] = ['carne', 'bacon', 'salsicha', 'ovo', 'queijo', 'alface', 'tomate', 'calabresa', 'cogumelo'];
 const ORDEM_DA_PIZZA: Ingrediente[] = ['tomate', 'queijo', 'calabresa', 'cogumelo'];
 
 const carregados = new Map<string, Promise<GLTF>>();
@@ -164,7 +178,10 @@ export class CenaDaCozinha {
   private copiaDoCoelho: CoelhoCopiado | null = null;
   private coelho: { raiz: THREE.Group; corpo: THREE.Object3D; mixer: THREE.AnimationMixer; acoes: Map<string, THREE.AnimationAction>; tocando: string; mao: THREE.Group; sinal: string } | null = null;
   private emCima = new Map<number, { grupo: THREE.Group; sinal: string }>();
-  private barras = new Map<number, { grupo: THREE.Group; cheio: THREE.Mesh; mat: THREE.MeshBasicMaterial }>();
+  private barras = new Map<number, { grupo: THREE.Group; faixas: THREE.Mesh[]; agulha: THREE.Mesh }>();
+  private fumacas = new Map<number, THREE.Group>();
+  private matFumaca: THREE.MeshBasicMaterial[] = [];
+  private geoFumaca: THREE.SphereGeometry | null = null;
   private luz: THREE.Mesh;
   private pegaveis: THREE.Object3D[] = [];
   private cozinha: Cozinha | null = null;
@@ -221,12 +238,30 @@ export class CenaDaCozinha {
 
   /** Carrega os modelos, monta a cozinha e desenha os ícones dos pedidos. Rejeita se algo falhar. */
   async montar(): Promise<Icones> {
-    const [kaykit, kenney, coelho] = await Promise.all([
+    const [kaykit, kenney, quaternius, coelho] = await Promise.all([
       Promise.all(MODELOS.map((m) => carregar(`${this.base}cozinha/${m}.gltf`).then((g) => [m as Modelo, g, 'kaykit'] as const))),
       Promise.all(MODELOS_KENNEY.map((m) => carregar(`${this.base}cozinha/kenney/${m}.glb`).then((g) => [m as Modelo, g, 'kenney'] as const))),
+      Promise.all(MODELOS_QUATERNIUS.map((m) => carregar(`${this.base}cozinha/quaternius/${m}.glb`).then((g) => [m as Modelo, g] as const))),
       carregar(`${this.base}cidades3d/coelho-animado.glb`),
     ]);
     if (this.morta) return { receitas: {}, ingredientes: {} };
+    // os da Quaternius têm um material por cor, sem textura; as cores vêm mais escuras que as da KayKit (o branco do ovo saía
+    // cinza), e por isso clareiam uma vez aqui, para os três pacotes casarem na mesma luz
+    const clareados = new Set<THREE.Material>();
+    for (const [m, g] of quaternius) {
+      g.scene.traverse((o) => {
+        const mesh = o as THREE.Mesh;
+        if (!mesh.isMesh) return;
+        for (const mat of (Array.isArray(mesh.material) ? mesh.material : [mesh.material]) as THREE.MeshStandardMaterial[]) {
+          if (clareados.has(mat)) continue;
+          clareados.add(mat);
+          mat.color.multiplyScalar(1.75);
+          mat.roughness = 0.85;
+          mat.metalness = 0;
+        }
+      });
+      this.modelos.set(m, g.scene);
+    }
     for (const [m, g, kit] of [...kaykit, ...kenney]) {
       // os modelos de cada kit usam o mesmo material e a mesma textura: um só por kit, para a placa guardar a imagem uma vez
       g.scene.traverse((o) => {
@@ -256,7 +291,7 @@ export class CenaDaCozinha {
     this.renderer.setSize(w, h, false);
     this.camera.aspect = w / h;
     // longe o bastante para caber a cozinha inteira, na largura e na altura
-    this.distancia = Math.max(1, 1.7 / this.camera.aspect);
+    this.distancia = Math.max(1.1, 1.9 / this.camera.aspect);
     this.camera.updateProjectionMatrix();
   }
 
@@ -289,6 +324,28 @@ export class CenaDaCozinha {
     if (largura) raiz.scale.setScalar(largura / Math.max(tam.x, tam.z, 1e-6));
     raiz.userData.altura = tam.y * raiz.scale.y;
     return raiz;
+  }
+
+  /** As cores trocadas pelo nome do material (o bife cru). */
+  private recolorir(o: THREE.Object3D, cores: Record<string, string>) {
+    o.traverse((x) => {
+      const mesh = x as THREE.Mesh;
+      if (!mesh.isMesh) return;
+      const troca = (base: THREE.Material) => {
+        const cor = cores[base.name];
+        if (!cor) return base;
+        const k = `${base.uuid}:${cor}`;
+        let m = this.tingidos.get(k);
+        if (!m) {
+          const novo = (base as THREE.MeshStandardMaterial).clone();
+          novo.color = new THREE.Color(cor);
+          m = novo;
+          this.tingidos.set(k, m);
+        }
+        return m;
+      };
+      mesh.material = Array.isArray(mesh.material) ? mesh.material.map(troca) : troca(mesh.material);
+    });
   }
 
   /** O mesmo material, tingido (a massa assada e a queimada). */
@@ -334,13 +391,13 @@ export class CenaDaCozinha {
     c.add(sol);
 
     // o chão de ladrilho
-    for (const x of [-8, -4, 0, 4, 8])
+    for (const x of [-10, -6, -2, 2, 6, 10])
       for (const z of [-3, 1]) {
         const p = this.bruto('floor_kitchen');
         p.position.set(x, 0, z);
         c.add(p);
       }
-    for (let x = -9; x <= 9; x += 2) {
+    for (let x = -11; x <= 11; x += 2) {
       const p = this.bruto('floor_kitchen_small');
       p.position.set(x, 0, 4);
       c.add(p);
@@ -417,6 +474,7 @@ export class CenaDaCozinha {
             ] as const) {
               const o = emCima(modelo, Math.max(0.5, largura * 1.15), y, dx, dz);
               o.rotation.y = giroY;
+              if (e.ing === 'bife') this.recolorir(o, BIFE_CRU);
             }
           }
         }
@@ -526,10 +584,12 @@ export class CenaDaCozinha {
     const kn = KENNEY[i.ing];
     if (kn) {
       // o tamanho de cada um está em KENNEY; a `largura` pedida só o aumenta ou diminui (0,85 é o normal)
-      const [modelo, tamanho, cor] = i.estado === 'cru' ? kn.cru : i.estado === 'picado' && kn.picado ? kn.picado : kn.cozido;
+      const queimadoDoPacote = i.estado === 'queimado' ? kn.queimado : undefined;
+      const [modelo, tamanho, cor] = queimadoDoPacote ?? (i.estado === 'cru' ? kn.cru : i.estado === 'picado' && kn.picado ? kn.picado : kn.cozido);
       const o = this.copia(modelo, (tamanho * largura) / 0.85);
-      if (i.estado === 'queimado') this.tingir(o, '#4a3a32');
-      else if (cor && i.estado !== 'cru') this.tingir(o, cor);
+      if (i.estado === 'queimado' && !queimadoDoPacote) this.tingir(o, '#4a3a32');
+      else if (cor && i.estado !== 'cru' && i.estado !== 'queimado') this.tingir(o, cor);
+      if (i.ing === 'bife' && i.estado === 'cru') this.recolorir(o, BIFE_CRU);
       g.add(o);
       return g;
     }
@@ -581,7 +641,7 @@ export class CenaDaCozinha {
         const i = itens.find((x) => x.ing === ing);
         if (!i) continue;
         // o ovo, maior que o pão, para a clara aparecer
-        if (ing === 'carne' || ing === 'salsicha' || ing === 'ovo') pilha(this.modeloDoItem(i, ing === 'ovo' && i.estado !== 'cru' ? 1.1 : 0.85));
+        if (ing === 'carne' || ing === 'salsicha' || ing === 'ovo' || ing === 'bacon') pilha(this.modeloDoItem(i, ing === 'ovo' && i.estado !== 'cru' ? 1.1 : 0.85));
         else {
           const v = VISUAL[ing];
           if (v) pilha(i.estado === 'cru' ? this.copia(v.cru, 0.5) : this.copia(v.noPrato, 0.66));
@@ -603,7 +663,8 @@ export class CenaDaCozinha {
     const ovo = carne ? itens.find((i) => i.ing === 'ovo') : undefined;
     const lado = itens.filter((i) => i !== ovo);
     lado.forEach((i, n) => {
-      const m = this.modeloDoItem(i, pequenos ? 0.52 : 0.8);
+      // o ovo frito e o bacon (o café da manhã) maiores: a clara some no prato branco, e o bacon é fino
+      const m = this.modeloDoItem(i, pequenos ? (i.ing === 'ovo' || i.ing === 'bacon' ? 0.72 : 0.52) : 0.8);
       if (pequenos) {
         const a = (n / lado.length) * Math.PI * 2 + Math.PI / 4;
         m.position.set(Math.cos(a) * 0.2, y, Math.sin(a) * 0.2);
@@ -739,6 +800,7 @@ export class CenaDaCozinha {
           }
         }
         this.barra(e, tempo);
+        this.fumaca(e, tempo);
       }
       // o coelho
       const c = k.coelho;
@@ -778,37 +840,113 @@ export class CenaDaCozinha {
     this.renderer.render(this.cena, this.camera);
   };
 
-  /** A barrinha de tempo em cima da tábua e do fogo. */
+  /**
+   * A barrinha em cima da tábua (quanto falta para picar) e o MEDIDOR DO PONTO em cima do fogo: a régua com as três faixas
+   * (cru, ponto, queimando) do ingrediente que está lá, e a agulha andando nela. Queimado, a barra some (a fumaça escura diz).
+   */
   private barra(e: Estacao, tempo: number) {
     const pr = progresso(e);
     let b = this.barras.get(e.id);
-    if (!pr) {
+    if (!pr || (pr.tipo === 'fogo' && pr.fase === 'queimado')) {
       if (b) b.grupo.visible = false;
       return;
     }
+    const L = 1.3;
     if (!b) {
       const grupo = new THREE.Group();
       const fundoMat = new THREE.MeshBasicMaterial({ color: '#3a2e28', depthTest: false, transparent: true });
-      const geo = new THREE.PlaneGeometry(1.2, 0.2);
+      const geo = new THREE.PlaneGeometry(L + 0.1, 0.24);
       const fundo = new THREE.Mesh(geo, fundoMat);
-      const mat = new THREE.MeshBasicMaterial({ color: '#7cc46a', depthTest: false, transparent: true });
-      const cheioGeo = new THREE.PlaneGeometry(1.1, 0.12);
-      cheioGeo.translate(0.55, 0, 0);
-      const cheio = new THREE.Mesh(cheioGeo, mat);
-      cheio.position.set(-0.55, 0, 0.001);
       fundo.renderOrder = 10;
-      cheio.renderOrder = 11;
-      grupo.add(fundo, cheio);
+      grupo.add(fundo);
+      // as faixas: uma geometria de largura 1 que começa no zero; a escala dá a largura, a posição o começo
+      const faixaGeo = new THREE.PlaneGeometry(1, 0.14);
+      faixaGeo.translate(0.5, 0, 0);
+      const faixas = ['#8a7566', '#7cc46a', '#e0533c'].map((cor) => {
+        const mat = new THREE.MeshBasicMaterial({ color: cor, depthTest: false, transparent: true });
+        const m = new THREE.Mesh(faixaGeo, mat);
+        m.position.z = 0.001;
+        m.renderOrder = 11;
+        grupo.add(m);
+        this.descartaveis.push(mat);
+        return m;
+      });
+      const agulhaMat = new THREE.MeshBasicMaterial({ color: '#fff8e8', depthTest: false, transparent: true });
+      const agulhaGeo = new THREE.PlaneGeometry(0.06, 0.3);
+      const agulha = new THREE.Mesh(agulhaGeo, agulhaMat);
+      agulha.position.z = 0.002;
+      agulha.renderOrder = 12;
+      grupo.add(agulha);
       grupo.position.set(e.x, TOPO[e.tipo] + 1.3, e.z);
-      this.descartaveis.push(fundoMat, geo, mat, cheioGeo);
+      this.descartaveis.push(fundoMat, geo, faixaGeo, agulhaMat, agulhaGeo);
       this.cena.add(grupo);
-      b = { grupo, cheio, mat };
+      b = { grupo, faixas, agulha };
       this.barras.set(e.id, b);
     }
     b.grupo.visible = true;
     b.grupo.quaternion.copy(this.camera.quaternion);
-    b.cheio.scale.x = Math.max(0.02, Math.min(1, pr.f));
-    b.mat.color.set(pr.perigo ? (this.calmo || Math.sin(tempo * 14) > 0 ? '#e0533c' : '#f0a040') : '#7cc46a');
+    const faixa = (n: number, de: number, ate: number) => {
+      const m = b!.faixas[n];
+      m.visible = ate > de;
+      m.position.x = -L / 2 + de * L;
+      m.scale.x = Math.max(0.001, (ate - de) * L);
+    };
+    if (pr.tipo === 'tabua') {
+      // a tábua: a faixa verde enchendo, sem agulha
+      faixa(0, 0, 0);
+      faixa(1, 0, Math.max(0.02, Math.min(1, pr.f)));
+      faixa(2, 0, 0);
+      b.agulha.visible = false;
+      return;
+    }
+    faixa(0, 0, pr.pronto);
+    faixa(1, pr.pronto, pr.aviso);
+    faixa(2, pr.aviso, 1);
+    b.agulha.visible = true;
+    b.agulha.position.x = -L / 2 + Math.min(1, pr.f) * L;
+    // queimando, a faixa vermelha pisca
+    const vermelha = b.faixas[2].material as THREE.MeshBasicMaterial;
+    vermelha.color.set(pr.fase === 'queimando' && !this.calmo && Math.sin(tempo * 14) > 0 ? '#f0a040' : '#e0533c');
+  }
+
+  /** A fumaça em cima do fogo: clara passando do ponto, escura com o queimado ainda lá. */
+  private fumaca(e: Estacao, tempo: number) {
+    const pr = progresso(e);
+    const fase = pr?.tipo === 'fogo' && (pr.fase === 'queimando' || pr.fase === 'queimado') ? pr.fase : null;
+    let g = this.fumacas.get(e.id);
+    if (!fase) {
+      if (g) g.visible = false;
+      return;
+    }
+    if (!g) {
+      if (!this.geoFumaca) {
+        this.geoFumaca = new THREE.SphereGeometry(0.2, 10, 8);
+        this.matFumaca = ['#d8d2ca', '#3d3734'].map((cor) => new THREE.MeshBasicMaterial({ color: cor, transparent: true, opacity: 0.55, depthWrite: false }));
+        this.descartaveis.push(this.geoFumaca, ...this.matFumaca);
+      }
+      g = new THREE.Group();
+      for (let n = 0; n < 6; n++) g.add(new THREE.Mesh(this.geoFumaca, this.matFumaca[0]));
+      g.position.set(e.x, TOPO[e.tipo] + 0.2, e.z);
+      if (e.tipo === 'forno') {
+        const r = this.rumoDa(e);
+        g.position.x += Math.sin(r) * 0.4;
+        g.position.z += Math.cos(r) * 0.4;
+        g.position.y += 0.9;
+      }
+      this.cena.add(g);
+      this.fumacas.set(e.id, g);
+    }
+    g.visible = true;
+    const escura = fase === 'queimado';
+    g.children.forEach((o, n) => {
+      const m = o as THREE.Mesh;
+      m.material = this.matFumaca[escura ? 1 : 0];
+      // cada bolinha sobe e cresce, e some lá em cima (encolhendo); com menos movimento, paradas
+      const fase01 = this.calmo ? n / 6 : (tempo * (escura ? 0.75 : 0.55) + n / 6) % 1;
+      const giro = n * 2.1 + tempo * 0.8;
+      m.position.set(Math.sin(giro) * 0.18 * fase01, fase01 * (escura ? 1.8 : 1.3), Math.cos(giro) * 0.18 * fase01);
+      m.scale.setScalar((0.5 + fase01 * (escura ? 1.5 : 1.0)) * Math.sin(Math.PI * Math.min(0.999, fase01 + 0.08)));
+    });
   }
 
   // ---------- o clique ----------

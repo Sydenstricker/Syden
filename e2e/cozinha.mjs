@@ -6,7 +6,7 @@
 //   regras do teclado: a entrega vai ao servidor, que confere o prato com a receita, e o número de pratos sobe.
 //
 //   node e2e/cozinha.mjs   (API de teste na 3099 e site na 5174; não precisa do LiveKit)
-// ESCRITO, AINDA NÃO RODADO: o jogo entra na estante quando for registrado (minijogos-routes.ts, minijogos.ts).
+// Rodou em 06/11/2026 com o ponto conferido pelo servidor (o piloto entrega e o servidor aceita).
 import fs from 'node:fs';
 import path from 'node:path';
 import { abrirNavegador, cadastrar, dispensarPresentes, falhou, ok, resumo, vigiar } from './ajuda.mjs';
@@ -46,7 +46,40 @@ try {
   await foto(duda, 'teclado');
   ok('as setas e o Espaço não deram erro na página');
 
-  // o piloto cozinha; o servidor confere cada prato
+  // O MEDIDOR DO PONTO E A FUMAÇA (06/11/2026): põe à mão, só na tela, o bacon queimando, o bife no ponto, o ovo queimado e a
+  // pizza ainda crua no forno (o servidor não sabe deles: é só o desenho), fotografa e limpa.
+  await duda.evaluate(() => {
+    const k = window.cozinhaDoTeste;
+    k.coelho.mao = null;
+    const por = (id, item, tempo) => {
+      const e = k.estacoes[id];
+      e.em = { tipo: 'item', item };
+      e.desde = k.relogio - tempo;
+    };
+    por(1, { ing: 'bacon', estado: 'cru' }, 8000);
+    por(2, { ing: 'bife', estado: 'cru' }, 6500);
+    por(3, { ing: 'ovo', estado: 'cru' }, 12000);
+    por(10, { ing: 'massa', estado: 'picado', com: ['queijo', 'tomate'] }, 2500);
+  });
+  await duda.waitForTimeout(700);
+  await foto(duda, 'ponto');
+  ok('o medidor do ponto e a fumaça desenharam sem erro');
+  // o bife cru e o bacon e o ovo no prato da montagem, para ver os modelos novos de perto
+  await duda.evaluate(() => {
+    const k = window.cozinhaDoTeste;
+    for (const id of [1, 2, 3, 10]) k.estacoes[id].em = null;
+    k.estacoes[4].em = { tipo: 'prato', itens: [{ ing: 'ovo', estado: 'cozido' }, { ing: 'bacon', estado: 'cozido' }] };
+    k.estacoes[6].em = { tipo: 'item', item: { ing: 'bife', estado: 'cru' } };
+    k.estacoes[9].em = { tipo: 'prato', itens: [{ ing: 'bife', estado: 'cozido' }, { ing: 'alface', estado: 'picado' }, { ing: 'tomate', estado: 'picado' }] };
+  });
+  await duda.waitForTimeout(500);
+  await foto(duda, 'pratos-novos');
+  await duda.evaluate(() => {
+    const k = window.cozinhaDoTeste;
+    for (const id of [4, 6, 9]) k.estacoes[id].em = null;
+  });
+
+  // o piloto cozinha; o servidor confere cada prato (e o ponto de cada item cozido, pelo relógio dele)
   await duda.evaluate(() => (window.cozinhaPilotoAutomatico = true));
   await duda.waitForFunction(() => Number(document.querySelector('.cozinha-pratos')?.textContent?.replace(/\D/g, '') ?? 0) >= 2, null, { timeout: 90000 });
   ok(`o piloto entregou ${await pratos(duda)} pratos, e a fila andou`);
