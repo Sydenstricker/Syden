@@ -3122,4 +3122,15 @@ export default {
   'Saiu da pista!': 'Трассадан шықты!',
   'Saídas da pista: {n}': 'Трассадан шығу: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Жылдамдату үшін басып тұрыңыз, бұрылыс алдында жіберіңіз: көлік дірілдесе, ол шекте тұр.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'Бөлме',
+  'Creme': 'Кілегей',
+  'Mel': 'Бал',
+  'Carvalho': 'Емен',
+  'Nogueira': 'Жаңғақ',
+  'Cerejeira': 'Шие',
+  'Pinho': 'Қарағай',
+  'Quadrado': 'Шаршы',
+  'Em L': 'L пішінді',
+  'Cubículo': 'Шағын бөлме',
 } satisfies Record<string, string>;

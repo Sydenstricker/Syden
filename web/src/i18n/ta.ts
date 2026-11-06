@@ -3033,4 +3033,15 @@ export default {
   'Saiu da pista!': 'பாதையை விட்டு வெளியே!',
   'Saídas da pista: {n}': 'பாதையை விட்டு வெளியேறியது: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'வேகம் கூட்ட அழுத்திப் பிடியுங்கள், வளைவுக்கு முன் விடுங்கள்: கார் நடுங்கினால், அது எல்லையில் உள்ளது.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'அறை',
+  'Creme': 'கிரீம்',
+  'Mel': 'தேன்',
+  'Carvalho': 'ஓக்',
+  'Nogueira': 'வால்நட்',
+  'Cerejeira': 'செர்ரி',
+  'Pinho': 'பைன்',
+  'Quadrado': 'சதுரம்',
+  'Em L': 'L வடிவம்',
+  'Cubículo': 'சிறிய அறை',
 } satisfies Record<string, string>;

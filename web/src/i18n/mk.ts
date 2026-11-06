@@ -3118,4 +3118,15 @@ export default {
   'Saiu da pista!': 'Надвор од патеката!',
   'Saídas da pista: {n}': 'Излетувања од патеката: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Држи за да забрзаш и пушти пред кривината: кога количката трепери, на границата е.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'Соба',
+  'Creme': 'Крем',
+  'Mel': 'Мед',
+  'Carvalho': 'Даб',
+  'Nogueira': 'Орев',
+  'Cerejeira': 'Цреша',
+  'Pinho': 'Бор',
+  'Quadrado': 'Квадратна',
+  'Em L': 'Во форма на Л',
+  'Cubículo': 'Собичка',
 } satisfies Record<string, string>;

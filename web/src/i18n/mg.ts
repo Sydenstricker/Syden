@@ -3118,4 +3118,15 @@ export default {
   'Saiu da pista!': 'Nivoaka ny lalana!',
   'Saídas da pista: {n}': 'Fivoahana amin\'ny lalana: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Tazony mba hanafaingana ary avelao alohan\'ny fiolahana: rehefa mangovitra ny fiara dia efa amin\'ny fetrany izy.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'Efitrano',
+  'Creme': 'Krema',
+  'Mel': 'Tantely',
+  'Carvalho': 'Oaka',
+  'Nogueira': 'Vaonihazo',
+  'Cerejeira': 'Seriza',
+  'Pinho': 'Kesika',
+  'Quadrado': 'Efamira',
+  'Em L': 'Endrika L',
+  'Cubículo': 'Efitrano kely',
 } satisfies Record<string, string>;

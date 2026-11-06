@@ -3118,4 +3118,15 @@ export default {
   'Saiu da pista!': 'Waddada ka baxay!',
   'Saídas da pista: {n}': 'Ka bixitaanka waddada: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Hay si aad xawaare u kordhiso, sii daa qalooca ka hor: marka gaarigu gariiro, xadka ayuu joogaa.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'Qol',
+  'Creme': 'Kareem',
+  'Mel': 'Malab',
+  'Carvalho': 'Geed oak',
+  'Nogueira': 'Waalnat',
+  'Cerejeira': 'Jeeri',
+  'Pinho': 'Geed bayn',
+  'Quadrado': 'Laba jibbaaran',
+  'Em L': 'Qaab L ah',
+  'Cubículo': 'Qol yar',
 } satisfies Record<string, string>;

@@ -3054,4 +3054,15 @@ export default {
   'Saiu da pista!': 'Εκτός πίστας!',
   'Saídas da pista: {n}': 'Έξοδοι από την πίστα: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Κράτα πατημένο για γκάζι και άφησέ το πριν από τη στροφή: όταν το αυτοκίνητο τρέμει, είναι στο όριο.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'Δωμάτιο',
+  'Creme': 'Κρεμ',
+  'Mel': 'Μέλι',
+  'Carvalho': 'Δρυς',
+  'Nogueira': 'Καρυδιά',
+  'Cerejeira': 'Κερασιά',
+  'Pinho': 'Πεύκο',
+  'Quadrado': 'Τετράγωνο',
+  'Em L': 'Σε σχήμα Γ',
+  'Cubículo': 'Δωματιάκι',
 } satisfies Record<string, string>;

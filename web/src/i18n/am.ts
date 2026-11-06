@@ -3048,4 +3048,15 @@ export default {
   'Saiu da pista!': 'ከመንገዱ ወጣ!',
   'Saídas da pista: {n}': 'ከመንገድ መውጣት፦ {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'ለማፋጠን ተጭነው ይያዙ፣ ከኩርባው በፊት ይልቀቁ፦ መኪናው ሲንቀጠቀጥ ገደቡ ላይ ነው።',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'ክፍል',
+  'Creme': 'ክሬም',
+  'Mel': 'ማር',
+  'Carvalho': 'ኦክ',
+  'Nogueira': 'ዋልነት',
+  'Cerejeira': 'ቼሪ',
+  'Pinho': 'ጥድ',
+  'Quadrado': 'ካሬ',
+  'Em L': 'የL ቅርጽ',
+  'Cubículo': 'ትንሽ ክፍል',
 } satisfies Record<string, string>;

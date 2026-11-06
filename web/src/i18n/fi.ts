@@ -3118,4 +3118,15 @@ export default {
   'Saiu da pista!': 'Ulos radalta!',
   'Saídas da pista: {n}': 'Ulosajot: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Pidä pohjassa kiihdyttääksesi ja päästä irti ennen mutkaa: kun auto tärisee, se on rajoilla.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'Huone',
+  'Creme': 'Kerma',
+  'Mel': 'Hunaja',
+  'Carvalho': 'Tammi',
+  'Nogueira': 'Pähkinä',
+  'Cerejeira': 'Kirsikka',
+  'Pinho': 'Mänty',
+  'Quadrado': 'Neliö',
+  'Em L': 'L-muotoinen',
+  'Cubículo': 'Koppi',
 } satisfies Record<string, string>;

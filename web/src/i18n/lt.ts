@@ -3120,4 +3120,15 @@ export default {
   'Saiu da pista!': 'Iš trasos!',
   'Saídas da pista: {n}': 'Išskridimai iš trasos: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Laikyk, kad greitintum, ir paleisk prieš posūkį: kai mašinėlė dreba, ji ties riba.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'Kambarys',
+  'Creme': 'Kreminė',
+  'Mel': 'Medus',
+  'Carvalho': 'Ąžuolas',
+  'Nogueira': 'Riešutmedis',
+  'Cerejeira': 'Vyšnia',
+  'Pinho': 'Pušis',
+  'Quadrado': 'Kvadratinis',
+  'Em L': 'L formos',
+  'Cubículo': 'Kambarėlis',
 } satisfies Record<string, string>;

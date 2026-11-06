@@ -3118,4 +3118,15 @@ export default {
   'Saiu da pista!': 'පථයෙන් ඉවතට!',
   'Saídas da pista: {n}': 'පථයෙන් ඉවත් වීම්: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'වේගය වැඩි කිරීමට ඔබාගෙන සිටින්න, වංගුවට පෙර අත හරින්න: කාරය වෙව්ලන විට, එය සීමාවේ ඇත.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'කාමරය',
+  'Creme': 'ක්‍රීම්',
+  'Mel': 'මී පැණි',
+  'Carvalho': 'ඕක්',
+  'Nogueira': 'වෝල්නට්',
+  'Cerejeira': 'චෙරි',
+  'Pinho': 'පයින්',
+  'Quadrado': 'සමචතුරස්‍ර',
+  'Em L': 'L හැඩය',
+  'Cubículo': 'කුඩා කාමරය',
 } satisfies Record<string, string>;

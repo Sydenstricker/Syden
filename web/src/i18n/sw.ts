@@ -3047,4 +3047,15 @@ export default {
   'Saiu da pista!': 'Nje ya njia!',
   'Saídas da pista: {n}': 'Kutoka nje ya njia: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Shikilia ili kuongeza kasi na uachie kabla ya kona: gari likitetemeka, liko kwenye kikomo.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'Chumba',
+  'Creme': 'Krimu',
+  'Mel': 'Asali',
+  'Carvalho': 'Mwaloni',
+  'Nogueira': 'Mkokwe',
+  'Cerejeira': 'Cheri',
+  'Pinho': 'Msonobari',
+  'Quadrado': 'Mraba',
+  'Em L': 'Umbo la L',
+  'Cubículo': 'Chumba kidogo',
 } satisfies Record<string, string>;

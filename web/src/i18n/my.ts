@@ -3087,4 +3087,15 @@ export default {
   'Saiu da pista!': 'လမ်းပေါ်မှ ထွက်သွားပြီ!',
   'Saídas da pista: {n}': 'လမ်းပေါ်မှ ထွက်မှု- {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'အရှိန်မြှင့်ရန် ဖိထားပြီး ကွေ့မတိုင်မီ လွှတ်ပါ- ကားတုန်လာလျှင် ကန့်သတ်ချက်အထိ ရောက်နေပါပြီ။',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'အခန်း',
+  'Creme': 'ခရင်မ်',
+  'Mel': 'ပျားရည်',
+  'Carvalho': 'ဝက်သစ်ချ',
+  'Nogueira': 'သစ်ကြားသား',
+  'Cerejeira': 'ချယ်ရီ',
+  'Pinho': 'ထင်းရှူး',
+  'Quadrado': 'စတုရန်း',
+  'Em L': 'L ပုံ',
+  'Cubículo': 'အခန်းကျဉ်း',
 } satisfies Record<string, string>;

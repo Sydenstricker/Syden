@@ -3018,4 +3018,15 @@ export default {
   'Saiu da pista!': 'Văng khỏi đường đua!',
   'Saídas da pista: {n}': 'Số lần văng khỏi đường đua: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Giữ để tăng tốc và thả ra trước khúc cua: khi xe rung, nó đang ở giới hạn.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'Căn phòng',
+  'Creme': 'Kem',
+  'Mel': 'Mật ong',
+  'Carvalho': 'Gỗ sồi',
+  'Nogueira': 'Óc chó',
+  'Cerejeira': 'Anh đào',
+  'Pinho': 'Thông',
+  'Quadrado': 'Vuông',
+  'Em L': 'Hình chữ L',
+  'Cubículo': 'Phòng nhỏ',
 } satisfies Record<string, string>;

@@ -3047,4 +3047,15 @@ export default {
   'Saiu da pista!': 'Uit de baan!',
   'Saídas da pista: {n}': 'Uit de baan: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Houd ingedrukt om gas te geven en laat los voor de bocht: als de auto trilt, zit hij op de grens.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'Kamer',
+  'Creme': 'Crème',
+  'Mel': 'Honing',
+  'Carvalho': 'Eiken',
+  'Nogueira': 'Notenhout',
+  'Cerejeira': 'Kersenhout',
+  'Pinho': 'Grenen',
+  'Quadrado': 'Vierkant',
+  'Em L': 'L-vormig',
+  'Cubículo': 'Hokje',
 } satisfies Record<string, string>;

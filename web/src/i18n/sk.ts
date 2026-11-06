@@ -3118,4 +3118,15 @@ export default {
   'Saiu da pista!': 'Mimo dráhy!',
   'Saídas da pista: {n}': 'Výjazdy z dráhy: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Drž na zrýchlenie a pusti pred zákrutou: keď sa auto trasie, je na hrane.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'Miestnosť',
+  'Creme': 'Krémová',
+  'Mel': 'Med',
+  'Carvalho': 'Dub',
+  'Nogueira': 'Orech',
+  'Cerejeira': 'Čerešňa',
+  'Pinho': 'Borovica',
+  'Quadrado': 'Štvorcová',
+  'Em L': 'V tvare L',
+  'Cubículo': 'Komôrka',
 } satisfies Record<string, string>;

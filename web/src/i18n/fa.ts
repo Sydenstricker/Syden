@@ -3041,4 +3041,15 @@ export default {
   'Saiu da pista!': 'خروج از پیست!',
   'Saídas da pista: {n}': 'دفعات خروج از پیست: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'برای گاز دادن نگه دارید و پیش از پیچ رها کنید: وقتی ماشین می‌لرزد، در مرز است.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'اتاق',
+  'Creme': 'کرم',
+  'Mel': 'عسلی',
+  'Carvalho': 'بلوط',
+  'Nogueira': 'گردو',
+  'Cerejeira': 'گیلاس',
+  'Pinho': 'کاج',
+  'Quadrado': 'مربع',
+  'Em L': 'L شکل',
+  'Cubículo': 'اتاقک',
 } satisfies Record<string, string>;

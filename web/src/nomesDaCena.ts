@@ -10,7 +10,8 @@ import { primeiraForma } from './minijogos';
  * busca acha por qualquer uma.
  */
 type T = (texto: string) => string;
-export type GrupoDaCena = 'm' | 'p' | 'o' | 'j' | 'c';
+/** (l: a planta do quarto; w: a cor da parede; f: a do piso — 06/11/2026) */
+export type GrupoDaCena = 'm' | 'p' | 'o' | 'j' | 'c' | 'l' | 'w' | 'f';
 
 const MOVEIS: Record<string, (t: T) => string> = {
   pufe: (t) => t('Pufe'),
@@ -87,7 +88,23 @@ const CORES: Record<string, (t: T) => string> = {
   cinza: (t) => t('Cinza'),
 };
 
-const TABELAS: Record<GrupoDaCena, Record<string, (t: T) => string>> = { m: MOVEIS, p: DA_PAREDE, o: DE_CIMA, j: JANELAS, c: CORES };
+// O CÔMODO (06/11/2026): a planta do quarto e as cores da parede e do piso (as figuras mostram; o nome é a dica e a busca)
+const PLANTAS: Record<string, (t: T) => string> = {
+  quadrado: (t) => t('Quadrado'),
+  l: (t) => t('Em L'),
+  cubiculo: (t) => t('Cubículo'),
+};
+const CORES_DA_PAREDE: Record<string, (t: T) => string> = { ...CORES, creme: (t) => t('Creme'), lavanda: (t) => t('Lavanda') };
+const CORES_DO_PISO: Record<string, (t: T) => string> = {
+  mel: (t) => t('Mel'),
+  carvalho: (t) => t('Carvalho'),
+  nogueira: (t) => t('Nogueira'),
+  cerejeira: (t) => t('Cerejeira'),
+  cinza: (t) => t('Cinza'),
+  pinho: (t) => t('Pinho'),
+};
+
+const TABELAS: Record<GrupoDaCena, Record<string, (t: T) => string>> = { m: MOVEIS, p: DA_PAREDE, o: DE_CIMA, j: JANELAS, c: CORES, l: PLANTAS, w: CORES_DA_PAREDE, f: CORES_DO_PISO };
 
 /** O texto inteiro do nome (com as variantes "a|b", se houver), ou o código, para o que ainda não tem nome. */
 function nomeCru(t: T, grupo: GrupoDaCena, id: string): string {

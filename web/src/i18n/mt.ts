@@ -3064,4 +3064,15 @@ export default {
   'Saiu da pista!': 'Barra mill-korsa!',
   'Saídas da pista: {n}': 'Ħarġiet mill-korsa: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Żomm biex taċċellera u erħi qabel il-kurva: meta l-karozza titriegħed, tkun fil-limitu.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'Kamra',
+  'Creme': 'Krema',
+  'Mel': 'Għasel',
+  'Carvalho': 'Ballut',
+  'Nogueira': 'Ġewż',
+  'Cerejeira': 'Ċirasa',
+  'Pinho': 'Żnuber',
+  'Quadrado': 'Kwadra',
+  'Em L': 'Forma ta\' L',
+  'Cubículo': 'Kamra żgħira',
 } satisfies Record<string, string>;

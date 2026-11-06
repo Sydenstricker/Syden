@@ -3043,4 +3043,15 @@ export default {
   'Saiu da pista!': 'Off the track!',
   'Saídas da pista: {n}': 'Track exits: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Hold to accelerate and let go before the curve: when the car shakes, it\'s at the limit.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'Room',
+  'Creme': 'Cream',
+  'Mel': 'Honey',
+  'Carvalho': 'Oak',
+  'Nogueira': 'Walnut',
+  'Cerejeira': 'Cherry',
+  'Pinho': 'Pine',
+  'Quadrado': 'Square',
+  'Em L': 'L-shaped',
+  'Cubículo': 'Cubicle',
 } satisfies Record<string, string>;

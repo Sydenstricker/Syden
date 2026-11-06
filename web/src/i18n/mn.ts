@@ -3132,4 +3132,15 @@ export default {
   'Saiu da pista!': 'Замаас гарлаа!',
   'Saídas da pista: {n}': 'Замаас гарсан: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Хурдасгахын тулд дарж барь, эргэлтийн өмнө тавь: машин чичирвэл хязгаартаа байна.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'Өрөө',
+  'Creme': 'Цөцгий',
+  'Mel': 'Зөгийн бал',
+  'Carvalho': 'Царс',
+  'Nogueira': 'Хушга',
+  'Cerejeira': 'Интоор',
+  'Pinho': 'Нарс',
+  'Quadrado': 'Дөрвөлжин',
+  'Em L': 'L хэлбэртэй',
+  'Cubículo': 'Жижиг өрөө',
 } satisfies Record<string, string>;

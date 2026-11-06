@@ -4807,7 +4807,7 @@ void main() {
     desfazendo = true;
     try {
       vestir(JSON.parse(retr));
-      guardarGuardados(); guardarParede(); guardarCores(); guardarObjetos(); guardarJanela(); guardarCadeira(); guardar();
+      guardarPlanta(); guardarGuardados(); guardarParede(); guardarCores(); guardarObjetos(); guardarJanela(); guardarCadeira(); guardar();
     } finally { desfazendo = false; }
     selecionar(null);
   }

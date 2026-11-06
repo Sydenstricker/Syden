@@ -3054,4 +3054,15 @@ export default {
   'Saiu da pista!': 'Den raon!',
   'Saídas da pista: {n}': 'Imeachtaí den raon: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Coinnigh síos chun luasghéarú agus scaoil roimh an gcúinne: nuair a chreathann an carr, tá sé ag an teorainn.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'Seomra',
+  'Creme': 'Uachtar',
+  'Mel': 'Mil',
+  'Carvalho': 'Dair',
+  'Nogueira': 'Gallchnó',
+  'Cerejeira': 'Silín',
+  'Pinho': 'Péine',
+  'Quadrado': 'Cearnach',
+  'Em L': 'I gcruth L',
+  'Cubículo': 'Cillín',
 } satisfies Record<string, string>;

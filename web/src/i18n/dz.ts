@@ -3131,4 +3131,15 @@ export default {
   'Saiu da pista!': 'ལམ་ལས་ཐོན་ཡི།',
   'Saídas da pista: {n}': 'ལམ་ལས་ཐོན་ཐེངས། {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'མགྱོགས་ཚད་བསྐྱེད་ནི་ལུ་ཨེབ་སྟེ་བཞག། གུག་གི་ཧེ་མ་བཏང་། སྣུམ་འཁོར་འདར་བའི་སྐབས་ ཚད་གཞི་ཁར་ཨིན།',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'ཁང་མིག',
+  'Creme': 'ཀི་རིམ',
+  'Mel': 'སྦྲང་རྩི',
+  'Carvalho': 'བེ་ཤིང',
+  'Nogueira': 'སྟར་ཀ',
+  'Cerejeira': 'ཅེ་རི',
+  'Pinho': 'ཐང་ཤིང',
+  'Quadrado': 'གྲུ་བཞི',
+  'Em L': 'L དབྱིབས',
+  'Cubículo': 'ཁང་མིག་ཆུང་ཀུ',
 } satisfies Record<string, string>;

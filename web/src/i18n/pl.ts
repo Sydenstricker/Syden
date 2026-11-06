@@ -3113,4 +3113,15 @@ export default {
   'Saiu da pista!': 'Poza torem!',
   'Saídas da pista: {n}': 'Wypadnięcia z toru: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Przytrzymaj, by przyspieszyć, i puść przed zakrętem: gdy auto drży, jest na granicy.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'Pokój',
+  'Creme': 'Kremowy',
+  'Mel': 'Miód',
+  'Carvalho': 'Dąb',
+  'Nogueira': 'Orzech',
+  'Cerejeira': 'Wiśnia',
+  'Pinho': 'Sosna',
+  'Quadrado': 'Kwadratowy',
+  'Em L': 'W kształcie L',
+  'Cubículo': 'Klitka',
 } satisfies Record<string, string>;

@@ -3050,4 +3050,15 @@ export default {
   'Saiu da pista!': 'Ta fita daga hanya!',
   'Saídas da pista: {n}': 'Fitowa daga hanya: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Ku riƙe don ƙara gudu, ku saki kafin kwana: idan mota tana girgiza, tana kan iyaka.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'Daki',
+  'Creme': 'Kirim',
+  'Mel': 'Zuma',
+  'Carvalho': 'Oak',
+  'Nogueira': 'Goro',
+  'Cerejeira': 'Ceri',
+  'Pinho': 'Fayin',
+  'Quadrado': 'Murabba\'i',
+  'Em L': 'Siffar L',
+  'Cubículo': 'Ƙaramin daki',
 } satisfies Record<string, string>;

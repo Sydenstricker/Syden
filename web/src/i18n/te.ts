@@ -3030,4 +3030,15 @@ export default {
   'Saiu da pista!': 'ట్రాక్ నుంచి బయటకు!',
   'Saídas da pista: {n}': 'ట్రాక్ నుంచి బయటపడినవి: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'వేగం పెంచడానికి నొక్కి పట్టుకోండి, మలుపుకు ముందు వదలండి: కారు వణికితే, అది పరిమితిలో ఉంది.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'గది',
+  'Creme': 'క్రీమ్',
+  'Mel': 'తేనె',
+  'Carvalho': 'ఓక్',
+  'Nogueira': 'వాల్‌నట్',
+  'Cerejeira': 'చెర్రీ',
+  'Pinho': 'పైన్',
+  'Quadrado': 'చతురస్రం',
+  'Em L': 'L ఆకారం',
+  'Cubículo': 'చిన్న గది',
 } satisfies Record<string, string>;

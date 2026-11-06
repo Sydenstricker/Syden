@@ -3119,4 +3119,15 @@ export default {
   'Saiu da pista!': 'Út af brautinni!',
   'Saídas da pista: {n}': 'Út af brautinni: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Haltu inni til að gefa í og slepptu fyrir beygjuna: þegar bíllinn titrar er hann á mörkunum.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'Herbergi',
+  'Creme': 'Krem',
+  'Mel': 'Hunang',
+  'Carvalho': 'Eik',
+  'Nogueira': 'Valhneta',
+  'Cerejeira': 'Kirsuber',
+  'Pinho': 'Fura',
+  'Quadrado': 'Ferningslaga',
+  'Em L': 'L-laga',
+  'Cubículo': 'Kompa',
 } satisfies Record<string, string>;

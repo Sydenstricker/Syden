@@ -3036,4 +3036,15 @@ export default {
   'Saiu da pista!': '코스 이탈!',
   'Saídas da pista: {n}': '코스 이탈: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': '누르고 있으면 가속, 커브 전에 떼세요. 차가 떨리면 한계예요.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': '방',
+  'Creme': '크림',
+  'Mel': '허니',
+  'Carvalho': '오크',
+  'Nogueira': '월넛',
+  'Cerejeira': '체리',
+  'Pinho': '소나무',
+  'Quadrado': '정사각형',
+  'Em L': 'L자형',
+  'Cubículo': '작은 방',
 } satisfies Record<string, string>;

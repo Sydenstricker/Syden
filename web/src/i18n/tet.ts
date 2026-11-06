@@ -3050,4 +3050,15 @@ export default {
   'Saiu da pista!': 'Sai husi dalan!',
   'Saídas da pista: {n}': 'Sai husi dalan: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Kaer hela atu aselera no husik molok kurva: bainhira karreta nakdoko, nia iha limite.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'Kuartu',
+  'Creme': 'Krema',
+  'Mel': 'Bani-been',
+  'Carvalho': 'Ai-oak',
+  'Nogueira': 'Ai-walnut',
+  'Cerejeira': 'Ai-xerés',
+  'Pinho': 'Ai-pinu',
+  'Quadrado': 'Kuadradu',
+  'Em L': 'Forma L',
+  'Cubículo': 'Kuartu ki\'ik',
 } satisfies Record<string, string>;

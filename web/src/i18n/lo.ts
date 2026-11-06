@@ -3119,4 +3119,15 @@ export default {
   'Saiu da pista!': 'ອອກນອກສະໜາມ!',
   'Saídas da pista: {n}': 'ອອກນອກສະໜາມ: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'ກົດຄ້າງໄວ້ເພື່ອເລັ່ງ ແລະ ປ່ອຍກ່ອນທາງໂຄ້ງ: ເມື່ອລົດສັ່ນ, ມັນຢູ່ທີ່ຂີດຈຳກັດແລ້ວ.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'ຫ້ອງ',
+  'Creme': 'ຄຣີມ',
+  'Mel': 'ນ້ຳເຜິ້ງ',
+  'Carvalho': 'ໄມ້ໂອກ',
+  'Nogueira': 'ໄມ້ວໍລນັດ',
+  'Cerejeira': 'ໄມ້ເຊີຣີ',
+  'Pinho': 'ໄມ້ແປກ',
+  'Quadrado': 'ສີ່ຫຼ່ຽມ',
+  'Em L': 'ຮູບ L',
+  'Cubículo': 'ຫ້ອງນ້ອຍ',
 } satisfies Record<string, string>;

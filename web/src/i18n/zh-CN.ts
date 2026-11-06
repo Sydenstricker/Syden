@@ -3035,4 +3035,15 @@ export default {
   'Saiu da pista!': '冲出赛道！',
   'Saídas da pista: {n}': '冲出赛道：{n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': '按住加速，入弯前松开：车一抖动，就到极限了。',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': '房间',
+  'Creme': '奶油色',
+  'Mel': '蜂蜜色',
+  'Carvalho': '橡木',
+  'Nogueira': '胡桃木',
+  'Cerejeira': '樱桃木',
+  'Pinho': '松木',
+  'Quadrado': '方形',
+  'Em L': 'L 形',
+  'Cubículo': '小隔间',
 } satisfies Record<string, string>;

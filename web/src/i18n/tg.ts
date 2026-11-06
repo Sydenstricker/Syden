@@ -3128,4 +3128,15 @@ export default {
   'Saiu da pista!': 'Аз роҳ берун!',
   'Saídas da pista: {n}': 'Баромадан аз роҳ: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Барои суръат гирифтан пахш карда нигоҳ дор ва пеш аз гардиш раҳо кун: вақте мошин меларзад, дар ҳад аст.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'Ҳуҷра',
+  'Creme': 'Қаймоқӣ',
+  'Mel': 'Асал',
+  'Carvalho': 'Булут',
+  'Nogueira': 'Чормағз',
+  'Cerejeira': 'Олуболу',
+  'Pinho': 'Санавбар',
+  'Quadrado': 'Мураббаъ',
+  'Em L': 'Шакли L',
+  'Cubículo': 'Ҳуҷраи хурд',
 } satisfies Record<string, string>;

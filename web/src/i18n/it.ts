@@ -3047,4 +3047,15 @@ export default {
   'Saiu da pista!': 'Fuori pista!',
   'Saídas da pista: {n}': 'Uscite di pista: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Tieni premuto per accelerare e lascia prima della curva: quando la macchina trema, è al limite.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'Stanza',
+  'Creme': 'Crema',
+  'Mel': 'Miele',
+  'Carvalho': 'Rovere',
+  'Nogueira': 'Noce',
+  'Cerejeira': 'Ciliegio',
+  'Pinho': 'Pino',
+  'Quadrado': 'Quadrata',
+  'Em L': 'A L',
+  'Cubículo': 'Stanzino',
 } satisfies Record<string, string>;

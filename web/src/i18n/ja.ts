@@ -3029,4 +3029,15 @@ export default {
   'Saiu da pista!': 'コースアウト！',
   'Saídas da pista: {n}': 'コースアウト：{n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': '押し続けて加速、カーブの前で離そう。車が震えたら限界のサイン。',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': '部屋',
+  'Creme': 'クリーム',
+  'Mel': 'ハニー',
+  'Carvalho': 'オーク',
+  'Nogueira': 'ウォールナット',
+  'Cerejeira': 'チェリー',
+  'Pinho': 'パイン',
+  'Quadrado': '正方形',
+  'Em L': 'L字型',
+  'Cubículo': '小部屋',
 } satisfies Record<string, string>;

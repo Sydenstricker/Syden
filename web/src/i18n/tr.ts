@@ -3050,4 +3050,15 @@ export default {
   'Saiu da pista!': 'Pistten çıktı!',
   'Saídas da pista: {n}': 'Pistten çıkışlar: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Hızlanmak için basılı tut, virajdan önce bırak: araba titriyorsa sınırdadır.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'Oda',
+  'Creme': 'Krem',
+  'Mel': 'Bal',
+  'Carvalho': 'Meşe',
+  'Nogueira': 'Ceviz',
+  'Cerejeira': 'Kiraz',
+  'Pinho': 'Çam',
+  'Quadrado': 'Kare',
+  'Em L': 'L biçimli',
+  'Cubículo': 'Odacık',
 } satisfies Record<string, string>;

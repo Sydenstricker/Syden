@@ -3088,4 +3088,15 @@ export default {
   'Saiu da pista!': 'Daandii irraa ba\'e!',
   'Saídas da pista: {n}': 'Daandii irraa ba\'uu: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Saffisa dabaluuf qabadhu, golee dura gadhiisi: yeroo konkolaataan raafamu, daangaa irra jira.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'Kutaa',
+  'Creme': 'Kiriimii',
+  'Mel': 'Damma',
+  'Carvalho': 'Muka Ook',
+  'Nogueira': 'Waalnatii',
+  'Cerejeira': 'Cheerii',
+  'Pinho': 'Muka Paayinii',
+  'Quadrado': 'Iskuweerii',
+  'Em L': 'Bifa L',
+  'Cubículo': 'Kutaa xiqqaa',
 } satisfies Record<string, string>;

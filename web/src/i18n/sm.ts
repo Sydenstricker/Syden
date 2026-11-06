@@ -3052,4 +3052,15 @@ export default {
   'Saiu da pista!': 'Ua alu ese mai le auala!',
   'Saídas da pista: {n}': 'Alu ese mai le auala: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Taofi e faatelevave ma tuʻu aʻo leʻi oʻo i le pioga: pe a tetete le taʻavale, ua oʻo i le tapulaʻa.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'Potu',
+  'Creme': 'Kulimi',
+  'Mel': 'Meli',
+  'Carvalho': 'Oka',
+  'Nogueira': 'Uolenati',
+  'Cerejeira': 'Seli',
+  'Pinho': 'Paina',
+  'Quadrado': 'Sikuea',
+  'Em L': 'Foliga L',
+  'Cubículo': 'Potu laitiiti',
 } satisfies Record<string, string>;

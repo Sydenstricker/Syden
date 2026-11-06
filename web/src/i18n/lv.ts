@@ -3120,4 +3120,15 @@ export default {
   'Saiu da pista!': 'Ārā no trases!',
   'Saídas da pista: {n}': 'Izlidojumi no trases: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Turi, lai paātrinātu, un atlaid pirms līkuma: kad mašīna trīc, tā ir uz robežas.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'Istaba',
+  'Creme': 'Krēmkrāsa',
+  'Mel': 'Medus',
+  'Carvalho': 'Ozols',
+  'Nogueira': 'Riekstkoks',
+  'Cerejeira': 'Ķirsis',
+  'Pinho': 'Priede',
+  'Quadrado': 'Kvadrātveida',
+  'Em L': 'L veida',
+  'Cubículo': 'Kambarītis',
 } satisfies Record<string, string>;

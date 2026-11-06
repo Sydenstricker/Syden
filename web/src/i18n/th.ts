@@ -3061,4 +3061,15 @@ export default {
   'Saiu da pista!': 'หลุดสนาม!',
   'Saídas da pista: {n}': 'หลุดสนาม: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'กดค้างเพื่อเร่ง แล้วปล่อยก่อนเข้าโค้ง: ถ้ารถสั่น แปลว่าถึงขีดจำกัดแล้ว',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'ห้อง',
+  'Creme': 'ครีม',
+  'Mel': 'น้ำผึ้ง',
+  'Carvalho': 'ไม้โอ๊ก',
+  'Nogueira': 'ไม้วอลนัท',
+  'Cerejeira': 'ไม้เชอร์รี',
+  'Pinho': 'ไม้สน',
+  'Quadrado': 'สี่เหลี่ยม',
+  'Em L': 'รูปตัว L',
+  'Cubículo': 'ห้องเล็ก',
 } satisfies Record<string, string>;

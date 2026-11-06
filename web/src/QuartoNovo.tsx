@@ -1,4 +1,4 @@
-import { AppWindow, Archive, Check, Coffee, Copy, Ellipsis, Frame, Grid2x2, Home, LayoutGrid, Moon, Mouse, Move, Pencil, Redo2, RotateCcw, RotateCw, Save, Search, Settings, Sofa, Sprout, Sun, Undo2, X } from 'lucide-react';
+import { AppWindow, Archive, Check, Coffee, Copy, Ellipsis, Frame, Grid2x2, Home, LayoutGrid, Moon, Mouse, Move, PaintRoller, Pencil, Redo2, RotateCcw, RotateCw, Save, Search, Settings, Sofa, Sprout, Sun, Undo2, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { API_URL, loadToken } from './api';
 import { CartaoDaPeca, type PecaClicada } from './CartaoDaPeca';
@@ -46,6 +46,8 @@ export interface Figuras {
   guardaveis?: string[];
   /** Cada tipo de janela, com a figura dele (só a original tem cortina e abre). */
   janelas?: Record<string, string>;
+  /** O CÔMODO (só no quarto, 06/11/2026): um pedaço da parede e do piso em cada cor, e a casca de cada planta. */
+  comodo?: { paredes: Record<string, string>; pisos: Record<string, string>; plantas: Record<string, string> };
 }
 export interface Arrumacao {
   /** Há o que desfazer e o que refazer (a cena guarda os passos da arrumação). */
@@ -61,6 +63,10 @@ export interface Arrumacao {
   selecao?: string | null;
   janela: string;
   tapete: string;
+  /** A planta do quarto e as cores da parede e do piso (só no quarto). */
+  planta?: string;
+  corDaParede?: string;
+  corDoPiso?: string;
   /** A opção escolhida de cada objeto que tem opções (o pôster). */
   opcoes?: Record<string, string>;
   /** Quais desses móveis estão no lugar (false: guardado). */
@@ -183,7 +189,7 @@ export function QuartoNovo({
  * As mudanças do Editar ficam PENDENTES até Aplicar (decisão dele): a página da cena guarda o rascunho; Salvar grava sem
  * sair, Cancelar volta ao que estava. Os comandos vão por mensagem e a página faz o mesmo que os botões de teste dela.
  */
-type Categoria = 'tudo' | 'moveis' | 'plantas' | 'parede' | 'emCima' | 'tapete' | 'janela';
+type Categoria = 'tudo' | 'comodo' | 'moveis' | 'plantas' | 'parede' | 'emCima' | 'tapete' | 'janela';
 const PLANTAS = new Set(['planta-alta', 'planta-baixa', 'plantinha']);
 
 /** Um item do catálogo: o que ele põe (grupo e códigos: os iguais com número no salão vão juntos) e a figura. */
@@ -295,6 +301,10 @@ export function EditorDaCena({
     for (const [id, src] of Object.entries(figuras.deCima ?? {})) r.push({ chave: 'o' + id, grupo: 'o', ids: [id], src });
     for (const [id, cor] of Object.entries(figuras.cores)) r.push({ chave: 'c' + id, grupo: 'c', ids: [id], cor });
     for (const [id, src] of Object.entries(figuras.janelas ?? {})) r.push({ chave: 'j' + id, grupo: 'j', ids: [id], src });
+    // o cômodo (só o quarto o manda): a planta, a parede e o piso, em figuras
+    for (const [id, src] of Object.entries(figuras.comodo?.plantas ?? {})) r.push({ chave: 'l' + id, grupo: 'l', ids: [id], src });
+    for (const [id, src] of Object.entries(figuras.comodo?.paredes ?? {})) r.push({ chave: 'w' + id, grupo: 'w', ids: [id], src });
+    for (const [id, src] of Object.entries(figuras.comodo?.pisos ?? {})) r.push({ chave: 'f' + id, grupo: 'f', ids: [id], src });
     return r;
   }, [figuras]);
   const noGrupo = (cat: Categoria, it: ItemDoCatalogo) => {
@@ -311,6 +321,8 @@ export function EditorDaCena({
         return it.grupo === 'c';
       case 'janela':
         return it.grupo === 'j';
+      case 'comodo':
+        return it.grupo === 'l' || it.grupo === 'w' || it.grupo === 'f';
       default:
         return true;
     }
@@ -321,12 +333,18 @@ export function EditorDaCena({
     const p = arrumacao?.presentes;
     if (it.grupo === 'c') return arrumacao?.tapete === it.ids[0] ? 1 : 0;
     if (it.grupo === 'j') return arrumacao?.janela === it.ids[0] ? 1 : 0;
+    if (it.grupo === 'l') return arrumacao?.planta === it.ids[0] ? 1 : 0;
+    if (it.grupo === 'w') return arrumacao?.corDaParede === it.ids[0] ? 1 : 0;
+    if (it.grupo === 'f') return arrumacao?.corDoPiso === it.ids[0] ? 1 : 0;
     const tabela = it.grupo === 'm' ? p?.m : it.grupo === 'p' ? p?.p : p?.o;
     return it.ids.reduce((s, id) => s + (tabela?.[id] ?? 0), 0);
   };
   const por = (it: ItemDoCatalogo) => {
     if (it.grupo === 'c') return enviar({ comando: 'tapete', cor: it.ids[0] });
     if (it.grupo === 'j') return enviar({ comando: 'janela', tipo: it.ids[0] });
+    if (it.grupo === 'l') return enviar({ comando: 'planta', planta: it.ids[0] });
+    if (it.grupo === 'w') return enviar({ comando: 'corDaParede', cor: it.ids[0] });
+    if (it.grupo === 'f') return enviar({ comando: 'corDoPiso', cor: it.ids[0] });
     // O QUE JÁ ESTÁ NA CENA (marcado em amarelo) SAI, como a lixeira (pedido dele, 16/10/2026); o que não está, entra.
     // (os iguais com número no salão: entra o primeiro que estiver fora). Mais um igual é o Duplicar.
     if (quantos(it) > 0) return enviar({ comando: 'tirarTipo', grupo: it.grupo, ids: it.ids });
@@ -336,6 +354,8 @@ export function EditorDaCena({
   };
   const categorias: { id: Categoria; rotulo: string; Icone: typeof Sofa }[] = [
     { id: 'tudo', rotulo: t('Tudo'), Icone: LayoutGrid },
+    // (só no quarto: o salão não manda o cômodo)
+    ...(figuras?.comodo ? [{ id: 'comodo' as const, rotulo: t('Cômodo'), Icone: PaintRoller }] : []),
     { id: 'moveis', rotulo: t('Móveis'), Icone: Sofa },
     { id: 'plantas', rotulo: t('Plantas'), Icone: Sprout },
     { id: 'parede', rotulo: t('Objetos da parede'), Icone: Frame },

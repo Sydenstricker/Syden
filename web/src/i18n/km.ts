@@ -3117,4 +3117,15 @@ export default {
   'Saiu da pista!': 'ចេញពីផ្លូវ!',
   'Saídas da pista: {n}': 'ចេញពីផ្លូវ៖ {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'ចុចជាប់ដើម្បីបង្កើនល្បឿន ហើយលែងមុនផ្លូវកោង៖ ពេលឡានញ័រ វាដល់កម្រិតហើយ។',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'បន្ទប់',
+  'Creme': 'ក្រែម',
+  'Mel': 'ទឹកឃ្មុំ',
+  'Carvalho': 'ឈើអូក',
+  'Nogueira': 'ឈើវ៉លណាត់',
+  'Cerejeira': 'ឈើឆឺរី',
+  'Pinho': 'ឈើស្រល់',
+  'Quadrado': 'ការ៉េ',
+  'Em L': 'រាងអក្សរ L',
+  'Cubículo': 'បន្ទប់តូច',
 } satisfies Record<string, string>;

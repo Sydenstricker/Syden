@@ -3119,4 +3119,15 @@ export default {
   'Saiu da pista!': 'Iphumile emzileni!',
   'Saídas da pista: {n}': 'Ukuphuma emzileni: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Bamba ukuze usheshise bese uyekela ngaphambi kwekhona: uma imoto iqhaqhazela, isemkhawulweni.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'Igumbi',
+  'Creme': 'Ukhilimu',
+  'Mel': 'Uju',
+  'Carvalho': 'I-oki',
+  'Nogueira': 'I-walnut',
+  'Cerejeira': 'Isheri',
+  'Pinho': 'Uphayini',
+  'Quadrado': 'Isikwele',
+  'Em L': 'Isimo esingu-L',
+  'Cubículo': 'Igumbi elincane',
 } satisfies Record<string, string>;

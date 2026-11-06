@@ -3129,4 +3129,15 @@ export default {
   'Saiu da pista!': 'Ýoldan çykdy!',
   'Saídas da pista: {n}': 'Ýoldan çykmalar: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Tizlendirmek üçin basyp sakla we öwrümden öň goýber: maşyn titrände, ol çäkde.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'Otag',
+  'Creme': 'Krem',
+  'Mel': 'Bal',
+  'Carvalho': 'Dub',
+  'Nogueira': 'Hoz',
+  'Cerejeira': 'Alça',
+  'Pinho': 'Sosna',
+  'Quadrado': 'Inedördül',
+  'Em L': 'L görnüşli',
+  'Cubículo': 'Kiçi otag',
 } satisfies Record<string, string>;

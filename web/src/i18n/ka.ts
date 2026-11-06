@@ -3136,4 +3136,15 @@ export default {
   'Saiu da pista!': 'ტრასიდან გავარდა!',
   'Saídas da pista: {n}': 'ტრასიდან გავარდნები: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'დააჭირე და გეჭიროს აჩქარებისთვის, მოსახვევამდე კი გაუშვი: როცა მანქანა კანკალებს, ზღვარზეა.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'ოთახი',
+  'Creme': 'კრემისფერი',
+  'Mel': 'თაფლი',
+  'Carvalho': 'მუხა',
+  'Nogueira': 'კაკალი',
+  'Cerejeira': 'ალუბალი',
+  'Pinho': 'ფიჭვი',
+  'Quadrado': 'კვადრატული',
+  'Em L': 'L-ის ფორმის',
+  'Cubículo': 'ოთახუნა',
 } satisfies Record<string, string>;

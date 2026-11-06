@@ -3128,4 +3128,15 @@ export default {
   'Saiu da pista!': 'Soti nan pis la!',
   'Saídas da pista: {n}': 'Sòti nan pis la: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Kenbe pou akselere epi lage anvan viraj la: lè machin nan tranble, li nan limit li.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'Chanm',
+  'Creme': 'Krèm',
+  'Mel': 'Siwo myèl',
+  'Carvalho': 'Chèn',
+  'Nogueira': 'Nwaye',
+  'Cerejeira': 'Seriz',
+  'Pinho': 'Pen',
+  'Quadrado': 'Kare',
+  'Em L': 'An fòm L',
+  'Cubículo': 'Ti chanm',
 } satisfies Record<string, string>;

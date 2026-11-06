@@ -3120,4 +3120,15 @@ export default {
   'Saiu da pista!': 'Pályán kívül!',
   'Saídas da pista: {n}': 'Kirepülések: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Tartsd lenyomva a gyorsításhoz, és engedd el a kanyar előtt: ha az autó remeg, a határon van.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'Szoba',
+  'Creme': 'Krém',
+  'Mel': 'Méz',
+  'Carvalho': 'Tölgy',
+  'Nogueira': 'Dió',
+  'Cerejeira': 'Cseresznye',
+  'Pinho': 'Fenyő',
+  'Quadrado': 'Négyzetes',
+  'Em L': 'L alakú',
+  'Cubículo': 'Kuckó',
 } satisfies Record<string, string>;

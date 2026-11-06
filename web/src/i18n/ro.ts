@@ -3048,4 +3048,15 @@ export default {
   'Saiu da pista!': 'Ieșire de pe pistă!',
   'Saídas da pista: {n}': 'Ieșiri de pe pistă: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Ține apăsat ca să accelerezi și dă drumul înainte de curbă: când mașina tremură, e la limită.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'Cameră',
+  'Creme': 'Crem',
+  'Mel': 'Miere',
+  'Carvalho': 'Stejar',
+  'Nogueira': 'Nuc',
+  'Cerejeira': 'Cireș',
+  'Pinho': 'Pin',
+  'Quadrado': 'Pătrată',
+  'Em L': 'În L',
+  'Cubículo': 'Cămăruță',
 } satisfies Record<string, string>;

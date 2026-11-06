@@ -3047,4 +3047,15 @@ export default {
   'Saiu da pista!': 'E lako tani mai na sala!',
   'Saídas da pista: {n}': 'Na lako tani mai na sala: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Taqomaka tiko me vakatotolotaki ka sereka ni bera na veibalei: ni sasaqiqi na motoka, sa yaco ena iyalayala.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'Rumu',
+  'Creme': 'Kirimu',
+  'Mel': 'Oni',
+  'Carvalho': 'Oki',
+  'Nogueira': 'Wolinati',
+  'Cerejeira': 'Jeri',
+  'Pinho': 'Paini',
+  'Quadrado': 'Lewe va',
+  'Em L': 'Vaka na L',
+  'Cubículo': 'Rumu lailai',
 } satisfies Record<string, string>;

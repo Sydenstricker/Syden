@@ -3045,4 +3045,15 @@ export default {
   'Saiu da pista!': 'Keluar lintasan!',
   'Saídas da pista: {n}': 'Keluar lintasan: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Tahan untuk mempercepat dan lepaskan sebelum tikungan: saat mobil bergetar, ia sudah di batas.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'Ruangan',
+  'Creme': 'Krem',
+  'Mel': 'Madu',
+  'Carvalho': 'Ek',
+  'Nogueira': 'Walnut',
+  'Cerejeira': 'Ceri',
+  'Pinho': 'Pinus',
+  'Quadrado': 'Persegi',
+  'Em L': 'Bentuk L',
+  'Cubículo': 'Bilik',
 } satisfies Record<string, string>;

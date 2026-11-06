@@ -3072,4 +3072,15 @@ export default {
   'Saiu da pista!': 'خروج عن الحلبة!',
   'Saídas da pista: {n}': 'مرات الخروج عن الحلبة: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'الضغط المستمر للتسريع، ثم الإفلات قبل المنعطف: عندما تهتز السيارة تكون عند الحد.',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'الغرفة',
+  'Creme': 'كريمي',
+  'Mel': 'عسلي',
+  'Carvalho': 'بلوط',
+  'Nogueira': 'جوز',
+  'Cerejeira': 'كرز',
+  'Pinho': 'صنوبر',
+  'Quadrado': 'مربّعة',
+  'Em L': 'على شكل L',
+  'Cubículo': 'حجرة صغيرة',
 } satisfies Record<string, string>;

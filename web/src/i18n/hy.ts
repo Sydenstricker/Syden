@@ -3137,4 +3137,15 @@ export default {
   'Saiu da pista!': 'Ուղուց դուրս!',
   'Saídas da pista: {n}': 'Ուղուց դուրս գալեր՝ {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Սեղմած պահիր՝ արագացնելու համար, և բաց թող շրջադարձից առաջ․ երբ մեքենան դողում է, սահմանին է։',
+  // O cômodo do quarto: a planta e as cores da parede e do piso (06/11/2026)
+  'Cômodo': 'Սենյակ',
+  'Creme': 'Կրեմ',
+  'Mel': 'Մեղր',
+  'Carvalho': 'Կաղնի',
+  'Nogueira': 'Ընկուզենի',
+  'Cerejeira': 'Բալենի',
+  'Pinho': 'Սոճի',
+  'Quadrado': 'Քառակուսի',
+  'Em L': 'L-աձև',
+  'Cubículo': 'Խցիկ',
 } satisfies Record<string, string>;
