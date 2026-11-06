@@ -805,6 +805,24 @@ civis da Kenney não dizem a direção no nome: os quadros das diagonais estão 
 mais de um cruzamento e semáforo. Ninguém jogou com gente: o ritmo das chegadas é chute medido contra o piloto (`window.transitoPilotoAutomatico`).
 Testes: `web/test/transito.test.ts`, `server/test/minijogos-transito.test.ts`, `e2e/transito.mjs` (passou).
 
+**A PONTE DA TOCA (06/11/2026, pedido dele: "30 segundos para montar a ponte; ganha quem usar menos recursos e fizer o tráfego
+atravessar"; só a mecânica do gênero, nada de Poly Bridge):** `ponte`, nas duas abas, 2D de lado e tudo por código. Três peças: a
+PISTA (a única por onde o tráfego passa, até 45°, 150 por casa), a MADEIRA (100, aguenta pouco) e o AÇO (300, mais forte e mais longo);
+o custo é preço × comprimento. Arrastar de um nó (o apoio vermelho ou a ponta de uma peça) põe a peça; clicar vai em corrente; botão
+direito ou "Apagar" tira (o que fica solto cai junto); Ctrl+Z; pelo teclado, setas, Enter, Delete e 1/2/3. "Testar" roda o tráfego ali
+mesmo SEM parar o relógio; "Pronto" ou o fim dos 30 s manda a lista. **A física é um arquivo só, nas duas cópias iguais byte a byte**
+(`web/src/ponte/sim.ts` ↔ `server/src/ponte-sim.ts`): massa-mola, passo de 1/60 s em 16 subpassos, só + − × ÷ e raiz; a peça cuja
+força passa do limite do tipo QUEBRA; o peso da ponte entra aos poucos em 0,75 s (de uma vez, o tranco quebrava treliças boas); cada
+veículo é uma carga que anda na pista embaixo dele e cai sem ela. O site manda só [ax, ay, bx, by, tipo, ...]; o servidor confere
+(`conferir`: a grade da fase, o comprimento, nada repetido, tudo ligado a um apoio) e REFAZ; o resultado é dele. Na sala, o relógio é o
+do servidor (a ponte depois dos 30 s + 2,5 s é recusada); no Solo, o do computador, com ESC. Placar: quem passou pelo MENOR custo, depois
+quem caiu pelo quanto o tráfego andou; no fim todos veem as pontes de todos, a vencedora primeiro. Cinco fases (riacho, rio, ravina, os
+pilares só com apoio no alto, e o vão com a pedra no meio, onde o caminhão pede aço); `pontePronta` dá uma ponte que passa em cada uma
+(o teste cobra). Solo com o recorde por fase (`ponte_recordes`, na política e no "Levar seus dados"); pódio só de quem passou
+(`pista: 'ponte'`, os pontos são o custo). Fora das conquistas da turma até ele decidir. O equilíbrio (limites, pesos, preços) é chute
+medido contra as pontes de referência: ninguém jogou. Testes: `web/test/ponte.test.ts`, `server/test/minijogos-ponte.test.ts`,
+`e2e/ponte.mjs` e `e2e/ponte-na-sala.mjs` (passaram).
+
 **OS CLÁSSICOS DE MESA (04/11/2026, pedido dele, depois da pesquisa de jogos sem manutenção):** Dominó, Truco, Damas e
 Batalha naval, só no Coletivo. Regra pública e nenhum conteúdo para manter. **Damas e Batalha naval são de MESA**, no `duelo`
 de `minijogo-tabuleiro.ts`, que ganhou a vista POR LADO (`publico(estado, lado)`: na Batalha naval cada um vê só a própria
