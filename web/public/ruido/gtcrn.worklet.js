@@ -54,6 +54,11 @@ function fft(re, im, inversa) {
 const janela = new Float32Array(N);
 for (let i = 0; i < N; i++) janela[i] = Math.sqrt(0.5 - 0.5 * Math.cos((2 * Math.PI * i) / N));
 
+/** Pico abaixo de −60 dBFS em toda a janela: quieto. */
+const QUIETO = 1e-3;
+/** Quadros quietos seguidos antes de parar o modelo (~300 ms). */
+const SEGURA = Math.round((0.3 * 16000) / H);
+
 class SupressorGtcrn extends AudioWorkletProcessor {
   constructor(options) {
     super();
@@ -86,6 +91,19 @@ class SupressorGtcrn extends AudioWorkletProcessor {
 
   quadro() {
     const { re, im, mix } = this;
+    // O QUIETO NÃO PASSA PELO MODELO (06/11/2026, como no app: desktop/src/ruido/dpdfnet.js): o microfone mudo e o silêncio
+    // abaixo de −60 dBFS de pico por ~300 ms. O modelo devolveria silêncio, e ele é quase todo o custo. O primeiro quadro
+    // acima o religa, com o estado de antes.
+    let pico = 0;
+    for (let i = 0; i < N; i++) { const a = this.entrada[i] < 0 ? -this.entrada[i] : this.entrada[i]; if (a > pico) pico = a; }
+    this.quietos = pico < QUIETO ? (this.quietos || 0) + 1 : 0;
+    if (this.quietos > SEGURA) {
+      for (let i = 0; i < H; i++) this.fila[(this.escritos + i) % this.fila.length] = this.soma[i] * this.ganho;
+      this.escritos += H;
+      this.soma.copyWithin(0, H);
+      this.soma.fill(0, N - H);
+      return;
+    }
     for (let i = 0; i < N; i++) { re[i] = this.entrada[i] * janela[i]; im[i] = 0; }
     fft(re, im, false);
     for (let k = 0; k < B; k++) { mix[2 * k] = re[k]; mix[2 * k + 1] = im[k]; }

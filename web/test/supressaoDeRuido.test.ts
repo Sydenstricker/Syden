@@ -66,3 +66,40 @@ describe('supressão de ruído (GTCRN em JavaScript puro)', () => {
     }
   });
 });
+
+describe('o worklet do GTCRN (o que a thread de áudio roda)', () => {
+  it('o quieto (mudo ou abaixo de −60 dBFS) não passa pelo modelo, e a voz que volta passa', async () => {
+    // a thread de áudio, de mentira: o worklet só precisa da classe base e do registro
+    let Classe: any;
+    const g = globalThis as any;
+    g.AudioWorkletProcessor = class { port = { postMessage() {}, onmessage: null }; };
+    g.registerProcessor = (_: string, c: unknown) => (Classe = c);
+    await import('../public/ruido/gtcrn.worklet.js' as string);
+    const pesos = ler('gtcrn.bin');
+    const w = new Classe({ processorOptions: { grafo: JSON.parse(ler('gtcrn.json').toString('utf8')), pesos: pesos.buffer.slice(pesos.byteOffset, pesos.byteOffset + pesos.byteLength) } });
+    let rodadas = 0;
+    const rodar = w.motor.rodar.bind(w.motor);
+    w.motor.rodar = (e: unknown) => (rodadas++, rodar(e));
+    const tocar = (s: number, f: (i: number) => number) => {
+      let energia = 0;
+      for (let b = 0; b < (s * 16000) / 128; b++) {
+        const ent = new Float32Array(128).map((_, i) => f(b * 128 + i));
+        const sai = new Float32Array(128);
+        w.process([[ent]], [[sai]]);
+        for (const v of sai) energia += v * v;
+      }
+      return energia;
+    };
+    const voz = (i: number) => 0.3 * Math.sin((2 * Math.PI * 220 * i) / 16000) * (0.6 + 0.4 * Math.sin(i / 900));
+    const antes = tocar(0.5, voz);
+    assert.ok(rodadas >= 25);
+    for (const [nome, f, para] of [['mudo', () => 0, true], ['quieto', () => 3e-4 * (Math.random() * 2 - 1), true], ['ventilador baixo', () => 5e-3 * (Math.random() * 2 - 1), false]] as const) {
+      const r0 = rodadas;
+      tocar(2, f);
+      const r = rodadas - r0; // 2 s = 125 quadros
+      assert.ok(para ? r <= 21 : r >= 120, `${nome}: o modelo rodou ${r} vezes em 2 s`);
+    }
+    const depois = tocar(0.5, voz);
+    assert.ok(depois > 0.25 * antes, `a voz que volta saiu fraca: ${depois} contra ${antes}`);
+  });
+});
