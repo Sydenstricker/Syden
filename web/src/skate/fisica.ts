@@ -15,7 +15,7 @@
  * somados vezes o número de manobras. O combo se fecha quando o skatista roda no chão sem manobra por um instante; cair
  * (pousar torto, com o flip pela metade, perder o equilíbrio, bater de frente) perde o combo inteiro.
  */
-import { altura, alturaDaPeca, dentro, pecaEm, perfilDaPeca, subidaDaPeca, TRILHOS, type Trilho } from './pista';
+import { altura, alturaDaPeca, dentro, LARGURA, MARGEM, pecaEm, PROFUNDIDADE, perfilDaPeca, subidaDaPeca, TRILHOS, type Trilho } from './pista';
 
 export const PASSO = 1 / 60;
 /** A sessão: 2 minutos. */
@@ -491,6 +491,7 @@ export function passo(k: Skatista, comandos: Comandos) {
       if (c.direita) k.deriva += 0.0017;
       k.equilibrio += k.deriva;
       if (k.equilibrio > 1 || k.equilibrio < -1) {
+        paraDentro(k);
         cair(k);
         break;
       }
@@ -504,6 +505,7 @@ export function passo(k: Skatista, comandos: Comandos) {
         somar(k, 'Grind', k.duracao * PASSO);
         k.rx = tr.dx * k.sentido;
         k.rz = tr.dz * k.sentido;
+        paraDentro(k);
         k.peca = pecaEm(k.x, k.z);
         decolar(k, 0, apertou('pulo') ? 'ollie' : 'queda', apertou('pulo') ? OLLIE : 0.7);
         if (k.saida === 'ollie') {
@@ -594,6 +596,13 @@ export function passo(k: Skatista, comandos: Comandos) {
     }
   }
   k.antes = { ...comandos };
+}
+
+/** Saindo da linha do alto da cerca (que fica por fora da pista), o skatista volta para dentro dela. */
+function paraDentro(k: Skatista) {
+  const m = MARGEM + 0.01;
+  k.x = Math.min(LARGURA - m, Math.max(m, k.x));
+  k.z = Math.min(PROFUNDIDADE - m, Math.max(m, k.z));
 }
 
 /** A linha de grind que a prancha pega neste passo, ou −1. */

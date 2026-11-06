@@ -29,7 +29,7 @@ test('o piloto automático anda a sessão inteira: ollie, grind nas duas linhas,
   assert.ok(k.terminou, 'a sessão não acabou');
   assert.ok(k.passo >= PASSOS_DA_SESSAO && k.passo <= PASSOS_DA_SESSAO + PASSOS_DE_FOLGA + 1);
   for (const m of ['Ollie', 'Grind', 'Kickflip', '180', 'Manual']) assert.ok(nomes.includes(m), `faltou ${m}`);
-  assert.equal(grinds.size, TRILHOS.length, 'não grindou nas duas linhas');
+  assert.ok(grinds.has(0) && grinds.has(1), 'não grindou nas duas linhas do meio');
   assert.equal(quedas, 0);
   assert.ok(combos >= 5);
   assert.ok(k.pontos > 10_000, `pontos: ${k.pontos}`);
@@ -95,4 +95,30 @@ test('bater de frente na caixa devagar faz voltar; o chão das peças bate com o
   assert.equal(altura(3, 0.1), 0.8);
   assert.equal(altura(8.5, 9), 0.21);
   assert.ok(PECAS.length > 30);
+});
+
+test('o alto da cerca dos lados se grinda (pedido dele, 06/11/2026), e ao sair ele volta para dentro da pista', () => {
+  for (const lado of [0, 1]) {
+    const k = novoSkatista();
+    k.x = lado === 0 ? 0.2 : 11.8;
+    k.z = 6;
+    k.modo = 'ar';
+    k.y = 0.4;
+    k.vy = -0.2;
+    k.vx = 0;
+    k.vz = 3;
+    k.cx = 0;
+    k.cz = 1;
+    k.noAr = 10;
+    let pegou = -1;
+    for (let i = 0; i < 20 && pegou < 0; i++) {
+      passo(k, NADA);
+      if (k.modo === 'grind') pegou = k.trilho;
+    }
+    assert.ok(pegou >= 2, `não pegou a cerca do lado ${lado}`);
+    assert.equal(TRILHOS[pegou].y, 0.35);
+    andar(k, 400, (i) => ({ esquerda: k.equilibrio > 0.2 && i % 2 === 0, direita: k.equilibrio < -0.2 && i % 2 === 0 }));
+    assert.notEqual(k.modo, 'grind');
+    assert.ok(k.x > 0.15 && k.x < 11.85, `ficou fora da pista: x = ${k.x}`);
+  }
 });

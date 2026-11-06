@@ -44,6 +44,8 @@ export const LARGURA = 12;
 export const PROFUNDIDADE = 18;
 /** O quanto se pode chegar perto da cerca. */
 export const MARGEM = 0.15;
+/** A altura do alto da cerca (medida no fence.glb), onde se grinda. */
+export const ALTURA_DA_CERCA = 0.35;
 
 /**
  * O PERFIL DO QUARTER, medido no half-pipe.glb (de 0,025 em 0,025 casa, do patamar em z local −0,5 à boca em +0,5). A
@@ -129,6 +131,11 @@ function montar(): { pecas: Peca[]; trilhos: Trilho[] } {
     return { x1, z1, x2, z2, y, folga, comp, dx: (x2 - x1) / comp, dz: (z2 - z1) / comp };
   };
   const trilhos = [trilho(3.5, 6, 3.5, 11, 0.25, 0.22), trilho(8.5, 7, 8.5, 11, 0.21, 0.3)];
+  // O ALTO DA CERCA dos lados compridos também se grinda (pedido dele, 06/11/2026: "a barra que proíbe sair do mapa"). O
+  // modelo da cerca tem 0,35 de altura e fica a 0,06 por fora da pista; a linha vai entre as bocas dos dois quarters. A folga
+  // é maior porque o skatista não chega a menos de MARGEM da cerca; ao sair da linha ele volta para dentro (fisica.ts).
+  trilhos.push(trilho(-0.04, 1.1, -0.04, PROFUNDIDADE - 1.1, ALTURA_DA_CERCA, 0.34));
+  trilhos.push(trilho(LARGURA + 0.04, 1.1, LARGURA + 0.04, PROFUNDIDADE - 1.1, ALTURA_DA_CERCA, 0.34));
   return { pecas, trilhos };
 }
 
