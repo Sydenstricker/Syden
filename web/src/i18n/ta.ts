@@ -3056,4 +3056,7 @@ export default {
   'Gincana da toca': 'வளை தடை ஓட்டம்',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': '3D தடை ஓட்டம்: கொடி வரை மேடைகள், நகரும் பட்டைகள், ரம்பங்கள், சுழலும் கைகள் மீது ஓடு, குதி, சமநிலையைக் காத்துக்கொள். விழுந்தால் கடைசிக் கொடிக்குத் திரும்புவாய். தனியாட்டத்தில் கடிகாரத்துக்கும் நண்பர்களின் பேய்களுக்கும் எதிராக.',
   'Quedas: {n}': 'விழுதல்: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'மணியை அடி: எல்லாத் தொழிலாளிகளும் கிராம மையத்துக்குள்',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'மீண்டும் மணியை அடி: எல்லாரும் மீண்டும் வேலைக்கு',
+  'Este lugar já está cheio.': 'இந்த இடம் ஏற்கனவே நிரம்பிவிட்டது.',
 } satisfies Record<string, string>;

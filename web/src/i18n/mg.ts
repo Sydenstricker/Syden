@@ -3141,4 +3141,7 @@ export default {
   'Gincana da toca': 'Hazakazakan-tsakana ao an-davaka',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Hazakazakan-tsakana amin’ny 3D: mihazakazaka, mitsambikina ary mitazona ny fifandanjana eny ambonin’ny sehatra, fehikibo mihodina, tsofa ary sandry mihodina mandra-pahatongana amin’ny saina. Raha lavo, miverina any amin’ny saina farany. Amin’ny Solo, manohitra ny famantaranandro sy ny matoatoan’ny namana.',
   'Quedas: {n}': 'Fianjerana: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Andeho ny lakolosy: ny mpiasa rehetra hiditra ao amin’ny afovoan-tanàna',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Andeho indray ny lakolosy: hiverina hiasa ny rehetra',
+  'Este lugar já está cheio.': 'Efa feno io toerana io.',
 } satisfies Record<string, string>;

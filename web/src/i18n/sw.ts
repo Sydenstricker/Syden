@@ -3070,4 +3070,7 @@ export default {
   'Gincana da toca': 'Mbio za vikwazo za Shimoni',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Mbio za vikwazo za 3D: kimbia, ruka na shika usawa juu ya majukwaa, mikanda inayosogea, misumeno na mikono inayozunguka hadi kwenye bendera. Ukianguka, unarudi kwenye bendera ya mwisho. Katika Solo, dhidi ya saa na mizimu ya marafiki.',
   'Quedas: {n}': 'Kuanguka: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Piga kengele: wafanyakazi wote waingie ndani ya kitovu cha kijiji',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Piga kengele tena: wote warudi kazini',
+  'Este lugar já está cheio.': 'Mahali hapa pameshajaa.',
 } satisfies Record<string, string>;

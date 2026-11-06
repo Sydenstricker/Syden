@@ -3141,4 +3141,7 @@ export default {
   'Gincana da toca': 'Orodka caqabadaha godka',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Orod caqabado ah oo 3D ah: orod, bood oo dheelitirka ilaali korka barxadaha, suunka socda, miinshaarrada iyo gacmaha wareegaya ilaa calanka. Haddii aad dhacdo, waxaad ku noqonaysaa calankii ugu dambeeyay. Solo-ga, saacadda iyo rooxaanta saaxiibbada.',
   'Quedas: {n}': 'Dhicitaan: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Garaac gambaleelka: shaqaalaha oo dhan gudaha xarunta tuulada',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Mar kale garaac gambaleelka: dhammaan dib ugu laabta shaqada',
+  'Este lugar já está cheio.': 'Meeshan horey ayay u buuxday.',
 } satisfies Record<string, string>;

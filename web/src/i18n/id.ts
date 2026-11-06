@@ -3068,4 +3068,7 @@ export default {
   'Gincana da toca': 'Lintasan Rintangan Liang',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Lintasan rintangan 3D: lari, lompat, dan jaga keseimbangan di atas platform, ban berjalan, gergaji, dan lengan putar sampai ke bendera. Kalau jatuh, kembali ke bendera terakhir. Di Solo, melawan waktu dan hantu teman-temanmu.',
   'Quedas: {n}': 'Jatuh: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Bunyikan lonceng: semua pekerja masuk ke pusat desa',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Bunyikan lonceng lagi: semua kembali bekerja',
+  'Este lugar já está cheio.': 'Tempat ini sudah penuh.',
 } satisfies Record<string, string>;

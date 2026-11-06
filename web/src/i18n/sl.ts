@@ -3143,4 +3143,7 @@ export default {
   'Gincana da toca': 'Poligon z ovirami pri brlogu',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Poligon z ovirami v 3D: teci, skači in lovi ravnotežje na ploščadih, tekočih trakovih, med žagami in vrtljivimi rokami do zastave. Padec pomeni vrnitev k zadnji zastavi. V solo igri proti uri in duhovom prijateljev.',
   'Quedas: {n}': 'Padci: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Pozvoni z zvonom: vsi delavci v središče vasi',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Pozvoni znova: vsi nazaj na delo',
+  'Este lugar já está cheio.': 'To mesto je že polno.',
 } satisfies Record<string, string>;

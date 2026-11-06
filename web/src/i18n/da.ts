@@ -3135,4 +3135,7 @@ export default {
   'Gincana da toca': 'Hulens forhindringsbane',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'En forhindringsbane i 3D: løb, hop og hold balancen hen over platforme, transportbånd, save og fejearme til flaget. Falder du, kommer du tilbage til det sidste flag. I solo mod uret og dine venners spøgelser.',
   'Quedas: {n}': 'Fald: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Ring med klokken: alle arbejdere ind i bycentret',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Ring med klokken igen: alle tilbage på arbejde',
+  'Este lugar já está cheio.': 'Dette sted er allerede fuldt.',
 } satisfies Record<string, string>;

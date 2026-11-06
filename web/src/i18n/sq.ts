@@ -3133,4 +3133,7 @@ export default {
   'Gincana da toca': 'Pista me pengesa e strofullës',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Një pistë me pengesa në 3D: vrapo, kërce dhe mbaj ekuilibrin mbi platforma, rripa lëvizës, sharra dhe krahë rrotullues deri te flamuri. Po rrëzove, kthehesh te flamuri i fundit. Në Solo, kundër orës dhe fantazmave të shokëve.',
   'Quedas: {n}': 'Rrëzime: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Bjer kambanën: të gjithë punëtorët brenda qendrës së fshatit',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Bjer kambanën përsëri: të gjithë përsëri në punë',
+  'Este lugar já está cheio.': 'Ky vend është tashmë plot.',
 } satisfies Record<string, string>;

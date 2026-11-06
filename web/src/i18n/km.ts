@@ -3140,4 +3140,7 @@ export default {
   'Gincana da toca': 'ការប្រណាំងឧបសគ្គរូង',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'ការប្រណាំងឧបសគ្គ 3D៖ រត់ លោត និងរក្សាលំនឹងលើវេទិកា ខ្សែក្រវាត់ រណារ និងដៃបង្វិល រហូតដល់ទង់។ បើធ្លាក់ ត្រឡប់ទៅទង់ចុងក្រោយ។ ក្នុង Solo ប្រកួតនឹងនាឡិកា និងខ្មោចមិត្តភក្តិ។',
   'Quedas: {n}': 'ការធ្លាក់៖ {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'វាយកណ្ដឹង៖ កម្មករទាំងអស់ចូលក្នុងមជ្ឈមណ្ឌលភូមិ',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'វាយកណ្ដឹងម្ដងទៀត៖ ទាំងអស់គ្នាត្រឡប់ទៅធ្វើការវិញ',
+  'Este lugar já está cheio.': 'កន្លែងនេះពេញហើយ។',
 } satisfies Record<string, string>;

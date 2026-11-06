@@ -3121,4 +3121,7 @@ export default {
   'Gincana da toca': 'Смуга перешкод біля нори',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Смуга перешкод у 3D: біжи, стрибай і тримай рівновагу на платформах, стрічках, серед пилок і обертових важелів до прапора. Після падіння — назад до останнього прапора. У соло — проти годинника й привидів друзів.',
   'Quedas: {n}': 'Падіння: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Удар у дзвін: усі робітники всередину центру села',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Удар у дзвін знову: усі назад до роботи',
+  'Este lugar já está cheio.': 'Це місце вже заповнене.',
 } satisfies Record<string, string>;

@@ -3137,4 +3137,7 @@ export default {
   'Gincana da toca': 'Gimcana del cau',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Una cursa d\'obstacles en 3D: corre, salta i mantén l\'equilibri per plataformes, cintes, serres i escombradores fins a la bandera. Si caus, tornes a l\'última bandera. En solitari, contra el rellotge i els fantasmes dels amics.',
   'Quedas: {n}': 'Caigudes: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Toca la campana: tots els treballadors dins del centre del poble',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Torna a tocar la campana: tothom de tornada a la feina',
+  'Este lugar já está cheio.': 'Aquest lloc ja és ple.',
 } satisfies Record<string, string>;

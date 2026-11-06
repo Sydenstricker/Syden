@@ -3071,4 +3071,7 @@ export default {
   'Gincana da toca': 'የዋሻው መሰናክል ሩጫ',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'በ3D የመሰናክል ሩጫ፦ እስከ ባንዲራው ድረስ በመድረኮች፣ በተንቀሳቃሽ ቀበቶዎች፣ በመጋዞች እና በሚሽከረከሩ ዘንጎች ላይ ይሩጡ፣ ይዝለሉ እና ሚዛንዎን ይጠብቁ። ከወደቁ ወደ መጨረሻው ባንዲራ ይመለሳሉ። በብቸኛ ጨዋታ ከሰዓቱ እና ከጓደኞችዎ መናፍስት ጋር።',
   'Quedas: {n}': 'መውደቅ፦ {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'ደወሉን መደወል፦ ሁሉም ሠራተኞች ወደ መንደር ማዕከሉ ውስጥ',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'ደወሉን እንደገና መደወል፦ ሁሉም ወደ ሥራ ይመለሱ',
+  'Este lugar já está cheio.': 'ይህ ቦታ ቀድሞውኑ ሞልቷል።',
 } satisfies Record<string, string>;

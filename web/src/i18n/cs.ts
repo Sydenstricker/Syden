@@ -3140,4 +3140,7 @@ export default {
   'Gincana da toca': 'Překážková dráha z nory',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Překážková dráha ve 3D: běž, skákej a udržuj rovnováhu na plošinách, pásech, pilách a otočných ramenech až k vlajce. Pád znamená návrat k poslední vlajce. V sólu proti času a duchům přátel.',
   'Quedas: {n}': 'Pády: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Zazvoň na zvon: všichni dělníci dovnitř centra vesnice',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Zazvoň znovu: všichni zpátky do práce',
+  'Este lugar já está cheio.': 'Toto místo je už plné.',
 } satisfies Record<string, string>;

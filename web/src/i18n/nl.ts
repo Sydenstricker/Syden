@@ -3070,4 +3070,7 @@ export default {
   'Gincana da toca': 'Holparcours',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Een hindernisparcours in 3D: ren, spring en bewaar je evenwicht over platforms, lopende banden, zagen en zwaaiarmen tot aan de vlag. Val je eraf, dan ga je terug naar de laatste vlag. In Solo tegen de klok en de geesten van je vrienden.',
   'Quedas: {n}': 'Vallen: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Luid de klok: alle arbeiders het dorpscentrum in',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Luid de klok nog eens: iedereen weer aan het werk',
+  'Este lugar já está cheio.': 'Deze plek is al vol.',
 } satisfies Record<string, string>;

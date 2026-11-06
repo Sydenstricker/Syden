@@ -3070,4 +3070,7 @@ export default {
   'Gincana da toca': 'Veitaqalevu ni qara',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'E dua na veitaqalevu ena 3D: cici, rika ka tudei vinaka ena veibuturara, vakatoso, ivaro kei na sei wiriwiri me yacova na kuila. Kevaka o lutu, o na lesu ki na kuila e muri. Ena Solo, veitalia kei na kaloko kei na yalo ni nomu itokani.',
   'Quedas: {n}': 'Lutu: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Qiqi na lali: o ira kece na dauvakacakacaka me ra curu ki na uluni koro',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Qiqi tale na lali: era lesu kece ki na cakacaka',
+  'Este lugar já está cheio.': 'Sa vakasinaiti oti na vanua oqo.',
 } satisfies Record<string, string>;

@@ -3155,4 +3155,7 @@ export default {
   'Gincana da toca': 'Нүхний саадтай зам',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': '3D саадтай зам: туг хүртэл тавцан, туузан дамжуулга, хөрөө, эргэдэг гарын дээгүүр гүй, үсэр, тэнцвэрээ хадгал. Унавал сүүлийн туг руу буцна. Солод цаг болон найзуудын сүнсний эсрэг.',
   'Quedas: {n}': 'Уналт: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Хонх цохих: бүх ажилчин тосгоны төв рүү орно',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Хонхыг дахин цохих: бүгд ажилдаа буцна',
+  'Este lugar já está cheio.': 'Энэ газар аль хэдийн дүүрсэн.',
 } satisfies Record<string, string>;

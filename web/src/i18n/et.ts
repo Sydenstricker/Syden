@@ -3138,4 +3138,7 @@ export default {
   'Gincana da toca': 'Uru takistusrada',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': '3D takistusrada: jookse, hüppa ja hoia tasakaalu platvormidel, lintidel, saagide ja pöörlevate hoobade vahel kuni lipuni. Kukkudes lähed tagasi viimase lipu juurde. Soolos kella ja sõprade kummituste vastu.',
   'Quedas: {n}': 'Kukkumisi: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Löö kella: kõik töölised külakeskusesse',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Löö uuesti kella: kõik tagasi tööle',
+  'Este lugar já está cheio.': 'See koht on juba täis.',
 } satisfies Record<string, string>;

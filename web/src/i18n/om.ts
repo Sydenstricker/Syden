@@ -3111,4 +3111,7 @@ export default {
   'Gincana da toca': 'Fiigicha gufuu boollaa',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Fiigicha gufuu 3D: hanga alaabaatti waltajjii, sabbata sochootu, magaazii fi harka marsu irra fiigi, utaali, madaallii kee eegi. Yoo kufte, gara alaabaa dhumaatti deebita. Solo keessatti sa’aatii fi ekeraa hiriyootaa irratti.',
   'Quedas: {n}': 'Kufaatii: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Bilbila rukuti: hojjettoonni hundi wiirtuu gandaa keessa haa galan',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Ammas bilbila rukuti: hundi gara hojiitti haa deebi’an',
+  'Este lugar já está cheio.': 'Bakki kun duraan guutameera.',
 } satisfies Record<string, string>;

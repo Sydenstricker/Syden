@@ -3077,4 +3077,7 @@ export default {
   'Gincana da toca': 'Lele Fakafaingataʻa ʻa e Ava',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Ko ha lele fakafaingataʻa ʻi he 3D: lele, puna mo tauhi ho mafamafa ʻi he ngaahi tuʻunga, ngaahi naunau ʻoku ngaue, ngaahi kili mo e ngaahi nima ʻoku takai ʻo aʻu ki he fuka. Kapau te ke tō, te ke foki ki he fuka fakamuimui. ʻI he Solo, fakafepakiʻi ʻa e taimi mo e ngaahi tēvolo ʻo ho ngaahi kaungāmeʻa.',
   'Quedas: {n}': 'Tō: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Tā ʻa e fafangu: ko e kau ngāue kotoa ki loto ʻi he senita ʻo e kolo',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Toe tā ʻa e fafangu: foki kotoa ki he ngāue',
+  'Este lugar já está cheio.': 'Kuo ʻosi fonu ʻa e feituʻu ni.',
 } satisfies Record<string, string>;

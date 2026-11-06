@@ -3110,4 +3110,7 @@ export default {
   'Gincana da toca': 'တွင်း အတားအဆီး ပြေးပွဲ',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': '3D အတားအဆီး ပြေးပွဲ- အလံအထိ ပလက်ဖောင်း၊ ခါးပတ်ရွေ့၊ လွှနှင့် လှည့်လက်တံများပေါ်တွင် ပြေး၊ ခုန်ပြီး ချိန်ခွင်လျှာ ထိန်းပါ။ ပြုတ်ကျလျှင် နောက်ဆုံးအလံသို့ ပြန်သွားမည်။ Solo တွင် နာရီနှင့် သူငယ်ချင်းများ၏ သရဲပုံရိပ်များကို ယှဉ်ပါ။',
   'Quedas: {n}': 'ပြုတ်ကျမှု- {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'ခေါင်းလောင်းထိုး- အလုပ်သမားအားလုံး ရွာဗဟိုထဲဝင်',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'ခေါင်းလောင်းထပ်ထိုး- အားလုံး အလုပ်ပြန်ဆင်း',
+  'Este lugar já está cheio.': 'ဒီနေရာ ပြည့်နေပြီ။',
 } satisfies Record<string, string>;

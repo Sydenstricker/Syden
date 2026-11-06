@@ -3077,4 +3077,7 @@ export default {
   'Gincana da toca': 'Cúrsa constaicí an Phoill',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Cúrsa constaicí 3D: rith, léim agus coinnigh do chothromaíocht ar ardáin, criosanna iompair, sábha agus scuabairí go dtí an bhratach. Má thiteann tú, fillfidh tú ar an mbratach dheireanach. Sa Solo, in aghaidh an chloig agus taibhsí do chairde.',
   'Quedas: {n}': 'Titimí: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Buail an clog: na hoibrithe go léir isteach i lár an tsráidbhaile',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Buail an clog arís: gach duine ar ais ag obair',
+  'Este lugar já está cheio.': 'Tá an áit seo lán cheana.',
 } satisfies Record<string, string>;

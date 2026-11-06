@@ -3077,4 +3077,7 @@ export default {
   'Gincana da toca': 'Στίβος εμποδίων του λαγουμιού',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Ένας στίβος εμποδίων σε 3D: τρέξε, πήδα και κράτα ισορροπία σε πλατφόρμες, ιμάντες, πριόνια και περιστρεφόμενους βραχίονες ως τη σημαία. Αν πέσεις, γυρνάς στην τελευταία σημαία. Στο σόλο, κόντρα στο χρονόμετρο και στα φαντάσματα των φίλων.',
   'Quedas: {n}': 'Πτώσεις: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Χτύπα την καμπάνα: όλοι οι εργάτες μέσα στο κέντρο του χωριού',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Χτύπα ξανά την καμπάνα: όλοι πίσω στη δουλειά',
+  'Este lugar já está cheio.': 'Αυτό το μέρος είναι ήδη γεμάτο.',
 } satisfies Record<string, string>;

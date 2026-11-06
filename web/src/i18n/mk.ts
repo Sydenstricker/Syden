@@ -3141,4 +3141,7 @@ export default {
   'Gincana da toca': 'Полигон со пречки од дувлото',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Трка со пречки во 3D: трчај, скокај и држи рамнотежа на платформи, ленти, пили и вртливи краци до знамето. При паѓање — назад до последното знаме. Во соло, против часовникот и духовите на пријателите.',
   'Quedas: {n}': 'Паѓања: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Удри ја камбаната: сите работници во центарот на селото',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Удри ја камбаната повторно: сите назад на работа',
+  'Este lugar já está cheio.': 'Ова место е веќе полно.',
 } satisfies Record<string, string>;

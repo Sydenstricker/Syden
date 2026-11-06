@@ -3112,4 +3112,7 @@ export default {
   'Gincana da toca': 'Yuva maneə yarışı',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': '3D maneə yarışı: bayrağa qədər platformalar, lentlər, mişarlar və fırlanan qollar üzərində qaç, tullan və tarazlığını saxla. Yıxılsan, son bayrağa qayıdırsan. Solo rejimdə saata və dostlarının xəyallarına qarşı.',
   'Quedas: {n}': 'Yıxılmalar: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Zəngi çal: bütün işçilər kənd mərkəzinin içinə',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Zəngi yenə çal: hamı işə qayıtsın',
+  'Este lugar já está cheio.': 'Bu yer artıq doludur.',
 } satisfies Record<string, string>;

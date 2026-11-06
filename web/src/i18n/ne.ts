@@ -3143,4 +3143,7 @@ export default {
   'Gincana da toca': 'दुलोको बाधा दौड',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': '3D बाधा दौड: झण्डासम्म प्लेटफर्म, कन्भेयर, आरा र घुम्ने हातहरूमाथि दौड, उफ्र र सन्तुलन राख। खसेमा अन्तिम झण्डामा फर्किन्छ। सोलोमा घडी र साथीहरूका भूतहरूविरुद्ध।',
   'Quedas: {n}': 'खसाइ: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'घण्टी बजाऊ: सबै कामदार गाउँ केन्द्रभित्र',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'फेरि घण्टी बजाऊ: सबै फेरि काममा',
+  'Este lugar já está cheio.': 'यो ठाउँ पहिल्यै भरिएको छ।',
 } satisfies Record<string, string>;

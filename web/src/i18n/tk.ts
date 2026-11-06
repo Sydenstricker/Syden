@@ -3152,4 +3152,7 @@ export default {
   'Gincana da toca': 'Hin päsgelli ýoly',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': '3D päsgelli ýol: baýdaga çenli platformalaryň, lentalaryň, arralaryň we aýlanýan gollaryň üstünden ylga, bök we deňagramlylygyňy sakla. Ýykylsaň, soňky baýdaga gaýdýarsyň. Ýeke oýunda sagada we dostlaryň arwahlaryna garşy.',
   'Quedas: {n}': 'Ýykylmalar: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Jaňy kak: ähli işçiler oba merkeziniň içine',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Jaňy ýene kak: hemmeler işe gaýtsyn',
+  'Este lugar já está cheio.': 'Bu ýer eýýäm doly.',
 } satisfies Record<string, string>;

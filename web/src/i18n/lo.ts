@@ -3142,4 +3142,7 @@ export default {
   'Gincana da toca': 'ການແລ່ນຂ້າມອຸປະສັກໂພງ',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'ການແລ່ນຂ້າມອຸປະສັກ 3D: ແລ່ນ, ໂດດ ແລະ ຮັກສາການຊົງຕົວເທິງແທ່ນ, ສາຍພານ, ເລື່ອຍ ແລະ ແຂນໝູນ ຈົນເຖິງທຸງ. ຖ້າຕົກ ຈະກັບໄປທຸງສຸດທ້າຍ. ໃນ Solo ແຂ່ງກັບໂມງ ແລະ ຜີຂອງໝູ່.',
   'Quedas: {n}': 'ການຕົກ: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'ຕີລະຄັງ: ກຳມະກອນທຸກຄົນເຂົ້າໄປໃນສູນກາງບ້ານ',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'ຕີລະຄັງອີກ: ທຸກຄົນກັບໄປເຮັດວຽກ',
+  'Este lugar já está cheio.': 'ບ່ອນນີ້ເຕັມແລ້ວ.',
 } satisfies Record<string, string>;

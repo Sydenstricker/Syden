@@ -3161,4 +3161,7 @@ export default {
   'Gincana da toca': 'Uya toʻsiqli yoʻlagi',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': '3D toʻsiqli yoʻlak: bayroqqacha platformalar, lentalar, arralar va aylanuvchi tutqichlar ustidan yugur, sakra va muvozanatni saqla. Yiqilsang, oxirgi bayroqqa qaytasan. Soloda soatga va doʻstlarning arvohlariga qarshi.',
   'Quedas: {n}': 'Yiqilishlar: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Qo‘ng‘iroqni chal: barcha ishchilar qishloq markazi ichiga',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Qo‘ng‘iroqni yana chal: hamma ishga qaytsin',
+  'Este lugar já está cheio.': 'Bu joy allaqachon to‘lgan.',
 } satisfies Record<string, string>;

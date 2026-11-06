@@ -3095,4 +3095,7 @@ export default {
   'Gincana da toca': 'Bau-Parcours',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Ein Hindernisparcours in 3D: Lauf, spring und halt das Gleichgewicht auf Plattformen, Laufbändern, Sägen und Drehbalken bis zur Flagge. Fällst du runter, geht es zurück zur letzten Flagge. Im Solo gegen die Uhr und die Geister deiner Freunde.',
   'Quedas: {n}': 'Stürze: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Läute die Glocke: alle Arbeiter ins Dorfzentrum',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Läute die Glocke noch mal: alle zurück an die Arbeit',
+  'Este lugar já está cheio.': 'Dieser Ort ist schon voll.',
 } satisfies Record<string, string>;

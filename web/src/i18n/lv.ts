@@ -3143,4 +3143,7 @@ export default {
   'Gincana da toca': 'Alas šķēršļu trase',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Šķēršļu trase 3D: skrien, lec un noturi līdzsvaru uz platformām, lentēm, starp zāģiem un rotējošām svirām līdz karogam. Nokrītot — atpakaļ pie pēdējā karoga. Solo spēlē pret pulksteni un draugu spokiem.',
   'Quedas: {n}': 'Kritieni: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Zvani zvanu: visi strādnieki ciemata centrā',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Zvani vēlreiz: visi atpakaļ pie darba',
+  'Este lugar já está cheio.': 'Šī vieta jau ir pilna.',
 } satisfies Record<string, string>;

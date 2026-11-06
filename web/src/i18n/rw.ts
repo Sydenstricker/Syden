@@ -3082,4 +3082,7 @@ export default {
   'Gincana da toca': 'Isiganwa ry\'inzitizi ry\'umwobo',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Isiganwa ry\'inzitizi muri 3D: iruka, usimbuke kandi ugumane umunzani hejuru y\'urubuga, imikandara igenda, inkerezo n\'amaboko azenguruka kugeza ku ibendera. Iyo uguye, usubira ku ibendera rya nyuma. Muri Solo, uhanganye n\'isaha n\'imizimu y\'inshuti.',
   'Quedas: {n}': 'Kugwa: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Vuza inzogera: abakozi bose binjire mu kigo cy’umudugudu',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Ongera uvuze inzogera: bose basubire ku kazi',
+  'Este lugar já está cheio.': 'Aha hantu harashize kuzura.',
 } satisfies Record<string, string>;

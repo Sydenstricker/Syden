@@ -3073,4 +3073,7 @@ export default {
   'Gincana da toca': 'Halai obstákulu kuak nian',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Halai obstákulu iha 3D: halai, hakfila no kaer balansu iha plataforma, faixa ne’ebé la’o, serra no liman ne’ebé fila to’o bandeira. Se monu, fila ba bandeira ikus. Iha Solo, hasoru relójiu no fantasma belun sira-nian.',
   'Quedas: {n}': 'Monu: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Baku sinu: traballadór hotu tama ba sentru knua',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Baku fali sinu: ema hotu fila ba servisu',
+  'Este lugar já está cheio.': 'Fatin ne’e nakonu ona.',
 } satisfies Record<string, string>;

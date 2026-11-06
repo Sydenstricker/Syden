@@ -184,7 +184,7 @@
   padding: 8px;
   box-sizing: border-box;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) minmax(0, 1.6fr);
+  grid-template-columns: auto auto minmax(0, 1fr) minmax(0, 1.6fr);
   gap: 10px;
   align-items: stretch;
 }
@@ -196,7 +196,7 @@
 @media (max-width: 640px) {
   .tocas-baixo {
     height: 190px;
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: auto auto minmax(0, 1fr);
     grid-template-rows: auto minmax(0, 1fr);
   }
   .tocas-mapa {
@@ -260,8 +260,7 @@
   font-variant-numeric: tabular-nums;
 }
 .tocas-fila,
-.tocas-grupo,
-.tocas-atalhos {
+.tocas-grupo {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
@@ -277,8 +276,7 @@
 .tocas-fila-item.esperando {
   color: #ffb36b;
 }
-.tocas-cancelar,
-.tocas-atalho {
+.tocas-cancelar {
   font: inherit;
   font-size: 0.85em;
   padding: 2px 8px;
@@ -287,6 +285,94 @@
   background: var(--bg-input);
   color: var(--text);
   cursor: pointer;
+}
+/* Os atalhos ao lado do minimapa: ícones da Kenney (iconesDeHud.tsx), dois por linha, com o número de quem está parado. */
+.tocas-atalhos {
+  display: grid;
+  grid-template-columns: repeat(2, 40px);
+  grid-auto-rows: 40px;
+  gap: 6px;
+  align-content: start;
+}
+.tocas-atalho {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border-radius: var(--radius, 8px);
+  border: 1px solid var(--border);
+  background: var(--bg-input);
+  color: var(--text-strong);
+  cursor: pointer;
+}
+.tocas-atalho:hover:not(:disabled) {
+  background: var(--bg-hover);
+  border-color: var(--accent);
+}
+.tocas-atalho.alerta {
+  color: #ffd27a;
+}
+.tocas-sino.ativo {
+  color: #ffd27a;
+  border-color: #ffd27a;
+  box-shadow: 0 0 0 1px #ffd27a inset;
+}
+.tocas-botao.tocas-sino {
+  align-items: center;
+  justify-content: center;
+}
+.tocas-atalho-numero {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  box-sizing: border-box;
+  border-radius: 999px;
+  background: #e0503c;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 16px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* OS SELOS DE CAPACIDADE (sobre a fazenda e a mina: quem está nela e quantos cabem). Só desenho: não pegam o clique. */
+.tocas-selos {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.tocas-selo {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 7px 1px 3px;
+  border-radius: 999px;
+  background: rgba(14, 18, 24, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  will-change: transform;
+}
+.tocas-selo img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+.tocas-selo.cheio {
+  border-color: #ffb36b;
+  color: #ffd27a;
 }
 .tocas-acoes {
   display: grid;

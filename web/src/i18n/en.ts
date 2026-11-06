@@ -3066,4 +3066,7 @@ export default {
   'Gincana da toca': 'Burrow Obstacle Course',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'A 3D obstacle course: run, jump and keep your balance across platforms, conveyor belts, saws and sweepers to the flag. Fall off and you go back to the last flag. In Solo, against the clock and your friends’ ghosts.',
   'Quedas: {n}': 'Falls: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Ring the bell: every worker into the town center',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Ring the bell again: everyone back to work',
+  'Este lugar já está cheio.': 'This place is already full.',
 } satisfies Record<string, string>;

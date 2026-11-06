@@ -3135,4 +3135,7 @@ export default {
   'Gincana da toca': 'Holhindernisbaan',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': '\'n Hindernisbaan in 3D: hardloop, spring en balanseer oor platforms, vervoerbande, sae en swaaiers tot by die vlag. Val jy, gaan jy terug na die laaste vlag. In Solo teen die klok en die spoke van jou vriende.',
   'Quedas: {n}': 'Valle: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Lui die klok: alle werkers die dorpsentrum in',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Lui die klok weer: almal terug werk toe',
+  'Este lugar já está cheio.': 'Hierdie plek is reeds vol.',
 } satisfies Record<string, string>;

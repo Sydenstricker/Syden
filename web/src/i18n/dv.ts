@@ -3151,4 +3151,7 @@ export default {
   'Gincana da toca': 'ގޯޅީގެ ހުރަސް ދުވުން',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': '3D ހުރަސް ދުވުމެއް: ދިދައާ ހަމައަށް ޕްލެޓްފޯމްތަކާއި، ބެލްޓްތަކާއި، ކިރުތަކާއި، އަނބުރާ ދަނޑިތަކުގެ މަތިން ދުވެ، ފުންމައި، ބެލެންސް ހިފަހައްޓާ. ވެއްޓިއްޖެނަމަ ފަހު ދިދައަށް އެނބުރި ދެވޭނެ. ސޯލޯގައި ގަޑިއާއި ރަހުމަތްތެރިންގެ ހިޔަނިތަކާ ދެކޮޅަށް.',
   'Quedas: {n}': 'ވެއްޓުން: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'ގަނޑުޖަހާ: ހުރިހާ މަސައްކަތްތެރިން ގަރިޔާގެ މަރުކަޒުގެ ތެރެއަށް',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'އަނެއްކާވެސް ގަނޑުޖަހާ: ހުރިހާ މީހުން މަސައްކަތަށް އެނބުރި',
+  'Este lugar já está cheio.': 'މިތަން މިހާރުވެސް ފުރިފައި.',
 } satisfies Record<string, string>;

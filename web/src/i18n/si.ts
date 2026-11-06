@@ -3141,4 +3141,7 @@ export default {
   'Gincana da toca': 'ගුහාවේ බාධක ධාවනය',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': '3D බාධක ධාවනයක්: කොඩිය දක්වා වේදිකා, වාහක පටි, කියත් සහ කැරකෙන බාහු මතින් දුවන්න, පනින්න, සමබරතාව රකින්න. වැටුණොත් අවසන් කොඩියට ආපසු. Solo හි ඔරලෝසුවට සහ මිතුරන්ගේ හොල්මන්වලට එරෙහිව.',
   'Quedas: {n}': 'වැටීම්: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'සීනුව නාද කරන්න: සියලු කම්කරුවන් ගම් මධ්‍යස්ථානය ඇතුළට',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'නැවත සීනුව නාද කරන්න: සියල්ලෝම නැවත වැඩට',
+  'Este lugar já está cheio.': 'මෙම ස්ථානය දැනටමත් පිරී ඇත.',
 } satisfies Record<string, string>;

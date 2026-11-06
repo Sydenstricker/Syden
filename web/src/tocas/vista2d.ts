@@ -1,5 +1,5 @@
 import { PREDIOS, TAMANHO, ePredio, eFonte, type Sim, type TipoPredio, type TipoUnidade } from './sim';
-import { CORES, type Vista } from './vista';
+import { CORES, golpeDoMartelo, passeioNaFazenda, type Vista } from './vista';
 
 /**
  * TOCAS E TORRES DE CIMA, EM 2D (05/11/2026): a reserva para quando não há WebGL (ou a pessoa escolheu o estilo 2D em
@@ -35,6 +35,8 @@ export class Vista2D implements Vista {
   private observador: ResizeObserver;
   private sinais: { x: number; y: number; ataque: boolean; inicio: number }[] = [];
   private alfa = 1;
+  /** O tempo da tela (só anda quando ela desenha: sem foco, para). */
+  private tempo = 0;
 
   constructor(
     private caixa: HTMLElement,
@@ -66,8 +68,9 @@ export class Vista2D implements Vista {
     return { x: (x - this.cx) * this.escala + this.caixa.clientWidth / 2, y: (y - this.cy) * this.escala + this.caixa.clientHeight / 2 };
   }
 
-  quadro(alfa: number) {
+  quadro(alfa: number, dt = 0) {
     this.alfa = alfa;
+    this.tempo += dt;
     const g = this.g;
     const k = this.tela.width / Math.max(1, this.caixa.clientWidth);
     g.setTransform(k, 0, 0, k, 0, 0);
@@ -119,11 +122,28 @@ export class Vista2D implements Vista {
       if (this.selecao.has(p.id)) this.contorno(s.x, s.y, lado, lado, p.dono === this.eu ? '#ffffff' : '#f0d24a');
       if (p.vida < p.vidaMax * 0.999 || this.selecao.has(p.id)) this.barra(s.x + lado * 0.1, s.y - 6, lado * 0.8, p.vida / p.vidaMax, p.dono !== this.eu);
     }
+    // o martelo das obras em que alguém trabalha agora
+    const batendo = new Set<number>();
+    for (const u of this.sim.unidades) if (u.acao === 'trabalhando' && u.ordem.tipo === 'construir' && u.ordem.alvo !== undefined) batendo.add(u.ordem.alvo);
+    for (const id of batendo) {
+      const p = this.sim.porId.get(id);
+      if (!ePredio(p) || p.pronto || (p.dono !== this.eu && !j.visivel[p.gy * T + p.gx])) continue;
+      const s = this.paraTela(p.gx + p.tam, p.gy + p.tam * 0.35);
+      this.martelo(s.x, s.y, e * (0.9 + p.tam * 0.4), golpeDoMartelo(this.tempo + id * 0.37));
+    }
     // as unidades
     for (const u of this.sim.unidades) {
-      const x = u.ax + (u.x - u.ax) * alfa;
-      const y = u.ay + (u.y - u.ay) * alfa;
+      if (u.abrigado) continue;
+      let x = u.ax + (u.x - u.ax) * alfa;
+      let y = u.ay + (u.y - u.ay) * alfa;
       if (u.dono !== this.eu && !j.visivel[Math.floor(y) * T + Math.floor(x)]) continue;
+      // quem colhe na fazenda anda pelas fileiras dela (só o desenho)
+      const faz = u.acao === 'trabalhando' && u.ordem.tipo === 'coletar' ? this.sim.porId.get(u.ordem.alvo ?? 0) : undefined;
+      if (ePredio(faz) && faz.tipo === 'fazenda') {
+        const p = passeioNaFazenda(faz.gx, faz.gy, faz.tam, this.tempo + u.id * 1.7);
+        x = p.x;
+        y = p.y;
+      }
       const s = this.paraTela(x, y);
       const r = e * (u.tipo === 'catapulta' ? 0.42 : u.tipo === 'cavaleiro' ? 0.36 : 0.28);
       g.beginPath();
@@ -189,6 +209,29 @@ export class Vista2D implements Vista {
         g.fill();
       }
     }
+  }
+
+  /** O martelo (cabo e cabeça), de pé em (x, y) e deitando para a esquerda pelo ângulo `a`. */
+  private martelo(x: number, y: number, comprido: number, a: number) {
+    const g = this.g;
+    g.save();
+    g.translate(x, y);
+    g.rotate(-a);
+    g.fillStyle = '#8a5a32';
+    g.fillRect(-comprido * 0.06, -comprido * 0.78, comprido * 0.12, comprido * 0.78);
+    g.fillStyle = '#9aa3ad';
+    g.fillRect(-comprido * 0.28, -comprido, comprido * 0.56, comprido * 0.26);
+    g.strokeStyle = 'rgba(0,0,0,0.5)';
+    g.lineWidth = 1.5;
+    g.strokeRect(-comprido * 0.28, -comprido, comprido * 0.56, comprido * 0.26);
+    g.restore();
+  }
+
+  projetar(x: number, y: number, alto: number) {
+    // de cima, a altura vira um tanto para cima na tela (o selo fica acima do prédio, sem cobrir quem trabalha nele)
+    const s = this.paraTela(x, y - alto);
+    if (s.x < -40 || s.y < -40 || s.x > this.caixa.clientWidth + 40 || s.y > this.caixa.clientHeight + 40) return null;
+    return s;
   }
 
   private contorno(x: number, y: number, w: number, h: number, cor: string) {
@@ -299,6 +342,7 @@ export class Vista2D implements Vista {
     let melhor: number | null = null;
     let dist = 0.5 * 0.5;
     for (const u of this.sim.unidades) {
+      if (u.abrigado) continue;
       const x = u.ax + (u.x - u.ax) * this.alfa;
       const y = u.ay + (u.y - u.ay) * this.alfa;
       if (u.dono !== this.eu && !j.visivel[Math.floor(y) * T + Math.floor(x)]) continue;
@@ -319,7 +363,7 @@ export class Vista2D implements Vista {
   noRetangulo(x0: number, y0: number, x1: number, y1: number): number[] {
     const a = this.chao(Math.min(x0, x1), Math.min(y0, y1));
     const b = this.chao(Math.max(x0, x1), Math.max(y0, y1));
-    return this.sim.unidades.filter((u) => u.dono === this.eu && u.x >= a.x && u.x <= b.x && u.y >= a.y && u.y <= b.y).map((u) => u.id);
+    return this.sim.unidades.filter((u) => u.dono === this.eu && !u.abrigado && u.x >= a.x && u.x <= b.x && u.y >= a.y && u.y <= b.y).map((u) => u.id);
   }
 
   arrastar(dx: number, dy: number) {

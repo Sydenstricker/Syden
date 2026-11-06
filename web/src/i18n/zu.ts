@@ -3142,4 +3142,7 @@ export default {
   'Gincana da toca': 'Umjaho wezithiyo womgodi',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Umjaho wezithiyo we-3D: gijima, gxuma futhi ubambe ibhalansi phezu kwezinkundla, amabhande ahambayo, amasaha nezingalo ezizungezayo kuze kube sefulegini. Uma uwa, ubuyela efulegini lokugcina. Ku-Solo, ubhekene newashi nezipoki zabangane.',
   'Quedas: {n}': 'Ukuwa: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Shaya insimbi: zonke izisebenzi zingene esikhungweni sedolobhana',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Shaya insimbi futhi: bonke babuyele emsebenzini',
+  'Este lugar já está cheio.': 'Le ndawo isigcwele.',
 } satisfies Record<string, string>;

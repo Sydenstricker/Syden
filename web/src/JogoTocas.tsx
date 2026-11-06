@@ -1,7 +1,8 @@
+import { Bell } from 'lucide-react';
 import { useEffect, useRef, useState, type MouseEvent as ME, type PointerEvent as PE, type WheelEvent as WE } from 'react';
 import { ComandosDoJogo } from './ComandosDosJogos';
-import { estiloVisual } from './Graficos';
 import { chave, useT } from './i18n';
+import { cursorDeHud, IconeDeHud, type NomeDoIconeDeHud } from './iconesDeHud';
 import { tocar } from './somDosJogos';
 import { criarIA, PERFIS, type IA } from './tocas/ia';
 import {
@@ -12,7 +13,9 @@ import {
   ePredio,
   ERA2,
   eUnidade,
+  lugarDeColeta,
   novaPartida,
+  ocupantes,
   passo,
   PASSO,
   PASSOS_DA_MARAVILHA,
@@ -144,6 +147,11 @@ interface Painel {
   era: 1 | 2;
   passo: number;
   maravilha: [number, number];
+  /** Os trabalhadores parados (o número no atalho). */
+  ociosos: number;
+  /** O sino do meu centro: tocado, e quantos já estão dentro. */
+  sino: boolean;
+  abrigados: number;
   /** Uma marca que muda quando a seleção ou o que está nela muda (para os botões se refazerem). */
   versao: number;
 }
@@ -188,6 +196,102 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
     window.setTimeout(() => setAviso((a) => (a === texto ? null : a)), 3000);
   };
 
+  // ---- os selos de capacidade (06/11/2026, pedido dele: "Fazenda 0/1, mina 0/5") ----
+  // Sobre cada fazenda pronta minha e cada mina já vista, quantos trabalhadores meus estão nela e quantos cabem (a regra é a da
+  // simulação, CAPACIDADE em sim.ts). A conta é refeita junto com o painel; o lugar na tela, a cada quadro desenhado.
+  const camadaDosSelos = useRef<HTMLDivElement>(null);
+  const selos = useRef(new Map<string, { el: HTMLDivElement; texto: HTMLSpanElement; x: number; y: number; alto: number; visto: boolean }>());
+  const lerSelos = () => {
+    const camada = camadaDosSelos.current;
+    if (!camada) return;
+    const j = sim.jogadores[0];
+    const querem = new Map<string, { x: number; y: number; alto: number; rec: Recurso; n: number; cap: number }>();
+    for (const p of sim.predios) {
+      if (p.dono !== 0 || p.tipo !== 'fazenda' || !p.pronto) continue;
+      const l = lugarDeColeta(sim, p.id)!;
+      querem.set(`f${p.id}`, { x: p.gx + p.tam / 2, y: p.gy + p.tam / 2, alto: 1.15, rec: 'comida', n: ocupantes(sim, 0, l.chave), cap: l.cap });
+    }
+    const minas = new Map<number, { sx: number; sy: number; k: number; visto: boolean; cap: number }>();
+    for (const f of sim.fontes) {
+      if (f.tipo !== 'ouro') continue;
+      const l = lugarDeColeta(sim, f.id);
+      if (!l) continue;
+      const m = minas.get(l.chave) ?? { sx: 0, sy: 0, k: 0, visto: false, cap: l.cap };
+      m.sx += f.gx + 0.5;
+      m.sy += f.gy + 0.5;
+      m.k++;
+      if (j.explorado[f.gy * TAMANHO + f.gx]) m.visto = true;
+      minas.set(l.chave, m);
+    }
+    for (const [chave, m] of minas) if (m.visto) querem.set(`m${chave}`, { x: m.sx / m.k, y: m.sy / m.k, alto: 0.7, rec: 'ouro', n: ocupantes(sim, 0, chave), cap: m.cap });
+    for (const [k, s] of selos.current)
+      if (!querem.has(k)) {
+        s.el.remove();
+        selos.current.delete(k);
+      }
+    for (const [k, q] of querem) {
+      let s = selos.current.get(k);
+      if (!s) {
+        const el = document.createElement('div');
+        el.className = 'tocas-selo';
+        const img = document.createElement('img');
+        img.src = ICONE(q.rec);
+        img.alt = '';
+        const texto = document.createElement('span');
+        el.append(img, texto);
+        camada.append(el);
+        s = { el, texto, x: q.x, y: q.y, alto: q.alto, visto: true };
+        selos.current.set(k, s);
+      }
+      s.x = q.x;
+      s.y = q.y;
+      const txt = `${q.n}/${q.cap}`;
+      if (s.texto.textContent !== txt) s.texto.textContent = txt;
+      s.el.classList.toggle('cheio', q.n >= q.cap);
+    }
+  };
+  const moverSelos = (v: Vista) => {
+    for (const s of selos.current.values()) {
+      const p = v.projetar(s.x, s.y, s.alto);
+      if (!p) {
+        if (s.visto) s.el.style.display = 'none';
+        s.visto = false;
+        continue;
+      }
+      if (!s.visto) s.el.style.display = '';
+      s.visto = true;
+      s.el.style.transform = `translate(${Math.round(p.x)}px, ${Math.round(p.y)}px) translate(-50%, -100%)`;
+    }
+  };
+
+  // ---- o cursor do mouse diz o que o botão direito vai fazer (pedido dele: "mudar o ícone do mouse para reforçar a ação") ----
+  const cursores = useRef<Partial<Record<Acao, string>>>({});
+  const cursorAtual = useRef<Acao | ''>('');
+  useEffect(() => {
+    let vivo = true;
+    for (const [acao, icone] of Object.entries(ICONE_DA_ACAO) as [Acao, NomeDoIconeDeHud][])
+      void cursorDeHud(icone).then((c) => {
+        if (vivo && c) cursores.current[acao] = c;
+      });
+    return () => {
+      vivo = false;
+    };
+  }, []);
+  const ultimoCursor = useRef(0);
+  const porCursor = (px: number, py: number) => {
+    const agora = performance.now();
+    if (agora - ultimoCursor.current < 70) return;
+    ultimoCursor.current = agora;
+    const v = vistaRef.current;
+    const c = caixa.current;
+    if (!v || !c) return;
+    const acao = colocandoRef.current ? '' : acaoDoMouse(sim, v, selRef.current, px, py);
+    if (acao === cursorAtual.current) return;
+    cursorAtual.current = acao;
+    c.style.cursor = acao ? cursores.current[acao] ?? '' : '';
+    c.dataset.acao = acao;
+  };
+
   // ---- a vista e o laço ----
   useEffect(() => {
     if (!caixa.current) return;
@@ -207,7 +311,9 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
       comecar();
     };
     const de2D = () => usar(new Vista2D(caixa.current!, sim, 0));
-    if (estiloVisual() === '3d' && temWebGL())
+    // o jogo tem a estética dele (decisão dele, 06/11/2026: "para os mini jogos, é uma estética única"): abre sempre em 3D, e o
+    // 2D fica para quando não há WebGL ou a cena falha
+    if (temWebGL())
       import('./tocas/cena')
         .then(({ CenaDasTocas }) => {
           if (!viva || !caixa.current) return;
@@ -266,6 +372,15 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
               avisar(t('A sua vila está sob ataque!'));
             }
             break;
+          case 'cheio':
+            if (e.dono === 0) {
+              som('erro', 600);
+              avisar(t('Este lugar já está cheio.'));
+            }
+            break;
+          case 'sino':
+            if (e.dono === 0) som('vez');
+            break;
         }
       }
     };
@@ -310,10 +425,15 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
           if ((dx || dy) && c) vista.arrastar(dx * v, dy * v, c.clientWidth / 2, c.clientHeight / 2);
         }
         vista.quadro(Math.min(1, acumulado / PASSO), dt);
+        if (agora - ultimoPainel > 200) lerSelos();
+        moverSelos(vista);
         if (agora - ultimoPainel > 200) {
           ultimoPainel = agora;
-          // quem morreu sai da seleção
-          const vivos = selRef.current.filter((x) => sim.porId.has(x));
+          // quem morreu (ou entrou no centro pelo sino) sai da seleção
+          const vivos = selRef.current.filter((x) => {
+            const e = sim.porId.get(x);
+            return !!e && !(eUnidade(e) && e.abrigado);
+          });
           if (vivos.length !== selRef.current.length) escolher(vivos);
           entregas.current = entregas.current.filter((x) => x.passo > sim.passo - JANELA_DA_TAXA);
           setPainel(lerPainel(sim, Math.floor(agora / 200), entregas.current));
@@ -514,6 +634,7 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
     if (!v) return;
     const p = local(e);
     if (colocandoRef.current) atualizarFantasma(p.x, p.y);
+    if (e.pointerType === 'mouse') porCursor(p.x, p.y);
     const g = gesto.current;
     if (!g) return;
     if (e.pointerType === 'touch') ptrs.current.set(e.pointerId, p);
@@ -687,6 +808,33 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
     );
   };
 
+  /**
+   * O SINO do centro da vila (06/11/2026, pedido dele): o primeiro toque manda todos os trabalhadores para dentro (o centro atira
+   * mais com eles lá), o segundo os devolve ao que faziam. Mora no atalho e no painel do centro.
+   */
+  const botaoSino = (classe: string) => {
+    const meuCentro = sim.predios.find((p) => p.dono === 0 && p.tipo === 'centro');
+    const rotulo = painel.sino ? t('Tocar o sino de novo: todos de volta ao trabalho') : t('Tocar o sino: todos os trabalhadores para dentro do centro da vila');
+    return (
+      <button
+        type="button"
+        className={`${classe} tocas-sino${painel.sino ? ' ativo' : ''}`}
+        title={rotulo}
+        aria-label={rotulo}
+        aria-pressed={painel.sino}
+        disabled={!meuCentro || acabou}
+        onClick={() => {
+          if (!meuCentro) return;
+          comandar(sim, 0, { t: 'sino', predio: meuCentro.id });
+          tocar('clique');
+        }}
+      >
+        <Bell size={20} aria-hidden="true" />
+        {painel.sino && painel.abrigados > 0 && <span className="tocas-atalho-numero">{painel.abrigados}</span>}
+      </button>
+    );
+  };
+
   const maravilha = painel.maravilha;
   return (
     <div className="tocas">
@@ -726,12 +874,46 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
         >
           <div ref={caixaSel} className="tocas-selecao" />
         </div>
+        <div ref={camadaDosSelos} className="tocas-selos" aria-hidden="true" />
         {aviso && <div className="tocas-aviso">{aviso}</div>}
         {acabou && (
           <div className="tocas-acabou">{sim.vencedor === 0 ? t('Vitória!') : t('Derrota')}</div>
         )}
       <div className="tocas-baixo">
         <canvas ref={mapa} className="tocas-mapa" width={TAMANHO * 3} height={TAMANHO * 3} onPointerDown={aoTocarNoMapa} onPointerMove={(e) => e.buttons === 1 && aoTocarNoMapa(e)} onContextMenu={(e) => e.preventDefault()} />
+        {/* os atalhos são ÍCONES ao lado do minimapa, sem texto (pedido dele, 06/11/2026) */}
+        <div className="tocas-atalhos">
+          <button type="button" className="tocas-atalho" onClick={irAoCentro} title={t('Centro da vila')} aria-label={t('Centro da vila')}>
+            <IconeDeHud nome="casa" tamanho={22} />
+          </button>
+          <button
+            type="button"
+            className={`tocas-atalho${painel.ociosos ? ' alerta' : ''}`}
+            title={t('Trabalhador parado')}
+            aria-label={`${t('Trabalhador parado')}: ${painel.ociosos}`}
+            onClick={() => {
+              const ociosos = sim.unidades.filter((u) => u.dono === 0 && u.tipo === 'trabalhador' && u.ordem.tipo === 'parado' && !u.abrigado);
+              if (!ociosos.length) return void tocar('erro');
+              const atual = selRef.current.length === 1 ? ociosos.findIndex((u) => u.id === selRef.current[0]) : -1;
+              const u = ociosos[(atual + 1) % ociosos.length];
+              escolher([u.id]);
+              vistaRef.current?.centrar(u.x, u.y);
+            }}
+          >
+            <IconeDeHud nome="peao" tamanho={22} />
+            {painel.ociosos > 0 && <span className="tocas-atalho-numero">{painel.ociosos}</span>}
+          </button>
+          <button
+            type="button"
+            className="tocas-atalho"
+            title={t('Exército')}
+            aria-label={t('Exército')}
+            onClick={() => escolher(sim.unidades.filter((u) => u.dono === 0 && UNIDADES[u.tipo].combate).map((u) => u.id))}
+          >
+            <IconeDeHud nome="punho" tamanho={22} />
+          </button>
+          {botaoSino('tocas-atalho')}
+        </div>
         <div className="tocas-info">
           {unico ? (
             <>
@@ -786,38 +968,13 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
                 ))}
             </div>
           ) : null}
-          <div className="tocas-atalhos">
-            <button type="button" className="tocas-atalho" onClick={irAoCentro}>
-              {t('Centro da vila')}
-            </button>
-            <button
-              type="button"
-              className="tocas-atalho"
-              onClick={() => {
-                const ociosos = sim.unidades.filter((u) => u.dono === 0 && u.tipo === 'trabalhador' && u.ordem.tipo === 'parado');
-                if (!ociosos.length) return void tocar('erro');
-                const atual = selRef.current.length === 1 ? ociosos.findIndex((u) => u.id === selRef.current[0]) : -1;
-                const u = ociosos[(atual + 1) % ociosos.length];
-                escolher([u.id]);
-                vistaRef.current?.centrar(u.x, u.y);
-              }}
-            >
-              {t('Trabalhador parado')}
-            </button>
-            <button
-              type="button"
-              className="tocas-atalho"
-              onClick={() => escolher(sim.unidades.filter((u) => u.dono === 0 && UNIDADES[u.tipo].combate).map((u) => u.id))}
-            >
-              {t('Exército')}
-            </button>
-          </div>
         </div>
         <div className="tocas-acoes">
           {trabalhadores.length > 0 && CONSTRUIVEIS.map(botaoConstruir)}
           {predio && predio.dono === 0 && predio.pronto && (
             <>
               {(Object.keys(UNIDADES) as TipoUnidade[]).filter((k) => UNIDADES[k].de === predio.tipo).map(botaoTreinar)}
+              {predio.tipo === 'centro' && botaoSino('tocas-botao')}
               {predio.tipo === 'centro' && painel.era === 1 && predio.pesquisa === 0 && (
                 <button
                   type="button"
@@ -859,6 +1016,32 @@ function pertoDeCasa(sim: Sim, x: number, y: number): boolean {
   return dx * dx + dy * dy < 15 * 15;
 }
 
+/** O que o botão direito faria agora, debaixo do mouse: o cursor mostra (vazio, o ponteiro de sempre). */
+type Acao = 'mover' | 'recolher' | 'atacar' | 'construir' | 'reunir';
+const ICONE_DA_ACAO: Record<Acao, NomeDoIconeDeHud> = { mover: 'mao', recolher: 'cesta', atacar: 'mira', construir: 'chave', reunir: 'bandeira' };
+
+function acaoDoMouse(sim: Sim, v: Vista, sel: number[], px: number, py: number): Acao | '' {
+  const escolhidos = sel.map((x) => sim.porId.get(x));
+  const us = escolhidos.filter(eUnidade).filter((u) => u.dono === 0 && !u.abrigado);
+  if (!us.length) {
+    // o prédio que treina, escolhido sozinho: o direito marca o ponto de reunião
+    const p = escolhidos.length === 1 ? escolhidos[0] : undefined;
+    if (ePredio(p) && p.dono === 0 && p.pronto && (Object.keys(UNIDADES) as TipoUnidade[]).some((k) => UNIDADES[k].de === p.tipo)) return 'reunir';
+    return '';
+  }
+  const id = v.pegar(px, py);
+  const e = id !== null ? sim.porId.get(id) : undefined;
+  const trabalhador = us.some((u) => u.tipo === 'trabalhador');
+  if (!e) return v.chao(px, py) ? 'mover' : '';
+  if (eFonte(e)) return trabalhador ? 'recolher' : 'mover';
+  if (e.dono !== 0) return 'atacar';
+  if (ePredio(e) && trabalhador) {
+    if (!e.pronto) return 'construir';
+    if (e.tipo === 'fazenda') return 'recolher';
+  }
+  return eUnidade(e) ? '' : 'mover';
+}
+
 function vezes(c: Custo, n: number): Custo {
   const r: Custo = {};
   for (const k of RECURSOS) if (c[k]) r[k] = c[k]! * n;
@@ -879,6 +1062,9 @@ function lerPainel(sim: Sim, versao: number, entregas: { passo: number; rec: Rec
     era: j.era,
     passo: sim.passo,
     maravilha: [sim.jogadores[0].maravilha, sim.jogadores[1].maravilha],
+    ociosos: sim.unidades.filter((u) => u.dono === 0 && u.tipo === 'trabalhador' && u.ordem.tipo === 'parado' && !u.abrigado).length,
+    sino: !!sim.predios.find((p) => p.dono === 0 && p.tipo === 'centro')?.sino,
+    abrigados: sim.unidades.filter((u) => u.dono === 0 && u.abrigado).length,
     versao,
   };
 }
@@ -905,7 +1091,7 @@ function desenharMapa(tela: HTMLCanvasElement | null, sim: Sim, vista: Vista) {
     g.fillRect(p.gx * k, p.gy * k, p.tam * k, p.tam * k);
   }
   for (const u of sim.unidades) {
-    if (u.dono !== 0 && !j.visivel[Math.floor(u.y) * TAMANHO + Math.floor(u.x)]) continue;
+    if (u.abrigado || (u.dono !== 0 && !j.visivel[Math.floor(u.y) * TAMANHO + Math.floor(u.x)])) continue;
     g.fillStyle = u.dono === 0 ? '#bcd3ff' : '#ffb3a8';
     g.fillRect(u.x * k - 1.5, u.y * k - 1.5, 3, 3);
   }

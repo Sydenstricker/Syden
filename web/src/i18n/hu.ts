@@ -3143,4 +3143,7 @@ export default {
   'Gincana da toca': 'Üregi akadálypálya',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Akadálypálya 3D-ben: fuss, ugorj és tartsd az egyensúlyt platformokon, futószalagokon, fűrészek és forgó karok között a zászlóig. Ha leesel, az utolsó zászlótól folytatod. Szólóban az óra és a barátaid szellemei ellen.',
   'Quedas: {n}': 'Esések: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Kongasd meg a harangot: minden munkás be a faluközpontba',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Kongasd meg újra: mindenki vissza dolgozni',
+  'Este lugar já está cheio.': 'Ez a hely már megtelt.',
 } satisfies Record<string, string>;

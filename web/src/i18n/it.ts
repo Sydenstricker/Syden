@@ -3070,4 +3070,7 @@ export default {
   'Gincana da toca': 'Percorso a ostacoli della tana',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Un percorso a ostacoli in 3D: corri, salta e tieni l\'equilibrio su piattaforme, nastri, seghe e bracci rotanti fino alla bandiera. Se cadi, torni all\'ultima bandiera. In Solo, contro il tempo e i fantasmi degli amici.',
   'Quedas: {n}': 'Cadute: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Suona la campana: tutti i lavoratori dentro il centro del villaggio',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Suona di nuovo la campana: tutti di nuovo al lavoro',
+  'Este lugar já está cheio.': 'Questo posto è già pieno.',
 } satisfies Record<string, string>;

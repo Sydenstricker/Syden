@@ -3159,4 +3159,7 @@ export default {
   'Gincana da toca': 'სოროს დაბრკოლებების გზა',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'დაბრკოლებების გზა 3D-ში: ირბინე, ხტუნე და შეინარჩუნე წონასწორობა პლატფორმებზე, ლენტებზე, ხერხებსა და მბრუნავ ღეროებზე დროშამდე. ჩავარდნისას — ბოლო დროშასთან დაბრუნება. სოლოში საათისა და მეგობრების მოჩვენებების წინააღმდეგ.',
   'Quedas: {n}': 'ვარდნები: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'ზარის დარეკვა: ყველა მუშა სოფლის ცენტრში შედის',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'ზარის ხელახლა დარეკვა: ყველა სამუშაოს უბრუნდება',
+  'Este lugar já está cheio.': 'ეს ადგილი უკვე სავსეა.',
 } satisfies Record<string, string>;

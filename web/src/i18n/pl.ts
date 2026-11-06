@@ -3136,4 +3136,7 @@ export default {
   'Gincana da toca': 'Tor przeszkód z nory',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Tor przeszkód w 3D: biegnij, skacz i utrzymuj równowagę na platformach, taśmach, wśród pił i obrotowych ramion aż do flagi. Upadek oznacza powrót do ostatniej flagi. W solo przeciw zegarowi i duchom znajomych.',
   'Quedas: {n}': 'Upadki: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Uderz w dzwon: wszyscy robotnicy do środka centrum wioski',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Uderz w dzwon jeszcze raz: wszyscy z powrotem do pracy',
+  'Este lugar já está cheio.': 'To miejsce jest już pełne.',
 } satisfies Record<string, string>;

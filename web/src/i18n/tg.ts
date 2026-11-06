@@ -3151,4 +3151,7 @@ export default {
   'Gincana da toca': 'Пайроҳаи монеаҳои лона',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Пайроҳаи монеаҳо дар 3D: то парчам дар болои платформаҳо, тасмаҳо, байни арраҳо ва дастаҳои чархзананда дав, ҷаҳ ва мувозинатро нигоҳ дор. Агар афтӣ, ба парчами охирин бармегардӣ. Дар соло бар зидди соат ва арвоҳи дӯстон.',
   'Quedas: {n}': 'Афтиданҳо: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Зангро зан: ҳамаи коргарон ба дохили маркази деҳа',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Зангро боз зан: ҳама ба кор баргарданд',
+  'Este lugar já está cheio.': 'Ин ҷой аллакай пур аст.',
 } satisfies Record<string, string>;

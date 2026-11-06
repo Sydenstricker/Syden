@@ -3086,4 +3086,7 @@ export default {
   'Gincana da toca': 'Eré ìdíwọ́ Ihò',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Eré ìdíwọ́ 3D: sáré, fò, kí o sì dúró déédéé lórí pèpéle, bẹ́líìtì tí ń rìn, ayùn àti apá tí ń yí títí dé àsíá. Tí o bá ṣubú, wàá padà sí àsíá tó kẹ́yìn. Nínú Solo, lòdì sí aago àti iwin àwọn ọ̀rẹ́.',
   'Quedas: {n}': 'Ìṣubú: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Lu agogo: gbogbo òṣìṣẹ́ wọ inú àárín abúlé',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Tún lu agogo: gbogbo ènìyàn padà sí iṣẹ́',
+  'Este lugar já está cheio.': 'Ibí yìí ti kún tẹ́lẹ̀.',
 } satisfies Record<string, string>;

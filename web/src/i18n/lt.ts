@@ -3143,4 +3143,7 @@ export default {
   'Gincana da toca': 'Urvo kliūčių ruožas',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Kliūčių ruožas 3D: bėk, šok ir išlaikyk pusiausvyrą ant platformų, juostų, tarp pjūklų ir besisukančių strypų iki vėliavos. Nukritus grįžtama prie paskutinės vėliavos. Solo žaidime prieš laikrodį ir draugų vaiduoklius.',
   'Quedas: {n}': 'Kritimai: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Skambink varpu: visi darbininkai į kaimo centrą',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Skambink dar kartą: visi atgal į darbą',
+  'Este lugar já está cheio.': 'Ši vieta jau pilna.',
 } satisfies Record<string, string>;

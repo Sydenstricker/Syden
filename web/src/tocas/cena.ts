@@ -2,16 +2,16 @@ import * as THREE from 'three';
 import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { PREDIOS, TAMANHO, eFonte, ePredio, eUnidade, type Fonte, type Predio, type Recurso, type Sim, type TipoPredio, type Unidade } from './sim';
-import { CORES, type Vista } from './vista';
+import { CORES, golpeDoMartelo, passeioNaFazenda, type Vista } from './vista';
 
 /**
  * TOCAS E TORRES EM 3D (05/11/2026). Só a TELA: a partida mora em sim.ts, e esta cena só a lê a cada quadro.
  *
  * - UM ESTILO SÓ, o da KayKit (06/11/2026, pedido dele): os prédios por era e por time, a muralha e o portão, as obras, as
- *   ruínas, a catapulta, as armas, as flechas, a pedra da catapulta, as bandeiras, as árvores e as pedras são do Medieval Hexagon
- *   Pack; as pilhas de recurso no centro, o que o trabalhador leva e as pepitas da mina, do Resource Bits (os dois CC0; licenças
- *   em web/public/tocas/). Os ladrilhos hexagonais do pacote ficaram de fora: a grade é quadrada. As unidades são o NOSSO coelho
- *   3D com esqueleto (o das Cidades à venda), com o moletom na cor do time.
+ *   ruínas, a catapulta, as armas, as flechas, a pedra da catapulta, a bandeira do ponto de reunião, o martelo das obras, as
+ *   árvores e as pedras são do Medieval Hexagon Pack; as pilhas de recurso no centro, o que o trabalhador leva e as pepitas da
+ *   mina, do Resource Bits (os dois CC0; licenças em web/public/tocas/). Os ladrilhos hexagonais do pacote ficaram de fora: a
+ *   grade é quadrada. As unidades são o NOSSO coelho 3D com esqueleto (o das Cidades à venda), com o moletom na cor do time.
  * - O pacote inteiro pinta com UMA textura (uma paleta): todos os modelos dele dividem um material só, e a placa guarda a
  *   textura uma vez.
  * - Árvores, ouro e pedras são INSTANCIADOS (uma malha para todas as árvores de um tipo); prédios e coelhos são cópias leves
@@ -70,7 +70,7 @@ const TODOS = [
       'm/catapult',
       'm/projectile_catapult',
       'm/projectile_arrow_{cor}_accent',
-      'm/banner_{cor}_accent',
+      'm/hammer',
       'm/flag_{cor}',
       'm/building_tower_base_{cor}',
       'm/building_destroyed',
@@ -227,6 +227,10 @@ interface Boneco {
   mao: THREE.Group;
   carga: string;
   golpe: number;
+  /** Quanto está "no campo" (0 na beira, onde a simulação o deixa; 1 andando pelas fileiras da fazenda): a passagem é suave. */
+  campo: number;
+  /** A fazenda do passeio (fica enquanto ele sai do campo). */
+  fazenda: number;
 }
 
 interface Construcao {
@@ -296,6 +300,8 @@ export class CenaDasTocas implements Vista {
     new THREE.MeshBasicMaterial({ color: '#e05252', depthTest: false, transparent: true }),
   ];
   private moldes = new Map<string, THREE.Object3D>();
+  /** O martelo gigante de cada obra em que alguém trabalha agora (pedido dele, 06/11/2026). */
+  private martelos = new Map<number, THREE.Group>();
   private armas = new Map<string, THREE.Object3D>();
   private tempo = 0;
 
@@ -601,11 +607,6 @@ export class CenaDasTocas implements Vista {
     return { obj: dentro, chave };
   }
 
-  /** A bandeira do time no canto do prédio (o estandarte do pacote). */
-  private bandeira(dono: number, alto: number): THREE.Object3D {
-    return this.copiaNormalizada(doTime('m/banner_{cor}_accent', dono), 0, alto);
-  }
-
   private atualizarPredios() {
     const vivos = new Set<number>();
     const visivel = this.sim.jogadores[this.eu].explorado;
@@ -621,11 +622,6 @@ export class CenaDasTocas implements Vista {
         raiz.position.set(p.gx + p.tam / 2, 0, p.gy + p.tam / 2);
         raiz.add(obj);
         raiz.userData.id = p.id;
-        if (p.tipo !== 'muralha' && p.tipo !== 'portao') {
-          const b = this.bandeira(p.dono, p.tipo === 'torre' ? 1.0 : 0.85);
-          b.position.set(-p.tam / 2 + 0.15, 0, p.tam / 2 - 0.15);
-          raiz.add(b);
-        }
         this.cena.add(raiz);
         c = { raiz, modelo: obj, chave: quer };
         this.predios.set(p.id, c);
@@ -639,6 +635,40 @@ export class CenaDasTocas implements Vista {
         this.cena.remove(c.raiz);
         this.predios.delete(id);
       }
+  }
+
+  /**
+   * O MARTELO DAS OBRAS (06/11/2026, pedido dele: "um martelo gigante batendo no prédio para mostrar que ele está sendo
+   * construído"): o martelo do pacote, bem maior que o coelho, de pé ao lado da obra, deitando sobre ela e subindo de novo. Só
+   * enquanto alguém trabalha nela de verdade (a obra parada não tem martelo: a tela não finge), e anda pelo tempo da tela, que
+   * para sem foco.
+   */
+  private atualizarMartelos() {
+    const batendo = new Set<number>();
+    for (const u of this.sim.unidades) if (u.acao === 'trabalhando' && u.ordem.tipo === 'construir' && u.ordem.alvo !== undefined) batendo.add(u.ordem.alvo);
+    for (const [id, m] of this.martelos)
+      if (!batendo.has(id) || !this.predios.get(id)?.raiz.visible) {
+        this.cena.remove(m);
+        this.martelos.delete(id);
+      }
+    for (const id of batendo) {
+      const p = this.sim.porId.get(id);
+      const c = this.predios.get(id);
+      if (!ePredio(p) || p.pronto || !c || !c.raiz.visible) continue;
+      let m = this.martelos.get(id);
+      const alto = p.tam === 1 ? 0.5 : 0.45 + p.tam * 0.12;
+      const comprido = p.tam === 1 ? 1.0 : 0.8 + p.tam * 0.38;
+      if (!m) {
+        m = new THREE.Group();
+        const h = this.molde('m/hammer', 0, comprido);
+        m.add(h);
+        // ao lado da obra, do lado da câmera um pouco: deita sobre o meio dela
+        m.position.set(p.gx + p.tam / 2 + comprido * 0.85, alto, p.gy + p.tam / 2 + 0.15);
+        this.cena.add(m);
+        this.martelos.set(id, m);
+      }
+      m.rotation.z = golpeDoMartelo(this.tempo + id * 0.37);
+    }
   }
 
   private chaveDoPredio(p: Predio): string {
@@ -709,7 +739,7 @@ export class CenaDasTocas implements Vista {
     giro.add(corpo);
     giro.add(mao);
     this.cena.add(raiz);
-    const b: Boneco = { raiz, corpo: giro, mixer, acoes, tocando: '', mao, carga: '', golpe: 0 };
+    const b: Boneco = { raiz, corpo: giro, mixer, acoes, tocando: '', mao, carga: '', golpe: 0, campo: 0, fazenda: 0 };
     return b;
   }
 
@@ -733,13 +763,34 @@ export class CenaDasTocas implements Vista {
         b = this.novoBoneco(u);
         this.bonecos.set(u.id, b);
       }
-      const x = u.ax + (u.x - u.ax) * alfa;
-      const z = u.ay + (u.y - u.ay) * alfa;
-      const visto = u.dono === this.eu || vis[Math.floor(z) * T + Math.floor(x)] === 1;
+      let x = u.ax + (u.x - u.ax) * alfa;
+      let z = u.ay + (u.y - u.ay) * alfa;
+      // o abrigado (o sino) está dentro do centro: não aparece
+      const visto = !u.abrigado && (u.dono === this.eu || vis[Math.floor(z) * T + Math.floor(x)] === 1);
       b.raiz.visible = visto;
       if (!visto) continue;
+      // quem colhe na fazenda anda pelas fileiras dela (só o desenho: na simulação ele colhe na beira)
+      const faz = u.acao === 'trabalhando' && u.ordem.tipo === 'coletar' ? this.sim.porId.get(u.ordem.alvo ?? 0) : undefined;
+      const naFazenda = ePredio(faz) && faz.tipo === 'fazenda';
+      b.campo = Math.max(0, Math.min(1, b.campo + (naFazenda ? dt : -dt) * 2.5));
+      let rx = u.rx;
+      let ry = u.ry;
+      let colhendo = false;
+      if (b.campo > 0 && ePredio(faz) && naFazenda) b.fazenda = faz.id;
+      const fz = b.campo > 0 && b.fazenda ? this.sim.porId.get(b.fazenda) : undefined;
+      if (ePredio(fz)) {
+        const p = passeioNaFazenda(fz.gx, fz.gy, fz.tam, this.tempo + u.id * 1.7);
+        const k = b.campo * b.campo * (3 - 2 * b.campo);
+        x += (p.x - x) * k;
+        z += (p.y - z) * k;
+        if (b.campo > 0.5) {
+          rx = p.rx;
+          ry = p.ry;
+          colhendo = p.colhendo;
+        }
+      }
       b.raiz.position.set(x, 0, z);
-      const quer = Math.atan2(u.rx, u.ry);
+      const quer = Math.atan2(rx, ry);
       let delta = quer - b.corpo.rotation.y;
       delta = Math.atan2(Math.sin(delta), Math.cos(delta));
       b.corpo.rotation.y += delta * Math.min(1, dt * 12);
@@ -748,15 +799,16 @@ export class CenaDasTocas implements Vista {
         b.corpo.position.y = atira ? 0.03 : 0;
         continue;
       }
-      const anim = u.acao === 'andando' ? 'andando' : u.acao === 'parado' ? 'parado' : 'falando';
+      const noCampo = b.campo > 0.5;
+      const anim = u.acao === 'andando' || (noCampo && !colhendo) ? 'andando' : u.acao === 'parado' ? 'parado' : 'falando';
       this.tocar(b, anim);
-      b.mixer!.update(dt * (u.tipo === 'cavaleiro' && anim === 'andando' ? 1.5 : 1));
+      b.mixer!.update(dt * (u.tipo === 'cavaleiro' && anim === 'andando' ? 1.5 : noCampo && anim === 'andando' ? 0.5 : 1));
       // o golpe: um avanço curto, no momento em que o golpe sai
       const bateu = u.acao === 'atacando' && u.recarga >= 12 && u.tipo !== 'arqueiro';
       const trabalha = u.acao === 'trabalhando';
       const f = this.tempo * 9 + u.id;
       b.corpo.position.z = 0;
-      b.mao.rotation.x = bateu ? -0.9 : trabalha ? Math.sin(f) * 0.6 : 0;
+      b.mao.rotation.x = bateu ? -0.9 : trabalha && (!noCampo || colhendo) ? Math.sin(f) * 0.6 : 0;
       // o que o trabalhador leva
       const carga = u.carga && u.carga.qtd > 0 ? u.carga.rec : '';
       if (carga !== b.carga) {
@@ -1065,6 +1117,7 @@ export class CenaDasTocas implements Vista {
     const agora = performance.now();
     this.atualizarNevoa();
     this.atualizarPredios();
+    this.atualizarMartelos();
     this.atualizarUnidades(alfa, dt);
     this.atualizarMarcas();
     this.atualizarTiros(agora);
@@ -1109,6 +1162,12 @@ export class CenaDasTocas implements Vista {
   private naTela(x: number, y: number, z: number) {
     const v = new THREE.Vector3(x, y, z).project(this.camera);
     return { x: ((v.x + 1) / 2) * this.caixa.clientWidth, y: ((1 - v.y) / 2) * this.caixa.clientHeight, atras: v.z > 1 };
+  }
+
+  projetar(x: number, y: number, alto: number) {
+    const s = this.naTela(x, alto, y);
+    if (s.atras || s.x < -40 || s.y < -40 || s.x > this.caixa.clientWidth + 40 || s.y > this.caixa.clientHeight + 40) return null;
+    return { x: s.x, y: s.y };
   }
 
   pegar(px: number, py: number): number | null {
@@ -1163,9 +1222,9 @@ export class CenaDasTocas implements Vista {
     const [c, d] = [Math.min(y0, y1), Math.max(y0, y1)];
     const lista: number[] = [];
     for (const u of this.sim.unidades) {
-      if (u.dono !== this.eu) continue;
+      if (u.dono !== this.eu || u.abrigado) continue;
       const bo = this.bonecos.get(u.id);
-      if (!bo) continue;
+      if (!bo || !bo.raiz.visible) continue;
       const s = this.naTela(bo.raiz.position.x, 0.3, bo.raiz.position.z);
       if (s.x >= a && s.x <= b && s.y >= c && s.y <= d) lista.push(u.id);
     }

@@ -3052,4 +3052,7 @@ export default {
   'Gincana da toca': '巣穴のアスレチック',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': '3Dのアスレチックコース：足場、ベルトコンベア、ノコギリ、回転バーを走って跳んでバランスを取りながら旗まで進もう。落ちたら最後の旗に戻る。ソロではタイムと友だちのゴーストと勝負。',
   'Quedas: {n}': '落下：{n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': '鐘を鳴らす：労働者全員を村の中心の中へ',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'もう一度鐘を鳴らす：全員仕事に戻る',
+  'Este lugar já está cheio.': 'ここはもう満員です。',
 } satisfies Record<string, string>;

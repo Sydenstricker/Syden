@@ -3059,4 +3059,7 @@ export default {
   'Gincana da toca': '굴 장애물 코스',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': '3D 장애물 코스: 깃발까지 발판, 컨베이어, 톱날, 회전 막대 위를 달리고 뛰고 균형을 잡아요. 떨어지면 마지막 깃발로 돌아가요. 솔로에서는 시간과 친구들의 고스트와 겨뤄요.',
   'Quedas: {n}': '낙하: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': '종 울리기: 일꾼 모두 마을 회관 안으로',
+  'Tocar o sino de novo: todos de volta ao trabalho': '종 다시 울리기: 모두 다시 일하러',
+  'Este lugar já está cheio.': '이 자리는 이미 꽉 찼어요.',
 } satisfies Record<string, string>;

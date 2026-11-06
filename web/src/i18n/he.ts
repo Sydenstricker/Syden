@@ -3125,4 +3125,7 @@ export default {
   'Gincana da toca': 'מסלול המכשולים של המחילה',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'מסלול מכשולים בתלת־ממד: לרוץ, לקפוץ ולשמור על שיווי משקל על משטחים, מסועים, מסורים וזרועות מסתובבות עד הדגל. נפילה מחזירה לדגל האחרון. ביחיד, נגד השעון ונגד רוחות הרפאים של החברים.',
   'Quedas: {n}': 'נפילות: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'צלצול בפעמון: כל הפועלים פנימה למרכז הכפר',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'צלצול נוסף בפעמון: כולם חוזרים לעבודה',
+  'Este lugar já está cheio.': 'המקום הזה כבר מלא.',
 } satisfies Record<string, string>;

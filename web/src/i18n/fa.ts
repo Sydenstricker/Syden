@@ -3064,4 +3064,7 @@ export default {
   'Gincana da toca': 'مسابقهٔ موانع لانه',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'یک مسابقهٔ موانع سه‌بعدی: روی سکوها، تسمه‌ها، اره‌ها و بازوهای چرخان تا پرچم بدو، بپر و تعادلت را نگه دار. اگر بیفتی، به آخرین پرچم برمی‌گردی. در تک‌نفره، در برابر ساعت و شبح دوستانت.',
   'Quedas: {n}': 'افتادن‌ها: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'زنگ را بزن: همه‌ی کارگرها به داخل مرکز روستا',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'دوباره زنگ را بزن: همه برگردند سر کار',
+  'Este lugar já está cheio.': 'این‌جا دیگر پر است.',
 } satisfies Record<string, string>;

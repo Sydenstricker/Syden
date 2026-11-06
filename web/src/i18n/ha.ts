@@ -3073,4 +3073,7 @@ export default {
   'Gincana da toca': 'Tseren matsaloli na kogo',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Tseren matsaloli a 3D: ku gudu, ku yi tsalle, ku kuma riƙe daidaito a kan dandamali, bel-bel masu motsi, zarto da sanduna masu juyawa har zuwa tuta. Idan aka faɗi, ana komawa tuta ta ƙarshe. A Solo, a kan agogo da fatalwowin abokai.',
   'Quedas: {n}': 'Faɗuwa: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Buga ƙararrawa: duk ma’aikata su shiga cibiyar ƙauye',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Sake buga ƙararrawa: kowa ya koma bakin aiki',
+  'Este lugar já está cheio.': 'Wannan wurin ya riga ya cika.',
 } satisfies Record<string, string>;

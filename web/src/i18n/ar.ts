@@ -3095,4 +3095,7 @@ export default {
   'Gincana da toca': 'سباق عقبات الجحر',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'سباق عقبات ثلاثي الأبعاد: الجري والقفز والتوازن فوق المنصات والسيور والمناشير والأذرع الدوّارة حتى العلم. عند السقوط، العودة إلى آخر علم. في اللعب الفردي: ضد الساعة وأشباح الأصدقاء.',
   'Quedas: {n}': 'السقطات: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'قرع الجرس: كل العمال إلى داخل مركز القرية',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'قرع الجرس مرة أخرى: عودة الجميع إلى العمل',
+  'Este lugar já está cheio.': 'هذا المكان ممتلئ بالفعل.',
 } satisfies Record<string, string>;

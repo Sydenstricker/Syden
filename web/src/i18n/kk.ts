@@ -3145,4 +3145,7 @@ export default {
   'Gincana da toca': 'Ін кедергі жолы',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': '3D кедергі жолы: туға дейін платформалар, таспалар, аралар мен айналмалы тұтқалар үстімен жүгір, секір және тепе-теңдікті сақта. Құласаң, соңғы туға ораласың. Солода сағатқа және достардың елестеріне қарсы.',
   'Quedas: {n}': 'Құлаулар: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Қоңырауды соқ: барлық жұмысшылар ауыл орталығының ішіне',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Қоңырауды қайта соқ: бәрі жұмысқа қайтсын',
+  'Este lugar já está cheio.': 'Бұл орын толып қалған.',
 } satisfies Record<string, string>;

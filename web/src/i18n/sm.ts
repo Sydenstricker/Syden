@@ -3075,4 +3075,7 @@ export default {
   'Gincana da toca': 'Tuuga faʻalavelave o le Lua',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'O se tuuga faʻalavelave i le 3D: tamoʻe, oso ma taofi lou paleni i luga o tulaga, fusi feʻaveaʻi, ili ma lima taʻamilo seʻia oʻo i le fuʻa. Afai e te paʻu, e te toe foʻi i le fuʻa mulimuli. I le Solo, faasaga i le uati ma aitu o au uo.',
   'Quedas: {n}': 'Paʻu: {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Tatā le logo: o tagata faigaluega uma i totonu o le ogatotonu o le nuu',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Toe tatā le logo: toe foʻi uma i le galuega',
+  'Este lugar já está cheio.': 'Ua uma ona tumu lenei nofoaga.',
 } satisfies Record<string, string>;

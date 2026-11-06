@@ -3160,4 +3160,7 @@ export default {
   'Gincana da toca': 'Որջի խոչընդոտների արշավ',
   'Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.': 'Խոչընդոտների արշավ 3D-ով․ վազիր, ցատկիր և պահիր հավասարակշռությունդ հարթակների, ժապավենների, սղոցների և պտտվող ձողերի վրայով մինչև դրոշը։ Ընկնելու դեպքում՝ վերադարձ վերջին դրոշին։ Մենախաղում՝ ժամացույցի և ընկերների ուրվականների դեմ։',
   'Quedas: {n}': 'Ընկնելներ՝ {n}',
+  'Tocar o sino: todos os trabalhadores para dentro do centro da vila': 'Հնչեցրու զանգը. բոլոր բանվորները՝ գյուղի կենտրոնի ներս',
+  'Tocar o sino de novo: todos de volta ao trabalho': 'Կրկին հնչեցրու զանգը. բոլորը՝ վերադարձ աշխատանքի',
+  'Este lugar já está cheio.': 'Այս տեղն արդեն լիքն է։',
 } satisfies Record<string, string>;
