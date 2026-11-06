@@ -1,5 +1,6 @@
-/* O DUELO DE AVIÕEZINHOS (05/11/2026): a tela deitada (4:3), ampliada em pixels inteiros, as vidas de todos em cima e os
-   botões de toque embaixo. Prefixo "aviao-": a classe "duelo" já é da mesa de duas pessoas. */
+/* O DUELO DE AVIÕEZINHOS (05/11/2026): a tela deitada (4:3), ampliada em pixels inteiros, com a câmera de cada um. Desde
+   06/11/2026 (pedido dele: "nada fora") as vidas de todos, a cenoura e o tempo ficam POR CIMA da tela, e os comandos também,
+   só no começo. Prefixo "aviao-": a classe "duelo" já é da mesa de duas pessoas. */
 
 .aviao {
   display: flex;
@@ -11,18 +12,30 @@
   -webkit-user-select: none;
 }
 
-.aviao-topo {
+/* o painel por cima da tela: o tempo numa linha fina no alto, e as vidas e a cenoura em plaquinhas escuras */
+.aviao-hud {
+  position: absolute;
+  inset: 0 0 auto 0;
   display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 6px 12px;
-  width: 100%;
-  max-width: 640px;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 0 6px;
+  background: linear-gradient(rgba(43, 38, 51, 0.5), rgba(43, 38, 51, 0));
+  pointer-events: none;
+  color: #fff7e0;
 }
 
-.aviao-topo .minijogo-tempo {
-  flex: 1;
-  min-width: 80px;
+.aviao-hud .minijogo-tempo {
+  border-radius: 0;
+  background: rgba(43, 38, 51, 0.6);
+}
+
+.aviao-topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 4px 10px;
+  padding: 0 6px;
 }
 
 .aviao-todos {
@@ -33,7 +46,8 @@
   padding: 0;
   list-style: none;
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 0.78rem;
+  line-height: 1.2;
 }
 
 .aviao-todos li {
@@ -41,10 +55,13 @@
   align-items: center;
   gap: 5px;
   max-width: 11em;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(43, 38, 51, 0.6);
 }
 
 .aviao-todos li.eu .aviao-nome {
-  color: var(--accent);
+  color: #f5c542;
 }
 
 .aviao-todos li.caiu {
@@ -88,11 +105,16 @@
 
 /* a cenoura teleguiada livre (ou no ar, apagada) */
 .aviao-cenoura {
+  flex: none;
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(43, 38, 51, 0.6);
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 0.78rem;
+  line-height: 1.2;
   white-space: nowrap;
 }
 
@@ -111,10 +133,10 @@
   transform: rotate(180deg);
 }
 
-/* a tela deitada, sem passar da altura da janela */
+/* a tela deitada, sem passar da altura da janela (o painel e os comandos vão dentro dela) */
 .aviao-moldura {
   position: relative;
-  width: min(100%, 640px, calc((100vh - 240px) * 4 / 3));
+  width: min(100%, 768px, calc((100vh - 170px) * 4 / 3));
   min-width: 240px;
   border-radius: var(--radius);
   overflow: hidden;
@@ -163,6 +185,42 @@
   background: rgba(240, 138, 36, 0.7);
 }
 
+/* os comandos, no começo da partida: um cartão no pé da tela, que não pega clique */
+.aviao-ajuda {
+  position: absolute;
+  inset: auto 8px 8px 8px;
+  padding: 6px 10px 8px;
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--bg-main) 88%, transparent);
+  color: var(--text);
+  text-align: center;
+  pointer-events: none;
+}
+
+.aviao-ajuda .jogo-comandos {
+  margin-top: 0;
+}
+
+.aviao-ajuda .settings-hint {
+  margin: 4px 0 0;
+}
+
+/* quem caiu na sala: o aviso no pé da tela */
+.aviao-aviso {
+  position: absolute;
+  inset: auto 0 10px 0;
+  width: fit-content;
+  max-width: calc(100% - 16px);
+  margin: 0 auto;
+  padding: 3px 10px;
+  border-radius: 4px;
+  background: rgba(43, 38, 51, 0.7);
+  color: #fff7e0;
+  font-weight: 600;
+  text-align: center;
+  pointer-events: none;
+}
+
 .aviao-fim-solo {
   display: flex;
   flex-direction: column;
@@ -173,5 +231,12 @@
 @media (pointer: fine) {
   .aviao-toque {
     display: none;
+  }
+}
+
+/* no toque, o cartão dos comandos sobe acima dos botões */
+@media (pointer: coarse) {
+  .aviao-ajuda {
+    bottom: 66px;
   }
 }

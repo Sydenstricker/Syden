@@ -461,3 +461,85 @@ export function desenharCena(
 }
 
 
+
+// ---------------------------------------------------------------------------------------------------------------------
+// A CÂMERA DE CADA UM (06/11/2026, pedido dele: "talvez funcione melhor somente com a câmera do usuário, como no jogo de
+// corrida"): a cena inteira é desenhada no mundo (a horta de 320 × 240), e a tela mostra só um pedaço dele, em volta do
+// próprio avião. Quem está fora da vista aparece como uma setinha na borda, na cor das asas dele; a cenoura que persegue
+// você, como uma seta laranja.
+// ---------------------------------------------------------------------------------------------------------------------
+
+/** O tamanho da vista, em pixels do mundo (a mesma proporção 4:3 da tela). */
+export const VISTA_L = 192;
+export const VISTA_A = 144;
+/** O quanto a câmera olha à frente do avião, na direção do voo. */
+const OLHAR_A_FRENTE = 22;
+
+export interface Camera {
+  x: number;
+  y: number;
+}
+
+/** O canto de cima da vista que põe (x, y) no meio, olhando um pouco à frente de (hx, hy), sem sair da horta pintada. */
+export function alvoDaCamera(x: number, y: number, hx: number, hy: number): Camera {
+  return {
+    x: Math.min(LARGURA - VISTA_L, Math.max(0, x + hx * OLHAR_A_FRENTE - VISTA_L / 2)),
+    y: Math.min(ALTURA - VISTA_A, Math.max(0, y + hy * OLHAR_A_FRENTE - VISTA_A / 2)),
+  };
+}
+
+/** Uma marca na borda: um avião (na cor das asas) ou a cenoura que persegue você. */
+export interface MarcaNaBorda {
+  x: number;
+  y: number;
+  cor: string;
+  cenoura: boolean;
+}
+
+/**
+ * Copia o pedaço do mundo que a câmera vê para a tela, e põe na borda as setas de quem está fora da vista. `emCima` é quanto do
+ * alto da vista o painel do jogo cobre (em pixels da vista): as setas de cima descem para baixo dele.
+ */
+export function desenharVista(
+  ctx: CanvasRenderingContext2D,
+  mundo: HTMLCanvasElement,
+  camera: Camera,
+  marcas: MarcaNaBorda[],
+  quadro: number,
+  calmo: boolean,
+  emCima = 0,
+) {
+  ctx.imageSmoothingEnabled = false;
+  const cx = Math.round(camera.x), cy = Math.round(camera.y);
+  ctx.drawImage(mundo, cx, cy, VISTA_L, VISTA_A, 0, 0, VISTA_L, VISTA_A);
+  const margem = 7;
+  // o meio das setas é o meio do que sobra visível, abaixo do painel
+  const topo = Math.min(VISTA_A / 2, Math.max(0, emCima));
+  const meioX = VISTA_L / 2, meioY = (VISTA_A + topo) / 2;
+  const meiaAltura = (VISTA_A - topo) / 2;
+  for (const m of marcas) {
+    const vx = m.x - cx, vy = m.y - cy;
+    // dentro da vista (com o avião inteiro aparecendo), não precisa de seta
+    if (vx >= 4 && vx <= VISTA_L - 4 && vy >= 4 && vy <= VISTA_A - 4) continue;
+    const dx = vx - meioX, dy = vy - meioY;
+    const k = Math.min(dx !== 0 ? (meioX - margem) / Math.abs(dx) : Infinity, dy !== 0 ? (meiaAltura - margem) / Math.abs(dy) : Infinity);
+    const px = meioX + dx * k, py = meioY + dy * k;
+    const d = Math.hypot(dx, dy) || 1;
+    const ux = dx / d, uy = dy / d;
+    // a cenoura pisca devagar (é um aviso), menos para quem pediu menos movimento
+    if (m.cenoura && !calmo && Math.floor(quadro / 10) % 3 === 2) continue;
+    const ponta = 6, base = 4;
+    const tri = (tam: number) => {
+      ctx.beginPath();
+      ctx.moveTo(px + ux * tam, py + uy * tam);
+      ctx.lineTo(px - ux * tam * 0.6 - uy * base * (tam / ponta), py - uy * tam * 0.6 + ux * base * (tam / ponta));
+      ctx.lineTo(px - ux * tam * 0.6 + uy * base * (tam / ponta), py - uy * tam * 0.6 - ux * base * (tam / ponta));
+      ctx.closePath();
+      ctx.fill();
+    };
+    ctx.fillStyle = '#2b2633';
+    tri(ponta + 2);
+    ctx.fillStyle = m.cor;
+    tri(ponta);
+  }
+}

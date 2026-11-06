@@ -4,7 +4,21 @@ import { ComandosDoJogo } from './ComandosDosJogos';
 import { useT } from './i18n';
 import { Placar, Relogio } from './Minijogo';
 import { tocar } from './somDosJogos';
-import { corDaAsa, desenharCena, paletaDe, pintarHorta, type AviaoNaTela, type Efeito, type PaletaDoAviao } from './duelo/desenho';
+import {
+  alvoDaCamera,
+  corDaAsa,
+  desenharCena,
+  desenharVista,
+  paletaDe,
+  pintarHorta,
+  VISTA_A,
+  VISTA_L,
+  type AviaoNaTela,
+  type Camera,
+  type Efeito,
+  type MarcaNaBorda,
+  type PaletaDoAviao,
+} from './duelo/desenho';
 import { criarPartida, TIPOS_DO_DUELO, type EventoDoDuelo, type Participante, type ResultadoDoSolo } from './duelo/partida';
 import type { ComandosDoDuelo } from './duelo/robo';
 import { ALTURA, CARGA, DURACAO_PASSOS, LARGURA, PASSOS_POR_SEGUNDO, VIDAS } from './duelo/sim';
@@ -19,6 +33,10 @@ import './duelo/duelo.css';
  * NA SALA (server/src/minijogo-duelo.ts): cada um voa aqui e manda a posição; o servidor dá a largada, carimba os tiros,
  * confere os acertos e fecha a partida. NO SOLO, contra 1 a 3 aviões do computador, a partida inteira roda aqui (duelo/partida.ts
  * com duelo/robo.ts), e só o fim vai ao servidor.
+ *
+ * A CÂMERA É DE CADA UM (06/11/2026, pedido dele, como na corrida): a tela mostra um pedaço da horta em volta do próprio avião,
+ * e quem está fora da vista vira uma seta na borda. Quem caiu ou assiste segue um avião que ainda voa. O placar, a cenoura e o
+ * tempo ficam POR CIMA da tela, dentro dela ("nada fora").
  *
  * A JANELA SEM FOCO: no Solo, pausa; na sala, que é de todos, o avião segue reto (as teclas se soltam) e a tela não é
  * desenhada.
@@ -168,6 +186,7 @@ function Ceu({
   const t = useT();
   const solo = !!aoFim;
   const canvas = useRef<HTMLCanvasElement>(null);
+  const painel = useRef<HTMLDivElement>(null);
   const comandos = useRef<ComandosDoDuelo>({ acelera: false, freia: false, vira: 0, fogo: false });
   const lados = useRef({ esquerda: false, direita: false, toqueEsquerda: false, toqueDireita: false });
   const lista = useRef(participantes);
@@ -175,7 +194,7 @@ function Ceu({
   const amostras = useRef(new Map<number, number[]>());
   const eventos = useRef<EventoDoDuelo[]>([]);
   const [vidas, setVidas] = useState(new Map(vidasVerdade.current));
-  const [hud, setHud] = useState({ restanteMs: DURACAO_PASSOS * (1000 / PASSOS_POR_SEGUNDO), contagem: 0 as number, livre: true, acabou: false });
+  const [hud, setHud] = useState({ restanteMs: DURACAO_PASSOS * (1000 / PASSOS_POR_SEGUNDO), contagem: 0 as number, livre: true, acabou: false, comeco: true });
   const euNoAr = piloto && (vidas.get(eu) ?? 0) > 0 && !hud.acabou;
 
   // as vidas pela verdade do servidor (a cada "mudou"): uma vida nunca volta
@@ -281,6 +300,12 @@ function Ceu({
     if (!tela || !ctx) return;
     tela.focus();
     const horta = pintarHorta();
+    // a cena inteira é desenhada no mundo, e a tela mostra o pedaço que a câmera vê
+    const mundo = document.createElement('canvas');
+    mundo.width = LARGURA;
+    mundo.height = ALTURA;
+    const ctxDoMundo = mundo.getContext('2d');
+    if (!ctxDoMundo) return;
     const calmo = typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const autopiloto = () => import.meta.env.DEV && (window as { dueloPilotoAutomatico?: boolean }).dueloPilotoAutomatico === true;
     const paletas = new Map<number, PaletaDoAviao>(lista.current.map((q) => [q.id, paletaDe(q.largada, q.avatar)]));
@@ -328,6 +353,30 @@ function Ceu({
     let quadro = 0;
     let ultimaContagem = -1;
     let estavaPronta = false;
+    // A CÂMERA: segue o meu avião; quem caiu (depois de ver a própria queda) ou só assiste segue um avião que ainda voa
+    let camera: Camera | null = null;
+    let seguido: number | null = piloto ? eu : null;
+    let semSeguido = 0;
+    // quanto do alto da vista o painel cobre (medido de vez em quando: muda com os nomes e a largura)
+    let emCima = 0;
+    const voa = (id: number | null) => id !== null && partida.voando(id) && !!partida.posicaoDe(id, partida.n);
+    const moverCamera = () => {
+      if (!voa(seguido)) {
+        // o meu avião caiu: a câmera fica na queda um instante antes de ir para outro
+        if (++semSeguido > 90 || seguido === null) {
+          const outro = lista.current.find((q) => voa(q.id));
+          if (outro) (seguido = outro.id), (semSeguido = 0);
+        }
+      } else semSeguido = 0;
+      const p = voa(seguido) ? partida.posicaoDe(seguido!, partida.n) : null;
+      if (!p) return;
+      const alvo = alvoDaCamera(p.x, p.y, p.hx, p.hy);
+      if (!camera || calmo) camera = alvo;
+      else {
+        camera.x += (alvo.x - camera.x) * 0.12;
+        camera.y += (alvo.y - camera.y) * 0.12;
+      }
+    };
     const desenhar = () => {
       const avioes: AviaoNaTela[] = [];
       const tiros = partida.tirosNaTela();
@@ -353,7 +402,16 @@ function Ceu({
           carga: q.id === eu && partida.meu && partida.meu.segurando > 4 ? carga : 0,
         });
       }
-      desenharCena(ctx, { horta, avioes, tiros, efeitos, quadro, calmo });
+      desenharCena(ctxDoMundo, { horta, avioes, tiros, efeitos, quadro, calmo });
+      // as setas na borda: os outros aviões fora da vista, e a cenoura que persegue quem a câmera segue
+      const marcas: MarcaNaBorda[] = [];
+      for (const a of avioes) if (a.id !== seguido) marcas.push({ x: a.x, y: a.y, cor: corDaAsa(lista.current.find((q) => q.id === a.id)?.largada ?? 0), cenoura: false });
+      for (const x of tiros) {
+        if (x.tipo !== 'missil' || (partida.tiros.get(x.id)?.tiro as { alvo?: number })?.alvo !== seguido) continue;
+        marcas.push({ x: x.x, y: x.y, cor: '#f08a24', cenoura: true });
+      }
+      if (quadro % 30 === 1 && painel.current && tela.clientHeight > 0) emCima = (painel.current.offsetHeight * VISTA_A) / tela.clientHeight;
+      desenharVista(ctx, mundo, camera ?? alvoDaCamera(LARGURA / 2, ALTURA / 2, 0, 0), marcas, quadro, calmo, emCima);
     };
     const passo = () => {
       id = requestAnimationFrame(passo);
@@ -381,11 +439,15 @@ function Ceu({
         ultimoHud = agora;
         const restanteMs = ((DURACAO_PASSOS - Math.max(0, partida.n)) * 1000) / PASSOS_POR_SEGUNDO;
         const livre = partida.carga().livre;
+        const comeco = partida.n < 4 * PASSOS_POR_SEGUNDO;
         setHud((h) =>
-          h.contagem === contagem && h.livre === livre && Math.ceil(h.restanteMs / 1000) === Math.ceil(restanteMs / 1000) ? h : { ...h, restanteMs, contagem, livre },
+          h.contagem === contagem && h.livre === livre && h.comeco === comeco && Math.ceil(h.restanteMs / 1000) === Math.ceil(restanteMs / 1000)
+            ? h
+            : { ...h, restanteMs, contagem, livre, comeco },
         );
       }
       if (semFoco) return;
+      moverCamera();
       desenhar();
     };
     id = requestAnimationFrame(passo);
@@ -422,38 +484,55 @@ function Ceu({
   const ordem = [...lista.current].sort((a, b) => (vidas.get(b.id) ?? VIDAS) - (vidas.get(a.id) ?? VIDAS));
   return (
     <div className="aviao">
-      <div className="aviao-topo">
-        <ol className="aviao-todos" aria-label={t('Vidas')}>
-          {ordem.map((q) => {
-            const n = vidas.get(q.id) ?? VIDAS;
-            return (
-              <li key={q.id} className={`${q.id === eu ? 'eu' : ''}${n === 0 ? ' caiu' : ''}`}>
-                <span className="aviao-asa" style={{ background: corDaAsa(q.largada) }} aria-hidden="true" />
-                <span className="aviao-nome">{q.nome}</span>
-                <span className="aviao-vidas" aria-label={t('Vidas: {n}', { n })}>
-                  {Array.from({ length: VIDAS }, (_, i) => (
-                    <i key={i} className={i < n ? 'cheia' : ''} />
-                  ))}
-                </span>
-              </li>
-            );
-          })}
-        </ol>
-        {euNoAr && (
-          <span className={`aviao-cenoura${hud.livre ? '' : ' no-ar'}`} title={t('Cenoura teleguiada')}>
-            <span className="aviao-cenoura-icone" aria-hidden="true" />
-            {hud.livre ? t('Pronta') : t('No ar')}
-          </span>
-        )}
-        <Relogio restante={relogio(hud.restanteMs)} total={(DURACAO_PASSOS * 1000) / PASSOS_POR_SEGUNDO} />
-      </div>
       <div className="aviao-moldura">
-        <canvas ref={canvas} className="aviao-tela" width={LARGURA} height={ALTURA} tabIndex={-1} />
+        <canvas ref={canvas} className="aviao-tela" width={VISTA_L} height={VISTA_A} tabIndex={-1} />
+        {/* O PAINEL DO JOGO, por cima da tela (pedido dele, 06/11/2026: nada fora dela): as vidas de todos, a cenoura e o tempo */}
+        <div className="aviao-hud" ref={painel}>
+          <Relogio restante={relogio(hud.restanteMs)} total={(DURACAO_PASSOS * 1000) / PASSOS_POR_SEGUNDO} />
+          <div className="aviao-topo">
+            <ol className="aviao-todos" aria-label={t('Vidas')}>
+              {ordem.map((q) => {
+                const n = vidas.get(q.id) ?? VIDAS;
+                return (
+                  <li key={q.id} className={`${q.id === eu ? 'eu' : ''}${n === 0 ? ' caiu' : ''}`}>
+                    <span className="aviao-asa" style={{ background: corDaAsa(q.largada) }} aria-hidden="true" />
+                    <span className="aviao-nome">{q.nome}</span>
+                    <span className="aviao-vidas" aria-label={t('Vidas: {n}', { n })}>
+                      {Array.from({ length: VIDAS }, (_, i) => (
+                        <i key={i} className={i < n ? 'cheia' : ''} />
+                      ))}
+                    </span>
+                  </li>
+                );
+              })}
+            </ol>
+            {euNoAr && (
+              <span className={`aviao-cenoura${hud.livre ? '' : ' no-ar'}`} title={t('Cenoura teleguiada')}>
+                <span className="aviao-cenoura-icone" aria-hidden="true" />
+                {hud.livre ? t('Pronta') : t('No ar')}
+              </span>
+            )}
+          </div>
+        </div>
         {hud.contagem > 0 && (
           <span className="golfe-contagem" aria-hidden="true">
             {hud.contagem}
           </span>
         )}
+        {/* os comandos, dentro da tela, só na largada e nos primeiros segundos */}
+        {euNoAr && (hud.contagem > 0 || hud.comeco) && (
+          <div className="aviao-ajuda">
+            <ComandosDoJogo
+              itens={[
+                { teclas: ['setas'], rotulo: t('Voar') },
+                { teclas: ['espaco'], toque: 'toque', rotulo: t('Atirar') },
+                { teclas: ['espaco'], toque: 'toque-segurar', rotulo: t('Segure e solte: cenoura teleguiada') },
+              ]}
+            />
+            <p className="settings-hint">{t('Dois acertos você aguenta; o terceiro derruba. Curva fechada perto da cerca protege por um instante.')}</p>
+          </div>
+        )}
+        {piloto && !euNoAr && !solo && !hud.acabou && <p className="aviao-aviso">{t('Caiu! Agora é torcer de longe.')}</p>}
         {euNoAr && (
           <div className="aviao-toque">
             <div>
@@ -475,19 +554,6 @@ function Ceu({
           </div>
         )}
       </div>
-      {piloto && !euNoAr && !solo && <p className="minijogo-situacao">{t('Caiu! Agora é torcer de longe.')}</p>}
-      {euNoAr && (
-        <>
-          <ComandosDoJogo
-            itens={[
-              { teclas: ['setas'], rotulo: t('Voar') },
-              { teclas: ['espaco'], toque: 'toque', rotulo: t('Atirar') },
-              { teclas: ['espaco'], toque: 'toque-segurar', rotulo: t('Segure e solte: cenoura teleguiada') },
-            ]}
-          />
-          <p className="settings-hint">{t('Dois acertos você aguenta; o terceiro derruba. Curva fechada perto da cerca protege por um instante.')}</p>
-        </>
-      )}
     </div>
   );
 }
