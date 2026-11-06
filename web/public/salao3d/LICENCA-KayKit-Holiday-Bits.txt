@@ -1,0 +1,15 @@
+	KayKit : Holiday Bits (1.0, EXTRA)
+
+	Created/distributed by Kay Lousberg (www.kaylousberg.com)
+
+			------------------------------
+
+	License: (Creative Commons Zero, CC0)
+	http://creativecommons.org/publicdomain/zero/1.0/
+
+	O pacote baixado não traz o arquivo de licença. A página oficial (https://kaylousberg.itch.io/holiday-bits,
+	conferida em 06/11/2026) declara: "Asset license: Creative Commons Zero v1.0 Universal" e "Free for personal and
+	commercial use, no attribution required. (CC0 Licensed)", sem termos à parte para o nível EXTRA. É a mesma licença
+	escrita nos outros pacotes EXTRA da KayKit que temos (Board Game Bits, Platformer Pack, Resource Bits).
+
+	Crédito nos termos do Syden, seção 10: "Kay Lousberg, www.kaylousberg.com".

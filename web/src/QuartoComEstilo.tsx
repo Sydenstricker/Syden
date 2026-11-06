@@ -61,7 +61,7 @@ export function QuartoComEstilo({
 }
 
 /** Os pixels: um xadrezinho de quadrados, como o pixel art visto de perto. */
-function FiguraPixel() {
+export function FiguraPixel() {
   return (
     <svg width="18" height="18" viewBox="0 0 6 6" fill="currentColor" aria-hidden="true" shapeRendering="crispEdges">
       <path d="M0 0h2v2H0zM4 0h2v2H4zM2 2h2v2H2zM0 4h2v2H0zM4 4h2v2H4z" />
@@ -70,7 +70,7 @@ function FiguraPixel() {
 }
 
 /** O cubo em três faces, como a câmera do quarto 3D o vê. */
-function FiguraCubo() {
+export function FiguraCubo() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" aria-hidden="true">
       <path d="M12 2.5 21 7.5v9L12 21.5 3 16.5v-9z" />

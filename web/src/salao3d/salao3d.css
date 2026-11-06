@@ -1,0 +1,111 @@
+/* O SALÃO 3D (salao3d/Salao3D.tsx) e o botão do estilo (SalaoComEstilo.tsx), 06/11/2026. A caixa tem a proporção da do salão de
+   pixel art (.salao-novo .quarto-novo, 4:3, em styles.css), para a troca não mexer no resto do início da comunidade. */
+.salao-com-estilo {
+  position: relative;
+  width: min(100%, 960px);
+  margin: 0 auto;
+}
+/* no Editar do pixel art (a tela inteira), o botão do estilo não fica por cima do editor */
+.salao-com-estilo:has(.editor-cena.editando) > .quarto-estilo-botao {
+  display: none;
+}
+.salao3d {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+}
+.salao3d-caixa {
+  position: absolute;
+  inset: 0;
+}
+.salao3d-caixa.escondida {
+  visibility: hidden;
+}
+.salao3d-tela {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: manipulation;
+}
+/* o nome de cada um em cima da cabeça, como no salão de pixel art */
+.salao3d-nome {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: rgba(20, 14, 24, 0.55);
+  color: #fff;
+  font-size: calc(11px * var(--escala-do-texto, 1));
+  white-space: nowrap;
+  pointer-events: none;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.salao3d-etiqueta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.salao3d-etiqueta small {
+  color: var(--text-muted, #bbb);
+  font-size: calc(11px * var(--escala-do-texto, 1));
+}
+/* o balão do recado, em cima do coelho que o dá */
+.salao3d-recado {
+  position: absolute;
+  transform: translate(-50%, calc(-100% - 12px));
+  width: min(280px, 70%);
+  padding: 10px 28px 10px 12px;
+  border-radius: 12px;
+  background: #fffaf0;
+  color: #2b2430;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  font-size: calc(13px * var(--escala-do-texto, 1));
+  z-index: 2;
+}
+.salao3d-recado::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -8px;
+  transform: translateX(-50%);
+  border: 8px solid transparent;
+  border-bottom: 0;
+  border-top-color: #fffaf0;
+}
+.salao3d-recado p {
+  margin: 4px 0 0;
+  white-space: pre-wrap;
+  max-height: 160px;
+  overflow: auto;
+}
+.salao3d-recado-fechar {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+}
+/* as setas de canal da TV, quando há mais de uma transmissão */
+.salao3d-canais {
+  position: absolute;
+  transform: translate(-50%, 40px);
+  display: flex;
+  gap: 4px;
+}
+.salao3d-canais button {
+  width: 26px;
+  height: 26px;
+  border: 1px solid var(--border, transparent);
+  border-radius: 8px;
+  background: var(--bg-float, #2b2430);
+  color: var(--text-strong, #fff);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+}

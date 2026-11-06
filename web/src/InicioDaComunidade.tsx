@@ -3,7 +3,7 @@ import { Calendario } from './Calendario';
 import { Conquistas } from './Conquistas';
 import { Mascote } from './Mascote';
 import { useState } from 'react';
-import { api } from './api';
+import { API_URL, api, mediaUrl } from './api';
 import { acharArte, acharCoelho, type CoelhoDoRecado } from './boasVindas';
 import { nomeDeCanal } from './bidi';
 import { CommunityIcon } from './CommunityIcon';
@@ -16,6 +16,8 @@ import { Salao, type AcoesDoSalao } from './Salao';
 import { usarCenaNova } from './cenaNova';
 import { ENDERECO_DO_SALAO, type PessoaNoSalao, SalaoNovo } from './SalaoNovo';
 import { getTheme } from './theme';
+import { useEstiloDoQuarto } from './Graficos';
+import { SalaoComEstilo } from './SalaoComEstilo';
 import { SeloDaComunidade } from './SeloDaComunidade';
 import { AbrirTicket } from './Tickets';
 import type { Socket } from 'socket.io-client';
@@ -145,8 +147,11 @@ export function InicioDaComunidade({
   // abrir (cenaNova.ts).
   const salao = usarCenaNova(ENDERECO_DO_SALAO);
   const salaoNovo = salao.cena === 'nova';
+  // O SALÃO EM 3D (SalaoComEstilo.tsx, 06/11/2026): a mesma escolha do quarto; ele tem os objetos do isométrico (o karaokê, o balcão).
+  const salao3d = useEstiloDoQuarto() === '3d';
+  const comObjetosNovos = salaoNovo || salao3d;
   // Quem está numa partida na sala de voz vai para o fliperama (sem a lista de jogadores, a sala inteira joga).
-  const { partida } = usarMinijogo(salaoNovo ? (salaDeVoz?.id ?? null) : null, salaoNovo ? (socket ?? null) : null);
+  const { partida } = usarMinijogo(comObjetosNovos ? (salaDeVoz?.id ?? null) : null, comObjetosNovos ? (socket ?? null) : null);
   const naSalaDoJogo = naVoz.filter((m) => m.channelId === salaDeVoz?.id).map((m) => m.userId);
   const jogando = new Set(partida && !partida.terminada ? (partida.jogadores?.map((j) => j.userId) ?? naSalaDoJogo) : []);
 
@@ -209,7 +214,7 @@ export function InicioDaComunidade({
     }),
     // O KARAOKÊ no salão novo: o microfone e a jukebox levam à sala de voz já com ele aberto (pedido dele, 15/10/2026: "é
     // melhor o usuário saber que essa função está sendo evoluída"; o karaokê já existe na sala de voz).
-    ...(salaoNovo &&
+    ...(comObjetosNovos &&
       salaDeVoz &&
       (() => {
         const karaoke = {
@@ -225,7 +230,7 @@ export function InicioDaComunidade({
     // O TROFÉU abre as conquistas da turma (20/10/2026, ver Conquistas.tsx); no salão de frente, só pelo atalho.
     trofeu: { rotulo: t('Conquistas'), sub: t('O que a turma fez junta'), onClick: () => setConquistas(true) },
     // O balcão do salão novo abre o recado (o balão é desenhado lá; o nome é o título do recado).
-    ...(salaoNovo && dados.boasVindas?.texto && { balcao: { rotulo: dados.boasVindas.titulo || t('Bem-vindo!'), onClick: () => {} } }),
+    ...(comObjetosNovos && dados.boasVindas?.texto && { balcao: { rotulo: dados.boasVindas.titulo || t('Bem-vindo!'), onClick: () => {} } }),
     ...(dados.podeEditar && {
       quadro: {
         rotulo: dados.boasVindas ? t('Mudar esta tela') : t('Montar esta tela'),
@@ -275,6 +280,33 @@ export function InicioDaComunidade({
 
         {/* Cada um com o PRÓPRIO coelho (o avatar pronto que escolheu) e o nome em cima: pedido do Sydenstricker em
             13/10/2026 (ver Salao.tsx). */}
+        <SalaoComEstilo
+          noite={getTheme() !== 'light'}
+          acoes={acoes}
+          titulo={community.name}
+          pessoas={naVoz.map((m) => ({
+            id: m.userId,
+            nome: nomeDe(m),
+            papel: m.screen ? 'transmitindo' : jogando.has(m.userId) ? 'jogando' : 'call',
+            avatar: membros.get(m.userId)?.avatarPronto ?? null,
+          }))}
+          aoVivo={
+            noAr && {
+              nome: nomeDe(noAr),
+              sub: [canais.find((c) => c.id === noAr.channelId)?.name, noAr.screenName].filter(Boolean).join(' · '),
+              total: transmissoes.length,
+              aoTrocar: (passo) => setCanal((c) => (c + passo + transmissoes.length) % transmissoes.length),
+            }
+          }
+          recado={dados.boasVindas?.texto ? { titulo: dados.boasVindas.titulo || t('Bem-vindo!'), texto: dados.boasVindas.texto } : null}
+          imagem={
+            community.bannerVersion
+              ? { url: `${API_URL}/api/communities/${community.id}/capa?v=${community.bannerVersion}`, encaixe: 'cobrir' }
+              : community.iconVersion !== null
+                ? { url: mediaUrl.communityIcon(community.id, community.iconVersion), encaixe: 'conter' }
+                : null
+          }
+        >
         {salaoNovo ? (
           <SalaoNovo
             community={community}
@@ -327,6 +359,7 @@ export function InicioDaComunidade({
             }
           />
         )}
+        </SalaoComEstilo>
 
       </div>
 
