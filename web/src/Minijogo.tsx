@@ -16,6 +16,7 @@ import { JogoNaval } from './JogoNaval';
 import { JogoTruco } from './JogoTruco';
 import { JogoFesta } from './JogoFesta';
 import { JogoGolfe } from './JogoGolfe';
+import { canalDoSocket, ligarCanalDaFesta } from './festa/comum';
 import { FicharioDeGeneros, naFicha, useFicha, classeDaFicha, fichaQueVale } from './FicharioDeGeneros';
 import { JogoGolfe3D, type EstadoGolfe3D } from './JogoGolfe3D';
 import { JogoFutebol, type EstadoFutebol } from './JogoFutebol';
@@ -176,6 +177,12 @@ export function PainelDoMinijogo({
   const [pulando, setPulando] = useState(false);
   const sozinho = correndo || pulando;
   const partida = sozinho ? null : partidaDaSala;
+  // O CANAL AO VIVO DA FESTA (os microjogos de empurrar e de equipe, desde 05/11/2026): o socket da sala, ou o do Solo.
+  const festaSolo = partida?.solo === true;
+  useEffect(() => {
+    ligarCanalDaFesta(socket ? canalDoSocket(socket, festaSolo ? null : channelId) : null);
+    return () => ligarCanalDaFesta(null);
+  }, [socket, channelId, festaSolo]);
   const setEscolhendoCategoria = (sim: boolean) => setEscolhendo(sim ? 'tamanho' : null);
   /** Os jogos que pedem categoria: clicar na capa abre a escolha, e não a partida. */
   // (a Horta em cascata pede o modo só no Solo: sem fim ou 2 minutos; na sala é sempre o versus)

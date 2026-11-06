@@ -392,6 +392,13 @@ export function criarTabuleiro({ agora = Date.now, aleatorio = Math.random, ceno
             else proximaVez();
           }
         },
+        // o canal ao vivo dos microjogos de contato (festa/rodada.ts, lote 5): só encaminha para o microjogo da vez
+        tempoReal(quem, dados) {
+          return fase === 'minijogo' && mini ? mini.tempoReal(quem, dados) : null;
+        },
+        parar() {
+          mini?.parar();
+        },
       };
     },
   };

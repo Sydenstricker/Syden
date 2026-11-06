@@ -111,6 +111,178 @@ export function Moldura({ placar, fracao, children }: { placar: string; fracao: 
   );
 }
 
+// ================================ AS EQUIPES E O CANAL AO VIVO (lote 5, 05/11/2026) ================================
+// O guia está em server/src/festa/registro.ts, "O CONTATO AO VIVO E AS EQUIPES".
+
+/**
+ * QUEM É QUEM, nos dados do microjogo ao vivo ou de equipes: a rodada do servidor põe isto em `dados.turma` (a tela não tem
+ * outro jeito de saber quem é ela mesma, nem os nomes).
+ */
+export interface TurmaNaTela {
+  eu: number;
+  /** As equipes (cada uma a lista de ids), ou null: cada um por si. */
+  equipes: number[][] | null;
+  robos: number[];
+  nomes: Record<string, string>;
+}
+
+/** As cores das equipes (e de cada um, no cada-um-por-si), na ordem. Fortes o bastante para o anel no chão. */
+export const CORES_DAS_EQUIPES = ['#e0604f', '#4f8fe0', '#e8b33c', '#5bb36a', '#a46ad8', '#e07fb8', '#3fb8b0', '#8a8a8a'];
+
+/** A cor de alguém: a da equipe, ou a da posição na lista de jogadores. */
+export function corDe(turma: TurmaNaTela | undefined, quem: number, ordem: number[]): string {
+  const e = turma?.equipes?.findIndex((eq) => eq.includes(quem)) ?? -1;
+  if (e >= 0) return CORES_DAS_EQUIPES[e % CORES_DAS_EQUIPES.length];
+  const i = ordem.indexOf(quem);
+  return CORES_DAS_EQUIPES[(i < 0 ? 0 : i) % CORES_DAS_EQUIPES.length];
+}
+
+/**
+ * AS EQUIPES NA TELA: uma faixa com a cor e os nomes de cada equipe, a minha marcada. Sem texto nenhum além dos nomes; vai em
+ * cima do jogo, dentro da `Moldura` (como `children`) ou fora dela.
+ */
+export function FaixaDasEquipes({ turma, pontos }: { turma: TurmaNaTela | undefined; pontos?: (number | string)[] }) {
+  if (!turma?.equipes) return null;
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, justifyContent: 'center', margin: '4px 0' }}>
+      {turma.equipes.map((eq, i) => {
+        const minha = eq.includes(turma.eu);
+        return (
+          <span
+            key={i}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 4,
+              padding: '2px 8px',
+              borderRadius: 999,
+              border: `2px solid ${CORES_DAS_EQUIPES[i % CORES_DAS_EQUIPES.length]}`,
+              background: minha ? CORES_DAS_EQUIPES[i % CORES_DAS_EQUIPES.length] : 'transparent',
+              color: minha ? '#fff' : 'inherit',
+              fontSize: 13,
+              fontWeight: minha ? 700 : 400,
+            }}
+          >
+            {eq.map((id) => turma.nomes[id] ?? '?').join(' + ')}
+            {pontos?.[i] !== undefined && <strong style={{ marginLeft: 4 }}>{pontos[i]}</strong>}
+          </span>
+        );
+      })}
+    </div>
+  );
+}
+
+/**
+ * O CANAL AO VIVO: o tempo real do motor ('minijogo:tempo-real' na sala, 'minijogo-solo:tempo-real' no Solo). Quem monta o
+ * painel dos jogos liga o canal uma vez (`ligarCanalDaFesta(canalDoSocket(socket, channelId))`, ou `null` no Solo para o
+ * canal do Solo); a tela de um microjogo só usa `useAoVivo`. Sem canal ligado, o que se manda vai pela ação 'acerto' (mais
+ * devagar), e os quadros do servidor não chegam.
+ */
+export interface CanalAoVivo {
+  enviar(dados: unknown): void;
+  ouvir(aoChegar: (dados: unknown) => void): () => void;
+}
+
+interface SocketMinimo {
+  emit(evento: string, dados: unknown): unknown;
+  on(evento: string, fn: (m: { channelId?: number; dados?: unknown }) => void): unknown;
+  off(evento: string, fn: (m: { channelId?: number; dados?: unknown }) => void): unknown;
+}
+
+/** O canal pelo socket do Syden: `channelId` da sala, ou null no Solo. */
+export function canalDoSocket(socket: SocketMinimo, channelId: number | null): CanalAoVivo {
+  const evento = channelId === null ? 'minijogo-solo:tempo-real' : 'minijogo:tempo-real';
+  return {
+    enviar: (dados) => socket.emit(evento, channelId === null ? { dados } : { channelId, dados }),
+    ouvir(aoChegar) {
+      const fn = (m: { channelId?: number; dados?: unknown }) => {
+        if (channelId !== null && m?.channelId !== channelId) return;
+        aoChegar(m?.dados);
+      };
+      socket.on(evento, fn);
+      return () => socket.off(evento, fn);
+    },
+  };
+}
+
+let canalLigado: CanalAoVivo | null = null;
+const aoTrocarCanal = new Set<() => void>();
+/** Liga (ou desliga, com null) o canal ao vivo da Festa. */
+export function ligarCanalDaFesta(canal: CanalAoVivo | null) {
+  canalLigado = canal;
+  for (const f of aoTrocarCanal) f();
+}
+
+/** Um quadro do servidor (o passo do microjogo): `n` o número do passo, `t` quanto o jogo já durava, `q` o que o microjogo mandou. */
+export interface QuadroAoVivo<Q> {
+  n: number;
+  t: number;
+  q: Q;
+}
+
+/**
+ * O CANAL AO VIVO NUMA TELA: `aoQuadro` recebe cada quadro deste microjogo (só enquanto `ligado`); devolve o "mandar", que vai
+ * pelo socket (ou, sem ele, pela ação 'acerto' com `aoVivo`). Os quadros chegam com `t` perto do "ms desde o começo" desta tela
+ * (o começo daqui já está atrasado de uma ida): para desenhar os outros, interpole uns 100 ms atrás (`LinhaDoTempo`).
+ */
+export function useAoVivo<Q>(id: string, ligado: boolean, lance: (corpo: Record<string, unknown>) => void, aoQuadro: (quadro: QuadroAoVivo<Q>) => void) {
+  const fn = useRef(aoQuadro);
+  fn.current = aoQuadro;
+  const [versao, setVersao] = useState(0);
+  useEffect(() => {
+    const trocou = () => setVersao((v) => v + 1);
+    aoTrocarCanal.add(trocou);
+    return () => {
+      aoTrocarCanal.delete(trocou);
+    };
+  }, []);
+  useEffect(() => {
+    if (!ligado || !canalLigado) return;
+    return canalLigado.ouvir((d) => {
+      const m = d as { festa?: unknown; n?: unknown; t?: unknown; q?: unknown } | null;
+      if (!m || m.festa !== id || typeof m.n !== 'number' || typeof m.t !== 'number') return;
+      fn.current({ n: m.n, t: m.t, q: m.q as Q });
+    });
+  }, [id, ligado, versao]);
+  const lanceRef = useRef(lance);
+  lanceRef.current = lance;
+  return useRef((dados: Record<string, unknown>) => {
+    if (canalLigado) canalLigado.enviar(dados);
+    else lanceRef.current({ aoVivo: dados });
+  }).current;
+}
+
+/**
+ * A LINHA DO TEMPO dos quadros: guarda os últimos e dá, para um instante (ms desde o começo), os dois quadros em volta e a
+ * fração entre eles, para desenhar os outros suavizados.
+ */
+export class LinhaDoTempo<Q> {
+  private quadros: QuadroAoVivo<Q>[] = [];
+  chegou(q: QuadroAoVivo<Q>) {
+    if (this.quadros.length && q.n <= this.quadros[this.quadros.length - 1].n) return;
+    this.quadros.push(q);
+    if (this.quadros.length > 40) this.quadros.shift();
+  }
+  ultimo(): QuadroAoVivo<Q> | null {
+    return this.quadros[this.quadros.length - 1] ?? null;
+  }
+  /** Os dois quadros em volta de `t` (ou o mais perto, repetido) e a fração de 0 a 1. */
+  em(t: number): { a: QuadroAoVivo<Q>; b: QuadroAoVivo<Q>; k: number } | null {
+    const l = this.quadros;
+    if (!l.length) return null;
+    if (t <= l[0].t) return { a: l[0], b: l[0], k: 0 };
+    for (let i = l.length - 1; i > 0; i--) {
+      if (l[i - 1].t <= t) {
+        const a = l[i - 1];
+        const b = l[i];
+        if (t >= b.t) return { a: b, b, k: 0 };
+        return { a, b, k: (t - a.t) / Math.max(1, b.t - a.t) };
+      }
+    }
+    return { a: l[l.length - 1], b: l[l.length - 1], k: 0 };
+  }
+}
+
 /** O coelho da festa, de frente (o mesmo desenho dos microjogos de 03/11), num <g> para pôr onde quiser. */
 export function CoelhoDeFrente({ x = 0, y = 0, escala = 1, olhos = 'abertos' }: { x?: number; y?: number; escala?: number; olhos?: 'abertos' | 'tontos' }) {
   return (

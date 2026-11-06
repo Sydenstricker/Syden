@@ -160,6 +160,8 @@ const FORMA_DE_CODIGO = [
   /^[\s\d.,+-]*[MLHVCSQTAZmlhvcsqtaz][\s\dMLHVCSQTAZmlhvcsqtaz.,+-]*$/, // traçado de SVG
   /^[\s\d.,+-]+$/, // viewBox e pontos de polígono: só números
   /^(?:translate|rotate|scale|matrix|skew[XY]?)\(/, // transformação de SVG
+  // valor de CSS no style={{…}} (os microjogos da Festa, 05/11/2026): medidas, grades, bordas, cores, sem palavra de frase
+  /^(?:\s*(?:-?[\d.]+(?:px|em|rem|vw|vh|fr|%|ms|s|deg)?|min|max|calc|repeat|minmax|solid|dashed|dotted|auto|none|#[0-9a-f]{3,8}|[(),/+*-]))+\s*$/i,
 ];
 
 /** Verbo de HTTP e cabeçalho: maiúsculos, mas ninguém os lê na tela. */
@@ -271,6 +273,13 @@ export function varrerTextos(raiz = 'web/src') {
           // expressão vira `t('…')` cru. O resultado foi `title=t('Remover membro')`, que não é JSX
           // válido. Uma lista de palavras errando o tipo quebrou o arquivo em sete lugares.
           if (NAO_TRADUZ.has(conteudo)) continue;
+          // CÓDIGO LIDO COMO TEXTO (os microjogos da Festa, 05/11/2026): uma comparação `a < b` dentro de `{…}` parece abrir uma
+          // tag, e o que vem depois vira "texto solto" (`CABO_MS || Date.now()`, `Promise`). Operador lógico, `Math.` ou uma
+          // constante com sublinhado não estão em frase nenhuma; um tipo genérico sozinho também não.
+          if (/\|\||&&|\bMath\.|\b[A-Z][A-Z0-9]*_[A-Z0-9_]+\b/.test(conteudo)) continue;
+          if (/^(?:Record|Promise|Map|Set|Array|Partial|Readonly|ReturnType)$/.test(conteudo)) continue;
+          // Rótulo só de símbolos e números (`⛳ ✓`, `★ 100 m ★`): sem duas letras seguidas, não há palavra para traduzir.
+          if (!/[A-Za-zÀ-ú]{2}/.test(conteudo)) continue;
           const linha = linhaDe(m.index);
           const bruta = linhas[linha - 1] ?? '';
           // Comentário não vai para a tela.

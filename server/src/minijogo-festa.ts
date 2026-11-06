@@ -36,7 +36,7 @@
  */
 import * as db from './db.js';
 import { embaralhar, placar, type Definicao } from './minijogo-motor.js';
-import { MICROJOGOS, PONTOS_FESTA, RODADAS_FESTA, rodadaDeFesta, type Microjogo, type RodadaDeFesta } from './festa/rodada.js';
+import { microjogosPara, PONTOS_FESTA, RODADAS_FESTA, rodadaDeFesta, type Microjogo, type RodadaDeFesta } from './festa/rodada.js';
 
 export * from './festa/rodada.js';
 // O que os outros arquivos e os testes usam continua saindo daqui.
@@ -62,7 +62,8 @@ export function criarFesta({ agora = Date.now, aleatorio = Math.random, ordem: o
     minimo: 2,
     comecar(ctx, { naSala }) {
       const inscritos = [...naSala];
-      const ordem = ordemDoTeste ?? embaralhar([...MICROJOGOS], aleatorio).slice(0, RODADAS_FESTA);
+      // o empurra-empurra (lote 5) pede 2 ou mais: no Solo, fica de fora do sorteio
+      const ordem = ordemDoTeste ?? embaralhar([...microjogosPara(inscritos.length)], aleatorio).slice(0, RODADAS_FESTA);
       const evento = `festa-${ctx.comunidade ?? 0}-${agora()}`;
       const pontos = new Map<number, number>(inscritos.map((id) => [id, 0]));
       let rodada = 1;
@@ -160,6 +161,14 @@ export function criarFesta({ agora = Date.now, aleatorio = Math.random, ordem: o
         },
         conferir() {
           if (!terminada) atual.conferir();
+        },
+        // o canal ao vivo dos microjogos de contato (lote 5): só encaminha para a rodada da vez
+        tempoReal(quem, dados) {
+          if (terminada || !inscritos.includes(quem)) return null;
+          return atual.tempoReal(quem, dados);
+        },
+        parar() {
+          atual.parar();
         },
       };
     },
