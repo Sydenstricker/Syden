@@ -28,6 +28,7 @@ import { futebol } from './minijogo-futebol.js';
 import { golfe3d } from './minijogo-golfe3d.js';
 import { tocas } from './minijogo-tocas.js';
 import { transito } from './minijogo-transito.js';
+import { carrinhos } from './minijogo-carrinhos.js';
 import { domino } from './minijogo-domino.js';
 import { naval } from './minijogo-naval.js';
 import { truco } from './minijogo-truco.js';
@@ -103,6 +104,8 @@ export const JOGOS: Record<string, Definicao> = {
   tocas,
   // o trânsito da toca (06/11/2026): liberar os carros do cruzamento sem batida, um minuto
   transito,
+  // os carrinhos da toca (06/11/2026): a pista de brinquedo com faixas, só o acelerador
+  carrinhos,
   // Os quizzes de adivinhar (minijogo-quiz.ts): um jogo por tema, todos no mesmo motor.
   ...Object.fromEntries(Object.entries(TEMAS).map(([id, tema]) => [id, criarQuiz(tema)])),
 };
@@ -117,7 +120,7 @@ export const JOGOS: Record<string, Definicao> = {
 // Tabuleiro da turma; os robôs vêm de minijogo-robos.ts)
 export const JOGOS_SOLO = new Set([
   'tamanho', 'xadrez', 'sudoku', 'festa', 'briga', 'blocos', 'golfe', 'caca', 'nave', 'balao', 'jato', 'barco', 'chefe', 'duelo', 'torre',
-  'cidades', 'gomoku', 'mancala', 'damas', 'naval', 'domino', 'truco', 'tabuleiro', 'partida-de-xadrez', 'cozinha', 'skate', 'futebol', 'golfe3d', 'tocas', 'transito',
+  'cidades', 'gomoku', 'mancala', 'damas', 'naval', 'domino', 'truco', 'tabuleiro', 'partida-de-xadrez', 'cozinha', 'skate', 'futebol', 'golfe3d', 'tocas', 'transito', 'carrinhos',
   ...Object.keys(TEMAS),
 ]);
 

@@ -7543,3 +7543,73 @@ export function torresDe(userId: number) {
     .all(userId) as { torre: string; tempoMs: number; amostras: string; em: string }[];
   return linhas.map((l) => ({ torre: l.torre, tempoMs: l.tempoMs, em: l.em, fantasma: JSON.parse(l.amostras) as number[] }));
 }
+
+// ---------------------------------------------------------------------------------------------------
+// OS CARRINHOS DA TOCA (06/11/2026): o melhor tempo de cada pessoa na corrida contra o relógio, com as voltas e o FANTASMA,
+// que aqui é o ACELERADOR de cada passo em trechos (o site refaz a corrida do amigo com carrinhos-sim.ts). Só o melhor: uma
+// corrida pior não substitui. Quem vê: a própria pessoa e os amigos aceitos (minijogo-carrinhos.ts).
+// ---------------------------------------------------------------------------------------------------
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS carrinhos_recordes (
+    user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    pista      TEXT NOT NULL,
+    tempo_ms   INTEGER NOT NULL,
+    voltas     TEXT NOT NULL,
+    entradas   TEXT NOT NULL,
+    em         TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    PRIMARY KEY (user_id, pista)
+  );
+`);
+
+export interface RecordeDosCarrinhos {
+  userId: number;
+  username: string;
+  nomeDeExibicao: string | null;
+  avatarPronto: number | null;
+  tempoMs: number;
+  em: string;
+}
+
+/** O recorde da pessoa e o dos amigos aceitos dela, nesta pista, do mais rápido ao mais lento (sem o fantasma). */
+export function recordesDosCarrinhos(userId: number, pista: string): RecordeDosCarrinhos[] {
+  return db
+    .prepare(
+      `SELECT r.user_id AS userId, u.username AS username, u.nome_exibicao AS nomeDeExibicao, u.avatar_pronto AS avatarPronto,
+              r.tempo_ms AS tempoMs, r.em AS em
+       FROM carrinhos_recordes r JOIN users u ON u.id = r.user_id
+       WHERE r.pista = ? AND (r.user_id = ? OR r.user_id IN (
+         SELECT CASE WHEN menor_id = ? THEN maior_id ELSE menor_id END FROM friendships
+         WHERE ? IN (menor_id, maior_id) AND situacao = 'aceita'))
+       ORDER BY r.tempo_ms LIMIT 30`,
+    )
+    .all(pista, userId, userId, userId) as unknown as RecordeDosCarrinhos[];
+}
+
+export function recordeDosCarrinhos(userId: number, pista: string): { tempoMs: number; entradas: string } | null {
+  const linha = db
+    .prepare('SELECT tempo_ms AS tempoMs, entradas FROM carrinhos_recordes WHERE user_id = ? AND pista = ?')
+    .get(userId, pista) as { tempoMs: number; entradas: string } | undefined;
+  return linha ?? null;
+}
+
+/** Guarda se for o melhor da pessoa nesta pista. Devolve o tempo que valia antes (null se não havia). */
+export function guardarCarrinhos(userId: number, pista: string, tempoMs: number, voltas: number[], entradas: string): { anterior: number | null; recorde: boolean } {
+  const antes = recordeDosCarrinhos(userId, pista);
+  if (antes && antes.tempoMs <= tempoMs) return { anterior: antes.tempoMs, recorde: false };
+  db.prepare(
+    `INSERT INTO carrinhos_recordes (user_id, pista, tempo_ms, voltas, entradas, em)
+     VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+     ON CONFLICT(user_id, pista) DO UPDATE SET tempo_ms = excluded.tempo_ms, voltas = excluded.voltas,
+       entradas = excluded.entradas, em = excluded.em`,
+  ).run(userId, pista, tempoMs, JSON.stringify(voltas), entradas);
+  return { anterior: antes?.tempoMs ?? null, recorde: true };
+}
+
+/** Os recordes da pessoa, com o fantasma (para o "Levar seus dados"). */
+export function carrinhosDe(userId: number) {
+  const linhas = db
+    .prepare('SELECT pista, tempo_ms AS tempoMs, voltas, entradas, em FROM carrinhos_recordes WHERE user_id = ? ORDER BY pista')
+    .all(userId) as { pista: string; tempoMs: number; voltas: string; entradas: string; em: string }[];
+  return linhas.map((l) => ({ pista: l.pista, tempoMs: l.tempoMs, em: l.em, voltas: JSON.parse(l.voltas) as number[], acelerador: JSON.parse(l.entradas) as number[] }));
+}
