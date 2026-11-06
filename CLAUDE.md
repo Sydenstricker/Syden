@@ -622,7 +622,17 @@ chiado passando do ponto e escura com o queimado. A planta passou a 12 × 5 (tr�
 o teste confere com a planta), com bacon e bife; receitas novas: café da manhã, x-bacon, bife com arroz e bife com salada. Os modelos
 (bacon, bife, ovo frito e queimado) saem por `e2e/3D/cozinha-quaternius/converter.py` (Blender) para `web/public/cozinha/quaternius/`,
 com as cores clareadas na carga para casar com a KayKit. O **Rolê do coelho** (`minijogo-skate.ts`, `JogoSkate.tsx`; Kenney Mini Skate): skate de 1 minuto (eram 2 até 06/11/2026; o recorde recomeçou em `skate_recordes_1min`) com combos, só a
-mecânica (nada de Tony Hawk); só no Solo até a sala ser testada na tela. No xadrez, a promoção deixa escolher a peça. O jogo de
+mecânica (nada de Tony Hawk). **Na SALA desde 06/11/2026** (pedido dele: "um modo com mais pessoas no skate, com fantasmas como no jogo de
+corrida"), de 2 a 8: o servidor dá o verde, cada um anda na própria pista e manda a posição 15 vezes por segundo (conferida por alto:
+dentro da pista, sem passo à frente do relógio, sem salto), que o servidor REPASSA; os outros aparecem como FANTASMAS (o coelho de cada um
+com as cores do avatar, meio transparente, a prancha também, e o nome em cima), 6 passos atrás do meu e interpolados, sem batida; a ordem
+ao vivo no canto (pelos pontos que cada um diz ter); quem não joga assiste pela câmera de quem tem mais pontos; sem pausa. **O SERVIDOR
+REFAZ A SESSÃO** (no Solo também): a física e a pista são DUAS CÓPIAS IGUAIS BYTE A BYTE (`web/src/skate/{fisica,pista}.ts` ↔
+`server/src/skate/`; `web/test/skate.test.ts` confere; só + − × ÷ e raiz, nada de seno, sorteio ou relógio), o site manda os comandos de
+cada passo em trechos (8 bits), e os pontos e o melhor combo que valem são os refeitos; a sessão não anda mais passos do que passou desde
+o verde (+3 s). Pódio na estante (`pista: 'skate'`, os pontos); sem itens, a sessão da sala que bate o recorde da pessoa vira o recorde
+(como no Pulo). Fora das conquistas da turma até ele decidir. Testes: `server/test/minijogos-skate.test.ts` (a sala de 3 com o piloto) e
+`e2e/skate-na-sala.mjs` (passou, duas pessoas com o LiveKit). Sobra possível: um programa que ache comandos melhores. No xadrez, a promoção deixa escolher a peça. O jogo de
 estratégia (o pacote Ultimate Fantasy RTS do Quaternius, CC0, em glTF) é o próximo, contra o computador primeiro.
 
 **O LOTE DA TARDE DE 05/11/2026 (pedidos dele):**
