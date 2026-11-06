@@ -779,6 +779,28 @@ fábrica** (sem Editar: arrumar é no pixel art; a do servidor é de pixel e nã
 de quem mora só se ele está na comunidade aberta). Sem WebGL, contexto perdido ou 20 s sem ficar pronto, volta o pixel art sozinho.
 Medido (Chrome de teste, sem placa): ~1,1–2,3 ms por quadro, 120 chamadas e ~48 mil triângulos; com sombras, ~3 ms e 215 chamadas.
 Teste: `e2e/quarto3d.mjs`; o salão não mudou.
+**O SALÃO 3D E O NATAL (06/11/2026, pedido dele: "testar o cenário de datas comemorativas, começando pelo Natal, no salão em 3D"; o
+"não implemente no salão ainda" de antes caiu):** `web/src/salao3d/` (a cena num pedaço à parte; os modelos novos em `web/public/salao3d/`,
+os do quarto 3D lidos de `quarto3d/`) e `web/src/SalaoComEstilo.tsx` (o mesmo botão do canto, na MESMA escolha; o padrão é o do quarto, o
+pixel art). Um salão 12 × 12 que cabe inteiro na caixa 4:3, sem câmera que anda, com as paredes de tijolo e as luzinhas. As funções nos
+mesmos objetos do pixel art: TV → voz ou assistir (o Ao vivo e quem transmite pintados na tela, as setas de canal com mais de uma), fliperama →
+Mini-games, estante → a conversa, balcão e o coelho dele → o recado (um balão em cima dele, e ele "fala"), quadro → a capa (ou o ícone) e o
+Montar a tela de quem administra, a prateleira com os troféus → Conquistas, a jukebox e o microfone → karaokê; a janela é ambientação. Clicar
+abre na hora (o salão não é de uma pessoa: ninguém anda até o objeto). Quem está na call com as cores do avatar e o nome em cima: o sofá, as
+poltronas, as banquetas, a mesa de jogos e de pé; quem transmite na frente da TV, quem joga no fliperama; sem ninguém, vazio. O fliperama, a
+jukebox, o microfone, o troféu, a janela e as telas são feitos por código. **A arrumação no 3D é a de fábrica; o Editar continua no pixel
+art.** Medido (Chrome de teste, sem placa): ~1,4 ms por quadro, 132 chamadas, ~140 mil triângulos (4 coelhos); no Natal ~2–2,6 ms, 170
+chamadas, ~186 mil; com sombras, ~2,9 ms e 294 chamadas. Teste: `e2e/salao3d.mjs`.
+**AS DATAS COMEMORATIVAS (a regra, mesmo dia):** um conjunto de época aparece SOZINHO pela data do aparelho (`salao3d/epocas.ts`: o mês e o
+dia de começo e de fim), igual para a turma inteira, sem servidor, e some sozinho — sem contagem, sem "pegue antes que acabe" (a regra da caixa
+de correio). Época nova é uma linha em `EPOCAS` e a montagem dela na cena. **O Natal vai de 1º de dezembro ao Dia de Reis (6 de janeiro)**
+(escolha minha, a confirmar com ele): a árvore com os presentes, o trenzinho dando a volta nela no trilho oval (para sem foco e com "menos
+movimento"), a casinha de gengibre, o boneco de neve, o poste com as bolas de neve, a poltrona vermelha com o pufe e o leite com biscoitos, as
+guirlandas, as luzinhas coloridas, neve no peitoril e, com Partículas ligado, neve leve caindo. **O coelho do recado recebe sentado na poltrona**
+(clicar nele ou nela abre o recado), e a mesa de jogos sai para dar lugar. Tudo do Holiday Bits (KayKit, EXTRA): o pacote não traz o arquivo
+de licença, e a página oficial declara CC0 (conferido em 06/11/2026; a nota em `web/public/salao3d/LICENCA-KayKit-Holiday-Bits.txt`; o crédito
+nos termos, seção 10). **Ver antes de dezembro, só no site de desenvolvimento:** `?natal` no endereço (ou `window.salao3dNatal = true`);
+`?sem-epoca` tira. Só no 3D: o salão de pixel art não tem Natal.
 **Os outros coletivos no Solo (05/11/2026, pedido dele: "outros jogos coletivos com opção de jogar sozinho contra IA"):** Cinco em
 linha, Mancala, Damas, Batalha naval, Dominó, Truco e Tabuleiro da turma, pelo módulo comum `server/src/minijogo-robos.ts` (os nomes,
 a pausa, `comRobos` para os jogos de convite contarem os robôs como gente na sala). Nas mesas (`duelo`), o robô senta na hora e
