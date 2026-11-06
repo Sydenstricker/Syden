@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
-import { Mundo } from '../src/nave/mundo';
+import { Mundo, comandosDoJogador, reancorar, type Toque } from '../src/nave/mundo';
 import { pilotar } from '../src/nave/piloto';
 import { CHEFE_T, FIM, Ficha, posicaoInimigo, roteiro, tirosDosInimigos, vaivem } from '../src/nave/sim';
 
@@ -84,4 +84,43 @@ test('a ficha recusa a trapaça óbvia', () => {
   const g = new Ficha(inimigos);
   assert.equal(g.bomba(200, 90, 210), null);
   assert.equal(g.bomba(210, 90, 210), 'Sem bomba.');
+});
+
+test('atirar andando: as setas com o fogo seguram os dois, e o clique do mouse não prende a nave (relato de 06/11/2026)', () => {
+  const solto = { esquerda: false, direita: false, cima: false, baixo: false, fogo: false, bomba: false };
+  // o teclado: seta e fogo juntos dão os dois
+  const c = comandosDoJogador({ ...solto, direita: true, cima: true, fogo: true }, null);
+  assert.deepEqual([c.dx, c.dy, c.fogo, c.alvo], [1, -1, true, null]);
+  // o mouse apertado atira; com a seta segurada, ela anda (o alvo do clique não prende a nave)
+  const dedo: Toque = { id: 1, dedoX: 50, dedoY: 50, naveX: 90, naveY: 210, ultimoX: 50, ultimoY: 50, alvo: { x: 90, y: 210 } };
+  const m = comandosDoJogador({ ...solto, esquerda: true }, dedo);
+  assert.deepEqual([m.dx, m.fogo, m.alvo], [-1, true, null]);
+  // sem seta, o arraste volta a mandar, a partir de onde a nave parou
+  reancorar(dedo, { x: 70, y: 210 });
+  assert.deepEqual(comandosDoJogador(solto, dedo).alvo, { x: 70, y: 210 });
+
+  // no mundo: a nave em zigue-zague, sempre atirando, dispara a cada cadência, anda, e o servidor aceita os acertos em movimento
+  const semente = 7;
+  const mundo = new Mundo(semente, true);
+  const servidor = new Ficha(roteiro(semente));
+  const xs = new Set<number>();
+  let disparos = 0;
+  let recusas = 0;
+  for (let n = 0; n < 1500 && !mundo.ficha.acabou; n++) {
+    const lado = Math.floor(n / 40) % 2 === 0;
+    const o = mundo.avancar(comandosDoJogador({ ...solto, direita: lado, esquerda: !lado, cima: n % 160 < 20, fogo: true }, null));
+    if (o.disparou) {
+      disparos++;
+      xs.add(mundo.nave.x);
+    }
+    if (n % 6 === 0) {
+      for (const ev of mundo.eventos.splice(0)) if (servidor.aplicar(ev) !== null) recusas++;
+      if (servidor.posicao(mundo.passo, mundo.nave.x, mundo.nave.y) !== null) recusas++;
+    }
+  }
+  assert.ok(disparos >= 150, `disparos andando: ${disparos}`);
+  assert.ok(xs.size > 20, `os disparos saíram de ${xs.size} lugares diferentes`);
+  assert.equal(recusas, 0, 'o servidor recusou um acerto feito em movimento');
+  assert.ok(servidor.mortos.size > 0, 'nenhum acerto andando');
+  assert.equal(servidor.pontos, mundo.ficha.pontos);
 });

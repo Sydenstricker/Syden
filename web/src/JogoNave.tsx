@@ -6,7 +6,7 @@ import { useT } from './i18n';
 import { Placar, Relogio } from './Minijogo';
 import type { Partida } from './minijogos';
 import { CORES_DA_ESQUADRILHA, desenhar, pintarHorta, type Outro } from './nave/desenho';
-import { Mundo, type Comandos } from './nave/mundo';
+import { Mundo, comandosDoJogador, reancorar, type Comandos, type Teclas, type Toque } from './nave/mundo';
 import { pilotar } from './nave/piloto';
 import { ALTURA, FIM, LARGURA, PASSOS_POR_S } from './nave/sim';
 import './nave/nave.css';
@@ -117,8 +117,8 @@ function Ceu({ estado, eu, jogador, socket, channelId }: { estado: EstadoNave & 
   for (const l of estado.jogadores) nomes.current.set(l.userId, l.username);
 
   const [hud, setHud] = useState({ pontos: 0, vidas: 3, bombas: 1, escudo: false, arma: 0, esquadrilha: 0, passo: -1, acabou: false, seguindo: null as string | null });
-  const teclas = useRef({ esquerda: false, direita: false, cima: false, baixo: false, fogo: false, bomba: false });
-  const toque = useRef<{ id: number; dedoX: number; dedoY: number; naveX: number; naveY: number; alvo: { x: number; y: number } } | null>(null);
+  const teclas = useRef<Teclas>({ esquerda: false, direita: false, cima: false, baixo: false, fogo: false, bomba: false });
+  const toque = useRef<Toque | null>(null);
   const [eToque, setEToque] = useState(false);
 
   // OS OUTROS chegam pelo socket, já com quem mandou (o servidor carimba)
@@ -144,7 +144,8 @@ function Ceu({ estado, eu, jogador, socket, channelId }: { estado: EstadoNave & 
     };
   }, [socket, channelId, eu, estado.solo]);
 
-  // O TECLADO: setas ou WASD andam, Espaço (ou Z) atira, X solta a bomba
+  // O TECLADO: setas ou WASD andam, Z, Espaço ou J atiram, X solta a bomba. Z e J além do Espaço porque muito teclado não
+  // registra o Espaço com duas setas seguradas (a diagonal): o Z ao lado das setas é o par clássico dos jogos de nave.
   useEffect(() => {
     const mapa: Record<string, keyof typeof teclas.current> = {
       ArrowLeft: 'esquerda',
@@ -157,6 +158,7 @@ function Ceu({ estado, eu, jogador, socket, channelId }: { estado: EstadoNave & 
       KeyS: 'baixo',
       Space: 'fogo',
       KeyZ: 'fogo',
+      KeyJ: 'fogo',
       KeyX: 'bomba',
     };
     const mudar = (valor: boolean) => (e: KeyboardEvent) => {
@@ -213,18 +215,9 @@ function Ceu({ estado, eu, jogador, socket, channelId }: { estado: EstadoNave & 
         rodou++;
         let cmd: Comandos;
         if (piloto() && m.pilotando) cmd = pilotar(m);
-        else {
-          const k = teclas.current;
-          const dedo = toque.current;
-          cmd = {
-            dx: (k.direita ? 1 : 0) - (k.esquerda ? 1 : 0),
-            dy: (k.baixo ? 1 : 0) - (k.cima ? 1 : 0),
-            fogo: k.fogo || !!dedo,
-            bomba: k.bomba,
-            alvo: dedo ? dedo.alvo : null,
-          };
-        }
+        else cmd = comandosDoJogador(teclas.current, toque.current);
         const o = m.avancar(cmd, semFoco || atrasado);
+        if (toque.current && (cmd.dx || cmd.dy)) reancorar(toque.current, m.nave);
         if (cmd.bomba) teclas.current.bomba = false;
         if (!atrasado) {
           if (o.disparou && agoraMs - ultimoSomDeTiro > 240) {
@@ -339,12 +332,14 @@ function Ceu({ estado, eu, jogador, socket, channelId }: { estado: EstadoNave & 
             e.currentTarget.setPointerCapture(e.pointerId);
             const p = noCeu(e);
             const m = mundo.current!;
-            toque.current = { id: e.pointerId, dedoX: p.x, dedoY: p.y, naveX: m.nave.x, naveY: m.nave.y, alvo: { x: m.nave.x, y: m.nave.y } };
+            toque.current = { id: e.pointerId, dedoX: p.x, dedoY: p.y, naveX: m.nave.x, naveY: m.nave.y, ultimoX: p.x, ultimoY: p.y, alvo: { x: m.nave.x, y: m.nave.y } };
           }}
           onPointerMove={(e) => {
             const d = toque.current;
             if (!d || d.id !== e.pointerId) return;
             const p = noCeu(e);
+            d.ultimoX = p.x;
+            d.ultimoY = p.y;
             d.alvo = { x: d.naveX + (p.x - d.dedoX) * 1.4, y: d.naveY + (p.y - d.dedoY) * 1.4 };
           }}
           onPointerUp={(e) => {
@@ -382,7 +377,7 @@ function Ceu({ estado, eu, jogador, socket, channelId }: { estado: EstadoNave & 
         <ComandosDoJogo
           itens={[
             { teclas: ['setas'], toque: 'toque-arrastar', rotulo: t('Voar') },
-            { teclas: ['espaco'], rotulo: t('Atirar') },
+            { teclas: ['z', 'espaco'], rotulo: t('Atirar') },
             { teclas: ['x'], rotulo: t('Bomba') },
           ]}
         />

@@ -40,6 +40,51 @@ export interface Comandos {
   alvo?: { x: number; y: number } | null;
 }
 
+/** As teclas seguradas agora (o teclado). */
+export interface Teclas {
+  esquerda: boolean;
+  direita: boolean;
+  cima: boolean;
+  baixo: boolean;
+  fogo: boolean;
+  bomba: boolean;
+}
+
+/** O dedo (ou o mouse com o botão apertado): onde ele começou, onde está, e onde a nave estava; `alvo` é para onde ela vai. */
+export interface Toque {
+  id: number;
+  dedoX: number;
+  dedoY: number;
+  naveX: number;
+  naveY: number;
+  ultimoX: number;
+  ultimoY: number;
+  alvo: { x: number; y: number };
+}
+
+/**
+ * OS COMANDOS DE QUEM JOGA, a partir do teclado e do dedo/mouse. Atirar e andar são INDEPENDENTES (relato dele, 06/11/2026:
+ * "só consegue atirar parado"): o dedo ou o mouse apertado atira, e as setas continuam andando por cima disso. Antes, o
+ * clique do mouse prendia a nave no lugar do clique (o `alvo` do arraste ganhava das setas), então quem atirava com o mouse e
+ * andava com o teclado ficava parado. Com as setas seguradas, o arraste é reancorado na nave (`reancorar`, depois do passo),
+ * para ela não voltar ao lugar do clique quando as setas soltam.
+ */
+export function comandosDoJogador(k: Teclas, dedo: Toque | null): Comandos {
+  const dx = (k.direita ? 1 : 0) - (k.esquerda ? 1 : 0);
+  const dy = (k.baixo ? 1 : 0) - (k.cima ? 1 : 0);
+  const setas = dx !== 0 || dy !== 0;
+  return { dx, dy, fogo: k.fogo || !!dedo, bomba: k.bomba, alvo: dedo && !setas ? dedo.alvo : null };
+}
+
+/** Depois de um passo andado pelas setas com o dedo/mouse apertado: o arraste recomeça de onde a nave está agora. */
+export function reancorar(dedo: Toque, nave: { x: number; y: number }) {
+  dedo.dedoX = dedo.ultimoX;
+  dedo.dedoY = dedo.ultimoY;
+  dedo.naveX = nave.x;
+  dedo.naveY = nave.y;
+  dedo.alvo = { x: nave.x, y: nave.y };
+}
+
 export interface Bala {
   p: number;
   x: number;
