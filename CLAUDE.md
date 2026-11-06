@@ -666,6 +666,19 @@ estratégia (o pacote Ultimate Fantasy RTS do Quaternius, CC0, em glTF) é o pr�
   os tiros já existiam na simulação. Os LADRILHOS hexagonais ficaram de fora (a grade é quadrada); o trigo é hexagonal, e passa.
   Cada pacote da KayKit pinta com UMA textura: os modelos dividem um material por pacote. Cavaleiro a cavalo (o pacote tem o
   cavalo) pediria a pose do coelho montado. Modelo novo: `web/scripts/tocas-modelos.mjs`.
+- **Tocas e Torres, a terceira rodada (pedidos dele, 06/11/2026):** **uma bandeira só**, a do ponto de reunião (o estandarte no canto
+  de cada prédio saiu: confundia com ela). **Os atalhos são ÍCONES** ao lado do minimapa (Game Icons da Kenney: centro da vila,
+  trabalhador parado com o número, exército, e o sino do lucide), e **o CURSOR diz o que o botão direito vai fazer** (`cursorDeHud`
+  em `iconesDeHud.tsx`: o ícone branco com contorno escuro, 32 px): mão (andar), cesta (colher), mira (atacar), chave (construir),
+  bandeira (reunião). **REGRA NOVA, a CAPACIDADE** (`CAPACIDADE` em `sim.ts`): a fazenda é de 1 trabalhador e a MINA (o bloco de
+  ouro encostado inteiro, `minaDe`) de 5, POR DONO; a árvore não tem limite. Quem passa do limite vai a outro lugar igual com vaga a
+  até 12 casas, ou fica parado ao lado com o aviso "Este lugar já está cheio."; a tela mostra o selo "n/cap" sobre cada fazenda pronta
+  e mina vista. O computador não manda à mina do meio enquanto a de casa existir (com o teto, o piloto automático ganha 7 de 10
+  sementes, e não mais todas). **REGRA NOVA, o SINO do centro** (comando `sino`, pronto para o lockstep): o primeiro toque manda
+  todos os trabalhadores para DENTRO (deixam a carga no estoque, somem do mapa, não apanham nem recebem ordem) e o centro solta uma
+  flecha a mais a cada 2 abrigados (até 5 a mais); o segundo toque os devolve ao que faziam. **Só desenho:** o martelo gigante
+  (o do pacote, ou desenhado no 2D) bate na obra enquanto alguém trabalha nela, e quem colhe na fazenda anda pelas fileiras dela
+  (`passeioNaFazenda` em `vista.ts`; na simulação ele colhe na beira). Os dois andam pelo tempo da tela, que para sem foco.
 - **Os três de 16 bits pedidos depois do sucesso do kart (05/11/2026, ele aprovou os três):**
   - **Esquadrilha da toca** (`nave`, `minijogo-nave.ts`, `nave-sim.ts` ↔ `web/src/nave/sim.ts`): navinha de rolagem vertical com a
     rede da Caça. A turma voa as MESMAS ondas, cada um na própria tela; o servidor refaz cada acerto pela "Ficha" (passo no relógio,
