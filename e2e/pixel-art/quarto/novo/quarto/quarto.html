@@ -4048,6 +4048,15 @@ void main() {
     for (let k = 0; k < W * W; k++) if (baseDonoObj[k] === uid) visto++;
     return [uid, { desenho, naPeca, visto }];
   }));
+  // E A DA CENA: os pixels de cada móvel fora da casca (passando da borda do quarto) e, de cada objeto da parede, os pixels
+  // do desenho e os que entraram na cena (a diferença saiu da tela).
+  window.irDoTeste = (id) => { const s0 = semAndar; semAndar = true; ir(id); semAndar = s0; desenhar(); }; // para o teste
+  window.auditoriaCenaDoTeste = () => {
+    const fora = {}, parede = {};
+    for (let k = 0; k < W * W; k++) if (dono[k] && dono[k] !== 'coelho' && foraDia[k]) fora[dono[k]] = (fora[dono[k]] ?? 0) + 1;
+    ordemDaParede.forEach((id, i) => { const T2 = texturaNaParede(id, NA_PAREDE[id].parede); let t = 0, n = 0; for (let k = 0; k < W * W; k++) { if (T2.dia[k * 4 + 3] > 127) t++; if (naParede[k] === i + 1) n++; } parede[id] = [t, n]; });
+    return { fora, parede };
+  };
   window.tampoDoTeste = (x, y) => { const r = tela.getBoundingClientRect(); return tampoDoPonteiro({ clientX: r.left + (x + 0.5) * r.width / W, clientY: r.top + (y + 0.5) * r.height / W }); }; // para o teste
 
   // ============================== OS OBJETOS DA PAREDE: arrastar, pôr e guardar ==============================
@@ -4543,7 +4552,7 @@ void main() {
     desfazendo = true;
     try {
       vestir(JSON.parse(retr));
-      guardarGuardados(); guardarParede(); guardarCores(); guardarObjetos(); guardarJanela(); guardarCadeira(); guardar();
+      guardarPlanta(); guardarGuardados(); guardarParede(); guardarCores(); guardarObjetos(); guardarJanela(); guardarCadeira(); guardar();
     } finally { desfazendo = false; }
     selecionar(null);
   }
