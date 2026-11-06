@@ -941,6 +941,21 @@ pilares só com apoio no alto, e o vão com a pedra no meio, onde o caminhão pe
 (`pista: 'ponte'`, os pontos são o custo). Fora das conquistas da turma até ele decidir. O equilíbrio (limites, pesos, preços) é chute
 medido contra as pontes de referência: ninguém jogou. Testes: `web/test/ponte.test.ts`, `server/test/minijogos-ponte.test.ts`,
 `e2e/ponte.mjs` e `e2e/ponte-na-sala.mjs` (passaram).
+**Os três relatos dele no mesmo dia, feitos:** (1) **"o jogador não sabe qual veículo precisa passar"**: desde a montagem, o tráfego da
+fase espera na margem de partida, NA ORDEM em que vai passar (o primeiro mais perto da ponte), cada um com o SELO DO PESO (um peso de
+academia com o número, maior quanto mais pesado; sem texto novo). A fila é só do desenho (`web/src/ponte/fila.ts`): a regra põe todos na
+SAIDA e solta um por vez, e a fila encosta no da frente e chega à SAIDA antes de a regra soltar (o teste cobra: nada pula). (2) **a HUD
+SEMPRE DENTRO DA TELA**, como o Duelo: as peças, os botões, o custo e o relógio por cima do quadro, e os comandos num cartão só na
+contagem e nos primeiros 4 s (nunca no teste nem no celular); a moldura é um contêiner, e na tela estreita os botões ficam só com a
+figura. (3) **Em 3D** (`web/src/ponte/cena3d.ts`, three.js num pedaço à parte), com a FÍSICA IGUAL (as duas cópias não mudaram): uma
+maquete de lado, de cima e de viés, com as margens cortadas na frente e o rio (ou a ravina) correndo para o fundo; DUAS treliças (a da
+frente no plano em que se monta, onde o mouse é projetado e a grade aparece, a de trás espelhada, com os pinos entre elas) e a pista de
+tábuas atravessada; as peças numa malha de instâncias por tipo, com a textura repetindo pelo comprimento e a cor do esforço PINTADA por
+cima (multiplicar sujava a madeira). Os veículos são o sedã e o caminhão de entrega do Car Kit (Kenney) e a carroça do Halloween Bits
+(KayKit), puxada pelo nosso coelho 3D, com as rodas girando; a peça que quebra solta o meio girando e as lascas, e o que cai na água
+espirra e faz onda. Abre direto no 3D (a caixa com a cor do céu enquanto carrega); sem WebGL, se a cena falhar ou o contexto cair, o 2D
+de reserva (`desenho.ts`, com a mesma fila; no site de desenvolvimento, `localStorage.ponte2d` força). Os modelos em `web/public/ponte/`
+com as licenças; o crédito nos termos, seção 10. Medido no Chrome de teste (sem placa): ~1,3 ms por quadro do lado do JavaScript.
 
 **OS CLÁSSICOS DE MESA (04/11/2026, pedido dele, depois da pesquisa de jogos sem manutenção):** Dominó, Truco, Damas e
 Batalha naval, só no Coletivo. Regra pública e nenhum conteúdo para manter. **Damas e Batalha naval são de MESA**, no `duelo`
