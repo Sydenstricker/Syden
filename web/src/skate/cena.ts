@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { carregarCoelho, copiarCoelho, minhasCoresDoCoelho, type CoelhoCopiado } from '../coelho3d';
 import { PASSO, type Skatista } from './fisica';
+import { MODELOS_DO_ENTORNO, montarEntorno } from './entorno';
 import { altura, alturaDaPeca, LARGURA, pecaEm, PECAS, PROFUNDIDADE } from './pista';
 
 /**
@@ -64,7 +65,7 @@ function aproximarAngulo(atual: number, alvo: number, k: number): number {
 export class CenaDoSkate {
   private renderer: THREE.WebGLRenderer;
   private cena = new THREE.Scene();
-  private camera = new THREE.PerspectiveCamera(62, 1, 0.05, 80);
+  private camera = new THREE.PerspectiveCamera(62, 1, 0.05, 260);
   private observador: ResizeObserver;
   private morta = false;
   private sombras = false;
@@ -134,9 +135,13 @@ export class CenaDoSkate {
   /** Carrega os modelos e monta a pista. Rejeita se algo falhar (quem chama mostra o aviso). */
   async montar(): Promise<void> {
     const nomes = [...new Set(PECAS.map((p) => p.modelo)), 'floor-concrete', 'fence', 'skateboard'];
+    // o entorno (entorno.ts) é enfeite: o modelo que não carregar fica de fora, sem segurar o jogo
+    const entorno = Promise.allSettled(MODELOS_DO_ENTORNO.map((n) => carregar(`${BASE}${n}.glb`)));
     const [coelho, ...lista] = await Promise.all([carregarCoelho(), ...nomes.map((n) => carregar(`${BASE}${n}.glb`))]);
+    const extras = await entorno;
     if (this.morta) return;
     const modelos = new Map(nomes.map((n, i) => [n, lista[i]]));
+    extras.forEach((r, i) => r.status === 'fulfilled' && modelos.set(MODELOS_DO_ENTORNO[i], r.value));
     this.montarPista(modelos);
     this.montarSkatista(coelho, modelos.get('skateboard')!);
   }
@@ -155,8 +160,10 @@ export class CenaDoSkate {
 
   private montarPista(modelos: Map<string, GLTF>) {
     const c = this.cena;
-    c.background = new THREE.Color('#bfe0ee');
-    c.fog = new THREE.Fog('#bfe0ee', 14, 34);
+    // o céu, a grama, o parque e o bairro em volta (entorno.ts); a neblina é a cor do horizonte
+    const { horizonte } = montarEntorno(c, modelos, this.descartaveis, this.sombras);
+    c.background = new THREE.Color(horizonte);
+    c.fog = new THREE.Fog(horizonte, 26, 95);
     c.add(new THREE.HemisphereLight('#fff6e8', '#8aa27a', 1.5));
     const sol = new THREE.DirectionalLight('#fff1d6', 2.1);
     sol.position.set(LARGURA / 2 - 6, 12, PROFUNDIDADE / 2 + 5);
@@ -175,13 +182,7 @@ export class CenaDoSkate {
     }
     c.add(sol);
 
-    // o gramado em volta e o piso de concreto da pista (um ladrilho só, esticado: a cor é uma só)
-    const grama = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), new THREE.MeshStandardMaterial({ color: '#86b06a', roughness: 1 }));
-    grama.rotation.x = -Math.PI / 2;
-    grama.position.set(LARGURA / 2, -0.01, PROFUNDIDADE / 2);
-    grama.receiveShadow = this.sombras;
-    grama.userData.proprio = true;
-    c.add(grama);
+    // o piso de concreto da pista (um ladrilho só, esticado: a cor é uma só)
     const piso = this.clonar(modelos.get('floor-concrete')!);
     piso.scale.set(LARGURA + 4, 1, PROFUNDIDADE + 4);
     piso.position.set(LARGURA / 2, 0, PROFUNDIDADE / 2);

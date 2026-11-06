@@ -170,3 +170,17 @@ test('a beirada do alto dos quarters (pedido dele, 06/11/2026): o vert com meio 
     assert.notEqual(k.modo, 'grind');
   }
 });
+
+test('o entorno (06/11/2026) fica todo fora da pista: nada em que o skatista possa bater', async () => {
+  const { lugaresDoEntorno, lugaresDosPostes } = await import('../src/skate/entorno');
+  const fora = (x: number, z: number) => Math.max(-x, x - 12, -z, z - 18);
+  let n = 0;
+  for (const [nome, lista] of lugaresDoEntorno())
+    for (const l of lista) {
+      n++;
+      // as árvores, as casas e o resto ficam na grama, além do concreto (2 casas); os bancos e as lixeiras na beira dele
+      assert.ok(fora(l.x, l.z) > 2.2, `${nome} em (${l.x.toFixed(1)}, ${l.z.toFixed(1)})`);
+    }
+  assert.ok(n > 100, `só ${n} coisas`);
+  for (const [x, z] of lugaresDosPostes()) assert.ok(fora(x, z) > 1, `poste em (${x}, ${z})`);
+});
