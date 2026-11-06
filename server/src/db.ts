@@ -7309,6 +7309,42 @@ export function guardarRecordeDoTransito(userId: number, pontos: number): boolea
 }
 
 // ---------------------------------------------------------------------------------------------------
+// A PONTE DA TOCA (06/11/2026): o recorde de cada pessoa no Solo, POR FASE — o MENOR custo de uma ponte que passou (o custo e o
+// resultado são os que o servidor refez). Só o melhor: uma ponte mais cara não substitui. É da pessoa, e só ela o vê
+// (minijogo-ponte.ts).
+// ---------------------------------------------------------------------------------------------------
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS ponte_recordes (
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    fase    TEXT NOT NULL,
+    custo   INTEGER NOT NULL,
+    em      TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    PRIMARY KEY (user_id, fase)
+  );
+`);
+
+export function recordeDaPonte(userId: number, fase: string): number | null {
+  return (db.prepare('SELECT custo FROM ponte_recordes WHERE user_id = ? AND fase = ?').get(userId, fase) as { custo: number } | undefined)?.custo ?? null;
+}
+
+/** Guarda se for o mais barato da pessoa nesta fase. Devolve true se virou recorde. */
+export function guardarRecordeDaPonte(userId: number, fase: string, custo: number): boolean {
+  const atual = recordeDaPonte(userId, fase);
+  if (atual !== null && atual <= custo) return false;
+  db.prepare(
+    `INSERT INTO ponte_recordes (user_id, fase, custo) VALUES (?, ?, ?)
+     ON CONFLICT(user_id, fase) DO UPDATE SET custo = excluded.custo, em = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')`,
+  ).run(userId, fase, custo);
+  return true;
+}
+
+/** Para o "Levar seus dados": os recordes de todas as fases. */
+export function pontesDe(userId: number): { fase: string; custo: number; em: string }[] {
+  return db.prepare('SELECT fase, custo, em FROM ponte_recordes WHERE user_id = ? ORDER BY fase').all(userId) as { fase: string; custo: number; em: string }[];
+}
+
+// ---------------------------------------------------------------------------------------------------
 // A ESQUADRILHA DA TOCA (a navinha, 05/11/2026): o recorde de cada pessoa no Solo (a melhor partida inteira, até o chefe).
 // Só o melhor: uma partida pior não substitui. É da pessoa, e só ela o vê (minijogo-nave.ts).
 // ---------------------------------------------------------------------------------------------------
