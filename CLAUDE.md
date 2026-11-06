@@ -739,6 +739,21 @@ um piloto (`e2e/3D/quarto/`, KayKit Bits Bundle 1, CC0), e **o coelho 3D com o N
 `e2e/pixel-art/personagem/blender/meshy/glb.py` (as poses do motor do pixel art viram animações de um GLB,
 `web/public/cidades3d/coelho-animado.glb`). O arquivo "animated_mixamo" do Meshy é o mesmo `mascote-t.glb`: esqueleto de gente, sem
 orelhas, e só Walking e Running.
+**O QUARTO 3D FOI AO APP (06/11/2026, pedido dele: "quero esse quarto 3D low poly como PILOTO da nossa funcionalidade de variação
+estética; um ícone no quarto que alterne entre 3D e Pixel Art; não implemente no salão ainda"):** `web/src/quarto3d/` (a cena num
+pedaço à parte, os modelos em `web/public/quarto3d/`) e `web/src/QuartoComEstilo.tsx` (o botão do canto: o xadrezinho de pixels e o
+cubo, "Estilo visual: 2D/3D", texto que já existia nos 80). **O botão e Gráficos mexem na MESMA escolha**, na hora, sem recarregar — e
+por isso o pixel art no quarto põe o Cidades em 2D também. **O padrão do QUARTO é o pixel art** (`estiloDoQuarto()`: só vai ao 3D quem
+escolheu, `estiloEscolhido` em 'syden:graficos'; um '3d' guardado sem a marca era o de fábrica gravado junto com as sombras); o do
+Cidades continua 3D. **Mudar o padrão do quarto é decisão dele.** No 3D: as funções nos objetos (guarda-roupa → Guarda-roupa, a mesa →
+Mini-games com o coelho sentando ao computador antes, o fone no abajur da mesa → Salas, o quadro de fotos → Amigos, a cortiça → ideias,
+a janela → Explorar, o abajur do criado-mudo → Dia e noite, a estante com um troféu feito por código → Troféus; a luminária só acende),
+realce e nome ao passar o mouse, o coelho com as cores do avatar no estado de verdade (ausente dorme, em chamada no computador; volta ao
+lugar 8 s depois de usar uma função), as sombras de Gráficos, no máximo 30 quadros por segundo, nada sem foco. **A arrumação no 3D é a de
+fábrica** (sem Editar: arrumar é no pixel art; a do servidor é de pixel e não serve ao 3D), e a VISITA em 3D também (as cores do avatar
+de quem mora só se ele está na comunidade aberta). Sem WebGL, contexto perdido ou 20 s sem ficar pronto, volta o pixel art sozinho.
+Medido (Chrome de teste, sem placa): ~1,1–2,3 ms por quadro, 120 chamadas e ~48 mil triângulos; com sombras, ~3 ms e 215 chamadas.
+Teste: `e2e/quarto3d.mjs`; o salão não mudou.
 **Os outros coletivos no Solo (05/11/2026, pedido dele: "outros jogos coletivos com opção de jogar sozinho contra IA"):** Cinco em
 linha, Mancala, Damas, Batalha naval, Dominó, Truco e Tabuleiro da turma, pelo módulo comum `server/src/minijogo-robos.ts` (os nomes,
 a pausa, `comRobos` para os jogos de convite contarem os robôs como gente na sala). Nas mesas (`duelo`), o robô senta na hora e
