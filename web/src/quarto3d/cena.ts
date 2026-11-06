@@ -193,20 +193,37 @@ const ARRUMACAO: Movel[] = [
     lado: 1,
     cores: { wood: '#c9714f' },
   },
+  // A MESA EM L COM TRÊS MONITORES (pedido dele, 06/11/2026, pela imagem do pacote): o braço comprido (desk_large) na parede
+  // da janela, com dois monitores, e o curto (desk) saindo dela, com o terceiro virado para a câmera; a cadeira no canto de
+  // dentro do L. As duas abrem o computador.
   {
     id: 'mesa',
-    arquivo: 'desk',
+    arquivo: 'desk_large',
     x: 0,
-    z: 6,
+    z: 5,
     lado: 3,
     funcao: 'computador',
     cima: [
-      { arquivo: 'monitor', dx: 0, dz: -0.28 },
+      { arquivo: 'monitor', dx: -0.55, dz: -0.28, giro: 0.12 },
+      { arquivo: 'monitor', dx: 0.55, dz: -0.28, giro: -0.12 },
       { arquivo: 'keyboard', dx: -0.05, dz: 0.12 },
-      { arquivo: 'mousepad_A', dx: 0.45, dz: 0.14 },
-      { arquivo: 'mouse', dx: 0.45, dz: 0.14 },
-      { arquivo: 'lamp_desk_headphones', dx: -0.78, dz: -0.15, funcao: 'fone' },
-      { arquivo: 'cup_pencils', dx: 0.82, dz: -0.25 },
+      { arquivo: 'mousepad_A', dx: 0.5, dz: 0.16 },
+      { arquivo: 'mouse', dx: 0.5, dz: 0.16 },
+      { arquivo: 'lamp_desk_headphones', dx: 1.15, dz: -0.15, funcao: 'fone' },
+      { arquivo: 'mug_A', dx: -1.15, dz: 0.05 },
+    ],
+  },
+  {
+    id: 'mesa2',
+    arquivo: 'desk',
+    x: 1,
+    z: 5,
+    lado: 0,
+    funcao: 'computador',
+    cima: [
+      { arquivo: 'monitor', dx: -0.1, dz: -0.28 },
+      { arquivo: 'cup_pencils', dx: 0.62, dz: -0.2 },
+      { arquivo: 'book_set', dx: 0.6, dz: 0.18, giro: 0.3 },
     ],
   },
   {
