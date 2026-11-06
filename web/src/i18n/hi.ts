@@ -2739,6 +2739,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'हिलने के लिए तीर, बदलने के लिए स्पेस, ढेर ऊपर करने के लिए X।',
   'A horta está salva!': 'बगीचा बच गया!',
   'A horta caiu.': 'बगीचा गिर गया।',
+  'Campanha': 'अभियान',
   'Sem vidas.': 'जानें ख़त्म।',
   'Você volta em {n}…': '{n} में वापसी…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'चलने के लिए तीर, मारने के लिए X (लगातार तीन से कॉम्बो), कूदने के लिए Z, स्पेशल के लिए C, जिसमें थोड़ी जान जाती है।',
@@ -3040,10 +3041,10 @@ export default {
   'Trânsito da toca': 'बिल का ट्रैफ़िक',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'चौराहे से गाड़ियों को बिना टकराए निकालने के लिए एक मिनट। भरी हुई कतार से भी अंक कटते हैं।',
   Liberar: 'छोड़ें',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'बिल की खिलौना गाड़ियाँ',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'चार लेन वाला खिलौना गाड़ियों का ट्रैक: गाड़ी अपनी लेन खुद पकड़कर चलती है, आप बस रफ़्तार बढ़ाते हैं। मोड़ पर ज़्यादा रफ़्तार दी तो गाड़ी उड़कर ट्रैक से बाहर हो जाती है और समय गँवाती है। अकेले: घड़ी, दोस्तों के भूतों और रोबोटों के ख़िलाफ़।',
   'Acelerar': 'रफ़्तार बढ़ाएँ',
   'Saiu da pista!': 'ट्रैक से बाहर!',
   'Saídas da pista: {n}': 'ट्रैक से बाहर: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'रफ़्तार बढ़ाने के लिए दबाए रखें और मोड़ से पहले छोड़ दें: जब गाड़ी काँपने लगे, तो वह सीमा पर है।',
+} satisfies Record<string, string>;

@@ -2810,6 +2810,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'ගෙන යාමට ඊතල යතුරු, මාරු කිරීමට හිස්තැන් යතුර, ගොඩ ඉහළ නැංවීමට X.',
   'A horta está salva!': 'වත්ත බේරුණා!',
   'A horta caiu.': 'වත්ත වැටුණා.',
+  'Campanha': 'ව්‍යාපාරය',
   'Sem vidas.': 'ජීවිත ඉතිරි නැත.',
   'Você volta em {n}…': '{n} කින් ආපසු එනවා…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'ඇවිදීමට ඊතල යතුරු, ගැසීමට X (එක දිගට තුනක් කොම්බෝ), පැනීමට Z, විශේෂ පහරට C, එය ජීවිතයෙන් ටිකක් වැය කරයි.',
@@ -3111,10 +3112,10 @@ export default {
   'Trânsito da toca': 'ගුහාවේ රථවාහන',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'මංසන්ධියෙන් වාහන එකිනෙක නොගැටෙන සේ යැවීමට විනාඩියක්. පිරුණු පෝලිමත් ලකුණු අඩු කරයි.',
   Liberar: 'යවන්න',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'ගුහාවේ සෙල්ලම් කාර්',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'පථ හතරක සෙල්ලම් කාර් ධාවන පථයක්: කාරය තමන්ගේ පථය දිගේ තනිවම යයි, ඔබ කරන්නේ වේගය වැඩි කිරීම පමණයි. වංගුවේදී වේගය වැඩි වුණොත්, එය පථයෙන් පියාඹා ගොස් කාලය නාස්ති වෙයි. තනියම: ඔරලෝසුවට, මිතුරන්ගේ හොල්මන්වලට සහ රොබෝවරුන්ට එරෙහිව.',
   'Acelerar': 'වේගය වැඩි කරන්න',
   'Saiu da pista!': 'පථයෙන් ඉවතට!',
   'Saídas da pista: {n}': 'පථයෙන් ඉවත් වීම්: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'වේගය වැඩි කිරීමට ඔබාගෙන සිටින්න, වංගුවට පෙර අත හරින්න: කාරය වෙව්ලන විට, එය සීමාවේ ඇත.',
+} satisfies Record<string, string>;

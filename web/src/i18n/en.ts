@@ -2735,6 +2735,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'Arrows to move, Space to swap, X to raise the stack.',
   'A horta está salva!': 'The garden is safe!',
   'A horta caiu.': 'The garden fell.',
+  'Campanha': 'Campaign',
   'Sem vidas.': 'Out of lives.',
   'Você volta em {n}…': 'You\'re back in {n}…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Arrows to move, X to hit (three in a row is the combo), Z to jump, C for the special, which costs a bit of health.',
@@ -3036,10 +3037,10 @@ export default {
   'Trânsito da toca': 'Burrow Traffic',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'One minute to send the cars through the intersection without letting them crash. A full queue also costs points.',
   Liberar: 'Release',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'Burrow Toy Cars',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'A four-lane toy car track: the car follows its lane by itself, and you only accelerate. Push too hard in a curve and it flies off and loses time. In Solo, against the clock, your friends\' ghosts and robots.',
   'Acelerar': 'Accelerate',
   'Saiu da pista!': 'Off the track!',
   'Saídas da pista: {n}': 'Track exits: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Hold to accelerate and let go before the curve: when the car shakes, it\'s at the limit.',
+} satisfies Record<string, string>;

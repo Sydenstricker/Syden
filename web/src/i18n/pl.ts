@@ -2805,6 +2805,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'Strzałki do ruchu, spacja do zamiany, X do podniesienia stosu.',
   'A horta está salva!': 'Ogródek uratowany!',
   'A horta caiu.': 'Ogródek upadł.',
+  'Campanha': 'Kampania',
   'Sem vidas.': 'Brak żyć.',
   'Você volta em {n}…': 'Wracasz za {n}…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Strzałki do chodzenia, X do uderzania (trzy z rzędu to kombo), Z do skoku, C do ciosu specjalnego, który zabiera trochę życia.',
@@ -3106,10 +3107,10 @@ export default {
   'Trânsito da toca': 'Ruch przy norze',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Minuta, żeby przepuszczać auta przez skrzyżowanie tak, by się nie zderzyły. Pełna kolejka też kosztuje punkty.',
   Liberar: 'Puść',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'Samochodziki z nory',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Tor dla samochodzików-zabawek z czterema pasami: auto samo trzyma się swojego pasa, a ty tylko przyspieszasz. Za mocno w zakręcie i wylatuje z toru, tracąc czas. Solo — na czas, z duchami znajomych i robotami.',
   'Acelerar': 'Przyspiesz',
   'Saiu da pista!': 'Poza torem!',
   'Saídas da pista: {n}': 'Wypadnięcia z toru: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Przytrzymaj, by przyspieszyć, i puść przed zakrętem: gdy auto drży, jest na granicy.',
+} satisfies Record<string, string>;

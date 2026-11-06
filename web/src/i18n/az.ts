@@ -2774,6 +2774,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'Hərəkət üçün oxlar, dəyişmək üçün Boşluq, yığını qaldırmaq üçün X.',
   'A horta está salva!': 'Bostan xilas oldu!',
   'A horta caiu.': 'Bostan düşdü.',
+  'Campanha': 'Kampaniya',
   'Sem vidas.': 'Can qalmadı.',
   'Você volta em {n}…': '{n} sonra qayıdırsan…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Yerimək üçün oxlar, vurmaq üçün X (ardıcıl üç zərbə kombodur), tullanmaq üçün Z, bir az can aparan xüsusi hərəkət üçün C.',
@@ -3082,10 +3083,10 @@ export default {
   'Trânsito da toca': 'Yuva trafiki',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Avtomobilləri toqquşdurmadan kəsişmədən buraxmaq üçün bir dəqiqə. Dolu növbə də xala başa gəlir.',
   Liberar: 'Burax',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'Yuva oyuncaq maşınları',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Dörd zolaqlı oyuncaq maşın treki: maşın zolağı özü izləyir, sən sadəcə sürəti artırırsan. Döngədə çox sürətlənsən, uçub trekdən çıxır və vaxt itirir. Tək rejimdə: saata, dostlarının xəyalətlərinə və robotlara qarşı.',
   'Acelerar': 'Sürətlən',
   'Saiu da pista!': 'Trekdən çıxdı!',
   'Saídas da pista: {n}': 'Trekdən çıxmalar: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Sürətlənmək üçün basıb saxla, döngədən əvvəl burax: maşın titrəyəndə həddədir.',
+} satisfies Record<string, string>;

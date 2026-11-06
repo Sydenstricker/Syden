@@ -2824,6 +2824,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'Сумнуудаар хөдөлгөж, хоосон зайн товчоор сольж, X-ээр овоог өргөнө.',
   'A horta está salva!': 'Цэцэрлэг аврагдлаа!',
   'A horta caiu.': 'Цэцэрлэг унав.',
+  'Campanha': 'Аян',
   'Sem vidas.': 'Амь дууслаа.',
   'Você volta em {n}…': '{n}-ийн дараа буцаж ирнэ…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Сумнуудаар алхаж, X-ээр цохиж (дараалсан гурав нь комбо), Z-ээр үсэрч, C-ээр тусгай цохилт хийнэ, энэ нь бага зэрэг амь зарцуулна.',
@@ -3125,10 +3126,10 @@ export default {
   'Trânsito da toca': 'Нүхний замын хөдөлгөөн',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Машинуудыг мөргөлдүүлэхгүйгээр уулзвараар нэвтрүүлэх нэг минут. Дүүрсэн дараалал ч оноо хасна.',
   Liberar: 'Явуул',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'Нүхний тоглоом машинууд',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Дөрвөн эгнээтэй тоглоом машины зам: машин өөрийн эгнээгээр өөрөө явна, зөвхөн хурдасгахад л болно. Эргэлтэд хэт хурдасгавал замаас нисэж гарч, цаг алдана. Ганцаараа: цаг, найзуудын сүнс, роботуудын эсрэг.',
   'Acelerar': 'Хурдасгах',
   'Saiu da pista!': 'Замаас гарлаа!',
   'Saídas da pista: {n}': 'Замаас гарсан: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Хурдасгахын тулд дарж барь, эргэлтийн өмнө тавь: машин чичирвэл хязгаартаа байна.',
+} satisfies Record<string, string>;

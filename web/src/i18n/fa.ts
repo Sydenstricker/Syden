@@ -2728,6 +2728,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'کلیدهای جهت‌نما برای حرکت، کلید فاصله برای جابه‌جایی، X برای بالا بردن توده.',
   'A horta está salva!': 'باغچه نجات پیدا کرد!',
   'A horta caiu.': 'باغچه از دست رفت.',
+  'Campanha': 'کارزار',
   'Sem vidas.': 'جانی باقی نمانده.',
   'Você volta em {n}…': '{n} دیگر برمی‌گردید…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'کلیدهای جهت‌نما برای راه رفتن، X برای ضربه زدن (سه ضربهٔ پشت سر هم کمبو است)، Z برای پریدن، C برای حرکت ویژه، که کمی جان می‌گیرد.',
@@ -3034,10 +3035,10 @@ export default {
   'Trânsito da toca': 'ترافیک لانه',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'یک دقیقه وقت داری ماشین‌ها را از چهارراه رد کنی بی‌آنکه به هم بخورند. صف پر هم امتیاز کم می‌کند.',
   Liberar: 'رها کن',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'ماشین‌های اسباب‌بازی لانه',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'پیست ماشین‌های اسباب‌بازی با چهار خط: ماشین خودش در خطش می‌رود و شما فقط گاز می‌دهید. اگر در پیچ زیادی گاز بدهید، از پیست پرت می‌شود و وقت از دست می‌دهد. در تک‌نفره: در برابر زمان، شبح دوستانتان و ربات‌ها.',
   'Acelerar': 'گاز دادن',
   'Saiu da pista!': 'خروج از پیست!',
   'Saídas da pista: {n}': 'دفعات خروج از پیست: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'برای گاز دادن نگه دارید و پیش از پیچ رها کنید: وقتی ماشین می‌لرزد، در مرز است.',
+} satisfies Record<string, string>;

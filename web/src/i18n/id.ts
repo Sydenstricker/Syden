@@ -2737,6 +2737,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'Panah untuk bergerak, Spasi untuk menukar, X untuk menaikkan tumpukan.',
   'A horta está salva!': 'Kebun selamat!',
   'A horta caiu.': 'Kebun jatuh.',
+  'Campanha': 'Kampanye',
   'Sem vidas.': 'Nyawa habis.',
   'Você volta em {n}…': 'Kamu kembali dalam {n}…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Panah untuk berjalan, X untuk memukul (tiga kali berturut-turut jadi kombo), Z untuk melompat, C untuk jurus spesial, yang memakan sedikit nyawa.',
@@ -3038,10 +3039,10 @@ export default {
   'Trânsito da toca': 'Lalu Lintas Liang',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Satu menit untuk melepas mobil-mobil di persimpangan tanpa membiarkan mereka bertabrakan. Antrean penuh juga mengurangi poin.',
   Liberar: 'Lepas',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'Mobil Mainan Liang',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Lintasan mobil mainan empat jalur: mobil mengikuti jalurnya sendiri, kamu cukup menekan gas. Terlalu kencang di tikungan, mobil terlempar keluar dan kehilangan waktu. Di mode Sendiri: melawan waktu, hantu teman-temanmu, dan robot.',
   'Acelerar': 'Percepat',
   'Saiu da pista!': 'Keluar lintasan!',
   'Saídas da pista: {n}': 'Keluar lintasan: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Tahan untuk mempercepat dan lepaskan sebelum tikungan: saat mobil bergetar, ia sudah di batas.',
+} satisfies Record<string, string>;

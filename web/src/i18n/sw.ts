@@ -2739,6 +2739,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'Mishale kusogeza, Space kubadilishana, X kuinua rundo.',
   'A horta está salva!': 'Bustani imeokolewa!',
   'A horta caiu.': 'Bustani imeanguka.',
+  'Campanha': 'Kampeni',
   'Sem vidas.': 'Hakuna maisha tena.',
   'Você volta em {n}…': 'Utarudi baada ya {n}…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Mishale kutembea, X kupiga (tatu mfululizo ni kombo), Z kuruka, C kwa mbinu maalum, inayotumia maisha kidogo.',
@@ -3040,10 +3041,10 @@ export default {
   'Trânsito da toca': 'Msongamano wa Shimoni',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Dakika moja ya kuruhusu magari kupita makutano bila kugongana. Foleni iliyojaa nayo hupunguza alama.',
   Liberar: 'Ruhusu',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'Magari ya Kuchezea ya Shimoni',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Njia ya magari ya kuchezea yenye mistari minne: gari hufuata mstari wake lenyewe, nawe unaongeza kasi tu. Ukiongeza kasi kupita kiasi kwenye kona, linaruka nje ya njia na kupoteza muda. Peke yako: dhidi ya saa, mizimu ya marafiki na roboti.',
   'Acelerar': 'Ongeza kasi',
   'Saiu da pista!': 'Nje ya njia!',
   'Saídas da pista: {n}': 'Kutoka nje ya njia: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Shikilia ili kuongeza kasi na uachie kabla ya kona: gari likitetemeka, liko kwenye kikomo.',
+} satisfies Record<string, string>;

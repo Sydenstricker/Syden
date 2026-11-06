@@ -2812,6 +2812,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'Puščice za premikanje, preslednica za menjavo, X za dvig kupa.',
   'A horta está salva!': 'Vrt je rešen!',
   'A horta caiu.': 'Vrt je padel.',
+  'Campanha': 'Kampanja',
   'Sem vidas.': 'Ni več življenj.',
   'Você volta em {n}…': 'Vrneš se čez {n}…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Puščice za hojo, X za udarec (trije zapored so kombo), Z za skok, C za posebno potezo, ki porabi malo življenja.',
@@ -3113,10 +3114,10 @@ export default {
   'Trânsito da toca': 'Promet pri brlogu',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Ena minuta, da spuščaš avte čez križišče, ne da bi trčili. Polna vrsta tudi stane točke.',
   Liberar: 'Spusti',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'Avtomobilčki pri brlogu',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Steza za avtomobilčke igrače s štirimi pasovi: avto sam sledi svojemu pasu, ti samo pospešuješ. Če v ovinku preveč pospešiš, odleti s steze in izgubi čas. Solo: proti času, duhovom prijateljev in robotom.',
   'Acelerar': 'Pospeši',
   'Saiu da pista!': 'S steze!',
   'Saídas da pista: {n}': 'Izleti s steze: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Drži za pospeševanje in spusti pred ovinkom: ko se avto trese, je na meji.',
+} satisfies Record<string, string>;

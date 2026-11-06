@@ -2780,6 +2780,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'Socho\'uuf furtuuwwan xiyyaa, jijjiiruuf Space, tuulii ol kaasuuf X.',
   'A horta está salva!': 'Iddoon biqiltuu baraarameera!',
   'A horta caiu.': 'Iddoon biqiltuu kufeera.',
+  'Campanha': 'Duula',
   'Sem vidas.': 'Lubbuun hin hafne.',
   'Você volta em {n}…': 'Sekondii {n} booda deebitee dhufta…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Deemuuf furtuuwwan xiyyaa, rukutuuf X (sadii wal duraa duubaan kombo dha), utaaluuf Z, tarkaanfii addaatiif C, kan lubbuu xiqqoo fixu.',
@@ -3081,10 +3082,10 @@ export default {
   'Trânsito da toca': 'Tiraafikii Boollaa',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Daqiiqaa tokko konkolaattota qaxxaamura irraa osoo wal hin dhahin gadi lakkisuuf. Tarreen guutames qabxii nama dhabsiisa.',
   Liberar: 'Gadi lakkisi',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'Konkolaataa Taphataa Boollaa',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Daandii konkolaataa taphataa sarara afur qabu: konkolaataan sarara isaa ofii isaatiin hordofa, ati saffisa qofa dabalta. Golee irratti saffisa baay\'ee yoo dabalte, daandii irraa barrisee yeroo dhaba. Kophaa: sa\'aatii, hafuurota hiriyyootaa fi roobootii wajjin.',
   'Acelerar': 'Saffisa dabali',
   'Saiu da pista!': 'Daandii irraa ba\'e!',
   'Saídas da pista: {n}': 'Daandii irraa ba\'uu: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Saffisa dabaluuf qabadhu, golee dura gadhiisi: yeroo konkolaataan raafamu, daangaa irra jira.',
+} satisfies Record<string, string>;

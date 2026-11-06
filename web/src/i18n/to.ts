@@ -2746,6 +2746,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'Ngaahi kī kahaʻu ke ngaue, Space ke fetongi, X ke hiki hake ʻa e fokotuʻunga.',
   'A horta está salva!': 'Kuo hao ʻa e ngoue!',
   'A horta caiu.': 'Kuo tō ʻa e ngoue.',
+  'Campanha': 'Fononga kakato',
   'Sem vidas.': 'ʻIkai ha moʻui.',
   'Você volta em {n}…': 'Te ke foki mai ʻi he {n}…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Ngaahi kī kahaʻu ke luelue, X ke taaʻi (tolu fakahokohoko ko e combo), Z ke puna, C ki he ngaue makehe, ʻa ia ʻoku ne fakaʻaongaʻi ha kiʻi moʻui.',
@@ -3047,10 +3048,10 @@ export default {
   'Trânsito da toca': 'Ngaahi Meʻalele ʻo e Ava',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Miniti ʻe taha ke tuku atu ai ʻa e ngaahi meʻalele ʻi he hala kolosi taʻe fepaki. Ko e laine kuo fonu ʻoku toʻo ai foki ʻa e ngaahi poini.',
   Liberar: 'Tuku',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'Kaʻa Vaʻinga ʻa e Ava',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Ko ha hala kaʻa vaʻinga ʻoku fā hono laine: ʻoku muimui ʻa e kaʻá ʻi hono laine ʻiate ia pē, pea ko koe pē ʻoku ke fakavaveʻi. Kapau te ke fakavaveʻi lahi ʻi he afe, ʻe puna ia ki tuʻa mei he halá pea mole ha taimi. Toko taha: fakafepakiʻi ʻa e taimi, ngaahi tēvolo ʻa e kaungāmeʻá mo e ngaahi lopoti.',
   'Acelerar': 'Fakavaveʻi',
   'Saiu da pista!': 'Kuo ʻalu ki tuʻa mei he halá!',
   'Saídas da pista: {n}': 'ʻAlu ki tuʻa mei he halá: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Puke ke fakavaveʻi pea tukuange kimuʻa he afe: ʻi he taimi ʻoku tetetete ai ʻa e kaʻá, kuo aʻu ia ki he ngataʻangá.',
+} satisfies Record<string, string>;

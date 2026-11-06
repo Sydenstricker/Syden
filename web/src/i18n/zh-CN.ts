@@ -2727,6 +2727,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': '方向键移动，空格键交换，X 键抬升方块。',
   'A horta está salva!': '菜园得救了！',
   'A horta caiu.': '菜园失守了。',
+  'Campanha': '战役',
   'Sem vidas.': '没有命了。',
   'Você volta em {n}…': '{n} 后回来…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': '方向键行走，X 键攻击（连续三下是连击），Z 键跳跃，C 键使出必杀技，会消耗一点生命。',
@@ -3028,10 +3029,10 @@ export default {
   'Trânsito da toca': '兔子洞交通',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': '一分钟内放行路口的车，别让它们相撞。排队排满也会扣分。',
   Liberar: '放行',
-} satisfies Record<string, string>;
   'Carrinhos da toca': '兔子洞玩具车',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': '一条四车道的玩具赛车跑道：车会自己沿着车道跑，你只管加速。弯道里加速过头，车就会飞出跑道，浪费时间。单人模式下，与时间、好友的幽灵和机器人比拼。',
   'Acelerar': '加速',
   'Saiu da pista!': '冲出赛道！',
   'Saídas da pista: {n}': '冲出赛道：{n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': '按住加速，入弯前松开：车一抖动，就到极限了。',
+} satisfies Record<string, string>;

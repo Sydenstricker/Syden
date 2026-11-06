@@ -2807,6 +2807,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'Fletxes per moure\'t, Espai per intercanviar, X per pujar la pila.',
   'A horta está salva!': 'L\'hort està salvat!',
   'A horta caiu.': 'L\'hort ha caigut.',
+  'Campanha': 'Campanya',
   'Sem vidas.': 'Sense vides.',
   'Você volta em {n}…': 'Tornes d\'aquí a {n}…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Fletxes per caminar, X per picar (tres seguits és el combo), Z per saltar, C per a l\'especial, que gasta una mica de vida.',
@@ -3107,10 +3108,10 @@ export default {
   'Trânsito da toca': 'Trànsit del cau',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Un minut per deixar passar els cotxes de la cruïlla sense que xoquin. La cua plena també resta punts.',
   Liberar: 'Deixa passar',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'Cotxets del cau',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Una pista de cotxets de joguina amb quatre carrils: el cotxe segueix el carril tot sol, i tu només acceleres. Si acceleres massa a la corba, surt volant i perd temps. En Individual, contra rellotge, els fantasmes dels amics i robots.',
   'Acelerar': 'Accelerar',
   'Saiu da pista!': 'Fora de la pista!',
   'Saídas da pista: {n}': 'Sortides de pista: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Mantén premut per accelerar i deixa anar abans de la corba: quan el cotxe tremola, és al límit.',
+} satisfies Record<string, string>;

@@ -2762,6 +2762,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'Flèches pour bouger, Espace pour échanger, X pour monter la pile.',
   'A horta está salva!': 'Le potager est sauvé !',
   'A horta caiu.': 'Le potager est tombé.',
+  'Campanha': 'Campagne',
   'Sem vidas.': 'Plus de vies.',
   'Você volta em {n}…': 'Tu reviens dans {n}…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Flèches pour marcher, X pour frapper (trois d’affilée font le combo), Z pour sauter, C pour le spécial, qui coûte un peu de vie.',
@@ -3063,10 +3064,10 @@ export default {
   'Trânsito da toca': 'Trafic du terrier',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Une minute pour faire passer les voitures au carrefour sans qu’elles se percutent. Une file pleine coûte aussi des points.',
   Liberar: 'Laisser passer',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'Petites voitures du terrier',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Un circuit de petites voitures à quatre voies : la voiture suit sa voie toute seule, et tu ne fais qu\'accélérer. Trop vite dans le virage, elle s\'envole et perd du temps. En solo, contre la montre, les fantômes de tes amis et des robots.',
   'Acelerar': 'Accélérer',
   'Saiu da pista!': 'Sortie de piste !',
   'Saídas da pista: {n}': 'Sorties de piste : {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Maintiens pour accélérer et lâche avant le virage : quand la voiture tremble, elle est à la limite.',
+} satisfies Record<string, string>;

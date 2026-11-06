@@ -2742,6 +2742,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'Kibiyoyi don motsi, Sarari don musanya, X don ɗaga tarin.',
   'A horta está salva!': 'An ceci lambun!',
   'A horta caiu.': 'Lambun ya faɗi.',
+  'Campanha': 'Kamfe',
   'Sem vidas.': 'Rayuka sun ƙare.',
   'Você volta em {n}…': 'Za ku dawo cikin {n}…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Kibiyoyi don tafiya, X don bugu (uku a jere shi ne combo), Z don tsalle, C don na musamman, wanda ke ɗan cin rai.',
@@ -3043,10 +3044,10 @@ export default {
   'Trânsito da toca': 'Cunkoson kogo',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Minti ɗaya don ku saki motoci a mahaɗar hanya ba tare da sun yi karo ba. Layi da ya cika ma yana rage maki.',
   Liberar: 'Saki',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'Motocin wasa na kogo',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Hanyar motocin wasa mai layi huɗu: mota tana bin layinta da kanta, ku kawai kuna ƙara gudu. Idan kuka ƙara gudu da yawa a kwana, za ta tashi daga hanya ta rasa lokaci. Ɗaiɗaiku: da agogo, fatalwowin abokanku da mutum-mutumi.',
   'Acelerar': 'Ƙara gudu',
   'Saiu da pista!': 'Ta fita daga hanya!',
   'Saídas da pista: {n}': 'Fitowa daga hanya: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Ku riƙe don ƙara gudu, ku saki kafin kwana: idan mota tana girgiza, tana kan iyaka.',
+} satisfies Record<string, string>;

@@ -2809,6 +2809,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'Šipkami se pohybuješ, mezerníkem vyměňuješ, X zvedá hromadu.',
   'A horta está salva!': 'Zahrádka je zachráněná!',
   'A horta caiu.': 'Zahrádka padla.',
+  'Campanha': 'Kampaň',
   'Sem vidas.': 'Žádné životy.',
   'Você volta em {n}…': 'Vracíš se za {n}…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Šipkami chodíš, X je úder (tři za sebou dají kombo), Z skok, C speciální útok, který stojí trochu života.',
@@ -3110,10 +3111,10 @@ export default {
   'Trânsito da toca': 'Doprava z nory',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Jedna minuta na pouštění aut přes křižovatku tak, aby se nesrazila. Plná fronta taky stojí body.',
   Liberar: 'Pustit',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'Autíčka z nory',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Dráha pro autíčka na hraní se čtyřmi pruhy: auto jede po svém pruhu samo, ty jen přidáváš plyn. Když v zatáčce přidáš moc, vyletí z dráhy a ztratí čas. Sólo: proti času, duchům přátel a robotům.',
   'Acelerar': 'Zrychlit',
   'Saiu da pista!': 'Mimo dráhu!',
   'Saídas da pista: {n}': 'Vyjetí z dráhy: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Drž pro zrychlení a pusť před zatáčkou: když se auto třese, je na hraně.',
+} satisfies Record<string, string>;

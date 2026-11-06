@@ -2802,6 +2802,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'Piltangenterna för att flytta, mellanslag för att byta, X för att höja stapeln.',
   'A horta está salva!': 'Trädgården är räddad!',
   'A horta caiu.': 'Trädgården föll.',
+  'Campanha': 'Kampanj',
   'Sem vidas.': 'Inga liv kvar.',
   'Você volta em {n}…': 'Du är tillbaka om {n}…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Piltangenterna för att gå, X för att slå (tre i rad är kombo), Z för att hoppa, C för specialattacken, som kostar lite liv.',
@@ -3103,10 +3104,10 @@ export default {
   'Trânsito da toca': 'Hålans trafik',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'En minut att släppa bilarna genom korsningen utan att de krockar. En full kö kostar också poäng.',
   Liberar: 'Släpp',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'Hålans leksaksbilar',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'En bilbana för leksaksbilar med fyra filer: bilen följer sin fil av sig själv, och du gasar bara. Gasar du för mycket i kurvan flyger den av banan och tappar tid. Solo: mot klockan, vännernas spöken och robotar.',
   'Acelerar': 'Gasa',
   'Saiu da pista!': 'Av banan!',
   'Saídas da pista: {n}': 'Avåkningar: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Håll inne för att gasa och släpp före kurvan: när bilen skakar är den vid gränsen.',
+} satisfies Record<string, string>;

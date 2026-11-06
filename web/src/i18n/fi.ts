@@ -2810,6 +2810,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'Nuolilla liikut, välilyönnillä vaihdat, X:llä nostat pinoa.',
   'A horta está salva!': 'Kasvimaa on pelastettu!',
   'A horta caiu.': 'Kasvimaa kaatui.',
+  'Campanha': 'Kampanja',
   'Sem vidas.': 'Elämät loppuivat.',
   'Você volta em {n}…': 'Palaat {n} kuluttua…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Nuolilla kävelet, X:llä lyöt (kolme peräkkäin on kombo), Z:lla hyppäät, C:llä teet erikoisliikkeen, joka vie vähän elämää.',
@@ -3111,10 +3112,10 @@ export default {
   'Trânsito da toca': 'Kolon liikenne',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Minuutti aikaa päästää autot risteyksen läpi niin, etteivät ne törmää. Täysi jono maksaa myös pisteitä.',
   Liberar: 'Päästä',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'Kolon leikkiautot',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Neljän kaistan leikkiautorata: auto seuraa kaistaansa itse, ja sinä vain kaasutat. Jos kaasutat mutkassa liikaa, se lentää radalta ja menettää aikaa. Yksin: aikaa, kavereiden haamuja ja robotteja vastaan.',
   'Acelerar': 'Kaasuta',
   'Saiu da pista!': 'Ulos radalta!',
   'Saídas da pista: {n}': 'Ulosajot: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Pidä pohjassa kiihdyttääksesi ja päästä irti ennen mutkaa: kun auto tärisee, se on rajoilla.',
+} satisfies Record<string, string>;

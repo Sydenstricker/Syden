@@ -2829,6 +2829,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'Սլաքներով շարժվում ես, բացատով փոխում, X-ով բարձրացնում կույտը։',
   'A horta está salva!': 'Բանջարանոցը փրկվեց։',
   'A horta caiu.': 'Բանջարանոցն ընկավ։',
+  'Campanha': 'Արշավ',
   'Sem vidas.': 'Կյանքեր չմնացին։',
   'Você volta em {n}…': 'Կվերադառնաս {n}-ից…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Սլաքներով քայլում ես, X-ով հարվածում (երեքը անընդմեջ կոմբո է), Z-ով ցատկում, C-ով անում հատուկ հարվածը, որը մի քիչ կյանք է խլում։',
@@ -3130,10 +3131,10 @@ export default {
   'Trânsito da toca': 'Որջի երթևեկություն',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Մեկ րոպե՝ մեքենաները խաչմերուկով բաց թողնելու համար, որ չբախվեն։ Լցված հերթն էլ միավորներ է արժենում։',
   Liberar: 'Բաց թող',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'Որջի խաղալիք մեքենաներ',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Չորս գծով խաղալիք մեքենաների ուղի․ մեքենան ինքն է հետևում իր գծին, իսկ դու միայն արագացնում ես։ Եթե շրջադարձում շատ արագացնես, այն թռչում է ուղուց և ժամանակ կորցնում։ Մենակ՝ ժամանակի, ընկերներիդ ուրվականների և ռոբոտների դեմ։',
   'Acelerar': 'Արագացնել',
   'Saiu da pista!': 'Ուղուց դուրս!',
   'Saídas da pista: {n}': 'Ուղուց դուրս գալեր՝ {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Սեղմած պահիր՝ արագացնելու համար, և բաց թող շրջադարձից առաջ․ երբ մեքենան դողում է, սահմանին է։',
+} satisfies Record<string, string>;

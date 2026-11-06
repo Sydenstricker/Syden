@@ -2811,6 +2811,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'Örvar til að hreyfa, bilslá til að skipta, X til að hækka staflann.',
   'A horta está salva!': 'Garðinum er bjargað!',
   'A horta caiu.': 'Garðurinn féll.',
+  'Campanha': 'Herferð',
   'Sem vidas.': 'Engin líf eftir.',
   'Você volta em {n}…': 'Þú kemur aftur eftir {n}…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Örvar til að ganga, X til að slá (þrjú í röð er samsetningin), Z til að hoppa, C fyrir sérstaka höggið, sem kostar smá líf.',
@@ -3112,10 +3113,10 @@ export default {
   'Trânsito da toca': 'Holuumferðin',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Ein mínúta til að hleypa bílunum yfir gatnamótin án þess að þeir rekist á. Full röð kostar líka stig.',
   Liberar: 'Hleypa',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'Leikfangabílar holunnar',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Leikfangabílabraut með fjórum akreinum: bíllinn fylgir sinni akrein sjálfur og þú gefur bara í. Ef þú gefur of mikið í í beygjunni flýgur hann út af og tapar tíma. Fyrir einn: við klukkuna, drauga vinanna og vélmenni.',
   'Acelerar': 'Gefa í',
   'Saiu da pista!': 'Út af brautinni!',
   'Saídas da pista: {n}': 'Út af brautinni: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Haltu inni til að gefa í og slepptu fyrir beygjuna: þegar bíllinn titrar er hann á mörkunum.',
+} satisfies Record<string, string>;

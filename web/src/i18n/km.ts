@@ -2809,6 +2809,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'ព្រួញសម្រាប់ផ្លាស់ទី ដកឃ្លាសម្រាប់ប្ដូរ X សម្រាប់លើកគំនរ។',
   'A horta está salva!': 'សួនបន្លែត្រូវបានសង្គ្រោះ!',
   'A horta caiu.': 'សួនបន្លែបានដួលរលំ។',
+  'Campanha': 'យុទ្ធនាការ',
   'Sem vidas.': 'អស់ជីវិតហើយ។',
   'Você volta em {n}…': 'អ្នកនឹងត្រឡប់មកវិញក្នុងរយៈ {n}…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'ព្រួញសម្រាប់ដើរ X សម្រាប់វាយ (បីដងជាប់គ្នាគឺខមបូ) Z សម្រាប់លោត C សម្រាប់ចលនាពិសេស ដែលស៊ីជីវិតបន្តិច។',
@@ -3110,10 +3111,10 @@ export default {
   'Trânsito da toca': 'ចរាចររូង',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'មួយនាទីដើម្បីបញ្ចេញឡានឆ្លងផ្លូវបំបែកដោយមិនឲ្យបុកគ្នា។ ជួរពេញក៏ខាតពិន្ទុដែរ។',
   Liberar: 'បញ្ចេញ',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'ឡានលេងរូង',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'ផ្លូវប្រណាំងឡានលេងមានបួនគន្លង៖ ឡានរត់តាមគន្លងរបស់វាដោយខ្លួនឯង ហើយអ្នកគ្រាន់តែបង្កើនល្បឿន។ បើបង្កើនល្បឿនខ្លាំងពេកនៅផ្លូវកោង វានឹងហោះចេញពីផ្លូវ ហើយខាតពេល។ លេងម្នាក់ឯង៖ ប្រឆាំងនឹងនាឡិកា ខ្មោចរបស់មិត្តភក្តិ និងរ៉ូបូត។',
   'Acelerar': 'បង្កើនល្បឿន',
   'Saiu da pista!': 'ចេញពីផ្លូវ!',
   'Saídas da pista: {n}': 'ចេញពីផ្លូវ៖ {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'ចុចជាប់ដើម្បីបង្កើនល្បឿន ហើយលែងមុនផ្លូវកោង៖ ពេលឡានញ័រ វាដល់កម្រិតហើយ។',
+} satisfies Record<string, string>;

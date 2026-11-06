@@ -19523,3 +19523,12 @@ body.arrastando-barra {
 .jogos-painel .fichario {
   margin-bottom: 6px;
 }
+
+/* A escolha da fase da Briga na horta: o cenário de cada fase, em 16:9 (JogoBriga.tsx, EscolhaDaBriga) */
+.corrida-pista-botao .briga-miniatura {
+  display: block;
+  width: 128px;
+  height: 72px;
+  border-radius: 4px;
+  image-rendering: pixelated;
+}

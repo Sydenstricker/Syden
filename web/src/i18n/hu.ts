@@ -2812,6 +2812,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'Nyilakkal mozogsz, szóközzel cserélsz, X-szel emeled a halmot.',
   'A horta está salva!': 'A kert megmenekült!',
   'A horta caiu.': 'A kert elesett.',
+  'Campanha': 'Hadjárat',
   'Sem vidas.': 'Elfogytak az életek.',
   'Você volta em {n}…': '{n} múlva visszatérsz…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Nyilakkal sétálsz, X-szel ütsz (három egymás után a kombó), Z-vel ugrasz, C-vel jön a különleges támadás, ami egy kis életbe kerül.',
@@ -3113,10 +3114,10 @@ export default {
   'Trânsito da toca': 'Üregi forgalom',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Egy perc, hogy átengedd az autókat a kereszteződésen úgy, hogy ne ütközzenek. A teli sor is pontba kerül.',
   Liberar: 'Engedd',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'Üregi kisautók',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Négysávos játékautópálya: az autó magától követi a sávját, te csak gyorsítasz. Ha a kanyarban túl sokat gyorsítasz, kirepül a pályáról, és időt veszít. Egyedül: az idő, a barátaid szellemei és robotok ellen.',
   'Acelerar': 'Gyorsítás',
   'Saiu da pista!': 'Pályán kívül!',
   'Saídas da pista: {n}': 'Kirepülések: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Tartsd lenyomva a gyorsításhoz, és engedd el a kanyar előtt: ha az autó remeg, a határon van.',
+} satisfies Record<string, string>;

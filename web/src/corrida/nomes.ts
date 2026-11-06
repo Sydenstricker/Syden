@@ -15,6 +15,12 @@ export const NOMES_DAS_PISTAS: Record<string, string> = {
   festa: chave('Festa dos coelhos'),
   // o pódio da Briga na horta, com a fase vencida (server/src/minijogo-briga.ts)
   briga: chave('Briga na horta'),
+  // e as outras fases da Briga e a campanha (06/11/2026): o troféu diz "Briga na horta · Floresta" (Trofeus.tsx, jogoDoTrofeu)
+  'briga-floresta': chave('Floresta'),
+  'briga-deserto': chave('Deserto'),
+  'briga-neve': chave('Neve'),
+  'briga-castelo': chave('Castelo'),
+  'briga-campanha': chave('Campanha'),
   // e o da Horta em cascata (server/src/minijogo-blocos.ts)
   blocos: chave('Horta em cascata'),
   // as fases e a copa do Pulo do coelho (server/src/plataforma.ts), que também dão troféu na sala
@@ -38,14 +44,14 @@ export const NOMES_DAS_PISTAS: Record<string, string> = {
   jato: chave('Coelhos a jato'),
   // e o da Regata da toca (server/src/minijogo-barco.ts)
   barco: chave('Regata da toca'),
+  // e o dos Carrinhos da toca (server/src/minijogo-carrinhos.ts)
+  carrinhos: chave('Carrinhos da toca'),
   // e o do Chefe da turma (server/src/minijogo-chefe.ts): os pontos são o dano dado
   chefe: chave('O chefe da turma'),
   // e o do Duelo de aviõezinhos (server/src/minijogo-duelo.ts): os pontos são as vidas que sobraram
   duelo: chave('Duelo de aviõezinhos'),
   // e o da Torre do celeiro (server/src/minijogo-torre.ts)
   torre: chave('A torre do celeiro'),
-  // e o dos Carrinhos da toca (server/src/minijogo-carrinhos.ts)
-  carrinhos: chave('Carrinhos da toca'),
 };
 
 export const nomeDaPista = (id: string) => NOMES_DAS_PISTAS[id] ?? id;

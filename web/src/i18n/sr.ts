@@ -2807,6 +2807,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'Стрелице за кретање, размакница за замену, X за подизање гомиле.',
   'A horta está salva!': 'Башта је спасена!',
   'A horta caiu.': 'Башта је пала.',
+  'Campanha': 'Кампања',
   'Sem vidas.': 'Нема више живота.',
   'Você volta em {n}…': 'Враћаш се за {n}…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Стрелице за ходање, X за ударац (три заредом су комбо), Z за скок, C за специјални потез, који троши мало живота.',
@@ -3108,10 +3109,10 @@ export default {
   'Trânsito da toca': 'Саобраћај код јазбине',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Један минут да пропушташ аутомобиле кроз раскрсницу, а да се не сударе. И пуна колона кошта бодова.',
   Liberar: 'Пусти',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'Аутићи из јазбине',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Стаза за аутиће играчке са четири траке: аутић сам прати своју траку, а ти само дајеш гас. Ако превише убрзаш у кривини, излети са стазе и губи време. Соло: против сата, духова пријатеља и робота.',
   'Acelerar': 'Убрзај',
   'Saiu da pista!': 'Ван стазе!',
   'Saídas da pista: {n}': 'Излетања са стазе: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Држи да убрзаш и пусти пре кривине: кад се аутић тресе, на граници је.',
+} satisfies Record<string, string>;

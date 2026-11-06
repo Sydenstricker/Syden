@@ -2753,6 +2753,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'ใช้ปุ่มลูกศรเลื่อน กดเว้นวรรคเพื่อสลับ กด X เพื่อดันกองขึ้น',
   'A horta está salva!': 'แปลงผักรอดแล้ว!',
   'A horta caiu.': 'แปลงผักแตกแล้ว',
+  'Campanha': 'แคมเปญ',
   'Sem vidas.': 'หมดชีวิตแล้ว',
   'Você volta em {n}…': 'กลับมาในอีก {n}…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'ใช้ปุ่มลูกศรเดิน กด X เพื่อต่อย (สามครั้งติดคือคอมโบ) กด Z เพื่อกระโดด กด C เพื่อใช้ท่าพิเศษ ซึ่งใช้พลังชีวิตเล็กน้อย',
@@ -3054,10 +3055,10 @@ export default {
   'Trânsito da toca': 'จราจรโพรงกระต่าย',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'หนึ่งนาทีเพื่อปล่อยรถผ่านสี่แยกโดยไม่ให้ชนกัน แถวที่เต็มก็เสียคะแนนเหมือนกัน',
   Liberar: 'ปล่อย',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'รถของเล่นโพรงกระต่าย',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'สนามรถของเล่นสี่เลน รถวิ่งตามเลนของมันเอง แค่เร่งเครื่องอย่างเดียว เร่งมากเกินไปตอนเข้าโค้ง รถจะลอยหลุดสนามและเสียเวลา เล่นคนเดียวแข่งกับเวลา ผีของเพื่อน ๆ และหุ่นยนต์',
   'Acelerar': 'เร่ง',
   'Saiu da pista!': 'หลุดสนาม!',
   'Saídas da pista: {n}': 'หลุดสนาม: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'กดค้างเพื่อเร่ง แล้วปล่อยก่อนเข้าโค้ง: ถ้ารถสั่น แปลว่าถึงขีดจำกัดแล้ว',
+} satisfies Record<string, string>;

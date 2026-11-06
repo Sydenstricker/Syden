@@ -2806,6 +2806,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'Қозғалу үшін көрсеткілер, ауыстыру үшін Бос орын, үйіндіні көтеру үшін X.',
   'A horta está salva!': 'Бақша құтқарылды!',
   'A horta caiu.': 'Бақша құлады.',
+  'Campanha': 'Жорық',
   'Sem vidas.': 'Өмір қалмады.',
   'Você volta em {n}…': '{n} кейін қайтасыз…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Жүру үшін көрсеткілер, соғу үшін X (қатарынан үшеуі — комбо), секіру үшін Z, сәл өмір жұмсайтын арнайы қимыл үшін C.',
@@ -3115,10 +3116,10 @@ export default {
   'Trânsito da toca': 'Ін трафигі',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Көліктерді қиылыстан соқтығыстырмай өткізуге бір минут. Толы кезек те ұпай кемітеді.',
   Liberar: 'Жібер',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'Ін ойыншық көліктері',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Төрт жолақты ойыншық көлік трассасы: көлік өз жолағымен өзі жүреді, сіз тек жылдамдатасыз. Бұрылыста тым қатты жылдамдатсаңыз, ол трассадан ұшып шығып, уақыт жоғалтады. Жеке: сағатқа, достарыңыздың елестеріне және роботтарға қарсы.',
   'Acelerar': 'Жылдамдату',
   'Saiu da pista!': 'Трассадан шықты!',
   'Saídas da pista: {n}': 'Трассадан шығу: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Жылдамдату үшін басып тұрыңыз, бұрылыс алдында жіберіңіз: көлік дірілдесе, ол шекте тұр.',
+} satisfies Record<string, string>;

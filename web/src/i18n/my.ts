@@ -2779,6 +2779,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'မြှားခလုတ်များဖြင့် ရွှေ့ပါ၊ နေရာလွတ်ခလုတ်ဖြင့် လဲပါ၊ X ဖြင့် အပုံကို မြှင့်ပါ။',
   'A horta está salva!': 'ဥယျာဉ် လွတ်မြောက်ပြီ!',
   'A horta caiu.': 'ဥယျာဉ် ကျဆုံးသွားပြီ။',
+  'Campanha': 'လှုပ်ရှားမှု',
   'Sem vidas.': 'အသက် မကျန်တော့ပါ။',
   'Você volta em {n}…': '{n} အကြာတွင် ပြန်လာမည်…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'မြှားခလုတ်များဖြင့် လမ်းလျှောက်ပါ၊ X ဖြင့် ထိုးပါ (သုံးချက်ဆက်တိုက်က ကွန်ဘို)၊ Z ဖြင့် ခုန်ပါ၊ C ဖြင့် အထူးလှုပ်ရှားမှု၊ ၎င်းက အသက်အနည်းငယ် ကုန်စေသည်။',
@@ -3080,10 +3081,10 @@ export default {
   'Trânsito da toca': 'တွင်း ယာဉ်ကြော',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'ကားတွေ မတိုက်မိအောင် လမ်းဆုံကနေ လွှတ်ပေးဖို့ တစ်မိနစ်။ တန်းစီပြည့်သွားရင်လည်း အမှတ်လျော့တယ်။',
   Liberar: 'လွှတ်',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'တွင်း ကစားစရာကားလေးများ',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'လမ်းကြောင်းလေးခုပါ ကစားစရာကားပြိုင်လမ်း- ကားသည် ၎င်း၏လမ်းကြောင်းအတိုင်း အလိုအလျောက်သွားပြီး အရှိန်မြှင့်ရုံသာ လုပ်ရပါမည်။ ကွေ့တွင် အရှိန်လွန်လျှင် လမ်းပေါ်မှ လွင့်ထွက်ပြီး အချိန်ဆုံးရှုံးပါမည်။ တစ်ယောက်တည်း- အချိန်၊ သူငယ်ချင်းများ၏ သရဲများနှင့် စက်ရုပ်များကို ယှဉ်ပြိုင်ပါ။',
   'Acelerar': 'အရှိန်မြှင့်',
   'Saiu da pista!': 'လမ်းပေါ်မှ ထွက်သွားပြီ!',
   'Saídas da pista: {n}': 'လမ်းပေါ်မှ ထွက်မှု- {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'အရှိန်မြှင့်ရန် ဖိထားပြီး ကွေ့မတိုင်မီ လွှတ်ပါ- ကားတုန်လာလျှင် ကန့်သတ်ချက်အထိ ရောက်နေပါပြီ။',
+} satisfies Record<string, string>;

@@ -2811,6 +2811,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'Imicibisholo ukuze unyakaze, i-Space ukuze ushintshe, u-X ukuze uphakamise inqwaba.',
   'A horta está salva!': 'Ingadi isindisiwe!',
   'A horta caiu.': 'Ingadi iwile.',
+  'Campanha': 'Umkhankaso',
   'Sem vidas.': 'Azikho izimpilo.',
   'Você volta em {n}…': 'Uzobuya ngemva kuka-{n}…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Imicibisholo ukuze uhambe, u-X ukuze ushaye (ezintathu ngokulandelana yi-combo), u-Z ukuze ugxume, u-C ukuze wenze inyakazo ekhethekile, edla impilo encane.',
@@ -3112,10 +3113,10 @@ export default {
   'Trânsito da toca': 'Ithrafikhi Yomgodi',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Umzuzu owodwa wokudedela izimoto empambanweni yemigwaqo zingashayisani. Ulayini ogcwele nawo ukudlela amaphuzu.',
   Liberar: 'Dedela',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'Izimoto Zokudlala Zomgodi',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Umzila wezimoto zokudlala onemizila emine: imoto ilandela umzila wayo yodwa, wena usheshisa nje. Uma usheshisa kakhulu ekhoneni, iyandiza iphume emzileni bese ilahlekelwa yisikhathi. Uwedwa: ubhekene nesikhathi, izipoki zabangane namarobhothi.',
   'Acelerar': 'Sheshisa',
   'Saiu da pista!': 'Iphumile emzileni!',
   'Saídas da pista: {n}': 'Ukuphuma emzileni: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Bamba ukuze usheshise bese uyekela ngaphambi kwekhona: uma imoto iqhaqhazela, isemkhawulweni.',
+} satisfies Record<string, string>;

@@ -2807,6 +2807,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'Nooled liikumiseks, tühik vahetamiseks, X virna tõstmiseks.',
   'A horta está salva!': 'Aed on päästetud!',
   'A horta caiu.': 'Aed langes.',
+  'Campanha': 'Kampaania',
   'Sem vidas.': 'Elud otsas.',
   'Você volta em {n}…': 'Tuled tagasi {n} pärast…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Nooled kõndimiseks, X löömiseks (kolm järjest on kombo), Z hüppamiseks, C erirünnakuks, mis võtab natuke elu.',
@@ -3108,10 +3109,10 @@ export default {
   'Trânsito da toca': 'Uru liiklus',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Üks minut, et lasta autod ristmikult läbi nii, et need kokku ei põrkaks. Täis järjekord maksab samuti punkte.',
   Liberar: 'Lase minna',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'Uru mänguautod',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Neljarajaline mänguautode rada: auto järgib oma rada ise, sina ainult kiirendad. Kui kurvis liiga palju kiirendad, lendab see rajalt välja ja kaotab aega. Üksi: aja, sõprade kummituste ja robotite vastu.',
   'Acelerar': 'Kiirenda',
   'Saiu da pista!': 'Rajalt väljas!',
   'Saídas da pista: {n}': 'Rajalt väljasõidud: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Hoia all, et kiirendada, ja lase lahti enne kurvi: kui auto väriseb, on see piiril.',
+} satisfies Record<string, string>;

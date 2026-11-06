@@ -35,6 +35,7 @@
  * Solo, nada.
  */
 import * as db from './db.js';
+import { BICHOS, CAMPANHA, CORPO, FASES_DA_BRIGA, TIPOS, bicho, faseDaBriga, pistaDaBriga, type TipoDeInimigo } from './briga-fases.js';
 import type { Contexto, Definicao } from './minijogo-motor.js';
 
 // ---------------- AS MEDIDAS (as mesmas do site: web/src/briga/regras.ts; web/test/briga.test.ts confere) ----------------
@@ -59,15 +60,15 @@ export const GOLPES: Record<Golpe, { dura: number; alcance: [number, number]; fu
   voadora: { dura: 900, alcance: [0, 30], fundo: 11, dano: 9, derruba: true },
   especial: { dura: 520, alcance: [-38, 38], fundo: 14, dano: 10, derruba: true },
 };
-/** A meia largura do corpo de cada inimigo. */
-export const CORPO = { raposa: 10, corvo: 9, texugo: 18 } as const;
-export type TipoDeInimigo = keyof typeof CORPO;
-export const TIPOS: TipoDeInimigo[] = ['raposa', 'corvo', 'texugo'];
+// OS BICHOS E AS FASES moram em briga-fases.ts (a mesma cópia do site, web/src/briga/fases.ts)
+export { BICHOS, CAMPANHA, CORPO, FASES_DA_BRIGA, TIPOS, type TipoDeInimigo };
 
 /** Os estados dos inimigos, na ordem do código que vai no quadro (o site tem a mesma lista). */
 export const ESTADOS = [
   'entrando', 'andando', 'esperando', 'preparando', 'atacando', 'recuperando', 'dor', 'caido', 'levantando', 'morto',
   'rondando', 'mirando', 'mergulhando', 'subindo', 'prep-investida', 'investida', 'cansado', 'prep-pancada', 'pancada',
+  // as fases novas (06/11/2026): o pulo de quem cai em cima, e a rajada do chefe que atira
+  'saltando', 'prep-sopro', 'sopro',
 ] as const;
 export type EstadoDoInimigo = (typeof ESTADOS)[number];
 /** As ações do coelho (o que a pessoa diz que ele está fazendo, para os outros o desenharem). */
@@ -106,20 +107,27 @@ export const FOLGA_VEL = 1.3;
 export const ACUMULO_X = 16;
 export const ACUMULO_Y = 10;
 
-export const PONTOS_NOCAUTE: Record<TipoDeInimigo, number> = { raposa: 50, corvo: 40, texugo: 300 };
+/** Quanto cada bicho dá a quem o derruba de vez. */
+export const PONTOS_NOCAUTE = Object.fromEntries(TIPOS.map((t) => [t, BICHOS[t].pontos])) as Record<TipoDeInimigo, number>;
 
 interface Onda {
-  raposas: number;
-  corvos: number;
-  chefe?: boolean;
+  bichos: Partial<Record<TipoDeInimigo, number>>;
+  chefe?: TipoDeInimigo;
 }
-export const ONDAS: Onda[] = [
-  { raposas: 3, corvos: 0 },
-  { raposas: 3, corvos: 1 },
-  { raposas: 3, corvos: 2 },
-  { raposas: 4, corvos: 2 },
-  { raposas: 0, corvos: 0, chefe: true },
-];
+/** As ondas de uma fase: as quatro dela e a do chefe. */
+export const ondasDa = (id: string): Onda[] => {
+  const f = faseDaBriga(id) ?? FASES_DA_BRIGA[0];
+  return [...f.ondas.map((bichos) => ({ bichos })), { bichos: {}, chefe: f.chefe }];
+};
+/** As ondas da horta (todas as fases têm cinco: ONDAS_X). */
+export const ONDAS: Onda[] = ondasDa('horta');
+
+/** O tiro (o do bicho que atira e a rajada do chefe): anda pela faixa; pular ou sair da faixa escapa. */
+export const TIRO_VEL = 130;
+export const SOPRO_VEL = 150;
+/** O pulo de quem cai em cima: a altura e o tempo no ar. */
+export const SALTO_ALTO = 34;
+export const SALTO_MS = 700;
 
 interface Ponto {
   t: number;
@@ -142,14 +150,30 @@ interface Inimigo {
   desde: number;
   ate: number;
   alvo: number | null;
-  /** A faixa do mergulho do corvo e da investida do texugo. */
+  /** A faixa do mergulho do corvo, da investida do texugo e do tiro; no pulo, o y de onde vai cair. */
   faixa: number;
+  /** No pulo: o x de onde vai cair, e de onde saiu. */
+  alvoX: number;
+  x0: number;
+  y0: number;
   /** Cada golpe que já o acertou (userId:id do golpe): um golpe acerta cada inimigo uma vez. */
   acertos: Set<string>;
   historia: Ponto[];
   /** O número do ataque do inimigo (cada mergulho, cada investida): quem já levou não leva de novo no mesmo. */
   ataque: number;
   proximoAtaque: number;
+}
+
+/** Um tiro no ar: o servidor o leva pela faixa, e cada passo é uma pancada (a folga vale igual). */
+interface Tiro {
+  id: number;
+  /** De quem (o código do tipo, para o site desenhar o tiro certo). */
+  tipo: TipoDeInimigo;
+  x: number;
+  y: number;
+  vx: number;
+  dano: number;
+  ate: number;
 }
 
 interface Ataque {
@@ -238,9 +262,16 @@ export function criarBriga({
     minimo: 2,
     // quatro coelhos: o quinto que aceitar assiste (e não conta como quem jogou)
     maximo: 4,
-    comecar(ctx: Contexto, { naSala }) {
+    comecar(ctx: Contexto, { naSala, corpo }) {
       const inscritos = [...naSala].slice(0, 4);
       if (inscritos.length === 0) return 'Ninguém para jogar.';
+      // A FASE (06/11/2026): uma delas, ou a campanha (todas seguidas). Todas abertas de fábrica; sem nada, a horta. "categoria"
+      // é o nome que o "Jogar de novo" do painel manda de volta.
+      const pedida = typeof corpo?.fase === 'string' ? corpo.fase : typeof corpo?.categoria === 'string' ? corpo.categoria : 'horta';
+      const escolha = pedida === CAMPANHA || faseDaBriga(pedida) ? pedida : 'horta';
+      const etapas = escolha === CAMPANHA ? FASES_DA_BRIGA.map((f) => f.id) : [escolha];
+      let etapa = 0;
+      let ondas = ondasDa(etapas[0]);
       const solo = ctx.comunidade === 0 || ctx.comunidade === undefined;
       const evento = `briga-${ctx.comunidade ?? 0}-${agora()}`;
       const n = inscritos.length;
@@ -249,6 +280,10 @@ export function criarBriga({
       let onda = 0;
       let arena: [number, number] = [ONDAS_X[0], ONDAS_X[0] + ARENA_L];
       let fila: TipoDeInimigo[] = [];
+      const tiros: Tiro[] = [];
+      let proximoTiro = 1;
+      /** A fase vencida na campanha: quando a próxima começa (null fora disso). */
+      let trocaEm: number | null = null;
       let proximaEntrada = 0;
       let passo = 0;
       let proximoId = 1;
@@ -328,13 +363,22 @@ export function criarBriga({
         onda = k;
         fase = 'lutando';
         arena = [ONDAS_X[k], ONDAS_X[k] + ARENA_L];
-        const o = ONDAS[k];
+        const o = ondas[k];
         const extras = n - 1;
         fila = [];
-        if (o.chefe) fila.push('texugo');
-        for (let i = 0; i < o.raposas + extras; i++) fila.push('raposa');
-        for (let i = 0; i < o.corvos + (o.corvos && extras > 1 ? 1 : 0); i++) fila.splice(1 + i * 2, 0, 'corvo');
-        if (o.chefe && extras > 0) for (let i = 0; i < extras; i++) fila.push('raposa');
+        // o bicho de soco da fase (a raposa, na horta) vem primeiro, um a mais por pessoa além da primeira; os outros entram
+        // intercalados (na horta, a mesma fila de antes)
+        const daFase = faseDaBriga(etapas[etapa]) ?? FASES_DA_BRIGA[0];
+        const deSoco = (Object.keys(daFase.ondas[0]) as TipoDeInimigo[]).find((t) => bicho(t).comp === 'soco') ?? 'raposa';
+        if (o.chefe) fila.push(o.chefe);
+        for (let i = 0; i < (o.bichos[deSoco] ?? 0) + extras; i++) fila.push(deSoco);
+        const outros: TipoDeInimigo[] = [];
+        for (const [t, q] of Object.entries(o.bichos) as [TipoDeInimigo, number][]) {
+          if (t === deSoco) continue;
+          for (let i = 0; i < q + (q && extras > 1 ? 1 : 0); i++) outros.push(t);
+        }
+        outros.forEach((t, i) => fila.splice(1 + i * 2, 0, t));
+        if (o.chefe && extras > 0) for (let i = 0; i < extras; i++) fila.push(deSoco);
         proximaEntrada = agora() + 600;
         // a turma desta onda: quem estava na sala quando ela começou
         const p = presentes();
@@ -347,28 +391,33 @@ export function criarBriga({
       };
 
       const naTela = () => [...inimigos.values()].filter((i) => i.estado !== 'morto').length;
-      const maxNaTela = () => (ONDAS[onda].chefe ? 1 + n : 2 + n);
+      const maxNaTela = () => (ondas[onda].chefe ? 1 + n : 2 + n);
 
       const entrar = (tipo: TipoDeInimigo) => {
         const doLado: 1 | -1 = aleatorio() < 0.5 ? -1 : 1;
         const x = doLado === 1 ? arena[1] + 24 : arena[0] - 24;
-        const hpMax = tipo === 'raposa' ? 30 : tipo === 'corvo' ? 18 : 220 + 90 * (n - 1);
+        const def = bicho(tipo);
+        const voa = def.comp === 'mergulho';
+        const hpMax = def.comp === 'chefe' ? def.hp + 90 * (n - 1) : def.hp;
         const t = agora();
         const ini: Inimigo = {
           id: proximoId++,
           tipo,
           x,
-          y: tipo === 'corvo' ? 10 + aleatorio() * (PROF - 20) : 8 + aleatorio() * (PROF - 16),
-          z: tipo === 'corvo' ? 34 : 0,
+          y: voa ? 10 + aleatorio() * (PROF - 20) : 8 + aleatorio() * (PROF - 16),
+          z: voa ? 34 : 0,
           lado: doLado === 1 ? -1 : 1,
           vx: 0,
           hp: hpMax,
           hpMax,
-          estado: tipo === 'corvo' ? 'rondando' : 'entrando',
+          estado: voa ? 'rondando' : 'entrando',
           desde: t,
-          ate: t + (tipo === 'corvo' ? 1200 + aleatorio() * 800 : 900),
+          ate: t + (voa ? 1200 + aleatorio() * 800 : 900),
           alvo: null,
           faixa: 0,
+          alvoX: 0,
+          x0: 0,
+          y0: 0,
           acertos: new Set(),
           historia: [],
           ataque: 0,
@@ -405,6 +454,8 @@ export function criarBriga({
         pancadas.push({ em: agora(), chave, dano, derruba, lado: i.lado, dentro });
       };
 
+      const voador = (i: Inimigo) => bicho(i.tipo).comp === 'mergulho';
+
       const passoDaRaposa = (i: Inimigo, dt: number, t: number) => {
         const alvo = maisPerto(i);
         switch (i.estado) {
@@ -413,7 +464,7 @@ export function criarBriga({
             if (!alvo) return;
             const lado = i.x < alvo.x ? -1 : 1;
             // as raposas se dividem dos dois lados de quem atacam, e não empilham no mesmo lugar
-            const outras = [...inimigos.values()].filter((o) => o !== i && o.tipo === 'raposa' && o.alvo === alvo.userId && o.estado !== 'morto');
+            const outras = [...inimigos.values()].filter((o) => o !== i && bicho(o.tipo).comp === 'soco' && o.alvo === alvo.userId && o.estado !== 'morto');
             const mesmoLado = outras.filter((o) => Math.sign(o.x - alvo.x) === lado).length;
             const ladoFinal = mesmoLado > 0 && outras.length < 2 ? -lado : lado;
             // o lado que cai fora da arena não serve (a raposa ficaria presa na borda, sem chegar nunca)
@@ -434,7 +485,7 @@ export function criarBriga({
             if (t >= i.ate) {
               mudar(i, 'atacando', 200);
               const x0 = i.x, y0 = i.y, lado = i.lado;
-              pancada(i, `${i.id}-${++i.ataque}`, 8, false, (j) => {
+              pancada(i, `${i.id}-${++i.ataque}`, bicho(i.tipo).dano, false, (j) => {
                 const dx = (j.x - x0) * lado;
                 return dx >= 4 && dx <= 32 && Math.abs(j.y - y0) <= 8 && j.z < 10;
               });
@@ -484,8 +535,8 @@ export function criarBriga({
             i.x += i.vx * dt;
             i.z += (6 - i.z) * Math.min(1, dt * 8);
             const x1 = i.x, y = i.y;
-            pancada(i, `${i.id}-${i.ataque}`, 7, false, (j) => {
-              const de = Math.min(x0, x1) - CORPO.corvo, ate = Math.max(x0, x1) + CORPO.corvo;
+            pancada(i, `${i.id}-${i.ataque}`, bicho(i.tipo).dano, false, (j) => {
+              const de = Math.min(x0, x1) - CORPO[i.tipo], ate = Math.max(x0, x1) + CORPO[i.tipo];
               return j.x >= de && j.x <= ate && Math.abs(j.y - y) <= 8 && j.z < 14;
             });
             if (t >= i.ate || (i.vx > 0 && i.x > arena[1] + 10) || (i.vx < 0 && i.x < arena[0] - 10)) {
@@ -515,7 +566,11 @@ export function criarBriga({
               if (t >= i.ate) mudar(i, 'andando', 0);
               return;
             }
-            if (t >= i.proximoAtaque && dx > 80) {
+            // o chefe que atira, de longe, às vezes solta a rajada em vez da investida
+            if (t >= i.proximoAtaque && dx > 80 && bicho(i.tipo).sopro && aleatorio() < 0.45) {
+              i.faixa = alvo.y;
+              mudar(i, 'prep-sopro', 950);
+            } else if (t >= i.proximoAtaque && dx > 80) {
               i.faixa = alvo.y;
               mudar(i, 'prep-investida', 950);
             } else if (t >= i.proximoAtaque && dx < 56 && Math.abs(alvo.y - i.y) < 14) {
@@ -538,8 +593,8 @@ export function criarBriga({
             const x0 = i.x;
             i.x += i.vx * dt;
             const x1 = i.x, y = i.y;
-            pancada(i, `${i.id}-${i.ataque}`, 14, true, (j) => {
-              const de = Math.min(x0, x1) - CORPO.texugo, ate = Math.max(x0, x1) + CORPO.texugo;
+            pancada(i, `${i.id}-${i.ataque}`, bicho(i.tipo).dano, true, (j) => {
+              const de = Math.min(x0, x1) - CORPO[i.tipo], ate = Math.max(x0, x1) + CORPO[i.tipo];
               return j.x >= de && j.x <= ate && Math.abs(j.y - y) <= 11 && j.z < 10;
             });
             if (t >= i.ate || (i.vx > 0 && i.x > arena[1] - 20) || (i.vx < 0 && i.x < arena[0] + 20)) {
@@ -553,11 +608,22 @@ export function criarBriga({
               mudar(i, 'pancada', 300);
               const x0 = i.x, y0 = i.y;
               // a pancada no chão: pega em volta, e quem está no ar escapa
-              pancada(i, `${i.id}-${++i.ataque}`, 16, true, (j) => Math.abs(j.x - x0) <= 54 && Math.abs(j.y - y0) <= 18 && j.z < 6);
+              pancada(i, `${i.id}-${++i.ataque}`, bicho(i.tipo).dano + 2, true, (j) => Math.abs(j.x - x0) <= 54 && Math.abs(j.y - y0) <= 18 && j.z < 6);
             }
             return;
           case 'pancada':
             if (t >= i.ate) mudar(i, 'recuperando', 900);
+            return;
+          case 'prep-sopro':
+            // enche o peito virado para a faixa (o site risca as três linhas)
+            ir(i, i.x, i.faixa, 0, 30, dt);
+            if (t >= i.ate) {
+              for (const dy of [-14, 0, 14]) atirar(i, Math.max(0, Math.min(PROF, i.faixa + dy)), SOPRO_VEL, bicho(i.tipo).dano - 6);
+              mudar(i, 'sopro', 400);
+            }
+            return;
+          case 'sopro':
+            if (t >= i.ate) mudar(i, 'recuperando', 800);
             return;
           case 'cansado':
           case 'recuperando':
@@ -569,6 +635,122 @@ export function criarBriga({
         }
       };
 
+      /** Um tiro sai do bicho pela faixa `y`, para o lado em que ele olha. */
+      const atirar = (i: Inimigo, y: number, vel: number, dano: number) => {
+        tiros.push({ id: proximoTiro++, tipo: i.tipo, x: i.x + i.lado * (CORPO[i.tipo] + 4), y, vx: i.lado * vel, dano, ate: agora() + 3500 });
+      };
+
+      /** O que PULA: chega perto, se agacha mirando um ponto do chão (o site pisca o círculo ali) e cai em cima dele. */
+      const passoDoPulo = (i: Inimigo, dt: number, t: number) => {
+        const alvo = maisPerto(i);
+        switch (i.estado) {
+          case 'entrando':
+          case 'andando': {
+            if (!alvo) return;
+            i.alvo = alvo.userId;
+            i.lado = alvo.x > i.x ? 1 : -1;
+            const lado = i.x < alvo.x ? -1 : 1;
+            const fora = (x: number) => x < arena[0] + 12 || x > arena[1] - 12;
+            const destinoX = fora(alvo.x + lado * 56) ? alvo.x - lado * 56 : alvo.x + lado * 56;
+            ir(i, destinoX, alvo.y, i.estado === 'entrando' ? 55 : 40, 26, dt);
+            if (i.estado === 'entrando' && t >= i.ate) mudar(i, 'andando', 0);
+            if (i.estado === 'andando' && t >= i.proximoAtaque && Math.abs(i.x - alvo.x) < 80 && Math.abs(i.y - alvo.y) < 12) {
+              // o ponto da queda é onde a pessoa está AGORA: quem se mexe durante o aviso escapa
+              i.alvoX = Math.max(arena[0] + 12, Math.min(arena[1] - 12, alvo.x));
+              i.faixa = alvo.y;
+              i.lado = i.alvoX >= i.x ? 1 : -1;
+              mudar(i, 'preparando', 650);
+            }
+            return;
+          }
+          case 'preparando':
+            if (t >= i.ate) {
+              i.x0 = i.x;
+              i.y0 = i.y;
+              mudar(i, 'saltando', SALTO_MS);
+            }
+            return;
+          case 'saltando': {
+            const p = Math.min(1, (t - i.desde) / SALTO_MS);
+            i.x = i.x0 + (i.alvoX - i.x0) * p;
+            i.y = i.y0 + (i.faixa - i.y0) * p;
+            i.z = 4 * SALTO_ALTO * p * (1 - p);
+            if (p >= 1) {
+              i.z = 0;
+              const x0 = i.x, y0 = i.y;
+              pancada(i, `${i.id}-${++i.ataque}`, bicho(i.tipo).dano, true, (j) => Math.abs(j.x - x0) <= 22 && Math.abs(j.y - y0) <= 10 && j.z < 8);
+              mudar(i, 'recuperando', 800);
+            }
+            return;
+          }
+          case 'recuperando':
+          case 'esperando':
+            if (t >= i.ate) {
+              i.proximoAtaque = t + 700 + aleatorio() * 1000;
+              mudar(i, 'andando', 0);
+            }
+            return;
+        }
+      };
+
+      /** O que ATIRA: fica longe, na faixa de quem está mais perto, mira (a linha pisca) e atira. */
+      const passoDoTiro = (i: Inimigo, dt: number, t: number) => {
+        const alvo = maisPerto(i);
+        switch (i.estado) {
+          case 'entrando':
+          case 'andando': {
+            if (!alvo) return;
+            i.alvo = alvo.userId;
+            const lado = i.x < alvo.x ? -1 : 1;
+            const fora = (x: number) => x < arena[0] + 14 || x > arena[1] - 14;
+            const destinoX = fora(alvo.x + lado * 105) ? alvo.x - lado * 105 : alvo.x + lado * 105;
+            ir(i, destinoX, alvo.y, i.estado === 'entrando' ? 55 : 38, 26, dt);
+            i.lado = alvo.x > i.x ? 1 : -1;
+            if (i.estado === 'entrando' && t >= i.ate) mudar(i, 'andando', 0);
+            if (i.estado === 'andando' && t >= i.proximoAtaque && Math.abs(i.y - alvo.y) < 4 && Math.abs(i.x - alvo.x) > 50) {
+              i.faixa = i.y;
+              mudar(i, 'mirando', 800);
+            }
+            return;
+          }
+          case 'mirando':
+            if (t >= i.ate) {
+              atirar(i, i.faixa, TIRO_VEL, bicho(i.tipo).dano);
+              mudar(i, 'atacando', 300);
+            }
+            return;
+          case 'atacando':
+            if (t >= i.ate) mudar(i, 'recuperando', 900);
+            return;
+          case 'recuperando':
+          case 'esperando':
+            if (t >= i.ate) {
+              i.proximoAtaque = t + 1200 + aleatorio() * 1200;
+              mudar(i, 'andando', 0);
+            }
+            return;
+        }
+      };
+
+      /** Os tiros andam; cada passo é uma pancada do trecho percorrido (decidida com a folga, como as outras). */
+      const passoDosTiros = (dt: number, t: number) => {
+        for (let k = tiros.length - 1; k >= 0; k--) {
+          const tr = tiros[k];
+          const x0 = tr.x;
+          tr.x += tr.vx * dt;
+          const x1 = tr.x, y = tr.y;
+          pancadas.push({
+            em: t,
+            chave: `tiro-${tr.id}`,
+            dano: tr.dano,
+            derruba: false,
+            lado: tr.vx > 0 ? 1 : -1,
+            dentro: (j) => j.x >= Math.min(x0, x1) - 6 && j.x <= Math.max(x0, x1) + 6 && Math.abs(j.y - y) <= 7 && j.z < 10,
+          });
+          if (t >= tr.ate || tr.x < arena[0] - 30 || tr.x > arena[1] + 30) tiros.splice(k, 1);
+        }
+      };
+
       const passoComum = (i: Inimigo, dt: number, t: number) => {
         // o que todos têm: apanhar, cair, levantar, sumir
         switch (i.estado) {
@@ -577,7 +759,7 @@ export function criarBriga({
             i.vx *= 0.8;
             if (t >= i.ate) {
               i.proximoAtaque = Math.max(i.proximoAtaque, t + 400);
-              mudar(i, i.tipo === 'corvo' ? 'subindo' : 'andando', i.tipo === 'corvo' ? 700 : 0);
+              mudar(i, voador(i) ? 'subindo' : 'andando', voador(i) ? 700 : 0);
             }
             return true;
           case 'caido':
@@ -590,7 +772,7 @@ export function criarBriga({
             }
             return true;
           case 'levantando':
-            if (t >= i.ate) mudar(i, i.tipo === 'corvo' ? 'subindo' : 'andando', i.tipo === 'corvo' ? 900 : 0);
+            if (t >= i.ate) mudar(i, voador(i) ? 'subindo' : 'andando', voador(i) ? 900 : 0);
             return true;
           case 'morto':
             if (t >= i.ate) inimigos.delete(i.id);
@@ -673,18 +855,22 @@ export function criarBriga({
           }
           for (const i of [...inimigos.values()]) {
             if (!passoComum(i, dt, t)) {
-              if (i.tipo === 'raposa') passoDaRaposa(i, dt, t);
-              else if (i.tipo === 'corvo') passoDoCorvo(i, dt, t);
+              const comp = bicho(i.tipo).comp;
+              if (comp === 'soco') passoDaRaposa(i, dt, t);
+              else if (comp === 'mergulho') passoDoCorvo(i, dt, t);
+              else if (comp === 'pulo') passoDoPulo(i, dt, t);
+              else if (comp === 'tiro') passoDoTiro(i, dt, t);
               else passoDoTexugo(i, dt, t);
             }
-            if (i.tipo !== 'corvo' && i.estado !== 'caido') i.z = 0;
+            if (!voador(i) && i.estado !== 'caido' && i.estado !== 'saltando') i.z = 0;
             // quem anda pelo chão, depois de entrar, fica dentro da arena (senão o texugo esperava do lado de fora, onde
             // ninguém o alcança); o corvo passa da borda no mergulho e volta sozinho
-            if (i.tipo !== 'corvo' && i.estado !== 'entrando') i.x = Math.max(arena[0] + 12, Math.min(arena[1] - 12, i.x));
+            if (!voador(i) && i.estado !== 'entrando') i.x = Math.max(arena[0] + 12, Math.min(arena[1] - 12, i.x));
             i.y = Math.max(0, Math.min(PROF, i.y));
             i.historia.push({ t, x: i.x, y: i.y, z: i.z });
             while (i.historia.length && i.historia[0].t < t - 1000) i.historia.shift();
           }
+          passoDosTiros(dt, t);
           decidirPancadas(t);
           // a volta de quem caiu
           for (const j of jogadores.values()) {
@@ -704,20 +890,55 @@ export function criarBriga({
             }
           }
           // a onda acabou: a seta, e a câmera anda quando alguém chega à frente
-          if (fase === 'lutando' && fila.length === 0 && inimigos.size === 0) {
-            if (onda === ONDAS.length - 1) return acabar(true);
-            fase = 'avancando';
-            arena = [arena[0], ONDAS_X[onda + 1] + ARENA_L];
-            ctx.avisar();
+          if (trocaEm !== null) {
+            if (t >= trocaEm) proximaEtapa(t);
+          } else if (fase === 'lutando' && fila.length === 0 && inimigos.size === 0) {
+            // A CAMPANHA: vencido o chefe, a fase seguinte começa logo (o site mostra o nome dela)
+            if (onda === ondas.length - 1 && etapa < etapas.length - 1) trocaEm = t + 2500;
+            else if (onda === ondas.length - 1) return acabar(true);
+            else {
+              fase = 'avancando';
+              arena = [arena[0], ONDAS_X[onda + 1] + ARENA_L];
+              ctx.avisar();
+            }
           } else if (fase === 'avancando' && emPe().some((j) => j.x >= ONDAS_X[onda + 1] + 90)) {
             comecarOnda(onda + 1);
           }
           // todo mundo fora, sem vidas: acabou
           const daTurma = [...jogadores.values()].filter((j) => naSalaAgora.has(j.userId));
           if (daTurma.length && daTurma.every((j) => j.estado === 'sem-vidas')) return acabar(false);
-          if (t - inicio > FASE_MAX_MS) return acabar(false);
+          if (t - inicio > FASE_MAX_MS * etapas.length) return acabar(false);
         }
         difundir();
+      };
+
+      /** A próxima fase da campanha: a arena volta ao começo, todo mundo em pé ao lado do outro, e os tiros somem. */
+      const proximaEtapa = (t: number) => {
+        trocaEm = null;
+        etapa++;
+        ondas = ondasDa(etapas[etapa]);
+        tiros.length = 0;
+        pancadas.length = 0;
+        inimigos.clear();
+        arena = [ONDAS_X[0], ONDAS_X[0] + ARENA_L];
+        let k = 0;
+        for (const j of jogadores.values()) {
+          if (j.estado === 'sem-vidas') continue;
+          j.x = 40 + k * 14;
+          j.y = 14 + k * 11;
+          k++;
+          j.z = 0;
+          j.noArDesde = null;
+          j.precisaPisar = false;
+          j.invulAte = t + 2000;
+          j.livreAte = t + 1500;
+          j.historia = [];
+          if (j.estado === 'em-pe') {
+            j.hp = VIDA;
+            evento_('r', j.userId, Math.round(j.x), Math.round(j.y));
+          }
+        }
+        comecarOnda(0);
       };
 
       const difundir = () => {
@@ -727,6 +948,9 @@ export function criarBriga({
           f: fase,
           o: onda,
           a: arena,
+          // a fase que está na tela (o índice em FASES_DA_BRIGA), e os tiros no ar: [id, tipo, x, y, lado]
+          fs: Math.max(0, FASES_DA_BRIGA.findIndex((f) => f.id === etapas[etapa])),
+          t: tiros.map((tr) => [tr.id, TIPOS.indexOf(tr.tipo), Math.round(tr.x), Math.round(tr.y), tr.vx > 0 ? 1 : -1]),
           i: [...inimigos.values()].map((i) => [
             i.id,
             TIPOS.indexOf(i.tipo),
@@ -738,6 +962,8 @@ export function criarBriga({
             Math.max(0, Math.round((i.hp / i.hpMax) * 100)),
             Math.min(255, Math.round((agora() - i.desde) / PASSO_MS)),
             Math.round(i.faixa),
+            // no pulo, o x de onde vai cair (o site pisca o círculo ali)
+            Math.round(i.alvoX),
           ]),
           j: [...jogadores.values()].map((j) => [
             j.userId,
@@ -803,7 +1029,7 @@ export function criarBriga({
               userId: l.userId,
               evento,
               communityId: ctx.comunidade ?? 0,
-              pista: 'briga',
+              pista: pistaDaBriga(escolha),
               posicao,
               tempoMs: null,
               pontos: l.pontos,
@@ -923,8 +1149,8 @@ export function criarBriga({
         if (ataque.acertos >= 6) return 'acertos demais';
         const i = inimigos.get(d.inimigo as number);
         if (!i || i.hp <= 0 || i.estado === 'morto' || i.estado === 'caido' || i.estado === 'levantando') return 'inimigo fora';
-        // o corvo voando alto só a voadora alcança
-        if (i.tipo === 'corvo' && i.z > 18 && ataque.golpe !== 'voadora') return 'alto demais';
+        // o que voa alto (o corvo, o sapo no meio do pulo) só a voadora alcança
+        if (i.z > 18 && ataque.golpe !== 'voadora') return 'alto demais';
         const chave = `${j.userId}:${ataque.id}`;
         if (i.acertos.has(chave)) return 'já acertou';
         const { x, y, z } = d;
@@ -949,7 +1175,8 @@ export function criarBriga({
         i.acertos.add(chave);
         if (i.acertos.size > 60) i.acertos = new Set([...i.acertos].slice(-30));
         ataque.acertos++;
-        const dano = i.tipo === 'texugo' && i.estado === 'cansado' ? Math.round(g.dano * 1.5) : g.dano;
+        const chefe = bicho(i.tipo).comp === 'chefe';
+        const dano = chefe && i.estado === 'cansado' ? Math.round(g.dano * 1.5) : g.dano;
         i.hp = Math.max(0, i.hp - dano);
         j.pontos += dano;
         j.golpes++;
@@ -961,9 +1188,9 @@ export function criarBriga({
           i.vx = empurra * 110;
           mudar(i, 'caido', 1000);
           evento_('x', i.id, j.userId);
-        } else if (i.tipo === 'texugo') {
+        } else if (chefe) {
           // o chefe aguenta firme: não cai nem para de atacar (ele pisca no site)
-        } else if (g.derruba || i.tipo === 'corvo') {
+        } else if (g.derruba || voador(i) || i.estado === 'saltando') {
           i.vx = empurra * 120;
           mudar(i, 'caido', 1000);
         } else {
@@ -981,7 +1208,12 @@ export function criarBriga({
           return {
             fase,
             onda: onda + 1,
-            ondas: ONDAS.length,
+            ondas: ondas.length,
+            // a fase escolhida (ou a campanha) e a que está na tela; "categoria" volta no "Jogar de novo"
+            categoria: escolha,
+            cenario: etapas[etapa],
+            etapa: etapa + 1,
+            etapas: etapas.length,
             venceu: fase === 'vitoria' || (fase === 'fim' && venceuAFase),
             jogadores: [...jogadores.values()].map((j) => ({
               userId: j.userId,

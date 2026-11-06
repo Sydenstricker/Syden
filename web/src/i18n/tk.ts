@@ -2812,6 +2812,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'Hereket etmek üçin oklar, çalyşmak üçin Boşluk, üýşmegi galdyrmak üçin X.',
   'A horta está salva!': 'Bakja halas boldy!',
   'A horta caiu.': 'Bakja ýykyldy.',
+  'Campanha': 'Kampaniýa',
   'Sem vidas.': 'Jan galmady.',
   'Você volta em {n}…': '{n}-dan gaýdyp gelersiň…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Ýöremek üçin oklar, urmak üçin X (yzly-yzyna üçüsi kombo), bökmek üçin Z, ýörite urgy üçin C, ol azajyk jan harçlaýar.',
@@ -3122,10 +3123,10 @@ export default {
   'Trânsito da toca': 'Hin ulag hereketi',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Maşynlary çatrykdan çaknyşdyrman geçirmek üçin bir minut. Doly nobat hem utuk aýyrýar.',
   Liberar: 'Goýber',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'Hin oýunjak maşynlary',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Dört zolakly oýunjak maşyn ýoly: maşyn öz zolagyndan özi gidýär, sen diňe tizligi artdyrýarsyň. Öwrümde tizligi gaty artdyrsaň, ýoldan uçup çykýar we wagt ýitirýär. Ýeke: wagta, dostlaryň arwahlaryna we robotlara garşy.',
   'Acelerar': 'Tizlendir',
   'Saiu da pista!': 'Ýoldan çykdy!',
   'Saídas da pista: {n}': 'Ýoldan çykmalar: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Tizlendirmek üçin basyp sakla we öwrümden öň goýber: maşyn titrände, ol çäkde.',
+} satisfies Record<string, string>;

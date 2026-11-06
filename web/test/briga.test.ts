@@ -95,7 +95,20 @@ test('a linha do tempo desenha atrás do quadro mais novo, interpolando', () => 
   assert.equal(misturar(v.a.i, v.b.i, v.k, [2, 3, 4])[0][2], 75);
 });
 
-test('com o servidor de verdade e 200 ms de atraso, o piloto automático vence a fase sozinho', async (t) => {
+test('as fases e os bichos: o arquivo do site é o do servidor, byte a byte', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const site = await readFile(new URL('../src/briga/fases.ts', import.meta.url), 'utf-8');
+  const servidor = await readFile(new URL('../../server/src/briga-fases.ts', import.meta.url), 'utf-8');
+  assert.equal(site, servidor);
+  // todo bicho das fases novas tem a folha dele (o Blender a fez), e os da horta continuam desenhados por código
+  const { FOLHAS_DOS_BICHOS } = await import('../src/briga/folhasDosBichos');
+  const { FASES_DA_BRIGA } = await import('../src/briga/fases');
+  for (const f of FASES_DA_BRIGA.slice(1)) {
+    for (const tipo of [f.chefe, ...f.ondas.flatMap((o) => Object.keys(o))]) assert.equal(FOLHAS_DOS_BICHOS[tipo]?.fase, f.id, `${f.id}: ${tipo}`);
+  }
+});
+
+for (const faseId of ['horta', 'floresta', 'deserto', 'neve', 'castelo']) test(`com o servidor de verdade e 200 ms de atraso, o piloto automático vence a fase sozinho: ${faseId}`, async (t) => {
   const s = await import('../../server/src/minijogo-briga.ts');
   let agora = 1_000_000;
   let passo: (() => void) | null = null;
@@ -116,7 +129,7 @@ test('com o servidor de verdade e 200 ms de atraso, o piloto automático vence a
   const jogo = s.criarBriga({ agora: () => agora, aleatorio: Math.random, intervalo: (p) => ((passo = p), 1), limpar: () => {} }).comecar(ctx, {
     naSala: [7],
     criadaPor: 7,
-    corpo: {},
+    corpo: { fase: faseId },
   });
   assert.ok(typeof jogo !== 'string');
   const c = novoCoelho(40, 14);
@@ -146,8 +159,8 @@ test('com o servidor de verdade e 200 ms de atraso, o piloto automático vence a
     c.hp = meu[7];
     if (meu[10] !== 0) continue;
     if (fim && quadros.at(-1)!.f !== 'lutando' && quadros.at(-1)!.f !== 'avancando') break;
-    const inimigos: InimigoNaTela[] = visto.i.map((l) => ({ id: l[0], tipo: TIPOS[l[1]], x: l[2], y: l[3], z: l[4], estado: ESTADOS[l[5]] }));
-    pilotoAutomatico(c, inimigos, cmd, c.relogio);
+    const inimigos: InimigoNaTela[] = visto.i.map((l) => ({ id: l[0], tipo: TIPOS[l[1]], x: l[2], y: l[3], z: l[4], estado: ESTADOS[l[5]], faixa: l[9], alvoX: l[10] }));
+    pilotoAutomatico(c, inimigos, cmd, c.relogio, (visto.t ?? []).map((tr) => ({ x: tr[2], y: tr[3], lado: tr[4] })));
     const n = passoDoCoelho(c, cmd, DT, quadros.at(-1)!.a);
     if (n.comecou) mandar(n.comecou);
     if (golpeAtivo(c) && c.golpe) {

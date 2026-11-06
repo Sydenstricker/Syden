@@ -2812,6 +2812,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'Ar bultiņām pārvieto, ar atstarpi samaini, ar X cel kaudzi.',
   'A horta está salva!': 'Dārzs ir glābts!',
   'A horta caiu.': 'Dārzs ir kritis.',
+  'Campanha': 'Kampaņa',
   'Sem vidas.': 'Nav dzīvību.',
   'Você volta em {n}…': 'Atgriezīsies pēc {n}…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Ar bultiņām ej, ar X sit (trīs pēc kārtas ir kombo), ar Z lec, ar C speciālais gājiens, kas patērē mazliet dzīvības.',
@@ -3113,10 +3114,10 @@ export default {
   'Trânsito da toca': 'Alas satiksme',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Viena minūte, lai izlaistu mašīnas cauri krustojumam tā, lai tās nesadurtos. Pilna rinda arī maksā punktus.',
   Liberar: 'Palaid',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'Alas mašīnītes',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Četru joslu rotaļu mašīnīšu trase: mašīna pati brauc pa savu joslu, tu tikai paātrini. Ja līkumā paātrini par daudz, tā izlido no trases un zaudē laiku. Solo — pret laiku, draugu spokiem un robotiem.',
   'Acelerar': 'Paātrināt',
   'Saiu da pista!': 'Ārā no trases!',
   'Saídas da pista: {n}': 'Izlidojumi no trases: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Turi, lai paātrinātu, un atlaid pirms līkuma: kad mašīna trīc, tā ir uz robežas.',
+} satisfies Record<string, string>;

@@ -2818,6 +2818,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'Harakatlanish uchun strelkalar, almashtirish uchun Probel, uyumni koʻtarish uchun X.',
   'A horta está salva!': 'Poliz qutqarildi!',
   'A horta caiu.': 'Poliz qulab tushdi.',
+  'Campanha': 'Kampaniya',
   'Sem vidas.': 'Jon qolmadi.',
   'Você volta em {n}…': '{n} dan keyin qaytasiz…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Yurish uchun strelkalar, urish uchun X (ketma-ket uchtasi kombo), sakrash uchun Z, maxsus zarba uchun C, u biroz jon sarflaydi.',
@@ -3131,10 +3132,10 @@ export default {
   'Trânsito da toca': 'Uya tirbandligi',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Mashinalarni chorrahadan to‘qnashtirmay o‘tkazish uchun bir daqiqa. To‘lgan navbat ham ochkoga tushadi.',
   Liberar: 'Qo‘yib yubor',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'Uya oʻyinchoq mashinalari',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Toʻrt yoʻlakli oʻyinchoq mashina treki: mashina oʻz yoʻlagidan oʻzi yuradi, sen faqat tezlashtirasan. Burilishda haddan tashqari tezlashtirsang, trekdan uchib chiqadi va vaqt yoʻqotadi. Yakka — vaqtga, doʻstlar arvohlariga va robotlarga qarshi.',
   'Acelerar': 'Tezlashtirish',
   'Saiu da pista!': 'Trekdan chiqdi!',
   'Saídas da pista: {n}': 'Trekdan chiqishlar: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Tezlashtirish uchun bosib tur va burilishdan oldin qoʻyib yubor: mashina titrasa, u chegarada.',
+} satisfies Record<string, string>;

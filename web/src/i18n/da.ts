@@ -2804,6 +2804,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'Piletaster for at bevæge dig, mellemrum for at bytte, X for at hæve stakken.',
   'A horta está salva!': 'Haven er reddet!',
   'A horta caiu.': 'Haven faldt.',
+  'Campanha': 'Kampagne',
   'Sem vidas.': 'Ingen liv tilbage.',
   'Você volta em {n}…': 'Du er tilbage om {n}…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Piletaster for at gå, X for at slå (tre i træk er kombo), Z for at hoppe, C for specialangrebet, som koster lidt liv.',
@@ -3105,10 +3106,10 @@ export default {
   'Trânsito da toca': 'Hulens trafik',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Ét minut til at sende bilerne gennem krydset, uden at de støder sammen. En fuld kø koster også point.',
   Liberar: 'Send afsted',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'Hulens legetøjsbiler',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'En racerbane til legetøjsbiler med fire spor: bilen følger selv sit spor, og du giver kun gas. Giver du for meget gas i svinget, flyver den af banen og taber tid. I Solo: mod uret, dine venners spøgelser og robotter.',
   'Acelerar': 'Giv gas',
   'Saiu da pista!': 'Af banen!',
   'Saídas da pista: {n}': 'Ude af banen: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Hold inde for at give gas, og slip før svinget: når bilen ryster, er den på grænsen.',
+} satisfies Record<string, string>;

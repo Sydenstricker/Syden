@@ -50,7 +50,7 @@ interface Interno {
   _arena: () => [number, number];
 }
 
-function comecar(naSala = [anaId, biaId], comunidadeId = comunidade.id, aleatorio = () => 0.5) {
+function comecar(naSala = [anaId, biaId], comunidadeId = comunidade.id, aleatorio = () => 0.5, corpo: Record<string, unknown> = {}) {
   let passo: (() => void) | null = null;
   let limpo = 0;
   let terminou = false;
@@ -78,7 +78,7 @@ function comecar(naSala = [anaId, biaId], comunidadeId = comunidade.id, aleatori
       return 1;
     },
     limpar: () => limpo++,
-  }).comecar(ctx, { naSala, criadaPor: naSala[0], corpo: {} });
+  }).comecar(ctx, { naSala, criadaPor: naSala[0], corpo });
   assert.ok(typeof jogo !== 'string');
   const interno = jogo as unknown as Interno;
   return {
@@ -284,7 +284,7 @@ function limparOnda(m: ReturnType<typeof comecar>, quem = anaId) {
     if (q && q.f !== 'lutando') break;
     for (const i of vivos) {
       i.hp = 1;
-      if (i.tipo === 'corvo') i.z = 0;
+      i.z = 0;
       i.historia.push({ t: agora, x: i.x, y: i.y, z: i.z });
       const j = m.interno._jogadores.get(quem)!;
       j.livreAte = agora + 1000;
@@ -362,9 +362,9 @@ test('cai, volta depois de alguns segundos com uma vida a menos, e sem vidas a f
   assert.ok(m.limpo() >= 1, 'o passo desliga no fim');
 });
 
-async function trofeus(token: string) {
+async function trofeus(token: string, pista = 'briga') {
   return ((await comToken(app, token)('GET', '/api/corrida-trofeus')).json().trofeus as { pista: string; posicao: number; pontos: number }[]).filter(
-    (t) => t.pista === 'briga',
+    (t) => t.pista === pista,
   );
 }
 
@@ -602,4 +602,175 @@ test('o resultado diz a posição só da turma (null para quem saiu), a mesma do
   assert.equal(pub.resultado.find((l) => l.userId === anaId)!.posicao, 1);
   assert.equal(pub.resultado.find((l) => l.userId === biaId)!.posicao, null, 'a Bia saiu no meio: sem posição');
   assert.equal(pub.resultado.at(-1)!.userId, biaId, 'quem saiu vem depois');
+});
+
+// ---------------- AS FASES NOVAS (06/11/2026) ----------------
+
+/** Anda até aparecer um bicho que satisfaça `f`, e o devolve. */
+function esperar(m: ReturnType<typeof comecar>, f: (i: Ini) => boolean, ms = 30_000) {
+  for (let t = 0; t < ms; t += PASSO_MS) {
+    const i = [...m.interno._inimigos.values()].find(f);
+    if (i) return i;
+    m.andar(PASSO_MS);
+  }
+  assert.fail('o bicho não apareceu');
+}
+
+/** Vence `ondas` ondas (a Ana bate em tudo) e anda até a arena seguinte. */
+function passarOndas(m: ReturnType<typeof comecar>, ondas: number) {
+  const j = m.interno._jogadores.get(anaId)!;
+  for (let k = 0; k < ondas; k++) {
+    limparOnda(m);
+    m.andar(PASSO_MS);
+    while (j.x < ONDAS_X[k + 1] + 100) {
+      m.pos(anaId, { x: j.x + 6, y: j.y });
+      m.andar(PASSO_MS);
+    }
+    m.andar(PASSO_MS);
+  }
+}
+
+/** Uma fase inteira, vencida; na campanha, até a próxima começar (sozinha, 2,5 s depois do chefe). */
+function vencerUmaFase(m: ReturnType<typeof comecar>) {
+  const fs = m.quadros.at(-1)!.fs;
+  passarOndas(m, ONDAS.length - 1);
+  const guarda = m as unknown as { _id?: number };
+  let id = guarda._id ?? 0;
+  for (let k = 0; k < 2000; k++) {
+    const q = m.quadros.at(-1)!;
+    if (q.f !== 'lutando' || q.fs !== fs) return;
+    for (const i of m.interno._inimigos.values()) {
+      if (i.hp <= 0 || i.estado === 'caido' || i.estado === 'levantando' || i.estado === 'morto') continue;
+      i.hp = 1;
+      i.z = 0;
+      i.historia.push({ t: agora, x: i.x, y: i.y, z: i.z });
+      const j = m.interno._jogadores.get(anaId)!;
+      j.livreAte = agora + 1000;
+      j.lado = 1;
+      m.pos(anaId, { x: i.x - 20, y: i.y, ataque: { id: ++id, g: 'soco1' } });
+      m.golpe(anaId, { a: id, inimigo: i.id, x: i.x - 20, y: i.y });
+      m.andar(300);
+    }
+    guarda._id = id;
+    m.andar(PASSO_MS);
+  }
+}
+
+test('a fase escolhida: os bichos dela entram, o quadro diz qual é, e fase desconhecida vira a horta', () => {
+  const m = comecar([anaId], comunidade.id, () => 0.5, { fase: 'deserto' });
+  m.andar(3000);
+  const q = m.quadros.at(-1)!;
+  assert.equal(q.fs, 2);
+  assert.ok((q.i as number[][]).length > 0 && (q.i as number[][]).every((l) => mod.TIPOS[l[1]] === 'cacto'), 'a primeira onda do deserto é de cactos');
+  const pub = m.jogo.publico(anaId) as { categoria: string; cenario: string; etapas: number };
+  assert.deepEqual([pub.categoria, pub.cenario, pub.etapas], ['deserto', 'deserto', 1]);
+  m.jogo.parar!();
+  const h = comecar([anaId], comunidade.id, () => 0.5, { fase: '../../etc' });
+  h.andar(1500);
+  assert.equal(h.quadros.at(-1)!.fs, 0);
+  assert.equal((h.jogo.publico(anaId) as { categoria: string }).categoria, 'horta');
+  h.jogo.parar!();
+  // o "Jogar de novo" manda a fase como categoria
+  const c = comecar([anaId], comunidade.id, () => 0.5, { categoria: 'castelo' });
+  c.andar(PASSO_MS);
+  assert.equal(c.quadros.at(-1)!.fs, 4);
+  c.jogo.parar!();
+});
+
+test('o que atira: mira a faixa, o tiro anda por ela, e quem fica parado nela leva', () => {
+  const m = comecar([anaId], comunidade.id, () => 0.5, { fase: 'deserto' });
+  const j = m.interno._jogadores.get(anaId)!;
+  // a terceira onda tem o dino
+  passarOndas(m, 2);
+  const dino = esperar(m, (i) => i.tipo === 'dino' && i.estado === 'mirando') as Ini & { faixa: number };
+  for (const i of m.interno._inimigos.values()) if (i !== dino) i.estado = 'morto';
+  const hp = j.hp;
+  j.invulAte = 0;
+  for (let t = 0; t < 2500; t += PASSO_MS) {
+    teleportar(m, anaId, dino.x + dino.lado * 70, dino.faixa);
+    m.andar(PASSO_MS);
+  }
+  assert.ok(m.quadros.some((q) => (q.t as unknown[]).length > 0), 'o tiro aparece no quadro');
+  assert.ok(j.hp < hp, `levou o tiro: ${j.hp}`);
+  m.jogo.parar!();
+});
+
+test('o que pula: mira onde a pessoa está, e quem sai do círculo durante o aviso escapa', () => {
+  const caso = (foge: boolean) => {
+    const m = comecar([anaId], comunidade.id, () => 0.5, { fase: 'floresta' });
+    const j = m.interno._jogadores.get(anaId)!;
+    passarOndas(m, 1);
+    const sapo = esperar(m, (i) => i.tipo === 'sapo' && i.estado === 'preparando') as Ini & { alvoX: number; faixa: number };
+    for (const i of m.interno._inimigos.values()) if (i !== sapo) i.estado = 'morto';
+    j.invulAte = 0;
+    const hp = j.hp;
+    const [ax, ay] = [sapo.alvoX, sapo.faixa];
+    for (let t = 0; t < 1800; t += PASSO_MS) {
+      teleportar(m, anaId, foge ? ax + 60 : ax, ay);
+      m.andar(PASSO_MS);
+    }
+    m.jogo.parar!();
+    return hp - j.hp;
+  };
+  assert.ok(caso(false) > 0, 'parada no círculo: leva');
+  assert.equal(caso(true), 0, 'fora do círculo: escapa');
+});
+
+test('o chefe que atira solta a rajada de três tiros (o da horta não tem)', () => {
+  const m = comecar([anaId], comunidade.id, () => 0.1, { fase: 'castelo' });
+  const j = m.interno._jogadores.get(anaId)!;
+  passarOndas(m, 4);
+  const dragao = esperar(m, (i) => i.tipo === 'dragao' && i.estado === 'andando');
+  for (const i of m.interno._inimigos.values()) if (i !== dragao) i.estado = 'morto';
+  // a Ana longe do chefe (mais de 80 px): de longe ele investe ou sopra
+  let viuTres = false;
+  for (let t = 0; t < 20_000 && !viuTres; t += PASSO_MS) {
+    teleportar(m, anaId, dragao.x > ONDAS_X[4] + 160 ? ONDAS_X[4] + 20 : ONDAS_X[4] + 300, j.y);
+    j.invulAte = agora + 10_000;
+    m.andar(PASSO_MS);
+    if (((m.quadros.at(-1)!.t as unknown[]) ?? []).length >= 3) viuTres = true;
+  }
+  assert.ok(viuTres, 'a rajada');
+  m.jogo.parar!();
+  assert.equal((mod.BICHOS.texugo as { sopro?: boolean }).sopro, undefined);
+});
+
+test('a fase avulsa dá o troféu dela; a horta continua com a pista de antes', async () => {
+  const antes = (await trofeus(ana.token, 'briga-neve')).length;
+  const antesHorta = (await trofeus(ana.token)).length;
+  const m = comecar([anaId, biaId], comunidade.id, () => 0.5, { fase: 'neve' });
+  const r = esperar(m, (i) => i.tipo === 'macaco' && (i.estado === 'andando' || i.estado === 'entrando'));
+  m.andar(300);
+  teleportar(m, biaId, r.x - 20, r.y);
+  m.pos(biaId, { x: r.x - 20, y: r.y, ataque: { id: 1, g: 'soco1' } });
+  m.golpe(biaId, { a: 1, inimigo: r.id, x: r.x - 20, y: r.y });
+  vencer(m);
+  assert.equal((await trofeus(ana.token, 'briga-neve')).length, antes + 1);
+  assert.equal((await trofeus(ana.token)).length, antesHorta);
+});
+
+test('a campanha: vencido o chefe, a fase seguinte começa do começo, com todo mundo em pé; o troféu é da campanha inteira', async () => {
+  const antes = (await trofeus(ana.token, 'briga-campanha')).length;
+  const m = comecar([anaId, biaId], comunidade.id, () => 0.5, { fase: 'campanha' });
+  const bi = m.interno._jogadores.get(biaId)!;
+  // a Bia acerta um, para ter ponto
+  const r = umaRaposa(m);
+  m.andar(300);
+  teleportar(m, biaId, r.x - 20, r.y);
+  m.pos(biaId, { x: r.x - 20, y: r.y, ataque: { id: 1, g: 'soco1' } });
+  m.golpe(biaId, { a: 1, inimigo: r.id, x: r.x - 20, y: r.y });
+  vencerUmaFase(m);
+  const q = m.quadros.at(-1)!;
+  assert.equal(q.f, 'lutando', 'a horta vencida não acaba a campanha');
+  assert.equal(q.fs, 1, `a floresta: ${JSON.stringify([q.f, q.o, q.fs, (q.i as unknown[]).length])}`);
+  assert.deepEqual(q.a, [0, 320]);
+  assert.ok(bi.x < 80, 'todo mundo de volta ao começo');
+  assert.ok(m.quadros.slice(-60).some((qq) => (qq.e as unknown[][]).some((e) => e[1] === 'r' && e[2] === biaId)), 'o site é avisado da posição nova');
+  assert.equal((m.jogo.publico(anaId) as { etapa: number }).etapa, 2);
+  // as outras quatro
+  for (let e = 0; e < 4; e++) vencerUmaFase(m);
+  assert.equal(m.quadros.at(-1)!.f, 'vitoria');
+  agora += FIM_MS;
+  m.relogio[0].depois();
+  assert.equal((await trofeus(ana.token, 'briga-campanha')).length, antes + 1);
 });

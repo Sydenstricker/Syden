@@ -2737,6 +2737,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'নড়তে তীর চিহ্ন, বদলাতে স্পেস, স্তূপ তুলতে X।',
   'A horta está salva!': 'বাগান বেঁচে গেছে!',
   'A horta caiu.': 'বাগানের পতন হলো।',
+  'Campanha': 'অভিযান',
   'Sem vidas.': 'আর জীবন নেই।',
   'Você volta em {n}…': '{n} পরে তুমি ফিরবে…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'হাঁটতে তীর চিহ্ন, মারতে X (পরপর তিনটে মানে কম্বো), লাফাতে Z, স্পেশালের জন্য C, যাতে একটু জীবন খরচ হয়।',
@@ -3038,10 +3039,10 @@ export default {
   'Trânsito da toca': 'গর্তের যানজট',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'চৌরাস্তা দিয়ে গাড়িগুলো ছাড়তে এক মিনিট, যেন ধাক্কা না লাগে। লাইন ভরে গেলেও পয়েন্ট কাটা যায়।',
   Liberar: 'ছাড়ো',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'গর্তের খেলনা গাড়ি',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'চার লেনের খেলনা গাড়ির ট্র্যাক: গাড়ি নিজেই লেন ধরে চলে, আপনি শুধু গতি বাড়ান। বাঁকে বেশি গতি দিলে গাড়ি উড়ে ট্র্যাকের বাইরে চলে যায় আর সময় নষ্ট হয়। একা খেললে: ঘড়ি, বন্ধুদের ভূত আর রোবটদের বিরুদ্ধে।',
   'Acelerar': 'গতি বাড়ান',
   'Saiu da pista!': 'ট্র্যাকের বাইরে!',
   'Saídas da pista: {n}': 'ট্র্যাক থেকে ছিটকে পড়া: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'গতি বাড়াতে চেপে ধরে রাখুন, বাঁকের আগে ছেড়ে দিন: গাড়ি কাঁপলে বুঝবেন সেটা সীমায় আছে।',
+} satisfies Record<string, string>;

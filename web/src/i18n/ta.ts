@@ -2725,6 +2725,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'நகர்த்த அம்புக்குறி விசைகள், மாற்ற ஸ்பேஸ், குவியலை உயர்த்த X.',
   'A horta está salva!': 'தோட்டம் காப்பாற்றப்பட்டது!',
   'A horta caiu.': 'தோட்டம் வீழ்ந்தது.',
+  'Campanha': 'பயணம்',
   'Sem vidas.': 'உயிர்கள் இல்லை.',
   'Você volta em {n}…': '{n} இல் திரும்புவாய்…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'நடக்க அம்புக்குறி விசைகள், அடிக்க X (தொடர்ந்து மூன்று என்பது காம்போ), தாவ Z, சிறப்பு அடிக்கு C, அது கொஞ்சம் உயிரைச் செலவழிக்கும்.',
@@ -3026,10 +3027,10 @@ export default {
   'Trânsito da toca': 'வளைப் போக்குவரத்து',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'சந்திப்பில் வாகனங்கள் மோதாமல் கடக்க விட ஒரு நிமிடம். நிரம்பிய வரிசையும் புள்ளிகளைக் குறைக்கும்.',
   Liberar: 'விடு',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'வளை பொம்மைக் கார்கள்',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'நான்கு தடங்கள் கொண்ட பொம்மைக் கார் பாதை: கார் தன் தடத்தைத் தானே பின்தொடரும், நீங்கள் வேகத்தை மட்டும் கூட்டினால் போதும். வளைவில் அதிக வேகம் கொடுத்தால், அது பாதையை விட்டுப் பறந்து நேரத்தை இழக்கும். தனியாக: கடிகாரம், நண்பர்களின் பேய்கள் மற்றும் ரோபோக்களுக்கு எதிராக.',
   'Acelerar': 'வேகம் கூட்டவும்',
   'Saiu da pista!': 'பாதையை விட்டு வெளியே!',
   'Saídas da pista: {n}': 'பாதையை விட்டு வெளியேறியது: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'வேகம் கூட்ட அழுத்திப் பிடியுங்கள், வளைவுக்கு முன் விடுங்கள்: கார் நடுங்கினால், அது எல்லையில் உள்ளது.',
+} satisfies Record<string, string>;

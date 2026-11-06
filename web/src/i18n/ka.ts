@@ -2828,6 +2828,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'ისრები მოძრაობისთვის, ჰარი გადასანაცვლებლად, X გროვის ასაწევად.',
   'A horta está salva!': 'ბოსტანი გადარჩა!',
   'A horta caiu.': 'ბოსტანი დაეცა.',
+  'Campanha': 'კამპანია',
   'Sem vidas.': 'სიცოცხლეები აღარ დარჩა.',
   'Você volta em {n}…': 'დაბრუნდები {n}-ში…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'ისრები სიარულისთვის, X დასარტყმელად (ზედიზედ სამი კომბოა), Z ასახტომად, C სპეციალური სვლისთვის, რომელსაც ცოტა სიცოცხლე მიაქვს.',
@@ -3129,10 +3130,10 @@ export default {
   'Trânsito da toca': 'სოროს მოძრაობა',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'ერთი წუთი, რომ მანქანები გზაჯვარედინზე გაატარო ისე, რომ არ შეეჯახონ. სავსე რიგიც ქულებს გაკლებს.',
   Liberar: 'გაუშვი',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'სოროს სათამაშო მანქანები',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'ოთხზოლიანი სათამაშო მანქანების ტრასა: მანქანა თავად მიჰყვება თავის ზოლს, შენ კი მხოლოდ აჩქარებ. მოსახვევში ზედმეტად თუ აჩქარე, ტრასიდან გადაფრინდება და დროს კარგავს. სოლო — დროის, მეგობრების მოჩვენებებისა და რობოტების წინააღმდეგ.',
   'Acelerar': 'აჩქარება',
   'Saiu da pista!': 'ტრასიდან გავარდა!',
   'Saídas da pista: {n}': 'ტრასიდან გავარდნები: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'დააჭირე და გეჭიროს აჩქარებისთვის, მოსახვევამდე კი გაუშვი: როცა მანქანა კანკალებს, ზღვარზეა.',
+} satisfies Record<string, string>;

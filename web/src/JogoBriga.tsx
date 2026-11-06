@@ -9,7 +9,6 @@ import {
   desenharBicho,
   desenharCoelho,
   desenharEfeito,
-  desenharFundo,
   desenharOndas,
   desenharRastro,
   desenharSeta,
@@ -21,6 +20,10 @@ import {
   W,
   type Efeito,
 } from './briga/desenho';
+import { desenharCenario } from './briga/cenarios';
+import { bicho, CAMPANHA, CORPO, FASES_DA_BRIGA, pistaDaBriga, type TipoDeInimigo } from './briga/fases';
+import { alturaDoBicho, carregarFolhas, desenharBichoDaFolha, desenharTiro, temFolha } from './briga/sprites';
+import { nomeDaPistaEm } from './corrida/nomes';
 import {
   acaoAtiva,
   ACOES,
@@ -118,7 +121,17 @@ interface Hud {
   fase: Quadro['f'] | null;
   meuEstado: number;
   voltaEm: number;
+  /** A fase que está na tela (o índice em FASES_DA_BRIGA), e desde quando (o nome dela aparece no começo). */
+  cenario: number;
+  cenarioDesde: number;
 }
+
+/** O que aparece no fim: a horta tem as frases dela; as outras fases e a campanha, vitória ou derrota. */
+const desfecho = (t: (s: string) => string, categoria: string | undefined, venceu: boolean) =>
+  !categoria || categoria === 'horta' ? (venceu ? t('A horta está salva!') : t('A horta caiu.')) : venceu ? t('Vitória!') : t('Derrota');
+
+/** O nome de uma fase, ou da campanha, já traduzido (os das pistas da estante de troféus: "Floresta", "Neve"...). */
+export const nomeDaFaseDaBriga = (t: (s: string) => string, id: string) => (id === 'horta' ? nomeDaPistaEm(t, 'horta-1') : nomeDaPistaEm(t, pistaDaBriga(id)));
 
 export function JogoBriga({
   estado,
@@ -144,7 +157,7 @@ export function JogoBriga({
     const regra = { venceu: !!doServidor && estado.venceu, solo: estado.solo === true, ficaram: linhas.filter((l) => l.posicao !== null).length };
     return (
       <div className="briga">
-        <p className="briga-desfecho">{estado.venceu ? t('A horta está salva!') : t('A horta caiu.')}</p>
+        <p className="briga-desfecho">{desfecho(t, (estado as { categoria?: string }).categoria, estado.venceu)}</p>
         <div className="minijogo-fim">
           <p className="minijogo-fim-titulo">
             <Trophy size={20} aria-hidden="true" /> {t('Fim de jogo!')}
@@ -162,7 +175,8 @@ export function JogoBriga({
       </div>
     );
   }
-  return <Palco estado={estado} eu={eu} jogador={jogador && estado.jogadores.some((j) => j.userId === eu)} socket={socket} channelId={channelId} />;
+  // uma partida nova é um palco novo (a linha do tempo e o meu coelho recomeçam: o "Jogar de novo" mantém o socket)
+  return <Palco key={estado.partidaId} estado={estado} eu={eu} jogador={jogador && estado.jogadores.some((j) => j.userId === eu)} socket={socket} channelId={channelId} />;
 }
 
 function Palco({
@@ -181,7 +195,7 @@ function Palco({
   const t = useT();
   const canvas = useRef<HTMLCanvasElement>(null);
   const [cmd] = useState(comandosVazios);
-  const [hud, setHud] = useState<Hud>({ linhas: [], fase: null, meuEstado: 0, voltaEm: 0 });
+  const [hud, setHud] = useState<Hud>({ linhas: [], fase: null, meuEstado: 0, voltaEm: 0, cenario: -1, cenarioDesde: 0 });
   const [agora, setAgora] = useState(Date.now);
   const solo = estado.solo === true;
   useTeclado(jogador, cmd);
@@ -213,6 +227,8 @@ function Palco({
     let quadroId = 0;
     let camX = 0;
     let posicionado = false;
+    let cenario = -1;
+    let cenarioDesde = 0;
 
     const enviar = (dados: unknown) =>
       solo ? socket.emit('minijogo-solo:tempo-real', { dados }) : socket.emit('minijogo:tempo-real', { channelId, dados });
@@ -306,14 +322,27 @@ function Palco({
         y: l[3],
         z: l[4],
         estado: ESTADOS[l[5]] ?? 'andando',
+        faixa: l[9],
+        alvoX: l[10],
       }));
+      // os tiros no ar, interpolados como os bichos: [id, tipo, x, y, lado]
+      const tiros = volta ? misturar(volta.a.t ?? [], volta.b.t ?? [], volta.k, [2]) : [];
+      // a fase na tela: as folhas dos bichos dela já pedidas, e o nome dela aparece quando muda
+      const fs = ultimo?.fs ?? 0;
+      if (ultimo && fs !== cenario) {
+        cenario = fs;
+        cenarioDesde = agoraMs;
+        const f = FASES_DA_BRIGA[fs];
+        if (f) carregarFolhas([f.chefe, ...f.ondas.flatMap((o) => Object.keys(o) as TipoDeInimigo[])]);
+        ultimoHud = 0;
+      }
 
       // O MEU COELHO: passos fixos de 1/60 s
       sobra += dt;
       while (sobra >= 1 / 60) {
         sobra -= 1 / 60;
         if (!jogando) continue;
-        if (import.meta.env.DEV && window.brigaPilotoAutomatico) pilotoAutomatico(eu_, naTelaAgora, cmd, eu_.relogio);
+        if (import.meta.env.DEV && window.brigaPilotoAutomatico) pilotoAutomatico(eu_, naTelaAgora, cmd, eu_.relogio, tiros.map((l) => ({ x: l[2], y: l[3], lado: l[4] })));
         const novo = passoDoCoelho(eu_, cmd, 1 / 60, arena);
         if (novo.comecou) {
           // o golpe que começou vai na hora, antes de qualquer acerto dele
@@ -341,25 +370,42 @@ function Palco({
       const cam = Math.round(camX);
 
       // O DESENHO, do fundo para a frente (quem está mais à frente na faixa é desenhado por cima)
-      desenharFundo(g, cam, FIM_DA_FASE);
+      desenharCenario(g, fs, cam, FIM_DA_FASE, agoraMs);
       const coisas: { y: number; desenhar: () => void }[] = [];
       for (const l of inimigos) {
         const tipo = TIPOS[l[1]] ?? 'raposa';
         const est = ESTADOS[l[5]] ?? 'andando';
         const { sx, sy } = naTela(cam, l[2], l[3], l[4]);
         const chao = CHAO + Math.round(l[3]);
+        const comp = bicho(tipo).comp;
+        const daFolha = temFolha(tipo);
         coisas.push({
           y: l[3],
           desenhar: () => {
-            sombra(g, sx, chao, tipo === 'texugo' ? 36 : tipo === 'corvo' ? 12 : 18, l[4]);
-            desenharAviso(g, tipo, est, sx, CHAO + Math.round(tipo === 'corvo' || tipo === 'texugo' ? l[9] ?? l[3] : l[3]), l[6], agoraMs, chao);
-            desenharBicho(g, { tipo, estado: est, lado: l[6], passos: l[8], hp: l[7], piscando: (piscandoInimigo.get(l[0]) ?? 0) > agoraMs }, sx, sy, agoraMs);
-            if (tipo !== 'texugo' && l[7] < 100 && est !== 'morto') {
+            sombra(g, sx, chao, tipo === 'texugo' ? 36 : tipo === 'corvo' ? 12 : tipo === 'raposa' ? 18 : CORPO[tipo] * 2, l[4]);
+            const queda = comp === 'pulo' ? Math.round((l[10] ?? l[2]) - cam) : undefined;
+            desenharAviso(g, tipo, est, sx, CHAO + Math.round(comp !== 'soco' ? l[9] ?? l[3] : l[3]), l[6], agoraMs, chao, queda);
+            const piscando = (piscandoInimigo.get(l[0]) ?? 0) > agoraMs;
+            if (daFolha) desenharBichoDaFolha(g, { tipo, estado: est, lado: l[6], ms: l[8] * 50, piscando }, sx, sy, agoraMs);
+            else desenharBicho(g, { tipo, estado: est, lado: l[6], passos: l[8], hp: l[7], piscando }, sx, sy, agoraMs);
+            if (comp !== 'chefe' && l[7] < 100 && est !== 'morto') {
+              const alto = daFolha ? alturaDoBicho(tipo) + 5 : tipo === 'corvo' ? 22 : 54;
               g.fillStyle = '#2a1e1a';
-              g.fillRect(sx - 8, sy - (tipo === 'corvo' ? 22 : 54), 16, 3);
+              g.fillRect(sx - 8, sy - alto, 16, 3);
               g.fillStyle = '#e2574a';
-              g.fillRect(sx - 7, sy - (tipo === 'corvo' ? 21 : 53), Math.round((14 * l[7]) / 100), 1);
+              g.fillRect(sx - 7, sy - alto + 1, Math.round((14 * l[7]) / 100), 1);
             }
+          },
+        });
+      }
+      for (const l of tiros) {
+        const tipo = TIPOS[l[1]] ?? 'dino';
+        const { sx, sy } = naTela(cam, l[2], l[3], 12);
+        coisas.push({
+          y: l[3],
+          desenhar: () => {
+            sombra(g, sx, CHAO + Math.round(l[3]), 6, 12);
+            desenharTiro(g, tipo, sx, sy, l[4], agoraMs);
           },
         });
       }
@@ -402,7 +448,7 @@ function Palco({
       }
       coisas.sort((a, b) => a.y - b.y).forEach((c_) => c_.desenhar());
       for (let k = efeitos.length - 1; k >= 0; k--) if (!desenharEfeito(g, efeitos[k], cam, agoraMs)) efeitos.splice(k, 1);
-      const chefe = inimigos.find((l) => l[1] === 2);
+      const chefe = inimigos.find((l) => bicho(TIPOS[l[1]] ?? 'raposa').comp === 'chefe');
       if (chefe) desenharBarraDoChefe(g, chefe[7]);
       if (ultimo) desenharOndas(g, ultimo.o, ONDAS_X.length);
       if (fase === 'avancando') desenharSeta(g, agoraMs);
@@ -415,6 +461,8 @@ function Palco({
           fase,
           meuEstado,
           voltaEm,
+          cenario,
+          cenarioDesde: Date.now() - (agoraMs - cenarioDesde),
         });
         setAgora(Date.now());
       }
@@ -428,12 +476,11 @@ function Palco({
   }, [socket, channelId, solo, eu, jogador, cmd]);
 
   const nome = (id: number) => pessoas.current.get(id)?.nome ?? '';
+  const categoria = (estado as { categoria?: string }).categoria;
   const aviso =
-    hud.fase === 'vitoria'
-      ? t('A horta está salva!')
-      : hud.fase === 'derrota'
-        ? t('A horta caiu.')
-        : jogador && hud.meuEstado === 2
+    hud.fase === 'vitoria' || hud.fase === 'derrota'
+      ? desfecho(t, categoria, hud.fase === 'vitoria')
+      : jogador && hud.meuEstado === 2
           ? t('Sem vidas.')
           : jogador && hud.meuEstado === 1 && hud.voltaEm > 0
             ? t('Você volta em {n}…', { n: Math.max(1, Math.ceil((hud.voltaEm - agora) / 1000)) })
@@ -458,6 +505,10 @@ function Palco({
       <div className="briga-tela">
         <canvas ref={canvas} width={W} height={H} />
         {aviso && <p className="briga-aviso">{aviso}</p>}
+        {/* o nome da fase, no começo dela (na campanha, a cada fase nova) */}
+        {!aviso && hud.cenario >= 0 && agora - hud.cenarioDesde < 2500 && (
+          <p className="briga-aviso briga-titulo">{nomeDaFaseDaBriga(t, FASES_DA_BRIGA[hud.cenario]?.id ?? 'horta')}</p>
+        )}
       </div>
       {jogador && <Toque cmd={cmd} />}
       {jogador && (
@@ -505,6 +556,62 @@ function Toque({ cmd }: { cmd: Comandos }) {
         <button type="button" aria-label={t('Especial')} {...apertar('especial')}>✸</button>
         <button type="button" aria-label={t('Pular')} {...apertar('pulo')}>⤒</button>
         <button type="button" aria-label={t('Bater')} {...apertar('soco')}>✊</button>
+      </div>
+    </div>
+  );
+}
+
+/** A MINIATURA de uma fase na escolha: o cenário dela, desenhado uma vez (de novo quando as camadas da floresta chegam). */
+function MiniaturaDaFase({ indice }: { indice: number }) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const g = ref.current?.getContext('2d');
+    if (!g) return;
+    g.imageSmoothingEnabled = false;
+    let vezes = 0;
+    const desenhar = () => desenharCenario(g, indice, 40, 99_999, 0);
+    desenhar();
+    // as imagens da floresta chegam depois: desenha de novo algumas vezes, e para
+    const h = setInterval(() => {
+      desenhar();
+      if (++vezes >= 6) clearInterval(h);
+    }, 300);
+    return () => clearInterval(h);
+  }, [indice]);
+  return <canvas ref={ref} width={W} height={H} aria-hidden="true" className="briga-miniatura" />;
+}
+
+/**
+ * A ESCOLHA DA FASE (06/11/2026): no Solo e na sala, quem começa escolhe uma fase ou a campanha (todas seguidas). Todas
+ * abertas de fábrica, sem progressão obrigatória, como o resto do Syden.
+ */
+export function EscolhaDaBriga({ aoEscolher, aoVoltar }: { aoEscolher: (fase: string) => void; aoVoltar: () => void }) {
+  const t = useT();
+  return (
+    <div className="corrida-escolha">
+      <ul className="corrida-pistas">
+        {FASES_DA_BRIGA.map((f, k) => (
+          <li key={f.id}>
+            <button type="button" className="corrida-pista-botao" onClick={() => aoEscolher(f.id)}>
+              <MiniaturaDaFase indice={k} />
+              <strong>{nomeDaFaseDaBriga(t, f.id)}</strong>
+            </button>
+          </li>
+        ))}
+        <li>
+          <button type="button" className="corrida-pista-botao copa" onClick={() => aoEscolher(CAMPANHA)}>
+            <span className="corrida-copa-mapas" aria-hidden="true">
+              <Trophy size={28} />
+            </span>
+            <strong>{nomeDaFaseDaBriga(t, CAMPANHA)}</strong>
+            <small>{FASES_DA_BRIGA.map((f) => nomeDaFaseDaBriga(t, f.id)).join(' · ')}</small>
+          </button>
+        </li>
+      </ul>
+      <div className="minijogo-acoes">
+        <button type="button" className="btn-secondary" onClick={aoVoltar}>
+          {t('Outros jogos')}
+        </button>
       </div>
     </div>
   );

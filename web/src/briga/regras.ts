@@ -31,12 +31,14 @@ export const ATIVO: Record<Golpe, [number, number]> = {
   voadora: [0.06, 1],
   especial: [0.15, 0.78],
 };
-export const CORPO = { raposa: 10, corvo: 9, texugo: 18 } as const;
-export type TipoDeInimigo = keyof typeof CORPO;
-export const TIPOS: TipoDeInimigo[] = ['raposa', 'corvo', 'texugo'];
+// os bichos e as fases: a mesma cópia do servidor (fases.ts ↔ server/src/briga-fases.ts)
+import { bicho, CORPO, TIPOS, type TipoDeInimigo } from './fases';
+export { CORPO, TIPOS, type TipoDeInimigo };
 export const ESTADOS = [
   'entrando', 'andando', 'esperando', 'preparando', 'atacando', 'recuperando', 'dor', 'caido', 'levantando', 'morto',
   'rondando', 'mirando', 'mergulhando', 'subindo', 'prep-investida', 'investida', 'cansado', 'prep-pancada', 'pancada',
+  // as fases novas (06/11/2026): o pulo de quem cai em cima, e a rajada do chefe que atira
+  'saltando', 'prep-sopro', 'sopro',
 ] as const;
 export type EstadoDoInimigo = (typeof ESTADOS)[number];
 export const ACOES = ['parado', 'andando', 'soco1', 'soco2', 'soco3', 'pulo', 'voadora', 'dor', 'caido', 'levantando', 'especial'] as const;
@@ -292,12 +294,22 @@ export interface InimigoNaTela {
   y: number;
   z: number;
   estado: EstadoDoInimigo;
+  /** A faixa do aviso (o mergulho, a investida, o tiro; no pulo, o y da queda) e, no pulo, o x da queda. */
+  faixa?: number;
+  alvoX?: number;
 }
 
-/** Pode apanhar agora? (Caído, levantando ou sumindo, não; o corvo no alto, só de voadora.) */
+/** Um tiro no ar, como o quadro o traz. */
+export interface TiroNaTela {
+  x: number;
+  y: number;
+  lado: number;
+}
+
+/** Pode apanhar agora? (Caído, levantando ou sumindo, não; o que está no alto — o corvo, o sapo pulando —, só de voadora.) */
 export function apanhavel(i: InimigoNaTela, golpe: Golpe): boolean {
   if (i.estado === 'caido' || i.estado === 'levantando' || i.estado === 'morto') return false;
-  return !(i.tipo === 'corvo' && i.z > 18 && golpe !== 'voadora');
+  return !(i.z > 18 && golpe !== 'voadora');
 }
 
 /** A caixa do golpe encosta no inimigo? A mesma conta do servidor, sem a folga dele. */
@@ -316,8 +328,12 @@ export interface Quadro {
   f: 'lutando' | 'avancando' | 'vitoria' | 'derrota' | 'fim';
   o: number;
   a: [number, number];
-  /** [id, tipo, x, y, z, estado, lado, hp%, passos no estado, faixa] */
+  /** [id, tipo, x, y, z, estado, lado, hp%, passos no estado, faixa, x da queda do pulo] */
   i: number[][];
+  /** A fase na tela (o índice em FASES_DA_BRIGA). */
+  fs?: number;
+  /** Os tiros no ar: [id, tipo, x, y, lado]. */
+  t?: number[][];
   /** [userId, x, y, z, lado, ação, ms da ação, hp, vidas, pontos, estado (0 em pé, 1 fora, 2 sem vidas), avatar, último golpe aceito] */
   j: number[][];
   e: unknown[][];
@@ -402,7 +418,7 @@ export function misturar(a: number[][], b: number[][], k: number, colunas: numbe
  * Anda até o inimigo mais perto e bate; sem inimigo, anda para a direita (a seta). Pula e dá voadora no corvo que está
  * no alto. Só para o e2e/briga.mjs terminar a fase (window.brigaPilotoAutomatico, ver JogoBriga.tsx).
  */
-export function pilotoAutomatico(c: Coelho, inimigos: InimigoNaTela[], cmd: Comandos, relogio: number) {
+export function pilotoAutomatico(c: Coelho, inimigos: InimigoNaTela[], cmd: Comandos, relogio: number, tiros: TiroNaTela[] = []) {
   cmd.esquerda = cmd.direita = cmd.cima = cmd.baixo = false;
   const vivos = inimigos.filter((i) => i.estado !== 'morto' && i.estado !== 'caido' && i.estado !== 'levantando');
   const alvo = vivos.sort((a, b) => Math.abs(a.x - c.x) + Math.abs(a.y - c.y) - (Math.abs(b.x - c.x) + Math.abs(b.y - c.y)))[0];
@@ -411,8 +427,26 @@ export function pilotoAutomatico(c: Coelho, inimigos: InimigoNaTela[], cmd: Coma
     return;
   }
   const lado = alvo.x >= c.x ? 1 : -1;
+  // sai da faixa de um tiro que vem (ou da linha que pisca de quem mira), e do círculo de quem vai cair em cima
+  const fugirDaFaixa = (y: number) => {
+    if (y >= c.y && c.y > 10) cmd.cima = true;
+    else if (c.y < PROF - 10) cmd.baixo = true;
+    else cmd.cima = true;
+  };
+  const tiro = tiros.find((tr) => Math.abs(tr.y - c.y) < 12 && (c.x - tr.x) * tr.lado > -10 && (c.x - tr.x) * tr.lado < 150);
+  if (tiro) return fugirDaFaixa(tiro.y);
+  const mirando = vivos.find((i) => bicho(i.tipo).comp === 'tiro' && i.estado === 'mirando' && Math.abs((i.faixa ?? i.y) - c.y) < 12);
+  if (mirando) return fugirDaFaixa(mirando.faixa ?? mirando.y);
+  const sopro = vivos.find((i) => i.estado === 'prep-sopro' && Math.abs((i.faixa ?? i.y) - c.y) < 26);
+  if (sopro) return fugirDaFaixa(sopro.faixa ?? sopro.y);
+  const queda = vivos.find((i) => (i.estado === 'preparando' || i.estado === 'saltando') && bicho(i.tipo).comp === 'pulo' && Math.abs((i.alvoX ?? i.x) - c.x) < 34 && Math.abs((i.faixa ?? i.y) - c.y) < 16);
+  if (queda) {
+    if ((queda.alvoX ?? queda.x) >= c.x) cmd.esquerda = true;
+    else cmd.direita = true;
+    return;
+  }
   // o chefe avisa antes: sai da faixa da investida e de perto da pancada
-  const chefe = vivos.find((i) => i.tipo === 'texugo');
+  const chefe = vivos.find((i) => bicho(i.tipo).comp === 'chefe');
   if (chefe && (chefe.estado === 'prep-investida' || chefe.estado === 'investida') && Math.abs(chefe.y - c.y) < 18) {
     if (chefe.y >= c.y && c.y > 4) cmd.cima = true;
     else cmd.baixo = true;
@@ -423,7 +457,8 @@ export function pilotoAutomatico(c: Coelho, inimigos: InimigoNaTela[], cmd: Coma
     else cmd.direita = true;
     return;
   }
-  const destino = alvo.x - lado * (alvo.tipo === 'texugo' ? 30 : 20);
+  const grande = bicho(alvo.tipo).comp === 'chefe';
+  const destino = alvo.x - lado * (grande ? 30 : 20);
   if (Math.abs(destino - c.x) > 4) {
     if (destino > c.x) cmd.direita = true;
     else cmd.esquerda = true;
@@ -437,9 +472,9 @@ export function pilotoAutomatico(c: Coelho, inimigos: InimigoNaTela[], cmd: Coma
   }
   // perto: na frente dele, ao alcance (na borda da arena, o destino exato pode não existir)
   const d = (alvo.x - c.x) * c.lado;
-  const perto = d >= 8 && d <= (alvo.tipo === 'texugo' ? 40 : 30) && Math.abs(alvo.y - c.y) <= 6;
+  const perto = d >= 8 && d <= (grande ? 40 : 30) && Math.abs(alvo.y - c.y) <= 6;
   if (perto && Math.floor(relogio / 120) % 2 === 0) {
-    if (alvo.tipo === 'corvo' && alvo.z > 18) {
+    if (alvo.z > 18) {
       if (c.acao === 'parado' || c.acao === 'andando') cmd.pulo = true;
       else cmd.soco = true;
     } else cmd.soco = true;

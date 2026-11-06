@@ -2790,6 +2790,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'חצים לתנועה, רווח להחלפה, X להרמת הערימה.',
   'A horta está salva!': 'הגינה ניצלה!',
   'A horta caiu.': 'הגינה נפלה.',
+  'Campanha': 'מערכה',
   'Sem vidas.': 'נגמרו החיים.',
   'Você volta em {n}…': 'חזרה בעוד {n}…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'חצים להליכה, X למכה (שלוש ברצף הן קומבו), Z לקפיצה, C למהלך המיוחד, שעולה מעט חיים.',
@@ -3095,10 +3096,10 @@ export default {
   'Trânsito da toca': 'תנועה במחילה',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'דקה אחת להעביר את המכוניות בצומת בלי שיתנגשו. גם תור מלא עולה בנקודות.',
   Liberar: 'שחרור',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'מכוניות המחילה',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'מסלול מכוניות צעצוע עם ארבעה נתיבים: המכונית נוסעת בנתיב שלה לבד, ונשאר רק להאיץ. האצה מוגזמת בעיקול מעיפה אותה מהמסלול ומבזבזת זמן. בסולו: נגד השעון, רוחות הרפאים של החברים ורובוטים.',
   'Acelerar': 'האצה',
   'Saiu da pista!': 'יציאה מהמסלול!',
   'Saídas da pista: {n}': 'יציאות מהמסלול: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'לחיצה ממושכת מאיצה, ושחרור לפני העיקול: כשהמכונית רועדת, היא על הגבול.',
+} satisfies Record<string, string>;

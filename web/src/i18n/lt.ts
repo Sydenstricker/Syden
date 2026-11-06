@@ -2812,6 +2812,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'Rodyklėmis judi, tarpo klavišu keiti, X pakeli krūvą.',
   'A horta está salva!': 'Daržas išgelbėtas!',
   'A horta caiu.': 'Daržas žlugo.',
+  'Campanha': 'Kampanija',
   'Sem vidas.': 'Gyvybių nebeliko.',
   'Você volta em {n}…': 'Grįžti po {n}…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Rodyklėmis vaikštai, X smūgiuoji (trys iš eilės – kombinacija), Z šoki, C – specialus smūgis, kuris atima šiek tiek gyvybės.',
@@ -3113,10 +3114,10 @@ export default {
   'Trânsito da toca': 'Urvo eismas',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Viena minutė praleisti automobilius per sankryžą, kad jie nesusidurtų. Pilna eilė irgi kainuoja taškų.',
   Liberar: 'Praleisk',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'Urvo mašinėlės',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Keturių juostų žaislinių mašinėlių trasa: mašinėlė pati važiuoja savo juosta, o tu tik greitini. Per daug paspausi posūkyje – ji išskris iš trasos ir praras laiko. Solo – prieš laiką, draugų vaiduoklius ir robotus.',
   'Acelerar': 'Greitinti',
   'Saiu da pista!': 'Iš trasos!',
   'Saídas da pista: {n}': 'Išskridimai iš trasos: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Laikyk, kad greitintum, ir paleisk prieš posūkį: kai mašinėlė dreba, ji ties riba.',
+} satisfies Record<string, string>;

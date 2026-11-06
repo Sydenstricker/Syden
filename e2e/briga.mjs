@@ -61,6 +61,8 @@ try {
   await duda.getByRole('button', { name: 'Mini-games' }).click();
   await duda.locator('.minijogo-abas').getByRole('tab', { name: 'Coletivo' }).click();
   await duda.locator('.minijogo-jogo', { hasText: 'Briga na horta' }).click();
+  // a escolha da fase (06/11/2026): a horta
+  await duda.locator('.corrida-pista-botao', { has: duda.locator('strong', { hasText: /^Horta$/ }) }).click();
   await edu.locator('.minijogo-convite').waitFor({ timeout: 10000 });
   await edu.locator('.minijogo-convite').getByRole('button', { name: 'Jogar' }).click();
   await duda.locator('.minijogo-espera-lista li', { hasText: 'edu' + s }).waitFor({ timeout: 5000 });
@@ -105,6 +107,7 @@ try {
   if (!(await duda.locator('.minijogo').count())) await duda.getByRole('button', { name: 'Mini-games' }).click();
   await duda.locator('.minijogo-abas').getByRole('tab', { name: 'Solo' }).click();
   await duda.locator('.minijogo-jogo', { hasText: 'Briga na horta' }).click();
+  await duda.locator('.corrida-pista-botao', { has: duda.locator('strong', { hasText: /^Horta$/ }) }).click();
   await duda.locator('.briga-tela canvas').waitFor({ timeout: 10000 });
   (await edu.locator('.minijogo-convite').count()) === 0 ? ok('no Solo, a briga começa sem convite') : falhou('o Solo convidou a sala');
   // no Solo o quadro vem pelo canal da pessoa

@@ -2740,6 +2740,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'Săgețile pentru a muta, Spațiu pentru a schimba, X pentru a ridica grămada.',
   'A horta está salva!': 'Grădina e salvată!',
   'A horta caiu.': 'Grădina a căzut.',
+  'Campanha': 'Campanie',
   'Sem vidas.': 'Fără vieți.',
   'Você volta em {n}…': 'Revii în {n}…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Săgețile pentru a merge, X pentru a lovi (trei la rând fac combo), Z pentru a sări, C pentru mișcarea specială, care consumă puțină viață.',
@@ -3041,10 +3042,10 @@ export default {
   'Trânsito da toca': 'Traficul vizuinii',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Un minut ca să lași mașinile să treacă prin intersecție fără să se ciocnească. Coada plină costă și ea puncte.',
   Liberar: 'Lasă',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'Mașinuțele vizuinii',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'O pistă de mașinuțe de jucărie cu patru benzi: mașina își urmează singură banda, iar tu doar accelerezi. Dacă accelerezi prea tare în curbă, zboară de pe pistă și pierde timp. Solo: contra cronometru, a fantomelor prietenilor și a roboților.',
   'Acelerar': 'Accelerează',
   'Saiu da pista!': 'Ieșire de pe pistă!',
   'Saídas da pista: {n}': 'Ieșiri de pe pistă: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Ține apăsat ca să accelerezi și dă drumul înainte de curbă: când mașina tremură, e la limită.',
+} satisfies Record<string, string>;

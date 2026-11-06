@@ -2739,6 +2739,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'Frecce per muoverti, Spazio per scambiare, X per alzare la pila.',
   'A horta está salva!': 'L\'orto è salvo!',
   'A horta caiu.': 'L\'orto è caduto.',
+  'Campanha': 'Campagna',
   'Sem vidas.': 'Niente più vite.',
   'Você volta em {n}…': 'Torni tra {n}…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Frecce per camminare, X per colpire (tre di fila sono la combo), Z per saltare, C per la mossa speciale, che consuma un po\' di vita.',
@@ -3040,10 +3041,10 @@ export default {
   'Trânsito da toca': 'Traffico della tana',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Un minuto per far passare le auto all’incrocio senza farle scontrare. Anche la fila piena costa punti.',
   Liberar: 'Lascia passare',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'Macchinine della tana',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Una pista di macchinine giocattolo a quattro corsie: la macchina segue la sua corsia da sola, e tu acceleri e basta. Se acceleri troppo in curva, vola fuori pista e perde tempo. In solitario: contro il tempo, i fantasmi dei tuoi amici e i robot.',
   'Acelerar': 'Accelera',
   'Saiu da pista!': 'Fuori pista!',
   'Saídas da pista: {n}': 'Uscite di pista: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Tieni premuto per accelerare e lascia prima della curva: quando la macchina trema, è al limite.',
+} satisfies Record<string, string>;

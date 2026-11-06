@@ -2810,6 +2810,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'Fallaarayaasha si aad u dhaqaaqdo, Space si aad u beddesho, X si aad kor ugu qaaddo raashka.',
   'A horta está salva!': 'Beertii waa la badbaadiyay!',
   'A horta caiu.': 'Beertii way dhacday.',
+  'Campanha': 'Ololaha',
   'Sem vidas.': 'Naf ma harin.',
   'Você volta em {n}…': 'Waxaad soo noqonaysaa {n} kadib…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Fallaarayaasha si aad u socoto, X si aad u garaacdo (saddex isku xiga waa kombo), Z si aad u booddo, C dhaqaaqa gaarka ah, kaas oo naf yar ku kharash gareeya.',
@@ -3111,10 +3112,10 @@ export default {
   'Trânsito da toca': 'Taraafikada Godka',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Hal daqiiqo oo aad gawaarida ka sii daynayso isgoyska iyagoon isku dhicin. Saf buuxa ayaa sidoo kale dhibco kaa jaraya.',
   Liberar: 'Sii day',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'Gawaarida Ciyaarta Godka',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Waddo gawaarida ciyaarta ah oo leh afar haad: gaarigu wuxuu raacaa haadkiisa isagoo keligiis ah, adiguna xawaaraha uun baad kordhisaa. Haddii aad qalooca xawaare badan ku gasho, wuu ka duulaa waddada oo wakhti buu lumiyaa. Keligaa: saacadda, rooxaanta saaxiibbada iyo robotyada.',
   'Acelerar': 'Xawaare kordhi',
   'Saiu da pista!': 'Waddada ka baxay!',
   'Saídas da pista: {n}': 'Ka bixitaanka waddada: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Hay si aad xawaare u kordhiso, sii daa qalooca ka hor: marka gaarigu gariiro, xadka ayuu joogaa.',
+} satisfies Record<string, string>;

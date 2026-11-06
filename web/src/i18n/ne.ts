@@ -2812,6 +2812,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'सार्न तीर कुञ्जीहरू, साट्न स्पेस, थुप्रो उठाउन X।',
   'A horta está salva!': 'बारी बच्यो!',
   'A horta caiu.': 'बारी हार्‍यो।',
+  'Campanha': 'अभियान',
   'Sem vidas.': 'जीवन सकियो।',
   'Você volta em {n}…': '{n} मा फर्किन्छौ…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'हिँड्न तीर कुञ्जीहरू, हान्न X (लगातार तीन पटक कम्बो हो), उफ्रिन Z, विशेष चालका लागि C, जसले अलिकति जीवन खर्च गर्छ।',
@@ -3113,10 +3114,10 @@ export default {
   'Trânsito da toca': 'दुलोको ट्राफिक',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'चोकबाट गाडीहरू नठोकिने गरी छोड्न एक मिनेट। भरिएको लाइनले पनि अंक घटाउँछ।',
   Liberar: 'छोड',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'दुलोका खेलौना गाडीहरू',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'चार लेनको खेलौना गाडीको ट्र्याक: गाडी आफ्नो लेन आफैँ पछ्याउँछ, तपाईं गति मात्र बढाउनुहुन्छ। मोडमा धेरै गति दिनुभयो भने गाडी उडेर ट्र्याकबाहिर जान्छ र समय गुमाउँछ। एक्लै: घडी, साथीहरूका भूतहरू र रोबोटहरूविरुद्ध।',
   'Acelerar': 'गति बढाउनुहोस्',
   'Saiu da pista!': 'ट्र्याकबाहिर!',
   'Saídas da pista: {n}': 'ट्र्याकबाहिर: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'गति बढाउन थिचिराख्नुहोस् र मोडअघि छोड्नुहोस्: गाडी काँप्दा यो सीमामा छ।',
+} satisfies Record<string, string>;

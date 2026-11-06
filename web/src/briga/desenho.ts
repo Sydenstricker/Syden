@@ -8,6 +8,7 @@
  * 200 ms de internet).
  */
 import { CORES_DOS_AVATARES, MOLETOM_DO_MASCOTE, PELO_DO_MASCOTE } from '../corrida/coresDosAvatares';
+import { bicho } from './fases';
 import type { Acao, EstadoDoInimigo, TipoDeInimigo } from './regras';
 
 export const W = 320;
@@ -403,7 +404,10 @@ function texugo(g: CanvasRenderingContext2D, b: Bicho, sx: number, sy: number, t
   }
 }
 
-/** O AVISO DE CADA GOLPE INIMIGO no chão: a linha do mergulho, a linha da investida, o círculo da pancada. */
+/**
+ * O AVISO DE CADA GOLPE INIMIGO no chão: a linha do mergulho, da investida e do tiro, as três linhas da rajada, o círculo da
+ * pancada e o de onde vai cair quem pula (`queda`: o x na tela, e a faixa é `faixaSy`).
+ */
 export function desenharAviso(
   g: CanvasRenderingContext2D,
   tipo: TipoDeInimigo,
@@ -413,13 +417,25 @@ export function desenharAviso(
   lado: number,
   tempo: number,
   sy: number,
+  queda?: number,
 ) {
   const pisca = Math.floor(tempo / 120) % 2 === 0;
-  if ((tipo === 'corvo' && estado === 'mirando') || (tipo === 'texugo' && estado === 'prep-investida')) {
+  const comp = bicho(tipo).comp;
+  const linha = (y: number) => {
     g.fillStyle = pisca ? '#e2574a' : '#f0a070';
     const ate = lado > 0 ? W : 0;
-    for (let x = sx; lado > 0 ? x < ate : x > ate; x += lado * 8) g.fillRect(Math.round(x), faixaSy, 4, 1);
-  } else if (tipo === 'texugo' && estado === 'prep-pancada') {
+    for (let x = sx; lado > 0 ? x < ate : x > ate; x += lado * 8) g.fillRect(Math.round(x), y, 4, 1);
+  };
+  if ((comp === 'mergulho' || comp === 'tiro') && estado === 'mirando') linha(faixaSy);
+  else if (comp === 'chefe' && estado === 'prep-investida') linha(faixaSy);
+  else if (comp === 'chefe' && estado === 'prep-sopro') for (const dy of [-14, 0, 14]) linha(Math.max(CHAO, Math.min(CHAO + 56, faixaSy + dy)));
+  else if (comp === 'pulo' && (estado === 'preparando' || estado === 'saltando') && queda !== undefined) {
+    g.strokeStyle = pisca ? '#e2574a' : '#f0a070';
+    g.lineWidth = 1;
+    g.beginPath();
+    g.ellipse(queda, faixaSy, 22, 6, 0, 0, Math.PI * 2);
+    g.stroke();
+  } else if (comp === 'chefe' && estado === 'prep-pancada') {
     g.strokeStyle = pisca ? '#e2574a' : '#f0a070';
     g.lineWidth = 1;
     g.beginPath();

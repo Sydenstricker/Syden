@@ -2740,6 +2740,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'ለመንቀሳቀስ ቀስቶች፣ ለመለዋወጥ ስፔስ፣ ቁልሉን ለማንሳት X።',
   'A horta está salva!': 'የአትክልት ቦታው ዳነ!',
   'A horta caiu.': 'የአትክልት ቦታው ወደቀ።',
+  'Campanha': 'ዘመቻ',
   'Sem vidas.': 'ሕይወት አልቋል።',
   'Você volta em {n}…': 'በ{n} ውስጥ ይመለሳሉ…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'ለመራመድ ቀስቶች፣ ለመምታት X (በተከታታይ ሶስት ጊዜ ኮምቦ ነው)፣ ለመዝለል Z፣ ትንሽ ሕይወት ለሚያስከፍለው ልዩ እንቅስቃሴ C።',
@@ -3041,10 +3042,10 @@ export default {
   'Trânsito da toca': 'የዋሻው ትራፊክ',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'መኪኖቹ ሳይጋጩ በመስቀለኛ መንገዱ እንዲያልፉ ለማድረግ አንድ ደቂቃ አለዎት። የሞላ ሰልፍም ነጥብ ያስቀንሳል።',
   Liberar: 'መልቀቅ',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'የዋሻው የአሻንጉሊት መኪኖች',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'ባለአራት መስመር የአሻንጉሊት መኪኖች መወዳደሪያ፦ መኪናው መስመሩን ራሱ ይከተላል፣ እርስዎ ማፋጠን ብቻ ነው። በኩርባ ላይ በጣም ካፋጠኑ ከመንገዱ በርሮ ይወጣል፣ ጊዜም ያጣል። ለብቻ፦ ከሰዓቱ፣ ከጓደኞችዎ መናፍስት እና ከሮቦቶች ጋር።',
   'Acelerar': 'ማፋጠን',
   'Saiu da pista!': 'ከመንገዱ ወጣ!',
   'Saídas da pista: {n}': 'ከመንገድ መውጣት፦ {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'ለማፋጠን ተጭነው ይያዙ፣ ከኩርባው በፊት ይልቀቁ፦ መኪናው ሲንቀጠቀጥ ገደቡ ላይ ነው።',
+} satisfies Record<string, string>;

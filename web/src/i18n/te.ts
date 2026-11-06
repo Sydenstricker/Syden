@@ -2722,6 +2722,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'కదపడానికి బాణం కీలు, మార్చడానికి స్పేస్, కుప్పను పైకి తేవడానికి X.',
   'A horta está salva!': 'తోట కాపాడబడింది!',
   'A horta caiu.': 'తోట పడిపోయింది.',
+  'Campanha': 'ప్రచారం',
   'Sem vidas.': 'ప్రాణాలు లేవు.',
   'Você volta em {n}…': '{n} లో తిరిగి వస్తావు…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'నడవడానికి బాణం కీలు, కొట్టడానికి X (వరుసగా మూడు అంటే కాంబో), దూకడానికి Z, ప్రత్యేక దెబ్బకు C, అది కొంచెం ప్రాణం ఖర్చు చేస్తుంది.',
@@ -3023,10 +3024,10 @@ export default {
   'Trânsito da toca': 'బొరియ ట్రాఫిక్',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'కూడలిలో కార్లు ఢీకొనకుండా పంపడానికి ఒక నిమిషం. నిండిన వరుస కూడా పాయింట్లు తగ్గిస్తుంది.',
   Liberar: 'పంపు',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'బొరియ బొమ్మ కార్లు',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'నాలుగు లేన్ల బొమ్మ కార్ల ట్రాక్: కారు తన లేన్‌ను తానే అనుసరిస్తుంది, మీరు వేగం పెంచితే చాలు. మలుపులో వేగం ఎక్కువైతే, అది ట్రాక్ నుంచి ఎగిరిపోయి సమయం కోల్పోతుంది. ఒంటరిగా: సమయం, స్నేహితుల దెయ్యాలు, రోబోలతో.',
   'Acelerar': 'వేగం పెంచండి',
   'Saiu da pista!': 'ట్రాక్ నుంచి బయటకు!',
   'Saídas da pista: {n}': 'ట్రాక్ నుంచి బయటపడినవి: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'వేగం పెంచడానికి నొక్కి పట్టుకోండి, మలుపుకు ముందు వదలండి: కారు వణికితే, అది పరిమితిలో ఉంది.',
+} satisfies Record<string, string>;

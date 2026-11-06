@@ -2802,6 +2802,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'Shigjetat për të lëvizur, Hapësira për të ndërruar, X për të ngritur pirgun.',
   'A horta está salva!': 'Kopshti u shpëtua!',
   'A horta caiu.': 'Kopshti ra.',
+  'Campanha': 'Fushata',
   'Sem vidas.': 'Pa jetë.',
   'Você volta em {n}…': 'Kthehesh pas {n}…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Shigjetat për të ecur, X për të goditur (tre radhazi janë kombo), Z për të kërcyer, C për lëvizjen speciale, që harxhon pak jetë.',
@@ -3103,10 +3104,10 @@ export default {
   'Trânsito da toca': 'Trafiku i strofullës',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Një minutë për të lëshuar makinat në kryqëzim pa i lënë të përplasen. Radha e mbushur kushton edhe ajo pikë.',
   Liberar: 'Lësho',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'Makinat e strofullës',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Një pistë makinash lodër me katër korsi: makina e ndjek korsinë vetë, ti vetëm përshpejton. Nëse përshpejton shumë në kthesë, ajo fluturon jashtë piste dhe humb kohë. Vetëm: kundër kohës, fantazmave të miqve dhe robotëve.',
   'Acelerar': 'Përshpejto',
   'Saiu da pista!': 'Jashtë piste!',
   'Saídas da pista: {n}': 'Dalje nga pista: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Mbaj shtypur për të përshpejtuar dhe lëshoje para kthesës: kur makina dridhet, është në kufi.',
+} satisfies Record<string, string>;

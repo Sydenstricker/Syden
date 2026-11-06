@@ -2760,6 +2760,7 @@ export default {
   'Setas para mover, Espaço para trocar, X para subir a pilha.': 'الأسهم للتحريك، ومفتاح المسافة للتبديل، وX لرفع الكومة.',
   'A horta está salva!': 'البستان في أمان!',
   'A horta caiu.': 'سقط البستان.',
+  'Campanha': 'الحملة',
   'Sem vidas.': 'نفدت الأرواح.',
   'Você volta em {n}…': 'العودة خلال {n}…',
   'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'الأسهم للمشي، وX للضرب (ثلاث ضربات متتالية هي الكومبو)، وZ للقفز، وC للحركة الخاصة، التي تستهلك قليلًا من الحياة.',
@@ -3065,10 +3066,10 @@ export default {
   'Trânsito da toca': 'مرور الجحر',
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'دقيقة واحدة لتمرير السيارات عبر التقاطع دون أن تصطدم. والطابور الممتلئ يكلّف نقاطًا أيضًا.',
   Liberar: 'إطلاق',
-} satisfies Record<string, string>;
   'Carrinhos da toca': 'سيارات الجحر الصغيرة',
   'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'حلبة سيارات لعبة بأربعة مسارات: تتبع السيارة مسارها وحدها، ولا يلزم سوى التسريع. الإفراط في التسريع عند المنعطف يُطيرها خارج الحلبة ويُضيّع الوقت. في الوضع الفردي: ضد الساعة وأشباح الأصدقاء والروبوتات.',
   'Acelerar': 'تسريع',
   'Saiu da pista!': 'خروج عن الحلبة!',
   'Saídas da pista: {n}': 'مرات الخروج عن الحلبة: {n}',
   'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'الضغط المستمر للتسريع، ثم الإفلات قبل المنعطف: عندما تهتز السيارة تكون عند الحد.',
+} satisfies Record<string, string>;
