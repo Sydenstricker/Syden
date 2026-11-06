@@ -150,6 +150,12 @@ function ambienteDoCoelho(): THREE.Texture {
  */
 export function materialDoCoelho(base: THREE.MeshStandardMaterial, cores: CoresDoCoelho = CORES_DO_MASCOTE): MaterialDoCoelho {
   const m = base.clone();
+  // Na luz em degraus o relevo (as dobras do moletom) quebraria cada faixa em manchas: os degraus saem da forma do corpo,
+  // como no render da Briga.
+  m.normalMap = null;
+  // e sem o reflexo do sol (a mancha branca no alto da cabeça, que nos degraus vira uma tampa): só a cor e a luz
+  m.roughness = 1;
+  m.metalness = 0;
   const uPelo = { value: new THREE.Color(cores.pelo ?? '#ffffff') };
   const uTrocaPelo = { value: cores.pelo ? 1 : 0 };
   const uRoupa = { value: new THREE.Color(cores.roupa) };
@@ -198,13 +204,24 @@ export function materialDoCoelho(base: THREE.MeshStandardMaterial, cores: CoresD
       .replace(
         '#include <opaque_fragment>',
         `{
+          // A LUZ EM DEGRAUS, como a do coelho da Briga (o render do Blender: 3 degraus que só multiplicam a cor; pedido dele,
+          // 06/11/2026: "o da briga tem textura, o do skate não"). A luz da cena (o sol, o céu, a noite do quarto) continua
+          // decidindo QUANTO chega; aqui só se arredonda isso a degraus de ~1,41× (um passo a cada meio log2), e a luz lisa,
+          // que numa pintura de cor chapada vira massa, passa a desenhar a forma em faixas.
+          float lCor = max(dot(diffuseColor.rgb, vec3(0.3, 0.59, 0.11)), 1e-3);
+          float lLuz = max(dot(outgoingLight, vec3(0.3, 0.59, 0.11)), 1e-4);
+          float chega = lLuz / lCor;
+          float degrau = exp2(floor(log2(chega) * 2.0 + 0.5) / 2.0);
+          outgoingLight *= degrau / chega;
+        }
+        {
           float borda = 1.0 - clamp(abs(dot(normalize(normal), normalize(vViewPosition))), 0.0, 1.0);
           outgoingLight += uBorda * pow(borda, 2.5);
         }
         #include <opaque_fragment>`,
       );
   };
-  m.customProgramCacheKey = () => 'coelho3d-paleta';
+  m.customProgramCacheKey = () => 'coelho3d-paleta-degraus';
   if (typeof document !== 'undefined') {
     m.envMap = ambienteDoCoelho();
     m.envMapIntensity = 1;
@@ -218,7 +235,7 @@ export function materialDoCoelho(base: THREE.MeshStandardMaterial, cores: CoresD
 }
 
 /** A espessura do contorno, em pixels da tela (vezes a densidade de pixels). */
-const CONTORNO_PX = 1.5;
+const CONTORNO_PX = 2;
 const tamanhoDaTela = new THREE.Vector2(1, 1);
 
 /** O material do contorno: a malha por trás, inflada pela normal NA TELA (a espessura não muda com a distância). */
@@ -236,6 +253,13 @@ function materialDoContorno(uOpaco: { value: number }): THREE.MeshBasicMaterial 
           vec3 nv = transformedNormal;
         #else
           vec3 nv = normalMatrix * normal;
+        #endif
+        // A malha do contorno é desenhada pelo avesso (BackSide), e aí o three.js VIRA a normal (FLIP_SIDED): sem desvirar, o
+        // contorno encolhia para dentro do corpo e nunca aparecia no coelho animado (achado em 06/11/2026).
+        #ifdef FLIP_SIDED
+          #ifdef USE_SKINNING
+            nv = -nv;
+          #endif
         #endif
         vec2 d = (projectionMatrix * vec4(nv, 0.0)).xy;
         float n = length(d);
