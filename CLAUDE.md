@@ -537,6 +537,18 @@ inimigo só é decidido 200 ms depois, e quem saiu da área nessa janela escapa;
 coelho é o mascote 3D de lado (`briga.py`/`briga-pos.py`, com a troca de paleta do avatar). Troféu só com a fase vencida
 (`pista: 'briga'`). Testes: `server/test/minijogos-briga.test.ts`, `web/test/briga.test.ts` (o piloto automático vence a
 fase contra o servidor de verdade, com 200 ms de atraso) e `e2e/briga.mjs` (escrito, não rodado).
+**AS FASES (06/11/2026, pedido dele: "a primeira fase é a briga na horta, e em outros cenários ele vai mudando inimigos e
+cenário"):** Horta (a de sempre, intocada), Floresta, Deserto, Neve e Castelo, e a **Campanha** (as cinco seguidas). Quem começa
+escolhe na largada, no Solo e na sala; todas abertas de fábrica. Os bichos e as fases moram em `server/src/briga-fases.ts` ↔
+`web/src/briga/fases.ts`, IGUAIS BYTE A BYTE (o teste confere); bicho novo entra no FIM da lista (o índice vai no quadro). Cada
+bicho é um COMPORTAMENTO: soco (a raposa), mergulho (o corvo), **pulo** (agacha mirando onde a pessoa está, o círculo pisca, e cai
+em cima), **tiro** (mira a faixa, a linha pisca, e atira: trocar de faixa ou pular escapa) e chefe (o texugo; os novos com a
+**rajada** de três tiros). Os da horta continuam por código; os outros 16 são os **Ultimate Monsters da Quaternius (CC0)**
+renderizados de lado pelo Blender com a câmera, a luz e o giro do coelho (`blender/meshy/briga-monstros.py` → `-pos.py` →
+`web/public/briga/<fase>/` e `folhasDosBichos.ts`, gerado). Sem humanos nem o Bunny no elenco. A floresta usa o Parallax Forest do
+ansimuz (CC0); deserto, neve e castelo são por código (`briga/cenarios.ts`). Troféu: a horta segue `'briga'`, as outras
+`'briga-<fase>'`, a campanha só inteira (`'briga-campanha'`). Crédito nos termos, seção 10. O equilíbrio dos bichos novos é chute
+medido contra o piloto automático. `e2e/briga-fases.mjs` passou (a escolha e as cinco fases, com fotos).
 
 **A HORTA EM CASCATA está feita (03/11/2026, o item 4):** trocar e combinar com a pilha subindo, 6 × 12 (NÃO é Tetris: nada
 cai do alto em forma de peça), com seis legumes desenhados por código. Cadeia (o que cai e combina) e combo (4 ou mais)
