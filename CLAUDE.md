@@ -808,15 +808,40 @@ pedaço à parte, os modelos em `web/public/quarto3d/`) e `web/src/QuartoComEsti
 cubo, "Estilo visual: 2D/3D", texto que já existia nos 80). **O botão e Gráficos mexem na MESMA escolha**, na hora, sem recarregar — e
 por isso o pixel art no quarto põe o Cidades em 2D também. **O padrão do QUARTO é o pixel art** (`estiloDoQuarto()`: só vai ao 3D quem
 escolheu, `estiloEscolhido` em 'syden:graficos'; um '3d' guardado sem a marca era o de fábrica gravado junto com as sombras); o do
-Cidades continua 3D. **Mudar o padrão do quarto é decisão dele.** No 3D: as funções nos objetos (guarda-roupa → Guarda-roupa, a mesa →
-Mini-games com o coelho sentando ao computador antes, o fone no abajur da mesa → Salas, o quadro de fotos → Amigos, a cortiça → ideias,
-a janela → Explorar, o abajur do criado-mudo → Dia e noite, a estante com um troféu feito por código → Troféus; a luminária só acende),
-realce e nome ao passar o mouse, o coelho com as cores do avatar no estado de verdade (ausente dorme, em chamada no computador; volta ao
-lugar 8 s depois de usar uma função), as sombras de Gráficos, no máximo 30 quadros por segundo, nada sem foco. **A arrumação no 3D é a de
-fábrica** (sem Editar: arrumar é no pixel art; a do servidor é de pixel e não serve ao 3D), e a VISITA em 3D também (as cores do avatar
-de quem mora só se ele está na comunidade aberta). Sem WebGL, contexto perdido ou 20 s sem ficar pronto, volta o pixel art sozinho.
-Medido (Chrome de teste, sem placa): ~1,1–2,3 ms por quadro, 120 chamadas e ~48 mil triângulos; com sombras, ~3 ms e 215 chamadas.
-Teste: `e2e/quarto3d.mjs`; o salão não mudou.
+Cidades continua 3D. **Mudar o padrão do quarto é decisão dele.** No 3D: as funções nos MESMOS objetos do pixel (o guarda-roupa →
+Guarda-roupa, a mesa → Mini-games com o coelho sentando na cadeira antes, o fone da parede → Salas, o quadro de fotos → Amigos, a cortiça →
+ideias, a janela → Explorar, o criado-mudo com o abajur → Dia e noite, a prateleira dos troféus → Troféus), realce e nome ao passar o
+mouse, o coelho com as cores do avatar no estado de verdade (ausente dorme na cama, em chamada na cadeira; volta ao lugar 8 s depois de
+usar uma função), as sombras de Gráficos, no máximo 30 quadros por segundo, nada sem foco. Sem WebGL, contexto perdido ou 20 s sem ficar
+pronto, volta o pixel art sozinho. Teste: `e2e/quarto3d.mjs` (nos dois temas).
+**O 3D DESENHA A ARRUMAÇÃO DO PIXEL (decisão dele, 06/11/2026: "a POSIÇÃO do item no quarto 2D terá o OBJETO EQUIVALENTE 3D na MESMA
+POSIÇÃO"):** o 3D não tem arrumação própria. Ele lê a que o servidor guarda (`/api/quarto`, e `/api/quarto/:id` na visita: quem visita
+vê o quarto da pessoa nos dois estilos) e `web/src/quarto3d/arrumacao.ts` a traduz: a planta (o de sempre, o L com o pilar, o cubículo),
+os móveis na casa e no giro (no pixel, a parede da direita é u = 0 e a da esquerda v = 0; no 3D, x = v e z = u, e os lados batem), a
+cadeira onde parou, a janela e os objetos da parede no trecho deles (as casas que ocupam e a altura em px, 3/195 por px), os objetos de
+cima no tampo, as cores do tapete, da parede e do piso, os guardados e as cópias ("cama~2", sem função). Arrumar continua só no pixel
+(o Editar). O que a página do pixel sabe e o servidor não guarda (as plantas, a arrumação de fábrica de cada planta, o tamanho de cada
+móvel na grade, onde cada objeto foi pintado) foi COPIADO de `montar.mjs` e do `quarto.html`, e `web/test/quarto3d-arrumacao.test.ts`
+confere contra eles: **peça nova no pixel pede a linha dela em `arrumacao.ts` e o modelo dela em cada tema** (o teste cobra). Sem
+desenho no 3D: a cortina fechada e a janela aberta da grande, e o tipo da janela (todas viram a janela do tema, na largura do vão).
+**OS TEMAS DO 3D (pedido dele, mesmo dia: "presets para o usuário escolher de base", que viraram CONJUNTOS DE MODELOS da mesma
+arrumação):** `web/src/quarto3d/temas.ts`, uma tabela peça do pixel → modelo por tema. O **clássico** (KayKit e Kenney, o piloto; a mesa é a
+comprida com os três monitores: o pé dela no pixel é 3 × 1 e o L de antes não cabe) e o **colorido** (Tiny Treats, de Isa Lousberg, CC0,
+em `web/public/quarto3d/tinytreats/`: a cama de solteiro do pacote, um tanto maior, com o ursinho; o criado-mudo com o abajur e o
+despertador; o guarda-roupa é a CÔMODA com a vitrola, porque o pacote não tem armário alto; a mesa com o computador antigo; a cadeira; a
+cadeira de balanço é a poltrona; o banquinho, o pufe; o tapete, a monstera e a espada-de-são-jorge; as paredes de lambri da sala, a janela
+grande de três peças, as tábuas do quarto; três molduras com fotos desenhadas no lugar da imagem de exemplo; a caneca de patinho, o bolo, a
+latinha). As comidas de cima que nenhum dos dois tem vêm do Food Kit do Kenney (`web/public/quarto3d/comida/`). O que nenhum pacote tem é
+feito por código: o fone pendurado, a cortiça, os troféus, o neon, o violão e o relógio do clássico. **No colorido, as peças paradas
+viram UMA malha só** (o chão, as paredes, as plantas, o tapete e os objetos de parede sem função; os originais ficam invisíveis no lugar,
+para o clique). A escolha é o botão das poltronas ao lado do 2D/3D, só no 3D ("Móveis: Clássico/Colorido", nos 80), lembrada NO APARELHO
+('syden:quarto3d-tema'): o servidor não guarda tema (o `cores` da arrumação seria o lugar, mas a página do pixel tira dele o que não
+conhece), então **quem visita vê o quarto da pessoa no tema que ELE escolheu**. Ficaram de fora do colorido, por não terem peça
+equivalente no pixel: a lareira, o aquário com o peixe, as velas e o relógio de pé (entram quando o pixel ganhar a peça). **O terceiro
+tema** é só mais uma entrada em `TEMAS`: o candidato é o Furniture Kit inteiro do Kenney, mais anguloso. Medido (Chrome de teste, sem
+placa, o quarto de fábrica): clássico ~1,1–1,6 ms por quadro, 84 chamadas, ~43 mil triângulos; colorido ~1,3–2,8 ms, 77 chamadas, ~58 mil;
+com sombras, 142 e 130 chamadas. O salão 3D lê modelos de `quarto3d/`: os que o quarto deixou de usar (desk, lamp_desk_headphones,
+table_small…) ficaram lá.
 **O SALÃO 3D E O NATAL (06/11/2026, pedido dele: "testar o cenário de datas comemorativas, começando pelo Natal, no salão em 3D"; o
 "não implemente no salão ainda" de antes caiu):** `web/src/salao3d/` (a cena num pedaço à parte; os modelos novos em `web/public/salao3d/`,
 os do quarto 3D lidos de `quarto3d/`) e `web/src/SalaoComEstilo.tsx` (o mesmo botão do canto, na MESMA escolha; o padrão é o do quarto, o
