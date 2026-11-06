@@ -22,7 +22,7 @@ const JOGOS = [
   { nome: 'Dominó', id: 'domino', casa: null, conta: null },
   { nome: 'Truco', id: 'truco', casa: null, conta: null },
   { nome: 'Tabuleiro da turma', id: 'tabuleiro', casa: '.tab-jogar:not([disabled])', conta: null },
-  { nome: 'Cidades à venda', id: 'cidades', casa: null, conta: null },
+  { nome: 'Capitais', id: 'cidades', casa: null, conta: null },
 ];
 
 const { browser } = await abrirNavegador();
