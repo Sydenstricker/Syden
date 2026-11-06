@@ -1,11 +1,19 @@
 import * as THREE from 'three';
 import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { fundoAconchegante, materialDeMadeira } from '../mesa3d/ambiente';
+import { iluminar } from '../mesa3d/base';
 
 /**
  * O XADREZ EM 3D (05/11/2026, pedido dele: "adicione xadrez também, com os assets que estão na pasta"): o tabuleiro e as peças
  * do KayKit Board Game Bits (CC0, web/public/mesa3d/License.txt; o crédito nos termos, seção 10), numa mesa de madeira. A peça
  * que andou desliza (o cavalo pula), as casas que valem acendem, o rei em xeque fica vermelho. Só a TELA: os lances são do
  * servidor, e o tabuleiro de botões do 2D continua por baixo para o teclado e o leitor de tela.
+ *
+ * A MESA (06/11/2026, pedido dele: "o xadrez também poderia ter mesa com mais textura; tem espaço fora da mesa sobrando: deixe
+ * a câmera vendo apenas a mesa"): o ambiente das mesas do Truco e das Damas (mesa3d/ambiente.ts: a madeira com veio, o fundo de
+ * sala e a luz quente do pendente), com o tabuleiro num pé de madeira mais escura em cima de uma mesa de tábuas que passa das
+ * bordas da tela; e a câmera ENQUADRA o tabuleiro (`posicionarCamera`): a distância e o ponto de mira saem da conta, para o
+ * tabuleiro e as peças mais altas caberem com uma folga pequena, em qualquer proporção da caixa e dos dois lados.
  */
 
 const BASE = `${import.meta.env.BASE_URL}mesa3d/`;
@@ -36,6 +44,19 @@ export interface XadrezDaCena {
 
 const TOPO = 0.3;
 const posDa = (i: number) => new THREE.Vector3((i % 8) - 3.5, TOPO, Math.floor(i / 8) - 3.5);
+/** O pé do tabuleiro: um pouco maior que ele (o tabuleiro do KayKit vai de −5 a 5), e mais baixo, para aparecer como um degrau. */
+const PE = 5.45;
+const PE_TOPO = 0.14;
+/** O rei, a peça mais alta, com a escala de `peca`. */
+const ALTURA_DA_PECA = TOPO + 1.8 * 0.82;
+/** O que tem de caber na tela: os cantos do pé e do tabuleiro, e o alto das peças nas fileiras de trás e da frente. */
+const PONTOS_DO_QUADRO = [
+  ...[-1, 1].flatMap((x) => [-1, 1].flatMap((z) => [new THREE.Vector3(x * PE, PE_TOPO, z * PE), new THREE.Vector3(x * 5, TOPO, z * 5)])),
+  ...[-3.5, 0, 3.5].flatMap((x) => [-3.5, 3.5].map((z) => new THREE.Vector3(x, ALTURA_DA_PECA, z))),
+];
+/** De onde a câmera olha (a mesma inclinação de antes, ~53°), e quanto da tela o quadro ocupa. */
+const DIRECAO = new THREE.Vector3(0, 12.5, 9.5).normalize();
+const FOLGA = 0.96;
 
 export class Xadrez3D {
   private renderer: THREE.WebGLRenderer;
@@ -51,6 +72,9 @@ export class Xadrez3D {
   private andando: { obj: THREE.Object3D; de: THREE.Vector3; para: THREE.Vector3; inicio: number; pula: boolean } | null = null;
   private morta = false;
   private calmo: boolean;
+  private sombras = false;
+  /** Materiais, geometrias e texturas desta cena (os modelos são do cache e ficam). */
+  private descartaveis: { dispose(): void }[] = [];
 
   constructor(
     private caixa: HTMLElement,
@@ -73,19 +97,26 @@ export class Xadrez3D {
     caixa.appendChild(tela);
     this.observador = new ResizeObserver(() => this.medir());
     this.observador.observe(caixa);
+    this.sombras = sombras;
     const c = this.cena;
-    c.background = new THREE.Color('#2b2430');
-    c.add(new THREE.HemisphereLight('#fff6ea', '#5a4636', 1.6));
-    const sol = new THREE.DirectionalLight('#fff1dc', 2.1);
-    sol.position.set(-5, 12, 7);
-    sol.castShadow = sombras;
-    Object.assign(sol.shadow.camera, { left: -7, right: 7, top: 7, bottom: -7 });
-    c.add(sol);
-    // a mesa de madeira embaixo do tabuleiro
-    const mesa = new THREE.Mesh(new THREE.CylinderGeometry(9, 9, 0.6, 48), new THREE.MeshStandardMaterial({ color: '#8a5a3c', roughness: 0.8 }));
+    fundoAconchegante(c, this.descartaveis);
+    iluminar(c, sombras);
+    // a mesa de tábuas, larga o bastante para a tela nunca ver a borda dela, e o pé do tabuleiro, de madeira mais escura
+    const mesaGeo = new THREE.BoxGeometry(44, 0.6, 44);
+    const mesaMat = materialDeMadeira(this.descartaveis, [3, 16]);
+    const mesa = new THREE.Mesh(mesaGeo, mesaMat);
     mesa.position.y = -0.3;
     mesa.receiveShadow = sombras;
-    c.add(mesa);
+    const peGeo = new THREE.BoxGeometry(PE * 2, PE_TOPO + 0.02, PE * 2);
+    const peMat = materialDeMadeira(this.descartaveis, [1, 6]);
+    peMat.color.set('#c39c80');
+    peMat.roughness = 0.45;
+    const pe = new THREE.Mesh(peGeo, peMat);
+    pe.position.y = PE_TOPO / 2 - 0.01;
+    pe.castShadow = sombras;
+    pe.receiveShadow = sombras;
+    this.descartaveis.push(mesaGeo, peGeo);
+    c.add(mesa, pe);
     tela.addEventListener('click', this.aoClique);
     this.medir();
   }
@@ -96,7 +127,10 @@ export class Xadrez3D {
     for (const [a, g] of lista) this.modelos.set(a, g);
     const tab = this.modelos.get('board_A')!.scene.clone(true);
     tab.traverse((o) => {
-      if ((o as THREE.Mesh).isMesh) o.receiveShadow = true;
+      if ((o as THREE.Mesh).isMesh) {
+        o.receiveShadow = this.sombras;
+        o.castShadow = this.sombras;
+      }
     });
     this.cena.add(tab);
     if (this.dados) this.atualizar(this.dados);
@@ -110,12 +144,45 @@ export class Xadrez3D {
     this.camera.aspect = w / h;
     this.posicionarCamera();
   }
+  /**
+   * O enquadramento: só a mesa. A câmera fica na mesma inclinação, e a conta acha a distância e o ponto de mira em que o
+   * quadro (PONTOS_DO_QUADRO) ocupa a tela com a folga, centrado: passos de aproximação, que convergem em poucas voltas.
+   */
   private posicionarCamera() {
+    const cam = this.camera;
     const lado = this.dados?.girado ? -1 : 1;
-    const longe = Math.max(1, 1.1 / this.camera.aspect);
-    this.camera.position.set(0, 12.5 * longe, 9.5 * lado * longe);
-    this.camera.lookAt(0, 0, 0.6 * lado);
-    this.camera.updateProjectionMatrix();
+    const dir = DIRECAO.clone().setZ(DIRECAO.z * lado);
+    const alvo = new THREE.Vector3(0, 0, 0.6 * lado);
+    const cima = new THREE.Vector3();
+    const v = new THREE.Vector3();
+    const meia = Math.tan(THREE.MathUtils.degToRad(cam.fov / 2));
+    let dist = 16;
+    cam.updateProjectionMatrix();
+    for (let k = 0; k < 30; k++) {
+      cam.position.copy(alvo).addScaledVector(dir, dist);
+      cam.lookAt(alvo);
+      cam.updateMatrixWorld();
+      let x0 = Infinity;
+      let x1 = -Infinity;
+      let y0 = Infinity;
+      let y1 = -Infinity;
+      for (const p of PONTOS_DO_QUADRO) {
+        v.copy(p).project(cam);
+        x0 = Math.min(x0, v.x);
+        x1 = Math.max(x1, v.x);
+        y0 = Math.min(y0, v.y);
+        y1 = Math.max(y1, v.y);
+      }
+      // centra na vertical (o quadro é simétrico na horizontal) e aproxima ou afasta até a folga
+      const precisa = Math.max((x1 - x0) / 2, (y1 - y0) / 2) / FOLGA;
+      if (Math.abs(precisa - 1) < 0.002 && Math.abs(y0 + y1) < 0.004) break;
+      cima.setFromMatrixColumn(cam.matrixWorld, 1);
+      alvo.addScaledVector(cima, ((y0 + y1) / 2) * meia * dist);
+      dist *= precisa;
+    }
+    cam.position.copy(alvo).addScaledVector(dir, dist);
+    cam.lookAt(alvo);
+    cam.updateMatrixWorld();
   }
 
   private peca(letra: string): THREE.Object3D | null {
@@ -221,6 +288,7 @@ export class Xadrez3D {
     this.observador.disconnect();
     this.renderer.domElement.removeEventListener('click', this.aoClique);
     for (const m of this.marcas) (m.material as THREE.Material).dispose();
+    for (const d of this.descartaveis) d.dispose();
     this.geoMarca.dispose();
     this.renderer.forceContextLoss();
     this.renderer.dispose();

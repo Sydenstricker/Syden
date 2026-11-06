@@ -19395,11 +19395,11 @@ body.arrastando-barra {
 .xadrez-3d {
   position: relative;
   width: min(100%, 60vh, 440px);
-  aspect-ratio: 1 / 0.86;
+  aspect-ratio: 1 / 0.8;
   margin: 0 auto;
   border-radius: 10px;
   overflow: hidden;
-  background: #2b2430;
+  background: #5e3a20;
 }
 .xadrez-3d-caixa,
 .xadrez-3d-reserva {
