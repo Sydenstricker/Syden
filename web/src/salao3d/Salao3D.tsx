@@ -3,7 +3,7 @@ import { useT } from '../i18n';
 import { Mascote } from '../Mascote';
 import type { AcoesDoSalao } from '../Salao';
 import { temWebGL } from '../quarto3d/Quarto3D';
-import type { CenaDoSalao3D } from './cena';
+import type { CenaDoSalao3D, VistaDoSalao3D } from './cena';
 import { type Epoca, epocaDoDia } from './epocas';
 import './salao3d.css';
 
@@ -36,6 +36,8 @@ function epocaAgora(): Epoca | null {
  * quando o 3D abre; o mascote espera enquanto carrega (sem texto); sem WebGL, um modelo que não veio, o contexto da placa perdido
  * ou 20 s sem ficar pronto, `aoFalhar` e volta o pixel art. As funções são as do salão de pixel art (`acoes`, de
  * InicioDaComunidade.tsx); o recado do balcão é um balão aqui fora, em cima do coelho que o dá.
+ * A PORTA DO BANHEIRO leva a câmera ao banheiro, um cômodo à parte (cena.ts); lá, a porta de dentro, o botão de voltar e o Esc
+ * trazem de volta, e o que é do salão (os nomes, o recado, as setas da TV) fica escondido.
  */
 export function Salao3D({
   noite,
@@ -64,6 +66,8 @@ export function Salao3D({
   const [etiqueta, setEtiqueta] = useState<{ id: string; x: number; y: number } | null>(null);
   const [rotulos, setRotulos] = useState<{ id: number; nome: string; x: number; y: number }[]>([]);
   const [recadoAberto, setRecadoAberto] = useState(false);
+  const [vista, setVista] = useState<VistaDoSalao3D>('salao');
+  const voltar = useRef<HTMLButtonElement>(null);
   const [pontos, setPontos] = useState<{ recado: { x: number; y: number } | null; tv: { x: number; y: number } | null }>({ recado: null, tv: null });
   const acoesRef = useRef(acoes);
   acoesRef.current = acoes;
@@ -112,6 +116,10 @@ export function Salao3D({
             aoPassar: setEtiqueta,
             temFuncao: (id) => !!acoesRef.current[id as keyof AcoesDoSalao],
             aoMudarRotulos: () => requestAnimationFrame(medirPontos),
+            aoMudarVista: (v) => {
+              setVista(v);
+              if (v === 'banheiro') setRecadoAberto(false);
+            },
           },
           epocaAgora(),
         );
@@ -155,7 +163,27 @@ export function Salao3D({
     if (recadoAberto) medirPontos();
   }, [recadoAberto, pronta]);
 
-  const acao = etiqueta ? acoes[etiqueta.id as keyof AcoesDoSalao] : undefined;
+  // no banheiro, o Esc volta ao salão (e o foco vai ao botão de voltar, para quem usa o teclado)
+  useEffect(() => {
+    if (vista !== 'banheiro') return;
+    voltar.current?.focus({ preventScroll: true });
+    const tecla = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') cena.current?.usarFuncao('sair-do-banheiro');
+    };
+    window.addEventListener('keydown', tecla, true);
+    return () => window.removeEventListener('keydown', tecla, true);
+  }, [vista]);
+
+  const noSalao = vista === 'salao';
+  // as duas portas do banheiro são da cena, e não do salão de fora (os textos são os da porta do salão de pixel art)
+  const acao =
+    etiqueta?.id === 'banheiro'
+      ? { rotulo: t('Porta do banheiro'), sub: t('Dá no banheiro. Bata antes de entrar.') }
+      : etiqueta?.id === 'sair-do-banheiro'
+        ? { rotulo: t('Porta do banheiro'), sub: undefined }
+        : etiqueta
+          ? acoes[etiqueta.id as keyof AcoesDoSalao]
+          : undefined;
   const funcoes = Object.entries(acoes).filter((e): e is [string, NonNullable<(typeof e)[1]>] => !!e[1] && e[0] !== 'janela');
   return (
     <div className="salao3d" aria-label={titulo} role="group">
@@ -166,6 +194,7 @@ export function Salao3D({
         </div>
       )}
       {pronta &&
+        noSalao &&
         rotulos.map((r) => (
           <span key={r.id} className="salao3d-nome" style={{ left: r.x, top: r.y }} aria-hidden="true">
             {r.nome}
@@ -177,7 +206,7 @@ export function Salao3D({
           {acao.sub && <small>{acao.sub}</small>}
         </span>
       )}
-      {pronta && recadoAberto && recado && pontos.recado && (
+      {pronta && noSalao && recadoAberto && recado && pontos.recado && (
         <div className="salao3d-recado" style={{ left: pontos.recado.x, top: pontos.recado.y }} role="dialog" aria-label={recado.titulo}>
           <button type="button" className="salao3d-recado-fechar" aria-label={t('Fechar')} title={t('Fechar')} onClick={() => setRecadoAberto(false)}>
             ×
@@ -186,7 +215,7 @@ export function Salao3D({
           <p>{recado.texto}</p>
         </div>
       )}
-      {pronta && aoVivo && aoVivo.total > 1 && pontos.tv && (
+      {pronta && noSalao && aoVivo && aoVivo.total > 1 && pontos.tv && (
         <div className="salao3d-canais" style={{ left: pontos.tv.x, top: pontos.tv.y }}>
           <button type="button" aria-label={t('Transmissão anterior')} title={t('Transmissão anterior')} onClick={() => aoVivo.aoTrocar(-1)}>
             ‹
@@ -196,13 +225,28 @@ export function Salao3D({
           </button>
         </div>
       )}
-      {pronta && (
+      {pronta && !noSalao && (
+        <button
+          ref={voltar}
+          type="button"
+          className="salao3d-voltar"
+          aria-label={t('Fechar')}
+          title={t('Fechar')}
+          onClick={() => cena.current?.usarFuncao('sair-do-banheiro')}
+        >
+          ‹
+        </button>
+      )}
+      {pronta && noSalao && (
         <div className="quarto3d-so-leitor">
           {funcoes.map(([id, a]) => (
             <button key={id} type="button" onClick={() => cena.current?.usarFuncao(id)}>
               {a.rotulo}
             </button>
           ))}
+          <button type="button" onClick={() => cena.current?.usarFuncao('banheiro')}>
+            {t('Porta do banheiro')}
+          </button>
         </div>
       )}
     </div>

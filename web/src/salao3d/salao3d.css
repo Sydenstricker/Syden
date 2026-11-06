@@ -109,3 +109,23 @@
   font-size: 16px;
   line-height: 1;
 }
+/* no banheiro (o cômodo atrás da porta), o botão de voltar ao salão, no canto de cima */
+.salao3d-voltar {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border, transparent);
+  border-radius: 12px;
+  background: var(--bg-float, #2b2430);
+  color: var(--text-strong, #fff);
+  cursor: pointer;
+  font-size: 26px;
+  line-height: 1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+.salao3d-voltar:focus-visible {
+  outline: 2px solid var(--accent, #f2c94c);
+  outline-offset: 2px;
+}

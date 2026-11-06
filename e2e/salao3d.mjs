@@ -1,7 +1,7 @@
 // O SALÃO 3D NO APP (06/11/2026): o salão abre em pixel art, o botão do canto vai ao 3D, quem está na call aparece com o próprio
 // coelho (e quem transmite, na frente da TV), as funções abrem pelos objetos do 3D, o recado sai do coelho do balcão, e o custo
 // do quadro; sem foco, não desenha. Depois, o NATAL na pré-visualização (?natal, só no site de desenvolvimento): a árvore, o trem
-// andando e o coelho do recado sentado na poltrona vermelha.
+// andando e o coelho do recado sentado na poltrona vermelha. E o BANHEIRO, o cômodo atrás da porta: a ida, a volta e o patinho.
 //
 //   API de teste na 3099 (INVITE_CODE=teste, CORS_ORIGIN=http://localhost:5174) e o site de desenvolvimento na 5174
 //   (API= e APP= trocam os endereços, para rodar ao lado de outros testes).
@@ -142,33 +142,106 @@ try {
   if ((q1 - q0) / 2 <= 32) ok(`no máximo ~30 quadros por segundo (${((q1 - q0) / 2).toFixed(0)})`);
   else falhou('quadros demais: ' + (q1 - q0) / 2);
 
-  // 4b. O BANHEIRO do canto do fundo: o patinho boia com foco e para sem foco; com a call cheia (12), ninguém cai dentro dele
-  const px0 = (await p.evaluate(() => window.salao3dDoTeste.medida())).patinho;
-  await p.waitForTimeout(1200);
-  const px1 = (await p.evaluate(() => window.salao3dDoTeste.medida())).patinho;
-  if (px0 !== null && px1 !== px0) ok(`o patinho boia na banheira (${px0.toFixed(3)} → ${px1.toFixed(3)})`);
-  else falhou('o patinho não boiou: ' + px0 + ' ' + px1);
-  await p.evaluate(() => (document.hasFocus = () => false));
-  const pf0 = (await p.evaluate(() => window.salao3dDoTeste.medida())).patinho;
-  await p.waitForTimeout(1000);
-  const pf1 = (await p.evaluate(() => window.salao3dDoTeste.medida())).patinho;
-  if (pf0 === pf1) ok('sem foco, o patinho para');
-  else falhou('sem foco, o patinho mexeu');
-  await p.evaluate(() => delete document.hasFocus);
+  // 4b. A call cheia (12) acha lugar no SALÃO: cada um num lugar, ninguém fora do chão nem na frente da porta do banheiro
   const cheia = await p.evaluate(() => {
     const s = window.salao3dDoTeste;
     const cores = { pelo: '#f3ede4', roupa: '#5a7d8c' };
     s.definirPessoas(Array.from({ length: 12 }, (_, i) => ({ id: 9000 + i, nome: 'p' + i, papel: i === 0 ? 'transmitindo' : i === 1 ? 'jogando' : 'call', cores })));
     return s.medida().pessoas;
   });
-  const noBanheiro = cheia.filter((x) => x.x < 4.35 && x.z < 2.85);
-  if (cheia.length === 12 && !noBanheiro.length) ok('com 12 na call, todos acham lugar fora do banheiro');
-  else falhou('a call cheia: ' + cheia.length + ' pessoas, ' + noBanheiro.length + ' no banheiro');
+  const foraDoChao = cheia.filter((x) => x.x < 0.2 || x.x > 11.8 || x.z < 0.2 || x.z > 11.8);
+  const naPorta = cheia.filter((x) => x.x < 1.4 && x.z > 1.4 && x.z < 2.9);
+  const juntos = cheia.filter((x, i) => cheia.some((y, k) => k < i && Math.hypot(x.x - y.x, x.z - y.z) < 0.5));
+  if (cheia.length === 12 && !foraDoChao.length && !naPorta.length && !juntos.length) ok('com 12 na call, cada um acha o seu lugar no salão');
+  else falhou(`a call cheia: ${cheia.length} pessoas, ${foraDoChao.length} fora do chão, ${naPorta.length} na porta, ${juntos.length} em cima de outro`);
   await p.locator('.salao3d').screenshot({ path: path.join(FOTOS, '2-3d-call-cheia.png') });
   await p.evaluate(() => window.salao3dDoTeste.definirNoite(true));
   await p.waitForTimeout(500);
   await p.locator('.salao3d').screenshot({ path: path.join(FOTOS, '2-3d-noite.png') });
   await p.evaluate(() => window.salao3dDoTeste.definirNoite(false));
+  await p.waitForTimeout(300);
+
+  // 4c. O BANHEIRO É UM CÔMODO À PARTE, ATRÁS DA PORTA: a porta acende ao passar o mouse, clicar abre e a câmera passa para lá
+  {
+    const cx = await p.locator('.salao3d-caixa').boundingBox();
+    const pt = await p.evaluate(() => window.salao3dDoTeste.pontoDaFuncao('banheiro'));
+    if (!pt) falhou('sem a porta do banheiro no salão');
+    await p.mouse.move(cx.x + pt.x, cx.y + pt.y);
+    await p.waitForTimeout(250);
+    const et = await p.locator('.salao3d-etiqueta').textContent({ timeout: 800 }).catch(() => null);
+    if (et?.includes('Porta do banheiro')) ok(`a porta do banheiro no salão: "${et}"`);
+    else falhou('a porta do banheiro sem a etiqueta: ' + et);
+    await p.mouse.click(cx.x + pt.x, cx.y + pt.y);
+    await p.waitForTimeout(180);
+    await p.locator('.salao3d').screenshot({ path: path.join(FOTOS, '2-porta-abrindo.png') });
+    await p.waitForFunction(() => window.salao3dDoTeste.medida().vista === 'banheiro', null, { timeout: 5000 }).then(
+      () => ok('clicar na porta leva ao banheiro'),
+      () => falhou('a porta não abriu o banheiro'),
+    );
+    await p.waitForTimeout(400);
+    const voltar = p.locator('.salao3d-voltar');
+    if ((await voltar.isVisible()) && (await voltar.getAttribute('aria-label')) === 'Fechar') ok('no banheiro, o botão de voltar (aria-label "Fechar")');
+    else falhou('sem o botão de voltar no banheiro');
+    if (!(await p.locator('.salao3d-nome').count())) ok('no banheiro, os nomes da call não aparecem');
+    else falhou('os nomes da call aparecem no banheiro');
+    const mb = await p.evaluate(() => window.salao3dDoTeste.medida());
+    console.log(`   banheiro: ${mb.ms.toFixed(2)} ms por quadro · ${mb.chamadas} chamadas · ${mb.triangulos} triângulos`);
+    await p.mouse.move(cx.x + 5, cx.y + 5);
+    await p.waitForTimeout(300);
+    await p.locator('.salao3d').screenshot({ path: path.join(FOTOS, '2-banheiro-dia.png') });
+    // o patinho boia com foco e para sem foco
+    const px0 = (await p.evaluate(() => window.salao3dDoTeste.medida())).patinho;
+    await p.waitForTimeout(1200);
+    const px1 = (await p.evaluate(() => window.salao3dDoTeste.medida())).patinho;
+    if (px0 !== null && px1 !== px0) ok(`o patinho boia na banheira (${px0.toFixed(3)} → ${px1.toFixed(3)})`);
+    else falhou('o patinho não boiou: ' + px0 + ' ' + px1);
+    await p.evaluate(() => (document.hasFocus = () => false));
+    const d0 = await p.evaluate(() => window.salao3dDoTeste.medida());
+    await p.waitForTimeout(1000);
+    const d1 = await p.evaluate(() => window.salao3dDoTeste.medida());
+    if (d0.patinho === d1.patinho && d1.desenhados - d0.desenhados <= 1) ok('sem foco, o banheiro não desenha e o patinho para');
+    else falhou('sem foco, o banheiro desenhou ou o patinho mexeu');
+    await p.evaluate(() => delete document.hasFocus);
+    await p.evaluate(() => window.salao3dDoTeste.definirNoite(true));
+    await p.waitForTimeout(500);
+    await p.locator('.salao3d').screenshot({ path: path.join(FOTOS, '2-banheiro-noite.png') });
+    await p.evaluate(() => window.salao3dDoTeste.definirNoite(false));
+    // a volta pela porta de dentro
+    const pd = await p.evaluate(() => window.salao3dDoTeste.pontoDaFuncao('sair-do-banheiro'));
+    if (!pd) falhou('sem a porta de dentro do banheiro');
+    else {
+      await p.mouse.move(cx.x + pd.x, cx.y + pd.y);
+      await p.waitForTimeout(250);
+      const ed = await p.locator('.salao3d-etiqueta').textContent({ timeout: 800 }).catch(() => null);
+      if (ed?.includes('Porta do banheiro')) ok('a porta de dentro acende ao passar o mouse');
+      else falhou('a porta de dentro sem a etiqueta: ' + ed);
+      await p.mouse.click(cx.x + pd.x, cx.y + pd.y);
+      await p.waitForFunction(() => window.salao3dDoTeste.medida().vista === 'salao', null, { timeout: 5000 }).then(
+        () => ok('a porta de dentro volta ao salão'),
+        () => falhou('a porta de dentro não voltou ao salão'),
+      );
+    }
+    await p.waitForTimeout(300);
+    if ((await p.locator('.salao3d-nome').count()) === 12) ok('de volta, os nomes da call voltam');
+    else falhou('de volta, os nomes: ' + (await p.locator('.salao3d-nome').count()));
+    // e de novo, pelo leitor de tela (o botão escondido) e de volta pelo Esc e pelo botão
+    await p.locator('.quarto3d-so-leitor button', { hasText: 'Porta do banheiro' }).focus();
+    await p.keyboard.press('Enter');
+    // o foco vai ao botão de voltar quando o banheiro aparece (e só então o Esc vale)
+    await p.waitForFunction(() => document.activeElement?.classList.contains('salao3d-voltar'), null, { timeout: 5000 }).catch(() => {});
+    await p.keyboard.press('Escape');
+    await p.waitForFunction(() => window.salao3dDoTeste.medida().vista === 'salao', null, { timeout: 5000 }).then(
+      () => ok('pelo teclado: o botão escondido abre, o Esc volta'),
+      () => falhou('pelo teclado, a ida e a volta falharam'),
+    );
+    await p.locator('.quarto3d-so-leitor button', { hasText: 'Porta do banheiro' }).focus();
+    await p.keyboard.press('Enter');
+    await p.locator('.salao3d-voltar').click({ timeout: 5000 });
+    await p.waitForFunction(() => window.salao3dDoTeste.medida().vista === 'salao', null, { timeout: 5000 }).then(
+      () => ok('o botão de voltar volta ao salão'),
+      () => falhou('o botão de voltar não voltou'),
+    );
+  }
   // esvazia (a lista de verdade volta quando a call mudar): o resto do teste não depende dela
   await p.evaluate(() => window.salao3dDoTeste.definirPessoas([]));
   await p.waitForTimeout(300);

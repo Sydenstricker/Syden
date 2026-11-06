@@ -100,31 +100,30 @@ interface Item {
 const PI = Math.PI;
 /** A arrumação de fábrica, pelo layout do salão de pixel art (o canto da TV, o bar no fundo, o fliperama e o karaokê). */
 const ARRUMACAO: Item[] = [
-  // o canto da TV: a TV na parede da esquerda, o sofá de frente, a mesinha no meio e as poltronas dos lados (desde o banheiro,
-  // 1,1 mais para a frente: o fundo da parede da esquerda é o banheiro e a passagem até a porta dele)
-  { id: 'tapete', arquivo: 'q:rug_oval_B', x: 3.0, z: 5.7, giro: PI / 2, escala: 1.35 },
-  { id: 'rack', arquivo: 'k:cabinetTelevision', x: 0.35, z: 5.7, giro: PI / 2, escala: 1.25 },
-  { id: 'tv', arquivo: 'k:televisionModern', x: 0.42, z: 5.7, giro: PI / 2, escala: 1.55, funcao: 'tv' },
-  { id: 'sofa', arquivo: 'q:couch_pillows', x: 4.7, z: 5.7, giro: -PI / 2, uso: 'sofa' },
-  { id: 'mesinha', arquivo: 'q:table_low', x: 2.75, z: 5.7, giro: PI / 2, escala: 0.8 },
-  { arquivo: 'q:mug_A', x: 2.6, z: 5.4, y: 0.3 },
-  { id: 'poltrona-1', arquivo: 'q:armchair_pillows', x: 2.9, z: 3.55, giro: 0, uso: 'poltrona' },
-  { id: 'poltrona-2', arquivo: 'q:armchair_pillows', x: 2.9, z: 7.85, giro: PI, uso: 'poltrona' },
-  // o fundo, depois do banheiro: o abajur no canto, a estante (os canais), a janela, o bar com as banquetas e a geladeira
-  { arquivo: 'q:lamp_standing', x: 4.85, z: 0.5 },
-  { id: 'estante', arquivo: 'qk:bookcaseClosedWide', x: 6.1, z: 0.3, funcao: 'estante', escala: 1.1 },
-  { arquivo: 'qk:books', x: 5.7, z: 0.3, y: 1.74, escala: 1.4 },
-  { arquivo: 'qk:plantSmall2', x: 6.6, z: 0.3, y: 1.74 },
+  // o canto da TV: a TV na parede da esquerda, o sofá de frente, a mesinha no meio e as poltronas dos lados
+  { id: 'tapete', arquivo: 'q:rug_oval_B', x: 3.0, z: 4.6, giro: PI / 2, escala: 1.35 },
+  { id: 'rack', arquivo: 'k:cabinetTelevision', x: 0.35, z: 4.6, giro: PI / 2, escala: 1.25 },
+  { id: 'tv', arquivo: 'k:televisionModern', x: 0.42, z: 4.6, giro: PI / 2, escala: 1.55, funcao: 'tv' },
+  { id: 'sofa', arquivo: 'q:couch_pillows', x: 4.7, z: 4.6, giro: -PI / 2, uso: 'sofa' },
+  { id: 'mesinha', arquivo: 'q:table_low', x: 2.75, z: 4.6, giro: PI / 2, escala: 0.8 },
+  { arquivo: 'q:mug_A', x: 2.6, z: 4.3, y: 0.3 },
+  { id: 'poltrona-1', arquivo: 'q:armchair_pillows', x: 2.9, z: 2.3, giro: 0, uso: 'poltrona' },
+  { id: 'poltrona-2', arquivo: 'q:armchair_pillows', x: 2.9, z: 6.9, giro: PI, uso: 'poltrona' },
+  // o fundo: a planta, a estante (os canais), o quadro, a janela, o bar com as banquetas e a geladeira
+  { arquivo: 'qk:pottedPlant', x: 0.45, z: 0.45, escala: 1.5 },
+  { id: 'estante', arquivo: 'qk:bookcaseClosedWide', x: 1.85, z: 0.3, funcao: 'estante', escala: 1.1 },
+  { arquivo: 'qk:books', x: 1.45, z: 0.3, y: 1.74, escala: 1.4 },
+  { arquivo: 'qk:plantSmall2', x: 2.35, z: 0.3, y: 1.74 },
   { id: 'balcao', arquivo: '@balcao', x: 8.6, z: 1.9, funcao: 'balcao' },
   { arquivo: 'k:kitchenCoffeeMachine', x: 7.5, z: 1.85, y: 0.86 },
   { id: 'banqueta-1', arquivo: 'k:stoolBar', x: 7.5, z: 2.85, giro: PI, uso: 'banqueta' },
   { id: 'banqueta-2', arquivo: 'k:stoolBar', x: 8.6, z: 2.85, giro: PI, uso: 'banqueta' },
   { id: 'banqueta-3', arquivo: 'k:stoolBar', x: 9.7, z: 2.85, giro: PI, uso: 'banqueta' },
   { arquivo: 'k:kitchenFridgeLarge', x: 11.3, z: 0.45 },
-  { arquivo: 'qk:pottedPlant', x: 11.5, z: 2.75, escala: 1.5 },
+  { arquivo: 'q:lamp_standing', x: 5.15, z: 0.55 },
   // o canto do fliperama e do karaokê, na parede da TV
-  { id: 'fliperama', arquivo: '@fliperama', x: 0.5, z: 8.3, giro: PI / 2, funcao: 'fliperama' },
-  { id: 'jukebox', arquivo: '@jukebox', x: 0.45, z: 9.85, giro: PI / 2, funcao: 'jukebox' },
+  { id: 'fliperama', arquivo: '@fliperama', x: 0.5, z: 8.0, giro: PI / 2, funcao: 'fliperama' },
+  { id: 'jukebox', arquivo: '@jukebox', x: 0.45, z: 9.7, giro: PI / 2, funcao: 'jukebox' },
   { id: 'microfone', arquivo: '@microfone', x: 1.7, z: 10.6, giro: PI / 2, funcao: 'microfone' },
   { arquivo: 'k:speaker', x: 0.35, z: 10.9, giro: PI / 2 },
   // a mesa de jogos na frente (no Natal, ela dá lugar à árvore)
@@ -184,26 +183,33 @@ interface DaParede {
   escala?: number;
 }
 const NA_PAREDE: DaParede[] = [
-  { arquivo: 'q:pictureframe_large_B', parede: 'esquerda', u: 9.1, y: 2.3, funcao: 'quadro' },
-  { arquivo: '@trofeu', parede: 'fundo', u: 9.7, y: 2.35, funcao: 'trofeu' },
+  { arquivo: 'q:pictureframe_large_B', parede: 'fundo', u: 4.1, y: 1.95, funcao: 'quadro' },
+  { arquivo: '@trofeu', parede: 'fundo', u: 8.6, y: 2.35, funcao: 'trofeu' },
   { arquivo: 'n:wreath', parede: 'esquerda', u: 11.05, y: 2.75, natal: 'so', escala: 0.6 },
-  { arquivo: 'n:bell_decorated', parede: 'fundo', u: 7.95, y: 2.85, natal: 'so', escala: 0.5 },
-  { arquivo: 'n:wreath', parede: 'fundo', u: 6.1, y: 2.75, natal: 'so', escala: 0.45 },
+  { arquivo: 'n:bell_decorated', parede: 'fundo', u: 6.35, y: 2.85, natal: 'so', escala: 0.5 },
+  { arquivo: 'n:wreath', parede: 'fundo', u: 1.85, y: 2.65, natal: 'so', escala: 0.45 },
 ];
 /** A janela do fundo (ambientação): de fora, o céu da hora. */
-const JANELA = { u: 7.95, y: 1.75, w: 1.5, h: 1.3 };
+const JANELA = { u: 6.35, y: 1.75, w: 1.5, h: 1.3 };
 /** A porta, na parede da esquerda, perto da frente (por onde a turma chega). */
 const PORTA_U = 11.05;
 
 /**
- * O BANHEIRO (06/11/2026, pedido dele, pela foto do Bubbly Bathroom do Tiny Treats): no canto do fundo, entre a parede do fundo e
- * a da esquerda, as duas de verdade do salão (por dentro, de azulejo); dos lados da sala, MURETAS baixas, para a câmera ver dentro
- * (o corte das casas de boneca). A porta, aberta, encostada na parede da esquerda por dentro, na passagem da mureta da frente.
- * É ambientação: nenhum objeto dele tem função (a tela não mente), e por isso ele também não acende ao passar o mouse.
- * As peças paradas viram UMA malha só (todas usam a mesma textura do pacote): uma chamada de desenho para o banheiro inteiro;
- * só o patinho, que boia, fica à parte.
+ * A PORTA DO BANHEIRO, na parede da esquerda, entre o canto da planta e o da TV (do Tiny Treats, fechada, com a moldura e a
+ * plaquinha do patinho em cima, feitas aqui): clicar abre o banheiro. A porta vai de `z` para o fundo.
  */
-const BANHEIRO = { largura: 4.2, fundo: 2.7, espessura: 0.12, mureta: 0.5, porta: 1.2, piso: 0.03 };
+const PORTA_DO_BANHEIRO = { z: 2.6, largura: 1.2, altura: 2.1 };
+
+/**
+ * O BANHEIRO (06/11/2026, pedido dele, pela foto do Bubbly Bathroom do Tiny Treats) É UM CÔMODO À PARTE, ATRÁS DA PORTA: a primeira
+ * versão era um canto do salão com muretas, e "o banheiro é para ficar atrás da porta" (correção dele, no mesmo dia). Ele mora
+ * longe do salão na mesma cena (`origem`, fora da vista dele), e a câmera passa para lá quando a porta abre: o cômodo sozinho na
+ * caixa, como casa de boneca (as duas paredes do fundo inteiras, de azulejo, e as da frente cortadas em muretas baixas), com a
+ * porta de dentro e o botão de voltar. Ninguém da call aparece nele.
+ * É ambientação: só as duas portas têm função (entrar e voltar). As peças paradas viram UMA malha só (todas usam a mesma textura
+ * do pacote): uma chamada de desenho para o banheiro inteiro; só o patinho, que boia, e a porta de dentro, que abre, ficam à parte.
+ */
+const BANHEIRO = { origem: 40, largura: 4.2, fundo: 3.3, espessura: 0.12, mureta: 0.5, piso: 0.03, parede: 0.2 };
 interface DoBanheiro {
   arquivo: string;
   x: number;
@@ -232,15 +238,13 @@ const PECAS_DO_BANHEIRO: DoBanheiro[] = [
   { arquivo: 'b:container_bathroom_B_pink', x: 3.68, z: 0.26, y: 2.15 },
   // o vaso encostado na mureta do lado, o papel e o lixinho
   { arquivo: 'b:toilet', x: 3.7, z: 1.98, giro: -PI / 2 },
-  { arquivo: 'b:toilet_roll_holder', x: B.largura, z: 2.5, y: 0.62, giro: -PI / 2, parede: true },
+  { arquivo: 'b:toilet_roll_holder', x: B.largura - B.espessura / 2, z: 2.5, y: 0.2, giro: -PI / 2, parede: true },
   { arquivo: 'b:toilet_roll_stack', x: 3.85, z: 2.52, giro: -0.3 },
   { arquivo: 'b:bin', x: 3.2, z: 2.48 },
   // o tapete rosa na frente da banheira, com os chinelos, e a pilha de toalhas
   { arquivo: 'b:mat', x: 2.45, z: 1.95 },
   { arquivo: 'b:slippers', x: 2.3, z: 2.0, y: 0.075, giro: 0.35 },
   { arquivo: 'b:towel_stacked', x: 1.42, z: 1.62, escala: 0.8, giro: 0.2 },
-  // a porta, aberta para dentro, encostada na parede da esquerda
-  { arquivo: 'b:door_modular', x: 0, z: B.fundo, giro: PI / 2, parede: true },
 ];
 
 export interface PessoaNoSalao3D {
@@ -256,7 +260,14 @@ export interface OpcoesDoSalao3D {
   temFuncao(id: string): boolean;
   /** Os nomes em cima de quem está na call mudaram de lugar (gente nova, a caixa mudou de tamanho). */
   aoMudarRotulos(): void;
+  /** A câmera passou para o banheiro (a porta abriu) ou voltou ao salão. */
+  aoMudarVista(vista: VistaDoSalao3D): void;
 }
+
+/** Onde a câmera está: no salão, ou dentro do banheiro (atrás da porta). */
+export type VistaDoSalao3D = 'salao' | 'banheiro';
+/** As funções que são da própria cena (as duas portas do banheiro), e não do salão de fora. */
+const DA_CENA = new Set(['banheiro', 'sair-do-banheiro']);
 
 interface Pronto {
   item: Item;
@@ -300,6 +311,9 @@ export class CenaDoSalao3D {
   private trem: { carros: THREE.Object3D[]; s: number; perimetro: number; ponto: (s: number) => { x: number; z: number; giro: number } } | null = null;
   private neve: THREE.Points | null = null;
   private patinho: { g: THREE.Group; x: number; y: number; z: number } | null = null;
+  private vista: VistaDoSalao3D = 'salao';
+  /** A porta que está abrindo (ao fim, a câmera passa para o outro cômodo e ela fecha de novo). */
+  private abrindo: { porta: THREE.Object3D; desde: number; ir: VistaDoSalao3D } | null = null;
   private noite = false;
   private sombras: boolean;
   private particulas: boolean;
@@ -348,20 +362,14 @@ export class CenaDoSalao3D {
     window.addEventListener('syden:graficos', this.aoMudarGraficos);
     window.addEventListener('storage', this.aoMudarGraficos);
 
-    const centro = new THREE.Vector3(N / 2 - 0.2, 1.0, N / 2 - 0.2);
-    this.camera.position.copy(centro).add(new THREE.Vector3(14, 12, 14));
-    this.camera.lookAt(centro);
-    this.camera.updateMatrixWorld();
     this.medir();
 
-    this.sol.position.set(9, 16, 13);
-    this.sol.target.position.set(5.5, 0, 5.5);
     this.sol.castShadow = true;
     this.sol.shadow.mapSize.set(1024, 1024);
     Object.assign(this.sol.shadow.camera, { left: -11, right: 11, top: 11, bottom: -11, near: 1, far: 40 });
     this.sol.shadow.bias = -0.0006;
     this.sol.shadow.normalBias = 0.03;
-    this.preenche.position.set(14, 9, 12);
+    this.enquadrar();
     this.cena.add(this.ceu, this.sol, this.sol.target, this.preenche);
     if (import.meta.env.DEV) (window as unknown as { salao3dDoTeste?: CenaDoSalao3D }).salao3dDoTeste = this;
   }
@@ -438,7 +446,54 @@ export class CenaDoSalao3D {
   }
 
   usarFuncao(id: string) {
-    this.opcoes.aoFuncao(id);
+    if (id === 'banheiro') this.abrirPorta('banheiro');
+    else if (id === 'sair-do-banheiro') this.abrirPorta('salao');
+    else this.opcoes.aoFuncao(id);
+  }
+
+  /** Abre a porta do cômodo em que a câmera está e passa para o outro (com "menos movimento", passa na hora). */
+  private abrirPorta(ir: VistaDoSalao3D) {
+    if (ir === this.vista || this.abrindo) return;
+    const porta = this.clicaveis.find((c) => c.userData.funcao === (ir === 'banheiro' ? 'banheiro' : 'sair-do-banheiro'));
+    if (!porta || this.calmo) return this.mostrar(ir);
+    this.abrindo = { porta: porta.userData.folha as THREE.Object3D, desde: this.t, ir };
+    this.ultimoQuadro = 0;
+  }
+
+  /** A câmera no salão ou no banheiro. */
+  private mostrar(vista: VistaDoSalao3D) {
+    this.vista = vista;
+    this.realcar(null);
+    // os coelhos não passam pelo corte da câmera (o esqueleto mexe, e o three.js os desenha sempre): fora do salão, escondidos
+    this.coelhosVisiveis();
+    this.opcoes.aoPassar(null);
+    this.enquadrar();
+    this.medir();
+    this.opcoes.aoMudarVista(vista);
+  }
+
+  private coelhosVisiveis() {
+    const ver = this.vista === 'salao';
+    if (this.recado) this.recado.raiz.visible = ver;
+    for (const c of this.pessoas.values()) c.raiz.visible = ver;
+  }
+
+  /** A câmera e o sol olhando para o cômodo da vista: o salão inteiro, ou o banheiro sozinho. */
+  private enquadrar() {
+    const centro =
+      this.vista === 'salao'
+        ? new THREE.Vector3(N / 2 - 0.2, 1.0, N / 2 - 0.2)
+        : new THREE.Vector3(B.origem + B.largura / 2, 1.0, B.fundo / 2);
+    this.camera.position.copy(centro).add(new THREE.Vector3(14, 12, 14));
+    this.camera.lookAt(centro);
+    this.camera.updateMatrixWorld();
+    // o sol e a luz de preencher vão junto (a sombra do sol cobre só ±11 em volta do alvo)
+    const alvo = this.vista === 'salao' ? new THREE.Vector3(5.5, 0, 5.5) : centro.clone().setY(0);
+    this.sol.target.position.copy(alvo);
+    this.sol.position.copy(alvo).add(new THREE.Vector3(3.5, 16, 7.5));
+    this.sol.target.updateMatrixWorld();
+    this.preenche.position.copy(alvo).add(new THREE.Vector3(8.5, 9, 6.5));
+    this.ultimoQuadro = 0;
   }
 
   /** Onde aparece o objeto de uma função, em pixels da caixa ('balcao' é a cabeça do coelho do recado). */
@@ -446,13 +501,14 @@ export class CenaDoSalao3D {
     if (id === 'balcao' && this.recado)
       return this.naTela(new THREE.Vector3().setFromMatrixPosition(this.recado.raiz.matrixWorld).add(new THREE.Vector3(0, ALTURA_DO_COELHO + 0.15, 0)));
     const o = this.clicaveis.find((c) => c.userData.funcao === id);
-    if (!o) return null;
+    if (!o || (o.userData.vista ?? 'salao') !== this.vista) return null;
     return this.naTela(new THREE.Box3().setFromObject(o).getCenter(new THREE.Vector3()));
   }
 
   /** Os nomes de quem está na call, em pixels da caixa, em cima da cabeça. */
   rotulos(): { id: number; nome: string; x: number; y: number }[] {
     const r: { id: number; nome: string; x: number; y: number }[] = [];
+    if (this.vista !== 'salao') return r;
     for (const [id, c] of this.pessoas) {
       c.raiz.updateMatrixWorld();
       const p = this.naTela(new THREE.Vector3().setFromMatrixPosition(c.raiz.matrixWorld).add(new THREE.Vector3(0, ALTURA_DO_COELHO + 0.12, 0)));
@@ -474,6 +530,7 @@ export class CenaDoSalao3D {
       recado: this.recado?.tocando,
       trem: this.trem ? this.trem.s : null,
       patinho: this.patinho ? this.patinho.g.position.x : null,
+      vista: this.vista,
     };
   }
 
@@ -517,9 +574,10 @@ export class CenaDoSalao3D {
     const h = Math.max(1, this.caixa.clientHeight);
     this.renderer.setSize(w, h, false);
     const a = w / h;
-    // o salão inteiro (o chão e as duas paredes) na caixa 4:3 do início da comunidade
-    const meia = Math.max(6.1, 8.4 / a);
-    Object.assign(this.camera, { left: -meia * a, right: meia * a, top: meia + 0.2, bottom: -meia + 0.2 });
+    // o salão inteiro (o chão e as duas paredes) na caixa 4:3 do início da comunidade; o banheiro, de mais perto
+    const [k, l, sobe] = this.vista === 'salao' ? [6.1, 8.4, 0.2] : [3.25, 3.4, 0.45];
+    const meia = Math.max(k, l / a);
+    Object.assign(this.camera, { left: -meia * a, right: meia * a, top: meia + sobe, bottom: -meia + sobe });
     this.camera.updateProjectionMatrix();
     this.ultimoQuadro = 0;
     if (this.montada) this.opcoes.aoMudarRotulos();
@@ -1031,16 +1089,104 @@ export class CenaDoSalao3D {
     return g;
   }
 
-  /** O banheiro do canto do fundo (BANHEIRO, lá em cima): o piso, os azulejos, as muretas, as peças numa malha só e o patinho. */
+  /**
+   * Uma porta do banheiro numa parede da esquerda (x = 0 de quem a recebe), de `z` para trás: a folha do Tiny Treats, a
+   * moldura, o vão atrás dela (a cor do outro cômodo: o verde-água do banheiro, as tábuas do salão) e a plaquinha do patinho em cima, sem texto.
+   * `userData.folha` é o que gira ao abrir.
+   */
+  private async portaDoBanheiro(pai: THREE.Object3D, z: number, funcao: string, vista: VistaDoSalao3D, corDoVao: string) {
+    const { largura: w, altura: h } = PORTA_DO_BANHEIRO;
+    const raiz = new THREE.Group();
+    raiz.rotation.y = PI / 2;
+    raiz.position.set(0, 0, z);
+    // a dobradiça no lado mais perto do fundo (a folha espelhada): aberta, ela fica de quina para a câmera e mostra o vão
+    const porta = this.copia(await modelo('b:door_modular'), 'b:door_modular');
+    porta.scale.set(-S, S, S);
+    const folha = new THREE.Group().add(porta);
+    folha.position.set(w, 0, 0.02);
+    raiz.add(folha);
+    const moldura = new THREE.MeshStandardMaterial({ color: '#efe3cc', roughness: 0.8 });
+    const ripa = (lw: number, lh: number, x: number, y: number) => {
+      const r = new THREE.Mesh(this.caixaGeo(lw, lh, 0.1), moldura);
+      r.position.set(x, y, 0.05);
+      r.castShadow = r.receiveShadow = true;
+      raiz.add(r);
+    };
+    ripa(0.1, h + 0.1, -0.05, (h + 0.1) / 2);
+    ripa(0.1, h + 0.1, w + 0.05, (h + 0.1) / 2);
+    ripa(w + 0.2, 0.1, w / 2, h + 0.05);
+    const vao = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: corDoVao }));
+    this.descartaveis.push(vao.geometry);
+    vao.position.set(w / 2, h / 2, 0.03);
+    raiz.add(vao);
+    // a plaquinha: o patinho amarelo e as bolhas, pintados (quem lê qualquer língua entende)
+    const placa = this.textura(
+      (g, W, H) => {
+        const bola = (x: number, y: number, rx: number, ry = rx) => {
+          g.beginPath();
+          g.ellipse(x * W, y * H, rx * W, ry * W, 0, 0, PI * 2);
+          g.fill();
+        };
+        g.fillStyle = '#7a5236';
+        g.beginPath();
+        g.roundRect(0, 0, W, H, 22);
+        g.fill();
+        g.fillStyle = '#fbf3df';
+        g.beginPath();
+        g.roundRect(9, 9, W - 18, H - 18, 16);
+        g.fill();
+        g.fillStyle = '#9fd3c7';
+        bola(0.2, 0.32, 0.07);
+        bola(0.31, 0.2, 0.045);
+        bola(0.84, 0.3, 0.055);
+        g.fillStyle = '#f2c94c';
+        bola(0.47, 0.68, 0.23, 0.11);
+        bola(0.62, 0.42, 0.11);
+        g.fillStyle = '#e8873a';
+        bola(0.74, 0.45, 0.06, 0.025);
+        g.fillStyle = '#3a2a22';
+        bola(0.64, 0.38, 0.02);
+      },
+      256,
+      180,
+    );
+    placa.wrapS = placa.wrapT = THREE.ClampToEdgeWrapping;
+    const plaquinha = new THREE.Mesh(this.caixaGeo(0.46, 0.32, 0.03), new THREE.MeshStandardMaterial({ map: placa, roughness: 0.8 }));
+    plaquinha.position.set(w / 2, h + 0.36, 0.03);
+    raiz.add(plaquinha);
+    raiz.userData = { funcao, folha, vista };
+    this.clicaveis.push(raiz);
+    pai.add(raiz);
+  }
+
+  /**
+   * O banheiro (BANHEIRO, lá em cima), longe do salão: a base, as paredes do fundo de azulejo, as muretas da frente, as peças numa
+   * malha só, o patinho e a porta de dentro. E a porta do lado do salão.
+   */
   private async montarBanheiro() {
-    const { largura: L, fundo: P, espessura: E, mureta: H, porta, piso } = BANHEIRO;
-    // o piso de ladrilho verde-água do pacote (3 × 2 placas, esticadas um tanto para cobrir o banheiro), um dedo acima das tábuas
+    await this.portaDoBanheiro(this.cena, PORTA_DO_BANHEIRO.z, 'banheiro', 'salao', '#9fd3c7');
+    const { largura: L, fundo: P, espessura: E, mureta: H, piso, parede: W } = BANHEIRO;
+    const sala = new THREE.Group();
+    sala.position.x = B.origem;
+    this.cena.add(sala);
+    // a base (como a laje do salão) e as duas paredes do fundo, por fora; por dentro, os azulejos e a pintura (mais abaixo)
+    const fora = new THREE.MeshStandardMaterial({ color: '#e6d6b8', roughness: 0.9 });
+    const bloco = (w: number, h: number, d: number, x: number, y: number, z: number) => {
+      const b = new THREE.Mesh(this.caixaGeo(w, h, d), fora);
+      b.position.set(x, y, z);
+      b.receiveShadow = true;
+      sala.add(b);
+    };
+    bloco(L + E + W, 0.2, P + E + W, (L + E - W) / 2, -0.1, (P + E - W) / 2);
+    bloco(L + E + W, ALTURA_DA_PAREDE, W, (L + E - W) / 2, ALTURA_DA_PAREDE / 2, -W / 2);
+    bloco(W, ALTURA_DA_PAREDE, P + E, -W / 2, ALTURA_DA_PAREDE / 2, (P + E) / 2);
+    // o piso de ladrilho verde-água do pacote (3 × 3 placas, esticadas um tanto para cobrir o banheiro)
     const pecas: { nome: string; o: THREE.Object3D }[] = [];
     for (let i = 0; i < 3; i++)
-      for (let k = 0; k < 2; k++) {
+      for (let k = 0; k < 3; k++) {
         const o = (await modelo('b:floor_tiled')).scene.clone(true);
-        o.scale.set(L / 3 / 2, 0.2, P / 2 / 2);
-        o.position.set((L / 3) * (i + 0.5), piso, (P / 2) * (k + 0.5));
+        o.scale.set(L / 3 / 2, 0.2, P / 3 / 2);
+        o.position.set((L / 3) * (i + 0.5), piso, (P / 3) * (k + 0.5));
         pecas.push({ nome: 'b:floor_tiled', o });
       }
     for (const d of PECAS_DO_BANHEIRO) {
@@ -1076,7 +1222,7 @@ export class CenaDoSalao3D {
     mat.roughness = 0.75;
     const banheiro = new THREE.Mesh(junta, mat);
     banheiro.castShadow = banheiro.receiveShadow = true;
-    this.cena.add(banheiro);
+    sala.add(banheiro);
     // o patinho, boiando na espuma da banheira (anda no laço, devagar)
     const banheira = PECAS_DO_BANHEIRO.find((p) => p.arquivo === 'b:bath')!;
     const pato = this.copia(await modelo('b:ducky'), 'b:ducky');
@@ -1087,16 +1233,16 @@ export class CenaDoSalao3D {
     this.patinho = { g: new THREE.Group().add(pato), x: banheira.x + 0.35, y: piso + 0.62, z: banheira.z - 0.05 };
     this.patinho.g.position.set(this.patinho.x, this.patinho.y, this.patinho.z);
     this.patinho.g.rotation.y = 0.6;
-    this.cena.add(this.patinho.g);
+    sala.add(this.patinho.g);
 
-    // os azulejos por dentro das paredes de verdade (brancos até 1,5, a pintura em cima) e as muretas dos lados da sala
+    // os azulejos por dentro das paredes do fundo (brancos até 1,5, a pintura em cima) e as muretas da frente (o corte da casa de boneca)
     const lado = 0.3;
     const azulejo = this.textura(
-      (g, W) => {
+      (g, T) => {
         g.fillStyle = '#cfd8d6';
-        g.fillRect(0, 0, W, W);
+        g.fillRect(0, 0, T, T);
         const n = 4;
-        const t = W / n;
+        const t = T / n;
         for (let i = 0; i < n; i++)
           for (let k = 0; k < n; k++) {
             const grad = g.createLinearGradient(i * t, k * t, (i + 1) * t, (k + 1) * t);
@@ -1122,32 +1268,33 @@ export class CenaDoSalao3D {
       p.position.set(x, y, z);
       p.rotation.y = giro;
       p.receiveShadow = true;
-      this.cena.add(p);
+      sala.add(p);
     };
     placa(L, BAIXO, azul(L, BAIXO), L / 2, BAIXO / 2, 0.011, 0);
     placa(L, ALTURA_DA_PAREDE - BAIXO, pintura, L / 2, (ALTURA_DA_PAREDE + BAIXO) / 2, 0.011, 0);
     placa(P, BAIXO, azul(P, BAIXO), 0.011, BAIXO / 2, P / 2, PI / 2);
     placa(P, ALTURA_DA_PAREDE - BAIXO, pintura, 0.011, (ALTURA_DA_PAREDE + BAIXO) / 2, P / 2, PI / 2);
-    // as muretas: a do lado (x = L, de ponta a ponta) e a da frente (z = P, com a passagem da porta junto da parede)
     const mureta = (w: number, x: number, z: number, giro: number) => {
       // um material só (uma chamada): as pontas, estreitas, levam o mesmo azulejo, e o tampo cobre o alto
       const m = new THREE.Mesh(this.caixaGeo(w, H, E), azul(w, H));
       m.position.set(x, H / 2, z);
       m.rotation.y = giro;
       m.castShadow = m.receiveShadow = true;
-      this.cena.add(m);
+      sala.add(m);
       const t = new THREE.Mesh(this.caixaGeo(w + 0.04, 0.05, E + 0.06), tampo);
       t.position.set(x, H + 0.025, z);
       t.rotation.y = giro;
       t.castShadow = true;
-      this.cena.add(t);
+      sala.add(t);
     };
     mureta(P + E, L + E / 2, (P + E) / 2, PI / 2);
-    mureta(L - porta, porta + (L - porta) / 2, P + E / 2, 0);
+    mureta(L, L / 2, P + E / 2, 0);
+    // a porta de dentro, na parede da esquerda, perto da frente: por ela se volta ao salão
+    await this.portaDoBanheiro(sala, P - 0.2, 'sair-do-banheiro', 'banheiro', '#a06f4a');
     // de noite, a vela da prateleira acende uma luz morna no banheiro
     const vela = new THREE.PointLight('#ffc27a', 0, 4.5, 1.6);
     vela.position.set(2.3, 2.6, 0.55);
-    this.cena.add(vela);
+    sala.add(vela);
     this.luzes.push(vela);
   }
 
@@ -1377,20 +1524,20 @@ export class CenaDoSalao3D {
     }
     // de pé, quando os lugares acabam: em volta do tapete, virados para a TV
     for (const [x, z] of [
-      [5.9, 4.7],
-      [5.9, 6.7],
-      [4.6, 8.5],
-      [5.3, 3.2],
+      [5.9, 3.6],
+      [5.9, 5.6],
+      [4.6, 7.4],
+      [4.6, 1.9],
     ])
       sentar.push({ pos: new THREE.Vector3(x, 0, z), giro: -PI / 2, anim: 'parado' });
     const frenteDaTv: Lugar[] = [
-      { pos: new THREE.Vector3(1.55, 0, 4.45), giro: PI / 2, anim: 'falando' },
-      { pos: new THREE.Vector3(1.55, 0, 6.95), giro: PI / 2, anim: 'falando' },
+      { pos: new THREE.Vector3(1.55, 0, 3.35), giro: PI / 2, anim: 'falando' },
+      { pos: new THREE.Vector3(1.55, 0, 5.85), giro: PI / 2, anim: 'falando' },
     ];
     const fliperama: Lugar[] = [
-      { pos: new THREE.Vector3(1.45, 0, 8.3), giro: -PI / 2, anim: 'parado' },
-      { pos: new THREE.Vector3(1.55, 0, 7.45), giro: -PI / 2 - 0.5, anim: 'parado' },
-      { pos: new THREE.Vector3(1.55, 0, 9.15), giro: -PI / 2 + 0.5, anim: 'parado' },
+      { pos: new THREE.Vector3(1.45, 0, 8.0), giro: -PI / 2, anim: 'parado' },
+      { pos: new THREE.Vector3(1.55, 0, 7.15), giro: -PI / 2 - 0.5, anim: 'parado' },
+      { pos: new THREE.Vector3(1.55, 0, 8.85), giro: -PI / 2 + 0.5, anim: 'parado' },
     ];
     for (const p of this.listaDePessoas) {
       let c = this.pessoas.get(p.id);
@@ -1403,6 +1550,7 @@ export class CenaDoSalao3D {
       const l = fila.shift() ?? sentar.shift() ?? { pos: new THREE.Vector3(6 + Math.random() * 2, 0, 9), giro: -PI / 4, anim: 'parado' };
       this.pousar(c, l);
     }
+    this.coelhosVisiveis();
     this.ultimoQuadro = 0;
     this.opcoes.aoMudarRotulos();
   }
@@ -1450,15 +1598,18 @@ export class CenaDoSalao3D {
 
   /** O primeiro objeto com função (que exista aqui) sob o ponteiro; um móvel sem função na frente segura o clique. */
   private alvoNoPonto(): THREE.Object3D | null {
+    // só o que é do cômodo à vista (no banheiro, a porta de dentro; no salão, todo o resto)
     const alvos = [
-      ...this.clicaveis,
-      ...this.moveis.filter((m) => !m.item.funcao && !m.item.arquivo.includes('rug') && !m.item.arquivo.includes('carpet')).map((m) => m.raiz),
+      ...this.clicaveis.filter((c) => (c.userData.vista ?? 'salao') === this.vista),
+      ...(this.vista === 'salao'
+        ? this.moveis.filter((m) => !m.item.funcao && !m.item.arquivo.includes('rug') && !m.item.arquivo.includes('carpet')).map((m) => m.raiz)
+        : []),
     ];
     for (const h of this.raio.intersectObjects(alvos, true)) {
       if ((h.object as THREE.Mesh).userData.contornoDoCoelho) continue;
       let o: THREE.Object3D | null = h.object;
       while (o) {
-        if (o.userData.funcao) return this.opcoes.temFuncao(o.userData.funcao) ? o : null;
+        if (o.userData.funcao) return DA_CENA.has(o.userData.funcao) || this.opcoes.temFuncao(o.userData.funcao) ? o : null;
         if (alvos.includes(o)) return null;
         o = o.parent;
       }
@@ -1476,7 +1627,7 @@ export class CenaDoSalao3D {
     if (!a || Math.hypot(e.clientX - a.x, e.clientY - a.y) > 8 || e.button !== 0) return;
     this.mirar(e);
     const o = this.alvoNoPonto();
-    if (o) this.opcoes.aoFuncao(o.userData.funcao);
+    if (o) this.usarFuncao(o.userData.funcao);
   };
 
   private aoMover = (e: PointerEvent) => {
@@ -1540,6 +1691,17 @@ export class CenaDoSalao3D {
     const dt = Math.min(0.1, this.relogio.getDelta());
     this.t += dt;
     this.passarAgora();
+    // a porta abrindo (uns 0,4 s); aberta, a câmera passa para o outro cômodo e ela fecha atrás
+    if (this.abrindo) {
+      const k = Math.min(1, (this.t - this.abrindo.desde) / 0.4);
+      this.abrindo.porta.rotation.y = 1.25 * (1 - (1 - k) * (1 - k));
+      if (k >= 1) {
+        this.abrindo.porta.rotation.y = 0;
+        const ir = this.abrindo.ir;
+        this.abrindo = null;
+        this.mostrar(ir);
+      }
+    }
     if (!this.calmo) {
       if (this.trem) this.andarTrem(dt);
       if (this.patinho) this.boiarPatinho();
@@ -1559,8 +1721,10 @@ export class CenaDoSalao3D {
         }
         p.needsUpdate = true;
       }
-      this.recado?.copia.mixer.update(dt);
-      for (const c of this.pessoas.values()) c.copia.mixer.update(dt);
+      if (this.vista === 'salao') {
+        this.recado?.copia.mixer.update(dt);
+        for (const c of this.pessoas.values()) c.copia.mixer.update(dt);
+      }
     }
     this.renderer.render(this.cena, this.camera);
     this.desenhados++;
