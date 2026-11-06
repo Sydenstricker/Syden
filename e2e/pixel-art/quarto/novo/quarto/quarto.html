@@ -359,7 +359,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   };
   // os objetos da parede de fábrica de cada planta (no cubículo a parede é curta: o quadro e os troféus na da esquerda, o
   // fone embaixo deles, a cortiça em cima do guarda-roupa)
-  const PAREDE_DA_PLANTA = { l: { quadro: { parede: 'esquerda', v: 0.7, h: 0 }, fone: { parede: 'esquerda', v: -2.5, h: -6 }, cortica: { parede: 'esquerda', v: 3, h: 0 }, trofeus: { parede: 'direita', v: -3.1, h: 33 } },
+  const PAREDE_DA_PLANTA = { l: { quadro: { parede: 'esquerda', v: -1.6, h: 0 }, fone: { parede: 'esquerda', v: -3.1, h: -6 }, cortica: { parede: 'esquerda', v: 0.9, h: 0 }, trofeus: { parede: 'direita', v: -3.1, h: 33 } },
     cubiculo: { quadro: { parede: 'esquerda', v: -0.6, h: 0 }, trofeus: { parede: 'esquerda', v: 2.3, h: 19 }, fone: { parede: 'esquerda', v: 2.0, h: -40 }, cortica: { parede: 'direita', v: -1.1, h: 30 } } };
   const paredeDaPlanta = () => (CENA === 'quarto' && PAREDE_DA_PLANTA[PLANTA]) || PAREDE_INICIAL;
   let NA_PAREDE = JSON.parse(JSON.stringify(paredeDaPlanta()));
@@ -910,7 +910,10 @@ if (CENA === 'salao') document.body.classList.add('salao');
     // comuns nas últimas linhas, mas aparecem no móvel inteiro (tirá-las deixava a mesa transparente, 14/10/2026).
     const [sr, sg, sb] = sombraCor.split(',').map(Number), parecida = (k) => Math.abs(movel[k * 4] - sr) + Math.abs(movel[k * 4 + 1] - sg) + Math.abs(movel[k * 4 + 2] - sb) < 18;
     let emCima = 0; for (let k = K0; k < Math.max(K0, (fundo - 25) * W); k++) if (movel[k * 4 + 3] > 127 && parecida(k)) emCima++;
-    if (vezes > 12 && emCima <= vezes * 0.1) {
+    // (NÃO NOS OBJETOS DE CIMA, auditoria de 06/11/2026: eles vêm sem sombra, e a regra levava a cor mais comum do pé, que
+    // é o corpo deles — a caneca de costas perdia o corpo inteiro e virava um contorno vazio, com o móvel aparecendo por
+    // dentro; o refrigerante, os livros e a pipoca perdiam o fundo)
+    if (vezes > 12 && emCima <= vezes * 0.1 && !OBJETOS_DE_CIMA[id]) {
       for (let k = K0; k < K1; k++) if (parecida(k)) movel[k * 4 + 3] = 0;
       // O QUE SOBRA DA SOMBRA, SOLTO (relato dele, 17/10/2026: "a poltrona está com uma mancha na base, parece um pixel
       // perdido"): o pixel da sombra num tom um pouco diferente não sai pela cor, e fica sozinho embaixo do móvel. Pedaço de
@@ -961,7 +964,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
     let bx0 = W, bx1 = 0;
     for (let y = y1 - 11; y <= y1; y++) for (let x = 0; x < W; x++) if (y >= 0 && movel[(y * W + x) * 4 + 3]) { bx0 = Math.min(bx0, x); bx1 = Math.max(bx1, x); }
     const meioDaBase = [(bx0 + bx1 + 1) / 2, y1 - (bx1 - bx0 + 1) / 4];
-    return { id, movel, buraco, sombra: VAZIA, topo: y0, peColuna, frente: [sx, y1], mede, centroTopo: soma / Math.max(1, n), meioDaBase, caixa: [x0, y0, x1 + 1, y1 + 1] };
+    return { id, movel, buraco, sombra: VAZIA, topo: y0, peColuna, frente: [sx, y1], mede, centroTopo: soma / Math.max(1, n), meioDaBase, larguraDaBase: Math.max(0, bx1 - bx0 + 1), caixa: [x0, y0, x1 + 1, y1 + 1] };
   }
   const VISTAS = porTipo({});
   for (const id of MOVEIS_GIRADOS) if (im['giro-' + id + '0']) VISTAS[id] = [0, 1, 2, 3].map((l) => pecaDeImagem(im['giro-' + id + l], id));
@@ -1571,12 +1574,12 @@ if (CENA === 'salao') document.body.classList.add('salao');
   const INICIAL = arrumacaoInicial();
   // A ARRUMAÇÃO DE FÁBRICA DE CADA PLANTA (06/11/2026): os mesmos móveis, com os de função (a cama, o criado-mudo, a mesa e o
   // guarda-roupa) sempre num lugar de chão. No L, a cama e o criado-mudo no braço da direita, a mesa e o guarda-roupa no da
-  // esquerda (o guarda-roupa de costas para a face do pilar), o tapete com o pufe na frente; no cubículo, tudo encostado nas
+  // esquerda (a mesa de costas para a face do pilar, o guarda-roupa na parede de fora), o tapete com o pufe na frente; no cubículo, tudo encostado nas
   // duas paredes, que andaram 2 casas para a frente.
   const INICIAIS = { quadrado: INICIAL };
   if (CENA === 'quarto') {
     const de = (pos) => { const a = JSON.parse(JSON.stringify(INICIAL)); for (const [id, [u, v, lado]] of Object.entries(pos)) if (a[id]) a[id] = { c: [u, v], lado }; return a; };
-    INICIAIS.l = de({ cama: [1.5, 7, 0], abajur: [0.5, 5.5, 0], mesa: [5.5, 0.5, 3], 'guarda-roupa': [4.5, 2, 0], 'planta-alta': [7.5, 0.5, 0], 'planta-baixa': [3.5, 4.5, 0], tapete: [6, 6, 0], pufe: [6, 6, 0], poltrona: [7, 3, 0] });
+    INICIAIS.l = de({ cama: [1.5, 7, 0], abajur: [0.5, 5.5, 0], mesa: [4.5, 1.5, 0], 'guarda-roupa': [7, 0.5, 3], 'planta-alta': [4.5, 3.5, 0], 'planta-baixa': [3.5, 4.5, 0], tapete: [6, 6, 0], pufe: [6, 6, 0], poltrona: [7, 3, 0] });
     INICIAIS.cubiculo = de({ cama: [3.5, 7, 0], abajur: [2.5, 5.5, 0], mesa: [4.5, 2.5, 3], 'guarda-roupa': [2.5, 3, 0], 'planta-alta': [7.5, 2.5, 0], 'planta-baixa': [6.5, 2.5, 0], tapete: [6, 6, 0], pufe: [6, 6, 0], poltrona: [7, 4, 0] });
   }
   const INI = () => INICIAIS[PLANTA] ?? INICIAL;
@@ -2971,8 +2974,10 @@ if (CENA === 'salao') document.body.classList.add('salao');
     const [us, ut] = d < 1e-3 ? [Math.SQRT1_2, Math.SQRT1_2] : [ds / d, dt / d]; // no meio exato: para a frente
     return [Math.min(0.9, Math.max(0.1, zs + us * r)), Math.min(0.9, Math.max(0.1, zt + ut * r))];
   }
+  // (no pé MEDIDO, o do desenho: o da grade é arredondado para cima, e o guarda-roupa de lado tem 1,6 casa de desenho num pé
+  // de 2 — o objeto posto na borda da grade ficava no ar, ao lado dele)
   function ondeEmCima(o) {
-    const pe = peDe(o.em), l = ARR[o.em].lado;
+    const pe = peMedidoDe(o.em), l = ARR[o.em].lado;
     let [a, b] = foraDoQueEstaEmPe(o.em, o.s, o.t);
     for (let r = 0; r < l; r++) [a, b] = [1 - b, a];
     let u = pe[0] + a * (pe[1] - pe[0]), v = pe[2] + b * (pe[3] - pe[2]);
@@ -2982,7 +2987,13 @@ if (CENA === 'salao') document.body.classList.add('salao');
       const [cu, cv] = centro(pe), falta = 0.3 - (u - cu + v - cv);
       if (falta > 0) { u = Math.min(pe[1] - 0.1, u + falta / 2); v = Math.min(pe[3] - 0.1, v + falta / 2); }
     }
-    return [u, v];
+    // O OBJETO NÃO PENDURA FORA DO TAMPO (auditoria de 06/11/2026): o ponto de apoio podia ir até 4% da borda, e meia caneca
+    // ficava no ar, na frente do criado-mudo (os objetos estão no tamanho inteiro, maiores que o tampo pede). O pé dele, um
+    // círculo do tamanho da base do desenho (meia diagonal de casa = 38 px), fica dentro do tampo; no tampo menor que ele,
+    // no meio.
+    const vis = OBJ_VISTAS[o.tipo]?.[(l + o.lado) % 4], r = vis ? vis.larguraDaBase / 2 / 38 : 0;
+    const dentro = (x, a0, a1) => { const m = Math.min(r, (a1 - a0) / 2); return Math.max(a0 + m, Math.min(a1 - m, x)); };
+    return [dentro(u, pe[0], pe[1]), dentro(v, pe[2], pe[3])];
   }
   const comObjetosCache = new WeakMap();
   // A peça do móvel com os objetos de cima desenhados nela, e um mapa de qual objeto é cada pixel (para pegá-los).
@@ -3972,7 +3983,7 @@ void main() {
     let melhor = null;
     for (const id of Object.keys(TOPOS)) {
       if (!ARR[id]) continue;
-      const [u, v] = uvDe(x, y + TOPOS[id]), pe = peDe(id);
+      const [u, v] = uvDe(x, y + TOPOS[id]), pe = peMedidoDe(id);
       if (u < pe[0] - folga || u > pe[1] + folga || v < pe[2] - folga || v > pe[3] + folga) continue;
       let a = (u - pe[0]) / (pe[1] - pe[0]), b = (v - pe[2]) / (pe[3] - pe[2]);
       for (let k = 0; k < ARR[id].lado; k++) [a, b] = [b, 1 - a]; // o avesso do giro de ondeEmCima
