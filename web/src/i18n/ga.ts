@@ -3048,3 +3048,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Nóiméad amháin chun na carranna a ligean tríd an gcrosbhealach gan iad a bhualadh faoina chéile. Cosnaíonn scuaine lán pointí freisin.',
   Liberar: 'Scaoil',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Gluaisteáin bhréagáin an Phoill',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Raon gluaisteán bréagáin le ceithre lána: leanann an carr a lána féin, agus níl le déanamh agat ach luasghéarú. Má luasghéaraíonn tú an iomarca sa chúinne, eitlíonn sé den raon agus cailleann sé am. Leat féin: in aghaidh an chloig, taibhsí do chairde agus róbait.',
+  'Acelerar': 'Luasghéaraigh',
+  'Saiu da pista!': 'Den raon!',
+  'Saídas da pista: {n}': 'Imeachtaí den raon: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Coinnigh síos chun luasghéarú agus scaoil roimh an gcúinne: nuair a chreathann an carr, tá sé ag an teorainn.',

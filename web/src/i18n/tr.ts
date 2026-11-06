@@ -3044,3 +3044,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Arabaları kavşaktan çarpıştırmadan geçirmek için bir dakika. Dolu kuyruk da puana mal olur.',
   Liberar: 'Geçir',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Yuva Oyuncak Arabaları',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Dört şeritli oyuncak araba pisti: araba kendi şeridini kendisi takip eder, sen sadece gaza basarsın. Virajda fazla gaz verirsen pistten uçar ve zaman kaybeder. Tek kişilik: zamana, arkadaşlarının hayaletlerine ve robotlara karşı.',
+  'Acelerar': 'Gaz ver',
+  'Saiu da pista!': 'Pistten çıktı!',
+  'Saídas da pista: {n}': 'Pistten çıkışlar: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Hızlanmak için basılı tut, virajdan önce bırak: araba titriyorsa sınırdadır.',

@@ -3053,3 +3053,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Umunota umwe wo kurekura imodoka mu masangano zitagonganye. Umurongo wuzuye nawo ugutwara amanota.',
   Liberar: 'Rekura',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Imodoka z\'udukinisho z\'umwobo',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Inzira y\'imodoka z\'udukinisho ifite imirongo ine: imodoka ikurikira umurongo wayo ubwayo, wowe wongera umuvuduko gusa. Niwongera umuvuduko cyane mu ikorosi, isohoka mu nzira iguruka igatakaza igihe. Wenyine: uhanganye n\'igihe, imyuka y\'inshuti n\'amarobo.',
+  'Acelerar': 'Ongera umuvuduko',
+  'Saiu da pista!': 'Yasohotse mu nzira!',
+  'Saídas da pista: {n}': 'Gusohoka mu nzira: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Kanda ufashe kugira ngo wongere umuvuduko, urekure mbere y\'ikorosi: iyo imodoka ihinda umushyitsi, iba igeze ku rugero.',

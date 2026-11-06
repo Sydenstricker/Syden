@@ -3042,3 +3042,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'መኪኖቹ ሳይጋጩ በመስቀለኛ መንገዱ እንዲያልፉ ለማድረግ አንድ ደቂቃ አለዎት። የሞላ ሰልፍም ነጥብ ያስቀንሳል።',
   Liberar: 'መልቀቅ',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'የዋሻው የአሻንጉሊት መኪኖች',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'ባለአራት መስመር የአሻንጉሊት መኪኖች መወዳደሪያ፦ መኪናው መስመሩን ራሱ ይከተላል፣ እርስዎ ማፋጠን ብቻ ነው። በኩርባ ላይ በጣም ካፋጠኑ ከመንገዱ በርሮ ይወጣል፣ ጊዜም ያጣል። ለብቻ፦ ከሰዓቱ፣ ከጓደኞችዎ መናፍስት እና ከሮቦቶች ጋር።',
+  'Acelerar': 'ማፋጠን',
+  'Saiu da pista!': 'ከመንገዱ ወጣ!',
+  'Saídas da pista: {n}': 'ከመንገድ መውጣት፦ {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'ለማፋጠን ተጭነው ይያዙ፣ ከኩርባው በፊት ይልቀቁ፦ መኪናው ሲንቀጠቀጥ ገደቡ ላይ ነው።',

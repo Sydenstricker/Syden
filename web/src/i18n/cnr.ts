@@ -3111,3 +3111,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Jedan minut da propuštaš automobile kroz raskrsnicu, a da se ne sudare. I puna kolona košta bodova.',
   Liberar: 'Pusti',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Autići iz jazbine',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Staza za autiće igračke s četiri trake: autić sam prati svoju traku, a ti samo daješ gas. Ako previše ubrzaš u krivini, izleti sa staze i gubi vrijeme. Solo: protiv sata, duhova prijatelja i robota.',
+  'Acelerar': 'Ubrzaj',
+  'Saiu da pista!': 'Van staze!',
+  'Saídas da pista: {n}': 'Izlijetanja sa staze: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Drži da ubrzaš i pusti prije krivine: kad se autić trese, na granici je.',

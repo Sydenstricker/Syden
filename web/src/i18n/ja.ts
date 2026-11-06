@@ -3023,3 +3023,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': '1分間、ぶつからないように交差点の車を通そう。列がいっぱいになっても点が減ります。',
   Liberar: '発進',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': '巣穴のミニカー',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': '4車線のおもちゃのレーシングコース。車は自分のレーンを勝手に進み、やることはアクセルだけ。カーブで踏みすぎるとコースから飛び出してタイムロス。ひとりでは、タイムアタックでフレンドのゴーストやロボットと勝負。',
+  'Acelerar': 'アクセル',
+  'Saiu da pista!': 'コースアウト！',
+  'Saídas da pista: {n}': 'コースアウト：{n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': '押し続けて加速、カーブの前で離そう。車が震えたら限界のサイン。',

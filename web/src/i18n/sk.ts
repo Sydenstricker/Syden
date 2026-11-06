@@ -3112,3 +3112,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Jedna minúta na púšťanie áut cez križovatku tak, aby sa nezrazili. Plný rad tiež stojí body.',
   Liberar: 'Pustiť',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Autíčka z nory',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Dráha pre autíčka na hranie so štyrmi pruhmi: auto ide po svojom pruhu samo, ty len pridávaš plyn. Keď v zákrute pridáš priveľa, vyletí z dráhy a stratí čas. Sólo: proti času, duchom priateľov a robotom.',
+  'Acelerar': 'Zrýchliť',
+  'Saiu da pista!': 'Mimo dráhy!',
+  'Saídas da pista: {n}': 'Výjazdy z dráhy: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Drž na zrýchlenie a pusti pred zákrutou: keď sa auto trasie, je na hrane.',

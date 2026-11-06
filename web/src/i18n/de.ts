@@ -3066,3 +3066,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Eine Minute, um die Autos über die Kreuzung zu lassen, ohne dass sie zusammenstoßen. Eine volle Schlange kostet auch Punkte.',
   Liberar: 'Freigeben',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Bau-Flitzer',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Eine Spielzeug-Rennbahn mit vier Spuren: Das Auto folgt seiner Spur von allein, du gibst nur Gas. Gibst du in der Kurve zu viel Gas, fliegt es raus und verliert Zeit. Im Solo: gegen die Uhr, die Geister deiner Freunde und Roboter.',
+  'Acelerar': 'Gas geben',
+  'Saiu da pista!': 'Rausgeflogen!',
+  'Saídas da pista: {n}': 'Abflüge: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Halte gedrückt, um Gas zu geben, und lass vor der Kurve los: Wenn das Auto zittert, ist es am Limit.',

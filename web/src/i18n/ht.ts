@@ -3122,3 +3122,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Yon minit pou lage machin yo nan kafou a san yo pa frape. Yon liy ki plen koute pwen tou.',
   Liberar: 'Lage',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Ti machin tanyè a',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Yon pis ti machin jwèt ak kat liy: machin nan swiv liy li pou kont li, ou menm ou jis akselere. Si ou akselere twòp nan viraj la, li vole soti nan pis la epi li pèdi tan. Pou kont ou: kont lè a, fantòm zanmi ou yo ak robo.',
+  'Acelerar': 'Akselere',
+  'Saiu da pista!': 'Soti nan pis la!',
+  'Saídas da pista: {n}': 'Sòti nan pis la: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Kenbe pou akselere epi lage anvan viraj la: lè machin nan tranble, li nan limit li.',

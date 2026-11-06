@@ -3114,3 +3114,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Viena minutė praleisti automobilius per sankryžą, kad jie nesusidurtų. Pilna eilė irgi kainuoja taškų.',
   Liberar: 'Praleisk',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Urvo mašinėlės',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Keturių juostų žaislinių mašinėlių trasa: mašinėlė pati važiuoja savo juosta, o tu tik greitini. Per daug paspausi posūkyje – ji išskris iš trasos ir praras laiko. Solo – prieš laiką, draugų vaiduoklius ir robotus.',
+  'Acelerar': 'Greitinti',
+  'Saiu da pista!': 'Iš trasos!',
+  'Saídas da pista: {n}': 'Išskridimai iš trasos: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Laikyk, kad greitintum, ir paleisk prieš posūkį: kai mašinėlė dreba, ji ties riba.',

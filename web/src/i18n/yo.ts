@@ -3057,3 +3057,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Ìṣẹ́jú kan láti jẹ́ kí àwọn mọ́tò kọjá ní oríta láìjẹ́ kí wọ́n kọlu ara wọn. Ìlà tó kún náà ń dín àmì kù.',
   Liberar: 'Jẹ́ kó lọ',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Ọkọ̀ Ìṣeré Ihò',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Ọ̀nà ọkọ̀ ìṣeré olójú ọ̀nà mẹ́rin: ọkọ̀ náà ń tẹ̀lé ojú ọ̀nà rẹ̀ fúnra rẹ̀, ìwọ kàn ń mú un yára sí i. Tí o bá mú un yára jù ní ibi títẹ̀, yóò fò jáde kúrò ní ọ̀nà, yóò sì pàdánù àkókò. Fún ẹnìkan: láti borí aago, àwọn iwin àwọn ọ̀rẹ́ àti àwọn rọ́bọ́ọ̀tì.',
+  'Acelerar': 'Mú yára',
+  'Saiu da pista!': 'Ó ti jáde kúrò ní ọ̀nà!',
+  'Saídas da pista: {n}': 'Jíjáde kúrò ní ọ̀nà: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Tẹ̀ ẹ́ mọ́lẹ̀ láti mú yára, kí o sì fi sílẹ̀ ṣáájú ibi títẹ̀: nígbà tí ọkọ̀ bá ń mì, ó ti dé ààlà.',

@@ -3132,3 +3132,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Mashinalarni chorrahadan to‘qnashtirmay o‘tkazish uchun bir daqiqa. To‘lgan navbat ham ochkoga tushadi.',
   Liberar: 'Qo‘yib yubor',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Uya oʻyinchoq mashinalari',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Toʻrt yoʻlakli oʻyinchoq mashina treki: mashina oʻz yoʻlagidan oʻzi yuradi, sen faqat tezlashtirasan. Burilishda haddan tashqari tezlashtirsang, trekdan uchib chiqadi va vaqt yoʻqotadi. Yakka — vaqtga, doʻstlar arvohlariga va robotlarga qarshi.',
+  'Acelerar': 'Tezlashtirish',
+  'Saiu da pista!': 'Trekdan chiqdi!',
+  'Saídas da pista: {n}': 'Trekdan chiqishlar: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Tezlashtirish uchun bosib tur va burilishdan oldin qoʻyib yubor: mashina titrasa, u chegarada.',

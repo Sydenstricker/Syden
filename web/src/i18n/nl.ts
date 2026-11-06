@@ -3041,3 +3041,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Eén minuut om de auto’s over het kruispunt te laten zonder dat ze botsen. Een volle rij kost ook punten.',
   Liberar: 'Laat gaan',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Holautootjes',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Een racebaan voor speelgoedautootjes met vier banen: de auto volgt zelf zijn baan, jij geeft alleen gas. Geef je te veel gas in de bocht, dan vliegt hij eruit en verliest tijd. Solo: tegen de klok, de geesten van je vrienden en robots.',
+  'Acelerar': 'Gas geven',
+  'Saiu da pista!': 'Uit de baan!',
+  'Saídas da pista: {n}': 'Uit de baan: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Houd ingedrukt om gas te geven en laat los voor de bocht: als de auto trilt, zit hij op de grens.',

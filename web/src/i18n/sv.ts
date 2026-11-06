@@ -3104,3 +3104,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'En minut att släppa bilarna genom korsningen utan att de krockar. En full kö kostar också poäng.',
   Liberar: 'Släpp',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Hålans leksaksbilar',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'En bilbana för leksaksbilar med fyra filer: bilen följer sin fil av sig själv, och du gasar bara. Gasar du för mycket i kurvan flyger den av banan och tappar tid. Solo: mot klockan, vännernas spöken och robotar.',
+  'Acelerar': 'Gasa',
+  'Saiu da pista!': 'Av banan!',
+  'Saídas da pista: {n}': 'Avåkningar: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Håll inne för att gasa och släpp före kurvan: när bilen skakar är den vid gränsen.',

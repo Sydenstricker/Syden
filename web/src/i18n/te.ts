@@ -3024,3 +3024,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'కూడలిలో కార్లు ఢీకొనకుండా పంపడానికి ఒక నిమిషం. నిండిన వరుస కూడా పాయింట్లు తగ్గిస్తుంది.',
   Liberar: 'పంపు',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'బొరియ బొమ్మ కార్లు',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'నాలుగు లేన్ల బొమ్మ కార్ల ట్రాక్: కారు తన లేన్‌ను తానే అనుసరిస్తుంది, మీరు వేగం పెంచితే చాలు. మలుపులో వేగం ఎక్కువైతే, అది ట్రాక్ నుంచి ఎగిరిపోయి సమయం కోల్పోతుంది. ఒంటరిగా: సమయం, స్నేహితుల దెయ్యాలు, రోబోలతో.',
+  'Acelerar': 'వేగం పెంచండి',
+  'Saiu da pista!': 'ట్రాక్ నుంచి బయటకు!',
+  'Saídas da pista: {n}': 'ట్రాక్ నుంచి బయటపడినవి: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'వేగం పెంచడానికి నొక్కి పట్టుకోండి, మలుపుకు ముందు వదలండి: కారు వణికితే, అది పరిమితిలో ఉంది.',

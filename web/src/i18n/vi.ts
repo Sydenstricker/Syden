@@ -3012,3 +3012,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Một phút để cho xe qua ngã tư mà không để chúng đâm nhau. Hàng đợi đầy cũng bị trừ điểm.',
   Liberar: 'Cho đi',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Xe đồ chơi hang thỏ',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Đường đua xe đồ chơi bốn làn: xe tự chạy theo làn của nó, bạn chỉ cần tăng tốc. Tăng tốc quá đà ở khúc cua, xe sẽ văng khỏi đường đua và mất thời gian. Chơi một mình: đua với thời gian, bóng ma của bạn bè và robot.',
+  'Acelerar': 'Tăng tốc',
+  'Saiu da pista!': 'Văng khỏi đường đua!',
+  'Saídas da pista: {n}': 'Số lần văng khỏi đường đua: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Giữ để tăng tốc và thả ra trước khúc cua: khi xe rung, nó đang ở giới hạn.',

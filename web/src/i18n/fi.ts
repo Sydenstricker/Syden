@@ -3112,3 +3112,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Minuutti aikaa päästää autot risteyksen läpi niin, etteivät ne törmää. Täysi jono maksaa myös pisteitä.',
   Liberar: 'Päästä',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Kolon leikkiautot',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Neljän kaistan leikkiautorata: auto seuraa kaistaansa itse, ja sinä vain kaasutat. Jos kaasutat mutkassa liikaa, se lentää radalta ja menettää aikaa. Yksin: aikaa, kavereiden haamuja ja robotteja vastaan.',
+  'Acelerar': 'Kaasuta',
+  'Saiu da pista!': 'Ulos radalta!',
+  'Saídas da pista: {n}': 'Ulosajot: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Pidä pohjassa kiihdyttääksesi ja päästä irti ennen mutkaa: kun auto tärisee, se on rajoilla.',

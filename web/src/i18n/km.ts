@@ -3111,3 +3111,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'មួយនាទីដើម្បីបញ្ចេញឡានឆ្លងផ្លូវបំបែកដោយមិនឲ្យបុកគ្នា។ ជួរពេញក៏ខាតពិន្ទុដែរ។',
   Liberar: 'បញ្ចេញ',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'ឡានលេងរូង',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'ផ្លូវប្រណាំងឡានលេងមានបួនគន្លង៖ ឡានរត់តាមគន្លងរបស់វាដោយខ្លួនឯង ហើយអ្នកគ្រាន់តែបង្កើនល្បឿន។ បើបង្កើនល្បឿនខ្លាំងពេកនៅផ្លូវកោង វានឹងហោះចេញពីផ្លូវ ហើយខាតពេល។ លេងម្នាក់ឯង៖ ប្រឆាំងនឹងនាឡិកា ខ្មោចរបស់មិត្តភក្តិ និងរ៉ូបូត។',
+  'Acelerar': 'បង្កើនល្បឿន',
+  'Saiu da pista!': 'ចេញពីផ្លូវ!',
+  'Saídas da pista: {n}': 'ចេញពីផ្លូវ៖ {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'ចុចជាប់ដើម្បីបង្កើនល្បឿន ហើយលែងមុនផ្លូវកោង៖ ពេលឡានញ័រ វាដល់កម្រិតហើយ។',

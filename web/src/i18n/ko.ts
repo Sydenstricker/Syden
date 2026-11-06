@@ -3030,3 +3030,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': '1분 동안 차들이 부딪치지 않게 교차로를 통과시키세요. 줄이 가득 차도 점수가 깎여요.',
   Liberar: '출발',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': '굴 미니카',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': '4차선 장난감 자동차 트랙. 차는 알아서 자기 차선을 따라가고, 할 일은 가속뿐이에요. 커브에서 너무 밟으면 트랙 밖으로 날아가 시간을 잃어요. 혼자서는 타임 어택으로 친구들의 고스트, 로봇과 겨뤄요.',
+  'Acelerar': '가속',
+  'Saiu da pista!': '코스 이탈!',
+  'Saídas da pista: {n}': '코스 이탈: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': '누르고 있으면 가속, 커브 전에 떼세요. 차가 떨리면 한계예요.',

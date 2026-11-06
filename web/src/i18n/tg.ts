@@ -3122,3 +3122,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Як дақиқа барои гузарондани мошинҳо аз чорраҳа бе бархӯрд. Навбати пур ҳам хол мегирад.',
   Liberar: 'Раҳо кун',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Мошинчаҳои лона',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Роҳи мошинчаҳои бозичаӣ бо чор хат: мошин худаш хати худро пайравӣ мекунад, ту танҳо суръат мегирӣ. Агар дар гардиш аз ҳад зиёд суръат гирӣ, аз роҳ парида мебарояд ва вақт гум мекунад. Танҳо: бар зидди вақт, арвоҳи дӯстон ва роботҳо.',
+  'Acelerar': 'Суръат гирифтан',
+  'Saiu da pista!': 'Аз роҳ берун!',
+  'Saídas da pista: {n}': 'Баромадан аз роҳ: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Барои суръат гирифтан пахш карда нигоҳ дор ва пеш аз гардиш раҳо кун: вақте мошин меларзад, дар ҳад аст.',

@@ -3112,3 +3112,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'මංසන්ධියෙන් වාහන එකිනෙක නොගැටෙන සේ යැවීමට විනාඩියක්. පිරුණු පෝලිමත් ලකුණු අඩු කරයි.',
   Liberar: 'යවන්න',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'ගුහාවේ සෙල්ලම් කාර්',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'පථ හතරක සෙල්ලම් කාර් ධාවන පථයක්: කාරය තමන්ගේ පථය දිගේ තනිවම යයි, ඔබ කරන්නේ වේගය වැඩි කිරීම පමණයි. වංගුවේදී වේගය වැඩි වුණොත්, එය පථයෙන් පියාඹා ගොස් කාලය නාස්ති වෙයි. තනියම: ඔරලෝසුවට, මිතුරන්ගේ හොල්මන්වලට සහ රොබෝවරුන්ට එරෙහිව.',
+  'Acelerar': 'වේගය වැඩි කරන්න',
+  'Saiu da pista!': 'පථයෙන් ඉවතට!',
+  'Saídas da pista: {n}': 'පථයෙන් ඉවත් වීම්: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'වේගය වැඩි කිරීමට ඔබාගෙන සිටින්න, වංගුවට පෙර අත හරින්න: කාරය වෙව්ලන විට, එය සීමාවේ ඇත.',

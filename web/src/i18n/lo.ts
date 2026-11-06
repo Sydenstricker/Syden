@@ -3113,3 +3113,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'ໜຶ່ງນາທີເພື່ອປ່ອຍລົດຜ່ານສີ່ແຍກໂດຍບໍ່ໃຫ້ຕຳກັນ. ແຖວເຕັມກໍເສຍຄະແນນຄືກັນ.',
   Liberar: 'ປ່ອຍ',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'ລົດຫຼິ້ນໂພງ',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'ສະໜາມລົດຫຼິ້ນສີ່ເລນ: ລົດແລ່ນຕາມເລນຂອງມັນເອງ, ທ່ານພຽງແຕ່ເລັ່ງ. ຖ້າເລັ່ງຫຼາຍເກີນໄປຢູ່ທາງໂຄ້ງ, ມັນຈະບິນອອກຈາກສະໜາມ ແລະ ເສຍເວລາ. ຫຼິ້ນຄົນດຽວ: ແຂ່ງກັບເວລາ, ຜີຂອງໝູ່ ແລະ ຫຸ່ນຍົນ.',
+  'Acelerar': 'ເລັ່ງ',
+  'Saiu da pista!': 'ອອກນອກສະໜາມ!',
+  'Saídas da pista: {n}': 'ອອກນອກສະໜາມ: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'ກົດຄ້າງໄວ້ເພື່ອເລັ່ງ ແລະ ປ່ອຍກ່ອນທາງໂຄ້ງ: ເມື່ອລົດສັ່ນ, ມັນຢູ່ທີ່ຂີດຈຳກັດແລ້ວ.',

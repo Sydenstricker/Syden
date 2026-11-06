@@ -3108,3 +3108,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Un minut per deixar passar els cotxes de la cruïlla sense que xoquin. La cua plena també resta punts.',
   Liberar: 'Deixa passar',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Cotxets del cau',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Una pista de cotxets de joguina amb quatre carrils: el cotxe segueix el carril tot sol, i tu només acceleres. Si acceleres massa a la corba, surt volant i perd temps. En Individual, contra rellotge, els fantasmes dels amics i robots.',
+  'Acelerar': 'Accelerar',
+  'Saiu da pista!': 'Fora de la pista!',
+  'Saídas da pista: {n}': 'Sortides de pista: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Mantén premut per accelerar i deixa anar abans de la corba: quan el cotxe tremola, és al límit.',

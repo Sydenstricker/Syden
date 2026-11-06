@@ -3130,3 +3130,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'ერთი წუთი, რომ მანქანები გზაჯვარედინზე გაატარო ისე, რომ არ შეეჯახონ. სავსე რიგიც ქულებს გაკლებს.',
   Liberar: 'გაუშვი',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'სოროს სათამაშო მანქანები',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'ოთხზოლიანი სათამაშო მანქანების ტრასა: მანქანა თავად მიჰყვება თავის ზოლს, შენ კი მხოლოდ აჩქარებ. მოსახვევში ზედმეტად თუ აჩქარე, ტრასიდან გადაფრინდება და დროს კარგავს. სოლო — დროის, მეგობრების მოჩვენებებისა და რობოტების წინააღმდეგ.',
+  'Acelerar': 'აჩქარება',
+  'Saiu da pista!': 'ტრასიდან გავარდა!',
+  'Saídas da pista: {n}': 'ტრასიდან გავარდნები: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'დააჭირე და გეჭიროს აჩქარებისთვის, მოსახვევამდე კი გაუშვი: როცა მანქანა კანკალებს, ზღვარზეა.',

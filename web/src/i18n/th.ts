@@ -3055,3 +3055,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'หนึ่งนาทีเพื่อปล่อยรถผ่านสี่แยกโดยไม่ให้ชนกัน แถวที่เต็มก็เสียคะแนนเหมือนกัน',
   Liberar: 'ปล่อย',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'รถของเล่นโพรงกระต่าย',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'สนามรถของเล่นสี่เลน รถวิ่งตามเลนของมันเอง แค่เร่งเครื่องอย่างเดียว เร่งมากเกินไปตอนเข้าโค้ง รถจะลอยหลุดสนามและเสียเวลา เล่นคนเดียวแข่งกับเวลา ผีของเพื่อน ๆ และหุ่นยนต์',
+  'Acelerar': 'เร่ง',
+  'Saiu da pista!': 'หลุดสนาม!',
+  'Saídas da pista: {n}': 'หลุดสนาม: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'กดค้างเพื่อเร่ง แล้วปล่อยก่อนเข้าโค้ง: ถ้ารถสั่น แปลว่าถึงขีดจำกัดแล้ว',

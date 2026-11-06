@@ -3112,3 +3112,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Iray minitra hamelana ireo fiara hiampita ny sampanan-dalana tsy hifandona. Ny filaharana feno koa dia mahatonga very isa.',
   Liberar: 'Avelao',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Fiara kilalao ao an-davaka',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Lalana fiara kilalao misy làlana efatra: ny fiara manaraka ny làlany ho azy, ianao kosa manafaingana fotsiny. Raha manafaingana loatra eo amin\'ny fiolahana ianao, dia manidina miala amin\'ny lalana izy ary very fotoana. Irery: manohitra ny fotoana, ny matoatoan\'ny namana ary ny rôbô.',
+  'Acelerar': 'Afaingano',
+  'Saiu da pista!': 'Nivoaka ny lalana!',
+  'Saídas da pista: {n}': 'Fivoahana amin\'ny lalana: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Tazony mba hanafaingana ary avelao alohan\'ny fiolahana: rehefa mangovitra ny fiara dia efa amin\'ny fetrany izy.',

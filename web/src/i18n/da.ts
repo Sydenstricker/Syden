@@ -3106,3 +3106,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Ét minut til at sende bilerne gennem krydset, uden at de støder sammen. En fuld kø koster også point.',
   Liberar: 'Send afsted',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Hulens legetøjsbiler',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'En racerbane til legetøjsbiler med fire spor: bilen følger selv sit spor, og du giver kun gas. Giver du for meget gas i svinget, flyver den af banen og taber tid. I Solo: mod uret, dine venners spøgelser og robotter.',
+  'Acelerar': 'Giv gas',
+  'Saiu da pista!': 'Af banen!',
+  'Saídas da pista: {n}': 'Ude af banen: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Hold inde for at give gas, og slip før svinget: når bilen ryster, er den på grænsen.',

@@ -3042,3 +3042,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Satu minit untuk melepaskan kereta di persimpangan tanpa membiarkannya berlanggar. Barisan penuh juga mengurangkan mata.',
   Liberar: 'Lepas',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Kereta Mainan Lubang',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Litar kereta mainan empat lorong: kereta mengikut lorongnya sendiri, anda hanya memecut. Terlalu laju di selekoh, kereta tercampak keluar dan rugi masa. Solo: melawan masa, hantu rakan-rakan dan robot.',
+  'Acelerar': 'Pecut',
+  'Saiu da pista!': 'Terkeluar litar!',
+  'Saídas da pista: {n}': 'Terkeluar litar: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Tekan dan tahan untuk memecut, lepaskan sebelum selekoh: apabila kereta bergegar, ia sudah di had.',

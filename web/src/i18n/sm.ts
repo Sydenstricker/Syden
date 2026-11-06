@@ -3046,3 +3046,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'E tasi le minute e tuʻu ai taʻavale e sopoia le fetaulaʻiga ala e aunoa ma le fetuʻiaʻi. O le laina ua tumu e toʻesea ai foʻi ni ʻai.',
   Liberar: 'Tuʻu',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Taʻavale Taʻalo o le Lua',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'O se auala taʻavale taʻalo e fā ona laina: e mulimuli le taʻavale i lona laina na o ia, ae na o lou faatelevave. Afai e soona faatelevave i le pioga, e lele ese mai le auala ma maumau le taimi. Toʻatasi: faasaga i le taimi, aitu o au uo ma robota.',
+  'Acelerar': 'Faatelevave',
+  'Saiu da pista!': 'Ua alu ese mai le auala!',
+  'Saídas da pista: {n}': 'Alu ese mai le auala: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Taofi e faatelevave ma tuʻu aʻo leʻi oʻo i le pioga: pe a tetete le taʻavale, ua oʻo i le tapulaʻa.',

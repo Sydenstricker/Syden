@@ -3114,3 +3114,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'चोकबाट गाडीहरू नठोकिने गरी छोड्न एक मिनेट। भरिएको लाइनले पनि अंक घटाउँछ।',
   Liberar: 'छोड',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'दुलोका खेलौना गाडीहरू',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'चार लेनको खेलौना गाडीको ट्र्याक: गाडी आफ्नो लेन आफैँ पछ्याउँछ, तपाईं गति मात्र बढाउनुहुन्छ। मोडमा धेरै गति दिनुभयो भने गाडी उडेर ट्र्याकबाहिर जान्छ र समय गुमाउँछ। एक्लै: घडी, साथीहरूका भूतहरू र रोबोटहरूविरुद्ध।',
+  'Acelerar': 'गति बढाउनुहोस्',
+  'Saiu da pista!': 'ट्र्याकबाहिर!',
+  'Saídas da pista: {n}': 'ट्र्याकबाहिर: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'गति बढाउन थिचिराख्नुहोस् र मोडअघि छोड्नुहोस्: गाडी काँप्दा यो सीमामा छ।',

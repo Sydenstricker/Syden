@@ -3048,3 +3048,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Miniti ʻe taha ke tuku atu ai ʻa e ngaahi meʻalele ʻi he hala kolosi taʻe fepaki. Ko e laine kuo fonu ʻoku toʻo ai foki ʻa e ngaahi poini.',
   Liberar: 'Tuku',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Kaʻa Vaʻinga ʻa e Ava',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Ko ha hala kaʻa vaʻinga ʻoku fā hono laine: ʻoku muimui ʻa e kaʻá ʻi hono laine ʻiate ia pē, pea ko koe pē ʻoku ke fakavaveʻi. Kapau te ke fakavaveʻi lahi ʻi he afe, ʻe puna ia ki tuʻa mei he halá pea mole ha taimi. Toko taha: fakafepakiʻi ʻa e taimi, ngaahi tēvolo ʻa e kaungāmeʻá mo e ngaahi lopoti.',
+  'Acelerar': 'Fakavaveʻi',
+  'Saiu da pista!': 'Kuo ʻalu ki tuʻa mei he halá!',
+  'Saídas da pista: {n}': 'ʻAlu ki tuʻa mei he halá: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Puke ke fakavaveʻi pea tukuange kimuʻa he afe: ʻi he taimi ʻoku tetetete ai ʻa e kaʻá, kuo aʻu ia ki he ngataʻangá.',

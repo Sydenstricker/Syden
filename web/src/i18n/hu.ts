@@ -3114,3 +3114,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Egy perc, hogy átengedd az autókat a kereszteződésen úgy, hogy ne ütközzenek. A teli sor is pontba kerül.',
   Liberar: 'Engedd',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Üregi kisautók',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Négysávos játékautópálya: az autó magától követi a sávját, te csak gyorsítasz. Ha a kanyarban túl sokat gyorsítasz, kirepül a pályáról, és időt veszít. Egyedül: az idő, a barátaid szellemei és robotok ellen.',
+  'Acelerar': 'Gyorsítás',
+  'Saiu da pista!': 'Pályán kívül!',
+  'Saídas da pista: {n}': 'Kirepülések: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Tartsd lenyomva a gyorsításhoz, és engedd el a kanyar előtt: ha az autó remeg, a határon van.',

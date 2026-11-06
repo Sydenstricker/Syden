@@ -3029,3 +3029,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': '一分钟内放行路口的车，别让它们相撞。排队排满也会扣分。',
   Liberar: '放行',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': '兔子洞玩具车',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': '一条四车道的玩具赛车跑道：车会自己沿着车道跑，你只管加速。弯道里加速过头，车就会飞出跑道，浪费时间。单人模式下，与时间、好友的幽灵和机器人比拼。',
+  'Acelerar': '加速',
+  'Saiu da pista!': '冲出赛道！',
+  'Saídas da pista: {n}': '冲出赛道：{n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': '按住加速，入弯前松开：车一抖动，就到极限了。',

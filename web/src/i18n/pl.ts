@@ -3107,3 +3107,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Minuta, żeby przepuszczać auta przez skrzyżowanie tak, by się nie zderzyły. Pełna kolejka też kosztuje punkty.',
   Liberar: 'Puść',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Samochodziki z nory',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Tor dla samochodzików-zabawek z czterema pasami: auto samo trzyma się swojego pasa, a ty tylko przyspieszasz. Za mocno w zakręcie i wylatuje z toru, tracąc czas. Solo — na czas, z duchami znajomych i robotami.',
+  'Acelerar': 'Przyspiesz',
+  'Saiu da pista!': 'Poza torem!',
+  'Saídas da pista: {n}': 'Wypadnięcia z toru: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Przytrzymaj, by przyspieszyć, i puść przed zakrętem: gdy auto drży, jest na granicy.',

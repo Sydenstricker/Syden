@@ -3048,3 +3048,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Ένα λεπτό για να περνάς τα αυτοκίνητα από τη διασταύρωση χωρίς να συγκρουστούν. Η γεμάτη ουρά κοστίζει κι αυτή πόντους.',
   Liberar: 'Άφησε',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Αυτοκινητάκια του λαγουμιού',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Μια πίστα για αυτοκινητάκια με τέσσερις λωρίδες: το αυτοκίνητο ακολουθεί μόνο του τη λωρίδα του, κι εσύ απλώς επιταχύνεις. Αν πατήσεις πολύ γκάζι στη στροφή, πετάγεται έξω και χάνει χρόνο. Ατομικά: με το χρονόμετρο, τα φαντάσματα των φίλων σου και ρομπότ.',
+  'Acelerar': 'Γκάζι',
+  'Saiu da pista!': 'Εκτός πίστας!',
+  'Saídas da pista: {n}': 'Έξοδοι από την πίστα: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Κράτα πατημένο για γκάζι και άφησέ το πριν από τη στροφή: όταν το αυτοκίνητο τρέμει, είναι στο όριο.',

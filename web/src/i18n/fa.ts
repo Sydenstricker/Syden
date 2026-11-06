@@ -3035,3 +3035,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'یک دقیقه وقت داری ماشین‌ها را از چهارراه رد کنی بی‌آنکه به هم بخورند. صف پر هم امتیاز کم می‌کند.',
   Liberar: 'رها کن',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'ماشین‌های اسباب‌بازی لانه',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'پیست ماشین‌های اسباب‌بازی با چهار خط: ماشین خودش در خطش می‌رود و شما فقط گاز می‌دهید. اگر در پیچ زیادی گاز بدهید، از پیست پرت می‌شود و وقت از دست می‌دهد. در تک‌نفره: در برابر زمان، شبح دوستانتان و ربات‌ها.',
+  'Acelerar': 'گاز دادن',
+  'Saiu da pista!': 'خروج از پیست!',
+  'Saídas da pista: {n}': 'دفعات خروج از پیست: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'برای گاز دادن نگه دارید و پیش از پیچ رها کنید: وقتی ماشین می‌لرزد، در مرز است.',

@@ -3044,3 +3044,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Minti ɗaya don ku saki motoci a mahaɗar hanya ba tare da sun yi karo ba. Layi da ya cika ma yana rage maki.',
   Liberar: 'Saki',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Motocin wasa na kogo',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Hanyar motocin wasa mai layi huɗu: mota tana bin layinta da kanta, ku kawai kuna ƙara gudu. Idan kuka ƙara gudu da yawa a kwana, za ta tashi daga hanya ta rasa lokaci. Ɗaiɗaiku: da agogo, fatalwowin abokanku da mutum-mutumi.',
+  'Acelerar': 'Ƙara gudu',
+  'Saiu da pista!': 'Ta fita daga hanya!',
+  'Saídas da pista: {n}': 'Fitowa daga hanya: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Ku riƙe don ƙara gudu, ku saki kafin kwana: idan mota tana girgiza, tana kan iyaka.',

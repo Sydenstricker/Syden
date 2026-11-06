@@ -3066,3 +3066,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'دقيقة واحدة لتمرير السيارات عبر التقاطع دون أن تصطدم. والطابور الممتلئ يكلّف نقاطًا أيضًا.',
   Liberar: 'إطلاق',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'سيارات الجحر الصغيرة',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'حلبة سيارات لعبة بأربعة مسارات: تتبع السيارة مسارها وحدها، ولا يلزم سوى التسريع. الإفراط في التسريع عند المنعطف يُطيرها خارج الحلبة ويُضيّع الوقت. في الوضع الفردي: ضد الساعة وأشباح الأصدقاء والروبوتات.',
+  'Acelerar': 'تسريع',
+  'Saiu da pista!': 'خروج عن الحلبة!',
+  'Saídas da pista: {n}': 'مرات الخروج عن الحلبة: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'الضغط المستمر للتسريع، ثم الإفلات قبل المنعطف: عندما تهتز السيارة تكون عند الحد.',

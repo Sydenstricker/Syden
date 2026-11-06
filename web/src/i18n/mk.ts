@@ -3112,3 +3112,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Една минута да ги пушташ колите низ раскрсницата без да се судрат. И полната редица чини поени.',
   Liberar: 'Пушти',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Количиња од дувлото',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Патека за количиња-играчки со четири ленти: количката сама ја следи својата лента, а ти само забрзуваш. Ако забрзаш премногу во кривината, излетува од патеката и губи време. Соло: против часовникот, духовите на пријателите и роботи.',
+  'Acelerar': 'Забрзај',
+  'Saiu da pista!': 'Надвор од патеката!',
+  'Saídas da pista: {n}': 'Излетувања од патеката: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Држи за да забрзаш и пушти пред кривината: кога количката трепери, на границата е.',

@@ -3034,3 +3034,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'چوراہے سے گاڑیوں کو ٹکرائے بغیر گزارنے کے لیے ایک منٹ۔ بھری ہوئی قطار سے بھی پوائنٹس کٹتے ہیں۔',
   Liberar: 'چھوڑیں',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'بِل کی کھلونا گاڑیاں',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'چار لین والا کھلونا گاڑیوں کا ٹریک: گاڑی اپنی لین خود پکڑ کر چلتی ہے، آپ بس رفتار بڑھاتے ہیں۔ موڑ پر زیادہ رفتار دی تو گاڑی اُڑ کر ٹریک سے باہر ہو جاتی ہے اور وقت ضائع ہوتا ہے۔ اکیلے: گھڑی، دوستوں کے بھوتوں اور روبوٹس کے خلاف۔',
+  'Acelerar': 'رفتار بڑھائیں',
+  'Saiu da pista!': 'ٹریک سے باہر!',
+  'Saídas da pista: {n}': 'ٹریک سے باہر: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'رفتار بڑھانے کے لیے دبائے رکھیں اور موڑ سے پہلے چھوڑ دیں: جب گاڑی کانپے تو وہ حد پر ہے۔',

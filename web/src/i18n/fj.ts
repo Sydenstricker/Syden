@@ -3041,3 +3041,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'E dua na miniti mo vakatalai ira na motoka ena sala veisalayaki me kakua ni ra veibasai. Na laini sa sinai e vakalailaitaka talega na maka.',
   Liberar: 'Vakatalai',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Motoka qito ni qara',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'E dua na sala ni motoka qito e va na kena laini: na motoka e muria ga na nona laini, o iko ga e vakatotolotaka. Ke o vakatotolotaka vakalevu ena veibalei, ena vuka tani ka vakaocaocataka na gauna. Duadua ga: vata kei na gauna, na yalo ni nomu itokani kei na roboti.',
+  'Acelerar': 'Vakatotolotaka',
+  'Saiu da pista!': 'E lako tani mai na sala!',
+  'Saídas da pista: {n}': 'Na lako tani mai na sala: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Taqomaka tiko me vakatotolotaki ka sereka ni bera na veibalei: ni sasaqiqi na motoka, sa yaco ena iyalayala.',

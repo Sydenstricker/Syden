@@ -3050,3 +3050,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Otu nkeji iji hapụ ụgbọ ala n’okporo ụzọ nkwụsị na-enweghị ka ha kụọ ibe ha. Ahịrị jupụtara na-ewepụkwa akara.',
   Liberar: 'Hapụ',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Ụgbọala egwuregwu ọgba',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Ụzọ ụgbọala egwuregwu nwere ahịrị anọ: ụgbọala na-agbaso ahịrị ya n\'onwe ya, naanị ị na-eme ka ọ gbaa ọsọ. Ọ bụrụ na i mee ka ọ gbaa ọsọ karịa n\'ebe ntụgharị, ọ na-efepụ n\'ụzọ ma tufuo oge. Otu onye: megide oge, mmụọ ndị enyi gị na robọt.',
+  'Acelerar': 'Gbaa ọsọ',
+  'Saiu da pista!': 'Ọ pụọla n\'ụzọ!',
+  'Saídas da pista: {n}': 'Ọpụpụ n\'ụzọ: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Jide ka ọ gbaa ọsọ ma hapụ tupu ntụgharị: mgbe ụgbọala na-ama jijiji, ọ nọ na njedebe.',

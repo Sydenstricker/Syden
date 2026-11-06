@@ -3126,3 +3126,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Машинуудыг мөргөлдүүлэхгүйгээр уулзвараар нэвтрүүлэх нэг минут. Дүүрсэн дараалал ч оноо хасна.',
   Liberar: 'Явуул',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Нүхний тоглоом машинууд',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Дөрвөн эгнээтэй тоглоом машины зам: машин өөрийн эгнээгээр өөрөө явна, зөвхөн хурдасгахад л болно. Эргэлтэд хэт хурдасгавал замаас нисэж гарч, цаг алдана. Ганцаараа: цаг, найзуудын сүнс, роботуудын эсрэг.',
+  'Acelerar': 'Хурдасгах',
+  'Saiu da pista!': 'Замаас гарлаа!',
+  'Saídas da pista: {n}': 'Замаас гарсан: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Хурдасгахын тулд дарж барь, эргэлтийн өмнө тавь: машин чичирвэл хязгаартаа байна.',

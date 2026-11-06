@@ -3058,3 +3058,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Minuta biex tgħaddi l-karozzi mill-intersezzjoni mingħajr ma jaħbtu. Kju mimli jiswa punti wkoll.',
   Liberar: 'Erħi',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Karozzini tal-Għar',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Korsa ta\' karozzini tal-logħob b\'erba\' korsiji: il-karozza ssegwi l-korsija tagħha waħedha, u int taċċellera biss. Jekk taċċellera wisq fil-kurva, ittir \'il barra mill-korsa u titlef il-ħin. Waħdek: kontra l-ħin, il-fatati tal-ħbieb u robots.',
+  'Acelerar': 'Aċċellera',
+  'Saiu da pista!': 'Barra mill-korsa!',
+  'Saídas da pista: {n}': 'Ħarġiet mill-korsa: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Żomm biex taċċellera u erħi qabel il-kurva: meta l-karozza titriegħed, tkun fil-limitu.',

@@ -3092,3 +3092,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Хвилина, щоб пропускати машини через перехрестя так, щоб вони не зіткнулися. Повна черга теж коштує очок.',
   Liberar: 'Пропустити',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Машинки біля нори',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Траса для іграшкових машинок із чотирма доріжками: машинка сама їде своєю доріжкою, а ти лише тиснеш газ. Перетиснеш у повороті — вона вилетить із траси й втратить час. Соло — на час, із привидами друзів і роботами.',
+  'Acelerar': 'Газ',
+  'Saiu da pista!': 'Виліт із траси!',
+  'Saídas da pista: {n}': 'Вильоти з траси: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Тримай, щоб прискорюватися, і відпускай перед поворотом: коли машинка тремтить, вона на межі.',

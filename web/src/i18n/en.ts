@@ -3037,3 +3037,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'One minute to send the cars through the intersection without letting them crash. A full queue also costs points.',
   Liberar: 'Release',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Burrow Toy Cars',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'A four-lane toy car track: the car follows its lane by itself, and you only accelerate. Push too hard in a curve and it flies off and loses time. In Solo, against the clock, your friends\' ghosts and robots.',
+  'Acelerar': 'Accelerate',
+  'Saiu da pista!': 'Off the track!',
+  'Saídas da pista: {n}': 'Track exits: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Hold to accelerate and let go before the curve: when the car shakes, it\'s at the limit.',

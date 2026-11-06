@@ -3044,3 +3044,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Minutu ida atu husik karreta sira liu krusamentu la ho baku malu. Fila nakonu mós lakon pontu.',
   Liberar: 'Husik',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Karreta-oin kuak nian',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Dalan ba karreta-oin halimar ho liña haat: karreta tuir ninia liña mesak, no ó só aselera de\'it. Se ó aselera liu iha kurva, nia semo sai husi dalan no lakon tempu. Mesak: kontra tempu, fantasma husi maluk sira no robô sira.',
+  'Acelerar': 'Aselera',
+  'Saiu da pista!': 'Sai husi dalan!',
+  'Saídas da pista: {n}': 'Sai husi dalan: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Kaer hela atu aselera no husik molok kurva: bainhira karreta nakdoko, nia iha limite.',

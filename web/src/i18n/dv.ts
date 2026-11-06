@@ -3122,3 +3122,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'ކާރުތައް ނުޖެހި ސަރަހައްދުން ފޮނުވުމަށް އެއް މިނެޓު. ފުރިފައިވާ ކިއުއިންވެސް ޕޮއިންޓް ގެއްލޭ.',
   Liberar: 'ފޮނުވުން',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'ގޯޅީގެ ކުޅޭ ކާރުތައް',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'ހަތަރު ލައިނުގެ ކުޅޭ ކާރުތަކުގެ ޓްރެކެއް: ކާރު އަމިއްލައަށް އޭގެ ލައިނުގައި ދުއްވާ، ތިބާ ކުރަންޖެހެނީ ހަމައެކަނި ސްޕީޑު އިތުރުކުރުން. ބުރުގައި ސްޕީޑު ގިނަވެއްޖެނަމަ، ކާރު ޓްރެކުން އުދުހިގެން ނިކުމެ ވަގުތު ގެއްލޭނެ. އެކަނި: ގަޑިއާއި، ރަޙުމަތްތެރިންގެ ފުރެތަކާއި، ރޮބޮޓުތަކާ ދެކޮޅަށް.',
+  'Acelerar': 'ސްޕީޑު އިތުރުކުރުން',
+  'Saiu da pista!': 'ޓްރެކުން ބޭރުވެއްޖެ!',
+  'Saídas da pista: {n}': 'ޓްރެކުން ބޭރުވި ފަހަރު: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'ސްޕީޑު އިތުރުކުރުމަށް ފިތާލައިގެން ހިފަހައްޓާ، ބުރުގެ ކުރިން ދޫކޮށްލާ: ކާރު ތުރުތުރުއަޅާއިރު، އެއީ ހައްދުގައި.',

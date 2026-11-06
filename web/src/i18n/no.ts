@@ -3112,3 +3112,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Ett minutt til å slippe bilene gjennom krysset uten at de kolliderer. Full kø koster også poeng.',
   Liberar: 'Slipp',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Hulebilene',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'En bilbane for lekebiler med fire felt: bilen følger feltet sitt selv, og du gir bare gass. Gir du for mye gass i svingen, flyr den av banen og taper tid. Solo: mot klokka, vennenes spøkelser og roboter.',
+  'Acelerar': 'Gi gass',
+  'Saiu da pista!': 'Av banen!',
+  'Saídas da pista: {n}': 'Utforkjøringer: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Hold inne for å gi gass, og slipp før svingen: når bilen rister, er den på grensen.',

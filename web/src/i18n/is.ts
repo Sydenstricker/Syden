@@ -3113,3 +3113,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Ein mínúta til að hleypa bílunum yfir gatnamótin án þess að þeir rekist á. Full röð kostar líka stig.',
   Liberar: 'Hleypa',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Leikfangabílar holunnar',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Leikfangabílabraut með fjórum akreinum: bíllinn fylgir sinni akrein sjálfur og þú gefur bara í. Ef þú gefur of mikið í í beygjunni flýgur hann út af og tapar tíma. Fyrir einn: við klukkuna, drauga vinanna og vélmenni.',
+  'Acelerar': 'Gefa í',
+  'Saiu da pista!': 'Út af brautinni!',
+  'Saídas da pista: {n}': 'Út af brautinni: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Haltu inni til að gefa í og slepptu fyrir beygjuna: þegar bíllinn titrar er hann á mörkunum.',

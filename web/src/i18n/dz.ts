@@ -3125,3 +3125,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'སྣུམ་འཁོར་ཚུ་མ་ཐུག་པར་ལམ་སྣ་ལས་བཏང་ནིའི་དོན་ལུ་སྐར་མ་གཅིག། གྲལ་གང་ཡང་སྐུགས་ཚད་ཆུདཔ་ཨིན།',
   Liberar: 'བཏང་',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'ཕུག་གི་རྩེད་ཆས་སྣུམ་འཁོར།',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'ལམ་བཞི་ཡོད་པའི་རྩེད་ཆས་སྣུམ་འཁོར་གྱི་ལམ། སྣུམ་འཁོར་འདི་རང་བཞིན་གྱིས་རང་གི་ལམ་ཁར་འགྱོཝ་ཨིན་ ཁྱོད་ཀྱིས་མགྱོགས་ཚད་རྐྱངམ་ཅིག་བསྐྱེད། གུག་ཁར་མགྱོགས་ཚད་ལྷག་པ་ཅིན་ ལམ་ལས་འཕུར་ཏེ་ དུས་ཚོད་འཕྱུག། རྐྱངམ་ནང་ ཆུ་ཚོད་དང་ ཆ་རོགས་ཚུ་གི་འདྲེ་དང་ རོ་བོཊ་ཚུ་དང་འགྲན།',
+  'Acelerar': 'མགྱོགས་ཚད་བསྐྱེད།',
+  'Saiu da pista!': 'ལམ་ལས་ཐོན་ཡི།',
+  'Saídas da pista: {n}': 'ལམ་ལས་ཐོན་ཐེངས། {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'མགྱོགས་ཚད་བསྐྱེད་ནི་ལུ་ཨེབ་སྟེ་བཞག། གུག་གི་ཧེ་མ་བཏང་། སྣུམ་འཁོར་འདར་བའི་སྐབས་ ཚད་གཞི་ཁར་ཨིན།',

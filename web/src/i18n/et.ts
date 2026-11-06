@@ -3109,3 +3109,9 @@ export default {
   'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Üks minut, et lasta autod ristmikult läbi nii, et need kokku ei põrkaks. Täis järjekord maksab samuti punkte.',
   Liberar: 'Lase minna',
 } satisfies Record<string, string>;
+  'Carrinhos da toca': 'Uru mänguautod',
+  'Uma pista de carrinhos de brinquedo com quatro faixas: o carro segue a faixa sozinho, e você só acelera. Acelerou demais na curva, ele sai voando e perde tempo. No Solo, contra o relógio, os fantasmas dos amigos e robôs.': 'Neljarajaline mänguautode rada: auto järgib oma rada ise, sina ainult kiirendad. Kui kurvis liiga palju kiirendad, lendab see rajalt välja ja kaotab aega. Üksi: aja, sõprade kummituste ja robotite vastu.',
+  'Acelerar': 'Kiirenda',
+  'Saiu da pista!': 'Rajalt väljas!',
+  'Saídas da pista: {n}': 'Rajalt väljasõidud: {n}',
+  'Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.': 'Hoia all, et kiirendada, ja lase lahti enne kurvi: kui auto väriseb, on see piiril.',
