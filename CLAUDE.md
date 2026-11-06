@@ -751,6 +751,10 @@ um piloto (`e2e/3D/quarto/`, KayKit Bits Bundle 1, CC0), e **o coelho 3D com o N
 `e2e/pixel-art/personagem/blender/meshy/glb.py` (as poses do motor do pixel art viram animações de um GLB,
 `web/public/cidades3d/coelho-animado.glb`). O arquivo "animated_mixamo" do Meshy é o mesmo `mascote-t.glb`: esqueleto de gente, sem
 orelhas, e só Walking e Running.
+**UMA ESCOLHA SÓ PARA O QUARTO E OS JOGOS (decisão dele, 06/11/2026):** perguntado se o botão do quarto devia valer só para o
+quarto (hoje, quem põe o quarto em pixel art põe também o Truco, o Dominó, as Damas e o Cidades em 2D), ele disse que não:
+"o importante é ter consistência, como o Mario 3D que vira 2D no Paper Mario; contanto que o personagem compartilhe da estética
+do minijogo, tudo bem". Fica tudo junto, para dar mais opções; separar só com retorno de quem usa.
 **O QUARTO 3D FOI AO APP (06/11/2026, pedido dele: "quero esse quarto 3D low poly como PILOTO da nossa funcionalidade de variação
 estética; um ícone no quarto que alterne entre 3D e Pixel Art; não implemente no salão ainda"):** `web/src/quarto3d/` (a cena num
 pedaço à parte, os modelos em `web/public/quarto3d/`) e `web/src/QuartoComEstilo.tsx` (o botão do canto: o xadrezinho de pixels e o
@@ -1017,7 +1021,9 @@ ficou combinado:
   (caneca, suco, pizza, livros…) gerados no TAMANHO FINAL, de 16 a 24 px, com silhueta forte e pouco detalhe: vieram 2,5×
   maiores e reduzir pixel art quebra o contorno (17/10/2026: estão no tamanho inteiro, grandes demais, por decisão dele,
   até isso), ~150 a 200 gerações; depois, os pedidos novos abaixo. Registrar no `custos.jsonl` também o custo das gerações avulsas (hoje só giros e estados ficam lá).
-- **DÍVIDA DE ARTE (pedidos dele, à espera de créditos do PixelLab):**
+- **DÍVIDA DE ARTE (pedidos dele, à espera de créditos do PixelLab). OS CRÉDITOS VOLTAM EM 07/11/2026** (aviso dele em
+  06/11: "anote no projeto para retomar essa demanda técnica"): retomar por esta lista e pela ordem do plano acima (os 5 da
+  parede, o pufe e o tapete, as janelas, os objetos de cima no tamanho final), registrando cada geração no `custos.jsonl`.**
   - **Um ventilador ou um ar-condicionado** (16/10/2026).
   - **A porta de entrada do salão** (aprovada em 20/10/2026): o membro novo chega por ela, e o coelho do balcão acena.
   - **Os giros das camas 1, 3 e 4** (20/10/2026), para elas entrarem liberadas no quarto (~75 gerações).
