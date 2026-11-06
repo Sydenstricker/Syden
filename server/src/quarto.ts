@@ -38,7 +38,8 @@ export interface Arrumacao {
   vista?: number;
   /** Os objetos da parede (quadro, fone, prateleira…): a parede, quantas casas andaram nela e quantos px subiram. */
   parede?: Record<string, { parede: 'direita' | 'esquerda'; v: number; h: number }>;
-  /** A cor escolhida de um móvel (o tapete: sálvia, terracota…), por código. */
+  /** A cor escolhida de um móvel (o tapete: sálvia, terracota…), por código. Desde 06/11/2026 também a do reboco das
+   *  paredes e a do piso do quarto ("parede" e "piso", pedido dele): a página pinta a casca por código. */
   cores?: Record<string, string>;
   /** Os objetos de cima (a caneca, os livros…): o tipo, o móvel em que estão, a posição no tampo (0 a 1) e o lado. */
   emCima?: Record<string, { tipo: string; em: string; s: number; t: number; lado: number }>;
@@ -50,6 +51,9 @@ export interface Arrumacao {
   canalDaTv?: string;
   /** O que está desligado pelo botão direito e vale para a turma: a TV, o fliperama, a jukebox (18/10/2026). */
   desligados?: string[];
+  /** A PLANTA do quarto (06/11/2026, pedido dele): "quadrado" (o de sempre), "l" ou "cubiculo". Ela muda quais casas são
+   *  chão e onde ficam as paredes; a página é quem sabe disso (as casas e as cascas moram lá), como os tipos de janela. */
+  planta?: string;
 }
 
 const numero = (x: unknown, min: number, max: number): number | null =>
@@ -137,6 +141,10 @@ export function validarArrumacao(x: unknown, N: number = CASAS_DO_QUARTO): { ok:
     const d = a.desligados;
     if (!Array.isArray(d) || d.length > MAX_MOVEIS || !d.every((id) => typeof id === 'string' && PECA.test(id))) return { erro: 'Arrumação inválida.' };
     saida.desligados = [...new Set(d as string[])];
+  }
+  if (a.planta !== undefined) {
+    if (typeof a.planta !== 'string' || !CODIGO.test(a.planta)) return { erro: 'Planta inválida.' };
+    saida.planta = a.planta;
   }
   if (a.vista !== undefined) {
     if (!Number.isInteger(a.vista) || (a.vista as number) < 0 || (a.vista as number) > 15) return { erro: 'Vista inválida.' };
