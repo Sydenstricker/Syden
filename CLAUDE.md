@@ -600,7 +600,7 @@ Game Bits (`web/src/xadrez3d/`), o tabuleiro de botões por baixo. Fora das conq
 **MAIS 3D E DOIS JOGOS NOVOS (05/11/2026, pedidos dele):** Damas, Truco, Dominó e os dados do Cidades em 3D (`web/src/mesa3d/`, a base
 comum e o gancho `useCena3D`; KayKit Board Game Bits). A **Cozinha da toca** (`minijogo-cozinha.ts`, `JogoCozinha.tsx`; KayKit Restaurant
 Bits): CADA UM NA PRÓPRIA COZINHA, os mesmos pedidos (a abordagem aprovada por ele, pela lição do Overcooked acima); o servidor confere cada
-prato pela receita. O **Rolê do coelho** (`minijogo-skate.ts`, `JogoSkate.tsx`; Kenney Mini Skate): skate de 2 minutos com combos, só a
+prato pela receita. O **Rolê do coelho** (`minijogo-skate.ts`, `JogoSkate.tsx`; Kenney Mini Skate): skate de 1 minuto (eram 2 até 06/11/2026; o recorde recomeçou em `skate_recordes_1min`) com combos, só a
 mecânica (nada de Tony Hawk); só no Solo até a sala ser testada na tela. No xadrez, a promoção deixa escolher a peça. O jogo de
 estratégia (o pacote Ultimate Fantasy RTS do Quaternius, CC0, em glTF) é o próximo, contra o computador primeiro.
 
@@ -1684,6 +1684,15 @@ dezenas de avatares na lista) é aceito, porque só existe enquanto a pessoa olh
 codificador na placa) custou ~1,8 núcleo (11%); com H.264 pela placa deve ser menos. A transmissão não foi medida de verdade (o
 "jogo" do teste é desenhado pelo processador, e capturar a tela real só com o pedido dele). Os scripts da medida ficaram no
 scratchpad da sessão (`medir-por-processo.ps1` separa os processos pelo `--type=` do Chromium).
+
+**A supressão de ruído, avaliada no mesmo dia (pedido dele):** medido no Electron com o processo e a porta de verdade, o
+DPDFNet é ~90% do custo do processo: o modelo leva ~1 ms a cada quadro de 10 ms em rajada e 1,3 a 2 ms em tempo real (a cache
+esfria entre um quadro e outro). Por isso os ~20% de um núcleo com som, contra os ~12% de 10/2026, que foram medidos em
+rajada. Tentado e SEM ganho: as opções do onnxruntime (otimização do grafo, arena, spinning, 2 threads), reaproveitar os
+tensores do estado (153 KB por quadro) e mandar dois quadros por vez. Feito: **o quieto não passa pelo modelo** (o microfone
+mudo e o silêncio abaixo de −60 dBFS de pico por 300 ms; de ~20% para ~2%, no app e no GTCRN do site) e a transformada por
+tabela (~400 KB lidos duas vezes por quadro) virou FFT. Baixar o custo com som pede trocar ou quantizar o modelo (int8),
+o que precisa de Python e de medir a qualidade de novo na gravação dele (DNSMOS): decisão dele.
 
 ## Fonte de terceiro: embutir é REDISTRIBUIR, e quase nenhuma "grátis" permite isso
 
