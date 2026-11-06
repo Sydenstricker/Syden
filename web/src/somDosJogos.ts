@@ -30,6 +30,7 @@ export type Efeito =
   | 'soco'
   | 'combo'
   | 'chegada'
+  | 'derrapa'
   | 'fim';
 
 const CHAVE = 'syden:somDosJogos';
@@ -180,8 +181,53 @@ export function tocar(efeito: Efeito) {
     case 'chegada':
       [523, 659, 784, 1047].forEach((f, i) => nota(a, 'square', f, f, 0.14, 0.22, i * 0.09));
       break;
+    case 'derrapa':
+      ruido(a, 0.16, 2600, 0.35, 0, 'bandpass');
+      nota(a, 'sawtooth', 1500, 1100, 0.14, 0.08);
+      break;
     case 'fim':
       [784, 659, 784, 1047].forEach((f, i) => nota(a, 'triangle', f, f, i === 3 ? 0.4 : 0.14, 0.45, i * 0.13));
       break;
   }
+}
+
+/**
+ * O MOTOR (os Carrinhos da toca, 06/11/2026): um zumbido contínuo, o motorzinho elétrico do carrinho, cuja altura e volume
+ * acompanham a rapidez (de 0 a 1). Quem chama ajusta a cada quadro e para ao sair; mudo (ou sem foco, quem chama passa 0), cala.
+ */
+export function criarMotor() {
+  const a = audio();
+  if (!a || !saida) return { ajustar: (_rapidez: number) => {}, parar: () => {} };
+  const o = a.createOscillator();
+  const o2 = a.createOscillator();
+  const filtro = a.createBiquadFilter();
+  const g = a.createGain();
+  o.type = 'sawtooth';
+  o2.type = 'square';
+  filtro.type = 'lowpass';
+  filtro.frequency.value = 900;
+  g.gain.value = 0;
+  o.connect(filtro);
+  o2.connect(filtro);
+  filtro.connect(g).connect(saida);
+  o.start();
+  o2.start();
+  let parado = false;
+  return {
+    ajustar(rapidez: number) {
+      if (parado) return;
+      const r = Math.max(0, Math.min(1, rapidez));
+      const t = a.currentTime;
+      o.frequency.setTargetAtTime(70 + r * 260, t, 0.05);
+      o2.frequency.setTargetAtTime(35 + r * 130, t, 0.05);
+      g.gain.setTargetAtTime(mudo || estaSurdo() ? 0 : r > 0.01 ? 0.08 + r * 0.22 : 0, t, 0.06);
+    },
+    parar() {
+      if (parado) return;
+      parado = true;
+      g.gain.setTargetAtTime(0, a.currentTime, 0.03);
+      o.stop(a.currentTime + 0.2);
+      o2.stop(a.currentTime + 0.2);
+    },
+  };
 }

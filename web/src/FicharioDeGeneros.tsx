@@ -37,6 +37,7 @@ export const GENEROS_DOS_JOGOS: Partial<Record<IdDoJogo | string, Genero[]>> = {
   balao: ['esporte', 'acao'],
   jato: ['esporte'],
   barco: ['esporte'],
+  carrinhos: ['esporte'],
   golfe: ['esporte'],
   golfe3d: ['esporte'],
   futebol: ['esporte'],

@@ -44,6 +44,8 @@ export const NOMES_DAS_PISTAS: Record<string, string> = {
   duelo: chave('Duelo de aviõezinhos'),
   // e o da Torre do celeiro (server/src/minijogo-torre.ts)
   torre: chave('A torre do celeiro'),
+  // e o dos Carrinhos da toca (server/src/minijogo-carrinhos.ts)
+  carrinhos: chave('Carrinhos da toca'),
 };
 
 export const nomeDaPista = (id: string) => NOMES_DAS_PISTAS[id] ?? id;

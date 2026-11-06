@@ -39,6 +39,8 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
       return <CapaJato />;
     case 'barco':
       return <CapaBarco />;
+    case 'carrinhos':
+      return <CapaCarrinhos />;
     case 'chefe':
       return <CapaChefe />;
     case 'duelo':
@@ -1180,6 +1182,37 @@ function CapaBarco() {
         <rect x="-3" y="5" width="6" height="5" fill="#f07a2a" />
         <circle cx="0" cy="-5" r="4.5" fill="#f2ecf7" />
         <path d="M-2 -9 L-3 -17 M2 -9 L3 -17" stroke="#f2ecf7" strokeWidth="2.4" strokeLinecap="round" />
+      </g>
+    </svg>
+  );
+}
+
+/** Os Carrinhos da toca: a pista de brinquedo de quatro faixas no chão de tábuas, com as zebras e dois carrinhos. */
+function CapaCarrinhos() {
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#c79b6e" />
+      {[14, 34, 54, 74, 94, 114].map((y) => (
+        <rect key={y} y={y} width="160" height="1.5" fill="#b48a5f" />
+      ))}
+      <rect x="10" y="12" width="140" height="96" rx="10" fill="#5f8c6a" />
+      <rect x="20" y="22" width="120" height="76" rx="36" fill="none" stroke="#e9f1f5" strokeWidth="30" />
+      <rect x="20" y="22" width="120" height="76" rx="36" fill="none" stroke="#5d6577" strokeWidth="26" />
+      <rect x="20" y="22" width="120" height="76" rx="36" fill="none" stroke="#e9f1f5" strokeWidth="1" />
+      {[-6.5, 6.5].map((d) => (
+        <rect key={d} x={20 - d} y={22 - d} width={120 + 2 * d} height={76 + 2 * d} rx={36 + d} fill="none" stroke="#c9cfdb" strokeWidth="0.8" strokeDasharray="4 4" />
+      ))}
+      <rect x="7" y="9" width="146" height="102" rx="49" fill="none" stroke="#e2463a" strokeWidth="2.5" strokeDasharray="5 5" />
+      <rect x="33" y="35" width="94" height="50" rx="23" fill="none" stroke="#e2463a" strokeWidth="2.5" strokeDasharray="5 5" />
+      <rect x="76" y="98" width="3" height="13" fill="#ffffff" />
+      <rect x="79" y="98" width="3" height="13" fill="#2a2a2a" />
+      <g transform="translate(56 102)">
+        <rect x="-8" y="-3.5" width="16" height="7" rx="3" fill="#e2463a" />
+        <circle cx="1" cy="0" r="2.6" fill="#f2ecf7" />
+      </g>
+      <g transform="translate(112 92) rotate(-28)">
+        <rect x="-8" y="-3.5" width="16" height="7" rx="3" fill="#3d7fd6" />
+        <circle cx="1" cy="0" r="2.6" fill="#ffd9a8" />
       </g>
     </svg>
   );

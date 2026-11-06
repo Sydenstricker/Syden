@@ -1,0 +1,238 @@
+/* OS CARRINHOS DA TOCA (JogoCarrinhos.tsx): a pista inteira em 3D e o painel por cima. */
+
+.minijogo.jogando-carrinhos {
+  width: min(760px, 94vw);
+}
+
+.carrinhos {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.carrinhos-moldura {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  max-height: 70vh;
+  border-radius: 10px;
+  overflow: hidden;
+  /* a cor do chão da cena (cena.ts, COR_DO_FUNDO): enquanto carrega, a caixa já é o lugar do jogo */
+  background: #c79b6e;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: pointer;
+}
+
+.carrinhos-caixa {
+  position: absolute;
+  inset: 0;
+}
+.carrinhos-caixa.escondida {
+  visibility: hidden;
+}
+.carrinhos-tela {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.carrinhos-painel {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  color: #fff;
+  font-weight: 800;
+  text-shadow:
+    0 2px 0 rgba(40, 24, 12, 0.55),
+    0 0 6px rgba(40, 24, 12, 0.35);
+  font-variant-numeric: tabular-nums;
+}
+
+.carrinhos-volta {
+  position: absolute;
+  top: 10px;
+  left: 14px;
+  font-size: calc(20px * var(--escala-do-texto, 1));
+}
+
+.carrinhos-relogio {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  font-size: calc(20px * var(--escala-do-texto, 1));
+}
+
+/* o acelerador: a barra cheia é o pé no fundo; vermelha quando o carro está no limite (derrapando) */
+.carrinhos-medidor {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  width: 14px;
+  height: 34%;
+  border-radius: 7px;
+  background: rgba(40, 24, 12, 0.35);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.7);
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+}
+.carrinhos-medidor > span {
+  display: block;
+  width: 100%;
+  background: #7fd18b;
+}
+.carrinhos-medidor.no-limite > span {
+  background: #ff6b5b;
+}
+
+.carrinhos-ordem {
+  position: absolute;
+  left: 14px;
+  top: 42px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: calc(13px * var(--escala-do-texto, 1));
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.carrinhos-ordem li {
+  display: flex;
+  gap: 6px;
+  opacity: 0.85;
+}
+.carrinhos-ordem li.eu {
+  opacity: 1;
+  color: #ffe08a;
+}
+
+.carrinhos-aviso {
+  position: absolute;
+  left: 50%;
+  top: 18%;
+  transform: translateX(-50%);
+  font-size: calc(24px * var(--escala-do-texto, 1));
+  color: #ffd166;
+  white-space: nowrap;
+}
+
+.carrinhos-contagem {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: calc(64px * var(--escala-do-texto, 1));
+}
+
+.carrinhos-escolha {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.carrinhos-robos,
+.carrinhos-fantasmas {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  margin: 0;
+}
+.carrinhos-robos legend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.carrinhos-robos [role='radiogroup'] {
+  display: flex;
+  gap: 8px;
+}
+.carrinhos-robos button {
+  min-width: 44px;
+  padding: 6px 10px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+  color: var(--text);
+  font-weight: 700;
+  cursor: pointer;
+}
+.carrinhos-robos button.escolhido {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast, #fff);
+}
+.carrinhos-fantasmas ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.carrinhos-fantasmas label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.carrinhos-quem {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.carrinhos-tempo {
+  font-variant-numeric: tabular-nums;
+}
+.carrinhos-tempo.grande {
+  font-size: calc(28px * var(--escala-do-texto, 1));
+  font-weight: 800;
+}
+
+.carrinhos-fim-solo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.carrinhos-posicao {
+  font-size: calc(30px * var(--escala-do-texto, 1));
+}
+.carrinhos-recorde {
+  color: var(--accent);
+}
+.carrinhos-voltas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.carrinhos-classificacao {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.carrinhos-classificacao li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.carrinhos-classificacao li.eu {
+  font-weight: 700;
+}
+.carrinhos-classificacao .carrinhos-posicao {
+  width: 2em;
+  text-align: center;
+  font-size: calc(18px * var(--escala-do-texto, 1));
+}

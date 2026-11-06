@@ -32,6 +32,7 @@ import { EscolhaDaTorre, JogoTorre, type EstadoTorre } from './JogoTorre';
 import type { EstadoChefe } from './chefe/regras';
 import { JogoCozinha, type EstadoCozinha } from './JogoCozinha';
 import { JogoSkate, type EstadoSkate } from './JogoSkate';
+import { JogoCarrinhos, type EstadoCarrinhos } from './JogoCarrinhos';
 import { JogoTransito, type EstadoTransito } from './JogoTransito';
 import { JogoLobisomem } from './JogoLobisomem';
 import { JogoPalavra } from './JogoPalavra';
@@ -591,6 +592,18 @@ export function PainelDoMinijogo({
       {jogoNaTela?.jogo === 'caca' && (
         <JogoCaca
           key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
+      {jogoNaTela?.jogo === 'carrinhos' && (
+        <JogoCarrinhos
+          key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
+          estado={jogoNaTela as unknown as EstadoCarrinhos & Partida}
+          eu={eu}
+          jogador={souJogador(partida)}
+          restante={restante}
+          agir={agir}
+          socket={socket}
+          channelId={channelId}
+        />
+      )}
           estado={jogoNaTela as unknown as EstadoCaca & Partida}
           eu={eu}
           jogador={souJogador(partida)}
