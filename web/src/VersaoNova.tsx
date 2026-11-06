@@ -62,6 +62,34 @@ export function VersaoNova() {
     };
   }, [mudou]);
 
+  // O PEDAÇO QUE NÃO EXISTE MAIS (06/11/2026, relato dele: o Minigolfe 3D "precisa de gráficos 3D, que não abriram"
+  // logo depois do deploy). Os jogos e as cenas 3D carregam em pedaços à parte, com o nome trocado a cada versão, e o
+  // deploy apaga os da versão anterior: a aba aberta antes dele pedia um arquivo que já não estava lá. O Vite avisa
+  // (vite:preloadError). Fora de chamada e sem nada digitado, recarrega na hora (a pessoa acabou de pedir aquilo, e a
+  // versão nova o tem); senão, o aviso de cima aparece já. Uma vez por minuto no máximo, para não virar laço.
+  useEffect(() => {
+    const aoFalharPedaco = () => {
+      let ultima = 0;
+      try {
+        ultima = Number(sessionStorage.getItem('syden.recarregouPorPedaco') ?? 0);
+      } catch {
+        // sem armazenamento: segue sem a trava, e o aviso cobre
+      }
+      if (!emChamada && !temTextoDigitado() && Date.now() - ultima > 60_000) {
+        try {
+          sessionStorage.setItem('syden.recarregouPorPedaco', String(Date.now()));
+        } catch {
+          // idem
+        }
+        window.location.reload();
+        return;
+      }
+      setMudou(true);
+    };
+    window.addEventListener('vite:preloadError', aoFalharPedaco);
+    return () => window.removeEventListener('vite:preloadError', aoFalharPedaco);
+  }, []);
+
   useEffect(() => {
     if (!mudou) return;
     let escondidaDesde = document.visibilityState === 'hidden' ? Date.now() : null;
