@@ -679,6 +679,18 @@ estratégia (o pacote Ultimate Fantasy RTS do Quaternius, CC0, em glTF) é o pr�
   - O levantamento do Mario Party 3 (o pedido dele: "um de caça que eu adorava, Aces High") está em `docs/mario-party-3.md`: o
     Aces High vira o "Duelo de aviõezinhos" sobre a rede dos itens do kart, e uns 34 minijogos cabem como microjogo da Festa.
 
+**OS CARRINHOS DA TOCA (06/11/2026, pedido dele: "um jogo de autorama"; "Autorama" é marca da Estrela, por isso o nome):**
+`carrinhos`, nas duas abas. A pista de brinquedo de 4 faixas em 3D (Toy Car Kit da Kenney, CC0: duas fileiras de peças largas, a
+curva pequena dentro da grande), o carro preso à faixa e quem joga SÓ ACELERA (Espaço/↑, mouse, toque; o gatilho do controle é
+analógico). Acima da velocidade da curva, 1 de folga em que o carro treme; passou, sai voando, fica fora 1,75 s e volta parado,
+piscando, ao lugar de onde saiu. Cinco voltas. **A regra é um arquivo só nas duas pontas** (`carrinhos-sim.ts` ↔
+`web/src/carrinhos/sim.ts`, byte a byte): o site manda o ACELERADOR de cada passo em trechos e o servidor REFAZ a corrida; o
+fantasma é esse acelerador. **A velocidade de cada raio de curva foi medida para nenhuma faixa ganhar** (a de dentro é mais curta;
+o piloto automático faz a mesma volta nas quatro, o teste cobra 1%): mexeu no traçado ou nos números, medir de novo. Solo na faixa
+do recorde (`carrinhos_recordes`, só amigos aceitos veem), com 0 a 3 robôs do site (erram de vez em quando); na sala, de 2 a 4,
+cada um na sua faixa, e a corrida da sala NÃO vira recorde (a faixa é outra). Pódio com `pista: 'carrinhos'`. Testes:
+`web/test/carrinhos.test.ts`, `server/test/minijogos-carrinhos.test.ts`, `e2e/carrinhos.mjs`, `e2e/carrinhos-na-sala.mjs`.
+
 **O TABULEIRO DA TURMA está feito (03/11/2026, o item 5):** `server/src/minijogo-tabuleiro-da-turma.ts`, `web/src/JogoTabuleiro.tsx`,
 só no Coletivo (2 a 8). Uma volta de 30 casas em volta de uma horta, desenhada por código; 5, 10 ou 15 rodadas. Na vez, cada
 um pede o dado (QUEM SORTEIA É O SERVIDOR), a peça anda na tela casa a casa, e a casa age: +3 cenouras, −3, ou um evento
