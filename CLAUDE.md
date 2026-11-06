@@ -651,6 +651,15 @@ estratégia (o pacote Ultimate Fantasy RTS do Quaternius, CC0, em glTF) é o pr�
     velocidade do kart, com a energia que é vida e turbo. Uma CÓPIA do que precisou da corrida (`jato/util.ts`), sem mexer nela.
     11 naves do computador completam a pista (não entram na classificação nem no troféu). Recordes e fantasmas como o kart
     (`jato_recordes`, só amigos aceitos veem; na política desde o mesmo dia, com os recordes da Caça e da Esquadrilha, que faltavam).
+  - **Regata da toca** (`barco`, `minijogo-barco.ts`, `server/src/barco.ts`, `web/src/barco/`): a corrida de barquinhos do Mario
+    Party 3 sobre a técnica do kart, com a água que desliza, a correnteza e as argolas; recordes e fantasmas como o kart
+    (`barco_recordes`, na política). **O chefe da turma** (`chefe`, `minijogo-chefe.ts`, `server/src/chefe/`): a turma contra a
+    toupeira-rei, com a rede da Briga (o chefe no servidor, o golpe decidido 220 ms depois).
+  - **A Festa é plugável desde 05/11/2026** (`server/src/festa/` e `web/src/festa/`, o guia no topo de `registro.ts`): um par de
+    arquivos por microjogo, e os lotes do Mario Party 3 entram pelos `loteN.ts`. Microjogo registrado entra no sorteio da Festa E do
+    Tabuleiro da turma.
+  - **O Tabuleiro da turma é 3D** (`web/src/tabuleiro3d/`), no meio de uma mini cidade, com a câmera de cada um; o SVG fica de
+    reserva.
   - Nenhum dos três tem e2e com a sala de verdade (LiveKit e duas pessoas): os Coletivos estão cobertos só pelos testes do servidor.
     Ficam fora das conquistas da turma até ele decidir, como os outros novos.
   - O levantamento do Mario Party 3 (o pedido dele: "um de caça que eu adorava, Aces High") está em `docs/mario-party-3.md`: o

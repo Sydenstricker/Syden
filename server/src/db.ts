@@ -7374,3 +7374,141 @@ export function jatosDe(userId: number) {
     .all(userId) as { pista: string; tempoMs: number; voltas: string; amostras: string; em: string }[];
   return linhas.map((l) => ({ pista: l.pista, tempoMs: l.tempoMs, em: l.em, voltas: JSON.parse(l.voltas) as number[], fantasma: JSON.parse(l.amostras) as number[] }));
 }
+
+// ---------------------------------------------------------------------------------------------------
+// A REGATA DA TOCA (05/11/2026): o melhor tempo de cada pessoa em cada pista, com as voltas e o FANTASMA (as posições do
+// barco, 15 por segundo, para os amigos correrem contra), como corrida_recordes e jato_recordes. Só o melhor: uma corrida
+// pior não substitui. Quem vê: a própria pessoa e os amigos aceitos (minijogo-barco.ts).
+// ---------------------------------------------------------------------------------------------------
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS barco_recordes (
+    user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    pista      TEXT NOT NULL,
+    tempo_ms   INTEGER NOT NULL,
+    voltas     TEXT NOT NULL,
+    amostras   TEXT NOT NULL,
+    em         TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    PRIMARY KEY (user_id, pista)
+  );
+`);
+
+export interface RecordeDoBarco {
+  userId: number;
+  username: string;
+  nomeDeExibicao: string | null;
+  avatarPronto: number | null;
+  tempoMs: number;
+  em: string;
+}
+
+/** O recorde da pessoa e o dos amigos aceitos dela, nesta pista, do mais rápido ao mais lento (sem o fantasma). */
+export function recordesDoBarco(userId: number, pista: string): RecordeDoBarco[] {
+  return db
+    .prepare(
+      `SELECT r.user_id AS userId, u.username AS username, u.nome_exibicao AS nomeDeExibicao, u.avatar_pronto AS avatarPronto,
+              r.tempo_ms AS tempoMs, r.em AS em
+       FROM barco_recordes r JOIN users u ON u.id = r.user_id
+       WHERE r.pista = ? AND (r.user_id = ? OR r.user_id IN (
+         SELECT CASE WHEN menor_id = ? THEN maior_id ELSE menor_id END FROM friendships
+         WHERE ? IN (menor_id, maior_id) AND situacao = 'aceita'))
+       ORDER BY r.tempo_ms LIMIT 30`,
+    )
+    .all(pista, userId, userId, userId) as unknown as RecordeDoBarco[];
+}
+
+export function recordeDoBarco(userId: number, pista: string): { tempoMs: number; amostras: string } | null {
+  const linha = db
+    .prepare('SELECT tempo_ms AS tempoMs, amostras FROM barco_recordes WHERE user_id = ? AND pista = ?')
+    .get(userId, pista) as { tempoMs: number; amostras: string } | undefined;
+  return linha ?? null;
+}
+
+/** Guarda se for o melhor da pessoa nesta pista. Devolve o tempo que valia antes (null se não havia). */
+export function guardarBarco(userId: number, pista: string, tempoMs: number, voltas: number[], amostras: string): { anterior: number | null; recorde: boolean } {
+  const antes = recordeDoBarco(userId, pista);
+  if (antes && antes.tempoMs <= tempoMs) return { anterior: antes.tempoMs, recorde: false };
+  db.prepare(
+    `INSERT INTO barco_recordes (user_id, pista, tempo_ms, voltas, amostras, em)
+     VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+     ON CONFLICT(user_id, pista) DO UPDATE SET tempo_ms = excluded.tempo_ms, voltas = excluded.voltas,
+       amostras = excluded.amostras, em = excluded.em`,
+  ).run(userId, pista, tempoMs, JSON.stringify(voltas), amostras);
+  return { anterior: antes?.tempoMs ?? null, recorde: true };
+}
+
+/** Os recordes da pessoa em todas as pistas, com o fantasma (para o "Levar seus dados"). */
+export function barcosDe(userId: number) {
+  const linhas = db
+    .prepare('SELECT pista, tempo_ms AS tempoMs, voltas, amostras, em FROM barco_recordes WHERE user_id = ? ORDER BY pista')
+    .all(userId) as { pista: string; tempoMs: number; voltas: string; amostras: string; em: string }[];
+  return linhas.map((l) => ({ pista: l.pista, tempoMs: l.tempoMs, em: l.em, voltas: JSON.parse(l.voltas) as number[], fantasma: JSON.parse(l.amostras) as number[] }));
+}
+
+// ---------------------------------------------------------------------------------------------------
+// A TORRE DO CELEIRO (05/11/2026): o melhor tempo de cada pessoa em cada torre, com o FANTASMA (as posições do coelho, 15
+// por segundo, para os amigos subirem contra), como plataforma_recordes. Só o melhor; quem vê: a própria pessoa e os amigos
+// aceitos (minijogo-torre.ts).
+// ---------------------------------------------------------------------------------------------------
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS torre_recordes (
+    user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    torre      TEXT NOT NULL,
+    tempo_ms   INTEGER NOT NULL,
+    amostras   TEXT NOT NULL,
+    em         TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    PRIMARY KEY (user_id, torre)
+  );
+`);
+
+export interface RecordeDaTorre {
+  userId: number;
+  username: string;
+  nomeDeExibicao: string | null;
+  avatarPronto: number | null;
+  tempoMs: number;
+  em: string;
+}
+
+/** O recorde da pessoa e o dos amigos aceitos dela, nesta torre, do mais rápido ao mais lento (sem o fantasma). */
+export function recordesDaTorre(userId: number, torre: string): RecordeDaTorre[] {
+  return db
+    .prepare(
+      `SELECT r.user_id AS userId, u.username AS username, u.nome_exibicao AS nomeDeExibicao, u.avatar_pronto AS avatarPronto,
+              r.tempo_ms AS tempoMs, r.em AS em
+       FROM torre_recordes r JOIN users u ON u.id = r.user_id
+       WHERE r.torre = ? AND (r.user_id = ? OR r.user_id IN (
+         SELECT CASE WHEN menor_id = ? THEN maior_id ELSE menor_id END FROM friendships
+         WHERE ? IN (menor_id, maior_id) AND situacao = 'aceita'))
+       ORDER BY r.tempo_ms LIMIT 30`,
+    )
+    .all(torre, userId, userId, userId) as unknown as RecordeDaTorre[];
+}
+
+export function recordeDaTorre(userId: number, torre: string): { tempoMs: number; amostras: string } | null {
+  const linha = db
+    .prepare('SELECT tempo_ms AS tempoMs, amostras FROM torre_recordes WHERE user_id = ? AND torre = ?')
+    .get(userId, torre) as { tempoMs: number; amostras: string } | undefined;
+  return linha ?? null;
+}
+
+/** Guarda se for o melhor da pessoa nesta torre. Devolve o tempo que valia antes (null se não havia). */
+export function guardarTorre(userId: number, torre: string, tempoMs: number, amostras: string): { anterior: number | null; recorde: boolean } {
+  const antes = recordeDaTorre(userId, torre);
+  if (antes && antes.tempoMs <= tempoMs) return { anterior: antes.tempoMs, recorde: false };
+  db.prepare(
+    `INSERT INTO torre_recordes (user_id, torre, tempo_ms, amostras, em)
+     VALUES (?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+     ON CONFLICT(user_id, torre) DO UPDATE SET tempo_ms = excluded.tempo_ms, amostras = excluded.amostras, em = excluded.em`,
+  ).run(userId, torre, tempoMs, amostras);
+  return { anterior: antes?.tempoMs ?? null, recorde: true };
+}
+
+/** Os recordes da pessoa em todas as torres, com o fantasma (para o "Levar seus dados"). */
+export function torresDe(userId: number) {
+  const linhas = db
+    .prepare('SELECT torre, tempo_ms AS tempoMs, amostras, em FROM torre_recordes WHERE user_id = ? ORDER BY torre')
+    .all(userId) as { torre: string; tempoMs: number; amostras: string; em: string }[];
+  return linhas.map((l) => ({ torre: l.torre, tempoMs: l.tempoMs, em: l.em, fantasma: JSON.parse(l.amostras) as number[] }));
+}

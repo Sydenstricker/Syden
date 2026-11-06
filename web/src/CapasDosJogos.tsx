@@ -35,6 +35,10 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
       return <CapaBalao />;
     case 'jato':
       return <CapaJato />;
+    case 'barco':
+      return <CapaBarco />;
+    case 'chefe':
+      return <CapaChefe />;
     case 'cozinha':
       return <CapaCozinha />;
     case 'skate':
@@ -1026,6 +1030,81 @@ function CapaCozinha() {
       {[66, 80, 94].map((x, k) => (
         <path key={x} d={`M${x} 30 q -5 -7 0 -14 q 5 -7 0 -14`} fill="none" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" opacity={0.75 - k * 0.12} />
       ))}
+    </svg>
+  );
+}
+
+/** O chefe da turma: a toupeira-rei de capacete saindo da toca, as marcas do ataque no chão e dois coelhos com torrões. */
+function CapaChefe() {
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#8fbf5e" />
+      {[0, 20, 40, 60, 80, 100].map((y) => (
+        <rect key={y} y={y} width="160" height="10" fill="#86b657" />
+      ))}
+      <ellipse cx="80" cy="56" rx="34" ry="12" fill="#5a3a22" />
+      {/* a toupeira-rei */}
+      <g transform="translate(80 40)">
+        <ellipse cx="0" cy="14" rx="26" ry="18" fill="#4a4048" />
+        <ellipse cx="0" cy="2" rx="20" ry="16" fill="#5a4e58" />
+        <path d="M-18 -6 Q0 -26 18 -6 Z" fill="#f0c93a" />
+        <rect x="-18" y="-7" width="36" height="5" fill="#d9a62a" />
+        <circle cx="0" cy="-14" r="4" fill="#fff6c8" />
+        <circle cx="-7" cy="3" r="2.5" fill="#1d1a22" />
+        <circle cx="7" cy="3" r="2.5" fill="#1d1a22" />
+        <ellipse cx="0" cy="10" rx="6" ry="4" fill="#f2a1b4" />
+        <path d="M-24 18 l-10 4 M-24 22 l-10 0 M24 18 l10 4 M24 22 l10 0" stroke="#f2d0b8" strokeWidth="2" strokeLinecap="round" />
+      </g>
+      {/* as marcas do ataque */}
+      {[[30, 92], [128, 86], [62, 104]].map(([x, y]) => (
+        <ellipse key={x} cx={x} cy={y} rx="13" ry="5" fill="none" stroke="#e5564c" strokeWidth="2" strokeDasharray="4 3" />
+      ))}
+      {/* os coelhos com os torrões */}
+      {[[44, 84, '#3f74d8'], [112, 98, '#e2a03a']].map(([x, y, cor]) => (
+        <g key={String(x)} transform={`translate(${x} ${y})`}>
+          <ellipse cx="0" cy="8" rx="7" ry="6" fill={String(cor)} />
+          <circle cx="0" cy="0" r="5" fill="#f2ecf7" />
+          <path d="M-2 -4 L-3 -12 M2 -4 L3 -12" stroke="#f2ecf7" strokeWidth="2.4" strokeLinecap="round" />
+          <circle cx="8" cy="-6" r="4" fill="#8ab8e0" stroke="#4f7fa8" strokeWidth="1" />
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+/** A Regata da toca: o riacho em perspectiva entre as margens de junco, a argola laranja e o barquinho com a esteira. */
+function CapaBarco() {
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#7fb8e6" />
+      <ellipse cx="40" cy="18" rx="18" ry="6" fill="#ffffff" />
+      <ellipse cx="118" cy="24" rx="22" ry="7" fill="#ffffff" />
+      <rect y="40" width="160" height="10" fill="#3f7f3a" />
+      <rect y="48" width="160" height="72" fill="#79b856" />
+      <path d="M62 50 L98 50 L156 120 L4 120 Z" fill="#2f7f8f" />
+      <path d="M62 50 L4 120 L0 120 L0 112 L58 50 Z M98 50 L156 120 L160 120 L160 112 L102 50 Z" fill="#8a6a44" />
+      {[[70, 62, 18], [88, 74, 26], [60, 90, 34], [96, 100, 30]].map(([x, y, w]) => (
+        <rect key={x + ',' + y} x={x} y={y} width={w} height="2" fill="#bfe6ee" opacity="0.6" />
+      ))}
+      {[[24, 70], [16, 84], [136, 72], [146, 88], [32, 60], [128, 60]].map(([x, y]) => (
+        <g key={x + ',' + y}>
+          <rect x={x} y={y - 14} width="2" height="16" fill="#4f8a30" />
+          <rect x={x - 1} y={y - 18} width="4" height="6" rx="2" fill="#7a4a2a" />
+        </g>
+      ))}
+      {/* a argola */}
+      <g transform="translate(80 66)">
+        <ellipse rx="14" ry="6" fill="none" stroke="#f07a2a" strokeWidth="4" />
+        <ellipse rx="14" ry="6" fill="none" stroke="#fff3e0" strokeWidth="4" strokeDasharray="6 8" />
+      </g>
+      {/* o barquinho com a esteira */}
+      <path d="M70 112 L80 98 L90 112" fill="none" stroke="#e8f6f8" strokeWidth="2" opacity="0.8" />
+      <g transform="translate(80 98)">
+        <path d="M-12 0 L12 0 L8 8 L-8 8 Z" fill="#a8683a" />
+        <rect x="-3" y="5" width="6" height="5" fill="#f07a2a" />
+        <circle cx="0" cy="-5" r="4.5" fill="#f2ecf7" />
+        <path d="M-2 -9 L-3 -17 M2 -9 L3 -17" stroke="#f2ecf7" strokeWidth="2.4" strokeLinecap="round" />
+      </g>
     </svg>
   );
 }

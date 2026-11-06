@@ -24,6 +24,9 @@ import { JogoCaca } from './JogoCaca';
 import { JogoNave, type EstadoNave } from './JogoNave';
 import { EscolhaDaArena, JogoBalao, type EstadoBalao } from './JogoBalao';
 import { EscolhaDaPistaDoJato, JogoJato, type EstadoJato } from './JogoJato';
+import { EscolhaDaPistaDoBarco, JogoBarco, type EstadoBarco } from './JogoBarco';
+import { JogoChefe } from './JogoChefe';
+import type { EstadoChefe } from './chefe/regras';
 import { JogoCozinha, type EstadoCozinha } from './JogoCozinha';
 import { JogoSkate, type EstadoSkate } from './JogoSkate';
 import { JogoLobisomem } from './JogoLobisomem';
@@ -298,6 +301,12 @@ export function PainelDoMinijogo({
           aoVoltar={() => setEscolhendo(null)}
         />
       )}
+      {!partida && escolhendo === 'barco' && (
+        <EscolhaDaPistaDoBarco
+          aoEscolher={(pista) => tentar(() => aoComecar('barco', { pista }, false).then(() => setEscolhendo(null)))}
+          aoVoltar={() => setEscolhendo(null)}
+        />
+      )}
       {!partida && escolhendo === 'jato' && (
         <EscolhaDaPistaDoJato
           aoEscolher={(pista) => tentar(() => aoComecar('jato', { pista }, false).then(() => setEscolhendo(null)))}
@@ -374,7 +383,7 @@ export function PainelDoMinijogo({
                       ? aba === 'solo'
                         ? setPulando(true)
                         : setEscolhendo('plataforma')
-                    : (jogo.id === 'balao' || jogo.id === 'jato') && aba === 'coletivo'
+                    : (jogo.id === 'balao' || jogo.id === 'jato' || jogo.id === 'barco') && aba === 'coletivo'
                       ? setEscolhendo(jogo.id)
                     : jogo.id === 'tabuleiro' || jogo.id === 'cidades' || (aba === 'solo' && ROBOS_NO_SOLO[jogo.id]) || pedeCategoria(jogo.id, aba === 'solo')
                       ? setEscolhendo(jogo.id)
@@ -443,6 +452,28 @@ export function PainelDoMinijogo({
         <JogoFesta
           key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
           estado={jogoNaTela as unknown as EstadoFesta & Partida} eu={eu} jogador={souJogador(partida)} restante={restante} agir={agir} />
+      )}
+      {jogoNaTela?.jogo === 'chefe' && (
+        <JogoChefe
+          key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
+          estado={jogoNaTela as unknown as EstadoChefe & Partida}
+          eu={eu}
+          jogador={souJogador(partida)}
+          socket={socket}
+          channelId={channelId}
+        />
+      )}
+      {jogoNaTela?.jogo === 'barco' && (
+        <JogoBarco
+          key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
+          estado={jogoNaTela as unknown as EstadoBarco & Partida}
+          eu={eu}
+          jogador={souJogador(partida)}
+          restante={restante}
+          agir={agir}
+          socket={socket}
+          channelId={channelId}
+        />
       )}
       {jogoNaTela?.jogo === 'jato' && (
         <JogoJato

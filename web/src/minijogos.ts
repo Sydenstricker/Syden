@@ -510,7 +510,7 @@ export interface EstadoBriga {
   partidaId: string;
 }
 
-export type IdDoJogo = 'corrida' | 'festa' | 'tabuleiro' | 'cidades' | 'golfe' | 'caca' | 'nave' | 'balao' | 'jato' | 'plataforma' | 'blocos' | 'briga' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'damas' | 'naval' | 'domino' | 'truco' | 'xadrez' | 'partida-de-xadrez' | 'cozinha' | 'skate' | 'futebol' | 'golfe3d' | 'tocas' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
+export type IdDoJogo = 'corrida' | 'festa' | 'tabuleiro' | 'cidades' | 'golfe' | 'caca' | 'nave' | 'balao' | 'jato' | 'barco' | 'chefe' | 'plataforma' | 'blocos' | 'briga' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'damas' | 'naval' | 'domino' | 'truco' | 'xadrez' | 'partida-de-xadrez' | 'cozinha' | 'skate' | 'futebol' | 'golfe3d' | 'tocas' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
 
 /**
  * As duas abas da estante (pedido dele, 14/10/2026). SOLO: a partida é só de quem joga, começa sem convite, não ocupa
@@ -731,6 +731,22 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
     id: 'jato',
     nome: chave('Coelhos a jato'),
     dica: chave('Corrida de naves-cenoura numa pista suspensa, muito mais rápida que o kart. A energia é a vida e o turbo: bater na borda gasta, a faixa cor-de-rosa recarrega, e sair da pista é cair. No Solo, contra o relógio e os fantasmas dos amigos.'),
+    abas: ['solo', 'coletivo'],
+  },
+  {
+    // A turma contra a toupeira-rei (JogoChefe.tsx, server/src/minijogo-chefe.ts, server/src/chefe/): a rede da Briga, com o chefe
+    // no servidor (a versão nossa da batalha final do Mario Party 3, pedido dele, 05/11/2026).
+    id: 'chefe',
+    nome: chave('O chefe da turma'),
+    dica: chave('A turma inteira contra a toupeira-rei, que sai das tocas em três fases. Fuja das marcas no chão, pegue os torrões azulados e atire de volta. Ganha a turma, ou ninguém.'),
+    abas: ['solo', 'coletivo'],
+  },
+  {
+    // A corrida de barquinhos (JogoBarco.tsx, server/src/minijogo-barco.ts, server/src/barco.ts): a técnica do kart com a água,
+    // que desliza (a versão nossa de dois minijogos de barco do Mario Party 3, pedido dele, 05/11/2026).
+    id: 'barco',
+    nome: chave('Regata da toca'),
+    dica: chave('Corrida de barquinhos no lago, no riacho e no mangue. A água desliza: tire o pé antes da curva, cuidado com a margem e aproveite a correnteza e as argolas. No Solo, contra o relógio e os fantasmas dos amigos.'),
     abas: ['solo', 'coletivo'],
   },
   {

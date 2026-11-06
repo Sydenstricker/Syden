@@ -11,6 +11,8 @@ import { caca } from './minijogo-caca.js';
 import { nave } from './minijogo-nave.js';
 import { balao } from './minijogo-balao.js';
 import { jato } from './minijogo-jato.js';
+import { barco } from './minijogo-barco.js';
+import { chefe } from './minijogo-chefe.js';
 import type { Contexto, Definicao, Jogo } from './minijogo-motor.js';
 import { lobisomem } from './minijogo-lobisomem.js';
 import { palavra } from './minijogo-palavra.js';
@@ -73,6 +75,8 @@ export const JOGOS: Record<string, Definicao> = {
   nave,
   balao,
   jato,
+  barco,
+  chefe,
   tabuleiro: tabuleiroDaTurma,
   cidades,
   // Os clássicos de mesa (04/11/2026, pedido dele): de regra pública, sem conteúdo para manter.
@@ -105,7 +109,7 @@ export const JOGOS: Record<string, Definicao> = {
 // (os jogos da turma com adversários do computador, pedido dele de 05/11/2026: Cidades à venda, os de mesa, Dominó, Truco e o
 // Tabuleiro da turma; os robôs vêm de minijogo-robos.ts)
 export const JOGOS_SOLO = new Set([
-  'tamanho', 'xadrez', 'sudoku', 'festa', 'briga', 'blocos', 'golfe', 'caca', 'nave', 'balao', 'jato',
+  'tamanho', 'xadrez', 'sudoku', 'festa', 'briga', 'blocos', 'golfe', 'caca', 'nave', 'balao', 'jato', 'barco', 'chefe',
   'cidades', 'gomoku', 'mancala', 'damas', 'naval', 'domino', 'truco', 'tabuleiro', 'partida-de-xadrez', 'cozinha', 'skate', 'futebol', 'golfe3d', 'tocas',
   ...Object.keys(TEMAS),
 ]);

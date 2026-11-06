@@ -15935,7 +15935,8 @@ body.arrastando-barra {
 /* A CORRIDA DOS COELHOS (03/11/2026, JogoCorrida.tsx): a tela pequena de 320 × 180 ampliada com os pixels nítidos. */
 .minijogo.jogando-corrida,
 .minijogo.jogando-balao,
-.minijogo.jogando-jato {
+.minijogo.jogando-jato,
+.minijogo.jogando-barco {
   width: min(760px, 94vw);
 }
 

@@ -1,0 +1,30 @@
+/* O CHEFE DA TURMA (05/11/2026): usa as classes da Briga na horta (.briga, .briga-hud, .briga-tela…) e acrescenta só o seu. */
+
+.chefe-topo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+  font-size: 0.85rem;
+}
+
+.chefe-topo strong {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-strong);
+}
+
+.chefe-mao {
+  min-height: 1.2em;
+  color: var(--text-muted);
+}
+
+.chefe .briga-hud li.chefe-fora {
+  opacity: 0.55;
+}
+
+.chefe-dano-final {
+  margin: 0;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}

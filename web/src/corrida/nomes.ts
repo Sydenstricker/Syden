@@ -34,6 +34,10 @@ export const NOMES_DAS_PISTAS: Record<string, string> = {
   balao: chave('Estoura-balão'),
   // e o dos Coelhos a jato (server/src/minijogo-jato.ts)
   jato: chave('Coelhos a jato'),
+  // e o da Regata da toca (server/src/minijogo-barco.ts)
+  barco: chave('Regata da toca'),
+  // e o do Chefe da turma (server/src/minijogo-chefe.ts): os pontos são o dano dado
+  chefe: chave('O chefe da turma'),
 };
 
 export const nomeDaPista = (id: string) => NOMES_DAS_PISTAS[id] ?? id;

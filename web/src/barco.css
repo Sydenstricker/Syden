@@ -1,0 +1,276 @@
+/* A REGATA DA TOCA (05/11/2026): a tela da corrida, a escolha da pista, os fantasmas e a classificação. */
+.barco {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.barco-pistas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 8px;
+}
+
+.barco-pista-botao {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px;
+  border-radius: 10px;
+  border: 2px solid var(--border);
+  background: var(--bg-raised);
+  color: inherit;
+  cursor: pointer;
+  text-align: center;
+}
+
+.barco-pista-botao:hover,
+.barco-pista-botao.escolhida {
+  border-color: var(--accent);
+}
+
+.barco-pista-botao canvas {
+  width: 72px;
+  height: 72px;
+  border-radius: 6px;
+}
+
+.barco-pista-botao small {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.barco-escolha {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.barco-pista-nome {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.barco-pista-nome .settings-hint {
+  margin: 0;
+}
+
+.barco-relogio {
+  font-variant-numeric: tabular-nums;
+}
+
+.barco-fantasmas {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 0;
+}
+
+.barco-fantasmas legend {
+  padding: 0 4px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.barco-fantasmas ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.barco-fantasmas label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.barco-quem {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.barco-topo {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.barco-tela {
+  position: relative;
+  outline: none;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #12303a;
+}
+
+.barco-tela canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  image-rendering: pixelated;
+}
+
+.barco-placar {
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  right: 8px;
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  pointer-events: none;
+  color: #f6f0ff;
+  font-weight: 700;
+  font-size: clamp(0.85rem, 2.4vw, 1.15rem);
+  text-shadow: 0 2px 0 #140e1c, 2px 0 0 #140e1c, -2px 0 0 #140e1c, 0 -2px 0 #140e1c;
+}
+
+.barco-toque {
+  display: none;
+}
+
+@media (pointer: coarse) {
+  .barco-toque {
+    position: absolute;
+    inset: auto 0 0 0;
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+    gap: 8px;
+  }
+  .barco-toque button {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 2px solid rgba(246, 240, 255, 0.6);
+    background: rgba(20, 14, 28, 0.45);
+    color: #f6f0ff;
+    font-size: 1.4rem;
+    touch-action: none;
+    user-select: none;
+  }
+  .barco-toque button:nth-child(2) {
+    margin-left: auto;
+  }
+}
+
+.barco-fim,
+.barco-fim-solo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px;
+  text-align: center;
+}
+
+.barco-fim {
+  position: absolute;
+  inset: 0;
+  background: rgba(16, 10, 26, 0.74);
+  color: #f6f0ff;
+}
+
+.barco-fim-solo {
+  border-radius: 8px;
+  background: var(--bg-raised);
+}
+
+.barco-recorde {
+  color: #e8a020;
+  font-size: 1.2rem;
+}
+
+
+.barco-relogio.grande {
+  font-size: clamp(1.6rem, 5vw, 2.4rem);
+  font-weight: 800;
+}
+
+.barco-voltas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.9rem;
+}
+
+.barco-ordem {
+  position: absolute;
+  top: 27%;
+  left: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 40%;
+  color: #f6f0ff;
+  font-weight: 700;
+  font-size: clamp(0.7rem, 1.9vw, 0.9rem);
+  text-shadow: 0 1px 0 #140e1c, 1px 0 0 #140e1c, -1px 0 0 #140e1c, 0 -1px 0 #140e1c;
+}
+
+.barco-ordem li {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.barco-ordem li span {
+  display: inline-block;
+  min-width: 1.2em;
+}
+
+.barco-ordem li.eu {
+  color: #ffc46a;
+}
+
+.barco-classificacao {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: min(320px, 90%);
+}
+
+.barco-classificacao li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(246, 240, 255, 0.08);
+}
+
+.barco-classificacao li.eu {
+  background: rgba(255, 196, 106, 0.22);
+}
+
+.barco-posicao {
+  min-width: 1.6em;
+  text-align: center;
+  font-weight: 800;
+}
+
+.barco-classificacao .barco-quem {
+  text-align: left;
+}
