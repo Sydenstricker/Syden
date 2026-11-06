@@ -1,5 +1,6 @@
 import { jogadaHonestaDoLote1 } from './festa-lote1-ajuda.js';
 import { jogadaHonestaDoLote2 } from './festa-lote2-ajuda.js';
+import { jogadaHonestaDoLote4 } from './festa-lote4-ajuda.js';
 /**
  * AJUDA PARA TESTAR UM MICROJOGO DA FESTA (05/11/2026): monta UMA rodada (festa/rodada.ts) sem banco e sem servidor, com o
  * relógio e o sorteio de mão, a rede de cada um medida pelo eco como na sala de verdade, e já dá a largada. Veja o guia em
@@ -110,7 +111,7 @@ type JogadaDoLote = (
   quem: number,
   relogio: { andar: () => void; avancar: (ms: number) => void },
 ) => boolean;
-const LOTES: JogadaDoLote[] = [jogadaHonestaDoLote1, jogadaHonestaDoLote2];
+const LOTES: JogadaDoLote[] = [jogadaHonestaDoLote1, jogadaHonestaDoLote2, jogadaHonestaDoLote4];
 
 export function jogadaHonesta(
   micro: string,
