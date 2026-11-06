@@ -112,7 +112,7 @@ const TODOS = [
 ];
 
 const carregados = new Map<string, Promise<GLTF>>();
-function carregar(arquivo: string): Promise<GLTF> {
+export function carregar(arquivo: string): Promise<GLTF> {
   let p = carregados.get(arquivo);
   if (!p) {
     p = new GLTFLoader().loadAsync(BASE + arquivo);
@@ -209,7 +209,7 @@ export function centroDaCasa(i: number): THREE.Vector3 {
 }
 
 /** Uma cópia do modelo com a base no chão, centrada, com `largura` no maior lado do chão (e no máximo `altura` de alto). */
-function copia(g: GLTF, largura: number, sombra: boolean, altura = Infinity): THREE.Object3D {
+export function copia(g: GLTF, largura: number, sombra: boolean, altura = Infinity): THREE.Object3D {
   const o = g.scene.clone(true);
   const caixa = new THREE.Box3().setFromObject(o);
   const tam = caixa.getSize(new THREE.Vector3());
@@ -230,8 +230,8 @@ function copia(g: GLTF, largura: number, sombra: boolean, altura = Infinity): TH
 }
 
 /** Peças feitas por código, juntas numa geometria só, com a cor em cada vértice: um objeto, uma chamada de desenho. */
-type Bloco = { geo: THREE.BufferGeometry; x: number; y: number; z: number; cor: string; rx?: number; ry?: number; rz?: number };
-function juntar(blocos: Bloco[]): THREE.BufferGeometry {
+export type Bloco = { geo: THREE.BufferGeometry; x: number; y: number; z: number; cor: string; rx?: number; ry?: number; rz?: number };
+export function juntar(blocos: Bloco[]): THREE.BufferGeometry {
   const partes = blocos.map((b) => {
     const g = b.geo.clone();
     if (b.rx) g.rotateX(b.rx);
@@ -251,7 +251,7 @@ function juntar(blocos: Bloco[]): THREE.BufferGeometry {
   for (const b of blocos) b.geo.dispose();
   return junta;
 }
-const caixa = (w: number, h: number, d: number, x: number, y: number, z: number, cor: string, ry = 0): Bloco => ({ geo: new THREE.BoxGeometry(w, h, d), x, y: y + h / 2, z, cor, ry });
+export const caixa = (w: number, h: number, d: number, x: number, y: number, z: number, cor: string, ry = 0): Bloco => ({ geo: new THREE.BoxGeometry(w, h, d), x, y: y + h / 2, z, cor, ry });
 
 const roundRect = (g: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) => {
   g.beginPath();
@@ -262,7 +262,7 @@ const roundRect = (g: CanvasRenderingContext2D, x: number, y: number, w: number,
   g.arcTo(x, y, x + w, y, r);
   g.closePath();
 };
-function textura(c: HTMLCanvasElement): THREE.CanvasTexture {
+export function textura(c: HTMLCanvasElement): THREE.CanvasTexture {
   const t = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace;
   t.anisotropy = 4;
@@ -477,7 +477,7 @@ const PARADA_DO_DADO = [new THREE.Vector3(-0.3, 0.03 + 0.375 * ESCALA_DO_DADO, 0
  * O giro que põe cada número para cima (o +y). Medido no modelo D6_A (foto de conferência das seis faces): o 6 está no +y, o 1
  * no -y, o 2 no +x, o 5 no -x, o 3 no +z e o 4 no -z.
  */
-const FACE_PARA_CIMA: Record<number, THREE.Quaternion> = {
+export const FACE_PARA_CIMA: Record<number, THREE.Quaternion> = {
   1: new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.PI, 0, 0)),
   2: new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, Math.PI / 2)),
   3: new THREE.Quaternion().setFromEuler(new THREE.Euler(-Math.PI / 2, 0, 0)),

@@ -1,0 +1,49 @@
+/* O Tabuleiro da turma em 3D (tabuleiro3d/): a cena cobre a caixa, com a cor do céu enquanto carrega; o SVG fica para o leitor. */
+.tab3d {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  max-height: 70vh;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #bfe4f2;
+}
+.tab3d-caixa {
+  position: absolute;
+  inset: 0;
+}
+.tab3d-caixa.escondida {
+  visibility: hidden;
+}
+.tab3d-tela {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: grab;
+}
+.tab3d-tela:active {
+  cursor: grabbing;
+}
+.tab3d-ver-tudo {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 4px 12px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(30, 36, 44, 0.72);
+  color: #fffaf0;
+  font: inherit;
+  font-size: calc(13px * var(--escala-do-texto, 1));
+  cursor: pointer;
+}
+.tab3d-ver-tudo:hover,
+.tab3d-ver-tudo:focus-visible {
+  background: rgba(30, 36, 44, 0.9);
+}
+@media (max-width: 560px) {
+  .tab3d {
+    aspect-ratio: 4 / 3;
+  }
+}

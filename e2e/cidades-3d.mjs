@@ -36,7 +36,7 @@ try {
   await quarto.waitForFunction(() => typeof window.visitaDoTeste === 'function', null, { timeout: 60000 });
   await p.waitForTimeout(800);
   await quarto.evaluate(() => parent.postMessage({ syden: 'quarto', acao: 'computador' }, location.origin));
-  await p.locator('.jogos-painel .jogos-solo button', { hasText: 'Cidades à venda' }).first().click();
+  await p.locator('.jogos-painel .jogos-solo button', { hasText: 'Capitais' }).first().click();
   const robos = p.locator('.cid-robos-botao').first();
   if (await robos.isVisible({ timeout: 5000 }).catch(() => false)) await robos.click();
   const rodadas = p.locator('.tab-rodadas-botao').first();

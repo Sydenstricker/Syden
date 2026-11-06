@@ -5,6 +5,9 @@ import { useT } from './i18n';
 import { RodadaDaFesta } from './JogoFesta';
 import { Placar, Relogio } from './Minijogo';
 import type { EfeitoDaCasa, EstadoTabuleiro, Partida } from './minijogos';
+import { tocar } from './somDosJogos';
+import type { DadosDoTabuleiro3D } from './tabuleiro3d/cena';
+import { TabuleiroDaTurma3D } from './tabuleiro3d/TabuleiroDaTurma3D';
 
 /**
  * O TABULEIRO DA TURMA (03/11/2026, server/src/minijogo-tabuleiro-da-turma.ts): o tabuleiro de festa, só a mecânica, desenhado
@@ -47,6 +50,55 @@ const hex = ([r, g, b]: [number, number, number]) => 'rgb(' + [r, g, b].join(','
 export function coresDe(avatar: number | null, i: number) {
   const a = avatar !== null ? CORES_DOS_AVATARES[avatar] : undefined;
   return a ? { pelo: hex(a.pelo), roupa: hex(a.roupa) } : { pelo: '#e8dccb', roupa: CORES_SEM_AVATAR[i % CORES_SEM_AVATAR.length] };
+}
+
+/** As cores do coelho 3D: as do avatar pronto; sem ele, o pelo do mascote e a roupa do lugar na ordem (para as peças não ficarem iguais). */
+export function coresDe3D(avatar: number | null, i: number): { pelo: string | null; roupa: string } {
+  const a = avatar !== null ? CORES_DOS_AVATARES[avatar] : undefined;
+  return a ? { pelo: hex(a.pelo), roupa: hex(a.roupa) } : { pelo: null, roupa: CORES_SEM_AVATAR[i % CORES_SEM_AVATAR.length] };
+}
+
+/** O que a casa fez, para subir em cima das peças na cena 3D (só números: nada a traduzir). */
+function efeitosNaCena(ultimo: EstadoTabuleiro['ultimo'], participantes: EstadoTabuleiro['participantes']): DadosDoTabuleiro3D['efeitos'] {
+  const e = ultimo?.efeito;
+  if (!ultimo || !e) return [];
+  const um = (userId: number, texto: string, bom: boolean) => ({ id: `${ultimo.id}-${userId}`, userId, texto, bom });
+  switch (e.tipo) {
+    case 'mais':
+    case 'achado':
+      return [um(ultimo.userId, `+${e.valor} 🥕`, true)];
+    case 'menos':
+      return e.valor ? [um(ultimo.userId, `−${e.valor} 🥕`, false)] : [];
+    case 'chuva':
+      return participantes.map((p) => um(p.userId, `+${e.valor} 🥕`, true));
+    default:
+      return [];
+  }
+}
+
+/**
+ * Os sons do andar (somDosJogos.ts, os efeitos que já existem): o dado quando sai, um pulo por casa, e ao chegar a moeda (ganhou)
+ * ou o erro (perdeu); comprar a dourada é o acerto. Só o que acontece com a tela aberta: o estado de quando ela abriu fica calado.
+ */
+function useSonsDoAndar(ultimo: EstadoTabuleiro['ultimo'], passo: number, chegou: boolean) {
+  const visto = useRef<{ id: number | null; passo: number; chegou: boolean } | null>(null);
+  useEffect(() => {
+    const id = ultimo?.id ?? null;
+    const antes = visto.current;
+    visto.current = { id, passo, chegou };
+    if (!antes || !ultimo) return;
+    if (id !== antes.id) {
+      tocar('dado');
+      return;
+    }
+    if (passo > antes.passo && passo > 0) tocar('pulo');
+    if (chegou && !antes.chegou) {
+      const e = ultimo.efeito;
+      if (ultimo.comprou) tocar('acerto');
+      else if (e && (e.tipo === 'mais' || e.tipo === 'achado' || e.tipo === 'chuva')) tocar('moeda');
+      else if (e && e.tipo === 'menos' && e.valor) tocar('erro');
+    }
+  }, [ultimo, passo, chegou]);
 }
 
 /** A peça: um coelho de frente, de pixels grandes, com a roupa embaixo. */
@@ -289,6 +341,7 @@ export function JogoTabuleiro({
     if (ultimo && ultimo.userId === userId && !chegou) return ultimo.caminho[Math.max(0, passo)];
     return p.pos;
   };
+  useSonsDoAndar(ultimo, animando ? passo : -1, chegou && (estado.fase === 'andando' || estado.fase === 'loja'));
 
   if (estado.terminada || estado.fase === 'fim') {
     // Só quem ficou até o fim tem posição e medalha (as mesmas dos troféus); quem saiu vem depois, sem posição. Na partida
@@ -375,7 +428,16 @@ export function JogoTabuleiro({
   return (
     <div className="tabuleiro-jogo">
       {placar}
-      <Tabuleiro estado={vista} posDe={posDe} />
+      <TabuleiroDaTurma3D
+        dados={{
+          casas: vista.casas,
+          pecas: vista.participantes.map((p, i) => ({ userId: p.userId, pos: posDe(p.userId), ...coresDe3D(p.avatar, i), vez: p.userId === estado.vez, presente: p.presente })),
+          dourada: vista.dourada,
+          andando: ultimo && (estado.fase === 'andando' || estado.fase === 'loja') ? { id: ultimo.id, userId: ultimo.userId, dado: ultimo.dado } : null,
+          efeitos: chegou && estado.fase === 'andando' ? efeitosNaCena(ultimo, estado.participantes) : [],
+        }}
+        reserva={<Tabuleiro estado={vista} posDe={posDe} />}
+      />
       <div className="tab-vez" aria-live="polite">
         {estado.fase === 'vez' && (
           <>
