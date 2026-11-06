@@ -17,6 +17,8 @@ const ARQUIVO = {
   /** Um adversário do computador. */
   robo: 'userRobot',
   pausa: 'pause',
+  /** De volta ao último posto (as quedas da Gincana da toca). */
+  voltar: 'return',
 } as const;
 
 export type NomeDoIconeDeHud = keyof typeof ARQUIVO;

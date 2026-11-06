@@ -43,6 +43,8 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
       return <CapaBarco />;
     case 'carrinhos':
       return <CapaCarrinhos />;
+    case 'gincana':
+      return <CapaGincana />;
     case 'chefe':
       return <CapaChefe />;
     case 'duelo':
@@ -1184,6 +1186,72 @@ function CapaBarco() {
         <rect x="-3" y="5" width="6" height="5" fill="#f07a2a" />
         <circle cx="0" cy="-5" r="4.5" fill="#f2ecf7" />
         <path d="M-2 -9 L-3 -17 M2 -9 L3 -17" stroke="#f2ecf7" strokeWidth="2.4" strokeLinecap="round" />
+      </g>
+    </svg>
+  );
+}
+
+/**
+ * A Gincana da toca: o céu, o mar lá embaixo, as plataformas azuis sobre pilares indo para longe, o varredor girando, a serra,
+ * o coelho no meio do pulo e a bandeira de chegada no fim.
+ */
+function CapaGincana() {
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#a8dcf5" />
+      <rect y="92" width="160" height="28" fill="#4fa9d9" />
+      <path d="M0 96 Q20 93 40 96 T80 96 T120 96 T160 96" fill="none" stroke="#8fd0ef" strokeWidth="1.2" />
+      {/* as nuvens */}
+      <g fill="#ffffff" opacity="0.9">
+        <ellipse cx="28" cy="20" rx="14" ry="6" />
+        <ellipse cx="38" cy="17" rx="9" ry="6" />
+        <ellipse cx="126" cy="28" rx="16" ry="6" />
+        <ellipse cx="136" cy="24" rx="9" ry="6" />
+      </g>
+      {/* a plataforma do fundo, com a bandeira de chegada */}
+      <rect x="94" y="44" width="4" height="50" fill="#c9cfd6" />
+      <path d="M84 44 L112 44 L108 38 L88 38 Z" fill="#5bc46a" />
+      <rect x="84" y="44" width="28" height="3" fill="#3d9a4c" />
+      <path d="M90 38 v-16 M106 38 v-16" stroke="#8d96a1" strokeWidth="1.6" />
+      <rect x="90" y="20" width="16" height="6" fill="#ffffff" stroke="#2a2a2a" strokeWidth="0.6" />
+      {[0, 1, 2, 3].map((i) => (
+        <rect key={i} x={90 + i * 4} y={i % 2 ? 23 : 20} width="2" height="3" fill="#2a2a2a" />
+      ))}
+      {/* a do meio, com o varredor */}
+      <rect x="58" y="64" width="5" height="30" fill="#c9cfd6" />
+      <path d="M40 64 L82 64 L76 56 L46 56 Z" fill="#4db4ef" />
+      <rect x="40" y="64" width="42" height="4" fill="#2f8fcc" />
+      <rect x="59" y="52" width="3" height="6" fill="#f07a2a" />
+      <g transform="rotate(-14 60 52)">
+        {[-1, 1].map((d) => (
+          <g key={d}>
+            {[0, 1, 2, 3].map((i) => (
+              <rect key={i} x={d > 0 ? 62 + i * 4 : 54 - i * 4} y="50" width="4" height="4" rx="1" fill={i % 2 ? '#ffffff' : '#4db4ef'} />
+            ))}
+          </g>
+        ))}
+      </g>
+      {/* a da frente, com a serra */}
+      <rect x="30" y="98" width="6" height="22" fill="#c9cfd6" />
+      <rect x="118" y="98" width="6" height="22" fill="#c9cfd6" />
+      <path d="M4 98 L156 98 L140 84 L20 84 Z" fill="#4db4ef" />
+      <rect x="4" y="98" width="152" height="5" fill="#2f8fcc" />
+      <g transform="translate(116 88)">
+        <ellipse cx="0" cy="0" rx="12" ry="3.6" fill="#a9b2bc" />
+        {Array.from({ length: 12 }, (_, i) => {
+          const a = (i / 12) * Math.PI * 2;
+          return <path key={i} d={`M${Math.cos(a) * 11} ${Math.sin(a) * 3.3} l${Math.cos(a + 0.6) * 3} ${Math.sin(a + 0.6) * 1}`} stroke="#7d8791" strokeWidth="1.4" />;
+        })}
+        <ellipse cx="0" cy="0" rx="3" ry="1" fill="#5d6670" />
+      </g>
+      {/* o coelho no meio do pulo, com o arco do pulo */}
+      <path d="M34 84 Q46 56 62 52" fill="none" stroke="#ffffff" strokeWidth="1.2" strokeDasharray="2 3" opacity="0.9" />
+      <g transform="translate(44 66)">
+        <ellipse cx="0" cy="4" rx="5.5" ry="6" fill="#3d7fd6" />
+        <circle cx="0" cy="-4" r="5" fill="#f2ecf7" />
+        <path d="M-2 -8 L-4 -17 M2 -8 L4 -17" stroke="#f2ecf7" strokeWidth="2.6" strokeLinecap="round" />
+        <circle cx="-1.6" cy="-4.5" r="0.8" fill="#2a2a2a" />
+        <circle cx="1.6" cy="-4.5" r="0.8" fill="#2a2a2a" />
       </g>
     </svg>
   );

@@ -33,6 +33,7 @@ import type { EstadoChefe } from './chefe/regras';
 import { JogoCozinha, type EstadoCozinha } from './JogoCozinha';
 import { JogoSkate, type EstadoSkate } from './JogoSkate';
 import { JogoCarrinhos, type EstadoCarrinhos } from './JogoCarrinhos';
+import { EscolhaDoPercurso, JogoGincana, type EstadoGincana } from './JogoGincana';
 import { JogoTransito, type EstadoTransito } from './JogoTransito';
 import { EscolhaDaPonte, JogoPonte, type EstadoPonte } from './JogoPonte';
 import { JogoLobisomem } from './JogoLobisomem';
@@ -333,6 +334,13 @@ export function PainelDoMinijogo({
           aoVoltar={() => setEscolhendo(null)}
         />
       )}
+      {/* A Gincana da toca na sala: o percurso da turma (no Solo, a escolha fica dentro do jogo, com os recordes de cada um). */}
+      {!partida && escolhendo === 'gincana' && (
+        <EscolhaDoPercurso
+          aoEscolher={(percurso) => tentar(() => aoComecar('gincana', { percurso }, false).then(() => setEscolhendo(null)))}
+          aoVoltar={() => setEscolhendo(null)}
+        />
+      )}
       {!partida && escolhendo === 'balao' && (
         <EscolhaDaArena
           aoEscolher={(arena) => tentar(() => aoComecar('balao', { arena }, false).then(() => setEscolhendo(null)))}
@@ -416,7 +424,7 @@ export function PainelDoMinijogo({
                       ? aba === 'solo'
                         ? setPulando(true)
                         : setEscolhendo('plataforma')
-                    : (jogo.id === 'balao' || jogo.id === 'jato' || jogo.id === 'barco' || jogo.id === 'torre') && aba === 'coletivo'
+                    : (jogo.id === 'balao' || jogo.id === 'jato' || jogo.id === 'barco' || jogo.id === 'torre' || jogo.id === 'gincana') && aba === 'coletivo'
                       ? setEscolhendo(jogo.id)
                     : jogo.id === 'briga' || jogo.id === 'ponte' || jogo.id === 'tabuleiro' || jogo.id === 'cidades' || (aba === 'solo' && ROBOS_NO_SOLO[jogo.id]) || pedeCategoria(jogo.id, aba === 'solo')
                       ? setEscolhendo(jogo.id)
@@ -602,6 +610,18 @@ export function PainelDoMinijogo({
       )}
       {jogoNaTela?.jogo === 'transito' && (
         <JogoTransito key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')} estado={jogoNaTela as unknown as EstadoTransito & Partida} eu={eu} jogador={souJogador(partida)} agir={agir} />
+      )}
+      {jogoNaTela?.jogo === 'gincana' && (
+        <JogoGincana
+          key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
+          estado={jogoNaTela as unknown as EstadoGincana & Partida}
+          eu={eu}
+          jogador={souJogador(partida)}
+          restante={restante}
+          agir={agir}
+          socket={socket}
+          channelId={channelId}
+        />
       )}
       {jogoNaTela?.jogo === 'carrinhos' && (
         <JogoCarrinhos

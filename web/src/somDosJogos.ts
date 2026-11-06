@@ -31,6 +31,9 @@ export type Efeito =
   | 'combo'
   | 'chegada'
   | 'derrapa'
+  | 'serra'
+  | 'empurrao'
+  | 'bandeira'
   | 'encaixe'
   | 'rangido'
   | 'quebra'
@@ -188,6 +191,21 @@ export function tocar(efeito: Efeito) {
     case 'derrapa':
       ruido(a, 0.16, 2600, 0.35, 0, 'bandpass');
       nota(a, 'sawtooth', 1500, 1100, 0.14, 0.08);
+      break;
+    // a Gincana da toca (06/11/2026): a serra que pega (o zunido metálico), o empurrão do varredor ou da bala (o tum de borracha)
+    // e a bandeira alcançada (duas notas subindo)
+    case 'serra':
+      nota(a, 'sawtooth', 1800, 900, 0.18, 0.12);
+      ruido(a, 0.12, 5000, 0.35, 0, 'highpass');
+      nota(a, 'triangle', 420, 120, 0.3, 0.45, 0.06);
+      break;
+    case 'empurrao':
+      nota(a, 'sine', 240, 90, 0.16, 0.8);
+      ruido(a, 0.05, 900, 0.5);
+      break;
+    case 'bandeira':
+      nota(a, 'triangle', 784, 784, 0.1, 0.45);
+      nota(a, 'triangle', 1175, 1175, 0.22, 0.45, 0.09);
       break;
     // a Ponte da toca (06/11/2026): a peça que encaixa (um toc de madeira), a ponte que range sob o peso e a que quebra
     case 'encaixe':
