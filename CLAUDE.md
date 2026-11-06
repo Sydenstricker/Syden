@@ -1657,6 +1657,34 @@ qual — o sinal de que havia escolha demais. O que saiu, e por quê:
 medir e decidir sozinho. Quase sempre consegue — e uma escolha que ninguém entende vira o relato
 "um modo deu problema e não sei qual".
 
+## Desempenho: o Electron fica, e sem foco nada se mexe
+
+**Avaliado em 06/11/2026, a pedido dele, depois de o Discord anunciar a troca do Electron por um app em Rust (GPUI, sem
+navegador embutido; a primeira versão de teste com ~290 MB contra até 4 GB do atual, sem data).** Para o Syden, NÃO: seria
+reescrever a interface inteira (a conversa, as chamadas, o quarto e o salão, os 100+ jogos em three.js e canvas, os 80 idiomas
+com RTL) e manter duas, porque o site no navegador continua. O GPUI é de um editor de texto, e o problema que o Discord tinha
+(4 GB) o Syden não tem. Se um dia pesar, o caminho é trocar a casca, nunca a interface.
+
+**Medido no mesmo dia, nesta máquina (Ryzen 7 3700X, 16 núcleos, 32 GB), com o Discord aberto ao lado:** parados, o Syden
+instalado usava 602 MB e o Discord 964 MB (a página do Discord sozinha, 469 MB), e no disco 405 MB contra 544 MB. Mas o
+processador perdia: 1,1% da máquina contra 0,1%, com o Syden ATRÁS do VS Code. As causas eram as animações que nunca paravam:
+o brilho da capa (que mexia no `left` e repintava a cada quadro) e as animações DENTRO dos SVGs dos avatares do mascote, que a
+página não pausa. **A regra que ficou: sem foco ou escondida, nada se mexe** (`web/src/janelaComFoco.ts`: a marca
+`janela-sem-foco` pausa toda animação de CSS, e o avatar troca para `avatar-*-parado.svg`, gerado pelo exportador do mascote).
+Medido: o canal de texto, sem foco, de 15%/19% (página/placa, de um núcleo) para ~0%. Animação nova de CSS já obedece; animação
+em canvas ou em SVG dentro de `<img>` precisa olhar `useJanelaComFoco()` ou `document.hasFocus()`, como o quarto e os jogos.
+
+**Com a janela À VISTA, os coelhos continuam vivos** (decisão dele, mesmo dia): a regra do GIF ("anima só sob o mouse") era
+contra o pisca-pisca, e o mascote vivo é a imersão do ambiente. O custo (~14% de um núcleo na página e ~22% na placa com
+dezenas de avatares na lista) é aceito, porque só existe enquanto a pessoa olha o Syden, e não enquanto joga.
+
+**Na chamada (medido no mesmo dia, o app de desenvolvimento com uma segunda pessoa, chamada cifrada):** com a janela à vista,
+~1 núcleo (6% da máquina); sem foco, ~⅓ de núcleo (2%). O maior gasto fixo é a SUPRESSÃO DE RUÍDO (o processo `NodeService`):
+20 a 37% de um núcleo o tempo todo. Assistir a 1080p em VP8 decodificado pelo processador (o pior caso: quem transmite sem
+codificador na placa) custou ~1,8 núcleo (11%); com H.264 pela placa deve ser menos. A transmissão não foi medida de verdade (o
+"jogo" do teste é desenhado pelo processador, e capturar a tela real só com o pedido dele). Os scripts da medida ficaram no
+scratchpad da sessão (`medir-por-processo.ps1` separa os processos pelo `--type=` do Chromium).
+
 ## Fonte de terceiro: embutir é REDISTRIBUIR, e quase nenhuma "grátis" permite isso
 
 **Decidido em 02/10/2026, depois de medir — e a medição derrubou a fonte que ele queria usar.**
