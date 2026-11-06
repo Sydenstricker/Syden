@@ -47,7 +47,7 @@ async function jogar(pagina, bem) {
   const palco = pagina.locator('.festa-palco');
   await palco.waitFor({ timeout: 15000 });
   const classe = (await pagina.locator('.festa').getAttribute('class')) ?? '';
-  const micro = classe.match(/festa-jogo-(saque|forca|relogio|copos|siga|alvo)/)?.[1];
+  const micro = classe.match(/festa-jogo-([a-z0-9]+)/)?.[1];
   if (micro === 'saque') {
     if (!bem) return pagina.locator('.festa-saque').dispatchEvent('pointerdown');
     await pagina.locator('.festa-saque.sinal').waitFor({ timeout: 10000 });

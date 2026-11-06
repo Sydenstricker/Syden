@@ -300,7 +300,8 @@ export interface EstadoPalavra {
 }
 
 /** A Festa dos coelhos (server/src/minijogo-festa.ts): 5 rodadas, um microjogo sorteado em cada. */
-export type Microjogo = 'saque' | 'forca' | 'relogio' | 'copos' | 'siga' | 'alvo';
+/** O id de um microjogo da Festa: os ids saem dos registros (server/src/festa/registro.ts e web/src/festa/registro.ts). */
+export type Microjogo = string;
 
 export interface LinhaDaFesta {
   userId: number;
@@ -318,17 +319,19 @@ export interface EstadoFesta {
   rodadas: number;
   microjogo: Microjogo;
   /** Os dados prontos do microjogo (as trocas dos copos, as setas, os alvos…), iguais para todos. */
-  dados: {
+  dados: ({
     periodoMs?: number;
     inicial?: number;
     trocas?: [number, number][];
     passos?: number[];
     setas?: number[];
     alvos?: { t: number; casa: number }[];
-  } | null;
+  } & Record<string, unknown>) | null;
   duracaoMs: number;
   /** O saque: o sinal já saiu. */
   sinal: boolean;
+  /** Há quanto tempo o 'jogando' começou, para quem recarrega no meio (a flor, o saque). */
+  jogandoHaMs?: number | null;
   meu: { motivo: LinhaDaFesta['motivo']; valor: number | null } | null;
   prontos: number[];
   jogadores: { userId: number; username: string }[];

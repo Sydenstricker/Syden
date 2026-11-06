@@ -5,6 +5,7 @@
 import assert from 'node:assert/strict';
 import { after, test } from 'node:test';
 import { comToken, criarConta, servidorDeTeste } from './ajuda.js';
+import { jogadaHonesta } from './festa-ajuda.js';
 
 const { app, fechar } = await servidorDeTeste();
 const festaMod = await import('../src/minijogo-festa.js');
@@ -265,13 +266,16 @@ test('a partida inteira: 5 rodadas sem repetir, o placar somado, e o troféu do 
     } else if (micro === 'siga') {
       agora += 5000;
       jogo.acao(anaId, { tipo: 'resultado', acertos: 1, setas: [(d as { setas: number[] }).setas[0]] });
-    } else {
+    } else if (micro === 'alvo') {
       agora += (d as { alvos: { t: number }[] }).alvos[0].t + 100;
       jogo.acao(anaId, { tipo: 'acerto', i: 0 });
       jogo.acao(anaId, { tipo: 'resultado' });
+    } else {
+      // os microjogos de festa/ (05/11/2026): cada um sabe a sua jogada honesta
+      jogadaHonesta(micro as string, jogo, anaId, { andar: m.andar, avancar: (ms) => (agora += ms) });
     }
-    // a Bia não respondeu: o relógio fecha a rodada
-    if (jogo.publico(anaId).fase === 'jogando') m.andar();
+    // a Bia não respondeu: o relógio fecha a rodada (a flor anda figura a figura)
+    while (jogo.publico(anaId).fase === 'jogando') m.andar();
     assert.equal(jogo.publico(anaId).fase, 'revelando');
     assert.equal(m.relogio[0].ms, REVELACAO_MS);
     const linhas = jogo.publico(anaId).linhas as Linha[];
