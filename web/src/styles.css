@@ -11905,18 +11905,29 @@ body.arrastando-barra {
   position: absolute;
   top: -50%;
   bottom: -50%;
+  left: -60%;
   width: 45%;
   background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.16) 45%, rgba(255, 255, 255, 0.28) 50%, transparent);
   transform: skewX(-18deg);
   animation: capa-brilho 8s ease-in-out infinite;
 }
 
+/* POR TRANSFORM, E NÃO POR `left` (06/11/2026, medido): mexer no `left` refazia a pintura a cada quadro, para sempre; o
+   transform só desliza a camada pronta. O caminho é o mesmo: de -60% a 115% da capa = 175% dela, que são ~389% da largura do
+   próprio brilho (45%). */
 @keyframes capa-brilho {
   /* O brilho passa e some; os dois terços parados no fim são o que separa "enfeite" de "pisca-pisca". */
-  0% { left: -60%; opacity: 0; }
+  0% { transform: translateX(0) skewX(-18deg); opacity: 0; }
   12% { opacity: 1; }
-  42% { left: 115%; opacity: 0; }
-  100% { left: 115%; opacity: 0; }
+  42% { transform: translateX(389%) skewX(-18deg); opacity: 0; }
+  100% { transform: translateX(389%) skewX(-18deg); opacity: 0; }
+}
+
+/* SEM FOCO, NADA SE MEXE: a janela atrás de um jogo não gasta placa nem processador com enfeite (a marca vem de main.tsx). */
+.janela-sem-foco *,
+.janela-sem-foco *::before,
+.janela-sem-foco *::after {
+  animation-play-state: paused !important;
 }
 
 /* A prévia nas Configurações: a mesma capa, num quadro de verdade em vez de encostada no cabeçalho. */

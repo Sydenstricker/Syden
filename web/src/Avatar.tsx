@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { mediaUrl } from './api';
 import { useDirectory } from './directory';
 import type { PresenceStatus } from './types';
+import { useJanelaComFoco } from './janelaComFoco';
 
 /**
  * O coelho em cada status — o mascote, e não o D4 (decisão de 05/10/2026). Cada status é um SVG
@@ -21,11 +22,14 @@ const POSE: Record<PresenceStatus, string> = {
 };
 
 function AvatarCoelho({ pose }: { pose: string }) {
+  // Sem foco, o mesmo desenho parado (avatar-*-parado.svg, do exportador): a animação dentro do SVG não se pausa de fora, e
+  // dezenas delas na lista de membros repintavam sem parar com a janela atrás de um jogo (medido em 06/11/2026).
+  const comFoco = useJanelaComFoco();
   return (
     <img
       className="avatar-coelho"
       data-status={pose}
-      src={`${import.meta.env.BASE_URL}mascote/avatar-${pose}.svg`}
+      src={`${import.meta.env.BASE_URL}mascote/avatar-${pose}${comFoco ? '' : '-parado'}.svg`}
       alt=""
       aria-hidden="true"
       draggable={false}

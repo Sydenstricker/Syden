@@ -150,6 +150,18 @@ for (const [nome, svg] of Object.entries(svgs)) {
   if (SO_DENTRO_DA_PAGINA.has(nome)) continue;
   writeFileSync(PASTA + nome + '.svg', svg.replace('<svg ', AVISO + '\n<svg ') + '\n');
   console.log(`  web/public/mascote/${nome}.svg`.padEnd(44) + `${(svg.length / 1024).toFixed(1)} KB`);
+  // O AVATAR PARADO (06/11/2026, medido): o mesmo desenho com o "menos movimento" sempre ligado, para a janela sem foco. A
+  // animação dentro de um SVG em <img> repinta sem parar, e a página não tem como pausá-la; com dezenas de pessoas na lista
+  // de membros, isso custava ~13% de um núcleo com ninguém olhando. web/src/Avatar.tsx troca para este enquanto a janela
+  // está sem foco (janelaComFoco.ts).
+  if (nome.startsWith('avatar-')) writeFileSync(PASTA + nome + '-parado.svg', paradoDoAvatar(svg.replace('<svg ', AVISO + '\n<svg ')) + '\n');
+}
+
+/** O "menos movimento" do próprio desenho, sem a condição: as animações param no desenho de repouso. */
+export function paradoDoAvatar(svg) {
+  const regra = '@media (prefers-reduced-motion: reduce) { * { animation: none !important; } }';
+  if (!svg.includes(regra)) throw new Error('o avatar perdeu a regra do menos movimento: ' + svg.slice(0, 80));
+  return svg.replace(regra, '* { animation: none !important; }');
 }
 
 trocarEntreMarcadores('web/index.html', 'introducao', AVISO + '\n' + prefixar(svgs.introducao, 'ab-'));
