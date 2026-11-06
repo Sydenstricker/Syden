@@ -973,6 +973,11 @@ if (CENA === 'salao') document.body.classList.add('salao');
       const d = mapa(k % W, (k / W) | 0);
       if (d < 0) continue;
       naJanela[d] = 1;
+      // O QUE ESTÁ PENDURADO NA FRENTE DA JANELA NÃO É VIDRO (relato dele, 06/11/2026: "o troféu está com mancha"): a
+      // paisagem é escrita em todo pixel de vidro na montagem da cena, depois dos objetos da parede, e aparecia por dentro da
+      // taça dourada posta na frente da janela (azul de noite, verde de dia). As pinturas da cortina e da janela aberta já
+      // levam os objetos da parede por cima; só a vista escapava.
+      if (naParede[d]) continue;
       if (emVidro) { vidro[d * 4 + 3] = 255; origemDoVidro[d] = k; }
       if (ab || emVao || emVA) noCaixilho[d] = 1;
       if (emVao) { vao[d] = 1; origemDoVidro[d] = k; }
