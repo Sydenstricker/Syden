@@ -1,0 +1,51 @@
+/* A TORRE DO CELEIRO (05/11/2026, JogoTorre.tsx): a escolha da torre com as miniaturas de pé. A tela da subida usa as
+   classes da corrida e do Pulo (corrida-tela, pulo-placar, pulo-toque, corrida-fim), que já seguem o tema. */
+.torre {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.torre-torres {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  gap: 8px;
+}
+
+.torre-botao {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px;
+  border-radius: 10px;
+  border: 2px solid var(--border);
+  background: var(--bg-raised);
+  color: inherit;
+  cursor: pointer;
+  text-align: center;
+}
+
+.torre-botao:hover,
+.torre-botao:focus-visible {
+  border-color: var(--accent);
+}
+
+.torre-botao.escolhida {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent) inset;
+}
+
+.torre-miniatura {
+  display: block;
+  width: 36px;
+  height: auto;
+  max-height: 96px;
+  object-fit: contain;
+  border-radius: 3px;
+  image-rendering: pixelated;
+}

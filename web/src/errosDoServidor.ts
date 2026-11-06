@@ -90,6 +90,12 @@ export const ERROS_TRADUZIDOS = [
   chave('Muitas corridas seguidas. Tente de novo daqui a pouco.'),
   chave('A corrida não está andando.'),
   chave('A corrida está andando.'),
+  // a Torre do celeiro (server/src/minijogo-torre.ts)
+  chave('Torre desconhecida.'),
+  chave('Subida inválida.'),
+  chave('A subida está andando.'),
+  chave('A subida não está andando.'),
+  chave('Você não está nesta subida.'),
   chave('Você não está nesta corrida.'),
   chave('Pista desconhecida.'),
   chave('Fantasma não encontrado.'),

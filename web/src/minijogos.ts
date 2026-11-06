@@ -510,7 +510,7 @@ export interface EstadoBriga {
   partidaId: string;
 }
 
-export type IdDoJogo = 'corrida' | 'festa' | 'tabuleiro' | 'cidades' | 'golfe' | 'caca' | 'nave' | 'balao' | 'jato' | 'barco' | 'chefe' | 'duelo' | 'plataforma' | 'blocos' | 'briga' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'damas' | 'naval' | 'domino' | 'truco' | 'xadrez' | 'partida-de-xadrez' | 'cozinha' | 'skate' | 'futebol' | 'golfe3d' | 'tocas' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
+export type IdDoJogo = 'corrida' | 'festa' | 'tabuleiro' | 'cidades' | 'golfe' | 'caca' | 'nave' | 'balao' | 'jato' | 'barco' | 'chefe' | 'duelo' | 'torre' | 'plataforma' | 'blocos' | 'briga' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'damas' | 'naval' | 'domino' | 'truco' | 'xadrez' | 'partida-de-xadrez' | 'cozinha' | 'skate' | 'futebol' | 'golfe3d' | 'tocas' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
 
 /**
  * As duas abas da estante (pedido dele, 14/10/2026). SOLO: a partida é só de quem joga, começa sem convite, não ocupa
@@ -731,6 +731,14 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
     id: 'jato',
     nome: chave('Coelhos a jato'),
     dica: chave('Corrida de naves-cenoura numa pista suspensa, muito mais rápida que o kart. A energia é a vida e o turbo: bater na borda gasta, a faixa cor-de-rosa recarrega, e sair da pista é cair. No Solo, contra o relógio e os fantasmas dos amigos.'),
+    abas: ['solo', 'coletivo'],
+  },
+  {
+    // A subida vertical (JogoTorre.tsx, server/src/minijogo-torre.ts, server/src/torre.ts, web/src/torre/): a técnica do Pulo do
+    // coelho, em pé (a versão nossa de um minijogo de torre do Mario Party 3, pedido dele, 05/11/2026).
+    id: 'torre',
+    nome: chave('A torre do celeiro'),
+    dica: chave('Suba o celeiro por tábuas, fardos e vigas que se mexem até o cata-vento lá no alto, desviando das ferramentas que caem e dos corvos. No Solo, contra o relógio e os fantasmas dos amigos.'),
     abas: ['solo', 'coletivo'],
   },
   {

@@ -32,8 +32,8 @@ const PAGINAS = [
   {
     arquivo: 'privacidade.html',
     data: '5 de novembro de 2026',
-    resumo: '27ae7c2348e7020d',
-    traducao: { arquivo: 'en/privacy.html', data: 'November 5, 2026', resumo: 'ba434a2813dc2952' },
+    resumo: '010cb0719654be21',
+    traducao: { arquivo: 'en/privacy.html', data: 'November 5, 2026', resumo: 'cbaf53857d807aef' },
   },
 ];
 

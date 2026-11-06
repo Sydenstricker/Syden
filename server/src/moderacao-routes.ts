@@ -216,6 +216,7 @@ export function registerModeracaoRoutes(app: FastifyInstance, io: IOServer) {
           // os recordes dos Coelhos a jato, com o fantasma, e as maiores pontuações da Caça e da Esquadrilha (05/11/2026)
           coelhosAJato: db.jatosDe(eu.id),
           regataDaToca: db.barcosDe(eu.id),
+          torreDoCeleiro: db.torresDe(eu.id),
           recordeDaCaca: db.recordeDaCaca(eu.id),
           recordeDaEsquadrilha: db.recordeDaNave(eu.id),
           // quem entra no quarto, os convidados (ids) e o destaque da estante de troféus (ver trofeus-routes.ts)

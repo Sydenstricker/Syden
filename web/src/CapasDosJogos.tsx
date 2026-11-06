@@ -41,6 +41,8 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
       return <CapaChefe />;
     case 'duelo':
       return <CapaDuelo />;
+    case 'torre':
+      return <CapaTorre />;
     case 'cozinha':
       return <CapaCozinha />;
     case 'skate':
@@ -1032,6 +1034,41 @@ function CapaCozinha() {
       {[66, 80, 94].map((x, k) => (
         <path key={x} d={`M${x} 30 q -5 -7 0 -14 q 5 -7 0 -14`} fill="none" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" opacity={0.75 - k * 0.12} />
       ))}
+    </svg>
+  );
+}
+
+/** A torre do celeiro: o celeiro vermelho por dentro, tábuas e fardos subindo, o coelho pulando e o cata-vento lá no alto. */
+function CapaTorre() {
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#8fc6e8" />
+      <path d="M30 120 V30 L80 6 L130 30 V120 Z" fill="#b8423a" />
+      <path d="M40 120 V36 L80 16 L120 36 V120 Z" fill="#6e3a2a" />
+      {[0, 1, 2, 3, 4, 5].map((i) => (
+        <rect key={i} x="40" y={40 + i * 14} width="80" height="1.5" fill="#5a2e22" />
+      ))}
+      {/* as tábuas e o fardo */}
+      <rect x="46" y="104" width="36" height="5" fill="#d9a05a" />
+      <rect x="84" y="86" width="30" height="5" fill="#d9a05a" />
+      <rect x="50" y="66" width="18" height="12" fill="#e8c35a" stroke="#b8902e" strokeWidth="1" />
+      <rect x="76" y="50" width="32" height="5" fill="#d9a05a" />
+      {/* a pá caindo, com a marca embaixo */}
+      <g transform="translate(100 62) rotate(20)">
+        <rect x="-1" y="-10" width="2" height="12" fill="#8a6a44" />
+        <path d="M-4 2 H4 L3 8 H-3 Z" fill="#9aa4b0" />
+      </g>
+      <rect x="90" y="84" width="16" height="2" fill="#ffd34d" opacity="0.8" />
+      {/* o coelho pulando */}
+      <g transform="translate(64 92)">
+        <ellipse cx="0" cy="6" rx="6" ry="5" fill="#3f74d8" />
+        <circle cx="0" cy="-1" r="5" fill="#f2ecf7" />
+        <path d="M-2 -5 L-4 -13 M2 -5 L4 -13" stroke="#f2ecf7" strokeWidth="2.4" strokeLinecap="round" />
+      </g>
+      {/* o cata-vento */}
+      <rect x="79" y="-2" width="2" height="12" fill="#3a3a3a" />
+      <path d="M80 2 L92 0 L92 5 Z M80 2 L68 0 L68 5 Z" fill="#3a3a3a" />
+      <circle cx="80" cy="2" r="2" fill="#f0c93a" />
     </svg>
   );
 }
