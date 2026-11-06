@@ -685,8 +685,8 @@ estratégia (o pacote Ultimate Fantasy RTS do Quaternius, CC0, em glTF) é o pr�
   - **A Festa é plugável desde 05/11/2026** (`server/src/festa/` e `web/src/festa/`, o guia no topo de `registro.ts`): um par de
     arquivos por microjogo, e os lotes do Mario Party 3 entram pelos `loteN.ts`. Microjogo registrado entra no sorteio da Festa E do
     Tabuleiro da turma.
-  - **OS MINIJOGOS DO MARIO PARTY 3 (05/11/2026, pedido dele: "implemente os jogos das classes A, B e C"):** 51 microjogos novos na
-    Festa (10 → 61), em seis lotes (`loteN.ts`), cada um com robô, teste de servidor e a jogada honesta em
+  - **OS MINIJOGOS DO MARIO PARTY 3 (05/11/2026, pedido dele: "implemente os jogos das classes A, B e C"):** 37 microjogos novos na
+    Festa (10 → 47, contados no registro em 06/11/2026; o "51 → 61" anotado antes estava errado), em seis lotes (`loteN.ts`), cada um com robô, teste de servidor e a jogada honesta em
     `server/test/festa-loteN-ajuda.ts`. **Ficaram de fora, de propósito:** 2 do lote 5 (repetiam o canteiro) e 5 do lote 6
     (Spotlight Swim, Coconut Conk e Hand Line and Sinker por tempo; Crazy Cogs e River Raiders porque pedem um objeto da turma
     inteira ao vivo, ruim com 200 ms), e os três que já tínhamos (os dois de tiro no chefinho = Caça; o de blocos = Horta em
