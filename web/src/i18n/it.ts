@@ -2358,7 +2358,7 @@ export default {
   'Siga o coelho': 'Segui il coniglio',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Ripeti le frecce in ordine. A ogni risposta giusta ne arriva un\'altra.',
   'Tiro ao alvo': 'Tiro al bersaglio',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Colpisci le carote che spuntano. Ognuna vale un punto.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Colpisci i bersagli che spuntano. Ognuno vale un punto.',
   'Cedo demais!': 'Troppo presto!',
   'Não valeu': 'Non valido',
   'Sem resposta': 'Nessuna risposta',

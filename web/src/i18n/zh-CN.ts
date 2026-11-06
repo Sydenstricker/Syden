@@ -2346,7 +2346,7 @@ export default {
   'Siga o coelho': '跟着兔子',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': '按顺序重复箭头。每答对一次，就多一个。',
   'Tiro ao alvo': '打靶',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': '击中出现的胡萝卜。每个一分。',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': '击中出现的靶子。每个一分。',
   'Cedo demais!': '太早了！',
   'Não valeu': '不算',
   'Sem resposta': '未作答',

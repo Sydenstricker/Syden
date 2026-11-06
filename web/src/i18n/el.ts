@@ -2365,7 +2365,7 @@ export default {
   'Siga o coelho': 'Ακολούθησε το κουνέλι',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Επανέλαβε τα βέλη με τη σειρά. Με κάθε επιτυχία, έρχεται ένα ακόμα.',
   'Tiro ao alvo': 'Σκοποβολή',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Χτύπα τα καρότα που εμφανίζονται. Το καθένα αξίζει έναν πόντο.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Χτύπα τους στόχους που εμφανίζονται. Ο καθένας αξίζει έναν πόντο.',
   'Cedo demais!': 'Πολύ νωρίς!',
   'Não valeu': 'Δεν μέτρησε',
   'Sem resposta': 'Καμία απάντηση',

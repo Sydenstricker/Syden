@@ -2379,7 +2379,7 @@ export default {
   'Siga o coelho': 'تتبُّع الأرنب',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'المطلوب تكرار الأسهم بالترتيب. مع كل إصابة يُضاف سهم آخر.',
   'Tiro ao alvo': 'الرماية على الهدف',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'المطلوب إصابة الجزرات التي تظهر. كل واحدة بنقطة.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'المطلوب إصابة الأهداف التي تظهر. كل هدف بنقطة.',
   'Cedo demais!': 'مبكر جدًا!',
   'Não valeu': 'لم يُحتسب',
   'Sem resposta': 'بلا إجابة',

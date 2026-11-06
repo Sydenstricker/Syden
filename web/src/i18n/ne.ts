@@ -2431,7 +2431,7 @@ export default {
   'Siga o coelho': 'खरायोलाई पछ्याऊ',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'तीरहरू क्रमैसँग दोहोर्‍याऊ। हरेक सहीपछि अर्को एउटा थपिन्छ।',
   'Tiro ao alvo': 'निशानेबाजी',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'देखा पर्ने गाजरहरूमा हान। हरेकको एक अंक।',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'देखा पर्ने निशानाहरूमा हान। हरेकको एक अंक।',
   'Cedo demais!': 'धेरै चाँडो!',
   'Não valeu': 'गनिएन',
   'Sem resposta': 'उत्तर छैन',

@@ -2428,7 +2428,7 @@ export default {
   'Siga o coelho': 'Následuj králíka',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Zopakuj šipky v pořadí. Po každém správném zopakování přibude další.',
   'Tiro ao alvo': 'Střelba na terč',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Zasáhni mrkve, které se objeví. Každá má hodnotu jednoho bodu.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Zasáhni terče, které se objeví. Každý má hodnotu jednoho bodu.',
   'Cedo demais!': 'Příliš brzy!',
   'Não valeu': 'Neplatí',
   'Sem resposta': 'Bez odpovědi',

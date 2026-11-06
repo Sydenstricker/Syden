@@ -2439,7 +2439,7 @@ export default {
   'Siga o coelho': 'ރެބިޓް ފަހަތުން ދާ',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'ތީރުތައް ތަރުތީބުން އަލުން ކުރާ. ކޮންމެ ރަނގަޅު ޖަވާބަކާއެކު އިތުރު އެއްޗެއް އަންނާނެ.',
   'Tiro ao alvo': 'ނިޝާނަށް ބަޑިޖެހުން',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'ފާޅުވާ ކެރެޓްތަކަށް ޖަހާ. ކޮންމެ އެއްޗަކަށް އެއް ޕޮއިންޓު.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'ފާޅުވާ ނިޝާނުތަކަށް ޖަހާ. ކޮންމެ އެއްޗަކަށް އެއް ޕޮއިންޓު.',
   'Cedo demais!': 'ވަރަށް އަވަސް!',
   'Não valeu': 'ނުގުނޭ',
   'Sem resposta': 'ޖަވާބެއް ނެތް',

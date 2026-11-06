@@ -2425,7 +2425,7 @@ export default {
   'Siga o coelho': 'Segueix el conill',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Repeteix les fletxes en ordre. A cada encert, en ve una més.',
   'Tiro ao alvo': 'Tir al blanc',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Encerta les pastanagues que apareguin. Cadascuna val un punt.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Encerta els blancs que apareguin. Cadascun val un punt.',
   'Cedo demais!': 'Massa d\'hora!',
   'Não valeu': 'No ha comptat',
   'Sem resposta': 'Sense resposta',

@@ -2429,7 +2429,7 @@ export default {
   'Siga o coelho': 'හාවා පසුපස යන්න',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'ඊතල පිළිවෙළට නැවත කරන්න. හරි වන සෑම වරකම තවත් එකක් එකතු වේ.',
   'Tiro ao alvo': 'ඉලක්කයට වෙඩි තැබීම',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'පෙනෙන කැරට්වලට වදින්න. එකකට ලකුණක්.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'පෙනෙන ඉලක්කවලට වදින්න. එකකට ලකුණක්.',
   'Cedo demais!': 'කලින් වැඩියි!',
   'Não valeu': 'ගණන් නොගැනිණි',
   'Sem resposta': 'පිළිතුරක් නැත',

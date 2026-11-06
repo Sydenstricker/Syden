@@ -2359,7 +2359,7 @@ export default {
   'Siga o coelho': 'Ikut Arnab',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Ulang anak panah mengikut urutan. Setiap kali betul, datang satu lagi.',
   'Tiro ao alvo': 'Menembak Sasaran',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Tembak lobak merah yang muncul. Setiap satu bernilai satu mata.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Tembak sasaran yang muncul. Setiap satu bernilai satu mata.',
   'Cedo demais!': 'Terlalu awal!',
   'Não valeu': 'Tidak dikira',
   'Sem resposta': 'Tiada jawapan',

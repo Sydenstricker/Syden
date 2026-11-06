@@ -2341,7 +2341,7 @@ export default {
   'Siga o coelho': 'కుందేలును అనుసరించు',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'బాణాలను క్రమంలో మళ్లీ చేయి. ప్రతి సరైనదానికి మరొకటి వస్తుంది.',
   'Tiro ao alvo': 'లక్ష్యానికి కాల్పు',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'కనిపించే క్యారెట్లను కొట్టు. ఒక్కోదానికి ఒక పాయింట్.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'కనిపించే లక్ష్యాలను కొట్టు. ఒక్కోదానికి ఒక పాయింట్.',
   'Cedo demais!': 'చాలా ముందుగా!',
   'Não valeu': 'లెక్కలోకి రాలేదు',
   'Sem resposta': 'సమాధానం లేదు',

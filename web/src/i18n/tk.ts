@@ -2431,7 +2431,7 @@ export default {
   'Siga o coelho': 'Towşanyň yzyna eýer',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Peýkamlary tertibi boýunça gaýtala. Her dogrusynda ýene biri goşulýar.',
   'Tiro ao alvo': 'Nyşana atmak',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Peýda bolýan käşirlere ur. Her biri bir utuk.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Peýda bolýan nyşanalara ur. Her biri bir utuk.',
   'Cedo demais!': 'Gaty ir!',
   'Não valeu': 'Hasaba alynmady',
   'Sem resposta': 'Jogap ýok',

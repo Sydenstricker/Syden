@@ -2399,7 +2399,7 @@ export default {
   'Siga o coelho': 'Hilleensa hordofi',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Xiyyoota tartiibaan irra deebi\'i. Yeroo sirrii hunda, tokko dabalata.',
   'Tiro ao alvo': 'Dhukaasa kaayyoo',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Kaarotii mul\'atan rukuti. Tokkoon tokkoon isaanii qabxii tokko qaba.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Kaayyoowwan mul\'atan rukuti. Tokkoon tokkoon isaanii qabxii tokko qaba.',
   'Cedo demais!': 'Yeroon isaa hin geenye!',
   'Não valeu': 'Hin lakkaa\'amne',
   'Sem resposta': 'Deebii hin jiru',

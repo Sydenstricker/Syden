@@ -2358,7 +2358,7 @@ export default {
   'Siga o coelho': 'खरगोश के पीछे चलो',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'तीरों को क्रम से दोहराओ। हर सही जवाब पर एक और आता है।',
   'Tiro ao alvo': 'निशानेबाज़ी',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'जो गाजरें दिखें, उन पर निशाना लगाओ। हर एक का एक अंक है।',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'जो निशाने दिखें, उन पर निशाना लगाओ। हर एक का एक अंक है।',
   'Cedo demais!': 'बहुत जल्दी!',
   'Não valeu': 'नहीं गिना गया',
   'Sem resposta': 'कोई जवाब नहीं',

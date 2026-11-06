@@ -2356,7 +2356,7 @@ export default {
   'Siga o coelho': 'Ikuti Kelinci',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Ulangi panah sesuai urutan. Setiap kali benar, datang satu lagi.',
   'Tiro ao alvo': 'Tembak Sasaran',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Kenai wortel yang muncul. Masing-masing bernilai satu poin.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Kenai sasaran yang muncul. Masing-masing bernilai satu poin.',
   'Cedo demais!': 'Terlalu cepat!',
   'Não valeu': 'Tidak dihitung',
   'Sem resposta': 'Tidak ada jawaban',

@@ -2448,7 +2448,7 @@ export default {
   'Siga o coelho': 'Հետևիր ճագարին',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Կրկնիր սլաքները հերթականությամբ։ Ամեն ճիշտ պատասխանից հետո ևս մեկն է գալիս։',
   'Tiro ao alvo': 'Կրակոց թիրախին',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Խփիր հայտնվող գազարներին։ Յուրաքանչյուրն արժե մեկ միավոր։',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Խփիր հայտնվող թիրախներին։ Յուրաքանչյուրն արժե մեկ միավոր։',
   'Cedo demais!': 'Շատ շո՛ւտ է։',
   'Não valeu': 'Չհաշվվեց',
   'Sem resposta': 'Պատասխան չկա',

@@ -2428,7 +2428,7 @@ export default {
   'Siga o coelho': 'Prati zeca',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Ponovi strelice redom. Sa svakim pogotkom dolazi još jedna.',
   'Tiro ao alvo': 'Gađanje mete',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Pogodi mrkve koje se pojave. Svaka vrijedi jedan bod.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Pogodi mete koje se pojave. Svaka vrijedi jedan bod.',
   'Cedo demais!': 'Prerano!',
   'Não valeu': 'Ne vrijedi',
   'Sem resposta': 'Bez odgovora',

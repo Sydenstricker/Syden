@@ -2426,7 +2426,7 @@ export default {
   'Siga o coelho': 'Järgi jänest',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Korda nooli õiges järjekorras. Iga õige korra järel tuleb üks juurde.',
   'Tiro ao alvo': 'Märklaualaskmine',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Taba ilmuvaid porgandeid. Iga porgand annab ühe punkti.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Taba ilmuvaid märklaudu. Iga märklaud annab ühe punkti.',
   'Cedo demais!': 'Liiga vara!',
   'Não valeu': 'Ei läinud arvesse',
   'Sem resposta': 'Vastust pole',

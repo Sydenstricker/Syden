@@ -2421,7 +2421,7 @@ export default {
   'Siga o coelho': 'Ndiq lepurin',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Përsërit shigjetat me radhë. Me çdo goditje, vjen edhe një.',
   'Tiro ao alvo': 'Qitje në shenjë',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Godit karotat që shfaqen. Secila vlen një pikë.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Godit shenjat që shfaqen. Secila vlen një pikë.',
   'Cedo demais!': 'Shumë herët!',
   'Não valeu': 'Nuk vlen',
   'Sem resposta': 'Pa përgjigje',

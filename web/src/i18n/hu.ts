@@ -2431,7 +2431,7 @@ export default {
   'Siga o coelho': 'Kövesd a nyuszit',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Ismételd meg a nyilakat sorrendben. Minden sikeres kör után jön még egy.',
   'Tiro ao alvo': 'Célba lövés',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Találd el a felbukkanó répákat. Mindegyik egy pontot ér.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Találd el a felbukkanó céltáblákat. Mindegyik egy pontot ér.',
   'Cedo demais!': 'Túl korán!',
   'Não valeu': 'Nem számított',
   'Sem resposta': 'Nincs válasz',

@@ -2377,7 +2377,7 @@ export default {
   'Siga o coelho': 'Следуй за кроликом',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Повторяй стрелки по порядку. С каждым верным ответом добавляется ещё одна.',
   'Tiro ao alvo': 'Стрельба по мишеням',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Попадай по морковкам, которые появляются. Каждая — одно очко.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Попадай по мишеням, которые появляются. Каждая — одно очко.',
   'Cedo demais!': 'Слишком рано!',
   'Não valeu': 'Не засчитано',
   'Sem resposta': 'Нет ответа',

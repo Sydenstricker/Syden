@@ -2354,7 +2354,7 @@ export default {
   'Siga o coelho': 'Follow the bunny',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Repeat the arrows in order. Each time you get it right, one more comes.',
   'Tiro ao alvo': 'Target practice',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Hit the carrots that pop up. Each one is worth one point.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Hit the targets that pop up. Each one is worth one point.',
   'Cedo demais!': 'Too early!',
   'Não valeu': 'Didn\'t count',
   'Sem resposta': 'No answer',

@@ -2431,7 +2431,7 @@ export default {
   'Siga o coelho': 'Sek triušį',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Pakartok rodykles iš eilės. Po kiekvieno pataikymo atsiranda dar viena.',
   'Tiro ao alvo': 'Šaudymas į taikinį',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Pataikyk į pasirodančias morkas. Kiekviena verta vieno taško.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Pataikyk į pasirodančius taikinius. Kiekvienas vertas vieno taško.',
   'Cedo demais!': 'Per anksti!',
   'Não valeu': 'Neįskaityta',
   'Sem resposta': 'Nėra atsakymo',

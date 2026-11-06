@@ -2429,7 +2429,7 @@ export default {
   'Siga o coelho': 'Araho ny bitro',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Avereno araka ny filaharany ireo zana-tsipika. Isaky ny marina, misy iray hafa indray.',
   'Tiro ao alvo': 'Fitifirana kendrena',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Tifiro ireo karaoty miseho. Isa iray avy izy ireo.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Tifiro ireo kendrena miseho. Isa iray avy izy ireo.',
   'Cedo demais!': 'Aloha loatra!',
   'Não valeu': 'Tsy noraisina',
   'Sem resposta': 'Tsy misy valiny',

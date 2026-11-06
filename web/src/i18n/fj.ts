@@ -2358,7 +2358,7 @@ export default {
   'Siga o coelho': 'Muria na rabeti',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Vakayacora tale na vakatakilakila ni sala me vaka na kena ituvatuva. Ena veigauna kece o dodonu kina, e kuri tale e dua.',
   'Tiro ao alvo': 'Vanataki',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Vana na kareti era basika mai. Yadua e dua na veitaucoko.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Vana na ka me vanataki era basika mai. Yadua e dua na veitaucoko.',
   'Cedo demais!': 'Sa rui vakusakusa!',
   'Não valeu': 'E sega ni wili',
   'Sem resposta': 'Sega ni sauma',

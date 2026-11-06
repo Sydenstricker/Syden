@@ -2429,7 +2429,7 @@ export default {
   'Siga o coelho': 'Следи го зајакот',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Повтори ги стрелките по ред. Со секој погодок доаѓа уште една.',
   'Tiro ao alvo': 'Гаѓање цел',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Погоди ги морковите што ќе се појават. Секој вреди еден поен.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Погоди ги целите што ќе се појават. Секоја вреди еден поен.',
   'Cedo demais!': 'Прерано!',
   'Não valeu': 'Не важи',
   'Sem resposta': 'Без одговор',

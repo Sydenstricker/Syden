@@ -2430,7 +2430,7 @@ export default {
   'Siga o coelho': 'Landela unogwaja',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Phinda imicibisholo ngokulandelana. Njalo uma uphumelela, kufika omunye.',
   'Tiro ao alvo': 'Ukudubula ithagethi',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Shaya izanqante ezivelayo. Ngasinye siyiphuzu elilodwa.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Shaya amathagethi avelayo. Ngalinye liyiphuzu elilodwa.',
   'Cedo demais!': 'Kusheshe kakhulu!',
   'Não valeu': 'Akubalwanga',
   'Sem resposta': 'Ayikho impendulo',

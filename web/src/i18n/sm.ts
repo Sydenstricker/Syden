@@ -2363,7 +2363,7 @@ export default {
   'Siga o coelho': 'Mulimuli i le lapiti',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Toe fai aū i le faasologa. O taimi uma e te saʻo ai, e oʻo mai se tasi.',
   'Tiro ao alvo': 'Fana i le sini',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Fana kāloti e aliali mai. E tasi le togi i le tasi.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Fana sini e aliali mai. E tasi le togi i le tasi.',
   'Cedo demais!': 'Vave tele!',
   'Não valeu': 'E le faitaulia',
   'Sem resposta': 'Leai se tali',

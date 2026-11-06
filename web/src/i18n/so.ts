@@ -2429,7 +2429,7 @@ export default {
   'Siga o coelho': 'Raac bakaylaha',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Ku celi falaadhaha siday u kala horreeyaan. Mar kasta oo aad saxdo, mid kale ayaa imanaya.',
   'Tiro ao alvo': 'Toogashada bartilmaameedka',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Ku dhufo karootada soo baxda. Mid walba waa hal dhibic.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Ku dhufo bartilmaameedyada soo baxa. Mid walba waa hal dhibic.',
   'Cedo demais!': 'Waa goor hore!',
   'Não valeu': 'Lama tirin',
   'Sem resposta': 'Jawaab ma jirto',

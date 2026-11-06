@@ -2425,7 +2425,7 @@ export default {
   'Siga o coelho': 'Қоянның соңынан еріңіз',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Көрсеткілерді ретімен қайталаңыз. Әр дұрыс жауаптан кейін тағы біреуі қосылады.',
   'Tiro ao alvo': 'Нысанаға ату',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Пайда болған сәбіздерге тигізіңіз. Әрқайсысы бір ұпай.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Пайда болған нысаналарға тигізіңіз. Әрқайсысы бір ұпай.',
   'Cedo demais!': 'Тым ерте!',
   'Não valeu': 'Есептелмеді',
   'Sem resposta': 'Жауап жоқ',

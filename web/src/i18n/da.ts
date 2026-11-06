@@ -2423,7 +2423,7 @@ export default {
   'Siga o coelho': 'Følg kaninen',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Gentag pilene i rækkefølge. For hvert rigtigt svar kommer der én mere.',
   'Tiro ao alvo': 'Skydning på skive',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Ram de gulerødder, der dukker op. Hver giver ét point.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Ram de skiver, der dukker op. Hver giver ét point.',
   'Cedo demais!': 'For tidligt!',
   'Não valeu': 'Talte ikke',
   'Sem resposta': 'Intet svar',

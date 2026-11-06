@@ -2372,7 +2372,7 @@ export default {
   'Siga o coelho': 'ตามกระต่าย',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'กดลูกศรซ้ำตามลำดับ ถูกแต่ละครั้งจะเพิ่มอีกหนึ่ง',
   'Tiro ao alvo': 'ยิงเป้า',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'ยิงแครอทที่โผล่ขึ้นมา ลูกละหนึ่งคะแนน',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'ยิงเป้าที่โผล่ขึ้นมา เป้าละหนึ่งคะแนน',
   'Cedo demais!': 'เร็วเกินไป!',
   'Não valeu': 'ไม่นับ',
   'Sem resposta': 'ไม่มีคำตอบ',

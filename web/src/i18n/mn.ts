@@ -2443,7 +2443,7 @@ export default {
   'Siga o coelho': 'Туулайг дага',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Сумнуудыг дарааллаар нь давт. Зөв хийх бүрт нэг нэмэгдэнэ.',
   'Tiro ao alvo': 'Бай онох',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Гарч ирэх луувангуудыг оно. Тус бүр нэг оноо.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Гарч ирэх байнуудыг оно. Тус бүр нэг оноо.',
   'Cedo demais!': 'Хэтэрхий эрт!',
   'Não valeu': 'Тооцогдсонгүй',
   'Sem resposta': 'Хариугүй',

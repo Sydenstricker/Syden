@@ -2429,7 +2429,7 @@ export default {
   'Siga o coelho': 'Nasleduj zajaca',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Zopakuj šípky v poradí. S každým zásahom pribudne ďalšia.',
   'Tiro ao alvo': 'Streľba na terč',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Trafuj mrkvy, ktoré sa objavia. Každá má hodnotu jedného bodu.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Trafuj terče, ktoré sa objavia. Každý má hodnotu jedného bodu.',
   'Cedo demais!': 'Príliš skoro!',
   'Não valeu': 'Neplatí',
   'Sem resposta': 'Bez odpovede',

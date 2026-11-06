@@ -2439,7 +2439,7 @@ export default {
   'Siga o coelho': 'Swiv lapen an',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Repete flèch yo nan lòd. Chak fwa ou jwenn li, gen youn anplis ki vini.',
   'Tiro ao alvo': 'Tire sou sib',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Frape kawòt ki parèt yo. Chak grenn vo yon pwen.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Frape sib ki parèt yo. Chak grenn vo yon pwen.',
   'Cedo demais!': 'Twò bonè!',
   'Não valeu': 'Sa pa konte',
   'Sem resposta': 'Pa gen repons',

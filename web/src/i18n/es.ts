@@ -2354,7 +2354,7 @@ export default {
   'Siga o coelho': 'Sigue al conejo',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Repite las flechas en orden. Con cada acierto, llega una más.',
   'Tiro ao alvo': 'Tiro al blanco',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Dale a las zanahorias que aparezcan. Cada una vale un punto.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Dale a los blancos que aparezcan. Cada uno vale un punto.',
   'Cedo demais!': '¡Demasiado pronto!',
   'Não valeu': 'No contó',
   'Sem resposta': 'Sin respuesta',

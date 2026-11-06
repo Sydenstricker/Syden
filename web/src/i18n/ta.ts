@@ -2344,7 +2344,7 @@ export default {
   'Siga o coelho': 'முயலைப் பின்தொடர்',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'அம்புகளை வரிசைப்படி திரும்பச் செய். ஒவ்வொரு சரிக்கும் இன்னொன்று சேரும்.',
   'Tiro ao alvo': 'இலக்குச் சுடுதல்',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'தோன்றும் கேரட்டுகளை அடி. ஒவ்வொன்றுக்கும் ஒரு புள்ளி.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'தோன்றும் இலக்குகளை அடி. ஒவ்வொன்றுக்கும் ஒரு புள்ளி.',
   'Cedo demais!': 'மிக முன்னதாக!',
   'Não valeu': 'கணக்கில் இல்லை',
   'Sem resposta': 'பதில் இல்லை',

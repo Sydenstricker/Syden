@@ -2340,7 +2340,7 @@ export default {
   'Siga o coelho': 'うさぎについて行こう',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': '矢印を順番どおりにくり返そう。正解するたびに1つ増えます。',
   'Tiro ao alvo': '的あて',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': '出てくるにんじんを撃とう。1つにつき1ポイント。',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': '出てくる的を撃とう。1つにつき1ポイント。',
   'Cedo demais!': '早すぎ！',
   'Não valeu': 'ノーカウント',
   'Sem resposta': '回答なし',

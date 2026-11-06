@@ -2381,7 +2381,7 @@ export default {
   'Siga o coelho': 'Suis le lapin',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Répète les flèches dans l\'ordre. À chaque réussite, une de plus arrive.',
   'Tiro ao alvo': 'Tir à la cible',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Touche les carottes qui apparaissent. Chacune vaut un point.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Touche les cibles qui apparaissent. Chacune vaut un point.',
   'Cedo demais!': 'Trop tôt !',
   'Não valeu': 'Pas compté',
   'Sem resposta': 'Pas de réponse',

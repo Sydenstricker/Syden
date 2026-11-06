@@ -2358,7 +2358,7 @@ export default {
   'Siga o coelho': 'Mfuate sungura',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Rudia mishale kwa mpangilio. Kila ukipatia, unaongezewa mmoja.',
   'Tiro ao alvo': 'Kulenga shabaha',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Piga karoti zinazojitokeza. Kila moja ni pointi moja.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Piga shabaha zinazojitokeza. Kila moja ni pointi moja.',
   'Cedo demais!': 'Mapema mno!',
   'Não valeu': 'Haikuhesabiwa',
   'Sem resposta': 'Hakuna jibu',

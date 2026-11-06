@@ -2370,7 +2370,7 @@ export default {
   'Siga o coelho': 'Kurikira urukwavu',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Subiramo imyambi uko ikurikirana. Uko ubonye neza, hiyongeraho undi.',
   'Tiro ao alvo': 'Kurasa intego',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Rasa karoti zigaragara. Buri imwe ifite inota rimwe.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Rasa intego zigaragara. Buri imwe ifite inota rimwe.',
   'Cedo demais!': 'Kare cyane!',
   'Não valeu': 'Ntibyabazwe',
   'Sem resposta': 'Nta gisubizo',

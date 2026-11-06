@@ -2429,7 +2429,7 @@ export default {
   'Siga o coelho': 'Seuraa kania',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Toista nuolet järjestyksessä. Jokaisen onnistumisen jälkeen tulee yksi lisää.',
   'Tiro ao alvo': 'Maaliinammunta',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Osu esiin tuleviin porkkanoihin. Jokainen on yhden pisteen arvoinen.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Osu esiin tuleviin maalitauluihin. Jokainen on yhden pisteen arvoinen.',
   'Cedo demais!': 'Liian aikaisin!',
   'Não valeu': 'Ei laskettu',
   'Sem resposta': 'Ei vastausta',

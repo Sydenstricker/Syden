@@ -2421,7 +2421,7 @@ export default {
   'Siga o coelho': 'Följ kaninen',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Upprepa pilarna i ordning. För varje rätt kommer en till.',
   'Tiro ao alvo': 'Målskytte',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Träffa morötterna som dyker upp. Varje morot är värd en poäng.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Träffa måltavlorna som dyker upp. Varje tavla är värd en poäng.',
   'Cedo demais!': 'För tidigt!',
   'Não valeu': 'Räknades inte',
   'Sem resposta': 'Inget svar',

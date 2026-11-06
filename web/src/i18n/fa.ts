@@ -2347,7 +2347,7 @@ export default {
   'Siga o coelho': 'خرگوش را دنبال کنید',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'فلش‌ها را به ترتیب تکرار کنید. با هر جواب درست، یکی دیگر اضافه می‌شود.',
   'Tiro ao alvo': 'تیراندازی به هدف',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'هویج‌هایی را که ظاهر می‌شوند بزنید. هر کدام یک امتیاز دارد.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'هدف‌هایی را که ظاهر می‌شوند بزنید. هر کدام یک امتیاز دارد.',
   'Cedo demais!': 'خیلی زود!',
   'Não valeu': 'حساب نشد',
   'Sem resposta': 'بی‌پاسخ',

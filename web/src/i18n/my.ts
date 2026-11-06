@@ -2398,7 +2398,7 @@ export default {
   'Siga o coelho': 'ယုန်နောက်လိုက်ပါ',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'မြှားများကို အစဉ်အတိုင်း ပြန်လုပ်ပါ။ မှန်တိုင်း နောက်ထပ်တစ်ခု ထပ်လာမည်။',
   'Tiro ao alvo': 'ပစ်မှတ်ပစ်',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'ပေါ်လာသော မုန်လာဥနီများကို ပစ်ပါ။ တစ်ခုလျှင် တစ်မှတ်။',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'ပေါ်လာသော ပစ်မှတ်များကို ပစ်ပါ။ တစ်ခုလျှင် တစ်မှတ်။',
   'Cedo demais!': 'စောလွန်းသည်!',
   'Não valeu': 'မရေတွက်ပါ',
   'Sem resposta': 'အဖြေမရှိ',

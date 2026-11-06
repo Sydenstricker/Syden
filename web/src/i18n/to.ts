@@ -2365,7 +2365,7 @@ export default {
   'Siga o coelho': 'Muimui ʻi he lāpisi',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Toe fai ʻa e ngaahi ngahau ʻo hangē ko hono hokohoko. ʻI he tonu kotoa pē, ʻoku toe haʻu ha taha.',
   'Tiro ao alvo': 'Fana ki he taumuʻa',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Fana ʻa e ngaahi kāloti ʻoku hā mai. ʻOku poini ʻe taha ʻa e taha kotoa.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Fana ʻa e ngaahi taumuʻa ʻoku hā mai. ʻOku poini ʻe taha ʻa e taha kotoa.',
   'Cedo demais!': 'Vave fau!',
   'Não valeu': 'Naʻe ʻikai lau',
   'Sem resposta': 'ʻIkai ha tali',

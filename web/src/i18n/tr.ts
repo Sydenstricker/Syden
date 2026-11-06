@@ -2353,7 +2353,7 @@ export default {
   'Siga o coelho': 'Tavşanı Takip Et',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Okları sırayla tekrarla. Her doğru tahminde bir tane daha gelir.',
   'Tiro ao alvo': 'Hedef Atışı',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Beliren havuçları vur. Her biri bir puan.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Beliren hedefleri vur. Her biri bir puan.',
   'Cedo demais!': 'Çok erken!',
   'Não valeu': 'Sayılmadı',
   'Sem resposta': 'Cevap yok',

@@ -2346,7 +2346,7 @@ export default {
   'Siga o coelho': 'خرگوش کے پیچھے چلیں',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'تیروں کو ترتیب سے دہرائیں۔ ہر درست جواب پر ایک اور آتا ہے۔',
   'Tiro ao alvo': 'نشانہ بازی',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'ظاہر ہونے والی گاجروں کو نشانہ بنائیں۔ ہر ایک کا ایک پوائنٹ۔',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'ظاہر ہونے والے نشانوں کو نشانہ بنائیں۔ ہر ایک کا ایک پوائنٹ۔',
   'Cedo demais!': 'بہت جلدی!',
   'Não valeu': 'شمار نہیں ہوا',
   'Sem resposta': 'کوئی جواب نہیں',

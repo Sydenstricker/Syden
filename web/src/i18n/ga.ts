@@ -2365,7 +2365,7 @@ export default {
   'Siga o coelho': 'Lean an coinín',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Déan na saigheada arís in ord. Le gach ceann ceart, tagann ceann eile.',
   'Tiro ao alvo': 'Lámhach ar sprioc',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Buail na cairéid a thagann aníos. Is fiú pointe amháin gach ceann.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Buail na spriocanna a thagann aníos. Is fiú pointe amháin gach ceann.',
   'Cedo demais!': 'Ró-luath!',
   'Não valeu': 'Níor comhaireadh',
   'Sem resposta': 'Gan freagra',

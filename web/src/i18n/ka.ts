@@ -2447,7 +2447,7 @@ export default {
   'Siga o coelho': 'მიჰყევი კურდღელს',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'გაიმეორე ისრები თანმიმდევრობით. ყოველი სწორი პასუხის შემდეგ კიდევ ერთი ემატება.',
   'Tiro ao alvo': 'მიზანში სროლა',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'მოარტყი გამოჩენილ სტაფილოებს. თითოეული ერთი ქულა ღირს.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'მოარტყი გამოჩენილ სამიზნეებს. თითოეული ერთი ქულა ღირს.',
   'Cedo demais!': 'ძალიან ადრეა!',
   'Não valeu': 'არ ჩაითვალა',
   'Sem resposta': 'პასუხი არ არის',

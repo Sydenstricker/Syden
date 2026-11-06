@@ -2367,7 +2367,7 @@ export default {
   'Siga o coelho': 'Soro oke bekee',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Megharịa akụ ndị ahụ n\'usoro. Mgbe ọ bụla i mere nke ọma, otu ọzọ na-abịa.',
   'Tiro ao alvo': 'Ịgba ihe mgbaru ọsọ',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Kụọ karọt ndị pụtara. Nke ọ bụla bụ otu isi ihe.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Kụọ ihe mgbaru ọsọ ndị pụtara. Nke ọ bụla bụ otu isi ihe.',
   'Cedo demais!': 'Ọ ka dị oke n\'isi!',
   'Não valeu': 'Agụghị ya',
   'Sem resposta': 'Enweghị azịza',

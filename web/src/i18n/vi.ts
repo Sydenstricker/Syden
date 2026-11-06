@@ -2329,7 +2329,7 @@ export default {
   'Siga o coelho': 'Theo chú thỏ',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Lặp lại các mũi tên theo thứ tự. Mỗi lần đúng sẽ có thêm một mũi tên.',
   'Tiro ao alvo': 'Bắn bia',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Bắn những củ cà rốt hiện ra. Mỗi củ một điểm.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Bắn những tấm bia hiện ra. Mỗi tấm một điểm.',
   'Cedo demais!': 'Sớm quá!',
   'Não valeu': 'Không tính',
   'Sem resposta': 'Không trả lời',

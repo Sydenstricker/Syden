@@ -2430,7 +2430,7 @@ export default {
   'Siga o coelho': 'ຕາມກະຕ່າຍ',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'ເຮັດຕາມລູກສອນຕາມລຳດັບ. ທຸກຄັ້ງທີ່ຖືກ ຈະມີເພີ່ມອີກອັນໜຶ່ງ.',
   'Tiro ao alvo': 'ຍິງເປົ້າ',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'ຍິງກາລົດທີ່ໂຜ່ອອກມາ. ແຕ່ລະອັນໄດ້ໜຶ່ງຄະແນນ.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'ຍິງເປົ້າທີ່ໂຜ່ອອກມາ. ແຕ່ລະອັນໄດ້ໜຶ່ງຄະແນນ.',
   'Cedo demais!': 'ໄວເກີນໄປ!',
   'Não valeu': 'ບໍ່ນັບ',
   'Sem resposta': 'ບໍ່ມີຄຳຕອບ',

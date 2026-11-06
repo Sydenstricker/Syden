@@ -2437,7 +2437,7 @@ export default {
   'Siga o coelho': 'Quyonga ergashing',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Strelkalarni tartib bilan takrorlang. Har toʻgʻri javobda yana bittasi qoʻshiladi.',
   'Tiro ao alvo': 'Nishonga otish',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Paydo boʻlgan sabzilarni uring. Har biri bir ochko.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Paydo boʻlgan nishonlarni uring. Har biri bir ochko.',
   'Cedo demais!': 'Juda erta!',
   'Não valeu': 'Hisoblanmadi',
   'Sem resposta': 'Javob yoʻq',

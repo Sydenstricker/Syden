@@ -2431,7 +2431,7 @@ export default {
   'Siga o coelho': 'Seko zaķim',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Atkārto bultas pēc kārtas. Ar katru pareizo atbildi nāk vēl viena.',
   'Tiro ao alvo': 'Šaušana mērķī',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Trāpi burkāniem, kas parādās. Katrs ir viena punkta vērts.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Trāpi mērķiem, kas parādās. Katrs ir viena punkta vērts.',
   'Cedo demais!': 'Par agru!',
   'Não valeu': 'Neieskaitās',
   'Sem resposta': 'Nav atbildes',

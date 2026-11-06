@@ -2430,7 +2430,7 @@ export default {
   'Siga o coelho': 'Fylgdu kanínunni',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Endurtaktu örvarnar í röð. Við hvert rétt svar bætist ein við.',
   'Tiro ao alvo': 'Skotfimi',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Hittu gulræturnar sem birtast. Hver gefur eitt stig.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Hittu skotmörkin sem birtast. Hvert gefur eitt stig.',
   'Cedo demais!': 'Of snemma!',
   'Não valeu': 'Taldist ekki',
   'Sem resposta': 'Ekkert svar',

@@ -2359,7 +2359,7 @@ export default {
   'Siga o coelho': 'Urmează iepurașul',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Repetă săgețile în ordine. La fiecare reușită mai vine una.',
   'Tiro ao alvo': 'Tir la țintă',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Lovește morcovii care apar. Fiecare valorează un punct.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Lovește țintele care apar. Fiecare valorează un punct.',
   'Cedo demais!': 'Prea devreme!',
   'Não valeu': 'Nu se pune',
   'Sem resposta': 'Fără răspuns',

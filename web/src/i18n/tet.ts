@@ -2361,7 +2361,7 @@ export default {
   'Siga o coelho': 'Tuir koelu',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Repete seta sira tuir orden. Kada loos, mai tan ida.',
   'Tiro ao alvo': 'Tiru ba alvu',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Tiru senoura sira ne\'ebé mosu. Ida-idak vale pontu ida.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Tiru alvu sira ne\'ebé mosu. Ida-idak vale pontu ida.',
   'Cedo demais!': 'Sedu liu!',
   'Não valeu': 'La konta',
   'Sem resposta': 'Laiha resposta',

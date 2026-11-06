@@ -2424,7 +2424,7 @@ export default {
   'Siga o coelho': 'Podążaj za królikiem',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Powtórz strzałki w kolejności. Po każdym trafieniu dochodzi kolejna.',
   'Tiro ao alvo': 'Strzelanie do celu',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Trafiaj marchewki, które się pojawią. Każda jest warta punkt.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Trafiaj w cele, które się pojawią. Każdy jest wart punkt.',
   'Cedo demais!': 'Za wcześnie!',
   'Não valeu': 'Nie liczy się',
   'Sem resposta': 'Brak odpowiedzi',

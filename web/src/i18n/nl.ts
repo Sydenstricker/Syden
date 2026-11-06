@@ -2358,7 +2358,7 @@ export default {
   'Siga o coelho': 'Volg het konijn',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Herhaal de pijlen in volgorde. Bij elke goede komt er een bij.',
   'Tiro ao alvo': 'Schijfschieten',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Raak de wortels die verschijnen. Elke wortel is één punt waard.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Raak de schijven die verschijnen. Elke schijf is één punt waard.',
   'Cedo demais!': 'Te vroeg!',
   'Não valeu': 'Telt niet',
   'Sem resposta': 'Geen antwoord',

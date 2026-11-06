@@ -2375,7 +2375,7 @@ export default {
   'Siga o coelho': 'Segwi l-Fenek',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Irrepeti l-vleġeġ bl-ordni. Ma\' kull tweġiba tajba, tiġi oħra.',
   'Tiro ao alvo': 'Tiri fil-Mira',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Laqat il-karrotti li jidhru. Kull waħda tiswa punt.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Laqat il-miri li jidhru. Kull waħda tiswa punt.',
   'Cedo demais!': 'Kmieni wisq!',
   'Não valeu': 'Ma jgħoddx',
   'Sem resposta': 'L-ebda tweġiba',

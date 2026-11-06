@@ -2374,7 +2374,7 @@ export default {
   'Siga o coelho': 'Tẹ̀lé ehoro',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Tún àwọn ọfà náà ṣe ní ìtòlẹ́sẹẹsẹ. Ní gbogbo ìgbà tí o bá gbà á, òmíràn á dé.',
   'Tiro ao alvo': 'Ìyìnbọn sí àfojúsùn',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Yin àwọn kárọ́ọ̀tì tó bá yọ. Ọ̀kọ̀ọ̀kan jẹ́ àmì-ayò kan.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Yin àwọn àfojúsùn tó bá yọ. Ọ̀kọ̀ọ̀kan jẹ́ àmì-ayò kan.',
   'Cedo demais!': 'Ó ti yá jù!',
   'Não valeu': 'Kò kà',
   'Sem resposta': 'Kò sí ìdáhùn',

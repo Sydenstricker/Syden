@@ -2359,7 +2359,7 @@ export default {
   'Siga o coelho': 'ጥንቸሉን ይከተሉ',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'ቀስቶቹን በቅደም ተከተል ይድገሙ። በእያንዳንዱ ትክክለኛ ምላሽ አንድ ተጨማሪ ይመጣል።',
   'Tiro ao alvo': 'ኢላማ መተኮስ',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'የሚታዩትን ካሮቶች ይምቱ። እያንዳንዱ አንድ ነጥብ ያስገኛል።',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'የሚታዩትን ኢላማዎች ይምቱ። እያንዳንዱ አንድ ነጥብ ያስገኛል።',
   'Cedo demais!': 'በጣም ቀደም!',
   'Não valeu': 'አልተቆጠረም',
   'Sem resposta': 'ምላሽ የለም',

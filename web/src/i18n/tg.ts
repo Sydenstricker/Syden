@@ -2430,7 +2430,7 @@ export default {
   'Siga o coelho': 'Аз паи харгӯш рав',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Тирчаҳоро бо тартиб такрор кун. Бо ҳар ҷавоби дуруст боз яке илова мешавад.',
   'Tiro ao alvo': 'Тирандозӣ ба ҳадаф',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Ба сабзиҳое, ки пайдо мешаванд, зан. Ҳар кадом як хол дорад.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Ба ҳадафҳое, ки пайдо мешаванд, зан. Ҳар кадом як хол дорад.',
   'Cedo demais!': 'Хеле барвақт!',
   'Não valeu': 'Ҳисоб нашуд',
   'Sem resposta': 'Ҷавоб нест',

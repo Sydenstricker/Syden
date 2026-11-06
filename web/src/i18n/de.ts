@@ -2383,7 +2383,7 @@ export default {
   'Siga o coelho': 'Folge dem Hasen',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Wiederhole die Pfeile in der Reihenfolge. Mit jedem Treffer kommt einer dazu.',
   'Tiro ao alvo': 'Zielschießen',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Triff die Karotten, die auftauchen. Jede zählt einen Punkt.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Triff die Zielscheiben, die auftauchen. Jede zählt einen Punkt.',
   'Cedo demais!': 'Zu früh!',
   'Não valeu': 'Zählt nicht',
   'Sem resposta': 'Keine Antwort',

@@ -2409,7 +2409,7 @@ export default {
   'Siga o coelho': 'בעקבות הארנב',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'לחזור על החצים לפי הסדר. עם כל הצלחה, מגיע עוד אחד.',
   'Tiro ao alvo': 'קליעה למטרה',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'לפגוע בגזרים שמופיעים. כל אחד שווה נקודה.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'לפגוע במטרות שמופיעות. כל אחת שווה נקודה.',
   'Cedo demais!': 'מוקדם מדי!',
   'Não valeu': 'לא נחשב',
   'Sem resposta': 'אין תשובה',

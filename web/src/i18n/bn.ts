@@ -2356,7 +2356,7 @@ export default {
   'Siga o coelho': 'খরগোশকে অনুসরণ করো',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'তীরগুলো ক্রম অনুযায়ী আবার করো। প্রতিবার ঠিক হলে আরও একটা আসে।',
   'Tiro ao alvo': 'লক্ষ্যভেদ',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'যে গাজরগুলো দেখা দেয় সেগুলোতে লাগাও। প্রতিটার মূল্য এক পয়েন্ট।',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'যে লক্ষ্যগুলো দেখা দেয় সেগুলোতে লাগাও। প্রতিটার মূল্য এক পয়েন্ট।',
   'Cedo demais!': 'খুব তাড়াতাড়ি!',
   'Não valeu': 'গণনা হয়নি',
   'Sem resposta': 'কোনো উত্তর নেই',

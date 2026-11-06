@@ -2361,7 +2361,7 @@ export default {
   'Siga o coelho': 'Bi zomo',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Ku maimaita kibiyoyin bisa tsari. Duk lokacin da kuka yi daidai, ɗaya na ƙaruwa.',
   'Tiro ao alvo': 'Harbin hari',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Ku harbi karas ɗin da suka bayyana. Kowanne yana da maki ɗaya.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Ku harbi hari da suka bayyana. Kowanne yana da maki ɗaya.',
   'Cedo demais!': 'Da wuri sosai!',
   'Não valeu': 'Bai ƙidaya ba',
   'Sem resposta': 'Babu amsa',

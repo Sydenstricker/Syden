@@ -2431,7 +2431,7 @@ export default {
   'Siga o coelho': 'Sledi zajcu',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Ponovi puščice po vrsti. Z vsakim zadetkom pride še ena.',
   'Tiro ao alvo': 'Streljanje v tarčo',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Zadeni korenčke, ki se pojavijo. Vsak je vreden točko.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Zadeni tarče, ki se pojavijo. Vsaka je vredna točko.',
   'Cedo demais!': 'Prezgodaj!',
   'Não valeu': 'Ne velja',
   'Sem resposta': 'Brez odgovora',

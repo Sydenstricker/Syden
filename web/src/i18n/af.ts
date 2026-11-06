@@ -2423,7 +2423,7 @@ export default {
   'Siga o coelho': 'Volg die haas',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Herhaal die pyle in volgorde. Elke keer as jy reg is, kom daar nog een by.',
   'Tiro ao alvo': 'Teikenskiet',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Tref die wortels wat verskyn. Elkeen is een punt werd.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Tref die teikens wat verskyn. Elkeen is een punt werd.',
   'Cedo demais!': 'Te vroeg!',
   'Não valeu': 'Het nie getel nie',
   'Sem resposta': 'Geen antwoord',

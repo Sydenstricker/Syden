@@ -2409,7 +2409,7 @@ export default {
   'Siga o coelho': 'Іди за кроликом',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Повторюй стрілки по черзі. З кожною правильною відповіддю додається ще одна.',
   'Tiro ao alvo': 'Стрільба по мішенях',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Влучай у морквини, що зʼявляються. Кожна — одне очко.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Влучай у мішені, що зʼявляються. Кожна — одне очко.',
   'Cedo demais!': 'Зарано!',
   'Não valeu': 'Не зараховано',
   'Sem resposta': 'Немає відповіді',

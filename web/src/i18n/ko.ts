@@ -2347,7 +2347,7 @@ export default {
   'Siga o coelho': '토끼 따라 하기',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': '화살표를 순서대로 따라 하세요. 맞힐 때마다 하나씩 늘어나요.',
   'Tiro ao alvo': '과녁 맞히기',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': '나타나는 당근을 맞히세요. 하나에 1점이에요.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': '나타나는 과녁을 맞히세요. 하나에 1점이에요.',
   'Cedo demais!': '너무 빨라요!',
   'Não valeu': '무효',
   'Sem resposta': '응답 없음',

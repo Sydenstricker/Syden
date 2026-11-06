@@ -2428,7 +2428,7 @@ export default {
   'Siga o coelho': 'តាមទន្សាយ',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'ធ្វើព្រួញឡើងវិញតាមលំដាប់។ រាល់ពេលត្រូវ នឹងមានមួយទៀតបន្ថែម។',
   'Tiro ao alvo': 'បាញ់គោលដៅ',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'បាញ់ការ៉ុតដែលលេចឡើង។ មួយៗមានតម្លៃមួយពិន្ទុ។',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'បាញ់គោលដៅដែលលេចឡើង។ មួយៗមានតម្លៃមួយពិន្ទុ។',
   'Cedo demais!': 'លឿនពេកហើយ!',
   'Não valeu': 'មិនរាប់',
   'Sem resposta': 'គ្មានចម្លើយ',

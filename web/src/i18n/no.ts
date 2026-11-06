@@ -2429,7 +2429,7 @@ export default {
   'Siga o coelho': 'Følg kaninen',
   'Repita as setas na ordem. A cada acerto, vem mais uma.': 'Gjenta pilene i rekkefølge. For hvert riktig svar kommer én til.',
   'Tiro ao alvo': 'Blinkskyting',
-  'Acerte as cenouras que aparecerem. Cada uma vale um ponto.': 'Treff gulrøttene som dukker opp. Hver er verdt ett poeng.',
+  'Acerte os alvos que aparecerem. Cada um vale um ponto.': 'Treff blinkene som dukker opp. Hver er verdt ett poeng.',
   'Cedo demais!': 'For tidlig!',
   'Não valeu': 'Telte ikke',
   'Sem resposta': 'Ingen svar',
