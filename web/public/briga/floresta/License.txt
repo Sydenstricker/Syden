@@ -1,0 +1,15 @@
+Os bichos desta fase são renderizados (e2e/pixel-art/personagem/blender/meshy/briga-monstros.py) dos modelos
+"Ultimate Monsters" da Quaternius, sob esta licença:
+
+------------------------------------------------------
+Ultimate Platformer Pack by @Quaternius
+Consider supporting me on Patreon, even $1 helps me a lot!
+
+https://www.patreon.com/quaternius
+-------------------------------------------------------
+
+License:
+CC0 1.0 Universal (CC0 1.0) 
+Public Domain Dedication
+https://creativecommons.org/publicdomain/zero/1.0/
+
