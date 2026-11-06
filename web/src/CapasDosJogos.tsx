@@ -39,6 +39,8 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
       return <CapaBarco />;
     case 'chefe':
       return <CapaChefe />;
+    case 'duelo':
+      return <CapaDuelo />;
     case 'cozinha':
       return <CapaCozinha />;
     case 'skate':
@@ -1030,6 +1032,41 @@ function CapaCozinha() {
       {[66, 80, 94].map((x, k) => (
         <path key={x} d={`M${x} 30 q -5 -7 0 -14 q 5 -7 0 -14`} fill="none" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" opacity={0.75 - k * 0.12} />
       ))}
+    </svg>
+  );
+}
+
+/** O Duelo de aviõezinhos: a horta de cima, dois teco-tecos se cruzando, a cenoura teleguiada com o rastro curvo e uma ervilha. */
+function CapaDuelo() {
+  const aviao = (x: number, y: number, giro: number, cor: string) => (
+    <g transform={`translate(${x} ${y}) rotate(${giro})`}>
+      <rect x="-16" y="-3" width="32" height="7" rx="2" fill={cor} />
+      <path d="M0 -12 L4 -4 L3 12 L-3 12 L-4 -4 Z" fill="#f2ecf7" stroke="#8a7a8a" strokeWidth="0.8" />
+      <rect x="-7" y="10" width="14" height="3" fill={cor} />
+      <circle cx="0" cy="-3" r="2.6" fill="#f6efe4" />
+      <path d="M-1.5 -5 L-2.5 -10 M1.5 -5 L2.5 -10" stroke="#f6efe4" strokeWidth="1.6" />
+    </g>
+  );
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#86b862" />
+      <rect x="0" y="56" width="160" height="10" fill="#cfa86a" />
+      <rect x="74" y="0" width="10" height="120" fill="#cfa86a" />
+      {[[10, 8], [96, 8], [10, 74], [96, 74]].map(([x, y]) => (
+        <rect key={x + ',' + y} x={x} y={y} width="52" height="38" fill="#7a5236" />
+      ))}
+      {[[14, 12], [100, 12], [14, 78], [100, 78]].map(([x, y]) =>
+        [0, 1, 2, 3].map((j) => <rect key={x + ',' + y + ',' + j} x={x} y={y + j * 9} width="44" height="2" fill="#4f9a3a" />),
+      )}
+      {/* o rastro curvo da cenoura e a cenoura */}
+      <path d="M44 92 Q60 40 104 44" fill="none" stroke="#fff3e0" strokeWidth="2" strokeDasharray="3 4" />
+      <g transform="translate(104 44) rotate(80)">
+        <path d="M0 -8 L3 4 L-3 4 Z" fill="#ec7f2b" />
+        <path d="M-2 4 L0 8 L2 4" fill="#4f9a3a" />
+      </g>
+      <circle cx="70" cy="30" r="3" fill="#7cc34a" stroke="#3f7a2a" strokeWidth="1" />
+      {aviao(122, 34, 60, '#d8483c')}
+      {aviao(40, 96, -30, '#3f74d8')}
     </svg>
   );
 }

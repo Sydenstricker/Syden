@@ -1,0 +1,177 @@
+/* O DUELO DE AVIÕEZINHOS (05/11/2026): a tela deitada (4:3), ampliada em pixels inteiros, as vidas de todos em cima e os
+   botões de toque embaixo. Prefixo "aviao-": a classe "duelo" já é da mesa de duas pessoas. */
+
+.aviao {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.aviao-topo {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  width: 100%;
+  max-width: 640px;
+}
+
+.aviao-topo .minijogo-tempo {
+  flex: 1;
+  min-width: 80px;
+}
+
+.aviao-todos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.aviao-todos li {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 11em;
+}
+
+.aviao-todos li.eu .aviao-nome {
+  color: var(--accent);
+}
+
+.aviao-todos li.caiu {
+  opacity: 0.5;
+}
+
+.aviao-todos li.caiu .aviao-nome {
+  text-decoration: line-through;
+}
+
+.aviao-nome {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* a cor das asas de cada um */
+.aviao-asa {
+  flex: none;
+  width: 10px;
+  height: 4px;
+  border-radius: 1px;
+  box-shadow: 0 0 0 1px #2b2633;
+}
+
+.aviao-vidas {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.aviao-vidas i {
+  width: 6px;
+  height: 6px;
+  background: #6b6478;
+  box-shadow: 0 0 0 1px #2b2633;
+}
+
+.aviao-vidas i.cheia {
+  background: #e2483d;
+}
+
+/* a cenoura teleguiada livre (ou no ar, apagada) */
+.aviao-cenoura {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.aviao-cenoura.no-ar {
+  opacity: 0.4;
+}
+
+.aviao-cenoura-icone {
+  display: inline-block;
+  width: 6px;
+  height: 14px;
+  background:
+    linear-gradient(#6cbf4f, #6cbf4f) center top / 4px 4px no-repeat,
+    linear-gradient(#f08a24, #f08a24) center bottom / 6px 10px no-repeat;
+  clip-path: polygon(0 0, 100% 0, 100% 35%, 50% 100%, 0 35%);
+  transform: rotate(180deg);
+}
+
+/* a tela deitada, sem passar da altura da janela */
+.aviao-moldura {
+  position: relative;
+  width: min(100%, 640px, calc((100vh - 240px) * 4 / 3));
+  min-width: 240px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: #86b25f;
+}
+
+.aviao-tela {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  image-rendering: pixelated;
+  touch-action: none;
+  outline: none;
+}
+
+/* os botões do toque, por cima da tela, embaixo */
+.aviao-toque {
+  position: absolute;
+  inset: auto 0 6px 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 6px;
+  pointer-events: none;
+}
+
+.aviao-toque > div {
+  display: flex;
+  gap: 6px;
+}
+
+.aviao-toque button {
+  pointer-events: auto;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px solid rgba(43, 38, 51, 0.6);
+  background: rgba(255, 247, 224, 0.55);
+  color: #2b2633;
+  font-size: 1.3rem;
+  font-weight: 700;
+  touch-action: none;
+}
+
+.aviao-toque button.aviao-fogo {
+  background: rgba(240, 138, 36, 0.7);
+}
+
+.aviao-fim-solo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+@media (pointer: fine) {
+  .aviao-toque {
+    display: none;
+  }
+}

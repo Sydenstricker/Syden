@@ -43,6 +43,7 @@ export const GENEROS_DOS_JOGOS: Partial<Record<IdDoJogo | string, Genero[]>> = {
   skate: ['esporte', 'acao'],
   briga: ['acao'],
   chefe: ['acao', 'festa'],
+  duelo: ['acao', 'festa'],
   plataforma: ['acao'],
   caca: ['acao'],
   nave: ['acao'],
