@@ -612,7 +612,16 @@ Game Bits (`web/src/xadrez3d/`), o tabuleiro de botões por baixo. Fora das conq
 **MAIS 3D E DOIS JOGOS NOVOS (05/11/2026, pedidos dele):** Damas, Truco, Dominó e os dados do Cidades em 3D (`web/src/mesa3d/`, a base
 comum e o gancho `useCena3D`; KayKit Board Game Bits). A **Cozinha da toca** (`minijogo-cozinha.ts`, `JogoCozinha.tsx`; KayKit Restaurant
 Bits): CADA UM NA PRÓPRIA COZINHA, os mesmos pedidos (a abordagem aprovada por ele, pela lição do Overcooked acima); o servidor confere cada
-prato pela receita. O **Rolê do coelho** (`minijogo-skate.ts`, `JogoSkate.tsx`; Kenney Mini Skate): skate de 1 minuto (eram 2 até 06/11/2026; o recorde recomeçou em `skate_recordes_1min`) com combos, só a
+prato pela receita. **A etapa de cozinhar no ponto (06/11/2026, pedido dele, com o pacote de comida da Quaternius, CC0):** o PONTO
+é do SERVIDOR, também no Solo (por isso a Cozinha não pausa): a tela manda "pus na estação N" e "tirei" na hora, numa fila (o "tirei"
+nunca passa o "pus"), e o servidor mede pelo relógio dele (`estadoNoFogo` em `cozinha-receitas.ts`, folga de 400 ms a favor de quem
+joga); cada item que ele viu sair no ponto vira uma FICHA, e o prato só vale com a ficha de cada cozido (o "está no ponto" da tela não
+conta). Queimado não serve receita nenhuma: lixeira. O fogo da tela anda pela hora de verdade (sem foco nada se desenha, mas queima). O
+medidor em cima do fogo é a régua cru / ponto (verde) / queimando (os últimos 40% antes de queimar, vermelha), com fumaça clara e o
+chiado passando do ponto e escura com o queimado. A planta passou a 12 × 5 (três fogões; as estações de fogo em `ESTACOES_DE_FOGO`, que
+o teste confere com a planta), com bacon e bife; receitas novas: café da manhã, x-bacon, bife com arroz e bife com salada. Os modelos
+(bacon, bife, ovo frito e queimado) saem por `e2e/3D/cozinha-quaternius/converter.py` (Blender) para `web/public/cozinha/quaternius/`,
+com as cores clareadas na carga para casar com a KayKit. O **Rolê do coelho** (`minijogo-skate.ts`, `JogoSkate.tsx`; Kenney Mini Skate): skate de 1 minuto (eram 2 até 06/11/2026; o recorde recomeçou em `skate_recordes_1min`) com combos, só a
 mecânica (nada de Tony Hawk); só no Solo até a sala ser testada na tela. No xadrez, a promoção deixa escolher a peça. O jogo de
 estratégia (o pacote Ultimate Fantasy RTS do Quaternius, CC0, em glTF) é o próximo, contra o computador primeiro.
 
