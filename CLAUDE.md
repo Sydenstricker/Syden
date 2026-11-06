@@ -749,6 +749,19 @@ um programa poderia mirar sozinho. Pontos: 100 o corvo, 150 o gafanhoto (menor),
 `server/test/minijogos-caca.test.ts` e `e2e/caca.mjs` (passou, pelo Solo do computador do quarto, com o piloto automático
 `window.cacaPilotoAutomatico`). Conta nas conquistas da turma desde o mesmo dia (decisão dele, junto com os clássicos de mesa).
 
+**O TRÂNSITO DA TOCA (06/11/2026, pedido dele, com os pacotes Isometric Buildings e Isometric Vehicles da Kenney, CC0):** um minuto num
+cruzamento isométrico; os carros chegam pelas quatro pontas e param na faixa, e clicar na rua (ou Q, E, C, Z, as pontas do teclado como
+as do mapa) solta o primeiro da fila, que segue reto ou vira (a seta pisca). Carros de ruas diferentes que se encostam BATEM: menos 3
+pontos, a sequência zera e o cruzamento TRAVA 2 s com a batida à vista — escolhido em vez de acabar a partida, porque num minuto perder
+tudo aos 10 s tira a graça. Fila cheia buzina e custa 1 ponto (esperar não é a jogada segura). 1 por carro, a ambulância 3, +5 a cada 10
+seguidos. **A regra é um arquivo só, em duas cópias iguais byte a byte** (`web/src/transito/sim.ts` ↔ `server/src/transito-sim.ts`): o site
+joga e manda só as liberações [passo, rua], e o servidor REFAZ a partida com a mesma semente (os pontos são dele). Solo com recorde
+(`transito_recordes`) e ESC; Coletivo com a mesma semente para a turma e o pódio (`pista: 'transito'`). Os prédios cortam o lado da laje
+(fica abaixo do chão), e a linha e a coluna na frente das ruas são calçada sem prédio, para nada esconder a faixa de perto. Os carros
+civis da Kenney não dizem a direção no nome: os quadros das diagonais estão em `web/scripts/transito-atlas.mjs`. Fora, de propósito:
+mais de um cruzamento e semáforo. Ninguém jogou com gente: o ritmo das chegadas é chute medido contra o piloto (`window.transitoPilotoAutomatico`).
+Testes: `web/test/transito.test.ts`, `server/test/minijogos-transito.test.ts`, `e2e/transito.mjs` (passou).
+
 **OS CLÁSSICOS DE MESA (04/11/2026, pedido dele, depois da pesquisa de jogos sem manutenção):** Dominó, Truco, Damas e
 Batalha naval, só no Coletivo. Regra pública e nenhum conteúdo para manter. **Damas e Batalha naval são de MESA**, no `duelo`
 de `minijogo-tabuleiro.ts`, que ganhou a vista POR LADO (`publico(estado, lado)`: na Batalha naval cada um vê só a própria
