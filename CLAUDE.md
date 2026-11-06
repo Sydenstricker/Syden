@@ -720,6 +720,22 @@ do recorde (`carrinhos_recordes`, só amigos aceitos veem), com 0 a 3 robôs do 
 cada um na sua faixa, e a corrida da sala NÃO vira recorde (a faixa é outra). Pódio com `pista: 'carrinhos'`. Testes:
 `web/test/carrinhos.test.ts`, `server/test/minijogos-carrinhos.test.ts`, `e2e/carrinhos.mjs`, `e2e/carrinhos-na-sala.mjs`.
 
+**A GINCANA DA TOCA (06/11/2026, pedido dele: "um minigame para chegar ao final do mapa, com esses assets que já temos"):**
+`gincana`, nas duas abas, a corrida de obstáculos em 3D com o Platformer Pack da KayKit (CC0; só as peças usadas, em
+`web/public/gincana/`). Só a mecânica do gênero: nada de nome nem arte de jogo existente. O coelho 3D corre, pula (folga da beirada,
+pulo guardado, soltar corta) e se equilibra até a bandeira; caiu do mapa, serra ou espinho, volta à última bandeira. Três percursos
+POR ROTEIRO (`ROTEIROS` em `gincana/sim.ts`: pedras, rampa, esteira, serras, varredores, blocos vermelhos que caem, plataformas que
+andam, espinhos, canhões, mola; ~25–50 s com o piloto perfeito). **A regra é um arquivo só nas duas pontas** (`gincana-sim.ts` ↔
+`web/src/gincana/sim.ts`) e a conferência é a dos Carrinhos: o site manda os COMANDOS de cada passo e o servidor REFAZ o percurso.
+Tudo que se mexe anda pelo passo (o giro dos varredores numa tabela feita por multiplicação, sem seno); só os blocos que caem são de
+cada um. A câmera fica atrás olhando o +z, e por isso o percurso é reto (a direita de quem joga é o −x da regra). Solo com
+`gincana_recordes` por percurso e os fantasmas dos amigos; na sala (2 a 8), as posições conferidas por `posicaoPossivel` (salto só de
+volta a uma bandeira alcançada), quem recarrega no meio assiste, e a corrida da sala vira recorde (sem itens). Pódio com
+`pista: 'gincana'`; fora das conquistas até ele decidir. O que sobra possível: um programa que ache os comandos perfeitos, e posições
+ao vivo inventadas dentro do que um coelho anda (só desenho). Percurso novo é id novo. Testes: `web/test/gincana.test.ts`,
+`server/test/minijogos-gincana.test.ts`, `e2e/gincana.mjs` e `e2e/gincana-na-sala.mjs` (passaram; o piloto automático planeja por
+busca em feixe, `gincana/piloto.ts`, ligado por `window.gincanaPilotoAutomatico` só em desenvolvimento). Ninguém jogou com gente.
+
 **O TABULEIRO DA TURMA está feito (03/11/2026, o item 5):** `server/src/minijogo-tabuleiro-da-turma.ts`, `web/src/JogoTabuleiro.tsx`,
 só no Coletivo (2 a 8). Uma volta de 30 casas em volta de uma horta, desenhada por código; 5, 10 ou 15 rodadas. Na vez, cada
 um pede o dado (QUEM SORTEIA É O SERVIDOR), a peça anda na tela casa a casa, e a casa age: +3 cenouras, −3, ou um evento
