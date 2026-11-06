@@ -16897,9 +16897,12 @@ body.arrastando-barra {
   color: var(--text-strong);
 }
 
+/* a barra mora na coluna "auto" do placar, que não tem largura própria: sem a dela, a barra encolhia a uns poucos px e
+   ninguém via a vida baixar (relato de 06/11/2026) */
 .briga-vida {
   display: block;
-  height: 5px;
+  width: 72px;
+  height: 6px;
   border-radius: 3px;
   background: var(--bg-hover);
   overflow: hidden;
@@ -16909,6 +16912,12 @@ body.arrastando-barra {
   display: block;
   height: 100%;
   background: var(--accent);
+  transition: width 0.2s ease-out;
+}
+
+/* quem acabou de apanhar: a barra fica vermelha um instante (relato de 06/11/2026: "não vi a vida diminuir") */
+.briga-hud li.doeu .briga-vida > span {
+  background: var(--red);
 }
 
 .briga-vidas {

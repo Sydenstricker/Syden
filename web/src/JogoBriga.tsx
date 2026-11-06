@@ -114,7 +114,7 @@ function useTeclado(ativo: boolean, cmd: Comandos) {
 }
 
 interface Hud {
-  linhas: { userId: number; hp: number; vidas: number; pontos: number; estado: number }[];
+  linhas: { userId: number; hp: number; vidas: number; pontos: number; estado: number; doeu: boolean }[];
   fase: Quadro['f'] | null;
   meuEstado: number;
   voltaEm: number;
@@ -203,6 +203,8 @@ function Palco({
     const vistos = new Set<number>();
     const piscandoOutros = new Map<number, number>();
     const piscandoInimigo = new Map<number, number>();
+    // quando cada um apanhou por último: a barra de vida do placar fica vermelha um instante
+    const apanhouEm = new Map<number, number>();
     let voltaEm = 0;
     let ultimoEnvio = 0;
     let ultimoHud = 0;
@@ -258,8 +260,13 @@ function Palco({
           if (quem !== eu) efeitos.push({ tipo: 'faisca', x, y, z, em: agoraMs + 100 });
         } else if (tipo === 'p' && r[0] === eu) {
           apanhar(eu_, r[2] === 1, r[3]);
+          apanhouEm.set(eu, agoraMs);
+          efeitos.push({ tipo: 'faisca', x: eu_.x, y: eu_.y, z: eu_.z, em: agoraMs });
         } else if (tipo === 'p') {
-          piscandoOutros.set(r[0], agoraMs + 300);
+          piscandoOutros.set(r[0], agoraMs + 400);
+          apanhouEm.set(r[0], agoraMs);
+          const outro = q.j.find((l) => l[0] === r[0]);
+          if (outro) efeitos.push({ tipo: 'faisca', x: outro[1], y: outro[2], z: outro[3], em: agoraMs + 100 });
         } else if (tipo === 'k' && r[0] === eu) {
           eu_.hp = 0;
           eu_.acao = 'caido';
@@ -404,7 +411,7 @@ function Palco({
       if (agoraMs - ultimoHud > 200 && ultimo) {
         ultimoHud = agoraMs;
         setHud({
-          linhas: ultimo.j.map((l) => ({ userId: l[0], hp: l[7], vidas: l[8], pontos: l[9], estado: l[10] })),
+          linhas: ultimo.j.map((l) => ({ userId: l[0], hp: l[7], vidas: l[8], pontos: l[9], estado: l[10], doeu: agoraMs - (apanhouEm.get(l[0]) ?? -1e9) < 450 })),
           fase,
           meuEstado,
           voltaEm,
@@ -436,7 +443,7 @@ function Palco({
     <div className="briga">
       <ul className="briga-hud" aria-live="off">
         {hud.linhas.map((l) => (
-          <li key={l.userId} className={l.userId === eu ? 'eu' : undefined}>
+          <li key={l.userId} className={[l.userId === eu ? 'eu' : '', l.doeu ? 'doeu' : ''].filter(Boolean).join(' ') || undefined}>
             <span className="minijogo-nome">{nome(l.userId)}</span>
             <span className="briga-vida" aria-hidden="true">
               <span style={{ width: `${Math.max(0, Math.min(100, l.hp))}%` }} />

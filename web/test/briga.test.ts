@@ -196,3 +196,69 @@ test('a medalha do fim é a do troféu: fase vencida, fora do Solo, 2 ou mais qu
   assert.equal(m(2, 0, { venceu: true, solo: false, ficaram: 2 }), '2.', 'sem ponto: sem medalha');
   assert.equal(m(null, 30, { venceu: true, solo: false, ficaram: 2 }), '–', 'quem saiu: sem posição');
 });
+
+// ---------------- O relato de 06/11/2026: "tomei vários socos e não pisquei, nem a vida baixou" ----------------
+
+test('parado ao lado da raposa, com o servidor de verdade e 200 ms de atraso: leva o golpe, pisca e a vida baixa', async () => {
+  const s = await import('../../server/src/minijogo-briga.ts');
+  let agora = 2_000_000;
+  let passo: (() => void) | null = null;
+  const quadros: Quadro[] = [];
+  const ctx = {
+    agendar: () => {},
+    avisar: () => {},
+    terminar: () => {},
+    naSala: () => [7],
+    nome: () => 'ana',
+    comunidade: 0,
+    difundir: (d: unknown) => quadros.push(d as Quadro),
+  };
+  const jogo = s.criarBriga({ agora: () => agora, aleatorio: () => 0.5, intervalo: (p) => ((passo = p), 1), limpar: () => {} }).comecar(ctx, {
+    naSala: [7],
+    criadaPor: 7,
+    corpo: {},
+  });
+  assert.ok(typeof jogo !== 'string');
+  const c = novoCoelho(160, 28);
+  const cmd = comandosVazios();
+  const vistos = new Set<number>();
+  let ultimoEnvio = 0;
+  let passos = 0;
+  let levou = 0;
+  let piscou = false;
+  let menorHp = 100;
+  for (let ms = 0; ms < 30_000; ms += 1000 / 60) {
+    agora += 1000 / 60;
+    if (++passos % 3 === 0) passo!();
+    // o quadro chega 100 ms depois (metade da ida e volta)
+    const chegados = quadros.slice(0, Math.max(0, quadros.length - 2));
+    for (const q of chegados.slice(-3)) {
+      for (const e of q.e) {
+        const [id, tipo, quem, , derruba, lado] = e as [number, string, number, number, number, number];
+        if (vistos.has(id)) continue;
+        vistos.add(id);
+        if (tipo === 'p' && quem === 7) {
+          levou++;
+          apanhar(c, derruba === 1, lado);
+        }
+      }
+    }
+    const meu = chegados.at(-1)?.j[0];
+    if (meu) {
+      c.hp = meu[7];
+      menorHp = Math.min(menorHp, meu[7]);
+    }
+    if (meu && meu[10] !== 0) continue;
+    // ninguém aperta nada: o coelho fica onde está (só o empurrão do golpe o mexe)
+    passoDoCoelho(c, cmd, DT, [0, 320]);
+    if (c.relogio < c.piscandoAte) piscou = true;
+    if (agora - ultimoEnvio >= 66) {
+      ultimoEnvio = agora;
+      jogo.tempoReal!(7, { tipo: 'pos', x: c.x, y: c.y, z: c.z, lado: c.lado, acao: 0, ta: 0 });
+    }
+  }
+  jogo.parar!();
+  assert.ok(levou > 0, 'o servidor decidiu que o coelho parado levou golpes');
+  assert.ok(menorHp < 100, `a vida que o quadro leva baixou: ${menorHp}`);
+  assert.ok(piscou, 'quem leva um golpe fica piscando');
+});

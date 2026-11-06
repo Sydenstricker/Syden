@@ -49,6 +49,8 @@ const CAIDO_MS = 900;
 const LEVANTANDO_MS = 450;
 /** Depois de levantar, piscando: o servidor dá a mesma folga (invulAte). */
 const PISCANDO_MS = 800;
+/** Depois de um golpe que não derruba, piscando: a folga que o servidor dá (invulAte, 400 ms). */
+export const PISCA_DO_GOLPE_MS = 400;
 /** Depois de um soco, quanto tempo o próximo aperto ainda continua o combo. */
 const JANELA_DO_COMBO_MS = 300;
 
@@ -255,6 +257,9 @@ export function apanhar(c: Coelho, derruba: boolean, lado: number) {
   c.socoNaFila = false;
   c.ultimoSoco = null;
   c.vx = (lado >= 0 ? 1 : -1) * (derruba ? 110 : 60);
+  // o golpe que não derruba também se vê (relato de 06/11/2026: "tomei vários socos e não pisquei"): pisca pela folga que
+  // o servidor dá (invulAte); o que derruba pisca ao levantar, que é quando a folga dele acaba
+  if (!derruba) c.piscandoAte = Math.max(c.piscandoAte, c.relogio + PISCA_DO_GOLPE_MS);
   if (derruba) {
     c.vz = c.z > 0 ? 60 : 120;
     comecar(c, 'caido');
