@@ -108,6 +108,7 @@ app</b> para ver o nome de cada objeto ao passar o mouse. A arrumação fica gua
 <div class="barra" id="enfeites"></div>
 <div class="barra" id="moveis"></div>
 <div class="barra" id="objetos-de-cima"></div>
+<div class="barra so-do-quarto" id="plantas"></div>
 <p id="acao-teste" aria-live="polite"></p>
 <p class="so-do-quarto"><b>O coelho</b>: o mascote isométrico, com as animações dele (andando, parado, falando) e as poses (sentado, lendo,
 dormindo), todas do mesmo personagem, no mesmo quadro e com a mesma âncora. A sombra vem da janela (de dia) ou do
@@ -121,7 +122,7 @@ coelho junto. Ver e2e/pixel-art/personagem/README.md.</p>
   <button id="falando" aria-pressed="false">Falando</button>
 </div>
 <details id="conta" class="barra"><summary>Conta no servidor (teste) e visitas</summary>
-  <p>O quarto de cada pessoa mora no servidor, e qualquer conta pode visitar (decisão dele, 15/10/2026). Aqui, numa API de
+  <p>O quarto de cada pessoa mora no servidor, e quem ela deixar pode visitar (público, amigos ou convidados; 03/11/2026). Aqui, numa API de
   teste: entre com uma conta, e a arrumação passa a ser guardada lá; ponha o número de outra conta para visitar o quarto
   dela (só olhar: nada se arrasta nem se guarda). <span id="quem"></span></p>
   <input id="api" value="http://localhost:3099" aria-label="Endereço da API" size="22">
@@ -239,12 +240,13 @@ function dados(im, filtro, w = W, h = W) {
 // A IMAGEM MENOR QUE A CENA (as vistas dos móveis têm 97 a 170 px): desenhada numa tela do tamanho DELA e copiada para
 // o canto de um quadro vazio do tamanho da cena. Antes, cada uma ia para uma tela de 1024 × 1024 só para ler de volta
 // 4 MB quase todos vazios (~6 ms por vista, 136 vistas no salão). O resultado é o mesmo, byte a byte.
-function dadosPequenos(im, w = W, h = W) {
-  const iw = Math.min(w, im.width), ih = Math.min(h, im.height), r = new Uint8ClampedArray(w * h * 4);
+// (mx, my: a MARGEM, onde a imagem começa no quadro; ver MARGEM_DO_TAMPO)
+function dadosPequenos(im, w = W, h = W, mx = 0, my = 0) {
+  const iw = Math.min(w - mx, im.width), ih = Math.min(h - my, im.height), r = new Uint8ClampedArray(w * h * 4);
   if (!iw || !ih) return r;
   const c = document.createElement('canvas'); c.width = iw; c.height = ih; const g = c.getContext('2d', { willReadFrequently: true });
   g.drawImage(im, 0, 0); const p = g.getImageData(0, 0, iw, ih).data;
-  for (let y = 0; y < ih; y++) r.set(p.subarray(y * iw * 4, (y + 1) * iw * 4), y * w * 4);
+  for (let y = 0; y < ih; y++) r.set(p.subarray(y * iw * 4, (y + 1) * iw * 4), ((y + my) * w + mx) * 4);
   return r;
 }
 
@@ -259,6 +261,9 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // A VISITA (15/10/2026): visitando o quarto de outra pessoa, nada se arrasta nem se guarda. E, entrando numa conta, cada
   // mudança vai também para o servidor (enviar, definido lá embaixo, com a conta).
   let soVer = false, enviar = () => {}, comecarPan = () => {};
+  // A VISITA NO APP (03/11/2026, VisitaAoQuarto.tsx): só olhar, mas a estante de troféus (a única função que o app manda)
+  // abre o destaque de quem mora no quarto.
+  let visitaNoApp = false;
   // AS OPÇÕES DE GRÁFICOS (pedido dele, 15/10/2026: "as partículas e a sombra deveriam estar num menu para ligar e
   // desligar; aqui está pesando, imagine em PC mais modesto"). Moram no navegador ('syden:graficos'), as mesmas no quarto
   // e no salão; no app, quem as escolhe são as Configurações (Aparência), e a página percebe na hora pelo evento storage
@@ -275,25 +280,53 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // O quarto sem janela, e a janela como peça (o tipo, a parede e quantas casas ela andou). Tudo o que a página usava da
   // pintura com a janela (a base, as noites, o vidro, a cortina, a janela aberta e as luzes borradas) é MONTADO aqui, e
   // montado de novo quando a janela muda. Na janela original, no lugar dela, a montagem dá a pintura de antes.
-  const semDia = dados(im['sem-dia']), semNoite = dados(im['sem-noite']), semAbajur = dados(im['sem-noite-abajur']);
-  // A repintura do abajur veio numa caixa, e a borda reta dela aparece na parede: perto da borda, mistura com a noite.
-  const CAIXA_ABAJUR = [190, 100, 322, 292], FAIXA = 14; // a de noite-abajur.mjs
-  for (let k = 0; k < W * W; k++) {
-    const x = k % W, y = (k / W) | 0, [x0, y0, x1, y1] = CAIXA_ABAJUR;
-    const borda = Math.min(x - x0, x1 - 1 - x, y - y0, y1 - 1 - y);
-    if (borda < 0 || borda >= FAIXA) continue;
-    const t = (borda + 1) / (FAIXA + 1);
-    for (let c = 0; c < 3; c++) semAbajur[k * 4 + c] = semAbajur[k * 4 + c] * t + semNoite[k * 4 + c] * (1 - t);
-  }
+  // ============================== AS PLANTAS DO QUARTO (pedido dele, 06/11/2026) ==============================
+  // "3 presets de quarto: a atual, uma sala em L e um cubículo quadradão". A grade continua a de 8 × 8 (as mesmas casas, os
+  // mesmos cantos na tela); a planta diz quais casas são CHÃO e onde estão as PAREDES. A casca de cada uma sai por código
+  // (janelas/plantas.py). Cada parede é uma lista de TRECHOS [de, até, recuo]: o trecho anda de "de" a "até" casas ao longo
+  // dela, e fica "recuo" casas à frente da parede do fundo (no L, as faces do pilar ficam 4 casas à frente). A janela e os
+  // objetos da parede vão num trecho só, inteiros nele.
+  const PLANTAS = CENA === 'salao' ? { quadrado: { chao: () => true, paredes: { direita: [[0, N, 0]], esquerda: [[0, N, 0]] }, solidos: [] } } : {
+    quadrado: { chao: () => true, paredes: { direita: [[0, 8, 0]], esquerda: [[0, 8, 0]] }, solidos: [] },
+    // o canto do fundo é um pilar de 4 × 4: as faces dele são paredes (u = 4 olhando para a esquerda, v = 4 para a direita)
+    l: { chao: (i, j) => i >= 4 || j >= 4, paredes: { direita: [[0, 4, 4], [4, 8, 0]], esquerda: [[0, 4, 4], [4, 8, 0]] }, solidos: [[0, 4, 0, 4]] },
+    // 6 × 6: as duas paredes 2 casas à frente
+    cubiculo: { chao: (i, j) => i >= 2 && j >= 2, paredes: { direita: [[2, 8, 2]], esquerda: [[2, 8, 2]] }, solidos: [[0, 2, 0, 8], [0, 8, 0, 2]] },
+  };
+  let PLANTA = 'quadrado';
+  try { const gpl = localStorage.getItem(PREFIXO + 'planta'); if (gpl && PLANTAS[gpl]) PLANTA = gpl; } catch { /* a de sempre */ }
+  const planta = () => PLANTAS[PLANTA];
+  // A janela de fábrica de cada planta: a grande, de cortinas até o chão, só cabe na parede inteira do quarto de sempre.
+  const JANELA_DA_PLANTA = { l: { tipo: 'cortinas', parede: 'direita', v: 1.7 }, cubiculo: { tipo: 'cortinas', parede: 'direita', v: 1.4 } };
+  const ehDoChao = (i, j) => i >= 0 && j >= 0 && i < N && j < N && planta().chao(i, j);
+  // O TRECHO de uma parede em que fica o ponto "a" (casas ao longo dela): o que o contém, ou o mais perto.
+  const trechoEm = (parede, a) => { const ts = planta().paredes[parede]; let m = ts[0], dm = Infinity; for (const t of ts) { const d = a < t[0] ? t[0] - a : a > t[1] ? a - t[1] : 0; if (d < dm) { dm = d; m = t; } } return m; };
   function borrar(arr, px) {
     const a = document.createElement('canvas'); a.width = W; a.height = W;
     a.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(arr), W, W), 0, 0);
     const b = document.createElement('canvas'); b.width = W; b.height = W; const gb = b.getContext('2d');
     gb.filter = 'blur(' + px + 'px)'; gb.drawImage(a, 0, 0); return gb.getImageData(0, 0, W, W).data;
   }
-  // A luz de cada lugar, sem a cor das coisas: a peça posta noutro lugar ganha a razão entre a luz de lá e a de onde
-  // foi pintada (a parede da direita é mais escura e mais quente que a da esquerda).
-  const semDiaL = borrar(semDia, 10), semNoiteL = borrar(semNoite, 10), semAbajurL = borrar(semAbajur, 10);
+  let semDia, semNoite, semAbajur, semDiaL, semNoiteL, semAbajurL;
+  function lerCasca() {
+    const sufixo = PLANTA === 'quadrado' ? '' : '-' + PLANTA;
+    semDia = dados(im['sem-dia' + sufixo]); semNoite = dados(im['sem-noite' + sufixo]);
+    // a luz do abajur PINTADA é do quarto de sempre (ver luzPintadaAgora): nas outras, a noite sem ela
+    semAbajur = PLANTA === 'quadrado' ? dados(im['sem-noite-abajur']) : new Uint8ClampedArray(semNoite);
+    // A repintura do abajur veio numa caixa, e a borda reta dela aparece na parede: perto da borda, mistura com a noite.
+    if (PLANTA === 'quadrado') for (let k = 0; k < W * W; k++) {
+      const x = k % W, y = (k / W) | 0, [x0, y0, x1, y1] = CAIXA_ABAJUR;
+      const borda = Math.min(x - x0, x1 - 1 - x, y - y0, y1 - 1 - y);
+      if (borda < 0 || borda >= FAIXA) continue;
+      const t = (borda + 1) / (FAIXA + 1);
+      for (let c = 0; c < 3; c++) semAbajur[k * 4 + c] = semAbajur[k * 4 + c] * t + semNoite[k * 4 + c] * (1 - t);
+    }
+    // A luz de cada lugar, sem a cor das coisas: a peça posta noutro lugar ganha a razão entre a luz de lá e a de onde
+    // foi pintada (a parede da direita é mais escura e mais quente que a da esquerda).
+    semDiaL = borrar(semDia, 10); semNoiteL = borrar(semNoite, 10); semAbajurL = borrar(semAbajur, 10);
+  }
+  const CAIXA_ABAJUR = [190, 100, 322, 292], FAIXA = 14; // a de noite-abajur.mjs
+  lerCasca();
   const TIPOS_JANELA = {};
   for (const [t, meta] of Object.entries(JANELAS)) {
     const d = (a) => (im['jan-' + t + '-' + a] ? dados(im['jan-' + t + '-' + a]) : null);
@@ -304,6 +337,8 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // No salão, a de tijolo (15/10/2026; antes a com cortinas, a com floreira e a redonda, que saía cortada).
   const JANELA_INICIAL = CENA === 'salao' ? { tipo: 'tijolo', parede: 'esquerda', v: 6.6 } : { tipo: 'original', parede: 'direita', v: 0 };
   let JAN = { ...JANELA_INICIAL };
+  const janelaDaPlanta = () => JANELA_DA_PLANTA[PLANTA] ?? JANELA_INICIAL;
+  if (PLANTA !== 'quadrado') JAN = { ...janelaDaPlanta() };
   try { const gj = JSON.parse(localStorage.getItem(PREFIXO + 'janela') ?? 'null'); if (gj && TIPOS_JANELA[gj.tipo]) JAN = gj; } catch { /* a de fábrica */ }
   // OS OBJETOS DA PAREDE: onde cada um está ({ parede, v, h }: a parede, quantas casas andou e quantos px subiu); o que não
   // está aqui fica guardado. De fábrica, os três com função ficam na parede da esquerda (a da direita é da janela).
@@ -318,8 +353,17 @@ if (CENA === 'salao') document.body.classList.add('salao');
     poster: { parede: 'direita', v: 8.6, h: 6 },
     // o pôster "Café & Fofoca" na cozinha, ao lado da prateleira de snacks (dele, 17/10/2026, feito no ChatGPT)
     cafe: { parede: 'esquerda', v: 12.6, h: 6 },
-  } : { quadro: { parede: 'esquerda', v: 0, h: 0 }, fone: { parede: 'esquerda', v: -2.5, h: -6 }, cortica: { parede: 'esquerda', v: 3, h: 0 } };
-  let NA_PAREDE = JSON.parse(JSON.stringify(PAREDE_INICIAL));
+  } : {
+    quadro: { parede: 'esquerda', v: 0, h: 0 }, fone: { parede: 'esquerda', v: -2.5, h: -6 }, cortica: { parede: 'esquerda', v: 3, h: 0 },
+    // a estante de troféus da Corrida dos coelhos (03/11/2026): entra sozinha nos quartos já arrumados (comNovos, abaixo)
+    trofeus: { parede: 'direita', v: 3.9, h: 16 },
+  };
+  // os objetos da parede de fábrica de cada planta (no cubículo a parede é curta: o quadro e os troféus na da esquerda, o
+  // fone embaixo deles, a cortiça em cima do guarda-roupa)
+  const PAREDE_DA_PLANTA = { l: { quadro: { parede: 'esquerda', v: -1.6, h: 0 }, fone: { parede: 'esquerda', v: -3.1, h: -6 }, cortica: { parede: 'esquerda', v: 0.9, h: 0 }, trofeus: { parede: 'direita', v: -3.1, h: 33 } },
+    cubiculo: { quadro: { parede: 'esquerda', v: -0.6, h: 0 }, trofeus: { parede: 'esquerda', v: 2.3, h: 19 }, fone: { parede: 'esquerda', v: 2.0, h: -40 }, cortica: { parede: 'direita', v: -1.1, h: 30 } } };
+  const paredeDaPlanta = () => (CENA === 'quarto' && PAREDE_DA_PLANTA[PLANTA]) || PAREDE_INICIAL;
+  let NA_PAREDE = JSON.parse(JSON.stringify(paredeDaPlanta()));
   // OBJETO NOVO ENTRA SOZINHO (relato dele, 16/10/2026: "atualizei a sala mas não vi o pôster"): a arrumação guarda quais
   // objetos da parede a página conhecia ao salvar ("conhecidos"). Um objeto de fábrica que ela não conhecia (veio depois)
   // entra no lugar de fábrica; o que a pessoa tirou de propósito continua fora. A arrumação de antes desta regra não traz a
@@ -374,20 +418,66 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // (o que fica no CHÃO, como a porta, não sobe nem desce: só anda ao longo da parede)
   // O QUE FICA NO CHÃO (a porta): o pé dele no chão. A porta do salão foi pintada 17 px acima (relato de 15/10/2026: "a porta
   // do banheiro não consegue encostar no chão"), e desce o que falta.
-  const prenderNaParede = (id, P) => { const it = ITENS_PAREDE[id]; return { parede: P.parede, v: Math.round(Math.max(-it.ocupa[0], Math.min(N - it.ocupa[1], P.v)) * 10) / 10, h: it.chao ? -Math.max(0, Math.round(it.alto[0])) : Math.round(Math.max(30 - it.alto[0], Math.min(190 - it.alto[1], P.h))) }; };
-  const mapaDaParede = (P) => { const dx = Math.round(27 * P.v), dy = Math.round(14.25 * P.v) - Math.round(P.h) + DY; return (x, y) => { x += dx + DX; y += dy; if (P.parede === 'esquerda') x = W - 1 - x; return x < 0 || y < 0 || x >= W || y >= W ? -1 : y * W + x; }; };
+  // (inteiro num TRECHO da parede: o do meio dele, ver PLANTAS)
+  const prenderNaParede = (id, P) => { const it = ITENS_PAREDE[id], tr = trechoEm(P.parede, P.v + (it.ocupa[0] + it.ocupa[1]) / 2); return { parede: P.parede, v: Math.round(Math.max(tr[0] - it.ocupa[0], Math.min(tr[1] - it.ocupa[1], P.v)) * 10) / 10, h: it.chao ? -Math.max(0, Math.round(it.alto[0])) : Math.round(Math.max(30 - it.alto[0], Math.min(190 - it.alto[1], P.h))) }; };
+  // (o recuo do trecho: a peça anda "recuo" casas para a frente, na direção que sai da parede)
+  const recuoDe = (parede, a) => trechoEm(parede, a)[2];
+  const mapaDaParede = (P, id) => { const it = ITENS_PAREDE[id], r = it ? recuoDe(P.parede, P.v + (it.ocupa[0] + it.ocupa[1]) / 2) : 0, dx = Math.round(27 * (P.v - r)), dy = Math.round(14.25 * (P.v + r)) - Math.round(P.h) + DY; return (x, y) => { x += dx + DX; y += dy; if (P.parede === 'esquerda') x = W - 1 - x; return x < 0 || y < 0 || x >= W || y >= W ? -1 : y * W + x; }; };
   // a de fábrica e a guardada também passam por aqui (a porta desce até o chão)
   const prenderTudo = (o) => Object.fromEntries(Object.entries(o).map(([id, P]) => [id, prenderNaParede(id, P)]));
   NA_PAREDE = prenderTudo(NA_PAREDE);
   const naParede = new Int8Array(W * W), formaParede = new Int8Array(W * W); // formaParede: o núcleo (ver nucleoDe)
+  // ============================== A COR DA PAREDE E DO PISO (pedido dele, 06/11/2026) ==============================
+  // "O usuário quer alterar a própria sala, como cor da parede, piso." Por código, sobre a casca pintada, como o tapete: cada
+  // canal de cada pixel do reboco (ou do chão) é multiplicado pela razão entre a cor escolhida e a cor MÉDIA dele na casca.
+  // A textura, as sombras e a luz pintada ficam (é a mesma conta em todo pixel), e a noite recebe a MESMA razão: a luz da
+  // noite, que é noite ÷ dia, não muda. Poucas cores, quentes e pouco saturadas, como a paleta do quarto. A escolha mora em
+  // "cores" (parede, piso), como a do tapete: o servidor já a guarda e confere.
+  const CORES_DA_PAREDE = { creme: null, salvia: [204, 210, 184], terracota: [228, 186, 164], azul: [192, 204, 212], lavanda: [210, 196, 212], mostarda: [232, 208, 156], rosa: [234, 200, 194], cinza: [208, 202, 194] };
+  const CORES_DO_PISO = { mel: null, carvalho: [202, 160, 112], nogueira: [104, 68, 50], cerejeira: [168, 94, 70], cinza: [152, 140, 128], pinho: [214, 180, 128] };
+  // O que cada pixel da casca é, para a cor: 1 = reboco da parede, 2 = chão (só os da planta), e a cor média de cada um.
+  let regiaoDaCor = new Uint8Array(W * W), mediaDaParede = [1, 1, 1], mediaDoPiso = [1, 1, 1];
+  const ehReboco = (A, k) => { const r = A[k * 4], g2 = A[k * 4 + 1], b = A[k * 4 + 2], mx = Math.max(r, g2, b), mn = Math.min(r, g2, b); return (r + g2 + b) / 3 > 100 && (mx - mn) / Math.max(1, mx) < 0.42; };
+  const igualACasca = (k) => Math.abs(base[k * 4] - semDia[k * 4]) + Math.abs(base[k * 4 + 1] - semDia[k * 4 + 1]) + Math.abs(base[k * 4 + 2] - semDia[k * 4 + 2]) < 30;
+  function medirRegioesDaCor() {
+    if (CENA !== 'quarto') return;
+    regiaoDaCor.fill(0);
+    const sp = [0, 0, 0], sc = [0, 0, 0]; let np = 0, nc = 0;
+    for (let k = 0; k < W * W; k++) {
+      if (foraDia[k]) continue;
+      if (ehChao[k]) { if (!naJanela[k] || igualACasca(k)) { regiaoDaCor[k] = 2; for (let c = 0; c < 3; c++) sc[c] += semDia[k * 4 + c]; nc++; } continue; }
+      if (!ehReboco(semDia, k)) continue;
+      // na janela, só o que é a própria parede; num objeto da parede, o que o recorte trouxe de parede (fora do núcleo)
+      if (naJanela[k] && !igualACasca(k)) continue;
+      if (naParede[k] && (formaParede[k] || !ehReboco(base, k))) continue;
+      regiaoDaCor[k] = 1; for (let c = 0; c < 3; c++) sp[c] += semDia[k * 4 + c]; np++;
+    }
+    mediaDaParede = sp.map((v) => v / Math.max(1, np)); mediaDoPiso = sc.map((v) => v / Math.max(1, nc));
+  }
+  // a razão de cada canal (null: a de fábrica)
+  const fatorDaCor = (tabela, id, media) => { const alvo = tabela[id]; return alvo ? alvo.map((v, c) => v / Math.max(1, media[c])) : null; };
+  const fatorDaParede = () => fatorDaCor(CORES_DA_PAREDE, CORES.parede, mediaDaParede);
+  const fatorDoPiso = () => fatorDaCor(CORES_DO_PISO, CORES.piso, mediaDoPiso);
+  function pintarRegioes() {
+    const fp = fatorDaParede(), fc = fatorDoPiso();
+    if (!fp && !fc) return;
+    for (let k = 0; k < W * W; k++) {
+      const f = regiaoDaCor[k] === 1 ? fp : regiaoDaCor[k] === 2 ? fc : null;
+      if (!f) continue;
+      for (let c = 0; c < 3; c++) { D[k * 3 + c] = Math.min(255, D[k * 3 + c] * f[c]); fundoNoite[k * 3 + c] = Math.min(255, fundoNoite[k * 3 + c] * f[c]); baseDaLuz[k * 4 + c] = Math.min(255, baseDaLuz[k * 4 + c] * f[c]); }
+    }
+  }
   const guardarJanela = () => { if (soVer) return; try { localStorage.setItem(PREFIXO + 'janela', JSON.stringify(JAN)); } catch { /* fica só nesta visita */ } enviar(); };
   // Para onde vai cada pixel da peça: ao longo da parede, o vetor de uma casa em v (27 px, 14,25 px); na outra parede, o
   // espelho (o quarto é simétrico em volta de x = 256).
-  const mapaDe = (J) => { const dx = Math.round(27 * J.v), dy = Math.round(14.25 * J.v) + DY; return (x, y) => { x += dx + DX; y += dy; if (J.parede === 'esquerda') x = W - 1 - x; return x < 0 || y < 0 || x >= W || y >= W ? -1 : y * W + x; }; };
+  const mapaDe = (J) => { const T = TIPOS_JANELA[J.tipo], r = T ? recuoDe(J.parede, J.v + (T.ocupa[0] + T.ocupa[1]) / 2) : 0, dx = Math.round(27 * (J.v - r)), dy = Math.round(14.25 * (J.v + r)) + DY; return (x, y) => { x += dx + DX; y += dy; if (J.parede === 'esquerda') x = W - 1 - x; return x < 0 || y < 0 || x >= W || y >= W ? -1 : y * W + x; }; };
   // Onde a janela pode ficar: inteira na parede.
-  const limitesDe = (t) => [-TIPOS_JANELA[t].ocupa[0], N - TIPOS_JANELA[t].ocupa[1]];
+  // (no trecho do meio dela; numa planta sem trecho em que ela caiba, não vale: ver cabeJanela)
+  const limitesDe = (t, J = JAN) => { const o = TIPOS_JANELA[t].ocupa, tr = trechoEm(J.parede, J.v + (o[0] + o[1]) / 2); return [tr[0] - o[0], tr[1] - o[1]]; };
+  const cabeJanela = (t) => Object.values(planta().paredes).some((ts) => ts.some((tr) => tr[1] - tr[0] >= TIPOS_JANELA[t].ocupa[1] - TIPOS_JANELA[t].ocupa[0] - 0.01));
   const ehChao = new Uint8Array(W * W);
-  for (let k = 0; k < W * W; k++) { const [u, v] = uvRapido(k % W + 0.5, ((k / W) | 0) + 0.5); ehChao[k] = u > 0 && u < N && v > 0 && v < N ? 1 : 0; }
+  const preencherChao = () => { for (let k = 0; k < W * W; k++) { const [u, v] = uvRapido(k % W + 0.5, ((k / W) | 0) + 0.5); ehChao[k] = u > 0 && u < N && v > 0 && v < N && ehDoChao(Math.floor(u), Math.floor(v)) ? 1 : 0; } };
+  preencherChao();
   function compor(fundo, peca, Ld, Ls, luar, ganho, mapa) {
     const out = new Uint8ClampedArray(fundo);
     if (luar) for (let k = 0; k < W * W; k++) {
@@ -439,8 +529,8 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // claros do fundo que ficavam na beira. As seis retas da silhueta (as quatro diagonais e as duas laterais) são medidas na
   // própria pintura, e o quarto passa a ser recortado por elas, em escada regular. A borda nova é repintada com o contorno
   // escuro que a pintura tinha ali perto (ver contornoLimpo). Vale para todas as versões (dia, noite, abajur…).
-  const fora0 = fundoDe(semDia);
-  const foraIdeal = (() => {
+  let fora0 = fundoDe(semDia);
+  const silhuetaIdeal = () => {
     const topo = new Int16Array(W).fill(-1), pe = new Int16Array(W).fill(-1);
     for (let x = 0; x < W; x++) for (let y = 0; y < W; y++) if (!fora0[y * W + x]) { if (topo[x] < 0) topo[x] = y; pe[x] = y; }
     let x0 = 0, x1 = W - 1;
@@ -461,7 +551,9 @@ if (CENA === 'salao') document.body.classList.add('salao');
       for (let y = Math.max(0, yt); y <= Math.min(W - 1, yb); y++) f[y * W + x] = 0;
     }
     return f;
-  })();
+  };
+  // (as plantas novas, janelas/plantas.py, saem com a borda limpa: a silhueta é a da própria casca)
+  let foraIdeal = PLANTA === 'quadrado' ? silhuetaIdeal() : fora0;
   // A borda nova: o pixel da beira ganha o mais escuro da pintura original em volta (até 2 px); o que era fundo e passou
   // para dentro ganha a cor do vizinho de dentro mais perto.
   function contornoLimpo(img) {
@@ -483,7 +575,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
       if (melhor >= 0) for (let c = 0; c < 3; c++) img[k * 4 + c] = fonte[melhor * 4 + c];
     }
   }
-  const foraDia = foraIdeal, foraNoite = foraIdeal;
+  let foraDia = foraIdeal, foraNoite = foraIdeal;
   // O QUADRO DA COMUNIDADE (no salão, 15/10/2026: "o quadro precisa mostrar a imagem da comunidade"). É o quadro de
   // fotos com a imagem no lugar das fotos, por código: a parte de dentro da moldura (medida no recorte, parede/quadro/,
   // nas coordenadas da parede da direita onde foi pintado) é um paralelogramo — colunas em pé, e o alto e o pé subindo
@@ -662,7 +754,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
     naParede.fill(0); formaParede.fill(0); luzesDaParede = [];
     const ids = Object.keys(NA_PAREDE).filter((id) => TEXTURAS_PAREDE[id]);
     ids.forEach((id, i) => {
-      const P = NA_PAREDE[id], T2 = id === 'quadro' && CENA === 'salao' && IMAGEM_DA_COMUNIDADE ? quadroComImagem(P.parede) : texturaNaParede(id, P.parede), mp = mapaDaParede(P);
+      const P = NA_PAREDE[id], T2 = id === 'quadro' && CENA === 'salao' && IMAGEM_DA_COMUNIDADE ? quadroComImagem(P.parede) : texturaNaParede(id, P.parede), mp = mapaDaParede(P, id);
       base = compor(base, T2.dia, semDiaL, semDiaL, null, null, mp);
       if (T.cortinaDia) cortinaDia = compor(cortinaDia, T2.dia, semDiaL, semDiaL, null, null, mp);
       abertaDia = compor(abertaDia, T2.dia, semDiaL, semDiaL, null, null, mp);
@@ -688,13 +780,14 @@ if (CENA === 'salao') document.body.classList.add('salao');
       }
     });
     ordemDaParede = ids;
+    medirRegioesDaCor();
     // AS LUZINHAS NA FRENTE (relato dele, 16/10/2026: "a janela está passando por cima das luzes"): o cordão está
     // pintado na casca, e o que vai na parede era composto por cima dele. Os pixels dele voltam da casca, por cima de tudo.
     if (LUZES) for (const [A, F] of [[base, semDia], [cortinaDia, semDia], [abertaDia, semDia], [noite, semNoite], [noiteSemLuar, semNoite], [noiteAbajur, semAbajur], [abajurSemLuar, semAbajur]])
       for (const k of LUZES) for (let c = 0; c < 3; c++) A[k * 4 + c] = F[k * 4 + c];
     if (!T.cortinaDia) cortinaDia = base;
     cortinaNoite = noiteSemLuar;
-    for (const A of new Set([base, noite, noiteAbajur, noiteSemLuar, abajurSemLuar, cortinaDia, abertaDia])) contornoLimpo(A);
+    if (PLANTA === 'quadrado') for (const A of new Set([base, noite, noiteAbajur, noiteSemLuar, abajurSemLuar, cortinaDia, abertaDia])) contornoLimpo(A);
     vidro = new Uint8ClampedArray(W * W * 4);
     naJanela.fill(0); noCaixilho.fill(0); vao.fill(0); vidroAberto.fill(0); origemDoVidro.fill(-1);
     for (let k = 0; k < W * W; k++) {
@@ -705,6 +798,11 @@ if (CENA === 'salao') document.body.classList.add('salao');
       const d = mapa(k % W, (k / W) | 0);
       if (d < 0) continue;
       naJanela[d] = 1;
+      // O QUE ESTÁ PENDURADO NA FRENTE DA JANELA NÃO É VIDRO (relato dele, 06/11/2026: "o troféu está com mancha"): a
+      // paisagem é escrita em todo pixel de vidro na montagem da cena, depois dos objetos da parede, e aparecia por dentro da
+      // taça dourada posta na frente da janela (azul de noite, verde de dia). As pinturas da cortina e da janela aberta já
+      // levam os objetos da parede por cima; só a vista escapava.
+      if (naParede[d]) continue;
       if (emVidro) { vidro[d * 4 + 3] = 255; origemDoVidro[d] = k; }
       if (ab || emVao || emVA) noCaixilho[d] = 1;
       if (emVao) { vao[d] = 1; origemDoVidro[d] = k; }
@@ -727,6 +825,8 @@ if (CENA === 'salao') document.body.classList.add('salao');
     noiteLimpa = null;
   }
   let noiteLimpa = null, ordemDaParede = [], luzesDaParede = [];
+  if (!cabeJanela(JAN.tipo)) JAN = { ...janelaDaPlanta() };
+  { const [a0, a1] = limitesDe(JAN.tipo); JAN = { ...JAN, v: Math.max(a0, Math.min(a1, JAN.v)) }; }
   aplicarJanela();
   const pecas = porTipo({});
   for (const m of MOVEIS) {
@@ -785,11 +885,18 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // pintura dele que aparece (com a luz e a sombra de lá); mexido, entra a vista solta, com a intensidade da luz do lugar.
   const KX = (CANTOS.direita[0] - CANTOS.fundo[0]) / N;
   const VAZIA = new Uint8ClampedArray(W * W * 4);
-  function pecaDeImagem(img, id) {
-    const movel = dadosPequenos(img);
+  // O OBJETO EM CIMA DE MÓVEL ALTO SAÍA CORTADO (relato dele, 06/11/2026: "o livro em cima do armário cortou"): a vista
+  // de um móvel começa no canto (0, 0) do quadro dela, e o guarda-roupa enche os 113 px da imagem; o livro posto no tampo
+  // passava da linha 0 e o que ficava acima dela não era desenhado (a caneca no fundo do tampo sumia inteira). O móvel que
+  // recebe objetos começa MAIS ABAIXO E À DIREITA no quadro (a margem): tudo o que se mede nele (a frente, o pé de cada
+  // coluna, a caixa, a tela) sai do próprio quadro, e a posição na cena não muda.
+  // (só os móveis com tampo; a TV e o fliperama não, porque as telas deles foram medidas na imagem: salao/moveis/telas.json)
+  const MARGEM_DO_TAMPO = { ilha: [40, 72], 'mesa-jogo': [40, 72], mesa: [40, 72], abajur: [40, 72], 'guarda-roupa': [40, 72], balcao: [40, 72], mesinha: [40, 72], estante: [40, 72] };
+  function pecaDeImagem(img, id, margem = MARGEM_DO_TAMPO[tipoDe(id)] ?? [0, 0]) {
+    const movel = dadosPequenos(img, W, W, margem[0], margem[1]);
     // SÓ AS LINHAS ONDE A PEÇA EXISTE (desempenho, 16/10/2026: no salão, de 1024 × 1024, cada passada pela imagem inteira
     // custava ~15 ms, e são umas oito por vista, em ~100 vistas). Fora delas a imagem é transparente: o resultado é o mesmo.
-    let ly0 = 0, ly1 = Math.min(W, img.height || W) - 1; // (abaixo da altura da imagem, tudo é vazio)
+    let ly0 = 0, ly1 = Math.min(W, (img.height || W) + margem[1]) - 1; // (abaixo da altura da imagem, tudo é vazio)
     const linhaVazia = (y) => { for (let k = y * W * 4 + 3, f = (y + 1) * W * 4; k < f; k += 4) if (movel[k]) return false; return true; };
     while (ly0 < W && linhaVazia(ly0)) ly0++;
     while (ly1 > ly0 && linhaVazia(ly1)) ly1--;
@@ -804,7 +911,10 @@ if (CENA === 'salao') document.body.classList.add('salao');
     // comuns nas últimas linhas, mas aparecem no móvel inteiro (tirá-las deixava a mesa transparente, 14/10/2026).
     const [sr, sg, sb] = sombraCor.split(',').map(Number), parecida = (k) => Math.abs(movel[k * 4] - sr) + Math.abs(movel[k * 4 + 1] - sg) + Math.abs(movel[k * 4 + 2] - sb) < 18;
     let emCima = 0; for (let k = K0; k < Math.max(K0, (fundo - 25) * W); k++) if (movel[k * 4 + 3] > 127 && parecida(k)) emCima++;
-    if (vezes > 12 && emCima <= vezes * 0.1) {
+    // (NÃO NOS OBJETOS DE CIMA, auditoria de 06/11/2026: eles vêm sem sombra, e a regra levava a cor mais comum do pé, que
+    // é o corpo deles — a caneca de costas perdia o corpo inteiro e virava um contorno vazio, com o móvel aparecendo por
+    // dentro; o refrigerante, os livros e a pipoca perdiam o fundo)
+    if (vezes > 12 && emCima <= vezes * 0.1 && !OBJETOS_DE_CIMA[id]) {
       for (let k = K0; k < K1; k++) if (parecida(k)) movel[k * 4 + 3] = 0;
       // O QUE SOBRA DA SOMBRA, SOLTO (relato dele, 17/10/2026: "a poltrona está com uma mancha na base, parece um pixel
       // perdido"): o pixel da sombra num tom um pouco diferente não sai pela cor, e fica sozinho embaixo do móvel. Pedaço de
@@ -855,7 +965,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
     let bx0 = W, bx1 = 0;
     for (let y = y1 - 11; y <= y1; y++) for (let x = 0; x < W; x++) if (y >= 0 && movel[(y * W + x) * 4 + 3]) { bx0 = Math.min(bx0, x); bx1 = Math.max(bx1, x); }
     const meioDaBase = [(bx0 + bx1 + 1) / 2, y1 - (bx1 - bx0 + 1) / 4];
-    return { id, movel, buraco, sombra: VAZIA, topo: y0, peColuna, frente: [sx, y1], mede, centroTopo: soma / Math.max(1, n), meioDaBase, caixa: [x0, y0, x1 + 1, y1 + 1] };
+    return { id, movel, buraco, sombra: VAZIA, topo: y0, peColuna, frente: [sx, y1], mede, centroTopo: soma / Math.max(1, n), meioDaBase, larguraDaBase: Math.max(0, bx1 - bx0 + 1), caixa: [x0, y0, x1 + 1, y1 + 1] };
   }
   const VISTAS = porTipo({});
   for (const id of MOVEIS_GIRADOS) if (im['giro-' + id + '0']) VISTAS[id] = [0, 1, 2, 3].map((l) => pecaDeImagem(im['giro-' + id + l], id));
@@ -1463,8 +1573,19 @@ if (CENA === 'salao') document.body.classList.add('salao');
   const PINTURA_NO_QUARTO = Object.fromEntries(fixos.map((m) => [m.id, { c: centro(m.pe), lado: LADO_PINTADO[m.id] ?? 0 }]));
   const origemPintada = (id) => (CENA === 'salao' ? INICIAL[id] : PINTURA_NO_QUARTO[id]);
   const INICIAL = arrumacaoInicial();
+  // A ARRUMAÇÃO DE FÁBRICA DE CADA PLANTA (06/11/2026): os mesmos móveis, com os de função (a cama, o criado-mudo, a mesa e o
+  // guarda-roupa) sempre num lugar de chão. No L, a cama e o criado-mudo no braço da direita, a mesa e o guarda-roupa no da
+  // esquerda (a mesa de costas para a face do pilar, o guarda-roupa na parede de fora), o tapete com o pufe na frente; no cubículo, tudo encostado nas
+  // duas paredes, que andaram 2 casas para a frente.
+  const INICIAIS = { quadrado: INICIAL };
+  if (CENA === 'quarto') {
+    const de = (pos) => { const a = JSON.parse(JSON.stringify(INICIAL)); for (const [id, [u, v, lado]] of Object.entries(pos)) if (a[id]) a[id] = { c: [u, v], lado }; return a; };
+    INICIAIS.l = de({ cama: [1.5, 7, 0], abajur: [0.5, 5.5, 0], mesa: [4.5, 1.5, 0], 'guarda-roupa': [7, 0.5, 3], 'planta-alta': [4.5, 3.5, 0], 'planta-baixa': [3.5, 4.5, 0], tapete: [6, 6, 0], pufe: [6, 6, 0], poltrona: [7, 3, 0] });
+    INICIAIS.cubiculo = de({ cama: [3.5, 7, 0], abajur: [2.5, 5.5, 0], mesa: [4.5, 2.5, 3], 'guarda-roupa': [2.5, 3, 0], 'planta-alta': [7.5, 2.5, 0], 'planta-baixa': [6.5, 2.5, 0], tapete: [6, 6, 0], pufe: [6, 6, 0], poltrona: [7, 4, 0] });
+  }
+  const INI = () => INICIAIS[PLANTA] ?? INICIAL;
   // A ARRUMAÇÃO DE CADA UM fica no navegador por enquanto (na página de teste); no app, ela vai para o servidor.
-  let ARR = JSON.parse(JSON.stringify(INICIAL));
+  let ARR = JSON.parse(JSON.stringify(INI()));
   try {
     const guardada = JSON.parse(localStorage.getItem(PREFIXO + 'arrumacao-2') ?? 'null');
     // Móvel novo (as plantas, 15/10/2026) entra no lugar de fábrica, sem desfazer o resto do que a pessoa arrumou.
@@ -1490,6 +1611,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   for (const id of GUARDADOS) delete ARR[id];
   const guardarGuardados = () => { if (soVer) return; try { localStorage.setItem(PREFIXO + 'guardados', JSON.stringify([...GUARDADOS])); } catch { /* fica só nesta visita */ } };
   window.arrumacaoDoTeste = () => ARR; // para o teste
+  window.tamDoTeste = (id, l) => tamDe(id, l); // para o teste
   const guardar = () => { if (soVer) return; try { localStorage.setItem(PREFIXO + 'arrumacao-2', JSON.stringify(ARR)); } catch { /* fica só nesta visita */ } enviar(); };
   const ehDeitado = (id) => tipoDe(id) === 'tapete';
   // No lugar da pintura? (mesmo centro e mesma posição; a cama de casal nunca, ela não foi pintada aqui)
@@ -1505,6 +1627,8 @@ if (CENA === 'salao') document.body.classList.add('salao');
     if (noLugar(id, c, lado) || !VISTAS[id]) return peDe(id, c, lado);
     const [du, dv] = VISTAS[id][lado].mede; return [c[0] - du / 2, c[0] + du / 2, c[1] - dv / 2, c[1] + dv / 2];
   };
+  // O pé inteiro em casas de chão (a planta em L e o cubículo têm casas fora)
+  const peNoChao = (pe) => { for (let i = Math.floor(pe[0] + 0.01); i < Math.ceil(pe[1] - 0.01); i++) for (let j = Math.floor(pe[2] + 0.01); j < Math.ceil(pe[3] - 0.01); j++) if (!ehDoChao(i, j)) return false; return true; };
   const sobrepoe = (a, b) => a[0] < b[1] - 0.01 && a[1] > b[0] + 0.01 && a[2] < b[3] - 0.01 && a[3] > b[2] + 0.01;
   // O app diz no endereço se é noite (16/10/2026, relato dele: "por um segundo o quarto começa de dia, depois carrega a
   // noite"): a mensagem com o tema só chega depois do "pronto", e o primeiro quadro saía de dia.
@@ -1512,7 +1636,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // Cabe aqui? Dentro do quarto e sem passar por cima de outro móvel (o tapete fica embaixo de tudo).
   const ocupa = (c, quem = pegado, lado = ARR[quem].lado) => {
     const pe = peDe(quem, c, lado);
-    if (pe[0] < -0.01 || pe[2] < -0.01 || pe[1] > N + 0.01 || pe[3] > N + 0.01) return true;
+    if (pe[0] < -0.01 || pe[2] < -0.01 || pe[1] > N + 0.01 || pe[3] > N + 0.01 || !peNoChao(pe)) return true;
     if (ehDeitado(quem)) return false;
     return Object.keys(ARR).some((id) => id !== quem && !ehDeitado(id) && sobrepoe(peDe(id), pe));
   };
@@ -1576,10 +1700,10 @@ if (CENA === 'salao') document.body.classList.add('salao');
     if (cadeira.v < cv + r) empurrar(0, 1, cv + r - cadeira.v, Q);
     if (cadeira.u > N - r) empurrar(-1, 0, cadeira.u - (N - r), Q);
     if (cadeira.v > N - r) empurrar(0, -1, cadeira.v - (N - r), Q);
-    // Os móveis: o ponto do pé mais perto do centro dela.
-    for (const id of Object.keys(ARR)) {
-      if (ehDeitadoOuNada(id)) continue;
-      const [u0, u1, v0, v1] = peDe(id);
+    // Os móveis (e o que a planta tira do chão, como o pilar do L): o ponto do pé mais perto do centro dela.
+    for (const id of [...Object.keys(ARR), ...planta().solidos.map((_, i) => '#' + i)]) {
+      if (id[0] !== '#' && ehDeitadoOuNada(id)) continue;
+      const [u0, u1, v0, v1] = id[0] === '#' ? planta().solidos[+id.slice(1)] : peDe(id);
       const qu = Math.min(u1, Math.max(u0, cadeira.u)), qv = Math.min(v1, Math.max(v0, cadeira.v));
       let du = cadeira.u - qu, dv = cadeira.v - qv, d = Math.hypot(du, dv);
       if (d >= r) continue;
@@ -1686,9 +1810,9 @@ if (CENA === 'salao') document.body.classList.add('salao');
     if (c[1] + tv / 2 > N) { c[1] = N - tv / 2; viva.vv = -Math.abs(viva.vv) * Q; }
     if (ehDeitado(id)) return;
     // os outros móveis: sai pelo lado em que entrou menos, e a velocidade daquele eixo volta pequena
-    for (const o of Object.keys(ARR)) {
-      if (o === id || ehDeitado(o)) continue;
-      const a = caixaDoVivo(c), b = peDe(o);
+    for (const o of [...Object.keys(ARR), ...planta().solidos.map((_, i) => '#' + i)]) {
+      if (o === id || (o[0] !== '#' && ehDeitado(o))) continue;
+      const a = caixaDoVivo(c), b = o[0] === '#' ? planta().solidos[+o.slice(1)] : peDe(o);
       if (!sobrepoe(a, b)) continue;
       const saidas = [[b[1] - a[0], 1, 0], [a[1] - b[0], -1, 0], [b[3] - a[2], 0, 1], [a[3] - b[2], 0, -1]].sort((x, y) => x[0] - y[0])[0];
       c[0] += saidas[1] * (saidas[0] + 0.001); c[1] += saidas[2] * (saidas[0] + 0.001);
@@ -1783,10 +1907,12 @@ if (CENA === 'salao') document.body.classList.add('salao');
 
   // A grade em pixel: a casa de cada pixel do chão; a borda é onde a casa muda.
   const casa = new Int16Array(W * W).fill(-1);
-  for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) {
+  let casaSuja = false; // a planta mudou: a placa recebe a casa de novo
+  const preencherCasa = () => { casa.fill(-1); casaSuja = true; for (let y = 0; y < W; y++) for (let x = 0; x < W; x++) {
     const [u, v] = uvRapido(x + 0.5, y + 0.5);
-    if (u >= 0 && v >= 0 && u < N && v < N) casa[y * W + x] = Math.floor(u) * N + Math.floor(v);
-  }
+    if (u >= 0 && v >= 0 && u < N && v < N && ehDoChao(Math.floor(u), Math.floor(v))) casa[y * W + x] = Math.floor(u) * N + Math.floor(v);
+  } };
+  preencherCasa();
 
   const VISTO = new Uint8Array(W * W); // os pixels que o móvel pego desenhou neste quadro (para o contorno)
   const dono = new Array(W * W).fill(''), donoObj = new Array(W * W).fill(''), baseDonoObj = new Array(W * W).fill('');
@@ -1849,7 +1975,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   let estado = 'atoa', falando = false, semAndar = matchMedia('(prefers-reduced-motion: reduce)').matches;
   // A casa ocupada: o pé dos móveis fixos (menos o tapete), e o pufe e a poltrona (2 × 2 em volta do cruzamento).
   const livre = (i, j) => {
-    if (i < 0 || j < 0 || i >= N || j >= N) return false;
+    if (!ehDoChao(i, j)) return false;
     // A fileira junto da parede da janela (u = 0) é onde descem as cortinas e o peitoril, pintados na parede: ali o
     // coelho parecia atravessar a cortina (relato de 14/10/2026).
     // (só com a janela original, a de cortinas até o chão, e na parede onde ela estiver)
@@ -2849,8 +2975,10 @@ if (CENA === 'salao') document.body.classList.add('salao');
     const [us, ut] = d < 1e-3 ? [Math.SQRT1_2, Math.SQRT1_2] : [ds / d, dt / d]; // no meio exato: para a frente
     return [Math.min(0.9, Math.max(0.1, zs + us * r)), Math.min(0.9, Math.max(0.1, zt + ut * r))];
   }
+  // (no pé MEDIDO, o do desenho: o da grade é arredondado para cima, e o guarda-roupa de lado tem 1,6 casa de desenho num pé
+  // de 2 — o objeto posto na borda da grade ficava no ar, ao lado dele)
   function ondeEmCima(o) {
-    const pe = peDe(o.em), l = ARR[o.em].lado;
+    const pe = peMedidoDe(o.em), l = ARR[o.em].lado;
     let [a, b] = foraDoQueEstaEmPe(o.em, o.s, o.t);
     for (let r = 0; r < l; r++) [a, b] = [1 - b, a];
     let u = pe[0] + a * (pe[1] - pe[0]), v = pe[2] + b * (pe[3] - pe[2]);
@@ -2860,7 +2988,13 @@ if (CENA === 'salao') document.body.classList.add('salao');
       const [cu, cv] = centro(pe), falta = 0.3 - (u - cu + v - cv);
       if (falta > 0) { u = Math.min(pe[1] - 0.1, u + falta / 2); v = Math.min(pe[3] - 0.1, v + falta / 2); }
     }
-    return [u, v];
+    // O OBJETO NÃO PENDURA FORA DO TAMPO (auditoria de 06/11/2026): o ponto de apoio podia ir até 4% da borda, e meia caneca
+    // ficava no ar, na frente do criado-mudo (os objetos estão no tamanho inteiro, maiores que o tampo pede). O pé dele, um
+    // círculo do tamanho da base do desenho (meia diagonal de casa = 38 px), fica dentro do tampo; no tampo menor que ele,
+    // no meio.
+    const vis = OBJ_VISTAS[o.tipo]?.[(l + o.lado) % 4], r = vis ? vis.larguraDaBase / 2 / 38 : 0;
+    const dentro = (x, a0, a1) => { const m = Math.min(r, (a1 - a0) / 2); return Math.max(a0 + m, Math.min(a1 - m, x)); };
+    return [dentro(u, pe[0], pe[1]), dentro(v, pe[2], pe[3])];
   }
   const comObjetosCache = new WeakMap();
   // A peça do móvel com os objetos de cima desenhados nela, e um mapa de qual objeto é cada pixel (para pegá-los).
@@ -2929,7 +3063,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // O criado-mudo pintado tinha falhas onde a cama antiga o tapava (relato de 14/10/2026, ao tirar a cama): ele é
   // sempre a vista solta, e a luz pintada vale com ele no lugar e na posição de origem.
   const naOrigem = (id) => !!origemPintada(id) && Math.abs(ARR[id].c[0] - origemPintada(id).c[0]) < 0.01 && Math.abs(ARR[id].c[1] - origemPintada(id).c[1]) < 0.01 && ARR[id].lado === origemPintada(id).lado;
-  const luzPintadaAgora = () => CENA === 'quarto' && modo === 'noite' && luzPintada && !abajurApagado && ARR.abajur && naOrigem('abajur');
+  const luzPintadaAgora = () => CENA === 'quarto' && PLANTA === 'quadrado' && modo === 'noite' && luzPintada && !abajurApagado && ARR.abajur && naOrigem('abajur');
   // A pintura da noite sem a silhueta do criado-mudo: o buraco é preenchido com a luz em volta, de fora para dentro
   // (cada pixel vira a média dos vizinhos já preenchidos), feito uma vez.
   function noiteAbajurSemMovel() {
@@ -3005,6 +3139,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
       if (fechada ? !naJanela[k] : !noCaixilho[k]) continue;
       for (let c = 0; c < 3; c++) baseDaLuz[k * 4 + c] = !fechada && vao[k] ? 0 : D[k * 3 + c];
     }
+    pintarRegioes();
     // Os móveis, de trás para a frente (a ordem pela área no chão).
     // O móvel que está sendo arrastado ou deslizando não entra na fotografia: ele é desenhado vivo, a cada quadro.
     variante = varianteDoPufe();
@@ -3023,8 +3158,9 @@ if (CENA === 'salao') document.body.classList.add('salao');
       tampoDaIlha = [[pe[0] + m2, pe[2] + m2], [pe[1] - m2, pe[2] + m2], [pe[1] - m2, pe[3] - m2], [pe[0] + m2, pe[3] - m2]].map(([u, v]) => { const [x, y] = ponto(u, v); return [x, y - TOPOS.ilha]; });
       const [cu, cv] = centro(pe), [x, y] = ponto(cu, cv); luzDoFogao = [x, y - TOPOS.ilha];
     }
+    const fcPiso = fatorDoPiso();
     for (const it of lista) {
-      const { p, dx, dy, fator, contato, raio, contatoPe } = it;
+      const { p, dx, dy, fator, contato, raio, contatoPe } = it, recorte = fcPiso && !p.frente;
       const hs = alturasDe(it);
       // A sombra de contato de quem não a trouxe pintada (a poltrona): uma elipse no chão, mais escura no meio.
       const [rx, ry] = raio ?? [30, 15];
@@ -3058,6 +3194,8 @@ if (CENA === 'salao') document.body.classList.add('salao');
         if (a) { const f = 1 - a / 255; for (let c = 0; c < 3; c++) { D[d * 3 + c] *= f; fundoNoite[d * 3 + c] *= f; } }
         if (p.movel[k * 4 + 3]) {
           for (let c = 0; c < 3; c++) D[d * 3 + c] = p.movel[k * 4 + c] * fator;
+          // (igual ao chão de lá, ou da cor da madeira: o tapete é verde e o pufe cinza, e a madeira na borda deles é chão)
+          if (recorte && ehChao[k] && (Math.abs(p.movel[k * 4] - semDia[k * 4]) + Math.abs(p.movel[k * 4 + 1] - semDia[k * 4 + 1]) + Math.abs(p.movel[k * 4 + 2] - semDia[k * 4 + 2]) < 30 || (p.movel[k * 4] > p.movel[k * 4 + 1] + 12 && p.movel[k * 4] - p.movel[k * 4 + 2] > 40))) for (let c = 0; c < 3; c++) D[d * 3 + c] = Math.min(255, D[d * 3 + c] * fcPiso[c]);
           eMovel[d] = 1; peY[d] = p.peColuna[k % W] + dy; dono[d] = it.dono ?? p.id; donoObj[d] = p.objPx ? p.objPx[k] : '';
           // A altura visível (da forma) dá o ponto do chão embaixo dele e a profundidade; fora da forma, o pé da coluna.
           const h = hs.h(k);
@@ -3391,7 +3529,8 @@ void main() {
       if (tudo) sujo = true;
       const noiteAgora = modo === 'noite';
       if (noiteAgora && sujo) { subir('tFN', fundoNoite); subir('tAc', acesa); sujo = false; }
-      if (!uv) { uv = new Float32Array(W * W * 2); for (let k = 0; k < W * W; k++) { uv[k * 2] = mapaU[k]; uv[k * 2 + 1] = mapaV[k]; } subir('tUV', uv); subir('tCasa', casa); }
+      if (!uv) { uv = new Float32Array(W * W * 2); for (let k = 0; k < W * W; k++) { uv[k * 2] = mapaU[k]; uv[k * 2 + 1] = mapaV[k]; } subir('tUV', uv); subir('tCasa', casa); casaSuja = false; }
+      if (casaSuja) { subir('tCasa', casa); casaSuja = false; }
       const fora = modo === 'dia' ? foraDia : foraNoite;
       for (const [nome, dados] of noiteAgora ? [['tBase', baseDaLuz], ['tRaz', P.razaoPe], ['tDiaPe', diaPe], ['tFora', fora]] : [['tFora', fora]]) if (dados && ((tudo && nome !== 'tFora') || T[nome].dados !== dados)) subir(nome, dados);
       gl.uniform1i(u('W'), W); gl.uniform1i(u('N'), N);
@@ -3577,7 +3716,7 @@ void main() {
     // o objeto de parede vivo: os pixels dele levados para onde está agora
     let paredeViva = null;
     if (paredePega?.vivo && TEXTURAS_PAREDE[paredePega.id]) {
-      const id = paredePega.id, T2 = texturaNaParede(id, paredePega.vivo.parede), mp = mapaDaParede(paredePega.vivo), cx = caixaDoItemDaParede(id), px = [];
+      const id = paredePega.id, T2 = texturaNaParede(id, paredePega.vivo.parede), mp = mapaDaParede(paredePega.vivo, id), cx = caixaDoItemDaParede(id), px = [];
       let bx0 = W, by0 = W, bx1 = 0, by1 = 0;
       const tex = modo === 'noite' && CENA !== 'salao' ? T2.noite : T2.dia, f = modo === 'noite' && CENA === 'salao' ? 0.6 : 1;
       for (let y = cx[1]; y < cx[3]; y++) for (let x = cx[0]; x < cx[2]; x++) {
@@ -3695,7 +3834,7 @@ void main() {
     bj.setAttribute('aria-pressed', String(aberta)); bj.textContent = 'Janela: ' + (aberta ? 'aberta' : 'fechada');
     bc.setAttribute('aria-pressed', String(fechada)); bc.textContent = 'Cortina: ' + (fechada ? 'fechada' : 'aberta');
   };
-  const prenderJanela = (J) => { const [a, b] = limitesDe(J.tipo); return { ...J, v: Math.max(a, Math.min(b, J.v)) }; };
+  const prenderJanela = (J) => { const [a, b] = limitesDe(J.tipo, J); return { ...J, v: Math.max(a, Math.min(b, J.v)) }; };
   const mudarJanela = (J, rapido) => { JAN = prenderJanela(J); aplicarJanela(rapido); assinaturaCena = ''; botoesDaJanela(); if (!rapido) { guardarJanela(); decidir(); } desenhar(); };
   btj.onclick = () => mudarJanela({ ...JAN, tipo: ORDEM_JANELAS[(ORDEM_JANELAS.indexOf(JAN.tipo) + 1) % ORDEM_JANELAS.length] });
   botoesDaJanela();
@@ -3705,6 +3844,12 @@ void main() {
   // Em que parede o ponteiro está, e em que casa dela (v, contada do canto do fundo).
   const naParedeDo = (e) => {
     const r = tela.getBoundingClientRect(), px = (e.clientX - r.left) * W / r.width;
+    // o TRECHO de parede que está naquela coluna (no L, a face do pilar que olha para a esquerda fica na metade esquerda
+    // da tela, e é uma parede "da direita": ver PLANTAS)
+    for (const parede of ['direita', 'esquerda']) for (const t of planta().paredes[parede]) {
+      const a = ((parede === 'direita' ? px : W - 1 - px) - W / 2) / KX + t[2];
+      if (a >= t[0] - 0.01 && a <= t[1] + 0.01) return { parede, v: a };
+    }
     const parede = px < W / 2 ? 'esquerda' : 'direita', x = parede === 'direita' ? px : W - 1 - px;
     return { parede, v: (x - W / 2) / KX };
   };
@@ -3727,7 +3872,7 @@ void main() {
   const rotulo = document.getElementById('rotulo');
   function funcaoEm(k) {
     // No salão, quem não administra só olha a arrumação, mas USA o salão: as funções valem para todo mundo.
-    if (!FUNCOES || EDITANDO || (soVer && CENA !== 'salao')) return null;
+    if (!FUNCOES || EDITANDO || (soVer && CENA !== 'salao' && !visitaNoApp)) return null;
     const ip = naParede[k];
     if (ip && !dono[k]) { const f = ITENS_PAREDE[ordemDaParede[ip - 1]].funcao; return f && FUNCOES[f] ? f : null; }
     if (dono[k]) { const f = FUNCAO_DO_MOVEL[dono[k]]; return f && FUNCOES[f] ? f : null; }
@@ -3839,7 +3984,7 @@ void main() {
     let melhor = null;
     for (const id of Object.keys(TOPOS)) {
       if (!ARR[id]) continue;
-      const [u, v] = uvDe(x, y + TOPOS[id]), pe = peDe(id);
+      const [u, v] = uvDe(x, y + TOPOS[id]), pe = peMedidoDe(id);
       if (u < pe[0] - folga || u > pe[1] + folga || v < pe[2] - folga || v > pe[3] + folga) continue;
       let a = (u - pe[0]) / (pe[1] - pe[0]), b = (v - pe[2]) / (pe[3] - pe[2]);
       for (let k = 0; k < ARR[id].lado; k++) [a, b] = [b, 1 - a]; // o avesso do giro de ondeEmCima
@@ -3905,6 +4050,25 @@ void main() {
     caixa.replaceChildren(...Object.entries(OBJETOS_DE_CIMA).map(([id, it]) => { const b = document.createElement('button'); b.textContent = 'Pôr ' + it.nome; b.onclick = () => { if (!soVer) porObjeto(id); }; return b; }));
   }
   window.objetosDoTeste = () => EM_CIMA; // para o teste
+  // A AUDITORIA DOS OBJETOS DE CIMA (06/11/2026): por objeto, os pixels do desenho, os que entraram na peça do móvel (o que
+  // ficou de fora foi CORTADO) e os que se veem na cena (o resto está atrás de outro móvel).
+  window.auditoriaDoTeste = () => Object.fromEntries(Object.entries(EM_CIMA).map(([uid, o]) => {
+    const vis = OBJ_VISTAS[o.tipo][((ARR[o.em]?.lado ?? 0) + o.lado) % 4]; let desenho = 0, naPeca = 0, visto = 0;
+    for (let k = 0; k < W * W; k++) if (vis.movel[k * 4 + 3] >= 128) desenho++;
+    const it = ARR[o.em] ? itemDe(o.em) : null;
+    if (it?.p.objPx) for (let k = 0; k < W * W; k++) if (it.p.objPx[k] === uid) naPeca++;
+    for (let k = 0; k < W * W; k++) if (baseDonoObj[k] === uid) visto++;
+    return [uid, { desenho, naPeca, visto }];
+  }));
+  // E A DA CENA: os pixels de cada móvel fora da casca (passando da borda do quarto) e, de cada objeto da parede, os pixels
+  // do desenho e os que entraram na cena (a diferença saiu da tela).
+  window.irDoTeste = (id) => { const s0 = semAndar; semAndar = true; ir(id); semAndar = s0; desenhar(); }; // para o teste
+  window.auditoriaCenaDoTeste = () => {
+    const fora = {}, parede = {};
+    for (let k = 0; k < W * W; k++) if (dono[k] && dono[k] !== 'coelho' && foraDia[k]) fora[dono[k]] = (fora[dono[k]] ?? 0) + 1;
+    ordemDaParede.forEach((id, i) => { const T2 = texturaNaParede(id, NA_PAREDE[id].parede); let t = 0, n = 0; for (let k = 0; k < W * W; k++) { if (T2.dia[k * 4 + 3] > 127) t++; if (naParede[k] === i + 1) n++; } parede[id] = [t, n]; });
+    return { fora, parede };
+  };
   window.tampoDoTeste = (x, y) => { const r = tela.getBoundingClientRect(); return tampoDoPonteiro({ clientX: r.left + (x + 0.5) * r.width / W, clientY: r.top + (y + 0.5) * r.height / W }); }; // para o teste
 
   // ============================== OS OBJETOS DA PAREDE: arrastar, pôr e guardar ==============================
@@ -3976,7 +4140,7 @@ void main() {
       if (selecionado === id) escolher(Object.keys(ARR)[0]);
       if (coelho.destino === id) { coelho.destino = null; coelho.pose = 'parado'; }
     } else {
-      const { c: c0, lado } = INICIAL[id], base = encaixar(id, ...c0, lado), opcoes = [];
+      const { c: c0, lado } = INI()[id], base = encaixar(id, ...c0, lado), opcoes = [];
       for (let di = -N; di <= N; di++) for (let dj = -N; dj <= N; dj++) opcoes.push(encaixar(id, base[0] + di, base[1] + dj, lado));
       opcoes.sort((a, b) => Math.hypot(a[0] - base[0], a[1] - base[1]) - Math.hypot(b[0] - base[0], b[1] - base[1]));
       ARR[id] = { c: base, lado };
@@ -3998,6 +4162,80 @@ void main() {
     }));
   }
   // Pôr e guardar um objeto da parede (os botões daqui e a barra de arrumar do app).
+  // A PLANTA NOVA na tela (a casca, as casas de chão, a silhueta). Não mexe na arrumação: ver trocarPlanta.
+  function aplicarPlanta(p) {
+    PLANTA = p; lerCasca();
+    fora0 = fundoDe(semDia); foraIdeal = PLANTA === 'quadrado' ? silhuetaIdeal() : fora0; foraDia = foraNoite = foraIdeal;
+    preencherChao(); preencherCasa(); noiteLimpa = null; cacheDoTapete.clear(); cacheDeAlturas.clear();
+  }
+  const guardarPlanta = () => { if (soVer) return; try { localStorage.setItem(PREFIXO + 'planta', PLANTA); } catch { /* fica só nesta visita */ } };
+  // TROCAR DE PLANTA (no Editar): o que continua no chão fica onde está; o que caiu fora vai para a casa livre mais perto; sem
+  // casa, o que se guarda é guardado, e o móvel de função (a cama, o criado-mudo, a mesa, o guarda-roupa) vai para o lugar de
+  // fábrica da planta, guardando o que estiver lá. A janela que não cabe vira a de fábrica da planta; os objetos da parede
+  // vão para o trecho de parede mais perto, sem cobrir uns aos outros.
+  function acomodarMoveis() {
+    const fora = Object.keys(ARR).filter((id) => !peNoChao(peDe(id))).sort((a, b) => Number(SO_COM_FUNCAO.includes(tipoDe(b))) - Number(SO_COM_FUNCAO.includes(tipoDe(a))));
+    const antes = {};
+    for (const id of fora) { antes[id] = ARR[id]; delete ARR[id]; }
+    for (const id of fora) {
+      const ini = INI()[tipoDe(id)] ?? antes[id];
+      let lugar = null;
+      for (const [c0, l] of [[antes[id].c, antes[id].lado], [antes[id].c, ini.lado], [ini.c, ini.lado]]) { ARR[id] = { c: c0, lado: l }; const c = lugarLivre(id, c0, l); if (c) { lugar = { c, lado: l }; break; } }
+      if (lugar) { ARR[id] = lugar; continue; }
+      if (ehCopia(id) || podeGuardar(id)) { delete ARR[id]; if (!ehCopia(id)) GUARDADOS.add(id); continue; }
+      ARR[id] = { c: [...ini.c], lado: ini.lado };
+      for (const o of Object.keys(ARR)) if (o !== id && !ehDeitado(o) && sobrepoe(peDe(o), peDe(id)) && (ehCopia(o) || podeGuardar(o))) { delete ARR[o]; if (!ehCopia(o)) GUARDADOS.add(o); }
+    }
+    EM_CIMA = Object.fromEntries(Object.entries(EM_CIMA).filter(([, o]) => ARR[o.em]));
+  }
+  // os objetos da parede que se cobrem (ou cobrem a janela) vão para um lugar livre
+  function acomodarParede() {
+    const todos = NA_PAREDE; NA_PAREDE = {};
+    for (const id of Object.keys(todos)) {
+      const it = ITENS_PAREDE[id]; if (!it) continue;
+      let P = prenderNaParede(id, todos[id]);
+      if (!livreNaParede(id, P)) for (const parede of [P.parede, P.parede === 'esquerda' ? 'direita' : 'esquerda']) {
+        let achou = null;
+        for (let h = 190 - it.alto[1]; h >= 30 - it.alto[0] && !achou; h -= 8) for (let v = -it.ocupa[0]; v <= N - it.ocupa[1] && !achou; v += 0.25) { const Q = prenderNaParede(id, { parede, v, h }); if (livreNaParede(id, Q)) achou = Q; }
+        if (achou) { P = achou; break; }
+      }
+      NA_PAREDE[id] = P;
+    }
+  }
+  function trocarPlanta(p) {
+    if (soVer || CENA !== 'quarto' || !PLANTAS[p] || p === PLANTA) return;
+    // quem não mexeu na de fábrica (os móveis, os objetos da parede, a janela) recebe a de fábrica da planta nova
+    const igual = (a, b) => JSON.stringify(Object.keys(a).sort().map((k) => [k, a[k]])) === JSON.stringify(Object.keys(b).sort().map((k) => [k, b[k]]));
+    const ini0 = Object.fromEntries(Object.entries(INI()).filter(([id]) => !GUARDADOS.has(id)));
+    const deFabrica = igual(ARR, ini0), paredeDeFabrica = igual(NA_PAREDE, prenderTudo(paredeDaPlanta())), janelaDeFabrica = igual(JAN, janelaDaPlanta());
+    aplicarPlanta(p); guardarPlanta();
+    if (deFabrica) { const objs = EM_CIMA; ARR = Object.fromEntries(Object.entries(JSON.parse(JSON.stringify(INI()))).filter(([id]) => !GUARDADOS.has(id))); EM_CIMA = objs; }
+    acomodarMoveis();
+    if (janelaDeFabrica || !cabeJanela(JAN.tipo)) JAN = { ...janelaDaPlanta() };
+    JAN = prenderJanela(JAN);
+    NA_PAREDE = paredeDeFabrica ? prenderTudo(paredeDaPlanta()) : prenderTudo(NA_PAREDE); acomodarParede();
+    aplicarJanela();
+    soltarDosMoveis();
+    { const i = Math.floor(cadeira.u), j = Math.floor(cadeira.v); if (!ehDoChao(i, j)) naMesa(); }
+    colidir();
+    guardarGuardados(); guardarParede(); guardarJanela(); guardarObjetos(); guardarCadeira(); guardar();
+    botoesDaJanela(); botoesDaParede(); botoesDosMoveis(); botoesDaPlanta();
+    if (!ARR[selecionado] && selecionado !== 'cadeira') escolher(Object.keys(ARR)[0]);
+    assinaturaCena = ''; decidir(); desenhar();
+  }
+  window.plantaDoTeste = (p) => { if (p) trocarPlanta(p); return PLANTA; }; // para o teste
+  // os botões da página de teste: a planta, a cor da parede e a do piso
+  function botoesDaPlanta() {
+    const caixa = document.getElementById('plantas'); if (!caixa || CENA !== 'quarto') return;
+    const grupo = (rotulo, ids, atual, f) => ids.map((id) => { const b = document.createElement('button'); b.textContent = rotulo + ': ' + id; b.setAttribute('aria-pressed', String(id === atual)); b.disabled = soVer; b.onclick = () => f(id); return b; });
+    caixa.replaceChildren(...grupo('Planta', Object.keys(PLANTAS), PLANTA, trocarPlanta), ...grupo('Parede', Object.keys(CORES_DA_PAREDE), CORES.parede ?? 'creme', (c) => escolherCor('parede', c)), ...grupo('Piso', Object.keys(CORES_DO_PISO), CORES.piso ?? 'mel', (c) => escolherCor('piso', c)));
+  }
+  function escolherCor(qual, cor) {
+    if (soVer) return;
+    const { [qual]: _fora, ...resto } = CORES;
+    CORES = (qual === 'parede' ? CORES_DA_PAREDE : CORES_DO_PISO)[cor] ? { ...resto, [qual]: cor } : resto;
+    guardarCores(); botoesDaPlanta(); desenhar();
+  }
   function alternarNaParede(id) {
     const it = ITENS_PAREDE[id];
     if (NA_PAREDE[id]) { delete NA_PAREDE[id]; mudarParede(id, null); return; }
@@ -4017,7 +4255,7 @@ void main() {
     }
     mudarParede(id, lugar ?? prenderNaParede(id, { parede: 'esquerda', v: 0, h: 0 }));
   }
-  botoesDaParede(); botoesDosMoveis();
+  botoesDaParede(); botoesDosMoveis(); botoesDaPlanta();
   window.paredeDoTeste = () => NA_PAREDE; // para o teste
   const bct = document.getElementById('cor-tapete'), ORDEM_CORES = Object.keys(CORES_DO_TAPETE);
   const botaoDaCor = () => { bct.textContent = 'Cor do tapete: ' + CORES_DO_TAPETE[CORES.tapete ?? 'salvia'].nome; bct.disabled = soVer; };
@@ -4037,6 +4275,8 @@ void main() {
   window.ondeDoMovel = (id) => { let sx = 0, sy = 0, n = 0; for (let k = 0; k < W * W; k++) if (dono[k] === id) { sx += k % W; sy += (k / W) | 0; n++; } return n ? [sx / n, sy / n] : null; }; // para o teste
   // para o teste: o pixel DO objeto mais perto do centro dele (o centro do fone, em arco, cai no vão, na parede)
   window.ondeNaParede = (id) => { const i = ordemDaParede.indexOf(id) + 1; const seus = []; for (let k = 0; k < W * W; k++) if (naParede[k] === i && !dono[k]) seus.push([k % W, (k / W) | 0]); if (!seus.length) return null; const cx = seus.reduce((s, q) => s + q[0], 0) / seus.length, cy = seus.reduce((s, q) => s + q[1], 0) / seus.length; let melhor = seus[0], d = Infinity; for (const q of seus) { const dq = (q[0] - cx) ** 2 + (q[1] - cy) ** 2; if (dq < d) { d = dq; melhor = q; } } return [melhor[0] + 0.5, melhor[1] + 0.5]; };
+  // para o teste: um pixel da janela que se pega para arrastar (sem móvel nem objeto da parede por cima), o mais perto do meio
+  window.ondeDaJanela = () => { const seus = []; for (let k = 0; k < W * W; k++) if (naJanela[k] && !dono[k] && !naParede[k]) seus.push([k % W, (k / W) | 0]); if (!seus.length) return null; const cx = seus.reduce((s, q) => s + q[0], 0) / seus.length, cy = seus.reduce((s, q) => s + q[1], 0) / seus.length; let melhor = seus[0], d = Infinity; for (const q of seus) { const dq = (q[0] - cx) ** 2 + (q[1] - cy) ** 2; if (dq < d) { d = dq; melhor = q; } } return [melhor[0] + 0.5, melhor[1] + 0.5]; };
 
   tela.addEventListener('pointerdown', (e) => {
     const k = pixelDo(e);
@@ -4228,7 +4468,7 @@ void main() {
     }
     if (k === 'r') girarSegurado(e.shiftKey ? -1 : 1);
   });
-  document.getElementById('inicial').onclick = () => { ARR = JSON.parse(JSON.stringify(INICIAL)); GUARDADOS = new Set(GUARDADOS_DE_FABRICA.filter(podeGuardar)); for (const id of GUARDADOS) delete ARR[id]; guardarGuardados(); botoesDosMoveis(); naMesa(); guardarCadeira(); guardar(); NA_PAREDE = prenderTudo(PAREDE_INICIAL); guardarParede(); CORES = {}; guardarCores(); botaoDaCor(); vestirOpcoes(); botaoDaOpcao(); EM_CIMA = EM_CIMA_INICIAL(); guardarObjetos(); botoesDaParede(); mudarJanela({ ...JANELA_INICIAL }); };
+  document.getElementById('inicial').onclick = () => { ARR = JSON.parse(JSON.stringify(INI())); GUARDADOS = new Set(GUARDADOS_DE_FABRICA.filter(podeGuardar)); for (const id of GUARDADOS) delete ARR[id]; guardarGuardados(); botoesDosMoveis(); naMesa(); guardarCadeira(); guardar(); NA_PAREDE = prenderTudo(paredeDaPlanta()); guardarParede(); CORES = {}; guardarCores(); botaoDaCor(); vestirOpcoes(); botaoDaOpcao(); EM_CIMA = EM_CIMA_INICIAL(); guardarObjetos(); botoesDaParede(); mudarJanela({ ...janelaDaPlanta() }); };
   escolher(ARR.poltrona ? 'poltrona' : Object.keys(ARR)[0]);
   const btela = document.getElementById('tela-pc'), NOMES_TELA = { auto: 'automática', call: 'em call', conversa: 'conversa', jogo: 'jogo', desligada: 'desligada' };
   btela.onclick = () => { conteudo = CONTEUDOS[(CONTEUDOS.indexOf(conteudo) + 1) % CONTEUDOS.length]; btela.textContent = 'Tela: ' + NOMES_TELA[conteudo]; assinaturaCena = ''; desenhar(); };
@@ -4249,6 +4489,7 @@ void main() {
     moveis: Object.fromEntries(Object.entries(ARR).map(([id, m]) => [id, { c: [+m.c[0].toFixed(3), +m.c[1].toFixed(3)], lado: m.lado }])),
     cadeira: { u: +cadeira.u.toFixed(3), v: +cadeira.v.toFixed(3), th: +cadeira.th.toFixed(3) },
     janela: { ...JAN }, cortina: fechada, janelaAberta: aberta, abajurApagado, vista,
+    ...(CENA === 'quarto' && { planta: PLANTA }),
     cores: { ...CORES },
     guardados: [...GUARDADOS],
     conhecidos: Object.keys(ITENS_PAREDE),
@@ -4261,17 +4502,20 @@ void main() {
   // Põe no quarto uma arrumação (a guardada, ou a de quem se visita). Móvel que o quarto não conhece fica de fora; o que
   // falta nela fica onde está na de fábrica.
   function vestir(a) {
-    const novo = JSON.parse(JSON.stringify(INICIAL));
+    // A PLANTA vem antes de tudo: as casas de chão e as paredes dela decidem onde o resto pode ficar.
+    const pl = CENA === 'quarto' && typeof a.planta === 'string' && PLANTAS[a.planta] ? a.planta : 'quadrado';
+    if (pl !== PLANTA) aplicarPlanta(pl);
+    const novo = JSON.parse(JSON.stringify(INI()));
     for (const [id, m] of Object.entries(a.moveis ?? {})) if ((novo[id] || (ehCopia(id) && INICIAL[tipoDe(id)])) && Array.isArray(m.c)) novo[id] = { c: [m.c[0], m.c[1]], lado: m.lado };
     GUARDADOS = new Set((Array.isArray(a.guardados) ? a.guardados : []).filter(podeGuardar));
     for (const id of GUARDADOS) delete novo[id];
     ARR = novo; reencaixarPlantas();
     if (a.cadeira) { Object.assign(cadeira, { u: a.cadeira.u, v: a.cadeira.v, th: a.cadeira.th, vu: 0, vv: 0, w: 0, kin: null }); soltarDosMoveis(); }
-    JAN = a.janela && TIPOS_JANELA[a.janela.tipo] ? prenderJanela(a.janela) : { ...JANELA_INICIAL };
+    JAN = a.janela && TIPOS_JANELA[a.janela.tipo] && cabeJanela(a.janela.tipo) ? prenderJanela(a.janela) : { ...janelaDaPlanta() };
     EM_CIMA = a.emCima && typeof a.emCima === 'object' ? Object.fromEntries(Object.entries(a.emCima).filter(([, o]) => OBJ_VISTAS[o.tipo] && TOPOS[o.em] && ARR[o.em])) : EM_CIMA_INICIAL();
-    CORES = a.cores && typeof a.cores === 'object' ? Object.fromEntries(Object.entries(a.cores).filter(([id, c]) => (id === 'tapete' && CORES_DO_TAPETE[c]) || OPCOES_PAREDE[id]?.[c])) : {};
+    CORES = a.cores && typeof a.cores === 'object' ? Object.fromEntries(Object.entries(a.cores).filter(([id, c]) => (id === 'tapete' && CORES_DO_TAPETE[c]) || (id === 'parede' && CORES_DA_PAREDE[c]) || (id === 'piso' && CORES_DO_PISO[c]) || OPCOES_PAREDE[id]?.[c])) : {};
     botaoDaCor(); vestirOpcoes(); botaoDaOpcao();
-    NA_PAREDE = a.parede ? prenderTudo(comNovos(Object.fromEntries(Object.entries(a.parede).filter(([id]) => ITENS_PAREDE[id])), a.conhecidos)) : prenderTudo(PAREDE_INICIAL);
+    NA_PAREDE = a.parede ? prenderTudo(comNovos(Object.fromEntries(Object.entries(a.parede).filter(([id]) => ITENS_PAREDE[id])), a.conhecidos)) : prenderTudo(paredeDaPlanta());
     aplicarJanela();
     fechada = !!a.cortina && !!TIPOS_JANELA[JAN.tipo].cortina; aberta = !!a.janelaAberta && !!TIPOS_JANELA[JAN.tipo].abre;
     abajurApagado = !!a.abajurApagado;
@@ -4296,7 +4540,7 @@ void main() {
   const pedir = async (metodo, rota, corpo) => {
     const r = await fetch(conta.api + rota, { method: metodo, headers: { authorization: 'Bearer ' + conta.token, ...(corpo && { 'content-type': 'application/json' }) }, body: corpo ? JSON.stringify(corpo) : undefined });
     const j = await r.json().catch(() => ({}));
-    if (!r.ok) throw new Error(j.error || 'erro ' + r.status);
+    if (!r.ok) throw Object.assign(new Error(j.error || 'erro ' + r.status), { status: r.status });
     return j;
   };
   const dizer = (t) => { campo('quem').textContent = t; };
@@ -4320,7 +4564,7 @@ void main() {
     desfazendo = true;
     try {
       vestir(JSON.parse(retr));
-      guardarGuardados(); guardarParede(); guardarCores(); guardarObjetos(); guardarJanela(); guardarCadeira(); guardar();
+      guardarPlanta(); guardarGuardados(); guardarParede(); guardarCores(); guardarObjetos(); guardarJanela(); guardarCadeira(); guardar();
     } finally { desfazendo = false; }
     selecionar(null);
   }
@@ -4390,7 +4634,7 @@ void main() {
     try {
       const r = await fetch(api + '/api/auth/login', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ username: campo('nome').value, password: campo('senha').value }) });
       const j = await r.json();
-      if (!r.ok) throw new Error(j.error || 'erro ' + r.status);
+      if (!r.ok) throw Object.assign(new Error(j.error || 'erro ' + r.status), { status: r.status });
       conta = { api, token: j.token, nome: j.user.username, id: j.user.id };
       try { localStorage.setItem('syden-teste-conta', JSON.stringify(conta)); } catch { /* só nesta visita */ }
       await carregarMeu();
@@ -4411,7 +4655,7 @@ void main() {
       const j = await pedir('GET', '/api/quarto/' + encodeURIComponent(campo('visitar-id').value.trim()));
       if (!soVer) meu = retrato();
       const quem = j.dono.nomeDeExibicao || j.dono.username;
-      modoVisita(quem); vestir(j.arrumacao); modoVisita(quem);
+      modoVisita(quem); if (j.arrumacao) vestir(j.arrumacao); else document.getElementById('inicial').onclick(); modoVisita(quem);
       dizer('Visitando o quarto de ' + quem + ' (só olhar).');
     } catch (e) { dizer('Não deu para visitar: ' + e.message); }
   };
@@ -4422,7 +4666,7 @@ void main() {
   // O que a barra de arrumar do app precisa saber para mostrar o que está escolhido.
   function relatar() {
     if (!MODO_APP || window.parent === window) return;
-    window.parent.postMessage({ syden: 'quarto', arrumacao: { desfazer: historico.length > 0, refazer: refeitos.length > 0, pendente: pendente(), rascunho: rascunho !== null, copias: PODE_COPIAR, presentes: presentes(), selecao: selecao?.chave ?? null, janela: JAN.tipo, tapete: CORES.tapete ?? 'salvia', opcoes: Object.fromEntries(Object.keys(OPCOES_PAREDE).map((id) => [id, opcaoDe(id)])), moveis: Object.fromEntries(Object.keys(INICIAL).filter(podeGuardar).map((id) => [id, !!ARR[id]])), parede: Object.fromEntries(Object.keys(ITENS_PAREDE).map((id) => [id, !!NA_PAREDE[id]])) } }, location.origin);
+    window.parent.postMessage({ syden: 'quarto', arrumacao: { desfazer: historico.length > 0, refazer: refeitos.length > 0, pendente: pendente(), rascunho: rascunho !== null, copias: PODE_COPIAR, presentes: presentes(), selecao: selecao?.chave ?? null, janela: JAN.tipo, tapete: CORES.tapete ?? 'salvia', ...(CENA === 'quarto' && { planta: PLANTA, corDaParede: CORES.parede ?? 'creme', corDoPiso: CORES.piso ?? 'mel' }), opcoes: Object.fromEntries(Object.keys(OPCOES_PAREDE).map((id) => [id, opcaoDe(id)])), moveis: Object.fromEntries(Object.keys(INICIAL).filter(podeGuardar).map((id) => [id, !!ARR[id]])), parede: Object.fromEntries(Object.keys(ITENS_PAREDE).map((id) => [id, !!NA_PAREDE[id]])) } }, location.origin);
   }
   // As figuras da barra (sem texto, para não pedir tradução): o recorte de cada objeto da parede, e a cor de cada tapete.
   function figurasDaBarra() {
@@ -4475,7 +4719,28 @@ void main() {
       if (T2.cortinaDia) for (let k = 0; k < W * W; k++) if (T2.cortinaDia[k * 4 + 3] > 127) for (let q = 0; q < 4; q++) d[k * 4 + q] = T2.cortinaDia[k * 4 + q];
       janelas[t] = recorte(d);
     }
-    return { miniaturas, cores, ordem: Object.keys(ITENS_PAREDE), deCima, opcoes, moveis, guardaveis, janelas };
+    // A PAREDE E O PISO (06/11/2026): um pedaço de cada um, na cor; e a PLANTA, a casca dela de dia, pequena
+    let comodo;
+    if (CENA === 'quarto') {
+      const pedaco = (x0, y0, w, h, regiao, f) => {
+        const c = document.createElement('canvas'); c.width = w; c.height = h; const d = new ImageData(w, h);
+        for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) { const k = (y0 + y) * W + x0 + x, j = (y * w + x) * 4; for (let q = 0; q < 3; q++) d.data[j + q] = Math.min(255, semDia[k * 4 + q] * (f && regiaoDaCor[k] === regiao ? f[q] : 1)); d.data[j + 3] = 255; }
+        c.getContext('2d').putImageData(d, 0, 0); return c.toDataURL();
+      };
+      const paredes = Object.fromEntries(Object.keys(CORES_DA_PAREDE).map((id) => [id, pedaco(150, 140, 32, 32, 1, fatorDaCor(CORES_DA_PAREDE, id, mediaDaParede))]));
+      const pisos = Object.fromEntries(Object.keys(CORES_DO_PISO).map((id) => [id, pedaco(240, 360, 40, 32, 2, fatorDaCor(CORES_DO_PISO, id, mediaDoPiso))]));
+      const plantas = {};
+      for (const pl of Object.keys(PLANTAS)) {
+        const img = im['sem-dia' + (pl === 'quadrado' ? '' : '-' + pl)], px = dados(img), fundo = fundoDe(px);
+        const c = document.createElement('canvas'); c.width = c.height = 64; const d = new ImageData(W, W);
+        for (let k = 0; k < W * W; k++) { for (let q = 0; q < 3; q++) d.data[k * 4 + q] = px[k * 4 + q]; d.data[k * 4 + 3] = fundo[k] ? 0 : 255; }
+        const g0 = document.createElement('canvas'); g0.width = g0.height = W; g0.getContext('2d').putImageData(d, 0, 0);
+        const gc = c.getContext('2d'); gc.imageSmoothingEnabled = true; gc.drawImage(g0, 16, 0, 480, 480, 0, 0, 64, 64);
+        plantas[pl] = c.toDataURL();
+      }
+      comodo = { paredes, pisos, plantas };
+    }
+    return { miniaturas, cores, ordem: Object.keys(ITENS_PAREDE), deCima, opcoes, moveis, guardaveis, janelas, ...(comodo && { comodo }) };
   }
 
   // ============================== A BARRINHA DO QUE ESTÁ ESCOLHIDO (16/10/2026) ==============================
@@ -4659,8 +4924,8 @@ void main() {
   }
   function porCopiaDoMovel(tipo, perto) {
     if (!temDesenho(tipo) || Object.keys(ARR).length >= MAX_PECAS) return null;
-    const id = novoIdDe(tipo, ARR), lado = (perto && ARR[perto] ? ARR[perto].lado : INICIAL[tipo]?.lado) ?? 0;
-    const c0 = perto && ARR[perto] ? ARR[perto].c : INICIAL[tipo]?.c ?? [N / 2, N / 2];
+    const id = novoIdDe(tipo, ARR), lado = (perto && ARR[perto] ? ARR[perto].lado : INI()[tipo]?.lado) ?? 0;
+    const c0 = perto && ARR[perto] ? ARR[perto].c : INI()[tipo]?.c ?? [N / 2, N / 2];
     ARR[id] = { c: [...c0], lado };
     const c = lugarLivre(id, c0, lado);
     if (!c) { delete ARR[id]; dizer('Não há espaço livre para mais um.'); return null; }
@@ -4826,7 +5091,15 @@ void main() {
       if (d.comando === 'desfazer') desfazer();
       if (typeof d.noite === 'boolean' && (modo === 'noite') !== d.noite) botoes[d.noite ? 'noite' : 'dia'].click();
       if (d.estado) document.querySelector('[data-estado="' + d.estado + '"]')?.click();
-      if (d.conta && !conta) {
+      if (d.conta && !conta && d.conta.visitar) {
+        // A VISITA NO APP: o quarto de outra pessoa, como ela deixou (ou o de fábrica, se nunca arrumou). Nada se guarda.
+        conta = d.conta; visitaNoApp = true;
+        modoVisita('visita');
+        pedir('GET', '/api/quarto/' + encodeURIComponent(d.conta.visitar))
+          .then((j) => { if (j.arrumacao) vestir(j.arrumacao); else document.getElementById('inicial').onclick(); modoVisita(j.dono.nomeDeExibicao || j.dono.username); })
+          .catch((e) => window.parent.postMessage({ syden: 'quarto', visitaFalhou: e?.status === 404 ? 'fechado' : 'falhou' }, location.origin))
+          .finally(() => { desenhar(); window.parent.postMessage({ syden: 'quarto', arrumado: true }, location.origin); });
+      } else if (d.conta && !conta) {
         conta = d.conta;
         // O SALÃO: a arrumação da comunidade, e só quem administra mexe (o servidor confere; aqui é só não deixar tentar).
         if (d.conta.rota) ROTA = d.conta.rota;
@@ -4849,6 +5122,9 @@ void main() {
       if (d.comando === 'girar') girar();
       if (d.vistasDe && typeof d.vistasDe.id === 'string') window.parent.postMessage({ syden: 'quarto', vistas: { grupo: d.vistasDe.grupo, id: d.vistasDe.id, imagens: vistasDaPeca(d.vistasDe.grupo, d.vistasDe.id) } }, location.origin);
       if (d.comando === 'janela') { if (TIPOS_JANELA[d.tipo]) mudarJanela({ ...JAN, tipo: d.tipo }); else btj.click(); }
+      if (d.comando === 'planta' && typeof d.planta === 'string') trocarPlanta(d.planta);
+      if (d.comando === 'corDaParede' && typeof d.cor === 'string' && d.cor in CORES_DA_PAREDE) escolherCor('parede', d.cor);
+      if (d.comando === 'corDoPiso' && typeof d.cor === 'string' && d.cor in CORES_DO_PISO) escolherCor('piso', d.cor);
       if (d.comando === 'tapete' && CORES_DO_TAPETE[d.cor]) { CORES = { ...CORES, tapete: d.cor }; guardarCores(); botaoDaCor(); desenhar(); }
       if (d.comando === 'parede' && ITENS_PAREDE[d.id]) alternarNaParede(d.id);
       if (d.comando === 'movel' && podeGuardar(d.id)) alternarMovel(d.id);
