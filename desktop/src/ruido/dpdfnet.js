@@ -15,6 +15,15 @@
 
 /** @typedef {{ taxa: number, janela: number, passo: number, tamanhoDoEstado: number, erbNorm: number[], specNorm: number[] }} Config */
 
+/**
+ * QUIETO: o quadro inteiro com pico abaixo de −60 dBFS. A voz falada fica entre −40 e −10 (até o sussurro perto do microfone
+ * passa de −50), e o ruído que o modelo existe para tirar (ventilador, teclado, rua) também fica acima; abaixo disto, o modelo
+ * devolveria silêncio. O microfone mudo (zeros) é o caso extremo.
+ */
+const QUIETO = 1e-3;
+/** Quantos quadros de 10 ms seguidos quietos antes de parar o modelo: 300 ms, para o fim da sílaba sair como o modelo faz. */
+const SEGURA = 30;
+
 /** Janela de Vorbis, igual à de `dpdfnet.audio.vorbis_window`. */
 function janelaVorbis(n) {
   const w = new Float32Array(n);
@@ -27,36 +36,65 @@ function janelaVorbis(n) {
 }
 
 /**
- * Transformada de Fourier real de tamanho N qualquer (320 não é potência de 2), por tabela.
- * Custa N×(N/2+1) multiplicações por quadro: ~50 mil, menos de 0,1 ms. Não vale uma FFT de base mista.
+ * Transformada de Fourier real de tamanho N (320 = 4·4·4·5, então não serve a FFT de base 2): uma FFT de base mista,
+ * recursiva, com as tabelas de giro do tamanho N.
+ *
+ * ERA UMA TABELA DE N×(N/2+1) senos e cossenos (até 06/11/2026), "barata" no papel: ~0,1 ms. Medido no Electron em tempo
+ * real, não era: a tabela tem ~400 KB e passava inteira pela memória duas vezes a cada 10 ms, tirando da cache os pesos da
+ * rede neural, que então rodava mais devagar. A FFT faz ~10 mil contas e só toca 2,5 KB de tabela.
  */
 function criarDft(n) {
-  const b = n / 2 + 1;
-  const cos = new Float32Array(b * n), sen = new Float32Array(b * n);
-  for (let k = 0; k < b; k++) {
-    for (let t = 0; t < n; t++) {
-      const a = (2 * Math.PI * k * t) / n;
-      cos[k * n + t] = Math.cos(a);
-      sen[k * n + t] = Math.sin(a);
+  const fatores = [];
+  for (let m = n; m > 1; ) {
+    const p = m % 4 === 0 ? 4 : m % 2 === 0 ? 2 : [3, 5, 7].find((f) => m % f === 0) ?? m;
+    fatores.push(p);
+    m /= p;
+  }
+  if (Math.max(...fatores) > 8) throw new Error(`tamanho de janela sem FFT: ${n}`);
+  const cosN = new Float64Array(n), senN = new Float64Array(n);
+  for (let e = 0; e < n; e++) { cosN[e] = Math.cos((2 * Math.PI * e) / n); senN[e] = -Math.sin((2 * Math.PI * e) / n); }
+  const tmpRe = new Float64Array(8), tmpIm = new Float64Array(8);
+  const zRe = new Float64Array(n), zIm = new Float64Array(n), xRe = new Float64Array(n), xIm = new Float64Array(n);
+
+  /** A transformada direta (e^−i) de in[ini + j·passo], j < m, gravada em out[saida…saida+m). */
+  function fft(inRe, inIm, ini, passo, m, nivel, outRe, outIm, saida) {
+    if (m === 1) { outRe[saida] = inRe[ini]; outIm[saida] = inIm[ini]; return; }
+    const p = fatores[nivel], q = m / p;
+    for (let r = 0; r < p; r++) fft(inRe, inIm, ini + r * passo, passo * p, q, nivel + 1, outRe, outIm, saida + r * q);
+    const giro = n / m;
+    for (let k = 0; k < q; k++) {
+      for (let r = 0; r < p; r++) { tmpRe[r] = outRe[saida + r * q + k]; tmpIm[r] = outIm[saida + r * q + k]; }
+      for (let s = 0; s < p; s++) {
+        const kk = k + s * q;
+        let a = 0, b = 0;
+        for (let r = 0; r < p; r++) {
+          const e = ((r * kk) % m) * giro;
+          const c = cosN[e], d = senN[e];
+          a += tmpRe[r] * c - tmpIm[r] * d;
+          b += tmpRe[r] * d + tmpIm[r] * c;
+        }
+        outRe[saida + kk] = a; outIm[saida + kk] = b;
+      }
     }
   }
+
+  const b = n / 2 + 1;
   return {
-    /** x real (n) → re, im (b) */
+    /** x real (n) → re, im (b), como numpy.fft.rfft */
     direta(x, re, im) {
-      for (let k = 0; k < b; k++) {
-        let r = 0, i = 0;
-        const base = k * n;
-        for (let t = 0; t < n; t++) { r += x[t] * cos[base + t]; i -= x[t] * sen[base + t]; }
-        re[k] = r; im[k] = i;
-      }
+      for (let t = 0; t < n; t++) { zRe[t] = x[t]; zIm[t] = 0; }
+      fft(zRe, zIm, 0, 1, n, 0, xRe, xIm, 0);
+      for (let k = 0; k < b; k++) { re[k] = xRe[k]; im[k] = xIm[k]; }
     },
-    /** re, im (b) → x real (n), como numpy.fft.irfft */
+    /** re, im (b) → x real (n), como numpy.fft.irfft (a parte imaginária do 0 e do N/2 não conta) */
     inversa(re, im, x) {
-      for (let t = 0; t < n; t++) {
-        let s = re[0] + (n % 2 === 0 ? re[b - 1] * (t % 2 === 0 ? 1 : -1) : 0);
-        for (let k = 1; k < (n % 2 === 0 ? b - 1 : b); k++) s += 2 * (re[k] * cos[k * n + t] - im[k] * sen[k * n + t]);
-        x[t] = s / n;
-      }
+      // inversa = conjugado da direta do conjugado, dividido por n
+      for (let k = 0; k < b; k++) { zRe[k] = re[k]; zIm[k] = -im[k]; }
+      zIm[0] = 0;
+      if (n % 2 === 0) zIm[b - 1] = 0;
+      for (let k = b; k < n; k++) { zRe[k] = zRe[n - k]; zIm[k] = -zIm[n - k]; }
+      fft(zRe, zIm, 0, 1, n, 0, xRe, xIm, 0);
+      for (let t = 0; t < n; t++) x[t] = xRe[t] / n;
     },
   };
 }
@@ -81,7 +119,7 @@ function criarFluxo(sessao, Tensor, cfg, { compensarVolume = true } = {}) {
   const soma = new Float32Array(N);
   const quadro = new Float32Array(N), re = new Float32Array(B), im = new Float32Array(B), tempo = new Float32Array(N);
   let ganho = 1;
-  let custoMs = 0, quadros = 0;
+  let custoMs = 0, quadros = 0, pulados = 0, quietos = 0;
 
   /** Iguala a fala de saída à de entrada: ver o comentário no topo do arquivo. */
   function compensar(entradaHop, saidaHop) {
@@ -112,6 +150,24 @@ function criarFluxo(sessao, Tensor, cfg, { compensarVolume = true } = {}) {
       entrada = juntos;
       const prontos = [];
       while (entrada.length >= N) {
+        // O QUIETO NÃO PASSA PELO MODELO (06/11/2026): o microfone mudo (o LiveKit desliga a faixa e chegam zeros) e o
+        // quarto em silêncio entre uma frase e outra. Medido no Electron: o modelo é ~90% do custo do processo, ~20% de um
+        // núcleo com som e ~2% mudo. Depois de 300 ms quietos, o modelo para; o primeiro quadro acima de −60 dBFS o
+        // religa, com o estado da rede de antes (ele se refaz em poucos quadros). A saída parada é silêncio: o resto da
+        // soma do último quadro do modelo, e depois zeros.
+        let pico = 0;
+        for (let i = 0; i < N; i++) { const a = entrada[i] < 0 ? -entrada[i] : entrada[i]; if (a > pico) pico = a; }
+        quietos = pico < QUIETO ? quietos + 1 : 0;
+        if (quietos > SEGURA) {
+          pulados++;
+          const pronto = soma.slice(0, H);
+          if (compensarVolume) for (let i = 0; i < H; i++) pronto[i] *= ganho;
+          prontos.push(pronto);
+          soma.copyWithin(0, H);
+          soma.fill(0, N - H);
+          entrada = entrada.slice(H);
+          continue;
+        }
         for (let i = 0; i < N; i++) quadro[i] = entrada[i] * w[i];
         dft.direta(quadro, re, im);
         const spec = new Float32Array(B * 2);
@@ -143,7 +199,13 @@ function criarFluxo(sessao, Tensor, cfg, { compensarVolume = true } = {}) {
       custoMs = 0; quadros = 0;
       return m;
     },
+    /** Quantos quadros quietos passaram sem o modelo, desde a última pergunta. */
+    pulados() {
+      const n = pulados;
+      pulados = 0;
+      return n;
+    },
   };
 }
 
-module.exports = { criarFluxo, janelaVorbis };
+module.exports = { criarFluxo, janelaVorbis, criarDft };
