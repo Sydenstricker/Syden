@@ -211,7 +211,9 @@ export function materialDoCoelho(base: THREE.MeshStandardMaterial, cores: CoresD
           float lCor = max(dot(diffuseColor.rgb, vec3(0.3, 0.59, 0.11)), 1e-3);
           float lLuz = max(dot(outgoingLight, vec3(0.3, 0.59, 0.11)), 1e-4);
           float chega = lLuz / lCor;
-          float degrau = exp2(floor(log2(chega) * 2.0 + 0.5) / 2.0);
+          // PARA BAIXO, nunca para o mais perto: arredondar para cima levava o coelho do sol forte (o Rolê) a 1,4× ou 2× a luz, e
+          // a cor clara do avatar estourava em branco (relato dele, 06/11/2026: "o coelho ainda está branco, sem textura").
+          float degrau = exp2(floor(log2(chega) * 2.0) / 2.0);
           outgoingLight *= degrau / chega;
         }
         {
@@ -264,6 +266,9 @@ function materialDoContorno(uOpaco: { value: number }): THREE.MeshBasicMaterial 
         vec2 d = (projectionMatrix * vec4(nv, 0.0)).xy;
         float n = length(d);
         if (n > 1e-5) gl_Position.xy += (d / n) * uPx * 2.0 * gl_Position.w / uTela;
+        // um tico para trás na profundidade: nas dobras do corpo (o vão do braço, o capuz) a malha inflada passava na frente e
+        // desenhava riscos pretos por dentro; empurrada, ela só aparece na silhueta
+        gl_Position.z += 0.004 * gl_Position.w;
       }`,
     );
     s.fragmentShader = s.fragmentShader

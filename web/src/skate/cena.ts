@@ -3,7 +3,7 @@ import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { carregarCoelho, copiarCoelho, minhasCoresDoCoelho, type CoelhoCopiado } from '../coelho3d';
 import { PASSO, type Skatista } from './fisica';
 import { MODELOS_DO_ENTORNO, montarEntorno } from './entorno';
-import { altura, alturaDaPeca, LARGURA, pecaEm, PECAS, PROFUNDIDADE } from './pista';
+import { altura, alturaDaPeca, LARGURA, pecaEm, PECAS, perfilDaPeca, PROFUNDIDADE, subidaDaPeca } from './pista';
 
 /**
  * A CENA DO SKATE (05/11/2026): a pista de pista.ts com as peças do Mini Skate da Kenney (CC0, web/public/skate/License.txt),
@@ -94,6 +94,11 @@ export class CenaDoSkate {
   private quadro = 0;
   /** O voo do vert: a altura de onde saiu (para virar o coelho no ar). */
   private saidaY = 0;
+  /** A câmera do VERT (0 a 1) e para que lado sobe a parede em que ele está. */
+  private vert = 0;
+  private subida: [number, number] = [0, -1];
+  private readonly focoVert = new THREE.Vector3();
+  private readonly posVert = new THREE.Vector3();
   private modoAntes = '';
 
   constructor(private caixa: HTMLElement) {
@@ -338,6 +343,27 @@ export class CenaDoSkate {
     // olha um pouco à frente e um pouco acima do coelho (na parede do quarter, o alto dela fica à vista)
     const foco = a_.foco.set(x + fx * 1.1, (y + this.camY) * 0.5 + 0.4, z + fz * 1.1);
     const pos = a_.pos.set(x - fx * 2.5, this.camY + 1.3, z - fz * 2.5);
+    // A CÂMERA DO VERT (pedido dele, 06/11/2026, com a foto de referência): subindo a parede do quarter e no voo que sai dela,
+    // a câmera sai de trás e vai para o lado da pista, alta, olhando de cima para o coelho com a rampa embaixo dele — o voo e
+    // o pouso à vista. Atrás e embaixo, como antes, ela olhava por cima da beirada para fora da pista, e o coelho flutuava
+    // na frente da cerca.
+    const naParede = k.peca >= 0 && perfilDaPeca(k.peca) === 'quarter' && k.modo !== 'ar' && k.modo !== 'caido';
+    if (naParede) {
+      const [sx, sz] = subidaDaPeca(k.peca);
+      this.subida[0] = sx;
+      this.subida[1] = sz;
+    }
+    const querVert = k.modo === 'ar' && k.saida === 'vert' ? 1 : naParede ? Math.min(1, Math.max(0, (y - 0.25) / 0.35)) : 0;
+    this.vert = this.quadro < 3 ? querVert : this.vert + (querVert - this.vert) * Math.min(1, dt * (querVert > this.vert ? 3.5 : 2));
+    if (this.vert > 0.001) {
+      const [sx, sz] = this.subida;
+      const baseY = Math.max(y, this.saidaY);
+      this.posVert.set(x - sx * 1.9, baseY + 1.8, z - sz * 1.9);
+      this.focoVert.set(x + sx * 0.25, y - 0.15, z + sz * 0.25);
+      const v = this.vert * this.vert * (3 - 2 * this.vert);
+      pos.lerp(this.posVert, v);
+      foco.lerp(this.focoVert, v);
+    }
     // sem atravessar o chão: acima do que houver embaixo dela, e no meio do caminho até o coelho
     const debaixo = (px: number, pz: number) => altura(Math.min(LARGURA, Math.max(0, px)), Math.min(PROFUNDIDADE, Math.max(0, pz)));
     pos.y = Math.max(pos.y, debaixo(pos.x, pos.z) + 0.6, debaixo(x - fx * 1.25, z - fz * 1.25) + 0.5);
