@@ -38,6 +38,15 @@ export interface Trilho {
   comp: number;
   dx: number;
   dz: number;
+  /** A manobra que a linha vale: 'Grind' (corrimão, caixa, cerca) ou 'Stall' (a beirada do alto dos quarters). */
+  nome: 'Grind' | 'Stall';
+  /**
+   * Só na beirada dos quarters: para onde fica a pista (o lado da curva, no chão, unitário). Ao sair da linha o skatista
+   * "entra de volta" na rampa por ali, e não fica no patamar estreito atrás dela.
+   */
+  dentro?: [number, number];
+  /** A prancha precisa estar quase ao longo da linha (|cosseno| mínimo), além do caminho. */
+  prancha?: number;
 }
 
 export const LARGURA = 12;
@@ -46,6 +55,10 @@ export const PROFUNDIDADE = 18;
 export const MARGEM = 0.15;
 /** A altura do alto da cerca (medida no fence.glb), onde se grinda. */
 export const ALTURA_DA_CERCA = 0.35;
+/** A altura do patamar dos quarters (a beirada, o "coping"), onde se faz o stall. */
+export const ALTURA_DA_BEIRADA = 0.8;
+/** Onde a curva do quarter encontra o patamar, contando da ponta da pista (o perfil QUARTER cai de 0,8 entre 0,2 e 0,225). */
+export const BEIRADA = 0.21;
 
 /**
  * O PERFIL DO QUARTER, medido no half-pipe.glb (de 0,025 em 0,025 casa, do patamar em z local −0,5 à boca em +0,5). A
@@ -126,9 +139,9 @@ function montar(): { pecas: Peca[]; trilhos: Trilho[] } {
   pecas.push({ modelo: 'pallet', x: -1.1, z: 6.6, rot: 1 });
   pecas.push({ modelo: 'structure-wood-platform', x: LARGURA + 1.6, z: 10.5, rot: 3 });
 
-  const trilho = (x1: number, z1: number, x2: number, z2: number, y: number, folga: number): Trilho => {
+  const trilho = (x1: number, z1: number, x2: number, z2: number, y: number, folga: number, extra: Partial<Trilho> = {}): Trilho => {
     const comp = Math.sqrt((x2 - x1) * (x2 - x1) + (z2 - z1) * (z2 - z1));
-    return { x1, z1, x2, z2, y, folga, comp, dx: (x2 - x1) / comp, dz: (z2 - z1) / comp };
+    return { x1, z1, x2, z2, y, folga, comp, dx: (x2 - x1) / comp, dz: (z2 - z1) / comp, nome: 'Grind', ...extra };
   };
   const trilhos = [trilho(3.5, 6, 3.5, 11, 0.25, 0.22), trilho(8.5, 7, 8.5, 11, 0.21, 0.3)];
   // O ALTO DA CERCA dos lados compridos também se grinda (pedido dele, 06/11/2026: "a barra que proíbe sair do mapa"). O
@@ -136,6 +149,14 @@ function montar(): { pecas: Peca[]; trilhos: Trilho[] } {
   // é maior porque o skatista não chega a menos de MARGEM da cerca; ao sair da linha ele volta para dentro (fisica.ts).
   trilhos.push(trilho(-0.04, 1.1, -0.04, PROFUNDIDADE - 1.1, ALTURA_DA_CERCA, 0.34));
   trilhos.push(trilho(LARGURA + 0.04, 1.1, LARGURA + 0.04, PROFUNDIDADE - 1.1, ALTURA_DA_CERCA, 0.34));
+  // A BEIRADA DO ALTO DOS QUARTERS (pedido dele, 06/11/2026: "se apoiar" na borda de cima, para variar): no vert o skatista
+  // sobe e desce rente à parede (a 0,04 da beirada, medido), e pega a linha descendo SE a prancha estiver ao longo dela (girar
+  // 90° no ar) — quem sobe reto e não gira volta à rampa como sempre. Vale "Stall", e sair dela devolve à rampa (fisica.ts).
+  const beirada = { nome: 'Stall' as const, prancha: 0.8 };
+  const x1 = MARGEM + 0.05;
+  const x2 = LARGURA - MARGEM - 0.05;
+  trilhos.push(trilho(x1, BEIRADA, x2, BEIRADA, ALTURA_DA_BEIRADA, 0.14, { ...beirada, dentro: [0, 1] }));
+  trilhos.push(trilho(x1, PROFUNDIDADE - BEIRADA, x2, PROFUNDIDADE - BEIRADA, ALTURA_DA_BEIRADA, 0.14, { ...beirada, dentro: [0, -1] }));
   return { pecas, trilhos };
 }
 

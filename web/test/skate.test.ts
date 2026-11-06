@@ -122,3 +122,51 @@ test('o alto da cerca dos lados se grinda (pedido dele, 06/11/2026), e ao sair e
     assert.ok(k.x > 0.15 && k.x < 11.85, `ficou fora da pista: x = ${k.x}`);
   }
 });
+
+test('a beirada do alto dos quarters (pedido dele, 06/11/2026): o vert com meio giro faz o Stall, e sair dela devolve à rampa', () => {
+  for (const [z0, sobe] of [
+    [12, -1],
+    [6, 1],
+  ] as const) {
+    for (const lado of ['esquerda', 'direita'] as const) {
+      const k = novoSkatista();
+      k.x = 2.5;
+      k.z = z0;
+      k.rz = sobe;
+      k.cz = sobe;
+      let noAr = 0;
+      let stall = -1;
+      const nomes: string[] = [];
+      let quedas = 0;
+      for (let i = 0; i < 700; i++) {
+        noAr = k.modo === 'ar' ? noAr + 1 : 0;
+        // no vert, 90° de giro (12 passos de 7,5°) põe a prancha ao longo da beirada; no grind, o equilíbrio
+        const gira = k.modo === 'ar' && k.saida === 'vert' && noAr <= 12;
+        const eq = k.modo === 'grind' ? (k.equilibrio + k.deriva * 10 > 0 ? { esquerda: true } : { direita: true }) : {};
+        passo(k, { ...NADA, frente: k.modo === 'chao' && i < 400, [lado]: gira, ...eq });
+        if (k.modo === 'grind' && stall < 0) stall = k.trilho;
+        for (const e of k.eventos) {
+          if (e.tipo === 'manobra') nomes.push(e.nome);
+          if (e.tipo === 'queda') quedas++;
+        }
+      }
+      assert.ok(stall >= 0, `não pegou a beirada (${z0}, ${lado})`);
+      assert.equal(TRILHOS[stall].nome, 'Stall');
+      assert.equal(TRILHOS[stall].y, 0.8);
+      assert.ok(nomes.includes('Stall'));
+      assert.equal(quedas, 0, 'caiu ao voltar para a rampa');
+      // de volta à pista, no chão, longe da cerca de trás
+      assert.equal(k.modo, 'chao');
+      assert.ok(k.z > 1 && k.z < 17, `ficou preso na ponta: z = ${k.z}`);
+      assert.ok(k.y < 0.05);
+    }
+  }
+  // sem o giro, o vert de sempre: sobe, desce e não pega a beirada
+  const k = novoSkatista();
+  k.x = 2.5;
+  k.z = 12;
+  for (let i = 0; i < 320; i++) {
+    passo(k, { ...NADA, frente: k.modo === 'chao' });
+    assert.notEqual(k.modo, 'grind');
+  }
+});

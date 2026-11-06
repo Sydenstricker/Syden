@@ -189,6 +189,9 @@ function valorBase(nome: string, seg: number): number {
       return 150 + Math.floor(300 * seg);
     case 'Grind':
       return 100 + Math.floor(200 * seg);
+    case 'Stall':
+      // a beirada do quarter: só se chega a ela de um vert com meio giro, e por isso vale mais que o grind
+      return 200 + Math.floor(250 * seg);
     case 'Manual':
       return 50 + Math.floor(150 * seg);
     case 'Air':
@@ -491,7 +494,16 @@ export function passo(k: Skatista, comandos: Comandos) {
       if (c.direita) k.deriva += 0.0017;
       k.equilibrio += k.deriva;
       if (k.equilibrio > 1 || k.equilibrio < -1) {
+        // caiu da linha: no chão da pista (da cerca, para dentro dela; da beirada, na própria rampa, virado para descer)
+        if (tr.dentro) {
+          k.x += tr.dentro[0] * 0.35;
+          k.z += tr.dentro[1] * 0.35;
+          k.rx = tr.dentro[0];
+          k.rz = tr.dentro[1];
+        }
         paraDentro(k);
+        k.peca = pecaEm(k.x, k.z);
+        k.y = altura(k.x, k.z);
         cair(k);
         break;
       }
@@ -502,12 +514,26 @@ export function passo(k: Skatista, comandos: Comandos) {
       k.z = tr.z1 + tr.dz * t;
       k.y = tr.y;
       if (apertou('pulo') || fora || k.vel < 0.4) {
-        somar(k, 'Grind', k.duracao * PASSO);
+        somar(k, tr.nome, k.duracao * PASSO);
         k.rx = tr.dx * k.sentido;
         k.rz = tr.dz * k.sentido;
+        if (tr.dentro) {
+          // DA BEIRADA, DE VOLTA À RAMPA: um tico para o lado da curva, e o caminho virado para ela (metade ao longo da linha),
+          // para cair na parede descendo; no patamar estreito atrás da beirada ele ficaria preso contra a cerca
+          k.rx = k.rx * 0.5 + tr.dentro[0];
+          k.rz = k.rz * 0.5 + tr.dentro[1];
+          const n = Math.sqrt(k.rx * k.rx + k.rz * k.rz);
+          k.rx /= n;
+          k.rz /= n;
+          k.cx = k.rx;
+          k.cz = k.rz;
+          k.x += tr.dentro[0] * 0.08;
+          k.z += tr.dentro[1] * 0.08;
+          k.vel = Math.max(k.vel, 1.2);
+        }
         paraDentro(k);
         k.peca = pecaEm(k.x, k.z);
-        decolar(k, 0, apertou('pulo') ? 'ollie' : 'queda', apertou('pulo') ? OLLIE : 0.7);
+        decolar(k, 0, apertou('pulo') ? 'ollie' : 'queda', apertou('pulo') ? OLLIE : tr.dentro ? 0.3 : 0.7);
         if (k.saida === 'ollie') {
           somar(k, 'Ollie');
           k.eventos.push({ tipo: 'ollie' });
@@ -619,6 +645,8 @@ function pegarTrilho(k: Skatista, yAntes: number, pousando = false): number {
     const h = Math.sqrt(k.vx * k.vx + k.vz * k.vz);
     const [ax, az] = h > 0.4 ? [k.vx / h, k.vz / h] : [k.cx, k.cz];
     if (Math.abs(ax * tr.dx + az * tr.dz) < 0.55) continue;
+    // a beirada pede a PRANCHA ao longo dela (o meio giro no vert), e não só o caminho
+    if (tr.prancha && Math.abs(k.cx * tr.dx + k.cz * tr.dz) < tr.prancha) continue;
     return i;
   }
   return -1;
@@ -630,7 +658,8 @@ function comecarGrind(k: Skatista, i: number) {
   fecharAr(k);
   const h = Math.sqrt(k.vx * k.vx + k.vz * k.vz);
   const p = k.vx * tr.dx + k.vz * tr.dz;
-  k.sentido = p >= 0 ? 1 : -1;
+  // quase sem caminho ao longo da linha (o vert, que sobe e desce reto), o sentido é o da prancha
+  k.sentido = Math.abs(p) > 0.3 ? (p > 0 ? 1 : -1) : k.cx * tr.dx + k.cz * tr.dz >= 0 ? 1 : -1;
   k.vel = Math.max(1.6, Math.abs(p), h * 0.8);
   k.t = Math.max(0, (k.x - tr.x1) * tr.dx + (k.z - tr.z1) * tr.dz);
   k.x = tr.x1 + tr.dx * k.t;
@@ -719,7 +748,10 @@ function pousar(k: Skatista) {
 /** As manobras em andamento, como o placar as mostra (o grind e o manual valendo o que já valem). */
 export function comboAberto(k: Skatista): Manobra[] {
   const extra: Manobra[] = [];
-  if (k.modo === 'grind') extra.push({ nome: 'Grind', pontos: valorBase('Grind', k.duracao * PASSO) });
+  if (k.modo === 'grind') {
+    const nome = TRILHOS[k.trilho].nome;
+    extra.push({ nome, pontos: valorBase(nome, k.duracao * PASSO) });
+  }
   if (k.modo === 'manual') extra.push({ nome: 'Manual', pontos: valorBase('Manual', k.duracao * PASSO) });
   if (k.modo === 'ar' && k.grab >= 6) extra.push({ nome: 'Grab', pontos: valorBase('Grab', k.grab * PASSO) });
   return [...k.combo, ...extra];
