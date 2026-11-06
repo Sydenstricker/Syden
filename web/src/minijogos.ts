@@ -510,7 +510,7 @@ export interface EstadoBriga {
   partidaId: string;
 }
 
-export type IdDoJogo = 'corrida' | 'festa' | 'tabuleiro' | 'cidades' | 'golfe' | 'caca' | 'nave' | 'balao' | 'jato' | 'barco' | 'chefe' | 'duelo' | 'torre' | 'plataforma' | 'blocos' | 'briga' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'damas' | 'naval' | 'domino' | 'truco' | 'xadrez' | 'partida-de-xadrez' | 'cozinha' | 'skate' | 'futebol' | 'golfe3d' | 'tocas' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
+export type IdDoJogo = 'corrida' | 'festa' | 'tabuleiro' | 'cidades' | 'golfe' | 'caca' | 'nave' | 'balao' | 'jato' | 'barco' | 'chefe' | 'duelo' | 'torre' | 'plataforma' | 'blocos' | 'briga' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'damas' | 'naval' | 'domino' | 'truco' | 'xadrez' | 'partida-de-xadrez' | 'cozinha' | 'skate' | 'futebol' | 'golfe3d' | 'tocas' | 'transito' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
 
 /**
  * As duas abas da estante (pedido dele, 14/10/2026). SOLO: a partida é só de quem joga, começa sem convite, não ocupa
@@ -723,6 +723,14 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
     id: 'caca',
     nome: chave('Caça às pragas da horta'),
     dica: chave('Corvos e gafanhotos atacam a horta. Mire e clique para acertar antes que fujam: a munição é contada, e cada onda vem mais rápida. Ganha quem fizer mais pontos.'),
+    abas: ['solo', 'coletivo'],
+  },
+  {
+    // O cruzamento (JogoTransito.tsx, server/src/minijogo-transito.ts, transito-sim.ts ↔ transito/sim.ts): a mesma semente para a
+    // turma, cada um no próprio cruzamento, e o servidor refaz a partida de cada um (pedido dele, 06/11/2026).
+    id: 'transito',
+    nome: chave('Trânsito da toca'),
+    dica: chave('Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.'),
     abas: ['solo', 'coletivo'],
   },
   {

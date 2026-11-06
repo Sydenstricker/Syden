@@ -3079,4 +3079,7 @@ export default {
   Pausar: 'Fasilə',
   'Caiu!': 'Yıxıldı!',
   'Melhor combo: {n}': 'Ən yaxşı kombo: {n}',
+  'Trânsito da toca': 'Yuva trafiki',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Avtomobilləri toqquşdurmadan kəsişmədən buraxmaq üçün bir dəqiqə. Dolu növbə də xala başa gəlir.',
+  Liberar: 'Burax',
 } satisfies Record<string, string>;

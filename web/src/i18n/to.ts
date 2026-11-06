@@ -3044,4 +3044,7 @@ export default {
   Pausar: 'Mālōlō',
   'Caiu!': 'Tō!',
   'Melhor combo: {n}': 'Combo lelei taha: {n}',
+  'Trânsito da toca': 'Ngaahi Meʻalele ʻo e Ava',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Miniti ʻe taha ke tuku atu ai ʻa e ngaahi meʻalele ʻi he hala kolosi taʻe fepaki. Ko e laine kuo fonu ʻoku toʻo ai foki ʻa e ngaahi poini.',
+  Liberar: 'Tuku',
 } satisfies Record<string, string>;

@@ -7281,6 +7281,34 @@ export function guardarRecordeDoSkate(userId: number, pontos: number): boolean {
 }
 
 // ---------------------------------------------------------------------------------------------------
+// O TRÂNSITO DA TOCA (06/11/2026): o recorde de cada pessoa no Solo (a melhor partida, os pontos que o servidor refez).
+// Só o melhor: uma partida pior não substitui. É da pessoa, e só ela o vê (minijogo-transito.ts).
+// ---------------------------------------------------------------------------------------------------
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS transito_recordes (
+    user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    pontos  INTEGER NOT NULL,
+    em      TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+  );
+`);
+
+export function recordeDoTransito(userId: number): number | null {
+  return (db.prepare('SELECT pontos FROM transito_recordes WHERE user_id = ?').get(userId) as { pontos: number } | undefined)?.pontos ?? null;
+}
+
+/** Guarda se for o melhor da pessoa. Devolve true se virou recorde. */
+export function guardarRecordeDoTransito(userId: number, pontos: number): boolean {
+  const atual = recordeDoTransito(userId);
+  if (atual !== null && atual >= pontos) return false;
+  db.prepare(
+    `INSERT INTO transito_recordes (user_id, pontos) VALUES (?, ?)
+     ON CONFLICT(user_id) DO UPDATE SET pontos = excluded.pontos, em = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')`,
+  ).run(userId, pontos);
+  return true;
+}
+
+// ---------------------------------------------------------------------------------------------------
 // A ESQUADRILHA DA TOCA (a navinha, 05/11/2026): o recorde de cada pessoa no Solo (a melhor partida inteira, até o chefe).
 // Só o melhor: uma partida pior não substitui. É da pessoa, e só ela o vê (minijogo-nave.ts).
 // ---------------------------------------------------------------------------------------------------

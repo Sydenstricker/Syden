@@ -3033,4 +3033,7 @@ export default {
   Pausar: 'Pause',
   'Caiu!': 'Bail!',
   'Melhor combo: {n}': 'Best combo: {n}',
+  'Trânsito da toca': 'Burrow Traffic',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'One minute to send the cars through the intersection without letting them crash. A full queue also costs points.',
+  Liberar: 'Release',
 } satisfies Record<string, string>;

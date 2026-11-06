@@ -3108,4 +3108,7 @@ export default {
   Pausar: 'විරාමය',
   'Caiu!': 'වැටුණා!',
   'Melhor combo: {n}': 'හොඳම කොම්බෝව: {n}',
+  'Trânsito da toca': 'ගුහාවේ රථවාහන',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'මංසන්ධියෙන් වාහන එකිනෙක නොගැටෙන සේ යැවීමට විනාඩියක්. පිරුණු පෝලිමත් ලකුණු අඩු කරයි.',
+  Liberar: 'යවන්න',
 } satisfies Record<string, string>;

@@ -3128,4 +3128,7 @@ export default {
   Pausar: 'Pauza',
   'Caiu!': 'Yiqildi!',
   'Melhor combo: {n}': 'Eng yaxshi kombo: {n}',
+  'Trânsito da toca': 'Uya tirbandligi',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Mashinalarni chorrahadan to‘qnashtirmay o‘tkazish uchun bir daqiqa. To‘lgan navbat ham ochkoga tushadi.',
+  Liberar: 'Qo‘yib yubor',
 } satisfies Record<string, string>;

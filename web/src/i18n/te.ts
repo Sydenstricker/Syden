@@ -3020,4 +3020,7 @@ export default {
   Pausar: 'పాజ్',
   'Caiu!': 'పడిపోయారు!',
   'Melhor combo: {n}': 'ఉత్తమ కాంబో: {n}',
+  'Trânsito da toca': 'బొరియ ట్రాఫిక్',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'కూడలిలో కార్లు ఢీకొనకుండా పంపడానికి ఒక నిమిషం. నిండిన వరుస కూడా పాయింట్లు తగ్గిస్తుంది.',
+  Liberar: 'పంపు',
 } satisfies Record<string, string>;

@@ -3033,4 +3033,7 @@ export default {
   Pausar: 'Pausa',
   'Caiu!': '¡Te caíste!',
   'Melhor combo: {n}': 'Mejor combo: {n}',
+  'Trânsito da toca': 'Tráfico de la madriguera',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Un minuto para soltar los coches del cruce sin dejar que choquen. La fila llena también cuesta puntos.',
+  Liberar: 'Soltar',
 } satisfies Record<string, string>;

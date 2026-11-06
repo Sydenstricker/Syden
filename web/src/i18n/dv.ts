@@ -3118,4 +3118,7 @@ export default {
   Pausar: 'ވަގުތީގޮތުން ހުއްޓާލާ',
   'Caiu!': 'ވެއްޓުނު!',
   'Melhor combo: {n}': 'އެންމެ ރަނގަޅު ކޮމްބޯ: {n}',
+  'Trânsito da toca': 'ގޯޅީގެ ޓްރެފިކް',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'ކާރުތައް ނުޖެހި ސަރަހައްދުން ފޮނުވުމަށް އެއް މިނެޓު. ފުރިފައިވާ ކިއުއިންވެސް ޕޮއިންޓް ގެއްލޭ.',
+  Liberar: 'ފޮނުވުން',
 } satisfies Record<string, string>;

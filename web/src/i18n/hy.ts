@@ -3127,4 +3127,7 @@ export default {
   Pausar: 'Դադար',
   'Caiu!': 'Ընկավ։',
   'Melhor combo: {n}': 'Լավագույն կոմբո՝ {n}',
+  'Trânsito da toca': 'Որջի երթևեկություն',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Մեկ րոպե՝ մեքենաները խաչմերուկով բաց թողնելու համար, որ չբախվեն։ Լցված հերթն էլ միավորներ է արժենում։',
+  Liberar: 'Բաց թող',
 } satisfies Record<string, string>;

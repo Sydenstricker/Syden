@@ -3019,4 +3019,7 @@ export default {
   Pausar: '一時停止',
   'Caiu!': '転んだ！',
   'Melhor combo: {n}': 'ベストコンボ：{n}',
+  'Trânsito da toca': '巣穴の交通整理',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': '1分間、ぶつからないように交差点の車を通そう。列がいっぱいになっても点が減ります。',
+  Liberar: '発進',
 } satisfies Record<string, string>;

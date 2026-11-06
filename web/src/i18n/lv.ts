@@ -3110,4 +3110,7 @@ export default {
   Pausar: 'Pauze',
   'Caiu!': 'Nokrita!',
   'Melhor combo: {n}': 'Labākais kombo: {n}',
+  'Trânsito da toca': 'Alas satiksme',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Viena minūte, lai izlaistu mašīnas cauri krustojumam tā, lai tās nesadurtos. Pilna rinda arī maksā punktus.',
+  Liberar: 'Palaid',
 } satisfies Record<string, string>;

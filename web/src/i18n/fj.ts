@@ -3037,4 +3037,7 @@ export default {
   Pausar: 'Vakacegu',
   'Caiu!': 'Bale!',
   'Melhor combo: {n}': 'Combo vinaka duadua: {n}',
+  'Trânsito da toca': 'Na veivoli ena qara',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'E dua na miniti mo vakatalai ira na motoka ena sala veisalayaki me kakua ni ra veibasai. Na laini sa sinai e vakalailaitaka talega na maka.',
+  Liberar: 'Vakatalai',
 } satisfies Record<string, string>;

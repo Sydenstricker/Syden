@@ -3119,4 +3119,7 @@ export default {
   Pausar: 'Arakesme',
   'Caiu!': 'Ýykyldy!',
   'Melhor combo: {n}': 'Iň gowy kombo: {n}',
+  'Trânsito da toca': 'Hin ulag hereketi',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Maşynlary çatrykdan çaknyşdyrman geçirmek üçin bir minut. Doly nobat hem utuk aýyrýar.',
+  Liberar: 'Goýber',
 } satisfies Record<string, string>;

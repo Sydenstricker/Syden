@@ -3121,4 +3121,7 @@ export default {
   Pausar: 'སྐབས་ཐོག་བཀག',
   'Caiu!': 'མར་བུད་ཡི།',
   'Melhor combo: {n}': 'ཀོམ་བོ་ལེགས་ཤོས་: {n}',
+  'Trânsito da toca': 'ཕུག་གི་འགྲུལ་འཁོར།',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'སྣུམ་འཁོར་ཚུ་མ་ཐུག་པར་ལམ་སྣ་ལས་བཏང་ནིའི་དོན་ལུ་སྐར་མ་གཅིག། གྲལ་གང་ཡང་སྐུགས་ཚད་ཆུདཔ་ཨིན།',
+  Liberar: 'བཏང་',
 } satisfies Record<string, string>;

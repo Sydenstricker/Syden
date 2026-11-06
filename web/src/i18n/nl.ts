@@ -3037,4 +3037,7 @@ export default {
   Pausar: 'Pauze',
   'Caiu!': 'Gevallen!',
   'Melhor combo: {n}': 'Beste combo: {n}',
+  'Trânsito da toca': 'Holverkeer',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Eén minuut om de auto’s over het kruispunt te laten zonder dat ze botsen. Een volle rij kost ook punten.',
+  Liberar: 'Laat gaan',
 } satisfies Record<string, string>;

@@ -3025,4 +3025,7 @@ export default {
   Pausar: '暂停',
   'Caiu!': '摔倒了！',
   'Melhor combo: {n}': '最佳连招：{n}',
+  'Trânsito da toca': '兔子洞交通',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': '一分钟内放行路口的车，别让它们相撞。排队排满也会扣分。',
+  Liberar: '放行',
 } satisfies Record<string, string>;

@@ -3040,4 +3040,7 @@ export default {
   Pausar: 'Dakata',
   'Caiu!': 'Ya faɗi!',
   'Melhor combo: {n}': 'Mafi kyawun combo: {n}',
+  'Trânsito da toca': 'Cunkoson kogo',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Minti ɗaya don ku saki motoci a mahaɗar hanya ba tare da sun yi karo ba. Layi da ya cika ma yana rage maki.',
+  Liberar: 'Saki',
 } satisfies Record<string, string>;

@@ -3037,4 +3037,7 @@ export default {
   Pausar: 'Sitisha',
   'Caiu!': 'Umeanguka!',
   'Melhor combo: {n}': 'Kombo bora: {n}',
+  'Trânsito da toca': 'Msongamano wa Shimoni',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Dakika moja ya kuruhusu magari kupita makutano bila kugongana. Foleni iliyojaa nayo hupunguza alama.',
+  Liberar: 'Ruhusu',
 } satisfies Record<string, string>;

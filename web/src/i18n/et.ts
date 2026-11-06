@@ -3105,4 +3105,7 @@ export default {
   Pausar: 'Paus',
   'Caiu!': 'Kukkus!',
   'Melhor combo: {n}': 'Parim kombo: {n}',
+  'Trânsito da toca': 'Uru liiklus',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Üks minut, et lasta autod ristmikult läbi nii, et need kokku ei põrkaks. Täis järjekord maksab samuti punkte.',
+  Liberar: 'Lase minna',
 } satisfies Record<string, string>;

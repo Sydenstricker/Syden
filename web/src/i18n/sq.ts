@@ -3100,4 +3100,7 @@ export default {
   Pausar: 'Pauzë',
   'Caiu!': 'Ra!',
   'Melhor combo: {n}': 'Kombo më e mirë: {n}',
+  'Trânsito da toca': 'Trafiku i strofullës',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Një minutë për të lëshuar makinat në kryqëzim pa i lënë të përplasen. Radha e mbushur kushton edhe ajo pikë.',
+  Liberar: 'Lësho',
 } satisfies Record<string, string>;

@@ -3051,4 +3051,7 @@ export default {
   Pausar: 'หยุดชั่วคราว',
   'Caiu!': 'ล้ม!',
   'Melhor combo: {n}': 'คอมโบที่ดีที่สุด: {n}',
+  'Trânsito da toca': 'จราจรโพรงกระต่าย',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'หนึ่งนาทีเพื่อปล่อยรถผ่านสี่แยกโดยไม่ให้ชนกัน แถวที่เต็มก็เสียคะแนนเหมือนกัน',
+  Liberar: 'ปล่อย',
 } satisfies Record<string, string>;

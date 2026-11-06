@@ -3053,4 +3053,7 @@ export default {
   Pausar: 'Dánudúró',
   'Caiu!': 'Ó ṣubú!',
   'Melhor combo: {n}': 'Combo tó dára jù: {n}',
+  'Trânsito da toca': 'Ọkọ̀ Ojú-ọ̀nà Ihò',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Ìṣẹ́jú kan láti jẹ́ kí àwọn mọ́tò kọjá ní oríta láìjẹ́ kí wọ́n kọlu ara wọn. Ìlà tó kún náà ń dín àmì kù.',
+  Liberar: 'Jẹ́ kó lọ',
 } satisfies Record<string, string>;

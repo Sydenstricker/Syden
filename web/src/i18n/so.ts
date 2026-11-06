@@ -3108,4 +3108,7 @@ export default {
   Pausar: 'Hakad',
   'Caiu!': 'Dhacay!',
   'Melhor combo: {n}': 'Combo-ga ugu fiican: {n}',
+  'Trânsito da toca': 'Taraafikada Godka',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Hal daqiiqo oo aad gawaarida ka sii daynayso isgoyska iyagoon isku dhicin. Saf buuxa ayaa sidoo kale dhibco kaa jaraya.',
+  Liberar: 'Sii day',
 } satisfies Record<string, string>;

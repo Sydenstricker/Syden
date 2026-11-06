@@ -3112,4 +3112,7 @@ export default {
   Pausar: 'Кідірту',
   'Caiu!': 'Құлады!',
   'Melhor combo: {n}': 'Ең үздік комбо: {n}',
+  'Trânsito da toca': 'Ін трафигі',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Көліктерді қиылыстан соқтығыстырмай өткізуге бір минут. Толы кезек те ұпай кемітеді.',
+  Liberar: 'Жібер',
 } satisfies Record<string, string>;

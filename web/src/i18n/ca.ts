@@ -3104,4 +3104,7 @@ export default {
   Pausar: 'Pausa',
   'Caiu!': 'Has caigut!',
   'Melhor combo: {n}': 'Millor combo: {n}',
+  'Trânsito da toca': 'Trànsit del cau',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Un minut per deixar passar els cotxes de la cruïlla sense que xoquin. La cua plena també resta punts.',
+  Liberar: 'Deixa passar',
 } satisfies Record<string, string>;

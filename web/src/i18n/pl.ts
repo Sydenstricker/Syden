@@ -3103,4 +3103,7 @@ export default {
   Pausar: 'Pauza',
   'Caiu!': 'Upadek!',
   'Melhor combo: {n}': 'Najlepsze combo: {n}',
+  'Trânsito da toca': 'Ruch przy norze',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Minuta, żeby przepuszczać auta przez skrzyżowanie tak, by się nie zderzyły. Pełna kolejka też kosztuje punkty.',
+  Liberar: 'Puść',
 } satisfies Record<string, string>;

@@ -3078,4 +3078,7 @@ export default {
   Pausar: 'Dhaabi',
   'Caiu!': 'Kufe!',
   'Melhor combo: {n}': 'Combo isa gaarii: {n}',
+  'Trânsito da toca': 'Tiraafikii Boollaa',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Daqiiqaa tokko konkolaattota qaxxaamura irraa osoo wal hin dhahin gadi lakkisuuf. Tarreen guutames qabxii nama dhabsiisa.',
+  Liberar: 'Gadi lakkisi',
 } satisfies Record<string, string>;

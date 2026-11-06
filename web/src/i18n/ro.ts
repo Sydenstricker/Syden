@@ -3038,4 +3038,7 @@ export default {
   Pausar: 'Pauză',
   'Caiu!': 'Ai căzut!',
   'Melhor combo: {n}': 'Cel mai bun combo: {n}',
+  'Trânsito da toca': 'Traficul vizuinii',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Un minut ca să lași mașinile să treacă prin intersecție fără să se ciocnească. Coada plină costă și ea puncte.',
+  Liberar: 'Lasă',
 } satisfies Record<string, string>;

@@ -3109,4 +3109,7 @@ export default {
   Pausar: 'Hlé',
   'Caiu!': 'Datt!',
   'Melhor combo: {n}': 'Besta kombó: {n}',
+  'Trânsito da toca': 'Holuumferðin',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Ein mínúta til að hleypa bílunum yfir gatnamótin án þess að þeir rekist á. Full röð kostar líka stig.',
+  Liberar: 'Hleypa',
 } satisfies Record<string, string>;

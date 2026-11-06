@@ -3126,4 +3126,7 @@ export default {
   Pausar: 'პაუზა',
   'Caiu!': 'დაეცა!',
   'Melhor combo: {n}': 'საუკეთესო კომბო: {n}',
+  'Trânsito da toca': 'სოროს მოძრაობა',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'ერთი წუთი, რომ მანქანები გზაჯვარედინზე გაატარო ისე, რომ არ შეეჯახონ. სავსე რიგიც ქულებს გაკლებს.',
+  Liberar: 'გაუშვი',
 } satisfies Record<string, string>;

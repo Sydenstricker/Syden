@@ -3107,4 +3107,7 @@ export default {
   Pausar: 'Pozastavit',
   'Caiu!': 'Spadl!',
   'Melhor combo: {n}': 'Nejlepší kombo: {n}',
+  'Trânsito da toca': 'Doprava z nory',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Jedna minuta na pouštění aut přes křižovatku tak, aby se nesrazila. Plná fronta taky stojí body.',
+  Liberar: 'Pustit',
 } satisfies Record<string, string>;

@@ -3108,4 +3108,7 @@ export default {
   Pausar: 'Tauko',
   'Caiu!': 'Kaatui!',
   'Melhor combo: {n}': 'Paras kombo: {n}',
+  'Trânsito da toca': 'Kolon liikenne',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Minuutti aikaa päästää autot risteyksen läpi niin, etteivät ne törmää. Täysi jono maksaa myös pisteitä.',
+  Liberar: 'Päästä',
 } satisfies Record<string, string>;

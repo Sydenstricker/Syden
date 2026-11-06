@@ -3110,4 +3110,7 @@ export default {
   Pausar: 'Pauzė',
   'Caiu!': 'Nugriuvo!',
   'Melhor combo: {n}': 'Geriausias kombo: {n}',
+  'Trânsito da toca': 'Urvo eismas',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Viena minutė praleisti automobilius per sankryžą, kad jie nesusidurtų. Pilna eilė irgi kainuoja taškų.',
+  Liberar: 'Praleisk',
 } satisfies Record<string, string>;

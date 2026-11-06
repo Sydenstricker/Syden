@@ -3042,4 +3042,7 @@ export default {
   Pausar: 'Mālōlō',
   'Caiu!': 'Paʻū!',
   'Melhor combo: {n}': 'Combo sili: {n}',
+  'Trânsito da toca': 'Taʻavale o le Lua',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'E tasi le minute e tuʻu ai taʻavale e sopoia le fetaulaʻiga ala e aunoa ma le fetuʻiaʻi. O le laina ua tumu e toʻesea ai foʻi ni ʻai.',
+  Liberar: 'Tuʻu',
 } satisfies Record<string, string>;

@@ -3122,4 +3122,7 @@ export default {
   Pausar: 'Түр зогсоох',
   'Caiu!': 'Унав!',
   'Melhor combo: {n}': 'Шилдэг комбо: {n}',
+  'Trânsito da toca': 'Нүхний замын хөдөлгөөн',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Машинуудыг мөргөлдүүлэхгүйгээр уулзвараар нэвтрүүлэх нэг минут. Дүүрсэн дараалал ч оноо хасна.',
+  Liberar: 'Явуул',
 } satisfies Record<string, string>;

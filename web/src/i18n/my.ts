@@ -3077,4 +3077,7 @@ export default {
   Pausar: 'ခဏရပ်',
   'Caiu!': 'လဲကျပြီ!',
   'Melhor combo: {n}': 'အကောင်းဆုံး combo: {n}',
+  'Trânsito da toca': 'တွင်း ယာဉ်ကြော',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'ကားတွေ မတိုက်မိအောင် လမ်းဆုံကနေ လွှတ်ပေးဖို့ တစ်မိနစ်။ တန်းစီပြည့်သွားရင်လည်း အမှတ်လျော့တယ်။',
+  Liberar: 'လွှတ်',
 } satisfies Record<string, string>;

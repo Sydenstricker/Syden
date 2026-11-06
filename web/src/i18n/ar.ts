@@ -3062,4 +3062,7 @@ export default {
   Pausar: 'إيقاف مؤقت',
   'Caiu!': 'سقط!',
   'Melhor combo: {n}': 'أفضل سلسلة: {n}',
+  'Trânsito da toca': 'مرور الجحر',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'دقيقة واحدة لتمرير السيارات عبر التقاطع دون أن تصطدم. والطابور الممتلئ يكلّف نقاطًا أيضًا.',
+  Liberar: 'إطلاق',
 } satisfies Record<string, string>;

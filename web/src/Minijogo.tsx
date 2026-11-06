@@ -32,6 +32,7 @@ import { EscolhaDaTorre, JogoTorre, type EstadoTorre } from './JogoTorre';
 import type { EstadoChefe } from './chefe/regras';
 import { JogoCozinha, type EstadoCozinha } from './JogoCozinha';
 import { JogoSkate, type EstadoSkate } from './JogoSkate';
+import { JogoTransito, type EstadoTransito } from './JogoTransito';
 import { JogoLobisomem } from './JogoLobisomem';
 import { JogoPalavra } from './JogoPalavra';
 import { EscolhaDaFase, JogoPlataforma, JogoPlataformaNaSala, type EstadoPlataforma } from './JogoPlataforma';
@@ -580,6 +581,9 @@ export function PainelDoMinijogo({
       )}
       {jogoNaTela?.jogo === 'skate' && (
         <JogoSkate key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')} estado={jogoNaTela as unknown as EstadoSkate & Partida} eu={eu} jogador={souJogador(partida)} agir={agir} />
+      )}
+      {jogoNaTela?.jogo === 'transito' && (
+        <JogoTransito key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')} estado={jogoNaTela as unknown as EstadoTransito & Partida} eu={eu} jogador={souJogador(partida)} agir={agir} />
       )}
       {jogoNaTela?.jogo === 'cozinha' && (
         <JogoCozinha key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')} estado={jogoNaTela as unknown as EstadoCozinha & Partida} eu={eu} jogador={souJogador(partida)} agir={agir} />

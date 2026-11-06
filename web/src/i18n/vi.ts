@@ -3008,4 +3008,7 @@ export default {
   Pausar: 'Tạm dừng',
   'Caiu!': 'Ngã rồi!',
   'Melhor combo: {n}': 'Combo tốt nhất: {n}',
+  'Trânsito da toca': 'Giao thông hang thỏ',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Một phút để cho xe qua ngã tư mà không để chúng đâm nhau. Hàng đợi đầy cũng bị trừ điểm.',
+  Liberar: 'Cho đi',
 } satisfies Record<string, string>;

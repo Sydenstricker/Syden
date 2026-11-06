@@ -3023,4 +3023,7 @@ export default {
   Pausar: 'இடைநிறுத்து',
   'Caiu!': 'விழுந்தது!',
   'Melhor combo: {n}': 'சிறந்த காம்போ: {n}',
+  'Trânsito da toca': 'வளைப் போக்குவரத்து',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'சந்திப்பில் வாகனங்கள் மோதாமல் கடக்க விட ஒரு நிமிடம். நிரம்பிய வரிசையும் புள்ளிகளைக் குறைக்கும்.',
+  Liberar: 'விடு',
 } satisfies Record<string, string>;

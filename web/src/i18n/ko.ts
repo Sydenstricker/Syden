@@ -3026,4 +3026,7 @@ export default {
   Pausar: '일시정지',
   'Caiu!': '넘어졌다!',
   'Melhor combo: {n}': '최고 콤보: {n}',
+  'Trânsito da toca': '굴 교통정리',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': '1분 동안 차들이 부딪치지 않게 교차로를 통과시키세요. 줄이 가득 차도 점수가 깎여요.',
+  Liberar: '출발',
 } satisfies Record<string, string>;

@@ -3040,4 +3040,7 @@ export default {
   Pausar: 'Para',
   'Caiu!': 'Monu!',
   'Melhor combo: {n}': "Kombo di'ak liu: {n}",
+  'Trânsito da toca': 'Tráfiku kuak nian',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Minutu ida atu husik karreta sira liu krusamentu la ho baku malu. Fila nakonu mós lakon pontu.',
+  Liberar: 'Husik',
 } satisfies Record<string, string>;

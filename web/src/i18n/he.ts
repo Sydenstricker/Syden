@@ -3092,4 +3092,7 @@ export default {
   Pausar: 'השהיה',
   'Caiu!': 'נפל!',
   'Melhor combo: {n}': 'הקומבו הטוב ביותר: {n}',
+  'Trânsito da toca': 'תנועה במחילה',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'דקה אחת להעביר את המכוניות בצומת בלי שיתנגשו. גם תור מלא עולה בנקודות.',
+  Liberar: 'שחרור',
 } satisfies Record<string, string>;

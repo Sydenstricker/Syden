@@ -1,0 +1,161 @@
+/* O TRÂNSITO DA TOCA (JogoTransito.tsx): a cidade em isométrico num canvas, e o painel por cima. */
+
+/* A cidade pede tela: o painel dos mini-games fica largo enquanto se joga. */
+.minijogo.jogando-transito {
+  width: min(980px, 96vw);
+}
+
+.transito {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.transito-moldura {
+  position: relative;
+  width: 100%;
+  max-width: calc(70vh * 930 / 545);
+  margin: 0 auto;
+  border-radius: 10px;
+  overflow: hidden;
+  background: linear-gradient(#a9d3ea, #cfe7f2);
+}
+
+.transito-tela {
+  display: block;
+  width: 100%;
+  height: auto;
+  touch-action: manipulation;
+  cursor: pointer;
+}
+
+.transito-icone {
+  display: inline-block;
+  flex: none;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.12em;
+  background-color: currentColor;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+.transito-painel {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  color: #fff;
+  font-weight: 800;
+  text-shadow:
+    0 2px 0 rgba(20, 28, 40, 0.55),
+    0 0 6px rgba(20, 28, 40, 0.35);
+  font-variant-numeric: tabular-nums;
+}
+.transito-painel .transito-icone {
+  filter: drop-shadow(0 2px 0 rgba(20, 28, 40, 0.55));
+}
+
+.transito-pontos {
+  position: absolute;
+  top: 10px;
+  left: 14px;
+  font-size: calc(24px * var(--escala-do-texto, 1));
+}
+
+.transito-relogio {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  font-size: calc(22px * var(--escala-do-texto, 1));
+}
+.transito-relogio.acabando {
+  color: #ffd166;
+}
+
+.transito-sequencia {
+  position: absolute;
+  top: 44px;
+  left: 14px;
+  font-size: calc(17px * var(--escala-do-texto, 1));
+  color: #ffe08a;
+}
+
+.transito-travado {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 30px;
+  color: #ffb02e;
+  animation: transito-pisca 0.5s steps(2) infinite;
+}
+@keyframes transito-pisca {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.transito-contagem {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(56px * var(--escala-do-texto, 1));
+  color: #ffe08a;
+}
+
+.transito-fim {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.transito-fim-pontos {
+  margin: 0;
+  font-size: calc(24px * var(--escala-do-texto, 1));
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.transito-fim-conta {
+  margin: 0;
+  display: flex;
+  gap: 18px;
+  font-size: calc(18px * var(--escala-do-texto, 1));
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.transito-fim-conta .bateu {
+  color: #d9483b;
+}
+.transito-recorde {
+  color: var(--accent);
+  font-weight: 700;
+}
+.transito-placar {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 0;
+  min-width: min(320px, 100%);
+}
+.transito-placar li {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.transito-placar li.eu {
+  background: var(--bg-soft, rgba(127, 127, 127, 0.12));
+}
+.transito-placar .minijogo-nome {
+  flex: 1;
+}
+.transito-placar-pos {
+  min-width: 1.5em;
+  font-variant-numeric: tabular-nums;
+}

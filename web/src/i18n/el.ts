@@ -3044,4 +3044,7 @@ export default {
   Pausar: 'Παύση',
   'Caiu!': 'Έπεσες!',
   'Melhor combo: {n}': 'Καλύτερο κόμπο: {n}',
+  'Trânsito da toca': 'Κίνηση στο λαγούμι',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Ένα λεπτό για να περνάς τα αυτοκίνητα από τη διασταύρωση χωρίς να συγκρουστούν. Η γεμάτη ουρά κοστίζει κι αυτή πόντους.',
+  Liberar: 'Άφησε',
 } satisfies Record<string, string>;

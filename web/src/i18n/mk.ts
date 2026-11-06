@@ -3108,4 +3108,7 @@ export default {
   Pausar: 'Пауза',
   'Caiu!': 'Падна!',
   'Melhor combo: {n}': 'Најдобро комбо: {n}',
+  'Trânsito da toca': 'Сообраќај кај дувлото',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Една минута да ги пушташ колите низ раскрсницата без да се судрат. И полната редица чини поени.',
+  Liberar: 'Пушти',
 } satisfies Record<string, string>;

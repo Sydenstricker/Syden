@@ -29,6 +29,8 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
       return <CapaTocas />;
     case 'caca':
       return <CapaCaca />;
+    case 'transito':
+      return <CapaTransito />;
     case 'nave':
       return <CapaNave />;
     case 'balao':
@@ -1331,6 +1333,65 @@ function CapaNave() {
         <circle cx="0" cy="-4" r="3" fill="#f6efe4" />
         <path d="M-2 -7 L-3 -12 M2 -7 L3 -12" stroke="#f6efe4" strokeWidth="2" />
       </g>
+    </svg>
+  );
+}
+
+/** O trânsito da toca: o cruzamento em isométrico, com prédios nos cantos, dois carros esperando e um passando. */
+function CapaTransito() {
+  // a grade isométrica da capa: (x, y) da cidade → o ponto da tela
+  const p = (x: number, y: number): [number, number] => [80 + (x - y) * 15, 14 + (x + y) * 7.5];
+  const pts = (l: [number, number][]) => l.map(([a, b]) => `${a},${b}`).join(' ');
+  const quad = (x0: number, y0: number, x1: number, y1: number) => pts([p(x0, y0), p(x1, y0), p(x1, y1), p(x0, y1)]);
+  const acima = ([a, b]: [number, number], h: number): [number, number] => [a, b - h];
+  const predio = (x: number, y: number, cor: string, h: number) => {
+    const a = p(x, y + 1.6);
+    const b = p(x + 1.6, y + 1.6);
+    const c = p(x + 1.6, y);
+    return (
+      <g key={`${x}-${y}`}>
+        <polygon points={pts([a, b, acima(b, h), acima(a, h)])} fill={cor} />
+        <polygon points={pts([b, c, acima(c, h), acima(b, h)])} fill={cor} opacity="0.75" />
+        <polygon points={pts([acima(p(x, y), h), acima(c, h), acima(b, h), acima(a, h)])} fill="#ddd8c4" />
+      </g>
+    );
+  };
+  const carro = (x: number, y: number, cor: string) => {
+    const [cx, cy] = p(x, y);
+    return (
+      <g transform={`translate(${cx} ${cy})`}>
+        <ellipse cx="0" cy="2" rx="9" ry="4" fill="#2a2c33" opacity="0.25" />
+        <path d="M-9 -3 L0 -7.5 L9 -3 L9 0 L0 4.5 L-9 0 Z" fill={cor} />
+        <path d="M-5 -7 L0 -9.5 L5 -7 L5 -4 L0 -1.5 L-5 -4 Z" fill="#9fd1ef" />
+        <circle cx="-5" cy="2" r="1.6" fill="#2a2c33" />
+        <circle cx="5" cy="2" r="1.6" fill="#2a2c33" />
+      </g>
+    );
+  };
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#a9d3ea" />
+      <polygon points={pts([p(0, 7), p(7, 7), p(7, 0), acima(p(7, 0), -8), acima(p(7, 7), -8), acima(p(0, 7), -8)])} fill="#a77d53" />
+      <polygon points={quad(0, 0, 7, 7)} fill="#cfcab6" />
+      <polygon points={quad(0, 3, 7, 4)} fill="#5d6169" />
+      <polygon points={quad(3, 0, 4, 7)} fill="#5d6169" />
+      {[0.15, 0.45, 0.75].map((a) => (
+        <g key={a} fill="#e9e5d8">
+          <polygon points={quad(2.82, 3 + a, 2.96, 3.14 + a)} />
+          <polygon points={quad(3 + a, 2.82, 3.14 + a, 2.96)} />
+          <polygon points={quad(4.04, 3 + a, 4.18, 3.14 + a)} />
+          <polygon points={quad(3 + a, 4.04, 3.14 + a, 4.18)} />
+        </g>
+      ))}
+      {predio(0.8, 0.8, '#b8524c', 16)}
+      {predio(4.8, 0.8, '#c9b98a', 12)}
+      {predio(0.8, 4.8, '#8f6a4a', 12)}
+      {carro(2.3, 3.75, '#d0524c')}
+      {carro(3.25, 2.3, '#f2b632')}
+      {carro(4.9, 3.75, '#4a79c8')}
+      {predio(5.2, 5.2, '#a84b46', 10)}
+      {/* a seta de quem vai virar */}
+      <path d="M90 42 l9 -2 l-4 8 Z" fill="#ffb02e" stroke="#3a2a10" strokeWidth="1" />
     </svg>
   );
 }

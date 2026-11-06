@@ -3110,4 +3110,7 @@ export default {
   Pausar: 'Szünet',
   'Caiu!': 'Elesett!',
   'Melhor combo: {n}': 'Legjobb kombó: {n}',
+  'Trânsito da toca': 'Üregi forgalom',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Egy perc, hogy átengedd az autókat a kereszteződésen úgy, hogy ne ütközzenek. A teli sor is pontba kerül.',
+  Liberar: 'Engedd',
 } satisfies Record<string, string>;

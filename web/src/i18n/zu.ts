@@ -3109,4 +3109,7 @@ export default {
   Pausar: 'Misa okwesikhashana',
   'Caiu!': 'Uwile!',
   'Melhor combo: {n}': 'Ikhombo engcono kakhulu: {n}',
+  'Trânsito da toca': 'Ithrafikhi Yomgodi',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Umzuzu owodwa wokudedela izimoto empambanweni yemigwaqo zingashayisani. Ulayini ogcwele nawo ukudlela amaphuzu.',
+  Liberar: 'Dedela',
 } satisfies Record<string, string>;

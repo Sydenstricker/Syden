@@ -3035,4 +3035,7 @@ export default {
   Pausar: 'বিরতি',
   'Caiu!': 'পড়ে গেছে!',
   'Melhor combo: {n}': 'সেরা কম্বো: {n}',
+  'Trânsito da toca': 'গর্তের যানজট',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'চৌরাস্তা দিয়ে গাড়িগুলো ছাড়তে এক মিনিট, যেন ধাক্কা না লাগে। লাইন ভরে গেলেও পয়েন্ট কাটা যায়।',
+  Liberar: 'ছাড়ো',
 } satisfies Record<string, string>;

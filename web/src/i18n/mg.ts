@@ -3108,4 +3108,7 @@ export default {
   Pausar: 'Ajanony',
   'Caiu!': 'Lavo!',
   'Melhor combo: {n}': 'Combo tsara indrindra: {n}',
+  'Trânsito da toca': 'Fifamoivoizana ao an-davaka',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Iray minitra hamelana ireo fiara hiampita ny sampanan-dalana tsy hifandona. Ny filaharana feno koa dia mahatonga very isa.',
+  Liberar: 'Avelao',
 } satisfies Record<string, string>;

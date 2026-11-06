@@ -3049,4 +3049,7 @@ export default {
   Pausar: 'Hagarika',
   'Caiu!': 'Yaguye!',
   'Melhor combo: {n}': 'Kombo nziza kurusha izindi: {n}',
+  'Trânsito da toca': 'Urujya n\'uruza rw\'umwobo',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Umunota umwe wo kurekura imodoka mu masangano zitagonganye. Umurongo wuzuye nawo ugutwara amanota.',
+  Liberar: 'Rekura',
 } satisfies Record<string, string>;

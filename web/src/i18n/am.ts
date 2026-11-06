@@ -3038,4 +3038,7 @@ export default {
   Pausar: 'ለአፍታ አቁም',
   'Caiu!': 'ወደቀ!',
   'Melhor combo: {n}': 'ምርጥ ኮምቦ፦ {n}',
+  'Trânsito da toca': 'የዋሻው ትራፊክ',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'መኪኖቹ ሳይጋጩ በመስቀለኛ መንገዱ እንዲያልፉ ለማድረግ አንድ ደቂቃ አለዎት። የሞላ ሰልፍም ነጥብ ያስቀንሳል።',
+  Liberar: 'መልቀቅ',
 } satisfies Record<string, string>;

@@ -3108,4 +3108,7 @@ export default {
   Pausar: 'Pause',
   'Caiu!': 'Falt!',
   'Melhor combo: {n}': 'Beste kombo: {n}',
+  'Trânsito da toca': 'Huletrafikken',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Ett minutt til å slippe bilene gjennom krysset uten at de kolliderer. Full kø koster også poeng.',
+  Liberar: 'Slipp',
 } satisfies Record<string, string>;

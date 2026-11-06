@@ -3030,4 +3030,7 @@ export default {
   Pausar: 'روکیں',
   'Caiu!': 'گر گئے!',
   'Melhor combo: {n}': 'بہترین کومبو: {n}',
+  'Trânsito da toca': 'بِل کا ٹریفک',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'چوراہے سے گاڑیوں کو ٹکرائے بغیر گزارنے کے لیے ایک منٹ۔ بھری ہوئی قطار سے بھی پوائنٹس کٹتے ہیں۔',
+  Liberar: 'چھوڑیں',
 } satisfies Record<string, string>;

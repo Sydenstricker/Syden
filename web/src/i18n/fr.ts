@@ -3060,4 +3060,7 @@ export default {
   Pausar: 'Pause',
   'Caiu!': 'Chute !',
   'Melhor combo: {n}': 'Meilleur combo : {n}',
+  'Trânsito da toca': 'Trafic du terrier',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Une minute pour faire passer les voitures au carrefour sans qu’elles se percutent. Une file pleine coûte aussi des points.',
+  Liberar: 'Laisser passer',
 } satisfies Record<string, string>;

@@ -3107,4 +3107,7 @@ export default {
   Pausar: 'ផ្អាក',
   'Caiu!': 'ដួលហើយ!',
   'Melhor combo: {n}': 'ខមបូល្អបំផុត៖ {n}',
+  'Trânsito da toca': 'ចរាចររូង',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'មួយនាទីដើម្បីបញ្ចេញឡានឆ្លងផ្លូវបំបែកដោយមិនឲ្យបុកគ្នា។ ជួរពេញក៏ខាតពិន្ទុដែរ។',
+  Liberar: 'បញ្ចេញ',
 } satisfies Record<string, string>;

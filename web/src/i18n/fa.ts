@@ -3031,4 +3031,7 @@ export default {
   Pausar: 'توقف',
   'Caiu!': 'افتاد!',
   'Melhor combo: {n}': 'بهترین کمبو: {n}',
+  'Trânsito da toca': 'ترافیک لانه',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'یک دقیقه وقت داری ماشین‌ها را از چهارراه رد کنی بی‌آنکه به هم بخورند. صف پر هم امتیاز کم می‌کند.',
+  Liberar: 'رها کن',
 } satisfies Record<string, string>;

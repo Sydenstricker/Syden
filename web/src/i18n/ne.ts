@@ -3110,4 +3110,7 @@ export default {
   Pausar: 'रोक्नुहोस्',
   'Caiu!': 'लड्यो!',
   'Melhor combo: {n}': 'उत्तम कम्बो: {n}',
+  'Trânsito da toca': 'दुलोको ट्राफिक',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'चोकबाट गाडीहरू नठोकिने गरी छोड्न एक मिनेट। भरिएको लाइनले पनि अंक घटाउँछ।',
+  Liberar: 'छोड',
 } satisfies Record<string, string>;

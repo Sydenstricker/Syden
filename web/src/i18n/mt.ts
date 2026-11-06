@@ -3054,4 +3054,7 @@ export default {
   Pausar: 'Pawsa',
   'Caiu!': "Waqa'!",
   'Melhor combo: {n}': 'L-aqwa kombo: {n}',
+  'Trânsito da toca': 'It-Traffiku tal-Għar',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Minuta biex tgħaddi l-karozzi mill-intersezzjoni mingħajr ma jaħbtu. Kju mimli jiswa punti wkoll.',
+  Liberar: 'Erħi',
 } satisfies Record<string, string>;

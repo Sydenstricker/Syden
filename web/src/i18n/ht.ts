@@ -3118,4 +3118,7 @@ export default {
   Pausar: 'Poz',
   'Caiu!': 'Tonbe!',
   'Melhor combo: {n}': 'Pi bon kombo: {n}',
+  'Trânsito da toca': 'Trafik tanyè a',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Yon minit pou lage machin yo nan kafou a san yo pa frape. Yon liy ki plen koute pwen tou.',
+  Liberar: 'Lage',
 } satisfies Record<string, string>;

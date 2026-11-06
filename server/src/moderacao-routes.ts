@@ -219,6 +219,7 @@ export function registerModeracaoRoutes(app: FastifyInstance, io: IOServer) {
           torreDoCeleiro: db.torresDe(eu.id),
           recordeDaCaca: db.recordeDaCaca(eu.id),
           recordeDaEsquadrilha: db.recordeDaNave(eu.id),
+          recordeDoTransito: db.recordeDoTransito(eu.id),
           // quem entra no quarto, os convidados (ids) e o destaque da estante de troféus (ver trofeus-routes.ts)
           // (com a arrumação: a política diz que ela é guardada, e faltava aqui — auditoria de 03/11/2026)
           quarto: {

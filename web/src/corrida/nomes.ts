@@ -26,6 +26,8 @@ export const NOMES_DAS_PISTAS: Record<string, string> = {
   golfe: chave('Minigolfe da toca'),
   // e o da Caça às pragas da horta (server/src/minijogo-caca.ts): os pontos, e MAIS é melhor
   caca: chave('Caça às pragas da horta'),
+  // e o do Trânsito da toca (server/src/minijogo-transito.ts): os pontos, e MAIS é melhor
+  transito: chave('Trânsito da toca'),
   // e o do Tabuleiro da turma (server/src/minijogo-tabuleiro-da-turma.ts)
   tabuleiro: chave('Tabuleiro da turma'),
   // e o de Capitais, o antigo Cidades à venda (server/src/minijogo-cidades.ts): os pontos são o patrimônio

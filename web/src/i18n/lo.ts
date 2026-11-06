@@ -3109,4 +3109,7 @@ export default {
   Pausar: 'ຢຸດຊົ່ວຄາວ',
   'Caiu!': 'ລົ້ມແລ້ວ!',
   'Melhor combo: {n}': 'ຄອມໂບດີທີ່ສຸດ: {n}',
+  'Trânsito da toca': 'ການຈະລາຈອນໂພງ',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'ໜຶ່ງນາທີເພື່ອປ່ອຍລົດຜ່ານສີ່ແຍກໂດຍບໍ່ໃຫ້ຕຳກັນ. ແຖວເຕັມກໍເສຍຄະແນນຄືກັນ.',
+  Liberar: 'ປ່ອຍ',
 } satisfies Record<string, string>;

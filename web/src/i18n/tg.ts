@@ -3118,4 +3118,7 @@ export default {
   Pausar: 'Таваққуф',
   'Caiu!': 'Афтод!',
   'Melhor combo: {n}': 'Беҳтарин комбо: {n}',
+  'Trânsito da toca': 'Ҳаракати лона',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Як дақиқа барои гузарондани мошинҳо аз чорраҳа бе бархӯрд. Навбати пур ҳам хол мегирад.',
+  Liberar: 'Раҳо кун',
 } satisfies Record<string, string>;

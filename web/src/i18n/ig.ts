@@ -3046,4 +3046,7 @@ export default {
   Pausar: 'Kwụsịtụ',
   'Caiu!': 'Dara!',
   'Melhor combo: {n}': 'Combo kacha mma: {n}',
+  'Trânsito da toca': 'Okporo ụzọ ọgba',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Otu nkeji iji hapụ ụgbọ ala n’okporo ụzọ nkwụsị na-enweghị ka ha kụọ ibe ha. Ahịrị jupụtara na-ewepụkwa akara.',
+  Liberar: 'Hapụ',
 } satisfies Record<string, string>;

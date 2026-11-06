@@ -3044,4 +3044,7 @@ export default {
   Pausar: 'Sos',
   'Caiu!': 'Thit!',
   'Melhor combo: {n}': 'An combo is fearr: {n}',
+  'Trânsito da toca': 'Trácht an Phoill',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Nóiméad amháin chun na carranna a ligean tríd an gcrosbhealach gan iad a bhualadh faoina chéile. Cosnaíonn scuaine lán pointí freisin.',
+  Liberar: 'Scaoil',
 } satisfies Record<string, string>;

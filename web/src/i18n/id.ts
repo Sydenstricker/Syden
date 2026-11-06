@@ -3035,4 +3035,7 @@ export default {
   Pausar: 'Jeda',
   'Caiu!': 'Jatuh!',
   'Melhor combo: {n}': 'Kombo terbaik: {n}',
+  'Trânsito da toca': 'Lalu Lintas Liang',
+  'Um minuto para soltar os carros do cruzamento sem deixar que batam. Fila cheia também custa pontos.': 'Satu menit untuk melepas mobil-mobil di persimpangan tanpa membiarkan mereka bertabrakan. Antrean penuh juga mengurangi poin.',
+  Liberar: 'Lepas',
 } satisfies Record<string, string>;
