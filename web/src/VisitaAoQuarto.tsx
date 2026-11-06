@@ -1,7 +1,10 @@
 import { Trophy, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { API_URL, loadToken } from './api';
+import { api, ApiError, API_URL, loadToken } from './api';
+import { useDirectory } from './directory';
+import { useEstiloDoQuarto } from './Graficos';
+import { QuartoComEstilo } from './QuartoComEstilo';
 import { useT } from './i18n';
 import { Mascote } from './Mascote';
 import { ENDERECO_DO_QUARTO } from './QuartoNovo';
@@ -23,6 +26,24 @@ export function VisitaAoQuarto({ dono, aoFechar }: { dono: { id: number; nome: s
   const [erro, setErro] = useState<null | 'fechado' | 'falhou'>(null);
 
   const enviar = (msg: Record<string, unknown>) => ref.current?.contentWindow?.postMessage({ syden: 'quarto', ...msg }, location.origin);
+  // O ESTILO DE QUEM VISITA (06/11/2026): no 3D, o quarto é o de fábrica do piloto (a arrumação de quem mora é a do pixel art), com o
+  // coelho nas cores do avatar de quem mora, se ele está na comunidade aberta (senão, o mascote). A porta é conferida do mesmo jeito.
+  const estilo = useEstiloDoQuarto();
+  const avatar = useDirectory().members.get(dono.id)?.avatarPronto ?? null;
+  useEffect(() => {
+    // trocou de estilo: a página do quarto (se voltar) nasce de novo e precisa da conta outra vez
+    setPronto(false);
+    setArrumado(false);
+    if (estilo !== '3d') return;
+    let vivo = true;
+    api(`/api/quarto/${dono.id}`).then(
+      () => vivo && setArrumado(true),
+      (e) => vivo && setErro(e instanceof ApiError && e.status === 404 ? 'fechado' : 'falhou'),
+    );
+    return () => {
+      vivo = false;
+    };
+  }, [estilo, dono.id]);
 
   useEffect(() => {
     const ouvir = (e: MessageEvent) => {
@@ -72,16 +93,24 @@ export function VisitaAoQuarto({ dono, aoFechar }: { dono: { id: number; nome: s
         {erro ? (
           <p className="form-error">{erro === 'fechado' ? t('Este quarto não está aberto para visita.') : t('Não deu para abrir o quarto agora.')}</p>
         ) : (
-          <div className="quarto-novo-caixa">
-            {!arrumado && (
-              <div className="visita-quarto-espera" aria-hidden="true">
-                <Mascote nome="ocioso" tamanho={180} />
+          <QuartoComEstilo
+            noite={false}
+            acoes={{ trofeu: { rotulo: t('Troféus'), sub: t('Em destaque'), onClick: () => setTrofeus(true) } }}
+            estado="atoa"
+            avatar={avatar}
+            titulo={t('O quarto de {nome}', { nome: dono.nome })}
+          >
+            <div className="quarto-novo-caixa">
+              {!arrumado && (
+                <div className="visita-quarto-espera" aria-hidden="true">
+                  <Mascote nome="ocioso" tamanho={180} />
+                </div>
+              )}
+              <div className="quarto-novo" style={arrumado ? undefined : { visibility: 'hidden' }}>
+                <iframe ref={ref} src={ENDERECO_DO_QUARTO + '?app'} title={t('O quarto de {nome}', { nome: dono.nome })} />
               </div>
-            )}
-            <div className="quarto-novo" style={arrumado ? undefined : { visibility: 'hidden' }}>
-              <iframe ref={ref} src={ENDERECO_DO_QUARTO + '?app'} title={t('O quarto de {nome}', { nome: dono.nome })} />
             </div>
-          </div>
+          </QuartoComEstilo>
         )}
         {trofeus && <Trofeus dono={dono} aoFechar={() => setTrofeus(false)} />}
       </div>

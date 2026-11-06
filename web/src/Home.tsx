@@ -15,6 +15,7 @@ import { type AcoesDoQuarto, Quarto } from './Quarto';
 import { Trofeus } from './Trofeus';
 import { usarCenaNova } from './cenaNova';
 import { ENDERECO_DO_QUARTO, type EstadoNoQuarto, QuartoNovo } from './QuartoNovo';
+import { QuartoComEstilo } from './QuartoComEstilo';
 import { loadMyStatus } from './presenceStatus';
 import { idiomaAtual, useT } from './i18n';
 import { IconeDeHud } from './iconesDeHud';
@@ -234,18 +235,21 @@ export function Home({
     <div className="home">
       <div className="home-cena">
         {/* (conferindo: o lugar fica guardado, sem afirmar nenhum dos dois) */}
-        {quarto.cena === 'nova' ? (
-          <QuartoNovo noite={periodo === 'noite'} acoes={acoes} estado={estadoNoQuarto} aoFalhar={quarto.desistir} ajustesAbertos={ajustesAbertos} />
-        ) : quarto.cena === 'antiga' ? (
-          <Quarto noite={periodo === 'noite'} acoes={acoes} />
-        ) : (
-          <div className="quarto-novo-caixa" aria-hidden="true">
-            {/* o mascote esperando (a espera não diz qual quarto vem: só espera) */}
-            <div className="quarto-novo editor-esperando">
-              <Mascote nome="ocioso" tamanho={180} />
+        {/* o quarto em pixel art ou em 3D, pelo botão do canto ou por Gráficos (QuartoComEstilo.tsx, 06/11/2026) */}
+        <QuartoComEstilo noite={periodo === 'noite'} acoes={acoes} estado={estadoNoQuarto} titulo={t('Início')}>
+          {quarto.cena === 'nova' ? (
+            <QuartoNovo noite={periodo === 'noite'} acoes={acoes} estado={estadoNoQuarto} aoFalhar={quarto.desistir} ajustesAbertos={ajustesAbertos} />
+          ) : quarto.cena === 'antiga' ? (
+            <Quarto noite={periodo === 'noite'} acoes={acoes} />
+          ) : (
+            <div className="quarto-novo-caixa" aria-hidden="true">
+              {/* o mascote esperando (a espera não diz qual quarto vem: só espera) */}
+              <div className="quarto-novo editor-esperando">
+                <Mascote nome="ocioso" tamanho={180} />
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </QuartoComEstilo>
         {salasAbertas && (
           <div className="vila-painel" role="dialog" aria-label={t('Salas de voz')}>
             <header>

@@ -1,0 +1,100 @@
+/* O QUARTO 3D (quarto3d/Quarto3D.tsx) e o botão que alterna 3D e pixel art (QuartoComEstilo.tsx), 06/11/2026. A caixa tem o
+   tamanho da do quarto de pixel art (.quarto-novo, em styles.css), para a troca não mexer no resto da home. */
+.quarto3d {
+  position: relative;
+  width: min(100%, 640px, 78vh);
+  aspect-ratio: 1;
+  margin: 0 auto;
+}
+.quarto3d-caixa {
+  position: absolute;
+  inset: 0;
+}
+.quarto3d-caixa.escondida {
+  visibility: hidden;
+}
+.quarto3d-tela {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: manipulation;
+}
+.quarto3d-espera {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+/* o nome da função ao passar o mouse, como no quarto de pixel art */
+.quarto3d-etiqueta {
+  position: absolute;
+  transform: translate(-50%, calc(-100% - 14px));
+  padding: 4px 9px;
+  border-radius: 8px;
+  background: var(--bg-float, #2b2430);
+  color: var(--text-strong, #f3ead8);
+  border: 1px solid var(--border, transparent);
+  font-size: calc(13px * var(--escala-do-texto, 1));
+  white-space: nowrap;
+  pointer-events: none;
+}
+/* as funções para o teclado e o leitor de tela: escondidas aos olhos, aparecem quando o foco chega nelas */
+.quarto3d-so-leitor button {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.quarto3d-so-leitor button:focus-visible {
+  left: 8px;
+  bottom: 8px;
+  width: auto;
+  height: auto;
+  clip-path: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--bg-float, #2b2430);
+  color: var(--text-strong, #f3ead8);
+  z-index: 2;
+}
+
+/* O BOTÃO DO ESTILO: pequeno e fixo no canto de cima do quarto, nos dois estilos. As duas figuras (o cubo e o quadrado de
+   pixels), a do estilo de agora acesa. */
+.quarto-com-estilo {
+  position: relative;
+  width: min(100%, 640px, 78vh);
+  margin: 0 auto;
+}
+.quarto-estilo-botao {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 3;
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--border, transparent);
+  border-radius: 10px;
+  background: var(--bg-float, #2b2430);
+  color: var(--text-muted, #bbb);
+  cursor: pointer;
+  opacity: 0.85;
+}
+.quarto-estilo-botao:hover,
+.quarto-estilo-botao:focus-visible {
+  opacity: 1;
+}
+.quarto-estilo-botao span {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+}
+.quarto-estilo-botao span.aceso {
+  background: var(--bg-active, #4a3d4f);
+  color: var(--text-strong, #fff);
+}

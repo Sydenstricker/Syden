@@ -4,6 +4,13 @@ Feito em 05/11/2026, a pedido dele: "crie uma versão piloto do quarto em low po
 página de teste fora do app, para comparar com o quarto de pixel art (`e2e/pixel-art/quarto/novo/quarto/`). Nada disto
 vai para o Syden.
 
+**NO APP desde 06/11/2026** (pedido dele: "quero esse quarto 3D low poly como PILOTO da nossa funcionalidade de variação
+estética"): `web/src/quarto3d/cena.ts` é esta cena trazida para o app, com as funções do quarto de pixel art nos objetos, o
+coelho com as cores do avatar seguindo o estado de verdade, e o botão do canto que alterna 3D e pixel art
+(`web/src/QuartoComEstilo.tsx`). Os modelos usados foram copiados para `web/public/quarto3d/`. Fotos: `fotos/no-app-*.png`;
+teste: `e2e/quarto3d.mjs`. Esta página
+continua sendo o lugar de experimentar (Arrumar, Girar), e o que mudar aqui não vai sozinho para o app.
+
 **Abrir:** na raiz do repositório, `npx vite e2e/3D/quarto --port 5200` e abrir http://localhost:5200/.
 
 | arquivo | o que é |

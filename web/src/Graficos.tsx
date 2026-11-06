@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Gauge } from 'lucide-react';
 import { useT } from './i18n';
 
@@ -14,32 +14,79 @@ import { useT } from './i18n';
  * O ESTILO VISUAL (05/11/2026, pedido dele: "quero ter material 2D pixel art e 3D low poly; que o usuário possa escolher o que
  * ele mais gosta"). 2D é o de sempre (o quarto e o salão em pixel art, o tabuleiro desenhado); 3D usa o que existe em low poly
  * (hoje, o tabuleiro do Cidades à venda). O que ainda não tem a versão 3D continua em 2D para quem escolheu 3D. De fábrica é o 3D,
- * porque hoje ele só muda o Cidades, que ele pediu em 3D; quando o quarto 3D chegar, a decisão do padrão é dele de novo.
+ * porque hoje ele só muda o Cidades, que ele pediu em 3D; quando o quarto 3D chegar, a decisão do padrão é dele de novo. O quarto 3D
+ * chegou em 06/11/2026 (QuartoComEstilo.tsx), e o padrão DELE é o pixel art até essa decisão (`estiloDoQuarto`, abaixo).
  */
 export type EstiloVisual = '2d' | '3d';
 const GRAFICOS_PADRAO = { particulas: false, sombras: false, telas: false, estilo: '3d' as EstiloVisual };
-type Graficos = typeof GRAFICOS_PADRAO;
+/**
+ * `estiloEscolhido`: a pessoa escolheu o estilo (aqui ou no botão do quarto). Até 06/11/2026 a seção gravava o objeto inteiro a
+ * cada mudança, com o '3d' de fábrica junto: um '3d' guardado sem a marca pode não ter sido escolha. Um '2d' guardado sempre foi.
+ */
+type Graficos = typeof GRAFICOS_PADRAO & { estiloEscolhido?: boolean };
 export function estiloVisual(): EstiloVisual {
   return lerGraficos().estilo === '2d' ? '2d' : '3d';
 }
+/**
+ * O ESTILO DO QUARTO (06/11/2026, o quarto 3D no app, pedido dele: "um ícone no quarto que alterne entre 3D e Pixel Art"). É a
+ * MESMA escolha de cima (o botão do quarto e esta seção mexem no mesmo valor), mas o padrão do quarto é o PIXEL ART: o quarto
+ * 3D é piloto, e quando ele fosse ao app o padrão era decisão dele de novo. Só quem escolheu o 3D (`estiloEscolhido`) o vê.
+ */
+export function estiloDoQuarto(): EstiloVisual {
+  const g = lerGraficos();
+  return g.estilo === '3d' && g.estiloEscolhido ? '3d' : '2d';
+}
+/** Escolher o estilo de qualquer lugar (o botão do quarto): grava e avisa quem mostra (o quarto, esta seção, a cena 3D). */
+export function escolherEstiloVisual(estilo: EstiloVisual) {
+  gravarGraficos({ ...lerGraficos(), estilo, estiloEscolhido: true });
+}
+/** O estilo do quarto, e muda quando a escolha muda (aqui, no botão do quarto ou noutra aba). */
+export function useEstiloDoQuarto(): EstiloVisual {
+  const [estilo, setEstilo] = useState(estiloDoQuarto);
+  useEffect(() => ouvirGraficos(() => setEstilo(estiloDoQuarto())), []);
+  return estilo;
+}
+/** Sem o armazenamento do navegador (janela privada), a escolha vale nesta visita, guardada aqui. */
+let naMemoria: Graficos | null = null;
 function lerGraficos(): Graficos {
+  if (naMemoria) return { ...naMemoria };
   try {
     return { ...GRAFICOS_PADRAO, ...JSON.parse(localStorage.getItem('syden:graficos') ?? '{}') };
   } catch {
     return { ...GRAFICOS_PADRAO };
   }
 }
+function gravarGraficos(novo: Graficos) {
+  try {
+    localStorage.setItem('syden:graficos', JSON.stringify(novo));
+    naMemoria = null;
+  } catch {
+    naMemoria = novo;
+  }
+  // as páginas do quarto e do salão (iframes) percebem pelo evento 'storage'; quem mora nesta página, por este
+  window.dispatchEvent(new Event('syden:graficos'));
+}
+function ouvirGraficos(f: () => void) {
+  const daOutraAba = () => {
+    naMemoria = null;
+    f();
+  };
+  window.addEventListener('syden:graficos', f);
+  window.addEventListener('storage', daOutraAba);
+  return () => {
+    window.removeEventListener('syden:graficos', f);
+    window.removeEventListener('storage', daOutraAba);
+  };
+}
 export function GraficosSection() {
   const t = useT();
   const [g, setG] = useState(lerGraficos);
-  const mudar = <K extends keyof Graficos>(k: K, valor: Graficos[K]) => {
-    const novo = { ...g, [k]: valor };
+  // o botão do quarto também muda o estilo: a seção acompanha
+  useEffect(() => ouvirGraficos(() => setG(lerGraficos())), []);
+  const mudar = <K extends keyof typeof GRAFICOS_PADRAO>(k: K, valor: Graficos[K]) => {
+    const novo = { ...g, [k]: valor, ...(k === 'estilo' ? { estiloEscolhido: true } : {}) };
     setG(novo);
-    try {
-      localStorage.setItem('syden:graficos', JSON.stringify(novo));
-    } catch {
-      /* só nesta visita */
-    }
+    gravarGraficos(novo);
   };
   const opcoes: { k: 'particulas' | 'sombras' | 'telas'; nome: string }[] = [
     { k: 'particulas', nome: t('Partículas') },
