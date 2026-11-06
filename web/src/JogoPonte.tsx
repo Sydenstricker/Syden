@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from 'react';
+import { forwardRef, useEffect, useRef, useState } from 'react';
 import { Check, Coins, Eraser, Hammer, Play, Undo2 } from 'lucide-react';
 import { ComandosDoJogo } from './ComandosDosJogos';
 import { chave, useT } from './i18n';
 import { comandoDaPausa, TelaDePausa, usePausaComEsc } from './pausaDosJogos';
 import { tocar } from './somDosJogos';
-import { ALTURA, DesenhoDaPonte, LARGURA } from './ponte/desenho';
+import { useVistaDaPonte } from './ponte/usarVista';
+import { ALTURA, COR_DO_FUNDO, LARGURA, type VistaDaPonte } from './ponte/vista';
 import {
   cabe,
   custo as custoDe,
@@ -35,6 +36,10 @@ import './ponte/ponte.css';
  *
  * O SERVIDOR refaz a simulação com a mesma regra (ponte/sim.ts ↔ server/src/ponte-sim.ts) e o resultado é o dele. Na sala, o relógio
  * é o do servidor (a contagem e os 30 s vêm no estado); no Solo, é o deste computador, e o ESC e a janela sem foco o PAUSAM.
+ *
+ * Desde o mesmo dia (pedidos dele): o DESENHO É 3D (ponte/cena3d.ts; a física continua a mesma, de lado), com o 2D de reserva; o
+ * tráfego espera na margem desde a montagem, na ordem, com o peso (ponte/fila.ts); e TUDO fica dentro da tela do jogo — as peças,
+ * os botões, o custo e o relógio por cima do quadro, e os comandos só na contagem e nos primeiros segundos.
  */
 
 export interface LinhaDaPonte {
@@ -172,13 +177,13 @@ export function EscolhaDaPonte({ aoEscolher, aoVoltar }: { aoEscolher: (fase: st
 // =====================================================================================================================
 
 /** Anda a simulação pelo tempo real (passos fixos), toca os sons e dá os estilhaços ao desenho. */
-function avancar(s: Sim, d: DesenhoDaPonte, conta: { acumulado: number; rangido: number }, dt: number, agora: number) {
+function avancar(s: Sim, d: VistaDaPonte | null, conta: { acumulado: number; rangido: number }, dt: number, agora: number) {
   if (s.terminou) return;
   conta.acumulado += dt;
   let n = 0;
   while (conta.acumulado >= PASSO && n < 6 && !s.terminou) {
     passo(s);
-    d.ouvir(s);
+    d?.ouvir(s);
     for (const ev of s.eventos) {
       if (ev.tipo === 'quebrou') tocar('quebra');
       else if (ev.tipo === 'chegou') tocar('chegada');
@@ -238,8 +243,8 @@ function Montagem({
   aoMandar: (pecas: number[]) => void;
 }) {
   const t = useT();
-  const tela = useRef<HTMLCanvasElement>(null);
-  const desenho = useRef<DesenhoDaPonte | null>(null);
+  const tela = useRef<HTMLDivElement>(null);
+  const { caixa3d, tela2d, vista: desenho, modo } = useVistaDaPonte(fase);
   const [pecas, setPecasEstado] = useState<number[]>([]);
   const pecasRef = useRef<number[]>([]);
   const historico = useRef<number[][]>([]);
@@ -301,13 +306,8 @@ function Montagem({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ---- o desenho ----
+  // ---- o desenho (um quadro por vez, na vista que estiver aberta: o 3D, ou o 2D de reserva) ----
   useEffect(() => {
-    const canvas = tela.current;
-    const ctx = canvas?.getContext('2d');
-    if (!canvas || !ctx) return;
-    const d = new DesenhoDaPonte(ctx, fase);
-    desenho.current = d;
     let viva = true;
     let id = 0;
     let ultimo = performance.now();
@@ -320,21 +320,25 @@ function Montagem({
       ultimo = agora;
       // sem foco (o jogo de verdade, outra janela), escondida ou pausada: nada se mexe
       if (document.hidden || !document.hasFocus() || pausa.ativa) return;
+      const d = desenho.current;
       const s = testeRef.current;
       if (s) {
         const terminou = s.terminou;
         avancar(s, d, conta, dt, agora);
         if (import.meta.env.DEV) window.ponteDoTeste = s;
-        d.simulacao(s, agora);
+        d?.simulacao(s, agora);
         if (!terminou && s.terminou) setResultadoDoTeste({ passou: s.passou, progresso: s.progresso, custo: s.custo });
         return;
       }
+      if (!d) return;
       const i = io.current;
       const alvo = i.origem ? alvoDe(i) : null;
+      const sobre = i.mouse && !i.teclado ? pontoEm(i.mouse) : null;
       d.montagem(pecasRef.current, {
         agora,
         origem: i.origem,
         cursor: i.teclado ? i.cursor : null,
+        sobre: sobre && cabe(fase, sobre[0], sobre[1]) ? sobre : null,
         fantasma: i.origem && alvo ? { ax: i.origem[0], ay: i.origem[1], bx: alvo[0], by: alvo[1], tipo: tipoRef.current, valida: podeLigar(i.origem, alvo, tipoRef.current) } : null,
         apagando: apagarRef.current && i.mouse ? pecaEm(i.mouse[0], i.mouse[1]) : -1,
       });
@@ -342,7 +346,7 @@ function Montagem({
     id = requestAnimationFrame(quadro);
     if (import.meta.env.DEV) {
       window.ponteMontar = (lista) => setPecas(semSoltas(fase, lista ?? pontePronta(fase)));
-      window.ponteParaTela = (x, y) => [d.sx(x), d.sy(y)];
+      window.ponteParaTela = (x, y) => desenho.current?.paraTela(x, y) ?? [0, 0];
     }
     return () => {
       viva = false;
@@ -450,7 +454,7 @@ function Montagem({
   };
 
   // ---- o mouse e o toque ----
-  const noMundo = (ev: React.PointerEvent<HTMLCanvasElement>): [number, number] | null => {
+  const noMundo = (ev: React.PointerEvent<HTMLDivElement>): [number, number] | null => {
     const c = tela.current;
     const d = desenho.current;
     if (!c || !d) return null;
@@ -462,7 +466,7 @@ function Montagem({
     const y = Math.round(m[1]);
     return (x - m[0]) * (x - m[0]) + (y - m[1]) * (y - m[1]) < 0.42 * 0.42 ? [x, y] : null;
   };
-  const desceu = (ev: React.PointerEvent<HTMLCanvasElement>) => {
+  const desceu = (ev: React.PointerEvent<HTMLDivElement>) => {
     if (parado()) return;
     const m = noMundo(ev);
     if (!m) return;
@@ -492,11 +496,11 @@ function Montagem({
     i.arrastando = false;
     i.desceuEm = p;
   };
-  const moveu = (ev: React.PointerEvent<HTMLCanvasElement>) => {
+  const moveu = (ev: React.PointerEvent<HTMLDivElement>) => {
     const m = noMundo(ev);
     if (m) io.current.mouse = m;
   };
-  const subiu = (ev: React.PointerEvent<HTMLCanvasElement>) => {
+  const subiu = (ev: React.PointerEvent<HTMLDivElement>) => {
     const i = io.current;
     if (parado() || !i.origem || ev.button === 2 || apagarRef.current) return;
     const m = noMundo(ev);
@@ -589,18 +593,21 @@ function Montagem({
 
   const seg = Math.ceil(relogio.restante / 1000);
   const total = custoDe(pecas);
+  // os comandos, dentro da tela, só na contagem e nos primeiros 4 segundos (depois, os botões já dizem tudo)
+  const ajuda = (relogio.contagem > 0 || relogio.restante > montagemMs - 4000) && teste === null;
   return (
     <div className="ponte">
       <div className="ponte-moldura">
-        <canvas
+        <TelaDaPonte
           ref={tela}
-          className={`ponte-tela${apagar ? ' apagando' : ''}`}
-          width={LARGURA}
-          height={ALTURA}
+          caixa3d={caixa3d}
+          tela2d={tela2d}
+          modo={modo}
+          className={apagar ? 'apagando' : undefined}
           onPointerDown={desceu}
           onPointerMove={moveu}
           onPointerUp={subiu}
-          onContextMenu={(ev) => ev.preventDefault()}
+          onPointerLeave={() => (io.current.mouse = null)}
         />
         <div className="ponte-painel" aria-hidden="true">
           <span className={`ponte-relogio${seg <= 5 ? ' acabando' : ''}`}>{`0:${String(seg).padStart(2, '0')}`}</span>
@@ -610,70 +617,119 @@ function Montagem({
           {resultadoDoTeste && <ResultadoDaSimulacao {...resultadoDoTeste} />}
         </div>
         {relogio.contagem > 0 && <span className="ponte-contagem">{relogio.contagem}</span>}
+        {ajuda && !pausado && (
+          <div className="ponte-ajuda">
+            <ComandosDoJogo
+              itens={[
+                { teclas: ['mouse-arrastar', 'setas'], toque: 'toque-arrastar', rotulo: t('Montar') },
+                { teclas: ['mouse-direito'], rotulo: t('Apagar') },
+                { teclas: ['z'], rotulo: t('Desfazer') },
+                ...(solo ? [comandoDaPausa(t)] : []),
+              ]}
+            />
+          </div>
+        )}
+        <div className="ponte-barra">
+          <div className="ponte-pecas" role="radiogroup" aria-label={t('Ponte')}>
+            {PECAS.map((p, i) => (
+              <button
+                key={i}
+                type="button"
+                role="radio"
+                aria-checked={tipo === i && !apagar}
+                aria-label={t(NOMES_DAS_PECAS[i])}
+                className={`ponte-peca-botao${tipo === i && !apagar ? ' escolhida' : ''}`}
+                disabled={teste !== null}
+                onClick={() => {
+                  setTipo(i);
+                  setApagar(false);
+                }}
+              >
+                <span className={`ponte-amostra tipo-${i}`} aria-hidden="true" />
+                <span className="ponte-rotulo" aria-hidden="true">
+                  {t(NOMES_DAS_PECAS[i])}
+                </span>
+                <small aria-hidden="true">
+                  <Coins size={11} /> {p.preco}
+                </small>
+                <kbd aria-hidden="true">{i + 1}</kbd>
+              </button>
+            ))}
+            <button
+              type="button"
+              className={`ponte-peca-botao${apagar ? ' escolhida' : ''}`}
+              aria-pressed={apagar}
+              aria-label={t('Apagar')}
+              disabled={teste !== null}
+              onClick={() => setApagar((a) => !a)}
+            >
+              <Eraser size={16} aria-hidden="true" />
+              <span className="ponte-rotulo" aria-hidden="true">
+                {t('Apagar')}
+              </span>
+            </button>
+          </div>
+          <div className="ponte-acoes">
+            <button type="button" className="ponte-acao" aria-label={t('Desfazer')} disabled={teste !== null || pecas.length === 0} onClick={desfazer}>
+              <Undo2 size={16} aria-hidden="true" />
+              <span className="ponte-rotulo" aria-hidden="true">
+                {t('Desfazer')}
+              </span>
+            </button>
+            <button type="button" className="ponte-acao" aria-label={teste ? t('Montar') : t('Testar')} onClick={testar}>
+              {teste ? <Hammer size={16} aria-hidden="true" /> : <Play size={16} aria-hidden="true" />}
+              <span className="ponte-rotulo" aria-hidden="true">
+                {teste ? t('Montar') : t('Testar')}
+              </span>
+            </button>
+            <button type="button" className="ponte-acao principal" aria-label={t('Pronto')} onClick={mandar}>
+              <Check size={16} aria-hidden="true" />
+              <span className="ponte-rotulo" aria-hidden="true">
+                {t('Pronto')}
+              </span>
+            </button>
+          </div>
+        </div>
         {pausado && <TelaDePausa aoContinuar={continuar} />}
       </div>
-      <div className="ponte-barra">
-        <div className="ponte-pecas" role="radiogroup" aria-label={t('Ponte')}>
-          {PECAS.map((p, i) => (
-            <button
-              key={i}
-              type="button"
-              role="radio"
-              aria-checked={tipo === i && !apagar}
-              className={`ponte-peca-botao${tipo === i && !apagar ? ' escolhida' : ''}`}
-              disabled={teste !== null}
-              onClick={() => {
-                setTipo(i);
-                setApagar(false);
-              }}
-            >
-              <span className={`ponte-amostra tipo-${i}`} aria-hidden="true" />
-              <span>{t(NOMES_DAS_PECAS[i])}</span>
-              <small aria-hidden="true">
-                <Coins size={11} /> {p.preco}
-              </small>
-              <kbd aria-hidden="true">{i + 1}</kbd>
-            </button>
-          ))}
-          <button type="button" className={`ponte-peca-botao${apagar ? ' escolhida' : ''}`} aria-pressed={apagar} disabled={teste !== null} onClick={() => setApagar((a) => !a)}>
-            <Eraser size={16} aria-hidden="true" />
-            <span>{t('Apagar')}</span>
-          </button>
-        </div>
-        <div className="ponte-acoes">
-          <button type="button" className="btn-secondary" disabled={teste !== null || pecas.length === 0} onClick={desfazer}>
-            <Undo2 size={14} aria-hidden="true" /> {t('Desfazer')}
-          </button>
-          <button type="button" className="btn-secondary" onClick={testar}>
-            {teste ? <Hammer size={14} aria-hidden="true" /> : <Play size={14} aria-hidden="true" />} {teste ? t('Montar') : t('Testar')}
-          </button>
-          <button type="button" className="btn-primary" onClick={mandar}>
-            <Check size={14} aria-hidden="true" /> {t('Pronto')}
-          </button>
-        </div>
-      </div>
-      <ComandosDoJogo
-        itens={[
-          { teclas: ['mouse-arrastar', 'setas'], toque: 'toque-arrastar', rotulo: t('Montar') },
-          { teclas: ['mouse-direito'], rotulo: t('Apagar') },
-          { teclas: ['z'], rotulo: t('Desfazer') },
-          ...(solo ? [comandoDaPausa(t)] : []),
-        ]}
-      />
     </div>
   );
 }
+
+/**
+ * A caixa da tela (16:9), onde o mouse e o toque são lidos: dentro, o 3D (a cena põe o canvas dela) ou o canvas do 2D de reserva.
+ * Enquanto o 3D carrega, só a cor do céu dele.
+ */
+const TelaDaPonte = forwardRef<
+  HTMLDivElement,
+  {
+    caixa3d: React.RefObject<HTMLDivElement | null>;
+    tela2d: React.RefObject<HTMLCanvasElement | null>;
+    modo: 'carregando' | '3d' | '2d';
+    className?: string;
+  } & Pick<React.HTMLAttributes<HTMLDivElement>, 'onPointerDown' | 'onPointerMove' | 'onPointerUp' | 'onPointerLeave'>
+>(function TelaDaPonte({ caixa3d, tela2d, modo, className, ...eventos }, ref) {
+  return (
+    <div
+      ref={ref}
+      className={`ponte-tela${className ? ' ' + className : ''}`}
+      data-modo={modo}
+      style={{ background: COR_DO_FUNDO }}
+      onContextMenu={(ev) => ev.preventDefault()}
+      {...eventos}
+    >
+      {modo === '2d' ? <canvas ref={tela2d} className="ponte-tela-2d" width={LARGURA} height={ALTURA} /> : <div ref={caixa3d} className="ponte-3d" />}
+    </div>
+  );
+});
 
 // =====================================================================================================================
 // O FIM: a ponte de cada um passando, e o placar
 // =====================================================================================================================
 
 function Reprise({ fase, pecas }: { fase: Fase; pecas: number[] }) {
-  const tela = useRef<HTMLCanvasElement>(null);
+  const { caixa3d, tela2d, vista, modo } = useVistaDaPonte(fase);
   useEffect(() => {
-    const ctx = tela.current?.getContext('2d');
-    if (!ctx) return;
-    const d = new DesenhoDaPonte(ctx, fase);
     let s = montar(fase, pecas);
     let viva = true;
     let id = 0;
@@ -687,6 +743,9 @@ function Reprise({ fase, pecas }: { fase: Fase; pecas: number[] }) {
       const dt = Math.min(0.1, (agora - ultimo) / 1000);
       ultimo = agora;
       if (document.hidden || !document.hasFocus()) return;
+      // a reprise começa quando a cena abriu (senão a ponte já teria passado quando ela aparecesse)
+      const d = vista.current;
+      if (!d) return;
       avancar(s, d, conta, dt, agora);
       if (import.meta.env.DEV) window.ponteDoTeste = s;
       d.simulacao(s, agora);
@@ -702,8 +761,10 @@ function Reprise({ fase, pecas }: { fase: Fase; pecas: number[] }) {
       viva = false;
       cancelAnimationFrame(id);
     };
+    // a vista é lida por referência a cada quadro
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fase, pecas]);
-  return <canvas ref={tela} className="ponte-tela" width={LARGURA} height={ALTURA} />;
+  return <TelaDaPonte caixa3d={caixa3d} tela2d={tela2d} modo={modo} />;
 }
 
 function Resultados({ estado, fase, eu, minhas, fim }: { estado: EstadoPonte; fase: Fase; eu: number; minhas: number[] | null; fim: boolean }) {

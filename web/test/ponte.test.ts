@@ -4,7 +4,7 @@
  * a fraca caindo, a conferência da lista e a ordem do placar.
  */
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
 import {
   ACO,
@@ -16,11 +16,15 @@ import {
   MADEIRA,
   montar,
   passo,
+  PASSO,
   PISTA,
   pontePronta,
+  SAIDA,
   semSoltas,
   simular,
 } from '../src/ponte/sim';
+import { Fila, filaInicial, fimDaFila, naFila } from '../src/ponte/fila';
+import { MODELOS_DA_PONTE } from '../src/ponte/vista';
 
 /** Só a pista, de margem a margem: sem estrutura nenhuma. */
 function soPista(largura: number): number[] {
@@ -123,5 +127,43 @@ describe('ponte da toca', () => {
     const c = { passou: false, progresso: 800, custo: 900 };
     const d = { passou: false, progresso: 300, custo: 100 };
     assert.deepEqual([a, c, d, b].sort(comparar), [b, a, c, d]);
+  });
+  it('a fila do desenho: o tráfego espera na ordem, encostado, e chega à saída antes de a regra soltar cada um (nada pula)', () => {
+    for (const f of FASES) {
+      const x = filaInicial(f);
+      assert.equal(x.length, f.trafego.length);
+      assert.equal(x[0], SAIDA, `${f.id}: o primeiro espera na saída`);
+      for (let i = 1; i < x.length; i++) assert.ok(x[i] < x[i - 1], `${f.id}: o ${i}º atrás do da frente`);
+      assert.ok(fimDaFila(f) < x[x.length - 1]);
+      const s = montar(f, pontePronta(f));
+      const fila = new Fila(f);
+      let antes = fila.atualizar(s, 0).slice();
+      while (!s.terminou) {
+        const eraFila = s.veiculos.map((_, i) => naFila(s, i));
+        passo(s);
+        const agora = fila.atualizar(s, PASSO).slice();
+        s.veiculos.forEach((v, i) => {
+          // quem a regra acabou de soltar já estava na saída, e ninguém anda para trás
+          if (eraFila[i] && !naFila(s, i)) assert.ok(Math.abs(antes[i] - SAIDA) < 1e-9, `${f.id}: o ${i}º pulou de ${antes[i]} para ${v.x}`);
+          assert.ok(agora[i] >= antes[i] - 1e-9, `${f.id}: o ${i}º andou para trás`);
+        });
+        antes = agora;
+      }
+    }
+  });
+
+  it('os veículos 3D estão em web/public/ponte, com as texturas e as licenças', () => {
+    const pasta = new URL('../public/ponte/', import.meta.url);
+    for (const m of MODELOS_DA_PONTE) {
+      assert.ok(existsSync(new URL(m, pasta)), `falta ${m}`);
+      let json: { images?: { uri?: string }[]; buffers?: { uri?: string }[] };
+      const b = readFileSync(new URL(m, pasta));
+      if (m.endsWith('.glb')) json = JSON.parse(b.subarray(20, 20 + b.readUInt32LE(12)).toString());
+      else json = JSON.parse(b.toString());
+      for (const u of [...(json.images ?? []), ...(json.buffers ?? [])].map((i) => i.uri).filter(Boolean) as string[])
+        assert.ok(existsSync(new URL(u, pasta)), `${m} pede ${u}`);
+    }
+    for (const l of ['LICENCA-Kenney-Car-Kit.txt', 'LICENCA-KayKit-Halloween-Bits.txt'])
+      assert.match(readFileSync(new URL(l, pasta), 'utf8'), /Creative Commons Zero, CC0/, l);
   });
 });

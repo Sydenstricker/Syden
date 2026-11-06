@@ -1,13 +1,15 @@
 /**
- * O DESENHO DA PONTE DA TOCA (06/11/2026): tudo por código, num canvas 2D de lado — o céu, os morros, a água, os barrancos, as
+ * O DESENHO 2D DA PONTE DA TOCA (06/11/2026): desde o mesmo dia, a RESERVA do 3D (cena3d.ts), para quando não há WebGL ou a cena
+ * não abre. Tudo por código, num canvas 2D de lado — o céu, os morros, a água, os barrancos, as
  * peças com textura de madeira, de tábua e de aço, o tráfego (coelhos de carroça, de carro e de caminhão) e os estilhaços. Nenhuma
  * arte de terceiro. O desenho NÃO decide nada: lê o estado da regra (sim.ts) e pinta. Aqui pode haver seno e cosseno (as ondas,
  * o ângulo de cada peça): o que o servidor refaz não passa por este arquivo.
  */
-import { CAIU, CHEGOU, cabe, ehAncora, ESPERANDO, MADEIRA, PISTA, SAIDA, type Fase, type Sim, type Veiculo } from './sim';
+import { Fila, fimDaFila, naFila, pesoEscrito } from './fila';
+import { CAIU, CHEGOU, cabe, ehAncora, ESPERANDO, MADEIRA, PISTA, VEICULOS, type Fase, type IdDoVeiculo, type Sim, type Veiculo } from './sim';
+import { ALTURA, LARGURA, type OpcoesDaMontagem, type VistaDaPonte } from './vista';
 
-export const LARGURA = 960;
-export const ALTURA = 540;
+export { ALTURA, LARGURA };
 
 /** As cores da madeira, da tábua e do aço (e a sombra de cada uma). */
 const COR = [
@@ -44,25 +46,40 @@ function sorteio(semente: number) {
 
 const CORES_DOS_CARROS = ['#d0524c', '#4a79c8', '#e0a43a', '#6aa35a'];
 
-export class DesenhoDaPonte {
+export class DesenhoDaPonte implements VistaDaPonte {
   readonly u: number;
   readonly ox: number;
   readonly oy: number;
   private fundo: HTMLCanvasElement | null = null;
   private particulas: Particula[] = [];
   private ultimo = 0;
+  private fila: Fila;
+  /** Onde a margem da esquerda começa (a fila do tráfego cabe nela). */
+  private x0: number;
 
   constructor(
     private ctx: CanvasRenderingContext2D,
     readonly fase: Fase,
   ) {
-    const x0 = -4.5;
+    this.fila = new Fila(fase);
+    // a fila do tráfego inteira na margem da esquerda; a grade entre a faixa de cima (o custo e o relógio) e a de baixo (as peças e
+    // os botões), que ficam POR CIMA da tela
+    const x0 = Math.min(-4.5, fimDaFila(fase) - 0.6);
+    this.x0 = x0;
     const x1 = fase.largura + 4.5;
-    const y0 = fase.fundo - 0.6;
-    const y1 = fase.alto + 1.4;
-    this.u = Math.min(LARGURA / (x1 - x0), ALTURA / (y1 - y0));
+    const topo = fase.alto + 1.4;
+    const grade = fase.baixo - 0.5;
+    const fundo = fase.fundo - 0.6;
+    this.u = Math.min(LARGURA / (x1 - x0), (0.7 * ALTURA) / (topo - grade), (0.91 * ALTURA) / (topo - fundo));
     this.ox = (LARGURA - (x1 - x0) * this.u) / 2 - x0 * this.u;
-    this.oy = (ALTURA + (y1 - y0) * this.u) / 2 + y0 * this.u;
+    this.oy = 0.09 * ALTURA + topo * this.u;
+  }
+
+  paraTela(x: number, y: number): [number, number] {
+    return [this.sx(x), this.sy(y)];
+  }
+  destruir() {
+    this.particulas = [];
   }
 
   sx(x: number) {
@@ -235,7 +252,7 @@ export class DesenhoDaPonte {
         g.stroke();
       }
     };
-    barranco(-6, 0, 0);
+    barranco(this.x0 - 2, 0, 0);
     barranco(f.largura, f.largura + 6, f.largura);
     // a bandeira de chegada
     const bx = this.sx(f.largura + 2.6);
@@ -379,19 +396,17 @@ export class DesenhoDaPonte {
   // A MONTAGEM
   // ------------------------------------------------------------------------------------------------------------------------------
 
-  montagem(
-    pecas: readonly number[],
-    o: {
-      agora: number;
-      fantasma?: { ax: number; ay: number; bx: number; by: number; tipo: number; valida: boolean } | null;
-      origem?: [number, number] | null;
-      cursor?: [number, number] | null;
-      apagando?: number;
-    },
-  ) {
+  montagem(pecas: readonly number[], o: OpcoesDaMontagem) {
     const g = this.ctx;
     const f = this.fase;
     g.drawImage(this.cenario(), 0, 0);
+    // o tráfego esperando na margem, na ordem em que vai passar, com o peso de cada um
+    const fila = this.fila.parada();
+    f.trafego.forEach((tipo, i) => {
+      const v: Veiculo = { tipo, x: fila[i], y: 0, vy: 0, estado: ESPERANDO, inclinacao: 0 };
+      this.veiculo(v, i, fila[i]);
+      this.selo(tipo, fila[i]);
+    });
     // a área de montar e os pontos da grade
     g.fillStyle = 'rgba(255, 255, 255, 0.07)';
     g.fillRect(this.sx(0), this.sy(f.alto), this.sx(f.largura) - this.sx(0), this.sy(f.baixo) - this.sy(f.alto));
@@ -424,6 +439,13 @@ export class DesenhoDaPonte {
       const x = f.ancoras[i];
       const y = f.ancoras[i + 1];
       this.no(x, y, true, !!o.origem && o.origem[0] === x && o.origem[1] === y);
+    }
+    if (o.sobre && !o.cursor) {
+      g.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+      g.lineWidth = 2;
+      g.beginPath();
+      g.arc(this.sx(o.sobre[0]), this.sy(o.sobre[1]), 0.2 * this.u, 0, Math.PI * 2);
+      g.stroke();
     }
     if (o.cursor) {
       g.strokeStyle = '#ffcf5a';
@@ -476,7 +498,12 @@ export class DesenhoDaPonte {
       }
     }
     for (const n of s.nos) if (n.m > 0.31 || n.fixo) this.no(n.x, n.y, n.fixo);
-    s.veiculos.forEach((v, i) => this.veiculo(v, i));
+    const fila = this.fila.atualizar(s, dt);
+    s.veiculos.forEach((v, i) => {
+      if (v.estado === CHEGOU) return;
+      this.veiculo(v, i, fila[i]);
+      if (naFila(s, i)) this.selo(v.tipo, fila[i]);
+    });
     // o respingo: quando o veículo que caiu chega na água
     if (this.respingo) {
       const v = s.veiculos.find((o) => o.estado === CAIU && o.y <= (this.respingo?.ate ?? 0));
@@ -503,12 +530,44 @@ export class DesenhoDaPonte {
     g.globalAlpha = 1;
   }
 
-  /** Um coelho de carroça, de carro ou de caminhão, apoiado na pista (as rodas em cima da tábua). */
-  private veiculo(v: Veiculo, i: number) {
-    if (v.estado === ESPERANDO || v.estado === CHEGOU || v.x < SAIDA + 0.01) return;
+  /**
+   * O SELO DO PESO em cima de um veículo que espera: um peso de academia com o número dentro, maior quanto mais pesado (o caminhão
+   * se vê de longe). Sem texto, só o número.
+   */
+  private selo(tipo: IdDoVeiculo, x: number) {
     const g = this.ctx;
     const u = this.u;
-    const px = this.sx(v.x);
+    const massa = VEICULOS[tipo].massa;
+    const r = (0.2 + 0.075 * Math.sqrt(massa)) * u;
+    const altura = tipo === 'caminhao' ? 1.25 : 0.9;
+    const px = this.sx(x);
+    const py = this.sy(altura) - r - 0.18 * u;
+    g.save();
+    g.strokeStyle = '#2f3640';
+    g.lineWidth = r * 0.28;
+    g.beginPath();
+    g.arc(px, py - r * 0.72, r * 0.48, Math.PI * 1.05, Math.PI * 1.95);
+    g.stroke();
+    g.fillStyle = '#2f3640';
+    g.beginPath();
+    g.arc(px, py, r, 0, Math.PI * 2);
+    g.fill();
+    g.strokeStyle = '#fff3e0';
+    g.lineWidth = 2;
+    g.stroke();
+    g.fillStyle = '#fff3e0';
+    g.font = `800 ${Math.round(r * 0.95)}px system-ui, sans-serif`;
+    g.textAlign = 'center';
+    g.textBaseline = 'middle';
+    g.fillText(pesoEscrito(tipo), px, py + r * 0.06);
+    g.restore();
+  }
+
+  /** Um coelho de carroça, de carro ou de caminhão, apoiado na pista (as rodas em cima da tábua). `x`: onde desenhar (a fila). */
+  private veiculo(v: Veiculo, i: number, x: number) {
+    const g = this.ctx;
+    const u = this.u;
+    const px = this.sx(x);
     const py = this.sy(v.y + ESPESSURA[PISTA] / 2);
     let ang = -Math.atan(v.inclinacao);
     if (v.estado === CAIU) ang += Math.min(0.9, -v.vy * 0.08);

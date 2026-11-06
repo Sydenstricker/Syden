@@ -1,4 +1,6 @@
-/* A PONTE DA TOCA (JogoPonte.tsx): o vão num canvas de lado, o painel por cima, e as peças e os botões embaixo. */
+/* A PONTE DA TOCA (JogoPonte.tsx): o vão em 3D (ou o 2D de reserva) numa caixa 16:9, e TUDO por cima dela — o custo e o relógio no
+   alto, as peças e os botões numa faixa no pé, os comandos só no começo (pedido dele, 06/11/2026: "a HUD sempre dentro da tela"). A
+   moldura é um contêiner: na tela estreita, os botões ficam só com a figura. */
 
 /* O vão pede tela: o painel dos mini-games fica largo enquanto se joga. */
 .minijogo.jogando-ponte {
@@ -12,20 +14,23 @@
 }
 
 .ponte-moldura {
+  container-type: inline-size;
   position: relative;
-  width: 100%;
-  max-width: calc(64vh * 16 / 9);
+  width: min(100%, calc((100vh - 180px) * 16 / 9));
+  min-width: 240px;
   margin: 0 auto;
   border-radius: 10px;
   overflow: hidden;
-  background: linear-gradient(#86c3e3, #f4e6c6);
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .ponte-tela {
+  position: relative;
   display: block;
   width: 100%;
-  height: auto;
   aspect-ratio: 16 / 9;
+  overflow: hidden;
   touch-action: none;
   cursor: crosshair;
 }
@@ -34,6 +39,15 @@
 }
 .ponte-fim .ponte-tela {
   cursor: default;
+}
+.ponte-tela-2d,
+.ponte-3d,
+.ponte-3d-tela {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .ponte-painel {
@@ -109,60 +123,152 @@
   text-shadow: 0 3px 0 rgba(20, 28, 40, 0.55);
 }
 
+/* a faixa das peças e dos botões, no pé da tela */
 .ponte-barra {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  z-index: 2;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  padding: 5px;
+  border-radius: 10px;
+  background: rgba(28, 34, 44, 0.58);
+  color: #fff7e8;
 }
 
 .ponte-pecas,
 .ponte-acoes {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+  gap: 5px;
 }
 
-.ponte-peca-botao {
+.ponte-peca-botao,
+.ponte-acao {
   position: relative;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  padding: 6px 10px;
+  min-width: 36px;
+  min-height: 36px;
+  padding: 4px 9px;
   border-radius: 8px;
-  border: 2px solid var(--border);
-  background: var(--bg-raised);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
   color: inherit;
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.9rem;
   cursor: pointer;
-  font-weight: 600;
 }
 .ponte-peca-botao:hover:not(:disabled),
-.ponte-peca-botao.escolhida {
-  border-color: var(--accent);
+.ponte-acao:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.55);
 }
-.ponte-peca-botao:disabled {
-  opacity: 0.55;
+.ponte-peca-botao.escolhida {
+  border-color: #f5c542;
+  background: rgba(245, 197, 66, 0.24);
+}
+.ponte-acao.principal {
+  border-color: #6fcf8a;
+  background: rgba(63, 154, 92, 0.85);
+}
+.ponte-peca-botao:disabled,
+.ponte-acao:disabled {
+  opacity: 0.45;
   cursor: default;
 }
 .ponte-peca-botao small {
   display: inline-flex;
   align-items: center;
   gap: 2px;
-  color: var(--text-muted);
+  color: rgba(255, 247, 232, 0.78);
   font-variant-numeric: tabular-nums;
 }
 .ponte-peca-botao kbd {
   font: inherit;
-  font-size: 0.7rem;
-  color: var(--text-muted);
-  border: 1px solid var(--border);
+  font-size: 0.68rem;
+  color: rgba(255, 247, 232, 0.7);
+  border: 1px solid rgba(255, 247, 232, 0.35);
   border-radius: 4px;
   padding: 0 4px;
 }
 @media (pointer: coarse) {
   .ponte-peca-botao kbd {
     display: none;
+  }
+}
+
+/* os comandos, na contagem e nos primeiros segundos: um cartão acima da faixa, que não pega clique */
+.ponte-ajuda {
+  position: absolute;
+  left: 50%;
+  bottom: 62px;
+  transform: translateX(-50%);
+  max-width: calc(100% - 16px);
+  padding: 6px 12px 8px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--bg-main) 88%, transparent);
+  color: var(--text);
+  pointer-events: none;
+}
+.ponte-ajuda .jogo-comandos {
+  margin-top: 0;
+}
+
+/* a tela estreita: os botões só com a figura (o nome fica para o leitor de tela) */
+@container (max-width: 760px) {
+  .ponte-rotulo,
+  .ponte-peca-botao kbd {
+    display: none;
+  }
+  .ponte-peca-botao,
+  .ponte-acao {
+    padding: 3px 7px;
+    gap: 4px;
+  }
+  .ponte-barra {
+    left: 5px;
+    right: 5px;
+    bottom: 5px;
+    gap: 4px;
+    padding: 4px;
+  }
+  .ponte-ajuda {
+    bottom: 52px;
+    font-size: 0.8rem;
+  }
+}
+@container (max-width: 520px) {
+  /* no celular, o cartão dos comandos cobriria o vão inteiro */
+  .ponte-ajuda {
+    display: none;
+  }
+}
+@container (max-width: 470px) {
+  .ponte-peca-botao small {
+    display: none;
+  }
+  .ponte-amostra {
+    width: 20px;
+  }
+  .ponte-pecas,
+  .ponte-acoes {
+    gap: 3px;
+  }
+  .ponte-relogio {
+    font-size: 18px;
+  }
+  .ponte-custo {
+    font-size: 16px;
+  }
+  .ponte-contagem {
+    font-size: 40px;
   }
 }
 
@@ -184,12 +290,6 @@
 .ponte-amostra.tipo-2 {
   height: 5px;
   background: radial-gradient(circle, #5f6d7a 1.2px, transparent 1.6px) 0 0 / 7px 5px, linear-gradient(#b9c5d0 40%, #8796a5 40%);
-}
-
-.ponte-acoes button {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
 }
 
 .ponte-vazia {
