@@ -809,6 +809,16 @@ guirlandas, as luzinhas coloridas, neve no peitoril e, com Partículas ligado, n
 de licença, e a página oficial declara CC0 (conferido em 06/11/2026; a nota em `web/public/salao3d/LICENCA-KayKit-Holiday-Bits.txt`; o crédito
 nos termos, seção 10). **Ver antes de dezembro, só no site de desenvolvimento:** `?natal` no endereço (ou `window.salao3dNatal = true`);
 `?sem-epoca` tira. Só no 3D: o salão de pixel art não tem Natal.
+**O BANHEIRO DO SALÃO 3D (06/11/2026, pedido dele, pela foto do Bubbly Bathroom do Tiny Treats):** no canto do fundo (4,2 × 2,7, entre
+as duas paredes de verdade, de azulejo por dentro), com MURETAS de 0,5 dos lados da sala (o corte das casas de boneca: com 1,05 a câmera
+não via o vaso nem o tapete), a passagem junto da parede da esquerda e a porta do pacote aberta, encostada nela. A banheira com espuma e o
+PATINHO boiando (para sem foco e com "menos movimento"), a pia no balcão azul com os frascos, o espelho, a prateleira com a vela (que acende
+de noite), a planta e os frascos, o vaso com o papel e o lixinho, o tapete rosa com os chinelos e as toalhas. **É ambientação:** nada nele tem
+função (o 3D não tem cartão da peça). As peças paradas são UMA malha só (todas usam a mesma textura de paleta do pacote): +10 chamadas e
++12 mil triângulos no salão. Para caber, o salão de fábrica mudou: o canto da TV desceu 1,1, o abajur e a estante foram para depois do
+banheiro, a janela (7,95) e o troféu (9,7) andaram, a planta do canto foi para o fim do bar, e o QUADRO foi para a parede da esquerda, em
+cima do fliperama; o Natal convive (a guirlanda do fundo foi para cima da estante). Os modelos em `web/public/salao3d/banheiro/` (Tiny
+Treats, de Isa Lousberg, CC0; o crédito nos termos, seção 10). O e2e confere o patinho e a call cheia (12, ninguém no banheiro).
 **Os outros coletivos no Solo (05/11/2026, pedido dele: "outros jogos coletivos com opção de jogar sozinho contra IA"):** Cinco em
 linha, Mancala, Damas, Batalha naval, Dominó, Truco e Tabuleiro da turma, pelo módulo comum `server/src/minijogo-robos.ts` (os nomes,
 a pausa, `comRobos` para os jogos de convite contarem os robôs como gente na sala). Nas mesas (`duelo`), o robô senta na hora e
