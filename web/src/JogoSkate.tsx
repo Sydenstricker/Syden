@@ -9,12 +9,12 @@ import type { CenaDoSkate } from './skate/cena';
 import './skate.css';
 
 /**
- * O ROLÊ DO COELHO (05/11/2026, pedido dele: "um mini Tony Hawk"): dois minutos numa pista de skate pequena, com o nosso coelho
+ * O ROLÊ DO COELHO (05/11/2026, pedido dele: "um mini Tony Hawk"): um minuto numa pista de skate pequena, com o nosso coelho
  * 3D em cima da prancha da Kenney. SÓ A MECÂNICA dos jogos de skate de pontos: nada de nome, personagem, fase ou música de
  * ninguém (e sem música nenhuma: a regra do "nunca fazer a nossa"; os efeitos são os de somDosJogos.ts).
  *
  * A SESSÃO É DESTE COMPUTADOR, como o contra o relógio do kart: a física (skate/fisica.ts) anda em passos fixos de 1/60 s, e
- * os 2 minutos são 7200 passos — a janela sem foco pausa tudo. No fim, os pontos vão ao servidor (server/src/minijogo-skate.ts),
+ * o minuto são 3600 passos — a janela sem foco pausa tudo. No fim, os pontos vão ao servidor (server/src/minijogo-skate.ts),
  * que confere o que dá (o tempo que passou, o tamanho) e guarda o recorde. A física não usa seno nem cosseno, para que um dia o
  * servidor possa refazer a sessão inteira a partir dos comandos, como no golfe.
  */

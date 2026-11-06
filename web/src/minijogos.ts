@@ -652,7 +652,7 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
     abas: ['solo', 'coletivo'],
   },
   {
-    // O skate (JogoSkate.tsx, server/src/minijogo-skate.ts): dois minutos de manobras e combos. Só no Solo por enquanto: a sala
+    // O skate (JogoSkate.tsx, server/src/minijogo-skate.ts): um minuto de manobras e combos. Só no Solo por enquanto: a sala
     // existe no servidor, mas não foi testada na tela.
     id: 'skate',
     nome: chave('Rolê do coelho'),

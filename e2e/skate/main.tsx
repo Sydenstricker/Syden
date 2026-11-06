@@ -13,7 +13,7 @@ let recorde: number | null = 1500;
 function Pagina() {
   const [estado, setEstado] = useState<EstadoSkate & { terminada?: boolean }>({
     fase: 'jogando',
-    duracaoMs: 120_000,
+    duracaoMs: 60_000,
     meu: { pontos: null, melhorCombo: null },
     placar: [{ userId: 1, username: 'eu', pontos: null, melhorCombo: null, posicao: null }],
     recorde: { antes: recorde, novo: false },

@@ -56,7 +56,7 @@ const fim = (pontos: number, passos = PASSOS_DA_SESSAO, melhorCombo = Math.floor
 test('no Solo, a sessão inteira vira o recorde, e a pior não substitui', () => {
   const p = comecar([anaId]);
   assert.equal(p.estado(anaId).recorde?.antes, null);
-  // antes de passarem os 2 minutos no relógio do servidor, não dá para ter andado a sessão inteira
+  // antes de passar o minuto no relógio do servidor, não dá para ter andado a sessão inteira
   agora += 30_000;
   assert.equal(p.jogo.acao(anaId, fim(4000)), 'Sessão inválida.');
   agora += DURACAO_MS;
@@ -84,7 +84,7 @@ test('o servidor confere o tamanho da sessão', () => {
   assert.equal(p.jogo.acao(anaId, fim(PONTOS_MAX + 1)), 'Sessão inválida.');
   assert.equal(p.jogo.acao(anaId, fim(1.5)), 'Sessão inválida.');
   assert.equal(p.jogo.acao(anaId, { tipo: 'fim', pontos: '100', passos: PASSOS_DA_SESSAO, melhorCombo: 0 }), 'Sessão inválida.');
-  // a sessão é de 7200 passos (um pouco mais, para fechar o combo no ar), nem menos, nem muito mais
+  // a sessão é de 3600 passos (um pouco mais, para fechar o combo no ar), nem menos, nem muito mais
   assert.equal(p.jogo.acao(anaId, fim(100, PASSOS_DA_SESSAO - 1)), 'Sessão inválida.');
   assert.equal(p.jogo.acao(anaId, fim(100, PASSOS_DA_SESSAO + 5000)), 'Sessão inválida.');
   // o melhor combo não passa do total

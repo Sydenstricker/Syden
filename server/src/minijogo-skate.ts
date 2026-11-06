@@ -1,12 +1,12 @@
 /**
- * O ROLÊ DO COELHO (05/11/2026, pedido dele: "um mini Tony Hawk"): dois minutos numa pista de skate, com pontos por manobra
+ * O ROLÊ DO COELHO (05/11/2026, pedido dele: "um mini Tony Hawk"): um minuto (eram dois até 06/11/2026) numa pista de skate, com pontos por manobra
  * e combos. SÓ A MECÂNICA dos jogos de skate de pontos; a pista, o coelho e tudo o que aparece são nossos ou da Kenney (CC0).
  *
  * A SESSÃO É DE QUEM JOGA, no computador dele (web/src/skate/fisica.ts, passos fixos de 1/60 s, como o contra o relógio do
  * kart): o servidor não vê manobra nenhuma. No fim, o site manda os pontos, quantos passos andou e o melhor combo, e o servidor
  * confere o que dá sem refazer a sessão:
  *  - uma vez só por pessoa;
- *  - os passos são os da sessão inteira (7200, ou um pouco mais: acabado o tempo, o combo no ar ainda fecha), e não podem
+ *  - os passos são os da sessão inteira (3600, ou um pouco mais: acabado o tempo, o combo no ar ainda fecha), e não podem
  *    ser mais do que o relógio do servidor viu passar desde a largada (a janela sem foco PAUSA a sessão, então pode passar
  *    mais tempo, nunca menos);
  *  - os pontos são inteiros, de 0 a um teto folgado, e o melhor combo não passa do total.
@@ -15,20 +15,20 @@
  *
  * Com a turma, cada um anda na SUA cópia da pista (sem batida entre skatistas pela internet, como na caça e no golfe), e os
  * pontos se comparam no fim: os três primeiros vão à estante de troféus (pista 'skate'). No Solo, o RECORDE da pessoa
- * (skate_recordes), sem troféu.
+ * (skate_recordes_1min), sem troféu.
  */
 import * as db from './db.js';
 import type { Definicao } from './minijogo-motor.js';
 
 /** Os números da física do site (web/src/skate/fisica.ts): a sessão e a folga para fechar o combo depois do tempo. */
-export const PASSOS_DA_SESSAO = 7200;
+export const PASSOS_DA_SESSAO = 3600;
 export const PASSOS_DE_FOLGA = 600;
 export const DURACAO_MS = (PASSOS_DA_SESSAO / 60) * 1000;
 /** A contagem da largada na tela (3 s) e a rede: os passos podem chegar um tico à frente do relógio do servidor. */
 export const FOLGA_DO_RELOGIO_MS = 2000;
 /** Ninguém volta: a partida fecha sozinha depois disto (a sessão pausada pela janela sem foco tem esse tanto para acabar). */
 export const PRAZO_MS = DURACAO_MS + 10 * 60_000;
-/** Pontos demais para dois minutos de pista (um combo enorme passa de 100 mil; isto é dez vezes uma sessão excelente). */
+/** Pontos demais para um minuto de pista (um combo enorme passa de 100 mil; isto é dez vezes uma sessão excelente). */
 export const PONTOS_MAX = 5_000_000;
 
 interface Skatista {

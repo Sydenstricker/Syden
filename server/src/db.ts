@@ -7250,12 +7250,15 @@ export function guardarRecordeDaCaca(userId: number, pontos: number): boolean {
 }
 
 // ---------------------------------------------------------------------------------------------------
-// O ROLÊ DO COELHO (o skate, 05/11/2026): o recorde de cada pessoa no Solo (a melhor sessão de 2 minutos).
+// O ROLÊ DO COELHO (o skate, 05/11/2026): o recorde de cada pessoa no Solo (a melhor sessão).
 // Só o melhor: uma sessão pior não substitui. É da pessoa, e só ela o vê (minijogo-skate.ts).
+// A SESSÃO PASSOU DE 2 MINUTOS PARA 1 em 06/11/2026 (pedido dele), e o recorde recomeçou numa tabela nova: os pontos de 2
+// minutos não se batem em 1, como pista nova é id novo no kart. A skate_recordes antiga (de 2 minutos) não se lê mais e fica
+// como estava (sai com a conta, pelo ON DELETE CASCADE).
 // ---------------------------------------------------------------------------------------------------
 
 db.exec(`
-  CREATE TABLE IF NOT EXISTS skate_recordes (
+  CREATE TABLE IF NOT EXISTS skate_recordes_1min (
     user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
     pontos  INTEGER NOT NULL,
     em      TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
@@ -7263,7 +7266,7 @@ db.exec(`
 `);
 
 export function recordeDoSkate(userId: number): number | null {
-  return (db.prepare('SELECT pontos FROM skate_recordes WHERE user_id = ?').get(userId) as { pontos: number } | undefined)?.pontos ?? null;
+  return (db.prepare('SELECT pontos FROM skate_recordes_1min WHERE user_id = ?').get(userId) as { pontos: number } | undefined)?.pontos ?? null;
 }
 
 /** Guarda se for o melhor da pessoa. Devolve true se virou recorde. */
@@ -7271,7 +7274,7 @@ export function guardarRecordeDoSkate(userId: number, pontos: number): boolean {
   const atual = recordeDoSkate(userId);
   if (atual !== null && atual >= pontos) return false;
   db.prepare(
-    `INSERT INTO skate_recordes (user_id, pontos) VALUES (?, ?)
+    `INSERT INTO skate_recordes_1min (user_id, pontos) VALUES (?, ?)
      ON CONFLICT(user_id) DO UPDATE SET pontos = excluded.pontos, em = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')`,
   ).run(userId, pontos);
   return true;

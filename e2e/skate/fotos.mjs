@@ -1,7 +1,7 @@
 // O Rolê do coelho na tela, com o piloto automático: sobe a página de conferência (vite.config.mjs, porta 5300) antes:
 //   npx vite e2e/skate --port 5300
 //   node e2e/skate/fotos.mjs            (uns 30 s: confere ollie, grind e pontos, e tira as fotos)
-//   COMPLETO=1 node e2e/skate/fotos.mjs (os 2 minutos inteiros, até a tela do fim)
+//   COMPLETO=1 node e2e/skate/fotos.mjs (o minuto inteiro, até a tela do fim)
 // As fotos vão para e2e/skate/fotos/.
 import { chromium } from 'file:///U:/Repos/Janja/node_modules/playwright-core/index.mjs';
 import { mkdirSync } from 'node:fs';
@@ -22,7 +22,7 @@ await pagina.bringToFront();
 const visto = { grind: false, manual: false, ar: false, caiu: 0 };
 const fotos = new Set();
 const ler = () => pagina.evaluate(() => { const k = window.skateSessaoDoTeste; return k && { modo: k.modo, pontos: k.pontos, passo: k.passo, terminou: k.terminou, combo: k.combo.length }; });
-const fim = Date.now() + (process.env.COMPLETO ? 140_000 : 32_000);
+const fim = Date.now() + (process.env.COMPLETO ? 80_000 : 32_000);
 while (Date.now() < fim) {
   const k = await ler();
   if (k) {

@@ -1,6 +1,6 @@
 /**
  * A FÍSICA DO SKATE (05/11/2026): passos fixos de 1/60 s, como a do kart e a do Pulo do coelho. O mesmo comando dá a mesma
- * sessão, e a sessão é o número de passos (2 minutos = 7200), não o relógio: a janela sem foco pausa tudo. Só + − × ÷ e raiz
+ * sessão, e a sessão é o número de passos (1 minuto = 3600), não o relógio: a janela sem foco pausa tudo. Só + − × ÷ e raiz
  * (os giros são por constantes escritas aqui, não por seno e cosseno), para que um dia o servidor possa refazer a conta.
  *
  * O MODELO, em 2,5 D: no chão o skatista anda na superfície (a velocidade é a DA SUPERFÍCIE, e a gravidade puxa ao longo da
@@ -18,8 +18,8 @@
 import { altura, alturaDaPeca, dentro, LARGURA, MARGEM, pecaEm, PROFUNDIDADE, perfilDaPeca, subidaDaPeca, TRILHOS, type Trilho } from './pista';
 
 export const PASSO = 1 / 60;
-/** A sessão: 2 minutos. */
-export const PASSOS_DA_SESSAO = 7200;
+/** A sessão: 1 minuto (eram 2 até 06/11/2026, pedido dele). */
+export const PASSOS_DA_SESSAO = 3600;
 /** Acabou o tempo no meio de um combo: ele ainda tem isto para fechar (depois, fecha como estiver). */
 export const PASSOS_DE_FOLGA = 600;
 
