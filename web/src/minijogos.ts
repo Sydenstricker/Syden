@@ -652,12 +652,12 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
     abas: ['solo', 'coletivo'],
   },
   {
-    // O skate (JogoSkate.tsx, server/src/minijogo-skate.ts): um minuto de manobras e combos. Só no Solo por enquanto: a sala
-    // existe no servidor, mas não foi testada na tela.
+    // O skate (JogoSkate.tsx, server/src/minijogo-skate.ts): um minuto de manobras e combos. Na sala desde 06/11/2026 (pedido
+    // dele): a mesma pista para a turma, os outros como fantasmas, e o servidor refaz a sessão de cada um.
     id: 'skate',
     nome: chave('Rolê do coelho'),
     dica: chave('Um minuto na pista de skate. Pule, gire, faça grind nos corrimãos e emende as manobras num combo: cada manobra a mais multiplica os pontos, mas cair perde o combo inteiro.'),
-    abas: ['solo'],
+    abas: ['solo', 'coletivo'],
   },
   {
     // A cozinha (JogoCozinha.tsx, server/src/minijogo-cozinha.ts): cada um na própria cozinha, os mesmos pedidos para todos.

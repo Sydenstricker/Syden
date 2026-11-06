@@ -1,7 +1,10 @@
 /**
  * A FÍSICA DO SKATE (05/11/2026): passos fixos de 1/60 s, como a do kart e a do Pulo do coelho. O mesmo comando dá a mesma
  * sessão, e a sessão é o número de passos (1 minuto = 3600), não o relógio: a janela sem foco pausa tudo. Só + − × ÷ e raiz
- * (os giros são por constantes escritas aqui, não por seno e cosseno), para que um dia o servidor possa refazer a conta.
+ * (os giros são por constantes escritas aqui, não por seno e cosseno), e por isso o servidor REFAZ a conta igual (06/11/2026):
+ * ESTE ARQUIVO E O pista.ts MORAM EM DUAS CÓPIAS IGUAIS BYTE A BYTE (web/src/skate/ e server/src/skate/; web/test/skate.test.ts
+ * confere). O site manda os comandos de cada passo (`gravador`), e o servidor refaz a sessão (`refazer`): os pontos que valem
+ * são os dele. Mexeu num, copie no outro: servidor e site sobem juntos.
  *
  * O MODELO, em 2,5 D: no chão o skatista anda na superfície (a velocidade é a DA SUPERFÍCIE, e a gravidade puxa ao longo da
  * inclinação: subir o quarter freia, descer acelera). O chão é o da pista (pista.ts): dentro de uma peça ele é contínuo, e na
@@ -15,7 +18,7 @@
  * somados vezes o número de manobras. O combo se fecha quando o skatista roda no chão sem manobra por um instante; cair
  * (pousar torto, com o flip pela metade, perder o equilíbrio, bater de frente) perde o combo inteiro.
  */
-import { altura, alturaDaPeca, dentro, LARGURA, MARGEM, pecaEm, PROFUNDIDADE, perfilDaPeca, subidaDaPeca, TRILHOS, type Trilho } from './pista';
+import { altura, alturaDaPeca, dentro, LARGURA, MARGEM, pecaEm, PROFUNDIDADE, perfilDaPeca, subidaDaPeca, TRILHOS, type Trilho } from './pista.js';
 
 export const PASSO = 1 / 60;
 /** A sessão: 1 minuto (eram 2 até 06/11/2026, pedido dele). */
@@ -755,4 +758,70 @@ export function comboAberto(k: Skatista): Manobra[] {
   if (k.modo === 'manual') extra.push({ nome: 'Manual', pontos: valorBase('Manual', k.duracao * PASSO) });
   if (k.modo === 'ar' && k.grab >= 6) extra.push({ nome: 'Grab', pontos: valorBase('Grab', k.grab * PASSO) });
   return [...k.combo, ...extra];
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+// OS COMANDOS EM BITS (06/11/2026): o que o site grava e o servidor refaz
+// ---------------------------------------------------------------------------------------------------------------------
+
+const BITS: (keyof Comandos)[] = ['frente', 'tras', 'esquerda', 'direita', 'pulo', 'flip', 'grab', 'manual'];
+export const COMANDO_MAXIMO = (1 << BITS.length) - 1;
+/** O passo mais alto que uma sessão alcança (o minuto, a folga para fechar o combo e o passo que fecha). */
+export const PASSOS_MAXIMOS = PASSOS_DA_SESSAO + PASSOS_DE_FOLGA + 1;
+
+export function emBits(c: Comandos): number {
+  let b = 0;
+  for (let i = 0; i < BITS.length; i++) if (c[BITS[i]]) b |= 1 << i;
+  return b;
+}
+
+export function deBits(b: number): Comandos {
+  const c = { ...NADA };
+  for (let i = 0; i < BITS.length; i++) c[BITS[i]] = (b & (1 << i)) !== 0;
+  return c;
+}
+
+/** Os comandos da sessão em trechos: [quantos passos, os bits], [quantos passos, os bits]… */
+export type Entradas = number[];
+
+export function entradasValidas(e: unknown): e is Entradas {
+  if (!Array.isArray(e) || e.length === 0 || e.length % 2 !== 0 || e.length > 2 * PASSOS_MAXIMOS) return false;
+  let total = 0;
+  for (let i = 0; i < e.length; i += 2) {
+    const n: unknown = e[i];
+    const b: unknown = e[i + 1];
+    if (typeof n !== 'number' || !Number.isInteger(n) || n < 1 || typeof b !== 'number' || !Number.isInteger(b) || b < 0 || b > COMANDO_MAXIMO) return false;
+    total += n;
+    if (total > PASSOS_MAXIMOS) return false;
+  }
+  return true;
+}
+
+/** Refaz a sessão inteira pelas entradas, até ela terminar. `passos` diz quantos passos as entradas tinham. */
+export function refazer(e: Entradas): { k: Skatista; passos: number } {
+  const k = novoSkatista();
+  let passos = 0;
+  for (let i = 0; i < e.length; i += 2) {
+    const c = deBits(e[i + 1]);
+    for (let j = 0; j < e[i]; j++) {
+      passos++;
+      if (!k.terminou) passo(k, c);
+    }
+  }
+  k.eventos = [];
+  return { k, passos };
+}
+
+/** Quem grava as entradas: junta os passos iguais seguidos. */
+export function gravador() {
+  const entradas: Entradas = [];
+  return {
+    entradas,
+    anotar(c: Comandos) {
+      const b = emBits(c);
+      const n = entradas.length;
+      if (n && entradas[n - 1] === b) entradas[n - 2]++;
+      else entradas.push(1, b);
+    },
+  };
 }

@@ -184,3 +184,37 @@ test('o entorno (06/11/2026) fica todo fora da pista: nada em que o skatista pos
   assert.ok(n > 100, `só ${n} coisas`);
   for (const [x, z] of lugaresDosPostes()) assert.ok(fora(x, z) > 1, `poste em (${x}, ${z})`);
 });
+
+test('a física e a pista são as MESMAS do servidor, byte a byte (ele refaz a sessão, 06/11/2026)', async () => {
+  const { readFileSync } = await import('node:fs');
+  for (const nome of ['fisica.ts', 'pista.ts']) {
+    const site = readFileSync(new URL(`../src/skate/${nome}`, import.meta.url));
+    const servidor = readFileSync(new URL(`../../server/src/skate/${nome}`, import.meta.url));
+    assert.ok(site.equals(servidor), `web/src/skate/${nome} e server/src/skate/${nome} são diferentes: copie um no outro`);
+  }
+});
+
+test('o que se grava refaz a mesma sessão (os comandos em bits, em trechos)', async () => {
+  const f = await import('../src/skate/fisica');
+  const k = novoSkatista();
+  const piloto = criarPiloto();
+  const g = f.gravador();
+  while (!k.terminou) {
+    const c = piloto(k);
+    g.anotar(c);
+    passo(k, c);
+  }
+  assert.ok(f.entradasValidas(g.entradas));
+  // os trechos juntam os passos iguais: bem menos números que passos
+  assert.ok(g.entradas.length < k.passo, `${g.entradas.length} números para ${k.passo} passos`);
+  const r = f.refazer(g.entradas);
+  assert.equal(r.passos, k.passo);
+  assert.equal(r.k.passo, k.passo);
+  assert.equal(r.k.pontos, k.pontos);
+  assert.equal(r.k.melhorCombo, k.melhorCombo);
+  for (let b = 0; b <= f.COMANDO_MAXIMO; b++) assert.equal(f.emBits(f.deBits(b)), b);
+  assert.equal(f.entradasValidas([1, 256]), false);
+  assert.equal(f.entradasValidas([0, 1]), false);
+  assert.equal(f.entradasValidas([f.PASSOS_MAXIMOS + 1, 0]), false);
+  assert.equal(f.entradasValidas([1.5, 0]), false);
+});

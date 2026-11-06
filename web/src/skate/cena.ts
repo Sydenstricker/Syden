@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { carregarCoelho, copiarCoelho, minhasCoresDoCoelho, type CoelhoCopiado } from '../coelho3d';
+import { carregarCoelho, copiarCoelho, minhasCoresDoCoelho, type CoelhoCopiado, type CoresDoCoelho } from '../coelho3d';
 import { PASSO, type Skatista } from './fisica';
 import { MODELOS_DO_ENTORNO, montarEntorno } from './entorno';
 import { altura, alturaDaPeca, LARGURA, pecaEm, PECAS, perfilDaPeca, PROFUNDIDADE, subidaDaPeca } from './pista';
@@ -56,6 +56,66 @@ function normalDoChao(i: number, x: number, z: number, saida: THREE.Vector3): TH
   return saida;
 }
 
+/** Um skatista da turma (a sala), como o servidor o repassou: o desenho de um passo, sem a física. */
+export interface QuadroDoOutro {
+  x: number;
+  y: number;
+  z: number;
+  /** Para onde a prancha aponta. */
+  cx: number;
+  cz: number;
+  /** 0 no chão, 1 no ar, 2 no grind, 3 no manual, 4 caído. */
+  e: number;
+  /** A base (de que lado o coelho está na prancha) e o flip que falta (0 a 20). */
+  b: number;
+  f: number;
+}
+
+export interface OutroNaCena {
+  cores: CoresDoCoelho;
+  nome: string;
+}
+
+interface Outro {
+  raiz: THREE.Group;
+  inclina: THREE.Group;
+  prancha: THREE.Group;
+  coelho: THREE.Group;
+  copia: CoelhoCopiado;
+  angulo: number;
+  noChao: THREE.Quaternion;
+  novo: boolean;
+}
+
+/** O nome em cima de um skatista da turma, num quadro de canvas (como na Gincana). */
+function etiqueta(texto: string): THREE.Sprite {
+  const c = document.createElement('canvas');
+  const g = c.getContext('2d')!;
+  const fonte = 'bold 40px system-ui, sans-serif';
+  g.font = fonte;
+  const w = Math.min(512, Math.ceil(g.measureText(texto).width) + 36);
+  c.width = w;
+  c.height = 64;
+  g.font = fonte;
+  g.fillStyle = 'rgba(20, 30, 45, 0.62)';
+  g.beginPath();
+  g.roundRect(0, 6, w, 52, 26);
+  g.fill();
+  g.fillStyle = '#ffffff';
+  g.textAlign = 'center';
+  g.textBaseline = 'middle';
+  g.fillText(texto, w / 2, 33);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, depthTest: false, transparent: true }));
+  s.scale.set((w / 64) * 0.36, 0.36, 1);
+  s.renderOrder = 10;
+  return s;
+}
+
+/** A transparência dos fantasmas da turma (o coelho e a prancha). */
+const OPACO_DO_FANTASMA = 0.5;
+
 function aproximarAngulo(atual: number, alvo: number, k: number): number {
   let d = alvo - atual;
   d = Math.atan2(Math.sin(d), Math.cos(d));
@@ -100,6 +160,8 @@ export class CenaDoSkate {
   private readonly focoVert = new THREE.Vector3();
   private readonly posVert = new THREE.Vector3();
   private modoAntes = '';
+  /** A turma (na sala): os fantasmas, cada um com o coelho dele. */
+  private outros: Outro[] = [];
 
   constructor(private caixa: HTMLElement) {
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'low-power' });
@@ -138,7 +200,7 @@ export class CenaDoSkate {
   }
 
   /** Carrega os modelos e monta a pista. Rejeita se algo falhar (quem chama mostra o aviso). */
-  async montar(): Promise<void> {
+  async montar(outros: OutroNaCena[] = []): Promise<void> {
     const nomes = [...new Set(PECAS.map((p) => p.modelo)), 'floor-concrete', 'fence', 'skateboard'];
     // o entorno (entorno.ts) é enfeite: o modelo que não carregar fica de fora, sem segurar o jogo
     const entorno = Promise.allSettled(MODELOS_DO_ENTORNO.map((n) => carregar(`${BASE}${n}.glb`)));
@@ -149,6 +211,92 @@ export class CenaDoSkate {
     extras.forEach((r, i) => r.status === 'fulfilled' && modelos.set(MODELOS_DO_ENTORNO[i], r.value));
     this.montarPista(modelos);
     this.montarSkatista(coelho, modelos.get('skateboard')!);
+    for (const o of outros) this.montarOutro(coelho, modelos.get('skateboard')!, o);
+  }
+
+  /** Troca as cores do skatista principal (quem só assiste segue o coelho de outra pessoa). */
+  pintar(cores: CoresDoCoelho) {
+    this.copia?.material.pintar(cores);
+  }
+
+  /** Um fantasma da turma: o coelho dele com as cores do avatar, meio transparente, a prancha também, e o nome em cima. */
+  private montarOutro(g: GLTF, prancha: GLTF, o: OutroNaCena) {
+    const copia = copiarCoelho(g, { altura: ALTURA_DO_COELHO, sombras: false, cores: o.cores, contorno: false });
+    copia.material.m.transparent = true;
+    copia.material.m.depthWrite = false;
+    copia.material.uOpaco.value = OPACO_DO_FANTASMA;
+    const coelho = new THREE.Group();
+    coelho.add(copia.corpo);
+    coelho.position.y = TAMPO;
+    coelho.rotation.y = -Math.PI / 2;
+    const tabua = prancha.scene.clone(true);
+    tabua.traverse((m) => {
+      const mesh = m as THREE.Mesh;
+      if (!mesh.isMesh) return;
+      const mats = (Array.isArray(mesh.material) ? mesh.material : [mesh.material]).map((x) => {
+        const c = x.clone();
+        c.transparent = true;
+        c.opacity = OPACO_DO_FANTASMA;
+        c.depthWrite = false;
+        this.descartaveis.push(c);
+        return c;
+      });
+      mesh.material = Array.isArray(mesh.material) ? mats : mats[0];
+    });
+    const pr = new THREE.Group();
+    pr.add(tabua);
+    const inclina = new THREE.Group();
+    inclina.add(pr, coelho);
+    const raiz = new THREE.Group();
+    raiz.add(inclina);
+    const e = etiqueta(o.nome);
+    e.position.y = TAMPO + ALTURA_DO_COELHO + 0.32;
+    raiz.add(e);
+    this.descartaveis.push(e.material.map!, e.material);
+    raiz.visible = false;
+    this.cena.add(raiz);
+    copia.acoes.get('parado')?.play();
+    this.outros.push({ raiz, inclina, prancha: pr, coelho, copia, angulo: 0, noChao: new THREE.Quaternion(), novo: true });
+  }
+
+  /** Desenha a turma: um quadro por fantasma, na ordem do montar (null: ainda sem posição, ou escondido). */
+  desenharOutros(quadros: (QuadroDoOutro | null)[], dt: number) {
+    if (this.morta) return;
+    const a_ = this.aux;
+    this.outros.forEach((o, i) => {
+      const q = quadros[i];
+      o.raiz.visible = !!q;
+      if (!q) {
+        o.novo = true;
+        return;
+      }
+      o.raiz.position.set(q.x, q.y, q.z);
+      const alvo = anguloDe(q.cx, q.cz);
+      o.angulo = o.novo ? alvo : aproximarAngulo(o.angulo, alvo, Math.min(1, dt * 18));
+      if (q.e === 0 || q.e === 3) normalDoChao(pecaEm(q.x, q.z), q.x, q.z, a_.n);
+      else a_.n.copy(CIMA);
+      a_.q.setFromUnitVectors(CIMA, a_.n);
+      if (o.novo) o.noChao.copy(a_.q);
+      else o.noChao.slerp(a_.q, Math.min(1, dt * (q.e === 1 ? 3.5 : 16)));
+      a_.giro.setFromAxisAngle(CIMA, o.angulo);
+      o.raiz.quaternion.copy(o.noChao).multiply(a_.giro);
+      o.novo = false;
+      o.inclina.rotation.x = q.e === 3 ? -0.32 : 0;
+      const flip = q.f > 0 ? 1 - q.f / 20 : 0;
+      o.prancha.rotation.z = flip * Math.PI * 2;
+      o.prancha.position.y = q.f > 0 ? Math.sin(flip * Math.PI) * 0.12 : 0;
+      o.coelho.rotation.y = (q.b > 0 ? -1 : 1) * (Math.PI / 2);
+      if (q.e === 4) {
+        o.coelho.rotation.x = -Math.PI / 2;
+        o.coelho.position.set(0.25, 0.08, 0);
+        o.prancha.rotation.z = Math.PI;
+        o.prancha.position.y = 0.16;
+      } else {
+        o.coelho.rotation.x = 0;
+        o.coelho.position.set(0, TAMPO, 0);
+      }
+      o.copia.mixer.update(this.calmo ? 0 : dt);
+    });
   }
 
   private clonar(g: GLTF): THREE.Object3D {
@@ -384,6 +532,7 @@ export class CenaDoSkate {
     this.morta = true;
     this.observador.disconnect();
     this.copia?.descartar();
+    for (const o of this.outros) o.copia.descartar();
     this.cena.traverse((o) => {
       const m = o as THREE.Mesh;
       if (!m.isMesh) return;

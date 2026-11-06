@@ -5,7 +5,8 @@
  * duas rampas de salto no meio.
  *
  * ESTE ARQUIVO NÃO CONHECE O THREE.JS: é a geometria que a física lê (a altura do chão em cada ponto e as linhas de grind),
- * e o desenho (cena.ts) só põe os modelos onde ela diz. Por isso pode ir ao servidor um dia, como a física do golfe.
+ * e o desenho (cena.ts) só põe os modelos onde ela diz. Mora em DUAS CÓPIAS IGUAIS (web/src/skate/ e server/src/skate/), com a
+ * física: o servidor refaz a sessão (06/11/2026).
  *
  * A unidade é a casa da Kenney (1 = um ladrilho); o coelho tem uns 0,75 de altura. O desenho das peças foi MEDIDO nos
  * modelos (a altura da superfície amostrada triângulo a triângulo, 05/11/2026): a rampa sobe 0,30 na metade da frente e é

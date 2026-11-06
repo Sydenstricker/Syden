@@ -217,3 +217,31 @@
   min-width: 1.5em;
   font-variant-numeric: tabular-nums;
 }
+
+/* NA SALA: a ordem ao vivo, embaixo do relógio (os pontos que cada um diz ter agora; o placar do fim é o refeito) */
+.skate-ordem {
+  position: absolute;
+  top: 42px;
+  right: 10px;
+  margin: 0;
+  padding: 4px 8px;
+  list-style: none;
+  border-radius: 8px;
+  background: rgba(20, 28, 40, 0.35);
+  font-size: calc(13px * var(--escala-do-texto, 1));
+  min-width: 120px;
+  max-width: 40%;
+}
+.skate-ordem li {
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+.skate-ordem li span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.skate-ordem li.eu {
+  color: #ffe08a;
+}

@@ -603,7 +603,16 @@ export function PainelDoMinijogo({
         />
       )}
       {jogoNaTela?.jogo === 'skate' && (
-        <JogoSkate key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')} estado={jogoNaTela as unknown as EstadoSkate & Partida} eu={eu} jogador={souJogador(partida)} agir={agir} />
+        <JogoSkate
+          key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
+          estado={jogoNaTela as unknown as EstadoSkate & Partida}
+          eu={eu}
+          jogador={souJogador(partida)}
+          agir={agir}
+          restante={restante}
+          socket={socket}
+          channelId={channelId}
+        />
       )}
       {jogoNaTela?.jogo === 'ponte' && (
         <JogoPonte key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')} estado={jogoNaTela as unknown as EstadoPonte & Partida} eu={eu} jogador={souJogador(partida)} agir={agir} />
