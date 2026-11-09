@@ -3095,4 +3095,17 @@ export default {
   "Concluída": "Kompletu",
   "Falhou": "Falla",
   "Em andamento": "La’o hela",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Server Syden nian la responde",
+  "O Syden está fora do ar": "Syden la funsiona",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "La’ós ita-nia internet: ami-nia server para responde. Bainhira fila, ekran ne’e lakon rasik.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — La iha ligasaun internet",
+  "Sem internet": "La iha internet",
+  "Quando a conexão voltar, esta tela some sozinha.": "Bainhira ligasaun fila, ekran ne’e lakon rasik.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Subar kuadru sira seluk",
+  "Mostrar os outros quadros": "Hatudu kuadru sira seluk",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Konvite ba komunidade",
+  "Entrar na comunidade": "Tama ba komunidade",
 } satisfies Record<string, string>;

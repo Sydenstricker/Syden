@@ -3095,4 +3095,17 @@ export default {
   "Concluída": "An kammala",
   "Falhou": "Ya gaza",
   "Em andamento": "Ana gudanarwa",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Sabar Syden ba ta amsa",
+  "O Syden está fora do ar": "Syden ba ya aiki",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "Ba intanet ɗinku ba ne: sabarmu ta daina amsawa. Idan ta dawo, wannan allo zai ɓace da kansa.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — Babu haɗin intanet",
+  "Sem internet": "Babu intanet",
+  "Quando a conexão voltar, esta tela some sozinha.": "Idan haɗi ya dawo, wannan allo zai ɓace da kansa.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Ɓoye sauran akwatuna",
+  "Mostrar os outros quadros": "Nuna sauran akwatuna",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Gayyatar ƙungiya",
+  "Entrar na comunidade": "Shiga ƙungiya",
 } satisfies Record<string, string>;

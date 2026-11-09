@@ -3177,4 +3177,17 @@ export default {
   "Concluída": "Дууссан",
   "Falhou": "Амжилтгүй",
   "Em andamento": "Явагдаж байна",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Syden-ийн сервер хариу өгөхгүй байна",
+  "O Syden está fora do ar": "Syden ажиллахгүй байна",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "Таны интернет биш: манай сервер хариу өгөхөө больсон. Буцаж ирэхэд энэ дэлгэц өөрөө алга болно.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — Интернэт холболт алга",
+  "Sem internet": "Интернэт алга",
+  "Quando a conexão voltar, esta tela some sozinha.": "Холболт сэргэхэд энэ дэлгэц өөрөө алга болно.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Бусад цонхыг нуух",
+  "Mostrar os outros quadros": "Бусад цонхыг харуулах",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Бүлгэмд урих",
+  "Entrar na comunidade": "Бүлгэмд нэгдэх",
 } satisfies Record<string, string>;

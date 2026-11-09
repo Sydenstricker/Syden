@@ -3093,4 +3093,17 @@ export default {
   "Concluída": "Selesai",
   "Falhou": "Gagal",
   "Em andamento": "Sedang berjalan",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Pelayan Syden tidak bertindak balas",
+  "O Syden está fora do ar": "Syden tidak berfungsi",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "Bukan internet anda: pelayan kami berhenti bertindak balas. Apabila ia kembali, skrin ini hilang sendiri.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — Tiada sambungan internet",
+  "Sem internet": "Tiada internet",
+  "Quando a conexão voltar, esta tela some sozinha.": "Apabila sambungan kembali, skrin ini hilang sendiri.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Sembunyikan petak lain",
+  "Mostrar os outros quadros": "Tunjukkan petak lain",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Jemputan ke komuniti",
+  "Entrar na comunidade": "Sertai komuniti",
 } satisfies Record<string, string>;

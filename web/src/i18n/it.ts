@@ -3092,4 +3092,17 @@ export default {
   "Concluída": "Completata",
   "Falhou": "Non riuscita",
   "Em andamento": "In corso",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Il server di Syden non risponde",
+  "O Syden está fora do ar": "Syden non è raggiungibile",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "Non è la tua connessione: il nostro server ha smesso di rispondere. Quando torna, questa schermata sparisce da sola.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — Nessuna connessione a internet",
+  "Sem internet": "Niente internet",
+  "Quando a conexão voltar, esta tela some sozinha.": "Quando la connessione torna, questa schermata sparisce da sola.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Nascondi gli altri riquadri",
+  "Mostrar os outros quadros": "Mostra gli altri riquadri",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Invito alla community",
+  "Entrar na comunidade": "Entra nella community",
 } satisfies Record<string, string>;

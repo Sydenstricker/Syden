@@ -3160,4 +3160,17 @@ export default {
   "Concluída": "Lõpetatud",
   "Falhou": "Ebaõnnestus",
   "Em andamento": "Käimas",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Sydeni server ei vasta",
+  "O Syden está fora do ar": "Syden ei tööta",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "See pole sinu internet: meie server lakkas vastamast. Kui see tagasi tuleb, kaob see ekraan ise.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — Internetiühendus puudub",
+  "Sem internet": "Internetti pole",
+  "Quando a conexão voltar, esta tela some sozinha.": "Kui ühendus tagasi tuleb, kaob see ekraan ise.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Peida teised paanid",
+  "Mostrar os outros quadros": "Näita teisi paane",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Kutse kogukonda",
+  "Entrar na comunidade": "Liitu kogukonnaga",
 } satisfies Record<string, string>;

@@ -3092,4 +3092,17 @@ export default {
   "Concluída": "Oti",
   "Falhou": "Sega ni rawa",
   "Em andamento": "Se caka tiko",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — E sega ni sauma na server i Syden",
+  "O Syden está fora do ar": "E sega ni cakacaka o Syden",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "E sega ni nomu internet: e sega ni sauma tale na noda server. Ni sa lesu mai, ena yali vakataki koya na sikirini oqo.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — E sega na internet",
+  "Sem internet": "E sega na internet",
+  "Quando a conexão voltar, esta tela some sozinha.": "Ni sa lesu mai na internet, ena yali vakataki koya na sikirini oqo.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Vunitaka na veika tale eso",
+  "Mostrar os outros quadros": "Vakaraitaka na veika tale eso",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Veisureti ki na isoqosoqo",
+  "Entrar na comunidade": "Curu ki na isoqosoqo",
 } satisfies Record<string, string>;

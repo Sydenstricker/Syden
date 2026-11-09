@@ -3162,4 +3162,17 @@ export default {
   "Concluída": "បានបញ្ចប់",
   "Falhou": "បរាជ័យ",
   "Em andamento": "កំពុងដំណើរការ",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — ម៉ាស៊ីនមេ Syden មិនឆ្លើយតប",
+  "O Syden está fora do ar": "Syden ដាច់ដំណើរការ",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "មិនមែនអ៊ីនធឺណិតរបស់អ្នកទេ៖ ម៉ាស៊ីនមេរបស់យើងឈប់ឆ្លើយតប។ ពេលវាត្រឡប់មកវិញ អេក្រង់នេះនឹងបាត់ដោយខ្លួនឯង។",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — គ្មានការតភ្ជាប់អ៊ីនធឺណិត",
+  "Sem internet": "គ្មានអ៊ីនធឺណិត",
+  "Quando a conexão voltar, esta tela some sozinha.": "ពេលការតភ្ជាប់ត្រឡប់មកវិញ អេក្រង់នេះនឹងបាត់ដោយខ្លួនឯង។",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "លាក់ប្រអប់ផ្សេងទៀត",
+  "Mostrar os outros quadros": "បង្ហាញប្រអប់ផ្សេងទៀត",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "ការអញ្ជើញចូលសហគមន៍",
+  "Entrar na comunidade": "ចូលរួមសហគមន៍",
 } satisfies Record<string, string>;

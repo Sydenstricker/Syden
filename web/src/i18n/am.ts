@@ -3093,4 +3093,17 @@ export default {
   "Concluída": "ተጠናቋል",
   "Falhou": "አልተሳካም",
   "Em andamento": "በሂደት ላይ",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — የSyden አገልጋይ ምላሽ አይሰጥም",
+  "O Syden está fora do ar": "Syden አይሰራም",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "ችግሩ የእርስዎ ኢንተርኔት አይደለም፦ አገልጋያችን ምላሽ መስጠት አቁሟል። ሲመለስ ይህ ማያ ገጽ በራሱ ይጠፋል።",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — የኢንተርኔት ግንኙነት የለም",
+  "Sem internet": "ኢንተርኔት የለም",
+  "Quando a conexão voltar, esta tela some sozinha.": "ግንኙነቱ ሲመለስ ይህ ማያ ገጽ በራሱ ይጠፋል።",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "ሌሎቹን ሳጥኖች መደበቅ",
+  "Mostrar os outros quadros": "ሌሎቹን ሳጥኖች ማሳየት",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "የማህበረሰብ ግብዣ",
+  "Entrar na comunidade": "ማህበረሰቡን መቀላቀል",
 } satisfies Record<string, string>;

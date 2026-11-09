@@ -3099,4 +3099,17 @@ export default {
   "Concluída": "Ολοκληρώθηκε",
   "Falhou": "Απέτυχε",
   "Em andamento": "Σε εξέλιξη",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Ο διακομιστής του Syden δεν αποκρίνεται",
+  "O Syden está fora do ar": "Το Syden είναι εκτός λειτουργίας",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "Δεν φταίει το ίντερνέτ σου: ο διακομιστής μας σταμάτησε να αποκρίνεται. Όταν επιστρέψει, αυτή η οθόνη θα φύγει μόνη της.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — Χωρίς σύνδεση στο ίντερνετ",
+  "Sem internet": "Χωρίς ίντερνετ",
+  "Quando a conexão voltar, esta tela some sozinha.": "Όταν επιστρέψει η σύνδεση, αυτή η οθόνη θα φύγει μόνη της.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Απόκρυψη των άλλων πλαισίων",
+  "Mostrar os outros quadros": "Εμφάνιση των άλλων πλαισίων",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Πρόσκληση στην κοινότητα",
+  "Entrar na comunidade": "Συμμετοχή στην κοινότητα",
 } satisfies Record<string, string>;

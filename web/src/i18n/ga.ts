@@ -3099,4 +3099,17 @@ export default {
   "Concluída": "Críochnaithe",
   "Falhou": "Theip air",
   "Em andamento": "Ar siúl",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Níl freastalaí Syden ag freagairt",
+  "O Syden está fora do ar": "Tá Syden as feidhm",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "Ní hé d’idirlíon é: stop ár bhfreastalaí ag freagairt. Nuair a thiocfaidh sé ar ais, imeoidh an scáileán seo leis féin.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — Gan nasc idirlín",
+  "Sem internet": "Gan idirlíon",
+  "Quando a conexão voltar, esta tela some sozinha.": "Nuair a thiocfaidh an nasc ar ais, imeoidh an scáileán seo leis féin.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Folaigh na boscaí eile",
+  "Mostrar os outros quadros": "Taispeáin na boscaí eile",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Cuireadh chuig an bpobal",
+  "Entrar na comunidade": "Téigh isteach sa phobal",
 } satisfies Record<string, string>;

@@ -3074,4 +3074,17 @@ export default {
   "Concluída": "完了",
   "Falhou": "失敗",
   "Em andamento": "実行中",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Sydenのサーバーが応答していません",
+  "O Syden está fora do ar": "Sydenは停止中です",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "あなたのネット環境の問題ではありません。サーバーが応答しなくなりました。復旧すると、この画面は自動で消えます。",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — インターネットに接続されていません",
+  "Sem internet": "インターネットなし",
+  "Quando a conexão voltar, esta tela some sozinha.": "接続が戻ると、この画面は自動で消えます。",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "ほかの枠を隠す",
+  "Mostrar os outros quadros": "ほかの枠を表示",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "コミュニティへの招待",
+  "Entrar na comunidade": "コミュニティに参加",
 } satisfies Record<string, string>;

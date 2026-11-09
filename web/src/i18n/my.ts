@@ -3132,4 +3132,17 @@ export default {
   "Concluída": "ပြီးဆုံးပြီ",
   "Falhou": "မအောင်မြင်ပါ",
   "Em andamento": "လုပ်ဆောင်နေသည်",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Syden ဆာဗာ တုံ့ပြန်မှု မရှိပါ",
+  "O Syden está fora do ar": "Syden ပိတ်နေသည်",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "သင့်အင်တာနက် မဟုတ်ပါ- ကျွန်ုပ်တို့၏ ဆာဗာ တုံ့ပြန်မှု ရပ်သွားသည်။ ပြန်လာသည့်အခါ ဤမျက်နှာပြင် အလိုအလျောက် ပျောက်သွားမည်။",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — အင်တာနက် ချိတ်ဆက်မှု မရှိပါ",
+  "Sem internet": "အင်တာနက် မရှိပါ",
+  "Quando a conexão voltar, esta tela some sozinha.": "ချိတ်ဆက်မှု ပြန်လာသည့်အခါ ဤမျက်နှာပြင် အလိုအလျောက် ပျောက်သွားမည်။",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "အခြားကွက်များကို ဝှက်ရန်",
+  "Mostrar os outros quadros": "အခြားကွက်များကို ပြရန်",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "အသိုင်းအဝိုင်းသို့ ဖိတ်ကြားချက်",
+  "Entrar na comunidade": "အသိုင်းအဝိုင်းသို့ ဝင်ရန်",
 } satisfies Record<string, string>;

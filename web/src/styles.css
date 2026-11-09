@@ -1890,6 +1890,26 @@ textarea {
   position: relative;
 }
 
+/* A faixa e, no canto direito dela, o botão de esconder e mostrar (ver faixaDeBaixo, em VoiceStage.tsx). Escondida, sobra
+   só o botão, numa linha baixa: ele nunca fica por cima da imagem. */
+.stage-faixa {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 8px;
+  min-width: 0;
+}
+
+.stage-faixa .stage-strip {
+  flex: 1;
+  min-width: 0;
+}
+
+.stage-faixa-botao {
+  flex-shrink: 0;
+}
+
 /* O X da transmissão aberta na faixa de baixo (ver tile, em VoiceStage.tsx). Sempre visível: escondido até o
    mouse passar, ninguém o descobriria — e quem quer fechar é justamente quem não sabe que dá. */
 .tile-fechar {
@@ -2193,15 +2213,19 @@ textarea {
  * Valia para os dois painéis; só o do soundboard foi notado, porque o do karaokê só aparece quando
  * há música no servidor e ainda não havia nenhuma.
  */
+/* Os botões da chamada NUNCA encolhem: encolhidos pelo flex, o círculo virava oval ("os botões estão ficando
+   distorcidos", relato de 09/11/2026). Sem espaço, a fileira quebra em duas (no celular, o desligar sumia à direita). */
 .stage-controls {
   position: relative;
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   gap: 12px;
 }
 
 .stage-controls .icon-button,
 .leave-button {
+  flex: none;
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -2375,6 +2399,36 @@ textarea {
 .dialog-body {
   color: var(--text);
   line-height: 1.5;
+}
+
+/* O convite para uma comunidade (ConviteParaComunidade.tsx): a imagem, o nome e quanta gente, antes de entrar. */
+.convite-comunidade-rotulo {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: calc(12px * var(--escala-do-texto));
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.convite-comunidade-quem {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.convite-comunidade-quem > div {
+  min-width: 0;
+}
+
+.convite-comunidade-quem h2 {
+  overflow-wrap: anywhere;
+}
+
+.convite-comunidade-gente {
+  color: var(--text-muted);
+  font-size: calc(14px * var(--escala-do-texto));
 }
 
 /* O cartão de uma peça do quarto ou do salão (CartaoDaPeca.tsx): a figura grande em pixel art, o nome e a frase. */
@@ -6450,9 +6504,13 @@ textarea {
     display: none;
   }
 
+  /* O que SOBRA ao lado da coluna de comunidades, e não 100% da tela: com 100%, as duas somadas passavam da borda e
+     cortavam o fim de cada linha (o "ASSISTINDO", o realce do canal; relato de 09/11/2026, no celular). */
   .app.mobile-channels .sidebar,
   .app.mobile-channels .no-community {
-    width: 100%;
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
   }
 }
 
@@ -6467,6 +6525,16 @@ textarea {
 
   .stage-strip .tile {
     width: 140px;
+  }
+
+  .stage-controls {
+    gap: 8px;
+  }
+
+  .stage-controls .icon-button,
+  .leave-button {
+    width: 42px;
+    height: 42px;
   }
 }
 
@@ -11406,6 +11474,13 @@ body.arrastando-barra {
   text-align: center;
   background: var(--bg-main);
   color: var(--text);
+}
+
+/* A queda do servidor cobre tudo, inclusive a tela de entrada e as janelas abertas (ServidorForaDoAr.tsx). */
+.servidor-fora-do-ar {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
 }
 
 .erro-geral h1 {

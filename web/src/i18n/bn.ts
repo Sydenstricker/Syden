@@ -3090,4 +3090,17 @@ export default {
   "Concluída": "সম্পন্ন",
   "Falhou": "ব্যর্থ",
   "Em andamento": "চলছে",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Syden-এর সার্ভার সাড়া দিচ্ছে না",
+  "O Syden está fora do ar": "Syden বন্ধ আছে",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "এটা আপনার ইন্টারনেট নয়: আমাদের সার্ভার সাড়া দেওয়া বন্ধ করেছে। ফিরে এলে এই স্ক্রিন নিজে থেকেই সরে যাবে।",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — ইন্টারনেট সংযোগ নেই",
+  "Sem internet": "ইন্টারনেট নেই",
+  "Quando a conexão voltar, esta tela some sozinha.": "সংযোগ ফিরে এলে এই স্ক্রিন নিজে থেকেই সরে যাবে।",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "অন্য ঘরগুলো লুকান",
+  "Mostrar os outros quadros": "অন্য ঘরগুলো দেখান",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "কমিউনিটির আমন্ত্রণ",
+  "Entrar na comunidade": "কমিউনিটিতে যোগ দিন",
 } satisfies Record<string, string>;

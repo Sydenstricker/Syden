@@ -3085,4 +3085,17 @@ export default {
   "Concluída": "مکمل",
   "Falhou": "ناکام",
   "Em andamento": "جاری",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Syden کا سرور جواب نہیں دے رہا",
+  "O Syden está fora do ar": "Syden بند ہے",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "یہ آپ کا انٹرنیٹ نہیں: ہمارے سرور نے جواب دینا بند کر دیا ہے۔ جب وہ واپس آئے گا تو یہ اسکرین خود ہی ہٹ جائے گی۔",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — انٹرنیٹ کنکشن نہیں ہے",
+  "Sem internet": "انٹرنیٹ نہیں",
+  "Quando a conexão voltar, esta tela some sozinha.": "جب کنکشن واپس آئے گا تو یہ اسکرین خود ہی ہٹ جائے گی۔",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "دوسرے خانے چھپائیں",
+  "Mostrar os outros quadros": "دوسرے خانے دکھائیں",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "کمیونٹی کا دعوت نامہ",
+  "Entrar na comunidade": "کمیونٹی میں شامل ہوں",
 } satisfies Record<string, string>;

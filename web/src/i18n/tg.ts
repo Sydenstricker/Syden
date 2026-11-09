@@ -3173,4 +3173,17 @@ export default {
   "Concluída": "Анҷом ёфт",
   "Falhou": "Ноком шуд",
   "Em andamento": "Дар ҷараён",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Сервери Syden ҷавоб намедиҳад",
+  "O Syden está fora do ar": "Syden кор намекунад",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "Мушкил дар интернети шумо нест: сервери мо ҷавоб доданро бас кард. Вақте ки он баргардад, ин экран худ аз худ нопадид мешавад.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — Пайвасти интернет нест",
+  "Sem internet": "Интернет нест",
+  "Quando a conexão voltar, esta tela some sozinha.": "Вақте ки пайваст барқарор шавад, ин экран худ аз худ нопадид мешавад.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Пинҳон кардани равзанаҳои дигар",
+  "Mostrar os outros quadros": "Нишон додани равзанаҳои дигар",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Даъват ба ҷомеа",
+  "Entrar na comunidade": "Ҳамроҳ шудан ба ҷомеа",
 } satisfies Record<string, string>;

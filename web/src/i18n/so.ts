@@ -3163,4 +3163,17 @@ export default {
   "Concluída": "Dhammaaday",
   "Falhou": "Wuu fashilmay",
   "Em andamento": "Socda",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Serferka Syden ma jawaabayo",
+  "O Syden está fora do ar": "Syden ma shaqaynayo",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "Ma aha internetkaaga: serferkayagu wuu joojiyay jawaabta. Marka uu soo laabto, shaashaddan iskeed ayay u baaba’aysaa.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — Ma jiro xiriir internet",
+  "Sem internet": "Internet ma jiro",
+  "Quando a conexão voltar, esta tela some sozinha.": "Marka xiriirku soo laabto, shaashaddan iskeed ayay u baaba’aysaa.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Qari sanduuqyada kale",
+  "Mostrar os outros quadros": "Muuji sanduuqyada kale",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Martiqaad bulshada",
+  "Entrar na comunidade": "Ku biir bulshada",
 } satisfies Record<string, string>;

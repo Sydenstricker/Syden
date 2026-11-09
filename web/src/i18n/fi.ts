@@ -3163,4 +3163,17 @@ export default {
   "Concluída": "Valmis",
   "Falhou": "Epäonnistui",
   "Em andamento": "Käynnissä",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Sydenin palvelin ei vastaa",
+  "O Syden está fora do ar": "Syden on poissa käytöstä",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "Vika ei ole sinun yhteydessäsi: palvelimemme lakkasi vastaamasta. Kun se palaa, tämä näkymä katoaa itsestään.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — Ei internetyhteyttä",
+  "Sem internet": "Ei internetiä",
+  "Quando a conexão voltar, esta tela some sozinha.": "Kun yhteys palaa, tämä näkymä katoaa itsestään.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Piilota muut ruudut",
+  "Mostrar os outros quadros": "Näytä muut ruudut",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Kutsu yhteisöön",
+  "Entrar na comunidade": "Liity yhteisöön",
 } satisfies Record<string, string>;

@@ -3081,4 +3081,17 @@ export default {
   "Concluída": "완료",
   "Falhou": "실패",
   "Em andamento": "진행 중",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Syden 서버가 응답하지 않아요",
+  "O Syden está fora do ar": "Syden이 멈췄어요",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "인터넷 문제가 아니에요. 저희 서버가 응답을 멈췄어요. 서버가 돌아오면 이 화면은 저절로 사라져요.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — 인터넷에 연결되지 않았어요",
+  "Sem internet": "인터넷 없음",
+  "Quando a conexão voltar, esta tela some sozinha.": "연결이 돌아오면 이 화면은 저절로 사라져요.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "다른 화면 숨기기",
+  "Mostrar os outros quadros": "다른 화면 보기",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "커뮤니티 초대",
+  "Entrar na comunidade": "커뮤니티 들어가기",
 } satisfies Record<string, string>;

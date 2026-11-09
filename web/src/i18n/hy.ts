@@ -3182,4 +3182,17 @@ export default {
   "Concluída": "Ավարտված",
   "Falhou": "Ձախողվեց",
   "Em andamento": "Ընթացքում",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Syden-ի սերվերը չի պատասխանում",
+  "O Syden está fora do ar": "Syden-ը չի աշխատում",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "Խնդիրը քո ինտերնետը չէ․ մեր սերվերը դադարեց պատասխանել։ Երբ վերադառնա, այս էկրանն ինքն իրեն կանհետանա։",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — Ինտերնետ կապ չկա",
+  "Sem internet": "Ինտերնետ չկա",
+  "Quando a conexão voltar, esta tela some sozinha.": "Երբ կապը վերականգնվի, այս էկրանն ինքն իրեն կանհետանա։",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Թաքցնել մյուս պատուհանները",
+  "Mostrar os outros quadros": "Ցույց տալ մյուս պատուհանները",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Հրավեր համայնք",
+  "Entrar na comunidade": "Միանալ համայնքին",
 } satisfies Record<string, string>;

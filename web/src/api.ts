@@ -100,6 +100,9 @@ export async function api<T>(
       signal: options.signal ?? AbortSignal.timeout(TEMPO_LIMITE_MS),
     });
   } catch (erro) {
+    // A tela do servidor fora do ar confere se é queda mesmo (ServidorForaDoAr.tsx). Um evento, e não um import,
+    // para este arquivo continuar sem depender de tela nenhuma.
+    if (options.signal?.aborted !== true) window.dispatchEvent(new Event('syden:api-falhou'));
     // Desistir por prazo e não conseguir falar com o servidor são coisas diferentes para quem lê:
     // a primeira sugere tentar de novo, a segunda sugere olhar a internet.
     if (erro instanceof DOMException && erro.name === 'TimeoutError') {
@@ -107,6 +110,8 @@ export async function api<T>(
     }
     throw new ApiError('Não foi possível falar com o servidor.', 0);
   }
+  // 502, 503 e 504 vêm do Caddy quando a API atrás dele não responde.
+  if (response.status >= 502 && response.status <= 504) window.dispatchEvent(new Event('syden:api-falhou'));
   const data = await response.json().catch(() => ({}));
   // A CONTA FOI BARRADA no meio do uso (ver protecao.ts): qualquer pedido recusado com a barreira troca a tela.
   if (response.status === 403 && data?.barreira) {

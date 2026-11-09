@@ -1,7 +1,9 @@
 import { randomBytes } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { DatabaseSync } from 'node:sqlite';
-import { guardarArquivo } from './arquivos.js';
+import { caminhoDe, guardarArquivo } from './arquivos.js';
 import { config } from './config.js';
+import { imagemAnimada } from './imagemAnimada.js';
 import type { ArquivoGuardado } from './entregar.js';
 import type { NovoServidor, ServidorDeJogo } from './jogos.js';
 
@@ -1029,6 +1031,25 @@ addColumnIfMissing('channels', 'created_by', 'INTEGER');
 addColumnIfMissing('users', 'avatar_version', 'INTEGER');
 // O avatar é um GIF animado (04/11/2026): o site o mostra parado nas listas e animado ao passar o mouse, como o Discord.
 addColumnIfMissing('users', 'avatar_animado', 'INTEGER NOT NULL DEFAULT 0');
+// Uma vez (09/11/2026): a marca olhava só o tipo GIF, e o WEBP ou o PNG animados que vieram por link ficaram sem ela e
+// tocavam em laço nas listas. Relê os já guardados pelos bytes (ver imagemAnimada.ts).
+if (!db.prepare("SELECT 1 FROM kv WHERE key = 'avatar-animado-pelos-bytes'").get()) {
+  const linhas = db
+    .prepare(
+      `SELECT a.user_id AS id, a.mime, a.sha, a.data FROM avatars a JOIN users u ON u.id = a.user_id
+       WHERE u.avatar_animado = 0 AND a.mime IN ('image/webp', 'image/png')`,
+    )
+    .all() as { id: number; mime: string; sha: string | null; data: Uint8Array | null }[];
+  for (const linha of linhas) {
+    try {
+      const dados = linha.data && linha.data.byteLength > 0 ? linha.data : linha.sha ? readFileSync(caminhoDe(linha.sha)) : null;
+      if (dados && imagemAnimada(linha.mime, dados)) db.prepare('UPDATE users SET avatar_animado = 1 WHERE id = ?').run(linha.id);
+    } catch {
+      // arquivo fora do disco: fica como estava
+    }
+  }
+  db.prepare("INSERT INTO kv (key, value) VALUES ('avatar-animado-pelos-bytes', '1') ON CONFLICT(key) DO NOTHING").run();
+}
 // O coelho pronto (10/10/2026): guarda-se o NÚMERO, e não a imagem, para o app desenhar o coelho na pose do
 // estado (dormindo, falando, ocupado). Uma foto enviada não tem pose; um coelho conhecido tem.
 addColumnIfMissing('users', 'avatar_pronto', 'INTEGER');
@@ -2153,7 +2174,7 @@ export function setAvatar(userId: number, avatar: { mime: string; data: Buffer }
       `INSERT INTO avatars (user_id, mime, data, sha, bytes) VALUES (?, ?, ?, ?, ?)
        ON CONFLICT(user_id) DO UPDATE SET mime = excluded.mime, data = excluded.data, sha = excluded.sha, bytes = excluded.bytes`,
     ).run(userId, avatar.mime, SEM_BYTES, no.sha, no.bytes);
-    db.prepare('UPDATE users SET avatar_version = ?, avatar_animado = ?, avatar_pronto = NULL WHERE id = ?').run(Date.now(), avatar.mime === 'image/gif' ? 1 : 0, userId);
+    db.prepare('UPDATE users SET avatar_version = ?, avatar_animado = ?, avatar_pronto = NULL WHERE id = ?').run(Date.now(), imagemAnimada(avatar.mime, avatar.data) ? 1 : 0, userId);
   } else {
     db.prepare('DELETE FROM avatars WHERE user_id = ?').run(userId);
     db.prepare('UPDATE users SET avatar_version = NULL, avatar_pronto = NULL WHERE id = ?').run(userId);

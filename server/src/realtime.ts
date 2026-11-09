@@ -292,9 +292,18 @@ export function anunciarPerfil(io: IOServer, userId: number) {
   }
 }
 
+/**
+ * A pessoa passou a participar de uma comunidade (criou, entrou por convite ou pelo link da aula): as abas e os
+ * aparelhos dela entram na sala da comunidade e RELEEM A LISTA de comunidades ('comunidades:mudou').
+ *
+ * Sem o aviso, quem entrava pelo navegador com o app aberto (relato de 09/11/2026) só via a comunidade nova no app
+ * depois de fechá-lo e abrir de novo: o app guardava a lista de quando abriu, e nada o mandava reler.
+ */
 export function joinCommunityRoom(io: IOServer, userId: number, communityId: number) {
   for (const socketId of onlineSockets.get(userId)?.sockets ?? []) {
-    io.sockets.sockets.get(socketId)?.join(communityRoom(communityId));
+    const socket = io.sockets.sockets.get(socketId);
+    socket?.join(communityRoom(communityId));
+    socket?.emit('comunidades:mudou', { id: communityId });
   }
 }
 

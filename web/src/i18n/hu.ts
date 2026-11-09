@@ -3165,4 +3165,17 @@ export default {
   "Concluída": "Kész",
   "Falhou": "Sikertelen",
   "Em andamento": "Folyamatban",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — A Syden szervere nem válaszol",
+  "O Syden está fora do ar": "A Syden nem elérhető",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "Nem a te interneteddel van baj: a szerverünk nem válaszol. Amikor visszajön, ez a képernyő magától eltűnik.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — Nincs internetkapcsolat",
+  "Sem internet": "Nincs internet",
+  "Quando a conexão voltar, esta tela some sozinha.": "Amikor a kapcsolat visszajön, ez a képernyő magától eltűnik.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "A többi csempe elrejtése",
+  "Mostrar os outros quadros": "A többi csempe megjelenítése",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Meghívó a közösségbe",
+  "Entrar na comunidade": "Csatlakozás a közösséghez",
 } satisfies Record<string, string>;

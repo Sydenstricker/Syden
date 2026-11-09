@@ -3099,4 +3099,17 @@ export default {
   "Concluída": "Kakato",
   "Falhou": "Ta’elavame’a",
   "Em andamento": "’Oku fai",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — ’Oku ’ikai tali mai ’a e server ’a Syden",
+  "O Syden está fora do ar": "’Oku tāpuni ’a Syden",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "’Oku ’ikai ko ho’o ’initanetí: kuo ta’ofi ’e he’emau server ’a e tali mai. ’I he’ene foki mai, ’e mole pē ’a e sikilini ko ’ení.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — ’Oku ’ikai ha ’initaneti",
+  "Sem internet": "’Ikai ha ’initaneti",
+  "Quando a conexão voltar, esta tela some sozinha.": "’I he foki mai ’a e fehokotaki, ’e mole pē ’a e sikilini ko ’ení.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Fufū ’a e ngaahi puha kehé",
+  "Mostrar os outros quadros": "Fakahā ’a e ngaahi puha kehé",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Fakaafe ki he kulupú",
+  "Entrar na comunidade": "Kau ki he kulupú",
 } satisfies Record<string, string>;

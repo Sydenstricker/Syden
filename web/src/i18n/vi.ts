@@ -3063,4 +3063,17 @@ export default {
   "Concluída": "Hoàn tất",
   "Falhou": "Thất bại",
   "Em andamento": "Đang chạy",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Máy chủ Syden không phản hồi",
+  "O Syden está fora do ar": "Syden đang ngừng hoạt động",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "Không phải do mạng của bạn: máy chủ của chúng tôi đã ngừng phản hồi. Khi nó hoạt động lại, màn hình này sẽ tự biến mất.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — Không có kết nối internet",
+  "Sem internet": "Không có internet",
+  "Quando a conexão voltar, esta tela some sozinha.": "Khi kết nối trở lại, màn hình này sẽ tự biến mất.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Ẩn các ô khác",
+  "Mostrar os outros quadros": "Hiện các ô khác",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Lời mời vào cộng đồng",
+  "Entrar na comunidade": "Tham gia cộng đồng",
 } satisfies Record<string, string>;

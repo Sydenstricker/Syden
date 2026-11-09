@@ -3164,4 +3164,17 @@ export default {
   "Concluída": "ສຳເລັດ",
   "Falhou": "ລົ້ມເຫຼວ",
   "Em andamento": "ກຳລັງດຳເນີນ",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — ເຊີບເວີຂອງ Syden ບໍ່ຕອບສະໜອງ",
+  "O Syden está fora do ar": "Syden ລົ້ມຢູ່",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "ບໍ່ແມ່ນອິນເຕີເນັດຂອງທ່ານ: ເຊີບເວີຂອງພວກເຮົາຢຸດຕອບສະໜອງ. ເມື່ອກັບມາ ໜ້າຈໍນີ້ຈະຫາຍໄປເອງ.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — ບໍ່ມີການເຊື່ອມຕໍ່ອິນເຕີເນັດ",
+  "Sem internet": "ບໍ່ມີອິນເຕີເນັດ",
+  "Quando a conexão voltar, esta tela some sozinha.": "ເມື່ອການເຊື່ອມຕໍ່ກັບມາ ໜ້າຈໍນີ້ຈະຫາຍໄປເອງ.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "ເຊື່ອງຊ່ອງອື່ນ",
+  "Mostrar os outros quadros": "ສະແດງຊ່ອງອື່ນ",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "ຄຳເຊີນເຂົ້າຊຸມຊົນ",
+  "Entrar na comunidade": "ເຂົ້າຮ່ວມຊຸມຊົນ",
 } satisfies Record<string, string>;

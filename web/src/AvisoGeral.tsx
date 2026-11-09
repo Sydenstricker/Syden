@@ -114,23 +114,30 @@ export function AvisoGeral() {
   const Icone = ICONE[aviso.tom] ?? Megaphone;
   const foto = aviso.imagem ? enderecoDaFotoDoAviso(aviso.imagem.sha) : null;
 
+  // O RECADO (o azul) não tem faixa, só o destaque (pedido dele, 09/11/2026: "não precisa ter aviso em cima e no
+  // meio da tela"). A faixa fica para manutenção e problema: são estado do servidor, e quem tenta entrar durante
+  // eles precisa continuar vendo, mesmo depois de fechar o destaque.
+  const comFaixa = aviso.tom !== 'recado';
+
   return (
     <>
-      <p className={`aviso-geral ${aviso.tom}`} role="status">
-        <Icone size={16} aria-hidden="true" />
-        {foto && (
-          <button type="button" className="aviso-geral-foto" onClick={() => setDestaque(true)} aria-label={t('Ver a foto do recado')}>
-            <img src={foto} alt="" />
+      {comFaixa && (
+        <p className={`aviso-geral ${aviso.tom}`} role="status">
+          <Icone size={16} aria-hidden="true" />
+          {foto && (
+            <button type="button" className="aviso-geral-foto" onClick={() => setDestaque(true)} aria-label={t('Ver a foto do recado')}>
+              <img src={foto} alt="" />
+            </button>
+          )}
+          <span className="aviso-geral-texto" onClick={() => setDestaque(true)}>
+            {aviso.texto}
+            {ateQuando(aviso.ate, t)}
+          </span>
+          <button type="button" className="link" onClick={() => setFechado(marca)} aria-label={t('Fechar aviso')}>
+            ✕
           </button>
-        )}
-        <span className="aviso-geral-texto" onClick={() => setDestaque(true)}>
-          {aviso.texto}
-          {ateQuando(aviso.ate, t)}
-        </span>
-        <button type="button" className="link" onClick={() => setFechado(marca)} aria-label={t('Fechar aviso')}>
-          ✕
-        </button>
-      </p>
+        </p>
+      )}
       {destaque && (
         <div className="aviso-destaque" onClick={() => setDestaque(false)}>
           <div

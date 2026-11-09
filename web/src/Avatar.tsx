@@ -154,24 +154,35 @@ function FotoDoAvatar({ src, animado, estado, size }: { src: string; animado: bo
     setLinha(avatar?.parentElement?.closest(LINHA_DO_AVATAR) ?? avatar?.parentElement ?? null);
   };
 
+  // SÓ O MOUSE DE VERDADE E O FOCO DO TECLADO (relato de 09/11/2026: "até no celular o GIF fica em loop"). No toque, o
+  // navegador inventa um mouseenter depois do toque e nunca manda o mouseleave, e o toque numa linha que é botão a FOCA:
+  // as duas coisas deixavam o GIF animando até tocar noutro lugar. Por isso pointerenter só com mouse ou caneta, e o foco
+  // só quando é o do teclado (:focus-visible, que o toque não acende).
   useEffect(() => {
     if (!animado || sempre || !linha) return;
-    const entrou = () => setMouseNaLinha(true);
+    const entrou = (e: Event) => {
+      if ((e as PointerEvent).pointerType !== 'touch') setMouseNaLinha(true);
+    };
     const saiu = () => setMouseNaLinha(false);
-    linha.addEventListener('mouseenter', entrou);
-    linha.addEventListener('mouseleave', saiu);
-    linha.addEventListener('focusin', entrou);
+    const focou = (e: Event) => {
+      if (e.target instanceof Element && e.target.matches(':focus-visible')) setMouseNaLinha(true);
+    };
+    linha.addEventListener('pointerenter', entrou);
+    linha.addEventListener('pointerleave', saiu);
+    linha.addEventListener('focusin', focou);
     linha.addEventListener('focusout', saiu);
     return () => {
-      linha.removeEventListener('mouseenter', entrou);
-      linha.removeEventListener('mouseleave', saiu);
-      linha.removeEventListener('focusin', entrou);
+      linha.removeEventListener('pointerenter', entrou);
+      linha.removeEventListener('pointerleave', saiu);
+      linha.removeEventListener('focusin', focou);
       linha.removeEventListener('focusout', saiu);
     };
   }, [animado, sempre, linha]);
 
+  // Sem foco, nada se mexe (janelaComFoco.ts): a marca do <html> pausa o CSS, mas não um GIF num <img>.
+  const comFoco = useJanelaComFoco();
   const falando = estado === 'falando';
-  const parado = animado && (menosMovimento || (!sempre && !mouseNaLinha && !falando));
+  const parado = animado && (menosMovimento || !comFoco || (!sempre && !mouseNaLinha && !falando));
 
   // o primeiro quadro, recortado no meio como o object-fit: cover do <img>
   useEffect(() => {

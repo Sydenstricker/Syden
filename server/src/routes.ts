@@ -964,6 +964,23 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       return db.listCommunitiesForUser(request.user.id).find((c) => c.id === community.id);
     });
 
+    /**
+     * O que um link de convite mostra ANTES de entrar: o nome, a imagem e quantas pessoas há. Entrar é o POST de
+     * baixo, e só depois de a pessoa confirmar (ConviteParaComunidade.tsx): abrir um link não pode, sozinho, pôr
+     * ninguém numa comunidade. Quem tem o código já poderia entrar, então ver isto não conta nada a mais.
+     */
+    authed.get<{ Params: { code: string } }>('/api/convite/:code', async (request, reply) => {
+      const community = db.findCommunityByInvite(request.params.code ?? '');
+      if (!community) return reply.code(404).send({ error: 'Código de convite inválido.' });
+      return {
+        id: community.id,
+        name: community.name,
+        iconVersion: community.iconVersion,
+        membros: db.countMembers(community.id),
+        jaParticipa: !!db.memberRole(community.id, request.user.id),
+      };
+    });
+
     authed.post<{ Body: { code?: string } }>('/api/communities/join', async (request, reply) => {
       if (barrarTemporario(request, reply)) return reply;
       const code = request.body?.code?.trim() ?? '';

@@ -1,4 +1,4 @@
-import { type RemoteAudioTrack, type Room, Track } from 'livekit-client';
+import { type RemoteAudioTrack, type Room, Track, TrackEvent } from 'livekit-client';
 import { criarTeto } from './limitador';
 import { getSettings } from './settings';
 
@@ -63,6 +63,7 @@ function apply(room: Room, userId: number) {
   // faixa do microfone, depois de o reforço estar ligado; quando ela ainda não chegou, o TrackSubscribed devolve tudo.
   participant.setVolume(Math.min(1, volume));
   const microfone = participant.getTrackPublication(Track.Source.Microphone)?.track as RemoteAudioTrack | undefined;
+  if (microfone) manterOZeroAoLigar(microfone, () => (isLocallyMuted(userId) ? 0 : getUserVolume(userId)));
   if (microfone && volume > 1) aplicarVolume(microfone, volume);
 }
 
@@ -175,11 +176,35 @@ export function trocarSaidaDoReforco(deviceId: string) {
   void ctx?.setSinkId?.(deviceId || '').catch(() => {});
 }
 
+/**
+ * O ZERO QUE O LIVEKIT ESQUECE (09/11/2026, relato: "o botão de calar as lives não funciona").
+ *
+ * `RemoteAudioTrack.setVolume` guarda o volume em `elementVolume` e o repete em cada elemento de áudio que se liga DEPOIS
+ * — mas a conferência dele é `if (this.elementVolume)`, e 0 é falso. A faixa chega (TrackSubscribed, que devolve os
+ * volumes) ANTES de o RoomAudioRenderer ligá-la ao `<audio>`, num efeito do React: o 0 ia para uma faixa ainda sem
+ * elemento, o elemento nascia a 100%, e a transmissão calada tocava alto com o botão dizendo "calada". Acontece a cada vez
+ * que o som da tela é baixado de novo (fechar e abrir a transmissão, reconectar), e o mesmo vale para a voz de quem você
+ * silenciou, que em sala grande é baixada de novo quando a pessoa volta a falar.
+ *
+ * Aqui, cada elemento novo recebe o 0 de novo. Num microtask, porque o evento sai no MEIO do `attach`: com o reforço, o
+ * LiveKit cria o nó de ganho logo depois (com ganho 1), e um 0 posto antes iria para o nó velho.
+ */
+const vigiadas = new WeakSet<object>();
+function manterOZeroAoLigar(faixa: RemoteAudioTrack, volumeAgora: () => number) {
+  if (vigiadas.has(faixa) || typeof (faixa as { on?: unknown }).on !== 'function') return;
+  vigiadas.add(faixa);
+  faixa.on(TrackEvent.ElementAttached, () => {
+    queueMicrotask(() => {
+      if (volumeAgora() === 0) faixa.setVolume(0);
+    });
+  });
+}
+
 /** O clique no alto-falante: cala, e o clique seguinte devolve o volume que estava (que continua guardado). */
 export function alternarMudoDaTela(room: Room, userId: number) {
   if (caladas.has(userId) || !(screenVolumes[String(userId)] ?? 1)) caladas.delete(userId);
   else caladas.add(userId);
-  aplicarVolume(screenAudioTrack(room, userId), getScreenVolume(userId));
+  aplicarVolume(screenAudioTrack(room, userId), getScreenVolume(userId), userId);
   return getScreenVolume(userId);
 }
 
@@ -193,7 +218,7 @@ export function setScreenVolume(room: Room, userId: number, volume: number) {
     write(SCREEN_KEY, screenVolumes);
     void import('./preferencias').then((m) => m.guardarEmBreve());
   }
-  aplicarVolume(screenAudioTrack(room, userId), getScreenVolume(userId));
+  aplicarVolume(screenAudioTrack(room, userId), getScreenVolume(userId), userId);
 }
 
 /**
@@ -203,8 +228,9 @@ export function setScreenVolume(room: Room, userId: number, volume: number) {
  * (o TrackSubscribed devolve todos os volumes, ver useVoice.ts). Era daí a impressão de que o
  * controle não funcionava para uma transmissão cujo som ainda não tinha sido assinado.
  */
-function aplicarVolume(faixa: RemoteAudioTrack | undefined, volume: number) {
+function aplicarVolume(faixa: RemoteAudioTrack | undefined, volume: number, userId?: number) {
   if (!faixa) return;
+  if (userId !== undefined) manterOZeroAoLigar(faixa, () => getScreenVolume(userId));
   // Acima de 100% sem o caminho de Web Audio, o navegador prenderia em 1 sem avisar. Melhor entregar
   // o máximo que existe do que fingir um número que não acontece.
   const conseguiu = volume > 1 ? ligarReforco(faixa) : true;
@@ -217,6 +243,6 @@ export function applyAllVolumes(room: Room) {
     const userId = Number(identity);
     if (!Number.isFinite(userId)) continue;
     apply(room, userId);
-    aplicarVolume(screenAudioTrack(room, userId), getScreenVolume(userId));
+    aplicarVolume(screenAudioTrack(room, userId), getScreenVolume(userId), userId);
   }
 }

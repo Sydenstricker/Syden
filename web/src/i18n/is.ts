@@ -3164,4 +3164,17 @@ export default {
   "Concluída": "Lokið",
   "Falhou": "Mistókst",
   "Em andamento": "Í gangi",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Þjónn Syden svarar ekki",
+  "O Syden está fora do ar": "Syden liggur niðri",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "Þetta er ekki netið þitt: þjónninn okkar hætti að svara. Þegar hann kemur aftur hverfur þessi skjár af sjálfu sér.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — Engin nettenging",
+  "Sem internet": "Ekkert net",
+  "Quando a conexão voltar, esta tela some sozinha.": "Þegar tengingin kemur aftur hverfur þessi skjár af sjálfu sér.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Fela hina reitina",
+  "Mostrar os outros quadros": "Sýna hina reitina",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Boð í samfélagið",
+  "Entrar na comunidade": "Ganga í samfélagið",
 } satisfies Record<string, string>;

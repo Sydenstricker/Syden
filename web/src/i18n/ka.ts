@@ -3181,4 +3181,17 @@ export default {
   "Concluída": "დასრულდა",
   "Falhou": "ვერ მოხერხდა",
   "Em andamento": "მიმდინარეობს",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Syden-ის სერვერი არ პასუხობს",
+  "O Syden está fora do ar": "Syden არ მუშაობს",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "ეს შენი ინტერნეტი არ არის: ჩვენმა სერვერმა პასუხი შეწყვიტა. როცა დაბრუნდება, ეს ეკრანი თავისით გაქრება.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — ინტერნეტ-კავშირი არ არის",
+  "Sem internet": "ინტერნეტი არ არის",
+  "Quando a conexão voltar, esta tela some sozinha.": "როცა კავშირი აღდგება, ეს ეკრანი თავისით გაქრება.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "სხვა ფანჯრების დამალვა",
+  "Mostrar os outros quadros": "სხვა ფანჯრების ჩვენება",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "მოწვევა თემში",
+  "Entrar na comunidade": "თემში შესვლა",
 } satisfies Record<string, string>;

@@ -3159,4 +3159,17 @@ export default {
   "Concluída": "Completada",
   "Falhou": "Ha fallat",
   "Em andamento": "En curs",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — El servidor de Syden no respon",
+  "O Syden está fora do ar": "Syden està caigut",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "No és la teva connexió: el nostre servidor ha deixat de respondre. Quan torni, aquesta pantalla desapareixerà sola.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — Sense connexió a internet",
+  "Sem internet": "Sense internet",
+  "Quando a conexão voltar, esta tela some sozinha.": "Quan torni la connexió, aquesta pantalla desapareixerà sola.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Amaga els altres quadres",
+  "Mostrar os outros quadros": "Mostra els altres quadres",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Invitació a la comunitat",
+  "Entrar na comunidade": "Entra a la comunitat",
 } satisfies Record<string, string>;

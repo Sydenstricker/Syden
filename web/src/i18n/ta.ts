@@ -3078,4 +3078,17 @@ export default {
   "Concluída": "முடிந்தது",
   "Falhou": "தோல்வி",
   "Em andamento": "நடைபெறுகிறது",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Syden சர்வர் பதிலளிக்கவில்லை",
+  "O Syden está fora do ar": "Syden இயங்கவில்லை",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "இது உங்கள் இணையம் அல்ல: எங்கள் சர்வர் பதிலளிப்பதை நிறுத்திவிட்டது. அது திரும்பியதும் இந்தத் திரை தானாக மறையும்.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — இணைய இணைப்பு இல்லை",
+  "Sem internet": "இணையம் இல்லை",
+  "Quando a conexão voltar, esta tela some sozinha.": "இணைப்பு திரும்பியதும் இந்தத் திரை தானாக மறையும்.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "மற்ற சட்டங்களை மறை",
+  "Mostrar os outros quadros": "மற்ற சட்டங்களைக் காட்டு",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "சமூகத்துக்கான அழைப்பு",
+  "Entrar na comunidade": "சமூகத்தில் சேர்",
 } satisfies Record<string, string>;

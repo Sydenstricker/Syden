@@ -3075,4 +3075,17 @@ export default {
   "Concluída": "పూర్తయింది",
   "Falhou": "విఫలమైంది",
   "Em andamento": "జరుగుతోంది",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Syden సర్వర్ స్పందించడం లేదు",
+  "O Syden está fora do ar": "Syden పనిచేయడం లేదు",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "ఇది మీ ఇంటర్నెట్ కాదు: మా సర్వర్ స్పందించడం ఆపేసింది. అది తిరిగి వచ్చాక ఈ స్క్రీన్ దానంతటదే పోతుంది.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — ఇంటర్నెట్ కనెక్షన్ లేదు",
+  "Sem internet": "ఇంటర్నెట్ లేదు",
+  "Quando a conexão voltar, esta tela some sozinha.": "కనెక్షన్ తిరిగి వచ్చాక ఈ స్క్రీన్ దానంతటదే పోతుంది.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "ఇతర పెట్టెలను దాచండి",
+  "Mostrar os outros quadros": "ఇతర పెట్టెలను చూపండి",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "సంఘానికి ఆహ్వానం",
+  "Entrar na comunidade": "సంఘంలో చేరండి",
 } satisfies Record<string, string>;

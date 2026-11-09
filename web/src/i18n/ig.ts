@@ -3101,4 +3101,17 @@ export default {
   "Concluída": "Emechara",
   "Falhou": "Ọ dara",
   "Em andamento": "Ọ na-aga",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Sava Syden anaghị aza",
+  "O Syden está fora do ar": "Syden anaghị arụ ọrụ",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "Ọ bụghị ịntanetị gị: sava anyị akwụsịla ịza. Mgbe ọ laghachiri, ihuenyo a ga-apụ n’onwe ya.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — Enweghị njikọ ịntanetị",
+  "Sem internet": "Enweghị ịntanetị",
+  "Quando a conexão voltar, esta tela some sozinha.": "Mgbe njikọ laghachiri, ihuenyo a ga-apụ n’onwe ya.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Zoo igbe ndị ọzọ",
+  "Mostrar os outros quadros": "Gosi igbe ndị ọzọ",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Òkù ịbịa obodo",
+  "Entrar na comunidade": "Banye n’obodo",
 } satisfies Record<string, string>;

@@ -3160,4 +3160,17 @@ export default {
   "Concluída": "Завршено",
   "Falhou": "Није успело",
   "Em andamento": "У току",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Syden сервер не одговара",
+  "O Syden está fora do ar": "Syden не ради",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "Није твој интернет: наш сервер је престао да одговара. Кад се врати, овај екран нестаје сам.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — Нема интернет везе",
+  "Sem internet": "Нема интернета",
+  "Quando a conexão voltar, esta tela some sozinha.": "Кад се веза врати, овај екран нестаје сам.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Сакриј остале оквире",
+  "Mostrar os outros quadros": "Прикажи остале оквире",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Позив у заједницу",
+  "Entrar na comunidade": "Придружи се заједници",
 } satisfies Record<string, string>;

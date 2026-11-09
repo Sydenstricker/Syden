@@ -3176,4 +3176,17 @@ export default {
   "Concluída": "མཇུག་བསྡུ་ཡོད།",
   "Falhou": "འཐུས་ཤོར།",
   "Em andamento": "འཕྲོ་མཐུད་དོ།",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Syden གི་སར་བར་གྱིས་ལན་མི་སླབ།",
+  "O Syden está fora do ar": "Syden ལཱ་མི་འབད།",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "འདི་ཁྱོད་ཀྱི་ཨིན་ཊར་ནེཊི་མེན། ང་བཅས་ཀྱི་སར་བར་གྱིས་ལན་སླབ་ནི་བཀག་ཡི། ལོག་འོང་པའི་སྐབས་ གསལ་གཞི་འདི་རང་བཞིན་གྱིས་མེད་པར་འགྱོ།",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — ཨིན་ཊར་ནེཊི་མཐུད་ལམ་མེད།",
+  "Sem internet": "ཨིན་ཊར་ནེཊི་མེད།",
+  "Quando a conexão voltar, esta tela some sozinha.": "མཐུད་ལམ་ལོག་འོང་པའི་སྐབས་ གསལ་གཞི་འདི་རང་བཞིན་གྱིས་མེད་པར་འགྱོ།",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "སྒྲོམ་གཞན་ཚུ་སྦ།",
+  "Mostrar os outros quadros": "སྒྲོམ་གཞན་ཚུ་སྟོན།",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "མི་སྡེ་ནང་མགྲོན་འབོད།",
+  "Entrar na comunidade": "མི་སྡེ་ནང་ཞུགས།",
 } satisfies Record<string, string>;

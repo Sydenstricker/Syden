@@ -12,6 +12,7 @@ import { ParabensDoSyden } from './ParabensDoSyden';
 import { AniversarioDoSyden } from './AniversarioDoSyden';
 import { VisitasAoQuarto, visitarQuarto } from './VisitaAoQuarto';
 import { ConviteParaQuarto, type ConviteDeQuarto } from './ConviteParaQuarto';
+import { ConviteParaComunidade, type PreviaDoConvite } from './ConviteParaComunidade';
 import { ehAniversarioDoSyden } from './diaDoSyden';
 import { ehAniversarioHoje } from './aniversarioHoje';
 import { CommunityDialog, CommunityRail } from './CommunityRail';
@@ -394,40 +395,73 @@ export function Shell({
     }
   }
 
-  // Chegou por um link de convite (?convite=xxxx): entra nessa comunidade assim que a sessão abre. Quem já
-  // participa (ex.: o próprio link de quem convidou) simplesmente não vê nada de diferente.
+  // Chegou por um link de convite (?convite=xxxx): mostra a comunidade e PERGUNTA antes de entrar (ver
+  // ConviteParaComunidade.tsx). Quem já participa (o próprio link de quem convidou, ou quem acabou de criar a conta
+  // por ele) não vê pergunta nenhuma: se o link era de uma sala, vai até ela.
   const [notice, setNotice] = useState<string | null>(null);
+  const [previaDoConvite, setPreviaDoConvite] = useState<PreviaDoConvite | null>(null);
+  const [entrandoPeloConvite, setEntrandoPeloConvite] = useState(false);
+  const [erroDoConvite, setErroDoConvite] = useState<string | null>(null);
   useEffect(() => {
     if (!pendingInviteCode) return;
-    api<Community>('/api/communities/join', { method: 'POST', body: { code: pendingInviteCode } }).then(
-      (community) => {
-        setNotice(t('Você entrou em {nome}.', { nome: community.name }));
-        void afterCommunityChange(community).then(() => {
-          if (pendingInviteChannel) setIrParaCanal({ communityId: community.id, channelId: pendingInviteChannel });
-        });
+    api<PreviaDoConvite>(`/api/convite/${encodeURIComponent(pendingInviteCode)}`).then(
+      async (previa) => {
+        if (!previa.jaParticipa) return setPreviaDoConvite(previa);
+        if (!pendingInviteChannel) return;
+        await reloadCommunities().catch(() => null);
+        setIrParaCanal({ communityId: previa.id, channelId: pendingInviteChannel });
       },
-      async (error) => {
-        if (error instanceof ApiError && error.status === 409) {
-          // Já participava: nada a avisar. Se o link era de uma sala, vai até ela — a comunidade é a
-          // que tem esse código de convite.
-          if (!pendingInviteChannel) return;
-          const lista = await reloadCommunities().catch(() => null);
-          const dela = lista?.find((c) => c.inviteCode === pendingInviteCode);
-          if (dela) setIrParaCanal({ communityId: dela.id, channelId: pendingInviteChannel });
-          return;
-        }
-        setNotice((error as Error).message);
-      },
+      (error) => setNotice((error as Error).message),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pendingInviteCode]);
+
+  // "Agora não": volta para onde estava, sem entrar. O link já saiu do endereço (App.tsx), então não pergunta de novo.
+  const fecharConviteDeComunidade = useCallback(() => {
+    setPreviaDoConvite(null);
+    setErroDoConvite(null);
+  }, []);
+
+  async function entrarPeloLinkDeConvite() {
+    if (!pendingInviteCode) return;
+    setEntrandoPeloConvite(true);
+    setErroDoConvite(null);
+    try {
+      const community = await api<Community>('/api/communities/join', { method: 'POST', body: { code: pendingInviteCode } });
+      setPreviaDoConvite(null);
+      setNotice(t('Você entrou em {nome}.', { nome: community.name }));
+      await afterCommunityChange(community);
+      if (pendingInviteChannel) setIrParaCanal({ communityId: community.id, channelId: pendingInviteChannel });
+    } catch (error) {
+      // Entrou por outra aba ou aparelho enquanto esta perguntava: é o mesmo que ter entrado aqui.
+      if (error instanceof ApiError && error.status === 409 && previaDoConvite) {
+        const entrada = previaDoConvite;
+        const lista = await reloadCommunities().catch(() => null);
+        const dela = lista?.find((c) => c.id === entrada.id);
+        if (dela) {
+          setPreviaDoConvite(null);
+          await afterCommunityChange(dela);
+          if (pendingInviteChannel) setIrParaCanal({ communityId: dela.id, channelId: pendingInviteChannel });
+          return;
+        }
+      }
+      setErroDoConvite((error as Error).message);
+    } finally {
+      setEntrandoPeloConvite(false);
+    }
+  }
 
   useEffect(() => {
     // O token é lido a cada tentativa de conexão, e não uma vez só: trocar a senha ou sair dos outros
     // aparelhos emite um token novo, e a reconexão precisa usar o novo, não o que estava aqui guardado.
     const s = io(API_URL, { auth: (pronto) => pronto({ token: loadToken() ?? token }) });
+    let jaConectou = false;
     s.on('connect', () => {
       setOnline(true);
+      // De volta depois de cair (o computador dormiu, a internet caiu): o que mudou nas comunidades enquanto isso
+      // ('comunidades:mudou', 'member:removed') não chegou, e a lista relê. Na primeira conexão, ela já veio.
+      if (jaConectou) void reloadCommunities().catch(console.error);
+      jaConectou = true;
       // As chamadas das conversas: o servidor manda de novo as abertas, e as que acabaram com o socket caído não ficam na
       // tela como "Entrar na chamada" (revisão de 02/11/2026).
       setChamadas({});
@@ -624,6 +658,9 @@ export function Shell({
       setCommunities((list) => list.map((c) => (c.id === id ? { ...c, inviteCode } : c))),
     );
     s.on('community:deleted', ({ id }: { id: number }) => setCommunities((list) => list.filter((c) => c.id !== id)));
+    // Você passou a participar de uma comunidade, aqui ou noutra aba ou aparelho (entrou pelo convite no navegador com o
+    // app aberto, criou uma no celular): a lista relê, sem levar esta tela para lá. Antes, o app só a via reabrindo.
+    s.on('comunidades:mudou', () => void reloadCommunities().catch(console.error));
     // Um administrador te puxou para outra sala de voz: o app entra nela sozinho, como no Discord.
     s.on('voice:move', ({ channelId: to }: { channelId: number }) => {
       setSelectedId(to);
@@ -1450,6 +1487,15 @@ export function Shell({
         />
       )}
       {/* Ideia acolhida: confete na tela, uma festa de cada vez. */}
+      {previaDoConvite && (
+        <ConviteParaComunidade
+          previa={previaDoConvite}
+          entrando={entrandoPeloConvite}
+          erro={erroDoConvite}
+          aoEntrar={() => void entrarPeloLinkDeConvite()}
+          aoFechar={fecharConviteDeComunidade}
+        />
+      )}
       {conviteVoz && <ConviteParaVoz convite={conviteVoz} aoEntrar={() => entrarPeloConvite(conviteVoz)} aoFechar={() => setConviteVoz(null)} />}
       {tocando && (
         <ChamadaRecebida

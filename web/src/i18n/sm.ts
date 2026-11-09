@@ -3097,4 +3097,17 @@ export default {
   "Concluída": "Ua mae’a",
   "Falhou": "Ua le manuia",
   "Em andamento": "O lo’o faia",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — E le tali mai le server a Syden",
+  "O Syden está fora do ar": "Ua tapuni Syden",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "E le o lau initaneti: ua le toe tali mai le matou server. A toe foi mai, o le a mou ese lava le lau lea.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — Leai se feso’ota’iga initaneti",
+  "Sem internet": "Leai se initaneti",
+  "Quando a conexão voltar, esta tela some sozinha.": "A toe foi mai le feso’ota’iga, o le a mou ese lava le lau lea.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Natia isi pusa",
+  "Mostrar os outros quadros": "Fa’aali isi pusa",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Vala’aulia i le fa’alapotopotoga",
+  "Entrar na comunidade": "Auai i le fa’alapotopotoga",
 } satisfies Record<string, string>;

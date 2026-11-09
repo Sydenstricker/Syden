@@ -4,6 +4,7 @@ import { ApiError, api, loadToken, saveToken } from './api';
 import { sincronizarAoEntrar } from './preferencias';
 import { AuthScreen } from './AuthScreen';
 import { AvisoGeral } from './AvisoGeral';
+import { recarregarQuandoOServidorVoltar, ServidorForaDoAr } from './ServidorForaDoAr';
 import { VersaoNova } from './VersaoNova';
 import { aoVoltarPeloApp, concluir, lerVolta, NOMES, RECADOS } from './entradaSocial';
 import { DesktopTitleBar } from './DesktopTitleBar';
@@ -195,6 +196,9 @@ export function App() {
           (error): Session => {
             // Só descarta o token se o servidor recusou; se estiver fora do ar, tenta de novo ao recarregar.
             if (error instanceof ApiError && error.status === 401) saveToken(null);
+            // Fora do ar: a tela da queda cobre a de entrada (que diria, sem ser verdade, que a pessoa saiu da conta)
+            // e, quando o servidor voltar, recarrega para entrar na sessão guardada.
+            else if (!(error instanceof ApiError) || error.status === 0 || error.status >= 500) recarregarQuandoOServidorVoltar();
             return { status: 'anonymous' };
           },
         )
@@ -215,6 +219,7 @@ export function App() {
       {/* Fica FORA do app-body de propósito: assim o recado aparece na tela de entrada também, que é
           onde ele mais faz falta — quem não consegue entrar é quem mais precisa saber do porquê. */}
       {session.status !== 'loading' && <AvisoGeral />}
+      <ServidorForaDoAr />
       <VersaoNova />
       {ligacaoFeita && (
         <p className="aviso-topo" role="status">

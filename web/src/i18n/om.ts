@@ -3133,4 +3133,17 @@ export default {
   "Concluída": "Xumurame",
   "Falhou": "Hin milkoofne",
   "Em andamento": "Itti jira",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Sarvariin Syden deebii hin kennu",
+  "O Syden está fora do ar": "Syden hojii ala",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "Interneetii kee miti: sarvariin keenya deebii kennuu dhiise. Yeroo deebi’u, iskiriiniin kun ofumaan bada.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — Walqunnamtiin interneetii hin jiru",
+  "Sem internet": "Interneetiin hin jiru",
+  "Quando a conexão voltar, esta tela some sozinha.": "Yeroo walqunnamtiin deebi’u, iskiriiniin kun ofumaan bada.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Saanduqoota biroo dhoksi",
+  "Mostrar os outros quadros": "Saanduqoota biroo agarsiisi",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Afeerraa hawaasaa",
+  "Entrar na comunidade": "Hawaasatti makami",
 } satisfies Record<string, string>;

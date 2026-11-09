@@ -3147,4 +3147,17 @@ export default {
   "Concluída": "הושלמה",
   "Falhou": "נכשלה",
   "Em andamento": "בתהליך",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — השרת של Syden לא מגיב",
+  "O Syden está fora do ar": "Syden לא זמין",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "זה לא האינטרנט שלך: השרת שלנו הפסיק להגיב. כשהוא יחזור, המסך הזה ייעלם מעצמו.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — אין חיבור לאינטרנט",
+  "Sem internet": "אין אינטרנט",
+  "Quando a conexão voltar, esta tela some sozinha.": "כשהחיבור יחזור, המסך הזה ייעלם מעצמו.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "הסתרת שאר החלונות",
+  "Mostrar os outros quadros": "הצגת שאר החלונות",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "הזמנה לקהילה",
+  "Entrar na comunidade": "הצטרפות לקהילה",
 } satisfies Record<string, string>;

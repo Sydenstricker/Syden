@@ -3183,4 +3183,17 @@ export default {
   "Concluída": "Bajarildi",
   "Falhou": "Muvaffaqiyatsiz",
   "Em andamento": "Bajarilmoqda",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Syden serveri javob bermayapti",
+  "O Syden está fora do ar": "Syden ishlamayapti",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "Bu sizning internetingiz emas: serverimiz javob bermay qoldi. U qaytganda bu ekran oʻzi yoʻqoladi.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — Internet aloqasi yoʻq",
+  "Sem internet": "Internet yoʻq",
+  "Quando a conexão voltar, esta tela some sozinha.": "Aloqa qaytganda bu ekran oʻzi yoʻqoladi.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Boshqa oynalarni yashirish",
+  "Mostrar os outros quadros": "Boshqa oynalarni koʻrsatish",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Hamjamiyatga taklif",
+  "Entrar na comunidade": "Hamjamiyatga qoʻshilish",
 } satisfies Record<string, string>;

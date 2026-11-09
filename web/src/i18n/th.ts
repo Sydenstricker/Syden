@@ -3106,4 +3106,17 @@ export default {
   "Concluída": "เสร็จสิ้น",
   "Falhou": "ล้มเหลว",
   "Em andamento": "กำลังดำเนินการ",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — เซิร์ฟเวอร์ของ Syden ไม่ตอบสนอง",
+  "O Syden está fora do ar": "Syden ล่มอยู่",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "ไม่ใช่ที่อินเทอร์เน็ตของคุณ: เซิร์ฟเวอร์ของเราหยุดตอบสนอง เมื่อกลับมา หน้าจอนี้จะหายไปเอง",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — ไม่มีการเชื่อมต่ออินเทอร์เน็ต",
+  "Sem internet": "ไม่มีอินเทอร์เน็ต",
+  "Quando a conexão voltar, esta tela some sozinha.": "เมื่อการเชื่อมต่อกลับมา หน้าจอนี้จะหายไปเอง",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "ซ่อนช่องอื่น",
+  "Mostrar os outros quadros": "แสดงช่องอื่น",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "คำเชิญเข้าคอมมูนิตี้",
+  "Entrar na comunidade": "เข้าร่วมคอมมูนิตี้",
 } satisfies Record<string, string>;

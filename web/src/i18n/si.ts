@@ -3163,4 +3163,17 @@ export default {
   "Concluída": "සම්පූර්ණයි",
   "Falhou": "අසාර්ථකයි",
   "Em andamento": "සිදුවෙමින්",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Syden සේවාදායකය ප්‍රතිචාර නොදක්වයි",
+  "O Syden está fora do ar": "Syden ක්‍රියා නොකරයි",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "මෙය ඔබේ අන්තර්ජාලය නොවේ: අපගේ සේවාදායකය ප්‍රතිචාර දැක්වීම නැවැත්වීය. එය නැවත පැමිණි විට මෙම තිරය ඉබේම අතුරුදන් වේ.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — අන්තර්ජාල සම්බන්ධතාවක් නැත",
+  "Sem internet": "අන්තර්ජාලය නැත",
+  "Quando a conexão voltar, esta tela some sozinha.": "සම්බන්ධතාව නැවත පැමිණි විට මෙම තිරය ඉබේම අතුරුදන් වේ.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "අනෙක් කොටු සඟවන්න",
+  "Mostrar os outros quadros": "අනෙක් කොටු පෙන්වන්න",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "ප්‍රජාවට ආරාධනය",
+  "Entrar na comunidade": "ප්‍රජාවට එක්වන්න",
 } satisfies Record<string, string>;

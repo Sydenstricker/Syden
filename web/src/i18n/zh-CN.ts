@@ -3080,4 +3080,17 @@ export default {
   "Concluída": "已完成",
   "Falhou": "失败",
   "Em andamento": "进行中",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Syden 的服务器没有响应",
+  "O Syden está fora do ar": "Syden 暂时无法使用",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "不是你的网络问题：我们的服务器停止了响应。恢复后，这个画面会自动消失。",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — 没有网络连接",
+  "Sem internet": "没有网络",
+  "Quando a conexão voltar, esta tela some sozinha.": "网络恢复后，这个画面会自动消失。",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "隐藏其他画面",
+  "Mostrar os outros quadros": "显示其他画面",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "社区邀请",
+  "Entrar na comunidade": "加入社区",
 } satisfies Record<string, string>;

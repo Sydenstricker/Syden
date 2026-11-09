@@ -13,6 +13,8 @@ import {
 import { type LocalTrackPublication, type Participant, type RemoteVideoTrack, type Room, RoomEvent, Track, type TrackPublication } from 'livekit-client';
 import {
   AudioLines,
+  ChevronDown,
+  ChevronUp,
   HeadphoneOff,
   Headphones,
   Info,
@@ -1062,7 +1064,9 @@ function FocusPane({
       {trackRef.source === Track.Source.ScreenShare && (
         <div className="stream-controls">
           <StreamInfoBadge publication={trackRef.publication} local={trackRef.participant.isLocal} />
-          <StreamAudio voice={voice} publisher={trackRef.participant} />
+          {/* A CHAVE É DE QUEM TRANSMITE: o quadro em foco é o mesmo componente quando o foco passa de uma transmissão
+              para outra, e sem ela o alto-falante ficava com o volume (e o ícone de calado) da transmissão anterior. */}
+          <StreamAudio key={trackRef.participant.identity} voice={voice} publisher={trackRef.participant} />
           {/* A janela à parte, como o pop-out do Discord (04/11/2026): a transmissão numa janela que se leva para o outro
               monitor. A sua própria não: seria olhar para a própria tela em dobro. */}
           {!trackRef.participant.isLocal && isTrackReference(trackRef) && (
@@ -1285,6 +1289,10 @@ export function Stage({
   // TODOS DO MESMO TAMANHO (04/11/2026, pedido "como no Meet"): transmissões abertas e câmeras lado a lado, numa grade,
   // em vez de uma grande e as outras na faixa de baixo. Clicar num quadro volta ao destaque com ele.
   const [mosaico, setMosaico] = useState(false);
+  // A FAIXA DE BAIXO ESCONDIDA (09/11/2026, como o "esconder" do Discord): as outras transmissões e as câmeras saem, e a
+  // transmissão em foco ganha o palco inteiro. O botão fica no canto direito da faixa, onde sobra espaço, e continua lá
+  // (sozinho) para trazê-la de volta.
+  const [faixaEscondida, setFaixaEscondida] = useState(false);
   const palco = useRef<HTMLDivElement>(null);
   const [soundboardOpen, setSoundboardOpen] = useState(false);
   // O karaokê abre sozinho para todo mundo quando alguém põe uma música.
@@ -1360,6 +1368,24 @@ export function Stage({
     }
     setPinned(focused && trackKey(focused) === trackKey(ref) ? null : trackKey(ref));
   };
+
+  /** A faixa de baixo (as outras transmissões e as câmeras), com o botão de esconder e mostrar no canto direito. */
+  const faixaDeBaixo = () =>
+    others.length > 0 && (
+      <div className={`stage-faixa${faixaEscondida ? ' escondida' : ''}`}>
+        {!faixaEscondida && <div className="stage-strip">{others.map((ref) => tile(ref, 48, true))}</div>}
+        <button
+          type="button"
+          className="stream-info-button stage-faixa-botao"
+          title={faixaEscondida ? t('Mostrar os outros quadros') : t('Esconder os outros quadros')}
+          aria-label={faixaEscondida ? t('Mostrar os outros quadros') : t('Esconder os outros quadros')}
+          aria-expanded={!faixaEscondida}
+          onClick={() => setFaixaEscondida(!faixaEscondida)}
+        >
+          {faixaEscondida ? <ChevronUp size={16} aria-hidden="true" /> : <ChevronDown size={16} aria-hidden="true" />}
+        </button>
+      </div>
+    );
 
   const abrirMenu = (e: React.MouseEvent<HTMLDivElement>, ref: TrackReferenceOrPlaceholder) => {
     const userId = Number(ref.participant.identity);
@@ -1482,7 +1508,7 @@ export function Stage({
               </FocusPane>
             ))}
           </div>
-          {others.length > 0 && <div className="stage-strip">{others.map((ref) => tile(ref, 48, true))}</div>}
+          {faixaDeBaixo()}
         </div>
       ) : focused ? (
         <div className="stage-focus">
@@ -1493,7 +1519,7 @@ export function Stage({
           >
             {tile(focused, 80)}
           </FocusPane>
-          {others.length > 0 && <div className="stage-strip">{others.map((ref) => tile(ref, 48, true))}</div>}
+          {faixaDeBaixo()}
         </div>
       ) : (
         // Sem tela compartilhada: cartões de tamanho fixo, centralizados, como no Discord.

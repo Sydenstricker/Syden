@@ -3086,4 +3086,17 @@ export default {
   "Concluída": "انجام شد",
   "Falhou": "ناموفق",
   "Em andamento": "در حال انجام",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — سرور Syden پاسخ نمی‌دهد",
+  "O Syden está fora do ar": "Syden از دسترس خارج است",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "مشکل از اینترنت تو نیست: سرور ما دیگر پاسخ نمی‌دهد. وقتی برگردد، این صفحه خودش ناپدید می‌شود.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — اتصال اینترنت وجود ندارد",
+  "Sem internet": "اینترنت نیست",
+  "Quando a conexão voltar, esta tela some sozinha.": "وقتی اتصال برگردد، این صفحه خودش ناپدید می‌شود.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "پنهان کردن کادرهای دیگر",
+  "Mostrar os outros quadros": "نمایش کادرهای دیگر",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "دعوت به انجمن",
+  "Entrar na comunidade": "پیوستن به انجمن",
 } satisfies Record<string, string>;

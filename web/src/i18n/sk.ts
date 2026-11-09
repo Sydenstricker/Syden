@@ -3163,4 +3163,17 @@ export default {
   "Concluída": "Dokončené",
   "Falhou": "Zlyhalo",
   "Em andamento": "Prebieha",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Server Sydenu neodpovedá",
+  "O Syden está fora do ar": "Syden je mimo prevádzky",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "Nie je to tvojím internetom: náš server prestal odpovedať. Keď sa vráti, táto obrazovka sama zmizne.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — Bez pripojenia na internet",
+  "Sem internet": "Bez internetu",
+  "Quando a conexão voltar, esta tela some sozinha.": "Keď sa pripojenie vráti, táto obrazovka sama zmizne.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Skryť ostatné dlaždice",
+  "Mostrar os outros quadros": "Zobraziť ostatné dlaždice",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Pozvánka do komunity",
+  "Entrar na comunidade": "Vstúpiť do komunity",
 } satisfies Record<string, string>;

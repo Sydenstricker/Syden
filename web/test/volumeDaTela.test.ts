@@ -53,3 +53,26 @@ test('a voz vai até 200%, sem nunca pôr mais de 1 no volume da pessoa', async 
   setUserVolume(comGente, 5, 0.5);
   assert.equal(pedidos.at(-1), 0.5);
 });
+
+// 09/11/2026, "o botão de calar as lives não funciona": o LiveKit repete o volume em cada elemento que se liga depois com
+// `if (this.elementVolume)`, e 0 é falso. A faixa chega (e recebe o 0) antes do <audio>; o elemento nascia a 100%.
+test('a transmissão calada continua calada quando o elemento de áudio se liga depois', async () => {
+  const ouvintes = new Map<string, () => void>();
+  const pedidos: number[] = [];
+  const faixa = {
+    setVolume: (v: number) => void pedidos.push(v),
+    on: (evento: string, f: () => void) => void ouvintes.set(evento, f),
+  };
+  const pessoa = { setVolume() {}, getTrackPublication: (fonte: string) => (fonte === 'screen_share_audio' ? { track: faixa } : undefined) };
+  const comGente = { remoteParticipants: new Map([['11', pessoa]]) } as unknown as Parameters<typeof setScreenVolume>[0];
+  assert.equal(alternarMudoDaTela(comGente, 11), 0);
+  pedidos.length = 0;
+  ouvintes.get('elementAttached')?.();
+  await Promise.resolve();
+  assert.deepEqual(pedidos, [0], 'o elemento novo recebe o 0 de novo');
+  alternarMudoDaTela(comGente, 11);
+  pedidos.length = 0;
+  ouvintes.get('elementAttached')?.();
+  await Promise.resolve();
+  assert.deepEqual(pedidos, [], 'com som, o LiveKit já cuida do volume');
+});

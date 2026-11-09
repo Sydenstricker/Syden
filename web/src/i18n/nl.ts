@@ -3092,4 +3092,17 @@ export default {
   "Concluída": "Voltooid",
   "Falhou": "Mislukt",
   "Em andamento": "Bezig",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — De server van Syden reageert niet",
+  "O Syden está fora do ar": "Syden is offline",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "Het ligt niet aan je internet: onze server reageert niet meer. Zodra hij terug is, verdwijnt dit scherm vanzelf.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — Geen internetverbinding",
+  "Sem internet": "Geen internet",
+  "Quando a conexão voltar, esta tela some sozinha.": "Zodra de verbinding terug is, verdwijnt dit scherm vanzelf.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Andere tegels verbergen",
+  "Mostrar os outros quadros": "Andere tegels tonen",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Uitnodiging voor de community",
+  "Entrar na comunidade": "Lid worden van de community",
 } satisfies Record<string, string>;

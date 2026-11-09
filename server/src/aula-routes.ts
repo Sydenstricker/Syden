@@ -4,7 +4,7 @@ import { signSession } from './auth.js';
 import { config } from './config.js';
 import * as db from './db.js';
 import { Freio } from './freio.js';
-import { communityRoom } from './realtime.js';
+import { communityRoom, joinCommunityRoom } from './realtime.js';
 import { manages, requireUser } from './routes.js';
 import { pessoaDeVerdade, turnstileLigado } from './turnstile.js';
 
@@ -77,6 +77,7 @@ export function registerAulaRoutes(app: FastifyInstance, io: IOServer) {
       if (!db.memberRole(aula.communityId, request.user.id)) {
         if (db.countMembers(aula.communityId) >= config.maxMembersPerCommunity) return reply.code(409).send({ error: 'A comunidade está cheia.' });
         db.addMember(aula.communityId, request.user.id);
+        joinCommunityRoom(io, request.user.id, aula.communityId);
         const user = db.findUserById(request.user.id);
         io.to(communityRoom(aula.communityId)).emit('member:updated', { communityId: aula.communityId, member: { ...user, role: 'member' } });
       }

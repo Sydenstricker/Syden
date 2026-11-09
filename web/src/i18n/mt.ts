@@ -3109,4 +3109,17 @@ export default {
   "Concluída": "Lest",
   "Falhou": "Falla",
   "Em andamento": "Għaddej",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Is-server ta’ Syden mhux qed iwieġeb",
+  "O Syden está fora do ar": "Syden mhux qed jaħdem",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "Mhux l-internet tiegħek: is-server tagħna waqaf iwieġeb. Meta jerġa’ lura, dan l-iskrin jgħib waħdu.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — L-ebda konnessjoni tal-internet",
+  "Sem internet": "L-ebda internet",
+  "Quando a conexão voltar, esta tela some sozinha.": "Meta l-konnessjoni terġa’ lura, dan l-iskrin jgħib waħdu.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Aħbi l-kwadri l-oħra",
+  "Mostrar os outros quadros": "Uri l-kwadri l-oħra",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Stedina għall-komunità",
+  "Entrar na comunidade": "Ingħaqad mal-komunità",
 } satisfies Record<string, string>;

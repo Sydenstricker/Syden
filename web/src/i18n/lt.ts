@@ -3165,4 +3165,17 @@ export default {
   "Concluída": "Baigta",
   "Falhou": "Nepavyko",
   "Em andamento": "Vykdoma",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Syden serveris neatsako",
+  "O Syden está fora do ar": "Syden neveikia",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "Tai ne tavo internetas: mūsų serveris nustojo atsakyti. Kai jis grįš, šis ekranas dings savaime.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — Nėra interneto ryšio",
+  "Sem internet": "Nėra interneto",
+  "Quando a conexão voltar, esta tela some sozinha.": "Kai ryšys grįš, šis ekranas dings savaime.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Slėpti kitus langelius",
+  "Mostrar os outros quadros": "Rodyti kitus langelius",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Kvietimas į bendruomenę",
+  "Entrar na comunidade": "Prisijungti prie bendruomenės",
 } satisfies Record<string, string>;

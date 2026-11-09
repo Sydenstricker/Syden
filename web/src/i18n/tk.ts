@@ -3174,4 +3174,17 @@ export default {
   "Concluída": "Tamamlandy",
   "Falhou": "Şowsuz",
   "Em andamento": "Dowam edýär",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Syden serweri jogap bermeýär",
+  "O Syden está fora do ar": "Syden işlemeýär",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "Bu siziň internetiňiz däl: serwerimiz jogap bermesini bes etdi. Ol gaýdyp gelende bu ekran öz-özünden ýiter.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — Internet baglanyşygy ýok",
+  "Sem internet": "Internet ýok",
+  "Quando a conexão voltar, esta tela some sozinha.": "Baglanyşyk gaýdyp gelende bu ekran öz-özünden ýiter.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Beýleki penjireleri gizle",
+  "Mostrar os outros quadros": "Beýleki penjireleri görkez",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Jemgyýete çakylyk",
+  "Entrar na comunidade": "Jemgyýete goşul",
 } satisfies Record<string, string>;

@@ -3093,4 +3093,17 @@ export default {
   "Concluída": "Finalizată",
   "Falhou": "Eșuată",
   "Em andamento": "În desfășurare",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Serverul Syden nu răspunde",
+  "O Syden está fora do ar": "Syden nu funcționează",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "Nu e internetul tău: serverul nostru nu mai răspunde. Când revine, ecranul acesta dispare singur.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — Fără conexiune la internet",
+  "Sem internet": "Fără internet",
+  "Quando a conexão voltar, esta tela some sozinha.": "Când revine conexiunea, ecranul acesta dispare singur.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Ascunde celelalte casete",
+  "Mostrar os outros quadros": "Arată celelalte casete",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Invitație în comunitate",
+  "Entrar na comunidade": "Intră în comunitate",
 } satisfies Record<string, string>;

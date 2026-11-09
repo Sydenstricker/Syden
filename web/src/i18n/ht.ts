@@ -3173,4 +3173,17 @@ export default {
   "Concluída": "Fini",
   "Falhou": "Echwe",
   "Em andamento": "Ap fèt",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Sèvè Syden an pa reponn",
+  "O Syden está fora do ar": "Syden an pa mache",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "Se pa entènèt ou: sèvè nou an sispann reponn. Lè l tounen, ekran sa a ap disparèt poukont li.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — Pa gen koneksyon entènèt",
+  "Sem internet": "Pa gen entènèt",
+  "Quando a conexão voltar, esta tela some sozinha.": "Lè koneksyon an tounen, ekran sa a ap disparèt poukont li.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Kache lòt bwat yo",
+  "Mostrar os outros quadros": "Montre lòt bwat yo",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Envitasyon nan kominote a",
+  "Entrar na comunidade": "Antre nan kominote a",
 } satisfies Record<string, string>;

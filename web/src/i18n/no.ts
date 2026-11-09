@@ -3163,4 +3163,17 @@ export default {
   "Concluída": "Fullført",
   "Falhou": "Mislyktes",
   "Em andamento": "Pågår",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Sydens server svarer ikke",
+  "O Syden está fora do ar": "Syden er nede",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "Det er ikke internettet ditt: serveren vår har sluttet å svare. Når den er tilbake, forsvinner denne skjermen av seg selv.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — Ingen internettilkobling",
+  "Sem internet": "Ikke internett",
+  "Quando a conexão voltar, esta tela some sozinha.": "Når tilkoblingen er tilbake, forsvinner denne skjermen av seg selv.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Skjul de andre rutene",
+  "Mostrar os outros quadros": "Vis de andre rutene",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Invitasjon til fellesskapet",
+  "Entrar na comunidade": "Bli med i fellesskapet",
 } satisfies Record<string, string>;

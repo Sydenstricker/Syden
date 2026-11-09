@@ -3163,4 +3163,17 @@ export default {
   "Concluída": "Vita",
   "Falhou": "Tsy nahomby",
   "Em andamento": "Mandeha",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Tsy mamaly ny mpizara Syden",
+  "O Syden está fora do ar": "Tsy mandeha Syden",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "Tsy ny internet-nao: nijanona tsy namaly ny mpizaranay. Rehefa miverina izy dia hanjavona ho azy ity efijery ity.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — Tsy misy fifandraisana internet",
+  "Sem internet": "Tsy misy internet",
+  "Quando a conexão voltar, esta tela some sozinha.": "Rehefa miverina ny fifandraisana dia hanjavona ho azy ity efijery ity.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Afeno ireo efajoro hafa",
+  "Mostrar os outros quadros": "Asehoy ireo efajoro hafa",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Fanasana ho any amin’ny vondrona",
+  "Entrar na comunidade": "Hiditra ao amin’ny vondrona",
 } satisfies Record<string, string>;

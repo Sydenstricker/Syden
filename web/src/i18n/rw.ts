@@ -3104,4 +3104,17 @@ export default {
   "Concluída": "Byarangiye",
   "Falhou": "Byanze",
   "Em andamento": "Birakomeje",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Seriveri ya Syden ntisubiza",
+  "O Syden está fora do ar": "Syden ntikora",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "Si internet yawe: seriveri yacu yaretse gusubiza. Nigaruka, iyi shusho izavaho ubwayo.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — Nta murandasi",
+  "Sem internet": "Nta murandasi",
+  "Quando a conexão voltar, esta tela some sozinha.": "Murandasi nigaruka, iyi shusho izavaho ubwayo.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Hisha udusanduku tundi",
+  "Mostrar os outros quadros": "Erekana udusanduku tundi",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Ubutumire mu muryango",
+  "Entrar na comunidade": "Injira mu muryango",
 } satisfies Record<string, string>;

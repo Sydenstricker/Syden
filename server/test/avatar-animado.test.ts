@@ -48,3 +48,45 @@ test('o GIF do avatar vai até 5 MB (eram 2), e o ícone da comunidade continua 
   const comunidade = (await como('POST', '/api/communities', { name: 'Ícone grande' })).json() as { id: number };
   assert.equal((await como('PUT', `/api/communities/${comunidade.id}/icon`, { image: deTamanho(3 * 1024 * 1024) })).statusCode, 400, 'o ícone fica nos 2 MB');
 });
+
+// O WEBP ANIMADO (09/11/2026, relato: "até no celular o GIF fica em loop"): o avatar por link guarda o arquivo como veio, e o
+// "copiar endereço da imagem" do GIPHY dá um WEBP animado. A marca olhava só o tipo GIF, e ele tocava em laço nas listas.
+const webp = (animado: boolean) => {
+  const vp8x = Buffer.alloc(18);
+  vp8x.write('VP8X', 0, 'latin1');
+  vp8x.writeUInt32LE(10, 4);
+  vp8x[8] = animado ? 0x02 : 0;
+  vp8x.writeUIntLE(9, 12, 3); // 10 de largura
+  vp8x.writeUIntLE(9, 15, 3); // 10 de altura
+  const corpo = Buffer.concat([Buffer.from('WEBP', 'latin1'), vp8x, Buffer.alloc(200, 1)]);
+  const cabeca = Buffer.alloc(8);
+  cabeca.write('RIFF', 0, 'latin1');
+  cabeca.writeUInt32LE(corpo.length, 4);
+  return 'data:image/webp;base64,' + Buffer.concat([cabeca, corpo]).toString('base64');
+};
+
+test('o WEBP animado também marca o avatar, e o parado não', async () => {
+  const como = comToken(app, (await criarConta(app, 'webpanima')).token);
+  const animado = await como('PUT', '/api/me/avatar', { image: webp(true) });
+  assert.equal(animado.statusCode, 200, animado.body);
+  assert.equal(animado.json().avatarAnimado, true);
+  const parado = await como('PUT', '/api/me/avatar', { image: webp(false) });
+  assert.equal(parado.statusCode, 200, parado.body);
+  assert.equal(parado.json().avatarAnimado, false);
+});
+
+test('o PNG animado (APNG) marca, o PNG comum não', async () => {
+  const { imagemAnimada } = await import('../src/imagemAnimada.js');
+  const pedaco = (tipo: string, dados = Buffer.alloc(0)) => {
+    const tam = Buffer.alloc(4);
+    tam.writeUInt32BE(dados.length);
+    return Buffer.concat([tam, Buffer.from(tipo, 'latin1'), dados, Buffer.alloc(4)]);
+  };
+  const assinatura = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+  const ihdr = pedaco('IHDR', Buffer.alloc(13));
+  const apng = Buffer.concat([assinatura, ihdr, pedaco('acTL', Buffer.alloc(8)), pedaco('IDAT', Buffer.alloc(5)), pedaco('IEND')]);
+  const comum = Buffer.concat([assinatura, ihdr, pedaco('IDAT', Buffer.alloc(5)), pedaco('IEND')]);
+  assert.equal(imagemAnimada('image/png', apng), true);
+  assert.equal(imagemAnimada('image/png', comum), false);
+  assert.equal(imagemAnimada('image/jpeg', Buffer.alloc(10)), false);
+});

@@ -3155,4 +3155,17 @@ export default {
   "Concluída": "Përfunduar",
   "Falhou": "Dështoi",
   "Em andamento": "Në vazhdim",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Serveri i Syden nuk po përgjigjet",
+  "O Syden está fora do ar": "Syden nuk funksionon",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "Nuk është interneti yt: serveri ynë ndaloi së përgjigjuri. Kur të kthehet, ky ekran zhduket vetë.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — Nuk ka lidhje interneti",
+  "Sem internet": "Pa internet",
+  "Quando a conexão voltar, esta tela some sozinha.": "Kur të kthehet lidhja, ky ekran zhduket vetë.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Fshih kutitë e tjera",
+  "Mostrar os outros quadros": "Shfaq kutitë e tjera",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Ftesë në komunitet",
+  "Entrar na comunidade": "Bashkohu me komunitetin",
 } satisfies Record<string, string>;

@@ -3092,4 +3092,17 @@ export default {
   "Concluída": "Imekamilika",
   "Falhou": "Imeshindwa",
   "Em andamento": "Inaendelea",
+  // O servidor fora do ar
+  "503 — O servidor do Syden não está respondendo": "503 — Seva ya Syden haijibu",
+  "O Syden está fora do ar": "Syden haipatikani",
+  "Não é a sua internet: o nosso servidor parou de responder. Quando ele voltar, esta tela some sozinha.": "Si intaneti yako: seva yetu imeacha kujibu. Ikirudi, skrini hii itatoweka yenyewe.",
+  "OFFLINE — Sem conexão com a internet": "OFFLINE — Hakuna muunganisho wa intaneti",
+  "Sem internet": "Hakuna intaneti",
+  "Quando a conexão voltar, esta tela some sozinha.": "Muunganisho ukirudi, skrini hii itatoweka yenyewe.",
+  // O palco: esconder a faixa de baixo
+  "Esconder os outros quadros": "Ficha visanduku vingine",
+  "Mostrar os outros quadros": "Onyesha visanduku vingine",
+  // Convite para a comunidade: confirmar antes de entrar
+  "Convite para a comunidade": "Mwaliko wa jumuiya",
+  "Entrar na comunidade": "Jiunge na jumuiya",
 } satisfies Record<string, string>;
