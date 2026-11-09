@@ -107,3 +107,96 @@
 {"ferramenta":"pixellab","peca":"salao/giros/pufao","geracoes":15,"quando":"2026-10-15T22:07:35.746Z"}
 {"ferramenta":"pixellab","peca":"salao/giros/ilha","geracoes":25,"quando":"2026-10-15T23:15:20.662Z"}
 {"ferramenta":"pixellab","peca":"salao/giros/geladeira","geracoes":25,"quando":"2026-10-15T23:18:40.308Z"}
+{"ferramenta":"pixellab","peca":"personagem/animacao/varrendo","geracoes":3,"quando":"2026-11-09T12:40:48.942Z"}
+{"ferramenta":"pixellab","peca":"personagem/estado/segurando-vassoura","geracoes":25,"quando":"2026-11-09T12:43:47.682Z"}
+{"ferramenta":"pixellab","peca":"personagem/animacao/varrendo","geracoes":14,"quando":"2026-11-09T12:46:46.080Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/deitar/south-east","geracoes":10,"quando":"2026-11-09T12:49:52.495Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/deitar-fb/south-east","geracoes":10,"quando":"2026-11-09T12:51:12.951Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/deitar-lendo/south-east","geracoes":10,"quando":"2026-11-09T12:52:42.267Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/deitar-lendo-fb/south-east","geracoes":10,"quando":"2026-11-09T12:54:10.292Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/deitar/north-east","geracoes":10,"quando":"2026-11-09T12:55:39.882Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/deitar-fb/north-east","geracoes":10,"quando":"2026-11-09T12:57:08.655Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/deitar-lendo/north-east","geracoes":10,"quando":"2026-11-09T12:59:41.634Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/deitar-lendo-fb/north-east","geracoes":10,"quando":"2026-11-09T13:01:20.184Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/deitar/north-west","geracoes":10,"quando":"2026-11-09T13:03:06.426Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/deitar-fb/north-west","geracoes":10,"quando":"2026-11-09T13:04:31.108Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/deitar-lendo/north-west","geracoes":10,"quando":"2026-11-09T13:05:58.024Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/deitar-lendo-fb/north-west","geracoes":10,"quando":"2026-11-09T13:07:35.039Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/bracos/north-east","geracoes":10,"quando":"2026-11-09T13:09:03.249Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/bracos/north-west","geracoes":10,"quando":"2026-11-09T13:10:26.907Z"}
+{"ferramenta":"pixellab","peca":"personagem/animacao/falando","geracoes":6,"quando":"2026-11-09T13:14:13.726Z"}
+{"ferramenta":"pixellab","peca":"personagem/gato/base-64 (descartada: grande demais)","geracoes":10,"quando":"2026-11-09T13:18:55.525Z"}
+{"ferramenta":"pixellab","peca":"salao/porta-de-entrada/fechada (perdida: o script parou de esperar antes; estimado)","geracoes":10,"quando":"2026-11-09T13:18:59.978Z"}
+{"ferramenta":"pixellab","peca":"personagem/gato/base (quadro 48)","geracoes":10,"quando":"2026-11-09T13:21:20.675Z"}
+{"ferramenta":"pixellab","peca":"salao/porta-de-entrada/fechada","geracoes":10,"quando":"2026-11-09T13:23:23.590Z"}
+{"ferramenta":"pixellab","peca":"salao/porta-de-entrada/fechada (com folga, 72 px)","geracoes":10,"quando":"2026-11-09T13:25:24.813Z"}
+{"ferramenta":"pixellab","peca":"quarto/giros/cama-casal-1","geracoes":25,"nota":"estimado: a diferença do saldo (100) pegou pedidos de outros agentes ao mesmo tempo; um objeto de 8 vistas de 150 px custa 25","quando":"2026-11-09T13:25:25.587Z"}
+{"ferramenta":"pixellab","peca":"salao/porta-de-entrada/aberta","geracoes":10,"quando":"2026-11-09T13:29:42.176Z"}
+{"ferramenta": "pixellab", "peca": "quarto/giros/cama-casal-3", "geracoes": 25, "retomado": "35f45251-1f90-4668-80d4-bf8331ef7424", "quando": "2026-11-09T13:31:02.207Z", "nota": "estimado pelo preço da API (objeto de 24 px: 10; de 150–170 px: 25; create-1-direction-object: 10–25, contado 25): a diferença do saldo pegou pedidos de outros agentes ao mesmo tempo (retomado depois de a rede cair)"}
+{"ferramenta":"pixellab","peca":"personagem/estado/dormindo-costas","geracoes":90,"quando":"2026-11-09T13:31:57.286Z"}
+{"ferramenta":"pixellab","peca":"salao/porta-de-entrada/aberta (inpaint)","geracoes":20,"quando":"2026-11-09T13:32:16.282Z"}
+{"ferramenta": "pixellab", "peca": "quarto/giros/cama-casal-4", "geracoes": 25, "quando": "2026-11-09T13:33:37.574Z", "nota": "estimado pelo preço da API (objeto de 24 px: 10; de 150–170 px: 25; create-1-direction-object: 10–25, contado 25): a diferença do saldo pegou pedidos de outros agentes ao mesmo tempo (o saldo caiu 80)"}
+{"ferramenta":"pixellab","peca":"personagem/gato/estado/dormindo (estimado pelo em-pe: o saldo caiu 45 com outro agente gastando junto)","geracoes":10,"quando":"2026-11-09T13:35:08.454Z"}
+{"ferramenta": "pixellab", "peca": "objetos/pequenos/opcoes/a", "geracoes": 25, "quando": "2026-11-09T13:36:51.338Z", "nota": "estimado pelo preço da API (objeto de 24 px: 10; de 150–170 px: 25; create-1-direction-object: 10–25, contado 25): a diferença do saldo pegou pedidos de outros agentes ao mesmo tempo (o saldo caiu 35)"}
+{"ferramenta":"pixellab","peca":"personagem/gato/animacao/espreguicar/north-east","geracoes":1,"quando":"2026-11-09T13:37:44.359Z"}
+{"ferramenta":"pixellab","peca":"personagem/acessorio/bone/parado/south-east/0,4","geracoes":20,"quando":"2026-11-09T13:40:16.484Z"}
+{"ferramenta": "pixellab", "peca": "objetos/pequenos/opcoes/b", "geracoes": 25, "quando": "2026-11-09T13:40:33.433Z", "nota": "estimado pelo preço da API (objeto de 24 px: 10; de 150–170 px: 25; create-1-direction-object: 10–25, contado 25): a diferença do saldo pegou pedidos de outros agentes ao mesmo tempo (o saldo caiu 56)"}
+{"ferramenta":"pixellab","peca":"personagem/gato/animacao/espreguicar-12/north-east","geracoes":1,"quando":"2026-11-09T13:40:46.593Z"}
+{"ferramenta":"pixellab","peca":"personagem/acessorio/bone/parado/south-east/0","geracoes":10,"quando":"2026-11-09T13:41:50.267Z"}
+{"ferramenta": "pixellab", "peca": "objetos/pequenos/giros/caneca", "geracoes": 10, "quando": "2026-11-09T13:44:09.843Z", "nota": "estimado pelo preço da API (objeto de 24 px: 10; de 150–170 px: 25; create-1-direction-object: 10–25, contado 25): a diferença do saldo pegou pedidos de outros agentes ao mesmo tempo (o saldo caiu 35)"}
+{"ferramenta":"pixellab","peca":"personagem/gato/animacao/espreguicar-12/north-west","geracoes":1,"quando":"2026-11-09T13:44:35.130Z"}
+{"ferramenta": "pixellab", "peca": "objetos/pequenos/giros/livros", "geracoes": 10, "quando": "2026-11-09T13:46:05.842Z", "nota": "estimado pelo preço da API (objeto de 24 px: 10; de 150–170 px: 25; create-1-direction-object: 10–25, contado 25): a diferença do saldo pegou pedidos de outros agentes ao mesmo tempo (o saldo caiu 26)"}
+{"ferramenta":"pixellab","peca":"personagem/gato/animacao/deitar/north-east","geracoes":1,"quando":"2026-11-09T13:46:09.955Z"}
+{"ferramenta": "pixellab", "peca": "objetos/pequenos/giros/retrato", "geracoes": 10, "quando": "2026-11-09T13:47:25.744Z", "nota": "estimado pelo preço da API (objeto de 24 px: 10; de 150–170 px: 25; create-1-direction-object: 10–25, contado 25): a diferença do saldo pegou pedidos de outros agentes ao mesmo tempo (o saldo caiu 25)"}
+{"ferramenta":"pixellab","peca":"personagem/gato/animacao/deitar/north-west","geracoes":1,"quando":"2026-11-09T13:48:57.795Z"}
+{"ferramenta": "pixellab", "peca": "objetos/pequenos/giros/videogame", "geracoes": 10, "quando": "2026-11-09T13:49:14.740Z", "nota": "estimado pelo preço da API (objeto de 24 px: 10; de 150–170 px: 25; create-1-direction-object: 10–25, contado 25): a diferença do saldo pegou pedidos de outros agentes ao mesmo tempo (o saldo caiu 11)"}
+{"ferramenta":"pixellab","peca":"personagem/gato/animacao/dormindo-respira/north-east","geracoes":1,"quando":"2026-11-09T13:50:54.778Z"}
+{"ferramenta":"pixellab","peca":"personagem/gato/animacao/sentado-rabo/north-east","geracoes":1,"quando":"2026-11-09T13:52:53.544Z"}
+{"ferramenta":"pixellab","peca":"personagem/estado/sentado-sofa","geracoes":25,"quando":"2026-11-09T13:53:13.173Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/deitar/north-east","geracoes":35,"quando":"2026-11-09T13:54:22.782Z"}
+{"ferramenta":"pixellab","peca":"personagem/gato/animacao/dormindo-respira/north-west","geracoes":1,"quando":"2026-11-09T13:54:46.569Z"}
+{"ferramenta":"pixellab","peca":"personagem/animacao/falando-noroeste","geracoes":14,"quando":"2026-11-09T13:55:24.585Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/deitar-fb/north-east","geracoes":14,"quando":"2026-11-09T13:55:35.053Z"}
+{"ferramenta":"pixellab","peca":"personagem/gato/animacao/sentado-rabo/north-west","geracoes":1,"quando":"2026-11-09T13:56:40.309Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/deitar-lendo/north-east","geracoes":21,"quando":"2026-11-09T13:57:03.469Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/deitar-lendo-fb/north-east","geracoes":45,"quando":"2026-11-09T13:58:36.236Z"}
+{"ferramenta":"pixellab","peca":"personagem/estado/sentado-poltrona-costas","geracoes":66,"quando":"2026-11-09T13:58:37.855Z"}
+{"ferramenta": "pixellab", "peca": "quarto/giros/ventilador", "geracoes": 25, "quando": "2026-11-09T13:59:36.475Z", "nota": "estimado pelo preço da API (objeto de 24 px: 10; de 150–170 px: 25; create-1-direction-object: 10–25, contado 25): a diferença do saldo pegou pedidos de outros agentes ao mesmo tempo (o saldo caiu 90)"}
+{"ferramenta":"pixellab","peca":"quarto/parede-avulsas (fone x2, quadro, cortica, prateleira, pintura)","geracoes":75,"quando":"2026-11-09T13:59:57.827Z"}
+{"ferramenta":"pixellab","peca":"quarto/janelas-avulsas (arco x2, redonda, floreira, cortinas)","geracoes":50,"quando":"2026-11-09T13:59:57.827Z"}
+{"ferramenta":"pixellab","peca":"quarto/janela-original-avulsa (base, cortina e aberta avulsas, 3 repinturas de estado)","geracoes":66,"quando":"2026-11-09T13:59:57.827Z"}
+{"ferramenta":"pixellab","peca":"quarto/pufe-avulso","geracoes":15,"quando":"2026-11-09T13:59:57.827Z"}
+{"ferramenta":"pixellab","peca":"quarto/tapete-avulso (x2)","geracoes":20,"quando":"2026-11-09T13:59:57.827Z"}
+{"ferramenta":"pixellab","peca":"quarto/noite-abajur-plantas (l, cubiculo)","geracoes":12,"quando":"2026-11-09T13:59:57.827Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/deitar/north-west","geracoes":45,"quando":"2026-11-09T14:00:08.307Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/bracos/north-east","geracoes":55,"quando":"2026-11-09T14:00:47.950Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/deitar-fb/north-west","geracoes":20,"quando":"2026-11-09T14:01:33.249Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/bracos/north-west","geracoes":20,"quando":"2026-11-09T14:02:04.396Z"}
+{"ferramenta": "pixellab", "peca": "quarto/giros/ventilador", "geracoes": 25, "quando": "2026-11-09T14:02:38.978Z", "nota": "estimado pelo preço da API (objeto de 24 px: 10; de 150–170 px: 25; create-1-direction-object: 10–25, contado 25): a diferença do saldo pegou pedidos de outros agentes ao mesmo tempo (o saldo caiu 65)"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/deitar-lendo/north-west","geracoes":45,"quando":"2026-11-09T14:02:57.208Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/deitar-lendo-fb/north-west","geracoes":10,"quando":"2026-11-09T14:04:38.156Z"}
+{"ferramenta":"pixellab","peca":"quarto/avulso/ventilador (72 × 120, as quatro cortadas: avulsos/ventilador-cortados/)","geracoes":10,"quando":"2026-11-09T13:51:27.914Z"}
+{"ferramenta":"pixellab","peca":"quarto/avulso/ventilador (96 × 152)","geracoes":10,"quando":"2026-11-09T13:56:40.039Z"}
+{"ferramenta":"pixellab","peca":"personagem/gato/animacao/espreguicar-12/north-west","geracoes":1,"quando":"2026-11-09T14:06:30.417Z"}
+{"ferramenta":"pixellab","peca":"personagem/animacao/acenando","geracoes":6,"quando":"2026-11-09T14:11:33.314Z"}
+{"ferramenta":"pixellab","peca":"personagem/gato/estado/em-pe","geracoes":10,"quando":"2026-11-09T14:22:11.832Z"}
+{"ferramenta":"pixellab","peca":"personagem/gato/animacao/andando/south-east","geracoes":1,"quando":"2026-11-09T14:24:30.663Z"}
+{"ferramenta":"pixellab","peca":"personagem/gato/animacao/lambendo/south-east","geracoes":1,"quando":"2026-11-09T14:26:31.971Z"}
+{"ferramenta":"pixellab","peca":"personagem/gato/animacao/sentar/south-east (recuperada: a espera caiu)","geracoes":1,"quando":"2026-11-09T14:27:21.000Z"}
+{"ferramenta":"pixellab","peca":"personagem/gato/animacao/andando/south-west","geracoes":1,"quando":"2026-11-09T14:28:15.234Z"}
+{"ferramenta":"pixellab","peca":"personagem/gato/animacao/sentar/south-west","geracoes":1,"quando":"2026-11-09T14:30:12.462Z"}
+{"ferramenta":"pixellab","peca":"personagem/gato/animacao/lambendo/south-west","geracoes":1,"quando":"2026-11-09T14:32:06.786Z"}
+{"ferramenta":"pixellab","peca":"personagem/gato/animacao/andando/north-east","geracoes":1,"quando":"2026-11-09T14:34:29.283Z"}
+{"ferramenta":"pixellab","peca":"personagem/gato/animacao/sentar/north-east","geracoes":1,"quando":"2026-11-09T14:36:38.306Z"}
+{"ferramenta":"pixellab","peca":"personagem/gato/animacao/lambendo/north-east","geracoes":1,"quando":"2026-11-09T14:38:30.996Z"}
+{"ferramenta":"pixellab","peca":"personagem/gato/animacao/andando/north-west","geracoes":1,"quando":"2026-11-09T14:40:47.486Z"}
+{"ferramenta":"pixellab","peca":"personagem/gato/animacao/sentar/north-west","geracoes":1,"quando":"2026-11-09T14:42:40.014Z"}
+{"ferramenta":"pixellab","peca":"personagem/gato/animacao/lambendo/north-west","geracoes":1,"quando":"2026-11-09T14:44:40.418Z"}
+{"ferramenta":"pixellab","peca":"personagem/gato/animacao/deitar/south-east","geracoes":1,"quando":"2026-11-09T14:47:03.773Z"}
+{"ferramenta":"pixellab","peca":"personagem/gato/animacao/espreguicar-12/south-east","geracoes":1,"quando":"2026-11-09T14:49:24.710Z"}
+{"ferramenta":"pixellab","peca":"personagem/gato/animacao/dormindo-respira/south-east","geracoes":1,"quando":"2026-11-09T14:50:45.901Z"}
+{"ferramenta":"pixellab","peca":"personagem/gato/animacao/sentado-rabo/south-east","geracoes":1,"quando":"2026-11-09T14:52:39.686Z"}
+{"ferramenta":"pixellab","peca":"personagem/gato/animacao/deitar/south-west","geracoes":1,"quando":"2026-11-09T14:54:38.430Z"}
+{"ferramenta":"pixellab","peca":"personagem/gato/animacao/espreguicar-12/south-west","geracoes":1,"quando":"2026-11-09T14:56:44.932Z"}
+{"ferramenta":"pixellab","peca":"personagem/gato/animacao/dormindo-respira/south-west","geracoes":1,"quando":"2026-11-09T14:58:44.525Z"}
+{"ferramenta":"pixellab","peca":"personagem/gato/animacao/sentado-rabo/south-west","geracoes":1,"quando":"2026-11-09T15:00:19.854Z"}

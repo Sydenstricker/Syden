@@ -3146,4 +3146,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "Afeerraa hawaasaa",
   "Entrar na comunidade": "Hawaasatti makami",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "Bubbee dhaabbatu, saphaphuu geengoo qabu, guyyoota ho’aaf.",
 } satisfies Record<string, string>;

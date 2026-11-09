@@ -3105,4 +3105,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "Invito alla community",
   "Entrar na comunidade": "Entra nella community",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "In piedi, con la griglia rotonda, per le giornate calde.",
 } satisfies Record<string, string>;

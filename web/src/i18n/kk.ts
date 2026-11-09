@@ -3180,4 +3180,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "Қауымдастыққа шақыру",
   "Entrar na comunidade": "Қауымдастыққа қосылу",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "Еденге қойылатын, дөңгелек торы бар, ыстық күндерге.",
 } satisfies Record<string, string>;

@@ -111,3 +111,22 @@ mais 68. A rodada da poltrona, da cortina e das máscaras do híbrido custou mai
   Guarda-roupa (quando as portas abrem), janela (o vidro) → Explorar, abajur → Dia e noite, mesa/cadeira → Mini-games. O
   nome aparece ao passar o mouse. Na página de teste, o botão "Funções do app" as liga, e o clique só conta o que faria.
   Teste: `node parede/testar.mjs`.
+
+## As avulsas que faltavam (09/11/2026, o compromisso de 17/10: "toda peça nasce avulsa")
+
+- **Objetos da parede** (fone, quadro, cortiça, prateleira, pintura): `parede-salao/<item>/` preparado do recorte do quarto
+  (o `dia.png` 27 px abaixo), `parede/avulsos.mjs` (pedidos próprios com "FILL": sem isso saíam com ~60% do tamanho) e
+  `parede/avulsos.py <item>=<n>`. Valem nos dois ambientes. O `peca-noite` das avulsas agora é o dia vezes a luz da noite do
+  quarto (antes era o dia: o fone e os troféus acendiam à noite no quarto). O quadro da comunidade foi medido de novo
+  (`DENTRO_DO_QUADRO`). Os `parede/<item>/` ficam: o motor só usa a avulsa no quarto se eles existirem.
+- **Janelas:** redonda e floreira avulsas (`janelas/avulsa.mjs <tipo>`, `avulsa.py <tipo> <n>`: o centro no da antiga, guardada
+  em `recorte-peca-dia.png`), ~80% do tamanho de antes e sem o halo creme na parede colorida. **O arco ficou o recorte**: duas
+  rodadas saíram com 70% do tamanho. **A de cortinas também**: a avulsa copiou a viga do teto. **A original é avulsa**
+  (`original-avulsa.mjs fechada`, `original-estados.mjs <n> cortina|aberta`, `original-pecas.py <n>`): sem a faixa de parede
+  creme, a viga e o luar pintados; os estados são REPINTURAS da avulsa só no vidro e na moldura (gerados como avulsas próprias,
+  saíam com outro desenho: `original/falhas/`). A cortina fechada agora fica dentro da moldura, e não até o chão.
+- **Pufe e tapete** (`avulso.mjs pufe|tapete`, `pecas-avulsas.py pufe=<n> tapete=<n>`): o pé no mesmo lugar do recorte (os
+  de antes em `pecas/recortes/`); o pufe é um desenho só nas três versões; o tapete vai à matiz da sálvia que o tingimento supõe.
+  O `limpar-recorte.py` saiu (era só deles).
+- **A luz do abajur pintada no L e no cubículo** (`noite-abajur-plantas.mjs`, depois `janelas/noite-abajur-plantas.py`): vale
+  com o criado-mudo no lugar de fábrica da planta (`ABAJUR_DAS_PLANTAS`); fora dele, a por código.

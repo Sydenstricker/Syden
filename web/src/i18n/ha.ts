@@ -3108,4 +3108,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "Gayyatar ƙungiya",
   "Entrar na comunidade": "Shiga ƙungiya",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "Fanka mai tsayawa, da ragar zagaye, don ranakun zafi.",
 } satisfies Record<string, string>;

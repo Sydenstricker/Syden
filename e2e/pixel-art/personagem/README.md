@@ -128,3 +128,28 @@ Movimento reduzido no sistema: o coelho aparece já no lugar, sem andar.
 3. **As animações**, uma de cada vez, começando por andar e sentar (`characters/animations`).
 4. **As camadas da frente** dos móveis de sentar e deitar (repintura `inpaint-v3`).
 5. Validado: os outros coelhos com a mesma receita, e o salão isométrico com o mesmo sistema.
+
+## A auditoria visual (09/11/2026): rodar depois de cada lote do PixelLab
+
+A auditoria das bordas (`../auditoria-de-bordas.mjs`) só acha o desenho cortado na borda do QUADRO, pela conta dos pixels.
+O que só aparece com a cena montada — a ordem de desenho (o coelho na frente da mesa em que devia estar atrás), o coelho
+flutuando acima do assento ou afundado no chão, a orelha cortada pela máscara da cabeceira, a perna por cima do braço da
+poltrona, a direção que falta numa animação e cai em outra — pede OLHAR. Para isso:
+
+    node e2e/pixel-art/auditoria-visual.mjs                       # os dois mascotes, quarto e salão (~2,5 min)
+    MASCOTE=pixellab CENA=quarto node e2e/pixel-art/auditoria-visual.mjs   # só um (~30 s)
+    SO=cama node e2e/pixel-art/auditoria-visual.mjs                # só os casos com "cama" no nome
+    SEM_MONTAR=1 ...                                               # reusa as páginas já montadas
+
+Ele monta as páginas numa pasta temporária (sem mexer no `quarto.html` e no `salao.html` do git), põe o coelho em cada lugar
+e pose pelos ganchos de teste da página (`window.coelhoDoTeste`, `girarDoTeste`, `caixaDoMovelDoTeste`,
+`pessoasNaTelaDoTeste`, em `quarto/novo/quarto/montar.mjs`), com o relógio parado, e fotografa de dia e de noite: a cama
+(lendo, dormindo, largado e o meio das transições de deitar), a poltrona, o pufe (os 4 olhares), a cadeira ao computador, o
+abajur e o guarda-roupa, cada móvel nas 4 posições; o coelho de pé (parado, andando, varrendo, falando) nas direções; no
+salão, o coelho do balcão e as pessoas da call em cada assento (sofás, poltronas, banquetas, cadeiras, pufão, TV,
+fliperama, chão), também nas 4 posições. Sai em `e2e/pixel-art/auditoria-visual/<mascote>/<cena>/`: um recorte ampliado
+3× por caso, uma FOLHA DE CONTATO por grupo e por hora (`folha-<grupo>-<dia|noite>.png`, o que se revisa) e o `index.json`.
+
+**Quando:** depois de cada lote novo de arte do personagem (poses, transições, animações) ou de mexer na ordem de desenho
+do motor. Rode com `MASCOTE=pixellab` (o quarto vai a 100% pixel art) e olhe as folhas: quarto primeiro, depois o salão. O
+script não decide o que é defeito; quem revisa compara com a rodada anterior.

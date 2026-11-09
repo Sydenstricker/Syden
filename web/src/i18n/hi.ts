@@ -3105,4 +3105,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "समुदाय का न्योता",
   "Entrar na comunidade": "समुदाय में शामिल हों",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "खड़ा पंखा, गोल जाली वाला, गर्म दिनों के लिए।",
 } satisfies Record<string, string>;

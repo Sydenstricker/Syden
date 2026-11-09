@@ -3168,4 +3168,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "Ftesë në komunitet",
   "Entrar na comunidade": "Bashkohu me komunitetin",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "Në këmbë, me rrjetën e rrumbullakët, për ditët e nxehta.",
 } satisfies Record<string, string>;

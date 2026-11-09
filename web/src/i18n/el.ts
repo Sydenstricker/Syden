@@ -3112,4 +3112,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "Πρόσκληση στην κοινότητα",
   "Entrar na comunidade": "Συμμετοχή στην κοινότητα",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "Όρθιος, με τη στρογγυλή σχάρα του, για τις ζεστές μέρες.",
 } satisfies Record<string, string>;

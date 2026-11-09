@@ -3170,4 +3170,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "Uitnodiging na die gemeenskap",
   "Entrar na comunidade": "Sluit by die gemeenskap aan",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "Staande, met sy ronde rooster, vir die warm dae.",
 } satisfies Record<string, string>;

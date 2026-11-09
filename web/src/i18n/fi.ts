@@ -3176,4 +3176,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "Kutsu yhteisöön",
   "Entrar na comunidade": "Liity yhteisöön",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "Jalallinen, pyöreä säleikkö, kuumille päiville.",
 } satisfies Record<string, string>;

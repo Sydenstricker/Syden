@@ -3173,4 +3173,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "Kutse kogukonda",
   "Entrar na comunidade": "Liitu kogukonnaga",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "Põrandal seisev, ümara võrega, palavateks päevadeks.",
 } satisfies Record<string, string>;

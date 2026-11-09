@@ -3124,4 +3124,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "Приглашение в сообщество",
   "Entrar na comunidade": "Вступить в сообщество",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "Напольный, с круглой решёткой, для жарких дней.",
 } satisfies Record<string, string>;

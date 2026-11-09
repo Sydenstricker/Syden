@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { API_URL, api, loadToken, mediaUrl } from './api';
+import { getDirectory, nomeDe } from './directory';
 import { useT } from './i18n';
 import type { PecaClicada } from './CartaoDaPeca';
 import { type Arrumacao, EditorDaCena, type Figuras } from './QuartoNovo';
 import type { AcoesDoSalao } from './Salao';
-import type { Community } from './types';
+import type { Community, CommunityMember } from './types';
 
 /**
  * O SALÃO NOVO, o isométrico de móveis soltos (e2e/pixel-art/salao/, montado por montar.mjs salao), dentro do início da
@@ -219,6 +220,30 @@ export function SalaoNovo({
     return () => {
       socket.off('salao:mudou', aoMudar);
       socket.off('member:updated', aoMudarMembro);
+    };
+  }, [socket, pronto, community.id]);
+
+  // QUEM ACABOU DE ENTRAR NA COMUNIDADE chega pela porta de entrada do salão, e o coelho do balcão acena (aprovado por ele em
+  // 20/10/2026). O servidor não tem um aviso só de entrada: o member:updated vale também para cargo e nível. Novo é quem a
+  // lista de membros desta comunidade não tinha quando o salão abriu (nem depois): o resto é mudança de quem já estava.
+  useEffect(() => {
+    if (!socket || !pronto) return;
+    const conhecidos = new Set<number>();
+    const semear = () => {
+      const d = getDirectory();
+      if (d.communityId === community.id) for (const id of d.members.keys()) conhecidos.add(id);
+    };
+    semear();
+    const aoMembro = ({ communityId, member }: { communityId: number; member: CommunityMember }) => {
+      if (communityId !== community.id) return;
+      if (!conhecidos.size) { semear(); conhecidos.add(member.id); return; } // a lista ainda não tinha chegado: sem como saber
+      if (conhecidos.has(member.id)) return;
+      conhecidos.add(member.id);
+      enviar({ chegou: { nome: nomeDe(member) } });
+    };
+    socket.on('member:updated', aoMembro);
+    return () => {
+      socket.off('member:updated', aoMembro);
     };
   }, [socket, pronto, community.id]);
 

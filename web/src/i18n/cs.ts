@@ -3175,4 +3175,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "Pozvánka do komunity",
   "Entrar na comunidade": "Vstoupit do komunity",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "Stojanový, s kulatou mřížkou, na horké dny.",
 } satisfies Record<string, string>;

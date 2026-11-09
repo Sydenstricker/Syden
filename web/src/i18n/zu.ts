@@ -3177,4 +3177,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "Isimemo somphakathi",
   "Entrar na comunidade": "Joyina umphakathi",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "Ifeni emile, enegridi eyindilinga, yezinsuku ezishisayo.",
 } satisfies Record<string, string>;

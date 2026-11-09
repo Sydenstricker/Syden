@@ -3122,4 +3122,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "Stedina għall-komunità",
   "Entrar na comunidade": "Ingħaqad mal-komunità",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "Wieqaf, bil-gradilja tonda, għall-jiem sħan.",
 } satisfies Record<string, string>;

@@ -3160,4 +3160,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "הזמנה לקהילה",
   "Entrar na comunidade": "הצטרפות לקהילה",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "עומד, עם הרשת העגולה, לימים החמים.",
 } satisfies Record<string, string>;

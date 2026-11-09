@@ -3103,4 +3103,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "কমিউনিটির আমন্ত্রণ",
   "Entrar na comunidade": "কমিউনিটিতে যোগ দিন",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "দাঁড়ানো পাখা, গোল জালিসহ, গরমের দিনের জন্য।",
 } satisfies Record<string, string>;

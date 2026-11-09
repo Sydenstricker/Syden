@@ -3186,4 +3186,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "Даъват ба ҷомеа",
   "Entrar na comunidade": "Ҳамроҳ шудан ба ҷомеа",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "Истода, бо панҷараи гирд, барои рӯзҳои гарм.",
 } satisfies Record<string, string>;

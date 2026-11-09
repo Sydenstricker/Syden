@@ -3186,4 +3186,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "Envitasyon nan kominote a",
   "Entrar na comunidade": "Antre nan kominote a",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "Vantilatè kanpe, ak griyaj won li, pou jou ki cho yo.",
 } satisfies Record<string, string>;

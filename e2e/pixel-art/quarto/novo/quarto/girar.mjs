@@ -16,8 +16,8 @@ const esperar = (ms) => new Promise((ok) => setTimeout(ok, ms));
 const [nome, origem, descricao = 'a green wingback armchair with wooden legs'] = process.argv.slice(2);
 const pasta = path.join(AQUI, 'avulsos', nome + '-giros');
 fs.mkdirSync(pasta, { recursive: true });
-const antes = await saldo();
-const r = await fetch(API + '/create-8-direction-object', {
+const antes = process.env.RETOMAR ? 0 : await saldo();
+const r = process.env.RETOMAR ? new Response(JSON.stringify({ object_id: process.env.RETOMAR, usage: null })) : await fetch(API + '/create-8-direction-object', {
   method: 'POST',
   headers: cab,
   body: JSON.stringify({
@@ -28,13 +28,14 @@ const r = await fetch(API + '/create-8-direction-object', {
 });
 const t = await r.text();
 if (!r.ok) throw new Error(r.status + ': ' + t.slice(0, 600));
-const { object_id: id } = JSON.parse(t);
+const { object_id: id, usage } = JSON.parse(t);
 console.log('objeto', id);
 let det;
 for (let i = 0; ; i++) {
-  if (i > 120) throw new Error('demorou demais');
+  if (i > 480) throw new Error(`demorou demais (objeto ${id})`); // (a fila do PixelLab, com outros pedidos, passa de 10 min)
   await esperar(5000);
-  det = await (await fetch(`${API}/objects/${id}`, { headers: cab })).json();
+  // (a rede cai às vezes no meio da espera: tenta de novo na volta seguinte; o objeto continua lá, e RETOMAR=<id> o busca)
+  try { det = await (await fetch(`${API}/objects/${id}`, { headers: cab })).json(); } catch { continue; }
   if (['completed', 'review'].includes(det.status)) break;
   if (['failed', 'error'].includes(det.status)) throw new Error(JSON.stringify(det).slice(0, 600));
 }
@@ -46,5 +47,5 @@ for (const [d, v] of Object.entries(rot)) {
   if (url) { fs.writeFileSync(path.join(pasta, d + '.png'), Buffer.from(await (await fetch(url)).arrayBuffer())); n++; }
 }
 const depois = await saldo();
-fs.appendFileSync(path.join(AQUI, '..', '..', '..', 'custos.jsonl'), JSON.stringify({ ferramenta: 'pixellab', peca: `quarto/giros/${nome}`, geracoes: +(antes - depois).toFixed(1), quando: new Date().toISOString() }) + '\n');
-console.log(`${n} vistas em avulsos/${nome}-giros/ (status ${det.status}); custou ${(antes - depois).toFixed(1)}`);
+fs.appendFileSync(path.join(AQUI, '..', '..', '..', 'custos.jsonl'), JSON.stringify({ ferramenta: 'pixellab', peca: `quarto/giros/${nome}`, geracoes: usage?.generations ?? (process.env.RETOMAR ? null : +(antes - depois).toFixed(1)), usage: usage ?? null, ...(process.env.RETOMAR && { retomado: process.env.RETOMAR }), quando: new Date().toISOString() }) + '\n');
+console.log(`${n} vistas em avulsos/${nome}-giros/ (status ${det.status}); custou ${usage?.generations ?? (antes - depois).toFixed(1)}`);

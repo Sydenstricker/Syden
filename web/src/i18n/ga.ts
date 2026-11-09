@@ -3112,4 +3112,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "Cuireadh chuig an bpobal",
   "Entrar na comunidade": "Téigh isteach sa phobal",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "Ina sheasamh, lena ghreille chruinn, do na laethanta te.",
 } satisfies Record<string, string>;

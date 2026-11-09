@@ -3105,4 +3105,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "Mwaliko wa jumuiya",
   "Entrar na comunidade": "Jiunge na jumuiya",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "Feni ya kusimama, yenye wavu wa duara, kwa siku za joto.",
 } satisfies Record<string, string>;

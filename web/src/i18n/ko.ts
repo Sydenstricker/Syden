@@ -3094,4 +3094,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "커뮤니티 초대",
   "Entrar na comunidade": "커뮤니티 들어가기",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "둥근 망이 달린 스탠드 선풍기, 더운 날을 위해.",
 } satisfies Record<string, string>;

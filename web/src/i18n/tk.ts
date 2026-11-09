@@ -3187,4 +3187,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "Jemgyýete çakylyk",
   "Entrar na comunidade": "Jemgyýete goşul",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "Aýakly, tegelek gözenekli, yssy günler üçin.",
 } satisfies Record<string, string>;

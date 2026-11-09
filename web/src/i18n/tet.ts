@@ -3108,4 +3108,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "Konvite ba komunidade",
   "Entrar na comunidade": "Tama ba komunidade",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "Ventuinha hamriik, ho grade kabuar, ba loron manas sira.",
 } satisfies Record<string, string>;

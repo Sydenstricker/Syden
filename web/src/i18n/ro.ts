@@ -3106,4 +3106,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "Invitație în comunitate",
   "Entrar na comunidade": "Intră în comunitate",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "În picioare, cu grila rotundă, pentru zilele călduroase.",
 } satisfies Record<string, string>;

@@ -3177,4 +3177,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "ຄຳເຊີນເຂົ້າຊຸມຊົນ",
   "Entrar na comunidade": "ເຂົ້າຮ່ວມຊຸມຊົນ",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "ພັດລົມຕັ້ງພື້ນ ມີຕາໜ່າງມົນ ສຳລັບມື້ທີ່ຮ້ອນ.",
 } satisfies Record<string, string>;

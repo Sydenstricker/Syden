@@ -3088,4 +3088,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "సంఘానికి ఆహ్వానం",
   "Entrar na comunidade": "సంఘంలో చేరండి",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "నిలబడే ఫ్యాన్, గుండ్రటి జాలీతో, ఎండ రోజుల కోసం.",
 } satisfies Record<string, string>;

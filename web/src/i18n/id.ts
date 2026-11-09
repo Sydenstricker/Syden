@@ -3103,4 +3103,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "Undangan ke komunitas",
   "Entrar na comunidade": "Gabung ke komunitas",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "Kipas berdiri, dengan kisi bulat, untuk hari-hari panas.",
 } satisfies Record<string, string>;

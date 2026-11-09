@@ -3121,4 +3121,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "Ìpè sí àwùjọ",
   "Entrar na comunidade": "Darapọ̀ mọ́ àwùjọ",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "Fáànù ìdúró, pẹ̀lú àwọ̀n yíká, fún ọjọ́ gbígbóná.",
 } satisfies Record<string, string>;

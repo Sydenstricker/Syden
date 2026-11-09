@@ -775,6 +775,7 @@ export class CenaDoQuarto3D {
     if (nome === 'neon') return this.neon();
     if (nome === 'violao') return this.violao();
     if (nome === 'relogio') return this.relogioDeParede();
+    if (nome === 'ventilador') return this.ventilador();
     return new THREE.Group();
   }
 
@@ -990,6 +991,50 @@ export class CenaDoQuarto3D {
     const cabeca = new THREE.Mesh(this.geo(new THREE.BoxGeometry(0.1, 0.14, 0.04)), escura);
     cabeca.position.set(0, 1.28, 0.07);
     g.add(boca, braco, cabeca);
+    g.traverse((o) => ((o as THREE.Mesh).castShadow = true));
+    return g;
+  }
+
+  /**
+   * O ventilador de pé (09/11/2026, a peça nova do pixel): nenhum pacote tem um (o Kenney só tem o de teto). A base redonda,
+   * a haste, o motor e a grade com as três pás, virada para a frente (+z), como o do pixel.
+   */
+  private ventilador() {
+    const g = new THREE.Group();
+    const creme = this.material('#efe3c8', { roughness: 0.55 });
+    const escuro = this.material('#6f6257', { roughness: 0.6 });
+    const pa = this.material('#cfe3dc', { roughness: 0.5, side: THREE.DoubleSide });
+    const base = new THREE.Mesh(this.geo(new THREE.CylinderGeometry(0.2, 0.23, 0.06, 20)), creme);
+    base.position.y = 0.03;
+    const haste = new THREE.Mesh(this.geo(new THREE.CylinderGeometry(0.025, 0.025, 0.72, 10)), creme);
+    haste.position.y = 0.42;
+    const motor = new THREE.Mesh(this.geo(new THREE.CylinderGeometry(0.08, 0.09, 0.16, 14)), creme);
+    motor.rotation.x = Math.PI / 2;
+    motor.position.set(0, 0.86, -0.04);
+    const cabeca = new THREE.Group();
+    cabeca.position.set(0, 0.86, 0.08);
+    const aro = new THREE.Mesh(this.geo(new THREE.TorusGeometry(0.26, 0.015, 6, 32)), creme);
+    const raio = this.geo(new THREE.BoxGeometry(0.008, 0.52, 0.008));
+    for (let i = 0; i < 6; i++) {
+      const r = new THREE.Mesh(raio, creme);
+      r.rotation.z = (i * Math.PI) / 6;
+      r.position.z = 0.03;
+      cabeca.add(r);
+    }
+    const miolo = new THREE.Mesh(this.geo(new THREE.CylinderGeometry(0.045, 0.045, 0.05, 12)), escuro);
+    miolo.rotation.x = Math.PI / 2;
+    const forma = new THREE.Shape();
+    forma.moveTo(0, 0);
+    forma.bezierCurveTo(0.08, 0.06, 0.2, 0.08, 0.22, 0);
+    forma.bezierCurveTo(0.2, -0.06, 0.08, -0.05, 0, 0);
+    const desenhoDaPa = this.geo(new THREE.ShapeGeometry(forma));
+    for (let i = 0; i < 3; i++) {
+      const p = new THREE.Mesh(desenhoDaPa, pa);
+      p.rotation.z = (i * 2 * Math.PI) / 3;
+      cabeca.add(p);
+    }
+    cabeca.add(aro, miolo);
+    g.add(base, haste, motor, cabeca);
     g.traverse((o) => ((o as THREE.Mesh).castShadow = true));
     return g;
   }

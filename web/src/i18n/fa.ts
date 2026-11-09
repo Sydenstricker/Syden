@@ -3099,4 +3099,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "دعوت به انجمن",
   "Entrar na comunidade": "پیوستن به انجمن",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "ایستاده، با توری گرد، برای روزهای گرم.",
 } satisfies Record<string, string>;

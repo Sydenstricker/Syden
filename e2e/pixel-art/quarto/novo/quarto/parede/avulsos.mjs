@@ -33,7 +33,14 @@ for (const item of process.argv.slice(2)) {
   gravar64(path.join(d, 'ref.png'), ref.b64);
   // (o violão, pedido "SMALL ... com parede em volta" para caber na parede, saía pequeno no quadro sozinho: relato de
   // 15/10/2026, "o violão está com falhas e artefatos")
-  const PROPRIO = { violao: 'ONLY ONE light wooden acoustic guitar hanging vertically from a small dark wall hook at the top, the guitar FILLS the whole image height from the hook at the top to the bottom of its body, clean dark outline, clean isometric pixel art' };
+  // OS DO QUARTO (09/11/2026, o compromisso de 17/10: "toda peça nasce avulsa"): pedidos com o texto de sempre, saíam com
+  // ~60% do tamanho do recorte, com folga em volta; o "FILLS" os traz ao tamanho dele (preparados por quarto-avulsos.py)
+  const PROPRIO = { violao: 'ONLY ONE light wooden acoustic guitar hanging vertically from a small dark wall hook at the top, the guitar FILLS the whole image height from the hook at the top to the bottom of its body, clean dark outline, clean isometric pixel art',
+    fone: 'ONLY ONE pair of dark grey over-ear headphones hanging from a small wooden wall hook, the headphones FILL the whole image from the hook at the top edge to the ear cups at the bottom edge, clean dark outline, clean isometric pixel art',
+    quadro: 'ONLY ONE wide wooden picture frame flat on a wall, seen at an isometric angle, holding three small instant photos of cute cartoon bunny rabbits pinned on a string on a cream backing, the frame FILLS the whole image edge to edge, clean dark outline, clean isometric pixel art',
+    cortica: 'ONLY ONE cork board in a wooden frame flat on a wall, seen at an isometric angle, with a few colorful paper notes pinned on it, the board FILLS the whole image edge to edge, clean dark outline, clean isometric pixel art',
+    prateleira: 'ONLY ONE short wooden wall shelf seen at an isometric angle, with a few books, a tiny potted succulent and a small cream ceramic vase on it, the shelf and its objects FILL the whole image edge to edge, clean dark outline, clean isometric pixel art',
+    pintura: 'ONLY ONE framed landscape painting of green hills and a soft sunset sky in a thin wooden frame, flat on a wall, seen at an isometric angle, the painting FILLS the whole image edge to edge, clean dark outline, clean isometric pixel art' };
   const texto = PROPRIO[item] ? PROPRIO[item] + ', isolated on a transparent background, NO wall and NO bricks drawn behind or around it, the same isometric angle as the reference' : ITENS[item].texto.replace(/,?\s*(flat against|set into) the plain cream[^,]*,?/g, ', ').replace(/ONLY/, 'ONLY ONE') + ', isolated on a transparent background, NO wall and NO bricks drawn behind or around it, the same isometric angle as the reference';
   const imagens = await chamar('/generate-image-v2', {
     description: texto, image_size: { width: ref.w, height: ref.h }, no_background: true,

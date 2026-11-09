@@ -3196,4 +3196,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "Hamjamiyatga taklif",
   "Entrar na comunidade": "Hamjamiyatga qoʻshilish",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "Tik turadigan, dumaloq panjarali, issiq kunlar uchun.",
 } satisfies Record<string, string>;

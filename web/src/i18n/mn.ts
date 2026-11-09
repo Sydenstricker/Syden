@@ -3190,4 +3190,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "Бүлгэмд урих",
   "Entrar na comunidade": "Бүлгэмд нэгдэх",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "Зогсоолтой, дугуй тортой, халуун өдрүүдэд.",
 } satisfies Record<string, string>;

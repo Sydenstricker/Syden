@@ -3170,4 +3170,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "Invitation til fællesskabet",
   "Entrar na comunidade": "Bliv en del af fællesskabet",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "Stående, med det runde gitter, til de varme dage.",
 } satisfies Record<string, string>;

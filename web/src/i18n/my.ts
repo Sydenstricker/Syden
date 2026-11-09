@@ -3145,4 +3145,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "အသိုင်းအဝိုင်းသို့ ဖိတ်ကြားချက်",
   "Entrar na comunidade": "အသိုင်းအဝိုင်းသို့ ဝင်ရန်",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "ရပ်ထားသော ပန်ကာ၊ အဝိုင်းဇကာပါ၊ ပူသောနေ့များအတွက်။",
 } satisfies Record<string, string>;

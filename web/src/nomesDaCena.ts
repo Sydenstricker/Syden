@@ -23,6 +23,10 @@ const MOVEIS: Record<string, (t: T) => string> = {
   mesa: (t) => t('Mesa'),
   'planta-alta': (t) => t('Planta alta'),
   'planta-baixa': (t) => t('Samambaia'),
+  // o bicho do quarto (09/11/2026; já traduzido nos 80: é palavra do Desenha e adivinha)
+  gato: (t) => t('Gato'),
+  // (já traduzido nos 80: é palavra do Desenha e adivinha)
+  ventilador: (t) => t('Ventilador'),
   tv: (t) => t('TV'),
   sofa: (t) => t('Sofá'),
   mesinha: (t) => t('Mesinha'),
@@ -134,6 +138,7 @@ const DESCRICOES: Partial<Record<GrupoDaCena, Record<string, (t: T) => string>>>
     mesa: (t) => t('O coelho senta aqui quando você entra numa call.'),
     'planta-alta': (t) => t('Folhas grandes para encher um canto de verde.'),
     'planta-baixa': (t) => t('Pequena e cheia, num cesto de palha.'),
+    ventilador: (t) => t('De pé, com a grade redonda, para os dias quentes.'),
     tv: (t) => t('Mostra quem está transmitindo agora.'),
     sofa: (t) => t('Cabe a turma inteira na frente da TV.'),
     mesinha: (t) => t('Baixinha, perto do sofá, para a pipoca e o refrigerante.'),

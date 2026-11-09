@@ -3087,4 +3087,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "コミュニティへの招待",
   "Entrar na comunidade": "コミュニティに参加",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "丸いガードの扇風機。暑い日のために。",
 } satisfies Record<string, string>;

@@ -11,7 +11,7 @@
  *
  * Toda peça de pixel tem a sua linha em todo tema (o teste confere): móveis (TAMANHOS de arrumacao.ts), objetos da parede
  * (ITENS_DA_PAREDE), objetos de cima e a janela. O que nenhum pacote tem é feito por código na cena ("codigo:…": o fone, a
- * cortiça, os troféus, o neon, o violão e o relógio do clássico). Os caminhos são relativos a web/public/quarto3d/.
+ * cortiça, os troféus, o neon, o violão e o relógio do clássico, e o ventilador dos dois). Os caminhos são relativos a web/public/quarto3d/.
  */
 
 export interface Parte {
@@ -124,6 +124,8 @@ export const TEMAS: Record<string, Tema> = {
       tapete: { arquivo: 'rug_oval_B', cabe: 'encher' },
       'planta-alta': { arquivo: 'kenney/pottedPlant', cores: { wood: '#c9714f' }, escala: 1.1 },
       'planta-baixa': { arquivo: 'cactus_medium_B' },
+      // o ventilador de pé (nenhum pacote tem: o do Kenney é de teto), feito por código na cena, o mesmo nos dois temas
+      ventilador: { arquivo: 'codigo:ventilador', cabe: 'livre' },
     },
     cadeira: { arquivo: 'chair_desk_A', pose: 'computador', assento: 0.37, avanco: 0.02 },
     naParede: {
@@ -235,6 +237,7 @@ export const TEMAS: Record<string, Tema> = {
       tapete: { arquivo: T + 'rug_B_large_orange', cabe: 'encher' },
       'planta-alta': { arquivo: T + 'monstera_plant_medium_potted', escala: 0.75, cabe: 'livre' },
       'planta-baixa': { arquivo: T + 'sansevieria_plant_medium_potted', escala: 0.75, cabe: 'livre' },
+      ventilador: { arquivo: 'codigo:ventilador', cabe: 'livre' },
     },
     cadeira: { arquivo: T + 'desk_chair_blue', pose: 'computador', assento: 0.42, avanco: 0.02 },
     naParede: {

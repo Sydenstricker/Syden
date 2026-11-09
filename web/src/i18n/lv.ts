@@ -3178,4 +3178,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "Uzaicinājums uz kopienu",
   "Entrar na comunidade": "Pievienoties kopienai",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "Stāvošs, ar apaļo režģi, karstajām dienām.",
 } satisfies Record<string, string>;

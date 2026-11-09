@@ -1,0 +1,41 @@
+{
+  "id": "77103856-5d72-4e67-a518-28b1130c22a8",
+  "name": "a wooden double bed with a hea",
+  "state_name": "base",
+  "prompt": "a wooden double bed with a headboard, drawers under the mattress, a grey and beige checkered blanket and two cream pillows",
+  "size": {
+    "width": 151,
+    "height": 151
+  },
+  "directions": 8,
+  "created_at": "2026-11-09T13:19:52.545888+00:00",
+  "view": "low top-down",
+  "rotation_urls": {
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/77103856-5d72-4e67-a518-28b1130c22a8/rotations/south.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/77103856-5d72-4e67-a518-28b1130c22a8/rotations/west.png",
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/77103856-5d72-4e67-a518-28b1130c22a8/rotations/east.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/77103856-5d72-4e67-a518-28b1130c22a8/rotations/north.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/77103856-5d72-4e67-a518-28b1130c22a8/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/77103856-5d72-4e67-a518-28b1130c22a8/rotations/south-west.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/77103856-5d72-4e67-a518-28b1130c22a8/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/77103856-5d72-4e67-a518-28b1130c22a8/rotations/north-west.png"
+  },
+  "storage_urls": {
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/77103856-5d72-4e67-a518-28b1130c22a8/rotations/east.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/77103856-5d72-4e67-a518-28b1130c22a8/rotations/west.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/77103856-5d72-4e67-a518-28b1130c22a8/rotations/north.png",
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/77103856-5d72-4e67-a518-28b1130c22a8/rotations/south.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/77103856-5d72-4e67-a518-28b1130c22a8/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/77103856-5d72-4e67-a518-28b1130c22a8/rotations/north-west.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/77103856-5d72-4e67-a518-28b1130c22a8/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/77103856-5d72-4e67-a518-28b1130c22a8/rotations/south-west.png"
+  },
+  "frame_urls": null,
+  "style_settings": {},
+  "tags": [],
+  "status": "completed",
+  "group_id": "49b50814-664f-4e00-b0d4-0d3294468411",
+  "progress_percent": null,
+  "eta_seconds": null,
+  "animations": []
+}

@@ -3176,4 +3176,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "ප්‍රජාවට ආරාධනය",
   "Entrar na comunidade": "ප්‍රජාවට එක්වන්න",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "සිටුවන පංකාවක්, රවුම් දැලක් සමඟ, උණුසුම් දිනවලට.",
 } satisfies Record<string, string>;

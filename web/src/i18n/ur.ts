@@ -3098,4 +3098,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "کمیونٹی کا دعوت نامہ",
   "Entrar na comunidade": "کمیونٹی میں شامل ہوں",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "کھڑا پنکھا، گول جالی والا، گرم دنوں کے لیے۔",
 } satisfies Record<string, string>;

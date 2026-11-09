@@ -3194,4 +3194,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "მოწვევა თემში",
   "Entrar na comunidade": "თემში შესვლა",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "მდგარი, მრგვალი ცხაურით, ცხელი დღეებისთვის.",
 } satisfies Record<string, string>;

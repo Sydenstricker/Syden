@@ -31,6 +31,16 @@ export const AVULSOS = {
   'planta-alta': { lado: [104, 152], texto: `ONLY ONE tall leafy monstera houseplant in a round terracotta pot standing on the floor, and nothing else, the whole plant visible with empty space all around it, nothing touching the edges, ${ANGULO}` },
   'planta-alta-antiga': { lado: [72, 120], texto: `ONLY ONE tall leafy monstera houseplant in a round terracotta pot standing on the floor, and nothing else, the whole plant visible from the leaves to the pot, ${ANGULO}` },
   'planta-baixa': { lado: [64, 72], texto: `ONLY ONE small round bushy green fern in a woven wicker basket pot standing on the floor, and nothing else, the whole plant visible, ${ANGULO}` },
+  // O VENTILADOR (dívida de arte, 16/10/2026: "um ventilador ou um ar-condicionado"; feito em 09/11/2026). O de pé ganhou do
+  // ar-condicionado: nesta escala, o ar-condicionado é uma caixa branca na parede que não se lê; o ventilador tem silhueta
+  // (a grade redonda no alto da haste) e é móvel solto, que gira como os outros.
+  // (num quadro de 72 × 120, as quatro saíram cortadas, no alto ou na base: avulsos/ventilador-cortados/)
+  ventilador: { lado: [96, 152], texto: `ONLY ONE standing pedestal electric fan and nothing else: a round fan head with a cream metal wire cage grill and three pale blades inside, on a tall thin cream pole with a round heavy base on the floor, a small control knob on the pole, the fan head facing the right-front (toward the lower right of the image), the whole fan visible from the top of the round head to the bottom of the round base, drawn small in the middle of the image with a wide empty margin on every side, nothing touching the edges, ${ANGULO}` },
+  // O PUFE E O TAPETE AVULSOS (09/11/2026, o compromisso de 17/10: "toda peça nasce avulsa"): eram recortes da pintura, com
+  // pontos do chão claro na borda. O quadro é o do recorte (80 × 66 e 214 × 113), e "FILLS" o faz encher (sem isso, ~60%).
+  pufe: { lado: [84, 72], texto: `ONLY ONE round dark grey fabric floor pouf, a short wide cylinder with soft rounded edges and stitched seams radiating from a button in the middle of the top, the pouf FILLS the whole image edge to edge, no shadow, ${ANGULO}` },
+  // (a primeira saiu com faixas verticais de luz na metade da direita: o pedido de luz do ANGULO; a segunda pede cor por igual)
+  tapete: { lado: [216, 116], texto: `ONLY ONE flat rectangular rug lying flat on the floor and nothing on it, seen at a 2:1 isometric angle so the rug is a wide diamond shape whose four corners touch the four edges of the image, plain muted sage green wool with a thin darker grey-green line border running just inside its edge, no fringe, no pattern, no shadow, the rug FILLS the whole image, ONE EVEN flat color over the whole rug with only a soft wool texture, no light patches and no gradient, isometric pixel art seen from above at the same 2:1 isometric angle as the reference, clean outline, warm muted palette` },
   'guarda-roupa': { lado: [64, 160], texto: `a tall freestanding wooden wardrobe with two doors and small round knobs, the whole piece visible from the top cornice to the feet, its doors facing to the right-front, the back against a wall on its left side, ${ANGULO}` },
 };
 

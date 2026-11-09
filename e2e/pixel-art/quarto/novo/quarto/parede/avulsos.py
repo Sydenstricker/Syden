@@ -6,6 +6,11 @@ import numpy as np
 from PIL import Image
 AQUI = os.path.dirname(os.path.abspath(__file__)); BASE = os.path.join(os.path.dirname(AQUI), 'parede-salao')
 chao = lambda x: 253 + (x - 256) * (114 / 216)
+from scipy.ndimage import gaussian_filter
+_J = os.path.join(os.path.dirname(AQUI), 'janelas')
+_ler = lambda f: np.array(Image.open(os.path.join(_J, f)).convert('RGB')).astype(float)
+_borrar = lambda a: np.stack([gaussian_filter(a[..., c], 10) for c in range(3)], 2)
+RAZAO_NOITE = _borrar(_ler('sem-janela-noite.png')) / np.maximum(1, _borrar(_ler('sem-janela-dia.png')))
 folha = []
 for arg in sys.argv[1:]:
     item, _, forcar = arg.partition('=')
@@ -36,7 +41,12 @@ for arg in sys.argv[1:]:
         c0, c1 = cols.min(), cols.max(); tela[:, c0:c1 + 1] = tela[:, c0:c1 + 1][:, ::-1].copy(); m = tela[..., 3] > 0
     hs = chao(meio) - np.nonzero(m[:, cols.min():cols.max() + 1].any(1))[0]
     tq = np.roll(tela, -27, 0).astype(np.uint8)
-    for nome in ('peca-dia', 'peca-noite'): Image.fromarray(tq, 'RGBA').save(os.path.join(d, nome + '.png'), optimize=True)
+    # A NOITE (09/11/2026): no salão a noite sai do dia, por código, mas o QUARTO usa a peca-noite como ela é, e a peça
+    # gerada sem parede acendia à noite (o fone, os troféus). Ela é o dia vezes a luz da noite do quarto no lugar (como
+    # parede/pecas.py e janelas/pecas.py fazem com os recortes).
+    Image.fromarray(tq, 'RGBA').save(os.path.join(d, 'peca-dia.png'), optimize=True)
+    tn = tq.copy(); tn[..., :3] = np.clip(tq[..., :3] * RAZAO_NOITE, 0, 255).astype(np.uint8) * (tq[..., 3:] > 0)
+    Image.fromarray(tn, 'RGBA').save(os.path.join(d, 'peca-noite.png'), optimize=True)
     meta = json.load(open(os.path.join(d, 'item.json'), encoding='utf8'))
     meta.update({'ocupa': [round((cols.min() - 256) / 27, 2), round((cols.max() + 1 - 256) / 27, 2)], 'alto': [round(float(hs.min()), 1), round(float(hs.max()), 1)], 'avulso': n})
     json.dump(meta, open(os.path.join(d, 'item.json'), 'w', encoding='utf8'), ensure_ascii=False)

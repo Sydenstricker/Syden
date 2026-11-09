@@ -64,15 +64,16 @@ export const TAMANHOS: Record<string, [number, number][]> = {
   mesa: [[1, 3], [2, 1], [1, 2], [3, 1]],
   'planta-alta': [[1, 1], [1, 1], [1, 1], [1, 1]],
   'planta-baixa': [[1, 1], [1, 1], [1, 1], [1, 1]],
+  ventilador: [[1, 1], [1, 1], [1, 1], [1, 1]],
 };
 
 /** Onde cada objeto da parede foi pintado: as casas ao longo da parede (com v = 0) e a altura, em px do pixel art. */
 export const ITENS_DA_PAREDE: Record<string, { ocupa: [number, number]; alto: [number, number]; chao?: boolean }> = {
-  fone: { ocupa: [3.52, 4.7], alto: [108.1, 150.1] },
-  quadro: { ocupa: [3.26, 5.59], alto: [107.8, 182.8] },
-  cortica: { ocupa: [3.3, 5], alto: [85.6, 159.6] },
-  prateleira: { ocupa: [2.89, 5.3], alto: [95.1, 169.1] },
-  pintura: { ocupa: [3.33, 4.81], alto: [98.5, 178.5] },
+  fone: { ocupa: [3.48, 4.7], alto: [104.1, 153.1] },
+  quadro: { ocupa: [3.37, 5.56], alto: [112.3, 182.3] },
+  cortica: { ocupa: [3.44, 4.93], alto: [91.1, 153.1] },
+  prateleira: { ocupa: [2.93, 5.37], alto: [99.6, 163.6] },
+  pintura: { ocupa: [3.3, 4.89], alto: [97.1, 180.1] },
   'prateleira-bar': { ocupa: [2.81, 5.63], alto: [79.6, 170.6] },
   'prateleira-snacks': { ocupa: [3, 5.52], alto: [98.2, 160.2] },
   trofeus: { ocupa: [3.11, 5.56], alto: [104.2, 157.2] },
@@ -85,10 +86,10 @@ export const ITENS_DA_PAREDE: Record<string, { ocupa: [number, number]; alto: [n
 /** As janelas: as casas que ocupam ao longo da parede com v = 0. A grande ("original") foi pintada com as cortinas abertas
  *  até as pontas da parede (0,04 a 8): o 3D usa só o vão do vidro dela, de 1,4 a 5. */
 export const JANELAS: Record<string, { ocupa: [number, number]; vidro?: [number, number] }> = {
-  original: { ocupa: [0.04, 8], vidro: [1.4, 5] },
+  original: { ocupa: [0.26, 8], vidro: [1.4, 5] },
   arco: { ocupa: [3.3, 5.3] },
-  redonda: { ocupa: [3.3, 5.41] },
-  floreira: { ocupa: [3.11, 5.52] },
+  redonda: { ocupa: [3.41, 5.3] },
+  floreira: { ocupa: [3.33, 5.3] },
   cortinas: { ocupa: [2.7, 5.89] },
 };
 
@@ -103,11 +104,16 @@ interface Fabrica {
   parede: Record<string, { parede: ParedeDoPixel; v: number; h: number }>;
 }
 const DE_CIMA_DE_FABRICA: NonNullable<ArrumacaoDoPixel['emCima']> = {
-  o1: { tipo: 'plantinha', em: 'mesa', s: 0.25, t: 0.82, lado: 0 },
-  o2: { tipo: 'livros', em: 'mesa', s: 0.3, t: 0.85, lado: 0 },
+  o1: { tipo: 'plantinha', em: 'mesa', s: 0.1, t: 0.8, lado: 0 },
+  o2: { tipo: 'livros', em: 'mesa', s: 0.32, t: 0.82, lado: 0 },
   o3: { tipo: 'caneca', em: 'abajur', s: 0.2, t: 0.5, lado: 0 },
 };
-const GUARDADOS_DE_FABRICA = ['poltrona'];
+const GUARDADOS_DE_FABRICA = ['poltrona', 'ventilador'];
+/**
+ * O MÓVEL NOVO CHEGA GUARDADO (o ventilador, 09/11/2026): quem já arrumou o quarto não o acha no meio dele, e sim no
+ * catálogo do Editar. Sem lugar na arrumação guardada, ele está guardado (a página faz igual: CHEGAM_GUARDADOS, em montar.mjs).
+ */
+const CHEGAM_GUARDADOS = ['ventilador'];
 /** A poltrona começa guardada; posta de volta sem lugar guardado, ela vai para cá (o INICIAL da página). */
 const POLTRONA = { c: [7, 5] as [number, number], lado: 0 };
 export const FABRICA: Record<string, Fabrica> = {
@@ -122,6 +128,7 @@ export const FABRICA: Record<string, Fabrica> = {
       mesa: { c: [1.5, 0.5], lado: 3 },
       'planta-alta': { c: [4.5, 0.5], lado: 0 },
       'planta-baixa': { c: [7.5, 0.5], lado: 0 },
+      ventilador: { c: [0.5, 3.5], lado: 0 },
     },
     cadeira: { u: 1.5, v: 2.15, th: -1.571 },
     janela: { tipo: 'original', parede: 'direita', v: 0 },
@@ -143,6 +150,7 @@ export const FABRICA: Record<string, Fabrica> = {
       mesa: { c: [4.5, 1.5], lado: 0 },
       'planta-alta': { c: [4.5, 3.5], lado: 0 },
       'planta-baixa': { c: [3.5, 4.5], lado: 0 },
+      ventilador: { c: [0.5, 4.5], lado: 0 },
     },
     cadeira: { u: 6.15, v: 1.5, th: -3.142 },
     janela: { tipo: 'cortinas', parede: 'direita', v: 1.7 },
@@ -164,6 +172,7 @@ export const FABRICA: Record<string, Fabrica> = {
       mesa: { c: [4.5, 2.5], lado: 3 },
       'planta-alta': { c: [7.5, 2.5], lado: 0 },
       'planta-baixa': { c: [6.5, 2.5], lado: 0 },
+      ventilador: { c: [2.5, 4.5], lado: 0 },
     },
     cadeira: { u: 4.5, v: 4.15, th: -1.571 },
     janela: { tipo: 'cortinas', parede: 'direita', v: 1.4 },
@@ -303,6 +312,7 @@ export function noMundo(a: ArrumacaoDoPixel | null | undefined): QuartoNoMundo {
   // (sem arrumação nenhuma, os guardados de fábrica: a poltrona; com uma sem a lista, nenhum, como a página faz)
   const guardados = Array.isArray(arr.guardados) ? arr.guardados : arr.moveis ? [] : GUARDADOS_DE_FABRICA;
   for (const id of guardados) if (id !== 'cama' && !FUNCAO_DO_MOVEL[id]) delete moveis[id];
+  for (const id of CHEGAM_GUARDADOS) if (!arr.moveis?.[id]) delete moveis[id];
 
   const mundo: MovelNoMundo[] = Object.entries(moveis).map(([id, m]) => {
     const tipo = tipoDe(id);

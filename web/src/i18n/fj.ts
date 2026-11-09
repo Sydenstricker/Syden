@@ -3105,4 +3105,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "Veisureti ki na isoqosoqo",
   "Entrar na comunidade": "Curu ki na isoqosoqo",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "E tu cake, kei na kena sau wavokiti, me baleta na siga katakata.",
 } satisfies Record<string, string>;

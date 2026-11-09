@@ -3119,4 +3119,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "คำเชิญเข้าคอมมูนิตี้",
   "Entrar na comunidade": "เข้าร่วมคอมมูนิตี้",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "พัดลมตั้งพื้น ตะแกรงกลม สำหรับวันที่อากาศร้อน",
 } satisfies Record<string, string>;

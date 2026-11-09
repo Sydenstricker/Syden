@@ -3195,4 +3195,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "Հրավեր համայնք",
   "Entrar na comunidade": "Միանալ համայնքին",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "Կանգնած, կլոր ցանցով, շոգ օրերի համար։",
 } satisfies Record<string, string>;

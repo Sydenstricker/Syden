@@ -3176,4 +3176,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "Fanasana ho any amin’ny vondrona",
   "Entrar na comunidade": "Hiditra ao amin’ny vondrona",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "Fivelezam-pandrana mijoro, misy makarakara boribory, ho an’ny andro mafana.",
 } satisfies Record<string, string>;

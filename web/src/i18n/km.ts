@@ -3175,4 +3175,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "ការអញ្ជើញចូលសហគមន៍",
   "Entrar na comunidade": "ចូលរួមសហគមន៍",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "កង្ហារឈរ មានសំណាញ់មូល សម្រាប់ថ្ងៃក្ដៅ។",
 } satisfies Record<string, string>;

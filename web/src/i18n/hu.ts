@@ -3178,4 +3178,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "Meghívó a közösségbe",
   "Entrar na comunidade": "Csatlakozás a közösséghez",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "Álló, kerek ráccsal, a forró napokra.",
 } satisfies Record<string, string>;

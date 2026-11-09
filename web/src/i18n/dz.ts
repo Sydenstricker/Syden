@@ -3189,4 +3189,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "མི་སྡེ་ནང་མགྲོན་འབོད།",
   "Entrar na comunidade": "མི་སྡེ་ནང་ཞུགས།",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "ལངས་ཏེ་སྡོད་པའི་གློག་གཡབ། སྒོར་སྒོརམ་གྱི་དྲྭ་བ་དང་གཅིག་ཁར། ཚ་བའི་ཉིན་མར།",
 } satisfies Record<string, string>;

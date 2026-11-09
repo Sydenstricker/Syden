@@ -3091,4 +3091,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "சமூகத்துக்கான அழைப்பு",
   "Entrar na comunidade": "சமூகத்தில் சேர்",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "நிற்கும் மின்விசிறி, வட்ட வலையுடன், வெயில் நாட்களுக்கு.",
 } satisfies Record<string, string>;

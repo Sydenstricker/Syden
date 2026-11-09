@@ -1,0 +1,41 @@
+{
+  "id": "dfffdc0e-beee-4cce-abfe-80c55c4193ff",
+  "name": "a short stack of three colorfu",
+  "state_name": "base",
+  "prompt": "a short stack of three colorful books lying flat, tiny pixel art item, bold dark outline, simple silhouette",
+  "size": {
+    "width": 24,
+    "height": 24
+  },
+  "directions": 8,
+  "created_at": "2026-11-09T13:45:08.448784+00:00",
+  "view": "low top-down",
+  "rotation_urls": {
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/dfffdc0e-beee-4cce-abfe-80c55c4193ff/rotations/south.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/dfffdc0e-beee-4cce-abfe-80c55c4193ff/rotations/west.png",
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/dfffdc0e-beee-4cce-abfe-80c55c4193ff/rotations/east.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/dfffdc0e-beee-4cce-abfe-80c55c4193ff/rotations/north.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/dfffdc0e-beee-4cce-abfe-80c55c4193ff/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/dfffdc0e-beee-4cce-abfe-80c55c4193ff/rotations/south-west.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/dfffdc0e-beee-4cce-abfe-80c55c4193ff/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/dfffdc0e-beee-4cce-abfe-80c55c4193ff/rotations/north-west.png"
+  },
+  "storage_urls": {
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/dfffdc0e-beee-4cce-abfe-80c55c4193ff/rotations/east.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/dfffdc0e-beee-4cce-abfe-80c55c4193ff/rotations/west.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/dfffdc0e-beee-4cce-abfe-80c55c4193ff/rotations/north.png",
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/dfffdc0e-beee-4cce-abfe-80c55c4193ff/rotations/south.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/dfffdc0e-beee-4cce-abfe-80c55c4193ff/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/dfffdc0e-beee-4cce-abfe-80c55c4193ff/rotations/north-west.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/dfffdc0e-beee-4cce-abfe-80c55c4193ff/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/dfffdc0e-beee-4cce-abfe-80c55c4193ff/rotations/south-west.png"
+  },
+  "frame_urls": null,
+  "style_settings": {},
+  "tags": [],
+  "status": "completed",
+  "group_id": "9c746f76-70b9-4666-8ea6-c5a9754aabd3",
+  "progress_percent": null,
+  "eta_seconds": null,
+  "animations": []
+}

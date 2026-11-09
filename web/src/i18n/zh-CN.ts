@@ -3093,4 +3093,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "社区邀请",
   "Entrar na comunidade": "加入社区",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "落地扇，圆形风罩，给炎热的日子。",
 } satisfies Record<string, string>;

@@ -3076,4 +3076,6 @@ export default {
   // Convite para a comunidade: confirmar antes de entrar
   "Convite para a comunidade": "Lời mời vào cộng đồng",
   "Entrar na comunidade": "Tham gia cộng đồng",
+  // O ventilador do quarto
+  "De pé, com a grade redonda, para os dias quentes.": "Quạt cây, lồng tròn, cho những ngày nóng.",
 } satisfies Record<string, string>;
