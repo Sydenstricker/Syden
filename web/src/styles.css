@@ -2477,6 +2477,16 @@ textarea {
   border-bottom: 1px solid var(--border);
 }
 
+/* O pedido de notificação, uma vez só (PedidoDeAvisoDeLigacao.tsx): o cartão do convite, com a frase inteira. */
+.pedido-de-aviso .convite-voz-texto > span {
+  white-space: normal;
+}
+
+.pedido-de-aviso-icone {
+  flex: none;
+  color: var(--accent);
+}
+
 /* O cartão do toque é o do convite para a voz, com o contorno verde que diz "ligação" antes de ler. */
 .chamada-recebida {
   outline: 2px solid var(--green);
@@ -2975,6 +2985,7 @@ textarea {
 }
 
 .settings-form input,
+.personagem-nome input,
 .settings-field select {
   background: var(--bg-darkest);
   border: none;
@@ -9898,51 +9909,202 @@ textarea {
   margin-top: 0;
 }
 
-/* A aba do avatar no Guarda-roupa (Aparencia.tsx): o personagem à esquerda, as escolhas à direita; empilha na tela estreita. */
-.guarda-roupa-aba-avatar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  gap: 20px;
-  max-width: 720px;
-  margin-top: 16px;
+/* ---------- A Aparência como FICHÁRIO (Aparencia.tsx, 09/11/2026, o desenho dele) ----------
+   Duas orelhas em cima da folha: a aberta tem a cor da folha e a cobre na emenda (margin-bottom: -1px), como uma
+   pasta de verdade; a fechada fica um tom atrás. Cada orelha tem a sua cor na borda de cima: a do app no destaque,
+   a do avatar num azul. */
+.aparencia-fichario {
+  max-width: 760px;
 }
 
-.guarda-roupa-personagem {
-  display: grid;
-  place-items: center;
-  flex: none;
-  width: 160px;
-  height: 200px;
+.aparencia-fichario-orelhas {
+  display: flex;
+  gap: 4px;
+  padding-inline-start: 12px;
+}
+
+.aparencia-fichario-orelha {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  margin-bottom: -1px;
+  padding: 10px 20px 9px;
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-top: 3px solid var(--orelha, var(--accent));
+  border-radius: 10px 10px 0 0;
+  background: var(--bg-main);
+  color: var(--text-muted);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.aparencia-fichario-orelha-avatar {
+  --orelha: #6aa8e8;
+}
+
+.aparencia-fichario-orelha:hover {
+  color: var(--text-strong);
+}
+
+.aparencia-fichario-orelha:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.aparencia-fichario-orelha.aberta {
+  z-index: 1;
+  border-bottom-color: var(--bg-secondary);
+  background: var(--bg-secondary);
+  color: var(--text-strong);
+}
+
+.aparencia-fichario-folha {
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 0 var(--radius) var(--radius) var(--radius);
   background: var(--bg-secondary);
 }
 
-/* O corpo inteiro é pixel art de ~27 × 51: ampliado em inteiro (3×, a largura posta ao carregar), sem suavizar. */
-.guarda-roupa-corpo {
-  height: auto;
-  image-rendering: pixelated;
+:root[dir='rtl'] .aparencia-fichario-folha,
+[dir='rtl'] .aparencia-fichario-folha {
+  border-radius: var(--radius) 0 var(--radius) var(--radius);
 }
 
-.guarda-roupa-aba-avatar-escolhas {
-  flex: 1;
-  min-width: min(100%, 280px);
-}
-
-.guarda-roupa-aba-avatar-escolhas .avatar-acoes {
+/* O personagem: o palco com o desenho grande e, ao lado, as linhas de setas; empilha na tela estreita. */
+.personagem {
+  display: flex;
   flex-wrap: wrap;
+  align-items: center;
+  gap: 20px;
 }
 
-.guarda-roupa-aba-avatar-escolhas .coelhos-prontos {
+.personagem + .personagem {
   margin-top: 16px;
 }
 
-.aparencia-para-o-guarda-roupa {
-  display: inline-flex;
+.personagem-palco {
+  display: grid;
+  place-items: end center;
+  flex: none;
+  width: 200px;
+  height: 210px;
+  padding-bottom: 12px;
+  border-radius: var(--radius);
+  background: radial-gradient(ellipse 60% 10% at 50% 92%, rgba(0, 0, 0, 0.28), transparent 70%), var(--bg-main);
+}
+
+.personagem-palco.pequeno {
+  height: 120px;
+}
+
+/* pixel art ampliada em inteiro (a largura e a altura vêm do onLoad), sem suavizar */
+.pixel-grande {
+  image-rendering: pixelated;
+}
+
+.personagem-linhas {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  min-width: min(100%, 260px);
+}
+
+.personagem-linha {
+  display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+}
+
+.personagem-seta {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--bg-main);
+  color: var(--text-strong);
+  cursor: pointer;
+}
+
+.personagem-seta:hover:not(:disabled),
+.personagem-seta:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.personagem-seta:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+/* as setas apontam para trás e para a frente na direção de leitura */
+[dir='rtl'] .personagem-seta svg {
+  transform: scaleX(-1);
+}
+
+.personagem-valor {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  text-align: center;
+}
+
+.personagem-valor small {
+  color: var(--text-muted);
+  font-size: calc(12px * var(--escala-do-texto));
+}
+
+.personagem-valor strong {
+  color: var(--text-strong);
+}
+
+.personagem-nome {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.personagem-nome label {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 160px;
+  color: var(--text-muted);
+  font-size: calc(12px * var(--escala-do-texto));
+}
+
+.personagem-foto {
   margin-top: 20px;
+}
+
+.personagem-foto summary {
+  color: var(--text-muted);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.personagem-foto[open] summary {
+  margin-bottom: 12px;
+}
+
+.personagem-foto .avatar-acoes {
+  flex-wrap: wrap;
+  background: var(--bg-main);
+}
+
+.enfeites-do-perfil {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
 }
 
 /* Os estilos dos valores de contribuição saíram daqui junto com o bloco que os usava: a contribuição
@@ -13687,59 +13849,6 @@ body.arrastando-barra {
   --logo-linha: #1e2533;
 }
 
-/* ---------- os coelhos prontos, no editor de avatar (SettingsModal.tsx, CoelhosProntos) ---------- */
-
-.coelhos-prontos {
-  margin-top: 16px;
-}
-
-.coelhos-prontos h4 {
-  margin: 0 0 8px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-muted);
-}
-
-.coelhos-prontos-grade {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
-  gap: 8px;
-}
-
-.coelhos-prontos-grade button {
-  display: grid;
-  place-items: center;
-  aspect-ratio: 1;
-  padding: 4px;
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  background: var(--bg-secondary);
-  cursor: pointer;
-  transition: transform 0.12s, border-color 0.12s;
-}
-
-.coelhos-prontos-grade button:hover:not(:disabled),
-.coelhos-prontos-grade button:focus-visible {
-  transform: translateY(-2px);
-  border-color: var(--accent);
-}
-
-.coelhos-prontos-grade button[aria-pressed='true'] {
-  border: 2px solid var(--accent);
-}
-
-.coelhos-prontos-grade button:disabled {
-  opacity: 0.5;
-  cursor: wait;
-}
-
-/* Pixel art: ampliada sem suavizar, senão borra. */
-.coelhos-prontos-grade img {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  image-rendering: pixelated;
-}
 
 /* Retirada por direito autoral (PainelDireitoAutoral.tsx): a busca numa linha, o resultado logo abaixo. */
 .direito-autoral-busca {

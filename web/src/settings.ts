@@ -38,6 +38,12 @@ export interface Settings {
   abrirTransmissaoSozinha: boolean;
   /** Sons de entrada, saída, mudo etc. */
   sounds: boolean;
+  /**
+   * O TOQUE de quem liga numa conversa privada (09/11/2026, sugestão de quem usa). Separado dos sons de aviso: quem os
+   * desliga para não ouvir a sala entrando e saindo continua querendo saber que alguém está ligando — é para isso que
+   * existe toque. Em "Não perturbe" a ligação aparece calada de qualquer jeito.
+   */
+  toqueDeLigacao: boolean;
   /** Volume dos sons do soundboard tocados na sala (0 a 1). */
   soundboardVolume: number;
   /** Confete, fogos e corações que qualquer um da sala manda. Desligado, nem vê nem manda. */
@@ -81,6 +87,7 @@ const DEFAULTS: Settings = {
   showMembers: true,
   abrirTransmissaoSozinha: false,
   sounds: true,
+  toqueDeLigacao: true,
   soundboardVolume: 0.6,
   efeitosVisuais: true,
   mostrarSemVideo: true,

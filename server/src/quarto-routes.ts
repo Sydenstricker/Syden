@@ -39,6 +39,26 @@ export function registerQuartoRoutes(app: FastifyInstance) {
       return { ok: true };
     });
 
+    /**
+     * O BICHO DO QUARTO, pelo Guarda-roupa do app (09/11/2026): qual bicho (cores.pet: 'gato', 'nenhum'…) e o nome dele,
+     * sem precisar da arrumação inteira — o resto do quarto fica como está (ou de fábrica, se nunca foi arrumado).
+     */
+    authed.put<{ Body: { pet?: unknown; nome?: unknown } }>('/api/quarto/pet', async (request, reply) => {
+      const { pet, nome } = request.body ?? {};
+      const q = db.lerQuarto(request.user.id);
+      const atual = q ? (JSON.parse(q.arrumacao) as Record<string, unknown>) : { moveis: {} };
+      const cores = { ...((atual.cores as Record<string, string> | undefined) ?? {}) };
+      if (pet !== undefined) cores.pet = pet as string;
+      const nova: Record<string, unknown> = { ...atual, cores };
+      if (nome !== undefined) nova.nomeDoPet = nome;
+      const v = validarArrumacao(nova);
+      if ('erro' in v) return reply.code(400).send({ error: v.erro });
+      const texto = JSON.stringify(v.ok);
+      if (texto.length > MAX_BYTES) return reply.code(413).send({ error: 'Arrumação grande demais.' });
+      db.guardarQuarto(request.user.id, texto);
+      return { pet: v.ok.cores?.pet ?? 'gato', nome: v.ok.nomeDoPet ?? '' };
+    });
+
     /** A VISITA: o quarto de outra pessoa, como ela deixou. */
     authed.get<{ Params: { id: string } }>('/api/quarto/:id', async (request, reply) => {
       const dono = Number(request.params.id);

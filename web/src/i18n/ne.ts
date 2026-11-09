@@ -1045,7 +1045,6 @@ export default {
   'Trocar a capa': 'कभर बदल्नुहोस्',
   'Trocar áudio': 'अडियो बदल्नुहोस्',
   'Trocar avatar': 'अवतार बदल्नुहोस्',
-  'Ou escolha um coelho': 'वा एउटा खरायो छान्नुहोस्',
   'Usar este coelho': 'यो खरायो प्रयोग गर्नुहोस्',
   'Trocar imagem': 'तस्बिर बदल्नुहोस्',
   'Trocar o e-mail': 'इमेल बदल्नुहोस्',
@@ -3182,4 +3181,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "उभ्याउने पंखा, गोलो जालीसहित, गर्मी दिनहरूका लागि।",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "अवतार",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "एप",
+  "Anterior": "अघिल्लो",
+  "Próximo": "अर्को",
+  "Sem bicho": "घरपालुवा जनावर छैन",
+  "Nome do bicho": "घरपालुवा जनावरको नाम",
+  "Usar uma foto": "फोटो प्रयोग गर",
+  "Bicho do quarto": "कोठाको घरपालुवा जनावर",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "कलको रिङटोन",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "निजी कुराकानीमा कसैले तिमीलाई कल गर्दा बज्छ, सूचना ध्वनिहरू बन्द हुँदा पनि। \"बाधा नदिनुहोस्\" मा कल नबजी देखिन्छ।",
+  'Avisar das ligações com o Syden em segundo plano?': "Syden पृष्ठभूमिमा हुँदा कलबारे सूचना दिने?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "ब्राउजरले अनुमति माग्नेछ। यसरी अर्को ट्याब वा प्रोग्राममा हुँदा पनि तिमीले कल र सन्देशबारे थाहा पाउनेछौ।",
+  'Permitir notificações': "सूचनाहरूलाई अनुमति दिनुहोस्",
 } satisfies Record<string, string>;

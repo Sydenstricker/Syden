@@ -1042,7 +1042,6 @@ export default {
   'Trocar a capa': 'ប្តូររូបគម្រប',
   'Trocar áudio': 'ប្តូរឯកសារសំឡេង',
   'Trocar avatar': 'ប្តូររូបតំណាង',
-  'Ou escolha um coelho': 'ឬជ្រើសរើសទន្សាយមួយ',
   'Usar este coelho': 'ប្រើទន្សាយនេះ',
   'Trocar imagem': 'ប្តូររូបភាព',
   'Trocar o e-mail': 'ប្តូរអ៊ីមែល',
@@ -3179,4 +3178,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "កង្ហារឈរ មានសំណាញ់មូល សម្រាប់ថ្ងៃក្ដៅ។",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "រូបតំណាង",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "កម្មវិធី",
+  "Anterior": "មុន",
+  "Próximo": "បន្ទាប់",
+  "Sem bicho": "គ្មានសត្វចិញ្ចឹម",
+  "Nome do bicho": "ឈ្មោះសត្វចិញ្ចឹម",
+  "Usar uma foto": "ប្រើរូបថត",
+  "Bicho do quarto": "សត្វចិញ្ចឹមក្នុងបន្ទប់",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "សំឡេងរោទ៍ការហៅ",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "រោទ៍នៅពេលមាននរណាម្នាក់ហៅអ្នកក្នុងការសន្ទនាឯកជន ទោះបីបិទសំឡេងជូនដំណឹងក៏ដោយ។ ក្នុង \"កុំរំខាន\" ការហៅបង្ហាញដោយមិនរោទ៍។",
+  'Avisar das ligações com o Syden em segundo plano?': "ជូនដំណឹងអំពីការហៅ ពេល Syden នៅផ្ទៃខាងក្រោយ?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "កម្មវិធីរុករកនឹងសុំការអនុញ្ញាត។ ដូច្នេះអ្នកនឹងដឹងអំពីការហៅ និងសារ ទោះនៅផ្ទាំង ឬកម្មវិធីផ្សេងក៏ដោយ។",
+  'Permitir notificações': "អនុញ្ញាតការជូនដំណឹង",
 } satisfies Record<string, string>;

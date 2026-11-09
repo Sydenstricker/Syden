@@ -1054,7 +1054,6 @@ export default {
   'Trocar a capa': 'ކަވަރު ބަދަލުކުރޭ',
   'Trocar áudio': 'އޯޑިއޯ ބަދަލުކުރޭ',
   'Trocar avatar': 'އަވަތާރު ބަދަލުކުރޭ',
-  'Ou escolha um coelho': 'ނުވަތަ ރެބިޓެއް ހޮވާ',
   'Usar este coelho': 'މި ރެބިޓް ބޭނުންކުރޭ',
   'Trocar imagem': 'ފޮޓޯ ބަދަލުކުރޭ',
   'Trocar o e-mail': 'އީމެއިލް ބަދަލުކުރޭ',
@@ -3190,4 +3189,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "ތިބޭ ފަންކާއެއް، ވަށް ދަޅާއާއެކު، ހޫނު ދުވަސްތަކަށް.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "އަވަތާރު",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "އެޕް",
+  "Anterior": "ކުރީގެ",
+  "Próximo": "ދެން",
+  "Sem bicho": "ގެންގުޅޭ ޖަނަވާރެއް ނެތް",
+  "Nome do bicho": "ގެންގުޅޭ ޖަނަވާރުގެ ނަން",
+  "Usar uma foto": "ފޮޓޯއެއް ބޭނުންކުރޭ",
+  "Bicho do quarto": "ކޮޓަރީގެ ގެންގުޅޭ ޖަނަވާރު",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "ކޯލްގެ ރިންގް",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "ޕްރައިވެޓް ވާހަކައެއްގައި މީހަކު ކަލެއަށް ގުޅާއިރު ރިންގްވާނެ، ނޮޓިފިކޭޝަން ސައުންޑްތައް ނިއްވާފައި ވިޔަސް. \"ހަމަޖެހިލުމުގައި\" ހުރިއިރު ކޯލް ފެންނާނީ ރިންގް ނުވެ.",
+  'Avisar das ligações com o Syden em segundo plano?': "Syden ފަހަތުގައި ހުރިއިރު ކޯލްތަކުގެ ނޮޓިފިކޭޝަން ދޭންތަ؟",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "ބްރައުޒަރު ހުއްދަ އެދޭނެ. އެއީ އެހެން ޓެބެއް ނުވަތަ ޕްރޮގްރާމެއްގައި ހުއްޓަސް ކޯލްތަކާއި މެސެޖްތަކުގެ ޚަބަރު ލިބޭނެ ގޮތް.",
+  'Permitir notificações': "ނޮޓިފިކޭޝަންތަކަށް ހުއްދަ ދޭ",
 } satisfies Record<string, string>;

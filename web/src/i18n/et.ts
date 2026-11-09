@@ -1040,7 +1040,6 @@ export default {
   'Trocar a capa': 'Vaheta kaanepilt',
   'Trocar áudio': 'Vaheta helifail',
   'Trocar avatar': 'Vaheta avatar',
-  'Ou escolha um coelho': 'Või vali jänes',
   'Usar este coelho': 'Kasuta seda jänest',
   'Trocar imagem': 'Vaheta pilt',
   'Trocar o e-mail': 'Vaheta e-post',
@@ -3177,4 +3176,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Põrandal seisev, ümara võrega, palavateks päevadeks.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Rakendus",
+  "Anterior": "Eelmine",
+  "Próximo": "Järgmine",
+  "Sem bicho": "Lemmikloomata",
+  "Nome do bicho": "Lemmiklooma nimi",
+  "Usar uma foto": "Kasuta fotot",
+  "Bicho do quarto": "Toa lemmikloom",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Kõne helin",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Heliseb, kui keegi sulle privaatvestluses helistab, isegi kui teavitushelid on välja lülitatud. Režiimis „Ära sega“ ilmub kõne helisemata.",
+  'Avisar das ligações com o Syden em segundo plano?': "Kas teavitada kõnedest, kui Syden on taustal?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Brauser küsib luba. Nii saad kõnedest ja sõnumitest teada ka teisel vahelehel või teises programmis.",
+  'Permitir notificações': "Luba teavitused",
 } satisfies Record<string, string>;

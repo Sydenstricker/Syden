@@ -3,6 +3,9 @@
 //   2. as duas ficam na mesma chamada, com o palco em cima da conversa e o painel "Voz conectada" na barra;
 //   3. a Ana liga a câmera e a Bia vê o vídeo; a Ana transmite a tela e a Bia abre e vê;
 //   4. a Bia desliga; a Ana liga de novo, a Bia recusa, e a Ana recebe o aviso.
+// E os sons da ligação (09/11/2026): a Bia, com os "Sons de aviso" desligados, ouve o toque mesmo assim; a Ana ouve o
+// "chamando" enquanto espera, e ele para quando a Bia atende ou recusa; o pedido de notificação do navegador aparece na
+// primeira ligação da Ana e não volta na segunda.
 // Sem mini-game, karaokê e soundboard na chamada privada (são coisas de comunidade).
 //
 // Precisa do LiveKit no ar (npm run dev:livekit). Fotos em FOTOS (padrão: e2e/fotos/chamada-*.png).
@@ -30,12 +33,42 @@ const TELA_FALSA = () => {
   };
 };
 
+/**
+ * Os sons são sintetizados (sounds.ts): cada nota é um oscilador. Guarda a frequência de cada um que começa, para saber
+ * o que tocou sem depender de alto-falante. O toque tem o Dó agudo (1046,5 Hz; é também o harmônico do som de entrar, por
+ * isso só se procura na Bia, que desligou os sons de aviso); o chamando, o Mi grave (329,63 Hz), que é só dele.
+ */
+const OUVIR_NOTAS = () => {
+  window.__notas = [];
+  const comecar = OscillatorNode.prototype.start;
+  OscillatorNode.prototype.start = function (...args) {
+    window.__notas.push(Math.round(this.frequency.value));
+    return comecar.apply(this, args);
+  };
+};
+/**
+ * O Chrome do teste responde "denied" às notificações sem perguntar; aqui ele fica no "ainda não perguntou" de quem
+ * acabou de chegar, e a pergunta do navegador só é contada (nada aparece na tela de quem roda o teste).
+ */
+const NOTIFICACAO_NAO_PERGUNTADA = () => {
+  window.__perguntasDoNavegador = 0;
+  Object.defineProperty(Notification, 'permission', { get: () => 'default', configurable: true });
+  Notification.requestPermission = async () => {
+    window.__perguntasDoNavegador++;
+    return 'default';
+  };
+};
+const TOQUE = 1047, CHAMANDO = 330;
+const contar = (p, freq) => p.evaluate((f) => window.__notas.filter((n) => n === f).length, freq);
+
 const { browser } = await abrirNavegador();
 
 async function entrar(prefixo) {
   const ctx = await browser.newContext({ viewport: { width: 1400, height: 900 }, permissions: ['microphone', 'camera'] });
   const page = vigiar(await ctx.newPage());
   await page.addInitScript(TELA_FALSA);
+  await page.addInitScript(OUVIR_NOTAS);
+  await page.addInitScript(NOTIFICACAO_NAO_PERGUNTADA);
   const nome = await criarConta(page, prefixo);
   await dispensarPresentes(page);
   return { page, nome };
@@ -78,19 +111,56 @@ try {
     () => falhou('a mensagem da Ana não apareceu na conversa dela'),
   );
 
+  // A Bia desliga os sons de aviso: o toque de ligação tem a chave dele, e tem de tocar mesmo assim.
+  await bia.page.locator('button[aria-label="Configurações"]').first().click();
+  await bia.page.locator('.settings-tab', { hasText: 'Notificações' }).first().click();
+  const sonsDeAviso = bia.page.locator('label.toggle-row', { has: bia.page.locator('.toggle-label', { hasText: /^Sons de aviso$/ }) });
+  await sonsDeAviso.click();
+  (await sonsDeAviso.locator('input').isChecked()) ? falhou('os sons de aviso da Bia não desligaram') : ok('a Bia desligou os sons de aviso');
+  await bia.page.keyboard.press('Escape');
+
   // ---------- 1. ligar e atender ----------
   await ana.page.getByRole('button', { name: 'Iniciar chamada', exact: true }).click();
   await ana.page.locator('.chamada-da-conversa .stage-controls').waitFor({ timeout: 30000 });
   ok('a Ana ligou: o palco aparece em cima da conversa');
+  const pedido = ana.page.locator('.pedido-de-aviso');
+  await pedido.waitFor({ timeout: 5000 }).then(
+    () => ok('na primeira ligação, a Ana vê o pedido de notificação'),
+    () => falhou('o pedido de notificação não apareceu na primeira ligação'),
+  );
+  (await ana.page.evaluate(() => window.__perguntasDoNavegador)) === 0
+    ? ok('a pergunta do navegador espera o clique')
+    : falhou('a pergunta do navegador saiu sem o clique');
+  await ana.page.screenshot({ path: path.join(FOTOS, 'chamada-pedido-de-aviso.png'), clip: (await pedido.boundingBox()) ?? undefined });
+  await pedido.getByRole('button', { name: 'Permitir notificações' }).click();
+  await pedido.waitFor({ state: 'detached', timeout: 3000 }).then(
+    () => ok('"Permitir notificações" fecha o pedido'),
+    () => falhou('o pedido de notificação não fechou'),
+  );
+  (await ana.page.evaluate(() => window.__perguntasDoNavegador)) === 1
+    ? ok('e só então o navegador pergunta')
+    : falhou('o "Permitir notificações" não chamou a pergunta do navegador');
   const cartao = bia.page.locator('.chamada-recebida');
   await cartao.waitFor({ timeout: 10000 }).then(
     () => ok('a Bia recebe o cartão de quem está ligando'),
     () => falhou('o toque não chegou à Bia'),
   );
+  await bia.page.waitForFunction((f) => window.__notas.includes(f), TOQUE, { timeout: 5000 }).then(
+    () => ok('com os sons de aviso desligados, a Bia ouve o toque'),
+    () => falhou('o toque não tocou para a Bia (sons de aviso desligados)'),
+  );
+  await ana.page.waitForFunction((f) => window.__notas.includes(f), CHAMANDO, { timeout: 5000 }).then(
+    () => ok('a Ana ouve o "chamando" enquanto espera'),
+    () => falhou('o "chamando" não tocou para a Ana'),
+  );
   await bia.page.screenshot({ path: path.join(FOTOS, 'chamada-tocando.png'), clip: (await cartao.boundingBox()) ?? undefined });
   await cartao.getByRole('button', { name: 'Atender' }).click();
   await bia.page.locator('.chamada-da-conversa .stage-controls').waitFor({ timeout: 30000 });
   ok('a Bia atendeu: a conversa abre com o palco');
+  await bia.page.locator('.pedido-de-aviso').getByRole('button', { name: 'Agora não' }).click({ timeout: 5000 }).then(
+    () => ok('quem atende a primeira ligação também vê o pedido, e diz "Agora não"'),
+    () => falhou('o pedido de notificação não apareceu para quem atendeu'),
+  );
   await bia.page.locator('.message', { hasText: 'oi, vou te ligar' }).first().waitFor({ timeout: 10000 }).then(
     () => ok('embaixo do palco, a Bia vê a conversa com a mensagem da Ana'),
     () => falhou('a conversa da Bia, embaixo do palco, não tem a mensagem da Ana'),
@@ -113,6 +183,11 @@ try {
   }));
   !semComunidade.minijogo ? ok('sem botão de mini-game na chamada privada') : falhou('o mini-game apareceu na chamada privada');
   (await cartao.count()) === 0 ? ok('o cartão do toque sumiu ao atender') : falhou('o cartão do toque continuou depois de atender');
+  {
+    const antes = await contar(ana.page, CHAMANDO);
+    await ana.page.waitForTimeout(3500); // o chamando se repete a cada 3 s
+    (await contar(ana.page, CHAMANDO)) === antes ? ok('o "chamando" para quando a Bia atende') : falhou('o "chamando" continuou depois de a Bia atender');
+  }
 
   // ---------- 3. câmera e tela ----------
   await ana.page.locator('.chamada-da-conversa .stage-controls button[aria-label="Ligar câmera"]').click();
@@ -153,6 +228,16 @@ try {
     () => ok('a Ana fica sabendo que a Bia recusou'),
     () => falhou('a recusa não chegou à Ana'),
   );
+  {
+    const antes = await contar(ana.page, CHAMANDO);
+    await ana.page.waitForTimeout(3500);
+    (await contar(ana.page, CHAMANDO)) === antes ? ok('o "chamando" para quando a Bia recusa') : falhou('o "chamando" continuou depois da recusa');
+  }
+  (await pedido.count()) === 0 ? ok('o pedido de notificação não volta na segunda ligação') : falhou('o pedido de notificação voltou');
+  // A Bia recebeu o pedido ao atender; disse "Agora não" e, ao recusar a segunda, ele não volta.
+  (await bia.page.locator('.pedido-de-aviso').count()) === 0
+    ? ok('quem disse "Agora não" não é perguntado de novo')
+    : falhou('o pedido voltou para a Bia');
   await ana.page.locator('.chamada-da-conversa .leave-button').click();
 } catch (erro) {
   falhou(String(erro));

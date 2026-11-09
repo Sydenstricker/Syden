@@ -897,7 +897,6 @@ export default {
   'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Возвращает эмодзи, которые идут вместе с Syden. То, что вы загрузили, остаётся как есть, и ничего не превращается в дубль.',
   'Trocar áudio': 'Сменить звук',
   'Trocar avatar': 'Сменить аватар',
-  'Ou escolha um coelho': 'Или выбери кролика',
   'Usar este coelho': 'Взять этого кролика',
   'Trocar imagem': 'Сменить картинку',
   'Trocar o e-mail': 'Сменить почту',
@@ -3128,4 +3127,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Напольный, с круглой решёткой, для жарких дней.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Аватар",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Приложение",
+  "Anterior": "Назад",
+  "Próximo": "Дальше",
+  "Sem bicho": "Без питомца",
+  "Nome do bicho": "Имя питомца",
+  "Usar uma foto": "Использовать фото",
+  "Bicho do quarto": "Питомец комнаты",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Мелодия звонка",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Звучит, когда кто-то звонит тебе в личной беседе, даже если звуки уведомлений выключены. В режиме «Не беспокоить» звонок появляется без мелодии.",
+  'Avisar das ligações com o Syden em segundo plano?': "Сообщать о звонках, когда Syden в фоне?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Браузер попросит разрешение. Так ты узнаешь о звонках и сообщениях даже в другой вкладке или программе.",
+  'Permitir notificações': "Разрешить уведомления",
 } satisfies Record<string, string>;

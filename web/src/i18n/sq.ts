@@ -1035,7 +1035,6 @@ export default {
   'Trocar a capa': 'Ndërro kopertinën',
   'Trocar áudio': 'Ndërro audion',
   'Trocar avatar': 'Ndërro avatarin',
-  'Ou escolha um coelho': 'Ose zgjidh një lepur',
   'Usar este coelho': 'Përdor këtë lepur',
   'Trocar imagem': 'Ndërro imazhin',
   'Trocar o e-mail': 'Ndërro email-in',
@@ -3172,4 +3171,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Në këmbë, me rrjetën e rrumbullakët, për ditët e nxehta.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatari",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Aplikacioni",
+  "Anterior": "I mëparshmi",
+  "Próximo": "I radhës",
+  "Sem bicho": "Pa kafshë shtëpiake",
+  "Nome do bicho": "Emri i kafshës",
+  "Usar uma foto": "Përdor një foto",
+  "Bicho do quarto": "Kafsha e dhomës",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Zile e thirrjes",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Bie kur dikush të thërret në një bisedë private, edhe me tingujt e njoftimit të fikur. Në \"Mos shqetëso\", thirrja shfaqet pa rënë.",
+  'Avisar das ligações com o Syden em segundo plano?': "Të të njoftojë për thirrjet kur Syden është në sfond?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Shfletuesi do të kërkojë leje. Kështu do të mësosh për thirrje dhe mesazhe edhe në një skedë ose program tjetër.",
+  'Permitir notificações': "Lejo njoftimet",
 } satisfies Record<string, string>;

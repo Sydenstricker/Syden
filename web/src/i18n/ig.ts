@@ -889,7 +889,6 @@ export default {
   'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Ọ na-eweghachi emoji ndị so Syden abịa. Ihe i bulitere na-anọ otu ọ dị, ọ dịghịkwa ihe na-aghọ okpukpu abụọ.',
   'Trocar áudio': 'Gbanwee ụda',
   'Trocar avatar': 'Gbanwee foto profaịlụ',
-  'Ou escolha um coelho': 'Ma ọ bụ họrọ oke bekee',
   'Usar este coelho': 'Jiri oke bekee a',
   'Trocar imagem': 'Gbanwee foto',
   'Trocar o e-mail': 'Gbanwee ozi-e',
@@ -3118,4 +3117,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Fan na-eguzo ọtọ, nwere ụgbụ gburugburu, maka ụbọchị ọkụ.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Foto profaịlụ",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Ngwa",
+  "Anterior": "Nke gara aga",
+  "Próximo": "Nke na-esote",
+  "Sem bicho": "Enweghị anụ ụlọ",
+  "Nome do bicho": "Aha anụ ụlọ",
+  "Usar uma foto": "Jiri foto",
+  "Bicho do quarto": "Anụ ụlọ nke ọnụ ụlọ",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Ụda oku",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Ọ na-ada mgbe mmadụ kpọrọ gị n’ime mkparịta ụka nzuzo, ọbụlagodi ma ụda ịdọ aka na ntị gbanyụọ. Na \"Ewela iwe m\", oku ahụ na-apụta n’adaghị ụda.",
+  'Avisar das ligações com o Syden em segundo plano?': "Ka a gwa gị maka oku mgbe Syden nọ n’azụ?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Ihe nchọgharị ga-arịọ ikike. Otú ahụ ị ga-ama maka oku na ozi ọbụlagodi n’ime taabụ ma ọ bụ mmemme ọzọ.",
+  'Permitir notificações': "Kwe ka ọkwa bịa",
 } satisfies Record<string, string>;

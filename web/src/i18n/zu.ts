@@ -1044,7 +1044,6 @@ export default {
   'Trocar a capa': 'Shintsha ikhava',
   'Trocar áudio': 'Shintsha umsindo',
   'Trocar avatar': 'Shintsha i-avatar',
-  'Ou escolha um coelho': 'Noma khetha unogwaja',
   'Usar este coelho': 'Sebenzisa lo nogwaja',
   'Trocar imagem': 'Shintsha isithombe',
   'Trocar o e-mail': 'Shintsha i-imeyili',
@@ -3181,4 +3180,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Ifeni emile, enegridi eyindilinga, yezinsuku ezishisayo.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "I-avatar",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Uhlelo lokusebenza",
+  "Anterior": "Okwangaphambili",
+  "Próximo": "Okulandelayo",
+  "Sem bicho": "Asikho isilwane sasekhaya",
+  "Nome do bicho": "Igama lesilwane sasekhaya",
+  "Usar uma foto": "Sebenzisa isithombe",
+  "Bicho do quarto": "Isilwane sasekamelweni",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Iringithoni yekholi",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Iyakhala uma othile ekushayela engxoxweni eyimfihlo, ngisho noma imisindo yezaziso icishiwe. Ku-\"Ungaphazamisi\", ikholi iyavela ingakhali.",
+  'Avisar das ligações com o Syden em segundo plano?': "Ukwazisa ngamakholi uma i-Syden ingemuva?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Isiphequluli sizocela imvume. Ngaleyo ndlela uzokwazi ngamakholi nemilayezo ngisho noma usethebhini noma ohlelweni olunye.",
+  'Permitir notificações': "Vumela izaziso",
 } satisfies Record<string, string>;

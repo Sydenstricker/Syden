@@ -1045,7 +1045,6 @@ export default {
   'Trocar a capa': 'Pakeisti viršelį',
   'Trocar áudio': 'Pakeisti garso failą',
   'Trocar avatar': 'Pakeisti avatarą',
-  'Ou escolha um coelho': 'Arba išsirink triušį',
   'Usar este coelho': 'Naudoti šį triušį',
   'Trocar imagem': 'Pakeisti paveikslėlį',
   'Trocar o e-mail': 'Pakeisti el. paštą',
@@ -3182,4 +3181,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Stovintis, su apvaliomis grotelėmis, karštoms dienoms.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avataras",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Programėlė",
+  "Anterior": "Ankstesnis",
+  "Próximo": "Kitas",
+  "Sem bicho": "Be augintinio",
+  "Nome do bicho": "Augintinio vardas",
+  "Usar uma foto": "Naudoti nuotrauką",
+  "Bicho do quarto": "Kambario augintinis",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Skambučio melodija",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Skamba, kai kas nors tau skambina privačiame pokalbyje, net jei pranešimų garsai išjungti. Režimu „Netrukdyti“ skambutis rodomas neskambant.",
+  'Avisar das ligações com o Syden em segundo plano?': "Pranešti apie skambučius, kai Syden veikia fone?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Naršyklė paprašys leidimo. Taip apie skambučius ir žinutes sužinosi net kitame skirtuke ar programoje.",
+  'Permitir notificações': "Leisti pranešimus",
 } satisfies Record<string, string>;

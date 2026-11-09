@@ -1039,7 +1039,6 @@ export default {
   'Trocar a capa': 'Мұқабаны ауыстыру',
   'Trocar áudio': 'Аудионы ауыстыру',
   'Trocar avatar': 'Аватарды ауыстыру',
-  'Ou escolha um coelho': 'Немесе қоян таңдаңыз',
   'Usar este coelho': 'Осы қоянды қолдану',
   'Trocar imagem': 'Суретті ауыстыру',
   'Trocar o e-mail': 'Электрондық поштаны ауыстыру',
@@ -3184,4 +3183,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Еденге қойылатын, дөңгелек торы бар, ыстық күндерге.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Аватар",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Қолданба",
+  "Anterior": "Алдыңғы",
+  "Próximo": "Келесі",
+  "Sem bicho": "Үй жануарысыз",
+  "Nome do bicho": "Үй жануарының аты",
+  "Usar uma foto": "Фото қолдану",
+  "Bicho do quarto": "Бөлменің үй жануары",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Қоңырау әуені",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Біреу саған жеке әңгімеде қоңырау шалғанда шырылдайды, ескерту дыбыстары өшірулі болса да. «Мазаламаңыз» режимінде қоңырау дыбыссыз көрінеді.",
+  'Avisar das ligações com o Syden em segundo plano?': "Syden фондық режимде болғанда қоңыраулар туралы хабарласын ба?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Браузер рұқсат сұрайды. Сонда басқа қойындыда не бағдарламада жүрсең де, қоңыраулар мен хабарламалар туралы білесің.",
+  'Permitir notificações': "Хабарландыруларға рұқсат беру",
 } satisfies Record<string, string>;

@@ -875,7 +875,6 @@ export default {
   'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Brings back the emojis that come with Syden. What you uploaded stays as it is, and nothing turns into a duplicate.',
   'Trocar áudio': 'Change audio',
   'Trocar avatar': 'Change avatar',
-  'Ou escolha um coelho': 'Or pick a bunny',
   'Usar este coelho': 'Use this bunny',
   'Trocar imagem': 'Change image',
   'Trocar o e-mail': 'Change the email',
@@ -3105,4 +3104,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Standing, with its round grille, for the hot days.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "App",
+  "Anterior": "Previous",
+  "Próximo": "Next",
+  "Sem bicho": "No pet",
+  "Nome do bicho": "Pet's name",
+  "Usar uma foto": "Use a photo",
+  "Bicho do quarto": "Room pet",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Call ringtone",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Rings when someone calls you in a private conversation, even with alert sounds off. In \"Do not disturb\", the call shows up without ringing.",
+  'Avisar das ligações com o Syden em segundo plano?': "Get notified of calls while Syden is in the background?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Your browser will ask for permission. That way you hear about calls and messages even in another tab or program.",
+  'Permitir notificações': "Allow notifications",
 } satisfies Record<string, string>;

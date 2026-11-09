@@ -86,6 +86,8 @@ contextBridge.exposeInMainWorld('sydenDesktop', {
   },
   /** Traz a janela para frente (ex.: ao clicar numa notificação). */
   focus: () => ipcRenderer.send('app:focus'),
+  /** Pisca (true) ou para de piscar (false) o ícone na barra de tarefas, sem trazer a janela — ex.: alguém ligando. */
+  piscar: (ligado) => ipcRenderer.send('app:piscar', Boolean(ligado)),
   /** Põe o número de avisos sobre o ícone na barra de tarefas. selo = PNG pronto (data URL), ou null. */
   setBadge: (quantas, selo) => ipcRenderer.send('app:badge', { quantas, selo }),
   /** Pinta a barra de título (que é do Windows, não do site) com as cores do tema escolhido. */

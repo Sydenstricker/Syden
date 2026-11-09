@@ -918,7 +918,6 @@ export default {
   'Trocar a capa': 'Schimbă coperta',
   'Trocar áudio': 'Schimbă sunetul',
   'Trocar avatar': 'Schimbă avatarul',
-  'Ou escolha um coelho': 'Sau alege un iepure',
   'Usar este coelho': 'Folosește acest iepure',
   'Trocar imagem': 'Schimbă imaginea',
   'Trocar o e-mail': 'Schimbă emailul',
@@ -3110,4 +3109,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "În picioare, cu grila rotundă, pentru zilele călduroase.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Aplicația",
+  "Anterior": "Anterior",
+  "Próximo": "Următor",
+  "Sem bicho": "Fără animal de companie",
+  "Nome do bicho": "Numele animalului",
+  "Usar uma foto": "Folosește o fotografie",
+  "Bicho do quarto": "Animalul din cameră",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Ton de apel",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Sună când cineva te apelează într-o conversație privată, chiar și cu sunetele de avertizare oprite. În „Nu deranja”, apelul apare fără să sune.",
+  'Avisar das ligações com o Syden em segundo plano?': "Să te anunțe de apeluri când Syden e în fundal?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Browserul îți va cere permisiunea. Așa afli de apeluri și mesaje chiar și într-o altă filă sau program.",
+  'Permitir notificações': "Permite notificările",
 } satisfies Record<string, string>;

@@ -18,6 +18,8 @@ import { ehAniversarioHoje } from './aniversarioHoje';
 import { CommunityDialog, CommunityRail } from './CommunityRail';
 import { isolar, nomeDeCanal } from './bidi';
 import { desktopBridge } from './desktop';
+import { oferecerAvisoDeLigacao, PedidoDeAvisoDeLigacao } from './PedidoDeAvisoDeLigacao';
+import { sounds } from './sounds';
 import { aplicarComunidade, buscarComunidade, clearDirectory, loadDirectory, nomeDe, syncDirectory, useDirectory } from './directory';
 import { ligarDigitacao } from './digitando';
 import { EmptyCommunities } from './EmptyCommunities';
@@ -166,6 +168,13 @@ export function Shell({
   // AS CHAMADAS DAS CONVERSAS PRIVADAS (02/11/2026): quem está em cada uma ('chamada:estado'), e a que está tocando agora.
   const [chamadas, setChamadas] = useState<Record<number, VoiceMember[]>>({});
   const [tocando, setTocando] = useState<ChamadaTocando | null>(null);
+  // O "chamando" de quem liga (09/11/2026): a conversa em que liguei e o servidor tocou para alguém, até atenderem.
+  const [chamandoEm, setChamandoEm] = useState<number | null>(null);
+  // O pedido de notificação do navegador, uma vez só, na primeira ligação (ver PedidoDeAvisoDeLigacao.tsx).
+  const [pedirAviso, setPedirAviso] = useState(false);
+  const talvezPedirAviso = () => {
+    if (oferecerAvisoDeLigacao()) setPedirAviso(true);
+  };
   // A notificação do sistema do toque: some junto com ele, para não sobrar na central um "está ligando" sem chamada.
   const avisoDoToqueRef = useRef<Notification | null>(null);
   useEffect(() => {
@@ -651,7 +660,12 @@ export function Shell({
       const quem = conversa?.members.find((m) => m.id === userId);
       if (voiceRef.current.channelId === channelId && conversa && conversa.members.length <= 2 && quem) {
         setNotice(t('{quem} recusou a chamada', { quem: isolar(nomeDe(quem)) }));
+        setChamandoEm((agora) => (agora === channelId ? null : agora));
       }
+    });
+    // Liguei, e o servidor tocou para alguém: o chamando começa (o efeito dele, mais abaixo, o para).
+    s.on('chamada:chamando', ({ channelId }: { channelId: number }) => {
+      if (voiceRef.current.channelId === channelId) setChamandoEm(channelId);
     });
     // Subiu de nível: o aviso é só seu, na faixa de avisos, e não na conversa dos outros (ver niveis.ts).
     s.on('nivel:subiu', ({ nivel }: { communityId: number; nivel: number }) =>
@@ -1005,12 +1019,42 @@ export function Shell({
   }, [tocando, chamadas, voice.channelId, user.id]);
   useEffect(() => {
     if (!tocando) return;
-    const relogio = window.setTimeout(() => setTocando(null), TEMPO_DO_TOQUE_MS);
+    const relogio = window.setTimeout(() => {
+      setTocando(null);
+      // Perdeu a ligação: é a hora em que o aviso do navegador mais faria falta.
+      talvezPedirAviso();
+    }, TEMPO_DO_TOQUE_MS);
     return () => window.clearTimeout(relogio);
   }, [tocando]);
+  // No app, o ícone PISCA na barra de tarefas enquanto toca (o processo principal só pisca sem a janela em foco, e para
+  // sozinho quando a pessoa abre o Syden). Nunca traz a janela: "a tela não interrompe". Em "Não perturbe", nada.
+  useEffect(() => {
+    if (!tocando || myStatus === 'ocupado' || !desktopBridge?.piscar) return;
+    desktopBridge.piscar(true);
+    return () => desktopBridge?.piscar?.(false);
+  }, [tocando, myStatus]);
+
+  // O CHAMANDO PARA quando o outro lado atendeu (alguém além de mim na chamada), eu saí dela, o outro recusou (no
+  // socket, acima) ou passaram os mesmos 30 s do toque — depois disso o outro lado já não está tocando.
+  useEffect(() => {
+    if (chamandoEm === null) return;
+    const naChamada = chamadas[chamandoEm] ?? [];
+    if (voice.channelId !== chamandoEm || naChamada.some((m) => m.userId !== user.id)) setChamandoEm(null);
+  }, [chamandoEm, chamadas, voice.channelId, user.id]);
+  useEffect(() => {
+    if (chamandoEm === null) return;
+    sounds.chamando();
+    const repete = window.setInterval(() => sounds.chamando(), 3000);
+    const fim = window.setTimeout(() => setChamandoEm(null), TEMPO_DO_TOQUE_MS);
+    return () => {
+      window.clearInterval(repete);
+      window.clearTimeout(fim);
+    };
+  }, [chamandoEm]);
 
   /** Liga (ou entra na chamada que já existe) na conversa; com vídeo, a câmera abre assim que a chamada conecta. */
   async function ligarNaConversa(channelId: number, comVideo: boolean) {
+    talvezPedirAviso();
     const sala = await voice.join(channelId, true);
     if (sala === channelId && comVideo) await voice.toggleCamera();
   }
@@ -1031,6 +1075,7 @@ export function Shell({
 
   function recusarChamada(chamada: ChamadaTocando) {
     setTocando(null);
+    talvezPedirAviso();
     socket?.emit('chamada:recusar', { channelId: chamada.channelId });
   }
 
@@ -1514,6 +1559,7 @@ export function Shell({
           aoRecusar={() => recusarChamada(tocando)}
         />
       )}
+      {pedirAviso && !tocando && <PedidoDeAvisoDeLigacao aoFechar={() => setPedirAviso(false)} />}
       {comemorar[0] && <Comemoracao ideia={comemorar[0].content} aoFechar={() => fecharComemoracao(comemorar[0].id)} />}
       {/*
         Um anúncio de cada vez, e nesta ordem: primeiro a festa da ideia acolhida (a notícia), depois a

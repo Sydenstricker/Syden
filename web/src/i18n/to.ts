@@ -887,7 +887,6 @@ export default {
   'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'ʻOku ne fakafoki mai ʻa e ngaahi emoji ʻoku haʻu mo Syden. Ko e meʻa naʻa mou hiki hake ʻoku nofo pē ʻo hangē ko ia, pea ʻoku ʻikai ha meʻa ʻe hoko ko ha tatau toe.',
   'Trocar áudio': 'Liliu ʻa e ongo',
   'Trocar avatar': 'Liliu ʻa e ʻavata',
-  'Ou escolha um coelho': 'Pe fili ha lāpisi',
   'Usar este coelho': 'Ngāueʻaki ʻa e lāpisi ko ʻeni',
   'Trocar imagem': 'Liliu ʻa e ʻīmisi',
   'Trocar o e-mail': 'Liliu ʻa e ʻīmeili',
@@ -3116,4 +3115,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Ko e ili tu’u, mo hono ’ā fuopotopoto, ki he ngaahi ’aho māfana.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "ʻAvata",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "ʻApi",
+  "Anterior": "Ki muʻa",
+  "Próximo": "Hoko mai",
+  "Sem bicho": "ʻIkai ha monumanu",
+  "Nome do bicho": "Hingoa ʻo e monumanu",
+  "Usar uma foto": "Fakaʻaongaʻi ha tā",
+  "Bicho do quarto": "Monumanu ʻo e loki",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Ongo ʻo e telefoni",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "ʻOku tatangi ʻi he taimi ʻoku ui atu ai ha taha kiate koe ʻi ha fetalanoaʻaki fakafoʻituitui, neongo kuo tāmateʻi ʻa e ngaahi ongo fakatokanga. ʻI he \"ʻOua ʻe fakahohaʻasi\", ʻoku hā mai ʻa e telefoni ʻo ʻikai tatangi.",
+  'Avisar das ligações com o Syden em segundo plano?': "Fakahā atu ʻa e ngaahi telefoni lolotonga ʻoku ʻi mui ʻa Syden?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "ʻE kole ʻe he browser ha ngofua. ʻI he founga ko ia te ke ʻilo ai ʻa e ngaahi telefoni mo e pōpoaki neongo ʻoku ke ʻi ha tab pe polokalama kehe.",
+  'Permitir notificações': "Fakangofua ʻa e ngaahi fakatokanga",
 } satisfies Record<string, string>;

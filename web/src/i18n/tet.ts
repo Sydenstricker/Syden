@@ -883,7 +883,6 @@ export default {
   'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Lori fali emoji sira ne\'ebé mai ho Syden. Buat ne\'ebé imi haruka hela hanesan, no buat ida la sai kópia dobru.',
   'Trocar áudio': 'Troka áudiu',
   'Trocar avatar': 'Troka avatar',
-  'Ou escolha um coelho': 'Ka hili koelu ida',
   'Usar este coelho': 'Uza koelu ne\'e',
   'Trocar imagem': 'Troka imajen',
   'Trocar o e-mail': 'Troka e-mail',
@@ -3112,4 +3111,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Ventuinha hamriik, ho grade kabuar, ba loron manas sira.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Aplikasaun",
+  "Anterior": "Molok",
+  "Próximo": "Tuirmai",
+  "Sem bicho": "Laiha animál hakiak",
+  "Nome do bicho": "Naran animál hakiak",
+  "Usar uma foto": "Uza foto ida",
+  "Bicho do quarto": "Animál hakiak kuartu nian",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Son telefone tama",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Tanis bainhira ema ida telefone ba ó iha konversa privada, maske son avizu nian mate. Iha \"Keta hamanas\", telefone mosu la tanis.",
+  'Avisar das ligações com o Syden em segundo plano?': "Fó-hatene kona-ba telefone bainhira Syden iha kotuk?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Navegadór sei husu lisensa. Nune’e ó sei hatene kona-ba telefone no mensajen maske iha tab ka programa seluk.",
+  'Permitir notificações': "Permite notifikasaun",
 } satisfies Record<string, string>;

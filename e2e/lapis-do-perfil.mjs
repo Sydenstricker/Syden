@@ -5,7 +5,7 @@
 // - ele abre as escolhas dentro do cartão, sem sair para as Configurações;
 // - vestir um fundo muda o cartão NA HORA (o cartão lê do diretório, que o "user:updated" atualiza);
 // - o cartão inteiro continua dentro da janela depois de crescer;
-// - o link "Guarda-roupa" leva à tela completa (era "Aparência" até 09/11/2026).
+// - o link "Guarda-roupa" leva à tela completa: a Aparência, na orelha do Avatar (09/11/2026).
 //
 // Fotos em FOTOS (padrão: e2e/fotos/lapis-*.png), para olhar o desenho em 300 px.
 import fs from 'node:fs';
@@ -89,10 +89,10 @@ try {
   else falhou(`o cartão passou da janela: ${JSON.stringify(caixa)}`);
   await page.screenshot({ path: path.join(FOTOS, 'lapis-fundo.png'), clip: caixa ?? undefined });
 
-  // O segundo caminho: o link leva ao Guarda-roupa completo.
+  // O segundo caminho: o link leva à Aparência completa, na orelha do Avatar.
   await escolhas.locator('.perfil-escolhas-mais').click();
   await page
-    .getByRole('heading', { name: 'Guarda-roupa' })
+    .locator('.aparencia-fichario-orelhas [role="tab"][aria-selected="true"]', { hasText: 'Avatar' })
     .waitFor({ timeout: 5000 })
     .then(
       () => ok('o link "Guarda-roupa" abre a tela completa'),

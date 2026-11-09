@@ -1045,7 +1045,6 @@ export default {
   'Trocar a capa': 'Örtügi çalyş',
   'Trocar áudio': 'Audiony çalyş',
   'Trocar avatar': 'Awatary çalyş',
-  'Ou escolha um coelho': 'Ýa-da towşan saýla',
   'Usar este coelho': 'Bu towşany ulan',
   'Trocar imagem': 'Suraty çalyş',
   'Trocar o e-mail': 'E-poçtany çalyş',
@@ -3191,4 +3190,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Aýakly, tegelek gözenekli, yssy günler üçin.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Awatar",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Programma",
+  "Anterior": "Öňki",
+  "Próximo": "Indiki",
+  "Sem bicho": "Öý haýwany ýok",
+  "Nome do bicho": "Öý haýwanynyň ady",
+  "Usar uma foto": "Surat ulan",
+  "Bicho do quarto": "Otagyň öý haýwany",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Jaň sesi",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Kimdir saňa şahsy söhbetdeşlikde jaň edende jyňňyrdaýar, bildiriş owazlary öçürilen hem bolsa. \"Biynjalyk etme\" düzgüninde jaň sessiz görünýär.",
+  'Avisar das ligações com o Syden em segundo plano?': "Syden arka planda bolanda jaňlar barada habar bersinmi?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Brauzer rugsat sorar. Şeýdip, başga goýmada ýa-da programmada bolsaň-da, jaňlar we habarlar barada bilersiň.",
+  'Permitir notificações': "Bildirişlere rugsat ber",
 } satisfies Record<string, string>;

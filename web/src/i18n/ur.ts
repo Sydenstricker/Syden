@@ -899,7 +899,6 @@ export default {
   'Trocar a capa': 'سرورق بدلیں',
   'Trocar áudio': 'آڈیو فائل بدلیں',
   'Trocar avatar': 'پروفائل تصویر بدلیں',
-  'Ou escolha um coelho': 'یا کوئی خرگوش چنیں',
   'Usar este coelho': 'یہ خرگوش استعمال کریں',
   'Trocar imagem': 'تصویر بدلیں',
   'Trocar o e-mail': 'ای میل بدلیں',
@@ -3102,4 +3101,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "کھڑا پنکھا، گول جالی والا، گرم دنوں کے لیے۔",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "پروفائل تصویر",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "ایپ",
+  "Anterior": "پچھلا",
+  "Próximo": "اگلا",
+  "Sem bicho": "کوئی پالتو نہیں",
+  "Nome do bicho": "پالتو کا نام",
+  "Usar uma foto": "کوئی تصویر استعمال کرو",
+  "Bicho do quarto": "کمرے کا پالتو",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "کال کی رنگ ٹون",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "جب کوئی نجی گفتگو میں تمہیں کال کرے تو بجتی ہے، چاہے اطلاعی آوازیں بند ہوں۔ \"تنگ نہ کریں\" میں کال بجے بغیر دکھائی دیتی ہے۔",
+  'Avisar das ligações com o Syden em segundo plano?': "جب Syden پس منظر میں ہو تو کالوں کی اطلاع دیں؟",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "براؤزر اجازت مانگے گا۔ اس طرح دوسرے ٹیب یا پروگرام میں ہونے پر بھی تمہیں کالوں اور پیغامات کا پتا چلے گا۔",
+  'Permitir notificações': "اطلاعات کی اجازت دیں",
 } satisfies Record<string, string>;

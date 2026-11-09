@@ -866,7 +866,6 @@ export default {
   'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': '把 Syden 自带的表情找回来。你们上传的保持原样，也不会变成重复的副本。',
   'Trocar áudio': '更换音频',
   'Trocar avatar': '更换头像',
-  'Ou escolha um coelho': '或者选一只兔子',
   'Usar este coelho': '用这只兔子',
   'Trocar imagem': '更换图片',
   'Trocar o e-mail': '更换邮箱',
@@ -3097,4 +3096,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "落地扇，圆形风罩，给炎热的日子。",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "头像",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "应用",
+  "Anterior": "上一个",
+  "Próximo": "下一个",
+  "Sem bicho": "没有宠物",
+  "Nome do bicho": "宠物的名字",
+  "Usar uma foto": "使用照片",
+  "Bicho do quarto": "房间里的宠物",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "来电铃声",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "有人在私人对话中给你打电话时响铃，即使关闭了提示音也会响。在“请勿打扰”时，来电只显示不响铃。",
+  'Avisar das ligações com o Syden em segundo plano?': "Syden 在后台时提醒你来电吗？",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "浏览器会请求权限。这样即使你在别的标签页或程序里，也能知道有来电和消息。",
+  'Permitir notificações': "允许通知",
 } satisfies Record<string, string>;

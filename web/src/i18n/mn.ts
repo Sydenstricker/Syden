@@ -1058,7 +1058,6 @@ export default {
   'Trocar a capa': 'Нүүр зураг солих',
   'Trocar áudio': 'Аудио солих',
   'Trocar avatar': 'Аватар солих',
-  'Ou escolha um coelho': 'Эсвэл туулай сонго',
   'Usar este coelho': 'Энэ туулайг ашиглах',
   'Trocar imagem': 'Зураг солих',
   'Trocar o e-mail': 'Имэйл солих',
@@ -3194,4 +3193,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Зогсоолтой, дугуй тортой, халуун өдрүүдэд.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Аватар",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Апп",
+  "Anterior": "Өмнөх",
+  "Próximo": "Дараах",
+  "Sem bicho": "Тэжээвэр амьтангүй",
+  "Nome do bicho": "Тэжээвэр амьтны нэр",
+  "Usar uma foto": "Зураг ашиглах",
+  "Bicho do quarto": "Өрөөний тэжээвэр амьтан",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Дуудлагын хонх",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Хэн нэгэн хувийн ярианд чам руу залгахад дуугарна, мэдэгдлийн дуу авиа унтраалттай байсан ч. \"Бүү саад бол\" горимд дуудлага дуугарахгүйгээр харагдана.",
+  'Avisar das ligações com o Syden em segundo plano?': "Syden арын горимд байхад дуудлагын талаар мэдэгдэх үү?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Хөтөч зөвшөөрөл асууна. Ингэснээр өөр таб эсвэл програмд байсан ч дуудлага, мессежийн талаар мэдэх болно.",
+  'Permitir notificações': "Мэдэгдлийг зөвшөөрөх",
 } satisfies Record<string, string>;

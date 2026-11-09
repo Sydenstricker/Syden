@@ -903,7 +903,6 @@ export default {
   'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Holt die Emojis zurück, die mit Syden kommen. Was ihr hochgeladen habt, bleibt wie es ist, und nichts wird zum Doppel.',
   'Trocar áudio': 'Audio wechseln',
   'Trocar avatar': 'Avatar wechseln',
-  'Ou escolha um coelho': 'Oder wähl einen Hasen',
   'Usar este coelho': 'Diesen Hasen verwenden',
   'Trocar imagem': 'Bild wechseln',
   'Trocar o e-mail': 'Die E-Mail ändern',
@@ -3134,4 +3133,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Ein Standventilator mit rundem Gitter, für heiße Tage.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "App",
+  "Anterior": "Zurück",
+  "Próximo": "Weiter",
+  "Sem bicho": "Kein Haustier",
+  "Nome do bicho": "Name des Haustiers",
+  "Usar uma foto": "Ein Foto verwenden",
+  "Bicho do quarto": "Haustier im Zimmer",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Klingelton für Anrufe",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Klingelt, wenn dich jemand in einer privaten Unterhaltung anruft, auch wenn die Hinweistöne aus sind. Bei „Bitte nicht stören“ erscheint der Anruf ohne Klingeln.",
+  'Avisar das ligações com o Syden em segundo plano?': "Über Anrufe benachrichtigen, wenn Syden im Hintergrund ist?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Der Browser fragt nach der Erlaubnis. So erfährst du von Anrufen und Nachrichten, auch in einem anderen Tab oder Programm.",
+  'Permitir notificações': "Benachrichtigungen erlauben",
 } satisfies Record<string, string>;

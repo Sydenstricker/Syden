@@ -893,7 +893,6 @@ export default {
   'Trocar a capa': 'カバー画像を変える',
   'Trocar áudio': '音声ファイルを変える',
   'Trocar avatar': 'プロフィール画像を変える',
-  'Ou escolha um coelho': 'または、うさぎを選ぶ',
   'Usar este coelho': 'このうさぎを使う',
   'Trocar imagem': '画像を変える',
   'Trocar o e-mail': 'メールアドレスを変える',
@@ -3091,4 +3090,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "丸いガードの扇風機。暑い日のために。",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "アバター",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "アプリ",
+  "Anterior": "前へ",
+  "Próximo": "次へ",
+  "Sem bicho": "ペットなし",
+  "Nome do bicho": "ペットの名前",
+  "Usar uma foto": "写真を使う",
+  "Bicho do quarto": "部屋のペット",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "通話の着信音",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "個人間の会話で誰かから着信があると鳴ります。通知音をオフにしていても鳴ります。「取り込み中」のときは鳴らさずに表示します。",
+  'Avisar das ligações com o Syden em segundo plano?': "Syden がバックグラウンドのときに着信を知らせますか？",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "ブラウザが許可を求めます。許可すると、別のタブやプログラムを使っていても通話やメッセージに気づけます。",
+  'Permitir notificações': "通知を許可",
 } satisfies Record<string, string>;

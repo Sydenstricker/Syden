@@ -1035,7 +1035,6 @@ export default {
   'Trocar a capa': 'Byt omslag',
   'Trocar áudio': 'Byt ljudfil',
   'Trocar avatar': 'Byt avatar',
-  'Ou escolha um coelho': 'Eller välj en kanin',
   'Usar este coelho': 'Använd den här kaninen',
   'Trocar imagem': 'Byt bild',
   'Trocar o e-mail': 'Byt e-postadress',
@@ -3172,4 +3171,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Stående, med sitt runda galler, för de varma dagarna.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "App",
+  "Anterior": "Föregående",
+  "Próximo": "Nästa",
+  "Sem bicho": "Inget husdjur",
+  "Nome do bicho": "Husdjurets namn",
+  "Usar uma foto": "Använd ett foto",
+  "Bicho do quarto": "Rummets husdjur",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Ringsignal",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Ringer när någon ringer dig i en privat konversation, även när aviseringsljuden är avstängda. I ”Stör ej” visas samtalet utan att ringa.",
+  'Avisar das ligações com o Syden em segundo plano?': "Få veta om samtal när Syden är i bakgrunden?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Webbläsaren kommer att be om tillåtelse. Då får du veta om samtal och meddelanden även i en annan flik eller ett annat program.",
+  'Permitir notificações': "Tillåt aviseringar",
 } satisfies Record<string, string>;

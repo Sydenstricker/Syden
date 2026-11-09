@@ -887,7 +887,6 @@ export default {
   'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Tugann sé ar ais na emojis a thagann le Syden. Fanann a d\'uaslódáil sibh mar atá, agus ní dhéantar dúbailt ar aon rud.',
   'Trocar áudio': 'Athraigh an fhuaim',
   'Trocar avatar': 'Athraigh an t-abhatár',
-  'Ou escolha um coelho': 'Nó roghnaigh coinín',
   'Usar este coelho': 'Úsáid an coinín seo',
   'Trocar imagem': 'Athraigh an íomhá',
   'Trocar o e-mail': 'Athraigh an ríomhphost',
@@ -3116,4 +3115,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Ina sheasamh, lena ghreille chruinn, do na laethanta te.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Abhatár",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Aip",
+  "Anterior": "Roimhe seo",
+  "Próximo": "Ar aghaidh",
+  "Sem bicho": "Gan peata",
+  "Nome do bicho": "Ainm an pheata",
+  "Usar uma foto": "Úsáid grianghraf",
+  "Bicho do quarto": "Peata an tseomra",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Ton glao",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Buaileann sé nuair a ghlaonn duine ort i gcomhrá príobháideach, fiú leis na fuaimeanna foláirimh múchta. In \"Ná cuir isteach orm\", taispeántar an glao gan bualadh.",
+  'Avisar das ligações com o Syden em segundo plano?': "Fógra a thabhairt faoi ghlaonna agus Syden sa chúlra?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Iarrfaidh an brabhsálaí cead. Ar an gcaoi sin cloisfidh tú faoi ghlaonna agus teachtaireachtaí fiú i gcluaisín nó i gclár eile.",
+  'Permitir notificações': "Ceadaigh fógraí",
 } satisfies Record<string, string>;

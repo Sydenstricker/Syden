@@ -53,12 +53,16 @@ const ligar = (token: string) =>
   });
 type Toque = { channelId: number; de: { id: number } };
 const toques = new Map<number, Toque[]>();
+// O "chamando" de quem liga (09/11/2026): o servidor só o manda quando tocou para alguém.
+const chamandos = new Map<number, number[]>();
 const estados: { channelId: number; members: { userId: number }[] }[] = [];
 const dasComunidades: { members: { userId: number }[] }[] = [];
 async function online(conta: { token: string; user: { id: number } }) {
   const s = await ligar(conta.token);
   toques.set(conta.user.id, []);
   s.on('chamada:tocando', (t: Toque) => toques.get(conta.user.id)!.push(t));
+  chamandos.set(conta.user.id, []);
+  s.on('chamada:chamando', (c: { channelId: number }) => chamandos.get(conta.user.id)!.push(c.channelId));
   if (conta === contaBia) {
     s.on('chamada:estado', (e) => estados.push(e));
     s.on('voice:state', (e) => dasComunidades.push(e));
@@ -91,6 +95,7 @@ test('quem liga faz tocar para o outro, e a chamada aparece só para a conversa'
   assert.equal(toque?.channelId, conversaAnaBia.id);
   assert.equal(toque?.de.id, contaAna.user.id);
   assert.equal(toques.get(contaCaio.user.id)!.length, 0, 'o Caio não é da conversa');
+  assert.deepEqual(chamandos.get(contaAna.user.id), [conversaAnaBia.id], 'quem liga fica sabendo que tocou');
   const ultimo = estados.filter((e) => e.channelId === conversaAnaBia.id).at(-1);
   assert.deepEqual(ultimo?.members.map((m) => m.userId), [contaAna.user.id]);
   assert.ok(!dasComunidades.some((e) => e.members.some((m) => m.userId === contaAna.user.id)), 'a lista da comunidade não a mostra');
@@ -101,6 +106,7 @@ test('atender não faz tocar de novo, e quem desliga sai da lista', async () => 
   await esperar();
   assert.equal(toques.get(contaAna.user.id)!.length, 0);
   assert.equal(toques.get(contaBia.user.id)!.length, 1);
+  assert.equal(chamandos.get(contaBia.user.id)!.length, 0, 'quem atende não ouve o chamando');
   daAna.emit('voice:leave');
   daBia.emit('voice:leave');
   await esperar();

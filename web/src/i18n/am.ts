@@ -918,7 +918,6 @@ export default {
   'Trocar a capa': 'ሽፋኑን ቀይር',
   'Trocar áudio': 'ድምፅ ቀይር',
   'Trocar avatar': 'የመገለጫ ፎቶ ቀይር',
-  'Ou escolha um coelho': 'ወይም ጥንቸል ይምረጡ',
   'Usar este coelho': 'ይህን ጥንቸል ይጠቀሙ',
   'Trocar imagem': 'ምስል ቀይር',
   'Trocar o e-mail': 'ኢሜይል ቀይር',
@@ -3110,4 +3109,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "የቆመ ማራገቢያ፣ ክብ መረብ ያለው፣ ለሞቃት ቀናት።",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "የመገለጫ ፎቶ",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "መተግበሪያ",
+  "Anterior": "ቀዳሚ",
+  "Próximo": "ቀጣይ",
+  "Sem bicho": "የቤት እንስሳ የለም",
+  "Nome do bicho": "የቤት እንስሳው ስም",
+  "Usar uma foto": "ፎቶ ተጠቀም",
+  "Bicho do quarto": "የክፍሉ የቤት እንስሳ",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "የጥሪ ደወል",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "አንድ ሰው በግል ውይይት ሲደውልልዎ ይደውላል፣ የማሳወቂያ ድምፆች ቢጠፉም እንኳ። በ\"አትረብሽ\" ውስጥ ጥሪው ሳይደውል ይታያል።",
+  'Avisar das ligações com o Syden em segundo plano?': "Syden ከበስተጀርባ ሲሆን ስለ ጥሪዎች ይነገርዎት?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "አሳሹ ፈቃድ ይጠይቃል። በዚህም በሌላ ትር ወይም ፕሮግራም ውስጥ ቢሆኑም ስለ ጥሪዎችና መልዕክቶች ያውቃሉ።",
+  'Permitir notificações': "ማሳወቂያዎችን መፍቀድ",
 } satisfies Record<string, string>;

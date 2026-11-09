@@ -878,7 +878,6 @@ export default {
   'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Inarudisha emoji zinazokuja na Syden. Mlichopakia kinabaki kama kilivyo, na hakuna kinachokuwa nakala.',
   'Trocar áudio': 'Badilisha sauti',
   'Trocar avatar': 'Badilisha avatar',
-  'Ou escolha um coelho': 'Au chagua sungura',
   'Usar este coelho': 'Tumia sungura huyu',
   'Trocar imagem': 'Badilisha picha',
   'Trocar o e-mail': 'Badilisha barua pepe',
@@ -3109,4 +3108,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Feni ya kusimama, yenye wavu wa duara, kwa siku za joto.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Programu",
+  "Anterior": "Iliyotangulia",
+  "Próximo": "Inayofuata",
+  "Sem bicho": "Bila mnyama kipenzi",
+  "Nome do bicho": "Jina la mnyama kipenzi",
+  "Usar uma foto": "Tumia picha",
+  "Bicho do quarto": "Mnyama kipenzi wa chumbani",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Mlio wa simu",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Hulia mtu anapokupigia katika mazungumzo ya faragha, hata sauti za arifa zikiwa zimezimwa. Katika \"Usinisumbue\", simu huonekana bila kulia.",
+  'Avisar das ligações com o Syden em segundo plano?': "Ukujulishe kuhusu simu Syden ikiwa nyuma?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Kivinjari kitaomba ruhusa. Hivyo utajua kuhusu simu na ujumbe hata ukiwa kwenye kichupo au programu nyingine.",
+  'Permitir notificações': "Ruhusu arifa",
 } satisfies Record<string, string>;

@@ -1040,7 +1040,6 @@ export default {
   'Trocar a capa': 'Смени корицата',
   'Trocar áudio': 'Смени аудиото',
   'Trocar avatar': 'Смени аватара',
-  'Ou escolha um coelho': 'Или избери заек',
   'Usar este coelho': 'Използвай този заек',
   'Trocar imagem': 'Смени изображението',
   'Trocar o e-mail': 'Смени имейла',
@@ -3177,4 +3176,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Стоящ, с кръгла решетка, за горещите дни.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Аватар",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Приложение",
+  "Anterior": "Предишен",
+  "Próximo": "Следващ",
+  "Sem bicho": "Без любимец",
+  "Nome do bicho": "Име на любимеца",
+  "Usar uma foto": "Използвай снимка",
+  "Bicho do quarto": "Любимецът на стаята",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Мелодия при обаждане",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Звъни, когато някой ти се обади в личен разговор, дори със спрени звуци за известия. В „Не безпокойте“ обаждането се показва без звънене.",
+  'Avisar das ligações com o Syden em segundo plano?': "Да те известява ли за обаждания, докато Syden е във фонов режим?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Браузърът ще поиска разрешение. Така ще разбираш за обаждания и съобщения дори в друг раздел или програма.",
+  'Permitir notificações': "Разреши известията",
 } satisfies Record<string, string>;

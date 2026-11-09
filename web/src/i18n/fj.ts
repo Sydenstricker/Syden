@@ -880,7 +880,6 @@ export default {
   'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'E vakalesuya mai na emoji e tiko vata kei na Syden. Na ka dou vakavodoka e tiko ga vakakina, ka sega ni dua na ka e lewe rua.',
   'Trocar áudio': 'Veisautaka na rorogo',
   'Trocar avatar': 'Veisautaka na avatar',
-  'Ou escolha um coelho': 'Se digitaka e dua na rabeti',
   'Usar este coelho': 'Vakayagataka na rabeti oqo',
   'Trocar imagem': 'Veisautaka na iyaloyalo',
   'Trocar o e-mail': 'Veisautaka na imeli',
@@ -3109,4 +3108,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "E tu cake, kei na kena sau wavokiti, me baleta na siga katakata.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Apu",
+  "Anterior": "Ka e liu",
+  "Próximo": "Ka tarava",
+  "Sem bicho": "Sega ni manumanu ni vale",
+  "Nome do bicho": "Yaca ni manumanu ni vale",
+  "Usar uma foto": "Vakayagataka e dua na itaba",
+  "Bicho do quarto": "Manumanu ni rumu",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Rorogo ni veiqiri",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "E rorogo ni dua e qiri vei iko ena veitalanoa vakaitaukei, se mani vakavakavotukana na rorogo ni vakasalataki. Ena \"Kua ni vakacacani\", e basika na veiqiri ka sega ni rorogo.",
+  'Avisar das ligações com o Syden em segundo plano?': "Me vakasalataki iko ena veiqiri ni tiko ena daku na Syden?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Ena kerea na veivakadonui na browser. Ena kila kina na veiqiri kei na itukutuku se mani o tiko ena dua tale na tab se porokaramu.",
+  'Permitir notificações': "Vakadonuya na vakasalataki",
 } satisfies Record<string, string>;

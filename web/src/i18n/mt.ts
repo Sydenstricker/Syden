@@ -897,7 +897,6 @@ export default {
   'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Iġib lura l-emojis li jiġu ma\' Syden. Dak li tellajtu jibqa\' kif inhu, u xejn ma jiġi duplikat.',
   'Trocar áudio': 'Ibdel l-awdjo',
   'Trocar avatar': 'Ibdel l-avatar',
-  'Ou escolha um coelho': 'Jew agħżel fenek',
   'Usar este coelho': 'Uża dan il-fenek',
   'Trocar imagem': 'Ibdel l-istampa',
   'Trocar o e-mail': 'Ibdel l-email',
@@ -3126,4 +3125,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Wieqaf, bil-gradilja tonda, għall-jiem sħan.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Applikazzjoni",
+  "Anterior": "Ta’ qabel",
+  "Próximo": "Li jmiss",
+  "Sem bicho": "Mingħajr annimal domestiku",
+  "Nome do bicho": "Isem l-annimal",
+  "Usar uma foto": "Uża ritratt",
+  "Bicho do quarto": "L-annimal tal-kamra",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Ton tas-sejħa",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Idoqq meta xi ħadd iċempillek f’konversazzjoni privata, anke bil-ħsejjes tal-avviżi mitfija. F’\"Iddisturbax\", is-sejħa tidher mingħajr ma ddoqq.",
+  'Avisar das ligações com o Syden em segundo plano?': "Navżak bis-sejħiet meta Syden ikun fl-isfond?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Il-browser se jitlob il-permess. Hekk issir taf bis-sejħiet u l-messaġġi anke f’tab jew programm ieħor.",
+  'Permitir notificações': "Ippermetti n-notifiki",
 } satisfies Record<string, string>;

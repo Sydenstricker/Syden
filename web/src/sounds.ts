@@ -43,6 +43,25 @@ export function deveTocar(avisosLigados: boolean, dosOutros: boolean, ensurdecid
   return !(dosOutros && ensurdecido);
 }
 
+/**
+ * A regra das LIGAÇÕES (09/11/2026), à parte da dos avisos.
+ *
+ * O TOQUE (alguém ligando para mim) não obedece aos "Sons de aviso" nem ao "Desativar áudio": os dois existem para não
+ * ouvir a SALA, e o toque é justamente o que precisa chegar — ligação que não toca ninguém atende. Ele tem a chave dele
+ * ("Toque de ligação"), e o "Não perturbe" o cala antes de chegar aqui (ver ChamadaRecebida.tsx).
+ *
+ * O CHAMANDO (eu ligando, esperando atenderem) é o som da chamada em que eu estou: obedece aos sons de aviso e cala
+ * com o "Desativar áudio", como o resto do que eu ouço nela.
+ */
+export function deveTocarLigacao(
+  tipo: 'toque' | 'chamando',
+  ajustes: { sounds: boolean; toqueDeLigacao: boolean },
+  ensurdecido: boolean,
+): boolean {
+  if (tipo === 'toque') return ajustes.toqueDeLigacao;
+  return ajustes.sounds && !ensurdecido;
+}
+
 let context: AudioContext | null = null;
 
 function audioContext() {
@@ -61,11 +80,15 @@ function audioContext() {
  */
 function play(notes: Note[], dosOutros = false) {
   if (!deveTocar(getSettings().sounds, dosOutros, surdo)) return;
+  tocarNotas(notes, VOLUME);
+}
+
+function tocarNotas(notes: Note[], volume: number) {
   try {
     const ac = audioContext();
     const start = ac.currentTime + 0.01;
     const master = ac.createGain();
-    master.gain.value = VOLUME;
+    master.gain.value = volume;
     master.connect(ac.destination);
 
     for (const note of notes) {
@@ -93,6 +116,7 @@ function play(notes: Note[], dosOutros = false) {
 }
 
 // Notas (Hz)
+const E4 = 329.63;
 const G4 = 392;
 const C5 = 523.25;
 const D5 = 587.33;
@@ -117,11 +141,12 @@ export const sounds = {
   undeafen: () => play([{ freq: G4, at: 0, dur: 0.1 }, { freq: E5, at: 0.06, dur: 0.18 }]),
   /**
    * O TOQUE de alguém ligando numa conversa privada: uma frase curta, repetida pela tela que mostra a chamada (ver
-   * ChamadaRecebida.tsx) até atender, recusar ou desistirem. Conta como som "dos outros": quem desligou esses avisos, ou
-   * desativou o áudio, vê a chamada sem ouvir.
+   * ChamadaRecebida.tsx) até atender, recusar ou desistirem. Tem a regra dele (deveTocarLigacao): toca mesmo com os sons
+   * de aviso desligados, e só o "Toque de ligação" o desliga.
    */
-  toque: () =>
-    play(
+  toque: () => {
+    if (!deveTocarLigacao('toque', getSettings(), surdo)) return;
+    tocarNotas(
       [
         { freq: E5, at: 0, dur: 0.18 },
         { freq: G5, at: 0.12, dur: 0.18 },
@@ -130,8 +155,24 @@ export const sounds = {
         { freq: G5, at: 0.82, dur: 0.18 },
         { freq: C6, at: 0.94, dur: 0.32 },
       ],
-      true,
-    ),
+      VOLUME,
+    );
+  },
+  /**
+   * O CHAMANDO de quem liga, enquanto o outro lado não atende (09/11/2026): duas notas graves e longas, mais baixas e
+   * mais devagar que o toque — é espera, não alarme, e não pode ser confundido com alguém ligando para mim. Repetido
+   * por Shell.tsx a cada 3 s, só depois de o servidor dizer que tocou para alguém ('chamada:chamando').
+   */
+  chamando: () => {
+    if (!deveTocarLigacao('chamando', getSettings(), surdo)) return;
+    tocarNotas(
+      [
+        { freq: E4, at: 0, dur: 0.6 },
+        { freq: G4, at: 0.4, dur: 0.9 },
+      ],
+      VOLUME * 0.6,
+    );
+  },
   /** Coelho cutucado na tela inicial: dois pulinhos curtos, bem discretos. */
   bunny: () => play([{ freq: A5, at: 0, dur: 0.08 }, { freq: C6, at: 0.06, dur: 0.12 }]),
   screenShareStart: () =>

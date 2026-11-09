@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { deveTocar } from '../src/sounds';
+import { deveTocar, deveTocarLigacao } from '../src/sounds';
 
 // Quem desativa o áudio não pode continuar ouvindo a sala. O defeito era esse, e era parcial: o
 // soundboard obedecia e os sons de entrar e sair não — então a pessoa ensurdecia e continuava ouvindo
@@ -27,4 +27,22 @@ test('avisos desligados nas configurações calam tudo, inclusive o próprio cli
       assert.equal(deveTocar(false, dosOutros, surdo), false);
     }
   }
+});
+
+// AS LIGAÇÕES (09/11/2026). O toque contava como som "dos outros": quem desligava os sons de aviso, ou ensurdecia, via a
+// ligação chegar calada — e ligação que não toca ninguém atende. Agora só a chave dele o cala.
+test('o toque de ligação toca com os sons de aviso desligados e ensurdecido', () => {
+  for (const sounds of [true, false]) {
+    for (const surdo of [true, false]) {
+      assert.equal(deveTocarLigacao('toque', { sounds, toqueDeLigacao: true }, surdo), true);
+      assert.equal(deveTocarLigacao('toque', { sounds, toqueDeLigacao: false }, surdo), false);
+    }
+  }
+});
+
+// O chamando é o som da chamada em que EU estou: cala como o resto dela.
+test('o chamando de quem liga obedece aos sons de aviso e ao "Desativar áudio"', () => {
+  assert.equal(deveTocarLigacao('chamando', { sounds: true, toqueDeLigacao: false }, false), true);
+  assert.equal(deveTocarLigacao('chamando', { sounds: true, toqueDeLigacao: true }, true), false);
+  assert.equal(deveTocarLigacao('chamando', { sounds: false, toqueDeLigacao: true }, false), false);
 });

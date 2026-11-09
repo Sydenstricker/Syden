@@ -1044,7 +1044,6 @@ export default {
   'Trocar a capa': 'ປ່ຽນໜ້າປົກ',
   'Trocar áudio': 'ປ່ຽນສຽງ',
   'Trocar avatar': 'ປ່ຽນຮູບໂປຣໄຟລ໌',
-  'Ou escolha um coelho': 'ຫຼື ເລືອກກະຕ່າຍ',
   'Usar este coelho': 'ໃຊ້ກະຕ່າຍໂຕນີ້',
   'Trocar imagem': 'ປ່ຽນຮູບ',
   'Trocar o e-mail': 'ປ່ຽນອີເມວ',
@@ -3181,4 +3180,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "ພັດລົມຕັ້ງພື້ນ ມີຕາໜ່າງມົນ ສຳລັບມື້ທີ່ຮ້ອນ.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "ຮູບໂປຣໄຟລ໌",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "ແອັບ",
+  "Anterior": "ກ່ອນໜ້າ",
+  "Próximo": "ຕໍ່ໄປ",
+  "Sem bicho": "ບໍ່ມີສັດລ້ຽງ",
+  "Nome do bicho": "ຊື່ສັດລ້ຽງ",
+  "Usar uma foto": "ໃຊ້ຮູບພາບ",
+  "Bicho do quarto": "ສັດລ້ຽງໃນຫ້ອງ",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "ສຽງເອີ້ນເຂົ້າ",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "ດັງເມື່ອມີຄົນໂທຫາເຈົ້າໃນການສົນທະນາສ່ວນຕົວ ເຖິງວ່າຈະປິດສຽງແຈ້ງເຕືອນໄວ້ກໍຕາມ. ໃນ \"ຫ້າມລົບກວນ\" ການໂທຈະສະແດງໂດຍບໍ່ດັງ.",
+  'Avisar das ligações com o Syden em segundo plano?': "ແຈ້ງເຕືອນການໂທເມື່ອ Syden ຢູ່ໃນພື້ນຫຼັງບໍ?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "ບຣາວເຊີຈະຂໍອະນຸຍາດ. ແບບນີ້ເຈົ້າຈະຮູ້ເຖິງການໂທ ແລະ ຂໍ້ຄວາມ ເຖິງວ່າຈະຢູ່ແຖບ ຫຼື ໂປຣແກຣມອື່ນ.",
+  'Permitir notificações': "ອະນຸຍາດການແຈ້ງເຕືອນ",
 } satisfies Record<string, string>;

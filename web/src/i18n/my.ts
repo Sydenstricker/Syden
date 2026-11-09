@@ -1002,7 +1002,6 @@ export default {
   'Trocar a capa': 'မျက်နှာဖုံး ပြောင်းရန်',
   'Trocar áudio': 'အသံဖိုင် ပြောင်းရန်',
   'Trocar avatar': 'ပရိုဖိုင်ပုံ ပြောင်းရန်',
-  'Ou escolha um coelho': 'သို့မဟုတ် ယုန်တစ်ကောင် ရွေးပါ',
   'Usar este coelho': 'ဒီယုန်ကို သုံးရန်',
   'Trocar imagem': 'ပုံ ပြောင်းရန်',
   'Trocar o e-mail': 'အီးမေးလ် ပြောင်းရန်',
@@ -3149,4 +3148,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "ရပ်ထားသော ပန်ကာ၊ အဝိုင်းဇကာပါ၊ ပူသောနေ့များအတွက်။",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "ပရိုဖိုင်ပုံ",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "အက်ပ်",
+  "Anterior": "ယခင်",
+  "Próximo": "နောက်တစ်ခု",
+  "Sem bicho": "အိမ်မွေးတိရစ္ဆာန် မရှိ",
+  "Nome do bicho": "အိမ်မွေးတိရစ္ဆာန်၏ အမည်",
+  "Usar uma foto": "ဓာတ်ပုံ သုံးရန်",
+  "Bicho do quarto": "အခန်းထဲက အိမ်မွေးတိရစ္ဆာန်",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "ခေါ်ဆိုမှု မြည်သံ",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "သီးသန့်စကားဝိုင်းတွင် တစ်စုံတစ်ယောက် သင့်ကို ခေါ်ဆိုသည့်အခါ မြည်သည်၊ အသိပေး အသံများ ပိတ်ထားသော်လည်း မြည်သည်။ \"မနှောင့်ယှက်ပါနှင့်\" တွင် ခေါ်ဆိုမှုကို မမြည်ဘဲ ပြသည်။",
+  'Avisar das ligações com o Syden em segundo plano?': "Syden နောက်ခံတွင် ရှိနေစဉ် ခေါ်ဆိုမှုများကို အသိပေးမလား?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "ဘရောက်ဇာက ခွင့်ပြုချက် တောင်းပါမည်။ ထိုသို့ဖြင့် အခြားတဘ် သို့မဟုတ် ပရိုဂရမ်တွင် ရှိနေစဉ်လည်း ခေါ်ဆိုမှုနှင့် မက်ဆေ့ချ်များကို သိရပါမည်။",
+  'Permitir notificações': "အသိပေးချက်များကို ခွင့်ပြုရန်",
 } satisfies Record<string, string>;

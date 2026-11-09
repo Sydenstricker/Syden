@@ -933,7 +933,6 @@ export default {
   'Trocar a capa': 'Yí ìbòrí náà padà',
   'Trocar áudio': 'Yí ohùn padà',
   'Trocar avatar': 'Yí àwòrán padà',
-  'Ou escolha um coelho': 'Tàbí yan ehoro kan',
   'Usar este coelho': 'Lo ehoro yìí',
   'Trocar imagem': 'Yí àwòrán padà',
   'Trocar o e-mail': 'Yí ímeèlì náà padà',
@@ -3125,4 +3124,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Fáànù ìdúró, pẹ̀lú àwọ̀n yíká, fún ọjọ́ gbígbóná.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Àwòrán",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Áàpù",
+  "Anterior": "Ti tẹ́lẹ̀",
+  "Próximo": "Tó kàn",
+  "Sem bicho": "Kò sí ẹranko ọ̀sìn",
+  "Nome do bicho": "Orúkọ ẹranko ọ̀sìn",
+  "Usar uma foto": "Lo fọ́tò kan",
+  "Bicho do quarto": "Ẹranko ọ̀sìn inú yàrá",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Ohùn ìpè",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Ó máa ń dún nígbà tí ẹnìkan bá pè ọ́ nínú ìjíròrò àdáni, kódà tí àwọn ìró ìkìlọ̀ bá wà ní pípa. Nínú \"Má dà mí láàmú\", ìpè náà máa ń hàn láìdún.",
+  'Avisar das ligações com o Syden em segundo plano?': "Ṣé kí a sọ fún ọ nípa àwọn ìpè nígbà tí Syden wà lẹ́yìn?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Aṣàwákiri yóò béèrè ìyọ̀ǹda. Bẹ́ẹ̀ ni o máa mọ̀ nípa àwọn ìpè àti ìfiránṣẹ́ kódà tí o bá wà ní táàbù tàbí ètò mìíràn.",
+  'Permitir notificações': "Gba àwọn ìfitónilétí láàyè",
 } satisfies Record<string, string>;

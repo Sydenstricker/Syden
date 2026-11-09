@@ -1044,7 +1044,6 @@ export default {
   'Trocar a capa': 'Иваз кардани муқова',
   'Trocar áudio': 'Иваз кардани аудио',
   'Trocar avatar': 'Иваз кардани аватар',
-  'Ou escolha um coelho': 'Ё харгӯшеро интихоб кунед',
   'Usar este coelho': 'Истифодаи ин харгӯш',
   'Trocar imagem': 'Иваз кардани тасвир',
   'Trocar o e-mail': 'Иваз кардани почтаи электронӣ',
@@ -3190,4 +3189,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Истода, бо панҷараи гирд, барои рӯзҳои гарм.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Аватар",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Барнома",
+  "Anterior": "Қаблӣ",
+  "Próximo": "Навбатӣ",
+  "Sem bicho": "Бе ҳайвони хонагӣ",
+  "Nome do bicho": "Номи ҳайвони хонагӣ",
+  "Usar uma foto": "Аз акс истифода бар",
+  "Bicho do quarto": "Ҳайвони хонагии ҳуҷра",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Оҳанги занг",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Вақте касе дар суҳбати шахсӣ ба ту занг мезанад, садо медиҳад, ҳатто агар садоҳои огоҳӣ хомӯш бошанд. Дар «Халал нарасонед» занг бе садо намоён мешавад.",
+  'Avisar das ligações com o Syden em segundo plano?': "Вақте Syden дар замина аст, дар бораи зангҳо огоҳ кунад?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Браузер иҷозат мепурсад. Ҳамин тавр, ҳатто дар варақа ё барномаи дигар аз зангҳо ва паёмҳо огоҳ мешавӣ.",
+  'Permitir notificações': "Иҷозат додани огоҳиҳо",
 } satisfies Record<string, string>;

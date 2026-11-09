@@ -1054,7 +1054,6 @@ export default {
   'Trocar a capa': 'Chanje kouvèti a',
   'Trocar áudio': 'Chanje odyo a',
   'Trocar avatar': 'Chanje avatar',
-  'Ou escolha um coelho': 'Oswa chwazi yon lapen',
   'Usar este coelho': 'Sèvi ak lapen sa a',
   'Trocar imagem': 'Chanje imaj la',
   'Trocar o e-mail': 'Chanje imèl la',
@@ -3190,4 +3189,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Vantilatè kanpe, ak griyaj won li, pou jou ki cho yo.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Aplikasyon",
+  "Anterior": "Anvan",
+  "Próximo": "Pwochen",
+  "Sem bicho": "Pa gen bèt kay",
+  "Nome do bicho": "Non bèt kay la",
+  "Usar uma foto": "Sèvi ak yon foto",
+  "Bicho do quarto": "Bèt kay chanm nan",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Sonnri apèl",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Sonnen lè yon moun rele w nan yon konvèsasyon prive, menm lè son avètisman yo fèmen. Nan \"Pa deranje\", apèl la parèt san l pa sonnen.",
+  'Avisar das ligações com o Syden em segundo plano?': "Avèti w pou apèl yo lè Syden dèyè?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Navigatè a pral mande pèmisyon. Konsa w ap konnen lè gen apèl ak mesaj, menm nan yon lòt onglè oswa pwogram.",
+  'Permitir notificações': "Pèmèt notifikasyon",
 } satisfies Record<string, string>;

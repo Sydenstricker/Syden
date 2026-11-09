@@ -1,5 +1,5 @@
-import { Check, Gift, Lock, Music, Shirt, Sparkles } from 'lucide-react';
-import { useEffect, useState, type ReactNode } from 'react';
+import { Check, ChevronLeft, ChevronRight, Gift, Lock, Music, Shirt, Sparkles } from 'lucide-react';
+import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { api } from './api';
 import { Avatar, enderecoDoCoelhoPronto, enderecoDoCorpoPronto } from './Avatar';
 import { nomeDe, useDirectory } from './directory';
@@ -13,6 +13,7 @@ import { escolherPaleta, PALETAS } from './theme';
 import { classeDoFundo, corDoNome, efeitoDoNome, letraDoNome } from './profileStyles';
 import { FONTES_DA_COMUNIDADE, fonteCobre } from './fontesDaComunidade';
 import { algarismos } from './algarismos';
+import { avisarQuartoMudou } from './quartoMudou';
 import { updateSettings, useSettings } from './settings';
 import type { GuardaRoupa, ItemDoGuardaRoupa, TipoDeItem, User } from './types';
 
@@ -31,9 +32,9 @@ import type { GuardaRoupa, ItemDoGuardaRoupa, TipoDeItem, User } from './types';
 // Ele é melhor do que a fileira de quadradinhos que estava nas Configurações, porque diz o que cada
 // coisa É antes de você vestir para descobrir.
 //
-// E A TELA SE DIVIDIU EM DUAS (09/11/2026, pedido dele): "uma coisa é mudar a aparência do aplicativo Syden, outra é
-// mudar o nosso avatar". A Aparência ficou com a cara do APP (paleta e cor de destaque); o GUARDA-ROUPA, a tela que o
-// guarda-roupa do quarto abre, ficou com a cara da PESSOA: o avatar e os enfeites do perfil (GuardaRoupaSection).
+// E A TELA GANHOU DUAS ORELHAS DE FICHÁRIO (09/11/2026, pedido e desenho dele): "uma coisa é mudar a aparência do
+// aplicativo Syden, outra é mudar o nosso avatar". A orelha do APLICATIVO tem a paleta e a cor de destaque; a do AVATAR,
+// que o guarda-roupa do quarto abre, tem o personagem com as setas, o bicho do quarto e os enfeites do perfil.
 
 /** O quadradinho que mostra como o item fica, sem precisar vestir para descobrir. */
 function Amostra({ item, corVestida }: { item: ItemDoGuardaRoupa; corVestida?: string }) {
@@ -420,117 +421,326 @@ export function EscolhasDoCartao({ nome, aoAbrirGuardaRoupa }: { nome: string; a
 }
 
 /**
- * A APARÊNCIA DO APP (09/11/2026, pedido dele: "uma coisa é mudar a aparência do aplicativo Syden, outra é mudar o nosso
- * avatar"). Só o que muda o Syden na tela de QUEM USA: a paleta e a cor de destaque. O que muda como os OUTROS veem a
- * pessoa (o avatar e os enfeites do perfil) mora no Guarda-roupa.
+ * AS ORELHAS DO FICHÁRIO (09/11/2026, o desenho dele): a Aparência é UMA tela com duas orelhas, "uma aparência para o
+ * aplicativo, outra para o avatar". O Aplicativo é o que muda o Syden na tela de quem usa (a paleta e a cor de destaque);
+ * o Avatar é a cara da PESSOA para os outros (o coelho, o bicho do quarto e os enfeites do perfil), e é o que o
+ * guarda-roupa do quarto abre: o guarda-roupa É a orelha do Avatar.
  */
-export function Aparencia({ aoAbrirGuardaRoupa }: { aoAbrirGuardaRoupa: () => void }) {
+export type OrelhaDaAparencia = 'aplicativo' | 'avatar';
+
+const ORELHAS: { id: OrelhaDaAparencia; nome: string }[] = [
+  { id: 'aplicativo', nome: chave('Aplicativo') },
+  { id: 'avatar', nome: chave('Avatar') },
+];
+
+export function Aparencia({
+  user,
+  orelha,
+  aoTrocarOrelha,
+  editorDaFoto,
+  aoAbrirPacotes,
+}: {
+  user: User;
+  orelha: OrelhaDaAparencia;
+  aoTrocarOrelha: (orelha: OrelhaDaAparencia) => void;
+  /** O envio de foto e GIF (SettingsModal.tsx: o recorte e os botões de arquivo moram lá). */
+  editorDaFoto: ReactNode;
+  aoAbrirPacotes: () => void;
+}) {
   const t = useT();
+  const botoes = useRef<(HTMLButtonElement | null)[]>([]);
+
+  // O teclado das abas (o padrão do WAI-ARIA): setas, Home e End andam de orelha em orelha e já abrem a folha.
+  function teclado(e: KeyboardEvent<HTMLDivElement>) {
+    const i = ORELHAS.findIndex((o) => o.id === orelha);
+    const rtl = getComputedStyle(e.currentTarget).direction === 'rtl';
+    const direita = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+    const passo = rtl ? -direita : direita;
+    const proxima = e.key === 'Home' ? 0 : e.key === 'End' ? ORELHAS.length - 1 : passo ? (i + passo + ORELHAS.length) % ORELHAS.length : -1;
+    if (proxima < 0) return;
+    e.preventDefault();
+    aoTrocarOrelha(ORELHAS[proxima].id);
+    botoes.current[proxima]?.focus();
+  }
+
   return (
     <>
       <h2>
         <Sparkles size={20} aria-hidden="true" /> {t('Aparência')}
       </h2>
-      <PaletaDoSyden />
-      <CorDoSyden />
-      {/* Quem procura o próprio avatar aqui (era o lugar dele até 09/11/2026) acha o caminho. */}
-      <button type="button" className="link-button aparencia-para-o-guarda-roupa" onClick={aoAbrirGuardaRoupa}>
-        <Shirt size={14} aria-hidden="true" /> {t('Guarda-roupa')}
-      </button>
+      <div className="aparencia-fichario">
+        <div className="aparencia-fichario-orelhas" role="tablist" aria-label={t('Aparência')} onKeyDown={teclado}>
+          {ORELHAS.map((o, i) => (
+            <button
+              key={o.id}
+              ref={(b) => {
+                botoes.current[i] = b;
+              }}
+              type="button"
+              role="tab"
+              id={'orelha-' + o.id}
+              aria-selected={orelha === o.id}
+              aria-controls={'folha-' + o.id}
+              tabIndex={orelha === o.id ? 0 : -1}
+              className={`aparencia-fichario-orelha aparencia-fichario-orelha-${o.id}${orelha === o.id ? ' aberta' : ''}`}
+              onClick={() => aoTrocarOrelha(o.id)}
+            >
+              {o.id === 'aplicativo' ? <Sparkles size={16} aria-hidden="true" /> : <Shirt size={16} aria-hidden="true" />} {t(o.nome)}
+            </button>
+          ))}
+        </div>
+        <div className={`aparencia-fichario-folha aparencia-fichario-folha-${orelha}`} role="tabpanel" id={'folha-' + orelha} aria-labelledby={'orelha-' + orelha}>
+          {orelha === 'aplicativo' ? (
+            <>
+              <PaletaDoSyden />
+              <CorDoSyden />
+            </>
+          ) : (
+            <FolhaDoAvatar user={user} editorDaFoto={editorDaFoto} aoAbrirPacotes={aoAbrirPacotes} />
+          )}
+        </div>
+      </div>
     </>
   );
 }
 
-/** As abas do Guarda-roupa: o avatar primeiro, depois os enfeites do perfil e os pacotes. */
-export type AbaDoGuardaRoupa = 'avatar' | Aba;
+/** O mascote, para quem ainda não escolheu coelho nem foto (web/public/guarda-roupa/mascote.png, de personagem/mascote-3d). */
+const MASCOTE = `${import.meta.env.BASE_URL}guarda-roupa/mascote.png`;
+/** Os bichos do quarto (cores.pet na arrumação; a página do quarto conhece os mesmos). 'nenhum' é guardado. */
+const BICHOS = ['gato', 'nenhum'] as const;
+type Bicho = (typeof BICHOS)[number];
+const FIGURA_DO_BICHO: Record<Bicho, string | null> = { gato: `${import.meta.env.BASE_URL}guarda-roupa/gato-sentado.png`, nenhum: null };
+const NOME_DO_BICHO: Record<Bicho, string> = { gato: chave('Gato'), nenhum: chave('Sem bicho') };
+const NOME_DO_PET_MAXIMO = 20; // o mesmo do servidor (quarto.ts)
+const COELHOS = 16;
 
 /**
- * A PRÉVIA DO PERSONAGEM, no alto da aba do avatar. O coelho pronto aparece de CORPO INTEIRO (o mesmo de pé do salão),
- * porque é o personagem e não só o rosto; foto, GIF ou o 16 (sem corpo ainda) ficam no avatar grande, como nas listas.
- *
- * QUANDO A CUSTOMIZAÇÃO CHEGAR (o personagem montado: corpo, cores, acessórios; os 16 coelhos viram pontos de partida),
- * é aqui que ele aparece montado, e cada parte vira uma seção da aba, abaixo da escolha do coelho. Até lá, nenhum
- * controle que não faz nada: a tela não afirma o que não é.
+ * PIXEL ART NA FOLHA: ampliada (ou reduzida) por um número INTEIRO, a maior que cabe na altura, sem suavizar (escala quebrada borra). A largura é
+ * posta ao carregar, quando se sabe o tamanho do desenho.
  */
-function PreviaDoPersonagem({ user }: { user: User }) {
-  const { members } = useDirectory();
-  const pronto = members.get(user.id)?.avatarPronto ?? null;
-  const corpo = pronto ? enderecoDoCorpoPronto(pronto) : null;
+function PixelGrande({ src, altura, className }: { src: string; altura: number; className?: string }) {
   return (
-    <div className="guarda-roupa-personagem">
-      {corpo ? (
-        <img
-          className="guarda-roupa-corpo"
-          src={corpo}
-          alt=""
-          draggable={false}
-          // ampliado em INTEIRO (3×), cada coelho na própria altura: pixel art em escala quebrada borra
-          onLoad={(e) => (e.currentTarget.style.width = `${e.currentTarget.naturalWidth * 3}px`)}
-        />
-      ) : (
-        <Avatar name={nomeDe(user)} userId={user.id} size={128} />
-      )}
+    <img
+      className={`pixel-grande${className ? ' ' + className : ''}`}
+      src={src}
+      alt=""
+      draggable={false}
+      onLoad={(e) => {
+        const img = e.currentTarget;
+        // o desenho já ampliado (o busto do 16 tem 256 px) desce por um divisor inteiro, que também não borra
+        const escala = img.naturalHeight <= altura ? Math.floor(altura / img.naturalHeight) : 1 / Math.ceil(img.naturalHeight / altura);
+        img.style.width = `${img.naturalWidth * escala}px`;
+        img.style.height = `${img.naturalHeight * escala}px`;
+      }}
+    />
+  );
+}
+
+/**
+ * UMA LINHA DO PERSONAGEM: um atributo com as setas ‹ › dos dois lados, como nos jogos de criar personagem (o desenho
+ * dele). Hoje só existem as linhas que têm opções de verdade: o coelho pronto e o bicho. QUANDO A CUSTOMIZAÇÃO CHEGAR (o
+ * personagem montado: cores, acessórios), cada atributo é mais uma <LinhaDoPersonagem> embaixo da do coelho; linha sem
+ * opção não aparece — a tela não afirma o que não é.
+ */
+function LinhaDoPersonagem({ rotulo, valor, anterior, proximo, ocupado }: { rotulo: string; valor: string; anterior: () => void; proximo: () => void; ocupado?: boolean }) {
+  const t = useT();
+  return (
+    <div className="personagem-linha" role="group" aria-label={rotulo}>
+      <button type="button" className="personagem-seta" onClick={anterior} disabled={ocupado} aria-label={`${t('Anterior')}: ${rotulo}`} title={t('Anterior')}>
+        <ChevronLeft size={22} aria-hidden="true" />
+      </button>
+      <span className="personagem-valor" aria-live="polite">
+        <small>{rotulo}</small>
+        <strong>{valor}</strong>
+      </span>
+      <button type="button" className="personagem-seta" onClick={proximo} disabled={ocupado} aria-label={`${t('Próximo')}: ${rotulo}`} title={t('Próximo')}>
+        <ChevronRight size={22} aria-hidden="true" />
+      </button>
     </div>
   );
 }
 
 /**
- * O GUARDA-ROUPA (09/11/2026, pedido dele: "essa tela ser um reflexo do guarda-roupa"): a tela que o guarda-roupa do
- * quarto abre. Tudo o que muda a cara da PESSOA para os outros: o avatar (a primeira aba, com a prévia do personagem) e
- * os enfeites do perfil. A aparência do APP ficou em Aparência.
- *
- * `editorDoAvatar` vem de fora (SettingsModal.tsx) porque o envio de foto, o recorte e os coelhos prontos moram lá, com
- * os botões de arquivo que outras seções também usam.
+ * A FOLHA DO AVATAR (o desenho dele): o personagem grande com as setas de cada atributo; embaixo, o bicho do quarto com as
+ * setas e o nome; a foto como opção recolhida; e, por último, os enfeites do perfil (o nome, o fundo, a moldura…).
  */
-export function GuardaRoupaSection({
-  user,
-  editorDoAvatar,
-  aoAbrirPacotes,
-  abaInicial = 'avatar',
-}: {
-  user: User;
-  editorDoAvatar: ReactNode;
-  aoAbrirPacotes: () => void;
-  abaInicial?: AbaDoGuardaRoupa;
-}) {
+function FolhaDoAvatar({ user, editorDaFoto, aoAbrirPacotes }: { user: User; editorDaFoto: ReactNode; aoAbrirPacotes: () => void }) {
   const t = useT();
-  const { dados, erro, vestir } = useGuardaRoupa();
-  const [aba, setAba] = useState<AbaDoGuardaRoupa>(abaInicial);
+  const { members } = useDirectory();
+  const eu = members.get(user.id);
+  // O coelho escolhido agora: a resposta do servidor chega pelo diretório, mas a seta responde na hora.
+  const [coelho, setCoelho] = useState<number | null | undefined>(undefined);
+  const pronto = coelho !== undefined ? coelho : (eu?.avatarPronto ?? null);
+  const temFoto = !pronto && (eu?.avatarVersion ?? null) !== null;
+  const [erro, setErro] = useState<string | null>(null);
 
-  const cobreMeuNome = (item: ItemDoGuardaRoupa) => (dados ? cobreONome(item, dados, nomeDe(user)) : true);
-  const doTipo = dados ? dados.itens.filter((item) => item.tipo === aba && cobreMeuNome(item)) : [];
-  const escondidas = dados ? dados.itens.filter((item) => item.tipo === aba && !cobreMeuNome(item)).length : 0;
+  // OS COELHOS PRONTOS (10/10/2026; desenhos do PixelLab em web/public/avatares/): ESCOLHER UM GUARDA SÓ O NÚMERO
+  // (/api/me/avatar-pronto), e não a imagem, para o app saber qual coelho é e desenhá-lo na pose do estado da pessoa
+  // (dormindo quando ausente, falando na call; ver Avatar.tsx). Eram uma grade em Minha conta; viraram as setas (09/11/2026).
+  async function trocarCoelho(passo: number) {
+    // sem coelho (foto ou nada), a seta para a frente começa no primeiro, e a para trás no último
+    const numero = pronto ? ((pronto - 1 + passo + COELHOS) % COELHOS) + 1 : passo > 0 ? 1 : COELHOS;
+    setErro(null);
+    setCoelho(numero);
+    try {
+      await api('/api/me/avatar-pronto', { method: 'PUT', body: { numero } });
+    } catch (e) {
+      setCoelho(undefined);
+      setErro((e as Error).message);
+    }
+  }
+
+  // O BICHO DO QUARTO mora na arrumação do quarto (cores.pet e nomeDoPet), e muda por PUT /api/quarto/pet.
+  const [bicho, setBicho] = useState<Bicho | null>(null);
+  const [nomeGuardado, setNomeGuardado] = useState('');
+  const [nome, setNome] = useState('');
+  const [salvo, setSalvo] = useState(false);
+  useEffect(() => {
+    void api<{ arrumacao: { cores?: Record<string, string>; nomeDoPet?: string } | null }>('/api/quarto')
+      .then(({ arrumacao }) => {
+        const pet = arrumacao?.cores?.pet;
+        setBicho(pet === 'nenhum' ? 'nenhum' : 'gato');
+        setNome(arrumacao?.nomeDoPet ?? '');
+        setNomeGuardado(arrumacao?.nomeDoPet ?? '');
+      })
+      .catch(() => setBicho('gato'));
+  }, []);
+
+  async function guardarBicho(mudanca: { pet?: Bicho; nome?: string }) {
+    setErro(null);
+    setSalvo(false);
+    try {
+      const r = await api<{ pet: string; nome: string }>('/api/quarto/pet', { method: 'PUT', body: mudanca });
+      setBicho(r.pet === 'nenhum' ? 'nenhum' : 'gato');
+      setNome(r.nome);
+      setNomeGuardado(r.nome);
+      if (mudanca.nome !== undefined) setSalvo(true);
+      avisarQuartoMudou(); // o quarto aberto atrás das Configurações relê
+    } catch (e) {
+      setErro((e as Error).message);
+    }
+  }
+  function trocarBicho(passo: number) {
+    if (!bicho) return;
+    const i = BICHOS.indexOf(bicho);
+    const novo = BICHOS[(i + passo + BICHOS.length) % BICHOS.length];
+    setBicho(novo);
+    void guardarBicho({ pet: novo });
+  }
+
+  const corpo = pronto ? enderecoDoCorpoPronto(pronto) : null;
+  const figuraDoBicho = bicho ? FIGURA_DO_BICHO[bicho] : null;
 
   return (
     <>
-      <h2>
-        <Shirt size={20} aria-hidden="true" /> {t('Guarda-roupa')}
-      </h2>
-      <p className="settings-hint">{t('Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.')}</p>
+      <section className="personagem">
+        <div className="personagem-palco">
+          {corpo ? (
+            <PixelGrande key={corpo} src={corpo} altura={180} className="personagem-coelho" />
+          ) : pronto ? (
+            // o 16 ainda não tem corpo inteiro: o busto, nítido
+            <PixelGrande key={pronto} src={enderecoDoCoelhoPronto(pronto)} altura={160} className="personagem-coelho" />
+          ) : temFoto ? (
+            <Avatar name={nomeDe(user)} userId={user.id} size={144} />
+          ) : (
+            <PixelGrande src={MASCOTE} altura={180} className="personagem-coelho" />
+          )}
+        </div>
+        <div className="personagem-linhas">
+          <LinhaDoPersonagem
+            rotulo={primeiraForma(t('Coelho'))}
+            valor={pronto ? `${algarismos(pronto)} / ${algarismos(COELHOS)}` : '—'}
+            anterior={() => void trocarCoelho(-1)}
+            proximo={() => void trocarCoelho(1)}
+          />
+        </div>
+      </section>
 
+      <section className="personagem personagem-bicho">
+        <div className="personagem-palco pequeno">{figuraDoBicho && <PixelGrande key={figuraDoBicho} src={figuraDoBicho} altura={96} />}</div>
+        <div className="personagem-linhas">
+          <LinhaDoPersonagem
+            rotulo={t('Bicho do quarto')}
+            valor={bicho ? t(NOME_DO_BICHO[bicho]) : '…'}
+            anterior={() => trocarBicho(-1)}
+            proximo={() => trocarBicho(1)}
+            ocupado={!bicho}
+          />
+          {bicho === 'gato' && (
+            <form
+              className="personagem-nome"
+              onSubmit={(e) => {
+                e.preventDefault();
+                void guardarBicho({ nome: nome.trim() });
+              }}
+            >
+              <label>
+                {t('Nome do bicho')}
+                <input
+                  value={nome}
+                  maxLength={NOME_DO_PET_MAXIMO}
+                  onChange={(e) => {
+                    setNome(e.target.value);
+                    setSalvo(false);
+                  }}
+                />
+              </label>
+              <button className="btn-secondary" disabled={nome.trim() === nomeGuardado}>
+                {t('Salvar')}
+              </button>
+              {salvo && <span className="form-success">{t('Salvo.')}</span>}
+            </form>
+          )}
+        </div>
+      </section>
+      {erro && <p className="form-error">{erro}</p>}
+
+      {/* A FOTO (ou GIF) continua valendo, como opção recolhida: o coelho é o caminho principal do desenho dele. */}
+      <details className="personagem-foto" open={temFoto || undefined}>
+        <summary>{t('Usar uma foto')}</summary>
+        {editorDaFoto}
+      </details>
+
+      <EnfeitesDoPerfil user={user} aoAbrirPacotes={aoAbrirPacotes} />
+    </>
+  );
+}
+
+/**
+ * OS ENFEITES DO PERFIL, na folha do Avatar, embaixo do personagem: a prévia de como os outros veem você e as abas de
+ * sempre (o nome, o fundo, a moldura, o efeito, a letra, as insígnias, os pacotes).
+ */
+function EnfeitesDoPerfil({ user, aoAbrirPacotes }: { user: User; aoAbrirPacotes: () => void }) {
+  const t = useT();
+  const { dados, erro, vestir } = useGuardaRoupa();
+  const [aba, setAba] = useState<Aba>('cor');
+
+  if (erro && !dados) return <p className="form-error">{erro}</p>;
+  if (!dados) return <p className="settings-hint">{t('Carregando…')}</p>;
+
+  const cobreMeuNome = (item: ItemDoGuardaRoupa) => cobreONome(item, dados, nomeDe(user));
+  const doTipo = dados.itens.filter((item) => item.tipo === aba && cobreMeuNome(item));
+  const escondidas = dados.itens.filter((item) => item.tipo === aba && !cobreMeuNome(item)).length;
+
+  return (
+    <section className="enfeites-do-perfil">
+      <p className="settings-hint">{t('Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.')}</p>
       {/* A PRÉVIA FICA NO ALTO E NÃO SE MEXE DE LUGAR enquanto você experimenta: é o ponto de
           referência. Ela usa o estado do servidor (o diretório), e não o desta tela, porque é
           exatamente assim que os outros vão te ver. */}
-      {dados && (
-        <>
-          <div className={`perfil-previa ${classeDoFundo(dados.vestindo.fundo ?? 'nenhum')}`}>
-            <Avatar name={nomeDe(user)} userId={user.id} size={56} />
-            <strong
-              data-cor={corDoNome(dados.vestindo.cor ?? 'padrao')}
-              data-efeito={efeitoDoNome(dados.vestindo.efeito)}
-              style={{ fontFamily: letraDoNome(dados.vestindo.letra) }}
-            >
-              {nomeDe(user)}
-            </strong>
-          </div>
-          <p className="settings-hint">{t('É assim que os outros veem você na lista e nas conversas.')}</p>
-        </>
-      )}
+      <div className={`perfil-previa ${classeDoFundo(dados.vestindo.fundo ?? 'nenhum')}`}>
+        <Avatar name={nomeDe(user)} userId={user.id} size={56} />
+        <strong
+          data-cor={corDoNome(dados.vestindo.cor ?? 'padrao')}
+          data-efeito={efeitoDoNome(dados.vestindo.efeito)}
+          style={{ fontFamily: letraDoNome(dados.vestindo.letra) }}
+        >
+          {nomeDe(user)}
+        </strong>
+      </div>
+      <p className="settings-hint">{t('É assim que os outros veem você na lista e nas conversas.')}</p>
 
       <div className="tab-row" role="tablist" aria-label={t('Tipos de cosmético')}>
-        <button role="tab" aria-selected={aba === 'avatar'} className={`tab${aba === 'avatar' ? ' active' : ''}`} onClick={() => setAba('avatar')}>
-          {t('Avatar')}
-        </button>
         {ABAS.map((opcao) => (
           <button
             key={opcao.tipo}
@@ -544,16 +754,7 @@ export function GuardaRoupaSection({
         ))}
       </div>
 
-      {/* O AVATAR NÃO DEPENDE DO CATÁLOGO: se /api/guarda-roupa falhar, trocar o coelho e a foto continua. */}
-      {aba === 'avatar' && (
-        <section className="guarda-roupa-aba-avatar">
-          <PreviaDoPersonagem user={user} />
-          <div className="guarda-roupa-aba-avatar-escolhas">{editorDoAvatar}</div>
-        </section>
-      )}
-
-      {aba !== 'avatar' && erro && <p className="form-error">{erro}</p>}
-      {aba !== 'avatar' && aba !== 'pacotes' && !dados && !erro && <p className="settings-hint">{t('Carregando…')}</p>}
+      {erro && <p className="form-error">{erro}</p>}
 
       {aba === 'insignia' && (
         <p className="settings-hint">
@@ -565,7 +766,7 @@ export function GuardaRoupaSection({
         <p className="settings-hint">{t('Escondidas por não terem todas as letras deste nome: {n}', { n: algarismos(escondidas) })}</p>
       )}
 
-      {dados && aba !== 'avatar' && aba !== 'pacotes' && (
+      {aba !== 'pacotes' && (
         <div className="guarda-roupa-grade">
           {doTipo.map((item) => (
             <Cartao
@@ -600,6 +801,6 @@ export function GuardaRoupaSection({
           de graça faz a pessoa procurar o que está trancado — e não há nada trancado; e Apple,
           Google e Microsoft cobram porcentagem sobre o que é vendido dentro do app. Sem pedido
           nenhum, não há o que discutir. */}
-    </>
+    </section>
   );
 }

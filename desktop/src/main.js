@@ -315,6 +315,8 @@ function createMainWindow() {
     mainWindow?.hide();
   });
   mainWindow.on('closed', () => (mainWindow = null));
+  // A pessoa voltou ao Syden por conta própria: o pisca da ligação já cumpriu o papel (ver 'app:piscar').
+  mainWindow.on('focus', () => mainWindow?.flashFrame(false));
 }
 
 // Teclas de atalho que funcionam mesmo com o Syden minimizado ou em segundo plano (ex.: durante um jogo).
@@ -344,6 +346,17 @@ ipcMain.on('app:abrir-fora', (event, url) => {
 
 ipcMain.on('app:focus', (event) => {
   if (mainWindow && event.sender === mainWindow.webContents) showMainWindow();
+});
+
+/**
+ * Piscar o ícone na barra de tarefas enquanto alguém liga (09/11/2026). É o "meio-termo aceitável" da regra de não
+ * tomar o primeiro plano: chama a atenção de quem está noutro programa SEM trazer a janela para a frente nem roubar o
+ * foco. Pisca até o site pedir para parar (atendeu, recusou, desistiram, 30 s) ou a pessoa abrir o Syden ('focus',
+ * acima). Com a janela já em foco não há o que avisar.
+ */
+ipcMain.on('app:piscar', (event, ligado) => {
+  if (!mainWindow || event.sender !== mainWindow.webContents) return;
+  mainWindow.flashFrame(Boolean(ligado) && !mainWindow.isFocused());
 });
 
 /**

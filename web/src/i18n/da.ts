@@ -1037,7 +1037,6 @@ export default {
   'Trocar a capa': 'Skift forsidebillede',
   'Trocar áudio': 'Skift lydfil',
   'Trocar avatar': 'Skift avatar',
-  'Ou escolha um coelho': 'Eller vælg en kanin',
   'Usar este coelho': 'Brug denne kanin',
   'Trocar imagem': 'Skift billede',
   'Trocar o e-mail': 'Skift e-mailadresse',
@@ -3174,4 +3173,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Stående, med det runde gitter, til de varme dage.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "App",
+  "Anterior": "Forrige",
+  "Próximo": "Næste",
+  "Sem bicho": "Intet kæledyr",
+  "Nome do bicho": "Kæledyrets navn",
+  "Usar uma foto": "Brug et foto",
+  "Bicho do quarto": "Værelsets kæledyr",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Ringetone",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Ringer, når nogen ringer til dig i en privat samtale, også når notifikationslydene er slået fra. Under \"Forstyr ikke\" vises opkaldet uden at ringe.",
+  'Avisar das ligações com o Syden em segundo plano?': "Skal du have besked om opkald, når Syden er i baggrunden?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Browseren vil bede om tilladelse. Så får du besked om opkald og beskeder, selv i en anden fane eller et andet program.",
+  'Permitir notificações': "Tillad notifikationer",
 } satisfies Record<string, string>;

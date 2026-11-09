@@ -897,7 +897,6 @@ export default {
   'Trocar a capa': 'அட்டைப் படத்தை மாற்று',
   'Trocar áudio': 'ஒலிக் கோப்பை மாற்று',
   'Trocar avatar': 'சுயவிவரப் படத்தை மாற்று',
-  'Ou escolha um coelho': 'அல்லது ஒரு முயலைத் தேர்ந்தெடு',
   'Usar este coelho': 'இந்த முயலைப் பயன்படுத்து',
   'Trocar imagem': 'படத்தை மாற்று',
   'Trocar o e-mail': 'மின்னஞ்சலை மாற்று',
@@ -3095,4 +3094,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "நிற்கும் மின்விசிறி, வட்ட வலையுடன், வெயில் நாட்களுக்கு.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "சுயவிவரப் படம்",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "செயலி",
+  "Anterior": "முந்தையது",
+  "Próximo": "அடுத்தது",
+  "Sem bicho": "செல்லப்பிராணி இல்லை",
+  "Nome do bicho": "செல்லப்பிராணியின் பெயர்",
+  "Usar uma foto": "ஒரு புகைப்படத்தைப் பயன்படுத்து",
+  "Bicho do quarto": "அறையின் செல்லப்பிராணி",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "அழைப்பு ஒலி",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "தனிப்பட்ட உரையாடலில் யாராவது உங்களை அழைக்கும்போது ஒலிக்கும், அறிவிப்பு ஒலிகள் அணைக்கப்பட்டிருந்தாலும். \"தொந்தரவு செய்ய வேண்டாம்\" இல் அழைப்பு ஒலிக்காமல் தோன்றும்.",
+  'Avisar das ligações com o Syden em segundo plano?': "Syden பின்னணியில் இருக்கும்போது அழைப்புகளைப் பற்றி அறிவிக்கவா?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "உலாவி அனுமதி கேட்கும். இதனால் வேறு தாவலிலோ நிரலிலோ இருந்தாலும் அழைப்புகளையும் செய்திகளையும் அறிந்துகொள்வீர்கள்.",
+  'Permitir notificações': "அறிவிப்புகளை அனுமதி",
 } satisfies Record<string, string>;

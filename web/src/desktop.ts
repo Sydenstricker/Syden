@@ -2,6 +2,11 @@
 
 interface DesktopBridge {
   focus(): void;
+  /**
+   * Pisca o ícone na barra de tarefas (true) ou para (false), sem trazer a janela nem tirar o foco de onde está. Só nos
+   * apps a partir de 09/11/2026: os anteriores não têm, e a ligação chega só com a notificação.
+   */
+  piscar?(ligado: boolean): void;
   onShortcut(callback: (action: 'mute' | 'deafen') => void): () => void;
   /** Abre um endereço no navegador do sistema, fora do app. */
   abrirFora?(url: string): void;

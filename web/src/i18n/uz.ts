@@ -1051,7 +1051,6 @@ export default {
   'Trocar a capa': 'Muqovani almashtirish',
   'Trocar áudio': 'Audioni almashtirish',
   'Trocar avatar': 'Avatarni almashtirish',
-  'Ou escolha um coelho': 'Yoki quyon tanlang',
   'Usar este coelho': 'Bu quyonni ishlatish',
   'Trocar imagem': 'Rasmni almashtirish',
   'Trocar o e-mail': 'E-pochtani almashtirish',
@@ -3200,4 +3199,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Tik turadigan, dumaloq panjarali, issiq kunlar uchun.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Ilova",
+  "Anterior": "Oldingi",
+  "Próximo": "Keyingi",
+  "Sem bicho": "Uy hayvonisiz",
+  "Nome do bicho": "Uy hayvonining ismi",
+  "Usar uma foto": "Rasm ishlat",
+  "Bicho do quarto": "Xonaning uy hayvoni",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Qo‘ng‘iroq ohangi",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Kimdir senga shaxsiy suhbatda qo‘ng‘iroq qilganda jiringlaydi, ogohlantirish tovushlari o‘chirilgan bo‘lsa ham. \"Bezovta qilmang\" rejimida qo‘ng‘iroq jiringlamasdan ko‘rinadi.",
+  'Avisar das ligações com o Syden em segundo plano?': "Syden fonda bo‘lganda qo‘ng‘iroqlar haqida xabar berilsinmi?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Brauzer ruxsat so‘raydi. Shunda boshqa varaqda yoki dasturda bo‘lsang ham, qo‘ng‘iroqlar va xabarlardan xabardor bo‘lasan.",
+  'Permitir notificações': "Bildirishnomalarga ruxsat berish",
 } satisfies Record<string, string>;

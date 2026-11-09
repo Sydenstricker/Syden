@@ -873,7 +873,6 @@ export default {
   'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Syden’la gelen emojileri geri getirir. Sizin yüklediğiniz olduğu gibi kalır, hiçbir şey tekrar kopya olmaz.',
   'Trocar áudio': 'Sesi değiştir',
   'Trocar avatar': 'Avatarı değiştir',
-  'Ou escolha um coelho': 'Ya da bir tavşan seç',
   'Usar este coelho': 'Bu tavşanı kullan',
   'Trocar imagem': 'Görseli değiştir',
   'Trocar o e-mail': 'E-postayı değiştir',
@@ -3112,4 +3111,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Ayaklı, yuvarlak ızgaralı, sıcak günler için.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Uygulama",
+  "Anterior": "Önceki",
+  "Próximo": "Sonraki",
+  "Sem bicho": "Evcil hayvan yok",
+  "Nome do bicho": "Evcil hayvanın adı",
+  "Usar uma foto": "Fotoğraf kullan",
+  "Bicho do quarto": "Odanın evcil hayvanı",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Arama zil sesi",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Biri seni özel bir sohbette aradığında çalar, uyarı sesleri kapalı olsa bile. \"Rahatsız etme\" modunda arama çalmadan görünür.",
+  'Avisar das ligações com o Syden em segundo plano?': "Syden arka plandayken aramalardan haberdar edilsin mi?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Tarayıcı izin isteyecek. Böylece başka bir sekmede ya da programda olsan bile aramalardan ve mesajlardan haberin olur.",
+  'Permitir notificações': "Bildirimlere izin ver",
 } satisfies Record<string, string>;

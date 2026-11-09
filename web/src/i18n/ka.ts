@@ -1062,7 +1062,6 @@ export default {
   'Trocar a capa': 'ყდის შეცვლა',
   'Trocar áudio': 'აუდიოს შეცვლა',
   'Trocar avatar': 'ავატარის შეცვლა',
-  'Ou escolha um coelho': 'ან აირჩიე კურდღელი',
   'Usar este coelho': 'ამ კურდღლის გამოყენება',
   'Trocar imagem': 'სურათის შეცვლა',
   'Trocar o e-mail': 'ელფოსტის შეცვლა',
@@ -3198,4 +3197,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "მდგარი, მრგვალი ცხაურით, ცხელი დღეებისთვის.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "ავატარი",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "აპი",
+  "Anterior": "წინა",
+  "Próximo": "შემდეგი",
+  "Sem bicho": "შინაური ცხოველის გარეშე",
+  "Nome do bicho": "შინაური ცხოველის სახელი",
+  "Usar uma foto": "ფოტოს გამოყენება",
+  "Bicho do quarto": "ოთახის შინაური ცხოველი",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "ზარის მელოდია",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "რეკავს, როცა ვინმე პირად საუბარში გირეკავს, მაშინაც კი, როცა შეტყობინების ბგერები გამორთულია. „არ შემაწუხო“ რეჟიმში ზარი ჩნდება დარეკვის გარეშე.",
+  'Avisar das ligações com o Syden em segundo plano?': "გაცნობოს ზარების შესახებ, როცა Syden ფონურ რეჟიმშია?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "ბრაუზერი ნებართვას მოითხოვს. ასე ზარებისა და შეტყობინებების შესახებ სხვა ჩანართში ან პროგრამაშიც გაიგებ.",
+  'Permitir notificações': "შეტყობინებების დაშვება",
 } satisfies Record<string, string>;

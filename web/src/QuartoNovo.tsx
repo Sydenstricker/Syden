@@ -7,6 +7,7 @@ import { Mascote } from './Mascote';
 import { useT } from './i18n';
 import { casaComABusca, type GrupoDaCena, nomeDaPeca } from './nomesDaCena';
 import type { AcoesDoQuarto } from './Quarto';
+import { aoMudarOQuarto } from './quartoMudou';
 
 /**
  * O QUARTO NOVO, o de móveis soltos que cada pessoa arruma (e2e/pixel-art/quarto/novo/quarto/), dentro do app. No ar
@@ -124,6 +125,9 @@ export function QuartoNovo({
     window.addEventListener('message', ouvir);
     return () => window.removeEventListener('message', ouvir);
   }, []);
+
+  // o Guarda-roupa mudou o bicho do quarto (quartoMudou.ts): a página relê a arrumação
+  useEffect(() => aoMudarOQuarto(() => ref.current?.contentWindow?.postMessage({ syden: 'quarto', recarregar: true }, location.origin)), []);
 
   useEffect(() => {
     if (!pronto || arrumado) return;
@@ -247,7 +251,7 @@ export function EditorDaCena({
   }, [editando]);
   // Os nomes da barrinha que a cena põe em cima do que está escolhido.
   useEffect(() => {
-    enviarRef.current({ rotulos: { mover: t('Mover'), girar: t('Girar'), tirar: t('Tirar'), duplicar: t('Duplicar'), opcoes: t('Mais opções'), cortina: t('Cortina'), janela: t('Janela'), sobre: t('Sobre') } });
+    enviarRef.current({ rotulos: { mover: t('Mover'), girar: t('Girar'), tirar: t('Tirar'), duplicar: t('Duplicar'), opcoes: t('Mais opções'), cortina: t('Cortina'), janela: t('Janela'), sobre: t('Sobre'), banheiro: t('Porta do banheiro'), fechar: t('Fechar') } });
   }, [t]);
   // A prévia de dia ou de noite vale só no Editar; ao sair, volta o do app.
   useEffect(() => {

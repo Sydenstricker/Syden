@@ -244,6 +244,9 @@ const toquesRecentes = new Map<string, number>();
  *
  * O FREIO, para o toque não virar insistência (revisão de 02/11/2026: sair e entrar fazia tocar a cada 20 s sem fim): no
  * mínimo 20 s entre um toque e outro, e no máximo 3 em 5 minutos, por pessoa e conversa.
+ *
+ * Devolve para quantas pessoas tocou: com alguma, quem liga ouve o "chamando" ('chamada:chamando'). Sem ninguém (todos
+ * fora do Syden, ou o freio segurou), o chamando não toca — ele diria que está tocando do outro lado, e não estaria.
  */
 const toquesDaJanela = new Map<string, number[]>();
 /**
@@ -251,20 +254,23 @@ const toquesDaJanela = new Map<string, number[]>();
  * voltou, e não uma ligação nova: não toca de novo (revisão de 02/11/2026).
  */
 const saiuDaChamadaEm = new Map<string, number>();
-function tocarParaQuemPode(io: IOServer, quemLiga: number, channelId: number) {
+function tocarParaQuemPode(io: IOServer, quemLiga: number, channelId: number): number {
   const chave = `${quemLiga}:${channelId}`, agora = Date.now();
   const recentes = (toquesDaJanela.get(chave) ?? []).filter((t) => t > agora - 5 * 60_000);
-  if (recentes.length >= 3 || (recentes.at(-1) ?? 0) > agora - 20_000) return;
+  if (recentes.length >= 3 || (recentes.at(-1) ?? 0) > agora - 20_000) return 0;
   toquesDaJanela.set(chave, [...recentes, agora]);
   for (const [k, lista] of toquesDaJanela) if (!lista.some((t) => t > agora - 5 * 60_000)) toquesDaJanela.delete(k);
   const eu = db.findUserById(quemLiga);
-  if (!eu) return;
+  if (!eu) return 0;
   const de = { id: eu.id, username: eu.username, nomeDeExibicao: eu.nomeDeExibicao ?? null };
+  let tocou = 0;
   for (const outro of db.channelMemberIds(channelId)) {
     if (outro === quemLiga || !estaOnline(outro)) continue;
     if (db.haBloqueio(quemLiga, outro) || !podeConversarNoParticular(quemLiga, outro)) continue;
     io.to(salaDaPessoa(outro)).emit('chamada:tocando', { channelId, de });
+    tocou++;
   }
+  return tocou;
 }
 
 /** Tira alguém da chamada da conversa (saiu da conversa), e avisa quem está nela. */
@@ -686,7 +692,7 @@ export function setupRealtime(io: IOServer) {
       // Saiu de outra sala (de comunidade ou de outra conversa): a lista de lá fica sabendo.
       if (anterior && (anterior.communityId !== communityId || anterior.channelId !== channel.id)) anunciarVoz(io, anterior);
       anunciarVoz(io, { communityId, channelId: channel.id });
-      if (ligando) tocarParaQuemPode(io, user.id, channel.id);
+      if (ligando && tocarParaQuemPode(io, user.id, channel.id) > 0) socket.emit('chamada:chamando', { channelId: channel.id });
       // Quem entra numa chamada privada tira dela, no LiveKit, quem não poderia estar junto e ficou lá sem lugar na lista
       // (um app modificado que mandou voice:leave e continuou conectado; revisão de 02/11/2026).
       if (daConversa) afastarDasChamadas(io, user.id);

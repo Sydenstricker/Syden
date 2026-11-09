@@ -925,7 +925,6 @@ export default {
   'Trocar a capa': 'เปลี่ยนภาพปก',
   'Trocar áudio': 'เปลี่ยนเสียง',
   'Trocar avatar': 'เปลี่ยนรูปโปรไฟล์',
-  'Ou escolha um coelho': 'หรือเลือกกระต่าย',
   'Usar este coelho': 'ใช้กระต่ายตัวนี้',
   'Trocar imagem': 'เปลี่ยนรูป',
   'Trocar o e-mail': 'เปลี่ยนอีเมล',
@@ -3123,4 +3122,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "พัดลมตั้งพื้น ตะแกรงกลม สำหรับวันที่อากาศร้อน",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "รูปโปรไฟล์",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "แอป",
+  "Anterior": "ก่อนหน้า",
+  "Próximo": "ถัดไป",
+  "Sem bicho": "ไม่มีสัตว์เลี้ยง",
+  "Nome do bicho": "ชื่อสัตว์เลี้ยง",
+  "Usar uma foto": "ใช้รูปภาพ",
+  "Bicho do quarto": "สัตว์เลี้ยงในห้อง",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "เสียงเรียกเข้า",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "ดังเมื่อมีคนโทรหาในการสนทนาส่วนตัว แม้จะปิดเสียงแจ้งเตือนไว้ ในโหมด \"ห้ามรบกวน\" สายจะแสดงขึ้นโดยไม่มีเสียง",
+  'Avisar das ligações com o Syden em segundo plano?': "แจ้งเตือนสายเรียกเข้าขณะ Syden อยู่เบื้องหลังไหม",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "เบราว์เซอร์จะขออนุญาต แล้วจะรู้เรื่องสายและข้อความแม้อยู่ในแท็บหรือโปรแกรมอื่น",
+  'Permitir notificações': "อนุญาตการแจ้งเตือน",
 } satisfies Record<string, string>;

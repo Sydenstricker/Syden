@@ -1040,7 +1040,6 @@ export default {
   'Trocar a capa': 'Замени насловну слику',
   'Trocar áudio': 'Замени аудио',
   'Trocar avatar': 'Замени аватар',
-  'Ou escolha um coelho': 'Или изабери зеца',
   'Usar este coelho': 'Користи овог зеца',
   'Trocar imagem': 'Замени слику',
   'Trocar o e-mail': 'Промени имејл',
@@ -3177,4 +3176,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Стојећи, са округлом решетком, за вруће дане.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Аватар",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Апликација",
+  "Anterior": "Претходно",
+  "Próximo": "Следеће",
+  "Sem bicho": "Без љубимца",
+  "Nome do bicho": "Име љубимца",
+  "Usar uma foto": "Користи фотографију",
+  "Bicho do quarto": "Љубимац из собе",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Мелодија позива",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Звони кад те неко позове у приватном разговору, чак и кад су звукови обавештења искључени. У „Не узнемиравај“ позив се појави без звоњења.",
+  'Avisar das ligações com o Syden em segundo plano?': "Да те обавештава о позивима док је Syden у позадини?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Прегледач ће тражити дозволу. Тако ћеш сазнати за позиве и поруке чак и у другој картици или програму.",
+  'Permitir notificações': "Дозволи обавештења",
 } satisfies Record<string, string>;

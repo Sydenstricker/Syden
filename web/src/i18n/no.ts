@@ -1043,7 +1043,6 @@ export default {
   'Trocar a capa': 'Bytt forsidebilde',
   'Trocar áudio': 'Bytt lydfil',
   'Trocar avatar': 'Bytt avatar',
-  'Ou escolha um coelho': 'Eller velg en kanin',
   'Usar este coelho': 'Bruk denne kaninen',
   'Trocar imagem': 'Bytt bilde',
   'Trocar o e-mail': 'Bytt e-postadresse',
@@ -3180,4 +3179,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Stående, med det runde gitteret, for de varme dagene.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "App",
+  "Anterior": "Forrige",
+  "Próximo": "Neste",
+  "Sem bicho": "Ingen kjæledyr",
+  "Nome do bicho": "Kjæledyrets navn",
+  "Usar uma foto": "Bruk et bilde",
+  "Bicho do quarto": "Rommets kjæledyr",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Ringetone",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Ringer når noen ringer deg i en privat samtale, også når varsellydene er slått av. I «Ikke forstyrr» vises anropet uten å ringe.",
+  'Avisar das ligações com o Syden em segundo plano?': "Vil du få beskjed om anrop når Syden er i bakgrunnen?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Nettleseren vil be om tillatelse. Da får du vite om anrop og meldinger selv i en annen fane eller et annet program.",
+  'Permitir notificações': "Tillat varsler",
 } satisfies Record<string, string>;

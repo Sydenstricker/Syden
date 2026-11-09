@@ -878,7 +878,6 @@ export default {
   'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Haalt de emoji’s terug die bij Syden horen. Wat jullie geüpload hebben blijft zoals het is, en niets wordt een dubbele.',
   'Trocar áudio': 'Audio wisselen',
   'Trocar avatar': 'Avatar wisselen',
-  'Ou escolha um coelho': 'Of kies een konijn',
   'Usar este coelho': 'Dit konijn gebruiken',
   'Trocar imagem': 'Afbeelding wisselen',
   'Trocar o e-mail': 'Het e-mailadres wijzigen',
@@ -3109,4 +3108,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Staand, met zijn ronde rooster, voor de warme dagen.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "App",
+  "Anterior": "Vorige",
+  "Próximo": "Volgende",
+  "Sem bicho": "Geen huisdier",
+  "Nome do bicho": "Naam van het huisdier",
+  "Usar uma foto": "Een foto gebruiken",
+  "Bicho do quarto": "Huisdier van de kamer",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Beltoon",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Gaat over als iemand je belt in een privégesprek, ook als de waarschuwingsgeluiden uit staan. Bij \"Niet storen\" verschijnt het gesprek zonder over te gaan.",
+  'Avisar das ligações com o Syden em segundo plano?': "Laten weten als er gebeld wordt terwijl Syden op de achtergrond staat?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Je browser vraagt om toestemming. Zo hoor je van oproepen en berichten, ook in een ander tabblad of programma.",
+  'Permitir notificações': "Meldingen toestaan",
 } satisfies Record<string, string>;

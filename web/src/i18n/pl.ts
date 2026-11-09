@@ -1026,7 +1026,6 @@ export default {
   'Trocar a capa': 'Zmień okładkę',
   'Trocar áudio': 'Zmień plik audio',
   'Trocar avatar': 'Zmień awatar',
-  'Ou escolha um coelho': 'Albo wybierz królika',
   'Usar este coelho': 'Użyj tego królika',
   'Trocar imagem': 'Zmień obraz',
   'Trocar o e-mail': 'Zmień e-mail',
@@ -3175,4 +3174,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Stojący, z okrągłą kratką, na upalne dni.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Awatar",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Aplikacja",
+  "Anterior": "Poprzedni",
+  "Próximo": "Następny",
+  "Sem bicho": "Bez zwierzaka",
+  "Nome do bicho": "Imię zwierzaka",
+  "Usar uma foto": "Użyj zdjęcia",
+  "Bicho do quarto": "Zwierzak z pokoju",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Dzwonek połączenia",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Dzwoni, gdy ktoś dzwoni do ciebie w prywatnej rozmowie, nawet przy wyłączonych dźwiękach powiadomień. W trybie „Nie przeszkadzać” połączenie pojawia się bez dzwonienia.",
+  'Avisar das ligações com o Syden em segundo plano?': "Powiadamiać o połączeniach, gdy Syden działa w tle?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Przeglądarka poprosi o zgodę. Dzięki temu dowiesz się o połączeniach i wiadomościach nawet w innej karcie lub programie.",
+  'Permitir notificações': "Zezwól na powiadomienia",
 } satisfies Record<string, string>;

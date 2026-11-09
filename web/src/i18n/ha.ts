@@ -914,7 +914,6 @@ export default {
   'Trocar a capa': 'Canza murfin',
   'Trocar áudio': 'Canza sauti',
   'Trocar avatar': 'Canza hoton martaba',
-  'Ou escolha um coelho': 'Ko zaɓi zomo',
   'Usar este coelho': 'Yi amfani da wannan zomo',
   'Trocar imagem': 'Canza hoto',
   'Trocar o e-mail': 'Canza imel',
@@ -3112,4 +3111,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Fanka mai tsayawa, da ragar zagaye, don ranakun zafi.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Hoton martaba",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Manhaja",
+  "Anterior": "Na baya",
+  "Próximo": "Na gaba",
+  "Sem bicho": "Babu dabbar gida",
+  "Nome do bicho": "Sunan dabbar gida",
+  "Usar uma foto": "Yi amfani da hoto",
+  "Bicho do quarto": "Dabbar gida ta ɗaki",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Ƙarar kira",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Yana ƙara idan wani ya kira ku a tattaunawa ta sirri, ko da sautunan sanarwa a kashe suke. A \"Kar a dami\", kiran yana bayyana ba tare da ƙara ba.",
+  'Avisar das ligações com o Syden em segundo plano?': "A sanar da ku kiraye-kiraye yayin da Syden ke bayan fage?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Burauza zai nemi izini. Ta haka za ku san kiraye-kiraye da saƙonni ko da kuna wani shafi ko shiri.",
+  'Permitir notificações': "Ba da izinin sanarwa",
 } satisfies Record<string, string>;

@@ -885,7 +885,6 @@ export default {
   'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'E toe aumai ai emoji e oʻo mai ma Syden. O mea na outou siʻi i luga e tumau pea, ma e leai se mea e faʻaluaina.',
   'Trocar áudio': 'Sui le leo',
   'Trocar avatar': 'Sui le avatar',
-  'Ou escolha um coelho': 'Pe filifili se lapiti',
   'Usar este coelho': 'Faʻaaoga lenei lapiti',
   'Trocar imagem': 'Sui le ata',
   'Trocar o e-mail': 'Sui le imeli',
@@ -3114,4 +3113,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Ili tu, ma lona pa lapotopoto, mo aso vevela.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Polokalame",
+  "Anterior": "Muamua",
+  "Próximo": "Le isi",
+  "Sem bicho": "Leai se fagafao",
+  "Nome do bicho": "Igoa o le fagafao",
+  "Usar uma foto": "Fa’aaoga se ata",
+  "Bicho do quarto": "Fagafao o le potu",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Leo o le valaau",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "E tatagi pe a valaau atu se tasi iā te oe i se talanoaga patino, e tusa lava pe tape leo lapataʻi. I le \"Aua le faʻalavelave\", e aliali mai le valaau e aunoa ma le tatagi.",
+  'Avisar das ligações com o Syden em segundo plano?': "Faailoa atu valaau pe a i tua le Syden?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "O le a talosaga le browser mo se faatagaga. O lea e te iloa ai valaau ma feʻau e tusa lava pe i se isi tab po o se polokalame.",
+  'Permitir notificações': "Faataga faailoga",
 } satisfies Record<string, string>;

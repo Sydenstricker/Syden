@@ -876,7 +876,6 @@ export default {
   'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Syden-এর সঙ্গে আসা ইমোজিগুলো ফিরিয়ে আনে। তোমরা যা পাঠিয়েছ তা যেমন আছে তেমনই থাকে, আর কিছুই দ্বিতীয়বার নকল হয় না।',
   'Trocar áudio': 'অডিও বদলাও',
   'Trocar avatar': 'অবতার বদলাও',
-  'Ou escolha um coelho': 'অথবা একটা খরগোশ বেছে নাও',
   'Usar este coelho': 'এই খরগোশটি ব্যবহার করো',
   'Trocar imagem': 'ছবি বদলাও',
   'Trocar o e-mail': 'ইমেল বদলাও',
@@ -3107,4 +3106,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "দাঁড়ানো পাখা, গোল জালিসহ, গরমের দিনের জন্য।",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "অবতার",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "অ্যাপ",
+  "Anterior": "আগেরটি",
+  "Próximo": "পরেরটি",
+  "Sem bicho": "কোনো পোষা প্রাণী নেই",
+  "Nome do bicho": "পোষা প্রাণীর নাম",
+  "Usar uma foto": "একটি ছবি ব্যবহার করো",
+  "Bicho do quarto": "ঘরের পোষা প্রাণী",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "কলের রিংটোন",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "প্রাইভেট কথোপকথনে কেউ তোমাকে কল করলে বাজে, বিজ্ঞপ্তির শব্দ বন্ধ থাকলেও। \"বিরক্ত কোরো না\"-তে কলটি না বেজে দেখা যায়।",
+  'Avisar das ligações com o Syden em segundo plano?': "Syden পেছনে থাকলে কলের কথা জানাবে?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "ব্রাউজার অনুমতি চাইবে। এতে অন্য ট্যাব বা প্রোগ্রামে থাকলেও তুমি কল আর মেসেজের খবর পাবে।",
+  'Permitir notificações': "বিজ্ঞপ্তি চালু করো",
 } satisfies Record<string, string>;

@@ -882,7 +882,6 @@ export default {
   'Trocar a capa': 'Đổi ảnh bìa',
   'Trocar áudio': 'Đổi tệp âm thanh',
   'Trocar avatar': 'Đổi ảnh đại diện',
-  'Ou escolha um coelho': 'Hoặc chọn một chú thỏ',
   'Usar este coelho': 'Dùng chú thỏ này',
   'Trocar imagem': 'Đổi ảnh',
   'Trocar o e-mail': 'Đổi e-mail',
@@ -3080,4 +3079,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Quạt cây, lồng tròn, cho những ngày nóng.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Ảnh đại diện",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Ứng dụng",
+  "Anterior": "Trước",
+  "Próximo": "Tiếp",
+  "Sem bicho": "Không có thú cưng",
+  "Nome do bicho": "Tên thú cưng",
+  "Usar uma foto": "Dùng một ảnh",
+  "Bicho do quarto": "Thú cưng trong phòng",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Nhạc chuông cuộc gọi",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Đổ chuông khi có người gọi cho bạn trong cuộc trò chuyện riêng, kể cả khi đã tắt âm báo. Ở chế độ \"Không làm phiền\", cuộc gọi hiện lên mà không đổ chuông.",
+  'Avisar das ligações com o Syden em segundo plano?': "Báo cho bạn về cuộc gọi khi Syden chạy nền?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Trình duyệt sẽ xin quyền. Nhờ vậy bạn biết có cuộc gọi và tin nhắn ngay cả khi đang ở thẻ hoặc chương trình khác.",
+  'Permitir notificações': "Cho phép thông báo",
 } satisfies Record<string, string>;

@@ -876,7 +876,6 @@ export default {
   'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Mengembalikan emoji bawaan Syden. Yang kalian unggah tetap seperti adanya, dan tidak ada yang jadi salinan ganda.',
   'Trocar áudio': 'Ganti audio',
   'Trocar avatar': 'Ganti avatar',
-  'Ou escolha um coelho': 'Atau pilih kelinci',
   'Usar este coelho': 'Pakai kelinci ini',
   'Trocar imagem': 'Ganti gambar',
   'Trocar o e-mail': 'Ganti emailnya',
@@ -3107,4 +3106,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Kipas berdiri, dengan kisi bulat, untuk hari-hari panas.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Aplikasi",
+  "Anterior": "Sebelumnya",
+  "Próximo": "Berikutnya",
+  "Sem bicho": "Tanpa hewan peliharaan",
+  "Nome do bicho": "Nama hewan peliharaan",
+  "Usar uma foto": "Pakai foto",
+  "Bicho do quarto": "Hewan peliharaan kamar",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Nada dering panggilan",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Berdering saat seseorang meneleponmu di percakapan pribadi, meski suara pemberitahuan dimatikan. Saat \"Jangan ganggu\", panggilan muncul tanpa berdering.",
+  'Avisar das ligações com o Syden em segundo plano?': "Beri tahu soal panggilan saat Syden di latar belakang?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Browser akan meminta izin. Dengan begitu kamu tahu ada panggilan dan pesan meski sedang di tab atau program lain.",
+  'Permitir notificações': "Izinkan notifikasi",
 } satisfies Record<string, string>;

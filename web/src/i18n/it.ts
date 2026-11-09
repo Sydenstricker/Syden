@@ -878,7 +878,6 @@ export default {
   'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Riporta le emoji che arrivano con Syden. Quello che avete caricato resta com’è, e niente diventa un doppione.',
   'Trocar áudio': 'Cambia audio',
   'Trocar avatar': 'Cambia avatar',
-  'Ou escolha um coelho': 'Oppure scegli un coniglio',
   'Usar este coelho': 'Usa questo coniglio',
   'Trocar imagem': 'Cambia immagine',
   'Trocar o e-mail': 'Cambia l’e-mail',
@@ -3109,4 +3108,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "In piedi, con la griglia rotonda, per le giornate calde.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "App",
+  "Anterior": "Precedente",
+  "Próximo": "Successivo",
+  "Sem bicho": "Nessun animale",
+  "Nome do bicho": "Nome dell'animale",
+  "Usar uma foto": "Usa una foto",
+  "Bicho do quarto": "L'animale della stanza",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Suoneria delle chiamate",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Suona quando qualcuno ti chiama in una conversazione privata, anche con i suoni di avviso disattivati. In \"Non disturbare\", la chiamata appare senza suonare.",
+  'Avisar das ligações com o Syden em segundo plano?': "Avvisarti delle chiamate quando Syden è in background?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Il browser ti chiederà il permesso. Così saprai di chiamate e messaggi anche in un’altra scheda o programma.",
+  'Permitir notificações': "Consenti le notifiche",
 } satisfies Record<string, string>;

@@ -1039,7 +1039,6 @@ export default {
   'Trocar a capa': 'Canviar la portada',
   'Trocar áudio': 'Canviar l’àudio',
   'Trocar avatar': 'Canviar l’avatar',
-  'Ou escolha um coelho': 'O tria un conill',
   'Usar este coelho': 'Fes servir aquest conill',
   'Trocar imagem': 'Canviar la imatge',
   'Trocar o e-mail': 'Canviar el correu',
@@ -3176,4 +3175,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "De peu, amb la reixa rodona, per als dies de calor.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Aplicació",
+  "Anterior": "Anterior",
+  "Próximo": "Següent",
+  "Sem bicho": "Sense mascota",
+  "Nome do bicho": "Nom de la mascota",
+  "Usar uma foto": "Fes servir una foto",
+  "Bicho do quarto": "Mascota de l'habitació",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "So de trucada",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Sona quan algú et truca en una conversa privada, fins i tot amb els sons d’avís desactivats. En \"No molestar\", la trucada apareix sense sonar.",
+  'Avisar das ligações com o Syden em segundo plano?': "Vols que t’avisi de les trucades amb el Syden en segon pla?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "El navegador et demanarà permís. Així sabràs de trucades i missatges fins i tot en una altra pestanya o programa.",
+  'Permitir notificações': "Permetre notificacions",
 } satisfies Record<string, string>;

@@ -867,7 +867,6 @@ export default {
   'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Syden에 기본으로 들어 있는 이모지를 되돌려요. 여러분이 올린 건 그대로 남고, 중복으로 복사되지도 않아요.',
   'Trocar áudio': '오디오 바꾸기',
   'Trocar avatar': '아바타 바꾸기',
-  'Ou escolha um coelho': '또는 토끼 고르기',
   'Usar este coelho': '이 토끼 쓰기',
   'Trocar imagem': '이미지 바꾸기',
   'Trocar o e-mail': '이메일 바꾸기',
@@ -3098,4 +3097,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "둥근 망이 달린 스탠드 선풍기, 더운 날을 위해.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "아바타",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "앱",
+  "Anterior": "이전",
+  "Próximo": "다음",
+  "Sem bicho": "반려동물 없음",
+  "Nome do bicho": "반려동물 이름",
+  "Usar uma foto": "사진 사용하기",
+  "Bicho do quarto": "방의 반려동물",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "통화 벨소리",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "개인 대화에서 누군가 전화를 걸면 울려요. 알림음을 꺼 두었어도 울려요. \"방해 금지\"에서는 벨 없이 표시돼요.",
+  'Avisar das ligações com o Syden em segundo plano?': "Syden이 백그라운드에 있을 때 통화를 알려 줄까요?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "브라우저가 권한을 요청해요. 그러면 다른 탭이나 프로그램에 있어도 통화와 메시지를 알 수 있어요.",
+  'Permitir notificações': "알림 허용",
 } satisfies Record<string, string>;

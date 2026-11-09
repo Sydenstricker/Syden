@@ -878,7 +878,6 @@ export default {
   'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Syden के साथ आने वाले इमोजी वापस ले आता है। तुम लोगों ने जो भेजा वह वैसा ही रहता है, और कुछ भी दोहरी नकल नहीं बनता।',
   'Trocar áudio': 'ऑडियो बदलो',
   'Trocar avatar': 'अवतार बदलो',
-  'Ou escolha um coelho': 'या कोई खरगोश चुनो',
   'Usar este coelho': 'यह खरगोश इस्तेमाल करो',
   'Trocar imagem': 'तस्वीर बदलो',
   'Trocar o e-mail': 'ईमेल बदलो',
@@ -3109,4 +3108,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "खड़ा पंखा, गोल जाली वाला, गर्म दिनों के लिए।",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "अवतार",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "ऐप",
+  "Anterior": "पिछला",
+  "Próximo": "अगला",
+  "Sem bicho": "कोई पालतू नहीं",
+  "Nome do bicho": "पालतू का नाम",
+  "Usar uma foto": "एक फ़ोटो इस्तेमाल करो",
+  "Bicho do quarto": "कमरे का पालतू",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "कॉल की रिंगटोन",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "जब कोई निजी बातचीत में तुम्हें कॉल करे तब बजती है, सूचना की आवाज़ें बंद होने पर भी। \"परेशान मत करो\" में कॉल बिना बजे दिखती है।",
+  'Avisar das ligações com o Syden em segundo plano?': "Syden पीछे चल रहा हो तब कॉल की सूचना दें?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "ब्राउज़र अनुमति मांगेगा। इससे दूसरे टैब या प्रोग्राम में होने पर भी तुम्हें कॉल और संदेशों का पता चलेगा।",
+  'Permitir notificações': "सूचनाओं की अनुमति दें",
 } satisfies Record<string, string>;

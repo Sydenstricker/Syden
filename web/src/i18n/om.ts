@@ -1001,7 +1001,6 @@ export default {
   'Trocar a capa': 'Haguuggii jijjiiri',
   'Trocar áudio': 'Sagalee jijjiiri',
   'Trocar avatar': 'Suuraa piroofaayilii jijjiiri',
-  'Ou escolha um coelho': 'Ykn illeenteessa filadhu',
   'Usar este coelho': 'Illeenteessa kana fayyadami',
   'Trocar imagem': 'Suuraa jijjiiri',
   'Trocar o e-mail': 'Imeelii jijjiiri',
@@ -3150,4 +3149,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Bubbee dhaabbatu, saphaphuu geengoo qabu, guyyoota ho’aaf.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Suuraa piroofaayilii",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Appii",
+  "Anterior": "Kan duraa",
+  "Próximo": "Kan itti aanu",
+  "Sem bicho": "Bineensi manaa hin jiru",
+  "Nome do bicho": "Maqaa bineensa manaa",
+  "Usar uma foto": "Suuraa fayyadami",
+  "Bicho do quarto": "Bineensa manaa kutaa",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Sagalee bilbilaa",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Namni tokko haasaa dhuunfaa keessatti yommuu siif bilbilu ni bilbila, sagaleen beeksisaa yoo cufame illee. \"Hin jeeqin\" keessatti bilbilli osoo hin bilbilin mul’ata.",
+  'Avisar das ligações com o Syden em segundo plano?': "Yeroo Syden duubaan jiru waa’ee bilbilaa siif haa beeksisu?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Barbaadaan hayyama gaafata. Akkasiin tabii ykn sagantaa biraa keessa yoo jirte illee waa’ee bilbilaa fi ergaa ni beekta.",
+  'Permitir notificações': "Beeksisa hayyami",
 } satisfies Record<string, string>;

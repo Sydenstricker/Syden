@@ -34,7 +34,7 @@ import {
   useState,
 } from 'react';
 import { AnimatedIcon } from './AnimatedIcon';
-import { Aparencia, GuardaRoupaSection } from './Aparencia';
+import { Aparencia, type OrelhaDaAparencia } from './Aparencia';
 import { GraficosSection } from './Graficos';
 import { EscolherSelo } from './EscolherSelo';
 import { PessoasBloqueadas } from './PessoasBloqueadas';
@@ -57,7 +57,7 @@ import { procurarRepetidos } from './somParecido';
 import { Insignia } from './Medalha';
 import { acharInsignia } from './insignias';
 import { type ScreenQuality, updateSettings, useSettings } from './settings';
-import { Avatar, enderecoDoCoelhoPronto } from './Avatar';
+import { Avatar } from './Avatar';
 import { CargosDoMembro, EditorDeCargos, EtiquetasDeCargo } from './Cargos';
 import { ConfiguracaoDeNiveis } from './Ranking';
 import { ConfiguracaoDeContadores } from './Contadores';
@@ -102,11 +102,9 @@ type Section = 'account' | 'familia' | 'guarda-roupa' | 'aparencia' | 'graficos'
 // o mouse, que é onde esse tipo de ícone rende sem competir com os botões da chamada.
 const USER_SECTIONS: { id: Section; label: string; icon: ReactNode }[] = [
   { id: 'account', label: chave('Minha conta'), icon: <AnimatedIcon name="avatar" size={20} /> },
-  // O GUARDA-ROUPA FICA LOGO DEPOIS DA CONTA: o avatar e os enfeites do perfil, a cara da PESSOA (o que o guarda-roupa do
-  // quarto abre). É o que sobrou da junção da Loja com os enfeites de perfil, separado da Aparência do app em 09/11/2026
-  // (pedido dele: "uma coisa é mudar aparência do aplicativo Syden, outra é mudar o nosso avatar"). Ver Aparencia.tsx.
-  { id: 'guarda-roupa', label: chave('Guarda-roupa'), icon: <Shirt size={20} /> },
-  // A APARÊNCIA é só a cara do APP: a paleta e a cor de destaque.
+  // A APARÊNCIA FICA LOGO DEPOIS DA CONTA, com duas orelhas de fichário (09/11/2026, o desenho dele): o Aplicativo (a
+  // paleta e a cor de destaque) e o Avatar (o personagem, o bicho do quarto e os enfeites do perfil). A orelha do Avatar
+  // é o guarda-roupa: o do quarto abre nela ('guarda-roupa', abaixo, é o atalho até ela). Ver Aparencia.tsx.
   { id: 'aparencia', label: chave('Aparência'), icon: <Sparkles size={20} /> },
   // OS GRÁFICOS DO QUARTO E DO SALÃO ganharam lugar próprio (pedido dele, 17/10/2026): dentro da Aparência ninguém os
   // achava, e não são cosmético, são o peso que o Syden põe no computador. Ver Graficos.tsx.
@@ -168,7 +166,13 @@ export function SettingsModal({
   onCommunityChanged: () => void;
 }) {
   const t = useT();
-  const [section, setSection] = useState<Section>(secaoInicial);
+  // 'guarda-roupa' não é uma aba do menu: é a Aparência aberta na orelha do Avatar (o guarda-roupa do quarto, o lápis do perfil)
+  const [section, setSection] = useState<Section>(secaoInicial === 'guarda-roupa' ? 'aparencia' : secaoInicial);
+  const [orelha, setOrelha] = useState<OrelhaDaAparencia>(secaoInicial === 'guarda-roupa' ? 'avatar' : 'aplicativo');
+  const abrirOAvatar = () => {
+    setOrelha('avatar');
+    setSection('aparencia');
+  };
   const [ferramentasAbertas, setFerramentasAbertas] = useState(false);
   const ferramentaAberta = SO_PARA_QUEM_ADMINISTRA.includes(section);
 
@@ -245,7 +249,7 @@ export function SettingsModal({
         <div className="settings-content-inner">
           {section === 'account' && (
             <>
-              <AccountSection user={user} onDeleted={onLogout} aoTrocarAvatar={() => setSection('guarda-roupa')} />
+              <AccountSection user={user} onDeleted={onLogout} aoTrocarAvatar={abrirOAvatar} />
               <MeuAniversario />
               <MeusIdiomas />
               <AoAbrir />
@@ -258,9 +262,14 @@ export function SettingsModal({
           )}
           {section === 'familia' && <FamiliaSection />}
           {section === 'graficos' && <GraficosSection />}
-          {section === 'aparencia' && <Aparencia aoAbrirGuardaRoupa={() => setSection('guarda-roupa')} />}
-          {section === 'guarda-roupa' && (
-            <GuardaRoupaSection user={user} editorDoAvatar={<AvatarEditor user={user} />} aoAbrirPacotes={() => setSection('soundboard')} />
+          {section === 'aparencia' && (
+            <Aparencia
+              user={user}
+              orelha={orelha}
+              aoTrocarOrelha={setOrelha}
+              editorDaFoto={<AvatarEditor user={user} />}
+              aoAbrirPacotes={() => setSection('soundboard')}
+            />
           )}
           {section === 'voice' && <VoiceSection voice={voice} />}
           {section === 'sounds' && <SoundsSection />}
@@ -1712,13 +1721,6 @@ function AvatarEditor({ user }: { user: User }) {
     setBusy(false);
   }
 
-  async function escolherPronto(numero: number) {
-    setBusy(true);
-    setError(null);
-    await api('/api/me/avatar-pronto', { method: 'PUT', body: { numero } }).catch((e) => setError((e as Error).message));
-    setBusy(false);
-  }
-
   async function remove() {
     setBusy(true);
     await api('/api/me/avatar', { method: 'DELETE' }).catch((e) => setError((e as Error).message));
@@ -1749,47 +1751,10 @@ function AvatarEditor({ user }: { user: User }) {
         </button>
       </form>
       <p className="settings-hint">{t('Ou cole o link de um GIF ou de uma imagem, do Tenor e do GIPHY também. O Syden baixa uma cópia e guarda.')}</p>
-      <CoelhosProntos disabled={busy} escolhido={eu?.avatarPronto ?? null} onEscolher={escolherPronto} />
       {cropping && (
         <ImageCropper file={cropping} title={t('Ajustar o avatar')} shape="circle" onCancel={() => setCropping(null)} onDone={upload} />
       )}
     </>
-  );
-}
-
-/**
- * OS COELHOS PRONTOS: avatares em pixel art, no estilo do quarto, para quem não tem foto ou não quer usar a
- * sua (pedido de 10/10/2026, depois de ver os do squad de demonstração: "podemos disponibilizar para o
- * usuário"). Os desenhos são do PixelLab (e2e/pixel-art/demonstracao/), guardados em web/public/avatares/
- * já ampliados a 256 px pelo vizinho mais próximo: nítidos em qualquer tamanho de avatar.
- *
- * ESCOLHER UM GUARDA SÓ O NÚMERO (/api/me/avatar-pronto), e não a imagem: assim o app sabe qual coelho é e o
- * desenha na pose do estado da pessoa — dormindo quando ausente, concentrado quando ocupado, falando na call
- * (ver Avatar.tsx). Uma foto enviada não tem pose; um coelho conhecido tem.
- */
-const COELHOS_PRONTOS = Array.from({ length: 16 }, (_, i) => i + 1);
-
-function CoelhosProntos({ disabled, escolhido, onEscolher }: { disabled: boolean; escolhido: number | null; onEscolher: (numero: number) => void }) {
-  const t = useT();
-  return (
-    <div className="coelhos-prontos">
-      <h4>{t('Ou escolha um coelho')}</h4>
-      <div className="coelhos-prontos-grade">
-        {COELHOS_PRONTOS.map((numero) => (
-          <button
-            key={numero}
-            type="button"
-            disabled={disabled}
-            aria-pressed={escolhido === numero}
-            aria-label={t('Usar este coelho')}
-            title={t('Usar este coelho')}
-            onClick={() => onEscolher(numero)}
-          >
-            <img src={enderecoDoCoelhoPronto(numero)} alt="" width={48} height={48} loading="lazy" />
-          </button>
-        ))}
-      </div>
-    </div>
   );
 }
 
@@ -2815,6 +2780,15 @@ function SoundsSection() {
           {t('O navegador bloqueou as notificações deste site. Libere no cadeado ao lado do endereço e recarregue a página.')}
         </p>
       )}
+      <Toggle
+        label={t('Toque de ligação')}
+        description={t('Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.')}
+        checked={settings.toqueDeLigacao}
+        onChange={(value) => {
+          updateSettings({ toqueDeLigacao: value });
+          if (value) sounds.toque();
+        }}
+      />
       <Toggle
         label={t('Efeitos visuais na chamada')}
         description={t('Confete, fogos e corações que qualquer pessoa da sala pode mandar. Desligue se o seu computador engasgar durante a chamada — desligado, você não vê nem manda.')}

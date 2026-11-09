@@ -892,7 +892,6 @@ export default {
   'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'Igarura emoji ziza na Syden. Ibyo mwohereje biguma uko biri, kandi nta kintu kiba kopi isubiramo.',
   'Trocar áudio': 'Hindura ijwi',
   'Trocar avatar': 'Hindura ifoto y\'umwirondoro',
-  'Ou escolha um coelho': 'Cyangwa uhitemo urukwavu',
   'Usar este coelho': 'Koresha uru rukwavu',
   'Trocar imagem': 'Hindura ishusho',
   'Trocar o e-mail': 'Hindura imeyili',
@@ -3121,4 +3120,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Umufana uhagaze, ufite akayunguruzo kazengurutse, ku minsi y’ubushyuhe.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Ifoto y'umwirondoro",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Porogaramu",
+  "Anterior": "Ibibanza",
+  "Próximo": "Ibikurikira",
+  "Sem bicho": "Nta tungo ryo mu rugo",
+  "Nome do bicho": "Izina ry'itungo",
+  "Usar uma foto": "Koresha ifoto",
+  "Bicho do quarto": "Itungo ry'icyumba",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Ijwi ry’umuhamagaro",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Rivuga iyo hari ukuhamagaye mu kiganiro cyihariye, n’iyo amajwi yo kumenyesha yazimijwe. Muri \"Ntumbangamire\", umuhamagaro ugaragara utavuze.",
+  'Avisar das ligações com o Syden em segundo plano?': "Kukumenyesha imihamagaro iyo Syden iri inyuma?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Mushakisha izasaba uruhushya. Bityo uzamenya imihamagaro n’ubutumwa n’iyo waba uri mu yindi tab cyangwa porogaramu.",
+  'Permitir notificações': "Emera amatangazo",
 } satisfies Record<string, string>;

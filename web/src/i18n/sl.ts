@@ -1045,7 +1045,6 @@ export default {
   'Trocar a capa': 'Zamenjaj naslovnico',
   'Trocar áudio': 'Zamenjaj zvočno datoteko',
   'Trocar avatar': 'Zamenjaj avatar',
-  'Ou escolha um coelho': 'Ali izberi zajca',
   'Usar este coelho': 'Uporabi tega zajca',
   'Trocar imagem': 'Zamenjaj sliko',
   'Trocar o e-mail': 'Spremeni e-naslov',
@@ -3182,4 +3181,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Stoječi, z okroglo mrežo, za vroče dni.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Aplikacija",
+  "Anterior": "Prejšnji",
+  "Próximo": "Naslednji",
+  "Sem bicho": "Brez ljubljenčka",
+  "Nome do bicho": "Ime ljubljenčka",
+  "Usar uma foto": "Uporabi fotografijo",
+  "Bicho do quarto": "Ljubljenček v sobi",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Zvonjenje klica",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Zazvoni, ko te nekdo pokliče v zasebnem pogovoru, tudi če so opozorilni zvoki izklopljeni. V načinu »Ne moti« se klic prikaže brez zvonjenja.",
+  'Avisar das ligações com o Syden em segundo plano?': "Te obveščam o klicih, ko je Syden v ozadju?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Brskalnik bo prosil za dovoljenje. Tako bodo klici in sporočila vidni tudi v drugem zavihku ali programu.",
+  'Permitir notificações': "Dovoli obvestila",
 } satisfies Record<string, string>;

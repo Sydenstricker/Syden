@@ -1043,7 +1043,6 @@ export default {
   'Trocar a capa': 'Beddel daboolka',
   'Trocar áudio': 'Beddel maqalka',
   'Trocar avatar': 'Beddel sawirka astaanta',
-  'Ou escolha um coelho': 'Ama dooro bakayle',
   'Usar este coelho': 'Isticmaal bakaylahan',
   'Trocar imagem': 'Beddel sawirka',
   'Trocar o e-mail': 'Beddel iimaylka',
@@ -3180,4 +3179,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Marawaxad taagan, leh shabaq wareegsan, maalmaha kulul.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Sawirka astaanta",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Abka",
+  "Anterior": "Hore",
+  "Próximo": "Xiga",
+  "Sem bicho": "Xayawaan guri ma jiro",
+  "Nome do bicho": "Magaca xayawaanka guriga",
+  "Usar uma foto": "Isticmaal sawir",
+  "Bicho do quarto": "Xayawaanka guriga ee qolka",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Codka wicitaanka",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Wuu dhawaaqaa marka qof kuu soo waco wada-hadal gaar ah, xitaa haddii dhawaaqyada ogeysiisku dansan yihiin. Marka \"Ha i dhibin\", wicitaanku wuu muuqdaa isagoon dhawaaqin.",
+  'Avisar das ligações com o Syden em segundo plano?': "Ma lagugu ogeysiiyaa wicitaannada marka Syden uu gadaal ku jiro?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Biraawsarku wuxuu weydiin doonaa ogolaansho. Sidaas ayaad ku ogaan doontaa wicitaannada iyo fariimaha xitaa haddii aad joogto tab ama barnaamij kale.",
+  'Permitir notificações': "Oggolow ogeysiisyada",
 } satisfies Record<string, string>;

@@ -1063,7 +1063,6 @@ export default {
   'Trocar a capa': 'Փոխել շապիկը',
   'Trocar áudio': 'Փոխել աուդիոն',
   'Trocar avatar': 'Փոխել ավատարը',
-  'Ou escolha um coelho': 'Կամ ընտրիր ճագար',
   'Usar este coelho': 'Օգտագործել այս ճագարը',
   'Trocar imagem': 'Փոխել պատկերը',
   'Trocar o e-mail': 'Փոխել էլ. փոստը',
@@ -3199,4 +3198,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Կանգնած, կլոր ցանցով, շոգ օրերի համար։",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Ավատար",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Հավելված",
+  "Anterior": "Նախորդ",
+  "Próximo": "Հաջորդ",
+  "Sem bicho": "Առանց ընտանի կենդանու",
+  "Nome do bicho": "Ընտանի կենդանու անունը",
+  "Usar uma foto": "Օգտագործիր լուսանկար",
+  "Bicho do quarto": "Սենյակի ընտանի կենդանին",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Զանգի մեղեդի",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Հնչում է, երբ ինչ-որ մեկը քեզ զանգում է անձնական զրույցում, նույնիսկ եթե ծանուցման հնչյունները անջատված են։ «Չանհանգստացնել» ռեժիմում զանգը երևում է առանց հնչելու։",
+  'Avisar das ligações com o Syden em segundo plano?': "Ծանուցե՞լ զանգերի մասին, երբ Syden-ը հետին պլանում է։",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Զննիչը թույլտվություն կխնդրի։ Այդպես զանգերի և հաղորդագրությունների մասին կիմանաս նույնիսկ այլ ներդիրում կամ ծրագրում։",
+  'Permitir notificações': "Թույլատրել ծանուցումները",
 } satisfies Record<string, string>;

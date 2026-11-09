@@ -1037,7 +1037,6 @@ export default {
   'Trocar a capa': 'Verander die voorblad',
   'Trocar áudio': 'Verander klanklêer',
   'Trocar avatar': 'Verander avatar',
-  'Ou escolha um coelho': 'Of kies ’n haas',
   'Usar este coelho': 'Gebruik hierdie haas',
   'Trocar imagem': 'Verander prent',
   'Trocar o e-mail': 'Verander die e-posadres',
@@ -3174,4 +3173,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Staande, met sy ronde rooster, vir die warm dae.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Toepassing",
+  "Anterior": "Vorige",
+  "Próximo": "Volgende",
+  "Sem bicho": "Geen troeteldier",
+  "Nome do bicho": "Troeteldier se naam",
+  "Usar uma foto": "Gebruik 'n foto",
+  "Bicho do quarto": "Troeteldier van die kamer",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Lui vir oproepe",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Lui wanneer iemand jou in ’n privaat gesprek bel, selfs met die kennisgewingklanke af. In \"Moenie steur nie\" verskyn die oproep sonder om te lui.",
+  'Avisar das ligações com o Syden em segundo plano?': "Laat weet jou van oproepe terwyl Syden in die agtergrond is?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Die blaaier sal toestemming vra. So hoor jy van oproepe en boodskappe, selfs in ’n ander oortjie of program.",
+  'Permitir notificações': "Laat kennisgewings toe",
 } satisfies Record<string, string>;

@@ -1045,7 +1045,6 @@ export default {
   'Trocar a capa': 'Borító cseréje',
   'Trocar áudio': 'Hangfájl cseréje',
   'Trocar avatar': 'Avatar cseréje',
-  'Ou escolha um coelho': 'Vagy válassz egy nyuszit',
   'Usar este coelho': 'Ennek a nyuszinak a használata',
   'Trocar imagem': 'Kép cseréje',
   'Trocar o e-mail': 'E-mail-cím cseréje',
@@ -3182,4 +3181,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Álló, kerek ráccsal, a forró napokra.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Alkalmazás",
+  "Anterior": "Előző",
+  "Próximo": "Következő",
+  "Sem bicho": "Nincs háziállat",
+  "Nome do bicho": "A háziállat neve",
+  "Usar uma foto": "Fotó használata",
+  "Bicho do quarto": "A szoba háziállata",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Hívás csengőhangja",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Csörög, ha valaki privát beszélgetésben hív, akkor is, ha az értesítési hangok ki vannak kapcsolva. „Ne zavarjanak” módban a hívás csörgés nélkül jelenik meg.",
+  'Avisar das ligações com o Syden em segundo plano?': "Értesítsen a hívásokról, amikor a Syden a háttérben van?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "A böngésző engedélyt fog kérni. Így más lapon vagy programban is értesülsz a hívásokról és üzenetekről.",
+  'Permitir notificações': "Értesítések engedélyezése",
 } satisfies Record<string, string>;

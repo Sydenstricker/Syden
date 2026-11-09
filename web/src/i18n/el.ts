@@ -924,7 +924,6 @@ export default {
   'Trocar a capa': 'Αλλαγή εξωφύλλου',
   'Trocar áudio': 'Αλλαγή ήχου',
   'Trocar avatar': 'Αλλαγή άβαταρ',
-  'Ou escolha um coelho': 'Ή διάλεξε ένα κουνέλι',
   'Usar este coelho': 'Χρήση αυτού του κουνελιού',
   'Trocar imagem': 'Αλλαγή εικόνας',
   'Trocar o e-mail': 'Αλλαγή του email',
@@ -3116,4 +3115,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Όρθιος, με τη στρογγυλή σχάρα του, για τις ζεστές μέρες.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Άβαταρ",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Εφαρμογή",
+  "Anterior": "Προηγούμενο",
+  "Próximo": "Επόμενο",
+  "Sem bicho": "Χωρίς κατοικίδιο",
+  "Nome do bicho": "Όνομα κατοικιδίου",
+  "Usar uma foto": "Χρησιμοποίησε μια φωτογραφία",
+  "Bicho do quarto": "Το κατοικίδιο του δωματίου",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Ήχος κλήσης",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Χτυπάει όταν κάποιος σε καλεί σε ιδιωτική συνομιλία, ακόμη και με τους ήχους ειδοποίησης κλειστούς. Στο «Μην ενοχλείτε» η κλήση εμφανίζεται χωρίς να χτυπά.",
+  'Avisar das ligações com o Syden em segundo plano?': "Να σε ειδοποιεί για κλήσεις όταν το Syden είναι στο παρασκήνιο;",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Ο περιηγητής θα ζητήσει άδεια. Έτσι θα μαθαίνεις για κλήσεις και μηνύματα ακόμη και σε άλλη καρτέλα ή πρόγραμμα.",
+  'Permitir notificações': "Να επιτρέπονται οι ειδοποιήσεις",
 } satisfies Record<string, string>;

@@ -119,6 +119,41 @@ describe('a planta e as cores do quarto (06/11/2026)', () => {
   });
 });
 
+describe('o bicho do quarto e o nome dele (09/11/2026)', () => {
+  it('o nome vai junto com a arrumação, limpo como o nome de exibição', async () => {
+    const r = await ana('PUT', '/api/quarto', { ...ARRUMACAO, nomeDoPet: '  Mi​mi‮  ' });
+    assert.equal(r.statusCode, 200);
+    assert.equal((await ana('GET', '/api/quarto')).json().arrumacao.nomeDoPet, 'Mimi');
+  });
+
+  it('RECUSA nome longo demais ou que não é texto; vazio é sem nome', async () => {
+    assert.equal((await ana('PUT', '/api/quarto', { ...ARRUMACAO, nomeDoPet: 'x'.repeat(21) })).statusCode, 400);
+    assert.equal((await ana('PUT', '/api/quarto', { ...ARRUMACAO, nomeDoPet: 42 })).statusCode, 400);
+    assert.equal((await ana('PUT', '/api/quarto', { ...ARRUMACAO, nomeDoPet: '​ ' })).statusCode, 200);
+    assert.equal((await ana('GET', '/api/quarto')).json().arrumacao.nomeDoPet, undefined);
+  });
+
+  it('o Guarda-roupa troca o bicho e o nome sem mexer no resto do quarto', async () => {
+    await ana('PUT', '/api/quarto', ARRUMACAO);
+    const r = await ana('PUT', '/api/quarto/pet', { pet: 'nenhum', nome: 'Bolinha' });
+    assert.equal(r.statusCode, 200);
+    assert.deepEqual(r.json(), { pet: 'nenhum', nome: 'Bolinha' });
+    const a = (await ana('GET', '/api/quarto')).json().arrumacao;
+    assert.deepEqual(a, { ...ARRUMACAO, cores: { tapete: 'terracota', pet: 'nenhum' }, nomeDoPet: 'Bolinha' });
+    // só o bicho: o nome fica
+    assert.deepEqual((await ana('PUT', '/api/quarto/pet', { pet: 'gato' })).json(), { pet: 'gato', nome: 'Bolinha' });
+    assert.equal((await ana('PUT', '/api/quarto/pet', { pet: 'Gato!' })).statusCode, 400);
+    assert.equal((await ana('PUT', '/api/quarto/pet', { nome: 'y'.repeat(30) })).statusCode, 400);
+    await ana('PUT', '/api/quarto', ARRUMACAO);
+  });
+
+  it('quem nunca arrumou também escolhe o bicho (o resto fica de fábrica)', async () => {
+    const r = await rui('PUT', '/api/quarto/pet', { pet: 'nenhum', nome: 'Tom' });
+    assert.equal(r.statusCode, 200);
+    assert.deepEqual((await rui('GET', '/api/quarto')).json().arrumacao, { moveis: {}, cores: { pet: 'nenhum' }, nomeDoPet: 'Tom' });
+  });
+});
+
 describe('visitar', () => {
   // Quem entra (público, amigos, privado) está em trofeus.test.ts; aqui, os quartos abertos a todos.
   before(async () => {

@@ -993,7 +993,6 @@ export default {
   'Trocar a capa': 'Üz qabığını dəyiş',
   'Trocar áudio': 'Səs faylını dəyiş',
   'Trocar avatar': 'Avatarı dəyiş',
-  'Ou escolha um coelho': 'Və ya dovşan seç',
   'Usar este coelho': 'Bu dovşanı istifadə et',
   'Trocar imagem': 'Şəkli dəyiş',
   'Trocar o e-mail': 'E-poçtu dəyiş',
@@ -3151,4 +3150,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Ayaqlı, dəyirmi barmaqlıqlı, isti günlər üçün.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Tətbiq",
+  "Anterior": "Əvvəlki",
+  "Próximo": "Növbəti",
+  "Sem bicho": "Ev heyvanı yoxdur",
+  "Nome do bicho": "Ev heyvanının adı",
+  "Usar uma foto": "Foto istifadə et",
+  "Bicho do quarto": "Otağın ev heyvanı",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Zəng melodiyası",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Kimsə sənə şəxsi söhbətdə zəng edəndə çalır, bildiriş səsləri söndürülsə belə. \"Narahat etməyin\" rejimində zəng səssiz görünür.",
+  'Avisar das ligações com o Syden em segundo plano?': "Syden arxa planda olanda zənglər barədə xəbər verilsin?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Brauzer icazə istəyəcək. Beləcə başqa tabda və ya proqramda olsan belə, zənglərdən və mesajlardan xəbər tutacaqsan.",
+  'Permitir notificações': "Bildirişlərə icazə ver",
 } satisfies Record<string, string>;

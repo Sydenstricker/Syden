@@ -1011,7 +1011,6 @@ export default {
   'Trocar a capa': 'להחליף את הכריכה',
   'Trocar áudio': 'להחליף שמע',
   'Trocar avatar': 'להחליף תמונת פרופיל',
-  'Ou escolha um coelho': 'או לבחור ארנב',
   'Usar este coelho': 'להשתמש בארנב הזה',
   'Trocar imagem': 'להחליף תמונה',
   'Trocar o e-mail': 'להחליף את המייל',
@@ -3164,4 +3163,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "עומד, עם הרשת העגולה, לימים החמים.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "תמונת פרופיל",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "אפליקציה",
+  "Anterior": "הקודם",
+  "Próximo": "הבא",
+  "Sem bicho": "בלי חיית מחמד",
+  "Nome do bicho": "שם חיית המחמד",
+  "Usar uma foto": "שימוש בתמונה",
+  "Bicho do quarto": "חיית המחמד של החדר",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "צלצול שיחה",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "מצלצל כשמגיעה שיחה נכנסת בשיחה פרטית, גם כשצלילי ההתראה כבויים. במצב \"לא להפריע\" השיחה מופיעה בלי צלצול.",
+  'Avisar das ligações com o Syden em segundo plano?': "להודיע על שיחות כש-Syden ברקע?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "הדפדפן יבקש הרשאה. כך יגיעו התראות על שיחות והודעות גם בכרטיסייה או בתוכנה אחרת.",
+  'Permitir notificações': "לאפשר התראות",
 } satisfies Record<string, string>;

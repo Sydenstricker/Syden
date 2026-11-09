@@ -1042,7 +1042,6 @@ export default {
   'Trocar a capa': 'Vyměnit obálku',
   'Trocar áudio': 'Vyměnit zvukový soubor',
   'Trocar avatar': 'Vyměnit avatar',
-  'Ou escolha um coelho': 'Nebo si vyber králíka',
   'Usar este coelho': 'Použít tohoto králíka',
   'Trocar imagem': 'Vyměnit obrázek',
   'Trocar o e-mail': 'Změnit e-mail',
@@ -3179,4 +3178,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Stojanový, s kulatou mřížkou, na horké dny.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Aplikace",
+  "Anterior": "Předchozí",
+  "Próximo": "Další",
+  "Sem bicho": "Bez mazlíčka",
+  "Nome do bicho": "Jméno mazlíčka",
+  "Usar uma foto": "Použít fotku",
+  "Bicho do quarto": "Mazlíček v pokoji",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Vyzvánění hovoru",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Zazvoní, když ti někdo volá v soukromé konverzaci, i když máš zvuky upozornění vypnuté. V režimu „Nerušit“ se hovor objeví bez zvonění.",
+  'Avisar das ligações com o Syden em segundo plano?': "Upozorňovat na hovory, když je Syden na pozadí?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Prohlížeč požádá o svolení. Tak se o hovorech a zprávách dozvíš i v jiné kartě nebo programu.",
+  'Permitir notificações': "Povolit oznámení",
 } satisfies Record<string, string>;

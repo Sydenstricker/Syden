@@ -1043,7 +1043,6 @@ export default {
   'Trocar a capa': 'කවරය වෙනස් කරන්න',
   'Trocar áudio': 'ශ්‍රව්‍යය වෙනස් කරන්න',
   'Trocar avatar': 'අවතාරය වෙනස් කරන්න',
-  'Ou escolha um coelho': 'නැත්නම් හාවෙක් තෝරන්න',
   'Usar este coelho': 'මේ හාවා භාවිත කරන්න',
   'Trocar imagem': 'රූපය වෙනස් කරන්න',
   'Trocar o e-mail': 'ඊමේල් වෙනස් කරන්න',
@@ -3180,4 +3179,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "සිටුවන පංකාවක්, රවුම් දැලක් සමඟ, උණුසුම් දිනවලට.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "අවතාරය",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "යෙදුම",
+  "Anterior": "පෙර",
+  "Próximo": "ඊළඟ",
+  "Sem bicho": "සුරතලෙක් නැත",
+  "Nome do bicho": "සුරතලාගේ නම",
+  "Usar uma foto": "ඡායාරූපයක් භාවිත කරන්න",
+  "Bicho do quarto": "කාමරයේ සුරතලා",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "ඇමතුම් නාදය",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "පෞද්ගලික සංවාදයක කවුරුන් හෝ ඔබට ඇමතූ විට නාද වේ, දැනුම්දීමේ ශබ්ද අක්‍රිය කර තිබුණත්. \"බාධා නොකරන්න\" තුළ ඇමතුම නාද නොවී පෙන්වයි.",
+  'Avisar das ligações com o Syden em segundo plano?': "Syden පසුබිමේ ඇති විට ඇමතුම් ගැන දන්වන්නද?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "බ්‍රවුසරය අවසර ඉල්ලයි. එවිට වෙනත් ටැබයක හෝ වැඩසටහනක සිටියත් ඔබට ඇමතුම් සහ පණිවිඩ ගැන දැනගත හැක.",
+  'Permitir notificações': "දැනුම්දීම්වලට ඉඩ දෙන්න",
 } satisfies Record<string, string>;

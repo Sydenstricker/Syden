@@ -1044,7 +1044,6 @@ export default {
   'Trocar a capa': 'Skipta um forsíðumynd',
   'Trocar áudio': 'Skipta um hljóðskrá',
   'Trocar avatar': 'Skipta um notandamynd',
-  'Ou escolha um coelho': 'Eða veldu kanínu',
   'Usar este coelho': 'Nota þessa kanínu',
   'Trocar imagem': 'Skipta um mynd',
   'Trocar o e-mail': 'Skipta um netfang',
@@ -3181,4 +3180,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Standandi, með kringlóttu grindina, fyrir heitu dagana.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Notandamynd",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Forrit",
+  "Anterior": "Fyrri",
+  "Próximo": "Næsta",
+  "Sem bicho": "Ekkert gæludýr",
+  "Nome do bicho": "Nafn gæludýrsins",
+  "Usar uma foto": "Nota mynd",
+  "Bicho do quarto": "Gæludýr herbergisins",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Hringitónn símtala",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Hringir þegar einhver hringir í þig í einkasamtali, jafnvel þótt slökkt sé á tilkynningahljóðum. Í „Ónáðið ekki“ birtist símtalið án hringingar.",
+  'Avisar das ligações com o Syden em segundo plano?': "Láta vita af símtölum þegar Syden er í bakgrunni?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Vafrinn mun biðja um leyfi. Þannig færðu að vita af símtölum og skilaboðum jafnvel í öðrum flipa eða forriti.",
+  'Permitir notificações': "Leyfa tilkynningar",
 } satisfies Record<string, string>;

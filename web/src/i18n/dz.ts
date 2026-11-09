@@ -1056,7 +1056,6 @@ export default {
   'Trocar a capa': 'ཁ་ཐོག་སོར།',
   'Trocar áudio': 'སྒྲ་ཡིག་སྣོད་སོར།',
   'Trocar avatar': 'ཨ་ཝ་ཊར་སོར།',
-  'Ou escolha um coelho': 'ཡང་ན་ རི་བོང་ཅིག་གདམ།',
   'Usar este coelho': 'རི་བོང་འདི་ལག་ལེན་འཐབ།',
   'Trocar imagem': 'པར་སོར།',
   'Trocar o e-mail': 'གློག་འཕྲིན་སོར།',
@@ -3193,4 +3192,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "ལངས་ཏེ་སྡོད་པའི་གློག་གཡབ། སྒོར་སྒོརམ་གྱི་དྲྭ་བ་དང་གཅིག་ཁར། ཚ་བའི་ཉིན་མར།",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "ཨ་ཝ་ཊར།",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "ཨེཔ།",
+  "Anterior": "ཧེ་མམ།",
+  "Próximo": "ཤུལ་མམ།",
+  "Sem bicho": "གཅེས་སེམས་ཅན་མེད།",
+  "Nome do bicho": "གཅེས་སེམས་ཅན་གྱི་མིང་།",
+  "Usar uma foto": "པར་ཅིག་ལག་ལེན་འཐབ།",
+  "Bicho do quarto": "ཁང་མིག་གི་གཅེས་སེམས་ཅན།",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "འབོད་བརྡའི་སྒྲ།",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "སྒེར་གྱི་གླེང་མོལ་ནང་ མི་གཅིག་གིས་ཁྱོད་ལུ་འབོད་བརྡ་གནང་པའི་སྐབས་ སྒྲ་བརྐྱབ་ཨིན། བརྡ་བསྐུལ་གྱི་སྒྲ་བཀག་ཡོད་རུང་། \"བར་ཆད་མ་འབད།\" ནང་ འབོད་བརྡ་སྒྲ་མེད་པར་སྟོནམ་ཨིན།",
+  'Avisar das ligações com o Syden em segundo plano?': "Syden རྒྱབ་ཁར་ཡོད་པའི་སྐབས་ འབོད་བརྡའི་སྐོར་ལས་བརྡ་བསྐུལ་འབད་ནི་ཨིན་ན?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "བརའུ་ཟར་གྱིས་གནང་བ་ཞུ་འོང་། དེ་འབདཝ་ད་ ཤོག་བྱང་ ཡང་ན་ ལས་རིམ་གཞན་ནང་ཡོད་རུང་ འབོད་བརྡ་དང་འཕྲིན་དོན་ཚུ་ཤེས་འོང་།",
+  'Permitir notificações': "བརྡ་བསྐུལ་ལུ་གནང་བ་བྱིན།",
 } satisfies Record<string, string>;

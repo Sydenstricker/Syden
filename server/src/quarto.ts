@@ -10,6 +10,7 @@
  * Validar aqui não é capricho: o que entra é desenhado na tela de QUEM VISITA. Uma arrumação gigante ou com valores
  * absurdos (NaN, casas fora do quarto) viraria um quarto quebrado, ou travado, na tela de outra pessoa.
  */
+import { limparNomeVisivel } from './nome-visivel.js';
 
 /** O quarto é uma grade de 8 × 8 casas; o salão da comunidade, de 16 × 16 (salao-routes.ts, desde 15/10/2026). */
 export const CASAS_DO_QUARTO = 8;
@@ -54,7 +55,13 @@ export interface Arrumacao {
   /** A PLANTA do quarto (06/11/2026, pedido dele): "quadrado" (o de sempre), "l" ou "cubiculo". Ela muda quais casas são
    *  chão e onde ficam as paredes; a página é quem sabe disso (as casas e as cascas moram lá), como os tipos de janela. */
   planta?: string;
+  /** O NOME DO BICHO do quarto (09/11/2026, pedido dele: o gato ganha nome no Guarda-roupa). É desenhado na tela de quem
+   *  visita, então passa pela mesma limpeza do nome de exibição, e tem no máximo NOME_DO_PET_MAXIMO letras. */
+  nomeDoPet?: string;
 }
+
+/** O nome do bicho: curto, porque aparece numa etiqueta em cima dele. */
+export const NOME_DO_PET_MAXIMO = 20;
 
 const numero = (x: unknown, min: number, max: number): number | null =>
   typeof x === 'number' && Number.isFinite(x) && x >= min && x <= max ? Math.round(x * 1000) / 1000 : null;
@@ -145,6 +152,13 @@ export function validarArrumacao(x: unknown, N: number = CASAS_DO_QUARTO): { ok:
   if (a.planta !== undefined) {
     if (typeof a.planta !== 'string' || !CODIGO.test(a.planta)) return { erro: 'Planta inválida.' };
     saida.planta = a.planta;
+  }
+  if (a.nomeDoPet !== undefined) {
+    if (typeof a.nomeDoPet !== 'string') return { erro: 'Nome do bicho inválido.' };
+    const nome = limparNomeVisivel(a.nomeDoPet);
+    if ([...nome].length > NOME_DO_PET_MAXIMO) return { erro: 'O nome do bicho pode ter até ' + NOME_DO_PET_MAXIMO + ' letras.' };
+    // vazio (ou só invisíveis) é o mesmo que sem nome: não se guarda
+    if (nome) saida.nomeDoPet = nome;
   }
   if (a.vista !== undefined) {
     if (!Number.isInteger(a.vista) || (a.vista as number) < 0 || (a.vista as number) > 15) return { erro: 'Vista inválida.' };

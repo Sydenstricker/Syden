@@ -1043,7 +1043,6 @@ export default {
   'Trocar a capa': 'Vaihda kansikuva',
   'Trocar áudio': 'Vaihda äänitiedosto',
   'Trocar avatar': 'Vaihda avatar',
-  'Ou escolha um coelho': 'Tai valitse kani',
   'Usar este coelho': 'Käytä tätä kania',
   'Trocar imagem': 'Vaihda kuva',
   'Trocar o e-mail': 'Vaihda sähköposti',
@@ -3180,4 +3179,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Jalallinen, pyöreä säleikkö, kuumille päiville.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Sovellus",
+  "Anterior": "Edellinen",
+  "Próximo": "Seuraava",
+  "Sem bicho": "Ei lemmikkiä",
+  "Nome do bicho": "Lemmikin nimi",
+  "Usar uma foto": "Käytä kuvaa",
+  "Bicho do quarto": "Huoneen lemmikki",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Puhelun soittoääni",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Soi, kun joku soittaa sinulle yksityisessä keskustelussa, vaikka ilmoitusäänet olisivat pois päältä. Älä häiritse -tilassa puhelu näkyy soimatta.",
+  'Avisar das ligações com o Syden em segundo plano?': "Ilmoitetaanko puheluista, kun Syden on taustalla?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Selain kysyy lupaa. Näin kuulet puheluista ja viesteistä myös toisessa välilehdessä tai ohjelmassa.",
+  'Permitir notificações': "Salli ilmoitukset",
 } satisfies Record<string, string>;

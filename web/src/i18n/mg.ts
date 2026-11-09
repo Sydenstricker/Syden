@@ -1043,7 +1043,6 @@ export default {
   'Trocar a capa': 'Ovay ny fonony',
   'Trocar áudio': 'Ovay ny feo',
   'Trocar avatar': 'Ovay ny avatar',
-  'Ou escolha um coelho': 'Na mifidiana bitro',
   'Usar este coelho': 'Ampiasao ity bitro ity',
   'Trocar imagem': 'Ovay ny sary',
   'Trocar o e-mail': 'Ovay ny mailaka',
@@ -3180,4 +3179,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Fivelezam-pandrana mijoro, misy makarakara boribory, ho an’ny andro mafana.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Fampiharana",
+  "Anterior": "Teo aloha",
+  "Próximo": "Manaraka",
+  "Sem bicho": "Tsy misy biby fiompy",
+  "Nome do bicho": "Anaran'ny biby fiompy",
+  "Usar uma foto": "Mampiasà sary",
+  "Bicho do quarto": "Biby fiompin'ny efitrano",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Feon’ny antso",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Maneno rehefa misy miantso anao amin’ny resaka manokana, na dia maty aza ny feo fampahafantarana. Amin’ny \"Aza manelingelina\", miseho tsy maneno ilay antso.",
+  'Avisar das ligações com o Syden em segundo plano?': "Hampahafantatra anao ny antso rehefa ao ambadika ny Syden?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Hangataka alalana ny mpitety. Amin’izay ho fantatrao ny antso sy ny hafatra na dia ao amin’ny tabilao na programa hafa aza ianao.",
+  'Permitir notificações': "Avelao ny fampahafantarana",
 } satisfies Record<string, string>;

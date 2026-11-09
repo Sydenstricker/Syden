@@ -899,7 +899,6 @@ export default {
   'Traz de volta os emojis que vêm com o Syden. O que vocês enviaram continua como está, e nada vira cópia repetida.': 'يعيد الإيموجيات التي تأتي مع Syden. ما رفعتموه يبقى كما هو، ولا يتحوّل شيء إلى نسخة مكرّرة.',
   'Trocar áudio': 'تغيير الصوت',
   'Trocar avatar': 'تغيير الصورة الرمزية',
-  'Ou escolha um coelho': 'أو اختيار أرنب',
   'Usar este coelho': 'استخدام هذا الأرنب',
   'Trocar imagem': 'تغيير الصورة',
   'Trocar o e-mail': 'تغيير البريد',
@@ -3134,4 +3133,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "مروحة أرضية بشبكة دائرية، للأيام الحارة.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "الصورة الرمزية",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "التطبيق",
+  "Anterior": "السابق",
+  "Próximo": "التالي",
+  "Sem bicho": "بلا حيوان أليف",
+  "Nome do bicho": "اسم الحيوان الأليف",
+  "Usar uma foto": "استخدام صورة",
+  "Bicho do quarto": "حيوان الغرفة الأليف",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "رنين المكالمات",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "يرنّ عند ورود مكالمة في محادثة خاصة، حتى مع إيقاف أصوات التنبيه. في وضع «عدم الإزعاج» تظهر المكالمة دون رنين.",
+  'Avisar das ligações com o Syden em segundo plano?': "التنبيه بالمكالمات وSyden في الخلفية؟",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "سيطلب المتصفح الإذن. بذلك تصل التنبيهات بالمكالمات والرسائل حتى من علامة تبويب أو برنامج آخر.",
+  'Permitir notificações': "السماح بالإشعارات",
 } satisfies Record<string, string>;

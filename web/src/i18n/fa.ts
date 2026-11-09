@@ -900,7 +900,6 @@ export default {
   'Trocar a capa': 'تعویض سرصفحه',
   'Trocar áudio': 'تعویض فایل صوتی',
   'Trocar avatar': 'تعویض تصویر پروفایل',
-  'Ou escolha um coelho': 'یا یک خرگوش انتخاب کنید',
   'Usar este coelho': 'استفاده از این خرگوش',
   'Trocar imagem': 'تعویض تصویر',
   'Trocar o e-mail': 'تعویض ایمیل',
@@ -3103,4 +3102,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "ایستاده، با توری گرد، برای روزهای گرم.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "تصویر پروفایل",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "برنامه",
+  "Anterior": "قبلی",
+  "Próximo": "بعدی",
+  "Sem bicho": "بدون حیوان خانگی",
+  "Nome do bicho": "نام حیوان خانگی",
+  "Usar uma foto": "از یک عکس استفاده کن",
+  "Bicho do quarto": "حیوان خانگی اتاق",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "زنگ تماس",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "وقتی کسی در گفتگوی خصوصی با تو تماس می‌گیرد زنگ می‌زند، حتی اگر صداهای هشدار خاموش باشند. در حالت «مزاحم نشوید» تماس بدون زنگ نشان داده می‌شود.",
+  'Avisar das ligações com o Syden em segundo plano?': "وقتی Syden در پس‌زمینه است، از تماس‌ها باخبرت کند؟",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "مرورگر اجازه می‌خواهد. این‌طوری حتی در زبانه یا برنامه‌ای دیگر هم از تماس‌ها و پیام‌ها باخبر می‌شوی.",
+  'Permitir notificações': "اجازه دادن به اعلان‌ها",
 } satisfies Record<string, string>;

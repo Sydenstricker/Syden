@@ -1045,7 +1045,6 @@ export default {
   'Trocar a capa': 'Mainīt vāka attēlu',
   'Trocar áudio': 'Mainīt audio failu',
   'Trocar avatar': 'Mainīt avatāru',
-  'Ou escolha um coelho': 'Vai izvēlies trusi',
   'Usar este coelho': 'Izmantot šo trusi',
   'Trocar imagem': 'Mainīt attēlu',
   'Trocar o e-mail': 'Mainīt e-pastu',
@@ -3182,4 +3181,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "Stāvošs, ar apaļo režģi, karstajām dienām.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatārs",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "Lietotne",
+  "Anterior": "Iepriekšējais",
+  "Próximo": "Nākamais",
+  "Sem bicho": "Bez mājdzīvnieka",
+  "Nome do bicho": "Mājdzīvnieka vārds",
+  "Usar uma foto": "Izmantot foto",
+  "Bicho do quarto": "Istabas mājdzīvnieks",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "Zvana signāls",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Zvana, kad kāds tev zvana privātā sarunā, pat ja paziņojumu skaņas ir izslēgtas. Režīmā “Netraucēt” zvans parādās bez zvanīšanas.",
+  'Avisar das ligações com o Syden em segundo plano?': "Paziņot par zvaniem, kad Syden ir fonā?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Pārlūks prasīs atļauju. Tā tu uzzināsi par zvaniem un ziņām arī citā cilnē vai programmā.",
+  'Permitir notificações': "Atļaut paziņojumus",
 } satisfies Record<string, string>;

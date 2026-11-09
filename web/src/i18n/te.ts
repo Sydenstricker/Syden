@@ -894,7 +894,6 @@ export default {
   'Trocar a capa': 'కవర్ చిత్రాన్ని మార్చు',
   'Trocar áudio': 'ఆడియో ఫైల్‌ను మార్చు',
   'Trocar avatar': 'ప్రొఫైల్ చిత్రాన్ని మార్చు',
-  'Ou escolha um coelho': 'లేదా ఒక కుందేలును ఎంచుకో',
   'Usar este coelho': 'ఈ కుందేలును వాడు',
   'Trocar imagem': 'చిత్రాన్ని మార్చు',
   'Trocar o e-mail': 'ఇమెయిల్‌ను మార్చు',
@@ -3092,4 +3091,18 @@ export default {
   "De pé, com a grade redonda, para os dias quentes.": "నిలబడే ఫ్యాన్, గుండ్రటి జాలీతో, ఎండ రోజుల కోసం.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "ప్రొఫైల్ చిత్రం",
+  // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
+  "Aplicativo": "యాప్",
+  "Anterior": "మునుపటిది",
+  "Próximo": "తర్వాతిది",
+  "Sem bicho": "పెంపుడు జంతువు లేదు",
+  "Nome do bicho": "పెంపుడు జంతువు పేరు",
+  "Usar uma foto": "ఒక ఫోటో వాడు",
+  "Bicho do quarto": "గదిలోని పెంపుడు జంతువు",
+  // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
+  'Toque de ligação': "కాల్ రింగ్‌టోన్",
+  'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "ప్రైవేట్ సంభాషణలో ఎవరైనా మీకు కాల్ చేసినప్పుడు మోగుతుంది, హెచ్చరిక శబ్దాలు ఆపివేసినా కూడా. \"కలవరపెట్టవద్దు\"లో కాల్ మోగకుండా కనిపిస్తుంది.",
+  'Avisar das ligações com o Syden em segundo plano?': "Syden నేపథ్యంలో ఉన్నప్పుడు కాల్‌ల గురించి తెలియజేయాలా?",
+  'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "బ్రౌజర్ అనుమతి అడుగుతుంది. దీనివల్ల వేరే ట్యాబ్ లేదా ప్రోగ్రామ్‌లో ఉన్నా కాల్‌లు, సందేశాల గురించి తెలుస్తుంది.",
+  'Permitir notificações': "నోటిఫికేషన్‌లను అనుమతించు",
 } satisfies Record<string, string>;
