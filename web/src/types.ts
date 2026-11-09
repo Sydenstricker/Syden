@@ -350,6 +350,25 @@ export interface HealthReport {
   events: HealthEvent[];
 }
 
+/** Uma ação do servidor na Hetzner. Ver server/src/provider.ts -> providerActions. */
+export interface ProviderAction {
+  id: number;
+  command: string;
+  status: 'running' | 'success' | 'error';
+  started: string;
+  finished: string | null;
+  error: string | null;
+}
+
+export interface ProviderActions {
+  configured: boolean;
+  actions: ProviderAction[];
+}
+
+export type HostDiagnostic =
+  | { available: false }
+  | { available: true; updatedAt: string; content: string };
+
 /** Quantas contas existem e como elas chegaram. Ver server/src/db.ts -> resumoDeContas. */
 export interface ResumoDeContas {
   total: number;

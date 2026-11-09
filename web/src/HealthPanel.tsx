@@ -1,7 +1,15 @@
 import { AlertOctagon, AlertTriangle, CheckCircle2, Info } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api } from './api';
-import type { HealthEvent, HealthReport, HealthSample, ProviderMetrics } from './types';
+import type {
+  HealthEvent,
+  HealthReport,
+  HealthSample,
+  HostDiagnostic,
+  ProviderAction,
+  ProviderActions,
+  ProviderMetrics,
+} from './types';
 import { useT } from './i18n';
 
 const REFRESH_MS = 60_000;
@@ -126,7 +134,9 @@ export function HealthPanel() {
         </p>
       </section>
 
+      <ProviderActionsPanel />
       <ProviderPanel />
+      <HostDiagnosticPanel />
 
       <section className="usage-card">
         <h2>{t('Acontecimentos')}</h2>
@@ -144,17 +154,79 @@ export function HealthPanel() {
   );
 }
 
+/** Recorte persistido dos boots recentes, coletado pelo host e guardado dentro do cofre cifrado. */
+function HostDiagnosticPanel() {
+  const t = useT();
+  const [snapshot, setSnapshot] = useState<HostDiagnostic | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [refresh, setRefresh] = useState(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+    api<HostDiagnostic>('/api/status/host-diagnostic')
+      .then((data) => !cancelled && setSnapshot(data))
+      .catch((e) => !cancelled && setError((e as Error).message))
+      .finally(() => !cancelled && setLoading(false));
+    return () => {
+      cancelled = true;
+    };
+  }, [refresh]);
+
+  return (
+    <section className="usage-card">
+      <h2>{t('Diagnóstico do host')}</h2>
+      <p className="usage-muted small">
+        {t('Registros limitados de Docker, SSH, logind e kernel dos três boots mais recentes. Podem conter endereços IP.')}
+      </p>
+      <button type="button" className="btn-secondary" disabled={loading} onClick={() => setRefresh((n) => n + 1)}>
+        {loading ? t('Carregando…') : t('Atualizar diagnóstico')}
+      </button>
+      {error && <p className="form-error">{error}</p>}
+      {!error && loading && <p className="usage-muted">{t('Carregando…')}</p>}
+      {!error && !loading && snapshot && !snapshot.available && (
+        <p className="usage-muted">
+          {t('Ainda não há snapshot. Ele será coletado na próxima abertura do cofre.')}
+        </p>
+      )}
+      {!error && !loading && snapshot?.available && (
+        <>
+          <p className="usage-muted small">
+            {t('Coletado em {data}', { data: new Date(snapshot.updatedAt).toLocaleString() })}
+          </p>
+          <pre
+            style={{
+              maxHeight: '32rem',
+              overflow: 'auto',
+              whiteSpace: 'pre-wrap',
+              overflowWrap: 'anywhere',
+              fontSize: '0.78rem',
+            }}
+          >
+            {snapshot.content}
+          </pre>
+        </>
+      )}
+    </section>
+  );
+}
+
 /**
  * Os mesmos gráficos da aba "Graphs" da Hetzner, buscados pelo servidor com um token só de leitura.
  * Sem token configurado a API devolve vazio, e esta parte simplesmente não aparece.
  */
 function ProviderPanel() {
+  const t = useT();
   const [metrics, setMetrics] = useState<ProviderMetrics | null>(null);
+  // 7 dias alcança uma queda de ontem ou da semana: os gráficos de 24 horas a perdem no dia seguinte.
+  const [horas, setHoras] = useState<24 | 168>(24);
 
   useEffect(() => {
     let cancelled = false;
     const load = () =>
-      api<ProviderMetrics>('/api/status/provider').then(
+      api<ProviderMetrics>(`/api/status/provider?horas=${horas}`).then(
         (data) => !cancelled && setMetrics(data),
         () => {},
       );
@@ -164,7 +236,7 @@ function ProviderPanel() {
       cancelled = true;
       clearInterval(timer);
     };
-  }, []);
+  }, [horas]);
 
   if (!metrics?.series.length) return null;
   const color = (label: string) =>
@@ -172,11 +244,17 @@ function ProviderPanel() {
 
   return (
     <section className="usage-card">
-      <h2>Medido pela {metrics.name}</h2>
+      <h2>{t('Medido pela {nome}', { nome: metrics.name })}</h2>
       <p className="usage-muted small">
-        Os mesmos números do painel do provedor, das últimas 24 horas. Inclui o disco, que o servidor não mede
-        sozinho.
+        {t('Os mesmos números do painel do provedor. Inclui o disco, que o servidor não mede sozinho.')}
       </p>
+      <div className="comunidades-janela" role="group" aria-label={t('Período')}>
+        {([24, 168] as const).map((n) => (
+          <button key={n} className={`chip${horas === n ? ' ativo' : ''}`} onClick={() => setHoras(n)} aria-pressed={horas === n}>
+            {n === 24 ? '24 h' : t('{n} dias', { n: 7 })}
+          </button>
+        ))}
+      </div>
       <div className="spark-grid">
         {metrics.series.map((serie) => (
           <Sparkline
@@ -189,6 +267,76 @@ function ProviderPanel() {
           />
         ))}
       </div>
+    </section>
+  );
+}
+
+/** O nome dos comandos que contam numa queda; os outros aparecem só pelo nome da API. */
+function nomeDoComando(command: string, t: (texto: string) => string): string | null {
+  if (command === 'start_server') return t('Ligar o servidor');
+  if (command === 'shutdown_server' || command === 'poweroff') return t('Desligar o servidor');
+  if (command === 'reboot_server' || command === 'reset_server') return t('Reiniciar o servidor');
+  return null;
+}
+
+function estadoDaAcao(status: ProviderAction['status'], t: (texto: string) => string): { texto: string; status: Status } {
+  if (status === 'success') return { texto: t('Concluída'), status: 'good' };
+  if (status === 'error') return { texto: t('Falhou'), status: 'critical' };
+  return { texto: t('Em andamento'), status: 'warning' };
+}
+
+/**
+ * O histórico de ações do servidor na Hetzner. Responde, depois do fato, se uma queda foi comandada (pelo
+ * painel ou pela API) ou se aconteceu sem ação nenhuma, do lado do host. Sem token, não aparece.
+ */
+function ProviderActionsPanel() {
+  const t = useT();
+  const [data, setData] = useState<ProviderActions | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    api<ProviderActions>('/api/status/provider/actions').then(
+      (d) => !cancelled && setData(d),
+      () => {},
+    );
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (!data?.configured) return null;
+
+  return (
+    <section className="usage-card">
+      <h2>{t('Ações no servidor')}</h2>
+      <p className="usage-muted small">
+        {t('O histórico da Hetzner: ligar, desligar e reiniciar, pelo painel ou pela API. Uma queda sem ação aqui não foi comandada por esses caminhos.')}
+      </p>
+      {data.actions.length === 0 ? (
+        <p className="usage-muted">{t('Nenhuma ação registrada.')}</p>
+      ) : (
+        <ul className="event-list">
+          {data.actions.map((acao) => {
+            const estado = estadoDaAcao(acao.status, t);
+            const Icon = STATUS_ICON[estado.status];
+            const nome = nomeDoComando(acao.command, t);
+            return (
+              <li key={acao.id} className="event-row">
+                <Icon size={16} className={`status-icon ${estado.status}`} aria-hidden="true" />
+                <time className="event-when" dateTime={acao.started}>
+                  {new Date(acao.started).toLocaleString()}
+                </time>
+                <span className="event-text">
+                  {/* O nome da API fica ao lado: "reset_server" (à força) e "reboot_server" (pelo sistema) não são a mesma queda. */}
+                  <strong>{nome ?? acao.command}</strong>
+                  {nome && <code> {acao.command}</code>} · {estado.texto}
+                  {acao.error && ` — ${acao.error}`}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </section>
   );
 }

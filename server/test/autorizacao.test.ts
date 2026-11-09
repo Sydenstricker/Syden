@@ -2,6 +2,8 @@
 // Controle de acesso é o tipo de coisa que quebra em silêncio, numa refatoração inocente, e só aparece
 // quando alguém lê a conversa de outra pessoa. Por isso está escrito aqui.
 import assert from 'node:assert/strict';
+import { rmSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 import { after, before, describe, it } from 'node:test';
 import type { FastifyInstance } from 'fastify';
 import { comToken, criarConta, servidorDeTeste } from './ajuda.js';
@@ -75,6 +77,23 @@ describe('painéis de dono', () => {
   it('não abrem para quem não administra o Syden', async () => {
     assert.equal((await estranho('GET', '/api/usage')).statusCode, 403);
     assert.equal((await estranho('GET', '/api/status')).statusCode, 403);
+    assert.equal((await estranho('GET', '/api/status/host-diagnostic')).statusCode, 403);
+    assert.equal((await estranho('GET', '/api/status/provider/actions')).statusCode, 403);
+  });
+
+  it('permitem ao administrador ler somente o snapshot persistido', async () => {
+    const { config } = await import('../src/config.js');
+    const caminho = join(dirname(config.databasePath), 'diagnostico-host.log');
+    writeFileSync(caminho, 'boot anterior: falha de montagem');
+    try {
+      const resposta = await dona('GET', '/api/status/host-diagnostic');
+      assert.equal(resposta.statusCode, 200);
+      assert.equal(resposta.headers['cache-control'], 'no-store');
+      assert.equal(resposta.json().available, true);
+      assert.equal(resposta.json().content, 'boot anterior: falha de montagem');
+    } finally {
+      rmSync(caminho, { force: true });
+    }
   });
 
   it('não deixam alguém se promover a administrador', async () => {

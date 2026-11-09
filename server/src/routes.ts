@@ -1,6 +1,7 @@
 import { limparNomeVisivel, NOME_VISIVEL_MAXIMO } from './nome-visivel.js';
 import type { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { AccessToken, RoomServiceClient, TrackSource } from 'livekit-server-sdk';
+import { dirname, join } from 'node:path';
 import type { Server as IOServer } from 'socket.io';
 import { hashPassword, signSession, verifyPassword, verifySession } from './auth.js';
 import { config } from './config.js';
@@ -31,7 +32,7 @@ import { salaDaPessoa,
 import { healthReport, recordClientError } from './health.js';
 import { INSIGNIAS, LIMITE_DA_VITRINE, conferirPresentes } from './presentes.js';
 import { pessoaDeVerdade, turnstileLigado } from './turnstile.js';
-import { providerMetrics } from './provider.js';
+import { providerActions, providerMetrics, type PeriodoDoProvedor } from './provider.js';
 import { apagarAviso, avisoDeAgora, avisoGuardado, guardarAviso, imagemDoAviso, lerAviso } from './aviso.js';
 import { guardarArquivo } from './arquivos.js';
 import { entregarArquivo } from './entregar.js';
@@ -43,6 +44,7 @@ import { mandarCodigo } from './email-routes.js';
 import { provedoresLigados } from './social.js';
 import { audiencia } from './audiencia.js';
 import * as prefs from './preferencias.js';
+import { lerDiagnosticoHost } from './diagnostico-host.js';
 import * as gifs from './gifs.js';
 import { salaParaEntrar } from './salas-temporarias.js';
 import { conferirSelo, CORES, ICONES, MARCOS, marcosAlcancados, podeUsarSelo } from './selos.js';
@@ -1408,10 +1410,26 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
       return healthReport();
     });
 
+    // O snapshot é criado localmente ao abrir o cofre e só pode ser lido por quem administra o Syden.
+    authed.get('/api/status/host-diagnostic', async (request, reply) => {
+      if (!request.user.isAdmin) return reply.code(403).send({ error: 'Só os administradores veem o estado do servidor.' });
+      reply.header('cache-control', 'no-store');
+      return lerDiagnosticoHost(join(dirname(config.databasePath), 'diagnostico-host.log'));
+    });
+
     // Os mesmos gráficos do painel da Hetzner, quando o token de leitura está configurado.
     authed.get('/api/status/provider', async (request, reply) => {
       if (!request.user.isAdmin) return reply.code(403).send({ error: 'Só os administradores veem o estado do servidor.' });
-      return (await providerMetrics()) ?? { name: '', series: [] };
+      const horas: PeriodoDoProvedor = (request.query as { horas?: string }).horas === '168' ? 168 : 24;
+      return (await providerMetrics(horas)) ?? { name: '', series: [] };
+    });
+
+    // O histórico de ações do servidor na Hetzner: se uma queda foi comandada por alguém, ou não.
+    authed.get('/api/status/provider/actions', async (request, reply) => {
+      if (!request.user.isAdmin) return reply.code(403).send({ error: 'Só os administradores veem o estado do servidor.' });
+      reply.header('cache-control', 'no-store');
+      const actions = await providerActions();
+      return { configured: actions !== null, actions: actions ?? [] };
     });
 
     /**

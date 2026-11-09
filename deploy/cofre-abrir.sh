@@ -23,5 +23,8 @@ else
 fi
 
 cd "$AQUI"
+if ! bash ./cofre-diagnostico.sh; then
+  echo "Aviso: não foi possível coletar os logs do host; tentando iniciar o Syden mesmo assim." >&2
+fi
 docker compose up -d --wait api
 echo "O Syden está no ar."

@@ -54,6 +54,15 @@ ssh <servidor>
 cd janja/deploy && sudo ./cofre-abrir.sh      # pede a senha
 ```
 
+Ao abrir o cofre, o script também salva em `dados/diagnostico-host.log`, dentro do volume cifrado, um recorte dos
+registros do journal do boot atual e dos dois anteriores (Docker, SSH, logind e kernel), além do estado dos serviços
+Docker. O painel Uso do servidor → Saúde do servidor mostra esse snapshot somente para administradores do Syden.
+Ele é atualizado a cada execução de `cofre-abrir.sh`; se a coleta falhar, a API ainda tenta subir e o script avisa.
+O journal pode não ter sido persistido pelo sistema e pode não registrar a causa de um desligamento abrupto; o snapshot
+também não recupera registros que já tenham sido apagados. Os registros de SSH podem conter endereços IP.
+Para coletar agora, depois de atualizar o servidor com essa versão e enquanto o cofre estiver aberto, rode
+`sudo bash ./cofre-diagnostico.sh` de dentro de `deploy/`; depois, atualize o painel.
+
 ## Apagar o que ficou sem cifra
 
 Depois de alguns dias com o Syden funcionando pelo cofre, os dados ANTIGOS, sem cifra, ainda estão em três lugares:
