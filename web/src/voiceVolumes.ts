@@ -158,6 +158,13 @@ function ligarReforco(faixa: RemoteAudioTrack): boolean {
     const teto = criarTeto(contextoDoReforco);
     if (teto && typeof interna.setWebAudioPlugins === 'function') interna.setWebAudioPlugins(teto);
     interna.setAudioContext(contextoDoReforco);
+    // O <audio> que já estava ligado CONTINUAVA TOCANDO (medido em e2e/chamada-de-verdade.mjs, 09/11/2026): o LiveKit só cala
+    // o elemento quando o contexto já existe ao ligar (attach); ligado depois, pelo setAudioContext, ele fica a 100% ao lado
+    // do ganho. O som saía em dobro, e calar (ganho 0) deixava os 100% do elemento tocando. Aqui, o mesmo que o attach faz.
+    for (const el of faixa.attachedElements) {
+      el.volume = 0;
+      el.muted = true;
+    }
     jaReforcadas.add(faixa);
     return true;
   } catch (erro) {
