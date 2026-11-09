@@ -100,6 +100,11 @@ const FONTES = {
   'aplaudindo-sofa': ['pl:baixa-120/animacoes/aplaudindo-sofa'],
   'surpreso-sofa': ['pl:baixa-120/animacoes/surpreso-sofa'],
   'sentar-sofa': ['pl:transicoes/sentar-sofa'],
+  // JOGANDO NO FLIPERAMA (pedido dele, 09/11/2026: "poderia ter animação para o coelho jogando"): as mãos no controle e o
+  // corpo no ritmo, e de vez em quando a empolgação (inclina para a tela e dá um pulinho). Só a do desenho do PixelLab (a pose
+  // no fliperama do 3D é outra: lá ela fica parada).
+  'jogando-fliperama': ['baixa-120/animacoes/jogando-fliperama'],
+  'empolgado-fliperama': ['baixa-120/animacoes/empolgado-fliperama'],
   'assistindo-chao': ['pl:baixa-120/animacoes/assistindo-chao'],
   // SENTADO É O DESENHO DO PIXELLAB ("pl:"), mesmo com o mascote 3D (decisão dele, 30/10/2026): as pernas da malha 3D ficam
   // dentro do moletom, e sentado ele parecia em pé ("de frente parece que ele não tem pernas"), em qualquer pose. Até
@@ -133,7 +138,7 @@ const FONTES = {
 // As 8 direções do personagem: as diagonais são as de uso; as outras 4 (de frente, de costas, de lado) servem à VIRADA.
 const DELES = { sudeste: 'south-east', sudoeste: 'south-west', nordeste: 'north-east', noroeste: 'north-west', sul: 'south', oeste: 'west', norte: 'north', leste: 'east' };
 const ANIMACOES = {};
-const SO_NO_SALAO = ['sentado-banqueta', 'no-fliperama', 'assistindo-sofa', 'rindo-sofa', 'assistindo-chao', 'acenando-sofa', 'aplaudindo-sofa', 'surpreso-sofa', 'sentar-sofa'];
+const SO_NO_SALAO = ['sentado-banqueta', 'no-fliperama', 'assistindo-sofa', 'rindo-sofa', 'assistindo-chao', 'acenando-sofa', 'aplaudindo-sofa', 'surpreso-sofa', 'sentar-sofa', 'jogando-fliperama', 'empolgado-fliperama'];
 // DEITADO DE CABEÇA PARA A FRENTE, NO DESENHO DO PIXELLAB (a auditoria visual, 09/11/2026): com a cama girada para o norte
 // (a cabeceira do nosso lado), o comprido da cama fica a uns 28° na tela. As diagonais do norte do PixelLab deitado desenham
 // o corpo a uns 50°, com os pés subindo para fora do colchão, em direção ao criado-mudo; as de lado (leste e oeste)
@@ -345,6 +350,12 @@ for (const m of MOVEIS) {
   IMAGENS[m.id + '-sombra'] = png(path.join(AQUI, 'pecas', m.id + '-sombra.png'));
 }
 
+// O BANHEIRO DO SALÃO (09/11/2026, pedido dele: "pode criar o banheiro de fato para o salão? Use o banheiro 3D atual como
+// referência, para não destoar"): o cômodo atrás da porta do banheiro, pronto por salao/banheiro/montar.py (a cena de dia e
+// de noite, a porta de dentro, o patinho de dia e de noite, e banheiro.json com as medidas). Sem ele, a porta é só enfeite.
+const PRONTO_DO_BANHEIRO = path.join(SALAO, 'banheiro', 'pronto');
+const BANHEIRO_META = CENA === 'salao' && fs.existsSync(path.join(PRONTO_DO_BANHEIRO, 'banheiro.json')) ? JSON.parse(fs.readFileSync(path.join(PRONTO_DO_BANHEIRO, 'banheiro.json'), 'utf8')) : null;
+if (BANHEIRO_META) for (const q of ['dia', 'noite', 'porta', 'pato-dia', 'pato-noite']) IMAGENS['banheiro-' + q] = png(path.join(PRONTO_DO_BANHEIRO, q + '.png'));
 // O topo da página de teste do salão (a do quarto fica como está, logo abaixo no HTML).
 const SALAO_TOPO = `<h1>O salão da comunidade</h1>
 <p>O salão isométrico, da turma. <b>Arraste e gire</b> os móveis (no app, só quem administra). Os botões de teste simulam o
@@ -385,6 +396,14 @@ const html = `<!doctype html>
   #fora-da-vista { position: absolute; inset: 0; pointer-events: none; }
   #fora-da-vista button { position: absolute; transform: translate(-50%, -50%); pointer-events: auto; min-width: 30px; height: 30px; padding: 0 8px; border-radius: 15px; border: 2px solid #ff9a3c; background: rgba(30, 24, 20, 0.82); color: #fff4e6; font: 700 14px/26px system-ui, sans-serif; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
   #fora-da-vista button span { font-size: 11px; opacity: 0.85; }
+  /* O BANHEIRO (09/11/2026): o cômodo atrás da porta, na mesma vista, inteiro e no meio dela, no tamanho de pixel do salão
+     (medirBanheiro); o salão fica escondido. */
+  #banheiro { position: absolute; aspect-ratio: auto; image-rendering: pixelated; cursor: default; touch-action: none; }
+  .vista.no-banheiro { cursor: default; }
+  #sair-do-banheiro { position: absolute; left: 10px; top: 10px; width: 36px; height: 36px; padding: 0; border-radius: 50%; border: 2px solid rgba(255, 236, 200, 0.35); background: rgba(30, 24, 20, 0.85); color: #fff4e6; font: 700 22px/30px system-ui, sans-serif; cursor: pointer; }
+  #sair-do-banheiro:hover, #sair-do-banheiro:focus-visible { border-color: #ffd58a; }
+  #rotulo-banheiro { position: absolute; pointer-events: none; transform: translate(-50%, -120%); background: rgba(30, 24, 20, 0.92); color: var(--texto); padding: 4px 10px; border-radius: 8px; font-size: 13px; white-space: nowrap; }
+  .so-leitor { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
   /* No salão não há conceito ao lado: o salão sozinho, maior. */
   body.salao .lado { grid-template-columns: 1fr; max-width: 900px; }
   body.salao .lado > figure:not(.com-rotulo) { display: none; }
@@ -486,7 +505,7 @@ coelho junto. Ver e2e/pixel-art/personagem/README.md.</p>
   <button id="visitar">Visitar</button> <button id="voltar" hidden>Voltar ao meu quarto</button>
 </details>
 <div class="lado">
-  <figure class="com-rotulo"><div class="vista"><div class="mundo"><canvas id="tela" width="${WC}" height="${WC}" aria-label="O quarto do coelho"></canvas><div id="rotulo" hidden></div><div id="barrinha" hidden></div><div id="nomes"></div><div id="aovivo" hidden></div><div id="recado" hidden></div></div><div id="fora-da-vista"></div></div><figcaption id="legenda"></figcaption></figure>
+  <figure class="com-rotulo"><div class="vista"><div class="mundo"><canvas id="tela" width="${WC}" height="${WC}" aria-label="O quarto do coelho"></canvas><div id="rotulo" hidden></div><div id="barrinha" hidden></div><div id="nomes"></div><div id="aovivo" hidden></div><div id="recado" hidden></div></div><div id="fora-da-vista"></div>${BANHEIRO_META ? `<canvas id="banheiro" width="${BANHEIRO_META.W}" height="${BANHEIRO_META.H}" hidden></canvas><div id="rotulo-banheiro" hidden></div><button id="sair-do-banheiro" type="button" hidden aria-label="Fechar" title="Fechar">‹</button><button id="entrar-no-banheiro" type="button" class="so-leitor">Porta do banheiro</button>` : ""}</div><figcaption id="legenda"></figcaption></figure>
   <figure><img id="conceito" alt="O conceito"><figcaption>Conceito (ChatGPT), convertido para pixel art. A versão de dia é a repintura do quarto híbrido.</figcaption></figure>
 </div>
 </main>
@@ -515,6 +534,7 @@ const BALOES_DO_QUARTO = ${JSON.stringify(BALOES_DO_QUARTO)};
 const ANIMACOES = Object.fromEntries(Object.entries(${JSON.stringify(ANIMACOES_IDX)}).map(([nome, dirs]) => [nome, Object.fromEntries(Object.entries(dirs).map(([d, qs]) => [d, qs.map((i) => QUADROS_DO_COELHO[i])]))]));
 const CANTOS = ${JSON.stringify(CANTOS_DA_CENA)}, N = ${NC};
 const CENA = ${JSON.stringify(CENA)}, DX = ${DX}, DY = ${DY};
+const BANHEIRO_META = ${JSON.stringify(BANHEIRO_META)};
 const SOFA_NOVO = ${SOFA_NOVO};
 // O que cada pessoa arrumou fica guardado por cena (o quarto e o salão não se misturam).
 const PREFIXO = CENA === 'salao' ? 'syden-salao-' : 'syden-quarto-';
@@ -747,7 +767,9 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // A arte de um objeto da parede onde ele está: na da esquerda, a peça própria quando ele tem texto.
   // (a porta de entrada, ABERTA enquanto alguém chega: chegouAlguem)
   let entradaAberta = false, CHEGANDO = null;
-  const texturaNaParede = (id, parede) => (entradaAberta && TEXTURAS_PAREDE[id].aberta) || (parede === 'esquerda' && TEXTURAS_PAREDE[id].esq) || TEXTURAS_PAREDE[id];
+  // (a porta do BANHEIRO, aberta no instante de passar para ele; noBanheiro: a vista está lá, e o salão fica parado. Ver O BANHEIRO.)
+  let portaAbrindo = false, noBanheiro = false;
+  const texturaNaParede = (id, parede) => ((tipoDe(id) === 'porta' ? portaAbrindo : entradaAberta) && TEXTURAS_PAREDE[id].aberta) || (parede === 'esquerda' && TEXTURAS_PAREDE[id].esq) || TEXTURAS_PAREDE[id];
   // A escolha de cor do tapete e de OPÇÃO de um objeto da parede (o pôster): { tapete: 'azul', poster: 'fogo' }.
   let CORES = {};
   try { CORES = JSON.parse(localStorage.getItem(PREFIXO + 'cores') ?? '{}') || {}; } catch { /* as de fábrica */ }
@@ -1280,7 +1302,10 @@ if (CENA === 'salao') document.body.classList.add('salao');
     // (NÃO NOS OBJETOS DE CIMA, auditoria de 06/11/2026: eles vêm sem sombra, e a regra levava a cor mais comum do pé, que
     // é o corpo deles — a caneca de costas perdia o corpo inteiro e virava um contorno vazio, com o móvel aparecendo por
     // dentro; o refrigerante, os livros e a pipoca perdiam o fundo)
-    if (vezes > 12 && emCima <= vezes * 0.1 && !OBJETOS_DE_CIMA[id]) {
+    // (NEM NO SOFÁ NOVO, 09/11/2026, relato dele: "a base do sofá ficou verde por causa do tapete": ele veio sem sombra, e a
+    // cor mais comum do pé era a madeira dos pés, que saía; o tapete aparecia pelo buraco)
+    const semSombraPintada = OBJETOS_DE_CIMA[id] || (SOFA_NOVO && tipoDe(id).startsWith('sofa'));
+    if (vezes > 12 && emCima <= vezes * 0.1 && !semSombraPintada) {
       for (let k = K0; k < K1; k++) if (parecida(k)) movel[k * 4 + 3] = 0;
       // O QUE SOBRA DA SOMBRA, SOLTO (relato dele, 17/10/2026: "a poltrona está com uma mancha na base, parece um pixel
       // perdido"): o pixel da sombra num tom um pouco diferente não sai pela cor, e fica sozinho embaixo do móvel. Pedaço de
@@ -2376,6 +2401,9 @@ if (CENA === 'salao') document.body.classList.add('salao');
   //   bichos e pelagens, no futuro, são mais um valor de cores.pet (PETS) e as pastas deles.
   // Arte: personagem/gato.mjs (o PixelLab, quadro 48). É desenhado VIVO a cada quadro, como a cadeira, por profundidade.
   const PETS = ['gato'];
+  // O NOME DELE (09/11/2026, pedido dele: o bicho ganha nome no Guarda-roupa do app). Mora na arrumação (nomeDoPet, que o
+  // servidor limpa e confere: até 20 letras) e aparece na etiqueta ao passar o mouse nele, também para quem visita.
+  let NOME_DO_PET = '';
   const GATO = {};
   for (const [nome, porDir] of Object.entries(GATO_QUADROS)) {
     GATO[nome] = {};
@@ -3138,13 +3166,13 @@ if (CENA === 'salao') document.body.classList.add('salao');
       } else {
         const r = saindo ? null : reacaoDe(pessoa, lugar);
         balao = r?.balao ?? null;
-        const assistindo = lugar.pose === 'sentado-sofa' ? animDe('assistindo-sofa') : lugar.pose === 'sentado' && !lugar.sobre && pessoa.papel === 'call' ? animDe('assistindo-chao') : null;
+        const assistindo = lugar.pose === 'sentado-sofa' ? animDe('assistindo-sofa') : lugar.pose === 'no-fliperama' ? animDe('jogando-fliperama') : lugar.pose === 'sentado' && !lugar.sobre && pessoa.papel === 'call' ? animDe('assistindo-chao') : null;
         nomeA = assistindo ?? lugar.pose;
         if (r?.anim) { nomeA = r.anim; iq = r.iq; }
         else if (assistindo) {
           const t = faseDasPessoas + i * 7, nA = ANIM[assistindo][lugar.olha].quadros.length;
           // a risada (ou, com transmissão, às vezes palmas): uma vez a cada ~15 s, num momento sorteado, cada um na sua hora
-          const extra = lugar.pose === 'sentado-sofa' ? (AO_VIVO && serveNaDirecao('aplaudindo-sofa', lugar.olha) && sorteio(pessoa.id, Math.floor(t / 50)) % 3 === 0 ? animDe('aplaudindo-sofa') : animDe('rindo-sofa')) : null;
+          const extra = lugar.pose === 'no-fliperama' ? animDe('empolgado-fliperama') : lugar.pose === 'sentado-sofa' ? (AO_VIVO && serveNaDirecao('aplaudindo-sofa', lugar.olha) && sorteio(pessoa.id, Math.floor(t / 50)) % 3 === 0 ? animDe('aplaudindo-sofa') : animDe('rindo-sofa')) : null;
           const nR = extra ? ANIM[extra][lugar.olha].quadros.length : 0;
           const P = 50, volta = Math.floor(t / P), inicio = extra ? sorteio(pessoa.id, volta) % (P - nR) : -1, dentro = t % P;
           if (semAndar) iq = Math.min(3, nA - 1); // (o quadro 0 é a pose de base, de olhos fechados: um já de olhos abertos)
@@ -3994,7 +4022,8 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // desktop desliga o freio do navegador para janela escondida (backgroundThrottling: false, para a chamada não cair),
   // então esta página seguiria desenhando atrás do jogo. Ela para sozinha quando a janela do Syden não está em foco ou
   // está escondida: o relógio passa sem desenhar nada, e o quadro volta ao voltar o foco.
-  const emPausa = () => { if (window.congelarDoTeste || document.hidden) return true; try { return !window.top.document.hasFocus(); } catch { return !document.hasFocus(); } };
+  // (no banheiro, o salão não está à vista: nada dele se mexe nem se desenha)
+  const emPausa = () => { if (window.congelarDoTeste || document.hidden || noBanheiro) return true; try { return !window.top.document.hasFocus(); } catch { return !document.hasFocus(); } };
   // A respiração das pessoas do salão: um tempo a cada 0,5 s (elas são peças da cena, e cada troca remonta a cena; mais
   // depressa que isso pesaria). Parada com a janela sem foco, com movimento reduzido, e sem ninguém na call.
   // (300 ms desde 09/11/2026, relato dele: "as animações no sofá estão muito lentas"; eram 500. Cada passo remonta a cena, ~90 ms)
@@ -5046,6 +5075,8 @@ void main() {
   const FUNCAO_DO_MOVEL = porTipo(CENA === 'salao' ? { tv: 'tv', fliperama: 'fliperama', estante: 'estante', balcao: 'balcao', microfone: 'microfone', jukebox: 'jukebox' } : { 'guarda-roupa': 'gavetas', abajur: 'abajur', mesa: 'computador' } /* (os mini-games só na mesa: a cadeira é de arrastar pelo quarto, decisão dele de 16/10/2026) */);
   const rotulo = document.getElementById('rotulo');
   function funcaoEm(k) {
+    // A PORTA DO BANHEIRO abre o banheiro, para todo mundo (a página faz sozinha: não é função do app). Ver O BANHEIRO.
+    if (!EDITANDO && portaDoBanheiroEm(k)) return 'banheiro';
     // No salão, quem não administra só olha a arrumação, mas USA o salão: as funções valem para todo mundo.
     if (!FUNCOES || EDITANDO || (soVer && CENA !== 'salao' && !visitaNoApp)) return null;
     const ip = naParede[k];
@@ -5055,6 +5086,7 @@ void main() {
     return null;
   }
   function acao(f) {
+    if (f === 'banheiro') return entrarNoBanheiro();
     // O balcão abre e fecha o recado, aqui mesmo (o balão é da página).
     // Longe do balcão (varrendo o salão), o clique o chama de volta, e o recado abre quando ele chega.
     if (f === 'balcao' && CENA === 'salao' && RECADO && (coelho.destino !== 'balcao' || coelho.caminho.length)) { coelho.varrendoNoSalao = false; coelho.varrendoAte = 0; ir('balcao'); abrirRecado(); return; }
@@ -5127,12 +5159,15 @@ void main() {
   tela.addEventListener('pointermove', (e) => {
     const f = arrastando || paredePega || janelaPega ? null : funcaoEm(pixelDo(e));
     realcar(f ? pixelDo(e) : null);
-    rotulo.hidden = !f;
+    // o nome do bicho, sobre ele (quem visita também vê)
+    const nomeDoGato = !f && !arrastando && !EDITANDO && NOME_DO_PET && temPet() && dono[pixelDo(e)] === 'gato' ? NOME_DO_PET : null;
+    rotulo.hidden = !f && !nomeDoGato;
     if (soVer) tela.style.cursor = f ? 'pointer' : 'default';
-    if (f) {
+    if (f || nomeDoGato) {
       const rf = rotulo.parentElement.getBoundingClientRect();
-      rotulo.innerHTML = ''; rotulo.append(FUNCOES[f].rotulo);
-      if (FUNCOES[f].sub) { const sm = document.createElement('small'); sm.textContent = FUNCOES[f].sub; rotulo.append(sm); }
+      const fn = nomeDoGato ? { rotulo: nomeDoGato } : f === 'banheiro' ? { rotulo: ROTULOS.banheiro } : FUNCOES[f];
+      rotulo.innerHTML = ''; rotulo.append(fn.rotulo);
+      if (fn.sub) { const sm = document.createElement('small'); sm.textContent = fn.sub; rotulo.append(sm); }
       // DENTRO DA CENA (relato dele, 16/10/2026: "às vezes o texto fica para fora do quarto"): centrado no ponteiro e acima
       // dele, mas preso às bordas do que se vê; sem espaço em cima, vai para baixo do ponteiro.
       const w = rotulo.offsetWidth, h = rotulo.offsetHeight, M = 6;
@@ -5322,11 +5357,12 @@ void main() {
   });
   tela.addEventListener('pointerup', () => {
     if (!paredePega) return;
-    const { id, mexeu, vivo } = paredePega;
+    const { id, mexeu, vivo, k: paredePegaK } = paredePega;
     paredePega = null;
     if (mexeu) { mudarParede(id, vivo); return; }
     const f = ITENS_PAREDE[id].funcao;
     if (FUNCOES && f && FUNCOES[f] && !EDITANDO) acao(f);
+    else if (funcaoEm(paredePegaK) === 'banheiro') acao('banheiro');
   });
   // Pôr e guardar: um botão por objeto. Posto, ele vai para o primeiro lugar livre (sem cobrir outro objeto nem a janela).
   const livreNaParede = (id, P) => {
@@ -5691,7 +5727,7 @@ void main() {
   }, { passive: false });
   // OS ATALHOS (o layout dele, 16/10/2026): os de editar valem no Editar, com algo escolhido.
   document.addEventListener('keydown', (e) => {
-    if (soVer || e.target?.closest?.('input, textarea')) return;
+    if (soVer || noBanheiro || e.target?.closest?.('input, textarea')) return; // (no banheiro, o salão não está à vista: nada se arruma às cegas)
     const ctrl = e.ctrlKey || e.metaKey, k = e.key.toLowerCase();
     if (ctrl && !e.shiftKey && k === 'z') { e.preventDefault(); desfazer(); return; }
     if (ctrl && (k === 'y' || (e.shiftKey && k === 'z'))) { e.preventDefault(); refazer(); return; }
@@ -5730,6 +5766,7 @@ void main() {
     janela: { ...JAN }, cortina: fechada, janelaAberta: aberta, abajurApagado, vista,
     ...(CENA === 'quarto' && { planta: PLANTA }),
     cores: { ...CORES },
+    ...(CENA === 'quarto' && NOME_DO_PET && { nomeDoPet: NOME_DO_PET }),
     guardados: [...GUARDADOS],
     conhecidos: Object.keys(ITENS_PAREDE),
     emCima: Object.fromEntries(Object.entries(EM_CIMA).map(([uid, o]) => [uid, { tipo: o.tipo, em: o.em, s: +o.s.toFixed(3), t: +o.t.toFixed(3), lado: o.lado }])),
@@ -5753,6 +5790,7 @@ void main() {
     JAN = a.janela && TIPOS_JANELA[a.janela.tipo] && cabeJanela(a.janela.tipo) ? prenderJanela(a.janela) : { ...janelaDaPlanta() };
     EM_CIMA = a.emCima && typeof a.emCima === 'object' ? Object.fromEntries(Object.entries(a.emCima).filter(([, o]) => OBJ_VISTAS[o.tipo] && TOPOS[o.em] && ARR[o.em])) : EM_CIMA_INICIAL();
     CORES = a.cores && typeof a.cores === 'object' ? Object.fromEntries(Object.entries(a.cores).filter(([id, c]) => (id === 'tapete' && CORES_DO_TAPETE[c]) || (id === 'parede' && CORES_DA_PAREDE[c]) || (id === 'piso' && CORES_DO_PISO[c]) || (id === 'cama' && CAMAS.includes(c)) || (id === 'pet' && (c === 'nenhum' || PETS.includes(c))) || OPCOES_PAREDE[id]?.[c])) : {};
+    NOME_DO_PET = typeof a.nomeDoPet === 'string' ? a.nomeDoPet.slice(0, 20) : '';
     vestirCama();
     botaoDaCor(); vestirOpcoes(); botaoDaOpcao();
     NA_PAREDE = a.parede ? prenderTudo(comNovos(Object.fromEntries(Object.entries(a.parede).filter(([id]) => ITENS_PAREDE[id])), a.conhecidos)) : prenderTudo(paredeDaPlanta());
@@ -5996,7 +6034,7 @@ void main() {
   // fica ESCOLHIDO, com o contorno claro, e ganha em cima dele uma barrinha com o que se faz com ELE: girar, tirar, as
   // opções (a cor do tapete, a arte do pôster, o tipo de janela) e, na janela, a cortina e abrir. Antes o Girar ficava na
   // barra do app e girava "o último móvel tocado", o que ninguém adivinha. Os nomes (dica e leitor de tela) vêm do app.
-  let ROTULOS = { mover: 'Mover', girar: 'Girar', tirar: 'Tirar', duplicar: 'Duplicar', opcoes: 'Opções', cortina: 'Cortina', janela: 'Janela', sobre: 'Sobre' };
+  let ROTULOS = { mover: 'Mover', girar: 'Girar', tirar: 'Tirar', duplicar: 'Duplicar', opcoes: 'Opções', cortina: 'Cortina', janela: 'Janela', sobre: 'Sobre', banheiro: 'Porta do banheiro', fechar: 'Fechar' };
   const barrinha = document.getElementById('barrinha');
   let opcoesAbertas = false, FIGURAS = null;
   const figurasCache = () => (FIGURAS ??= figurasDaBarra());
@@ -6323,7 +6361,7 @@ void main() {
       if (d.funcoes) FUNCOES = d.funcoes;
       if (d.fecharGuardaRoupa && guardaRoupaAberto) { guardaRoupaAberto = false; gavetasPedidas = false; }
       if ('editando' in d) {
-        const antes = EDITANDO; EDITANDO = !!d.editando; rotulo.hidden = true; realcar(null);
+        const antes = EDITANDO; EDITANDO = !!d.editando; rotulo.hidden = true; realcar(null); if (EDITANDO) sairDoBanheiro();
         if (EDITANDO && !antes) comecarRascunho();
         // sair do Editar sem dizer como (o app fechou a barra): o que estava pendente vale, como no Aplicar
         if (!EDITANDO) { selecionar(null); pararDeMover(); if (rascunho !== null) aplicarRascunho(); }
@@ -6338,7 +6376,7 @@ void main() {
       if (d.comando === 'opcoes' && selecao) { opcoesAbertas = !opcoesAbertas; montarBarrinha(); }
       if (d.comando === 'por' && typeof d.id === 'string') porDoCatalogo(d.grupo, d.id);
       if (d.comando === 'tirarTipo') tirarDoCatalogo(d.grupo, d.ids);
-      if (d.rotulos) { ROTULOS = { ...ROTULOS, ...d.rotulos }; montarBarrinha(); }
+      if (d.rotulos) { ROTULOS = { ...ROTULOS, ...d.rotulos }; montarBarrinha(); if (entrarB) entrarB.textContent = ROTULOS.banheiro; }
       if (d.comando === 'desfazer') desfazer();
       if (typeof d.noite === 'boolean' && (modo === 'noite') !== d.noite) botoes[d.noite ? 'noite' : 'dia'].click();
       if (d.estado) document.querySelector('[data-estado="' + d.estado + '"]')?.click();
@@ -6440,9 +6478,27 @@ void main() {
       const m = 22, x = g.gx < 0 ? m : g.gx > 0 ? vw - m : Math.max(m, Math.min(vw - m, g.sx / g.n));
       const y = g.gy < 0 ? m : g.gy > 0 ? vh - m : Math.max(m, Math.min(vh - m, g.sy / g.n));
       b.style.left = x + 'px'; b.style.top = y + 'px';
-      b.onclick = () => { camera.x = (g.cx / g.n) * px - vw / 2; camera.y = (g.cy / g.n) * px - vh / 2; prenderCamera(); };
+      // NO APERTAR, e não no clique (relato dele, 09/11/2026: "se eu clicar no 1, a câmera deveria ir em direção àquele
+      // personagem"): as marcas são refeitas a cada passo das pessoas (300 ms), e o botão apertado já era outro na hora de
+      // soltar, então o clique nunca chegava; e o apertar começava a arrastar a vista. A câmera DESLIZA até eles.
+      const alvo = [(g.cx / g.n) * px - vw / 2, (g.cy / g.n) * px - vh / 2];
+      b.onpointerdown = (e) => { e.stopPropagation(); e.preventDefault(); irComCamera(alvo); };
+      b.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); irComCamera(alvo); } };
       return b;
     }));
+  }
+  // A câmera desliza até o alvo em ~0,4 s (com menos movimento, vai direto); arrastar a vista no meio interrompe.
+  let deslize = null;
+  function irComCamera([x, y]) {
+    if (deslize) cancelAnimationFrame(deslize);
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { camera.x = x; camera.y = y; prenderCamera(); return; }
+    const x0 = camera.x, y0 = camera.y, t0 = performance.now(), DURA = 400;
+    const passo = (t) => {
+      const k = Math.min(1, (t - t0) / DURA), e = 1 - (1 - k) ** 3;
+      camera.x = x0 + (x - x0) * e; camera.y = y0 + (y - y0) * e; prenderCamera();
+      deslize = k < 1 ? requestAnimationFrame(passo) : null;
+    };
+    deslize = requestAnimationFrame(passo);
   }
   function medirCamera(centrarEm) {
     if (!camera.ativa) return;
@@ -6460,11 +6516,119 @@ void main() {
     medirCamera([ondeAbre[0], ondeAbre[1] - 40]);
     window.addEventListener('resize', () => medirCamera());
     let pan = null;
-    comecarPan = (e) => { pan = { x: e.clientX, y: e.clientY, cx: camera.x, cy: camera.y, id: e.pointerId }; vistaEl.classList.add('andando'); };
+    comecarPan = (e) => { if (deslize) { cancelAnimationFrame(deslize); deslize = null; } pan = { x: e.clientX, y: e.clientY, cx: camera.x, cy: camera.y, id: e.pointerId }; vistaEl.classList.add('andando'); };
     vistaEl.addEventListener('pointerdown', (e) => { if (!tela.hasPointerCapture(e.pointerId) && !pan) comecarPan(e); });
     window.addEventListener('pointermove', (e) => { if (!pan || e.pointerId !== pan.id) return; camera.x = pan.cx - (e.clientX - pan.x); camera.y = pan.cy - (e.clientY - pan.y); prenderCamera(); });
     window.addEventListener('pointerup', (e) => { if (pan && e.pointerId === pan.id) { pan = null; vistaEl.classList.remove('andando'); } });
   }
+  // ============================== O BANHEIRO (09/11/2026) ==============================
+  // Pedido dele: "pode criar o banheiro de fato para o salão? Use o banheiro 3D atual como referência, para não destoar". É
+  // um CÔMODO À PARTE, atrás da porta do banheiro, como no salão 3D (web/src/salao3d/cena.ts): clicar na porta (fora do
+  // Editar; quem só olha o salão também) abre a folha e a vista passa para o banheiro, uma cena pequena e FIXA, montada por
+  // e2e/pixel-art/salao/banheiro/montar.py (a casca e as peças avulsas do PixelLab, de dia e de noite, com a vela acesa). Lá,
+  // a porta de dentro, o botão ‹ do canto e o Esc voltam. Ninguém da call vai ao banheiro: o salão (as pessoas, os nomes, o
+  // recado, a TV) fica escondido e parado (emPausa) enquanto a vista está lá. É ambientação: não se arruma, e o servidor
+  // não sabe dele. O PATINHO boia na banheira (sobe e desce um pixel e anda devagar pela espuma) no ritmo dos coelhos, 12
+  // desenhos por segundo; sem foco, nada se desenha, e com "menos movimento" ele fica parado. Pelo teclado: o botão
+  // escondido "Porta do banheiro" (para o leitor de tela e o Tab) entra, e o foco vai ao de voltar.
+  function portaDoBanheiroEm(k) { return !!BANHEIRO_META && CENA === 'salao' && !dono[k] && naParede[k] > 0 && tipoDe(ordemDaParede[naParede[k] - 1]) === 'porta'; }
+  const telaB = document.getElementById('banheiro'), gB = telaB?.getContext('2d');
+  const sairB = document.getElementById('sair-do-banheiro'), entrarB = document.getElementById('entrar-no-banheiro'), rotuloB = document.getElementById('rotulo-banheiro');
+  let sobreAPorta = false, quadroB = 0, assinaturaB = '', contornoB = null, mascaraB = null;
+  if (BANHEIRO_META && telaB) {
+    // a porta de dentro: a máscara (para o clique) e o contorno claro do realce, como o dos móveis do salão
+    const BW = BANHEIRO_META.W, BH = BANHEIRO_META.H, pd = dados(im['banheiro-porta'], null, BW, BH);
+    mascaraB = new Uint8Array(BW * BH);
+    for (let k = 0; k < BW * BH; k++) mascaraB[k] = pd[k * 4 + 3] > 127 ? 1 : 0;
+    const c = document.createElement('canvas'); c.width = BW; c.height = BH; const gc = c.getContext('2d'), id = gc.createImageData(BW, BH);
+    for (let y = 1; y < BH - 1; y++) for (let x = 1; x < BW - 1; x++) {
+      const k = y * BW + x;
+      if (mascaraB[k] || !(mascaraB[k - 1] || mascaraB[k + 1] || mascaraB[k - BW] || mascaraB[k + BW])) continue;
+      id.data[k * 4] = 255; id.data[k * 4 + 1] = 250; id.data[k * 4 + 2] = 240; id.data[k * 4 + 3] = 255;
+    }
+    gc.putImageData(id, 0, 0); contornoB = c;
+    entrarB.onclick = () => entrarNoBanheiro(true);
+    sairB.onclick = () => sairDoBanheiro();
+    const pixelB = (e) => {
+      const r = telaB.getBoundingClientRect(), x = Math.floor(((e.clientX - r.left) * BW) / r.width), y = Math.floor(((e.clientY - r.top) * BH) / r.height);
+      return x < 0 || y < 0 || x >= BW || y >= BH ? -1 : y * BW + x;
+    };
+    addEventListener('resize', () => { if (noBanheiro) medirBanheiro(); });
+    // o salão não anda por baixo (a câmera arrastava escondida)
+    for (const el of [telaB, sairB]) el.addEventListener('pointerdown', (e) => e.stopPropagation());
+    telaB.addEventListener('pointermove', (e) => {
+      const k = pixelB(e), sobre = k >= 0 && !!mascaraB[k];
+      telaB.style.cursor = sobre ? 'pointer' : 'default';
+      rotuloB.hidden = !sobre;
+      if (sobre) {
+        const rv = vistaEl.getBoundingClientRect();
+        rotuloB.textContent = ROTULOS.banheiro;
+        rotuloB.style.left = Math.max(rotuloB.offsetWidth / 2 + 6, Math.min(rv.width - rotuloB.offsetWidth / 2 - 6, e.clientX - rv.left)) + 'px';
+        rotuloB.style.top = Math.max(rotuloB.offsetHeight * 1.2 + 6, e.clientY - rv.top) + 'px';
+      }
+      if (sobre !== sobreAPorta) { sobreAPorta = sobre; desenharBanheiro(); }
+    });
+    telaB.addEventListener('pointerleave', () => { rotuloB.hidden = true; if (sobreAPorta) { sobreAPorta = false; desenharBanheiro(); } });
+    telaB.addEventListener('click', (e) => { const k = pixelB(e); if (k >= 0 && mascaraB[k]) sairDoBanheiro(); });
+    addEventListener('keydown', (e) => { if (noBanheiro && e.key === 'Escape') { e.preventDefault(); e.stopImmediatePropagation(); sairDoBanheiro(); } }, true);
+    // o relógio do patinho: só conta o tempo à vista (sem foco, fica onde estava, e nada se desenha)
+    setInterval(() => {
+      if (!noBanheiro || window.congelarDoTeste || document.hidden) return;
+      try { if (!window.top.document.hasFocus()) return; } catch { if (!document.hasFocus()) return; }
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) quadroB++;
+      desenharBanheiro();
+    }, 1000 / 12);
+  }
+  // Onde o patinho está no quadro n: boia um pixel para cima e para baixo (2 s) e anda devagar pela espuma (7 s, ida e volta).
+  const patoNoQuadro = (n) => [Math.round(BANHEIRO_META.pato.anda * Math.sin((2 * Math.PI * n) / 84)), Math.sin((2 * Math.PI * n) / 24) > 0.35 ? -1 : 0];
+  // O pixel do banheiro é o do salão (a conta de medirCamera: a vista mostra 560 px da cena), sem passar do que cabe na vista.
+  function medirBanheiro() {
+    const M = BANHEIRO_META, vw = vistaEl.clientWidth, vh = vistaEl.clientHeight, s = Math.min(Math.max(1, vw / 560), vw / M.W, vh / M.H);
+    Object.assign(telaB.style, { width: M.W * s + 'px', height: M.H * s + 'px', left: (vw - M.W * s) / 2 + 'px', top: (vh - M.H * s) / 2 + 'px' });
+  }
+  function desenharBanheiro() {
+    if (!noBanheiro || !gB) return;
+    const [dx, dy] = patoNoQuadro(quadroB), sig = [modo, dx, dy, sobreAPorta].join();
+    if (sig === assinaturaB) return;
+    assinaturaB = sig;
+    const M = BANHEIRO_META, noite = modo === 'noite', pato = im[noite ? 'banheiro-pato-noite' : 'banheiro-pato-dia'];
+    gB.clearRect(0, 0, M.W, M.H);
+    gB.drawImage(im[noite ? 'banheiro-noite' : 'banheiro-dia'], 0, 0);
+    // o patinho na água: o que passa da linha da água (a parte de baixo dele) fica submerso
+    const [px, py] = M.pato.xy, alto = Math.max(0, Math.min(pato.height, M.pato.agua - (py + dy)));
+    if (alto) gB.drawImage(pato, 0, 0, pato.width, alto, px + dx, py + dy, pato.width, alto);
+    if (sobreAPorta && contornoB) gB.drawImage(contornoB, 0, 0);
+  }
+  function entrarNoBanheiro(peloTeclado) {
+    if (!BANHEIRO_META || noBanheiro || portaAbrindo || EDITANDO) return;
+    rotulo.hidden = true; realcar(null);
+    const passar = () => { portaAbrindo = false; mostrarBanheiro(true, peloTeclado); aplicarJanela(true); assinaturaCena = ''; };
+    // a folha abre por um instante, e a vista passa (com "menos movimento", passa na hora)
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches || !NA_PAREDE.porta || !TEXTURAS_PAREDE.porta?.aberta) return passar();
+    portaAbrindo = true; aplicarJanela(true); assinaturaCena = ''; desenhar();
+    setTimeout(passar, 420);
+  }
+  function sairDoBanheiro() {
+    if (!noBanheiro) return;
+    const comFoco = document.activeElement === sairB;
+    mostrarBanheiro(false);
+    if (comFoco) entrarB.focus({ preventScroll: true });
+  }
+  function mostrarBanheiro(sim, foco) {
+    noBanheiro = sim;
+    telaB.hidden = sairB.hidden = !sim; rotuloB.hidden = true; sobreAPorta = false; assinaturaB = '';
+    sairB.setAttribute('aria-label', ROTULOS.fechar); sairB.title = ROTULOS.fechar;
+    mundoEl.style.visibility = sim ? 'hidden' : '';
+    document.getElementById('fora-da-vista').hidden = sim;
+    vistaEl.classList.toggle('no-banheiro', sim);
+    if (sim) { medirBanheiro(); desenharBanheiro(); if (foco) sairB.focus({ preventScroll: true }); } else { assinaturaCena = ''; desenhar(); }
+  }
+  window.banheiroDoTeste = () => ({ noBanheiro, portaAbrindo, quadro: quadroB, pato: BANHEIRO_META && patoNoQuadro(quadroB), sobreAPorta, meta: BANHEIRO_META }); // para o teste
+  // para a auditoria visual: ir e voltar sem a folha abrindo, o quadro do patinho, o realce da porta de dentro e a porta do salão aberta
+  window.irAoBanheiroDoTeste = (sim) => (sim ? mostrarBanheiro(true) : sairDoBanheiro());
+  window.quadroDoBanheiroDoTeste = (n, sobre = false) => { quadroB = n; sobreAPorta = sobre; assinaturaB = ''; desenharBanheiro(); };
+  window.portaAbertaDoTeste = (sim) => { portaAbrindo = sim; aplicarJanela(true); assinaturaCena = ''; desenhar(); };
+  window.portaDoBanheiroDoTeste = () => { let sx = 0, sy = 0, n = 0; for (let k = 0; k < W * W; k++) if (portaDoBanheiroEm(k)) { sx += k % W; sy += (k / W) | 0; n++; } return n ? [Math.round(sx / n), Math.round(sy / n)] : null; }; // para o teste: o meio da porta
   // Os gráficos: os botões da página de teste, e o que o app mudar nas Configurações.
   function botoesDosGraficos() {
     for (const [k, nome] of [['particulas', 'Partículas'], ['sombras', 'Sombras'], ['telas', 'Telas animadas']]) {

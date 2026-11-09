@@ -232,3 +232,28 @@
 {"ferramenta":"pixellab","peca":"salao/sofa-novo/ocupado/north-west/1","geracoes":10,"quando":"2026-11-09T17:25:59.794Z"}
 {"ferramenta":"pixellab","peca":"salao/sofa-novo/ocupado/north-east/0","geracoes":10,"quando":"2026-11-09T17:27:05.039Z"}
 {"ferramenta":"pixellab","peca":"salao/sofa-novo/ocupado/north-east/1","geracoes":10,"quando":"2026-11-09T17:28:22.529Z"}
+{"ferramenta":"pixellab","peca":"personagem/animacao/jogando-fliperama","geracoes":12,"quando":"2026-11-09T17:48:23.011Z"}
+{"ferramenta":"pixellab","peca":"personagem/animacao/empolgado-fliperama","geracoes":12,"quando":"2026-11-09T17:51:03.277Z"}
+{"ferramenta":"pixellab","peca":"salao/banheiro/casca","geracoes":25,"quando":"2026-11-09T18:06:32.090Z"}
+{"ferramenta":"pixellab","peca":"salao/banheiro/casca (a primeira chamada, perdida: a espera procurava o trabalho pelo id errado; custo estimado pela segunda, igual)","geracoes":25,"quando":"2026-11-09T18:05:00.000Z"}
+{"ferramenta":"pixellab","peca":"salao/banheiro/casca","geracoes":25,"quando":"2026-11-09T18:09:09.634Z"}
+{"ferramenta":"pixellab","peca":"salao/banheiro/peca/banheira","geracoes":10,"quando":"2026-11-09T18:12:13.682Z"}
+{"ferramenta":"pixellab","peca":"salao/banheiro/peca/pia","geracoes":10,"quando":"2026-11-09T18:13:51.828Z"}
+{"ferramenta":"pixellab","peca":"salao/banheiro/peca/espelho","geracoes":10,"quando":"2026-11-09T18:16:48.521Z"}
+{"ferramenta":"pixellab","peca":"salao/banheiro/peca/prateleira","geracoes":10,"quando":"2026-11-09T18:18:55.932Z"}
+{"ferramenta":"pixellab","peca":"salao/banheiro/peca/vaso","geracoes":10,"quando":"2026-11-09T18:20:39.456Z"}
+{"ferramenta":"pixellab","peca":"salao/banheiro/peca/tapete","geracoes":10,"quando":"2026-11-09T18:22:51.729Z"}
+{"ferramenta":"pixellab","peca":"salao/banheiro/peca/toalhas","geracoes":10,"quando":"2026-11-09T18:25:09.978Z"}
+{"ferramenta":"pixellab","peca":"salao/banheiro/peca/lixo","geracoes":10,"quando":"2026-11-09T18:27:30.932Z"}
+{"ferramenta":"pixellab","peca":"salao/banheiro/peca/papel","geracoes":10,"quando":"2026-11-09T18:30:14.818Z"}
+{"ferramenta":"pixellab","peca":"salao/banheiro/peca/porta","geracoes":10,"quando":"2026-11-09T18:31:56.520Z"}
+{"ferramenta":"pixellab","peca":"salao/banheiro/peca/patinho","geracoes":10,"quando":"2026-11-09T18:34:26.968Z"}
+{"ferramenta":"pixellab","peca":"salao/banheiro/peca/banheira","geracoes":10,"quando":"2026-11-09T18:37:02.160Z"}
+{"ferramenta":"pixellab","peca":"salao/banheiro/peca/pia","geracoes":10,"quando":"2026-11-09T18:38:31.079Z"}
+{"ferramenta":"pixellab","peca":"salao/banheiro/peca/vaso","geracoes":15,"quando":"2026-11-09T18:40:21.174Z"}
+{"ferramenta":"pixellab","peca":"salao/banheiro/peca/porta","geracoes":10,"quando":"2026-11-09T18:42:19.640Z"}
+{"ferramenta":"pixellab","peca":"salao/banheiro/peca/espelho","geracoes":10,"quando":"2026-11-09T18:44:13.999Z"}
+{"ferramenta":"pixellab","peca":"salao/banheiro/peca/prateleira","geracoes":10,"quando":"2026-11-09T18:45:47.507Z"}
+{"ferramenta":"pixellab","peca":"salao/banheiro/peca/tapete","geracoes":10,"quando":"2026-11-09T18:47:20.155Z"}
+{"ferramenta":"pixellab","peca":"salao/banheiro/porta-aberta (inpaint)","geracoes":10,"quando":"2026-11-09T18:48:29.846Z"}
+{"ferramenta":"pixellab","peca":"salao/banheiro/peca/papel","geracoes":10,"quando":"2026-11-09T18:55:10.622Z"}

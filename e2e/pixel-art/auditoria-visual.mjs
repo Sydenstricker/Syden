@@ -324,6 +324,48 @@ for (const mascote of MASCOTES) for (const cena of CENAS) {
         await p.evaluate(() => { window.pertoDaTvDoTeste(5); window.pessoasDoTeste([]); window.movimentoDoTeste?.(false); });
         await girar('sofa', origSofa.lado, origSofa.c);
       }
+
+      // O BANHEIRO (09/11/2026): a porta do salão fechada, com o realce, e aberta (o instante antes de a vista passar); o
+      // banheiro inteiro; cada peça ampliada; a porta de dentro com o realce; e o patinho em 6 quadros do ciclo dele.
+      const meta = await p.evaluate(() => window.banheiroDoTeste?.().meta ?? null);
+      if (meta && quer('banheiro', '')) {
+        const pt = await p.evaluate(() => window.portaDoBanheiroDoTeste());
+        const cp = pt && [pt[0] - 40, pt[1] - 75, pt[0] + 40, pt[1] + 75];
+        if (cp) {
+          await foto('banheiro', 'salao-porta', modo, [cp]);
+          await p.evaluate(() => window.portaAbertaDoTeste(true));
+          await foto('banheiro', 'salao-porta-aberta', modo, [cp]);
+          await p.evaluate(() => window.portaAbertaDoTeste(false));
+        } else naoDeu('banheiro', 'salao-porta', modo, 'a porta do banheiro não está na parede');
+        await p.evaluate(() => window.irAoBanheiroDoTeste(true));
+        /** Como foto(), mas da tela do banheiro. */
+        const fotoB = async (nome, caixa, amplia = AMPLIA) => {
+          const png = await p.evaluate(({ caixa, amplia }) => {
+            const c = document.getElementById('banheiro'), [x0, y0, x1, y1] = caixa.map(Math.round), w = x1 - x0, h = y1 - y0;
+            const o = document.createElement('canvas'); o.width = w * amplia; o.height = h * amplia;
+            const g = o.getContext('2d'); g.imageSmoothingEnabled = false; g.fillStyle = '#2a2522'; g.fillRect(0, 0, o.width, o.height);
+            g.drawImage(c, x0, y0, w, h, 0, 0, w * amplia, h * amplia);
+            return o.toDataURL('image/png').split(',')[1];
+          }, { caixa, amplia });
+          const arquivo = path.join(pasta, 'banheiro', `${nome}-${modo}.png`);
+          fs.mkdirSync(path.dirname(arquivo), { recursive: true });
+          fs.writeFileSync(arquivo, Buffer.from(png, 'base64'));
+          casos.push({ caso: `banheiro/${nome}-${modo}`, grupo: 'banheiro', nome, modo, arquivo: path.relative(pasta, arquivo).replaceAll('\\', '/'), caixa });
+          total++;
+        };
+        await p.evaluate(() => window.quadroDoBanheiroDoTeste(0));
+        await fotoB('inteiro', [0, 0, meta.W, meta.H], 2);
+        for (const [id, c] of Object.entries(meta.pecas)) await fotoB('peca-' + id, [c[0] - 8, c[1] - 8, c[2] + 8, c[3] + 8], 4);
+        const cpd = meta.pecas.porta;
+        await p.evaluate(() => window.quadroDoBanheiroDoTeste(0, true));
+        await fotoB('porta-de-dentro-realce', [cpd[0] - 8, cpd[1] - 8, cpd[2] + 8, cpd[3] + 8], 4);
+        const [px, py] = meta.pato.xy;
+        for (const n of [0, 6, 12, 21, 42, 63]) {
+          await p.evaluate((n) => window.quadroDoBanheiroDoTeste(n), n);
+          await fotoB(`pato-q${n}`, [px - 14, py - 12, px + 26, py + 22], 6);
+        }
+        await p.evaluate(() => window.irAoBanheiroDoTeste(false));
+      }
     }
   }
   await p.close();
