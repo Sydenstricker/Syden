@@ -4,6 +4,18 @@ import { Avatar } from './Avatar';
 import { isUnread } from './unread';
 import type { DirectChannel, UserRef } from './types';
 import { useT } from './i18n';
+import { resumoDaMensagem } from './MessageItem';
+
+/**
+ * A prévia da conversa na lista: o resumo da última mensagem (o texto, "GIF", a enquete, "Figurinha", "Anexo"), e só
+ * "Sem mensagens ainda" quando não há mensagem nenhuma. Antes ela mostrava o texto cru, e uma conversa que terminava numa
+ * figurinha ou num anexo, que não têm texto, dizia que estava vazia (relato dele, 09/11/2026); um GIF mostrava o link.
+ */
+function previaDaConversa(c: DirectChannel, t: ReturnType<typeof useT>): string {
+  if (c.lastMessageId === null) return '';
+  if (c.lastMessageFigurinha && !c.lastMessage) return t('Figurinha');
+  return resumoDaMensagem({ content: c.lastMessage ?? '', anexos: c.lastMessageAnexos ?? 0, enquete: c.lastMessageEnquete ?? null }, t);
+}
 
 /**
  * A conversa ficou sem a outra pessoa — ou seja, a conta dela foi excluída.
@@ -86,7 +98,8 @@ export function DirectList({
               <span className="direct-info">
                 <span className="direct-name">{directName(conversa, selfId, t)}</span>
                 <span className="direct-preview">
-                  {conversa.lastMessage || (grupo ? t('{n} pessoas', { n: conversa.members.length }) : t('Sem mensagens ainda'))}
+                  {previaDaConversa(conversa, t) ||
+                    (grupo ? t('{n} pessoas', { n: conversa.members.length }) : conversa.lastMessageId === null ? t('Sem mensagens ainda') : '')}
                 </span>
               </span>
               {nova && <span className="direct-row-dot" aria-label={t('mensagem nova')} />}

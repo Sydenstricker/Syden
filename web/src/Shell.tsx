@@ -527,6 +527,10 @@ export function Shell({
           lastMessage: message.content,
           lastMessageAt: message.createdAt,
           lastMessageId: message.id,
+          // o que ela traz fora do texto, para a prévia da lista (previaDaConversa, em DirectList.tsx)
+          lastMessageAnexos: message.attachments.length,
+          lastMessageFigurinha: message.attachments.some((a) => a.figurinha === 1),
+          lastMessageEnquete: message.poll?.question ?? null,
         };
         if (openRef.current === message.channelId) markRead(message.channelId, message.id);
         return [atualizada, ...list.filter((c) => c.id !== message.channelId)];

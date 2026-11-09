@@ -100,3 +100,34 @@ test('a figurinha retirada por direito autoral sai também das coleções', asyn
   assert.equal((await comoBia('GET', '/api/figurinhas')).json().figurinhas.length, antesBia - 1, 'e da de quem salvou');
   void db;
 });
+
+// A PRÉVIA DA CONVERSA (relato dele, 09/11/2026): uma conversa privada que termina numa figurinha ou num anexo, que não
+// têm texto, aparecia na lista como "Sem mensagens ainda". A lista agora diz o que a última mensagem traz.
+test('a lista de conversas diz o que a última mensagem traz quando ela não tem texto', async () => {
+  const criada = await comoAna("POST", "/api/direct", { userIds: [bia.user.id] });
+  assert.equal(criada.statusCode, 200, criada.body);
+  const dm = criada.json() as { id: number };
+  const naLista = async () =>
+    ((await comoBia('GET', '/api/direct')).json() as { id: number; lastMessage: string | null; lastMessageId: number | null; lastMessageAnexos: number; lastMessageFigurinha: boolean; lastMessageEnquete: string | null }[]).find((c) => c.id === dm.id)!;
+
+  const fig = (await comoAna('POST', '/api/figurinhas', { image: png('figurinha-da-conversa') })).json() as { id: number };
+  const mandou = await comoAna("POST", `/api/channels/${dm.id}/figurinha`, { figurinhaId: fig.id });
+  assert.equal(mandou.statusCode, 200, mandou.body);
+  let c = await naLista();
+  assert.notEqual(c.lastMessageId, null, 'a conversa tem mensagem');
+  assert.equal(c.lastMessage, '');
+  assert.equal(c.lastMessageFigurinha, true);
+  assert.equal(c.lastMessageAnexos, 1);
+
+  assert.equal((await comoAna('POST', `/api/channels/${dm.id}/messages`, { files: [{ name: 'foto.png', data: png('foto-da-conversa') }] })).statusCode, 200);
+  c = await naLista();
+  assert.equal(c.lastMessageFigurinha, false);
+  assert.equal(c.lastMessageAnexos, 1);
+
+  // texto com anexo (o texto sozinho vai pelo socket): a prévia é o texto
+  const texto = await comoAna('POST', `/api/channels/${dm.id}/messages`, { content: 'olha essa', files: [{ name: 'b.png', data: png('outra-foto') }] });
+  assert.equal(texto.statusCode, 200, texto.body);
+  c = await naLista();
+  assert.equal(c.lastMessage, 'olha essa');
+  assert.equal(c.lastMessageAnexos, 1);
+});

@@ -200,6 +200,10 @@ export interface DirectChannel {
   lastMessageId: number | null;
   /** Até onde ESTA pessoa já leu, segundo o servidor — o que faz a bolinha valer em todo aparelho. */
   lastReadId: number | null;
+  /** O que a última mensagem traz fora do texto (para a prévia não dizer "Sem mensagens" de uma figurinha). */
+  lastMessageAnexos?: number;
+  lastMessageFigurinha?: boolean;
+  lastMessageEnquete?: string | null;
 }
 
 /** Arquivo mandado junto com uma mensagem (imagem, vídeo, áudio ou qualquer outro). */

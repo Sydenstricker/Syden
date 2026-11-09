@@ -164,6 +164,10 @@ export interface DirectChannel {
   lastMessageId: number | null;
   /** Até que mensagem ESTA pessoa já leu aqui. É o que faz a bolinha valer em todos os aparelhos. */
   lastReadId: number | null;
+  /** O que a última mensagem traz fora do texto: quantos anexos, se é figurinha, a pergunta da enquete. */
+  lastMessageAnexos: number;
+  lastMessageFigurinha: boolean;
+  lastMessageEnquete: string | null;
 }
 
 /** Arquivo enviado junto com uma mensagem. Os bytes ficam no banco; aqui vai só a ficha dele. */
@@ -3292,7 +3296,32 @@ export function listDirectChannels(userId: number): DirectChannel[] {
 
   const byChannel = new Map<number, UserRef[]>(rows.map((row) => [row.id, []]));
   for (const { channelId, ...user } of members) byChannel.get(channelId)?.push(user);
-  return rows.map((row) => ({ ...row, members: byChannel.get(row.id) ?? [] }));
+
+  // O QUE A ÚLTIMA MENSAGEM TRAZ quando não tem texto (relato dele, 09/11/2026: uma conversa com mensagens aparecia como
+  // "Sem mensagens ainda"): a figurinha, o anexo e a enquete moram fora de `content`, que vem vazio. A lista resume com
+  // o mesmo resumo da citação de resposta (resumoDaMensagem, no site).
+  const ultimas = rows.map((r) => r.lastMessageId).filter((id): id is number => id !== null);
+  const traz = new Map<number, { anexos: number; figurinha: boolean; enquete: string | null }>();
+  if (ultimas.length) {
+    for (const a of db
+      .prepare(`SELECT message_id AS id, COUNT(*) AS n, MAX(figurinha) AS f FROM attachments WHERE message_id IN (${idList(ultimas)}) GROUP BY message_id`)
+      .all() as unknown as { id: number; n: number; f: number }[])
+      traz.set(a.id, { anexos: a.n, figurinha: a.f === 1, enquete: null });
+    for (const p of db
+      .prepare(`SELECT message_id AS id, question FROM polls WHERE message_id IN (${idList(ultimas)})`)
+      .all() as unknown as { id: number; question: string }[])
+      traz.set(p.id, { ...(traz.get(p.id) ?? { anexos: 0, figurinha: false }), enquete: p.question });
+  }
+  return rows.map((row) => {
+    const t = row.lastMessageId !== null ? traz.get(row.lastMessageId) : undefined;
+    return {
+      ...row,
+      lastMessageAnexos: t?.anexos ?? 0,
+      lastMessageFigurinha: t?.figurinha ?? false,
+      lastMessageEnquete: t?.enquete ?? null,
+      members: byChannel.get(row.id) ?? [],
+    };
+  });
 }
 
 interface MessageRow {
