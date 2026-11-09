@@ -10,6 +10,7 @@
 #     escura e o pé da borda) vêm das pontas do quarto, andando 2 casas numa direção só: 28,5 px, meio pixel arredondado.
 # De noite, a mesma conta sobre a noite. A luz do abajur PINTADA vale só no quarto de sempre (a pintura é daquele quarto).
 #   py e2e/pixel-art/quarto/novo/quarto/janelas/plantas.py   → janelas/sem-janela-<dia|noite>-<l|cubiculo>.png
+#   (--so-franja: só tira a franja clara de cima das cascas já feitas; ver sem_franja)
 import os
 import numpy as np
 from PIL import Image
@@ -74,8 +75,38 @@ def cubiculo(src):
     return out
 
 
+def sem_franja(img):
+    """OS PONTINHOS CLAROS EM CIMA DA CORNIJA (relato dele, 09/11/2026: "os quartos novos têm artefatos na parte superior"): a
+    casca de sempre tem, colada no contorno de cima, uma franja de pixels quase da cor do fundo (o serrilhado da pintura). No
+    quarto de sempre a silhueta ideal da página os corta; nas plantas novas o fora é o fundo pela COR, e eles ficavam como
+    pontinhos claros (rosados de dia, na parede de qualquer cor). Pixel encostado no fundo e quase da cor dele vira fundo."""
+    out = img.copy(); fundo = img[0, 0].astype(int)
+    for _ in range(3):
+        e = (np.abs(out.astype(int) - fundo).max(2) <= 6)  # (de noite o fundo tem ruído de ±2)
+        viz = np.zeros_like(e); viz[1:] |= e[:-1]; viz[:-1] |= e[1:]; viz[:, 1:] |= e[:, :-1]; viz[:, :-1] |= e[:, 1:]
+        # (até 48 do fundo, mas não o reboco creme, que fica a ~41 dele e é mais claro: a franja é cinza-rosada e escura)
+        perto = (np.abs(out.astype(int) - fundo).max(2) < 48) & (out.mean(2) < 175) & ~e & viz
+        # e o pixel solto (3 ou 4 vizinhos de fundo), de qualquer cor: um de reboco ficava no vão do L, em cima da cornija
+        nviz = np.zeros(e.shape, int); nviz[1:] += e[:-1]; nviz[:-1] += e[1:]; nviz[:, 1:] += e[:, :-1]; nviz[:, :-1] += e[:, 1:]
+        perto |= ~e & (nviz >= 3)
+        # (e o claro na quina do contorno, com fundo em cima e de um lado: o reboco que o degrau do contorno deixou de fora)
+        cima = np.zeros_like(e); cima[1:] = e[:-1]
+        perto |= ~e & cima & (nviz >= 2) & (out.mean(2) > 150)
+        if not perto.any(): break
+        out[perto] = fundo
+    return out
+
+
+import sys
+if '--so-franja' in sys.argv:
+    # só tira a franja das cascas já feitas, sem refazê-las (refeitas, a noite saía ±2 diferente da guardada)
+    for q in ('dia', 'noite'):
+        for nome in ('l', 'cubiculo'):
+            f = os.path.join(AQUI, f'sem-janela-{q}-{nome}.png')
+            Image.fromarray(sem_franja(np.array(Image.open(f).convert('RGB')))).save(f)
+    sys.exit(0)
 for q in ('dia', 'noite'):
     src = np.array(Image.open(os.path.join(AQUI, f'sem-janela-{q}.png')).convert('RGB'))
     for nome, f in (('l', em_l), ('cubiculo', cubiculo)):
-        Image.fromarray(f(src)).save(os.path.join(AQUI, f'sem-janela-{q}-{nome}.png'))
+        Image.fromarray(sem_franja(f(src))).save(os.path.join(AQUI, f'sem-janela-{q}-{nome}.png'))
         print(f'sem-janela-{q}-{nome}.png')
