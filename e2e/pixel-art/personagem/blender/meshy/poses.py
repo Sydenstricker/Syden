@@ -189,11 +189,19 @@ def transicao(cadeia, n):
 # A CÂMERA DO DEITADO: a do coelho em pé (20° de elevação, 32° nas diagonais) foi escolhida para PARECER o mascote
 # do PixelLab; o chão do salão é desenhado a ~32° e com as diagonais a 45° (a casa de 27 × 14,25). Em pé a diferença não
 # aparece; deitado, sim: na câmera de pé o corpo some em profundidade e vira uma bola vista de cima.
-def camera(elev):
+#
+# DESCER_DEITADO: deitado, o corpo DESCE no quadro (em px), na mesma medida em que a câmera vira a do deitado. Lendo, de
+# cabeça erguida, a ponta das orelhas passava do alto do quadro de 120 e saía CORTADA reta (relato dele, 09/11/2026: "orelha
+# do coelho está cortando na cama"); embaixo sobravam ~40 px. O motor ancora o deitado pelo meio do corpo, lido do desenho,
+# então descer no quadro não o tira do lugar na cama. Quem confere: e2e/pixel-art/auditoria-de-bordas.mjs.
+DESCER_DEITADO = 20
+
+
+def camera(elev, descer=0.0):
     e = math.radians(elev)
     cima_ = Vector((0, math.sin(e), math.cos(e)))
     frente_ = Vector((0, math.cos(e), -math.sin(e)))
-    centro_ = cima_ * ((PE_PX[1] - 60) * u_px) - Vector((1, 0, 0)) * ((PE_PX[0] - 60) * u_px)
+    centro_ = cima_ * ((PE_PX[1] - 60 + descer) * u_px) - Vector((1, 0, 0)) * ((PE_PX[0] - 60) * u_px)
     cam.location = centro_ - frente_ * 40
     cam.rotation_euler = (math.pi / 2 - e, 0, 0)
 
@@ -266,7 +274,7 @@ if not os.environ.get('GLB'):
             for i in range(n):
                 # deitando: a câmera vai da de pé à do deitado junto com o corpo
                 k = 1.0 if cam_ == 'deitado' else (i + 1) / n if cam_ == 'deitando' else 0.0
-                camera(DE_PE[0] + (DEITADO[0] - DE_PE[0]) * k)
+                camera(DE_PE[0] + (DEITADO[0] - DE_PE[0]) * k, DESCER_DEITADO * k)
                 ARM.rotation_euler = (0, 0, math.radians(giro_da(d, DE_PE[1] + (DEITADO[1] - DE_PE[1]) * k)))
                 f(i, n)
                 LIVRO.hide_render = not (livro is True or (livro == 'fim' and i >= n - 2))
