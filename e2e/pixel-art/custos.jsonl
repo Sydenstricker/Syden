@@ -200,3 +200,15 @@
 {"ferramenta":"pixellab","peca":"personagem/gato/animacao/espreguicar-12/south-west","geracoes":1,"quando":"2026-11-09T14:56:44.932Z"}
 {"ferramenta":"pixellab","peca":"personagem/gato/animacao/dormindo-respira/south-west","geracoes":1,"quando":"2026-11-09T14:58:44.525Z"}
 {"ferramenta":"pixellab","peca":"personagem/gato/animacao/sentado-rabo/south-west","geracoes":1,"quando":"2026-11-09T15:00:19.854Z"}
+{"ferramenta":"pixellab","peca":"salao/sofa-ocupado/south-west/0","geracoes":10,"quando":"2026-11-09T16:01:22.399Z"}
+{"ferramenta":"pixellab","peca":"salao/sofa-ocupado/south-west/1","geracoes":10,"quando":"2026-11-09T16:02:46.716Z"}
+{"ferramenta":"pixellab","peca":"personagem/animacao/assistindo-sofa (do estado sentado-sofa; o saldo caiu 44 com o pedido errado e outros agentes)","geracoes":12,"quando":"2026-11-09T16:02:55.390Z"}
+{"ferramenta":"pixellab","peca":"personagem/animacao/assistindo-sofa-sem-estado (descartada: pedida sem PERSONAGEM, saiu do coelho de pé; em mascote/falhas/)","geracoes":12,"quando":"2026-11-09T16:03:00.000Z"}
+{"ferramenta":"pixellab","peca":"salao/sofa-ocupado/south-east/0","geracoes":10,"quando":"2026-11-09T16:04:31.657Z"}
+{"ferramenta":"pixellab","peca":"personagem/animacao/rindo-sofa","geracoes":6,"quando":"2026-11-09T16:05:44.406Z"}
+{"ferramenta":"pixellab","peca":"salao/sofa-ocupado/south-east/1","geracoes":10,"quando":"2026-11-09T16:05:58.678Z"}
+{"ferramenta":"pixellab","peca":"salao/sofa-ocupado/north-west/0","geracoes":10,"quando":"2026-11-09T16:07:30.053Z"}
+{"ferramenta":"pixellab","peca":"salao/sofa-ocupado/north-west/1","geracoes":10,"quando":"2026-11-09T16:08:43.383Z"}
+{"ferramenta":"pixellab","peca":"personagem/animacao/assistindo-chao","geracoes":9,"quando":"2026-11-09T16:08:56.242Z"}
+{"ferramenta":"pixellab","peca":"salao/sofa-ocupado/north-east/0","geracoes":10,"quando":"2026-11-09T16:09:44.483Z"}
+{"ferramenta":"pixellab","peca":"salao/sofa-ocupado/north-east/1","geracoes":10,"quando":"2026-11-09T16:10:53.610Z"}

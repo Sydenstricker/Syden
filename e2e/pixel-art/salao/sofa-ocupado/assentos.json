@@ -1,0 +1,70 @@
+{
+ "south-west": {
+  "assentos": [
+   {
+    "x": 66,
+    "y": 97,
+    "sobe": 12,
+    "olha": "sudoeste"
+   },
+   {
+    "x": 99,
+    "y": 114,
+    "sobe": 12,
+    "olha": "sudoeste"
+   }
+  ],
+  "caixaIgual": true
+ },
+ "north-west": {
+  "assentos": [
+   {
+    "x": 111,
+    "y": 101,
+    "sobe": 10,
+    "olha": "noroeste"
+   },
+   {
+    "x": 79,
+    "y": 118,
+    "sobe": 10,
+    "olha": "noroeste"
+   }
+  ],
+  "caixaIgual": true
+ },
+ "north-east": {
+  "assentos": [
+   {
+    "x": 60,
+    "y": 101,
+    "sobe": 10,
+    "olha": "nordeste"
+   },
+   {
+    "x": 93,
+    "y": 118,
+    "sobe": 10,
+    "olha": "nordeste"
+   }
+  ],
+  "caixaIgual": true
+ },
+ "south-east": {
+  "assentos": [
+   {
+    "x": 104,
+    "y": 97,
+    "sobe": 12,
+    "olha": "sudeste"
+   },
+   {
+    "x": 71,
+    "y": 114,
+    "sobe": 12,
+    "olha": "sudeste"
+   }
+  ],
+  "caixaIgual": "espelho do sudoeste"
+ }
+}

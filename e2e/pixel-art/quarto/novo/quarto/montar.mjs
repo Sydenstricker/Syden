@@ -88,6 +88,12 @@ const FONTES = {
   falando: ['baixa-120/animacoes/falando'],
   // o coelho do balcão acena para quem chega pela porta de entrada do salão (chegouAlguem); só o do PixelLab tem
   acenando: ['baixa-120/animacoes/acenando'],
+  // ASSISTINDO À TRANSMISSÃO (relato dele, 09/11/2026: "os coelhos parados no sofá parecem que estão dormindo; estão
+  // completamente congelados"): no sofá e no chão diante da TV, de olhos ABERTOS, respirando, mexendo a cabeça e as orelhas,
+  // e de vez em quando uma risada (rindo-sofa). Só do desenho do PixelLab (as poses sentadas são dele); sem a direção, a pose.
+  'assistindo-sofa': ['pl:baixa-120/animacoes/assistindo-sofa'],
+  'rindo-sofa': ['pl:baixa-120/animacoes/rindo-sofa'],
+  'assistindo-chao': ['pl:baixa-120/animacoes/assistindo-chao'],
   // SENTADO É O DESENHO DO PIXELLAB ("pl:"), mesmo com o mascote 3D (decisão dele, 30/10/2026): as pernas da malha 3D ficam
   // dentro do moletom, e sentado ele parecia em pé ("de frente parece que ele não tem pernas"), em qualquer pose. Até
   // haver uma malha do mascote sentado (e2e/pixel-art/personagem/blender/meshy/README.md), as poses sentadas, a
@@ -120,7 +126,7 @@ const FONTES = {
 // As 8 direções do personagem: as diagonais são as de uso; as outras 4 (de frente, de costas, de lado) servem à VIRADA.
 const DELES = { sudeste: 'south-east', sudoeste: 'south-west', nordeste: 'north-east', noroeste: 'north-west', sul: 'south', oeste: 'west', norte: 'north', leste: 'east' };
 const ANIMACOES = {};
-const SO_NO_SALAO = ['sentado-banqueta', 'no-fliperama'];
+const SO_NO_SALAO = ['sentado-banqueta', 'no-fliperama', 'assistindo-sofa', 'rindo-sofa', 'assistindo-chao'];
 // DEITADO DE CABEÇA PARA A FRENTE, NO DESENHO DO PIXELLAB (a auditoria visual, 09/11/2026): com a cama girada para o norte
 // (a cabeceira do nosso lado), o comprido da cama fica a uns 28° na tela. As diagonais do norte do PixelLab deitado desenham
 // o corpo a uns 50°, com os pés subindo para fora do colchão, em direção ao criado-mudo; as de lado (leste e oeste)
@@ -179,6 +185,13 @@ if (CENA === 'quarto') for (const [nome, pasta] of [['cama-1', 'cama-casal-1-gir
   if (!ORDEM_DO_GIRO.every((d) => fs.existsSync(path.join(dir, d + '.png')))) continue;
   CAMAS[nome] = true;
   if (nome !== 'cama-2') ORDEM_DO_GIRO.forEach((d, l) => { IMAGENS['giro-cama@' + nome + l] = png(path.join(dir, d + '.png')); }); // (a 2 são as giro-cama)
+}
+// O SOFÁ QUE AFUNDA (relato dele, 09/11/2026: "parece que eles se sentam POR CIMA do sofá"): as mesmas 4 vistas com a almofada
+// de quem senta afundada (salao/sofa-ocupado/: <vista>-0, -1 e -01, repintadas só nas almofadas). A página escolhe pela
+// ocupação de cada sofá (ver vistaDoSofa).
+if (CENA === 'salao') for (const ocup of ['0', '1', '01']) {
+  const dir = path.join(SALAO, 'sofa-ocupado');
+  if (ORDEM_DO_GIRO.every((d) => fs.existsSync(path.join(dir, d + '-' + ocup + '.png')))) ORDEM_DO_GIRO.forEach((d, l) => { IMAGENS['giro-sofa@' + ocup + l] = png(path.join(dir, d + '-' + ocup + '.png')); });
 }
 // A MÁSCARA DA TELA (pedido dele, 15/10/2026: "me fala qual o arquivo da TV que eu crio um com máscara"): uma cópia da
 // vista de frente com a tela pintada de MAGENTA puro (255, 0, 255), ao lado dela: <vista>-tela.png. Quando existe, ela
@@ -1296,6 +1309,8 @@ if (CENA === 'salao') document.body.classList.add('salao');
   }
   const VISTAS = porTipo({});
   for (const id of MOVEIS_GIRADOS) if (im['giro-' + id + '0']) VISTAS[id] = [0, 1, 2, 3].map((l) => pecaDeImagem(im['giro-' + id + l], id));
+  // O sofá ocupado (salao/sofa-ocupado/): por ocupação ('0', '1' ou os dois, '01'), as 4 vistas com as almofadas afundadas.
+  const VISTAS_SOFA = Object.fromEntries(['0', '1', '01'].filter((o) => im['giro-sofa@' + o + '0']).map((o) => [o, [0, 1, 2, 3].map((l) => pecaDeImagem(im['giro-sofa@' + o + l], 'sofa'))]));
   // AS QUATRO CAMAS (20/10/2026, liberadas): as vistas de cada uma, feitas quando escolhida; a escolhida (CORES.cama) é a
   // VISTAS.cama, e tudo o que mede a cama (o pé, deitar, a forma, a ordem de desenho) lê dali. A 2 é a de fábrica.
   const VISTAS_DAS_CAMAS = VISTAS.cama ? { 'cama-2': VISTAS.cama } : {};
@@ -2735,7 +2750,8 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // Quanto o assento do sofá vai para a frente do meio do pé dele, por posição (lado 0 a 3: sudoeste, noroeste, nordeste,
   // sudeste). Ver lugaresDoSalao.
   // (de costas, 09/11/2026, com a pose própria do sofá: um pouco para trás, a cabeça logo acima do encosto)
-  const AVANCO_NO_SOFA = [0.5, -0.1, -0.1, 0.45];
+  // (o sudeste, 09/11/2026: com 0,45 ele ficava em cima do encosto da ponta do sofá de canto; 0,9 é a almofada)
+  const AVANCO_NO_SOFA = [0.5, -0.1, -0.1, 0.9];
   // DOIS LUGARES POR SOFÁ (pedido dele, 09/11/2026, vendo três coelhos no sofá do salão: "a Ana flutua", a perna cortada,
   // de costas os coelhos colados uns nos outros): o desenho sentado é largo para o sofá, e com três eles se sobrepunham.
   // As frações ao longo do comprido; quem não cabe vai para outro assento ou para o chão.
@@ -2743,8 +2759,11 @@ if (CENA === 'salao') document.body.classList.add('salao');
   window.lugaresNoSofaDoTeste = (l) => { LUGARES_NO_SOFA.splice(0, LUGARES_NO_SOFA.length, ...l); pecasDasPessoas.clear(); assinaturaCena = ''; desenhar(); }; // para medir
   // O braço do sofá (a camada da frente de quem senta na ponta): a fatia de cada ponta do lado comprido e a altura, em px.
   const BRACO_DO_SOFA = [0.13, 30];
+  // Quanto quem senta de frente afunda na almofada (px): desce, e a beira da almofada cobre o que desceu.
+  let AFUNDA_NO_SOFA = 4;
+  window.afundaNoSofaDoTeste = (n) => { AFUNDA_NO_SOFA = n; pecasDasPessoas.clear(); assinaturaCena = ''; desenhar(); }; // para medir
   // Quanto o assento sobe do chão, por posição (a pose do sofá é ancorada pelos pés, que ficam na beira do assento).
-  const SOBE_NO_SOFA = [12, 10, 10, 10];
+  const SOBE_NO_SOFA = [12, 10, 10, 8];
   // De costas no sofá, quantos px do alto do desenho aparecem por cima do encosto (as orelhas e a cabeça).
   // (desde 09/11/2026 o corte é a aresta de cima do encosto, ver itensDasPessoas; a folga, em px, desce a linha)
   let FOLGA_DO_ENCOSTO = 0;
@@ -2754,6 +2773,22 @@ if (CENA === 'salao') document.body.classList.add('salao');
   let SOBE_NO_PUFAO_DE_COSTAS = 14;
   window.sobeNoPufaoDoTeste = (n) => { SOBE_NO_PUFAO_DE_COSTAS = n; }; // para medir
   window.avancoNoSofaDoTeste = (lado, v) => { AVANCO_NO_SOFA[lado] = v; }; // para o teste
+  // QUEM ESTÁ EM CADA ASSENTO DE UM SOFÁ: '' (ninguém), '0', '1' ou '01' (a vista dele com as almofadas afundadas). Guardado
+  // pela turma e pela arrumação (lugaresDasPessoas é refeito a cada montagem da cena).
+  let ocupacaoGuardada = { chave: '', porSofa: {} }, calculandoOcupacao = false;
+  function ocupacaoDoSofa(id) {
+    if (CENA !== 'salao') return '';
+    const chave = JSON.stringify([PESSOAS, ARR, CHEGANDO]);
+    if (calculandoOcupacao) return ''; // (os lugares podem perguntar pelo desenho do sofá enquanto são calculados)
+    if (ocupacaoGuardada.chave !== chave) {
+      const porSofa = {};
+      calculandoOcupacao = true;
+      try { for (const { lugar } of lugaresDasPessoas()) if (lugar.assento != null && lugar.sobre) (porSofa[lugar.sobre] ??= new Set()).add(lugar.assento); } finally { calculandoOcupacao = false; }
+      ocupacaoGuardada = { chave, porSofa: Object.fromEntries(Object.entries(porSofa).map(([s, a]) => [s, [...a].sort().join('')])) };
+    }
+    return ocupacaoGuardada.porSofa[id] ?? '';
+  }
+  window.ocupacaoDoSofaDoTeste = (id) => ocupacaoDoSofa(id); // para o teste
   function lugaresDoSalao() {
     const sentar = [], tv = [], fliperama = [], chao = [];
     for (const id of ['sofa', 'sofa-2']) if (ARR[id]) {
@@ -2762,9 +2797,9 @@ if (CENA === 'salao') document.body.classList.add('salao');
       // com os pontos desenhados sobre o sofá): o pé dele na grade não coincide com o desenho, e com 0,15 em todas o
       // assento caía nas almofadas de trás (de frente) ou no alto do encosto (de costas), e o coelho ficava em pé ali.
       const longoU = fu === 0, frente = AVANCO_NO_SOFA[ARR[id].lado] ?? 0.15;
-      for (const f of LUGARES_NO_SOFA) {
+      for (const [assento, f] of LUGARES_NO_SOFA.entries()) {
         const u = longoU ? pe[0] + f * (pe[1] - pe[0]) : cu + fu * frente, v = longoU ? cv + fv * frente : pe[2] + f * (pe[3] - pe[2]);
-        sentar.push({ u, v, sobe: SOBE_NO_SOFA[ARR[id].lado] ?? 16, pose: 'sentado-sofa', olha, sobre: id });
+        sentar.push({ u, v, sobe: SOBE_NO_SOFA[ARR[id].lado] ?? 16, pose: 'sentado-sofa', olha, sobre: id, assento });
       }
     }
     // as cadeiras da mesa de jogos e o pufão. QUEM SENTA OLHA PARA ONDE A CADEIRA OLHA (a auditoria visual, 09/11/2026: olhando
@@ -2889,9 +2924,28 @@ if (CENA === 'salao') document.body.classList.add('salao');
     for (const [i, { pessoa, lugar }] of lugaresDasPessoas().entries()) {
       // RESPIRANDO (relato dele, 30/10/2026: "os coelhos estão engessados"): 4 tempos do ciclo da pose, cada pessoa
       // defasada da outra, trocados por respirarAsPessoas. Pose de um desenho só fica parada.
-      const a = quadrosDe(lugar.pose, lugar.olha), nq = a.quadros.length, iq = nq >= 4 ? Math.floor(((faseDasPessoas + i * 3) % 4) * nq / 4) : 0;
+      // ASSISTINDO (relato dele, 09/11/2026: "parecem que estão dormindo; completamente congelados"): quem senta no sofá ou no
+      // chão vendo a TV tem a animação de assistir, de olhos abertos, cada um no seu tempo; de frente, de vez em quando uma
+      // risada. Com "menos movimento", o primeiro quadro dela (os olhos abertos, parado).
+      const animDe = (nome) => (ANIM[nome]?.[lugar.olha] ? nome : null);
+      const assistindo = lugar.pose === 'sentado-sofa' ? animDe('assistindo-sofa') : lugar.pose === 'sentado' && !lugar.sobre && pessoa.papel === 'call' ? animDe('assistindo-chao') : null;
+      let nomeA = assistindo ?? lugar.pose, iq;
+      if (assistindo) {
+        const t = faseDasPessoas + i * 7, nA = ANIM[assistindo][lugar.olha].quadros.length;
+        const rindo = lugar.pose === 'sentado-sofa' ? animDe('rindo-sofa') : null, nR = rindo ? ANIM[rindo][lugar.olha].quadros.length : 0;
+        // a risada: uma vez a cada ~25 s, num momento sorteado (pela pessoa e pela volta), e cada um na sua hora
+        const P = 50, volta = Math.floor(t / P), inicio = rindo ? ((pessoa.id * 7919 + volta * 104729) >>> 0) % (P - nR) : -1, dentro = t % P;
+        if (semAndar) iq = Math.min(3, nA - 1); // (o quadro 0 é a pose de base, de olhos fechados: um já de olhos abertos)
+        else if (rindo && dentro >= inicio && dentro < inicio + nR) { nomeA = rindo; iq = dentro - inicio; }
+        else iq = t % nA;
+      }
+      const a = quadrosDe(nomeA, lugar.olha), nq = a.quadros.length;
+      if (iq == null) iq = nq >= 4 ? Math.floor(((faseDasPessoas + i * 3) % 4) * nq / 4) : 0;
       const q = a.quadros[iq], [px, py] = ponto(lugar.u, lugar.v);
-      const X0 = Math.round(px - a.peX), Y0 = Math.round(py - a.peY - 1 - lugar.sobe);
+      // NO SOFÁ, DE FRENTE, ELE AFUNDA NA ALMOFADA (o mesmo relato: "parece que se sentam POR CIMA"): desce uns px, e o que
+      // passa da linha de antes, sobre o desenho do sofá, fica atrás da beira da almofada (ver abaixo).
+      const afunda = lugar.pose === 'sentado-sofa' && lugar.sobre && !String(lugar.olha).startsWith('n') ? AFUNDA_NO_SOFA : 0;
+      const X0 = Math.round(px - a.peX), Y0 = Math.round(py - a.peY - 1 - lugar.sobe) + afunda;
       // os móveis cujo desenho fica SEMPRE na frente desta pessoa: o assento dela, se está de costas nele; e, no chão, os
       // sofás e poltronas de que ela está inteiramente atrás (u ou v menor), como quem senta no tapete encostado no sofá
       const deCostas = !!lugar.sobre && String(lugar.olha).startsWith('n'), e = 0.001;
@@ -2900,7 +2954,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
         const sp = peDe(id);
         return lugar.u + 0.28 <= sp[0] + e || lugar.v + 0.28 <= sp[2] + e;
       });
-      const chave = [pessoa.id, lugar.pose, lugar.olha, X0, Y0, iq, JSON.stringify(naFrente.map((id) => ARR[id]))].join('|');
+      const chave = [pessoa.id, nomeA, lugar.olha, X0, Y0, iq, JSON.stringify(naFrente.map((id) => ARR[id]))].join('|');
       let p = pecasDasPessoas.get(chave);
       if (!p) {
         const movel = new Uint8ClampedArray(W * W * 4), peColuna = new Int16Array(W).fill(-1);
@@ -2941,6 +2995,14 @@ if (CENA === 'salao') document.body.classList.add('salao');
               const linha = Math.round(ay - h1 + (X - ax) * incl + FOLGA_DO_ENCOSTO);
               for (let Y = Math.max(linha, Y0, 0); Y < Math.min(W, Y0 + q.h); Y++) movel[(Y * W + X) * 4 + 3] = 0;
             }
+          }
+        }
+        // A BEIRA DA ALMOFADA NA FRENTE: o que afundou (abaixo da linha de antes) some onde o sofá está desenhado.
+        if (afunda && ARR[lugar.sobre]) {
+          const f = itemDe(lugar.sobre), m = f.p.movel, linha = Math.round(py - 1 - lugar.sobe);
+          for (let Y = Math.max(0, linha + 1); Y < Math.min(W, Y0 + q.h); Y++) for (let X = Math.max(0, X0); X < Math.min(W, X0 + q.w); X++) {
+            const sx = X - f.dx, sy = Y - f.dy;
+            if (sx >= 0 && sy >= 0 && sx < W && sy < W && m[(sy * W + sx) * 4 + 3] > 127) movel[(Y * W + X) * 4 + 3] = 0;
           }
         }
         if (lugar.sobre && lugar.pose === 'sentado-sofa' && !deCostas && ARR[lugar.sobre]) {
@@ -3108,7 +3170,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   }
   function chegar() {
     const pt = coelho.destino && pontos()[coelho.destino];
-    if (!pt) { coelho.pose = 'parado'; if (coelho.varrendoNoSalao) coelho.varrendoAte = performance.now() + 5000; return; }
+    if (!pt) { coelho.pose = 'parado'; if (coelho.varrendoNoSalao) { coelho.varrendoAte = performance.now() + 5000; coelho.dir = varrerDeFrente(coelho.dir); } return; }
     if (!pt.onde) { if (coelho.destino === 'guarda-roupa' && VISTAS_ABERTO) { guardaRoupaAberto = true; if (FUNCOES?.gavetas && !soVer && !EDITANDO) gavetasPedidas = true; } return chegarDeVez(); }
     coelho.largado = Math.random() < 0.5; // dormindo rígido ou largado: sorteado antes, a transição já vai para ele
     const id = coelho.destino, p2 = pontos()[id], ro = roteiro(id, p2);
@@ -3186,13 +3248,18 @@ if (CENA === 'salao') document.body.classList.add('salao');
     coelho.destino = null; coelho.pose = 'parado'; coelho.varrendoNoSalao = true; coelho.varrendoAte = 0;
     andarAte(c);
   }
+  // VARRER DE FRENTE (relato dele, 09/11/2026: "o coelho está varrendo de costas"): varrer é para ser visto; virado para o
+  // fundo só se viam as costas e o cabo. Ao começar, ele vira para quem olha, pela virada suave: nordeste → sudeste,
+  // noroeste → sudoeste (e as retas para a diagonal da frente mais perto).
+  const DE_FRENTE_PARA_VARRER = { nordeste: 'sudeste', noroeste: 'sudoeste', norte: 'sudoeste', leste: 'sudeste', oeste: 'sudoeste', sul: 'sudeste' };
+  function varrerDeFrente(dir) { return DE_FRENTE_PARA_VARRER[dir] ?? dir; }
   // À toa, de dia: de tempos em tempos, uma casa livre qualquer.
   function passear() {
     if (CENA === 'salao') return varrerOSalao();
     if (estado !== 'atoa' || modo === 'noite' || coelho.caminho.length || coelho.destino || coelho.trans || coelho.aproximar) return;
     // VARRER (pedido dele, 30/10/2026): numa parada a cada três, em vez de sair andando, ele varre onde está, por uns 4 s
     // (o próximo passeio vem de 4 a 7 s depois). Com movimento reduzido, não: varrer é só movimento.
-    if (!semAndar && Object.keys(ANIM.varrendo ?? {}).length && Math.random() < 1 / 3) { coelho.varrendoAte = performance.now() + 4000; return; }
+    if (!semAndar && Object.keys(ANIM.varrendo ?? {}).length && Math.random() < 1 / 3) { coelho.varrendoAte = performance.now() + 4000; coelho.dir = varrerDeFrente(coelho.dir); return; }
     const livres = todasAsCasas().filter(([i, j]) => livre(i, j));
     const c = caminho(saida(), [livres[Math.floor(Math.random() * livres.length)]]);
     if (c) andarAte(c);
@@ -3769,7 +3836,8 @@ if (CENA === 'salao') document.body.classList.add('salao');
     const p = VISTAS[id][l], pe = peMedidoDe(id), [fx, fy] = ponto(pe[1], pe[3]), [nx, ny] = ponto(c[0], c[1]);
     const fator = Math.min(1.2, Math.max(0.8, luz(nx, ny) / luz(mx, my)));
     // Aberto: a vista aberta, posta onde a fechada estaria (o mesmo enquadramento).
-    const desenho = id === 'guarda-roupa' && VISTAS_ABERTO && portas ? (portas === 3 ? VISTAS_ABERTO[l] : PASSAGEM_GR ? PASSAGEM_GR[l][portas - 1] : p) : p;
+    const desenho = id === 'guarda-roupa' && VISTAS_ABERTO && portas ? (portas === 3 ? VISTAS_ABERTO[l] : PASSAGEM_GR ? PASSAGEM_GR[l][portas - 1] : p)
+      : (id === 'sofa' || id === 'sofa-2') && VISTAS_SOFA[ocupacaoDoSofa(id)] ? VISTAS_SOFA[ocupacaoDoSofa(id)][l] : p; // o sofá com as almofadas de quem senta afundadas
     return { p: desenho, dx: Math.round(fx - p.frente[0]), dy: Math.round(fy - p.frente[1]), fator, pe, contatoPe: pe, forma: FORMAS[id], olha };
   }
   // A caixa do desenho de uma peça (as pintadas não a trazem), guardada.
