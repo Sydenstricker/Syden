@@ -106,6 +106,35 @@ await p.evaluate(() => window.passoDoGatoDoTeste(0.01));
 const pc = await p.evaluate(() => { const t = document.getElementById('tela'); t.scrollIntoView(); const r = t.getBoundingClientRect(), c = window.ondeEsta('gato'); return c && [r.left + c[0] * r.width / t.width, r.top + c[1] * r.height / t.width]; });
 if (pc) { await p.mouse.click(pc[0], pc[1]); await p.waitForTimeout(100); }
 conferir((await p.evaluate(() => window.gatoDoTeste())).anim === 'acordar', 'o clique o espreguiça');
+conferir((await p.evaluate(() => window.gatoDoTeste())).balao === 'coracao', 'o clique dá o coração (o carinho)');
+
+// 4b. OS BALÕES: o zzz dormindo (3 s a cada 7), e cada balão em cima da cabeça, nos lugares e nas direções, de dia e de noite
+const bfotos = [];
+for (const [id, pose, balao, dir, modo] of [['tapete', 'dormindo', null, 'sudeste', 'dia'], ['tapete', 'dormindo', null, 'noroeste', 'noite'], ['chao', 'sentado', 'coracao', 'sudoeste', 'dia'], ['chao', 'sentado', 'susto', 'nordeste', 'dia'], ['cama', 'sentado', 'pontos', 'sudeste', 'dia'], ['pufe', 'sentado', 'coracao', 'sudeste', 'noite'], ['cama', 'dormindo', null, 'sudoeste', 'noite'], ['janela', 'sentado', 'nota', null, 'dia']]) {
+  await p.click('#' + modo); await p.waitForTimeout(200);
+  if (!(await ir(id))) { console.log('  sem lugar: ' + id); continue; }
+  const g = await p.evaluate(([pose, balao, dir]) => {
+    window.gatoDoTeste({ pose, anim: null, vaiDormir: false, ate: 1e9, balao: null, balaoLivre: 1e9, t: 701, respiraT0: 700, ...(dir ? { dir } : {}) });
+    if (balao) window.balaoNoGatoDoTeste(balao); else window.passoDoGatoDoTeste(0);
+    return window.gatoDoTeste();
+  }, [pose, balao, dir]);
+  conferir(g.balao === (balao ?? 'zzz'), `${id} ${pose}: o balão ${g.balao}`);
+  bfotos.push(await foto(`balao-${id}-${pose}-${g.balao}-${modo}`));
+}
+await p.click('#dia'); await p.waitForTimeout(200);
+folha('gato-baloes.png', bfotos);
+// o zzz some e volta: 3 s de 7
+const zzz = await p.evaluate(() => { window.irGatoDoTeste('tapete'); const r = []; for (const t of [701, 703.5, 705, 708.2]) { window.gatoDoTeste({ pose: 'dormindo', balao: null, t }); r.push(window.gatoDoTeste().balao); } return r; });
+conferir(JSON.stringify(zzz) === JSON.stringify(['zzz', null, null, 'zzz']), 'o zzz vem e vai (' + JSON.stringify(zzz) + ')');
+
+// 4c. O CARINHO NO COELHO (o clique nele): de pé, a pirueta pelas 8 direções e, depois, os corações
+const car = await p.evaluate(() => {
+  window.baloesDoCoelhoDoTeste({ destino: null, pose: 'parado', caminho: [], trans: null, aproximar: null, pirueta: null, coracoes: [], balao: null }); window.passoDoGatoDoTeste(0);
+  window.carinhoNoCoelhoDoTeste(); const q0 = window.baloesDoCoelhoDoTeste().quadro, dirs = new Set(), viu = [];
+  for (let k = 1; k <= 14; k++) { window.baloesDoCoelhoDoTeste({ quadro: q0 + k }); window.passoDoGatoDoTeste(0); const b = window.baloesDoCoelhoDoTeste(); if (b.pirueta) dirs.add(b.dirVista); viu.push(...b.agora); }
+  return { coracoes: viu.filter((n) => n.startsWith('coracao')).length, rotulos: dirs.size };
+});
+conferir(car.coracoes > 0, 'o carinho no coelho: os corações sobem (' + JSON.stringify(car) + ')');
 
 // 5. GUARDAR E PÔR: cores.pet
 await p.evaluate(() => window.alternarPetDoTeste());

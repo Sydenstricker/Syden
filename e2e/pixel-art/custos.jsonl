@@ -212,3 +212,23 @@
 {"ferramenta":"pixellab","peca":"personagem/animacao/assistindo-chao","geracoes":9,"quando":"2026-11-09T16:08:56.242Z"}
 {"ferramenta":"pixellab","peca":"salao/sofa-ocupado/north-east/0","geracoes":10,"quando":"2026-11-09T16:09:44.483Z"}
 {"ferramenta":"pixellab","peca":"salao/sofa-ocupado/north-east/1","geracoes":10,"quando":"2026-11-09T16:10:53.610Z"}
+{"ferramenta":"pixellab","peca":"salao/sofa-novo/opcoes","geracoes":10,"quando":"2026-11-09T17:00:25.110Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/sentar-sofa/south-east","geracoes":10,"quando":"2026-11-09T17:06:45.230Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/sentar-sofa/south-west","geracoes":10,"quando":"2026-11-09T17:08:04.739Z"}
+{"ferramenta":"pixellab","peca":"personagem/animacao/assistindo-sofa-fofo","geracoes":12,"quando":"2026-11-09T17:08:37.167Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/sentar-sofa/north-east","geracoes":10,"quando":"2026-11-09T17:09:33.881Z"}
+{"ferramenta":"pixellab","peca":"salao/sofa-novo/giros","geracoes":25,"quando":"2026-11-09T17:10:18.500Z"}
+{"ferramenta":"pixellab","peca":"personagem/transicao/sentar-sofa/north-west","geracoes":10,"quando":"2026-11-09T17:10:50.166Z"}
+{"ferramenta":"pixellab","peca":"personagem/animacao/acenando-sofa","geracoes":12,"quando":"2026-11-09T17:14:19.563Z"}
+{"ferramenta":"pixellab","peca":"personagem/animacao/aplaudindo-sofa","geracoes":12,"quando":"2026-11-09T17:17:54.227Z"}
+{"ferramenta":"pixellab","peca":"salao/sofa-novo/ocupado/south-west/0","geracoes":10,"quando":"2026-11-09T17:20:24.607Z"}
+{"ferramenta":"pixellab","peca":"salao/sofa-novo/ocupado/south-west/1","geracoes":10,"quando":"2026-11-09T17:21:33.930Z"}
+{"ferramenta":"pixellab","peca":"personagem/animacao/surpreso-sofa","geracoes":12,"quando":"2026-11-09T17:21:33.991Z"}
+{"ferramenta":"pixellab","peca":"salao/sofa-novo/ocupado/south-east/0","geracoes":10,"quando":"2026-11-09T17:22:34.651Z"}
+{"ferramenta":"pixellab","peca":"salao/sofa-novo/ocupado/south-east/1","geracoes":10,"quando":"2026-11-09T17:23:36.401Z"}
+{"ferramenta":"pixellab","peca":"personagem/animacao/rindo-sofa (nordeste e noroeste)","geracoes":6,"quando":"2026-11-09T17:23:39.917Z"}
+{"ferramenta":"pixellab","peca":"salao/sofa-novo/ocupado/north-west/0","geracoes":10,"quando":"2026-11-09T17:24:50.429Z"}
+{"ferramenta":"pixellab","peca":"personagem/animacao/assistindo-sofa-fofo-ne (refeita: a de antes virava o rosto, mudava de cor e tinha um sinal)","geracoes":3,"quando":"2026-11-09T17:25:57.927Z"}
+{"ferramenta":"pixellab","peca":"salao/sofa-novo/ocupado/north-west/1","geracoes":10,"quando":"2026-11-09T17:25:59.794Z"}
+{"ferramenta":"pixellab","peca":"salao/sofa-novo/ocupado/north-east/0","geracoes":10,"quando":"2026-11-09T17:27:05.039Z"}
+{"ferramenta":"pixellab","peca":"salao/sofa-novo/ocupado/north-east/1","geracoes":10,"quando":"2026-11-09T17:28:22.529Z"}

@@ -1,0 +1,70 @@
+{
+ "south-west": {
+  "assentos": [
+   {
+    "x": 42,
+    "y": 96,
+    "sobe": 12,
+    "olha": "sudoeste"
+   },
+   {
+    "x": 86,
+    "y": 118,
+    "sobe": 12,
+    "olha": "sudoeste"
+   }
+  ],
+  "caixaIgual": true
+ },
+ "north-west": {
+  "assentos": [
+   {
+    "x": 91,
+    "y": 87,
+    "sobe": 12,
+    "olha": "noroeste"
+   },
+   {
+    "x": 59,
+    "y": 104,
+    "sobe": 12,
+    "olha": "noroeste"
+   }
+  ],
+  "caixaIgual": true
+ },
+ "north-east": {
+  "assentos": [
+   {
+    "x": 62,
+    "y": 88,
+    "sobe": 12,
+    "olha": "nordeste"
+   },
+   {
+    "x": 94,
+    "y": 105,
+    "sobe": 12,
+    "olha": "nordeste"
+   }
+  ],
+  "caixaIgual": true
+ },
+ "south-east": {
+  "assentos": [
+   {
+    "x": 112,
+    "y": 95,
+    "sobe": 12,
+    "olha": "sudeste"
+   },
+   {
+    "x": 68,
+    "y": 118,
+    "sobe": 12,
+    "olha": "sudeste"
+   }
+  ],
+  "caixaIgual": true
+ }
+}

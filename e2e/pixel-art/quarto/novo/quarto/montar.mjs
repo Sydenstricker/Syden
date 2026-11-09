@@ -91,8 +91,15 @@ const FONTES = {
   // ASSISTINDO À TRANSMISSÃO (relato dele, 09/11/2026: "os coelhos parados no sofá parecem que estão dormindo; estão
   // completamente congelados"): no sofá e no chão diante da TV, de olhos ABERTOS, respirando, mexendo a cabeça e as orelhas,
   // e de vez em quando uma risada (rindo-sofa). Só do desenho do PixelLab (as poses sentadas são dele); sem a direção, a pose.
-  'assistindo-sofa': ['pl:baixa-120/animacoes/assistindo-sofa'],
+  // (a de olhos pequenos e fofos, 09/11/2026: os olhos da primeira, pretos e grandes, ficavam "alienígenas", relato dele)
+  'assistindo-sofa': ['pl:baixa-120/animacoes/assistindo-sofa-fofo', 'pl:baixa-120/animacoes/assistindo-sofa'],
   'rindo-sofa': ['pl:baixa-120/animacoes/rindo-sofa'],
+  // AS REAÇÕES NO SOFÁ (pedido dele, 09/11/2026: "reagindo ao que acontece na stream e demais eventos no salão"): acenar
+  // (alguém chegou), aplaudir, e o susto (inclinar-se para a frente). E SENTAR no sofá: os quadros do meio, de pé até sentado.
+  'acenando-sofa': ['pl:baixa-120/animacoes/acenando-sofa'],
+  'aplaudindo-sofa': ['pl:baixa-120/animacoes/aplaudindo-sofa'],
+  'surpreso-sofa': ['pl:baixa-120/animacoes/surpreso-sofa'],
+  'sentar-sofa': ['pl:transicoes/sentar-sofa'],
   'assistindo-chao': ['pl:baixa-120/animacoes/assistindo-chao'],
   // SENTADO É O DESENHO DO PIXELLAB ("pl:"), mesmo com o mascote 3D (decisão dele, 30/10/2026): as pernas da malha 3D ficam
   // dentro do moletom, e sentado ele parecia em pé ("de frente parece que ele não tem pernas"), em qualquer pose. Até
@@ -126,7 +133,7 @@ const FONTES = {
 // As 8 direções do personagem: as diagonais são as de uso; as outras 4 (de frente, de costas, de lado) servem à VIRADA.
 const DELES = { sudeste: 'south-east', sudoeste: 'south-west', nordeste: 'north-east', noroeste: 'north-west', sul: 'south', oeste: 'west', norte: 'north', leste: 'east' };
 const ANIMACOES = {};
-const SO_NO_SALAO = ['sentado-banqueta', 'no-fliperama', 'assistindo-sofa', 'rindo-sofa', 'assistindo-chao'];
+const SO_NO_SALAO = ['sentado-banqueta', 'no-fliperama', 'assistindo-sofa', 'rindo-sofa', 'assistindo-chao', 'acenando-sofa', 'aplaudindo-sofa', 'surpreso-sofa', 'sentar-sofa'];
 // DEITADO DE CABEÇA PARA A FRENTE, NO DESENHO DO PIXELLAB (a auditoria visual, 09/11/2026): com a cama girada para o norte
 // (a cabeceira do nosso lado), o comprido da cama fica a uns 28° na tela. As diagonais do norte do PixelLab deitado desenham
 // o corpo a uns 50°, com os pés subindo para fora do colchão, em direção ao criado-mudo; as de lado (leste e oeste)
@@ -159,12 +166,17 @@ for (const [nosso, deles] of [['sudeste', 'south-east'], ['sudoeste', 'south-wes
 // A mesa vem LIMPA (decisão dele, 15/10/2026: "o móvel deve ser uma coisa, os elementos outra"); a plantinha e os
 // livros que chegaram a vir pintados nela (mesa-teclado-enfeitada-giros) são OBJETOS DE CIMA, peças à parte. As plantas
 // são o mesmo desenho nas 4 posições (uma planta é igual de todos os lados).
+// O SOFÁ NOVO DO SALÃO (09/11/2026, pedido dele: "crie um sofá novo; ele deve estar PERFEITO"): o de dois lugares, do tamanho do
+// coelho e o mesmo dos quatro lados (salao/sofa-novo/). O de antes (o de canto, moveis/sofa-giros) fica guardado: SOFA_VELHO=1
+// no ambiente o traz de volta.
+const SOFA_NOVO = !process.env.SOFA_VELHO && fs.existsSync(path.join(SALAO, 'sofa-novo', 'giros', 'south-west.png'));
+const SOFA_DO_SALAO = SOFA_NOVO ? 'S:../sofa-novo/giros' : 'S:sofa-giros';
 const GIROS = CENA === 'salao'
   // O SALÃO: os móveis escolhidos (salao/moveis/), LIMPOS (sem garrafas, canecas e videogame: o que vai em cima é objeto),
   // mais as plantas do quarto. A banqueta entra duas vezes (o mesmo desenho).
-  ? { sofa: 'S:sofa-giros', tv: 'S:tv-limpa-giros', fliperama: 'S:fliperama-giros', balcao: 'S:balcao-limpo-giros', estante: 'S:estante-giros', mesinha: 'S:mesinha-limpa-giros', banqueta: 'S:banqueta-giros', 'banqueta-2': 'S:banqueta-giros', 'planta-alta': 'planta-alta-giros', 'planta-baixa': 'planta-baixa-giros',
+  ? { sofa: SOFA_DO_SALAO, tv: 'S:tv-limpa-giros', fliperama: 'S:fliperama-giros', balcao: 'S:balcao-limpo-giros', estante: 'S:estante-giros', mesinha: 'S:mesinha-limpa-giros', banqueta: 'S:banqueta-giros', 'banqueta-2': 'S:banqueta-giros', 'planta-alta': 'planta-alta-giros', 'planta-baixa': 'planta-baixa-giros',
     // o 16 × 16: mais um sofá (o mesmo desenho) e as duas poltronas do quarto, sem gerar arte nova
-    'sofa-2': 'S:sofa-giros', poltrona: 'poltrona-giros', 'poltrona-2': 'poltrona-giros',
+    'sofa-2': SOFA_DO_SALAO, poltrona: 'poltrona-giros', 'poltrona-2': 'poltrona-giros',
     // os móveis novos do 16 × 16 (escolhidos por ele: a caixa de som 4 e o pufão 1), e as 4 cadeiras da mesa de jogos
     'mesa-jogo': 'S:mesa-jogo-giros', cadeira: 'S:cadeira-giros', 'cadeira-2': 'S:cadeira-giros', 'cadeira-3': 'S:cadeira-giros', 'cadeira-4': 'S:cadeira-giros',
     jukebox: 'S:jukebox-giros', microfone: 'S:microfone-giros', pufao: 'S:pufao-giros', ilha: 'S:ilha-giros', geladeira: 'S:geladeira-giros' }
@@ -190,7 +202,7 @@ if (CENA === 'quarto') for (const [nome, pasta] of [['cama-1', 'cama-casal-1-gir
 // de quem senta afundada (salao/sofa-ocupado/: <vista>-0, -1 e -01, repintadas só nas almofadas). A página escolhe pela
 // ocupação de cada sofá (ver vistaDoSofa).
 if (CENA === 'salao') for (const ocup of ['0', '1', '01']) {
-  const dir = path.join(SALAO, 'sofa-ocupado');
+  const dir = SOFA_NOVO ? path.join(SALAO, 'sofa-novo', 'ocupado') : path.join(SALAO, 'sofa-ocupado');
   if (ORDEM_DO_GIRO.every((d) => fs.existsSync(path.join(dir, d + '-' + ocup + '.png')))) ORDEM_DO_GIRO.forEach((d, l) => { IMAGENS['giro-sofa@' + ocup + l] = png(path.join(dir, d + '-' + ocup + '.png')); });
 }
 // A MÁSCARA DA TELA (pedido dele, 15/10/2026: "me fala qual o arquivo da TV que eu crio um com máscara"): uma cópia da
@@ -226,6 +238,8 @@ if (CENA === 'salao') {
   IMAGENS.capaDeTeste = soNoTeste(path.join(AQUI, '..', '..', '..', 'salao', 'bases', 'tarde-1.png'));
   // as luzinhas do alto das paredes, à parte (salao/luzes16.py): vão por cima da janela e dos objetos da parede
   IMAGENS.luzes = png(path.join(SALAO, 'luzes16.png'));
+  // os balões das reações (Kenney Emotes, CC0, os mesmos das reações da chamada: web/public/reacoes/), 16 × 16
+  for (const b of ['exclamation', 'heart', 'laugh', 'faceHappy', 'faceSad', 'stars', 'question', 'music']) IMAGENS['balao-' + b] = png(path.join(AQUI, '..', '..', '..', '..', '..', 'web', 'public', 'reacoes', b + '.png'));
 }
 // AS PLANTAS (06/11/2026): as cascas do quarto em L e do cubículo (janelas/plantas.py), de dia e de noite.
 if (CENA === 'quarto') for (const pl of ['l', 'cubiculo']) for (const q of ['dia', 'noite']) IMAGENS['sem-' + q + '-' + pl] = png(path.join(JAN_DIR, `sem-janela-${q}-${pl}.png`));
@@ -261,6 +275,17 @@ if (CENA === 'quarto' && fs.existsSync(GATO_DIR)) {
     const qs = fs.readdirSync(d).filter((f) => f.startsWith(deles + '-') && /-\d+\.png$/.test(f)).sort((a, b) => Number(a.match(/-(\d+)\.png$/)[1]) - Number(b.match(/-(\d+)\.png$/)[1]));
     const lista = qs.length ? qs : fs.existsSync(path.join(d, deles + '.png')) ? [deles + '.png'] : [];
     if (lista.length) (GATO_QUADROS[nome] ??= {})[nossa] = lista.map((f) => png(path.join(d, f)));
+  }
+}
+// OS BALÕES DO QUARTO (09/11/2026, pedidos dele: "zzz e demais ações para o gato", e a pirueta com corações do coelho
+// clicado): os balõezinhos em pixel art das reações da chamada (web/public/reacoes/, o Kenney Emotes Pack, CC0; o crédito
+// já está nos termos, seção 10), 16 × 16, sem ampliar. O nome nosso → o arquivo deles. Do gato e do coelho do quarto.
+const BALOES_DO_QUARTO = {};
+if (CENA === 'quarto') {
+  const REACOES = path.join(AQUI, '..', '..', '..', '..', '..', 'web', 'public', 'reacoes');
+  for (const [nosso, deles] of Object.entries({ zzz: 'sleeps', coracao: 'heart', coracoes: 'hearts', susto: 'exclamation', nota: 'music', pontos: 'dots3' })) {
+    const f = path.join(REACOES, deles + '.png');
+    if (fs.existsSync(f)) BALOES_DO_QUARTO[nosso] = png(f);
   }
 }
 const ITENS_PAREDE = {};
@@ -486,9 +511,11 @@ const OBJETOS_DE_CIMA = ${JSON.stringify(OBJETOS_DE_CIMA)};
 // reserva); as animações guardam o número dele.
 const QUADROS_DO_COELHO = ${JSON.stringify(QUADROS)};
 const GATO_QUADROS = ${JSON.stringify(GATO_QUADROS)};
+const BALOES_DO_QUARTO = ${JSON.stringify(BALOES_DO_QUARTO)};
 const ANIMACOES = Object.fromEntries(Object.entries(${JSON.stringify(ANIMACOES_IDX)}).map(([nome, dirs]) => [nome, Object.fromEntries(Object.entries(dirs).map(([d, qs]) => [d, qs.map((i) => QUADROS_DO_COELHO[i])]))]));
 const CANTOS = ${JSON.stringify(CANTOS_DA_CENA)}, N = ${NC};
 const CENA = ${JSON.stringify(CENA)}, DX = ${DX}, DY = ${DY};
+const SOFA_NOVO = ${SOFA_NOVO};
 // O que cada pessoa arrumou fica guardado por cena (o quarto e o salão não se misturam).
 const PREFIXO = CENA === 'salao' ? 'syden-salao-' : 'syden-quarto-';
 const MOVEIS_GIRADOS = ${JSON.stringify(Object.keys(GIROS))};
@@ -2358,6 +2385,34 @@ if (CENA === 'salao') document.body.classList.add('salao');
       GATO[nome][d] = quadros;
     }
   }
+  // O QUADRO DAS ANIMAÇÕES É MAIOR (relato dele, 09/11/2026: "gato se teleportando na transição entre a última animação e
+  // o quadro final"): as poses paradas têm 48 × 48, mas o PixelLab devolve cada animação num quadro maior (56 a 76 px), com
+  // a pose de partida deslocada lá dentro (o deitar de frente, 14 px para a direita e 6 para baixo). Desenhadas pelo canto
+  // de cima, como as paradas, a animação inteira saía deslocada e, no fim, ele pulava de volta. O deslocamento de cada
+  // animação e direção é MEDIDO: o primeiro quadro dela é a pose de partida (pixel a pixel, conferido em 09/11/2026), então
+  // é onde ela casa com a pose parada; vai em q.ox, q.oy, e o desenho o desconta.
+  const PARTIDA_DO_GATO = { sentar: 'em-pe', andando: 'em-pe', deitar: 'sentado', rabo: 'sentado', lambendo: 'sentado', respira: 'dormindo', acordar: 'dormindo' };
+  const caixaAlfa = (q) => { let x0 = q.w, y0 = q.h; for (let k = 0; k < q.w * q.h; k++) if (q.px[k * 4 + 3] > 127) { const x = k % q.w, y = (k / q.w) | 0; if (x < x0) x0 = x; if (y < y0) y0 = y; } return [x0, y0]; };
+  const alfa = (q, x, y) => x >= 0 && y >= 0 && x < q.w && y < q.h && q.px[(y * q.w + x) * 4 + 3] > 127;
+  for (const [nome, de] of Object.entries(PARTIDA_DO_GATO)) for (const [d, qs] of Object.entries(GATO[nome] ?? {})) {
+    const ref = GATO[de]?.[d]?.[0], q = qs[0];
+    if (!ref || !q) continue;
+    const [ax, ay] = caixaAlfa(q), [bx, by] = caixaAlfa(ref);
+    let melhor = [Infinity, ax - bx, ay - by];
+    for (let ey = -3; ey <= 3; ey++) for (let ex = -3; ex <= 3; ex++) {
+      const ox = ax - bx + ex, oy = ay - by + ey; let erro = 0;
+      for (let y = 0; y < q.h; y++) for (let x = 0; x < q.w; x++) if (alfa(q, x, y) !== alfa(ref, x - ox, y - oy)) erro++;
+      if (erro < melhor[0]) melhor = [erro, ox, oy];
+    }
+    for (const f of qs) { f.ox = melhor[1]; f.oy = melhor[2]; }
+  }
+  // A CABEÇA de cada quadro (onde o balão aponta): o alto do desenho e o meio das 6 linhas de cima, já sem o deslocamento.
+  for (const porDir of Object.values(GATO)) for (const qs of Object.values(porDir)) for (const q of qs) {
+    q.ox ??= 0; q.oy ??= 0;
+    let topo = -1, sx = 0, n = 0;
+    for (let y = 0; y < q.h && (topo < 0 || y < topo + 6); y++) for (let x = 0; x < q.w; x++) if (alfa(q, x, y)) { if (topo < 0) topo = y; sx += x; n++; }
+    q.cabeca = [sx / Math.max(1, n) - q.ox, Math.max(0, topo) - q.oy];
+  }
   // A âncora é a MESMA em todas as poses de uma direção (o quadro é o mesmo, 48 × 48): o pé da pose sentada, para ele não
   // pular de uma animação para a outra.
   const PE_DO_GATO = {};
@@ -2498,11 +2553,15 @@ if (CENA === 'salao') document.body.classList.add('salao');
       gato.posto = true;
       const ls = lugaresDoGato(), l = ls.find((x) => x.id === 'tapete') ?? ls.find((x) => x.id !== 'janela');
       if (l) { const s0 = semAndar; semAndar = true; irGato(l); semAndar = s0; gato.vaiDormir = false; gato.pose = l.pose; gato.ate = gato.t + sorte(10, 25); }
+      gato.janelaAntes = janelaAbertaParaGato();
       return;
     }
+    // os balões: o que passou do tempo sai; a JANELA QUE ABRE assusta quem está acordado (o barulho da rua)
+    if (gato.balao && gato.t >= gato.balao.ate) gato.balao = null;
+    { const ab = janelaAbertaParaGato(); if (ab && !gato.janelaAntes && gato.pose !== 'dormindo') balaoNoGato('susto', true); gato.janelaAntes = ab; }
     if (gato.anim) {
       const qs = GATO[gato.anim.nome]?.[gato.dir] ?? Object.values(GATO[gato.anim.nome] ?? {})[0], n = qs?.length ?? 0;
-      if ((gato.t - gato.anim.t0) * 1000 / (MS_DO_GATO[gato.anim.nome] ?? 120) >= n) { const a = gato.anim; gato.anim = null; if (a.depois) gato.pose = a.depois; a.entao?.(); }
+      if ((gato.t - gato.anim.t0) * 1000 / (MS_DO_GATO[gato.anim.nome] ?? 120) >= n) { const a = gato.anim; gato.anim = null; if (a.depois) gato.pose = a.depois; if (a.depois === 'dormindo') gato.respiraT0 = gato.t; a.entao?.(); } // (a respiração começa do primeiro quadro, o que casa com o fim do deitar)
       return;
     }
     if (gato.pulo) {
@@ -2520,9 +2579,13 @@ if (CENA === 'salao') document.body.classList.add('salao');
       return;
     }
     // O COELHO VAI USAR O MÓVEL EM QUE ELE ESTÁ: ele sai na hora (sem esperar a vez), para os dois nunca se atravessarem.
-    if (gato.lugar?.sobre && doCoelho(gato.lugar.sobre)) { gato.fugiuEm = gato.t; gato.lugar = { ...gato.lugar, id: 'saindo' }; irGato(proximoLugarDoGato()); return; }
-    // O COELHO CHEGOU PERTO (no chão): ele vai para outro lugar.
-    if (gato.sobe === 0 && Math.hypot(coelho.u - gato.u, coelho.v - gato.v) < 0.75 && gato.t > (gato.fugiuEm ?? -9) + 4) { gato.fugiuEm = gato.t; irGato(proximoLugarDoGato()); return; }
+    if (gato.lugar?.sobre && doCoelho(gato.lugar.sobre)) { gato.fugiuEm = gato.t; gato.lugar = { ...gato.lugar, id: 'saindo' }; balaoNoGato('susto', true); irGato(proximoLugarDoGato()); return; }
+    // O COELHO CHEGOU PERTO (no chão): ele vai para outro lugar (com o susto).
+    if (gato.sobe === 0 && Math.hypot(coelho.u - gato.u, coelho.v - gato.v) < 0.75 && gato.t > (gato.fugiuEm ?? -9) + 4) { gato.fugiuEm = gato.t; balaoNoGato('susto', true); irGato(proximoLugarDoGato()); return; }
+    // O coelho passa PERTO e ele está em cima de um móvel (ali não foge), acordado: o coração, de vez em quando.
+    if (gato.sobe > 0 && gato.pose !== 'dormindo' && Math.hypot(coelho.u - gato.u, coelho.v - gato.v) < 1.6 && gato.t > (gato.carinhoEm ?? -99) + 40) { gato.carinhoEm = gato.t; if (Math.random() < 0.5) balaoNoGato('coracao'); }
+    // Parado, sentado: um balão sozinho de vez em quando (~1 a cada 40 s; no peitoril com a janela aberta, a nota: a rua).
+    if (gato.pose === 'sentado' && Math.random() < dt / 40) balaoNoGato(gato.lugar?.janela && janelaAbertaParaGato() ? 'nota' : 'pontos');
     // A cortina fechou (ou a janela virou outra, sem peitoril) com ele no peitoril: vai embora logo.
     if (gato.lugar?.janela && (fechada || JAN.tipo !== 'original') && gato.ate > gato.t + 2) gato.ate = gato.t + 2;
     if (gato.t < gato.ate) return;
@@ -2540,8 +2603,67 @@ if (CENA === 'salao') document.body.classList.add('salao');
     if (gato.anim || gato.caminho.length || gato.pulo || !temPet()) return;
     gato.vaiDormir = false;
     tocarGato('acordar', 'sentado');
+    balaoNoGato('coracao', true); // o carinho
     gato.ate = gato.t + sorte(10, 18);
     desenhar();
+  }
+  // OS BALÕES DELE (09/11/2026, pedido dele: "adicionamos zzz e demais ações para o gato? talvez reutilizar os assets de
+  // balões com emoções"): os balõezinhos das reações da chamada, 16 × 16, em cima da cabeça, sem ampliar nem suavizar.
+  // - zzz: dormindo e parado, 3 s a cada 7 (com menos movimento, fica, parado);
+  // - coração: o clique (o carinho) e, de vez em quando, o coelho passando perto dele em cima de um móvel;
+  // - !: o susto, quando o coelho chega perto (e ele sai) ou vai usar o móvel em que ele está, e a janela que abre;
+  // - …: parado, sentado, uma vez a cada ~40 s; no peitoril com a janela aberta, a nota (a rua).
+  // CALMO: um balão por vez, e os que vêm sozinhos (sem clique nem susto) esperam ~15 s depois do anterior.
+  // Desenhado por cima da luz (como o balão de fala do coelho); o que está na frente do gato o esconde (inteiro).
+  const BALOES_DO_GATO = {}; // (os mesmos do coelho do quarto)
+  for (const [nome, src] of Object.entries(BALOES_DO_QUARTO)) { const img = await carregar(src); BALOES_DO_GATO[nome] = { px: dados(img, null, img.width, img.height), w: img.width, h: img.height }; }
+  const DURACAO_DO_BALAO = { coracao: 2.2, susto: 1.4, nota: 2.6, pontos: 2.6 };
+  function balaoNoGato(nome, forcar = false) {
+    if (!BALOES_DO_GATO[nome] || !temPet()) return;
+    if (!forcar && (gato.balao || gato.t < (gato.balaoLivre ?? 0))) return;
+    const dur = DURACAO_DO_BALAO[nome] ?? 2;
+    gato.balao = { nome, t0: gato.t, ate: gato.t + dur };
+    gato.balaoLivre = gato.t + dur + 15;
+  }
+  // O balão agora e o quanto ele sobe (px): nasce 2 px abaixo e sobe ao lugar; o zzz flutua 1 px, devagar.
+  function balaoAgoraDoGato() {
+    let nome = null, t0 = 0;
+    if (gato.balao && gato.t < gato.balao.ate) ({ nome, t0 } = gato.balao);
+    else if (gato.pose === 'dormindo' && !gato.anim && !gato.caminho.length && !gato.pulo && BALOES_DO_GATO.zzz) {
+      if (semAndar) return { nome: 'zzz', dy: 0 };
+      const c = gato.t % 7; if (c < 3) { nome = 'zzz'; t0 = gato.t - c; }
+    }
+    if (!nome) return null;
+    if (semAndar) return { nome, dy: 0 };
+    const idade = gato.t - t0, entra = idade < 0.25 ? (idade < 0.12 ? 2 : 1) : 0;
+    return { nome, dy: entra + (nome === 'zzz' && idade >= 0.25 ? Math.floor(idade / 0.8) % 2 : 0) };
+  }
+  // Pinta o balão em px (a imagem já com a luz), pela cabeça do quadro dele; um contorno escuro e leve em volta, para o
+  // branco se ler na parede creme e no lençol. A PROFUNDIDADE é do balão inteiro, nunca pixel a pixel (o zzz cortado pelo
+  // braço da poltrona, o coração pela folha da planta, não se liam): com mais de um quarto dele atrás do que está na frente
+  // do gato, ele não aparece; senão, aparece inteiro. De noite, um pouco mais escuro (o branco puro ofuscava no quarto escuro).
+  function pintarBalaoDoGato(px, ga, r) {
+    const b = ga.balao, im = b && BALOES_DO_GATO[b.nome];
+    if (!im) return;
+    const bx = Math.round(ga.X0 + ga.q.ox + ga.q.cabeca[0] - im.w / 2), by = ga.Y0 + ga.q.oy + ga.q.cabeca[1] - im.h - 1 + b.dy;
+    const cheio = (x, y) => x >= 0 && y >= 0 && x < im.w && y < im.h && im.px[(y * im.w + x) * 4 + 3] > 127;
+    let n = 0, atras = 0;
+    for (let y = 0; y < im.h; y++) for (let x = 0; x < im.w; x++) {
+      if (!cheio(x, y)) continue;
+      const X = bx + x, Y = by + y; n++;
+      if (X < 0 || Y < 0 || X >= W || Y >= W) { atras++; continue; }
+      const d = Y * W + X;
+      if (eMovel[d] && dono[d] !== 'gato' && chaveDoPixel[d] > ga.chaveDeDesenho) atras++;
+    }
+    if (atras * 4 > n) return;
+    const f = modo === 'noite' ? 0.8 : 1;
+    for (let y = -1; y <= im.h; y++) for (let x = -1; x <= im.w; x++) {
+      const X = bx + x, Y = by + y;
+      if (X < r[0] || Y < r[1] || X >= r[2] || Y >= r[3]) continue;
+      const k = (Y * W + X) * 4;
+      if (cheio(x, y)) { const s = (y * im.w + x) * 4; px[k] = im.px[s] * f; px[k + 1] = im.px[s + 1] * f; px[k + 2] = im.px[s + 2] * f; px[k + 3] = 255; }
+      else if (cheio(x - 1, y) || cheio(x + 1, y) || cheio(x, y - 1) || cheio(x, y + 1)) for (let c = 0; c < 3; c++) px[k + c] = px[k + c] * 0.55 + [44, 30, 26][c] * 0.45;
+    }
   }
   // O quadro dele agora: [desenho, chave] (a chave entra na assinatura do quadro, para ele redesenhar só quando muda).
   function quadroDoGato() {
@@ -2552,7 +2674,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
     }
     if (gato.caminho.length && !semAndar) { const qs = so('andando'); if (qs) { const i = Math.floor(gato.t * 1000 / MS_DO_GATO.andando) % qs.length; return [qs[i], 'w' + i + d]; } }
     if (gato.pose === 'em-pe' || gato.pulo) return [(so('em-pe') ?? so('sentado'))[0], 'e' + d];
-    if (gato.pose === 'dormindo') { const qs = so('respira'); if (qs && !semAndar) { const i = Math.floor(gato.t * 1000 / MS_DO_GATO.respira) % qs.length; return [qs[i], 'z' + i + d]; } return [(so('dormindo') ?? so('sentado'))[0], 'z' + d]; }
+    if (gato.pose === 'dormindo') { const qs = so('respira'); if (qs && !semAndar) { const i = Math.floor(Math.max(0, gato.t - (gato.respiraT0 ?? 0)) * 1000 / MS_DO_GATO.respira) % qs.length; return [qs[i], 'z' + i + d]; } return [(so('dormindo') ?? so('sentado'))[0], 'z' + d]; }
     // sentado: o rabo, uma vez a cada ~6 s
     const qs = so('rabo'), dentro = (gato.t * 1000) % 6000, i = Math.floor(dentro / MS_DO_GATO.rabo);
     if (qs && !semAndar && dentro > 1500 && i < qs.length) return [qs[i], 'r' + i + d];
@@ -2576,7 +2698,8 @@ if (CENA === 'salao') document.body.classList.add('salao');
     if (temPet()) { gato.posto = false; gato.anim = null; gato.caminho = []; gato.pulo = null; }
     guardarCores(); desenhar();
   }
-  window.gatoDoTeste = (o) => { if (o) Object.assign(gato, o); return { u: gato.u, v: gato.v, sobe: gato.sobe, dir: gato.dir, pose: gato.pose, lugar: gato.lugar?.id ?? null, anim: gato.anim?.nome ?? null, andando: gato.caminho.length > 0, pet: temPet() }; }; // para o teste
+  window.gatoDoTeste = (o) => { if (o) Object.assign(gato, o); return { u: gato.u, v: gato.v, sobe: gato.sobe, dir: gato.dir, pose: gato.pose, lugar: gato.lugar?.id ?? null, anim: gato.anim?.nome ?? null, andando: gato.caminho.length > 0, pet: temPet(), balao: balaoAgoraDoGato()?.nome ?? null }; }; // para o teste
+  window.balaoNoGatoDoTeste = (nome) => { gato.balaoLivre = 0; balaoNoGato(nome, true); desenhar(); }; // para o teste
   window.irGatoDoTeste = (id) => { const l = id === 'janela' ? lugarDaJanelaParaGato() : lugaresDoGato().find((x) => x.id === id); if (l) { gato.anim = null; gato.caminho = []; gato.pulo = null; const s0 = semAndar; semAndar = true; irGato(l); semAndar = s0; if (l.pose === 'dormindo') { gato.vaiDormir = false; gato.pose = 'dormindo'; } } return !!l; }; // para o teste
   window.passoDoGatoDoTeste = (dt) => { passoDoGato(dt); desenhar(); }; // para o teste (o relógio dele, sem esperar)
   window.alternarPetDoTeste = () => alternarPet(); // para o teste
@@ -2746,12 +2869,13 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // Quantos px o assento da banqueta sobe do chão (a pose da banqueta tem o pé na ponta da perna pendurada).
   const SOBE_NA_BANQUETA = 19; // o assento está a ~34 px; a perna pendurada desce uns 15
   // Até onde um assento conta como "vendo a TV" (casas do centro dela): o sofá da frente cabe, o do outro lado do salão não.
-  const PERTO_DA_TV = 5;
+  let PERTO_DA_TV = 5;
+  window.pertoDaTvDoTeste = (n) => { PERTO_DA_TV = n; pecasDasPessoas.clear(); assinaturaCena = ''; desenhar(); }; // para o teste (os assentos longe da TV também entram antes do chão)
   // Quanto o assento do sofá vai para a frente do meio do pé dele, por posição (lado 0 a 3: sudoeste, noroeste, nordeste,
   // sudeste). Ver lugaresDoSalao.
   // (de costas, 09/11/2026, com a pose própria do sofá: um pouco para trás, a cabeça logo acima do encosto)
   // (o sudeste, 09/11/2026: com 0,45 ele ficava em cima do encosto da ponta do sofá de canto; 0,9 é a almofada)
-  const AVANCO_NO_SOFA = [0.5, -0.1, -0.1, 0.9];
+  const AVANCO_NO_SOFA = SOFA_NOVO ? [0.5, 0.05, 0.05, 0.5] : [0.5, -0.1, -0.1, 0.9];
   // DOIS LUGARES POR SOFÁ (pedido dele, 09/11/2026, vendo três coelhos no sofá do salão: "a Ana flutua", a perna cortada,
   // de costas os coelhos colados uns nos outros): o desenho sentado é largo para o sofá, e com três eles se sobrepunham.
   // As frações ao longo do comprido; quem não cabe vai para outro assento ou para o chão.
@@ -2763,7 +2887,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   let AFUNDA_NO_SOFA = 4;
   window.afundaNoSofaDoTeste = (n) => { AFUNDA_NO_SOFA = n; pecasDasPessoas.clear(); assinaturaCena = ''; desenhar(); }; // para medir
   // Quanto o assento sobe do chão, por posição (a pose do sofá é ancorada pelos pés, que ficam na beira do assento).
-  const SOBE_NO_SOFA = [12, 10, 10, 8];
+  const SOBE_NO_SOFA = SOFA_NOVO ? [12, 12, 12, 12] : [12, 10, 10, 8];
   // De costas no sofá, quantos px do alto do desenho aparecem por cima do encosto (as orelhas e a cabeça).
   // (desde 09/11/2026 o corte é a aresta de cima do encosto, ver itensDasPessoas; a folga, em px, desce a linha)
   let FOLGA_DO_ENCOSTO = 0;
@@ -2907,6 +3031,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   function chegouAlguem(nome) {
     if (CENA !== 'salao' || !NA_PAREDE.entrada) return;
     CHEGANDO = { nome };
+    evento('porta'); // a turma no salão reage (acena, olha) a quem chegou pela porta
     if (!entradaAberta) { entradaAberta = true; aplicarJanela(true); }
     // o coelho do balcão acena (a animação "acenando" do mascote; sem ela, o gesto do falando), se está lá
     if (coelho.destino === 'balcao' && !coelho.caminho.length) coelho.acenandoAte = performance.now() + 3500;
@@ -2919,32 +3044,121 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // desenhado depois do móvel em que senta).
   const pecasDasPessoas = new Map();
   let faseDasPessoas = 0;
+  // ============================== CHEGAR, SAIR E REAGIR NO SALÃO (09/11/2026) ==============================
+  // Pedido dele: "as transições entre em pé, sentando, sentado, e as animações no sofá reagindo ao que acontece na stream e
+  // demais eventos no salão". O que a página sabe (o que o app manda, SalaoNovo.tsx): quem está na call (as pessoas e o papel
+  // de cada uma), a transmissão da TV (começou, acabou, trocou de canal) e quem entrou na comunidade (a porta de entrada).
+  // Chat e karaokê não chegam aqui (o salão não recebe as mensagens nem a música), então não há reação a eles.
+  // - Quem CHEGA ao sofá senta (de pé na frente dele, os quadros do meio, sentado); quem SAI da call sentado nele levanta antes
+  //   de sumir.
+  // - Cada evento vira uma reação em parte da turma, cada um no seu tempo (atraso e sorteio pela pessoa): acenar para quem
+  //   chegou, o susto quando a transmissão começa ou troca, um balão (os do Kenney, os mesmos das reações da chamada) por cima.
+  // - Com "menos movimento": sem transição nem animação, só a pose (e o balão, que não se mexe). Sem foco: nada anda.
+  let JA_VISTOS = new Map(); // id → { chave (o lugar), desde (o passo em que chegou nele) }
+  let SAINDO = []; // { pessoa, lugar, desde }: quem saiu da call sentado no sofá, levantando
+  let EVENTOS = []; // { tipo, desde, quem }
+  const evento = (tipo, extra = {}) => { EVENTOS = [...EVENTOS.filter((e) => faseDasPessoas - e.desde < 30), { tipo, desde: faseDasPessoas, ...extra }]; };
+  function mudarPessoas(nova) {
+    const depois = new Set(nova.map((p) => p.id));
+    if (PESSOAS.length) {
+      const antes = new Set(PESSOAS.map((p) => p.id));
+      for (const p of nova) if (!antes.has(p.id)) evento('chegou', { quem: p.id });
+      const lugares = new Map(lugaresDasPessoas().map((x) => [x.pessoa.id, x.lugar]));
+      for (const p of PESSOAS) if (!depois.has(p.id)) {
+        evento('saiu', { quem: p.id });
+        const l = lugares.get(p.id);
+        if (l?.pose === 'sentado-sofa' && !semAndar && ANIM['sentar-sofa']?.[l.olha]) SAINDO.push({ pessoa: p, lugar: l, desde: faseDasPessoas });
+      }
+    }
+    PESSOAS = nova;
+  }
+  function eventoDaTv(antes, depois) {
+    if (!antes && depois) evento('aoVivo');
+    else if (antes && !depois) evento('fimDoAoVivo');
+    else if (antes && depois && (antes.canal !== depois.canal || antes.nome !== depois.nome || antes.genero !== depois.genero)) evento('outroCanal');
+  }
+  // O que cada evento faz em quem reage: a animação (só no sofá) e o balão.
+  const REACOES = { chegou: ['acenando-sofa', 'heart'], porta: ['acenando-sofa', 'exclamation'], aoVivo: ['surpreso-sofa', 'exclamation'], outroCanal: ['surpreso-sofa', 'question'], fimDoAoVivo: [null, 'faceSad'], saiu: [null, 'faceSad'] };
+  // De costas (o noroeste e o nordeste), o susto e as palmas viravam a cabeça de lado com as orelhas deitadas (a auditoria,
+  // 09/11/2026): ali fica só o balão. O aceno e a risada de costas ficaram bons.
+  const DE_COSTAS_SERVE = new Set(['acenando-sofa', 'rindo-sofa']);
+  const serveNaDirecao = (nome, olha) => !String(olha).startsWith('n') || DE_COSTAS_SERVE.has(nome);
+  const sorteio = (a, b) => ((a * 7919 + b * 104729 + 12345) >>> 0) % 1000;
+  // A reação de uma pessoa agora: { anim, iq, balao } ou null.
+  function reacaoDe(pessoa, lugar) {
+    const noSofa = lugar.pose === 'sentado-sofa';
+    for (let k = EVENTOS.length - 1; k >= 0; k--) {
+      const e = EVENTOS[k];
+      if (e.quem === pessoa.id) continue; // (quem chegou ou saiu não reage a si)
+      const s = sorteio(pessoa.id, e.desde), quantos = e.tipo === 'saiu' || e.tipo === 'fimDoAoVivo' ? 350 : 650; // (parte da turma)
+      if (s >= quantos) continue;
+      const atraso = s % 5, passou = faseDasPessoas - e.desde - atraso;
+      if (passou < 0) continue;
+      const [nome, balao] = REACOES[e.tipo] ?? [];
+      const anim = noSofa && nome && ANIM[nome]?.[lugar.olha] && serveNaDirecao(nome, lugar.olha) && !semAndar ? nome : null, n = anim ? ANIM[anim][lugar.olha].quadros.length : 0;
+      if (passou < Math.max(n, 8)) return { anim: passou < n ? anim : null, iq: passou, balao: passou < 8 ? balao : null };
+    }
+    return null;
+  }
+  // os balões, decodificados uma vez
+  const BALOES = {};
+  const balaoDe = (nome) => { if (!BALOES[nome] && im['balao-' + nome]) { const b = im['balao-' + nome]; BALOES[nome] = { px: dados(b, null, b.width, b.height), w: b.width, h: b.height }; } return BALOES[nome]; };
+  window.eventoDoTeste = (tipo) => evento(tipo); // para o teste
+  window.movimentoDoTeste = (sim) => { semAndar = !sim; }; // para o teste (os ganchos do coelho deixam a página sem caminhada)
+  window.faseDoTeste = (n) => { if (n != null) { faseDasPessoas = n; desenhar(); } return faseDasPessoas; }; // para o teste
+  let pessoasIniciadas = false;
   function itensDasPessoas() {
     const itens = [];
-    for (const [i, { pessoa, lugar }] of lugaresDasPessoas().entries()) {
+    const vivos = SAINDO.filter((x) => faseDasPessoas - x.desde < 3);
+    const todos = [...lugaresDasPessoas(), ...vivos.map((x) => ({ pessoa: x.pessoa, lugar: x.lugar, saindo: x }))];
+    for (const [i, { pessoa, lugar: lugar0, saindo }] of todos.entries()) {
+      let lugar = lugar0;
       // RESPIRANDO (relato dele, 30/10/2026: "os coelhos estão engessados"): 4 tempos do ciclo da pose, cada pessoa
       // defasada da outra, trocados por respirarAsPessoas. Pose de um desenho só fica parada.
       // ASSISTINDO (relato dele, 09/11/2026: "parecem que estão dormindo; completamente congelados"): quem senta no sofá ou no
       // chão vendo a TV tem a animação de assistir, de olhos abertos, cada um no seu tempo; de frente, de vez em quando uma
-      // risada. Com "menos movimento", o primeiro quadro dela (os olhos abertos, parado).
+      // risada (ou, com transmissão, palmas). Com "menos movimento", um quadro dela de olhos abertos, parado.
       const animDe = (nome) => (ANIM[nome]?.[lugar.olha] ? nome : null);
-      const assistindo = lugar.pose === 'sentado-sofa' ? animDe('assistindo-sofa') : lugar.pose === 'sentado' && !lugar.sobre && pessoa.papel === 'call' ? animDe('assistindo-chao') : null;
-      let nomeA = assistindo ?? lugar.pose, iq;
-      if (assistindo) {
-        const t = faseDasPessoas + i * 7, nA = ANIM[assistindo][lugar.olha].quadros.length;
-        const rindo = lugar.pose === 'sentado-sofa' ? animDe('rindo-sofa') : null, nR = rindo ? ANIM[rindo][lugar.olha].quadros.length : 0;
-        // a risada: uma vez a cada ~25 s, num momento sorteado (pela pessoa e pela volta), e cada um na sua hora
-        const P = 50, volta = Math.floor(t / P), inicio = rindo ? ((pessoa.id * 7919 + volta * 104729) >>> 0) % (P - nR) : -1, dentro = t % P;
-        if (semAndar) iq = Math.min(3, nA - 1); // (o quadro 0 é a pose de base, de olhos fechados: um já de olhos abertos)
-        else if (rindo && dentro >= inicio && dentro < inicio + nR) { nomeA = rindo; iq = dentro - inicio; }
-        else iq = t % nA;
+      // A CHEGADA AO LUGAR: a chave do lugar; mudou (ou chegou agora), conta o passo
+      const chaveDoLugar = [lugar.sobre ?? '', lugar.assento ?? '', lugar.pose, lugar.u.toFixed(2), lugar.v.toFixed(2)].join('|');
+      if (!saindo) {
+        const v = JA_VISTOS.get(pessoa.id);
+        if (!v || v.chave !== chaveDoLugar) JA_VISTOS.set(pessoa.id, { chave: chaveDoLugar, desde: pessoasIniciadas ? faseDasPessoas : -99 });
+      }
+      // SENTANDO (e, ao contrário, LEVANTANDO quem saiu): 0 de pé na frente do sofá, 1 e 2 os quadros do meio, 3 sentado
+      const trans = lugar.pose === 'sentado-sofa' && !semAndar ? animDe('sentar-sofa') : null;
+      let passoT = 3;
+      if (trans) passoT = saindo ? 2 - (faseDasPessoas - saindo.desde) : Math.min(3, faseDasPessoas - JA_VISTOS.get(pessoa.id).desde);
+      let nomeA, iq, balao = null;
+      if (trans && passoT < 3) {
+        // de pé, um pouco à frente do assento e no chão; nos do meio, chegando ao assento
+        const f = [0, 0.45, 0.8][Math.max(0, passoT)], [fu, fv] = VET[lugar.olha];
+        lugar = { ...lugar, u: lugar.u + fu * 0.45 * (1 - f), v: lugar.v + fv * 0.45 * (1 - f), sobe: lugar.sobe * f };
+        if (passoT <= 0) { nomeA = 'parado'; iq = 0; } else { nomeA = trans; iq = passoT - 1; }
+      } else {
+        const r = saindo ? null : reacaoDe(pessoa, lugar);
+        balao = r?.balao ?? null;
+        const assistindo = lugar.pose === 'sentado-sofa' ? animDe('assistindo-sofa') : lugar.pose === 'sentado' && !lugar.sobre && pessoa.papel === 'call' ? animDe('assistindo-chao') : null;
+        nomeA = assistindo ?? lugar.pose;
+        if (r?.anim) { nomeA = r.anim; iq = r.iq; }
+        else if (assistindo) {
+          const t = faseDasPessoas + i * 7, nA = ANIM[assistindo][lugar.olha].quadros.length;
+          // a risada (ou, com transmissão, às vezes palmas): uma vez a cada ~15 s, num momento sorteado, cada um na sua hora
+          const extra = lugar.pose === 'sentado-sofa' ? (AO_VIVO && serveNaDirecao('aplaudindo-sofa', lugar.olha) && sorteio(pessoa.id, Math.floor(t / 50)) % 3 === 0 ? animDe('aplaudindo-sofa') : animDe('rindo-sofa')) : null;
+          const nR = extra ? ANIM[extra][lugar.olha].quadros.length : 0;
+          const P = 50, volta = Math.floor(t / P), inicio = extra ? sorteio(pessoa.id, volta) % (P - nR) : -1, dentro = t % P;
+          if (semAndar) iq = Math.min(3, nA - 1); // (o quadro 0 é a pose de base, de olhos fechados: um já de olhos abertos)
+          else if (extra && dentro >= inicio && dentro < inicio + nR) { nomeA = extra; iq = dentro - inicio; }
+          else iq = t % nA;
+        }
       }
       const a = quadrosDe(nomeA, lugar.olha), nq = a.quadros.length;
       if (iq == null) iq = nq >= 4 ? Math.floor(((faseDasPessoas + i * 3) % 4) * nq / 4) : 0;
+      iq = Math.max(0, Math.min(nq - 1, iq));
       const q = a.quadros[iq], [px, py] = ponto(lugar.u, lugar.v);
       // NO SOFÁ, DE FRENTE, ELE AFUNDA NA ALMOFADA (o mesmo relato: "parece que se sentam POR CIMA"): desce uns px, e o que
       // passa da linha de antes, sobre o desenho do sofá, fica atrás da beira da almofada (ver abaixo).
-      const afunda = lugar.pose === 'sentado-sofa' && lugar.sobre && !String(lugar.olha).startsWith('n') ? AFUNDA_NO_SOFA : 0;
+      const afunda = lugar.pose === 'sentado-sofa' && lugar.sobre && !String(lugar.olha).startsWith('n') && passoT >= 3 ? AFUNDA_NO_SOFA : 0;
       const X0 = Math.round(px - a.peX), Y0 = Math.round(py - a.peY - 1 - lugar.sobe) + afunda;
       // os móveis cujo desenho fica SEMPRE na frente desta pessoa: o assento dela, se está de costas nele; e, no chão, os
       // sofás e poltronas de que ela está inteiramente atrás (u ou v menor), como quem senta no tapete encostado no sofá
@@ -2954,7 +3168,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
         const sp = peDe(id);
         return lugar.u + 0.28 <= sp[0] + e || lugar.v + 0.28 <= sp[2] + e;
       });
-      const chave = [pessoa.id, nomeA, lugar.olha, X0, Y0, iq, JSON.stringify(naFrente.map((id) => ARR[id]))].join('|');
+      const chave = [pessoa.id, nomeA, lugar.olha, X0, Y0, iq, balao ?? '', JSON.stringify(naFrente.map((id) => ARR[id]))].join('|');
       let p = pecasDasPessoas.get(chave);
       if (!p) {
         const movel = new Uint8ClampedArray(W * W * 4), peColuna = new Int16Array(W).fill(-1);
@@ -3020,7 +3234,13 @@ if (CENA === 'salao') document.body.classList.add('salao');
             }
           }
         }
-        p = { id: 'pessoa-' + pessoa.id, movel, sombra: VAZIA, topo: Y0 + a.topo, peColuna, caixa: [Math.max(0, X0), Math.max(0, Y0), Math.min(W, X0 + q.w), Math.min(W, Y0 + q.h)] };
+        // O BALÃO DA REAÇÃO, por cima da cabeça (16 × 16, os do Kenney)
+        const bl = balao && balaoDe(balao);
+        if (bl) {
+          const bx = Math.round(px - bl.w / 2 + 6), by = Y0 + a.topo - bl.h - 3;
+          for (let y = 0; y < bl.h; y++) for (let x = 0; x < bl.w; x++) { const s4 = (y * bl.w + x) * 4, X = bx + x, Y = by + y; if (bl.px[s4 + 3] < 128 || X < 0 || Y < 0 || X >= W || Y >= W) continue; const d = (Y * W + X) * 4; for (let c = 0; c < 4; c++) movel[d + c] = bl.px[s4 + c]; peColuna[X] = Math.max(peColuna[X], Math.round(py)); }
+        }
+        p = { id: 'pessoa-' + pessoa.id, movel, sombra: VAZIA, topo: Y0 + a.topo - (bl ? 20 : 0), peColuna, caixa: [Math.max(0, X0 - 4), Math.max(0, Y0 - (bl ? 24 : 0)), Math.min(W, X0 + q.w), Math.min(W, Y0 + q.h)] };
         if (pecasDasPessoas.size > 80) pecasDasPessoas.clear(); // (8 pessoas × 4 tempos da respiração cabem)
         pecasDasPessoas.set(chave, p);
       }
@@ -3030,6 +3250,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
         // TV, quem senta tem o encosto do NOSSO lado, e o móvel vai por cima dele, como o coelho na poltrona do quarto
         atras: !!lugar.sobre && String(lugar.olha).startsWith('n'), nome: pessoa.nome, cabeca: [px, Y0 + a.topo] });
     }
+    pessoasIniciadas = true;
     return itens;
   }
   // A caminhada: busca em largura pela grade, nas 4 direções da grade (que na tela são as 4 diagonais).
@@ -3329,7 +3550,9 @@ if (CENA === 'salao') document.body.classList.add('salao');
     }
     const virando = coelho.dirVista !== coelho.dir;
     const animDaVirada = nomeAnim === 'sentado' || nomeAnim === 'sentado-poltrona' ? 'sentado' : 'parado';
-    const a = quadroT ? quadroT.a : virando ? quadrosDe(animDaVirada, coelho.dirVista) : quadrosDe(nomeAnim, coelho.dir);
+    // A PIRUETA do carinho (ver "O CARINHO NO COELHO"): a pose parada em cada uma das 8 direções, com o pulinho
+    const giro = piruetaAgora(!!tr || !!sentado || !!FORCAR?.anim || CENA !== 'quarto');
+    const a = quadroT ? quadroT.a : giro ? quadrosDe('parado', giro.dir) : virando ? quadrosDe(animDaVirada, coelho.dirVista) : quadrosDe(nomeAnim, coelho.dir);
     // PARADO, a respiração é discreta (relato de 14/10/2026: o ciclo inteiro do PixelLab balançava "como bêbado", 5 px
     // na cabeça e 3 px para o lado). Só os quadros mais parecidos com a pose, devagar, a maior parte do tempo nela.
     const RESPIRA = [0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 8, 8, 8];
@@ -3342,13 +3565,14 @@ if (CENA === 'salao') document.body.classList.add('salao');
       : nomeAnim === 'parado' && !quadroT ? Math.min(a.quadros.length - 1, RESPIRA[coelho.quadro % RESPIRA.length])
       : nomeAnim === 'no-computador' && !quadroT ? Math.min(a.quadros.length - 1, NO_PC[coelho.quadro % NO_PC.length])
       : coelho.quadro % a.quadros.length;
-    const quadro = quadroT ? quadroT.q : virando ? a.quadros[0] : a.quadros[iq];
-    rotuloDoQuadro = (quadroT ? 'T' + indiceT + ':' + Math.round(centroT[0]) + ',' + Math.round(centroT[1]) : nomeAnim + iq) + coelho.dirVista + (falando ? Math.floor(coelho.quadro / 3) % 3 : '');
+    const quadro = quadroT ? quadroT.q : giro || virando ? a.quadros[0] : a.quadros[iq];
+    baloesDoCoelho = baloesDoCoelhoAgora(nomeAnim);
+    rotuloDoQuadro = (quadroT ? 'T' + indiceT + ':' + Math.round(centroT[0]) + ',' + Math.round(centroT[1]) : nomeAnim + iq) + coelho.dirVista + (falando ? Math.floor(coelho.quadro / 3) % 3 : '') + (giro ? 'g' + giro.dir : '') + (baloesDoCoelho.length ? JSON.stringify(baloesDoCoelho) : '');
     const sw = quadro.w, sh = quadro.h;
     const altura = tr ? subida : sentado ? pt.sobe : 0;
     if (tr && quadroT && subida === 0) { /* na beirada: os pés do quadro no chão */ }
     // Na transição, pelo CENTRO do corpo; no resto, pelo pé.
-    const X0 = Math.round(centroT ? centroT[0] - quadro.cx : px - a.peX), Y0 = Math.round(centroT ? centroT[1] - quadro.cy : py - a.peY - 1 - altura);
+    const X0 = Math.round(centroT ? centroT[0] - quadro.cx : px - a.peX), Y0 = Math.round(centroT ? centroT[1] - quadro.cy : py - a.peY - 1 - altura) - (giro?.pulo ?? 0);
     for (let y = 0; y < sh; y++) for (let x = 0; x < sw; x++) {
       const s = (y * quadro.w + x) * 4;
       const fonte = quadro.px;
@@ -3382,6 +3606,12 @@ if (CENA === 'salao') document.body.classList.add('salao');
     // A ÁREA NO CHÃO: de pé, um quadradinho em volta do pé; sentado ou deitado, ele está SOBRE o móvel.
     const r = 0.3, area = [coelho.u - r, coelho.u + r, coelho.v - r, coelho.v + r];
     coelhoTopo = Y0 + a.topo;
+    // a cabeça (onde os balões dele apontam): o alto do desenho e o meio das 6 linhas de cima
+    if (baloesDoCoelho.length) {
+      let topo = -1, sx = 0, n = 0;
+      for (let y = 0; y < sh && (topo < 0 || y < topo + 6); y++) for (let x = 0; x < sw; x++) if (quadro.px[(y * sw + x) * 4 + 3] >= 128) { if (topo < 0) topo = y; sx += x; n++; }
+      coelhoCabeca = n ? [X0 + sx / n, Y0 + topo] : null;
+    }
     // Na transição e no trecho até a beirada, a ordem é a do móvel (antes ou depois dele).
     const sobre = sobreT ?? (sentado ? pt.sobre : null);
     coelhoAtras = sobreT ? atrasT : sentado ? !!pt.atras : false;
@@ -3419,6 +3649,109 @@ if (CENA === 'salao') document.body.classList.add('salao');
     }
   }
 
+  // ============================== O CARINHO NO COELHO E OS BALÕES DELE (09/11/2026) ==============================
+  // Pedido dele: "Eu tinha em outro projeto uma resposta do avatar ao ser clicado. Ele dava uma pirueta e soltava emoji de
+  // coração." Só no quarto, fora do Editar (e também para quem visita: é só desenho):
+  // - O CLIQUE NELE (no desenho dele, não no móvel embaixo): de pé ou andando, uma PIRUETA pelas 8 direções da pose parada
+  //   (um passo do relógio por direção, 0,8 s, com um pulinho; andando, ele para enquanto gira) e, depois, os CORAÇÕES:
+  //   três balõezinhos que sobem e somem, um depois do outro. Sentado ou deitado, só os corações. Com menos movimento, nada
+  //   gira: um coração parado, por um momento. Em pausa, nada anda (o relógio é o do laço, coelho.quadro).
+  // - OS BALÕES DELE, com as regras do gato (um por vez, os que vêm sozinhos espaçados, parados com menos movimento):
+  //   zzz dormindo na cama (3 s a cada 7), "…" lendo na cama (de vez em quando), e o coração perto do gato (de vez em quando).
+  //   Falando, nenhum (o balão de fala é o dele).
+  // Os balões são os do Kenney Emotes Pack (BALOES_DO_QUARTO, os mesmos do gato), 16 × 16, sem ampliar, por cima de tudo
+  // (como o balão de fala), um pouco mais escuros de noite.
+  const BALOES_DO_COELHO = CENA === 'quarto' ? BALOES_DO_GATO : {};
+  const ANEL_DA_PIRUETA = ['sudeste', 'sul', 'sudoeste', 'oeste', 'noroeste', 'norte', 'nordeste', 'leste'];
+  const PULO_DA_PIRUETA = [0, 2, 4, 5, 5, 4, 2, 1]; // px acima do chão, por passo
+  let coelhoCabeca = null; // [x, y] da cabeça no último quadro (o meio das linhas de cima e o alto do desenho)
+  function carinhoNoCoelho() {
+    if (CENA !== 'quarto' || !BALOES_DO_COELHO.coracao || coelho.pirueta || coelho.coracoes?.length) return;
+    const pt = coelho.destino && !coelho.caminho.length ? pontos()[coelho.destino] : null;
+    const podeGirar = !semAndar && !coelho.trans && !(pt && pt.onde) && !FORCAR?.anim;
+    if (podeGirar) coelho.pirueta = { q0: coelho.quadro, i0: Math.max(0, ANEL_DA_PIRUETA.indexOf(coelho.dir)) };
+    const q0 = coelho.quadro + (podeGirar ? 8 : 1);
+    coelho.coracoes = semAndar ? [{ q0, img: 'coracao', dx: 0, vida: 15 }]
+      : [{ q0, img: 'coracao', dx: -9, vida: 14 }, { q0: q0 + 3, img: 'coracoes', dx: 9, vida: 14 }, { q0: q0 + 6, img: 'coracao', dx: 0, vida: 14 }];
+    coelho.balao = null; coelho.balaoLivre = coelho.quadro + 150;
+    desenhar();
+  }
+  // A pirueta agora: { dir, pulo } (ou nada). Sentado, em transição ou com menos movimento, ela acaba na hora.
+  function piruetaAgora(bloqueado) {
+    const p = coelho.pirueta;
+    if (!p) return null;
+    const passo = coelho.quadro - p.q0;
+    if (bloqueado || semAndar || passo >= 8 || passo < 0) { coelho.pirueta = null; coelho.dirVista = coelho.dir; return null; }
+    if (passo === 0) return null; // (o clique entre dois passos: começa no próximo)
+    return { dir: ANEL_DA_PIRUETA[(p.i0 + passo) % 8], pulo: PULO_DA_PIRUETA[passo] };
+  }
+  // O PASSO dos balões dele (do laço, a cada 0,1 s).
+  function passoDosBaloesDoCoelho() {
+    if (CENA !== 'quarto') return;
+    const q = coelho.quadro;
+    if (coelho.coracoes?.length) coelho.coracoes = coelho.coracoes.filter((c) => q - c.q0 < c.vida);
+    if (coelho.balao && q >= coelho.balao.ate) coelho.balao = null;
+    if (coelho.balao || coelho.coracoes?.length || falando || q < (coelho.balaoLivre ?? 0)) return;
+    const naCama = coelho.destino === 'cama' && !coelho.caminho.length && !coelho.trans;
+    // lendo na cama: os três pontinhos, uma vez a cada ~40 s
+    if (naCama && coelho.pose === 'lendo' && Math.random() < 1 / 400) { coelho.balao = { nome: 'pontos', q0: q, ate: q + 26 }; coelho.balaoLivre = q + 26 + 150; return; }
+    // perto do gato (o gato acordado e sem balão), fora da cama: o coração, de vez em quando
+    if (temPet() && gato.posto && gato.pose !== 'dormindo' && !gato.balao && !naCama && q > (coelho.carinhoNoGato ?? -9999) + 400 && Math.hypot(coelho.u - gato.u, coelho.v - gato.v) < 1.4) {
+      coelho.carinhoNoGato = q;
+      if (Math.random() < 0.5) { coelho.balao = { nome: 'coracao', q0: q, ate: q + 22 }; coelho.balaoLivre = q + 22 + 150; }
+    }
+  }
+  // O que aparece em cima dele agora: [{ nome, dx, dy, alfa }] (os corações do carinho, ou um balão).
+  function baloesDoCoelhoAgora(nomeAnim) {
+    if (CENA !== 'quarto') return [];
+    const q = coelho.quadro;
+    if (coelho.coracoes?.length) {
+      const r = [];
+      for (const c of coelho.coracoes) {
+        const idade = q - c.q0; if (idade < 0 || idade >= c.vida) continue;
+        if (semAndar) { r.push({ nome: c.img, dx: c.dx, dy: 0, alfa: 1 }); continue; }
+        // sobe ~1,5 px por passo (inteiro), balançando 1 px; some nos 4 últimos passos
+        r.push({ nome: c.img, dx: c.dx + ((idade >> 2) % 2 ? 1 : 0), dy: -Math.round(idade * 1.5), alfa: Math.min(1, (c.vida - idade) / 4) });
+      }
+      // (entre o clique e o primeiro coração, nada; depois do último, os balões de sempre)
+      if (r.length || coelho.coracoes.some((c) => q - c.q0 < 0)) return r;
+    }
+    if (falando) return [];
+    if (coelho.balao) { const idade = q - coelho.balao.q0; return [{ nome: coelho.balao.nome, dx: 0, dy: semAndar ? 0 : idade < 1 ? 2 : idade < 2 ? 1 : 0, alfa: 1 }]; }
+    if ((nomeAnim === 'dormindo' || nomeAnim === 'dormindo-largado') && BALOES_DO_COELHO.zzz) {
+      if (semAndar) return [{ nome: 'zzz', dx: 0, dy: 0, alfa: 1 }];
+      const c = q % 70; if (c < 30) return [{ nome: 'zzz', dx: 0, dy: c < 1 ? 2 : c < 2 ? 1 : (c >> 3) % 2, alfa: 1 }];
+    }
+    return [];
+  }
+  let baloesDoCoelho = [];
+  // A caixa deles (para a região do quadro), ou nada.
+  function caixaDosBaloesDoCoelho() {
+    if (!coelhoCabeca || !baloesDoCoelho.length) return null;
+    let c = null;
+    for (const b of baloesDoCoelho) { const x = Math.round(coelhoCabeca[0] - 8) + b.dx, y = coelhoCabeca[1] - 18 + b.dy; c = unir(c, [x - 2, y - 2, x + 19, y + 19]); }
+    return c;
+  }
+  // Pinta em px (a imagem já com a luz), por cima de tudo; o contorno escuro leve e a noite, como os do gato.
+  function pintarBaloesDoCoelho(px, r) {
+    if (!coelhoCabeca || !baloesDoCoelho.length) return;
+    const f = modo === 'noite' ? 0.8 : 1;
+    for (const b of baloesDoCoelho) {
+      const im = BALOES_DO_COELHO[b.nome]; if (!im) continue;
+      const bx = Math.round(coelhoCabeca[0] - im.w / 2) + b.dx, by = coelhoCabeca[1] - im.h - 2 + b.dy;
+      const cheio = (x, y) => x >= 0 && y >= 0 && x < im.w && y < im.h && im.px[(y * im.w + x) * 4 + 3] > 127;
+      for (let y = -1; y <= im.h; y++) for (let x = -1; x <= im.w; x++) {
+        const X = bx + x, Y = by + y;
+        if (X < r[0] || Y < r[1] || X >= r[2] || Y >= r[3]) continue;
+        const k = (Y * W + X) * 4;
+        if (cheio(x, y)) { const s = (y * im.w + x) * 4; for (let c = 0; c < 3; c++) px[k + c] = px[k + c] * (1 - b.alfa) + im.px[s + c] * f * b.alfa; }
+        else if (cheio(x - 1, y) || cheio(x + 1, y) || cheio(x, y - 1) || cheio(x, y + 1)) for (let c = 0; c < 3; c++) px[k + c] = px[k + c] * (1 - 0.45 * b.alfa) + [44, 30, 26][c] * 0.45 * b.alfa;
+      }
+    }
+  }
+  window.carinhoNoCoelhoDoTeste = () => carinhoNoCoelho(); // para o teste
+  window.baloesDoCoelhoDoTeste = (o) => { if (o) Object.assign(coelho, o); return { pirueta: !!coelho.pirueta, coracoes: coelho.coracoes?.length ?? 0, balao: coelho.balao?.nome ?? null, agora: baloesDoCoelho.map((b) => b.nome), quadro: coelho.quadro, dirVista: coelho.dirVista }; }; // para o teste
+
   // ============================== A FORMA DE CADA MÓVEL (o formato para escalar) ==============================
   // Cada móvel declara a sua forma UMA VEZ, em caixas: a fatia da área no chão que ela ocupa e a altura (px). Os lados
   // são relativos para onde o móvel OLHA ("frente", "tras", e os dois "lado"), então as 4 posições saem girando a forma.
@@ -3449,7 +3782,8 @@ if (CENA === 'salao') document.body.classList.add('salao');
     'planta-baixa': [{ h: [0, 50] }],
     ventilador: [{ h: [0, 90] }],
     // O salão (15/10/2026).
-    sofa: [{ h: [0, 20] }, { lado: 'tras', fatia: 0.3, h: [0, 44] }],
+    // (o sofá novo, 09/11/2026: o assento e o encosto mais altos, medidos no desenho dele)
+    sofa: SOFA_NOVO ? [{ h: [0, 24] }, { lado: 'tras', fatia: 0.3, h: [0, 54] }] : [{ h: [0, 20] }, { lado: 'tras', fatia: 0.3, h: [0, 44] }],
     tv: [{ h: [0, 30] }, { lado: 'tras', fatia: 0.35, h: [0, 82] }],
     fliperama: [{ h: [0, 118] }],
     balcao: [{ h: [0, 52] }],
@@ -3663,7 +3997,8 @@ if (CENA === 'salao') document.body.classList.add('salao');
   const emPausa = () => { if (window.congelarDoTeste || document.hidden) return true; try { return !window.top.document.hasFocus(); } catch { return !document.hasFocus(); } };
   // A respiração das pessoas do salão: um tempo a cada 0,5 s (elas são peças da cena, e cada troca remonta a cena; mais
   // depressa que isso pesaria). Parada com a janela sem foco, com movimento reduzido, e sem ninguém na call.
-  if (CENA === 'salao') setInterval(() => { if (!PESSOAS.length || semAndar || emPausa() || arrastando || viva) return; faseDasPessoas++; desenhar(); }, 500);
+  // (300 ms desde 09/11/2026, relato dele: "as animações no sofá estão muito lentas"; eram 500. Cada passo remonta a cena, ~90 ms)
+  if (CENA === 'salao') setInterval(() => { if ((!PESSOAS.length && !SAINDO.length) || semAndar || emPausa() || arrastando || viva) return; faseDasPessoas++; SAINDO = SAINDO.filter((x) => faseDasPessoas - x.desde < 6); desenhar(); }, 300);
   setInterval(() => {
     if (emPausa()) { ultimo = performance.now(); return; }
     // AS NOTAS DA JUKEBOX (ideia dele, 15/10/2026): uma notinha a cada ~0,9 s, que sobe balançando e some. É partícula:
@@ -3677,6 +4012,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
     ultimo = agora;
     coelho.quadro++;
     passoDoGato(dt); // o bicho do quarto
+    passoDosBaloesDoCoelho(); // os balões do coelho (e o fim dos corações do carinho)
     esbarrao(dt);
     if (VISTAS_ABERTO) {
       const alvoP = guardaRoupaAberto ? 3 : 0;
@@ -3696,7 +4032,8 @@ if (CENA === 'salao') document.body.classList.add('salao');
       }
       coelho.proximaVirada = agora + 9000 + Math.random() * 7000;
     }
-    if (coelho.aproximar) {
+    if (coelho.pirueta) { /* a pirueta do carinho: ele para enquanto gira */ }
+    else if (coelho.aproximar) {
       const ap = coelho.aproximar, du = ap.alvo[0] - coelho.u, dv = ap.alvo[1] - coelho.v, dist = Math.hypot(du, dv), passo = 2 * dt;
       if (dist > 0.01) coelho.dir = Math.abs(du) >= Math.abs(dv) ? (du > 0 ? 'sudoeste' : 'nordeste') : (dv > 0 ? 'sudeste' : 'noroeste');
       if (dist <= passo) { coelho.u = ap.alvo[0]; coelho.v = ap.alvo[1]; coelho.aproximar = null; ap.depois(); if (coelho.redecidir && !coelho.trans && !coelho.aproximar) { coelho.redecidir = false; decidir(); } }
@@ -3728,6 +4065,8 @@ if (CENA === 'salao') document.body.classList.add('salao');
   for (const ev of ['pointerdown', 'wheel']) tela.addEventListener(ev, (e) => {
     if (!soVer) return;
     e.stopImmediatePropagation();
+    // No quarto, quem visita também faz carinho no coelho e no gato (é só desenho; nada se guarda).
+    if (ev === 'pointerdown' && CENA === 'quarto' && e.button === 0) { const d = dono[pixelDo(e)]; if (d === 'coelho') carinhoNoCoelho(); else if (d === 'gato') acordarGato(); }
     // No salão, quem só olha ainda clica nas funções (a TV, o fliperama, a estante...).
     if (ev === 'pointerdown' && CENA === 'salao') { const f = funcaoEm(pixelDo(e)); if (f) acao(f); else comecarPan(e); }
   }, { capture: true });
@@ -4403,14 +4742,16 @@ void main() {
     // O COELHO deste quadro (enche quadroBuf e a caixa dele). Se nada mudou nele, o quadro não é desenhado.
     pecaDoCoelho();
     if (CENA === 'salao') posicionarRecado();
-    const caixaC = ultimaCaixa ? [ultimaCaixa[0], ultimaCaixa[1] - 18, ultimaCaixa[2], ultimaCaixa[3]] : null; // com o balão
+    const caixaC = ultimaCaixa ? unir([ultimaCaixa[0], ultimaCaixa[1] - 18, ultimaCaixa[2], ultimaCaixa[3]], caixaDosBaloesDoCoelho()) : null; // com o balão (e os do carinho)
     const vc = VISTAS_CADEIRA ? VISTAS_CADEIRA[indiceDaVista()] : null, [cgx, cgy] = ponto(cadeira.u, cadeira.v);
     const cx0 = vc ? Math.round(cgx - vc.meioDaBase[0]) : 0, cy0 = vc ? Math.round(cgy - vc.meioDaBase[1]) : 0;
     const caixaCadeira = vc ? [cx0 + vc.caixa[0] - 18, cy0 + vc.caixa[1], cx0 + vc.caixa[2] + 18, cy0 + vc.caixa[3] + 8] : null;
     // o gatinho deste quadro (e a caixa dele, para limpar o quadro de antes)
     const qg = temPet() && gato.posto ? quadroDoGato() : null;
-    const gatoAgora = qg ? (() => { const [gx, gy] = ponto(gato.u, gato.v), [px0, py0] = PE_DO_GATO[gato.dir] ?? PE_DO_GATO.sudeste ?? [24, 44], sb = Math.round(gato.sobe); return { q: qg[0], chave: qg[1], gx, gy, sb, X0: Math.round(gx - px0), Y0: Math.round(gy - py0 - 1 - sb) }; })() : null;
-    const caixaGato = gatoAgora ? [gatoAgora.X0 - 15, gatoAgora.Y0, gatoAgora.X0 + gatoAgora.q.w + 15, gatoAgora.Y0 + gatoAgora.q.h + 4] : null;
+    // (X0, Y0: o canto do quadro dele na cena, descontado o deslocamento do quadro da animação, q.ox/q.oy; o balão entra na
+    // chave, e a caixa sobe 22 px por causa dele)
+    const gatoAgora = qg ? (() => { const [gx, gy] = ponto(gato.u, gato.v), [px0, py0] = PE_DO_GATO[gato.dir] ?? PE_DO_GATO.sudeste ?? [24, 44], sb = Math.round(gato.sobe), q = qg[0], bal = balaoAgoraDoGato(); return { q, chave: qg[1] + (bal ? '|' + bal.nome + bal.dy : ''), balao: bal, gx, gy, sb, X0: Math.round(gx - px0 - q.ox), Y0: Math.round(gy - py0 - 1 - sb - q.oy) }; })() : null;
+    const caixaGato = gatoAgora ? [gatoAgora.X0 - 15, gatoAgora.Y0 - 22, gatoAgora.X0 + gatoAgora.q.w + 15, gatoAgora.Y0 + gatoAgora.q.h + 4] : null;
     const telaMexe = liga('telas') && telasAgora.some((t) => tipoDaTela(t.id) !== 'desligada');
     // O MÓVEL VIVO (arrastado ou deslizando): a peça dele onde ele está agora.
     const iv = viva ? itemDe(viva.id) : null, cxv = iv ? caixaDaPeca(iv.p) : null, contorno = [], desenhados = [];
@@ -4487,7 +4828,7 @@ void main() {
     }
     // O GATINHO DA JANELA, como a cadeira: uma sombrinha no chão e ele, por profundidade (o pé dele).
     if (gatoAgora) {
-      const { q, X0, Y0, gx, gy, sb } = gatoAgora, chave = chaveDoGato(gy), fator = Math.min(1.2, Math.max(0.8, luz(gx, gy) / luz(...ponto(N / 2, N / 2))));
+      const { q, X0, Y0, gx, gy, sb } = gatoAgora, chave = chaveDoGato(gy); gatoAgora.chaveDeDesenho = chave; const fator = Math.min(1.2, Math.max(0.8, luz(gx, gy) / luz(...ponto(N / 2, N / 2))));
       if (!sb) for (let yy = -3; yy <= 3; yy++) for (let xx = -14; xx <= 14; xx++) {
         const dd = (xx / 14) ** 2 + (yy / 3.5) ** 2, X = Math.round(gx + xx), Y = Math.round(gy + yy);
         if (dd >= 1 || X < 0 || Y < 0 || X >= W || Y >= W) continue;
@@ -4627,6 +4968,8 @@ void main() {
       }
     }
     if (falando) balao(imagem.data); // falando de pé ou sentado
+    if (gatoAgora?.balao) pintarBalaoDoGato(imagem.data, gatoAgora, r); // o balão do gato (zzz, coração, susto…)
+    pintarBaloesDoCoelho(imagem.data, r); // os do coelho (os corações do carinho, zzz, …)
     g.putImageData(imagem, 0, 0, r[0], r[1], r[2] - r[0], r[3] - r[1]);
     regiaoAnterior = agora;
     posicionarBarrinha(sel);
@@ -5223,6 +5566,7 @@ void main() {
     if (naJanela[pixelDo(e)] && !dono[pixelDo(e)]) return;
     const d = dono[pixelDo(e)];
     if (d === 'gato') { if (!EDITANDO) acordarGato(); return; } // o gatinho da janela acorda (ele não se arrasta)
+    if (d === 'coelho') { if (!EDITANDO) carinhoNoCoelho(); return; } // o carinho: a pirueta e os corações
     if (d === 'cadeira') {
       if (coelho.destino === 'cadeira') return; // com ele sentado (ou indo sentar), ela fica
       const [u, v] = uvDoPonteiro(e);
@@ -6021,7 +6365,7 @@ void main() {
       if (typeof d.podeEditar === 'boolean' && conta) { soVer = !d.podeEditar; tela.style.cursor = soVer ? 'default' : ''; }
       // Quem administra mudou o salão (salao:mudou): relê. Não no meio de um arraste.
       if (d.recarregar && conta && !arrastando && !viva && !envioPendente && rascunho === null) reler().catch(() => {});
-      if ('aoVivo' in d) { if (!AO_VIVO && d.aoVivo) canalDaTv = null; AO_VIVO = d.aoVivo || null; desenhar(); } // começou uma transmissão: a TV vai a ela
+      if ('aoVivo' in d) { eventoDaTv(AO_VIVO, d.aoVivo || null); if (!AO_VIVO && d.aoVivo) canalDaTv = null; AO_VIVO = d.aoVivo || null; desenhar(); } // começou uma transmissão: a TV vai a ela
       if ('imagem' in d) carregarImagem(d.imagem);
       if ('recado' in d) { const antes = JSON.stringify(RECADO); RECADO = d.recado && (d.recado.titulo || d.recado.texto) ? d.recado : null; if (RECADO && JSON.stringify(RECADO) !== antes) abrirRecado(); else posicionarRecado(true); }
       if (d.visitar) campo('visitar-id').value = String(d.visitar), campo('visitar').click();
@@ -6039,7 +6383,7 @@ void main() {
       if (d.comando === 'opcao' && OPCOES_PAREDE[d.id]?.[d.opcao]) escolherOpcao(d.id, d.opcao);
       if (d.comando === 'inicial') document.getElementById('inicial').click();
       if (d.comando === 'objeto' && OBJ_VISTAS[d.tipo]) porObjeto(d.tipo);
-      if (Array.isArray(d.pessoas)) { PESSOAS = d.pessoas.slice(0, 12); desenhar(); }
+      if (Array.isArray(d.pessoas)) { mudarPessoas(d.pessoas.slice(0, 12)); desenhar(); }
       if (d.chegou && typeof d.chegou.nome === 'string') chegouAlguem(d.chegou.nome.slice(0, 40));
     });
     window.parent.postMessage({ syden: 'quarto', pronto: true, figuras: figurasCache() }, location.origin);
@@ -6058,7 +6402,7 @@ void main() {
       bp.textContent = 'Pessoas na call: ' + n; desenhar();
     };
   }
-  window.pessoasDoTeste = (lista) => { PESSOAS = lista; desenhar(); }; // para o teste
+  window.pessoasDoTeste = (lista, comEventos) => { if (comEventos) mudarPessoas(lista); else { PESSOAS = lista; JA_VISTOS = new Map(); SAINDO = []; pessoasIniciadas = false; } desenhar(); }; // para o teste (comEventos: como o app manda, com quem chega sentando e quem sai levantando)
   // ============================== A CÂMERA (o salão 16 × 16, 15/10/2026) ==============================
   // Decisão dele: "câmera que anda". O salão inteiro não cabe no tamanho de pixel do quarto, então a vista mostra um pedaço
   // e o mundo anda dentro dela: arrastar onde não há nada para pegar (o chão, a parede, o fundo) leva a câmera. Ela abre

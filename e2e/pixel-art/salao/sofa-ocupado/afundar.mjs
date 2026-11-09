@@ -11,11 +11,16 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const AQUI = path.dirname(new URL(import.meta.url).pathname).replace(/^\/([A-Z]:)/, '$1');
-const GIROS = path.join(AQUI, '..', 'moveis', 'sofa-giros');
+// O SOFÁ NOVO (09/11/2026, salao/sofa-novo/): SOFA_NOVO=1 trabalha nas vistas dele e grava em sofa-novo/ocupado/; sem ela, o
+// sofá de canto de antes, aqui.
+const NOVO = !!process.env.SOFA_NOVO;
+const GIROS = NOVO ? path.join(AQUI, '..', 'sofa-novo', 'giros') : path.join(AQUI, '..', 'moveis', 'sofa-giros');
+const OUT = NOVO ? path.join(AQUI, '..', 'sofa-novo', 'ocupado') : AQUI;
+fs.mkdirSync(OUT, { recursive: true });
 const API = 'https://api.pixellab.ai/v2';
 const cab = { authorization: `Bearer ${process.env.PIXELLAB_KEY}`, 'content-type': 'application/json' };
 const [cmd, vista, k] = process.argv.slice(2);
-const py = (codigo, ...args) => execFileSync('py', ['-3', '-c', codigo, ...args], { cwd: AQUI, stdio: 'inherit' });
+const py = (codigo, ...args) => execFileSync('py', ['-3', '-c', codigo, ...args], { cwd: OUT, stdio: 'inherit' });
 
 if (cmd === 'mascaras') {
   // De frente (sudoeste, sudeste): a almofada do assento (uma elipse em volta de onde ele senta) e o pedaço do encosto atrás
@@ -24,11 +29,12 @@ if (cmd === 'mascaras') {
   py(`
 import json
 import numpy as np
+GIROS = r'${GIROS}'
 from PIL import Image
 j = json.load(open('assentos.json'))
 folha = []
 for vista, info in j.items():
-    im = np.array(Image.open('../moveis/sofa-giros/' + vista + '.png').convert('RGBA'))
+    im = np.array(Image.open(GIROS + '/' + vista + '.png').convert('RGBA'))
     a = im[..., 3] > 127
     dentro = a.copy()
     for _ in range(2):
@@ -39,12 +45,14 @@ for vista, info in j.items():
     for k, s in enumerate(info['assentos']):
         x, y = s['x'], s['y'] - s['sobe']
         if frente:
-            m = ((xx - (x - 2)) / 15) ** 2 + ((yy - (y - 7)) / 9) ** 2 < 1
-            m |= ((xx - (x + atras * 11)) / 12) ** 2 + ((yy - (y - 25)) / 11) ** 2 < 1
+            # (o sofá novo tem assentos maiores e o encosto mais alto: G = 1,25)
+            G = ${NOVO ? 1.25 : 1}
+            m = ((xx - (x - 2)) / (15 * G)) ** 2 + ((yy - (y - 7 * G)) / (9 * G)) ** 2 < 1
+            m |= ((xx - (x + atras * (11 if G == 1 else 6))) / (12 * G)) ** 2 + ((yy - (y - 25 * G)) / (11 * G)) ** 2 < 1
         else:
             # a aresta de cima do encosto: as linhas de desenho mais altas perto da coluna do assento
             m = np.zeros_like(a)
-            for c in range(x - 12, x + 13):
+            for c in range(x - ${NOVO ? 15 : 12}, x + ${NOVO ? 16 : 13}):
                 if 0 <= c < W and a[:, c].any():
                     t = np.argmax(a[:, c]); m[t:t + 9, c] = True
         m &= dentro
@@ -58,12 +66,13 @@ for f in folha: s.paste(f, (x, 0)); x += f.width
 s.save('mascaras.png')
 `);
 } else if (cmd === 'pintar') {
-  const ler = (f) => ({ image: { type: 'base64', base64: fs.readFileSync(f).toString('base64'), format: 'png' }, size: { width: 170, height: 170 } });
+  const LADO = NOVO ? 151 : 170; // (o lado das vistas)
+  const ler = (f) => ({ image: { type: 'base64', base64: fs.readFileSync(f).toString('base64'), format: 'png' }, size: { width: LADO, height: LADO } });
   const frente = vista.startsWith('south');
   const descricao = frente
     ? 'the same sofa, the seat cushion here is SUNK and squashed with a soft deep dent and wrinkles as if someone heavy is sitting on it right now, the backrest cushion behind it pressed back and flattened, same fabric color, same pixel art style, empty seat, no person, no character, no animal'
     : 'the same sofa seen from behind, the top edge of the backrest cushion here is pressed and bent slightly backward as if someone is leaning against it from the other side, same fabric color, same pixel art style, no person, no character';
-  const r = await fetch(API + '/inpaint-v3', { method: 'POST', headers: cab, body: JSON.stringify({ description: descricao, inpainting_image: ler(path.join(GIROS, vista + '.png')), mask_image: ler(path.join(AQUI, `mascara-${vista}-${k}.png`)), no_background: true, crop_to_mask: true }) });
+  const r = await fetch(API + '/inpaint-v3', { method: 'POST', headers: cab, body: JSON.stringify({ description: descricao, inpainting_image: ler(path.join(GIROS, vista + '.png')), mask_image: ler(path.join(OUT, `mascara-${vista}-${k}.png`)), no_background: true, crop_to_mask: true }) });
   const t = await r.text();
   if (!r.ok) throw new Error(r.status + ': ' + t.slice(0, 400));
   const trabalho = JSON.parse(t).background_job_id;
@@ -75,8 +84,8 @@ s.save('mascaras.png')
     if (['failed', 'error'].includes(j.status)) throw new Error(JSON.stringify(j).slice(0, 400));
   }
   const imgs = (j.last_response?.images ?? (j.last_response?.image ? [j.last_response.image] : [])).map((q) => (typeof q === 'string' ? q : q.base64));
-  imgs.forEach((b, i) => fs.writeFileSync(path.join(AQUI, `bruto-${vista}-${k}-${i + 1}.png`), Buffer.from(b, 'base64')));
-  fs.appendFileSync(path.join(AQUI, '..', '..', 'custos.jsonl'), JSON.stringify({ ferramenta: 'pixellab', peca: `salao/sofa-ocupado/${vista}/${k}`, geracoes: j.usage?.generations ?? null, quando: new Date().toISOString() }) + '\n');
+  imgs.forEach((b, i) => fs.writeFileSync(path.join(OUT, `bruto-${vista}-${k}-${i + 1}.png`), Buffer.from(b, 'base64')));
+  fs.appendFileSync(path.join(AQUI, '..', '..', 'custos.jsonl'), JSON.stringify({ ferramenta: 'pixellab', peca: `salao/${NOVO ? 'sofa-novo/ocupado' : 'sofa-ocupado'}/${vista}/${k}`, geracoes: j.usage?.generations ?? null, quando: new Date().toISOString() }) + '\n');
   console.log(imgs.length, 'opções; custou', j.usage?.generations);
 } else if (cmd === 'juntar') {
   // A vista final de cada assento: a original com SÓ os pixels da máscara trocados pelos repintados (o resto fica byte a
@@ -84,10 +93,11 @@ s.save('mascaras.png')
   py(`
 import json, glob, os
 import numpy as np
+GIROS = r'${GIROS}'
 from PIL import Image
 j = json.load(open('assentos.json'))
 for vista, info in j.items():
-    base = np.array(Image.open('../moveis/sofa-giros/' + vista + '.png').convert('RGBA'))
+    base = np.array(Image.open(GIROS + '/' + vista + '.png').convert('RGBA'))
     junto = base.copy(); n = 0
     for k in range(len(info['assentos'])):
         b = sorted(glob.glob('bruto-%s-%d-*.png' % (vista, k)))

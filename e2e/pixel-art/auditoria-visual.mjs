@@ -32,7 +32,7 @@ const SO = process.env.SO || '';
 const AMPLIA = 3;
 // O LADO DO RECORTE por grupo, em px da cena: o mesmo em todo o grupo, para a escala do coelho ser comparável de uma foto
 // para outra na folha (com recortes do tamanho de cada caixa, o coelho com a vassoura parecia menor). Cresce só se não couber.
-const LADO = { 'de-pe': 150, cama: 190, pessoas: 170, gato: 150 };
+const LADO = { 'de-pe': 150, cama: 190, pessoas: 170, gato: 150, sofa: 200 };
 const DIAGONAIS = ['sudeste', 'sudoeste', 'nordeste', 'noroeste'];
 const RETAS = ['sul', 'oeste', 'norte', 'leste'];
 
@@ -279,6 +279,51 @@ for (const mascote of MASCOTES) for (const cena of CENAS) {
         for (const [k, x] of chao.entries()) await foto('pessoas', `chao-${k}`, modo, [[x.x - 28, x.y - 62, x.x + 28, x.y + 6]], { pose: x.pose, olha: x.olha });
       }
       await p.evaluate(() => window.pessoasDoTeste([]));
+
+      // O SOFÁ (o novo, 09/11/2026: "ele deve estar PERFEITO"): nas 4 posições, com 1 e 2 pessoas (as almofadas afundadas e
+      // ninguém cortado), quem CHEGA sentando (os 3 passos: de pé, os dois do meio) e quem SAI levantando, e as REAÇÕES (alguém
+      // chegou na call, a transmissão começou, alguém pela porta, a risada e as palmas). Os assentos longe da TV entram antes do
+      // chão (pertoDaTvDoTeste), para os dois lugares encherem em qualquer posição; o relógio das pessoas é o gancho faseDoTeste.
+      if (await p.evaluate(() => !!window.faseDoTeste && !!window.pertoDaTvDoTeste)) {
+        const origSofa = original.sofa;
+        await p.evaluate(() => { window.pertoDaTvDoTeste(99); window.movimentoDoTeste?.(true); });
+        const gente = (n) => Array.from({ length: n }, (_, i) => ({ id: 101 + i, nome: 'S' + i, papel: 'call' }));
+        const doSofa = async () => (await p.evaluate(() => window.pessoasNaTelaDoTeste())).filter((x) => x.sobre === 'sofa');
+        const fotoSofa = async (nome, extra = {}) => {
+          const cs = await caixaDe('sofa'), ps = await doSofa();
+          await foto('sofa', nome, modo, [cs, ...ps.map((x) => [x.x - 30, x.y - 80, x.x + 30, x.y + 6])].filter(Boolean), { ocupacao: await p.evaluate(() => window.ocupacaoDoSofaDoTeste('sofa')), ...extra });
+        };
+        for (const lado of [0, 1, 2, 3]) {
+          if (!quer('sofa', `L${lado}`)) continue;
+          let c = null;
+          for (const [a, b] of [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, -1], [2, 0], [0, 2]]) { c = await girar('sofa', lado, [origSofa.c[0] + a, origSofa.c[1] + b]); if (c) break; }
+          if (!c) { naoDeu('sofa', `L${lado}`, modo, 'não coube'); continue; }
+          const f0 = await p.evaluate(() => window.faseDoTeste());
+          for (const n of [0, 1, 2]) {
+            await p.evaluate((l) => window.pessoasDoTeste(l), gente(n));
+            await p.evaluate((f) => window.faseDoTeste(f), f0 + 4);
+            await fotoSofa(`L${lado}-${n}-pessoas`);
+          }
+          // quem chega: de 1 para 2 pessoas, com eventos (a segunda senta nos passos 0, 1 e 2; a primeira acena)
+          await p.evaluate((l) => window.pessoasDoTeste(l), gente(1));
+          const f1 = await p.evaluate(() => window.faseDoTeste());
+          await p.evaluate((l) => window.pessoasDoTeste(l, true), gente(2));
+          for (const k of [0, 1, 2, 3, 5]) { await p.evaluate((f) => window.faseDoTeste(f), f1 + k); await fotoSofa(`L${lado}-chega-${k}`); }
+          // quem sai: de 2 para 1, levantando
+          const f2 = await p.evaluate(() => window.faseDoTeste());
+          await p.evaluate((l) => window.pessoasDoTeste(l, true), gente(1));
+          for (const k of [0, 1, 2]) { await p.evaluate((f) => window.faseDoTeste(f), f2 + k); await fotoSofa(`L${lado}-sai-${k}`); }
+          // as reações, com os dois sentados
+          await p.evaluate((l) => window.pessoasDoTeste(l), gente(2));
+          for (const ev of ['aoVivo', 'porta', 'chegou']) {
+            const f3 = (await p.evaluate(() => window.faseDoTeste())) + 10;
+            await p.evaluate(([ev, f]) => { window.faseDoTeste(f); window.eventoDoTeste(ev); }, [ev, f3]);
+            for (const k of [3, 6]) { await p.evaluate((f) => window.faseDoTeste(f), f3 + k); await fotoSofa(`L${lado}-${ev}-${k}`); }
+          }
+        }
+        await p.evaluate(() => { window.pertoDaTvDoTeste(5); window.pessoasDoTeste([]); window.movimentoDoTeste?.(false); });
+        await girar('sofa', origSofa.lado, origSofa.c);
+      }
     }
   }
   await p.close();

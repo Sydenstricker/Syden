@@ -10,10 +10,15 @@ import path from 'node:path';
 import { abrirNavegador } from '../../../ajuda.mjs';
 
 const AQUI = path.dirname(new URL(import.meta.url).pathname).replace(/^\/([A-Z]:)/, '$1');
-const GIROS = path.join(AQUI, '..', 'moveis', 'sofa-giros');
+// O SOFÁ NOVO (09/11/2026, salao/sofa-novo/): SOFA_NOVO=1 trabalha nas vistas dele e grava em sofa-novo/ocupado/; sem ela, o
+// sofá de canto de antes, aqui.
+const NOVO = !!process.env.SOFA_NOVO;
+const GIROS = NOVO ? path.join(AQUI, '..', 'sofa-novo', 'giros') : path.join(AQUI, '..', 'moveis', 'sofa-giros');
+const OUT = NOVO ? path.join(AQUI, '..', 'sofa-novo', 'ocupado') : AQUI;
+fs.mkdirSync(OUT, { recursive: true });
 const ORDEM = ['south-west', 'north-west', 'north-east', 'south-east'];
 const pagina = path.join(os.tmpdir(), 'syden-salao-sofa.html');
-if (!process.env.SEM_MONTAR) execFileSync(process.execPath, [path.join(AQUI, '..', '..', 'quarto', 'novo', 'quarto', 'montar.mjs'), 'salao'], { env: { ...process.env, MASCOTE: 'pixellab', SAIDA_DA_PAGINA: pagina }, stdio: 'ignore' });
+if (!process.env.SEM_MONTAR) execFileSync(process.execPath, [path.join(AQUI, '..', '..', 'quarto', 'novo', 'quarto', 'montar.mjs'), 'salao'], { env: { ...process.env, MASCOTE: 'pixellab', SAIDA_DA_PAGINA: pagina, ...(NOVO ? {} : { SOFA_VELHO: '1' }) }, stdio: 'ignore' });
 const caixaDoDesenho = (f) => JSON.parse(execFileSync('py', ['-3', '-c', 'import sys,json\nfrom PIL import Image\nprint(json.dumps(list(Image.open(sys.argv[1]).getbbox())))', f]).toString());
 const { browser } = await abrirNavegador({ viewport: { width: 1240, height: 1000 } });
 const p = await browser.newPage({ viewport: { width: 1240, height: 1000 } });
@@ -29,7 +34,7 @@ for (const lado of [0, 1, 2, 3]) {
   await p.waitForTimeout(200);
   const r = await p.evaluate(() => {
     const L = window.lugaresDoTeste(), cx = window.caixaDoMovelDoTeste('sofa');
-    return { cx, assentos: L.lugares.sentar.filter((x) => x.sobre === 'sofa').map((x) => { const [px, py] = L.ponto(x.u, x.v); return { px, py, sobe: x.sobe, olha: x.olha }; }) };
+    return { cx, assentos: [...L.lugares.sentar, ...(L.lugares.longe ?? [])].filter((x) => x.sobre === 'sofa').sort((a, b) => (a.assento ?? 0) - (b.assento ?? 0)).map((x) => { const [px, py] = L.ponto(x.u, x.v); return { px, py, sobe: x.sobe, olha: x.olha }; }) };
   });
   const cd = caixaDoDesenho(path.join(GIROS, ORDEM[lado] + '.png')), dx = r.cx[0] - cd[0], dy = r.cx[1] - cd[1];
   // (as caixas medem igual? se não, o sofá na tela não é a vista inteira: avisa)
@@ -38,5 +43,5 @@ for (const lado of [0, 1, 2, 3]) {
   console.log(ORDEM[lado], JSON.stringify(saida[ORDEM[lado]]), 'na tela', r.cx, 'desenho', cd);
 }
 await p.evaluate((o) => window.girarDoTeste('sofa', o.lado, o.c), orig);
-fs.writeFileSync(path.join(AQUI, 'assentos.json'), JSON.stringify(saida, null, 1));
+fs.writeFileSync(path.join(OUT, 'assentos.json'), JSON.stringify(saida, null, 1));
 await browser.close();
