@@ -1445,6 +1445,33 @@ de forma orgânica, no quarto do início e no salão da comunidade. E **estrutur
     Só a parte que corre (a palha, não o cabo), e preenchida linha a linha: os pixels soltos das posições puladas viram
     "objetos-fantasma", não borrão. Animação nova: escolher qual peça leva o rastro e conferir no `smear.gif`.
 
+## O personagem: o 2D é todo PixelLab, e o 3D copia o 2D
+
+**Decidido em 09/11/2026, pelo Sydenstricker, revendo o caminho de 18/10 (PixelLab → Meshy → Blender renderizando o pixel).**
+Nas palavras dele: "o fluxo do 2D é todo pelo PixelLab… pelos aprendizados de misturar 3D e 2D, todo o processo será pelo
+PixelLab, mesmo que demore mais e custe mais créditos. Com o fluxo feito, a versão 3D do Syden usa os elementos criados em
+2D, com o nosso esqueleto e o nosso fluxo atual." **Na cena 2D, tudo 2D; na 3D, tudo 3D.**
+
+- **O objetivo é a customização completa** (pedido dele, mesmo dia): escolher o coelho, os acessórios e as cores, e usar esse
+  personagem nos minigames 2D e 3D e como avatar no quarto e no salão, nos dois estilos. **Os 16 avatares de hoje são
+  pré-seleções** para ajudar a escolher.
+- **Primeiro, fechar o ciclo do mascote principal** (pedido dele): o mascote do PixelLab (`personagem/mascote/`) tem desde
+  09/11/2026 todas as poses do quarto e do salão nas 4 diagonais (`MASCOTE=pixellab` no `montar.mjs`). **O do app continua
+  o 3D até ele decidir trocar.**
+- **Acessório é por REPINTURA, uma vez por pose e direção** (piloto de 09/11/2026, `personagem/acessorio.mjs`, o boné):
+  repintar quadro a quadro dava um boné diferente em cada quadro (tremeria); pintado uma vez e acompanhando a cabeça pelo
+  código, fica estável. ~10 gerações por pose e direção. Nas poses em que a cabeça deita ou gira, pinta-se naquela pose.
+- **Roupa não é camada no PixelLab:** cobre o corpo, que muda de forma a cada quadro. Cada roupa é uma VERSÃO do personagem
+  (um estado), com as animações dela (~300 a 400 gerações por roupa). O coelho sem roupa não economiza no 2D (economiza no
+  3D). Cor de roupa e pelo é troca de paleta, de graça.
+- **A auditoria visual** (`e2e/pixel-art/auditoria-visual.mjs`, pedido dele) fotografa cada pose em cada móvel, de dia e de
+  noite, com os dois mascotes e o gato; roda depois de cada lote do PixelLab. A das bordas
+  (`e2e/pixel-art/auditoria-de-bordas.mjs`) roda no `npm test`.
+- **O gato é o pet do quarto** (pedido dele, mesmo dia: "mais um elemento customizável"): tem os lugares dele, sobe no
+  peitoril da janela grande para olhar a rua, sai de onde o coelho vai usar, e se guarda no Editar (`cores.pet`). Outras
+  pelagens ou bichos: mais um valor de `cores.pet` e a arte deles.
+- **O sofá do salão tem 2 lugares** (sugestão dele): com 3, os coelhos se sobrepunham e as pontas cortavam as pernas.
+
 ## Traduzir mensagens de outro idioma: válido, para outro momento
 
 **Registrado em 09/10/2026, pelo Sydenstricker.** A pergunta: quem lê em português entra numa comunidade japonesa —
