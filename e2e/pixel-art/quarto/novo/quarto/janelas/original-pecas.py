@@ -80,6 +80,37 @@ for estado in ('cortina', 'aberta'):
     else:
         rosa = (e[..., 0] - e[..., 1] > 60) & (e[..., 2] - e[..., 1] > 60)
         vao = dentro & rosa
+        # O PEITORIL E A TRAVESSA DE BAIXO SÃO OS DA JANELA FECHADA (relato dele, 09/11/2026: "a janela aberta parece que tem
+        # pedaços cortados"): a repintura redesenhou a faixa abaixo do vidro (a máscara ia 3 px abaixo dele) com outras
+        # linhas, que se quebravam em degraus ao encontrar o peitoril da avulsa. Abaixo do vão, em cada coluna que tem vão, vale
+        # a avulsa; a repintura fica só no vão e nas folhas. (O peitoril não muda de altura: o gato senta nele.)
+        ys_v, xs_v = np.nonzero(vao)
+        fundo = np.full(512, -1); np.maximum.at(fundo, xs_v, ys_v)
+        abaixo = (fundo[None, :] >= 0) & (ys > fundo[None, :])
+        # até o pé do vidro da fechada (nos montantes, interpolado entre as colunas vizinhas) a abertura continua: é vão,
+        # e os pés dos montantes não ficam espetados nela; dali para baixo, a travessa e o peitoril da fechada
+        yv, xv = np.nonzero(VID); pe = np.full(512, np.nan); np.fmax.at(pe, xv, yv.astype(float))
+        tem = ~np.isnan(pe); pe = np.interp(np.arange(512), np.nonzero(tem)[0], pe[tem])
+        no_vao = abaixo & (ys <= pe[None, :])
+        vao = vao | no_vao; e[no_vao] = [255, 0, 255]
+        # (e os pontinhos escuros soltos dentro do vão, que viravam pintas na vista)
+        furos = binary_fill_holes(vao) & ~vao; vao = vao | furos; e[furos] = [255, 0, 255]
+        abaixo = abaixo & ~no_vao & OP
+        e[abaixo] = peca[abaixo][:, :3]
+        # OS PÉS DOS MONTANTES: na travessa da fechada, cada montante desce uns pixels com contorno, e sem ele em cima vira um
+        # toco espetado e uma falha nas linhas da travessa. Nas colunas dos montantes (sem vidro na fechada), a faixa logo
+        # abaixo do vidro é a da coluna com vidro mais perto à esquerda, levada pela inclinação da parede (114/216).
+        com_vidro = VID.any(0); cols_vao = np.nonzero(fundo >= 0)[0]
+        for x in range(cols_vao.min(), cols_vao.max() + 1):
+            if com_vidro[x]: continue
+            k = 1
+            while x - k >= 0 and not com_vidro[x - k]: k += 1
+            if x - k < 0: continue
+            for y in range(int(pe[x]) - 2, int(pe[x]) + 7):
+                ys_ = int(round(y - 0.528 * k))
+                if 0 <= y < 512 and abaixo[y, x] and OP[ys_, x - k]: e[y, x] = peca[ys_, x - k, :3]
+        print('aberta: pixels do peitoril devolvidos', int(abaixo.sum()))
+        p[..., :3] = e
         # o vidro das folhas abertas: o claro e pouco saturado dentro da janela, longe das cortinas (as colunas onde a avulsa é creme)
         lum = e.mean(2); sat = e.max(2) - e.min(2)
         creme_av = OP & (peca[..., :3].mean(2) > 170) & ((peca[..., :3].max(2) - peca[..., :3].min(2)) < 90)
