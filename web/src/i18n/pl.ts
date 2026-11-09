@@ -3173,4 +3173,6 @@ export default {
   "Entrar na comunidade": "Dołącz do społeczności",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Stojący, z okrągłą kratką, na upalne dni.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Awatar",
 } satisfies Record<string, string>;

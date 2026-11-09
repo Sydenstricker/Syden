@@ -3107,4 +3107,6 @@ export default {
   "Entrar na comunidade": "समुदाय में शामिल हों",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "खड़ा पंखा, गोल जाली वाला, गर्म दिनों के लिए।",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "अवतार",
 } satisfies Record<string, string>;

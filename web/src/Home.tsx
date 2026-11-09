@@ -138,6 +138,7 @@ export function Home({
   naVoz,
   aoEntrar,
   aoAbrirGuardaRoupa,
+  aoAbrirGraficos,
   ajustesAbertos,
   aoAbrirAmigos,
   aoExplorar,
@@ -156,7 +157,9 @@ export function Home({
   naVoz: VoiceMember[];
   aoEntrar: (channelId: number) => void;
   aoAbrirGuardaRoupa: () => void;
-  /** As configurações (a aba de aparência, que o guarda-roupa abre) estão abertas: ao fechar, o quarto fecha as portas. */
+  /** A engrenagem do Editar do quarto: Configurações → Gráficos. */
+  aoAbrirGraficos?: () => void;
+  /** As configurações (o Guarda-roupa, que o guarda-roupa do quarto abre) estão abertas: ao fechar, o quarto fecha as portas. */
   ajustesAbertos?: boolean;
   aoAbrirAmigos: () => void;
   aoExplorar: () => void;
@@ -238,7 +241,7 @@ export function Home({
         {/* o quarto em pixel art ou em 3D, pelo botão do canto ou por Gráficos (QuartoComEstilo.tsx, 06/11/2026) */}
         <QuartoComEstilo noite={periodo === 'noite'} acoes={acoes} estado={estadoNoQuarto} titulo={t('Início')}>
           {quarto.cena === 'nova' ? (
-            <QuartoNovo noite={periodo === 'noite'} acoes={acoes} estado={estadoNoQuarto} aoFalhar={quarto.desistir} ajustesAbertos={ajustesAbertos} />
+            <QuartoNovo noite={periodo === 'noite'} acoes={acoes} estado={estadoNoQuarto} aoFalhar={quarto.desistir} ajustesAbertos={ajustesAbertos} aoConfigurar={aoAbrirGraficos} />
           ) : quarto.cena === 'antiga' ? (
             <Quarto noite={periodo === 'noite'} acoes={acoes} />
           ) : (

@@ -3090,4 +3090,6 @@ export default {
   "Entrar na comunidade": "సంఘంలో చేరండి",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "నిలబడే ఫ్యాన్, గుండ్రటి జాలీతో, ఎండ రోజుల కోసం.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "ప్రొఫైల్ చిత్రం",
 } satisfies Record<string, string>;

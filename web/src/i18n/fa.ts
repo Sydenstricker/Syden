@@ -3101,4 +3101,6 @@ export default {
   "Entrar na comunidade": "پیوستن به انجمن",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "ایستاده، با توری گرد، برای روزهای گرم.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "تصویر پروفایل",
 } satisfies Record<string, string>;

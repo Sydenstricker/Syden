@@ -9898,6 +9898,53 @@ textarea {
   margin-top: 0;
 }
 
+/* A aba do avatar no Guarda-roupa (Aparencia.tsx): o personagem à esquerda, as escolhas à direita; empilha na tela estreita. */
+.guarda-roupa-aba-avatar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 20px;
+  max-width: 720px;
+  margin-top: 16px;
+}
+
+.guarda-roupa-personagem {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 160px;
+  height: 200px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-secondary);
+}
+
+/* O corpo inteiro é pixel art de ~27 × 51: ampliado em inteiro (3×, a largura posta ao carregar), sem suavizar. */
+.guarda-roupa-corpo {
+  height: auto;
+  image-rendering: pixelated;
+}
+
+.guarda-roupa-aba-avatar-escolhas {
+  flex: 1;
+  min-width: min(100%, 280px);
+}
+
+.guarda-roupa-aba-avatar-escolhas .avatar-acoes {
+  flex-wrap: wrap;
+}
+
+.guarda-roupa-aba-avatar-escolhas .coelhos-prontos {
+  margin-top: 16px;
+}
+
+.aparencia-para-o-guarda-roupa {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 20px;
+}
+
 /* Os estilos dos valores de contribuição saíram daqui junto com o bloco que os usava: a contribuição
    agora mora só no site (web/site/contribuir.html), com o estilo dele. */
 

@@ -164,8 +164,8 @@ export function ProfileCard({
   onSendMessage: (userId: number) => void;
   isSelf: boolean;
   /**
-   * Abre Configurações → Aparência, a tela completa. O lápis do SEU cartão abre as escolhas ali mesmo
-   * (EscolhasDoCartao); isto é o link no fim delas, para insígnias, pacotes e paleta. No cartão dos
+   * Abre Configurações → Guarda-roupa, a tela completa. O lápis do SEU cartão abre as escolhas ali mesmo
+   * (EscolhasDoCartao); isto é o link no fim delas, para o avatar, as insígnias e os pacotes. No cartão dos
    * outros não há lápis: não haveria o que editar.
    */
   aoEditar?: () => void;
@@ -270,7 +270,7 @@ export function ProfileCard({
           {isSelf && editando && aoEditar && (
             <EscolhasDoCartao
               nome={membro.username}
-              aoAbrirAparencia={() => {
+              aoAbrirGuardaRoupa={() => {
                 onClose();
                 aoEditar();
               }}

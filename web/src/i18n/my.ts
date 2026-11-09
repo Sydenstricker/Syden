@@ -3147,4 +3147,6 @@ export default {
   "Entrar na comunidade": "အသိုင်းအဝိုင်းသို့ ဝင်ရန်",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "ရပ်ထားသော ပန်ကာ၊ အဝိုင်းဇကာပါ၊ ပူသောနေ့များအတွက်။",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "ပရိုဖိုင်ပုံ",
 } satisfies Record<string, string>;

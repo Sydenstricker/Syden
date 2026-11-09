@@ -3095,4 +3095,6 @@ export default {
   "Entrar na comunidade": "加入社区",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "落地扇，圆形风罩，给炎热的日子。",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "头像",
 } satisfies Record<string, string>;

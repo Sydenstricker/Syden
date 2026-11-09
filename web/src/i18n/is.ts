@@ -3179,4 +3179,6 @@ export default {
   "Entrar na comunidade": "Ganga í samfélagið",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Standandi, með kringlóttu grindina, fyrir heitu dagana.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Notandamynd",
 } satisfies Record<string, string>;

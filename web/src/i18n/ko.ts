@@ -3096,4 +3096,6 @@ export default {
   "Entrar na comunidade": "커뮤니티 들어가기",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "둥근 망이 달린 스탠드 선풍기, 더운 날을 위해.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "아바타",
 } satisfies Record<string, string>;

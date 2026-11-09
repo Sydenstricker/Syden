@@ -3179,4 +3179,6 @@ export default {
   "Entrar na comunidade": "Joyina umphakathi",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Ifeni emile, enegridi eyindilinga, yezinsuku ezishisayo.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "I-avatar",
 } satisfies Record<string, string>;

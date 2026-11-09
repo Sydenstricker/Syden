@@ -3114,4 +3114,6 @@ export default {
   "Entrar na comunidade": "Kau ki he kulupú",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Ko e ili tu’u, mo hono ’ā fuopotopoto, ki he ngaahi ’aho māfana.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "ʻAvata",
 } satisfies Record<string, string>;

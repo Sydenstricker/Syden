@@ -3180,4 +3180,6 @@ export default {
   "Entrar na comunidade": "Csatlakozás a közösséghez",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Álló, kerek ráccsal, a forró napokra.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Avatar",
 } satisfies Record<string, string>;

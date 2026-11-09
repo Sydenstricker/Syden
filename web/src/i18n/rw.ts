@@ -3119,4 +3119,6 @@ export default {
   "Entrar na comunidade": "Injira mu muryango",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Umufana uhagaze, ufite akayunguruzo kazengurutse, ku minsi y’ubushyuhe.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Ifoto y'umwirondoro",
 } satisfies Record<string, string>;

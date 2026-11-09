@@ -3172,4 +3172,6 @@ export default {
   "Entrar na comunidade": "Bliv en del af fællesskabet",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Stående, med det runde gitter, til de varme dage.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Avatar",
 } satisfies Record<string, string>;

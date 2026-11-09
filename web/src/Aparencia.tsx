@@ -1,7 +1,7 @@
-import { Check, Gift, Lock, Music, Sparkles } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Check, Gift, Lock, Music, Shirt, Sparkles } from 'lucide-react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { api } from './api';
-import { Avatar, enderecoDoCoelhoPronto } from './Avatar';
+import { Avatar, enderecoDoCoelhoPronto, enderecoDoCorpoPronto } from './Avatar';
 import { nomeDe, useDirectory } from './directory';
 import { primeiraForma } from './minijogos';
 import { chave, useT } from './i18n';
@@ -30,6 +30,10 @@ import type { GuardaRoupa, ItemDoGuardaRoupa, TipoDeItem, User } from './types';
 // O QUE SOBREVIVEU DA LOJA: o formato de catálogo, com nome, descrição, amostra e o estado "em uso".
 // Ele é melhor do que a fileira de quadradinhos que estava nas Configurações, porque diz o que cada
 // coisa É antes de você vestir para descobrir.
+//
+// E A TELA SE DIVIDIU EM DUAS (09/11/2026, pedido dele): "uma coisa é mudar a aparência do aplicativo Syden, outra é
+// mudar o nosso avatar". A Aparência ficou com a cara do APP (paleta e cor de destaque); o GUARDA-ROUPA, a tela que o
+// guarda-roupa do quarto abre, ficou com a cara da PESSOA: o avatar e os enfeites do perfil (GuardaRoupaSection).
 
 /** O quadradinho que mostra como o item fica, sem precisar vestir para descobrir. */
 function Amostra({ item, corVestida }: { item: ItemDoGuardaRoupa; corVestida?: string }) {
@@ -246,7 +250,7 @@ function CorDoSyden() {
 type Vestivel = 'cor' | 'fundo' | 'moldura' | 'efeito' | 'letra';
 
 /**
- * O guarda-roupa da pessoa e o jeito de vestir um item. É o MESMO para a Aparência e para o lápis do
+ * O guarda-roupa da pessoa e o jeito de vestir um item. É o MESMO para o Guarda-roupa e para o lápis do
  * cartão de perfil (ProfileCard.tsx): dois caminhos para a mesma escolha, e um só código decidindo o
  * que ela faz — senão um dia os dois lugares discordariam sobre o que "clicar no que está em uso" faz.
  */
@@ -320,14 +324,14 @@ const ABAS_DO_CARTAO = ABAS.filter((aba) => aba.tipo !== 'insignia' && aba.tipo 
 
 /**
  * A APARÊNCIA DENTRO DO CARTÃO DE PERFIL, pelo lápis (decisão do Sydenstricker, 11/10/2026: "dois
- * caminhos" — a Aparência de sempre, e o cartão para quem se vê numa comunidade e quer mudar ali).
+ * caminhos" — o Guarda-roupa de sempre, e o cartão para quem se vê numa comunidade e quer mudar ali).
  *
  * Compacta porque o cartão tem 300 px: só as amostras, com o nome no título, e só o que a pessoa já
- * tem — trancado é catálogo, e catálogo é a Aparência. Ficam de fora as insígnias (a ordem delas se
+ * tem — trancado é catálogo, e catálogo é o Guarda-roupa. Ficam de fora as insígnias (a ordem delas se
  * escolhe em Minha conta), os pacotes e a paleta, que não aparecem no cartão. O próprio cartão é a
  * prévia: ele lê a pessoa do diretório, que se atualiza ao vestir.
  */
-export function EscolhasDoCartao({ nome, aoAbrirAparencia }: { nome: string; aoAbrirAparencia: () => void }) {
+export function EscolhasDoCartao({ nome, aoAbrirGuardaRoupa }: { nome: string; aoAbrirGuardaRoupa: () => void }) {
   const t = useT();
   const { dados, erro, vestir } = useGuardaRoupa();
   // A aba do COELHO vem primeiro (13/10/2026: ele procurou trocar o coelho pelo lápis e não achou; só havia em
@@ -408,52 +412,125 @@ export function EscolhasDoCartao({ nome, aoAbrirAparencia }: { nome: string; aoA
           );
         })}
       </div>
-      <button type="button" className="link-button perfil-escolhas-mais" onClick={aoAbrirAparencia}>
-        <Sparkles size={14} aria-hidden="true" /> {t('Aparência')}
+      <button type="button" className="link-button perfil-escolhas-mais" onClick={aoAbrirGuardaRoupa}>
+        <Shirt size={14} aria-hidden="true" /> {t('Guarda-roupa')}
       </button>
     </div>
   );
 }
 
-export function Aparencia({ user, aoAbrirPacotes }: { user: User; aoAbrirPacotes: () => void }) {
+/**
+ * A APARÊNCIA DO APP (09/11/2026, pedido dele: "uma coisa é mudar a aparência do aplicativo Syden, outra é mudar o nosso
+ * avatar"). Só o que muda o Syden na tela de QUEM USA: a paleta e a cor de destaque. O que muda como os OUTROS veem a
+ * pessoa (o avatar e os enfeites do perfil) mora no Guarda-roupa.
+ */
+export function Aparencia({ aoAbrirGuardaRoupa }: { aoAbrirGuardaRoupa: () => void }) {
   const t = useT();
-  const { dados, erro, vestir } = useGuardaRoupa();
-  const [aba, setAba] = useState<Aba>('cor');
-
-  if (erro && !dados) return <p className="form-error">{erro}</p>;
-  if (!dados) return <p className="settings-hint">{t('Carregando…')}</p>;
-
-  const cobreMeuNome = (item: ItemDoGuardaRoupa) => cobreONome(item, dados, nomeDe(user));
-  const doTipo = dados.itens.filter((item) => item.tipo === aba && cobreMeuNome(item));
-  const escondidas = dados.itens.filter((item) => item.tipo === aba && !cobreMeuNome(item)).length;
-  const vestidoAgora = (item: ItemDoGuardaRoupa) => estaVestido(item, dados);
-
   return (
     <>
       <h2>
         <Sparkles size={20} aria-hidden="true" /> {t('Aparência')}
       </h2>
-      <p className="settings-hint">{t('Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.')}</p>
-
       <PaletaDoSyden />
       <CorDoSyden />
+      {/* Quem procura o próprio avatar aqui (era o lugar dele até 09/11/2026) acha o caminho. */}
+      <button type="button" className="link-button aparencia-para-o-guarda-roupa" onClick={aoAbrirGuardaRoupa}>
+        <Shirt size={14} aria-hidden="true" /> {t('Guarda-roupa')}
+      </button>
+    </>
+  );
+}
+
+/** As abas do Guarda-roupa: o avatar primeiro, depois os enfeites do perfil e os pacotes. */
+export type AbaDoGuardaRoupa = 'avatar' | Aba;
+
+/**
+ * A PRÉVIA DO PERSONAGEM, no alto da aba do avatar. O coelho pronto aparece de CORPO INTEIRO (o mesmo de pé do salão),
+ * porque é o personagem e não só o rosto; foto, GIF ou o 16 (sem corpo ainda) ficam no avatar grande, como nas listas.
+ *
+ * QUANDO A CUSTOMIZAÇÃO CHEGAR (o personagem montado: corpo, cores, acessórios; os 16 coelhos viram pontos de partida),
+ * é aqui que ele aparece montado, e cada parte vira uma seção da aba, abaixo da escolha do coelho. Até lá, nenhum
+ * controle que não faz nada: a tela não afirma o que não é.
+ */
+function PreviaDoPersonagem({ user }: { user: User }) {
+  const { members } = useDirectory();
+  const pronto = members.get(user.id)?.avatarPronto ?? null;
+  const corpo = pronto ? enderecoDoCorpoPronto(pronto) : null;
+  return (
+    <div className="guarda-roupa-personagem">
+      {corpo ? (
+        <img
+          className="guarda-roupa-corpo"
+          src={corpo}
+          alt=""
+          draggable={false}
+          // ampliado em INTEIRO (3×), cada coelho na própria altura: pixel art em escala quebrada borra
+          onLoad={(e) => (e.currentTarget.style.width = `${e.currentTarget.naturalWidth * 3}px`)}
+        />
+      ) : (
+        <Avatar name={nomeDe(user)} userId={user.id} size={128} />
+      )}
+    </div>
+  );
+}
+
+/**
+ * O GUARDA-ROUPA (09/11/2026, pedido dele: "essa tela ser um reflexo do guarda-roupa"): a tela que o guarda-roupa do
+ * quarto abre. Tudo o que muda a cara da PESSOA para os outros: o avatar (a primeira aba, com a prévia do personagem) e
+ * os enfeites do perfil. A aparência do APP ficou em Aparência.
+ *
+ * `editorDoAvatar` vem de fora (SettingsModal.tsx) porque o envio de foto, o recorte e os coelhos prontos moram lá, com
+ * os botões de arquivo que outras seções também usam.
+ */
+export function GuardaRoupaSection({
+  user,
+  editorDoAvatar,
+  aoAbrirPacotes,
+  abaInicial = 'avatar',
+}: {
+  user: User;
+  editorDoAvatar: ReactNode;
+  aoAbrirPacotes: () => void;
+  abaInicial?: AbaDoGuardaRoupa;
+}) {
+  const t = useT();
+  const { dados, erro, vestir } = useGuardaRoupa();
+  const [aba, setAba] = useState<AbaDoGuardaRoupa>(abaInicial);
+
+  const cobreMeuNome = (item: ItemDoGuardaRoupa) => (dados ? cobreONome(item, dados, nomeDe(user)) : true);
+  const doTipo = dados ? dados.itens.filter((item) => item.tipo === aba && cobreMeuNome(item)) : [];
+  const escondidas = dados ? dados.itens.filter((item) => item.tipo === aba && !cobreMeuNome(item)).length : 0;
+
+  return (
+    <>
+      <h2>
+        <Shirt size={20} aria-hidden="true" /> {t('Guarda-roupa')}
+      </h2>
+      <p className="settings-hint">{t('Tudo aqui é de graça. Escolha o que quiser, troque quando quiser.')}</p>
 
       {/* A PRÉVIA FICA NO ALTO E NÃO SE MEXE DE LUGAR enquanto você experimenta: é o ponto de
           referência. Ela usa o estado do servidor (o diretório), e não o desta tela, porque é
           exatamente assim que os outros vão te ver. */}
-      <div className={`perfil-previa ${classeDoFundo(dados.vestindo.fundo ?? 'nenhum')}`}>
-        <Avatar name={nomeDe(user)} userId={user.id} size={56} />
-        <strong
-          data-cor={corDoNome(dados.vestindo.cor ?? 'padrao')}
-          data-efeito={efeitoDoNome(dados.vestindo.efeito)}
-          style={{ fontFamily: letraDoNome(dados.vestindo.letra) }}
-        >
-          {nomeDe(user)}
-        </strong>
-      </div>
-      <p className="settings-hint">{t('É assim que os outros veem você na lista e nas conversas.')}</p>
+      {dados && (
+        <>
+          <div className={`perfil-previa ${classeDoFundo(dados.vestindo.fundo ?? 'nenhum')}`}>
+            <Avatar name={nomeDe(user)} userId={user.id} size={56} />
+            <strong
+              data-cor={corDoNome(dados.vestindo.cor ?? 'padrao')}
+              data-efeito={efeitoDoNome(dados.vestindo.efeito)}
+              style={{ fontFamily: letraDoNome(dados.vestindo.letra) }}
+            >
+              {nomeDe(user)}
+            </strong>
+          </div>
+          <p className="settings-hint">{t('É assim que os outros veem você na lista e nas conversas.')}</p>
+        </>
+      )}
 
       <div className="tab-row" role="tablist" aria-label={t('Tipos de cosmético')}>
+        <button role="tab" aria-selected={aba === 'avatar'} className={`tab${aba === 'avatar' ? ' active' : ''}`} onClick={() => setAba('avatar')}>
+          {t('Avatar')}
+        </button>
         {ABAS.map((opcao) => (
           <button
             key={opcao.tipo}
@@ -467,7 +544,16 @@ export function Aparencia({ user, aoAbrirPacotes }: { user: User; aoAbrirPacotes
         ))}
       </div>
 
-      {erro && <p className="form-error">{erro}</p>}
+      {/* O AVATAR NÃO DEPENDE DO CATÁLOGO: se /api/guarda-roupa falhar, trocar o coelho e a foto continua. */}
+      {aba === 'avatar' && (
+        <section className="guarda-roupa-aba-avatar">
+          <PreviaDoPersonagem user={user} />
+          <div className="guarda-roupa-aba-avatar-escolhas">{editorDoAvatar}</div>
+        </section>
+      )}
+
+      {aba !== 'avatar' && erro && <p className="form-error">{erro}</p>}
+      {aba !== 'avatar' && aba !== 'pacotes' && !dados && !erro && <p className="settings-hint">{t('Carregando…')}</p>}
 
       {aba === 'insignia' && (
         <p className="settings-hint">
@@ -479,13 +565,13 @@ export function Aparencia({ user, aoAbrirPacotes }: { user: User; aoAbrirPacotes
         <p className="settings-hint">{t('Escondidas por não terem todas as letras deste nome: {n}', { n: algarismos(escondidas) })}</p>
       )}
 
-      {aba !== 'pacotes' && (
+      {dados && aba !== 'avatar' && aba !== 'pacotes' && (
         <div className="guarda-roupa-grade">
           {doTipo.map((item) => (
             <Cartao
               key={item.codigo}
               item={item}
-              vestido={vestidoAgora(item)}
+              vestido={estaVestido(item, dados)}
               corVestida={corDoNome(dados.vestindo.cor ?? 'padrao')}
               onVestir={(i) => void vestir(i)}
             />

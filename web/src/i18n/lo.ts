@@ -3179,4 +3179,6 @@ export default {
   "Entrar na comunidade": "ເຂົ້າຮ່ວມຊຸມຊົນ",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "ພັດລົມຕັ້ງພື້ນ ມີຕາໜ່າງມົນ ສຳລັບມື້ທີ່ຮ້ອນ.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "ຮູບໂປຣໄຟລ໌",
 } satisfies Record<string, string>;

@@ -3110,4 +3110,6 @@ export default {
   "Entrar na comunidade": "Tama ba komunidade",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Ventuinha hamriik, ho grade kabuar, ba loron manas sira.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Avatar",
 } satisfies Record<string, string>;

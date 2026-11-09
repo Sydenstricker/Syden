@@ -3158,4 +3158,6 @@ export default {
   "Entrar na comunidade": "Приєднатися до спільноти",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Підлоговий, з круглою решіткою, для спекотних днів.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Аватар",
 } satisfies Record<string, string>;

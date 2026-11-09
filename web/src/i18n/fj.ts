@@ -3107,4 +3107,6 @@ export default {
   "Entrar na comunidade": "Curu ki na isoqosoqo",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "E tu cake, kei na kena sau wavokiti, me baleta na siga katakata.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Avatar",
 } satisfies Record<string, string>;

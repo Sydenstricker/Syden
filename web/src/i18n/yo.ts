@@ -3123,4 +3123,6 @@ export default {
   "Entrar na comunidade": "Darapọ̀ mọ́ àwùjọ",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Fáànù ìdúró, pẹ̀lú àwọ̀n yíká, fún ọjọ́ gbígbóná.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Àwòrán",
 } satisfies Record<string, string>;

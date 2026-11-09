@@ -3110,4 +3110,6 @@ export default {
   "Entrar na comunidade": "Shiga ƙungiya",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Fanka mai tsayawa, da ragar zagaye, don ranakun zafi.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Hoton martaba",
 } satisfies Record<string, string>;

@@ -3189,4 +3189,6 @@ export default {
   "Entrar na comunidade": "Jemgyýete goşul",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Aýakly, tegelek gözenekli, yssy günler üçin.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Awatar",
 } satisfies Record<string, string>;

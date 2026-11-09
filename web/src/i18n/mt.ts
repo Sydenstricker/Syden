@@ -3124,4 +3124,6 @@ export default {
   "Entrar na comunidade": "Ingħaqad mal-komunità",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Wieqaf, bil-gradilja tonda, għall-jiem sħan.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Avatar",
 } satisfies Record<string, string>;

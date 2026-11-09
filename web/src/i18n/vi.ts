@@ -3078,4 +3078,6 @@ export default {
   "Entrar na comunidade": "Tham gia cộng đồng",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Quạt cây, lồng tròn, cho những ngày nóng.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Ảnh đại diện",
 } satisfies Record<string, string>;

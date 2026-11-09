@@ -3108,4 +3108,6 @@ export default {
   "Entrar na comunidade": "Intră în comunitate",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "În picioare, cu grila rotundă, pentru zilele călduroase.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Avatar",
 } satisfies Record<string, string>;

@@ -3175,4 +3175,6 @@ export default {
   "Entrar na comunidade": "Liitu kogukonnaga",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Põrandal seisev, ümara võrega, palavateks päevadeks.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Avatar",
 } satisfies Record<string, string>;

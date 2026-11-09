@@ -3177,4 +3177,6 @@ export default {
   "Entrar na comunidade": "Pridruži se zajednici",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Stojeći, sa okruglom rešetkom, za vruće dane.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Avatar",
 } satisfies Record<string, string>;

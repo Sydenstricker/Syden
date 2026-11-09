@@ -3170,4 +3170,6 @@ export default {
   "Entrar na comunidade": "Bashkohu me komunitetin",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Në këmbë, me rrjetën e rrumbullakët, për ditët e nxehta.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Avatari",
 } satisfies Record<string, string>;

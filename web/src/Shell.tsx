@@ -1182,7 +1182,7 @@ export function Shell({
             onSetStatus={setMyStatus}
             onWatchStream={watchStream}
             onSendMessage={(id) => void startConversation(id)}
-            aoEditarPerfil={() => setSettingsOpen('aparencia')}
+            aoEditarPerfil={() => setSettingsOpen('guarda-roupa')}
             onSelect={selectChannel}
             onOpenUsage={() => {
               setView('community');
@@ -1265,7 +1265,8 @@ export function Shell({
               // A LOJA VIROU UMA ABA DAS CONFIGURAÇÕES. Ela era uma tela de topo alcançada pela
               // vila e pela tela de boas-vindas DA COMUNIDADE — e por isso parecia ser da
               // comunidade, embora nunca tenha sido. Agora ela está onde mora o resto do que é seu.
-              aoAbrirGuardaRoupa={() => setSettingsOpen('aparencia')}
+              aoAbrirGuardaRoupa={() => setSettingsOpen('guarda-roupa')}
+              aoAbrirGraficos={() => setSettingsOpen('graficos')}
               ajustesAbertos={settingsOpen !== null}
               aoAbrirAmigos={() => setView('amigos')}
               aoExplorar={() => setExplorarAberto(true)}
@@ -1316,7 +1317,7 @@ export function Shell({
                     privada
                     aoAbrirVozEVideo={() => setSettingsOpen('voice')}
                     aoMandarMensagem={(userId) => void startConversation(userId)}
-                    aoEditarPerfil={() => setSettingsOpen('aparencia')}
+                    aoEditarPerfil={() => setSettingsOpen('guarda-roupa')}
                   />
                 </div>
               )}
@@ -1333,7 +1334,7 @@ export function Shell({
                     canais={comunidadeDaSala === visivelId ? channels : []}
                     aoAbrirVozEVideo={() => setSettingsOpen('voice')}
                     aoMandarMensagem={(userId) => void startConversation(userId)}
-                    aoEditarPerfil={() => setSettingsOpen('aparencia')}
+                    aoEditarPerfil={() => setSettingsOpen('guarda-roupa')}
                   />
                 </div>
               )}
@@ -1422,7 +1423,7 @@ export function Shell({
                 aoAbrirVozEVideo={() => setSettingsOpen('voice')}
                 canais={channels}
                 aoMandarMensagem={(id) => void startConversation(id)}
-                aoEditarPerfil={() => setSettingsOpen('aparencia')}
+                aoEditarPerfil={() => setSettingsOpen('guarda-roupa')}
               />
               {/* A conversa ao lado é o que separa "assistir junto" de "assistir ao mesmo tempo" —
                   sem ela, cada um comenta no vazio. Reaproveita o canal de texto que já existe: a
@@ -1466,7 +1467,7 @@ export function Shell({
             selfId={user.id}
             onWatchStream={watchStream}
             onSendMessage={(id) => void startConversation(id)}
-            aoEditarPerfil={() => setSettingsOpen('aparencia')}
+            aoEditarPerfil={() => setSettingsOpen('guarda-roupa')}
           />
         )}
       </div>

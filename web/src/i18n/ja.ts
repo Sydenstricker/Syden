@@ -3089,4 +3089,6 @@ export default {
   "Entrar na comunidade": "コミュニティに参加",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "丸いガードの扇風機。暑い日のために。",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "アバター",
 } satisfies Record<string, string>;

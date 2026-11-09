@@ -3177,4 +3177,6 @@ export default {
   "Entrar na comunidade": "Vstoupit do komunity",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Stojanový, s kulatou mřížkou, na horké dny.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Avatar",
 } satisfies Record<string, string>;

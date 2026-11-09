@@ -3180,4 +3180,6 @@ export default {
   "Entrar na comunidade": "Prisijungti prie bendruomenės",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Stovintis, su apvaliomis grotelėmis, karštoms dienoms.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Avataras",
 } satisfies Record<string, string>;

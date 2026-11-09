@@ -3114,4 +3114,6 @@ export default {
   "Entrar na comunidade": "Συμμετοχή στην κοινότητα",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Όρθιος, με τη στρογγυλή σχάρα του, για τις ζεστές μέρες.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Άβαταρ",
 } satisfies Record<string, string>;

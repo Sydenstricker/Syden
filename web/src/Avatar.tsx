@@ -43,6 +43,15 @@ export function enderecoDoCoelhoPronto(numero: number, estado?: EstadoDoPronto) 
 }
 
 /**
+ * O CORPO INTEIRO de um coelho pronto, de pé (web/public/avatares/coelho-NN-corpo.png, o mesmo do salão de frente).
+ * O 16 ainda não tem corpo (o saldo do PixelLab acabou nele): null, e quem mostra fica com o busto.
+ */
+export function enderecoDoCorpoPronto(numero: number): string | null {
+  if (numero < 1 || numero > 15) return null;
+  return `${import.meta.env.BASE_URL}avatares/coelho-${String(numero).padStart(2, '0')}-corpo.png`;
+}
+
+/**
  * O que um coelho pronto sabe fazer além de ficar parado. Cada estado é uma faixa de QUADROS_DO_PRONTO quadros
  * (e2e/pixel-art/avatares/folhas.mjs), tocada em laço pelo CSS: falando mexe a boca, ausente dorme, ocupado
  * franze a testa. Online não tem faixa: é o desenho parado, com o anel verde.

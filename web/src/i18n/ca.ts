@@ -3174,4 +3174,6 @@ export default {
   "Entrar na comunidade": "Entra a la comunitat",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "De peu, amb la reixa rodona, per als dies de calor.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Avatar",
 } satisfies Record<string, string>;

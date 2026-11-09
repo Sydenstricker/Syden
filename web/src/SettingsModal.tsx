@@ -15,6 +15,7 @@ import { Accessibility, Languages,
   ShieldOff,
   ShieldPlus,
   Smile,
+  Shirt,
   Sparkles,
   HeartHandshake,
   Trash2,
@@ -33,7 +34,7 @@ import {
   useState,
 } from 'react';
 import { AnimatedIcon } from './AnimatedIcon';
-import { Aparencia } from './Aparencia';
+import { Aparencia, GuardaRoupaSection } from './Aparencia';
 import { GraficosSection } from './Graficos';
 import { EscolherSelo } from './EscolherSelo';
 import { PessoasBloqueadas } from './PessoasBloqueadas';
@@ -95,15 +96,17 @@ import { SomPorEndereco } from './SomPorEndereco';
 
 export type SettingsSection = Section;
 
-type Section = 'account' | 'familia' | 'aparencia' | 'graficos' | 'voice' | 'sounds' | 'acessibilidade' | 'idioma' | 'community' | 'members' | 'moderacao' | 'comandos' | 'tickets' | 'cargos-automaticos' | 'agendadas' | 'sorteios' | 'destaques' | 'emojis' | 'soundboard';
+type Section = 'account' | 'familia' | 'guarda-roupa' | 'aparencia' | 'graficos' | 'voice' | 'sounds' | 'acessibilidade' | 'idioma' | 'community' | 'members' | 'moderacao' | 'comandos' | 'tickets' | 'cargos-automaticos' | 'agendadas' | 'sorteios' | 'destaques' | 'emojis' | 'soundboard';
 
 // Os desenhos animados ficam aqui, nos menus: são poucos, aparecem um de cada vez e reagem ao passar
 // o mouse, que é onde esse tipo de ícone rende sem competir com os botões da chamada.
 const USER_SECTIONS: { id: Section; label: string; icon: ReactNode }[] = [
   { id: 'account', label: chave('Minha conta'), icon: <AnimatedIcon name="avatar" size={20} /> },
-  // APARÊNCIA FICA LOGO DEPOIS DA CONTA, e é o que sobrou da junção da Loja com os enfeites de
-  // perfil: cor do nome, fundo, moldura e insígnias se escolhiam em dois lugares diferentes, e a
-  // moldura só num deles. Ver web/src/Aparencia.tsx.
+  // O GUARDA-ROUPA FICA LOGO DEPOIS DA CONTA: o avatar e os enfeites do perfil, a cara da PESSOA (o que o guarda-roupa do
+  // quarto abre). É o que sobrou da junção da Loja com os enfeites de perfil, separado da Aparência do app em 09/11/2026
+  // (pedido dele: "uma coisa é mudar aparência do aplicativo Syden, outra é mudar o nosso avatar"). Ver Aparencia.tsx.
+  { id: 'guarda-roupa', label: chave('Guarda-roupa'), icon: <Shirt size={20} /> },
+  // A APARÊNCIA é só a cara do APP: a paleta e a cor de destaque.
   { id: 'aparencia', label: chave('Aparência'), icon: <Sparkles size={20} /> },
   // OS GRÁFICOS DO QUARTO E DO SALÃO ganharam lugar próprio (pedido dele, 17/10/2026): dentro da Aparência ninguém os
   // achava, e não são cosmético, são o peso que o Syden põe no computador. Ver Graficos.tsx.
@@ -242,7 +245,7 @@ export function SettingsModal({
         <div className="settings-content-inner">
           {section === 'account' && (
             <>
-              <AccountSection user={user} onDeleted={onLogout} />
+              <AccountSection user={user} onDeleted={onLogout} aoTrocarAvatar={() => setSection('guarda-roupa')} />
               <MeuAniversario />
               <MeusIdiomas />
               <AoAbrir />
@@ -255,7 +258,10 @@ export function SettingsModal({
           )}
           {section === 'familia' && <FamiliaSection />}
           {section === 'graficos' && <GraficosSection />}
-          {section === 'aparencia' && <Aparencia user={user} aoAbrirPacotes={() => setSection('soundboard')} />}
+          {section === 'aparencia' && <Aparencia aoAbrirGuardaRoupa={() => setSection('guarda-roupa')} />}
+          {section === 'guarda-roupa' && (
+            <GuardaRoupaSection user={user} editorDoAvatar={<AvatarEditor user={user} />} aoAbrirPacotes={() => setSection('soundboard')} />
+          )}
           {section === 'voice' && <VoiceSection voice={voice} />}
           {section === 'sounds' && <SoundsSection />}
           {section === 'acessibilidade' && <AcessibilidadeSection />}
@@ -493,7 +499,7 @@ function OutrosAparelhos() {
 
 // ---------- Minha conta ----------
 
-function AccountSection({ user, onDeleted }: { user: User; onDeleted: () => void }) {
+function AccountSection({ user, onDeleted, aoTrocarAvatar }: { user: User; onDeleted: () => void; aoTrocarAvatar: () => void }) {
   const t = useT();
   // Conta criada pelo Google/GitHub não tem senha nenhuma. Isso muda dois formulários desta tela: o
   // de senha (que passa a DEFINIR a primeira, sem pedir a atual) e o de excluir (que confirma pelo
@@ -542,7 +548,7 @@ function AccountSection({ user, onDeleted }: { user: User; onDeleted: () => void
   return (
     <>
       <h2>{t('Minha conta')}</h2>
-      <AvatarEditor user={user} />
+      <CartaoDaConta user={user} aoTrocarAvatar={aoTrocarAvatar} />
       <NomeDeExibicao user={user} />
 
       <h3>{temSenha === false ? t('Definir uma senha') : t('Trocar senha')}</h3>
@@ -1637,6 +1643,30 @@ function NomeDeExibicao({ user }: { user: User }) {
   );
 }
 
+/**
+ * O CARTÃO DA CONTA, no alto de Minha conta: o avatar e os nomes. Trocar o avatar leva ao Guarda-roupa, que é onde ele
+ * mora desde 09/11/2026 (a cara da pessoa num lugar só, a mesma tela que o guarda-roupa do quarto abre).
+ */
+function CartaoDaConta({ user, aoTrocarAvatar }: { user: User; aoTrocarAvatar: () => void }) {
+  const t = useT();
+  useDirectory(); // redesenha quando o avatar ou o nome mudam
+  return (
+    <div className="settings-card account-card">
+      <Avatar name={user.username} userId={user.id} size={80} />
+      <div className="account-info">
+        <div className="account-name">{nomeDaConta(user)}</div>
+        {/* Com nome de exibição, o nome da conta fica embaixo: é por ele que se entra e se é mencionado. */}
+        {nomeDaConta(user) !== user.username && <div className="perfil-conta">{user.username}</div>}
+      </div>
+      <div className="account-actions">
+        <button type="button" className="btn-secondary" onClick={aoTrocarAvatar}>
+          <Shirt size={16} aria-hidden="true" /> {t('Trocar avatar')}
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function AvatarEditor({ user }: { user: User }) {
   const t = useT();
   const { members } = useDirectory();
@@ -1697,14 +1727,8 @@ function AvatarEditor({ user }: { user: User }) {
 
   return (
     <>
-      <div className="settings-card account-card">
-        <Avatar name={user.username} userId={user.id} size={80} />
-        <div className="account-info">
-          <div className="account-name">{nomeDaConta(user)}</div>
-          {/* Com nome de exibição, o nome da conta fica embaixo: é por ele que se entra e se é mencionado. */}
-          {nomeDaConta(user) !== user.username && <div className="perfil-conta">{user.username}</div>}
-          
-        </div>
+      {/* No Guarda-roupa (09/11/2026), a prévia do personagem fica ao lado: aqui só o que se faz com o avatar. */}
+      <div className="settings-card account-card avatar-acoes">
         <div className="account-actions">
           <FilePicker accept="image/png,image/jpeg,image/webp,image/gif" disabled={busy} onFile={(f) => void escolher(f)}>
             {busy ? 'Enviando…' : hasAvatar ? t('Trocar avatar') : t('Enviar avatar')}

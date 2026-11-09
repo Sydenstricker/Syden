@@ -3149,4 +3149,6 @@ export default {
   "Entrar na comunidade": "İcmaya qoşul",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Ayaqlı, dəyirmi barmaqlıqlı, isti günlər üçün.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Avatar",
 } satisfies Record<string, string>;

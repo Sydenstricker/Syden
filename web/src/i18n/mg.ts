@@ -3178,4 +3178,6 @@ export default {
   "Entrar na comunidade": "Hiditra ao amin’ny vondrona",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Fivelezam-pandrana mijoro, misy makarakara boribory, ho an’ny andro mafana.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Avatar",
 } satisfies Record<string, string>;

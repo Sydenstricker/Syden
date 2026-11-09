@@ -3132,4 +3132,6 @@ export default {
   "Entrar na comunidade": "الانضمام إلى المجتمع",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "مروحة أرضية بشبكة دائرية، للأيام الحارة.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "الصورة الرمزية",
 } satisfies Record<string, string>;

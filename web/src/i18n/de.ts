@@ -3132,4 +3132,6 @@ export default {
   "Entrar na comunidade": "Der Community beitreten",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Ein Standventilator mit rundem Gitter, für heiße Tage.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Avatar",
 } satisfies Record<string, string>;

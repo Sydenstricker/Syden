@@ -3198,4 +3198,6 @@ export default {
   "Entrar na comunidade": "Hamjamiyatga qoʻshilish",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Tik turadigan, dumaloq panjarali, issiq kunlar uchun.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Avatar",
 } satisfies Record<string, string>;

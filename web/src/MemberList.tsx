@@ -51,7 +51,7 @@ export function MemberList({
   onWatchStream: (channelId: number, userId: number) => void;
   /** Abre a conversa privada com alguém, pelo menu do botão direito. */
   onSendMessage: (userId: number) => void;
-  /** O lápis do seu próprio cartão de perfil: abre Configurações → Aparência. */
+  /** O lápis do seu próprio cartão de perfil: abre Configurações → Guarda-roupa. */
   aoEditarPerfil?: () => void;
 }) {
   const t = useT();

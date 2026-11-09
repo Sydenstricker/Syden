@@ -3172,4 +3172,6 @@ export default {
   "Entrar na comunidade": "Sluit by die gemeenskap aan",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Staande, met sy ronde rooster, vir die warm dae.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Avatar",
 } satisfies Record<string, string>;

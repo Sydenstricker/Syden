@@ -3177,4 +3177,6 @@ export default {
   "Entrar na comunidade": "ចូលរួមសហគមន៍",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "កង្ហារឈរ មានសំណាញ់មូល សម្រាប់ថ្ងៃក្ដៅ។",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "រូបតំណាង",
 } satisfies Record<string, string>;

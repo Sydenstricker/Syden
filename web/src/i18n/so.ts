@@ -3178,4 +3178,6 @@ export default {
   "Entrar na comunidade": "Ku biir bulshada",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Marawaxad taagan, leh shabaq wareegsan, maalmaha kulul.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Sawirka astaanta",
 } satisfies Record<string, string>;

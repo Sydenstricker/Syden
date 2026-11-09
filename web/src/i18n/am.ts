@@ -3108,4 +3108,6 @@ export default {
   "Entrar na comunidade": "ማህበረሰቡን መቀላቀል",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "የቆመ ማራገቢያ፣ ክብ መረብ ያለው፣ ለሞቃት ቀናት።",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "የመገለጫ ፎቶ",
 } satisfies Record<string, string>;

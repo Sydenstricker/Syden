@@ -3192,4 +3192,6 @@ export default {
   "Entrar na comunidade": "Бүлгэмд нэгдэх",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Зогсоолтой, дугуй тортой, халуун өдрүүдэд.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Аватар",
 } satisfies Record<string, string>;

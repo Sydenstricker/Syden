@@ -3107,4 +3107,6 @@ export default {
   "Entrar na comunidade": "Jiunge na jumuiya",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Feni ya kusimama, yenye wavu wa duara, kwa siku za joto.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Avatar",
 } satisfies Record<string, string>;

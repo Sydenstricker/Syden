@@ -3178,4 +3178,6 @@ export default {
   "Entrar na comunidade": "Liity yhteisöön",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Jalallinen, pyöreä säleikkö, kuumille päiville.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Avatar",
 } satisfies Record<string, string>;

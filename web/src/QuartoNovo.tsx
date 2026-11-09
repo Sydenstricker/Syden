@@ -80,14 +80,17 @@ export function QuartoNovo({
   estado,
   aoFalhar,
   ajustesAbertos,
+  aoConfigurar,
 }: {
   noite: boolean;
   acoes: AcoesDoQuarto;
   estado: EstadoNoQuarto;
-  /** As configurações abertas (o guarda-roupa abre a de aparência): fechando, o guarda-roupa do quarto fecha junto. */
+  /** As configurações abertas (o guarda-roupa abre a do Guarda-roupa): fechando, o guarda-roupa do quarto fecha junto. */
   ajustesAbertos?: boolean;
   /** A cena não disse "pronto" a tempo: quem mostra volta ao quarto antigo. */
   aoFalhar?: () => void;
+  /** A engrenagem do Editar: as configurações do quarto (Gráficos). */
+  aoConfigurar?: () => void;
 }) {
   const t = useT();
   const ref = useRef<HTMLIFrameElement>(null);
@@ -165,8 +168,9 @@ export function QuartoNovo({
       noite={noite}
       peca={peca}
       aoFecharPeca={() => setPeca(null)}
-      // a engrenagem abre a Aparência (os gráficos do quarto moram lá), como o guarda-roupa
-      aoConfigurar={acoes.gavetas ? () => acoesRef.current.gavetas?.onClick() : undefined}
+      // a engrenagem abre os Gráficos, onde moram as opções do quarto (até 09/11/2026 abria a Aparência, pelo guarda-roupa;
+      // desde que ele abre o Guarda-roupa, a engrenagem levaria ao avatar)
+      aoConfigurar={aoConfigurar}
     >
       <div className="quarto-novo-caixa">
         <div className="quarto-novo">

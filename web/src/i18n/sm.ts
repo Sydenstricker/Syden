@@ -3112,4 +3112,6 @@ export default {
   "Entrar na comunidade": "Auai i le fa’alapotopotoga",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Ili tu, ma lona pa lapotopoto, mo aso vevela.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Avatar",
 } satisfies Record<string, string>;

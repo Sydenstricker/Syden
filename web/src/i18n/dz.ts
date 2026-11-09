@@ -3191,4 +3191,6 @@ export default {
   "Entrar na comunidade": "མི་སྡེ་ནང་ཞུགས།",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "ལངས་ཏེ་སྡོད་པའི་གློག་གཡབ། སྒོར་སྒོརམ་གྱི་དྲྭ་བ་དང་གཅིག་ཁར། ཚ་བའི་ཉིན་མར།",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "ཨ་ཝ་ཊར།",
 } satisfies Record<string, string>;

@@ -3180,4 +3180,6 @@ export default {
   "Entrar na comunidade": "समुदायमा सामेल हुनुहोस्",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "उभ्याउने पंखा, गोलो जालीसहित, गर्मी दिनहरूका लागि।",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "अवतार",
 } satisfies Record<string, string>;

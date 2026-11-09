@@ -3116,4 +3116,6 @@ export default {
   "Entrar na comunidade": "Banye n’obodo",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Fan na-eguzo ọtọ, nwere ụgbụ gburugburu, maka ụbọchị ọkụ.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Foto profaịlụ",
 } satisfies Record<string, string>;

@@ -3100,4 +3100,6 @@ export default {
   "Entrar na comunidade": "کمیونٹی میں شامل ہوں",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "کھڑا پنکھا، گول جالی والا، گرم دنوں کے لیے۔",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "پروفائل تصویر",
 } satisfies Record<string, string>;

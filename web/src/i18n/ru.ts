@@ -3126,4 +3126,6 @@ export default {
   "Entrar na comunidade": "Вступить в сообщество",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Напольный, с круглой решёткой, для жарких дней.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Аватар",
 } satisfies Record<string, string>;

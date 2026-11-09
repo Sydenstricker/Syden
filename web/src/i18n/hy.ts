@@ -3197,4 +3197,6 @@ export default {
   "Entrar na comunidade": "Միանալ համայնքին",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Կանգնած, կլոր ցանցով, շոգ օրերի համար։",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Ավատար",
 } satisfies Record<string, string>;

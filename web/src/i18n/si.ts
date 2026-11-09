@@ -3178,4 +3178,6 @@ export default {
   "Entrar na comunidade": "ප්‍රජාවට එක්වන්න",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "සිටුවන පංකාවක්, රවුම් දැලක් සමඟ, උණුසුම් දිනවලට.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "අවතාරය",
 } satisfies Record<string, string>;

@@ -3188,4 +3188,6 @@ export default {
   "Entrar na comunidade": "Antre nan kominote a",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Vantilatè kanpe, ak griyaj won li, pou jou ki cho yo.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Avatar",
 } satisfies Record<string, string>;

@@ -3108,4 +3108,6 @@ export default {
   "Entrar na comunidade": "Sertai komuniti",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Kipas berdiri, dengan jeriji bulat, untuk hari-hari panas.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "Avatar",
 } satisfies Record<string, string>;

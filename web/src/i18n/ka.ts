@@ -3196,4 +3196,6 @@ export default {
   "Entrar na comunidade": "თემში შესვლა",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "მდგარი, მრგვალი ცხაურით, ცხელი დღეებისთვის.",
+  // O Guarda-roupa: a aba do avatar
+  "Avatar": "ავატარი",
 } satisfies Record<string, string>;
