@@ -2812,7 +2812,7 @@ export default {
   'Campanha': 'Fampielezan-kevitra',
   'Sem vidas.': 'Tsy misy aina intsony.',
   'Você volta em {n}…': 'Hiverina ianao afaka {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Ny zana-tsipika handehanana, ny X hamelezana (telo misesy no combo), ny Z hitsambikinana, ny C ho an\'ny manokana, izay mandany aina kely.',
+  'Arrancada': 'Hazakazaka',
   'Andar': 'Handeha',
   'Especial': 'Manokana',
   'Pular': 'Hitsambikina',
@@ -3177,6 +3177,9 @@ export default {
   "Entrar na comunidade": "Hiditra ao amin’ny vondrona",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Fivelezam-pandrana mijoro, misy makarakara boribory, ho an’ny andro mafana.",
+  // A caminha do gato
+  "Caminha do gato": "Fandrian'ny saka",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Boribory sy malefaka, ambany ny fidirana. Eto no matory ny saka.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3189,6 +3192,23 @@ export default {
   "Bicho do quarto": "Biby fiompin'ny efitrano",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Feon’ny antso",
+  'Tocar ligações com o áudio desativado': "Maneno ny antso na dia vonoina aza ny feo",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Rehefa vonoina ny feo, tonga tsy misy feo ny antso manokana: miseho eo amin’ny efijery ny fampandrenesana ary mipi-pitra eo amin’ny tsipika fanaovan-draharaha i Syden. Alefaso ity raha te handre ny feon’ny antso ihany ianao.",
+  'Avatares anteriores': "Avatar teo aloha",
+  'Voltar a este avatar': "Miverina amin’ity avatar ity",
+  'Tirar do histórico': "Esory amin’ny tantara",
+  'Avatar não encontrado.': "Tsy hita ny avatar.",
+  'Sininho': "Lakolosy kely",
+  'Arpejo': "Arpeggio",
+  'Suave': "Malefaka",
+  'Bipe': "Bip",
+  'Grupo': "Vondrona",
+  'Nenhum': "Tsy misy",
+  'Novo grupo': "Vondrona vaovao",
+  'O do grupo ({grupo})': "An’ilay vondrona ({grupo})",
+  'Grupos de toque': "Vondron’ny feon’antso",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Samy manana ny feon’antsony ny vondrona tsirairay. Ampidiro ao anaty vondrona ny olona iray, na misafidiana feo ho azy irery, amin’ny tsindry havanana eo amin’ny anarany.",
+  'Apagar grupo': "Fafao ny vondrona",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Maneno rehefa misy miantso anao amin’ny resaka manokana, na dia maty aza ny feo fampahafantarana. Amin’ny \"Aza manelingelina\", miseho tsy maneno ilay antso.",
   'Avisar das ligações com o Syden em segundo plano?': "Hampahafantatra anao ny antso rehefa ao ambadika ny Syden?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Hangataka alalana ny mpitety. Amin’izay ho fantatrao ny antso sy ny hafatra na dia ao amin’ny tabilao na programa hafa aza ianao.",

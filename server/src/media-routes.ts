@@ -61,6 +61,12 @@ export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
   app.get<{ Params: { id: string } }>('/api/communities/:id/capa', async (request, reply) =>
     entregarArquivo(request, reply, db.findCommunityBanner(Number(request.params.id))),
   );
+  // O avatar anterior (09/11/2026): pela chave do endereço, que só a dona recebe (GET /api/me/avatares-anteriores).
+  app.get<{ Params: { id: string; chave: string } }>('/api/avatares-anteriores/:id/:chave', async (request, reply) => {
+    const arquivo = db.arquivoDoAvatarAnterior(Number(request.params.id), String(request.params.chave));
+    if (!arquivo) return reply.code(404).send({ error: 'Avatar não encontrado.' });
+    return entregarArquivo(request, reply, arquivo, { 'content-disposition': 'inline' });
+  });
   app.get<{ Params: { id: string } }>('/api/emojis/:id/image', async (request, reply) =>
     entregarArquivo(request, reply, db.findEmojiFile(Number(request.params.id))),
   );
@@ -121,6 +127,21 @@ export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
       const user = db.setAvatarPronto(request.user.id, numero);
       io.emit('user:updated', user);
       return user;
+    });
+
+    // OS AVATARES ANTERIORES (09/11/2026, pedido dele): os últimos 5 que a pessoa trocou, para voltar a um deles.
+    authed.get('/api/me/avatares-anteriores', async (request) => db.avataresAnteriores(request.user.id));
+    authed.put<{ Body: { id?: unknown } }>('/api/me/avatar/anterior', async (request, reply) => {
+      const id = request.body?.id;
+      if (typeof id !== 'number' || !Number.isInteger(id)) return reply.code(400).send({ error: 'Avatar não encontrado.' });
+      const user = db.voltarAoAvatarAnterior(request.user.id, id);
+      if (!user) return reply.code(404).send({ error: 'Avatar não encontrado.' });
+      io.emit('user:updated', user);
+      return user;
+    });
+    authed.delete<{ Params: { id: string } }>('/api/me/avatares-anteriores/:id', async (request, reply) => {
+      if (!db.apagarAvatarAnterior(request.user.id, Number(request.params.id))) return reply.code(404).send({ error: 'Avatar não encontrado.' });
+      return { ok: true };
     });
 
     authed.delete('/api/me/avatar', async (request) => {

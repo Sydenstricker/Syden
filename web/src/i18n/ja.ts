@@ -2723,7 +2723,7 @@ export default {
   'Campanha': 'キャンペーン',
   'Sem vidas.': 'ライフがなくなった。',
   'Você volta em {n}…': '{n}で復活…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': '矢印キーで歩く、Xでパンチ（3回続けるとコンボ）、Zでジャンプ、Cで必殺技（ライフを少し使う）。',
+  'Arrancada': 'ダッシュ',
   'Andar': '歩く',
   'Especial': '必殺技',
   'Pular': 'ジャンプ',
@@ -3088,6 +3088,9 @@ export default {
   "Entrar na comunidade": "コミュニティに参加",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "丸いガードの扇風機。暑い日のために。",
+  // A caminha do gato
+  "Caminha do gato": "ねこベッド",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "丸くてふかふか、入り口が低いベッド。ねこはここで眠る。",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "アバター",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3100,6 +3103,23 @@ export default {
   "Bicho do quarto": "部屋のペット",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "通話の着信音",
+  'Tocar ligações com o áudio desativado': "音をオフにしていても通話を鳴らす",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "音をオフにしていると、個別通話は無音で届きます。通知が画面に表示され、Syden がタスクバーで点滅します。それでも着信音を聞きたいときはオンにしてください。",
+  'Avatares anteriores': "以前のプロフィール画像",
+  'Voltar a este avatar': "このプロフィール画像に戻す",
+  'Tirar do histórico': "履歴から削除",
+  'Avatar não encontrado.': "プロフィール画像が見つかりません。",
+  'Sininho': "チャイム",
+  'Arpejo': "アルペジオ",
+  'Suave': "やわらか",
+  'Bipe': "ビープ",
+  'Grupo': "グループ",
+  'Nenhum': "なし",
+  'Novo grupo': "新しいグループ",
+  'O do grupo ({grupo})': "グループの着信音（{grupo}）",
+  'Grupos de toque': "着信音のグループ",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "グループごとに着信音を決められます。名前を右クリックして、その人をグループに入れるか、その人だけの着信音を選んでください。",
+  'Apagar grupo': "グループを削除",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "個人間の会話で誰かから着信があると鳴ります。通知音をオフにしていても鳴ります。「取り込み中」のときは鳴らさずに表示します。",
   'Avisar das ligações com o Syden em segundo plano?': "Syden がバックグラウンドのときに着信を知らせますか？",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "ブラウザが許可を求めます。許可すると、別のタブやプログラムを使っていても通話やメッセージに気づけます。",

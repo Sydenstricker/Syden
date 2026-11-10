@@ -2814,7 +2814,7 @@ export default {
   'Campanha': 'अभियान',
   'Sem vidas.': 'जीवन सकियो।',
   'Você volta em {n}…': '{n} मा फर्किन्छौ…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'हिँड्न तीर कुञ्जीहरू, हान्न X (लगातार तीन पटक कम्बो हो), उफ्रिन Z, विशेष चालका लागि C, जसले अलिकति जीवन खर्च गर्छ।',
+  'Arrancada': 'तीव्र दौड',
   'Andar': 'हिँड',
   'Especial': 'विशेष',
   'Pular': 'उफ्र',
@@ -3179,6 +3179,9 @@ export default {
   "Entrar na comunidade": "समुदायमा सामेल हुनुहोस्",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "उभ्याउने पंखा, गोलो जालीसहित, गर्मी दिनहरूका लागि।",
+  // A caminha do gato
+  "Caminha do gato": "बिरालोको ओछ्यान",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "गोलो र नरम, होचो प्रवेशसहित। बिरालो यहीँ सुत्छ।",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "अवतार",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3191,6 +3194,23 @@ export default {
   "Bicho do quarto": "कोठाको घरपालुवा जनावर",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "कलको रिङटोन",
+  'Tocar ligações com o áudio desativado': "आवाज बन्द हुँदा पनि कलमा घण्टी बजाउनुहोस्",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "आवाज बन्द हुँदा निजी कल आवाजबिना आउँछ: सूचना स्क्रिनमा देखिन्छ र Syden टास्कबारमा झिम्किन्छ। जे भए पनि रिङटोन सुन्न यो खोल्नुहोस्।",
+  'Avatares anteriores': "अघिल्ला अवतारहरू",
+  'Voltar a este avatar': "यो अवतारमा फर्कनुहोस्",
+  'Tirar do histórico': "इतिहासबाट हटाउनुहोस्",
+  'Avatar não encontrado.': "अवतार भेटिएन।",
+  'Sininho': "सानो घण्टी",
+  'Arpejo': "आर्पेजियो",
+  'Suave': "मधुर",
+  'Bipe': "बिप",
+  'Grupo': "समूह",
+  'Nenhum': "कुनै पनि होइन",
+  'Novo grupo': "नयाँ समूह",
+  'O do grupo ({grupo})': "समूहको ({grupo})",
+  'Grupos de toque': "रिङटोन समूहहरू",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "हरेक समूहको आफ्नै रिङटोन हुन्छ। कसैको नाममा दायाँ-क्लिक गरेर उसलाई समूहमा राख्नुहोस्, वा उसका लागि मात्र रिङटोन छान्नुहोस्।",
+  'Apagar grupo': "समूह मेटाउनुहोस्",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "निजी कुराकानीमा कसैले तिमीलाई कल गर्दा बज्छ, सूचना ध्वनिहरू बन्द हुँदा पनि। \"बाधा नदिनुहोस्\" मा कल नबजी देखिन्छ।",
   'Avisar das ligações com o Syden em segundo plano?': "Syden पृष्ठभूमिमा हुँदा कलबारे सूचना दिने?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "ब्राउजरले अनुमति माग्नेछ। यसरी अर्को ट्याब वा प्रोग्राममा हुँदा पनि तिमीले कल र सन्देशबारे थाहा पाउनेछौ।",

@@ -2755,7 +2755,7 @@ export default {
   'Campanha': 'แคมเปญ',
   'Sem vidas.': 'หมดชีวิตแล้ว',
   'Você volta em {n}…': 'กลับมาในอีก {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'ใช้ปุ่มลูกศรเดิน กด X เพื่อต่อย (สามครั้งติดคือคอมโบ) กด Z เพื่อกระโดด กด C เพื่อใช้ท่าพิเศษ ซึ่งใช้พลังชีวิตเล็กน้อย',
+  'Arrancada': 'พุ่งตัว',
   'Andar': 'เดิน',
   'Especial': 'ท่าพิเศษ',
   'Pular': 'กระโดด',
@@ -3120,6 +3120,9 @@ export default {
   "Entrar na comunidade": "เข้าร่วมคอมมูนิตี้",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "พัดลมตั้งพื้น ตะแกรงกลม สำหรับวันที่อากาศร้อน",
+  // A caminha do gato
+  "Caminha do gato": "ที่นอนแมว",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "กลมและนุ่ม ทางเข้าต่ำ แมวนอนที่นี่",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "รูปโปรไฟล์",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3132,6 +3135,23 @@ export default {
   "Bicho do quarto": "สัตว์เลี้ยงในห้อง",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "เสียงเรียกเข้า",
+  'Tocar ligações com o áudio desativado': "ให้เสียงเรียกเข้าดังแม้ปิดเสียงอยู่",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "เมื่อปิดเสียงอยู่ สายส่วนตัวจะเข้ามาแบบไม่มีเสียง: การแจ้งเตือนจะแสดงบนหน้าจอ และ Syden จะกะพริบที่แถบงาน เปิดตัวเลือกนี้เพื่อให้ได้ยินเสียงเรียกเข้าอยู่ดี",
+  'Avatares anteriores': "รูปโปรไฟล์ก่อนหน้า",
+  'Voltar a este avatar': "กลับไปใช้รูปโปรไฟล์นี้",
+  'Tirar do histórico': "นำออกจากประวัติ",
+  'Avatar não encontrado.': "ไม่พบรูปโปรไฟล์",
+  'Sininho': "กระดิ่ง",
+  'Arpejo': "อาร์เปจโจ",
+  'Suave': "นุ่มนวล",
+  'Bipe': "บี๊บ",
+  'Grupo': "กลุ่ม",
+  'Nenhum': "ไม่มี",
+  'Novo grupo': "กลุ่มใหม่",
+  'O do grupo ({grupo})': "ของกลุ่ม ({grupo})",
+  'Grupos de toque': "กลุ่มเสียงเรียกเข้า",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "แต่ละกลุ่มมีเสียงเรียกเข้าของตัวเอง คลิกขวาที่ชื่อเพื่อใส่ใครสักคนในกลุ่ม หรือเลือกเสียงเรียกเข้าสำหรับคนนั้นโดยเฉพาะ",
+  'Apagar grupo': "ลบกลุ่ม",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "ดังเมื่อมีคนโทรหาในการสนทนาส่วนตัว แม้จะปิดเสียงแจ้งเตือนไว้ ในโหมด \"ห้ามรบกวน\" สายจะแสดงขึ้นโดยไม่มีเสียง",
   'Avisar das ligações com o Syden em segundo plano?': "แจ้งเตือนสายเรียกเข้าขณะ Syden อยู่เบื้องหลังไหม",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "เบราว์เซอร์จะขออนุญาต แล้วจะรู้เรื่องสายและข้อความแม้อยู่ในแท็บหรือโปรแกรมอื่น",

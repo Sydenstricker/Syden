@@ -8,6 +8,8 @@
 export type Figura =
   | 'setas'
   | 'setas-lado'
+  /** As letras W, A, S e D no arranjo das setas (montado das teclas da Kenney; pedido dele, 09/11/2026). */
+  | 'wasd'
   | 'espaco'
   | 'z'
   | 'x'
@@ -25,6 +27,7 @@ export type Figura =
 const ARQUIVO: Record<Figura, string> = {
   setas: 'keyboard_arrows',
   'setas-lado': 'keyboard_arrows_horizontal',
+  wasd: 'keyboard_wasd',
   espaco: 'keyboard_space',
   z: 'keyboard_z',
   x: 'keyboard_x',
@@ -67,7 +70,7 @@ function svgDe(f: Figura): string {
 }
 
 function Icone({ f }: { f: Figura }) {
-  return <span className={'jogo-comando-icone' + (f === 'espaco' || f === 'setas' || f === 'setas-lado' ? ' largo' : '')} dangerouslySetInnerHTML={{ __html: svgDe(f) }} />;
+  return <span className={'jogo-comando-icone' + (f === 'espaco' || f === 'setas' || f === 'setas-lado' || f === 'wasd' ? ' largo' : '')} dangerouslySetInnerHTML={{ __html: svgDe(f) }} />;
 }
 
 export function ComandosDoJogo({ itens }: { itens: Comando[] }) {
@@ -78,8 +81,9 @@ export function ComandosDoJogo({ itens }: { itens: Comando[] }) {
         {itens.map((c) => (
           <li key={c.rotulo}>
             <span className="jogo-comando-figuras">
-              {c.teclas.map((f) => (
-                <Icone key={f} f={f} />
+              {/* a mesma figura pode vir duas vezes (o toque duplo da arrancada da Briga) */}
+              {c.teclas.map((f, i) => (
+                <Icone key={f + i} f={f} />
               ))}
             </span>
             <span className="jogo-comando-rotulo">{c.rotulo}</span>

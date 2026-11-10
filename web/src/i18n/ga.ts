@@ -2748,7 +2748,7 @@ export default {
   'Campanha': 'Feachtas',
   'Sem vidas.': 'Gan saol fágtha.',
   'Você volta em {n}…': 'Beidh tú ar ais i gceann {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Saigheada chun siúl, X chun bualadh (trí cinn as a chéile an teaglaim), Z chun léim, C don ghluaiseacht speisialta, a chosnaíonn beagán saoil.',
+  'Arrancada': 'Ruathar',
   'Andar': 'Siúil',
   'Especial': 'Speisialta',
   'Pular': 'Léim',
@@ -3113,6 +3113,9 @@ export default {
   "Entrar na comunidade": "Téigh isteach sa phobal",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Ina sheasamh, lena ghreille chruinn, do na laethanta te.",
+  // A caminha do gato
+  "Caminha do gato": "Leaba an chait",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Cruinn agus bog, le bealach isteach íseal. Codlaíonn an cat anseo.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Abhatár",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3125,6 +3128,23 @@ export default {
   "Bicho do quarto": "Peata an tseomra",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Ton glao",
+  'Tocar ligações com o áudio desativado': "Glaonna a bhualadh agus an fhuaim múchta",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Agus an fhuaim múchta, tagann glao príobháideach gan fuaim: taispeántar an fógra ar an scáileán agus bíonn Syden ag caochadh sa tascbharra. Cas air é seo chun an ton a chloisteáil mar sin féin.",
+  'Avatares anteriores': "Abhatáir roimhe seo",
+  'Voltar a este avatar': "Fill ar an abhatár seo",
+  'Tirar do histórico': "Bain den stair",
+  'Avatar não encontrado.': "Níor aimsíodh an t-abhatár.",
+  'Sininho': "Cloigín",
+  'Arpejo': "Arpeggio",
+  'Suave': "Bog",
+  'Bipe': "Bíp",
+  'Grupo': "Grúpa",
+  'Nenhum': "Dada",
+  'Novo grupo': "Grúpa nua",
+  'O do grupo ({grupo})': "Ceann an ghrúpa ({grupo})",
+  'Grupos de toque': "Grúpaí ton",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Tá a ton féin ag gach grúpa. Cuir duine i ngrúpa, nó roghnaigh ton don duine sin amháin, le cliceáil dheis ar a ainm.",
+  'Apagar grupo': "Scrios an grúpa",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Buaileann sé nuair a ghlaonn duine ort i gcomhrá príobháideach, fiú leis na fuaimeanna foláirimh múchta. In \"Ná cuir isteach orm\", taispeántar an glao gan bualadh.",
   'Avisar das ligações com o Syden em segundo plano?': "Fógra a thabhairt faoi ghlaonna agus Syden sa chúlra?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Iarrfaidh an brabhsálaí cead. Ar an gcaoi sin cloisfidh tú faoi ghlaonna agus teachtaireachtaí fiú i gcluaisín nó i gclár eile.",

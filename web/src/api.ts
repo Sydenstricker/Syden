@@ -132,4 +132,6 @@ export const mediaUrl = {
   sound: (id: number) => `${API_URL}/api/sounds/${id}/audio`,
   karaoke: (id: number) => `${API_URL}/api/karaoke/${id}/audio`,
   attachment: (id: number, key: string) => `${API_URL}/api/attachments/${id}/${key}`,
+  /** Um avatar que a pessoa usou antes (só ela recebe a chave). */
+  avatarAnterior: (id: number, chave: string) => `${API_URL}/api/avatares-anteriores/${id}/${chave}`,
 };

@@ -1,7 +1,7 @@
-import { Check, ChevronLeft, ChevronRight, Gift, Lock, Music, Shirt, Sparkles } from 'lucide-react';
+import { Check, ChevronLeft, ChevronRight, Gift, Lock, Music, Shirt, Sparkles, X } from 'lucide-react';
 import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
-import { api } from './api';
-import { Avatar, enderecoDoCoelhoPronto, enderecoDoCorpoPronto } from './Avatar';
+import { api, mediaUrl } from './api';
+import { Avatar, enderecoDoCoelhoPronto, enderecoDoCorpoPronto, FotoDoAvatar } from './Avatar';
 import { nomeDe, useDirectory } from './directory';
 import { primeiraForma } from './minijogos';
 import { chave, useT } from './i18n';
@@ -504,7 +504,7 @@ export function Aparencia({
   );
 }
 
-/** O mascote, para quem ainda não escolheu coelho nem foto (web/public/guarda-roupa/mascote.png, de personagem/mascote-3d). */
+/** O mascote, para quem ainda não escolheu coelho nem foto (web/public/guarda-roupa/mascote.png, de personagem/mascote: o do PixelLab desde 09/11/2026). */
 const MASCOTE = `${import.meta.env.BASE_URL}guarda-roupa/mascote.png`;
 /** Os bichos do quarto (cores.pet na arrumação; a página do quarto conhece os mesmos). 'nenhum' é guardado. */
 const BICHOS = ['gato', 'nenhum'] as const;
@@ -701,8 +701,82 @@ function FolhaDoAvatar({ user, editorDaFoto, aoAbrirPacotes }: { user: User; edi
         {editorDaFoto}
       </details>
 
+      <AvataresAnteriores versao={eu?.avatarVersion ?? null} pronto={pronto} />
+
       <EnfeitesDoPerfil user={user} aoAbrirPacotes={aoAbrirPacotes} />
     </>
+  );
+}
+
+interface AvatarAnterior {
+  id: number;
+  chave: string;
+  animado: boolean;
+}
+
+/**
+ * OS AVATARES ANTERIORES (09/11/2026, pedido dele: "se eu altero o avatar, não consigo escolher o antigo; no meu caso era um
+ * GIF. Seria legal mostrar o histórico dos últimos 5 para resgatar"). As fotos e os GIFs que a pessoa trocou, até 5, o mais
+ * novo primeiro (o servidor guarda; ver avatares_anteriores em db.ts). Clicar volta a ele, e o "×" o tira do histórico. O
+ * GIF fica parado e anima sob o mouse, como nas listas. Sem nenhum, a seção não aparece.
+ */
+function AvataresAnteriores({ versao, pronto }: { versao: number | null; pronto: number | null }) {
+  const t = useT();
+  const [lista, setLista] = useState<AvatarAnterior[]>([]);
+  const [erro, setErro] = useState<string | null>(null);
+  const [ocupado, setOcupado] = useState(false);
+  // relê quando o avatar muda (por aqui, pelo editor da foto ou pelas setas do coelho)
+  useEffect(() => {
+    let vivo = true;
+    void api<AvatarAnterior[]>('/api/me/avatares-anteriores')
+      .then((l) => vivo && setLista(l))
+      .catch(() => {});
+    return () => {
+      vivo = false;
+    };
+  }, [versao, pronto]);
+
+  async function voltar(id: number) {
+    setErro(null);
+    setOcupado(true);
+    try {
+      await api('/api/me/avatar/anterior', { method: 'PUT', body: { id } });
+    } catch (e) {
+      setErro((e as Error).message);
+    } finally {
+      setOcupado(false);
+    }
+  }
+  async function tirar(id: number) {
+    setErro(null);
+    try {
+      await api(`/api/me/avatares-anteriores/${id}`, { method: 'DELETE' });
+      setLista((l) => l.filter((a) => a.id !== id));
+    } catch (e) {
+      setErro((e as Error).message);
+    }
+  }
+
+  if (!lista.length) return null;
+  return (
+    <section className="avatares-anteriores">
+      <h3>{t('Avatares anteriores')}</h3>
+      <ul>
+        {lista.map((a) => (
+          <li key={a.id}>
+            <button className="avatar-anterior" disabled={ocupado} title={t('Voltar a este avatar')} aria-label={t('Voltar a este avatar')} onClick={() => void voltar(a.id)}>
+              <span className="avatar">
+                <FotoDoAvatar src={mediaUrl.avatarAnterior(a.id, a.chave)} animado={a.animado} estado={null} size={56} />
+              </span>
+            </button>
+            <button className="avatar-anterior-tirar icon-plain" title={t('Tirar do histórico')} aria-label={t('Tirar do histórico')} onClick={() => void tirar(a.id)}>
+              <X size={14} />
+            </button>
+          </li>
+        ))}
+      </ul>
+      {erro && <p className="form-error">{erro}</p>}
+    </section>
   );
 }
 

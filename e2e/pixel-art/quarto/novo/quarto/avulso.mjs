@@ -41,6 +41,10 @@ export const AVULSOS = {
   pufe: { lado: [84, 72], texto: `ONLY ONE round dark grey fabric floor pouf, a short wide cylinder with soft rounded edges and stitched seams radiating from a button in the middle of the top, the pouf FILLS the whole image edge to edge, no shadow, ${ANGULO}` },
   // (a primeira saiu com faixas verticais de luz na metade da direita: o pedido de luz do ANGULO; a segunda pede cor por igual)
   tapete: { lado: [216, 116], texto: `ONLY ONE flat rectangular rug lying flat on the floor and nothing on it, seen at a 2:1 isometric angle so the rug is a wide diamond shape whose four corners touch the four edges of the image, plain muted sage green wool with a thin darker grey-green line border running just inside its edge, no fringe, no pattern, no shadow, the rug FILLS the whole image, ONE EVEN flat color over the whole rug with only a soft wool texture, no light patches and no gradient, isometric pixel art seen from above at the same 2:1 isometric angle as the reference, clean outline, warm muted palette` },
+  // A CAMINHA DO GATO (09/11/2026, pedido dele: "o gato não tem caminha dele? seria um acessório pertinente"): o móvel do
+  // bicho, onde ele dorme. A borda da frente é mais baixa (a entrada), para o giro se ver: redonda por igual, as 4 posições
+  // seriam o mesmo desenho.
+  'caminha-gato': { lado: [80, 64], texto: `ONLY ONE empty round plush cat bed lying on the floor and nothing else, no cat: a low wide round donut-shaped pet bed with a thick soft rolled rim of dusty terracotta fabric, a soft cream cushion inside, the rim dips lower at the front as an entrance facing the left-front (toward the lower left of the image), the whole bed visible, drawn in the middle of the image with a small empty margin on every side, nothing touching the edges, no shadow, ${ANGULO}` },
   'guarda-roupa': { lado: [64, 160], texto: `a tall freestanding wooden wardrobe with two doors and small round knobs, the whole piece visible from the top cornice to the feet, its doors facing to the right-front, the back against a wall on its left side, ${ANGULO}` },
 };
 

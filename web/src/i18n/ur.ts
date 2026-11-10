@@ -2729,7 +2729,7 @@ export default {
   'Campanha': 'مہم',
   'Sem vidas.': 'جانیں ختم۔',
   'Você volta em {n}…': '{n} میں واپسی…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'چلنے کے لیے تیر والی کلیدیں، مارنے کے لیے X (لگاتار تین کومبو ہیں)، چھلانگ کے لیے Z، خاص وار کے لیے C، جو تھوڑی سی جان خرچ کرتا ہے۔',
+  'Arrancada': 'جھپٹ',
   'Andar': 'چلیں',
   'Especial': 'خاص',
   'Pular': 'چھلانگ',
@@ -3099,6 +3099,9 @@ export default {
   "Entrar na comunidade": "کمیونٹی میں شامل ہوں",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "کھڑا پنکھا، گول جالی والا، گرم دنوں کے لیے۔",
+  // A caminha do gato
+  "Caminha do gato": "بلی کا بستر",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "گول اور نرم، نیچے داخلے کے ساتھ۔ بلی یہیں سوتی ہے۔",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "پروفائل تصویر",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3111,6 +3114,23 @@ export default {
   "Bicho do quarto": "کمرے کا پالتو",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "کال کی رنگ ٹون",
+  'Tocar ligações com o áudio desativado': "آواز بند ہونے پر بھی کال کی گھنٹی بجے",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "آواز بند ہونے پر نجی کال بغیر آواز کے آتی ہے: اطلاع اسکرین پر دکھائی دیتی ہے اور Syden ٹاسک بار میں جھلملاتا ہے۔ پھر بھی رنگ ٹون سننے کے لیے اسے آن کریں۔",
+  'Avatares anteriores': "پچھلی پروفائل تصاویر",
+  'Voltar a este avatar': "اس پروفائل تصویر پر واپس جائیں",
+  'Tirar do histórico': "تاریخچے سے ہٹائیں",
+  'Avatar não encontrado.': "پروفائل تصویر نہیں ملی۔",
+  'Sininho': "گھنٹی",
+  'Arpejo': "آرپیجیو",
+  'Suave': "نرم",
+  'Bipe': "بیپ",
+  'Grupo': "گروپ",
+  'Nenhum': "کوئی نہیں",
+  'Novo grupo': "نیا گروپ",
+  'O do grupo ({grupo})': "گروپ والی ({grupo})",
+  'Grupos de toque': "رنگ ٹون گروپ",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "ہر گروپ کی اپنی رنگ ٹون ہوتی ہے۔ کسی کے نام پر رائٹ کلک کر کے اسے گروپ میں ڈالیں، یا صرف اس کے لیے رنگ ٹون چنیں۔",
+  'Apagar grupo': "گروپ مٹائیں",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "جب کوئی نجی گفتگو میں تمہیں کال کرے تو بجتی ہے، چاہے اطلاعی آوازیں بند ہوں۔ \"تنگ نہ کریں\" میں کال بجے بغیر دکھائی دیتی ہے۔",
   'Avisar das ligações com o Syden em segundo plano?': "جب Syden پس منظر میں ہو تو کالوں کی اطلاع دیں؟",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "براؤزر اجازت مانگے گا۔ اس طرح دوسرے ٹیب یا پروگرام میں ہونے پر بھی تمہیں کالوں اور پیغامات کا پتا چلے گا۔",

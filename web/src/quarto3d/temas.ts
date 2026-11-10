@@ -126,6 +126,8 @@ export const TEMAS: Record<string, Tema> = {
       'planta-baixa': { arquivo: 'cactus_medium_B' },
       // o ventilador de pé (nenhum pacote tem: o do Kenney é de teto), feito por código na cena, o mesmo nos dois temas
       ventilador: { arquivo: 'codigo:ventilador', cabe: 'livre' },
+      // a caminha do gato (09/11/2026): nenhum pacote tem uma; feita por código, a mesma nos dois temas
+      'caminha-gato': { arquivo: 'codigo:caminha-gato', cabe: 'livre' },
     },
     cadeira: { arquivo: 'chair_desk_A', pose: 'computador', assento: 0.37, avanco: 0.02 },
     naParede: {
@@ -238,6 +240,8 @@ export const TEMAS: Record<string, Tema> = {
       'planta-alta': { arquivo: T + 'monstera_plant_medium_potted', escala: 0.75, cabe: 'livre' },
       'planta-baixa': { arquivo: T + 'sansevieria_plant_medium_potted', escala: 0.75, cabe: 'livre' },
       ventilador: { arquivo: 'codigo:ventilador', cabe: 'livre' },
+      // a caminha do gato (09/11/2026): nenhum pacote tem uma; feita por código, a mesma nos dois temas
+      'caminha-gato': { arquivo: 'codigo:caminha-gato', cabe: 'livre' },
     },
     cadeira: { arquivo: T + 'desk_chair_blue', pose: 'computador', assento: 0.42, avanco: 0.02 },
     naParede: {

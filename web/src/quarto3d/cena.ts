@@ -776,6 +776,7 @@ export class CenaDoQuarto3D {
     if (nome === 'violao') return this.violao();
     if (nome === 'relogio') return this.relogioDeParede();
     if (nome === 'ventilador') return this.ventilador();
+    if (nome === 'caminha-gato') return this.caminhaDoGato();
     return new THREE.Group();
   }
 
@@ -991,6 +992,33 @@ export class CenaDoQuarto3D {
     const cabeca = new THREE.Mesh(this.geo(new THREE.BoxGeometry(0.1, 0.14, 0.04)), escura);
     cabeca.position.set(0, 1.28, 0.07);
     g.add(boca, braco, cabeca);
+    g.traverse((o) => ((o as THREE.Mesh).castShadow = true));
+    return g;
+  }
+
+  /**
+   * A caminha do gato (09/11/2026, a peça nova do pixel): a borda redonda de tecido terracota, mais baixa na frente (+z, a
+   * entrada, como no desenho), e a almofada creme dentro. O gato do quarto ainda não existe no 3D: ela fica vazia.
+   */
+  private caminhaDoGato() {
+    const g = new THREE.Group();
+    const tecido = this.material('#b8654a', { roughness: 0.9 });
+    const almofada = this.material('#efe1c6', { roughness: 0.95 });
+    // a borda: um toro achatado, com a entrada aberta na frente (o arco que falta) e um rolinho baixo no lugar dela
+    const borda = new THREE.Mesh(this.geo(new THREE.TorusGeometry(0.3, 0.08, 10, 36, Math.PI * 1.6)), tecido);
+    borda.rotation.x = -Math.PI / 2;
+    borda.rotation.z = -Math.PI * 0.3; // (o vão do arco, de 1,6π a 2π, cai no +z)
+    borda.scale.set(1, 1, 1.15);
+    borda.position.y = 0.09;
+    const entrada = new THREE.Mesh(this.geo(new THREE.TorusGeometry(0.3, 0.05, 8, 14, Math.PI * 0.4)), tecido);
+    entrada.rotation.x = -Math.PI / 2;
+    entrada.rotation.z = -Math.PI * 0.7;
+    entrada.position.y = 0.05;
+    const fundo = new THREE.Mesh(this.geo(new THREE.CylinderGeometry(0.34, 0.36, 0.05, 32)), tecido);
+    fundo.position.y = 0.025;
+    const meio = new THREE.Mesh(this.geo(new THREE.CylinderGeometry(0.25, 0.27, 0.05, 28)), almofada);
+    meio.position.y = 0.07;
+    g.add(fundo, borda, entrada, meio);
     g.traverse((o) => ((o as THREE.Mesh).castShadow = true));
     return g;
   }

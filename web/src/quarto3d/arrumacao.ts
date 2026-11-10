@@ -65,6 +65,7 @@ export const TAMANHOS: Record<string, [number, number][]> = {
   'planta-alta': [[1, 1], [1, 1], [1, 1], [1, 1]],
   'planta-baixa': [[1, 1], [1, 1], [1, 1], [1, 1]],
   ventilador: [[1, 1], [1, 1], [1, 1], [1, 1]],
+  'caminha-gato': [[1, 1], [1, 1], [1, 1], [1, 1]],
 };
 
 /** Onde cada objeto da parede foi pintado: as casas ao longo da parede (com v = 0) e a altura, em px do pixel art. */
@@ -113,7 +114,8 @@ const GUARDADOS_DE_FABRICA = ['poltrona', 'ventilador'];
  * O MÓVEL NOVO CHEGA GUARDADO (o ventilador, 09/11/2026): quem já arrumou o quarto não o acha no meio dele, e sim no
  * catálogo do Editar. Sem lugar na arrumação guardada, ele está guardado (a página faz igual: CHEGAM_GUARDADOS, em montar.mjs).
  */
-const CHEGAM_GUARDADOS = ['ventilador'];
+// (a caminha do gato vem POSTA no quarto novo, decisão dele de 09/11/2026, e chega guardada no já arrumado)
+const CHEGAM_GUARDADOS = ['ventilador', 'caminha-gato'];
 /** A poltrona começa guardada; posta de volta sem lugar guardado, ela vai para cá (o INICIAL da página). */
 const POLTRONA = { c: [7, 5] as [number, number], lado: 0 };
 export const FABRICA: Record<string, Fabrica> = {
@@ -129,6 +131,7 @@ export const FABRICA: Record<string, Fabrica> = {
       'planta-alta': { c: [4.5, 0.5], lado: 0 },
       'planta-baixa': { c: [7.5, 0.5], lado: 0 },
       ventilador: { c: [0.5, 3.5], lado: 0 },
+      'caminha-gato': { c: [7.5, 7.5], lado: 0 },
     },
     cadeira: { u: 1.5, v: 2.15, th: -1.571 },
     janela: { tipo: 'original', parede: 'direita', v: 0 },
@@ -151,6 +154,7 @@ export const FABRICA: Record<string, Fabrica> = {
       'planta-alta': { c: [4.5, 3.5], lado: 0 },
       'planta-baixa': { c: [3.5, 4.5], lado: 0 },
       ventilador: { c: [0.5, 4.5], lado: 0 },
+      'caminha-gato': { c: [7.5, 7.5], lado: 0 },
     },
     cadeira: { u: 6.15, v: 1.5, th: -3.142 },
     janela: { tipo: 'cortinas', parede: 'direita', v: 1.7 },
@@ -173,6 +177,7 @@ export const FABRICA: Record<string, Fabrica> = {
       'planta-alta': { c: [7.5, 2.5], lado: 0 },
       'planta-baixa': { c: [6.5, 2.5], lado: 0 },
       ventilador: { c: [2.5, 4.5], lado: 0 },
+      'caminha-gato': { c: [7.5, 7.5], lado: 0 },
     },
     cadeira: { u: 4.5, v: 4.15, th: -1.571 },
     janela: { tipo: 'cortinas', parede: 'direita', v: 1.4 },
@@ -312,7 +317,8 @@ export function noMundo(a: ArrumacaoDoPixel | null | undefined): QuartoNoMundo {
   // (sem arrumação nenhuma, os guardados de fábrica: a poltrona; com uma sem a lista, nenhum, como a página faz)
   const guardados = Array.isArray(arr.guardados) ? arr.guardados : arr.moveis ? [] : GUARDADOS_DE_FABRICA;
   for (const id of guardados) if (id !== 'cama' && !FUNCAO_DO_MOVEL[id]) delete moveis[id];
-  for (const id of CHEGAM_GUARDADOS) if (!arr.moveis?.[id]) delete moveis[id];
+  // (só numa arrumação guardada: sem nenhuma, é o quarto novo, e a caminha vem posta)
+  if (arr.moveis) for (const id of CHEGAM_GUARDADOS) if (!arr.moveis[id]) delete moveis[id];
 
   const mundo: MovelNoMundo[] = Object.entries(moveis).map(([id, m]) => {
     const tipo = tipoDe(id);

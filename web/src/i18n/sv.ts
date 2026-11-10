@@ -2804,7 +2804,7 @@ export default {
   'Campanha': 'Kampanj',
   'Sem vidas.': 'Inga liv kvar.',
   'Você volta em {n}…': 'Du är tillbaka om {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Piltangenterna för att gå, X för att slå (tre i rad är kombo), Z för att hoppa, C för specialattacken, som kostar lite liv.',
+  'Arrancada': 'Rusning',
   'Andar': 'Gå',
   'Especial': 'Special',
   'Pular': 'Hoppa',
@@ -3169,6 +3169,9 @@ export default {
   "Entrar na comunidade": "Gå med i gemenskapen",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Stående, med sitt runda galler, för de varma dagarna.",
+  // A caminha do gato
+  "Caminha do gato": "Kattbädd",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Rund och mjuk, med en låg ingång. Katten sover här.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3181,6 +3184,23 @@ export default {
   "Bicho do quarto": "Rummets husdjur",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Ringsignal",
+  'Tocar ligações com o áudio desativado': "Ring vid samtal även med ljudet av",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Med ljudet av kommer ett privat samtal utan ljud: aviseringen visas på skärmen och Syden blinkar i aktivitetsfältet. Slå på det här för att höra ringsignalen ändå.",
+  'Avatares anteriores': "Tidigare avatarer",
+  'Voltar a este avatar': "Gå tillbaka till den här avataren",
+  'Tirar do histórico': "Ta bort från historiken",
+  'Avatar não encontrado.': "Avataren hittades inte.",
+  'Sininho': "Klocka",
+  'Arpejo': "Arpeggio",
+  'Suave': "Mjuk",
+  'Bipe': "Pip",
+  'Grupo': "Grupp",
+  'Nenhum': "Ingen",
+  'Novo grupo': "Ny grupp",
+  'O do grupo ({grupo})': "Gruppens ({grupo})",
+  'Grupos de toque': "Ringsignalgrupper",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Varje grupp har sin egen ringsignal. Lägg någon i en grupp, eller välj en ringsignal bara för den personen, genom att högerklicka på namnet.",
+  'Apagar grupo': "Ta bort grupp",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Ringer när någon ringer dig i en privat konversation, även när aviseringsljuden är avstängda. I ”Stör ej” visas samtalet utan att ringa.",
   'Avisar das ligações com o Syden em segundo plano?': "Få veta om samtal när Syden är i bakgrunden?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Webbläsaren kommer att be om tillåtelse. Då får du veta om samtal och meddelanden även i en annan flik eller ett annat program.",

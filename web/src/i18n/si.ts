@@ -2812,7 +2812,7 @@ export default {
   'Campanha': 'ව්‍යාපාරය',
   'Sem vidas.': 'ජීවිත ඉතිරි නැත.',
   'Você volta em {n}…': '{n} කින් ආපසු එනවා…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'ඇවිදීමට ඊතල යතුරු, ගැසීමට X (එක දිගට තුනක් කොම්බෝ), පැනීමට Z, විශේෂ පහරට C, එය ජීවිතයෙන් ටිකක් වැය කරයි.',
+  'Arrancada': 'වේගවත් දිවීම',
   'Andar': 'ඇවිදින්න',
   'Especial': 'විශේෂ',
   'Pular': 'පනින්න',
@@ -3177,6 +3177,9 @@ export default {
   "Entrar na comunidade": "ප්‍රජාවට එක්වන්න",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "සිටුවන පංකාවක්, රවුම් දැලක් සමඟ, උණුසුම් දිනවලට.",
+  // A caminha do gato
+  "Caminha do gato": "පූසාගේ ඇඳ",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "රවුම් හා මෘදු, පහත් ඇතුල් වීමක් සමඟ. පූසා නිදන්නේ මෙතැන.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "අවතාරය",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3189,6 +3192,23 @@ export default {
   "Bicho do quarto": "කාමරයේ සුරතලා",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "ඇමතුම් නාදය",
+  'Tocar ligações com o áudio desativado': "ශබ්දය අක්‍රිය වුවත් ඇමතුම් නාද කරන්න",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "ශබ්දය අක්‍රිය විට පුද්ගලික ඇමතුමක් ශබ්දයක් නැතිව පැමිණේ: දැනුම්දීම තිරයේ පෙන්වන අතර Syden කාර්ය තීරුවේ දැල්වේ. කෙසේ වෙතත් නාදය ඇසීමට මෙය සක්‍රිය කරන්න.",
+  'Avatares anteriores': "පෙර අවතාර",
+  'Voltar a este avatar': "මෙම අවතාරයට ආපසු යන්න",
+  'Tirar do histórico': "ඉතිහාසයෙන් ඉවත් කරන්න",
+  'Avatar não encontrado.': "අවතාරය හමු නොවීය.",
+  'Sininho': "සීනුව",
+  'Arpejo': "ආර්පෙජියෝ",
+  'Suave': "මෘදු",
+  'Bipe': "බීප්",
+  'Grupo': "කණ්ඩායම",
+  'Nenhum': "කිසිවක් නැත",
+  'Novo grupo': "නව කණ්ඩායම",
+  'O do grupo ({grupo})': "කණ්ඩායමේ නාදය ({grupo})",
+  'Grupos de toque': "නාද කණ්ඩායම්",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "සෑම කණ්ඩායමකටම තමන්ගේම නාදයක් ඇත. නම මත දකුණු-ක්ලික් කර කෙනෙකු කණ්ඩායමකට දමන්න, නැතහොත් ඔහුට පමණක් නාදයක් තෝරන්න.",
+  'Apagar grupo': "කණ්ඩායම මකන්න",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "පෞද්ගලික සංවාදයක කවුරුන් හෝ ඔබට ඇමතූ විට නාද වේ, දැනුම්දීමේ ශබ්ද අක්‍රිය කර තිබුණත්. \"බාධා නොකරන්න\" තුළ ඇමතුම නාද නොවී පෙන්වයි.",
   'Avisar das ligações com o Syden em segundo plano?': "Syden පසුබිමේ ඇති විට ඇමතුම් ගැන දන්වන්නද?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "බ්‍රවුසරය අවසර ඉල්ලයි. එවිට වෙනත් ටැබයක හෝ වැඩසටහනක සිටියත් ඔබට ඇමතුම් සහ පණිවිඩ ගැන දැනගත හැක.",

@@ -2814,7 +2814,7 @@ export default {
   'Campanha': 'Kampanja',
   'Sem vidas.': 'Ni več življenj.',
   'Você volta em {n}…': 'Vrneš se čez {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Puščice za hojo, X za udarec (trije zapored so kombo), Z za skok, C za posebno potezo, ki porabi malo življenja.',
+  'Arrancada': 'Šprint',
   'Andar': 'Hoja',
   'Especial': 'Posebna',
   'Pular': 'Skok',
@@ -3179,6 +3179,9 @@ export default {
   "Entrar na comunidade": "Pridruži se skupnosti",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Stoječi, z okroglo mrežo, za vroče dni.",
+  // A caminha do gato
+  "Caminha do gato": "Mačja posteljica",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Okrogla in mehka, z nizkim vhodom. Tu spi mačka.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3191,6 +3194,23 @@ export default {
   "Bicho do quarto": "Ljubljenček v sobi",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Zvonjenje klica",
+  'Tocar ligações com o áudio desativado': "Zvoni ob klicih tudi z izklopljenim zvokom",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Z izklopljenim zvokom zasebni klic pride brez zvoka: obvestilo se prikaže na zaslonu, Syden pa utripa v opravilni vrstici. Vklopi, da zvonjenje vseeno slišiš.",
+  'Avatares anteriores': "Prejšnji avatarji",
+  'Voltar a este avatar': "Vrni se k temu avatarju",
+  'Tirar do histórico': "Odstrani iz zgodovine",
+  'Avatar não encontrado.': "Avatarja ni mogoče najti.",
+  'Sininho': "Zvonček",
+  'Arpejo': "Arpeggio",
+  'Suave': "Nežno",
+  'Bipe': "Pisk",
+  'Grupo': "Skupina",
+  'Nenhum': "Brez",
+  'Novo grupo': "Nova skupina",
+  'O do grupo ({grupo})': "Zvonjenje skupine ({grupo})",
+  'Grupos de toque': "Skupine zvonjenj",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Vsaka skupina ima svoje zvonjenje. Daj nekoga v skupino ali izberi zvonjenje samo zanj, z desnim klikom na njegovo ime.",
+  'Apagar grupo': "Izbriši skupino",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Zazvoni, ko te nekdo pokliče v zasebnem pogovoru, tudi če so opozorilni zvoki izklopljeni. V načinu »Ne moti« se klic prikaže brez zvonjenja.",
   'Avisar das ligações com o Syden em segundo plano?': "Te obveščam o klicih, ko je Syden v ozadju?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Brskalnik bo prosil za dovoljenje. Tako bodo klici in sporočila vidni tudi v drugem zavihku ali programu.",

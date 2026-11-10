@@ -2781,7 +2781,7 @@ export default {
   'Campanha': 'လှုပ်ရှားမှု',
   'Sem vidas.': 'အသက် မကျန်တော့ပါ။',
   'Você volta em {n}…': '{n} အကြာတွင် ပြန်လာမည်…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'မြှားခလုတ်များဖြင့် လမ်းလျှောက်ပါ၊ X ဖြင့် ထိုးပါ (သုံးချက်ဆက်တိုက်က ကွန်ဘို)၊ Z ဖြင့် ခုန်ပါ၊ C ဖြင့် အထူးလှုပ်ရှားမှု၊ ၎င်းက အသက်အနည်းငယ် ကုန်စေသည်။',
+  'Arrancada': 'အရှိန်ပြေး',
   'Andar': 'လျှောက်ရန်',
   'Especial': 'အထူး',
   'Pular': 'ခုန်ရန်',
@@ -3146,6 +3146,9 @@ export default {
   "Entrar na comunidade": "အသိုင်းအဝိုင်းသို့ ဝင်ရန်",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "ရပ်ထားသော ပန်ကာ၊ အဝိုင်းဇကာပါ၊ ပူသောနေ့များအတွက်။",
+  // A caminha do gato
+  "Caminha do gato": "ကြောင်အိပ်ရာ",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "အဝိုင်းပုံ၊ ပျော့ပျောင်းပြီး ဝင်ပေါက်နိမ့်သည်။ ကြောင် ဒီမှာ အိပ်သည်။",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "ပရိုဖိုင်ပုံ",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3158,6 +3161,23 @@ export default {
   "Bicho do quarto": "အခန်းထဲက အိမ်မွေးတိရစ္ဆာန်",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "ခေါ်ဆိုမှု မြည်သံ",
+  'Tocar ligações com o áudio desativado': "အသံပိတ်ထားလည်း ခေါ်ဆိုမှု မြည်စေရန်",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "အသံပိတ်ထားချိန်တွင် ကိုယ်ပိုင်ခေါ်ဆိုမှုသည် အသံမပါဘဲ ရောက်လာသည်- အသိပေးချက် မျက်နှာပြင်ပေါ်တွင် ပေါ်လာပြီး Syden သည် taskbar တွင် မှိတ်တုတ်မှိတ်တုတ် ဖြစ်နေမည်။ မည်သို့ပင်ဖြစ်စေ မြည်သံကို ကြားလိုလျှင် ၎င်းကို ဖွင့်ပါ။",
+  'Avatares anteriores': "ယခင် ပရိုဖိုင်ပုံများ",
+  'Voltar a este avatar': "ဤပရိုဖိုင်ပုံသို့ ပြန်သွားရန်",
+  'Tirar do histórico': "မှတ်တမ်းမှ ဖယ်ရှားရန်",
+  'Avatar não encontrado.': "ပရိုဖိုင်ပုံ မတွေ့ပါ။",
+  'Sininho': "ခေါင်းလောင်းသံ",
+  'Arpejo': "အာပီဂျီယို",
+  'Suave': "နူးညံ့",
+  'Bipe': "ဘိပ်",
+  'Grupo': "အဖွဲ့",
+  'Nenhum': "မရှိ",
+  'Novo grupo': "အဖွဲ့သစ်",
+  'O do grupo ({grupo})': "အဖွဲ့၏ မြည်သံ ({grupo})",
+  'Grupos de toque': "မြည်သံ အဖွဲ့များ",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "အဖွဲ့တိုင်းတွင် ကိုယ်ပိုင်မြည်သံ ရှိသည်။ အမည်ပေါ်တွင် ညာကလစ်နှိပ်၍ တစ်စုံတစ်ယောက်ကို အဖွဲ့ထဲထည့်ပါ သို့မဟုတ် ထိုသူအတွက်သာ မြည်သံ ရွေးပါ။",
+  'Apagar grupo': "အဖွဲ့ ဖျက်ရန်",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "သီးသန့်စကားဝိုင်းတွင် တစ်စုံတစ်ယောက် သင့်ကို ခေါ်ဆိုသည့်အခါ မြည်သည်၊ အသိပေး အသံများ ပိတ်ထားသော်လည်း မြည်သည်။ \"မနှောင့်ယှက်ပါနှင့်\" တွင် ခေါ်ဆိုမှုကို မမြည်ဘဲ ပြသည်။",
   'Avisar das ligações com o Syden em segundo plano?': "Syden နောက်ခံတွင် ရှိနေစဉ် ခေါ်ဆိုမှုများကို အသိပေးမလား?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "ဘရောက်ဇာက ခွင့်ပြုချက် တောင်းပါမည်။ ထိုသို့ဖြင့် အခြားတဘ် သို့မဟုတ် ပရိုဂရမ်တွင် ရှိနေစဉ်လည်း ခေါ်ဆိုမှုနှင့် မက်ဆေ့ချ်များကို သိရပါမည်။",

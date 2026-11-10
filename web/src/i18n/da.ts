@@ -2806,7 +2806,7 @@ export default {
   'Campanha': 'Kampagne',
   'Sem vidas.': 'Ingen liv tilbage.',
   'Você volta em {n}…': 'Du er tilbage om {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Piletaster for at gå, X for at slå (tre i træk er kombo), Z for at hoppe, C for specialangrebet, som koster lidt liv.',
+  'Arrancada': 'Spurt',
   'Andar': 'Gå',
   'Especial': 'Special',
   'Pular': 'Hop',
@@ -3171,6 +3171,9 @@ export default {
   "Entrar na comunidade": "Bliv en del af fællesskabet",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Stående, med det runde gitter, til de varme dage.",
+  // A caminha do gato
+  "Caminha do gato": "Kattekurv",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Rund og blød, med en lav indgang. Katten sover her.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3183,6 +3186,23 @@ export default {
   "Bicho do quarto": "Værelsets kæledyr",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Ringetone",
+  'Tocar ligações com o áudio desativado': "Ring ved opkald, selv med lyd slået fra",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Med lyd slået fra kommer et privat opkald uden lyd: beskeden vises på skærmen, og Syden blinker på proceslinjen. Slå det til for at høre ringetonen alligevel.",
+  'Avatares anteriores': "Tidligere avatarer",
+  'Voltar a este avatar': "Gå tilbage til denne avatar",
+  'Tirar do histórico': "Fjern fra historikken",
+  'Avatar não encontrado.': "Avataren blev ikke fundet.",
+  'Sininho': "Klokke",
+  'Arpejo': "Arpeggio",
+  'Suave': "Blød",
+  'Bipe': "Bip",
+  'Grupo': "Gruppe",
+  'Nenhum': "Ingen",
+  'Novo grupo': "Ny gruppe",
+  'O do grupo ({grupo})': "Gruppens ({grupo})",
+  'Grupos de toque': "Ringetonegrupper",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Hver gruppe har sin egen ringetone. Sæt nogen i en gruppe, eller vælg en ringetone kun til den person, ved at højreklikke på navnet.",
+  'Apagar grupo': "Slet gruppe",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Ringer, når nogen ringer til dig i en privat samtale, også når notifikationslydene er slået fra. Under \"Forstyr ikke\" vises opkaldet uden at ringe.",
   'Avisar das ligações com o Syden em segundo plano?': "Skal du have besked om opkald, når Syden er i baggrunden?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Browseren vil bede om tilladelse. Så får du besked om opkald og beskeder, selv i en anden fane eller et andet program.",

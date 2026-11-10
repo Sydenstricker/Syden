@@ -2727,7 +2727,7 @@ export default {
   'Campanha': 'பயணம்',
   'Sem vidas.': 'உயிர்கள் இல்லை.',
   'Você volta em {n}…': '{n} இல் திரும்புவாய்…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'நடக்க அம்புக்குறி விசைகள், அடிக்க X (தொடர்ந்து மூன்று என்பது காம்போ), தாவ Z, சிறப்பு அடிக்கு C, அது கொஞ்சம் உயிரைச் செலவழிக்கும்.',
+  'Arrancada': 'பாய்ச்சல்',
   'Andar': 'நட',
   'Especial': 'சிறப்பு',
   'Pular': 'தாவு',
@@ -3092,6 +3092,9 @@ export default {
   "Entrar na comunidade": "சமூகத்தில் சேர்",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "நிற்கும் மின்விசிறி, வட்ட வலையுடன், வெயில் நாட்களுக்கு.",
+  // A caminha do gato
+  "Caminha do gato": "பூனைப் படுக்கை",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "வட்டமானது, மென்மையானது, தாழ்வான நுழைவுடன். பூனை இங்கே தூங்கும்.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "சுயவிவரப் படம்",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3104,6 +3107,23 @@ export default {
   "Bicho do quarto": "அறையின் செல்லப்பிராணி",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "அழைப்பு ஒலி",
+  'Tocar ligações com o áudio desativado': "ஒலி அணைத்திருந்தாலும் அழைப்புக்கு ஒலிக்கட்டும்",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "ஒலி அணைத்திருக்கும்போது தனிப்பட்ட அழைப்பு ஒலியின்றி வரும்: அறிவிப்பு திரையில் தோன்றும், Syden பணிப்பட்டியில் மின்னும். எப்படியும் அழைப்பு ஒலியைக் கேட்க இதை இயக்கு.",
+  'Avatares anteriores': "முந்தைய சுயவிவரப் படங்கள்",
+  'Voltar a este avatar': "இந்தச் சுயவிவரப் படத்துக்குத் திரும்பு",
+  'Tirar do histórico': "வரலாற்றிலிருந்து நீக்கு",
+  'Avatar não encontrado.': "சுயவிவரப் படம் கிடைக்கவில்லை.",
+  'Sininho': "மணியொலி",
+  'Arpejo': "ஆர்பெஜியோ",
+  'Suave': "மென்மை",
+  'Bipe': "பீப்",
+  'Grupo': "குழு",
+  'Nenhum': "எதுவுமில்லை",
+  'Novo grupo': "புதிய குழு",
+  'O do grupo ({grupo})': "குழுவின் ஒலி ({grupo})",
+  'Grupos de toque': "அழைப்பு ஒலிக் குழுக்கள்",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "ஒவ்வொரு குழுவுக்கும் தனி அழைப்பு ஒலி உண்டு. பெயரில் வலது கிளிக் செய்து ஒருவரைக் குழுவில் சேர், அல்லது அவருக்கு மட்டும் ஒலியைத் தேர்ந்தெடு.",
+  'Apagar grupo': "குழுவை நீக்கு",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "தனிப்பட்ட உரையாடலில் யாராவது உங்களை அழைக்கும்போது ஒலிக்கும், அறிவிப்பு ஒலிகள் அணைக்கப்பட்டிருந்தாலும். \"தொந்தரவு செய்ய வேண்டாம்\" இல் அழைப்பு ஒலிக்காமல் தோன்றும்.",
   'Avisar das ligações com o Syden em segundo plano?': "Syden பின்னணியில் இருக்கும்போது அழைப்புகளைப் பற்றி அறிவிக்கவா?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "உலாவி அனுமதி கேட்கும். இதனால் வேறு தாவலிலோ நிரலிலோ இருந்தாலும் அழைப்புகளையும் செய்திகளையும் அறிந்துகொள்வீர்கள்.",

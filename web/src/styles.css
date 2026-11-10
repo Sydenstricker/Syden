@@ -10096,6 +10096,68 @@ textarea {
   margin-bottom: 12px;
 }
 
+/* OS AVATARES ANTERIORES (09/11/2026): os últimos 5, em fila, clicar volta; o "×" no canto tira do histórico. */
+.avatares-anteriores {
+  margin-top: 20px;
+}
+
+.avatares-anteriores h3 {
+  margin: 0 0 10px;
+  color: var(--text-muted);
+  font-size: calc(13px * var(--escala-do-texto));
+}
+
+.avatares-anteriores ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.avatares-anteriores li {
+  position: relative;
+}
+
+.avatar-anterior {
+  display: block;
+  padding: 3px;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+}
+
+.avatar-anterior:hover,
+.avatar-anterior:focus-visible {
+  border-color: var(--accent);
+}
+
+.avatar-anterior .avatar {
+  width: 56px;
+  height: 56px;
+}
+
+.avatar-anterior-tirar {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border-radius: 50%;
+  background: var(--bg-secondary);
+  color: var(--text-muted);
+  box-shadow: 0 0 0 1px var(--border);
+}
+
+.avatar-anterior-tirar:hover {
+  color: var(--text);
+}
+
 .personagem-foto .avatar-acoes {
   flex-wrap: wrap;
   background: var(--bg-main);
@@ -19762,4 +19824,27 @@ body.arrastando-barra {
   height: 72px;
   border-radius: 4px;
   image-rendering: pixelated;
+}
+
+/* OS GRUPOS DE TOQUE (09/11/2026): uma linha por grupo, com o nome, quantas pessoas, o som, ouvir e apagar. */
+.grupos-de-toque {
+  margin: 4px 0 20px;
+}
+
+.grupo-de-toque {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.grupo-de-toque input {
+  flex: 1 1 140px;
+  min-width: 0;
+}
+
+.grupo-de-toque-pessoas {
+  color: var(--text-muted);
+  font-size: calc(12px * var(--escala-do-texto));
 }

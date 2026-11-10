@@ -2808,7 +2808,7 @@ export default {
   'Campanha': 'Жорық',
   'Sem vidas.': 'Өмір қалмады.',
   'Você volta em {n}…': '{n} кейін қайтасыз…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Жүру үшін көрсеткілер, соғу үшін X (қатарынан үшеуі — комбо), секіру үшін Z, сәл өмір жұмсайтын арнайы қимыл үшін C.',
+  'Arrancada': 'Серпіліс',
   'Andar': 'Жүру',
   'Especial': 'Арнайы',
   'Pular': 'Секіру',
@@ -3181,6 +3181,9 @@ export default {
   "Entrar na comunidade": "Қауымдастыққа қосылу",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Еденге қойылатын, дөңгелек торы бар, ыстық күндерге.",
+  // A caminha do gato
+  "Caminha do gato": "Мысық төсегі",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Дөңгелек әрі жұмсақ, кіреберісі аласа. Мысық осында ұйықтайды.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Аватар",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3193,6 +3196,23 @@ export default {
   "Bicho do quarto": "Бөлменің үй жануары",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Қоңырау әуені",
+  'Tocar ligações com o áudio desativado': "Дыбыс өшірулі кезде де қоңырау әуенін ойнату",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Дыбыс өшірулі кезде жеке қоңырау дыбыссыз келеді: хабарлама экранда көрінеді, ал Syden тапсырмалар тақтасында жыпылықтайды. Әуенді бәрібір есту үшін мұны қос.",
+  'Avatares anteriores': "Бұрынғы аватарлар",
+  'Voltar a este avatar': "Осы аватарға оралу",
+  'Tirar do histórico': "Тарихтан алып тастау",
+  'Avatar não encontrado.': "Аватар табылмады.",
+  'Sininho': "Сыңғыр",
+  'Arpejo': "Арпеджио",
+  'Suave': "Жұмсақ",
+  'Bipe': "Бип",
+  'Grupo': "Топ",
+  'Nenhum': "Жоқ",
+  'Novo grupo': "Жаңа топ",
+  'O do grupo ({grupo})': "Топтікі ({grupo})",
+  'Grupos de toque': "Әуен топтары",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Әр топтың өз әуені бар. Адамның атын тінтуірдің оң жағымен басып, оны топқа қос немесе тек соған арналған әуен таңда.",
+  'Apagar grupo': "Топты жою",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Біреу саған жеке әңгімеде қоңырау шалғанда шырылдайды, ескерту дыбыстары өшірулі болса да. «Мазаламаңыз» режимінде қоңырау дыбыссыз көрінеді.",
   'Avisar das ligações com o Syden em segundo plano?': "Syden фондық режимде болғанда қоңыраулар туралы хабарласын ба?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Браузер рұқсат сұрайды. Сонда басқа қойындыда не бағдарламада жүрсең де, қоңыраулар мен хабарламалар туралы білесің.",

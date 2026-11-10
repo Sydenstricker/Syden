@@ -2737,7 +2737,7 @@ export default {
   'Campanha': 'Campaña',
   'Sem vidas.': 'Sin vidas.',
   'Você volta em {n}…': 'Vuelves en {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Flechas para andar, X para golpear (tres seguidos es el combo), Z para saltar, C para el especial, que gasta un poco de vida.',
+  'Arrancada': 'Impulso',
   'Andar': 'Andar',
   'Especial': 'Especial',
   'Pular': 'Saltar',
@@ -3102,6 +3102,9 @@ export default {
   "Entrar na comunidade": "Unirse a la comunidad",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "De pie, con su rejilla redonda, para los días de calor.",
+  // A caminha do gato
+  "Caminha do gato": "Camita del gato",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Redonda y mullida, con la entrada más baja. Aquí duerme el gato.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3114,6 +3117,23 @@ export default {
   "Bicho do quarto": "Mascota del cuarto",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Tono de llamada",
+  'Tocar ligações com o áudio desativado': "Sonar las llamadas con el audio desactivado",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Con el audio desactivado, una llamada privada llega sin sonido: el aviso aparece en la pantalla y Syden parpadea en la barra de tareas. Actívalo para oír el tono igualmente.",
+  'Avatares anteriores': "Avatares anteriores",
+  'Voltar a este avatar': "Volver a este avatar",
+  'Tirar do histórico': "Quitar del historial",
+  'Avatar não encontrado.': "Avatar no encontrado.",
+  'Sininho': "Campanita",
+  'Arpejo': "Arpegio",
+  'Suave': "Suave",
+  'Bipe': "Pitido",
+  'Grupo': "Grupo",
+  'Nenhum': "Ninguno",
+  'Novo grupo': "Nuevo grupo",
+  'O do grupo ({grupo})': "El del grupo ({grupo})",
+  'Grupos de toque': "Grupos de tono",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Cada grupo tiene su tono. Pon a alguien en un grupo, o elige un tono solo para esa persona, con clic derecho en su nombre.",
+  'Apagar grupo': "Borrar grupo",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Suena cuando alguien te llama en una conversación privada, aunque tengas los sonidos de aviso desactivados. En \"No molestar\", la llamada aparece sin sonar.",
   'Avisar das ligações com o Syden em segundo plano?': "¿Avisarte de las llamadas con Syden en segundo plano?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "El navegador te pedirá permiso. Así te enteras de llamadas y mensajes aunque estés en otra pestaña o programa.",

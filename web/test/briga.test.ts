@@ -23,7 +23,7 @@ const DT = 1 / 60;
 
 test('as medidas do site são as do servidor', async () => {
   const s = await import('../../server/src/minijogo-briga.ts');
-  for (const k of ['ARENA_L', 'PROF', 'ONDAS_X', 'VEL_X', 'VEL_Y', 'VIDA', 'CUSTO_ESPECIAL', 'PASSO_MS', 'GOLPES', 'CORPO', 'TIPOS', 'ESTADOS', 'ACOES'] as const) {
+  for (const k of ['ARENA_L', 'PROF', 'ONDAS_X', 'VEL_X', 'VEL_Y', 'VIDA', 'GIRO_MS', 'GIRO_TICK_MS', 'RECARGA_ESPECIAL_MS', 'ARRANCADA_MS', 'ARRANCADA_VEL', 'ARRANCADA_RECARGA_MS', 'PASSO_MS', 'GOLPES', 'CORPO', 'TIPOS', 'ESTADOS', 'ACOES'] as const) {
     assert.deepEqual((regras as Record<string, unknown>)[k], (s as Record<string, unknown>)[k], k);
   }
 });
@@ -48,7 +48,7 @@ test('o combo: três apertos dão soco1, soco2 e soco3, com números seguidos e 
   assert.equal(comecos[3]?.golpe, 'soco1', 'depois do terceiro, recomeça');
 });
 
-test('o pulo: uma voadora por pulo, e o especial só com vida para pagar', () => {
+test('o pulo: uma voadora por pulo, e o especial só com a barra cheia', () => {
   const c = novoCoelho(100, 20);
   const cmd = comandosVazios();
   cmd.pulo = true;
@@ -61,16 +61,70 @@ test('o pulo: uma voadora por pulo, e o especial só com vida para pagar', () =>
   assert.equal(passoDoCoelho(c, cmd, DT, [0, 320]).comecou, undefined, 'a segunda no mesmo pulo não sai');
   for (let k = 0; k < 120 && c.z > 0; k++) passoDoCoelho(c, cmd, DT, [0, 320]);
   assert.equal(c.acao, 'parado');
-  c.hp = regras.CUSTO_ESPECIAL;
+  c.ultimoEspecial = c.relogio - regras.RECARGA_ESPECIAL_MS / 2;
+  assert.ok(Math.abs(regras.cargaDoEspecial(c) - 0.5) < 0.01, 'a barra pela metade');
   cmd.especial = true;
-  assert.equal(passoDoCoelho(c, cmd, DT, [0, 320]).comecou, undefined, 'sem vida para pagar');
-  c.hp = 50;
+  assert.equal(passoDoCoelho(c, cmd, DT, [0, 320]).comecou, undefined, 'sem a barra cheia');
+  c.ultimoEspecial = -Infinity;
+  const hp = c.hp;
   cmd.especial = true;
   assert.equal(passoDoCoelho(c, cmd, DT, [0, 320]).comecou?.golpe, 'especial');
+  assert.equal(c.hp, hp, 'não custa vida');
+  assert.equal(regras.cargaDoEspecial(c) < 0.01, true, 'a barra esvazia');
   // apanhar derruba e tira o golpe
   apanhar(c, true, -1);
   assert.equal(c.acao, 'caido');
   assert.equal(golpeAtivo(c), false);
+});
+
+test('o giro anda, troca de faixa e pega de novo a cada volta', () => {
+  const c = novoCoelho(100, 20);
+  const cmd = comandosVazios();
+  cmd.especial = true;
+  passoDoCoelho(c, cmd, DT, [0, 1000]);
+  assert.equal(c.acao, 'especial');
+  const voltas = new Set<number>();
+  cmd.direita = cmd.baixo = true;
+  for (let k = 0; k < 60 && c.acao === 'especial'; k++) {
+    passoDoCoelho(c, cmd, DT, [0, 1000]);
+    assert.equal(golpeAtivo(c), true, 'pega o giro inteiro');
+    c.acertados.add(k);
+    voltas.add(c.volta);
+  }
+  assert.ok(c.x > 150, `andou girando: ${c.x}`);
+  assert.ok(c.y > 30, `trocou de faixa girando: ${c.y}`);
+  assert.equal(c.acao, 'especial', 'um segundo depois, ainda gira');
+  for (let k = 0; k < 120 && c.acao === 'especial'; k++) {
+    passoDoCoelho(c, cmd, DT, [0, 1000]);
+    voltas.add(c.volta);
+  }
+  assert.deepEqual([...voltas].sort(), [0, 1, 2, 3, 4]);
+  assert.equal(c.golpe, null);
+});
+
+test('a arrancada: dois toques para o mesmo lado, para frente ou para trás, com recarga', () => {
+  const d = new regras.ToqueDuplo();
+  assert.equal(d.apertou(1, 0), false);
+  assert.equal(d.apertou(1, 180), true, 'o segundo toque logo depois');
+  assert.equal(d.apertou(1, 300), false, 'o terceiro recomeça a conta');
+  assert.equal(d.apertou(-1, 400), false);
+  assert.equal(d.apertou(1, 450), false, 'trocou de lado: não vale');
+  assert.equal(d.apertou(1, 900), false, 'devagar demais');
+
+  const c = novoCoelho(200, 20);
+  const cmd = comandosVazios();
+  cmd.arrancada = -1;
+  assert.equal(passoDoCoelho(c, cmd, DT, [0, 1000]).arrancou, true);
+  assert.equal(c.lado, -1, 'para trás também');
+  for (let k = 0; k < 30 && c.acao === 'arrancada'; k++) passoDoCoelho(c, cmd, DT, [0, 1000]);
+  const andou = 200 - c.x;
+  assert.ok(andou > 40 && andou < 50, `a arrancada andou ${andou} px`);
+  cmd.arrancada = 1;
+  assert.equal(passoDoCoelho(c, cmd, DT, [0, 1000]).arrancou, undefined, 'na recarga, não sai');
+  for (let k = 0; k < 40; k++) passoDoCoelho(c, cmd, DT, [0, 1000]);
+  cmd.arrancada = 1;
+  assert.equal(passoDoCoelho(c, cmd, DT, [0, 1000]).arrancou, true);
+  assert.equal(c.lado, 1);
 });
 
 test('a caixa do golpe: na frente e na mesma faixa; o especial pega dos dois lados; o corvo no alto, só de voadora', () => {
@@ -100,10 +154,10 @@ test('as fases e os bichos: o arquivo do site é o do servidor, byte a byte', as
   const site = await readFile(new URL('../src/briga/fases.ts', import.meta.url), 'utf-8');
   const servidor = await readFile(new URL('../../server/src/briga-fases.ts', import.meta.url), 'utf-8');
   assert.equal(site, servidor);
-  // todo bicho das fases novas tem a folha dele (o Blender a fez), e os da horta continuam desenhados por código
+  // todo bicho tem a folha dele (o Blender a fez), a horta também desde 09/11/2026
   const { FOLHAS_DOS_BICHOS } = await import('../src/briga/folhasDosBichos');
   const { FASES_DA_BRIGA } = await import('../src/briga/fases');
-  for (const f of FASES_DA_BRIGA.slice(1)) {
+  for (const f of FASES_DA_BRIGA) {
     for (const tipo of [f.chefe, ...f.ondas.flatMap((o) => Object.keys(o))]) assert.equal(FOLHAS_DOS_BICHOS[tipo]?.fase, f.id, `${f.id}: ${tipo}`);
   }
 });

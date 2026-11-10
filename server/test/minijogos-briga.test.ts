@@ -8,7 +8,7 @@ import { comToken, criarConta, servidorDeTeste } from './ajuda.js';
 
 const { app, fechar } = await servidorDeTeste();
 const mod = await import('../src/minijogo-briga.js');
-const { criarBriga, briga, GRACA_MS, PASSO_MS, ONDAS, ONDAS_X, VOLTA_MS, CUSTO_ESPECIAL, FIM_MS, Z_MAX, AR_MAX_MS } = mod;
+const { criarBriga, briga, GRACA_MS, PASSO_MS, ONDAS, ONDAS_X, VOLTA_MS, RECARGA_ESPECIAL_MS, GIRO_TICK_MS, ARRANCADA_MS, ACOES, FIM_MS, Z_MAX, AR_MAX_MS } = mod;
 after(fechar);
 
 let agora = 9_000_000;
@@ -242,19 +242,74 @@ test('o combo inteiro derruba; caído não apanha; rápido demais não começa',
   m.jogo.parar!();
 });
 
-test('o especial custa vida (o servidor cobra) e não se repete de seguida', () => {
+test('o especial: sai com a barra cheia, não custa vida, e não se repete antes da recarga', () => {
   const m = comecar();
   m.andar(200);
   const j = m.interno._jogadores.get(anaId)!;
   const hp = j.hp;
+  const comecou = (id: number) => m.golpe(anaId, { a: id, inimigo: 999, x: j.x, y: j.y, v: 0 }) !== 'golpe que não começou';
   m.pos(anaId, { x: j.x, y: j.y, ataque: { id: 1, g: 'especial' } });
-  assert.equal(j.hp, hp - CUSTO_ESPECIAL);
+  assert.equal(comecou(1), true, 'a barra começa cheia');
+  assert.equal(j.hp, hp, 'não custa vida');
+  m.andar(2000);
   m.pos(anaId, { x: j.x, y: j.y, ataque: { id: 2, g: 'especial' } });
-  assert.equal(j.hp, hp - CUSTO_ESPECIAL, 'o segundo, logo depois, não começa');
-  m.andar(1000);
-  j.hp = CUSTO_ESPECIAL;
+  assert.equal(comecou(2), false, 'antes da recarga, não começa');
+  m.andar(RECARGA_ESPECIAL_MS);
   m.pos(anaId, { x: j.x, y: j.y, ataque: { id: 3, g: 'especial' } });
-  assert.equal(j.hp, CUSTO_ESPECIAL, 'sem vida para pagar, não sai');
+  assert.equal(comecou(3), true, 'recarregada, sai de novo');
+  m.jogo.parar!();
+});
+
+test('o giro pega cada inimigo uma vez por volta, e a volta não chega antes da hora', () => {
+  const m = comecar();
+  const r = umaRaposa(m);
+  m.andar(500);
+  teleportar(m, anaId, r.x - 20, r.y);
+  m.pos(anaId, { x: r.x - 20, y: r.y, ataque: { id: 1, g: 'especial' } });
+  const hp = r.hp;
+  const bater = (v: unknown) => {
+    teleportar(m, anaId, r.x - 20, r.y);
+    return m.golpe(anaId, { a: 1, inimigo: r.id, x: r.x - 20, y: r.y, v });
+  };
+  assert.equal(bater(0), null);
+  assert.ok(r.hp < hp, 'o dano entrou');
+  assert.equal(bater(0), 'já acertou', 'a mesma volta não pega duas vezes');
+  assert.equal(bater(3), 'volta adiantada', 'a quarta volta, logo no começo, não vale');
+  assert.equal(bater(9), 'volta');
+  assert.equal(bater(undefined), 'volta');
+  m.andar(GIRO_TICK_MS);
+  assert.equal(bater(1), null, 'a volta seguinte pega de novo');
+  m.jogo.parar!();
+});
+
+test('a arrancada anda mais que o coelho, uma de cada vez, e não vira teleporte', () => {
+  const m = comecar();
+  m.andar(1500);
+  const j = m.interno._jogadores.get(anaId)!;
+  const ARR = ACOES.indexOf('arrancada');
+  const arrancar = () => {
+    const x0 = j.x;
+    m.pos(anaId, { x: x0, y: j.y, acao: ARR });
+    // a do site: 220 px/s por 200 ms (11 px a cada 50 ms)
+    for (let k = 1; k <= 4; k++) {
+      m.andar(PASSO_MS);
+      m.pos(anaId, { x: x0 + k * 11, y: j.y, acao: ARR });
+    }
+    return j.x - x0;
+  };
+  m.pos(anaId, { x: j.x, y: j.y });
+  m.andar(500);
+  const andou = arrancar();
+  assert.ok(andou >= 43, `a arrancada andou ${andou} px`);
+  // logo depois, outra: o crédito a mais não vem
+  const segunda = arrancar();
+  assert.ok(segunda < 30, `a segunda, na recarga, andou ${segunda} px`);
+  // a ação dizendo arrancada não deixa saltar longe
+  m.andar(1000);
+  const x1 = j.x;
+  m.pos(anaId, { x: x1 + 250, y: j.y, acao: ARR });
+  assert.ok(j.x - x1 < 16 + 44 + 1, `saltou ${j.x - x1} px`);
+  assert.ok(ARRANCADA_MS > 0);
   m.jogo.parar!();
 });
 

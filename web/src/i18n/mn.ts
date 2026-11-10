@@ -2826,7 +2826,7 @@ export default {
   'Campanha': 'Аян',
   'Sem vidas.': 'Амь дууслаа.',
   'Você volta em {n}…': '{n}-ийн дараа буцаж ирнэ…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Сумнуудаар алхаж, X-ээр цохиж (дараалсан гурав нь комбо), Z-ээр үсэрч, C-ээр тусгай цохилт хийнэ, энэ нь бага зэрэг амь зарцуулна.',
+  'Arrancada': 'Огцом гүйлт',
   'Andar': 'Алхах',
   'Especial': 'Тусгай',
   'Pular': 'Үсрэх',
@@ -3191,6 +3191,9 @@ export default {
   "Entrar na comunidade": "Бүлгэмд нэгдэх",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Зогсоолтой, дугуй тортой, халуун өдрүүдэд.",
+  // A caminha do gato
+  "Caminha do gato": "Муурны ор",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Дугуй, зөөлөн, намхан оролттой. Муур энд унтдаг.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Аватар",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3203,6 +3206,23 @@ export default {
   "Bicho do quarto": "Өрөөний тэжээвэр амьтан",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Дуудлагын хонх",
+  'Tocar ligações com o áudio desativado': "Дуу хаасан үед ч дуудлага дуугаргах",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Дуу хаасан үед хувийн дуудлага дуугүй ирнэ: мэдэгдэл дэлгэц дээр гарч, Syden ажлын самбарт анивчина. Хонхыг ямар ч байсан сонсохыг хүсвэл үүнийг асаа.",
+  'Avatares anteriores': "Өмнөх аватарууд",
+  'Voltar a este avatar': "Энэ аватар руу буцах",
+  'Tirar do histórico': "Түүхээс хасах",
+  'Avatar não encontrado.': "Аватар олдсонгүй.",
+  'Sininho': "Хонхны дуу",
+  'Arpejo': "Арпежио",
+  'Suave': "Зөөлөн",
+  'Bipe': "Бип",
+  'Grupo': "Бүлэг",
+  'Nenhum': "Байхгүй",
+  'Novo grupo': "Шинэ бүлэг",
+  'O do grupo ({grupo})': "Бүлгийнх ({grupo})",
+  'Grupos de toque': "Хонхны бүлгүүд",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Бүлэг бүр өөрийн хонхтой. Хүний нэр дээр баруун товшиж түүнийг бүлэгт оруул, эсвэл зөвхөн түүнд зориулсан хонх сонго.",
+  'Apagar grupo': "Бүлгийг устгах",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Хэн нэгэн хувийн ярианд чам руу залгахад дуугарна, мэдэгдлийн дуу авиа унтраалттай байсан ч. \"Бүү саад бол\" горимд дуудлага дуугарахгүйгээр харагдана.",
   'Avisar das ligações com o Syden em segundo plano?': "Syden арын горимд байхад дуудлагын талаар мэдэгдэх үү?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Хөтөч зөвшөөрөл асууна. Ингэснээр өөр таб эсвэл програмд байсан ч дуудлага, мессежийн талаар мэдэх болно.",

@@ -2730,7 +2730,7 @@ export default {
   'Campanha': 'کارزار',
   'Sem vidas.': 'جانی باقی نمانده.',
   'Você volta em {n}…': '{n} دیگر برمی‌گردید…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'کلیدهای جهت‌نما برای راه رفتن، X برای ضربه زدن (سه ضربهٔ پشت سر هم کمبو است)، Z برای پریدن، C برای حرکت ویژه، که کمی جان می‌گیرد.',
+  'Arrancada': 'یورش',
   'Andar': 'راه رفتن',
   'Especial': 'ویژه',
   'Pular': 'پریدن',
@@ -3100,6 +3100,9 @@ export default {
   "Entrar na comunidade": "پیوستن به انجمن",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "ایستاده، با توری گرد، برای روزهای گرم.",
+  // A caminha do gato
+  "Caminha do gato": "تخت گربه",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "گرد و نرم، با ورودی کوتاه. گربه اینجا می‌خوابد.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "تصویر پروفایل",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3112,6 +3115,23 @@ export default {
   "Bicho do quarto": "حیوان خانگی اتاق",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "زنگ تماس",
+  'Tocar ligações com o áudio desativado': "زنگ تماس با صدای خاموش",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "وقتی صدا خاموش است، تماس خصوصی بی‌صدا می‌رسد: اعلان روی صفحه نمایش داده می‌شود و Syden در نوار وظیفه چشمک می‌زند. این را روشن کن تا زنگ را با این حال بشنوی.",
+  'Avatares anteriores': "تصویرهای پروفایل قبلی",
+  'Voltar a este avatar': "برگشتن به این تصویر پروفایل",
+  'Tirar do histórico': "حذف از تاریخچه",
+  'Avatar não encontrado.': "تصویر پروفایل پیدا نشد.",
+  'Sininho': "زنگوله",
+  'Arpejo': "آرپژ",
+  'Suave': "ملایم",
+  'Bipe': "بوق",
+  'Grupo': "گروه",
+  'Nenhum': "هیچ‌کدام",
+  'Novo grupo': "گروه جدید",
+  'O do grupo ({grupo})': "زنگ گروه ({grupo})",
+  'Grupos de toque': "گروه‌های زنگ",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "هر گروه زنگ خودش را دارد. با کلیک راست روی اسم کسی، او را در گروهی بگذار یا فقط برای او زنگی انتخاب کن.",
+  'Apagar grupo': "حذف گروه",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "وقتی کسی در گفتگوی خصوصی با تو تماس می‌گیرد زنگ می‌زند، حتی اگر صداهای هشدار خاموش باشند. در حالت «مزاحم نشوید» تماس بدون زنگ نشان داده می‌شود.",
   'Avisar das ligações com o Syden em segundo plano?': "وقتی Syden در پس‌زمینه است، از تماس‌ها باخبرت کند؟",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "مرورگر اجازه می‌خواهد. این‌طوری حتی در زبانه یا برنامه‌ای دیگر هم از تماس‌ها و پیام‌ها باخبر می‌شوی.",

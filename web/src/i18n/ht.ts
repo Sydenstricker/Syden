@@ -2822,7 +2822,7 @@ export default {
   'Campanha': 'Kanpay',
   'Sem vidas.': 'Pa gen lavi ankò.',
   'Você volta em {n}…': 'Ou retounen nan {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Flèch pou mache, X pou frape (twa youn apre lòt se konbo a), Z pou sote, C pou espesyal la, ki koute yon ti lavi.',
+  'Arrancada': 'Kous rapid',
   'Andar': 'Mache',
   'Especial': 'Espesyal',
   'Pular': 'Sote',
@@ -3187,6 +3187,9 @@ export default {
   "Entrar na comunidade": "Antre nan kominote a",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Vantilatè kanpe, ak griyaj won li, pou jou ki cho yo.",
+  // A caminha do gato
+  "Caminha do gato": "Ti kabann chat la",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Won e mou, ak yon antre ki ba. Chat la dòmi la a.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3199,6 +3202,23 @@ export default {
   "Bicho do quarto": "Bèt kay chanm nan",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Sonnri apèl",
+  'Tocar ligações com o áudio desativado': "Sonnen pou apèl menm lè son an koupe",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Lè son an koupe, yon apèl prive rive san son: avi a parèt sou ekran an epi Syden ap kliyote nan ba travay la. Aktive sa pou w tande sonnri a kanmenm.",
+  'Avatares anteriores': "Avatar anvan yo",
+  'Voltar a este avatar': "Retounen nan avatar sa a",
+  'Tirar do histórico': "Retire nan istorik la",
+  'Avatar não encontrado.': "Avatar la pa jwenn.",
+  'Sininho': "Ti klòch",
+  'Arpejo': "Apèj",
+  'Suave': "Dous",
+  'Bipe': "Bip",
+  'Grupo': "Gwoup",
+  'Nenhum': "Okenn",
+  'Novo grupo': "Nouvo gwoup",
+  'O do grupo ({grupo})': "Sa gwoup la ({grupo})",
+  'Grupos de toque': "Gwoup sonnri",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Chak gwoup gen sonnri pa l. Mete yon moun nan yon gwoup, oswa chwazi yon sonnri pou moun sa a sèlman, avèk klik dwat sou non li.",
+  'Apagar grupo': "Efase gwoup la",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Sonnen lè yon moun rele w nan yon konvèsasyon prive, menm lè son avètisman yo fèmen. Nan \"Pa deranje\", apèl la parèt san l pa sonnen.",
   'Avisar das ligações com o Syden em segundo plano?': "Avèti w pou apèl yo lè Syden dèyè?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Navigatè a pral mande pèmisyon. Konsa w ap konnen lè gen apèl ak mesaj, menm nan yon lòt onglè oswa pwogram.",

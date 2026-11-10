@@ -4,11 +4,14 @@ import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import {
   CHAO,
+  desenharArrancada,
   desenharAviso,
   desenharBarraDoChefe,
+  desenharBarraDoEspecial,
   desenharBicho,
   desenharCoelho,
   desenharEfeito,
+  desenharGiro,
   desenharOndas,
   desenharRastro,
   desenharSeta,
@@ -22,7 +25,7 @@ import {
 } from './briga/desenho';
 import { desenharCenario } from './briga/cenarios';
 import { bicho, CAMPANHA, CORPO, FASES_DA_BRIGA, pistaDaBriga, type TipoDeInimigo } from './briga/fases';
-import { alturaDoBicho, carregarFolhas, desenharBichoDaFolha, desenharTiro, temFolha } from './briga/sprites';
+import { alturaDoBicho, carregarFolhas, desenhaPelaFolha, desenharBichoDaFolha, desenharTiro } from './briga/sprites';
 import { nomeDaPistaEm } from './corrida/nomes';
 import {
   acaoAtiva,
@@ -30,6 +33,7 @@ import {
   apanhar,
   apanhavel,
   ARENA_L,
+  cargaDoEspecial,
   comandosVazios,
   contarDesde,
   encosta,
@@ -44,6 +48,7 @@ import {
   passoDoCoelho,
   pilotoAutomatico,
   TIPOS,
+  ToqueDuplo,
   type Acao,
   type Comandos,
   type InimigoNaTela,
@@ -54,9 +59,9 @@ import { useT } from './i18n';
 import type { EstadoBriga, Partida } from './minijogos';
 
 /**
- * A BRIGA NA HORTA (03/11/2026, server/src/minijogo-briga.ts): briga de rua de lado, com a turma, contra raposas, corvos e um
- * texugo. Só a mecânica dos fliperamas de quatro jogadores do começo dos anos 90; o desenho é todo daqui (briga/desenho.ts)
- * e o coelho é o mascote 3D de lado.
+ * A BRIGA NA HORTA (03/11/2026, server/src/minijogo-briga.ts): briga de rua de lado, com a turma, contra os bichos de cada
+ * fase. Só a mecânica dos fliperamas de quatro jogadores do começo dos anos 90; o cenário é daqui (briga/desenho.ts,
+ * cenarios.ts), os bichos são os monstros da Quaternius renderizados de lado (briga/sprites.ts) e o coelho é o mascote 3D.
  *
  * O MEU COELHO ANDA AQUI, NA HORA (briga/regras.ts, passoDoCoelho), e a posição vai ao servidor ~15 vezes por segundo. Os
  * inimigos e os outros coelhos chegam no quadro do servidor (20 por segundo) e são desenhados ~100 ms atrás, interpolados.
@@ -74,18 +79,25 @@ declare global {
   }
 }
 
-/** O teclado: setas ou WASD andam, X/J bate, Z/K/Espaço pula, C/L é o especial. */
+/**
+ * O teclado: setas ou WASD andam (as duas iguais em tudo, inclusive no toque duplo da arrancada), X/J bate, Z/K/Espaço pula,
+ * C/L é o especial.
+ */
 function useTeclado(ativo: boolean, cmd: Comandos) {
   useEffect(() => {
     if (!ativo) return;
+    const duplo = new ToqueDuplo();
     const tecla = (e: KeyboardEvent, apertada: boolean) => {
       const alvo = e.target as HTMLElement | null;
       if (apertada && alvo && (alvo.tagName === 'INPUT' || alvo.tagName === 'TEXTAREA' || alvo.isContentEditable)) return;
       if (apertada && (e.ctrlKey || e.metaKey || e.altKey)) return;
       const k = e.key.toLowerCase();
       let usou = true;
-      if (k === 'arrowleft' || k === 'a') cmd.esquerda = apertada;
-      else if (k === 'arrowright' || k === 'd') cmd.direita = apertada;
+      // o aperto NOVO de um lado (não o repetido de quem segura) conta para o toque duplo: o segundo é a arrancada
+      const lado = k === 'arrowleft' || k === 'a' ? -1 : k === 'arrowright' || k === 'd' ? 1 : 0;
+      if (lado && apertada && !e.repeat && duplo.apertou(lado, performance.now())) cmd.arrancada = lado;
+      if (lado < 0) cmd.esquerda = apertada;
+      else if (lado > 0) cmd.direita = apertada;
       else if (k === 'arrowup' || k === 'w') cmd.cima = apertada;
       else if (k === 'arrowdown' || k === 's') cmd.baixo = apertada;
       else if (k === 'x' || k === 'j') {
@@ -289,7 +301,8 @@ function Palco({
           eu_.t = 0;
           voltaEm = r[1] > 0 ? Date.now() + 3000 : 0;
         } else if (tipo === 'r' && r[0] === eu) {
-          Object.assign(eu_, novoCoelho(r[1], r[2]), { ataque: eu_.ataque, relogio: eu_.relogio });
+          // a barra do especial continua de onde estava (o servidor também guarda o último giro)
+          Object.assign(eu_, novoCoelho(r[1], r[2]), { ataque: eu_.ataque, relogio: eu_.relogio, ultimoEspecial: eu_.ultimoEspecial });
           eu_.piscandoAte = eu_.relogio + 2000;
         } else if (tipo === 'x') {
           const ini = q.i.find((l) => l[0] === r[0]);
@@ -348,13 +361,23 @@ function Palco({
           // o golpe que começou vai na hora, antes de qualquer acerto dele
           mandarPosicao(novo.comecou);
           tocar(novo.comecou.golpe === 'especial' ? 'combo' : 'soco');
-          if (novo.comecou.golpe === 'especial') efeitos.push({ tipo: 'giro', x: eu_.x, y: eu_.y, z: 0, em: agoraMs });
         }
+        // a arrancada também vai na hora: o servidor dá a folga de distância dela a partir dessa posição
+        if (novo.arrancou) mandarPosicao();
         if (golpeAtivo(eu_) && eu_.golpe) {
           for (const i of naTelaAgora) {
             if (eu_.acertados.has(i.id) || !apanhavel(i, eu_.golpe) || !encosta(eu_.golpe, eu_.x, eu_.y, eu_.z, eu_.lado, i)) continue;
             eu_.acertados.add(i.id);
-            enviar({ tipo: 'golpe', a: eu_.ataque, inimigo: i.id, x: Math.round(eu_.x * 10) / 10, y: Math.round(eu_.y * 10) / 10, z: Math.round(eu_.z) });
+            // no giro, a volta (`v`) vai junto: cada volta pega cada inimigo uma vez, e o servidor confere a hora dela
+            enviar({
+              tipo: 'golpe',
+              a: eu_.ataque,
+              inimigo: i.id,
+              x: Math.round(eu_.x * 10) / 10,
+              y: Math.round(eu_.y * 10) / 10,
+              z: Math.round(eu_.z),
+              ...(eu_.golpe === 'especial' ? { v: eu_.volta } : {}),
+            });
             efeitos.push({ tipo: 'faisca', x: i.x, y: i.y, z: i.z, em: agoraMs });
             piscandoInimigo.set(i.id, agoraMs + 140);
           }
@@ -378,7 +401,7 @@ function Palco({
         const { sx, sy } = naTela(cam, l[2], l[3], l[4]);
         const chao = CHAO + Math.round(l[3]);
         const comp = bicho(tipo).comp;
-        const daFolha = temFolha(tipo);
+        const daFolha = desenhaPelaFolha(tipo);
         coisas.push({
           y: l[3],
           desenhar: () => {
@@ -416,16 +439,20 @@ function Palco({
         const pessoa = pessoas.current.get(l[0]);
         const acao: Acao = ACOES[l[5]] ?? 'parado';
         const { sx, sy } = naTela(cam, l[1], l[2], l[3]);
+        const girando = l[10] === 0 && acao === 'especial';
         coisas.push({
           y: l[2],
           desenhar: () => {
             sombra(g, sx, CHAO + Math.round(l[2]), 18, l[3]);
+            if (girando) desenharGiro(g, sx, sy, agoraMs, false);
+            if (l[10] === 0 && acao === 'arrancada') desenharArrancada(g, sx, sy, l[4], l[6]);
             const f = folhaDe(folha, pessoa?.avatar ?? (l[11] || null)) ?? imagem;
             desenharCoelho(g, f, sx, sy, l[4], desenhoDoCoelho(l[10] === 1 ? 'caido' : acao, l[10] === 1 ? 999 : l[6], l[3] > 0 && l[6] < 280), {
               nome: pessoa?.nome,
               piscando: (piscandoOutros.get(l[0]) ?? 0) > agoraMs,
             });
             if (l[10] === 0 && acaoAtiva(acao, l[6])) desenharRastro(g, sx, sy, l[4], acao);
+            if (girando) desenharGiro(g, sx, sy, agoraMs, true);
           },
         });
       }
@@ -437,12 +464,15 @@ function Palco({
           desenhar: () => {
             sombra(g, sx, CHAO + Math.round(eu_.y), 18, eu_.z);
             const acao: Acao = meuEstado !== 0 ? 'caido' : eu_.acao;
+            if (acao === 'especial') desenharGiro(g, sx, sy, agoraMs, false);
+            if (acao === 'arrancada') desenharArrancada(g, sx, sy, eu_.lado, eu_.t);
             desenharCoelho(g, f, sx, sy, eu_.lado, desenhoDoCoelho(acao, meuEstado !== 0 ? 999 : eu_.t, eu_.vz > 0), {
               nome: outros.length > 1 ? pessoas.current.get(eu)?.nome : undefined,
               eu: true,
               piscando: eu_.relogio < eu_.piscandoAte,
             });
             if (meuEstado === 0 && golpeAtivo(eu_)) desenharRastro(g, sx, sy, eu_.lado, eu_.acao);
+            if (acao === 'especial') desenharGiro(g, sx, sy, agoraMs, true);
           },
         });
       }
@@ -452,6 +482,8 @@ function Palco({
       if (chefe) desenharBarraDoChefe(g, chefe[7]);
       if (ultimo) desenharOndas(g, ultimo.o, ONDAS_X.length);
       if (fase === 'avancando') desenharSeta(g, agoraMs);
+      // a barra do especial de quem joga: enche com a recarga, e cheia ele sai
+      if (jogador && meuEstado === 0) desenharBarraDoEspecial(g, cargaDoEspecial(eu_), agoraMs);
 
       // o placar de cima, umas 5 vezes por segundo
       if (agoraMs - ultimoHud > 200 && ultimo) {
@@ -514,14 +546,16 @@ function Palco({
       {jogador && (
         <ComandosDoJogo
           itens={[
-            { teclas: ['setas'], rotulo: t('Andar') },
+            // as setas e o WASD fazem o mesmo (pedido dele, 09/11/2026: "os comandos WASD deveriam ter ícones")
+            { teclas: ['setas', 'wasd'], rotulo: t('Andar') },
+            // dois toques para o mesmo lado (as duas figuras dizem "duas vezes"; A/D também)
+            { teclas: ['setas-lado', 'setas-lado'], rotulo: t('Arrancada') },
             { teclas: ['z'], rotulo: t('Pular') },
             { teclas: ['x'], rotulo: t('Bater') },
             { teclas: ['c'], rotulo: t('Especial') },
           ]}
         />
       )}
-      {jogador && <p className="settings-hint briga-dica">{t('Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.')}</p>}
     </div>
   );
 }
@@ -529,10 +563,14 @@ function Palco({
 /** Os botões da tela de toque: o direcional à esquerda, e bater, pular e o especial à direita. */
 function Toque({ cmd }: { cmd: Comandos }) {
   const t = useT();
+  const [duplo] = useState(() => new ToqueDuplo());
   const segurar = (k: 'esquerda' | 'direita' | 'cima' | 'baixo') => ({
     onPointerDown: (e: React.PointerEvent) => {
       e.preventDefault();
       cmd[k] = true;
+      // dois toques no mesmo lado do direcional: a arrancada, como no teclado
+      const lado = k === 'esquerda' ? -1 : k === 'direita' ? 1 : 0;
+      if (lado && duplo.apertou(lado, performance.now())) cmd.arrancada = lado;
     },
     onPointerUp: () => (cmd[k] = false),
     onPointerCancel: () => (cmd[k] = false),

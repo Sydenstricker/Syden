@@ -2744,7 +2744,7 @@ export default {
   'Campanha': 'Kampaña',
   'Sem vidas.': 'La iha moris ona.',
   'Você volta em {n}…': 'Ó fila fali iha {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Xave seta atu la\'o, X atu baku (tolu tuir malu mak kombo), Z atu salta, C ba movimentu espesiál, ne\'ebé gasta moris uitoan.',
+  'Arrancada': 'Halai lalais',
   'Andar': 'La\'o',
   'Especial': 'Espesiál',
   'Pular': 'Salta',
@@ -3109,6 +3109,9 @@ export default {
   "Entrar na comunidade": "Tama ba komunidade",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Ventuinha hamriik, ho grade kabuar, ba loron manas sira.",
+  // A caminha do gato
+  "Caminha do gato": "Kama busa nian",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Kabuar no maman, ho dalan tama ne'ebé ki'ik. Busa toba iha ne'e.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3121,6 +3124,23 @@ export default {
   "Bicho do quarto": "Animál hakiak kuartu nian",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Son telefone tama",
+  'Tocar ligações com o áudio desativado': "Tanis ba telefone tama maski áudiu taka",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Bainhira áudiu taka, telefone tama privadu to’o la ho son: avizu mosu iha ekran no Syden lakan-lakan iha barra tarefa. Loke ida-ne’e atu rona son telefone tama nafatin.",
+  'Avatares anteriores': "Avatar uluk sira",
+  'Voltar a este avatar': "Fila ba avatar ida-ne’e",
+  'Tirar do histórico': "Hasai husi istória",
+  'Avatar não encontrado.': "La hetan avatar.",
+  'Sininho': "Sinu ki’ik",
+  'Arpejo': "Arpejiu",
+  'Suave': "Kalma",
+  'Bipe': "Bip",
+  'Grupo': "Grupu",
+  'Nenhum': "Laiha",
+  'Novo grupo': "Grupu foun",
+  'O do grupo ({grupo})': "Grupu nian ({grupo})",
+  'Grupos de toque': "Grupu son telefone",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Grupu ida-idak iha ninia son rasik. Tau ema ida iha grupu, ka hili son ida ba ema ne’e de’it, ho kliik liman-loos iha ninia naran.",
+  'Apagar grupo': "Hamoos grupu",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Tanis bainhira ema ida telefone ba ó iha konversa privada, maske son avizu nian mate. Iha \"Keta hamanas\", telefone mosu la tanis.",
   'Avisar das ligações com o Syden em segundo plano?': "Fó-hatene kona-ba telefone bainhira Syden iha kotuk?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Navegadór sei husu lisensa. Nune’e ó sei hatene kona-ba telefone no mensajen maske iha tab ka programa seluk.",

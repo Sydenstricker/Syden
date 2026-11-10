@@ -2758,7 +2758,7 @@ export default {
   'Campanha': 'Kampanja',
   'Sem vidas.': 'Bla ħajjiet.',
   'Você volta em {n}…': 'Terġa\' lura fi {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Il-vleġeġ biex timxi, X biex tagħti daqqa (tlieta wara xulxin huma combo), Z biex taqbeż, C għall-mossa speċjali, li tonfoq ftit ħajja.',
+  'Arrancada': 'Sprint',
   'Andar': 'Imxi',
   'Especial': 'Speċjali',
   'Pular': 'Aqbeż',
@@ -3123,6 +3123,9 @@ export default {
   "Entrar na comunidade": "Ingħaqad mal-komunità",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Wieqaf, bil-gradilja tonda, għall-jiem sħan.",
+  // A caminha do gato
+  "Caminha do gato": "Sodda tal-qattus",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Tonda u ratba, b'daħla baxxa. Il-qattus jorqod hawn.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3135,6 +3138,23 @@ export default {
   "Bicho do quarto": "L-annimal tal-kamra",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Ton tas-sejħa",
+  'Tocar ligações com o áudio desativado': "Daqq għas-sejħiet anki bl-awdjo mitfi",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Bl-awdjo mitfi, sejħa privata tasal mingħajr ħoss: l-avviż jidher fuq l-iskrin u Syden iteptep fil-barra tal-kompiti. Ixgħel dan biex xorta tisma’ t-ton.",
+  'Avatares anteriores': "Avatars ta’ qabel",
+  'Voltar a este avatar': "Erġa’ lura għal dan l-avatar",
+  'Tirar do histórico': "Neħħi mill-istorja",
+  'Avatar não encontrado.': "L-avatar ma nstabx.",
+  'Sininho': "Qanpiena",
+  'Arpejo': "Arpeġġ",
+  'Suave': "Ħelu",
+  'Bipe': "Bip",
+  'Grupo': "Grupp",
+  'Nenhum': "Xejn",
+  'Novo grupo': "Grupp ġdid",
+  'O do grupo ({grupo})': "Dak tal-grupp ({grupo})",
+  'Grupos de toque': "Gruppi tat-ton",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Kull grupp għandu t-ton tiegħu. Daħħal lil xi ħadd fi grupp, jew agħżel ton għal dik il-persuna biss, b’klikk tal-lemin fuq isimha.",
+  'Apagar grupo': "Ħassar il-grupp",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Idoqq meta xi ħadd iċempillek f’konversazzjoni privata, anke bil-ħsejjes tal-avviżi mitfija. F’\"Iddisturbax\", is-sejħa tidher mingħajr ma ddoqq.",
   'Avisar das ligações com o Syden em segundo plano?': "Navżak bis-sejħiet meta Syden ikun fl-isfond?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Il-browser se jitlob il-permess. Hekk issir taf bis-sejħiet u l-messaġġi anke f’tab jew programm ieħor.",

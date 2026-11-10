@@ -2782,7 +2782,7 @@ export default {
   'Campanha': 'Duula',
   'Sem vidas.': 'Lubbuun hin hafne.',
   'Você volta em {n}…': 'Sekondii {n} booda deebitee dhufta…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Deemuuf furtuuwwan xiyyaa, rukutuuf X (sadii wal duraa duubaan kombo dha), utaaluuf Z, tarkaanfii addaatiif C, kan lubbuu xiqqoo fixu.',
+  'Arrancada': 'Fiiga saffisaa',
   'Andar': 'Deemi',
   'Especial': 'Addaa',
   'Pular': 'Utaali',
@@ -3147,6 +3147,9 @@ export default {
   "Entrar na comunidade": "Hawaasatti makami",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Bubbee dhaabbatu, saphaphuu geengoo qabu, guyyoota ho’aaf.",
+  // A caminha do gato
+  "Caminha do gato": "Siree adurree",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Geengoo fi laafaa, balbala gadi aanaa qaba. Adurreen asitti rafti.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Suuraa piroofaayilii",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3159,6 +3162,23 @@ export default {
   "Bicho do quarto": "Bineensa manaa kutaa",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Sagalee bilbilaa",
+  'Tocar ligações com o áudio desativado': "Yeroo sagaleen cufamettis bilbilaa waamichaa dhageessisi",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Yeroo sagaleen cufamu, waamichi dhuunfaa sagalee malee dhufa: beeksisni iskiriinii irratti mul’ata, Syden immoo baala hojii irratti ifa. Haa ta’u malee sagalee bilbilaa dhaga’uuf kana bani.",
+  'Avatares anteriores': "Suuraalee piroofaayilii duraanii",
+  'Voltar a este avatar': "Gara suuraa piroofaayilii kanaatti deebi’i",
+  'Tirar do histórico': "Seenaa irraa haqi",
+  'Avatar não encontrado.': "Suuraan piroofaayilii hin argamne.",
+  'Sininho': "Bilbila xinnoo",
+  'Arpejo': "Arpeejiyoo",
+  'Suave': "Laafaa",
+  'Bipe': "Biip",
+  'Grupo': "Garee",
+  'Nenhum': "Homaa",
+  'Novo grupo': "Garee haaraa",
+  'O do grupo ({grupo})': "Kan garee ({grupo})",
+  'Grupos de toque': "Gareewwan sagalee bilbilaa",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Gareen hundi sagalee bilbilaa mataa isaa qaba. Maqaa irratti mirgaan cuqaasuun nama tokko garee keessa galchi, ykn nama sanaaf qofa sagalee bilbilaa filadhu.",
+  'Apagar grupo': "Garee haqi",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Namni tokko haasaa dhuunfaa keessatti yommuu siif bilbilu ni bilbila, sagaleen beeksisaa yoo cufame illee. \"Hin jeeqin\" keessatti bilbilli osoo hin bilbilin mul’ata.",
   'Avisar das ligações com o Syden em segundo plano?': "Yeroo Syden duubaan jiru waa’ee bilbilaa siif haa beeksisu?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Barbaadaan hayyama gaafata. Akkasiin tabii ykn sagantaa biraa keessa yoo jirte illee waa’ee bilbilaa fi ergaa ni beekta.",

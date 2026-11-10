@@ -10,9 +10,10 @@
  * - 'tiro': fica longe, mira a faixa de quem está mais perto (a linha pisca) e atira; pular ou trocar de faixa escapa.
  * - 'chefe': o do texugo (a investida pela faixa e a pancada no chão), e, com `sopro`, uma rajada de três tiros.
  *
- * A horta é a de sempre (os mesmos bichos, as mesmas ondas). Os bichos das fases novas são os monstros da Quaternius (CC0),
- * renderizados de lado pelo Blender (e2e/pixel-art/personagem/blender/meshy/briga-monstros.py); os da horta continuam
- * desenhados por código. Os ids são internos e nunca aparecem na tela.
+ * A horta é a de sempre (os mesmos bichos, as mesmas ondas). Os bichos são os monstros da Quaternius (CC0), renderizados de
+ * lado pelo Blender (e2e/pixel-art/personagem/blender/meshy/briga-monstros.py); desde 09/11/2026 os da horta também (pedido
+ * dele): a "raposa" é o gato malhado, o "corvo" o pombo e o "texugo" a galinha gigante. Os ids ficaram, porque vão no quadro
+ * da rede e nos troféus; são internos e nunca aparecem na tela.
  */
 
 export type Comportamento = 'soco' | 'mergulho' | 'pulo' | 'tiro' | 'chefe';
@@ -32,7 +33,7 @@ export interface DefinicaoDoBicho {
 }
 
 export const BICHOS = {
-  // a horta (desenhados por código, como sempre)
+  // a horta (o gato, o pombo e a galinha; os ids são os de antes)
   raposa: { comp: 'soco', corpo: 10, hp: 30, pontos: 50, dano: 8 },
   corvo: { comp: 'mergulho', corpo: 9, hp: 18, pontos: 40, dano: 7 },
   texugo: { comp: 'chefe', corpo: 18, hp: 220, pontos: 300, dano: 14 },

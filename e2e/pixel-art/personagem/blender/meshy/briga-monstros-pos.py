@@ -20,6 +20,8 @@ FASE = {
     'cacto': 'deserto', 'dino': 'deserto', 'redemoinho': 'deserto', 'alpaca-rei': 'deserto',
     'macaco': 'neve', 'espinhento': 'neve', 'golem': 'neve', 'yeti': 'neve',
     'diabinho': 'castelo', 'demonio-azul': 'castelo', 'fantasma': 'castelo', 'dragao': 'castelo',
+    # a horta (09/11/2026): o gato, o pombo e a galinha, com os ids de antes
+    'raposa': 'horta', 'corvo': 'horta', 'texugo': 'horta',
 }
 CONTORNO = (24, 16, 26)
 SALTO = 3

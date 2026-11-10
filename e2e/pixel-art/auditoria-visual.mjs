@@ -45,7 +45,7 @@ for (const mascote of MASCOTES) for (const cena of CENAS) {
   const pagina = path.join(PAGINAS, `${cena}-${mascote}.html`);
   if (!process.env.SEM_MONTAR || !fs.existsSync(pagina)) {
     console.log(`montando ${cena} (${mascote})…`);
-    execFileSync(process.execPath, [MONTAR, ...(cena === 'salao' ? ['salao'] : [])], { env: { ...process.env, MASCOTE: mascote === 'pixellab' ? 'pixellab' : '', SAIDA_DA_PAGINA: pagina }, stdio: 'inherit' });
+    execFileSync(process.execPath, [MONTAR, ...(cena === 'salao' ? ['salao'] : [])], { env: { ...process.env, MASCOTE: mascote === 'pixellab' ? 'pixellab' : '3d', SAIDA_DA_PAGINA: pagina }, stdio: 'inherit' });
   }
   const pasta = path.join(SAIDA, mascote, cena);
   if (!SO) fs.rmSync(pasta, { recursive: true, force: true });

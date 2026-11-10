@@ -2736,7 +2736,7 @@ export default {
   'Campanha': 'Sefer',
   'Sem vidas.': 'Can kalmadı.',
   'Você volta em {n}…': '{n} içinde dönüyorsun…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Yön tuşlarıyla yürü, X ile vur (arka arkaya üç vuruş kombodur), Z ile zıpla, C ile biraz can harcayan özel hamleyi yap.',
+  'Arrancada': 'Atılma',
   'Andar': 'Yürü',
   'Especial': 'Özel',
   'Pular': 'Zıpla',
@@ -3109,6 +3109,9 @@ export default {
   "Entrar na comunidade": "Topluluğa katıl",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Ayaklı, yuvarlak ızgaralı, sıcak günler için.",
+  // A caminha do gato
+  "Caminha do gato": "Kedi yatağı",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Yuvarlak ve yumuşak, girişi alçak. Kedi burada uyur.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3121,6 +3124,23 @@ export default {
   "Bicho do quarto": "Odanın evcil hayvanı",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Arama zil sesi",
+  'Tocar ligações com o áudio desativado': "Ses kapalıyken de aramalarda çal",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Ses kapalıyken özel bir arama sessiz gelir: bildirim ekranda görünür ve Syden görev çubuğunda yanıp söner. Zil sesini yine de duymak için bunu aç.",
+  'Avatares anteriores': "Önceki avatarlar",
+  'Voltar a este avatar': "Bu avatara dön",
+  'Tirar do histórico': "Geçmişten kaldır",
+  'Avatar não encontrado.': "Avatar bulunamadı.",
+  'Sininho': "Çan",
+  'Arpejo': "Arpej",
+  'Suave': "Yumuşak",
+  'Bipe': "Bip",
+  'Grupo': "Grup",
+  'Nenhum': "Yok",
+  'Novo grupo': "Yeni grup",
+  'O do grupo ({grupo})': "Grubunki ({grupo})",
+  'Grupos de toque': "Zil sesi grupları",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Her grubun kendi zil sesi var. Adına sağ tıklayarak birini bir gruba koy ya da yalnızca o kişi için zil sesi seç.",
+  'Apagar grupo': "Grubu sil",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Biri seni özel bir sohbette aradığında çalar, uyarı sesleri kapalı olsa bile. \"Rahatsız etme\" modunda arama çalmadan görünür.",
   'Avisar das ligações com o Syden em segundo plano?': "Syden arka plandayken aramalardan haberdar edilsin mi?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Tarayıcı izin isteyecek. Böylece başka bir sekmede ya da programda olsan bile aramalardan ve mesajlardan haberin olur.",

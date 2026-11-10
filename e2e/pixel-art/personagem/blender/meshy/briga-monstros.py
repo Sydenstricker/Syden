@@ -53,6 +53,14 @@ MONSTROS = {
     'demonio-azul': dict(arq='BlueDemon.gltf', px=50, lado=80, anim=dict(H1, prep=('Weapon', 0.0, 0.45), golpe=('Weapon', 0.5, 0.85))),
     'fantasma': dict(arq='Ghost.gltf', px=40, lado=80, anim=VOA),
     'dragao': dict(arq='Dragon_Evolved.gltf', px=95, lado=128, anim=VOA),
+    # a horta (09/11/2026, pedido dele: "não temos assets para substituir os inimigos?"): os ids continuam os de antes, porque
+    # vão no quadro da rede e nos troféus; só o desenho trocou. A raposa virou o gato malhado (o laranja dela), o corvo o pombo
+    # e o texugo a galinha gigante (escolhida entre três chefes: t/briga-horta-chefes.png). Os bichos redondos da Quaternius
+    # (gato, pombo, galinha) têm a cara noutro eixo: com o giro dos outros, apareciam de costas, e `frente` os vira de três
+    # quartos para a câmera, como o coelho.
+    'raposa': dict(arq='Cat.gltf', px=52, lado=80, anim=H2, frente=34),
+    'corvo': dict(arq='Pigeon.gltf', px=40, lado=80, anim=H2, frente=34),
+    'texugo': dict(arq='Chicken.gltf', px=100, lado=128, anim=H2, frente=34),
 }
 FRENTE_GRAUS = 64   # o mesmo do coelho: virado para a direita da tela, um pouco para a câmera
 ELEV = math.radians(20)
@@ -172,7 +180,7 @@ try:
         mn, mx = caixa(meshes)
         k = (m['px'] / PX_POR_UNIDADE) / (mx.z - mn.z)
         cx, cy = (mn.x + mx.x) / 2, (mn.y + mx.y) / 2
-        raiz.matrix_world = Matrix.Rotation(math.radians(FRENTE_GRAUS), 4, 'Z') @ Matrix.Scale(k, 4) @ Matrix.Translation((-cx, -cy, -mn.z))
+        raiz.matrix_world = Matrix.Rotation(math.radians(m.get('frente', FRENTE_GRAUS)), 4, 'Z') @ Matrix.Scale(k, 4) @ Matrix.Translation((-cx, -cy, -mn.z))
         bpy.context.view_layer.update()
 
         # a câmera: a do coelho, com o quadro do tamanho do bicho; o pé (a origem) cai em (lado/2, 0,85 × lado)

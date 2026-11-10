@@ -33,6 +33,8 @@ export const CHAVES_QUE_SOBEM = [
   'syden.screenVolumes',
   /** As anotações sobre outras pessoas. Ver o aviso acima. */
   'syden.notas',
+  /** O toque de ligação de cada pessoa e os grupos (toquesDeLigacao.ts): também é sobre outras pessoas. */
+  'syden.toques',
 ] as const;
 
 /**
@@ -144,6 +146,7 @@ export async function sincronizarAoEntrar(): Promise<boolean> {
       // ao ser importado, e isso acontece bem antes de alguém entrar.
       const { recarregarDoDisco } = await import('./settings');
       recarregarDoDisco();
+      (await import('./toquesDeLigacao')).relerToques();
       return true;
     }
     await api('/api/me/preferencias', { method: 'PUT', body: montar() });

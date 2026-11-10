@@ -2739,7 +2739,7 @@ export default {
   'Campanha': 'অভিযান',
   'Sem vidas.': 'আর জীবন নেই।',
   'Você volta em {n}…': '{n} পরে তুমি ফিরবে…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'হাঁটতে তীর চিহ্ন, মারতে X (পরপর তিনটে মানে কম্বো), লাফাতে Z, স্পেশালের জন্য C, যাতে একটু জীবন খরচ হয়।',
+  'Arrancada': 'ঝটিকা দৌড়',
   'Andar': 'হাঁটো',
   'Especial': 'স্পেশাল',
   'Pular': 'লাফাও',
@@ -3104,6 +3104,9 @@ export default {
   "Entrar na comunidade": "কমিউনিটিতে যোগ দিন",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "দাঁড়ানো পাখা, গোল জালিসহ, গরমের দিনের জন্য।",
+  // A caminha do gato
+  "Caminha do gato": "বিড়ালের বিছানা",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "গোল আর নরম, নিচু প্রবেশপথসহ। বিড়াল এখানে ঘুমায়।",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "অবতার",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3116,6 +3119,23 @@ export default {
   "Bicho do quarto": "ঘরের পোষা প্রাণী",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "কলের রিংটোন",
+  'Tocar ligações com o áudio desativado': "শব্দ বন্ধ থাকলেও কলে রিং হোক",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "শব্দ বন্ধ থাকলে ব্যক্তিগত কল নিঃশব্দে আসে: বিজ্ঞপ্তি পর্দায় দেখা যায় আর Syden টাস্কবারে জ্বলে-নেভে। তবুও রিংটোন শুনতে এটি চালু করো।",
+  'Avatares anteriores': "আগের অবতারগুলো",
+  'Voltar a este avatar': "এই অবতারে ফিরে যাও",
+  'Tirar do histórico': "ইতিহাস থেকে সরাও",
+  'Avatar não encontrado.': "অবতার পাওয়া যায়নি।",
+  'Sininho': "ছোট ঘণ্টা",
+  'Arpejo': "আর্পেজিও",
+  'Suave': "কোমল",
+  'Bipe': "বিপ",
+  'Grupo': "গ্রুপ",
+  'Nenhum': "কোনোটি নয়",
+  'Novo grupo': "নতুন গ্রুপ",
+  'O do grupo ({grupo})': "গ্রুপেরটা ({grupo})",
+  'Grupos de toque': "রিংটোন গ্রুপ",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "প্রতিটি গ্রুপের নিজের রিংটোন আছে। কারও নামে ডান-ক্লিক করে তাকে কোনো গ্রুপে রাখো, অথবা শুধু তার জন্য একটি রিংটোন বেছে নাও।",
+  'Apagar grupo': "গ্রুপ মুছে ফেলো",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "প্রাইভেট কথোপকথনে কেউ তোমাকে কল করলে বাজে, বিজ্ঞপ্তির শব্দ বন্ধ থাকলেও। \"বিরক্ত কোরো না\"-তে কলটি না বেজে দেখা যায়।",
   'Avisar das ligações com o Syden em segundo plano?': "Syden পেছনে থাকলে কলের কথা জানাবে?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "ব্রাউজার অনুমতি চাইবে। এতে অন্য ট্যাব বা প্রোগ্রামে থাকলেও তুমি কল আর মেসেজের খবর পাবে।",

@@ -44,6 +44,11 @@ export interface Settings {
    * existe toque. Em "Não perturbe" a ligação aparece calada de qualquer jeito.
    */
   toqueDeLigacao: boolean;
+  /**
+   * O toque com o "Desativar áudio" ligado (09/11/2026, decisão dele): de fábrica, quem desativou o áudio pediu silêncio, e a
+   * ligação chega calada (o cartão aparece e a barra de tarefas pisca). Quem prefere ouvir mesmo assim liga isto, em Voz e vídeo.
+   */
+  toqueComAudioDesativado: boolean;
   /** Volume dos sons do soundboard tocados na sala (0 a 1). */
   soundboardVolume: number;
   /** Confete, fogos e corações que qualquer um da sala manda. Desligado, nem vê nem manda. */
@@ -88,6 +93,7 @@ const DEFAULTS: Settings = {
   abrirTransmissaoSozinha: false,
   sounds: true,
   toqueDeLigacao: true,
+  toqueComAudioDesativado: false,
   soundboardVolume: 0.6,
   efeitosVisuais: true,
   mostrarSemVideo: true,

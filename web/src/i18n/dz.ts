@@ -2825,7 +2825,7 @@ export default {
   'Campanha': 'འཐབ་འཁྲུག་རིམ་པ།',
   'Sem vidas.': 'ཚེ་སྲོག་ མེདཔ་ཐལ།',
   'Você volta em {n}…': '{n} ནང་ ལོག་འོང་…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'འགྱོ་ནི་ལུ་མདའ་རྟགས་ རྡུང་ནི་ལུ་ X (རིམ་བཞིན་གསུམ་ ཀོམ་བོ་ཨིན།) མཆོང་ནི་ལུ་ Z ཚེ་སྲོག་ཅུང་ཞིག་ཟ་མི་ ལྷག་ཅན་གྱི་བྱ་བ་ལུ་ C།',
+  'Arrancada': 'མགྱོགས་རྒྱུག',
   'Andar': 'འགྱོ།',
   'Especial': 'ལྷག་ཅན།',
   'Pular': 'མཆོང་།',
@@ -3190,6 +3190,9 @@ export default {
   "Entrar na comunidade": "མི་སྡེ་ནང་ཞུགས།",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "ལངས་ཏེ་སྡོད་པའི་གློག་གཡབ། སྒོར་སྒོརམ་གྱི་དྲྭ་བ་དང་གཅིག་ཁར། ཚ་བའི་ཉིན་མར།",
+  // A caminha do gato
+  "Caminha do gato": "ཞི་མིའི་ཉལ་ཁྲི།",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "སྒོར་སྒོརམ་དང་ འཇམ་ཏོང་ཏོ། འཛུལ་སྒོ་དམའ་བ། ཞི་མི་ནཱ་ལུ་ཉལ་ཨིན།",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "ཨ་ཝ་ཊར།",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3202,6 +3205,23 @@ export default {
   "Bicho do quarto": "ཁང་མིག་གི་གཅེས་སེམས་ཅན།",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "འབོད་བརྡའི་སྒྲ།",
+  'Tocar ligações com o áudio desativado': "སྒྲ་ཁ་བསྡམས་རུང་འབོད་བརྡ་ལུ་སྒྲ་བཏང་།",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "སྒྲ་ཁ་བསྡམས་ཡོད་པའི་སྐབས་ སྒེར་གྱི་འབོད་བརྡ་སྒྲ་མེད་པར་འོང་། བརྡ་བསྐུལ་གསལ་གཞི་ནང་མཐོང་ཞིནམ་ལས་ Syden ལཱ་འགན་ཕྲ་རིང་ནང་འོད་འཚེར་འབདཝ་ཨིན། ག་དེ་སྦེ་རུང་འབོད་བརྡའི་སྒྲ་གོ་ནིའི་དོན་ལུ་ འདི་ཁ་ཕྱེ།",
+  'Avatares anteriores': "ཧེ་མའི་ཨ་ཝ་ཊར་ཚུ།",
+  'Voltar a este avatar': "ཨ་ཝ་ཊར་འདི་ལུ་ལོག་ཤོག",
+  'Tirar do histórico': "ལོ་རྒྱུས་ནང་ལས་བཏོན།",
+  'Avatar não encontrado.': "ཨ་ཝ་ཊར་མ་ཐོབ།",
+  'Sininho': "དྲིལ་བུ་ཆུང་ཀུ།",
+  'Arpejo': "ཨར་པེ་ཇོ།",
+  'Suave': "འཇམ་ཏོང་ཏོ།",
+  'Bipe': "བིབ།",
+  'Grupo': "སྡེ་ཚན།",
+  'Nenhum': "ག་ནི་ཡང་མེད།",
+  'Novo grupo': "སྡེ་ཚན་གསརཔ།",
+  'O do grupo ({grupo})': "སྡེ་ཚན་གྱི་སྒྲ། ({grupo})",
+  'Grupos de toque': "འབོད་བརྡའི་སྒྲའི་སྡེ་ཚན།",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "སྡེ་ཚན་རེ་རེ་ལུ་ རང་སོའི་སྒྲ་ཡོདཔ་ཨིན། མིང་གུ་ གཡས་ཀྱི་ཨེབ་རྟ་ནུན་ཏེ་ མི་ཅིག་སྡེ་ཚན་ནང་བཙུགས་ ཡང་ན་ མི་དེ་ཁོ་རྐྱང་གི་དོན་ལུ་ སྒྲ་ཅིག་གདམ།",
+  'Apagar grupo': "སྡེ་ཚན་བཏོན་གཏང་།",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "སྒེར་གྱི་གླེང་མོལ་ནང་ མི་གཅིག་གིས་ཁྱོད་ལུ་འབོད་བརྡ་གནང་པའི་སྐབས་ སྒྲ་བརྐྱབ་ཨིན། བརྡ་བསྐུལ་གྱི་སྒྲ་བཀག་ཡོད་རུང་། \"བར་ཆད་མ་འབད།\" ནང་ འབོད་བརྡ་སྒྲ་མེད་པར་སྟོནམ་ཨིན།",
   'Avisar das ligações com o Syden em segundo plano?': "Syden རྒྱབ་ཁར་ཡོད་པའི་སྐབས་ འབོད་བརྡའི་སྐོར་ལས་བརྡ་བསྐུལ་འབད་ནི་ཨིན་ན?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "བརའུ་ཟར་གྱིས་གནང་བ་ཞུ་འོང་། དེ་འབདཝ་ད་ ཤོག་བྱང་ ཡང་ན་ ལས་རིམ་གཞན་ནང་ཡོད་རུང་ འབོད་བརྡ་དང་འཕྲིན་དོན་ཚུ་ཤེས་འོང་།",

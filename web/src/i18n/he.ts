@@ -2792,7 +2792,7 @@ export default {
   'Campanha': 'מערכה',
   'Sem vidas.': 'נגמרו החיים.',
   'Você volta em {n}…': 'חזרה בעוד {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'חצים להליכה, X למכה (שלוש ברצף הן קומבו), Z לקפיצה, C למהלך המיוחד, שעולה מעט חיים.',
+  'Arrancada': 'זינוק',
   'Andar': 'הליכה',
   'Especial': 'מיוחד',
   'Pular': 'קפיצה',
@@ -3161,6 +3161,9 @@ export default {
   "Entrar na comunidade": "הצטרפות לקהילה",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "עומד, עם הרשת העגולה, לימים החמים.",
+  // A caminha do gato
+  "Caminha do gato": "מיטת חתול",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "עגולה ורכה, עם כניסה נמוכה. החתול ישן כאן.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "תמונת פרופיל",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3173,6 +3176,23 @@ export default {
   "Bicho do quarto": "חיית המחמד של החדר",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "צלצול שיחה",
+  'Tocar ligações com o áudio desativado': "צלצול בשיחות גם כשהשמע כבוי",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "כשהשמע כבוי, שיחה פרטית מגיעה בלי צליל: ההתראה מופיעה במסך ו־Syden מהבהב בשורת המשימות. אפשר להפעיל את זה כדי לשמוע את הצלצול בכל זאת.",
+  'Avatares anteriores': "תמונות פרופיל קודמות",
+  'Voltar a este avatar': "לחזור לתמונת הפרופיל הזו",
+  'Tirar do histórico': "להסיר מההיסטוריה",
+  'Avatar não encontrado.': "תמונת הפרופיל לא נמצאה.",
+  'Sininho': "פעמון קטן",
+  'Arpejo': "ארפג׳ו",
+  'Suave': "רך",
+  'Bipe': "צפצוף",
+  'Grupo': "קבוצה",
+  'Nenhum': "ללא",
+  'Novo grupo': "קבוצה חדשה",
+  'O do grupo ({grupo})': "של הקבוצה ({grupo})",
+  'Grupos de toque': "קבוצות צלצול",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "לכל קבוצה יש צלצול משלה. אפשר להכניס מישהו לקבוצה, או לבחור צלצול רק בשבילו, בלחיצה ימנית על השם.",
+  'Apagar grupo': "למחוק קבוצה",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "מצלצל כשמגיעה שיחה נכנסת בשיחה פרטית, גם כשצלילי ההתראה כבויים. במצב \"לא להפריע\" השיחה מופיעה בלי צלצול.",
   'Avisar das ligações com o Syden em segundo plano?': "להודיע על שיחות כש-Syden ברקע?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "הדפדפן יבקש הרשאה. כך יגיעו התראות על שיחות והודעות גם בכרטיסייה או בתוכנה אחרת.",

@@ -1,3 +1,4 @@
+import { GruposDeToque } from './GruposDeToque';
 import { Room } from 'livekit-client';
 import { Accessibility, Languages,
   AudioLines,
@@ -2515,6 +2516,13 @@ function VoiceSection({ voice }: { voice: Voice }) {
         </>
       )}
 
+      <Toggle
+        label={t('Tocar ligações com o áudio desativado')}
+        description={t('Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.')}
+        checked={settings.toqueComAudioDesativado}
+        onChange={(value) => updateSettings({ toqueComAudioDesativado: value })}
+      />
+
       <h3>{t('Processamento de voz')}</h3>
       <Toggle
         label={t('Supressão de ruído')}
@@ -2789,6 +2797,7 @@ function SoundsSection() {
           if (value) sounds.toque();
         }}
       />
+      {settings.toqueDeLigacao && <GruposDeToque />}
       <Toggle
         label={t('Efeitos visuais na chamada')}
         description={t('Confete, fogos e corações que qualquer pessoa da sala pode mandar. Desligue se o seu computador engasgar durante a chamada — desligado, você não vê nem manda.')}

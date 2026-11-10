@@ -2814,7 +2814,7 @@ export default {
   'Campanha': 'Kampanija',
   'Sem vidas.': 'Gyvybių nebeliko.',
   'Você volta em {n}…': 'Grįžti po {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Rodyklėmis vaikštai, X smūgiuoji (trys iš eilės – kombinacija), Z šoki, C – specialus smūgis, kuris atima šiek tiek gyvybės.',
+  'Arrancada': 'Proveržis',
   'Andar': 'Eiti',
   'Especial': 'Specialus',
   'Pular': 'Šokti',
@@ -3179,6 +3179,9 @@ export default {
   "Entrar na comunidade": "Prisijungti prie bendruomenės",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Stovintis, su apvaliomis grotelėmis, karštoms dienoms.",
+  // A caminha do gato
+  "Caminha do gato": "Katės guolis",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Apvalus ir minkštas, su žemu įėjimu. Čia miega katė.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avataras",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3191,6 +3194,23 @@ export default {
   "Bicho do quarto": "Kambario augintinis",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Skambučio melodija",
+  'Tocar ligações com o áudio desativado': "Skambėti, net kai garsas išjungtas",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Kai garsas išjungtas, privatus skambutis ateina be garso: pranešimas pasirodo ekrane, o Syden mirksi užduočių juostoje. Įjunk, jei vis tiek nori girdėti melodiją.",
+  'Avatares anteriores': "Ankstesni avatarai",
+  'Voltar a este avatar': "Grįžti prie šio avataro",
+  'Tirar do histórico': "Pašalinti iš istorijos",
+  'Avatar não encontrado.': "Avataras nerastas.",
+  'Sininho': "Varpelis",
+  'Arpejo': "Arpedžio",
+  'Suave': "Švelni",
+  'Bipe': "Pyptelėjimas",
+  'Grupo': "Grupė",
+  'Nenhum': "Nėra",
+  'Novo grupo': "Nauja grupė",
+  'O do grupo ({grupo})': "Grupės ({grupo})",
+  'Grupos de toque': "Melodijų grupės",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Kiekviena grupė turi savo melodiją. Dešiniuoju pelės mygtuku spustelėk žmogaus vardą ir įdėk jį į grupę arba pasirink melodiją tik jam.",
+  'Apagar grupo': "Ištrinti grupę",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Skamba, kai kas nors tau skambina privačiame pokalbyje, net jei pranešimų garsai išjungti. Režimu „Netrukdyti“ skambutis rodomas neskambant.",
   'Avisar das ligações com o Syden em segundo plano?': "Pranešti apie skambučius, kai Syden veikia fone?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Naršyklė paprašys leidimo. Taip apie skambučius ir žinutes sužinosi net kitame skirtuke ar programoje.",

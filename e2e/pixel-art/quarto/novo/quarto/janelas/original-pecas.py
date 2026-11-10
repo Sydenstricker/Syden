@@ -72,10 +72,73 @@ for estado in ('cortina', 'aberta'):
     alisar(e, estado)
     p = np.zeros((512, 512, 4)); p[..., :3] = e; p[..., 3] = dentro * 255
     if estado == 'cortina':
-        # (sobrou vidro magenta? vira a cor da cortina em volta: com a cortina fechada, nada de vista)
-        mag = dentro & (e[..., 0] > 200) & (e[..., 1] < 80) & (e[..., 2] > 200)
-        if mag.any(): p[mag, :3] = np.median(e[dentro & ~mag & (e.mean(2) > 170)], 0)
-        print('cortina: magenta que sobrou', int(mag.sum()))
+        # A CORTINA FECHADA SÃO AS DUAS CORTINAS DOS LADOS CORRIDAS ATÉ O MEIO (relato dele, 09/11/2026: "a cortina nunca se
+        # mexe e aparece essa do nada na janela"). A repintura (estado-cortina.png) pôs uma terceira cortina DENTRO da moldura,
+        # até o peitoril, com as dos lados paradas no lugar. Agora é por código, a partir da própria peça: cada cortina se
+        # estende até o meio, repetindo as pregas dela (as colunas de dentro, sem o contorno), com a borda de fora no lugar e a
+        # borda de dentro de cada uma encontrando a da outra no meio; cada coluna copiada desce pela inclinação da varão, e vai
+        # da argola até o chão, como as dos lados.
+        INC = 95 / 192  # (o alto das cortinas: x 271 → y 47, x 463 → y 142; o pé delas acompanha)
+        E0, E1, EB = 272, 306, 311   # a da esquerda: pregas 272–306, a borda de dentro 307–311
+        D0, D1, DB = 436, 466, 431   # a da direita: a borda de dentro 431–435, pregas 436–466
+        MEIO = (EB + DB) // 2
+        orig = peca.copy(); fech = peca.copy(); a_f = OP.copy(); pano = np.zeros((512, 512), bool)
+        # só o tecido (o creme pouco saturado) e o contorno em volta dele: a borda de dentro das cortinas está na frente da
+        # moldura, e copiar a coluna inteira levava a madeira junto
+        from scipy.ndimage import binary_dilation
+        rgb_o = orig[..., :3]; tecido = (orig[..., 3] > 127) & (rgb_o.mean(2) > 140) & ((rgb_o.max(2) - rgb_o.min(2)) < 100)
+        tecido = binary_dilation(tecido, iterations=1) & (orig[..., 3] > 127) & ((rgb_o.mean(2) > 140) | (rgb_o.mean(2) < 70))
+        def copiar(x, xs_):
+            dy = int(round(INC * (x - xs_)))
+            col = orig[:, xs_]; ok = tecido[:, xs_]
+            ys_ok = np.nonzero(ok)[0]; yd = ys_ok + dy; m = (yd >= 0) & (yd < 512)
+            fech[yd[m], x] = col[ys_ok[m]]; a_f[yd[m], x] = True; pano[yd[m], x] = True
+        for x in range(E0, MEIO + 1):
+            if x > MEIO - (EB - E1): xs_ = EB - (MEIO - x)
+            else: xs_ = E0 + (x - E0) % (E1 - E0 + 1)
+            copiar(x, xs_)
+        for x in range(MEIO + 1, D1 + 1):
+            if x <= MEIO + (D0 - DB): xs_ = DB + (x - MEIO - 1)
+            else: xs_ = D1 - (D1 - x) % (D1 - D0 + 1)
+            copiar(x, xs_)
+        # (a borda de dentro de cada cortina tem falhas, e no encontro das duas a moldura aparecia numa fresta: o que fica
+        # entre o alto e o pé do pano, numa coluna dele, e não é pano, é o pano vizinho do mesmo lado)
+        for _ in range(4):
+            for x in range(E0, D1 + 1):
+                c = np.nonzero(pano[:, x])[0]
+                if len(c) == 0: continue
+                viz = x - 1 if x <= MEIO else x + 1
+                for y in range(c.min(), c.max() + 1):
+                    if not pano[y, x] and pano[y, viz]:
+                        fech[y, x] = fech[y, viz]; a_f[y, x] = True; pano[y, x] = True
+            for x in (MEIO, MEIO + 1):  # e a fresta de uma coluna inteira no meio
+                for y in range(512):
+                    if not pano[y, x] and pano[y, x - 1] and pano[y, x + 1]: fech[y, x] = fech[y, x - 1]; a_f[y, x] = True; pano[y, x] = True
+        # (no encontro, o contorno das duas bordas, e o do "dente" da borda da esquerda, somavam uma faixa escura: fica um
+        # pixel de contorno, e o resto da faixa é o tecido logo à esquerda dela)
+        escuro = lambda y, x: fech[y, x, :3].mean() < 70
+        for y in range(512):
+            x = MEIO - 8
+            while x <= MEIO + 4:
+                if pano[y, x] and escuro(y, x):
+                    f = x
+                    while f + 1 <= MEIO + 6 and pano[y, f + 1] and escuro(y, f + 1): f += 1
+                    if f > x and pano[y, x - 1] and not escuro(y, x - 1):
+                        for q in range(x, f): fech[y, q] = fech[y, x - 1]
+                    x = f + 1
+                else: x += 1
+        # (e o contorno que sobra no encontro também sai: "essa linha preta no meio da cortina tem que melhorar", relato dele.
+        # O encontro de duas cortinas é uma DOBRA, não uma borda: o pixel escuro vira o tecido à esquerda dele escurecido,
+        # como as sombras das pregas. O contorno de fora, no pé e no alto, fica.)
+        for y in range(512):
+            for x in range(MEIO - 8, MEIO + 7):
+                if not (pano[y, x] and escuro(y, x)): continue
+                esq = next((x - k for k in range(1, 5) if pano[y, x - k] and not escuro(y, x - k)), None)
+                dir_ = next((x + k for k in range(1, 5) if pano[y, x + k] and not escuro(y, x + k)), None)
+                if esq is None or dir_ is None: continue
+                fech[y, x, :3] = fech[y, esq, :3] * 0.78
+        p = fech.copy(); p[..., 3] = a_f * 255
+        print('cortina: fechada por código, até o chão')
         gravar_rgba(p, 'cortina-dia'); gravar_rgba(noite(p), 'cortina-noite')
     else:
         rosa = (e[..., 0] - e[..., 1] > 60) & (e[..., 2] - e[..., 1] > 60)

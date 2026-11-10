@@ -2814,7 +2814,7 @@ export default {
   'Campanha': 'Kampaniýa',
   'Sem vidas.': 'Jan galmady.',
   'Você volta em {n}…': '{n}-dan gaýdyp gelersiň…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Ýöremek üçin oklar, urmak üçin X (yzly-yzyna üçüsi kombo), bökmek üçin Z, ýörite urgy üçin C, ol azajyk jan harçlaýar.',
+  'Arrancada': 'Çalt ylgaw',
   'Andar': 'Ýöre',
   'Especial': 'Ýörite',
   'Pular': 'Bök',
@@ -3188,6 +3188,9 @@ export default {
   "Entrar na comunidade": "Jemgyýete goşul",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Aýakly, tegelek gözenekli, yssy günler üçin.",
+  // A caminha do gato
+  "Caminha do gato": "Pişik düşegi",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Tegelek we ýumşak, girelgesi pes. Pişik şu ýerde ýatýar.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Awatar",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3200,6 +3203,23 @@ export default {
   "Bicho do quarto": "Otagyň öý haýwany",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Jaň sesi",
+  'Tocar ligações com o áudio desativado': "Owaz ýapyk wagty hem jaňlary jyňňyrdat",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Owaz ýapyk wagty şahsy jaň sessiz gelýär: duýduryş ekranda görünýär we Syden meseleler setirinde ýanyp-öçýär. Jaň sesini her niçigem bolsa eşitmek üçin muny aç.",
+  'Avatares anteriores': "Öňki awatarlar",
+  'Voltar a este avatar': "Bu awatara gaýdyp gel",
+  'Tirar do histórico': "Taryhdan aýyr",
+  'Avatar não encontrado.': "Awatar tapylmady.",
+  'Sininho': "Jaňjagaz",
+  'Arpejo': "Arpejio",
+  'Suave': "Ýumşak",
+  'Bipe': "Bip",
+  'Grupo': "Topar",
+  'Nenhum': "Hiç biri",
+  'Novo grupo': "Täze topar",
+  'O do grupo ({grupo})': "Toparyňky ({grupo})",
+  'Grupos de toque': "Jaň sesi toparlary",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Her toparyň öz jaň sesi bar. Adynyň üstüne sag basyp, kimdir birini topara goş ýa-da diňe şol adam üçin jaň sesini saýla.",
+  'Apagar grupo': "Topary poz",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Kimdir saňa şahsy söhbetdeşlikde jaň edende jyňňyrdaýar, bildiriş owazlary öçürilen hem bolsa. \"Biynjalyk etme\" düzgüninde jaň sessiz görünýär.",
   'Avisar das ligações com o Syden em segundo plano?': "Syden arka planda bolanda jaňlar barada habar bersinmi?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Brauzer rugsat sorar. Şeýdip, başga goýmada ýa-da programmada bolsaň-da, jaňlar we habarlar barada bilersiň.",

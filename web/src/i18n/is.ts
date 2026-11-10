@@ -2813,7 +2813,7 @@ export default {
   'Campanha': 'Herferð',
   'Sem vidas.': 'Engin líf eftir.',
   'Você volta em {n}…': 'Þú kemur aftur eftir {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Örvar til að ganga, X til að slá (þrjú í röð er samsetningin), Z til að hoppa, C fyrir sérstaka höggið, sem kostar smá líf.',
+  'Arrancada': 'Sprettur',
   'Andar': 'Ganga',
   'Especial': 'Sérstakt',
   'Pular': 'Hoppa',
@@ -3178,6 +3178,9 @@ export default {
   "Entrar na comunidade": "Ganga í samfélagið",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Standandi, með kringlóttu grindina, fyrir heitu dagana.",
+  // A caminha do gato
+  "Caminha do gato": "Kattabæli",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Kringlótt og mjúkt, með lágum inngangi. Kötturinn sefur hér.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Notandamynd",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3190,6 +3193,23 @@ export default {
   "Bicho do quarto": "Gæludýr herbergisins",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Hringitónn símtala",
+  'Tocar ligações com o áudio desativado': "Hringja við símtöl þótt slökkt sé á hljóði",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Þegar slökkt er á hljóði berst einkasímtal án hljóðs: tilkynningin birtist á skjánum og Syden blikkar á verkstikunni. Kveiktu á þessu til að heyra hringitóninn samt.",
+  'Avatares anteriores': "Fyrri notandamyndir",
+  'Voltar a este avatar': "Fara aftur í þessa notandamynd",
+  'Tirar do histórico': "Fjarlægja úr ferli",
+  'Avatar não encontrado.': "Notandamynd fannst ekki.",
+  'Sininho': "Bjalla",
+  'Arpejo': "Arpeggio",
+  'Suave': "Mjúkur",
+  'Bipe': "Píp",
+  'Grupo': "Hópur",
+  'Nenhum': "Enginn",
+  'Novo grupo': "Nýr hópur",
+  'O do grupo ({grupo})': "Hóps ({grupo})",
+  'Grupos de toque': "Hringitónahópar",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Hver hópur hefur sinn hringitón. Settu einhvern í hóp, eða veldu hringitón bara fyrir viðkomandi, með hægrismelli á nafnið.",
+  'Apagar grupo': "Eyða hópi",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Hringir þegar einhver hringir í þig í einkasamtali, jafnvel þótt slökkt sé á tilkynningahljóðum. Í „Ónáðið ekki“ birtist símtalið án hringingar.",
   'Avisar das ligações com o Syden em segundo plano?': "Láta vita af símtölum þegar Syden er í bakgrunni?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Vafrinn mun biðja um leyfi. Þannig færðu að vita af símtölum og skilaboðum jafnvel í öðrum flipa eða forriti.",

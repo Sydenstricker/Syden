@@ -2729,7 +2729,7 @@ export default {
   'Campanha': '战役',
   'Sem vidas.': '没有命了。',
   'Você volta em {n}…': '{n} 后回来…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': '方向键行走，X 键攻击（连续三下是连击），Z 键跳跃，C 键使出必杀技，会消耗一点生命。',
+  'Arrancada': '冲刺',
   'Andar': '行走',
   'Especial': '必杀',
   'Pular': '跳跃',
@@ -3094,6 +3094,9 @@ export default {
   "Entrar na comunidade": "加入社区",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "落地扇，圆形风罩，给炎热的日子。",
+  // A caminha do gato
+  "Caminha do gato": "猫窝",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "圆圆软软的，入口低低的。猫在这里睡觉。",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "头像",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3106,6 +3109,23 @@ export default {
   "Bicho do quarto": "房间里的宠物",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "来电铃声",
+  'Tocar ligações com o áudio desativado': "关闭声音时也响铃",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "关闭声音时，私人通话会静音到达：提醒会显示在屏幕上，Syden 会在任务栏闪烁。打开此项，照样能听到来电铃声。",
+  'Avatares anteriores': "以前的头像",
+  'Voltar a este avatar': "换回这个头像",
+  'Tirar do histórico': "从历史中移除",
+  'Avatar não encontrado.': "未找到头像。",
+  'Sininho': "风铃",
+  'Arpejo': "琶音",
+  'Suave': "柔和",
+  'Bipe': "哔声",
+  'Grupo': "分组",
+  'Nenhum': "无",
+  'Novo grupo': "新建分组",
+  'O do grupo ({grupo})': "跟随分组（{grupo}）",
+  'Grupos de toque': "铃声分组",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "每个分组有自己的铃声。在名字上点右键，可以把这个人放进分组，或者只为这个人选一个铃声。",
+  'Apagar grupo': "删除分组",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "有人在私人对话中给你打电话时响铃，即使关闭了提示音也会响。在“请勿打扰”时，来电只显示不响铃。",
   'Avisar das ligações com o Syden em segundo plano?': "Syden 在后台时提醒你来电吗？",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "浏览器会请求权限。这样即使你在别的标签页或程序里，也能知道有来电和消息。",

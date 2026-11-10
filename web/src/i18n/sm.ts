@@ -2746,7 +2746,7 @@ export default {
   'Campanha': 'Malaga atoa',
   'Sem vidas.': 'Ua leai ni ola.',
   'Você volta em {n}…': 'E te toe foi mai i le {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Ki o aū e savali ai, X e tā ai (tolu sosoo o le combo), Z e oso ai, C mo le gaioiga faapitoa, e faaaoga ai sina ola.',
+  'Arrancada': 'Momoe',
   'Andar': 'Savali',
   'Especial': 'Faapitoa',
   'Pular': 'Oso',
@@ -3111,6 +3111,9 @@ export default {
   "Entrar na comunidade": "Auai i le fa’alapotopotoga",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Ili tu, ma lona pa lapotopoto, mo aso vevela.",
+  // A caminha do gato
+  "Caminha do gato": "Moega o le pusi",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Lapotopoto ma malu, e maualalo lona faitotoa. E moe le pusi i inei.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3123,6 +3126,23 @@ export default {
   "Bicho do quarto": "Fagafao o le potu",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Leo o le valaau",
+  'Tocar ligações com o áudio desativado': "Tatagi valaau e tusa pe tapuni le leo",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "A tapuni le leo, e oo mai se valaau patino e aunoa ma se leo: e aliali mai le faasilasilaga i le lau ma emoemo Syden i le taskbar. Ki lenei e faalogo ai lava i le leo o le valaau.",
+  'Avatares anteriores': "Avatar muamua",
+  'Voltar a este avatar': "Toe foi i lenei avatar",
+  'Tirar do histórico': "Aveese mai le talafaasolopito",
+  'Avatar não encontrado.': "E le o maua le avatar.",
+  'Sininho': "Logo laʻititi",
+  'Arpejo': "Arpeggio",
+  'Suave': "Malū",
+  'Bipe': "Pi",
+  'Grupo': "Vaega",
+  'Nenhum': "Leai",
+  'Novo grupo': "Vaega fou",
+  'O do grupo ({grupo})': "Le leo o le vaega ({grupo})",
+  'Grupos de toque': "Vaega o leo o valaau",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "E tofu le vaega ma lona leo. Tuu se tasi i se vaega, pe filifili se leo mo na o ia, i le kiliki taumatau i lona igoa.",
+  'Apagar grupo': "Tapeʻese le vaega",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "E tatagi pe a valaau atu se tasi iā te oe i se talanoaga patino, e tusa lava pe tape leo lapataʻi. I le \"Aua le faʻalavelave\", e aliali mai le valaau e aunoa ma le tatagi.",
   'Avisar das ligações com o Syden em segundo plano?': "Faailoa atu valaau pe a i tua le Syden?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "O le a talosaga le browser mo se faatagaga. O lea e te iloa ai valaau ma feʻau e tusa lava pe i se isi tab po o se polokalame.",

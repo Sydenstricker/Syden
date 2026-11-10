@@ -149,7 +149,7 @@ function useMenosMovimento() {
  * abrindo e fechando a boca, e na chamada parece que o avatar fala). O sinal é o mesmo que mexe a boca do coelho pronto,
  * com a folga curta da fala (FOLGA_DA_FALA_MS), para o GIF não parar e recomeçar entre uma palavra e outra.
  */
-function FotoDoAvatar({ src, animado, estado, size }: { src: string; animado: boolean; estado: EstadoDoPronto | null; size: number }) {
+export function FotoDoAvatar({ src, animado, estado, size }: { src: string; animado: boolean; estado: EstadoDoPronto | null; size: number }) {
   const menosMovimento = useMenosMovimento();
   const sempre = size >= AVATAR_GRANDE;
   const [linha, setLinha] = useState<Element | null>(null);

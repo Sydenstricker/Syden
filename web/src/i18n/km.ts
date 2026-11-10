@@ -2811,7 +2811,7 @@ export default {
   'Campanha': 'យុទ្ធនាការ',
   'Sem vidas.': 'អស់ជីវិតហើយ។',
   'Você volta em {n}…': 'អ្នកនឹងត្រឡប់មកវិញក្នុងរយៈ {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'ព្រួញសម្រាប់ដើរ X សម្រាប់វាយ (បីដងជាប់គ្នាគឺខមបូ) Z សម្រាប់លោត C សម្រាប់ចលនាពិសេស ដែលស៊ីជីវិតបន្តិច។',
+  'Arrancada': 'ការរត់លឿន',
   'Andar': 'ដើរ',
   'Especial': 'ពិសេស',
   'Pular': 'លោត',
@@ -3176,6 +3176,9 @@ export default {
   "Entrar na comunidade": "ចូលរួមសហគមន៍",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "កង្ហារឈរ មានសំណាញ់មូល សម្រាប់ថ្ងៃក្ដៅ។",
+  // A caminha do gato
+  "Caminha do gato": "គ្រែឆ្មា",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "មូល និងទន់ មានច្រកចូលទាប។ ឆ្មាដេកនៅទីនេះ។",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "រូបតំណាង",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3188,6 +3191,23 @@ export default {
   "Bicho do quarto": "សត្វចិញ្ចឹមក្នុងបន្ទប់",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "សំឡេងរោទ៍ការហៅ",
+  'Tocar ligações com o áudio desativado': "រោទ៍ការហៅ ទោះបិទសំឡេងក៏ដោយ",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "ពេលបិទសំឡេង ការហៅឯកជនមកដល់ដោយគ្មានសំឡេង៖ ការជូនដំណឹងបង្ហាញលើអេក្រង់ ហើយ Syden ភ្លឹបភ្លែតនៅរបារភារកិច្ច។ បើកវា ដើម្បីឮសំឡេងរោទ៍ដដែល។",
+  'Avatares anteriores': "រូបតំណាងមុនៗ",
+  'Voltar a este avatar': "ត្រឡប់ទៅរូបតំណាងនេះ",
+  'Tirar do histórico': "ដកចេញពីប្រវត្តិ",
+  'Avatar não encontrado.': "រកមិនឃើញរូបតំណាងទេ។",
+  'Sininho': "កណ្ដឹងតូច",
+  'Arpejo': "អាប៉េហ្ស៊ីយ៉ូ",
+  'Suave': "ទន់ភ្លន់",
+  'Bipe': "ប៊ីប",
+  'Grupo': "ក្រុម",
+  'Nenhum': "គ្មាន",
+  'Novo grupo': "ក្រុមថ្មី",
+  'O do grupo ({grupo})': "របស់ក្រុម ({grupo})",
+  'Grupos de toque': "ក្រុមសំឡេងរោទ៍",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "ក្រុមនីមួយៗមានសំឡេងរោទ៍ផ្ទាល់ខ្លួន។ ចុចកណ្ដុរស្ដាំលើឈ្មោះ ដើម្បីដាក់នរណាម្នាក់ក្នុងក្រុម ឬជ្រើសសំឡេងរោទ៍សម្រាប់តែម្នាក់នោះ។",
+  'Apagar grupo': "លុបក្រុម",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "រោទ៍នៅពេលមាននរណាម្នាក់ហៅអ្នកក្នុងការសន្ទនាឯកជន ទោះបីបិទសំឡេងជូនដំណឹងក៏ដោយ។ ក្នុង \"កុំរំខាន\" ការហៅបង្ហាញដោយមិនរោទ៍។",
   'Avisar das ligações com o Syden em segundo plano?': "ជូនដំណឹងអំពីការហៅ ពេល Syden នៅផ្ទៃខាងក្រោយ?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "កម្មវិធីរុករកនឹងសុំការអនុញ្ញាត។ ដូច្នេះអ្នកនឹងដឹងអំពីការហៅ និងសារ ទោះនៅផ្ទាំង ឬកម្មវិធីផ្សេងក៏ដោយ។",

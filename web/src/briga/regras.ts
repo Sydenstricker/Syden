@@ -12,8 +12,28 @@ export const ONDAS_X = [0, 360, 720, 1080, 1440];
 export const VEL_X = 72;
 export const VEL_Y = 44;
 export const VIDA = 100;
-export const CUSTO_ESPECIAL = 8;
 export const PASSO_MS = 50;
+/**
+ * O ESPECIAL É UM GIRO EM QUE SE ANDA (09/11/2026, pedido dele: "o especial teria uma barra para visualizar possibilidade de
+ * uso, e ele não ficaria travado usando: poder andar e girar"). Antes ele custava vida e prendia o coelho no lugar meio
+ * segundo. Agora dura GIRO_MS, o coelho anda e troca de faixa na velocidade de sempre, e a cada GIRO_TICK_MS pega de novo
+ * quem estiver em volta (cada inimigo, uma vez por volta). O recurso é uma RECARGA pelo tempo, e não mais a vida: a barra
+ * enche sozinha em RECARGA_ESPECIAL_MS desde o último giro, e cheia ele sai. Pelo tempo, e não pelos acertos, de propósito:
+ * o site e o servidor contam a mesma coisa sem trocar mensagem nenhuma (a barra daqui não precisa saber quais acertos o
+ * servidor aceitou), e quem está apanhando não fica sem a saída por ter vida pouca.
+ */
+export const GIRO_MS = 1600;
+export const GIRO_TICK_MS = 320;
+export const RECARGA_ESPECIAL_MS = 8000;
+/**
+ * A ARRANCADA (09/11/2026, pedido dele: "se aperto duas vezes pra frente o coelho dá um dash ou corre, tanto para frente
+ * como para trás"): dois toques para o mesmo lado (seta ou A/D) dentro de TOQUE_DUPLO_MS, e o coelho dispara ARRANCADA_MS
+ * para aquele lado, a ARRANCADA_VEL. Só movimento: não bate nem fica invulnerável (o servidor confere o quanto ela anda).
+ */
+export const ARRANCADA_MS = 200;
+export const ARRANCADA_VEL = 220;
+export const ARRANCADA_RECARGA_MS = 600;
+export const TOQUE_DUPLO_MS = 250;
 
 export type Golpe = 'soco1' | 'soco2' | 'soco3' | 'voadora' | 'especial';
 export const GOLPES: Record<Golpe, { dura: number; alcance: [number, number]; fundo: number; dano: number; derruba: boolean }> = {
@@ -21,7 +41,8 @@ export const GOLPES: Record<Golpe, { dura: number; alcance: [number, number]; fu
   soco2: { dura: 280, alcance: [6, 32], fundo: 9, dano: 5, derruba: false },
   soco3: { dura: 420, alcance: [4, 34], fundo: 10, dano: 9, derruba: true },
   voadora: { dura: 900, alcance: [0, 30], fundo: 11, dano: 9, derruba: true },
-  especial: { dura: 520, alcance: [-38, 38], fundo: 14, dano: 10, derruba: true },
+  // o giro: pega dos dois lados, a cada volta (GIRO_TICK_MS), e não derruba (só empurra: quem gira vai atrás)
+  especial: { dura: GIRO_MS, alcance: [-34, 34], fundo: 14, dano: 4, derruba: false },
 };
 /** Em que parte do golpe ele pega (fração da duração). A voadora pega do começo até o pé tocar o chão. */
 export const ATIVO: Record<Golpe, [number, number]> = {
@@ -29,7 +50,7 @@ export const ATIVO: Record<Golpe, [number, number]> = {
   soco2: [0.25, 0.6],
   soco3: [0.3, 0.6],
   voadora: [0.06, 1],
-  especial: [0.15, 0.78],
+  especial: [0, 1],
 };
 // os bichos e as fases: a mesma cópia do servidor (fases.ts ↔ server/src/briga-fases.ts)
 import { bicho, CORPO, TIPOS, type TipoDeInimigo } from './fases';
@@ -41,7 +62,8 @@ export const ESTADOS = [
   'saltando', 'prep-sopro', 'sopro',
 ] as const;
 export type EstadoDoInimigo = (typeof ESTADOS)[number];
-export const ACOES = ['parado', 'andando', 'soco1', 'soco2', 'soco3', 'pulo', 'voadora', 'dor', 'caido', 'levantando', 'especial'] as const;
+// a ordem é o código que vai na rede: ação nova entra no FIM ('arrancada', 09/11/2026)
+export const ACOES = ['parado', 'andando', 'soco1', 'soco2', 'soco3', 'pulo', 'voadora', 'dor', 'caido', 'levantando', 'especial', 'arrancada'] as const;
 export type Acao = (typeof ACOES)[number];
 
 const PULO_VZ = 215;
@@ -65,9 +87,25 @@ export interface Comandos {
   soco: boolean;
   pulo: boolean;
   especial: boolean;
+  /** O segundo toque para um lado (o teclado e os botões de toque contam: ToqueDuplo); 0 sem arrancada. */
+  arrancada: -1 | 0 | 1;
 }
 
-export const comandosVazios = (): Comandos => ({ esquerda: false, direita: false, cima: false, baixo: false, soco: false, pulo: false, especial: false });
+export const comandosVazios = (): Comandos => ({ esquerda: false, direita: false, cima: false, baixo: false, soco: false, pulo: false, especial: false, arrancada: 0 });
+
+/**
+ * O TOQUE DUPLO: quem aperta (o teclado, o direcional da tela de toque) avisa cada aperto NOVO de um lado; o segundo, para o
+ * mesmo lado, dentro de TOQUE_DUPLO_MS, é a arrancada. Fica fora do passo do coelho para o piloto automático (que liga e
+ * desliga a seta a cada passo) não disparar arrancadas sem querer.
+ */
+export class ToqueDuplo {
+  private ultimo: { lado: -1 | 1; em: number } | null = null;
+  apertou(lado: -1 | 1, agora: number): boolean {
+    const duplo = !!this.ultimo && this.ultimo.lado === lado && agora - this.ultimo.em <= TOQUE_DUPLO_MS;
+    this.ultimo = duplo ? null : { lado, em: agora };
+    return duplo;
+  }
+}
 
 export interface Coelho {
   x: number;
@@ -92,6 +130,9 @@ export interface Coelho {
   voadoraNestePulo: boolean;
   piscandoAte: number;
   ultimoEspecial: number;
+  ultimaArrancada: number;
+  /** No giro: a volta atual (cada uma pega cada inimigo uma vez; vai junto no acerto). */
+  volta: number;
   /** O relógio do coelho (ms). */
   relogio: number;
   hp: number;
@@ -114,6 +155,8 @@ export const novoCoelho = (x: number, y: number): Coelho => ({
   voadoraNestePulo: false,
   piscandoAte: 0,
   ultimoEspecial: -Infinity,
+  ultimaArrancada: -Infinity,
+  volta: 0,
   relogio: 0,
   hp: VIDA,
 });
@@ -121,7 +164,12 @@ export const novoCoelho = (x: number, y: number): Coelho => ({
 /** O que um passo do coelho fez de novo: um golpe que começou (vai ao servidor na hora). */
 export interface Novidade {
   comecou?: { id: number; golpe: Golpe };
+  /** A arrancada começou (a posição vai na hora, para o servidor dar a folga dela já na primeira). */
+  arrancou?: boolean;
 }
+
+/** Quanto da barra do especial está cheio (0 a 1), pelo relógio do coelho. */
+export const cargaDoEspecial = (c: Coelho) => Math.max(0, Math.min(1, (c.relogio - c.ultimoEspecial) / RECARGA_ESPECIAL_MS));
 
 const comecar = (c: Coelho, acao: Acao) => {
   c.acao = acao;
@@ -161,8 +209,9 @@ export function passoDoCoelho(c: Coelho, cmd: Comandos, dt: number, arena: [numb
   c.relogio += ms;
   c.t += ms;
   let novo: Novidade = {};
-  const soco = cmd.soco, pulo = cmd.pulo, especial = cmd.especial;
+  const soco = cmd.soco, pulo = cmd.pulo, especial = cmd.especial, arrancada = cmd.arrancada;
   cmd.soco = cmd.pulo = cmd.especial = false;
+  cmd.arrancada = 0;
   const mx = (cmd.direita ? 1 : 0) - (cmd.esquerda ? 1 : 0);
   const my = (cmd.baixo ? 1 : 0) - (cmd.cima ? 1 : 0);
 
@@ -187,14 +236,33 @@ export function passoDoCoelho(c: Coelho, cmd: Comandos, dt: number, arena: [numb
         comecar(c, 'parado');
       }
       break;
+    case 'arrancada':
+      c.x += c.lado * ARRANCADA_VEL * dt;
+      if (c.t >= ARRANCADA_MS) comecar(c, 'parado');
+      break;
+    case 'especial': {
+      // o giro anda e troca de faixa como o coelho parado; cada volta nova pega todo mundo de novo
+      c.x += mx * VEL_X * dt;
+      c.y += my * VEL_Y * dt;
+      if (mx) c.lado = mx > 0 ? 1 : -1;
+      const volta = Math.min(Math.floor(c.t / GIRO_TICK_MS), Math.ceil(GIRO_MS / GIRO_TICK_MS) - 1);
+      if (volta !== c.volta) {
+        c.volta = volta;
+        c.acertados = new Set();
+      }
+      if (c.t >= GIRO_MS) {
+        c.golpe = null;
+        comecar(c, 'parado');
+      }
+      break;
+    }
     case 'soco1':
     case 'soco2':
-    case 'soco3':
-    case 'especial': {
+    case 'soco3': {
       const g = GOLPES[c.acao];
-      if (soco && c.acao !== 'especial' && c.t > g.dura * 0.45) c.socoNaFila = true;
+      if (soco && c.t > g.dura * 0.45) c.socoNaFila = true;
       if (c.t >= g.dura) {
-        if (c.acao !== 'especial') c.ultimoSoco = { golpe: c.acao, fim: c.relogio };
+        c.ultimoSoco = { golpe: c.acao, fim: c.relogio };
         c.golpe = null;
         comecar(c, 'parado');
         if (c.socoNaFila) {
@@ -224,9 +292,17 @@ export function passoDoCoelho(c: Coelho, cmd: Comandos, dt: number, arena: [numb
     }
     default: {
       // parado ou andando: anda, e cada aperto começa uma coisa
-      if (especial && c.hp > CUSTO_ESPECIAL && c.relogio - c.ultimoEspecial >= 950) {
+      if (especial && cargaDoEspecial(c) >= 1) {
         c.ultimoEspecial = c.relogio;
+        c.volta = 0;
         novo = comecarGolpe(c, 'especial');
+        break;
+      }
+      if (arrancada && c.relogio - c.ultimaArrancada >= ARRANCADA_RECARGA_MS) {
+        c.ultimaArrancada = c.relogio;
+        c.lado = arrancada;
+        comecar(c, 'arrancada');
+        novo = { arrancou: true };
         break;
       }
       if (soco) {

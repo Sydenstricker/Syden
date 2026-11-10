@@ -2724,7 +2724,7 @@ export default {
   'Campanha': 'ప్రచారం',
   'Sem vidas.': 'ప్రాణాలు లేవు.',
   'Você volta em {n}…': '{n} లో తిరిగి వస్తావు…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'నడవడానికి బాణం కీలు, కొట్టడానికి X (వరుసగా మూడు అంటే కాంబో), దూకడానికి Z, ప్రత్యేక దెబ్బకు C, అది కొంచెం ప్రాణం ఖర్చు చేస్తుంది.',
+  'Arrancada': 'వేగపు పరుగు',
   'Andar': 'నడువు',
   'Especial': 'ప్రత్యేకం',
   'Pular': 'దూకు',
@@ -3089,6 +3089,9 @@ export default {
   "Entrar na comunidade": "సంఘంలో చేరండి",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "నిలబడే ఫ్యాన్, గుండ్రటి జాలీతో, ఎండ రోజుల కోసం.",
+  // A caminha do gato
+  "Caminha do gato": "పిల్లి పరుపు",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "గుండ్రంగా, మెత్తగా, తక్కువ ప్రవేశంతో. పిల్లి ఇక్కడే నిద్రపోతుంది.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "ప్రొఫైల్ చిత్రం",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3101,6 +3104,23 @@ export default {
   "Bicho do quarto": "గదిలోని పెంపుడు జంతువు",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "కాల్ రింగ్‌టోన్",
+  'Tocar ligações com o áudio desativado': "శబ్దం ఆఫ్‌లో ఉన్నా కాల్‌లకు రింగ్ చేయి",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "శబ్దం ఆఫ్‌లో ఉన్నప్పుడు ప్రైవేట్ కాల్ శబ్దం లేకుండా వస్తుంది: నోటిఫికేషన్ స్క్రీన్‌పై కనిపిస్తుంది, Syden టాస్క్‌బార్‌లో మెరుస్తుంది. అయినా రింగ్‌టోన్ వినడానికి దీన్ని ఆన్ చేయి.",
+  'Avatares anteriores': "మునుపటి ప్రొఫైల్ చిత్రాలు",
+  'Voltar a este avatar': "ఈ ప్రొఫైల్ చిత్రానికి తిరిగి వెళ్ళు",
+  'Tirar do histórico': "చరిత్ర నుండి తీసివేయి",
+  'Avatar não encontrado.': "ప్రొఫైల్ చిత్రం కనబడలేదు.",
+  'Sininho': "గంట",
+  'Arpejo': "ఆర్పెజియో",
+  'Suave': "మృదువు",
+  'Bipe': "బీప్",
+  'Grupo': "గ్రూప్",
+  'Nenhum': "ఏదీ లేదు",
+  'Novo grupo': "కొత్త గ్రూప్",
+  'O do grupo ({grupo})': "గ్రూప్‌ది ({grupo})",
+  'Grupos de toque': "రింగ్‌టోన్ గ్రూప్‌లు",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "ప్రతి గ్రూప్‌కు దాని సొంత రింగ్‌టోన్ ఉంటుంది. పేరుపై కుడి క్లిక్ చేసి ఎవరినైనా గ్రూప్‌లో పెట్టు, లేదా ఆ వ్యక్తికి మాత్రమే రింగ్‌టోన్ ఎంచుకో.",
+  'Apagar grupo': "గ్రూప్‌ను తొలగించు",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "ప్రైవేట్ సంభాషణలో ఎవరైనా మీకు కాల్ చేసినప్పుడు మోగుతుంది, హెచ్చరిక శబ్దాలు ఆపివేసినా కూడా. \"కలవరపెట్టవద్దు\"లో కాల్ మోగకుండా కనిపిస్తుంది.",
   'Avisar das ligações com o Syden em segundo plano?': "Syden నేపథ్యంలో ఉన్నప్పుడు కాల్‌ల గురించి తెలియజేయాలా?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "బ్రౌజర్ అనుమతి అడుగుతుంది. దీనివల్ల వేరే ట్యాబ్ లేదా ప్రోగ్రామ్‌లో ఉన్నా కాల్‌లు, సందేశాల గురించి తెలుస్తుంది.",

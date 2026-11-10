@@ -2748,7 +2748,7 @@ export default {
   'Campanha': 'Fononga kakato',
   'Sem vidas.': 'ʻIkai ha moʻui.',
   'Você volta em {n}…': 'Te ke foki mai ʻi he {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Ngaahi kī kahaʻu ke luelue, X ke taaʻi (tolu fakahokohoko ko e combo), Z ke puna, C ki he ngaue makehe, ʻa ia ʻoku ne fakaʻaongaʻi ha kiʻi moʻui.',
+  'Arrancada': 'Lele vave',
   'Andar': 'Luelue',
   'Especial': 'Makehe',
   'Pular': 'Puna',
@@ -3113,6 +3113,9 @@ export default {
   "Entrar na comunidade": "Kau ki he kulupú",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Ko e ili tu’u, mo hono ’ā fuopotopoto, ki he ngaahi ’aho māfana.",
+  // A caminha do gato
+  "Caminha do gato": "Mohenga ’o e pusi",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Fuopotopoto mo molū, mo e hū ma’ulalo. ’Oku mohe heni ’a e pusi.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "ʻAvata",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3125,6 +3128,23 @@ export default {
   "Bicho do quarto": "Monumanu ʻo e loki",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Ongo ʻo e telefoni",
+  'Tocar ligações com o áudio desativado': "Tatangi ki he ngaahi telefoni neongo kuo taʻofi e leʻo",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "ʻI he taimi kuo taʻofi ai e leʻo, ʻoku aʻu mai ha telefoni fakafoʻituitui taʻe ha leʻo: ʻoku hā e fakatokanga ʻi he sikilini pea ʻoku ʻuhila ʻa Syden ʻi he taskbar. Fakaʻaki eni ke ke fanongo pē ki he ongo ʻo e telefoni.",
+  'Avatares anteriores': "Ngaahi ʻavata kimuʻa",
+  'Voltar a este avatar': "Foki ki he ʻavata ko eni",
+  'Tirar do histórico': "Toʻo mei he hisitōlia",
+  'Avatar não encontrado.': "ʻOku ʻikai maʻu e ʻavata.",
+  'Sininho': "Fafangu siʻi",
+  'Arpejo': "ʻAapesio",
+  'Suave': "Molū",
+  'Bipe': "Pipi",
+  'Grupo': "Kulupu",
+  'Nenhum': "ʻIkai",
+  'Novo grupo': "Kulupu foʻou",
+  'O do grupo ({grupo})': "ʻO e kulupú ({grupo})",
+  'Grupos de toque': "Ngaahi kulupu ongo",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "ʻOku taki taha ʻa e kulupu mo hono ongo. Tuku ha taha ki ha kulupu, pe fili ha ongo maʻana pē, ʻaki hono lomiʻi toʻomataʻu hono hingoa.",
+  'Apagar grupo': "Tāmateʻi ʻa e kulupu",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "ʻOku tatangi ʻi he taimi ʻoku ui atu ai ha taha kiate koe ʻi ha fetalanoaʻaki fakafoʻituitui, neongo kuo tāmateʻi ʻa e ngaahi ongo fakatokanga. ʻI he \"ʻOua ʻe fakahohaʻasi\", ʻoku hā mai ʻa e telefoni ʻo ʻikai tatangi.",
   'Avisar das ligações com o Syden em segundo plano?': "Fakahā atu ʻa e ngaahi telefoni lolotonga ʻoku ʻi mui ʻa Syden?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "ʻE kole ʻe he browser ha ngofua. ʻI he founga ko ia te ke ʻilo ai ʻa e ngaahi telefoni mo e pōpoaki neongo ʻoku ke ʻi ha tab pe polokalama kehe.",

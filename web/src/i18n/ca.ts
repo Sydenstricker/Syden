@@ -2809,7 +2809,7 @@ export default {
   'Campanha': 'Campanya',
   'Sem vidas.': 'Sense vides.',
   'Você volta em {n}…': 'Tornes d\'aquí a {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Fletxes per caminar, X per picar (tres seguits és el combo), Z per saltar, C per a l\'especial, que gasta una mica de vida.',
+  'Arrancada': 'Esprint',
   'Andar': 'Caminar',
   'Especial': 'Especial',
   'Pular': 'Saltar',
@@ -3173,6 +3173,9 @@ export default {
   "Entrar na comunidade": "Entra a la comunitat",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "De peu, amb la reixa rodona, per als dies de calor.",
+  // A caminha do gato
+  "Caminha do gato": "Llitet del gat",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Rodó i tou, amb l'entrada més baixa. El gat hi dorm.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3185,6 +3188,23 @@ export default {
   "Bicho do quarto": "Mascota de l'habitació",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "So de trucada",
+  'Tocar ligações com o áudio desativado': "Fer sonar les trucades amb l’àudio desactivat",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Amb l’àudio desactivat, una trucada privada arriba sense so: l’avís apareix a la pantalla i el Syden parpelleja a la barra de tasques. Activa-ho per sentir el so igualment.",
+  'Avatares anteriores': "Avatars anteriors",
+  'Voltar a este avatar': "Tornar a aquest avatar",
+  'Tirar do histórico': "Treure de l’historial",
+  'Avatar não encontrado.': "No s’ha trobat l’avatar.",
+  'Sininho': "Campaneta",
+  'Arpejo': "Arpegi",
+  'Suave': "Suau",
+  'Bipe': "Bip",
+  'Grupo': "Grup",
+  'Nenhum': "Cap",
+  'Novo grupo': "Grup nou",
+  'O do grupo ({grupo})': "El del grup ({grupo})",
+  'Grupos de toque': "Grups de so",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Cada grup té el seu so. Posa algú en un grup, o tria un so només per a aquesta persona, amb el botó dret sobre el seu nom.",
+  'Apagar grupo': "Esborrar el grup",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Sona quan algú et truca en una conversa privada, fins i tot amb els sons d’avís desactivats. En \"No molestar\", la trucada apareix sense sonar.",
   'Avisar das ligações com o Syden em segundo plano?': "Vols que t’avisi de les trucades amb el Syden en segon pla?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "El navegador et demanarà permís. Així sabràs de trucades i missatges fins i tot en una altra pestanya o programa.",

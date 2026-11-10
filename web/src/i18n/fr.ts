@@ -2764,7 +2764,7 @@ export default {
   'Campanha': 'Campagne',
   'Sem vidas.': 'Plus de vies.',
   'Você volta em {n}…': 'Tu reviens dans {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Flèches pour marcher, X pour frapper (trois d’affilée font le combo), Z pour sauter, C pour le spécial, qui coûte un peu de vie.',
+  'Arrancada': 'Ruée',
   'Andar': 'Marcher',
   'Especial': 'Spécial',
   'Pular': 'Sauter',
@@ -3129,6 +3129,9 @@ export default {
   "Entrar na comunidade": "Rejoindre la communauté",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Sur pied, avec sa grille ronde, pour les jours chauds.",
+  // A caminha do gato
+  "Caminha do gato": "Panier du chat",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Rond et moelleux, avec une entrée basse. Le chat dort ici.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3141,6 +3144,23 @@ export default {
   "Bicho do quarto": "L'animal de la chambre",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Sonnerie d’appel",
+  'Tocar ligações com o áudio desativado': "Sonner pour les appels même son coupé",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Son coupé, un appel privé arrive en silence : l’avis s’affiche à l’écran et Syden clignote dans la barre des tâches. Active cette option pour entendre la sonnerie quand même.",
+  'Avatares anteriores': "Avatars précédents",
+  'Voltar a este avatar': "Revenir à cet avatar",
+  'Tirar do histórico': "Retirer de l’historique",
+  'Avatar não encontrado.': "Avatar introuvable.",
+  'Sininho': "Clochette",
+  'Arpejo': "Arpège",
+  'Suave': "Douce",
+  'Bipe': "Bip",
+  'Grupo': "Groupe",
+  'Nenhum': "Aucun",
+  'Novo grupo': "Nouveau groupe",
+  'O do grupo ({grupo})': "Celle du groupe ({grupo})",
+  'Grupos de toque': "Groupes de sonnerie",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Chaque groupe a sa sonnerie. Mets quelqu’un dans un groupe, ou choisis une sonnerie rien que pour cette personne, d’un clic droit sur son nom.",
+  'Apagar grupo': "Supprimer le groupe",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Sonne quand quelqu’un t’appelle dans une conversation privée, même avec les sons d’alerte coupés. En « Ne pas déranger », l’appel s’affiche sans sonner.",
   'Avisar das ligações com o Syden em segundo plano?': "Te prévenir des appels quand Syden est en arrière-plan ?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Le navigateur va te demander l’autorisation. Comme ça, tu es au courant des appels et des messages même dans un autre onglet ou programme.",

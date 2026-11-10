@@ -2741,7 +2741,7 @@ export default {
   'Campanha': 'Veldtocht',
   'Sem vidas.': 'Geen levens meer.',
   'Você volta em {n}…': 'Je bent terug over {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Pijltjestoetsen om te lopen, X om te slaan (drie achter elkaar is de combo), Z om te springen, C voor de special, die wat leven kost.',
+  'Arrancada': 'Sprint',
   'Andar': 'Lopen',
   'Especial': 'Special',
   'Pular': 'Springen',
@@ -3106,6 +3106,9 @@ export default {
   "Entrar na comunidade": "Lid worden van de community",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Staand, met zijn ronde rooster, voor de warme dagen.",
+  // A caminha do gato
+  "Caminha do gato": "Kattenmand",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Rond en zacht, met een lage ingang. Hier slaapt de kat.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3118,6 +3121,23 @@ export default {
   "Bicho do quarto": "Huisdier van de kamer",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Beltoon",
+  'Tocar ligações com o áudio desativado': "Overgaan bij oproepen als het geluid uit staat",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Als het geluid uit staat, komt een privéoproep zonder geluid binnen: de melding verschijnt op het scherm en Syden knippert in de taakbalk. Zet dit aan om de beltoon toch te horen.",
+  'Avatares anteriores': "Vorige avatars",
+  'Voltar a este avatar': "Terug naar deze avatar",
+  'Tirar do histórico': "Uit de geschiedenis halen",
+  'Avatar não encontrado.': "Avatar niet gevonden.",
+  'Sininho': "Belletje",
+  'Arpejo': "Arpeggio",
+  'Suave': "Zacht",
+  'Bipe': "Piep",
+  'Grupo': "Groep",
+  'Nenhum': "Geen",
+  'Novo grupo': "Nieuwe groep",
+  'O do grupo ({grupo})': "Die van de groep ({grupo})",
+  'Grupos de toque': "Beltoongroepen",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Elke groep heeft een eigen beltoon. Zet iemand in een groep, of kies een beltoon alleen voor die persoon, met rechtsklikken op de naam.",
+  'Apagar grupo': "Groep verwijderen",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Gaat over als iemand je belt in een privégesprek, ook als de waarschuwingsgeluiden uit staan. Bij \"Niet storen\" verschijnt het gesprek zonder over te gaan.",
   'Avisar das ligações com o Syden em segundo plano?': "Laten weten als er gebeld wordt terwijl Syden op de achtergrond staat?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Je browser vraagt om toestemming. Zo hoor je van oproepen en berichten, ook in een ander tabblad of programma.",

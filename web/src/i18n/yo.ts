@@ -2757,7 +2757,7 @@ export default {
   'Campanha': 'Ìpolongo',
   'Sem vidas.': 'Kò sí ẹ̀mí mọ́.',
   'Você volta em {n}…': 'O máa padà dé ní {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Àwọn bọ́tìnì ọfà láti rìn, X láti lù (mẹ́ta léraléra ni kọ́mbò), Z láti fò, C fún ìgbésẹ̀ àkànṣe, tí ó ń ná ẹ̀mí díẹ̀.',
+  'Arrancada': 'Ìsáré kíákíá',
   'Andar': 'Rìn',
   'Especial': 'Àkànṣe',
   'Pular': 'Fò',
@@ -3122,6 +3122,9 @@ export default {
   "Entrar na comunidade": "Darapọ̀ mọ́ àwùjọ",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Fáànù ìdúró, pẹ̀lú àwọ̀n yíká, fún ọjọ́ gbígbóná.",
+  // A caminha do gato
+  "Caminha do gato": "Ibùsùn ológbò",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Ó yíká, ó sì rọ̀, pẹ̀lú ẹnu ọ̀nà tó lọ sílẹ̀. Ológbò ń sùn níbí.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Àwòrán",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3134,6 +3137,23 @@ export default {
   "Bicho do quarto": "Ẹranko ọ̀sìn inú yàrá",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Ohùn ìpè",
+  'Tocar ligações com o áudio desativado': "Jẹ́ kí ìpè dún bí o tilẹ̀ pa ohùn",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Nígbà tí o bá pa ohùn, ìpè àdáni máa ń dé láìsí ohùn: ìkìlọ̀ máa ń hàn lójú ìbojú, Syden sì máa ń tàn ní ọ̀pá iṣẹ́. Tan èyí láti gbọ́ ohùn ìpè bákan náà.",
+  'Avatares anteriores': "Àwọn àwòrán tó ti kọjá",
+  'Voltar a este avatar': "Padà sí àwòrán yìí",
+  'Tirar do histórico': "Yọ kúrò nínú ìtàn",
+  'Avatar não encontrado.': "A kò rí àwòrán náà.",
+  'Sininho': "Agogo kékeré",
+  'Arpejo': "Arpeggio",
+  'Suave': "Jẹ́jẹ́",
+  'Bipe': "Bíìpù",
+  'Grupo': "Ẹgbẹ́",
+  'Nenhum': "Kò sí",
+  'Novo grupo': "Ẹgbẹ́ tuntun",
+  'O do grupo ({grupo})': "Ti ẹgbẹ́ náà ({grupo})",
+  'Grupos de toque': "Àwọn ẹgbẹ́ ohùn ìpè",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Ẹgbẹ́ kọ̀ọ̀kan ní ohùn ìpè tirẹ̀. Fi ẹnìkan sínú ẹgbẹ́, tàbí yan ohùn ìpè fún ẹni náà nìkan, nípa títẹ ọ̀tún lórí orúkọ rẹ̀.",
+  'Apagar grupo': "Pa ẹgbẹ́ rẹ́",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Ó máa ń dún nígbà tí ẹnìkan bá pè ọ́ nínú ìjíròrò àdáni, kódà tí àwọn ìró ìkìlọ̀ bá wà ní pípa. Nínú \"Má dà mí láàmú\", ìpè náà máa ń hàn láìdún.",
   'Avisar das ligações com o Syden em segundo plano?': "Ṣé kí a sọ fún ọ nípa àwọn ìpè nígbà tí Syden wà lẹ́yìn?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Aṣàwákiri yóò béèrè ìyọ̀ǹda. Bẹ́ẹ̀ ni o máa mọ̀ nípa àwọn ìpè àti ìfiránṣẹ́ kódà tí o bá wà ní táàbù tàbí ètò mìíràn.",

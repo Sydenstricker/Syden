@@ -2806,7 +2806,7 @@ export default {
   'Campanha': 'Veldtog',
   'Sem vidas.': 'Geen lewens oor nie.',
   'Você volta em {n}…': 'Jy is terug oor {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Pyltjies om te loop, X om te slaan (drie agtereenvolgens is die kombinasie), Z om te spring, C vir die spesiale skuif, wat ’n bietjie lewe kos.',
+  'Arrancada': 'Spurt',
   'Andar': 'Loop',
   'Especial': 'Spesiaal',
   'Pular': 'Spring',
@@ -3171,6 +3171,9 @@ export default {
   "Entrar na comunidade": "Sluit by die gemeenskap aan",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Staande, met sy ronde rooster, vir die warm dae.",
+  // A caminha do gato
+  "Caminha do gato": "Katmandjie",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Rond en sag, met 'n lae ingang. Die kat slaap hier.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3183,6 +3186,23 @@ export default {
   "Bicho do quarto": "Troeteldier van die kamer",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Lui vir oproepe",
+  'Tocar ligações com o áudio desativado': "Lui vir oproepe as klank af is",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "As klank af is, kom ’n privaat oproep sonder klank: die kennisgewing verskyn op die skerm en Syden flits in die taakbalk. Skakel dit aan om die lui tog te hoor.",
+  'Avatares anteriores': "Vorige avatars",
+  'Voltar a este avatar': "Gaan terug na hierdie avatar",
+  'Tirar do histórico': "Verwyder uit die geskiedenis",
+  'Avatar não encontrado.': "Avatar nie gevind nie.",
+  'Sininho': "Klokkie",
+  'Arpejo': "Arpeggio",
+  'Suave': "Sag",
+  'Bipe': "Piep",
+  'Grupo': "Groep",
+  'Nenhum': "Geen",
+  'Novo grupo': "Nuwe groep",
+  'O do grupo ({grupo})': "Die groep s’n ({grupo})",
+  'Grupos de toque': "Luigroepe",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Elke groep het sy eie luitoon. Sit iemand in ’n groep, of kies ’n luitoon net vir daardie persoon, met ’n regsklik op hul naam.",
+  'Apagar grupo': "Vee groep uit",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Lui wanneer iemand jou in ’n privaat gesprek bel, selfs met die kennisgewingklanke af. In \"Moenie steur nie\" verskyn die oproep sonder om te lui.",
   'Avisar das ligações com o Syden em segundo plano?': "Laat weet jou van oproepe terwyl Syden in die agtergrond is?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Die blaaier sal toestemming vra. So hoor jy van oproepe en boodskappe, selfs in ’n ander oortjie of program.",

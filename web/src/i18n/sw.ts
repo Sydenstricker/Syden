@@ -2741,7 +2741,7 @@ export default {
   'Campanha': 'Kampeni',
   'Sem vidas.': 'Hakuna maisha tena.',
   'Você volta em {n}…': 'Utarudi baada ya {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Mishale kutembea, X kupiga (tatu mfululizo ni kombo), Z kuruka, C kwa mbinu maalum, inayotumia maisha kidogo.',
+  'Arrancada': 'Mbio za ghafla',
   'Andar': 'Tembea',
   'Especial': 'Maalum',
   'Pular': 'Ruka',
@@ -3106,6 +3106,9 @@ export default {
   "Entrar na comunidade": "Jiunge na jumuiya",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Feni ya kusimama, yenye wavu wa duara, kwa siku za joto.",
+  // A caminha do gato
+  "Caminha do gato": "Kitanda cha paka",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Cha duara na laini, chenye mlango wa chini. Paka hulala hapa.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3118,6 +3121,23 @@ export default {
   "Bicho do quarto": "Mnyama kipenzi wa chumbani",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Mlio wa simu",
+  'Tocar ligações com o áudio desativado': "Lia kwa simu hata sauti ikiwa imezimwa",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Sauti ikiwa imezimwa, simu ya faragha inafika bila sauti: arifa inaonekana kwenye skrini na Syden inamulikamulika kwenye upau wa kazi. Washa hii ili usikie mlio hata hivyo.",
+  'Avatares anteriores': "Avatar za awali",
+  'Voltar a este avatar': "Rudi kwenye avatar hii",
+  'Tirar do histórico': "Ondoa kwenye historia",
+  'Avatar não encontrado.': "Avatar haikupatikana.",
+  'Sininho': "Kengele ndogo",
+  'Arpejo': "Arpeggio",
+  'Suave': "Laini",
+  'Bipe': "Biip",
+  'Grupo': "Kikundi",
+  'Nenhum': "Hakuna",
+  'Novo grupo': "Kikundi kipya",
+  'O do grupo ({grupo})': "Wa kikundi ({grupo})",
+  'Grupos de toque': "Vikundi vya milio",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Kila kikundi kina mlio wake. Weka mtu kwenye kikundi, au chagua mlio kwa ajili yake tu, kwa kubofya kulia jina lake.",
+  'Apagar grupo': "Futa kikundi",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Hulia mtu anapokupigia katika mazungumzo ya faragha, hata sauti za arifa zikiwa zimezimwa. Katika \"Usinisumbue\", simu huonekana bila kulia.",
   'Avisar das ligações com o Syden em segundo plano?': "Ukujulishe kuhusu simu Syden ikiwa nyuma?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Kivinjari kitaomba ruhusa. Hivyo utajua kuhusu simu na ujumbe hata ukiwa kwenye kichupo au programu nyingine.",

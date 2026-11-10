@@ -122,6 +122,7 @@ const ANIMS: [Acao | 'parado', number][] = [
   ['parado', 4], ['andando', 8], ['soco1', 2], ['soco2', 2], ['soco3', 3], ['pulo', 2], ['voadora', 1], ['dor', 2], ['caido', 2],
   ['levantando', 2], ['especial', 4],
 ];
+// a arrancada (09/11/2026) não tem desenho próprio na folha: são os passos do andar, no dobro do ritmo
 const INICIO: Record<string, number> = {};
 {
   let k = 0;
@@ -155,7 +156,10 @@ export function desenhoDoCoelho(acao: Acao, t: number, subindo: boolean): number
     case 'levantando':
       return INICIO.levantando + (t < 220 ? 0 : 1);
     case 'especial':
+      // as 4 vistas do giro, em volta: o coelho gira o tempo todo enquanto anda (GIRO_MS)
       return INICIO.especial + q(4, 70);
+    case 'arrancada':
+      return INICIO.andando + q(8, 40);
   }
 }
 
@@ -502,6 +506,71 @@ export function desenharRastro(g: CanvasRenderingContext2D, sx: number, sy: numb
   } else if (acao === 'voadora') {
     g.fillRect(x(8, 14), sy - 12, 14, 1);
     g.fillRect(x(4, 10), sy - 9, 10, 1);
+  }
+}
+
+/**
+ * O GIRO EM VOLTA DO COELHO (o especial, 09/11/2026): um anel de riscos claros, do tamanho de onde ele pega (o alcance de
+ * 34 px para cada lado, na fundura da faixa), rodando. A metade de trás vai antes do coelho e a da frente depois (`frente`).
+ */
+export function desenharGiro(g: CanvasRenderingContext2D, sx: number, sy: number, t: number, frente: boolean) {
+  const giro = t / 55;
+  for (let k = 0; k < 3; k++) {
+    const base = giro + (k * Math.PI * 2) / 3;
+    for (let p = 0; p < 9; p++) {
+      const a = base - p * 0.11;
+      const naFrente = Math.sin(a) > 0;
+      if (naFrente !== frente) continue;
+      g.fillStyle = p < 3 ? '#fff6c8' : p < 6 ? '#ffd88a' : '#e8a85a';
+      g.fillRect(Math.round(sx + Math.cos(a) * 32), Math.round(sy - 14 + Math.sin(a) * 9), p < 3 ? 2 : 1, p < 3 ? 2 : 1);
+    }
+  }
+}
+
+/** A poeira da arrancada, atrás dos pés (só desenho). */
+export function desenharArrancada(g: CanvasRenderingContext2D, sx: number, sy: number, lado: number, t: number) {
+  g.fillStyle = '#d8c0a0';
+  for (let k = 0; k < 3; k++) {
+    const d = 10 + k * 7 + ((t / 25) % 7);
+    g.fillRect(Math.round(sx - lado * d), sy - 2 - (k % 2) * 2, 3 - (k === 2 ? 1 : 0), 2);
+  }
+  g.fillStyle = '#fff6c8';
+  g.fillRect(Math.round(lado > 0 ? sx - 22 : sx + 12), sy - 26, 10, 1);
+  g.fillRect(Math.round(lado > 0 ? sx - 18 : sx + 10), sy - 18, 8, 1);
+}
+
+/**
+ * A BARRA DO ESPECIAL (09/11/2026, pedido dele: "uma barra para visualizar possibilidade de uso"): no canto de baixo, à
+ * esquerda, o redemoinho do giro e a barra que enche com a recarga; cheia, ela brilha e o redemoinho gira. Sem texto.
+ */
+export function desenharBarraDoEspecial(g: CanvasRenderingContext2D, carga: number, tempo: number) {
+  const x = 6, y = H - 12;
+  const cheia = carga >= 1;
+  // o redemoinho (o desenho do comando: três braços em volta de um miolo)
+  g.fillStyle = '#2a1e1a';
+  g.fillRect(x - 1, y - 1, 11, 11);
+  const cor = cheia ? (Math.floor(tempo / 200) % 2 ? '#fff6c8' : '#ffd36a') : '#8a7a6a';
+  g.fillStyle = cor;
+  const giro = cheia ? Math.floor(tempo / 120) % 4 : 0;
+  const bracos = [
+    [[4, 0], [5, 0], [6, 1], [7, 2]],
+    [[8, 4], [8, 5], [7, 6], [6, 7]],
+    [[4, 8], [3, 8], [2, 7], [1, 6]],
+    [[0, 4], [0, 3], [1, 2], [2, 1]],
+  ];
+  for (let b = 0; b < 4; b++) for (const [px, py] of bracos[(b + giro) % 4]) g.fillRect(x + px, y + py, 1, 1);
+  g.fillRect(x + 3, y + 3, 3, 3);
+  // a barra
+  const bx = x + 13, w = 44;
+  g.fillStyle = '#2a1e1a';
+  g.fillRect(bx, y + 2, w + 2, 6);
+  g.fillStyle = '#4a3a30';
+  g.fillRect(bx + 1, y + 3, w, 4);
+  g.fillStyle = cheia ? cor : '#e8a85a';
+  g.fillRect(bx + 1, y + 3, Math.round(w * Math.max(0, Math.min(1, carga))), 4);
+  if (cheia) {
+    g.fillStyle = '#ffffff';
+    g.fillRect(bx + 1, y + 3, w, 1);
   }
 }
 

@@ -2744,7 +2744,7 @@ export default {
   'Campanha': 'Kamfe',
   'Sem vidas.': 'Rayuka sun ƙare.',
   'Você volta em {n}…': 'Za ku dawo cikin {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Kibiyoyi don tafiya, X don bugu (uku a jere shi ne combo), Z don tsalle, C don na musamman, wanda ke ɗan cin rai.',
+  'Arrancada': 'Gudu',
   'Andar': 'Tafi',
   'Especial': 'Na musamman',
   'Pular': 'Yi tsalle',
@@ -3109,6 +3109,9 @@ export default {
   "Entrar na comunidade": "Shiga ƙungiya",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Fanka mai tsayawa, da ragar zagaye, don ranakun zafi.",
+  // A caminha do gato
+  "Caminha do gato": "Gadon mage",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Mai zagaye da laushi, da ƙofa ƙasa-ƙasa. Mage na barci a nan.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Hoton martaba",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3121,6 +3124,23 @@ export default {
   "Bicho do quarto": "Dabbar gida ta ɗaki",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Ƙarar kira",
+  'Tocar ligações com o áudio desativado': "Ƙarar kira ko da an kashe sauti",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Idan an kashe sauti, kiran sirri yana zuwa ba tare da ƙara ba: sanarwar tana bayyana a allo, kuma Syden yana walƙiya a sandar ayyuka. Ku kunna wannan don ku ji ƙarar kira duk da haka.",
+  'Avatares anteriores': "Hotunan martaba na baya",
+  'Voltar a este avatar': "Koma ga wannan hoton martaba",
+  'Tirar do histórico': "Cire daga tarihi",
+  'Avatar não encontrado.': "Ba a sami hoton martaba ba.",
+  'Sininho': "Ƙaramar ƙararrawa",
+  'Arpejo': "Arpeggio",
+  'Suave': "Laushi",
+  'Bipe': "Bip",
+  'Grupo': "Rukuni",
+  'Nenhum': "Babu",
+  'Novo grupo': "Sabon rukuni",
+  'O do grupo ({grupo})': "Na rukunin ({grupo})",
+  'Grupos de toque': "Rukunonin ƙarar kira",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Kowane rukuni yana da ƙararsa. Ku saka wani a rukuni, ko ku zaɓi ƙara don wannan mutumin kawai, ta danna sunansa da maɓallin dama.",
+  'Apagar grupo': "Goge rukuni",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Yana ƙara idan wani ya kira ku a tattaunawa ta sirri, ko da sautunan sanarwa a kashe suke. A \"Kar a dami\", kiran yana bayyana ba tare da ƙara ba.",
   'Avisar das ligações com o Syden em segundo plano?': "A sanar da ku kiraye-kiraye yayin da Syden ke bayan fage?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Burauza zai nemi izini. Ta haka za ku san kiraye-kiraye da saƙonni ko da kuna wani shafi ko shiri.",

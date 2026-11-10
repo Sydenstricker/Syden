@@ -47,6 +47,8 @@ export interface Figuras {
   guardaveis?: string[];
   /** Cada tipo de janela, com a figura dele (só a original tem cortina e abre). */
   janelas?: Record<string, string>;
+  /** As paisagens atrás do vidro, pelo número (09/11/2026). */
+  vistas?: Record<string, string>;
   /** O CÔMODO (só no quarto, 06/11/2026): um pedaço da parede e do piso em cada cor, e a casca de cada planta. */
   comodo?: { paredes: Record<string, string>; pisos: Record<string, string>; plantas: Record<string, string> };
 }
@@ -63,6 +65,8 @@ export interface Arrumacao {
   /** O que está escolhido na cena ("m" + móvel, "p" + objeto da parede, "o" + objeto de cima, "j" a janela). */
   selecao?: string | null;
   janela: string;
+  /** A paisagem atrás do vidro (0 a 3). */
+  vista?: number;
   tapete: string;
   /** A planta do quarto e as cores da parede e do piso (só no quarto). */
   planta?: string;
@@ -309,6 +313,7 @@ export function EditorDaCena({
     for (const [id, src] of Object.entries(figuras.deCima ?? {})) r.push({ chave: 'o' + id, grupo: 'o', ids: [id], src });
     for (const [id, cor] of Object.entries(figuras.cores)) r.push({ chave: 'c' + id, grupo: 'c', ids: [id], cor });
     for (const [id, src] of Object.entries(figuras.janelas ?? {})) r.push({ chave: 'j' + id, grupo: 'j', ids: [id], src });
+    for (const [id, src] of Object.entries(figuras.vistas ?? {})) r.push({ chave: 'v' + id, grupo: 'v', ids: [id], src });
     // o cômodo (só o quarto o manda): a planta, a parede e o piso, em figuras
     for (const [id, src] of Object.entries(figuras.comodo?.plantas ?? {})) r.push({ chave: 'l' + id, grupo: 'l', ids: [id], src });
     for (const [id, src] of Object.entries(figuras.comodo?.paredes ?? {})) r.push({ chave: 'w' + id, grupo: 'w', ids: [id], src });
@@ -328,7 +333,7 @@ export function EditorDaCena({
       case 'tapete':
         return it.grupo === 'c';
       case 'janela':
-        return it.grupo === 'j';
+        return it.grupo === 'j' || it.grupo === 'v';
       case 'comodo':
         return it.grupo === 'l' || it.grupo === 'w' || it.grupo === 'f';
       default:
@@ -341,6 +346,7 @@ export function EditorDaCena({
     const p = arrumacao?.presentes;
     if (it.grupo === 'c') return arrumacao?.tapete === it.ids[0] ? 1 : 0;
     if (it.grupo === 'j') return arrumacao?.janela === it.ids[0] ? 1 : 0;
+    if (it.grupo === 'v') return String(arrumacao?.vista ?? 0) === it.ids[0] ? 1 : 0;
     if (it.grupo === 'l') return arrumacao?.planta === it.ids[0] ? 1 : 0;
     if (it.grupo === 'w') return arrumacao?.corDaParede === it.ids[0] ? 1 : 0;
     if (it.grupo === 'f') return arrumacao?.corDoPiso === it.ids[0] ? 1 : 0;
@@ -350,6 +356,7 @@ export function EditorDaCena({
   const por = (it: ItemDoCatalogo) => {
     if (it.grupo === 'c') return enviar({ comando: 'tapete', cor: it.ids[0] });
     if (it.grupo === 'j') return enviar({ comando: 'janela', tipo: it.ids[0] });
+    if (it.grupo === 'v') return enviar({ comando: 'vista', vista: Number(it.ids[0]) });
     if (it.grupo === 'l') return enviar({ comando: 'planta', planta: it.ids[0] });
     if (it.grupo === 'w') return enviar({ comando: 'corDaParede', cor: it.ids[0] });
     if (it.grupo === 'f') return enviar({ comando: 'corDoPiso', cor: it.ids[0] });

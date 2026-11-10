@@ -2830,7 +2830,7 @@ export default {
   'Campanha': 'კამპანია',
   'Sem vidas.': 'სიცოცხლეები აღარ დარჩა.',
   'Você volta em {n}…': 'დაბრუნდები {n}-ში…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'ისრები სიარულისთვის, X დასარტყმელად (ზედიზედ სამი კომბოა), Z ასახტომად, C სპეციალური სვლისთვის, რომელსაც ცოტა სიცოცხლე მიაქვს.',
+  'Arrancada': 'სწრაფი სვლა',
   'Andar': 'სიარული',
   'Especial': 'სპეციალური',
   'Pular': 'ხტომა',
@@ -3195,6 +3195,9 @@ export default {
   "Entrar na comunidade": "თემში შესვლა",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "მდგარი, მრგვალი ცხაურით, ცხელი დღეებისთვის.",
+  // A caminha do gato
+  "Caminha do gato": "კატის საწოლი",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "მრგვალი და რბილი, დაბალი შესასვლელით. კატას აქ სძინავს.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "ავატარი",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3207,6 +3210,23 @@ export default {
   "Bicho do quarto": "ოთახის შინაური ცხოველი",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "ზარის მელოდია",
+  'Tocar ligações com o áudio desativado': "ზარის დარეკვა ხმის გამორთვისას",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "ხმის გამორთვისას პირადი ზარი უხმოდ მოდის: შეტყობინება ეკრანზე ჩნდება და Syden ციმციმებს ამოცანების ზოლში. ჩართე, რომ მელოდია მაინც გაიგო.",
+  'Avatares anteriores': "წინა ავატარები",
+  'Voltar a este avatar': "ამ ავატარზე დაბრუნება",
+  'Tirar do histórico': "ისტორიიდან ამოღება",
+  'Avatar não encontrado.': "ავატარი ვერ მოიძებნა.",
+  'Sininho': "ზარაკი",
+  'Arpejo': "არპეჯო",
+  'Suave': "რბილი",
+  'Bipe': "ბიპი",
+  'Grupo': "ჯგუფი",
+  'Nenhum': "არცერთი",
+  'Novo grupo': "ახალი ჯგუფი",
+  'O do grupo ({grupo})': "ჯგუფისა ({grupo})",
+  'Grupos de toque': "მელოდიების ჯგუფები",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "თითოეულ ჯგუფს თავისი მელოდია აქვს. სახელზე მარჯვენა დაწკაპუნებით ჩასვი ვინმე ჯგუფში ან აირჩიე მელოდია მხოლოდ მისთვის.",
+  'Apagar grupo': "ჯგუფის წაშლა",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "რეკავს, როცა ვინმე პირად საუბარში გირეკავს, მაშინაც კი, როცა შეტყობინების ბგერები გამორთულია. „არ შემაწუხო“ რეჟიმში ზარი ჩნდება დარეკვის გარეშე.",
   'Avisar das ligações com o Syden em segundo plano?': "გაცნობოს ზარების შესახებ, როცა Syden ფონურ რეჟიმშია?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "ბრაუზერი ნებართვას მოითხოვს. ასე ზარებისა და შეტყობინებების შესახებ სხვა ჩანართში ან პროგრამაშიც გაიგებ.",

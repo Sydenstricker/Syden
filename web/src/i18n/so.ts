@@ -2812,7 +2812,7 @@ export default {
   'Campanha': 'Ololaha',
   'Sem vidas.': 'Naf ma harin.',
   'Você volta em {n}…': 'Waxaad soo noqonaysaa {n} kadib…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Fallaarayaasha si aad u socoto, X si aad u garaacdo (saddex isku xiga waa kombo), Z si aad u booddo, C dhaqaaqa gaarka ah, kaas oo naf yar ku kharash gareeya.',
+  'Arrancada': 'Orod degdeg ah',
   'Andar': 'Soco',
   'Especial': 'Gaar',
   'Pular': 'Bood',
@@ -3177,6 +3177,9 @@ export default {
   "Entrar na comunidade": "Ku biir bulshada",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Marawaxad taagan, leh shabaq wareegsan, maalmaha kulul.",
+  // A caminha do gato
+  "Caminha do gato": "Sariirta bisadda",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Wareegsan oo jilicsan, leh albaab hoose. Bisaddu halkan ayay seexataa.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Sawirka astaanta",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3189,6 +3192,23 @@ export default {
   "Bicho do quarto": "Xayawaanka guriga ee qolka",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Codka wicitaanka",
+  'Tocar ligações com o áudio desativado': "Ka dhawaaq wicitaannada xitaa marka codka la damiyo",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Marka codka la damiyo, wicitaan gaar ah wuxuu yimaadaa cod la’aan: ogeysiisku wuxuu ka muuqdaa shaashadda, Syden-na wuxuu ka biligleeyaa barta hawlaha. Shid tan si aad codka wicitaanka u maqasho si kastaba.",
+  'Avatares anteriores': "Sawirradii astaanta ee hore",
+  'Voltar a este avatar': "Ku noqo sawirkan astaanta",
+  'Tirar do histórico': "Ka saar taariikhda",
+  'Avatar não encontrado.': "Sawirka astaanta lama helin.",
+  'Sininho': "Gambaleel yar",
+  'Arpejo': "Arbejiyo",
+  'Suave': "Jilicsan",
+  'Bipe': "Biib",
+  'Grupo': "Koox",
+  'Nenhum': "Midna",
+  'Novo grupo': "Koox cusub",
+  'O do grupo ({grupo})': "Kan kooxda ({grupo})",
+  'Grupos de toque': "Kooxaha codka wicitaanka",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Koox kastaa waxay leedahay cod u gaar ah. Ku dhufo midig magaca qofka si aad koox ugu darto, ama ugu doorato cod isaga oo keliya ah.",
+  'Apagar grupo': "Tirtir kooxda",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Wuu dhawaaqaa marka qof kuu soo waco wada-hadal gaar ah, xitaa haddii dhawaaqyada ogeysiisku dansan yihiin. Marka \"Ha i dhibin\", wicitaanku wuu muuqdaa isagoon dhawaaqin.",
   'Avisar das ligações com o Syden em segundo plano?': "Ma lagugu ogeysiiyaa wicitaannada marka Syden uu gadaal ku jiro?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Biraawsarku wuxuu weydiin doonaa ogolaansho. Sidaas ayaad ku ogaan doontaa wicitaannada iyo fariimaha xitaa haddii aad joogto tab ama barnaamij kale.",

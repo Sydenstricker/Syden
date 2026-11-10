@@ -2813,7 +2813,7 @@ export default {
   'Campanha': 'Umkhankaso',
   'Sem vidas.': 'Azikho izimpilo.',
   'Você volta em {n}…': 'Uzobuya ngemva kuka-{n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Imicibisholo ukuze uhambe, u-X ukuze ushaye (ezintathu ngokulandelana yi-combo), u-Z ukuze ugxume, u-C ukuze wenze inyakazo ekhethekile, edla impilo encane.',
+  'Arrancada': 'Ukugijima',
   'Andar': 'Hamba',
   'Especial': 'Okukhethekile',
   'Pular': 'Gxuma',
@@ -3178,6 +3178,9 @@ export default {
   "Entrar na comunidade": "Joyina umphakathi",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Ifeni emile, enegridi eyindilinga, yezinsuku ezishisayo.",
+  // A caminha do gato
+  "Caminha do gato": "Umbhede wekati",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Uyindilinga futhi uthambile, unomnyango ophansi. Ikati lilala lapha.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "I-avatar",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3190,6 +3193,23 @@ export default {
   "Bicho do quarto": "Isilwane sasekamelweni",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Iringithoni yekholi",
+  'Tocar ligações com o áudio desativado': "Khalisa amakholi noma umsindo uvaliwe",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Uma umsindo uvaliwe, ikholi eyimfihlo ifika ingenamsindo: isaziso sivela esikrinini futhi i-Syden icwazimula kubha yemisebenzi. Vula lokhu ukuze uzwe iringithoni noma kunjalo.",
+  'Avatares anteriores': "Ama-avatar angaphambilini",
+  'Voltar a este avatar': "Buyela kule avatar",
+  'Tirar do histórico': "Susa emlandweni",
+  'Avatar não encontrado.': "I-avatar ayitholakalanga.",
+  'Sininho': "Insimbi encane",
+  'Arpejo': "I-arpeggio",
+  'Suave': "Okuthambile",
+  'Bipe': "Bhiphu",
+  'Grupo': "Iqembu",
+  'Nenhum': "Lutho",
+  'Novo grupo': "Iqembu elisha",
+  'O do grupo ({grupo})': "Eleqembu ({grupo})",
+  'Grupos de toque': "Amaqembu amaringithoni",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Iqembu ngalinye linoringithoni walo. Faka umuntu eqenjini, noma ukhethe iringithoni yakhe yedwa, ngokuchofoza kwesokudla egameni lakhe.",
+  'Apagar grupo': "Susa iqembu",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Iyakhala uma othile ekushayela engxoxweni eyimfihlo, ngisho noma imisindo yezaziso icishiwe. Ku-\"Ungaphazamisi\", ikholi iyavela ingakhali.",
   'Avisar das ligações com o Syden em segundo plano?': "Ukwazisa ngamakholi uma i-Syden ingemuva?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Isiphequluli sizocela imvume. Ngaleyo ndlela uzokwazi ngamakholi nemilayezo ngisho noma usethebhini noma ohlelweni olunye.",

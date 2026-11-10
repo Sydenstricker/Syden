@@ -2730,7 +2730,7 @@ export default {
   'Campanha': '캠페인',
   'Sem vidas.': '목숨이 없어요.',
   'Você volta em {n}…': '{n} 후에 돌아와요…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': '방향키로 걷기, X로 때리기(세 번 연속이면 콤보), Z로 점프, C로 필살기(체력이 조금 줄어요).',
+  'Arrancada': '대시',
   'Andar': '걷기',
   'Especial': '필살기',
   'Pular': '점프',
@@ -3095,6 +3095,9 @@ export default {
   "Entrar na comunidade": "커뮤니티 들어가기",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "둥근 망이 달린 스탠드 선풍기, 더운 날을 위해.",
+  // A caminha do gato
+  "Caminha do gato": "고양이 침대",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "둥글고 푹신한 침대, 입구가 낮아요. 고양이가 여기서 자요.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "아바타",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3107,6 +3110,23 @@ export default {
   "Bicho do quarto": "방의 반려동물",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "통화 벨소리",
+  'Tocar ligações com o áudio desativado': "소리를 꺼도 통화 벨 울리기",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "소리를 끄면 개인 통화가 소리 없이 와요. 알림이 화면에 뜨고 Syden이 작업 표시줄에서 깜박여요. 그래도 벨소리를 듣고 싶다면 켜세요.",
+  'Avatares anteriores': "이전 아바타",
+  'Voltar a este avatar': "이 아바타로 돌아가기",
+  'Tirar do histórico': "기록에서 지우기",
+  'Avatar não encontrado.': "아바타를 찾을 수 없어요.",
+  'Sininho': "차임",
+  'Arpejo': "아르페지오",
+  'Suave': "부드럽게",
+  'Bipe': "삐",
+  'Grupo': "그룹",
+  'Nenhum': "없음",
+  'Novo grupo': "새 그룹",
+  'O do grupo ({grupo})': "그룹 벨소리 ({grupo})",
+  'Grupos de toque': "벨소리 그룹",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "그룹마다 벨소리가 있어요. 이름을 오른쪽 클릭해서 그룹에 넣거나, 그 사람만의 벨소리를 골라 보세요.",
+  'Apagar grupo': "그룹 삭제",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "개인 대화에서 누군가 전화를 걸면 울려요. 알림음을 꺼 두었어도 울려요. \"방해 금지\"에서는 벨 없이 표시돼요.",
   'Avisar das ligações com o Syden em segundo plano?': "Syden이 백그라운드에 있을 때 통화를 알려 줄까요?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "브라우저가 권한을 요청해요. 그러면 다른 탭이나 프로그램에 있어도 통화와 메시지를 알 수 있어요.",

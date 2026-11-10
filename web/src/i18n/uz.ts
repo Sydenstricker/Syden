@@ -2820,7 +2820,7 @@ export default {
   'Campanha': 'Kampaniya',
   'Sem vidas.': 'Jon qolmadi.',
   'Você volta em {n}…': '{n} dan keyin qaytasiz…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Yurish uchun strelkalar, urish uchun X (ketma-ket uchtasi kombo), sakrash uchun Z, maxsus zarba uchun C, u biroz jon sarflaydi.',
+  'Arrancada': 'Otilish',
   'Andar': 'Yurish',
   'Especial': 'Maxsus',
   'Pular': 'Sakrash',
@@ -3197,6 +3197,9 @@ export default {
   "Entrar na comunidade": "Hamjamiyatga qoʻshilish",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Tik turadigan, dumaloq panjarali, issiq kunlar uchun.",
+  // A caminha do gato
+  "Caminha do gato": "Mushuk to'shagi",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Dumaloq va yumshoq, kirish joyi past. Mushuk shu yerda uxlaydi.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3209,6 +3212,23 @@ export default {
   "Bicho do quarto": "Xonaning uy hayvoni",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Qo‘ng‘iroq ohangi",
+  'Tocar ligações com o áudio desativado': "Ovoz oʻchiq boʻlsa ham qoʻngʻiroqni jiringlatish",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Ovoz oʻchiq boʻlganda shaxsiy qoʻngʻiroq ovozsiz keladi: bildirishnoma ekranda chiqadi va Syden vazifalar panelida miltillaydi. Baribir ohangni eshitish uchun buni yoq.",
+  'Avatares anteriores': "Oldingi avatarlar",
+  'Voltar a este avatar': "Bu avatarga qaytish",
+  'Tirar do histórico': "Tarixdan olib tashlash",
+  'Avatar não encontrado.': "Avatar topilmadi.",
+  'Sininho': "Qoʻngʻiroqcha",
+  'Arpejo': "Arpedjio",
+  'Suave': "Mayin",
+  'Bipe': "Bip",
+  'Grupo': "Guruh",
+  'Nenhum': "Yoʻq",
+  'Novo grupo': "Yangi guruh",
+  'O do grupo ({grupo})': "Guruhniki ({grupo})",
+  'Grupos de toque': "Ohang guruhlari",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Har bir guruhning oʻz ohangi bor. Ismiga oʻng tugma bilan bosib, kimnidir guruhga qoʻsh yoki faqat u uchun ohang tanla.",
+  'Apagar grupo': "Guruhni oʻchirish",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Kimdir senga shaxsiy suhbatda qo‘ng‘iroq qilganda jiringlaydi, ogohlantirish tovushlari o‘chirilgan bo‘lsa ham. \"Bezovta qilmang\" rejimida qo‘ng‘iroq jiringlamasdan ko‘rinadi.",
   'Avisar das ligações com o Syden em segundo plano?': "Syden fonda bo‘lganda qo‘ng‘iroqlar haqida xabar berilsinmi?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Brauzer ruxsat so‘raydi. Shunda boshqa varaqda yoki dasturda bo‘lsang ham, qo‘ng‘iroqlar va xabarlardan xabardor bo‘lasan.",

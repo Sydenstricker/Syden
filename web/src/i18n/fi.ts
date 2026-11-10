@@ -2812,7 +2812,7 @@ export default {
   'Campanha': 'Kampanja',
   'Sem vidas.': 'Elämät loppuivat.',
   'Você volta em {n}…': 'Palaat {n} kuluttua…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Nuolilla kävelet, X:llä lyöt (kolme peräkkäin on kombo), Z:lla hyppäät, C:llä teet erikoisliikkeen, joka vie vähän elämää.',
+  'Arrancada': 'Syöksy',
   'Andar': 'Kävele',
   'Especial': 'Erikoisliike',
   'Pular': 'Hyppää',
@@ -3177,6 +3177,9 @@ export default {
   "Entrar na comunidade": "Liity yhteisöön",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Jalallinen, pyöreä säleikkö, kuumille päiville.",
+  // A caminha do gato
+  "Caminha do gato": "Kissanpeti",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Pyöreä ja pehmeä, matala sisäänkäynti. Kissa nukkuu tässä.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3189,6 +3192,23 @@ export default {
   "Bicho do quarto": "Huoneen lemmikki",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Puhelun soittoääni",
+  'Tocar ligações com o áudio desativado': "Soita puhelut, vaikka ääni on pois",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Kun ääni on pois, yksityinen puhelu tulee äänettä: ilmoitus näkyy näytöllä ja Syden vilkkuu tehtäväpalkissa. Laita tämä päälle, niin kuulet soittoäänen silti.",
+  'Avatares anteriores': "Aiemmat avatarit",
+  'Voltar a este avatar': "Palaa tähän avatariin",
+  'Tirar do histórico': "Poista historiasta",
+  'Avatar não encontrado.': "Avataria ei löytynyt.",
+  'Sininho': "Kello",
+  'Arpejo': "Arpeggio",
+  'Suave': "Pehmeä",
+  'Bipe': "Piippaus",
+  'Grupo': "Ryhmä",
+  'Nenhum': "Ei mitään",
+  'Novo grupo': "Uusi ryhmä",
+  'O do grupo ({grupo})': "Ryhmän oma ({grupo})",
+  'Grupos de toque': "Soittoääniryhmät",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Jokaisella ryhmällä on oma soittoäänensä. Lisää joku ryhmään tai valitse soittoääni vain hänelle napsauttamalla hänen nimeään hiiren oikealla.",
+  'Apagar grupo': "Poista ryhmä",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Soi, kun joku soittaa sinulle yksityisessä keskustelussa, vaikka ilmoitusäänet olisivat pois päältä. Älä häiritse -tilassa puhelu näkyy soimatta.",
   'Avisar das ligações com o Syden em segundo plano?': "Ilmoitetaanko puheluista, kun Syden on taustalla?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Selain kysyy lupaa. Näin kuulet puheluista ja viesteistä myös toisessa välilehdessä tai ohjelmassa.",

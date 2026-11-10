@@ -2809,7 +2809,7 @@ export default {
   'Campanha': 'Кампания',
   'Sem vidas.': 'Няма повече животи.',
   'Você volta em {n}…': 'Връщаш се след {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Стрелките за ходене, X за удар (три поредни са комбо), Z за скок, C за специалния удар, който струва малко живот.',
+  'Arrancada': 'Рывък',
   'Andar': 'Ходене',
   'Especial': 'Специално',
   'Pular': 'Скок',
@@ -3174,6 +3174,9 @@ export default {
   "Entrar na comunidade": "Присъедини се към общността",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Стоящ, с кръгла решетка, за горещите дни.",
+  // A caminha do gato
+  "Caminha do gato": "Легло за котка",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Кръгло и меко, с нисък вход. Котката спи тук.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Аватар",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3186,6 +3189,23 @@ export default {
   "Bicho do quarto": "Любимецът на стаята",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Мелодия при обаждане",
+  'Tocar ligações com o áudio desativado': "Звънене при обаждане с изключен звук",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "С изключен звук личното обаждане идва без звук: известието се появява на екрана, а Syden мига в лентата на задачите. Включи, за да чуваш мелодията въпреки това.",
+  'Avatares anteriores': "Предишни аватари",
+  'Voltar a este avatar': "Върни този аватар",
+  'Tirar do histórico': "Премахни от историята",
+  'Avatar não encontrado.': "Аватарът не е намерен.",
+  'Sininho': "Звънче",
+  'Arpejo': "Арпеж",
+  'Suave': "Нежна",
+  'Bipe': "Бип",
+  'Grupo': "Група",
+  'Nenhum': "Без група",
+  'Novo grupo': "Нова група",
+  'O do grupo ({grupo})': "Тази на групата ({grupo})",
+  'Grupos de toque': "Групи за мелодии",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Всяка група има своя мелодия. Сложи някого в група или избери мелодия само за този човек с десен клик върху името му.",
+  'Apagar grupo': "Изтрий групата",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Звъни, когато някой ти се обади в личен разговор, дори със спрени звуци за известия. В „Не безпокойте“ обаждането се показва без звънене.",
   'Avisar das ligações com o Syden em segundo plano?': "Да те известява ли за обаждания, докато Syden е във фонов режим?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Браузърът ще поиска разрешение. Така ще разбираш за обаждания и съобщения дори в друг раздел или програма.",

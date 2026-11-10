@@ -2741,7 +2741,7 @@ export default {
   'Campanha': 'Ivalavala taucoko',
   'Sem vidas.': 'Sa oti na bula.',
   'Você volta em {n}…': 'O na lesu mai ena {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Na vakatakilakila ni sala mo lako kina, na X mo moku kina (e tolu veitarataravi na combo), na Z mo rika kina, na C me baleta na ivakarau vakatabakidua, e vakayagataka vakalailai na bula.',
+  'Arrancada': 'Cici totolo',
   'Andar': 'Lako',
   'Especial': 'Vakatabakidua',
   'Pular': 'Rika',
@@ -3106,6 +3106,9 @@ export default {
   "Entrar na comunidade": "Curu ki na isoqosoqo",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "E tu cake, kei na kena sau wavokiti, me baleta na siga katakata.",
+  // A caminha do gato
+  "Caminha do gato": "Idavodavo ni pusi",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "E vakavolivolita ka malumu, e lailai na kena katuba. E moce kina na pusi.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3118,6 +3121,23 @@ export default {
   "Bicho do quarto": "Manumanu ni rumu",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Rorogo ni veiqiri",
+  'Tocar ligações com o áudio desativado': "Rorogo ni veiqiri ni vakamatei na rorogo",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Ni vakamatei na rorogo, e yaco mai na veiqiri vakaitaukei ka sega ni rorogo: e basika na itukutuku ena sikirini ka cila tiko ko Syden ena taskbar. Vakacegua mo rogoca ga na rorogo ni veiqiri.",
+  'Avatares anteriores': "Avatar e liu",
+  'Voltar a este avatar': "Lesu ki na avatar oqo",
+  'Tirar do histórico': "Kauta tani mai na itukutuku makawa",
+  'Avatar não encontrado.': "E sega ni kunei na avatar.",
+  'Sininho': "Lali lailai",
+  'Arpejo': "Arpeggio",
+  'Suave': "Malumu",
+  'Bipe': "Bip",
+  'Grupo': "Mataqali",
+  'Nenhum': "Sega",
+  'Novo grupo': "Mataqali vou",
+  'O do grupo ({grupo})': "Na kena ni mataqali ({grupo})",
+  'Grupos de toque': "Mataqali ni rorogo",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "E tu na nona rorogo na mataqali yadua. Vakacuruma e dua ena dua na mataqali, se digitaka e dua na rorogo me nona ga, ena kiliki ni yasana imatau ena yacana.",
+  'Apagar grupo': "Bokoca na mataqali",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "E rorogo ni dua e qiri vei iko ena veitalanoa vakaitaukei, se mani vakavakavotukana na rorogo ni vakasalataki. Ena \"Kua ni vakacacani\", e basika na veiqiri ka sega ni rorogo.",
   'Avisar das ligações com o Syden em segundo plano?': "Me vakasalataki iko ena veiqiri ni tiko ena daku na Syden?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Ena kerea na veivakadonui na browser. Ena kila kina na veiqiri kei na itukutuku se mani o tiko ena dua tale na tab se porokaramu.",

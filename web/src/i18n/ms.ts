@@ -2742,7 +2742,7 @@ export default {
   'Campanha': 'Kempen',
   'Sem vidas.': 'Tiada nyawa lagi.',
   'Você volta em {n}…': 'Kamu kembali dalam {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Anak panah untuk berjalan, X untuk memukul (tiga berturut-turut ialah kombo), Z untuk melompat, C untuk gerakan istimewa, yang menggunakan sedikit nyawa.',
+  'Arrancada': 'Pecutan',
   'Andar': 'Jalan',
   'Especial': 'Istimewa',
   'Pular': 'Lompat',
@@ -3107,6 +3107,9 @@ export default {
   "Entrar na comunidade": "Sertai komuniti",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Kipas berdiri, dengan jeriji bulat, untuk hari-hari panas.",
+  // A caminha do gato
+  "Caminha do gato": "Katil kucing",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Bulat dan lembut, dengan pintu masuk rendah. Kucing tidur di sini.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3119,6 +3122,23 @@ export default {
   "Bicho do quarto": "Haiwan peliharaan bilik",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Nada dering panggilan",
+  'Tocar ligações com o áudio desativado': "Bunyikan panggilan semasa bunyi dimatikan",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Semasa bunyi dimatikan, panggilan peribadi tiba tanpa bunyi: pemberitahuan muncul pada skrin dan Syden berkelip pada bar tugas. Hidupkan ini untuk tetap mendengar nada dering.",
+  'Avatares anteriores': "Avatar sebelumnya",
+  'Voltar a este avatar': "Kembali ke avatar ini",
+  'Tirar do histórico': "Buang daripada sejarah",
+  'Avatar não encontrado.': "Avatar tidak ditemui.",
+  'Sininho': "Loceng",
+  'Arpejo': "Arpeggio",
+  'Suave': "Lembut",
+  'Bipe': "Bip",
+  'Grupo': "Kumpulan",
+  'Nenhum': "Tiada",
+  'Novo grupo': "Kumpulan baharu",
+  'O do grupo ({grupo})': "Milik kumpulan ({grupo})",
+  'Grupos de toque': "Kumpulan nada dering",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Setiap kumpulan ada nada deringnya sendiri. Masukkan seseorang ke dalam kumpulan, atau pilih nada dering khas untuk orang itu, dengan klik kanan pada namanya.",
+  'Apagar grupo': "Padam kumpulan",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Berbunyi apabila seseorang memanggil kamu dalam perbualan peribadi, walaupun bunyi pemberitahuan dimatikan. Dalam \"Jangan ganggu\", panggilan muncul tanpa berbunyi.",
   'Avisar das ligações com o Syden em segundo plano?': "Maklumkan tentang panggilan semasa Syden di latar belakang?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Pelayar akan meminta kebenaran. Dengan itu kamu tahu tentang panggilan dan mesej walaupun di tab atau program lain.",

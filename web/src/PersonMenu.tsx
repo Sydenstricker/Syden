@@ -12,6 +12,8 @@ import { Ban,
   MonitorX,
   PenLine,
   PhoneOff,
+  BellRing,
+  Users,
   ShieldOff,
   ShieldPlus,
   StickyNote,
@@ -28,6 +30,8 @@ import { DialogoDeDenuncia } from './Denuncia';
 import { Vitrine } from './Vitrine';
 import { ModeracaoDaPessoa, podeAgirSobre } from './ModeracaoDaPessoa';
 import { pedirMencao } from './mencao';
+import { ouvirToque } from './sounds';
+import { criarGrupo, escolherToqueDaPessoa, LIMITE_DO_NOME_DO_GRUPO, MAXIMO_DE_GRUPOS, NOME_DO_TOQUE, porNoGrupo, TOQUES, toqueDe, useToques } from './toquesDeLigacao';
 import { guardarNota, LIMITE_DA_NOTA, useNota } from './notas';
 import { corDoNome, efeitoDoNome, letraDoNome } from './profileStyles';
 import { getUserVolume, isLocallyMuted, setLocalMute, setUserVolume, TETO_DA_VOZ } from './voiceVolumes';
@@ -159,7 +163,12 @@ export function PersonMenu({
   // O nome que se vê (apelido, nome de exibição, nome da conta). O `username` fica para mencionar: é a identidade.
   const nomeVisto = nomeNaComunidade(target.userId, target.username);
   /** A lista que está aberta embaixo de "Cargo" ou de "Mover para" (os submenus do Discord, aqui abrindo no lugar). */
-  const [aberto, setAberto] = useState<'cargo' | 'mover' | null>(null);
+  const [aberto, setAberto] = useState<'cargo' | 'mover' | 'toque' | 'grupo' | null>(null);
+  // O TOQUE DE LIGAÇÃO E O GRUPO desta pessoa (toquesDeLigacao.ts): só seus, como a anotação
+  const toques = useToques();
+  const minha = toques.pessoas[String(target.userId)];
+  const grupoDela = minha?.grupo ? toques.grupos.find((g) => g.id === minha.grupo) : undefined;
+  const [novoGrupo, setNovoGrupo] = useState<string | null>(null);
   const [volume, setVolume] = useState(() => getUserVolume(target.userId));
   const [muted, setMuted] = useState(() => isLocallyMuted(target.userId));
   const [error, setError] = useState<string | null>(null);
@@ -206,7 +215,7 @@ export function PersonMenu({
       left: Math.max(8, Math.min(target.x, window.innerWidth - caixa.width - 8)),
       top: Math.max(8, Math.min(target.y, window.innerHeight - caixa.height - 8)),
     });
-  }, [target.x, target.y, anotando, apelidando, aberto]); // (aberto: as listas de Cargo e Mover para crescem o menu)
+  }, [target.x, target.y, anotando, apelidando, aberto, novoGrupo]); // (aberto: as listas de Cargo e Mover para crescem o menu)
 
   useEffect(() => {
     const fora = () => onClose();
@@ -473,6 +482,93 @@ export function PersonMenu({
             )}
           </Item>
         ))}
+
+      {/* O TOQUE QUANDO ESTA PESSOA LIGA (09/11/2026, pedido dele): o só dela, ou o do grupo dela. Só seus. */}
+      {!isSelf && (
+        <>
+          <Item icone={<BellRing size={16} />} seta onClick={() => setAberto(aberto === 'toque' ? null : 'toque')}>
+            {t('Toque de ligação')}
+            <small>{t(NOME_DO_TOQUE[toqueDe(target.userId, toques)])}</small>
+          </Item>
+          {aberto === 'toque' && (
+            <>
+              <Item icone={<span />} marcado={!minha?.toque} onClick={() => escolherToqueDaPessoa(target.userId, null)}>
+                {grupoDela ? t('O do grupo ({grupo})', { grupo: grupoDela.nome }) : t(NOME_DO_TOQUE.padrao)}
+              </Item>
+              {TOQUES.filter((x) => x !== 'padrao' || grupoDela).map((x) => (
+                <Item
+                  key={x}
+                  icone={<span />}
+                  marcado={minha?.toque === x}
+                  onClick={() => {
+                    escolherToqueDaPessoa(target.userId, x);
+                    ouvirToque(x);
+                  }}
+                >
+                  {t(NOME_DO_TOQUE[x])}
+                </Item>
+              ))}
+            </>
+          )}
+          <Item icone={<Users size={16} />} seta onClick={() => setAberto(aberto === 'grupo' ? null : 'grupo')}>
+            {t('Grupo')}
+            <small>{grupoDela ? grupoDela.nome : t('Nenhum')}</small>
+          </Item>
+          {aberto === 'grupo' && (
+            <>
+              <Item icone={<span />} marcado={!grupoDela} onClick={() => porNoGrupo(target.userId, null)}>
+                {t('Nenhum')}
+              </Item>
+              {toques.grupos.map((g) => (
+                <Item key={g.id} icone={<span />} marcado={grupoDela?.id === g.id} onClick={() => porNoGrupo(target.userId, g.id)}>
+                  {g.nome}
+                </Item>
+              ))}
+              {toques.grupos.length < MAXIMO_DE_GRUPOS &&
+                (novoGrupo === null ? (
+                  <Item icone={<span />} onClick={() => setNovoGrupo('')}>
+                    {t('Novo grupo')}
+                  </Item>
+                ) : (
+                  <div className="person-menu-nota">
+                    <input
+                      autoFocus
+                      value={novoGrupo}
+                      maxLength={LIMITE_DO_NOME_DO_GRUPO}
+                      placeholder={t('Nome do grupo')}
+                      aria-label={t('Nome do grupo')}
+                      onChange={(e) => setNovoGrupo(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          e.preventDefault();
+                          const g = criarGrupo(novoGrupo);
+                          if (g) porNoGrupo(target.userId, g.id);
+                          setNovoGrupo(null);
+                        } else if (e.key === 'Escape') {
+                          e.stopPropagation();
+                          setNovoGrupo(null);
+                        }
+                      }}
+                    />
+                    <div className="person-menu-nota-rodape">
+                      <span>{t('Só você vê')}</span>
+                      <button
+                        className="link-button"
+                        onClick={() => {
+                          const g = criarGrupo(novoGrupo);
+                          if (g) porNoGrupo(target.userId, g.id);
+                          setNovoGrupo(null);
+                        }}
+                      >
+                        {t('Guardar')}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+            </>
+          )}
+        </>
+      )}
 
       {!isSelf && (
         <>

@@ -2811,7 +2811,7 @@ export default {
   'Campanha': 'Kampaň',
   'Sem vidas.': 'Žádné životy.',
   'Você volta em {n}…': 'Vracíš se za {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Šipkami chodíš, X je úder (tři za sebou dají kombo), Z skok, C speciální útok, který stojí trochu života.',
+  'Arrancada': 'Výpad',
   'Andar': 'Chůze',
   'Especial': 'Speciál',
   'Pular': 'Skok',
@@ -3176,6 +3176,9 @@ export default {
   "Entrar na comunidade": "Vstoupit do komunity",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Stojanový, s kulatou mřížkou, na horké dny.",
+  // A caminha do gato
+  "Caminha do gato": "Pelíšek pro kočku",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Kulatý a měkký, s nízkým vstupem. Kočka tu spí.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3188,6 +3191,23 @@ export default {
   "Bicho do quarto": "Mazlíček v pokoji",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Vyzvánění hovoru",
+  'Tocar ligações com o áudio desativado': "Vyzvánět i s vypnutým zvukem",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "S vypnutým zvukem přijde soukromý hovor potichu: upozornění se objeví na obrazovce a Syden bliká na hlavním panelu. Zapni, pokud chceš vyzvánění slyšet i tak.",
+  'Avatares anteriores': "Předchozí avatary",
+  'Voltar a este avatar': "Vrátit se k tomuto avataru",
+  'Tirar do histórico': "Odebrat z historie",
+  'Avatar não encontrado.': "Avatar nenalezen.",
+  'Sininho': "Zvoneček",
+  'Arpejo': "Arpeggio",
+  'Suave': "Jemné",
+  'Bipe': "Pípnutí",
+  'Grupo': "Skupina",
+  'Nenhum': "Žádná",
+  'Novo grupo': "Nová skupina",
+  'O do grupo ({grupo})': "Podle skupiny ({grupo})",
+  'Grupos de toque': "Skupiny vyzvánění",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Každá skupina má své vyzvánění. Přidej někoho do skupiny nebo mu vyber vyzvánění jen pro něj – pravým kliknutím na jeho jméno.",
+  'Apagar grupo': "Smazat skupinu",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Zazvoní, když ti někdo volá v soukromé konverzaci, i když máš zvuky upozornění vypnuté. V režimu „Nerušit“ se hovor objeví bez zvonění.",
   'Avisar das ligações com o Syden em segundo plano?': "Upozorňovat na hovory, když je Syden na pozadí?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Prohlížeč požádá o svolení. Tak se o hovorech a zprávách dozvíš i v jiné kartě nebo programu.",

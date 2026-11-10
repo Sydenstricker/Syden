@@ -2804,7 +2804,7 @@ export default {
   'Campanha': 'Fushata',
   'Sem vidas.': 'Pa jetë.',
   'Você volta em {n}…': 'Kthehesh pas {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Shigjetat për të ecur, X për të goditur (tre radhazi janë kombo), Z për të kërcyer, C për lëvizjen speciale, që harxhon pak jetë.',
+  'Arrancada': 'Vrull',
   'Andar': 'Ec',
   'Especial': 'Speciale',
   'Pular': 'Kërce',
@@ -3169,6 +3169,9 @@ export default {
   "Entrar na comunidade": "Bashkohu me komunitetin",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Në këmbë, me rrjetën e rrumbullakët, për ditët e nxehta.",
+  // A caminha do gato
+  "Caminha do gato": "Shtrati i maces",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "I rrumbullakët dhe i butë, me hyrje të ulët. Macja fle këtu.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatari",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3181,6 +3184,23 @@ export default {
   "Bicho do quarto": "Kafsha e dhomës",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Zile e thirrjes",
+  'Tocar ligações com o áudio desativado': "Bjeri ziles për thirrjet edhe me zërin të fikur",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Me zërin të fikur, një thirrje private vjen pa zë: njoftimi shfaqet në ekran dhe Syden pulson në shiritin e detyrave. Aktivizoje që ta dëgjosh zilen gjithsesi.",
+  'Avatares anteriores': "Avatarët e mëparshëm",
+  'Voltar a este avatar': "Kthehu te ky avatar",
+  'Tirar do histórico': "Hiqe nga historiku",
+  'Avatar não encontrado.': "Avatari nuk u gjet.",
+  'Sininho': "Zilkë",
+  'Arpejo': "Arpexho",
+  'Suave': "E butë",
+  'Bipe': "Bip",
+  'Grupo': "Grup",
+  'Nenhum': "Asnjë",
+  'Novo grupo': "Grup i ri",
+  'O do grupo ({grupo})': "Ajo e grupit ({grupo})",
+  'Grupos de toque': "Grupet e zileve",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Çdo grup ka zilen e vet. Fute dikë në një grup ose zgjidh një zile vetëm për të, me klik të djathtë mbi emrin.",
+  'Apagar grupo': "Fshi grupin",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Bie kur dikush të thërret në një bisedë private, edhe me tingujt e njoftimit të fikur. Në \"Mos shqetëso\", thirrja shfaqet pa rënë.",
   'Avisar das ligações com o Syden em segundo plano?': "Të të njoftojë për thirrjet kur Syden është në sfond?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Shfletuesi do të kërkojë leje. Kështu do të mësosh për thirrje dhe mesazhe edhe në një skedë ose program tjetër.",

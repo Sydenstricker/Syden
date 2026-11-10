@@ -1,4 +1,5 @@
 import { getSettings } from './settings';
+import type { Toque } from './toquesDeLigacao';
 
 // Sons de aviso da chamada, sintetizados na hora pela Web Audio API (sem arquivos de áudio).
 // Toca só para quem está no computador; nada disso é transmitido para a sala.
@@ -46,19 +47,21 @@ export function deveTocar(avisosLigados: boolean, dosOutros: boolean, ensurdecid
 /**
  * A regra das LIGAÇÕES (09/11/2026), à parte da dos avisos.
  *
- * O TOQUE (alguém ligando para mim) não obedece aos "Sons de aviso" nem ao "Desativar áudio": os dois existem para não
- * ouvir a SALA, e o toque é justamente o que precisa chegar — ligação que não toca ninguém atende. Ele tem a chave dele
- * ("Toque de ligação"), e o "Não perturbe" o cala antes de chegar aqui (ver ChamadaRecebida.tsx).
+ * O TOQUE (alguém ligando para mim) não obedece aos "Sons de aviso": eles existem para não ouvir a SALA, e o toque é
+ * justamente o que precisa chegar. Ele tem a chave dele ("Toque de ligação"), e o "Não perturbe" o cala antes de chegar aqui
+ * (ver ChamadaRecebida.tsx). O "DESATIVAR ÁUDIO" O CALA DE FÁBRICA (decisão dele, mesmo dia: "se é desativar áudio, por
+ * padrão ele desativa áudio"): o cartão da ligação aparece e a barra de tarefas pisca do mesmo jeito. Quem prefere ouvir
+ * liga "Tocar ligações com o áudio desativado" (toqueComAudioDesativado).
  *
  * O CHAMANDO (eu ligando, esperando atenderem) é o som da chamada em que eu estou: obedece aos sons de aviso e cala
  * com o "Desativar áudio", como o resto do que eu ouço nela.
  */
 export function deveTocarLigacao(
   tipo: 'toque' | 'chamando',
-  ajustes: { sounds: boolean; toqueDeLigacao: boolean },
+  ajustes: { sounds: boolean; toqueDeLigacao: boolean; toqueComAudioDesativado: boolean },
   ensurdecido: boolean,
 ): boolean {
-  if (tipo === 'toque') return ajustes.toqueDeLigacao;
+  if (tipo === 'toque') return ajustes.toqueDeLigacao && (!ensurdecido || ajustes.toqueComAudioDesativado);
   return ajustes.sounds && !ensurdecido;
 }
 
@@ -124,6 +127,74 @@ const E5 = 659.25;
 const G5 = 783.99;
 const A5 = 880;
 const C6 = 1046.5;
+const A4 = 440;
+const F5 = 698.46;
+const B5 = 987.77;
+const E6 = 1318.51;
+
+/**
+ * AS FRASES DE CADA TOQUE (09/11/2026, os toques por pessoa e por grupo, toquesDeLigacao.ts). Curtas, repetidas a cada
+ * 2,5 s pela tela da ligação; nenhuma passa de ~1,3 s, para não emendar na repetição. O 'padrao' é o toque de sempre.
+ */
+const FRASES: Record<Exclude<Toque, 'silencio'>, { notas: Note[]; volume: number }> = {
+  padrao: {
+    notas: [
+      { freq: E5, at: 0, dur: 0.18 },
+      { freq: G5, at: 0.12, dur: 0.18 },
+      { freq: C6, at: 0.24, dur: 0.32 },
+      { freq: E5, at: 0.7, dur: 0.18 },
+      { freq: G5, at: 0.82, dur: 0.18 },
+      { freq: C6, at: 0.94, dur: 0.32 },
+    ],
+    volume: 1,
+  },
+  // dois toques de sino agudo, como a campainha de uma loja
+  sininho: {
+    notas: [
+      { freq: E6, at: 0, dur: 0.5 },
+      { freq: B5, at: 0.14, dur: 0.6 },
+      { freq: E6, at: 0.62, dur: 0.5 },
+      { freq: B5, at: 0.76, dur: 0.6 },
+    ],
+    volume: 0.8,
+  },
+  // subindo de uma vez, alegre
+  arpejo: {
+    notas: [
+      { freq: C5, at: 0, dur: 0.16 },
+      { freq: E5, at: 0.09, dur: 0.16 },
+      { freq: G5, at: 0.18, dur: 0.16 },
+      { freq: C6, at: 0.27, dur: 0.22 },
+      { freq: E6, at: 0.36, dur: 0.4 },
+    ],
+    volume: 0.9,
+  },
+  // grave e lento, para quem não quer susto
+  suave: {
+    notas: [
+      { freq: A4, at: 0, dur: 0.7 },
+      { freq: C5, at: 0.35, dur: 0.7 },
+      { freq: F5, at: 0.7, dur: 0.9 },
+    ],
+    volume: 0.7,
+  },
+  // o bipe curto de telefone, três vezes
+  bipe: {
+    notas: [
+      { freq: A5, at: 0, dur: 0.12 },
+      { freq: A5, at: 0.2, dur: 0.12 },
+      { freq: A5, at: 0.4, dur: 0.12 },
+    ],
+    volume: 0.8,
+  },
+};
+
+/** Toca a frase de um toque, sem regra nenhuma: para ouvir antes de escolher (Configurações, o menu da pessoa). */
+export function ouvirToque(toque: Toque) {
+  if (toque === 'silencio') return;
+  const f = FRASES[toque];
+  tocarNotas(f.notas, VOLUME * f.volume);
+}
 
 export const sounds = {
   selfJoin: () => play([{ freq: C5, at: 0, dur: 0.22 }, { freq: G5, at: 0.09, dur: 0.4 }]),
@@ -144,19 +215,9 @@ export const sounds = {
    * ChamadaRecebida.tsx) até atender, recusar ou desistirem. Tem a regra dele (deveTocarLigacao): toca mesmo com os sons
    * de aviso desligados, e só o "Toque de ligação" o desliga.
    */
-  toque: () => {
+  toque: (toque: Toque = 'padrao') => {
     if (!deveTocarLigacao('toque', getSettings(), surdo)) return;
-    tocarNotas(
-      [
-        { freq: E5, at: 0, dur: 0.18 },
-        { freq: G5, at: 0.12, dur: 0.18 },
-        { freq: C6, at: 0.24, dur: 0.32 },
-        { freq: E5, at: 0.7, dur: 0.18 },
-        { freq: G5, at: 0.82, dur: 0.18 },
-        { freq: C6, at: 0.94, dur: 0.32 },
-      ],
-      VOLUME,
-    );
+    ouvirToque(toque);
   },
   /**
    * O CHAMANDO de quem liga, enquanto o outro lado não atende (09/11/2026): duas notas graves e longas, mais baixas e

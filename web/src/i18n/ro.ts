@@ -2742,7 +2742,7 @@ export default {
   'Campanha': 'Campanie',
   'Sem vidas.': 'Fără vieți.',
   'Você volta em {n}…': 'Revii în {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Săgețile pentru a merge, X pentru a lovi (trei la rând fac combo), Z pentru a sări, C pentru mișcarea specială, care consumă puțină viață.',
+  'Arrancada': 'Țâșnire',
   'Andar': 'Mergi',
   'Especial': 'Special',
   'Pular': 'Sari',
@@ -3107,6 +3107,9 @@ export default {
   "Entrar na comunidade": "Intră în comunitate",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "În picioare, cu grila rotundă, pentru zilele călduroase.",
+  // A caminha do gato
+  "Caminha do gato": "Culcușul pisicii",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Rotund și moale, cu intrarea mai joasă. Aici doarme pisica.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3119,6 +3122,23 @@ export default {
   "Bicho do quarto": "Animalul din cameră",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Ton de apel",
+  'Tocar ligações com o áudio desativado': "Sună la apeluri și cu sunetul oprit",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Cu sunetul oprit, un apel privat vine fără sunet: notificarea apare pe ecran și Syden clipește în bara de activități. Activează asta ca să auzi tonul de apel oricum.",
+  'Avatares anteriores': "Avatare anterioare",
+  'Voltar a este avatar': "Revino la acest avatar",
+  'Tirar do histórico': "Scoate din istoric",
+  'Avatar não encontrado.': "Avatarul nu a fost găsit.",
+  'Sininho': "Clopoțel",
+  'Arpejo': "Arpegiu",
+  'Suave': "Blând",
+  'Bipe': "Bip",
+  'Grupo': "Grup",
+  'Nenhum': "Niciunul",
+  'Novo grupo': "Grup nou",
+  'O do grupo ({grupo})': "Cel al grupului ({grupo})",
+  'Grupos de toque': "Grupuri de tonuri",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Fiecare grup are tonul lui. Pune pe cineva într-un grup sau alege un ton doar pentru acea persoană, cu clic dreapta pe numele ei.",
+  'Apagar grupo': "Șterge grupul",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Sună când cineva te apelează într-o conversație privată, chiar și cu sunetele de avertizare oprite. În „Nu deranja”, apelul apare fără să sune.",
   'Avisar das ligações com o Syden em segundo plano?': "Să te anunțe de apeluri când Syden e în fundal?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Browserul îți va cere permisiunea. Așa afli de apeluri și mesaje chiar și într-o altă filă sau program.",

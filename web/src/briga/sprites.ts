@@ -1,8 +1,10 @@
 /**
- * OS BICHOS DAS FASES NOVAS (06/11/2026): as folhas renderizadas pelo Blender dos monstros da Quaternius (CC0;
+ * OS BICHOS DAS FASES (06/11/2026): as folhas renderizadas pelo Blender dos monstros da Quaternius (CC0;
  * e2e/pixel-art/personagem/blender/meshy/briga-monstros.py e briga-monstros-pos.py → web/public/briga/<fase>/<bicho>.png),
- * com a mesma câmera e a mesma luz do coelho. Os da horta (raposa, corvo, texugo) continuam desenhados por código
- * (desenho.ts). O ritmo é "em dois", 12 desenhos por segundo, como o do coelho.
+ * com a mesma câmera e a mesma luz do coelho. Desde 09/11/2026 (pedido dele: "não temos assets para substituir os
+ * inimigos?") a horta também: a raposa é o gato malhado, o corvo o pombo e o texugo a galinha gigante, com os ids de antes.
+ * O desenho por código deles (desenho.ts) ficou só de reserva, enquanto a folha não chega ou se ela falhar.
+ * O ritmo é "em dois", 12 desenhos por segundo, como o do coelho.
  *
  * Levar golpe pisca BRANCO (uma cópia branca da folha, feita uma vez); a preparação treme 1 px, como a do texugo.
  */
@@ -22,8 +24,14 @@ const INICIO = {} as Record<Anim, number>;
   }
 }
 
-/** Este bicho tem folha (os das fases novas)? */
+/** Este bicho tem folha? */
 export const temFolha = (tipo: TipoDeInimigo) => tipo in FOLHAS_DOS_BICHOS;
+
+/** Os da horta têm também o desenho por código, de reserva: sem a folha ainda, eles aparecem assim, e não somem. */
+const DE_RESERVA: ReadonlySet<TipoDeInimigo> = new Set<TipoDeInimigo>(['raposa', 'corvo', 'texugo']);
+
+/** Desenha pela folha? Os que têm reserva, só com ela já carregada; os outros, sempre (sem ela, a sombra diz que estão ali). */
+export const desenhaPelaFolha = (tipo: TipoDeInimigo) => temFolha(tipo) && (!DE_RESERVA.has(tipo) || folha(tipo) !== null);
 
 const folhas = new Map<string, { img: HTMLImageElement; branca: HTMLCanvasElement | null }>();
 function folha(tipo: string) {

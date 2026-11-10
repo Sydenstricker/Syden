@@ -2753,7 +2753,7 @@ export default {
   'Campanha': 'Urugendo',
   'Sem vidas.': 'Nta buzima busigaye.',
   'Você volta em {n}…': 'Uragaruka mu {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Utwambi two kugenda, X yo gukubita (eshatu zikurikiranye ni combo), Z yo gusimbuka, C y\'igikorwa cyihariye, gitwara ubuzima buke.',
+  'Arrancada': 'Umwiruko',
   'Andar': 'Genda',
   'Especial': 'Cyihariye',
   'Pular': 'Simbuka',
@@ -3118,6 +3118,9 @@ export default {
   "Entrar na comunidade": "Injira mu muryango",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Umufana uhagaze, ufite akayunguruzo kazengurutse, ku minsi y’ubushyuhe.",
+  // A caminha do gato
+  "Caminha do gato": "Uburiri bw'injangwe",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Buzengurutse kandi bworoshye, bufite umuryango muto. Injangwe iryama hano.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Ifoto y'umwirondoro",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3130,6 +3133,23 @@ export default {
   "Bicho do quarto": "Itungo ry'icyumba",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Ijwi ry’umuhamagaro",
+  'Tocar ligações com o áudio desativado': "Kuvuza umuhamagaro n’iyo amajwi afunze",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Iyo amajwi afunze, umuhamagaro wihariye uza nta jwi: ubutumwa bugaragara kuri ecran, kandi Syden irabagirana ku murongo w’imirimo. Fungura ibi kugira ngo wumve ijwi ry’umuhamagaro uko byagenda kose.",
+  'Avatares anteriores': "Amafoto y’umwirondoro yabanje",
+  'Voltar a este avatar': "Garura iyi foto y’umwirondoro",
+  'Tirar do histórico': "Kura mu mateka",
+  'Avatar não encontrado.': "Ifoto y’umwirondoro ntiyabonetse.",
+  'Sininho': "Inzogera nto",
+  'Arpejo': "Arpeggio",
+  'Suave': "Ryoroheje",
+  'Bipe': "Bip",
+  'Grupo': "Itsinda",
+  'Nenhum': "Nta na rimwe",
+  'Novo grupo': "Itsinda rishya",
+  'O do grupo ({grupo})': "Iry’itsinda ({grupo})",
+  'Grupos de toque': "Amatsinda y’amajwi y’umuhamagaro",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Buri tsinda rifite ijwi ryaryo ry’umuhamagaro. Shyira umuntu mu itsinda, cyangwa uhitemo ijwi rye wenyine, ukanze iburyo ku izina rye.",
+  'Apagar grupo': "Siba itsinda",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Rivuga iyo hari ukuhamagaye mu kiganiro cyihariye, n’iyo amajwi yo kumenyesha yazimijwe. Muri \"Ntumbangamire\", umuhamagaro ugaragara utavuze.",
   'Avisar das ligações com o Syden em segundo plano?': "Kukumenyesha imihamagaro iyo Syden iri inyuma?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Mushakisha izasaba uruhushya. Bityo uzamenya imihamagaro n’ubutumwa n’iyo waba uri mu yindi tab cyangwa porogaramu.",

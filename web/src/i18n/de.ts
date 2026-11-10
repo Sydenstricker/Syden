@@ -2766,7 +2766,7 @@ export default {
   'Campanha': 'Kampagne',
   'Sem vidas.': 'Keine Leben mehr.',
   'Você volta em {n}…': 'Du bist in {n} zurück…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Pfeiltasten zum Laufen, X zum Schlagen (drei hintereinander sind die Combo), Z zum Springen, C für den Spezialangriff, der etwas Leben kostet.',
+  'Arrancada': 'Sprint',
   'Andar': 'Laufen',
   'Especial': 'Spezial',
   'Pular': 'Springen',
@@ -3131,6 +3131,9 @@ export default {
   "Entrar na comunidade": "Der Community beitreten",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Ein Standventilator mit rundem Gitter, für heiße Tage.",
+  // A caminha do gato
+  "Caminha do gato": "Katzenbett",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Rund und weich, mit einem niedrigen Einstieg. Hier schläft die Katze.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3143,6 +3146,23 @@ export default {
   "Bicho do quarto": "Haustier im Zimmer",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Klingelton für Anrufe",
+  'Tocar ligações com o áudio desativado': "Bei Anrufen klingeln, auch wenn der Ton aus ist",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Wenn der Ton aus ist, kommt ein privater Anruf ohne Ton: Der Hinweis erscheint auf dem Bildschirm und Syden blinkt in der Taskleiste. Schalte das ein, um den Klingelton trotzdem zu hören.",
+  'Avatares anteriores': "Frühere Avatare",
+  'Voltar a este avatar': "Zu diesem Avatar zurück",
+  'Tirar do histórico': "Aus dem Verlauf entfernen",
+  'Avatar não encontrado.': "Avatar nicht gefunden.",
+  'Sininho': "Glöckchen",
+  'Arpejo': "Arpeggio",
+  'Suave': "Sanft",
+  'Bipe': "Piepton",
+  'Grupo': "Gruppe",
+  'Nenhum': "Keine",
+  'Novo grupo': "Neue Gruppe",
+  'O do grupo ({grupo})': "Der der Gruppe ({grupo})",
+  'Grupos de toque': "Klingelton-Gruppen",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Jede Gruppe hat ihren eigenen Klingelton. Steck jemanden in eine Gruppe oder wähl einen Klingelton nur für diese Person – mit einem Rechtsklick auf den Namen.",
+  'Apagar grupo': "Gruppe löschen",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Klingelt, wenn dich jemand in einer privaten Unterhaltung anruft, auch wenn die Hinweistöne aus sind. Bei „Bitte nicht stören“ erscheint der Anruf ohne Klingeln.",
   'Avisar das ligações com o Syden em segundo plano?': "Über Anrufe benachrichtigen, wenn Syden im Hintergrund ist?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Der Browser fragt nach der Erlaubnis. So erfährst du von Anrufen und Nachrichten, auch in einem anderen Tab oder Programm.",

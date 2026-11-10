@@ -2762,7 +2762,7 @@ export default {
   'Campanha': 'الحملة',
   'Sem vidas.': 'نفدت الأرواح.',
   'Você volta em {n}…': 'العودة خلال {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'الأسهم للمشي، وX للضرب (ثلاث ضربات متتالية هي الكومبو)، وZ للقفز، وC للحركة الخاصة، التي تستهلك قليلًا من الحياة.',
+  'Arrancada': 'اندفاع',
   'Andar': 'المشي',
   'Especial': 'حركة خاصة',
   'Pular': 'القفز',
@@ -3131,6 +3131,9 @@ export default {
   "Entrar na comunidade": "الانضمام إلى المجتمع",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "مروحة أرضية بشبكة دائرية، للأيام الحارة.",
+  // A caminha do gato
+  "Caminha do gato": "سرير القطة",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "سرير دائري وناعم بمدخل منخفض، تنام فيه القطة.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "الصورة الرمزية",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3143,6 +3146,23 @@ export default {
   "Bicho do quarto": "حيوان الغرفة الأليف",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "رنين المكالمات",
+  'Tocar ligações com o áudio desativado': "رنين المكالمات مع كتم الصوت",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "عند كتم الصوت، تصل المكالمة الخاصة دون صوت: يظهر التنبيه على الشاشة ويومض Syden في شريط المهام. يمكنك تفعيل هذا الخيار لسماع الرنين رغم ذلك.",
+  'Avatares anteriores': "الصور الرمزية السابقة",
+  'Voltar a este avatar': "العودة إلى هذه الصورة الرمزية",
+  'Tirar do histórico': "إزالة من السجل",
+  'Avatar não encontrado.': "لم يُعثر على الصورة الرمزية.",
+  'Sininho': "جرس صغير",
+  'Arpejo': "أربيجيو",
+  'Suave': "هادئة",
+  'Bipe': "صفارة",
+  'Grupo': "المجموعة",
+  'Nenhum': "بلا مجموعة",
+  'Novo grupo': "مجموعة جديدة",
+  'O do grupo ({grupo})': "نغمة المجموعة ({grupo})",
+  'Grupos de toque': "مجموعات الرنين",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "لكل مجموعة رنينها الخاص. يمكنك وضع شخص في مجموعة، أو اختيار رنين له وحده، بالنقر بزر الفأرة الأيمن على اسمه.",
+  'Apagar grupo': "حذف المجموعة",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "يرنّ عند ورود مكالمة في محادثة خاصة، حتى مع إيقاف أصوات التنبيه. في وضع «عدم الإزعاج» تظهر المكالمة دون رنين.",
   'Avisar das ligações com o Syden em segundo plano?': "التنبيه بالمكالمات وSyden في الخلفية؟",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "سيطلب المتصفح الإذن. بذلك تصل التنبيهات بالمكالمات والرسائل حتى من علامة تبويب أو برنامج آخر.",

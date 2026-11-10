@@ -2750,7 +2750,7 @@ export default {
   'Campanha': 'Mkpọsa',
   'Sem vidas.': 'Ndụ agwụla.',
   'Você volta em {n}…': 'Ị ga-alọta n’ime {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Akụ iji jee ije, X iji kụọ (atọ n’usoro bụ combo), Z iji wụlie, C maka ihe pụrụ iche, nke na-eri ntakịrị ndụ.',
+  'Arrancada': 'Ọsọ ike',
   'Andar': 'Jee ije',
   'Especial': 'Pụrụ iche',
   'Pular': 'Wụlie',
@@ -3115,6 +3115,9 @@ export default {
   "Entrar na comunidade": "Banye n’obodo",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Fan na-eguzo ọtọ, nwere ụgbụ gburugburu, maka ụbọchị ọkụ.",
+  // A caminha do gato
+  "Caminha do gato": "Akwa nwamba",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Ọ gbara gburugburu, dị nro, nwere ọnụ ụzọ dị ala. Nwamba na-ehi ụra ebe a.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Foto profaịlụ",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3127,6 +3130,23 @@ export default {
   "Bicho do quarto": "Anụ ụlọ nke ọnụ ụlọ",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Ụda oku",
+  'Tocar ligações com o áudio desativado': "Kpọọ oku mgbe ụda gbanyụrụ",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Mgbe ụda gbanyụrụ, oku nzuzo na-abịa n’enweghị ụda: ọkwa na-apụta na ihuenyo, Syden na-enwukwa n’ogwe ọrụ. Gbanwuo nke a ka ị nụrụ ụda oku n’agbanyeghị.",
+  'Avatares anteriores': "Foto profaịlụ ndị gara aga",
+  'Voltar a este avatar': "Laghachi na foto profaịlụ a",
+  'Tirar do histórico': "Wepụ na akụkọ",
+  'Avatar não encontrado.': "Ahụghị foto profaịlụ ahụ.",
+  'Sininho': "Obere mgbịrịgba",
+  'Arpejo': "Arpeggio",
+  'Suave': "Nwayọọ",
+  'Bipe': "Bip",
+  'Grupo': "Otu",
+  'Nenhum': "Ọ dịghị",
+  'Novo grupo': "Otu ọhụrụ",
+  'O do grupo ({grupo})': "Nke otu ahụ ({grupo})",
+  'Grupos de toque': "Otu ụda oku",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Otu ọ bụla nwere ụda oku nke ya. Tinye mmadụ n’otu, ma ọ bụ họrọ ụda oku maka naanị onye ahụ, site n’ịpị aka nri n’aha ya.",
+  'Apagar grupo': "Hichapụ otu",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Ọ na-ada mgbe mmadụ kpọrọ gị n’ime mkparịta ụka nzuzo, ọbụlagodi ma ụda ịdọ aka na ntị gbanyụọ. Na \"Ewela iwe m\", oku ahụ na-apụta n’adaghị ụda.",
   'Avisar das ligações com o Syden em segundo plano?': "Ka a gwa gị maka oku mgbe Syden nọ n’azụ?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Ihe nchọgharị ga-arịọ ikike. Otú ahụ ị ga-ama maka oku na ozi ọbụlagodi n’ime taabụ ma ọ bụ mmemme ọzọ.",

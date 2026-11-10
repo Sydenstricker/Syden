@@ -73,9 +73,10 @@ const IMAGENS = {
 // O MASCOTE ISOMÉTRICO (personagem/mascote/baixa-120, 14/10/2026): as 4 diagonais, paradas. Os nomes do PixelLab
 // (south-east...) viram os do README (sudeste...).
 // O MASCOTE 3D (30/10/2026, personagem/blender/meshy/): as poses gravadas do modelo do Meshy (personagem/mascote-3d/,
-// as mesmas pastas do PixelLab). É o do app desde 30/10/2026 (pedido dele: "atualizar com o mascote 3D"); MASCOTE=pixellab
-// no ambiente volta ao desenho do PixelLab, numa página à parte (quarto-pixellab.html, salao-pixellab.html).
-const PASTA_DO_MASCOTE = process.env.MASCOTE === 'pixellab' ? 'mascote' : 'mascote-3d';
+// as mesmas pastas do PixelLab). Foi o do app de 30/10 a 09/11/2026. DESDE 09/11/2026 O DO APP É O DO PIXELLAB (decisão dele:
+// "pode trocar o coelho 3D pelo 2D no quarto de pixel art"; na cena 2D, tudo 2D). MASCOTE=3d no ambiente volta ao 3D, numa
+// página à parte (quarto-3d.html, salao-3d.html); MASCOTE=pixellab continua valendo (é o padrão).
+const PASTA_DO_MASCOTE = process.env.MASCOTE === '3d' ? 'mascote-3d' : 'mascote';
 const MASCOTE = path.join(AQUI, '..', '..', '..', 'personagem', PASTA_DO_MASCOTE, 'baixa-120');
 // AS ANIMAÇÕES DO MASCOTE (personagem/animar.mjs e estado.mjs): para cada animação, as pastas em ordem de preferência;
 // cada direção vem da primeira que a tiver. Uma pasta com <direção>-<n>.png é uma animação; com <direção>.png, uma pose.
@@ -187,7 +188,10 @@ const GIROS = CENA === 'salao'
     jukebox: 'S:jukebox-giros', microfone: 'S:microfone-giros', pufao: 'S:pufao-giros', ilha: 'S:ilha-giros', geladeira: 'S:geladeira-giros' }
   : { poltrona: 'poltrona-giros', abajur: 'criado-mudo-pes-limpo-giros', 'guarda-roupa': 'guarda-roupa-giros', cama: 'cama-casal-giros', mesa: 'mesa-teclado-giros', 'planta-alta': 'planta-alta-giros', 'planta-baixa': 'planta-baixa-giros',
     // o ventilador de pé (09/11/2026, dívida de arte: "um ventilador ou um ar-condicionado"), avulso.mjs + girar.mjs
-    ventilador: 'ventilador-giros' };
+    ventilador: 'ventilador-giros',
+    // a caminha do gato (09/11/2026, pedido dele: "o gato não tem caminha dele? seria um acessório pertinente"), avulso.mjs +
+    // girar.mjs: redonda, com a borda mais baixa na entrada (é ela que mostra o giro). O gato dorme nela (lugaresDoGato).
+    'caminha-gato': 'caminha-gato-giros' };
 const ORDEM_DO_GIRO = ['south-west', 'north-west', 'north-east', 'south-east'];
 for (const [id, pasta] of Object.entries(GIROS)) {
   const dir = pasta.startsWith('S:') ? path.join(SALAO, 'moveis', pasta.slice(2)) : path.join(AQUI, 'avulsos', pasta);
@@ -273,7 +277,9 @@ for (const tipo of CENA === 'salao' ? ['tijolo', 'original', 'arco', 'redonda', 
 const GATO_DIR = path.join(AQUI, '..', '..', '..', 'personagem', 'gato');
 const GATO_QUADROS = {};
 if (CENA === 'quarto' && fs.existsSync(GATO_DIR)) {
-  const PASTAS_DO_GATO = { dormindo: 'estados/dormindo', respira: 'animacoes/dormindo-respira', acordar: 'animacoes/espreguicar-12', deitar: 'animacoes/deitar', sentado: 'base', rabo: 'animacoes/sentado-rabo', 'em-pe': 'estados/em-pe', andando: 'animacoes/andando', sentar: 'animacoes/sentar', lambendo: 'animacoes/lambendo' };
+  const PASTAS_DO_GATO = { dormindo: 'estados/dormindo', respira: 'animacoes/dormindo-respira', acordar: 'animacoes/espreguicar-12', deitar: 'animacoes/deitar', sentado: 'base', rabo: 'animacoes/sentado-rabo', 'em-pe': 'estados/em-pe', andando: 'animacoes/andando', sentar: 'animacoes/sentar', lambendo: 'animacoes/lambendo', pulo: 'animacoes/pulo',
+    // (09/11/2026, a segunda rodada: o agachado e as passagens dele, e as coisas de gato)
+    agachado: 'estados/agachado', agachar: 'animacoes/agachar', mirar: 'animacoes/mirar', saltar: 'animacoes/saltar', esfregar: 'animacoes/esfregar', amassar: 'animacoes/amassar', bocejar: 'animacoes/bocejar' };
   for (const [nome, pasta] of Object.entries(PASTAS_DO_GATO)) for (const [nossa, deles] of [['sudeste', 'south-east'], ['sudoeste', 'south-west'], ['nordeste', 'north-east'], ['noroeste', 'north-west']]) {
     const d = path.join(GATO_DIR, pasta);
     if (!fs.existsSync(d)) continue;
@@ -1304,7 +1310,9 @@ if (CENA === 'salao') document.body.classList.add('salao');
     // dentro; o refrigerante, os livros e a pipoca perdiam o fundo)
     // (NEM NO SOFÁ NOVO, 09/11/2026, relato dele: "a base do sofá ficou verde por causa do tapete": ele veio sem sombra, e a
     // cor mais comum do pé era a madeira dos pés, que saía; o tapete aparecia pelo buraco)
-    const semSombraPintada = OBJETOS_DE_CIMA[id] || (SOFA_NOVO && tipoDe(id).startsWith('sofa'));
+    // (NEM NA CAMINHA DO GATO, 09/11/2026: veio sem sombra, e de costas a cor mais comum do pé é a da borda da frente, que
+    // saía e deixava a caminha vazada, com o chão aparecendo)
+    const semSombraPintada = OBJETOS_DE_CIMA[id] || (SOFA_NOVO && tipoDe(id).startsWith('sofa')) || tipoDe(id) === 'caminha-gato';
     if (vezes > 12 && emCima <= vezes * 0.1 && !semSombraPintada) {
       for (let k = K0; k < K1; k++) if (parecida(k)) movel[k * 4 + 3] = 0;
       // O QUE SOBRA DA SOMBRA, SOLTO (relato dele, 17/10/2026: "a poltrona está com uma mancha na base, parece um pixel
@@ -1891,7 +1899,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   window.portasDoTeste = () => ({ aberto: guardaRoupaAberto, portas }); // para o teste
   // Para onde cada móvel olha em cada posição (a ordem das vistas: Girar anda nesta lista).
   const ORIENTA = ['sudoeste', 'noroeste', 'nordeste', 'sudeste'];
-  const NOMES = porTipo({ cadeira: 'a cadeira', pufe: 'o pufe', poltrona: 'a poltrona', abajur: 'o criado-mudo', 'guarda-roupa': 'o guarda-roupa', cama: 'a cama', tapete: 'o tapete', mesa: 'a mesa', 'planta-alta': 'a planta alta', 'planta-baixa': 'a samambaia', ventilador: 'o ventilador', sofa: 'o sofá', tv: 'a TV', fliperama: 'o fliperama', balcao: 'o balcão', estante: 'a estante', mesinha: 'a mesinha', banqueta: 'a banqueta', 'banqueta-2': 'a outra banqueta', 'sofa-2': 'o outro sofá', 'poltrona-2': 'a outra poltrona', 'mesa-jogo': 'a mesa de jogos', 'cadeira-2': 'outra cadeira', 'cadeira-3': 'outra cadeira', 'cadeira-4': 'outra cadeira', jukebox: 'a jukebox', microfone: 'o microfone', pufao: 'o pufão', ilha: 'a ilha da cozinha', geladeira: 'a geladeira' });
+  const NOMES = porTipo({ cadeira: 'a cadeira', pufe: 'o pufe', poltrona: 'a poltrona', abajur: 'o criado-mudo', 'guarda-roupa': 'o guarda-roupa', cama: 'a cama', tapete: 'o tapete', mesa: 'a mesa', 'planta-alta': 'a planta alta', 'planta-baixa': 'a samambaia', ventilador: 'o ventilador', 'caminha-gato': 'a caminha do gato', sofa: 'o sofá', tv: 'a TV', fliperama: 'o fliperama', balcao: 'o balcão', estante: 'a estante', mesinha: 'a mesinha', banqueta: 'a banqueta', 'banqueta-2': 'a outra banqueta', 'sofa-2': 'o outro sofá', 'poltrona-2': 'a outra poltrona', 'mesa-jogo': 'a mesa de jogos', 'cadeira-2': 'outra cadeira', 'cadeira-3': 'outra cadeira', 'cadeira-4': 'outra cadeira', jukebox: 'a jukebox', microfone: 'o microfone', pufao: 'o pufão', ilha: 'a ilha da cozinha', geladeira: 'a geladeira' });
   const pufes = MOVEIS.filter((m) => m.pufe);
   const fixos = MOVEIS.filter((m) => !m.pufe);
   const centro = (pe) => [(pe[0] + pe[1]) / 2, (pe[2] + pe[3]) / 2];
@@ -1961,11 +1969,12 @@ if (CENA === 'salao') document.body.classList.add('salao');
     if (VISTAS['planta-alta']) a['planta-alta'] = { c: encaixar('planta-alta', 7.5, 0.5, 0), lado: 0 };
     if (VISTAS['planta-baixa']) a['planta-baixa'] = { c: encaixar('planta-baixa', 4, 7.5, 0), lado: 0 };
     if (VISTAS.ventilador) a.ventilador = { c: [0.5, 3.5], lado: 0 };
+    if (VISTAS['caminha-gato']) a['caminha-gato'] = { c: [7.5, 7.5], lado: 0 };
     // A ARRUMAÇÃO DE FÁBRICA É A DELE (16/10/2026: "eu quero essa configuração, com exceção da poltrona, como base inicial
     // do quarto para as pessoas"): a mesa e o guarda-roupa na parede da esquerda, as plantas entre eles, a cama e o
     // criado-mudo na da janela, o pufe no tapete. A poltrona começa GUARDADA (GUARDADOS_DE_FABRICA); posta de volta, vai
     // para o canto da frente.
-    const DELE = { pufe: [4, 4, 0], poltrona: [7, 5, 0], cama: [1.5, 7, 0], abajur: [0.5, 5.5, 0], 'guarda-roupa': [6, 0.5, 3], tapete: [5, 4, 0], mesa: [1.5, 0.5, 3], 'planta-alta': [4.5, 0.5, 0], 'planta-baixa': [7.5, 0.5, 0], ventilador: [0.5, 3.5, 0] };
+    const DELE = { pufe: [4, 4, 0], poltrona: [7, 5, 0], cama: [1.5, 7, 0], abajur: [0.5, 5.5, 0], 'guarda-roupa': [6, 0.5, 3], tapete: [5, 4, 0], mesa: [1.5, 0.5, 3], 'planta-alta': [4.5, 0.5, 0], 'planta-baixa': [7.5, 0.5, 0], ventilador: [0.5, 3.5, 0], 'caminha-gato': [7.5, 7.5, 0] };
     for (const [id, [u, v, lado]] of Object.entries(DELE)) if (a[id]) a[id] = { c: [u, v], lado };
     return a;
   }
@@ -1982,8 +1991,8 @@ if (CENA === 'salao') document.body.classList.add('salao');
   const INICIAIS = { quadrado: INICIAL };
   if (CENA === 'quarto') {
     const de = (pos) => { const a = JSON.parse(JSON.stringify(INICIAL)); for (const [id, [u, v, lado]] of Object.entries(pos)) if (a[id]) a[id] = { c: [u, v], lado }; return a; };
-    INICIAIS.l = de({ cama: [1.5, 7, 0], abajur: [0.5, 5.5, 0], mesa: [4.5, 1.5, 0], 'guarda-roupa': [7, 0.5, 3], 'planta-alta': [4.5, 3.5, 0], 'planta-baixa': [3.5, 4.5, 0], tapete: [6, 6, 0], pufe: [6, 6, 0], poltrona: [7, 3, 0], ventilador: [0.5, 4.5, 0] });
-    INICIAIS.cubiculo = de({ cama: [3.5, 7, 0], abajur: [2.5, 5.5, 0], mesa: [4.5, 2.5, 3], 'guarda-roupa': [2.5, 3, 0], 'planta-alta': [7.5, 2.5, 0], 'planta-baixa': [6.5, 2.5, 0], tapete: [6, 6, 0], pufe: [6, 6, 0], poltrona: [7, 4, 0], ventilador: [2.5, 4.5, 0] });
+    INICIAIS.l = de({ cama: [1.5, 7, 0], abajur: [0.5, 5.5, 0], mesa: [4.5, 1.5, 0], 'guarda-roupa': [7, 0.5, 3], 'planta-alta': [4.5, 3.5, 0], 'planta-baixa': [3.5, 4.5, 0], tapete: [6, 6, 0], pufe: [6, 6, 0], poltrona: [7, 3, 0], ventilador: [0.5, 4.5, 0], 'caminha-gato': [7.5, 7.5, 0] });
+    INICIAIS.cubiculo = de({ cama: [3.5, 7, 0], abajur: [2.5, 5.5, 0], mesa: [4.5, 2.5, 3], 'guarda-roupa': [2.5, 3, 0], 'planta-alta': [7.5, 2.5, 0], 'planta-baixa': [6.5, 2.5, 0], tapete: [6, 6, 0], pufe: [6, 6, 0], poltrona: [7, 4, 0], ventilador: [2.5, 4.5, 0], 'caminha-gato': [7.5, 7.5, 0] });
   }
   const INI = () => INICIAIS[PLANTA] ?? INICIAL;
   // A ARRUMAÇÃO DE CADA UM fica no navegador por enquanto (na página de teste); no app, ela vai para o servidor.
@@ -2007,7 +2016,9 @@ if (CENA === 'salao') document.body.classList.add('salao');
   const GUARDADOS_DE_FABRICA = CENA === 'quarto' ? ['poltrona', 'ventilador'] : [];
   // O MÓVEL NOVO CHEGA GUARDADO (o ventilador, 09/11/2026): quem já arrumou o quarto o acha no catálogo do Editar, e não no
   // meio do quarto, em cima do que ele pôs ali. Sem lugar na arrumação guardada, está guardado (o 3D faz igual: arrumacao.ts).
-  const CHEGAM_GUARDADOS = CENA === 'quarto' ? ['ventilador'] : [];
+  // (a caminha do gato, 09/11/2026, decisão dele: "nos quartos novos venha ela já posta de fábrica"; no quarto já arrumado
+  // ela chega guardada, como o ventilador, e fica no catálogo)
+  const CHEGAM_GUARDADOS = CENA === 'quarto' ? ['ventilador', 'caminha-gato'] : [];
   const chegarGuardados = (moveis) => { for (const id of CHEGAM_GUARDADOS) if (INICIAL[id] && !moveis?.[id]?.c) { GUARDADOS.add(id); delete ARR[id]; } };
   let GUARDADOS = new Set();
   try {
@@ -2184,7 +2195,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // arrastado segue o ponteiro de verdade; soltando em movimento, ele desliza. O PESO decide quanto da velocidade do
   // ponteiro ele leva e quanto atrito ele tem: o pufe desliza mais de uma casa, a poltrona meia, a cama e o guarda-roupa
   // quase nada. Bate nos outros móveis e nas paredes (quica pouco) e, parando, se encaixa na casa livre mais perto.
-  const PESO = porTipo({ pufe: 1.5, poltrona: 3, abajur: 3, tapete: 4, mesa: 6, cama: 14, 'guarda-roupa': 18, 'planta-alta': 2.5, 'planta-baixa': 1.5, sofa: 12, tv: 8, fliperama: 16, balcao: 14, estante: 15, mesinha: 4, banqueta: 1.5, 'banqueta-2': 1.5, 'sofa-2': 12, 'poltrona-2': 3, 'mesa-jogo': 6, 'cadeira-2': 2, 'cadeira-3': 2, 'cadeira-4': 2, jukebox: 14, microfone: 3, pufao: 2, ilha: 14, geladeira: 16 });
+  const PESO = porTipo({ pufe: 1.5, poltrona: 3, abajur: 3, tapete: 4, mesa: 6, cama: 14, 'guarda-roupa': 18, 'planta-alta': 2.5, 'planta-baixa': 1.5, 'caminha-gato': 1, sofa: 12, tv: 8, fliperama: 16, balcao: 14, estante: 15, mesinha: 4, banqueta: 1.5, 'banqueta-2': 1.5, 'sofa-2': 12, 'poltrona-2': 3, 'mesa-jogo': 6, 'cadeira-2': 2, 'cadeira-3': 2, 'cadeira-4': 2, jukebox: 14, microfone: 3, pufao: 2, ilha: 14, geladeira: 16 });
   let viva = null; // { id, orig, modo: 'arrasto' | 'deslize' | 'encaixe', vu, vv, de, para, t0 }
   // O "TCHAN" AO COLOCAR (ideia dele, 14/10/2026, como no Hozy): o móvel que assenta solta faíscas de pixel pela borda
   // do pé dele no chão, que sobem um pouco e somem. Enquanto está pego, ele tem um contorno branco.
@@ -2419,7 +2430,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // de cima, como as paradas, a animação inteira saía deslocada e, no fim, ele pulava de volta. O deslocamento de cada
   // animação e direção é MEDIDO: o primeiro quadro dela é a pose de partida (pixel a pixel, conferido em 09/11/2026), então
   // é onde ela casa com a pose parada; vai em q.ox, q.oy, e o desenho o desconta.
-  const PARTIDA_DO_GATO = { sentar: 'em-pe', andando: 'em-pe', deitar: 'sentado', rabo: 'sentado', lambendo: 'sentado', respira: 'dormindo', acordar: 'dormindo' };
+  const PARTIDA_DO_GATO = { sentar: 'em-pe', andando: 'em-pe', pulo: 'em-pe', agachar: 'em-pe', mirar: 'agachado', saltar: 'agachado', esfregar: 'em-pe', amassar: 'em-pe', bocejar: 'sentado', deitar: 'sentado', rabo: 'sentado', lambendo: 'sentado', respira: 'dormindo', acordar: 'dormindo' };
   const caixaAlfa = (q) => { let x0 = q.w, y0 = q.h; for (let k = 0; k < q.w * q.h; k++) if (q.px[k * 4 + 3] > 127) { const x = k % q.w, y = (k / q.w) | 0; if (x < x0) x0 = x; if (y < y0) y0 = y; } return [x0, y0]; };
   const alfa = (q, x, y) => x >= 0 && y >= 0 && x < q.w && y < q.h && q.px[(y * q.w + x) * 4 + 3] > 127;
   for (const [nome, de] of Object.entries(PARTIDA_DO_GATO)) for (const [d, qs] of Object.entries(GATO[nome] ?? {})) {
@@ -2455,7 +2466,52 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // caminho, o lugar escolhido e a animação de uma vez que está tocando ({ nome, t0, depois, entao, avesso }). "t" é o
   // relógio dele (s), que só anda com a página em uso.
   const gato = { u: 5.5, v: 5.5, sobe: 0, dir: 'sudeste', pose: 'dormindo', caminho: [], lugar: null, anim: null, t: 0, ate: 6, pulo: null, posto: false };
-  const MS_DO_GATO = { andando: 110, sentar: 120, lambendo: 140, deitar: 130, acordar: 90, respira: 520, rabo: 150 };
+  const MS_DO_GATO = { andando: 110, sentar: 120, lambendo: 140, deitar: 130, acordar: 90, respira: 520, rabo: 150, pulo: 90, agachar: 110, mirar: 110, saltar: 90, esfregar: 130, amassar: 150, bocejar: 120 };
+  // O PULO (relato dele, 09/11/2026: "poderia ter animação dele pegando impulso para a janela; atualmente ele apenas teleporta
+  // para a janela"): a animação do PixelLab (gato.mjs passagem pulo, de em pé a em pé) em três tempos. O primeiro terço dos
+  // quadros é o IMPULSO, parado no chão (agacha e empurra); o do meio é o VOO, e é o código que leva o gato pelo arco, do
+  // lugar de saída ao de chegada (subindo um pouco acima do destino antes de cair nele); o último terço é o POUSO, já lá.
+  // Na descida, o mesmo (o arco só cai). Sem a animação (ou com menos movimento), só o arco, como antes.
+  // O IMPULSO DE VERDADE (pedido dele, mesmo dia: o gato se prepara para o salto?): para SUBIR, ele primeiro AGACHA (o corpo
+  // cola no chão), MIRA uns instantes (o traseiro balança, os olhos no alvo) e então SALTA do agachado (gato.mjs: agachar, mirar
+  // e saltar, a partir do estado "agachado"); o salto é dividido em terços como o pulo. Para DESCER (e no susto), o pulo de
+  // antes, sem preparar: gato pula do móvel sem mirar. O roteiro é uma lista de trechos; o do voo é o que o arco percorre.
+  const ESPELHO_DO_GATO = { sudeste: 'sudoeste', sudoeste: 'sudeste', nordeste: 'noroeste', noroeste: 'nordeste' };
+  const quadrosDoGato = (nome, d) => GATO[nome]?.[d] ?? GATO[nome]?.[ESPELHO_DO_GATO[d]];
+  const MIRA_DO_PULO = 0.8; // s mirando antes de saltar
+  function tempoDoPulo(p) {
+    const d = p.dir ?? gato.dir, ms = (nome) => (MS_DO_GATO[nome] ?? 100) / 1000, voo = 0.3 + Math.abs(p.para[2] - p.de[2]) / 200;
+    const ag = quadrosDoGato('agachar', d), mi = quadrosDoGato('mirar', d), sa = quadrosDoGato('saltar', d), pu = quadrosDoGato('pulo', d);
+    const segs = [];
+    let salto = null;
+    if (p.para[2] > p.de[2] + 4 && ag && sa) {
+      segs.push({ nome: 'agachar', qs: ag, o: 0, dur: ag.length * ms('agachar') });
+      if (mi) segs.push({ nome: 'mirar', qs: mi, o: 0, dur: Math.max(MIRA_DO_PULO, mi.length * ms('mirar')), laco: true });
+      salto = { nome: 'saltar', qs: sa };
+    } else if (pu) salto = { nome: 'pulo', qs: pu };
+    if (salto) {
+      const n = salto.qs.length, t3 = Math.floor(n / 3), m = ms(salto.nome);
+      segs.push({ nome: salto.nome, qs: salto.qs.slice(0, t3), o: 0, dur: t3 * m }, { nome: salto.nome, qs: salto.qs.slice(t3, n - t3), o: t3, dur: voo, voo: true }, { nome: salto.nome, qs: salto.qs.slice(n - t3), o: n - t3, dur: (n - t3 - t3 > 0 ? t3 : 0) * m });
+    } else segs.push({ voo: true, dur: voo });
+    let impulso = 0;
+    for (const sg of segs) { if (sg.voo) break; impulso += sg.dur; }
+    return { segs, impulso, voo, total: segs.reduce((a, sg) => a + sg.dur, 0) };
+  }
+  // O quadro do pulo agora: o voo pela fração do arco; o resto pelo relógio (a mira em laço).
+  function quadroDoPulo(p, dt0) {
+    const { segs } = tempoDoPulo(p);
+    let t = dt0;
+    for (let j = 0; j < segs.length; j++) {
+      const sg = segs[j];
+      if (t >= sg.dur && j < segs.length - 1) { t -= sg.dur; continue; }
+      if (!sg.qs?.length) return null;
+      const n = sg.qs.length, i = sg.voo ? Math.min(n - 1, Math.floor((t / sg.dur) * n)) : sg.laco ? Math.floor((t * 1000) / MS_DO_GATO[sg.nome]) % n : Math.min(n - 1, Math.floor((t * 1000) / MS_DO_GATO[sg.nome]));
+      return [sg.qs[Math.max(0, i)], sg.nome + (sg.o + Math.max(0, i))];
+    }
+    return null;
+  }
+  // Para onde ele pula: a diagonal do salto (u para baixo-esquerda é sudoeste; v para baixo-direita, sudeste), ou a de agora.
+  const direcaoDoPulo = (de, para) => { const du = para[0] - de[0], dv = para[1] - de[1]; return Math.hypot(du, dv) < 0.15 ? gato.dir : Math.abs(du) >= Math.abs(dv) ? (du > 0 ? 'sudoeste' : 'nordeste') : (dv > 0 ? 'sudeste' : 'noroeste'); };
   const VELOCIDADE_DO_GATO = 0.9; // casas por segundo: devagar
   const sorte = (a, b) => a + Math.random() * (b - a);
   // A casa livre para o gato: chão, sem móvel em pé (o tapete não conta) e sem o coelho.
@@ -2463,8 +2519,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
     if (i < 0 || j < 0 || i >= N || j >= N || !ehDoChao(i, j)) return false;
     if (Math.floor(coelho.u) === i && Math.floor(coelho.v) === j) return false;
     if (coelho.caminho.slice(0, 2).some(([ci, cj]) => ci === i && cj === j)) return false; // (por onde o coelho vai passar)
-    const cu = i + 0.5, cv = j + 0.5;
-    return !Object.keys(ARR).some((id) => { if (ehDeitado(id)) return false; const pe = peDe(id); return cu > pe[0] && cu < pe[1] && cv > pe[2] && cv < pe[3]; });
+    return semMovel(i, j);
   }
   function caminhoDoGato(de, alvos) {
     const alvo = new Set(alvos.map(([i, j]) => i * N + j)), veio = new Map([[de[0] * N + de[1], -1]]), fila = [de[0] * N + de[1]];
@@ -2479,12 +2534,18 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // As casas livres em volta de um pé (de onde se pula para o móvel).
   const emVoltaDoGato = ([u0, u1, v0, v1]) => { const r = []; for (let i = Math.floor(u0) - 1; i <= Math.ceil(u1); i++) for (let j = Math.floor(v0) - 1; j <= Math.ceil(v1); j++) { const dentro = i + 0.5 > u0 && i + 0.5 < u1 && j + 0.5 > v0 && j + 0.5 < v1; if (!dentro && livreParaGato(i, j)) r.push([i, j]); } return r; };
   const DIAGONAIS_DO_GATO = ['sudeste', 'sudoeste', 'nordeste', 'noroeste'];
+  // DE FRENTE PARA QUEM OLHA (relato dele, 09/11/2026: "o gato poderia olhar mais para o usuário: eu só vejo as costas
+  // dele"): parado, sentado ou deitado, ele fica de frente (sudeste ou sudoeste) quase sempre; de costas, só olhando a janela
+  // (o vidro está atrás dele) e, de vez em quando, no chão (olhando o quarto, para não parecer de cera).
   const deFrente = () => (Math.random() < 0.5 ? 'sudeste' : 'sudoeste');
+  const quaseSempreDeFrente = () => (Math.random() < 0.9 ? deFrente() : DIAGONAIS_DO_GATO[2 + Math.floor(Math.random() * 2)]);
   // A JANELA (relato dele, 09/11/2026: "o esperado seria ele subir e ficar na janela encarando a rua"): ele PULA no
   // PEITORIL da janela grande (a original, a única com o banco fundo) e senta ou deita ali, virado para o vidro. Aberta, ele
   // vai mais vezes; fechada, também vai (olhar pelo vidro é coisa de gato); com a cortina fechada, não (ficaria por cima
   // dela). As outras janelas não têm onde subir: ele não vai a elas, e nunca fica no chão encarando a parede.
-  const PEITORIL = { sobe: 48, fundo: 0.3 }; // a altura do banco (px) e onde ele senta (casas a partir da parede), medidos
+  const PEITORIL = { sobe: 48, fundo: 0.3 };
+  // (o meio da almofada fica um pouco à frente do centro do pé: posto no centro, ele deitava em cima da borda de trás)
+  const ALMOFADA_DA_CAMINHA = 4, DENTRO_DA_CAMINHA = 3; // px acima do chão: a almofada dentro da borda (medido no desenho) // a altura do banco (px) e onde ele senta (casas a partir da parede), medidos
   const janelaAbertaParaGato = () => aberta && !fechada && !!TIPOS_JANELA[JAN.tipo]?.abre;
   function lugarDaJanelaParaGato() {
     const T = TIPOS_JANELA[JAN.tipo];
@@ -2494,9 +2555,11 @@ if (CENA === 'salao') document.body.classList.add('salao');
     for (const d of [0, 0.5, -0.5, 1, -1, 1.5, -1.5]) {
       if (Math.abs(d) > meia) continue;
       const a = meio + d, onde = JAN.parede === 'direita' ? [r + PEITORIL.fundo, a] : [a, r + PEITORIL.fundo];
+      // um móvel encostado embaixo da janela tapa o peitoril (e o gato ficava dentro dele: a auditoria de sobreposição, 09/11/2026)
+      if (!semMovel(Math.floor(onde[0]), Math.floor(onde[1]))) continue;
       // de onde ele pula: a casa do chão logo na frente, ou a seguinte
       const ao = [0, 1].map((k) => (JAN.parede === 'direita' ? [Math.floor(r) + k, Math.floor(a)] : [Math.floor(a), Math.floor(r) + k])).filter(([i, j]) => livreParaGato(i, j));
-      if (ao.length) return { id: 'janela', onde, sobe: PEITORIL.sobe, sobre: null, ao, olha, pose: Math.random() < 0.3 ? 'dormindo' : 'sentado', quanto: sorte(20, 45), janela: true, peso: janelaAbertaParaGato() ? 4 : 1.5 };
+      if (ao.length) return { id: 'janela', jan: assinaturaDaJanela(), onde, sobe: PEITORIL.sobe, sobre: null, ao, olha, pose: Math.random() < 0.3 ? 'dormindo' : 'sentado', quanto: sorte(20, 45), janela: true, peso: janelaAbertaParaGato() ? 4 : 1.5 };
     }
     return null;
   }
@@ -2510,7 +2573,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
     if (ARR.tapete) {
       const pe = peDe('tapete'), casas = [];
       for (let i = Math.floor(pe[0]); i < Math.ceil(pe[1]); i++) for (let j = Math.floor(pe[2]); j < Math.ceil(pe[3]); j++) if (livreParaGato(i, j)) casas.push([i, j]);
-      if (casas.length) { const [i, j] = casas[Math.floor(Math.random() * casas.length)]; r.push({ id: 'tapete', onde: [i + 0.5, j + 0.5], sobe: 0, ao: [[i, j]], olha: DIAGONAIS_DO_GATO[Math.floor(Math.random() * 4)], pose: 'dormindo', quanto: sorte(40, 90), peso: 3 }); }
+      if (casas.length) { const [i, j] = casas[Math.floor(Math.random() * casas.length)]; r.push({ id: 'tapete', onde: [i + 0.5, j + 0.5], sobe: 0, ao: [[i, j]], olha: deFrente(), pose: 'dormindo', quanto: sorte(40, 90), peso: 3 }); }
     }
     // nos PÉS DA CAMA (o lado oposto à cabeceira), em cima do colchão
     if (ARR.cama) {
@@ -2518,17 +2581,36 @@ if (CENA === 'salao') document.body.classList.add('salao');
       const pes = eixoU ? (fu > 0 ? pe[1] : pe[0]) : (fv > 0 ? pe[3] : pe[2]);
       const onde = eixoU ? [pes - fu * 0.55, (pe[2] + pe[3]) / 2 + 0.25] : [(pe[0] + pe[1]) / 2 + 0.25, pes - fv * 0.55];
       const ao = emVoltaDoGato(peDe('cama'));
-      if (ao.length && !doCoelho('cama')) r.push({ id: 'cama', onde, sobe: 30, sobre: 'cama', ao, olha: deFrente(), pose: 'dormindo', quanto: sorte(50, 110), peso: 3 });
+      if (ao.length && !doCoelho('cama')) r.push({ id: 'cama', movel: assinaturaDoMovel('cama'), onde, sobe: 30, sobre: 'cama', ao, olha: deFrente(), pose: 'dormindo', quanto: sorte(50, 110), peso: 3 });
+    }
+    // na CAMINHA DELE (09/11/2026): é o lugar preferido para dormir, enrolado de frente; a almofada fica uns px acima do chão,
+    // e ele é desenhado logo depois dela (chaveDoGato). As cópias ("caminha-gato~2") valem igual.
+    for (const id of Object.keys(ARR).filter((x) => tipoDe(x) === 'caminha-gato')) {
+      const ao = emVoltaDoGato(peDe(id));
+      if (ao.length) r.push({ id: 'caminha:' + id, movel: assinaturaDoMovel(id), onde: [ARR[id].c[0] + 0.1, ARR[id].c[1] + 0.1], sobe: ALMOFADA_DA_CAMINHA, sobre: id, ao, olha: deFrente(), pose: 'dormindo', quanto: sorte(60, 140), peso: 6 });
     }
     // no PUFE e na POLTRONA (de frente para a tela), quando o coelho não está neles
-    if (ARR.pufe && !doCoelho('pufe')) { const ao = emVoltaDoGato(peDe('pufe')); if (ao.length) r.push({ id: 'pufe', onde: [...ARR.pufe.c], sobe: 26, sobre: 'pufe', ao, olha: deFrente(), pose: 'sentado', quanto: sorte(20, 50), peso: 2 }); }
-    if (ARR.poltrona && !doCoelho('poltrona') && ORIENTA[ARR.poltrona.lado].startsWith('s')) { const ao = emVoltaDoGato(peDe('poltrona')); if (ao.length) r.push({ id: 'poltrona', onde: [...ARR.poltrona.c], sobe: 14, sobre: 'poltrona', ao, olha: ORIENTA[ARR.poltrona.lado], pose: 'dormindo', quanto: sorte(40, 90), peso: 2 }); }
+    if (ARR.pufe && !doCoelho('pufe')) { const ao = emVoltaDoGato(peDe('pufe')); if (ao.length) r.push({ id: 'pufe', movel: assinaturaDoMovel('pufe'), onde: [...ARR.pufe.c], sobe: 26, sobre: 'pufe', ao, olha: deFrente(), pose: 'sentado', quanto: sorte(20, 50), peso: 2 }); }
+    if (ARR.poltrona && !doCoelho('poltrona') && ORIENTA[ARR.poltrona.lado].startsWith('s')) { const ao = emVoltaDoGato(peDe('poltrona')); if (ao.length) r.push({ id: 'poltrona', movel: assinaturaDoMovel('poltrona'), onde: [...ARR.poltrona.c], sobe: 14, sobre: 'poltrona', ao, olha: ORIENTA[ARR.poltrona.lado], pose: 'dormindo', quanto: sorte(40, 90), peso: 2 }); }
     // num CANTO livre do chão: sentado, olhando em volta
     { const casas = todasAsCasas().filter(([i, j]) => livreParaGato(i, j) && Math.hypot(i + 0.5 - coelho.u, j + 0.5 - coelho.v) > 1.5);
-      if (casas.length) { const [i, j] = casas[Math.floor(Math.random() * casas.length)]; r.push({ id: 'chao', onde: [i + 0.5, j + 0.5], sobe: 0, ao: [[i, j]], olha: DIAGONAIS_DO_GATO[Math.floor(Math.random() * 4)], pose: 'sentado', quanto: sorte(15, 35), peso: 1 }); } }
+      if (casas.length) { const [i, j] = casas[Math.floor(Math.random() * casas.length)]; r.push({ id: 'chao', onde: [i + 0.5, j + 0.5], sobe: 0, ao: [[i, j]], olha: quaseSempreDeFrente(), pose: 'sentado', quanto: sorte(15, 35), peso: 1 }); } }
     const lj = lugarDaJanelaParaGato();
     if (lj) r.push(lj);
     return r;
+  }
+  // O LUGAR NO COELHO (09/11/2026, pedido dele: "esfregar-se no coelho"): uma casa livre colada na dele, e o gato encosta
+  // (a meia casa dele), virado para ele. Só com o coelho PARADO no chão (nem andando, nem na cama, na cadeira ou no pufe), e
+  // nunca com menos movimento (ele não anda). Não é lugar para ficar: uns segundos, e ele segue.
+  function lugarNoCoelho() {
+    if (semAndar || coelho.pose !== 'parado' || coelho.destino || coelho.caminho.length) return null;
+    const ci = Math.floor(coelho.u), cj = Math.floor(coelho.v);
+    const casas = [[1, 0], [-1, 0], [0, 1], [0, -1]].map(([di, dj]) => [ci + di, cj + dj]).filter(([i, j]) => livreParaGato(i, j));
+    if (!casas.length) return null;
+    casas.sort((a, b) => Math.hypot(a[0] + 0.5 - gato.u, a[1] + 0.5 - gato.v) - Math.hypot(b[0] + 0.5 - gato.u, b[1] + 0.5 - gato.v));
+    const [i, j] = casas[0], du = coelho.u - (i + 0.5), dv = coelho.v - (j + 0.5), d = Math.hypot(du, dv) || 1;
+    const olha = Math.abs(du) >= Math.abs(dv) ? (du > 0 ? 'sudoeste' : 'nordeste') : (dv > 0 ? 'sudeste' : 'noroeste');
+    return { id: 'coelho', onde: [coelho.u - (du / d) * 0.55, coelho.v - (dv / d) * 0.55], sobe: 0, ao: [[i, j]], olha, pose: 'sentado', quanto: sorte(4, 8), peso: 0, esfrega: true };
   }
   // Uma animação de uma vez; ao fim, a pose "depois" e a função "entao". Sem a arte (ou com menos movimento), já no fim.
   const tocarGato = (nome, depois, entao, avesso = false) => {
@@ -2549,11 +2631,18 @@ if (CENA === 'salao') document.body.classList.add('salao');
     const comecar = () => {
       const saida = livreParaGato(...de) ? de : todasAsCasas().filter(([i, j]) => livreParaGato(i, j)).sort((a, b) => Math.hypot(a[0] - de[0], a[1] - de[1]) - Math.hypot(b[0] - de[0], b[1] - de[1]))[0];
       const c = saida && caminhoDoGato(saida, lugar.ao);
-      if (!c) { gato.lugar = null; gato.pose = 'sentado'; gato.ate = gato.t + sorte(5, 10); return; }
+      if (!c) { gato.lugar = null; gato.pose = 'sentado'; if (!gato.sobe) gato.dir = deFrente(); gato.ate = gato.t + sorte(5, 10); return; }
       gato.pose = 'em-pe';
       gato.aoChegar = () => {
-        const fim = () => { gato.dir = lugar.olha; tocarGato('sentar', 'sentado', chegar); };
+        const fim = () => {
+          gato.dir = lugar.olha;
+          // NO COELHO, ele se esfrega na perna dele (duas vezes) antes de sentar, com um coração de vez em quando
+          if (lugar.esfrega && GATO.esfregar) { if (Math.random() < 0.6) balaoNoGato('coracao'); tocarGato('esfregar', 'em-pe', () => tocarGato('esfregar', 'em-pe', () => tocarGato('sentar', 'sentado', chegar))); return; }
+          tocarGato('sentar', 'sentado', chegar);
+        };
         if (lugar.sobe > 0) gato.pulo = { de: [gato.u, gato.v, 0], para: [lugar.onde[0], lugar.onde[1], lugar.sobe], t0: gato.t, depois: fim };
+        // (o lugar fora do meio da casa, como o encostado no coelho: anda até ele, em vez de saltar para lá)
+        else if (Math.hypot(lugar.onde[0] - gato.u, lugar.onde[1] - gato.v) > 0.2) { gato.caminho = [[lugar.onde[0], lugar.onde[1]]]; gato.aoChegar = fim; }
         else { gato.u = lugar.onde[0]; gato.v = lugar.onde[1]; fim(); }
       };
       const andar = () => { gato.caminho = c.slice(1).map(([i, j]) => [i + 0.5, j + 0.5]); if (!gato.caminho.length) { const f = gato.aoChegar; gato.aoChegar = null; f(); } };
@@ -2572,6 +2661,37 @@ if (CENA === 'salao') document.body.classList.add('salao');
     for (const l of ls) { s -= l.peso; if (s <= 0) return l; }
     return ls[ls.length - 1];
   }
+  // O MÓVEL GANHA DO GATO (relato dele, 09/11/2026: "se eu arrastar um móvel para onde já tem um personagem, nada impede
+  // que eu cometa essa sobreposição"). Arrastado, girado, guardado, desfeito ou relido do servidor: se o gato ficou DENTRO
+  // de um móvel (no chão, numa casa que agora é do pé de outro), no ar (o móvel em que ele estava foi para outro lugar ou
+  // foi guardado; a janela do peitoril andou) ou com um móvel no caminho, ele pula para a casa livre mais perto e escolhe
+  // outro lugar logo depois. Com menos movimento, já aparece lá. Nunca impede o arraste: quem sai é o gato.
+  // Devolve true quando agiu (o passo para ali).
+  function tirarGatoDeCima() {
+    if (gato.pulo || arrastando || viva) return false; // (no ar ele já está indo; com o móvel na mão, espera o encaixe)
+    const l = gato.lugar, casa = [Math.floor(gato.u), Math.floor(gato.v)];
+    let fora = null;
+    if (gato.sobe > 0) {
+      if (l?.janela) { if (l.jan !== assinaturaDaJanela() || !semMovel(...casa)) fora = 'no-ar'; } // (a janela andou, ou um móvel tapou o peitoril)
+      else if (l?.sobre && l.movel !== undefined && l.movel !== assinaturaDoMovel(l.sobre)) fora = 'no-ar';
+    } else if (!semMovel(...casa)) fora = 'dentro';
+    else if (gato.caminho.some(([u, v]) => !semMovel(Math.floor(u), Math.floor(v)))) fora = 'caminho';
+    if (!fora) return false;
+    gato.anim = null; gato.caminho = []; gato.aoChegar = null; gato.vaiDormir = false;
+    const sentar = () => { gato.lugar = null; gato.pose = 'sentado'; gato.dir = deFrente(); gato.ate = gato.t + sorte(1, 3); };
+    // só o caminho bloqueado, e a casa dele está livre: termina o passo no meio dela e escolhe de novo
+    if (fora === 'caminho') {
+      if (semAndar) { gato.u = casa[0] + 0.5; gato.v = casa[1] + 0.5; sentar(); }
+      else { gato.caminho = [[casa[0] + 0.5, casa[1] + 0.5]]; gato.aoChegar = sentar; }
+      return true;
+    }
+    const livres = todasAsCasas().filter(([i, j]) => livreParaGato(i, j));
+    const [i, j] = livres.sort((a, b) => Math.hypot(a[0] + 0.5 - gato.u, a[1] + 0.5 - gato.v) - Math.hypot(b[0] + 0.5 - gato.u, b[1] + 0.5 - gato.v))[0] ?? [];
+    if (i == null) return false;
+    if (semAndar) { gato.u = i + 0.5; gato.v = j + 0.5; gato.sobe = 0; sentar(); }
+    else { gato.pulo = { de: [gato.u, gato.v, gato.sobe], para: [i + 0.5, j + 0.5, 0], t0: gato.t, depois: sentar }; balaoNoGato('susto', true); }
+    return true;
+  }
   // O PASSO (do laço do coelho, que para em pausa): dt em segundos.
   function passoDoGato(dt) {
     if (!temPet()) return;
@@ -2579,13 +2699,14 @@ if (CENA === 'salao') document.body.classList.add('salao');
     if (!gato.posto) {
       // ao abrir: já está num lugar (o tapete, se houver), na pose dele, sem chegar andando
       gato.posto = true;
-      const ls = lugaresDoGato(), l = ls.find((x) => x.id === 'tapete') ?? ls.find((x) => x.id !== 'janela');
+      const ls = lugaresDoGato(), l = ls.find((x) => x.id.startsWith('caminha:')) ?? ls.find((x) => x.id === 'tapete') ?? ls.find((x) => x.id !== 'janela');
       if (l) { const s0 = semAndar; semAndar = true; irGato(l); semAndar = s0; gato.vaiDormir = false; gato.pose = l.pose; gato.ate = gato.t + sorte(10, 25); }
       gato.janelaAntes = janelaAbertaParaGato();
       return;
     }
     // os balões: o que passou do tempo sai; a JANELA QUE ABRE assusta quem está acordado (o barulho da rua)
     if (gato.balao && gato.t >= gato.balao.ate) gato.balao = null;
+    if (tirarGatoDeCima()) return;
     { const ab = janelaAbertaParaGato(); if (ab && !gato.janelaAntes && gato.pose !== 'dormindo') balaoNoGato('susto', true); gato.janelaAntes = ab; }
     if (gato.anim) {
       const qs = GATO[gato.anim.nome]?.[gato.dir] ?? Object.values(GATO[gato.anim.nome] ?? {})[0], n = qs?.length ?? 0;
@@ -2593,10 +2714,14 @@ if (CENA === 'salao') document.body.classList.add('salao');
       return;
     }
     if (gato.pulo) {
-      const p = gato.pulo, f = Math.min(1, (gato.t - p.t0) / (0.3 + Math.abs(p.para[2] - p.de[2]) / 200));
+      const p = gato.pulo;
+      if (!p.dir) { p.dir = direcaoDoPulo(p.de, p.para); gato.dir = p.dir; }
+      const tp = tempoDoPulo(p), dt0 = gato.t - p.t0, f = Math.max(0, Math.min(1, (dt0 - tp.impulso) / tp.voo));
+      // o arco: a reta entre os dois, mais uma lomba que passa um pouco do mais alto dos dois (subir num móvel é saltar acima dele)
+      const lomba = 10 + Math.max(0, p.para[2] - p.de[2]) * 0.25;
       gato.u = p.de[0] + (p.para[0] - p.de[0]) * f; gato.v = p.de[1] + (p.para[1] - p.de[1]) * f;
-      gato.sobe = p.de[2] + (p.para[2] - p.de[2]) * f + Math.sin(Math.PI * f) * 10;
-      if (f >= 1) { gato.pulo = null; gato.sobe = p.para[2]; p.depois?.(); }
+      gato.sobe = p.de[2] + (p.para[2] - p.de[2]) * f + Math.sin(Math.PI * f) * lomba;
+      if (dt0 >= tp.total) { gato.pulo = null; gato.sobe = p.para[2]; gato.u = p.para[0]; gato.v = p.para[1]; p.depois?.(); }
       return;
     }
     if (gato.caminho.length) {
@@ -2609,7 +2734,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
     // O COELHO VAI USAR O MÓVEL EM QUE ELE ESTÁ: ele sai na hora (sem esperar a vez), para os dois nunca se atravessarem.
     if (gato.lugar?.sobre && doCoelho(gato.lugar.sobre)) { gato.fugiuEm = gato.t; gato.lugar = { ...gato.lugar, id: 'saindo' }; balaoNoGato('susto', true); irGato(proximoLugarDoGato()); return; }
     // O COELHO CHEGOU PERTO (no chão): ele vai para outro lugar (com o susto).
-    if (gato.sobe === 0 && Math.hypot(coelho.u - gato.u, coelho.v - gato.v) < 0.75 && gato.t > (gato.fugiuEm ?? -9) + 4) { gato.fugiuEm = gato.t; balaoNoGato('susto', true); irGato(proximoLugarDoGato()); return; }
+    if (gato.sobe === 0 && gato.lugar?.id !== 'coelho' && Math.hypot(coelho.u - gato.u, coelho.v - gato.v) < 0.75 && gato.t > (gato.fugiuEm ?? -9) + 4) { gato.fugiuEm = gato.t; balaoNoGato('susto', true); irGato(proximoLugarDoGato()); return; }
     // O coelho passa PERTO e ele está em cima de um móvel (ali não foge), acordado: o coração, de vez em quando.
     if (gato.sobe > 0 && gato.pose !== 'dormindo' && Math.hypot(coelho.u - gato.u, coelho.v - gato.v) < 1.6 && gato.t > (gato.carinhoEm ?? -99) + 40) { gato.carinhoEm = gato.t; if (Math.random() < 0.5) balaoNoGato('coracao'); }
     // Parado, sentado: um balão sozinho de vez em quando (~1 a cada 40 s; no peitoril com a janela aberta, a nota: a rua).
@@ -2619,11 +2744,23 @@ if (CENA === 'salao') document.body.classList.add('salao');
     if (gato.t < gato.ate) return;
     // A HORA DE MUDAR: no lugar de dormir, ele deita; dormindo, acorda e fica, ou muda de lugar; sentado, se lambe, ou muda (e
     // a janela aberta chama de vez em quando).
-    if (gato.vaiDormir) { gato.vaiDormir = false; tocarGato('deitar', 'dormindo'); gato.ate = gato.t + (gato.lugar?.quanto ?? 60); return; }
-    if (gato.pose === 'dormindo') { if (Math.random() < 0.4) { tocarGato('acordar', 'sentado'); gato.ate = gato.t + sorte(8, 16); } else irGato(proximoLugarDoGato()); return; }
+    // (no tapete e na caminha, antes de deitar, às vezes ele AMASSA PÃOZINHO: levanta, amassa e senta de novo)
+    if (gato.vaiDormir) {
+      gato.vaiDormir = false; gato.ate = gato.t + (gato.lugar?.quanto ?? 60);
+      const macio = gato.lugar && (gato.lugar.id === 'tapete' || gato.lugar.id.startsWith('caminha:'));
+      if (macio && GATO.amassar && !semAndar && Math.random() < 0.55) tocarGato('sentar', 'em-pe', () => tocarGato('amassar', 'em-pe', () => tocarGato('amassar', 'em-pe', () => tocarGato('sentar', 'sentado', () => tocarGato('deitar', 'dormindo')))), true);
+      else tocarGato('deitar', 'dormindo');
+      return;
+    }
+    // (acordado, às vezes ele BOCEJA)
+    if (gato.pose === 'dormindo') { if (Math.random() < 0.4) { tocarGato('acordar', 'sentado', () => { if (Math.random() < 0.5 && GATO.bocejar && gato.dir.startsWith('s')) tocarGato('bocejar', 'sentado'); }); gato.ate = gato.t + sorte(8, 16); } else irGato(proximoLugarDoGato()); return; }
     const lj = !gato.lugar?.janela && Math.random() < (janelaAbertaParaGato() ? 0.35 : 0.12) ? lugarDaJanelaParaGato() : null;
     if (lj) { irGato(lj); return; }
     if (Math.random() < 0.3 && GATO.lambendo) { tocarGato('lambendo', 'sentado'); gato.ate = gato.t + sorte(6, 12); return; }
+    // (o bocejo só de frente: de costas, a boca aberta não se lê e virava um borrão branco na nuca)
+    if (gato.pose === 'sentado' && gato.dir.startsWith('s') && Math.random() < 0.15 && GATO.bocejar) { tocarGato('bocejar', 'sentado'); gato.ate = gato.t + sorte(6, 12); return; }
+    // ESFREGAR-SE NO COELHO (pedido dele, mesmo dia): de vez em quando, com o coelho parado no chão, ele vai até ele
+    if (Math.random() < 0.18 && gato.t > (gato.esfregouEm ?? -99) + 60) { const lc = lugarNoCoelho(); if (lc) { gato.esfregouEm = gato.t; irGato(lc); return; } }
     irGato(proximoLugarDoGato());
   }
   // O CLIQUE: ele se espreguiça e senta, de onde estiver (o espreguiçar começa deitado e acaba sentado). Andando, nada.
@@ -2701,7 +2838,10 @@ if (CENA === 'salao') document.body.classList.add('salao');
       if (qs) { const i = Math.min(qs.length - 1, Math.floor((gato.t - gato.anim.t0) * 1000 / (MS_DO_GATO[gato.anim.nome] ?? 120))), k = gato.anim.avesso ? qs.length - 1 - i : i; return [qs[k], gato.anim.nome + k + d]; }
     }
     if (gato.caminho.length && !semAndar) { const qs = so('andando'); if (qs) { const i = Math.floor(gato.t * 1000 / MS_DO_GATO.andando) % qs.length; return [qs[i], 'w' + i + d]; } }
+    if (gato.pulo && !semAndar) { const r = quadroDoPulo(gato.pulo, gato.t - gato.pulo.t0); if (r) return [r[0], 'p' + r[1] + d]; }
     if (gato.pose === 'em-pe' || gato.pulo) return [(so('em-pe') ?? so('sentado'))[0], 'e' + d];
+    // (o AGACHADO como pose parada: a animação "agachar" é reutilizável, e quem a toca pode deixá-lo agachado)
+    if (gato.pose === 'agachado') return [(so('agachado') ?? so('em-pe'))[0], 'a' + d];
     if (gato.pose === 'dormindo') { const qs = so('respira'); if (qs && !semAndar) { const i = Math.floor(Math.max(0, gato.t - (gato.respiraT0 ?? 0)) * 1000 / MS_DO_GATO.respira) % qs.length; return [qs[i], 'z' + i + d]; } return [(so('dormindo') ?? so('sentado'))[0], 'z' + d]; }
     // sentado: o rabo, uma vez a cada ~6 s
     const qs = so('rabo'), dentro = (gato.t * 1000) % 6000, i = Math.floor(dentro / MS_DO_GATO.rabo);
@@ -2713,6 +2853,8 @@ if (CENA === 'salao') document.body.classList.add('salao');
   function chaveDoGato(gy) {
     const sobre = gato.sobe > 0 ? (gato.lugar?.sobre ?? null) : null;
     if (!sobre) return gy + 2;
+    // NA CAMINHA ele fica DENTRO: a borda da frente passa na frente dele, a de trás fica atrás (a profundidade do meio dela)
+    if (tipoDe(sobre) === 'caminha-gato' && !gato.pulo) return gy + DENTRO_DA_CAMINHA;
     if (chaveDoMovelDoGato.id !== sobre || chaveDoMovelDoGato.assin !== assinaturaCena) {
       let m = 0; for (let k = 0; k < W * W; k++) if (baseDono[k] === sobre && baseChave[k] > m) m = baseChave[k];
       chaveDoMovelDoGato = { id: sobre, assin: assinaturaCena, chave: m };
@@ -2728,7 +2870,8 @@ if (CENA === 'salao') document.body.classList.add('salao');
   }
   window.gatoDoTeste = (o) => { if (o) Object.assign(gato, o); return { u: gato.u, v: gato.v, sobe: gato.sobe, dir: gato.dir, pose: gato.pose, lugar: gato.lugar?.id ?? null, anim: gato.anim?.nome ?? null, andando: gato.caminho.length > 0, pet: temPet(), balao: balaoAgoraDoGato()?.nome ?? null }; }; // para o teste
   window.balaoNoGatoDoTeste = (nome) => { gato.balaoLivre = 0; balaoNoGato(nome, true); desenhar(); }; // para o teste
-  window.irGatoDoTeste = (id) => { const l = id === 'janela' ? lugarDaJanelaParaGato() : lugaresDoGato().find((x) => x.id === id); if (l) { gato.anim = null; gato.caminho = []; gato.pulo = null; const s0 = semAndar; semAndar = true; irGato(l); semAndar = s0; if (l.pose === 'dormindo') { gato.vaiDormir = false; gato.pose = 'dormindo'; } } return !!l; }; // para o teste
+  window.tocarGatoDoTeste = (lista) => { gato.anim = null; gato.caminho = []; gato.pulo = null; const tocar = (k) => { if (k < lista.length) tocarGato(lista[k][0], lista[k][1] ?? gato.pose, () => tocar(k + 1), !!lista[k][2]); }; tocar(0); }; // para o teste (e os GIFs): [[nome, depois, avesso], ...] em seguida
+  window.irGatoDoTeste = (id, andando) => { const l = id === 'janela' ? lugarDaJanelaParaGato() : id === 'coelho' ? lugarNoCoelho() : lugaresDoGato().find((x) => x.id === id); if (l && andando) { gato.anim = null; gato.caminho = []; gato.pulo = null; irGato(l); return true; } if (l) { gato.anim = null; gato.caminho = []; gato.pulo = null; const s0 = semAndar; semAndar = true; irGato(l); semAndar = s0; if (l.pose === 'dormindo') { gato.vaiDormir = false; gato.pose = 'dormindo'; } } return !!l; }; // para o teste
   window.passoDoGatoDoTeste = (dt) => { passoDoGato(dt); desenhar(); }; // para o teste (o relógio dele, sem esperar)
   window.alternarPetDoTeste = () => alternarPet(); // para o teste
   window.coelhoOndeDoTeste = () => [coelho.u, coelho.v]; // para o teste (o gato colado nele, na auditoria)
@@ -2744,9 +2887,18 @@ if (CENA === 'salao') document.body.classList.add('salao');
     // coelho parecia atravessar a cortina (relato de 14/10/2026).
     // (só com a janela original, a de cortinas até o chão, e na parede onde ela estiver)
     if (JAN.tipo === 'original' && (JAN.parede === 'direita' ? i === 0 : j === 0)) return false;
+    return semMovel(i, j);
+  };
+  // A casa é do chão e o meio dela não está no pé de nenhum móvel em pé (o tapete não conta). A regra comum do coelho, do
+  // gato e da turma do salão (livre e livreParaGato acrescentam as delas).
+  function semMovel(i, j) {
+    if (!ehDoChao(i, j)) return false;
     const cu = i + 0.5, cv = j + 0.5;
     return !Object.keys(ARR).some((id) => { if (ehDeitado(id)) return false; const pe = peDe(id); return cu > pe[0] && cu < pe[1] && cv > pe[2] && cv < pe[3]; });
-  };
+  }
+  // O móvel (ou a janela) como estava quando o personagem foi para ele: mudou, ele não está mais em cima de nada.
+  function assinaturaDoMovel(id) { return ARR[id] ? JSON.stringify(ARR[id]) : null; }
+  function assinaturaDaJanela() { return JSON.stringify([JAN.tipo, JAN.parede, JAN.v]); }
   const todasAsCasas = () => [...Array(N * N).keys()].map((k) => [Math.floor(k / N), k % N]);
   // OS PONTOS SÃO DO MÓVEL: calculados de onde ele está AGORA (arrastou, o ponto foi junto; girou, o olhar mudou).
   // "ao": as casas do chão de onde se chega; "onde": onde o pé fica (null = fica na casa de chegada); "sobe": quantos px
@@ -2943,6 +3095,9 @@ if (CENA === 'salao') document.body.classList.add('salao');
   window.ocupacaoDoSofaDoTeste = (id) => ocupacaoDoSofa(id); // para o teste
   function lugaresDoSalao() {
     const sentar = [], tv = [], fliperama = [], chao = [];
+    // A casa onde o coelho do recado fica atrás do balcão não é lugar da turma (os dois de pé na mesma casa, um dentro do outro).
+    const doRecado = pontosDoSalao(null).balcao?.ao[0];
+    const paraPessoa = (i, j) => livre(i, j) && !(doRecado && doRecado[0] === i && doRecado[1] === j);
     for (const id of ['sofa', 'sofa-2']) if (ARR[id]) {
       const pe = peDe(id), olha = ORIENTA[ARR[id].lado], [fu, fv] = VET[olha], [cu, cv] = centro(pe);
       // ao longo do lado comprido, para a frente do meio. QUANTO para a frente depende da posição (medido em 30/10/2026,
@@ -2971,10 +3126,13 @@ if (CENA === 'salao') document.body.classList.add('salao');
       const [u, v] = ARR[id].c, alvo = ARR.balcao ? centro(peDe('balcao')) : [u, v - 1];
       sentar.push({ u, v, sobe: SOBE_NA_BANQUETA, pose: 'sentado-banqueta', olha: DIAGONAL(alvo[0] - u, alvo[1] - v), sobre: id });
     }
+    // O MÓVEL GANHA (relato dele, 09/11/2026): um móvel arrastado para a frente da TV ou do fliperama tira o lugar dali, e
+    // quem transmite ou joga vai para os lugares em volta (ou para o sofá), em vez de sentar dentro dele.
     const naFrente = (id, casas) => {
       if (!ARR[id]) return null;
       const olha = ORIENTA[ARR[id].lado], [fu, fv] = VET[olha], pe = peDe(id), [cu, cv] = centro(pe);
       const u = cu + fu * ((pe[1] - pe[0]) / 2 + casas), v = cv + fv * ((pe[3] - pe[2]) / 2 + casas);
+      if (!paraPessoa(Math.floor(u), Math.floor(v))) return null;
       return { u, v, sobe: 0, pose: 'parado', olha: DIAGONAL(-fu, -fv), sobre: null };
     };
     // QUEM TRANSMITE SENTA NO CHÃO, colado na TV (relato dele, 30/10/2026: de pé a 1,6 casa, a mesinha cobria as pernas e
@@ -2992,7 +3150,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
       const [lu, lv] = [fv, fu]; // o lado (perpendicular à frente, no chão)
       const tela = [cu + fu * meia, cv + fv * meia];
       return lugares.map(([frente, lado]) => [cu + fu * (meia + frente) + lu * lado, cv + fv * (meia + frente) + lv * lado])
-        .filter(([u, v]) => u > 0.3 && v > 0.3 && u < N - 0.3 && v < N - 0.3 && livre(Math.floor(u), Math.floor(v)))
+        .filter(([u, v]) => u > 0.3 && v > 0.3 && u < N - 0.3 && v < N - 0.3 && paraPessoa(Math.floor(u), Math.floor(v)))
         .map(([u, v]) => ({ u, v, sobe: 0, pose: 'parado', olha: DIAGONAL(tela[0] - u, tela[1] - v), sobre: null }));
     };
     // primeiro os lugares do lado de lá da TV (os dois móveis costumam ficar lado a lado, e a turma de um engolia o outro)
@@ -3013,7 +3171,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
       // (no chão, de 1,6 casa da TV — à frente fica quem transmite — até a fileira do sofá; e não colado na frente da TV,
       // entre a tela e o sofá, onde taparia a imagem para quem está sentado)
       const lugaresNoChao = todasAsCasas()
-        .filter(([i, j]) => livre(i, j))
+        .filter(([i, j]) => paraPessoa(i, j))
         .map(([i, j]) => ({ i, j, e: eixo(i + 0.5, j + 0.5) }))
         .filter(({ e: [frente, lado] }) => frente >= 1.6 && frente <= fileira + 0.6 && !(frente < 2.6 && Math.abs(lado) < 1.2));
       // SENTADOS NO CHÃO, e do mais perto da TV ao mais longe (relato dele, 30/10/2026: de pé na fileira do sofá, eles iam
@@ -3024,7 +3182,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
       for (const { i, j } of lugaresNoChao.slice(0, 8)) chao.push({ u: i + 0.5, v: j + 0.5, sobe: 0, pose: 'sentado', olha: OITO_DIRECOES(alvoTv[0] - i - 0.5, alvoTv[1] - j - 0.5), sobre: null });
     } else {
       const meio = ARR.mesinha ? centro(peDe('mesinha')) : [N / 2, N / 2];
-      const livres = todasAsCasas().filter(([i, j]) => livre(i, j)).sort((a, b) => Math.hypot(a[0] + 0.5 - meio[0], a[1] + 0.5 - meio[1]) - Math.hypot(b[0] + 0.5 - meio[0], b[1] + 0.5 - meio[1]));
+      const livres = todasAsCasas().filter(([i, j]) => paraPessoa(i, j)).sort((a, b) => Math.hypot(a[0] + 0.5 - meio[0], a[1] + 0.5 - meio[1]) - Math.hypot(b[0] + 0.5 - meio[0], b[1] + 0.5 - meio[1]));
       for (const [i, j] of livres.slice(0, 8)) chao.push({ u: i + 0.5, v: j + 0.5, sobe: 0, pose: 'parado', olha: 'sudoeste', sobre: null });
     }
     // OS ASSENTOS, DO MAIS PERTO DA TV AO MAIS LONGE; os perto (até PERTO_DA_TV casas) vêm antes do chão, os longe depois
@@ -3053,7 +3211,11 @@ if (CENA === 'salao') document.body.classList.add('salao');
   function lugarDaEntrada() {
     const P = NA_PAREDE.entrada, it = ITENS_PAREDE.entrada;
     if (!P || !it) return null;
-    const a = P.v + (it.ocupa[0] + it.ocupa[1]) / 2, r = recuoDe(P.parede, a) + 0.4;
+    const a = P.v + (it.ocupa[0] + it.ocupa[1]) / 2, r0 = recuoDe(P.parede, a) + 0.4;
+    // Um móvel na frente da porta (o móvel ganha, 09/11/2026): quem chega para na primeira casa livre para dentro, até 3 casas.
+    let r = r0;
+    for (; r < r0 + 3; r++) { const [u, v] = P.parede === 'direita' ? [r, a] : [a, r]; if (livre(Math.floor(u), Math.floor(v))) break; }
+    if (r >= r0 + 3) return null;
     return P.parede === 'direita' ? { u: r, v: a, sobe: 0, pose: 'parado', olha: 'sudoeste' } : { u: a, v: r, sobe: 0, pose: 'parado', olha: 'sudeste' };
   }
   function chegouAlguem(nome) {
@@ -3491,7 +3653,9 @@ if (CENA === 'salao') document.body.classList.add('salao');
     }
     if (coelho.destino !== 'balcao' || !ARR.balcao || !document.getElementById('recado').hidden || Math.random() >= 1 / 4) return;
     const [bu, bv] = centro(peDe('balcao'));
-    const perto = todasAsCasas().filter(([i, j]) => { const d = Math.hypot(i + 0.5 - bu, j + 0.5 - bv); return livre(i, j) && d > 2.5 && d < 5.5; });
+    // (nem na casa de quem está na call no chão ou de pé: os dois um dentro do outro)
+    const daTurma = new Set(lugaresDasPessoas().filter(({ lugar }) => !lugar.sobre).map(({ lugar }) => Math.floor(lugar.u) * N + Math.floor(lugar.v)));
+    const perto = todasAsCasas().filter(([i, j]) => { const d = Math.hypot(i + 0.5 - bu, j + 0.5 - bv); return livre(i, j) && !daTurma.has(i * N + j) && d > 2.5 && d < 5.5; });
     const c = perto.length && caminho(saida(), [perto[Math.floor(Math.random() * perto.length)]]);
     if (!c) return;
     coelho.destino = null; coelho.pose = 'parado'; coelho.varrendoNoSalao = true; coelho.varrendoAte = 0;
@@ -3512,6 +3676,69 @@ if (CENA === 'salao') document.body.classList.add('salao');
     const livres = todasAsCasas().filter(([i, j]) => livre(i, j));
     const c = caminho(saida(), [livres[Math.floor(Math.random() * livres.length)]]);
     if (c) andarAte(c);
+  }
+  // O MÓVEL GANHA DO COELHO (relato dele, 09/11/2026, com a foto do coelho dentro de um móvel do salão: "se eu arrastar um
+  // móvel para onde já tem um personagem, nada impede que eu cometa essa sobreposição"). O arraste não é impedido: arrastado,
+  // girado, duplicado, posto de volta, desfeito, trocada a planta ou relido do servidor (salao:mudou), quem está numa casa
+  // que virou pé de móvel SAI dela. Conferido a cada passo do relógio, e não em cada lugar que mexe na arrumação (são uns
+  // dez, e o próximo que nascer esqueceria). Sentado ou deitado no próprio móvel não conta: o ponto anda com o móvel.
+  // - Andando: o móvel caiu no caminho (ou no fim dele) → refaz a rota a partir de onde ele está, para o mesmo lugar.
+  // - Parado dentro do pé de um móvel → anda em linha reta até a casa livre mais perto (com menos movimento, já aparece lá) e,
+  //   se estava indo a um móvel (o balcão), volta a ele pelo caminho de sempre.
+  // - No salão, o coelho do recado cujo balcão mudou de lugar volta para trás dele (senão ficava parado no meio do salão,
+  //   atrás de nada).
+  let empurroesDaCadeira = { arrumacao: '', vezes: 0 };
+  const cadeiraEmCimaDeMovel = () => Object.keys(ARR).some((m) => {
+    if (m === 'mesa' || ehDeitado(m)) return false;
+    const [u0, u1, v0, v1] = peDe(m);
+    return Math.hypot(cadeira.u - Math.min(u1, Math.max(u0, cadeira.u)), cadeira.v - Math.min(v1, Math.max(v0, cadeira.v))) < R_CADEIRA - 0.02;
+  });
+  function tirarDeCima() {
+    if (arrastando || viva) return; // (com o móvel na mão, espera o encaixe)
+    // A CADEIRA DO COMPUTADOR (com ou sem ele sentado) parada em cima de um móvel posto ali: ela é empurrada para fora, como
+    // quando o móvel é solto ali (colidir). Só a mesa não conta: ao computador, a cadeira fica rente a ela. No máximo 3
+    // empurrões por arrumação (espremida entre dois móveis, ela não fica sendo empurrada a cada passo, nem guardada a cada um).
+    if (CENA === 'quarto' && VISTAS_CADEIRA && !cadeiraMexendo() && cadeiraEmCimaDeMovel()) {
+      const a = JSON.stringify(ARR);
+      if (empurroesDaCadeira.arrumacao !== a) empurroesDaCadeira = { arrumacao: a, vezes: 0 };
+      if (empurroesDaCadeira.vezes++ < 3) { colidir(); acordarCadeira(); }
+    }
+    if (coelho.trans || coelho.aproximar || coelho.descendo || coelho.pirueta) return; // (no meio de sentar ou levantar: no próximo passo)
+    const id = coelho.destino, pt = id ? pontos()[id] : null;
+    // o móvel em que ele estava sentado foi guardado (ou sumiu na troca de planta): de pé, e o estado decide de novo
+    if (id && !pt && !coelho.caminho.length) { coelho.destino = null; coelho.pose = 'parado'; coelho.cadeiraFase = null; decidir(); return; }
+    if (pt?.onde && !coelho.caminho.length) return; // sentado ou deitado no móvel dele: é o lugar dele
+    if (coelho.caminho.length) {
+      if (coelho.caminho.every(([i, j]) => livre(i, j))) return;
+      let alvos;
+      if (id && pt?.ao.length) {
+        alvos = pt.ao;
+        if (pt.onde) { const ro = roteiro(id, pt), d = ([i, j]) => Math.hypot(i + 0.5 - ro.beira[0], j + 0.5 - ro.beira[1]); alvos = [[...pt.ao].sort((a, b) => d(a) - d(b))[0]]; }
+      } else {
+        const fim = coelho.caminho[coelho.caminho.length - 1];
+        alvos = [livre(...fim) ? fim : todasAsCasas().filter(([i, j]) => livre(i, j)).sort((a, b) => Math.hypot(a[0] - fim[0], a[1] - fim[1]) - Math.hypot(b[0] - fim[0], b[1] - fim[1]))[0]].filter(Boolean);
+      }
+      const c = alvos.length && caminho(saida(), alvos);
+      // (a rota nova começa na casa dele: ele termina o passo até o meio dela e segue)
+      if (c) { if (semAndar) andarAte(c); else coelho.caminho = c; return; }
+      coelho.caminho = []; // sem rota: fica onde está e cai no caso de baixo
+      if (!coelho.destino || !pt?.onde) coelho.pose = 'parado';
+    }
+    const casa = [Math.floor(coelho.u), Math.floor(coelho.v)];
+    if (livre(...casa)) {
+      if (CENA === 'salao' && id === 'balcao' && pt && !pt.ao.some(([i, j]) => i === casa[0] && j === casa[1]) && pt.ao.length) { coelho.destino = null; ir('balcao'); }
+      return;
+    }
+    // a casa livre mais perto que não seja a do gato nem a de quem está no chão do salão (os dois um dentro do outro)
+    const ocupadas = new Set(CENA === 'salao' ? lugaresDasPessoas().filter(({ lugar }) => !lugar.sobre).map(({ lugar }) => Math.floor(lugar.u) * N + Math.floor(lugar.v)) : temPet() && gato.sobe === 0 ? [Math.floor(gato.u) * N + Math.floor(gato.v)] : []);
+    const perto = (q) => todasAsCasas().filter(([i, j]) => livre(i, j) && (!q || !ocupadas.has(i * N + j))).sort((a, b) => Math.hypot(a[0] - casa[0], a[1] - casa[1]) - Math.hypot(b[0] - casa[0], b[1] - casa[1]))[0];
+    const s = perto(true) ?? perto(false);
+    if (!s) return;
+    coelho.pose = 'parado'; coelho.varrendoAte = 0;
+    // O guarda-roupa não é chamado de novo: chegar a ele abre as portas e a função (as gavetas), e ninguém pediu isso agora.
+    const volta = id && id !== 'guarda-roupa' ? id : null;
+    coelho.destino = null;
+    aproximar([s[0] + 0.5, s[1] + 0.5], false, null, () => { if (volta) ir(volta); });
   }
   const quadroBuf = new Uint8ClampedArray(W * W * 4), peBuf = new Int16Array(W).fill(-1), semSombra = new Uint8ClampedArray(W * W * 4);
   let ultimaCaixa = null, coelhoPe = null, coelhoTopo = 0, coelhoChave = 0, rotuloDoQuadro = '', coelhoLinha = W, coelhoSobre = null, coelhoAtras = false, coelhoAtrasDaMesa = false;
@@ -3809,6 +4036,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
     'planta-alta': [{ h: [0, 100] }],
     'planta-baixa': [{ h: [0, 50] }],
     ventilador: [{ h: [0, 90] }],
+    'caminha-gato': [{ h: [0, 16] }],
     // O salão (15/10/2026).
     // (o sofá novo, 09/11/2026: o assento e o encosto mais altos, medidos no desenho dele)
     sofa: SOFA_NOVO ? [{ h: [0, 24] }, { lado: 'tras', fatia: 0.3, h: [0, 54] }] : [{ h: [0, 20] }, { lado: 'tras', fatia: 0.3, h: [0, 44] }],
@@ -4040,6 +4268,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
     const agora = performance.now(), dt = Math.min(0.25, (agora - ultimo) / 1000);
     ultimo = agora;
     coelho.quadro++;
+    tirarDeCima(); // ninguém dentro de móvel (o móvel arrastado ganha)
     passoDoGato(dt); // o bicho do quarto
     passoDosBaloesDoCoelho(); // os balões do coelho (e o fim dos corações do carinho)
     esbarrao(dt);
@@ -5315,6 +5544,58 @@ void main() {
   // No salão, onde cada pessoa da call ficou (o pé na tela, já com a altura do assento).
   window.pessoasNaTelaDoTeste = () => CENA !== 'salao' ? [] : lugaresDasPessoas().map(({ pessoa, lugar }) => { const [x, y] = ponto(lugar.u, lugar.v); return { id: pessoa.id, papel: pessoa.papel, pose: lugar.pose, olha: lugar.olha, sobre: lugar.sobre, x, y: y - lugar.sobe }; });
   window.irDoTeste = (id) => { const s0 = semAndar; semAndar = true; ir(id); semAndar = s0; desenhar(); }; // para o teste
+  // A AUDITORIA DE SOBREPOSIÇÃO (09/11/2026, e2e/pixel-art/auditoria-de-sobreposicao.mjs): põe um móvel em cima de um ponto,
+  // deixa os personagens reagirem como no relógio, e confere cada um contra o pé de cada móvel e contra os outros.
+  // (o gato pelo passo inteiro dele, com o relógio adiantado: é o passo que o tira do pufe ou da casa aonde o coelho chega)
+  window.reagirDoTeste = () => { for (let k = 0; k < 4; k++) { tirarDeCima(); if (temPet() && gato.posto) passoDoGato(5); } };
+  window.arrumarDoTeste = (a) => { for (const id of Object.keys(ARR)) delete ARR[id]; Object.assign(ARR, JSON.parse(JSON.stringify(a))); assinaturaCena = ''; };
+  window.casasLivresDoTeste = () => todasAsCasas().filter(([i, j]) => livre(i, j));
+  window.coelhoEmDoTeste = (u, v) => { Object.assign(coelho, { u, v, caminho: [], destino: null, pose: 'parado', trans: null, aproximar: null, descendo: false, redecidir: false, cadeiraFase: null, varrendoNoSalao: false, varrendoAte: 0 }); };
+  window.desenharDoTeste = () => { assinaturaCena = ''; desenhar(); };
+  window.lugaresDasPessoasDoTeste = () => (CENA !== 'salao' ? [] : lugaresDasPessoas().map(({ pessoa, lugar }) => ({ id: pessoa.id, u: lugar.u, v: lugar.v, sobre: lugar.sobre ?? null, pose: lugar.pose })));
+  window.chaoDoTeste = () => ({ N, chao: todasAsCasas().filter(([i, j]) => ehDoChao(i, j)) });
+  // Um móvel posto (na posição "lado") de modo que o pé dele cubra o ponto (u, v); devolve o centro, ou null se não coube.
+  window.cobrirDoTeste = (id, lado, [u, v]) => {
+    if (!INICIAL[id] && !ARR[id]) return null;
+    const antes = ARR[id];
+    for (const du of [0, -0.5, 0.5, -1, 1, -1.5, 1.5]) for (const dv of [0, -0.5, 0.5, -1, 1, -1.5, 1.5]) {
+      const c = encaixar(id, u + du, v + dv, lado), pe = peDe(id, c, lado);
+      if (!(u > pe[0] && u < pe[1] && v > pe[2] && v < pe[3])) continue;
+      if (!ARR[id]) ARR[id] = { c, lado };
+      if (!ocupa(c, id, lado)) { ARR[id] = { c, lado }; assinaturaCena = ''; return c; }
+    }
+    if (antes) ARR[id] = antes; else delete ARR[id];
+    return null;
+  };
+  window.sobreposicoesDoTeste = () => {
+    const quem = [];
+    // o coelho (o do quarto, ou o do recado no salão)
+    {
+      const pt = coelho.destino ? pontos()[coelho.destino] : null, sentado = pt?.onde && !coelho.caminho.length;
+      if (coelho.trans || coelho.aproximar) quem.push({ quem: 'coelho', u: coelho.u, v: coelho.v, sobre: null, movendo: true });
+      else quem.push({ quem: 'coelho', u: sentado ? pt.onde[0] : coelho.u, v: sentado ? pt.onde[1] : coelho.v, sobre: sentado ? coelho.destino : null, destino: coelho.destino });
+    }
+    if (temPet() && gato.posto) quem.push({ quem: 'gato', u: gato.u, v: gato.v, sobre: gato.sobe > 0 ? (gato.lugar?.janela ? 'janela' : gato.lugar?.sobre ?? '?') : null, lugar: gato.lugar?.id ?? null });
+    if (CENA === 'salao') for (const { pessoa, lugar } of lugaresDasPessoas()) quem.push({ quem: 'pessoa-' + pessoa.id, u: lugar.u, v: lugar.v, sobre: lugar.sobre ?? null, pose: lugar.pose });
+    const r = [], dentro = (u, v, pe, m = 0.05) => u > pe[0] + m && u < pe[1] - m && v > pe[2] + m && v < pe[3] - m;
+    for (const q of quem) {
+      // (na cadeira do computador, ele fica um pouco por baixo do tampo da mesa: é o lugar dela)
+      const seu = new Set([q.sobre, ...(q.sobre === 'cadeira' && CENA === 'quarto' ? ['mesa'] : [])]);
+      for (const id of Object.keys(ARR)) if (!ehDeitado(id) && !seu.has(id) && dentro(q.u, q.v, peDe(id))) r.push({ tipo: 'dentro', ...q, movel: id });
+      if (!q.sobre && !ehDoChao(Math.floor(q.u), Math.floor(q.v))) r.push({ tipo: 'fora-do-chao', ...q });
+      if (q.sobre && q.sobre !== 'janela' && !(q.sobre === 'cadeira' && CENA === 'quarto')) {
+        if (!ARR[q.sobre] || !dentro(q.u, q.v, peDe(q.sobre), -0.75)) r.push({ tipo: 'no-ar', ...q });
+      }
+      if (q.sobre === 'janela' && (gato.lugar?.jan !== assinaturaDaJanela() || fechada || JAN.tipo !== 'original')) r.push({ tipo: 'no-ar', ...q });
+      if (q.sobre === '?') r.push({ tipo: 'no-ar', ...q });
+    }
+    for (let a = 0; a < quem.length; a++) for (let b = a + 1; b < quem.length; b++) {
+      const x = quem[a], y = quem[b];
+      if (x.sobre !== y.sobre) continue;
+      if (Math.hypot(x.u - y.u, x.v - y.v) < (x.sobre ? 0.3 : 0.6)) r.push({ tipo: 'juntos', quem: x.quem, outro: y.quem, u: x.u, v: x.v, sobre: x.sobre });
+    }
+    return r;
+  };
   window.auditoriaCenaDoTeste = () => {
     const fora = {}, parede = {};
     for (let k = 0; k < W * W; k++) if (dono[k] && dono[k] !== 'coelho' && foraDia[k]) fora[dono[k]] = (fora[dono[k]] ?? 0) + 1;
@@ -5754,7 +6035,10 @@ void main() {
   const bg = document.getElementById('grade');
   bg.onclick = () => { grade = !grade; bg.setAttribute('aria-pressed', String(grade)); desenhar(); };
   const bv = document.getElementById('vista');
-  bv.onclick = () => { vista = (vista + 1) % 4; bv.textContent = 'Vista: ' + (vista + 1); enviar(); desenhar(); };
+  // (a escolha da vista: o botão da página de teste passa à seguinte; o Editar do app escolhe pela figura)
+  const escolherVista = (n) => { if (soVer || !Number.isInteger(n) || n < 0 || n >= vistasDia.length) return; vista = n; bv.textContent = 'Vista: ' + (vista + 1); enviar(); montarBarrinha(); desenhar(); };
+  bv.onclick = () => escolherVista((vista + 1) % 4);
+  window.vistaDoTeste = (n) => { if (n !== undefined) escolherVista(n); return vista; }; // para o teste
   const bl = document.getElementById('luz');
   bl.onclick = () => { luzPintada = !luzPintada; bl.setAttribute('aria-pressed', String(luzPintada)); bl.textContent = 'Luz do abajur à noite: ' + (luzPintada ? 'pintada' : 'por código'); desenhar(); };
 
@@ -5944,7 +6228,7 @@ void main() {
   // O que a barra de arrumar do app precisa saber para mostrar o que está escolhido.
   function relatar() {
     if (!MODO_APP || window.parent === window) return;
-    window.parent.postMessage({ syden: 'quarto', arrumacao: { desfazer: historico.length > 0, refazer: refeitos.length > 0, pendente: pendente(), rascunho: rascunho !== null, copias: PODE_COPIAR, presentes: presentes(), selecao: selecao?.chave ?? null, janela: JAN.tipo, tapete: CORES.tapete ?? 'salvia', ...(CENA === 'quarto' && { planta: PLANTA, corDaParede: CORES.parede ?? 'creme', corDoPiso: CORES.piso ?? 'mel' }), opcoes: Object.fromEntries(Object.keys(OPCOES_PAREDE).map((id) => [id, opcaoDe(id)])), moveis: { ...Object.fromEntries(Object.keys(INICIAL).filter(podeGuardar).map((id) => [id, !!ARR[id]])), ...(CENA === 'quarto' && GATO.sentado && { gato: temPet() }) }, parede: Object.fromEntries(Object.keys(ITENS_PAREDE).map((id) => [id, !!NA_PAREDE[id]])) } }, location.origin);
+    window.parent.postMessage({ syden: 'quarto', arrumacao: { desfazer: historico.length > 0, refazer: refeitos.length > 0, pendente: pendente(), rascunho: rascunho !== null, copias: PODE_COPIAR, presentes: presentes(), selecao: selecao?.chave ?? null, janela: JAN.tipo, vista, tapete: CORES.tapete ?? 'salvia', ...(CENA === 'quarto' && { planta: PLANTA, corDaParede: CORES.parede ?? 'creme', corDoPiso: CORES.piso ?? 'mel' }), opcoes: Object.fromEntries(Object.keys(OPCOES_PAREDE).map((id) => [id, opcaoDe(id)])), moveis: { ...Object.fromEntries(Object.keys(INICIAL).filter(podeGuardar).map((id) => [id, !!ARR[id]])), ...(CENA === 'quarto' && GATO.sentado && { gato: temPet() }) }, parede: Object.fromEntries(Object.keys(ITENS_PAREDE).map((id) => [id, !!NA_PAREDE[id]])) } }, location.origin);
   }
   // As figuras da barra (sem texto, para não pedir tradução): o recorte de cada objeto da parede, e a cor de cada tapete.
   function figurasDaBarra() {
@@ -6026,7 +6310,17 @@ void main() {
       c.getContext('2d').putImageData(new ImageData(new Uint8ClampedArray(q.px), q.w, q.h), 0, 0);
       moveis.gato = c.toDataURL(); guardaveis.push('gato');
     }
-    return { miniaturas, cores, ordem: Object.keys(ITENS_PAREDE), deCima, opcoes, moveis, guardaveis, janelas, ...(comodo && { comodo }), ...(camas && { camas }) };
+    // AS VISTAS DA JANELA (relato dele, 09/11/2026: "não tínhamos umas 4 variações de cenário da janela? eu só consigo abrir e
+    // fechar a janela"): as quatro paisagens de ../janela/ já trocavam, mas só pelo botão "Vista" da página de teste. Agora
+    // são figuras na aba Janela do Editar e no "…" da janela, como as cores do tapete: a paisagem de dia, espelhada como
+    // aparece pelo vidro. Valem para todos os tipos de janela e moram em "vista" na arrumação (o servidor já guardava).
+    const vistas = CENA === 'quarto' ? Object.fromEntries(vistasDia.map((v, n) => {
+      const c = document.createElement('canvas'); c.width = 128; c.height = 160; const d = new ImageData(128, 160);
+      for (let y = 0; y < 160; y++) for (let x = 0; x < 128; x++) for (let q = 0; q < 4; q++) d.data[(y * 128 + x) * 4 + q] = q === 3 ? 255 : v[(y * 128 + 127 - x) * 4 + q];
+      c.getContext('2d').putImageData(d, 0, 0);
+      return [String(n), c.toDataURL()];
+    })) : null;
+    return { miniaturas, cores, ordem: Object.keys(ITENS_PAREDE), deCima, opcoes, moveis, guardaveis, janelas, ...(vistas && { vistas }), ...(comodo && { comodo }), ...(camas && { camas }) };
   }
 
   // ============================== A BARRINHA DO QUE ESTÁ ESCOLHIDO (16/10/2026) ==============================
@@ -6114,6 +6408,8 @@ void main() {
       if (T.abre) botoesB.push(botaoDaBarrinha('janela', () => trocarJanela(), { pressionado: aberta, desligado: fechada }));
       const janelas = figurasCache().janelas ?? {};
       if (Object.keys(janelas).length > 1) for (const [t2, src] of Object.entries(janelas)) opcoes.push(figuraDaBarrinha(src, JAN.tipo === t2, () => { mudarJanela({ ...JAN, tipo: t2 }); selecao && (selecao.cena = null); }));
+      // e a paisagem do lado de fora (as figuras de figurasDaBarra)
+      for (const [n, src] of Object.entries(figurasCache().vistas ?? {})) opcoes.push(figuraDaBarrinha(src, vista === Number(n), () => escolherVista(Number(n))));
     }
     // o cartão da peça (o mesmo do clique fora do Editar), para as que têm função também
     const dd = chaveDoDetalhe(ch);
@@ -6411,6 +6707,7 @@ void main() {
       if (d.comando === 'girar') girar();
       if (d.vistasDe && typeof d.vistasDe.id === 'string') window.parent.postMessage({ syden: 'quarto', vistas: { grupo: d.vistasDe.grupo, id: d.vistasDe.id, imagens: vistasDaPeca(d.vistasDe.grupo, d.vistasDe.id) } }, location.origin);
       if (d.comando === 'janela') { if (TIPOS_JANELA[d.tipo]) mudarJanela({ ...JAN, tipo: d.tipo }); else btj.click(); }
+      if (d.comando === 'vista' && Number.isInteger(d.vista)) escolherVista(d.vista);
       if (d.comando === 'planta' && typeof d.planta === 'string') trocarPlanta(d.planta);
       if (d.comando === 'corDaParede' && typeof d.cor === 'string' && d.cor in CORES_DA_PAREDE) escolherCor('parede', d.cor);
       if (d.comando === 'corDoPiso' && typeof d.cor === 'string' && d.cor in CORES_DO_PISO) escolherCor('piso', d.cor);
@@ -6699,8 +6996,8 @@ if (PUBLICAR) {
   fs.writeFileSync(path.join(PUBLICAR.pagina, 'precarregar.json'), JSON.stringify([PUBLICAR.url + nomeJs, PACOTE.url]));
   console.log(CENA, 'publicado:', Math.round(pagina.length / 1024), 'KB de página +', Math.round(js.length / 1024), 'KB de script +', Math.round(PACOTE.bytes / 1024), 'KB de imagens num pacote (' + PACOTE_ITENS.size + ')');
 } else {
-  // com o mascote do PixelLab, uma página à parte, para comparar sem trocar a de teste de sempre
-  const sufixo = PASTA_DO_MASCOTE === 'mascote' ? '-pixellab' : '';
+  // com o mascote 3D, uma página à parte, para comparar sem trocar a de teste de sempre
+  const sufixo = PASTA_DO_MASCOTE === 'mascote-3d' ? '-3d' : '';
   // SAIDA_DA_PAGINA (a auditoria visual): a página vai para outro lugar, sem mexer na de teste guardada no git
   const SAIDA = process.env.SAIDA_DA_PAGINA || (CENA === 'salao' ? path.join(SALAO, `salao${sufixo}.html`) : path.join(AQUI, `quarto${sufixo}.html`));
   fs.writeFileSync(SAIDA, html);

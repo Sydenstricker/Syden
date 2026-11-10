@@ -2831,7 +2831,7 @@ export default {
   'Campanha': 'Արշավ',
   'Sem vidas.': 'Կյանքեր չմնացին։',
   'Você volta em {n}…': 'Կվերադառնաս {n}-ից…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Սլաքներով քայլում ես, X-ով հարվածում (երեքը անընդմեջ կոմբո է), Z-ով ցատկում, C-ով անում հատուկ հարվածը, որը մի քիչ կյանք է խլում։',
+  'Arrancada': 'Արագ վազք',
   'Andar': 'Քայլել',
   'Especial': 'Հատուկ',
   'Pular': 'Ցատկել',
@@ -3196,6 +3196,9 @@ export default {
   "Entrar na comunidade": "Միանալ համայնքին",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Կանգնած, կլոր ցանցով, շոգ օրերի համար։",
+  // A caminha do gato
+  "Caminha do gato": "Կատվի մահճակալ",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Կլոր և փափուկ, ցածր մուտքով։ Կատուն այստեղ է քնում։",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Ավատար",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3208,6 +3211,23 @@ export default {
   "Bicho do quarto": "Սենյակի ընտանի կենդանին",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Զանգի մեղեդի",
+  'Tocar ligações com o áudio desativado': "Զանգել նաև անջատված ձայնի դեպքում",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Երբ ձայնն անջատված է, անձնական զանգը գալիս է առանց ձայնի. ծանուցումը երևում է էկրանին, իսկ Syden-ը թարթում է առաջադրանքների վահանակում։ Միացրու, որ մեղեդին լսես ամեն դեպքում։",
+  'Avatares anteriores': "Նախորդ ավատարները",
+  'Voltar a este avatar': "Վերադառնալ այս ավատարին",
+  'Tirar do histórico': "Հեռացնել պատմությունից",
+  'Avatar não encontrado.': "Ավատարը չի գտնվել։",
+  'Sininho': "Զանգակ",
+  'Arpejo': "Արպեջիո",
+  'Suave': "Մեղմ",
+  'Bipe': "Բիփ",
+  'Grupo': "Խումբ",
+  'Nenhum': "Ոչ մեկը",
+  'Novo grupo': "Նոր խումբ",
+  'O do grupo ({grupo})': "Խմբինը ({grupo})",
+  'Grupos de toque': "Մեղեդիների խմբեր",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Յուրաքանչյուր խումբ ունի իր մեղեդին։ Աջ սեղմիր մարդու անվան վրա՝ նրան խմբի մեջ դնելու կամ միայն նրա համար մեղեդի ընտրելու համար։",
+  'Apagar grupo': "Ջնջել խումբը",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Հնչում է, երբ ինչ-որ մեկը քեզ զանգում է անձնական զրույցում, նույնիսկ եթե ծանուցման հնչյունները անջատված են։ «Չանհանգստացնել» ռեժիմում զանգը երևում է առանց հնչելու։",
   'Avisar das ligações com o Syden em segundo plano?': "Ծանուցե՞լ զանգերի մասին, երբ Syden-ը հետին պլանում է։",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Զննիչը թույլտվություն կխնդրի։ Այդպես զանգերի և հաղորդագրությունների մասին կիմանաս նույնիսկ այլ ներդիրում կամ ծրագրում։",

@@ -2748,7 +2748,7 @@ export default {
   'Campanha': 'Εκστρατεία',
   'Sem vidas.': 'Τέλος οι ζωές.',
   'Você volta em {n}…': 'Επιστρέφεις σε {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Βέλη για περπάτημα, X για χτύπημα (τρία στη σειρά είναι το κόμπο), Z για άλμα, C για την ειδική κίνηση, που κοστίζει λίγη ζωή.',
+  'Arrancada': 'Εφόρμηση',
   'Andar': 'Περπάτημα',
   'Especial': 'Ειδική κίνηση',
   'Pular': 'Άλμα',
@@ -3113,6 +3113,9 @@ export default {
   "Entrar na comunidade": "Συμμετοχή στην κοινότητα",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Όρθιος, με τη στρογγυλή σχάρα του, για τις ζεστές μέρες.",
+  // A caminha do gato
+  "Caminha do gato": "Κρεβατάκι γάτας",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Στρογγυλό και μαλακό, με χαμηλή είσοδο. Εδώ κοιμάται η γάτα.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Άβαταρ",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3125,6 +3128,23 @@ export default {
   "Bicho do quarto": "Το κατοικίδιο του δωματίου",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Ήχος κλήσης",
+  'Tocar ligações com o áudio desativado': "Ήχος κλήσης και με απενεργοποιημένο ήχο",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Με απενεργοποιημένο ήχο, μια ιδιωτική κλήση φτάνει χωρίς ήχο: η ειδοποίηση εμφανίζεται στην οθόνη και το Syden αναβοσβήνει στη γραμμή εργασιών. Ενεργοποίησέ το για να ακούς τον ήχο κλήσης ούτως ή άλλως.",
+  'Avatares anteriores': "Προηγούμενα άβαταρ",
+  'Voltar a este avatar': "Επιστροφή σε αυτό το άβαταρ",
+  'Tirar do histórico': "Αφαίρεση από το ιστορικό",
+  'Avatar não encontrado.': "Το άβαταρ δεν βρέθηκε.",
+  'Sininho': "Καμπανάκι",
+  'Arpejo': "Αρπέζ",
+  'Suave': "Απαλός",
+  'Bipe': "Μπιπ",
+  'Grupo': "Ομάδα",
+  'Nenhum': "Καμία",
+  'Novo grupo': "Νέα ομάδα",
+  'O do grupo ({grupo})': "Της ομάδας ({grupo})",
+  'Grupos de toque': "Ομάδες ήχων κλήσης",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Κάθε ομάδα έχει τον δικό της ήχο κλήσης. Βάλε κάποιον σε μια ομάδα ή διάλεξε ήχο κλήσης μόνο για εκείνον, με δεξί κλικ στο όνομά του.",
+  'Apagar grupo': "Διαγραφή ομάδας",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Χτυπάει όταν κάποιος σε καλεί σε ιδιωτική συνομιλία, ακόμη και με τους ήχους ειδοποίησης κλειστούς. Στο «Μην ενοχλείτε» η κλήση εμφανίζεται χωρίς να χτυπά.",
   'Avisar das ligações com o Syden em segundo plano?': "Να σε ειδοποιεί για κλήσεις όταν το Syden είναι στο παρασκήνιο;",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Ο περιηγητής θα ζητήσει άδεια. Έτσι θα μαθαίνεις για κλήσεις και μηνύματα ακόμη και σε άλλη καρτέλα ή πρόγραμμα.",

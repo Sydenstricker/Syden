@@ -2814,7 +2814,7 @@ export default {
   'Campanha': 'Hadjárat',
   'Sem vidas.': 'Elfogytak az életek.',
   'Você volta em {n}…': '{n} múlva visszatérsz…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Nyilakkal sétálsz, X-szel ütsz (három egymás után a kombó), Z-vel ugrasz, C-vel jön a különleges támadás, ami egy kis életbe kerül.',
+  'Arrancada': 'Roham',
   'Andar': 'Séta',
   'Especial': 'Különleges',
   'Pular': 'Ugrás',
@@ -3179,6 +3179,9 @@ export default {
   "Entrar na comunidade": "Csatlakozás a közösséghez",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Álló, kerek ráccsal, a forró napokra.",
+  // A caminha do gato
+  "Caminha do gato": "Macskaágy",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Kerek és puha, alacsony bejárattal. Itt alszik a macska.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3191,6 +3194,23 @@ export default {
   "Bicho do quarto": "A szoba háziállata",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Hívás csengőhangja",
+  'Tocar ligações com o áudio desativado': "Csengés hívásnál kikapcsolt hang mellett is",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Kikapcsolt hangnál a privát hívás hang nélkül érkezik: az értesítés megjelenik a képernyőn, és a Syden villog a tálcán. Kapcsold be, ha a csengőhangot így is hallani szeretnéd.",
+  'Avatares anteriores': "Korábbi avatarok",
+  'Voltar a este avatar': "Vissza ehhez az avatarhoz",
+  'Tirar do histórico': "Törlés az előzményekből",
+  'Avatar não encontrado.': "Az avatar nem található.",
+  'Sininho': "Csengettyű",
+  'Arpejo': "Arpeggio",
+  'Suave': "Lágy",
+  'Bipe': "Csipogás",
+  'Grupo': "Csoport",
+  'Nenhum': "Nincs",
+  'Novo grupo': "Új csoport",
+  'O do grupo ({grupo})': "A csoporté ({grupo})",
+  'Grupos de toque': "Csengőhang-csoportok",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Minden csoportnak saját csengőhangja van. Tegyél valakit egy csoportba, vagy válassz csengőhangot csak neki – jobb kattintással a nevére.",
+  'Apagar grupo': "Csoport törlése",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Csörög, ha valaki privát beszélgetésben hív, akkor is, ha az értesítési hangok ki vannak kapcsolva. „Ne zavarjanak” módban a hívás csörgés nélkül jelenik meg.",
   'Avisar das ligações com o Syden em segundo plano?': "Értesítsen a hívásokról, amikor a Syden a háttérben van?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "A böngésző engedélyt fog kérni. Így más lapon vagy programban is értesülsz a hívásokról és üzenetekről.",

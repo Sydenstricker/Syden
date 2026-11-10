@@ -2813,7 +2813,7 @@ export default {
   'Campanha': 'Маърака',
   'Sem vidas.': 'Ҷон намонд.',
   'Você volta em {n}…': 'Баъди {n} бармегардӣ…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Тирчаҳо барои рафтан, X барои задан (се пай дар пай комбо аст), Z барои ҷаҳидан, C барои зарбаи махсус, ки каме ҷон сарф мекунад.',
+  'Arrancada': 'Ҷаҳиш',
   'Andar': 'Рафтан',
   'Especial': 'Махсус',
   'Pular': 'Ҷаҳидан',
@@ -3187,6 +3187,9 @@ export default {
   "Entrar na comunidade": "Ҳамроҳ шудан ба ҷомеа",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Истода, бо панҷараи гирд, барои рӯзҳои гарм.",
+  // A caminha do gato
+  "Caminha do gato": "Ҷойхоби гурба",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Гирду нарм, бо даромадгоҳи паст. Гурба дар ин ҷо мехобад.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Аватар",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3199,6 +3202,23 @@ export default {
   "Bicho do quarto": "Ҳайвони хонагии ҳуҷра",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Оҳанги занг",
+  'Tocar ligações com o áudio desativado': "Оҳанги занг ҳатто ҳангоми хомӯш будани садо",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Вақте ки садо хомӯш аст, занги шахсӣ бесадо меояд: огоҳинома дар экран пайдо мешавад ва Syden дар панели вазифаҳо милт-милт мекунад. Барои ба ҳар ҳол шунидани оҳанг инро фаъол кун.",
+  'Avatares anteriores': "Аватарҳои пешина",
+  'Voltar a este avatar': "Ба ин аватар баргаштан",
+  'Tirar do histórico': "Аз таърих хориҷ кардан",
+  'Avatar não encontrado.': "Аватар ёфт нашуд.",
+  'Sininho': "Зангӯла",
+  'Arpejo': "Арпеҷио",
+  'Suave': "Мулоим",
+  'Bipe': "Бип",
+  'Grupo': "Гурӯҳ",
+  'Nenhum': "Ҳеҷ",
+  'Novo grupo': "Гурӯҳи нав",
+  'O do grupo ({grupo})': "Аз они гурӯҳ ({grupo})",
+  'Grupos de toque': "Гурӯҳҳои оҳанг",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Ҳар гурӯҳ оҳанги худро дорад. Бо пахши рости муш дар номи касе, ӯро ба гурӯҳ дохил кун ё танҳо барои ӯ оҳанг интихоб кун.",
+  'Apagar grupo': "Нест кардани гурӯҳ",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Вақте касе дар суҳбати шахсӣ ба ту занг мезанад, садо медиҳад, ҳатто агар садоҳои огоҳӣ хомӯш бошанд. Дар «Халал нарасонед» занг бе садо намоён мешавад.",
   'Avisar das ligações com o Syden em segundo plano?': "Вақте Syden дар замина аст, дар бораи зангҳо огоҳ кунад?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Браузер иҷозат мепурсад. Ҳамин тавр, ҳатто дар варақа ё барномаи дигар аз зангҳо ва паёмҳо огоҳ мешавӣ.",

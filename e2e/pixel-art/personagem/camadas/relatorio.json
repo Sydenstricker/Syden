@@ -1,0 +1,7730 @@
+{
+ "mascote/bone/parado/south-east": [
+  {
+   "quadro": "south-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-1.png",
+   "desloc": [
+    1,
+    1
+   ],
+   "custo": 19.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-2.png",
+   "desloc": [
+    0,
+    -2
+   ],
+   "custo": 14.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-3.png",
+   "desloc": [
+    -1,
+    -4
+   ],
+   "custo": 26.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-4.png",
+   "desloc": [
+    -2,
+    -4
+   ],
+   "custo": 21.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-5.png",
+   "desloc": [
+    -2,
+    -4
+   ],
+   "custo": 21.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-6.png",
+   "desloc": [
+    -2,
+    -2
+   ],
+   "custo": 24.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-7.png",
+   "desloc": [
+    -1,
+    -2
+   ],
+   "custo": 19.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-8.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 12.8,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "mascote/bone/andando/south-east": [
+  {
+   "quadro": "south-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-1.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 21.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-2.png",
+   "desloc": [
+    0,
+    -2
+   ],
+   "custo": 26.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-3.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 33.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-4.png",
+   "desloc": [
+    2,
+    0
+   ],
+   "custo": 31.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-5.png",
+   "desloc": [
+    2,
+    0
+   ],
+   "custo": 27.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-6.png",
+   "desloc": [
+    1,
+    -3
+   ],
+   "custo": 25.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-7.png",
+   "desloc": [
+    1,
+    -2
+   ],
+   "custo": 23.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-8.png",
+   "desloc": [
+    1,
+    0
+   ],
+   "custo": 26.3,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "mascote/bone/falando/south-east": [
+  {
+   "quadro": "south-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-1.png",
+   "desloc": [
+    -1,
+    -1
+   ],
+   "custo": 13.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-2.png",
+   "desloc": [
+    -2,
+    -2
+   ],
+   "custo": 17.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-3.png",
+   "desloc": [
+    -4,
+    -3
+   ],
+   "custo": 23.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-4.png",
+   "desloc": [
+    -4,
+    -3
+   ],
+   "custo": 25.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-5.png",
+   "desloc": [
+    -4,
+    -3
+   ],
+   "custo": 32.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-6.png",
+   "desloc": [
+    -4,
+    -3
+   ],
+   "custo": 29.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-7.png",
+   "desloc": [
+    -2,
+    -2
+   ],
+   "custo": 24.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-8.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 15.0,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "mascote/bone/acenando/south-east": [
+  {
+   "quadro": "south-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-1.png",
+   "desloc": [
+    1,
+    1
+   ],
+   "custo": 20.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-2.png",
+   "desloc": [
+    -1,
+    -1
+   ],
+   "custo": 22.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-3.png",
+   "desloc": [
+    -4,
+    -2
+   ],
+   "custo": 26.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-4.png",
+   "desloc": [
+    -6,
+    -2
+   ],
+   "custo": 27.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-5.png",
+   "desloc": [
+    -7,
+    -2
+   ],
+   "custo": 32.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-6.png",
+   "desloc": [
+    -6,
+    -2
+   ],
+   "custo": 34.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-7.png",
+   "desloc": [
+    -4,
+    -2
+   ],
+   "custo": 31.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-8.png",
+   "desloc": [
+    -2,
+    -1
+   ],
+   "custo": 21.4,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "mascote/bone/parado/south-west": [
+  {
+   "quadro": "south-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-1.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 20.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-2.png",
+   "desloc": [
+    2,
+    -1
+   ],
+   "custo": 22.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-3.png",
+   "desloc": [
+    4,
+    -3
+   ],
+   "custo": 20.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-4.png",
+   "desloc": [
+    4,
+    -2
+   ],
+   "custo": 29.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-5.png",
+   "desloc": [
+    2,
+    -1
+   ],
+   "custo": 28.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-6.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 21.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-7.png",
+   "desloc": [
+    2,
+    -2
+   ],
+   "custo": 24.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-8.png",
+   "desloc": [
+    4,
+    -3
+   ],
+   "custo": 22.3,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "mascote/bone/andando/south-west": [
+  {
+   "quadro": "south-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-1.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 22.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-2.png",
+   "desloc": [
+    -1,
+    2
+   ],
+   "custo": 27.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-3.png",
+   "desloc": [
+    -1,
+    1
+   ],
+   "custo": 27.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-4.png",
+   "desloc": [
+    -2,
+    1
+   ],
+   "custo": 22.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-5.png",
+   "desloc": [
+    0,
+    1
+   ],
+   "custo": 18.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-6.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 15.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-7.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 23.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-8.png",
+   "desloc": [
+    -1,
+    2
+   ],
+   "custo": 26.1,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "mascote/bone/falando/south-west": [
+  {
+   "quadro": "south-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-1.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 14.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-2.png",
+   "desloc": [
+    2,
+    -2
+   ],
+   "custo": 24.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-3.png",
+   "desloc": [
+    4,
+    -3
+   ],
+   "custo": 20.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-4.png",
+   "desloc": [
+    4,
+    -2
+   ],
+   "custo": 24.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-5.png",
+   "desloc": [
+    4,
+    -2
+   ],
+   "custo": 26.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-6.png",
+   "desloc": [
+    5,
+    -2
+   ],
+   "custo": 30.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-7.png",
+   "desloc": [
+    6,
+    -2
+   ],
+   "custo": 37.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-8.png",
+   "desloc": [
+    5,
+    1
+   ],
+   "custo": 40.9,
+   "na_frente": 0,
+   "marcado": true
+  }
+ ],
+ "mascote/bone/acenando/south-west": [
+  {
+   "quadro": "south-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-1.png",
+   "desloc": [
+    -2,
+    1
+   ],
+   "custo": 19.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-2.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 18.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-3.png",
+   "desloc": [
+    4,
+    -4
+   ],
+   "custo": 25.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-4.png",
+   "desloc": [
+    4,
+    -3
+   ],
+   "custo": 30.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-5.png",
+   "desloc": [
+    5,
+    -3
+   ],
+   "custo": 33.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-6.png",
+   "desloc": [
+    4,
+    -3
+   ],
+   "custo": 31.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-7.png",
+   "desloc": [
+    2,
+    -2
+   ],
+   "custo": 23.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-8.png",
+   "desloc": [
+    1,
+    -2
+   ],
+   "custo": 19.7,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "mascote/bone/parado/north-east": [
+  {
+   "quadro": "north-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-1.png",
+   "desloc": [
+    0,
+    1
+   ],
+   "custo": 15.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-2.png",
+   "desloc": [
+    0,
+    2
+   ],
+   "custo": 17.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-3.png",
+   "desloc": [
+    1,
+    3
+   ],
+   "custo": 20.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-4.png",
+   "desloc": [
+    1,
+    4
+   ],
+   "custo": 21.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-5.png",
+   "desloc": [
+    2,
+    3
+   ],
+   "custo": 21.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-6.png",
+   "desloc": [
+    2,
+    2
+   ],
+   "custo": 24.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-7.png",
+   "desloc": [
+    1,
+    1
+   ],
+   "custo": 25.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-8.png",
+   "desloc": [
+    0,
+    1
+   ],
+   "custo": 23.6,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "mascote/bone/andando/north-east": [
+  {
+   "quadro": "north-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-1.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 9.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-2.png",
+   "desloc": [
+    0,
+    2
+   ],
+   "custo": 19.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-3.png",
+   "desloc": [
+    0,
+    4
+   ],
+   "custo": 25.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-4.png",
+   "desloc": [
+    -1,
+    2
+   ],
+   "custo": 27.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-5.png",
+   "desloc": [
+    0,
+    1
+   ],
+   "custo": 21.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-6.png",
+   "desloc": [
+    0,
+    -2
+   ],
+   "custo": 8.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-7.png",
+   "desloc": [
+    1,
+    0
+   ],
+   "custo": 14.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-8.png",
+   "desloc": [
+    1,
+    2
+   ],
+   "custo": 21.8,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "mascote/bone/falando/north-east": [
+  {
+   "quadro": "north-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-1.png",
+   "desloc": [
+    2,
+    0
+   ],
+   "custo": 13.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-2.png",
+   "desloc": [
+    2,
+    1
+   ],
+   "custo": 13.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-3.png",
+   "desloc": [
+    0,
+    1
+   ],
+   "custo": 16.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-4.png",
+   "desloc": [
+    -2,
+    1
+   ],
+   "custo": 9.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-5.png",
+   "desloc": [
+    -2,
+    1
+   ],
+   "custo": 17.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-6.png",
+   "desloc": [
+    -2,
+    1
+   ],
+   "custo": 16.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-7.png",
+   "desloc": [
+    0,
+    1
+   ],
+   "custo": 14.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-8.png",
+   "desloc": [
+    0,
+    1
+   ],
+   "custo": 12.7,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "mascote/bone/parado/north-west": [
+  {
+   "quadro": "north-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-1.png",
+   "desloc": [
+    -1,
+    0
+   ],
+   "custo": 9.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-2.png",
+   "desloc": [
+    -1,
+    2
+   ],
+   "custo": 12.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-3.png",
+   "desloc": [
+    0,
+    2
+   ],
+   "custo": 16.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-4.png",
+   "desloc": [
+    2,
+    2
+   ],
+   "custo": 17.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-5.png",
+   "desloc": [
+    3,
+    1
+   ],
+   "custo": 20.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-6.png",
+   "desloc": [
+    3,
+    0
+   ],
+   "custo": 20.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-7.png",
+   "desloc": [
+    2,
+    0
+   ],
+   "custo": 13.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-8.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 11.1,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "mascote/bone/andando/north-west": [
+  {
+   "quadro": "north-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-1.png",
+   "desloc": [
+    1,
+    0
+   ],
+   "custo": 13.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-2.png",
+   "desloc": [
+    1,
+    1
+   ],
+   "custo": 19.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-3.png",
+   "desloc": [
+    2,
+    0
+   ],
+   "custo": 21.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-4.png",
+   "desloc": [
+    1,
+    -2
+   ],
+   "custo": 26.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-5.png",
+   "desloc": [
+    2,
+    2
+   ],
+   "custo": 31.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-6.png",
+   "desloc": [
+    1,
+    1
+   ],
+   "custo": 30.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-7.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 32.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-8.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 29.9,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "mascote/bone/falando/north-west": [
+  {
+   "quadro": "north-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-1.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 14.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-2.png",
+   "desloc": [
+    2,
+    0
+   ],
+   "custo": 16.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-3.png",
+   "desloc": [
+    2,
+    2
+   ],
+   "custo": 11.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-4.png",
+   "desloc": [
+    0,
+    1
+   ],
+   "custo": 11.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-5.png",
+   "desloc": [
+    -2,
+    2
+   ],
+   "custo": 12.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-6.png",
+   "desloc": [
+    -2,
+    3
+   ],
+   "custo": 9.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-7.png",
+   "desloc": [
+    0,
+    2
+   ],
+   "custo": 10.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-8.png",
+   "desloc": [
+    2,
+    0
+   ],
+   "custo": 9.4,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "mascote/bandana/parado/south-east": [
+  {
+   "quadro": "south-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-1.png",
+   "desloc": [
+    0,
+    1
+   ],
+   "custo": 16.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-2.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 15.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-3.png",
+   "desloc": [
+    -1,
+    -2
+   ],
+   "custo": 22.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-4.png",
+   "desloc": [
+    -1,
+    -3
+   ],
+   "custo": 26.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-5.png",
+   "desloc": [
+    -1,
+    -3
+   ],
+   "custo": 25.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-6.png",
+   "desloc": [
+    -1,
+    -2
+   ],
+   "custo": 26.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-7.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 24.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-8.png",
+   "desloc": [
+    0,
+    1
+   ],
+   "custo": 15.8,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "mascote/bandana/andando/south-east": [
+  {
+   "quadro": "south-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-1.png",
+   "desloc": [
+    0,
+    -2
+   ],
+   "custo": 16.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-2.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 23.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-3.png",
+   "desloc": [
+    2,
+    0
+   ],
+   "custo": 26.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-4.png",
+   "desloc": [
+    3,
+    1
+   ],
+   "custo": 24.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-5.png",
+   "desloc": [
+    2,
+    0
+   ],
+   "custo": 19.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-6.png",
+   "desloc": [
+    2,
+    -2
+   ],
+   "custo": 15.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-7.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 16.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-8.png",
+   "desloc": [
+    1,
+    1
+   ],
+   "custo": 16.9,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "mascote/bandana/falando/south-east": [
+  {
+   "quadro": "south-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-1.png",
+   "desloc": [
+    -1,
+    -1
+   ],
+   "custo": 12.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-2.png",
+   "desloc": [
+    -2,
+    -2
+   ],
+   "custo": 18.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-3.png",
+   "desloc": [
+    -2,
+    -3
+   ],
+   "custo": 17.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-4.png",
+   "desloc": [
+    -2,
+    -3
+   ],
+   "custo": 19.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-5.png",
+   "desloc": [
+    -2,
+    -3
+   ],
+   "custo": 18.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-6.png",
+   "desloc": [
+    -2,
+    -3
+   ],
+   "custo": 18.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-7.png",
+   "desloc": [
+    -1,
+    -2
+   ],
+   "custo": 12.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-8.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 14.1,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "mascote/bandana/acenando/south-east": [
+  {
+   "quadro": "south-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-1.png",
+   "desloc": [
+    0,
+    1
+   ],
+   "custo": 12.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-2.png",
+   "desloc": [
+    -1,
+    -1
+   ],
+   "custo": 16.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-3.png",
+   "desloc": [
+    -2,
+    -2
+   ],
+   "custo": 22.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-4.png",
+   "desloc": [
+    -4,
+    -3
+   ],
+   "custo": 23.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-5.png",
+   "desloc": [
+    -4,
+    -3
+   ],
+   "custo": 23.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-6.png",
+   "desloc": [
+    -3,
+    -3
+   ],
+   "custo": 19.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-7.png",
+   "desloc": [
+    -2,
+    -3
+   ],
+   "custo": 19.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-8.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 15.0,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "mascote/bandana/parado/south-west": [
+  {
+   "quadro": "south-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-1.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 13.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-2.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 19.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-3.png",
+   "desloc": [
+    2,
+    -3
+   ],
+   "custo": 25.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-4.png",
+   "desloc": [
+    1,
+    -2
+   ],
+   "custo": 21.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-5.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 17.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-6.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 15.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-7.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 21.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-8.png",
+   "desloc": [
+    2,
+    -2
+   ],
+   "custo": 25.5,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "mascote/bandana/andando/south-west": [
+  {
+   "quadro": "south-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-1.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 22.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-2.png",
+   "desloc": [
+    -1,
+    1
+   ],
+   "custo": 26.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-3.png",
+   "desloc": [
+    -2,
+    2
+   ],
+   "custo": 28.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-4.png",
+   "desloc": [
+    -2,
+    0
+   ],
+   "custo": 22.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-5.png",
+   "desloc": [
+    0,
+    1
+   ],
+   "custo": 16.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-6.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 16.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-7.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 21.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-8.png",
+   "desloc": [
+    -2,
+    2
+   ],
+   "custo": 26.8,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "mascote/bandana/falando/south-west": [
+  {
+   "quadro": "south-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-1.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 9.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-2.png",
+   "desloc": [
+    1,
+    -2
+   ],
+   "custo": 17.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-3.png",
+   "desloc": [
+    2,
+    -3
+   ],
+   "custo": 16.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-4.png",
+   "desloc": [
+    2,
+    -3
+   ],
+   "custo": 19.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-5.png",
+   "desloc": [
+    2,
+    -3
+   ],
+   "custo": 18.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-6.png",
+   "desloc": [
+    2,
+    -3
+   ],
+   "custo": 17.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-7.png",
+   "desloc": [
+    2,
+    -3
+   ],
+   "custo": 17.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-8.png",
+   "desloc": [
+    1,
+    -2
+   ],
+   "custo": 17.0,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "mascote/bandana/acenando/south-west": [
+  {
+   "quadro": "south-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-1.png",
+   "desloc": [
+    -1,
+    1
+   ],
+   "custo": 17.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-2.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 21.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-3.png",
+   "desloc": [
+    2,
+    -2
+   ],
+   "custo": 29.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-4.png",
+   "desloc": [
+    2,
+    -2
+   ],
+   "custo": 29.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-5.png",
+   "desloc": [
+    2,
+    -2
+   ],
+   "custo": 29.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-6.png",
+   "desloc": [
+    1,
+    -2
+   ],
+   "custo": 28.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-7.png",
+   "desloc": [
+    1,
+    -2
+   ],
+   "custo": 23.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-8.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 18.6,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "mascote/bandana/parado/north-east": [
+  {
+   "quadro": "north-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-1.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 8.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-2.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 12.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-3.png",
+   "desloc": [
+    0,
+    1
+   ],
+   "custo": 14.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-4.png",
+   "desloc": [
+    1,
+    2
+   ],
+   "custo": 16.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-5.png",
+   "desloc": [
+    1,
+    2
+   ],
+   "custo": 16.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-6.png",
+   "desloc": [
+    1,
+    1
+   ],
+   "custo": 13.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-7.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 7.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-8.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 4.3,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "mascote/bandana/andando/north-east": [
+  {
+   "quadro": "north-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-1.png",
+   "desloc": [
+    0,
+    -2
+   ],
+   "custo": 7.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-2.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 8.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-3.png",
+   "desloc": [
+    0,
+    2
+   ],
+   "custo": 8.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-4.png",
+   "desloc": [
+    0,
+    1
+   ],
+   "custo": 8.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-5.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 16.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-6.png",
+   "desloc": [
+    0,
+    -2
+   ],
+   "custo": 18.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-7.png",
+   "desloc": [
+    1,
+    0
+   ],
+   "custo": 20.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-8.png",
+   "desloc": [
+    1,
+    2
+   ],
+   "custo": 21.1,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "mascote/bandana/falando/north-east": [
+  {
+   "quadro": "north-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-1.png",
+   "desloc": [
+    1,
+    0
+   ],
+   "custo": 9.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-2.png",
+   "desloc": [
+    1,
+    0
+   ],
+   "custo": 9.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-3.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 6.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-4.png",
+   "desloc": [
+    -2,
+    0
+   ],
+   "custo": 11.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-5.png",
+   "desloc": [
+    -2,
+    0
+   ],
+   "custo": 11.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-6.png",
+   "desloc": [
+    -1,
+    0
+   ],
+   "custo": 10.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-7.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 6.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-8.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 6.6,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "mascote/bandana/parado/north-west": [
+  {
+   "quadro": "north-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-1.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 6.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-2.png",
+   "desloc": [
+    0,
+    1
+   ],
+   "custo": 7.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-3.png",
+   "desloc": [
+    1,
+    2
+   ],
+   "custo": 9.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-4.png",
+   "desloc": [
+    3,
+    2
+   ],
+   "custo": 15.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-5.png",
+   "desloc": [
+    4,
+    1
+   ],
+   "custo": 21.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-6.png",
+   "desloc": [
+    4,
+    0
+   ],
+   "custo": 20.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-7.png",
+   "desloc": [
+    2,
+    0
+   ],
+   "custo": 13.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-8.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 5.9,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "mascote/bandana/andando/north-west": [
+  {
+   "quadro": "north-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-1.png",
+   "desloc": [
+    1,
+    0
+   ],
+   "custo": 16.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-2.png",
+   "desloc": [
+    2,
+    2
+   ],
+   "custo": 17.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-3.png",
+   "desloc": [
+    3,
+    1
+   ],
+   "custo": 17.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-4.png",
+   "desloc": [
+    3,
+    0
+   ],
+   "custo": 18.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-5.png",
+   "desloc": [
+    2,
+    1
+   ],
+   "custo": 14.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-6.png",
+   "desloc": [
+    1,
+    1
+   ],
+   "custo": 9.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-7.png",
+   "desloc": [
+    1,
+    0
+   ],
+   "custo": 18.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-8.png",
+   "desloc": [
+    2,
+    1
+   ],
+   "custo": 20.2,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "mascote/bandana/falando/north-west": [
+  {
+   "quadro": "north-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-1.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 11.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-2.png",
+   "desloc": [
+    2,
+    -1
+   ],
+   "custo": 12.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-3.png",
+   "desloc": [
+    2,
+    0
+   ],
+   "custo": 11.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-4.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 11.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-5.png",
+   "desloc": [
+    -2,
+    0
+   ],
+   "custo": 13.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-6.png",
+   "desloc": [
+    -2,
+    2
+   ],
+   "custo": 14.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-7.png",
+   "desloc": [
+    0,
+    1
+   ],
+   "custo": 12.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-8.png",
+   "desloc": [
+    2,
+    -1
+   ],
+   "custo": 10.0,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "orelha-caida/bone/parado/south-east": [
+  {
+   "quadro": "south-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-1.png",
+   "desloc": [
+    -1,
+    -2
+   ],
+   "custo": 15.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-2.png",
+   "desloc": [
+    -2,
+    -3
+   ],
+   "custo": 17.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-3.png",
+   "desloc": [
+    -2,
+    -4
+   ],
+   "custo": 19.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-4.png",
+   "desloc": [
+    -3,
+    -5
+   ],
+   "custo": 23.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-5.png",
+   "desloc": [
+    -2,
+    -5
+   ],
+   "custo": 22.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-6.png",
+   "desloc": [
+    -1,
+    -3
+   ],
+   "custo": 19.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-7.png",
+   "desloc": [
+    1,
+    1
+   ],
+   "custo": 17.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-8.png",
+   "desloc": [
+    1,
+    1
+   ],
+   "custo": 16.7,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "orelha-caida/bone/andando/south-east": [
+  {
+   "quadro": "south-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-1.png",
+   "desloc": [
+    0,
+    -2
+   ],
+   "custo": 11.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-2.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 5.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-3.png",
+   "desloc": [
+    1,
+    1
+   ],
+   "custo": 10.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-4.png",
+   "desloc": [
+    1,
+    2
+   ],
+   "custo": 9.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-5.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 7.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-6.png",
+   "desloc": [
+    1,
+    -2
+   ],
+   "custo": 10.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-7.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 12.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-8.png",
+   "desloc": [
+    1,
+    1
+   ],
+   "custo": 10.0,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "orelha-caida/bone/falando/south-east": [
+  {
+   "quadro": "south-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-1.png",
+   "desloc": [
+    0,
+    1
+   ],
+   "custo": 12.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-2.png",
+   "desloc": [
+    -2,
+    -1
+   ],
+   "custo": 21.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-3.png",
+   "desloc": [
+    -3,
+    -2
+   ],
+   "custo": 18.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-4.png",
+   "desloc": [
+    -4,
+    -3
+   ],
+   "custo": 21.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-5.png",
+   "desloc": [
+    -4,
+    -3
+   ],
+   "custo": 21.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-6.png",
+   "desloc": [
+    -3,
+    -2
+   ],
+   "custo": 15.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-7.png",
+   "desloc": [
+    -1,
+    -1
+   ],
+   "custo": 15.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-8.png",
+   "desloc": [
+    0,
+    1
+   ],
+   "custo": 13.9,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "orelha-caida/bone/acenando/south-east": [
+  {
+   "quadro": "south-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-1.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 15.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-2.png",
+   "desloc": [
+    -2,
+    -2
+   ],
+   "custo": 11.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-3.png",
+   "desloc": [
+    -4,
+    -2
+   ],
+   "custo": 16.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-4.png",
+   "desloc": [
+    -4,
+    -2
+   ],
+   "custo": 21.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-5.png",
+   "desloc": [
+    -4,
+    -2
+   ],
+   "custo": 21.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-6.png",
+   "desloc": [
+    -4,
+    -2
+   ],
+   "custo": 21.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-7.png",
+   "desloc": [
+    -4,
+    -2
+   ],
+   "custo": 16.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-8.png",
+   "desloc": [
+    -2,
+    -2
+   ],
+   "custo": 14.6,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "orelha-caida/bone/parado/south-west": [
+  {
+   "quadro": "south-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-1.png",
+   "desloc": [
+    1,
+    -2
+   ],
+   "custo": 16.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-2.png",
+   "desloc": [
+    2,
+    -4
+   ],
+   "custo": 21.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-3.png",
+   "desloc": [
+    2,
+    -4
+   ],
+   "custo": 29.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-4.png",
+   "desloc": [
+    1,
+    -2
+   ],
+   "custo": 28.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-5.png",
+   "desloc": [
+    2,
+    -1
+   ],
+   "custo": 20.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-6.png",
+   "desloc": [
+    1,
+    0
+   ],
+   "custo": 21.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-7.png",
+   "desloc": [
+    1,
+    0
+   ],
+   "custo": 21.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-8.png",
+   "desloc": [
+    1,
+    1
+   ],
+   "custo": 16.9,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "orelha-caida/bone/andando/south-west": [
+  {
+   "quadro": "south-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-1.png",
+   "desloc": [
+    2,
+    0
+   ],
+   "custo": 16.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-2.png",
+   "desloc": [
+    2,
+    2
+   ],
+   "custo": 20.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-3.png",
+   "desloc": [
+    0,
+    2
+   ],
+   "custo": 17.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-4.png",
+   "desloc": [
+    -1,
+    1
+   ],
+   "custo": 19.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-5.png",
+   "desloc": [
+    -1,
+    -1
+   ],
+   "custo": 14.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-6.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 10.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-7.png",
+   "desloc": [
+    2,
+    -1
+   ],
+   "custo": 16.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-8.png",
+   "desloc": [
+    1,
+    1
+   ],
+   "custo": 18.5,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "orelha-caida/bone/falando/south-west": [
+  {
+   "quadro": "south-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-1.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 13.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-2.png",
+   "desloc": [
+    3,
+    -2
+   ],
+   "custo": 30.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-3.png",
+   "desloc": [
+    3,
+    -1
+   ],
+   "custo": 33.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-4.png",
+   "desloc": [
+    3,
+    -1
+   ],
+   "custo": 30.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-5.png",
+   "desloc": [
+    3,
+    -1
+   ],
+   "custo": 32.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-6.png",
+   "desloc": [
+    2,
+    -1
+   ],
+   "custo": 24.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-7.png",
+   "desloc": [
+    1,
+    0
+   ],
+   "custo": 23.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-8.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 13.6,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "orelha-caida/bone/acenando/south-west": [
+  {
+   "quadro": "south-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-1.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 16.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-2.png",
+   "desloc": [
+    2,
+    -1
+   ],
+   "custo": 21.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-3.png",
+   "desloc": [
+    3,
+    -1
+   ],
+   "custo": 27.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-4.png",
+   "desloc": [
+    2,
+    -1
+   ],
+   "custo": 31.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-5.png",
+   "desloc": [
+    3,
+    -1
+   ],
+   "custo": 29.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-6.png",
+   "desloc": [
+    3,
+    -1
+   ],
+   "custo": 26.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-7.png",
+   "desloc": [
+    3,
+    -1
+   ],
+   "custo": 28.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-8.png",
+   "desloc": [
+    3,
+    -1
+   ],
+   "custo": 31.6,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "orelha-caida/bone/parado/north-east": [
+  {
+   "quadro": "north-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-1.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 5.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-2.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 8.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-3.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 13.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-4.png",
+   "desloc": [
+    -1,
+    -1
+   ],
+   "custo": 18.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-5.png",
+   "desloc": [
+    -1,
+    0
+   ],
+   "custo": 12.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-6.png",
+   "desloc": [
+    -1,
+    1
+   ],
+   "custo": 4.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-7.png",
+   "desloc": [
+    -1,
+    1
+   ],
+   "custo": 4.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-8.png",
+   "desloc": [
+    0,
+    1
+   ],
+   "custo": 4.5,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "orelha-caida/bone/andando/north-east": [
+  {
+   "quadro": "north-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-1.png",
+   "desloc": [
+    1,
+    0
+   ],
+   "custo": 5.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-2.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 9.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-3.png",
+   "desloc": [
+    0,
+    -2
+   ],
+   "custo": 10.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-4.png",
+   "desloc": [
+    -1,
+    -1
+   ],
+   "custo": 8.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-5.png",
+   "desloc": [
+    -1,
+    0
+   ],
+   "custo": 7.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-6.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 8.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-7.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 6.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-8.png",
+   "desloc": [
+    1,
+    -2
+   ],
+   "custo": 12.0,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "orelha-caida/bone/falando/north-east": [
+  {
+   "quadro": "north-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-1.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 7.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-2.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 10.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-3.png",
+   "desloc": [
+    -1,
+    0
+   ],
+   "custo": 12.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-4.png",
+   "desloc": [
+    -2,
+    1
+   ],
+   "custo": 16.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-5.png",
+   "desloc": [
+    -2,
+    1
+   ],
+   "custo": 19.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-6.png",
+   "desloc": [
+    -1,
+    2
+   ],
+   "custo": 20.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-7.png",
+   "desloc": [
+    0,
+    1
+   ],
+   "custo": 21.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-8.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 6.4,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "orelha-caida/bone/parado/north-west": [
+  {
+   "quadro": "north-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-1.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 4.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-2.png",
+   "desloc": [
+    -1,
+    -2
+   ],
+   "custo": 3.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-3.png",
+   "desloc": [
+    -2,
+    -2
+   ],
+   "custo": 6.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-4.png",
+   "desloc": [
+    -2,
+    -1
+   ],
+   "custo": 18.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-5.png",
+   "desloc": [
+    -2,
+    0
+   ],
+   "custo": 22.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-6.png",
+   "desloc": [
+    -2,
+    0
+   ],
+   "custo": 22.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-7.png",
+   "desloc": [
+    -1,
+    0
+   ],
+   "custo": 15.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-8.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 11.6,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "orelha-caida/bone/andando/north-west": [
+  {
+   "quadro": "north-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-1.png",
+   "desloc": [
+    -1,
+    -1
+   ],
+   "custo": 6.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-2.png",
+   "desloc": [
+    -1,
+    -1
+   ],
+   "custo": 12.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-3.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 19.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-4.png",
+   "desloc": [
+    0,
+    1
+   ],
+   "custo": 14.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-5.png",
+   "desloc": [
+    1,
+    0
+   ],
+   "custo": 17.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-6.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 16.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-7.png",
+   "desloc": [
+    0,
+    -2
+   ],
+   "custo": 9.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-8.png",
+   "desloc": [
+    -1,
+    -1
+   ],
+   "custo": 10.5,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "orelha-caida/bone/falando/north-west": [
+  {
+   "quadro": "north-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-1.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 11.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-2.png",
+   "desloc": [
+    -1,
+    0
+   ],
+   "custo": 9.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-3.png",
+   "desloc": [
+    -2,
+    0
+   ],
+   "custo": 14.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-4.png",
+   "desloc": [
+    -2,
+    0
+   ],
+   "custo": 13.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-5.png",
+   "desloc": [
+    -2,
+    0
+   ],
+   "custo": 14.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-6.png",
+   "desloc": [
+    -2,
+    1
+   ],
+   "custo": 14.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-7.png",
+   "desloc": [
+    -1,
+    0
+   ],
+   "custo": 8.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-8.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 8.8,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "orelha-caida/bandana/parado/south-east": [
+  {
+   "quadro": "south-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-1.png",
+   "desloc": [
+    -1,
+    -2
+   ],
+   "custo": 14.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-2.png",
+   "desloc": [
+    -1,
+    -3
+   ],
+   "custo": 15.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-3.png",
+   "desloc": [
+    -2,
+    -5
+   ],
+   "custo": 15.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-4.png",
+   "desloc": [
+    -2,
+    -6
+   ],
+   "custo": 18.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-5.png",
+   "desloc": [
+    -2,
+    -5
+   ],
+   "custo": 17.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-6.png",
+   "desloc": [
+    -1,
+    -3
+   ],
+   "custo": 19.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-7.png",
+   "desloc": [
+    1,
+    1
+   ],
+   "custo": 24.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-8.png",
+   "desloc": [
+    1,
+    1
+   ],
+   "custo": 20.1,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "orelha-caida/bandana/andando/south-east": [
+  {
+   "quadro": "south-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-1.png",
+   "desloc": [
+    0,
+    -2
+   ],
+   "custo": 17.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-2.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 24.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-3.png",
+   "desloc": [
+    1,
+    0
+   ],
+   "custo": 35.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-4.png",
+   "desloc": [
+    1,
+    1
+   ],
+   "custo": 42.6,
+   "na_frente": 0,
+   "marcado": true
+  },
+  {
+   "quadro": "south-east-5.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 30.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-6.png",
+   "desloc": [
+    1,
+    -3
+   ],
+   "custo": 19.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-7.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 19.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-8.png",
+   "desloc": [
+    1,
+    1
+   ],
+   "custo": 22.4,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "orelha-caida/bandana/falando/south-east": [
+  {
+   "quadro": "south-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-1.png",
+   "desloc": [
+    1,
+    1
+   ],
+   "custo": 17.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-2.png",
+   "desloc": [
+    -1,
+    -1
+   ],
+   "custo": 21.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-3.png",
+   "desloc": [
+    -3,
+    -2
+   ],
+   "custo": 25.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-4.png",
+   "desloc": [
+    -3,
+    -3
+   ],
+   "custo": 24.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-5.png",
+   "desloc": [
+    -3,
+    -3
+   ],
+   "custo": 21.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-6.png",
+   "desloc": [
+    -3,
+    -2
+   ],
+   "custo": 18.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-7.png",
+   "desloc": [
+    -1,
+    -1
+   ],
+   "custo": 16.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-8.png",
+   "desloc": [
+    0,
+    1
+   ],
+   "custo": 16.3,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "orelha-caida/bandana/acenando/south-east": [
+  {
+   "quadro": "south-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-1.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 20.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-2.png",
+   "desloc": [
+    -2,
+    -2
+   ],
+   "custo": 24.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-3.png",
+   "desloc": [
+    -3,
+    -3
+   ],
+   "custo": 25.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-4.png",
+   "desloc": [
+    -3,
+    -3
+   ],
+   "custo": 25.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-5.png",
+   "desloc": [
+    -3,
+    -3
+   ],
+   "custo": 25.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-6.png",
+   "desloc": [
+    -3,
+    -3
+   ],
+   "custo": 25.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-7.png",
+   "desloc": [
+    -3,
+    -3
+   ],
+   "custo": 23.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-8.png",
+   "desloc": [
+    -1,
+    -2
+   ],
+   "custo": 18.9,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "orelha-caida/bandana/parado/south-west": [
+  {
+   "quadro": "south-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-1.png",
+   "desloc": [
+    1,
+    -2
+   ],
+   "custo": 16.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-2.png",
+   "desloc": [
+    1,
+    -4
+   ],
+   "custo": 17.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-3.png",
+   "desloc": [
+    1,
+    -4
+   ],
+   "custo": 25.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-4.png",
+   "desloc": [
+    1,
+    -3
+   ],
+   "custo": 27.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-5.png",
+   "desloc": [
+    1,
+    -2
+   ],
+   "custo": 18.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-6.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 20.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-7.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 18.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-8.png",
+   "desloc": [
+    1,
+    0
+   ],
+   "custo": 18.9,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "orelha-caida/bandana/andando/south-west": [
+  {
+   "quadro": "south-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-1.png",
+   "desloc": [
+    2,
+    0
+   ],
+   "custo": 14.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-2.png",
+   "desloc": [
+    2,
+    2
+   ],
+   "custo": 26.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-3.png",
+   "desloc": [
+    0,
+    2
+   ],
+   "custo": 27.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-4.png",
+   "desloc": [
+    -1,
+    1
+   ],
+   "custo": 25.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-5.png",
+   "desloc": [
+    -1,
+    -1
+   ],
+   "custo": 20.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-6.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 16.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-7.png",
+   "desloc": [
+    2,
+    -1
+   ],
+   "custo": 15.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-8.png",
+   "desloc": [
+    2,
+    1
+   ],
+   "custo": 22.1,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "orelha-caida/bandana/falando/south-west": [
+  {
+   "quadro": "south-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-1.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 17.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-2.png",
+   "desloc": [
+    2,
+    -3
+   ],
+   "custo": 35.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-3.png",
+   "desloc": [
+    2,
+    -3
+   ],
+   "custo": 42.0,
+   "na_frente": 0,
+   "marcado": true
+  },
+  {
+   "quadro": "south-west-4.png",
+   "desloc": [
+    2,
+    -3
+   ],
+   "custo": 36.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-5.png",
+   "desloc": [
+    3,
+    -2
+   ],
+   "custo": 34.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-6.png",
+   "desloc": [
+    2,
+    -1
+   ],
+   "custo": 23.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-7.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 18.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-8.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 11.9,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "orelha-caida/bandana/acenando/south-west": [
+  {
+   "quadro": "south-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-1.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 20.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-2.png",
+   "desloc": [
+    2,
+    -1
+   ],
+   "custo": 21.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-3.png",
+   "desloc": [
+    3,
+    -1
+   ],
+   "custo": 21.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-4.png",
+   "desloc": [
+    2,
+    -1
+   ],
+   "custo": 25.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-5.png",
+   "desloc": [
+    2,
+    -1
+   ],
+   "custo": 28.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-6.png",
+   "desloc": [
+    2,
+    -1
+   ],
+   "custo": 23.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-7.png",
+   "desloc": [
+    3,
+    -1
+   ],
+   "custo": 22.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-8.png",
+   "desloc": [
+    2,
+    -1
+   ],
+   "custo": 23.1,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "orelha-caida/bandana/parado/north-east": [
+  {
+   "quadro": "north-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-1.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 9.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-2.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 14.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-3.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 20.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-4.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 25.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-5.png",
+   "desloc": [
+    0,
+    1
+   ],
+   "custo": 22.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-6.png",
+   "desloc": [
+    -1,
+    1
+   ],
+   "custo": 15.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-7.png",
+   "desloc": [
+    -1,
+    1
+   ],
+   "custo": 9.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-8.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 8.2,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "orelha-caida/bandana/andando/north-east": [
+  {
+   "quadro": "north-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-1.png",
+   "desloc": [
+    1,
+    0
+   ],
+   "custo": 9.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-2.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 11.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-3.png",
+   "desloc": [
+    0,
+    -2
+   ],
+   "custo": 12.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-4.png",
+   "desloc": [
+    -1,
+    -1
+   ],
+   "custo": 13.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-5.png",
+   "desloc": [
+    -1,
+    0
+   ],
+   "custo": 17.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-6.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 17.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-7.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 16.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-8.png",
+   "desloc": [
+    1,
+    -2
+   ],
+   "custo": 13.2,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "orelha-caida/bandana/falando/north-east": [
+  {
+   "quadro": "north-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-1.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 8.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-2.png",
+   "desloc": [
+    -1,
+    -1
+   ],
+   "custo": 15.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-3.png",
+   "desloc": [
+    -2,
+    -1
+   ],
+   "custo": 20.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-4.png",
+   "desloc": [
+    -2,
+    1
+   ],
+   "custo": 21.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-5.png",
+   "desloc": [
+    -2,
+    1
+   ],
+   "custo": 19.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-6.png",
+   "desloc": [
+    -1,
+    1
+   ],
+   "custo": 18.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-7.png",
+   "desloc": [
+    -1,
+    0
+   ],
+   "custo": 14.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-8.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 5.8,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "orelha-caida/bandana/parado/north-west": [
+  {
+   "quadro": "north-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-1.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 5.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-2.png",
+   "desloc": [
+    -1,
+    -2
+   ],
+   "custo": 9.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-3.png",
+   "desloc": [
+    -2,
+    -2
+   ],
+   "custo": 12.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-4.png",
+   "desloc": [
+    -2,
+    -2
+   ],
+   "custo": 21.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-5.png",
+   "desloc": [
+    -2,
+    -1
+   ],
+   "custo": 29.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-6.png",
+   "desloc": [
+    -2,
+    -1
+   ],
+   "custo": 29.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-7.png",
+   "desloc": [
+    -2,
+    -1
+   ],
+   "custo": 18.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-8.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 12.4,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "orelha-caida/bandana/andando/north-west": [
+  {
+   "quadro": "north-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-1.png",
+   "desloc": [
+    -1,
+    -1
+   ],
+   "custo": 17.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-2.png",
+   "desloc": [
+    -1,
+    -2
+   ],
+   "custo": 16.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-3.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 19.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-4.png",
+   "desloc": [
+    -3,
+    0
+   ],
+   "custo": 29.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-5.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 35.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-6.png",
+   "desloc": [
+    0,
+    -2
+   ],
+   "custo": 29.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-7.png",
+   "desloc": [
+    0,
+    -3
+   ],
+   "custo": 20.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-8.png",
+   "desloc": [
+    -1,
+    -1
+   ],
+   "custo": 17.9,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "orelha-caida/bandana/falando/north-west": [
+  {
+   "quadro": "north-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-1.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 9.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-2.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 21.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-3.png",
+   "desloc": [
+    -1,
+    -1
+   ],
+   "custo": 26.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-4.png",
+   "desloc": [
+    -1,
+    -1
+   ],
+   "custo": 28.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-5.png",
+   "desloc": [
+    -1,
+    -1
+   ],
+   "custo": 28.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-6.png",
+   "desloc": [
+    -1,
+    -1
+   ],
+   "custo": 30.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-7.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 25.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-8.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 16.0,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "musculoso/bone/parado/south-east": [
+  {
+   "quadro": "south-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-1.png",
+   "desloc": [
+    2,
+    2
+   ],
+   "custo": 19.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-2.png",
+   "desloc": [
+    2,
+    3
+   ],
+   "custo": 12.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-3.png",
+   "desloc": [
+    2,
+    2
+   ],
+   "custo": 22.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-4.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 22.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-5.png",
+   "desloc": [
+    -2,
+    -4
+   ],
+   "custo": 23.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-6.png",
+   "desloc": [
+    -3,
+    -5
+   ],
+   "custo": 17.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-7.png",
+   "desloc": [
+    -3,
+    -5
+   ],
+   "custo": 23.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-8.png",
+   "desloc": [
+    -3,
+    -3
+   ],
+   "custo": 27.6,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "musculoso/bone/andando/south-east": [
+  {
+   "quadro": "south-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-1.png",
+   "desloc": [
+    0,
+    -2
+   ],
+   "custo": 13.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-2.png",
+   "desloc": [
+    0,
+    -4
+   ],
+   "custo": 22.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-3.png",
+   "desloc": [
+    1,
+    -2
+   ],
+   "custo": 15.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-4.png",
+   "desloc": [
+    1,
+    0
+   ],
+   "custo": 13.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-5.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 14.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-6.png",
+   "desloc": [
+    0,
+    -4
+   ],
+   "custo": 14.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-7.png",
+   "desloc": [
+    0,
+    -4
+   ],
+   "custo": 14.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-8.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 12.7,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "musculoso/bone/falando/south-east": [
+  {
+   "quadro": "south-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-1.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 10.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-2.png",
+   "desloc": [
+    -2,
+    -2
+   ],
+   "custo": 11.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-3.png",
+   "desloc": [
+    -4,
+    -4
+   ],
+   "custo": 16.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-4.png",
+   "desloc": [
+    -5,
+    -4
+   ],
+   "custo": 22.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-5.png",
+   "desloc": [
+    -5,
+    -4
+   ],
+   "custo": 27.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-6.png",
+   "desloc": [
+    -4,
+    -3
+   ],
+   "custo": 32.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-7.png",
+   "desloc": [
+    -1,
+    -1
+   ],
+   "custo": 27.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-8.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 5.3,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "musculoso/bone/acenando/south-east": [
+  {
+   "quadro": "south-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-1.png",
+   "desloc": [
+    2,
+    0
+   ],
+   "custo": 14.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-2.png",
+   "desloc": [
+    0,
+    -2
+   ],
+   "custo": 8.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-3.png",
+   "desloc": [
+    -3,
+    -4
+   ],
+   "custo": 10.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-4.png",
+   "desloc": [
+    -5,
+    -4
+   ],
+   "custo": 23.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-5.png",
+   "desloc": [
+    -5,
+    -4
+   ],
+   "custo": 31.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-6.png",
+   "desloc": [
+    -4,
+    -4
+   ],
+   "custo": 23.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-7.png",
+   "desloc": [
+    -4,
+    -4
+   ],
+   "custo": 22.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-8.png",
+   "desloc": [
+    -2,
+    -2
+   ],
+   "custo": 22.2,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "musculoso/bone/parado/south-west": [
+  {
+   "quadro": "south-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-1.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 17.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-2.png",
+   "desloc": [
+    2,
+    -2
+   ],
+   "custo": 19.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-3.png",
+   "desloc": [
+    5,
+    -3
+   ],
+   "custo": 22.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-4.png",
+   "desloc": [
+    6,
+    -4
+   ],
+   "custo": 21.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-5.png",
+   "desloc": [
+    6,
+    -4
+   ],
+   "custo": 24.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-6.png",
+   "desloc": [
+    8,
+    -4
+   ],
+   "custo": 30.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-7.png",
+   "desloc": [
+    5,
+    -4
+   ],
+   "custo": 33.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-8.png",
+   "desloc": [
+    3,
+    -3
+   ],
+   "custo": 30.8,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "musculoso/bone/andando/south-west": [
+  {
+   "quadro": "south-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-1.png",
+   "desloc": [
+    2,
+    0
+   ],
+   "custo": 15.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-2.png",
+   "desloc": [
+    2,
+    2
+   ],
+   "custo": 9.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-3.png",
+   "desloc": [
+    2,
+    2
+   ],
+   "custo": 12.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-4.png",
+   "desloc": [
+    1,
+    1
+   ],
+   "custo": 11.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-5.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 10.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-6.png",
+   "desloc": [
+    0,
+    -3
+   ],
+   "custo": 21.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-7.png",
+   "desloc": [
+    -1,
+    1
+   ],
+   "custo": 21.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-8.png",
+   "desloc": [
+    -1,
+    2
+   ],
+   "custo": 24.3,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "musculoso/bone/falando/south-west": [
+  {
+   "quadro": "south-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-1.png",
+   "desloc": [
+    -2,
+    1
+   ],
+   "custo": 24.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-2.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 22.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-3.png",
+   "desloc": [
+    3,
+    -3
+   ],
+   "custo": 23.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-4.png",
+   "desloc": [
+    5,
+    -4
+   ],
+   "custo": 27.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-5.png",
+   "desloc": [
+    5,
+    -3
+   ],
+   "custo": 32.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-6.png",
+   "desloc": [
+    4,
+    -3
+   ],
+   "custo": 29.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-7.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 24.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-8.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 14.6,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "musculoso/bone/acenando/south-west": [
+  {
+   "quadro": "south-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-1.png",
+   "desloc": [
+    -1,
+    1
+   ],
+   "custo": 15.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-2.png",
+   "desloc": [
+    2,
+    -1
+   ],
+   "custo": 26.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-3.png",
+   "desloc": [
+    5,
+    -3
+   ],
+   "custo": 26.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-4.png",
+   "desloc": [
+    8,
+    -3
+   ],
+   "custo": 31.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-5.png",
+   "desloc": [
+    8,
+    -3
+   ],
+   "custo": 31.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-6.png",
+   "desloc": [
+    8,
+    -3
+   ],
+   "custo": 28.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-7.png",
+   "desloc": [
+    7,
+    -2
+   ],
+   "custo": 30.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-8.png",
+   "desloc": [
+    4,
+    -1
+   ],
+   "custo": 28.3,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "musculoso/bone/parado/north-east": [
+  {
+   "quadro": "north-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-1.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 15.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-2.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 13.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-3.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 12.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-4.png",
+   "desloc": [
+    -1,
+    1
+   ],
+   "custo": 9.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-5.png",
+   "desloc": [
+    -2,
+    0
+   ],
+   "custo": 10.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-6.png",
+   "desloc": [
+    -2,
+    -1
+   ],
+   "custo": 17.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-7.png",
+   "desloc": [
+    -1,
+    -1
+   ],
+   "custo": 22.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-8.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 21.5,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "musculoso/bone/andando/north-east": [
+  {
+   "quadro": "north-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-1.png",
+   "desloc": [
+    0,
+    -2
+   ],
+   "custo": 19.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-2.png",
+   "desloc": [
+    1,
+    0
+   ],
+   "custo": 20.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-3.png",
+   "desloc": [
+    1,
+    2
+   ],
+   "custo": 24.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-4.png",
+   "desloc": [
+    -1,
+    3
+   ],
+   "custo": 25.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-5.png",
+   "desloc": [
+    -1,
+    1
+   ],
+   "custo": 19.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-6.png",
+   "desloc": [
+    0,
+    -2
+   ],
+   "custo": 5.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-7.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 20.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-8.png",
+   "desloc": [
+    1,
+    2
+   ],
+   "custo": 24.4,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "musculoso/bone/falando/north-east": [
+  {
+   "quadro": "north-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-1.png",
+   "desloc": [
+    -1,
+    0
+   ],
+   "custo": 15.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-2.png",
+   "desloc": [
+    -2,
+    1
+   ],
+   "custo": 33.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-3.png",
+   "desloc": [
+    -2,
+    1
+   ],
+   "custo": 34.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-4.png",
+   "desloc": [
+    -4,
+    1
+   ],
+   "custo": 35.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-5.png",
+   "desloc": [
+    -4,
+    2
+   ],
+   "custo": 34.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-6.png",
+   "desloc": [
+    -5,
+    1
+   ],
+   "custo": 32.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-7.png",
+   "desloc": [
+    -3,
+    1
+   ],
+   "custo": 30.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-8.png",
+   "desloc": [
+    0,
+    1
+   ],
+   "custo": 22.5,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "musculoso/bone/parado/north-west": [
+  {
+   "quadro": "north-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-1.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 13.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-2.png",
+   "desloc": [
+    0,
+    -2
+   ],
+   "custo": 17.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-3.png",
+   "desloc": [
+    0,
+    -3
+   ],
+   "custo": 17.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-4.png",
+   "desloc": [
+    0,
+    -4
+   ],
+   "custo": 15.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-5.png",
+   "desloc": [
+    0,
+    -3
+   ],
+   "custo": 10.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-6.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 11.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-7.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 10.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-8.png",
+   "desloc": [
+    0,
+    1
+   ],
+   "custo": 12.1,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "musculoso/bone/andando/north-west": [
+  {
+   "quadro": "north-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-1.png",
+   "desloc": [
+    0,
+    -2
+   ],
+   "custo": 10.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-2.png",
+   "desloc": [
+    1,
+    -2
+   ],
+   "custo": 20.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-3.png",
+   "desloc": [
+    1,
+    0
+   ],
+   "custo": 21.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-4.png",
+   "desloc": [
+    0,
+    2
+   ],
+   "custo": 15.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-5.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 13.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-6.png",
+   "desloc": [
+    1,
+    -2
+   ],
+   "custo": 19.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-7.png",
+   "desloc": [
+    2,
+    -2
+   ],
+   "custo": 16.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-8.png",
+   "desloc": [
+    1,
+    1
+   ],
+   "custo": 9.0,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "musculoso/bone/falando/north-west": [
+  {
+   "quadro": "north-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-1.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 6.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-2.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 18.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-3.png",
+   "desloc": [
+    1,
+    0
+   ],
+   "custo": 23.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-4.png",
+   "desloc": [
+    1,
+    0
+   ],
+   "custo": 24.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-5.png",
+   "desloc": [
+    1,
+    0
+   ],
+   "custo": 23.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-6.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 6.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-7.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 6.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-8.png",
+   "desloc": [
+    0,
+    2
+   ],
+   "custo": 10.7,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "musculoso/bandana/parado/south-east": [
+  {
+   "quadro": "south-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-1.png",
+   "desloc": [
+    1,
+    2
+   ],
+   "custo": 21.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-2.png",
+   "desloc": [
+    1,
+    3
+   ],
+   "custo": 28.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-3.png",
+   "desloc": [
+    1,
+    1
+   ],
+   "custo": 25.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-4.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 20.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-5.png",
+   "desloc": [
+    -1,
+    -3
+   ],
+   "custo": 19.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-6.png",
+   "desloc": [
+    -1,
+    -3
+   ],
+   "custo": 26.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-7.png",
+   "desloc": [
+    -1,
+    -3
+   ],
+   "custo": 27.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-8.png",
+   "desloc": [
+    -1,
+    -2
+   ],
+   "custo": 25.8,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "musculoso/bandana/andando/south-east": [
+  {
+   "quadro": "south-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-1.png",
+   "desloc": [
+    0,
+    -2
+   ],
+   "custo": 22.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-2.png",
+   "desloc": [
+    1,
+    -4
+   ],
+   "custo": 30.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-3.png",
+   "desloc": [
+    1,
+    -2
+   ],
+   "custo": 30.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-4.png",
+   "desloc": [
+    1,
+    0
+   ],
+   "custo": 29.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-5.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 26.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-6.png",
+   "desloc": [
+    0,
+    -4
+   ],
+   "custo": 11.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-7.png",
+   "desloc": [
+    0,
+    -4
+   ],
+   "custo": 16.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-8.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 15.8,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "musculoso/bandana/falando/south-east": [
+  {
+   "quadro": "south-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-1.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 17.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-2.png",
+   "desloc": [
+    -2,
+    -2
+   ],
+   "custo": 26.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-3.png",
+   "desloc": [
+    -3,
+    -4
+   ],
+   "custo": 29.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-4.png",
+   "desloc": [
+    -3,
+    -4
+   ],
+   "custo": 27.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-5.png",
+   "desloc": [
+    -3,
+    -4
+   ],
+   "custo": 29.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-6.png",
+   "desloc": [
+    -2,
+    -3
+   ],
+   "custo": 27.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-7.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 22.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-8.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 17.9,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "musculoso/bandana/acenando/south-east": [
+  {
+   "quadro": "south-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-1.png",
+   "desloc": [
+    1,
+    0
+   ],
+   "custo": 14.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-2.png",
+   "desloc": [
+    0,
+    -2
+   ],
+   "custo": 22.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-3.png",
+   "desloc": [
+    -3,
+    -4
+   ],
+   "custo": 35.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-4.png",
+   "desloc": [
+    -4,
+    -4
+   ],
+   "custo": 41.4,
+   "na_frente": 0,
+   "marcado": true
+  },
+  {
+   "quadro": "south-east-5.png",
+   "desloc": [
+    -3,
+    -4
+   ],
+   "custo": 37.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-6.png",
+   "desloc": [
+    -3,
+    -4
+   ],
+   "custo": 37.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-7.png",
+   "desloc": [
+    -3,
+    -4
+   ],
+   "custo": 37.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-east-8.png",
+   "desloc": [
+    -1,
+    -2
+   ],
+   "custo": 34.0,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "musculoso/bandana/parado/south-west": [
+  {
+   "quadro": "south-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-1.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 13.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-2.png",
+   "desloc": [
+    1,
+    -2
+   ],
+   "custo": 22.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-3.png",
+   "desloc": [
+    2,
+    -3
+   ],
+   "custo": 31.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-4.png",
+   "desloc": [
+    3,
+    -4
+   ],
+   "custo": 33.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-5.png",
+   "desloc": [
+    3,
+    -4
+   ],
+   "custo": 33.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-6.png",
+   "desloc": [
+    3,
+    -4
+   ],
+   "custo": 32.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-7.png",
+   "desloc": [
+    2,
+    -4
+   ],
+   "custo": 28.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-8.png",
+   "desloc": [
+    1,
+    -3
+   ],
+   "custo": 27.3,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "musculoso/bandana/andando/south-west": [
+  {
+   "quadro": "south-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-1.png",
+   "desloc": [
+    1,
+    0
+   ],
+   "custo": 26.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-2.png",
+   "desloc": [
+    2,
+    2
+   ],
+   "custo": 33.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-3.png",
+   "desloc": [
+    2,
+    2
+   ],
+   "custo": 36.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-4.png",
+   "desloc": [
+    1,
+    1
+   ],
+   "custo": 39.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-5.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 30.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-6.png",
+   "desloc": [
+    -1,
+    -2
+   ],
+   "custo": 16.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-7.png",
+   "desloc": [
+    -1,
+    0
+   ],
+   "custo": 18.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-8.png",
+   "desloc": [
+    -2,
+    2
+   ],
+   "custo": 26.0,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "musculoso/bandana/falando/south-west": [
+  {
+   "quadro": "south-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-1.png",
+   "desloc": [
+    -1,
+    0
+   ],
+   "custo": 19.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-2.png",
+   "desloc": [
+    0,
+    -2
+   ],
+   "custo": 25.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-3.png",
+   "desloc": [
+    1,
+    -3
+   ],
+   "custo": 28.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-4.png",
+   "desloc": [
+    1,
+    -3
+   ],
+   "custo": 33.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-5.png",
+   "desloc": [
+    1,
+    -3
+   ],
+   "custo": 32.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-6.png",
+   "desloc": [
+    1,
+    -3
+   ],
+   "custo": 29.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-7.png",
+   "desloc": [
+    1,
+    -2
+   ],
+   "custo": 25.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-8.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 20.1,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "musculoso/bandana/acenando/south-west": [
+  {
+   "quadro": "south-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-1.png",
+   "desloc": [
+    -1,
+    1
+   ],
+   "custo": 24.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-2.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 29.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-3.png",
+   "desloc": [
+    3,
+    -4
+   ],
+   "custo": 40.6,
+   "na_frente": 0,
+   "marcado": true
+  },
+  {
+   "quadro": "south-west-4.png",
+   "desloc": [
+    5,
+    -3
+   ],
+   "custo": 41.2,
+   "na_frente": 0,
+   "marcado": true
+  },
+  {
+   "quadro": "south-west-5.png",
+   "desloc": [
+    5,
+    -3
+   ],
+   "custo": 41.4,
+   "na_frente": 0,
+   "marcado": true
+  },
+  {
+   "quadro": "south-west-6.png",
+   "desloc": [
+    5,
+    -3
+   ],
+   "custo": 39.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "south-west-7.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 43.1,
+   "na_frente": 0,
+   "marcado": true
+  },
+  {
+   "quadro": "south-west-8.png",
+   "desloc": [
+    1,
+    -2
+   ],
+   "custo": 40.3,
+   "na_frente": 0,
+   "marcado": true
+  }
+ ],
+ "musculoso/bandana/parado/north-east": [
+  {
+   "quadro": "north-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-1.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 9.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-2.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 5.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-3.png",
+   "desloc": [
+    -1,
+    0
+   ],
+   "custo": 6.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-4.png",
+   "desloc": [
+    -2,
+    1
+   ],
+   "custo": 11.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-5.png",
+   "desloc": [
+    -2,
+    0
+   ],
+   "custo": 14.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-6.png",
+   "desloc": [
+    -2,
+    -1
+   ],
+   "custo": 16.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-7.png",
+   "desloc": [
+    -1,
+    -1
+   ],
+   "custo": 20.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-8.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 15.4,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "musculoso/bandana/andando/north-east": [
+  {
+   "quadro": "north-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-1.png",
+   "desloc": [
+    1,
+    -2
+   ],
+   "custo": 10.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-2.png",
+   "desloc": [
+    1,
+    0
+   ],
+   "custo": 16.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-3.png",
+   "desloc": [
+    1,
+    2
+   ],
+   "custo": 17.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-4.png",
+   "desloc": [
+    0,
+    3
+   ],
+   "custo": 15.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-5.png",
+   "desloc": [
+    -1,
+    0
+   ],
+   "custo": 9.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-6.png",
+   "desloc": [
+    0,
+    -2
+   ],
+   "custo": 5.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-7.png",
+   "desloc": [
+    1,
+    0
+   ],
+   "custo": 12.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-8.png",
+   "desloc": [
+    1,
+    2
+   ],
+   "custo": 14.3,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "musculoso/bandana/falando/north-east": [
+  {
+   "quadro": "north-east-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-1.png",
+   "desloc": [
+    -1,
+    0
+   ],
+   "custo": 8.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-2.png",
+   "desloc": [
+    -1,
+    0
+   ],
+   "custo": 12.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-3.png",
+   "desloc": [
+    -2,
+    0
+   ],
+   "custo": 17.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-4.png",
+   "desloc": [
+    -3,
+    0
+   ],
+   "custo": 21.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-5.png",
+   "desloc": [
+    -3,
+    0
+   ],
+   "custo": 22.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-6.png",
+   "desloc": [
+    -4,
+    0
+   ],
+   "custo": 23.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-7.png",
+   "desloc": [
+    -3,
+    0
+   ],
+   "custo": 19.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-east-8.png",
+   "desloc": [
+    -1,
+    0
+   ],
+   "custo": 11.2,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "musculoso/bandana/parado/north-west": [
+  {
+   "quadro": "north-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-1.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 7.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-2.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 11.9,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-3.png",
+   "desloc": [
+    0,
+    -3
+   ],
+   "custo": 13.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-4.png",
+   "desloc": [
+    0,
+    -4
+   ],
+   "custo": 14.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-5.png",
+   "desloc": [
+    0,
+    -3
+   ],
+   "custo": 10.2,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-6.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 9.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-7.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 5.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-8.png",
+   "desloc": [
+    0,
+    1
+   ],
+   "custo": 4.8,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "musculoso/bandana/andando/north-west": [
+  {
+   "quadro": "north-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-1.png",
+   "desloc": [
+    1,
+    -2
+   ],
+   "custo": 23.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-2.png",
+   "desloc": [
+    1,
+    -2
+   ],
+   "custo": 33.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-3.png",
+   "desloc": [
+    1,
+    0
+   ],
+   "custo": 32.7,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-4.png",
+   "desloc": [
+    1,
+    2
+   ],
+   "custo": 31.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-5.png",
+   "desloc": [
+    1,
+    -1
+   ],
+   "custo": 19.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-6.png",
+   "desloc": [
+    1,
+    -2
+   ],
+   "custo": 16.5,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-7.png",
+   "desloc": [
+    2,
+    -2
+   ],
+   "custo": 20.8,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-8.png",
+   "desloc": [
+    1,
+    1
+   ],
+   "custo": 18.4,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ],
+ "musculoso/bandana/falando/north-west": [
+  {
+   "quadro": "north-west-0.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 0.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-1.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 4.0,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-2.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 2.6,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-3.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 5.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-4.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 6.3,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-5.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 6.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-6.png",
+   "desloc": [
+    0,
+    -1
+   ],
+   "custo": 5.4,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-7.png",
+   "desloc": [
+    0,
+    0
+   ],
+   "custo": 3.1,
+   "na_frente": 0,
+   "marcado": false
+  },
+  {
+   "quadro": "north-west-8.png",
+   "desloc": [
+    0,
+    2
+   ],
+   "custo": 4.9,
+   "na_frente": 0,
+   "marcado": false
+  }
+ ]
+}

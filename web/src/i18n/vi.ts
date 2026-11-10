@@ -2712,7 +2712,7 @@ export default {
   'Campanha': 'Chiến dịch',
   'Sem vidas.': 'Hết mạng.',
   'Você volta em {n}…': 'Bạn quay lại sau {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Phím mũi tên để đi, X để đánh (ba đòn liên tiếp là combo), Z để nhảy, C để tung chiêu đặc biệt, tốn một chút máu.',
+  'Arrancada': 'Lướt nhanh',
   'Andar': 'Đi',
   'Especial': 'Đặc biệt',
   'Pular': 'Nhảy',
@@ -3077,6 +3077,9 @@ export default {
   "Entrar na comunidade": "Tham gia cộng đồng",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Quạt cây, lồng tròn, cho những ngày nóng.",
+  // A caminha do gato
+  "Caminha do gato": "Ổ của mèo",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Tròn và êm, lối vào thấp. Mèo ngủ ở đây.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Ảnh đại diện",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3089,6 +3092,23 @@ export default {
   "Bicho do quarto": "Thú cưng trong phòng",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Nhạc chuông cuộc gọi",
+  'Tocar ligações com o áudio desativado': "Đổ chuông cuộc gọi khi đã tắt âm thanh",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Khi tắt âm thanh, cuộc gọi riêng đến mà không có tiếng: thông báo hiện trên màn hình và Syden nhấp nháy trên thanh tác vụ. Bật mục này để vẫn nghe nhạc chuông.",
+  'Avatares anteriores': "Ảnh đại diện trước đây",
+  'Voltar a este avatar': "Quay lại ảnh đại diện này",
+  'Tirar do histórico': "Xóa khỏi lịch sử",
+  'Avatar não encontrado.': "Không tìm thấy ảnh đại diện.",
+  'Sininho': "Chuông nhỏ",
+  'Arpejo': "Hợp âm rải",
+  'Suave': "Êm dịu",
+  'Bipe': "Bíp",
+  'Grupo': "Nhóm",
+  'Nenhum': "Không có",
+  'Novo grupo': "Nhóm mới",
+  'O do grupo ({grupo})': "Của nhóm ({grupo})",
+  'Grupos de toque': "Nhóm nhạc chuông",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Mỗi nhóm có nhạc chuông riêng. Nhấp chuột phải vào tên một người để đưa họ vào nhóm, hoặc chọn nhạc chuông chỉ cho người đó.",
+  'Apagar grupo': "Xóa nhóm",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Đổ chuông khi có người gọi cho bạn trong cuộc trò chuyện riêng, kể cả khi đã tắt âm báo. Ở chế độ \"Không làm phiền\", cuộc gọi hiện lên mà không đổ chuông.",
   'Avisar das ligações com o Syden em segundo plano?': "Báo cho bạn về cuộc gọi khi Syden chạy nền?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Trình duyệt sẽ xin quyền. Nhờ vậy bạn biết có cuộc gọi và tin nhắn ngay cả khi đang ở thẻ hoặc chương trình khác.",

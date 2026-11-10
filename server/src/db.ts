@@ -2174,12 +2174,14 @@ export function findOwner(): User | undefined {
 export function setAvatar(userId: number, avatar: { mime: string; data: Buffer } | null): User {
   if (avatar) {
     const no = aoDisco(avatar.data);
+    guardarAvatarAnterior(userId, no.sha);
     db.prepare(
       `INSERT INTO avatars (user_id, mime, data, sha, bytes) VALUES (?, ?, ?, ?, ?)
        ON CONFLICT(user_id) DO UPDATE SET mime = excluded.mime, data = excluded.data, sha = excluded.sha, bytes = excluded.bytes`,
     ).run(userId, avatar.mime, SEM_BYTES, no.sha, no.bytes);
     db.prepare('UPDATE users SET avatar_version = ?, avatar_animado = ?, avatar_pronto = NULL WHERE id = ?').run(Date.now(), imagemAnimada(avatar.mime, avatar.data) ? 1 : 0, userId);
   } else {
+    guardarAvatarAnterior(userId);
     db.prepare('DELETE FROM avatars WHERE user_id = ?').run(userId);
     db.prepare('UPDATE users SET avatar_version = NULL, avatar_pronto = NULL WHERE id = ?').run(userId);
   }
@@ -2191,9 +2193,93 @@ export const COELHOS_PRONTOS = 16;
 
 /** Veste um coelho pronto. A foto enviada, se havia, sai: o avatar é um ou outro. */
 export function setAvatarPronto(userId: number, numero: number): User {
+  guardarAvatarAnterior(userId);
   db.prepare('DELETE FROM avatars WHERE user_id = ?').run(userId);
   db.prepare('UPDATE users SET avatar_version = NULL, avatar_pronto = ? WHERE id = ?').run(numero, userId);
   return findUserById(userId)!;
+}
+
+// ---------- OS AVATARES ANTERIORES (09/11/2026, pedido dele) ----------
+//
+// "Se eu altero o avatar, não consigo escolher o antigo; no meu caso era um GIF. Seria legal mostrar o histórico dos últimos
+// 5 para resgatar." Quem troca a foto (ou o GIF) por outra, por um coelho pronto ou por nada guarda a de antes aqui, até 5
+// por pessoa, a mais nova primeiro. Só o sha aponta o arquivo, que já está no disco (a vassoura de órfãos lê esta tabela).
+// Quem pode ver: só a dona, pela chave no endereço (como a figurinha: <img> não manda o login). O Shield que derruba a
+// imagem a tira daqui também, e excluir a conta apaga o histórico. Voltar a um anterior não confere de novo no Shield: a
+// imagem já passou pela conferência ao subir, e a reconferência periódica a alcança pelo sha.
+db.exec(`
+  CREATE TABLE IF NOT EXISTS avatares_anteriores (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    chave      TEXT NOT NULL,
+    sha        TEXT NOT NULL,
+    mime       TEXT NOT NULL,
+    bytes      INTEGER NOT NULL,
+    animado    INTEGER NOT NULL DEFAULT 0,
+    guardado   INTEGER NOT NULL,
+    UNIQUE (user_id, sha)
+  );
+  CREATE INDEX IF NOT EXISTS idx_avatares_anteriores_sha ON avatares_anteriores(sha);
+`);
+
+/** Quantos avatares anteriores cada pessoa guarda. */
+export const AVATARES_ANTERIORES = 5;
+
+export interface AvatarAnterior {
+  id: number;
+  chave: string;
+  mime: string;
+  animado: boolean;
+  /** quando deixou de ser o avatar (ms) */
+  guardado: number;
+}
+
+/** Leva o avatar de agora (se é uma foto guardada no disco, e não o mesmo arquivo que vai entrar) para o histórico. */
+function guardarAvatarAnterior(userId: number, shaQueEntra?: string) {
+  const atual = db
+    .prepare('SELECT a.sha, a.mime, a.bytes, u.avatar_animado AS animado FROM avatars a JOIN users u ON u.id = a.user_id WHERE a.user_id = ?')
+    .get(userId) as { sha: string | null; mime: string; bytes: number | null; animado: number } | undefined;
+  if (shaQueEntra) db.prepare('DELETE FROM avatares_anteriores WHERE user_id = ? AND sha = ?').run(userId, shaQueEntra);
+  if (!atual?.sha || atual.bytes === null || atual.sha === shaQueEntra) return;
+  db.prepare(
+    `INSERT INTO avatares_anteriores (user_id, chave, sha, mime, bytes, animado, guardado) VALUES (?, ?, ?, ?, ?, ?, ?)
+     ON CONFLICT(user_id, sha) DO UPDATE SET guardado = excluded.guardado`,
+  ).run(userId, randomBytes(12).toString('hex'), atual.sha, atual.mime, atual.bytes, atual.animado ? 1 : 0, Date.now());
+  db.prepare(
+    `DELETE FROM avatares_anteriores WHERE user_id = ? AND id NOT IN
+       (SELECT id FROM avatares_anteriores WHERE user_id = ? ORDER BY guardado DESC, id DESC LIMIT ?)`,
+  ).run(userId, userId, AVATARES_ANTERIORES);
+}
+
+export function avataresAnteriores(userId: number): AvatarAnterior[] {
+  return (
+    db
+      .prepare('SELECT id, chave, mime, animado, guardado FROM avatares_anteriores WHERE user_id = ? ORDER BY guardado DESC, id DESC')
+      .all(userId) as unknown as (Omit<AvatarAnterior, 'animado'> & { animado: number })[]
+  ).map((a) => ({ ...a, animado: !!a.animado }));
+}
+
+export function arquivoDoAvatarAnterior(id: number, chave: string): ArquivoGuardado | undefined {
+  return db.prepare('SELECT mime, sha, bytes FROM avatares_anteriores WHERE id = ? AND chave = ?').get(id, chave) as ArquivoGuardado | undefined;
+}
+
+/** Volta a um avatar anterior; o de agora vai para o histórico no lugar dele. undefined se não é da pessoa. */
+export function voltarAoAvatarAnterior(userId: number, id: number): User | undefined {
+  const a = db.prepare('SELECT sha, mime, bytes, animado FROM avatares_anteriores WHERE id = ? AND user_id = ?').get(id, userId) as
+    | { sha: string; mime: string; bytes: number; animado: number }
+    | undefined;
+  if (!a) return undefined;
+  guardarAvatarAnterior(userId, a.sha);
+  db.prepare(
+    `INSERT INTO avatars (user_id, mime, data, sha, bytes) VALUES (?, ?, ?, ?, ?)
+     ON CONFLICT(user_id) DO UPDATE SET mime = excluded.mime, data = excluded.data, sha = excluded.sha, bytes = excluded.bytes`,
+  ).run(userId, a.mime, SEM_BYTES, a.sha, a.bytes);
+  db.prepare('UPDATE users SET avatar_version = ?, avatar_animado = ?, avatar_pronto = NULL WHERE id = ?').run(Date.now(), a.animado, userId);
+  return findUserById(userId)!;
+}
+
+export function apagarAvatarAnterior(userId: number, id: number): boolean {
+  return db.prepare('DELETE FROM avatares_anteriores WHERE id = ? AND user_id = ?').run(id, userId).changes > 0;
 }
 
 /** Cor do nome e fundo do perfil. Passar null em qualquer um dos dois volta ao padrão. */
@@ -3081,6 +3167,7 @@ export function deleteAccount(userId: number) {
     db.prepare('UPDATE minijogo_partidas SET criada_por = NULL WHERE criada_por = ?').run(userId);
     db.prepare('DELETE FROM cinema_segundos WHERE user_id = ?').run(userId);
     db.prepare('DELETE FROM avatars WHERE user_id = ?').run(userId);
+    db.prepare('DELETE FROM avatares_anteriores WHERE user_id = ?').run(userId);
     // O ON DELETE CASCADE já daria conta, mas aqui dentro estão as ANOTAÇÕES QUE A PESSOA ESCREVEU
     // SOBRE OUTRAS — dado pessoal de terceiro. Apagar por efeito indireto de uma configuração que
     // alguém pode desligar sem perceber é frágil demais para esse conteúdo.
@@ -5200,6 +5287,7 @@ export function retirarPeloShield(sha: string): RetiradoPeloShield {
     // as figurinhas (04/11/2026): de todas as coleções, e quem guardou conta como quem subiu (não há outra pista)
     for (const { quem } of db.prepare('SELECT user_id AS quem FROM figurinhas WHERE sha = ?').all(sha) as { quem: number }[]) autores.add(quem);
     db.prepare('DELETE FROM figurinhas WHERE sha = ?').run(sha);
+    db.prepare('DELETE FROM avatares_anteriores WHERE sha = ?').run(sha);
     const anexos = db
       .prepare('SELECT a.id, a.message_id AS messageId, m.channel_id AS channelId FROM attachments a JOIN messages m ON m.id = a.message_id WHERE a.sha = ?')
       .all(sha) as { id: number; messageId: number; channelId: number }[];

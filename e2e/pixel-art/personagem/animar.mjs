@@ -20,14 +20,16 @@ const saldo = async () => (await (await fetch(API + '/balance', { headers: cab }
 const esperar = (ms) => new Promise((ok) => setTimeout(ok, ms));
 // PERSONAGEM=<id> anima a partir de um ESTADO (uma pose do mesmo mascote, estado.mjs): o "digitando" parte do sentado ao
 // computador.
-const PERSONAGEM = process.env.PERSONAGEM || JSON.parse(fs.readFileSync(path.join(AQUI, 'mascote', 'baixa-120', 'personagem.json'), 'utf8')).id;
+// COELHO=<corpo> anima um CORPO BASE (corpo-novo.mjs: um estado do mascote, com as mesmas animações); o padrão é o mascote.
+const COELHO = process.env.COELHO || 'mascote';
+const PERSONAGEM = process.env.PERSONAGEM || JSON.parse(fs.readFileSync(path.join(AQUI, COELHO, 'baixa-120', 'personagem.json'), 'utf8')).id;
 
 const [nome, modelo, direcoes] = process.argv.slice(2);
 // O PixelLab ACEITA MENOS DIREÇÕES do que se pede quando há trabalhos demais ao mesmo tempo (14/10/2026: sete pedidos
 // em paralelo, e cada um levou só uma parte). Pedir de novo com a MESMA animação acrescenta as que faltaram: o grupo
 // fica guardado em grupo.txt na pasta dela.
 if (!nome || !modelo || !direcoes) throw new Error('uso: animar.mjs <animação> <modelo|texto:ação> <direções>');
-const pasta = path.join(AQUI, 'mascote', 'baixa-120', 'animacoes', nome);
+const pasta = path.join(AQUI, COELHO, 'baixa-120', 'animacoes', nome);
 fs.mkdirSync(pasta, { recursive: true });
 
 const antes = await saldo();
@@ -66,9 +68,18 @@ for (let i = 0; ; i++) {
 fs.writeFileSync(path.join(pasta, 'animacao.json'), JSON.stringify(anim, null, 2));
 let n = 0;
 for (const d of anim) for (let k = 0; k < d.frames.length; k++) {
-  fs.writeFileSync(path.join(pasta, `${d.direction}-${k}.png`), Buffer.from(await (await fetch(d.frames[k])).arrayBuffer()));
+  // O endereço do quadro às vezes responde um erro em JSON no lugar da imagem (09/11/2026: um 500 que se repetia): sem
+  // PNG, tenta de novo, e desiste avisando (o quadro some da sequência; renumerar à mão).
+  let b;
+  for (let t = 0; t < 4; t++) {
+    b = Buffer.from(await (await fetch(d.frames[k])).arrayBuffer());
+    if (b.subarray(1, 4).toString() === 'PNG') break;
+    b = null; await esperar(3000);
+  }
+  if (!b) { console.log(`o quadro ${d.direction}-${k} não veio (erro do PixelLab)`); continue; }
+  fs.writeFileSync(path.join(pasta, `${d.direction}-${k}.png`), b);
   n++;
 }
 const depois = await saldo();
-fs.appendFileSync(path.join(AQUI, '..', 'custos.jsonl'), JSON.stringify({ ferramenta: 'pixellab', peca: `personagem/animacao/${nome}`, geracoes: +(antes - depois).toFixed(1), quando: new Date().toISOString() }) + '\n');
+fs.appendFileSync(path.join(AQUI, '..', 'custos.jsonl'), JSON.stringify({ ferramenta: 'pixellab', peca: `personagem/animacao/${COELHO === 'mascote' ? '' : COELHO + '/'}${nome}`, geracoes: +(antes - depois).toFixed(1), quando: new Date().toISOString() }) + '\n');
 console.log(`${n} quadros em animacoes/${nome}/; custou ${(antes - depois).toFixed(1)} gerações (restam ${depois})`);

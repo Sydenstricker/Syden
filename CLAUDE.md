@@ -537,6 +537,13 @@ inimigo só é decidido 200 ms depois, e quem saiu da área nessa janela escapa;
 coelho é o mascote 3D de lado (`briga.py`/`briga-pos.py`, com a troca de paleta do avatar). Troféu só com a fase vencida
 (`pista: 'briga'`). Testes: `server/test/minijogos-briga.test.ts`, `web/test/briga.test.ts` (o piloto automático vence a
 fase contra o servidor de verdade, com 200 ms de atraso) e `e2e/briga.mjs` (escrito, não rodado).
+**OS AJUSTES DE 09/11/2026 (pedidos dele):** os bichos da HORTA também são da Quaternius agora (o gato listrado no lugar da
+raposa, o pombo no do corvo e a galinha gigante no do texugo; os ids continuam raposa/corvo/texugo, que vão no quadro e nos
+troféus; o desenho por código só enquanto a folha carrega). Os comandos mostram as setas E o WASD lado a lado. **A ARRANCADA:**
+dois toques para o lado (setas, A/D ou o toque) em 250 ms dão um dash de 200 ms, para a frente ou para trás, só movimento; o
+servidor dá um crédito de distância à parte para ela. **O ESPECIAL VIROU UM GIRO** (a mecânica do giro que anda, só a mecânica):
+1,6 s girando e andando, acertando em volta a cada 320 ms, com RECARGA DE 8 s pelo relógio (não gasta mais vida) e a barra no
+canto da tela; o servidor confere a recarga e cada acerto. O equilíbrio é chute medido contra o piloto automático.
 **AS FASES (06/11/2026, pedido dele: "a primeira fase é a briga na horta, e em outros cenários ele vai mudando inimigos e
 cenário"):** Horta (a de sempre, intocada), Floresta, Deserto, Neve e Castelo, e a **Campanha** (as cinco seguidas). Quem começa
 escolhe na largada, no Solo e na sala; todas abertas de fábrica. Os bichos e as fases moram em `server/src/briga-fases.ts` ↔
@@ -1461,6 +1468,8 @@ PixelLab, mesmo que demore mais e custe mais créditos. Com o fluxo feito, a ver
 - **Acessório é por REPINTURA, uma vez por pose e direção** (piloto de 09/11/2026, `personagem/acessorio.mjs`, o boné):
   repintar quadro a quadro dava um boné diferente em cada quadro (tremeria); pintado uma vez e acompanhando a cabeça pelo
   código, fica estável. ~10 gerações por pose e direção. Nas poses em que a cabeça deita ou gira, pinta-se naquela pose.
+  **Acessório de cabeça fica ENTRE as duas orelhas** (decisão dele, mesmo dia, vendo o boné atravessado num quadro): as
+  orelhas só atravessam o acessório quando o desenho dele é para isso.
 - **Roupa não é camada no PixelLab:** cobre o corpo, que muda de forma a cada quadro. Cada roupa é uma VERSÃO do personagem
   (um estado), com as animações dela (~300 a 400 gerações por roupa). O coelho sem roupa não economiza no 2D (economiza no
   3D). Cor de roupa e pelo é troca de paleta, de graça.
@@ -1470,7 +1479,65 @@ PixelLab, mesmo que demore mais e custe mais créditos. Com o fluxo feito, a ver
 - **O gato é o pet do quarto** (pedido dele, mesmo dia: "mais um elemento customizável"): tem os lugares dele, sobe no
   peitoril da janela grande para olhar a rua, sai de onde o coelho vai usar, e se guarda no Editar (`cores.pet`). Outras
   pelagens ou bichos: mais um valor de `cores.pet` e a arte deles.
+  **Aprovado, e os ajustes de 09/11/2026 (pedidos dele):** a **caminha do gato** é móvel do catálogo (`caminha-gato`, avulsa e com
+  os giros; no 3D, feita por código), POSTA DE FÁBRICA no canto da frente das três plantas (decisão dele: "nos quartos novos
+  venha ela já posta"; no quarto já arrumado chega guardada, como o ventilador, e fica no catálogo) e é o lugar preferido dele para dormir, DENTRO dela (a
+  borda da frente o cobre); parado, ele fica **de frente** (sudeste/sudoeste), de costas só olhando a janela e, raramente, no
+  chão; e o **pulo** é a animação do PixelLab em três tempos (impulso no chão, o voo pelo arco do código, o pouso). As
+  **4 vistas da janela** (`../janela/vista-*`), que só o botão da página de teste trocava, são figuras na aba Janela do Editar
+  e no "…" da janela (`vista` na arrumação, que o servidor já guardava).
+  **A segunda rodada (mesmo dia):** o **impulso de verdade**: para SUBIR ele agacha (o estado `agachado` e a passagem
+  `agachar`, reutilizáveis: a pose parada 'agachado' existe), MIRA ~0,8 s (`mirar`, o traseiro balançando) e salta do agachado
+  (`saltar`); para descer, o pulo de antes. E as coisas de gato, de vez em quando e sem insistir (com menos movimento, nada):
+  **esfregar-se no coelho** parado no chão (vai até a perna dele; no máximo uma vez por minuto), **amassar pãozinho** no tapete ou na
+  caminha antes de deitar, **bocejar** (só de frente) e **lamber a pata** (era o `lambendo`). De costas, o agachado do estado parecia
+  sentado: o de costas é o último quadro de `agachar-costas`, sem quadro final (os de antes em `animacoes/falhas/`).
+  **PENDÊNCIA: o gato no quarto 3D** (decisão dele, 09/11/2026: "no momento deixe vazia; vamos evoluindo os elementos aos
+  poucos"). No 3D a caminha existe e fica VAZIA, porque o gato ainda não tem modelo 3D; quando tiver, ele dorme nela lá também.
 - **O sofá do salão tem 2 lugares** (sugestão dele): com 3, os coelhos se sobrepunham e as pontas cortavam as pernas.
+- **O móvel ganha, o personagem sai** (relato dele, 09/11/2026: "se eu arrastar um móvel para onde já tem um personagem, nada
+  impede"): arrastar não é impedido; quem estava ali (o coelho, o gato, o coelho do balcão, quem está na call) anda para a casa
+  livre mais perto, a cada passo do motor. `e2e/pixel-art/auditoria-de-sobreposicao.mjs` confere o quarto (as três plantas) e o
+  salão; rodar depois de mexer em móvel, ponto de interação ou personagem.
+- **O mascote do app é o do PixelLab desde 09/11/2026** (decisão dele): `MASCOTE=3d` no `montar.mjs` volta ao 3D.
+- **As fotos de frente dos 16 coelhos para o Meshy** (`e2e/pixel-art/avatares/frente.mjs`, as escolhidas em
+  `frente/escolhidas.json`, ampliadas em `frente/para-meshy/`): gerados cada um sozinho, o acabamento variava; o 14 vai de
+  referência de ESTILO, e a roupa de cada um vem da foto de frente dele (a do 14 vazava para os outros).
+- **O MÉTODO DAS CAMADAS (piloto de 09/11/2026, pedido dele: "escalável e com qualidade; resolver primeiro em 2D, depois o
+  3D").** As 16 fotos de frente são RECEITAS (corpo + roupa + cores + acessórios), não 16 personagens: o personagem é feito de
+  camadas que se combinam por código, e só a forma nova custa geração. **CORPO** novo só quando a silhueta muda, e ele nasce
+  como ESTADO do mascote (`corpo-novo.mjs`): herda tamanho, vista, luz, roupa e esqueleto. Criado do zero a partir de um
+  conceito, saiu com 57 px contra 90 e noutro ângulo (`orelha-caida/falhas/`). As animações saem pelo mesmo `animar.mjs`
+  (`COELHO=<corpo>`). **ACESSÓRIO** é pintado UMA vez por corpo e direção (`acessorio.mjs`, ~10 gerações; a região, crânio ou
+  pescoço, sai das contas de pixel) e levado a todos os quadros por `acessorio-camadas.py`, que acompanha a cabeça PELA
+  IMAGEM (procura o pedaço em volta do acessório), deixa na frente o pedaço grande que entra pela borda (a mão) e marca o
+  quadro em que a cabeça mudou de forma (pede pintura própria). Medido: 2 corpos (mascote e orelha caída) × boné e bandana ×
+  parado, andando, falando e acenando nas 4 diagonais, 504 quadros, 3 marcados; a folha da troca é
+  `personagem/camadas/troca.png`. Custo do piloto ~400 gerações, ~100 delas em tentativas que falharam. A conta de agora:
+  acessório novo ≈ 40 gerações por corpo; corpo novo ≈ 26 + ~10 por animação. **Lições do PixelLab:** no texto da animação,
+  NÃO cite efeitos nem para proibir (o "no sparkles" desenhou brilhos), e "as orelhas balançam" fez as orelhas caídas
+  levantarem; o que flutua solto ou preso por um fio sai com `limpar-soltos.py`. O endereço de um quadro às vezes devolve
+  um erro 500 em JSON no lugar do PNG (`animar.mjs` confere e avisa). **A decidir com ele:** a regra "um modelo por coelho" do
+  3D (de 18/10) vira "poucos corpos + acessórios avulsos"; o mesmo acessório sai de tamanhos diferentes em cada corpo, porque
+  cada pintura é independente (o boné da orelha caída é maior que o do mascote); e roupa (terno, regata, sandália de dedo:
+  ele pediu mais variedade que o moletom) é uma versão do corpo, a próxima camada a medir.
+  **O terceiro corpo, o MUSCULOSO de regata** (pedido dele, mesmo dia), saiu com a mesma receita e recebeu o boné e a bandana
+  sem nada à mão: 3 corpos, 756 quadros. A gola se acha onde o PELO acaba descendo pelo meio da cabeça (o "primeiro escuro"
+  pôs a bandana na cintura da regata cinza), e a máscara do boné sobe 16 px e protege as orelhas em pé (com 8, a cabeça
+  redonda da orelha caída cortou o boné reto em cima). Ele aceita pequenas variações de tamanho do acessório entre corpos.
+  **O PILOTO EM 3D (mesmo dia, pedido dele: "estender o piloto para 3D antes de mudar as regras"; `personagem/blender/camadas/`,
+  LEIA-ME lá):** o acessório é malha avulsa presa ao osso, com o encaixe MEDIDO na malha de cada corpo (`saida/encaixe.json`), e
+  o GLB de teste liga e desliga cada peça (`ver.html`). A bandana veste bem nos dois corpos; a orelha caída sai da malha do
+  mascote com um segundo osso por orelha (girar só o osso amassava); o boné na orelha caída fica bom. **O boné no mascote de
+  orelha em pé NÃO cabe** em 3D: as orelhas nascem quase juntas no alto da cabeça, e o "entre as orelhas" do 2D é um truque
+  do desenho. Saídas para ele escolher: boné com furos, virado para trás, ou corpos de orelhas mais afastadas. Os provisórios
+  são feitos por script; os do Meshy entram sozinhos por nome em `camadas/meshy/` (4 downloads: 2 corpos e 2 acessórios).
+  Corpo novo do Meshy ainda pede medir o esqueleto à mão (`MEDIDAS` do `mascote.py`) uma vez. A regra "um modelo por coelho"
+  continua até ele decidir. **Decidido por ele no mesmo dia: o boné 3D segue o desenho 2D** (no 2D ele senta na cabeça, entre
+  as orelhas, sem ser atravessado; o 3D repete isso, e um boné atravessado só se o 2D for assim), e **o mascote 3D ganha uma
+  malha NOVA do Meshy com as orelhas afastadas** ("a qualidade vai ser maior"), no lugar de dobrar a malha de hoje. A foto de
+  entrada é `camadas/para-meshy/corpo-mascote.png` (`mascote-frente.mjs`), e o boné ganhou uma imagem própria, grande
+  (`acessorio-avulso.mjs`).
 
 ## Traduzir mensagens de outro idioma: válido, para outro momento
 

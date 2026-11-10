@@ -2809,7 +2809,7 @@ export default {
   'Campanha': 'Kampaania',
   'Sem vidas.': 'Elud otsas.',
   'Você volta em {n}…': 'Tuled tagasi {n} pärast…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Nooled kõndimiseks, X löömiseks (kolm järjest on kombo), Z hüppamiseks, C erirünnakuks, mis võtab natuke elu.',
+  'Arrancada': 'Sööst',
   'Andar': 'Kõnni',
   'Especial': 'Erirünnak',
   'Pular': 'Hüppa',
@@ -3174,6 +3174,9 @@ export default {
   "Entrar na comunidade": "Liitu kogukonnaga",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Põrandal seisev, ümara võrega, palavateks päevadeks.",
+  // A caminha do gato
+  "Caminha do gato": "Kassipesa",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Ümar ja pehme, madala sissepääsuga. Kass magab siin.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatar",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3186,6 +3189,23 @@ export default {
   "Bicho do quarto": "Toa lemmikloom",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Kõne helin",
+  'Tocar ligações com o áudio desativado': "Helista kõnede puhul ka siis, kui heli on väljas",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Kui heli on välja lülitatud, saabub privaatkõne vaikselt: teade ilmub ekraanile ja Syden vilgub tegumiribal. Lülita see sisse, et helinat ikkagi kuulda.",
+  'Avatares anteriores': "Varasemad avatarid",
+  'Voltar a este avatar': "Mine tagasi selle avatari juurde",
+  'Tirar do histórico': "Eemalda ajaloost",
+  'Avatar não encontrado.': "Avatari ei leitud.",
+  'Sininho': "Kelluke",
+  'Arpejo': "Arpedžo",
+  'Suave': "Pehme",
+  'Bipe': "Piiks",
+  'Grupo': "Rühm",
+  'Nenhum': "Puudub",
+  'Novo grupo': "Uus rühm",
+  'O do grupo ({grupo})': "Rühma oma ({grupo})",
+  'Grupos de toque': "Helinarühmad",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Igal rühmal on oma helin. Pane keegi rühma või vali helin ainult talle, paremklõpsuga tema nimel.",
+  'Apagar grupo': "Kustuta rühm",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Heliseb, kui keegi sulle privaatvestluses helistab, isegi kui teavitushelid on välja lülitatud. Režiimis „Ära sega“ ilmub kõne helisemata.",
   'Avisar das ligações com o Syden em segundo plano?': "Kas teavitada kõnedest, kui Syden on taustal?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Brauser küsib luba. Nii saad kõnedest ja sõnumitest teada ka teisel vahelehel või teises programmis.",

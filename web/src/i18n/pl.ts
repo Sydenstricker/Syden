@@ -2807,7 +2807,7 @@ export default {
   'Campanha': 'Kampania',
   'Sem vidas.': 'Brak żyć.',
   'Você volta em {n}…': 'Wracasz za {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Strzałki do chodzenia, X do uderzania (trzy z rzędu to kombo), Z do skoku, C do ciosu specjalnego, który zabiera trochę życia.',
+  'Arrancada': 'Zryw',
   'Andar': 'Idź',
   'Especial': 'Specjalny',
   'Pular': 'Skocz',
@@ -3172,6 +3172,9 @@ export default {
   "Entrar na comunidade": "Dołącz do społeczności",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Stojący, z okrągłą kratką, na upalne dni.",
+  // A caminha do gato
+  "Caminha do gato": "Legowisko dla kota",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Okrągłe i miękkie, z niskim wejściem. Tu śpi kot.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Awatar",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3184,6 +3187,23 @@ export default {
   "Bicho do quarto": "Zwierzak z pokoju",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Dzwonek połączenia",
+  'Tocar ligações com o áudio desativado': "Dzwoń przy połączeniach z wyłączonym dźwiękiem",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Z wyłączonym dźwiękiem prywatne połączenie przychodzi bez dźwięku: powiadomienie pojawia się na ekranie, a Syden miga na pasku zadań. Włącz, aby mimo to słyszeć dzwonek.",
+  'Avatares anteriores': "Poprzednie awatary",
+  'Voltar a este avatar': "Wróć do tego awatara",
+  'Tirar do histórico': "Usuń z historii",
+  'Avatar não encontrado.': "Nie znaleziono awatara.",
+  'Sininho': "Dzwoneczek",
+  'Arpejo': "Arpeggio",
+  'Suave': "Łagodny",
+  'Bipe': "Piknięcie",
+  'Grupo': "Grupa",
+  'Nenhum': "Brak",
+  'Novo grupo': "Nowa grupa",
+  'O do grupo ({grupo})': "Dzwonek grupy ({grupo})",
+  'Grupos de toque': "Grupy dzwonków",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Każda grupa ma własny dzwonek. Dodaj kogoś do grupy albo wybierz dzwonek tylko dla tej osoby – kliknij prawym przyciskiem jej imię.",
+  'Apagar grupo': "Usuń grupę",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Dzwoni, gdy ktoś dzwoni do ciebie w prywatnej rozmowie, nawet przy wyłączonych dźwiękach powiadomień. W trybie „Nie przeszkadzać” połączenie pojawia się bez dzwonienia.",
   'Avisar das ligações com o Syden em segundo plano?': "Powiadamiać o połączeniach, gdy Syden działa w tle?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Przeglądarka poprosi o zgodę. Dzięki temu dowiesz się o połączeniach i wiadomościach nawet w innej karcie lub programie.",

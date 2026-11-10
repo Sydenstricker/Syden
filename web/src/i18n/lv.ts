@@ -2814,7 +2814,7 @@ export default {
   'Campanha': 'Kampaņa',
   'Sem vidas.': 'Nav dzīvību.',
   'Você volta em {n}…': 'Atgriezīsies pēc {n}…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'Ar bultiņām ej, ar X sit (trīs pēc kārtas ir kombo), ar Z lec, ar C speciālais gājiens, kas patērē mazliet dzīvības.',
+  'Arrancada': 'Izrāviens',
   'Andar': 'Iet',
   'Especial': 'Speciālais',
   'Pular': 'Lēkt',
@@ -3179,6 +3179,9 @@ export default {
   "Entrar na comunidade": "Pievienoties kopienai",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "Stāvošs, ar apaļo režģi, karstajām dienām.",
+  // A caminha do gato
+  "Caminha do gato": "Kaķa gulta",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "Apaļa un mīksta, ar zemu ieeju. Šeit guļ kaķis.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "Avatārs",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3191,6 +3194,23 @@ export default {
   "Bicho do quarto": "Istabas mājdzīvnieks",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "Zvana signāls",
+  'Tocar ligações com o áudio desativado': "Zvana signāls arī ar izslēgtu skaņu",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Kad skaņa ir izslēgta, privāts zvans pienāk bez skaņas: paziņojums parādās ekrānā, un Syden mirgo uzdevumjoslā. Ieslēdz, lai zvana signālu tomēr dzirdētu.",
+  'Avatares anteriores': "Iepriekšējie avatāri",
+  'Voltar a este avatar': "Atgriezties pie šī avatāra",
+  'Tirar do histórico': "Noņemt no vēstures",
+  'Avatar não encontrado.': "Avatārs nav atrasts.",
+  'Sininho': "Zvaniņš",
+  'Arpejo': "Arpēdžo",
+  'Suave': "Maigs",
+  'Bipe': "Pīkstiens",
+  'Grupo': "Grupa",
+  'Nenhum': "Nav",
+  'Novo grupo': "Jauna grupa",
+  'O do grupo ({grupo})': "Grupas signāls ({grupo})",
+  'Grupos de toque': "Zvana signālu grupas",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "Katrai grupai ir savs zvana signāls. Ar labo klikšķi uz vārda ieliec kādu grupā vai izvēlies signālu tikai viņam.",
+  'Apagar grupo': "Dzēst grupu",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "Zvana, kad kāds tev zvana privātā sarunā, pat ja paziņojumu skaņas ir izslēgtas. Režīmā “Netraucēt” zvans parādās bez zvanīšanas.",
   'Avisar das ligações com o Syden em segundo plano?': "Paziņot par zvaniem, kad Syden ir fonā?",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "Pārlūks prasīs atļauju. Tā tu uzzināsi par zvaniem un ziņām arī citā cilnē vai programmā.",

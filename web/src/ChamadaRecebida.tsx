@@ -5,6 +5,7 @@ import { isolar } from './bidi';
 import { nomeDe } from './directory';
 import { useT } from './i18n';
 import { sounds } from './sounds';
+import { toqueDe, useToques } from './toquesDeLigacao';
 
 /** O que chega a quem recebe a ligação ('chamada:tocando', em server/src/realtime.ts). */
 export interface ChamadaTocando {
@@ -36,13 +37,15 @@ export function ChamadaRecebida({
 }) {
   const t = useT();
   const quem = nomeDe(chamada.de);
+  // o toque desta pessoa: o dela, o do grupo dela ou o padrão (toquesDeLigacao.ts); "Silenciar" chega sem som
+  const toque = toqueDe(chamada.de.id, useToques());
 
   useEffect(() => {
-    if (calado) return;
-    sounds.toque();
-    const relogio = window.setInterval(() => sounds.toque(), 2500);
+    if (calado || toque === 'silencio') return;
+    sounds.toque(toque);
+    const relogio = window.setInterval(() => sounds.toque(toque), 2500);
     return () => window.clearInterval(relogio);
-  }, [calado]);
+  }, [calado, toque]);
 
   return (
     <div className="convite-voz chamada-recebida" role="alertdialog" aria-label={t('{quem} está ligando', { quem: quem })}>

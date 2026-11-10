@@ -74,6 +74,9 @@ test('sem arrumação, a de fábrica: a poltrona guardada, e os eixos do pixel n
   assert.ok(!q.moveis.some((m) => m.id === 'ventilador'), 'o ventilador começa guardado');
   // o móvel novo chega guardado para quem já arrumou (sem lugar na arrumação dele), e aparece onde a pessoa o pôs
   assert.ok(!noMundo({ moveis: { cama: { c: [1.5, 7], lado: 0 } }, guardados: [] }).moveis.some((m) => m.id === 'ventilador'));
+  // a caminha do gato vem posta no quarto novo, e chega guardada no quarto já arrumado (09/11/2026)
+  assert.ok(q.moveis.some((m) => m.id === 'caminha-gato'), 'a caminha começa posta');
+  assert.ok(!noMundo({ moveis: { cama: { c: [1.5, 7], lado: 0 } }, guardados: [] }).moveis.some((m) => m.id === 'caminha-gato'));
   assert.deepEqual(noMundo({ moveis: { ventilador: { c: [5.5, 6.5], lado: 2 } }, guardados: [] }).moveis.find((m) => m.id === 'ventilador')?.pe, { x0: 6, x1: 7, z0: 5, z1: 6 });
   const cama = q.moveis.find((m) => m.id === 'cama')!;
   // (u, v) = (1,5, 7), o lado 0, e o pé de 3 ao longo de u por 2 ao longo de v

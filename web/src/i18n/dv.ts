@@ -2822,7 +2822,7 @@ export default {
   'Campanha': 'ކެމްޕެއިން',
   'Sem vidas.': 'ފުރާނަ ނިމިއްޖެ.',
   'Você volta em {n}…': '{n} ފަހުން އަނބުރާ އަންނާނެ…',
-  'Setas para andar, X para bater (três seguidas é o combo), Z para pular, C para o especial, que gasta um pouco de vida.': 'ހިނގަން އެރޯ، ތަޅަން X (ތިން ފަހަރު ދިމާދިމާއަށް ކޮމްބޯ)، ފުންމަން Z، ކުޑަކޮށް ފުރާނަ ހޭދަވާ ޚާއްޞަ ހަރަކާތަށް C.',
+  'Arrancada': 'ހަލުވި ދުވުން',
   'Andar': 'ހިނގުން',
   'Especial': 'ޚާއްޞަ',
   'Pular': 'ފުންމުން',
@@ -3187,6 +3187,9 @@ export default {
   "Entrar na comunidade": "ކޮމިއުނިޓީއަށް ގުޅުން",
   // O ventilador do quarto
   "De pé, com a grade redonda, para os dias quentes.": "ތިބޭ ފަންކާއެއް، ވަށް ދަޅާއާއެކު، ހޫނު ދުވަސްތަކަށް.",
+  // A caminha do gato
+  "Caminha do gato": "ބުޅާގެ އެނދު",
+  "Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.": "ވަށް، މަޑު، ދަށް ވަދެވޭ ތަނަކާއެކު. ބުޅާ ނިދަނީ މިތާ.",
   // O Guarda-roupa: a aba do avatar
   "Avatar": "އަވަތާރު",
   // A Aparência em fichário: as orelhas, as setas do personagem e o bicho do quarto
@@ -3199,6 +3202,23 @@ export default {
   "Bicho do quarto": "ކޮޓަރީގެ ގެންގުޅޭ ޖަނަވާރު",
   // A ligação na conversa privada: o toque, e o pedido de notificação uma vez só (09/11/2026)
   'Toque de ligação': "ކޯލްގެ ރިންގް",
+  'Tocar ligações com o áudio desativado': "އަޑު ބަންދުކޮށްފައި ވިޔަސް ކޯލްތަކަށް ރިންގްވާ",
+  'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "އަޑު ބަންދުކޮށްފައިވާއިރު، ޕްރައިވެޓް ކޯލެއް އަންނަނީ އަޑެއް ނެތިއެވެ: އެންގުން ސްކްރީނުގައި ފެނިގެންދާނެ، އަދި Syden ޓާސްކްބާގައި ދިއްލި ނިވިގެންދާނެ. އެހެންނަމަވެސް ރިންގް އަޑުއަހަން މިއަށް ހުޅުވާލާ.",
+  'Avatares anteriores': "ކުރީގެ އަވަތާރުތައް",
+  'Voltar a este avatar': "މި އަވަތާރަށް އަނބުރާ ދޭ",
+  'Tirar do histórico': "ހިސްޓްރީއިން ނަގާ",
+  'Avatar não encontrado.': "އަވަތާރު ނުފެނުނު.",
+  'Sininho': "ކުޑަ ބެލް",
+  'Arpejo': "އާޕެޖިއޯ",
+  'Suave': "މަޑު",
+  'Bipe': "ބީޕް",
+  'Grupo': "ގްރޫޕް",
+  'Nenhum': "އެއްވެސް ނެތް",
+  'Novo grupo': "އައު ގްރޫޕް",
+  'O do grupo ({grupo})': "ގްރޫޕުގެ ރިންގް ({grupo})",
+  'Grupos de toque': "ރިންގް ގްރޫޕްތައް",
+  'Cada grupo tem o seu toque. Ponha alguém num grupo, ou escolha um toque só para essa pessoa, com o botão direito no nome dela.': "ކޮންމެ ގްރޫޕަކަށް ވަކި ރިންގެއް އެބައޮތް. ނަމުގެ މައްޗަށް ކަނާތު ފަރާތުން ކްލިކްކޮށް، މީހަކު ގްރޫޕަކަށް ލާ، ނުވަތަ އެމީހާއަށް ހަމައެކަނި ރިންގެއް ހޮވާ.",
+  'Apagar grupo': "ގްރޫޕް ފޮހެލާ",
   'Toca quando alguém liga para você numa conversa privada, mesmo com os sons de aviso desligados. Em "Não perturbe", a ligação aparece sem tocar.': "ޕްރައިވެޓް ވާހަކައެއްގައި މީހަކު ކަލެއަށް ގުޅާއިރު ރިންގްވާނެ، ނޮޓިފިކޭޝަން ސައުންޑްތައް ނިއްވާފައި ވިޔަސް. \"ހަމަޖެހިލުމުގައި\" ހުރިއިރު ކޯލް ފެންނާނީ ރިންގް ނުވެ.",
   'Avisar das ligações com o Syden em segundo plano?': "Syden ފަހަތުގައި ހުރިއިރު ކޯލްތަކުގެ ނޮޓިފިކޭޝަން ދޭންތަ؟",
   'O navegador vai pedir permissão. Assim você fica sabendo de ligações e mensagens mesmo em outra aba ou programa.': "ބްރައުޒަރު ހުއްދަ އެދޭނެ. އެއީ އެހެން ޓެބެއް ނުވަތަ ޕްރޮގްރާމެއްގައި ހުއްޓަސް ކޯލްތަކާއި މެސެޖްތަކުގެ ޚަބަރު ލިބޭނެ ގޮތް.",

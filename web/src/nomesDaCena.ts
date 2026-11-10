@@ -10,8 +10,8 @@ import { primeiraForma } from './minijogos';
  * busca acha por qualquer uma.
  */
 type T = (texto: string) => string;
-/** (l: a planta do quarto; w: a cor da parede; f: a do piso — 06/11/2026) */
-export type GrupoDaCena = 'm' | 'p' | 'o' | 'j' | 'c' | 'l' | 'w' | 'f';
+/** (l: a planta do quarto; w: a cor da parede; f: a do piso — 06/11/2026; v: a vista da janela — 09/11/2026) */
+export type GrupoDaCena = 'm' | 'p' | 'o' | 'j' | 'c' | 'l' | 'w' | 'f' | 'v';
 
 const MOVEIS: Record<string, (t: T) => string> = {
   pufe: (t) => t('Pufe'),
@@ -27,6 +27,8 @@ const MOVEIS: Record<string, (t: T) => string> = {
   gato: (t) => t('Gato'),
   // (já traduzido nos 80: é palavra do Desenha e adivinha)
   ventilador: (t) => t('Ventilador'),
+  // a caminha do gato (09/11/2026)
+  'caminha-gato': (t) => t('Caminha do gato'),
   tv: (t) => t('TV'),
   sofa: (t) => t('Sofá'),
   mesinha: (t) => t('Mesinha'),
@@ -83,6 +85,15 @@ const JANELAS: Record<string, (t: T) => string> = {
   tijolo: (t) => t('De tijolo'),
 };
 
+// AS VISTAS DA JANELA (09/11/2026): as quatro paisagens, pelo número; o nome é o que mais se vê em cada uma (palavras que já
+// existiam nos 80, do Desenha e adivinha: a figura é que mostra)
+const VISTAS: Record<string, (t: T) => string> = {
+  '0': (t) => t('Árvore'),
+  '1': (t) => t('Rio'),
+  '2': (t) => t('Montanha'),
+  '3': (t) => t('Vila'),
+};
+
 const CORES: Record<string, (t: T) => string> = {
   salvia: (t) => t('Sálvia'),
   terracota: (t) => t('Terracota'),
@@ -108,7 +119,7 @@ const CORES_DO_PISO: Record<string, (t: T) => string> = {
   pinho: (t) => t('Pinho'),
 };
 
-const TABELAS: Record<GrupoDaCena, Record<string, (t: T) => string>> = { m: MOVEIS, p: DA_PAREDE, o: DE_CIMA, j: JANELAS, c: CORES, l: PLANTAS, w: CORES_DA_PAREDE, f: CORES_DO_PISO };
+const TABELAS: Record<GrupoDaCena, Record<string, (t: T) => string>> = { m: MOVEIS, p: DA_PAREDE, o: DE_CIMA, j: JANELAS, c: CORES, l: PLANTAS, w: CORES_DA_PAREDE, f: CORES_DO_PISO, v: VISTAS };
 
 /** O texto inteiro do nome (com as variantes "a|b", se houver), ou o código, para o que ainda não tem nome. */
 function nomeCru(t: T, grupo: GrupoDaCena, id: string): string {
@@ -139,6 +150,7 @@ const DESCRICOES: Partial<Record<GrupoDaCena, Record<string, (t: T) => string>>>
     'planta-alta': (t) => t('Folhas grandes para encher um canto de verde.'),
     'planta-baixa': (t) => t('Pequena e cheia, num cesto de palha.'),
     ventilador: (t) => t('De pé, com a grade redonda, para os dias quentes.'),
+    'caminha-gato': (t) => t('Redonda e fofa, com a entrada mais baixa. O gato dorme aqui.'),
     tv: (t) => t('Mostra quem está transmitindo agora.'),
     sofa: (t) => t('Cabe a turma inteira na frente da TV.'),
     mesinha: (t) => t('Baixinha, perto do sofá, para a pipoca e o refrigerante.'),

@@ -1,7 +1,7 @@
 /**
  * A BRIGA NA HORTA (03/11/2026, o piloto): briga de rua de lado, em grupo, no espírito dos fliperamas de quatro jogadores do
- * começo dos anos 90 — SÓ A MECÂNICA (andar pela faixa da frente para o fundo, combo de três socos, pulo, voadora, o especial
- * que custa vida, cair e levantar piscando). Nenhum nome, personagem, fase, inimigo, som ou arte de ninguém: os coelhos
+ * começo dos anos 90 — SÓ A MECÂNICA (andar pela faixa da frente para o fundo, combo de três socos, pulo, voadora, o especial,
+ * cair e levantar piscando; desde 09/11/2026, a arrancada de dois toques e o especial que gira andando, com a barra de recarga). Nenhum nome, personagem, fase, inimigo, som ou arte de ninguém: os coelhos
  * defendem a horta de raposas e corvos, e o chefe é um texugo. Tudo desenhado por código no site (web/src/JogoBriga.tsx),
  * menos o coelho, que é o mascote 3D renderizado de lado (e2e/pixel-art/personagem/blender/meshy/briga.py).
  *
@@ -25,7 +25,7 @@
  * O que continua possível pelo console, entre amigos: mentir a própria posição dentro do limite de velocidade (fugir dos
  * golpes indo e voltando rápido), e mandar acertos que a tela não mostrou mas que a distância permite (bater um pouco mais
  * longe que o desenho, dentro da folga de 10 px). Não dá para bater em quem está do outro lado da tela, nem mais rápido que
- * o combo, nem num inimigo caído ou morto, nem fazer o especial sem pagar a vida. A altura também é conferida (revisão de
+ * o combo, nem num inimigo caído ou morto, nem girar antes de a barra do especial encher. A altura também é conferida (revisão de
  * 03/11/2026): o pulo tem teto e tempo de ar, o soco é de quem está no chão, e a voadora é uma por pulo de verdade, com um
  * balde por cima. Ainda possível: emendar pulos de 1 s com uma posição no chão entre eles (no ar ~95% do tempo, contra
  * ~90% de quem aperta o pulo sem parar no site), o que escapa de golpes inimigos como no site; e cada voadora custa um pulo.
@@ -49,7 +49,26 @@ export const VEL_X = 72;
 export const VEL_Y = 44;
 export const VIDA = 100;
 export const VIDAS = 3;
-export const CUSTO_ESPECIAL = 8;
+/**
+ * O ESPECIAL É UM GIRO EM QUE SE ANDA (09/11/2026, pedido dele; o porquê está em web/src/briga/regras.ts): dura GIRO_MS, e
+ * cada volta de GIRO_TICK_MS pega cada inimigo uma vez. Não custa mais vida: sai quando a recarga (RECARGA_ESPECIAL_MS desde
+ * o último) acaba, e o servidor confere pelo relógio dele, com FOLGA_RECARGA_MS para a rede.
+ */
+export const GIRO_MS = 1600;
+export const GIRO_TICK_MS = 320;
+export const RECARGA_ESPECIAL_MS = 8000;
+export const FOLGA_RECARGA_MS = 400;
+/** Uma volta não pode chegar mais que isto antes da hora dela (a rede atrasa o começo do giro mais que a volta, às vezes). */
+export const FOLGA_DA_VOLTA_MS = 250;
+/**
+ * A ARRANCADA (09/11/2026, pedido dele): dois toques para o mesmo lado, e o coelho dispara ARRANCADA_MS a ARRANCADA_VEL. O
+ * servidor dá, na posição que a anuncia (a ação 'arrancada'), ARRANCADA_EXTRA px a mais de crédito de andar, que valem por
+ * pouco tempo; uma por ARRANCADA_RECARGA_MS. Passar disso continua cortado como antes: não vira teleporte.
+ */
+export const ARRANCADA_MS = 200;
+export const ARRANCADA_VEL = 220;
+export const ARRANCADA_RECARGA_MS = 600;
+export const ARRANCADA_EXTRA = Math.ceil(((ARRANCADA_VEL - VEL_X) * ARRANCADA_MS) / 1000) + 6;
 
 export type Golpe = 'soco1' | 'soco2' | 'soco3' | 'voadora' | 'especial';
 /** Cada golpe: quanto dura (ms), o alcance à frente [de, até] (px; o especial pega dos dois lados), a fundura e o dano. */
@@ -58,8 +77,11 @@ export const GOLPES: Record<Golpe, { dura: number; alcance: [number, number]; fu
   soco2: { dura: 280, alcance: [6, 32], fundo: 9, dano: 5, derruba: false },
   soco3: { dura: 420, alcance: [4, 34], fundo: 10, dano: 9, derruba: true },
   voadora: { dura: 900, alcance: [0, 30], fundo: 11, dano: 9, derruba: true },
-  especial: { dura: 520, alcance: [-38, 38], fundo: 14, dano: 10, derruba: true },
+  // o giro: pega dos dois lados, a cada volta (GIRO_TICK_MS), e não derruba (só empurra: quem gira vai atrás)
+  especial: { dura: GIRO_MS, alcance: [-34, 34], fundo: 14, dano: 4, derruba: false },
 };
+/** Quantas voltas tem o giro. */
+export const VOLTAS_DO_GIRO = Math.ceil(GIRO_MS / GIRO_TICK_MS);
 // OS BICHOS E AS FASES moram em briga-fases.ts (a mesma cópia do site, web/src/briga/fases.ts)
 export { BICHOS, CAMPANHA, CORPO, FASES_DA_BRIGA, TIPOS, type TipoDeInimigo };
 
@@ -72,7 +94,9 @@ export const ESTADOS = [
 ] as const;
 export type EstadoDoInimigo = (typeof ESTADOS)[number];
 /** As ações do coelho (o que a pessoa diz que ele está fazendo, para os outros o desenharem). */
-export const ACOES = ['parado', 'andando', 'soco1', 'soco2', 'soco3', 'pulo', 'voadora', 'dor', 'caido', 'levantando', 'especial'] as const;
+// a ordem é o código que vai na rede: ação nova entra no FIM ('arrancada', 09/11/2026)
+export const ACOES = ['parado', 'andando', 'soco1', 'soco2', 'soco3', 'pulo', 'voadora', 'dor', 'caido', 'levantando', 'especial', 'arrancada'] as const;
+const ACAO_ARRANCADA = ACOES.indexOf('arrancada');
 
 // ---------------- O RELÓGIO E AS FOLGAS ----------------
 export const PASSO_MS = 50;
@@ -208,6 +232,10 @@ interface Jogador {
   ataques: Ataque[];
   ultimoAtaque: number;
   ultimoEspecial: number;
+  /** A última arrancada aceita, o crédito a mais dela (px) e até quando ele vale. */
+  ultimaArrancada: number;
+  extraX: number;
+  arrancadaAte: number;
   /** Desde a última voadora, ele já pôs o pé no chão? */
   pisou: boolean;
   /** Desde quando ele está no ar (a primeira posição com z > 0), ou null no chão. */
@@ -335,6 +363,9 @@ export function criarBriga({
             ataques: [],
             ultimoAtaque: 0,
             ultimoEspecial: -Infinity,
+            ultimaArrancada: -Infinity,
+            extraX: 0,
+            arrancadaAte: 0,
             pisou: true,
             noArDesde: null,
             precisaPisar: false,
@@ -1095,11 +1126,9 @@ export function criarBriga({
           if (!gastar(j.baldes.voadora)) return;
           j.pisou = false;
         } else {
-          // o especial custa vida (o servidor cobra), e não dá para repetir de seguida
-          if (t - j.ultimoEspecial < 900 || j.hp <= CUSTO_ESPECIAL) return;
+          // o giro: só com a barra cheia (a recarga pelo relógio daqui, com a folga da rede)
+          if (t - j.ultimoEspecial < RECARGA_ESPECIAL_MS - FOLGA_RECARGA_MS) return;
           j.ultimoEspecial = t;
-          j.hp -= CUSTO_ESPECIAL;
-          j.invulAte = Math.max(j.invulAte, t + 350);
         }
         j.ultimoAtaque = id;
         ultimos.push({ id, golpe, em: t, acertos: 0 });
@@ -1116,12 +1145,24 @@ export function criarBriga({
         // não mais rápido que o coelho anda: o que se pode andar se acumula com o tempo (FOLGA_VEL × a velocidade), até um
         // teto pequeno para a rede (duas posições que chegam juntas); o empurrão e a volta dão um tempo livre
         const dt = Math.max(0, (t - j.ultimaEm) / 1000);
+        // a arrancada anunciada (no chão, uma por ARRANCADA_RECARGA_MS, com folga da rede) dá um crédito a mais, à parte, que
+        // vale pouco tempo e é gasto PRIMEIRO: o que sobra depois dela é só o andar de sempre (duas arrancadas emendadas não
+        // dobram a distância), e passado o prazo o que sobrou se perde
+        if (acao === ACAO_ARRANCADA && nz <= 0 && t - j.ultimaArrancada >= ARRANCADA_RECARGA_MS - 150) {
+          j.ultimaArrancada = t;
+          j.arrancadaAte = t + ARRANCADA_MS + 300;
+          j.extraX = ARRANCADA_EXTRA;
+        }
+        if (t > j.arrancadaAte) j.extraX = 0;
         j.creditoX = Math.min(ACUMULO_X, j.creditoX + VEL_X * FOLGA_VEL * dt);
         j.creditoY = Math.min(ACUMULO_Y, j.creditoY + VEL_Y * FOLGA_VEL * dt);
         if (t > j.livreAte) {
-          nx = j.x + Math.max(-j.creditoX, Math.min(j.creditoX, nx - j.x));
+          const podeX = j.creditoX + j.extraX;
+          nx = j.x + Math.max(-podeX, Math.min(podeX, nx - j.x));
           ny = j.y + Math.max(-j.creditoY, Math.min(j.creditoY, ny - j.y));
-          j.creditoX -= Math.abs(nx - j.x);
+          const gastoDoExtra = Math.min(j.extraX, Math.abs(nx - j.x));
+          j.extraX -= gastoDoExtra;
+          j.creditoX -= Math.abs(nx - j.x) - gastoDoExtra;
           j.creditoY -= Math.abs(ny - j.y);
         }
         j.x = nx;
@@ -1146,12 +1187,19 @@ export function criarBriga({
         if (!ataque) return 'golpe que não começou';
         const g = GOLPES[ataque.golpe];
         if (t - ataque.em > g.dura + 500) return 'golpe velho';
-        if (ataque.acertos >= 6) return 'acertos demais';
+        if (ataque.acertos >= (ataque.golpe === 'especial' ? 6 * VOLTAS_DO_GIRO : 6)) return 'acertos demais';
         const i = inimigos.get(d.inimigo as number);
         if (!i || i.hp <= 0 || i.estado === 'morto' || i.estado === 'caido' || i.estado === 'levantando') return 'inimigo fora';
         // o que voa alto (o corvo, o sapo no meio do pulo) só a voadora alcança
         if (i.z > 18 && ataque.golpe !== 'voadora') return 'alto demais';
-        const chave = `${j.userId}:${ataque.id}`;
+        // o giro pega cada inimigo uma vez POR VOLTA: a volta vem no acerto, e não pode chegar antes da hora dela
+        let volta = 0;
+        if (ataque.golpe === 'especial') {
+          volta = d.v as number;
+          if (!numero(volta) || !Number.isInteger(volta) || volta < 0 || volta >= VOLTAS_DO_GIRO) return 'volta';
+          if (t < ataque.em + volta * GIRO_TICK_MS - FOLGA_DA_VOLTA_MS) return 'volta adiantada';
+        }
+        const chave = ataque.golpe === 'especial' ? `${j.userId}:${ataque.id}:${volta}` : `${j.userId}:${ataque.id}`;
         if (i.acertos.has(chave)) return 'já acertou';
         const { x, y, z } = d;
         if (![x, y, z].every(numero)) return 'números';

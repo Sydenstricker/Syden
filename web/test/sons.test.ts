@@ -29,20 +29,28 @@ test('avisos desligados nas configurações calam tudo, inclusive o próprio cli
   }
 });
 
-// AS LIGAÇÕES (09/11/2026). O toque contava como som "dos outros": quem desligava os sons de aviso, ou ensurdecia, via a
-// ligação chegar calada — e ligação que não toca ninguém atende. Agora só a chave dele o cala.
-test('o toque de ligação toca com os sons de aviso desligados e ensurdecido', () => {
+// AS LIGAÇÕES (09/11/2026). O toque contava como som "dos outros": quem desligava os sons de aviso via a ligação chegar
+// calada. Agora os sons de aviso não o calam; o "Desativar áudio" o cala de fábrica (decisão dele), e a opção
+// toqueComAudioDesativado o deixa tocar mesmo assim.
+test('o toque de ligação toca com os sons de aviso desligados', () => {
   for (const sounds of [true, false]) {
-    for (const surdo of [true, false]) {
-      assert.equal(deveTocarLigacao('toque', { sounds, toqueDeLigacao: true }, surdo), true);
-      assert.equal(deveTocarLigacao('toque', { sounds, toqueDeLigacao: false }, surdo), false);
+    for (const toqueComAudioDesativado of [true, false]) {
+      assert.equal(deveTocarLigacao('toque', { sounds, toqueDeLigacao: true, toqueComAudioDesativado }, false), true);
+      assert.equal(deveTocarLigacao('toque', { sounds, toqueDeLigacao: false, toqueComAudioDesativado }, false), false);
     }
   }
 });
 
+test('com o áudio desativado o toque cala, a menos que a pessoa peça para ouvir', () => {
+  assert.equal(deveTocarLigacao('toque', { sounds: true, toqueDeLigacao: true, toqueComAudioDesativado: false }, true), false);
+  assert.equal(deveTocarLigacao('toque', { sounds: true, toqueDeLigacao: true, toqueComAudioDesativado: true }, true), true);
+  assert.equal(deveTocarLigacao('toque', { sounds: true, toqueDeLigacao: false, toqueComAudioDesativado: true }, true), false);
+});
+
 // O chamando é o som da chamada em que EU estou: cala como o resto dela.
 test('o chamando de quem liga obedece aos sons de aviso e ao "Desativar áudio"', () => {
-  assert.equal(deveTocarLigacao('chamando', { sounds: true, toqueDeLigacao: false }, false), true);
-  assert.equal(deveTocarLigacao('chamando', { sounds: true, toqueDeLigacao: true }, true), false);
-  assert.equal(deveTocarLigacao('chamando', { sounds: false, toqueDeLigacao: true }, false), false);
+  const a = { toqueComAudioDesativado: true };
+  assert.equal(deveTocarLigacao('chamando', { sounds: true, toqueDeLigacao: false, ...a }, false), true);
+  assert.equal(deveTocarLigacao('chamando', { sounds: true, toqueDeLigacao: true, ...a }, true), false);
+  assert.equal(deveTocarLigacao('chamando', { sounds: false, toqueDeLigacao: true, ...a }, false), false);
 });
