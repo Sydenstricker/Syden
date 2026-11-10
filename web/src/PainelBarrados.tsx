@@ -104,9 +104,54 @@ export function PainelBarrados() {
             <button type="button" className="btn-secondary" onClick={() => void desfazer(b)}>
               {b.banidoEm ? t('Desfazer o banimento') : t('Levantar a suspensão')}
             </button>
+            {!b.banidoEm && <CorrigirNascimento userId={b.userId} aoFeito={carregar} />}
           </li>
         ))}
       </ul>
     </section>
+  );
+}
+
+/**
+ * CORRIGIR A DATA DE NASCIMENTO (10/11/2026): para quem foi suspenso por idade e errou a data. A pessoa não corrige a própria
+ * (é o que a protege de quem mente para sair das proteções); quem cuida do Syden corrige, e a regra da idade vale na hora:
+ * de 13 para cima a suspensão sai, abaixo de 13 continua (ver /api/admin/nascimento).
+ */
+function CorrigirNascimento({ userId, aoFeito }: { userId: number; aoFeito: () => void }) {
+  const t = useT();
+  const [aberto, setAberto] = useState(false);
+  const [data, setData] = useState('');
+  const [erro, setErro] = useState<string | null>(null);
+  if (!aberto) {
+    return (
+      <button type="button" className="btn-secondary" onClick={() => setAberto(true)}>
+        {t('Corrigir a data de nascimento')}
+      </button>
+    );
+  }
+  return (
+    <form
+      className="denuncia-autoridade"
+      onSubmit={async (e) => {
+        e.preventDefault();
+        setErro(null);
+        try {
+          await api('/api/admin/nascimento', { method: 'POST', body: { userId, nascimento: data } });
+          setAberto(false);
+          aoFeito();
+        } catch (err) {
+          setErro((err as Error).message);
+        }
+      }}
+    >
+      <label>
+        {t('Data de nascimento')}
+        <input type="date" value={data} max={new Date().toISOString().slice(0, 10)} onChange={(e) => setData(e.target.value)} required />
+      </label>
+      <button className="btn-primary" disabled={!data}>
+        {t('Corrigir a data de nascimento')}
+      </button>
+      {erro && <p className="form-error">{erro}</p>}
+    </form>
   );
 }

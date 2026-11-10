@@ -84,8 +84,17 @@ describe('a idade', () => {
     assert.equal((await como('POST', '/api/me/recurso', { texto: 'Errei o ano, tenho 30 anos.' })).statusCode, 200);
     const barrados = (await dono('GET', '/api/admin/barrados')).json().barrados;
     assert.ok(barrados.some((b: { username: string; recurso: string }) => b.username === 'pequeno' && b.recurso.includes('30 anos')));
-    assert.equal((await dono('POST', '/api/admin/levantar-suspensao', { userId: sem.id })).statusCode, 200);
+    // levantar sem corrigir a data deixaria a conta aberta como ADULTA (ehMenor só cobre 13 a 17): recusa
+    assert.equal((await dono('POST', '/api/admin/levantar-suspensao', { userId: sem.id })).statusCode, 409);
+    // a correção da data é de quem cuida do Syden, e a regra vale na hora
+    assert.equal((await como('POST', '/api/admin/nascimento', { userId: sem.id, nascimento: comAnos(30) })).statusCode, 403, 'a pessoa não corrige a própria');
+    const corrigida = (await dono('POST', '/api/admin/nascimento', { userId: sem.id, nascimento: comAnos(30) })).json();
+    assert.equal(corrigida.faixa, 'adulto');
+    assert.equal(corrigida.barreira, null);
     assert.equal((await como('GET', '/api/me')).json().barreira, null);
+    // corrigida para menos de 13, suspende de novo
+    assert.equal((await dono('POST', '/api/admin/nascimento', { userId: sem.id, nascimento: comAnos(11) })).json().barreira.tipo, 'suspensa');
+    assert.equal((await dono('POST', '/api/admin/nascimento', { userId: sem.id, nascimento: 'ontem' })).statusCode, 400);
   });
 
   it('de 13 a 15, passados 7 dias sem responsável, a conta para até ligar', async () => {

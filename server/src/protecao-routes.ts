@@ -292,6 +292,30 @@ export function registerProtecaoRoutes(app: FastifyInstance, io: IOServer) {
       });
     }
 
+    /**
+     * CORRIGIR A DATA DE NASCIMENTO (pedido dele, 10/11/2026, com um caso de suspensão por idade): a pessoa não corrige a
+     * própria data (é o que a protege de quem mente para sair das proteções), e "levantar a suspensão" deixava a data de
+     * menor de 13 na conta. Quem cuida do Syden corrige a data, e a regra da idade vale de novo na hora: abaixo de 13,
+     * suspensa; de 13 para cima, a suspensão por idade sai (e de 13 a 15 corre o prazo do responsável a partir de agora).
+     * A auditoria guarda a FAIXA, nunca a data (art. 13 do ECA Digital: dado de verificação só serve para verificar).
+     */
+    authed.post<{ Body: { userId?: number; nascimento?: string } }>('/api/admin/nascimento', async (request, reply) => {
+      if (!request.user.isAdmin) return reply.code(403).send({ error: 'Só quem cuida do Syden faz isto.' });
+      const alvo = Number(request.body?.userId);
+      const nascimento = request.body?.nascimento;
+      if (!db.findUserById(alvo)) return reply.code(404).send({ error: 'Pessoa não encontrada.' });
+      if (!dataValida(nascimento) || Date.parse(nascimento) > Date.now()) return reply.code(400).send({ error: 'Escreva a data de nascimento.' });
+      db.guardarNascimento(alvo, nascimento, 'corrigida');
+      const faixa = faixaDe(nascimento);
+      const suspensa = !!db.protecaoDe(alvo)?.suspensaEm;
+      if (faixa === 'crianca' && !suspensa) db.suspenderPorIdade(alvo, 'O Syden é para quem tem 13 anos ou mais.');
+      if (faixa !== 'crianca' && suspensa) db.levantarSuspensao(alvo);
+      afastarDasChamadas(io, alvo);
+      db.registrarAuditoria({ actor: request.user, action: 'conta.nascimento-corrigido', target: db.findUserById(alvo)?.username ?? String(alvo), detail: faixa ?? '' });
+      // (a idade verificada pelo Windows, se houver, continua valendo quando é mais protetora: faixaDaConta)
+      return { faixa, barreira: barreiraDe(alvo) };
+    });
+
     for (const [rota, acao] of [
       ['/api/admin/desbanir', 'desbanir'],
       ['/api/admin/levantar-suspensao', 'levantar'],
@@ -300,6 +324,11 @@ export function registerProtecaoRoutes(app: FastifyInstance, io: IOServer) {
         if (!request.user.isAdmin) return reply.code(403).send({ error: 'Só quem cuida do Syden faz isto.' });
         const alvo = Number(request.body?.userId);
         if (!db.findUserById(alvo)) return reply.code(404).send({ error: 'Pessoa não encontrada.' });
+        // Levantar a suspensão de quem tem na conta a data de menor de 13 deixava a conta aberta COMO ADULTA (ehMenor só cobre
+        // 13 a 17): primeiro corrige-se a data (/api/admin/nascimento), que levanta a suspensão sozinha.
+        if (acao === 'levantar' && faixaDaConta(db.protecaoDe(alvo)) === 'crianca') {
+          return reply.code(409).send({ error: 'A data de nascimento desta conta dá menos de 13 anos. Corrija a data primeiro.' });
+        }
         if (acao === 'desbanir') db.desbanir(alvo);
         else db.levantarSuspensao(alvo);
         db.registrarAuditoria({
