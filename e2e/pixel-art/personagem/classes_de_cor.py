@@ -48,7 +48,36 @@ def cls(a, corpo):
             tam = np.bincount(rot.ravel()); tam[0] = 0
             roupa |= rot == tam.argmax()
     out[roupa] = 2
+    if corpo in ('musculoso', 'musculoso-f-curta'):
+        # OS BRILHOS DA REGATA (relato dele, 10/11/2026: "as costas não pegaram a cor da roupa"): nas costas, a luz deixa tons
+        # claros (lum >= 155) DENTRO da regata, e eles ficavam pelo, manchas da cor do pelo na roupa. Buraco da roupa vira roupa,
+        # menos o que encosta no contorno: o rabinho (entre a regata e o short) e a faixa da barriga têm o traço preto em volta.
+        roupa = out == 2
+        buraco = ndimage.binary_fill_holes(roupa) & ~roupa & (out == 1)
+        rot, n = ndimage.label(buraco, structure=np.ones((3, 3)))
+        for k in range(1, n + 1):
+            p = rot == k
+            if not (ndimage.binary_dilation(p, np.ones((3, 3))) & contorno).any(): out[p] = 2
     out[rosa] = 3; out[contorno] = 3
+    # AS SOMBRAS ESCURAS DO PELO (relato dele, 10/11/2026: "a orelha caída está com vários artefatos, em vários quadros"): o
+    # queixo, o traço da boca e a borda das orelhas são do mesmo lilás, só que abaixo de 95, e ficavam FIXOS: com o pelo verde,
+    # manchas roxas no rosto. Tom lilás de 60 a 95 que não é roupa nem contorno vai para a classe da vizinhança (pelo ou roupa,
+    # a que tiver mais em volta; sem nenhuma, pelo): assim a sombra na beira da regata continua roupa.
+    sombra = op & ~contorno & ~rosa & (out == 3) & (lum >= 60) & (lum < 95) & (b >= r - 25) & (sat < 70)
+    if sombra.any():
+        k = np.ones((3, 3))
+        pelo = ndimage.convolve((out == 1).astype(int), k, mode='constant')
+        pano = ndimage.convolve((out == 2).astype(int), k, mode='constant')
+        out[sombra & (pano > pelo)] = 2
+        out[sombra & (pano <= pelo)] = 1
+    # e o pontinho ROSA solto no meio da roupa (um reflexo do PixelLab na gola): o rosa de verdade (focinho, orelha, almofadas
+    # das patas) encosta no pelo; o de até 4 px cercado de roupa vira roupa
+    rot, n = ndimage.label(rosa & (out == 3), structure=np.ones((3, 3)))
+    for i in range(1, n + 1):
+        p = rot == i
+        if p.sum() > 4: continue
+        volta = ndimage.binary_dilation(p, np.ones((3, 3))) & ~p
+        if (out[volta] == 2).sum() > (out[volta] == 1).sum(): out[p] = 2
     return out
 
 def referencias(a, k):

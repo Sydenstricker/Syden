@@ -187,6 +187,8 @@ export function bustoDoCoelho(receita: Receita): Promise<string> {
     });
     p.catch(() => bustos.delete(chave));
     bustos.set(chave, p);
+    // o mesmo teto dos quadros: experimentar cores no criador não acumula uma imagem por cor
+    if (bustos.size > 200) bustos.delete(bustos.keys().next().value!);
   }
   return p;
 }

@@ -106,14 +106,24 @@ function desenharCoracao(g: CanvasRenderingContext2D, q: HTMLCanvasElement, k: n
 export function BustoDoCoelho({ receita: dada, estado }: { receita: Receita; estado: 'falando' | 'ausente' | 'ocupado' | null }) {
   const receita = useReceitaEstavel(dada);
   const [src, setSrc] = useState<string | null>(null);
+  const jaMostrou = useRef(false);
   useEffect(() => {
     let vivo = true;
-    bustoDoCoelho(receita).then(
-      (s) => vivo && setSrc(s),
-      () => {},
+    // na primeira vez, já; depois, um instante de espera: mexendo nas cores, o busto só se refaz quando a cor para (o palco
+    // já mostra cada uma)
+    const tempo = setTimeout(
+      () => {
+        bustoDoCoelho(receita).then(
+          (s) => vivo && setSrc(s),
+          () => {},
+        );
+      },
+      jaMostrou.current ? 200 : 0,
     );
+    jaMostrou.current = true;
     return () => {
       vivo = false;
+      clearTimeout(tempo);
     };
   }, [receita]);
   if (!src) return <span className="avatar-foto avatar-coelho-montado" aria-hidden="true" />;

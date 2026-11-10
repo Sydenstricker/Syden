@@ -1,5 +1,5 @@
 import { RotateCcw, RotateCw, Shuffle, X } from 'lucide-react';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { api } from '../api';
 import { algarismos } from '../algarismos';
 import { enderecoDoCoelhoPronto } from '../Avatar';
@@ -79,6 +79,9 @@ interface Membro {
   coelho?: string | null;
 }
 
+/** O coelho em montagem, guardado fora do componente (ver "O RASCUNHO" abaixo). */
+let rascunho: { chave: string; receita: Receita; sugestao: number } | null = null;
+
 export function CriadorDoCoelho({ eu, avatarAtual }: { eu: Membro | undefined; avatarAtual: ReactNode }) {
   const t = useT();
   const prontos = useCorposProntos();
@@ -87,15 +90,28 @@ export function CriadorDoCoelho({ eu, avatarAtual }: { eu: Membro | undefined; a
   const atualCodigo = eu?.coelho ?? null;
   // o coelho que está valendo: a receita guardada; sem ela, a da sugestão que a pessoa usa; sem nada, o mascote
   const salva = lerCodigo(atualCodigo) ?? (atualPronto ? PRESETS[atualPronto] : RECEITA_DO_MASCOTE);
-  const [receita, setReceita] = useState<Receita>(salva);
+  // O RASCUNHO (relato dele, 10/11/2026: "alterei entre a aba Avatar e Aplicativo, e resetou o coelho que eu estava
+  // configurando"): trocar de aba desmonta o criador. O que está sendo montado fica guardado enquanto a página vive, e volta
+  // ao reabrir, desde que o avatar não tenha mudado nesse meio-tempo (salvo aqui ou por outro caminho).
+  const chaveDoAvatar = `${atualPronto}|${atualCodigo}|${eu?.avatarVersion ?? ''}`;
+  const guardado = rascunho?.chave === chaveDoAvatar ? rascunho : null;
+  const [receita, setReceita] = useState<Receita>(guardado?.receita ?? salva);
   // 0 é o ATUAL (o que vale agora, seja foto, sugestão ou coelho montado); 1 a 16, as sugestões
-  const [sugestao, setSugestao] = useState(atualPronto && !atualFoto ? atualPronto : 0);
+  const [sugestao, setSugestao] = useState(guardado?.sugestao ?? (atualPronto && !atualFoto ? atualPronto : 0));
+  useEffect(() => {
+    rascunho = { chave: chaveDoAvatar, receita, sugestao };
+  }, [chaveDoAvatar, receita, sugestao]);
   const [dir, setDir] = useState<Direcao>('south-east');
   const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
-  // o avatar mudou (salvo aqui, pela foto, por um anterior): a tela volta ao que vale
+  // o avatar mudou (salvo aqui, pela foto, por um anterior): a tela volta ao que vale. Ao abrir com um rascunho, fica ele.
+  const primeira = useRef(true);
   useEffect(() => {
+    if (primeira.current) {
+      primeira.current = false;
+      if (guardado) return;
+    }
     setReceita(lerCodigo(atualCodigo) ?? (atualPronto ? PRESETS[atualPronto] : RECEITA_DO_MASCOTE));
     setSugestao(atualPronto && !atualFoto ? atualPronto : 0);
   }, [atualPronto, atualCodigo, atualFoto, eu?.avatarVersion]);
@@ -135,9 +151,11 @@ export function CriadorDoCoelho({ eu, avatarAtual }: { eu: Membro | undefined; a
       setSalvando(false);
     }
   }
-  // o corpo de uma escolha: a combinação pedida, senão a roupa de fábrica do mesmo tipo, senão o masculino do corpo base
+  // o corpo de uma escolha: a combinação pedida, senão QUALQUER roupa pronta do mesmo tipo (a de fábrica primeiro), senão o
+  // masculino do corpo base. Sem a roupa curta aqui, a forte feminina (só a de regata curta tem desenho) nunca era alcançada:
+  // o "Tipo de corpo" aparecia no forte e caía de volta no masculino (relato dele, 10/11/2026).
   function corpoPronto(base: Base, tipo: Tipo, veste: Veste): Corpo {
-    for (const c of [corpoDe(base, tipo, veste), corpoDe(base, tipo, 'padrao'), corpoDe(base, 'masculino', 'padrao')]) if (c && prontos.has(c)) return c;
+    for (const c of [corpoDe(base, tipo, veste), corpoDe(base, tipo, 'padrao'), corpoDe(base, tipo, 'curta'), corpoDe(base, 'masculino', 'padrao')]) if (c && prontos.has(c)) return c;
     return base;
   }
   function sortear() {
@@ -281,7 +299,24 @@ export function CriadorDoCoelho({ eu, avatarAtual }: { eu: Membro | undefined; a
 /** Uma linha de cores: a original, as amostras e a cor livre (o seletor do sistema, qualquer RGB). */
 function Cores({ rotulo, lista, valor, mudar }: { rotulo: string; lista: { nome: string; cor: string }[]; valor: Cor; mudar: (c: Cor) => void }) {
   const t = useT();
-  const livre = valor !== null && !lista.some((c) => c.cor === valor);
+  // ARRASTAR NO SELETOR DO SISTEMA (relato dele, 10/11/2026: "segurei para alterar a cor, ficou bem lento"): ele manda uma cor
+  // a cada movimento do mouse, e cada uma remontava o coelho, o avatar do canto e a tela inteira. O quadradinho segue o mouse
+  // na hora (o rascunho), e o coelho recebe no máximo uma cor a cada 120 ms, sempre a última.
+  const [rascunho, setRascunho] = useState<string | null>(null);
+  const espera = useRef<{ tempo: ReturnType<typeof setTimeout> | null; cor: string | null }>({ tempo: null, cor: null });
+  useEffect(() => () => clearTimeout(espera.current.tempo ?? undefined), []);
+  function arrastar(cor: string) {
+    setRascunho(cor);
+    espera.current.cor = cor;
+    if (espera.current.tempo) return;
+    espera.current.tempo = setTimeout(() => {
+      espera.current.tempo = null;
+      if (espera.current.cor) mudar(espera.current.cor);
+    }, 120);
+  }
+  useEffect(() => setRascunho(null), [valor]);
+  const mostrado = rascunho ?? valor;
+  const livre = mostrado !== null && !lista.some((c) => c.cor === mostrado);
   return (
     <div className="criador-cores" role="group" aria-label={rotulo}>
       <small>{rotulo}</small>
@@ -299,8 +334,8 @@ function Cores({ rotulo, lista, valor, mudar }: { rotulo: string; lista: { nome:
             onClick={() => mudar(c.cor)}
           />
         ))}
-        <label className="criador-cor livre" aria-pressed={livre} title={t('Escolher a cor')} style={livre ? { background: valor! } : undefined}>
-          <input type="color" value={valor ?? '#ffffff'} aria-label={`${t('Escolher a cor')}: ${rotulo}`} onChange={(e) => mudar(e.target.value.toLowerCase())} />
+        <label className="criador-cor livre" aria-pressed={livre} title={t('Escolher a cor')} style={livre ? { background: mostrado! } : undefined}>
+          <input type="color" value={mostrado ?? '#ffffff'} aria-label={`${t('Escolher a cor')}: ${rotulo}`} onChange={(e) => arrastar(e.target.value.toLowerCase())} />
         </label>
       </div>
     </div>
