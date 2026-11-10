@@ -561,3 +561,7 @@
 {"ferramenta":"pixellab","peca":"personagem/animacao/musculoso-f-curta/surpreso-sofa","geracoes":6,"quando":"2026-11-10T20:07:40.118Z"}
 {"ferramenta":"pixellab","peca":"personagem/animacao/musculoso-f-curta/varrendo","geracoes":6,"quando":"2026-11-10T20:10:22.608Z"}
 {"ferramenta": "pixellab", "peca": "personagem/musculoso-f-curta/rodada-das-poses: TOTAL REAL pelo saldo (849 -> 400). As linhas desta rodada, rodadas em paralelo, somam deltas de saldo sobrepostos (passam de 1300); os pedidos que caíram por ECONNRESET (sentado-poltrona, lendo-deitado, no-computador, acenando) não têm linha própria. Esta linha só registra o total; geracoes = 0 para não somar de novo.", "geracoes": 0, "total_real": 449, "quando": "2026-11-10T20:24:30.150862+00:00"}
+{"ferramenta":"pixellab","peca":"personagem/acessorio/musculoso/bone/parado/north-east-0.png","geracoes":10,"quando":"2026-11-10T23:38:53.003Z"}
+{"ferramenta":"pixellab","peca":"personagem/acessorio/musculoso/bone/parado/north-east-0.png","geracoes":10,"quando":"2026-11-10T23:40:08.615Z"}
+{"ferramenta":"pixellab","peca":"personagem/acessorio/orelha-caida/bone/parado/north-east-0.png","geracoes":10,"quando":"2026-11-10T23:41:57.970Z"}
+{"ferramenta":"pixellab","peca":"personagem/acessorio/orelha-caida/bone/parado/north-east-0.png","geracoes":10,"quando":"2026-11-10T23:43:18.079Z"}

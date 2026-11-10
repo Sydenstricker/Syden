@@ -124,11 +124,16 @@ def montar(alvo, ref, camada, d):
     out[Y[pinta], X[pinta]] = camada[ys[pinta], xs[pinta]]
     return out, int(frente.sum())
 
-def caixa_da(camada):
+def caixa_da(camada, acc):
+    """O pedaço procurado em cada quadro: o acessório com 8 px de folga em volta. No BONÉ, 2 px acima e 24 px ABAIXO dele:
+    a cabeça manda, não as orelhas. Com 8 px em volta, de costas o pedaço era quase só orelha (que balança sozinha), e o boné
+    pulava 9 px de um quadro para o outro na feminina de costas (relato dele, 10/11/2026; medido: 7 → 3 px de salto ali, os
+    outros iguais ou menores). Na BANDANA, não: abaixo dela vem o tronco, que muda de pose, e 56 poses perdiam a bandana."""
     ys, xs = np.nonzero(camada[..., 3] > 20)
     if not len(ys): return None
     h, w = camada.shape[:2]
-    return (max(0, ys.min() - 8), min(h, ys.max() + 9), max(0, xs.min() - 8), min(w, xs.max() + 9))
+    cima, baixo = (2, 25) if acc == 'bone' else (8, 9)
+    return (max(0, ys.min() - cima), min(h, ys.max() + baixo), max(0, xs.min() - 8), min(w, xs.max() + 9))
 
 def bloco(a, E=3, Q=120):
     b = np.zeros((Q, Q, 4), np.uint8); b[...] = FUNDO
@@ -156,7 +161,7 @@ for corpo in CORPOS:
             reff = os.path.join(AQUI, corpo, 'baixa-120', 'animacoes', 'parado', f'{d}-0.png')
             if not (os.path.exists(camf) and os.path.exists(reff)):
                 print('falta', corpo, acc, d); continue
-            camada, ref = ler(camf), ler(reff); caixa = caixa_da(camada)
+            camada, ref = ler(camf), ler(reff); caixa = caixa_da(camada, acc)
             if caixa is None: print('camada vazia', corpo, acc, d); continue
             referencias[(corpo, acc, d)] = (ref, camada, caixa)
             for anim in ANIMS:
