@@ -3134,6 +3134,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Mgbe ụda gbanyụrụ, oku nzuzo na-abịa n’enweghị ụda: ọkwa na-apụta na ihuenyo, Syden na-enwukwa n’ogwe ọrụ. Gbanwuo nke a ka ị nụrụ ụda oku n’agbanyeghị.",
   'Avatares anteriores': "Foto profaịlụ ndị gara aga",
   'Voltar a este avatar': "Laghachi na foto profaịlụ a",
+  'Atual': "Nke ugbu a",
   'Tirar do histórico': "Wepụ na akụkọ",
   'Avatar não encontrado.': "Ahụghị foto profaịlụ ahụ.",
   'Sininho': "Obere mgbịrịgba",

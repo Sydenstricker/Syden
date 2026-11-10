@@ -3165,6 +3165,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "အသံပိတ်ထားချိန်တွင် ကိုယ်ပိုင်ခေါ်ဆိုမှုသည် အသံမပါဘဲ ရောက်လာသည်- အသိပေးချက် မျက်နှာပြင်ပေါ်တွင် ပေါ်လာပြီး Syden သည် taskbar တွင် မှိတ်တုတ်မှိတ်တုတ် ဖြစ်နေမည်။ မည်သို့ပင်ဖြစ်စေ မြည်သံကို ကြားလိုလျှင် ၎င်းကို ဖွင့်ပါ။",
   'Avatares anteriores': "ယခင် ပရိုဖိုင်ပုံများ",
   'Voltar a este avatar': "ဤပရိုဖိုင်ပုံသို့ ပြန်သွားရန်",
+  'Atual': "လက်ရှိ",
   'Tirar do histórico': "မှတ်တမ်းမှ ဖယ်ရှားရန်",
   'Avatar não encontrado.': "ပရိုဖိုင်ပုံ မတွေ့ပါ။",
   'Sininho': "ခေါင်းလောင်းသံ",

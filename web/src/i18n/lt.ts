@@ -3198,6 +3198,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Kai garsas išjungtas, privatus skambutis ateina be garso: pranešimas pasirodo ekrane, o Syden mirksi užduočių juostoje. Įjunk, jei vis tiek nori girdėti melodiją.",
   'Avatares anteriores': "Ankstesni avatarai",
   'Voltar a este avatar': "Grįžti prie šio avataro",
+  'Atual': "Dabartinis",
   'Tirar do histórico': "Pašalinti iš istorijos",
   'Avatar não encontrado.': "Avataras nerastas.",
   'Sininho': "Varpelis",

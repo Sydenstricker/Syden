@@ -3196,6 +3196,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Rehefa vonoina ny feo, tonga tsy misy feo ny antso manokana: miseho eo amin’ny efijery ny fampandrenesana ary mipi-pitra eo amin’ny tsipika fanaovan-draharaha i Syden. Alefaso ity raha te handre ny feon’ny antso ihany ianao.",
   'Avatares anteriores': "Avatar teo aloha",
   'Voltar a este avatar': "Miverina amin’ity avatar ity",
+  'Atual': "Ankehitriny",
   'Tirar do histórico': "Esory amin’ny tantara",
   'Avatar não encontrado.': "Tsy hita ny avatar.",
   'Sininho': "Lakolosy kely",

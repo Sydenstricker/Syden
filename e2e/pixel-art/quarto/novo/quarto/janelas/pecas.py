@@ -17,6 +17,9 @@ import os
 import numpy as np
 from PIL import Image
 from scipy.ndimage import gaussian_filter, binary_dilation, binary_fill_holes, label
+import sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from vidro_limpo import sem_pintas
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 Q = os.path.dirname(AQUI)
@@ -121,7 +124,13 @@ for tipo, nome in NOMES.items():
     # a beira do magenta (pixels meio magenta, do serrilhado) também é vidro: senão ficavam pontinhos rosa na borda
     rosado = (dia[..., 0] - dia[..., 1] > 60) & (dia[..., 2] - dia[..., 1] > 60)
     vidro = vidro | (binary_dilation(vidro, iterations=2) & rosado)
-    p, m = recortar_limpo(dia, semDia); gravar_rgba(p, d, 'peca-dia.png')
+    vidro = sem_pintas(vidro)  # (a madeira solta dentro do vidro: vidro_limpo.py)
+    p, m = recortar_limpo(dia, semDia)
+    # O VIDRO FICA FORA DA PEÇA (relato dele, 10/11/2026: "esse céu rosado, apesar de bonito, não tem coerência com a noite"):
+    # a peça levava o magenta do vidro, e a luz do abajur por código (a noite de montar.mjs) usa a pintura do dia como a cor do
+    # que ela ilumina. Atrás da vista escura, o magenta aceso virava um céu rosa, mais forte perto do abajur. Sem ele, a
+    # pintura ali é a parede, como nas janelas avulsas (redonda, floreira, a original).
+    p[vidro, 3] = 0; gravar_rgba(p, d, 'peca-dia.png')
     # de noite: o desenho vezes a luz da noite do lugar
     pn = p.copy(); pn[..., :3] = dia * razaoNoite; gravar_rgba(pn, d, 'peca-noite.png')
     mascara(vidro, d, 'vidro.png')

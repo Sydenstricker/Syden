@@ -3193,6 +3193,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Кад је звук искључен, приватни позив стиже без звука: обавештење се појави на екрану, а Syden трепери на траци задатака. Укључи да ипак чујеш мелодију.",
   'Avatares anteriores': "Претходни аватари",
   'Voltar a este avatar': "Врати овај аватар",
+  'Atual': "Тренутни",
   'Tirar do histórico': "Уклони из историје",
   'Avatar não encontrado.': "Аватар није пронађен.",
   'Sininho': "Звонце",

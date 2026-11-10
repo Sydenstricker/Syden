@@ -3210,6 +3210,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Дуу хаасан үед хувийн дуудлага дуугүй ирнэ: мэдэгдэл дэлгэц дээр гарч, Syden ажлын самбарт анивчина. Хонхыг ямар ч байсан сонсохыг хүсвэл үүнийг асаа.",
   'Avatares anteriores': "Өмнөх аватарууд",
   'Voltar a este avatar': "Энэ аватар руу буцах",
+  'Atual': "Одоогийн",
   'Tirar do histórico': "Түүхээс хасах",
   'Avatar não encontrado.': "Аватар олдсонгүй.",
   'Sininho': "Хонхны дуу",

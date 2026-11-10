@@ -3200,6 +3200,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Дыбыс өшірулі кезде жеке қоңырау дыбыссыз келеді: хабарлама экранда көрінеді, ал Syden тапсырмалар тақтасында жыпылықтайды. Әуенді бәрібір есту үшін мұны қос.",
   'Avatares anteriores': "Бұрынғы аватарлар",
   'Voltar a este avatar': "Осы аватарға оралу",
+  'Atual': "Қазіргі",
   'Tirar do histórico': "Тарихтан алып тастау",
   'Avatar não encontrado.': "Аватар табылмады.",
   'Sininho': "Сыңғыр",

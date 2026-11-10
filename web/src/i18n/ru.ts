@@ -3144,6 +3144,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "При выключенном звуке личный звонок приходит беззвучно: уведомление появляется на экране, а Syden мигает на панели задач. Включи, чтобы всё равно слышать мелодию звонка.",
   'Avatares anteriores': "Прежние аватары",
   'Voltar a este avatar': "Вернуть этот аватар",
+  'Atual': "Текущий",
   'Tirar do histórico': "Убрать из истории",
   'Avatar não encontrado.': "Аватар не найден.",
   'Sininho': "Колокольчик",

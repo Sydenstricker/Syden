@@ -3139,6 +3139,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "เมื่อปิดเสียงอยู่ สายส่วนตัวจะเข้ามาแบบไม่มีเสียง: การแจ้งเตือนจะแสดงบนหน้าจอ และ Syden จะกะพริบที่แถบงาน เปิดตัวเลือกนี้เพื่อให้ได้ยินเสียงเรียกเข้าอยู่ดี",
   'Avatares anteriores': "รูปโปรไฟล์ก่อนหน้า",
   'Voltar a este avatar': "กลับไปใช้รูปโปรไฟล์นี้",
+  'Atual': "ปัจจุบัน",
   'Tirar do histórico': "นำออกจากประวัติ",
   'Avatar não encontrado.': "ไม่พบรูปโปรไฟล์",
   'Sininho': "กระดิ่ง",

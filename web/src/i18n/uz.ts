@@ -3216,6 +3216,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Ovoz oʻchiq boʻlganda shaxsiy qoʻngʻiroq ovozsiz keladi: bildirishnoma ekranda chiqadi va Syden vazifalar panelida miltillaydi. Baribir ohangni eshitish uchun buni yoq.",
   'Avatares anteriores': "Oldingi avatarlar",
   'Voltar a este avatar': "Bu avatarga qaytish",
+  'Atual': "Joriy",
   'Tirar do histórico': "Tarixdan olib tashlash",
   'Avatar não encontrado.': "Avatar topilmadi.",
   'Sininho': "Qoʻngʻiroqcha",

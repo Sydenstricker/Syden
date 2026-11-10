@@ -3123,6 +3123,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "শব্দ বন্ধ থাকলে ব্যক্তিগত কল নিঃশব্দে আসে: বিজ্ঞপ্তি পর্দায় দেখা যায় আর Syden টাস্কবারে জ্বলে-নেভে। তবুও রিংটোন শুনতে এটি চালু করো।",
   'Avatares anteriores': "আগের অবতারগুলো",
   'Voltar a este avatar': "এই অবতারে ফিরে যাও",
+  'Atual': "বর্তমান",
   'Tirar do histórico': "ইতিহাস থেকে সরাও",
   'Avatar não encontrado.': "অবতার পাওয়া যায়নি।",
   'Sininho': "ছোট ঘণ্টা",

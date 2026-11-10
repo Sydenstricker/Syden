@@ -3128,6 +3128,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Bainhira áudiu taka, telefone tama privadu to’o la ho son: avizu mosu iha ekran no Syden lakan-lakan iha barra tarefa. Loke ida-ne’e atu rona son telefone tama nafatin.",
   'Avatares anteriores': "Avatar uluk sira",
   'Voltar a este avatar': "Fila ba avatar ida-ne’e",
+  'Atual': "Agora daudauk",
   'Tirar do histórico': "Hasai husi istória",
   'Avatar não encontrado.': "La hetan avatar.",
   'Sininho': "Sinu ki’ik",

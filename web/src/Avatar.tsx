@@ -43,12 +43,14 @@ export function enderecoDoCoelhoPronto(numero: number, estado?: EstadoDoPronto) 
 }
 
 /**
- * O CORPO INTEIRO de um coelho pronto, de pé (web/public/avatares/coelho-NN-corpo.png, o mesmo do salão de frente).
- * O 16 ainda não tem corpo (o saldo do PixelLab acabou nele): null, e quem mostra fica com o busto.
+ * O CORPO INTEIRO de um coelho pronto, de frente (web/public/avatares/coelho-NN-inteiro.png, até 91 × 173 px): a foto de
+ * frente refinada em 09/11/2026, a escolhida de cada um, sem a borda vazia (e2e/pixel-art/avatares/frente-para-o-app.py).
+ * Todos os 16 têm. O salão de frente NÃO usa esta: ele continua com os coelho-NN-corpo.png de 34 × 51, cujo tamanho é a
+ * medida do salão (CORPOS em Salao.tsx).
  */
 export function enderecoDoCorpoPronto(numero: number): string | null {
-  if (numero < 1 || numero > 15) return null;
-  return `${import.meta.env.BASE_URL}avatares/coelho-${String(numero).padStart(2, '0')}-corpo.png`;
+  if (!Number.isInteger(numero) || numero < 1 || numero > 16) return null;
+  return `${import.meta.env.BASE_URL}avatares/coelho-${String(numero).padStart(2, '0')}-inteiro.png`;
 }
 
 /**

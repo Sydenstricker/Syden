@@ -3150,6 +3150,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "عند كتم الصوت، تصل المكالمة الخاصة دون صوت: يظهر التنبيه على الشاشة ويومض Syden في شريط المهام. يمكنك تفعيل هذا الخيار لسماع الرنين رغم ذلك.",
   'Avatares anteriores': "الصور الرمزية السابقة",
   'Voltar a este avatar': "العودة إلى هذه الصورة الرمزية",
+  'Atual': "الحالية",
   'Tirar do histórico': "إزالة من السجل",
   'Avatar não encontrado.': "لم يُعثر على الصورة الرمزية.",
   'Sininho': "جرس صغير",

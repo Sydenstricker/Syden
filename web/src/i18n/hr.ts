@@ -3195,6 +3195,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Kad je zvuk isključen, privatni poziv stiže bez zvuka: obavijest se pojavi na zaslonu, a Syden treperi na programskoj traci. Uključi da ipak čuješ melodiju.",
   'Avatares anteriores': "Prethodni avatari",
   'Voltar a este avatar': "Vrati ovaj avatar",
+  'Atual': "Trenutačni",
   'Tirar do histórico': "Ukloni iz povijesti",
   'Avatar não encontrado.': "Avatar nije pronađen.",
   'Sininho': "Zvonce",

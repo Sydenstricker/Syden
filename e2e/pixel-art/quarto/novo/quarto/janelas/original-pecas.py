@@ -9,6 +9,8 @@ import json, os, sys
 import numpy as np
 from PIL import Image
 from scipy.ndimage import binary_fill_holes, gaussian_filter, label
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from vidro_limpo import sem_pintas
 
 AQUI = os.path.dirname(os.path.abspath(__file__)); d = os.path.join(AQUI, 'original')
 n = sys.argv[1] if len(sys.argv) > 1 else '1'
@@ -22,10 +24,27 @@ razao = borrar(ler('sem-janela-noite.png')) / np.maximum(1, borrar(ler('sem-jane
 a = np.array(Image.open(os.path.join(d, f'avulso-{n}.png')).convert('RGBA')).astype(int)
 op = a[..., 3] > 127
 rosado = ((a[..., 0] - a[..., 1] > 30) & (a[..., 2] - a[..., 1] > 30)) | ((a[..., 0] - a[..., 1] > 60) & (a[..., 2] - a[..., 1] > 20))  # (com 60, uma linha roxa escura sobrava no vidro)
+# A MADEIRA TINGIDA DE ROSA NÃO É VIDRO (relato dele, 09/11/2026: "a janela parece ter dois pixels de artefato"). A coluna de
+# sombra do montante do meio (x 362) veio meio a meio: o marrom dela (7e4b36, 82403c) e o mesmo marrom misturado ao magenta
+# (923753, ad257f), que o "rosado" mandava para o vidro. A beira do montante virava um pontilhado de pixels escuros soltos
+# na vista, que de noite saltam como pintas pretas. São só esses dois tons, de madeira (vermelho médio, verde de madeira,
+# menos azul que vermelho; o magenta e o roxo escuro do serrilhado não entram): voltam a ser madeira, com a cor do vizinho
+# de madeira da mesma coluna (ou da linha).
+R_, G_, B_ = a[..., 0], a[..., 1], a[..., 2]
+tingida = rosado & op & (R_ >= 100) & (R_ <= 200) & (G_ >= 25) & (G_ <= 80) & (B_ < R_)
+limpa = op & ~rosado
+for y, x in zip(*np.nonzero(tingida)):
+    viz = [(y - 1, x), (y + 1, x), (y, x - 1), (y, x + 1), (y - 2, x), (y + 2, x)]
+    viz = [(yy, xx) for yy, xx in viz if 0 <= yy < a.shape[0] and 0 <= xx < a.shape[1] and limpa[yy, xx]]
+    a[y, x, :3] = a[viz[0]][:3] if viz else [126, 75, 54]
+rosado &= ~tingida
+print('madeira tingida de rosa devolvida', int(tingida.sum()))
 op &= ~rosado
 rot, _ = label(op); tam = np.bincount(rot.ravel()); tam[0] = 0; op = rot == tam.argmax()
 vidro = binary_fill_holes(op) & ~op
 rv, _ = label(vidro); tv = np.bincount(rv.ravel()); tv[0] = 0; vidro = np.isin(rv, np.nonzero(tv >= 12)[0])
+# (e o que ainda sobrar de madeira solta no vidro, o furo e o dente: vidro_limpo.py)
+vidro = sem_pintas(vidro); op &= ~vidro
 
 def na_tela(m):
     t = np.zeros((512, 512), bool); h, w = m.shape; t[ref['y0']:ref['y0'] + h, ref['x0']:ref['x0'] + w] = m[:512 - ref['y0'], :512 - ref['x0']]; return t

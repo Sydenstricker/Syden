@@ -3198,6 +3198,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "आवाज बन्द हुँदा निजी कल आवाजबिना आउँछ: सूचना स्क्रिनमा देखिन्छ र Syden टास्कबारमा झिम्किन्छ। जे भए पनि रिङटोन सुन्न यो खोल्नुहोस्।",
   'Avatares anteriores': "अघिल्ला अवतारहरू",
   'Voltar a este avatar': "यो अवतारमा फर्कनुहोस्",
+  'Atual': "हालको",
   'Tirar do histórico': "इतिहासबाट हटाउनुहोस्",
   'Avatar não encontrado.': "अवतार भेटिएन।",
   'Sininho': "सानो घण्टी",

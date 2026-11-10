@@ -775,6 +775,11 @@ if (CENA === 'salao') document.body.classList.add('salao');
   let entradaAberta = false, CHEGANDO = null;
   // (a porta do BANHEIRO, aberta no instante de passar para ele; noBanheiro: a vista está lá, e o salão fica parado. Ver O BANHEIRO.)
   let portaAbrindo = false, noBanheiro = false;
+  // A PEÇA SEM NOITE PRÓPRIA (10/11/2026, auditoria-de-noite.mjs): as geradas sem parede que não passaram por parede/avulsos.py
+  // depois de 09/11 (o relógio, o violão, a prateleira de snacks, a do bar, as portas, os pôsteres, o neon) têm a peca-noite
+  // IGUAL à do dia, e no quarto, que usa a noite pintada como ela é, acendiam de noite. Elas ganham a noite por código, como no
+  // salão: o dia vezes a luz da noite no lugar.
+  const noiteDoDia = (T2) => CENA === 'salao' || (T2._noiteDoDia ??= T2.noite === T2.dia || (T2.noite.length === T2.dia.length && T2.noite.every((v, k) => v === T2.dia[k])));
   const texturaNaParede = (id, parede) => ((tipoDe(id) === 'porta' ? portaAbrindo : entradaAberta) && TEXTURAS_PAREDE[id].aberta) || (parede === 'esquerda' && TEXTURAS_PAREDE[id].esq) || TEXTURAS_PAREDE[id];
   // A escolha de cor do tapete e de OPÇÃO de um objeto da parede (o pôster): { tapete: 'azul', poster: 'fogo' }.
   let CORES = {};
@@ -870,7 +875,9 @@ if (CENA === 'salao') document.body.classList.add('salao');
   const ehChao = new Uint8Array(W * W);
   const preencherChao = () => { for (let k = 0; k < W * W; k++) { const [u, v] = uvRapido(k % W + 0.5, ((k / W) | 0) + 0.5); ehChao[k] = u > 0 && u < N && v > 0 && v < N && ehDoChao(Math.floor(u), Math.floor(v)) ? 1 : 0; } };
   preencherChao();
-  function compor(fundo, peca, Ld, Ls, luar, ganho, mapa) {
+  // (piso: o menor ganho de luz da peça. 0,6 para a peça do dia posta noutro lugar de dia; a noite FEITA DO DIA desce até 0,1,
+  // senão o objeto ficava a 60% do dia, bem mais claro que a parede em volta, que de noite fica a ~35%: auditoria-de-noite.mjs)
+  function compor(fundo, peca, Ld, Ls, luar, ganho, mapa, piso = 0.6) {
     const out = new Uint8ClampedArray(fundo);
     if (luar) for (let k = 0; k < W * W; k++) {
       if (luar[k * 4] < 128) continue;
@@ -881,7 +888,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
       if (peca[k * 4 + 3] < 128) continue;
       const d = mapa(k % W, (k / W) | 0);
       if (d < 0) continue;
-      for (let c = 0; c < 3; c++) out[d * 4 + c] = peca[k * 4 + c] * Math.min(2.5, Math.max(0.6, Ld[d * 4 + c] / Math.max(1, Ls[k * 4 + c])));
+      for (let c = 0; c < 3; c++) out[d * 4 + c] = peca[k * 4 + c] * Math.min(2.5, Math.max(piso, Ld[d * 4 + c] / Math.max(1, Ls[k * 4 + c])));
     }
     return out;
   }
@@ -998,7 +1005,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // A imagem (o endereço que o app manda): desenhada no plano da parede, no tamanho de dentro do quadro, sobre o creme do
   // passe-partout. "cobrir" (a capa, larga) enche e corta; "conter" (o ícone, quadrado) fica inteiro, no meio.
   function carregarImagem(d) {
-    if (!d || !d.url || !TEXTURAS_PAREDE.quadro) { IMAGEM_DA_COMUNIDADE = null; versaoDaImagem++; aplicarJanela(); desenhar(); return; }
+    if (!d || !d.url || !TEXTURAS_PAREDE.quadro) { IMAGEM_DA_COMUNIDADE = null; versaoDaImagem++; aplicarJanela(); desenhar(); carregarGif(d?.url); return; }
     const img = new Image();
     img.crossOrigin = 'anonymous';
     img.onload = () => {
@@ -1013,6 +1020,70 @@ if (CENA === 'salao') document.body.classList.add('salao');
     };
     img.onerror = () => { IMAGEM_DA_COMUNIDADE = null; versaoDaImagem++; aplicarJanela(); desenhar(); };
     img.src = d.url;
+    carregarGif(d.url);
+  }
+  // O GIF DA COMUNIDADE NA TV (pedido dele, 10/11/2026: "talvez seria legal o GIF da comunidade aparecer na TV"). A capa e o
+  // ícone animados ficam INTEIROS no servidor (db.ts: redesenhar num canvas guardaria só o primeiro quadro), e o <img> do
+  // quadro só dá o primeiro. Aqui os quadros saem pelo ImageDecoder (WebCodecs: Chrome, Edge e o app), reduzidos uma vez ao
+  // tamanho da tela da TV (GIF_W × GIF_H, cobrindo) e com as cores em degraus, como a pixel art dos outros canais. Sem
+  // ImageDecoder (o Firefox), o primeiro quadro, parado. Imagem parada não vira canal: ela já está no quadro da parede.
+  const GIF_W = 64, GIF_H = 36, GIF_MAX_QUADROS = 150;
+  let GIF_DA_COMUNIDADE = null, versaoDoGif = 0; // { quadros: [{ px, ms }], total }
+  window.gifDoTeste = () => GIF_DA_COMUNIDADE && { quadros: GIF_DA_COMUNIDADE.quadros.length, total: GIF_DA_COMUNIDADE.total }; // para o teste
+  const degrau = (v) => Math.min(255, Math.round(v / 24) * 24);
+  function quadroDoGif(fonte, fw, fh) {
+    const c = document.createElement('canvas'); c.width = GIF_W; c.height = GIF_H;
+    const g2 = c.getContext('2d', { willReadFrequently: true }); g2.imageSmoothingEnabled = true;
+    const esc = Math.max(GIF_W / fw, GIF_H / fh);
+    g2.fillStyle = '#18141f'; g2.fillRect(0, 0, GIF_W, GIF_H);
+    g2.drawImage(fonte, (GIF_W - fw * esc) / 2, (GIF_H - fh * esc) / 2, fw * esc, fh * esc);
+    const px = g2.getImageData(0, 0, GIF_W, GIF_H).data;
+    for (let i = 0; i < px.length; i += 4) { px[i] = degrau(px[i]); px[i + 1] = degrau(px[i + 1]); px[i + 2] = degrau(px[i + 2]); }
+    return px;
+  }
+  async function carregarGif(url) {
+    const minha = ++versaoDoGif;
+    const largar = () => { if (minha !== versaoDoGif) return; GIF_DA_COMUNIDADE = null; delete COR_DO_BRILHO.comunidade; assinaturaCena = ''; desenhar(); };
+    if (CENA !== 'salao' || !url) return largar();
+    try {
+      const resp = await fetch(url, { mode: 'cors' });
+      if (!resp.ok) return largar();
+      const tipo = (resp.headers.get('content-type') || '').split(';')[0].trim();
+      const bytes = new Uint8Array(await resp.arrayBuffer());
+      const ehGif = bytes[0] === 0x47 && bytes[1] === 0x49 && bytes[2] === 0x46;
+      const quadros = [];
+      if (typeof ImageDecoder === 'function' && (await ImageDecoder.isTypeSupported(ehGif ? 'image/gif' : tipo).catch(() => false))) {
+        const dec = new ImageDecoder({ data: bytes, type: ehGif ? 'image/gif' : tipo });
+        await dec.tracks.ready;
+        const n = Math.min(GIF_MAX_QUADROS, dec.tracks.selectedTrack?.frameCount ?? 1);
+        if (n < 2) { dec.close(); return largar(); }
+        for (let i = 0; i < n; i++) {
+          const { image } = await dec.decode({ frameIndex: i });
+          // (a duração do quadro vem em microssegundos; abaixo de 20 ms os navegadores tratam como 100 ms)
+          const ms = image.duration ? image.duration / 1000 : 100;
+          quadros.push({ px: quadroDoGif(image, image.displayWidth, image.displayHeight), ms: ms < 20 ? 100 : ms });
+          image.close();
+          if (minha !== versaoDoGif) { dec.close(); return; }
+        }
+        dec.close();
+      } else {
+        // a reserva: é GIF com mais de um quadro (mais de um bloco de controle de imagem)? Então o primeiro, parado.
+        let gce = 0;
+        if (ehGif) for (let i = 0; i + 2 < bytes.length && gce < 2; i++) if (bytes[i] === 0x21 && bytes[i + 1] === 0xf9 && bytes[i + 2] === 0x04) gce++;
+        if (gce < 2) return largar();
+        const img = new Image(); img.crossOrigin = 'anonymous';
+        await new Promise((ok, falha) => { img.onload = ok; img.onerror = falha; img.src = url; });
+        quadros.push({ px: quadroDoGif(img, img.naturalWidth, img.naturalHeight), ms: 1e9 });
+      }
+      if (minha !== versaoDoGif) return;
+      const total = quadros.reduce((t, q) => t + q.ms, 0);
+      // a luz da TV de noite: a cor média do primeiro quadro, um pouco apagada
+      const m = [0, 0, 0], p0 = quadros[0].px;
+      for (let i = 0; i < p0.length; i += 4) for (let c = 0; c < 3; c++) m[c] += p0[i + c];
+      COR_DO_BRILHO.comunidade = m.map((v) => Math.round((v / (p0.length / 4)) * 0.75));
+      GIF_DA_COMUNIDADE = { quadros, total };
+      assinaturaCena = ''; desenhar();
+    } catch { largar(); }
   }
   // A MONTAGEM da janela onde ela está (rapido: arrastando, sem refazer as luzes borradas, refeitas ao soltar).
   const LUZES = im.luzes ? (() => { const d = dados(im.luzes), ks = []; for (let k = 0; k < W * W; k++) if (d[k * 4] > 127) ks.push(k); return ks; })() : null;
@@ -1152,10 +1223,12 @@ if (CENA === 'salao') document.body.classList.add('salao');
       base = compor(base, T2.dia, semDiaL, semDiaL, null, null, mp);
       if (T.cortinaDia) cortinaDia = compor(cortinaDia, T2.dia, semDiaL, semDiaL, null, null, mp);
       abertaDia = compor(abertaDia, T2.dia, semDiaL, semDiaL, null, null, mp);
-      const p2 = CENA === 'salao' ? T2.dia : T2.noite, L2 = CENA === 'salao' ? semDiaL : semNoiteL;
-      for (const nome of ['noite', 'noiteSemLuar']) { const v0 = nome === 'noite' ? noite : noiteSemLuar; const v1 = compor(v0, p2, semNoiteL, L2, null, null, mp); if (nome === 'noite') noite = v1; else noiteSemLuar = v1; }
-      noiteAbajur = compor(noiteAbajur, p2, semAbajurL, L2, null, null, mp);
-      abajurSemLuar = compor(abajurSemLuar, p2, semAbajurL, L2, null, null, mp);
+      // A NOITE FEITA DO DIA (o salão inteiro, e no quarto a peça cuja noite é igual ao dia: relato dele de 10/11/2026, "o
+      // violão, o relógio e a estante aparecem com iluminação de dia")
+      const pd = noiteDoDia(T2), p2 = pd ? T2.dia : T2.noite, L2 = pd ? semDiaL : semNoiteL, piso = pd ? 0.1 : 0.6;
+      for (const nome of ['noite', 'noiteSemLuar']) { const v0 = nome === 'noite' ? noite : noiteSemLuar; const v1 = compor(v0, p2, semNoiteL, L2, null, null, mp, piso); if (nome === 'noite') noite = v1; else noiteSemLuar = v1; }
+      noiteAbajur = compor(noiteAbajur, p2, semAbajurL, L2, null, null, mp, piso);
+      abajurSemLuar = compor(abajurSemLuar, p2, semAbajurL, L2, null, null, mp, piso);
       for (let k = 0; k < W * W; k++) if (T2.dia[k * 4 + 3] > 127) { const d = mp(k % W, (k / W) | 0); if (d >= 0) naParede[d] = i + 1; }
       { const nuc = nucleoDe(T2); for (let k = 0; k < W * W; k++) if (nuc[k]) { const d = mp(k % W, (k / W) | 0); if (d >= 0) formaParede[d] = i + 1; } }
       // O QUE ACENDE (o neon, o lampião da prateleira do bar): de noite, as cores claras dele ficam como de dia, e ele
@@ -1530,7 +1603,9 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // O gênero do jogo transmitido (web/src/generoDoJogo.ts) → o desenho da TV.
   const DESENHO_DO_GENERO = { moba: 'arena', tiro: 'tatico', futebol: 'futebol', corrida: 'corrida', luta: 'luta', aventura: 'aventura', construcao: 'construcao', fazenda: 'fazenda', estrategia: 'estrategia', cartas: 'cartas', terror: 'terror', plataforma: 'jogo', festa: 'festa', espaco: 'espaco', quebracabeca: 'quebracabeca', esportes: 'esportes', voo: 'voo', turnos: 'turnos', historia: 'historia', ritmo: 'ritmo' };
   let canalDaTv = null;
-  const canalDaTvAgora = () => (canalDaTv === 'ao-vivo' && !AO_VIVO ? 'tv' : canalDaTv ?? (AO_VIVO ? 'ao-vivo' : 'tv'));
+  // (o GIF da comunidade, havendo, é o primeiro dos canais à toa, e o da TV à toa sem escolha: ver carregarGif)
+  const canaisDaTv = () => [...(GIF_DA_COMUNIDADE ? ['comunidade'] : []), ...CANAIS_DA_TV];
+  const canalDaTvAgora = () => (canalDaTv === 'ao-vivo' && !AO_VIVO ? 'tv' : canalDaTv === 'comunidade' && !GIF_DA_COMUNIDADE ? 'tv' : canalDaTv ?? (AO_VIVO ? 'ao-vivo' : GIF_DA_COMUNIDADE ? 'comunidade' : 'tv'));
   const tipoDaTela = (id) => (telasDesligadas.has(id) ? 'desligada' : id === 'mesa' ? conteudoAgora() : id === 'tv' ? canalDaTvAgora() : 'fliperama');
   const COR_DO_BRILHO = { call: [90, 110, 160], jogo: [120, 170, 210], conversa: [140, 120, 190], tv: [170, 140, 120], 'ao-vivo': [190, 90, 110], fliperama: [160, 110, 210], futebol: [110, 170, 110], tatico: [180, 160, 120], arena: [100, 140, 120] };
   // O CONTEÚDO: "auto" segue o estado (em call, a chamada; à toa, a conversa; ausente, desligada); o botão escolhe.
@@ -1550,6 +1625,11 @@ if (CENA === 'salao') document.body.classList.add('salao');
   const misturar = (a, b, f) => [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f];
   // A cor de um ponto (s, t) da tela, no instante "q" (quartos de segundo). Pixel art: blocos chapados, poucas cores.
   function corDaTela(s, t, q, tipo) {
+    if (tipo === 'comunidade') {
+      const G = GIF_DA_COMUNIDADE; if (!G) return null;
+      const px = G.quadros[gifAgora].px, i = (Math.min(GIF_H - 1, Math.floor(t * GIF_H)) * GIF_W + Math.min(GIF_W - 1, Math.floor(s * GIF_W))) * 4;
+      return [px[i], px[i + 1], px[i + 2]];
+    }
     if (tipo === 'call') {
       // A chamada: quatro quadros com as pessoas (a cabeça redonda), a borda verde em quem fala, e a barra embaixo.
       if (t > 0.86) return s > 0.44 && s < 0.56 ? [214, 72, 72] : [28, 30, 44];
@@ -2071,6 +2151,10 @@ if (CENA === 'salao') document.body.classList.add('salao');
   const ASSENTO_CADEIRA = 34, SOBE_CADEIRA = 20, AVANCO_NA_CADEIRA = 0.4;
   const cadeira = { u: 6, v: 6, vu: 0, vv: 0, th: 0, w: 0, presa: false, kin: null, alvo: null };
   window.cadeiraDoTeste = cadeira; // para as fotos e o teste
+  // A CADEIRA DO COMPUTADOR é só do QUARTO (relato dele, 10/11/2026: "essa cadeira [do salão] está imóvel, só essa nesse
+  // ângulo"): o salão tem um móvel com o mesmo código, a primeira cadeira da mesa de jogos, e o arraste, o Girar, o Mover e o
+  // Duplicar dela iam para a cadeira de rodinhas, que no salão nem é desenhada.
+  const ehCadeiraDoPc = (id) => CENA === 'quarto' && id === 'cadeira';
   window.coelhoNaCadeiraDoTeste = () => ({ u: coelho.u, v: coelho.v, fase: coelho.cadeiraFase ?? null, destino: coelho.destino, andando: coelho.caminho.length > 0 || !!coelho.aproximar, trans: !!coelho.trans, dir: coelho.dirVista ?? coelho.dir }); // para o teste
   // O lugar dela na mesa: S é sentado à mesa (encostado); P0, puxada para trás, de onde se senta. Virada para a mesa.
   function lugarNaMesa() {
@@ -2195,7 +2279,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // arrastado segue o ponteiro de verdade; soltando em movimento, ele desliza. O PESO decide quanto da velocidade do
   // ponteiro ele leva e quanto atrito ele tem: o pufe desliza mais de uma casa, a poltrona meia, a cama e o guarda-roupa
   // quase nada. Bate nos outros móveis e nas paredes (quica pouco) e, parando, se encaixa na casa livre mais perto.
-  const PESO = porTipo({ pufe: 1.5, poltrona: 3, abajur: 3, tapete: 4, mesa: 6, cama: 14, 'guarda-roupa': 18, 'planta-alta': 2.5, 'planta-baixa': 1.5, 'caminha-gato': 1, sofa: 12, tv: 8, fliperama: 16, balcao: 14, estante: 15, mesinha: 4, banqueta: 1.5, 'banqueta-2': 1.5, 'sofa-2': 12, 'poltrona-2': 3, 'mesa-jogo': 6, 'cadeira-2': 2, 'cadeira-3': 2, 'cadeira-4': 2, jukebox: 14, microfone: 3, pufao: 2, ilha: 14, geladeira: 16 });
+  const PESO = porTipo({ pufe: 1.5, poltrona: 3, abajur: 3, tapete: 4, mesa: 6, cama: 14, 'guarda-roupa': 18, 'planta-alta': 2.5, 'planta-baixa': 1.5, 'caminha-gato': 1, sofa: 12, tv: 8, fliperama: 16, balcao: 14, estante: 15, mesinha: 4, banqueta: 1.5, 'banqueta-2': 1.5, 'sofa-2': 12, 'poltrona-2': 3, 'mesa-jogo': 6, cadeira: 2, 'cadeira-2': 2, 'cadeira-3': 2, 'cadeira-4': 2, jukebox: 14, microfone: 3, pufao: 2, ilha: 14, geladeira: 16 });
   let viva = null; // { id, orig, modo: 'arrasto' | 'deslize' | 'encaixe', vu, vv, de, para, t0 }
   // O "TCHAN" AO COLOCAR (ideia dele, 14/10/2026, como no Hozy): o móvel que assenta solta faíscas de pixel pela borda
   // do pé dele no chão, que sobem um pouco e somem. Enquanto está pego, ele tem um contorno branco.
@@ -4532,8 +4616,12 @@ if (CENA === 'salao') document.body.classList.add('salao');
     baseDaLuz.set(base);
     if (aberta || fechada) for (let k = 0; k < W * W; k++) {
       if (fechada ? !naJanela[k] : !noCaixilho[k]) continue;
-      for (let c = 0; c < 3; c++) baseDaLuz[k * 4 + c] = !fechada && vao[k] ? 0 : D[k * 3 + c];
+      for (let c = 0; c < 3; c++) baseDaLuz[k * 4 + c] = !fechada && (vao[k] || vidroAberto[k]) ? 0 : D[k * 3 + c]; // (o vidro das folhas mostra a vista: também não acende)
     }
+    // O VIDRO FECHADO TAMBÉM É O LADO DE FORA (relato dele, 10/11/2026: "esse céu rosado, apesar de bonito, não tem coerência
+    // com a noite"): a luz usava a pintura do dia atrás do vidro (o magenta da máscara no arco e na de cortinas, a parede nas
+    // outras) e acendia a vista de noite, rosa e mais forte perto do abajur.
+    if (!aberta && !fechada) for (let k = 0; k < W * W; k++) if (vidro[k * 4 + 3] > 127) baseDaLuz[k * 4] = baseDaLuz[k * 4 + 1] = baseDaLuz[k * 4 + 2] = 0;
     pintarRegioes();
     // Os móveis, de trás para a frente (a ordem pela área no chão).
     // O móvel que está sendo arrastado ou deslizando não entra na fotografia: ele é desenhado vivo, a cada quadro.
@@ -4662,6 +4750,58 @@ if (CENA === 'salao') document.body.classList.add('salao');
     return { u0, v0, fu, fv, cor, alcance, largura, forca, caixa };
   }
   // A cor final de cada pixel de uma região: a luz da noite, a cortina, a sombra do coelho, a grade e o destino do arraste.
+  // A LUZ DE NOITE DO SALÃO (pedido dele, 10/11/2026: "adicione luz no salão para eu avaliar como fica"). O quarto tem o
+  // abajur; o salão, de noite, só tinha os halos somados por cima (a tela, a jukebox, o neon), que não aclaram nada. Aqui, cada
+  // fonte que JÁ ESTÁ no desenho vira uma lâmpada como a do abajur: a luz cai com a distância, em faixas, e revela a cor do
+  // dia do que está perto (o chão, a parede, os móveis, os coelhos), tingida pela cor da fonte. [x, y, alcance, força, cor]
+  //   - as LUZINHAS do alto das paredes (luzes16.png): quentes, uma lâmpada a cada trecho do cordão, um pouco abaixo dele
+  //     (iluminam a parede e a beira do chão);
+  //   - a TV e o fliperama acesos: frios e fracos, da cor do que passa na tela;
+  //   - a jukebox: âmbar; o neon: da cor dele, fraco.
+  // O vidro da janela não acende (baseDaLuz é zero nele), e de dia nada disso existe.
+  const LUZINHAS = (() => {
+    if (CENA !== 'salao' || !LUZES) return [];
+    const trechos = new Map();
+    for (const k of LUZES) { const x = k % W, y = (k / W) | 0, b = Math.round(x / 72); const t = trechos.get(b) ?? [0, 0, 0]; t[0] += x; t[1] += y; t[2]++; trechos.set(b, t); }
+    return [...trechos.values()].filter((t) => t[2] > 20).map(([sx, sy, n]) => [sx / n, sy / n + 50, 66, 0.42, [1, 0.8, 0.52]]);
+  })();
+  let lampadasCache = null, lampadasChave = '';
+  function lampadasDoSalao() {
+    if (CENA !== 'salao') return [];
+    const L = [...LUZINHAS];
+    for (const { id, pts } of telasAgora) {
+      const tipoTela = tipoDaTela(id);
+      if (tipoTela === 'desligada') continue;
+      const cor = (COR_DO_BRILHO[tipoTela] ?? [140, 120, 190]).map((c) => c / 255);
+      let sx = 0, sy = 0; for (const [x, y] of pts) { sx += x; sy += y; }
+      L.push([sx / pts.length, sy / pts.length + 40, id === 'tv' ? 72 : 50, id === 'tv' ? 0.45 : 0.3, cor]);
+    }
+    if (luzDaJukebox) L.push([luzDaJukebox[0], luzDaJukebox[1] + 10, 58, 0.45, [1, 0.62, 0.3]]);
+    for (const [x, y, cor] of luzesDaParede) L.push([x, y + 36, 50, 0.3, cor.map((c) => Math.min(1, c / 200))]);
+    const chave = JSON.stringify(L);
+    if (chave !== lampadasChave) { lampadasChave = chave; lampadasCache = L; }
+    return lampadasCache;
+  }
+  window.lampadasDoTeste = () => lampadasDoSalao(); // para o teste
+  // No processador, a luz das lâmpadas é um CAMPO calculado uma vez para a lista (ela só muda quando a cena muda: o canal da
+  // TV, a jukebox desligada): por pixel, refazer as exponenciais de 17 lâmpadas dobrava o passe (128 → 292 ms no salão).
+  let campoDasLampadas = null, campoDe = null;
+  function campoDe_(lampadas) {
+    if (!lampadas.length) return null;
+    if (campoDe === lampadas) return campoDasLampadas;
+    const C = campoDasLampadas ?? new Float32Array(W * W * 3); C.fill(0);
+    for (const Lp of lampadas) {
+      const al = Lp[2] * 3, ax = Math.max(0, Math.floor(Lp[0] - al)), bx = Math.min(W - 1, Math.ceil(Lp[0] + al)), ay = Math.max(0, Math.floor(Lp[1] - al / 1.4)), by = Math.min(W - 1, Math.ceil(Lp[1] + al / 1.4));
+      for (let y = ay; y <= by; y++) for (let x = ax; x <= bx; x++) {
+        const dx = x - Lp[0], dy = (y - Lp[1]) * 1.4;
+        if (dx > al || dx < -al || dy > al || dy < -al) continue;
+        const b = Math.floor(Lp[3] * Math.exp(-(dx * dx + dy * dy) / (2 * Lp[2] * Lp[2])) * 12) / 12;
+        if (b > 0) { const k = (y * W + x) * 3; for (let c = 0; c < 3; c++) C[k + c] += Lp[4][c] * b; }
+      }
+    }
+    campoDasLampadas = C; campoDe = lampadas;
+    return C;
+  }
   const QUENTE = [1, 0.72, 0.42], BRASA = [120, 26, 16], CUPULA_X = [1.05, 0.8, 0.5], CUPULA_M = [34, 14, 0], PERTO = [1, 0.7, 0.4];
   function passeFinal(r) {
     const tp = performance.now(), P = parametrosDaLuz();
@@ -4697,11 +4837,12 @@ if (CENA === 'salao') document.body.classList.add('salao');
     }
     if (noite) for (const L of luzesDaParede) brilhos.push(L);
     if (noite && luzDoFogao) brilhos.push([luzDoFogao[0], luzDoFogao[1], [255, 110, 50], 40, 0.3]);
-    return { pintada, razaoPe, lx, ly, alvoOcupado, paAlvo, brilhos, focos };
+    return { pintada, razaoPe, lx, ly, alvoOcupado, paAlvo, brilhos, focos, lampadas: noite ? lampadasDoSalao() : [] };
   }
   function passeFinalCPU(r, P) {
     const [x0, y0, x1, y1] = prender(r);
-    const { pintada, razaoPe, lx, ly, alvoOcupado, paAlvo, brilhos, focos } = P;
+    const { pintada, razaoPe, lx, ly, alvoOcupado, paAlvo, brilhos, focos, lampadas } = P;
+    const LC = modo === 'noite' ? campoDe_(lampadas) : null;
     for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
       const k = y * W + x;
       const sombraAqui = sombraFinal[k];
@@ -4714,7 +4855,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
         if (noiteAqui) {
           // Com a luz pintada, os móveis só herdam a razão noite/dia (que já traz o abajur). Com a luz por código:
           // quente, caindo com a distância, em faixas como a luz é desenhada em pixel art.
-          const quente = QUENTE[c] * brilho;
+          const quente = QUENTE[c] * brilho + (LC ? LC[k * 3 + c] : 0); // (+ as lâmpadas do salão)
           const ac = eMovel[k] === 2 ? 0 : acesa[k]; // (2: o coelho ou a cadeira por cima da luz)
           if (ac === 2) { /* a lâmpada da jukebox: a cor do dia */ }
           else if (ac === 3) v = v * 0.7 + BRASA[c] * 0.45; // a boca do cooktop, acesa (brasa, não lâmpada)
@@ -4791,7 +4932,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
     const cv = document.createElement('canvas'); cv.width = W; cv.height = W;
     const gl = cv.getContext('webgl2', { antialias: false, depth: false, stencil: false, alpha: true, premultipliedAlpha: false, preserveDrawingBuffer: false, powerPreference: 'low-power' });
     if (!gl) return null;
-    const MAX_B = 32, MAX_F = 8;
+    const MAX_B = 32, MAX_F = 8, MAX_L = 32;
     const vs = \`#version 300 es
 in vec2 p; void main() { gl_Position = vec4(p, 0.0, 1.0); }\`;
     const fs = \`#version 300 es
@@ -4802,6 +4943,7 @@ uniform isampler2D tPeY, tChao, tCasa;
 uniform int W, N, noite, pintada, fechadaDia, grade, temAlvo, alvoOcupado, nB, nF;
 uniform float lx, ly, forcaSombra; uniform vec4 pa;
 uniform vec4 bPos[\${MAX_B}]; uniform vec3 bCor[\${MAX_B}];
+uniform vec4 lPos[\${MAX_L}]; uniform vec3 lCor[\${MAX_L}]; uniform int nL;
 uniform vec4 fA[\${MAX_F}]; uniform vec4 fB[\${MAX_F}]; uniform vec4 fCx[\${MAX_F}]; uniform vec3 fCor[\${MAX_F}];
 out vec4 cor;
 vec3 grava(vec3 v) { return roundEven(clamp(v, 0.0, 255.0)); }
@@ -4819,7 +4961,14 @@ void main() {
   float pertoBase = nt && pin && em ? 0.75 * exp(-(sq(fx - lx) + sq((fy - ly) * 1.3)) / (2.0 * 60.0 * 60.0)) : 0.0;
   vec3 v = d;
   if (nt) {
-    vec3 quente = vec3(1.0, 0.72, 0.42) * brilho;
+    vec3 extra = vec3(0.0);
+    for (int i = 0; i < nL; i++) {
+      vec4 L = lPos[i]; float dx = fx - L.x, dy = (fy - L.y) * 1.4, al = L.z * 3.0;
+      if (abs(dx) > al || abs(dy) > al) continue;
+      float b = floor(L.w * exp(-(dx * dx + dy * dy) / (2.0 * L.z * L.z)) * 12.0) / 12.0;
+      if (b > 0.0) extra += lCor[i] * b;
+    }
+    vec3 quente = vec3(1.0, 0.72, 0.42) * brilho + extra;
     if (ac == 2u) {}
     else if (ac == 3u) v = v * 0.7 + vec3(120.0, 26.0, 16.0) * 0.45;
     else if (ac != 0u) v = min(vec3(255.0), v * vec3(1.05, 0.8, 0.5) + vec3(34.0, 14.0, 0.0));
@@ -4937,6 +5086,9 @@ void main() {
       gl.uniform1f(u('lx'), P.lx); gl.uniform1f(u('ly'), P.ly); gl.uniform1f(u('forcaSombra'), forcaDaSombra);
       const bs = P.brilhos.slice(0, MAX_B), fs2 = P.focos.slice(0, MAX_F);
       gl.uniform1i(u('nB'), bs.length); gl.uniform1i(u('nF'), fs2.length);
+      const ls = (P.lampadas ?? []).slice(0, MAX_L);
+      gl.uniform1i(u('nL'), ls.length);
+      if (ls.length) { gl.uniform4fv(u('lPos[0]'), ls.flatMap((L) => [L[0], L[1], L[2], L[3]])); gl.uniform3fv(u('lCor[0]'), ls.flatMap((L) => L[4])); }
       if (bs.length) {
         gl.uniform4fv(u('bPos[0]'), bs.flatMap((b) => [b[0], b[1], b[3] ?? 34, b[4] ?? 0.32]));
         gl.uniform3fv(u('bCor[0]'), bs.flatMap((b) => b[2]));
@@ -4970,8 +5122,13 @@ void main() {
     return { canais: cpu.length, diferentes: n, maior: max };
   };
   // Pinta o conteúdo da tela por cima da imagem (dentro da região r), só onde o pixel ainda é da mesa.
+  let gifAgora = 0;
   function pintarTela(r) {
     const q = liga('telas') ? Math.floor(performance.now() / 250) : 0; // paradas: o primeiro quadro, aceso
+    // o GIF anda pelo relógio, com a duração de cada quadro (com "Telas animadas" desligado, o primeiro)
+    gifAgora = 0;
+    const G = GIF_DA_COMUNIDADE;
+    if (G && liga('telas') && G.quadros.length > 1) { let tg = performance.now() % G.total; while (gifAgora < G.quadros.length - 1 && tg >= G.quadros[gifAgora].ms) tg -= G.quadros[gifAgora++].ms; }
     for (const { id, pts } of telasAgora) for (const [x, y, s2, t2] of pts) {
       if (x < r[0] || y < r[1] || x >= r[2] || y >= r[3]) continue;
       const k = y * W + x;
@@ -5019,7 +5176,7 @@ void main() {
       // desenhava a sombra.
       const c = unir([cxv[0] + iv.dx - 2, cxv[1] + iv.dy - 2, cxv[2] + iv.dx + 2, cxv[3] + iv.dy + 2], [Math.min(...cantos.map((q) => q[0])) - 6, Math.min(...cantos.map((q) => q[1])) - 4, Math.max(...cantos.map((q) => q[0])) + 6, Math.max(...cantos.map((q) => q[1])) + 4]);
       return [Math.floor(c[0]), Math.floor(c[1]), Math.ceil(c[2]), Math.ceil(c[3])]; })() : null;
-    const sig = JSON.stringify([ultimaCaixa, rotuloDoQuadro, coelhoChave, gatoAgora ? [gatoAgora.chave, gatoAgora.X0, gatoAgora.Y0] : 0, vc ? [cx0, cy0, indiceDaVista()] : 0, telaMexe ? Math.floor(performance.now() / 250) : 0, conteudoAgora(), iv ? [iv.dx, iv.dy, alvo] : 0, particulas.length ? performance.now() : 0, notas.length ? Math.floor(performance.now() / 100) : 0, paredePega?.vivo ? JSON.stringify(paredePega.vivo) : 0, objPego?.vivo ? [Math.round(objPego.vivo.x), Math.round(objPego.vivo.y), objPego.vivo.lado] : 0, realce?.chave ?? 0, EDITANDO && selecao ? selecao.chave : 0]);
+    const sig = JSON.stringify([ultimaCaixa, rotuloDoQuadro, coelhoChave, gatoAgora ? [gatoAgora.chave, gatoAgora.X0, gatoAgora.Y0] : 0, vc ? [cx0, cy0, indiceDaVista()] : 0, telaMexe ? Math.floor(performance.now() / (GIF_DA_COMUNIDADE && canalDaTvAgora() === 'comunidade' && !telasDesligadas.has('tv') ? 100 : 250)) : 0, conteudoAgora(), iv ? [iv.dx, iv.dy, alvo] : 0, particulas.length ? performance.now() : 0, notas.length ? Math.floor(performance.now() / 100) : 0, paredePega?.vivo ? JSON.stringify(paredePega.vivo) : 0, objPego?.vivo ? [Math.round(objPego.vivo.x), Math.round(objPego.vivo.y), objPego.vivo.lado] : 0, realce?.chave ?? 0, EDITANDO && selecao ? selecao.chave : 0]);
     const mexeu = sig !== assinaturaQuadro;
     if (!mexeu && regiaoAnterior && regiaoAnterior[2] - regiaoAnterior[0] < W) { escreverLegenda(); return; }
     if (selecao && !EDITANDO) selecao = null;
@@ -5148,7 +5305,7 @@ void main() {
     if (paredePega?.vivo && TEXTURAS_PAREDE[paredePega.id]) {
       const id = paredePega.id, T2 = texturaNaParede(id, paredePega.vivo.parede), mp = mapaDaParede(paredePega.vivo, id), cx = caixaDoItemDaParede(id), px = [];
       let bx0 = W, by0 = W, bx1 = 0, by1 = 0;
-      const tex = modo === 'noite' && CENA !== 'salao' ? T2.noite : T2.dia, f = modo === 'noite' && CENA === 'salao' ? 0.6 : 1;
+      const pd = noiteDoDia(T2), tex = modo === 'noite' && !pd ? T2.noite : T2.dia, f = modo === 'noite' && pd ? 0.4 : 1;
       for (let y = cx[1]; y < cx[3]; y++) for (let x = cx[0]; x < cx[2]; x++) {
         const k4 = (y * W + x) * 4; if (T2.dia[k4 + 3] < 128) continue;
         const d = mp(x, y); if (d < 0) continue;
@@ -5489,6 +5646,10 @@ void main() {
     caixa.replaceChildren(...Object.entries(OBJETOS_DE_CIMA).map(([id, it]) => { const b = document.createElement('button'); b.textContent = 'Pôr ' + it.nome; b.onclick = () => { if (!soVer) porObjeto(id); }; return b; }));
   }
   window.objetosDoTeste = () => EM_CIMA; // para o teste
+  // A AUDITORIA DE NOITE (10/11/2026, e2e/pixel-art/auditoria-de-noite.mjs): o catálogo inteiro e, por pixel da tela, de que
+  // peça ele é (a mesma escolha do clique: 'm' móvel, 'p' objeto da parede, 'o' objeto de cima).
+  window.catalogoDoTeste = () => ({ moveis: Object.keys(INICIAL), inicial: INICIAL, parede: Object.keys(ITENS_PAREDE), paredeInicial: PAREDE_INICIAL, deCima: Object.keys(OBJ_VISTAS), topos: Object.keys(TOPOS) });
+  window.pixelsDasPecasDoTeste = () => { const m = {}; for (let k = 0; k < W * W; k++) { const c = escolhaEm(k); if (c) (m[c] ??= []).push(k); } return m; };
   // A AUDITORIA DOS OBJETOS DE CIMA (06/11/2026): por objeto, os pixels do desenho, os que entraram na peça do móvel (o que
   // ficou de fora foi CORTADO) e os que se veem na cena (o resto está atrás de outro móvel).
   window.auditoriaDoTeste = () => Object.fromEntries(Object.entries(EM_CIMA).map(([uid, o]) => {
@@ -5884,7 +6045,7 @@ void main() {
     const d = dono[pixelDo(e)];
     if (d === 'gato') { if (!EDITANDO) acordarGato(); return; } // o gatinho da janela acorda (ele não se arrasta)
     if (d === 'coelho') { if (!EDITANDO) carinhoNoCoelho(); return; } // o carinho: a pirueta e os corações
-    if (d === 'cadeira') {
+    if (ehCadeiraDoPc(d)) {
       if (coelho.destino === 'cadeira') return; // com ele sentado (ou indo sentar), ela fica
       const [u, v] = uvDoPonteiro(e);
       cadeira.presa = true; cadeira.kin = null; escolher('cadeira'); pegaDelta = [cadeira.u - u, cadeira.v - v]; cadeira.alvo = [cadeira.u, cadeira.v]; amostras = [[performance.now(), u, v]];
@@ -5972,7 +6133,7 @@ void main() {
   // GIRAR o móvel escolhido (o último que se tocou): a próxima das 4 posições. Se ele não couber girado ali, tenta a
   // seguinte; não cabendo em nenhuma, fica como está.
   const girar = () => {
-    if (selecionado === 'cadeira') { levarCadeira([cadeira.u, cadeira.v], cadeira.th + Math.PI / 4, 250); return; }
+    if (ehCadeiraDoPc(selecionado)) { levarCadeira([cadeira.u, cadeira.v], cadeira.th + Math.PI / 4, 250); return; }
     const id = selecionado;
     if (tipoDe(id) === 'pufe' || !ARR[id]) return;
     for (let passo = 1; passo < 4; passo++) {
@@ -6082,7 +6243,7 @@ void main() {
     fechada = !!a.cortina && !!TIPOS_JANELA[JAN.tipo].cortina; aberta = !!a.janelaAberta && !!TIPOS_JANELA[JAN.tipo].abre;
     abajurApagado = !!a.abajurApagado;
     if (CENA === 'salao') {
-      canalDaTv = CANAIS_DA_TV.includes(a.canalDaTv) ? a.canalDaTv : null;
+      canalDaTv = CANAIS_DA_TV.includes(a.canalDaTv) || a.canalDaTv === 'comunidade' ? a.canalDaTv : null;
       telasDesligadas.clear();
       for (const id of Array.isArray(a.desligados) ? a.desligados : []) if (DESLIGAVEIS_DO_SALAO.includes(id)) telasDesligadas.add(id);
       assinaturaCena = '';
@@ -6266,9 +6427,13 @@ void main() {
     const opcoes = Object.fromEntries(Object.entries(OPCOES_PAREDE).map(([id, ops]) => [id, Object.fromEntries(Object.entries(ops).map(([nome, o]) => [nome, recorte(soNucleo(o))]))]));
     // e cada móvel que se pode guardar: a vista de fábrica dele (ou o recorte da pintura, como o tapete)
     const moveis = {};
+    // OS IGUAIS COM NÚMERO DO SALÃO (cadeira, cadeira-2, -3 e -4; sofa e sofa-2…) são a MESMA peça, só com outro giro na
+    // arrumação de fábrica: a figura de todos é a do primeiro, e o catálogo os junta num cartão só (relato dele, 10/11/2026:
+    // "a mesma cadeira foi disponibilizada como 4 objetos diferentes, sendo que é a mesma cadeira em ângulos diferentes").
+    const igualDe = (id) => { const b = id.replace(/-\d+$/, ''); return b !== id && INICIAL[b] && VISTAS[b] ? b : id; };
     // (todos, desde 16/10/2026: no catálogo do Editar, o que já está no quarto ganha uma cópia; os que se guardam vão
     // também em "guardaveis", a lista de antes)
-    for (const id of Object.keys(INICIAL)) { const fonte = VISTAS[id]?.[INICIAL[id].lado]?.movel ?? pecas[id]?.movel ?? (id === 'pufe' ? pecas[(varianteDoPufe() ?? pufes[0])?.id]?.movel : null); if (fonte) moveis[id] = recorte(fonte); } // (o pufe mora nas variantes de luz dele)
+    for (const id of Object.keys(INICIAL)) { const ig = igualDe(id), fonte = VISTAS[ig]?.[INICIAL[ig].lado]?.movel ?? pecas[id]?.movel ?? (id === 'pufe' ? pecas[(varianteDoPufe() ?? pufes[0])?.id]?.movel : null); if (fonte) moveis[id] = recorte(fonte); } // (o pufe mora nas variantes de luz dele)
     const guardaveis = Object.keys(INICIAL).filter((id) => podeGuardar(id) && moveis[id]);
     // e cada tipo de janela (com a cortina, na que tem): a barra mostra a figura de cada uma, e não um botão que troca às
     // cegas (relato dele, 16/10/2026: o "Janela" trocava o tipo, e só a original tem cortina e abre)
@@ -6383,7 +6548,7 @@ void main() {
     if (!ch) { barrinha.hidden = true; barrinha.replaceChildren(); return; }
     const tipo = ch[0], id = ch.slice(1), botoesB = [], opcoes = [];
     // mover, girar, tirar, duplicar e "…" (a ordem da referência dele)
-    if (tipo !== 'j' && ch !== 'mcadeira') botoesB.push(botaoDaBarrinha('mover', () => (movendo ? pararDeMover() : comecarAMover()), { pressionado: !!movendo }));
+    if (tipo !== 'j' && !ehCadeiraDoPc(ch.slice(1))) botoesB.push(botaoDaBarrinha('mover', () => (movendo ? pararDeMover() : comecarAMover()), { pressionado: !!movendo }));
     if (tipo === 'm') {
       if (tipoDe(id) !== 'pufe') botoesB.push(botaoDaBarrinha('girar', () => { escolher(id); girar(); }));
       if (podeTirar(ch)) botoesB.push(botaoDaBarrinha('tirar', () => tirarEscolhido()));
@@ -6464,7 +6629,7 @@ void main() {
       assinaturaCena = ''; enviar(); desenhar(); return true;
     }
     if (d === 'tv') {
-      const ciclo = [...(AO_VIVO ? ['ao-vivo'] : []), ...CANAIS_DA_TV], i = ciclo.indexOf(canalDaTvAgora());
+      const ciclo = [...(AO_VIVO ? ['ao-vivo'] : []), ...canaisDaTv()], i = ciclo.indexOf(canalDaTvAgora());
       if (telasDesligadas.has('tv')) { telasDesligadas.delete('tv'); canalDaTv = ciclo[0]; }
       else if (i === ciclo.length - 1) telasDesligadas.add('tv');
       else canalDaTv = ciclo[i + 1];
@@ -6492,7 +6657,7 @@ void main() {
   function podeDuplicar(ch) {
     if (!PODE_COPIAR || soVer || !ch) return false;
     const t = ch[0], id = ch.slice(1), tipo = tipoDe(id);
-    if (t === 'm') return tipo !== 'cadeira' && !!ARR[id] && temDesenho(tipo) && Object.keys(ARR).length < MAX_PECAS;
+    if (t === 'm') return !ehCadeiraDoPc(tipo) && !!ARR[id] && temDesenho(tipo) && Object.keys(ARR).length < MAX_PECAS;
     if (t === 'p') return !!NA_PAREDE[id] && Object.keys(NA_PAREDE).length < MAX_PECAS;
     if (t === 'o') return !!EM_CIMA[id] && Object.keys(EM_CIMA).length < 60;
     return false;
@@ -6613,7 +6778,7 @@ void main() {
   function comecarAMover() {
     if (!EDITANDO || soVer || !selecao || movendo) return;
     const t = selecao.chave[0];
-    if (t === 'j' || selecao.chave === 'mcadeira') return; // a janela e a cadeira já andam arrastando
+    if (t === 'j' || ehCadeiraDoPc(selecao.chave.slice(1))) return; // a janela e a cadeira já andam arrastando
     movendo = { chave: selecao.chave }; tela.style.cursor = 'move'; montarBarrinha(); desenhar();
   }
   function pararDeMover() {
@@ -6963,6 +7128,7 @@ void main() {
       ba.setAttribute('aria-pressed', String(!!n)); ba.textContent = 'Ao vivo: ' + (n ? n + ' transmissão' + (n > 1 ? 'ões' : '') : 'ninguém'); desenhar();
     };
     let ni = 0;
+    window.imagemDoTeste = (d) => carregarImagem(d); // para o teste (o GIF da comunidade na TV)
     bi.onclick = () => {
       // nenhuma → o ícone (contido) → a capa (cobrindo) → nenhuma
       ni = (ni + 1) % 3;

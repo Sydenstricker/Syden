@@ -3096,6 +3096,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Khi tắt âm thanh, cuộc gọi riêng đến mà không có tiếng: thông báo hiện trên màn hình và Syden nhấp nháy trên thanh tác vụ. Bật mục này để vẫn nghe nhạc chuông.",
   'Avatares anteriores': "Ảnh đại diện trước đây",
   'Voltar a este avatar': "Quay lại ảnh đại diện này",
+  'Atual': "Hiện tại",
   'Tirar do histórico': "Xóa khỏi lịch sử",
   'Avatar não encontrado.': "Không tìm thấy ảnh đại diện.",
   'Sininho': "Chuông nhỏ",

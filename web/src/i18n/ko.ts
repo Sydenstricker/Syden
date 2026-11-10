@@ -3114,6 +3114,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "소리를 끄면 개인 통화가 소리 없이 와요. 알림이 화면에 뜨고 Syden이 작업 표시줄에서 깜박여요. 그래도 벨소리를 듣고 싶다면 켜세요.",
   'Avatares anteriores': "이전 아바타",
   'Voltar a este avatar': "이 아바타로 돌아가기",
+  'Atual': "현재",
   'Tirar do histórico': "기록에서 지우기",
   'Avatar não encontrado.': "아바타를 찾을 수 없어요.",
   'Sininho': "차임",

@@ -3197,6 +3197,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Þegar slökkt er á hljóði berst einkasímtal án hljóðs: tilkynningin birtist á skjánum og Syden blikkar á verkstikunni. Kveiktu á þessu til að heyra hringitóninn samt.",
   'Avatares anteriores': "Fyrri notandamyndir",
   'Voltar a este avatar': "Fara aftur í þessa notandamynd",
+  'Atual': "Núverandi",
   'Tirar do histórico': "Fjarlægja úr ferli",
   'Avatar não encontrado.': "Notandamynd fannst ekki.",
   'Sininho': "Bjalla",

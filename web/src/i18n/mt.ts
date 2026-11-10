@@ -3142,6 +3142,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Bl-awdjo mitfi, sejħa privata tasal mingħajr ħoss: l-avviż jidher fuq l-iskrin u Syden iteptep fil-barra tal-kompiti. Ixgħel dan biex xorta tisma’ t-ton.",
   'Avatares anteriores': "Avatars ta’ qabel",
   'Voltar a este avatar': "Erġa’ lura għal dan l-avatar",
+  'Atual': "Attwali",
   'Tirar do histórico': "Neħħi mill-istorja",
   'Avatar não encontrado.': "L-avatar ma nstabx.",
   'Sininho': "Qanpiena",

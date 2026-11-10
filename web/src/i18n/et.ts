@@ -3193,6 +3193,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Kui heli on välja lülitatud, saabub privaatkõne vaikselt: teade ilmub ekraanile ja Syden vilgub tegumiribal. Lülita see sisse, et helinat ikkagi kuulda.",
   'Avatares anteriores': "Varasemad avatarid",
   'Voltar a este avatar': "Mine tagasi selle avatari juurde",
+  'Atual': "Praegune",
   'Tirar do histórico': "Eemalda ajaloost",
   'Avatar não encontrado.': "Avatari ei leitud.",
   'Sininho': "Kelluke",

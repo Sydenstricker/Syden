@@ -171,7 +171,7 @@ for corpo in CORPOS:
     px_dir = os.path.join(PASTA[corpo], 'pixel')
     os.makedirs(px_dir, exist_ok=True)
     for combo in COMBOS:
-        for d in DIRS + ['south', 'east', 'north']:
+        for d in DIRS + ['south', 'east', 'north', 'west']:
             if not os.path.exists(os.path.join(PASTA[corpo], 'quadros', f'{corpo}-{combo}-{d}.png')):
                 continue
             q = processar(corpo, f'{corpo}-{combo}-{d}.png')

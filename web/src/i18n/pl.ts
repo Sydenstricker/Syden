@@ -3191,6 +3191,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Z wyłączonym dźwiękiem prywatne połączenie przychodzi bez dźwięku: powiadomienie pojawia się na ekranie, a Syden miga na pasku zadań. Włącz, aby mimo to słyszeć dzwonek.",
   'Avatares anteriores': "Poprzednie awatary",
   'Voltar a este avatar': "Wróć do tego awatara",
+  'Atual': "Obecny",
   'Tirar do histórico': "Usuń z historii",
   'Avatar não encontrado.': "Nie znaleziono awatara.",
   'Sininho': "Dzwoneczek",

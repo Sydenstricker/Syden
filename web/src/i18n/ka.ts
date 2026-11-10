@@ -3214,6 +3214,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "ხმის გამორთვისას პირადი ზარი უხმოდ მოდის: შეტყობინება ეკრანზე ჩნდება და Syden ციმციმებს ამოცანების ზოლში. ჩართე, რომ მელოდია მაინც გაიგო.",
   'Avatares anteriores': "წინა ავატარები",
   'Voltar a este avatar': "ამ ავატარზე დაბრუნება",
+  'Atual': "მიმდინარე",
   'Tirar do histórico': "ისტორიიდან ამოღება",
   'Avatar não encontrado.': "ავატარი ვერ მოიძებნა.",
   'Sininho': "ზარაკი",

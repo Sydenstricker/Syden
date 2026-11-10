@@ -3188,6 +3188,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Med ljudet av kommer ett privat samtal utan ljud: aviseringen visas på skärmen och Syden blinkar i aktivitetsfältet. Slå på det här för att höra ringsignalen ändå.",
   'Avatares anteriores': "Tidigare avatarer",
   'Voltar a este avatar': "Gå tillbaka till den här avataren",
+  'Atual': "Nuvarande",
   'Tirar do histórico': "Ta bort från historiken",
   'Avatar não encontrado.': "Avataren hittades inte.",
   'Sininho': "Klocka",

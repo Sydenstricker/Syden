@@ -1,7 +1,7 @@
 // A APARÊNCIA EM FICHÁRIO (09/11/2026, o desenho dele): uma tela, duas orelhas.
 // - Configurações → Aparência abre na orelha Aplicativo (as paletas e a cor do Syden); as orelhas são abas de verdade
 //   (role=tab, aria-selected, as setas do teclado trocam);
-// - a orelha Avatar: o personagem grande com as setas do coelho pronto (a escolha fica guardada), o bicho do quarto com as
+// - a orelha Avatar: o personagem grande com as setas do coelho pronto (só mostram; o Salvar guarda, e o "Atual" é a 1ª posição), o bicho do quarto com as
 //   setas (Gato / Sem bicho) e o nome dele, a foto recolhida e os enfeites do perfil embaixo;
 // - o bicho e o nome chegam ao quarto (o gato some e volta; o nome aparece ao passar o mouse nele);
 // - Minha conta, o guarda-roupa do quarto (pixel art e 3D) abrem a orelha Avatar; não há mais entrada "Guarda-roupa" no menu.
@@ -68,14 +68,16 @@ try {
   const coelho = 'Coelho';
   await valor(coelho).waitFor({ timeout: 10_000 });
   const antes = (await valor(coelho).textContent())?.trim();
-  (await page.locator('.personagem-palco img[src*="guarda-roupa/mascote"]').count()) && antes === '—'
-    ? ok('sem coelho escolhido, a prévia é o mascote')
+  (await page.locator('.personagem-palco img[src*="guarda-roupa/mascote"]').count()) && antes === 'Atual'
+    ? ok('sem coelho escolhido, o carrossel começa no "Atual", que é o mascote')
     : console.log('   (a conta já começa com avatar: ' + antes + ')');
   await seta(coelho, '›').click();
-  await page.waitForFunction(() => document.querySelector('.personagem-coelho')?.getAttribute('src')?.includes('coelho-01-corpo'), null, { timeout: 5_000 }).then(
-    () => ok('› vai ao coelho 1, de corpo inteiro'),
+  await page.waitForFunction(() => document.querySelector('.personagem-coelho')?.getAttribute('src')?.includes('coelho-01-inteiro'), null, { timeout: 5_000 }).then(
+    () => ok('› vai ao coelho 1, de corpo inteiro (a foto de frente refinada)'),
     () => falhou('› não mostrou o coelho 1'),
   );
+  await seta(coelho, '‹').click();
+  (await valor(coelho).textContent())?.trim() === 'Atual' ? ok('‹ volta ao "Atual"') : falhou('‹ deu ' + (await valor(coelho).textContent()));
   await seta(coelho, '‹').click();
   (await valor(coelho).textContent())?.trim() === '16 / 16' ? ok('‹ dá a volta ao 16') : falhou('‹ deu ' + (await valor(coelho).textContent()));
   await page.waitForTimeout(300);
@@ -83,15 +85,22 @@ try {
     const img = document.querySelector('.personagem-coelho');
     return img && img.complete ? { w: img.width / img.naturalWidth, h: img.height / img.naturalHeight, r: getComputedStyle(img).imageRendering } : null;
   });
-  // o 16 (só o busto, já em 256 px) desce pela metade: inteiro para cima ou divisor inteiro para baixo
+  // o 16 tem a foto de frente refinada (64 × 152) desde 10/11/2026: inteiro para cima ou divisor inteiro para baixo
   const inteiro = (k) => Number.isInteger(k >= 1 ? k : 1 / k);
   nitido && inteiro(nitido.w) && nitido.w === nitido.h && nitido.r === 'pixelated'
     ? ok(`o desenho do 16 vai em escala inteira (${nitido.w}×), sem suavizar`)
     : falhou('ampliação: ' + JSON.stringify(nitido));
   await seta(coelho, '›').click();
   await seta(coelho, '›').click();
-  (await valor(coelho).textContent())?.trim() === '2 / 16' ? ok('› › chega ao 2') : falhou('chegou a ' + (await valor(coelho).textContent()));
-  await page.waitForTimeout(800);
+  await seta(coelho, '›').click();
+  (await valor(coelho).textContent())?.trim() === '2 / 16' ? ok('› › › passa pelo "Atual" e chega ao 2') : falhou('chegou a ' + (await valor(coelho).textContent()));
+  // as setas só mostram: o 2 só vale depois do Salvar
+  await page.locator('.personagem-salvar button').click();
+  await page.waitForFunction(() => document.querySelector('.personagem-linha[aria-label="Coelho"] strong')?.textContent === '2 / 16 · Atual', null, { timeout: 10_000 }).then(
+    () => ok('o Salvar veste o 2, que vira o "Atual"'),
+    () => falhou('o Salvar não vestiu o 2'),
+  );
+  (await page.locator('.personagem-salvar').count()) === 0 ? ok('salvo, o botão some') : falhou('o Salvar continua depois de salvar');
 
   // 3. O bicho e o nome
   const bicho = 'Bicho do quarto';
@@ -146,7 +155,7 @@ try {
   await page.locator('#abertura').waitFor({ state: 'detached', timeout: 15_000 }).catch(() => {});
   await abrirAparencia();
   await orelha('Avatar').click();
-  await page.waitForFunction(() => document.querySelector('.personagem-linha[aria-label="Coelho"] strong')?.textContent === '2 / 16', null, { timeout: 10_000 }).then(
+  await page.waitForFunction(() => document.querySelector('.personagem-linha[aria-label="Coelho"] strong')?.textContent === '2 / 16 · Atual', null, { timeout: 10_000 }).then(
     () => ok('depois de recarregar, o coelho 2 continua escolhido'),
     () => falhou('o coelho escolhido não ficou'),
   );

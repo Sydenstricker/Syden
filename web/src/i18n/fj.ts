@@ -3125,6 +3125,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Ni vakamatei na rorogo, e yaco mai na veiqiri vakaitaukei ka sega ni rorogo: e basika na itukutuku ena sikirini ka cila tiko ko Syden ena taskbar. Vakacegua mo rogoca ga na rorogo ni veiqiri.",
   'Avatares anteriores': "Avatar e liu",
   'Voltar a este avatar': "Lesu ki na avatar oqo",
+  'Atual': "Ena gauna oqo",
   'Tirar do histórico': "Kauta tani mai na itukutuku makawa",
   'Avatar não encontrado.': "E sega ni kunei na avatar.",
   'Sininho': "Lali lailai",

@@ -3125,6 +3125,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "आवाज़ बंद होने पर निजी कॉल बिना आवाज़ के आती है: सूचना स्क्रीन पर दिखती है और Syden टास्कबार में टिमटिमाता है। फिर भी रिंगटोन सुनने के लिए इसे चालू करो।",
   'Avatares anteriores': "पिछले अवतार",
   'Voltar a este avatar': "इस अवतार पर वापस जाओ",
+  'Atual': "मौजूदा",
   'Tirar do histórico': "इतिहास से हटाओ",
   'Avatar não encontrado.': "अवतार नहीं मिला।",
   'Sininho': "घंटी",

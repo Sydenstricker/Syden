@@ -3137,6 +3137,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Iyo amajwi afunze, umuhamagaro wihariye uza nta jwi: ubutumwa bugaragara kuri ecran, kandi Syden irabagirana ku murongo w’imirimo. Fungura ibi kugira ngo wumve ijwi ry’umuhamagaro uko byagenda kose.",
   'Avatares anteriores': "Amafoto y’umwirondoro yabanje",
   'Voltar a este avatar': "Garura iyi foto y’umwirondoro",
+  'Atual': "Iriho ubu",
   'Tirar do histórico': "Kura mu mateka",
   'Avatar não encontrado.': "Ifoto y’umwirondoro ntiyabonetse.",
   'Sininho': "Inzogera nto",

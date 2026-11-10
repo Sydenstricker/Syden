@@ -3125,6 +3125,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Als het geluid uit staat, komt een privéoproep zonder geluid binnen: de melding verschijnt op het scherm en Syden knippert in de taakbalk. Zet dit aan om de beltoon toch te horen.",
   'Avatares anteriores': "Vorige avatars",
   'Voltar a este avatar': "Terug naar deze avatar",
+  'Atual': "Huidige",
   'Tirar do histórico': "Uit de geschiedenis halen",
   'Avatar não encontrado.': "Avatar niet gevonden.",
   'Sininho': "Belletje",

@@ -3167,6 +3167,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Səs bağlı olanda şəxsi zəng səssiz gəlir: bildiriş ekranda görünür və Syden tapşırıqlar panelində yanıb-sönür. Yenə də zəng melodiyasını eşitmək üçün bunu aç.",
   'Avatares anteriores': "Əvvəlki avatarlar",
   'Voltar a este avatar': "Bu avatara qayıt",
+  'Atual': "Hazırkı",
   'Tirar do histórico': "Tarixçədən sil",
   'Avatar não encontrado.': "Avatar tapılmadı.",
   'Sininho': "Zınqırov",

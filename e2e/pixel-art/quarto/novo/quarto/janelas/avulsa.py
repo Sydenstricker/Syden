@@ -6,6 +6,8 @@ import json, os, sys
 import numpy as np
 from PIL import Image
 from scipy.ndimage import binary_fill_holes, label
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from vidro_limpo import sem_pintas
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 tipo = sys.argv[1] if len(sys.argv) > 1 else 'tijolo'; n = sys.argv[2] if len(sys.argv) > 2 else '1'
@@ -22,6 +24,7 @@ rot, k = label(op); tam = np.bincount(rot.ravel()); tam[0] = 0; op = rot == tam.
 vidro = binary_fill_holes(op) & ~op
 # um buraco pequeno na madeira não é vidro
 rv, kv = label(vidro); tv = np.bincount(rv.ravel()); tv[0] = 0; vidro = np.isin(rv, np.nonzero(tv >= 12)[0])
+vidro = sem_pintas(vidro)  # (a madeira solta dentro do vidro: vidro_limpo.py)
 
 tela = np.zeros((512, 512, 4), np.uint8); vid = np.zeros((512, 512), bool)
 y0, x0 = ref['y0'], ref['x0']; h, w = op.shape

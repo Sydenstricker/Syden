@@ -3132,6 +3132,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "ʻI he taimi kuo taʻofi ai e leʻo, ʻoku aʻu mai ha telefoni fakafoʻituitui taʻe ha leʻo: ʻoku hā e fakatokanga ʻi he sikilini pea ʻoku ʻuhila ʻa Syden ʻi he taskbar. Fakaʻaki eni ke ke fanongo pē ki he ongo ʻo e telefoni.",
   'Avatares anteriores': "Ngaahi ʻavata kimuʻa",
   'Voltar a este avatar': "Foki ki he ʻavata ko eni",
+  'Atual': "Lolotonga",
   'Tirar do histórico': "Toʻo mei he hisitōlia",
   'Avatar não encontrado.': "ʻOku ʻikai maʻu e ʻavata.",
   'Sininho': "Fafangu siʻi",

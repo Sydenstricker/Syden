@@ -3206,6 +3206,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "އަޑު ބަންދުކޮށްފައިވާއިރު، ޕްރައިވެޓް ކޯލެއް އަންނަނީ އަޑެއް ނެތިއެވެ: އެންގުން ސްކްރީނުގައި ފެނިގެންދާނެ، އަދި Syden ޓާސްކްބާގައި ދިއްލި ނިވިގެންދާނެ. އެހެންނަމަވެސް ރިންގް އަޑުއަހަން މިއަށް ހުޅުވާލާ.",
   'Avatares anteriores': "ކުރީގެ އަވަތާރުތައް",
   'Voltar a este avatar': "މި އަވަތާރަށް އަނބުރާ ދޭ",
+  'Atual': "މިހާރުގެ",
   'Tirar do histórico': "ހިސްޓްރީއިން ނަގާ",
   'Avatar não encontrado.': "އަވަތާރު ނުފެނުނު.",
   'Sininho': "ކުޑަ ބެލް",

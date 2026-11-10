@@ -3196,6 +3196,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Kun ääni on pois, yksityinen puhelu tulee äänettä: ilmoitus näkyy näytöllä ja Syden vilkkuu tehtäväpalkissa. Laita tämä päälle, niin kuulet soittoäänen silti.",
   'Avatares anteriores': "Aiemmat avatarit",
   'Voltar a este avatar': "Palaa tähän avatariin",
+  'Atual': "Nykyinen",
   'Tirar do histórico': "Poista historiasta",
   'Avatar não encontrado.': "Avataria ei löytynyt.",
   'Sininho': "Kello",

@@ -3113,6 +3113,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "关闭声音时，私人通话会静音到达：提醒会显示在屏幕上，Syden 会在任务栏闪烁。打开此项，照样能听到来电铃声。",
   'Avatares anteriores': "以前的头像",
   'Voltar a este avatar': "换回这个头像",
+  'Atual': "当前",
   'Tirar do histórico': "从历史中移除",
   'Avatar não encontrado.': "未找到头像。",
   'Sininho': "风铃",

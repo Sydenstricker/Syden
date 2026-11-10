@@ -3198,6 +3198,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Kad skaņa ir izslēgta, privāts zvans pienāk bez skaņas: paziņojums parādās ekrānā, un Syden mirgo uzdevumjoslā. Ieslēdz, lai zvana signālu tomēr dzirdētu.",
   'Avatares anteriores': "Iepriekšējie avatāri",
   'Voltar a este avatar': "Atgriezties pie šī avatāra",
+  'Atual': "Pašreizējais",
   'Tirar do histórico': "Noņemt no vēstures",
   'Avatar não encontrado.': "Avatārs nav atrasts.",
   'Sininho': "Zvaniņš",

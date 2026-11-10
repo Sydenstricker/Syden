@@ -25,10 +25,17 @@ trap 'rm -f "$TEMP" "$TEMP.limite"' EXIT
   fi
   for BOOT in -2 -1 0; do
     echo
-    echo "=== Boot $BOOT: Docker, SSH, logind e kernel (até 250 linhas) ==="
+    echo "=== Boot $BOOT: Docker, SSH e logind (até 250 linhas) ==="
     if ! journalctl --boot="$BOOT" --unit=docker.service --unit=ssh.service --unit=systemd-logind.service \
-        --kernel --no-pager --output=short-iso-precise --lines=250; then
+        --no-pager --output=short-iso-precise --lines=250; then
       echo "Falha ao ler o journal do boot $BOOT."
+    fi
+    # O kernel numa chamada à parte: o journalctl do servidor não conhece --kernel (só -k), e -k junto com --unit
+    # cruzaria os filtros (kernel E unidade) e não traria nada (10/11/2026, a primeira execução de verdade).
+    echo
+    echo "=== Boot $BOOT: kernel (até 150 linhas) ==="
+    if ! journalctl --boot="$BOOT" -k --no-pager --output=short-iso-precise --lines=150; then
+      echo "Falha ao ler o kernel do boot $BOOT."
     fi
   done
   echo

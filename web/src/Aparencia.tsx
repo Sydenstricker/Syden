@@ -568,25 +568,43 @@ function FolhaDoAvatar({ user, editorDaFoto, aoAbrirPacotes }: { user: User; edi
   const t = useT();
   const { members } = useDirectory();
   const eu = members.get(user.id);
-  // O coelho escolhido agora: a resposta do servidor chega pelo diretório, mas a seta responde na hora.
-  const [coelho, setCoelho] = useState<number | null | undefined>(undefined);
-  const pronto = coelho !== undefined ? coelho : (eu?.avatarPronto ?? null);
-  const temFoto = !pronto && (eu?.avatarVersion ?? null) !== null;
+  // O AVATAR QUE ESTÁ VALENDO (o do servidor, pelo diretório): um coelho pronto, uma foto (ou GIF), ou nada (o mascote).
+  const atualPronto = eu?.avatarPronto ?? null;
+  const atualFoto = !atualPronto && (eu?.avatarVersion ?? null) !== null;
+  // O CARROSSEL SÓ MOSTRA (10/11/2026, relato dele: "durante a alternância entre avatares, eu perdi de novo o meu referencial
+  // antigo de GIF; se eu não quiser nenhum dos oferecidos, queria continuar com o meu atual"). Antes, cada seta já trocava o
+  // avatar no servidor: a primeira seta tirava o GIF (que ia para os anteriores, lá embaixo) e o carrossel nunca mais o
+  // mostrava. Agora a escolha fica na tela até o "Salvar". 0 é o ATUAL (a foto ou o GIF, animado, ou o mascote), a primeira
+  // posição; 1 a 16, os coelhos prontos. Quem já usa um coelho começa nele, que é o atual.
+  const [escolha, setEscolha] = useState(atualPronto ?? 0);
+  const [salvando, setSalvando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
+  // o avatar mudou (salvo aqui, pelo editor da foto ou por um anterior): a tela volta ao atual
+  useEffect(() => setEscolha(atualPronto ?? 0), [atualPronto, eu?.avatarVersion]);
+  const mudou = escolha !== (atualPronto ?? 0);
 
   // OS COELHOS PRONTOS (10/10/2026; desenhos do PixelLab em web/public/avatares/): ESCOLHER UM GUARDA SÓ O NÚMERO
   // (/api/me/avatar-pronto), e não a imagem, para o app saber qual coelho é e desenhá-lo na pose do estado da pessoa
   // (dormindo quando ausente, falando na call; ver Avatar.tsx). Eram uma grade em Minha conta; viraram as setas (09/11/2026).
-  async function trocarCoelho(passo: number) {
-    // sem coelho (foto ou nada), a seta para a frente começa no primeiro, e a para trás no último
-    const numero = pronto ? ((pronto - 1 + passo + COELHOS) % COELHOS) + 1 : passo > 0 ? 1 : COELHOS;
+  function trocarCoelho(passo: number) {
+    // sem coelho atual, a posição 0 (o atual) entra na volta; com um coelho, o atual já é um dos 16
+    const posicoes = atualPronto ? COELHOS : COELHOS + 1;
+    const indice = atualPronto ? escolha - 1 : escolha;
+    const novo = (indice + passo + posicoes) % posicoes;
     setErro(null);
-    setCoelho(numero);
+    setEscolha(atualPronto ? novo + 1 : novo);
+  }
+  async function salvarCoelho() {
+    if (!mudou || escolha < 1) return;
+    setErro(null);
+    setSalvando(true);
     try {
-      await api('/api/me/avatar-pronto', { method: 'PUT', body: { numero } });
+      // o servidor leva a foto (ou o GIF) de agora para os anteriores, de onde se volta a ela
+      await api('/api/me/avatar-pronto', { method: 'PUT', body: { numero: escolha } });
     } catch (e) {
-      setCoelho(undefined);
       setErro((e as Error).message);
+    } finally {
+      setSalvando(false);
     }
   }
 
@@ -628,8 +646,11 @@ function FolhaDoAvatar({ user, editorDaFoto, aoAbrirPacotes }: { user: User; edi
     void guardarBicho({ pet: novo });
   }
 
-  const corpo = pronto ? enderecoDoCorpoPronto(pronto) : null;
+  const corpo = escolha > 0 ? enderecoDoCorpoPronto(escolha) : null;
   const figuraDoBicho = bicho ? FIGURA_DO_BICHO[bicho] : null;
+  const rotuloDoCoelho = primeiraForma(t('Coelho'));
+  const valorDoCoelho =
+    escolha === 0 ? t('Atual') : `${algarismos(escolha)} / ${algarismos(COELHOS)}${escolha === atualPronto ? ` · ${t('Atual')}` : ''}`;
 
   return (
     <>
@@ -637,22 +658,24 @@ function FolhaDoAvatar({ user, editorDaFoto, aoAbrirPacotes }: { user: User; edi
         <div className="personagem-palco">
           {corpo ? (
             <PixelGrande key={corpo} src={corpo} altura={180} className="personagem-coelho" />
-          ) : pronto ? (
-            // o 16 ainda não tem corpo inteiro: o busto, nítido
-            <PixelGrande key={pronto} src={enderecoDoCoelhoPronto(pronto)} altura={160} className="personagem-coelho" />
-          ) : temFoto ? (
+          ) : escolha > 0 ? (
+            <PixelGrande key={escolha} src={enderecoDoCoelhoPronto(escolha)} altura={160} className="personagem-coelho" />
+          ) : atualFoto ? (
+            // o atual é a foto ou o GIF: grande assim, o GIF anima sempre (FotoDoAvatar)
             <Avatar name={nomeDe(user)} userId={user.id} size={144} />
           ) : (
             <PixelGrande src={MASCOTE} altura={180} className="personagem-coelho" />
           )}
         </div>
         <div className="personagem-linhas">
-          <LinhaDoPersonagem
-            rotulo={primeiraForma(t('Coelho'))}
-            valor={pronto ? `${algarismos(pronto)} / ${algarismos(COELHOS)}` : '—'}
-            anterior={() => void trocarCoelho(-1)}
-            proximo={() => void trocarCoelho(1)}
-          />
+          <LinhaDoPersonagem rotulo={rotuloDoCoelho} valor={valorDoCoelho} anterior={() => trocarCoelho(-1)} proximo={() => trocarCoelho(1)} ocupado={salvando} />
+          {mudou && (
+            <div className="personagem-salvar">
+              <button type="button" className="btn-primary" disabled={salvando} aria-label={`${t('Salvar')}: ${rotuloDoCoelho}`} onClick={() => void salvarCoelho()}>
+                {t('Salvar')}
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
@@ -696,12 +719,12 @@ function FolhaDoAvatar({ user, editorDaFoto, aoAbrirPacotes }: { user: User; edi
       {erro && <p className="form-error">{erro}</p>}
 
       {/* A FOTO (ou GIF) continua valendo, como opção recolhida: o coelho é o caminho principal do desenho dele. */}
-      <details className="personagem-foto" open={temFoto || undefined}>
+      <details className="personagem-foto" open={atualFoto || undefined}>
         <summary>{t('Usar uma foto')}</summary>
         {editorDaFoto}
       </details>
 
-      <AvataresAnteriores versao={eu?.avatarVersion ?? null} pronto={pronto} />
+      <AvataresAnteriores versao={eu?.avatarVersion ?? null} pronto={atualPronto} />
 
       <EnfeitesDoPerfil user={user} aoAbrirPacotes={aoAbrirPacotes} />
     </>

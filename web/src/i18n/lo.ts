@@ -3197,6 +3197,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "ເມື່ອປິດສຽງ, ການໂທສ່ວນຕົວຈະມາໂດຍບໍ່ມີສຽງ: ການແຈ້ງເຕືອນຈະສະແດງຢູ່ໜ້າຈໍ ແລະ Syden ຈະກະພິບຢູ່ແຖບໜ້າວຽກ. ເປີດອັນນີ້ເພື່ອໃຫ້ໄດ້ຍິນສຽງເອີ້ນເຂົ້າຢູ່ດີ.",
   'Avatares anteriores': "ຮູບໂປຣໄຟລ໌ກ່ອນໜ້າ",
   'Voltar a este avatar': "ກັບໄປໃຊ້ຮູບໂປຣໄຟລ໌ນີ້",
+  'Atual': "ປັດຈຸບັນ",
   'Tirar do histórico': "ລຶບອອກຈາກປະຫວັດ",
   'Avatar não encontrado.': "ບໍ່ພົບຮູບໂປຣໄຟລ໌.",
   'Sininho': "ກະດິ່ງນ້ອຍ",

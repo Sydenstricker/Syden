@@ -3148,6 +3148,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Son coupé, un appel privé arrive en silence : l’avis s’affiche à l’écran et Syden clignote dans la barre des tâches. Active cette option pour entendre la sonnerie quand même.",
   'Avatares anteriores': "Avatars précédents",
   'Voltar a este avatar': "Revenir à cet avatar",
+  'Atual': "Actuel",
   'Tirar do histórico': "Retirer de l’historique",
   'Avatar não encontrado.': "Avatar introuvable.",
   'Sininho': "Clochette",

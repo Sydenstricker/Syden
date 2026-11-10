@@ -668,6 +668,12 @@ def violacoes_da_orelha(fit, quadros):
     return pior
 
 
+# quanto vale andar a base contra girar (0,1 de deslocamento pesa como PESO_DESLOCA/10 graus). Medido em 10/11/2026 no
+# mascote: com 40 sai (12°, 3°, 1,2) e a orelha fica em pé, com a raiz esticada de costas; com 100 sai (57°, 27°, 0,7) e
+# as orelhas ficam quase na horizontal. Ficou o 40.
+PESO_DESLOCA = float(os.environ.get('PESO_DESLOCA', 40))
+
+
 def ajuste_das_orelhas(corpo, fit):
     global CORPO, CHAPEU
     CORPO, CHAPEU = corpo, True
@@ -689,8 +695,10 @@ def ajuste_das_orelhas(corpo, fit):
     if antes == 0:
         return (0, 0, 0), 0, 0
     # do menor movimento para o maior (0,1 de deslocamento pesa como 4°); confere-se em poucos quadros e, achado, em todos
-    cands = [(a, d, m / 10) for a in range(0, 31, 3) for d in range(0, 25, 3) for m in range(0, 9)]
-    cands.sort(key=lambda x: x[0] ** 2 + x[1] ** 2 + (x[2] * 40) ** 2)
+    cands = [(a, d, m / 10) for a in range(0, 61, 3) for d in range(0, 46, 3) for m in range(0, 13)]
+    cands.sort(key=lambda x: x[0] ** 2 + x[1] ** 2 + (x[2] * PESO_DESLOCA) ** 2)
+    if os.environ.get('DIAG'):
+        cands = cands[:1]
     v = antes
     for c in cands:
         AJUSTE_OREL[corpo] = c
@@ -698,22 +706,169 @@ def ajuste_das_orelhas(corpo, fit):
             v = violacoes_da_orelha(fit, todos)
             if v == 0:
                 return c, antes, 0
-    return AJUSTE_OREL[corpo], antes, v
+    # nenhum resolve: devolve o maior, com o que sobra medido de verdade
+    return AJUSTE_OREL[corpo], antes, violacoes_da_orelha(fit, todos)
 
 
-for CORPO in CORPOS:
+# O AJUSTE DAS ORELHAS da v4 ficou DESLIGADO (decisão dele, 10/11/2026: as orelhas viravam "asas"); no lugar, o boné
+# RECUA nas vistas de costas (recuo_de_costas, abaixo). ORELHAS_COM_BONE=1 liga o ajuste de novo, para comparar.
+for CORPO in (CORPOS if os.environ.get('ORELHAS_COM_BONE') else []):
     if caida(CORPO):
         continue          # a orelha caída passa por baixo do boné de propósito
     aj, antes, depois = ajuste_das_orelhas(CORPO, INFO[CORPO]['bone'])
     INFO[CORPO]['orelhas_com_bone'] = dict(afasta=aj[0], deita=aj[1], desloca=aj[2], vertices_antes=antes,
                                            vertices_depois=depois)
     print('orelhas com o boné', CORPO, INFO[CORPO]['orelhas_com_bone'])
+if os.environ.get('DIAG'):
+    # diagnóstico: onde ficam os vértices de orelha que violam, sem ajuste e com o maior ajuste
+    for aj_ in ((0, 0, 0), (30, 24, 0.8), (60, 40, 1.5)):
+        CORPO, CHAPEU = 'mascote', True
+        AJUSTE_OREL['mascote'] = aj_
+        fit = INFO['mascote']['bone']
+        for nome_q, fq in [(f'p{i}', (lambda i=i: pose_parado(i, 16))) for i in range(0, 16, 2)] +                           [(f'a{i}', (lambda i=i: pose_andando(i, 8))) for i in range(8)]:
+            print('DIAG quadro', aj_, nome_q, violacoes_da_orelha(fit, [fq]))
+        pose_parado(0, 16)
+        O, n, fr = np.array(fit['O']), np.array(fit['n']), np.array(fit['fr'])
+        rx, ry, rz = fit['r']
+        idx = np.nonzero(W_OREL['L'] + W_OREL['R'] > 0.5)[0]
+        P = malha_posta()[idx]
+        q = P - O
+        lx, ly, lz = q[:, 0] / rx, (q @ -fr) / ry, (q @ n) / rz
+        m = (lx ** 2 + ly ** 2 < 1.06 ** 2) & (lz > -0.08)
+        w = (W_OREL['L'] + W_OREL['R'])[idx]
+        print('DIAG', aj_, 'viol', int(m.sum()), 'w', np.round(np.percentile(w[m], [0, 50, 100]), 2) if m.any() else '-',
+              'P', np.round(P[m].min(0), 2) if m.any() else '-', np.round(P[m].max(0), 2) if m.any() else '-',
+              'orelha toda z', np.round(P[:, 2].min(), 2), np.round(P[:, 2].max(), 2), 'x', np.round(P[:, 0].min(), 2), np.round(P[:, 0].max(), 2))
+    print('DIAG fit', fit['O'], fit['r'], fit['n'])
+    raise SystemExit
 CHAPEU = False
 zerar()
 with open(os.path.join(SAIDA_C, 'encaixe.json'), 'w', encoding='utf-8') as f_:
     json.dump(INFO, f_, indent=1)
 
 COMBOS = {'nada': (), 'bone': ('bone',), 'bandana': ('bandana',), 'ambos': ('bone', 'bandana')}
+
+# O BONÉ RECUA NAS VISTAS DE COSTAS (decisão dele, 10/11/2026: "de costas, se trouxer para trás o boné, apenas na pose de
+# trás, para mim está ok"). É um ajuste por VISTA (pela direção do render), não por pose: de costas, todo quadro usa o
+# recuo daquela vista; de frente e de lado, o lugar de sempre. O boné RECUA GIRANDO em volta do centro da cabeça (assim
+# continua sentado nela: empurrado em linha reta para trás, ele flutuaria sobre a nuca). O ângulo se MEDE na malha, para
+# cada vista de costas: o menor em que, em todos os quadros do parado e do andando, pela câmera daquela vista, quase nada
+# da copa fica atrás de uma orelha (o boné aparece inteiro, na frente da base delas, sem picotar). A base da orelha que
+# fica dentro da copa não aparece: a copa a cobre; o relatório conta quantos vértices são.
+# No 3D de câmera livre (o site), o mesmo entraria pelo ângulo entre a câmera e a frente do coelho: com a câmera atrás
+# (mais de ~120° da frente), o boné vai ao giro medido, interpolado na faixa de passagem. Não está no site.
+VISTAS_DE_COSTAS = {'north-east': 180 - GIRO, 'north-west': -(180 - GIRO), 'north': 180}
+RECUO = {}            # corpo -> {vista: graus de giro para trás, em volta do centro da cabeça}
+BASE_DO_BONE = {}     # nome do objeto -> (matrix_basis de sempre, a rotação do pai para levar um vetor do mundo à base)
+_rng_c = np.random.default_rng(3)
+_cs = _rng_c.normal(size=(1500, 3)); _cs /= np.linalg.norm(_cs, axis=1, keepdims=True)
+COPA_UNITARIA = _cs[_cs[:, 2] > 0.05]     # a superfície da copa, numa meia esfera de raio 1
+
+
+def giro_para_tras(graus):
+    # o giro em volta do eixo x que leva o alto da cabeça para trás (+y)
+    t = math.radians(graus)
+    return np.array([[1, 0, 0], [0, math.cos(t), math.sin(t)], [0, -math.sin(t), math.cos(t)]])
+
+
+def recuo_de_costas(corpo, fit):
+    global CORPO, CHAPEU
+    CORPO, CHAPEU = corpo, False
+    O0, n, fr = np.array(fit['O']), np.array(fit['n']), np.array(fit['fr'])
+    yl = -fr
+    xl = np.array([1.0, 0, 0])
+    rx, ry, rz = fit['r']
+    idx = np.nonzero(W_OREL['L'] + W_OREL['R'] > 0.5)[0]
+    quadros = [lambda i=i: pose_parado(i, 16) for i in range(0, 16, 2)] + [lambda i=i: pose_andando(i, 8) for i in range(8)]
+    # as orelhas e o crânio em cada quadro, no espaço da CABEÇA (o boné anda com ela): a pose muda a cabeça, não o boné
+    cab = ARM.pose.bones['cabeca']
+    orelhas_q = []
+    for f in quadros:
+        f()
+        co_ = malha_posta()
+        M = np.array(ARM.matrix_world @ cab.matrix)
+        Mi = np.linalg.inv(M)
+        P = co_[idx]
+        Pc = (Mi[:3, :3] @ P.T).T + Mi[:3, 3]
+        orelhas_q.append((Pc, M))
+    zerar(); bpy.context.view_layer.update()
+    M0 = np.array(ARM.matrix_world @ cab.matrix)
+    M0i = np.linalg.inv(M0)
+
+    def no_mundo(Pc, M):
+        return (M[:3, :3] @ Pc.T).T + M[:3, 3]
+
+    cima = np.array([0, math.sin(ELEV), math.cos(ELEV)])
+    frente_cam = np.array([0, math.cos(ELEV), -math.sin(ELEV)])
+    resultado = {}
+    for d, graus in VISTAS_DE_COSTAS.items():
+        g = math.radians(graus)
+        R = np.array([[math.cos(g), -math.sin(g), 0], [math.sin(g), math.cos(g), 0], [0, 0, 1]])
+        achado = None
+        copa0 = O0 + (COPA_UNITARIA[:, :1] * rx) * xl + (COPA_UNITARIA[:, 1:2] * ry) * yl + (COPA_UNITARIA[:, 2:3] * rz) * n
+        Cc = np.array(INFO[corpo]['cabeca_centro'])
+        for k in range(0, 31):
+            r_ = k * 3
+            Rb = giro_para_tras(r_)
+            # o boné girado para trás em volta do centro da cabeça, no espaço da cabeça em repouso
+            copa = (Rb @ (copa0 - Cc).T).T + Cc
+            copa_c = (M0i[:3, :3] @ copa.T).T + M0i[:3, 3]
+            pior_dentro, pior_coberto = 0, 0.0
+            for Pc, M in orelhas_q:
+                # dentro da copa: a orelha levada ao espaço do boné antes do giro
+                Pw0 = no_mundo(Pc, M0)
+                q = (Rb.T @ (Pw0 - Cc).T).T + Cc - O0
+                dd = np.sqrt((q @ xl / rx) ** 2 + (q @ yl / ry) ** 2 + (q @ n / rz) ** 2)
+                pior_dentro = max(pior_dentro, int(((dd < 1.0) & (q @ n > 0)).sum()))
+                # coberto pela orelha, pela câmera desta vista: o ponto da copa que tem orelha na frente (mais perto)
+                cw = (R @ no_mundo(copa_c, M).T).T
+                ew = (R @ no_mundo(Pc, M).T).T
+                cx, cy, cz = cw[:, 0], cw @ cima, cw @ frente_cam
+                ex, ey, ez = ew[:, 0], ew @ cima, ew @ frente_cam
+                perto = (np.abs(cx[:, None] - ex[None]) < 0.1) & (np.abs(cy[:, None] - ey[None]) < 0.1) & \
+                        (ez[None] < cz[:, None] - 0.02)
+                pior_coberto = max(pior_coberto, float(perto.any(1).mean()))
+            if pior_coberto < 0.03:
+                achado = (r_, pior_dentro, pior_coberto)
+                break
+            if k == 0:
+                inicio = (pior_dentro, round(pior_coberto, 3))
+        resultado[d] = dict(recuo=achado[0] if achado else None, sem_recuo=inicio,
+                            com_recuo=(achado[1], round(achado[2], 3)) if achado else None)
+        print('recuo de costas', corpo, d, resultado[d])
+    return resultado
+
+
+for CORPO in CORPOS:
+    if caida(CORPO):
+        continue          # na orelha caída o boné já cobre a raiz das orelhas; de costas, ele fica onde está
+    rr = recuo_de_costas(CORPO, INFO[CORPO]['bone'])
+    RECUO[CORPO] = {d: v['recuo'] for d, v in rr.items() if v['recuo']}
+    INFO[CORPO]['recuo_de_costas'] = rr
+with open(os.path.join(SAIDA_C, 'encaixe.json'), 'w', encoding='utf-8') as f_:
+    json.dump(INFO, f_, indent=1)
+CHAPEU = False
+zerar()
+bpy.context.view_layer.update()
+for (c, a), ob in ACES.items():
+    if a == 'bone':
+        Mp = ob.matrix_world @ ob.matrix_basis.inverted()
+        BASE_DO_BONE[ob.name] = (ob.matrix_basis.copy(), Mp.copy())
+
+
+def posicionar_bone(vista):
+    # o boné no lugar de sempre, ou recuado se esta vista é de costas e o corpo tem recuo medido
+    for (c, a), ob in ACES.items():
+        if a != 'bone' or ob.name not in BASE_DO_BONE:
+            continue
+        base, Mp = BASE_DO_BONE[ob.name]
+        ob.matrix_basis = base.copy()
+        r_ = RECUO.get(c, {}).get(vista)
+        if r_:
+            # o giro no espaço do esqueleto em repouso, levado à base do objeto (o pai é o osso da cabeça)
+            Cc = Vector(INFO[c]['cabeca_centro'])
+            T = Matrix.Translation(Cc) @ Matrix(giro_para_tras(r_).tolist()).to_4x4() @ Matrix.Translation(-Cc)
+            ob.matrix_basis = Mp.inverted() @ T @ Mp @ base
 
 
 def vestir_corpo(corpo, combo):
@@ -769,6 +924,7 @@ if ETAPA != 'medir':
                 vestir_corpo(corpo, combo)
                 for d, graus in dict(DIRS4, south=0, east=90, north=180, west=-90).items():
                     ARM.rotation_euler = (0, 0, math.radians(graus))
+                    posicionar_bone(d)
                     pose_parado(0, 16)
                     bpy.context.view_layer.update()
                     render_pixel(os.path.join(QUADROS, f'{corpo}-{combo}-{d}.png'))
@@ -779,6 +935,7 @@ if ETAPA != 'medir':
             for nome_, (n_, f_) in ANIM.items():
                 for d, graus in DIRS4.items():
                     ARM.rotation_euler = (0, 0, math.radians(graus))
+                    posicionar_bone(d)
                     for i in range(n_):
                         f_(i, n_)
                         bpy.context.view_layer.update()
@@ -821,6 +978,7 @@ if ETAPA != 'medir':
                 for d, graus in (('south', 0), ('south-east', GIRO), ('east', 90), ('north-east', 180 - GIRO),
                                  ('north', 180), ('north-west', -(180 - GIRO)), ('west', -90), ('south-west', -GIRO)):
                     ARM.rotation_euler = (0, 0, math.radians(graus))
+                    posicionar_bone(d)
                     pose_parado(0, 16)
                     bpy.context.view_layer.update()
                     r.filepath = os.path.join(pasta_n, f'{corpo}-{combo}-{d}.png')

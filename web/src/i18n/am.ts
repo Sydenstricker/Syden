@@ -3126,6 +3126,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "ድምፅ ሲጠፋ የግል ጥሪ ያለ ድምፅ ይደርሳል፤ ማሳወቂያው በማያ ገጹ ላይ ይታያል፣ Syden ደግሞ በተግባር አሞሌ ላይ ብልጭ ይላል። ቢሆንም ደወሉን ለመስማት ይህን ያብሩ።",
   'Avatares anteriores': "ቀደም ያሉ የመገለጫ ፎቶዎች",
   'Voltar a este avatar': "ወደዚህ የመገለጫ ፎቶ መመለስ",
+  'Atual': "የአሁኑ",
   'Tirar do histórico': "ከታሪክ ማስወገድ",
   'Avatar não encontrado.': "የመገለጫ ፎቶው አልተገኘም።",
   'Sininho': "ትንሽ ደወል",

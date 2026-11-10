@@ -3197,6 +3197,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Uma umsindo uvaliwe, ikholi eyimfihlo ifika ingenamsindo: isaziso sivela esikrinini futhi i-Syden icwazimula kubha yemisebenzi. Vula lokhu ukuze uzwe iringithoni noma kunjalo.",
   'Avatares anteriores': "Ama-avatar angaphambilini",
   'Voltar a este avatar': "Buyela kule avatar",
+  'Atual': "Okwamanje",
   'Tirar do histórico': "Susa emlandweni",
   'Avatar não encontrado.': "I-avatar ayitholakalanga.",
   'Sininho': "Insimbi encane",

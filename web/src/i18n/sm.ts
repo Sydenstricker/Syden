@@ -3130,6 +3130,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "A tapuni le leo, e oo mai se valaau patino e aunoa ma se leo: e aliali mai le faasilasilaga i le lau ma emoemo Syden i le taskbar. Ki lenei e faalogo ai lava i le leo o le valaau.",
   'Avatares anteriores': "Avatar muamua",
   'Voltar a este avatar': "Toe foi i lenei avatar",
+  'Atual': "O le taimi nei",
   'Tirar do histórico': "Aveese mai le talafaasolopito",
   'Avatar não encontrado.': "E le o maua le avatar.",
   'Sininho': "Logo laʻititi",

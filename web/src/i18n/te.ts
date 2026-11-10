@@ -3108,6 +3108,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "శబ్దం ఆఫ్‌లో ఉన్నప్పుడు ప్రైవేట్ కాల్ శబ్దం లేకుండా వస్తుంది: నోటిఫికేషన్ స్క్రీన్‌పై కనిపిస్తుంది, Syden టాస్క్‌బార్‌లో మెరుస్తుంది. అయినా రింగ్‌టోన్ వినడానికి దీన్ని ఆన్ చేయి.",
   'Avatares anteriores': "మునుపటి ప్రొఫైల్ చిత్రాలు",
   'Voltar a este avatar': "ఈ ప్రొఫైల్ చిత్రానికి తిరిగి వెళ్ళు",
+  'Atual': "ప్రస్తుత",
   'Tirar do histórico': "చరిత్ర నుండి తీసివేయి",
   'Avatar não encontrado.': "ప్రొఫైల్ చిత్రం కనబడలేదు.",
   'Sininho': "గంట",

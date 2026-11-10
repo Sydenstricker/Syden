@@ -3166,6 +3166,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Yeroo sagaleen cufamu, waamichi dhuunfaa sagalee malee dhufa: beeksisni iskiriinii irratti mul’ata, Syden immoo baala hojii irratti ifa. Haa ta’u malee sagalee bilbilaa dhaga’uuf kana bani.",
   'Avatares anteriores': "Suuraalee piroofaayilii duraanii",
   'Voltar a este avatar': "Gara suuraa piroofaayilii kanaatti deebi’i",
+  'Atual': "Kan ammaa",
   'Tirar do histórico': "Seenaa irraa haqi",
   'Avatar não encontrado.': "Suuraan piroofaayilii hin argamne.",
   'Sininho': "Bilbila xinnoo",

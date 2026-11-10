@@ -3119,6 +3119,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "وقتی صدا خاموش است، تماس خصوصی بی‌صدا می‌رسد: اعلان روی صفحه نمایش داده می‌شود و Syden در نوار وظیفه چشمک می‌زند. این را روشن کن تا زنگ را با این حال بشنوی.",
   'Avatares anteriores': "تصویرهای پروفایل قبلی",
   'Voltar a este avatar': "برگشتن به این تصویر پروفایل",
+  'Atual': "فعلی",
   'Tirar do histórico': "حذف از تاریخچه",
   'Avatar não encontrado.': "تصویر پروفایل پیدا نشد.",
   'Sininho': "زنگوله",

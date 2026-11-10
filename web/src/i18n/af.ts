@@ -3190,6 +3190,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "As klank af is, kom ’n privaat oproep sonder klank: die kennisgewing verskyn op die skerm en Syden flits in die taakbalk. Skakel dit aan om die lui tog te hoor.",
   'Avatares anteriores': "Vorige avatars",
   'Voltar a este avatar': "Gaan terug na hierdie avatar",
+  'Atual': "Huidige",
   'Tirar do histórico': "Verwyder uit die geskiedenis",
   'Avatar não encontrado.': "Avatar nie gevind nie.",
   'Sininho': "Klokkie",

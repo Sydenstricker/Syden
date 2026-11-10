@@ -1219,6 +1219,9 @@ ficou combinado:
     dela (`INICIAIS`, `PAREDE_DA_PLANTA`); trocar de planta mantém o que continua no chão, leva o que caiu fora para a
     casa livre mais perto (ou guarda; o móvel de função vai para o lugar de fábrica), e quem não mexeu na de fábrica recebe
     a da planta nova. O servidor guarda `planta` (código); quem visita vê igual. Testes: `comodo.mjs` (no app).
+  - **A AUDITORIA DE NOITE** (10/11/2026, relato dele: o violão, o relógio e a prateleira de potes claros de noite): `e2e/pixel-art/
+    auditoria-de-noite.mjs` põe cada peça do catálogo na cena e reprova a que escurece bem menos que o entorno; objeto da parede sem
+    noite própria (a peca-noite igual à do dia) ganha a noite por código (`noiteDoDia`). Rodar quando entrar peça nova.
 - **Feito em 11/10/2026:** a caixa de ideias dizia "aqui embaixo da vila"; agora diz "do quarto", nos 70 idiomas.
 - Saldo em 08/10/2026: PixelLab 493 de 2.000 gerações restando (plano Tier 1, US$ 12/mês; a repintura nova
   `inpaint-v3` exige o Tier 2), Retro Diffusion US$ 3,28.
@@ -1533,11 +1536,33 @@ PixelLab, mesmo que demore mais e custe mais créditos. Com o fluxo feito, a ver
   do desenho. Saídas para ele escolher: boné com furos, virado para trás, ou corpos de orelhas mais afastadas. Os provisórios
   são feitos por script; os do Meshy entram sozinhos por nome em `camadas/meshy/` (4 downloads: 2 corpos e 2 acessórios).
   Corpo novo do Meshy ainda pede medir o esqueleto à mão (`MEDIDAS` do `mascote.py`) uma vez. A regra "um modelo por coelho"
-  continua até ele decidir. **Decidido por ele no mesmo dia: o boné 3D segue o desenho 2D** (no 2D ele senta na cabeça, entre
+  continuou até ele decidir (decidiu em 10/11: ver "REVISTO" abaixo). **Decidido por ele no mesmo dia: o boné 3D segue o desenho 2D** (no 2D ele senta na cabeça, entre
   as orelhas, sem ser atravessado; o 3D repete isso, e um boné atravessado só se o 2D for assim), e **o mascote 3D ganha uma
   malha NOVA do Meshy com as orelhas afastadas** ("a qualidade vai ser maior"), no lugar de dobrar a malha de hoje. A foto de
   entrada é `camadas/para-meshy/corpo-mascote.png` (`mascote-frente.mjs`), e o boné ganhou uma imagem própria, grande
   (`acessorio-avulso.mjs`).
+  **REVISTO em 10/11/2026, e é o que vale:** o corpo do Meshy de orelhas afastadas saiu MAGRINHO ("parece uma opção feminina do
+  mascote") e virou um corpo base a mais (`mascote-novo`), não o principal. **O mascote principal continua a `mascote-t.glb`, com
+  o boné do Meshy (`camadas/meshy/bone.glb`) na posição da v3 de frente e de lado, e RECUADO 48° só nas vistas de costas**
+  (nordeste, noroeste, norte; `recuo_de_costas` em `saida/encaixe.json`, medido na malha: menos de 3% da copa atrás das
+  orelhas). Ajuste por VISTA, não por pose. Afastar as orelhas pelos ossos (a v4) virava "asas" e foi descartado. Ele aprovou:
+  "para mim a solução do 3D está ok, pode usar ele". **Com isso, A REGRA DO 3D MUDOU:** em vez de "um modelo por coelho", o 3D é
+  feito de POUCOS CORPOS BASE + ACESSÓRIOS AVULSOS presos ao osso, com o encaixe medido em cada corpo (o mesmo método das
+  camadas do 2D). No site, de câmera livre, o recuo de costas entra interpolado pelo ângulo entre a câmera e a frente do coelho
+  (até ~100°, a posição de sempre; de ~140°, os 48°): anotado em `cena.py` e no LEIA-ME, ainda não feito.
+  **A AUDITORIA DAS CAMADAS (10/11/2026, pedido dele: "talvez seja necessário melhorarmos o nosso processo de auditoria da
+  arte? São vários erros que passaram"):** ele achou os defeitos pintando o coelho de cores berrantes no criador (a bolinha
+  presa no alto da cabeça, riscos de roupa nas orelhas, a regata mudando de tom entre quadros, o halo em volta da bandana),
+  porque nas cores originais quase não se viam. `personagem/auditoria-de-camadas.py` faz isso de propósito em todo corpo,
+  animação, direção e quadro: mede soltos e PICOS (o quadro cujo alto sobe 5 px acima dos dois vizinhos), roupa que foge 35%
+  da mediana da direção, roupa na altura das orelhas e pixel claro sem a cor do acessório; e monta `camadas/estresse-<corpo>.png`
+  (pelo rosa-choque, roupa vermelha, boné azul, bandana verde) para OLHAR. **Roda depois de cada corpo, animação ou acessório
+  novo, e só passa com 0 marcas.** As correções que ela pediu: `limpar-soltos.py` corta os picos; `acessorio-limpar.py`
+  tira da camada o que não tem a cor do acessório nem é o contorno colado nele (a repintura mexia no pelo em volta);
+  `classes_de_cor.py` separa pelo e roupa (roupa é peça de 40 px ou mais, do pescoço para baixo; na regata, o maior pedaço dos
+  tons médios) e o tom de referência é o do quadro 0 da direção, fixo (recalcular por quadro fazia a cor piscar). **O
+  criador de coelho** (a prévia da customização, pedido dele: "como uma tela de seleção de Dark Souls ou The Sims") está
+  publicado como artefato: corpo, cor do pelo, roupa, boné e bandana com cores, girar, receitas e clicar para acenar.
 
 ## Traduzir mensagens de outro idioma: válido, para outro momento
 

@@ -3195,6 +3195,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "ពេលបិទសំឡេង ការហៅឯកជនមកដល់ដោយគ្មានសំឡេង៖ ការជូនដំណឹងបង្ហាញលើអេក្រង់ ហើយ Syden ភ្លឹបភ្លែតនៅរបារភារកិច្ច។ បើកវា ដើម្បីឮសំឡេងរោទ៍ដដែល។",
   'Avatares anteriores': "រូបតំណាងមុនៗ",
   'Voltar a este avatar': "ត្រឡប់ទៅរូបតំណាងនេះ",
+  'Atual': "បច្ចុប្បន្ន",
   'Tirar do histórico': "ដកចេញពីប្រវត្តិ",
   'Avatar não encontrado.': "រកមិនឃើញរូបតំណាងទេ។",
   'Sininho': "កណ្ដឹងតូច",

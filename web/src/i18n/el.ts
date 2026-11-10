@@ -3132,6 +3132,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Με απενεργοποιημένο ήχο, μια ιδιωτική κλήση φτάνει χωρίς ήχο: η ειδοποίηση εμφανίζεται στην οθόνη και το Syden αναβοσβήνει στη γραμμή εργασιών. Ενεργοποίησέ το για να ακούς τον ήχο κλήσης ούτως ή άλλως.",
   'Avatares anteriores': "Προηγούμενα άβαταρ",
   'Voltar a este avatar': "Επιστροφή σε αυτό το άβαταρ",
+  'Atual': "Τρέχον",
   'Tirar do histórico': "Αφαίρεση από το ιστορικό",
   'Avatar não encontrado.': "Το άβαταρ δεν βρέθηκε.",
   'Sininho': "Καμπανάκι",

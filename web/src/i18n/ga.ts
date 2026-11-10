@@ -3132,6 +3132,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Agus an fhuaim múchta, tagann glao príobháideach gan fuaim: taispeántar an fógra ar an scáileán agus bíonn Syden ag caochadh sa tascbharra. Cas air é seo chun an ton a chloisteáil mar sin féin.",
   'Avatares anteriores': "Abhatáir roimhe seo",
   'Voltar a este avatar': "Fill ar an abhatár seo",
+  'Atual': "Reatha",
   'Tirar do histórico': "Bain den stair",
   'Avatar não encontrado.': "Níor aimsíodh an t-abhatár.",
   'Sininho': "Cloigín",

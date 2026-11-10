@@ -3207,6 +3207,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Owaz ýapyk wagty şahsy jaň sessiz gelýär: duýduryş ekranda görünýär we Syden meseleler setirinde ýanyp-öçýär. Jaň sesini her niçigem bolsa eşitmek üçin muny aç.",
   'Avatares anteriores': "Öňki awatarlar",
   'Voltar a este avatar': "Bu awatara gaýdyp gel",
+  'Atual': "Häzirki",
   'Tirar do histórico': "Taryhdan aýyr",
   'Avatar não encontrado.': "Awatar tapylmady.",
   'Sininho': "Jaňjagaz",

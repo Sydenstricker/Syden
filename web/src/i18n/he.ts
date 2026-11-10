@@ -3180,6 +3180,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "כשהשמע כבוי, שיחה פרטית מגיעה בלי צליל: ההתראה מופיעה במסך ו־Syden מהבהב בשורת המשימות. אפשר להפעיל את זה כדי לשמוע את הצלצול בכל זאת.",
   'Avatares anteriores': "תמונות פרופיל קודמות",
   'Voltar a este avatar': "לחזור לתמונת הפרופיל הזו",
+  'Atual': "נוכחי",
   'Tirar do histórico': "להסיר מההיסטוריה",
   'Avatar não encontrado.': "תמונת הפרופיל לא נמצאה.",
   'Sininho': "פעמון קטן",

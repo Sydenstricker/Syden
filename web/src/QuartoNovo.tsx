@@ -298,14 +298,17 @@ export function EditorDaCena({
   const itens = useMemo(() => {
     if (!figuras) return [] as ItemDoCatalogo[];
     const r: ItemDoCatalogo[] = [];
-    // os iguais com número no salão (cadeira, cadeira-2…) são um item só: a mesma figura
-    const porFigura = new Map<string, ItemDoCatalogo>();
+    // os iguais com número no salão (cadeira, cadeira-2…) são um item só, pelo código sem o número (pela figura, eram 4
+    // cartões da mesma cadeira, um em cada giro: relato dele, 10/11/2026)
+    const porTipo = new Map<string, ItemDoCatalogo>();
     for (const [id, src] of Object.entries(figuras.moveis ?? {})) {
-      const junto = porFigura.get(src);
+      const tipo = id.replace(/-\d+$/, '');
+      const junto = porTipo.get(tipo) ?? porTipo.get(src);
       if (junto) junto.ids.push(id);
       else {
         const it: ItemDoCatalogo = { chave: 'm' + id, grupo: 'm', ids: [id], src };
-        porFigura.set(src, it);
+        porTipo.set(tipo, it);
+        porTipo.set(src, it);
         r.push(it);
       }
     }

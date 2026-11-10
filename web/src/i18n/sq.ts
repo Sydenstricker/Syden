@@ -3188,6 +3188,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Me zërin të fikur, një thirrje private vjen pa zë: njoftimi shfaqet në ekran dhe Syden pulson në shiritin e detyrave. Aktivizoje që ta dëgjosh zilen gjithsesi.",
   'Avatares anteriores': "Avatarët e mëparshëm",
   'Voltar a este avatar': "Kthehu te ky avatar",
+  'Atual': "Aktual",
   'Tirar do histórico': "Hiqe nga historiku",
   'Avatar não encontrado.': "Avatari nuk u gjet.",
   'Sininho': "Zilkë",

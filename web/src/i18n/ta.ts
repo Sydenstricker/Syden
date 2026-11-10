@@ -3111,6 +3111,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "ஒலி அணைத்திருக்கும்போது தனிப்பட்ட அழைப்பு ஒலியின்றி வரும்: அறிவிப்பு திரையில் தோன்றும், Syden பணிப்பட்டியில் மின்னும். எப்படியும் அழைப்பு ஒலியைக் கேட்க இதை இயக்கு.",
   'Avatares anteriores': "முந்தைய சுயவிவரப் படங்கள்",
   'Voltar a este avatar': "இந்தச் சுயவிவரப் படத்துக்குத் திரும்பு",
+  'Atual': "தற்போதைய",
   'Tirar do histórico': "வரலாற்றிலிருந்து நீக்கு",
   'Avatar não encontrado.': "சுயவிவரப் படம் கிடைக்கவில்லை.",
   'Sininho': "மணியொலி",

@@ -3195,6 +3195,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "S vypnutým zvukem přijde soukromý hovor potichu: upozornění se objeví na obrazovce a Syden bliká na hlavním panelu. Zapni, pokud chceš vyzvánění slyšet i tak.",
   'Avatares anteriores': "Předchozí avatary",
   'Voltar a este avatar': "Vrátit se k tomuto avataru",
+  'Atual': "Současný",
   'Tirar do histórico': "Odebrat z historie",
   'Avatar não encontrado.': "Avatar nenalezen.",
   'Sininho': "Zvoneček",

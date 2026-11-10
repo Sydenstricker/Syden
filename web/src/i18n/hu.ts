@@ -3198,6 +3198,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Kikapcsolt hangnál a privát hívás hang nélkül érkezik: az értesítés megjelenik a képernyőn, és a Syden villog a tálcán. Kapcsold be, ha a csengőhangot így is hallani szeretnéd.",
   'Avatares anteriores': "Korábbi avatarok",
   'Voltar a este avatar': "Vissza ehhez az avatarhoz",
+  'Atual': "Jelenlegi",
   'Tirar do histórico': "Törlés az előzményekből",
   'Avatar não encontrado.': "Az avatar nem található.",
   'Sininho': "Csengettyű",

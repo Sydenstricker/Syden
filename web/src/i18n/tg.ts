@@ -3206,6 +3206,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Вақте ки садо хомӯш аст, занги шахсӣ бесадо меояд: огоҳинома дар экран пайдо мешавад ва Syden дар панели вазифаҳо милт-милт мекунад. Барои ба ҳар ҳол шунидани оҳанг инро фаъол кун.",
   'Avatares anteriores': "Аватарҳои пешина",
   'Voltar a este avatar': "Ба ин аватар баргаштан",
+  'Atual': "Ҷорӣ",
   'Tirar do histórico': "Аз таърих хориҷ кардан",
   'Avatar não encontrado.': "Аватар ёфт нашуд.",
   'Sininho': "Зангӯла",

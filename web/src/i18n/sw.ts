@@ -3125,6 +3125,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Sauti ikiwa imezimwa, simu ya faragha inafika bila sauti: arifa inaonekana kwenye skrini na Syden inamulikamulika kwenye upau wa kazi. Washa hii ili usikie mlio hata hivyo.",
   'Avatares anteriores': "Avatar za awali",
   'Voltar a este avatar': "Rudi kwenye avatar hii",
+  'Atual': "Ya sasa",
   'Tirar do histórico': "Ondoa kwenye historia",
   'Avatar não encontrado.': "Avatar haikupatikana.",
   'Sininho': "Kengele ndogo",

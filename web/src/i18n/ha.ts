@@ -3128,6 +3128,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Idan an kashe sauti, kiran sirri yana zuwa ba tare da ƙara ba: sanarwar tana bayyana a allo, kuma Syden yana walƙiya a sandar ayyuka. Ku kunna wannan don ku ji ƙarar kira duk da haka.",
   'Avatares anteriores': "Hotunan martaba na baya",
   'Voltar a este avatar': "Koma ga wannan hoton martaba",
+  'Atual': "Na yanzu",
   'Tirar do histórico': "Cire daga tarihi",
   'Avatar não encontrado.': "Ba a sami hoton martaba ba.",
   'Sininho': "Ƙaramar ƙararrawa",

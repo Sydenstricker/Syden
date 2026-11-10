@@ -81,3 +81,21 @@ vier girado, é um giro a acrescentar em `importar_meshy`, no `cena.py`.
 - **Os corpos do Meshy ainda não entram sozinhos:** o esqueleto do `mascote.py` é posto por medidas à mão (`MEDIDAS`).
   Para cada corpo novo é preciso medir os pontos (ombro, cotovelo, mão, orelhas, pernas, cortes dos pesos), como foi feito
   na malha em T; daí em diante o boné e a bandana se encaixam sozinhos.
+
+## Acessório de cabeça → ajuste das orelhas (v4, 10/11/2026)
+
+Com o boné posto no mascote principal, as orelhas em pé se afastam, deitam e a base anda para longe do boné, pelos ossos
+(`ajuste_das_orelhas` no `cena.py`): a busca vai do menor movimento ao maior e para no primeiro que deixa ZERO vértices de
+orelha dentro ou em cima do boné em 8 quadros do parado e 8 do andando. Saiu afastar 12°, deitar 3° e andar a base 1,2
+(`saida/encaixe.json`, `orelhas_com_bone`). No GLB, as animações `parado-bone` e `andando-bone` são as com o ajuste, e o
+`ver.html` troca para elas ao ligar o boné. `PESO_DESLOCA` decide andar contra girar; `DIAG=1` mostra quadro a quadro.
+`entrega_v4.py` monta as imagens da v4.
+
+## v5 (10/11/2026): o boné recua só nas vistas de costas
+
+O ajuste das orelhas da v4 ficou desligado (`ORELHAS_COM_BONE=1` o liga para comparar). No lugar, nas vistas de COSTAS
+(nordeste, noroeste e norte) o boné GIRA para trás em volta do centro da cabeça, o menor ângulo em que, pela câmera daquela
+vista e em todos os quadros do parado e do andando, menos de 3% da copa fica atrás de uma orelha (`recuo_de_costas`; o
+resultado em `saida/encaixe.json`, `recuo_de_costas`). Medido no mascote: 48° nas três vistas. É por VISTA: as outras usam o
+lugar de sempre. No site (câmera livre) entraria pelo ângulo entre a câmera e a frente do coelho, e não está lá; o GLB de
+teste continua sem o recuo. `SUFIXO=v5 py -3 entrega_v4.py <pasta>` monta as imagens.

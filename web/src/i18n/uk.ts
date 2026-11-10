@@ -3176,6 +3176,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Коли звук вимкнено, особистий дзвінок надходить беззвучно: сповіщення з’являється на екрані, а Syden блимає на панелі завдань. Увімкни, щоб усе одно чути мелодію дзвінка.",
   'Avatares anteriores': "Попередні аватари",
   'Voltar a este avatar': "Повернути цей аватар",
+  'Atual': "Поточний",
   'Tirar do histórico': "Прибрати з історії",
   'Avatar não encontrado.': "Аватар не знайдено.",
   'Sininho': "Дзвіночок",

@@ -3126,6 +3126,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Cu sunetul oprit, un apel privat vine fără sunet: notificarea apare pe ecran și Syden clipește în bara de activități. Activează asta ca să auzi tonul de apel oricum.",
   'Avatares anteriores': "Avatare anterioare",
   'Voltar a este avatar': "Revino la acest avatar",
+  'Atual': "Actual",
   'Tirar do histórico': "Scoate din istoric",
   'Avatar não encontrado.': "Avatarul nu a fost găsit.",
   'Sininho': "Clopoțel",

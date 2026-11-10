@@ -3121,6 +3121,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "While deafened, a private call arrives silently: the notice shows on screen and Syden flashes in the taskbar. Turn this on to hear the ringtone anyway.",
   'Avatares anteriores': "Previous avatars",
   'Voltar a este avatar': "Go back to this avatar",
+  'Atual': "Current",
   'Tirar do histórico': "Remove from history",
   'Avatar não encontrado.': "Avatar not found.",
   'Sininho': "Chime",

@@ -85,7 +85,9 @@ function aplicar() {
     const m = o.name.match(/^acessorio-(bone|bandana)-(.+?)(_\d+)?$/);
     if (m) o.visible = estado[m[1]] && m[2] === estado.corpo;
   });
-  const clip = clips.find((c) => c.name === `${estado.anim}-${estado.corpo}`) || clips.find((c) => c.name === estado.anim);
+  // com o boné, a animação com as orelhas ajustadas (afastadas e deitadas o mínimo para não entrar nele), se houver
+  const base = clips.find((c) => c.name === `${estado.anim}-${estado.corpo}`) ? `${estado.anim}-${estado.corpo}` : estado.anim;
+  const clip = (estado.bone && clips.find((c) => c.name === `${base}-bone`)) || clips.find((c) => c.name === base);
   mixer.stopAllAction();
   if (clip) mixer.clipAction(clip).play();
   document.querySelectorAll('[data-corpo]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.corpo === estado.corpo));

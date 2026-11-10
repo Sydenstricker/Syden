@@ -3196,6 +3196,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Marka codka la damiyo, wicitaan gaar ah wuxuu yimaadaa cod la’aan: ogeysiisku wuxuu ka muuqdaa shaashadda, Syden-na wuxuu ka biligleeyaa barta hawlaha. Shid tan si aad codka wicitaanka u maqasho si kastaba.",
   'Avatares anteriores': "Sawirradii astaanta ee hore",
   'Voltar a este avatar': "Ku noqo sawirkan astaanta",
+  'Atual': "Hadda",
   'Tirar do histórico': "Ka saar taariikhda",
   'Avatar não encontrado.': "Sawirka astaanta lama helin.",
   'Sininho': "Gambaleel yar",

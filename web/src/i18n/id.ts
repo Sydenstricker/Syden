@@ -3123,6 +3123,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Saat suara dimatikan, panggilan pribadi datang tanpa bunyi: pemberitahuan muncul di layar dan Syden berkedip di bilah tugas. Nyalakan ini untuk tetap mendengar nada dering.",
   'Avatares anteriores': "Avatar sebelumnya",
   'Voltar a este avatar': "Kembali ke avatar ini",
+  'Atual': "Saat ini",
   'Tirar do histórico': "Hapus dari riwayat",
   'Avatar não encontrado.': "Avatar tidak ditemukan.",
   'Sininho': "Lonceng",

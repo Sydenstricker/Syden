@@ -3150,6 +3150,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Wenn der Ton aus ist, kommt ein privater Anruf ohne Ton: Der Hinweis erscheint auf dem Bildschirm und Syden blinkt in der Taskleiste. Schalte das ein, um den Klingelton trotzdem zu hören.",
   'Avatares anteriores': "Frühere Avatare",
   'Voltar a este avatar': "Zu diesem Avatar zurück",
+  'Atual': "Aktuell",
   'Tirar do histórico': "Aus dem Verlauf entfernen",
   'Avatar não encontrado.': "Avatar nicht gefunden.",
   'Sininho': "Glöckchen",

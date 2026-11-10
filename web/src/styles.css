@@ -10012,6 +10012,12 @@ textarea {
   min-width: min(100%, 260px);
 }
 
+/* o "Salvar" do coelho: só aparece quando o carrossel mostra outro que não o atual */
+.personagem-salvar {
+  display: flex;
+  justify-content: center;
+}
+
 .personagem-linha {
   display: flex;
   align-items: center;

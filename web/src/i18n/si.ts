@@ -3196,6 +3196,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "ශබ්දය අක්‍රිය විට පුද්ගලික ඇමතුමක් ශබ්දයක් නැතිව පැමිණේ: දැනුම්දීම තිරයේ පෙන්වන අතර Syden කාර්ය තීරුවේ දැල්වේ. කෙසේ වෙතත් නාදය ඇසීමට මෙය සක්‍රිය කරන්න.",
   'Avatares anteriores': "පෙර අවතාර",
   'Voltar a este avatar': "මෙම අවතාරයට ආපසු යන්න",
+  'Atual': "වත්මන්",
   'Tirar do histórico': "ඉතිහාසයෙන් ඉවත් කරන්න",
   'Avatar não encontrado.': "අවතාරය හමු නොවීය.",
   'Sininho': "සීනුව",

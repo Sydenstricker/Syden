@@ -3192,6 +3192,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Amb l’àudio desactivat, una trucada privada arriba sense so: l’avís apareix a la pantalla i el Syden parpelleja a la barra de tasques. Activa-ho per sentir el so igualment.",
   'Avatares anteriores': "Avatars anteriors",
   'Voltar a este avatar': "Tornar a aquest avatar",
+  'Atual': "Actual",
   'Tirar do histórico': "Treure de l’historial",
   'Avatar não encontrado.': "No s’ha trobat l’avatar.",
   'Sininho': "Campaneta",

@@ -2236,11 +2236,16 @@ export interface AvatarAnterior {
 
 /** Leva o avatar de agora (se é uma foto guardada no disco, e não o mesmo arquivo que vai entrar) para o histórico. */
 function guardarAvatarAnterior(userId: number, shaQueEntra?: string) {
-  const atual = db
-    .prepare('SELECT a.sha, a.mime, a.bytes, u.avatar_animado AS animado FROM avatars a JOIN users u ON u.id = a.user_id WHERE a.user_id = ?')
-    .get(userId) as { sha: string | null; mime: string; bytes: number | null; animado: number } | undefined;
+  const linha = db
+    .prepare('SELECT a.sha, a.mime, a.bytes, a.data, u.avatar_animado AS animado FROM avatars a JOIN users u ON u.id = a.user_id WHERE a.user_id = ?')
+    .get(userId) as { sha: string | null; mime: string; bytes: number | null; data: Uint8Array | null; animado: number } | undefined;
   if (shaQueEntra) db.prepare('DELETE FROM avatares_anteriores WHERE user_id = ? AND sha = ?').run(userId, shaQueEntra);
-  if (!atual?.sha || atual.bytes === null || atual.sha === shaQueEntra) return;
+  if (!linha) return;
+  // O AVATAR DE ANTES DO DISCO (sha nulo, os bytes ainda no `data`, de quem não trocou desde a migração; ver aoDisco): vai
+  // para o disco agora, senão sairia do Syden sem passar pelo histórico (o furo que o teste de 10/11/2026 prende).
+  const noDisco = linha.sha && linha.bytes !== null ? { sha: linha.sha, bytes: linha.bytes } : linha.data?.byteLength ? aoDisco(linha.data) : null;
+  if (!noDisco || noDisco.sha === shaQueEntra) return;
+  const atual = { ...noDisco, mime: linha.mime, animado: linha.animado };
   db.prepare(
     `INSERT INTO avatares_anteriores (user_id, chave, sha, mime, bytes, animado, guardado) VALUES (?, ?, ?, ?, ?, ?, ?)
      ON CONFLICT(user_id, sha) DO UPDATE SET guardado = excluded.guardado`,

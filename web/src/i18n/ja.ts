@@ -3107,6 +3107,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "音をオフにしていると、個別通話は無音で届きます。通知が画面に表示され、Syden がタスクバーで点滅します。それでも着信音を聞きたいときはオンにしてください。",
   'Avatares anteriores': "以前のプロフィール画像",
   'Voltar a este avatar': "このプロフィール画像に戻す",
+  'Atual': "現在",
   'Tirar do histórico': "履歴から削除",
   'Avatar não encontrado.': "プロフィール画像が見つかりません。",
   'Sininho': "チャイム",

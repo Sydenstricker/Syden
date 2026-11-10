@@ -3206,6 +3206,7 @@ export default {
   'Com o áudio desativado, uma ligação privada chega sem som: o aviso aparece na tela e o Syden pisca na barra de tarefas. Ligue para ouvir o toque mesmo assim.': "Lè son an koupe, yon apèl prive rive san son: avi a parèt sou ekran an epi Syden ap kliyote nan ba travay la. Aktive sa pou w tande sonnri a kanmenm.",
   'Avatares anteriores': "Avatar anvan yo",
   'Voltar a este avatar': "Retounen nan avatar sa a",
+  'Atual': "Aktyèl",
   'Tirar do histórico': "Retire nan istorik la",
   'Avatar não encontrado.': "Avatar la pa jwenn.",
   'Sininho': "Ti klòch",
