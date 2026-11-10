@@ -3174,4 +3174,5 @@ export default {
   'Layout carregado do código.': "코드에서 배치를 불러왔어요.",
   'Esse código é de outro tipo de cena.': "이 코드는 다른 종류의 장면 코드예요.",
   'Esse código não é de um layout do Syden.': "이 코드는 Syden 배치의 코드가 아니에요.",
+  'Corrigir a data de nascimento': "생년월일 수정",
 } satisfies Record<string, string>;

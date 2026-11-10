@@ -3256,4 +3256,5 @@ export default {
   'Layout carregado do código.': "Sisustus ladattu koodista.",
   'Esse código é de outro tipo de cena.': "Tämä koodi on toisenlaisesta näkymästä.",
   'Esse código não é de um layout do Syden.': "Tämä koodi ei ole Sydenin sisustuksen.",
+  'Corrigir a data de nascimento': "Korjaa syntymäaika",
 } satisfies Record<string, string>;

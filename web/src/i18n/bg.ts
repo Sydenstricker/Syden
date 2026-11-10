@@ -3253,4 +3253,5 @@ export default {
   'Layout carregado do código.': "Подредбата е заредена от кода.",
   'Esse código é de outro tipo de cena.': "Този код е на друг вид сцена.",
   'Esse código não é de um layout do Syden.': "Този код не е на подредба от Syden.",
+  'Corrigir a data de nascimento': "Поправи датата на раждане",
 } satisfies Record<string, string>;

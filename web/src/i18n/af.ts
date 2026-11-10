@@ -3250,4 +3250,5 @@ export default {
   'Layout carregado do código.': "Uitleg uit die kode gelaai.",
   'Esse código é de outro tipo de cena.': "Hierdie kode is van ’n ander soort toneel.",
   'Esse código não é de um layout do Syden.': "Hierdie kode is nie van ’n Syden-uitleg nie.",
+  'Corrigir a data de nascimento': "Korrigeer die geboortedatum",
 } satisfies Record<string, string>;

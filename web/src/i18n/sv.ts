@@ -3248,4 +3248,5 @@ export default {
   'Layout carregado do código.': "Inredning inläst från koden.",
   'Esse código é de outro tipo de cena.': "Den här koden är från en annan sorts scen.",
   'Esse código não é de um layout do Syden.': "Den här koden är inte från en Syden-inredning.",
+  'Corrigir a data de nascimento': "Rätta födelsedatumet",
 } satisfies Record<string, string>;

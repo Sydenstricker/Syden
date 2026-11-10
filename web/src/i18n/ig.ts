@@ -3194,4 +3194,5 @@ export default {
   'Layout carregado do código.': "Ebugoro nhazi site na koodu.",
   'Esse código é de outro tipo de cena.': "Koodu a bụ nke ụdị ebe ọzọ.",
   'Esse código não é de um layout do Syden.': "Koodu a abụghị nke nhazi Syden.",
+  'Corrigir a data de nascimento': "Mezie ụbọchị ọmụmụ",
 } satisfies Record<string, string>;

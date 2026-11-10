@@ -3171,4 +3171,5 @@ export default {
   'Layout carregado do código.': "குறியீட்டிலிருந்து அமைப்பு ஏற்றப்பட்டது.",
   'Esse código é de outro tipo de cena.': "இந்தக் குறியீடு வேறு வகைக் காட்சியுடையது.",
   'Esse código não é de um layout do Syden.': "இந்தக் குறியீடு Syden அமைப்புடையது அல்ல.",
+  'Corrigir a data de nascimento': "பிறந்த தேதியைத் திருத்து",
 } satisfies Record<string, string>;

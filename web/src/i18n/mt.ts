@@ -3202,4 +3202,5 @@ export default {
   'Layout carregado do código.': "L-arranġament imtella mill-kodiċi.",
   'Esse código é de outro tipo de cena.': "Dan il-kodiċi huwa ta’ tip ieħor ta’ xena.",
   'Esse código não é de um layout do Syden.': "Dan il-kodiċi mhuwiex ta’ arranġament ta’ Syden.",
+  'Corrigir a data de nascimento': "Ikkoreġi d-data tat-twelid",
 } satisfies Record<string, string>;

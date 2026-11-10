@@ -3225,4 +3225,5 @@ export default {
   'Layout carregado do código.': "ကုဒ်မှ အခင်းအကျင်းကို ဖွင့်ပြီးပါပြီ။",
   'Esse código é de outro tipo de cena.': "ဤကုဒ်သည် အခြားမြင်ကွင်းအမျိုးအစား၏ ကုဒ်ဖြစ်သည်။",
   'Esse código não é de um layout do Syden.': "ဤကုဒ်သည် Syden အခင်းအကျင်း၏ ကုဒ်မဟုတ်ပါ။",
+  'Corrigir a data de nascimento': "မွေးနေ့ ပြင်ဆင်ရန်",
 } satisfies Record<string, string>;

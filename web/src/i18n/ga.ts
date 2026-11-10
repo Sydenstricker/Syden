@@ -3192,4 +3192,5 @@ export default {
   'Layout carregado do código.': "Leagan amach lódáilte ón gcód.",
   'Esse código é de outro tipo de cena.': "Is le cineál eile radhairc an cód seo.",
   'Esse código não é de um layout do Syden.': "Ní le leagan amach de chuid Syden an cód seo.",
+  'Corrigir a data de nascimento': "Ceartaigh an dáta breithe",
 } satisfies Record<string, string>;

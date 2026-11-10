@@ -3266,4 +3266,5 @@ export default {
   'Layout carregado do código.': "Тартиб аз код бор карда шуд.",
   'Esse código é de outro tipo de cena.': "Ин код аз навъи дигари саҳна аст.",
   'Esse código não é de um layout do Syden.': "Ин код аз тартиби Syden нест.",
+  'Corrigir a data de nascimento': "Ислоҳ кардани санаи таваллуд",
 } satisfies Record<string, string>;

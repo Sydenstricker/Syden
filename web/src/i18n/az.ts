@@ -3227,4 +3227,5 @@ export default {
   'Layout carregado do código.': "Tərtibat koddan yükləndi.",
   'Esse código é de outro tipo de cena.': "Bu kod başqa növ səhnəyə aiddir.",
   'Esse código não é de um layout do Syden.': "Bu kod Syden tərtibatına aid deyil.",
+  'Corrigir a data de nascimento': "Doğum tarixini düzəlt",
 } satisfies Record<string, string>;

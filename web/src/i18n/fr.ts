@@ -3208,4 +3208,5 @@ export default {
   'Layout carregado do código.': "Disposition chargée depuis le code.",
   'Esse código é de outro tipo de cena.': "Ce code est celui d’un autre type de scène.",
   'Esse código não é de um layout do Syden.': "Ce code n’est pas celui d’une disposition de Syden.",
+  'Corrigir a data de nascimento': "Corriger la date de naissance",
 } satisfies Record<string, string>;

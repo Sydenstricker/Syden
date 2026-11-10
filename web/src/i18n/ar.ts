@@ -3210,4 +3210,5 @@ export default {
   'Layout carregado do código.': "تم تحميل التخطيط من الرمز.",
   'Esse código é de outro tipo de cena.': "هذا الرمز لنوع آخر من المشاهد.",
   'Esse código não é de um layout do Syden.': "هذا الرمز ليس لتخطيط من Syden.",
+  'Corrigir a data de nascimento': "تصحيح تاريخ الميلاد",
 } satisfies Record<string, string>;

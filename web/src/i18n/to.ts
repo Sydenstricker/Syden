@@ -3192,4 +3192,5 @@ export default {
   'Layout carregado do código.': "Kuo hū ‘a e fokotu‘utu‘u mei he kouti.",
   'Esse código é de outro tipo de cena.': "Ko e kouti ‘eni ‘o ha fa‘ahinga feitu‘u kehe.",
   'Esse código não é de um layout do Syden.': "‘Oku ‘ikai ko e kouti ‘eni ‘o ha fokotu‘utu‘u ‘a Syden.",
+  'Corrigir a data de nascimento': "Fakatonutonu ʻa e ʻaho fāʻeleʻi",
 } satisfies Record<string, string>;

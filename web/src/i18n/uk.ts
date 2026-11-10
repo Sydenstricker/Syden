@@ -3236,4 +3236,5 @@ export default {
   'Layout carregado do código.': "Розташування завантажено з коду.",
   'Esse código é de outro tipo de cena.': "Цей код від сцени іншого типу.",
   'Esse código não é de um layout do Syden.': "Цей код не від розташування Syden.",
+  'Corrigir a data de nascimento': "Виправити дату народження",
 } satisfies Record<string, string>;

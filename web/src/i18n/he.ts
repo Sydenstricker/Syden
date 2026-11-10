@@ -3240,4 +3240,5 @@ export default {
   'Layout carregado do código.': "הסידור נטען מהקוד.",
   'Esse código é de outro tipo de cena.': "הקוד הזה שייך לסוג אחר של סצנה.",
   'Esse código não é de um layout do Syden.': "הקוד הזה לא שייך לסידור של Syden.",
+  'Corrigir a data de nascimento': "לתקן את תאריך הלידה",
 } satisfies Record<string, string>;

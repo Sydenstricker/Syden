@@ -3255,4 +3255,5 @@ export default {
   'Layout carregado do código.': "បានផ្ទុកប្លង់ពីកូដ។",
   'Esse código é de outro tipo de cena.': "កូដនេះជារបស់ទិដ្ឋភាពប្រភេទផ្សេង។",
   'Esse código não é de um layout do Syden.': "កូដនេះមិនមែនជារបស់ប្លង់ Syden ទេ។",
+  'Corrigir a data de nascimento': "កែថ្ងៃខែឆ្នាំកំណើត",
 } satisfies Record<string, string>;

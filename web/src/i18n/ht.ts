@@ -3266,4 +3266,5 @@ export default {
   'Layout carregado do código.': "Aranjman chaje nan kòd la.",
   'Esse código é de outro tipo de cena.': "Kòd sa a pou yon lòt kalite sèn.",
   'Esse código não é de um layout do Syden.': "Kòd sa a pa pou yon aranjman Syden.",
+  'Corrigir a data de nascimento': "Korije dat nesans lan",
 } satisfies Record<string, string>;

@@ -3167,4 +3167,5 @@ export default {
   'Layout carregado do código.': "コードからレイアウトを読み込みました。",
   'Esse código é de outro tipo de cena.': "このコードは別の種類のシーンのものです。",
   'Esse código não é de um layout do Syden.': "このコードは Syden のレイアウトのものではありません。",
+  'Corrigir a data de nascimento': "生年月日を修正",
 } satisfies Record<string, string>;

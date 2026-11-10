@@ -3276,4 +3276,5 @@ export default {
   'Layout carregado do código.': "Joylashuv koddan yuklandi.",
   'Esse código é de outro tipo de cena.': "Bu kod boshqa turdagi sahnaga tegishli.",
   'Esse código não é de um layout do Syden.': "Bu kod Syden joylashuviga tegishli emas.",
+  'Corrigir a data de nascimento': "Tugʻilgan sanani tuzatish",
 } satisfies Record<string, string>;

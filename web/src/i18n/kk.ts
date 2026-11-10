@@ -3260,4 +3260,5 @@ export default {
   'Layout carregado do código.': "Орналасу кодтан жүктелді.",
   'Esse código é de outro tipo de cena.': "Бұл код басқа түрдегі көрініске тиесілі.",
   'Esse código não é de um layout do Syden.': "Бұл код Syden орналасуына тиесілі емес.",
+  'Corrigir a data de nascimento': "Туған күнін түзету",
 } satisfies Record<string, string>;

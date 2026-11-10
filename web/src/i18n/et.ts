@@ -3253,4 +3253,5 @@ export default {
   'Layout carregado do código.': "Paigutus laaditud koodist.",
   'Esse código é de outro tipo de cena.': "See kood on teist tüüpi stseeni oma.",
   'Esse código não é de um layout do Syden.': "See kood ei ole Sydeni paigutuse oma.",
+  'Corrigir a data de nascimento': "Paranda sünnikuupäev",
 } satisfies Record<string, string>;

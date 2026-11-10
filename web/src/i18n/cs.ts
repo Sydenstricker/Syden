@@ -3255,4 +3255,5 @@ export default {
   'Layout carregado do código.': "Rozvržení načtené z kódu.",
   'Esse código é de outro tipo de cena.': "Tento kód patří k jinému typu scény.",
   'Esse código não é de um layout do Syden.': "Tento kód nepatří žádnému rozvržení ze Sydenu.",
+  'Corrigir a data de nascimento': "Opravit datum narození",
 } satisfies Record<string, string>;

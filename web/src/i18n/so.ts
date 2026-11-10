@@ -3256,4 +3256,5 @@ export default {
   'Layout carregado do código.': "Qaabeynta waa laga soo raray koodhka.",
   'Esse código é de outro tipo de cena.': "Koodhkani waa mid nooc kale oo muuqaal ah.",
   'Esse código não é de um layout do Syden.': "Koodhkani ma aha mid qaabeyn Syden ah.",
+  'Corrigir a data de nascimento': "Sax taariikhda dhalashada",
 } satisfies Record<string, string>;

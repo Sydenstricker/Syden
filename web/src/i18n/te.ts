@@ -3168,4 +3168,5 @@ export default {
   'Layout carregado do código.': "కోడ్ నుండి అమరిక లోడ్ అయింది.",
   'Esse código é de outro tipo de cena.': "ఈ కోడ్ వేరే రకమైన దృశ్యానిది.",
   'Esse código não é de um layout do Syden.': "ఈ కోడ్ Syden అమరికది కాదు.",
+  'Corrigir a data de nascimento': "పుట్టిన తేదీ సరిచేయి",
 } satisfies Record<string, string>;

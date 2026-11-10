@@ -3248,4 +3248,5 @@ export default {
   'Layout carregado do código.': "Rregullimi u ngarkua nga kodi.",
   'Esse código é de outro tipo de cena.': "Ky kod është i një lloji tjetër skene.",
   'Esse código não é de um layout do Syden.': "Ky kod nuk është i një rregullimi të Syden.",
+  'Corrigir a data de nascimento': "Korrigjo datën e lindjes",
 } satisfies Record<string, string>;

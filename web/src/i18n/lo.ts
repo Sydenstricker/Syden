@@ -3257,4 +3257,5 @@ export default {
   'Layout carregado do código.': "ໂຫຼດການຈັດວາງຈາກລະຫັດແລ້ວ.",
   'Esse código é de outro tipo de cena.': "ລະຫັດນີ້ເປັນຂອງສາກປະເພດອື່ນ.",
   'Esse código não é de um layout do Syden.': "ລະຫັດນີ້ບໍ່ແມ່ນຂອງການຈັດວາງ Syden.",
+  'Corrigir a data de nascimento': "ແກ້ໄຂວັນເກີດ",
 } satisfies Record<string, string>;

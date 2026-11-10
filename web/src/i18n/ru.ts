@@ -3204,4 +3204,5 @@ export default {
   'Layout carregado do código.': "Расстановка загружена из кода.",
   'Esse código é de outro tipo de cena.': "Этот код от сцены другого типа.",
   'Esse código não é de um layout do Syden.': "Этот код не от расстановки Syden.",
+  'Corrigir a data de nascimento': "Исправить дату рождения",
 } satisfies Record<string, string>;

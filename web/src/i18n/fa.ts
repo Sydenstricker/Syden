@@ -3179,4 +3179,5 @@ export default {
   'Layout carregado do código.': "چیدمان از کد بارگذاری شد.",
   'Esse código é de outro tipo de cena.': "این کد مال نوع دیگری از صحنه است.",
   'Esse código não é de um layout do Syden.': "این کد مال چیدمانی از Syden نیست.",
+  'Corrigir a data de nascimento': "اصلاح تاریخ تولد",
 } satisfies Record<string, string>;

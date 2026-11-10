@@ -3258,4 +3258,5 @@ export default {
   'Layout carregado do código.': "Išdėstymas įkeltas iš kodo.",
   'Esse código é de outro tipo de cena.': "Šis kodas yra kitokios scenos.",
   'Esse código não é de um layout do Syden.': "Šis kodas nėra Syden išdėstymo.",
+  'Corrigir a data de nascimento': "Pataisyti gimimo datą",
 } satisfies Record<string, string>;

@@ -3257,4 +3257,5 @@ export default {
   'Layout carregado do código.': "Uppröðun hlaðin úr kóðanum.",
   'Esse código é de outro tipo de cena.': "Þessi kóði er af annarri tegund af senu.",
   'Esse código não é de um layout do Syden.': "Þessi kóði er ekki af Syden-uppröðun.",
+  'Corrigir a data de nascimento': "Leiðrétta fæðingardag",
 } satisfies Record<string, string>;

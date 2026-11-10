@@ -3185,4 +3185,5 @@ export default {
   'Layout carregado do código.': "Mpangilio umepakiwa kutoka kwenye msimbo.",
   'Esse código é de outro tipo de cena.': "Msimbo huu ni wa aina nyingine ya mandhari.",
   'Esse código não é de um layout do Syden.': "Msimbo huu si wa mpangilio wa Syden.",
+  'Corrigir a data de nascimento': "Sahihisha tarehe ya kuzaliwa",
 } satisfies Record<string, string>;

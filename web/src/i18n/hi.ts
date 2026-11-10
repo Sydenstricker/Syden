@@ -3185,4 +3185,5 @@ export default {
   'Layout carregado do código.': "लेआउट कोड से लोड हो गया।",
   'Esse código é de outro tipo de cena.': "यह कोड किसी दूसरे तरह के दृश्य का है।",
   'Esse código não é de um layout do Syden.': "यह कोड Syden के किसी लेआउट का नहीं है।",
+  'Corrigir a data de nascimento': "जन्मतिथि ठीक करो",
 } satisfies Record<string, string>;

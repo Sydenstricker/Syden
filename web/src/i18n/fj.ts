@@ -3185,4 +3185,5 @@ export default {
   'Layout carregado do código.': "Sa vakacurumi na ituvatuva mai na kodi.",
   'Esse código é de outro tipo de cena.': "Na kodi oqo e nei dua tale na mataqali vanua.",
   'Esse código não é de um layout do Syden.': "Na kodi oqo e sega ni nei dua na ituvatuva ni Syden.",
+  'Corrigir a data de nascimento': "Vakadodonutaka na tikinisiga ni sucu",
 } satisfies Record<string, string>;

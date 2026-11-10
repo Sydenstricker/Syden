@@ -3192,4 +3192,5 @@ export default {
   'Layout carregado do código.': "Η διάταξη φορτώθηκε από τον κωδικό.",
   'Esse código é de outro tipo de cena.': "Αυτός ο κωδικός είναι από άλλο είδος σκηνής.",
   'Esse código não é de um layout do Syden.': "Αυτός ο κωδικός δεν είναι διάταξης του Syden.",
+  'Corrigir a data de nascimento': "Διόρθωση ημερομηνίας γέννησης",
 } satisfies Record<string, string>;

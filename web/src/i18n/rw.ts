@@ -3197,4 +3197,5 @@ export default {
   'Layout carregado do código.': "Imitunganyirize yafunguwe ivuye muri kode.",
   'Esse código é de outro tipo de cena.': "Iyi kode ni iy’ubundi bwoko bw’ahantu.",
   'Esse código não é de um layout do Syden.': "Iyi kode si iy’imitunganyirize ya Syden.",
+  'Corrigir a data de nascimento': "Gukosora itariki y'amavuko",
 } satisfies Record<string, string>;

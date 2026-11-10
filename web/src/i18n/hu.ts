@@ -3258,4 +3258,5 @@ export default {
   'Layout carregado do código.': "Elrendezés betöltve a kódból.",
   'Esse código é de outro tipo de cena.': "Ez a kód egy másik fajta jeleneté.",
   'Esse código não é de um layout do Syden.': "Ez a kód nem egy Syden-elrendezésé.",
+  'Corrigir a data de nascimento': "Születési dátum javítása",
 } satisfies Record<string, string>;

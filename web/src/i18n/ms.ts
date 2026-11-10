@@ -3186,4 +3186,5 @@ export default {
   'Layout carregado do código.': "Susun atur dimuatkan daripada kod.",
   'Esse código é de outro tipo de cena.': "Kod ini milik jenis babak yang lain.",
   'Esse código não é de um layout do Syden.': "Kod ini bukan milik susun atur Syden.",
+  'Corrigir a data de nascimento': "Betulkan tarikh lahir",
 } satisfies Record<string, string>;

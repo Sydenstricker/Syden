@@ -3275,4 +3275,5 @@ export default {
   'Layout carregado do código.': "Դասավորությունը բեռնվեց կոդից։",
   'Esse código é de outro tipo de cena.': "Այս կոդը այլ տեսակի տեսարանի է։",
   'Esse código não é de um layout do Syden.': "Այս կոդը Syden-ի դասավորությանը չէ։",
+  'Corrigir a data de nascimento': "Ուղղել ծննդյան ամսաթիվը",
 } satisfies Record<string, string>;

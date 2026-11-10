@@ -3251,4 +3251,5 @@ export default {
   'Layout carregado do código.': "Układ wczytany z kodu.",
   'Esse código é de outro tipo de cena.': "Ten kod należy do innego rodzaju sceny.",
   'Esse código não é de um layout do Syden.': "Ten kod nie należy do układu z Syden.",
+  'Corrigir a data de nascimento': "Popraw datę urodzenia",
 } satisfies Record<string, string>;

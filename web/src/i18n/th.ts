@@ -3199,4 +3199,5 @@ export default {
   'Layout carregado do código.': "โหลดการจัดวางจากรหัสแล้ว",
   'Esse código é de outro tipo de cena.': "รหัสนี้เป็นของฉากประเภทอื่น",
   'Esse código não é de um layout do Syden.': "รหัสนี้ไม่ใช่ของการจัดวาง Syden",
+  'Corrigir a data de nascimento': "แก้ไขวันเกิด",
 } satisfies Record<string, string>;

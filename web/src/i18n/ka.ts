@@ -3274,4 +3274,5 @@ export default {
   'Layout carregado do código.': "განლაგება კოდიდან ჩაიტვირთა.",
   'Esse código é de outro tipo de cena.': "ეს კოდი სხვა ტიპის სცენისაა.",
   'Esse código não é de um layout do Syden.': "ეს კოდი Syden-ის განლაგებისა არ არის.",
+  'Corrigir a data de nascimento': "დაბადების თარიღის შესწორება",
 } satisfies Record<string, string>;

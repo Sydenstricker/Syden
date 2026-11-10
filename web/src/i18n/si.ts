@@ -3256,4 +3256,5 @@ export default {
   'Layout carregado do código.': "කේතයෙන් පිරිසැලසුම පූරණය විය.",
   'Esse código é de outro tipo de cena.': "මෙම කේතය වෙනත් වර්ගයක දර්ශනයක.",
   'Esse código não é de um layout do Syden.': "මෙම කේතය Syden පිරිසැලසුමක නොවේ.",
+  'Corrigir a data de nascimento': "උපන් දිනය නිවැරදි කරන්න",
 } satisfies Record<string, string>;

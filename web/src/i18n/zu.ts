@@ -3257,4 +3257,5 @@ export default {
   'Layout carregado do código.': "Ukuhlelwa kulayishwe kukhodi.",
   'Esse código é de outro tipo de cena.': "Le khodi ingeyolunye uhlobo lwendawo.",
   'Esse código não é de um layout do Syden.': "Le khodi akuyona yokuhlelwa kwe-Syden.",
+  'Corrigir a data de nascimento': "Lungisa usuku lokuzalwa",
 } satisfies Record<string, string>;

@@ -3188,4 +3188,5 @@ export default {
   'Layout carregado do código.': "An loda tsari daga lambar.",
   'Esse código é de outro tipo de cena.': "Wannan lambar ta wani irin wuri ce dabam.",
   'Esse código não é de um layout do Syden.': "Wannan lambar ba ta tsarin Syden ba ce.",
+  'Corrigir a data de nascimento': "Gyara ranar haihuwa",
 } satisfies Record<string, string>;

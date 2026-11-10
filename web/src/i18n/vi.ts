@@ -3156,4 +3156,5 @@ export default {
   'Layout carregado do código.': "Đã tải bố cục từ mã.",
   'Esse código é de outro tipo de cena.': "Mã này thuộc một loại cảnh khác.",
   'Esse código não é de um layout do Syden.': "Mã này không phải của một bố cục Syden.",
+  'Corrigir a data de nascimento': "Sửa ngày sinh",
 } satisfies Record<string, string>;

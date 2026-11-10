@@ -3256,4 +3256,5 @@ export default {
   'Layout carregado do código.': "Распоредот е вчитан од кодот.",
   'Esse código é de outro tipo de cena.': "Овој код е од друг вид сцена.",
   'Esse código não é de um layout do Syden.': "Овој код не е од распоред на Syden.",
+  'Corrigir a data de nascimento': "Поправи го датумот на раѓање",
 } satisfies Record<string, string>;

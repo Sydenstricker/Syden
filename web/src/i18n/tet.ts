@@ -3188,4 +3188,5 @@ export default {
   'Layout carregado do código.': "Arranju karrega husi kódigu.",
   'Esse código é de outro tipo de cena.': "Kódigu ne’e husi sena tipu seluk.",
   'Esse código não é de um layout do Syden.': "Kódigu ne’e la’ós arranju Syden nian.",
+  'Corrigir a data de nascimento': "Koriji data moris",
 } satisfies Record<string, string>;

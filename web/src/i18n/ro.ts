@@ -3186,4 +3186,5 @@ export default {
   'Layout carregado do código.': "Amenajare încărcată din cod.",
   'Esse código é de outro tipo de cena.': "Acest cod este al altui tip de scenă.",
   'Esse código não é de um layout do Syden.': "Acest cod nu este al unei amenajări Syden.",
+  'Corrigir a data de nascimento': "Corectează data nașterii",
 } satisfies Record<string, string>;

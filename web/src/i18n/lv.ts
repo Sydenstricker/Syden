@@ -3258,4 +3258,5 @@ export default {
   'Layout carregado do código.': "Iekārtojums ielādēts no koda.",
   'Esse código é de outro tipo de cena.': "Šis kods ir no cita veida ainas.",
   'Esse código não é de um layout do Syden.': "Šis kods nav no Syden iekārtojuma.",
+  'Corrigir a data de nascimento': "Labot dzimšanas datumu",
 } satisfies Record<string, string>;

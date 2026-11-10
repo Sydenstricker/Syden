@@ -3258,4 +3258,5 @@ export default {
   'Layout carregado do código.': "Razporeditev naložena iz kode.",
   'Esse código é de outro tipo de cena.': "Ta koda je od druge vrste prizora.",
   'Esse código não é de um layout do Syden.': "Ta koda ni od razporeditve iz Sydena.",
+  'Corrigir a data de nascimento': "Popravi datum rojstva",
 } satisfies Record<string, string>;

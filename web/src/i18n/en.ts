@@ -3181,4 +3181,5 @@ export default {
   'Layout carregado do código.': "Layout loaded from the code.",
   'Esse código é de outro tipo de cena.': "This code is from a different kind of scene.",
   'Esse código não é de um layout do Syden.': "This code isn’t from a Syden layout.",
+  'Corrigir a data de nascimento': "Correct the date of birth",
 } satisfies Record<string, string>;

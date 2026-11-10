@@ -3201,4 +3201,5 @@ export default {
   'Layout carregado do código.': "A ti gbé ìṣètò wọlé láti inú kóòdù.",
   'Esse código é de outro tipo de cena.': "Kóòdù yìí jẹ́ ti irú ibi mìíràn.",
   'Esse código não é de um layout do Syden.': "Kóòdù yìí kì í ṣe ti ìṣètò Syden.",
+  'Corrigir a data de nascimento': "Ṣàtúnṣe ọjọ́ ìbí",
 } satisfies Record<string, string>;

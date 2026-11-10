@@ -3266,4 +3266,5 @@ export default {
   'Layout carregado do código.': "ކޯޑުން ލޭއައުޓް ލޯޑުވެއްޖެ.",
   'Esse código é de outro tipo de cena.': "މި ކޯޑަކީ އެހެން ބާވަތެއްގެ މަންޒަރެއްގެ ކޯޑެއް.",
   'Esse código não é de um layout do Syden.': "މި ކޯޑަކީ Syden ގެ ލޭއައުޓެއްގެ ކޯޑެއް ނޫން.",
+  'Corrigir a data de nascimento': "އުފަން ތާރީޚު ރަނގަޅުކުރޭ",
 } satisfies Record<string, string>;

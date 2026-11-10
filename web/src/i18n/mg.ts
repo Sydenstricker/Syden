@@ -3256,4 +3256,5 @@ export default {
   'Layout carregado do código.': "Voavaky avy amin’ny kaody ny fandaminana.",
   'Esse código é de outro tipo de cena.': "An’ny karazana sehatra hafa io kaody io.",
   'Esse código não é de um layout do Syden.': "Tsy an’ny fandaminana Syden io kaody io.",
+  'Corrigir a data de nascimento': "Ahitsio ny daty nahaterahana",
 } satisfies Record<string, string>;

@@ -3186,4 +3186,5 @@ export default {
   'Layout carregado do código.': "አቀማመጡ ከኮዱ ተጭኗል።",
   'Esse código é de outro tipo de cena.': "ይህ ኮድ የሌላ ዓይነት ትዕይንት ነው።",
   'Esse código não é de um layout do Syden.': "ይህ ኮድ የSyden አቀማመጥ አይደለም።",
+  'Corrigir a data de nascimento': "የትውልድ ቀኑን አስተካክል",
 } satisfies Record<string, string>;

@@ -3226,4 +3226,5 @@ export default {
   'Layout carregado do código.': "Qindaa’inni koodii irraa fe’ameera.",
   'Esse código é de outro tipo de cena.': "Koodiin kun kan gosa bakkee biraati.",
   'Esse código não é de um layout do Syden.': "Koodiin kun kan qindaa’ina Syden miti.",
+  'Corrigir a data de nascimento': "Guyyaa dhalootaa sirreessi",
 } satisfies Record<string, string>;

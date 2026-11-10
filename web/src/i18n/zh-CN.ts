@@ -3173,4 +3173,5 @@ export default {
   'Layout carregado do código.': "已从代码载入布局。",
   'Esse código é de outro tipo de cena.': "这个代码属于另一种场景。",
   'Esse código não é de um layout do Syden.': "这个代码不是 Syden 的布局。",
+  'Corrigir a data de nascimento': "更正出生日期",
 } satisfies Record<string, string>;
