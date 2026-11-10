@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { CORES_DOS_AVATARES } from './corrida/coresDosAvatares';
+import { coresDoJogador, type AvatarDoJogo } from './coelho/cores';
 import { BotoesDosRobos, cadaUmPorSi } from './EscolhaDosRobos';
 import { useT } from './i18n';
 import { RodadaDaFesta } from './JogoFesta';
@@ -47,14 +47,14 @@ const COR_DA_CASA: Record<string, [string, string]> = {
 /** As cores de quem não tem avatar pronto: uma por lugar na ordem. */
 const CORES_SEM_AVATAR = ['#d9774f', '#7d93c4', '#7fae8a', '#c98aa8', '#e3b45a', '#5fa8a0', '#b8743f', '#9c86c0'];
 const hex = ([r, g, b]: [number, number, number]) => 'rgb(' + [r, g, b].join(',') + ')';
-export function coresDe(avatar: number | null, i: number) {
-  const a = avatar !== null ? CORES_DOS_AVATARES[avatar] : undefined;
+export function coresDe(avatar: number | string | null, i: number) {
+  const a = coresDoJogador(avatar);
   return a ? { pelo: hex(a.pelo), roupa: hex(a.roupa) } : { pelo: '#e8dccb', roupa: CORES_SEM_AVATAR[i % CORES_SEM_AVATAR.length] };
 }
 
 /** As cores do coelho 3D: as do avatar pronto; sem ele, o pelo do mascote e a roupa do lugar na ordem (para as peças não ficarem iguais). */
-export function coresDe3D(avatar: number | null, i: number): { pelo: string | null; roupa: string } {
-  const a = avatar !== null ? CORES_DOS_AVATARES[avatar] : undefined;
+export function coresDe3D(avatar: number | string | null, i: number): { pelo: string | null; roupa: string } {
+  const a = coresDoJogador(avatar);
   return a ? { pelo: hex(a.pelo), roupa: hex(a.roupa) } : { pelo: null, roupa: CORES_SEM_AVATAR[i % CORES_SEM_AVATAR.length] };
 }
 

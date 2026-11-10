@@ -30,7 +30,7 @@ import './balao/balao.css';
 export interface JogadorDoBalao {
   userId: number;
   username: string;
-  avatar: number | null;
+  avatar: number | string | null;
   largada: number;
   baloes: number;
   estouros: number;
@@ -50,7 +50,7 @@ export interface EstadoBalao {
   jogadores?: JogadorDoBalao[];
   // no Solo
   username?: string;
-  avatar?: number | null;
+  avatar?: number | string | null;
   robos?: { userId: number; username: string }[];
   resultadoDoSolo?: { posicao: number; total: number; baloes: number; estouros: number } | null;
 }
@@ -366,7 +366,7 @@ function PartidaSolo({
   quantos: number;
   eu: number;
   nome: string;
-  avatar: number | null;
+  avatar: number | string | null;
   robos: { userId: number; username: string }[];
   aoTerminar: (r: { posicao: number; total: number; baloes: number; estouros: number; passos: number }) => void;
 }) {

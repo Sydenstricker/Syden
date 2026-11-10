@@ -201,6 +201,12 @@ https://api.syden.chat/api/health
 Ele responde `{"ok":true}` e não exige login, justamente para servir de sinal de vida. Peça alerta por
 e-mail a cada 5 minutos de silêncio.
 
+**São DOIS monitores, um por máquina** (desde 10/11/2026): o site (`https://syden.chat`) mora no GitHub Pages e a
+API (o endereço acima) na Hetzner, e um cai sem o outro — a queda de 10/11 às 05:55 foi só do site, e com um monitor
+só ninguém sabia qual. Dê a cada um um nome que diga a máquina ("Syden — site", "Syden — API"): o painel de Uso do
+servidor mostra um bloco por monitor, com esse nome. Para a API, o tipo **Keyword** procurando `"ok":true` pega
+também o caso de algo responder no lugar dela (uma página de erro do Caddy, por exemplo).
+
 ### 4. App de desktop (Windows)
 
 O app é uma janela do Electron que carrega o site do GitHub Pages. Por isso, as atualizações do site chegam

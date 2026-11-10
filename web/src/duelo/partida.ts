@@ -48,7 +48,7 @@ export const TIPOS_DO_DUELO = ['ervilha', 'missil', 'acerto'] as const;
 export interface Participante {
   id: number;
   nome: string;
-  avatar: number | null;
+  avatar: number | string | null;
   /** O lugar na largada (e a cor das asas). */
   largada: number;
 }

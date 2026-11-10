@@ -41,7 +41,7 @@ export interface EstadoChefe {
   faseDoChefe: number;
   fases: number;
   danoDaTurma: number;
-  jogadores: { userId: number; username: string; avatar: number | null; pontos: number; vidas: number }[];
+  jogadores: { userId: number; username: string; avatar: number | string | null; pontos: number; vidas: number }[];
   resultado: { userId: number; username: string; pontos: number; acertos: number; posicao: number | null }[] | null;
   partidaId: string;
 }

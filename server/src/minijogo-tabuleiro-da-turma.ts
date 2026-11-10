@@ -88,7 +88,7 @@ export function criarTabuleiro({ agora = Date.now, aleatorio = Math.random, ceno
       // a ordem da vez é sorteada (o corte em 8 já vem das rotas, pelo `maximo`; este é só a garantia)
       const ordem = embaralhar(naSala.slice(0, MAXIMO_DO_TABULEIRO), aleatorio);
       const pecas = new Map<number, Peca>(ordem.map((userId) => [userId, { userId, pos: 0, cenouras: cenourasIniciais, douradas: 0 }]));
-      const avatares = new Map(ordem.map((id) => [id, ehRobo(id) ? null : (db.findUserById(id)?.avatarPronto ?? null)]));
+      const avatares = new Map(ordem.map((id) => [id, ehRobo(id) ? null : (db.avatarDoJogo(id))]));
       const evento = `tabuleiro-${ctx.comunidade ?? 0}-${agora()}`;
       /** Uma casa nova para a dourada: nunca a largada, nunca a de agora. */
       const novaDourada = (antes: number) => {

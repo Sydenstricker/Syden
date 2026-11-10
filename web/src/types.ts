@@ -11,6 +11,8 @@ export interface User {
   avatarAnimado?: boolean;
   /** O coelho pronto escolhido (1 a 16, public/avatares/), ou null. Exclui a foto: é um ou outro. */
   avatarPronto?: number | null;
+  /** O coelho do criador ("SYD1-…", coelho/receita.ts): o da cena e, sem foto nem pronto, o avatar. Servidores antigos não mandam. */
+  coelho?: string | null;
   /** Nome da cor escolhida para o nome (ver profileStyles), ou null para a cor do cargo. */
   nameColor: string | null;
   /** Nome do fundo escolhido para o cartão de perfil, ou null para o liso. */
@@ -58,6 +60,7 @@ export type PublicUser = Pick<
   | 'avatarVersion'
   | 'avatarAnimado'
   | 'avatarPronto'
+  | 'coelho'
   | 'isAdmin'
   | 'isOwner'
   | 'nameColor'

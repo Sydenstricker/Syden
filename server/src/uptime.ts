@@ -28,7 +28,7 @@ export interface Disponibilidade {
 
 export const uptimeConfigurado = Boolean(config.uptimeRobotKey);
 
-let cache: { at: number; data: Disponibilidade | null } | null = null;
+let cache: { at: number; data: Disponibilidade[] | null } | null = null;
 
 /** Os códigos que o UptimeRobot usa para o estado de um monitor. */
 const SITUACAO: Record<number, Disponibilidade['situacao']> = {
@@ -39,7 +39,11 @@ const SITUACAO: Record<number, Disponibilidade['situacao']> = {
   9: 'fora do ar',
 };
 
-export async function disponibilidade(): Promise<Disponibilidade | null> {
+/**
+ * UM POR MONITOR (10/11/2026): o site (syden.chat, no GitHub Pages) e a API (api.syden.chat/api/health, na Hetzner) são
+ * máquinas diferentes, e a queda de 10/11 às 05:55 foi só do site. Com um monitor só, "o Syden caiu" não dizia qual.
+ */
+export async function disponibilidade(): Promise<Disponibilidade[] | null> {
   if (!uptimeConfigurado) return null;
   if (cache && Date.now() - cache.at < CACHE_MS) return cache.data;
 
@@ -68,26 +72,26 @@ export async function disponibilidade(): Promise<Disponibilidade | null> {
       }[];
     };
 
-    const monitor = corpo.monitors?.[0];
-    if (corpo.stat !== 'ok' || !monitor) throw new Error('resposta sem monitor');
+    if (corpo.stat !== 'ok' || !corpo.monitors?.length) throw new Error('resposta sem monitor');
 
-    // Vem como "99.988-99.972-99.981": um dia, sete dias, trinta dias.
-    const [umDia, seteDias, trintaDias] = (monitor.custom_uptime_ratio ?? '').split('-').map((n) => {
-      const valor = Number(n);
-      return Number.isFinite(valor) ? valor : null;
+    const data: Disponibilidade[] = corpo.monitors.map((monitor) => {
+      // Vem como "99.988-99.972-99.981": um dia, sete dias, trinta dias.
+      const [umDia, seteDias, trintaDias] = (monitor.custom_uptime_ratio ?? '').split('-').map((n) => {
+        const valor = Number(n);
+        return Number.isFinite(valor) ? valor : null;
+      });
+      return {
+        nome: monitor.friendly_name ?? 'Syden',
+        situacao: SITUACAO[monitor.status ?? 1] ?? 'aguardando',
+        umDia: umDia ?? null,
+        seteDias: seteDias ?? null,
+        trintaDias: trintaDias ?? null,
+        // type 1 = caiu. Os outros tipos são "voltou" e "pausado", que não interessam na lista de quedas.
+        quedas: (monitor.logs ?? [])
+          .filter((l) => l.type === 1 && l.datetime)
+          .map((l) => ({ quando: new Date(l.datetime! * 1000).toISOString(), duracaoMin: Math.round((l.duration ?? 0) / 60) })),
+      };
     });
-
-    const data: Disponibilidade = {
-      nome: monitor.friendly_name ?? 'Syden',
-      situacao: SITUACAO[monitor.status ?? 1] ?? 'aguardando',
-      umDia: umDia ?? null,
-      seteDias: seteDias ?? null,
-      trintaDias: trintaDias ?? null,
-      // type 1 = caiu. Os outros tipos são "voltou" e "pausado", que não interessam na lista de quedas.
-      quedas: (monitor.logs ?? [])
-        .filter((l) => l.type === 1 && l.datetime)
-        .map((l) => ({ quando: new Date(l.datetime! * 1000).toISOString(), duracaoMin: Math.round((l.duration ?? 0) / 60) })),
-    };
 
     cache = { at: Date.now(), data };
     return data;

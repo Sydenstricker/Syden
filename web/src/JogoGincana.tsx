@@ -46,14 +46,14 @@ export interface EstadoGincana {
   percurso: string;
   partidaId: string;
   // o Solo
-  recordes?: { userId: number; nome: string; avatar: number | null; percurso: string; tempoMs: number }[];
-  meuAvatar?: number | null;
+  recordes?: { userId: number; nome: string; avatar: number | string | null; percurso: string; tempoMs: number }[];
+  meuAvatar?: number | string | null;
   meuNome?: string;
-  fantasmas?: { userId: number; nome: string; avatar: number | null; tempoMs: number; entradas: number[] }[];
+  fantasmas?: { userId: number; nome: string; avatar: number | string | null; tempoMs: number; entradas: number[] }[];
   rodada?: number;
   resultado?: { tempoMs: number; quedas: number; recorde: boolean; anterior: number | null } | null;
   // a sala
-  corredores?: { userId: number; username: string; tempoMs: number | null; quedas: number; posicao: number | null; avatar: number | null }[];
+  corredores?: { userId: number; username: string; tempoMs: number | null; quedas: number; posicao: number | null; avatar: number | string | null }[];
   prazo?: boolean;
 }
 
@@ -148,7 +148,7 @@ interface Painel {
 /** Um rival da sala: as posições que o servidor repassou, pelo passo do percurso dele. */
 interface Rival {
   nome: string;
-  avatar: number | null;
+  avatar: number | string | null;
   posicoes: { n: number; x: number; y: number; z: number; e: number }[];
   chegou: boolean;
 }
@@ -160,7 +160,7 @@ interface ConfigDoPercurso {
   corro: boolean;
   meuNome: string;
   minhasCores: Promise<CoresDoCoelho>;
-  fantasmas: { nome: string; avatar: number | null; entradas: Entradas }[];
+  fantasmas: { nome: string; avatar: number | string | null; entradas: Entradas }[];
   rivais?: Map<number, Rival>;
   contagem: number;
   pausa?: Pausa;

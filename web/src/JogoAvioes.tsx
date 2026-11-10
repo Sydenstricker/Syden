@@ -46,7 +46,7 @@ import './duelo/duelo.css';
 export interface JogadorDoDuelo {
   userId: number;
   username: string;
-  avatar: number | null;
+  avatar: number | string | null;
   largada: number;
   vidas: number;
   acertos: number;
@@ -64,7 +64,7 @@ export interface EstadoDosAvioes {
   jogadores?: JogadorDoDuelo[];
   // no Solo
   username?: string;
-  avatar?: number | null;
+  avatar?: number | string | null;
   robos?: { userId: number; username: string }[];
   resultadoDoSolo?: { posicao: number; total: number; vidas: number; acertos: number } | null;
 }

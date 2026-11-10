@@ -32,7 +32,7 @@ export function Quarto3D({
   acoes: AcoesDoQuarto;
   estado: EstadoDoCoelho;
   /** O avatar pronto de quem mora (na visita: null é o mascote); sem ele, o MEU coelho. */
-  avatar?: number | null;
+  avatar?: number | string | null;
   titulo: string;
   aoFalhar: () => void;
   /** Na visita, o id de quem mora: a arrumação dele. */

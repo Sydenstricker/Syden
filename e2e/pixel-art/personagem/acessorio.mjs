@@ -28,6 +28,9 @@ const ACESSORIOS = {
     // Na orelha caída, as orelhas saem de baixo dele, dos lados.
     descricao: 'a small red baseball cap worn on top of the bunny head, sitting BETWEEN the two long ears: the whole cap is in the gap between the ears, both ears stay fully outside the cap on its left and right sides, nothing passes through the cap, short visor, same pixel art style and outline as the character',
     regiao: 'cranio',
+    // DE COSTAS (10/11/2026, relato dele: "o boné não acompanhou a rotação"): pintado só com a descrição de cima, nas vistas
+    // de costas do mascote e do musculoso a aba saía virada para quem olha, como se fosse de frente.
+    costas: 'seen from BEHIND: we see the back of the cap, with the rounded back of the crown and the small adjustment strap opening at the back; the visor points AWAY from the viewer, toward the far side, and is mostly hidden behind the crown; the cap sits on top of the bunny head between the two long ears',
   },
   bandana: {
     // A bandana do coelho 16 (a escolhida das fotos de frente): no pescoço, por cima da gola do moletom.
@@ -130,7 +133,7 @@ fs.writeFileSync(path.join(destino, 'mascara', arquivo), PNG.sync.write(m));
 if (process.env.SO_MASCARA) { console.log('máscara', JSON.stringify(caixa)); process.exit(0); }
 const tamanho = { width: base.width, height: base.height };
 const r = await fetch(API + '/inpaint-v3', { method: 'POST', headers: cab, body: JSON.stringify({
-  description: acessorio.descricao,
+  description: direcao.startsWith('north') && acessorio.costas ? `${acessorio.descricao}; ${acessorio.costas}` : acessorio.descricao,
   inpainting_image: { image: { type: 'base64', base64: b64(base), format: 'png' }, size: tamanho },
   mask_image: { image: { type: 'base64', base64: b64(m), format: 'png' }, size: tamanho },
   no_background: true, crop_to_mask: false,

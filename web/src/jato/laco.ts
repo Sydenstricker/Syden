@@ -48,7 +48,7 @@ export interface PosicaoNaSala {
 
 export interface RivalDoJato {
   nome: string;
-  avatar?: number | null;
+  avatar?: number | string | null;
   posicoes: PosicaoNaSala[];
   /** Explodiu (o servidor disse): some da pista. */
   fora?: boolean;
@@ -66,8 +66,8 @@ export interface OpcoesDoLaco {
   pista: DefinicaoDoJato;
   /** Sem nave (quem assiste): a câmera vai atrás de quem está na frente. */
   piloto: boolean;
-  meuAvatar?: number | null;
-  fantasmas?: { amostras: number[]; avatar: number | null }[];
+  meuAvatar?: number | string | null;
+  fantasmas?: { amostras: number[]; avatar: number | string | null }[];
   rivais?: Map<number, RivalDoJato>;
   /** Quantas naves do computador na pista. */
   robos: number;
@@ -169,7 +169,7 @@ export function rodarJato(o: OpcoesDoLaco): () => void {
 
   /** Os rivais da sala no passo `n`. */
   const rivaisEm = (n: number) => {
-    const lista: { id: number; nome: string; avatar: number | null; pos: PosicaoNaSala }[] = [];
+    const lista: { id: number; nome: string; avatar: number | string | null; pos: PosicaoNaSala }[] = [];
     for (const [id, r] of o.rivais ?? []) {
       if (r.fora) continue;
       const pos = rivalEm(r.posicoes, n);

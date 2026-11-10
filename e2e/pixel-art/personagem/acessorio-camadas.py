@@ -15,21 +15,49 @@
 #   → camadas/folha-<acessório>-<corpo>.png  (por animação e direção: o quadro sem e com o acessório)
 #     camadas/troca.png                      (cada corpo com cada acessório e com os dois: a prova de que trocam)
 #     camadas/<corpo>-<acessório>-<animação>-<direção>.gif e camadas/relatorio.json
+#
+# AS POSES DA CENA (10/11/2026: o quarto e o salão de pixel art usam mais que as 4 animações; ver FONTES em
+# quarto/novo/quarto/montar.mjs). O mesmo rastreio leva o acessório a elas, nos três corpos. AS CHAVES do relatorio.json:
+#   '<corpo>/<acessório>/<animação>/<direção>'            as 4 de sempre (parado, andando, falando, acenando), como antes;
+#   '<corpo>/<acessório>/<pasta da animação>/<direção>'    as animações da cena, pelo nome da pasta em baixa-120/animacoes/
+#                                                         (assistindo-sofa-fofo, jogando-fliperama, digitando-maos...);
+#   '<corpo>/<acessório>/estados/<estado>/<direção>'      as poses paradas (estados/sentado-2...): lista de UM quadro;
+#   '<corpo>/<acessório>/transicoes/<transição>/<direção>' as passagens (transicoes/sentar-fluido...).
+# Cada quadro tem o mesmo formato de antes ({quadro, desloc, custo, na_frente, marcado}), e mais "sem": true quando o quadro
+# fica SEM o acessório: nas poses deitadas (o rastreio da cabeça não vale ali; dormir sem boné é aceitável) e, nas poses da
+# cena, quando a procura passa do LIMITE (a cabeça mudou de forma). Nada novo é pintado: o acessório é sempre a pintura do
+# "parado" 0 da direção. web/scripts/coelho-camadas.py já lê o "sem" (null no lugar do deslocamento).
+#   → e camadas/folha-<acessório>-<corpo>-cena.png (as poses da cena, com o acessório; "sem" fica sem ele)
 import os, re, json, sys
 import numpy as np
 from PIL import Image
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 SAIDA = os.path.join(AQUI, 'camadas')
-CORPOS = ['mascote', 'orelha-caida', 'musculoso']
+CORPOS = ['mascote', 'orelha-caida', 'musculoso', 'mascote-f-moletom', 'musculoso-f-curta']
 ACESSORIOS = ['bone', 'bandana']
 ANIMS = ['parado', 'andando', 'falando', 'acenando']
 # a pasta de cada animação, quando o corpo não usa a de nome igual (o mascote anda pela v3: a "andando" é a caminhada antiga,
 # por esqueleto, noutra escala e fora do quarto)
 PASTAS = {('mascote', 'andando'): ['andando-v3', 'andando-v3b']}
+# AS POSES DA CENA (as pastas primeiras de FONTES, montar.mjs): (chave, pasta relativa ao corpo)
+ANIMS_DA_CENA = ['varrendo', 'assistindo-sofa-fofo', 'rindo-sofa', 'acenando-sofa', 'aplaudindo-sofa', 'surpreso-sofa',
+                 'jogando-fliperama', 'empolgado-fliperama', 'assistindo-chao', 'digitando-maos']
+ESTADOS = ['sentado-2', 'sentado-sofa', 'sentado-poltrona', 'no-computador', 'sentado-banqueta', 'no-fliperama',
+           'lendo-deitado', 'dormindo', 'dormindo-largado']
+TRANSICOES = ['sentar-fluido', 'sentar-sofa', 'deitar-fluido', 'deitar-lendo-fluido', 'bracos']
+POSES = ([(a, os.path.join('baixa-120', 'animacoes', a)) for a in ANIMS_DA_CENA]
+         + [(f'estados/{e}', os.path.join('estados', e)) for e in ESTADOS]
+         + [(f'transicoes/{t}', os.path.join('transicoes', t)) for t in TRANSICOES])
+# deitado: sem acessório, sempre (o deitar começa sentado, mas a cabeça vai deitando quadro a quadro)
+DEITADAS = {'estados/lendo-deitado', 'estados/dormindo', 'estados/dormindo-largado', 'transicoes/deitar-fluido', 'transicoes/deitar-lendo-fluido'}
 DIRS = ['south-east', 'south-west', 'north-east', 'north-west']
 BUSCA = 14          # px que a cabeça pode andar entre a referência e o quadro
 LIMITE = 40         # custo médio (0–255) acima do qual o quadro é marcado
+# nas poses da cena, em cadeia (ver abaixo), o custo soma o rosto que muda (olhos abertos no sofá, a boca do riso) e a cabeça
+# que inclina, com o boné ainda no lugar: medido na folha da cena em 10/11/2026, de 40 a 60 o acessório está certo. Acima, a
+# pose fica sem ele. FORCAR=1 no ambiente põe o acessório em tudo (para olhar onde ele iria).
+LIMITE_CENA = 60
 OCLUSAO = 90        # diferença de cor (soma dos canais) que diz "ali agora há outra coisa"
 FUNDO = (70, 70, 90, 255)
 
@@ -37,6 +65,7 @@ def ler(f): return np.array(Image.open(f).convert('RGBA')).astype(int)
 
 def quadros(pasta, d):
     if not os.path.isdir(pasta): return []
+    if os.path.exists(os.path.join(pasta, f'{d}.png')): return [os.path.join(pasta, f'{d}.png')]  # um estado: uma pose
     fs = [f for f in os.listdir(pasta) if re.fullmatch(f'{d}-\\d+\\.png', f)]
     return [os.path.join(pasta, f) for f in sorted(fs, key=lambda f: int(re.search(r'-(\d+)\.png', f).group(1)))]
 
@@ -121,7 +150,7 @@ relatorio = {}
 referencias = {}
 for corpo in CORPOS:
     for acc in ACESSORIOS:
-        linhas = []
+        linhas = []; linhas_cena = []
         for d in DIRS:
             camf = os.path.join(AQUI, corpo, 'acessorios', acc, 'parado', f'{d}-0.png')
             reff = os.path.join(AQUI, corpo, 'baixa-120', 'animacoes', 'parado', f'{d}-0.png')
@@ -142,7 +171,39 @@ for corpo in CORPOS:
                 linhas += [sem, com]
                 gif = [Image.fromarray(np.kron(np.where(c[..., 3:4] > 20, c, FUNDO).astype(np.uint8), np.ones((4, 4, 1), np.uint8))).convert('RGB') for c in com]
                 gif[0].save(os.path.join(SAIDA, f'{corpo}-{acc}-{anim}-{d}.gif'), save_all=True, append_images=gif[1:], duration=125, loop=0)
+            # as poses da cena
+            for chave, rel_pasta in POSES:
+                fs = quadros(os.path.join(AQUI, corpo, rel_pasta), d)
+                if not fs: continue
+                imgs = [ler(f) for f in fs]
+                if chave in DEITADAS:
+                    relatorio[f'{corpo}/{acc}/{chave}/{d}'] = [{'quadro': os.path.basename(f), 'desloc': [0, 0], 'custo': None, 'na_frente': 0, 'marcado': False, 'sem': True} for f in fs]
+                    linhas_cena.append(imgs); continue
+                # EM CADEIA: o quadro 0 da pose contra o parado (onde a cabeça foi parar), e cada quadro contra o quadro 0 da
+                # PRÓPRIA pose. Medido em 10/11/2026: contra o parado, o rosto de olhos abertos do sofá e a cabeça inclinada
+                # pesavam no custo (40 a 60) sem a posição estar errada; contra o quadro 0 da pose, só o movimento conta.
+                d0, c0 = procurar(ref, imgs[0], caixa)
+                y0, y1, x0, x1 = caixa; H0, W0 = imgs[0].shape[:2]
+                caixa0 = (max(0, y0 + d0[1]), min(H0, y1 + d0[1]), max(0, x0 + d0[0]), min(W0, x1 + d0[0]))
+                medidas = []
+                for k, a in enumerate(imgs):
+                    if k == 0: medidas.append((tuple(d0), c0)); continue
+                    dk, ck = procurar(imgs[0], a, caixa0)
+                    medidas.append(((d0[0] + dk[0], d0[1] + dk[1]), max(c0, ck)))
+                # um quadro que falha tira o acessório da pose INTEIRA naquela direção: o boné sumindo e voltando no meio de
+                # uma animação que repete piscaria
+                sem_pose = any(c > LIMITE_CENA for _, c in medidas) and not os.environ.get('FORCAR')
+                com, info = [], []
+                for f, a, (desloc, custo) in zip(fs, imgs, medidas):
+                    m, frente = (a, 0) if sem_pose else montar(a, ref, camada, desloc)
+                    com.append(m)
+                    q = {'quadro': os.path.basename(f), 'desloc': list(desloc), 'custo': round(float(custo), 1), 'na_frente': frente, 'marcado': bool(custo > LIMITE_CENA)}
+                    if sem_pose: q['sem'] = True
+                    info.append(q)
+                relatorio[f'{corpo}/{acc}/{chave}/{d}'] = info
+                linhas_cena.append(com)
         if linhas: folha(linhas, os.path.join(SAIDA, f'folha-{acc}-{corpo}.png'))
+        if linhas_cena: folha(linhas_cena, os.path.join(SAIDA, f'folha-{acc}-{corpo}-cena.png'), E=2)
 
 # A TROCA: cada corpo × (nada, cada acessório, todos juntos), no "parado" 0 de cada direção
 linhas = []
@@ -161,6 +222,12 @@ if linhas: folha(linhas, os.path.join(SAIDA, 'troca.png'))
 
 json.dump(relatorio, open(os.path.join(SAIDA, 'relatorio.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
 marcados = [(k, q['quadro'], q['custo']) for k, v in relatorio.items() for q in v if q['marcado']]
-custos = [q['custo'] for v in relatorio.values() for q in v]
+custos = [q['custo'] for v in relatorio.values() for q in v if q['custo'] is not None]
+sem = {}
+for k, v in relatorio.items():
+    n = sum(1 for q in v if q.get('sem'))
+    if n: sem[k] = (n, len(v))
+print(f'{len(sem)} poses com quadros SEM acessório:')
+for k, (n, t) in sem.items(): print(f'  sem {k}: {n} de {t}')
 print(f'{len(custos)} quadros; custo médio {np.mean(custos):.1f}, máximo {max(custos):.1f}; {len(marcados)} marcados')
 for m in marcados[:30]: print('  marcado', *m)

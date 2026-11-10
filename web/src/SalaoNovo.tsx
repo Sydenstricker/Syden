@@ -5,6 +5,7 @@ import { getDirectory, nomeDe } from './directory';
 import { useT } from './i18n';
 import type { PecaClicada } from './CartaoDaPeca';
 import { type Arrumacao, EditorDaCena, type Figuras } from './QuartoNovo';
+import type { Receita } from './coelho/receita';
 import type { AcoesDoSalao } from './Salao';
 import type { Community, CommunityMember } from './types';
 
@@ -39,6 +40,8 @@ export interface PessoaNoSalao {
   id: number;
   nome: string;
   papel: 'call' | 'transmitindo' | 'jogando';
+  /** O coelho dela na cena (coelho/receita.ts, receitaDe: a do criador, senão a sugestão do coelho pronto, senão o mascote). */
+  coelho?: Receita;
 }
 
 export function SalaoNovo({

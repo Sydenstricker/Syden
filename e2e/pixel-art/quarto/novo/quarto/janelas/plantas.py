@@ -14,6 +14,7 @@
 import os
 import numpy as np
 from PIL import Image
+from buracos import sem_buracos
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 F0X, F0Y, CX, CY, N = 256.0, 226.0, 27.0, 14.25, 8
@@ -108,5 +109,5 @@ if '--so-franja' in sys.argv:
 for q in ('dia', 'noite'):
     src = np.array(Image.open(os.path.join(AQUI, f'sem-janela-{q}.png')).convert('RGB'))
     for nome, f in (('l', em_l), ('cubiculo', cubiculo)):
-        Image.fromarray(sem_franja(f(src))).save(os.path.join(AQUI, f'sem-janela-{q}-{nome}.png'))
+        Image.fromarray(sem_buracos(sem_franja(f(src)))).save(os.path.join(AQUI, f'sem-janela-{q}-{nome}.png'))
         print(f'sem-janela-{q}-{nome}.png')

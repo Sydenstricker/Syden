@@ -1,4 +1,4 @@
-import { CORES_DOS_AVATARES } from '../corrida/coresDosAvatares';
+import { coresDoJogador, type AvatarDoJogo } from '../coelho/cores';
 import { CORES_DA_ESQUADRILHA } from '../nave/desenho';
 import { ALTURA, ARENA, LARGURA } from './sim';
 
@@ -49,9 +49,9 @@ export interface PaletaDoAviao {
 }
 
 /** As cores do avião de quem largou em `largada`, com o avatar `avatar` (sem avatar pronto, o moletom do mascote). */
-export function paletaDe(largada: number, avatar: number | null): PaletaDoAviao {
+export function paletaDe(largada: number, avatar: number | string | null): PaletaDoAviao {
   const asa = deHex(CORES_DA_ESQUADRILHA[largada % CORES_DA_ESQUADRILHA.length]);
-  const a = avatar !== null ? CORES_DOS_AVATARES[avatar] : undefined;
+  const a = coresDoJogador(avatar);
   return { asa, corpo: a ? a.roupa : [61, 43, 54], pelo: a ? a.pelo : [236, 228, 240] };
 }
 

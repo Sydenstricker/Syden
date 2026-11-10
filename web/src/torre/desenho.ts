@@ -1,5 +1,5 @@
 import { H, QUADRO_H, QUADRO_W, W } from '../plataforma/desenho';
-import { CORES_DOS_AVATARES } from '../corrida/coresDosAvatares';
+import { coresDoJogador, type AvatarDoJogo } from '../coelho/cores';
 import { altura, Bloco, blocoEm, COLUNAS, corvoEm, LARGURA, movelEm, quedaEm, T, type Ferramenta, type Tema, type Torre } from './fases';
 
 /**
@@ -322,7 +322,7 @@ export interface Figura {
   alpha?: number;
   nome?: string;
   piscando?: boolean;
-  avatar?: number | null;
+  avatar?: number | string | null;
 }
 
 /** Desenha a cena com a câmera em camY (o alto da tela, no mundo), no passo n da subida de quem se vê. */
@@ -445,10 +445,10 @@ export function barraDaSubida(ctx: CanvasRenderingContext2D, pontos: { andou: nu
  * Aqui o pelo é o tom claro e frio (o azul não fica abaixo do vermelho) e o moletom o escuro quente (o vermelho acima do
  * azul); o resto (os olhos, o nariz, o contorno quase preto) fica como está. Sem avatar pronto, o mascote.
  */
-const folhasDaTorre = new Map<number, HTMLCanvasElement>();
+const folhasDaTorre = new Map<number | string, HTMLCanvasElement>();
 const luz = (r: number, g: number, b: number) => 0.3 * r + 0.59 * g + 0.11 * b;
-export function folhaDaTorre(base: HTMLImageElement, avatar: number | null): CanvasImageSource {
-  const cores = avatar !== null ? CORES_DOS_AVATARES[avatar] : undefined;
+export function folhaDaTorre(base: HTMLImageElement, avatar: number | string | null): CanvasImageSource {
+  const cores = coresDoJogador(avatar);
   if (!cores || !base.complete || !base.naturalWidth) return base;
   const pronta = folhasDaTorre.get(avatar!);
   if (pronta) return pronta;

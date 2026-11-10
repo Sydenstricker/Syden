@@ -2,7 +2,8 @@ import * as THREE from 'three';
 import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { api, loadToken } from './api';
-import { CORES_DOS_AVATARES, MOLETOM_DO_MASCOTE } from './corrida/coresDosAvatares';
+import { MOLETOM_DO_MASCOTE } from './corrida/coresDosAvatares';
+import { coresDoJogador, type AvatarDoJogo } from './coelho/cores';
 import type { User } from './types';
 
 /**
@@ -71,8 +72,8 @@ const hex = ([r, g, b]: [number, number, number]) => `rgb(${r},${g},${b})`;
 export const CORES_DO_MASCOTE: CoresDoCoelho = { pelo: null, roupa: hex(MOLETOM_DO_MASCOTE[0]) };
 
 /** As cores do avatar pronto (as do kart); sem avatar pronto, o mascote. */
-export function coresDoAvatar(avatar: number | null | undefined): CoresDoCoelho {
-  const a = avatar ? CORES_DOS_AVATARES[avatar] : undefined;
+export function coresDoAvatar(avatar: number | string | null | undefined): CoresDoCoelho {
+  const a = coresDoJogador(avatar);
   return a ? { pelo: hex(a.pelo), roupa: hex(a.roupa) } : CORES_DO_MASCOTE;
 }
 
@@ -86,7 +87,7 @@ export function minhasCoresDoCoelho(): Promise<CoresDoCoelho> {
   if (!loadToken()) return Promise.resolve(CORES_DO_MASCOTE);
   if (!minhas)
     minhas = api<User>('/api/me').then(
-      (u) => coresDoAvatar(u.avatarPronto),
+      (u) => coresDoAvatar(u.coelho ?? u.avatarPronto),
       () => {
         minhas = null;
         return CORES_DO_MASCOTE;

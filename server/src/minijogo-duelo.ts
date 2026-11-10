@@ -94,7 +94,7 @@ type TiroVivo = { tipo: 'ervilha'; id: string; dono: number; tiro: Tiro; fim: nu
 export interface LinhaDoDuelo {
   userId: number;
   username: string;
-  avatar: number | null;
+  avatar: number | string | null;
   largada: number;
   vidas: number;
   acertos: number;
@@ -112,7 +112,7 @@ export function criarDueloDeAvioes({ agora = Date.now }: { agora?: () => number 
       if (ctx.solo) return comecarSolo(ctx, naSala, agora);
       const inscritos = [...naSala].slice(0, LARGADAS.length);
       const evento = `duelo-${ctx.comunidade ?? 0}-${agora()}`;
-      const avatares = new Map(inscritos.map((id) => [id, db.findUserById(id)?.avatarPronto ?? null]));
+      const avatares = new Map(inscritos.map((id) => [id, db.avatarDoJogo(id)]));
       const jogadores = new Map<number, Jogador>(
         inscritos.map((id, i) => {
           const a = largada(i);
@@ -429,7 +429,7 @@ function comecarSolo(ctx: Contexto, naSala: number[], agora: () => number): Jogo
   };
   ctx.agendar(PRAZO_DO_SOLO_MS, () => terminar(false));
   const robos = idsDosRobos(ROBOS_DO_DUELO).map((id) => ({ userId: id, username: nomeDoRobo(id) }));
-  const avatar = db.findUserById(quem)?.avatarPronto ?? null;
+  const avatar = db.avatarDoJogo(quem);
   const inteiro = (v: unknown): v is number => typeof v === 'number' && Number.isInteger(v);
   return {
     publico: () => ({ fase, solo: true, partidaId: evento, username: ctx.nome(quem), avatar, robos, resultadoDoSolo: resultado }),

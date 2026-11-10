@@ -155,7 +155,7 @@ function Palco({
   const fases = estado.fases || 3;
   useTeclado(jogador, cmd);
 
-  const pessoas = useRef(new Map<number, { nome: string; avatar: number | null }>());
+  const pessoas = useRef(new Map<number, { nome: string; avatar: number | string | null }>());
   for (const j of estado.jogadores) pessoas.current.set(j.userId, { nome: j.username, avatar: j.avatar });
 
   useEffect(() => {

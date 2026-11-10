@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
+import { BustoDoCoelho } from './coelho/CoelhoMontado';
+import { lerCodigo } from './coelho/receita';
 import { mediaUrl } from './api';
 import { useDirectory } from './directory';
 import type { PresenceStatus } from './types';
@@ -282,6 +284,7 @@ export function Avatar({
   const membro = userId === undefined ? undefined : members.get(userId);
   const version = membro?.avatarVersion ?? null;
   const pronto = version === null ? (membro?.avatarPronto ?? null) : null;
+  const montado = version === null && pronto === null ? lerCodigo(membro?.coelho) : null;
   // A moldura vem do DIRETÓRIO, e não de quem chamou: assim ela aparece em toda parte onde já se
   // desenha um avatar (lista de membros, chamada, mensagem) sem passar a escolha de mão em mão. E
   // muda sozinha quando a pessoa troca, pelo mesmo "user:updated" que já atualiza o nome.
@@ -338,6 +341,16 @@ export function Avatar({
         </>
       ) : pronto !== null ? (
         <CoelhoPronto numero={pronto} estado={estadoDoPronto} />
+      ) : montado ? (
+        // O COELHO DO CRIADOR (10/11/2026): o busto dele, com os estados da foto (não tem quadros de falar e dormir de frente)
+        <>
+          <BustoDoCoelho receita={montado} estado={estadoDoPronto} />
+          {estadoDoPronto === 'ausente' && (
+            <span className="avatar-foto-zzz" aria-hidden="true">
+              z
+            </span>
+          )}
+        </>
       ) : (
         <AvatarCoelho pose={pose} />
       )}

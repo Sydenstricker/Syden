@@ -153,3 +153,60 @@ fliperama, chão), também nas 4 posições. Sai em `e2e/pixel-art/auditoria-vis
 **Quando:** depois de cada lote novo de arte do personagem (poses, transições, animações) ou de mexer na ordem de desenho
 do motor. Rode com `MASCOTE=pixellab` (o quarto vai a 100% pixel art) e olhe as folhas: quarto primeiro, depois o salão. O
 script não decide o que é defeito; quem revisa compara com a rodada anterior.
+
+## As poses da cena nos corpos novos (10/11/2026)
+
+Pedido: a orelha caída e o musculoso com as mesmas poses que o quarto e o salão de pixel art usam (FONTES em
+`../quarto/novo/quarto/montar.mjs`), para o criador de coelho ir ao app com os três corpos. As pastas e os nomes são os do
+mascote (`<corpo>/estados/...`, `<corpo>/transicoes/...`, `<corpo>/baixa-120/animacoes/...`): trocar a pasta-base basta.
+
+- **Os ESTADOS saem da pose do MASCOTE, com a edição do corpo** (`estado.mjs` com `COELHO=<corpo> ORIGEM=mascote/estados/<pose>`,
+  a edição de `corpo-novo.mjs` com "exactly the same pose"): o assento, a cama e os braços da poltrona ficam no mesmo lugar
+  que o mascote validado na cena. ~25 gerações por estado (as 8 direções). A edição agora fica guardada no `estado.json`.
+- **As TRANSIÇÕES saem da animação v3 com o quadro final** (`transicao.mjs` com `MOTOR=v3`: `custom_start_frame` e
+  `end_frame` em `/characters/animations`): a passagem inteira de uma vez, por ~1 a 2 gerações a direção, contra 10 por PAR
+  de quadros do interpolation-v2 (as fluidas do mascote custaram ~30 por direção). `PEGAR` escolhe os quadros para ter o
+  mesmo número de quadros do mascote.
+- **A remoção de fundo do PixelLab apaga o BRANCO de dentro do desenho** (as páginas do livro no lendo-deitado, o tênis do
+  musculoso sentado no sofá): ficou um buraco transparente fechado pelo contorno. `preencher-buracos.py` pinta de volta, só
+  nas pastas conferidas olhando (os vãos de verdade, entre o braço e o corpo, também são regiões fechadas).
+- **A limpeza aprendeu** (`limpar-soltos.py`, com `tocos.py`): o toco de qualquer tom por fora do traço e o cinza neutro
+  sozinho no pelo (o achado dele no "parado" do mascote); o brilho só conta se não encosta no escuro nem no quente (o brilho
+  do olho aberto e a página do livro são do desenho); o pedaço solto de 40 px ou mais é do corpo (o tênis); a quina do livro
+  presa à capa fica; e numa transição não há "pico" (o corte tirava o alto da cabeça no deitar).
+- **O acessório nas poses** (`acessorio-camadas.py`): rastreio EM CADEIA (o quadro 0 da pose contra o parado, os outros
+  contra o quadro 0 da pose), limite 60; um quadro que falha tira o acessório da pose inteira naquela direção (sumir e voltar
+  piscaria). Deitado, sempre sem (`"sem": true` no relatorio.json). As chaves estão no topo do script.
+- **A segunda rodada (10/11/2026, ~308 gerações):** os estados `no-fliperama` e `dormindo-largado` e as animações das reações
+  no sofá, do fliperama, do assistir no chão e do varrer (orelha caída; o musculoso sem o varrer). Só ficaram as direções que
+  saíram boas; as outras estão em `<corpo>/falhas/` e a cena cai na pose parada: o v3 desenha efeitos (nuvem, faísca, gota,
+  tufo) em cima da cabeça da orelha caída — `limpar-soltos.py --teto N` corta o que passa do alto do quadro 0, conferindo
+  olhando — e, nas diagonais de costas do sofá, vira a cara para trás. O sudoeste do `no-fliperama` do musculoso saiu DE
+  COSTAS (está em falhas: a cena cai no parado). O `varrendo` dos corpos parte do coelho de pé com `PRIMEIRO=0` no
+  `animar.mjs` (sem o estado com a vassoura); o sudoeste da orelha caída perdia a vassoura em alguns quadros e saiu.
+- **O tipo feminino (10/11/2026, ~483 gerações):** `mascote-f-moletom` com as mesmas poses, pela mesma receita (a edição de
+  `CORPOS['mascote-f-moletom']` em cima das poses do mascote; scripts no scratchpad: estados, transições e animações). As
+  reações do sofá só nas diagonais de frente (as de costas viravam o rosto nos outros corpos), o fliperama só nas de costas, o
+  chão em nordeste e leste. Em `falhas/`: o `surpreso-sofa` sudoeste (olhos amarelos), o `empolgado-fliperama` noroeste
+  (arcos de efeito) e o `varrendo` sudeste e nordeste (a vassoura sumia em alguns quadros). `corpo-novo.mjs` ganhou `base`: a
+  orelha caída feminina (`orelha-caida-f-moletom`) e a forte feminina (`musculoso-f`) saem do corpo deles, só as 8 rotações,
+  à espera da aprovação dele antes das poses.
+- **A forte feminina de regata curta (10/11/2026, ~449 gerações, saldo 849 → 400):** `musculoso-f-curta` com as mesmas poses e as
+  mesmas economias do `mascote-f-moletom` (scripts no scratchpad, a edição dela em cima das poses do mascote: "feminine fitness
+  athlete... cropped heather grey sports tank top that shows the toned belly, black bike shorts... exactly the same pose"). A
+  regata e o short batem com as rotações dela em todas as poses. **O cinza neutro:** em várias poses (poltrona, dormindo,
+  lendo) a regata veio em cinza NEUTRO (133,133,133) em vez do cinza malva das rotações (161,135,154); foi tingido para o malva
+  na mesma proporção de brilho antes da limpeza. **As classes de cor:** `classes_de_cor.py` dá a ela a regra da regata do
+  musculoso (o maior pedaço dos tons médios), e a barriga e as coxas ficam pelo. Na folha de estresse a regata saía BRANCA:
+  com o short sendo a maior parte da roupa, o tom de referência (a mediana) caía no preto e a regata estourava; agora, quando a
+  parte clara da roupa é minoria, a referência é ela (`referencias`; o musculoso sentado ganha o mesmo conserto, o moletom
+  não muda). E a auditoria dá folga maior à "roupa estável" de braços nus nas poses de braço para a frente (no aplaudir, a
+  regata some atrás dos braços com as classes certas). O boné de costas (nordeste e noroeste) trazia
+  um pedaço solto por fora da orelha: ficou só o pedaço maior da camada. Em `falhas/`: o `varrendo` nas 4 direções e de novo
+  em sudoeste e sudeste (o v3 desenhou o coelho PEGANDO a vassoura, ou um esfregão, em vez de varrer: a cena cai no parado),
+  o `empolgado-fliperama` noroeste (arcos de efeito) e o `surpreso-sofa` sudeste (olhos azuis). A conexão caiu (ECONNRESET)
+  no meio de alguns pedidos já pagos: `estado.mjs`, `animar.mjs` e `transicao.mjs` agora tentam de novo as LEITURAS (o POST
+  não, para não pagar duas vezes), e o que caiu foi baixado do PixelLab pelo id.
+- **Ainda falta (pede gerações):** `varrendo` do musculoso e da forte feminina; o `assistindo-sofa-fofo` (orelha: sudeste e nordeste; musculoso:
+  as de costas); e as direções de costas das reações no sofá que viravam o rosto; o `deitar-fluido` sudeste e o
+  `deitar-lendo-fluido` sudoeste da orelha caída, que ficaram curtos (o v3 levantava as orelhas).

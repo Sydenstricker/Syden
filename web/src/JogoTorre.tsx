@@ -30,13 +30,13 @@ export interface EstadoTorre {
   pista: string;
   partidaId: string;
   // o Solo
-  recordes?: { userId: number; nome: string; avatar: number | null; tempoMs: number }[];
-  meuAvatar?: number | null;
-  fantasmas?: { userId: number; nome: string; avatar: number | null; tempoMs: number; amostras: number[] }[];
+  recordes?: { userId: number; nome: string; avatar: number | string | null; tempoMs: number }[];
+  meuAvatar?: number | string | null;
+  fantasmas?: { userId: number; nome: string; avatar: number | string | null; tempoMs: number; amostras: number[] }[];
   rodada?: number;
   resultado?: { tempoMs: number; recorde: boolean; anterior: number | null } | null;
   // a sala
-  pilotos?: { userId: number; username: string; tempoMs: number | null; posicao: number | null; avatar: number | null }[];
+  pilotos?: { userId: number; username: string; tempoMs: number | null; posicao: number | null; avatar: number | string | null }[];
   prazo?: boolean;
 }
 
@@ -421,7 +421,7 @@ function TorreNaSala({
   const inscrito = jogador && pilotos.some((p) => p.userId === eu);
   const piloto = inscrito && !abriuNoMeio;
   const controles = useControles(piloto && !chegou && !fim);
-  const rivais = useRef(new Map<number, Rival & { avatar?: number | null }>());
+  const rivais = useRef(new Map<number, Rival & { avatar?: number | string | null }>());
   const def = torrePorId(estado.pista);
   const meuAvatar = pilotos.find((p) => p.userId === eu)?.avatar ?? null;
 

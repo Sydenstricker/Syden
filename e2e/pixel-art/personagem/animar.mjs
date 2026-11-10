@@ -18,8 +18,12 @@ const API = 'https://api.pixellab.ai/v2';
 const cab = { authorization: `Bearer ${process.env.PIXELLAB_KEY}`, 'content-type': 'application/json' };
 const saldo = async () => (await (await fetch(API + '/balance', { headers: cab })).json()).subscription.generations;
 const esperar = (ms) => new Promise((ok) => setTimeout(ok, ms));
+// a conexão às vezes cai no meio (ECONNRESET, 10/11/2026): as LEITURAS (GET) tentam de novo; o POST não, para não pagar duas vezes
+{ const _f = globalThis.fetch; globalThis.fetch = async (url, op) => { for (let t = 0; ; t++) { try { return await _f(url, op); } catch (e) { if ((op?.method && op.method !== 'GET') || t >= 5) throw e; await esperar(4000); } } }; }
 // PERSONAGEM=<id> anima a partir de um ESTADO (uma pose do mesmo mascote, estado.mjs): o "digitando" parte do sentado ao
 // computador.
+// PRIMEIRO=0 (v3) não guarda o desenho de partida como quadro 0: todos os quadros são gerados (o varrendo dos corpos novos parte
+// do coelho de pé, sem vassoura, e a vassoura tem de estar em TODOS os quadros).
 // COELHO=<corpo> anima um CORPO BASE (corpo-novo.mjs: um estado do mascote, com as mesmas animações); o padrão é o mascote.
 const COELHO = process.env.COELHO || 'mascote';
 const PERSONAGEM = process.env.PERSONAGEM || JSON.parse(fs.readFileSync(path.join(AQUI, COELHO, 'baixa-120', 'personagem.json'), 'utf8')).id;
@@ -36,7 +40,7 @@ const antes = await saldo();
 const arqGrupo = path.join(pasta, 'grupo.txt');
 const grupoAntigo = fs.existsSync(arqGrupo) ? fs.readFileSync(arqGrupo, 'utf8').trim() : null;
 const corpo0 = modelo.startsWith('texto:')
-  ? { character_id: PERSONAGEM, mode: 'v3', action_description: modelo.slice(6), animation_name: nome, frame_count: 8, directions: direcoes.split(','), keep_first_frame: true }
+  ? { character_id: PERSONAGEM, mode: 'v3', action_description: modelo.slice(6), animation_name: nome, frame_count: 8, directions: direcoes.split(','), keep_first_frame: process.env.PRIMEIRO !== '0' }
   : { character_id: PERSONAGEM, mode: 'template', template_animation_id: modelo, animation_name: nome, directions: direcoes.split(',') };
 const corpo = { ...corpo0, ...(grupoAntigo && { animation_group_id: grupoAntigo }) };
 const r = await fetch(API + '/characters/animations', { method: 'POST', headers: cab, body: JSON.stringify(corpo) });

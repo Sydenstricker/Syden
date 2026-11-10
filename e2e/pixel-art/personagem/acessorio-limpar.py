@@ -12,7 +12,7 @@ from PIL import Image
 from scipy import ndimage
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
-acc = sys.argv[1]; corpos = sys.argv[2:] or ['mascote', 'orelha-caida', 'musculoso']
+acc = sys.argv[1]; corpos = sys.argv[2:] or ['mascote', 'orelha-caida', 'musculoso', 'mascote-f-moletom', 'musculoso-f-curta']
 
 def matiz_sat_lum(a):
     rgb = a[..., :3].astype(float) / 255

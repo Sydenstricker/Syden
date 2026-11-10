@@ -9,6 +9,7 @@
  * pessoa, e a faixa do casco é a cor da roupa dele (as mesmas cores do kart, corrida/coresDosAvatares.ts).
  */
 import { CORES_DOS_AVATARES } from '../corrida/coresDosAvatares';
+import { coresDoJogador, type AvatarDoJogo } from '../coelho/cores';
 
 export const LADO = 48;
 /** O ponto da folha que fica sobre o chão (o meio da nave, onde vai a sombra). */
@@ -37,8 +38,8 @@ export interface FolhaDaNave {
 const MASCOTE: CoresDaNave = { casco: [236, 128, 52], faixa: [61, 43, 54], folha: [96, 176, 84], pelo: [236, 226, 240] };
 
 /** As cores da nave de quem tem o avatar `avatar` (o pelo e a roupa dele); sem avatar pronto, o mascote. */
-export function coresDoAvatar(avatar: number | null | undefined): CoresDaNave {
-  const c = avatar !== null && avatar !== undefined ? CORES_DOS_AVATARES[avatar] : undefined;
+export function coresDoAvatar(avatar: number | string | null | undefined): CoresDaNave {
+  const c = coresDoJogador(avatar);
   return c ? { ...MASCOTE, pelo: c.pelo, faixa: c.roupa } : MASCOTE;
 }
 

@@ -127,7 +127,7 @@ type ItemVivo =
 export interface LinhaDoBalao {
   userId: number;
   username: string;
-  avatar: number | null;
+  avatar: number | string | null;
   largada: number;
   baloes: number;
   estouros: number;
@@ -148,7 +148,7 @@ export function criarBalao({ agora = Date.now, aleatorio = Math.random }: { agor
       const semente = Math.floor(aleatorio() * 2 ** 31);
       const inscritos = [...naSala];
       const evento = `balao-${ctx.comunidade ?? 0}-${agora()}`;
-      const avatares = new Map(inscritos.map((id) => [id, db.findUserById(id)?.avatarPronto ?? null]));
+      const avatares = new Map(inscritos.map((id) => [id, db.avatarDoJogo(id)]));
       const jogadores = new Map<number, Jogador>(
         inscritos.map((id, i) => {
           const [x, y] = arena.largadas[i % arena.largadas.length];
@@ -539,7 +539,7 @@ function comecarSolo(ctx: Contexto, naSala: number[], agora: () => number): Jogo
   };
   ctx.agendar(PRAZO_DO_SOLO_MS, () => terminar(false));
   const robos = idsDosRobos(MAXIMO_DE_ROBOS).map((id) => ({ userId: id, username: nomeDoRobo(id) }));
-  const avatar = db.findUserById(quem)?.avatarPronto ?? null;
+  const avatar = db.avatarDoJogo(quem);
   const inteiro = (v: unknown): v is number => typeof v === 'number' && Number.isInteger(v);
   return {
     publico: () => ({ fase, solo: true, partidaId: evento, username: ctx.nome(quem), avatar, robos, resultadoDoSolo: resultado }),

@@ -66,6 +66,11 @@ export interface User {
   avatarAnimado: boolean;
   /** O coelho pronto escolhido (1 a 16, web/public/avatares/), ou null. Exclui a foto: é um OU outro. */
   avatarPronto: number | null;
+  /**
+   * O COELHO DA PESSOA (10/11/2026): a receita do criador ("SYD1-…", ver coelho-receita.ts): o corpo, as cores e os
+   * acessórios. É o coelho dela no quarto, no salão e, quando não há foto nem coelho pronto, o avatar. null = o mascote.
+   */
+  coelho: string | null;
   /** Nome da cor escolhida para o nome, ou null para a cor padrão do cargo. */
   nameColor: string | null;
   /** Nome do fundo escolhido para o cartão de perfil, ou null para o liso. */
@@ -97,7 +102,7 @@ export type UserRef = Pick<User, 'id' | 'username'> & {
 /** O que todos precisam saber de cada usuário para desenhar nome e avatar. */
 export type PublicUser = Pick<
   User,
-  'id' | 'username' | 'nomeDeExibicao' | 'avatarVersion' | 'avatarAnimado' | 'avatarPronto' | 'isAdmin' | 'isOwner' | 'moldura' | 'nameEffect' | 'nameFont' | 'vitrine' | 'acceptedIdeas' | 'selo'
+  'id' | 'username' | 'nomeDeExibicao' | 'avatarVersion' | 'avatarAnimado' | 'avatarPronto' | 'coelho' | 'isAdmin' | 'isOwner' | 'moldura' | 'nameEffect' | 'nameFont' | 'vitrine' | 'acceptedIdeas' | 'selo'
 >;
 
 /** Alguém dentro de uma comunidade: os dados públicos mais o cargo que tem ali. */
@@ -1057,6 +1062,10 @@ if (!db.prepare("SELECT 1 FROM kv WHERE key = 'avatar-animado-pelos-bytes'").get
 // O coelho pronto (10/10/2026): guarda-se o NÚMERO, e não a imagem, para o app desenhar o coelho na pose do
 // estado (dormindo, falando, ocupado). Uma foto enviada não tem pose; um coelho conhecido tem.
 addColumnIfMissing('users', 'avatar_pronto', 'INTEGER');
+// O coelho montado no criador (10/11/2026): a receita canônica, "SYD1-…" (coelho-receita.ts).
+addColumnIfMissing('users', 'coelho', 'TEXT');
+// "Meus coelhos" (10/11/2026): as receitas que a pessoa guardou com um nome, para voltar a elas. JSON [{ nome, codigo }].
+addColumnIfMissing('users', 'coelhos_salvos', 'TEXT');
 addColumnIfMissing('users', 'is_owner', 'INTEGER NOT NULL DEFAULT 0');
 addColumnIfMissing('users', 'accepted_ideas', 'INTEGER NOT NULL DEFAULT 0');
 // Enfeites do perfil: a cor do nome e o fundo do cartão de perfil. Os dois guardam só o NOME da opção
@@ -1643,7 +1652,7 @@ export function removeMember(communityId: number, userId: number) {
 export function listCommunityMembers(communityId: number): CommunityMember[] {
   const rows = db
     .prepare(
-      `SELECT u.id, u.username, u.nome_exibicao AS nomeDeExibicao, u.is_admin AS isAdmin, u.is_owner AS isOwner, u.avatar_version AS avatarVersion, u.avatar_animado AS avatarAnimado, u.avatar_pronto AS avatarPronto,
+      `SELECT u.id, u.username, u.nome_exibicao AS nomeDeExibicao, u.is_admin AS isAdmin, u.is_owner AS isOwner, u.avatar_version AS avatarVersion, u.avatar_animado AS avatarAnimado, u.avatar_pronto AS avatarPronto, u.coelho,
               u.name_color AS nameColor, u.banner, u.moldura, u.name_effect AS nameEffect, u.name_font AS nameFont, u.vitrine, u.accepted_ideas AS acceptedIdeas, m.role, m.silenciado_ate AS silenciadoAte, m.apelido
        FROM community_members m JOIN users u ON u.id = m.user_id
        WHERE m.community_id = ? ORDER BY u.id`,
@@ -1669,7 +1678,7 @@ export function communityIdsForUser(userId: number): number[] {
 }
 
 const userColumns =
-  'id, username, nome_exibicao AS nomeDeExibicao, is_admin AS isAdmin, is_owner AS isOwner, avatar_version AS avatarVersion, avatar_animado AS avatarAnimado, avatar_pronto AS avatarPronto, name_color AS nameColor, banner, moldura, name_effect AS nameEffect, name_font AS nameFont, vitrine, accepted_ideas AS acceptedIdeas, temporario_ate AS temporarioAte, ' +
+  'id, username, nome_exibicao AS nomeDeExibicao, is_admin AS isAdmin, is_owner AS isOwner, avatar_version AS avatarVersion, avatar_animado AS avatarAnimado, avatar_pronto AS avatarPronto, coelho, name_color AS nameColor, banner, moldura, name_effect AS nameEffect, name_font AS nameFont, vitrine, accepted_ideas AS acceptedIdeas, temporario_ate AS temporarioAte, ' +
   // O selo vestido, resolvido aqui mesmo. Guarda-se o NÚMERO da comunidade e não uma cópia do selo:
   // quando ela troca o dela, o de quem veste troca junto, sem ninguém precisar reescolher.
   '(SELECT selo_texto FROM communities c WHERE c.id = users.selo_comunidade) AS seloTexto, ' +
@@ -1685,6 +1694,7 @@ type UserRow = {
   avatarVersion: number | null;
   avatarAnimado: number | null;
   avatarPronto: number | null;
+  coelho: string | null;
   nameColor: string | null;
   banner: string | null;
   moldura: string | null;
@@ -1709,6 +1719,7 @@ function toUser(row: UserRow | undefined): User | undefined {
       avatarVersion: row.avatarVersion,
       avatarAnimado: row.avatarVersion !== null && row.avatarAnimado === 1,
       avatarPronto: row.avatarPronto ?? null,
+      coelho: row.coelho ?? null,
       nameColor: row.nameColor,
       banner: row.banner,
       moldura: row.moldura,
@@ -2195,8 +2206,50 @@ export const COELHOS_PRONTOS = 16;
 export function setAvatarPronto(userId: number, numero: number): User {
   guardarAvatarAnterior(userId);
   db.prepare('DELETE FROM avatars WHERE user_id = ?').run(userId);
-  db.prepare('UPDATE users SET avatar_version = NULL, avatar_pronto = ? WHERE id = ?').run(numero, userId);
+  // o coelho do criador sai junto: na cena, quem escolheu um pronto aparece com a receita dele (PRESETS, coelho-receita.ts)
+  db.prepare('UPDATE users SET avatar_version = NULL, avatar_pronto = ?, coelho = NULL WHERE id = ?').run(numero, userId);
   return findUserById(userId)!;
+}
+
+/**
+ * GUARDA O COELHO DO CRIADOR (10/11/2026). `codigo` já vem conferido e canônico (coelho-receita.ts). Com `pronto` (a
+ * pessoa escolheu uma das 16 sugestões e não mexeu nela), o avatar é o desenho pronto daquele número, como antes; sem ele,
+ * o avatar passa a ser o próprio coelho montado. Nos dois casos a foto de agora, se havia, vai para os anteriores.
+ */
+export function setCoelho(userId: number, codigo: string, pronto: number | null): User {
+  guardarAvatarAnterior(userId);
+  db.prepare('DELETE FROM avatars WHERE user_id = ?').run(userId);
+  db.prepare('UPDATE users SET avatar_version = NULL, avatar_pronto = ?, coelho = ? WHERE id = ?').run(pronto, codigo, userId);
+  return findUserById(userId)!;
+}
+
+/**
+ * O COELHO DE ALGUÉM NOS JOGOS (10/11/2026, pedido dele: "um ecossistema integrado"): a receita do criador ("SYD1-…"),
+ * quando há; senão o número do coelho pronto; senão null (o mascote). O site tira dela as cores do pelo e da roupa
+ * (web/src/coelho/cores.ts, coresDoJogador), e os jogos pintam o coelho com elas, como faziam com o número.
+ */
+export type AvatarDoJogo = number | string | null;
+export function avatarDoJogo(userId: number): AvatarDoJogo {
+  const u = findUserById(userId);
+  return u ? (u.coelho ?? u.avatarPronto ?? null) : null;
+}
+
+/** Quantos coelhos a pessoa guarda em "Meus coelhos". */
+export const COELHOS_SALVOS_MAXIMO = 12;
+
+export function coelhosSalvos(userId: number): { nome: string; codigo: string }[] {
+  const linha = db.prepare('SELECT coelhos_salvos AS v FROM users WHERE id = ?').get(userId) as { v: string | null } | undefined;
+  try {
+    const lista = JSON.parse(linha?.v ?? '[]') as unknown;
+    return Array.isArray(lista) ? (lista as { nome: string; codigo: string }[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+/** Guarda a lista já conferida (media-routes.ts confere cada código e cada nome). */
+export function guardarCoelhosSalvos(userId: number, lista: { nome: string; codigo: string }[]) {
+  db.prepare('UPDATE users SET coelhos_salvos = ? WHERE id = ?').run(lista.length ? JSON.stringify(lista) : null, userId);
 }
 
 // ---------- OS AVATARES ANTERIORES (09/11/2026, pedido dele) ----------
@@ -4493,7 +4546,7 @@ export interface RecordeDaCorrida {
   username: string;
   nomeDeExibicao: string | null;
   /** O coelho pronto que a pessoa usa de avatar (1 a 16), para correr com as cores dele; null = o mascote. */
-  avatarPronto: number | null;
+  avatarPronto: AvatarDoJogo;
   tempoMs: number;
   voltas: number[];
   em: string;
@@ -4503,7 +4556,7 @@ export interface RecordeDaCorrida {
 export function recordesDaCorrida(userId: number, pista: string): RecordeDaCorrida[] {
   const linhas = db
     .prepare(
-      `SELECT r.user_id AS userId, u.username AS username, u.nome_exibicao AS nomeDeExibicao, u.avatar_pronto AS avatarPronto, r.tempo_ms AS tempoMs,
+      `SELECT r.user_id AS userId, u.username AS username, u.nome_exibicao AS nomeDeExibicao, COALESCE(u.coelho, u.avatar_pronto) AS avatarPronto, r.tempo_ms AS tempoMs,
               r.voltas AS voltas, r.em AS em
        FROM corrida_recordes r JOIN users u ON u.id = r.user_id
        WHERE r.pista = ? AND (r.user_id = ? OR r.user_id IN (
@@ -7537,7 +7590,7 @@ export interface RecordeDoJato {
   userId: number;
   username: string;
   nomeDeExibicao: string | null;
-  avatarPronto: number | null;
+  avatarPronto: AvatarDoJogo;
   tempoMs: number;
   em: string;
 }
@@ -7546,7 +7599,7 @@ export interface RecordeDoJato {
 export function recordesDoJato(userId: number, pista: string): RecordeDoJato[] {
   return db
     .prepare(
-      `SELECT r.user_id AS userId, u.username AS username, u.nome_exibicao AS nomeDeExibicao, u.avatar_pronto AS avatarPronto,
+      `SELECT r.user_id AS userId, u.username AS username, u.nome_exibicao AS nomeDeExibicao, COALESCE(u.coelho, u.avatar_pronto) AS avatarPronto,
               r.tempo_ms AS tempoMs, r.em AS em
        FROM jato_recordes r JOIN users u ON u.id = r.user_id
        WHERE r.pista = ? AND (r.user_id = ? OR r.user_id IN (
@@ -7607,7 +7660,7 @@ export interface RecordeDoBarco {
   userId: number;
   username: string;
   nomeDeExibicao: string | null;
-  avatarPronto: number | null;
+  avatarPronto: AvatarDoJogo;
   tempoMs: number;
   em: string;
 }
@@ -7616,7 +7669,7 @@ export interface RecordeDoBarco {
 export function recordesDoBarco(userId: number, pista: string): RecordeDoBarco[] {
   return db
     .prepare(
-      `SELECT r.user_id AS userId, u.username AS username, u.nome_exibicao AS nomeDeExibicao, u.avatar_pronto AS avatarPronto,
+      `SELECT r.user_id AS userId, u.username AS username, u.nome_exibicao AS nomeDeExibicao, COALESCE(u.coelho, u.avatar_pronto) AS avatarPronto,
               r.tempo_ms AS tempoMs, r.em AS em
        FROM barco_recordes r JOIN users u ON u.id = r.user_id
        WHERE r.pista = ? AND (r.user_id = ? OR r.user_id IN (
@@ -7676,7 +7729,7 @@ export interface RecordeDaTorre {
   userId: number;
   username: string;
   nomeDeExibicao: string | null;
-  avatarPronto: number | null;
+  avatarPronto: AvatarDoJogo;
   tempoMs: number;
   em: string;
 }
@@ -7685,7 +7738,7 @@ export interface RecordeDaTorre {
 export function recordesDaTorre(userId: number, torre: string): RecordeDaTorre[] {
   return db
     .prepare(
-      `SELECT r.user_id AS userId, u.username AS username, u.nome_exibicao AS nomeDeExibicao, u.avatar_pronto AS avatarPronto,
+      `SELECT r.user_id AS userId, u.username AS username, u.nome_exibicao AS nomeDeExibicao, COALESCE(u.coelho, u.avatar_pronto) AS avatarPronto,
               r.tempo_ms AS tempoMs, r.em AS em
        FROM torre_recordes r JOIN users u ON u.id = r.user_id
        WHERE r.torre = ? AND (r.user_id = ? OR r.user_id IN (
@@ -7745,7 +7798,7 @@ export interface RecordeDosCarrinhos {
   userId: number;
   username: string;
   nomeDeExibicao: string | null;
-  avatarPronto: number | null;
+  avatarPronto: AvatarDoJogo;
   tempoMs: number;
   em: string;
 }
@@ -7754,7 +7807,7 @@ export interface RecordeDosCarrinhos {
 export function recordesDosCarrinhos(userId: number, pista: string): RecordeDosCarrinhos[] {
   return db
     .prepare(
-      `SELECT r.user_id AS userId, u.username AS username, u.nome_exibicao AS nomeDeExibicao, u.avatar_pronto AS avatarPronto,
+      `SELECT r.user_id AS userId, u.username AS username, u.nome_exibicao AS nomeDeExibicao, COALESCE(u.coelho, u.avatar_pronto) AS avatarPronto,
               r.tempo_ms AS tempoMs, r.em AS em
        FROM carrinhos_recordes r JOIN users u ON u.id = r.user_id
        WHERE r.pista = ? AND (r.user_id = ? OR r.user_id IN (
@@ -7815,7 +7868,7 @@ export interface RecordeDaGincana {
   userId: number;
   username: string;
   nomeDeExibicao: string | null;
-  avatarPronto: number | null;
+  avatarPronto: AvatarDoJogo;
   percurso: string;
   tempoMs: number;
   em: string;
@@ -7825,7 +7878,7 @@ export interface RecordeDaGincana {
 export function recordesDaGincana(userId: number): RecordeDaGincana[] {
   return db
     .prepare(
-      `SELECT r.user_id AS userId, u.username AS username, u.nome_exibicao AS nomeDeExibicao, u.avatar_pronto AS avatarPronto,
+      `SELECT r.user_id AS userId, u.username AS username, u.nome_exibicao AS nomeDeExibicao, COALESCE(u.coelho, u.avatar_pronto) AS avatarPronto,
               r.percurso AS percurso, r.tempo_ms AS tempoMs, r.em AS em
        FROM gincana_recordes r JOIN users u ON u.id = r.user_id
        WHERE r.user_id = ? OR r.user_id IN (

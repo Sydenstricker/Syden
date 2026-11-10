@@ -44,9 +44,9 @@ export interface OpcoesDaTorre {
   /** Sem coelho (quem assiste): a câmera vai atrás de quem está mais alto. */
   piloto: boolean;
   eu: number;
-  meuAvatar?: number | null;
-  fantasmas?: { amostras: number[]; avatar?: number | null }[];
-  rivais?: Map<number, Rival & { avatar?: number | null }>;
+  meuAvatar?: number | string | null;
+  fantasmas?: { amostras: number[]; avatar?: number | string | null }[];
+  rivais?: Map<number, Rival & { avatar?: number | string | null }>;
   contagem: number;
   calmo?: boolean;
   /** A pausa do ESC (pausaDosJogos.tsx), só no Solo: lida a cada quadro, como a janela sem foco. */
@@ -108,7 +108,7 @@ export function rodarTorre(o: OpcoesDaTorre): () => void {
     };
 
     const rivaisEm = (n: number) => {
-      const lista: { id: number; nome: string; avatar: number | null; pos: PosicaoDoRival }[] = [];
+      const lista: { id: number; nome: string; avatar: number | string | null; pos: PosicaoDoRival }[] = [];
       for (const [id, r] of o.rivais ?? []) {
         const pos = rivalNaTorre(r.posicoes, n);
         if (pos) lista.push({ id, nome: r.nome, avatar: r.avatar ?? null, pos });

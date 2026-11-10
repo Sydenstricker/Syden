@@ -15,6 +15,7 @@ import { pedirParaAbrirAoEntrar, usarMinijogo } from './minijogos';
 import { Salao, type AcoesDoSalao } from './Salao';
 import { usarCenaNova } from './cenaNova';
 import { ENDERECO_DO_SALAO, type PessoaNoSalao, SalaoNovo } from './SalaoNovo';
+import { receitaDe } from './coelho/receita';
 import { getTheme } from './theme';
 import { useEstiloDoQuarto } from './Graficos';
 import { SalaoComEstilo } from './SalaoComEstilo';
@@ -288,7 +289,7 @@ export function InicioDaComunidade({
             id: m.userId,
             nome: nomeDe(m),
             papel: m.screen ? 'transmitindo' : jogando.has(m.userId) ? 'jogando' : 'call',
-            avatar: membros.get(m.userId)?.avatarPronto ?? null,
+            avatar: membros.get(m.userId)?.coelho ?? membros.get(m.userId)?.avatarPronto ?? null,
           }))}
           aoVivo={
             noAr && {
@@ -309,6 +310,11 @@ export function InicioDaComunidade({
         >
         {salaoNovo ? (
           <SalaoNovo
+            // UM SALÃO POR COMUNIDADE (relato dele, 10/11/2026: "estou em duas comunidades e elas estão exatamente iguais;
+            // as alterações que faço em uma estão migrando para a outra?"): a página do salão recebe a rota da comunidade
+            // uma vez só, ao abrir. Sem a chave, trocar de comunidade mantinha a página da anterior, que continuava mostrando
+            // e GRAVANDO no salão dela.
+            key={community.id}
             community={community}
             acoes={acoes}
             naCall={naVoz.map(
@@ -316,6 +322,7 @@ export function InicioDaComunidade({
                 id: m.userId,
                 nome: nomeDe(m),
                 papel: m.screen ? 'transmitindo' : jogando.has(m.userId) ? 'jogando' : 'call',
+                coelho: receitaDe(membros.get(m.userId) ?? {}),
               }),
             )}
             aoVivo={

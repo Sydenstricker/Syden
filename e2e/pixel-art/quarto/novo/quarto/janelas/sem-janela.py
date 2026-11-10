@@ -6,7 +6,32 @@
 #   python e2e/pixel-art/quarto/novo/quarto/janelas/sem-janela.py   → janelas/sem-janela-<dia|noite|noite-abajur>.png
 import os
 import numpy as np
+
+
+def contorno_de_baixo(img):
+    """OS PONTINHOS DE MADEIRA NO CONTORNO DE BAIXO (10/11/2026, relato dele no quarto do Kanguru: "dois artefatos no chão"): a
+    pintura tem pixels cor de chão em (153,422), (181,436-437) e (52,323), NO contorno preto que fecha a laje por fora
+    (o (181,436), entre o contorno e o fundo, foi trocado à mão pela cor da laje do lado, em 10/11/2026). Na metade de
+    baixo, o pixel claro encostado no fundo (por cor, como em plantas.py) vira o mais escuro dos vizinhos (o contorno)."""
+    out = img.copy(); fundo = img[0, 0].astype(int); H, W = img.shape[:2]
+    e = np.abs(out[..., :3].astype(int) - fundo[:3]).max(2) <= 6
+    viz = np.zeros_like(e); viz[1:] |= e[:-1]; viz[:-1] |= e[1:]; viz[:, 1:] |= e[:, :-1]; viz[:, :-1] |= e[:, 1:]
+    lum = out[..., :3].astype(float) @ [0.299, 0.587, 0.114]
+    # só a MADEIRA (quente e média): o reboco creme da borda esquerda (lum ~200) é de verdade, a página põe a espessura ao lado
+    ruim = ~e & viz & (lum > 50) & (lum < 170) & (out[..., 0].astype(int) > out[..., 2].astype(int) + 25); ruim[: H // 2] = False
+    for y, x in zip(*np.nonzero(ruim)):
+        vs = [out[yy, xx] for yy in range(max(0, y - 1), min(H, y + 2)) for xx in range(max(0, x - 1), min(W, x + 2)) if not e[yy, xx] and not ruim[yy, xx]]
+        if vs: out[y, x] = min(vs, key=lambda p: float(p[:3].astype(float) @ [0.299, 0.587, 0.114]))
+    # e o quente SOLTO no escuro da laje (todos os 8 vizinhos escuros): vira a cor mais comum dos vizinhos
+    lum = out[..., :3].astype(float) @ [0.299, 0.587, 0.114]
+    for y in range(H // 2, H - 1):
+        for x in range(1, W - 1):
+            if 50 < lum[y, x] < 170 and int(out[y, x, 0]) > int(out[y, x, 2]) + 25 and (lum[y - 1:y + 2, x - 1:x + 2] < 45).sum() == 8:
+                cores = [tuple(out[yy, xx]) for yy in (y - 1, y, y + 1) for xx in (x - 1, x, x + 1) if (yy, xx) != (y, x)]
+                out[y, x] = max(set(cores), key=cores.count)
+    return out
 from PIL import Image
+from buracos import sem_buracos
 
 AQUI = os.path.dirname(os.path.abspath(__file__))
 Q = os.path.dirname(AQUI)
@@ -64,7 +89,7 @@ def piso(x, y):
     return y > chao(x) - 1 if x >= 256 else y > 226 + (256 - x) * (114 / 216) - 1
 
 dia = sem_janela_dia()
-Image.fromarray(dia.astype(np.uint8)).save(os.path.join(AQUI, 'sem-janela-dia.png'))
+Image.fromarray(sem_buracos(contorno_de_baixo(dia.astype(np.uint8)))).save(os.path.join(AQUI, 'sem-janela-dia.png'))
 noite = np.array(Image.open(os.path.join(Q, 'noite.png')).convert('RGB')).astype(float)
 abajur = np.array(Image.open(os.path.join(Q, 'noite-abajur.png')).convert('RGB')).astype(float)
 noite0 = noite.copy()
@@ -103,7 +128,7 @@ semLuar = noite.copy()
 semLuar[chaoM] = np.clip(dia * Rl, 0, 255)[chaoM]
 Rm = (noite / np.maximum(1, DIA))[:, ::-1]
 semLuar[paredeD] = np.clip(dia * Rm, 0, 255)[paredeD]
-Image.fromarray(semLuar.astype(np.uint8)).save(os.path.join(AQUI, 'sem-janela-noite.png'))
+Image.fromarray(contorno_de_baixo(semLuar.astype(np.uint8))).save(os.path.join(AQUI, 'sem-janela-noite.png'))
 os.makedirs(os.path.join(AQUI, 'original'), exist_ok=True)
 # O luar vira MÁSCARA + uma cor: os quadrados (onde a noite pintada passa bem da luz do lugar) e o ganho médio deles.
 # Assim ele anda com a janela sem levar o desenho das tábuas de onde foi pintado.
@@ -134,5 +159,5 @@ limpo = chaoM & ~fantasma
 RAf = borrar(RA * limpo[..., None], 6) / np.maximum(1e-4, gaussian_filter(limpo.astype(float), 6))[..., None]
 RA[fantasma] = RAf[fantasma]
 comAbajur = np.clip(semLuar * RA, 0, 255)
-Image.fromarray(comAbajur.astype(np.uint8)).save(os.path.join(AQUI, 'sem-janela-noite-abajur.png'))
+Image.fromarray(contorno_de_baixo(comAbajur.astype(np.uint8))).save(os.path.join(AQUI, 'sem-janela-noite-abajur.png'))
 print('ok')

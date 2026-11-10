@@ -355,7 +355,7 @@ export interface EstadoTabuleiro {
   dourada: number;
   preco: number;
   vez: number | null;
-  participantes: { userId: number; username: string; avatar: number | null; pos: number; cenouras: number; douradas: number; presente: boolean }[];
+  participantes: { userId: number; username: string; avatar: number | string | null; pos: number; cenouras: number; douradas: number; presente: boolean }[];
   /**
    * O último andar: o dado, as casas por onde passou (a primeira é a de onde saiu) e o que a casa fez. `antes`: as contas, as
    * posições e a dourada de quando a peça saiu, para a tela não mostrar o resultado antes de ela chegar.
@@ -416,7 +416,7 @@ export interface EstadoCidades {
   jurosDoResgate: number;
   lanceMinimo: number;
   vez: number | null;
-  jogadores: { userId: number; username: string; avatar: number | null; pos: number; dinheiro: number; patrimonio: number; falido: boolean; parado: number; presente: boolean; robo?: boolean }[];
+  jogadores: { userId: number; username: string; avatar: number | string | null; pos: number; dinheiro: number; patrimonio: number; falido: boolean; parado: number; presente: boolean; robo?: boolean }[];
   posses: { casa: number; dono: number; predios: number; hipotecada: boolean; aluguel: number }[];
   /** O último andar: os dados (null quando foi uma notícia que moveu) e as casas por onde passou (a primeira é a de onde saiu). */
   ultimo: { id: number; userId: number; dados: [number, number] | null; caminho: number[] } | null;
@@ -505,7 +505,7 @@ export interface EstadoBriga {
   onda: number;
   ondas: number;
   venceu: boolean;
-  jogadores: { userId: number; username: string; avatar: number | null; pontos: number; vidas: number }[];
+  jogadores: { userId: number; username: string; avatar: number | string | null; pontos: number; vidas: number }[];
   resultado: { userId: number; username: string; pontos: number; golpes: number; nocautes: number }[] | null;
   partidaId: string;
 }

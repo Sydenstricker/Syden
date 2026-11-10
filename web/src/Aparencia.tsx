@@ -1,9 +1,11 @@
-import { Check, ChevronLeft, ChevronRight, Gift, Lock, Music, Shirt, Sparkles, X } from 'lucide-react';
+import { Check, Gift, Lock, Music, Shirt, Sparkles, X } from 'lucide-react';
 import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { api, mediaUrl } from './api';
-import { Avatar, enderecoDoCoelhoPronto, enderecoDoCorpoPronto, FotoDoAvatar } from './Avatar';
+import { Avatar, enderecoDoCoelhoPronto, FotoDoAvatar } from './Avatar';
 import { nomeDe, useDirectory } from './directory';
 import { primeiraForma } from './minijogos';
+import { CriadorDoCoelho } from './coelho/CriadorDoCoelho';
+import { LinhaDoPersonagem, PixelGrande } from './personagemUi';
 import { chave, useT } from './i18n';
 import { acharInsignia } from './insignias';
 import { Insignia } from './Medalha';
@@ -504,61 +506,12 @@ export function Aparencia({
   );
 }
 
-/** O mascote, para quem ainda não escolheu coelho nem foto (web/public/guarda-roupa/mascote.png, de personagem/mascote: o do PixelLab desde 09/11/2026). */
-const MASCOTE = `${import.meta.env.BASE_URL}guarda-roupa/mascote.png`;
 /** Os bichos do quarto (cores.pet na arrumação; a página do quarto conhece os mesmos). 'nenhum' é guardado. */
 const BICHOS = ['gato', 'nenhum'] as const;
 type Bicho = (typeof BICHOS)[number];
 const FIGURA_DO_BICHO: Record<Bicho, string | null> = { gato: `${import.meta.env.BASE_URL}guarda-roupa/gato-sentado.png`, nenhum: null };
 const NOME_DO_BICHO: Record<Bicho, string> = { gato: chave('Gato'), nenhum: chave('Sem bicho') };
 const NOME_DO_PET_MAXIMO = 20; // o mesmo do servidor (quarto.ts)
-const COELHOS = 16;
-
-/**
- * PIXEL ART NA FOLHA: ampliada (ou reduzida) por um número INTEIRO, a maior que cabe na altura, sem suavizar (escala quebrada borra). A largura é
- * posta ao carregar, quando se sabe o tamanho do desenho.
- */
-function PixelGrande({ src, altura, className }: { src: string; altura: number; className?: string }) {
-  return (
-    <img
-      className={`pixel-grande${className ? ' ' + className : ''}`}
-      src={src}
-      alt=""
-      draggable={false}
-      onLoad={(e) => {
-        const img = e.currentTarget;
-        // o desenho já ampliado (o busto do 16 tem 256 px) desce por um divisor inteiro, que também não borra
-        const escala = img.naturalHeight <= altura ? Math.floor(altura / img.naturalHeight) : 1 / Math.ceil(img.naturalHeight / altura);
-        img.style.width = `${img.naturalWidth * escala}px`;
-        img.style.height = `${img.naturalHeight * escala}px`;
-      }}
-    />
-  );
-}
-
-/**
- * UMA LINHA DO PERSONAGEM: um atributo com as setas ‹ › dos dois lados, como nos jogos de criar personagem (o desenho
- * dele). Hoje só existem as linhas que têm opções de verdade: o coelho pronto e o bicho. QUANDO A CUSTOMIZAÇÃO CHEGAR (o
- * personagem montado: cores, acessórios), cada atributo é mais uma <LinhaDoPersonagem> embaixo da do coelho; linha sem
- * opção não aparece — a tela não afirma o que não é.
- */
-function LinhaDoPersonagem({ rotulo, valor, anterior, proximo, ocupado }: { rotulo: string; valor: string; anterior: () => void; proximo: () => void; ocupado?: boolean }) {
-  const t = useT();
-  return (
-    <div className="personagem-linha" role="group" aria-label={rotulo}>
-      <button type="button" className="personagem-seta" onClick={anterior} disabled={ocupado} aria-label={`${t('Anterior')}: ${rotulo}`} title={t('Anterior')}>
-        <ChevronLeft size={22} aria-hidden="true" />
-      </button>
-      <span className="personagem-valor" aria-live="polite">
-        <small>{rotulo}</small>
-        <strong>{valor}</strong>
-      </span>
-      <button type="button" className="personagem-seta" onClick={proximo} disabled={ocupado} aria-label={`${t('Próximo')}: ${rotulo}`} title={t('Próximo')}>
-        <ChevronRight size={22} aria-hidden="true" />
-      </button>
-    </div>
-  );
-}
 
 /**
  * A FOLHA DO AVATAR (o desenho dele): o personagem grande com as setas de cada atributo; embaixo, o bicho do quarto com as
@@ -568,45 +521,10 @@ function FolhaDoAvatar({ user, editorDaFoto, aoAbrirPacotes }: { user: User; edi
   const t = useT();
   const { members } = useDirectory();
   const eu = members.get(user.id);
-  // O AVATAR QUE ESTÁ VALENDO (o do servidor, pelo diretório): um coelho pronto, uma foto (ou GIF), ou nada (o mascote).
+  // O AVATAR QUE ESTÁ VALENDO (o do servidor, pelo diretório): uma foto (ou GIF), um coelho pronto, o coelho montado, ou nada.
   const atualPronto = eu?.avatarPronto ?? null;
-  const atualFoto = !atualPronto && (eu?.avatarVersion ?? null) !== null;
-  // O CARROSSEL SÓ MOSTRA (10/11/2026, relato dele: "durante a alternância entre avatares, eu perdi de novo o meu referencial
-  // antigo de GIF; se eu não quiser nenhum dos oferecidos, queria continuar com o meu atual"). Antes, cada seta já trocava o
-  // avatar no servidor: a primeira seta tirava o GIF (que ia para os anteriores, lá embaixo) e o carrossel nunca mais o
-  // mostrava. Agora a escolha fica na tela até o "Salvar". 0 é o ATUAL (a foto ou o GIF, animado, ou o mascote), a primeira
-  // posição; 1 a 16, os coelhos prontos. Quem já usa um coelho começa nele, que é o atual.
-  const [escolha, setEscolha] = useState(atualPronto ?? 0);
-  const [salvando, setSalvando] = useState(false);
+  const atualFoto = (eu?.avatarVersion ?? null) !== null;
   const [erro, setErro] = useState<string | null>(null);
-  // o avatar mudou (salvo aqui, pelo editor da foto ou por um anterior): a tela volta ao atual
-  useEffect(() => setEscolha(atualPronto ?? 0), [atualPronto, eu?.avatarVersion]);
-  const mudou = escolha !== (atualPronto ?? 0);
-
-  // OS COELHOS PRONTOS (10/10/2026; desenhos do PixelLab em web/public/avatares/): ESCOLHER UM GUARDA SÓ O NÚMERO
-  // (/api/me/avatar-pronto), e não a imagem, para o app saber qual coelho é e desenhá-lo na pose do estado da pessoa
-  // (dormindo quando ausente, falando na call; ver Avatar.tsx). Eram uma grade em Minha conta; viraram as setas (09/11/2026).
-  function trocarCoelho(passo: number) {
-    // sem coelho atual, a posição 0 (o atual) entra na volta; com um coelho, o atual já é um dos 16
-    const posicoes = atualPronto ? COELHOS : COELHOS + 1;
-    const indice = atualPronto ? escolha - 1 : escolha;
-    const novo = (indice + passo + posicoes) % posicoes;
-    setErro(null);
-    setEscolha(atualPronto ? novo + 1 : novo);
-  }
-  async function salvarCoelho() {
-    if (!mudou || escolha < 1) return;
-    setErro(null);
-    setSalvando(true);
-    try {
-      // o servidor leva a foto (ou o GIF) de agora para os anteriores, de onde se volta a ela
-      await api('/api/me/avatar-pronto', { method: 'PUT', body: { numero: escolha } });
-    } catch (e) {
-      setErro((e as Error).message);
-    } finally {
-      setSalvando(false);
-    }
-  }
 
   // O BICHO DO QUARTO mora na arrumação do quarto (cores.pet e nomeDoPet), e muda por PUT /api/quarto/pet.
   const [bicho, setBicho] = useState<Bicho | null>(null);
@@ -646,38 +564,12 @@ function FolhaDoAvatar({ user, editorDaFoto, aoAbrirPacotes }: { user: User; edi
     void guardarBicho({ pet: novo });
   }
 
-  const corpo = escolha > 0 ? enderecoDoCorpoPronto(escolha) : null;
   const figuraDoBicho = bicho ? FIGURA_DO_BICHO[bicho] : null;
-  const rotuloDoCoelho = primeiraForma(t('Coelho'));
-  const valorDoCoelho =
-    escolha === 0 ? t('Atual') : `${algarismos(escolha)} / ${algarismos(COELHOS)}${escolha === atualPronto ? ` · ${t('Atual')}` : ''}`;
 
   return (
     <>
-      <section className="personagem">
-        <div className="personagem-palco">
-          {corpo ? (
-            <PixelGrande key={corpo} src={corpo} altura={180} className="personagem-coelho" />
-          ) : escolha > 0 ? (
-            <PixelGrande key={escolha} src={enderecoDoCoelhoPronto(escolha)} altura={160} className="personagem-coelho" />
-          ) : atualFoto ? (
-            // o atual é a foto ou o GIF: grande assim, o GIF anima sempre (FotoDoAvatar)
-            <Avatar name={nomeDe(user)} userId={user.id} size={144} />
-          ) : (
-            <PixelGrande src={MASCOTE} altura={180} className="personagem-coelho" />
-          )}
-        </div>
-        <div className="personagem-linhas">
-          <LinhaDoPersonagem rotulo={rotuloDoCoelho} valor={valorDoCoelho} anterior={() => trocarCoelho(-1)} proximo={() => trocarCoelho(1)} ocupado={salvando} />
-          {mudou && (
-            <div className="personagem-salvar">
-              <button type="button" className="btn-primary" disabled={salvando} aria-label={`${t('Salvar')}: ${rotuloDoCoelho}`} onClick={() => void salvarCoelho()}>
-                {t('Salvar')}
-              </button>
-            </div>
-          )}
-        </div>
-      </section>
+      {/* O CRIADOR (10/11/2026): o coelho em camadas, com as 16 sugestões; ver coelho/CriadorDoCoelho.tsx */}
+      <CriadorDoCoelho eu={eu} avatarAtual={<Avatar name={nomeDe(user)} userId={user.id} size={56} />} />
 
       <section className="personagem personagem-bicho">
         <div className="personagem-palco pequeno">{figuraDoBicho && <PixelGrande key={figuraDoBicho} src={figuraDoBicho} altura={96} />}</div>

@@ -52,7 +52,7 @@ export const TIPOS_DO_BALAO = ['repolho', 'lama', 'cenoura', 'alface', 'estourou
 export interface Participante {
   id: number;
   nome: string;
-  avatar: number | null;
+  avatar: number | string | null;
   /** O lugar na largada (e a cor dos balões). */
   largada: number;
 }

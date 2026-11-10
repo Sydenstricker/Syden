@@ -52,7 +52,7 @@ export interface PosicaoNaSala {
 
 export interface RivalDoBarco {
   nome: string;
-  avatar?: number | null;
+  avatar?: number | string | null;
   posicoes: PosicaoNaSala[];
 }
 
@@ -68,8 +68,8 @@ export interface OpcoesDoLaco {
   pista: DefinicaoDoBarco;
   /** Sem barco (quem assiste): a câmera vai atrás de quem está na frente. */
   piloto: boolean;
-  meuAvatar?: number | null;
-  fantasmas?: { amostras: number[]; avatar: number | null }[];
+  meuAvatar?: number | string | null;
+  fantasmas?: { amostras: number[]; avatar: number | string | null }[];
   rivais?: Map<number, RivalDoBarco>;
   /** Passos de semáforo antes do verde (3 s = 180). */
   contagem: number;
@@ -159,7 +159,7 @@ export function rodarBarco(o: OpcoesDoLaco): () => void {
   };
 
   const rivaisEm = (n: number) => {
-    const lista: { id: number; nome: string; avatar: number | null; pos: PosicaoNaSala }[] = [];
+    const lista: { id: number; nome: string; avatar: number | string | null; pos: PosicaoNaSala }[] = [];
     for (const [id, r] of o.rivais ?? []) {
       const pos = rivalEm(r.posicoes, n);
       if (pos) {

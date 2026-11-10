@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { Trophy } from 'lucide-react';
 import { ComandosDoJogo } from './ComandosDosJogos';
-import { CORES_DOS_AVATARES } from './corrida/coresDosAvatares';
+import { coresDoJogador, type AvatarDoJogo } from './coelho/cores';
 import { useT } from './i18n';
 import { comandoDaPausa, TelaDePausa, usePausaComEsc } from './pausaDosJogos';
 import { tocar } from './somDosJogos';
@@ -25,7 +25,7 @@ export interface PessoaDoFutebol {
   userId: number;
   username: string;
   robo: boolean;
-  avatar: number | null;
+  avatar: number | string | null;
   slot: number;
 }
 
@@ -47,7 +47,7 @@ export interface EstadoFutebol {
   formato?: number | null;
   resultadoDoSolo?: { formato: number; gols: number; contra: number } | null;
   username?: string;
-  avatar?: number | null;
+  avatar?: number | string | null;
   robos?: { userId: number; username: string }[];
 }
 
@@ -68,7 +68,7 @@ declare global {
 }
 
 const PELO_DO_MASCOTE: [number, number, number] = [250, 241, 212];
-const peloDe = (avatar: number | null | undefined): [number, number, number] => (avatar && CORES_DOS_AVATARES[avatar]?.pelo) || PELO_DO_MASCOTE;
+const peloDe = (avatar: number | string | null | undefined): [number, number, number] => coresDoJogador(avatar)?.pelo || PELO_DO_MASCOTE;
 const FORMATO_GUARDADO = 'syden:futebolFormato';
 
 export function JogoFutebol({ estado, eu, jogador, agir, socket = null, channelId = 0 }: Props) {
@@ -515,7 +515,7 @@ function PartidaSolo({
   formato: number;
   eu: number;
   nome: string;
-  avatar: number | null;
+  avatar: number | string | null;
   robos: { userId: number; username: string }[];
   aoTerminar: (m: Mundo) => void;
 }) {

@@ -31,7 +31,7 @@ interface Recorde {
   userId: number;
   username: string;
   nomeDeExibicao: string | null;
-  avatarPronto?: number | null;
+  avatarPronto?: number | string | null;
   tempoMs: number;
   voltas: number[];
 }
@@ -276,7 +276,7 @@ export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void
   const [placar, setPlacar] = usePlacar();
   const [vendoTrofeus, setVendoTrofeus] = useState(false);
   /** O meu avatar pronto (o servidor diz junto dos recordes): as cores do meu kart. */
-  const [meuAvatar, setMeuAvatar] = useState<number | null>(null);
+  const [meuAvatar, setMeuAvatar] = useState<number | string | null>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const controles = useControles(fase === 'correndo');
   // ESC pausa (só aqui, no Solo: na sala o relógio é o de todos)
@@ -287,7 +287,7 @@ export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void
   const pista = def.id;
 
   const lerRecordes = (id = pista) =>
-    api<{ recordes: Recorde[]; meuAvatar?: number | null }>(`/api/corrida/${id}`)
+    api<{ recordes: Recorde[]; meuAvatar?: number | string | null }>(`/api/corrida/${id}`)
       .then((r) => {
         setRecordes(r.recordes);
         setMeuAvatar(r.meuAvatar ?? null);
@@ -325,7 +325,7 @@ export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void
               .catch(() => null),
           ),
         )
-      ).filter((a): a is { amostras: number[]; avatar: number | null } => a !== null);
+      ).filter((a): a is { amostras: number[]; avatar: number | string | null } => a !== null);
       if (!vivo || !canvas.current) return;
       parar = rodarCorrida({
         canvas: canvas.current,
@@ -494,7 +494,7 @@ export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void
  * saiu, que vem depois, sem posição nem medalha (revisão independente, 03/11/2026: a tela dava a medalha pela ordem da
  * lista, com quem saiu dentro dela, e o troféu guardado era outro).
  */
-type LinhaDaCorrida = { userId: number; username: string; tempoMs: number | null; voltas?: number[]; avatar?: number | null; posicao?: number | null };
+type LinhaDaCorrida = { userId: number; username: string; tempoMs: number | null; voltas?: number[]; avatar?: number | string | null; posicao?: number | null };
 
 /** A marca do lugar no fim: a medalha só para quem tem resultado, entre 2 ou mais que ficaram (como o troféu); senão o número. */
 const marcaDoLugar = (posicao: number | null | undefined, comResultado: boolean, ficaram: number) =>

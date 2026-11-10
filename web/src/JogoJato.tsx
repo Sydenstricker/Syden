@@ -30,13 +30,13 @@ export interface EstadoJato {
   robos: number;
   partidaId: string;
   // o Solo
-  recordes?: { userId: number; nome: string; avatar: number | null; tempoMs: number }[];
-  meuAvatar?: number | null;
-  fantasmas?: { userId: number; nome: string; avatar: number | null; tempoMs: number; amostras: number[] }[];
+  recordes?: { userId: number; nome: string; avatar: number | string | null; tempoMs: number }[];
+  meuAvatar?: number | string | null;
+  fantasmas?: { userId: number; nome: string; avatar: number | string | null; tempoMs: number; amostras: number[] }[];
   rodada?: number;
   resultado?: { tempoMs: number | null; voltas: number[]; recorde: boolean; anterior: number | null; explodiu: boolean } | null;
   // a sala
-  pilotos?: { userId: number; username: string; tempoMs: number | null; voltas: number[]; posicao: number | null; explodiu: boolean; avatar: number | null }[];
+  pilotos?: { userId: number; username: string; tempoMs: number | null; voltas: number[]; posicao: number | null; explodiu: boolean; avatar: number | string | null }[];
   prazo?: boolean;
 }
 

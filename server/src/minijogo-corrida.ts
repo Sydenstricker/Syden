@@ -154,7 +154,7 @@ export function criarCorrida(agora: () => number = Date.now): Definicao {
       /** Quem começou a partida: só eles correm (a copa inteira), e quem sai da sala fica sem pontos dali em diante. */
       const inscritos = [...naSala];
       /** O coelho de cada um (o avatar pronto), lido uma vez: cada kart corre com as cores do seu. */
-      const avatares = new Map(inscritos.map((id) => [id, db.findUserById(id)?.avatarPronto ?? null]));
+      const avatares = new Map(inscritos.map((id) => [id, db.avatarDoJogo(id)]));
       let pilotos = new Map<number, Piloto>();
       /** Os itens desta corrida que o servidor carimbou, e os que já acertaram alguém: "acertou" só vale para um item de
        * verdade, uma vez (revisão de 03/11/2026: um "acertou" inventado sumia com o item dos outros). */

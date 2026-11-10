@@ -148,7 +148,7 @@ interface Balde {
 
 interface Jogador {
   userId: number;
-  avatar: number | null;
+  avatar: number | string | null;
   x: number;
   y: number;
   lado: 1 | -1;
@@ -172,7 +172,7 @@ interface Jogador {
 
 export interface ServicosDoChefe {
   /** O coelho pronto do avatar da pessoa (ou null: o mascote). */
-  avatarDe(userId: number): number | null;
+  avatarDe(userId: number): number | string | null;
   guardarTrofeu(t: { userId: number; evento: string; communityId: number; pista: string; posicao: number; tempoMs: number | null; pontos: number | null; rivais: number[] }): void;
 }
 

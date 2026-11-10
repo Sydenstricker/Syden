@@ -213,7 +213,7 @@ function Palco({
   useTeclado(jogador, cmd);
 
   // os nomes e os avatares vêm do estado (o quadro só tem números)
-  const pessoas = useRef(new Map<number, { nome: string; avatar: number | null }>());
+  const pessoas = useRef(new Map<number, { nome: string; avatar: number | string | null }>());
   for (const j of estado.jogadores) pessoas.current.set(j.userId, { nome: j.username, avatar: j.avatar });
 
   useEffect(() => {

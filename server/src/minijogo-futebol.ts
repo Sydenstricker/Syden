@@ -83,7 +83,7 @@ interface Balde {
 
 interface Pessoa {
   userId: number;
-  avatar: number | null;
+  avatar: number | string | null;
   ultimaEm: number;
   credito: number;
   /** O relógio do site (ms) da última posição, devolvido no quadro: o site mede o tempo de ida e volta. */
@@ -157,7 +157,7 @@ export function criarFutebol({
           userId,
           {
             userId,
-            avatar: db.findUserById(userId)?.avatarPronto ?? null,
+            avatar: db.avatarDoJogo(userId),
             ultimaEm: agora(),
             credito: ACUMULO,
             eco: 0,
@@ -529,7 +529,7 @@ function comecarSolo(ctx: Contexto, naSala: number[], corpo: Record<string, unkn
   const inteiro = (v: unknown): v is number => typeof v === 'number' && Number.isInteger(v);
   // o site joga a partida com os robôs dele: os nomes vão daqui (os mesmos do resto do Solo), e o avatar de quem joga
   const nomesDosRobos = idsDosRobos(MAXIMO_DE_ROBOS).map((id) => ({ userId: id, username: nomeDoRobo(id) }));
-  const avatar = db.findUserById(quem)?.avatarPronto ?? null;
+  const avatar = db.avatarDoJogo(quem);
   return {
     publico() {
       return { fase, solo: true, formato: formatoInicial, resultadoDoSolo: resultado, username: ctx.nome(quem), avatar, robos: nomesDosRobos, partidaId: evento };

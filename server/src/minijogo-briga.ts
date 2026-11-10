@@ -209,7 +209,7 @@ interface Ataque {
 
 interface Jogador {
   userId: number;
-  avatar: number | null;
+  avatar: number | string | null;
   x: number;
   y: number;
   z: number;
@@ -342,7 +342,7 @@ export function criarBriga({
           userId,
           {
             userId,
-            avatar: db.findUserById(userId)?.avatarPronto ?? null,
+            avatar: db.avatarDoJogo(userId),
             x: 40 + k * 14,
             y: 14 + k * 11,
             z: 0,

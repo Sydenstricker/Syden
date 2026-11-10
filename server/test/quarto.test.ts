@@ -168,6 +168,17 @@ describe('visitar', () => {
     assert.equal(r.json().dono.username, 'ana');
   });
 
+  it('o coelho de quem mora vem junto (o da cena: a receita do criador e o coelho pronto)', async () => {
+    const codigo = 'SYD1-' + Buffer.from(JSON.stringify({ c: 'orelha-caida', h: 'bone', hc: '#2f6fe0' })).toString('base64').replace(/=+$/, '');
+    assert.equal((await ana('PUT', '/api/me/coelho', { codigo })).statusCode, 200);
+    const visita = (await zeca('GET', `/api/quarto/${anaId}`)).json().dono;
+    assert.equal(visita.coelho, codigo);
+    assert.ok('avatarPronto' in visita);
+    const meu = (await ana('GET', '/api/quarto')).json();
+    assert.equal(meu.coelho, codigo);
+    assert.ok('avatarPronto' in meu);
+  });
+
   it('quem não arrumou o quarto: quem visita vê o de fábrica', async () => {
     const r = await ana('GET', `/api/quarto/${zecaId}`);
     assert.equal(r.statusCode, 200);

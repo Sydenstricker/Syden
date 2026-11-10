@@ -52,7 +52,7 @@ export function criarGolfe3D({ agora = Date.now }: { agora?: () => number } = {}
       const duracao = solo ? BURACO_SOLO_MS : BURACO_MS;
       const evento = `golfe3d-${ctx.comunidade ?? 0}-${agora()}`;
       // o coelho de cada um, com as cores do avatar pronto (lido uma vez, na largada)
-      const avatares = new Map(inscritos.map((id) => [id, db.findUserById(id)?.avatarPronto ?? null]));
+      const avatares = new Map(inscritos.map((id) => [id, db.avatarDoJogo(id)]));
       let indice = 0;
       let fase: 'preparando' | 'jogando' | 'placar' | 'fim' = 'preparando';
       let inicio = 0;

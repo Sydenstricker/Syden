@@ -8,6 +8,7 @@ import { QuartoComEstilo } from './QuartoComEstilo';
 import { useT } from './i18n';
 import { Mascote } from './Mascote';
 import { ENDERECO_DO_QUARTO } from './QuartoNovo';
+import { receitaDe } from './coelho/receita';
 import { Trofeus } from './Trofeus';
 
 /**
@@ -30,7 +31,8 @@ export function VisitaAoQuarto({ dono, aoFechar }: { dono: { id: number; nome: s
   // tema de quem visita, com o coelho nas cores do avatar de quem mora, se ele está na comunidade aberta (senão, o mascote). A porta
   // é conferida do mesmo jeito.
   const estilo = useEstiloDoQuarto();
-  const avatar = useDirectory().members.get(dono.id)?.avatarPronto ?? null;
+  const membroDono = useDirectory().members.get(dono.id);
+  const avatar = membroDono?.coelho ?? membroDono?.avatarPronto ?? null;
   useEffect(() => {
     // trocou de estilo: a página do quarto (se voltar) nasce de novo e precisa da conta outra vez
     setPronto(false);
@@ -53,6 +55,8 @@ export function VisitaAoQuarto({ dono, aoFechar }: { dono: { id: number; nome: s
       if (e.data.arrumado) setArrumado(true);
       if (e.data.visitaFalhou) setErro(e.data.visitaFalhou === 'fechado' ? 'fechado' : 'falhou');
       if (e.data.acao === 'trofeu') setTrofeus(true);
+      // o coelho de quem mora, que o servidor manda com o quarto: a página o desenha pela receita
+      if (e.data.coelhoDe) enviar({ coelho: receitaDe(e.data.coelhoDe) });
     };
     window.addEventListener('message', ouvir);
     return () => window.removeEventListener('message', ouvir);

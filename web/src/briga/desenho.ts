@@ -7,7 +7,8 @@
  * Nada aqui é de outro jogo: os bichos são formas simples, com a preparação de cada golpe bem visível (é ela que paga os
  * 200 ms de internet).
  */
-import { CORES_DOS_AVATARES, MOLETOM_DO_MASCOTE, PELO_DO_MASCOTE } from '../corrida/coresDosAvatares';
+import { MOLETOM_DO_MASCOTE, PELO_DO_MASCOTE } from '../corrida/coresDosAvatares';
+import { coresDoJogador, type AvatarDoJogo } from '../coelho/cores';
 import { bicho } from './fases';
 import type { Acao, EstadoDoInimigo, TipoDeInimigo } from './regras';
 
@@ -164,11 +165,11 @@ export function desenhoDoCoelho(acao: Acao, t: number, subindo: boolean): number
 }
 
 /** A folha com as cores do avatar (a troca de paleta do kart, a mesma tabela). Guardada por avatar. */
-const folhas = new Map<number, HTMLCanvasElement>();
+const folhas = new Map<number | string, HTMLCanvasElement>();
 const lum = (r: number, g: number, b: number) => 0.3 * r + 0.59 * g + 0.11 * b;
-export function folhaDe(base: HTMLImageElement, avatar: number | null): CanvasImageSource | null {
+export function folhaDe(base: HTMLImageElement, avatar: number | string | null): CanvasImageSource | null {
   if (!base.complete || !base.naturalWidth) return null;
-  const cores = avatar ? CORES_DOS_AVATARES[avatar] : undefined;
+  const cores = coresDoJogador(avatar);
   if (!cores) return base;
   const pronta = folhas.get(avatar!);
   if (pronta) return pronta;

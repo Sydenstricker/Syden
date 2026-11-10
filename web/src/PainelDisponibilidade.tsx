@@ -27,17 +27,17 @@ const porcento = (n: number | null) => (n === null ? '—' : `${n.toFixed(2)}%`)
  */
 export function PainelDisponibilidade() {
   const t = useT();
-  const [dados, setDados] = useState<Disponibilidade | null | 'carregando'>('carregando');
+  const [dados, setDados] = useState<Disponibilidade[] | null | 'carregando'>('carregando');
 
   useEffect(() => {
-    api<Disponibilidade | null>('/api/status/uptime')
+    api<Disponibilidade[] | null>('/api/status/uptime')
       .then(setDados)
       .catch(() => setDados(null));
   }, []);
 
   // Sem chave configurada (ou sem resposta), a seção não existe — melhor do que mostrar zeros, que
   // pareceriam queda total.
-  if (dados === 'carregando' || dados === null) return null;
+  if (dados === 'carregando' || dados === null || dados.length === 0) return null;
 
   return (
     <section className="usage-card">
@@ -48,37 +48,43 @@ export function PainelDisponibilidade() {
         Medido pelo UptimeRobot, que pede uma resposta ao Syden a cada 5 minutos de um lugar fora do servidor.
       </p>
 
-      <p className={`disponibilidade-agora ${dados.situacao === 'no ar' ? 'boa' : 'ruim'}`}>
-        <span className="bolinha" aria-hidden="true" />
-        {dados.situacao === 'no ar' ? 'No ar agora' : `Situação: ${dados.situacao}`}
-      </p>
+      {/* Um bloco por monitor (10/11/2026): o site e a API caem separados, e o nome diz qual. */}
+      {dados.map((m) => (
+        <div key={m.nome} className="disponibilidade-monitor">
+          {dados.length > 1 && <h4 className="disponibilidade-titulo">{m.nome}</h4>}
+          <p className={`disponibilidade-agora ${m.situacao === 'no ar' ? 'boa' : 'ruim'}`}>
+            <span className="bolinha" aria-hidden="true" />
+            {m.situacao === 'no ar' ? 'No ar agora' : `Situação: ${m.situacao}`}
+          </p>
 
-      <div className="painel-numeros">
-        {[
-          { rotulo: 'Últimas 24 h', valor: dados.umDia },
-          { rotulo: '7 dias', valor: dados.seteDias },
-          { rotulo: '30 dias', valor: dados.trintaDias },
-        ].map((n) => (
-          <div key={n.rotulo}>
-            <strong>{porcento(n.valor)}</strong>
-            <small>{n.rotulo}</small>
-          </div>
-        ))}
-      </div>
-
-      {dados.quedas.length > 0 && (
-        <>
-          <h4 className="disponibilidade-titulo">{t('Últimas quedas')}</h4>
-          <ul className="disponibilidade-quedas">
-            {dados.quedas.map((q) => (
-              <li key={q.quando}>
-                <time dateTime={q.quando}>{quando(q.quando)}</time>
-                <span>{duracao(q.duracaoMin)} fora do ar</span>
-              </li>
+          <div className="painel-numeros">
+            {[
+              { rotulo: 'Últimas 24 h', valor: m.umDia },
+              { rotulo: '7 dias', valor: m.seteDias },
+              { rotulo: '30 dias', valor: m.trintaDias },
+            ].map((n) => (
+              <div key={n.rotulo}>
+                <strong>{porcento(n.valor)}</strong>
+                <small>{n.rotulo}</small>
+              </div>
             ))}
-          </ul>
-        </>
-      )}
+          </div>
+
+          {m.quedas.length > 0 && (
+            <>
+              <h4 className="disponibilidade-titulo">{t('Últimas quedas')}</h4>
+              <ul className="disponibilidade-quedas">
+                {m.quedas.map((q) => (
+                  <li key={q.quando}>
+                    <time dateTime={q.quando}>{quando(q.quando)}</time>
+                    <span>{duracao(q.duracaoMin)} fora do ar</span>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+        </div>
+      ))}
     </section>
   );
 }

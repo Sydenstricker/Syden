@@ -1,4 +1,4 @@
-import { AppWindow, Archive, Check, Coffee, Copy, Ellipsis, Frame, Grid2x2, Home, LayoutGrid, Moon, Mouse, Move, PaintRoller, Pencil, Redo2, RotateCcw, RotateCw, Save, Search, Settings, Sofa, Sprout, Sun, Undo2, X } from 'lucide-react';
+import { AppWindow, Archive, Check, Coffee, Copy, Share2, Ellipsis, Frame, Grid2x2, Home, LayoutGrid, Moon, Mouse, Move, PaintRoller, Pencil, Redo2, RotateCcw, RotateCw, Save, Search, Settings, Sofa, Sprout, Sun, Undo2, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { API_URL, loadToken } from './api';
 import { CartaoDaPeca, type PecaClicada } from './CartaoDaPeca';
@@ -7,7 +7,9 @@ import { Mascote } from './Mascote';
 import { useT } from './i18n';
 import { casaComABusca, type GrupoDaCena, nomeDaPeca } from './nomesDaCena';
 import type { AcoesDoQuarto } from './Quarto';
+import { receitaDe } from './coelho/receita';
 import { aoMudarOQuarto } from './quartoMudou';
+import { codigoDoLayout, lerCodigoDoLayout } from './codigoDoLayout';
 
 /**
  * O QUARTO NOVO, o de móveis soltos que cada pessoa arruma (e2e/pixel-art/quarto/novo/quarto/), dentro do app. No ar
@@ -125,12 +127,14 @@ export function QuartoNovo({
       if (e.data.arrumacao) setArrumacao(e.data.arrumacao);
       if (e.data.detalhe && typeof e.data.detalhe.id === 'string') setPeca(e.data.detalhe);
       if (typeof e.data.acao === 'string') acoesRef.current[e.data.acao]?.onClick();
+      // o coelho de quem mora (o servidor manda com a arrumação; a receita se lê aqui): o da cena (CLAUDE.md, "O CRIADOR ESTÁ NO APP")
+      if (e.data.coelhoDe) enviar({ coelho: receitaDe(e.data.coelhoDe) });
     };
     window.addEventListener('message', ouvir);
     return () => window.removeEventListener('message', ouvir);
   }, []);
 
-  // o Guarda-roupa mudou o bicho do quarto (quartoMudou.ts): a página relê a arrumação
+  // o Guarda-roupa mudou o bicho do quarto, ou a Aparência o coelho (quartoMudou.ts): a página relê a arrumação (e o coelho)
   useEffect(() => aoMudarOQuarto(() => ref.current?.contentWindow?.postMessage({ syden: 'quarto', recarregar: true }, location.origin)), []);
 
   useEffect(() => {
@@ -423,6 +427,7 @@ export function EditorDaCena({
           <button type="button" className="editor-botao" onClick={() => enviar({ comando: 'inicial' })}>
             <RotateCcw size={18} aria-hidden="true" /> {t('Voltar ao padrão')}
           </button>
+          <CodigoDoLayout enviar={enviar} />
           <div className="editor-vao" />
           <div className="editor-par editor-dia-noite" role="group">
             <button type="button" aria-pressed={!noiteAgora} aria-label={t('Dia')} title={t('Dia')} onClick={() => { setPrevia(false); enviar({ noite: false }); }}>
@@ -516,6 +521,84 @@ export function EditorDaCena({
           </button>
         </div>
       ) : null}
+    </div>
+  );
+}
+
+/**
+ * O CÓDIGO DO LAYOUT, no Editar (pedido dele, 10/11/2026, "como já ocorre na configuração dos coelhos"): abre um painel com o
+ * código deste quarto ou salão, para copiar, e um campo para colar o de alguém. Colado, o layout entra como uma mudança do Editar
+ * (Desfazer volta, Cancelar descarta, Aplicar guarda). Ver codigoDoLayout.ts.
+ */
+function CodigoDoLayout({ enviar }: { enviar: (msg: Record<string, unknown>) => void }) {
+  const t = useT();
+  const [aberto, setAberto] = useState(false);
+  const [codigo, setCodigo] = useState('');
+  const [colado, setColado] = useState('');
+  const [aviso, setAviso] = useState<{ texto: string; ruim?: boolean } | null>(null);
+  useEffect(() => {
+    if (!aberto) return;
+    const ouvir = (e: MessageEvent) => {
+      if (e.origin !== location.origin || e.data?.syden !== 'quarto') return;
+      if (e.data.layout) void codigoDoLayout(e.data.layout).then(setCodigo);
+      if (e.data.layoutUsado === true) {
+        setAviso({ texto: t('Layout carregado do código.') });
+        setColado('');
+      }
+      if (e.data.layoutUsado === false) setAviso({ texto: t('Esse código é de outro tipo de cena.'), ruim: true });
+    };
+    window.addEventListener('message', ouvir);
+    enviar({ comando: 'exportar' });
+    return () => window.removeEventListener('message', ouvir);
+    // (o código é pedido ao abrir: a cena responde com o retrato de agora)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [aberto]);
+  return (
+    <div className="editor-codigo">
+      <button type="button" className="editor-botao" aria-expanded={aberto} onClick={() => { setAviso(null); setAberto((a) => !a); }}>
+        <Share2 size={18} aria-hidden="true" /> {t('Código do layout')}
+      </button>
+      {aberto && (
+        <div className="editor-codigo-painel" role="group" aria-label={t('Código do layout')}>
+          <div className="editor-codigo-linha">
+            <input readOnly value={codigo} placeholder="…" aria-label={t('Código do layout')} onFocus={(e) => e.currentTarget.select()} />
+            <button
+              type="button"
+              className="btn-secondary"
+              disabled={!codigo}
+              onClick={async () => {
+                try {
+                  await navigator.clipboard.writeText(codigo);
+                  setAviso({ texto: t('Código copiado.') });
+                } catch {
+                  setAviso({ texto: t('Selecione o código e copie com Ctrl+C.') });
+                }
+              }}
+            >
+              {t('Copiar')}
+            </button>
+          </div>
+          <form
+            className="editor-codigo-linha"
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const layout = await lerCodigoDoLayout(colado);
+              if (!layout) return setAviso({ texto: t('Esse código não é de um layout do Syden.'), ruim: true });
+              enviar({ comando: 'importar', layout });
+            }}
+          >
+            <input value={colado} placeholder={t('Cole um código aqui')} aria-label={t('Cole um código aqui')} onChange={(e) => setColado(e.target.value)} />
+            <button className="btn-secondary" disabled={!colado.trim()}>
+              {t('Usar')}
+            </button>
+          </form>
+          {aviso && (
+            <p className={aviso.ruim ? 'form-error' : 'form-success'} role="status">
+              {aviso.texto}
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 }

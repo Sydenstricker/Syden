@@ -124,7 +124,7 @@ function sessaoNaSala(ctx: Contexto, inscritos: number[], agora: () => number) {
   let fase: 'largada' | 'jogando' | 'fim' = 'largada';
   let verdeEm = 0;
   const skatistas = new Map<number, Skatista>(inscritos.map((id) => [id, { pontos: null, melhorCombo: null, ultima: null }]));
-  const avatares = new Map(inscritos.map((id) => [id, db.findUserById(id)?.avatarPronto ?? null]));
+  const avatares = new Map(inscritos.map((id) => [id, db.avatarDoJogo(id)]));
   const recordes = new Map<number, { antes: number | null; novo: boolean }>(inscritos.map((id) => [id, { antes: db.recordeDoSkate(id), novo: false }]));
   /** Quem ficou na sala até o fim (fixado ao fechar): só esses têm posição. */
   let ficaram: Set<number> | null = null;

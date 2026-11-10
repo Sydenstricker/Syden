@@ -10,7 +10,7 @@ export * from './chefe/motor.js';
 export * from './chefe/conta.js';
 
 const servicos: NonNullable<OpcoesDoChefe['servicos']> = {
-  avatarDe: (userId) => db.findUserById(userId)?.avatarPronto ?? null,
+  avatarDe: (userId) => db.avatarDoJogo(userId),
   guardarTrofeu: (t) => db.guardarTrofeu(t),
 };
 

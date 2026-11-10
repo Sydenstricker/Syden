@@ -1280,10 +1280,11 @@ a TV e o fliperama têm TELA POR CÓDIGO (a TV à toa passa um desenho calmo e, 
 transmite em cima, com as setas de canal; a imagem de verdade continua fora da TV); **a TV tem CANAIS (18/10/2026, pedido dele): o desenho, futebol,
 um tiro tático e uma arena de rotas, todos por código e genéricos (sem nome, logo ou mapa de jogo de verdade, e SEM o selo
 vermelho, que é só da transmissão de verdade); o botão direito passa de canal em canal e, depois do último, desliga.
-Havendo transmissão, ela é o primeiro canal, e uma transmissão que começa leva a TV a ela.** **O Ao vivo mostra o GÊNERO do jogo transmitido (18/10/2026, decisão dele: "o gênero, não o jogo"):** 20 desenhos nossos (moba, tiro, futebol, corrida, luta, aventura, construção, fazenda, estratégia, cartas, terror, plataforma, festa, espaço, quebra-cabeça, esportes, voo, RPG por turnos, história e ritmo; os sete últimos tirados da lista de gêneros da Steam que ele mandou, juntando os que dão o mesmo desenho numa tela pequena), nunca imagem do jogo. Só no app e só transmitindo UMA JANELA: o app passa à página o executável dono da janela (o mesmo dado do som do jogo), a página o converte pela tabela `web/src/generoDoJogo.ts` e só o gênero vai aos outros (o servidor aceita só os da lista). Pelo executável e nunca pelo título, que engana. Jogo novo é uma linha na tabela, sem versão nova do app; fora da tabela, o Ao vivo comum. Teste: `salao/canais-da-tv.mjs`. o quadro mostra a CAPA da comunidade
+Havendo transmissão, ela é o primeiro canal, e uma transmissão que começa leva a TV a ela.** **O GIF da comunidade (10/11/2026, pedidos dele):** quando a capa ou o ícone da comunidade é animado, ele é mais um canal da TV (reduzido ao estilo da tela, pelo `ImageDecoder`; no Firefox, parado). De fábrica a TV fica no pôr do sol; quem arruma o salão escolhe o canal (botão direito ou o "…" do Editar, em figuras), e vale para a turma. **A luz de noite do salão** (mesmo dia): as luzinhas do alto das paredes, a TV, o fliperama, a jukebox e o neon iluminam em volta, como o abajur no quarto (`lampadasDoSalao`); ele a viu e aprovou ("não é defeito"). **O Ao vivo mostra o GÊNERO do jogo transmitido (18/10/2026, decisão dele: "o gênero, não o jogo"):** 20 desenhos nossos (moba, tiro, futebol, corrida, luta, aventura, construção, fazenda, estratégia, cartas, terror, plataforma, festa, espaço, quebra-cabeça, esportes, voo, RPG por turnos, história e ritmo; os sete últimos tirados da lista de gêneros da Steam que ele mandou, juntando os que dão o mesmo desenho numa tela pequena), nunca imagem do jogo. Só no app e só transmitindo UMA JANELA: o app passa à página o executável dono da janela (o mesmo dado do som do jogo), a página o converte pela tabela `web/src/generoDoJogo.ts` e só o gênero vai aos outros (o servidor aceita só os da lista). Pelo executável e nunca pelo título, que engana. Jogo novo é uma linha na tabela, sem versão nova do app; fora da tabela, o Ao vivo comum. Teste: `salao/canais-da-tv.mjs`. o quadro mostra a CAPA da comunidade
 (ou o ícone, inteiro) no plano da parede; quem transmite fica na frente da TV, quem está numa partida no fliperama (pose
 própria), e as banquetas têm a pose sentada alta. **A arrumação é da COMUNIDADE** (`saloes`, `salao-routes.ts`): todo
-membro vê igual e USA as funções, só quem administra arruma (o servidor confere), e a turma relê na hora (`salao:mudou`). **A turma ajuda a arrumar (18/10/2026, decisão dele):** quem administra marca no cargo "Pode arrumar o salão", e quem tem o cargo arruma — é a ÚNICA exceção, de propósito, ao "cargo é identidade, não poder" (db.ts). Contra a bagunça, o salão guarda quem mexeu por último e o salão de ANTES dessa pessoa começar, e quem administra desfaz ("Última mudança no salão: fulano · Desfazer"). O canal da TV e o que está desligado (TV, fliperama, jukebox) vão com a arrumação: valem para a turma, e só quem arruma muda.
+membro vê igual e USA as funções, só quem administra arruma (o servidor confere), e a turma relê na hora (`salao:mudou`). **UM SALÃO POR COMUNIDADE E O CÓDIGO DO LAYOUT (10/11/2026, relato dele: "estou em duas comunidades e elas estão exatamente iguais"):** dois defeitos juntos. (1) O `SalaoNovo` não remontava ao trocar de comunidade, e a página do salão recebe a rota uma vez só: a segunda comunidade mostrava e GRAVAVA no salão da primeira (agora `key={community.id}`). (2) A arrumação no navegador tem uma chave só para todos os salões, e a comunidade sem salão no servidor recebia a do navegador (agora começa na de fábrica). **No Editar (quarto e salão), o "Código do layout"**: o retrato da arrumação comprimido, "SYDL1-…" (`web/src/codigoDoLayout.ts`), para copiar; colado, entra como mudança do Editar (Desfazer, Cancelar, Aplicar), e o de um salão não entra num quarto. O "Voltar ao padrão" já existia na mesma barra. Teste: `e2e/pixel-art/salao/codigo-do-layout.mjs`.
+**A turma ajuda a arrumar (18/10/2026, decisão dele):** quem administra marca no cargo "Pode arrumar o salão", e quem tem o cargo arruma — é a ÚNICA exceção, de propósito, ao "cargo é identidade, não poder" (db.ts). Contra a bagunça, o salão guarda quem mexeu por último e o salão de ANTES dessa pessoa começar, e quem administra desfaz ("Última mudança no salão: fulano · Desfazer"). O canal da TV e o que está desligado (TV, fliperama, jukebox) vão com a arrumação: valem para a turma, e só quem arruma muda.
 Testes: `salao/no-app.mjs` (no app de desenvolvimento) e `e2e/cenas-no-ar.mjs` (no build de produção).
 
 **O SALÃO É 16 × 16, COM CÂMERA (decisão dele, 15/10/2026: "imaginei 4× o tamanho"; "câmera que anda").** A casca sai por
@@ -1563,6 +1564,44 @@ PixelLab, mesmo que demore mais e custe mais créditos. Com o fluxo feito, a ver
   tons médios) e o tom de referência é o do quadro 0 da direção, fixo (recalcular por quadro fazia a cor piscar). **O
   criador de coelho** (a prévia da customização, pedido dele: "como uma tela de seleção de Dark Souls ou The Sims") está
   publicado como artefato: corpo, cor do pelo, roupa, boné e bandana com cores, girar, receitas e clicar para acenar.
+  **O CRIADOR ESTÁ NO APP (10/11/2026, pedido dele: "pode implementar ao Syden?")**, como a primeira folha da Aparência → Avatar
+  (`web/src/coelho/`): o palco é o coelho EM CAMADAS (`montar.ts`: as tiras de `web/public/coelho/`, geradas por
+  `web/scripts/coelho-camadas.py`, com a troca de paleta e os acessórios), gira e acena ao clique; no canto, o avatar redondo como os
+  outros vão ver. **As 16 sugestões são os coelhos prontos** (decisão dele: "usar os 16 avatares como sugestões; futuramente criar os
+  assets no PixelLab e gerar maior variação"): cada uma é a receita mais perto com as peças de hoje (`PRESETS` em `receita.ts`).
+  Escolhida e intacta, o avatar continua o desenho pronto; mexeu num traço, vira "Personalizado" e o avatar passa a ser o BUSTO do
+  coelho montado. A receita é o código "SYD1-…" (o da prévia), em DUAS CÓPIAS IGUAIS (`web/src/coelho/receita.ts` ↔
+  `server/src/coelho-receita.ts`), e o servidor a guarda canônica em `users.coelho` (`PUT /api/me/coelho`, com `pronto` quando é a
+  sugestão intacta); "Meus coelhos" fica na conta (`users.coelhos_salvos`, até 12, no "Levar seus dados"). Nada muda até o Salvar, e a
+  foto de antes vai para os anteriores. Escolher um pronto pelo caminho antigo tira a receita. **A CENA DESENHA O COELHO DE CADA UM**
+  (mesmo dia): no quarto, o de quem mora (o servidor manda `coelho`/`avatarPronto` com a arrumação, o app lê por `receitaDe` e devolve
+  à página; o "arrumado" espera; mudar na Aparência relê), na visita o do dono, e no salão o de cada pessoa na call (`coelho` em
+  `PessoaNoSalao`); o do balcão continua o mascote. A página pinta com a conta do criador ("O COELHO DE CADA UM" em montar.mjs), pelos
+  mapas de `web/scripts/coelho-cena.py` → `personagem/cena/`; os outros corpos vêm num pacote à parte, baixado só quando alguém os usa.
+  Pose que o corpo não tem cai na mais perto DELE (`CAIR`; varrendo não existe fora do mascote); pose nova só entra depois de
+  `acessorio-camadas.py` e `coelho-cena.py` (o montar avisa e a deixa de fora). Com `MASCOTE=3d`, todos são o mascote. Teste:
+  `e2e/pixel-art/coelho-na-cena.mjs`.
+  **OS JOGOS SEGUEM A RECEITA (mesmo dia, pedido dele: "quero um ecossistema integrado"):** o servidor manda aos jogos o
+  `avatarDoJogo` (db.ts: a receita, senão o número do pronto, senão null; nos recordes, `COALESCE(u.coelho, u.avatar_pronto)`), e o
+  site tira as cores por `coresDoJogador` (`web/src/coelho/cores.ts`), no lugar da tabela dos 16. O corpo nos jogos continua o do
+  mascote (só as cores mudam); orelha caída, musculoso e acessórios nos jogos pedem modelos e folhas novas.
+  **O TIPO DE CORPO (10/11/2026, pedido dele: "no Dark Souls tem uma opção de tipo de corpo, feminino e masculino"; e "mesmo
+  multiplicando o trabalho, me parece que terá o resultado mais completo"):** cada corpo base ganha a versão feminina. A do
+  mascote é a SILHUETA base das próximas (`personagem/mascote-f`, com o moletom curto e o umbigo, pintado à mão nas vistas de
+  frente porque ele pediu), e a roupa de fábrica dela é o moletom comprido (`mascote-f-moletom`, a primeira tentativa, de
+  silhueta sutil, aproveitada como roupa: "o resultado ficou bom e seria útil já aproveitar o material"). Na receita, o
+  `corpo` continua sendo a PASTA (`mascote-f-moletom`, `orelha-caida-f-moletom`, `musculoso-f`…), e `partesDoCorpo`/`corpoDe`
+  (receita.ts) a dividem em corpo base, tipo e roupa, as três linhas do criador; a linha do tipo e a da roupa só aparecem quando
+  a combinação tem desenho (`public/coelho/dados.json`). Cada roupa no PixelLab é um conjunto inteiro de poses (~500 gerações),
+  e cada versão feminina completa ~600: o que não couber no saldo espera a renovação do mês.
+  **Aprovados no mesmo dia:** a orelha caída feminina MARCADA (`orelha-caida-f-moletom`; a sutil saiu: "a sutil parece o padrão com
+  o olho customizado") e a forte feminina em DUAS versões (dele: "mulher musculosa não treina a mesma coisa que um homem musculoso,
+  são outros grupos musculares"; "merece duas versões"): `musculoso-f` (regata, braços fortes mas menores) e `musculoso-f-curta`
+  (regata curta, short até o meio da coxa, coxas e glúteos fortes), as duas roupas da forte feminina. Só o `mascote-f-moletom`
+  tem as poses; os outros, só o corpo base.
+  **Os cinzas soltos** (mesmo dia, relato dele): o PixelLab deixa pixels de cinza NEUTRO (75 e 133) soltos no pelo e no pescoço;
+  `personagem/limpar-cinzas.py <corpo>` troca os pedaços de até 4 px pela cor dos vizinhos. NÃO rodar no musculoso (a regata é cinza). Peça nova (fone, óculos, gorro, roupas) entra em `CABECAS`/`PESCOCOS` e nas sugestões que a usam. Teste:
+  `e2e/criador-de-coelho.mjs` (substituiu o `avatar-atual.mjs`).
 
 ## Traduzir mensagens de outro idioma: válido, para outro momento
 

@@ -35,7 +35,7 @@ export function QuartoComEstilo({
   acoes: AcoesDoQuarto;
   estado: EstadoNoQuarto;
   /** Na visita, o avatar pronto de quem mora (null: o mascote). */
-  avatar?: number | null;
+  avatar?: number | string | null;
   titulo: string;
   /** Na visita, o id de quem mora (o 3D lê a arrumação dele). */
   dono?: number;

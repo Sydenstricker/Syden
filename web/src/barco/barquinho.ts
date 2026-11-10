@@ -7,7 +7,7 @@
  * A TROCA DE PALETA do avatar é de graça: o pelo do coelho é a cor do pelo do avatar pronto da pessoa, e o moletom e a faixa
  * do casco são a cor da roupa dele (as mesmas cores do kart, corrida/coresDosAvatares.ts).
  */
-import { CORES_DOS_AVATARES } from '../corrida/coresDosAvatares';
+import { coresDoJogador, type AvatarDoJogo } from '../coelho/cores';
 
 export const LADO = 48;
 /** O ponto da folha que fica sobre a água (o meio do casco, na linha d'água). */
@@ -36,8 +36,8 @@ export interface FolhaDoBarco {
 const MASCOTE: CoresDoBarco = { casco: [198, 140, 86], faixa: [61, 43, 54], roupa: [61, 43, 54], pelo: [236, 226, 240] };
 
 /** As cores do barco de quem tem o avatar `avatar` (o pelo e a roupa dele); sem avatar pronto, o mascote. */
-export function coresDoAvatar(avatar: number | null | undefined): CoresDoBarco {
-  const c = avatar !== null && avatar !== undefined ? CORES_DOS_AVATARES[avatar] : undefined;
+export function coresDoAvatar(avatar: number | string | null | undefined): CoresDoBarco {
+  const c = coresDoJogador(avatar);
   return c ? { ...MASCOTE, pelo: c.pelo, faixa: c.roupa, roupa: c.roupa } : MASCOTE;
 }
 

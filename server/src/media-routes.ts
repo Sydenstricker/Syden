@@ -7,6 +7,7 @@ import { restorePack } from './expressions.js';
 import { parseMedia, parseMediaConferida, sniffMime } from './media.js';
 import { communityRoom } from './realtime.js';
 import { nomeDeEmoji } from './nome-do-emoji.js';
+import { codigo as codigoDoCoelho, lerCodigo } from './coelho-receita.js';
 import { cotaEsgotada, manages, requireUser, roleIn } from './routes.js';
 
 /**
@@ -127,6 +128,37 @@ export function registerMediaRoutes(app: FastifyInstance, io: IOServer) {
       const user = db.setAvatarPronto(request.user.id, numero);
       io.emit('user:updated', user);
       return user;
+    });
+
+    // O COELHO DO CRIADOR (10/11/2026, pedido dele): a receita (o corpo, as cores, os acessórios), e o número da sugestão
+    // quando a pessoa escolheu uma das 16 sem mexer (aí o avatar continua o desenho pronto dela). Guardada já canônica.
+    authed.put<{ Body: { codigo?: unknown; pronto?: unknown } }>('/api/me/coelho', async (request, reply) => {
+      const receita = lerCodigo(request.body?.codigo);
+      if (!receita) return reply.code(400).send({ error: 'Esse código não é de um coelho do Syden.' });
+      const pronto = request.body?.pronto;
+      if (pronto !== undefined && pronto !== null && (typeof pronto !== 'number' || !Number.isInteger(pronto) || pronto < 1 || pronto > db.COELHOS_PRONTOS)) {
+        return reply.code(400).send({ error: 'Esse coelho não existe.' });
+      }
+      const user = db.setCoelho(request.user.id, codigoDoCoelho(receita), (pronto as number | null | undefined) ?? null);
+      io.emit('user:updated', user);
+      return user;
+    });
+
+    // "MEUS COELHOS" (10/11/2026, pedido dele: "criar determinado perfil e permitir copiar código"): receitas com nome,
+    // na conta (e não no aparelho), até 12. A lista vai inteira a cada mudança; cada código é conferido e guardado canônico.
+    authed.get('/api/me/coelhos-salvos', async (request) => db.coelhosSalvos(request.user.id));
+    authed.put<{ Body: { lista?: unknown } }>('/api/me/coelhos-salvos', async (request, reply) => {
+      const lista = request.body?.lista;
+      if (!Array.isArray(lista) || lista.length > db.COELHOS_SALVOS_MAXIMO) return reply.code(400).send({ error: 'Lista de coelhos inválida.' });
+      const limpa: { nome: string; codigo: string }[] = [];
+      for (const item of lista as { nome?: unknown; codigo?: unknown }[]) {
+        const receita = lerCodigo(item?.codigo);
+        const nome = typeof item?.nome === 'string' ? item.nome.trim().slice(0, 24) : '';
+        if (!receita || !nome) return reply.code(400).send({ error: 'Lista de coelhos inválida.' });
+        limpa.push({ nome, codigo: codigoDoCoelho(receita) });
+      }
+      db.guardarCoelhosSalvos(request.user.id, limpa);
+      return limpa;
     });
 
     // OS AVATARES ANTERIORES (09/11/2026, pedido dele): os últimos 5 que a pessoa trocou, para voltar a um deles.

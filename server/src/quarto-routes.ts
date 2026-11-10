@@ -24,10 +24,15 @@ export function registerQuartoRoutes(app: FastifyInstance) {
   app.register(async (authed) => {
     authed.addHook('preHandler', requireUser);
 
-    /** O meu quarto: a arrumação guardada, ou null (ainda não mexeu: a página usa a de fábrica). */
+    /**
+     * O meu quarto: a arrumação guardada, ou null (ainda não mexeu: a página usa a de fábrica). E o MEU COELHO (10/11/2026, o
+     * coelho de cada um na cena): a receita do criador e o coelho pronto, que o app lê (coelho/receita.ts, receitaDe) e a
+     * página desenha.
+     */
     authed.get('/api/quarto', async (request) => {
       const q = db.lerQuarto(request.user.id);
-      return { arrumacao: q ? JSON.parse(q.arrumacao) : null, em: q?.em ?? null, copias: ACEITA_COPIAS };
+      const eu = db.findUserById(request.user.id);
+      return { arrumacao: q ? JSON.parse(q.arrumacao) : null, em: q?.em ?? null, copias: ACEITA_COPIAS, coelho: eu?.coelho ?? null, avatarPronto: eu?.avatarPronto ?? null };
     });
 
     authed.put<{ Body: unknown }>('/api/quarto', { bodyLimit: MAX_BYTES * 2 }, async (request, reply) => {
@@ -59,7 +64,7 @@ export function registerQuartoRoutes(app: FastifyInstance) {
       return { pet: v.ok.cores?.pet ?? 'gato', nome: v.ok.nomeDoPet ?? '' };
     });
 
-    /** A VISITA: o quarto de outra pessoa, como ela deixou. */
+    /** A VISITA: o quarto de outra pessoa, como ela deixou (com o coelho dela, que é quem aparece lá). */
     authed.get<{ Params: { id: string } }>('/api/quarto/:id', async (request, reply) => {
       const dono = Number(request.params.id);
       if (!Number.isInteger(dono) || dono <= 0) return reply.code(400).send({ error: 'Pedido inválido.' });
@@ -70,7 +75,7 @@ export function registerQuartoRoutes(app: FastifyInstance) {
       if (!podeVisitarQuarto(request.user.id, dono)) return reply.code(404).send(nada);
       const pessoa = db.findUserById(dono)!;
       const q = db.lerQuarto(dono);
-      return { dono: { id: pessoa.id, username: pessoa.username, nomeDeExibicao: pessoa.nomeDeExibicao }, arrumacao: q ? JSON.parse(q.arrumacao) : null, em: q?.em ?? null };
+      return { dono: { id: pessoa.id, username: pessoa.username, nomeDeExibicao: pessoa.nomeDeExibicao, coelho: pessoa.coelho ?? null, avatarPronto: pessoa.avatarPronto ?? null }, arrumacao: q ? JSON.parse(q.arrumacao) : null, em: q?.em ?? null };
     });
   });
 }

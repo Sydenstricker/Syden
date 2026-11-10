@@ -1,4 +1,5 @@
-import { CORES_DOS_AVATARES, MOLETOM_DO_MASCOTE, PELO_DO_MASCOTE } from './coresDosAvatares';
+import { MOLETOM_DO_MASCOTE, PELO_DO_MASCOTE } from './coresDosAvatares';
+import { coresDoJogador, type AvatarDoJogo } from '../coelho/cores';
 import { MUNDO, RES, sorteio, type Pista, type Tema } from './pista';
 
 /**
@@ -520,7 +521,7 @@ export function kartNaTela(
   ky: number,
   angulo: number,
   pulo: number,
-  opcoes: { fantasma?: boolean; sombra?: boolean; tremor?: number; nome?: string; avatar?: number | null } = {},
+  opcoes: { fantasma?: boolean; sombra?: boolean; tremor?: number; nome?: string; avatar?: number | string | null } = {},
 ): Figura | null {
   const pr = projetar(cam, kx, ky);
   if (!pr || !d.coelho) return null;
@@ -563,10 +564,10 @@ export function kartNaTela(
  * avatar pronto da pessoa — a troca de paleta dos jogos do Super Nintendo. As cores de cada avatar saem de
  * web/scripts/cores-dos-avatares.py (coresDosAvatares.ts). Sem avatar pronto (foto, ou nenhum), o mascote como é.
  */
-const folhas = new Map<number, HTMLCanvasElement>();
+const folhas = new Map<number | string, HTMLCanvasElement>();
 const lum = (r: number, g: number, b: number) => 0.3 * r + 0.59 * g + 0.11 * b;
-export function folhaDoAvatar(base: HTMLImageElement, avatar: number | null): CanvasImageSource {
-  const cores = avatar !== null ? CORES_DOS_AVATARES[avatar] : undefined;
+export function folhaDoAvatar(base: HTMLImageElement, avatar: number | string | null): CanvasImageSource {
+  const cores = coresDoJogador(avatar);
   if (!cores || !base.complete || !base.naturalWidth) return base;
   const pronta = folhas.get(avatar!);
   if (pronta) return pronta;

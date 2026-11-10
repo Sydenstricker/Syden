@@ -47,6 +47,30 @@ function fecharPacote() {
   fs.writeFileSync(path.join(PUBLICAR.imagens, arquivo), tudo);
   return { url: PUBLICAR.url + arquivo, indice, bytes: tudo.length };
 }
+// OS PACOTES À PARTE (10/11/2026, o coelho de cada um): o que só se usa quando alguém na cena tem aquele corpo (os quadros
+// da orelha caída e do musculoso, os mapas de classes, as camadas dos acessórios) vai num pacote por corpo, que a página só
+// baixa quando precisa. Na página de teste, dentro dela, como o resto.
+const PACOTES_A_PARTE = new Map(); // grupo → Map(nome → dados)
+const pngAParte = (grupo, arquivo) => {
+  if (!PUBLICAR) return png(arquivo);
+  const dados = fs.readFileSync(arquivo), nome = impressao(dados);
+  if (!PACOTES_A_PARTE.has(grupo)) PACOTES_A_PARTE.set(grupo, new Map());
+  PACOTES_A_PARTE.get(grupo).set(nome, dados);
+  return 'pacote@' + grupo + ':' + nome;
+};
+function fecharPacotesAParte() {
+  if (!PUBLICAR) return {};
+  const r = {};
+  for (const [grupo, itens] of PACOTES_A_PARTE) {
+    const indice = {}, partes = [];
+    let pos = 0;
+    for (const [nome, dados] of itens) { indice[nome] = [pos, dados.length]; partes.push(dados); pos += dados.length; }
+    const tudo = Buffer.concat(partes), arquivo = 'cena-corpo-' + grupo + '-' + impressao(tudo) + '.bin';
+    fs.writeFileSync(path.join(PUBLICAR.imagens, arquivo), tudo);
+    r[grupo] = { url: PUBLICAR.url + arquivo, indice, bytes: tudo.length };
+  }
+  return r;
+}
 // O que só a página de teste mostra (o conceito ao lado, as imagens de teste do quadro): fora da publicada.
 const soNoTeste = (arquivo) => (PUBLICAR ? null : png(arquivo));
 // A CENA (15/10/2026): o mesmo motor monta o QUARTO e o SALÃO da comunidade (e2e/pixel-art/salao/). O SALÃO É 16 × 16
@@ -148,22 +172,35 @@ const SO_NO_SALAO = ['sentado-banqueta', 'no-fliperama', 'assistindo-sofa', 'rin
 // o leste. (As diagonais do sul dos dois já batem com a cama.)
 const DEITADO = ['lendo', 'dormindo', 'dormindo-largado'];
 const DELES_DEITADO_PL = { ...DELES, nordeste: 'east', noroeste: 'west' };
-for (const [nome, pastas] of Object.entries(FONTES)) {
-  if (CENA !== 'salao' && SO_NO_SALAO.includes(nome)) continue;
-  ANIMACOES[nome] = {};
-  for (const nossa of Object.keys(DELES)) {
-    for (const p of pastas) {
-      const doPixelLab = p.startsWith('pl:') || PASTA_DO_MASCOTE === 'mascote';
-      const deles = (DEITADO.includes(nome) && doPixelLab ? DELES_DEITADO_PL : DELES)[nossa];
-      // "pl:" é a pasta do desenho do PixelLab, qualquer que seja o mascote (ver sentado, acima)
-      const dir = p.startsWith('pl:') ? path.join(AQUI, '..', '..', '..', 'personagem', 'mascote', p.slice(3)) : path.join(PERS, p);
-      if (!fs.existsSync(dir)) continue;
-      const quadros = fs.readdirSync(dir).filter((f) => f.startsWith(deles + '-') && /-\d+\.png$/.test(f)).sort((a, b) => Number(a.match(/-(\d+)\.png$/)[1]) - Number(b.match(/-(\d+)\.png$/)[1]));
-      const lista = quadros.length ? quadros : fs.existsSync(path.join(dir, deles + '.png')) ? [deles + '.png'] : [];
-      if (lista.length) { ANIMACOES[nome][nossa] = lista.map((f) => png(path.join(dir, f))); break; }
+// Para cada animação e cada direção, os ARQUIVOS dos quadros: a primeira pasta que tiver a direção. (Uma função, desde
+// 10/11/2026: o coelho de cada um usa a mesma escolha nos outros corpos; ver "O COELHO DE CADA UM", abaixo.)
+//   base: a pasta do corpo; pl: a pasta do desenho do PixelLab ("pl:"); doPixelLab: o corpo é desenho do PixelLab;
+//   cair: mais pastas por animação, depois das de FONTES (a pose mais perto do MESMO corpo, onde a dele falta).
+//   aceita: se a pasta serve (o coelho de cada um só usa as que coelho-cena.py já mediu).
+function resolverAnimacoes(base, pl, doPixelLabSempre, cair = {}, aceita = () => true) {
+  const r = {};
+  for (const [nome, pastas0] of Object.entries(FONTES)) {
+    if (CENA !== 'salao' && SO_NO_SALAO.includes(nome)) continue;
+    r[nome] = {};
+    const pastas = [...pastas0, ...(cair[nome] ?? [])];
+    for (const nossa of Object.keys(DELES)) {
+      for (const p of pastas) {
+        const doPixelLab = p.startsWith('pl:') || doPixelLabSempre;
+        const deles = (DEITADO.includes(nome) && doPixelLab ? DELES_DEITADO_PL : DELES)[nossa];
+        // "pl:" é a pasta do desenho do PixelLab, qualquer que seja o mascote (ver sentado, acima)
+        const dir = p.startsWith('pl:') ? path.join(pl, p.slice(3)) : path.join(base, p);
+        if (!fs.existsSync(dir)) continue;
+        const quadros = fs.readdirSync(dir).filter((f) => f.startsWith(deles + '-') && /-\d+\.png$/.test(f)).sort((a, b) => Number(a.match(/-(\d+)\.png$/)[1]) - Number(b.match(/-(\d+)\.png$/)[1]));
+        const lista = quadros.length ? quadros : fs.existsSync(path.join(dir, deles + '.png')) ? [deles + '.png'] : [];
+        if (lista.length && aceita(dir, lista)) { r[nome][nossa] = lista.map((f) => path.join(dir, f)); break; }
+      }
     }
   }
+  return r;
 }
+const PERSONAGEM = path.join(AQUI, '..', '..', '..', 'personagem');
+const ARQUIVOS_DO_MASCOTE = resolverAnimacoes(PERS, path.join(PERSONAGEM, 'mascote'), PASTA_DO_MASCOTE === 'mascote');
+for (const [nome, porDir] of Object.entries(ARQUIVOS_DO_MASCOTE)) ANIMACOES[nome] = Object.fromEntries(Object.entries(porDir).map(([d, arqs]) => [d, arqs.map((f) => png(f))]));
 for (const [nosso, deles] of [['sudeste', 'south-east'], ['sudoeste', 'south-west'], ['nordeste', 'north-east'], ['noroeste', 'north-west']]) {
   IMAGENS['mascote-' + nosso] = png(path.join(MASCOTE, deles + '.png'));
 }
@@ -326,10 +363,59 @@ for (const item of ['fone', 'quadro', 'cortica', 'prateleira', 'pintura', 'prate
   }
 }
 const QUADROS = [], ANIMACOES_IDX = {};
+const RECEITAS_NA_CENA = PASTA_DO_MASCOTE === 'mascote', CORPOS_DA_CENA = {}, TIRAS_DE_MAPA = [];
 { const indice = new Map();
   for (const [nome, dirs] of Object.entries(ANIMACOES)) {
     ANIMACOES_IDX[nome] = {};
     for (const [d, qs] of Object.entries(dirs)) ANIMACOES_IDX[nome][d] = qs.map((q) => { if (!indice.has(q)) { indice.set(q, QUADROS.length); QUADROS.push(q); } return indice.get(q); });
+  }
+  // ============================== O COELHO DE CADA UM (10/11/2026) ==============================
+  // Pedido dele: "um ecossistema integrado": o coelho que cada pessoa monta no criador (Aparência → Avatar) aparece no quarto e
+  // no salão com o corpo, as cores e os acessórios dela. Para cada corpo, as mesmas animações de FONTES (a mesma escolha de
+  // pasta, por resolverAnimacoes); onde o corpo não tem a pose, a mais perto DELE (CAIR: nunca de outro corpo), e o que nem
+  // assim existe (varrendo) fica sem, e a página não o faz. Cada quadro leva o mapa de classes, o tom de referência e o lugar
+  // dos acessórios, de web/scripts/coelho-cena.py (personagem/cena/); a página pinta com a mesma conta do criador
+  // (web/src/coelho/montar.ts). Com o mascote 3D (MASCOTE=3d), todos continuam o mascote, como antes.
+  const CAIR = {
+    andando: ['baixa-120/animacoes/andando'],
+    acenando: ['baixa-120/animacoes/falando'],
+    'assistindo-sofa': ['estados/sentado-sofa'], 'rindo-sofa': ['estados/sentado-sofa'], 'acenando-sofa': ['estados/sentado-sofa'],
+    'aplaudindo-sofa': ['estados/sentado-sofa'], 'surpreso-sofa': ['estados/sentado-sofa'],
+    'jogando-fliperama': ['estados/no-fliperama', 'baixa-120/animacoes/parado'], 'empolgado-fliperama': ['estados/no-fliperama', 'baixa-120/animacoes/parado'],
+    'assistindo-chao': ['estados/sentado-2'],
+  };
+  const DIRS_DOS_DADOS = ['south-east', 'south-west', 'north-east', 'north-west', 'south', 'west', 'north', 'east'];
+  const arqDados = path.join(PERSONAGEM, 'cena', 'dados.json');
+  if (RECEITAS_NA_CENA && !fs.existsSync(arqDados)) throw new Error('falta ' + arqDados + ': rode py -3 web/scripts/coelho-cena.py');
+  const D = RECEITAS_NA_CENA ? JSON.parse(fs.readFileSync(arqDados, 'utf8')) : { corpos: {} };
+  const idx = (q) => { if (!indice.has(q)) { indice.set(q, QUADROS.length); QUADROS.push(q); } return indice.get(q); };
+  for (const [corpo, C] of Object.entries(D.corpos)) {
+    // (cada quadro uma vez por corpo: as animações repetem quadros, e as poses de reserva mais ainda; elas guardam o número)
+    const raiz = path.join(PERSONAGEM, corpo), tiras = new Map(), animacoes = {}, quadros = [], unicos = new Map();
+    const unico = (e) => { const k = JSON.stringify(e); if (!unicos.has(k)) { unicos.set(k, quadros.length); quadros.push(e); } return unicos.get(k); };
+    // (uma pose nova que coelho-cena.py ainda não mediu fica de fora, com um aviso, até rodá-lo: a de antes continua)
+    const medida = (dir, lista) => {
+      const pasta = path.relative(raiz, dir).split(path.sep).join('/');
+      if (!lista.every((f) => C.pastas[pasta]?.arquivos[f])) { console.warn(`aviso: ${corpo}/${pasta} sem os mapas de todos os quadros (rode py -3 web/scripts/coelho-cena.py); fica de fora`); return false; }
+      if (C.pastas[pasta].semRelatorio) { console.warn(`aviso: ${corpo}/${pasta} sem o lugar dos acessórios (rode py -3 e2e/pixel-art/personagem/acessorio-camadas.py e depois coelho-cena.py); fica de fora`); return false; }
+      return true;
+    };
+    const arquivos = corpo === 'mascote' ? ARQUIVOS_DO_MASCOTE : resolverAnimacoes(raiz, raiz, true, CAIR, medida);
+    for (const [nome, porDir] of Object.entries(arquivos)) {
+      animacoes[nome] = {};
+      // cada quadro: [o quadro, a tira do mapa, x na tira, ref do pelo, ref da roupa, { acessório: [dx, dy] } ou 0, a direção do arquivo]
+      for (const [d, arqs] of Object.entries(porDir)) animacoes[nome][d] = arqs.map((f) => {
+        const pasta = path.relative(raiz, path.dirname(f)).split(path.sep).join('/'), arq = path.basename(f), P = C.pastas[pasta];
+        if (!P?.arquivos[arq]) throw new Error(`${corpo}/${pasta}/${arq} sem mapa: rode py -3 web/scripts/coelho-cena.py`);
+        if (!tiras.has(pasta)) { tiras.set(pasta, TIRAS_DE_MAPA.length); TIRAS_DE_MAPA.push(pngAParte(corpo, path.join(PERSONAGEM, 'cena', P.mapa))); }
+        const dirArq = arq.match(/^(.*?)(?:-\d+)?\.png$/)[1], ref = P.refs[dirArq] ?? [1, 1], acc = {};
+        for (const [a, lugares] of Object.entries(P.acc)) if (lugares[arq]) acc[a] = lugares[arq];
+        return unico([idx(corpo === 'mascote' ? png(f) : pngAParte(corpo, f)), tiras.get(pasta), P.arquivos[arq][0], ref[0], ref[1], Object.keys(acc).length ? acc : 0, DIRS_DOS_DADOS.indexOf(dirArq)]);
+      });
+    }
+    const camadas = {};
+    for (const [acc, dirs] of Object.entries(C.camadas)) { camadas[acc] = {}; for (const d of dirs) camadas[acc][d] = pngAParte(corpo, path.join(raiz, 'acessorios', acc, 'parado', d + '-0.png')); }
+    CORPOS_DA_CENA[corpo] = { quadros, animacoes, camadas };
   } }
 // OS OBJETOS DE CIMA (../../../objetos/, escolhidos.json: a opção escolhida de cada um): 4 vistas do mesmo objeto, ou a
 // mesma vista nas 4 posições para o que é igual de todos os lados (o copo, a planta).
@@ -370,6 +456,7 @@ banquetas), <b>Ao vivo</b> (a TV liga e mostra quem transmite, com as setas de c
 capa no quadro) e <b>Recado</b> (o balão do coelho atrás do balcão; clicar no balcão mostra de novo). Ligue as <b>Funções do
 app</b> para ver o nome de cada objeto ao passar o mouse. A arrumação fica guardada neste navegador.</p>`;
 const PACOTE = fecharPacote();
+const A_PARTE = fecharPacotesAParte();
 const html = `<!doctype html>
 <html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${CENA === 'salao' ? 'Salão da comunidade' : 'Quarto do coelho'}</title>
@@ -535,6 +622,9 @@ const OBJETOS_DE_CIMA = ${JSON.stringify(OBJETOS_DE_CIMA)};
 // Cada quadro vai UMA vez (as animações repetem quadros entre si: a pose parada no começo de cada uma, as pastas de
 // reserva); as animações guardam o número dele.
 const QUADROS_DO_COELHO = ${JSON.stringify(QUADROS)};
+// O coelho de cada um (ver "O COELHO DE CADA UM"): os corpos, as tiras dos mapas e os pacotes à parte (baixados só quando alguém usa)
+const RECEITAS_NA_CENA = ${RECEITAS_NA_CENA}, CORPOS_DA_CENA = ${JSON.stringify(CORPOS_DA_CENA)}, TIRAS_DE_MAPA = ${JSON.stringify(TIRAS_DE_MAPA)};
+const PACOTES_A_PARTE = ${JSON.stringify(Object.fromEntries(Object.entries(A_PARTE).map(([g, x]) => [g, { url: x.url, indice: x.indice }])))};
 const GATO_QUADROS = ${JSON.stringify(GATO_QUADROS)};
 const BALOES_DO_QUARTO = ${JSON.stringify(BALOES_DO_QUARTO)};
 const ANIMACOES = Object.fromEntries(Object.entries(${JSON.stringify(ANIMACOES_IDX)}).map(([nome, dirs]) => [nome, Object.fromEntries(Object.entries(dirs).map(([d, qs]) => [d, qs.map((i) => QUADROS_DO_COELHO[i])]))]));
@@ -601,8 +691,13 @@ const imagensPedidas = new Map();
 let pacoteAberto = null;
 const abrirPacote = () => (pacoteAberto ??= fetch(PACOTE.url).then((r) => r.arrayBuffer()).then((buf) =>
   Object.fromEntries(Object.entries(PACOTE.indice).map(([nome, [ini, tam]]) => [nome, URL.createObjectURL(new Blob([new Uint8Array(buf, ini, tam)], { type: 'image/png' }))]))));
+const abertosAParte = {};
+const abrirAParte = (g) => (abertosAParte[g] ??= fetch(PACOTES_A_PARTE[g].url).then((r) => r.arrayBuffer()).then((buf) =>
+  Object.fromEntries(Object.entries(PACOTES_A_PARTE[g].indice).map(([nome, [ini, tam]]) => [nome, URL.createObjectURL(new Blob([new Uint8Array(buf, ini, tam)], { type: 'image/png' }))]))));
+const urlDe = (src) => src.startsWith('pacote:') ? abrirPacote().then((m) => m[src.slice(7)])
+  : src.startsWith('pacote@') ? (([g, nome]) => abrirAParte(g).then((m) => m[nome]))(src.slice(7).split(':')) : Promise.resolve(src);
 const carregar = (src) => {
-  if (!imagensPedidas.has(src)) imagensPedidas.set(src, (src.startsWith('pacote:') ? abrirPacote().then((m) => m[src.slice(7)]) : Promise.resolve(src)).then((url) => new Promise((ok) => {
+  if (!imagensPedidas.has(src)) imagensPedidas.set(src, urlDe(src).then((url) => new Promise((ok) => {
     const im = new Image();
     // DECODIFICADA EM SEGUNDO PLANO (desempenho, 16/10/2026): a imagem só se descomprimia no primeiro desenho, em
     // sequência e travando a página (~1 s no salão, com as vistas de 1024 × 1024). createImageBitmap descomprime fora da
@@ -1603,9 +1698,11 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // O gênero do jogo transmitido (web/src/generoDoJogo.ts) → o desenho da TV.
   const DESENHO_DO_GENERO = { moba: 'arena', tiro: 'tatico', futebol: 'futebol', corrida: 'corrida', luta: 'luta', aventura: 'aventura', construcao: 'construcao', fazenda: 'fazenda', estrategia: 'estrategia', cartas: 'cartas', terror: 'terror', plataforma: 'jogo', festa: 'festa', espaco: 'espaco', quebracabeca: 'quebracabeca', esportes: 'esportes', voo: 'voo', turnos: 'turnos', historia: 'historia', ritmo: 'ritmo' };
   let canalDaTv = null;
-  // (o GIF da comunidade, havendo, é o primeiro dos canais à toa, e o da TV à toa sem escolha: ver carregarGif)
+  // (o GIF da comunidade, havendo, é o primeiro dos canais à toa: ver carregarGif. DE FÁBRICA A TV FICA NO PADRÃO, o pôr do
+  // sol; o GIF é um canal que quem arruma o salão ESCOLHE, e a escolha vai com a arrumação, para a turma toda. Decisão dele,
+  // 10/11/2026: "quero que o adm possa escolher entre a TV padrão e a TV com GIF da comunidade".)
   const canaisDaTv = () => [...(GIF_DA_COMUNIDADE ? ['comunidade'] : []), ...CANAIS_DA_TV];
-  const canalDaTvAgora = () => (canalDaTv === 'ao-vivo' && !AO_VIVO ? 'tv' : canalDaTv === 'comunidade' && !GIF_DA_COMUNIDADE ? 'tv' : canalDaTv ?? (AO_VIVO ? 'ao-vivo' : GIF_DA_COMUNIDADE ? 'comunidade' : 'tv'));
+  const canalDaTvAgora = () => (canalDaTv === 'ao-vivo' && !AO_VIVO ? 'tv' : canalDaTv === 'comunidade' && !GIF_DA_COMUNIDADE ? 'tv' : canalDaTv ?? (AO_VIVO ? 'ao-vivo' : 'tv'));
   const tipoDaTela = (id) => (telasDesligadas.has(id) ? 'desligada' : id === 'mesa' ? conteudoAgora() : id === 'tv' ? canalDaTvAgora() : 'fliperama');
   const COR_DO_BRILHO = { call: [90, 110, 160], jogo: [120, 170, 210], conversa: [140, 120, 190], tv: [170, 140, 120], 'ao-vivo': [190, 90, 110], fliperama: [160, 110, 210], futebol: [110, 170, 110], tatico: [180, 160, 120], arena: [100, 140, 120] };
   // O CONTEÚDO: "auto" segue o estado (em call, a chamada; à toa, a conversa; ausente, desligada); o botão escolhe.
@@ -2428,6 +2525,9 @@ if (CENA === 'salao') document.body.classList.add('salao');
   const folha = dados(im.coelho, null, im.coelho.width, fh);
   // AS ANIMAÇÕES: cada quadro decodificado uma vez. A ÂNCORA é do PRIMEIRO quadro de cada animação e direção (o meio da
   // última linha com desenho): de pé, é o pé; sentado, é o assento. Fixa na animação inteira, para o coelho não tremer.
+  // (uma função desde 10/11/2026: os outros corpos do coelho de cada um passam pela mesma conta; ver animDaReceita)
+  async function montarAnim(ANIMACOES) {
+  await Promise.all(Object.values(ANIMACOES).flatMap((porDir) => Object.values(porDir).flat()).map((src) => carregar(src)));
   const ANIM = {};
   for (const [nome, porDir] of Object.entries(ANIMACOES)) {
     ANIM[nome] = {};
@@ -2464,12 +2564,177 @@ if (CENA === 'salao') document.body.classList.add('salao');
       }
     }
   }
+  return ANIM;
+  }
+  const ANIM_DO_MASCOTE = await montarAnim(ANIMACOES);
+  // o coelho da cena: no quarto, o de quem mora (a receita dele, definirCoelhoDoQuarto); no salão, o do balcão (o mascote)
+  let ANIM = ANIM_DO_MASCOTE;
   // A direção que falta numa animação: a do mesmo lado (de frente ↔ de frente), e por fim a pose parada.
   const PAR = { sudeste: 'sudoeste', sudoeste: 'sudeste', nordeste: 'noroeste', noroeste: 'nordeste' };
-  function quadrosDe(nome, d) {
-    const a = ANIM[nome] ?? {};
-    return a[d] ?? a[PAR[d]] ?? (d.startsWith('n') ? a.sudoeste ?? a.sudeste : a.noroeste ?? a.nordeste) ?? ANIM.parado[d] ?? ANIM.parado.sudeste;
+  function quadrosDe(nome, d, A = ANIM) {
+    const a = A[nome] ?? {};
+    return a[d] ?? a[PAR[d]] ?? (d.startsWith('n') ? a.sudoeste ?? a.sudeste : a.noroeste ?? a.nordeste) ?? A.parado[d] ?? A.parado.sudeste;
   }
+  // ============================== O COELHO DE CADA UM (10/11/2026) ==============================
+  // Pedido dele: "um ecossistema integrado". O coelho que cada pessoa monta no criador (Aparência → Avatar) é o dela aqui: no
+  // quarto, o de quem mora (o app manda a receita, já lida por receitaDe: a do criador, senão a sugestão do coelho pronto,
+  // senão o mascote); no salão, o de cada pessoa na call. O coelho do balcão continua o mascote.
+  // O DESENHO é a mesma conta do criador (web/src/coelho/montar.ts), quadro a quadro: os quadros do corpo, o pelo e a roupa
+  // trocados pelo mapa de classes (pelo = 1, roupa = 2) com o tom de referência do quadro 0 da direção, e por cima a bandana e
+  // o boné, pintados uma vez por direção e postos no lugar medido em cada quadro (ou ausentes: deitado, ou onde a cabeça
+  // mudou de forma). A luz da noite e o resto da cena trabalham sobre o quadro já pintado, como com o mascote.
+  // Cada animação de cada receita é pintada na PRIMEIRA vez que é pedida (e guardada); os outros corpos (os quadros, os
+  // mapas e as camadas) vêm de um pacote à parte, baixado só quando alguém na cena tem aquele corpo.
+  const COR_DA_RECEITA = /^#[0-9a-f]{6}$/;
+  // a receita que chega do app, conferida de novo (ela é desenhada aqui): corpo e acessório que a cena não conhece somem
+  function receitaConferida(r) {
+    if (!RECEITAS_NA_CENA || !r || typeof r !== 'object' || !CORPOS_DA_CENA[r.corpo]) return null;
+    const cor = (c) => (typeof c === 'string' && COR_DA_RECEITA.test(c.toLowerCase()) ? c.toLowerCase() : null);
+    const acc = (a) => (typeof a === 'string' && CORPOS_DA_CENA[r.corpo].camadas[a] ? a : null);
+    const cabeca = acc(r.cabeca), pescoco = acc(r.pescoco);
+    return { corpo: r.corpo, pelo: cor(r.pelo), roupa: cor(r.roupa), cabeca, cabecaCor: cabeca ? cor(r.cabecaCor) : null, pescoco, pescocoCor: pescoco ? cor(r.pescocoCor) : null };
+  }
+  const chaveDaReceita = (r) => (r ? [r.corpo, r.pelo, r.roupa, r.cabeca, r.cabecaCor, r.pescoco, r.pescocoCor].join('|') : '');
+  const ehOMascote = (r) => !r || (r.corpo === 'mascote' && !r.pelo && !r.roupa && !r.cabeca && !r.pescoco);
+  const DIRS_DOS_DADOS = ['south-east', 'south-west', 'north-east', 'north-west', 'south', 'west', 'north', 'east'];
+  const tirasDeMapa = [], corposDaCena = new Map();
+  // Um corpo: as animações (pela mesma montarAnim do mascote: a mesma âncora), o que cada quadro precisa e as camadas.
+  function corpoDaCena(corpo) {
+    let p = corposDaCena.get(corpo);
+    if (!p) {
+      p = (async () => {
+        const C = CORPOS_DA_CENA[corpo], srcs = {}, meta = {};
+        for (const [nome, porDir] of Object.entries(C.animacoes)) {
+          srcs[nome] = {}; meta[nome] = {};
+          for (const [d, is] of Object.entries(porDir)) { const qs = is.map((i) => C.quadros[i]); srcs[nome][d] = qs.map((q) => QUADROS_DO_COELHO[q[0]]); meta[nome][d] = qs; }
+        }
+        const usadas = [...new Set(Object.values(meta).flatMap((porDir) => Object.values(porDir).flat().map((q) => q[1])))];
+        const lerTira = async (t) => {
+          if (tirasDeMapa[t]) return;
+          const img = await carregar(TIRAS_DE_MAPA[t]), px = dados(img, null, img.width, img.height), cls = new Uint8Array(img.width * img.height);
+          for (let k = 0; k < cls.length; k++) cls[k] = Math.round(px[k * 4] / 80);
+          tirasDeMapa[t] = { w: img.width, cls };
+        };
+        const camadas = {};
+        const lerCamada = async (acc, d, src) => { const img = await carregar(src); (camadas[acc] ??= {})[d] = { px: dados(img, null, img.width, img.height), w: img.width, h: img.height }; };
+        const [anim] = await Promise.all([corpo === 'mascote' ? ANIM_DO_MASCOTE : montarAnim(srcs), ...usadas.map(lerTira),
+          ...Object.entries(C.camadas).flatMap(([acc, porDir]) => Object.entries(porDir).map(([d, src]) => lerCamada(acc, d, src)))]);
+        return { anim, meta, camadas };
+      })();
+      p.catch(() => corposDaCena.delete(corpo));
+      corposDaCena.set(corpo, p);
+    }
+    return p;
+  }
+  // A TROCA DE PALETA, igual à do criador (montar.ts): o tom de cada pixel em relação ao tom do meio da classe vira o mesmo
+  // tom da cor escolhida (abaixo do meio escurece até 25%, acima clareia em direção ao branco).
+  const lumDe = (r, g, b) => 0.299 * r + 0.587 * g + 0.114 * b;
+  const rgbDe = (h) => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+  function rampa(alvo, k) {
+    if (k <= 1) return alvo.map((c) => c * (0.25 + 0.75 * k));
+    const t = Math.min(1, (k - 1) * 1.1);
+    return alvo.map((c) => c + (255 - c) * t);
+  }
+  function recolorir(d, sel, alvo, refFixa) {
+    let ref = refFixa;
+    if (!ref) {
+      const ls = [];
+      for (let i = 0; i < d.length; i += 4) if (d[i + 3] > 20 && sel(i >> 2)) ls.push(lumDe(d[i], d[i + 1], d[i + 2]));
+      ls.sort((a, b) => a - b);
+      ref = ls[ls.length >> 1] || 1;
+    }
+    const a = rgbDe(alvo);
+    for (let i = 0; i < d.length; i += 4) {
+      if (d[i + 3] <= 20 || !sel(i >> 2)) continue;
+      const [r, g, b] = rampa(a, lumDe(d[i], d[i + 1], d[i + 2]) / ref);
+      d[i] = r; d[i + 1] = g; d[i + 2] = b;
+    }
+  }
+  const camadasPintadas = new Map();
+  function camadaPintada(base, corpo, acc, dir, cor) {
+    const k = [corpo, acc, dir, cor].join('|');
+    if (!camadasPintadas.has(k)) {
+      const o = base.camadas[acc]?.[dir];
+      let c = null;
+      if (o) { const px = new Uint8ClampedArray(o.px); if (cor) recolorir(px, () => true, cor); c = { px, w: o.w, h: o.h }; }
+      camadasPintadas.set(k, c);
+    }
+    return camadasPintadas.get(k);
+  }
+  // m: [o quadro, a tira do mapa, x na tira, ref do pelo, ref da roupa, { acessório: [dx, dy] } ou 0, a direção do arquivo]
+  function pintarQuadro(q, m, base, r) {
+    const px = new Uint8ClampedArray(q.px), T = tirasDeMapa[m[1]], x0 = m[2], w = q.w;
+    const classe = (c) => (j) => T.cls[((j / w) | 0) * T.w + x0 + (j % w)] === c;
+    if (r.pelo) recolorir(px, classe(1), r.pelo, m[3]);
+    if (r.roupa) recolorir(px, classe(2), r.roupa, m[4]);
+    // a bandana antes do boné (o boné fica por cima, como no criador); "por cima" como o drawImage do criador
+    for (const [acc, cor] of [[r.pescoco, r.pescocoCor], [r.cabeca, r.cabecaCor]]) {
+      const onde = acc && m[5] ? m[5][acc] : null;
+      const cam = onde && camadaPintada(base, r.corpo, acc, DIRS_DOS_DADOS[m[6]], cor);
+      if (!cam) continue;
+      for (let y = 0; y < cam.h; y++) {
+        const Y = y + onde[1]; if (Y < 0 || Y >= q.h) continue;
+        for (let x = 0; x < cam.w; x++) {
+          const s = (y * cam.w + x) * 4, a = cam.px[s + 3] / 255; if (!a) continue;
+          const X = x + onde[0]; if (X < 0 || X >= w) continue;
+          const d = (Y * w + X) * 4, da = px[d + 3] / 255, oa = a + da * (1 - a);
+          for (let c = 0; c < 3; c++) px[d + c] = (cam.px[s + c] * a + px[d + c] * da * (1 - a)) / oa;
+          px[d + 3] = oa * 255;
+        }
+      }
+    }
+    return { ...q, px };
+  }
+  function pintarEntrada(b, ms, base, r) {
+    if (!b || !ms || ms.length !== b.quadros.length) return b;
+    const quadros = b.quadros.map((q, i) => pintarQuadro(q, ms[i], base, r)), q0 = quadros[0];
+    let topo = q0.h; for (let k = 0; k < q0.w * q0.h; k++) if (q0.px[k * 4 + 3] > 127) { topo = (k / q0.w) | 0; break; }
+    return { ...b, quadros, topo };
+  }
+  // A VIRADA com acessório: as poses de frente, de costas e de lado (sul, oeste, norte, leste) não têm a camada pintada, e o
+  // boné sumiria por um quadro a cada virada. Ali, a diagonal mais perto.
+  const VIRADA_COM_ACESSORIO = { sul: 'sudeste', oeste: 'sudoeste', norte: 'noroeste', leste: 'nordeste' };
+  function animPintado(base, r) {
+    const comAcc = !!(r.cabeca || r.pescoco), feitos = new Map(), out = {};
+    for (const [nome, porDir] of Object.entries(base.anim)) out[nome] = new Proxy(porDir, { get(t, d) {
+      if (typeof d !== 'string' || !(d in t)) return t[d];
+      const diag = VIRADA_COM_ACESSORIO[d], semAcc = !base.meta[nome]?.[d]?.[0]?.[5];
+      const dd = comAcc && diag && semAcc && t[diag] ? diag : d, k = nome + '|' + dd;
+      if (!feitos.has(k)) feitos.set(k, pintarEntrada(t[dd], base.meta[nome]?.[dd], base, r));
+      return feitos.get(k);
+    } });
+    return out;
+  }
+  const animsDasReceitas = new Map(), receitasPedidas = new Map();
+  // O desenho de uma receita, pronto para quadrosDe; null enquanto o corpo carrega (pede, e redesenha quando chegar).
+  function animDaReceita(r) {
+    if (ehOMascote(r)) return ANIM_DO_MASCOTE;
+    const k = chaveDaReceita(r);
+    if (animsDasReceitas.has(k)) return animsDasReceitas.get(k);
+    esperarReceita(r);
+    return null;
+  }
+  function esperarReceita(r) {
+    if (ehOMascote(r)) return Promise.resolve(ANIM_DO_MASCOTE);
+    const k = chaveDaReceita(r);
+    if (!receitasPedidas.has(k)) receitasPedidas.set(k, corpoDaCena(r.corpo).then((base) => animPintado(base, r), (e) => { console.warn('o corpo do coelho não carregou:', r.corpo, e); return ANIM_DO_MASCOTE; })
+      .then((a) => { animsDasReceitas.set(k, a); if (CENA === 'salao') { pecasDasPessoas.clear(); assinaturaCena = ''; desenhar(); } return a; }));
+    return receitasPedidas.get(k);
+  }
+  // O coelho de uma pessoa do salão (sem receita, o mascote).
+  const animDaPessoa = (p) => animDaReceita(receitaConferida(p?.coelho));
+  // O COELHO DO QUARTO: o de quem mora. Até o corpo chegar, o de antes (o app só mostra o quarto depois: ver "arrumado").
+  let receitaDoQuarto = null, versaoDoCoelho = 0;
+  function definirCoelhoDoQuarto(r0) {
+    if (CENA !== 'quarto') return Promise.resolve();
+    const r = receitaConferida(r0), k = chaveDaReceita(r);
+    receitaDoQuarto = r;
+    return esperarReceita(r).then((a) => {
+      if (chaveDaReceita(receitaDoQuarto) !== k || ANIM === a) return;
+      ANIM = a; versaoDoCoelho++; desenhar();
+    });
+  }
+  window.receitaDoTeste = (r) => definirCoelhoDoQuarto(r); // para o teste (no salão, cada pessoa leva a dela: pessoasDoTeste)
   // O mascote: um quadro por direção. O pé é o meio da última linha com desenho (a âncora do README).
   const mascote = {};
   for (const d of ['sudeste', 'sudoeste', 'nordeste', 'noroeste']) {
@@ -3341,7 +3606,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
       for (const p of PESSOAS) if (!depois.has(p.id)) {
         evento('saiu', { quem: p.id });
         const l = lugares.get(p.id);
-        if (l?.pose === 'sentado-sofa' && !semAndar && ANIM['sentar-sofa']?.[l.olha]) SAINDO.push({ pessoa: p, lugar: l, desde: faseDasPessoas });
+        if (l?.pose === 'sentado-sofa' && !semAndar && animDaPessoa(p)?.['sentar-sofa']?.[l.olha]) SAINDO.push({ pessoa: p, lugar: l, desde: faseDasPessoas });
       }
     }
     PESSOAS = nova;
@@ -3359,7 +3624,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   const serveNaDirecao = (nome, olha) => !String(olha).startsWith('n') || DE_COSTAS_SERVE.has(nome);
   const sorteio = (a, b) => ((a * 7919 + b * 104729 + 12345) >>> 0) % 1000;
   // A reação de uma pessoa agora: { anim, iq, balao } ou null.
-  function reacaoDe(pessoa, lugar) {
+  function reacaoDe(pessoa, lugar, A = ANIM) {
     const noSofa = lugar.pose === 'sentado-sofa';
     for (let k = EVENTOS.length - 1; k >= 0; k--) {
       const e = EVENTOS[k];
@@ -3369,7 +3634,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
       const atraso = s % 5, passou = faseDasPessoas - e.desde - atraso;
       if (passou < 0) continue;
       const [nome, balao] = REACOES[e.tipo] ?? [];
-      const anim = noSofa && nome && ANIM[nome]?.[lugar.olha] && serveNaDirecao(nome, lugar.olha) && !semAndar ? nome : null, n = anim ? ANIM[anim][lugar.olha].quadros.length : 0;
+      const anim = noSofa && nome && A[nome]?.[lugar.olha] && serveNaDirecao(nome, lugar.olha) && !semAndar ? nome : null, n = anim ? A[anim][lugar.olha].quadros.length : 0;
       if (passou < Math.max(n, 8)) return { anim: passou < n ? anim : null, iq: passou, balao: passou < 8 ? balao : null };
     }
     return null;
@@ -3378,6 +3643,15 @@ if (CENA === 'salao') document.body.classList.add('salao');
   const BALOES = {};
   const balaoDe = (nome) => { if (!BALOES[nome] && im['balao-' + nome]) { const b = im['balao-' + nome]; BALOES[nome] = { px: dados(b, null, b.width, b.height), w: b.width, h: b.height }; } return BALOES[nome]; };
   window.eventoDoTeste = (tipo) => evento(tipo); // para o teste
+  // para o teste do coelho de cada um: só os pixels de uma pessoa do salão (o último desenho dela), antes da luz da cena
+  const ultimaPecaDaPessoa = new Map();
+  window.pixelsDaPessoaDoTeste = (id) => { const p = ultimaPecaDaPessoa.get(id); return p ? regiaoDoTeste(p.movel, p.caixa) : null; };
+  function regiaoDoTeste(buf, caixa) {
+    if (!caixa) return null;
+    const [x0, y0, x1, y1] = caixa.map((v) => Math.max(0, Math.min(W, Math.round(v)))), w = x1 - x0, h = y1 - y0, px = [];
+    for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) { const k = (y * W + x) * 4; px.push(buf[k], buf[k + 1], buf[k + 2], buf[k + 3]); }
+    return { caixa: [x0, y0, x1, y1], w, h, px };
+  }
   window.movimentoDoTeste = (sim) => { semAndar = !sim; }; // para o teste (os ganchos do coelho deixam a página sem caminhada)
   window.faseDoTeste = (n) => { if (n != null) { faseDasPessoas = n; desenhar(); } return faseDasPessoas; }; // para o teste
   let pessoasIniciadas = false;
@@ -3387,12 +3661,15 @@ if (CENA === 'salao') document.body.classList.add('salao');
     const todos = [...lugaresDasPessoas(), ...vivos.map((x) => ({ pessoa: x.pessoa, lugar: x.lugar, saindo: x }))];
     for (const [i, { pessoa, lugar: lugar0, saindo }] of todos.entries()) {
       let lugar = lugar0;
+      // o coelho dela (a receita do criador); enquanto o corpo dela carrega, ela ainda não aparece
+      const A = animDaPessoa(pessoa), rk = chaveDaReceita(receitaConferida(pessoa.coelho));
+      if (!A) continue;
       // RESPIRANDO (relato dele, 30/10/2026: "os coelhos estão engessados"): 4 tempos do ciclo da pose, cada pessoa
       // defasada da outra, trocados por respirarAsPessoas. Pose de um desenho só fica parada.
       // ASSISTINDO (relato dele, 09/11/2026: "parecem que estão dormindo; completamente congelados"): quem senta no sofá ou no
       // chão vendo a TV tem a animação de assistir, de olhos abertos, cada um no seu tempo; de frente, de vez em quando uma
       // risada (ou, com transmissão, palmas). Com "menos movimento", um quadro dela de olhos abertos, parado.
-      const animDe = (nome) => (ANIM[nome]?.[lugar.olha] ? nome : null);
+      const animDe = (nome) => (A[nome]?.[lugar.olha] ? nome : null);
       // A CHEGADA AO LUGAR: a chave do lugar; mudou (ou chegou agora), conta o passo
       const chaveDoLugar = [lugar.sobre ?? '', lugar.assento ?? '', lugar.pose, lugar.u.toFixed(2), lugar.v.toFixed(2)].join('|');
       if (!saindo) {
@@ -3410,23 +3687,23 @@ if (CENA === 'salao') document.body.classList.add('salao');
         lugar = { ...lugar, u: lugar.u + fu * 0.45 * (1 - f), v: lugar.v + fv * 0.45 * (1 - f), sobe: lugar.sobe * f };
         if (passoT <= 0) { nomeA = 'parado'; iq = 0; } else { nomeA = trans; iq = passoT - 1; }
       } else {
-        const r = saindo ? null : reacaoDe(pessoa, lugar);
+        const r = saindo ? null : reacaoDe(pessoa, lugar, A);
         balao = r?.balao ?? null;
         const assistindo = lugar.pose === 'sentado-sofa' ? animDe('assistindo-sofa') : lugar.pose === 'no-fliperama' ? animDe('jogando-fliperama') : lugar.pose === 'sentado' && !lugar.sobre && pessoa.papel === 'call' ? animDe('assistindo-chao') : null;
         nomeA = assistindo ?? lugar.pose;
         if (r?.anim) { nomeA = r.anim; iq = r.iq; }
         else if (assistindo) {
-          const t = faseDasPessoas + i * 7, nA = ANIM[assistindo][lugar.olha].quadros.length;
+          const t = faseDasPessoas + i * 7, nA = A[assistindo][lugar.olha].quadros.length;
           // a risada (ou, com transmissão, às vezes palmas): uma vez a cada ~15 s, num momento sorteado, cada um na sua hora
           const extra = lugar.pose === 'no-fliperama' ? animDe('empolgado-fliperama') : lugar.pose === 'sentado-sofa' ? (AO_VIVO && serveNaDirecao('aplaudindo-sofa', lugar.olha) && sorteio(pessoa.id, Math.floor(t / 50)) % 3 === 0 ? animDe('aplaudindo-sofa') : animDe('rindo-sofa')) : null;
-          const nR = extra ? ANIM[extra][lugar.olha].quadros.length : 0;
+          const nR = extra ? A[extra][lugar.olha].quadros.length : 0;
           const P = 50, volta = Math.floor(t / P), inicio = extra ? sorteio(pessoa.id, volta) % (P - nR) : -1, dentro = t % P;
           if (semAndar) iq = Math.min(3, nA - 1); // (o quadro 0 é a pose de base, de olhos fechados: um já de olhos abertos)
           else if (extra && dentro >= inicio && dentro < inicio + nR) { nomeA = extra; iq = dentro - inicio; }
           else iq = t % nA;
         }
       }
-      const a = quadrosDe(nomeA, lugar.olha), nq = a.quadros.length;
+      const a = quadrosDe(nomeA, lugar.olha, A), nq = a.quadros.length;
       if (iq == null) iq = nq >= 4 ? Math.floor(((faseDasPessoas + i * 3) % 4) * nq / 4) : 0;
       iq = Math.max(0, Math.min(nq - 1, iq));
       const q = a.quadros[iq], [px, py] = ponto(lugar.u, lugar.v);
@@ -3442,7 +3719,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
         const sp = peDe(id);
         return lugar.u + 0.28 <= sp[0] + e || lugar.v + 0.28 <= sp[2] + e;
       });
-      const chave = [pessoa.id, nomeA, lugar.olha, X0, Y0, iq, balao ?? '', JSON.stringify(naFrente.map((id) => ARR[id]))].join('|');
+      const chave = [pessoa.id, rk, nomeA, lugar.olha, X0, Y0, iq, balao ?? '', JSON.stringify(naFrente.map((id) => ARR[id]))].join('|');
       let p = pecasDasPessoas.get(chave);
       if (!p) {
         const movel = new Uint8ClampedArray(W * W * 4), peColuna = new Int16Array(W).fill(-1);
@@ -3516,6 +3793,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
         }
         p = { id: 'pessoa-' + pessoa.id, movel, sombra: VAZIA, topo: Y0 + a.topo - (bl ? 20 : 0), peColuna, caixa: [Math.max(0, X0 - 4), Math.max(0, Y0 - (bl ? 24 : 0)), Math.min(W, X0 + q.w), Math.min(W, Y0 + q.h)] };
         if (pecasDasPessoas.size > 80) pecasDasPessoas.clear(); // (8 pessoas × 4 tempos da respiração cabem)
+        ultimaPecaDaPessoa.set(pessoa.id, p); // (para o teste)
         pecasDasPessoas.set(chave, p);
       }
       const r = 0.28;
@@ -3925,6 +4203,8 @@ if (CENA === 'salao') document.body.classList.add('salao');
     }
     ultimaCaixa = [X0, Y0, X0 + sw, Y0 + sh];
     window.caixaDoCoelho = ultimaCaixa; // para as fotos de perto do teste
+    // para o teste do coelho de cada um (e2e/pixel-art/coelho-na-cena.mjs): só os pixels dele, antes da luz da cena
+    window.pixelsDoCoelhoDoTeste = () => regiaoDoTeste(quadroBuf, ultimaCaixa);
     // [x, y do chão, altura do assento]: sentado, a sombra sai do assento e cai no chão em volta do móvel.
     coelhoPe = [px, py, altura];
     // A espessura dele na profundidade: de pé, fino; sentado, as pernas à frente; deitado, o corpo inteiro no colchão.
@@ -5123,6 +5403,14 @@ void main() {
   };
   // Pinta o conteúdo da tela por cima da imagem (dentro da região r), só onde o pixel ainda é da mesa.
   let gifAgora = 0;
+  // A figura de um canal (para o "…" da TV): a tela dele, parada, num retângulo 16:9.
+  function figuraDoCanal(canal) {
+    const c = document.createElement('canvas'); c.width = 48; c.height = 27; c.style.imageRendering = 'pixelated'; c.style.width = '48px';
+    const g2 = c.getContext('2d'), d = g2.createImageData(48, 27), guarda = gifAgora; gifAgora = 0;
+    for (let y = 0; y < 27; y++) for (let x = 0; x < 48; x++) { const cor = corDaTela((x + 0.5) / 48, (y + 0.5) / 27, 0, canal) ?? [0, 0, 0], i = (y * 48 + x) * 4; d.data[i] = cor[0]; d.data[i + 1] = cor[1]; d.data[i + 2] = cor[2]; d.data[i + 3] = 255; }
+    gifAgora = guarda; g2.putImageData(d, 0, 0);
+    return c;
+  }
   function pintarTela(r) {
     const q = liga('telas') ? Math.floor(performance.now() / 250) : 0; // paradas: o primeiro quadro, aceso
     // o GIF anda pelo relógio, com a duração de cada quadro (com "Telas animadas" desligado, o primeiro)
@@ -5176,7 +5464,7 @@ void main() {
       // desenhava a sombra.
       const c = unir([cxv[0] + iv.dx - 2, cxv[1] + iv.dy - 2, cxv[2] + iv.dx + 2, cxv[3] + iv.dy + 2], [Math.min(...cantos.map((q) => q[0])) - 6, Math.min(...cantos.map((q) => q[1])) - 4, Math.max(...cantos.map((q) => q[0])) + 6, Math.max(...cantos.map((q) => q[1])) + 4]);
       return [Math.floor(c[0]), Math.floor(c[1]), Math.ceil(c[2]), Math.ceil(c[3])]; })() : null;
-    const sig = JSON.stringify([ultimaCaixa, rotuloDoQuadro, coelhoChave, gatoAgora ? [gatoAgora.chave, gatoAgora.X0, gatoAgora.Y0] : 0, vc ? [cx0, cy0, indiceDaVista()] : 0, telaMexe ? Math.floor(performance.now() / (GIF_DA_COMUNIDADE && canalDaTvAgora() === 'comunidade' && !telasDesligadas.has('tv') ? 100 : 250)) : 0, conteudoAgora(), iv ? [iv.dx, iv.dy, alvo] : 0, particulas.length ? performance.now() : 0, notas.length ? Math.floor(performance.now() / 100) : 0, paredePega?.vivo ? JSON.stringify(paredePega.vivo) : 0, objPego?.vivo ? [Math.round(objPego.vivo.x), Math.round(objPego.vivo.y), objPego.vivo.lado] : 0, realce?.chave ?? 0, EDITANDO && selecao ? selecao.chave : 0]);
+    const sig = JSON.stringify([ultimaCaixa, rotuloDoQuadro, coelhoChave, gatoAgora ? [gatoAgora.chave, gatoAgora.X0, gatoAgora.Y0] : 0, vc ? [cx0, cy0, indiceDaVista()] : 0, telaMexe ? Math.floor(performance.now() / (GIF_DA_COMUNIDADE && canalDaTvAgora() === 'comunidade' && !telasDesligadas.has('tv') ? 100 : 250)) : 0, conteudoAgora(), iv ? [iv.dx, iv.dy, alvo] : 0, particulas.length ? performance.now() : 0, notas.length ? Math.floor(performance.now() / 100) : 0, paredePega?.vivo ? JSON.stringify(paredePega.vivo) : 0, objPego?.vivo ? [Math.round(objPego.vivo.x), Math.round(objPego.vivo.y), objPego.vivo.lado] : 0, realce?.chave ?? 0, EDITANDO && selecao ? selecao.chave : 0, versaoDoCoelho]);
     const mexeu = sig !== assinaturaQuadro;
     if (!mexeu && regiaoAnterior && regiaoAnterior[2] - regiaoAnterior[0] < W) { escreverLegenda(); return; }
     if (selecao && !EDITANDO) selecao = null;
@@ -6185,7 +6473,8 @@ void main() {
     }
     if (k === 'r') girarSegurado(e.shiftKey ? -1 : 1);
   });
-  document.getElementById('inicial').onclick = () => { ARR = JSON.parse(JSON.stringify(INI())); GUARDADOS = new Set(GUARDADOS_DE_FABRICA.filter(podeGuardar)); for (const id of GUARDADOS) delete ARR[id]; guardarGuardados(); botoesDosMoveis(); naMesa(); guardarCadeira(); guardar(); NA_PAREDE = prenderTudo(paredeDaPlanta()); guardarParede(); CORES = {}; guardarCores(); botaoDaCor(); vestirOpcoes(); vestirCama(); botaoDaOpcao(); EM_CIMA = EM_CIMA_INICIAL(); guardarObjetos(); botoesDaParede(); mudarJanela({ ...janelaDaPlanta() }); };
+  function voltarAoDeFabrica() { ARR = JSON.parse(JSON.stringify(INI())); GUARDADOS = new Set(GUARDADOS_DE_FABRICA.filter(podeGuardar)); for (const id of GUARDADOS) delete ARR[id]; guardarGuardados(); botoesDosMoveis(); naMesa(); guardarCadeira(); guardar(); NA_PAREDE = prenderTudo(paredeDaPlanta()); guardarParede(); CORES = {}; guardarCores(); botaoDaCor(); vestirOpcoes(); vestirCama(); botaoDaOpcao(); EM_CIMA = EM_CIMA_INICIAL(); guardarObjetos(); botoesDaParede(); mudarJanela({ ...janelaDaPlanta() }); }
+  document.getElementById('inicial').onclick = voltarAoDeFabrica;
   escolher(ARR.poltrona ? 'poltrona' : Object.keys(ARR)[0]);
   const btela = document.getElementById('tela-pc'), NOMES_TELA = { auto: 'automática', call: 'em call', conversa: 'conversa', jogo: 'jogo', desligada: 'desligada' };
   btela.onclick = () => { conteudo = CONTEUDOS[(CONTEUDOS.indexOf(conteudo) + 1) % CONTEUDOS.length]; btela.textContent = 'Tela: ' + NOMES_TELA[conteudo]; assinaturaCena = ''; desenhar(); };
@@ -6336,17 +6625,35 @@ void main() {
     esperaDoEnvio = setTimeout(() => { pedir('PUT', ROTA, retrato()).then(() => dizer('Entrou como ' + conta.nome + ' (conta ' + conta.id + '). Guardado no servidor.')).catch((e) => dizer('Não guardou: ' + e.message)).finally(() => { envioPendente = false; }); }, 700);
   };
   async function carregarMeu() {
-    const { arrumacao, copias } = await pedir('GET', ROTA);
+    const resposta = await pedir('GET', ROTA), { arrumacao, copias } = resposta;
     PODE_COPIAR = !!copias;
-    if (arrumacao) vestir(arrumacao); else enviar(); // ainda não tinha: o que está na tela vira o dele
+    // ainda não tinha: o que está na tela vira o dele. NO SALÃO, o de fábrica (relato dele, 10/11/2026: "estou em duas
+    // comunidades e elas estão exatamente iguais"): o que está na tela veio do navegador, e a chave dele ('syden-salao-…') é
+    // a mesma para todas as comunidades; a primeira vez que alguém que arruma abria o salão de uma comunidade nova, o salão
+    // de OUTRA comunidade era gravado nela.
+    if (arrumacao) vestir(arrumacao); else { if (CENA === 'salao') voltarAoDeFabrica(); enviar(); }
     marcarBase(); // desfazer não volta para antes do que veio do servidor
     if (rascunho !== null) rascunho = JSON.stringify(retrato());
     dizer('Entrou como ' + conta.nome + ' (conta ' + conta.id + ').');
+    await pedirCoelho(resposta);
+  }
+  // O COELHO DE QUEM MORA (10/11/2026, "O COELHO DE CADA UM"): o servidor manda, com a arrumação, o coelho de quem mora (a
+  // receita do criador e o coelho pronto); quem sabe ler a receita é o app (coelho/receita.ts, receitaDe), que devolve
+  // { coelho }. O "arrumado" espera por ele (até 3 s): o quarto não aparece com o coelho de outro e troca um instante depois.
+  let esperaDoCoelho = null;
+  function pedirCoelho(dono) {
+    if (CENA !== 'quarto' || !MODO_APP || window.parent === window || !dono || !('coelho' in dono || 'avatarPronto' in dono)) return Promise.resolve();
+    return new Promise((ok) => {
+      esperaDoCoelho = ok;
+      window.parent.postMessage({ syden: 'quarto', coelhoDe: { coelho: dono.coelho ?? null, avatarPronto: dono.avatarPronto ?? null } }, location.origin);
+      setTimeout(ok, 3000);
+    });
   }
   // O SALÃO MUDOU (salao:mudou): relê. O aviso chega também para quem mudou; aí a arrumação lida é a mesma da tela, e o
   // desfazer dele continua valendo.
   async function reler() {
-    const { arrumacao } = await pedir('GET', ROTA);
+    const resposta = await pedir('GET', ROTA), { arrumacao } = resposta;
+    pedirCoelho(resposta); // (o coelho muda pela Aparência: o quarto aberto atrás relê, quartoMudou.ts)
     // (quem está com um rascunho aberto não é atropelado pela mudança de outra pessoa)
     if (!arrumacao || envioPendente || arrastando || viva || rascunho !== null) return;
     vestir(arrumacao);
@@ -6554,6 +6861,13 @@ void main() {
       if (podeTirar(ch)) botoesB.push(botaoDaBarrinha('tirar', () => tirarEscolhido()));
       if (podeDuplicar(ch)) botoesB.push(botaoDaBarrinha('duplicar', () => duplicarEscolhido()));
       if (tipoDe(id) === 'cama') for (const [nome, src] of Object.entries(figurasCache().camas ?? {})) opcoes.push(figuraDaBarrinha(src, camaEscolhida() === nome, () => escolherCama(nome)));
+      // O CANAL DA TV NO EDITAR DO SALÃO (10/11/2026): com o GIF da comunidade, o "…" da TV mostra as duas telas em figura, o
+      // pôr do sol (o padrão) e a capa animada; a escolha é a mesma do botão direito e vai com a arrumação.
+      if (id === 'tv' && CENA === 'salao' && GIF_DA_COMUNIDADE) for (const canal of ['tv', 'comunidade']) {
+        opcoes.push(figuraDaBarrinha(figuraDoCanal(canal), canalDaTvAgora() === canal && !telasDesligadas.has('tv'), () => {
+          canalDaTv = canal; telasDesligadas.delete('tv'); assinaturaCena = ''; enviar(); desenhar(); montarBarrinha();
+        }));
+      }
       if (tipoDe(id) === 'tapete') for (const [cor, css] of Object.entries(figurasCache().cores)) {
         const bola = document.createElement('span'); bola.className = 'cor'; bola.style.background = css;
         opcoes.push(figuraDaBarrinha(bola, (CORES.tapete ?? 'salvia') === cor, () => { CORES = { ...CORES, tapete: cor }; guardarCores(); botaoDaCor(); desenhar(); }));
@@ -6827,6 +7141,15 @@ void main() {
         // sair do Editar sem dizer como (o app fechou a barra): o que estava pendente vale, como no Aplicar
         if (!EDITANDO) { selecionar(null); pararDeMover(); if (rascunho !== null) aplicarRascunho(); }
       }
+      // O CÓDIGO DO LAYOUT (pedido dele, 10/11/2026: "deveria ter código para compartilhar o layout, como já ocorre na configuração
+      // dos coelhos"): o app pede o retrato (e o transforma no código "SYDL1-…"), ou manda um retrato colado, que se veste como um
+      // Desfazer ao contrário (fica no rascunho do Editar até Aplicar). O salão não veste quarto e vice-versa.
+      if (d.comando === 'exportar' && MODO_APP && window.parent !== window) window.parent.postMessage({ syden: 'quarto', layout: { cena: CENA, ...retrato() } }, location.origin);
+      if (d.comando === 'importar' && d.layout && typeof d.layout === 'object' && !soVer) {
+        const ok = d.layout.cena === CENA;
+        if (ok) { const { cena: _cena, ...resto } = d.layout; vestirEGuardar(JSON.stringify(resto)); anotar(); relatar(); }
+        if (MODO_APP && window.parent !== window) window.parent.postMessage({ syden: 'quarto', layoutUsado: ok }, location.origin);
+      }
       if (d.comando === 'salvar') salvarRascunho();
       if (d.comando === 'aplicar') aplicarRascunho();
       if (d.comando === 'cancelar') cancelarRascunho();
@@ -6846,7 +7169,7 @@ void main() {
         conta = d.conta; visitaNoApp = true;
         modoVisita('visita');
         pedir('GET', '/api/quarto/' + encodeURIComponent(d.conta.visitar))
-          .then((j) => { if (j.arrumacao) vestir(j.arrumacao); else document.getElementById('inicial').onclick(); modoVisita(j.dono.nomeDeExibicao || j.dono.username); })
+          .then((j) => { if (j.arrumacao) vestir(j.arrumacao); else document.getElementById('inicial').onclick(); modoVisita(j.dono.nomeDeExibicao || j.dono.username); return pedirCoelho(j.dono); })
           .catch((e) => window.parent.postMessage({ syden: 'quarto', visitaFalhou: e?.status === 404 ? 'fechado' : 'falhou' }, location.origin))
           .finally(() => { desenhar(); window.parent.postMessage({ syden: 'quarto', arrumado: true }, location.origin); });
       } else if (d.conta && !conta) {
@@ -6884,6 +7207,8 @@ void main() {
       if (d.comando === 'inicial') document.getElementById('inicial').click();
       if (d.comando === 'objeto' && OBJ_VISTAS[d.tipo]) porObjeto(d.tipo);
       if (Array.isArray(d.pessoas)) { mudarPessoas(d.pessoas.slice(0, 12)); desenhar(); }
+      // o coelho de quem mora no quarto (a resposta ao coelhoDe, ver pedirCoelho)
+      if ('coelho' in d) definirCoelhoDoQuarto(d.coelho).finally(() => { esperaDoCoelho?.(); esperaDoCoelho = null; });
       if (d.chegou && typeof d.chegou.nome === 'string') chegouAlguem(d.chegou.nome.slice(0, 40));
     });
     window.parent.postMessage({ syden: 'quarto', pronto: true, figuras: figurasCache() }, location.origin);
@@ -6902,7 +7227,8 @@ void main() {
       bp.textContent = 'Pessoas na call: ' + n; desenhar();
     };
   }
-  window.pessoasDoTeste = (lista, comEventos) => { if (comEventos) mudarPessoas(lista); else { PESSOAS = lista; JA_VISTOS = new Map(); SAINDO = []; pessoasIniciadas = false; } desenhar(); }; // para o teste (comEventos: como o app manda, com quem chega sentando e quem sai levantando)
+  // (devolve a promessa de quando os coelhos de todos chegaram: cada pessoa pode ter o dela, { coelho: receita })
+  window.pessoasDoTeste = (lista, comEventos) => { if (comEventos) mudarPessoas(lista); else { PESSOAS = lista; JA_VISTOS = new Map(); SAINDO = []; pessoasIniciadas = false; } desenhar(); return Promise.all(lista.map((p) => esperarReceita(receitaConferida(p.coelho)))).then(() => {}); }; // para o teste (comEventos: como o app manda, com quem chega sentando e quem sai levantando)
   // ============================== A CÂMERA (o salão 16 × 16, 15/10/2026) ==============================
   // Decisão dele: "câmera que anda". O salão inteiro não cabe no tamanho de pixel do quarto, então a vista mostra um pedaço
   // e o mundo anda dentro dela: arrastar onde não há nada para pegar (o chão, a parede, o fundo) leva a câmera. Ela abre

@@ -49,7 +49,7 @@ export interface EstadoGolfe3D {
   decorridoMs: number | null;
   fechando: boolean;
   tacadasMax: number;
-  bolas: { userId: number; username: string; avatar: number | null; x: number; z: number; tacadas: number; dentro: boolean; acabou: boolean }[];
+  bolas: { userId: number; username: string; avatar: number | string | null; x: number; z: number; tacadas: number; dentro: boolean; acabou: boolean }[];
   meu: Bola | null;
   placar: { userId: number; username: string; pontos: number; buraco: number | null; posicao: number | null }[];
   partidaId: string;

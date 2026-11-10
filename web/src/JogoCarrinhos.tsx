@@ -46,15 +46,15 @@ export interface EstadoCarrinhos {
   voltasDaCorrida: number;
   partidaId: string;
   // o Solo
-  recordes?: { userId: number; nome: string; avatar: number | null; tempoMs: number }[];
-  meuAvatar?: number | null;
+  recordes?: { userId: number; nome: string; avatar: number | string | null; tempoMs: number }[];
+  meuAvatar?: number | string | null;
   meuNome?: string;
-  fantasmas?: { userId: number; nome: string; avatar: number | null; tempoMs: number; entradas: number[] }[];
+  fantasmas?: { userId: number; nome: string; avatar: number | string | null; tempoMs: number; entradas: number[] }[];
   robos?: number;
   rodada?: number;
   resultado?: { tempoMs: number; voltas: number[]; saidas: number; recorde: boolean; anterior: number | null } | null;
   // a sala
-  pilotos?: { userId: number; username: string; faixa: number; tempoMs: number | null; voltas: number[]; posicao: number | null; avatar: number | null }[];
+  pilotos?: { userId: number; username: string; faixa: number; tempoMs: number | null; voltas: number[]; posicao: number | null; avatar: number | string | null }[];
   prazo?: boolean;
 }
 
@@ -140,7 +140,7 @@ interface Painel {
 interface Rival {
   nome: string;
   faixa: number;
-  avatar: number | null;
+  avatar: number | string | null;
   posicoes: { n: number; s: number; f: number; d: number }[];
   /** O passo (no meu relógio) em que ele saiu da pista, para o desenho do voo. */
   saiuEm: number | null;

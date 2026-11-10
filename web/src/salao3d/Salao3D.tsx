@@ -12,7 +12,7 @@ export interface PessoaNoSalao3DDeFora {
   id: number;
   nome: string;
   papel: 'call' | 'transmitindo' | 'jogando';
-  avatar: number | null;
+  avatar: number | string | null;
 }
 
 /**

@@ -62,7 +62,7 @@ function solo(ctx: Ctx, eu: number, torreInicial: string, agora: () => number) {
   let id = torreInicial;
   let rodada = 0;
   let subiuEm = 0;
-  let fantasmas: { userId: number; nome: string; avatar: number | null; tempoMs: number; amostras: number[] }[] = [];
+  let fantasmas: { userId: number; nome: string; avatar: number | string | null; tempoMs: number; amostras: number[] }[] = [];
   let resultado: { tempoMs: number; recorde: boolean; anterior: number | null } | null = null;
   const evento = `torre-solo-${eu}-${agora()}`;
   const parado = () => ctx.agendar(SOLO_PARADO_MS, () => ctx.terminar(false));
@@ -74,7 +74,7 @@ function solo(ctx: Ctx, eu: number, torreInicial: string, agora: () => number) {
       solo: true,
       pista: id,
       recordes: db.recordesDaTorre(eu, id).map(({ userId, username, nomeDeExibicao, avatarPronto, tempoMs }) => ({ userId, nome: nomeDeExibicao || username, avatar: avatarPronto, tempoMs })),
-      meuAvatar: db.findUserById(eu)?.avatarPronto ?? null,
+      meuAvatar: db.avatarDoJogo(eu),
       fantasmas: fase === 'correndo' ? fantasmas : [],
       rodada,
       resultado,
@@ -108,7 +108,7 @@ function solo(ctx: Ctx, eu: number, torreInicial: string, agora: () => number) {
           const r = db.recordeDaTorre(outro, id);
           if (!r) continue;
           const u = db.findUserById(outro);
-          fantasmas.push({ userId: outro, nome: u?.nomeDeExibicao || u?.username || '?', avatar: u?.avatarPronto ?? null, tempoMs: r.tempoMs, amostras: JSON.parse(r.amostras) as number[] });
+          fantasmas.push({ userId: outro, nome: u?.nomeDeExibicao || u?.username || '?', avatar: (u?.coelho ?? u?.avatarPronto ?? null), tempoMs: r.tempoMs, amostras: JSON.parse(r.amostras) as number[] });
         }
         fase = 'correndo';
         rodada++;
@@ -155,7 +155,7 @@ function sala(ctx: Ctx, naSala: number[], id: string, agora: () => number) {
   let verdeEm = 0;
   let prazoAberto = false;
   const inscritos = [...naSala];
-  const avatares = new Map(inscritos.map((u) => [u, db.findUserById(u)?.avatarPronto ?? null]));
+  const avatares = new Map(inscritos.map((u) => [u, db.avatarDoJogo(u)]));
   const subindo = new Map<number, Subindo>(
     inscritos.map((u) => [u, { tempoMs: null, andou: 0, maiorN: 0, refY: def.largada[1], refN: 0, recomecou: false }]),
   );

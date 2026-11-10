@@ -234,7 +234,7 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
       const idsDosRobos = Array.from({ length: robos }, (_, k) => -(k + 1));
       const ordem = embaralhar([...naSala.slice(0, MAXIMO_DAS_CIDADES - robos), ...idsDosRobos], aleatorio);
       const jogadores = new Map<number, Jogador>(ordem.map((userId) => [userId, { userId, pos: 0, dinheiro: dinheiroInicial, falido: false, parado: 0 }]));
-      const avatares = new Map(ordem.map((id) => [id, ehRobo(id) ? null : (db.findUserById(id)?.avatarPronto ?? null)]));
+      const avatares = new Map(ordem.map((id) => [id, ehRobo(id) ? null : (db.avatarDoJogo(id))]));
       const nome = (id: number) => (ehRobo(id) ? `🤖 ${NOMES_DOS_ROBOS[-id - 1]}` : ctx.nome(id));
       /** O jeito de cada robô: uns pagam mais caro que outros no leilão (de 0,8 a 1,15 do preço). */
       const jeito = new Map(idsDosRobos.map((id) => [id, 0.8 + aleatorio() * 0.35]));

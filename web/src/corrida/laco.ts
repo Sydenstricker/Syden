@@ -83,7 +83,7 @@ export interface PosicaoDoRival {
 export interface Rival {
   nome: string;
   /** O avatar pronto (as cores do kart), ou null. */
-  avatar?: number | null;
+  avatar?: number | string | null;
   /** Em ordem de passo; o laço lê, quem recebe do socket acrescenta. */
   posicoes: PosicaoDoRival[];
 }
@@ -138,9 +138,9 @@ export interface OpcoesDoLaco {
   piloto: boolean;
   eu: number;
   /** O meu avatar pronto (as cores do meu kart), ou null. */
-  meuAvatar?: number | null;
+  meuAvatar?: number | string | null;
   /** Os fantasmas (amostras do servidor) do contra o relógio, com o avatar de quem é. */
-  fantasmas?: { amostras: number[]; avatar: number | null }[];
+  fantasmas?: { amostras: number[]; avatar: number | string | null }[];
   /** Os rivais da sala, por id. */
   rivais?: Map<number, Rival>;
   /** Os itens (só na sala). */
@@ -433,7 +433,7 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
 
     /** Os rivais no passo `n`, com o nome. */
     const rivaisEm = (n: number) => {
-      const lista: { id: number; nome: string; avatar: number | null; pos: PosicaoDoRival }[] = [];
+      const lista: { id: number; nome: string; avatar: number | string | null; pos: PosicaoDoRival }[] = [];
       for (const [id, r] of o.rivais ?? []) {
         const pos = rivalEm(r.posicoes, n);
         if (pos) lista.push({ id, nome: r.nome, avatar: r.avatar ?? null, pos });

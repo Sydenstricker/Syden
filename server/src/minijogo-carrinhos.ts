@@ -62,7 +62,7 @@ function solo(ctx: Parameters<Definicao['comecar']>[0], eu: number, agora: () =>
   let rodada = 0;
   let robos = 0;
   let correuEm = 0;
-  let fantasmas: { userId: number; nome: string; avatar: number | null; tempoMs: number; entradas: number[] }[] = [];
+  let fantasmas: { userId: number; nome: string; avatar: number | string | null; tempoMs: number; entradas: number[] }[] = [];
   let resultado: { tempoMs: number; voltas: number[]; saidas: number; recorde: boolean; anterior: number | null } | null = null;
   const evento = `carrinhos-solo-${eu}-${agora()}`;
   const parado = () => ctx.agendar(SOLO_PARADO_MS, () => ctx.terminar(false));
@@ -76,7 +76,7 @@ function solo(ctx: Parameters<Definicao['comecar']>[0], eu: number, agora: () =>
       recordes: db
         .recordesDosCarrinhos(eu, PISTA_DOS_CARRINHOS)
         .map(({ userId, username, nomeDeExibicao, avatarPronto, tempoMs }) => ({ userId, nome: nomeDeExibicao || username, avatar: avatarPronto, tempoMs })),
-      meuAvatar: db.findUserById(eu)?.avatarPronto ?? null,
+      meuAvatar: db.avatarDoJogo(eu),
       meuNome: ctx.nome(eu),
       fantasmas: fase === 'correndo' ? fantasmas : [],
       robos,
@@ -107,7 +107,7 @@ function solo(ctx: Parameters<Definicao['comecar']>[0], eu: number, agora: () =>
           const r = db.recordeDosCarrinhos(id, PISTA_DOS_CARRINHOS);
           if (!r) continue;
           const u = db.findUserById(id);
-          fantasmas.push({ userId: id, nome: u?.nomeDeExibicao || u?.username || '?', avatar: u?.avatarPronto ?? null, tempoMs: r.tempoMs, entradas: JSON.parse(r.entradas) as number[] });
+          fantasmas.push({ userId: id, nome: u?.nomeDeExibicao || u?.username || '?', avatar: (u?.coelho ?? u?.avatarPronto ?? null), tempoMs: r.tempoMs, entradas: JSON.parse(r.entradas) as number[] });
         }
         fase = 'correndo';
         rodada++;
@@ -152,7 +152,7 @@ function sala(ctx: Parameters<Definicao['comecar']>[0], naSala: number[], agora:
   let verdeEm = 0;
   let prazoAberto = false;
   const inscritos = naSala.slice(0, FAIXAS);
-  const avatares = new Map(inscritos.map((id) => [id, db.findUserById(id)?.avatarPronto ?? null]));
+  const avatares = new Map(inscritos.map((id) => [id, db.avatarDoJogo(id)]));
   const pilotos = new Map<number, Piloto>(inscritos.map((id, i) => [id, { faixa: i, tempoMs: null, voltas: [], andou: 0, ultima: null }]));
   let ficaram: Set<number> | null = null;
 

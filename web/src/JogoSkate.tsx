@@ -48,7 +48,7 @@ export interface EstadoSkate {
   /** O que eu já mandei (null: ainda andando). */
   meu: { pontos: number | null; melhorCombo: number | null } | null;
   /** Mais pontos primeiro; a posição só entre quem terminou (empatados dividem). */
-  placar: { userId: number; username: string; avatar?: number | null; pontos: number | null; melhorCombo: number | null; posicao: number | null }[];
+  placar: { userId: number; username: string; avatar?: number | string | null; pontos: number | null; melhorCombo: number | null; posicao: number | null }[];
   /** O recorde de antes, e se esta sessão virou o novo (no Solo; na sala, o de cada um). */
   recorde: { antes: number | null; novo: boolean } | null;
   partidaId: string;
@@ -74,7 +74,7 @@ type Posicao = QuadroDoOutro & { n: number; p: number };
 /** Um skatista da turma: as posições que o servidor repassou, pelo passo da sessão dele. */
 interface Rival {
   nome: string;
-  avatar: number | null;
+  avatar: number | string | null;
   posicoes: Posicao[];
 }
 

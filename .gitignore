@@ -36,6 +36,8 @@ SFX/
 # cada estado), as peças do lobby do site e a imagem de compartilhar o link ficavam fora do git — no ar, o avatar
 # escolhido e o fim do site apareceriam quebrados, e o link compartilhado iria sem imagem (este já ia).
 !web/public/avatares/*.png
+# o coelho do criador (web/scripts/coelho-camadas.py): as tiras, os mapas e as camadas dos acessórios
+!web/public/coelho/**/*.png
 # As figuras do "Qual é o tamanho?" (web/scripts/figuras-do-tamanho.mjs).
 !web/public/tamanho/*.png
 # A textura da Cozinha da toca (os modelos da KayKit em web/public/cozinha/, que a pedem pelo nome).
