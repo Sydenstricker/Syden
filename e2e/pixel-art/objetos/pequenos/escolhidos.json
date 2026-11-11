@@ -1,12 +1,12 @@
 {
-  "caneca": "opcoes/b-46-caneca.png",
-  "suco": "opcoes/a-3-suco.png",
-  "refrigerante": "opcoes/a-4-refrigerante.png",
-  "plantinha": "opcoes/a-5-plantinha.png",
-  "livros": "opcoes/a-6-livros.png",
-  "videogame": "opcoes/b-32-videogame.png",
-  "pipoca": "opcoes/a-8-pipoca.png",
-  "retrato": "opcoes/b-2-retrato.png",
-  "salgadinho": "opcoes/b-11-salgadinho.png",
-  "bolo": "opcoes/b-23-bolo.png"
+  "caneca": "refeitos/caneca-9.png",
+  "suco": "refeitos/suco-17.png",
+  "refrigerante": "refeitos/refrigerante-9.png",
+  "plantinha": "refeitos/plantinha-21.png",
+  "livros": "refeitos/livros-2.png",
+  "videogame": "refeitos/videogame-20.png",
+  "pipoca": "refeitos/pipoca-1.png",
+  "retrato": "refeitos/retrato-4.png",
+  "salgadinho": "refeitos/salgadinho-1.png",
+  "bolo": "refeitos/bolo-1.png"
 }

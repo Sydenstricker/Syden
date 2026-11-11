@@ -267,6 +267,11 @@ for (const [id, estados] of Object.entries(ESTADOS)) for (const [nome, pasta] of
   const dir = path.join(AQUI, 'avulsos', pasta);
   if (ORDEM_DO_GIRO.every((d) => fs.existsSync(path.join(dir, d + '.png')))) ORDEM_DO_GIRO.forEach((d, l) => { IMAGENS['giro-' + id + '-' + nome + l] = png(path.join(dir, d + '.png')); });
 }
+// A HÉLICE GIRANDO (ventilador-quadros.mjs, 10/11/2026): os quadros da hélice de cada vista do ventilador, por código.
+if (CENA === 'quarto') {
+  const dir = path.join(AQUI, 'avulsos', 'ventilador-girando');
+  for (const q of [0, 1, 2]) if (ORDEM_DO_GIRO.every((d) => fs.existsSync(path.join(dir, d + '-' + q + '.png')))) ORDEM_DO_GIRO.forEach((d, l) => { IMAGENS['giro-ventilador@gira' + q + '_' + l] = png(path.join(dir, d + '-' + q + '.png')); });
+}
 // A PASSAGEM entre dois estados (animar-estado.mjs): os quadros do meio, das portas abrindo; fechar toca ao avesso.
 const PASSAGENS = CENA === 'quarto' ? { 'guarda-roupa': 'guarda-roupa-aberto-passagem' } : {};
 for (const [id, pasta] of Object.entries(PASSAGENS)) {
@@ -522,6 +527,13 @@ const html = `<!doctype html>
   #barrinha .opcoes button { width: auto; min-width: 34px; height: 40px; padding: 2px 5px; }
   #barrinha .opcoes img { height: 34px; width: auto; image-rendering: pixelated; }
   #barrinha .opcoes .cor { width: 24px; height: 24px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.3); }
+  /* a cor livre do tapete: o arco-íris até ser escolhida, e o seletor do sistema por cima, invisível */
+  #barrinha .cor-livre { position: relative; min-width: 34px; height: 40px; padding: 2px 5px; display: grid; place-items: center; border-radius: 7px; cursor: pointer; }
+  #barrinha .cor-livre:hover { background: rgba(255, 236, 200, 0.14); }
+  #barrinha .cor-livre[aria-pressed="true"] { background: rgba(255, 200, 120, 0.28); box-shadow: inset 0 0 0 1px rgba(255, 213, 138, 0.7); }
+  #barrinha .cor-livre .cor { background: conic-gradient(#e5455f, #f5b82e, #5fbf6a, #3d6fd1, #7a4fc0, #e5455f); }
+  #barrinha .cor-livre input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; opacity: 0; cursor: pointer; }
+  #barrinha .cor-livre:has(input:focus-visible) { outline: 2px solid #ffd58a; outline-offset: 1px; }
   html.app main { padding: 0; max-width: none; }
   html.app main > :not(.lado), html.app .lado > figure:not(.com-rotulo), html.app figcaption { display: none; }
   html.app .lado { display: block; }
@@ -2448,8 +2460,30 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // escolhida e a saturação muda, mas a CLARIDADE fica — o desenho (as tramas, as sombras) é o mesmo, só o tom muda. O
   // tapete pintado é sálvia (matiz 0,16, saturação 0,27).
   const CORES_DO_TAPETE = { salvia: { nome: 'sálvia', h: 0.158, s: 1 }, terracota: { nome: 'terracota', h: 0.03, s: 2.1 }, azul: { nome: 'azul', h: 0.58, s: 1.15 }, mostarda: { nome: 'mostarda', h: 0.105, s: 2.4 }, rosa: { nome: 'rosa', h: 0.95, s: 1.05 }, cinza: { nome: 'cinza', h: 0.158, s: 0.2 } };
+  // A COR LIVRE (pedido dele, 10/11/2026: "além das 6 amostras, uma cor livre, RGB"): '#rrggbb' em "cores". A matiz vai à da
+  // cor, e a saturação e a claridade são multiplicadas pela razão entre ela e a MÉDIA do tapete pintado: o tapete continua com
+  // o desenho dele (as tramas, as sombras), e a média dele fica perto da cor escolhida.
+  const ehCorLivre = (c) => typeof c === 'string' && /^#[0-9a-f]{6}$/.test(c);
+  const corDoTapete = (c) => CORES_DO_TAPETE[c] ?? (ehCorLivre(c) ? alvoDaCorLivre(c) : null);
+  const hsv = (r, g, b) => { const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn; let h = 0; if (d) h = mx === r ? ((g - b) / d + 6) % 6 / 6 : mx === g ? ((b - r) / d + 2) / 6 : ((r - g) / d + 4) / 6; return [h, mx ? d / mx : 0, mx / 255]; };
+  let mediaDoTapeteCache = null;
+  function mediaDoTapete() {
+    if (mediaDoTapeteCache) return mediaDoTapeteCache;
+    let n = 0; const m = [0, 0, 0];
+    for (let k = 0; k < W * W; k++) if (pecas.tapete && pecas.tapete.movel[k * 4 + 3]) { for (let q = 0; q < 3; q++) m[q] += pecas.tapete.movel[k * 4 + q]; n++; }
+    return (mediaDoTapeteCache = m.map((v) => v / Math.max(1, n)));
+  }
+  const alvosLivres = new Map();
+  function alvoDaCorLivre(c) {
+    if (alvosLivres.has(c)) return alvosLivres.get(c);
+    const [h, s, v] = hsv(parseInt(c.slice(1, 3), 16), parseInt(c.slice(3, 5), 16), parseInt(c.slice(5, 7), 16)), [, s0, v0] = hsv(...mediaDoTapete());
+    const alvo = { h, s: s / Math.max(0.05, s0), v: Math.min(2.2, Math.max(0.15, v / Math.max(0.05, v0))) };
+    if (alvosLivres.size > 40) alvosLivres.clear();
+    alvosLivres.set(c, alvo);
+    return alvo;
+  }
   function tingirPixel(r, g, b, alvo) {
-    const mx = Math.max(r, g, b), mn = Math.min(r, g, b), v = mx / 255, d = mx - mn;
+    const mx = Math.max(r, g, b), mn = Math.min(r, g, b), v = Math.min(1, (mx / 255) * (alvo.v ?? 1)), d = mx - mn;
     let h = 0, sat = mx ? d / mx : 0;
     if (d) h = mx === r ? ((g - b) / d + 6) % 6 / 6 : mx === g ? ((b - r) / d + 2) / 6 : ((r - g) / d + 4) / 6;
     // A borda traz pixels da madeira do chão (o recorte antigo): eles SAEM, e o chão de verdade aparece no lugar.
@@ -2465,10 +2499,11 @@ if (CENA === 'salao') document.body.classList.add('salao');
   }
   const tingidos = new Map();
   function tingir(p) {
-    const cor = CORES.tapete && CORES.tapete !== 'salvia' ? CORES_DO_TAPETE[CORES.tapete] : null;
+    const cor = CORES.tapete && CORES.tapete !== 'salvia' ? corDoTapete(CORES.tapete) : null;
     if (!cor) return p;
     let porCor = tingidos.get(p);
-    if (!porCor) { porCor = {}; tingidos.set(p, porCor); }
+    // (a cor livre, arrastada no seletor, faz uma cor nova a cada passo: o guardado não cresce sem fim)
+    if (!porCor || Object.keys(porCor).length > 12) { porCor = {}; tingidos.set(p, porCor); }
     if (porCor[CORES.tapete]) return porCor[CORES.tapete];
     const movel = new Uint8ClampedArray(p.movel);
     for (let k = 0; k < W * W; k++) if (movel[k * 4 + 3]) {
@@ -4782,6 +4817,116 @@ if (CENA === 'salao') document.body.classList.add('salao');
     }
     return { ...it, p: porPeca.get(chave) };
   }
+  // ============================== O VENTILADOR LIGADO (10/11/2026, pedido dele) ==============================
+  // O botão direito nele avança: desligado → ligado (a hélice girando) → ligado e OSCILANDO (a cabeça indo de um lado para o
+  // outro) → desligado. O estado mora em "cores" (o id do ventilador: 'ligado' ou 'oscilando'; sem nada, desligado), que o
+  // servidor já guarda e confere: quem visita vê igual. A hélice são 3 quadros por vista (ventilador-quadros.mjs), a 12 por
+  // segundo; a oscilação é POR CÓDIGO (a cabeça anda até 3 px para os lados e estica ou encolhe um pouco, em 4 s): o PixelLab,
+  // pedido de animar a cabeça indo e voltando, girou o ventilador inteiro (avulsos/ventilador-oscilar-falha/). Com "menos
+  // movimento" nada gira; sem foco, nada é desenhado. A cena NÃO é remontada a cada quadro: montarCena guarda o que estava atrás
+  // da caixa do ventilador, e cada quadro só troca os pixels dele na fotografia (aplicarVentiladores).
+  const ESTADOS_DO_VENTILADOR = ['ligado', 'oscilando'];
+  const estadoDoVentilador = (id) => (CENA === 'quarto' && ESTADOS_DO_VENTILADOR.includes(CORES[id]) ? CORES[id] : null);
+  const QUADROS_DA_HELICE = !im['giro-ventilador@gira1_0'] ? 1 : im['giro-ventilador@gira2_0'] ? 3 : 2;
+  const PASSOS_DA_OSCILACAO = 16; // 4 s ida e volta, um passo a cada 250 ms
+  const quadrosDaHelice = [[], [], [], []];
+  const quadroDaHelice = (l, q) => (!im['giro-ventilador@gira' + q + '_' + l] ? VISTAS.ventilador[l] : (quadrosDaHelice[l][q] ??= pecaDeImagem(im['giro-ventilador@gira' + q + '_' + l], 'ventilador')));
+  // [quadro da hélice, passo da oscilação] agora
+  const tempoDoVentilador = () => { if (semAndar) return [0, 0]; const t = performance.now(); return [Math.floor(t / (1000 / 12)) % QUADROS_DA_HELICE, Math.floor(t / 250) % PASSOS_DA_OSCILACAO]; };
+  window.ventiladorDoTeste = (q, n) => { tempoFixoDoVentilador = q === undefined ? null : [q, n ?? 0]; chaveDosVentiladores = ''; desenhar(); }; // para o teste e as fotos
+  let tempoFixoDoVentilador = null;
+  const tempoDoVentiladorAgora = () => tempoFixoDoVentilador ?? tempoDoVentilador();
+  // A CABEÇA: da linha de cima até onde a largura cai abaixo de 16 px (a haste); o eixo é o meio da haste logo abaixo.
+  const cortesDoVentilador = new WeakMap();
+  function cortesDe(p) {
+    let c = cortesDoVentilador.get(p); if (c) return c;
+    const [x0, y0, x1, y1] = p.caixa, larg = (y) => { let a = W, b = -1; for (let x = x0; x < x1; x++) if (p.movel[(y * W + x) * 4 + 3]) { a = Math.min(a, x); b = Math.max(b, x); } return b >= a ? [a, b] : null; };
+    let fim = y0 + 20; while (fim < y1 && (larg(fim)?.[1] ?? 0) - (larg(fim)?.[0] ?? 0) + 1 >= 16) fim++;
+    const h = larg(Math.min(y1 - 1, fim + 2)) ?? [x0, x1 - 1];
+    c = { fim, eixo: (h[0] + h[1] + 1) / 2 }; cortesDoVentilador.set(p, c); return c;
+  }
+  const oscilados = new Map();
+  function ventiladorOscilado(p, n) {
+    const chave = n; let porP = oscilados.get(p);
+    if (!porP) { if (oscilados.size > 6) oscilados.clear(); porP = new Map(); oscilados.set(p, porP); }
+    if (porP.has(chave)) return porP.get(chave);
+    const { fim, eixo } = cortesDe(p), [x0, y0, x1, y1] = p.caixa, M = 6, X0 = Math.max(0, x0 - M), X1 = Math.min(W, x1 + M);
+    const fase = Math.sin((2 * Math.PI * n) / PASSOS_DA_OSCILACAO), movel = new Uint8ClampedArray(p.movel);
+    for (let y = y0; y < fim; y++) {
+      // (nas últimas 4 linhas da cabeça o desvio diminui: o pescoço dobra, em vez de partir)
+      const peso = Math.min(1, (fim - y) / 4), o = 3 * fase * peso, esc = 1 + 0.12 * fase * peso;
+      for (let x = X0; x < X1; x++) {
+        const k = (y * W + x) * 4, sx = Math.round(eixo + (x + 0.5 - eixo - o) / esc - 0.5);
+        if (sx >= x0 && sx < x1) for (let q = 0; q < 4; q++) movel[k + q] = p.movel[(y * W + sx) * 4 + q];
+        else movel[k + 3] = 0;
+      }
+    }
+    const peColuna = new Int16Array(p.peColuna);
+    for (let x = X0; x < X1; x++) if (peColuna[x] < 0) peColuna[x] = p.peColuna[Math.min(x1 - 1, Math.max(x0, x))];
+    const r = { ...p, movel, peColuna, caixa: [X0, y0, X1, y1] };
+    porP.set(chave, r);
+    return r;
+  }
+  function pecaDoVentilador(id, l) {
+    const e = estadoDoVentilador(id); if (!e || !VISTAS.ventilador) return null;
+    const [q, n] = tempoDoVentiladorAgora(), p = quadroDaHelice(l, q);
+    // (a caixa da oscilação é a mesma em todo passo: a altura de cada pixel, guardada pela caixa, não se refaz a cada quadro)
+    return e === 'oscilando' ? ventiladorOscilado(p, n) : p;
+  }
+  // O que montarCena guardou de cada ventilador ligado: a caixa, o que estava atrás dela e quem a cobre depois.
+  let VENTS = [], chaveDosVentiladores = '';
+  function comecarVentilador(it) {
+    const [x0, y0, x1, y1] = it.p.caixa, M = 8;
+    const box = [Math.max(0, x0 - M + it.dx), Math.max(0, y0 + it.dy), Math.min(W, x1 + M + it.dx), Math.min(W, y1 + it.dy)];
+    const bw = box[2] - box[0], bh = box[3] - box[1], n = Math.max(0, bw * bh);
+    const r = { id: it.dono, it, box, bw, D: new Float32Array(n * 3), eMovel: new Uint8Array(n), peY: new Int16Array(n), dono: new Array(n), donoObj: new Array(n), chao: new Int32Array(n), altura: new Float32Array(n), tipo: new Int8Array(n), chave: new Float32Array(n), depois: null };
+    for (let y = box[1]; y < box[3]; y++) for (let x = box[0]; x < box[2]; x++) {
+      const k = y * W + x, j = (y - box[1]) * bw + x - box[0];
+      for (let c = 0; c < 3; c++) r.D[j * 3 + c] = D[k * 3 + c];
+      r.eMovel[j] = eMovel[k]; r.peY[j] = peY[k]; r.dono[j] = dono[k]; r.donoObj[j] = donoObj[k]; r.chao[j] = chaoPx[k]; r.altura[j] = alturaPx[k]; r.tipo[j] = tipoPx[k]; r.chave[j] = chaveDoPixel[k];
+    }
+    VENTS.push(r);
+    return r;
+  }
+  // (a sombra pintada do próprio ventilador entra no "atrás": ela é aplicada antes do pixel dele)
+  const antesDoVentilador = (r, d) => { const x = d % W, y = (d / W) | 0; if (x < r.box[0] || x >= r.box[2] || y < r.box[1] || y >= r.box[3]) return; const j = (y - r.box[1]) * r.bw + x - r.box[0]; for (let c = 0; c < 3; c++) r.D[j * 3 + c] = D[d * 3 + c]; };
+  const fimDoVentilador = (r) => { r.depois = []; for (let y = r.box[1]; y < r.box[3]; y++) for (let x = r.box[0]; x < r.box[2]; x++) r.depois.push(dono[y * W + x]); };
+  // A cada quadro: os pixels do ventilador na fotografia (base*) trocam pelos do quadro de agora; onde o quadro não tem pixel,
+  // volta o que estava atrás. O que um móvel da frente cobre (desenhado depois dele) fica como está.
+  function aplicarVentiladores() {
+    if (!VENTS.length) return null;
+    const chave = tempoDoVentiladorAgora().join(',');
+    if (chave === chaveDosVentiladores) return null;
+    chaveDosVentiladores = chave;
+    let caixa = null;
+    for (const r of VENTS) {
+      if (!ARR[r.id]) continue;
+      const p = pecaDoVentilador(r.id, ARR[r.id].lado); if (!p) continue;
+      const it = { ...r.it, p }, hs = alturasDe(it), { dx, dy, fator } = it;
+      for (let y = r.box[1]; y < r.box[3]; y++) for (let x = r.box[0]; x < r.box[2]; x++) {
+        const d = y * W + x, j = (y - r.box[1]) * r.bw + x - r.box[0];
+        if (baseDono[d] !== r.depois[j]) continue; // um móvel da frente
+        const px = x - dx, py = y - dy, k = py * W + px;
+        if (px >= 0 && py >= 0 && px < W && py < W && p.movel[k * 4 + 3]) {
+          for (let c = 0; c < 3; c++) baseD[d * 3 + c] = p.movel[k * 4 + c] * fator;
+          baseEMovel[d] = 1; basePeY[d] = p.peColuna[px] + dy; baseDono[d] = r.id; baseDonoObj[d] = '';
+          const h = hs.h(k);
+          if (h >= 0) { baseChao[d] = (y + h) * W + x; baseAltura[d] = h; baseTipo[d] = hs.tipo(k); baseChave[d] = y + h; }
+          else { const pc = Math.min(W - 1, basePeY[d]); baseChao[d] = pc * W + x; baseAltura[d] = pc - y; baseTipo[d] = 0; baseChave[d] = pc; }
+          if (it.pe && casa[baseChao[d]] < 0) { const [gx, gy] = ponto((it.pe[0] + it.pe[1]) / 2, (it.pe[2] + it.pe[3]) / 2); baseChao[d] = Math.min(W - 1, Math.round(gy)) * W + Math.round(gx); }
+        } else {
+          for (let c = 0; c < 3; c++) baseD[d * 3 + c] = r.D[j * 3 + c];
+          baseEMovel[d] = r.eMovel[j]; basePeY[d] = r.peY[j]; baseDono[d] = r.dono[j]; baseDonoObj[d] = r.donoObj[j]; baseChao[d] = r.chao[j]; baseAltura[d] = r.altura[j]; baseTipo[d] = r.tipo[j]; baseChave[d] = r.chave[j];
+        }
+        r.depois[j] = baseDono[d];
+      }
+      caixa = unir(caixa, r.box);
+    }
+    return caixa;
+  }
+  // o relógio da hélice: 12 por segundo, só com um ventilador ligado, a janela com foco e movimento à vontade
+  setInterval(() => { if (!VENTS.length || semAndar || tempoFixoDoVentilador || emPausa()) return; if (tempoDoVentiladorAgora().join(',') !== chaveDosVentiladores) desenhar(); }, 1000 / 12);
+
   function itemSemObjetos(id) {
     const { c, lado: l } = ARR[id], olha = ORIENTA[l], [mx, my] = ponto(N / 2, N / 2);
     if (tipoDe(id) === 'pufe') {
@@ -4798,7 +4943,8 @@ if (CENA === 'salao') document.body.classList.add('salao');
     const fator = Math.min(1.2, Math.max(0.8, luz(nx, ny) / luz(mx, my)));
     // Aberto: a vista aberta, posta onde a fechada estaria (o mesmo enquadramento).
     const desenho = id === 'guarda-roupa' && VISTAS_ABERTO && portas ? (portas === 3 ? VISTAS_ABERTO[l] : PASSAGEM_GR ? PASSAGEM_GR[l][portas - 1] : p)
-      : (id === 'sofa' || id === 'sofa-2') && VISTAS_SOFA[ocupacaoDoSofa(id)] ? VISTAS_SOFA[ocupacaoDoSofa(id)][l] : p; // o sofá com as almofadas de quem senta afundadas
+      : (id === 'sofa' || id === 'sofa-2') && VISTAS_SOFA[ocupacaoDoSofa(id)] ? VISTAS_SOFA[ocupacaoDoSofa(id)][l]
+      : tipoDe(id) === 'ventilador' && estadoDoVentilador(id) ? pecaDoVentilador(id, l) ?? p : p; // o sofá com as almofadas de quem senta afundadas; o ventilador ligado
     return { p: desenho, dx: Math.round(fx - p.frente[0]), dy: Math.round(fy - p.frente[1]), fator, pe, contatoPe: pe, forma: FORMAS[id], olha };
   }
   // A caixa do desenho de uma peça (as pintadas não a trazem), guardada.
@@ -4850,6 +4996,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   }
   function montarCena() {
     D.fill(0); fundoNoite.fill(0); eMovel.fill(0); acesa.fill(0); peY.fill(0); dono.fill(''); donoObj.fill('');
+    VENTS = [];
     const pintada = luzPintadaAgora(), fundoN = pintada ? noiteAbajur : noite;
     for (let k = 0; k < W * W; k++) for (let c = 0; c < 3; c++) { D[k * 3 + c] = base[k * 4 + c]; fundoNoite[k * 3 + c] = fundoN[k * 4 + c]; }
     // A pintura da noite com o abajur traz a silhueta do criado-mudo PINTADO; a vista solta é um pouco menor e deixava
@@ -4924,6 +5071,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
     const fcPiso = fatorDoPiso();
     for (const it of lista) {
       const { p, dx, dy, fator, contato, raio, contatoPe } = it, recorte = fcPiso && !p.frente;
+      const ventRec = it.dono && tipoDe(it.dono) === 'ventilador' && estadoDoVentilador(it.dono) ? comecarVentilador(it) : null;
       const hs = alturasDe(it);
       // A sombra de contato de quem não a trouxe pintada (a poltrona): uma elipse no chão, mais escura no meio.
       const [rx, ry] = raio ?? [30, 15];
@@ -4955,6 +5103,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
         if (x < 0 || y < 0 || x >= W || y >= W) continue;
         const d = y * W + x, a = p.sombra[k * 4 + 3];
         if (a) { const f = 1 - a / 255; for (let c = 0; c < 3; c++) { D[d * 3 + c] *= f; fundoNoite[d * 3 + c] *= f; } }
+        if (ventRec) antesDoVentilador(ventRec, d);
         if (p.movel[k * 4 + 3]) {
           for (let c = 0; c < 3; c++) D[d * 3 + c] = p.movel[k * 4 + c] * fator;
           // (igual ao chão de lá, ou da cor da madeira: o tapete é verde e o pufe cinza, e a madeira na borda deles é chão)
@@ -4982,7 +5131,11 @@ if (CENA === 'salao') document.body.classList.add('salao');
           else if (p.id === 'ilha' && tampoDaIlha && p.movel[m4] + p.movel[m4 + 1] + p.movel[m4 + 2] < 130 && dentroDoPoligono(x, y, tampoDaIlha)) acesa[d] = 3;
         }
       }
+      if (ventRec) fimDoVentilador(ventRec);
     }
+    // quem foi desenhado DEPOIS do ventilador (na frente dele) fica: o que mudou na caixa dele desde o fim dele
+    for (const r of VENTS) { let j = 0; for (let y = r.box[1]; y < r.box[3]; y++) for (let x = r.box[0]; x < r.box[2]; x++, j++) if (dono[y * W + x] !== r.depois[j]) r.depois[j] = '#frente'; }
+    chaveDosVentiladores = tempoDoVentiladorAgora().join(',');
     // A fotografia da cena, sem o coelho: a cada quadro, a região dele volta a ela.
     baseD.set(D); baseEMovel.set(eMovel); basePeY.set(peY); baseChao.set(chaoPx); baseAltura.set(alturaPx); baseTipo.set(tipoPx); baseChave.set(chaveDoPixel);
     for (let k = 0; k < W * W; k++) { baseDono[k] = dono[k]; baseDonoObj[k] = donoObj[k]; }
@@ -5464,12 +5617,14 @@ void main() {
       // desenhava a sombra.
       const c = unir([cxv[0] + iv.dx - 2, cxv[1] + iv.dy - 2, cxv[2] + iv.dx + 2, cxv[3] + iv.dy + 2], [Math.min(...cantos.map((q) => q[0])) - 6, Math.min(...cantos.map((q) => q[1])) - 4, Math.max(...cantos.map((q) => q[0])) + 6, Math.max(...cantos.map((q) => q[1])) + 4]);
       return [Math.floor(c[0]), Math.floor(c[1]), Math.ceil(c[2]), Math.ceil(c[3])]; })() : null;
-    const sig = JSON.stringify([ultimaCaixa, rotuloDoQuadro, coelhoChave, gatoAgora ? [gatoAgora.chave, gatoAgora.X0, gatoAgora.Y0] : 0, vc ? [cx0, cy0, indiceDaVista()] : 0, telaMexe ? Math.floor(performance.now() / (GIF_DA_COMUNIDADE && canalDaTvAgora() === 'comunidade' && !telasDesligadas.has('tv') ? 100 : 250)) : 0, conteudoAgora(), iv ? [iv.dx, iv.dy, alvo] : 0, particulas.length ? performance.now() : 0, notas.length ? Math.floor(performance.now() / 100) : 0, paredePega?.vivo ? JSON.stringify(paredePega.vivo) : 0, objPego?.vivo ? [Math.round(objPego.vivo.x), Math.round(objPego.vivo.y), objPego.vivo.lado] : 0, realce?.chave ?? 0, EDITANDO && selecao ? selecao.chave : 0, versaoDoCoelho]);
+    const sig = JSON.stringify([ultimaCaixa, rotuloDoQuadro, coelhoChave, gatoAgora ? [gatoAgora.chave, gatoAgora.X0, gatoAgora.Y0] : 0, vc ? [cx0, cy0, indiceDaVista()] : 0, telaMexe ? Math.floor(performance.now() / (GIF_DA_COMUNIDADE && canalDaTvAgora() === 'comunidade' && !telasDesligadas.has('tv') ? 100 : 250)) : 0, conteudoAgora(), iv ? [iv.dx, iv.dy, alvo] : 0, particulas.length ? performance.now() : 0, notas.length ? Math.floor(performance.now() / 100) : 0, paredePega?.vivo ? JSON.stringify(paredePega.vivo) : 0, objPego?.vivo ? [Math.round(objPego.vivo.x), Math.round(objPego.vivo.y), objPego.vivo.lado] : 0, realce?.chave ?? 0, EDITANDO && selecao ? selecao.chave : 0, versaoDoCoelho, VENTS.length ? tempoDoVentiladorAgora().join(',') : 0]);
     const mexeu = sig !== assinaturaQuadro;
+    const caixaVent = mexeu ? aplicarVentiladores() : null; // o quadro do ventilador, na fotografia
     if (!mexeu && regiaoAnterior && regiaoAnterior[2] - regiaoAnterior[0] < W) { escreverLegenda(); return; }
     if (selecao && !EDITANDO) selecao = null;
     // Só limpa a região de antes quando vai redesenhar: limpando e saindo, o coelho e a cadeira sumiam do mapa de quem é
     // cada pixel, e o clique na cadeira parada não a achava.
+    if (caixaVent) restaurar(caixaVent);
     if (regiaoAnterior) restaurar(regiaoAnterior);
     assinaturaQuadro = sig;
     if (caixaC) restaurar(caixaC);
@@ -5613,7 +5768,7 @@ void main() {
     const ocupado = arrastando || !!viva || !!paredePega?.mexeu || !!janelaPega?.mexeu || !!objPego?.mexeu;
     const sel = selecao && EDITANDO && !ocupado ? selecao : null;
     if (sel && sel.cena !== assinaturaCena) { sel.caixa = caixaDaChave(sel.chave); sel.cena = assinaturaCena; if (!sel.caixa) { selecao = null; montarBarrinha(); } }
-    const agora = unir(unir(unir(unir(unir(unir(unir(unir(unir(unir(sel?.caixa ?? null, realce?.caixa ?? null), caixaC), caixaDaSombra), caixaCadeira), caixaGato), telaMexe ? caixaDaTela : null), caixaViva), caixaDoAlvo), caixaObjVivo), caixaFaiscas ?? (regiaoDasFaiscas ? regiaoDasFaiscas : null));
+    const agora = unir(unir(unir(unir(unir(unir(unir(unir(unir(unir(sel?.caixa ?? null, realce?.caixa ?? null), caixaC), caixaDaSombra), caixaCadeira), caixaGato), telaMexe ? caixaDaTela : null), caixaViva), caixaDoAlvo), unir(caixaObjVivo, caixaVent)), caixaFaiscas ?? (regiaoDasFaiscas ? regiaoDasFaiscas : null));
     regiaoDasFaiscas = caixaFaiscas;
     const r = prender(unir(agora, regiaoAnterior) ?? [0, 0, W, W]);
     passeFinal(r);
@@ -5741,6 +5896,7 @@ void main() {
   // EDITANDO (a barra de arrumar do app em "Editar", 16/10/2026): o clique arruma e não abre a função. Relato dele: "não
   // consigo ajustar a janela (cortina, abrir a janela), pois se eu clico sou direcionado para a função da janela".
   let EDITANDO = false;
+  window.editandoDoTeste = (v) => { EDITANDO = !!v; }; // para o teste (no app, quem liga é a mensagem "editando")
   const FUNCOES_DE_TESTE = CENA === 'salao'
     ? { tv: { rotulo: 'Entrar na voz', sub: '3 na chamada agora' }, fliperama: { rotulo: 'Mini-games', sub: 'Na sala de voz, com a turma' }, estante: { rotulo: 'Entrar na conversa', sub: '# geral' }, janela: { rotulo: 'Chamar alguém', sub: 'Copia o convite desta comunidade' }, balcao: { rotulo: 'Recado', sub: 'O que quem administra escreveu' }, quadro: { rotulo: 'Mudar esta tela', sub: 'Só quem administra vê este bloco' }, microfone: { rotulo: 'Karaokê', sub: 'Na sala de voz, com a turma' }, jukebox: { rotulo: 'Karaokê', sub: 'Na sala de voz, com a turma' }, trofeu: { rotulo: 'Conquistas', sub: 'O que a turma fez junta' } }
     : { fone: { rotulo: 'Salas', sub: 'Converse e jogue' }, quadro: { rotulo: 'Amigos', sub: 'Quem anda com você' }, cortica: { rotulo: 'Tem uma ideia para o Syden?' }, gavetas: { rotulo: 'Guarda-roupa', sub: 'Enfeites, sons e emojis' }, janela: { rotulo: 'Explorar', sub: 'Entrar em outra comunidade' }, abajur: { rotulo: 'Dia e noite' }, computador: { rotulo: 'Mini-games', sub: 'Jogar com a turma' } };
@@ -6241,8 +6397,20 @@ void main() {
   botoesDaParede(); botoesDosMoveis(); botoesDaPlanta();
   window.paredeDoTeste = () => NA_PAREDE; // para o teste
   const bct = document.getElementById('cor-tapete'), ORDEM_CORES = Object.keys(CORES_DO_TAPETE);
-  const botaoDaCor = () => { bct.textContent = 'Cor do tapete: ' + CORES_DO_TAPETE[CORES.tapete ?? 'salvia'].nome; bct.disabled = soVer; };
+  const botaoDaCor = () => { bct.textContent = 'Cor do tapete: ' + (CORES_DO_TAPETE[CORES.tapete ?? 'salvia']?.nome ?? CORES.tapete); bct.disabled = soVer; };
   bct.onclick = () => { CORES = { ...CORES, tapete: ORDEM_CORES[(ORDEM_CORES.indexOf(CORES.tapete ?? 'salvia') + 1) % ORDEM_CORES.length] }; guardarCores(); botaoDaCor(); desenhar(); };
+  // A cor do tapete escolhida (uma das 6, ou a livre). A livre chega a cada ~120 ms enquanto se arrasta no seletor do sistema:
+  // as que chegam em sequência viram UM passo do Desfazer (juntarNoHistorico, em anotar).
+  function escolherCorDoTapete(cor) {
+    if (soVer || !(CORES_DO_TAPETE[cor] || ehCorLivre(cor))) return;
+    const agora = performance.now();
+    juntarNoHistorico = ehCorLivre(cor) && ehCorLivre(CORES.tapete) && agora - ultimaCorLivre < 1500;
+    if (ehCorLivre(cor)) ultimaCorLivre = agora;
+    CORES = { ...CORES, tapete: cor };
+    try { guardarCores(); } finally { juntarNoHistorico = false; }
+    botaoDaCor(); desenhar();
+  }
+  window.corDoTapeteDoTeste = (cor) => { escolherCorDoTapete(cor); return CORES.tapete; }; // para o teste
   botaoDaCor();
   // A OPÇÃO de um objeto da parede (o pôster): troca o desenho no mesmo lugar, preso de novo à parede (o tamanho muda um
   // pouco de uma opção para outra).
@@ -6523,7 +6691,7 @@ void main() {
     if (a.cadeira) { Object.assign(cadeira, { u: a.cadeira.u, v: a.cadeira.v, th: a.cadeira.th, vu: 0, vv: 0, w: 0, kin: null }); soltarDosMoveis(); }
     JAN = a.janela && TIPOS_JANELA[a.janela.tipo] && cabeJanela(a.janela.tipo) ? prenderJanela(a.janela) : { ...janelaDaPlanta() };
     EM_CIMA = a.emCima && typeof a.emCima === 'object' ? Object.fromEntries(Object.entries(a.emCima).filter(([, o]) => OBJ_VISTAS[o.tipo] && TOPOS[o.em] && ARR[o.em])) : EM_CIMA_INICIAL();
-    CORES = a.cores && typeof a.cores === 'object' ? Object.fromEntries(Object.entries(a.cores).filter(([id, c]) => (id === 'tapete' && CORES_DO_TAPETE[c]) || (id === 'parede' && CORES_DA_PAREDE[c]) || (id === 'piso' && CORES_DO_PISO[c]) || (id === 'cama' && CAMAS.includes(c)) || (id === 'pet' && (c === 'nenhum' || PETS.includes(c))) || OPCOES_PAREDE[id]?.[c])) : {};
+    CORES = a.cores && typeof a.cores === 'object' ? Object.fromEntries(Object.entries(a.cores).filter(([id, c]) => (id === 'tapete' && (CORES_DO_TAPETE[c] || ehCorLivre(c))) || (tipoDe(id) === 'ventilador' && CENA === 'quarto' && (c === 'ligado' || c === 'oscilando')) || (id === 'parede' && CORES_DA_PAREDE[c]) || (id === 'piso' && CORES_DO_PISO[c]) || (id === 'cama' && CAMAS.includes(c)) || (id === 'pet' && (c === 'nenhum' || PETS.includes(c))) || OPCOES_PAREDE[id]?.[c])) : {};
     NOME_DO_PET = typeof a.nomeDoPet === 'string' ? a.nomeDoPet.slice(0, 20) : '';
     vestirCama();
     botaoDaCor(); vestirOpcoes(); botaoDaOpcao();
@@ -6564,11 +6732,12 @@ void main() {
   // REFAZER (16/10/2026, o layout dele): o que se desfez vai para outra pilha, e uma mudança nova a esvazia.
   const historico = [], refeitos = [];
   let retratoAtual = null, desfazendo = false;
+  let juntarNoHistorico = false, ultimaCorLivre = 0; // a cor livre do tapete arrastada: um passo só (escolherCorDoTapete)
   const marcarBase = () => { retratoAtual = JSON.stringify(retrato()); historico.length = 0; refeitos.length = 0; relatar(); };
   function anotar() {
     if (soVer) return;
     const r = JSON.stringify(retrato());
-    if (retratoAtual !== null && r !== retratoAtual && !desfazendo) { historico.push(retratoAtual); if (historico.length > 50) historico.shift(); refeitos.length = 0; }
+    if (retratoAtual !== null && r !== retratoAtual && !desfazendo && !juntarNoHistorico) { historico.push(retratoAtual); if (historico.length > 50) historico.shift(); refeitos.length = 0; }
     retratoAtual = r;
   }
   const ocupadoAgora = () => arrastando || viva || paredePega || janelaPega || objPego;
@@ -6715,9 +6884,7 @@ void main() {
     const soNucleo = (T2) => { const nuc = nucleoDe(T2), d = new Uint8ClampedArray(T2.dia); for (let k = 0; k < W * W; k++) if (!nuc[k]) d[k * 4 + 3] = 0; return d; };
     for (const [id, T2] of Object.entries(TEXTURAS_PAREDE)) miniaturas[id] = recorte(soNucleo(T2));
     // a cor média do tapete pintado, tingida em cada uma
-    let n = 0; const m = [0, 0, 0];
-    for (let k = 0; k < W * W; k++) if (pecas.tapete && pecas.tapete.movel[k * 4 + 3]) { for (let q = 0; q < 3; q++) m[q] += pecas.tapete.movel[k * 4 + q]; n++; }
-    const media = m.map((v) => v / Math.max(1, n));
+    const media = mediaDoTapete();
     const cores = Object.fromEntries(Object.entries(CORES_DO_TAPETE).map(([id, cor]) => [id, 'rgb(' + (id === 'salvia' ? media : tingirPixel(media[0], media[1], media[2], cor)).map(Math.round).join(',') + ')']));
     // e o primeiro desenho de cada objeto de cima
     const deCima = {};
@@ -6800,7 +6967,7 @@ void main() {
   // fica ESCOLHIDO, com o contorno claro, e ganha em cima dele uma barrinha com o que se faz com ELE: girar, tirar, as
   // opções (a cor do tapete, a arte do pôster, o tipo de janela) e, na janela, a cortina e abrir. Antes o Girar ficava na
   // barra do app e girava "o último móvel tocado", o que ninguém adivinha. Os nomes (dica e leitor de tela) vêm do app.
-  let ROTULOS = { mover: 'Mover', girar: 'Girar', tirar: 'Tirar', duplicar: 'Duplicar', opcoes: 'Opções', cortina: 'Cortina', janela: 'Janela', sobre: 'Sobre', banheiro: 'Porta do banheiro', fechar: 'Fechar' };
+  let ROTULOS = { cor: 'Escolher a cor', mover: 'Mover', girar: 'Girar', tirar: 'Tirar', duplicar: 'Duplicar', opcoes: 'Opções', cortina: 'Cortina', janela: 'Janela', sobre: 'Sobre', banheiro: 'Porta do banheiro', fechar: 'Fechar' };
   const barrinha = document.getElementById('barrinha');
   let opcoesAbertas = false, FIGURAS = null;
   const figurasCache = () => (FIGURAS ??= figurasDaBarra());
@@ -6850,6 +7017,24 @@ void main() {
     b.onclick = (ev) => { ev.stopPropagation(); acao(); montarBarrinha(); };
     return b;
   };
+  // A COR LIVRE do tapete no "…" (10/11/2026): o seletor de cor do sistema, invisível por cima de uma bola de arco-íris (a cor
+  // escolhida, quando é a livre). A bola segue o ponteiro na hora; a cena recebe no máximo uma cor a cada 120 ms, a última.
+  const hexDe = (rgb) => '#' + rgb.map((v) => Math.round(v).toString(16).padStart(2, '0')).join('');
+  function corLivreDaBarrinha() {
+    const livre = ehCorLivre(CORES.tapete), rot = document.createElement('label');
+    rot.className = 'cor-livre'; rot.title = ROTULOS.cor; rot.setAttribute('aria-pressed', String(livre));
+    const bola = document.createElement('span'); bola.className = 'cor'; if (livre) bola.style.background = CORES.tapete;
+    const ent = document.createElement('input'); ent.type = 'color'; ent.setAttribute('aria-label', ROTULOS.cor);
+    const css = figurasCache().cores[CORES.tapete ?? 'salvia'];
+    ent.value = livre ? CORES.tapete : css ? hexDe(css.slice(4, -1).split(',').map(Number)) : '#a3b384';
+    let espera = null, ultima = null;
+    const mandar = () => { clearTimeout(espera); espera = null; if (ultima) escolherCorDoTapete(ultima); ultima = null; };
+    ent.addEventListener('input', () => { ultima = ent.value.toLowerCase(); bola.style.background = ultima; rot.setAttribute('aria-pressed', 'true'); espera ??= setTimeout(mandar, 120); });
+    ent.addEventListener('change', () => { ultima = ent.value.toLowerCase(); mandar(); montarBarrinha(); });
+    ent.addEventListener('click', (ev) => ev.stopPropagation());
+    rot.append(bola, ent);
+    return rot;
+  }
   function montarBarrinha() {
     const ch = selecao?.chave;
     if (!ch) { barrinha.hidden = true; barrinha.replaceChildren(); return; }
@@ -6870,8 +7055,9 @@ void main() {
       }
       if (tipoDe(id) === 'tapete') for (const [cor, css] of Object.entries(figurasCache().cores)) {
         const bola = document.createElement('span'); bola.className = 'cor'; bola.style.background = css;
-        opcoes.push(figuraDaBarrinha(bola, (CORES.tapete ?? 'salvia') === cor, () => { CORES = { ...CORES, tapete: cor }; guardarCores(); botaoDaCor(); desenhar(); }));
+        opcoes.push(figuraDaBarrinha(bola, (CORES.tapete ?? 'salvia') === cor, () => escolherCorDoTapete(cor)));
       }
+      if (tipoDe(id) === 'tapete') opcoes.push(corLivreDaBarrinha());
     } else if (tipo === 'p') {
       botoesB.push(botaoDaBarrinha('tirar', () => tirarEscolhido()));
       if (podeDuplicar(ch)) botoesB.push(botaoDaBarrinha('duplicar', () => duplicarEscolhido()));
@@ -6933,6 +7119,12 @@ void main() {
     }
     const d = dono[k], tipo = d ? tipoDe(d) : '';
     if (tipo === 'abajur' && CENA === 'quarto' && podeArrumar) { abajurApagado = !abajurApagado; assinaturaCena = ''; enviar(); desenhar(); return true; }
+    // o ventilador: desligado → ligado → oscilando → desligado (vai com a arrumação, em "cores")
+    if (tipo === 'ventilador' && CENA === 'quarto' && podeArrumar) {
+      const e = estadoDoVentilador(d), prox = e === null ? 'ligado' : e === 'ligado' ? 'oscilando' : null, novo = { ...CORES };
+      if (prox) novo[d] = prox; else delete novo[d];
+      CORES = novo; guardarCores(); desenhar(); return true;
+    }
     if (d === 'guarda-roupa' && VISTAS_ABERTO && podeArrumar) { guardaRoupaAberto = !guardaRoupaAberto; gavetasPedidas = false; desenhar(); return true; }
     if (d === 'mesa' && CENA === 'quarto') { conteudo = conteudoAgora() === 'desligada' ? 'conversa' : 'desligada'; assinaturaCena = ''; desenhar(); return true; }
     if (d === 'ilha') { fogaoAceso = !fogaoAceso; assinaturaCena = ''; desenhar(); return true; }
@@ -6952,7 +7144,8 @@ void main() {
     if (d === 'fliperama') { if (telasDesligadas.has(d)) telasDesligadas.delete(d); else telasDesligadas.add(d); assinaturaCena = ''; if (CENA === 'salao') enviar(); desenhar(); return true; }
     return false;
   }
-  window.estadoDoTeste = () => ({ abajurApagado, guardaRoupaAberto, conteudo, telas: [...telasDesligadas], canalDaTv: canalDaTvAgora(), fogaoAceso, cortina: fechada, aberta }); // para o teste
+  window.estadoDoTeste = () => ({ ventiladores: Object.fromEntries(Object.keys(ARR).filter((id) => tipoDe(id) === 'ventilador').map((id) => [id, estadoDoVentilador(id)])), abajurApagado, guardaRoupaAberto, conteudo, telas: [...telasDesligadas], canalDaTv: canalDaTvAgora(), fogaoAceso, cortina: fechada, aberta }); // para o teste
+  window.pixelDoVentiladorDoTeste = (id = 'ventilador') => { for (let k = 0; k < W * W; k++) if (dono[k] === id) return [k % W, (k / W) | 0]; return null; }; // para o teste
   // (o botão direito não pega, não arrasta nem escolhe: só o menu de contexto, logo abaixo, o atende)
   addEventListener('pointerdown', (e) => { if (e.target === tela && e.button !== 0) e.stopImmediatePropagation(); }, true);
   tela.addEventListener('contextmenu', (e) => {
@@ -7199,7 +7392,7 @@ void main() {
       if (d.comando === 'planta' && typeof d.planta === 'string') trocarPlanta(d.planta);
       if (d.comando === 'corDaParede' && typeof d.cor === 'string' && d.cor in CORES_DA_PAREDE) escolherCor('parede', d.cor);
       if (d.comando === 'corDoPiso' && typeof d.cor === 'string' && d.cor in CORES_DO_PISO) escolherCor('piso', d.cor);
-      if (d.comando === 'tapete' && CORES_DO_TAPETE[d.cor]) { CORES = { ...CORES, tapete: d.cor }; guardarCores(); botaoDaCor(); desenhar(); }
+      if (d.comando === 'tapete' && (CORES_DO_TAPETE[d.cor] || ehCorLivre(d.cor))) escolherCorDoTapete(d.cor);
       if (d.comando === 'parede' && ITENS_PAREDE[d.id]) alternarNaParede(d.id);
       if (d.comando === 'movel' && podeGuardar(d.id)) alternarMovel(d.id);
       if (d.comando === 'movel' && d.id === 'gato') alternarPet();

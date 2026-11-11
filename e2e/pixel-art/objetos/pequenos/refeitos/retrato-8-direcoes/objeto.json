@@ -1,0 +1,42 @@
+{
+  "id": "a8a0f14c-e303-4417-aa78-6b279aa64a84",
+  "name": "a small standing wooden pictur",
+  "state_name": "base",
+  "prompt": "a small standing wooden picture frame, tiny pixel art item, bold dark outline, simple silhouette",
+  "size": {
+    "width": 34,
+    "height": 34
+  },
+  "directions": 8,
+  "created_at": "2026-11-11T00:20:50.583695+00:00",
+  "view": "low top-down",
+  "rotation_urls": {
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/a8a0f14c-e303-4417-aa78-6b279aa64a84/rotations/south.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/a8a0f14c-e303-4417-aa78-6b279aa64a84/rotations/west.png",
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/a8a0f14c-e303-4417-aa78-6b279aa64a84/rotations/east.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/a8a0f14c-e303-4417-aa78-6b279aa64a84/rotations/north.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/a8a0f14c-e303-4417-aa78-6b279aa64a84/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/a8a0f14c-e303-4417-aa78-6b279aa64a84/rotations/south-west.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/a8a0f14c-e303-4417-aa78-6b279aa64a84/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/a8a0f14c-e303-4417-aa78-6b279aa64a84/rotations/north-west.png"
+  },
+  "storage_urls": {
+    "east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/a8a0f14c-e303-4417-aa78-6b279aa64a84/rotations/east.png",
+    "west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/a8a0f14c-e303-4417-aa78-6b279aa64a84/rotations/west.png",
+    "north": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/a8a0f14c-e303-4417-aa78-6b279aa64a84/rotations/north.png",
+    "south": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/a8a0f14c-e303-4417-aa78-6b279aa64a84/rotations/south.png",
+    "north-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/a8a0f14c-e303-4417-aa78-6b279aa64a84/rotations/north-east.png",
+    "north-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/a8a0f14c-e303-4417-aa78-6b279aa64a84/rotations/north-west.png",
+    "south-east": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/a8a0f14c-e303-4417-aa78-6b279aa64a84/rotations/south-east.png",
+    "south-west": "https://backblaze.pixellab.ai/file/pixellab-characters/objects/302d20c3-468e-443d-8fd5-96ab9ab92d85/a8a0f14c-e303-4417-aa78-6b279aa64a84/rotations/south-west.png"
+  },
+  "frame_urls": null,
+  "style_settings": {},
+  "tags": [],
+  "status": "completed",
+  "expansion_review": null,
+  "group_id": "f5670227-0234-4644-ba61-c6e97ef768a6",
+  "progress_percent": null,
+  "eta_seconds": null,
+  "animations": []
+}

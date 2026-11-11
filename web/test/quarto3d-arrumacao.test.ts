@@ -120,3 +120,9 @@ test('a arrumação guardada: cópias, guardados, o que não existe, o L e a jan
   assert.equal(q.cores.tapete, '#d99ba3');
   assert.equal(q.cores.parede, undefined);
 });
+
+test('a cor livre do tapete (10/11/2026) vai ao 3D como veio, e o que não é cor fica de fora', () => {
+  assert.equal(noMundo({ moveis: {}, cores: { tapete: '#3d6fd1' } }).cores.tapete, '#3d6fd1');
+  assert.equal(noMundo({ moveis: {}, cores: { tapete: '#3D6FD1' } }).cores.tapete, undefined);
+  assert.equal(noMundo({ moveis: {}, cores: { tapete: 'url(x)' } }).cores.tapete, undefined);
+});

@@ -387,7 +387,9 @@ export function noMundo(a: ArrumacaoDoPixel | null | undefined): QuartoNoMundo {
 
   const cores: QuartoNoMundo['cores'] = {};
   const co = arr.cores ?? {};
+  // (a cor livre, '#rrggbb', vai como veio: no 3D o tapete é pintado liso, sem a trama do pixel)
   if (CORES_DO_TAPETE[co.tapete]) cores.tapete = CORES_DO_TAPETE[co.tapete];
+  else if (typeof co.tapete === 'string' && /^#[0-9a-f]{6}$/.test(co.tapete)) cores.tapete = co.tapete;
   if (CORES_DA_PAREDE[co.parede]) cores.parede = CORES_DA_PAREDE[co.parede]!;
   if (CORES_DO_PISO[co.piso]) cores.piso = CORES_DO_PISO[co.piso]!;
 

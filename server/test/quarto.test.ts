@@ -89,6 +89,10 @@ describe('o meu quarto', () => {
       { moveis: {}, planta: 'Cubículo' }, // a planta é um código
       { moveis: {}, planta: 3 },
       { moveis: {}, cores: { parede: 'azul claro' } },
+      { moveis: {}, cores: { tapete: '#A3B384' } }, // a cor livre só em minúsculas
+      { moveis: {}, cores: { tapete: '#a3b38' } },
+      { moveis: {}, cores: { tapete: 'rgb(1,2,3)' } },
+      { moveis: {}, cores: { parede: '#a3b384' } }, // a cor livre é só do tapete
     ];
     for (const r of ruins) assert.equal((await ana('PUT', '/api/quarto', r)).statusCode, 400, JSON.stringify(r)?.slice(0, 80));
     assert.deepEqual((await ana('GET', '/api/quarto')).json().arrumacao, ARRUMACAO, 'a recusa não mexeu no que estava');
@@ -115,6 +119,13 @@ describe('a planta e as cores do quarto (06/11/2026)', () => {
     const emL = { ...ARRUMACAO, planta: 'l', cores: { tapete: 'azul', parede: 'salvia', piso: 'nogueira' } };
     assert.equal((await ana('PUT', '/api/quarto', emL)).statusCode, 200);
     assert.deepEqual((await ana('GET', '/api/quarto')).json().arrumacao, emL);
+    await ana('PUT', '/api/quarto', ARRUMACAO);
+  });
+
+  it('a COR LIVRE do tapete e o VENTILADOR ligado (10/11/2026) vão em "cores", e quem visita vê igual', async () => {
+    const livre = { ...ARRUMACAO, cores: { tapete: '#3d6fd1', ventilador: 'oscilando', 'ventilador~2': 'ligado' } };
+    assert.equal((await ana('PUT', '/api/quarto', livre)).statusCode, 200);
+    assert.deepEqual((await ana('GET', '/api/quarto')).json().arrumacao, livre);
     await ana('PUT', '/api/quarto', ARRUMACAO);
   });
 });

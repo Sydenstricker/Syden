@@ -21,6 +21,8 @@ const CODIGO = /^[a-z][a-z0-9-]{0,23}$/;
  * entrou em 16/10/2026 (decisão dele: "tudo pode duplicar"); o tipo é o que vem antes do "~".
  */
 const PECA = /^[a-z][a-z0-9-]{0,23}(~[1-9][0-9]{0,2})?$/;
+/** A cor livre do tapete: só '#rrggbb' em minúsculas (é desenhada na tela de quem visita, como os códigos). */
+const COR_LIVRE = /^#[0-9a-f]{6}$/;
 /** (era 40: o salão já tem perto de 30 móveis, e as cópias passariam disso) */
 const MAX_MOVEIS = 80;
 /** Esta versão aceita cópias: a página só oferece o Duplicar quando o servidor diz isto (ver as rotas). */
@@ -39,7 +41,7 @@ export interface Arrumacao {
   vista?: number;
   /** Os objetos da parede (quadro, fone, prateleira…): a parede, quantas casas andaram nela e quantos px subiram. */
   parede?: Record<string, { parede: 'direita' | 'esquerda'; v: number; h: number }>;
-  /** A cor escolhida de um móvel (o tapete: sálvia, terracota…), por código. Desde 06/11/2026 também a do reboco das
+  /** A cor escolhida de um móvel (o tapete: sálvia, terracota…, ou a cor livre '#rrggbb'), por código. Desde 06/11/2026 também a do reboco das
    *  paredes e a do piso do quarto ("parede" e "piso", pedido dele): a página pinta a casca por código. */
   cores?: Record<string, string>;
   /** Os objetos de cima (a caneca, os livros…): o tipo, o móvel em que estão, a posição no tampo (0 a 1) e o lado. */
@@ -116,7 +118,8 @@ export function validarArrumacao(x: unknown, N: number = CASAS_DO_QUARTO): { ok:
     if (!c || typeof c !== 'object' || Array.isArray(c) || Object.keys(c).length > MAX_MOVEIS) return { erro: 'Cores inválidas.' };
     saida.cores = {};
     for (const [id, cor] of Object.entries(c as Record<string, unknown>)) {
-      if (!PECA.test(id) || typeof cor !== 'string' || !CODIGO.test(cor)) return { erro: 'Cor inválida.' };
+      // (o tapete aceita também a COR LIVRE, '#rrggbb': o seletor de cor do sistema no Editar, pedido dele em 10/11/2026)
+      if (!PECA.test(id) || typeof cor !== 'string' || !(CODIGO.test(cor) || (id === 'tapete' && COR_LIVRE.test(cor)))) return { erro: 'Cor inválida.' };
       saida.cores[id] = cor;
     }
   }

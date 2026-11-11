@@ -259,7 +259,7 @@ export function EditorDaCena({
   }, [editando]);
   // Os nomes da barrinha que a cena põe em cima do que está escolhido.
   useEffect(() => {
-    enviarRef.current({ rotulos: { mover: t('Mover'), girar: t('Girar'), tirar: t('Tirar'), duplicar: t('Duplicar'), opcoes: t('Mais opções'), cortina: t('Cortina'), janela: t('Janela'), sobre: t('Sobre'), banheiro: t('Porta do banheiro'), fechar: t('Fechar') } });
+    enviarRef.current({ rotulos: { cor: t('Escolher a cor'), mover: t('Mover'), girar: t('Girar'), tirar: t('Tirar'), duplicar: t('Duplicar'), opcoes: t('Mais opções'), cortina: t('Cortina'), janela: t('Janela'), sobre: t('Sobre'), banheiro: t('Porta do banheiro'), fechar: t('Fechar') } });
   }, [t]);
   // A prévia de dia ou de noite vale só no Editar; ao sair, volta o do app.
   useEffect(() => {
@@ -472,6 +472,7 @@ export function EditorDaCena({
                         </button>
                       );
                     })}
+                    {sec.id === 'tapete' && <CorLivreDoTapete valor={arrumacao?.tapete} enviar={enviar} />}
                   </div>
                 </section>
               ))}
@@ -522,6 +523,35 @@ export function EditorDaCena({
         </div>
       ) : null}
     </div>
+  );
+}
+
+/**
+ * A COR LIVRE DO TAPETE (pedido dele, 10/11/2026): depois das 6 amostras, o seletor de cor do sistema, como a cor livre do
+ * criador de coelho. O quadradinho segue o ponteiro na hora, e a cena recebe no máximo uma cor a cada 120 ms, sempre a última.
+ */
+function CorLivreDoTapete({ valor, enviar }: { valor?: string; enviar: (msg: Record<string, unknown>) => void }) {
+  const t = useT();
+  const [rascunho, setRascunho] = useState<string | null>(null);
+  const espera = useRef<{ tempo: ReturnType<typeof setTimeout> | null; cor: string | null }>({ tempo: null, cor: null });
+  useEffect(() => () => clearTimeout(espera.current.tempo ?? undefined), []);
+  useEffect(() => setRascunho(null), [valor]);
+  const ehLivre = (c?: string | null) => !!c && /^#[0-9a-f]{6}$/.test(c);
+  const mostrado = rascunho ?? (ehLivre(valor) ? valor! : null);
+  function arrastar(cor: string) {
+    setRascunho(cor);
+    espera.current.cor = cor;
+    if (espera.current.tempo) return;
+    espera.current.tempo = setTimeout(() => {
+      espera.current.tempo = null;
+      if (espera.current.cor) enviar({ comando: 'tapete', cor: espera.current.cor });
+    }, 120);
+  }
+  return (
+    <label className="editor-item editor-cor-livre" title={t('Escolher a cor')} aria-pressed={!!mostrado}>
+      <span className="editor-cor" style={mostrado ? { background: mostrado } : undefined} />
+      <input type="color" value={mostrado ?? '#a3b384'} aria-label={t('Escolher a cor')} onChange={(e) => arrastar(e.target.value.toLowerCase())} />
+    </label>
   );
 }
 
