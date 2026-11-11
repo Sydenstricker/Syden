@@ -12,7 +12,7 @@ import { describe, it, test } from 'node:test';
 const css = readFileSync(new URL('../src/styles.css', import.meta.url), 'utf8');
 
 /** Variáveis que não são definidas no CSS porque chegam prontas do React, em `style={{...}}`. */
-const VINDAS_DO_APP = new Set(['--card-width']);
+const VINDAS_DO_APP = new Set(['--card-width', '--monitor', '--monitor-mesa']);
 
 function definidasEm(trecho: string): Set<string> {
   return new Set([...trecho.matchAll(/^\s*(--[a-z0-9-]+)\s*:/gim)].map((m) => m[1]));
