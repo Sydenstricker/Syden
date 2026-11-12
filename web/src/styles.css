@@ -20305,3 +20305,22 @@ body.arrastando-barra {
 .editor-codigo-painel p {
   margin: 0;
 }
+
+/* NA TELA CHEIA, OS CONTROLES SOMEM COM O MOUSE PARADO (12/11/2026; ver telaCheiaOciosa.ts). Só os controles e o cursor:
+   as câmeras e os avisos ficam. O "!important" vence as regras de passar o mouse, que acendem o botão de tela cheia e o
+   "i" (o mouse está sempre em cima do palco quando ele ocupa a tela). */
+.stage:fullscreen :is(.stage-controls, .fullscreen-button, .tile-info, .tile-name, .tile-fechar, .stage-faixa-botao) {
+  transition: opacity 0.3s ease;
+}
+.stage[data-ocioso] {
+  cursor: none;
+}
+.stage[data-ocioso] :is(.stage-controls, .fullscreen-button, .tile-info, .tile-name, .tile-fechar, .stage-faixa-botao) {
+  opacity: 0 !important;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .stage:fullscreen :is(.stage-controls, .fullscreen-button, .tile-info, .tile-name, .tile-fechar, .stage-faixa-botao) {
+    transition: none;
+  }
+}

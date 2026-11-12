@@ -10,6 +10,7 @@ import {
   useTracks,
   VideoTrack,
 } from '@livekit/components-react';
+import { useOciosoNaTelaCheia } from './telaCheiaOciosa';
 import { type LocalTrackPublication, type Participant, type RemoteVideoTrack, type Room, RoomEvent, Track, type TrackPublication } from 'livekit-client';
 import {
   AudioLines,
@@ -1294,6 +1295,8 @@ export function Stage({
   // (sozinho) para trazê-la de volta.
   const [faixaEscondida, setFaixaEscondida] = useState(false);
   const palco = useRef<HTMLDivElement>(null);
+  // Na tela cheia, os controles somem com o mouse parado (telaCheiaOciosa.ts).
+  const ocioso = useOciosoNaTelaCheia(palco);
   const [soundboardOpen, setSoundboardOpen] = useState(false);
   // O karaokê abre sozinho para todo mundo quando alguém põe uma música.
   const [karaokeOpen, setKaraokeOpen] = useState(false);
@@ -1468,7 +1471,7 @@ export function Stage({
 
   return (
     <JanelasDestacadas chavesQueExistem={tracks.filter((t) => t.source === Track.Source.Camera || aberta(t)).map(trackKey)}>
-    <div className="stage" ref={palco} data-lk-theme="default">
+    <div className="stage" ref={palco} data-lk-theme="default" data-ocioso={ocioso || undefined}>
       {siteNoPalco ? (
         <SiteNoPalco nome={siteNoPalco.nome} endereco={siteNoPalco.endereco} aoFechar={() => setSiteNoPalco(null)} />
       ) : igualando ? (

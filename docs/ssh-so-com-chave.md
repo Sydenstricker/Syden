@@ -2,6 +2,29 @@
 
 **Plano escrito em 09/11/2026, a pedido dele, para retomar depois dos testes do PixelLab.** Ainda NÃO foi feito.
 
+## O que se mediu em 12/11/2026 (e por que ficou como pendência, decisão dele)
+
+- **A senha do root já não entra pelo SSH** (`PermitRootLogin prohibit-password` já vale), e **nenhuma conta tem senha
+  utilizável** (o `/etc/shadow` não tem hash em ninguém; só o root tem shell). Uma senha vazada não serve hoje: as ~14,8
+  mil tentativas por dia não têm chance. A etapa 2 vira defesa a mais (um usuário criado no futuro com senha).
+- **Por isso a etapa 0 muda:** não há senha do root para entrar no console da Hetzner. A porta de emergência de verdade é
+  o **"Reset root password"** do painel, que gera uma na hora. A conta da Hetzner (senha forte; conferir a verificação em
+  duas etapas) é a porta que importa.
+- **O risco que sobra é a chave do PC SEM SENHA** (conferido: `ssh-keygen -y -P '' -f ~/.ssh/id_ed25519` abre). Quem
+  copiar o arquivo entra como root. A saída, quando ele quiser:
+
+```powershell
+ssh-keygen -p -f $env:USERPROFILE\.ssh\id_ed25519        # a senha nova; a chave é a mesma, o servidor não muda
+# como administrador, uma vez: o agente guarda a chave aberta enquanto o Windows estiver logado
+Get-Service ssh-agent | Set-Service -StartupType Automatic
+Start-Service ssh-agent
+ssh-add $env:USERPROFILE\.ssh\id_ed25519                   # depois de cada vez que ligar o PC
+```
+
+  O que muda: sem o agente, cada `ssh` pede a senha (o `git pull` e o resto dentro da conexão, não), e o `ssh` que o
+  Claude roda nas conversas (logs, diagnóstico) FALHA, porque não tem como digitar a senha. Com o agente, nada muda,
+  exceto o primeiro `ssh` depois de ligar o PC. O deploy do site e as tarefas do servidor não usam esta chave.
+
 ## Por que
 
 O SSH é a porta pela qual se entra no servidor para administrá-lo (é por ela que se roda `cofre-abrir.sh`). Hoje ela
