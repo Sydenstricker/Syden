@@ -36,6 +36,7 @@ try {
   await quarto.waitForFunction(() => typeof window.visitaDoTeste === 'function', null, { timeout: 60000 });
   await p.waitForTimeout(800);
   await quarto.evaluate(() => parent.postMessage({ syden: 'quarto', acao: 'computador' }, location.origin));
+  await p.locator('.area-de-trabalho [data-icone="mini-games"]').click(); // a área de trabalho do computador (11/11/2026)
   await p.locator('.jogos-painel .jogos-solo button', { hasText: 'Capitais' }).first().click();
   const robos = p.locator('.cid-robos-botao').first();
   if (await robos.isVisible({ timeout: 5000 }).catch(() => false)) await robos.click();

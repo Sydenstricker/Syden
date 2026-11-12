@@ -67,6 +67,7 @@ try {
   await quarto.waitForFunction(() => typeof window.visitaDoTeste === 'function', null, { timeout: 60000 });
   await duda.waitForTimeout(1000); // o app manda as funções logo depois do "pronto"
   await quarto.evaluate(() => parent.postMessage({ syden: 'quarto', acao: 'computador' }, location.origin));
+  await duda.locator('.area-de-trabalho [data-icone="mini-games"]').click(); // a área de trabalho do computador (11/11/2026)
   const painel = duda.locator('.jogos-painel');
   await painel.waitFor();
   const sitesDeFora = await painel.locator('.jogos-de-fora li').allInnerTexts();

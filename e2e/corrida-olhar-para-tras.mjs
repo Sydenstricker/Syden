@@ -19,6 +19,7 @@ try {
   await quarto.waitForFunction(() => typeof window.visitaDoTeste === 'function', null, { timeout: 60000 });
   await p.waitForTimeout(800);
   await quarto.evaluate(() => parent.postMessage({ syden: 'quarto', acao: 'computador' }, location.origin));
+  await p.locator('.area-de-trabalho [data-icone="mini-games"]').click(); // a área de trabalho do computador (11/11/2026)
   await p.locator('.jogos-painel .jogos-solo button', { hasText: 'Corrida dos coelhos' }).click();
   const comandos = await p.locator('.corrida-largada .jogo-comandos').innerText();
   comandos.includes('Olhar para trás') ? ok('na largada, o comando aparece com a tecla') : falhou('comandos: ' + comandos);

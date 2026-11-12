@@ -104,7 +104,7 @@ try {
   await p.locator('.vila-painel-fechar').first().click();
 
   et = await clicar('computador');
-  await p.locator('.jogos-painel').waitFor({ timeout: 12_000 }).then(
+  await p.locator('.area-de-trabalho').waitFor({ timeout: 12_000 }).then(
     () => ok(`a mesa (${et}) abre os Mini-games`),
     () => falhou('a mesa não abriu os Mini-games'),
   );
@@ -112,7 +112,7 @@ try {
   if (pose.pose === 'sentado' && pose.animacao === 'computador' && pose.em === 'cadeira') ok(`${tema}: o coelho sentou na cadeira antes da função`);
   else falhou('pose no computador: ' + JSON.stringify(pose));
   await foto(p, tema + '-4-mesa-minigames');
-  await p.locator('.jogos-painel .vila-painel-fechar').click();
+  await p.locator('.barra-retro-desligar').click();
 
   const temaAntes = await p.evaluate(() => document.documentElement.dataset.theme ?? document.documentElement.className);
   await clicar('abajur');

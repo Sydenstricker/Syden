@@ -7,7 +7,7 @@ import type { Socket } from 'socket.io-client';
 import { SiteEmbutido } from './SiteEmbutido';
 import { type CSSProperties, type FormEvent, useRef, useState } from 'react';
 import monitorUrl from './assets/quarto/monitor.png';
-import monitorMesaUrl from './assets/quarto/monitor-mesa.png';
+import { TelaDoComputador } from './TelaDoComputador';
 import { api } from './api';
 import { nomeDe, useDirectory } from './directory';
 import { getTheme, toggleTheme } from './theme';
@@ -294,21 +294,23 @@ export function Home({
         )}
         {jogosAbertos && (
           // A TELA DO COMPUTADOR (pedido dele, 10/11/2026: "eu clico através de um PC no quarto"): a lista aparece dentro
-          // do MESMO monitor que está na mesa (a moldura é um 9-slice, feita por código: e2e/pixel-art/monitor/escuro.mjs). Só aqui: o fliperama do salão e o
+          // do MESMO monitor que está na mesa (a moldura é um 9-slice, feita por código: e2e/pixel-art/monitor/escuro.mjs). Dentro, a área de
+          // trabalho retrô (TelaDoComputador.tsx, 11/11/2026): o ícone Mini-games abre a lista numa janela. Só aqui: o fliperama do salão e o
           // botão da sala abrem o painel de sempre. Abaixo de 480 px a moldura afina para 1 px por pixel.
           <div
             className="monitor-do-quarto"
             role="dialog"
             aria-label={t('Mini-games')}
-            style={{ '--monitor': `url(${monitorUrl})`, '--monitor-mesa': `url(${monitorMesaUrl})` } as CSSProperties}
+            style={{ '--monitor': `url(${monitorUrl})` } as CSSProperties}
           >
-            <div className="vila-painel jogos-painel">
-            <header>
-              <h3>{t('Mini-games')}</h3>
-              <button className="vila-painel-fechar" aria-label={t('Fechar')} onClick={() => setJogosAbertos(false)}>
-                ✕
-              </button>
-            </header>
+            <TelaDoComputador
+              aoDesligar={() => setJogosAbertos(false)}
+              aoAbrirTrofeus={() => {
+                setJogosAbertos(false);
+                setTrofeusAbertos(true);
+              }}
+              escutarEsc={!siteAberto}
+            >
             {/* Sozinho, aqui mesmo: a partida é só sua, e não precisa de sala nem de chamada. */}
             <section className="jogos-do-syden jogos-solo">
               <h4>
@@ -408,9 +410,7 @@ export function Home({
                 })}
               </ul>
             </section>
-            </div>
-            {/* embaixo do monitor, a mesa: o pé curto, o teclado e o mouse no mousepad (só enfeite; o LED mora no canto da moldura) */}
-            <span className="monitor-mesa" aria-hidden="true" />
+            </TelaDoComputador>
           </div>
         )}
       </div>

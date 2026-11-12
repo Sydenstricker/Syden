@@ -40,6 +40,7 @@ try {
     await quarto.waitForFunction(() => typeof window.visitaDoTeste === 'function', null, { timeout: 60000 });
     await p.waitForTimeout(800);
     await quarto.evaluate(() => parent.postMessage({ syden: 'quarto', acao: 'computador' }, location.origin));
+    await p.locator('.area-de-trabalho [data-icone="mini-games"]').click(); // a área de trabalho do computador (11/11/2026)
     const painel = p.locator('.jogos-painel');
     await painel.waitFor();
     await painel.locator('.jogos-solo button', { hasText: 'Ponte da toca' }).click();

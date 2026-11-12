@@ -40,6 +40,7 @@ try {
   for (const jogo of JOGOS) {
     const antes = erros.length;
     await quarto.evaluate(() => parent.postMessage({ syden: 'quarto', acao: 'computador' }, location.origin));
+    await duda.locator('.area-de-trabalho [data-icone="mini-games"]').click(); // a área de trabalho do computador (11/11/2026)
     const painel = duda.locator('.jogos-painel');
     await painel.waitFor();
     const botao = painel.locator('.jogos-solo button', { hasText: jogo.nome }).first();

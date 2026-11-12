@@ -27,6 +27,7 @@ try {
     await p.waitForTimeout(800);
     await p.evaluate((k) => (window[k] = true), j.piloto);
     await quarto.evaluate(() => parent.postMessage({ syden: 'quarto', acao: 'computador' }, location.origin));
+    await p.locator('.area-de-trabalho [data-icone="mini-games"]').click(); // a área de trabalho do computador (11/11/2026)
     await p.locator('.jogos-painel .jogos-solo button', { hasText: j.nome }).evaluate((b) => b.click());
     // escolha que alguns pedem (quantos por time, por exemplo): o primeiro botão da escolha, se houver
     await p.waitForTimeout(1500);

@@ -7810,24 +7810,25 @@ textarea {
   overflow-y: auto;
 }
 
-/* A TELA DO COMPUTADOR DO QUARTO (10/11/2026): o painel dos Mini-games dentro do MESMO monitor que está na mesa do quarto, em
-   pixel art. A moldura é um 9-slice (9 9 13 9 px da imagem, feita por código: e2e/pixel-art/monitor/escuro.mjs) em escala
-   inteira: 2 px por pixel, e 1 px na tela estreita. O LED mora no canto de baixo, que não estica. A tela é DEITADA, perto de 4:3,
-   como a da mesa ("o monitor está na horizontal", relato dele); embaixo, a mesa: o pé curto, o teclado e o mouse no mousepad. */
+/* A TELA DO COMPUTADOR DO QUARTO (10/11/2026): os Mini-games dentro do MESMO monitor que está na mesa do quarto, em pixel art.
+   A moldura é um 9-slice (9 9 13 9 px da imagem, feita por código: e2e/pixel-art/monitor/escuro.mjs) em escala inteira: 2 px
+   por pixel, e 1 px na tela estreita. O LED mora no canto de baixo, que não estica. A tela é DEITADA, perto de 4:3, como a da
+   mesa ("o monitor está na horizontal", relato dele). Sem a mesa embaixo desde 11/11/2026: o teclado e o mouse minúsculos
+   ficavam ruins ("se for para deixar um item ruim, melhor nem colocar"). */
 .monitor-do-quarto {
   --px: 2px;
   position: absolute;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, calc(-50% - 11 * var(--px)));
+  transform: translate(-50%, -50%);
   z-index: 4;
   display: flex;
   flex-direction: column;
   width: min(720px, 94%);
   aspect-ratio: 4 / 3;
-  /* sem isto a proporção cresceria com a lista; a lista rola dentro da tela */
+  /* sem isto a proporção cresceria com a lista; a lista rola dentro da janela */
   min-height: 0;
-  max-height: calc(88% - 22 * var(--px));
+  max-height: 90%;
   border-style: solid;
   border-width: calc(9 * var(--px)) calc(9 * var(--px)) calc(13 * var(--px)) calc(9 * var(--px));
   border-image: var(--monitor) 9 9 13 9 stretch;
@@ -7843,37 +7844,187 @@ textarea {
   .monitor-do-quarto {
     --px: 1px;
     aspect-ratio: auto;
+    height: 80%;
   }
   .monitor-do-quarto .jogos-solo ul {
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   }
-  /* sem a mesa: no celular ela cairia em cima do botão Editar, logo abaixo do quarto */
-  .monitor-mesa {
-    display: none;
-  }
 }
-.monitor-do-quarto > .jogos-painel {
+
+/* A ÁREA DE TRABALHO RETRÔ (TelaDoComputador.tsx, 11/11/2026): o jeito dos anos 90, sem nada copiado de sistema nenhum. As cores
+   são fixas, como as de uma tela de verdade; só o conteúdo da janela segue o tema, para a lista continuar legível nos dois. */
+.area-de-trabalho {
+  --retro-cinza: #c3c0c8;
+  --retro-claro: #f4f2f6;
+  --retro-sombra: #77737f;
+  --retro-escuro: #1b1b22;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  image-rendering: auto;
+  font-size: calc(13px * var(--escala-do-texto));
+}
+.area-de-trabalho-fundo {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  /* o verde-azulado de época, com a marca do Syden apagada no meio */
+  background:
+    var(--marca-do-syden) center / 22% auto no-repeat,
+    #2f7a78;
+  background-blend-mode: soft-light, normal;
+  box-shadow: inset 0 0 calc(10 * var(--px)) rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+.area-de-trabalho-icones {
+  list-style: none;
+  margin: 0;
+  padding: 12px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: max-content;
+}
+.area-de-trabalho-icones button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 84px;
+  padding: 4px 2px;
+  border: 1px dotted transparent;
+  background: none;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+}
+.area-de-trabalho-icones button span {
+  padding: 0 3px;
+  text-align: center;
+  line-height: 1.25;
+  text-shadow: 1px 1px 0 #000;
+}
+.area-de-trabalho-icones button:hover span,
+.area-de-trabalho-icones button:focus-visible span {
+  background: #1f3f8f;
+  text-shadow: none;
+}
+.area-de-trabalho-icones button:focus-visible {
+  outline: none;
+  border-color: #fff;
+}
+.area-de-trabalho-icones button:hover svg,
+.area-de-trabalho-icones button:focus-visible svg {
+  filter: drop-shadow(0 0 0 #1f3f8f) brightness(0.85);
+}
+
+/* o relevo de época: claro em cima e à esquerda, escuro embaixo e à direita (e o contrário quando afundado) */
+.botao-retro {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--retro-cinza);
+  color: var(--retro-escuro);
+  border: none;
+  box-shadow:
+    inset -1px -1px 0 var(--retro-escuro),
+    inset 1px 1px 0 var(--retro-claro),
+    inset -2px -2px 0 var(--retro-sombra);
+  font: inherit;
+  cursor: pointer;
+}
+.botao-retro:active,
+.botao-retro.afundado {
+  box-shadow:
+    inset 1px 1px 0 var(--retro-escuro),
+    inset -1px -1px 0 var(--retro-claro),
+    inset 2px 2px 0 var(--retro-sombra);
+}
+.botao-retro:focus-visible {
+  outline: 1px dotted var(--retro-escuro);
+  outline-offset: -4px;
+}
+
+.janela-retro {
+  position: absolute;
+  inset: 6px;
+  display: flex;
+  flex-direction: column;
+  padding: 3px;
+  background: var(--retro-cinza);
+  box-shadow:
+    inset -1px -1px 0 var(--retro-escuro),
+    inset 1px 1px 0 var(--retro-claro),
+    inset -2px -2px 0 var(--retro-sombra),
+    4px 4px 0 rgba(0, 0, 0, 0.25);
+}
+.janela-retro-titulo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 3px 3px 5px;
+  background: linear-gradient(90deg, #1f2f7a, #4a78c8);
+  color: #fff;
+}
+.janela-retro-titulo h3 {
+  flex: 1 1 auto;
+  margin: 0;
+  font-size: 1em;
+  font-weight: 700;
+}
+.janela-retro-fechar {
+  width: 20px;
+  height: 18px;
+  padding: 0;
+}
+.janela-retro > .jogos-painel {
   position: static;
   transform: none;
   width: auto;
   max-height: none;
   flex: 1 1 auto;
   min-height: 0;
+  margin-top: 3px;
   border: none;
   border-radius: 0;
-  /* o tom de monitor: os cantos de dentro um pouco mais escuros, sem tocar no texto */
-  box-shadow: inset 0 0 calc(10 * var(--px)) rgba(0, 0, 0, 0.35);
-  image-rendering: auto;
+  box-shadow:
+    inset 1px 1px 0 var(--retro-sombra),
+    inset -1px -1px 0 var(--retro-claro);
 }
-.monitor-mesa {
-  position: absolute;
-  pointer-events: none;
-  left: 50%;
-  top: calc(100% + 13 * var(--px));
-  width: calc(160 * var(--px));
-  height: calc(22 * var(--px));
-  transform: translateX(-50%);
-  background: var(--monitor-mesa) no-repeat 0 0 / 100% 100%;
+
+.barra-retro {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+  padding: 3px;
+  background: var(--retro-cinza);
+  border-top: 1px solid var(--retro-claro);
+  color: var(--retro-escuro);
+}
+.barra-retro-desligar {
+  width: 30px;
+  height: 24px;
+}
+.barra-retro-janela {
+  height: 24px;
+  padding: 0 8px;
+  max-width: 45%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  cursor: default;
+  font-weight: 700;
+}
+.barra-retro-relogio {
+  margin-left: auto;
+  padding: 3px 10px;
+  box-shadow:
+    inset 1px 1px 0 var(--retro-sombra),
+    inset -1px -1px 0 var(--retro-claro);
+  font-variant-numeric: tabular-nums;
 }
 
 .jogos-painel h4 {

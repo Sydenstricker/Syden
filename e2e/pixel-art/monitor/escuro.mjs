@@ -3,7 +3,8 @@
 // sudeste da mesa (quarto/novo/quarto/avulsos/mesa-teclado-giros/south-east.png), e a forma é desenhada aqui, sem geração:
 // contorno preto, moldura cinza-arroxeada com o realce no alto e à esquerda, a tela afundada (a borda de cima escura, a de baixo
 // clara), o LED vermelho no canto de baixo; embaixo, o pé curto, o teclado e o mouse no mousepad.
-//   node e2e/pixel-art/monitor/escuro.mjs   → web/src/assets/quarto/monitor.png (o 9-slice: 9 9 13 9) e monitor-mesa.png
+//   node e2e/pixel-art/monitor/escuro.mjs   → web/src/assets/quarto/monitor.png (o 9-slice: 9 9 13 9). A mesa embaixo
+// (mesa(), o pé, o teclado e o mouse) saiu do app em 11/11/2026 ("se for para deixar um item ruim, melhor nem colocar"); fica de registro.
 // (fatiar.mjs, da moldura creme, ficou de registro: rodá-lo de novo sobrescreve estas imagens.)
 import fs from 'node:fs';
 import path from 'node:path';
@@ -115,7 +116,6 @@ const png = (px) => p.evaluate((px) => {
   return c.toDataURL('image/png').split(',')[1];
 }, px);
 gravar64(path.join(DESTINO, 'monitor.png'), await png(moldura()));
-gravar64(path.join(DESTINO, 'monitor-mesa.png'), await png(mesa()));
 await fechar();
-for (const velho of ['monitor-botoes.png', 'monitor-pe.png']) fs.rmSync(path.join(DESTINO, velho), { force: true });
+for (const velho of ['monitor-botoes.png', 'monitor-pe.png', 'monitor-mesa.png']) fs.rmSync(path.join(DESTINO, velho), { force: true });
 console.log('monitor escuro →', DESTINO);
