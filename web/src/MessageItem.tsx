@@ -1,5 +1,6 @@
 import { Download, FileText, Flag, MessageSquarePlus, MessagesSquare, Reply, SmilePlus, ThumbsUp, Trash2, Check } from 'lucide-react';
 import { useBloqueados } from './bloqueios';
+import { abrirConviteNoSyden } from './linkDeConvite';
 import { DialogoDeDenuncia } from './Denuncia';
 import { BotaoDeLembrete } from './Lembrete';
 import { useRef, useState } from 'react';
@@ -497,7 +498,7 @@ export function MessageText({ content }: { content: string }) {
     <p className={`message-text${jumbo ? ' jumbo' : ''}`}>
       {content.split(URL_RE).map((part, i) =>
         i % 2 === 1 ? (
-          <a key={i} href={part} target="_blank" rel="noreferrer noopener">
+          <a key={i} href={part} target="_blank" rel="noreferrer noopener" onClick={(e) => abrirConviteNoSyden(e, part)}>
             {part}
           </a>
         ) : (

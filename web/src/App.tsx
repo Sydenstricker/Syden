@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { type ConviteDoLink, EVENTO_DO_CONVITE } from './linkDeConvite';
 import { esconderAbertura } from './abertura';
 import { ApiError, api, loadToken, saveToken } from './api';
 import { sincronizarAoEntrar } from './preferencias';
@@ -58,7 +59,17 @@ export function App() {
   // recusado). Com ela, a tela é a da pendência, e não o Syden.
   const barreiraAoVivo = useBarreira();
   const barreira = session.status === 'ready' ? (barreiraAoVivo ?? session.user.barreira ?? null) : null;
-  const [inviteCode] = useState(readInviteFromUrl);
+  // O convite do endereço, e o de um link clicado DENTRO do Syden (linkDeConvite.ts): `vez` faz o mesmo link clicado de
+  // novo perguntar de novo.
+  const [inviteCode, setInviteCode] = useState<(ConviteDoLink & { vez: number }) | null>(() => {
+    const doEndereco = readInviteFromUrl();
+    return doEndereco && { ...doEndereco, vez: 0 };
+  });
+  useEffect(() => {
+    const aoPedir = (e: Event) => setInviteCode((antes) => ({ ...(e as CustomEvent<ConviteDoLink>).detail, vez: (antes?.vez ?? 0) + 1 }));
+    window.addEventListener(EVENTO_DO_CONVITE, aoPedir);
+    return () => window.removeEventListener(EVENTO_DO_CONVITE, aoPedir);
+  }, []);
   // O link da aula (?aula=…): sem conta, a porta é a EntradaNaAula; com conta, o Shell põe na sala.
   const [linkDaAula, setLinkDaAula] = useState(lerLinkDaAula);
   const [querUsarConta, setQuerUsarConta] = useState(false);
@@ -299,6 +310,7 @@ export function App() {
             user={session.user}
             pendingInviteCode={inviteCode?.code ?? null}
             pendingInviteChannel={inviteCode?.canal ?? null}
+            pendingInviteVez={inviteCode?.vez ?? 0}
             linkDaAula={linkDaAula}
             aoUsarLinkDaAula={() => {
               esquecerLinkDaAula();

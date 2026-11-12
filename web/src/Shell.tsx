@@ -104,6 +104,7 @@ export function Shell({
   user: loggedUser,
   pendingInviteCode,
   pendingInviteChannel,
+  pendingInviteVez = 0,
   linkDaAula,
   aoUsarLinkDaAula,
   onLogout,
@@ -114,6 +115,8 @@ export function Shell({
   pendingInviteCode?: string | null;
   /** O link era de uma sala (&canal=ID): depois de entrar na comunidade, abre esse canal. */
   pendingInviteChannel?: number | null;
+  /** Muda a cada link de convite clicado dentro do Syden, para o mesmo link perguntar de novo (linkDeConvite.ts). */
+  pendingInviteVez?: number;
   /** Veio de um link de aula (?aula=…) já com conta: entra na turma e cai na sala (ver aula.ts). */
   linkDaAula?: string | null;
   aoUsarLinkDaAula?: () => void;
@@ -416,14 +419,19 @@ export function Shell({
     api<PreviaDoConvite>(`/api/convite/${encodeURIComponent(pendingInviteCode)}`).then(
       async (previa) => {
         if (!previa.jaParticipa) return setPreviaDoConvite(previa);
-        if (!pendingInviteChannel) return;
+        if (!pendingInviteChannel) {
+          // Já participa e o link é da comunidade: vai até ela.
+          setView('community');
+          setCommunityId(previa.id);
+          return;
+        }
         await reloadCommunities().catch(() => null);
         setIrParaCanal({ communityId: previa.id, channelId: pendingInviteChannel });
       },
       (error) => setNotice((error as Error).message),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pendingInviteCode]);
+  }, [pendingInviteCode, pendingInviteVez]);
 
   // "Agora não": volta para onde estava, sem entrar. O link já saiu do endereço (App.tsx), então não pergunta de novo.
   const fecharConviteDeComunidade = useCallback(() => {

@@ -10,6 +10,7 @@ import {
   useTracks,
   VideoTrack,
 } from '@livekit/components-react';
+import { useGradeQueEnche } from './gradeDoPalco';
 import { useOciosoNaTelaCheia } from './telaCheiaOciosa';
 import { type LocalTrackPublication, type Participant, type RemoteVideoTrack, type Room, RoomEvent, Track, type TrackPublication } from 'livekit-client';
 import {
@@ -1349,6 +1350,8 @@ export function Stage({
   const focused = splitting || igualando ? undefined : (fixado ?? abertas[0]);
   const others = igualando ? [] : splitting ? tracks.filter((t) => !abertas.includes(t)) : focused ? tracks.filter((t) => t !== focused) : tracks;
   const card = cardSize(tracks.length);
+  // O lado a lado e o mosaico enchem o palco, também num monitor em pé (gradeDoPalco.ts).
+  const grade = useGradeQueEnche(igualando ? tracks.length : splitting ? abertas.length : 0);
   // O clipe segue o que está grande na tela; com a tela dividida, a primeira transmissão.
   const paraClipar = (focused?.source === Track.Source.ScreenShare ? focused : undefined) ?? abertas[0];
   // Na chamada privada não há clipe (ele vai para um canal da comunidade): nada de gravar a tela e as vozes em memória à toa.
@@ -1477,7 +1480,7 @@ export function Stage({
       ) : igualando ? (
         // Todos do mesmo tamanho: as transmissões abertas primeiro, depois as câmeras, e os convites no fim.
         <div className="stage-focus">
-          <div className="stage-split stage-mosaico">
+          <div className="stage-split stage-mosaico" ref={grade.ref} style={grade.estilo}>
             {[...abertas, ...tracks.filter((t) => !abertas.includes(t))].map((ref) =>
               abertas.includes(ref) ? (
                 <FocusPane
@@ -1499,7 +1502,7 @@ export function Stage({
       ) : splitting ? (
         // Todas as transmissões do mesmo tamanho, lado a lado.
         <div className="stage-focus">
-          <div className="stage-split">
+          <div className="stage-split" ref={grade.ref} style={grade.estilo}>
             {abertas.map((ref) => (
               <FocusPane
                 key={trackKey(ref)}

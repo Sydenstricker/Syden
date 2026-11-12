@@ -1,3 +1,5 @@
+import { desktopBridge } from './desktop';
+
 // Põe um vídeo da chamada numa janela separada, para quem tem dois monitores.
 //
 // A IDEIA VEIO NO LUGAR DE UM LAYOUT ARRASTÁVEL, e é melhor por uma razão simples: quem tem duas telas
@@ -24,7 +26,16 @@ interface DocumentPiP {
 const api = (): DocumentPiP | undefined =>
   (window as unknown as { documentPictureInPicture?: DocumentPiP }).documentPictureInPicture;
 
-export const janelaDestacadaDisponivel = () => typeof api()?.requestWindow === 'function';
+/**
+ * NO APP, O PiP COMUM DE VÍDEO (12/11/2026, relato: "o botão do meio não funciona para assistir em outra janela"). O
+ * Electron tem a Document PiP na página, mas não do lado de fora: negada (a regra de janelas novas do app), ela falha com
+ * "no window"; liberada, a janela abre e fecha no mesmo instante (medido no Electron 44). O PiP comum funciona. Por isso,
+ * no app, a janela à parte é a de vídeo: sem o nome em cima, mas com a imagem ao vivo, sempre por cima, e o LiveKit a
+ * reconhece (baixa a camada do tamanho dela e não a pausa com a janela principal minimizada).
+ */
+const pipDeVideo = () => desktopBridge !== undefined && document.pictureInPictureEnabled === true;
+
+export const janelaDestacadaDisponivel = () => pipDeVideo() || typeof api()?.requestWindow === 'function';
 
 /**
  * Leva o CSS do Syden para dentro da janela nova.
@@ -88,6 +99,7 @@ export async function destacarVideo(
   /** A faixa do LiveKit, quando houver: a janela nova é ligada a ela por `attach` (ver abaixo). */
   faixa?: { attach(elemento: HTMLVideoElement): HTMLMediaElement; detach(elemento: HTMLVideoElement): HTMLMediaElement },
 ): Promise<JanelaAberta | null> {
+  if (pipDeVideo()) return destacarNoPipDeVideo(origem, aoFechar, faixa);
   const pip = api();
   if (!pip?.requestWindow) return null;
 
@@ -139,6 +151,53 @@ export async function destacarVideo(
   return {
     fechar() {
       janela.close();
+    },
+  };
+}
+
+type Faixa = { attach(elemento: HTMLVideoElement): HTMLMediaElement; detach(elemento: HTMLVideoElement): HTMLMediaElement };
+
+/**
+ * O PiP comum, com um <video> NOSSO (pela mesma razão da cópia acima: o do quadro é do React e do LiveKit, e trocar o
+ * quadro de lugar o desmontaria, fechando a janela). Ele mora fora da vista na página, ligado à faixa por `attach`.
+ */
+async function destacarNoPipDeVideo(origem: HTMLVideoElement, aoFechar?: () => void, faixa?: Faixa): Promise<JanelaAberta | null> {
+  const video = document.createElement('video');
+  video.muted = true;
+  video.playsInline = true;
+  video.setAttribute('aria-hidden', 'true');
+  video.style.cssText = 'position:fixed;left:-10000px;top:0;width:320px;height:180px;opacity:0;pointer-events:none';
+  document.body.append(video);
+  if (faixa) faixa.attach(video);
+  else video.srcObject = origem.srcObject;
+
+  let fechada = false;
+  const limpar = () => {
+    if (fechada) return;
+    fechada = true;
+    if (faixa) faixa.detach(video);
+    video.srcObject = null;
+    video.remove();
+    aoFechar?.();
+  };
+  try {
+    if (video.readyState < HTMLMediaElement.HAVE_METADATA) {
+      await new Promise<void>((ok, falha) => {
+        video.addEventListener('loadedmetadata', () => ok(), { once: true });
+        setTimeout(() => falha(new Error('sem imagem')), 4000);
+      });
+    }
+    await video.play();
+    await video.requestPictureInPicture();
+  } catch {
+    limpar();
+    return null;
+  }
+  video.addEventListener('leavepictureinpicture', limpar, { once: true });
+  return {
+    fechar() {
+      if (document.pictureInPictureElement === video) void document.exitPictureInPicture().catch(() => {});
+      limpar();
     },
   };
 }
