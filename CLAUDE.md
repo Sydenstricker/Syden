@@ -1223,14 +1223,29 @@ ficou combinado:
     auditoria-de-noite.mjs` põe cada peça do catálogo na cena e reprova a que escurece bem menos que o entorno; objeto da parede sem
     noite própria (a peca-noite igual à do dia) ganha a noite por código (`noiteDoDia`). Rodar quando entrar peça nova.
   - **O LOTE DE 10/11/2026 (pedidos dele):** (1) os Mini-games abertos pelo COMPUTADOR DO QUARTO aparecem dentro do MESMO monitor
-    da mesa (deitado, 4:3, a moldura escura com o LED, o teclado e o mouse embaixo), feito por código com as cores da mesa
+    da mesa (deitado, 4:3, a moldura escura com o LED), feito por código com as cores da mesa
     (`e2e/pixel-art/monitor/escuro.mjs` → `web/src/assets/quarto/`; a versão creme do PixelLab foi recusada: "não é o mesmo
-    monitor"); o fliperama e a sala abrem o painel de sempre. (2) O tapete aceita COR LIVRE (`cores.tapete` = '#rrggbb'; o
+    monitor"); o fliperama e a sala abrem o painel de sempre. **Em 11/11/2026 (pedidos dele):** o teclado e o mouse minúsculos
+    embaixo SAÍRAM ("se for para deixar um item ruim, melhor nem colocar"), e a tela virou uma ÁREA DE TRABALHO RETRÔ, nossa
+    (`TelaDoComputador.tsx`: sem logo nem "Iniciar" de sistema nenhum): os ícones em pixel art Mini-games (abre a lista numa
+    janela com barra de título e ✕) e Troféus, e a barra com o desligar e o relógio; Esc fecha a janela e depois o computador.
+    Só entra ícone do que funciona. Teste: `e2e/tela-do-computador.mjs`. (2) O tapete aceita COR LIVRE (`cores.tapete` = '#rrggbb'; o
     servidor aceita hex só no tapete). (3) Os 10 OBJETOS DE CIMA refeitos no tamanho final (`e2e/pixel-art/objetos/refeitos.mjs`;
     saem de 20 a 28 px, o menor que o PixelLab faz sem virar ruído; os de 09/11 em `pequenos/falhas/09-11/`), a suculenta virou
     uma echeveria. (4) O VENTILADOR pelo botão direito: desligado → ligado → oscilando → desligado (`cores[<id>]` = 'ligado' |
-    'oscilando'); a hélice é um rastro por código (`ventilador-quadros.mjs`) e a cabeça oscila por código: o PixelLab girou o
-    ventilador inteiro em vez da cabeça (`avulsos/ventilador-oscilar-falha/`). No 3D ele fica parado.
+    'oscilando'); a hélice é um rastro por código (`ventilador-quadros.mjs`). No 3D ele fica parado.
+    **A OSCILAÇÃO DESENHADA (11/11/2026, revista por ele quadro a quadro, ~20 rodadas):** cada vista do quarto oscila pelas duas
+    VIZINHAS (a sudeste vai da sul à leste), 7 posições e volta, com 2 quadros do meio por par feitos pelo PixelLab
+    (`ventilador-entre-vistas.mjs`, interpolation-v2 numa janela de 128 px, 10 gerações por par, 80 no total); pedir ao PixelLab que
+    animasse "só a cabeça" girava o ventilador inteiro (`avulsos/ventilador-oscilar-falha/`). `ventilador-oscilacao.mjs` cola cada
+    cabeça sobre a haste e a base PARADAS: alinhada pela HASTE (o encaixe abaixo dela tem o botão de lado e errava até 5 px), a haste
+    da cabeça tirada e a da base no lugar, o pé do aro abaixo do corte só se continua o aro. A página baixa os quadros num pacote À
+    PARTE só quando alguém põe para oscilar (`OSC_VENT`, `pedirOscilacao`); até lá, a oscilação por código. **Cada desenho do
+    PixelLab pediu limpeza à mão** (os originais ao lado, em `originais/`, `antes-do-aro/`, `antes-do-motor/`, `antes-do-branco/`):
+    a haste atravessando a grade, a espessura preta do aro por dentro, o motor espiando quase de frente, a frente da grade branca de
+    lado (virou arame). E a hélice por código aprendeu a lista que está no topo de `ventilador-quadros.mjs`. **Pendente:** a P3 do
+    noroeste (`north__north-west-1.png`) veio sem as varetas da grade (gerar o par de novo ou usar um quadro do meio só); as três vistas
+    novas não foram aprovadas por ele como a sudeste; só a sudeste foi vista dentro do quarto.
 - **Feito em 11/10/2026:** a caixa de ideias dizia "aqui embaixo da vila"; agora diz "do quarto", nos 70 idiomas.
 - Saldo em 08/10/2026: PixelLab 493 de 2.000 gerações restando (plano Tier 1, US$ 12/mês; a repintura nova
   `inpaint-v3` exige o Tier 2), Retro Diffusion US$ 3,28.

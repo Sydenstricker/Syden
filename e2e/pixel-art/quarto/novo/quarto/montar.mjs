@@ -272,6 +272,19 @@ if (CENA === 'quarto') {
   const dir = path.join(AQUI, 'avulsos', 'ventilador-girando');
   for (const q of [0, 1, 2]) if (ORDEM_DO_GIRO.every((d) => fs.existsSync(path.join(dir, d + '-' + q + '.png')))) ORDEM_DO_GIRO.forEach((d, l) => { IMAGENS['giro-ventilador@gira' + q + '_' + l] = png(path.join(dir, d + '-' + q + '.png')); });
 }
+// A CABEÇA OSCILANDO, DESENHADA (11/11/2026, aprovada por ele quadro a quadro): por vista, as posições da cabeça (ventilador-oscilacao.mjs,
+// com os quadros do meio do PixelLab) × os 3 quadros da hélice (ventilador-quadros.mjs). Num pacote À PARTE: só quem põe um
+// ventilador para oscilar o baixa; vista sem os quadros fica com a oscilação por código.
+const OSC_VENT = [null, null, null, null];
+if (CENA === 'quarto') {
+  const dir = path.join(AQUI, 'avulsos', 'ventilador-oscilando');
+  ORDEM_DO_GIRO.forEach((d, l) => {
+    const arq = (n, q) => path.join(dir, d + '-' + n + '-' + q + '.png');
+    let n = 0; while (fs.existsSync(arq(n, 0))) n++;
+    if (!n || !Array.from({ length: n }, (_, i) => i).every((i) => [0, 1, 2].every((q) => fs.existsSync(arq(i, q))))) return;
+    OSC_VENT[l] = Array.from({ length: n }, (_, i) => [0, 1, 2].map((q) => pngAParte('ventilador', arq(i, q))));
+  });
+}
 // A PASSAGEM entre dois estados (animar-estado.mjs): os quadros do meio, das portas abrindo; fechar toca ao avesso.
 const PASSAGENS = CENA === 'quarto' ? { 'guarda-roupa': 'guarda-roupa-aberto-passagem' } : {};
 for (const [id, pasta] of Object.entries(PASSAGENS)) {
@@ -638,6 +651,7 @@ const QUADROS_DO_COELHO = ${JSON.stringify(QUADROS)};
 const RECEITAS_NA_CENA = ${RECEITAS_NA_CENA}, CORPOS_DA_CENA = ${JSON.stringify(CORPOS_DA_CENA)}, TIRAS_DE_MAPA = ${JSON.stringify(TIRAS_DE_MAPA)};
 const PACOTES_A_PARTE = ${JSON.stringify(Object.fromEntries(Object.entries(A_PARTE).map(([g, x]) => [g, { url: x.url, indice: x.indice }])))};
 const GATO_QUADROS = ${JSON.stringify(GATO_QUADROS)};
+const OSC_VENT = ${JSON.stringify(OSC_VENT)};
 const BALOES_DO_QUARTO = ${JSON.stringify(BALOES_DO_QUARTO)};
 const ANIMACOES = Object.fromEntries(Object.entries(${JSON.stringify(ANIMACOES_IDX)}).map(([nome, dirs]) => [nome, Object.fromEntries(Object.entries(dirs).map(([d, qs]) => [d, qs.map((i) => QUADROS_DO_COELHO[i])]))]));
 const CANTOS = ${JSON.stringify(CANTOS_DA_CENA)}, N = ${NC};
@@ -4821,18 +4835,19 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // O botão direito nele avança: desligado → ligado (a hélice girando) → ligado e OSCILANDO (a cabeça indo de um lado para o
   // outro) → desligado. O estado mora em "cores" (o id do ventilador: 'ligado' ou 'oscilando'; sem nada, desligado), que o
   // servidor já guarda e confere: quem visita vê igual. A hélice são 3 quadros por vista (ventilador-quadros.mjs), a 12 por
-  // segundo; a oscilação é POR CÓDIGO (a cabeça anda até 3 px para os lados e estica ou encolhe um pouco, em 4 s): o PixelLab,
+  // segundo; a oscilação é DESENHADA desde 11/11/2026 (ver pedirOscilacao), e a POR CÓDIGO (a cabeça anda até 3 px para os lados e
+  // estica ou encolhe um pouco, em 4 s) fica para a vista sem os quadros e enquanto eles chegam: o PixelLab,
   // pedido de animar a cabeça indo e voltando, girou o ventilador inteiro (avulsos/ventilador-oscilar-falha/). Com "menos
   // movimento" nada gira; sem foco, nada é desenhado. A cena NÃO é remontada a cada quadro: montarCena guarda o que estava atrás
   // da caixa do ventilador, e cada quadro só troca os pixels dele na fotografia (aplicarVentiladores).
   const ESTADOS_DO_VENTILADOR = ['ligado', 'oscilando'];
   const estadoDoVentilador = (id) => (CENA === 'quarto' && ESTADOS_DO_VENTILADOR.includes(CORES[id]) ? CORES[id] : null);
   const QUADROS_DA_HELICE = !im['giro-ventilador@gira1_0'] ? 1 : im['giro-ventilador@gira2_0'] ? 3 : 2;
-  const PASSOS_DA_OSCILACAO = 16; // 4 s ida e volta, um passo a cada 250 ms
+  const PASSOS_DA_OSCILACAO = 24; // 4 s ida e volta, um passo a cada 1/6 s (as 12 posições desenhadas ficam 1/3 s cada)
   const quadrosDaHelice = [[], [], [], []];
   const quadroDaHelice = (l, q) => (!im['giro-ventilador@gira' + q + '_' + l] ? VISTAS.ventilador[l] : (quadrosDaHelice[l][q] ??= pecaDeImagem(im['giro-ventilador@gira' + q + '_' + l], 'ventilador')));
   // [quadro da hélice, passo da oscilação] agora
-  const tempoDoVentilador = () => { if (semAndar) return [0, 0]; const t = performance.now(); return [Math.floor(t / (1000 / 12)) % QUADROS_DA_HELICE, Math.floor(t / 250) % PASSOS_DA_OSCILACAO]; };
+  const tempoDoVentilador = () => { if (semAndar) return [0, 0]; const t = performance.now(); return [Math.floor(t / (1000 / 12)) % QUADROS_DA_HELICE, Math.floor(t / (4000 / PASSOS_DA_OSCILACAO)) % PASSOS_DA_OSCILACAO]; };
   window.ventiladorDoTeste = (q, n) => { tempoFixoDoVentilador = q === undefined ? null : [q, n ?? 0]; chaveDosVentiladores = ''; desenhar(); }; // para o teste e as fotos
   let tempoFixoDoVentilador = null;
   const tempoDoVentiladorAgora = () => tempoFixoDoVentilador ?? tempoDoVentilador();
@@ -4867,11 +4882,32 @@ if (CENA === 'salao') document.body.classList.add('salao');
     porP.set(chave, r);
     return r;
   }
+  // A OSCILAÇÃO DESENHADA (11/11/2026): pedida na primeira vez que um ventilador oscila naquela vista; enquanto chega, a por código.
+  // Todas as posições ganham a MESMA caixa (a soma delas), porque montarCena guarda o que está atrás dela uma vez só.
+  const oscPronta = [null, null, null, null], oscPedida = [false, false, false, false];
+  function pedirOscilacao(l) {
+    if (oscPedida[l] || !OSC_VENT[l]) return;
+    oscPedida[l] = true;
+    Promise.all(OSC_VENT[l].map((qs) => Promise.all(qs.map((src) => carregar(src))))).then((imgs) => {
+      const pecas = imgs.map((qs) => qs.map((img) => pecaDeImagem(img, 'ventilador')));
+      let caixa = null; for (const qs of pecas) for (const p of qs) caixa = unir(caixa, p.caixa);
+      oscPronta[l] = pecas.map((qs) => qs.map((p) => {
+        const peColuna = new Int16Array(p.peColuna);
+        for (let x = caixa[0]; x < caixa[2]; x++) if (peColuna[x] < 0) peColuna[x] = p.peColuna[Math.min(p.caixa[2] - 1, Math.max(p.caixa[0], x))];
+        return { ...p, peColuna, caixa };
+      }));
+      assinaturaCena = ''; chaveDosVentiladores = ''; desenhar();
+    });
+  }
   function pecaDoVentilador(id, l) {
     const e = estadoDoVentilador(id); if (!e || !VISTAS.ventilador) return null;
     const [q, n] = tempoDoVentiladorAgora(), p = quadroDaHelice(l, q);
+    if (e !== 'oscilando') return p;
+    pedirOscilacao(l);
+    const o = oscPronta[l];
+    if (o) return o[Math.floor((n * o.length) / PASSOS_DA_OSCILACAO) % o.length][q % o[0].length];
     // (a caixa da oscilação é a mesma em todo passo: a altura de cada pixel, guardada pela caixa, não se refaz a cada quadro)
-    return e === 'oscilando' ? ventiladorOscilado(p, n) : p;
+    return ventiladorOscilado(p, n);
   }
   // O que montarCena guardou de cada ventilador ligado: a caixa, o que estava atrás dela e quem a cobre depois.
   let VENTS = [], chaveDosVentiladores = '';

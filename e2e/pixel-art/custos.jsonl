@@ -583,3 +583,11 @@
 {"ferramenta":"pixellab","peca":"objetos/pequenos/refeitos/videogame (32px)","geracoes":10,"usage":{"type":"generations","generations":10},"saldo":[231,207],"nota":"o saldo é dividido com outros pedidos ao mesmo tempo","quando":"2026-11-11T00:22:57.917Z"}
 {"ferramenta":"pixellab","peca":"objetos/pequenos/refeitos/caneca (32px)","geracoes":10,"usage":{"type":"generations","generations":10},"saldo":[231,197],"nota":"o saldo é dividido com outros pedidos ao mesmo tempo","quando":"2026-11-11T00:23:40.314Z"}
 {"ferramenta":"pixellab","peca":"objetos/pequenos/refeitos/caneca (32px)","geracoes":10,"usage":{"type":"generations","generations":10},"saldo":[207,187],"nota":"o saldo é dividido com outros pedidos ao mesmo tempo","quando":"2026-11-11T00:29:36.581Z"}
+{"ferramenta":"pixellab","peca":"quarto/ventilador-entre/south__south-east","geracoes":10,"quando":"2026-11-11T20:57:57.804Z"}
+{"ferramenta":"pixellab","peca":"quarto/ventilador-entre/south-east__east","geracoes":10,"quando":"2026-11-11T21:00:36.416Z"}
+{"ferramenta":"pixellab","peca":"quarto/ventilador-entre/south__south-west","geracoes":10,"quando":"2026-11-11T23:09:11.552Z"}
+{"ferramenta":"pixellab","peca":"quarto/ventilador-entre/south-west__west","geracoes":10,"quando":"2026-11-11T23:10:37.367Z"}
+{"ferramenta":"pixellab","peca":"quarto/ventilador-entre/north__north-east","geracoes":10,"quando":"2026-11-11T23:12:09.083Z"}
+{"ferramenta":"pixellab","peca":"quarto/ventilador-entre/north-east__east","geracoes":10,"quando":"2026-11-11T23:13:56.510Z"}
+{"ferramenta":"pixellab","peca":"quarto/ventilador-entre/north__north-west","geracoes":10,"quando":"2026-11-11T23:16:00.477Z"}
+{"ferramenta":"pixellab","peca":"quarto/ventilador-entre/north-west__west","geracoes":10,"quando":"2026-11-11T23:17:35.109Z"}
