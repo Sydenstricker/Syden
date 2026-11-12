@@ -3254,4 +3254,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Овај код је од друге врсте сцене.",
   'Esse código não é de um layout do Syden.': "Овај код није од Сиденовог распореда.",
   'Corrigir a data de nascimento': "Исправи датум рођења",
+  "Recomendar para este computador": "Препоручи за овај рачунар",
+  "Medindo a internet e a placa de vídeo…": "Мерим интернет и графичку картицу…",
+  "Recomendado: {modo}.": "Препоручено: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Твој интернет шаље {mbps} Mbps, а графичка картица издржава 60 сличица у секунди.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "„Течно“ тражи око 12 Mbps слања, а твој интернет шаље {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Графичка картица овог рачунара не кодира 60 сличица у секунди, па би „Течно“ оптеретило процесор током игре.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "У твом последњем преносу у режиму „Течно“ овај рачунар није издржао 60 сличица.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Интернет сада није могао да се измери. Покушај поново за који тренутак.",
 } satisfies Record<string, string>;

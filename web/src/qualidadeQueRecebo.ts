@@ -38,12 +38,24 @@ export function economizandoDados(): boolean {
 export function aplicarTeto(publicacao: RemoteTrackPublication, economizar = economizandoDados()) {
   if (publicacao.source !== Track.Source.ScreenShare) return;
   try {
-    publicacao.setVideoQuality(economizar ? VideoQuality.LOW : VideoQuality.HIGH);
+    publicacao.setVideoQuality(economizar ? VideoQuality.LOW : maiorQualidade(publicacao));
   } catch (erro) {
     // Um pedido de qualidade que o servidor recusa não pode derrubar a sala: a imagem continua vindo
     // como vinha, que é o pior caso aceitável.
     console.error(erro);
   }
+}
+
+/**
+ * "SEM TETO" É A MAIOR VERSÃO QUE A TRANSMISSÃO TEM, NÃO "ALTA" (12/11/2026, achado pelo `e2e/versoes-da-tela.mjs`). O LiveKit
+ * rotula as versões pela ordem: com duas (540p e 1080p), elas são "baixa" e "média", e não existe "alta". Pedindo "alta"
+ * sem camada alta, ele joga fora o tamanho do quadro na tela e pede a maior: quem assistia num quadro de 660 px recebia
+ * 1080p, e o celular em pé também. Pedindo a maior que existe, o tamanho do quadro volta a decidir abaixo dela.
+ */
+export function maiorQualidade(publicacao: Pick<RemoteTrackPublication, 'trackInfo'>): VideoQuality {
+  // As camadas vêm com a qualidade do protocolo, que tem os mesmos números (0 baixa, 1 média, 2 alta).
+  const qualidades = (publicacao.trackInfo?.layers ?? []).map((c) => Number(c.quality)).filter((q) => q >= VideoQuality.LOW && q <= VideoQuality.HIGH);
+  return qualidades.length === 0 ? VideoQuality.HIGH : (Math.max(...qualidades) as VideoQuality);
 }
 
 /** Aplica o teto em tudo o que já está na sala. Chamado a cada transmissão nova. */

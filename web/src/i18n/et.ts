@@ -3254,4 +3254,12 @@ export default {
   'Esse código é de outro tipo de cena.': "See kood on teist tüüpi stseeni oma.",
   'Esse código não é de um layout do Syden.': "See kood ei ole Sydeni paigutuse oma.",
   'Corrigir a data de nascimento': "Paranda sünnikuupäev",
+  "Recomendar para este computador": "Soovita selle arvuti jaoks",
+  "Medindo a internet e a placa de vídeo…": "Mõõdan internetti ja graafikakaarti…",
+  "Recomendado: {modo}.": "Soovitatud: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Sinu internet saadab {mbps} Mbit/s ja graafikakaart saab hakkama 60 kaadriga sekundis.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "„Sujuv“ vajab umbes 12 Mbit/s üleslaadimist, sinu internet saadab {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Selle arvuti graafikakaart ei kodeeri 60 kaadrit sekundis ja „Sujuv“ koormaks mängu ajal protsessorit.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Sinu viimasel ülekandel režiimis „Sujuv“ ei pidanud see arvuti 60 kaadrile vastu.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Internetti ei õnnestunud praegu mõõta. Proovi varsti uuesti.",
 } satisfies Record<string, string>;

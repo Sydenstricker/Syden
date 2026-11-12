@@ -3257,4 +3257,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Denne koden er fra en annen type scene.",
   'Esse código não é de um layout do Syden.': "Denne koden er ikke fra en Syden-innredning.",
   'Corrigir a data de nascimento': "Rett fødselsdatoen",
+  "Recomendar para este computador": "Anbefal for denne datamaskinen",
+  "Medindo a internet e a placa de vídeo…": "Måler internett og skjermkort…",
+  "Recomendado: {modo}.": "Anbefalt: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Internettet ditt sender {mbps} Mbps, og skjermkortet klarer 60 bilder i sekundet.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "«Flytende» trenger rundt 12 Mbps opplasting, og internettet ditt sender {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Skjermkortet i denne datamaskinen koder ikke 60 bilder i sekundet, og «Flytende» ville belastet prosessoren under spillet.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "I den siste sendingen din i «Flytende» klarte ikke denne datamaskinen de 60 bildene.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Klarte ikke å måle internett nå. Prøv igjen om litt.",
 } satisfies Record<string, string>;

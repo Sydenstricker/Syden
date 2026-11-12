@@ -3195,4 +3195,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Koodu a bụ nke ụdị ebe ọzọ.",
   'Esse código não é de um layout do Syden.': "Koodu a abụghị nke nhazi Syden.",
   'Corrigir a data de nascimento': "Mezie ụbọchị ọmụmụ",
+  "Recomendar para este computador": "Kwado maka kọmputa a",
+  "Medindo a internet e a placa de vídeo…": "Na-atụ ịntanetị na kaadị eserese…",
+  "Recomendado: {modo}.": "A na-akwado: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Ịntanetị gị na-ezipụ {mbps} Mbps, kaadị eserese nwekwara ike ijikwa foto 60 kwa sekọnd.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "\"Dị nro\" chọrọ ihe dị ka 12 Mbps nzipu, ịntanetị gị na-ezipụ {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Kaadị eserese kọmputa a anaghị etinye foto 60 kwa sekọnd, \"Dị nro\" ga-ebokwa prọsesọ ibu n'oge egwuregwu.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "N'ọgbasa ikpeazụ gị na \"Dị nro\", kọmputa a enweghị ike ijide foto 60 ahụ.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Enweghị ike ịtụ ịntanetị ugbu a. Nwaa ọzọ n'oge na-adịghị anya.",
 } satisfies Record<string, string>;

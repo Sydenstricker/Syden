@@ -3211,4 +3211,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Dieser Code gehört zu einer anderen Art von Szene.",
   'Esse código não é de um layout do Syden.': "Dieser Code gehört zu keiner Syden-Einrichtung.",
   'Corrigir a data de nascimento': "Geburtsdatum korrigieren",
+  "Recomendar para este computador": "Für diesen Computer empfehlen",
+  "Medindo a internet e a placa de vídeo…": "Internet und Grafikkarte werden gemessen…",
+  "Recomendado: {modo}.": "Empfohlen: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Dein Internet sendet {mbps} Mbit/s, und die Grafikkarte schafft 60 Bilder pro Sekunde.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "„Flüssig“ braucht etwa 12 Mbit/s Upload, und dein Internet sendet {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Die Grafikkarte dieses Computers kodiert keine 60 Bilder pro Sekunde, und „Flüssig“ würde beim Spielen den Prozessor belasten.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Bei deiner letzten Übertragung in „Flüssig“ hat dieser Computer die 60 Bilder nicht gehalten.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Das Internet ließ sich gerade nicht messen. Versuch es gleich noch einmal.",
 } satisfies Record<string, string>;

@@ -3168,4 +3168,12 @@ export default {
   'Esse código é de outro tipo de cena.': "このコードは別の種類のシーンのものです。",
   'Esse código não é de um layout do Syden.': "このコードは Syden のレイアウトのものではありません。",
   'Corrigir a data de nascimento': "生年月日を修正",
+  "Recomendar para este computador": "このパソコンに合う設定をすすめる",
+  "Medindo a internet e a placa de vídeo…": "回線とグラフィックカードを測っています…",
+  "Recomendado: {modo}.": "おすすめ：{modo}",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "あなたの回線の送信は {mbps} Mbps で、グラフィックカードは毎秒60フレームに対応できます。",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "「なめらか」には送信が約12 Mbps必要ですが、あなたの回線の送信は {mbps} です。",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "このパソコンのグラフィックカードは毎秒60フレームのエンコードに対応しておらず、「なめらか」だとゲーム中にプロセッサーへ負担がかかります。",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "前回の「なめらか」での配信で、このパソコンは60フレームを保てませんでした。",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "今は回線を測れませんでした。少したってからもう一度試してください。",
 } satisfies Record<string, string>;

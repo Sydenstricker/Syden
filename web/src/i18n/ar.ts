@@ -3211,4 +3211,12 @@ export default {
   'Esse código é de outro tipo de cena.': "هذا الرمز لنوع آخر من المشاهد.",
   'Esse código não é de um layout do Syden.': "هذا الرمز ليس لتخطيط من Syden.",
   'Corrigir a data de nascimento': "تصحيح تاريخ الميلاد",
+  "Recomendar para este computador": "التوصية لهذا الحاسوب",
+  "Medindo a internet e a placa de vídeo…": "جارٍ قياس الإنترنت وبطاقة الرسومات…",
+  "Recomendado: {modo}.": "الموصى به: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "سرعة الرفع في هذا الاتصال {mbps} ميغابت/ث، وبطاقة الرسومات تتحمّل 60 إطارًا في الثانية.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "يحتاج وضع «سلسة» إلى نحو 12 ميغابت/ث للرفع، وسرعة الرفع في هذا الاتصال {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "بطاقة الرسومات في هذا الحاسوب لا ترمّز 60 إطارًا في الثانية، وسيُثقل وضع «سلسة» المعالج أثناء اللعب.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "في آخر بث بوضع «سلسة»، لم يتحمّل هذا الحاسوب 60 إطارًا.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "تعذّر قياس الإنترنت الآن. يُرجى المحاولة بعد قليل.",
 } satisfies Record<string, string>;

@@ -3251,4 +3251,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Hierdie kode is van ’n ander soort toneel.",
   'Esse código não é de um layout do Syden.': "Hierdie kode is nie van ’n Syden-uitleg nie.",
   'Corrigir a data de nascimento': "Korrigeer die geboortedatum",
+  "Recomendar para este computador": "Beveel aan vir hierdie rekenaar",
+  "Medindo a internet e a placa de vídeo…": "Meet die internet en die grafiese kaart…",
+  "Recomendado: {modo}.": "Aanbeveel: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Jou internet stuur {mbps} Mbps op en die grafiese kaart hanteer 60 rame per sekonde.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "'Vloeiend' het sowat 12 Mbps oplaai nodig, en jou internet stuur {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Hierdie rekenaar se grafiese kaart kodeer nie 60 rame per sekonde nie, en 'Vloeiend' sou die verwerker tydens die speletjie belas.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "In jou laaste uitsending in 'Vloeiend' kon hierdie rekenaar nie die 60 rame hou nie.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Kon nie nou die internet meet nie. Probeer later weer.",
 } satisfies Record<string, string>;

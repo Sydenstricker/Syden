@@ -3227,4 +3227,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Koodiin kun kan gosa bakkee biraati.",
   'Esse código não é de um layout do Syden.': "Koodiin kun kan qindaa’ina Syden miti.",
   'Corrigir a data de nascimento': "Guyyaa dhalootaa sirreessi",
+  "Recomendar para este computador": "Kompiitara kanaaf gorsi",
+  "Medindo a internet e a placa de vídeo…": "Interneetii fi kaardii giraafiksii safaraa jira…",
+  "Recomendado: {modo}.": "Gorsa: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Interneetiin kee {mbps} Mbps erga, kaardiin giraafiksiis sekondii tokkotti fireemii 60 danda’a.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "\"Lallaafaa\"n ergaa gara 12 Mbps barbaada, interneetiin kee immoo {mbps} erga.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Kaardiin giraafiksii kompiitara kanaa sekondii tokkotti fireemii 60 hin koodu, \"Lallaafaa\"n immoo yeroo taphaa piroseesara ni ulfeessa.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Tamsaasa kee isa dhumaa \"Lallaafaa\"n keessatti kompiitarri kun fireemii 60 hin dandeenye.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Amma interneetii safaruun hin danda’amne. Xiqqoo booda irra deebi’ii yaali.",
 } satisfies Record<string, string>;

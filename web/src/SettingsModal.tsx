@@ -58,6 +58,7 @@ import { procurarRepetidos } from './somParecido';
 import { Insignia } from './Medalha';
 import { acharInsignia } from './insignias';
 import { type ScreenQuality, updateSettings, useSettings } from './settings';
+import { type Recomendacao, recomendarParaEsteComputador } from './recomendarModo';
 import { Avatar } from './Avatar';
 import { CargosDoMembro, EditorDeCargos, EtiquetasDeCargo } from './Cargos';
 import { ConfiguracaoDeNiveis } from './Ranking';
@@ -2590,7 +2591,61 @@ function VoiceSection({ voice }: { voice: Voice }) {
           </label>
         ))}
       </div>
+      <RecomendarModo />
     </>
+  );
+}
+
+/**
+ * "Recomendar para este computador" (12/11/2026, pedido dele): mede a internet até o servidor e pergunta à placa de vídeo,
+ * e escolhe o modo por quem clicou (recomendarModo.ts). Quem discordar troca acima, como sempre.
+ */
+function RecomendarModo() {
+  const t = useT();
+  const [estado, setEstado] = useState<'parado' | 'medindo' | 'pronto' | 'falhou'>('parado');
+  const [resultado, setResultado] = useState<Recomendacao | null>(null);
+  const sinal = useRef<AbortController | null>(null);
+  useEffect(() => () => sinal.current?.abort(), []);
+
+  async function medir() {
+    sinal.current?.abort();
+    sinal.current = new AbortController();
+    setEstado('medindo');
+    const r = await recomendarParaEsteComputador(sinal.current.signal).catch(() => null);
+    if (sinal.current.signal.aborted) return;
+    if (!r) return setEstado('falhou');
+    updateSettings({ screenQuality: r.modo });
+    setResultado(r);
+    setEstado('pronto');
+  }
+
+  const mbps = resultado
+    ? new Intl.NumberFormat(undefined, { maximumFractionDigits: resultado.envioMbps < 10 ? 1 : 0 }).format(resultado.envioMbps)
+    : '';
+  const porque =
+    resultado?.motivo === 'cabe'
+      ? t('A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.', { mbps })
+      : resultado?.motivo === 'internet'
+        ? t('O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.', { mbps })
+        : resultado?.motivo === 'placa'
+          ? t('A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.')
+          : t('Na última transmissão em Fluido, este computador não aguentou os 60 quadros.');
+
+  return (
+    <div className="recomendar-modo">
+      <button type="button" className="btn-secondary" onClick={() => void medir()} disabled={estado === 'medindo'}>
+        {t('Recomendar para este computador')}
+      </button>
+      <p className="settings-hint" role="status">
+        {estado === 'medindo' && t('Medindo a internet e a placa de vídeo…')}
+        {estado === 'falhou' && t('Não deu para medir a internet agora. Tente de novo daqui a pouco.')}
+        {estado === 'pronto' && resultado && (
+          <>
+            <strong>{t('Recomendado: {modo}.', { modo: t(resultado.modo === 'smooth' ? 'Fluido' : 'Padrão') })}</strong> {porque}
+          </>
+        )}
+      </p>
+    </div>
   );
 }
 

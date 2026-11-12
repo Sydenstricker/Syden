@@ -3241,4 +3241,12 @@ export default {
   'Esse código é de outro tipo de cena.': "הקוד הזה שייך לסוג אחר של סצנה.",
   'Esse código não é de um layout do Syden.': "הקוד הזה לא שייך לסידור של Syden.",
   'Corrigir a data de nascimento': "לתקן את תאריך הלידה",
+  "Recomendar para este computador": "להמליץ למחשב הזה",
+  "Medindo a internet e a placa de vídeo…": "מודדים את האינטרנט ואת כרטיס המסך…",
+  "Recomendado: {modo}.": "מומלץ: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "קצב ההעלאה של החיבור הוא {mbps} Mbps, וכרטיס המסך עומד ב-60 פריימים בשנייה.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "״חלק״ צריך בערך 12 Mbps העלאה, וקצב ההעלאה של החיבור הוא {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "כרטיס המסך של המחשב הזה לא מקודד 60 פריימים בשנייה, ו״חלק״ היה מעמיס על המעבד בזמן המשחק.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "בשידור האחרון ב״חלק״, המחשב הזה לא עמד ב-60 הפריימים.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "לא ניתן היה למדוד את האינטרנט עכשיו. כדאי לנסות שוב עוד מעט.",
 } satisfies Record<string, string>;

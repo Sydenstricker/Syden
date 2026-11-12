@@ -3258,4 +3258,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Þessi kóði er af annarri tegund af senu.",
   'Esse código não é de um layout do Syden.': "Þessi kóði er ekki af Syden-uppröðun.",
   'Corrigir a data de nascimento': "Leiðrétta fæðingardag",
+  "Recomendar para este computador": "Mæla með fyrir þessa tölvu",
+  "Medindo a internet e a placa de vídeo…": "Mæli netið og skjákortið…",
+  "Recomendado: {modo}.": "Mælt með: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Netið þitt sendir {mbps} Mb/s og skjákortið ræður við 60 ramma á sekúndu.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "„Mjúkt“ þarf um 12 Mb/s í upphal, og netið þitt sendir {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Skjákort þessarar tölvu kóðar ekki 60 ramma á sekúndu, og „Mjúkt“ myndi íþyngja örgjörvanum meðan þú spilar.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Í síðustu útsendingunni þinni í „Mjúkt“ réð þessi tölva ekki við 60 rammana.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Ekki tókst að mæla netið núna. Reyndu aftur eftir smá stund.",
 } satisfies Record<string, string>;

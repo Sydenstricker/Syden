@@ -3193,4 +3193,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Ko e kouti ‘eni ‘o ha fa‘ahinga feitu‘u kehe.",
   'Esse código não é de um layout do Syden.': "‘Oku ‘ikai ko e kouti ‘eni ‘o ha fokotu‘utu‘u ‘a Syden.",
   'Corrigir a data de nascimento': "Fakatonutonu ʻa e ʻaho fāʻeleʻi",
+  "Recomendar para este computador": "Fokotuʻu ki he komipiuta ko ʻeni",
+  "Medindo a internet e a placa de vídeo…": "ʻOku fua ʻa e ʻinitanetí mo e kaati fakatātaá…",
+  "Recomendado: {modo}.": "Fokotuʻu: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "ʻOku fekau ʻe hoʻo ʻinitanetí ʻa e {mbps} Mbps, pea ʻoku lava ʻe he kaati fakatātaá ʻo fua ʻa e ʻīmisi ʻe 60 ʻi he sekoni.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "ʻOku fiemaʻu ʻe he \"Molū\" ʻa e 12 Mbps nai ki hono fekau, pea ʻoku fekau ʻe hoʻo ʻinitanetí ʻa e {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "ʻOku ʻikai ke lava ʻe he kaati fakatātā ʻo e komipiuta ko ʻeni ʻo fakakouti ʻa e ʻīmisi ʻe 60 ʻi he sekoni, pea ʻe fakamamafaʻi ʻe he \"Molū\" ʻa e prosesa lolotonga ʻa e vaʻingá.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "ʻI hoʻo fakamafola fakamuimui ʻi he \"Molū\", naʻe ʻikai lava ʻe he komipiuta ko ʻeni ʻo fua ʻa e ʻīmisi ʻe 60.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Naʻe ʻikai lava ke fua ʻa e ʻinitanetí he taimí ni. Toe feinga ʻamui siʻi.",
 } satisfies Record<string, string>;

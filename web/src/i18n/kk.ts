@@ -3261,4 +3261,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Бұл код басқа түрдегі көрініске тиесілі.",
   'Esse código não é de um layout do Syden.': "Бұл код Syden орналасуына тиесілі емес.",
   'Corrigir a data de nascimento': "Туған күнін түзету",
+  "Recomendar para este computador": "Осы компьютерге ұсыныс беру",
+  "Medindo a internet e a placa de vídeo…": "Интернет пен бейнекарта өлшенуде…",
+  "Recomendado: {modo}.": "Ұсынылады: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Интернетің {mbps} Мбит/с жібереді, ал бейнекарта секундына 60 кадрды көтереді.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "«Бірқалыпты» режиміне шамамен 12 Мбит/с жүктеу керек, ал интернетің {mbps} жібереді.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Бұл компьютердің бейнекартасы секундына 60 кадрды кодтамайды, ал «Бірқалыпты» ойын кезінде процессорды ауырлатар еді.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Соңғы «Бірқалыпты» трансляцияңда бұл компьютер 60 кадрға шыдамады.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Интернетті қазір өлшеу мүмкін болмады. Сәлден соң қайта көр.",
 } satisfies Record<string, string>;

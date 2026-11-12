@@ -3267,4 +3267,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Kòd sa a pou yon lòt kalite sèn.",
   'Esse código não é de um layout do Syden.': "Kòd sa a pa pou yon aranjman Syden.",
   'Corrigir a data de nascimento': "Korije dat nesans lan",
+  "Recomendar para este computador": "Rekòmande pou òdinatè sa a",
+  "Medindo a internet e a placa de vídeo…": "N ap mezire entènèt la ak kat grafik la…",
+  "Recomendado: {modo}.": "Rekòmande: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Entènèt ou voye {mbps} Mbps, epi kat grafik la ka sipòte 60 imaj pa segonn.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "\"Likid\" bezwen anviwon 12 Mbps pou voye, epi entènèt ou voye {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Kat grafik òdinatè sa a pa kode 60 imaj pa segonn, epi \"Likid\" ta chaje processeur a pandan jwèt la.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Nan dènye difizyon ou an \"Likid\", òdinatè sa a pa t kenbe 60 imaj yo.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Nou pa t ka mezire entènèt la kounye a. Eseye ankò nan yon ti moman.",
 } satisfies Record<string, string>;

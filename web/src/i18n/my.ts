@@ -3226,4 +3226,12 @@ export default {
   'Esse código é de outro tipo de cena.': "ဤကုဒ်သည် အခြားမြင်ကွင်းအမျိုးအစား၏ ကုဒ်ဖြစ်သည်။",
   'Esse código não é de um layout do Syden.': "ဤကုဒ်သည် Syden အခင်းအကျင်း၏ ကုဒ်မဟုတ်ပါ။",
   'Corrigir a data de nascimento': "မွေးနေ့ ပြင်ဆင်ရန်",
+  "Recomendar para este computador": "ဒီကွန်ပျူတာအတွက် အကြံပြုရန်",
+  "Medindo a internet e a placa de vídeo…": "အင်တာနက်နှင့် ဂရပ်ဖစ်ကတ်ကို တိုင်းနေသည်…",
+  "Recomendado: {modo}.": "အကြံပြုချက်: {modo}။",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "သင့်အင်တာနက်က {mbps} Mbps ပို့နိုင်ပြီး ဂရပ်ဖစ်ကတ်က တစ်စက္ကန့် ဖရိမ် 60 ကို နိုင်သည်။",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "\"ချောမွေ့\" အတွက် အပ်လုဒ် 12 Mbps ခန့် လိုပြီး သင့်အင်တာနက်က {mbps} ပို့သည်။",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "ဒီကွန်ပျူတာ၏ ဂရပ်ဖစ်ကတ်သည် တစ်စက္ကန့် ဖရိမ် 60 ကို ကုဒ်မပြောင်းနိုင်သဖြင့် \"ချောမွေ့\" က ဂိမ်းကစားစဉ် ပရိုဆက်ဆာကို ဝန်ပိစေမည်။",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "\"ချောမွေ့\" ဖြင့် နောက်ဆုံးထုတ်လွှင့်မှုတွင် ဒီကွန်ပျူတာက ဖရိမ် 60 ကို မထိန်းနိုင်ခဲ့ပါ။",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "ယခု အင်တာနက်ကို မတိုင်းနိုင်ပါ။ ခဏနေမှ ထပ်စမ်းပါ။",
 } satisfies Record<string, string>;

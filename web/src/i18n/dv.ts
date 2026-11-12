@@ -3267,4 +3267,12 @@ export default {
   'Esse código é de outro tipo de cena.': "މި ކޯޑަކީ އެހެން ބާވަތެއްގެ މަންޒަރެއްގެ ކޯޑެއް.",
   'Esse código não é de um layout do Syden.': "މި ކޯޑަކީ Syden ގެ ލޭއައުޓެއްގެ ކޯޑެއް ނޫން.",
   'Corrigir a data de nascimento': "އުފަން ތާރީޚު ރަނގަޅުކުރޭ",
+  "Recomendar para este computador": "މި ކޮމްޕިއުޓަރަށް ރަނގަޅު ގޮތް ބުނޭ",
+  "Medindo a internet e a placa de vídeo…": "އިންޓަނެޓާއި ގްރެފިކްސް ކާޑު މަނިކުރަނީ…",
+  "Recomendado: {modo}.": "ރަނގަޅީ: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "ތިބާގެ އިންޓަނެޓުން {mbps} Mbps ފޮނުވާ، ގްރެފިކްސް ކާޑަށް ސިކުންތަކަށް 60 ފްރޭމް ކުރެވޭ.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "\"ހިމޭން\"އަށް ގާތްގަނޑަކަށް 12 Mbps ފޮނުވުން ބޭނުންވޭ، ތިބާގެ އިންޓަނެޓުން ފޮނުވަނީ {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "މި ކޮމްޕިއުޓަރުގެ ގްރެފިކްސް ކާޑުން ސިކުންތަކަށް 60 ފްރޭމް އެންކޯޑެއް ނުކުރޭ، \"ހިމޭން\"އިން ކުޅޭއިރު ޕްރޮސެސަރަށް ބުރަވާނެ.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "\"ހިމޭން\"ގައި ކުރި އެންމެ ފަހު ބްރޯޑްކާސްޓުގައި މި ކޮމްޕިއުޓަރަށް 60 ފްރޭމް ހިފެހެއްޓިފައެއް ނުވޭ.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "މިހާރު އިންޓަނެޓް މަނިނުކުރެވުނު. ކުޑަ ވަގުތަކުން އަލުން މަސައްކަތްކުރޭ.",
 } satisfies Record<string, string>;

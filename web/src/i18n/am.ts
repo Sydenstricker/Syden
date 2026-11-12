@@ -3187,4 +3187,12 @@ export default {
   'Esse código é de outro tipo de cena.': "ይህ ኮድ የሌላ ዓይነት ትዕይንት ነው።",
   'Esse código não é de um layout do Syden.': "ይህ ኮድ የSyden አቀማመጥ አይደለም።",
   'Corrigir a data de nascimento': "የትውልድ ቀኑን አስተካክል",
+  "Recomendar para este computador": "ለዚህ ኮምፒውተር ጠቁም",
+  "Medindo a internet e a placa de vídeo…": "ኢንተርኔቱንና የግራፊክስ ካርዱን በመለካት ላይ…",
+  "Recomendado: {modo}.": "የሚመከረው፦ {modo}።",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "የእርስዎ ኢንተርኔት {mbps} Mbps ይልካል፣ የግራፊክስ ካርዱም በሰከንድ 60 ፍሬሞችን ይችላል።",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "«ለስላሳ» ወደ 12 Mbps የመላኪያ ፍጥነት ይፈልጋል፣ የእርስዎ ኢንተርኔት ደግሞ {mbps} ይልካል።",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "የዚህ ኮምፒውተር የግራፊክስ ካርድ በሰከንድ 60 ፍሬሞችን አይቀይርም፣ «ለስላሳ» ደግሞ በጨዋታው ጊዜ ፕሮሰሰሩን ያከብደዋል።",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "በ«ለስላሳ» በተደረገው የመጨረሻ ስርጭት ይህ ኮምፒውተር 60 ፍሬሞቹን መቋቋም አልቻለም።",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "አሁን ኢንተርኔቱን መለካት አልተቻለም። ትንሽ ቆይተው እንደገና ይሞክሩ።",
 } satisfies Record<string, string>;

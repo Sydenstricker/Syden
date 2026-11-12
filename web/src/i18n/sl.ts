@@ -3259,4 +3259,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Ta koda je od druge vrste prizora.",
   'Esse código não é de um layout do Syden.': "Ta koda ni od razporeditve iz Sydena.",
   'Corrigir a data de nascimento': "Popravi datum rojstva",
+  "Recomendar para este computador": "Priporoči za ta računalnik",
+  "Medindo a internet e a placa de vídeo…": "Merim internet in grafično kartico…",
+  "Recomendado: {modo}.": "Priporočeno: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Tvoj internet pošilja {mbps} Mb/s, grafična kartica pa zmore 60 sličic na sekundo.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "»Tekoče« potrebuje okoli 12 Mb/s pošiljanja, tvoj internet pa pošilja {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Grafična kartica tega računalnika ne kodira 60 sličic na sekundo, zato bi »Tekoče« med igro obremenilo procesor.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Pri tvojem zadnjem prenosu v načinu »Tekoče« ta računalnik ni zdržal 60 sličic.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Interneta zdaj ni bilo mogoče izmeriti. Poskusi znova čez trenutek.",
 } satisfies Record<string, string>;

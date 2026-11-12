@@ -3174,4 +3174,12 @@ export default {
   'Esse código é de outro tipo de cena.': "这个代码属于另一种场景。",
   'Esse código não é de um layout do Syden.': "这个代码不是 Syden 的布局。",
   'Corrigir a data de nascimento': "更正出生日期",
+  "Recomendar para este computador": "为这台电脑推荐",
+  "Medindo a internet e a placa de vídeo…": "正在测量网络和显卡…",
+  "Recomendado: {modo}.": "推荐：{modo}",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "你的网络上传 {mbps} Mbps，显卡能应付每秒 60 帧。",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "“流畅”需要大约 12 Mbps 上传，而你的网络上传 {mbps}。",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "这台电脑的显卡不能编码每秒 60 帧，“流畅”会在游戏时加重处理器的负担。",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "上次用“流畅”直播时，这台电脑撑不住 60 帧。",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "现在无法测量网络。请稍后再试。",
 } satisfies Record<string, string>;

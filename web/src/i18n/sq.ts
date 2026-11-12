@@ -3249,4 +3249,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Ky kod është i një lloji tjetër skene.",
   'Esse código não é de um layout do Syden.': "Ky kod nuk është i një rregullimi të Syden.",
   'Corrigir a data de nascimento': "Korrigjo datën e lindjes",
+  "Recomendar para este computador": "Rekomando për këtë kompjuter",
+  "Medindo a internet e a placa de vídeo…": "Po mat internetin dhe kartën grafike…",
+  "Recomendado: {modo}.": "Rekomandohet: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Interneti yt dërgon {mbps} Mbps dhe karta grafike përballon 60 kuadro në sekondë.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "“I rrjedhshëm” kërkon rreth 12 Mbps dërgim, dhe interneti yt dërgon {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Karta grafike e këtij kompjuteri nuk kodon 60 kuadro në sekondë, dhe “I rrjedhshëm” do ta rëndonte procesorin gjatë lojës.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Në transmetimin tënd të fundit me “I rrjedhshëm”, ky kompjuter nuk i përballoi 60 kuadrot.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Interneti nuk u mat dot tani. Provo sërish pas pak.",
 } satisfies Record<string, string>;

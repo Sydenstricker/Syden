@@ -3257,4 +3257,12 @@ export default {
   'Esse código é de outro tipo de cena.': "An’ny karazana sehatra hafa io kaody io.",
   'Esse código não é de um layout do Syden.': "Tsy an’ny fandaminana Syden io kaody io.",
   'Corrigir a data de nascimento': "Ahitsio ny daty nahaterahana",
+  "Recomendar para este computador": "Torohy ho an’ity solosaina ity",
+  "Medindo a internet e a placa de vídeo…": "Mandrefy ny aterineto sy ny karatra sary…",
+  "Recomendado: {modo}.": "Torohina: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Mandefa {mbps} Mbps ny aterinetonao, ary zakan’ny karatra sary ny sary 60 isan-tsegondra.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "Mila 12 Mbps eo ho eo ho fandefasana ny “Malama”, ary mandefa {mbps} ny aterinetonao.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Tsy manao kaody sary 60 isan-tsegondra ny karatra sarin’ity solosaina ity, ary hanavesatra ny processeur mandritra ny lalao ny “Malama”.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Tamin’ny fandefasana farany nataonao tamin’ny “Malama”, tsy nahazaka ny sary 60 ity solosaina ity.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Tsy voarefy ny aterineto izao. Andramo indray afaka kelikely.",
 } satisfies Record<string, string>;

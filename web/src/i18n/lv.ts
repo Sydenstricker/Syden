@@ -3259,4 +3259,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Šis kods ir no cita veida ainas.",
   'Esse código não é de um layout do Syden.': "Šis kods nav no Syden iekārtojuma.",
   'Corrigir a data de nascimento': "Labot dzimšanas datumu",
+  "Recomendar para este computador": "Ieteikt šim datoram",
+  "Medindo a internet e a placa de vídeo…": "Mēra internetu un videokarti…",
+  "Recomendado: {modo}.": "Ieteicams: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Tavs internets sūta {mbps} Mb/s, un videokarte tiek galā ar 60 kadriem sekundē.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "“Plūstoši” vajag ap 12 Mb/s augšupielādes, un tavs internets sūta {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Šī datora videokarte nekodē 60 kadrus sekundē, un “Plūstoši” spēles laikā noslogotu procesoru.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Tavā pēdējā raidījumā režīmā “Plūstoši” šis dators neizturēja 60 kadrus.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Internetu tagad neizdevās izmērīt. Mēģini vēlreiz pēc brītiņa.",
 } satisfies Record<string, string>;

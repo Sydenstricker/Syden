@@ -3180,4 +3180,12 @@ export default {
   'Esse código é de outro tipo de cena.': "این کد مال نوع دیگری از صحنه است.",
   'Esse código não é de um layout do Syden.': "این کد مال چیدمانی از Syden نیست.",
   'Corrigir a data de nascimento': "اصلاح تاریخ تولد",
+  "Recomendar para este computador": "پیشنهاد برای این رایانه",
+  "Medindo a internet e a placa de vídeo…": "در حال اندازه‌گیری اینترنت و کارت گرافیک…",
+  "Recomendado: {modo}.": "پیشنهاد: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "اینترنتت {mbps} مگابیت بر ثانیه می‌فرستد و کارت گرافیک از پس ۶۰ فریم در ثانیه برمی‌آید.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "«روان» حدود ۱۲ مگابیت بر ثانیه آپلود می‌خواهد، و اینترنتت {mbps} می‌فرستد.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "کارت گرافیک این رایانه ۶۰ فریم در ثانیه رمزگذاری نمی‌کند، و «روان» هنگام بازی بار پردازنده را سنگین می‌کند.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "در آخرین پخش با «روان»، این رایانه ۶۰ فریم را تاب نیاورد.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "الان نشد اینترنت را اندازه گرفت. کمی بعد دوباره امتحان کن.",
 } satisfies Record<string, string>;

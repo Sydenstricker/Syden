@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { APERTO_INICIAL, describeStats, proximaParada, proximoAperto, proximoFluido, resumoDoAperto, taxaRedonda } from '../src/streamStats.js';
+import { APERTO_INICIAL, describeStats, motivoDoAperto, nextQuality, proximaParada, proximoAperto, proximoFluido, resumoDoAperto, taxaRedonda } from '../src/streamStats.js';
 
 // ===================================================================================================
 // O NÚMERO DE QUADROS NÃO PODE FAZER UMA TRANSMISSÃO SAUDÁVEL PARECER QUEBRADA.
@@ -156,5 +156,43 @@ describe('o aperto registrado', () => {
     const linha = resumoDoAperto({ motivo: 'bandwidth', segundos: 12, largura: 640, altura: 360, fps: 29.4, kbps: 610, estimativaKbps: 900, codec: 'VP8', naPlaca: false, modo: 'Padrão' });
     assert.equal(linha, 'apertada há 12 s pela internet · sai 640×360 a 29 fps, 610 kbps (a internet estima 900) · VP8 pelo processador · Padrão');
     assert.ok(linha.length <= 200);
+  });
+});
+
+// ===================================================================================================
+// "BANDA" QUE É O TETO DA VERSÃO (12/11/2026). O Chrome diz 'bandwidth' também quando a versão bate no teto de taxa dela,
+// com a internet sobrando. O diário de 11/11 culpava a internet com 26 Mbps estimados, e a otimização dinâmica encolhia a
+// imagem e não a devolvia nunca (medido: 540p → 180p → 135p → 90p, e parado lá).
+// ===================================================================================================
+describe('a banda que é o teto', () => {
+  it('com a internet estimada acima da soma dos tetos, o aperto é o teto', () => {
+    assert.equal(motivoDoAperto('bandwidth', 26034, 800), 'teto');
+    assert.equal(motivoDoAperto('bandwidth', 6800, 6800), 'teto');
+  });
+  it('abaixo dela, é a internet; e os outros motivos passam como vieram', () => {
+    assert.equal(motivoDoAperto('bandwidth', 5397, 7800), 'bandwidth');
+    assert.equal(motivoDoAperto('bandwidth', null, 7800), 'bandwidth');
+    assert.equal(motivoDoAperto('cpu', 26034, 800), 'cpu');
+    assert.equal(motivoDoAperto('none', 26034, 800), 'none');
+  });
+  it('o teto não encolhe a imagem, e não segura a volta ao tamanho cheio', () => {
+    const encolhida = { step: 1, comfortable: 0 };
+    assert.deepEqual(nextQuality({ step: 0, comfortable: 0 }, { fps: 15, limitedBy: 'teto' }), { step: 0, comfortable: 0 });
+    let q = encolhida;
+    for (let i = 0; i < 3; i++) q = nextQuality(q, { fps: 30, limitedBy: 'teto' });
+    assert.equal(q.step, 0, 'três medições boas com o teto e a imagem volta');
+    assert.equal(nextQuality({ step: 0, comfortable: 0 }, { fps: 15, limitedBy: 'bandwidth' }).step, 1, 'a internet de verdade ainda encolhe');
+  });
+  it('o diário diz "pelo teto da versão", e é um motivo à parte', () => {
+    const linha = resumoDoAperto({ motivo: 'teto', segundos: 12, largura: 427, altura: 240, fps: 29, kbps: 816, estimativaKbps: 26034, codec: 'VP8', naPlaca: false, modo: 'Padrão' });
+    assert.ok(linha.startsWith('apertada há 12 s pelo teto da versão · sai 427×240'), linha);
+    let a = APERTO_INICIAL;
+    const registros: string[] = [];
+    for (const m of ['teto', 'teto', 'teto', 'bandwidth', 'bandwidth', 'bandwidth'] as const) {
+      const r = proximoAperto(a, m, true);
+      a = r.aperto;
+      if (r.registrar) registros.push(a.motivo!);
+    }
+    assert.deepEqual(registros, ['teto', 'bandwidth']);
   });
 });

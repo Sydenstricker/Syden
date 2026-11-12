@@ -3259,4 +3259,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Šis kodas yra kitokios scenos.",
   'Esse código não é de um layout do Syden.': "Šis kodas nėra Syden išdėstymo.",
   'Corrigir a data de nascimento': "Pataisyti gimimo datą",
+  "Recomendar para este computador": "Rekomenduoti šiam kompiuteriui",
+  "Medindo a internet e a placa de vídeo…": "Matuojamas internetas ir vaizdo plokštė…",
+  "Recomendado: {modo}.": "Rekomenduojama: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Tavo internetas siunčia {mbps} Mbps, o vaizdo plokštė atlaiko 60 kadrų per sekundę.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "„Sklandu“ reikia apie 12 Mbps siuntimo, o tavo internetas siunčia {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Šio kompiuterio vaizdo plokštė nekoduoja 60 kadrų per sekundę, tad „Sklandu“ žaidimo metu apkrautų procesorių.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Paskutinėje tavo transliacijoje režimu „Sklandu“ šis kompiuteris neišlaikė 60 kadrų.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Dabar nepavyko išmatuoti interneto. Pabandyk vėl po truputėlio.",
 } satisfies Record<string, string>;

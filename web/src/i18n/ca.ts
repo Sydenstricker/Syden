@@ -3253,4 +3253,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Aquest codi és d’un altre tipus d’escena.",
   'Esse código não é de um layout do Syden.': "Aquest codi no és d’una disposició de Syden.",
   'Corrigir a data de nascimento': "Corregir la data de naixement",
+  "Recomendar para este computador": "Recomana per a aquest ordinador",
+  "Medindo a internet e a placa de vídeo…": "Mesurant la connexió i la targeta gràfica…",
+  "Recomendado: {modo}.": "Recomanat: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "La teva connexió envia {mbps} Mbps i la targeta gràfica pot amb 60 fotogrames per segon.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "«Fluid» demana uns 12 Mbps de pujada, i la teva connexió n’envia {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "La targeta gràfica d’aquest ordinador no codifica 60 fotogrames per segon, i «Fluid» carregaria el processador durant el joc.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "A l’última transmissió en «Fluid», aquest ordinador no va aguantar els 60 fotogrames.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Ara no s’ha pogut mesurar la connexió. Torna-ho a provar d’aquí a una estona.",
 } satisfies Record<string, string>;

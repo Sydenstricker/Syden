@@ -3186,4 +3186,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Na kodi oqo e nei dua tale na mataqali vanua.",
   'Esse código não é de um layout do Syden.': "Na kodi oqo e sega ni nei dua na ituvatuva ni Syden.",
   'Corrigir a data de nascimento': "Vakadodonutaka na tikinisiga ni sucu",
+  "Recomendar para este computador": "Vakaturataka ena kompiuta qo",
+  "Medindo a internet e a placa de vídeo…": "Vakarautaka tiko na initaneti kei na kaba ni iyaloyalo…",
+  "Recomendado: {modo}.": "Vakaturi: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Na nomu initaneti e vakauta {mbps} Mbps, ka na kaba ni iyaloyalo e rawata e 60 na iyaloyalo e na sekodi.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "Na \"Vakatotolo\" e gadreva e rauta ni 12 Mbps ni vakauta, ka na nomu initaneti e vakauta {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Na kaba ni iyaloyalo ni kompiuta qo e sega ni rawa ni vakarautaka e 60 na iyaloyalo e na sekodi, ka na \"Vakatotolo\" ena vakabibitaka na prosesa ni qito tiko.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "E na nomu vakaraitaki vakaotioti e na \"Vakatotolo\", e sega ni rawata na kompiuta qo e 60 na iyaloyalo.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "E sega ni rawa ni vakarautaki na initaneti ena gauna qo. Tovolea tale e na dua na gauna lekaleka.",
 } satisfies Record<string, string>;

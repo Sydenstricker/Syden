@@ -3193,4 +3193,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Αυτός ο κωδικός είναι από άλλο είδος σκηνής.",
   'Esse código não é de um layout do Syden.': "Αυτός ο κωδικός δεν είναι διάταξης του Syden.",
   'Corrigir a data de nascimento': "Διόρθωση ημερομηνίας γέννησης",
+  "Recomendar para este computador": "Πρόταση για αυτόν τον υπολογιστή",
+  "Medindo a internet e a placa de vídeo…": "Μέτρηση του ίντερνετ και της κάρτας γραφικών…",
+  "Recomendado: {modo}.": "Προτείνεται: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Το ίντερνέτ σου στέλνει {mbps} Mbps και η κάρτα γραφικών αντέχει 60 καρέ το δευτερόλεπτο.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "Το «Ρευστό» θέλει περίπου 12 Mbps αποστολής, και το ίντερνέτ σου στέλνει {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Η κάρτα γραφικών αυτού του υπολογιστή δεν κωδικοποιεί 60 καρέ το δευτερόλεπτο, και το «Ρευστό» θα βάραινε τον επεξεργαστή στο παιχνίδι.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Στην τελευταία σου μετάδοση σε «Ρευστό», αυτός ο υπολογιστής δεν άντεξε τα 60 καρέ.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Δεν ήταν δυνατή η μέτρηση του ίντερνετ τώρα. Δοκίμασε ξανά σε λίγο.",
 } satisfies Record<string, string>;

@@ -3257,4 +3257,12 @@ export default {
   'Esse código é de outro tipo de cena.': "මෙම කේතය වෙනත් වර්ගයක දර්ශනයක.",
   'Esse código não é de um layout do Syden.': "මෙම කේතය Syden පිරිසැලසුමක නොවේ.",
   'Corrigir a data de nascimento': "උපන් දිනය නිවැරදි කරන්න",
+  "Recomendar para este computador": "මෙම පරිගණකයට නිර්දේශ කරන්න",
+  "Medindo a internet e a placa de vídeo…": "අන්තර්ජාලය සහ ග්‍රැෆික්ස් කාඩ්පත මනිමින්…",
+  "Recomendado: {modo}.": "නිර්දේශිතයි: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "ඔබේ අන්තර්ජාලය {mbps} Mbps යවයි, ග්‍රැෆික්ස් කාඩ්පතට තත්පරයට රාමු 60ක් දරාගත හැකියි.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "\"සුමට\" සඳහා උඩුගත කිරීම 12 Mbps පමණ ඕනෑ, ඔබේ අන්තර්ජාලය යවන්නේ {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "මෙම පරිගණකයේ ග්‍රැෆික්ස් කාඩ්පත තත්පරයට රාමු 60ක් කේතනය නොකරයි, \"සුමට\" ක්‍රීඩා කරන අතරතුර ප්‍රොසෙසරයට බරක් වෙයි.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "\"සුමට\" හි අවසන් විකාශනයේදී මෙම පරිගණකයට රාමු 60 දරාගත නොහැකි විය.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "දැන් අන්තර්ජාලය මැනිය නොහැකි විය. ටික වේලාවකින් නැවත උත්සාහ කරන්න.",
 } satisfies Record<string, string>;

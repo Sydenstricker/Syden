@@ -3169,4 +3169,12 @@ export default {
   'Esse código é de outro tipo de cena.': "ఈ కోడ్ వేరే రకమైన దృశ్యానిది.",
   'Esse código não é de um layout do Syden.': "ఈ కోడ్ Syden అమరికది కాదు.",
   'Corrigir a data de nascimento': "పుట్టిన తేదీ సరిచేయి",
+  "Recomendar para este computador": "ఈ కంప్యూటర్‌కు సిఫార్సు చెయ్యి",
+  "Medindo a internet e a placa de vídeo…": "ఇంటర్నెట్‌ను, గ్రాఫిక్స్ కార్డ్‌ను కొలుస్తోంది…",
+  "Recomendado: {modo}.": "సిఫార్సు: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "నీ ఇంటర్నెట్ {mbps} Mbps పంపుతుంది, గ్రాఫిక్స్ కార్డ్ సెకనుకు 60 ఫ్రేమ్‌లను తట్టుకుంటుంది.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "\"సాఫీగా\"కి సుమారు 12 Mbps అప్‌లోడ్ కావాలి, నీ ఇంటర్నెట్ {mbps} పంపుతుంది.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "ఈ కంప్యూటర్ గ్రాఫిక్స్ కార్డ్ సెకనుకు 60 ఫ్రేమ్‌లను ఎన్‌కోడ్ చెయ్యదు, \"సాఫీగా\" ఆట సమయంలో ప్రాసెసర్‌పై భారం వేస్తుంది.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "\"సాఫీగా\"లో నీ చివరి ప్రసారంలో ఈ కంప్యూటర్ 60 ఫ్రేమ్‌లను తట్టుకోలేకపోయింది.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "ఇప్పుడు ఇంటర్నెట్‌ను కొలవలేకపోయాం. కాసేపటి తర్వాత మళ్లీ ప్రయత్నించు.",
 } satisfies Record<string, string>;

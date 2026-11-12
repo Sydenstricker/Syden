@@ -3184,4 +3184,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Kode ini milik jenis adegan yang lain.",
   'Esse código não é de um layout do Syden.': "Kode ini bukan milik tata letak Syden.",
   'Corrigir a data de nascimento': "Perbaiki tanggal lahir",
+  "Recomendar para este computador": "Rekomendasikan untuk komputer ini",
+  "Medindo a internet e a placa de vídeo…": "Mengukur internet dan kartu grafis…",
+  "Recomendado: {modo}.": "Rekomendasi: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Internetmu mengirim {mbps} Mbps dan kartu grafis sanggup 60 frame per detik.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "\"Mulus\" butuh sekitar 12 Mbps unggah, dan internetmu mengirim {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Kartu grafis komputer ini tidak mengodekan 60 frame per detik, dan \"Mulus\" akan membebani prosesor saat bermain.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Di siaran terakhirmu dalam \"Mulus\", komputer ini tidak sanggup menahan 60 frame.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Internet tidak bisa diukur sekarang. Coba lagi sebentar lagi.",
 } satisfies Record<string, string>;

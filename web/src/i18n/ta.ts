@@ -3172,4 +3172,12 @@ export default {
   'Esse código é de outro tipo de cena.': "இந்தக் குறியீடு வேறு வகைக் காட்சியுடையது.",
   'Esse código não é de um layout do Syden.': "இந்தக் குறியீடு Syden அமைப்புடையது அல்ல.",
   'Corrigir a data de nascimento': "பிறந்த தேதியைத் திருத்து",
+  "Recomendar para este computador": "இந்தக் கணினிக்குப் பரிந்துரை",
+  "Medindo a internet e a placa de vídeo…": "இணையத்தையும் கிராஃபிக்ஸ் கார்டையும் அளவிடுகிறது…",
+  "Recomendado: {modo}.": "பரிந்துரை: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "உன் இணையம் {mbps} Mbps அனுப்புகிறது, கிராஃபிக்ஸ் கார்டு நொடிக்கு 60 பிரேம்களைத் தாங்கும்.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "\"மென்மையாக\"-க்கு சுமார் 12 Mbps பதிவேற்றம் தேவை, உன் இணையம் {mbps} அனுப்புகிறது.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "இந்தக் கணினியின் கிராஃபிக்ஸ் கார்டு நொடிக்கு 60 பிரேம்களை என்கோட் செய்யாது, \"மென்மையாக\" விளையாடும்போது செயலியைச் சுமையாக்கும்.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "\"மென்மையாக\"-வில் உன் கடைசி ஒளிபரப்பில் இந்தக் கணினி 60 பிரேம்களைத் தாங்கவில்லை.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "இப்போது இணையத்தை அளவிட முடியவில்லை. சிறிது நேரம் கழித்து மீண்டும் முயல்.",
 } satisfies Record<string, string>;

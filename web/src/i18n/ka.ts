@@ -3275,4 +3275,12 @@ export default {
   'Esse código é de outro tipo de cena.': "ეს კოდი სხვა ტიპის სცენისაა.",
   'Esse código não é de um layout do Syden.': "ეს კოდი Syden-ის განლაგებისა არ არის.",
   'Corrigir a data de nascimento': "დაბადების თარიღის შესწორება",
+  "Recomendar para este computador": "ამ კომპიუტერისთვის რეკომენდაცია",
+  "Medindo a internet e a placa de vídeo…": "ვზომავ ინტერნეტს და ვიდეობარათს…",
+  "Recomendado: {modo}.": "რეკომენდებულია: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "შენი ინტერნეტი აგზავნის {mbps} Mbps-ს, ვიდეობარათი კი წამში 60 კადრს უძლებს.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "„გლუვს“ სჭირდება დაახლოებით 12 Mbps ატვირთვა, შენი ინტერნეტი კი აგზავნის {mbps}-ს.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "ამ კომპიუტერის ვიდეობარათი წამში 60 კადრს არ აკოდირებს, და „გლუვი“ თამაშისას პროცესორს დატვირთავდა.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "„გლუვ“ რეჟიმში ბოლო ტრანსლაციისას ეს კომპიუტერი 60 კადრს ვერ გაუძლო.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "ინტერნეტის გაზომვა ახლა ვერ მოხერხდა. ცოტა ხანში სცადე ხელახლა.",
 } satisfies Record<string, string>;

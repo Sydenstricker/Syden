@@ -3186,4 +3186,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Msimbo huu ni wa aina nyingine ya mandhari.",
   'Esse código não é de um layout do Syden.': "Msimbo huu si wa mpangilio wa Syden.",
   'Corrigir a data de nascimento': "Sahihisha tarehe ya kuzaliwa",
+  "Recomendar para este computador": "Pendekeza kwa kompyuta hii",
+  "Medindo a internet e a placa de vídeo…": "Inapima intaneti na kadi ya michoro…",
+  "Recomendado: {modo}.": "Inapendekezwa: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Intaneti yako inatuma {mbps} Mbps, na kadi ya michoro inaweza fremu 60 kwa sekunde.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "“Laini” inahitaji takriban Mbps 12 za kupakia, na intaneti yako inatuma {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Kadi ya michoro ya kompyuta hii haisimbi fremu 60 kwa sekunde, na “Laini” ingeelemea kichakataji wakati wa mchezo.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Katika matangazo yako ya mwisho kwa “Laini”, kompyuta hii haikuweza kuhimili fremu 60.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Imeshindwa kupima intaneti sasa. Jaribu tena baada ya muda mfupi.",
 } satisfies Record<string, string>;

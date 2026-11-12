@@ -3187,4 +3187,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Acest cod este al altui tip de scenă.",
   'Esse código não é de um layout do Syden.': "Acest cod nu este al unei amenajări Syden.",
   'Corrigir a data de nascimento': "Corectează data nașterii",
+  "Recomendar para este computador": "Recomandă pentru acest computer",
+  "Medindo a internet e a placa de vídeo…": "Se măsoară internetul și placa video…",
+  "Recomendado: {modo}.": "Recomandat: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Internetul tău trimite {mbps} Mbps, iar placa video face față la 60 de cadre pe secundă.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "„Fluid” cere în jur de 12 Mbps la trimitere, iar internetul tău trimite {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Placa video a acestui computer nu codifică 60 de cadre pe secundă, iar „Fluid” ar încărca procesorul în timpul jocului.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "La ultima ta transmisie în „Fluid”, acest computer n-a rezistat la cele 60 de cadre.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Nu s-a putut măsura internetul acum. Încearcă din nou puțin mai târziu.",
 } satisfies Record<string, string>;

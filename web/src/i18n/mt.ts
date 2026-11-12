@@ -3203,4 +3203,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Dan il-kodiċi huwa ta’ tip ieħor ta’ xena.",
   'Esse código não é de um layout do Syden.': "Dan il-kodiċi mhuwiex ta’ arranġament ta’ Syden.",
   'Corrigir a data de nascimento': "Ikkoreġi d-data tat-twelid",
+  "Recomendar para este computador": "Irrakkomanda għal dan il-kompjuter",
+  "Medindo a internet e a placa de vídeo…": "Qed inkejlu l-internet u l-karta grafika…",
+  "Recomendado: {modo}.": "Rakkomandat: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "L-internet tiegħek jibgħat {mbps} Mbps u l-karta grafika tlaħħaq ma’ 60 qafas fis-sekonda.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "“Fluwidu” jeħtieġ madwar 12 Mbps ta’ upload, u l-internet tiegħek jibgħat {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Il-karta grafika ta’ dan il-kompjuter ma tikkodifikax 60 qafas fis-sekonda, u “Fluwidu” jtaqqal il-proċessur waqt il-logħba.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Fl-aħħar xandira tiegħek f’“Fluwidu”, dan il-kompjuter ma laħħaqx mas-60 qafas.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Ma setax jitkejjel l-internet issa. Erġa’ pprova ftit wara.",
 } satisfies Record<string, string>;

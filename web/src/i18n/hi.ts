@@ -3186,4 +3186,12 @@ export default {
   'Esse código é de outro tipo de cena.': "यह कोड किसी दूसरे तरह के दृश्य का है।",
   'Esse código não é de um layout do Syden.': "यह कोड Syden के किसी लेआउट का नहीं है।",
   'Corrigir a data de nascimento': "जन्मतिथि ठीक करो",
+  "Recomendar para este computador": "इस कंप्यूटर के लिए सुझाव दो",
+  "Medindo a internet e a placa de vídeo…": "इंटरनेट और ग्राफ़िक्स कार्ड नापे जा रहे हैं…",
+  "Recomendado: {modo}.": "सुझाव: {modo}।",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "तुम्हारा इंटरनेट {mbps} Mbps भेजता है और ग्राफ़िक्स कार्ड 60 फ़्रेम प्रति सेकंड संभाल लेता है।",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "\"चिकना\" को लगभग 12 Mbps अपलोड चाहिए, और तुम्हारा इंटरनेट {mbps} भेजता है।",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "इस कंप्यूटर का ग्राफ़िक्स कार्ड 60 फ़्रेम प्रति सेकंड एनकोड नहीं करता, और \"चिकना\" खेलते समय प्रोसेसर पर बोझ डालेगा।",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "\"चिकना\" में पिछले प्रसारण में यह कंप्यूटर 60 फ़्रेम नहीं संभाल पाया।",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "अभी इंटरनेट नापा नहीं जा सका। थोड़ी देर में फिर कोशिश करो।",
 } satisfies Record<string, string>;

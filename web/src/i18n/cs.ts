@@ -3256,4 +3256,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Tento kód patří k jinému typu scény.",
   'Esse código não é de um layout do Syden.': "Tento kód nepatří žádnému rozvržení ze Sydenu.",
   'Corrigir a data de nascimento': "Opravit datum narození",
+  "Recomendar para este computador": "Doporučit pro tento počítač",
+  "Medindo a internet e a placa de vídeo…": "Měřím internet a grafickou kartu…",
+  "Recomendado: {modo}.": "Doporučeno: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Tvůj internet odesílá {mbps} Mb/s a grafická karta zvládne 60 snímků za sekundu.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "„Plynulé“ potřebuje asi 12 Mb/s odesílání a tvůj internet odesílá {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Grafická karta tohoto počítače nekóduje 60 snímků za sekundu a „Plynulé“ by během hry zatěžovalo procesor.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Při posledním vysílání v režimu „Plynulé“ tento počítač 60 snímků neudržel.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Internet se teď nepodařilo změřit. Zkus to za chvíli znovu.",
 } satisfies Record<string, string>;

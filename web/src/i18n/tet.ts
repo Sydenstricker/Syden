@@ -3189,4 +3189,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Kódigu ne’e husi sena tipu seluk.",
   'Esse código não é de um layout do Syden.': "Kódigu ne’e la’ós arranju Syden nian.",
   'Corrigir a data de nascimento': "Koriji data moris",
+  "Recomendar para este computador": "Rekomenda ba komputadór ida-ne’e",
+  "Medindo a internet e a placa de vídeo…": "Sukat hela internet no kartaun gráfiku…",
+  "Recomendado: {modo}.": "Rekomendadu: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Ó-nia internet haruka {mbps} Mbps, no kartaun gráfiku bele aguenta imajen 60 kada segundu.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "“Fluidu” presiza haruka maizumenus 12 Mbps, no ó-nia internet haruka {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Kartaun gráfiku komputadór ida-ne’e nian la kodifika imajen 60 kada segundu, no “Fluidu” sei todan ba prosesadór durante jogu.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Iha ó-nia transmisaun ikus iha “Fluidu”, komputadór ida-ne’e la aguenta imajen 60.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "La bele sukat internet agora. Koko fali iha tempu badak.",
 } satisfies Record<string, string>;

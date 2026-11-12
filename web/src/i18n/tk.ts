@@ -3268,4 +3268,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Bu kod başga görnüşli sahna degişli.",
   'Esse código não é de um layout do Syden.': "Bu kod Syden ýerleşişine degişli däl.",
   'Corrigir a data de nascimento': "Doglan gününi düzet",
+  "Recomendar para este computador": "Bu kompýuter üçin maslahat ber",
+  "Medindo a internet e a placa de vídeo…": "Internet we wideokarta ölçülýär…",
+  "Recomendado: {modo}.": "Maslahat: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Internetiň {mbps} Mbit/s iberýär, wideokarta bolsa sekuntda 60 kadra çydaýar.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "\"Ýumşak\" üçin takmynan 12 Mbit/s ibermek gerek, internetiň bolsa {mbps} iberýär.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Bu kompýuteriň wideokartasy sekuntda 60 kadry kodlamaýar we \"Ýumşak\" oýun wagtynda prosessory agyrlaşdyrardy.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "\"Ýumşak\" tertibindäki soňky ýaýlymyňda bu kompýuter 60 kadra çydap bilmedi.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Interneti häzir ölçüp bolmady. Biraz soňra gaýtadan synanyş.",
 } satisfies Record<string, string>;

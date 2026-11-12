@@ -3198,4 +3198,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Iyi kode ni iy’ubundi bwoko bw’ahantu.",
   'Esse código não é de um layout do Syden.': "Iyi kode si iy’imitunganyirize ya Syden.",
   'Corrigir a data de nascimento': "Gukosora itariki y'amavuko",
+  "Recomendar para este computador": "Saba inama kuri iyi mudasobwa",
+  "Medindo a internet e a placa de vídeo…": "Birapima interineti n’ikarita y’amashusho…",
+  "Recomendado: {modo}.": "Igisabwa: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Interineti yawe yohereza {mbps} Mbps, kandi ikarita y’amashusho ishobora amashusho 60 ku isegonda.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "“Bitemba” isaba hafi 12 Mbps zo kohereza, kandi interineti yawe yohereza {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Ikarita y’amashusho y’iyi mudasobwa ntishobora gukora amashusho 60 ku isegonda, kandi “Bitemba” yaremereza porosesa mu gihe cy’umukino.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Mu iyerekana ryawe riheruka muri “Bitemba”, iyi mudasobwa ntiyashoboye amashusho 60.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Ntibyashobotse gupima interineti ubu. Ongera ugerageze mu kanya.",
 } satisfies Record<string, string>;

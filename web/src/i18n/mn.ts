@@ -3271,4 +3271,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Энэ код өөр төрлийн дүр зургийнх.",
   'Esse código não é de um layout do Syden.': "Энэ код Syden-ий байршуулалтынх биш.",
   'Corrigir a data de nascimento': "Төрсөн огноог засах",
+  "Recomendar para este computador": "Энэ компьютерт зөвлөх",
+  "Medindo a internet e a placa de vídeo…": "Интернет болон видео картыг хэмжиж байна…",
+  "Recomendado: {modo}.": "Зөвлөмж: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Чиний интернет {mbps} Mbps илгээдэг бөгөөд видео карт секундэд 60 кадрыг даана.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "\"Жигд\" горимд ойролцоогоор 12 Mbps илгээлт хэрэгтэй, чиний интернет {mbps} илгээдэг.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Энэ компьютерийн видео карт секундэд 60 кадр кодлохгүй тул \"Жигд\" тоглох үед процессорыг ачаална.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "\"Жигд\" горимын сүүлийн дамжуулалтад энэ компьютер 60 кадрыг дааж чадаагүй.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Одоо интернетийг хэмжиж чадсангүй. Түр хүлээгээд дахин оролдоорой.",
 } satisfies Record<string, string>;

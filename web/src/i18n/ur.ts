@@ -3179,4 +3179,12 @@ export default {
   'Esse código é de outro tipo de cena.': "یہ کوڈ کسی اور قسم کے منظر کا ہے۔",
   'Esse código não é de um layout do Syden.': "یہ کوڈ Syden کی کسی ترتیب کا نہیں ہے۔",
   'Corrigir a data de nascimento': "تاریخِ پیدائش درست کریں",
+  "Recomendar para este computador": "اس کمپیوٹر کے لیے تجویز کرو",
+  "Medindo a internet e a placa de vídeo…": "انٹرنیٹ اور گرافکس کارڈ ناپے جا رہے ہیں…",
+  "Recomendado: {modo}.": "تجویز: {modo}۔",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "تمہارا انٹرنیٹ {mbps} Mbps بھیجتا ہے اور گرافکس کارڈ 60 فریم فی سیکنڈ سنبھال لیتا ہے۔",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "\"روانی\" کو تقریباً 12 Mbps اپ لوڈ چاہیے، اور تمہارا انٹرنیٹ {mbps} بھیجتا ہے۔",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "اس کمپیوٹر کا گرافکس کارڈ 60 فریم فی سیکنڈ انکوڈ نہیں کرتا، اور \"روانی\" کھیلتے وقت پروسیسر پر بوجھ ڈالے گی۔",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "\"روانی\" میں پچھلی نشریات میں یہ کمپیوٹر 60 فریم نہیں سنبھال سکا۔",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "ابھی انٹرنیٹ نہیں ناپا جا سکا۔ تھوڑی دیر بعد پھر کوشش کرو۔",
 } satisfies Record<string, string>;

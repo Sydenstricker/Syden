@@ -3200,4 +3200,12 @@ export default {
   'Esse código é de outro tipo de cena.': "รหัสนี้เป็นของฉากประเภทอื่น",
   'Esse código não é de um layout do Syden.': "รหัสนี้ไม่ใช่ของการจัดวาง Syden",
   'Corrigir a data de nascimento': "แก้ไขวันเกิด",
+  "Recomendar para este computador": "แนะนำสำหรับคอมพิวเตอร์เครื่องนี้",
+  "Medindo a internet e a placa de vídeo…": "กำลังวัดอินเทอร์เน็ตและการ์ดจอ…",
+  "Recomendado: {modo}.": "แนะนำ: {modo}",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "อินเทอร์เน็ตของคุณส่งได้ {mbps} Mbps และการ์ดจอรับไหว 60 เฟรมต่อวินาที",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "\"ลื่นไหล\" ต้องการการส่งราว 12 Mbps และอินเทอร์เน็ตของคุณส่งได้ {mbps}",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "การ์ดจอของคอมพิวเตอร์เครื่องนี้เข้ารหัส 60 เฟรมต่อวินาทีไม่ได้ และ \"ลื่นไหล\" จะทำให้หน่วยประมวลผลหนักระหว่างเล่นเกม",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "ในการถ่ายทอดครั้งล่าสุดแบบ \"ลื่นไหล\" คอมพิวเตอร์เครื่องนี้รับ 60 เฟรมไม่ไหว",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "ตอนนี้วัดอินเทอร์เน็ตไม่ได้ ลองใหม่อีกสักครู่",
 } satisfies Record<string, string>;

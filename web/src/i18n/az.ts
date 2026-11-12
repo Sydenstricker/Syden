@@ -3228,4 +3228,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Bu kod başqa növ səhnəyə aiddir.",
   'Esse código não é de um layout do Syden.': "Bu kod Syden tərtibatına aid deyil.",
   'Corrigir a data de nascimento': "Doğum tarixini düzəlt",
+  "Recomendar para este computador": "Bu kompüter üçün tövsiyə et",
+  "Medindo a internet e a placa de vídeo…": "İnternet və videokart ölçülür…",
+  "Recomendado: {modo}.": "Tövsiyə olunur: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "İnternetin {mbps} Mbps göndərir və videokart saniyədə 60 kadrın öhdəsindən gəlir.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "\"Axıcı\" təxminən 12 Mbps göndərmə tələb edir, internetin isə {mbps} göndərir.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Bu kompüterin videokartı saniyədə 60 kadr kodlaşdırmır və \"Axıcı\" oyun zamanı prosessoru yükləyərdi.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "\"Axıcı\" rejimindəki son yayımda bu kompüter 60 kadra tab gətirmədi.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "İnterneti indi ölçmək mümkün olmadı. Bir azdan yenidən cəhd et.",
 } satisfies Record<string, string>;

@@ -3157,6 +3157,14 @@ textarea {
   outline: 2px solid var(--link);
 }
 
+/* "Recomendar para este computador", embaixo das opções de qualidade da tela (12/11/2026). */
+.recomendar-modo {
+  margin-top: 12px;
+}
+.recomendar-modo .settings-hint:empty {
+  display: none;
+}
+
 .quality-title {
   font-weight: 600;
   color: var(--text-strong);

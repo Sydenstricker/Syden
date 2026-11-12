@@ -2083,6 +2083,30 @@ qual — o sinal de que havia escolha demais. O que saiu, e por quê:
 medir e decidir sozinho. Quase sempre consegue — e uma escolha que ninguém entende vira o relato
 "um modo deu problema e não sei qual".
 
+**DUAS VERSÕES, O "BANDA" QUE ERA O TETO E O BOTÃO DE RECOMENDAR (12/11/2026, pelo diário de 11/11 e por pedido dele).**
+O diário trazia "chega embaçada" e "apertada pela internet" com a internet sobrando (26 Mbps estimados, saindo 427×240).
+Medido (`e2e/versoes-da-tela.mjs`), três coisas eram nossas:
+- **O Chrome diz "banda" também quando a versão bate no TETO de taxa dela**, no mesmo computador. A de 360p a 800 kbps
+  com jogo pesado ia a 213×120. O diário culpava a internet, e a otimização dinâmica encolhia a imagem e só a devolvia
+  com "nenhum aperto", que não vinha: medido, 540p → 180p → 135p → 90p, parado. Agora "banda" só é a internet quando a
+  estimativa não cobre a soma dos tetos das versões ligadas; se cobre, é o "teto" (`motivoDoAperto`, streamStats.ts), que
+  não encolhe nem segura a volta, e vai ao diário como "pelo teto da versão".
+- **Três versões cobravam demais de quem transmite** (pergunta dele: "ter tantas opções cobra do streamer"): 1080p, 720p e
+  360p, 7,8 Mbps e +55% de pixels. **Agora são DUAS, 1080p a 5 Mbps e 960×540 a 1,8, nos dois modos**: 6,8 Mbps e +25%.
+  A de 540p é também a do celular em pé (o LiveKit pede pela largura do quadro × a densidade, que ele limita a 2), e o
+  1,8 foi medido: é a mesma taxa por pixel da de 360p a 800, e a 1,5 ela desaba. O preço aceito: quem baixa menos de
+  ~1,8 Mbps vê a imagem travar em vez de borrar.
+- **Com duas versões, o "sem teto" de quem assiste mandava 1080p a todo mundo.** O LiveKit as rotula "baixa" e "média";
+  pedir "alta" sem camada alta faz ele ignorar o tamanho do quadro. O teto é a maior que a transmissão TEM
+  (`maiorQualidade`, qualidadeQueRecebo.ts).
+
+**O "Recomendar para este computador"** (Configurações → Voz e vídeo, embaixo de Padrão e Fluido; `recomendarModo.ts`) é
+a exceção pedida por ele à regra acima: a escolha continua, e o Syden a faz quando a pessoa pede. Ele mede o ENVIO até o
+servidor (pedaços de 1 MB a `/api/medir-envio`, que só conta e joga fora; a ida e volta é descontada), pergunta à placa
+se codifica 1080p a 60, e lembra no aparelho se o último Fluido caiu para 30 ou aguentou um minuto. Fluido só com as três
+a favor (12 Mbps ou mais); senão Padrão, com o porquê na tela, e o modo já fica escolhido. Sem medir a internet, não
+recomenda nada.
+
 ## Desempenho: o Electron fica, e sem foco nada se mexe
 
 **Avaliado em 06/11/2026, a pedido dele, depois de o Discord anunciar a troca do Electron por um app em Rust (GPUI, sem

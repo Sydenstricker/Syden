@@ -3258,4 +3258,12 @@ export default {
   'Esse código é de outro tipo de cena.': "ລະຫັດນີ້ເປັນຂອງສາກປະເພດອື່ນ.",
   'Esse código não é de um layout do Syden.': "ລະຫັດນີ້ບໍ່ແມ່ນຂອງການຈັດວາງ Syden.",
   'Corrigir a data de nascimento': "ແກ້ໄຂວັນເກີດ",
+  "Recomendar para este computador": "ແນະນຳສຳລັບຄອມພິວເຕີນີ້",
+  "Medindo a internet e a placa de vídeo…": "ກຳລັງວັດອິນເຕີເນັດ ແລະ ກາດກຣາຟິກ…",
+  "Recomendado: {modo}.": "ແນະນຳ: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "ອິນເຕີເນັດຂອງເຈົ້າສົ່ງໄດ້ {mbps} Mbps ແລະ ກາດກຣາຟິກຮອງຮັບ 60 ເຟຣມຕໍ່ວິນາທີໄດ້.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "\"ລື່ນ\" ຕ້ອງການການສົ່ງປະມານ 12 Mbps ແລະ ອິນເຕີເນັດຂອງເຈົ້າສົ່ງໄດ້ {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "ກາດກຣາຟິກຂອງຄອມພິວເຕີນີ້ບໍ່ເຂົ້າລະຫັດ 60 ເຟຣມຕໍ່ວິນາທີ ແລະ \"ລື່ນ\" ຈະເຮັດໃຫ້ໂປຣເຊສເຊີໜັກໃນຂະນະຫຼິ້ນເກມ.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "ໃນການຖ່າຍທອດຄັ້ງສຸດທ້າຍແບບ \"ລື່ນ\" ຄອມພິວເຕີນີ້ຮັບ 60 ເຟຣມບໍ່ໄຫວ.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "ວັດອິນເຕີເນັດບໍ່ໄດ້ໃນຕອນນີ້. ລອງໃໝ່ອີກຈັກໜ້ອຍ.",
 } satisfies Record<string, string>;

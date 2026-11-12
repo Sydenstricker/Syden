@@ -3277,4 +3277,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Bu kod boshqa turdagi sahnaga tegishli.",
   'Esse código não é de um layout do Syden.': "Bu kod Syden joylashuviga tegishli emas.",
   'Corrigir a data de nascimento': "Tugʻilgan sanani tuzatish",
+  "Recomendar para este computador": "Bu kompyuter uchun tavsiya qil",
+  "Medindo a internet e a placa de vídeo…": "Internet va videokarta o‘lchanmoqda…",
+  "Recomendado: {modo}.": "Tavsiya: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Interneting {mbps} Mbit/s yuboradi, videokarta esa soniyasiga 60 kadrni ko‘taradi.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "“Silliq” taxminan 12 Mbit/s yuklashni talab qiladi, interneting esa {mbps} yuboradi.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Bu kompyuterning videokartasi soniyasiga 60 kadrni kodlamaydi, “Silliq” esa o‘yin paytida protsessorni og‘irlashtirardi.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "“Silliq” rejimidagi oxirgi efiringda bu kompyuter 60 kadrga bardosh bermadi.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Internetni hozir o‘lchab bo‘lmadi. Birozdan keyin yana urinib ko‘r.",
 } satisfies Record<string, string>;

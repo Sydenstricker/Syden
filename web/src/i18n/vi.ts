@@ -3157,4 +3157,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Mã này thuộc một loại cảnh khác.",
   'Esse código não é de um layout do Syden.': "Mã này không phải của một bố cục Syden.",
   'Corrigir a data de nascimento': "Sửa ngày sinh",
+  "Recomendar para este computador": "Đề xuất cho máy tính này",
+  "Medindo a internet e a placa de vídeo…": "Đang đo mạng và card đồ họa…",
+  "Recomendado: {modo}.": "Đề xuất: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Mạng của bạn gửi được {mbps} Mbps và card đồ họa chịu được 60 khung hình mỗi giây.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "“Mượt” cần khoảng 12 Mbps tải lên, còn mạng của bạn gửi được {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Card đồ họa của máy tính này không mã hóa được 60 khung hình mỗi giây, và “Mượt” sẽ làm nặng bộ xử lý khi chơi.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Trong lần phát gần nhất ở chế độ “Mượt”, máy tính này không giữ được 60 khung hình.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Không đo được mạng lúc này. Thử lại sau một lát.",
 } satisfies Record<string, string>;

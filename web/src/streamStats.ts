@@ -149,6 +149,28 @@ export function useStreamStats(publication: Publication | undefined, { local = f
   return stats;
 }
 
+// ---------- "Banda" que não é a internet ----------
+
+/**
+ * O CHROME DIZ "BANDA" TAMBÉM QUANDO A VERSÃO BATE NO TETO DELA (medido em 12/11/2026, `e2e/versoes-da-tela.mjs`). Cada
+ * versão da transmissão tem um teto de taxa (o maxBitrate); com imagem difícil e o teto curto, o codificador encolhe a
+ * imagem para caber, e o `qualityLimitationReason` diz 'bandwidth' — no mesmo computador, com a internet sobrando. Do
+ * diário de 11/11: "apertada pela internet · sai 427×240… (a internet estima 26034)".
+ *
+ * Isso tinha dois custos. O diário culpava a internet de quem transmitia. E a otimização dinâmica (nextQuality) encolhia
+ * a imagem num quadro ruim e só a devolvia com o motivo 'none', que não vinha nunca: medido, uma versão de 540p a
+ * 1,5 Mbps desceu a 180p, 135p e 90p e não voltou.
+ *
+ * A REGRA: "banda" só é a internet quando a estimativa do navegador NÃO COBRE a soma dos tetos das versões ligadas. Se
+ * cobre, a internet daria conta de todas elas cheias, e o aperto é o teto ('teto').
+ */
+export type MotivoDoAperto = StreamStats['limitedBy'] | 'teto';
+
+export function motivoDoAperto(limitedBy: StreamStats['limitedBy'], estimativaKbps: number | null, somaDosTetosKbps: number): MotivoDoAperto {
+  if (limitedBy !== 'bandwidth' || estimativaKbps === null || somaDosTetosKbps <= 0) return limitedBy;
+  return estimativaKbps >= somaDosTetosKbps ? 'teto' : 'bandwidth';
+}
+
 // ---------- Otimização dinâmica da transmissão ----------
 
 /** Piso de quadros por segundo abaixo do qual a imagem visivelmente engasga. */
@@ -171,15 +193,18 @@ export interface AutoQuality {
  * Decide o próximo degrau de qualidade a partir da última medição. Regra: quem assiste sente mais a
  * imagem travando do que a imagem menor, então, quando falta processador ou banda, encolhe-se a imagem
  * para segurar os quadros; a nitidez só volta depois de um tempo bom com folga.
+ *
+ * O aperto pelo TETO da versão (motivoDoAperto) não é falta de máquina nem de internet: não encolhe, e não segura a
+ * volta. Quem encolhe dentro do teto é o próprio codificador, e ele mesmo desfaz quando a imagem acalma.
  */
-export function nextQuality(current: AutoQuality, sample: { fps: number; limitedBy: StreamStats['limitedBy'] }): AutoQuality {
+export function nextQuality(current: AutoQuality, sample: { fps: number; limitedBy: MotivoDoAperto }): AutoQuality {
   if (sample.fps <= 0) return current; // ainda medindo, ou ninguém assistindo
   const struggling = sample.fps < FPS_FLOOR && (sample.limitedBy === 'cpu' || sample.limitedBy === 'bandwidth');
 
   if (struggling) {
     return { step: Math.min(current.step + 1, SCALE_STEPS.length - 1), comfortable: 0 };
   }
-  if (current.step > 0 && sample.fps >= FPS_COMFORT && sample.limitedBy === 'none') {
+  if (current.step > 0 && sample.fps >= FPS_COMFORT && (sample.limitedBy === 'none' || sample.limitedBy === 'teto')) {
     const comfortable = current.comfortable + 1;
     return comfortable >= PATIENCE ? { step: current.step - 1, comfortable: 0 } : { step: current.step, comfortable };
   }
@@ -260,16 +285,19 @@ export const MEDIDAS_PARA_REGISTRAR = 3;
 export interface Aperto {
   /** Medições apertadas seguidas, e por qual motivo. */
   seguidas: number;
-  motivo: 'cpu' | 'bandwidth' | null;
+  motivo: MotivoRegistrado | null;
   /** Os motivos já registrados nesta transmissão. */
-  registrados: ('cpu' | 'bandwidth')[];
+  registrados: MotivoRegistrado[];
 }
+
+/** O que vai ao diário: o processador, a internet, ou o teto da versão (ver motivoDoAperto). */
+export type MotivoRegistrado = 'cpu' | 'bandwidth' | 'teto';
 
 export const APERTO_INICIAL: Aperto = { seguidas: 0, motivo: null, registrados: [] };
 
 /** Conta a medição; `registrar` diz se é a hora de mandar a linha (uma vez por motivo). */
-export function proximoAperto(atual: Aperto, limitedBy: StreamStats['limitedBy'], codificando: boolean): { aperto: Aperto; registrar: boolean } {
-  const motivo = limitedBy === 'cpu' || limitedBy === 'bandwidth' ? limitedBy : null;
+export function proximoAperto(atual: Aperto, limitedBy: MotivoDoAperto, codificando: boolean): { aperto: Aperto; registrar: boolean } {
+  const motivo = limitedBy === 'cpu' || limitedBy === 'bandwidth' || limitedBy === 'teto' ? limitedBy : null;
   if (!codificando || !motivo) return { aperto: { ...atual, seguidas: 0, motivo: null }, registrar: false };
   const seguidas = motivo === atual.motivo ? atual.seguidas + 1 : 1;
   if (seguidas >= MEDIDAS_PARA_REGISTRAR && !atual.registrados.includes(motivo)) {
@@ -280,7 +308,7 @@ export function proximoAperto(atual: Aperto, limitedBy: StreamStats['limitedBy']
 
 /** A linha do diário (cabe nos 200 caracteres que o servidor guarda). */
 export function resumoDoAperto(m: {
-  motivo: 'cpu' | 'bandwidth';
+  motivo: MotivoRegistrado;
   segundos: number;
   largura: number;
   altura: number;
@@ -292,7 +320,7 @@ export function resumoDoAperto(m: {
   modo: string;
 }): string {
   const partes = [
-    `apertada há ${Math.round(m.segundos)} s pel${m.motivo === 'cpu' ? 'o processador' : 'a internet'}`,
+    `apertada há ${Math.round(m.segundos)} s ${m.motivo === 'cpu' ? 'pelo processador' : m.motivo === 'teto' ? 'pelo teto da versão' : 'pela internet'}`,
     `sai ${m.largura}×${m.altura} a ${Math.round(m.fps)} fps` +
       (m.kbps !== null ? `, ${m.kbps} kbps` : '') +
       (m.estimativaKbps !== null ? ` (a internet estima ${m.estimativaKbps})` : ''),

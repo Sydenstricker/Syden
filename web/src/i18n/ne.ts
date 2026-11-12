@@ -3259,4 +3259,12 @@ export default {
   'Esse código é de outro tipo de cena.': "यो कोड अर्कै किसिमको दृश्यको हो।",
   'Esse código não é de um layout do Syden.': "यो कोड Syden को लेआउटको होइन।",
   'Corrigir a data de nascimento': "जन्म मिति सच्याउनुहोस्",
+  "Recomendar para este computador": "यो कम्प्युटरका लागि सिफारिस गर",
+  "Medindo a internet e a placa de vídeo…": "इन्टरनेट र ग्राफिक्स कार्ड नापिँदै…",
+  "Recomendado: {modo}.": "सिफारिस: {modo}।",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "तिम्रो इन्टरनेटले {mbps} Mbps पठाउँछ र ग्राफिक्स कार्डले प्रति सेकेन्ड ६० फ्रेम धान्छ।",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "\"सहज\" लाई करिब १२ Mbps अपलोड चाहिन्छ, र तिम्रो इन्टरनेटले {mbps} पठाउँछ।",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "यो कम्प्युटरको ग्राफिक्स कार्डले प्रति सेकेन्ड ६० फ्रेम इन्कोड गर्दैन, र \"सहज\" ले खेल्दा प्रोसेसरमा भार पार्छ।",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "\"सहज\" मा अन्तिम प्रसारणमा यो कम्प्युटरले ६० फ्रेम धान्न सकेन।",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "अहिले इन्टरनेट नाप्न सकिएन। केही बेरपछि फेरि प्रयास गर।",
 } satisfies Record<string, string>;

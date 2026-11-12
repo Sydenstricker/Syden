@@ -3267,4 +3267,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Ин код аз навъи дигари саҳна аст.",
   'Esse código não é de um layout do Syden.': "Ин код аз тартиби Syden нест.",
   'Corrigir a data de nascimento': "Ислоҳ кардани санаи таваллуд",
+  "Recomendar para este computador": "Барои ин компютер тавсия деҳ",
+  "Medindo a internet e a placa de vídeo…": "Интернет ва видеокорт чен карда мешаванд…",
+  "Recomendado: {modo}.": "Тавсия: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Интернети ту {mbps} Мбит/с мефиристад ва видеокорт 60 кадр дар сонияро мебардорад.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "«Равон» тақрибан 12 Мбит/с фиристодан мехоҳад, интернети ту бошад {mbps} мефиристад.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Видеокорти ин компютер 60 кадр дар сонияро рамзгузорӣ намекунад ва «Равон» ҳангоми бозӣ протсессорро сангин мекард.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Дар пахши охирини ту бо «Равон» ин компютер ба 60 кадр тоб наовард.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Ҳоло интернетро чен кардан нашуд. Каме баъд боз кӯшиш кун.",
 } satisfies Record<string, string>;

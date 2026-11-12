@@ -3175,4 +3175,12 @@ export default {
   'Esse código é de outro tipo de cena.': "이 코드는 다른 종류의 장면 코드예요.",
   'Esse código não é de um layout do Syden.': "이 코드는 Syden 배치의 코드가 아니에요.",
   'Corrigir a data de nascimento': "생년월일 수정",
+  "Recomendar para este computador": "이 컴퓨터에 맞게 추천",
+  "Medindo a internet e a placa de vídeo…": "인터넷과 그래픽 카드를 측정하는 중…",
+  "Recomendado: {modo}.": "추천: {modo}",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "인터넷 업로드는 {mbps} Mbps이고, 그래픽 카드는 초당 60프레임을 감당할 수 있어요.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "\"부드럽게\"는 업로드가 약 12 Mbps 필요한데, 인터넷 업로드는 {mbps}예요.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "이 컴퓨터의 그래픽 카드는 초당 60프레임을 인코딩하지 못해서, \"부드럽게\"는 게임 중에 프로세서에 부담을 줘요.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "지난번 \"부드럽게\" 방송에서 이 컴퓨터는 60프레임을 버티지 못했어요.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "지금은 인터넷을 측정하지 못했어요. 잠시 후 다시 해 보세요.",
 } satisfies Record<string, string>;

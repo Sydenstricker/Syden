@@ -3276,4 +3276,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Այս կոդը այլ տեսակի տեսարանի է։",
   'Esse código não é de um layout do Syden.': "Այս կոդը Syden-ի դասավորությանը չէ։",
   'Corrigir a data de nascimento': "Ուղղել ծննդյան ամսաթիվը",
+  "Recomendar para este computador": "Առաջարկել այս համակարգչի համար",
+  "Medindo a internet e a placa de vídeo…": "Չափվում են ինտերնետը և վիդեոքարտը…",
+  "Recomendado: {modo}.": "Առաջարկվում է՝ {modo}։",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Քո ինտերնետը ուղարկում է {mbps} Mbps, իսկ վիդեոքարտը կարող է վայրկյանում 60 կադր։",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "«Սահուն»-ին պետք է մոտ 12 Mbps ուղարկում, իսկ քո ինտերնետը ուղարկում է {mbps}։",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Այս համակարգչի վիդեոքարտը վայրկյանում 60 կադր չի կոդավորում, և «Սահուն»-ը խաղի ժամանակ կծանրաբեռներ պրոցեսորը։",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "«Սահուն»-ով քո վերջին հեռարձակման ժամանակ այս համակարգիչը չդիմացավ 60 կադրին։",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Հիմա չհաջողվեց չափել ինտերնետը։ Փորձիր նորից մի քիչ ուշ։",
 } satisfies Record<string, string>;

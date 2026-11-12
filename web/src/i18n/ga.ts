@@ -3193,4 +3193,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Is le cineál eile radhairc an cód seo.",
   'Esse código não é de um layout do Syden.': "Ní le leagan amach de chuid Syden an cód seo.",
   'Corrigir a data de nascimento': "Ceartaigh an dáta breithe",
+  "Recomendar para este computador": "Mol don ríomhaire seo",
+  "Medindo a internet e a placa de vídeo…": "Ag tomhas an idirlín agus an chárta grafaice…",
+  "Recomendado: {modo}.": "Molta: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Seolann d’idirlíon {mbps} Mbps agus is féidir leis an gcárta grafaice 60 fráma sa soicind a láimhseáil.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "Teastaíonn thart ar 12 Mbps uaslódála ó “Réidh”, agus seolann d’idirlíon {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Ní ionchódaíonn cárta grafaice an ríomhaire seo 60 fráma sa soicind, agus chuirfeadh “Réidh” ualach ar an bpróiseálaí le linn an chluiche.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Sa chraoladh deireanach agat i “Réidh”, níor sheas an ríomhaire seo leis na 60 fráma.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Níorbh fhéidir an t-idirlíon a thomhas anois. Bain triail eile as ar ball.",
 } satisfies Record<string, string>;

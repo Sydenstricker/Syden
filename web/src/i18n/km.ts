@@ -3256,4 +3256,12 @@ export default {
   'Esse código é de outro tipo de cena.': "កូដនេះជារបស់ទិដ្ឋភាពប្រភេទផ្សេង។",
   'Esse código não é de um layout do Syden.': "កូដនេះមិនមែនជារបស់ប្លង់ Syden ទេ។",
   'Corrigir a data de nascimento': "កែថ្ងៃខែឆ្នាំកំណើត",
+  "Recomendar para este computador": "ណែនាំសម្រាប់កុំព្យូទ័រនេះ",
+  "Medindo a internet e a placa de vídeo…": "កំពុងវាស់អ៊ីនធឺណិត និងកាតក្រាហ្វិក…",
+  "Recomendado: {modo}.": "បានណែនាំ៖ {modo}។",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "អ៊ីនធឺណិតរបស់អ្នកផ្ញើបាន {mbps} Mbps ហើយកាតក្រាហ្វិកអាចទ្រាំបាន 60 ស៊ុមក្នុងមួយវិនាទី។",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "«រលូន» ត្រូវការការផ្ញើប្រហែល 12 Mbps ហើយអ៊ីនធឺណិតរបស់អ្នកផ្ញើបាន {mbps}។",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "កាតក្រាហ្វិករបស់កុំព្យូទ័រនេះមិនអ៊ិនកូដ 60 ស៊ុមក្នុងមួយវិនាទីទេ ហើយ «រលូន» នឹងធ្វើឱ្យប្រព័ន្ធដំណើរការធ្ងន់ពេលលេងហ្គេម។",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "ក្នុងការផ្សាយចុងក្រោយជា «រលូន» កុំព្យូទ័រនេះមិនអាចទ្រាំ 60 ស៊ុមបានទេ។",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "មិនអាចវាស់អ៊ីនធឺណិតបានឥឡូវនេះទេ។ សូមសាកម្ដងទៀតបន្តិចទៀត។",
 } satisfies Record<string, string>;

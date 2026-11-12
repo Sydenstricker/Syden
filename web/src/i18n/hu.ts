@@ -3259,4 +3259,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Ez a kód egy másik fajta jeleneté.",
   'Esse código não é de um layout do Syden.': "Ez a kód nem egy Syden-elrendezésé.",
   'Corrigir a data de nascimento': "Születési dátum javítása",
+  "Recomendar para este computador": "Ajánlás ehhez a számítógéphez",
+  "Medindo a internet e a placa de vídeo…": "Mérem az internetet és a videokártyát…",
+  "Recomendado: {modo}.": "Ajánlott: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Az interneted {mbps} Mbps-t küld, és a videokártya bírja a másodpercenkénti 60 képkockát.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "A „Folyamatos” kb. 12 Mbps feltöltést kér, az interneted pedig {mbps}-t küld.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Ennek a számítógépnek a videokártyája nem kódol másodpercenként 60 képkockát, így a „Folyamatos” játék közben a processzort terhelné.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "A legutóbbi „Folyamatos” közvetítésedben ez a számítógép nem bírta a 60 képkockát.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Most nem sikerült megmérni az internetet. Próbáld újra kicsit később.",
 } satisfies Record<string, string>;

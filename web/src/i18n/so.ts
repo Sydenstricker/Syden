@@ -3257,4 +3257,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Koodhkani waa mid nooc kale oo muuqaal ah.",
   'Esse código não é de um layout do Syden.': "Koodhkani ma aha mid qaabeyn Syden ah.",
   'Corrigir a data de nascimento': "Sax taariikhda dhalashada",
+  "Recomendar para este computador": "Kugu tali kombiyuutarkan",
+  "Medindo a internet e a placa de vídeo…": "Waxaa la cabbirayaa internetka iyo kaarka sawirada…",
+  "Recomendado: {modo}.": "Lagu taliyay: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Internetkaagu wuxuu diraa {mbps} Mbps, kaarka sawiraduna wuxuu qaadi karaa 60 sawir ilbiriqsikiiba.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "\"Siman\" wuxuu u baahan yahay qiyaastii 12 Mbps oo dirid ah, internetkaaguna wuxuu diraa {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Kaarka sawirada ee kombiyuutarkan ma koodeeyo 60 sawir ilbiriqsikiiba, \"Siman\"-na wuxuu culays saari lahaa processor-ka inta ciyaarta lagu jiro.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Baahintaadii ugu dambeysay ee \"Siman\", kombiyuutarkani ma qaadi karin 60-ka sawir.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Hadda lama cabbiri karin internetka. Mar kale isku day wax yar kadib.",
 } satisfies Record<string, string>;

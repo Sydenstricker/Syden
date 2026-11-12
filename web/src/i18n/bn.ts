@@ -3184,4 +3184,12 @@ export default {
   'Esse código é de outro tipo de cena.': "এই কোডটি অন্য ধরনের দৃশ্যের।",
   'Esse código não é de um layout do Syden.': "এই কোডটি Syden-এর কোনো লেআউটের নয়।",
   'Corrigir a data de nascimento': "জন্মতারিখ ঠিক করে দাও",
+  "Recomendar para este computador": "এই কম্পিউটারের জন্য সুপারিশ করো",
+  "Medindo a internet e a placa de vídeo…": "ইন্টারনেট আর গ্রাফিক্স কার্ড মাপা হচ্ছে…",
+  "Recomendado: {modo}.": "সুপারিশ: {modo}।",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "তোমার ইন্টারনেট {mbps} Mbps পাঠায় আর গ্রাফিক্স কার্ড সেকেন্ডে ৬০ ফ্রেম সামলাতে পারে।",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "\"মসৃণ\"-এর জন্য প্রায় ১২ Mbps আপলোড লাগে, আর তোমার ইন্টারনেট পাঠায় {mbps}।",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "এই কম্পিউটারের গ্রাফিক্স কার্ড সেকেন্ডে ৬০ ফ্রেম এনকোড করে না, তাই \"মসৃণ\" খেলার সময় প্রসেসরের ওপর চাপ দেবে।",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "\"মসৃণ\"-এ শেষ সম্প্রচারে এই কম্পিউটার ৬০ ফ্রেম ধরে রাখতে পারেনি।",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "এখন ইন্টারনেট মাপা গেল না। একটু পরে আবার চেষ্টা করো।",
 } satisfies Record<string, string>;

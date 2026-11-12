@@ -3189,4 +3189,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Wannan lambar ta wani irin wuri ce dabam.",
   'Esse código não é de um layout do Syden.': "Wannan lambar ba ta tsarin Syden ba ce.",
   'Corrigir a data de nascimento': "Gyara ranar haihuwa",
+  "Recomendar para este computador": "Ba da shawara don wannan kwamfuta",
+  "Medindo a internet e a placa de vídeo…": "Ana auna intanet da katin hoto…",
+  "Recomendado: {modo}.": "Shawara: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Intanet ɗinku tana aika {mbps} Mbps, kuma katin hoto yana iya ɗaukar hotuna 60 a daƙiƙa.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "\"Mai gudana\" yana buƙatar kusan 12 Mbps na aikawa, kuma intanet ɗinku tana aika {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Katin hoto na wannan kwamfuta ba ya ɓoye hotuna 60 a daƙiƙa, kuma \"Mai gudana\" zai nauyaya na'ura mai sarrafawa yayin wasa.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "A watsawa ta ƙarshe a \"Mai gudana\", wannan kwamfuta ba ta iya ɗaukar hotuna 60 ba.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Ba a iya auna intanet yanzu ba. A sake gwadawa nan ba da jimawa ba.",
 } satisfies Record<string, string>;

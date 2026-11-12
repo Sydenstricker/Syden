@@ -44,7 +44,9 @@ import {
   APERTO_INICIAL,
   type Aperto,
   proximoFluido,
+  motivoDoAperto,
 } from './streamStats';
+import { lembrarDoFluido } from './recomendarModo';
 import { filaUltimaVale } from './fila';
 import { desktopBridge } from './desktop';
 import { escolherCodecDaTela } from './escolherCodec';
@@ -126,11 +128,22 @@ const SCREEN_HINTS: Record<ScreenQuality, { contentHint: 'motion' | 'detail'; de
  * E ELA SAI A 30 QUADROS, NÃO 15 (11/10/2026). Por ser a que chega no quadro pequeno e no notebook, a
  * 15 ela fazia o jogo parecer travado justamente para quem tem menos tela — e não havia aviso nenhum,
  * porque do lado de quem transmite estava tudo certo. Codificar 360p é barato; a conta continua cabendo.
+ *
+ * DUAS VERSÕES, 1080p E 540p, NOS DOIS MODOS (12/11/2026, pergunta dele: "ter tantas opções cobra de quem está
+ * transmitindo"). Eram três no Padrão (1080p a 5 Mbps, 720p a 2 e 360p a 0,8: 7,8 Mbps de envio e 55% a mais de pixels
+ * para codificar) e o degrau de baixo era fundo: quem não recebia a de 720p caía na de 360p, que com jogo em movimento o
+ * codificador encolhia até 427×240 (o diário de 11/11). Agora a de baixo é 960×540, que é também o tamanho do celular em
+ * pé (o LiveKit pede pela largura do quadro × a densidade, que ele limita a 2: ~780 px), e só o celular deitado em tela
+ * cheia e o computador pedem a de 1080p. Conta nova: 6,8 Mbps e 25% a mais de pixels. Quem tem menos de ~1,8 Mbps para
+ * baixar fica pior que antes (a imagem trava em vez de borrar): foi a troca escolhida.
+ *
+ * O TETO DE 1,8 Mbps FOI MEDIDO (12/11/2026, `e2e/versoes-da-tela.mjs`), numa cena em que a de 360p a 800 kbps se
+ * segura: a de 540p se segura com 1,8 (a mesma taxa por pixel) e a 1,5 desaba. No Fluido ela continua a 30 quadros.
  */
-const CAMADA_PEQUENA = new VideoPreset(640, 360, 800_000, 30);
+const CAMADA_MENOR = new VideoPreset(960, 540, 1_800_000, 30);
 const SCREEN_LAYERS: Record<ScreenQuality, VideoPreset[]> = {
-  standard: [CAMADA_PEQUENA, new VideoPreset(1280, 720, 2_000_000, 30)],
-  smooth: [CAMADA_PEQUENA],
+  standard: [CAMADA_MENOR],
+  smooth: [CAMADA_MENOR],
 };
 
 // De quanto em quanto tempo a otimização dinâmica confere como a transmissão está indo.
@@ -1583,6 +1596,10 @@ export function useVoice(socket: Socket | null) {
     let busy = false;
     let fluido: Fluido = { apertos: 0, em30: false };
     let parada: Parada = { paradas: 0, nitida: false };
+    // Para a recomendação de modo (recomendarModo.ts): o Fluido que aguentou um minuto inteiro com alguém assistindo
+    // conta a favor dele na próxima vez; o que caiu para 30, contra.
+    const inicio = performance.now();
+    let fluidoMedido = false;
     // Quadros codificados por camada na medição anterior, e quando: é a diferença que diz se a tela
     // está parada. O framesPerSecond do navegador não serve aqui — tela parada e camada pausada dão
     // os dois zero, e só a segunda quer dizer "ninguém assistindo".
@@ -1609,6 +1626,9 @@ export function useVoice(socket: Socket | null) {
         let bytes = 0;
         let estimativa: number | null = null;
         const codecs = new Map<string, string>();
+        // A soma dos tetos das versões ligadas: com a internet estimada acima dela, "banda" é o teto (motivoDoAperto).
+        const somaDosTetosKbps =
+          sender.getParameters().encodings?.reduce((soma, e) => soma + (e.active === false ? 0 : (e.maxBitrate ?? 0)), 0) / 1000 || 0;
         const relatorio = await sender.getStats();
         relatorio.forEach((entry: Record<string, unknown>) => {
           if (entry.type === 'codec' && typeof entry.mimeType === 'string') codecs.set(String(entry.id), entry.mimeType.replace(/^video\//i, '').toUpperCase());
@@ -1619,9 +1639,9 @@ export function useVoice(socket: Socket | null) {
         relatorio.forEach((entry: Record<string, unknown>) => {
           if (entry.type !== 'outbound-rtp' || entry.kind !== 'video') return;
           fps = Math.max(fps, Number(entry.framesPerSecond ?? 0));
+          if (entry.active === false) return; // camada pausada (ninguém assistindo): não diz nada da tela
           const reason = String(entry.qualityLimitationReason ?? 'none');
           if (reason === 'cpu' || reason === 'bandwidth') limitedBy = reason;
-          if (entry.active === false) return; // camada pausada (ninguém assistindo): não diz nada da tela
           bytes += Number(entry.bytesSent ?? 0);
           if (!maior || Number(entry.frameHeight ?? 0) > Number(maior.frameHeight ?? 0)) maior = entry;
           const camada = String(entry.rid ?? entry.ssrc ?? '');
@@ -1637,7 +1657,8 @@ export function useVoice(socket: Socket | null) {
         quandoAntes = agora;
         bytesAntes = bytes;
 
-        const contado = proximoAperto(aperto, limitedBy, fpsCodificado !== null);
+        const motivo = motivoDoAperto(limitedBy, estimativa, somaDosTetosKbps);
+        const contado = proximoAperto(aperto, motivo, fpsCodificado !== null);
         aperto = contado.aperto;
         const camada = maior as Record<string, unknown> | null;
         if (contado.registrar && camada && aperto.motivo) {
@@ -1660,7 +1681,9 @@ export function useVoice(socket: Socket | null) {
 
         if (modoNoArRef.current === 'smooth' && !fluido.em30) {
           fluido = proximoFluido(fluido, { fps, limitedBy });
+          if (fps > 0) fluidoMedido = true;
           if (fluido.em30) {
+            lembrarDoFluido('caiu');
             // Só a camada grande, que é a última: a pequena já sai a 30 e com a taxa dela.
             const parameters = sender.getParameters();
             const grande = parameters.encodings[parameters.encodings.length - 1];
@@ -1694,7 +1717,7 @@ export function useVoice(socket: Socket | null) {
           if (parada.nitida) return; // parada, os degraus de tamanho ficam quietos
         }
 
-        const next = nextQuality(quality, { fps, limitedBy });
+        const next = nextQuality(quality, { fps, limitedBy: motivo });
         if (next.step !== quality.step) {
           const parameters = sender.getParameters();
           // Guarda a proporção original de cada camada: com simulcast elas já nascem em tamanhos diferentes.
@@ -1712,7 +1735,10 @@ export function useVoice(socket: Socket | null) {
     };
 
     const timer = setInterval(() => void check(), SCREEN_CHECK_MS);
-    return () => clearInterval(timer);
+    return () => {
+      clearInterval(timer);
+      if (modoNoArRef.current === 'smooth' && fluidoMedido && !fluido.em30 && performance.now() - inicio >= 60_000) lembrarDoFluido('aguentou');
+    };
   }, [media.screen, room]);
 
   // Avisa "Você está silenciado!" quando a pessoa fala com o microfone mudo, como no Discord. O LiveKit

@@ -3202,4 +3202,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Kóòdù yìí jẹ́ ti irú ibi mìíràn.",
   'Esse código não é de um layout do Syden.': "Kóòdù yìí kì í ṣe ti ìṣètò Syden.",
   'Corrigir a data de nascimento': "Ṣàtúnṣe ọjọ́ ìbí",
+  "Recomendar para este computador": "Dábàá fún kọ̀ǹpútà yìí",
+  "Medindo a internet e a placa de vídeo…": "À ń wọn íntánẹ́ẹ̀tì àti káàdì àwòrán…",
+  "Recomendado: {modo}.": "A dábàá: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Íntánẹ́ẹ̀tì rẹ ń fi {mbps} Mbps ránṣẹ́, káàdì àwòrán sì lè gbé fírẹ́mù 60 ní ìṣẹ́jú-àáyá kan.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "\"Ó ń ṣàn\" nílò bí 12 Mbps ìfiránṣẹ́, íntánẹ́ẹ̀tì rẹ sì ń fi {mbps} ránṣẹ́.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Káàdì àwòrán kọ̀ǹpútà yìí kò lè kódù fírẹ́mù 60 ní ìṣẹ́jú-àáyá kan, \"Ó ń ṣàn\" yóò sì di ẹrù sí ẹ̀rọ ìṣiṣẹ́ nígbà eré.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Nínú ìgbéjáde rẹ tó kẹ́yìn ní \"Ó ń ṣàn\", kọ̀ǹpútà yìí kò lè gbé fírẹ́mù 60.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "A kò lè wọn íntánẹ́ẹ̀tì báyìí. Tún gbìyànjú díẹ̀ sí i.",
 } satisfies Record<string, string>;

@@ -3187,4 +3187,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Kod ini milik jenis babak yang lain.",
   'Esse código não é de um layout do Syden.': "Kod ini bukan milik susun atur Syden.",
   'Corrigir a data de nascimento': "Betulkan tarikh lahir",
+  "Recomendar para este computador": "Cadangkan untuk komputer ini",
+  "Medindo a internet e a placa de vídeo…": "Mengukur internet dan kad grafik…",
+  "Recomendado: {modo}.": "Disyorkan: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "Internet anda menghantar {mbps} Mbps dan kad grafik mampu 60 bingkai sesaat.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "\"Lancar\" perlukan kira-kira 12 Mbps muat naik, dan internet anda menghantar {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Kad grafik komputer ini tidak mengekod 60 bingkai sesaat, dan \"Lancar\" akan membebankan pemproses semasa bermain.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Dalam siaran terakhir anda dalam \"Lancar\", komputer ini tidak mampu menahan 60 bingkai.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Internet tidak dapat diukur sekarang. Cuba lagi sebentar lagi.",
 } satisfies Record<string, string>;

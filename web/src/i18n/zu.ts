@@ -3258,4 +3258,12 @@ export default {
   'Esse código é de outro tipo de cena.': "Le khodi ingeyolunye uhlobo lwendawo.",
   'Esse código não é de um layout do Syden.': "Le khodi akuyona yokuhlelwa kwe-Syden.",
   'Corrigir a data de nascimento': "Lungisa usuku lokuzalwa",
+  "Recomendar para este computador": "Ncoma le khompyutha",
+  "Medindo a internet e a placa de vídeo…": "Kukalwa i-inthanethi nekhadi lemifanekiso…",
+  "Recomendado: {modo}.": "Kunconywa: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "I-inthanethi yakho ithumela u-{mbps} Mbps, futhi ikhadi lemifanekiso lingakwazi izithombe ezingu-60 ngomzuzwana.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "“Okushelelayo” kudinga cishe u-12 Mbps wokuthumela, kanti i-inthanethi yakho ithumela u-{mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Ikhadi lemifanekiso lale khompyutha alibhali izithombe ezingu-60 ngomzuzwana, futhi “Okushelelayo” kungasindisa iphrosesa ngesikhathi somdlalo.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Ekusakazeni kwakho kokugcina ku-“Okushelelayo”, le khompyutha ayizange ikwazi izithombe ezingu-60.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Akukwazekanga ukukala i-inthanethi manje. Zama futhi ngemuva kwesikhashana.",
 } satisfies Record<string, string>;

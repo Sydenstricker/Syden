@@ -3191,4 +3191,12 @@ export default {
   'Esse código é de outro tipo de cena.': "O lenei kulupu numera e mo se isi ituaiga vaaiga.",
   'Esse código não é de um layout do Syden.': "O lenei kulupu numera e le o se faatulagaga a Syden.",
   'Corrigir a data de nascimento': "Faasaʻo le aso fanau",
+  "Recomendar para este computador": "Fautua mo lenei komepiuta",
+  "Medindo a internet e a placa de vídeo…": "O loʻo fuaina le initaneti ma le kata ata…",
+  "Recomendado: {modo}.": "Fautuaina: {modo}.",
+  "A sua internet envia {mbps} Mbps e a placa de vídeo dá conta de 60 quadros por segundo.": "O lau initaneti e lafo {mbps} Mbps, ma e mafai e le kata ata ona tauaveina ata e 60 i le sekone.",
+  "O Fluido pede uns 12 Mbps de envio, e a sua internet envia {mbps}.": "E manaʻomia e le \"Lamolemole\" pe tusa ma le 12 Mbps o le lafo, ae e lafo e lau initaneti {mbps}.",
+  "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "E le faʻailoga e le kata ata o lenei komepiuta ata e 60 i le sekone, ma o le a faʻamamafaina e le \"Lamolemole\" le processor aʻo taʻalo.",
+  "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "I lau faʻasalalauga mulimuli i le \"Lamolemole\", e leʻi mafai e lenei komepiuta ona tauaveina ata e 60.",
+  "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "E leʻi mafai ona fuaina le initaneti i le taimi nei. Toe taumafai i se taimi puupuu.",
 } satisfies Record<string, string>;
