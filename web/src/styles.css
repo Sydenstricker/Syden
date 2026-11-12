@@ -20321,6 +20321,40 @@ body.arrastando-barra {
   opacity: 0 !important;
   pointer-events: none;
 }
+/* A TELA CHEIA DE VERDADE (12/11/2026, sugestão de quem usa): com uma transmissão no palco e a faixa de baixo escondida
+   pela setinha (ou sem faixa nenhuma), a barra da chamada e a setinha FLUTUAM por cima da imagem, e o palco perde a
+   margem. Antes, mesmo apagados, eles guardavam o lugar deles, e a imagem ficava encolhida acima de uma faixa preta.
+   Com a faixa à vista, tudo continua como estava: as câmeras não ficam embaixo dos botões. */
+.stage:fullscreen:has(.stage-focus):not(:has(.stage-strip)) {
+  padding: 0;
+  gap: 0;
+}
+.stage:fullscreen:has(.stage-focus):not(:has(.stage-strip)) .stage-focus {
+  gap: 0;
+}
+.stage:fullscreen:has(.stage-focus):not(:has(.stage-strip)) > .stage-controls {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 16px;
+  z-index: 5;
+}
+.stage:fullscreen:has(.stage-focus):not(:has(.stage-strip)) .stage-faixa.escondida {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  z-index: 6;
+}
+/* A barra flutuante não pode engolir o clique da imagem nas laterais: só os botões recebem. */
+.stage:fullscreen:has(.stage-focus):not(:has(.stage-strip)) > .stage-controls {
+  pointer-events: none;
+}
+.stage:fullscreen:has(.stage-focus):not(:has(.stage-strip)) > .stage-controls > * {
+  pointer-events: auto;
+}
+.stage[data-ocioso] > .stage-controls > * {
+  pointer-events: none;
+}
 @media (prefers-reduced-motion: reduce) {
   .stage:fullscreen :is(.stage-controls, .fullscreen-button, .tile-info, .tile-name, .tile-fechar, .stage-faixa-botao) {
     transition: none;

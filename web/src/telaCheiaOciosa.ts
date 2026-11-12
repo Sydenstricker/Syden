@@ -7,13 +7,14 @@ import { type RefObject, useEffect, useState } from 'react';
  * uma tecla traz tudo de volta na hora. As câmeras e os avisos (microfone bloqueado, silenciado) não somem: são conteúdo.
  *
  * Nunca some enquanto a pessoa está USANDO os controles: o mouse em cima da barra ou do "i", um menu aberto
- * (`aria-expanded`), ou o foco do teclado num deles. Fora da tela cheia, nada muda: o palco divide a tela com o resto do
+ * (`aria-expanded`; menos a setinha da faixa de baixo, que fica "aberta" o tempo todo com a faixa à vista e prendia os
+ * controles na tela para sempre), ou o foco do teclado num deles. Fora da tela cheia, nada muda: o palco divide a tela com o resto do
  * Syden, e esconder ali seria só atrapalhar.
  */
 export const OCIOSO_MS = 3000;
 
 /** O que segura os controles na tela, mesmo com o mouse parado. */
-const EM_USO = '.stage-controls:hover, .stream-info:hover, .stage-controls :focus-visible, [aria-expanded="true"]';
+const EM_USO = '.stage-controls:hover, .stream-info:hover, .stage-controls :focus-visible, [aria-expanded="true"]:not(.stage-faixa-botao)';
 
 export function useOciosoNaTelaCheia(alvo: RefObject<HTMLElement | null>): boolean {
   const [ocioso, setOcioso] = useState(false);
