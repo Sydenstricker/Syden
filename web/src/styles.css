@@ -3160,6 +3160,8 @@ textarea {
 /* "Recomendar para este computador", embaixo das opções de qualidade da tela (12/11/2026). */
 .recomendar-modo {
   margin-top: 12px;
+  /* É o último da aba: sem isto, a frase da recomendação encosta na borda de baixo da janela (relato dele, 12/11/2026). */
+  padding-bottom: 24px;
 }
 .recomendar-modo .settings-hint:empty {
   display: none;
