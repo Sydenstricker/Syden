@@ -93,3 +93,36 @@ describe('qual codec usar na transmissão de tela', () => {
     }
   });
 });
+
+describe('a segunda pergunta, ao WebCodecs (a NVIDIA de 12/11/2026)', () => {
+  // O Chrome 157 responde powerEfficient: false para tudo numa RTX 3070, que codifica H.264 pela placa.
+  const mentiroso = { encodingInfo: async () => ({ supported: true, powerEfficient: false }) };
+
+  it('quando o encodingInfo diz que não, vale o codificador do WebCodecs pela placa', async () => {
+    const perguntas: Record<string, unknown>[] = [];
+    const webCodecs = async (config: Record<string, unknown>) => {
+      perguntas.push(config);
+      return { supported: String(config.codec).startsWith('avc1') };
+    };
+    assert.deepEqual(await escolherCodecDaTela(1920, 1080, 60, mentiroso, webCodecs), { codec: 'h264', motivo: 'placa' });
+    assert.ok(perguntas.every((p) => p.hardwareAcceleration === 'prefer-hardware'));
+    // 1080p60 pede o nível 4.2 do H.264; o 4.0 só cabe 1080p30.
+    assert.equal(perguntas.find((p) => String(p.codec).startsWith('avc1'))?.codec, 'avc1.64002A');
+    assert.equal(perguntas.find((p) => String(p.codec).startsWith('vp09'))?.scalabilityMode, 'L1T3');
+  });
+
+  it('o VP9 pela placa no WebCodecs vem primeiro', async () => {
+    const tudo = async () => ({ supported: true });
+    assert.deepEqual(await escolherCodecDaTela(1920, 1080, 30, mentiroso, tudo), { codec: 'vp9', motivo: 'placa' });
+  });
+
+  it('os dois dizendo não, fica o VP8 pelo processador', async () => {
+    const nada = async () => ({ supported: false });
+    assert.deepEqual(await escolherCodecDaTela(1920, 1080, 60, mentiroso, nada), { codec: 'vp8', motivo: 'processador' });
+  });
+
+  it('sem encodingInfo, o WebCodecs sozinho decide', async () => {
+    const h264 = async (c: Record<string, unknown>) => ({ supported: String(c.codec).startsWith('avc1') });
+    assert.deepEqual(await escolherCodecDaTela(1280, 720, 30, undefined, h264), { codec: 'h264', motivo: 'placa' });
+  });
+});

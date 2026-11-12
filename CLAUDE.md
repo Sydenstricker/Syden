@@ -2076,6 +2076,10 @@ qual — o sinal de que havia escolha demais. O que saiu, e por quê:
   e por isso nunca. **Ele sai com `scalabilityMode: 'L1T3'`**: sem isso o LiveKit publica VP9 de tela
   numa camada só e força `motion`, e somem a camada pequena e a nitidez da tela parada. Exige servidor
   acima da 1.13.6. Teste de tela: `e2e/vp9-pela-placa.mjs`.
+- **A pergunta à placa MENTIA na NVIDIA (12/11/2026, relato dele com uma RTX 3070).** No Chrome e no Edge 157, o
+  `mediaCapabilities.encodingInfo` responde "não é pela placa" para tudo, e a transmissão de verdade sai pelo
+  codificador da NVIDIA: quem tinha NVIDIA transmitia em VP8 pelo processador. Quando ela diz não, o Syden pergunta ao
+  WebCodecs (`prefer-hardware`), que acertou (H.264 sim; VP9 e AV1 não). Ver `escolherCodec.ts`.
 - **Uma opção em cada menu de compartilhar.** No app não existe aba de navegador; no navegador a janela
   sai sempre muda. App: tela inteira e janela. Navegador: tela inteira e aba.
 
