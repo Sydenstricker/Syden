@@ -60,6 +60,7 @@ export const FUNDOS_DO_PERFIL: Record<string, ItemVisual> = {
   nebulosa: { nome: chave('Nebulosa'), descricao: chave('Poeira de estrelas, roxa e azul.') },
   vitral: { nome: chave('Vitral'), descricao: chave('Vidro colorido com a luz passando.') },
   cosmos: { nome: chave('Cosmos'), descricao: chave('O céu inteiro girando bem devagar.') },
+  fuinha: { nome: chave('Fuinha'), descricao: chave('Uma fuinha correndo pelo campo ao entardecer.') },
 };
 
 /** Onde procurar a arte de cada tipo. As insígnias têm catálogo próprio, com moldura e frase. */

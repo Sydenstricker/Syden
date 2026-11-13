@@ -3180,4 +3180,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "இந்தக் கணினியின் கிராஃபிக்ஸ் கார்டு நொடிக்கு 60 பிரேம்களை என்கோட் செய்யாது, \"மென்மையாக\" விளையாடும்போது செயலியைச் சுமையாக்கும்.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "\"மென்மையாக\"-வில் உன் கடைசி ஒளிபரப்பில் இந்தக் கணினி 60 பிரேம்களைத் தாங்கவில்லை.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "இப்போது இணையத்தை அளவிட முடியவில்லை. சிறிது நேரம் கழித்து மீண்டும் முயல்.",
+  'Fuinha': "மரநாய்",
+  'Uma fuinha correndo pelo campo ao entardecer.': "சூரியன் மறையும் வேளையில் வயல்வெளியில் ஓடும் மரநாய்.",
 } satisfies Record<string, string>;

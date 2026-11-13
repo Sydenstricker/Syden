@@ -3190,4 +3190,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "This computer's graphics card can't encode 60 frames per second, so Smooth would load the processor during the game.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "In your last Smooth stream, this computer couldn't keep up 60 frames.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Couldn't measure the internet right now. Try again in a moment.",
+  'Fuinha': "Weasel",
+  'Uma fuinha correndo pelo campo ao entardecer.': "A weasel running across the field at sunset.",
 } satisfies Record<string, string>;

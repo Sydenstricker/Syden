@@ -3285,4 +3285,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Bu kompyuterning videokartasi soniyasiga 60 kadrni kodlamaydi, “Silliq” esa o‘yin paytida protsessorni og‘irlashtirardi.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "“Silliq” rejimidagi oxirgi efiringda bu kompyuter 60 kadrga bardosh bermadi.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Internetni hozir o‘lchab bo‘lmadi. Birozdan keyin yana urinib ko‘r.",
+  'Fuinha': "Latcha",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Quyosh botayotganda dalada yugurayotgan latcha.",
 } satisfies Record<string, string>;

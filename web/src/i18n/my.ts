@@ -3234,4 +3234,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "ဒီကွန်ပျူတာ၏ ဂရပ်ဖစ်ကတ်သည် တစ်စက္ကန့် ဖရိမ် 60 ကို ကုဒ်မပြောင်းနိုင်သဖြင့် \"ချောမွေ့\" က ဂိမ်းကစားစဉ် ပရိုဆက်ဆာကို ဝန်ပိစေမည်။",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "\"ချောမွေ့\" ဖြင့် နောက်ဆုံးထုတ်လွှင့်မှုတွင် ဒီကွန်ပျူတာက ဖရိမ် 60 ကို မထိန်းနိုင်ခဲ့ပါ။",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "ယခု အင်တာနက်ကို မတိုင်းနိုင်ပါ။ ခဏနေမှ ထပ်စမ်းပါ။",
+  'Fuinha': "ဝီဆယ်ကောင်",
+  'Uma fuinha correndo pelo campo ao entardecer.': "နေဝင်ချိန် ကွင်းပြင်ကို ဖြတ်ပြေးနေသော ဝီဆယ်ကောင်။",
 } satisfies Record<string, string>;

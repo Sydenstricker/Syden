@@ -3267,4 +3267,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Šio kompiuterio vaizdo plokštė nekoduoja 60 kadrų per sekundę, tad „Sklandu“ žaidimo metu apkrautų procesorių.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Paskutinėje tavo transliacijoje režimu „Sklandu“ šis kompiuteris neišlaikė 60 kadrų.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Dabar nepavyko išmatuoti interneto. Pabandyk vėl po truputėlio.",
+  'Fuinha': "Žebenkštis",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Saulėlydžio metu per lauką bėganti žebenkštis.",
 } satisfies Record<string, string>;

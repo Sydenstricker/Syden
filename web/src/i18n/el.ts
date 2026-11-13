@@ -3201,4 +3201,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Η κάρτα γραφικών αυτού του υπολογιστή δεν κωδικοποιεί 60 καρέ το δευτερόλεπτο, και το «Ρευστό» θα βάραινε τον επεξεργαστή στο παιχνίδι.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Στην τελευταία σου μετάδοση σε «Ρευστό», αυτός ο υπολογιστής δεν άντεξε τα 60 καρέ.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Δεν ήταν δυνατή η μέτρηση του ίντερνετ τώρα. Δοκίμασε ξανά σε λίγο.",
+  'Fuinha': "Νυφίτσα",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Μια νυφίτσα που τρέχει στο λιβάδι το σούρουπο.",
 } satisfies Record<string, string>;

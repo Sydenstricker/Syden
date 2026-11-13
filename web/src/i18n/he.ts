@@ -3249,4 +3249,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "כרטיס המסך של המחשב הזה לא מקודד 60 פריימים בשנייה, ו״חלק״ היה מעמיס על המעבד בזמן המשחק.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "בשידור האחרון ב״חלק״, המחשב הזה לא עמד ב-60 הפריימים.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "לא ניתן היה למדוד את האינטרנט עכשיו. כדאי לנסות שוב עוד מעט.",
+  'Fuinha': "סמור",
+  'Uma fuinha correndo pelo campo ao entardecer.': "סמור שרץ בשדה בשקיעה.",
 } satisfies Record<string, string>;

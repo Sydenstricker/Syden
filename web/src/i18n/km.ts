@@ -3264,4 +3264,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "កាតក្រាហ្វិករបស់កុំព្យូទ័រនេះមិនអ៊ិនកូដ 60 ស៊ុមក្នុងមួយវិនាទីទេ ហើយ «រលូន» នឹងធ្វើឱ្យប្រព័ន្ធដំណើរការធ្ងន់ពេលលេងហ្គេម។",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "ក្នុងការផ្សាយចុងក្រោយជា «រលូន» កុំព្យូទ័រនេះមិនអាចទ្រាំ 60 ស៊ុមបានទេ។",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "មិនអាចវាស់អ៊ីនធឺណិតបានឥឡូវនេះទេ។ សូមសាកម្ដងទៀតបន្តិចទៀត។",
+  'Fuinha': "សត្វរមាំង",
+  'Uma fuinha correndo pelo campo ao entardecer.': "សត្វរមាំងមួយកំពុងរត់កាត់វាលពេលថ្ងៃលិច។",
 } satisfies Record<string, string>;

@@ -3188,4 +3188,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "کارت گرافیک این رایانه ۶۰ فریم در ثانیه رمزگذاری نمی‌کند، و «روان» هنگام بازی بار پردازنده را سنگین می‌کند.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "در آخرین پخش با «روان»، این رایانه ۶۰ فریم را تاب نیاورد.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "الان نشد اینترنت را اندازه گرفت. کمی بعد دوباره امتحان کن.",
+  'Fuinha': "راسو",
+  'Uma fuinha correndo pelo campo ao entardecer.': "راسویی که هنگام غروب در دشت می‌دود.",
 } satisfies Record<string, string>;

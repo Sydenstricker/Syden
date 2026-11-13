@@ -3201,4 +3201,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Ní ionchódaíonn cárta grafaice an ríomhaire seo 60 fráma sa soicind, agus chuirfeadh “Réidh” ualach ar an bpróiseálaí le linn an chluiche.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Sa chraoladh deireanach agat i “Réidh”, níor sheas an ríomhaire seo leis na 60 fráma.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Níorbh fhéidir an t-idirlíon a thomhas anois. Bain triail eile as ar ball.",
+  'Fuinha': "Easóg",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Easóg ag rith trasna na páirce le luí na gréine.",
 } satisfies Record<string, string>;

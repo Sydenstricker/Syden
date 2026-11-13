@@ -3206,4 +3206,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Ikarita y’amashusho y’iyi mudasobwa ntishobora gukora amashusho 60 ku isegonda, kandi “Bitemba” yaremereza porosesa mu gihe cy’umukino.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Mu iyerekana ryawe riheruka muri “Bitemba”, iyi mudasobwa ntiyashoboye amashusho 60.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Ntibyashobotse gupima interineti ubu. Ongera ugerageze mu kanya.",
+  'Fuinha': "Weasel",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Weasel yiruka mu murima izuba rirenga.",
 } satisfies Record<string, string>;

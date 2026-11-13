@@ -3208,4 +3208,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "การ์ดจอของคอมพิวเตอร์เครื่องนี้เข้ารหัส 60 เฟรมต่อวินาทีไม่ได้ และ \"ลื่นไหล\" จะทำให้หน่วยประมวลผลหนักระหว่างเล่นเกม",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "ในการถ่ายทอดครั้งล่าสุดแบบ \"ลื่นไหล\" คอมพิวเตอร์เครื่องนี้รับ 60 เฟรมไม่ไหว",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "ตอนนี้วัดอินเทอร์เน็ตไม่ได้ ลองใหม่อีกสักครู่",
+  'Fuinha': "เพียงพอน",
+  'Uma fuinha correndo pelo campo ao entardecer.': "เพียงพอนวิ่งข้ามทุ่งยามพระอาทิตย์ตก",
 } satisfies Record<string, string>;

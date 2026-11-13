@@ -3197,4 +3197,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Katin hoto na wannan kwamfuta ba ya ɓoye hotuna 60 a daƙiƙa, kuma \"Mai gudana\" zai nauyaya na'ura mai sarrafawa yayin wasa.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "A watsawa ta ƙarshe a \"Mai gudana\", wannan kwamfuta ba ta iya ɗaukar hotuna 60 ba.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Ba a iya auna intanet yanzu ba. A sake gwadawa nan ba da jimawa ba.",
+  'Fuinha': "Weasel",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Weasel yana gudu a cikin fili da faɗuwar rana.",
 } satisfies Record<string, string>;

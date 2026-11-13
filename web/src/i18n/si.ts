@@ -3265,4 +3265,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "මෙම පරිගණකයේ ග්‍රැෆික්ස් කාඩ්පත තත්පරයට රාමු 60ක් කේතනය නොකරයි, \"සුමට\" ක්‍රීඩා කරන අතරතුර ප්‍රොසෙසරයට බරක් වෙයි.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "\"සුමට\" හි අවසන් විකාශනයේදී මෙම පරිගණකයට රාමු 60 දරාගත නොහැකි විය.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "දැන් අන්තර්ජාලය මැනිය නොහැකි විය. ටික වේලාවකින් නැවත උත්සාහ කරන්න.",
+  'Fuinha': "වීසල්",
+  'Uma fuinha correndo pelo campo ao entardecer.': "හිරු බසින වේලාවේ පිට්ටනිය හරහා දුවන වීසල් කෙනෙක්.",
 } satisfies Record<string, string>;

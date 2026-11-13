@@ -3210,4 +3210,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Káàdì àwòrán kọ̀ǹpútà yìí kò lè kódù fírẹ́mù 60 ní ìṣẹ́jú-àáyá kan, \"Ó ń ṣàn\" yóò sì di ẹrù sí ẹ̀rọ ìṣiṣẹ́ nígbà eré.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Nínú ìgbéjáde rẹ tó kẹ́yìn ní \"Ó ń ṣàn\", kọ̀ǹpútà yìí kò lè gbé fírẹ́mù 60.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "A kò lè wọn íntánẹ́ẹ̀tì báyìí. Tún gbìyànjú díẹ̀ sí i.",
+  'Fuinha': "Weasel",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Weasel kan ń sáré kọjá pápá nígbà tí oòrùn ń wọ̀.",
 } satisfies Record<string, string>;

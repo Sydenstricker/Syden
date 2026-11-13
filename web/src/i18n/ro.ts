@@ -3195,4 +3195,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Placa video a acestui computer nu codifică 60 de cadre pe secundă, iar „Fluid” ar încărca procesorul în timpul jocului.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "La ultima ta transmisie în „Fluid”, acest computer n-a rezistat la cele 60 de cadre.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Nu s-a putut măsura internetul acum. Încearcă din nou puțin mai târziu.",
+  'Fuinha': "Nevăstuică",
+  'Uma fuinha correndo pelo campo ao entardecer.': "O nevăstuică alergând pe câmp la apus.",
 } satisfies Record<string, string>;

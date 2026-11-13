@@ -3260,4 +3260,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Karta graficzna tego komputera nie koduje 60 klatek na sekundę, a tryb „Płynnie” obciążałby procesor w trakcie gry.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "W twojej ostatniej transmisji w trybie „Płynnie” ten komputer nie utrzymał 60 klatek.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Nie udało się teraz zmierzyć internetu. Spróbuj ponownie za chwilę.",
+  'Fuinha': "Łasica",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Łasica biegnąca przez pole o zachodzie słońca.",
 } satisfies Record<string, string>;

@@ -3194,4 +3194,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "La scheda video di questo computer non codifica 60 fotogrammi al secondo, e «Fluido» peserebbe sul processore durante il gioco.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Nella tua ultima trasmissione in «Fluido», questo computer non ha retto i 60 fotogrammi.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Non è stato possibile misurare la connessione ora. Riprova tra poco.",
+  'Fuinha': "Donnola",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Una donnola che corre nel prato al tramonto.",
 } satisfies Record<string, string>;

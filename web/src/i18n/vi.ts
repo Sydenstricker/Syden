@@ -3165,4 +3165,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Card đồ họa của máy tính này không mã hóa được 60 khung hình mỗi giây, và “Mượt” sẽ làm nặng bộ xử lý khi chơi.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Trong lần phát gần nhất ở chế độ “Mượt”, máy tính này không giữ được 60 khung hình.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Không đo được mạng lúc này. Thử lại sau một lát.",
+  'Fuinha': "Chồn",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Một chú chồn chạy băng qua cánh đồng lúc hoàng hôn.",
 } satisfies Record<string, string>;

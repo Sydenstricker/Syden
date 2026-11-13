@@ -51,6 +51,8 @@ export const CATALOGO: ItemDoGuardaRoupa[] = [
   // bonitos, não serem difíceis.
   ...livres('cor', ['cobre', 'jade', 'ametista', 'prisma']),
   ...livres('fundo', ['nebulosa', 'vitral', 'cosmos']),
+  // A fuinha (12/11/2026): desenho nosso, livre como os outros.
+  ...livres('fundo', ['fuinha']),
   ...livres('moldura', ['ouro-moldura', 'esmeralda-moldura', 'rubi', 'prisma-moldura']),
 
   // O EFEITO DO NOME, que é o 'mesmo nome, novo visual'. Como todo o resto: livre.

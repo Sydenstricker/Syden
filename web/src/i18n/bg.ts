@@ -3262,4 +3262,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Видеокартата на този компютър не кодира 60 кадъра в секунда и „Плавно“ би натоварило процесора по време на играта.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "При последното ти излъчване в „Плавно“ този компютър не издържа 60-те кадъра.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Интернетът не може да бъде измерен сега. Опитай пак след малко.",
+  'Fuinha': "Невестулка",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Невестулка, която тича през полето по залез.",
 } satisfies Record<string, string>;

@@ -3192,4 +3192,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "এই কম্পিউটারের গ্রাফিক্স কার্ড সেকেন্ডে ৬০ ফ্রেম এনকোড করে না, তাই \"মসৃণ\" খেলার সময় প্রসেসরের ওপর চাপ দেবে।",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "\"মসৃণ\"-এ শেষ সম্প্রচারে এই কম্পিউটার ৬০ ফ্রেম ধরে রাখতে পারেনি।",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "এখন ইন্টারনেট মাপা গেল না। একটু পরে আবার চেষ্টা করো।",
+  'Fuinha': "বেজি",
+  'Uma fuinha correndo pelo campo ao entardecer.': "সূর্যাস্তে মাঠ জুড়ে ছুটে চলা একটি বেজি।",
 } satisfies Record<string, string>;

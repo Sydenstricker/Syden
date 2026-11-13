@@ -3276,4 +3276,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Bu kompýuteriň wideokartasy sekuntda 60 kadry kodlamaýar we \"Ýumşak\" oýun wagtynda prosessory agyrlaşdyrardy.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "\"Ýumşak\" tertibindäki soňky ýaýlymyňda bu kompýuter 60 kadra çydap bilmedi.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Interneti häzir ölçüp bolmady. Biraz soňra gaýtadan synanyş.",
+  'Fuinha': "Gyrsyçan",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Gün ýaşanda meýdandan ylgap barýan gyrsyçan.",
 } satisfies Record<string, string>;

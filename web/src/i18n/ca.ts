@@ -3261,4 +3261,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "La targeta gràfica d’aquest ordinador no codifica 60 fotogrames per segon, i «Fluid» carregaria el processador durant el joc.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "A l’última transmissió en «Fluid», aquest ordinador no va aguantar els 60 fotogrames.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Ara no s’ha pogut mesurar la connexió. Torna-ho a provar d’aquí a una estona.",
+  'Fuinha': "Mostela",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Una mostela corrent pel camp a la posta de sol.",
 } satisfies Record<string, string>;

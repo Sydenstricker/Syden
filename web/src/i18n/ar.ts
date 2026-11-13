@@ -3219,4 +3219,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "بطاقة الرسومات في هذا الحاسوب لا ترمّز 60 إطارًا في الثانية، وسيُثقل وضع «سلسة» المعالج أثناء اللعب.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "في آخر بث بوضع «سلسة»، لم يتحمّل هذا الحاسوب 60 إطارًا.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "تعذّر قياس الإنترنت الآن. يُرجى المحاولة بعد قليل.",
+  'Fuinha': "ابن عرس",
+  'Uma fuinha correndo pelo campo ao entardecer.': "ابن عرس يركض في الحقل عند الغروب.",
 } satisfies Record<string, string>;

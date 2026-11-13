@@ -3192,4 +3192,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Kartu grafis komputer ini tidak mengodekan 60 frame per detik, dan \"Mulus\" akan membebani prosesor saat bermain.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Di siaran terakhirmu dalam \"Mulus\", komputer ini tidak sanggup menahan 60 frame.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Internet tidak bisa diukur sekarang. Coba lagi sebentar lagi.",
+  'Fuinha': "Musang",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Seekor musang berlari melintasi padang saat matahari terbenam.",
 } satisfies Record<string, string>;

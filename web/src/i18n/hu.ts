@@ -3267,4 +3267,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Ennek a számítógépnek a videokártyája nem kódol másodpercenként 60 képkockát, így a „Folyamatos” játék közben a processzort terhelné.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "A legutóbbi „Folyamatos” közvetítésedben ez a számítógép nem bírta a 60 képkockát.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Most nem sikerült megmérni az internetet. Próbáld újra kicsit később.",
+  'Fuinha': "Menyét",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Naplementekor a mezőn átszaladó menyét.",
 } satisfies Record<string, string>;

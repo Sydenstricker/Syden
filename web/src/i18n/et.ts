@@ -3262,4 +3262,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Selle arvuti graafikakaart ei kodeeri 60 kaadrit sekundis ja „Sujuv“ koormaks mängu ajal protsessorit.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Sinu viimasel ülekandel režiimis „Sujuv“ ei pidanud see arvuti 60 kaadrile vastu.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Internetti ei õnnestunud praegu mõõta. Proovi varsti uuesti.",
+  'Fuinha': "Nirk",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Päikeseloojangul üle välja jooksev nirk.",
 } satisfies Record<string, string>;

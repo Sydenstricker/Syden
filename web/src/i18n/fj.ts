@@ -3194,4 +3194,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Na kaba ni iyaloyalo ni kompiuta qo e sega ni rawa ni vakarautaka e 60 na iyaloyalo e na sekodi, ka na \"Vakatotolo\" ena vakabibitaka na prosesa ni qito tiko.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "E na nomu vakaraitaki vakaotioti e na \"Vakatotolo\", e sega ni rawata na kompiuta qo e 60 na iyaloyalo.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "E sega ni rawa ni vakarautaki na initaneti ena gauna qo. Tovolea tale e na dua na gauna lekaleka.",
+  'Fuinha': "Weasel",
+  'Uma fuinha correndo pelo campo ao entardecer.': "E dua na weasel e cici ena loma ni were ni gauna e dromu kina na siga.",
 } satisfies Record<string, string>;

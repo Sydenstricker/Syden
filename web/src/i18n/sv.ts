@@ -3257,4 +3257,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Den här datorns grafikkort kodar inte 60 bilder per sekund, och ”Flytande” skulle belasta processorn under spelet.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "I din senaste sändning i ”Flytande” klarade den här datorn inte de 60 bilderna.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Det gick inte att mäta internet just nu. Försök igen om en stund.",
+  'Fuinha': "Vessla",
+  'Uma fuinha correndo pelo campo ao entardecer.': "En vessla som springer över fältet i solnedgången.",
 } satisfies Record<string, string>;

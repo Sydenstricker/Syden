@@ -52,6 +52,7 @@ export const FUNDOS: Fundo[] = [
   { id: 'nebulosa', label: chave('Nebulosa'), animado: true },
   { id: 'vitral', label: chave('Vitral'), animado: true },
   { id: 'cosmos', label: chave('Cosmos'), animado: true },
+  { id: 'fuinha', label: chave('Fuinha'), animado: true },
 ];
 
 const CORES = new Set(CORES_DE_NOME.map((c) => c.id));

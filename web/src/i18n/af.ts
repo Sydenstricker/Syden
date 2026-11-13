@@ -3259,4 +3259,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Hierdie rekenaar se grafiese kaart kodeer nie 60 rame per sekonde nie, en 'Vloeiend' sou die verwerker tydens die speletjie belas.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "In jou laaste uitsending in 'Vloeiend' kon hierdie rekenaar nie die 60 rame hou nie.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Kon nie nou die internet meet nie. Probeer later weer.",
+  'Fuinha': "Wesel",
+  'Uma fuinha correndo pelo campo ao entardecer.': "'n Wesel wat by sonsondergang oor die veld hardloop.",
 } satisfies Record<string, string>;

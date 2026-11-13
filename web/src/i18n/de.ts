@@ -3219,4 +3219,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Die Grafikkarte dieses Computers kodiert keine 60 Bilder pro Sekunde, und „Flüssig“ würde beim Spielen den Prozessor belasten.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Bei deiner letzten Übertragung in „Flüssig“ hat dieser Computer die 60 Bilder nicht gehalten.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Das Internet ließ sich gerade nicht messen. Versuch es gleich noch einmal.",
+  'Fuinha': "Wiesel",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Ein Wiesel, das bei Sonnenuntergang über die Wiese läuft.",
 } satisfies Record<string, string>;

@@ -3278,4 +3278,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "གློག་རིག་འདི་གི་ པར་རིས་ཀཱཌ་གིས་ སྐར་ཆ་རེ་ལུ་ པར་ཚད་ ༦༠ ཨིན་ཀོཌ་མི་འབད་ \"ལྷུག་ལྷུག\" གིས་ རྩེད་འགྲན་གྱི་སྐབས་ ལས་སྣོན་ལུ་ འབག་ལྗིད་བཟོ་འོང་།",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "\"ལྷུག་ལྷུག\" ནང་ མཇུག་གི་བརྒྱུད་སྤེལ་ནང་ གློག་རིག་འདི་གིས་ པར་ཚད་ ༦༠ འབག་མ་ཚུགས།",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "ད་ལྟོ་ ཨིན་ཊར་ནེཊ་ ཚད་འཇལ་མ་ཚུགས། ཅུང་ཅིག་ལས་ ལོག་འབད་རྩོལ།",
+  'Fuinha': "སྲམ་",
+  'Uma fuinha correndo pelo campo ao entardecer.': "ཉི་མ་ནུབ་པའི་སྐབས་ ཐང་ཁར་རྒྱུག་པའི་སྲམ་ཅིག",
 } satisfies Record<string, string>;

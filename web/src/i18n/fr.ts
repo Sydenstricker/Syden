@@ -3217,4 +3217,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "La carte graphique de cet ordinateur n’encode pas 60 images par seconde, et « Fluide » chargerait le processeur pendant le jeu.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Lors de ta dernière diffusion en « Fluide », cet ordinateur n’a pas tenu les 60 images.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Impossible de mesurer la connexion pour l’instant. Réessaie dans un moment.",
+  'Fuinha': "Belette",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Une belette qui court dans le champ au coucher du soleil.",
 } satisfies Record<string, string>;

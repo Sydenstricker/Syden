@@ -3265,4 +3265,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Tämän tietokoneen näytönohjain ei koodaa 60:tä kuvaa sekunnissa, ja ”Sujuva” kuormittaisi suoritinta pelin aikana.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Viimeisimmässä ”Sujuva”-lähetyksessäsi tämä tietokone ei jaksanut 60:tä kuvaa.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Nettiä ei voitu mitata juuri nyt. Yritä hetken päästä uudelleen.",
+  'Fuinha': "Lumikko",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Lumikko juoksee pellon poikki auringonlaskussa.",
 } satisfies Record<string, string>;

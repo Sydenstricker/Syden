@@ -3197,4 +3197,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Kartaun gráfiku komputadór ida-ne’e nian la kodifika imajen 60 kada segundu, no “Fluidu” sei todan ba prosesadór durante jogu.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Iha ó-nia transmisaun ikus iha “Fluidu”, komputadór ida-ne’e la aguenta imajen 60.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "La bele sukat internet agora. Koko fali iha tempu badak.",
+  'Fuinha': "Weasel",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Weasel ida halai iha natar laran bainhira loro monu.",
 } satisfies Record<string, string>;

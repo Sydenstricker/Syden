@@ -3197,4 +3197,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Bu bilgisayarın ekran kartı saniyede 60 kare kodlamıyor; “Akıcı” oyun sırasında işlemciyi yorardı.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "“Akıcı” moddaki son yayınında bu bilgisayar 60 kareyi kaldıramadı.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "İnternet şu an ölçülemedi. Birazdan tekrar dene.",
+  'Fuinha': "Gelincik",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Gün batımında çayırda koşan bir gelincik.",
 } satisfies Record<string, string>;

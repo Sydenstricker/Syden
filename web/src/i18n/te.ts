@@ -3177,4 +3177,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "ఈ కంప్యూటర్ గ్రాఫిక్స్ కార్డ్ సెకనుకు 60 ఫ్రేమ్‌లను ఎన్‌కోడ్ చెయ్యదు, \"సాఫీగా\" ఆట సమయంలో ప్రాసెసర్‌పై భారం వేస్తుంది.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "\"సాఫీగా\"లో నీ చివరి ప్రసారంలో ఈ కంప్యూటర్ 60 ఫ్రేమ్‌లను తట్టుకోలేకపోయింది.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "ఇప్పుడు ఇంటర్నెట్‌ను కొలవలేకపోయాం. కాసేపటి తర్వాత మళ్లీ ప్రయత్నించు.",
+  'Fuinha': "వీసెల్",
+  'Uma fuinha correndo pelo campo ao entardecer.': "సూర్యాస్తమయ వేళ పొలంలో పరుగెత్తుతున్న వీసెల్.",
 } satisfies Record<string, string>;

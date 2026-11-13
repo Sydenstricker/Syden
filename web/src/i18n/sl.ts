@@ -3267,4 +3267,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Grafična kartica tega računalnika ne kodira 60 sličic na sekundo, zato bi »Tekoče« med igro obremenilo procesor.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Pri tvojem zadnjem prenosu v načinu »Tekoče« ta računalnik ni zdržal 60 sličic.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Interneta zdaj ni bilo mogoče izmeriti. Poskusi znova čez trenutek.",
+  'Fuinha': "Podlasica",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Podlasica, ki ob sončnem zahodu teče čez polje.",
 } satisfies Record<string, string>;

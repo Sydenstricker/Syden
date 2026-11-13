@@ -3195,4 +3195,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Kad grafik komputer ini tidak mengekod 60 bingkai sesaat, dan \"Lancar\" akan membebankan pemproses semasa bermain.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Dalam siaran terakhir anda dalam \"Lancar\", komputer ini tidak mampu menahan 60 bingkai.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Internet tidak dapat diukur sekarang. Cuba lagi sebentar lagi.",
+  'Fuinha': "Cerpelai",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Seekor cerpelai berlari merentasi padang ketika matahari terbenam.",
 } satisfies Record<string, string>;

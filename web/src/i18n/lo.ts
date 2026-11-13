@@ -3266,4 +3266,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "ກາດກຣາຟິກຂອງຄອມພິວເຕີນີ້ບໍ່ເຂົ້າລະຫັດ 60 ເຟຣມຕໍ່ວິນາທີ ແລະ \"ລື່ນ\" ຈະເຮັດໃຫ້ໂປຣເຊສເຊີໜັກໃນຂະນະຫຼິ້ນເກມ.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "ໃນການຖ່າຍທອດຄັ້ງສຸດທ້າຍແບບ \"ລື່ນ\" ຄອມພິວເຕີນີ້ຮັບ 60 ເຟຣມບໍ່ໄຫວ.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "ວັດອິນເຕີເນັດບໍ່ໄດ້ໃນຕອນນີ້. ລອງໃໝ່ອີກຈັກໜ້ອຍ.",
+  'Fuinha': "ເຫງັນ",
+  'Uma fuinha correndo pelo campo ao entardecer.': "ເຫງັນທີ່ກຳລັງແລ່ນຂ້າມທົ່ງຕອນຕາເວັນຕົກ.",
 } satisfies Record<string, string>;

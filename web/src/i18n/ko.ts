@@ -3183,4 +3183,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "이 컴퓨터의 그래픽 카드는 초당 60프레임을 인코딩하지 못해서, \"부드럽게\"는 게임 중에 프로세서에 부담을 줘요.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "지난번 \"부드럽게\" 방송에서 이 컴퓨터는 60프레임을 버티지 못했어요.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "지금은 인터넷을 측정하지 못했어요. 잠시 후 다시 해 보세요.",
+  'Fuinha': "족제비",
+  'Uma fuinha correndo pelo campo ao entardecer.': "해 질 녘 들판을 가로질러 달리는 족제비.",
 } satisfies Record<string, string>;

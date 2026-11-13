@@ -8402,6 +8402,61 @@ textarea {
   animation: fundo-cosmos 70s linear infinite;
 }
 
+/* Fuinha (pedido de 12/11/2026): uma fuinha NOSSA atravessando o campo ao entardecer, aos pulos, como as fuinhas
+   correm (esticada no ar, arqueada no chão). O desenho é do Syden (assets/fundos/fuinha-*.svg), e não o de skin
+   nenhuma: a de uma arma de jogo é de quem a fez. Tudo em CSS, de propósito: um SVG com animação dentro de <img> não
+   obedece ao "sem foco, nada se mexe", e aqui a pausa (.janela-sem-foco) e o "menos movimento" valem sozinhos. O
+   cartão é o contêiner (cqw) para ela entrar e sair inteira em qualquer tamanho: a faixa do perfil, a linha da lista
+   de membros, a amostra do guarda-roupa. */
+.fundo-fuinha {
+  position: relative;
+  overflow: hidden;
+  container-type: inline-size;
+  background:
+    radial-gradient(18% 34% at 80% 34%, rgba(255, 233, 186, 0.85), transparent 70%),
+    linear-gradient(to bottom, transparent 74%, #5f7f3f 74%, #47652f 100%),
+    linear-gradient(to bottom, #f0b27c 0%, #df8a6b 48%, #b9677a 74%);
+}
+
+.fundo-fuinha::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 8%;
+  height: 44%;
+  aspect-ratio: 120 / 48;
+  background: url('./assets/fundos/fuinha-1.svg') center / contain no-repeat;
+  pointer-events: none;
+  transform: translateX(-100%);
+  animation:
+    fuinha-corre 9s linear infinite,
+    fuinha-pulo 0.5s ease-in-out infinite,
+    fuinha-passo 0.5s linear infinite;
+}
+
+/* Atravessa em 3/4 do ciclo e espera fora do cartão o resto: entra de novo, não fica dando voltas. */
+@keyframes fuinha-corre {
+  0% { transform: translateX(-100%); }
+  75%,
+  100% { transform: translateX(100cqw); }
+}
+
+/* O pulo usa `translate`, que soma com o `transform` da corrida em vez de brigar com ele. */
+@keyframes fuinha-pulo {
+  0%,
+  50%,
+  100% { translate: 0 0; }
+  25% { translate: 0 -16%; }
+}
+
+/* Esticada no ar, arqueada no chão. */
+@keyframes fuinha-passo {
+  0%,
+  49.9% { background-image: url('./assets/fundos/fuinha-1.svg'); }
+  50%,
+  100% { background-image: url('./assets/fundos/fuinha-2.svg'); }
+}
+
 @keyframes fundo-nebulosa {
   from { background-position: 0% 0%, 100% 100%, 50% 0%, 0% 0%; }
   to { background-position: 100% 100%, 0% 0%, 50% 100%, 0% 0%; }
@@ -8734,6 +8789,12 @@ textarea {
   .fundo-cosmos::after,
   [data-cor='prisma'] {
     animation: none;
+  }
+
+  /* Parada, a fuinha fica no meio do campo, e não escondida fora do cartão. */
+  .fundo-fuinha::after {
+    animation: none;
+    transform: translateX(calc(50cqw - 50%));
   }
 }
 
@@ -12508,6 +12569,7 @@ body.arrastando-barra {
 .guarda-roupa-cartao:hover .fundo-nebulosa { animation-duration: 8s; }
 .guarda-roupa-cartao:hover .fundo-vitral { animation-duration: 3s; }
 .guarda-roupa-cartao:hover .fundo-cosmos::after { animation-duration: 18s; }
+.guarda-roupa-cartao:hover .fundo-fuinha::after { animation-duration: 3s, 0.35s, 0.35s; }
 
 /* As molduras paradas (prata, bronze, folha, mar, brasa) ganham um giro de luz só no hover: elas não
    têm animação própria, e sem isto seriam as únicas do guarda-roupa que não reagem a nada. */

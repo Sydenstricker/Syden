@@ -3176,4 +3176,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "このパソコンのグラフィックカードは毎秒60フレームのエンコードに対応しておらず、「なめらか」だとゲーム中にプロセッサーへ負担がかかります。",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "前回の「なめらか」での配信で、このパソコンは60フレームを保てませんでした。",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "今は回線を測れませんでした。少したってからもう一度試してください。",
+  'Fuinha': "イタチ",
+  'Uma fuinha correndo pelo campo ao entardecer.': "夕暮れの野原を駆けていくイタチ。",
 } satisfies Record<string, string>;

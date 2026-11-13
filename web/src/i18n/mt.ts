@@ -3211,4 +3211,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Il-karta grafika ta’ dan il-kompjuter ma tikkodifikax 60 qafas fis-sekonda, u “Fluwidu” jtaqqal il-proċessur waqt il-logħba.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Fl-aħħar xandira tiegħek f’“Fluwidu”, dan il-kompjuter ma laħħaqx mas-60 qafas.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Ma setax jitkejjel l-internet issa. Erġa’ pprova ftit wara.",
+  'Fuinha': "Ballottra",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Ballottra tiġri mal-għalqa max-xemx nieżla.",
 } satisfies Record<string, string>;

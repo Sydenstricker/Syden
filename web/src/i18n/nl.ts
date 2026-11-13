@@ -3194,4 +3194,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "De videokaart van deze computer codeert geen 60 beelden per seconde, en ‘Vloeiend’ zou tijdens het spel de processor belasten.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Bij je laatste uitzending in ‘Vloeiend’ hield deze computer de 60 beelden niet vol.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Het internet kon nu niet gemeten worden. Probeer het zo opnieuw.",
+  'Fuinha': "Wezel",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Een wezel die bij zonsondergang over het veld rent.",
 } satisfies Record<string, string>;

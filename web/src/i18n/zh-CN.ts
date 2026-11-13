@@ -3182,4 +3182,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "这台电脑的显卡不能编码每秒 60 帧，“流畅”会在游戏时加重处理器的负担。",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "上次用“流畅”直播时，这台电脑撑不住 60 帧。",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "现在无法测量网络。请稍后再试。",
+  'Fuinha': "黄鼠狼",
+  'Uma fuinha correndo pelo campo ao entardecer.': "一只黄鼠狼在夕阳下穿过田野。",
 } satisfies Record<string, string>;

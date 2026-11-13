@@ -3267,4 +3267,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Šī datora videokarte nekodē 60 kadrus sekundē, un “Plūstoši” spēles laikā noslogotu procesoru.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Tavā pēdējā raidījumā režīmā “Plūstoši” šis dators neizturēja 60 kadrus.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Internetu tagad neizdevās izmērīt. Mēģini vēlreiz pēc brītiņa.",
+  'Fuinha': "Zebiekste",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Zebiekste, kas saulrietā skrien pāri laukam.",
 } satisfies Record<string, string>;

@@ -3265,4 +3265,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Tsy manao kaody sary 60 isan-tsegondra ny karatra sarin’ity solosaina ity, ary hanavesatra ny processeur mandritra ny lalao ny “Malama”.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Tamin’ny fandefasana farany nataonao tamin’ny “Malama”, tsy nahazaka ny sary 60 ity solosaina ity.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Tsy voarefy ny aterineto izao. Andramo indray afaka kelikely.",
+  'Fuinha': "Weasel",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Weasel mihazakazaka eny an-tsaha rehefa milentika ny masoandro.",
 } satisfies Record<string, string>;

@@ -3283,4 +3283,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "ამ კომპიუტერის ვიდეობარათი წამში 60 კადრს არ აკოდირებს, და „გლუვი“ თამაშისას პროცესორს დატვირთავდა.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "„გლუვ“ რეჟიმში ბოლო ტრანსლაციისას ეს კომპიუტერი 60 კადრს ვერ გაუძლო.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "ინტერნეტის გაზომვა ახლა ვერ მოხერხდა. ცოტა ხანში სცადე ხელახლა.",
+  'Fuinha': "დედოფალა",
+  'Uma fuinha correndo pelo campo ao entardecer.': "მზის ჩასვლისას მინდორზე მორბენალი დედოფალა.",
 } satisfies Record<string, string>;

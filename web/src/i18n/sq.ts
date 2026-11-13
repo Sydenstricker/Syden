@@ -3257,4 +3257,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Karta grafike e këtij kompjuteri nuk kodon 60 kuadro në sekondë, dhe “I rrjedhshëm” do ta rëndonte procesorin gjatë lojës.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Në transmetimin tënd të fundit me “I rrjedhshëm”, ky kompjuter nuk i përballoi 60 kuadrot.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Interneti nuk u mat dot tani. Provo sërish pas pak.",
+  'Fuinha': "Nuselalë",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Një nuselalë që vrapon nëpër fushë në perëndim të diellit.",
 } satisfies Record<string, string>;

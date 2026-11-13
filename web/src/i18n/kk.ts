@@ -3269,4 +3269,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Бұл компьютердің бейнекартасы секундына 60 кадрды кодтамайды, ал «Бірқалыпты» ойын кезінде процессорды ауырлатар еді.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Соңғы «Бірқалыпты» трансляцияңда бұл компьютер 60 кадрға шыдамады.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Интернетті қазір өлшеу мүмкін болмады. Сәлден соң қайта көр.",
+  'Fuinha': "Ақкіс",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Күн батарда дала арқылы жүгіріп бара жатқан ақкіс.",
 } satisfies Record<string, string>;

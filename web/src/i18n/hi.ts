@@ -3194,4 +3194,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "इस कंप्यूटर का ग्राफ़िक्स कार्ड 60 फ़्रेम प्रति सेकंड एनकोड नहीं करता, और \"चिकना\" खेलते समय प्रोसेसर पर बोझ डालेगा।",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "\"चिकना\" में पिछले प्रसारण में यह कंप्यूटर 60 फ़्रेम नहीं संभाल पाया।",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "अभी इंटरनेट नापा नहीं जा सका। थोड़ी देर में फिर कोशिश करो।",
+  'Fuinha': "नेवला",
+  'Uma fuinha correndo pelo campo ao entardecer.': "सूर्यास्त के समय मैदान में दौड़ता एक नेवला।",
 } satisfies Record<string, string>;

@@ -3275,4 +3275,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Kat grafik òdinatè sa a pa kode 60 imaj pa segonn, epi \"Likid\" ta chaje processeur a pandan jwèt la.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Nan dènye difizyon ou an \"Likid\", òdinatè sa a pa t kenbe 60 imaj yo.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Nou pa t ka mezire entènèt la kounye a. Eseye ankò nan yon ti moman.",
+  'Fuinha': "Belèt",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Yon belèt k ap kouri nan jaden an lè solèy ap kouche.",
 } satisfies Record<string, string>;

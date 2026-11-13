@@ -3279,4 +3279,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Энэ компьютерийн видео карт секундэд 60 кадр кодлохгүй тул \"Жигд\" тоглох үед процессорыг ачаална.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "\"Жигд\" горимын сүүлийн дамжуулалтад энэ компьютер 60 кадрыг дааж чадаагүй.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Одоо интернетийг хэмжиж чадсангүй. Түр хүлээгээд дахин оролдоорой.",
+  'Fuinha': "Үен",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Нар жаргах үед талаар гүйж буй үен.",
 } satisfies Record<string, string>;

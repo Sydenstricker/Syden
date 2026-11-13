@@ -3265,4 +3265,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Grafická karta tohto počítača nekóduje 60 snímok za sekundu a „Plynulé“ by počas hry zaťažovalo procesor.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Pri tvojom poslednom vysielaní v režime „Plynulé“ tento počítač 60 snímok neudržal.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Internet sa teraz nepodarilo zmerať. Skús to o chvíľu znova.",
+  'Fuinha': "Lasica",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Lasica bežiaca po poli pri západe slnka.",
 } satisfies Record<string, string>;

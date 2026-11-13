@@ -3266,4 +3266,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Skjákort þessarar tölvu kóðar ekki 60 ramma á sekúndu, og „Mjúkt“ myndi íþyngja örgjörvanum meðan þú spilar.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Í síðustu útsendingunni þinni í „Mjúkt“ réð þessi tölva ekki við 60 rammana.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Ekki tókst að mæla netið núna. Reyndu aftur eftir smá stund.",
+  'Fuinha': "Hreysiköttur",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Hreysiköttur sem hleypur yfir túnið við sólsetur.",
 } satisfies Record<string, string>;

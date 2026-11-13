@@ -3194,4 +3194,6 @@ export default {
   "A placa de vídeo deste computador não codifica 60 quadros por segundo, e o Fluido pesaria no processador durante o jogo.": "Kadi ya michoro ya kompyuta hii haisimbi fremu 60 kwa sekunde, na “Laini” ingeelemea kichakataji wakati wa mchezo.",
   "Na última transmissão em Fluido, este computador não aguentou os 60 quadros.": "Katika matangazo yako ya mwisho kwa “Laini”, kompyuta hii haikuweza kuhimili fremu 60.",
   "Não deu para medir a internet agora. Tente de novo daqui a pouco.": "Imeshindwa kupima intaneti sasa. Jaribu tena baada ya muda mfupi.",
+  'Fuinha': "Kicheche",
+  'Uma fuinha correndo pelo campo ao entardecer.': "Kicheche akikimbia shambani wakati wa machweo.",
 } satisfies Record<string, string>;
