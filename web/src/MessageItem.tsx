@@ -3,7 +3,7 @@ import { useBloqueados } from './bloqueios';
 import { abrirConviteNoSyden } from './linkDeConvite';
 import { DialogoDeDenuncia } from './Denuncia';
 import { BotaoDeLembrete } from './Lembrete';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { api, mediaUrl } from './api';
 import { SeloDaComunidade } from './SeloDaComunidade';
@@ -70,6 +70,54 @@ function FigurinhaNaConversa({ file, url }: { file: Attachment; url: string }) {
   );
 }
 
+/** Até este tamanho, o .txt anexado aparece na conversa (é o texto longo que o Composer transformou em arquivo). */
+const TEXTO_COM_PREVIA = 256 * 1024;
+const LINHAS_DA_PREVIA = 12;
+
+/**
+ * O TEXTO LONGO NA CONVERSA (12/11/2026, como no Discord): a mensagem que passou de 2.000 caracteres vira um .txt
+ * (ver textoComoArquivo, em Composer.tsx), e aqui ela aparece como texto: as primeiras linhas, "Ver mais" para o resto,
+ * e o arquivo para baixar ao lado do nome. Sempre como TEXTO (nunca HTML), e só baixado quando a mensagem aparece.
+ */
+function TextoAnexado({ file, url }: { file: Attachment; url: string }) {
+  const t = useT();
+  const [texto, setTexto] = useState<string | null>(null);
+  const [inteiro, setInteiro] = useState(false);
+  useEffect(() => {
+    let vivo = true;
+    fetch(url)
+      .then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(String(r.status)))))
+      .then((b) => vivo && setTexto(new TextDecoder('utf-8').decode(b)))
+      .catch(() => vivo && setTexto(''));
+    return () => {
+      vivo = false;
+    };
+  }, [url]);
+  const linhas = texto?.split('\n') ?? [];
+  const cortado = !inteiro && (linhas.length > LINHAS_DA_PREVIA || (texto?.length ?? 0) > 1200);
+  const mostrado = cortado ? linhas.slice(0, LINHAS_DA_PREVIA).join('\n').slice(0, 1200) : (texto ?? '');
+  return (
+    <div className="attachment-texto">
+      <div className="attachment-texto-topo">
+        <FileText size={16} aria-hidden="true" />
+        <span className="attachment-name">{file.name}</span>
+        <span className="attachment-size">{formatBytes(file.size)}</span>
+        <a className="attachment-texto-baixar" href={url} download={file.name} title={file.name} aria-label={file.name}>
+          <Download size={16} />
+        </a>
+      </div>
+      {texto === null ? null : texto === '' ? null : (
+        <pre className="attachment-texto-corpo">{mostrado}{cortado ? '…' : ''}</pre>
+      )}
+      {cortado && (
+        <button type="button" className="attachment-texto-mais" onClick={() => setInteiro(true)}>
+          {t('Ver mais')}
+        </button>
+      )}
+    </div>
+  );
+}
+
 function Attachments({ files }: { files: Attachment[] }) {
   const t = useT();
   return (
@@ -110,6 +158,7 @@ function Attachments({ files }: { files: Attachment[] }) {
             </div>
           );
         }
+        if (/.txt$/i.test(file.name) && file.size <= TEXTO_COM_PREVIA) return <TextoAnexado key={file.id} file={file} url={url} />;
         return (
           <a key={file.id} className="attachment-file" href={url} download={file.name}>
             <FileText size={28} />

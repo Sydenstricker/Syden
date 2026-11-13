@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { APERTO_INICIAL, describeStats, motivoDoAperto, nextQuality, proximaParada, proximoAperto, proximoFluido, resumoDoAperto, taxaRedonda } from '../src/streamStats.js';
+import { APERTO_INICIAL, LEVE_INICIAL, describeStats, motivoDoAperto, nextQuality, proximaParada, proximoAperto, proximoFluido, proximoLeve, reducaoNoLeve, telaEmMovimento, resumoDoAperto, taxaRedonda } from '../src/streamStats.js';
 
 // ===================================================================================================
 // O NÚMERO DE QUADROS NÃO PODE FAZER UMA TRANSMISSÃO SAUDÁVEL PARECER QUEBRADA.
@@ -194,5 +194,50 @@ describe('a banda que é o teto', () => {
       if (r.registrar) registros.push(a.motivo!);
     }
     assert.deepEqual(registros, ['teto', 'bandwidth']);
+  });
+});
+
+// O DEGRAU LEVE (12/11/2026): o notebook que não dá conta de 1080p a 30 passa a 720p, até 15 quadros, segurando a nitidez.
+describe('o degrau leve do Padrão', () => {
+  const passos = (motivos: Parameters<typeof proximoLeve>[1][]) => motivos.reduce((l, m) => proximoLeve(l, m, true, false), LEVE_INICIAL);
+
+  it('dois apertos seguidos do processador ligam o leve', () => assert.equal(passos(['cpu', 'cpu']).ligado, true));
+  it('a internet apertando também', () => assert.equal(passos(['bandwidth', 'bandwidth']).ligado, true));
+  it('um aperto só não liga', () => assert.equal(passos(['cpu', 'none', 'cpu']).ligado, false));
+  it('o teto da versão não é falta de máquina: não liga', () => assert.equal(passos(['teto', 'teto', 'teto']).ligado, false));
+  it('sem medida (ninguém assistindo), nada muda', () => assert.deepEqual(proximoLeve(LEVE_INICIAL, 'cpu', false, false), LEVE_INICIAL));
+  it('seis folgas seguidas desligam', () => assert.equal(passos(['cpu', 'cpu', 'none', 'none', 'none', 'none', 'none', 'none']).ligado, false));
+  it('um aperto no meio das folgas recomeça a conta', () =>
+    assert.equal(passos(['cpu', 'cpu', 'none', 'none', 'none', 'cpu', 'none', 'none', 'none']).ligado, true));
+  it('apertou de novo depois de voltar: fica até o fim', () => {
+    const l = passos(['cpu', 'cpu', ...Array(6).fill('none'), 'cpu', 'cpu', ...Array(20).fill('none')]);
+    assert.equal(l.ligado, true);
+    assert.equal(l.vezes, 2);
+  });
+  it('a versão de 1080 vai a 720, e a de 540 continua 540', () => {
+    assert.equal(1080 / reducaoNoLeve(1, 1080), 720);
+    assert.equal(1080 / reducaoNoLeve(2, 1080), 540);
+  });
+  it('captura de 1440 também chega a 720', () => assert.equal(1440 / reducaoNoLeve(1, 1440), 720));
+
+  // O jogador não é quem o leve ajuda: jogo pesado aperta o processador, mas a tela dele muda o tempo todo.
+  const comTela = (medidas: [Parameters<typeof proximoLeve>[1], boolean][]) => medidas.reduce((l, [m, mov]) => proximoLeve(l, m, true, mov), LEVE_INICIAL);
+  it('o jogo apertando o processador NÃO liga o leve', () => assert.equal(comTela([['cpu', true], ['cpu', true], ['cpu', true], ['cpu', true]]).ligado, false));
+  it('jogo: a tela mudando 30 vezes por segundo é movimento', () => assert.equal(telaEmMovimento(30, false), true));
+  it('Configurações com o cursor: 4 mudanças por segundo não é', () => assert.equal(telaEmMovimento(4, false), false));
+  it('a janela que o app reconhece como jogo é sempre movimento', () => assert.equal(telaEmMovimento(2, true), true));
+  it('dentro do leve a medida bate no teto de 15: 14 já é movimento', () => assert.equal(telaEmMovimento(14, false, true), true));
+  it('dentro do leve, o cursor piscando continua parado', () => assert.equal(telaEmMovimento(3, false, true), false));
+  it('sem a medida, conta como movimento (na dúvida, o jogador)', () => assert.equal(telaEmMovimento(null, false), true));
+  it('uma rolagem no meio dos apertos recomeça a conta', () => assert.equal(comTela([['cpu', false], ['cpu', true], ['cpu', false]]).ligado, false));
+  it('abriu o jogo dentro do leve: duas medições em movimento tiram dele', () => {
+    const l = comTela([['cpu', false], ['cpu', false], ['cpu', true], ['cpu', true]]);
+    assert.equal(l.ligado, false);
+  });
+  it('uma medição em movimento só (rolou a página) não tira', () => assert.equal(comTela([['cpu', false], ['cpu', false], ['cpu', true], ['cpu', false]]).ligado, true));
+  it('o jogo tira até quem já ficaria até o fim', () => {
+    const dentro = comTela([['cpu', false], ['cpu', false], ...Array(6).fill(['none', false]), ['cpu', false], ['cpu', false]]);
+    assert.equal(dentro.vezes, 2);
+    assert.equal(proximoLeve(proximoLeve(dentro, 'cpu', true, true), 'cpu', true, true).ligado, false);
   });
 });

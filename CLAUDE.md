@@ -2080,6 +2080,18 @@ qual — o sinal de que havia escolha demais. O que saiu, e por quê:
   `mediaCapabilities.encodingInfo` responde "não é pela placa" para tudo, e a transmissão de verdade sai pelo
   codificador da NVIDIA: quem tinha NVIDIA transmitia em VP8 pelo processador. Quando ela diz não, o Syden pergunta ao
   WebCodecs (`prefer-hardware`), que acertou (H.264 sim; VP9 e AV1 não). Ver `escolherCodec.ts`.
+- **O DEGRAU LEVE DO PADRÃO (12/11/2026, relato: ajudando uma amiga a instalar a impressora, o notebook dela não dava
+  conta de 1080p a 30 e o texto chegava ilegível; ele quis automático, não um modo na lista).** O processador ou a internet
+  apertando por ~8 s (o MOTIVO, não o número de quadros: o navegador segura os 30 encolhendo a imagem) leva a transmissão a
+  720p, até 15 quadros e 2 Mbps, segurando a nitidez (`proximoLeve`, streamStats.ts). Folgou ~24 s, volta uma vez; apertou
+  de novo, fica até o fim. Simulado no codificador VP8 do Chrome com uma tela de Configurações: a 270p que ela recebia é
+  ilegível; o leve a 720p se lê até a 600 kbps (`e2e/fotos/degrau-leve-comparacao.png`). **O leve é de quem MOSTRA UMA TELA,
+  nunca de quem joga** (pergunta dele, mesmo dia: "o jogador se beneficia de altos frames; é outro perfil"): jogo pesado também
+  aperta o processador, e para ele encolher e segurar os quadros continua o certo. O que separa os dois é quanto a tela MUDA (a
+  captura só entrega quadro quando algo muda): o leve só entra com menos de 15 mudanças por segundo, nunca numa janela que o
+  app reconhece como jogo, e sai sozinho se a tela passa a mexer (abriu o jogo depois de ajudar); sem a medida, conta como
+  jogo (`telaEmMovimento`). O Fluido nunca entra no leve. Teste: `e2e/degrau-leve.mjs` (a tela e o jogo; o aperto é
+  simulado, porque o estrangulamento do Chrome para também o "jogo" desenhado na página).
 - **Uma opção em cada menu de compartilhar.** No app não existe aba de navegador; no navegador a janela
   sai sempre muda. App: tela inteira e janela. Navegador: tela inteira e aba.
 

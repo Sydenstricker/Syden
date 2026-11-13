@@ -20360,3 +20360,68 @@ body.arrastando-barra {
     transition: none;
   }
 }
+
+/* O TEXTO LONGO (12/11/2026, ver textoComoArquivo em Composer.tsx e TextoAnexado em MessageItem.tsx). */
+.composer-contador {
+  align-self: flex-end;
+  flex: none;
+  padding: 0 6px 12px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+.composer-contador.passou {
+  color: var(--red);
+  font-weight: 600;
+}
+.attachment-texto {
+  max-width: min(640px, 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-input);
+  overflow: hidden;
+}
+.attachment-texto-topo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  min-width: 0;
+}
+.attachment-texto-topo .attachment-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.attachment-texto-baixar {
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+}
+.attachment-texto-baixar:hover {
+  color: var(--text-strong);
+}
+.attachment-texto-corpo {
+  margin: 0;
+  padding: 10px 12px;
+  max-height: 480px;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font: inherit;
+  font-size: 0.9rem;
+  color: inherit;
+}
+.attachment-texto-mais {
+  display: block;
+  width: 100%;
+  padding: 6px;
+  border: 0;
+  border-top: 1px solid var(--border);
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+}

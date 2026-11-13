@@ -27,6 +27,14 @@ import { nomeDe } from './directory';
 import { resumoDaMensagem } from './MessageItem';
 import { useT, idiomaAtual } from './i18n';
 
+/** O limite do servidor (realtime.ts e chat-routes.ts): o que passa vai como arquivo de texto. */
+export const LIMITE_DA_MENSAGEM = 2000;
+
+/** O texto longo num arquivo .txt com o nome "mensagem" na língua de quem manda (a conversa mostra a prévia dele). */
+export function textoComoArquivo(texto: string, nome: string) {
+  return new File([texto], `${nome.toLowerCase()}.txt`, { type: 'text/plain' });
+}
+
 const MAX_FILES = 5;
 
 interface Staged extends PreparedFile {
@@ -163,6 +171,12 @@ export const Composer = forwardRef<ComposerHandle, {
   async function send() {
     const content = draft.trim();
     if (sending) return;
+    // Digitou além do limite: o texto vira arquivo, à vista, e o próximo Enter manda (ver textoComoArquivo).
+    if (content.length > LIMITE_DA_MENSAGEM) {
+      await addFiles([textoComoArquivo(content, t('Mensagem'))]);
+      setDraft('');
+      return;
+    }
     if (staged.length === 0) {
       if (!content) return;
       const citada = respondendo;
@@ -237,6 +251,16 @@ export const Composer = forwardRef<ComposerHandle, {
     if (files.length > 0) {
       event.preventDefault();
       void addFiles(files);
+      return;
+    }
+    // TEXTO COLADO QUE PASSA DO LIMITE VIRA ARQUIVO, como no Discord (12/11/2026, relato: "tentei copiar o texto e saiu
+    // cortada"). Antes, o maxLength da caixa jogava fora o que passava de 2.000, calado.
+    const texto = event.clipboardData?.getData('text/plain') ?? '';
+    const caixa = event.currentTarget;
+    const depois = draft.length - (caixa.selectionEnd - caixa.selectionStart) + texto.length;
+    if (texto.trim() && depois > LIMITE_DA_MENSAGEM) {
+      event.preventDefault();
+      void addFiles([textoComoArquivo(texto, t('Mensagem'))]);
     }
   }
 
@@ -372,7 +396,6 @@ export const Composer = forwardRef<ComposerHandle, {
           ref={inputRef}
           rows={1}
           value={draft}
-          maxLength={2000}
           placeholder={sending ? t('Enviando…') : placeholder}
           disabled={sending}
           onChange={(e) => {
@@ -384,6 +407,12 @@ export const Composer = forwardRef<ComposerHandle, {
           onKeyDown={onKeyDown}
           onPaste={onPaste}
         />
+        {/* Perto do limite, a conta à vista; passou, vermelha (o Enter transforma em arquivo). Só números: nada a traduzir. */}
+        {draft.length > LIMITE_DA_MENSAGEM - 200 && (
+          <span className={`composer-contador${draft.length > LIMITE_DA_MENSAGEM ? ' passou' : ''}`} aria-live="polite">
+            {draft.length}/{LIMITE_DA_MENSAGEM}
+          </span>
+        )}
 
         {temGif && (
           <div className="composer-emoji">

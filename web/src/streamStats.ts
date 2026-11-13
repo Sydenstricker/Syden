@@ -272,6 +272,86 @@ export function proximaParada(atual: Parada, fps: number | null, apertado = fals
   return { paradas, nitida: paradas >= PARADAS_PARA_NITIDEZ };
 }
 
+// ---------- O degrau leve: o computador ou a internet que não dão conta ----------
+
+/**
+ * O DEGRAU LEVE DO PADRÃO (12/11/2026, relato de quem usa: ajudando uma amiga a instalar a impressora, o notebook dela
+ * "não tava tankando 1080p a 30 fps", e o texto chegava ilegível). Com o processador ou a internet apertando, o navegador
+ * segura os 30 quadros e ENCOLHE a imagem (maintain-framerate): para jogo é o certo, para ler uma tela e dar instrução é
+ * o pior. E, como ele segura os 30, a medida de quadros quase não cai: o aperto aparece no MOTIVO, não no número.
+ *
+ * Por isso o degrau leve olha o motivo: apertado (processador ou internet, não o teto da versão) por duas medições
+ * seguidas (~8 s), a transmissão passa a 720p no máximo, até 15 quadros, e segura a NITIDEZ (maintain-resolution). Na
+ * realidade de quem tem notebook fraco e internet de celular, é o que dá para ler. Folgou por ~24 s, volta ao normal UMA
+ * vez; se apertar de novo, fica no leve até o fim da transmissão (subir e descer seria pior que ficar).
+ *
+ * O LEVE É DE QUEM MOSTRA UMA TELA, NUNCA DE QUEM JOGA (pergunta dele, mesmo dia: "o jogador se beneficia de altos
+ * frames; é o oposto do gamer"). Jogo pesado também aperta o processador, e para ele encolher a imagem e segurar os
+ * quadros continua o certo. O que separa os dois é QUANTO A TELA MUDA: o navegador só captura um quadro quando algo
+ * mudou na tela, e jogo muda sempre (os 30 da captura), enquanto Configurações, instalador ou planilha mudam com o
+ * cursor e um clique aqui e ali. Por isso o leve só entra com a tela mudando MENOS de 15 vezes por segundo — o que ele
+ * segura; acima disso, cortar para 15 tiraria quadros de verdade — e nunca numa janela que o app reconhece como jogo
+ * (generoDoJogo.ts). Sem saber quanto a tela muda (navegador sem a medida), conta como movimento: na dúvida, o jogador.
+ * E se a tela passa a mexer de verdade dentro do leve (abriu o jogo depois de ajudar), duas medições seguidas tiram dele.
+ */
+export const FPS_DO_LEVE = 15;
+export const ALTURA_DO_LEVE = 720;
+/** O teto de taxa da versão grande no leve: 720p a 15 quadros cabe folgado nisto. */
+export const KBPS_DO_LEVE = 2000;
+const APERTOS_PARA_O_LEVE = 2;
+const FOLGAS_PARA_SAIR_DO_LEVE = 6;
+const MOVIMENTOS_PARA_SAIR_DO_LEVE = 2;
+
+export interface Leve {
+  ligado: boolean;
+  /** Medições apertadas seguidas (fora do leve) ou folgadas seguidas (dentro dele). */
+  seguidas: number;
+  /** Quantas vezes entrou nesta transmissão: na segunda, fica (menos se a tela passar a mexer). */
+  vezes: number;
+  /** Dentro do leve: medições seguidas com a tela em movimento. */
+  movimentos: number;
+}
+
+export const LEVE_INICIAL: Leve = { ligado: false, seguidas: 0, vezes: 0, movimentos: 0 };
+
+/**
+ * A tela está em movimento (jogo, vídeo, rolagem sem parar)? `quadrosDaTela` é quantas vezes por segundo a captura
+ * mudou na última medição (null quando o navegador não diz), e `jogo` é a janela que o app reconhece como jogo.
+ *
+ * DENTRO do leve a medida não passa de 15: o navegador conta os quadros da captura DEPOIS do teto de quadros da
+ * transmissão (medido em e2e/degrau-leve.mjs: o jogo dentro do leve dava 14,4 a 15,0). Lá, chegar perto do teto (80%)
+ * já é movimento: a tela muda mais do que o leve deixa passar.
+ */
+export function telaEmMovimento(quadrosDaTela: number | null, jogo: boolean, noLeve = false): boolean {
+  return jogo || quadrosDaTela === null || quadrosDaTela >= (noLeve ? FPS_DO_LEVE * 0.8 : FPS_DO_LEVE);
+}
+
+/**
+ * Decide o degrau leve pela última medição. `medindo` é falso quando não deu para medir (ninguém assistindo), e
+ * `movimento` vem de telaEmMovimento.
+ */
+export function proximoLeve(atual: Leve, motivo: MotivoDoAperto, medindo: boolean, movimento: boolean): Leve {
+  if (!medindo) return atual;
+  const apertado = motivo === 'cpu' || motivo === 'bandwidth';
+  if (!atual.ligado) {
+    if (!apertado || movimento) return { ...atual, seguidas: 0 };
+    const seguidas = atual.seguidas + 1;
+    return seguidas >= APERTOS_PARA_O_LEVE ? { ligado: true, seguidas: 0, vezes: atual.vezes + 1, movimentos: 0 } : { ...atual, seguidas };
+  }
+  const movimentos = movimento ? atual.movimentos + 1 : 0;
+  if (movimentos >= MOVIMENTOS_PARA_SAIR_DO_LEVE) return { ligado: false, seguidas: 0, vezes: atual.vezes, movimentos: 0 };
+  atual = { ...atual, movimentos };
+  if (atual.vezes >= 2) return atual;
+  if (apertado) return { ...atual, seguidas: 0 };
+  const seguidas = atual.seguidas + 1;
+  return seguidas >= FOLGAS_PARA_SAIR_DO_LEVE ? { ligado: false, seguidas: 0, vezes: atual.vezes, movimentos: 0 } : { ...atual, seguidas };
+}
+
+/** A redução de cada versão no leve: nenhuma passa de 720 de altura, e nenhuma fica maior do que já era. */
+export function reducaoNoLeve(reducaoDeFabrica: number, alturaDaCaptura: number): number {
+  return Math.max(reducaoDeFabrica, alturaDaCaptura / ALTURA_DO_LEVE);
+}
+
 // ---------- O aperto que fica registrado ----------
 
 /**
