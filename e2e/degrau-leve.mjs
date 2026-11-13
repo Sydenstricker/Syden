@@ -91,40 +91,42 @@ async function cenario(cena) {
     await bia.waitForTimeout(10000);
     ok(`[${cena}] antes do aperto, a Bia recebe ${JSON.stringify(await recebido(bia))}; a tela muda ${await ana.evaluate(() => window.quadrosDaTela?.toFixed?.(1))} vezes por segundo`);
 
-    await ana.evaluate(() => (window.apertoDeTeste = 'cpu'));
+    const apertouEm = await ana.evaluate(() => ((window.apertoDeTeste = 'cpu'), Date.now()));
 
-    let ultimo = null;
+    // A transição: de quarto em quarto de segundo, até o leve ligar (ou 30 s, no jogo).
     const mudancas = [];
-    for (let i = 0; i < 10; i++) {
-      ultimo = await recebido(bia);
-      mudancas.push(await ana.evaluate(() => window.quadrosDaTela?.toFixed?.(1) ?? null));
-      if (await ana.evaluate(() => window.transmissaoNoLeve?.ligado)) break;
+    for (let i = 0; i < 120 && !(await ana.evaluate(() => window.transmissaoNoLeve?.ligado)); i++) {
+      await ana.waitForTimeout(250);
+      if (i % 4 === 3) mudancas.push(await ana.evaluate(() => window.quadrosDaTela?.toFixed?.(1) ?? null));
     }
     const pedido = await ana.evaluate(() => window.transmissaoNoLeve ?? null);
+    const ultimo = await recebido(bia);
     if (cena === 'jogo') {
       !pedido?.ligado
         ? ok(`[jogo] com o processador apertado, o leve NÃO ligou (a tela mudando ${mudancas.join(', ')} vezes por segundo); a Bia recebe ${ultimo.altura}p a ${ultimo.fps.toFixed(1)} fps`)
         : falhou(`[jogo] o leve ligou no jogo: ${JSON.stringify(pedido)} (mudanças: ${mudancas.join(', ')})`);
     } else {
-      pedido?.ligado && pedido.preferencia === 'maintain-resolution' && pedido.versoes.every((v) => v.fps <= 15)
-        ? ok(`[tela] o leve ligou (a tela mudando ${mudancas.join(', ')} vezes por segundo): ${JSON.stringify(pedido)}`)
-        : falhou(`[tela] o leve não ligou: ${JSON.stringify(pedido)} (mudanças: ${mudancas.join(', ')})`);
+      const entrou = pedido ? (pedido.quando - apertouEm) / 1000 : null;
+      pedido?.ligado && pedido.preferencia === 'maintain-resolution' && pedido.versoes.every((v) => v.fps <= 15) && entrou <= 5
+        ? ok(`[tela] o leve ligou em ${entrou.toFixed(1)} s (a tela mudando ${mudancas.join(', ')} vezes por segundo): ${JSON.stringify(pedido)}`)
+        : falhou(`[tela] o leve não ligou em até 5 s (${entrou} s): ${JSON.stringify(pedido)} (mudanças: ${mudancas.join(', ')})`);
       const depois = await recebido(bia);
       depois.altura <= 720 && depois.altura >= 540
         ? ok(`[tela] a Bia recebe ${depois.altura}p a ${depois.fps.toFixed(1)} fps`)
         : falhou(`[tela] a Bia recebe ${JSON.stringify(depois)}`);
 
       // Abriu o jogo: o aperto continua (simulado, para o desenho não parar), e a tela passa a mudar sempre.
-      await ana.evaluate(() => (window.virarJogo = true));
+      const virouEm = await ana.evaluate(() => ((window.virarJogo = true), Date.now()));
       const noJogo = [];
-      for (let i = 0; i < 8 && (await ana.evaluate(() => window.transmissaoNoLeve?.ligado)); i++) {
-        await ana.waitForTimeout(4000);
-        noJogo.push(await ana.evaluate(() => window.quadrosDaTela?.toFixed?.(1) ?? null));
+      for (let i = 0; i < 60 && (await ana.evaluate(() => window.transmissaoNoLeve?.ligado)); i++) {
+        await ana.waitForTimeout(250);
+        if (i % 4 === 3) noJogo.push(await ana.evaluate(() => window.quadrosDaTela?.toFixed?.(1) ?? null));
       }
       const saiu = await ana.evaluate(() => window.transmissaoNoLeve ?? null);
-      saiu && !saiu.ligado && saiu.preferencia === 'maintain-framerate'
-        ? ok(`[tela] virou jogo (a tela mudando ${noJogo.join(', ')} vezes por segundo): o leve saiu sozinho, ${JSON.stringify(saiu)}`)
-        : falhou(`[tela] virou jogo e o leve ficou: ${JSON.stringify(saiu)} (mudanças: ${noJogo.join(', ')})`);
+      const saiuEm = saiu ? (saiu.quando - virouEm) / 1000 : null;
+      saiu && !saiu.ligado && saiu.preferencia === 'maintain-framerate' && saiuEm <= 4
+        ? ok(`[tela] virou jogo (a tela mudando ${noJogo.join(', ')} vezes por segundo): o leve saiu sozinho em ${saiuEm.toFixed(1)} s, ${JSON.stringify(saiu)}`)
+        : falhou(`[tela] virou jogo e o leve não saiu em até 4 s (${saiuEm} s): ${JSON.stringify(saiu)} (mudanças: ${noJogo.join(', ')})`);
     }
   } finally {
     await ana.context().close();

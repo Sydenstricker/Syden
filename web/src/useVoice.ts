@@ -49,6 +49,7 @@ import {
   LEVE_INICIAL,
   proximoLeve,
   telaEmMovimento,
+  MEDIDA_DO_LEVE_MS,
   reducaoNoLeve,
   FPS_DO_LEVE,
   KBPS_DO_LEVE,
@@ -1619,9 +1620,78 @@ export function useVoice(socket: Socket | null) {
     // anterior, para a taxa de verdade.
     let aperto: Aperto = APERTO_INICIAL;
     let bytesAntes: number | null = null;
-    // Os quadros que a CAPTURA entregou (media-source, antes do codificador): o navegador só captura quando a tela muda,
-    // e é isso que separa o jogo (muda sempre) da tela de Configurações (muda com o cursor). Ver telaEmMovimento.
+    // O LAÇO DO LEVE (proximoLeve, em streamStats.ts), de segundo em segundo, à parte da conferência geral de 4 s: a
+    // transição para dentro e para fora do leve não pode esperar duas conferências (até 8 s de jogo a 15 quadros).
+    // Ele lê os quadros que a CAPTURA entregou (media-source): o navegador só captura quando a tela muda, e é isso que
+    // separa o jogo (muda sempre) da tela de Configurações (muda com o cursor). Ver telaEmMovimento.
     let quadrosDaFonteAntes: number | null = null;
+    let quandoDaFonteAntes = 0;
+    const medirLeve = async () => {
+      if (busy || modoNoArRef.current !== 'standard') return;
+      const sender = room.localParticipant.getTrackPublication(Track.Source.ScreenShare)?.videoTrack?.sender;
+      if (!sender) return;
+      busy = true;
+      try {
+        let limitedBy: StreamStats['limitedBy'] = 'none';
+        let estimativa: number | null = null;
+        let quadrosDaFonte: number | null = null;
+        let algumaAtiva = false;
+        const somaDosTetosKbps =
+          sender.getParameters().encodings?.reduce((soma, e) => soma + (e.active === false ? 0 : (e.maxBitrate ?? 0)), 0) / 1000 || 0;
+        const agora = performance.now();
+        (await sender.getStats()).forEach((entry: Record<string, unknown>) => {
+          if (entry.type === 'media-source' && entry.kind === 'video' && typeof entry.frames === 'number') {
+            quadrosDaFonte = Math.max(quadrosDaFonte ?? 0, entry.frames);
+          }
+          if (entry.type === 'candidate-pair' && entry.nominated && typeof entry.availableOutgoingBitrate === 'number') {
+            estimativa = Math.round(entry.availableOutgoingBitrate / 1000);
+          }
+          if (entry.type !== 'outbound-rtp' || entry.kind !== 'video' || entry.active === false) return;
+          algumaAtiva = true;
+          const reason = String(entry.qualityLimitationReason ?? 'none');
+          if (reason === 'cpu' || reason === 'bandwidth') limitedBy = reason;
+        });
+        const fonte = quadrosDaFonte as number | null;
+        const quadrosDaTela =
+          fonte !== null && quadrosDaFonteAntes !== null && quandoDaFonteAntes > 0 && fonte >= quadrosDaFonteAntes
+            ? (fonte - quadrosDaFonteAntes) / ((agora - quandoDaFonteAntes) / 1000)
+            : null;
+        const medindo = algumaAtiva && quadrosDaFonteAntes !== null;
+        quadrosDaFonteAntes = fonte;
+        quandoDaFonteAntes = agora;
+        // No site de desenvolvimento, o teste (e2e/degrau-leve.mjs) pode simular o aperto: o estrangulamento do Chrome
+        // pararia também o "jogo" desenhado na página, o que não acontece com um jogo de verdade, noutro programa.
+        const apertoDeTeste = import.meta.env.DEV ? (window as unknown as { apertoDeTeste?: 'cpu' }).apertoDeTeste : undefined;
+        const motivo = apertoDeTeste ?? motivoDoAperto(limitedBy, estimativa, somaDosTetosKbps);
+        const leveAntes = leve.ligado;
+        leve = proximoLeve(leve, motivo, medindo, telaEmMovimento(quadrosDaTela, generoDaTelaRef.current !== null, leve.ligado));
+        // Só no site de desenvolvimento: o teste lê quanto a tela mudou em cada medida.
+        if (import.meta.env.DEV) (window as unknown as { quadrosDaTela?: unknown }).quadrosDaTela = quadrosDaTela;
+        if (leve.ligado === leveAntes) return;
+        const faixa = room.localParticipant.getTrackPublication(Track.Source.ScreenShare)?.videoTrack;
+        const parameters = sender.getParameters();
+        base ??= parameters.encodings.map((encoding) => encoding.scaleResolutionDownBy);
+        deFabrica ??= parameters.encodings.map((e) => ({ fps: e.maxFramerate, kbps: e.maxBitrate }));
+        const altura = faixa?.mediaStreamTrack.getSettings().height ?? 1080;
+        if (faixa) faixa.mediaStreamTrack.contentHint = leve.ligado ? 'detail' : 'motion';
+        parameters.degradationPreference = leve.ligado ? 'maintain-resolution' : 'maintain-framerate';
+        parameters.encodings.forEach((encoding, index) => {
+          const fabrica = deFabrica?.[index];
+          const reducao = base?.[index] ?? 1;
+          encoding.scaleResolutionDownBy = leve.ligado ? reducaoNoLeve(reducao, altura) : reducao;
+          encoding.maxFramerate = leve.ligado ? Math.min(fabrica?.fps ?? 30, FPS_DO_LEVE) : fabrica?.fps;
+          encoding.maxBitrate = leve.ligado ? Math.min(fabrica?.kbps ?? Infinity, KBPS_DO_LEVE * 1000) : fabrica?.kbps;
+        });
+        await sender.setParameters(parameters).catch(console.error);
+        // Só no site de desenvolvimento: o teste confere o que foi pedido ao codificador, e quando.
+        if (import.meta.env.DEV) (window as unknown as { transmissaoNoLeve?: unknown }).transmissaoNoLeve = { ligado: leve.ligado, quando: Date.now(), quadrosDaTela, versoes: sender.getParameters().encodings.map((e) => ({ reducao: e.scaleResolutionDownBy, fps: e.maxFramerate, kbps: e.maxBitrate })), preferencia: sender.getParameters().degradationPreference };
+        // Os degraus de tamanho e a nitidez da tela parada recomeçam do zero, de um lado e do outro.
+        quality = { step: 0, comfortable: 0 };
+        parada = { paradas: 0, nitida: false };
+      } finally {
+        busy = false;
+      }
+    };
 
     const check = async () => {
       if (busy) return;
@@ -1638,16 +1708,12 @@ export function useVoice(socket: Socket | null) {
         let maior: Record<string, unknown> | null = null;
         let bytes = 0;
         let estimativa: number | null = null;
-        let quadrosDaFonte: number | null = null;
         const codecs = new Map<string, string>();
         // A soma dos tetos das versões ligadas: com a internet estimada acima dela, "banda" é o teto (motivoDoAperto).
         const somaDosTetosKbps =
           sender.getParameters().encodings?.reduce((soma, e) => soma + (e.active === false ? 0 : (e.maxBitrate ?? 0)), 0) / 1000 || 0;
         const relatorio = await sender.getStats();
         relatorio.forEach((entry: Record<string, unknown>) => {
-          if (entry.type === 'media-source' && entry.kind === 'video' && typeof entry.frames === 'number') {
-            quadrosDaFonte = Math.max(quadrosDaFonte ?? 0, entry.frames);
-          }
           if (entry.type === 'codec' && typeof entry.mimeType === 'string') codecs.set(String(entry.id), entry.mimeType.replace(/^video\//i, '').toUpperCase());
           if (entry.type === 'candidate-pair' && entry.nominated && typeof entry.availableOutgoingBitrate === 'number') {
             estimativa = Math.round(entry.availableOutgoingBitrate / 1000);
@@ -1670,19 +1736,11 @@ export function useVoice(socket: Socket | null) {
         const segundos = (agora - quandoAntes) / 1000;
         const fpsCodificado = quadrosNoIntervalo !== null && quandoAntes > 0 ? quadrosNoIntervalo / segundos : null;
         const kbps = bytesAntes !== null && quandoAntes > 0 && bytes >= bytesAntes ? Math.round(((bytes - bytesAntes) * 8) / segundos / 1000) : null;
-        const quadrosDaTela =
-          quadrosDaFonte !== null && quadrosDaFonteAntes !== null && quandoAntes > 0 && quadrosDaFonte >= quadrosDaFonteAntes
-            ? (quadrosDaFonte - quadrosDaFonteAntes) / segundos
-            : null;
-        quadrosDaFonteAntes = quadrosDaFonte;
         quadrosAntes = quadrosAgora;
         quandoAntes = agora;
         bytesAntes = bytes;
 
-        // No site de desenvolvimento, o teste (e2e/degrau-leve.mjs) pode simular o aperto: o estrangulamento do Chrome pararia
-        // também o "jogo" desenhado na página, o que não acontece com um jogo de verdade, noutro programa.
-        const apertoDeTeste = import.meta.env.DEV ? (window as unknown as { apertoDeTeste?: 'cpu' }).apertoDeTeste : undefined;
-        const motivo = apertoDeTeste ?? motivoDoAperto(limitedBy, estimativa, somaDosTetosKbps);
+        const motivo = motivoDoAperto(limitedBy, estimativa, somaDosTetosKbps);
         const contado = proximoAperto(aperto, motivo, fpsCodificado !== null);
         aperto = contado.aperto;
         const camada = maior as Record<string, unknown> | null;
@@ -1722,33 +1780,7 @@ export function useVoice(socket: Socket | null) {
         }
 
         if (modoNoArRef.current === 'standard') {
-          // O DEGRAU LEVE (proximoLeve, em streamStats.ts): 720p, até 15 quadros, a nitidez antes dos quadros.
-          const leveAntes = leve.ligado;
-          leve = proximoLeve(leve, motivo, fpsCodificado !== null, telaEmMovimento(quadrosDaTela, generoDaTelaRef.current !== null, leve.ligado));
-          // Só no site de desenvolvimento: o teste (e2e/degrau-leve.mjs) lê quanto a tela mudou em cada medição.
-          if (import.meta.env.DEV) (window as unknown as { quadrosDaTela?: unknown }).quadrosDaTela = quadrosDaTela;
-          if (leve.ligado !== leveAntes) {
-            const faixa = room.localParticipant.getTrackPublication(Track.Source.ScreenShare)?.videoTrack;
-            const parameters = sender.getParameters();
-            base ??= parameters.encodings.map((encoding) => encoding.scaleResolutionDownBy);
-            deFabrica ??= parameters.encodings.map((e) => ({ fps: e.maxFramerate, kbps: e.maxBitrate }));
-            const altura = faixa?.mediaStreamTrack.getSettings().height ?? 1080;
-            if (faixa) faixa.mediaStreamTrack.contentHint = leve.ligado ? 'detail' : 'motion';
-            parameters.degradationPreference = leve.ligado ? 'maintain-resolution' : 'maintain-framerate';
-            parameters.encodings.forEach((encoding, index) => {
-              const fabrica = deFabrica?.[index];
-              const reducao = base?.[index] ?? 1;
-              encoding.scaleResolutionDownBy = leve.ligado ? reducaoNoLeve(reducao, altura) : reducao;
-              encoding.maxFramerate = leve.ligado ? Math.min(fabrica?.fps ?? 30, FPS_DO_LEVE) : fabrica?.fps;
-              encoding.maxBitrate = leve.ligado ? Math.min(fabrica?.kbps ?? Infinity, KBPS_DO_LEVE * 1000) : fabrica?.kbps;
-            });
-            await sender.setParameters(parameters).catch(console.error);
-            // Só no site de desenvolvimento: o teste (e2e/degrau-leve.mjs) confere o que foi pedido ao codificador.
-            if (import.meta.env.DEV) (window as unknown as { transmissaoNoLeve?: unknown }).transmissaoNoLeve = { ligado: leve.ligado, quadrosDaTela, versoes: sender.getParameters().encodings.map((e) => ({ reducao: e.scaleResolutionDownBy, fps: e.maxFramerate, kbps: e.maxBitrate })), preferencia: sender.getParameters().degradationPreference };
-            // Os degraus de tamanho e a nitidez da tela parada recomeçam do zero, de um lado e do outro.
-            quality = { step: 0, comfortable: 0 };
-            parada = { paradas: 0, nitida: false };
-          }
+          // No leve, quem decide é o laço dele (medirLeve); os degraus de tamanho e a nitidez da tela parada ficam quietos.
           if (leve.ligado) return;
           const seguinte = proximaParada(parada, fpsCodificado, limitedBy !== 'none');
           if (seguinte.nitida !== parada.nitida) {
@@ -1788,8 +1820,10 @@ export function useVoice(socket: Socket | null) {
     };
 
     const timer = setInterval(() => void check(), SCREEN_CHECK_MS);
+    const timerDoLeve = setInterval(() => void medirLeve(), MEDIDA_DO_LEVE_MS);
     return () => {
       clearInterval(timer);
+      clearInterval(timerDoLeve);
       if (modoNoArRef.current === 'smooth' && fluidoMedido && !fluido.em30 && performance.now() - inicio >= 60_000) lembrarDoFluido('aguentou');
     };
   }, [media.screen, room]);

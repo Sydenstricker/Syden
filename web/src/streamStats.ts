@@ -280,8 +280,8 @@ export function proximaParada(atual: Parada, fps: number | null, apertado = fals
  * segura os 30 quadros e ENCOLHE a imagem (maintain-framerate): para jogo é o certo, para ler uma tela e dar instrução é
  * o pior. E, como ele segura os 30, a medida de quadros quase não cai: o aperto aparece no MOTIVO, não no número.
  *
- * Por isso o degrau leve olha o motivo: apertado (processador ou internet, não o teto da versão) por duas medições
- * seguidas (~8 s), a transmissão passa a 720p no máximo, até 15 quadros, e segura a NITIDEZ (maintain-resolution). Na
+ * Por isso o degrau leve olha o motivo: apertado (processador ou internet, não o teto da versão) por 3 s seguidos, a
+ * transmissão passa a 720p no máximo, até 15 quadros, e segura a NITIDEZ (maintain-resolution). Na
  * realidade de quem tem notebook fraco e internet de celular, é o que dá para ler. Folgou por ~24 s, volta ao normal UMA
  * vez; se apertar de novo, fica no leve até o fim da transmissão (subir e descer seria pior que ficar).
  *
@@ -292,15 +292,20 @@ export function proximaParada(atual: Parada, fps: number | null, apertado = fals
  * cursor e um clique aqui e ali. Por isso o leve só entra com a tela mudando MENOS de 15 vezes por segundo — o que ele
  * segura; acima disso, cortar para 15 tiraria quadros de verdade — e nunca numa janela que o app reconhece como jogo
  * (generoDoJogo.ts). Sem saber quanto a tela muda (navegador sem a medida), conta como movimento: na dúvida, o jogador.
- * E se a tela passa a mexer de verdade dentro do leve (abriu o jogo depois de ajudar), duas medições seguidas tiram dele.
+ * E se a tela passa a mexer de verdade dentro do leve (abriu o jogo depois de ajudar), 2 s seguidos tiram dele.
+ *
+ * O LEVE MEDE DE SEGUNDO EM SEGUNDO (pergunta dele, mesmo dia: "8 s de transição podem ser percebidos como lag"), num laço
+ * só dele (MEDIDA_DO_LEVE_MS), e não na conferência geral de 4 s: com duas conferências, o jogo aberto dentro do leve
+ * passava até 8 s a 15 quadros, e o texto ficava até 8 s borrado antes de entrar. As contas abaixo são em medidas de 1 s.
  */
 export const FPS_DO_LEVE = 15;
 export const ALTURA_DO_LEVE = 720;
 /** O teto de taxa da versão grande no leve: 720p a 15 quadros cabe folgado nisto. */
 export const KBPS_DO_LEVE = 2000;
-const APERTOS_PARA_O_LEVE = 2;
-const FOLGAS_PARA_SAIR_DO_LEVE = 6;
-const MOVIMENTOS_PARA_SAIR_DO_LEVE = 2;
+export const MEDIDA_DO_LEVE_MS = 1000;
+export const APERTOS_PARA_O_LEVE = 3;
+export const FOLGAS_PARA_SAIR_DO_LEVE = 24;
+export const MOVIMENTOS_PARA_SAIR_DO_LEVE = 2;
 
 export interface Leve {
   ligado: boolean;
