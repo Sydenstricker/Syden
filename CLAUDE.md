@@ -1331,7 +1331,18 @@ que mudou, a cada quadro) e o resultado volta para a mesma imagem, então o que 
 balão) não mudou. `window.compararGpuDoTeste()` confere: de dia, idêntico; de noite, ~200 de 4 milhões de canais diferem
 em 1 (arredondamento). **Medido no salão, de noite:** montar a cena de ~183 para ~77 ms, o quadro do arraste de 19 para 9 ms;
 criar o contexto, ~40 ms, uma vez, ao abrir. A montagem dos móveis (`montarCena`, ~60 ms) continua na CPU. O contexto vive no
-iframe da página: sair do início ou da home desmonta o iframe e o libera; com a janela sem foco, nada é desenhado.
+iframe da página; com a janela sem foco, nada é desenhado. **Sair do início ou do salão GUARDA a cena (13/11/2026, relato dele:
+"notável quando mudo de aba para procurar mensagem")**: ela fica montada, escondida (visibility) e parada (a página e as cenas 3D
+conferem `checkVisibility`), e voltar é só mostrar (medido: ~2,5 s de volta → ~0,1 s). **A guarda é modesta** (pergunta dele,
+mesmo dia: "estamos guardando quase 2 GB de RAM do usuário por 10 minutos?"): UMA cena só (a última de onde a pessoa saiu), por
+3 min (30 s sem foco na janela), e NADA em computador com menos de 8 GB (`navigator.deviceMemory`); com o salão de outra
+comunidade, também sai (`web/src/CenaGuardada.tsx`). Teste: `e2e/cena-guardada.mjs`.
+**E A CENA PESAVA DEMAIS (mesmo dia, medido por `e2e/pixel-art/memoria-das-cenas.mjs`, que diz quanto cada lugar do código segura):**
+cada vista de móvel, objeto de cima e objeto de parede é um quadro do tamanho da CENA (4 MB no salão, 1 MB no quarto), e a página
+preparava as do CATÁLOGO INTEIRO na abertura. Agora cada uma é feita no primeiro uso (`preguicoso` em montar.mjs), e as figuras do
+Editar só ESPIAM (fazem e deixam ir). Medido: o salão de ~1,6 GB para ~1,06 GB, o quarto de ~550 para ~445 MB. O que sobra: as peças
+postas, ainda no tamanho da cena (~290 MB no salão; guardá-las no tamanho delas é uma reforma no motor), e ~2.400 imagens
+decodificadas de saída (~220 MB, quase todas quadros dos coelhos). Peça nova: criar a vista com `vistasPreguicosas`, nunca com `.map`.
 
 **As luzinhas do alto das paredes vão NA FRENTE do que se pendura (16/10/2026):** estão pintadas na casca, e a janela e
 os objetos da parede as cobriam (a lâmpada no canto da janela saía cortada). `salao/luzes16.py` tira a máscara delas (as

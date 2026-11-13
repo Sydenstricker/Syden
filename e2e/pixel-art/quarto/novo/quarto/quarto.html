@@ -279,6 +279,28 @@ function dadosPequenos(im, w = W, h = W, mx = 0, my = 0) {
   return r;
 }
 
+// PREPARAR SÓ O QUE A CENA USA (13/11/2026, pergunta dele: "precisamos de tanta RAM assim?"). Cada vista de móvel, de objeto
+// de cima e de objeto da parede é um quadro do tamanho da CENA (no salão, 1024 × 1024 × 4 = 4 MB), mesmo para um vaso de 150
+// px, e eram todas preparadas na abertura, do catálogo INTEIRO: medido (memoria-das-cenas.mjs), 840 MB no salão e ~200 MB no
+// quarto, quase tudo de peça que nem estava posta. Agora cada uma é feita no PRIMEIRO USO e guardada; o que nunca vai à cena
+// nunca é feito. Quem só olha de passagem (as figuras do catálogo do Editar) ESPIA: faz, usa e deixa ir, sem guardar.
+const ESPIAR = Symbol('espiar');
+function preguicoso(alvo, chave, fazer) {
+  let v;
+  Object.defineProperty(alvo, chave, { get: () => (v ??= fazer()), set: (x) => { v = x; }, enumerable: true, configurable: true });
+  (alvo[ESPIAR] ??= {})[chave] = () => v ?? fazer();
+  return alvo;
+}
+/** As 4 (ou n) vistas de uma peça, cada uma feita quando lida. */
+const vistasPreguicosas = (n, fazer) => { const a = new Array(n); for (let l = 0; l < n; l++) preguicoso(a, l, () => fazer(l)); return a; };
+/** Lê sem guardar: a já feita, ou uma feita só para esta leitura. */
+const espiar = (alvo, chave) => (alvo?.[ESPIAR]?.[chave] ? alvo[ESPIAR][chave]() : alvo?.[chave]);
+/** O objeto inteiro visto pela espiada (para quem lê .dia, .noite… de passagem). */
+// (o que se grava nele de passagem, como o núcleo que nucleoDe guarda, também não fica)
+const espiado = (alvo) => (alvo?.[ESPIAR] ? new Proxy(alvo, { get: (t, k) => (typeof k === 'string' && t[ESPIAR][k] ? t[ESPIAR][k]() : t[k]), set: () => true }) : alvo);
+/** A textura de um objeto da parede (dia e noite), cada metade feita quando lida. */
+const texturaPreguicosa = (alvo, dia, noite) => preguicoso(preguicoso(alvo, 'dia', dia), 'noite', noite);
+
 // O MODO APP antes de qualquer imagem (relato dele, 16/10/2026: "aparece isso no início" — a página de teste inteira,
 // com os botões e as explicações, durante os segundos em que as imagens baixavam).
 if (new URLSearchParams(location.search).has('app')) document.documentElement.classList.add('app');
@@ -413,7 +435,14 @@ if (CENA === 'salao') document.body.classList.add('salao');
   const TEXTURAS_PAREDE = porTipo({}, TEXTURAS_DA_COPIA);
   const caixasDaParede = {};
   const caixaDoItemDaParede = (id) => { if (caixasDaParede[id]) return caixasDaParede[id]; const T2 = TEXTURAS_PAREDE[id].dia; let x0 = W, y0 = W, x1 = 0, y1 = 0; for (let k = 0; k < W * W; k++) if (T2[k * 4 + 3] > 127) { const x = k % W, y = (k / W) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); } return (caixasDaParede[id] = [x0, y0, x1 + 1, y1 + 1]); };
-  for (const id of Object.keys(ITENS_PAREDE)) TEXTURAS_PAREDE[id] = { dia: dados(im['par-' + id + '-dia']), noite: dados(im['par-' + id + '-noite']), ...(ITENS_PAREDE[id].texto ? { esq: { dia: dados(im['par-' + id + '-esq-dia']), noite: dados(im['par-' + id + '-esq-noite']) } } : {}), ...(ITENS_PAREDE[id].aberta ? { aberta: { dia: dados(im['par-' + id + '-aberta-dia']), noite: dados(im['par-' + id + '-aberta-noite']) } } : {}) };
+  // (cada textura feita no primeiro uso: ver preguicoso)
+  const texturaDaParede = (alvo, nome) => texturaPreguicosa(alvo, () => dados(im['par-' + nome + '-dia']), () => dados(im['par-' + nome + '-noite']));
+  for (const id of Object.keys(ITENS_PAREDE)) {
+    const T2 = texturaDaParede({}, id);
+    if (ITENS_PAREDE[id].texto) T2.esq = texturaDaParede({}, id + '-esq');
+    if (ITENS_PAREDE[id].aberta) T2.aberta = texturaDaParede({}, id + '-aberta');
+    TEXTURAS_PAREDE[id] = T2;
+  }
   // A arte de um objeto da parede onde ele está: na da esquerda, a peça própria quando ele tem texto.
   // (a porta de entrada, ABERTA enquanto alguém chega: chegouAlguem)
   let entradaAberta = false, CHEGANDO = null;
@@ -433,7 +462,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // tudo o que desenha, mede ou encaixa o objeto continua lendo dali.
   const OPCOES_PAREDE = porTipo({});
   for (const [id, it] of Object.entries(ITENS_PAREDE)) if (it.opcoes) {
-    OPCOES_PAREDE[id] = Object.fromEntries(Object.entries(it.opcoes).map(([nome, o]) => [nome, { ...o, dia: dados(im['par-' + id + '@' + nome + '-dia']), noite: dados(im['par-' + id + '@' + nome + '-noite']) }]));
+    OPCOES_PAREDE[id] = Object.fromEntries(Object.entries(it.opcoes).map(([nome, o]) => [nome, texturaDaParede({ ...o }, id + '@' + nome)]));
   }
   const opcaoDe = (id) => (OPCOES_PAREDE[id]?.[CORES[id]] ? CORES[id] : ITENS_PAREDE[id]?.fabrica);
   function vestirOpcoes() {
@@ -1085,14 +1114,14 @@ if (CENA === 'salao') document.body.classList.add('salao');
     return { id, movel, buraco, sombra: VAZIA, topo: y0, peColuna, frente: [sx, y1], mede, centroTopo: soma / Math.max(1, n), meioDaBase, larguraDaBase: Math.max(0, bx1 - bx0 + 1), caixa: [x0, y0, x1 + 1, y1 + 1] };
   }
   const VISTAS = porTipo({});
-  for (const id of MOVEIS_GIRADOS) if (im['giro-' + id + '0']) VISTAS[id] = [0, 1, 2, 3].map((l) => pecaDeImagem(im['giro-' + id + l], id));
+  for (const id of MOVEIS_GIRADOS) if (im['giro-' + id + '0']) VISTAS[id] = vistasPreguicosas(4, (l) => pecaDeImagem(im['giro-' + id + l], id));
   // O sofá ocupado (salao/sofa-ocupado/): por ocupação ('0', '1' ou os dois, '01'), as 4 vistas com as almofadas afundadas.
-  const VISTAS_SOFA = Object.fromEntries(['0', '1', '01'].filter((o) => im['giro-sofa@' + o + '0']).map((o) => [o, [0, 1, 2, 3].map((l) => pecaDeImagem(im['giro-sofa@' + o + l], 'sofa'))]));
+  const VISTAS_SOFA = Object.fromEntries(['0', '1', '01'].filter((o) => im['giro-sofa@' + o + '0']).map((o) => [o, vistasPreguicosas(4, (l) => pecaDeImagem(im['giro-sofa@' + o + l], 'sofa'))]));
   // AS QUATRO CAMAS (20/10/2026, liberadas): as vistas de cada uma, feitas quando escolhida; a escolhida (CORES.cama) é a
   // VISTAS.cama, e tudo o que mede a cama (o pé, deitar, a forma, a ordem de desenho) lê dali. A 2 é a de fábrica.
   const VISTAS_DAS_CAMAS = VISTAS.cama ? { 'cama-2': VISTAS.cama } : {};
   const camaEscolhida = () => (CAMAS.includes(CORES.cama) && (CORES.cama === 'cama-2' || im['giro-cama@' + CORES.cama + '0']) ? CORES.cama : 'cama-2');
-  const vistasDaCama = (nome) => (VISTAS_DAS_CAMAS[nome] ??= [0, 1, 2, 3].map((l) => pecaDeImagem(im['giro-cama@' + nome + l], 'cama')));
+  const vistasDaCama = (nome) => (VISTAS_DAS_CAMAS[nome] ??= vistasPreguicosas(4, (l) => pecaDeImagem(im['giro-cama@' + nome + l], 'cama')));
   if (VISTAS.cama) VISTAS.cama = vistasDaCama(camaEscolhida());
   // ============================== OS OBJETOS DE CIMA (15/10/2026) ==============================
   // Decisão dele: "o móvel deve ser uma coisa, os elementos outra". O que vai no tampo é peça à parte: mora num móvel,
@@ -1105,7 +1134,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // nítidos e grandes demais para os móveis; o conserto de verdade é gerá-los no tamanho final (dívida de arte, CLAUDE.md).
   const ESCALA_DOS_OBJETOS = 1;
   const reduzir = (img) => { const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(img.width * ESCALA_DOS_OBJETOS)); c.height = Math.max(1, Math.round(img.height * ESCALA_DOS_OBJETOS)); const g2 = c.getContext('2d'); g2.imageSmoothingEnabled = false; g2.drawImage(img, 0, 0, c.width, c.height); return c; };
-  for (const id of Object.keys(OBJETOS_DE_CIMA)) OBJ_VISTAS[id] = [0, 1, 2, 3].map((l) => pecaDeImagem(reduzir(im['obj-' + id + l]), id));
+  for (const id of Object.keys(OBJETOS_DE_CIMA)) OBJ_VISTAS[id] = vistasPreguicosas(4, (l) => pecaDeImagem(reduzir(im['obj-' + id + l]), id));
   // A altura do tampo de cada móvel que recebe objetos (px acima do chão) e a margem da borda (para nada cair).
   // (o criado-mudo era 50, e a caneca flutuava na altura da cúpula: a "mancha" no abajur, relato de 15/10/2026)
   const TOPOS = porTipo({ ilha: 42, 'mesa-jogo': 34, mesa: 44, abajur: 35, 'guarda-roupa': 76, balcao: 54, mesinha: 22, tv: 30, estante: 88 });
@@ -1612,11 +1641,11 @@ if (CENA === 'salao') document.body.classList.add('salao');
   try { const go = JSON.parse(localStorage.getItem(PREFIXO + 'objetos') ?? 'null'); if (go) EM_CIMA = Object.fromEntries(Object.entries(go).filter(([, o]) => OBJ_VISTAS[o.tipo] && TOPOS[o.em])); } catch { /* os de fábrica */ }
   // O GUARDA-ROUPA ABERTO (pedido dele, 14/10/2026: "precisa de mais estados, como temos na janela"): as portas abertas
   // com as roupas, nas mesmas 4 vistas. Clicar nele leva o coelho até lá e abre; clicar de novo fecha.
-  const VISTAS_ABERTO = im['giro-guarda-roupa-aberto0'] ? [0, 1, 2, 3].map((l) => pecaDeImagem(im['giro-guarda-roupa-aberto' + l], 'guarda-roupa')) : null;
+  const VISTAS_ABERTO = im['giro-guarda-roupa-aberto0'] ? vistasPreguicosas(4, (l) => pecaDeImagem(im['giro-guarda-roupa-aberto' + l], 'guarda-roupa')) : null;
   let guardaRoupaAberto = false;
   // As portas ABRINDO (pedido dele, 15/10/2026): os quadros do meio entre o fechado e o aberto. "portas" vai de 0
   // (fechado) a 3 (aberto) e anda um passo a cada dois quadros do relógio na direção de guardaRoupaAberto.
-  const PASSAGEM_GR = im['passagem-guarda-roupa0-0'] ? [0, 1, 2, 3].map((l) => [0, 1].map((k) => pecaDeImagem(im['passagem-guarda-roupa' + l + '-' + k], 'guarda-roupa'))) : null;
+  const PASSAGEM_GR = im['passagem-guarda-roupa0-0'] ? [0, 1, 2, 3].map((l) => vistasPreguicosas(2, (k) => pecaDeImagem(im['passagem-guarda-roupa' + l + '-' + k], 'guarda-roupa'))) : null;
   let portas = 0;
   // A FUNÇÃO DEPOIS DA ANIMAÇÃO (pedido dele, 16/10/2026: "deveria esperar a animação de abrir o guarda-roupa, para aí
   // abrir a aba de aparência"): o pedido fica guardado e sai quando as portas terminam de abrir, com uma pausa curta para
@@ -1791,7 +1820,7 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // Ela é desenhada como o coelho (a cada quadro, só a região dela), nunca na fotografia da cena: remontar a cena a
   // cada quadro custaria um núcleo inteiro num computador modesto.
   const OITO = ['south-west', 'south', 'south-east', 'east', 'north-east', 'north', 'north-west', 'west'];
-  const VISTAS_CADEIRA = im['cadeira-south-west'] ? OITO.map((d) => pecaDeImagem(im['cadeira-' + d], 'cadeira')) : null;
+  const VISTAS_CADEIRA = im['cadeira-south-west'] ? vistasPreguicosas(OITO.length, (i) => pecaDeImagem(im['cadeira-' + OITO[i]], 'cadeira')) : null;
   const R_CADEIRA = 0.38;
   // A altura do assento acima do chão (medida na vista) e quanto o coelho sobe para sentar nela.
   const ASSENTO_CADEIRA = 34, SOBE_CADEIRA = 20, AVANCO_NA_CADEIRA = 0.4;
@@ -4187,7 +4216,9 @@ if (CENA === 'salao') document.body.classList.add('salao');
   // então esta página seguiria desenhando atrás do jogo. Ela para sozinha quando a janela do Syden não está em foco ou
   // está escondida: o relógio passa sem desenhar nada, e o quadro volta ao voltar o foco.
   // (no banheiro, o salão não está à vista: nada dele se mexe nem se desenha)
-  const emPausa = () => { if (window.congelarDoTeste || document.hidden || noBanheiro) return true; try { return !window.top.document.hasFocus(); } catch { return !document.hasFocus(); } };
+  // (13/11/2026) e com a cena GUARDADA pelo app numa outra aba (CenaGuardada.tsx: o iframe fica montado, com visibility hidden)
+  const guardadaPeloApp = () => { try { const f = window.frameElement; return !!f && typeof f.checkVisibility === 'function' && !f.checkVisibility({ visibilityProperty: true }); } catch { return false; } };
+  const emPausa = () => { if (window.congelarDoTeste || document.hidden || noBanheiro || guardadaPeloApp()) return true; try { return !window.top.document.hasFocus(); } catch { return !document.hasFocus(); } };
   // A respiração das pessoas do salão: um tempo a cada 0,5 s (elas são peças da cena, e cada troca remonta a cena; mais
   // depressa que isso pesaria). Parada com a janela sem foco, com movimento reduzido, e sem ninguém na call.
   // (300 ms desde 09/11/2026, relato dele: "as animações no sofá estão muito lentas"; eram 500. Cada passo remonta a cena, ~90 ms)
@@ -6441,7 +6472,7 @@ void main() {
     // (só o NÚCLEO do objeto: o recorte traz pedaços da parede e da sombra em volta — o fone parecia "com pedaços da
     // parede" no catálogo, relato dele de 16/10/2026)
     const soNucleo = (T2) => { const nuc = nucleoDe(T2), d = new Uint8ClampedArray(T2.dia); for (let k = 0; k < W * W; k++) if (!nuc[k]) d[k * 4 + 3] = 0; return d; };
-    for (const [id, T2] of Object.entries(TEXTURAS_PAREDE)) miniaturas[id] = recorte(soNucleo(T2));
+    for (const [id, T2] of Object.entries(TEXTURAS_PAREDE)) miniaturas[id] = recorte(soNucleo(espiado(T2)));
     // a cor média do tapete pintado, tingida em cada uma
     const media = mediaDoTapete();
     const cores = Object.fromEntries(Object.entries(CORES_DO_TAPETE).map(([id, cor]) => [id, 'rgb(' + (id === 'salvia' ? media : tingirPixel(media[0], media[1], media[2], cor)).map(Math.round).join(',') + ')']));
@@ -6450,14 +6481,14 @@ void main() {
     // (do desenho INTEIRO, preparado como na cena: na cena eles vão pela metade, no tamanho de verdade, e ampliados no
     // catálogo pareciam borrados — relato dele de 16/10/2026)
     for (const [id, vs] of Object.entries(OBJ_VISTAS)) {
-      const v0 = im['obj-' + id + '0'] ? pecaDeImagem(im['obj-' + id + '0'], id) : vs[0], [x0, y0, x1, y1] = v0.caixa, c = document.createElement('canvas'); c.width = x1 - x0; c.height = y1 - y0;
+      const v0 = im['obj-' + id + '0'] ? pecaDeImagem(im['obj-' + id + '0'], id) : espiar(vs, 0), [x0, y0, x1, y1] = v0.caixa, c = document.createElement('canvas'); c.width = x1 - x0; c.height = y1 - y0;
       const d = new ImageData(c.width, c.height);
       for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) { const k = (y * W + x) * 4, j = ((y - y0) * c.width + (x - x0)) * 4; for (let q = 0; q < 4; q++) d.data[j + q] = v0.movel[k + q]; }
       c.getContext('2d').putImageData(d, 0, 0);
       deCima[id] = c.toDataURL();
     }
     // e as opções de cada objeto que tem (o pôster): o recorte de cada uma
-    const opcoes = Object.fromEntries(Object.entries(OPCOES_PAREDE).map(([id, ops]) => [id, Object.fromEntries(Object.entries(ops).map(([nome, o]) => [nome, recorte(soNucleo(o))]))]));
+    const opcoes = Object.fromEntries(Object.entries(OPCOES_PAREDE).map(([id, ops]) => [id, Object.fromEntries(Object.entries(ops).map(([nome, o]) => [nome, recorte(soNucleo(espiado(o)))]))]));
     // e cada móvel que se pode guardar: a vista de fábrica dele (ou o recorte da pintura, como o tapete)
     const moveis = {};
     // OS IGUAIS COM NÚMERO DO SALÃO (cadeira, cadeira-2, -3 e -4; sofa e sofa-2…) são a MESMA peça, só com outro giro na
@@ -6466,7 +6497,7 @@ void main() {
     const igualDe = (id) => { const b = id.replace(/-d+$/, ''); return b !== id && INICIAL[b] && VISTAS[b] ? b : id; };
     // (todos, desde 16/10/2026: no catálogo do Editar, o que já está no quarto ganha uma cópia; os que se guardam vão
     // também em "guardaveis", a lista de antes)
-    for (const id of Object.keys(INICIAL)) { const ig = igualDe(id), fonte = VISTAS[ig]?.[INICIAL[ig].lado]?.movel ?? pecas[id]?.movel ?? (id === 'pufe' ? pecas[(varianteDoPufe() ?? pufes[0])?.id]?.movel : null); if (fonte) moveis[id] = recorte(fonte); } // (o pufe mora nas variantes de luz dele)
+    for (const id of Object.keys(INICIAL)) { const ig = igualDe(id), fonte = espiar(VISTAS[ig], INICIAL[ig].lado)?.movel ?? pecas[id]?.movel ?? (id === 'pufe' ? pecas[(varianteDoPufe() ?? pufes[0])?.id]?.movel : null); if (fonte) moveis[id] = recorte(fonte); } // (o pufe mora nas variantes de luz dele)
     const guardaveis = Object.keys(INICIAL).filter((id) => podeGuardar(id) && moveis[id]);
     // e cada tipo de janela (com a cortina, na que tem): a barra mostra a figura de cada uma, e não um botão que troca às
     // cegas (relato dele, 16/10/2026: o "Janela" trocava o tipo, e só a original tem cortina e abre)
@@ -6501,7 +6532,7 @@ void main() {
       comodo = { paredes, pisos, plantas };
     }
     // e as quatro camas (liberadas, 20/10/2026), na posição de fábrica: a barrinha da cama mostra a figura de cada uma
-    const camas = VISTAS.cama && CAMAS.length > 1 ? Object.fromEntries(CAMAS.map((nome) => [nome, recorte(vistasDaCama(nome)[INICIAL.cama?.lado ?? 0].movel)])) : null;
+    const camas = VISTAS.cama && CAMAS.length > 1 ? Object.fromEntries(CAMAS.map((nome) => [nome, recorte(espiar(vistasDaCama(nome), INICIAL.cama?.lado ?? 0).movel)])) : null;
     // O BICHO DO QUARTO (o gato): a pose sentada de frente, como um móvel que se guarda e se põe (alternarPet)
     if (CENA === 'quarto' && GATO.sentado?.sudeste) {
       const q = GATO.sentado.sudeste[0], c = document.createElement('canvas'); c.width = q.w; c.height = q.h;
@@ -7113,7 +7144,7 @@ void main() {
     addEventListener('keydown', (e) => { if (noBanheiro && e.key === 'Escape') { e.preventDefault(); e.stopImmediatePropagation(); sairDoBanheiro(); } }, true);
     // o relógio do patinho: só conta o tempo à vista (sem foco, fica onde estava, e nada se desenha)
     setInterval(() => {
-      if (!noBanheiro || window.congelarDoTeste || document.hidden) return;
+      if (!noBanheiro || window.congelarDoTeste || document.hidden || guardadaPeloApp()) return;
       try { if (!window.top.document.hasFocus()) return; } catch { if (!document.hasFocus()) return; }
       if (!matchMedia('(prefers-reduced-motion: reduce)').matches) quadroB++;
       desenharBanheiro();

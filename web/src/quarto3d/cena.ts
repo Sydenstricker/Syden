@@ -4,6 +4,7 @@ import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js
 import { carregarCoelho, CORES_DO_MASCOTE, copiarCoelho, type CoelhoCopiado, type CoresDoCoelho } from '../coelho3d';
 import { FUNCAO_DA_PAREDE, FUNCAO_DO_MOVEL, N, noMundo, type ArrumacaoDoPixel, type NaParedeNoMundo, type QuartoNoMundo } from './arrumacao';
 import { TEMAS, type Parte, type PecaDaParede, type PecaDoTema, type Tema } from './temas';
+import { elementoAVista } from '../CenaGuardada';
 
 /**
  * O QUARTO EM 3D LOW POLY NO APP (06/11/2026, pedido dele: "quero esse quarto 3D low poly como PILOTO da nossa
@@ -1611,7 +1612,7 @@ export class CenaDoQuarto3D {
   private desenhar = () => {
     if (this.morta) return;
     // sem foco na janela (o jogo de verdade aberto) ou escondida, não desenha nada
-    if (document.hidden || !document.hasFocus()) {
+    if (document.hidden || !document.hasFocus() || !elementoAVista(this.caixa)) {
       this.relogio.update();
       return;
     }

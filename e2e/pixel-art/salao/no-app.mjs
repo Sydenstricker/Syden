@@ -68,13 +68,13 @@ conferir(nomes.includes('voz' + sufixo), 'quem está na call de verdade aparece 
 conferir(!(await D.frame.evaluate(() => window.visitaDoTeste().soVer)), 'a dona pode arrumar');
 const rec = await D.frame.evaluate(() => window.recadoDoTeste());
 conferir((await D.frame.locator('#recado').textContent()).includes('karaokê'), 'o coelho do balcão lê o recado da dona ' + JSON.stringify(rec));
-conferir(await D.p.locator('.editor-entrar button').isVisible(), 'a dona tem o Editar');
+conferir(await D.p.locator('.editor-entrar button:visible').isVisible(), 'a dona tem o Editar');
 await D.p.screenshot({ path: path.join(FOTOS, 'no-app-dona.png') });
 
 const M = await abrirSalao(membro, 'membro');
 await M.p.waitForTimeout(2500);
 conferir(await M.frame.evaluate(() => window.visitaDoTeste().soVer), 'o membro só olha a arrumação');
-conferir(!(await M.p.locator('.editor-entrar button').isVisible()), 'o membro não tem o Editar');
+conferir(!(await M.p.locator('.editor-entrar button:visible').isVisible()), 'o membro não tem o Editar');
 // A TV: o nome da função ao passar o mouse, e o clique entra na sala de voz.
 const tv = await M.frame.evaluate(() => { const L = window.arrumacaoDoTeste(); return L.tv && window.ondeDoMovel ? window.ondeDoMovel('tv') : null; });
 if (tv) {
@@ -90,7 +90,7 @@ if (tv) {
 // A dona troca a janela pelo EDITOR (o layout dele, 16/10/2026): vai ao servidor no Aplicar e chega ao salão do membro.
 const categoria = (nome) => D.p.locator('.editor-categorias button', { hasText: nome }).first().click();
 const itens = D.p.locator('.editor-grade .editor-item');
-await D.p.locator('.editor-entrar button').click(); await D.p.waitForTimeout(500);
+await D.p.locator('.editor-entrar button:visible').click(); await D.p.waitForTimeout(500);
 await categoria('Janela');
 await D.p.locator('.editor-grade .editor-item[aria-pressed="false"]').first().click(); // outro tipo de janela
 await D.p.waitForTimeout(600);
@@ -105,7 +105,7 @@ await M.p.screenshot({ path: path.join(FOTOS, 'no-app-membro.png') });
 // GUARDAR UM MÓVEL (escolhido, Tirar) E ESCOLHER O PÔSTER (as opções da barrinha): vão ao servidor no Aplicar e chegam
 // ao salão aberto do membro.
 const primeiroMovel = await D.frame.evaluate(() => Object.keys(window.visitaDoTeste().retrato.moveis).find((id) => ['sofa', 'mesinha', 'poltrona'].includes(id)));
-await D.p.locator('.editor-entrar button').click(); await D.p.waitForTimeout(500);
+await D.p.locator('.editor-entrar button:visible').click(); await D.p.waitForTimeout(500);
 await D.frame.evaluate((id) => window.selecionarDoTeste('m' + id), primeiroMovel); await D.p.waitForTimeout(300);
 await D.p.locator('.editor-atalhos button', { hasText: 'Tirar' }).click(); await D.p.waitForTimeout(500);
 await D.frame.evaluate(() => window.selecionarDoTeste('pposter')); await D.p.waitForTimeout(400);
@@ -133,8 +133,8 @@ const membroId = (await pedir('GET', `/api/communities/${comunidade.id}/members`
 const cargo = await pedir('POST', `/api/communities/${comunidade.id}/cargos`, dona, { nome: 'Decoração', cor: '#88aa66' });
 await pedir('PUT', `/api/communities/${comunidade.id}/members/${membroId}/cargos/${cargo.id}`, dona);
 await pedir('PATCH', `/api/communities/${comunidade.id}/cargos/${cargo.id}`, dona, { arrumaSalao: true });
-await M.p.locator('.editor-entrar button').waitFor({ timeout: 15000 }).catch(() => {});
-conferir(await M.p.locator('.editor-entrar button').isVisible(), 'o membro com o cargo ganha o Editar, sem recarregar');
+await M.p.locator('.editor-entrar button:visible').waitFor({ timeout: 15000 }).catch(() => {});
+conferir(await M.p.locator('.editor-entrar button:visible').isVisible(), 'o membro com o cargo ganha o Editar, sem recarregar');
 conferir(!(await M.frame.evaluate(() => window.visitaDoTeste().soVer)), 'e a página deixa ele arrumar');
 await M.frame.evaluate(() => {
   const [x, y] = window.ondeEsta('jukebox'), c = document.getElementById('tela'), q = c.getBoundingClientRect();

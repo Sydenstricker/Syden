@@ -57,7 +57,7 @@ await p.locator('.vila-painel-fechar').click().catch(() => {});
 const categoria = (nome) => p.locator('.editor-categorias button', { hasText: nome }).first().click();
 const itens = p.locator('.editor-grade .editor-item');
 const doServidor = async () => (await (await fetch(API + '/api/quarto', { headers: { authorization: 'Bearer ' + token } })).json());
-await p.locator('.editor-entrar button').click();
+await p.locator('.editor-entrar button:visible').click();
 await p.waitForTimeout(500);
 conferir(await p.locator('.editor-cena.editando').isVisible(), 'Editar abre o editor na tela inteira');
 await categoria('Janela');
@@ -85,7 +85,7 @@ conferir(!!guardado.arrumacao?.parede?.pintura, 'e a pintura posta');
 conferir(guardado.copias === true, 'o servidor diz que aceita cópias');
 
 // CANCELAR volta ao que estava ao entrar, e não grava nada.
-await p.locator('.editor-entrar button').click(); await p.waitForTimeout(400);
+await p.locator('.editor-entrar button:visible').click(); await p.waitForTimeout(400);
 await categoria('Tapete'); await itens.nth(3).click(); await p.waitForTimeout(400); // mostarda
 await p.locator('.editor-fim .editor-botao', { hasText: 'Cancelar' }).click(); await p.waitForTimeout(1200);
 guardado = await doServidor();
@@ -93,7 +93,7 @@ conferir(guardado.arrumacao?.cores?.tapete === 'azul', 'Cancelar não gravou a c
 conferir((await frame.evaluate(() => window.visitaDoTeste().retrato.cores.tapete)) === 'azul', 'e o quarto voltou à cor de antes');
 
 // A BARRINHA em cima do escolhido, DUPLICAR e DESFAZER.
-await p.locator('.editor-entrar button').click(); await p.waitForTimeout(500);
+await p.locator('.editor-entrar button:visible').click(); await p.waitForTimeout(500);
 const caixa = await frame.locator('#tela').boundingBox();
 const pufe = await frame.evaluate(() => window.ondeDoMovel('pufe'));
 await p.mouse.click(caixa.x + pufe[0] * caixa.width / 512, caixa.y + pufe[1] * caixa.height / 512);

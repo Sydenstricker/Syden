@@ -3,6 +3,7 @@ import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { carregarCoelho, CORES_DO_MASCOTE, copiarCoelho, type CoelhoCopiado, type CoresDoCoelho } from '../coelho3d';
 import type { Epoca } from './epocas';
+import { elementoAVista } from '../CenaGuardada';
 
 /**
  * O SALÃO DA COMUNIDADE EM 3D LOW POLY (06/11/2026, pedido dele: o Natal "no salão, em 3D"). É a versão 3D do salão isométrico de
@@ -1680,7 +1681,7 @@ export class CenaDoSalao3D {
   private desenhar = () => {
     if (this.morta) return;
     // sem foco na janela (o jogo de verdade aberto) ou escondida, não desenha nada (e o trem não anda)
-    if (document.hidden || !document.hasFocus()) {
+    if (document.hidden || !document.hasFocus() || !elementoAVista(this.caixa)) {
       this.relogio.update();
       return;
     }

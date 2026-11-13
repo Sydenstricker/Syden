@@ -49,6 +49,7 @@ import { useVoice } from './useVoice';
 import { Stage, VoiceStage } from './VoiceStage';
 import { type AulaEmCurso, guardarAulaEmCurso, lerAulaEmCurso } from './aula';
 import { Mascote } from './Mascote';
+import { CenaGuardada } from './CenaGuardada';
 import { useT, idiomaAtual } from './i18n';
 
 /** Última comunidade aberta, para o app voltar onde a pessoa estava. */
@@ -1309,7 +1310,8 @@ export function Shell({
               {voice.error} <span className="banner-close">✕</span>
             </div>
           )}
-          {view === 'home' && (
+          {/* o quarto fica guardado (escondido e parado) por uns minutos fora do início: voltar não o refaz (CenaGuardada.tsx) */}
+          <CenaGuardada aVista={view === 'home'} lugar="quarto" chave="home">
             <Home
               comunidade={community?.name}
               salas={channels.filter((c) => c.type === 'voice')}
@@ -1333,7 +1335,7 @@ export function Shell({
                 setCommunityId(id);
               }}
             />
-          )}
+          </CenaGuardada>
           {view === 'amigos' && (
             <div className="tela-com-volta">
               <button className="btn-sutil" onClick={() => setView('home')}>
@@ -1424,7 +1426,9 @@ export function Shell({
           {/* O espaço de boas-vindas cobre o conteúdo da comunidade enquanto está aberto. Fica ANTES
               dos canais na ordem do código porque é o que a pessoa deve ver primeiro — e porque assim
               nenhuma das condições abaixo precisa saber que ele existe. */}
-          {view === 'community' && mostrandoBoasVindas && community && boasVindas && (
+          {/* o salão também fica guardado ao ir a um canal da MESMA comunidade (CenaGuardada.tsx) */}
+          {community && boasVindas && (
+            <CenaGuardada aVista={view === 'community' && mostrandoBoasVindas} lugar="salao" chave={String(community.id)}>
             <InicioDaComunidade
               community={community}
               dados={boasVindas}
@@ -1443,6 +1447,7 @@ export function Shell({
               }}
               aoFechar={() => setMostrandoBoasVindas(false)}
             />
+            </CenaGuardada>
           )}
           {view === 'community' && !mostrandoBoasVindas && selected?.type === 'text' && socket && (
             <TextChannel

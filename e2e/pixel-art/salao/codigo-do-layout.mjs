@@ -71,7 +71,7 @@ const deB = await doServidor(B);
 conferir(deB && JSON.stringify(deB.moveis[id].c) === JSON.stringify(deFabrica.moveis[id].c), 'a segunda nasceu com o salão de fábrica, e não com o da primeira: ' + JSON.stringify(deB?.moveis[id]?.c));
 
 // 3. o código da primeira
-await p.locator('.editor-entrar button').click();
+await p.locator('.editor-entrar button:visible').click();
 await p.getByRole('button', { name: 'Código do layout' }).click();
 const campoDoCodigo = p.locator('.editor-codigo-painel input[readonly]');
 await p.waitForFunction(() => document.querySelector('.editor-codigo-painel input[readonly]')?.value.startsWith('SYDL1-'), null, { timeout: 10000 });
@@ -81,7 +81,7 @@ await p.getByRole('button', { name: 'Cancelar' }).click().catch(() => {});
 
 // 4. colar na segunda e aplicar
 await abrir(B);
-await p.locator('.editor-entrar button').click();
+await p.locator('.editor-entrar button:visible').click();
 await p.getByRole('button', { name: 'Código do layout' }).click();
 await p.locator('.editor-codigo-painel input:not([readonly])').fill('não é código');
 await p.locator('.editor-codigo-painel form button').click();

@@ -34,7 +34,7 @@ for (let i = 0; i < 3; i++) { const b = p.getByRole('button', { name: 'Resgatar'
 await p.keyboard.press('Escape'); await p.waitForTimeout(800);
 const doServidor = async () => (await (await fetch(API + '/api/quarto', { headers: { authorization: 'Bearer ' + ana.token } })).json()).arrumacao;
 
-await p.locator('.editor-entrar button').click(); await p.waitForTimeout(500);
+await p.locator('.editor-entrar button:visible').click(); await p.waitForTimeout(500);
 await p.locator('.editor-categorias button', { hasText: 'Cômodo' }).first().click();
 const item = (nome) => p.locator('.editor-grade .editor-item[aria-label="' + nome + '"]');
 conferir((await p.locator('.editor-grade .editor-item').count()) === 3 + 8 + 6, 'o Cômodo tem as 3 plantas, as 8 paredes e os 6 pisos');
@@ -55,7 +55,7 @@ conferir(a?.janela?.tipo !== 'original', 'a janela grande, que não cabe no L, v
 await p.screenshot({ path: path.join(FOTOS, 'comodo-l.png') });
 
 // O CUBÍCULO, e Cancelar volta ao L
-await p.locator('.editor-entrar button').click(); await p.waitForTimeout(400);
+await p.locator('.editor-entrar button:visible').click(); await p.waitForTimeout(400);
 await p.locator('.editor-categorias button', { hasText: 'Cômodo' }).first().click();
 await item('Cubículo').click(); await p.waitForTimeout(1500);
 const cub = await frame.evaluate(() => Object.entries(window.arrumacaoDoTeste()).filter(([id, m]) => id !== 'tapete' && (m.c[0] < 2 || m.c[1] < 2)).map(([id]) => id));

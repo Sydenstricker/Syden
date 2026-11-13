@@ -855,6 +855,22 @@ textarea {
   position: relative;
 }
 
+/* O quarto e o salão guardados fora da vista (CenaGuardada.tsx): à vista, o wrapper some do layout; escondidos, ocupam o
+   mesmo lugar por baixo, sem aparecer nem receber clique, e com o mesmo tamanho (a cena não se redesenha por isso). */
+.cena-guardada {
+  display: contents;
+}
+.cena-guardada.escondida {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  inset: 0;
+  visibility: hidden;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: -1;
+}
+
 .main > .channel-layout,
 .main > .voice-stage {
   flex: 1;
