@@ -178,13 +178,35 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
   const avisar = (p: Partida) =>
     p.solo ? emitToUser(io, p.criadaPor, 'minijogo-solo:mudou', {}) : io.to(communityRoom(p.communityId)).emit('minijogo:mudou', { channelId: p.channelId });
 
+  /**
+   * O ERRO DE UM JOGO ACABA SÓ AQUELA PARTIDA (auditoria de 12/11/2026). O relógio, a conferência e o socket chamam o
+   * código do jogo FORA de uma requisição: um erro ali não vira 500, vira exceção solta, e o processo inteiro cai,
+   * levando todas as salas e chamadas. Aqui ele vai para o log, e a partida que errou é encerrada (o estado dela já não
+   * é confiável).
+   */
+  function isolado<T>(p: Partida, onde: string, fazer: () => T): T | undefined {
+    try {
+      return fazer();
+    } catch (erro) {
+      app.log.error({ err: erro, jogo: p.jogo, onde }, 'minijogo: erro dentro do jogo, partida encerrada');
+      try {
+        encerrar(p);
+      } catch {
+        // encerrar chama o parar do próprio jogo, que pode ser o que quebrou: a partida sai da memória mesmo assim
+        if (p.solo) solos.delete(p.criadaPor);
+        else partidas.delete(p.channelId);
+      }
+      return undefined;
+    }
+  }
+
   function agendar(p: Partida, ms: number, depois: () => void) {
     if (p.relogio) clearTimeout(p.relogio);
     p.ate = Date.now() + ms;
     p.relogio = setTimeout(() => {
       // Os jogadores saíram da sala: a partida acaba junto, sem esperar ninguém.
-      if (presentes(p).length === 0) return encerrar(p);
-      depois();
+      if (presentes(p).length === 0) return isolado(p, 'relógio', () => encerrar(p));
+      isolado(p, 'relógio', depois);
     }, ms);
     p.relogio.unref?.();
   }
@@ -268,7 +290,9 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
 
   // QUEM SAIU DA SALA (revisão de 16/10/2026): a rodada que só esperava essa pessoa segue sem ela, sem esperar o relógio.
   const conferencia = setInterval(() => {
-    for (const p of [...partidas.values(), ...solos.values()]) if (p.instancia && !p.terminada && !p.convite) p.instancia.conferir?.();
+    for (const p of [...partidas.values(), ...solos.values()]) {
+      if (p.instancia && !p.terminada && !p.convite) isolado(p, 'conferir', () => p.instancia?.conferir?.());
+    }
   }, 4000);
   conferencia.unref?.();
   app.addHook('onClose', async () => clearInterval(conferencia));
@@ -285,7 +309,8 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
       const channelId = Number(dados?.channelId);
       const p = partidas.get(channelId);
       if (!userId || !p?.instancia?.tempoReal || p.terminada || salaDeVozDe(userId)?.channelId !== channelId) return;
-      const repassar = p.instancia.tempoReal(userId, dados.dados);
+      const instancia = p.instancia;
+      const repassar = isolado(p, 'tempo real', () => instancia.tempoReal!(userId, dados.dados));
       if (repassar === null || repassar === undefined) return;
       for (const id of quemEstaNaSala(channelId)) {
         if (id !== userId) emitToUser(io, id, 'minijogo:tempo-real', { channelId, dados: repassar });
@@ -297,7 +322,8 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
       const userId = (socket.data.user as { id: number } | undefined)?.id;
       const p = userId ? solos.get(userId) : undefined;
       if (!userId || !p?.instancia?.tempoReal || p.terminada) return;
-      p.instancia.tempoReal(userId, dados?.dados);
+      const instancia = p.instancia;
+      isolado(p, 'tempo real', () => instancia.tempoReal!(userId, dados?.dados));
     });
   });
 

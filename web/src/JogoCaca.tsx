@@ -157,6 +157,12 @@ function Horta({ estado, eu, jogador, agir }: { estado: EstadoCaca & Partida; eu
           atirarRef.current(pos.x, pos.y);
         }
       }
+      // SEM FOCO, NADA SE DESENHA (auditoria de 12/11/2026): as pragas voam pelo relógio da onda, e a tela que volta as
+      // mostra onde estão. O piloto automático do e2e desenha sempre, para o teste não depender do foco da janela.
+      if ((document.hidden || !document.hasFocus()) && !(import.meta.env.DEV && (window as { cacaPilotoAutomatico?: boolean }).cacaPilotoAutomatico)) {
+        id = requestAnimationFrame(quadro);
+        return;
+      }
       desenhar(ctx, {
         cenario,
         ms: ms !== null && ms >= 0 ? ms : null,

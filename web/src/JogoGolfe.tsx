@@ -322,6 +322,12 @@ function MesaDoGolfe({
           baterRef.current(tc.dx / f, tc.dy / f, f / FORCA_MAX);
         }
       }
+      // SEM FOCO, NADA SE DESENHA (auditoria de 12/11/2026): o chão em perspectiva é redesenhado pixel a pixel no
+      // processador a cada quadro, e pesava atrás do jogo de quem tem o Syden aberto ao lado. A bola continua andando acima.
+      if ((document.hidden || !document.hasFocus()) && !(import.meta.env.DEV && (window as { golfePilotoAutomatico?: boolean }).golfePilotoAutomatico)) {
+        id = requestAnimationFrame(quadro);
+        return;
+      }
       const outros: { x: number; y: number; cor: string; dentro: boolean }[] = [];
       for (const o of outrosDoServidor.current) {
         if (o.userId === eu) continue;

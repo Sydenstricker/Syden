@@ -222,6 +222,8 @@ export function registerModeracaoRoutes(app: FastifyInstance, io: IOServer) {
           recordeDaCaca: db.recordeDaCaca(eu.id),
           recordeDaEsquadrilha: db.recordeDaNave(eu.id),
           recordeDoTransito: db.recordeDoTransito(eu.id),
+          // o recorde do Rolê do coelho (a sessão de 1 minuto): a política o promete, e faltava aqui (auditoria de 12/11/2026)
+          recordeDoRole: db.recordeDoSkate(eu.id),
           // os recordes dos Carrinhos da toca, com o fantasma (o acelerador de cada passo)
           carrinhosDaToca: db.carrinhosDe(eu.id),
           // os recordes da Gincana da toca, com o fantasma (os comandos de cada passo)

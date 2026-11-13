@@ -48,8 +48,15 @@ export function useRelogio(ligado: boolean) {
   useEffect(() => {
     if (!ligado) return;
     let id = 0;
+    let ultimo = 0;
     const passo = () => {
-      setAgora(Date.now());
+      // Sem foco, 4 vezes por segundo em vez de a cada quadro (auditoria de 12/11/2026): é o React redesenhando a tela
+      // inteira, atrás do jogo de quem tem o Syden aberto ao lado. Não para de vez porque o relógio também fecha a rodada.
+      const agora = Date.now();
+      if (agora - ultimo >= 250 || (!document.hidden && document.hasFocus())) {
+        ultimo = agora;
+        setAgora(agora);
+      }
       id = requestAnimationFrame(passo);
     };
     id = requestAnimationFrame(passo);

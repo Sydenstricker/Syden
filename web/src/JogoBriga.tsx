@@ -392,6 +392,13 @@ function Palco({
       camX += (alvoCam - camX) * Math.min(1, dt * 6);
       const cam = Math.round(camX);
 
+      // SEM FOCO, NADA SE DESENHA (auditoria de 12/11/2026): o coelho e o envio da posição acima continuam, para a turma não
+      // perder ninguém, mas o canvas inteiro é o que pesa. Os efeitos só somem desenhados: sem desenho, fica o teto deles.
+      if ((document.hidden || !document.hasFocus()) && !(import.meta.env.DEV && window.brigaPilotoAutomatico)) {
+        if (efeitos.length > 40) efeitos.splice(0, efeitos.length - 40);
+        return;
+      }
+
       // O DESENHO, do fundo para a frente (quem está mais à frente na faixa é desenhado por cima)
       desenharCenario(g, fs, cam, FIM_DA_FASE, agoraMs);
       const coisas: { y: number; desenhar: () => void }[] = [];

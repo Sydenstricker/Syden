@@ -149,6 +149,14 @@ describe('levar os meus dados embora (LGPD)', () => {
     assert.ok(pacote.comunidades.length >= 1);
   });
 
+  it('o recorde do Rolê do coelho vai junto (a política o promete; faltava, auditoria de 12/11/2026)', async () => {
+    const db = await import('../src/db.js');
+    const eu = JSON.parse((await bia('GET', '/api/me/dados')).body);
+    db.guardarRecordeDoSkate(eu.conta.id, 4321);
+    const pacote = JSON.parse((await bia('GET', '/api/me/dados')).body);
+    assert.equal(pacote.conta.recordeDoRole, 4321);
+  });
+
   it('cada um só leva os próprios dados', async () => {
     const meus = JSON.parse((await estranho('GET', '/api/me/dados')).body);
     assert.ok(meus.conta.username.startsWith('zeca'));

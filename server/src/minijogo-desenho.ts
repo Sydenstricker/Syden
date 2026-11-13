@@ -239,8 +239,15 @@ export const desenho: Definicao = {
         }
         if (corpo.tipo === 'limpar' || corpo.tipo === 'desfazer') {
           if (fase !== 'desenhando' || quem !== quemDesenha) return 'Só quem desenha mexe no desenho.';
-          if (corpo.tipo === 'limpar') tracos = new Map();
-          else tracos.delete(Math.max(-1, ...tracos.keys()));
+          if (corpo.tipo === 'limpar') {
+            tracos = new Map();
+            pontosNoDesenho = 0;
+          } else {
+            // O orçamento volta com o traço desfeito: quem apaga e refaz não fica sem tinta no meio do desenho.
+            const ultimo = Math.max(-1, ...tracos.keys());
+            for (const parte of tracos.get(ultimo)?.partes.values() ?? []) pontosNoDesenho -= parte.length / 2;
+            tracos.delete(ultimo);
+          }
           versao++;
           ctx.avisar();
           return null;
@@ -253,9 +260,12 @@ export const desenho: Definicao = {
         const inteiro = (x: unknown, max: number) => Number.isInteger(x) && (x as number) >= 0 && (x as number) <= max;
         if (!inteiro(t, 100_000) || !inteiro(i, 5_000) || !inteiro(c, CORES - 1) || !inteiro(e, ESPESSURAS - 1)) return null;
         if (!Array.isArray(p) || p.length === 0 || p.length > 400 || p.length % 2 !== 0 || !p.every((x) => inteiro(x, 1000))) return null;
-        if (pontosNoDesenho + p.length / 2 > PONTOS_POR_DESENHO) return null;
+        // A conta é do que FICA GUARDADO: reenviar uma parte que já existe troca os pontos dela pelos novos. Antes só a parte
+        // nova contava, e um programa reenviando o mesmo pedaço com 200 pontos enchia o servidor (auditoria de 12/11/2026).
         const traco = tracos.get(t as number) ?? { c: c as number, e: e as number, partes: new Map() };
-        if (!traco.partes.has(i as number)) pontosNoDesenho += p.length / 2;
+        const antes = (traco.partes.get(i as number)?.length ?? 0) / 2;
+        if (pontosNoDesenho - antes + p.length / 2 > PONTOS_POR_DESENHO) return null;
+        pontosNoDesenho += p.length / 2 - antes;
         traco.partes.set(i as number, p as number[]);
         tracos.set(t as number, traco);
         return { t, i, c, e, p };
