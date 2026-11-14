@@ -30,15 +30,34 @@ export function economizandoDados(): boolean {
 }
 
 /**
- * Aplica o teto a uma publicação de tela.
+ * O COMPUTADOR DE QUEM ASSISTE ESTÁ APERTADO, SEM FOCO (ver apertoDeQuemAssiste.ts): a tela e as câmeras dos outros
+ * descem à versão menor. Mora aqui, e não num parâmetro, porque o teto é reaplicado de vários lugares (alguém chegou,
+ * a economia mudou) e todos precisam respeitá-lo.
+ */
+let apertado = false;
+const camerasBaixadas = new WeakSet<RemoteTrackPublication>();
+export const apertadoParaAssistir = () => apertado;
+export function definirAperto(valor: boolean) {
+  apertado = valor;
+}
+
+/**
+ * Aplica o teto a uma publicação de vídeo.
  *
- * Só mexe em transmissão de TELA: câmera é um quadradinho e já custa pouco, e cortar a qualidade do
- * rosto de alguém para economizar não é uma troca que valha a pena.
+ * A economia de dados só mexe na TELA: câmera é um quadradinho e já custa pouco em dados, e cortar a qualidade do
+ * rosto de alguém para economizar não é uma troca que valha a pena. O aperto mexe nas duas, porque ali o custo é o de
+ * DECODIFICAR, que existe também para a câmera (e ninguém está olhando de perto: a janela está sem foco).
  */
 export function aplicarTeto(publicacao: RemoteTrackPublication, economizar = economizandoDados()) {
-  if (publicacao.source !== Track.Source.ScreenShare) return;
+  const tela = publicacao.source === Track.Source.ScreenShare;
+  if (!tela && publicacao.source !== Track.Source.Camera) return;
+  if (!tela && !apertado && !camerasBaixadas.has(publicacao)) return; // câmera nunca apertada: como sempre foi
   try {
-    publicacao.setVideoQuality(economizar ? VideoQuality.LOW : maiorQualidade(publicacao));
+    if (!tela) {
+      if (apertado) camerasBaixadas.add(publicacao);
+      else camerasBaixadas.delete(publicacao);
+    }
+    publicacao.setVideoQuality(apertado || (tela && economizar) ? VideoQuality.LOW : maiorQualidade(publicacao));
   } catch (erro) {
     // Um pedido de qualidade que o servidor recusa não pode derrubar a sala: a imagem continua vindo
     // como vinha, que é o pior caso aceitável.

@@ -3,7 +3,7 @@ import type { TrackPublication } from 'livekit-client';
 import { api } from './api';
 import { desktopBridge } from './desktop';
 import { ondeRoda } from './ondeRoda';
-import { economizandoDados } from './qualidadeQueRecebo';
+import { apertadoParaAssistir, economizandoDados } from './qualidadeQueRecebo';
 import { MEDIDAS_PARA_REGISTRAR } from './streamStats';
 
 /**
@@ -84,7 +84,8 @@ export function useRegistroDoQueChega(publication: TrackPublication | undefined,
         if (perdidos >= 0 && recebidos + perdidos > 0) perda = Math.round((perdidos / (recebidos + perdidos)) * 100);
       }
       antes = medida;
-      seguidas = chegaBorrada(recebida.altura, mostrada.altura) ? seguidas + 1 : 0;
+      // a versão menor pedida de propósito (o computador apertado, ver apertoDeQuemAssiste.ts) não é "chega embaçada"
+      seguidas = chegaBorrada(recebida.altura, mostrada.altura) && !apertadoParaAssistir() ? seguidas + 1 : 0;
       if (seguidas < MEDIDAS_PARA_REGISTRAR) return;
       registrado = true;
       const dim = publication?.dimensions;

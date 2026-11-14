@@ -2113,6 +2113,20 @@ qual — o sinal de que havia escolha demais. O que saiu, e por quê:
 medir e decidir sozinho. Quase sempre consegue — e uma escolha que ninguém entende vira o relato
 "um modo deu problema e não sei qual".
 
+**QUEM ASSISTE NO SEGUNDO MONITOR ENQUANTO JOGA (14/11/2026, relato: FPS baixo no LoL; a ideia de medir é dele: "a segunda
+tela não pode se dar ao luxo de consumir tantos recursos").** No mesmo monitor do jogo, o Chrome percebe que está coberto e a
+página e o vídeo param sozinhos (medido: a página a 0 quadros). No segundo monitor o Syden fica à vista e sem foco, e o vídeo
+seguia inteiro. Agora, **sem foco E com o computador apertado**, a tela e as câmeras dos outros descem à versão de 540p, e voltam
+com o foco ou com 20 s de folga; apertou de novo depois de voltar, fica até o foco (`apertoDeQuemAssiste.ts`, aplicado por
+`qualidadeQueRecebo.ts`). Folgado e sem foco, nada muda: quem só assiste no segundo monitor não perde nada. Os sinais, porque o
+navegador não deixa ver RAM nem placa: a **pressão do processador** (Compute Pressure API, Chrome e Edge; entrega a leitura sem foco
+enquanto o microfone está aberto, medido) com "serious" na hora ou "fair" por 5 s, e os **quadros perdidos** na decodificação
+(todo navegador) acima de 10% em duas medidas seguidas (uma só é a troca de versão). Medido (`e2e/assistir-apertado.mjs`, VP8 pelo
+processador, 15 quadros): o navegador de quem assiste de 2,21 para 0,93 núcleo. Uma linha no diário por chamada quando acontece.
+**No app**, o Electron nunca deixa a página "escondida" (o freio de segundo plano desligado: coberta e até minimizada, ela anima a
+60 por segundo, medido), então o app diz à página se está à vista (`desktop/src/a-vista.js`, com a janela da frente lida pelo
+módulo nativo): minimizado, na bandeja ou coberto inteiro por outro programa, o vídeo nem é baixado.
+
 **DUAS VERSÕES, O "BANDA" QUE ERA O TETO E O BOTÃO DE RECOMENDAR (12/11/2026, pelo diário de 11/11 e por pedido dele).**
 O diário trazia "chega embaçada" e "apertada pela internet" com a internet sobrando (26 Mbps estimados, saindo 427×240).
 Medido (`e2e/versoes-da-tela.mjs`), três coisas eram nossas:

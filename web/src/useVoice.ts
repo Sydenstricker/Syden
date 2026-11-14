@@ -28,7 +28,8 @@ import { type ScreenQuality, getSettings, updateSettings } from './settings';
 import { playSoundboard, stopAllSounds } from './soundboard';
 import { DURACAO_DA_REACAO_MS, ehReacao, type Reacao } from './reacoes';
 import { nomeDaTransmissao } from './streamName';
-import { aoMudarEconomia, aplicarTetoEmTodas } from './qualidadeQueRecebo';
+import { aoMudarEconomia, aplicarTetoEmTodas, definirAperto } from './qualidadeQueRecebo';
+import { ESTADO_INICIAL, fracaoPerdida, proximoApertoDeQuemAssiste, type Pressao } from './apertoDeQuemAssiste';
 import { applyAllVolumes, idsComVolumeAjustado, trocarSaidaDoReforco } from './voiceVolumes';
 import { type Fonte, lembrarFalantes, quemOuvir, queroEstaFaixa } from './quemOuvir';
 import {
@@ -487,6 +488,92 @@ export function useVoice(socket: Socket | null) {
         .off(RoomEvent.ParticipantConnected, restore)
         .off(RoomEvent.TrackSubscribed, restore)
         .off(RoomEvent.Connected, restore);
+    };
+  }, [room]);
+
+  // QUEM ASSISTE SEM FOCO COM O COMPUTADOR APERTADO (o jogo no outro monitor): a imagem dos outros desce à versão menor,
+  // e volta com o foco ou com folga. A regra e os porquês em apertoDeQuemAssiste.ts.
+  useEffect(() => {
+    let estado = ESTADO_INICIAL;
+    let pressao: Pressao | null = null;
+    let contadoresAntes: { decodificados: number; perdidos: number } | null = null;
+    let registrado = false;
+    let vivo = true;
+
+    // A pressão do processador (Chrome e Edge). Sem a API, ou recusada, fica só a perda de quadros.
+    type Observador = { observe(fonte: 'cpu', opcoes?: { sampleInterval?: number }): Promise<void>; disconnect(): void };
+    const Construtor = (window as unknown as { PressureObserver?: new (cb: (registros: { state: Pressao }[]) => void) => Observador }).PressureObserver;
+    let observador: Observador | null = null;
+    if (Construtor) {
+      try {
+        observador = new Construtor((registros) => {
+          pressao = registros.at(-1)?.state ?? pressao;
+        });
+        observador.observe('cpu', { sampleInterval: 1000 }).catch(() => {
+          observador = null;
+        });
+      } catch {
+        observador = null;
+      }
+    }
+
+    const medir = async () => {
+      // Os contadores de todos os vídeos que chegam (tela e câmeras), somados.
+      let decodificados = 0;
+      let perdidos = 0;
+      let algum = false;
+      for (const pessoa of room.remoteParticipants.values()) {
+        for (const publicacao of pessoa.videoTrackPublications.values()) {
+          const faixa = publicacao.track;
+          if (!faixa || !publicacao.isSubscribed) continue;
+          try {
+            (await faixa.getRTCStatsReport())?.forEach((e: Record<string, unknown>) => {
+              if (e.type !== 'inbound-rtp' || e.kind !== 'video') return;
+              algum = true;
+              decodificados += Number(e.framesDecoded ?? 0);
+              perdidos += Number(e.framesDropped ?? 0);
+            });
+          } catch {
+            // uma faixa que não responde não decide nada
+          }
+        }
+      }
+      if (!vivo) return;
+      const agora = algum ? { decodificados, perdidos } : null;
+      const perda = agora ? fracaoPerdida(contadoresAntes, agora) : null;
+      contadoresAntes = agora;
+      const comFoco = !document.hidden && document.hasFocus();
+      const antes = estado.apertado;
+      estado = proximoApertoDeQuemAssiste(estado, { comFoco, pressao, perdaDeQuadros: perda, agora: performance.now() });
+      // para o e2e (assistir-apertado.mjs): o que a regra leu, só no site de desenvolvimento
+      if (import.meta.env.DEV) (window as unknown as { apertoDeQuemAssiste?: unknown }).apertoDeQuemAssiste = { pressao, perda, comFoco, ...estado };
+      if (estado.apertado === antes) return;
+      definirAperto(estado.apertado);
+      aplicarTetoEmTodas(room);
+      // Uma linha no diário por chamada, para saber se isto acontece no mundo (e com quem: pressão ou perda).
+      if (estado.apertado && !registrado) {
+        registrado = true;
+        const linha = `quem assiste: sem foco e apertado, imagem à versão menor · processador ${pressao ?? 'sem leitura'}${perda !== null ? ` · ${Math.round(perda * 100)}% dos quadros perdidos` : ''}`;
+        void api('/api/client-errors', {
+          method: 'POST',
+          body: { kind: 'transmissão', message: linha, onde: ondeRoda(navigator.userAgent, desktopBridge !== undefined) },
+        }).catch(() => {});
+      }
+    };
+    let medindo = false;
+    const relogio = setInterval(() => {
+      if (medindo) return; // uma leitura lenta não empilha outra
+      medindo = true;
+      void medir().finally(() => (medindo = false));
+    }, 1000);
+    return () => {
+      vivo = false;
+      clearInterval(relogio);
+      observador?.disconnect();
+      if (estado.apertado) {
+        definirAperto(false);
+        aplicarTetoEmTodas(room);
+      }
     };
   }, [room]);
 
