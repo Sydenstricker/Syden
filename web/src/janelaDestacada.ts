@@ -96,6 +96,41 @@ export async function destacarVideo(
   origem: HTMLVideoElement,
   titulo: string,
   aoFechar?: () => void,
+  faixa?: Faixa,
+): Promise<JanelaAberta | null> {
+  let aberta = false;
+  const janela = await abrirDestacado(origem, titulo, () => {
+    if (aberta) {
+      aberta = false;
+      destacadas--;
+      for (const f of ouvintesDasDestacadas) f();
+    }
+    aoFechar?.();
+  }, faixa);
+  if (janela) {
+    aberta = true;
+    destacadas++;
+    for (const f of ouvintesDasDestacadas) f();
+  }
+  return janela;
+}
+
+/**
+ * Quantas janelas destacadas estão abertas agora. Com uma aberta, o vídeo continua sendo baixado mesmo com a janela
+ * principal fora da vista (ver o "à vista" em useVoice.ts): a janelinha é justamente o que fica à vista sobre o jogo.
+ */
+let destacadas = 0;
+const ouvintesDasDestacadas = new Set<() => void>();
+export const haJanelaDestacada = () => destacadas > 0;
+export function aoMudarDestacadas(f: () => void): () => void {
+  ouvintesDasDestacadas.add(f);
+  return () => ouvintesDasDestacadas.delete(f);
+}
+
+async function abrirDestacado(
+  origem: HTMLVideoElement,
+  titulo: string,
+  aoFechar?: () => void,
   /** A faixa do LiveKit, quando houver: a janela nova é ligada a ela por `attach` (ver abaixo). */
   faixa?: { attach(elemento: HTMLVideoElement): HTMLMediaElement; detach(elemento: HTMLVideoElement): HTMLMediaElement },
 ): Promise<JanelaAberta | null> {

@@ -89,3 +89,30 @@ export function elementoAVista(el: Element | null | undefined): boolean {
   const conferir = (el as Element & { checkVisibility?: (o?: { visibilityProperty?: boolean }) => boolean }).checkVisibility;
   return conferir ? conferir.call(el, { visibilityProperty: true }) : true;
 }
+
+/** A cena 3D pode desenhar agora? (janela à vista e em foco, e a caixa dela à vista) */
+export function cenaPodeDesenhar(caixa: Element | null | undefined): boolean {
+  return !document.hidden && document.hasFocus() && elementoAVista(caixa);
+}
+
+/**
+ * SEM FOCO, O LAÇO PARA DE VEZ (14/11/2026, relato: FPS baixo no LoL). O app desliga o freio de segundo plano
+ * (backgroundThrottling: false), então um setAnimationLoop que só "não desenhava" sem foco ainda acordava o Syden a cada
+ * quadro do monitor (144, 240 vezes por segundo) atrás do jogo. Aqui o laço é desligado, e uma conferência de 4 vezes por
+ * segundo o religa quando a cena volta a poder desenhar. Devolve como cancelar a espera (na destruição da cena).
+ */
+export function esperarParaDesenhar(
+  renderer: { setAnimationLoop(f: ((t: number) => void) | null): void },
+  laco: (t: number) => void,
+  caixa: Element | null | undefined,
+  aoVoltar: () => void,
+): () => void {
+  renderer.setAnimationLoop(null);
+  const relogio = setInterval(() => {
+    if (!cenaPodeDesenhar(caixa)) return;
+    clearInterval(relogio);
+    aoVoltar();
+    renderer.setAnimationLoop(laco);
+  }, 250);
+  return () => clearInterval(relogio);
+}

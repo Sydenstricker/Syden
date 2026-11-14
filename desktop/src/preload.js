@@ -9,6 +9,12 @@ let ultimaTelaEscolhida = null;
 let ultimoSomEscolhido = null;
 // O executável dono da janela escolhida ("dota2.exe"), para o gênero do jogo. null = tela inteira ou app antigo.
 let ultimoProgramaEscolhido = null;
+// O último aviso de 'app:a-vista' (ver aoMudarAVista).
+let ultimoAVista = true;
+ipcRenderer.on('app:a-vista', (_event, aVista) => {
+  ultimoAVista = Boolean(aVista);
+});
+
 ipcRenderer.on('tela:escolhida', (_event, escolha) => {
   // Versões antigas do processo principal mandavam só o nome; este preload vai junto com ele, mas o
   // formato velho não custa nada aceitar.
@@ -82,6 +88,18 @@ contextBridge.exposeInMainWorld('sydenDesktop', {
     // aparece do outro lado, como "An object could not be cloned", longe da causa.
     return () => {
       ipcRenderer.removeListener('entrada:voltou', ouvinte);
+    };
+  },
+  /**
+   * Avisa quando o Syden sai da vista (minimizado, na bandeja, ou coberto por um jogo em tela cheia) e quando volta.
+   * Devolve a função de parar de escutar (com as chaves: ver aoVoltarDaEntrada). Ver src/a-vista.js.
+   */
+  aoMudarAVista: (callback) => {
+    const ouvinte = (_evento, aVista) => callback(Boolean(aVista));
+    ipcRenderer.on('app:a-vista', ouvinte);
+    if (!ultimoAVista) callback(false); // quem se inscreve depois do aviso recebe o estado de agora
+    return () => {
+      ipcRenderer.removeListener('app:a-vista', ouvinte);
     };
   },
   /** Traz a janela para frente (ex.: ao clicar numa notificação). */

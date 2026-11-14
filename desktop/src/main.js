@@ -4,6 +4,7 @@ const path = require('node:path');
 const config = require('../app.config.json');
 const { setupScreenAudio, screenAudioAvailable, stopScreenAudio, escolherFonteDoSom, programaDaFonte } = require('./screen-audio');
 const { setupRuido, pararRuido } = require('./ruido');
+const { vigiarAVista } = require('./a-vista');
 const { setupRecorte, pararRecorte } = require('./recorte');
 const { anotarQuemAbriu, lerQuemAbriu, mesmaInstalacao, recadoDeDoisSydens } = require('./duas-instalacoes');
 
@@ -268,6 +269,7 @@ function createMainWindow() {
   });
 
   mainWindow.once('ready-to-show', () => mainWindow?.show());
+  vigiarAVista(mainWindow);
 
   // A volta que chegou antes de a página existir. 'did-finish-load' e não 'ready-to-show': a janela
   // aparece antes de o JavaScript do site estar de pé, e quem escuta o recado é o site.

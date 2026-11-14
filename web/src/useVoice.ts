@@ -57,6 +57,7 @@ import {
 import { lembrarDoFluido } from './recomendarModo';
 import { filaUltimaVale } from './fila';
 import { desktopBridge } from './desktop';
+import { aoMudarDestacadas, haJanelaDestacada } from './janelaDestacada';
 import { escolherCodecDaTela } from './escolherCodec';
 import { ehEfeitoVisual, type EfeitoVisualId } from './efeitosVisuais';
 import type { DisparoVisual } from './CamadaDeEfeitos';
@@ -1120,6 +1121,8 @@ export function useVoice(socket: Socket | null) {
    * responsável muda alguma (o evento syden:protecao). Para adulto, nulas, e nada muda.
    */
   const protecaoRef = useRef<{ regras: Regras; amigos: Set<string> } | null>(null);
+  /** A janela do app está à vista? (ver desktop/src/a-vista.js; no navegador, sempre true: lá o LiveKit já pausa sozinho) */
+  const aVistaRef = useRef(true);
 
   const aplicarInscricoes = useCallback(() => {
     /**
@@ -1138,10 +1141,16 @@ export function useVoice(socket: Socket | null) {
 
     // Menor com "assistir só de amigos": o vídeo (tela, câmera e o som da tela) de quem não é amigo nem é pedido.
     const soDeAmigos = protecaoRef.current?.regras.assistirSoAmigos ? protecaoRef.current.amigos : null;
+    // FORA DA VISTA, SEM VÍDEO (14/11/2026, relato: FPS baixo no LoL). Com o Syden minimizado ou coberto por um jogo em
+    // tela cheia, a imagem da tela e das câmeras não é baixada nem decodificada; o som continua (o da tela também). Volta
+    // sozinha quando a janela volta. Com uma janela destacada aberta, nada pausa: ela é o que fica à vista.
+    const semVideo = !aVistaRef.current && !haJanelaDestacada();
     for (const pessoa of room.remoteParticipants.values()) {
       for (const publicacao of pessoa.trackPublications.values()) {
         const fonte = fonteDa(publicacao);
-        const bloqueado = soDeAmigos !== null && fonte !== 'microfone' && !soDeAmigos.has(pessoa.identity);
+        const bloqueado =
+          (soDeAmigos !== null && fonte !== 'microfone' && !soDeAmigos.has(pessoa.identity)) ||
+          (semVideo && (fonte === 'tela' || fonte === 'camera'));
         const querido = !bloqueado && queroEstaFaixa(fonte, pessoa.identity, vozesQueridas, assistindoRef.current);
         if (publicacao.isDesired !== querido) publicacao.setSubscribed(querido);
       }
@@ -1200,6 +1209,20 @@ export function useVoice(socket: Socket | null) {
         .off(RoomEvent.LocalTrackPublished, aplicarPermissoesDoMenor);
     };
   }, [room, aplicarInscricoes, aplicarPermissoesDoMenor]);
+
+  // A janela do app saindo e voltando da vista, e as janelas destacadas abrindo e fechando: a inscrição do vídeo é refeita.
+  useEffect(() => {
+    const pararDestacadas = aoMudarDestacadas(aplicarInscricoes);
+    const pararAVista = desktopBridge?.aoMudarAVista?.((aVista) => {
+      if (aVistaRef.current === aVista) return;
+      aVistaRef.current = aVista;
+      aplicarInscricoes();
+    });
+    return () => {
+      pararDestacadas();
+      pararAVista?.();
+    };
+  }, [aplicarInscricoes]);
 
   useEffect(() => {
     aplicarInscricoes();
@@ -1841,7 +1864,7 @@ export function useVoice(socket: Socket | null) {
       return;
     }
     let cancelled = false;
-    let raf = 0;
+    let relogioDoMudo: ReturnType<typeof setInterval> | undefined;
     let stream: MediaStream | null = null;
     let ctx: AudioContext | null = null;
     let aboveSince: number | null = null;
@@ -1883,9 +1906,11 @@ export function useVoice(socket: Socket | null) {
           } else {
             aboveSince = null;
           }
-          raf = requestAnimationFrame(tick);
         };
-        raf = requestAnimationFrame(tick);
+        // Num relógio de 50 ms, e NÃO a cada quadro (14/11/2026, relato: FPS baixo no LoL). O app desliga o freio de
+        // segundo plano (backgroundThrottling: false), então um requestAnimationFrame aqui acordava o Syden a cada quadro
+        // do monitor (144, 240 vezes por segundo) durante a partida inteira de quem joga no mudo. 50 ms bastam aos 250 ms.
+        relogioDoMudo = setInterval(tick, 50);
       } catch {
         // Sem acesso a um segundo fluxo do microfone aqui: só não há como avisar, nada quebra.
       }
@@ -1893,7 +1918,7 @@ export function useVoice(socket: Socket | null) {
 
     return () => {
       cancelled = true;
-      cancelAnimationFrame(raf);
+      clearInterval(relogioDoMudo);
       clearTimeout(hideTimer);
       stream?.getTracks().forEach((t) => t.stop());
       void ctx?.close();

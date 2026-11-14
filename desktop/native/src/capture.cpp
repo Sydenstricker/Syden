@@ -413,9 +413,44 @@ Napi::Value WindowProcess(const Napi::CallbackInfo& info) {
   return result;
 }
 
+/**
+ * A janela da frente (a que tem o foco do Windows): o processo, a classe e o retângulo em pixels de tela.
+ *
+ * Existe para o Syden saber se está À VISTA (14/11/2026, relato: FPS baixo no LoL). Com o freio de segundo plano
+ * desligado (backgroundThrottling: false, pela chamada), a página nunca fica "hidden", nem coberta por um jogo em tela
+ * cheia, nem minimizada (medido no Electron 44), e o vídeo da chamada continuava sendo baixado e decodificado atrás do
+ * jogo. O JavaScript compara este retângulo com o da janela do Syden: se a da frente o cobre inteiro, ninguém o vê.
+ */
+Napi::Value JanelaDaFrente(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  const HWND hwnd = GetForegroundWindow();
+  if (!hwnd || IsIconic(hwnd)) return env.Null();
+  DWORD pid = 0;
+  GetWindowThreadProcessId(hwnd, &pid);
+  RECT r{};
+  if (!GetWindowRect(hwnd, &r)) return env.Null();
+  wchar_t classe[128] = L"";
+  GetClassNameW(hwnd, classe, 128);
+  std::string classeUtf8;
+  const int bytes = WideCharToMultiByte(CP_UTF8, 0, classe, -1, nullptr, 0, nullptr, nullptr);
+  if (bytes > 1) {
+    classeUtf8.resize(static_cast<size_t>(bytes) - 1);
+    WideCharToMultiByte(CP_UTF8, 0, classe, -1, classeUtf8.data(), bytes, nullptr, nullptr);
+  }
+  Napi::Object result = Napi::Object::New(env);
+  result.Set("pid", Napi::Number::New(env, pid));
+  result.Set("classe", Napi::String::New(env, classeUtf8));
+  result.Set("x", Napi::Number::New(env, r.left));
+  result.Set("y", Napi::Number::New(env, r.top));
+  result.Set("largura", Napi::Number::New(env, r.right - r.left));
+  result.Set("altura", Napi::Number::New(env, r.bottom - r.top));
+  return result;
+}
+
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
   exports.Set("start", Napi::Function::New(env, Start));
   exports.Set("windowProcess", Napi::Function::New(env, WindowProcess));
+  exports.Set("janelaDaFrente", Napi::Function::New(env, JanelaDaFrente));
   exports.Set("stop", Napi::Function::New(env, Stop));
   exports.Set("faixaDeIdade", Napi::Function::New(env, FaixaDeIdade));
   return exports;
