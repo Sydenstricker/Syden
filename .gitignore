@@ -90,3 +90,8 @@ desktop/recorte-modelo/*.onnx
 
 # A auditoria visual (e2e/pixel-art/auditoria-visual.mjs) refaz as fotos a cada rodada
 e2e/pixel-art/auditoria-visual/
+
+# o Python gera sozinho ao rodar os scripts de arte
+__pycache__/
+# perfis de processador das auditorias (grandes, refeitos a cada rodada)
+*.cpuprofile

@@ -1,0 +1,64 @@
+[
+  {
+    "cenario": "assistindo a transmissão (1080p)",
+    "foco": "com foco",
+    "nucleos": 1.457,
+    "porTipo": {
+      "browser": 0.01,
+      "renderer": 0.714,
+      "GPU": 0.67,
+      "network.mojom.NetworkService": 0.012,
+      "storage.mojom.StorageService": 0,
+      "audio.mojom.AudioService": 0.05,
+      "video_capture.mojom.VideoCaptureService": 0
+    },
+    "memoriaMb": 1247,
+    "rafPorSeg": 0,
+    "relogiosPorSeg": 29.9,
+    "longas": 0,
+    "longasMs": 0,
+    "porDocumento": [
+      {
+        "url": "/app/",
+        "raf": 0,
+        "relogios": 7.8
+      },
+      {
+        "url": "/app/quarto-novo/?app&noite",
+        "raf": 0,
+        "relogios": 22.1
+      }
+    ]
+  },
+  {
+    "cenario": "assistindo a transmissão (1080p)",
+    "foco": "sem foco",
+    "nucleos": 0.829,
+    "porTipo": {
+      "browser": 0.006,
+      "renderer": 0.498,
+      "GPU": 0.262,
+      "network.mojom.NetworkService": 0.013,
+      "storage.mojom.StorageService": 0,
+      "audio.mojom.AudioService": 0.049,
+      "video_capture.mojom.VideoCaptureService": 0
+    },
+    "memoriaMb": 1087,
+    "rafPorSeg": 0,
+    "relogiosPorSeg": 29.8,
+    "longas": 0,
+    "longasMs": 0,
+    "porDocumento": [
+      {
+        "url": "/app/",
+        "raf": 0,
+        "relogios": 7.7
+      },
+      {
+        "url": "/app/quarto-novo/?app&noite",
+        "raf": 0,
+        "relogios": 22.1
+      }
+    ]
+  }
+]
