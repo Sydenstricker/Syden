@@ -266,7 +266,7 @@ function PersonTile({
         <VideoTrack trackRef={trackRef} />
       ) : (
         <div className="tile-avatar">
-          <Avatar name={name} userId={Number(trackRef.participant.identity)} size={avatarSize} speaking={speaking} musica={musica} assistindo={assistindo} />
+          <Avatar name={name} userId={Number(trackRef.participant.identity)} size={avatarSize} speaking={speaking} musica={musica} assistindo={assistindo} naChamada />
         </div>
       )}
       {/* Mesma informação de formato da transmissão, só que discreta: aparece ao passar o mouse. */}

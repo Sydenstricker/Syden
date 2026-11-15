@@ -153,9 +153,23 @@ function useMenosMovimento() {
  * abrindo e fechando a boca, e na chamada parece que o avatar fala). O sinal é o mesmo que mexe a boca do coelho pronto,
  * com a folga curta da fala (FOLGA_DA_FALA_MS), para o GIF não parar e recomeçar entre uma palavra e outra.
  */
-export function FotoDoAvatar({ src, animado, estado, size }: { src: string; animado: boolean; estado: EstadoDoPronto | null; size: number }) {
+export function FotoDoAvatar({
+  src,
+  animado,
+  estado,
+  size,
+  soFalando = false,
+}: {
+  src: string;
+  animado: boolean;
+  estado: EstadoDoPronto | null;
+  size: number;
+  /** Na chamada, o GIF anima SÓ com a fala (relato de 14/11/2026: o quadro da chamada tem 80 px, contava como "grande" e
+   *  o GIF animava sempre, mesmo com a pessoa no mudo); nem o mouse em cima do quadro o anima. */
+  soFalando?: boolean;
+}) {
   const menosMovimento = useMenosMovimento();
-  const sempre = size >= AVATAR_GRANDE;
+  const sempre = size >= AVATAR_GRANDE && !soFalando;
   const [linha, setLinha] = useState<Element | null>(null);
   const [mouseNaLinha, setMouseNaLinha] = useState(false);
   const canvas = useRef<HTMLCanvasElement | null>(null);
@@ -172,7 +186,7 @@ export function FotoDoAvatar({ src, animado, estado, size }: { src: string; anim
   // as duas coisas deixavam o GIF animando até tocar noutro lugar. Por isso pointerenter só com mouse ou caneta, e o foco
   // só quando é o do teclado (:focus-visible, que o toque não acende).
   useEffect(() => {
-    if (!animado || sempre || !linha) return;
+    if (!animado || sempre || soFalando || !linha) return;
     const entrou = (e: Event) => {
       if ((e as PointerEvent).pointerType !== 'touch') setMouseNaLinha(true);
     };
@@ -190,12 +204,12 @@ export function FotoDoAvatar({ src, animado, estado, size }: { src: string; anim
       linha.removeEventListener('focusin', focou);
       linha.removeEventListener('focusout', saiu);
     };
-  }, [animado, sempre, linha]);
+  }, [animado, sempre, soFalando, linha]);
 
   // Sem foco, nada se mexe (janelaComFoco.ts): a marca do <html> pausa o CSS, mas não um GIF num <img>.
   const comFoco = useJanelaComFoco();
   const falando = estado === 'falando';
-  const parado = animado && (menosMovimento || !comFoco || (!sempre && !mouseNaLinha && !falando));
+  const parado = animado && (menosMovimento || !comFoco || (!sempre && !(mouseNaLinha && !soFalando) && !falando));
 
   // o primeiro quadro, recortado no meio como o object-fit: cover do <img>
   useEffect(() => {
@@ -261,6 +275,7 @@ export function Avatar({
   digitando,
   musica,
   assistindo,
+  naChamada,
   size = 32,
 }: {
   /** Não aparece mais no desenho (era a inicial, antes do coelho); fica para quem chama dizer de quem é. */
@@ -278,6 +293,8 @@ export function Avatar({
   musica?: boolean;
   /** Está na plateia de uma transmissão (ver assistindo.ts): o coelho aparece com a pipoca. */
   assistindo?: boolean;
+  /** O quadro da chamada: o GIF do avatar anima só enquanto a pessoa fala (ver FotoDoAvatar). */
+  naChamada?: boolean;
   size?: number;
 }) {
   const { members } = useDirectory();
@@ -332,7 +349,7 @@ export function Avatar({
         // desenho de uma foto não se anima quadro a quadro como o coelho, então é a foto inteira que se mexe — pula de
         // leve falando, cochila (esmaecida, com o zzz) ausente, e balança devagar ocupada. Ver .avatar-foto em styles.css.
         <>
-          <FotoDoAvatar src={mediaUrl.avatar(userId!, version)} animado={!!membro?.avatarAnimado} estado={estadoDoPronto} size={size} />
+          <FotoDoAvatar src={mediaUrl.avatar(userId!, version)} animado={!!membro?.avatarAnimado} estado={estadoDoPronto} size={size} soFalando={naChamada} />
           {estadoDoPronto === 'ausente' && (
             <span className="avatar-foto-zzz" aria-hidden="true">
               z
