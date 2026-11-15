@@ -20527,3 +20527,146 @@ body.arrastando-barra {
   color: var(--accent);
   cursor: pointer;
 }
+
+/* ---------- O bolão (Bolao.tsx): por cima do desenho do calendário ---------- */
+.calendario.bolao {
+  width: min(480px, 100%);
+}
+.calendario-lista li.bolao-item {
+  padding: 0;
+}
+.bolao-abrir {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.bolao-abrir:hover {
+  background: var(--bg-hover);
+}
+.bolao-regra {
+  color: var(--text-muted);
+  font-size: calc(12px * var(--escala-do-texto));
+}
+.bolao-abas {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
+}
+.bolao-abas button {
+  padding: 6px 12px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  cursor: pointer;
+}
+.bolao-abas button.ativa {
+  border-bottom-color: var(--accent);
+  color: var(--text);
+  font-weight: 600;
+}
+.calendario-lista li.bolao-jogo {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+.bolao-jogo-topo,
+.bolao-jogo-rodape {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.bolao-jogo-rodape {
+  color: var(--text-muted);
+  font-size: calc(13px * var(--escala-do-texto));
+}
+.bolao-placar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.bolao-time {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-weight: 600;
+}
+.bolao-time.casa {
+  text-align: end;
+}
+.bolao-gols {
+  width: 3em;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-input);
+  color: var(--text);
+  font: inherit;
+  font-weight: 700;
+  text-align: center;
+}
+.bolao-gols::-webkit-inner-spin-button,
+.bolao-gols::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input.bolao-gols {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+span.bolao-gols {
+  background: transparent;
+}
+.bolao-salvar {
+  flex-shrink: 0;
+}
+.bolao-palpites {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: calc(13px * var(--escala-do-texto));
+}
+.bolao-palpites li {
+  display: flex;
+  gap: 10px;
+}
+.bolao-posicao {
+  width: 2em;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+.bolao-apagar {
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+  border: 0;
+  background: transparent;
+  color: var(--red);
+  font: inherit;
+  font-size: calc(13px * var(--escala-do-texto));
+  cursor: pointer;
+}
+@media (max-width: 480px) {
+  .bolao-placar {
+    flex-wrap: wrap;
+  }
+  .bolao-salvar {
+    width: 100%;
+  }
+}

@@ -1,5 +1,6 @@
-import { CalendarDays, Gamepad2, Hash, Link2, Mic, Sparkles, Trophy, X } from 'lucide-react';
+import { CalendarDays, Gamepad2, Medal, Hash, Link2, Mic, Sparkles, Trophy, X } from 'lucide-react';
 import { Calendario } from './Calendario';
+import { Bolao } from './Bolao';
 import { Conquistas } from './Conquistas';
 import { Mascote } from './Mascote';
 import { useState } from 'react';
@@ -132,6 +133,8 @@ export function InicioDaComunidade({
   const [copiado, setCopiado] = useState(false);
   // O CALENDÁRIO (18/10/2026): por um atalho, até o calendário de parede do salão ganhar arte.
   const [calendario, setCalendario] = useState(false);
+  // O BOLÃO (14/11/2026, ver Bolao.tsx): também por um atalho.
+  const [bolao, setBolao] = useState(false);
   const [conquistas, setConquistas] = useState(false);
   // A TV AO VIVO: quem transmite agora, nesta comunidade. O canal é um índice nessa lista, e volta ao começo
   // quando a lista encolhe (alguém parou de transmitir).
@@ -385,9 +388,14 @@ export function InicioDaComunidade({
           <CalendarDays size={16} />
           <span>{t('Calendário')}</span>
         </button>
+        <button className="bv-atalho" onClick={() => setBolao(true)}>
+          <Medal size={16} />
+          <span>{t('Bolão')}</span>
+        </button>
         <AbrirTicket community={community} aoAbrir={aoAbrirConversa} />
       </div>
       {calendario && <Calendario communityId={community.id} socket={socket} aoFechar={() => setCalendario(false)} />}
+      {bolao && <Bolao communityId={community.id} socket={socket} aoFechar={() => setBolao(false)} />}
       {conquistas && (
         <Conquistas
           communityId={community.id}

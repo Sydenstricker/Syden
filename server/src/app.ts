@@ -27,6 +27,7 @@ import { registerCorridaRoutes } from './corrida-routes.js';
 import { registerPlataformaRoutes } from './plataforma-routes.js';
 import { registerSalaoRoutes } from './salao-routes.js';
 import { registerCalendarioRoutes } from './calendario-routes.js';
+import { registerBolaoRoutes } from './bolao-routes.js';
 import { registerConquistasRoutes } from './conquistas.js';
 import { registerAulaRoutes } from './aula-routes.js';
 import { registerCargosRoutes } from './cargos-routes.js';
@@ -93,6 +94,7 @@ export async function buildApp({ background = true } = {}): Promise<{ app: Fasti
   registerPlataformaRoutes(app);
   registerSalaoRoutes(app, io);
   registerCalendarioRoutes(app, io);
+  registerBolaoRoutes(app, io);
   registerConquistasRoutes(app);
   registerAulaRoutes(app, io);
   registerCargosRoutes(app, io);

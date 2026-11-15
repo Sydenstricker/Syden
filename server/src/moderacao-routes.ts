@@ -228,6 +228,8 @@ export function registerModeracaoRoutes(app: FastifyInstance, io: IOServer) {
           carrinhosDaToca: db.carrinhosDe(eu.id),
           // os recordes da Gincana da toca, com o fantasma (os comandos de cada passo)
           gincanaDaToca: db.gincanaDe(eu.id),
+          // os palpites nos bolões das comunidades (bolao-routes.ts)
+          palpitesDoBolao: db.palpitesDe(eu.id),
           // os recordes da Ponte da toca, por fase: o menor custo de uma ponte que passou
           ponteDaToca: db.pontesDe(eu.id),
           // quem entra no quarto, os convidados (ids) e o destaque da estante de troféus (ver trofeus-routes.ts)
