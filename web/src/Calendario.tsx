@@ -18,12 +18,19 @@ interface Evento {
   titulo: string;
   quando: string;
 }
-/** Um bolão com prazo (Bolao.tsx): aparece no dia em que os palpites fecham (15/11/2026, pedido dele). */
+/**
+ * Um bolão (Bolao.tsx). TODO bolão fica registrado no calendário, os passados também (15/11/2026, pedido dele: "os usuários
+ * podem consultar o calendário e ver eventos da comunidade passados e futuros"), num dia só: o da RESPOSTA, quando já saiu
+ * (numa pergunta de "quando", é o próprio acontecimento); senão o do prazo dos palpites; senão o dia em que foi criado.
+ */
 interface BolaoComPrazo {
   id: number;
   pergunta: string;
   fechaEm: string | null;
+  resposta: string | null;
+  criadoEm: string;
 }
+const diaDoBolao = (b: BolaoComPrazo) => new Date(b.resposta ?? b.fechaEm ?? b.criadoEm);
 interface Aniversario {
   userId: number;
   nome: string;
@@ -92,11 +99,11 @@ export function Calendario({
     };
   }, [communityId, mes, versao]);
 
-  // os bolões da comunidade: os que têm prazo entram no dia em que os palpites fecham
+  // os bolões da comunidade, todos (ver diaDoBolao)
   useEffect(() => {
     let vivo = true;
     api<{ boloes: BolaoComPrazo[] }>(`/api/communities/${communityId}/boloes`)
-      .then((r) => vivo && setBoloes(r.boloes.filter((b) => b.fechaEm)))
+      .then((r) => vivo && setBoloes(r.boloes))
       .catch(() => {});
     return () => {
       vivo = false;
@@ -124,7 +131,7 @@ export function Calendario({
   // o que há neste mês, em ordem
   const itens: Item[] = [
     ...(dados?.eventos ?? []).map((evento) => ({ tipo: 'evento' as const, data: new Date(evento.quando), evento })),
-    ...boloes.map((bolao) => ({ tipo: 'bolao' as const, data: new Date(bolao.fechaEm!), bolao })),
+    ...boloes.map((bolao) => ({ tipo: 'bolao' as const, data: diaDoBolao(bolao), bolao })),
     ...(dados?.aniversarios ?? [])
       .filter((a) => a.mes === mes.getMonth() + 1)
       .map((aniversario) => ({ tipo: 'aniversario' as const, data: new Date(mes.getFullYear(), aniversario.mes - 1, aniversario.dia), aniversario })),
@@ -225,10 +232,15 @@ export function Calendario({
                 onClick={() => setEscolhido(escolhido && mesmoDia(dia, escolhido) ? null : dia)}
               >
                 {i + 1}
-                {(evento || bolao || aniversario) && (
+                {/* o bolão é um selo com a inicial no canto do dia (o desenho dele), e não mais um pontinho */}
+                {bolao && (
+                  <span className="calendario-selo-bolao" aria-hidden="true">
+                    {t('Bolão').charAt(0).toLocaleUpperCase()}
+                  </span>
+                )}
+                {(evento || aniversario) && (
                   <span className="calendario-marcas" aria-hidden="true">
                     {evento && <span className="calendario-marca evento" />}
-                    {bolao && <span className="calendario-marca bolao" />}
                     {aniversario && <span className="calendario-marca aniversario" />}
                   </span>
                 )}
@@ -262,7 +274,11 @@ export function Calendario({
               <li key={'b' + i.bolao.id} className="calendario-bolao">
                 <button type="button" className="bolao-abrir" onClick={() => aoAbrirBolao?.(i.bolao.id)} disabled={!aoAbrirBolao}>
                   <span className="calendario-quando">
-                    {primeiraMaiuscula(t('Fecha em {quando}', { quando: fmtDia.format(i.data) + ', ' + fmtHora.format(i.data) }))}
+                    {i.bolao.resposta
+                      ? t('Resposta: {quando}', { quando: fmtDia.format(i.data) + ', ' + fmtHora.format(i.data) })
+                      : i.bolao.fechaEm
+                        ? primeiraMaiuscula(t('Fecha em {quando}', { quando: fmtDia.format(i.data) + ', ' + fmtHora.format(i.data) }))
+                        : primeiraMaiuscula(fmtDia.format(i.data))}
                   </span>
                   <span className="calendario-nome">
                     <Medal size={14} aria-hidden="true" /> {t('Bolão')}: {i.bolao.pergunta}

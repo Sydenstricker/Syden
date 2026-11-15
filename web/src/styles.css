@@ -2735,8 +2735,21 @@ textarea {
   background: #e8679a; /* rosa de festa, fixo: o destaque de cada tema é amarelo, azul ou verde-água, e o link e o verde
      coincidem com ele em algum tema */
 }
-.calendario-marca.bolao {
-  background: #9b7be0; /* violeta fixo, pelo mesmo motivo do rosa do aniversário: não coincide com o destaque de nenhum tema */
+.calendario-selo-bolao {
+  position: absolute;
+  top: 4px;
+  right: 7px;
+  color: #f5d76e; /* amarelo fixo, como no desenho dele */
+  font-size: calc(14px * var(--escala-do-texto));
+  font-weight: 800;
+  line-height: 1;
+}
+[dir='rtl'] .calendario-selo-bolao {
+  right: auto;
+  left: 5px;
+}
+.calendario-dia.escolhido .calendario-selo-bolao {
+  color: var(--accent-texto);
 }
 .calendario-lista li.calendario-bolao {
   padding: 0;

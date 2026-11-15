@@ -103,10 +103,17 @@ await pedir('POST', `/api/communities/${comunidade.id}/boloes`, ana, { pergunta:
 await A.keyboard.press('Escape');
 await A.keyboard.press('Escape');
 await A.locator('.bv-atalho', { hasText: 'Calendário' }).click({ timeout: 30000 });
-if (prazo.getMonth() !== new Date().getMonth()) await A.locator('.calendario').getByRole('button', { name: /Próximo|seguinte/i }).first().click();
+if (prazo.getMonth() !== new Date().getMonth()) await A.getByRole('button', { name: 'Próximo mês' }).click();
 const noCalendario = A.locator('.calendario-bolao', { hasText: 'Quem chega primeiro?' });
 await noCalendario.waitFor({ timeout: 15000 });
-conferir(await A.locator('.calendario-marca.bolao').count() >= 1, 'o dia do prazo ganha a marca do bolão');
+conferir((await A.locator('.calendario-dia .calendario-selo-bolao').allInnerTexts()).includes('B'), 'o dia do prazo ganha o selo B do bolão');
+// o bolão já respondido fica registrado no dia da resposta (1/12/2026), mesmo depois de acabar
+const meses = (2026 - prazo.getFullYear()) * 12 + 11 - prazo.getMonth();
+for (let i = 0; i < meses; i++) await A.getByRole('button', { name: 'Próximo mês' }).click();
+await A.locator('.calendario-bolao', { hasText: 'Quando o Caio chega?' }).filter({ hasText: 'Resposta' }).waitFor({ timeout: 15000 });
+conferir(true, 'o bolão respondido fica no dia da resposta');
+await A.screenshot({ path: path.join(FOTOS, 'bolao-respondido-no-calendario.png') });
+for (let i = 0; i < meses; i++) await A.getByRole('button', { name: 'Mês anterior' }).click();
 await A.screenshot({ path: path.join(FOTOS, 'bolao-no-calendario.png') });
 await noCalendario.locator('button').click();
 await A.locator('.bolao-pergunta', { hasText: 'Quem chega primeiro?' }).waitFor({ timeout: 15000 });

@@ -1819,8 +1819,10 @@ colocar a sua resposta; como no caso é o dia e o horário, cada um dá palpite 
 dá UM palpite de dia e hora (muda enquanto está aberto); os dos outros só aparecem quando fecha (no prazo, na mão, ou com a
 resposta); quem criou ou quem administra lança a resposta certa, e ganha quem chegou mais perto (empate: quem palpitou antes). Só
 pontos, sem dinheiro. A foto passa pelo funil das imagens, é servida pela chave do endereço (`/api/boloes/:id/foto/:chave`), está na
-vassoura de órfãos e sai pelo Shield (a pergunta fica). **No calendário da comunidade** (ideia dele, mesmo dia), o bolão com prazo
-aparece no dia em que os palpites fecham, com a marca violeta, e clicar o abre. As tabelas da primeira forma (`bolao_jogos`) caem
+vassoura de órfãos e sai pelo Shield (a pergunta fica). **No calendário da comunidade** (ideia dele, mesmo dia), TODO bolão fica
+registrado, os passados também ("ver eventos passados e futuros"), num dia só: o da resposta, quando já saiu (numa pergunta
+de "quando", é o próprio acontecimento), senão o do prazo, senão o da criação; o dia ganha o selo com a inicial de "Bolão" no
+canto (o desenho dele), e clicar o abre. As tabelas da primeira forma (`bolao_jogos`) caem
 sozinhas na subida. Teste: `server/test/bolao.test.ts` e `e2e/bolao.mjs`. Outro tipo de resposta (número, texto) é mais um campo
 no bolão e outra conta de distância.
 
