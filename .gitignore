@@ -95,3 +95,6 @@ e2e/pixel-art/auditoria-visual/
 __pycache__/
 # perfis de processador das auditorias (grandes, refeitos a cada rodada)
 *.cpuprofile
+
+# Os modelos de detector de voz baixados para medir (e2e/vad/README.md): dados de terceiros, baixados de novo pelo e2e/vad/baixar.mjs.
+e2e/vad/modelos/
