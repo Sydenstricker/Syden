@@ -316,7 +316,7 @@ function UmBolao({
         </form>
       ) : (
         <>
-        {/* os ganhadores em destaque, logo abaixo da pergunta (pedido dele: "abrir a imagem, os palpites e os ganhadores") */}
+        {/* os ganhadores em destaque, logo abaixo da pergunta (pedido dele, 15/11/2026) */}
         {!!ganhadores.length && (
           <div className="bolao-ganhadores">
             <Trophy size={18} aria-hidden="true" />
