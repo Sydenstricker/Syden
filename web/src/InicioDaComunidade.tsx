@@ -133,6 +133,8 @@ export function InicioDaComunidade({
   const [copiado, setCopiado] = useState(false);
   // O CALENDÁRIO (18/10/2026): por um atalho, até o calendário de parede do salão ganhar arte.
   const [calendario, setCalendario] = useState(false);
+  // o mês em que o calendário estava ao abrir um bolão por ele: a volta cai no mesmo mês
+  const [mesDoCalendario, setMesDoCalendario] = useState<Date | null>(null);
   // O BOLÃO (14/11/2026, ver Bolao.tsx): também por um atalho.
   // false = fechado; true = a lista; um número = aquele bolão (aberto pelo calendário, 15/11/2026)
   const [bolao, setBolao] = useState<boolean | number>(false);
@@ -385,7 +387,13 @@ export function InicioDaComunidade({
             </button>
           );
         })}
-        <button className="bv-atalho" onClick={() => setCalendario(true)}>
+        <button
+          className="bv-atalho"
+          onClick={() => {
+            setMesDoCalendario(null);
+            setCalendario(true);
+          }}
+        >
           <CalendarDays size={16} />
           <span>{t('Calendário')}</span>
         </button>
@@ -400,14 +408,22 @@ export function InicioDaComunidade({
           communityId={community.id}
           socket={socket}
           aoFechar={() => setCalendario(false)}
-          aoAbrirBolao={(id) => {
+          mesInicial={mesDoCalendario}
+          aoAbrirBolao={(id, mes) => {
+            setMesDoCalendario(mes);
             setCalendario(false);
             setBolao(id);
           }}
         />
       )}
       {bolao !== false && (
-        <Bolao communityId={community.id} socket={socket} inicial={typeof bolao === 'number' ? bolao : null} aoFechar={() => setBolao(false)} />
+        <Bolao communityId={community.id} socket={socket} inicial={typeof bolao === 'number' ? bolao : null}
+          aoFechar={() => setBolao(false)}
+          aoVoltar={() => {
+            setBolao(false);
+            setCalendario(true);
+          }}
+        />
       )}
       {conquistas && (
         <Conquistas

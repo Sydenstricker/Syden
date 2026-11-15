@@ -113,6 +113,18 @@ for (let i = 0; i < meses; i++) await A.getByRole('button', { name: 'Próximo m�
 await A.locator('.calendario-bolao', { hasText: 'Quando o Caio chega?' }).filter({ hasText: 'Resposta' }).waitFor({ timeout: 15000 });
 conferir(true, 'o bolão respondido fica no dia da resposta');
 await A.screenshot({ path: path.join(FOTOS, 'bolao-respondido-no-calendario.png') });
+// consultar pelo calendário: abre com a foto, os palpites e os ganhadores; o "voltar" volta ao calendário
+await A.locator('.calendario-bolao', { hasText: 'Quando o Caio chega?' }).locator('button').click();
+await A.locator('.bolao-ganhadores').waitFor({ timeout: 15000 });
+conferir(await A.locator('.bolao-foto').evaluate((img) => img.complete && img.naturalWidth > 0), 'consultado pelo calendário, a foto aparece');
+conferir((await A.locator('.bolao-ranking li').count()) === 2, 'consultado pelo calendário, os palpites aparecem');
+const ganhadores = await A.locator('.bolao-ganhadores').innerText();
+conferir(/Quem ganhou/.test(ganhadores) && /ana/.test(ganhadores) && !/bia/.test(ganhadores), 'os ganhadores em destaque: ' + ganhadores.trim());
+conferir((await A.locator('.bolao-ranking li.bolao-ganhou').count()) === 1, 'a linha de quem ganhou tem o troféu');
+await A.screenshot({ path: path.join(FOTOS, 'bolao-consultado-pelo-calendario.png') });
+await A.locator('.bolao').getByRole('button', { name: 'Voltar' }).click();
+await A.locator('.calendario-bolao', { hasText: 'Quando o Caio chega?' }).waitFor({ timeout: 15000 });
+conferir(true, 'o "voltar" do bolão volta ao calendário, no mesmo lugar de onde veio');
 for (let i = 0; i < meses; i++) await A.getByRole('button', { name: 'Mês anterior' }).click();
 await A.screenshot({ path: path.join(FOTOS, 'bolao-no-calendario.png') });
 await noCalendario.locator('button').click();

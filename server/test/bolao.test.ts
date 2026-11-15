@@ -4,7 +4,7 @@
  *   1. Qualquer membro cria um bolão (com foto, servida pela chave); quem não participa recebe 404.
  *   2. Os palpites dos outros só aparecem depois de fechar (na hora marcada, na mão ou com a resposta).
  *   3. Só quem criou e quem administra fecham, lançam a resposta e apagam.
- *   4. A classificação: mais perto primeiro; empate, quem palpitou antes.
+ *   4. A classificação: mais perto primeiro; quem empata na menor distância também ganha.
  */
 import assert from 'node:assert/strict';
 import { after, test } from 'node:test';
@@ -45,6 +45,22 @@ test('a classificação e o "aberto"', () => {
   );
   assert.equal(r[0].diferencaMs, 30 * 60000);
   assert.equal(r[1].diferencaMs, -60 * 60000);
+  // só d ganha; empatados na menor distância, os dois ganham
+  assert.deepEqual(
+    r.map((p) => p.ganhou),
+    [true, false, false, false],
+  );
+  const empate = classificar(
+    [
+      { quando: '2026-12-01T09:00:00.000Z', em: '2' },
+      { quando: '2026-12-01T11:00:00.000Z', em: '1' },
+    ],
+    '2026-12-01T10:00:00.000Z',
+  );
+  assert.deepEqual(
+    empate.map((p) => p.ganhou),
+    [true, true],
+  );
   assert.equal(aberto({ fechado: false, resposta: null, fechaEm: null }), true);
   assert.equal(aberto({ fechado: true, resposta: null, fechaEm: null }), false);
   assert.equal(aberto({ fechado: false, resposta: daqui(0), fechaEm: null }), false);

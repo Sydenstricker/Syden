@@ -16,8 +16,8 @@ import { manages, requireUser } from './routes.js';
  * - UMA PERGUNTA, com uma foto se quiser, e cada membro dá UM palpite de dia e hora (pode mudar enquanto está aberto).
  * - FECHA na hora marcada por quem criou, quando quem cuida fecha na mão, ou quando a resposta sai. Os palpites dos outros
  *   só aparecem depois de fechar: antes, dava para palpitar um minuto depois de alguém.
- * - GANHA QUEM CHEGOU MAIS PERTO da resposta, que quem cuida lança (quem criou e quem administra). Empate, ganha quem
- *   palpitou primeiro.
+ * - GANHA QUEM CHEGOU MAIS PERTO da resposta, que quem cuida lança (quem criou e quem administra). Quem empata na menor
+ *   distância (uma hora antes e uma hora depois) também ganha: são os ganhadores; na lista, quem palpitou antes vem primeiro.
  *
  * Quem não participa da comunidade recebe 404, como no calendário. Mudou um bolão, a turma relê (bolao:mudou); o palpite
  * de cada um não avisa ninguém. A foto passa pelo funil das imagens (tipo, tamanho, pixels, Shield) e é servida pela chave
@@ -48,12 +48,14 @@ export function aberto(bolao: Pick<db.Bolao, 'fechado' | 'fechaEm' | 'resposta'>
   return !bolao.fechado && bolao.resposta === null && (bolao.fechaEm === null || Date.parse(bolao.fechaEm) > agora);
 }
 
-/** A classificação: quem chegou mais perto da resposta primeiro; no empate, quem palpitou antes. */
-export function classificar<P extends { quando: string; em: string }>(palpites: P[], resposta: string): (P & { diferencaMs: number })[] {
+/** A classificação: quem chegou mais perto primeiro (no empate, quem palpitou antes), e quem ganhou: todos na menor distância. */
+export function classificar<P extends { quando: string; em: string }>(palpites: P[], resposta: string): (P & { diferencaMs: number; ganhou: boolean })[] {
   const alvo = Date.parse(resposta);
-  return palpites
+  const ordem = palpites
     .map((p) => ({ ...p, diferencaMs: Date.parse(p.quando) - alvo }))
     .sort((a, b) => Math.abs(a.diferencaMs) - Math.abs(b.diferencaMs) || a.em.localeCompare(b.em));
+  const menor = ordem.length ? Math.abs(ordem[0].diferencaMs) : 0;
+  return ordem.map((p) => ({ ...p, ganhou: Math.abs(p.diferencaMs) === menor }));
 }
 
 export function registerBolaoRoutes(app: FastifyInstance, io: IOServer) {

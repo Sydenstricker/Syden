@@ -1817,12 +1817,14 @@ placares, 10/5/3 pontos), e ele não entendeu a tela. O que ele queria: "adicion
 colocar a sua resposta; como no caso é o dia e o horário, cada um dá palpite com um calendário". Agora (`server/src/bolao-routes.ts`,
 `web/src/Bolao.tsx`): qualquer membro cria uma PERGUNTA com foto opcional e, se quiser, a hora em que os palpites fecham; cada um
 dá UM palpite de dia e hora (muda enquanto está aberto); os dos outros só aparecem quando fecha (no prazo, na mão, ou com a
-resposta); quem criou ou quem administra lança a resposta certa, e ganha quem chegou mais perto (empate: quem palpitou antes). Só
+resposta); quem criou ou quem administra lança a resposta certa, e ganha quem chegou mais perto (empatados na menor distância,
+ganham todos). Só
 pontos, sem dinheiro. A foto passa pelo funil das imagens, é servida pela chave do endereço (`/api/boloes/:id/foto/:chave`), está na
 vassoura de órfãos e sai pelo Shield (a pergunta fica). **No calendário da comunidade** (ideia dele, mesmo dia), TODO bolão fica
 registrado, os passados também ("ver eventos passados e futuros"), num dia só: o da resposta, quando já saiu (numa pergunta
 de "quando", é o próprio acontecimento), senão o do prazo, senão o da criação; o dia ganha o selo com a inicial de "Bolão" no
-canto (o desenho dele), e clicar o abre. As tabelas da primeira forma (`bolao_jogos`) caem
+canto (o desenho dele), e clicar o abre com a foto, os palpites e os GANHADORES em destaque ("Quem ganhou: …" e o troféu na linha); o
+"voltar" dele volta ao calendário, no mesmo mês. As tabelas da primeira forma (`bolao_jogos`) caem
 sozinhas na subida. Teste: `server/test/bolao.test.ts` e `e2e/bolao.mjs`. Outro tipo de resposta (número, texto) é mais um campo
 no bolão e outra conta de distância.
 

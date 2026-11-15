@@ -1,4 +1,4 @@
-import { ChevronLeft, ImagePlus, Lock, LockOpen, Medal, Trash2, X } from 'lucide-react';
+import { ChevronLeft, ImagePlus, Lock, LockOpen, Medal, Trash2, Trophy, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { api, API_URL } from './api';
@@ -25,6 +25,8 @@ interface Palpite {
   nome: string;
   quando: string;
   diferencaMs?: number;
+  /** Com a resposta: quem chegou mais perto (os empatados na menor distância também). */
+  ganhou?: boolean;
 }
 interface Detalhe {
   bolao: Bolao;
@@ -97,12 +99,15 @@ export function Bolao({
   socket,
   inicial = null,
   aoFechar,
+  aoVoltar,
 }: {
   communityId: number;
   socket?: Socket | null;
   /** Abrir já num bolão (vindo do calendário). */
   inicial?: number | null;
   aoFechar: () => void;
+  /** Vindo do calendário, o "voltar" (e o Esc) do bolão aberto volta ao calendário, e não à lista de bolões. */
+  aoVoltar?: () => void;
 }) {
   const t = useT();
   const idioma = idiomaAtual();
@@ -160,12 +165,18 @@ export function Bolao({
   useEffect(() => {
     const tecla = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return;
-      if (aberto !== null) setAberto(null);
-      else aoFechar();
+      voltar();
     };
     window.addEventListener('keydown', tecla);
     return () => window.removeEventListener('keydown', tecla);
-  }, [aoFechar, aberto]);
+  });
+
+  /** Do bolão aberto: ao calendário, se veio dele, senão à lista; da lista, fecha. */
+  function voltar() {
+    if (aberto === null) aoFechar();
+    else if (aoVoltar && aberto === inicial) aoVoltar();
+    else setAberto(null);
+  }
 
   async function chamar(caminho: string, metodo: string, corpo?: unknown) {
     setErro(null);
@@ -194,7 +205,7 @@ export function Bolao({
         <div className="calendario-topo">
           <h2 id="bolao-titulo">
             {aberto !== null && (
-              <button type="button" className="icon-plain" onClick={() => setAberto(null)} aria-label={t('Voltar')} title={t('Voltar')}>
+              <button type="button" className="icon-plain" onClick={voltar} aria-label={t('Voltar')} title={t('Voltar')}>
                 <ChevronLeft size={18} aria-hidden="true" />
               </button>
             )}
@@ -266,6 +277,7 @@ function UmBolao({
 }) {
   const t = useT();
   const { bolao, meu, palpites, podeEditar } = detalhe;
+  const ganhadores = palpites?.filter((p) => p.ganhou) ?? [];
   const [palpite, setPalpite] = useState(meu ? paraOCampo(meu) : '');
   const [resposta, setResposta] = useState(bolao.resposta ? paraOCampo(bolao.resposta) : '');
   const [salvo, setSalvo] = useState(false);
@@ -303,17 +315,28 @@ function UmBolao({
           </span>
         </form>
       ) : (
+        <>
+        {/* os ganhadores em destaque, logo abaixo da pergunta (pedido dele: "abrir a imagem, os palpites e os ganhadores") */}
+        {!!ganhadores.length && (
+          <div className="bolao-ganhadores">
+            <Trophy size={18} aria-hidden="true" />
+            <strong>{t('Quem ganhou: {nomes}', { nomes: ganhadores.map((p) => p.nome).join(', ') })}</strong>
+          </div>
+        )}
         <ol className="calendario-lista bolao-ranking">
           {!palpites?.length && <li className="calendario-vazio">{t('Ninguém palpitou.')}</li>}
           {palpites?.map((p, i) => (
-            <li key={p.userId}>
-              {bolao.resposta && <span className="bolao-posicao">{i + 1}º</span>}
+            <li key={p.userId} className={p.ganhou ? 'bolao-ganhou' : undefined}>
+              {bolao.resposta && (
+                <span className="bolao-posicao">{p.ganhou ? <Trophy size={15} aria-hidden="true" /> : `${i + 1}º`}</span>
+              )}
               <span className="calendario-nome">{p.nome}</span>
               <span className="calendario-quando">{quando(p.quando)}</span>
               {p.diferencaMs !== undefined && <strong className="bolao-distancia">{distancia(p.diferencaMs, idioma)}</strong>}
             </li>
           ))}
         </ol>
+        </>
       )}
 
       {podeEditar && (

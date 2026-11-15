@@ -65,17 +65,20 @@ export function Calendario({
   socket,
   aoFechar,
   aoAbrirBolao,
+  mesInicial,
 }: {
   communityId: number;
   socket?: Socket | null;
   aoFechar: () => void;
   /** Clicar num bolão do calendário o abre (InicioDaComunidade troca o calendário pelo bolão). */
-  aoAbrirBolao?: (bolaoId: number) => void;
+  aoAbrirBolao?: (bolaoId: number, mes: Date) => void;
+  /** O mês em que abrir (a volta de um bolão aberto daqui cai no mesmo mês). */
+  mesInicial?: Date | null;
 }) {
   const t = useT();
   const idioma = idiomaAtual();
   const hoje = new Date();
-  const [mes, setMes] = useState(() => new Date(hoje.getFullYear(), hoje.getMonth(), 1));
+  const [mes, setMes] = useState(() => mesInicial ?? new Date(hoje.getFullYear(), hoje.getMonth(), 1));
   const [escolhido, setEscolhido] = useState<Date | null>(null);
   const [dados, setDados] = useState<{ eventos: Evento[]; aniversarios: Aniversario[]; podeEditar: boolean } | null>(null);
   const [boloes, setBoloes] = useState<BolaoComPrazo[]>([]);
@@ -272,7 +275,7 @@ export function Calendario({
               </li>
             ) : i.tipo === 'bolao' ? (
               <li key={'b' + i.bolao.id} className="calendario-bolao">
-                <button type="button" className="bolao-abrir" onClick={() => aoAbrirBolao?.(i.bolao.id)} disabled={!aoAbrirBolao}>
+                <button type="button" className="bolao-abrir" onClick={() => aoAbrirBolao?.(i.bolao.id, mes)} disabled={!aoAbrirBolao}>
                   <span className="calendario-quando">
                     {i.bolao.resposta
                       ? t('Resposta: {quando}', { quando: fmtDia.format(i.data) + ', ' + fmtHora.format(i.data) })

@@ -20724,3 +20724,24 @@ body.arrastando-barra {
   font-size: calc(13px * var(--escala-do-texto));
   cursor: pointer;
 }
+.bolao-ganhadores {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: color-mix(in srgb, #f5d76e 16%, transparent);
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+.bolao-ganhadores svg {
+  flex-shrink: 0;
+  color: #f5d76e;
+}
+.calendario-lista li.bolao-ganhou {
+  background: color-mix(in srgb, #f5d76e 10%, var(--bg-secondary));
+}
+.bolao-ganhou .bolao-posicao {
+  display: inline-flex;
+  color: #f5d76e;
+}
