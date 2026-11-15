@@ -212,6 +212,12 @@ h3,
 }
 
 /* Faixa arrastável no lugar da barra de título clara do Windows; só existe dentro do app de desktop. */
+.desktop-titlebar-versao {
+  font-weight: 400;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
 .desktop-titlebar {
   height: 36px;
   flex-shrink: 0;

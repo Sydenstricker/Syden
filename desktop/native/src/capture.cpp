@@ -437,9 +437,44 @@ Napi::Value JanelaDaFrente(const Napi::CallbackInfo& info) {
     classeUtf8.resize(static_cast<size_t>(bytes) - 1);
     WideCharToMultiByte(CP_UTF8, 0, classe, -1, classeUtf8.data(), bytes, nullptr, nullptr);
   }
+  // SÓ UM PROGRAMA EM TELA CHEIA DE VERDADE ESCONDE O SYDEN (15/11/2026, relato: "dependendo do app, em tela cheia, só trava
+  // o vídeo"; medido em e2e/mudo-e-pausa-no-app.mjs). Uma sobreposição (gravador, Game Bar, contador de quadros) cobre a tela
+  // e é transparente: o Syden continua à vista atrás dela. Ela se denuncia pelo estilo: camada (WS_EX_LAYERED) ou que deixa
+  // o clique passar (WS_EX_TRANSPARENT). NÃO o WS_EX_NOREDIRECTIONBITMAP: todo programa feito com o Chromium (o VS Code, o
+  // próprio navegador, os apps em Electron) o tem, e com ele nenhum desses contaria como tela cheia (medido). E "tela
+  // cheia" é cobrir o MONITOR dela inteiro, não só o retângulo do Syden (uma janela maximizada deixa a barra de tarefas).
+  const LONG_PTR ex = GetWindowLongPtrW(hwnd, GWL_EXSTYLE);
+  const bool sobreposicao = (ex & (WS_EX_LAYERED | WS_EX_TRANSPARENT)) != 0;
+  bool telaCheia = false;
+  MONITORINFO mi{};
+  mi.cbSize = sizeof(mi);
+  if (HMONITOR m = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONULL); m && GetMonitorInfoW(m, &mi)) {
+    const LONG folga = 2;
+    telaCheia = r.left <= mi.rcMonitor.left + folga && r.top <= mi.rcMonitor.top + folga &&
+                r.right >= mi.rcMonitor.right - folga && r.bottom >= mi.rcMonitor.bottom - folga;
+  }
+  // o nome do programa (para o diário de saúde dizer QUAL janela pausou o vídeo)
+  std::string exe;
+  if (HANDLE process = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid)) {
+    wchar_t path[MAX_PATH];
+    DWORD size = MAX_PATH;
+    if (QueryFullProcessImageNameW(process, 0, path, &size)) {
+      const wchar_t* name = wcsrchr(path, L'\\');
+      name = name ? name + 1 : path;
+      const int n = WideCharToMultiByte(CP_UTF8, 0, name, -1, nullptr, 0, nullptr, nullptr);
+      if (n > 1) {
+        exe.resize(static_cast<size_t>(n) - 1);
+        WideCharToMultiByte(CP_UTF8, 0, name, -1, exe.data(), n, nullptr, nullptr);
+      }
+    }
+    CloseHandle(process);
+  }
   Napi::Object result = Napi::Object::New(env);
   result.Set("pid", Napi::Number::New(env, pid));
   result.Set("classe", Napi::String::New(env, classeUtf8));
+  result.Set("exe", Napi::String::New(env, exe));
+  result.Set("sobreposicao", Napi::Boolean::New(env, sobreposicao));
+  result.Set("telaCheia", Napi::Boolean::New(env, telaCheia));
   result.Set("x", Napi::Number::New(env, r.left));
   result.Set("y", Napi::Number::New(env, r.top));
   result.Set("largura", Napi::Number::New(env, r.right - r.left));

@@ -11,8 +11,10 @@ let ultimoSomEscolhido = null;
 let ultimoProgramaEscolhido = null;
 // O último aviso de 'app:a-vista' (ver aoMudarAVista).
 let ultimoAVista = true;
-ipcRenderer.on('app:a-vista', (_event, aVista) => {
+let ultimoMotivo = null;
+ipcRenderer.on('app:a-vista', (_event, aVista, motivo) => {
   ultimoAVista = Boolean(aVista);
+  ultimoMotivo = motivo ?? null;
 });
 
 ipcRenderer.on('tela:escolhida', (_event, escolha) => {
@@ -95,14 +97,23 @@ contextBridge.exposeInMainWorld('sydenDesktop', {
    * Devolve a função de parar de escutar (com as chaves: ver aoVoltarDaEntrada). Ver src/a-vista.js.
    */
   aoMudarAVista: (callback) => {
-    const ouvinte = (_evento, aVista) => callback(Boolean(aVista));
+    // o segundo argumento é POR QUE saiu da vista ({ motivo, exe }), para o diário de saúde (15/11/2026)
+    const ouvinte = (_evento, aVista, motivo) => callback(Boolean(aVista), motivo ?? null);
     ipcRenderer.on('app:a-vista', ouvinte);
-    if (!ultimoAVista) callback(false); // quem se inscreve depois do aviso recebe o estado de agora
+    if (!ultimoAVista) callback(false, ultimoMotivo); // quem se inscreve depois do aviso recebe o estado de agora
     return () => {
       ipcRenderer.removeListener('app:a-vista', ouvinte);
     };
   },
   /** Traz a janela para frente (ex.: ao clicar numa notificação). */
+  /** A versão do app ("0.1.11"), para a barra de título. Lida uma vez, na hora. */
+  versao: (() => {
+    try {
+      return String(ipcRenderer.sendSync('app:versao') || '');
+    } catch {
+      return '';
+    }
+  })(),
   focus: () => ipcRenderer.send('app:focus'),
   /** Pisca (true) ou para de piscar (false) o ícone na barra de tarefas, sem trazer a janela — ex.: alguém ligando. */
   piscar: (ligado) => ipcRenderer.send('app:piscar', Boolean(ligado)),

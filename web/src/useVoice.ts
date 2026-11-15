@@ -1222,6 +1222,11 @@ export function useVoice(socket: Socket | null) {
   const protecaoRef = useRef<{ regras: Regras; amigos: Set<string> } | null>(null);
   /** A janela do app está à vista? (ver desktop/src/a-vista.js; no navegador, sempre true: lá o LiveKit já pausa sozinho) */
   const aVistaRef = useRef(true);
+  /** Os programas que já pausaram o vídeo nesta chamada (uma linha no diário por programa). */
+  const pausasContadas = useRef(new Set<string>());
+  useEffect(() => {
+    pausasContadas.current.clear();
+  }, [channelId]);
 
   const aplicarInscricoes = useCallback(() => {
     /**
@@ -1312,10 +1317,18 @@ export function useVoice(socket: Socket | null) {
   // A janela do app saindo e voltando da vista, e as janelas destacadas abrindo e fechando: a inscrição do vídeo é refeita.
   useEffect(() => {
     const pararDestacadas = aoMudarDestacadas(aplicarInscricoes);
-    const pararAVista = desktopBridge?.aoMudarAVista?.((aVista) => {
+    const pararAVista = desktopBridge?.aoMudarAVista?.((aVista, fora) => {
       if (aVistaRef.current === aVista) return;
       aVistaRef.current = aVista;
       aplicarInscricoes();
+      // O DIÁRIO DIZ QUEM PAUSOU O VÍDEO (15/11/2026, relato: "dependendo do app, em tela cheia, só trava o vídeo"): coberto
+      // por outro programa, com uma transmissão sendo assistida, uma linha por programa e por chamada. O próximo relato de
+      // vídeo parado vem com o nome do programa da frente.
+      const programa = fora?.motivo === 'coberto' ? fora.exe || 'programa sem nome' : null;
+      if (programa && assistindoRef.current.size > 0 && !pausasContadas.current.has(programa)) {
+        pausasContadas.current.add(programa);
+        reportProblem('transmissão', `o vídeo pausou: o app ficou coberto por ${programa} em tela cheia (o som continua)`);
+      }
     });
     return () => {
       pararDestacadas();

@@ -12,6 +12,8 @@ export function DesktopTitleBar({ minimal }: { minimal?: boolean }) {
       {/* Só o nome: o coelho já está logo abaixo, no botão de início, e repetido aqui ficava poluído.
           Durante a animação de abertura nem o nome aparece — a faixa continua servindo para arrastar. */}
       {!minimal && <span>Syden</span>}
+      {/* A versão do app ao lado do nome (pedido dele, 15/11/2026): quem relata um problema diz qual versão usa. */}
+      {!minimal && desktopBridge.versao && <span className="desktop-titlebar-versao">{desktopBridge.versao}</span>}
     </div>
   );
 }

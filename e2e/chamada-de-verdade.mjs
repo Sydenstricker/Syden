@@ -62,9 +62,11 @@ const ESPIAO_DE_GANHO = () => {
 };
 
 const { browser } = await abrirNavegador();
+const paginas = [];
 const pessoa = async (opcoes = {}) => {
   const ctx = await browser.newContext({ viewport: { width: 1400, height: 900 }, permissions: ['microphone', 'camera'], ...opcoes });
   const page = vigiar(await ctx.newPage());
+  paginas.push(page);
   await page.addInitScript(TELA_FALSA);
   await page.addInitScript(ESPIAO_DE_GANHO);
   return page;
@@ -164,10 +166,13 @@ try {
   const ana = await pessoa();
   await cadastrar(ana, 'ana' + s);
   await dispensarPresentes(ana);
-  await ana.getByRole('button', { name: 'Adicionar comunidade' }).click();
-  await ana.locator('.community-choice-option').first().click();
-  await ana.locator('form.dialog input').first().fill('Voz ' + s);
-  await ana.locator('form.dialog .btn-primary').click();
+  // a comunidade pela API (o diálogo de criar mudou; o teste não é sobre ele)
+  await ana.evaluate(async ({ api, nome }) => {
+    await fetch(api + '/api/communities', { method: 'POST', headers: { authorization: 'Bearer ' + localStorage.getItem('janja.token'), 'content-type': 'application/json' }, body: JSON.stringify({ name: nome }) });
+  }, { api: API, nome: 'Voz ' + s });
+  await ana.reload();
+  await dispensarPresentes(ana);
+  await ana.locator(`.rail-list .rail-item[aria-label="Voz ${s}"]`).click({ timeout: 30000 });
   await ana.locator('.channel-name', { hasText: /^geral$/ }).first().waitFor({ timeout: 20000 });
   const convite = await ana.evaluate(async (api) => {
     const r = await fetch(api + '/api/communities', { headers: { authorization: 'Bearer ' + localStorage.getItem('janja.token') } });
@@ -180,7 +185,8 @@ try {
   await entrarNaComunidade(bia, convite);
 
   // a Ana manda uma mensagem (para o avatar aparecer na conversa do celular, em c)
-  await ana.locator('.composer textarea, textarea').first().fill('oi turma');
+  await ana.locator('.channel-name', { hasText: /^geral$/ }).first().click();
+  await ana.locator('.composer textarea').first().fill('oi turma');
   await ana.keyboard.press('Enter');
 
   await entrarNaSala(ana);
@@ -476,6 +482,8 @@ try {
   await foto(caio, 'celular-avatar');
 } catch (erro) {
   falhou('parou no meio: ' + String(erro?.message ?? erro).split('\n')[0]);
+  console.log(String(erro?.stack ?? '').split('\n').slice(0, 6).join('\n'));
+  for (const [i, pg] of paginas.entries()) await pg.screenshot({ path: `e2e/fotos/chamada-de-verdade-erro-${i}.png` }).catch(() => {});
 } finally {
   await browser.close();
 }

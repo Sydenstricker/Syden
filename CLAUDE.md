@@ -2211,6 +2211,17 @@ novo com a foto por cima até dizer "pronto" (sem o mascote de espera no meio). 
 ~950 MB e o quarto ~400 MB; acordar leva ~3 s no quarto e ~7 s no salão, com a foto à vista. Não dorme no Editar nem com uma
 peça aberta. A foto não traz os nomes nem os balões (HTML por cima do canvas). As cenas 3D (Quarto3D, Salao3D) ainda não dormem.
 
+**A PAUSA DO VÍDEO SÓ COM TELA CHEIA DE VERDADE (15/11/2026, relatos de quem usa: "o mute das lives voltou a dar problema",
+"dependendo do app, em tela cheia, só trava o vídeo", "o Discord vaza os mics compartilhando só uma janela").** Medido no app
+(`e2e/mudo-e-pausa-no-app.mjs`): o mudo da live CONTINUA calado ao minimizar, cobrir e descobrir; o defeito era a pausa da 0.1.10,
+que parava o vídeo com uma SOBREPOSIÇÃO transparente em tela cheia na frente (o Syden à vista atrás dela). Agora só conta como
+coberto a janela da frente que ocupa o MONITOR inteiro e não é camada nem deixa o clique passar (WS_EX_LAYERED/TRANSPARENT, no
+`janelaDaFrente` do módulo nativo). NÃO o WS_EX_NOREDIRECTIONBITMAP: todo programa feito com o Chromium o tem (medido com o VS Code).
+O DIÁRIO DE SAÚDE ganhou duas linhas: o programa que pausou o vídeo (uma por programa, por chamada, só assistindo), e o motivo de,
+numa JANELA, ir o som do computador inteiro (`donoDaJanela` em screen-audio.js: app da Store, módulo antigo, ou só o som do
+programa não abriu). A barra de título do app mostra a versão. Tudo isso chega com a versão do app depois da 0.1.10. Os testes do
+app pedem o PC parado: com alguém usando, a janela do teste não vem para a frente e o "coberto" falha.
+
 ## Fonte de terceiro: embutir é REDISTRIBUIR, e quase nenhuma "grátis" permite isso
 
 **Decidido em 02/10/2026, depois de medir — e a medição derrubou a fonte que ele queria usar.**

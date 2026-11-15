@@ -76,18 +76,26 @@ function escolherFonte(/** @type {string | null} */ id) {
   if (mudou && running && destino && !destino.isDestroyed()) start(destino);
 }
 
-/** Só o som do programa da janela escolhida, quando dá para saber qual é e ele mesmo toca o som. */
-function processoDaJanela() {
+/**
+ * O processo dono da janela escolhida (só o som dele vai), ou o MOTIVO de não usá-lo (null na tela inteira). O motivo vai
+ * à página, que o escreve no diário de saúde: sem o dono, o som cai no do computador inteiro, com as vozes do Discord
+ * junto (15/11/2026, relato: "seria bom o Discord não vazar os mics se você só está compartilhando uma janela").
+ * @returns {{ pid: number | null, motivo: string | null, exe?: string }}
+ */
+function donoDaJanela() {
   const hwnd = /^window:(\d+):/.exec(fonteEscolhida ?? '')?.[1];
-  if (!hwnd || !native?.windowProcess) return null; // tela inteira, ou módulo de uma versão anterior
+  if (!hwnd) return { pid: null, motivo: null }; // tela inteira: o som do computador é o esperado
+  if (!native?.windowProcess) return { pid: null, motivo: 'o módulo de som é de uma versão anterior' };
   // (se a consulta falhar, fica o som do computador sem o Syden, e não o silêncio)
   try {
     const dono = native.windowProcess(Number(hwnd));
-    if (!dono || dono.pid === process.pid || DONO_NAO_TOCA.has(String(dono.exe).toLowerCase())) return null;
-    return dono.pid;
+    if (!dono) return { pid: null, motivo: 'a janela já não existe' };
+    if (dono.pid === process.pid) return { pid: null, motivo: 'a janela é do próprio Syden' };
+    if (DONO_NAO_TOCA.has(String(dono.exe).toLowerCase())) return { pid: null, motivo: `a janela é de ${dono.exe} (app da Store), que não toca o som`, exe: dono.exe };
+    return { pid: dono.pid, motivo: null, exe: dono.exe };
   } catch (error) {
     console.error('Não deu para saber o programa da janela:', error);
-    return null;
+    return { pid: null, motivo: 'não deu para saber o programa da janela: ' + String(error?.message ?? error).slice(0, 80) };
   }
 }
 
@@ -199,22 +207,25 @@ function start(/** @type {Electron.WebContents} */ webContents, querPorta = fals
     if (porta) porta.postMessage(pcm);
     else webContents.send('screen-audio:chunk', pcm);
   };
-  const resposta = (/** @type {'native' | 'fake'} */ source) => ({ ok: true, source, porta: Boolean(porta) });
+  // computador: por que, numa JANELA, vai o som do computador inteiro (null: foi só o do programa, ou é a tela inteira)
+  const resposta = (/** @type {'native' | 'fake'} */ source, /** @type {string | null} */ computador = null) => ({ ok: true, source, porta: Boolean(porta), computador });
 
   try {
     if (native) {
       // includePid: só aquele programa. excludePid: tudo menos o próprio Syden, com seus filhos.
-      const pid = processoDaJanela();
-      if (pid !== null) {
+      const dono = donoDaJanela();
+      let computador = dono.motivo;
+      if (dono.pid !== null) {
         try {
-          native.start(send, { sampleRate: SAMPLE_RATE, channels: CHANNELS, includePid: pid });
+          native.start(send, { sampleRate: SAMPLE_RATE, channels: CHANNELS, includePid: dono.pid });
           return resposta('native');
         } catch (error) {
           console.error('Só o som da janela não abriu; vai o do computador sem o Syden:', error);
+          computador = `só o som de ${dono.exe || 'o programa'} não abriu (${String(error?.message ?? error).slice(0, 80)})`;
         }
       }
       native.start(send, { sampleRate: SAMPLE_RATE, channels: CHANNELS, excludePid: process.pid });
-      return resposta('native');
+      return resposta('native', computador);
     }
     startFake(send);
     return resposta('fake');

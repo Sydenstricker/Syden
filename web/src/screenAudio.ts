@@ -68,7 +68,7 @@ export async function captureAppAudio(aoProblema: (motivo: string) => void = () 
       };
     }).finally(() => window.removeEventListener('message', ouvirPorta));
 
-  let started: { ok: boolean; porta?: boolean } | undefined;
+  let started: { ok: boolean; porta?: boolean; computador?: string | null } | undefined;
   try {
     started = await bridge.start({ porta: true });
   } catch (e) {
@@ -81,6 +81,9 @@ export async function captureAppAudio(aoProblema: (motivo: string) => void = () 
     aoProblema('a captura do Windows não ligou');
     return null;
   }
+  // NUMA JANELA, O SOM DO COMPUTADOR INTEIRO (15/11/2026, relato: o Discord vazando na transmissão de uma janela): o app
+  // não conseguiu mandar só o som do programa dela, e as vozes de outros programas vão junto. O diário diz por quê.
+  if (started.computador) aoProblema('numa janela, foi o som do computador inteiro (com as vozes de outros programas, como o Discord): ' + started.computador);
   let porta: MessagePort | null = null;
   if (started.porta) {
     porta = await esperarPorta();

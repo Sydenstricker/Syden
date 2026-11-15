@@ -346,6 +346,11 @@ ipcMain.on('app:abrir-fora', (event, url) => {
   if (typeof url === 'string' && url.startsWith('https://')) void shell.openExternal(url);
 });
 
+// A versão do app, para a barra de título mostrar (15/11/2026, pedido dele: "seria útil ter a versão do app em algum lugar").
+ipcMain.on('app:versao', (event) => {
+  event.returnValue = app.getVersion();
+});
+
 ipcMain.on('app:focus', (event) => {
   if (mainWindow && event.sender === mainWindow.webContents) showMainWindow();
 });

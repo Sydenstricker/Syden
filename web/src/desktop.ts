@@ -12,7 +12,9 @@ interface DesktopBridge {
    * Avisa quando a janela do Syden sai da vista (minimizada, na bandeja, coberta por um jogo em tela cheia) e quando
    * volta. Só nos apps a partir de 14/11/2026 (desktop/src/a-vista.js). Devolve como parar de escutar.
    */
-  aoMudarAVista?(callback: (aVista: boolean) => void): () => void;
+  /** A versão do app ("0.1.11"); só nos apps a partir da 0.1.11 (antes, undefined). */
+  versao?: string;
+  aoMudarAVista?(callback: (aVista: boolean, motivo?: { motivo: 'minimizado' | 'escondido' | 'coberto'; exe?: string } | null) => void): () => void;
   /** Abre um endereço no navegador do sistema, fora do app. */
   abrirFora?(url: string): void;
   /** Avisa quando a pessoa volta do Google pelo endereço syden://. Devolve como parar de escutar. */
