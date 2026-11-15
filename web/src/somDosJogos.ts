@@ -1,3 +1,4 @@
+import { usar } from './audioOcioso';
 import { estaSurdo } from './sounds';
 
 /**
@@ -81,7 +82,7 @@ function audio(): AudioContext | null {
       return null;
     }
   }
-  if (ctx.state === 'suspended') void ctx.resume().catch(() => {});
+  usar(ctx); // retoma, e suspende depois de 10 s sem som (ver audioOcioso.ts)
   return ctx;
 }
 

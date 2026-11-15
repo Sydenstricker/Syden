@@ -76,6 +76,18 @@ export interface LocalMedia {
   screen: boolean;
 }
 
+/**
+ * A faixa do microfone ANTES do nosso processador (supressão, efeito de voz), ou null. Com processador, o `mediaStreamTrack`
+ * do LiveKit é a saída dele, que fica muda no mudo junto com a entrada; a crua só existe no campo interno.
+ */
+function faixaCruaDoMicrofone(room: Room): MediaStreamTrack | null {
+  const faixa = room.localParticipant.getTrackPublication(Track.Source.Microphone)?.audioTrack;
+  if (!faixa) return null;
+  const interna = (faixa as unknown as { _mediaStreamTrack?: MediaStreamTrack })._mediaStreamTrack;
+  const crua = interna ?? (faixa.getProcessor() ? null : faixa.mediaStreamTrack);
+  return crua && crua.readyState === 'live' ? crua : null;
+}
+
 function readLocalMedia(lp: LocalParticipant): LocalMedia {
   return { muted: !lp.isMicrophoneEnabled, video: lp.isCameraEnabled, screen: lp.isScreenShareEnabled };
 }
@@ -235,7 +247,7 @@ function erroDaTransmissao(error: unknown) {
 }
 
 import { criarVigiaDePicote } from './vigiaDePicote';
-import { pingDoRelatorio } from './ping';
+import { definirPing, pingDoRelatorio } from './ping';
 
 /**
  * Conta ao servidor um problema que só acontece no computador da pessoa (microfone bloqueado, voz barrada
@@ -1960,9 +1972,19 @@ export function useVoice(socket: Socket | null) {
 
     (async () => {
       try {
-        stream = await navigator.mediaDevices.getUserMedia({
-          audio: { deviceId: getSettings().audioInput || undefined, echoCancellation: true, noiseSuppression: true },
-        });
+        // UMA CÓPIA DA FAIXA QUE JÁ ESTÁ ABERTA, e não um segundo microfone (auditoria de desempenho, 15/11/2026). O
+        // getUserMedia de antes abria outra captura, com o cancelamento de eco e a supressão do navegador rodando em dobro
+        // a partida inteira de quem joga no mudo. O mudo do LiveKit só desliga (enabled = false) a faixa crua; a cópia
+        // tem o próprio "ligado", vem do mesmo dispositivo e já processada. Sem faixa (entrou no mudo), o caminho antigo.
+        const crua = faixaCruaDoMicrofone(room);
+        if (crua) {
+          const copia = crua.clone();
+          copia.enabled = true;
+          stream = new MediaStream([copia]);
+        } else
+          stream = await navigator.mediaDevices.getUserMedia({
+            audio: { deviceId: getSettings().audioInput || undefined, echoCancellation: true, noiseSuppression: true },
+          });
         if (cancelled) {
           stream.getTracks().forEach((t) => t.stop());
           return;
@@ -2010,7 +2032,7 @@ export function useVoice(socket: Socket | null) {
       stream?.getTracks().forEach((t) => t.stop());
       void ctx?.close();
     };
-  }, [channelId, media.muted]);
+  }, [channelId, media.muted, room]);
 
   /**
    * "NINGUÉM ME OUVE" SEM NENHUM AVISO: o microfone abre, a voz é publicada, e o que sai é silêncio.
@@ -2127,15 +2149,20 @@ export function useVoice(socket: Socket | null) {
   /**
    * O PING (ver ping.ts), lido a cada 2 s enquanto há chamada. Qualquer faixa serve, minha ou de outra pessoa: todas vão
    * ao mesmo servidor de voz. Sozinho na sala e mudo não há faixa nenhuma, e vale o ping do canal de sinalização.
+   * O número vai para fora do useVoice (definirPing, ver ping.ts): como estado daqui, redesenhava o app inteiro a cada 2 s.
    */
-  const [ping, setPing] = useState<number | null>(null);
   useEffect(() => {
     if (channelId === null) {
-      setPing(null);
+      definirPing(null);
       return;
     }
     let vivo = true;
+    let ultimaMedida = 0;
     const medir = async () => {
+      // Sem foco, uma medida a cada 10 s: o número continua à vista no segundo monitor, mas pedir as estatísticas de
+      // todas as faixas a cada 2 s com o jogo na frente é trabalho que ninguém está olhando.
+      if (!document.hasFocus() && Date.now() - ultimaMedida < 10_000) return;
+      ultimaMedida = Date.now();
       const faixas = [
         ...[...room.localParticipant.trackPublications.values()].map((p) => p.track),
         ...[...room.remoteParticipants.values()].flatMap((pessoa) => [...pessoa.trackPublications.values()].map((p) => p.track)),
@@ -2151,7 +2178,7 @@ export function useVoice(socket: Socket | null) {
         if (ms !== null) break;
       }
       if (ms === null && room.engine.client.rtt > 0) ms = Math.round(room.engine.client.rtt);
-      if (vivo) setPing(ms);
+      if (vivo) definirPing(ms);
     };
     void medir();
     const relogio = window.setInterval(() => void medir(), 2000);
@@ -2211,7 +2238,5 @@ export function useVoice(socket: Socket | null) {
     setVoiceEffect,
     /** O código de segurança da chamada de ponta a ponta; null fora dela (ou numa sala sem cifra). */
     codigoDeSeguranca,
-    /** O ping até o servidor de voz, em ms; null fora da chamada ou enquanto não há medida. */
-    ping,
   };
 }

@@ -1,4 +1,5 @@
 import { mediaUrl } from './api';
+import { segurar, soltar } from './audioOcioso';
 import { comTeto } from './limitador';
 import { estaSurdo } from './sounds';
 import { aoMudarAjustes, getSettings } from './settings';
@@ -61,7 +62,7 @@ export function playSoundboard(soundId: number, volumeDoSom = 1) {
       void (audio as HTMLAudioElement & { setSinkId(id: string): Promise<void> }).setSinkId(settings.audioOutput).catch(() => {});
     }
   }
-  void audio.play().catch(() => {});
+  void audio.play().catch(() => audio.dispatchEvent(new Event('syden:nao-tocou')));
 }
 
 /**
@@ -76,10 +77,20 @@ export function playSoundboard(soundId: number, volumeDoSom = 1) {
 function porOndeTocar(audio: HTMLAudioElement): boolean {
   try {
     contexto ??= new AudioContext();
-    void contexto.resume().catch(() => {});
-    const teto = comTeto(contexto);
+    const ctx = contexto;
+    void ctx.resume().catch(() => {});
+    const teto = comTeto(ctx);
     if (!teto) return false;
-    contexto.createMediaElementSource(audio).connect(teto);
+    ctx.createMediaElementSource(audio).connect(teto);
+    // Segura o contexto acordado enquanto o som toca, e o deixa parar 10 s depois que ele acaba (ver audioOcioso.ts).
+    segurar(ctx);
+    let solto = false;
+    const largar = () => {
+      if (solto) return;
+      solto = true;
+      soltar(ctx);
+    };
+    for (const evento of ['ended', 'pause', 'error', 'emptied', 'syden:nao-tocou']) audio.addEventListener(evento, largar);
     return true;
   } catch {
     // Navegador sem Web Audio, ou som que já estava ligado a um contexto: toca do jeito simples.

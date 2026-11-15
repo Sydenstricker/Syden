@@ -13715,6 +13715,18 @@ body.arrastando-barra {
   margin: 0 auto;
 }
 
+/* a cena dormindo sem foco (cenaDormindo.ts): a foto dela no lugar do iframe, e por cima dele enquanto acorda */
+.quarto-novo { position: relative; }
+.cena-foto {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  pointer-events: none;
+  z-index: 1;
+}
+
 .quarto-novo iframe {
   width: 100%;
   height: 100%;

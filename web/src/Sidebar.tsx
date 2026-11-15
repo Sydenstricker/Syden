@@ -23,7 +23,7 @@ import {
   Trophy,
   Signal,
 } from 'lucide-react';
-import { nivelDoPing } from './ping';
+import { nivelDoPing, usePing } from './ping';
 import { type KeyboardEvent, type ReactNode, useState } from 'react';
 import { ALGORITMOS_DA_CHAMADA } from './chaveDaChamada';
 import { api } from './api';
@@ -325,12 +325,7 @@ export function Sidebar({
             <div className="voice-panel-status">
               {t('Voz conectada')}
               {/* O PING, como no Discord: a cor diz se está bom, e o número fica para quem quer saber quanto. */}
-              {voice.ping !== null && (
-                <span className="voice-ping" data-nivel={nivelDoPing(voice.ping)} title={`ping ${voice.ping} ms`}>
-                  <Signal size={12} aria-hidden="true" />
-                  {voice.ping} ms
-                </span>
-              )}
+              <PingDaVoz />
             </div>
             {/* O nome da sala leva de volta a ela (de uma conversa privada, por exemplo), como no Discord. */}
             {'id' in connectedChannel ? (
@@ -713,3 +708,15 @@ function ChannelGroup({
   );
 }
 
+
+/** O ping da chamada num componente só dele: muda a cada 2 s, e não deve redesenhar a barra lateral inteira (ver ping.ts). */
+function PingDaVoz() {
+  const ping = usePing();
+  if (ping === null) return null;
+  return (
+    <span className="voice-ping" data-nivel={nivelDoPing(ping)} title={`ping ${ping} ms`}>
+      <Signal size={12} aria-hidden="true" />
+      {ping} ms
+    </span>
+  );
+}

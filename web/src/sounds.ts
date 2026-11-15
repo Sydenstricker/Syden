@@ -1,3 +1,4 @@
+import { usar } from './audioOcioso';
 import { getSettings } from './settings';
 import type { Toque } from './toquesDeLigacao';
 
@@ -69,7 +70,7 @@ let context: AudioContext | null = null;
 
 function audioContext() {
   context ??= new AudioContext();
-  if (context.state === 'suspended') void context.resume();
+  usar(context); // retoma, e suspende depois de 10 s sem som (ver audioOcioso.ts)
   return context;
 }
 

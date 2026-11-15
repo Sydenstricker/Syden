@@ -154,7 +154,9 @@ for (const [nome, svg] of Object.entries(svgs)) {
   // animação dentro de um SVG em <img> repinta sem parar, e a página não tem como pausá-la; com dezenas de pessoas na lista
   // de membros, isso custava ~13% de um núcleo com ninguém olhando. web/src/Avatar.tsx troca para este enquanto a janela
   // está sem foco (janelaComFoco.ts).
-  if (nome.startsWith('avatar-')) writeFileSync(PASTA + nome + '-parado.svg', paradoDoAvatar(svg.replace('<svg ', AVISO + '\n<svg ')) + '\n');
+  // E AS CENAS TAMBÉM (15/11/2026, auditoria de desempenho): o "assistir junto" da barra lateral, o "apresentação" do palco
+  // e o "ocioso" que espera o quarto e o salão ficavam animando atrás do jogo. Mascote.tsx troca para o parado sem foco.
+  writeFileSync(PASTA + nome + '-parado.svg', paradoDoAvatar(svg.replace('<svg ', AVISO + '\n<svg ')) + '\n');
 }
 
 /** O "menos movimento" do próprio desenho, sem a condição: as animações param no desenho de repouso. */

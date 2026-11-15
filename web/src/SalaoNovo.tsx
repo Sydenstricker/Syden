@@ -3,6 +3,7 @@ import type { Socket } from 'socket.io-client';
 import { API_URL, api, loadToken, mediaUrl } from './api';
 import { getDirectory, nomeDe } from './directory';
 import { useT } from './i18n';
+import { useCenaDormindo } from './cenaDormindo';
 import type { PecaClicada } from './CartaoDaPeca';
 import { type Arrumacao, EditorDaCena, type Figuras } from './QuartoNovo';
 import type { Receita } from './coelho/receita';
@@ -83,7 +84,7 @@ export function SalaoNovo({
   trocarRef.current = aoVivo?.aoTrocar;
   // Se é noite vai no endereço, e não só na mensagem que segue o "pronto": senão o primeiro quadro sai de dia. Só o da
   // abertura (trocar o endereço recarregaria a cena; depois, a troca vai por mensagem).
-  const [endereco] = useState(() => ENDERECO + (noite ? '&noite' : ''));
+  const [endereco, setEndereco] = useState(() => ENDERECO + (noite ? '&noite' : ''));
   const [pronto, setPronto] = useState(false);
   // A arrumação da pessoa (ou da comunidade) já está na cena. Até lá, o mascote espera e a cena fica escondida: senão ela
   // aparecia de fábrica (o abajur aceso) e mudava um instante depois. Sem resposta em 5 s, mostra assim mesmo.
@@ -91,6 +92,20 @@ export function SalaoNovo({
   const [figuras, setFiguras] = useState<Figuras | null>(null);
   const [arrumacao, setArrumacao] = useState<Arrumacao | null>(null);
   const [peca, setPeca] = useState<PecaClicada | null>(null);
+
+  // A CENA DORME SEM FOCO (cenaDormindo.ts): 30 s sem foco, à vista, ela vira uma foto e a página sai (a memória vai junto);
+  // com o foco de volta, a página é montada de novo, com a foto por cima até ela dizer que está pronta.
+  const dorme = useCenaDormindo(ref, pronto && arrumado && !peca);
+  useEffect(() => {
+    if (dorme.montada) return;
+    setPronto(false);
+    setArrumado(false);
+    setEndereco(ENDERECO + (noite ? '&noite' : '')); // ao acordar, já na hora do dia de agora
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dorme.montada]);
+  useEffect(() => {
+    if (dorme.foto && dorme.montada && pronto && arrumado) dorme.acordou();
+  }, [dorme, pronto, arrumado]);
   // O que o servidor diz: se esta pessoa arruma (pelo cargo), quem mexeu por último, e se dá para desfazer.
   const [servidor, setServidor] = useState<EstadoDoSalao | null>(null);
   const podeArrumar = podeEditar || !!servidor?.podeEditar;
@@ -127,10 +142,10 @@ export function SalaoNovo({
 
   // Sem o "pronto" da cena a tempo (a página não carregou, ou foi barrada): volta o salão antigo (ver cenaNova.ts).
   useEffect(() => {
-    if (pronto || !aoFalhar) return;
+    if (pronto || !aoFalhar || !dorme.montada) return;
     const prazo = setTimeout(aoFalhar, 20_000);
     return () => clearTimeout(prazo);
-  }, [pronto, aoFalhar]);
+  }, [pronto, aoFalhar, dorme.montada]);
 
   // Só o que se mostra de cada função (o clique volta para cá, onde mora a ação).
   // A JANELA É AMBIENTAÇÃO, NÃO CONVITE (decisão dele, 18/10/2026: "a janela convidar não vejo sentido"): ela mostra o lado
@@ -251,10 +266,11 @@ export function SalaoNovo({
   }, [socket, pronto, community.id]);
 
   return (
-    <EditorDaCena titulo={community.name} figuras={figuras} arrumacao={arrumacao} enviar={enviar} podeEditar={pronto && podeArrumar} carregando={!pronto || !arrumado} noite={noite} peca={peca} aoFecharPeca={() => setPeca(null)}>
+    <EditorDaCena titulo={community.name} figuras={figuras} arrumacao={arrumacao} enviar={enviar} podeEditar={pronto && podeArrumar} carregando={!dorme.foto && (!pronto || !arrumado)} noite={noite} peca={peca} aoFecharPeca={() => setPeca(null)}>
       <div className="quarto-novo-caixa salao-novo">
         <div className="quarto-novo">
-          <iframe ref={ref} src={endereco} title={t('Início')} />
+          {dorme.montada && <iframe ref={ref} src={endereco} title={t('Início')} />}
+          {dorme.foto && <img className="cena-foto" src={dorme.foto} alt="" aria-hidden="true" />}
         </div>
         {/* Para quem administra: quem mexeu por último, e o caminho de volta (a turma arruma; o dono não perde o salão). */}
         {servidor?.podeDesfazer && servidor.porUltimo && (

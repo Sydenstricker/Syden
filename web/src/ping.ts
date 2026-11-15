@@ -1,3 +1,5 @@
+import { useSyncExternalStore } from 'react';
+
 /**
  * O PING DA CHAMADA, como o do Discord (pedido de 24/10/2026): quanto o som leva para ir ao servidor de voz e voltar.
  *
@@ -34,4 +36,28 @@ export function nivelDoPing(ms: number): NivelDoPing {
   if (ms < 300) return 'bom';
   if (ms < 450) return 'medio';
   return 'ruim';
+}
+
+/**
+ * O NÚMERO MORA FORA DO useVoice (auditoria de desempenho, 15/11/2026). Ele muda a cada 2 s, e como estado do useVoice
+ * (que vive no Shell) redesenhava o app INTEIRO a cada medida, durante toda a chamada, com o jogo rodando. Aqui só quem
+ * mostra o número (o painel de voz da barra lateral) se redesenha.
+ */
+let pingAtual: number | null = null;
+const ouvintesDoPing = new Set<() => void>();
+
+export function definirPing(ms: number | null) {
+  if (ms === pingAtual) return;
+  pingAtual = ms;
+  for (const o of ouvintesDoPing) o();
+}
+
+export function usePing(): number | null {
+  return useSyncExternalStore(
+    (o) => {
+      ouvintesDoPing.add(o);
+      return () => ouvintesDoPing.delete(o);
+    },
+    () => pingAtual,
+  );
 }

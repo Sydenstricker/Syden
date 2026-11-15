@@ -59,11 +59,38 @@ const QUIETO = 1e-3;
 /** Quadros quietos seguidos antes de parar o modelo (~300 ms). */
 const SEGURA = Math.round((0.3 * 16000) / H);
 
+// O DETECTOR DE VOZ (15/11/2026, auditoria de desempenho: o modelo era quase metade do custo da chamada, e com o ruído de um
+// quarto de verdade, acima de −60 dBFS, ele nunca dormia). Sem voz, o modelo devolveria só o ruído apagado; então ele dorme
+// também com o RUÍDO PARADO, e não só com o silêncio. Barato de propósito, duas energias por quadro: a do quadro novo inteiro
+// e a da diferença entre amostras vizinhas (que realça o agudo: o "s" e o "f" do começo de uma palavra quase não têm grave,
+// e somem na energia total de um ventilador). Cada uma tem o seu PISO, o ruído de fundo, que desce na hora com um quadro mais
+// baixo e sobe devagar (~1 dB/s, para acompanhar um ventilador que liga). Voz é um quadro MARGEM acima do piso em qualquer
+// das duas; com voz, o modelo roda, e continua rodando até SEGURA_VOZ depois dela, para não cortar o fim das palavras.
+// MEDIDO E NÃO LIGADO (15/11/2026, e2e/supressao-sem-voz.mjs): energia não separa voz de ruído o bastante. Onde o começo
+// das frases sai intacto (margem 4 dB), o modelo roda 90% do tempo; onde dorme metade (6–10 dB), o começo das frases perde
+// 4 a 8 dB com ventilador ou ruído alto. Fica para um detector de voz de verdade (um modelo pequeno), se um dia valer.
+/** dB acima do piso (o mínimo do ruído) para contar como voz. */
+const MARGEM_DB = 9;
+/** Quanto de cada quadro entra na energia suavizada (~3 quadros). */
+const SUAVE = 0.35;
+/** Quanto o piso sobe por quadro: ×1,004 a cada 16 ms ≈ 1 dB/s sem voz; com voz, ~0,1 dB/s. */
+const SUBIDA = 1.004, SUBIDA_COM_VOZ = 1.0004;
+/** Quanto tempo o modelo continua rodando depois da última voz. */
+const SEGURA_VOZ_MS = 500;
+
 class SupressorGtcrn extends AudioWorkletProcessor {
   constructor(options) {
     super();
-    const { grafo, pesos } = options.processorOptions;
+    const { grafo, pesos, sono, margemDb = MARGEM_DB, seguraMs = SEGURA_VOZ_MS } = options.processorOptions;
+    // a margem e a folga vêm de fora só no teste, que varre os valores
+    this.detector = { margem: Math.pow(10, margemDb / 10), segura: Math.round((seguraMs / 1000) * 16000 / H) };
     this.motor = criarMotor(grafo, pesos);
+    // 'quieto' (o padrão): dorme só no silêncio abaixo de −60 dBFS. 'voz': dorme sem voz, pelo detector abaixo, que NÃO foi
+    // ao ar (ver o resultado no topo de e2e/supressao-sem-voz.mjs). 'nunca': sempre rodando.
+    // Os dois últimos ficam para o teste de e2e/supressao-sem-voz.mjs comparar.
+    this.sono = sono === 'voz' || sono === 'nunca' ? sono : 'quieto';
+    this.piso = 0; this.pisoAgudo = 0; this.es = 0; this.esa = 0; this.semVoz = 0;
+    this.rodados = 0; this.vistos = 0; // quantos quadros passaram pelo modelo, de quantos (para o teste)
     this.caches = {
       conv_cache: new Float32Array(2 * 1 * 16 * 16 * 33),
       tra_cache: new Float32Array(2 * 3 * 1 * 1 * 16),
@@ -97,7 +124,10 @@ class SupressorGtcrn extends AudioWorkletProcessor {
     let pico = 0;
     for (let i = 0; i < N; i++) { const a = this.entrada[i] < 0 ? -this.entrada[i] : this.entrada[i]; if (a > pico) pico = a; }
     this.quietos = pico < QUIETO ? (this.quietos || 0) + 1 : 0;
-    if (this.quietos > SEGURA) {
+    this.vistos++;
+    let dormir = this.sono !== 'nunca' && this.quietos > SEGURA;
+    if (this.sono === 'voz' && !dormir) dormir = this.semVozAgora();
+    if (dormir) {
       for (let i = 0; i < H; i++) this.fila[(this.escritos + i) % this.fila.length] = this.soma[i] * this.ganho;
       this.escritos += H;
       this.soma.copyWithin(0, H);
@@ -109,6 +139,7 @@ class SupressorGtcrn extends AudioWorkletProcessor {
     for (let k = 0; k < B; k++) { mix[2 * k] = re[k]; mix[2 * k + 1] = im[k]; }
 
     const t0 = Date.now();
+    this.rodados++;
     const s = this.motor.rodar(this.entradas);
     this.custoMs += Date.now() - t0;
     this.quadros++;
@@ -165,6 +196,27 @@ class SupressorGtcrn extends AudioWorkletProcessor {
       this.port.postMessage({ custoMsPorQuadro: this.custoMs / this.quadros });
       this.custoMs = 0; this.quadros = 0;
     }
+  }
+
+  /** O quadro novo (as últimas H amostras) não tem voz, e a última voz já passou de SEGURA_VOZ: o modelo pode dormir. */
+  semVozAgora() {
+    const x = this.entrada, d = this.detector;
+    let e = 1e-12, ea = 1e-12;
+    for (let i = N - H; i < N; i++) { e += x[i] * x[i]; const dif = x[i] - x[i - 1]; ea += dif * dif; }
+    const primeiro = this.piso === 0;
+    // A ENERGIA SUAVIZADA em ~3 quadros (48 ms): quadro a quadro, um ruído comum passa 6 dB acima do próprio mínimo a toda
+    // hora, e o modelo nunca dormia (medido). Suavizada, ela ainda pega o começo da fala no primeiro ou segundo quadro.
+    if (primeiro) { this.es = e; this.esa = ea; } else { this.es += (e - this.es) * SUAVE; this.esa += (ea - this.esa) * SUAVE; }
+    const voz = !primeiro && (this.es > this.piso * d.margem || this.esa > this.pisoAgudo * d.margem);
+    // O piso segue o MÍNIMO: desce na hora, sobe devagar (~1 dB/s sem voz, ~10× mais devagar com voz). Seguir a média
+    // (medido) cortava a fala no meio das frases: as sílabas fracas puxavam o piso para cima, e a voz deixava de contar.
+    if (primeiro) { this.piso = this.es; this.pisoAgudo = this.esa; } else {
+      const sobe = voz ? SUBIDA_COM_VOZ : SUBIDA;
+      this.piso = this.es < this.piso ? this.es : this.piso * sobe;
+      this.pisoAgudo = this.esa < this.pisoAgudo ? this.esa : this.pisoAgudo * sobe;
+    }
+    this.semVoz = voz ? 0 : this.semVoz + 1;
+    return this.semVoz > d.segura;
   }
 
   process(inputs, outputs) {

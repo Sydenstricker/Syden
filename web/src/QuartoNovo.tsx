@@ -5,6 +5,7 @@ import { CartaoDaPeca, type PecaClicada } from './CartaoDaPeca';
 import { desktopBridge } from './desktop';
 import { Mascote } from './Mascote';
 import { useT } from './i18n';
+import { useCenaDormindo } from './cenaDormindo';
 import { casaComABusca, type GrupoDaCena, nomeDaPeca } from './nomesDaCena';
 import type { AcoesDoQuarto } from './Quarto';
 import { receitaDe } from './coelho/receita';
@@ -105,7 +106,7 @@ export function QuartoNovo({
   acoesRef.current = acoes;
   // Se é noite vai no endereço, e não só na mensagem que segue o "pronto": senão o primeiro quadro sai de dia. Só o da
   // abertura (trocar o endereço recarregaria a cena; depois, a troca vai por mensagem).
-  const [endereco] = useState(() => ENDERECO + (noite ? '&noite' : ''));
+  const [endereco, setEndereco] = useState(() => ENDERECO + (noite ? '&noite' : ''));
   const [pronto, setPronto] = useState(false);
   // A arrumação da pessoa (ou da comunidade) já está na cena. Até lá, o mascote espera e a cena fica escondida: senão ela
   // aparecia de fábrica (o abajur aceso) e mudava um instante depois. Sem resposta em 5 s, mostra assim mesmo.
@@ -113,6 +114,20 @@ export function QuartoNovo({
   const [figuras, setFiguras] = useState<Figuras | null>(null);
   const [arrumacao, setArrumacao] = useState<Arrumacao | null>(null);
   const [peca, setPeca] = useState<PecaClicada | null>(null);
+
+  // A CENA DORME SEM FOCO (cenaDormindo.ts): 30 s sem foco, à vista, ela vira uma foto e a página sai (a memória vai junto);
+  // com o foco de volta, a página é montada de novo, com a foto por cima até ela dizer que está pronta.
+  const dorme = useCenaDormindo(ref, pronto && arrumado && !peca);
+  useEffect(() => {
+    if (dorme.montada) return;
+    setPronto(false);
+    setArrumado(false);
+    setEndereco(ENDERECO + (noite ? '&noite' : '')); // ao acordar, já na hora do dia de agora
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dorme.montada]);
+  useEffect(() => {
+    if (dorme.foto && dorme.montada && pronto && arrumado) dorme.acordou();
+  }, [dorme, pronto, arrumado]);
 
   const enviar = (msg: Record<string, unknown>) => ref.current?.contentWindow?.postMessage({ syden: 'quarto', ...msg }, location.origin);
 
@@ -145,10 +160,10 @@ export function QuartoNovo({
 
   // Sem o "pronto" da cena a tempo (a página não carregou, ou foi barrada): volta a cena antiga (ver cenaNova.ts).
   useEffect(() => {
-    if (pronto || !aoFalhar) return;
+    if (pronto || !aoFalhar || !dorme.montada) return;
     const prazo = setTimeout(aoFalhar, 20_000);
     return () => clearTimeout(prazo);
-  }, [pronto, aoFalhar]);
+  }, [pronto, aoFalhar, dorme.montada]);
 
   // Só o que se mostra de cada função (o clique volta para cá, onde mora a ação).
   const funcoes = JSON.stringify(Object.fromEntries(Object.entries(acoes).map(([id, a]) => [id, { rotulo: a?.rotulo, sub: a?.sub }])));
@@ -176,7 +191,7 @@ export function QuartoNovo({
       arrumacao={arrumacao}
       enviar={enviar}
       podeEditar={pronto}
-      carregando={!pronto || !arrumado}
+      carregando={!dorme.foto && (!pronto || !arrumado)}
       noite={noite}
       peca={peca}
       aoFecharPeca={() => setPeca(null)}
@@ -186,7 +201,8 @@ export function QuartoNovo({
     >
       <div className="quarto-novo-caixa">
         <div className="quarto-novo">
-          <iframe ref={ref} src={endereco} title={t('Início')} />
+          {dorme.montada && <iframe ref={ref} src={endereco} title={t('Início')} />}
+          {dorme.foto && <img className="cena-foto" src={dorme.foto} alt="" aria-hidden="true" />}
         </div>
       </div>
     </EditorDaCena>

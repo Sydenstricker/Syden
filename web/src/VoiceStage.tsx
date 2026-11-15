@@ -1139,9 +1139,12 @@ function useVozesDaSala(room: Room, ligado: boolean): MediaStream | null {
   useEffect(() => {
     if (!ligado) {
       setVozes(null);
+      // desligado o gravador, o contexto dorme: rodando, ele mantinha a thread de áudio acordada a sessão inteira
+      void ctxRef.current?.suspend().catch(() => {});
       return;
     }
     const ctx = (ctxRef.current ??= new AudioContext());
+    void ctx.resume().catch(() => {});
     const destino = ctx.createMediaStreamDestination();
     // Guarda quem já está ligado, para não ligar a mesma faixa duas vezes quando um evento repetir.
     const ligadas = new Map<string, MediaStreamAudioSourceNode>();

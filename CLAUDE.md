@@ -2188,6 +2188,29 @@ mudo e o silêncio abaixo de −60 dBFS de pico por 300 ms; de ~20% para ~2%, no
 tabela (~400 KB lidos duas vezes por quadro) virou FFT. Baixar o custo com som pede trocar ou quantizar o modelo (int8),
 o que precisa de Python e de medir a qualidade de novo na gravação dele (DNSMOS): decisão dele.
 
+**A supressão do site que dorme sem voz: MEDIDA E NÃO LIGADA (15/11/2026, pedido dele).** O GTCRN roda o tempo todo numa
+chamada de verdade (o "quieto" de −60 dBFS nunca chega com o ruído de um quarto: 100% nos cinco cenários medidos). Um detector
+por energia (`semVozAgora` em gtcrn.worklet.js, ligado só pelo teste) não separa voz de ruído o bastante: onde o começo das frases
+sai intacto, o modelo roda 90% do tempo; onde ele dorme metade, o começo das frases perde 4 a 8 dB com ventilador ou ruído alto.
+O padrão continua o "quieto". O próximo passo, se valer, é um detector de voz de verdade (um modelo pequeno). Os números e o
+teste: `e2e/supressao-sem-voz.mjs` (fala pt-BR do Windows sobre cinco ruídos, o worklet de verdade no Node).
+
+**O lote pequeno da auditoria (15/11/2026):** o PING mora fora do useVoice (`definirPing`/`usePing` em ping.ts): como estado do
+Shell, redesenhava o app inteiro a cada 2 s da chamada; sem foco, uma medida a cada 10 s. O aviso "Você está silenciado!" ouve
+uma CÓPIA da faixa do microfone já aberta (`faixaCruaDoMicrofone`), e não um segundo getUserMedia com o cancelamento de eco e a
+supressão do navegador em dobro (medido: a cópia de uma faixa desligada pelo mudo traz o mesmo som da original). Os contextos de
+áudio dos sons da interface, dos jogos e do soundboard DORMEM 10 s depois do último som (`audioOcioso.ts`): antes, depois do
+primeiro "plim", a thread de áudio ficava acordada a sessão inteira. O das vozes do clipe dorme com o gravador desligado. As
+cenas do mascote (`Mascote.tsx`) têm o "-parado.svg" sem foco, como os avatares. Contexto de áudio novo: `usar` ou
+`segurar`/`soltar`; nunca deixar um "running" à toa.
+
+**A CENA À VISTA DORME SEM FOCO (15/11/2026, pedido dele: "1,1 GB de RAM é muita coisa, especialmente no contexto brasileiro de
+PCs mais modestos").** O quarto e o salão no segundo monitor, com o jogo no primeiro: 30 s sem foco, a parte à vista do canvas
+vira uma FOTO e o iframe sai (`cenaDormindo.ts`, usado por QuartoNovo e SalaoNovo); com o foco de volta, a página é montada de
+novo com a foto por cima até dizer "pronto" (sem o mascote de espera no meio). Medido (`e2e/cena-dormindo.mjs`): o salão libera
+~950 MB e o quarto ~400 MB; acordar leva ~3 s no quarto e ~7 s no salão, com a foto à vista. Não dorme no Editar nem com uma
+peça aberta. A foto não traz os nomes nem os balões (HTML por cima do canvas). As cenas 3D (Quarto3D, Salao3D) ainda não dormem.
+
 ## Fonte de terceiro: embutir é REDISTRIBUIR, e quase nenhuma "grátis" permite isso
 
 **Decidido em 02/10/2026, depois de medir — e a medição derrubou a fonte que ele queria usar.**

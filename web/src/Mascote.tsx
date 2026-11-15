@@ -15,6 +15,8 @@
  * o estilo fica preso dentro dela. As animações rodam do mesmo jeito, e o próprio SVG para quando a
  * pessoa pediu menos movimento ao sistema.
  */
+import { useJanelaComFoco } from './janelaComFoco';
+
 export type NomeDoMascote =
   | 'ocioso'
   | 'introducao'
@@ -30,10 +32,13 @@ export type NomeDoMascote =
   | 'erro-404';
 
 export function Mascote({ nome, tamanho = 160, className }: { nome: NomeDoMascote; tamanho?: number; className?: string }) {
+  // Sem foco, o mesmo desenho parado (o "-parado.svg", do exportador), como o Avatar: a animação dentro de um SVG em <img>
+  // não se pausa de fora, e o "assistir junto" da barra lateral repintava atrás do jogo a partida inteira.
+  const comFoco = useJanelaComFoco();
   return (
     <img
       className={className ? `mascote ${className}` : 'mascote'}
-      src={`${import.meta.env.BASE_URL}mascote/${nome}.svg`}
+      src={`${import.meta.env.BASE_URL}mascote/${nome}${comFoco ? '' : '-parado'}.svg`}
       width={tamanho}
       height={Math.round(tamanho * 0.75)}
       alt=""
