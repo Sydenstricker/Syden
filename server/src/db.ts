@@ -5346,6 +5346,9 @@ export function retirarPeloShield(sha: string): RetiradoPeloShield {
     for (const { quem } of db.prepare('SELECT user_id AS quem FROM figurinhas WHERE sha = ?').all(sha) as { quem: number }[]) autores.add(quem);
     db.prepare('DELETE FROM figurinhas WHERE sha = ?').run(sha);
     db.prepare('DELETE FROM avatares_anteriores WHERE sha = ?').run(sha);
+    // a foto da pergunta de um bolão (15/11/2026): sai a foto, a pergunta fica
+    for (const { quem } of db.prepare('SELECT criado_por AS quem FROM boloes WHERE sha = ?').all(sha) as { quem: number | null }[]) if (quem !== null) autores.add(quem);
+    db.prepare('UPDATE boloes SET sha = NULL, mime = NULL WHERE sha = ?').run(sha);
     const anexos = db
       .prepare('SELECT a.id, a.message_id AS messageId, m.channel_id AS channelId FROM attachments a JOIN messages m ON m.id = a.message_id WHERE a.sha = ?')
       .all(sha) as { id: number; messageId: number; channelId: number }[];
@@ -7918,80 +7921,79 @@ export function gincanaDe(userId: number) {
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-// O BOLÃO DA COMUNIDADE (pedido dele, 14/11/2026; ver bolao-routes.ts). SÓ PONTOS: o Syden não anota nem move dinheiro
-// (o que a turma combinar é por fora). Quem cria o bolão cadastra os jogos e digita o placar final, para qualquer esporte,
-// sem API de terceiro. O palpite fecha na hora do jogo, e o dos outros só aparece depois dela (senão, copiava-se).
+// O BOLÃO DA COMUNIDADE (pedido dele, 14/11/2026, refeito em 15/11 no formato que ele queria; ver bolao-routes.ts): uma
+// PERGUNTA com foto ("quando o fulano chega?"), e cada um dá UM palpite de dia e hora. Quem chegar mais perto da resposta
+// ganha. SÓ PONTOS: o Syden não anota nem move dinheiro. Os palpites dos outros só aparecem depois que fecham.
 // Quem exclui a conta leva os palpites junto (ON DELETE CASCADE); o bolão de quem saiu fica para a turma.
 // ---------------------------------------------------------------------------------------------------------------------
+// A primeira forma (jogos com placar, 14/11/2026) viveu algumas horas no ar: as tabelas dela saem, se ainda existirem.
+if ((db.prepare("SELECT COUNT(*) AS n FROM sqlite_master WHERE name = 'bolao_jogos'").get() as { n: number }).n) {
+  db.exec('DROP TABLE IF EXISTS bolao_palpites; DROP TABLE bolao_jogos; DROP TABLE IF EXISTS boloes;');
+}
 db.exec(`
   CREATE TABLE IF NOT EXISTS boloes (
     id           INTEGER PRIMARY KEY AUTOINCREMENT,
     community_id INTEGER NOT NULL REFERENCES communities(id) ON DELETE CASCADE,
-    titulo       TEXT NOT NULL,
+    pergunta     TEXT NOT NULL,
+    sha          TEXT,
+    mime         TEXT,
+    chave        TEXT NOT NULL,
+    fecha_em     TEXT,
+    fechado      INTEGER NOT NULL DEFAULT 0,
+    resposta     TEXT,
     criado_por   INTEGER REFERENCES users(id) ON DELETE SET NULL,
     criado_em    TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
   );
   CREATE INDEX IF NOT EXISTS boloes_da_comunidade ON boloes(community_id);
-  CREATE TABLE IF NOT EXISTS bolao_jogos (
-    id        INTEGER PRIMARY KEY AUTOINCREMENT,
-    bolao_id  INTEGER NOT NULL REFERENCES boloes(id) ON DELETE CASCADE,
-    casa      TEXT NOT NULL,
-    fora      TEXT NOT NULL,
-    quando    TEXT NOT NULL,
-    gols_casa INTEGER,
-    gols_fora INTEGER
-  );
-  CREATE INDEX IF NOT EXISTS bolao_jogos_por_bolao ON bolao_jogos(bolao_id, quando);
   CREATE TABLE IF NOT EXISTS bolao_palpites (
-    jogo_id   INTEGER NOT NULL REFERENCES bolao_jogos(id) ON DELETE CASCADE,
-    user_id   INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    gols_casa INTEGER NOT NULL,
-    gols_fora INTEGER NOT NULL,
-    em        TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
-    PRIMARY KEY (jogo_id, user_id)
+    bolao_id INTEGER NOT NULL REFERENCES boloes(id) ON DELETE CASCADE,
+    user_id  INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    quando   TEXT NOT NULL,
+    em       TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    PRIMARY KEY (bolao_id, user_id)
   );
 `);
 
 export interface Bolao {
   id: number;
-  titulo: string;
+  pergunta: string;
+  /** A chave do endereço da foto (GET /api/boloes/:id/foto/:chave), ou null sem foto. */
+  foto: string | null;
+  /** ISO: até quando se palpita, ou null (até quem cuida fechar). */
+  fechaEm: string | null;
+  fechado: boolean;
+  /** ISO: a resposta certa, quando quem cuida a lançou. */
+  resposta: string | null;
   criadoPor: number | null;
   criadoEm: string;
-  jogos: number;
-}
-export interface JogoDoBolao {
-  id: number;
-  casa: string;
-  fora: string;
-  /** ISO, em UTC: a hora do jogo, quando o palpite fecha. */
-  quando: string;
-  golsCasa: number | null;
-  golsFora: number | null;
+  palpites: number;
 }
 export interface PalpiteDoBolao {
-  jogoId: number;
   userId: number;
   nome: string;
-  golsCasa: number;
-  golsFora: number;
+  quando: string;
+  em: string;
 }
 
+const COLUNAS_DO_BOLAO = `b.id, b.pergunta, CASE WHEN b.sha IS NULL THEN NULL ELSE b.chave END AS foto, b.fecha_em AS fechaEm,
+  b.fechado, b.resposta, b.criado_por AS criadoPor, b.criado_em AS criadoEm,
+  (SELECT COUNT(*) FROM bolao_palpites p WHERE p.bolao_id = b.id) AS palpites`;
+const comoBolao = (linha: Record<string, unknown>) => ({ ...linha, fechado: !!linha.fechado }) as unknown as Bolao;
+
 export function boloesDaComunidade(communityId: number): Bolao[] {
-  return db
-    .prepare(
-      `SELECT b.id, b.titulo, b.criado_por AS criadoPor, b.criado_em AS criadoEm,
-              (SELECT COUNT(*) FROM bolao_jogos j WHERE j.bolao_id = b.id) AS jogos
-       FROM boloes b WHERE b.community_id = ? ORDER BY b.id DESC`,
-    )
-    .all(communityId) as unknown as Bolao[];
+  return (db.prepare(`SELECT ${COLUNAS_DO_BOLAO} FROM boloes b WHERE b.community_id = ? ORDER BY b.id DESC`).all(communityId) as Record<string, unknown>[]).map(comoBolao);
 }
 
 export function bolaoDaComunidade(communityId: number, bolaoId: number): Bolao | undefined {
-  return boloesDaComunidade(communityId).find((b) => b.id === bolaoId);
+  const linha = db.prepare(`SELECT ${COLUNAS_DO_BOLAO} FROM boloes b WHERE b.community_id = ? AND b.id = ?`).get(communityId, bolaoId) as Record<string, unknown> | undefined;
+  return linha && comoBolao(linha);
 }
 
-export function criarBolao(communityId: number, titulo: string, userId: number): Bolao {
-  const { lastInsertRowid } = db.prepare('INSERT INTO boloes (community_id, titulo, criado_por) VALUES (?, ?, ?)').run(communityId, titulo, userId);
+export function criarBolao(communityId: number, userId: number, pergunta: string, fechaEm: string | null, foto: { sha: string; mime: string } | null): Bolao {
+  const chave = randomBytes(12).toString('hex');
+  const { lastInsertRowid } = db
+    .prepare('INSERT INTO boloes (community_id, pergunta, sha, mime, chave, fecha_em, criado_por) VALUES (?, ?, ?, ?, ?, ?, ?)')
+    .run(communityId, pergunta, foto?.sha ?? null, foto?.mime ?? null, chave, fechaEm, userId);
   return bolaoDaComunidade(communityId, Number(lastInsertRowid))!;
 }
 
@@ -7999,63 +8001,50 @@ export function apagarBolao(communityId: number, bolaoId: number): boolean {
   return db.prepare('DELETE FROM boloes WHERE id = ? AND community_id = ?').run(bolaoId, communityId).changes > 0;
 }
 
-export function jogosDoBolao(bolaoId: number): JogoDoBolao[] {
-  return db
-    .prepare(
-      `SELECT id, casa, fora, quando, gols_casa AS golsCasa, gols_fora AS golsFora FROM bolao_jogos
-       WHERE bolao_id = ? ORDER BY quando, id`,
-    )
-    .all(bolaoId) as unknown as JogoDoBolao[];
+/** Fecha os palpites na mão (quem cuida), ou os reabre. */
+export function fecharBolao(bolaoId: number, fechado: boolean) {
+  db.prepare('UPDATE boloes SET fechado = ? WHERE id = ?').run(fechado ? 1 : 0, bolaoId);
 }
 
-export function jogoDoBolao(bolaoId: number, jogoId: number): JogoDoBolao | undefined {
-  return jogosDoBolao(bolaoId).find((j) => j.id === jogoId);
+/** A resposta certa (ISO), ou null para voltar a "sem resposta" (corrigir uma digitada errado). */
+export function responderBolao(bolaoId: number, resposta: string | null) {
+  db.prepare('UPDATE boloes SET resposta = ? WHERE id = ?').run(resposta, bolaoId);
 }
 
-export function criarJogoDoBolao(bolaoId: number, casa: string, fora: string, quando: string): JogoDoBolao {
-  const { lastInsertRowid } = db.prepare('INSERT INTO bolao_jogos (bolao_id, casa, fora, quando) VALUES (?, ?, ?, ?)').run(bolaoId, casa, fora, quando);
-  return { id: Number(lastInsertRowid), casa, fora, quando, golsCasa: null, golsFora: null };
+/** A foto do bolão pela chave do endereço (que só quem é da comunidade recebe). */
+export function fotoDoBolao(bolaoId: number, chave: string): { sha: string; mime: string } | undefined {
+  return db.prepare('SELECT sha, mime FROM boloes WHERE id = ? AND chave = ? AND sha IS NOT NULL').get(bolaoId, chave) as
+    | { sha: string; mime: string }
+    | undefined;
 }
 
-export function apagarJogoDoBolao(bolaoId: number, jogoId: number): boolean {
-  return db.prepare('DELETE FROM bolao_jogos WHERE id = ? AND bolao_id = ?').run(jogoId, bolaoId).changes > 0;
-}
-
-export function resultadoDoJogo(bolaoId: number, jogoId: number, golsCasa: number | null, golsFora: number | null): boolean {
-  return db.prepare('UPDATE bolao_jogos SET gols_casa = ?, gols_fora = ? WHERE id = ? AND bolao_id = ?').run(golsCasa, golsFora, jogoId, bolaoId).changes > 0;
-}
-
-export function palpitar(jogoId: number, userId: number, golsCasa: number, golsFora: number) {
+export function palpitar(bolaoId: number, userId: number, quando: string) {
   db.prepare(
-    `INSERT INTO bolao_palpites (jogo_id, user_id, gols_casa, gols_fora) VALUES (?, ?, ?, ?)
-     ON CONFLICT(jogo_id, user_id) DO UPDATE SET gols_casa = excluded.gols_casa, gols_fora = excluded.gols_fora,
-       em = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')`,
-  ).run(jogoId, userId, golsCasa, golsFora);
+    `INSERT INTO bolao_palpites (bolao_id, user_id, quando) VALUES (?, ?, ?)
+     ON CONFLICT(bolao_id, user_id) DO UPDATE SET quando = excluded.quando, em = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')`,
+  ).run(bolaoId, userId, quando);
 }
 
 /** Os palpites de um bolão, só de quem ainda é membro da comunidade (com o nome que tem nela). */
 export function palpitesDoBolao(communityId: number, bolaoId: number): PalpiteDoBolao[] {
   return db
     .prepare(
-      `SELECT p.jogo_id AS jogoId, p.user_id AS userId, COALESCE(m.apelido, u.nome_exibicao, u.username) AS nome,
-              p.gols_casa AS golsCasa, p.gols_fora AS golsFora
+      `SELECT p.user_id AS userId, COALESCE(m.apelido, u.nome_exibicao, u.username) AS nome, p.quando, p.em
        FROM bolao_palpites p
-       JOIN bolao_jogos j ON j.id = p.jogo_id
        JOIN users u ON u.id = p.user_id
        JOIN community_members m ON m.community_id = ? AND m.user_id = p.user_id
-       WHERE j.bolao_id = ? ORDER BY nome COLLATE NOCASE`,
+       WHERE p.bolao_id = ? ORDER BY p.quando`,
     )
     .all(communityId, bolaoId) as unknown as PalpiteDoBolao[];
 }
 
-/** Para o "Levar seus dados": os palpites da pessoa, com o jogo e o bolão. */
+/** Para o "Levar seus dados": os palpites da pessoa, com a pergunta. */
 export function palpitesDe(userId: number) {
   return db
     .prepare(
-      `SELECT b.community_id AS communityId, b.titulo AS bolao, j.casa, j.fora, j.quando,
-              p.gols_casa AS golsCasa, p.gols_fora AS golsFora, p.em
-       FROM bolao_palpites p JOIN bolao_jogos j ON j.id = p.jogo_id JOIN boloes b ON b.id = j.bolao_id
-       WHERE p.user_id = ? ORDER BY j.quando`,
+      `SELECT b.community_id AS communityId, b.pergunta, p.quando, p.em
+       FROM bolao_palpites p JOIN boloes b ON b.id = p.bolao_id
+       WHERE p.user_id = ? ORDER BY p.em`,
     )
-    .all(userId) as { communityId: number; bolao: string; casa: string; fora: string; quando: string; golsCasa: number; golsFora: number; em: string }[];
+    .all(userId) as { communityId: number; pergunta: string; quando: string; em: string }[];
 }

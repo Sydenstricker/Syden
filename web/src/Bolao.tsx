@@ -1,59 +1,118 @@
-import { ChevronLeft, Medal, Trash2, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { ChevronLeft, ImagePlus, Lock, LockOpen, Medal, Trash2, X } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
-import { api } from './api';
+import { api, API_URL } from './api';
 import { idiomaAtual, useT } from './i18n';
 
 /**
- * O BOLÃO DA COMUNIDADE (pedido dele, 14/11/2026; as regras em server/src/bolao-routes.ts). Só pontos, sem dinheiro.
- * Qualquer membro cria um bolão; quem o criou e quem administra cadastram os jogos e lançam o placar. Cada um palpita até
- * a hora do jogo, e os palpites dos outros só aparecem depois dela. Abre por um atalho embaixo do salão, como o calendário.
+ * O BOLÃO DA COMUNIDADE (pedido dele, 14/11/2026, refeito em 15/11 no formato que ele queria; as regras em
+ * server/src/bolao-routes.ts): uma PERGUNTA com foto ("quando o fulano chega?"), e cada um dá UM palpite de dia e hora
+ * pelo calendário. Os palpites dos outros só aparecem quando fecha; quem criou (ou quem administra) lança a resposta, e
+ * ganha quem chegou mais perto. Só pontos, sem dinheiro. Abre por um atalho embaixo do salão, como o calendário.
  */
 interface Bolao {
   id: number;
-  titulo: string;
-  jogos: number;
+  pergunta: string;
+  foto: string | null;
+  fechaEm: string | null;
+  fechado: boolean;
+  resposta: string | null;
+  palpites: number;
+  aberto: boolean;
 }
 interface Palpite {
   userId: number;
   nome: string;
-  golsCasa: number;
-  golsFora: number;
-  pontos: number | null;
-}
-interface Jogo {
-  id: number;
-  casa: string;
-  fora: string;
   quando: string;
-  golsCasa: number | null;
-  golsFora: number | null;
-  comecou: boolean;
-  meu: { golsCasa: number; golsFora: number; pontos: number | null } | null;
-  palpites: Palpite[] | null;
-  quantosPalpitaram: number;
+  diferencaMs?: number;
 }
 interface Detalhe {
   bolao: Bolao;
-  jogos: Jogo[];
-  ranking: { userId: number; nome: string; pontos: number; exatos: number }[];
+  meu: string | null;
+  palpites: Palpite[] | null;
   podeEditar: boolean;
 }
 
-const doisDigitos = (n: number) => String(n).padStart(2, '0');
-const primeiraMaiuscula = (s: string) => s.charAt(0).toLocaleUpperCase() + s.slice(1);
-/** O número de um campo de gols: vazio é "não preenchido". */
-const numero = (s: string) => (s.trim() === '' ? null : Number(s));
+/** O teto do servidor para a foto (4 MB), e o maior lado depois de reduzida. */
+const FOTO_MAXIMA = 4 * 1024 * 1024;
+const LADO_MAXIMO = 1600;
 
-export function Bolao({ communityId, socket, aoFechar }: { communityId: number; socket?: Socket | null; aoFechar: () => void }) {
+const enderecoDaFoto = (b: Pick<Bolao, 'id' | 'foto'>) => `${API_URL}/api/boloes/${b.id}/foto/${b.foto}`;
+const doisDigitos = (n: number) => String(n).padStart(2, '0');
+/** Uma data ISO no formato do campo datetime-local (a hora do computador de quem vê). */
+const paraOCampo = (iso: string) => {
+  const d = new Date(iso);
+  return `${d.getFullYear()}-${doisDigitos(d.getMonth() + 1)}-${doisDigitos(d.getDate())}T${doisDigitos(d.getHours())}:${doisDigitos(d.getMinutes())}`;
+};
+/** O valor do campo datetime-local virando ISO, ou null se vazio ou torto. */
+const doCampo = (valor: string) => {
+  const ms = valor ? new Date(valor).getTime() : NaN;
+  return Number.isFinite(ms) ? new Date(ms).toISOString() : null;
+};
+
+const comoDataUrl = (blob: Blob) =>
+  new Promise<string>((resolve, reject) => {
+    const leitor = new FileReader();
+    leitor.onload = () => resolve(String(leitor.result));
+    leitor.onerror = () => reject(new Error('Não foi possível abrir essa imagem.'));
+    leitor.readAsDataURL(blob);
+  });
+
+/** A foto escolhida, pronta para subir: inteira, reduzida até 1600 px no lado maior, em WEBP. O GIF passa como veio. */
+async function prepararFoto(file: File): Promise<string> {
+  if (!file.type.startsWith('image/')) throw new Error('Escolha um arquivo de imagem.');
+  if (file.type === 'image/gif') {
+    if (file.size > FOTO_MAXIMA) throw new Error('Cada arquivo pode ter até 4 MB.');
+    return comoDataUrl(file);
+  }
+  const bitmap = await createImageBitmap(file).catch(() => {
+    throw new Error('Não foi possível abrir essa imagem.');
+  });
+  const escala = Math.min(1, LADO_MAXIMO / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.round(bitmap.width * escala);
+  canvas.height = Math.round(bitmap.height * escala);
+  const ctx = canvas.getContext('2d')!;
+  ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+  const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/webp', 0.86));
+  if (!blob) throw new Error('Não foi possível processar essa imagem.');
+  if (blob.size > FOTO_MAXIMA) throw new Error('Cada arquivo pode ter até 4 MB.');
+  return comoDataUrl(blob);
+}
+
+/** "+30 min", "−2 h", "+3 d": a distância do palpite à resposta, sem texto para traduzir (as unidades vêm do Intl). */
+function distancia(ms: number, idioma: string) {
+  const abs = Math.abs(ms);
+  const minutos = Math.round(abs / 60000);
+  const [valor, unidade] =
+    minutos < 60 ? [minutos, 'minute'] : minutos < 48 * 60 ? [Math.round((minutos / 60) * 10) / 10, 'hour'] : [Math.round((minutos / 1440) * 10) / 10, 'day'];
+  const texto = new Intl.NumberFormat(idioma, { style: 'unit', unit: unidade, unitDisplay: 'short', maximumFractionDigits: 1 }).format(valor);
+  return minutos === 0 ? '0' : `${ms > 0 ? '+' : '−'}${texto}`;
+}
+
+export function Bolao({
+  communityId,
+  socket,
+  inicial = null,
+  aoFechar,
+}: {
+  communityId: number;
+  socket?: Socket | null;
+  /** Abrir já num bolão (vindo do calendário). */
+  inicial?: number | null;
+  aoFechar: () => void;
+}) {
   const t = useT();
+  const idioma = idiomaAtual();
+  const fmt = new Intl.DateTimeFormat(idioma, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  const quando = (iso: string) => fmt.format(new Date(iso));
   const [boloes, setBoloes] = useState<Bolao[] | null>(null);
-  const [aberto, setAberto] = useState<number | null>(null);
+  const [aberto, setAberto] = useState<number | null>(inicial);
   const [detalhe, setDetalhe] = useState<Detalhe | null>(null);
-  const [aba, setAba] = useState<'jogos' | 'classificacao'>('jogos');
   const [erro, setErro] = useState<string | null>(null);
   const [versao, setVersao] = useState(0);
-  const [titulo, setTitulo] = useState('');
 
   useEffect(() => {
     let vivo = true;
@@ -80,7 +139,7 @@ export function Bolao({ communityId, socket, aoFechar }: { communityId: number; 
     };
   }, [communityId, aberto, versao]);
 
-  // alguém criou um bolão, um jogo ou lançou um placar: relê
+  // alguém criou, palpitou pela primeira vez, fechou ou lançou a resposta: relê
   useEffect(() => {
     if (!socket) return;
     const mudou = (d: { communityId: number }) => d.communityId === communityId && setVersao((v) => v + 1);
@@ -89,6 +148,14 @@ export function Bolao({ communityId, socket, aoFechar }: { communityId: number; 
       socket.off('bolao:mudou', mudou);
     };
   }, [socket, communityId]);
+
+  // a hora de fechar passou com a janela aberta: relê, para os palpites aparecerem
+  useEffect(() => {
+    const fecha = detalhe?.bolao.aberto && detalhe.bolao.fechaEm ? Date.parse(detalhe.bolao.fechaEm) - Date.now() : null;
+    if (fecha === null || fecha > 24 * 60 * 60 * 1000) return;
+    const id = window.setTimeout(() => setVersao((v) => v + 1), Math.max(0, fecha) + 500);
+    return () => window.clearTimeout(id);
+  }, [detalhe]);
 
   useEffect(() => {
     const tecla = (e: KeyboardEvent) => {
@@ -105,22 +172,21 @@ export function Bolao({ communityId, socket, aoFechar }: { communityId: number; 
     try {
       const r = await api(`/api/communities/${communityId}/boloes${caminho}`, { method: metodo, body: corpo });
       setVersao((v) => v + 1);
-      return r;
+      return r ?? true;
     } catch (e) {
       setErro((e as Error).message);
       return null;
     }
   }
 
-  async function criarBolao(e: React.FormEvent) {
-    e.preventDefault();
-    const novo = (await chamar('', 'POST', { titulo })) as Bolao | null;
-    if (novo) {
-      setTitulo('');
-      setAba('jogos');
-      setAberto(novo.id);
-    }
-  }
+  const estado = (b: Bolao) =>
+    b.resposta
+      ? t('Resposta: {quando}', { quando: quando(b.resposta) })
+      : b.aberto
+        ? b.fechaEm
+          ? t('Fecha em {quando}', { quando: quando(b.fechaEm) })
+          : t('Aberto')
+        : t('Fechado');
 
   return (
     <div className="dialog-backdrop" onMouseDown={(e) => e.target === e.currentTarget && aoFechar()}>
@@ -132,7 +198,7 @@ export function Bolao({ communityId, socket, aoFechar }: { communityId: number; 
                 <ChevronLeft size={18} aria-hidden="true" />
               </button>
             )}
-            <Medal size={18} aria-hidden="true" /> {aberto !== null && detalhe ? detalhe.bolao.titulo : t('Bolão')}
+            <Medal size={18} aria-hidden="true" /> {t('Bolão')}
           </h2>
           <button type="button" className="icon-plain" onClick={aoFechar} aria-label={t('Fechar')} title={t('Fechar')} autoFocus>
             <X size={18} aria-hidden="true" />
@@ -145,83 +211,37 @@ export function Bolao({ communityId, socket, aoFechar }: { communityId: number; 
               {boloes && boloes.length === 0 && <li className="calendario-vazio">{t('Nenhum bolão ainda.')}</li>}
               {boloes?.map((b) => (
                 <li key={b.id} className="bolao-item">
-                  <button
-                    type="button"
-                    className="bolao-abrir"
-                    onClick={() => {
-                      setAba('jogos');
-                      setAberto(b.id);
-                    }}
-                  >
-                    <span className="calendario-nome">{b.titulo}</span>
-                    <span className="calendario-quando">{t('Jogos: {n}', { n: b.jogos })}</span>
+                  <button type="button" className="bolao-abrir" onClick={() => setAberto(b.id)}>
+                    {b.foto && <img className="bolao-miniatura" src={enderecoDaFoto(b)} alt="" loading="lazy" />}
+                    <span className="bolao-item-texto">
+                      <span className="calendario-nome">{b.pergunta}</span>
+                      <span className="calendario-quando">
+                        {estado(b)} · {t('Palpites: {n}', { n: b.palpites })}
+                      </span>
+                    </span>
                   </button>
                 </li>
               ))}
             </ul>
-            <form className="calendario-novo" onSubmit={(e) => void criarBolao(e)}>
-              <strong>{t('Novo bolão')}</strong>
-              <div className="calendario-novo-linha">
-                <input value={titulo} maxLength={60} onChange={(e) => setTitulo(e.target.value)} placeholder={t('Nome do bolão')} aria-label={t('Nome do bolão')} required />
-                <button type="submit" className="btn-primary" disabled={!titulo.trim()}>
-                  {t('Criar')}
-                </button>
-              </div>
-              <span className="bolao-regra">{t('Só pontos: placar exato vale 10, o vencedor com o saldo certo 5, e só o vencedor 3.')}</span>
-            </form>
+            <NovoBolao
+              aoCriar={async (corpo) => {
+                const novo = (await chamar('', 'POST', corpo)) as Bolao | null;
+                if (novo) setAberto(novo.id);
+                return !!novo;
+              }}
+              aoErrar={setErro}
+            />
           </>
         ) : !detalhe ? null : (
-          <>
-            <div className="bolao-abas" role="tablist">
-              <button type="button" role="tab" aria-selected={aba === 'jogos'} className={aba === 'jogos' ? 'ativa' : ''} onClick={() => setAba('jogos')}>
-                {t('Jogos')}
-              </button>
-              <button
-                type="button"
-                role="tab"
-                aria-selected={aba === 'classificacao'}
-                className={aba === 'classificacao' ? 'ativa' : ''}
-                onClick={() => setAba('classificacao')}
-              >
-                {t('Classificação')}
-              </button>
-            </div>
-
-            {aba === 'jogos' ? (
-              <>
-                <ul className="calendario-lista">
-                  {detalhe.jogos.length === 0 && <li className="calendario-vazio">{t('Nenhum jogo ainda.')}</li>}
-                  {detalhe.jogos.map((j) => (
-                    <JogoDoBolao key={j.id} jogo={j} podeEditar={detalhe.podeEditar} chamar={(c, m, corpo) => chamar(`/${aberto}/jogos/${j.id}${c}`, m, corpo)} />
-                  ))}
-                </ul>
-                {detalhe.podeEditar && <NovoJogo aoCriar={(corpo) => chamar(`/${aberto}/jogos`, 'POST', corpo)} />}
-                {detalhe.podeEditar && (
-                  <button
-                    type="button"
-                    className="bolao-apagar"
-                    onClick={() => {
-                      if (confirm(t('Apagar este bolão, com os jogos e os palpites?'))) void chamar(`/${aberto}`, 'DELETE').then((r) => r && setAberto(null));
-                    }}
-                  >
-                    <Trash2 size={14} aria-hidden="true" /> {t('Apagar bolão')}
-                  </button>
-                )}
-              </>
-            ) : (
-              <ol className="calendario-lista bolao-ranking">
-                {detalhe.ranking.length === 0 && <li className="calendario-vazio">{t('A classificação aparece quando sair o primeiro placar.')}</li>}
-                {detalhe.ranking.map((r, i) => (
-                  <li key={r.userId}>
-                    <span className="bolao-posicao">{i + 1}º</span>
-                    <span className="calendario-nome">{r.nome}</span>
-                    <span className="calendario-quando">{t('Exatos: {n}', { n: r.exatos })}</span>
-                    <strong>{t('{n} pts', { n: r.pontos })}</strong>
-                  </li>
-                ))}
-              </ol>
-            )}
-          </>
+          <UmBolao
+            key={detalhe.bolao.id}
+            detalhe={detalhe}
+            estado={estado(detalhe.bolao)}
+            quando={quando}
+            idioma={idioma}
+            chamar={(caminho, metodo, corpo) => chamar(`/${detalhe.bolao.id}${caminho}`, metodo, corpo)}
+            aoApagar={() => setAberto(null)}
+          />
         )}
         {erro && <span className="form-error small">{erro}</span>}
       </div>
@@ -229,159 +249,174 @@ export function Bolao({ communityId, socket, aoFechar }: { communityId: number; 
   );
 }
 
-function JogoDoBolao({
-  jogo,
-  podeEditar,
+function UmBolao({
+  detalhe,
+  estado,
+  quando,
+  idioma,
   chamar,
+  aoApagar,
 }: {
-  jogo: Jogo;
-  podeEditar: boolean;
+  detalhe: Detalhe;
+  estado: string;
+  quando: (iso: string) => string;
+  idioma: string;
   chamar: (caminho: string, metodo: string, corpo?: unknown) => Promise<unknown>;
+  aoApagar: () => void;
 }) {
   const t = useT();
-  const idioma = idiomaAtual();
-  const quando = new Date(jogo.quando);
-  const fmt = new Intl.DateTimeFormat(idioma, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-  // o campo começa no palpite (antes) ou no placar (depois, para quem lança)
-  const inicial = jogo.comecou ? (jogo.golsCasa !== null ? jogo : null) : jogo.meu;
-  const [casa, setCasa] = useState(inicial ? String(inicial.golsCasa) : '');
-  const [fora, setFora] = useState(inicial ? String(inicial.golsFora) : '');
+  const { bolao, meu, palpites, podeEditar } = detalhe;
+  const [palpite, setPalpite] = useState(meu ? paraOCampo(meu) : '');
+  const [resposta, setResposta] = useState(bolao.resposta ? paraOCampo(bolao.resposta) : '');
   const [salvo, setSalvo] = useState(false);
-  const [verPalpites, setVerPalpites] = useState(false);
-  useEffect(() => {
-    setCasa(inicial ? String(inicial.golsCasa) : '');
-    setFora(inicial ? String(inicial.golsFora) : '');
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [jogo.comecou, jogo.golsCasa, jogo.golsFora, jogo.meu?.golsCasa, jogo.meu?.golsFora]);
+  useEffect(() => setResposta(bolao.resposta ? paraOCampo(bolao.resposta) : ''), [bolao.resposta]);
 
-  const editavel = !jogo.comecou || podeEditar;
-  const c = numero(casa), f = numero(fora);
-  const valido = c !== null && f !== null && Number.isInteger(c) && Number.isInteger(f) && c >= 0 && f >= 0 && c <= 99 && f <= 99;
-
-  async function salvar(e: React.FormEvent) {
+  async function palpitar(e: React.FormEvent) {
     e.preventDefault();
-    if (!valido) return;
-    const r = await chamar(jogo.comecou ? '/resultado' : '/palpite', 'PUT', { golsCasa: c, golsFora: f });
-    if (r) {
+    const iso = doCampo(palpite);
+    if (iso && (await chamar('/palpite', 'PUT', { quando: iso }))) {
       setSalvo(true);
-      setTimeout(() => setSalvo(false), 1500);
+      window.setTimeout(() => setSalvo(false), 1500);
     }
   }
 
-  const campo = (valor: string, mudar: (v: string) => void, rotulo: string) =>
-    editavel ? (
-      <input
-        className="bolao-gols"
-        type="number"
-        inputMode="numeric"
-        min={0}
-        max={99}
-        value={valor}
-        onChange={(e) => mudar(e.target.value)}
-        aria-label={rotulo}
-      />
-    ) : (
-      <span className="bolao-gols">{valor === '' ? '–' : valor}</span>
-    );
-
   return (
-    <li className="bolao-jogo">
-      <div className="bolao-jogo-topo">
-        <span className="calendario-quando">{primeiraMaiuscula(fmt.format(quando))}</span>
-        {podeEditar && (
-          <button
-            type="button"
-            className="icon-plain expression-delete"
-            onClick={() => confirm(t('Apagar este jogo?')) && void chamar('', 'DELETE')}
-            aria-label={t('Apagar jogo')}
-            title={t('Apagar jogo')}
-          >
-            <Trash2 size={15} aria-hidden="true" />
+    <div className="bolao-um">
+      {bolao.foto && <img className="bolao-foto" src={enderecoDaFoto(bolao)} alt="" />}
+      <h3 className="bolao-pergunta">{bolao.pergunta}</h3>
+      <span className="calendario-quando">
+        {estado} · {t('Palpites: {n}', { n: bolao.palpites })}
+      </span>
+
+      {bolao.aberto ? (
+        <form className="bolao-palpitar" onSubmit={(e) => void palpitar(e)}>
+          <label>
+            <strong>{t('Seu palpite')}</strong>
+            <input type="datetime-local" value={palpite} onChange={(e) => setPalpite(e.target.value)} required />
+          </label>
+          <button type="submit" className="btn-primary" disabled={!doCampo(palpite)}>
+            {salvo ? '✓' : t('Palpitar')}
           </button>
-        )}
-      </div>
-      <form className="bolao-placar" onSubmit={(e) => void salvar(e)}>
-        <span className="bolao-time casa">{jogo.casa}</span>
-        {campo(casa, setCasa, t('Gols de {time}', { time: jogo.casa }))}
-        <span aria-hidden="true">×</span>
-        {campo(fora, setFora, t('Gols de {time}', { time: jogo.fora }))}
-        <span className="bolao-time">{jogo.fora}</span>
-        {editavel && (
-          <button type="submit" className="btn-primary bolao-salvar" disabled={!valido}>
-            {salvo ? '✓' : jogo.comecou ? t('Lançar placar') : t('Palpitar')}
-          </button>
-        )}
-      </form>
-      <div className="bolao-jogo-rodape">
-        {!jogo.comecou ? (
-          <span>{jogo.meu ? t('Seu palpite está salvo. Dá para mudar até a hora do jogo.') : t('Palpites: {n}', { n: jogo.quantosPalpitaram })}</span>
-        ) : (
-          <>
-            {jogo.meu ? (
-              <span>
-                {t('Seu palpite: {casa} × {fora}', { casa: jogo.meu.golsCasa, fora: jogo.meu.golsFora })}
-                {jogo.meu.pontos !== null && <strong> · +{jogo.meu.pontos}</strong>}
-              </span>
-            ) : (
-              <span>{jogo.golsCasa === null ? t('Aguardando o placar.') : t('Sem palpite.')}</span>
-            )}
-            {!!jogo.palpites?.length && (
-              <button type="button" className="link-button" onClick={() => setVerPalpites((v) => !v)} aria-expanded={verPalpites}>
-                {t('Palpites: {n}', { n: jogo.palpites.length })}
-              </button>
-            )}
-          </>
-        )}
-      </div>
-      {verPalpites && jogo.palpites && (
-        <ul className="bolao-palpites">
-          {jogo.palpites.map((p) => (
+          <span className="bolao-regra">
+            {meu ? t('Seu palpite está salvo. Dá para mudar até fechar.') : t('Os palpites dos outros aparecem quando fechar.')}{' '}
+            {t('Ganha quem chegar mais perto. Só pontos, sem dinheiro.')}
+          </span>
+        </form>
+      ) : (
+        <ol className="calendario-lista bolao-ranking">
+          {!palpites?.length && <li className="calendario-vazio">{t('Ninguém palpitou.')}</li>}
+          {palpites?.map((p, i) => (
             <li key={p.userId}>
+              {bolao.resposta && <span className="bolao-posicao">{i + 1}º</span>}
               <span className="calendario-nome">{p.nome}</span>
-              <span>
-                {p.golsCasa} × {p.golsFora}
-              </span>
-              {p.pontos !== null && <strong>+{p.pontos}</strong>}
+              <span className="calendario-quando">{quando(p.quando)}</span>
+              {p.diferencaMs !== undefined && <strong className="bolao-distancia">{distancia(p.diferencaMs, idioma)}</strong>}
             </li>
           ))}
-        </ul>
+        </ol>
       )}
-    </li>
+
+      {podeEditar && (
+        <div className="bolao-cuidar">
+          <form
+            className="bolao-palpitar"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const iso = doCampo(resposta);
+              if (iso) void chamar('/resposta', 'PUT', { resposta: iso });
+            }}
+          >
+            <label>
+              <strong>{t('Resposta certa')}</strong>
+              <input type="datetime-local" value={resposta} onChange={(e) => setResposta(e.target.value)} required />
+            </label>
+            <button type="submit" className="btn-primary" disabled={!doCampo(resposta) || doCampo(resposta) === bolao.resposta}>
+              {t('Lançar resposta')}
+            </button>
+          </form>
+          <div className="bolao-acoes">
+            {!bolao.resposta && (
+              <button type="button" className="link-button" onClick={() => void chamar('/fechado', 'PUT', { fechado: bolao.aberto })}>
+                {bolao.aberto ? <Lock size={14} aria-hidden="true" /> : <LockOpen size={14} aria-hidden="true" />}{' '}
+                {bolao.aberto ? t('Fechar palpites') : t('Reabrir palpites')}
+              </button>
+            )}
+            <button
+              type="button"
+              className="bolao-apagar"
+              onClick={() => {
+                if (confirm(t('Apagar este bolão, com os palpites?'))) void chamar('', 'DELETE').then((r) => r && aoApagar());
+              }}
+            >
+              <Trash2 size={14} aria-hidden="true" /> {t('Apagar bolão')}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
-function NovoJogo({ aoCriar }: { aoCriar: (corpo: { casa: string; fora: string; quando: string }) => Promise<unknown> }) {
+function NovoBolao({ aoCriar, aoErrar }: { aoCriar: (corpo: { pergunta: string; fechaEm: string | null; imagem: string | null }) => Promise<boolean>; aoErrar: (erro: string) => void }) {
   const t = useT();
-  const hoje = new Date();
-  const [casa, setCasa] = useState('');
-  const [fora, setFora] = useState('');
-  const [data, setData] = useState(() => `${hoje.getFullYear()}-${doisDigitos(hoje.getMonth() + 1)}-${doisDigitos(hoje.getDate())}`);
-  const [hora, setHora] = useState('21:30');
+  const [pergunta, setPergunta] = useState('');
+  const [fechaEm, setFechaEm] = useState('');
+  const [imagem, setImagem] = useState<string | null>(null);
+  const [enviando, setEnviando] = useState(false);
+  const arquivo = useRef<HTMLInputElement>(null);
+
+  async function escolher(file: File | undefined) {
+    if (!file) return;
+    try {
+      setImagem(await prepararFoto(file));
+    } catch (e) {
+      aoErrar((e as Error).message);
+    }
+  }
 
   async function criar(e: React.FormEvent) {
     e.preventDefault();
-    const [a, m, d] = data.split('-').map(Number), [hh, mm] = hora.split(':').map(Number);
-    const r = await aoCriar({ casa, fora, quando: new Date(a, m - 1, d, hh || 0, mm || 0).toISOString() });
-    if (r) {
-      setCasa('');
-      setFora('');
+    setEnviando(true);
+    const ok = await aoCriar({ pergunta, fechaEm: doCampo(fechaEm), imagem });
+    setEnviando(false);
+    if (ok) {
+      setPergunta('');
+      setFechaEm('');
+      setImagem(null);
     }
   }
 
   return (
-    <form className="calendario-novo" onSubmit={(e) => void criar(e)}>
-      <strong>{t('Novo jogo')}</strong>
-      <div className="calendario-novo-linha">
-        <input value={casa} maxLength={40} onChange={(e) => setCasa(e.target.value)} placeholder={t('Mandante')} aria-label={t('Mandante')} required />
-        <input value={fora} maxLength={40} onChange={(e) => setFora(e.target.value)} placeholder={t('Visitante')} aria-label={t('Visitante')} required />
-      </div>
-      <div className="calendario-novo-linha">
-        <input type="date" value={data} onChange={(e) => setData(e.target.value)} aria-label={t('Data')} required />
-        <input type="time" value={hora} onChange={(e) => setHora(e.target.value)} aria-label={t('Hora')} required />
-        <button type="submit" className="btn-primary" disabled={!casa.trim() || !fora.trim()}>
-          {t('Criar')}
+    <form className="calendario-novo bolao-novo" onSubmit={(e) => void criar(e)}>
+      <strong>{t('Novo bolão')}</strong>
+      {imagem ? (
+        <div className="bolao-previa">
+          <img src={imagem} alt="" />
+          <button type="button" className="link-button" onClick={() => setImagem(null)}>
+            {t('Tirar a foto')}
+          </button>
+        </div>
+      ) : (
+        <button type="button" className="bolao-escolher-foto" onClick={() => arquivo.current?.click()}>
+          <ImagePlus size={18} aria-hidden="true" /> {t('Adicionar foto')}
         </button>
-      </div>
+      )}
+      <input ref={arquivo} type="file" accept="image/*" hidden onChange={(e) => void escolher(e.target.files?.[0]).then(() => (e.target.value = ''))} />
+      <input
+        value={pergunta}
+        maxLength={200}
+        onChange={(e) => setPergunta(e.target.value)}
+        placeholder={t('Qual é a pergunta?')}
+        aria-label={t('Qual é a pergunta?')}
+        required
+      />
+      <label className="bolao-fecha">
+        <span>{t('Palpites até (opcional)')}</span>
+        <input type="datetime-local" value={fechaEm} onChange={(e) => setFechaEm(e.target.value)} />
+      </label>
+      <button type="submit" className="btn-primary" disabled={!pergunta.trim() || enviando}>
+        {t('Criar')}
+      </button>
     </form>
   );
 }

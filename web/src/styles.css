@@ -2735,6 +2735,17 @@ textarea {
   background: #e8679a; /* rosa de festa, fixo: o destaque de cada tema é amarelo, azul ou verde-água, e o link e o verde
      coincidem com ele em algum tema */
 }
+.calendario-marca.bolao {
+  background: #9b7be0; /* violeta fixo, pelo mesmo motivo do rosa do aniversário: não coincide com o destaque de nenhum tema */
+}
+.calendario-lista li.calendario-bolao {
+  padding: 0;
+}
+.calendario-bolao .bolao-abrir {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
 .calendario-dia.escolhido .calendario-marca {
   background: var(--accent-texto);
 }
@@ -20552,97 +20563,136 @@ body.arrastando-barra {
 .bolao-abrir:hover {
   background: var(--bg-hover);
 }
+.bolao-item-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.bolao-item-texto .calendario-nome {
+  overflow-wrap: anywhere;
+}
+.bolao-miniatura {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  object-fit: cover;
+}
 .bolao-regra {
   color: var(--text-muted);
   font-size: calc(12px * var(--escala-do-texto));
 }
-.bolao-abas {
+.bolao-um {
   display: flex;
-  gap: 4px;
-  border-bottom: 1px solid var(--border);
+  flex-direction: column;
+  gap: 10px;
 }
-.bolao-abas button {
-  padding: 6px 12px;
-  border: 0;
-  border-bottom: 2px solid transparent;
+.bolao-foto {
+  width: 100%;
+  max-height: 280px;
+  border-radius: 10px;
+  object-fit: contain;
+  background: var(--bg-secondary);
+}
+.bolao-pergunta {
+  margin: 0;
+  font-size: calc(18px * var(--escala-do-texto));
+  overflow-wrap: anywhere;
+}
+.bolao-palpitar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 8px;
+}
+.bolao-palpitar label,
+.bolao-fecha {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 200px;
+}
+.bolao-fecha span {
+  color: var(--text-muted);
+  font-size: calc(13px * var(--escala-do-texto));
+}
+.bolao-palpitar .bolao-regra {
+  flex-basis: 100%;
+}
+.bolao-palpitar input,
+.bolao-fecha input,
+.bolao-novo > input {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-input);
+  color: var(--text);
+  font: inherit;
+  color-scheme: dark light;
+}
+.bolao-novo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.bolao-novo > .btn-primary {
+  align-self: flex-end;
+}
+.bolao-escolher-foto {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 18px;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
   background: transparent;
   color: var(--text-muted);
   font: inherit;
   cursor: pointer;
 }
-.bolao-abas button.ativa {
-  border-bottom-color: var(--accent);
+.bolao-escolher-foto:hover {
+  background: var(--bg-hover);
   color: var(--text);
-  font-weight: 600;
 }
-.calendario-lista li.bolao-jogo {
-  flex-direction: column;
-  align-items: stretch;
-  gap: 6px;
-}
-.bolao-jogo-topo,
-.bolao-jogo-rodape {
+.bolao-previa {
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+.bolao-previa img {
+  max-width: 100%;
+  max-height: 160px;
+  border-radius: 8px;
+}
+.bolao-ranking li {
+  gap: 10px;
+}
+.bolao-distancia {
+  margin-inline-start: auto;
+  font-variant-numeric: tabular-nums;
+}
+.bolao-cuidar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+.bolao-acoes {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
 }
-.bolao-jogo-rodape {
-  color: var(--text-muted);
-  font-size: calc(13px * var(--escala-do-texto));
-}
-.bolao-placar {
-  display: flex;
+.bolao-acoes .link-button {
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
-}
-.bolao-time {
-  flex: 1;
-  min-width: 0;
-  overflow-wrap: anywhere;
-  font-weight: 600;
-}
-.bolao-time.casa {
-  text-align: end;
-}
-.bolao-gols {
-  width: 3em;
-  padding: 4px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg-input);
-  color: var(--text);
-  font: inherit;
-  font-weight: 700;
-  text-align: center;
-}
-.bolao-gols::-webkit-inner-spin-button,
-.bolao-gols::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-input.bolao-gols {
-  -moz-appearance: textfield;
-  appearance: textfield;
-}
-span.bolao-gols {
-  background: transparent;
-}
-.bolao-salvar {
-  flex-shrink: 0;
-}
-.bolao-palpites {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  font-size: calc(13px * var(--escala-do-texto));
-}
-.bolao-palpites li {
-  display: flex;
-  gap: 10px;
+  gap: 4px;
 }
 .bolao-posicao {
   width: 2em;
@@ -20650,7 +20700,6 @@ span.bolao-gols {
   font-weight: 700;
 }
 .bolao-apagar {
-  align-self: flex-start;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -20661,12 +20710,4 @@ span.bolao-gols {
   font: inherit;
   font-size: calc(13px * var(--escala-do-texto));
   cursor: pointer;
-}
-@media (max-width: 480px) {
-  .bolao-placar {
-    flex-wrap: wrap;
-  }
-  .bolao-salvar {
-    width: 100%;
-  }
 }

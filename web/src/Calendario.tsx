@@ -1,4 +1,4 @@
-import { Cake, CalendarDays, ChevronLeft, ChevronRight, Trash2, X } from 'lucide-react';
+import { Cake, CalendarDays, ChevronLeft, ChevronRight, Medal, Trash2, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { api } from './api';
@@ -18,6 +18,12 @@ interface Evento {
   titulo: string;
   quando: string;
 }
+/** Um bolão com prazo (Bolao.tsx): aparece no dia em que os palpites fecham (15/11/2026, pedido dele). */
+interface BolaoComPrazo {
+  id: number;
+  pergunta: string;
+  fechaEm: string | null;
+}
 interface Aniversario {
   userId: number;
   nome: string;
@@ -27,6 +33,7 @@ interface Aniversario {
 type Item =
   | { tipo: 'evento'; data: Date; evento: Evento }
   | { tipo: 'aniversario'; data: Date; aniversario: Aniversario }
+  | { tipo: 'bolao'; data: Date; bolao: BolaoComPrazo }
   // o aniversário do próprio Syden (diaDoSyden.ts), em toda comunidade, a partir do primeiro ano
   | { tipo: 'syden'; data: Date };
 
@@ -46,13 +53,25 @@ function primeiroDiaDaSemana(idioma: string): number {
   }
 }
 
-export function Calendario({ communityId, socket, aoFechar }: { communityId: number; socket?: Socket | null; aoFechar: () => void }) {
+export function Calendario({
+  communityId,
+  socket,
+  aoFechar,
+  aoAbrirBolao,
+}: {
+  communityId: number;
+  socket?: Socket | null;
+  aoFechar: () => void;
+  /** Clicar num bolão do calendário o abre (InicioDaComunidade troca o calendário pelo bolão). */
+  aoAbrirBolao?: (bolaoId: number) => void;
+}) {
   const t = useT();
   const idioma = idiomaAtual();
   const hoje = new Date();
   const [mes, setMes] = useState(() => new Date(hoje.getFullYear(), hoje.getMonth(), 1));
   const [escolhido, setEscolhido] = useState<Date | null>(null);
   const [dados, setDados] = useState<{ eventos: Evento[]; aniversarios: Aniversario[]; podeEditar: boolean } | null>(null);
+  const [boloes, setBoloes] = useState<BolaoComPrazo[]>([]);
   const [erro, setErro] = useState<string | null>(null);
   const [titulo, setTitulo] = useState('');
   const [data, setData] = useState(() => `${hoje.getFullYear()}-${doisDigitos(hoje.getMonth() + 1)}-${doisDigitos(hoje.getDate())}`);
@@ -73,13 +92,26 @@ export function Calendario({ communityId, socket, aoFechar }: { communityId: num
     };
   }, [communityId, mes, versao]);
 
+  // os bolões da comunidade: os que têm prazo entram no dia em que os palpites fecham
+  useEffect(() => {
+    let vivo = true;
+    api<{ boloes: BolaoComPrazo[] }>(`/api/communities/${communityId}/boloes`)
+      .then((r) => vivo && setBoloes(r.boloes.filter((b) => b.fechaEm)))
+      .catch(() => {});
+    return () => {
+      vivo = false;
+    };
+  }, [communityId, versao]);
+
   // alguém marcou ou apagou: relê
   useEffect(() => {
     if (!socket) return;
     const mudou = (d: { communityId: number }) => d.communityId === communityId && setVersao((v) => v + 1);
     socket.on('calendario:mudou', mudou);
+    socket.on('bolao:mudou', mudou);
     return () => {
       socket.off('calendario:mudou', mudou);
+      socket.off('bolao:mudou', mudou);
     };
   }, [socket, communityId]);
 
@@ -92,6 +124,7 @@ export function Calendario({ communityId, socket, aoFechar }: { communityId: num
   // o que há neste mês, em ordem
   const itens: Item[] = [
     ...(dados?.eventos ?? []).map((evento) => ({ tipo: 'evento' as const, data: new Date(evento.quando), evento })),
+    ...boloes.map((bolao) => ({ tipo: 'bolao' as const, data: new Date(bolao.fechaEm!), bolao })),
     ...(dados?.aniversarios ?? [])
       .filter((a) => a.mes === mes.getMonth() + 1)
       .map((aniversario) => ({ tipo: 'aniversario' as const, data: new Date(mes.getFullYear(), aniversario.mes - 1, aniversario.dia), aniversario })),
@@ -179,7 +212,9 @@ export function Calendario({ communityId, socket, aoFechar }: { communityId: num
           {Array.from({ length: diasNoMes }, (_, i) => {
             const dia = new Date(mes.getFullYear(), mes.getMonth(), i + 1);
             const doDiaI = itens.filter((it) => mesmoDia(it.data, dia));
-            const evento = doDiaI.some((it) => it.tipo === 'evento'), aniversario = doDiaI.some((it) => it.tipo !== 'evento');
+            const evento = doDiaI.some((it) => it.tipo === 'evento'),
+              bolao = doDiaI.some((it) => it.tipo === 'bolao'),
+              aniversario = doDiaI.some((it) => it.tipo === 'aniversario' || it.tipo === 'syden');
             const classes = ['calendario-dia', mesmoDia(dia, hoje) && 'hoje', escolhido && mesmoDia(dia, escolhido) && 'escolhido'].filter(Boolean).join(' ');
             return (
               <button
@@ -190,9 +225,10 @@ export function Calendario({ communityId, socket, aoFechar }: { communityId: num
                 onClick={() => setEscolhido(escolhido && mesmoDia(dia, escolhido) ? null : dia)}
               >
                 {i + 1}
-                {(evento || aniversario) && (
+                {(evento || bolao || aniversario) && (
                   <span className="calendario-marcas" aria-hidden="true">
                     {evento && <span className="calendario-marca evento" />}
+                    {bolao && <span className="calendario-marca bolao" />}
                     {aniversario && <span className="calendario-marca aniversario" />}
                   </span>
                 )}
@@ -221,6 +257,17 @@ export function Calendario({ communityId, socket, aoFechar }: { communityId: num
                     <Trash2 size={15} aria-hidden="true" />
                   </button>
                 )}
+              </li>
+            ) : i.tipo === 'bolao' ? (
+              <li key={'b' + i.bolao.id} className="calendario-bolao">
+                <button type="button" className="bolao-abrir" onClick={() => aoAbrirBolao?.(i.bolao.id)} disabled={!aoAbrirBolao}>
+                  <span className="calendario-quando">
+                    {primeiraMaiuscula(t('Fecha em {quando}', { quando: fmtDia.format(i.data) + ', ' + fmtHora.format(i.data) }))}
+                  </span>
+                  <span className="calendario-nome">
+                    <Medal size={14} aria-hidden="true" /> {t('Bolão')}: {i.bolao.pergunta}
+                  </span>
+                </button>
               </li>
             ) : i.tipo === 'syden' ? (
               <li key="syden">

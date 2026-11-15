@@ -1,6 +1,6 @@
-// O BOLÃO DA COMUNIDADE (14/11/2026), na tela: o membro cria um bolão pelo atalho embaixo do salão e cadastra um jogo que
-// começa em ~25 s; a outra pessoa palpita (e não vê o palpite de ninguém); passada a hora, o palpite fecha, quem criou
-// lança o placar, e a classificação aparece na tela aberta da outra pessoa sem recarregar.
+// O BOLÃO DA COMUNIDADE (15/11/2026, o formato que ele queria), na tela: Ana cria pelo atalho embaixo do salão uma pergunta
+// com foto; Ana e Bia dão o palpite de dia e hora pelo calendário (e ninguém vê o dos outros); Ana fecha os palpites e eles
+// aparecem na tela aberta de Bia sem recarregar; Ana lança a resposta, e a classificação por distância aparece para Bia.
 //   API de teste e vite: ver o topo de e2e/calendario.mjs
 //   node e2e/bolao.mjs   → e2e/fotos/bolao-*.png
 import fs from 'node:fs';
@@ -51,65 +51,66 @@ async function abrirBolao(token, quem, largura = 1200) {
   return p;
 }
 
-// Ana cria o bolão e o jogo pela tela
+// Ana cria o bolão pela tela, com foto
 const A = await abrirBolao(ana, 'ana');
-await A.getByLabel('Nome do bolão').fill('Copa da turma');
-await A.locator('.bolao').getByRole('button', { name: 'Criar', exact: true }).click();
-await A.getByRole('tab', { name: 'Jogos' }).waitFor();
-const amanha = new Date(Date.now() + 86400000);
-await A.getByLabel('Mandante').fill('Flamengo');
-await A.getByLabel('Visitante').fill('Palmeiras');
-const dois = (n) => String(n).padStart(2, '0');
-await A.locator('.bolao').getByLabel('Data').fill(`${amanha.getFullYear()}-${dois(amanha.getMonth() + 1)}-${dois(amanha.getDate())}`);
-await A.locator('.bolao').getByLabel('Hora').fill('21:30');
-await A.locator('.bolao .calendario-novo').getByRole('button', { name: 'Criar', exact: true }).click();
-await A.locator('.bolao-jogo', { hasText: 'Palmeiras' }).waitFor();
-conferir(true, 'o jogo cadastrado pelo formulário aparece para quem criou');
-// o jogo do teste começa daqui a 45 s (o formulário só marca minutos cheios): pela API, pela mesma conta
-const comeca = Date.now() + 45000;
-const bolaoId = (await pedir('GET', `/api/communities/${comunidade.id}/boloes`, ana)).boloes[0].id;
-await pedir('POST', `/api/communities/${comunidade.id}/boloes/${bolaoId}/jogos`, ana, { casa: 'Brasil', fora: 'Argentina', quando: new Date(comeca).toISOString() });
-await A.locator('.bolao-jogo', { hasText: 'Argentina' }).waitFor({ timeout: 10000 });
-conferir(true, 'o jogo novo aparece sozinho (bolao:mudou)');
+await A.locator('.bolao input[type=file]').setInputFiles(path.join(AQUI, '..', 'web', 'public', 'avatares', 'coelho-01-corpo.png'));
+await A.locator('.bolao-previa img').waitFor();
+await A.getByLabel('Qual é a pergunta?').fill('Quando o Caio chega?');
+await A.locator('.bolao-novo').getByRole('button', { name: 'Criar', exact: true }).click();
+await A.locator('.bolao-pergunta', { hasText: 'Quando o Caio chega?' }).waitFor({ timeout: 15000 });
+conferir(await A.locator('.bolao-foto').evaluate((img) => img.complete && img.naturalWidth > 0), 'a foto da pergunta aparece');
 
-// Bia palpita
+// Bia e Ana palpitam pelo calendário
 const B = await abrirBolao(bia, 'bia');
-await B.locator('.bolao-abrir', { hasText: 'Copa da turma' }).click();
-await B.getByLabel('Gols de Brasil').fill('2');
-await B.getByLabel('Gols de Argentina').fill('1');
-await B.locator('.bolao-jogo', { hasText: 'Argentina' }).getByRole('button', { name: 'Palpitar' }).click();
+await B.locator('.bolao-abrir', { hasText: 'Quando o Caio chega?' }).click();
+await B.locator('.bolao-palpitar input[type=datetime-local]').fill('2026-12-01T09:00');
+await B.getByRole('button', { name: 'Palpitar' }).click();
 await B.getByText('Seu palpite está salvo').waitFor({ timeout: 10000 });
 conferir(true, 'o palpite de Bia fica salvo');
 await B.screenshot({ path: path.join(FOTOS, 'bolao-palpite.png') });
-// Ana palpita também, e não vê o de Bia antes da hora
-await A.getByLabel('Gols de Brasil').fill('1');
-await A.getByLabel('Gols de Argentina').fill('1');
-await A.locator('.bolao-jogo', { hasText: 'Argentina' }).getByRole('button', { name: 'Palpitar' }).click();
+await A.locator('.bolao-palpitar input[type=datetime-local]').first().fill('2026-12-01T10:30');
+await A.getByRole('button', { name: 'Palpitar' }).click();
 await A.getByText('Seu palpite está salvo').waitFor({ timeout: 10000 });
-conferir(!(await A.locator('.bolao-palpites').isVisible()), 'antes da hora, ninguém vê os palpites dos outros');
+conferir((await A.locator('.bolao-ranking li').count()) === 0, 'aberto, ninguém vê os palpites dos outros');
+await A.screenshot({ path: path.join(FOTOS, 'bolao-quem-criou.png') });
 
-// passada a hora: Ana lança o placar
-await A.waitForTimeout(Math.max(0, comeca - Date.now()) + 1500);
-await A.reload();
-await A.getByText('Início', { exact: true }).first().click({ timeout: 30000 }).catch(() => {});
-await A.locator('.bv-atalho', { hasText: 'Bolão' }).click({ timeout: 60000 });
-await A.locator('.bolao-abrir', { hasText: 'Copa da turma' }).click();
-await A.locator('.bolao-jogo', { hasText: 'Argentina' }).getByRole('button', { name: 'Lançar placar' }).waitFor({ timeout: 15000 });
-await A.getByLabel('Gols de Brasil').fill('2');
-await A.getByLabel('Gols de Argentina').fill('1');
-await A.locator('.bolao-jogo', { hasText: 'Argentina' }).getByRole('button', { name: 'Lançar placar' }).click();
+// Ana fecha: os palpites aparecem na tela aberta de Bia, sem recarregar (bolao:mudou)
+await A.getByRole('button', { name: 'Fechar palpites' }).click();
+await B.locator('.bolao-ranking li').nth(1).waitFor({ timeout: 15000 });
+conferir((await B.locator('.bolao-ranking li').count()) === 2, 'fechado, Bia vê os dois palpites sem recarregar');
 
-// a tela aberta de Bia relê sozinha (bolao:mudou)
-await B.getByText('+10').first().waitFor({ timeout: 15000 });
-conferir(true, 'Bia vê os 10 pontos sem recarregar');
-await B.getByRole('tab', { name: 'Classificação' }).click();
-const linhas = await B.locator('.bolao-ranking li').allInnerTexts();
-console.log('  classificação:', linhas.map((l) => l.replace(/\s+/g, ' ')).join(' | '));
-conferir(linhas.length === 2 && /bia/.test(linhas[0]) && /10/.test(linhas[0]), 'Bia lidera com 10');
+// Ana lança a resposta: a classificação por distância
+await A.locator('.bolao-cuidar input[type=datetime-local]').fill('2026-12-01T10:00');
+await A.getByRole('button', { name: 'Lançar resposta' }).click();
+await B.locator('.bolao-distancia').first().waitFor({ timeout: 15000 });
+const linhas = (await B.locator('.bolao-ranking li').allInnerTexts()).map((l) => l.replace(/\s+/g, ' '));
+console.log('  classificação:', linhas.join(' | '));
+conferir(linhas.length === 2 && /ana/.test(linhas[0]) && /\+30/.test(linhas[0]) && /bia/.test(linhas[1]), 'Ana (30 min depois) ganha de Bia (1 h antes)');
 await B.screenshot({ path: path.join(FOTOS, 'bolao-classificacao.png') });
-await A.getByRole('button', { name: /Palpites/ }).click();
-conferir((await A.locator('.bolao-palpites li').count()) === 2, 'depois da hora, os palpites de todos aparecem');
-await A.screenshot({ path: path.join(FOTOS, 'bolao-jogo.png') });
+
+// na tela estreita, nada sai para o lado
+await B.setViewportSize({ width: 380, height: 800 });
+const C = B;
+await C.waitForTimeout(500);
+conferir(await C.locator('.bolao').evaluate((d) => d.scrollWidth <= d.clientWidth + 1), 'na tela estreita, nada estoura para o lado');
+await C.screenshot({ path: path.join(FOTOS, 'bolao-estreita.png') });
+
+// no calendário: o bolão com prazo aparece no dia em que os palpites fecham, e clicar o abre
+const prazo = new Date();
+prazo.setHours(23, 30, 0, 0);
+if (prazo.getTime() < Date.now() + 60000) prazo.setDate(prazo.getDate() + 1);
+await pedir('POST', `/api/communities/${comunidade.id}/boloes`, ana, { pergunta: 'Quem chega primeiro?', fechaEm: prazo.toISOString() });
+await A.keyboard.press('Escape');
+await A.keyboard.press('Escape');
+await A.locator('.bv-atalho', { hasText: 'Calendário' }).click({ timeout: 30000 });
+if (prazo.getMonth() !== new Date().getMonth()) await A.locator('.calendario').getByRole('button', { name: /Próximo|seguinte/i }).first().click();
+const noCalendario = A.locator('.calendario-bolao', { hasText: 'Quem chega primeiro?' });
+await noCalendario.waitFor({ timeout: 15000 });
+conferir(await A.locator('.calendario-marca.bolao').count() >= 1, 'o dia do prazo ganha a marca do bolão');
+await A.screenshot({ path: path.join(FOTOS, 'bolao-no-calendario.png') });
+await noCalendario.locator('button').click();
+await A.locator('.bolao-pergunta', { hasText: 'Quem chega primeiro?' }).waitFor({ timeout: 15000 });
+conferir(true, 'clicar no bolão do calendário abre o bolão');
 
 await navegador.close();
 console.log(falhas.length ? `\n${falhas.length} falha(s)` : '\ntudo certo');

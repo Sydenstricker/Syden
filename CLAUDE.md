@@ -1810,6 +1810,20 @@ não virar um jeito de baixar arquivo de ninguém. A vassoura de órfãos e a re
 tela, com o resto desfocado atrás, e fechado fica a faixa (clicar nela reabre). "Uma vez" é por aparelho (`syden.avisoVisto`, a marca
 texto|sha): voltar a cada abertura seria insistir. É a exceção escolhida por ele ao "não interrompa", e só para o recado de quem cuida do Syden.
 
+## O bolão é uma pergunta com palpite de dia e hora, não uma tabela de jogos
+
+**Refeito em 15/11/2026, pelo relato dele ao ver a primeira versão:** eu tinha entendido "bolão" como o de futebol (jogos,
+placares, 10/5/3 pontos), e ele não entendeu a tela. O que ele queria: "adicionar uma imagem, adicionar a pergunta e cada pessoa
+colocar a sua resposta; como no caso é o dia e o horário, cada um dá palpite com um calendário". Agora (`server/src/bolao-routes.ts`,
+`web/src/Bolao.tsx`): qualquer membro cria uma PERGUNTA com foto opcional e, se quiser, a hora em que os palpites fecham; cada um
+dá UM palpite de dia e hora (muda enquanto está aberto); os dos outros só aparecem quando fecha (no prazo, na mão, ou com a
+resposta); quem criou ou quem administra lança a resposta certa, e ganha quem chegou mais perto (empate: quem palpitou antes). Só
+pontos, sem dinheiro. A foto passa pelo funil das imagens, é servida pela chave do endereço (`/api/boloes/:id/foto/:chave`), está na
+vassoura de órfãos e sai pelo Shield (a pergunta fica). **No calendário da comunidade** (ideia dele, mesmo dia), o bolão com prazo
+aparece no dia em que os palpites fecham, com a marca violeta, e clicar o abre. As tabelas da primeira forma (`bolao_jogos`) caem
+sozinhas na subida. Teste: `server/test/bolao.test.ts` e `e2e/bolao.mjs`. Outro tipo de resposta (número, texto) é mais um campo
+no bolão e outra conta de distância.
+
 ## A foto do avatar se mexe, e o GIF anima só sob o mouse
 
 **Feito em 04/11/2026, pedidos dele.** A foto própria tem os estados dos coelhos prontos, mexendo a foto inteira (ela não tem

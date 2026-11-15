@@ -134,7 +134,8 @@ export function InicioDaComunidade({
   // O CALENDÁRIO (18/10/2026): por um atalho, até o calendário de parede do salão ganhar arte.
   const [calendario, setCalendario] = useState(false);
   // O BOLÃO (14/11/2026, ver Bolao.tsx): também por um atalho.
-  const [bolao, setBolao] = useState(false);
+  // false = fechado; true = a lista; um número = aquele bolão (aberto pelo calendário, 15/11/2026)
+  const [bolao, setBolao] = useState<boolean | number>(false);
   const [conquistas, setConquistas] = useState(false);
   // A TV AO VIVO: quem transmite agora, nesta comunidade. O canal é um índice nessa lista, e volta ao começo
   // quando a lista encolhe (alguém parou de transmitir).
@@ -394,8 +395,20 @@ export function InicioDaComunidade({
         </button>
         <AbrirTicket community={community} aoAbrir={aoAbrirConversa} />
       </div>
-      {calendario && <Calendario communityId={community.id} socket={socket} aoFechar={() => setCalendario(false)} />}
-      {bolao && <Bolao communityId={community.id} socket={socket} aoFechar={() => setBolao(false)} />}
+      {calendario && (
+        <Calendario
+          communityId={community.id}
+          socket={socket}
+          aoFechar={() => setCalendario(false)}
+          aoAbrirBolao={(id) => {
+            setCalendario(false);
+            setBolao(id);
+          }}
+        />
+      )}
+      {bolao !== false && (
+        <Bolao communityId={community.id} socket={socket} inicial={typeof bolao === 'number' ? bolao : null} aoFechar={() => setBolao(false)} />
+      )}
       {conquistas && (
         <Conquistas
           communityId={community.id}
