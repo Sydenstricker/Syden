@@ -11,6 +11,12 @@
 // entrega a anterior, que cobre os trinta segundos logo antes. Uma gravação só rodando — nada de dobrar
 // o trabalho do computador de quem está só assistindo.
 
+/**
+ * As faixas de cada fluxo de transmissão pelo nome que o worker de cifra conhece (o mediaStreamID do LiveKit), para o
+ * gravador sem recodificar (clipeCru/gravador.ts). Quem monta o fluxo (VoiceStage) marca; quem grava (useClipe) lê.
+ */
+export const FAIXAS_CRUAS = new WeakMap<MediaStream, { video: string; audio: string | null }>();
+
 /** O tamanho da janela: de quanto em quanto tempo a gravação é fechada e recomeçada. */
 export const SEGUNDOS_DO_CLIPE = 30;
 
@@ -244,12 +250,12 @@ export function corrigirDuracao(video: HTMLVideoElement) {
 }
 
 /** Nome do arquivo do clipe: quem estava transmitindo e a hora, para não virar "video (3)". */
-export function nomeDoClipe(de: string): string {
+export function nomeDoClipe(de: string, tipo = 'video/webm'): string {
   const agora = new Date();
   const dois = (n: number) => String(n).padStart(2, '0');
   const quando = `${dois(agora.getDate())}-${dois(agora.getMonth() + 1)} ${dois(agora.getHours())}h${dois(agora.getMinutes())}`;
   const quem = de.replace(/[^\p{L}\p{N} _-]/gu, '').trim() || 'clipe';
-  return `Clipe de ${quem} ${quando}.webm`;
+  return `Clipe de ${quem} ${quando}.${tipo.startsWith('video/mp4') ? 'mp4' : 'webm'}`;
 }
 
 // ===================================================================================================
@@ -390,8 +396,11 @@ export async function montarClipe(blob: Blob, { inicio: pedido, fim, volume, voz
   aoAndar?.(0.3);
 
   // ---------- o vídeo: copiado, e o som trocado pelo misturado ----------
+  // O H.264 (do clipe sem recodificar, quando quem transmite usa a placa) não entra em WebM: copiado, ele vai em MP4,
+  // que também leva o Opus. Sem isto a conversão descartava o vídeo calada e o clipe saía só com som.
+  const mp4 = (await trilhaDeVideo?.getCodec()) === 'avc';
   const target = new mb.BufferTarget();
-  const output = new mb.Output({ format: new mb.WebMOutputFormat(), target });
+  const output = new mb.Output({ format: mp4 ? new mb.Mp4OutputFormat({ fastStart: 'in-memory' }) : new mb.WebMOutputFormat(), target });
   const conversao = await mb.Conversion.init({
     input,
     output,
@@ -407,6 +416,44 @@ export async function montarClipe(blob: Blob, { inicio: pedido, fim, volume, voz
   await Promise.all([conversao.execute(), som.add(misturado).then(() => som.close())]);
   await output.finalize();
   aoAndar?.(1);
+  if (!target.buffer) throw new Error('O clipe saiu vazio.');
+  return new Blob([target.buffer], { type: mp4 ? 'video/mp4' : 'video/webm' });
+}
+
+/**
+ * O CLIPE QUE PASSOU DO LIMITE DO CHAT, recodificado para caber (16/11/2026).
+ *
+ * O gravador sem recodificar (clipeCru/gravador.ts) entrega o arquivo na taxa da transmissão (3 a 5 Mbps): 30 s passam
+ * dos 8 MB do chat, que o gravador antigo nunca passava (gravava a 1,6 Mbps). Aqui o vídeo é recodificado UMA vez, só
+ * quando a pessoa manda na conversa, numa taxa que cabe e em até 1280 de largura (na taxa do chat, 1080p borraria). O
+ * custo de codificar sai do momento em que ninguém está jogando: o envio, e não a chamada inteira.
+ */
+export async function caberNoChat(blob: Blob, limite: number, aoAndar?: (fracao: number) => void): Promise<Blob> {
+  const mb = await import('mediabunny');
+  const input = new mb.Input({ source: new mb.BlobSource(blob), formats: mb.ALL_FORMATS });
+  const duracao = Math.max(1, await input.computeDuration());
+  const SOM = 96_000;
+  // 10% de folga para o contêiner e para o codificador passar um pouco da taxa pedida
+  const taxa = Math.max(300_000, Math.floor((limite * 8 * 0.9) / duracao - SOM));
+  const trilha = await input.getPrimaryVideoTrack();
+  const largura = trilha && trilha.displayWidth > 1280 ? 1280 : undefined;
+  const target = new mb.BufferTarget();
+  const output = new mb.Output({ format: new mb.WebMOutputFormat(), target });
+  const conversao = await mb.Conversion.init({
+    input,
+    output,
+    video: { codec: 'vp8', bitrate: taxa, width: largura, forceTranscode: true },
+    audio: { codec: 'opus', bitrate: SOM },
+  });
+  if (!conversao.isValid) throw new Error('Este navegador não sabe montar o clipe.');
+  // vídeo descartado sairia como um clipe só de som, mandado sem aviso: melhor falhar e dizer
+  const semVideo = conversao.discardedTracks.find((d) => d.track.type === 'video');
+  if (semVideo) {
+    console.warn('[syden] caberNoChat: o vídeo seria descartado:', semVideo.reason, trilha?.displayWidth, trilha?.displayHeight, await trilha?.getCodecParameterString(), taxa);
+    throw new Error('Este navegador não sabe montar o clipe.');
+  }
+  conversao.onProgress = (fracao) => aoAndar?.(fracao);
+  await conversao.execute();
   if (!target.buffer) throw new Error('O clipe saiu vazio.');
   return new Blob([target.buffer], { type: 'video/webm' });
 }

@@ -16,6 +16,7 @@ import {
   VideoPresets,
   isE2EESupported,
 } from 'livekit-client';
+import { clipeCruLigado } from './clipeCru/gravador';
 import { ChamadaCifrada, ChavesDaChamada } from './chaveDaChamada';
 import { t } from './i18n';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -311,7 +312,16 @@ export function useVoice(socket: Socket | null) {
   const [room] = useState(() => {
     const settings = getSettings();
     return new Room({
-      encryption: chaves ? { keyProvider: chaves, worker: new Worker(new URL('livekit-client/e2ee-worker', import.meta.url), { type: 'module' }) } : undefined,
+      // Com o clipe sem recodificar ligado (clipeCru/gravador.ts, desligado de fábrica), o worker leva o gancho que copia
+      // os quadros decifrados; desligado, é o do LiveKit puro, como sempre foi.
+      encryption: chaves
+        ? {
+            keyProvider: chaves,
+            worker: clipeCruLigado()
+              ? new Worker(new URL('./clipeCru/trabalhadorDaCifra.ts', import.meta.url), { type: 'module' })
+              : new Worker(new URL('livekit-client/e2ee-worker', import.meta.url), { type: 'module' }),
+          }
+        : undefined,
       // Só baixa a resolução que o elemento de vídeo realmente mostra, contando pixel de CSS (o padrão do
       // LiveKit até a escala 2).
       //

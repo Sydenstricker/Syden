@@ -1,15 +1,18 @@
 import { Download, Scissors, Send, X } from 'lucide-react';
+import { clipeCruLigado, gravarSemRecodificar } from './clipeCru/gravador';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { api } from './api';
 import {
   type Clipe,
+  caberNoChat,
 
   corteVazio,
   duracaoDoClipe,
   type GravacaoEmRolagem,
   gravarEmRolagem,
   nomeDoClipe,
+  FAIXAS_CRUAS,
   montarClipe,
   recortarClipe,
   SEGUNDOS_DO_CLIPE,
@@ -104,8 +107,10 @@ function Previa({
     return () => window.removeEventListener('keydown', aoTeclar);
   }, [onFechar]);
 
-  const cabeNoChat = blob.size <= LIMITE_DO_CHAT;
-  const nome = nomeDoClipe(de);
+  // O arquivo do gravador sem recodificar vem na taxa da transmissão e pode passar do limite: no envio ele é
+  // recodificado para caber (caberNoChat), onde o navegador sabe codificar vídeo.
+  const cabeNoChat = blob.size <= LIMITE_DO_CHAT || typeof VideoEncoder !== 'undefined';
+  const nome = nomeDoClipe(de, blob.type);
 
   /**
    * O ARQUIVO QUE VAI: o original quando ninguém mexeu em nada, o recorte quando mexeram.
@@ -142,7 +147,7 @@ function Previa({
       const endereco = URL.createObjectURL(arquivo);
       const link = document.createElement('a');
       link.href = endereco;
-      link.download = nome;
+      link.download = nomeDoClipe(de, arquivo.type);
       link.click();
       setTimeout(() => URL.revokeObjectURL(endereco), 10_000);
     } catch (e) {
@@ -154,7 +159,15 @@ function Previa({
     setEnviando(true);
     setErro(null);
     try {
-      const arquivo = await arquivoFinal();
+      let arquivo = await arquivoFinal();
+      if (arquivo.size > LIMITE_DO_CHAT && typeof VideoEncoder !== 'undefined') {
+        setCortando(0);
+        try {
+          arquivo = await caberNoChat(arquivo, LIMITE_DO_CHAT, setCortando);
+        } finally {
+          setCortando(null);
+        }
+      }
       // Cortar REGRAVA, e regravação pode sair maior que o original (mais movimento no trecho
       // escolhido = mais bytes por segundo). Conferir de novo aqui é o que evita o envio ser recusado
       // pelo servidor com uma mensagem que não explica nada.
@@ -162,7 +175,7 @@ function Previa({
       const data = await readAsDataUrl(arquivo);
       await api(`/api/channels/${canalId}/messages`, {
         method: 'POST',
-        body: { content: t('Clipe de {quem}', { quem: de }), files: [{ name: nome, data, width: null, height: null }] },
+        body: { content: t('Clipe de {quem}', { quem: de }), files: [{ name: nomeDoClipe(de, arquivo.type), data, width: null, height: null }] },
       });
       setPronto(true);
       setTimeout(onFechar, 1200);
@@ -416,7 +429,9 @@ export function useClipe(stream: MediaStream | null, vozes?: MediaStream | null)
     setErro(null);
     if (!stream) return;
 
-    const rolando = gravarEmRolagem(stream, vozes ?? null);
+    // O clipe sem recodificar (desligado de fábrica): só com a chave ligada E a faixa conhecida pelo worker de cifra.
+    const cruas = clipeCruLigado() ? FAIXAS_CRUAS.get(stream) : undefined;
+    const rolando = cruas ? gravarSemRecodificar(cruas, vozes ?? null) : gravarEmRolagem(stream, vozes ?? null);
     gravacao.current = rolando;
     if (!rolando) return;
     setGravando(true);

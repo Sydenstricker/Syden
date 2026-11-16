@@ -10,6 +10,7 @@ import {
   useTracks,
   VideoTrack,
 } from '@livekit/components-react';
+import { FAIXAS_CRUAS } from './clips';
 import { useGradeQueEnche } from './gradeDoPalco';
 import { useOciosoNaTelaCheia } from './telaCheiaOciosa';
 import { type LocalTrackPublication, type Participant, type RemoteVideoTrack, type Room, RoomEvent, Track, type TrackPublication } from 'livekit-client';
@@ -1214,10 +1215,15 @@ function useTransmissaoNaTela(screen: TrackReferenceOrPlaceholder | undefined) {
   const video = screen && isTrackReference(screen) ? screen.publication.track?.mediaStreamTrack : undefined;
   const somReferencia = sons[0];
   const audio = somReferencia && isTrackReference(somReferencia) ? somReferencia.publication.track?.mediaStreamTrack : undefined;
+  // o mediaStreamID de cada RemoteTrack é o nome pelo qual o worker de cifra conhece a faixa (clipeCru/gravador.ts)
+  const idDoVideo = screen && isTrackReference(screen) ? screen.publication.track?.mediaStreamID : undefined;
+  const idDoAudio = somReferencia && isTrackReference(somReferencia) ? somReferencia.publication.track?.mediaStreamID : undefined;
   return useMemo(() => {
     if (!video) return null;
-    return new MediaStream(audio ? [video, audio] : [video]);
-  }, [video, audio]);
+    const stream = new MediaStream(audio ? [video, audio] : [video]);
+    if (idDoVideo) FAIXAS_CRUAS.set(stream, { video: idDoVideo, audio: idDoAudio ?? null });
+    return stream;
+  }, [video, audio, idDoVideo, idDoAudio]);
 }
 
 export function Stage({

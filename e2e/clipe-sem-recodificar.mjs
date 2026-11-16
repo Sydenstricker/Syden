@@ -18,10 +18,24 @@
 //
 //   API de teste na 3099, site na 5174 e LiveKit local (npm run dev:livekit)
 //   node e2e/clipe-sem-recodificar.mjs            (CODEC=vp9 ou CODEC=h264 para os outros; RAPIDO=1 encurta as esperas)
+//
+// NO_APP=1 (16/11/2026): quem assiste é o APP (o Electron do desktop/, apontado ao site de teste), e não o Chrome. Com
+// TRANSFORM=script, mede se o pedido limpo de quadro-chave (sendKeyFrameRequest) funciona dentro do app.
+//
+// MEDIDO NO APP (16/11/2026, Electron 44.4.3 / Chromium 152, NO_APP=1 TRANSFORM=script RAPIDO=1, VP8):
+//   - o caminho do RTCRtpScriptTransform FUNCIONA no app (as duas faixas, sem o InvalidState que fez o LiveKit desligá-lo no
+//     Chrome; o LiveKit 2.24.1 ainda o desliga em todo Chromium, pelo userAgent);
+//   - o sendKeyFrameRequest trouxe o quadro-chave em 58 ms (estragar um quadro: 395 ms; trocar de camada: ~200 ms; soltar
+//     um quadro: 3 s). Pedido na faixa de áudio dá InvalidStateError ("not video"): pedir só no vídeo;
+//   - o gravador de hoje custa ~1,0 núcleo na página do APP (no Chrome tinham sido ~0,3); a cópia, ~0 (0,4 ms por segundo);
+//   - 1099 quadros guardados decodificaram sem erro e viraram um WebM de 38,6 s que toca.
+// O gravador que usa isto é web/src/clipeCru/ (desligado de fábrica). A decisão que falta: como pedir quadro-chave no
+// Chromium, onde o LiveKit não usa o caminho do pedido limpo.
 import { spawnSync } from 'node:child_process';
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
+import { _electron } from 'playwright-core';
 import { abrirNavegador, falhou, ok, resumo, vigiar } from './ajuda.mjs';
 
 const API = 'http://localhost:3099', APP = 'http://localhost:5174/app/';
@@ -279,7 +293,19 @@ const comunidade = await pedir('POST', '/api/communities', dona, { name: 'Clipe 
 await pedir('POST', '/api/communities/join', amiga, { code: comunidade.inviteCode });
 
 const navAna = await abrirNavegador({ permissoes: ['microphone'] });
-const navBia = await abrirNavegador({ permissoes: ['microphone'] });
+const NO_APP = !!process.env.NO_APP;
+let appBia = null;
+if (NO_APP) {
+  const env = { ...process.env, SYDEN_URL: APP, SYDEN_PASTA_DE_DADOS: mkdtempSync(join(tmpdir(), 'syden-app-clipe-')) };
+  delete env.ELECTRON_RUN_AS_NODE;
+  appBia = await _electron.launch({
+    executablePath: resolve('node_modules/electron/dist/electron.exe'),
+    args: ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream', '--autoplay-policy=no-user-gesture-required', resolve('desktop')],
+    env,
+  });
+  console.log('  quem assiste é o APP: Electron ' + (await appBia.evaluate(() => process.versions.electron)) + ', Chromium ' + (await appBia.evaluate(() => process.versions.chrome)));
+}
+const navBia = NO_APP ? { contexto: appBia.context(), browser: null } : await abrirNavegador({ permissoes: ['microphone'] });
 
 // O gancho entra pela rede: o arquivo do worker de cifra é baixado e servido com o gancho na frente.
 let ganchoServido = 0;
@@ -290,12 +316,17 @@ await navBia.contexto.route(/livekit-client\.e2ee\.worker\.mjs/, async (rota) =>
   await rota.fulfill({ response: resposta, body: `(${GANCHO.toString()})();\n` + corpo, headers: { ...Object.fromEntries(Object.entries(resposta.headers()).filter(([k]) => k !== 'content-length')), 'content-type': 'text/javascript' } });
 });
 
-async function naSala(contexto, token, preparo, arg) {
-  const page = vigiar(await contexto.newPage());
+async function naSala(contexto, token, preparo, arg, janelaDoApp = null) {
+  const page = vigiar(janelaDoApp ?? (await contexto.newPage()));
   page.on('console', (m) => m.type() === 'error' && /e2ee|worker|decode/i.test(m.text()) && console.log('  [console]', m.text().slice(0, 200)));
-  await page.addInitScript(preparo, arg);
-  await page.addInitScript((tk) => { localStorage.setItem('janja.token', tk); }, token);
-  await page.goto(APP);
+  // no app, a janela já existe: os scripts vão no contexto e a página recarrega com eles
+  const alvo = janelaDoApp ? contexto : page;
+  await alvo.addInitScript(preparo, arg);
+  await alvo.addInitScript((tk) => { localStorage.setItem('janja.token', tk); }, token);
+  if (janelaDoApp) {
+    await page.waitForLoadState('domcontentloaded');
+    await page.reload();
+  } else await page.goto(APP);
   await page.locator(`.rail-list .rail-item[aria-label="${comunidade.name}"]`).waitFor({ timeout: 60000 });
   for (let i = 0; i < 6; i++) {
     const r = page.getByRole('button', { name: 'Resgatar' }), f = page.getByRole('button', { name: 'Fechar', exact: true });
@@ -313,7 +344,7 @@ const entrarNaSala = async (page) => {
 };
 
 const A = await naSala(navAna.contexto, dona, PREPARO_DA_ANA, CODEC);
-const B = await naSala(navBia.contexto, amiga, PREPARO_DA_BIA, process.env.TRANSFORM === 'script');
+const B = await naSala(navBia.contexto, amiga, PREPARO_DA_BIA, process.env.TRANSFORM === 'script', NO_APP ? await appBia.firstWindow() : null);
 
 // A biblioteca do LiveKit da página da Bia (o mesmo módulo do app, pelo mesmo endereço), para guardar as publicações
 // que ela assina: é por elas que se pede outra camada (setVideoQuality).
@@ -559,9 +590,18 @@ if (base64) {
 // Por tipo de processo do Chrome da Bia (o MediaRecorder codifica no processo da página, o "renderer"). As fases se
 // alternam (gravador+cópia, só cópia, de novo as duas, nada), porque a imagem que chega muda de tamanho sozinha (a
 // Ana, sem placa no teste, encolhe a transmissão quando aperta) e uma fase só mediria a variação, não o gravador.
-const cdp = await navBia.browser.newBrowserCDPSession();
+const cdp = NO_APP ? null : await navBia.browser.newBrowserCDPSession();
 const cpuPorTipo = async () => {
   const r = {};
+  if (NO_APP) {
+    // no app, pelo próprio Electron: o tempo de processador acumulado (s) de cada processo; a página é o 'Tab'
+    for (const m of await appBia.evaluate(({ app }) => app.getAppMetrics().map((x) => ({ type: x.type, cpu: x.cpu.cumulativeCPUUsage ?? 0 })))) {
+      const tipo = m.type === 'Tab' ? 'renderer' : m.type.toLowerCase();
+      r[tipo] = (r[tipo] ?? 0) + m.cpu;
+    }
+    r.total = Object.values(r).reduce((a, b) => a + b, 0);
+    return r;
+  }
   for (const p of (await cdp.send('SystemInfo.getProcessInfo')).processInfo) r[p.type] = (r[p.type] ?? 0) + p.cpuTime;
   r.total = Object.values(r).reduce((a, b) => a + b, 0);
   return r;
@@ -622,5 +662,5 @@ ok(`4a. processador de quem assiste (página): o gravador do app ≈ ${(media(fa
 ok(`4b. o anel de 30 s ocupa ${s3.mb30s.toFixed(1)} MB (${s3.quadros30s} quadros; ${((s3.mb30s * 8) / 30).toFixed(2)} Mbps chegando)`);
 
 await navAna.browser.close();
-await navBia.browser.close();
+await (NO_APP ? appBia.close() : navBia.browser.close());
 resumo(`clipe-sem-recodificar (${CODEC})`);

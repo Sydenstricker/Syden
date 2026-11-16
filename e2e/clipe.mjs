@@ -11,12 +11,15 @@
 // Precisa do LiveKit no ar:  npm run dev:livekit
 //
 //   node e2e/clipe.mjs
+//   CLIPE_CRU=1 node e2e/clipe.mjs   (16/11/2026: o gravador sem recodificar, clipeCru/gravador.ts, ligado na Bia)
 import { spawnSync } from 'node:child_process';
 import { writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { abrirNavegador, criarConta, dispensarPresentes, falhou, ok, resumo, vigiar } from './ajuda.mjs';
 
 /** No lugar da tela real: um canvas que muda a cada quadro, para haver vídeo de verdade para gravar. */
-const TELA_FALSA = () => {
+const TELA_FALSA = (pesada) => {
   navigator.mediaDevices.getDisplayMedia = async () => {
     const canvas = document.createElement('canvas');
     canvas.width = 1280;
@@ -30,6 +33,23 @@ const TELA_FALSA = () => {
       for (let i = 0; i < 20; i++) {
         ctx.fillStyle = `hsl(${(n * 7 + i * 11) % 360} 80% 60%)`;
         ctx.fillRect((n * 17 + i * 151) % 1240, (i * 97 + n * 5) % 680, 90, 60);
+      }
+      // TELA_PESADA=1: ruído que o codificador não comprime, para a transmissão ir à taxa de cima (o clipe de 30 s
+      // sem recodificar passa dos 8 MB do chat, e o envio precisa encolhê-lo)
+      if (pesada) {
+        // oito quadros de ruído feitos uma vez (sortear a cada quadro pesava demais na página da Ana)
+        window.__ruidos ??= Array.from({ length: 8 }, () => {
+          const img = ctx.createImageData(640, 360);
+          for (let k = 0; k < img.data.length; k += 4) {
+            const v = (Math.random() * 255) | 0;
+            img.data[k] = v;
+            img.data[k + 1] = (v * 7) & 255;
+            img.data[k + 2] = 255 - v;
+            img.data[k + 3] = 255;
+          }
+          return img;
+        });
+        ctx.putImageData(window.__ruidos[n % 8], (n * 13) % 640, (n * 7) % 360);
       }
     }, 1000 / 30);
     return canvas.captureStream(30);
@@ -81,9 +101,19 @@ async function entrar(prefixo) {
   const page = await ctx.newPage();
   vigiar(page);
   page.on('pageerror', (e) => console.log(`  [${prefixo} erro]`, String(e).slice(0, 200)));
-  page.on('console', (m) => (m.text().startsWith('[corte]') || m.text().includes('montarClipe')) && console.log(`  [${prefixo}]`, m.text().slice(0, 300)));
-  await page.addInitScript(TELA_FALSA);
+  page.on('console', (m) => (m.text().startsWith('[corte]') || m.text().includes('montarClipe') || m.text().includes('caberNoChat')) && console.log(`  [${prefixo}]`, m.text().slice(0, 300)));
+  await page.addInitScript(TELA_FALSA, !!process.env.TELA_PESADA);
+  // CODEC=h264 ou vp9: a placa "diz" que codifica só esse, para a transmissão sair nele (como em clipe-sem-recodificar.mjs)
+  if (process.env.CODEC && prefixo === 'ana') {
+    await page.addInitScript((codec) => {
+      const tipo = { vp9: 'video/VP9', h264: 'video/H264' }[codec];
+      const original = navigator.mediaCapabilities.encodingInfo.bind(navigator.mediaCapabilities);
+      navigator.mediaCapabilities.encodingInfo = async (c) => (c?.video?.contentType === tipo ? { supported: true, smooth: true, powerEfficient: true } : c?.video?.contentType === 'video/VP9' || c?.video?.contentType === 'video/H264' ? { supported: true, smooth: true, powerEfficient: false } : original(c));
+      if (window.VideoEncoder?.isConfigSupported) VideoEncoder.isConfigSupported = async (c) => ({ supported: false, config: c });
+    }, process.env.CODEC);
+  }
   await page.addInitScript(GUARDAR_GRAVACOES);
+  if (process.env.CLIPE_CRU) await page.addInitScript(() => localStorage.setItem('syden.clipeCru', 'sim'));
   const usuario = await criarConta(page, prefixo);
   await dispensarPresentes(page);
   return { page, usuario };
@@ -196,6 +226,16 @@ if ((await tesoura.count()) === 0) {
     const textoDoErro = erro ? await bia.page.locator('.clipe-aviso').first().innerText() : '';
     console.log(`  depois do clique: diálogo=${dialogo} erro=${erro} ${textoDoErro}`);
 
+    if (process.env.CLIPE_CRU) {
+      // no caminho sem recodificar, nenhum MediaRecorder de VÍDEO pode ter rodado na Bia até aqui
+      const deVideo = await bia.page.evaluate(() => window.__gravacoes.filter((g) => g.tipo.startsWith('video')).length);
+      const mb = await bia.page.evaluate(async () => { const v = document.querySelector('.clipe-video'); return v ? (await (await fetch(v.src)).blob()).size / 1048576 : 0; });
+      console.log('  o clipe sem recodificar tem ' + mb.toFixed(1) + ' MB');
+      const cru = await bia.page.evaluate(async () => { const b = await (await fetch(document.querySelector('.clipe-video').src)).blob(); const l = new FileReader(); return await new Promise((r) => { l.onload = () => r(String(l.result).split(',')[1] ?? ''); l.readAsDataURL(b); }); });
+      // fora do repositório (passa de 15 MB), para conferir com o ffprobe à mão
+      writeFileSync(join(tmpdir(), 'syden-clipe-cru.bin'), Buffer.from(cru, 'base64'));
+      deVideo === 0 ? ok('sem recodificar: nenhum gravador de vídeo rodou na Bia') : falhou(`sem recodificar: ${deVideo} gravação(ões) de vídeo na Bia`);
+    }
     dialogo === 1 ? ok('a prévia do clipe abriu') : falhou(`a prévia não abriu${textoDoErro ? ` — disse: ${textoDoErro}` : ' e não disse nada'}`);
 
     if (dialogo === 1) {
