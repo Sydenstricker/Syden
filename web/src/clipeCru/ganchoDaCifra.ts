@@ -18,8 +18,12 @@
 const CANAL = 'syden-clipe-cru';
 /** Quanto do passado o anel guarda além do quadro-chave que abre a janela. */
 const JANELA_MS = 30_000;
-/** Sem quadro-chave novo, o anel volta até este tanto atrás para achar um; mais que isso, o clipe não sai. */
-const MAXIMO_MS = 120_000;
+/**
+ * Sem quadro-chave novo, o anel guarda até este tanto para trás, para o clipe ter de onde abrir. No NAVEGADOR o WebRTC quase
+ * não manda quadro-chave sem pedido (medido: nenhum em 60 s), e não há como pedir; com 2 min aqui, uma tela parada perdia
+ * o único que tinha e o clipe não saía. O clipe longo abre no editor já com os últimos 30 s escolhidos (Clipe.inicio).
+ */
+const MAXIMO_MS = 10 * 60_000;
 /** Teto de memória por faixa. */
 const MAXIMO_BYTES = 150 * 1024 * 1024;
 
@@ -69,7 +73,11 @@ function aparar(f: Faixa) {
   if (corte > 0) {
     for (const q of f.anel.splice(0, corte)) f.bytes -= q.dados.byteLength;
   }
-  while (f.anel.length && (f.anel[0].t < limite - MAXIMO_MS || f.bytes > MAXIMO_BYTES)) f.bytes -= f.anel.shift()!.dados.byteLength;
+  // passou do tempo ou da memória: sai um grupo inteiro (até o próximo quadro-chave), porque metade dele não decodifica
+  while (f.anel.length && (f.anel[0].t < limite - MAXIMO_MS || f.bytes > MAXIMO_BYTES)) {
+    f.bytes -= f.anel.shift()!.dados.byteLength;
+    while (f.anel.length && f.anel[0].tipo !== 'key') f.bytes -= f.anel.shift()!.dados.byteLength;
+  }
 }
 
 function embrulhar(id: string, original: WritableStream, pedirChave?: () => Promise<void>): WritableStream {

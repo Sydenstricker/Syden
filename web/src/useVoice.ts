@@ -311,9 +311,13 @@ export function useVoice(socket: Socket | null) {
   const [codigoDeSeguranca, setCodigoDeSeguranca] = useState<string | null>(null);
   const [room] = useState(() => {
     const settings = getSettings();
+    // NO APP, o caminho da cifra que sabe pedir quadro-chave (RTCRtpScriptTransform; o desvio está em vite.config.ts):
+    // o gravador de clipes pede um quando o último passa de 20 s, e o clipe abre perto dos 30 s. No navegador o LiveKit
+    // segue no createEncodedStreams, e o clipe depende dos quadros-chave que chegam sozinhos.
+    (globalThis as { __sydenScriptTransform?: boolean }).__sydenScriptTransform = desktopBridge !== undefined && clipeCruLigado();
     return new Room({
-      // Com o clipe sem recodificar ligado (clipeCru/gravador.ts, desligado de fábrica), o worker leva o gancho que copia
-      // os quadros decifrados; desligado, é o do LiveKit puro, como sempre foi.
+      // Com o clipe sem recodificar (clipeCru/gravador.ts, LIGADO de fábrica desde 16/11/2026), o worker leva o gancho que
+      // copia os quadros decifrados; com ele desligado ('syden.clipeCru' = 'nao'), é o do LiveKit puro, como sempre foi.
       encryption: chaves
         ? {
             keyProvider: chaves,

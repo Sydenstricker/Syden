@@ -57,6 +57,11 @@ export interface Clipe {
   blob: Blob;
   segundos: number;
   /**
+   * Onde o editor abre a seleção, em segundos. O gravador sem recodificar (clipeCru/) começa o arquivo num quadro-chave,
+   * que pode estar bem antes dos últimos 30 s; aí a seleção já abre nos últimos 30. Sem ele, no começo.
+   */
+  inicio?: number;
+  /**
    * As vozes da sala, gravadas À PARTE e na mesma janela de tempo. null quando não havia vozes para
    * gravar (ninguém com microfone ligado, ou navegador sem o que é preciso).
    *
@@ -273,6 +278,17 @@ export interface Corte {
   volume: number;
   /** A trilha de vozes da sala, quando a pessoa marcou a caixinha. null = clipe só com o som do jogo. */
   vozes?: Blob | null;
+  /**
+   * Bytes em que o arquivo tem de caber (o limite do chat). Com ele, o vídeo é RECODIFICADO na mesma passada do corte, numa
+   * taxa que cabe (ver caberNoChat). Sem isso o clipe do gravador sem recodificar, cortado fora de um quadro-chave, era
+   * codificado duas vezes: medido no app, 90 s para mandar um clipe de 30 s.
+   */
+  caber?: number;
+}
+
+/** A taxa do vídeo para os segundos caberem no limite em bytes, com o som de 96 kbps (10% de folga ao contêiner). */
+function taxaQueCabe(limite: number, segundos: number): number {
+  return Math.max(300_000, Math.floor((limite * 8 * 0.9) / Math.max(1, segundos) - 96_000));
 }
 
 /** Nada a fazer: o pedaço é o arquivo inteiro, o volume não mudou e não há voz para juntar. */
@@ -344,7 +360,7 @@ function irPara(video: HTMLMediaElement, segundo: number): Promise<void> {
  *
  * A Mediabunny (MPL-2.0) só é baixada quando alguém monta um clipe — ela não pesa na abertura do app.
  */
-export async function montarClipe(blob: Blob, { inicio: pedido, fim, volume, vozes }: Corte, aoAndar?: (fracao: number) => void): Promise<Blob> {
+export async function montarClipe(blob: Blob, { inicio: pedido, fim, volume, vozes, caber }: Corte, aoAndar?: (fracao: number) => void): Promise<Blob> {
   const mb = await import('mediabunny');
   let inicio = pedido;
   const input = new mb.Input({ source: new mb.BlobSource(blob), formats: mb.ALL_FORMATS });
@@ -398,17 +414,22 @@ export async function montarClipe(blob: Blob, { inicio: pedido, fim, volume, voz
   // ---------- o vídeo: copiado, e o som trocado pelo misturado ----------
   // O H.264 (do clipe sem recodificar, quando quem transmite usa a placa) não entra em WebM: copiado, ele vai em MP4,
   // que também leva o Opus. Sem isto a conversão descartava o vídeo calada e o clipe saía só com som.
-  const mp4 = (await trilhaDeVideo?.getCodec()) === 'avc';
+  // Para caber no chat, o vídeo sai em VP8 recodificado (em WebM) já nesta passada.
+  const mp4 = !caber && (await trilhaDeVideo?.getCodec()) === 'avc';
   const target = new mb.BufferTarget();
   const output = new mb.Output({ format: mp4 ? new mb.Mp4OutputFormat({ fastStart: 'in-memory' }) : new mb.WebMOutputFormat(), target });
   const conversao = await mb.Conversion.init({
     input,
     output,
     trim: { start: inicio, end: ate },
+    video: caber
+      ? { codec: 'vp8', bitrate: taxaQueCabe(caber, comprimento), width: trilhaDeVideo && trilhaDeVideo.displayWidth > 1280 ? 1280 : undefined, forceTranscode: true }
+      : undefined,
     audio: { discard: true },
     composable: true,
   });
   if (!conversao.isValid) throw new Error('Este navegador não sabe montar o clipe.');
+  if (conversao.discardedTracks.some((d) => d.track.type === 'video')) throw new Error('Este navegador não sabe montar o clipe.');
   const som = new mb.AudioBufferSource({ codec: 'opus', quality: new mb.Quality('high') });
   output.addAudioTrack(som);
   conversao.onProgress = (fracao) => aoAndar?.(0.3 + 0.7 * fracao);
@@ -433,8 +454,7 @@ export async function caberNoChat(blob: Blob, limite: number, aoAndar?: (fracao:
   const input = new mb.Input({ source: new mb.BlobSource(blob), formats: mb.ALL_FORMATS });
   const duracao = Math.max(1, await input.computeDuration());
   const SOM = 96_000;
-  // 10% de folga para o contêiner e para o codificador passar um pouco da taxa pedida
-  const taxa = Math.max(300_000, Math.floor((limite * 8 * 0.9) / duracao - SOM));
+  const taxa = taxaQueCabe(limite, duracao);
   const trilha = await input.getPrimaryVideoTrack();
   const largura = trilha && trilha.displayWidth > 1280 ? 1280 : undefined;
   const target = new mb.BufferTarget();

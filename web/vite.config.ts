@@ -80,9 +80,34 @@ const cenasNoBuild: Plugin = {
   },
 };
 
+// O CAMINHO LIMPO DA CIFRA NO APP (16/11/2026, decisão dele). O LiveKit decide entre createEncodedStreams e
+// RTCRtpScriptTransform em isScriptTransformSupportedForWorker, e recusa o segundo em TODO Chromium pelo userAgent
+// ("o Chrome 141 às vezes dava InvalidState"). Só o segundo tem o sendKeyFrameRequest, que o gravador de clipes sem
+// recodificar usa (web/src/clipeCru/). Medido no app (Electron 44 / Chromium 152, e2e/clipe-sem-recodificar.mjs
+// NO_APP=1 TRANSFORM=script): funciona, sem o InvalidState. Por isso o app liga `globalThis.__sydenScriptTransform`
+// (useVoice.ts) e o LiveKit passa a aceitar o caminho nele; no navegador, nada muda. Trocar o userAgent faria o
+// mesmo, mas o LiveKit usa o navegador detectado em outros lugares (simulcast, Safari).
+const DESVIO_DA_CIFRA = {
+  de: "typeof window.RTCRtpScriptTransform !== 'undefined' && !isChromiumBased();",
+  para: "typeof window.RTCRtpScriptTransform !== 'undefined' && (!isChromiumBased() || globalThis.__sydenScriptTransform === true);",
+};
+const desvioDaCifra = {
+  name: 'desvio-da-cifra',
+  transform(codigo: string, id: string) {
+    if (!/livekit-client[\\/]dist[\\/]livekit-client\.esm\.mjs$/.test(id.split('?')[0])) return null;
+    if (!codigo.includes(DESVIO_DA_CIFRA.de)) {
+      // uma versão nova do LiveKit mudou o trecho: o build para, em vez de o clipe perder o quadro-chave calado
+      throw new Error('desvio-da-cifra: o trecho de isScriptTransformSupportedForWorker mudou no livekit-client; revise vite.config.ts');
+    }
+    return { code: codigo.replace(DESVIO_DA_CIFRA.de, DESVIO_DA_CIFRA.para), map: null };
+  },
+};
+
 export default defineConfig({
   base: BASE,
-  plugins: [react(), arquivoDeVersao, quartoNovo, cenasNoBuild],
+  plugins: [react(), arquivoDeVersao, quartoNovo, cenasNoBuild, desvioDaCifra as Plugin],
+  // no desenvolvimento o LiveKit é pré-empacotado, e lá os plugins do Vite não passam: o mesmo desvio entra por aqui
+  optimizeDeps: { rolldownOptions: { plugins: [desvioDaCifra] } },
   build: {
     // O app sai numa subpasta, e os arquivos do site entram na raiz depois (scripts/montar-site.mjs).
     outDir: 'dist/app',

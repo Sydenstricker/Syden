@@ -11,11 +11,17 @@
 // Precisa do LiveKit no ar:  npm run dev:livekit
 //
 //   node e2e/clipe.mjs
-//   CLIPE_CRU=1 node e2e/clipe.mjs   (16/11/2026: o gravador sem recodificar, clipeCru/gravador.ts, ligado na Bia)
+//   O gravador é o sem recodificar (clipeCru/gravador.ts, ligado de fábrica desde 16/11/2026).
+//   CLIPE_ANTIGO=1 node e2e/clipe.mjs   o gravador de antes ('syden.clipeCru' = 'nao' na Bia)
+//   NO_APP=1 node e2e/clipe.mjs         a Bia é o APP (o Electron do desktop/, apontado ao site de teste): confere que a
+//                                       cifra vai pelo RTCRtpScriptTransform e que o pedido de quadro-chave segura o clipe
+//                                       perto dos 30 s (use ESPERA_DO_CLIPE=50000)
 import { spawnSync } from 'node:child_process';
 import { writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { mkdtempSync } from 'node:fs';
+import { join, resolve } from 'node:path';
+import { _electron } from 'playwright-core';
 import { abrirNavegador, criarConta, dispensarPresentes, falhou, ok, resumo, vigiar } from './ajuda.mjs';
 
 /** No lugar da tela real: um canvas que muda a cada quadro, para haver vídeo de verdade para gravar. */
@@ -95,26 +101,69 @@ function volumeMedio(arquivo) {
 }
 
 const { browser } = await abrirNavegador();
+const NO_APP = !!process.env.NO_APP;
+let app = null;
+
+/** As conexões da página, para conferir por qual caminho a cifra foi montada. */
+const GUARDAR_CONEXOES = () => {
+  window.__conexoes = [];
+  const Original = window.RTCPeerConnection;
+  window.RTCPeerConnection = function (...args) {
+    const pc = new Original(...args);
+    window.__conexoes.push(pc);
+    return pc;
+  };
+  window.RTCPeerConnection.prototype = Original.prototype;
+  Object.setPrototypeOf(window.RTCPeerConnection, Original);
+};
 
 async function entrar(prefixo) {
-  const ctx = await browser.newContext({ viewport: { width: 1400, height: 900 }, permissions: ['microphone'] });
-  const page = await ctx.newPage();
+  let ctx, page;
+  if (NO_APP && prefixo === 'bia') {
+    const env = { ...process.env, SYDEN_URL: 'http://localhost:5174/app/', SYDEN_PASTA_DE_DADOS: mkdtempSync(join(tmpdir(), 'syden-app-clipe-')) };
+    delete env.ELECTRON_RUN_AS_NODE;
+    app = await _electron.launch({
+      executablePath: resolve('node_modules/electron/dist/electron.exe'),
+      args: ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream', '--autoplay-policy=no-user-gesture-required', resolve('desktop')],
+      env,
+    });
+    console.log('  a bia é o APP: Electron ' + (await app.evaluate(() => process.versions.electron)));
+    ctx = app.context();
+    page = await app.firstWindow();
+    await ctx.addInitScript(GUARDAR_CONEXOES);
+  } else {
+    ctx = await browser.newContext({ viewport: { width: 1400, height: 900 }, permissions: ['microphone'] });
+    page = await ctx.newPage();
+    if (prefixo === 'bia') await page.addInitScript(GUARDAR_CONEXOES);
+  }
+  const alvo = NO_APP && prefixo === 'bia' ? ctx : page;
   vigiar(page);
   page.on('pageerror', (e) => console.log(`  [${prefixo} erro]`, String(e).slice(0, 200)));
   page.on('console', (m) => (m.text().startsWith('[corte]') || m.text().includes('montarClipe') || m.text().includes('caberNoChat')) && console.log(`  [${prefixo}]`, m.text().slice(0, 300)));
-  await page.addInitScript(TELA_FALSA, !!process.env.TELA_PESADA);
+  await alvo.addInitScript(TELA_FALSA, !!process.env.TELA_PESADA);
   // CODEC=h264 ou vp9: a placa "diz" que codifica só esse, para a transmissão sair nele (como em clipe-sem-recodificar.mjs)
   if (process.env.CODEC && prefixo === 'ana') {
-    await page.addInitScript((codec) => {
+    await alvo.addInitScript((codec) => {
       const tipo = { vp9: 'video/VP9', h264: 'video/H264' }[codec];
       const original = navigator.mediaCapabilities.encodingInfo.bind(navigator.mediaCapabilities);
       navigator.mediaCapabilities.encodingInfo = async (c) => (c?.video?.contentType === tipo ? { supported: true, smooth: true, powerEfficient: true } : c?.video?.contentType === 'video/VP9' || c?.video?.contentType === 'video/H264' ? { supported: true, smooth: true, powerEfficient: false } : original(c));
       if (window.VideoEncoder?.isConfigSupported) VideoEncoder.isConfigSupported = async (c) => ({ supported: false, config: c });
     }, process.env.CODEC);
   }
-  await page.addInitScript(GUARDAR_GRAVACOES);
-  if (process.env.CLIPE_CRU) await page.addInitScript(() => localStorage.setItem('syden.clipeCru', 'sim'));
-  const usuario = await criarConta(page, prefixo);
+  await alvo.addInitScript(GUARDAR_GRAVACOES);
+  if (process.env.CLIPE_ANTIGO) await alvo.addInitScript(() => localStorage.setItem('syden.clipeCru', 'nao'));
+  let usuario;
+  if (NO_APP && prefixo === 'bia') {
+    // o app abre na tela de entrar, sem o link do convite: a conta nasce pela API e o token vai para a janela
+    usuario = prefixo + Date.now().toString().slice(-6);
+    const api = (rota, corpo) => fetch('http://localhost:3099' + rota, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(corpo) }).then((r) => r.json());
+    await api('/api/auth/register', { username: usuario, password: 'segredo123', email: usuario + '@exemplo.teste', inviteCode: 'teste', nascimento: '1990-01-01' });
+    const { token } = await api('/api/auth/login', { username: usuario, password: 'segredo123' });
+    await ctx.addInitScript((tk) => localStorage.setItem('janja.token', tk), token);
+    await page.waitForLoadState('domcontentloaded');
+    await page.reload();
+    await page.locator('button.rail-action[aria-label="Adicionar comunidade"]').waitFor({ timeout: 60000 });
+  } else usuario = await criarConta(page, prefixo);
   await dispensarPresentes(page);
   return { page, usuario };
 }
@@ -226,7 +275,7 @@ if ((await tesoura.count()) === 0) {
     const textoDoErro = erro ? await bia.page.locator('.clipe-aviso').first().innerText() : '';
     console.log(`  depois do clique: diálogo=${dialogo} erro=${erro} ${textoDoErro}`);
 
-    if (process.env.CLIPE_CRU) {
+    if (!process.env.CLIPE_ANTIGO) {
       // no caminho sem recodificar, nenhum MediaRecorder de VÍDEO pode ter rodado na Bia até aqui
       const deVideo = await bia.page.evaluate(() => window.__gravacoes.filter((g) => g.tipo.startsWith('video')).length);
       const mb = await bia.page.evaluate(async () => { const v = document.querySelector('.clipe-video'); return v ? (await (await fetch(v.src)).blob()).size / 1048576 : 0; });
@@ -235,6 +284,27 @@ if ((await tesoura.count()) === 0) {
       // fora do repositório (passa de 15 MB), para conferir com o ffprobe à mão
       writeFileSync(join(tmpdir(), 'syden-clipe-cru.bin'), Buffer.from(cru, 'base64'));
       deVideo === 0 ? ok('sem recodificar: nenhum gravador de vídeo rodou na Bia') : falhou(`sem recodificar: ${deVideo} gravação(ões) de vídeo na Bia`);
+      // o caminho da cifra: no app, o RTCRtpScriptTransform (o desvio de vite.config.ts); no navegador, o de sempre
+      const caminho = await bia.page.evaluate(() => ({
+        marca: globalThis.__sydenScriptTransform === true,
+        script: window.__conexoes.flatMap((pc) => pc.getReceivers()).filter((r) => r.transform).length,
+        recebendo: window.__conexoes.flatMap((pc) => pc.getReceivers()).filter((r) => r.track?.readyState === 'live').length,
+      }));
+      console.log('  a cifra na bia: ' + JSON.stringify(caminho));
+      if (NO_APP) caminho.marca && caminho.script > 0 ? ok(`no app, a cifra vai pelo RTCRtpScriptTransform (${caminho.script} faixa(s))`) : falhou('no app, a cifra NÃO foi pelo RTCRtpScriptTransform');
+      else !caminho.marca && caminho.script === 0 ? ok('no navegador, a cifra continua no caminho de sempre') : falhou('no navegador, a cifra mudou de caminho');
+      // a duração do arquivo e onde o editor abriu a seleção
+      const regua = await bia.page.evaluate(() => {
+        const r = [...document.querySelectorAll('.clipe-dialog input[type="range"]')].map((i) => +i.value);
+        return { duracao: document.querySelector('.clipe-video')?.duration, inicio: r[0], fim: r[1] };
+      });
+      console.log('  o arquivo e a seleção: ' + JSON.stringify(regua));
+      const espera = Number(process.env.ESPERA_DO_CLIPE ?? 8000) / 1000;
+      if (NO_APP && espera > 40) {
+        // com o pedido de quadro-chave a cada 20 s, o arquivo não passa de ~30 + 20 s
+        regua.duracao < 52 ? ok(`com o pedido de quadro-chave, o clipe tem ${regua.duracao.toFixed(1)} s`) : falhou(`o clipe tem ${regua.duracao} s: o pedido de quadro-chave não segurou`);
+      }
+      if (regua.duracao > 38 + 0.5) regua.fim - regua.inicio <= 31 ? ok('o arquivo longo abre com os últimos 30 s escolhidos') : falhou('o arquivo longo abriu com tudo escolhido');
     }
     dialogo === 1 ? ok('a prévia do clipe abriu') : falhou(`a prévia não abriu${textoDoErro ? ` — disse: ${textoDoErro}` : ' e não disse nada'}`);
 
@@ -270,14 +340,17 @@ if ((await tesoura.count()) === 0) {
         const relogios = await bia.page.evaluate(async () => {
           const v = document.querySelector('.clipe-video');
           const a = document.querySelector('.clipe-dialog audio');
+          // a seleção pode não começar no zero (o clipe longo do gravador sem recodificar): conta quanto o vídeo ANDOU
           await v.play().catch(() => {});
-          for (let i = 0; i < 80 && v.currentTime < 2; i++) await new Promise((r) => setTimeout(r, 100));
-          const r = { video: v.currentTime, vozes: a.currentTime, vozesTocando: !a.paused };
+          await new Promise((r) => setTimeout(r, 300));
+          const t0 = v.currentTime;
+          for (let i = 0; i < 80 && v.currentTime - t0 < 2; i++) await new Promise((r) => setTimeout(r, 100));
+          const r = { video: v.currentTime, andou: v.currentTime - t0, vozes: a.currentTime, vozesTocando: !a.paused };
           v.pause();
           await new Promise((r) => setTimeout(r, 300));
           return { ...r, vozesParamJunto: a.paused };
         });
-        if (relogios.video < 1) {
+        if (relogios.andou < 1) {
           console.log('  (o vídeo da prévia não andou neste Chrome; a sincronia não foi medida)', JSON.stringify(relogios));
         } else {
           relogios.vozesTocando && Math.abs(relogios.video - relogios.vozes) < 0.5
@@ -365,7 +438,15 @@ if ((await bia.page.locator('.clipe-dialog').count()) === 1) {
   } else {
     const inicioDoEnvio = Date.now();
     await mandar.click();
-    await bia.page.getByRole('button', { name: /Mandado!/ }).waitFor({ timeout: 90000 }).catch(() => {});
+    // o que o diálogo mostra durante o envio (no app, o "Mandado!" chegou a não aparecer para o teste)
+    let ultimo = '';
+    while (Date.now() - inicioDoEnvio < 90_000) {
+      const agora = await bia.page.evaluate(() => (document.querySelector('.clipe-dialog') ? [...document.querySelectorAll('.clipe-dialog button')].map((x) => x.textContent?.trim()).filter(Boolean).join(' | ') + ' ' + (document.querySelector('.clipe-dialog progress, .clipe-dialog [role=progressbar]')?.getAttribute('value') ?? '') : '(diálogo fechado)')).catch((e) => 'erro: ' + e.message);
+      if (agora !== ultimo) console.log(`  ${((Date.now() - inicioDoEnvio) / 1000).toFixed(1)} s: ${agora.slice(0, 160)}`);
+      ultimo = agora;
+      if (/Mandado!|diálogo fechado/.test(agora)) break;
+      await bia.page.waitForTimeout(500);
+    }
     const segundos = (Date.now() - inicioDoEnvio) / 1000;
     const erroNoEnvio = await bia.page.locator('.clipe-dialog .form-error').textContent().catch(() => null);
     erroNoEnvio
@@ -411,5 +492,6 @@ if ((await bia.page.locator('.clipe-dialog').count()) === 1) {
 }
 
 await bia.page.screenshot({ path: 'e2e/fotos/clipe-menu.png' });
+await app?.close();
 await browser.close();
 resumo('a tesoura, com transmissão de verdade');

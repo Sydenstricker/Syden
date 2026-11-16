@@ -34,6 +34,7 @@ const LIMITE_DO_CHAT = 8 * 1024 * 1024;
 function Previa({
   blob,
   segundos,
+  inicioSugerido,
   vozesDaSala,
   de,
   canais,
@@ -41,6 +42,7 @@ function Previa({
 }: {
   blob: Blob;
   segundos: number;
+  inicioSugerido?: number;
   vozesDaSala: Blob | null;
   de: string;
   canais: Channel[];
@@ -83,6 +85,7 @@ function Previa({
       if (!vivo) return;
       setDuracao(total);
       setFim(total);
+      if (inicioSugerido && inicioSugerido < total - 1) setInicio(inicioSugerido);
     });
     return () => {
       vivo = false;
@@ -119,13 +122,13 @@ function Previa({
    * mexeu no volume não tem por que pagar nenhum dos dois — então o caminho sem edição manda os bytes
    * exatos que saíram da gravação.
    */
-  async function arquivoFinal(): Promise<Blob> {
+  async function arquivoFinal(caber?: number): Promise<Blob> {
     // A DURAÇÃO PODE NÃO TER CHEGADO quando a pessoa clica (ela é medida varrendo o arquivo). Antes,
     // duração zero entregava o arquivo cru — e com ele iam embora as vozes que a caixinha prometia,
     // sem aviso. Agora, com vozes pedidas, o corte acontece de qualquer jeito, até o fim do arquivo.
     const vozes = comVozes ? vozesDaSala : null;
-    const corte = { inicio, fim: duracao > 0 ? fim : Infinity, volume, vozes };
-    if (!vozes && (duracao === 0 || corteVazio(corte, duracao))) return blob;
+    const corte = { inicio, fim: duracao > 0 ? fim : Infinity, volume, vozes, caber };
+    if (!caber && !vozes && (duracao === 0 || corteVazio(corte, duracao))) return blob;
     setCortando(0);
     try {
       try {
@@ -159,7 +162,11 @@ function Previa({
     setEnviando(true);
     setErro(null);
     try {
-      let arquivo = await arquivoFinal();
+      // O pedaço escolhido não cabe nos 8 MB (o gravador sem recodificar vem na taxa da transmissão): o corte já recodifica
+      // para caber, numa passada só.
+      const pedaco = duracao > 0 ? (fim - inicio) / duracao : 1;
+      const grande = typeof VideoEncoder !== 'undefined' && blob.size * pedaco > LIMITE_DO_CHAT * 0.95;
+      let arquivo = await arquivoFinal(grande ? LIMITE_DO_CHAT : undefined);
       if (arquivo.size > LIMITE_DO_CHAT && typeof VideoEncoder !== 'undefined') {
         setCortando(0);
         try {
@@ -429,9 +436,9 @@ export function useClipe(stream: MediaStream | null, vozes?: MediaStream | null)
     setErro(null);
     if (!stream) return;
 
-    // O clipe sem recodificar (desligado de fábrica): só com a chave ligada E a faixa conhecida pelo worker de cifra.
+    // O clipe sem recodificar (ligado de fábrica): com a faixa conhecida pelo worker de cifra; sem a cifra, o de antes.
     const cruas = clipeCruLigado() ? FAIXAS_CRUAS.get(stream) : undefined;
-    const rolando = cruas ? gravarSemRecodificar(cruas, vozes ?? null) : gravarEmRolagem(stream, vozes ?? null);
+    const rolando = cruas ? gravarSemRecodificar(cruas, vozes ?? null, () => gravarEmRolagem(stream, vozes ?? null)) : gravarEmRolagem(stream, vozes ?? null);
     gravacao.current = rolando;
     if (!rolando) return;
     setGravando(true);
@@ -557,6 +564,7 @@ export function PreviaDoClipe({ clipe, de, canais }: { clipe: EstadoDoClipe; de:
     <Previa
       blob={clipe.clipe.blob}
       segundos={clipe.clipe.segundos}
+      inicioSugerido={clipe.clipe.inicio}
       vozesDaSala={clipe.clipe.vozes}
       de={de}
       canais={canais}

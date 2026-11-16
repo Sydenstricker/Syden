@@ -2031,6 +2031,23 @@ Para a tela inteira, as saídas continuam sendo desmarcar "compartilhar áudio" 
 desmarcar só vale da versão seguinte à 0.1.7 em diante: antes o site ligava a captura de som por fora,
 sempre.)
 
+## O clipe não recodifica: copia os quadros que já chegam
+
+**Decidido em 16/11/2026, pelo Sydenstricker.** O gravador de clipes recodificava a transmissão o tempo todo (medido no app: ~1
+núcleo de quem assiste, que muitas vezes está jogando). Agora (`web/src/clipeCru/`, LIGADO no app e no site) o worker de cifra
+copia os quadros JÁ CODIFICADOS, depois de decifrados, num anel; o arquivo só é montado quando a pessoa pede (VP8/VP9/AV1 em
+WebM, H.264 em MP4, sem recodificar; as vozes vão alinhadas num WAV). O clipe abre num QUADRO-CHAVE:
+- **No app, o quadro-chave é PEDIDO** (`sendKeyFrameRequest`, quando o último passa de 20 s). Só existe no caminho do
+  RTCRtpScriptTransform, que o LiveKit recusa em todo Chromium pelo userAgent; o app o liga por `__sydenScriptTransform` e um
+  DESVIO no código do LiveKit feito no build (`vite.config.ts`, que para o build se o trecho mudar numa versão nova). Medido
+  no app: 58 ms. Escolha dele: SÓ no app, porque mexe na decifragem de todas as chamadas.
+- **No navegador não há como pedir**, e o WebRTC quase não manda sozinho: o anel segura o último quadro-chave por até 10 min
+  (ou 150 MB), e o clipe longo abre no editor com os últimos 30 s escolhidos (`Clipe.inicio`).
+- **O preço:** o arquivo vem na taxa da transmissão e passa dos 8 MB do chat; ao mandar, o corte e o encolhimento são UMA
+  passada (`Corte.caber`; em duas, 90 s no app; numa, ~13 s). Sem a cifra de ponta a ponta o gancho não vê nada, e em 6 s
+  entra o gravador de antes. `localStorage 'syden.clipeCru' = 'nao'` volta ao de antes. Teste: `e2e/clipe.mjs` (`NO_APP=1`,
+  `CLIPE_ANTIGO=1`, `CODEC=`).
+
 ## Texto borrado na transmissão: o Padrão decide pela imagem parada
 
 **Diagnosticado em 06/10/2026, consertado em 11/10/2026.** Relato: o Magnitudle transmitido chegava com

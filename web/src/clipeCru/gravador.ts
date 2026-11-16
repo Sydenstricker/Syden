@@ -8,8 +8,10 @@
 // últimas gravações são decodificadas e postas na MESMA régua do vídeo, num WAV do tamanho exato do clipe: o editor
 // (montarClipe) continua contando que o segundo N das vozes é o segundo N do vídeo.
 //
-// DESLIGADO DE FÁBRICA, até a decisão de como pedir quadro-chave (ver o fim de e2e/clipe-sem-recodificar.mjs). Para
-// experimentar: localStorage 'syden.clipeCru' = 'sim' (só vale com a chamada cifrada, que é a de fábrica).
+// LIGADO DE FÁBRICA no app e no site (decisão dele, 16/11/2026). No APP a cifra vai pelo RTCRtpScriptTransform (o desvio
+// de vite.config.ts) e o quadro-chave é PEDIDO quando o último passa de 20 s; no navegador não há como pedir, e o clipe
+// abre no quadro-chave que chegou sozinho (o anel guarda até 2 min para trás). Só vale com a chamada cifrada (a de
+// fábrica); sem ela, o gravador de antes. Para voltar ao gravador de antes: localStorage 'syden.clipeCru' = 'nao'.
 import type { Clipe, GravacaoEmRolagem } from '../clips';
 import type { QuadroCru } from './ganchoDaCifra';
 import { escolherJanela, montarArquivo } from './montar';
@@ -21,9 +23,9 @@ const CHAVE_VELHA_MS = 20_000;
 
 export function clipeCruLigado(): boolean {
   try {
-    return localStorage.getItem('syden.clipeCru') === 'sim';
+    return localStorage.getItem('syden.clipeCru') !== 'nao';
   } catch {
-    return false;
+    return true;
   }
 }
 
@@ -170,8 +172,35 @@ function vozesEmRolagem(vozes: MediaStream | null | undefined) {
  * Começa a guardar os quadros das faixas `faixas` (o mediaStreamID de cada RemoteTrack do LiveKit: é por ele que o
  * worker de cifra as conhece). Devolve null quando não há faixa de vídeo para guardar.
  */
-export function gravarSemRecodificar(faixas: { video: string; audio?: string | null }, vozes?: MediaStream | null): GravacaoEmRolagem | null {
-  if (!faixas.video) return null;
+export function gravarSemRecodificar(
+  faixas: { video: string; audio?: string | null },
+  vozes: MediaStream | null,
+  reserva: () => GravacaoEmRolagem | null,
+): GravacaoEmRolagem | null {
+  if (!faixas.video) return reserva();
+  const proprio = gravarCru(faixas, vozes);
+  // SEM A CIFRA DE PONTA A PONTA (o servidor a desliga numa emergência, ou o navegador não a tem) o gancho nunca vê os
+  // quadros: nenhum worker confirma o "gravar", e em 6 s entra o gravador de antes, para o botão não ficar sem clipe.
+  let atual: GravacaoEmRolagem = proprio;
+  let parado = false;
+  const prazo = setTimeout(() => {
+    if (parado || proprio.confirmado()) return;
+    proprio.parar();
+    const outro = reserva();
+    if (outro) atual = outro;
+  }, 6000);
+  return {
+    pegar: () => atual.pegar(),
+    segundosProntos: () => atual.segundosProntos(),
+    parar() {
+      parado = true;
+      clearTimeout(prazo);
+      atual.parar();
+    },
+  };
+}
+
+function gravarCru(faixas: { video: string; audio?: string | null }, vozes: MediaStream | null): GravacaoEmRolagem & { confirmado: () => boolean } {
   const ids = [faixas.video, ...(faixas.audio ? [faixas.audio] : [])];
   let parado = false;
   let gravando = false;
@@ -209,9 +238,13 @@ export function gravarSemRecodificar(faixas: { video: string; audio?: string | n
       const janela = escolherJanela(video, audio, SEGUNDOS);
       if (!janela) return null;
       const arquivo = await montarArquivo(janela);
-      return { blob: arquivo.blob, segundos: Math.round(arquivo.segundos), vozes: await vozesAlinhadas(gravacoesDeVoz, janela.inicio, janela.fim) };
+      const vozesDoClipe = await vozesAlinhadas(gravacoesDeVoz, janela.inicio, janela.fim);
+      // o quadro-chave ficou bem antes dos 30 s (no navegador, sem como pedir um): o editor abre nos últimos 30
+      const longo = arquivo.segundos > SEGUNDOS + 8;
+      return { blob: arquivo.blob, segundos: longo ? SEGUNDOS : Math.round(arquivo.segundos), inicio: longo ? arquivo.segundos - SEGUNDOS : undefined, vozes: vozesDoClipe };
     },
     segundosProntos: () => (parado ? 0 : prontos),
+    confirmado: () => gravando,
     parar() {
       if (parado) return;
       parado = true;
