@@ -302,6 +302,14 @@ export type Voice = ReturnType<typeof useVoice>;
  * Mantém uma única conexão com o LiveKit que sobrevive à navegação entre canais (como no Discord),
  * e espelha o estado local (mudo, câmera, tela) no servidor para a barra lateral de todos.
  */
+/**
+ * O SOM DA TELA NÃO É VOZ (16/11/2026, relato: a turma assistindo à gravação do Mundial de LoL, "o áudio parecia
+ * walkie-talkie"). No navegador, o som da aba ou da tela era publicado com os padrões da sala, que são os do MICROFONE: DTX
+ * ligado (o Opus para de mandar quando acha que é silêncio, e a narração com torcida liga e desliga) e 48 kbps mono. O som
+ * do app (startAppAudio) já ia assim; agora os dois vão igual.
+ */
+const SOM_DA_TELA = { audioPreset: AudioPresets.musicHighQualityStereo, dtx: false, red: false, forceStereo: true } as const;
+
 export function useVoice(socket: Socket | null) {
   // A chamada de ponta a ponta (chaveDaChamada.ts): o provedor de chaves é da sala inteira do LiveKit, e só existe
   // onde o navegador sabe cifrar quadro a quadro. Ligar ou não, em cada entrada, é o servidor que diz (o "e2ee" do
@@ -1524,10 +1532,7 @@ export function useVoice(socket: Socket | null) {
       await room.localParticipant.publishTrack(audio.track, {
         source: Track.Source.ScreenShareAudio,
         // Som de jogo e de música não é voz: nada de cortar silêncio nem de mono.
-        audioPreset: AudioPresets.musicHighQualityStereo,
-        dtx: false,
-        red: false,
-        forceStereo: true,
+        ...SOM_DA_TELA,
       });
       appAudioRef.current = audio;
     } catch (e) {
@@ -1559,7 +1564,7 @@ export function useVoice(socket: Socket | null) {
       }
       const somNoAr = lp.getTrackPublication(Track.Source.ScreenShareAudio)?.audioTrack;
       if (som && somNoAr) await somNoAr.replaceTrack(som.mediaStreamTrack, { userProvidedTrack: false });
-      else if (som) await lp.publishTrack(som, { source: Track.Source.ScreenShareAudio });
+      else if (som) await lp.publishTrack(som, { source: Track.Source.ScreenShareAudio, ...SOM_DA_TELA });
       else if (somNoAr) await lp.unpublishTrack(somNoAr);
     },
     [],
@@ -1609,6 +1614,8 @@ export function useVoice(socket: Socket | null) {
         } else {
           const { codec } = await escolherCodecDaTela(preset.width, preset.height, preset.encoding.maxFramerate ?? 30);
           await lp.setScreenShareEnabled(true, captura, {
+            // valem só para a faixa de SOM da tela (a de imagem não as lê)
+            ...SOM_DA_TELA,
             screenShareEncoding: preset.encoding,
             degradationPreference: hints.degradation,
             // MEDIDO a cada transmissão: a pergunta é se o H.264 sai pela placa de vídeo nesta máquina

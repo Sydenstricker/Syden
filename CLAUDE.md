@@ -2141,6 +2141,11 @@ qual — o sinal de que havia escolha demais. O que saiu, e por quê:
   segundo, num laço só dele** (pergunta dele, mesmo dia: "8 s de transição podem parecer lag"): na conferência geral de 4 s
   eram duas medidas, e o jogo aberto dentro do leve passava até 8 s a 15 quadros. Medido no e2e: entra em 3,5 s e sai em 2,8 s.
   A volta ao normal com folga continua em 24 s: ali não há lag, só a imagem continuando nítida.
+- **O som da tela no NAVEGADOR saía como voz (16/11/2026, relato: a turma assistindo à gravação do Mundial de LoL, "o áudio
+  parecia walkie-talkie").** Publicado pelo `setScreenShareEnabled`, ele herdava os padrões da sala, que são os do microfone:
+  DTX ligado (o Opus para de mandar no que acha que é silêncio, e narração com torcida liga e desliga) e 48 kbps. O som do app já
+  ia como música; agora os dois vão por `SOM_DA_TELA` (128 kbps, estéreo, sem DTX nem RED). Teste: `e2e/som-da-tela.mjs` (lê a
+  negociação de verdade; o DTX vem na resposta do servidor, `usedtx=1`).
 - **Uma opção em cada menu de compartilhar.** No app não existe aba de navegador; no navegador a janela
   sai sempre muda. App: tela inteira e janela. Navegador: tela inteira e aba.
 
