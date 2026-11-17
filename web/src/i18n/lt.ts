@@ -3424,4 +3424,12 @@ export default {
   'Arena': "Arena",
   'Golpe forte': "Stiprus smūgis",
   'Aventura': "Nuotykis",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Iškirpimas",
+  'Automático': "Automatinis",
+  'Leve': "Lengvas",
+  'Completo': "Pilnas",
+  'Automático · {modelo}': "Automatinis · {modelo}",
+  'Completo indisponível neste computador': "Pilnas šiame kompiuteryje nepasiekiamas",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "Automatiniu režimu Syden naudoja Pilną vaizdo plokšte, kai ji laisva, o Lengvą, kai priekyje žaidimas arba mažai šviesos.",
 } satisfies Record<string, string>;

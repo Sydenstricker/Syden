@@ -3354,4 +3354,12 @@ export default {
   'Arena': "Arena",
   'Golpe forte': "Baku makaas",
   'Aventura': "Aventura",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Kotu",
+  'Automático': "Automátiku",
+  'Leve': "Kmaan",
+  'Completo': "Kompletu",
+  'Automático · {modelo}': "Automátiku · {modelo}",
+  'Completo indisponível neste computador': "Kompletu la iha iha komputadór ida-ne’e",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "Iha Automátiku, Syden uza Kompletu iha kartaun gráfiku bainhira nia livre, no Kmaan bainhira iha jogu iha oin ka naroman uitoan.",
 } satisfies Record<string, string>;

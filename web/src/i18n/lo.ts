@@ -3423,4 +3423,12 @@ export default {
   'Arena': "ເດີ່ນປະລອງ",
   'Golpe forte': "ການໂຈມຕີແຮງ",
   'Aventura': "ການຜະຈົນໄພ",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "ຕັດ",
+  'Automático': "ອັດຕະໂນມັດ",
+  'Leve': "ເບົາ",
+  'Completo': "ເຕັມ",
+  'Automático · {modelo}': "ອັດຕະໂນມັດ · {modelo}",
+  'Completo indisponível neste computador': "ເຕັມ ບໍ່ມີໃນຄອມພິວເຕີນີ້",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "ໃນອັດຕະໂນມັດ Syden ໃຊ້ເຕັມຜ່ານກາດກຣາຟິກເມື່ອມັນວ່າງ ແລະ ໃຊ້ເບົາເມື່ອມີເກມຢູ່ດ້ານໜ້າ ຫຼື ແສງໜ້ອຍ.",
 } satisfies Record<string, string>;

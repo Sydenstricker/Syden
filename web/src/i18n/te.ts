@@ -3334,4 +3334,12 @@ export default {
   'Arena': "రంగస్థలం",
   'Golpe forte': "బలమైన దెబ్బ",
   'Aventura': "సాహసం",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "కత్తిరింపు",
+  'Automático': "ఆటోమేటిక్",
+  'Leve': "తేలిక",
+  'Completo': "పూర్తి",
+  'Automático · {modelo}': "ఆటోమేటిక్ · {modelo}",
+  'Completo indisponível neste computador': "ఈ కంప్యూటర్‌లో పూర్తి అందుబాటులో లేదు",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "ఆటోమేటిక్‌లో, గ్రాఫిక్స్ కార్డ్ ఖాళీగా ఉన్నప్పుడు Syden దానిపై పూర్తిని వాడుతుంది; ముందు ఆట ఉన్నప్పుడు లేదా వెలుతురు తక్కువగా ఉన్నప్పుడు తేలికను.",
 } satisfies Record<string, string>;

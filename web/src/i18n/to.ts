@@ -3358,4 +3358,12 @@ export default {
   'Arena': "Malaʻe fakavaʻe",
   'Golpe forte': "Taaʻi mālohi",
   'Aventura': "ʻEveniti fakaʻofoʻofa",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Tutu",
+  'Automático': "Fakaʻotomētiki",
+  'Leve': "Maʻamaʻa",
+  'Completo': "Kakato",
+  'Automático · {modelo}': "Fakaʻotomētiki · {modelo}",
+  'Completo indisponível neste computador': "ʻOku ʻikai ke maʻu ʻa e Kakato ʻi he komipiuta ko ʻeni",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "ʻI he Fakaʻotomētiki, ʻoku ngāueʻaki ʻe Syden ʻa e Kakato ʻi he kaati fakatātā ʻo ka ʻatā, pea mo e Maʻamaʻa ʻo ka ʻi ai ha vaʻinga ʻi muʻa pe siʻi ʻa e maama.",
 } satisfies Record<string, string>;

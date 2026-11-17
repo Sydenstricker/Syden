@@ -3433,4 +3433,12 @@ export default {
   'Arena': "Arena",
   'Golpe forte': "Güýçli urgy",
   'Aventura': "Başdan geçiriş",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Kesip almak",
+  'Automático': "Awtomatik",
+  'Leve': "Ýeňil",
+  'Completo': "Doly",
+  'Automático · {modelo}': "Awtomatik · {modelo}",
+  'Completo indisponível neste computador': "Doly bu kompýuterde elýeterli däl",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "Awtomatikde Syden wideokarta boş wagtynda Doly modeli onuň bilen, öňde oýun bolanda ýa-da yşyk az bolanda bolsa Ýeňil modeli ulanýar.",
 } satisfies Record<string, string>;

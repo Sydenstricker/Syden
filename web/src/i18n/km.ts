@@ -3421,4 +3421,12 @@ export default {
   'Arena': "សង្វៀន",
   'Golpe forte': "ការវាយខ្លាំង",
   'Aventura': "ដំណើរផ្សងព្រេង",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "កាត់",
+  'Automático': "ស្វ័យប្រវត្តិ",
+  'Leve': "ស្រាល",
+  'Completo': "ពេញលេញ",
+  'Automático · {modelo}': "ស្វ័យប្រវត្តិ · {modelo}",
+  'Completo indisponível neste computador': "ពេញលេញ មិនមាននៅលើកុំព្យូទ័រនេះទេ",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "ក្នុងស្វ័យប្រវត្តិ Syden ប្រើពេញលេញតាមកាតក្រាហ្វិក ពេលវាទំនេរ ហើយប្រើស្រាល ពេលមានហ្គេមនៅខាងមុខ ឬពន្លឺតិច។",
 } satisfies Record<string, string>;

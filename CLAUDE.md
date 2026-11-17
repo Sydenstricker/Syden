@@ -2418,6 +2418,27 @@ fica no aparelho, reduzida a 1280 × 720). Vale na hora, com a câmera ligada. *
 - Teste: `e2e/fundo-da-camera-no-app.mjs` (o app com a câmera falsa tocando um vídeo do estudo; os quatro modos e o custo) e
   `desktop/test/fundo-camera.test.mjs`. Sobra: uma franja clara fina da parede em volta do cabelo (o modelo a 192 px).
 
+**O FILTRO GUIADO E O COMPLETO (17/11/2026, relato dele: "não fica tão refinado quanto o do NVIDIA Broadcast"; "pode fazer os 3").**
+A franja clara em volta do cabelo saiu com o FILTRO GUIADO na placa (`fundoDaCamera.ts`: perto da borda, a máscara segue o brilho do
+próprio quadro; 320 px, raio 4, eps 0,004; +0,1 a 0,4 ms por quadro, medido no app; nas fotos, a franja de ~49% para ~46% e o corte
+da pessoa de ~41% para ~32%; em vídeo, +12% de troca de lado no contorno e o arrasto igual). Há DOIS modelos: o **Leve** (o
+PP-HumanSeg 192, no processador, para todos) e o **Completo** (o PP-MattingV2 512 do PaddleSeg, Apache 2.0, em 16 bits, 18 MB,
+convertido por nós dos zips oficiais por `e2e/fundo-da-camera/converter-paddle.py`; borda de 1 px contra 5, ~5 ms pelo DirectML,
+~225 MiB de VRAM), numa thread à parte do processo (abrir pelo DirectML trava a thread por ~1,5 s). O pacote passou a levar o
+`DirectML.dll` (+~37 MB com o modelo; o `dxcompiler` e o `dxil` não precisam ir). **No Automático (o de fábrica) o Syden decide**
+(`desktop/src/fundo-camera/decisor.js`): o Completo só com a placa capaz (abaixo de 33 ms ao abrir), sem jogo na frente
+(GameConfigStore ou tela cheia de verdade, `jogo.js`, a cada 2 s), com luz (no escuro ele se perde: brilho médio abaixo de 85 vai ao
+Leve, volta acima de 100) e sem aperto (5 quadros seguidos acima de 60 ms; a NVIDIA à toa baixa o relógio e o quadro leva 25–50 ms, e
+isso não é aperto); desce sem piscar (a máscara anterior entra na mesma suavização) e volta com folga. **QUEM USA PODE SOBREPOR**
+(decisão dele, 17/11/2026, pelo caso do Mundial: "uma detecção automática deixou os usuários de reféns"; o mesmo princípio do
+Personalizado da transmissão): Voz e vídeo → Recorte → Automático, Leve ou Completo, e o Automático diz o que está usando
+("Automático · Completo"). **A escolha manual é respeitada** (nem jogo, nem aperto, nem pouca luz a trocam); só o Completo que não
+roda de jeito nenhum vira o Leve, dito na mesma linha ("Completo indisponível neste computador"), sem janela. Uma linha no diário de
+saúde na primeira descida do Automático. Pendente, decisão dele: o PP-HumanSeg v2 de retrato custa metade do Leve no processador (6,8
+contra 13,8 ms), com a mesma qualidade, e é candidato a novo Leve. Não medido: webcam e escuro de verdade (o 85/100 vem de vídeos
+escurecidos por código), outras placas além da RTX 3070, um jogo de verdade na frente. Medida: `e2e/fundo-da-camera/README.md` (os
+comparativos lado a lado em `resultados/`, fora do git); testes: `desktop/test/fundo-camera.test.mjs` e `e2e/fundo-da-camera-no-app.mjs`.
+
 ## Fonte de terceiro: embutir é REDISTRIBUIR, e quase nenhuma "grátis" permite isso
 
 **Decidido em 02/10/2026, depois de medir — e a medição derrubou a fonte que ele queria usar.**

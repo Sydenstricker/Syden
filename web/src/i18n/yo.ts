@@ -3367,4 +3367,12 @@ export default {
   'Arena': "Pápá ìjà",
   'Golpe forte': "Ìkọlù líle",
   'Aventura': "Ìrìn-àjò",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Gígé",
+  'Automático': "Aládàáṣe",
+  'Leve': "Fúyẹ́",
+  'Completo': "Kíkún",
+  'Automático · {modelo}': "Aládàáṣe · {modelo}",
+  'Completo indisponível neste computador': "Kíkún kò sí lórí kọ̀ǹpútà yìí",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "Ní Aládàáṣe, Syden ń lo Kíkún lórí káàdì àwòrán nígbà tí kò bá ṣiṣẹ́, ó sì ń lo Fúyẹ́ nígbà tí eré bá wà níwájú tàbí tí ìmọ́lẹ̀ bá kéré.",
 } satisfies Record<string, string>;

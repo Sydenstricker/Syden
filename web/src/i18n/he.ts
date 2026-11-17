@@ -3406,4 +3406,12 @@ export default {
   'Arena': "זירה",
   'Golpe forte': "מכה חזקה",
   'Aventura': "הרפתקה",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "חיתוך",
+  'Automático': "אוטומטי",
+  'Leve': "קל",
+  'Completo': "מלא",
+  'Automático · {modelo}': "אוטומטי · {modelo}",
+  'Completo indisponível neste computador': "מלא לא זמין במחשב הזה",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "במצב אוטומטי, Syden משתמש במלא, דרך כרטיס המסך, כשהוא פנוי, ובקל כשמשחק פתוח בחזית או כשיש מעט אור.",
 } satisfies Record<string, string>;

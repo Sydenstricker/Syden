@@ -3393,4 +3393,12 @@ export default {
   'Arena': "Arena",
   'Golpe forte': "Güclü zərbə",
   'Aventura': "Macəra",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Kəsmə",
+  'Automático': "Avtomatik",
+  'Leve': "Yüngül",
+  'Completo': "Tam",
+  'Automático · {modelo}': "Avtomatik · {modelo}",
+  'Completo indisponível neste computador': "Tam bu kompüterdə mövcud deyil",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "Avtomatik rejimdə Syden videokart boş olanda Tam modeli videokartda, qabaqda oyun olanda və ya işıq az olanda isə Yüngül modeli işlədir.",
 } satisfies Record<string, string>;

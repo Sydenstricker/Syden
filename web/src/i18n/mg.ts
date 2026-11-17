@@ -3422,4 +3422,12 @@ export default {
   'Arena': "Kianja",
   'Golpe forte': "Kapoka mahery",
   'Aventura': "Fitsangatsanganana",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Fanapahana",
+  'Automático': "Mandeha ho azy",
+  'Leve': "Maivana",
+  'Completo': "Feno",
+  'Automático · {modelo}': "Mandeha ho azy · {modelo}",
+  'Completo indisponível neste computador': "Tsy misy ny Feno amin’ity solosaina ity",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "Amin’ny Mandeha ho azy, ny Feno no ampiasain’i Syden amin’ny karatra sary rehefa malalaka izy, ary ny Maivana rehefa misy lalao eo aloha na kely ny hazavana.",
 } satisfies Record<string, string>;

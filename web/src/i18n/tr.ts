@@ -3355,4 +3355,12 @@ export default {
   'Arena': "Arena",
   'Golpe forte': "Güçlü vuruş",
   'Aventura': "Macera",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Kesme",
+  'Automático': "Otomatik",
+  'Leve': "Hafif",
+  'Completo': "Tam",
+  'Automático · {modelo}': "Otomatik · {modelo}",
+  'Completo indisponível neste computador': "Tam bu bilgisayarda kullanılamıyor",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "Otomatik'te Syden, ekran kartı boştayken Tam'ı onunla, önde bir oyun varken veya ışık azken Hafif'i kullanır.",
 } satisfies Record<string, string>;

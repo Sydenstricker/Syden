@@ -3352,4 +3352,12 @@ export default {
   'Arena': "Uwanja",
   'Golpe forte': "Pigo kali",
   'Aventura': "Safari ya kusisimua",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Ukataji",
+  'Automático': "Kiotomatiki",
+  'Leve': "Nyepesi",
+  'Completo': "Kamili",
+  'Automático · {modelo}': "Kiotomatiki · {modelo}",
+  'Completo indisponível neste computador': "Kamili haipatikani kwenye kompyuta hii",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "Katika Kiotomatiki, Syden hutumia Kamili kwenye kadi ya michoro ikiwa haina kazi, na Nyepesi kukiwa na mchezo mbele au mwanga ukiwa mdogo.",
 } satisfies Record<string, string>;

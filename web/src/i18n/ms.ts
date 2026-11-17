@@ -3348,4 +3348,12 @@ export default {
   'Arena': "Arena",
   'Golpe forte': "Serangan kuat",
   'Aventura': "Pengembaraan",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Potongan",
+  'Automático': "Automatik",
+  'Leve': "Ringan",
+  'Completo': "Penuh",
+  'Automático · {modelo}': "Automatik · {modelo}",
+  'Completo indisponível neste computador': "Penuh tiada pada komputer ini",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "Pada Automatik, Syden guna Penuh pada kad grafik apabila ia lapang, dan Ringan apabila ada permainan di hadapan atau cahaya kurang.",
 } satisfies Record<string, string>;

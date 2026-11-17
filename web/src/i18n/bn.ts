@@ -3350,4 +3350,12 @@ export default {
   'Arena': "অ্যারেনা",
   'Golpe forte': "জোরালো আঘাত",
   'Aventura': "অভিযান",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "কাটআউট",
+  'Automático': "স্বয়ংক্রিয়",
+  'Leve': "হালকা",
+  'Completo': "পূর্ণ",
+  'Automático · {modelo}': "স্বয়ংক্রিয় · {modelo}",
+  'Completo indisponível neste computador': "এই কম্পিউটারে পূর্ণ পাওয়া যায় না",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "স্বয়ংক্রিয়তে Syden গ্রাফিক্স কার্ড খালি থাকলে তাতে পূর্ণ চালায়, আর সামনে গেম থাকলে বা আলো কম হলে হালকা।",
 } satisfies Record<string, string>;

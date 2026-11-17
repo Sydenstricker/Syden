@@ -3358,4 +3358,12 @@ export default {
   'Arena': "Airéine",
   'Golpe forte': "Buille láidir",
   'Aventura': "Eachtra",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Gearradh",
+  'Automático': "Uathoibríoch",
+  'Leve': "Éadrom",
+  'Completo': "Iomlán",
+  'Automático · {modelo}': "Uathoibríoch · {modelo}",
+  'Completo indisponível neste computador': "Níl Iomlán ar fáil ar an ríomhaire seo",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "Ar Uathoibríoch, úsáideann Syden Iomlán, ar an gcárta grafaice, nuair atá sé saor, agus Éadrom nuair atá cluiche chun tosaigh nó nuair atá an solas lag.",
 } satisfies Record<string, string>;

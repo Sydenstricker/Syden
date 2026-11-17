@@ -3345,4 +3345,12 @@ export default {
   'Arena': "میدان نبرد",
   'Golpe forte': "ضربهٔ قوی",
   'Aventura': "ماجراجویی",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "برش",
+  'Automático': "خودکار",
+  'Leve': "سبک",
+  'Completo': "کامل",
+  'Automático · {modelo}': "خودکار · {modelo}",
+  'Completo indisponível neste computador': "کامل روی این رایانه در دسترس نیست",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "در حالت خودکار، Syden وقتی کارت گرافیک آزاد است کامل را با آن اجرا می‌کند، و وقتی بازی‌ای جلوی صفحه است یا نور کم است، سبک را.",
 } satisfies Record<string, string>;

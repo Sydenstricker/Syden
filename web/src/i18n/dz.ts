@@ -3435,4 +3435,12 @@ export default {
   'Arena': "རྩེད་ཐང་",
   'Golpe forte': "ཤུགས་ཅན་རྡུང་བ།",
   'Aventura': "ཉེན་ཁ་ཅན་གྱི་འགྲུལ་བསྐྱོད།",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "བཏོག་ནི",
+  'Automático': "རང་འགུལ",
+  'Leve': "ཡང་ཏོག",
+  'Completo': "ཆ་ཚང་",
+  'Automático · {modelo}': "རང་འགུལ · {modelo}",
+  'Completo indisponível neste computador': "ཆ་ཚང་ གློག་རིག་འདི་ནང་ མེད།",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "རང་འགུལ་ནང་ Syden གིས་ པར་རིས་ཀཱཌ་ སྟོང་པ་ཡོད་པའི་སྐབས་ ཆ་ཚང་ ཀཱཌ་གུ་ ལག་ལེན་འཐབ་ཨིན། རྩེད་རིགས་མདུན་ཁར་ཡོད་པའམ་ འོད་ཉུང་བའི་སྐབས་ ཡང་ཏོག་ ལག་ལེན་འཐབ་ཨིན།",
 } satisfies Record<string, string>;

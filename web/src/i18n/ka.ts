@@ -3440,4 +3440,12 @@ export default {
   'Arena': "არენა",
   'Golpe forte': "ძლიერი დარტყმა",
   'Aventura': "თავგადასავალი",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "ამოჭრა",
+  'Automático': "ავტომატური",
+  'Leve': "მსუბუქი",
+  'Completo': "სრული",
+  'Automático · {modelo}': "ავტომატური · {modelo}",
+  'Completo indisponível neste computador': "სრული ამ კომპიუტერზე მიუწვდომელია",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "ავტომატურში Syden იყენებს სრულს ვიდეობარათით, როცა ის თავისუფალია, და მსუბუქს, როცა წინ თამაშია ან სინათლე ცოტაა.",
 } satisfies Record<string, string>;

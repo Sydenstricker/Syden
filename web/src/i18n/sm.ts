@@ -3356,4 +3356,12 @@ export default {
   'Arena': "Malae taalo",
   'Golpe forte': "Ta malosi",
   'Aventura': "Faigamalaga",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Tipi",
+  'Automático': "Otometi",
+  'Leve': "Māmā",
+  'Completo': "Atoatoa",
+  'Automático · {modelo}': "Otometi · {modelo}",
+  'Completo indisponível neste computador': "E lē o maua le Atoatoa i lenei komepiuta",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "I le Otometi, e faʻaaogā e Syden le Atoatoa i le kata ata pe a avanoa, ae o le Māmā pe a i ai se taʻaloga i luma pe itiiti le malamalama.",
 } satisfies Record<string, string>;

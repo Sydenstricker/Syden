@@ -2,6 +2,8 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { ipcMain, MessageChannelMain, utilityProcess } = require('electron');
+const { ARQUIVO_MODESTO, ARQUIVO_REFINADO } = require('./modelos');
+const { vigiarJogo } = require('./jogo');
 
 /**
  * O FUNDO DA CÂMERA, como o NVIDIA Broadcast (pedido dele, 14/11/2026; "pode construir", 16/11/2026): desfocar, apagar ou
@@ -11,13 +13,19 @@ const { ipcMain, MessageChannelMain, utilityProcess } = require('electron');
  * PP-HumanSeg (Apache 2.0, 6 MB, versionado em desktop/fundo-camera/ como o modelo do ruído) roda nativo pelo
  * onnxruntime-node, num processo à parte: se quebrar, cai só o efeito, e a câmera segue sem ele.
  *
+ * DOIS MODELOS (17/11/2026, "pode fazer os 3"): o MODESTO, no processador, para todos, e o REFINADO, pela placa (DirectML),
+ * que entra SOZINHO quando ela pode e sai quando um jogo vem para a frente ou a placa aperta (decisor.js, jogo.js). Ninguém
+ * escolhe qualidade. Medida e escolha: e2e/fundo-da-camera/README.md, "Os refinados".
+ *
  * PARA NÃO ATRAPALHAR QUEM JOGA: 2 núcleos e prioridade baixa, ~0,17 de um núcleo a 15 quadros por segundo (medido em
  * 14–15/11/2026, e2e/fundo-da-camera/README.md); o processo só existe com uma câmera usando o efeito, e sai sozinho um
  * minuto depois da última. A IMAGEM DA CÂMERA NÃO SAI DO COMPUTADOR: o quadro reduzido vai por uma porta direta da página
  * ao processo, e a máscara volta pela mesma porta. A página monta o resultado pela placa (web/src/fundoDaCamera.ts).
  */
 
-const MODELO = path.join(__dirname.replace('app.asar', 'app.asar.unpacked'), '..', '..', 'fundo-camera', 'pphumanseg-192.onnx');
+const PASTA = path.join(__dirname.replace('app.asar', 'app.asar.unpacked'), '..', '..', 'fundo-camera');
+const MODELO = path.join(PASTA, ARQUIVO_MODESTO);
+const REFINADO = path.join(PASTA, ARQUIVO_REFINADO);
 
 /** @type {Electron.UtilityProcess | null} */
 let processo = null;
@@ -30,14 +38,27 @@ function disponivel() {
   return fs.existsSync(MODELO);
 }
 
+/** @type {(() => void) | null} */
+let pararDeVigiar = null;
+
 function garantirProcesso() {
   if (processo) return processo;
-  const filho = utilityProcess.fork(path.join(__dirname, 'processo.js'), [MODELO], {
+  // o refinado só vai se estiver no pacote; o processo decide sozinho se a placa o roda (ver decisor.js)
+  const filho = utilityProcess.fork(path.join(__dirname, 'processo.js'), [MODELO, fs.existsSync(REFINADO) ? REFINADO : ''], {
     serviceName: 'Syden — fundo da câmera',
     stdio: 'inherit',
   });
+  // a janela da frente, enquanto o processo existe: com um jogo na frente, o refinado desce ao modesto (a placa é do jogo)
+  pararDeVigiar?.();
+  pararDeVigiar = vigiarJogo((exe) => {
+    if (processo === filho) filho.postMessage({ tipo: 'jogo', exe });
+  });
   filho.on('exit', (codigo) => {
-    if (processo === filho) processo = null;
+    if (processo === filho) {
+      processo = null;
+      pararDeVigiar?.();
+      pararDeVigiar = null;
+    }
     // 0 é a saída de "um minuto sem câmera"; o resto é queda
     if (codigo !== 0) {
       quedas++;
@@ -59,6 +80,8 @@ function setupFundoCamera() {
 }
 
 function pararFundoCamera() {
+  pararDeVigiar?.();
+  pararDeVigiar = null;
   processo?.kill();
   processo = null;
 }

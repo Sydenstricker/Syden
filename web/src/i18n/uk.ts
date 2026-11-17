@@ -3402,4 +3402,12 @@ export default {
   'Arena': "Арена",
   'Golpe forte': "Сильний удар",
   'Aventura': "Пригода",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Вирізання",
+  'Automático': "Автоматично",
+  'Leve': "Легкий",
+  'Completo': "Повний",
+  'Automático · {modelo}': "Автоматично · {modelo}",
+  'Completo indisponível neste computador': "Повний недоступний на цьому комп’ютері",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "В автоматичному режимі Syden використовує Повний на відеокарті, коли вона вільна, і Легкий, коли на передньому плані гра або мало світла.",
 } satisfies Record<string, string>;

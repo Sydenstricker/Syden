@@ -3358,4 +3358,12 @@ export default {
   'Arena': "Αρένα",
   'Golpe forte': "Δυνατό χτύπημα",
   'Aventura': "Περιπέτεια",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Αποκοπή",
+  'Automático': "Αυτόματο",
+  'Leve': "Ελαφρύ",
+  'Completo': "Πλήρες",
+  'Automático · {modelo}': "Αυτόματο · {modelo}",
+  'Completo indisponível neste computador': "Το Πλήρες δεν είναι διαθέσιμο σε αυτόν τον υπολογιστή",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "Στο Αυτόματο, το Syden χρησιμοποιεί το Πλήρες, μέσω της κάρτας γραφικών, όταν είναι ελεύθερη, και το Ελαφρύ με ένα παιχνίδι μπροστά ή με λίγο φως.",
 } satisfies Record<string, string>;

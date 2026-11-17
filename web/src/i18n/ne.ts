@@ -3424,4 +3424,12 @@ export default {
   'Arena': "अखडा",
   'Golpe forte': "बलियो प्रहार",
   'Aventura': "साहसिक यात्रा",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "काटछाँट",
+  'Automático': "स्वचालित",
+  'Leve': "हल्का",
+  'Completo': "पूर्ण",
+  'Automático · {modelo}': "स्वचालित · {modelo}",
+  'Completo indisponível neste computador': "यो कम्प्युटरमा पूर्ण उपलब्ध छैन",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "स्वचालितमा Syden ले ग्राफिक्स कार्ड खाली हुँदा त्यसमा पूर्ण चलाउँछ, र अगाडि गेम हुँदा वा उज्यालो कम हुँदा हल्का।",
 } satisfies Record<string, string>;

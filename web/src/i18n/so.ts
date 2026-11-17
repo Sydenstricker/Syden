@@ -3422,4 +3422,12 @@ export default {
   'Arena': "Garoon",
   'Golpe forte': "Weerar xoog leh",
   'Aventura': "Tacabur",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Goyn",
+  'Automático': "Toos ah",
+  'Leve': "Fudud",
+  'Completo': "Dhammaystiran",
+  'Automático · {modelo}': "Toos ah · {modelo}",
+  'Completo indisponível neste computador': "Dhammaystiran kuma jiro kombiyuutarkan",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "Marka Toos ah, Syden wuxuu isticmaalaa Dhammaystiran kaarka sawirada marka uu firaaqo yahay, iyo Fudud marka ciyaar hore u jirto ama iftiinku yar yahay.",
 } satisfies Record<string, string>;

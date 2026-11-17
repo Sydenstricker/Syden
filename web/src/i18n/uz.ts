@@ -3442,4 +3442,12 @@ export default {
   'Arena': "Arena",
   'Golpe forte': "Kuchli zarba",
   'Aventura': "Sarguzasht",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Kesib olish",
+  'Automático': "Avtomatik",
+  'Leve': "Yengil",
+  'Completo': "Toʻliq",
+  'Automático · {modelo}': "Avtomatik · {modelo}",
+  'Completo indisponível neste computador': "Toʻliq bu kompyuterda mavjud emas",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "Avtomatik rejimda Syden videokarta boʻsh boʻlganda Toʻliqni u orqali, oldinda oʻyin boʻlsa yoki yorugʻlik kam boʻlsa, Yengilni ishlatadi.",
 } satisfies Record<string, string>;

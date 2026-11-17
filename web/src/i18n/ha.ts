@@ -3354,4 +3354,12 @@ export default {
   'Arena': "Fage",
   'Golpe forte': "Bugu mai ƙarfi",
   'Aventura': "Kasada",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Yanke",
+  'Automático': "Atomatik",
+  'Leve': "Mai sauƙi",
+  'Completo': "Cikakke",
+  'Automático · {modelo}': "Atomatik · {modelo}",
+  'Completo indisponível neste computador': "Babu Cikakke a wannan kwamfuta",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "A Atomatik, Syden yana amfani da Cikakke ta katin hoto idan ba ta da aiki, da Mai sauƙi idan akwai wasa a gaba ko haske ya yi kaɗan.",
 } satisfies Record<string, string>;

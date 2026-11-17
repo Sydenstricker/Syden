@@ -3377,4 +3377,12 @@ export default {
   'Arena': "الحلبة",
   'Golpe forte': "ضربة قوية",
   'Aventura': "المغامرة",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "القصّ",
+  'Automático': "تلقائي",
+  'Leve': "خفيف",
+  'Completo': "كامل",
+  'Automático · {modelo}': "تلقائي · {modelo}",
+  'Completo indisponível neste computador': "الكامل غير متاح على هذا الحاسوب",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "في الوضع التلقائي، يستخدم Syden الكامل عبر بطاقة الرسومات حين تكون متفرغة، والخفيف حين تكون لعبة في المقدمة أو حين تكون الإضاءة ضعيفة.",
 } satisfies Record<string, string>;

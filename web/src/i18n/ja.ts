@@ -3333,4 +3333,12 @@ export default {
   'Arena': "アリーナ",
   'Golpe forte': "強攻撃",
   'Aventura': "冒険",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "切り抜き",
+  'Automático': "自動",
+  'Leve': "軽量",
+  'Completo': "高品質",
+  'Automático · {modelo}': "自動 · {modelo}",
+  'Completo indisponível neste computador': "このパソコンでは高品質を使えません",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "自動では、グラフィックカードが空いているときはSydenがそれで高品質を使い、ゲームが前面にあるときや暗いときは軽量を使います。",
 } satisfies Record<string, string>;

@@ -3360,4 +3360,12 @@ export default {
   'Arena': "Ọgbọ egwuregwu",
   'Golpe forte': "Ọkpọ siri ike",
   'Aventura': "Njem ịnyịnya ụzọ",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Mbepụ",
+  'Automático': "Akpaka",
+  'Leve': "Dị mfe",
+  'Completo': "Zuru ezu",
+  'Automático · {modelo}': "Akpaka · {modelo}",
+  'Completo indisponível neste computador': "Zuru ezu adịghị na kọmputa a",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "Na Akpaka, Syden na-eji Zuru ezu na kaadị eserese mgbe ọ tọgbọrọ chakoo, na Dị mfe mgbe egwuregwu dị n'ihu ma ọ bụ mgbe ìhè dị ntakịrị.",
 } satisfies Record<string, string>;

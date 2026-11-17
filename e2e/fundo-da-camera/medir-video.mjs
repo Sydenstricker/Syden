@@ -16,6 +16,7 @@ import { existsSync, mkdirSync, statSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { filtroGuiado } from './guiado.mjs';
 import { MODELOS, VIDEOS } from './lista.mjs';
 
 const require = createRequire(import.meta.url);
@@ -157,7 +158,34 @@ const SUAVES = [
   { id: 'hist', nome: 'histerese 0,35–0,65', f: histerese(0.35, 0.65) },
   { id: 'ema50h', nome: 'média 0,5 + histerese', f: histerese(0.35, 0.65, ema(0.5)) },
   { id: 'adapt', nome: 'média que se adapta (0,8 → 0,2)', f: adaptativa },
+  // COMO A PÁGINA MONTA (17/11/2026): a que se adapta, no tamanho do modelo (como o processo do app faz), ampliada ao quadro com o
+  // smoothstep de 0,3 a 0,7; e o mesmo com o FILTRO GUIADO (guiado.mjs) antes do smoothstep. Estas duas pedem o quadro da câmera
+  // e a máscara crua no tamanho do modelo (`ctx`); a saída volta à grade pela média de cada bloco
+  { id: 'pagina', nome: 'a que se adapta, como a página monta', f: (s, ctx) => comoAPagina(ctx, false), pagina: true },
+  { id: 'guiado', nome: 'a que se adapta + filtro guiado', f: (s, ctx) => comoAPagina(ctx, true), pagina: true },
 ];
+const SEM_GUIADO = process.env.GUIADO === '0';
+const efetiva = (v) => {
+  const t = Math.min(1, Math.max(0, (v - 0.3) / 0.4));
+  return t * t * (3 - 2 * t);
+};
+/** A sequência inteira como a página a monta, devolvida na grade GL × GA (a média de cada bloco do quadro cheio). */
+function comoAPagina({ m, cruas, quadros }, guiado, GW = GL, GH = GA) {
+  const [w, h] = m.entrada;
+  const suaves = adaptativa(cruas);
+  return suaves.map((p, t) => {
+    const cheia = guiado ? filtroGuiado(quadros[t], L, A, 3, p, w, h) : naGrade(m, p, L, A);
+    if (GW === L && GH === A) return Float32Array.from(cheia, efetiva);
+    const r = new Float32Array(GW * GH), bx = L / GW, by = A / GH;
+    for (let y = 0; y < GH; y++)
+      for (let x = 0; x < GW; x++) {
+        let soma = 0;
+        for (let yy = 0; yy < by; yy++) for (let xx = 0; xx < bx; xx++) soma += efetiva(cheia[(y * by + yy) * L + x * bx + xx]);
+        r[y * GW + x] = soma / (bx * by);
+      }
+    return r;
+  });
+}
 
 // ---- as medidas ----
 const bin = (p) => {
@@ -226,10 +254,13 @@ function arrasto(crua, suave, anda, para) {
 }
 
 // ---- rodar ----
-const mods = ['pphumanseg', 'mp-paisagem'].map((id) => MODELOS.find((m) => m.id === id));
+// MODELOS_DO_VIDEO=id,id troca os modelos (o primeiro é a referência da fidelidade); PLACA=id,id roda esses pelo DirectML
+// (os refinados de 17/11/2026), os outros com 2 núcleos
+const mods = (process.env.MODELOS_DO_VIDEO ?? 'pphumanseg,mp-paisagem').split(',').map((id) => MODELOS.find((m) => m.id === id));
+const naPlaca = new Set((process.env.PLACA ?? '').split(',').filter(Boolean));
 const sessoes = {};
 for (const m of mods) {
-  const s = await ort.InferenceSession.create(join(AQUI, 'modelos', m.arquivo), { intraOpNumThreads: 2, interOpNumThreads: 1, logSeverityLevel: 3 });
+  const s = await ort.InferenceSession.create(join(AQUI, 'modelos', m.arquivo), naPlaca.has(m.id) ? { executionProviders: ['dml'], logSeverityLevel: 3 } : { intraOpNumThreads: 2, interOpNumThreads: 1, logSeverityLevel: 3 });
   sessoes[m.id] = { s, prep: preparador(m), nome: s.inputNames[0], saida: s.outputNames[0] };
   const t0 = new Uint8Array(L * A * 3).fill(128);
   for (let i = 0; i < 5; i++) await s.run({ [sessoes[m.id].nome]: sessoes[m.id].prep(t0) });
@@ -283,11 +314,11 @@ for (const v of videos) {
       paraVideo[`${v.id}/${va.id}`].mascaras[m.id] = mascaras;
       const grade = mascaras.map((p) => naGrade(m, p));
       const suaves = {};
-      for (const sv of SUAVES) suaves[sv.id] = tremor(sv.f(grade));
+      for (const sv of SUAVES) if (!(sv.id === 'guiado' && SEM_GUIADO)) suaves[sv.id] = tremor(sv.f(grade, { m, cruas: mascaras, quadros }));
       // a FIDELIDADE: a estabilidade sozinha não diz se a pessoa está lá (uma máscara vazia não treme). Compara, quadro a
       // quadro, com a máscara do mesmo modelo na versão limpa, e com a do PP-HumanSeg limpo (a referência, à falta de gabarito)
       if (va.id === 'limpa') (limpas[v.id] ??= {})[m.id] = grade;
-      const fiel = { proprio: iouMedia(grade, limpas[v.id][m.id]), referencia: iouMedia(grade, limpas[v.id].pphumanseg), area: media(grade.map((p) => bin(p).reduce((s, x) => s + x, 0) / p.length)) };
+      const fiel = { proprio: iouMedia(grade, limpas[v.id][m.id]), referencia: iouMedia(grade, limpas[v.id][mods[0].id]), area: media(grade.map((p) => bin(p).reduce((s, x) => s + x, 0) / p.length)) };
       linhas.push({ video: v, variante: va, modelo: m, suaves, fiel });
       const c = suaves.crua, e = suaves.ema65;
       console.log(`${v.id.padEnd(19)} ${va.id.padEnd(10)} ${m.id.padEnd(11)} ${quadros.length} quadros · ${mediana(tm).toFixed(1)} ms (com o preparo ${mediana(tt).toFixed(1)}) · IoU crua ${(c.iou * 100).toFixed(2)}% trocas ${c.trocas.toFixed(3)} · média 0,65: ${(e.iou * 100).toFixed(2)}% ${e.trocas.toFixed(3)}`);
@@ -321,10 +352,13 @@ for (const m of mods)
       for (let t = 0; t < PARADO + ANDA + DEPOIS; t++) seq.push(deslocado(q0, Math.min(ANDA, Math.max(0, t - PARADO)) * PASSO - (ANDA * PASSO) / 2));
       const { mascaras } = await rodar(m, seq);
       const grade = mascaras.map((p) => naGrade(m, p));
-      for (const sv of SUAVES) (acum[sv.id] ??= []).push(arrasto(grade, sv.f(grade), PARADO + 3, PARADO + ANDA));
+      // as da página comparam com a crua montada do mesmo jeito (ampliada e com o smoothstep), senão o smoothstep sozinho conta
+      const cruaPagina = SUAVES.some((sv) => sv.pagina) ? grade.map((p) => Float32Array.from(p, efetiva)) : null;
+      for (const sv of SUAVES) if (!(sv.id === 'guiado' && SEM_GUIADO)) (acum[sv.id] ??= []).push(arrasto(sv.pagina ? cruaPagina : grade, sv.f(grade, { m, cruas: mascaras, quadros: seq }), PARADO + 3, PARADO + ANDA));
     }
     for (const sv of SUAVES) {
       const a = acum[sv.id];
+      if (!a) continue;
       arrastos.push({ modelo: m, variante: vaId, passo: PASSO, suave: sv, medio: media(a.map((x) => x.medio)), max: Math.max(...a.map((x) => x.max)), assenta: Math.max(...a.map((x) => x.assenta)), resto: media(a.map((x) => x.resto)) });
     }
   }
@@ -336,14 +370,14 @@ const NC = COLUNAS.length;
 const quarto = spawnSync('ffmpeg', ['-v', 'error', '-i', join(AQUI, '../recorte-de-fundo/imagens/quarto.png'), '-vf', `scale=${L}:${A}:force_original_aspect_ratio=increase:flags=neighbor,crop=${L}:${A}`, '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-'], { maxBuffer: 1 << 28 }).stdout;
 async function videoLadoALado(chave, arquivo) {
   const { quadros, mascaras } = paraVideo[chave];
-  const ff = spawn('ffmpeg', ['-v', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', `${NC * L}x${2 * A}`, '-r', String(QPS), '-i', '-', '-c:v', 'libx264', '-crf', '20', '-preset', 'veryfast', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', join(VID, arquivo)]);
+  const ff = spawn('ffmpeg', ['-v', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-s', `${NC * L}x${mods.length * A}`, '-r', String(QPS), '-i', '-', '-c:v', 'libx264', '-crf', '20', '-preset', 'veryfast', '-pix_fmt', 'yuv420p', '-movflags', '+faststart', join(VID, arquivo)]);
   const fim = new Promise((ok, erro) => ff.on('close', (c) => (c === 0 ? ok() : erro(new Error('ffmpeg saiu com ' + c)))));
   const paineis = mods.flatMap((m) => {
     const cheia = mascaras[m.id].map((p) => naGrade(m, p, L, A));
-    return COLUNAS.map((sv) => sv.f(cheia));
+    return COLUNAS.map((sv) => (sv.pagina ? comoAPagina({ m, cruas: mascaras[m.id], quadros }, sv.id === 'guiado', L, A) : sv.f(cheia)));
   });
   for (let t = 0; t < quadros.length; t++) {
-    const out = Buffer.alloc(NC * 2 * L * A * 3);
+    const out = Buffer.alloc(NC * mods.length * L * A * 3);
     paineis.forEach((pn, k) => {
       const ox = (k % NC) * L, oy = Math.floor(k / NC) * A, a = pn[t], q = quadros[t];
       for (let y = 0; y < A; y++)
@@ -390,7 +424,7 @@ const tabTremor = mods
   )
   .join('');
 const tabFiel = linhas
-  .filter((l) => l.variante.id !== 'limpa' || l.modelo.id !== 'pphumanseg')
+  .filter((l) => l.variante.id !== 'limpa' || l.modelo.id !== mods[0].id)
   .map((l) => `<tr><td>${l.video.nome}</td><td>${l.variante.nome}</td><td>${l.modelo.nome}</td><td>${pct(l.fiel.proprio)}</td><td>${pct(l.fiel.referencia)}</td><td>${(l.fiel.area * 100).toFixed(1)}%</td></tr>`)
   .join('');
 const tabArrasto = arrastos.map((a) => `<tr><td>${a.modelo.nome}</td><td>${a.variante}, ${a.passo} px/quadro</td><td>${a.suave.nome}</td><td>${a.medio.toFixed(1)} px</td><td>${a.max.toFixed(1)} px</td><td>${a.assenta}</td><td>${a.resto.toFixed(2)} px</td></tr>`).join('');

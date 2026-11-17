@@ -3340,4 +3340,12 @@ export default {
   'Arena': "竞技场",
   'Golpe forte': "重击",
   'Aventura': "冒险",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "抠像",
+  'Automático': "自动",
+  'Leve': "轻量",
+  'Completo': "完整",
+  'Automático · {modelo}': "自动 · {modelo}",
+  'Completo indisponível neste computador': "这台电脑无法使用完整",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "在自动模式下，显卡空闲时 Syden 用显卡运行完整，前台有游戏或光线较暗时则用轻量。",
 } satisfies Record<string, string>;

@@ -3322,4 +3322,12 @@ export default {
   'Arena': "Đấu trường",
   'Golpe forte': "Đòn mạnh",
   'Aventura': "Phiêu lưu",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Tách nền",
+  'Automático': "Tự động",
+  'Leve': "Nhẹ",
+  'Completo': "Đầy đủ",
+  'Automático · {modelo}': "Tự động · {modelo}",
+  'Completo indisponível neste computador': "Máy tính này không dùng được Đầy đủ",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "Ở Tự động, Syden dùng Đầy đủ trên card đồ họa khi card rảnh, và dùng Nhẹ khi có game ở phía trước hoặc khi thiếu sáng.",
 } satisfies Record<string, string>;

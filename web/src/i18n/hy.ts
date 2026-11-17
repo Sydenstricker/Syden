@@ -3441,4 +3441,12 @@ export default {
   'Arena': "Ասպարեզ",
   'Golpe forte': "Ուժեղ հարված",
   'Aventura': "Արկած",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Կտրում",
+  'Automático': "Ավտոմատ",
+  'Leve': "Թեթև",
+  'Completo': "Լրիվ",
+  'Automático · {modelo}': "Ավտոմատ · {modelo}",
+  'Completo indisponível neste computador': "Լրիվը հասանելի չէ այս համակարգչում",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "Ավտոմատում Syden-ն օգտագործում է Լրիվը վիդեոքարտով, երբ այն ազատ է, և Թեթևը, երբ առջևում խաղ կա կամ լույսը քիչ է։",
 } satisfies Record<string, string>;

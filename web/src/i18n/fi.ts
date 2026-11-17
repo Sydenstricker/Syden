@@ -3422,4 +3422,12 @@ export default {
   'Arena': "Areena",
   'Golpe forte': "Voimakas isku",
   'Aventura': "Seikkailu",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Rajaus",
+  'Automático': "Automaattinen",
+  'Leve': "Kevyt",
+  'Completo': "Täysi",
+  'Automático · {modelo}': "Automaattinen · {modelo}",
+  'Completo indisponível neste computador': "Täysi ei ole käytettävissä tällä tietokoneella",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "Automaattisessa Syden käyttää Täyttä näytönohjaimella, kun se on vapaana, ja Kevyttä, kun peli on edessä tai valoa on vähän.",
 } satisfies Record<string, string>;

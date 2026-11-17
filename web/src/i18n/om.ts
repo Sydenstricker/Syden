@@ -3392,4 +3392,12 @@ export default {
   'Arena': "Dirree",
   'Golpe forte': "Rukuttaa jabaa",
   'Aventura': "Imala sodaachisaa",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Kutuu",
+  'Automático': "Ofumaan",
+  'Leve': "Salphaa",
+  'Completo': "Guutuu",
+  'Automático · {modelo}': "Ofumaan · {modelo}",
+  'Completo indisponível neste computador': "Guutuun kompiitara kana irratti hin jiru",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "Ofumaaniin, Syden yeroo kaardiin giraafiksii bilisa ta’u Guutuu isaan fayyadama, yeroo taphni fuuldura jiru ykn ifni xiqqaate immoo Salphaa.",
 } satisfies Record<string, string>;

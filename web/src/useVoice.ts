@@ -1528,6 +1528,14 @@ export function useVoice(socket: Socket | null) {
           await atual.trocar(efeito);
         } else {
           const novo = new ProcessadorDoFundo(efeito);
+          // o refinado (pela placa) desceu ao modesto: uma linha no diário de saúde, só a primeira vez com esta câmera, para
+          // se saber quem nunca vê o refinado e por quê (um jogo na frente, ou a placa apertada). A pessoa não vê nada
+          let contou = false;
+          novo.aoDescer = (d) => {
+            if (contou) return;
+            contou = true;
+            reportProblem('câmera', `fundo da câmera: o refinado desceu ao modesto — ${d.motivo === 'jogo' ? `jogo na frente (${d.exe ?? '?'})` : d.motivo === 'escuro' ? 'pouca luz na câmera' : 'a placa apertou'}`.slice(0, 200));
+          };
           await faixa.setProcessor(novo, true);
           fundoRef.current = novo;
         }

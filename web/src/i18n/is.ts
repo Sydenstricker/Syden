@@ -3423,4 +3423,12 @@ export default {
   'Arena': "Leikvangur",
   'Golpe forte': "Öflugt högg",
   'Aventura': "Ævintýri",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Úrklipping",
+  'Automático': "Sjálfvirkt",
+  'Leve': "Létt",
+  'Completo': "Fullt",
+  'Automático · {modelo}': "Sjálfvirkt · {modelo}",
+  'Completo indisponível neste computador': "Fullt er ekki í boði í þessari tölvu",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "Á Sjálfvirku notar Syden Fullt á skjákortinu þegar það er laust, og Létt þegar leikur er í forgrunni eða birtan er lítil.",
 } satisfies Record<string, string>;

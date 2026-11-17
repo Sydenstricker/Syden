@@ -3426,4 +3426,12 @@ export default {
   'Arena': "Арена",
   'Golpe forte': "Күшті соққы",
   'Aventura': "Шытырман оқиға",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Қиып алу",
+  'Automático': "Автоматты",
+  'Leve': "Жеңіл",
+  'Completo': "Толық",
+  'Automático · {modelo}': "Автоматты · {modelo}",
+  'Completo indisponível neste computador': "Толық бұл компьютерде қолжетімсіз",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "Автоматты режимде Syden бейнекарта бос болғанда Толықты соның көмегімен, ал алдыңғы жоспарда ойын болса не жарық аз болса, Жеңілді пайдаланады.",
 } satisfies Record<string, string>;

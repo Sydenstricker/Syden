@@ -8,7 +8,9 @@ import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
+import { filtroGuiado } from './guiado.mjs';
 import { FOTOS, MODELOS } from './lista.mjs';
+import { ampliar, qualidadeDaBorda } from './qualidade.mjs';
 
 const require = createRequire(import.meta.url);
 const ort = require('onnxruntime-node');
@@ -123,8 +125,12 @@ const p90 = (xs) => [...xs].sort((a, b) => a - b)[Math.floor(xs.length * 0.9)];
 const resultados = [];
 for (const m of MODELOS.filter((m) => !so || so.includes(m.id))) {
   const caminho = join(AQUI, 'modelos', m.arquivo);
-  const linha = { modelo: m, tempos: {}, mascaras: [], estabilidade: [] };
-  for (const c of CONFIGS) {
+  const linha = { modelo: m, tempos: {}, mascaras: [], estabilidade: [], cruas: [] };
+  // CONFIGS=cpu-2,dml mede só essas (os refinados levam segundos por quadro no processador); as máscaras saem da de 4
+  // núcleos, ou da última da lista
+  const configs = process.env.CONFIGS ? CONFIGS.filter((c) => process.env.CONFIGS.split(',').includes(c.id)) : CONFIGS;
+  const daMascara = configs.some((c) => c.id === 'cpu-4') ? 'cpu-4' : configs.at(-1).id;
+  for (const c of configs) {
     let sessao;
     try {
       sessao = await ort.InferenceSession.create(caminho, { ...c.opcoes, logSeverityLevel: 3 });
@@ -148,18 +154,57 @@ for (const m of MODELOS.filter((m) => !so || so.includes(m.id))) {
     }
     linha.tempos[c.id] = { modelo: mediana(so_modelo), p90: p90(so_modelo), total: mediana(com_pre) };
     console.log(m.id.padEnd(15), c.id.padEnd(6), `modelo ${mediana(so_modelo).toFixed(1)} ms (p90 ${p90(so_modelo).toFixed(1)}), com o preparo ${mediana(com_pre).toFixed(1)} ms`);
-    if (c.id === 'cpu-4') {
+    if (c.id === daMascara) {
       for (const q of quadros) {
         const a = mascara(m, (await sessao.run({ [nome]: entrada(m, q.rgba) }))[sessao.outputNames[0]]);
         const b = mascara(m, (await sessao.run({ [nome]: entrada(m, q.rgba, 3) }))[sessao.outputNames[0]]);
         linha.mascaras.push(Buffer.from(Uint8Array.from(a, (v) => Math.round(Math.max(0, Math.min(1, v)) * 255))).toString('base64'));
         linha.estabilidade.push(concordancia(m, a, b, 3));
+        linha.cruas.push(a);
       }
     }
     await sessao.release?.();
   }
   resultados.push(linha);
 }
+
+// ---- A BORDA (17/11/2026): a franja, o corte e a largura (qualidade.mjs), com a máscara como a página a monta (ampliada e com
+// o smoothstep de 0,3 a 0,7) e com o filtro guiado (guiado.mjs) antes dele. Cada modelo ganha uma linha "+ filtro guiado" no
+// comparativo. GUIADO=0 pula. ----
+const suave = (a, b) => (m) => Float32Array.from(m, (v) => {
+  const t = Math.min(1, Math.max(0, (v - a) / (b - a)));
+  return t * t * (3 - 2 * t);
+});
+const efetiva = suave(0.3, 0.7);
+const comGuiado = [];
+for (const r of resultados) {
+  const [w, h] = r.modelo.entrada;
+  r.borda = [];
+  const g = { modelo: { ...r.modelo, id: r.modelo.id + '-guiado', nome: r.modelo.nome + ' + filtro guiado', entrada: [L, A] }, tempos: {}, mascaras: [], estabilidade: r.estabilidade, borda: [] };
+  quadros.forEach((q, qi) => {
+    const m = r.cruas[qi];
+    if (!m) return;
+    const crua = efetiva(ampliar(m, w, h, L, A));
+    r.borda.push(qualidadeDaBorda(q.rgba, L, A, 4, crua));
+    // o comparativo mostra o que a página mostraria: a máscara já ampliada e com o smoothstep
+    (r.desenho ??= []).push(Buffer.from(Uint8Array.from(crua, (v) => Math.round(v * 255))).toString('base64'));
+    if (process.env.GUIADO === '0') return;
+    const t0 = performance.now();
+    const fg = efetiva(filtroGuiado(q.rgba, L, A, 4, m, w, h));
+    g.tempoJs = (g.tempoJs ?? 0) + performance.now() - t0;
+    g.borda.push(qualidadeDaBorda(q.rgba, L, A, 4, fg));
+    g.mascaras.push(Buffer.from(Uint8Array.from(fg, (v) => Math.round(v * 255))).toString('base64'));
+  });
+  if (g.mascaras.length) comGuiado.push(g);
+}
+const media = (xs) => xs.reduce((s, x) => s + x, 0) / Math.max(1, xs.length);
+for (const r of [...resultados, ...comGuiado]) {
+  const b = r.borda;
+  if (!b?.length) continue;
+  r.bordaMedia = { franja: media(b.map((x) => x.franja)), corte: media(b.map((x) => x.corte)), largura: media(b.map((x) => x.largura)) };
+  console.log('borda', r.modelo.id.padEnd(24), `franja ${(r.bordaMedia.franja * 100).toFixed(1)}%  corte ${(r.bordaMedia.corte * 100).toFixed(1)}%  largura ${r.bordaMedia.largura.toFixed(2)} px`);
+}
+resultados.push(...comGuiado);
 
 // ---- a comparação: cada máscara ampliada ao quadro e os três fundos, montados pelo Chrome ----
 const quarto = 'data:image/png;base64,' + readFileSync(join(AQUI, '../recorte-de-fundo/imagens/quarto.png')).toString('base64');
@@ -219,7 +264,7 @@ const fotos = await pagina.evaluate(
   },
   {
     quadros: quadros.map((q) => ({ rgba: Buffer.from(q.rgba).toString('base64') })),
-    resultados: resultados.map((r) => ({ modelo: r.modelo, mascaras: r.mascaras })),
+    resultados: resultados.map((r) => (r.desenho ? { modelo: { ...r.modelo, entrada: [L, A] }, mascaras: r.desenho } : { modelo: r.modelo, mascaras: r.mascaras })),
     L,
     A,
     quarto,
@@ -232,7 +277,8 @@ const tabela = resultados
     const t = (id) => (r.tempos[id]?.erro ? 'falha' : r.tempos[id] ? `${r.tempos[id].modelo.toFixed(1)} ms` : '–');
     const est = r.estabilidade.reduce((s, x) => s + x, 0) / r.estabilidade.length;
     const mb = (readFileSync(join(AQUI, 'modelos', r.modelo.arquivo)).length / 1e6).toFixed(1);
-    return `<tr><td>${r.modelo.nome}</td><td>${mb} MB</td><td>${t('cpu-1')}</td><td>${t('cpu-2')}</td><td>${t('cpu-4')}</td><td>${t('dml')}</td><td>${(est * 100).toFixed(1)}%</td><td>${r.modelo.licenca}</td></tr>`;
+    const bd = r.bordaMedia ? `<td>${(r.bordaMedia.franja * 100).toFixed(1)}%</td><td>${(r.bordaMedia.corte * 100).toFixed(1)}%</td><td>${r.bordaMedia.largura.toFixed(2)} px</td>` : '<td>–</td><td>–</td><td>–</td>';
+    return `<tr><td>${r.modelo.nome}</td><td>${mb} MB</td><td>${t('cpu-1')}</td><td>${t('cpu-2')}</td><td>${t('cpu-4')}</td><td>${t('dml')}</td><td>${(est * 100).toFixed(1)}%</td>${bd}<td>${r.modelo.licenca}</td></tr>`;
   })
   .join('\n');
 const blocos = FOTOS.map(
@@ -248,9 +294,9 @@ const blocos = FOTOS.map(
 writeFileSync(
   join(RES, 'comparar.html'),
   `<!doctype html><meta charset="utf-8"><title>Fundo da câmera</title><style>body{font:14px system-ui;background:#16181d;color:#ddd;margin:16px}table{border-collapse:collapse}td,th{border:1px solid #444;padding:4px 8px}img{width:100%;max-width:1920px}figure{margin:0 0 14px}</style>
-<h1>Fundo da câmera: os candidatos</h1><p>Quadro de 640 × 360. Tempo: a mediana do modelo por quadro, depois de aquecido. Estabilidade: quanto a máscara concorda com ela mesma com a câmera 3 px ao lado (100% = nada treme).</p>
-<table><tr><th>Modelo</th><th>Arquivo</th><th>1 núcleo</th><th>2 núcleos</th><th>4 núcleos</th><th>Placa</th><th>Estabilidade</th><th>Licença</th></tr>${tabela}</table>
+<h1>Fundo da câmera: os candidatos</h1><p>Quadro de 640 × 360. Tempo: a mediana do modelo por quadro, depois de aquecido. Estabilidade: quanto a máscara concorda com ela mesma com a câmera 3 px ao lado (100% = nada treme). Franja: quanto do que aparece na borda é fundo (a parede vazando); corte: quanto da pessoa a borda joga fora; largura: a espessura da borda em px (qualidade.mjs). As linhas "+ filtro guiado" têm o tempo do filtro na placa medido no app, não aqui.</p>
+<table><tr><th>Modelo</th><th>Arquivo</th><th>1 núcleo</th><th>2 núcleos</th><th>4 núcleos</th><th>Placa</th><th>Estabilidade</th><th>Franja</th><th>Corte</th><th>Largura da borda</th><th>Licença</th></tr>${tabela}</table>
 <p>Cada linha: fundo apagado · desfocado · imagem (o quarto).</p>${blocos}`,
 );
-writeFileSync(join(RES, 'tempos.json'), JSON.stringify(resultados.map((r) => ({ id: r.modelo.id, tempos: r.tempos, estabilidade: r.estabilidade })), null, 2));
+writeFileSync(join(RES, 'tempos.json'), JSON.stringify(resultados.map((r) => ({ id: r.modelo.id, tempos: r.tempos, estabilidade: r.estabilidade, borda: r.borda, bordaMedia: r.bordaMedia })), null, 2));
 console.log('\nresultados/comparar.html');

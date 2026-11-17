@@ -3341,4 +3341,12 @@ export default {
   'Arena': "아레나",
   'Golpe forte': "강공격",
   'Aventura': "모험",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "배경 분리",
+  'Automático': "자동",
+  'Leve': "가벼움",
+  'Completo': "고품질",
+  'Automático · {modelo}': "자동 · {modelo}",
+  'Completo indisponível neste computador': "이 컴퓨터에서는 고품질을 쓸 수 없음",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "자동에서는 그래픽 카드가 한가할 때 Syden이 그 카드로 고품질을 쓰고, 게임이 앞에 떠 있거나 빛이 적을 때는 가벼움을 씁니다.",
 } satisfies Record<string, string>;

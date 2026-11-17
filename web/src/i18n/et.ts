@@ -3419,4 +3419,12 @@ export default {
   'Arena': "Areen",
   'Golpe forte': "Tugev löök",
   'Aventura': "Seiklus",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Väljalõige",
+  'Automático': "Automaatne",
+  'Leve': "Kerge",
+  'Completo': "Täielik",
+  'Automático · {modelo}': "Automaatne · {modelo}",
+  'Completo indisponível neste computador': "Täielik pole selles arvutis saadaval",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "Automaatse puhul kasutab Syden Täielikku graafikakaardil, kui see on vaba, ja Kerget, kui mäng on esiplaanil või valgust on vähe.",
 } satisfies Record<string, string>;

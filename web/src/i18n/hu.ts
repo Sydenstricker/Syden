@@ -3424,4 +3424,12 @@ export default {
   'Arena': "Aréna",
   'Golpe forte': "Erős ütés",
   'Aventura': "Kaland",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Kivágás",
+  'Automático': "Automatikus",
+  'Leve': "Könnyű",
+  'Completo': "Teljes",
+  'Automático · {modelo}': "Automatikus · {modelo}",
+  'Completo indisponível neste computador': "A Teljes nem érhető el ezen a számítógépen",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "Automatikus módban a Syden a Teljest használja a videokártyán, ha az szabad, és a Könnyűt, ha játék fut előtérben vagy kevés a fény.",
 } satisfies Record<string, string>;

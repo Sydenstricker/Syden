@@ -3351,4 +3351,12 @@ export default {
   'Arena': "Rara ni veivala",
   'Golpe forte': "Mokuta kaukauwa",
   'Aventura': "Ilakolako",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Musuka",
+  'Automático': "Vakataki koya",
+  'Leve': "Mamada",
+  'Completo': "Taucoko",
+  'Automático · {modelo}': "Vakataki koya · {modelo}",
+  'Completo indisponível neste computador': "E sega ni rawa na Taucoko ena kompiuta qo",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "Ena Vakataki koya, e vakayagataka o Syden na Taucoko ena kaba ni iyaloyalo ni sega ni vakayagataki tiko, ka na Mamada ni dua na qito e liu se ni malumu na rarama.",
 } satisfies Record<string, string>;

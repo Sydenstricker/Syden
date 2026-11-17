@@ -150,3 +150,126 @@ paisagem continua de reserva (~0,05 de um núcleo); nos vídeos ele não falhou 
 **A suavização é a média que se adapta (α de 0,8 a 0,2 pela mudança do pixel)**, sobre a máscara pequena antes de
 ampliar (é uma conta por pixel: 37 mil em 192 × 192). Se for para ser uma média fixa, **0,5**: corta ~48% do tremor no escuro e
 atrasa ~0,6 quadro. **0,8 e a histerese, não**: uma arrasta a mão por meio segundo, a outra deixa pixels presos.
+
+## O filtro guiado e os refinados (17/11/2026)
+
+Relato dele com o fundo no ar: funciona, mas "não fica tão refinado quanto o do NVIDIA Broadcast": uma FRANJA CLARA fina em
+volta do cabelo e a borda grossa, porque a máscara de 192 px é ampliada. Pedido: os três passos abaixo ("pode fazer os 3").
+
+```
+py -3.12 -m venv <pasta> && <pasta>/Scripts/python -m pip install paddlepaddle==2.6.2 paddle2onnx==1.3.1 setuptools onnx onnxconverter-common
+<pasta>/Scripts/python e2e/fundo-da-camera/converter-paddle.py   # os candidatos do PaddleSeg em ONNX (modelos/, fora do git)
+SO=pphumanseg,ppmatting-v2-fp16 CONFIGS=cpu-2,dml node e2e/fundo-da-camera/medir.mjs        # fotos: tempo e a borda
+MODELOS_DO_VIDEO=pphumanseg,ppmatting-v2-fp16,ppseg-v2-retrato PLACA=ppmatting-v2-fp16 SUAVES_DO_VIDEO=crua,pagina,guiado \
+  node e2e/fundo-da-camera/medir-video.mjs                                                    # vídeo: tremor e arrasto
+```
+
+### 1. O filtro guiado no modesto (`guiado.mjs`; a mesma conta na placa em `web/src/fundoDaCamera.ts`)
+
+O filtro guiado (He, Sun e Tang, 2010; a versão rápida, 2015) faz a máscara, perto da borda, virar uma função linear do BRILHO
+do próprio quadro da câmera, e a borda dela cola na borda da imagem. A conta é num quadro de até 320 px de largura (os
+coeficientes são lisos), janela de raio 4 e `eps` 0,004 (brilho de 0 a 1); a saída usa o brilho do quadro cheio. A varredura
+(320 e 640 px, raio 2 a 6, `eps` 0,001 a 0,01) mudou os números dentro do ruído da medida (as fotos escuras levam ruído
+sorteado, ±0,7 ponto entre rodadas): ficou o primeiro.
+
+**A borda sem gabarito** (`qualidade.mjs`): na faixa de transição (alfa entre 0,05 e 0,95), a FRANJA é quanto do que aparece é
+fundo (o pixel se parece mais com a cor do fundo ali perto e entra com alfa), o CORTE é quanto da pessoa sai, e a LARGURA é a
+espessura da faixa. São proxies, para comparar na mesma foto. A média das 9 fotos, com a máscara montada como a página monta:
+
+| Modelo | Franja | Corte | Largura |
+|---|---|---|---|
+| PP-HumanSeg (o modesto) | 49,9% | 40,9% | 5,5 px |
+| **PP-HumanSeg + filtro guiado** | **46,8%** | **31,7%** | 7,0 px |
+| PP-MattingV2 512 | 44,1% | 38,6% | 1,0 px |
+| PP-MattingV2 512 + filtro guiado | 42,3% | 34,6% | 3,0 px |
+
+O filtro guiado baixou a franja e o corte em todos os modelos medidos (o comparativo traz cada um com e sem). A faixa fica mais
+larga porque o filtro deixa transparência onde a imagem tem borda de verdade (o fio de cabelo), em vez do degrau do smoothstep.
+A olho (`resultados/comparar.html`, as linhas "+ filtro guiado"): o halo claro do fundo em volta do cabelo escuro some.
+
+**Na placa, medido no app** (`e2e/fundo-da-camera-no-app.mjs`: a montagem com e sem o filtro, alternando quadro a quadro, com
+uma leitura de 1 pixel que obriga a placa a terminar): **0,1 a 0,4 ms por quadro** a mais (2,3–2,9 ms sem, 2,4–3,2 ms com, em
+três rodadas), na RTX 3070.
+
+**O tremor e o arrasto, em vídeo** (a média dos três vídeos; o modesto com a média que se adapta, montado como a página monta):
+
+| PP-HumanSeg | Trocas limpa | Trocas escura | IoU p5 escura | Arrasto 6 px/q | Arrasto no escuro | Mão 18 px/q |
+|---|---|---|---|---|---|---|
+| como a página monta | 0,141 | 0,245 | 93,1% | 1,3 px | 2,1 px | 1,4 px |
+| + filtro guiado | 0,160 | 0,275 | 93,2% | 1,2 px | 2,4 px | 1,4 px |
+
+O filtro acrescenta ~12% de troca de lado nos pixels de contorno (ele segue a borda da imagem, que também treme com o ruído) e
+praticamente não muda o arrasto. O "resto parado" sobe de 0,02 para ~0,4 px porque compara com a máscara SEM o filtro (a borda
+mudou de lugar de propósito): não é pixel preso.
+
+### 2. Os refinados, pela placa (as mesmas fotos e vídeos; o tempo é só o do modelo, a mediana)
+
+| Modelo | Arquivo | 2 núcleos | Placa (DirectML) | Franja / largura (fotos) | No escuro, em vídeo |
+|---|---|---|---|---|---|
+| PP-HumanSeg 192 (o modesto) | 6,2 MB | 13,8 ms | 3,3 ms | 49,9% / 5,5 px | trocas 0,245; fiel 94–99% |
+| PP-HumanSeg v2 retrato 256 × 144 | 3,8 MB | 6,8 ms | 2,0 ms | 43,4% / 6,1 px | trocas 0,230; fiel 91–98% |
+| PP-HumanSeg v2 leve 192 | 12,2 MB | 9,1 ms | 2,0 ms | 45,1% / 5,6 px | – |
+| PP-HumanSeg v2 médio 192 | 30,2 MB | 13,9 ms | 2,0 ms | 48,6% / 6,4 px | – |
+| PP-HumanSeg v1 servidor 512 | 107 MB | 1.562 ms | 28,1 ms | 55,1% / 1,8 px | – |
+| **PP-MattingV2 512, 16 bits** | **18,1 MB** | ~290 ms | **4,6–5,5 ms** | 44,1% / 1,0 px | **trocas 1,04; fiel 72–100%** |
+| PP-MattingV2 768 × 512 | 35,9 MB | 411 ms | 8,6 ms | 45,4% / 0,9 px | – |
+| MODNet 512 × 288 | 25,9 MB | 216 ms | 13,5 ms | 55,7% / 1,5 px | trocas 7,5 e 71; fiel 35–98% |
+| MODNet 896 × 512 | 25,9 MB | 674 ms | 24,0 ms | 60,3% / 1,4 px | – |
+
+Todos Apache 2.0 (PaddleSeg e ZHKKKe/MODNet). "Fiel": a IoU com a máscara do mesmo modelo no mesmo vídeo limpo. A máquina estava
+em uso (outros testes e o cliente do LoL abertos) durante as fotos: os tempos no processador saíram até 2× piores que os de
+14/11; os da placa batem. **VRAM** do PP-MattingV2 aberto pelo DirectML: ~225 MiB em 16 bits, ~263 em 32 (pela memória usada da
+placa antes e depois de abrir, não por processo).
+
+**As conversões** (`converter-paddle.py`): ninguém publica os v2 nem o PP-MattingV2 em ONNX com origem confiável, então a
+conversão é nossa, a partir dos zips OFICIAIS do PaddleSeg (paddleseg.bj.bcebos.com, os links do README do PaddleSeg 2.9), pelo
+paddle2onnx 1.3.1. Dois tropeços que o script resolve: (1) a média adaptativa dos v2 sai como um AveragePool de passo zero com a
+entrada de tamanho livre ("Adaptive only support static input shape"): fixar a entrada e refazer a inferência de formas no
+Paddle resolve; (2) o PP-MattingV2 só converte com lados que as médias dele dividem bem: 512 × 288 e 640 × 352 saem quebrados,
+512 × 512 e 768 × 512 saem. A meia precisão (onnxconverter-common) pede tirar o `scales` vazio dos Resize (o `sizes` basta) e as
+constantes que sobram; a saída difere da de 32 bits em no máximo 0,002 de alfa.
+
+**O escolhido é o PP-MattingV2 512 em 16 bits**: a borda mais fina de todos (1 px, contra 5,5 do modesto), o cabelo e a mão no
+lugar com luz, ~5 ms na placa (o mais rápido dos que recortam de verdade; o MODNet leva 13–24 ms e se perde no escuro e com a
+pessoa fora de foco), 18 MB (cabe no git, abaixo dos ~30 MB), Apache 2.0. Os v2 de segmentação são baratos, mas a borda deles é
+tão larga quanto a do modesto: não são "refinados". O servidor 512 é lento e pesado demais (107 MB, 28 ms).
+
+**O preço dele, e o que se fez:** (a) **no escuro ele se perde**: nos vídeos escurecidos com ruído, a máscara troca de lado 4×
+mais que a do modesto, e em dois dos três fica só 72–85% parecida com a dele mesmo na luz. Por isso, no Automático, A CÂMERA
+ESCURA VAI AO MODESTO (o brilho médio abaixo de 85 de 255, e de volta acima de 100; os vídeos escurecidos ficam entre 51 e 61, os
+normais entre 153 e 166). (b) Com a pessoa fora de foco (a foto do cabelo cacheado, com a câmera focando o celular), ele corta o
+cabelo de lado; o filtro guiado devolve parte. (c) Na foto da videochamada, ele recorta o notebook junto com a pessoa (o modesto
+não).
+
+**O PP-HumanSeg v2 de retrato** (256 × 144, 16:9 como a webcam) é a descoberta à parte: metade do tempo do modesto no
+processador (6,8 contra 13,8 ms), franja menor nas fotos e o mesmo tremor no escuro. Ele pode virar o modesto num passo seguinte
+(decisão dele); NÃO foi trocado aqui.
+
+### 3. A troca no app (`desktop/src/fundo-camera/`: decisor.js, jogo.js, placa.js, processo.js, segmentador.js, modelos.js)
+
+- O refinado mora numa THREAD À PARTE do processo (`placa.js`): abrir pelo DirectML trava a thread por ~1,5 s (medido), e o
+  modesto ficava calado; a página, que desiste do processo calado por 2 s, desligava o efeito.
+- No Automático ele entra com a placa capaz (a mediana de 8 quadros seguidos abaixo de 33 ms, ao abrir), nenhum jogo na frente
+  (os executáveis do `HKCU\System\GameConfigStore\Children`, ou tela cheia de verdade; a cada 2 s, `jogo.js`), luz bastante, e
+  sem aperto (5 quadros seguidos acima de 60 ms descem; volta com 24 s de folga, uma vez; o jogo que sai, com 5 s).
+- **O relógio da placa engana**: com a placa à toa entre um quadro e outro, a NVIDIA baixa o relógio (P5, 345 MHz), e o mesmo
+  modelo que leva 5 ms em quadros seguidos leva 25–50 ms a 15 por segundo (no app: mediana 26 ms, p90 56 ms, pior 101 ms em 527
+  quadros). Não é aperto: o limite em uso é o do quadro (60 ms), e não o da abertura (33 ms).
+- A troca não pisca: a máscara anterior é levada ao tamanho da nova e entra na mesma média que se adapta (no e2e, o pior quadro
+  da descida com o jogo ainda tinha 100% dos cantos apagados).
+- **A escolha à mão** (decisão dele, mesmo dia, pelo caso do Mundial): Configurações → Voz e vídeo → Recorte: Automático (de
+  fábrica), Leve ou Completo. A escolha é respeitada (nem jogo, nem aperto, nem pouca luz a trocam); o Completo que não roda neste
+  computador vira o Leve, e a linha diz "Completo indisponível neste computador". No Automático, a linha diz o que vale agora
+  ("Automático · Completo").
+- O pacote passa a levar o `DirectML.dll` (18,5 MB) e o modelo (18,1 MB): **~37 MB a mais** sem comprimir. O `dxcompiler.dll` e o
+  `dxil.dll` continuam fora: o DirectML abre e roda sem eles (medido com uma cópia do onnxruntime-node sem os dois).
+- O processo com o refinado gastou 0,09 de um núcleo em 10 s (a conta vai à placa), contra 0,10–0,22 com o modesto. A página
+  reduz e copia 1 MB por quadro (512 × 512 RGBA) em vez de 147 KB: o custo disso na página NÃO foi medido à parte.
+
+### O que NÃO foi medido
+
+- Webcam de verdade, e escuro de verdade (o ruído de uma webcam no escuro tem cor e padrão próprios; o limite de 85/100 é o dos
+  vídeos escurecidos por código).
+- Outra placa que não a RTX 3070 (AMD, Intel integrada, notebook híbrido): a abertura mede e decide, mas o tempo nelas não foi visto.
+- Um jogo de verdade na frente com o refinado (o e2e simula pelo `SYDEN_TESTE_JOGO`), e o aperto real de um jogo na placa.
+- O custo da página com o quadro de 512 × 512.

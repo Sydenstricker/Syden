@@ -3368,4 +3368,12 @@ export default {
   'Arena': "Arena",
   'Golpe forte': "Daqqa qawwija",
   'Aventura': "Avventura",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Qtugħ",
+  'Automático': "Awtomatiku",
+  'Leve': "Ħafif",
+  'Completo': "Sħiħ",
+  'Automático · {modelo}': "Awtomatiku · {modelo}",
+  'Completo indisponível neste computador': "Is-Sħiħ mhuwiex disponibbli f’dan il-kompjuter",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "Fl-Awtomatiku, Syden juża s-Sħiħ, fuq il-karta grafika, meta tkun ħielsa, u l-Ħafif b’logħba quddiem jew b’ftit dawl.",
 } satisfies Record<string, string>;

@@ -38,7 +38,7 @@
       "fundo-camera/**",
       "!**/node_modules/onnxruntime-node/bin/napi-v*/{darwin,linux}/**",
       "!**/node_modules/onnxruntime-node/bin/napi-v*/win32/arm64/**",
-      "!**/node_modules/onnxruntime-node/bin/napi-v*/win32/x64/{DirectML.dll,dxcompiler.dll,dxil.dll}"
+      "!**/node_modules/onnxruntime-node/bin/napi-v*/win32/x64/{dxcompiler.dll,dxil.dll}"
     ],
     "win": {
       "target": "nsis",

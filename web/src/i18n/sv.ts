@@ -3414,4 +3414,12 @@ export default {
   'Arena': "Arena",
   'Golpe forte': "Kraftigt slag",
   'Aventura': "Äventyr",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Urklipp",
+  'Automático': "Automatiskt",
+  'Leve': "Lätt",
+  'Completo': "Full",
+  'Automático · {modelo}': "Automatiskt · {modelo}",
+  'Completo indisponível neste computador': "Full är inte tillgänglig på den här datorn",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "På Automatiskt använder Syden Full på grafikkortet när det är ledigt, och Lätt med ett spel i förgrunden eller i svagt ljus.",
 } satisfies Record<string, string>;

@@ -3436,4 +3436,12 @@ export default {
   'Arena': "Арена",
   'Golpe forte': "Хүчтэй цохилт",
   'Aventura': "Адал явдал",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Тайрах",
+  'Automático': "Автомат",
+  'Leve': "Хөнгөн",
+  'Completo': "Бүрэн",
+  'Automático · {modelo}': "Автомат · {modelo}",
+  'Completo indisponível neste computador': "Энэ компьютер дээр Бүрэн боломжгүй",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "Автомат горимд Syden видео карт сул үед Бүрэнг түүгээр, урд талд тоглоом байх эсвэл гэрэл бага үед Хөнгөнийг ашиглана.",
 } satisfies Record<string, string>;

@@ -3352,4 +3352,12 @@ export default {
   'Arena': "Arenă",
   'Golpe forte': "Lovitură puternică",
   'Aventura': "Aventură",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Decupare",
+  'Automático': "Automat",
+  'Leve': "Ușor",
+  'Completo': "Complet",
+  'Automático · {modelo}': "Automat · {modelo}",
+  'Completo indisponível neste computador': "Complet nu este disponibil pe acest computer",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "În Automat, Syden folosește Complet, pe placa video, când e liberă, și Ușor cu un joc în prim-plan sau cu lumină slabă.",
 } satisfies Record<string, string>;

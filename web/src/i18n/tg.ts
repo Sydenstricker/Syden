@@ -3432,4 +3432,12 @@ export default {
   'Arena': "Арена",
   'Golpe forte': "Зарбаи қавӣ",
   'Aventura': "Саргузашт",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Буридан",
+  'Automático': "Худкор",
+  'Leve': "Сабук",
+  'Completo': "Пурра",
+  'Automático · {modelo}': "Худкор · {modelo}",
+  'Completo indisponível neste computador': "Пурра дар ин компютер дастрас нест",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "Дар ҳолати худкор Syden ҳангоми холӣ будани видеокорт Пурраро бо он, ва ҳангоми дар пеш будани бозӣ ё кам будани рӯшноӣ Сабукро истифода мебарад.",
 } satisfies Record<string, string>;

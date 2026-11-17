@@ -3422,4 +3422,12 @@ export default {
   'Arena': "Aréna",
   'Golpe forte': "Silný úder",
   'Aventura': "Dobrodružstvo",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Výrez",
+  'Automático': "Automaticky",
+  'Leve': "Ľahký",
+  'Completo': "Úplný",
+  'Automático · {modelo}': "Automaticky · {modelo}",
+  'Completo indisponível neste computador': "Úplný nie je na tomto počítači dostupný",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "V režime Automaticky Syden používa Úplný cez grafickú kartu, keď je voľná, a Ľahký, keď beží hra v popredí alebo je málo svetla.",
 } satisfies Record<string, string>;

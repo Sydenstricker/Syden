@@ -3432,4 +3432,12 @@ export default {
   'Arena': "Arèn",
   'Golpe forte': "Gwo kou",
   'Aventura': "Avanti",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Dekoupaj",
+  'Automático': "Otomatik",
+  'Leve': "Lejè",
+  'Completo': "Konplè",
+  'Automático · {modelo}': "Otomatik · {modelo}",
+  'Completo indisponível neste computador': "Konplè pa disponib sou òdinatè sa a",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "An Otomatik, Syden sèvi ak Konplè, sou kat grafik la, lè l lib, epi ak Lejè lè gen yon jwèt devan oswa lè pa gen anpil limyè.",
 } satisfies Record<string, string>;

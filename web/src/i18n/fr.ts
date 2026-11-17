@@ -3375,4 +3375,12 @@ export default {
   'Arena': "Arène",
   'Golpe forte': "Coup puissant",
   'Aventura': "Aventure",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Détourage",
+  'Automático': "Automatique",
+  'Leve': "Léger",
+  'Completo': "Complet",
+  'Automático · {modelo}': "Automatique · {modelo}",
+  'Completo indisponível neste computador': "Complet indisponible sur cet ordinateur",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "En Automatique, Syden utilise le Complet, sur la carte graphique, quand elle est libre, et le Léger avec un jeu au premier plan ou peu de lumière.",
 } satisfies Record<string, string>;

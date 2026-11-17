@@ -3347,4 +3347,12 @@ export default {
   'Arena': "Arena",
   'Golpe forte': "Strong attack",
   'Aventura': "Adventure",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Cutout",
+  'Automático': "Automatic",
+  'Leve': "Light",
+  'Completo': "Full",
+  'Automático · {modelo}': "Automatic · {modelo}",
+  'Completo indisponível neste computador': "Full isn't available on this computer",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "On Automatic, Syden uses Full, on the graphics card, when it's free, and Light with a game in front or in low light.",
 } satisfies Record<string, string>;

@@ -23,7 +23,14 @@ import { Accessibility, Languages,
   UserX,
   Users,
   X, ShieldCheck, TerminalSquare, CalendarClock, Gift, Star, Ticket as TicketIcon, BadgeCheck, Gauge, Wrench, ChevronDown, CircleOff, Focus, Eraser, Image as ImageIcon } from 'lucide-react';
-import { type EfeitoDoFundo, fundoDaCameraDisponivel, guardarImagemDoFundo, imagemDoFundo } from './fundoDaCamera';
+import {
+  type EfeitoDoFundo,
+  fundoDaCameraDisponivel,
+  guardarImagemDoFundo,
+  imagemDoFundo,
+  type ModeloDoFundoAgora,
+  ouvirModeloDoFundo,
+} from './fundoDaCamera';
 import {
   type FormEvent,
   // Apelidados: sem isto o KeyboardEvent do React sombreia o do DOM, e o ouvinte de Escape lá
@@ -2836,7 +2843,51 @@ function FundoDaCameraPicker({ voice }: { voice: Voice }) {
           </FilePicker>
         </div>
       )}
+      {escolhido !== 'nenhum' && <QualidadeDoFundo />}
     </>
+  );
+}
+
+/**
+ * QUAL MODELO TIRA O FUNDO (17/11/2026, decisão dele): o Automático é o de fábrica, e o Syden troca sozinho entre o Completo
+ * (pela placa) e o Leve (no processador); mas quem usa pode SOBREPOR, e a escolha é respeitada, como o Personalizado da
+ * transmissão: uma leitura automática errada não deixa ninguém sem saída. Ao lado, o que está valendo agora, para a pessoa saber
+ * o que está corrigindo; e o Completo que não roda neste computador cai para o Leve, dito na mesma linha, sem janela nenhuma.
+ */
+function QualidadeDoFundo() {
+  const t = useT();
+  const { qualidadeDoFundo } = useSettings();
+  const [agora, setAgora] = useState<ModeloDoFundoAgora>(null);
+  useEffect(() => ouvirModeloDoFundo(setAgora), []);
+  const OPCOES: ['automatico' | 'leve' | 'completo', string][] = [
+    ['automatico', chave('Automático')],
+    ['leve', chave('Leve')],
+    ['completo', chave('Completo')],
+  ];
+  const nomeDoNivel = agora?.nivel === 'refinado' ? t('Completo') : t('Leve');
+  let estado: string | null = null;
+  if (agora && qualidadeDoFundo === 'automatico') estado = t('Automático · {modelo}', { modelo: nomeDoNivel });
+  else if (agora && qualidadeDoFundo === 'completo' && agora.semRefinado) estado = t('Completo indisponível neste computador');
+  return (
+    <div className="fundo-da-camera-qualidade">
+      <p className="settings-hint">
+        {t('No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.')}
+      </p>
+      <div className="tela-personalizada-grupo" role="radiogroup" aria-label={t('Recorte')}>
+        <span className="toggle-label">{t('Recorte')}</span>
+        {OPCOES.map(([id, nome]) => (
+          <label key={id} className={`chip-opcao${qualidadeDoFundo === id ? ' selected' : ''}`}>
+            <input type="radio" name="qualidade-do-fundo" checked={qualidadeDoFundo === id} onChange={() => updateSettings({ qualidadeDoFundo: id })} />
+            {t(nome)}
+          </label>
+        ))}
+      </div>
+      {estado && (
+        <p className="settings-hint fundo-da-camera-estado" aria-live="polite">
+          {estado}
+        </p>
+      )}
+    </div>
   );
 }
 

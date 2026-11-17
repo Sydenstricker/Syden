@@ -3337,4 +3337,12 @@ export default {
   'Arena': "அரங்கம்",
   'Golpe forte': "வலுவான தாக்குதல்",
   'Aventura': "சாகசம்",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "வெட்டல்",
+  'Automático': "தானியங்கி",
+  'Leve': "இலகு",
+  'Completo': "முழு",
+  'Automático · {modelo}': "தானியங்கி · {modelo}",
+  'Completo indisponível neste computador': "இந்தக் கணினியில் முழு கிடைக்காது",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "தானியங்கியில், கிராஃபிக்ஸ் கார்டு காலியாக இருக்கும்போது Syden அதில் முழுவைப் பயன்படுத்துகிறது; முன்னால் விளையாட்டு இருந்தாலோ வெளிச்சம் குறைவாக இருந்தாலோ இலகுவை.",
 } satisfies Record<string, string>;

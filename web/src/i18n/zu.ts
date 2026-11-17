@@ -3423,4 +3423,12 @@ export default {
   'Arena': "Inkundla",
   'Golpe forte': "Ukushaya okunamandla",
   'Aventura': "Uhambo lokuzidela",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Ukusika",
+  'Automático': "Okuzenzakalelayo",
+  'Leve': "Okulula",
+  'Completo': "Okugcwele",
+  'Automático · {modelo}': "Okuzenzakalelayo · {modelo}",
+  'Completo indisponível neste computador': "Okugcwele akutholakali kule khompyutha",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "Ku-Okuzenzakalelayo, i-Syden isebenzisa Okugcwele ekhadini lemifanekiso uma likhululekile, ne-Okulula uma kunomdlalo phambili noma ukukhanya kukuncane.",
 } satisfies Record<string, string>;

@@ -3421,4 +3421,12 @@ export default {
   'Arena': "Arena",
   'Golpe forte': "Snažan udarac",
   'Aventura': "Avantura",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Izdvajanje",
+  'Automático': "Automatski",
+  'Leve': "Lagani",
+  'Completo': "Potpuni",
+  'Automático · {modelo}': "Automatski · {modelo}",
+  'Completo indisponível neste computador': "Potpuni nije dostupan na ovom računaru",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "U Automatskom, Syden koristi Potpuni, preko grafičke kartice, kad je slobodna, a Lagani kad je igra u prvom planu ili je svjetlo slabo.",
 } satisfies Record<string, string>;

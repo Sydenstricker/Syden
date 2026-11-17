@@ -3424,4 +3424,12 @@ export default {
   'Arena': "Arēna",
   'Golpe forte': "Spēcīgs sitiens",
   'Aventura': "Piedzīvojums",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Izgriešana",
+  'Automático': "Automātiski",
+  'Leve': "Vieglais",
+  'Completo': "Pilnais",
+  'Automático · {modelo}': "Automātiski · {modelo}",
+  'Completo indisponível neste computador': "Pilnais šajā datorā nav pieejams",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "Automātiski Syden izmanto Pilno ar videokarti, kad tā ir brīva, un Vieglo, kad priekšplānā ir spēle vai ir maz gaismas.",
 } satisfies Record<string, string>;

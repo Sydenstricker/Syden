@@ -3363,4 +3363,12 @@ export default {
   'Arena': "Ikibuga",
   'Golpe forte': "Igikubito gikomeye",
   'Aventura': "Urugendo rw’ibitangaza",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Gukata",
+  'Automático': "Byikora",
+  'Leve': "Byoroshye",
+  'Completo': "Byuzuye",
+  'Automático · {modelo}': "Byikora · {modelo}",
+  'Completo indisponível neste computador': "Byuzuye ntibiboneka kuri iyi mudasobwa",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "Muri Byikora, Syden ikoresha Byuzuye ku ikarita y’amashusho iyo idakora, na Byoroshye iyo hari umukino imbere cyangwa urumuri ari ruke.",
 } satisfies Record<string, string>;

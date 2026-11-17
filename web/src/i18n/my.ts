@@ -3391,4 +3391,12 @@ export default {
   'Arena': "ကွင်းပြင်",
   'Golpe forte': "ပြင်းထန်သောတိုက်ခိုက်မှု",
   'Aventura': "စွန့်စားခန်း",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "ဖြတ်ထုတ်ခြင်း",
+  'Automático': "အလိုအလျောက်",
+  'Leve': "ပေါ့ပါး",
+  'Completo': "အပြည့်",
+  'Automático · {modelo}': "အလိုအလျောက် · {modelo}",
+  'Completo indisponível neste computador': "ဒီကွန်ပျူတာတွင် အပြည့် မရနိုင်ပါ",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "အလိုအလျောက်တွင် ဂရပ်ဖစ်ကတ် အားနေချိန် Syden သည် ၎င်းဖြင့် အပြည့်ကို သုံးပြီး ရှေ့တွင် ဂိမ်းရှိချိန် သို့မဟုတ် အလင်းနည်းချိန် ပေါ့ပါးကို သုံးသည်။",
 } satisfies Record<string, string>;

@@ -22,6 +22,12 @@ export interface Settings {
   videoInput: string;
   /** O fundo da câmera (só no app; ver fundoDaCamera.ts). A imagem escolhida fica à parte, neste aparelho. */
   fundoDaCamera: 'nenhum' | 'desfocar' | 'apagar' | 'imagem';
+  /**
+   * Qual modelo tira o fundo (17/11/2026): 'automatico' (de fábrica: o Syden decide, o Completo pela placa quando ela pode e o
+   * Leve com um jogo na frente ou a placa apertada), ou a escolha da pessoa, que o Syden RESPEITA (a correção à mão, como o
+   * Personalizado da transmissão). Ver desktop/src/fundo-camera/decisor.js.
+   */
+  qualidadeDoFundo: 'automatico' | 'leve' | 'completo';
   noiseSuppression: boolean;
   echoCancellation: boolean;
   screenQuality: ScreenQuality;
@@ -89,6 +95,7 @@ const DEFAULTS: Settings = {
   audioOutput: '',
   videoInput: '',
   fundoDaCamera: 'nenhum',
+  qualidadeDoFundo: 'automatico',
   noiseSuppression: true,
   echoCancellation: true,
   screenQuality: 'standard',

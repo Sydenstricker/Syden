@@ -3344,4 +3344,12 @@ export default {
   'Arena': "اکھاڑا",
   'Golpe forte': "زوردار وار",
   'Aventura': "مہم جوئی",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "کٹ آؤٹ",
+  'Automático': "خودکار",
+  'Leve': "ہلکا",
+  'Completo': "مکمل",
+  'Automático · {modelo}': "خودکار · {modelo}",
+  'Completo indisponível neste computador': "اس کمپیوٹر پر مکمل دستیاب نہیں",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "خودکار میں Syden گرافکس کارڈ خالی ہو تو اس پر مکمل استعمال کرتا ہے، اور سامنے کوئی گیم ہو یا روشنی کم ہو تو ہلکا۔",
 } satisfies Record<string, string>;

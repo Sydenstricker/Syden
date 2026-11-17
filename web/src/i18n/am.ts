@@ -3352,4 +3352,12 @@ export default {
   'Arena': "መድረክ",
   'Golpe forte': "ጠንካራ ምት",
   'Aventura': "ጀብዱ",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "መቁረጫ",
+  'Automático': "ራስ-ሰር",
+  'Leve': "ቀላል",
+  'Completo': "ሙሉ",
+  'Automático · {modelo}': "ራስ-ሰር · {modelo}",
+  'Completo indisponível neste computador': "ሙሉ በዚህ ኮምፒውተር ላይ አይገኝም",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "በራስ-ሰር፣ Syden የግራፊክስ ካርዱ ነፃ ሲሆን ሙሉውን በካርዱ ይጠቀማል፤ ጨዋታ ፊት ለፊት ሲሆን ወይም ብርሃን ሲያንስ ደግሞ ቀላሉን።",
 } satisfies Record<string, string>;

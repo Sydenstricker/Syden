@@ -3352,4 +3352,12 @@ export default {
   'Arena': "Arena",
   'Golpe forte': "Krachtige aanval",
   'Aventura': "Avontuur",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Uitsnede",
+  'Automático': "Automatisch",
+  'Leve': "Licht",
+  'Completo': "Volledig",
+  'Automático · {modelo}': "Automatisch · {modelo}",
+  'Completo indisponível neste computador': "Volledig is niet beschikbaar op deze computer",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "Bij Automatisch gebruikt Syden Volledig, via de videokaart, als die vrij is, en Licht met een spel op de voorgrond of bij weinig licht.",
 } satisfies Record<string, string>;

@@ -3414,4 +3414,12 @@ export default {
   'Arena': "Arena",
   'Golpe forte': "Goditje e fortë",
   'Aventura': "Aventurë",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Prerje",
+  'Automático': "Automatik",
+  'Leve': "I lehtë",
+  'Completo': "I plotë",
+  'Automático · {modelo}': "Automatik · {modelo}",
+  'Completo indisponível neste computador': "I plotë nuk është i disponueshëm në këtë kompjuter",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "Në Automatik, Syden përdor të Plotin në kartën grafike kur ajo është e lirë, dhe të Lehtin kur ka një lojë përpara ose pak dritë.",
 } satisfies Record<string, string>;

@@ -3365,4 +3365,12 @@ export default {
   'Arena': "สนามประลอง",
   'Golpe forte': "ท่าโจมตีแรง",
   'Aventura': "การผจญภัย",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "การตัดพื้นหลัง",
+  'Automático': "อัตโนมัติ",
+  'Leve': "เบา",
+  'Completo': "เต็ม",
+  'Automático · {modelo}': "อัตโนมัติ · {modelo}",
+  'Completo indisponível neste computador': "ใช้แบบเต็มบนคอมพิวเตอร์เครื่องนี้ไม่ได้",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "ในโหมดอัตโนมัติ Syden ใช้แบบเต็มผ่านการ์ดจอเมื่อการ์ดว่าง และใช้แบบเบาเมื่อมีเกมอยู่ด้านหน้าหรือแสงน้อย",
 } satisfies Record<string, string>;

@@ -3422,4 +3422,12 @@ export default {
   'Arena': "Арена",
   'Golpe forte': "Силен удар",
   'Aventura': "Авантура",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "Исечување",
+  'Automático': "Автоматски",
+  'Leve': "Лесен",
+  'Completo': "Целосен",
+  'Automático · {modelo}': "Автоматски · {modelo}",
+  'Completo indisponível neste computador': "Целосниот не е достапен на овој компјутер",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "Во Автоматски, Syden го користи Целосниот преку графичката картичка кога е слободна, а Лесниот кога има игра во преден план или кога светлото е слабо.",
 } satisfies Record<string, string>;

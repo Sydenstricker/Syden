@@ -3422,4 +3422,12 @@ export default {
   'Arena': "ක්‍රීඩාංගණය",
   'Golpe forte': "බලවත් පහර",
   'Aventura': "වික්‍රමය",
+  // O fundo da câmera: Automático, Leve e Completo (17/11/2026)
+  'Recorte': "කැපීම",
+  'Automático': "ස්වයංක්‍රීය",
+  'Leve': "සැහැල්ලු",
+  'Completo': "සම්පූර්ණ",
+  'Automático · {modelo}': "ස්වයංක්‍රීය · {modelo}",
+  'Completo indisponível neste computador': "මෙම පරිගණකයේ සම්පූර්ණ නොමැත",
+  'No Automático, o Syden usa o Completo, pela placa de vídeo, quando ela está livre, e o Leve com um jogo na frente ou com pouca luz.': "ස්වයංක්‍රීයේදී Syden ග්‍රැෆික්ස් කාඩ්පත නිදහස් විට එයින් සම්පූර්ණ භාවිත කරයි, ඉදිරියෙන් ක්‍රීඩාවක් ඇති විට හෝ ආලෝකය අඩු විට සැහැල්ලු.",
 } satisfies Record<string, string>;
