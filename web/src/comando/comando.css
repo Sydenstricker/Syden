@@ -1,0 +1,17 @@
+/* O COMANDO CENOURA (16/11/2026, JogoComando.tsx): usa as classes da Briga na horta (.briga, .briga-hud, .briga-tela…) e
+   acrescenta só o seu. O painel largo, como os outros jogos de ação. */
+.minijogo.jogando-comando {
+  width: min(760px, 94vw);
+}
+
+.comando .briga-hud li.comando-fora {
+  opacity: 0.55;
+}
+
+.comando-golpes {
+  grid-column: 1 / -1;
+  color: var(--accent);
+  font-size: 0.6rem;
+  letter-spacing: 2px;
+  min-height: 0.8em;
+}
