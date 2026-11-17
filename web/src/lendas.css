@@ -1,0 +1,289 @@
+/* LENDAS DA TOCA (16/11/2026, JogoLendas.tsx): a luta em pixel art de 320 × 180, a turma em linhas embaixo, como nos RPGs
+   de turno; o painel largo dos jogos de ação. */
+.minijogo.jogando-lendas {
+  width: min(760px, 94vw);
+}
+
+.lendas {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  user-select: none;
+}
+
+.lendas-caminho {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.lendas-caminho li {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--bg-elevated, rgba(255, 255, 255, 0.06));
+  border: 2px solid var(--border);
+  font-size: 17px;
+}
+.lendas-caminho li + li::before {
+  content: '';
+  position: absolute;
+  right: calc(100% + 2px);
+  top: 50%;
+  width: 4px;
+  border-top: 2px dashed var(--border);
+}
+.lendas-caminho li.feita {
+  opacity: 0.45;
+}
+.lendas-caminho li.agora {
+  border-color: var(--accent, #f0c93a);
+  box-shadow: 0 0 0 3px rgba(240, 201, 58, 0.25);
+}
+.lendas-coelho {
+  position: absolute;
+  top: -14px;
+  font-size: 13px;
+}
+
+.lendas-titulo {
+  margin: 0;
+  text-align: center;
+  font-weight: 700;
+}
+
+.lendas-cartas {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+@media (max-width: 560px) {
+  .lendas-cartas {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.lendas-carta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 8px;
+  border-radius: 10px;
+  border: 2px solid var(--border);
+  background: var(--bg-elevated, rgba(255, 255, 255, 0.04));
+  color: inherit;
+  cursor: pointer;
+  text-align: center;
+}
+.lendas-carta:hover:not(:disabled) {
+  border-color: var(--accent, #f0c93a);
+}
+.lendas-carta.escolhida {
+  border-color: var(--accent, #f0c93a);
+  background: rgba(240, 201, 58, 0.12);
+}
+.lendas-carta small {
+  color: var(--text-muted);
+  font-size: 11.5px;
+  min-height: 2.6em;
+}
+.lendas-carta-emoji {
+  font-size: 28px;
+}
+.lendas-barras {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  font-size: 10px;
+}
+.lendas-barras > span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.lendas-barras i {
+  display: block;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--accent, #f0c93a);
+}
+
+.lendas-quem {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+}
+
+.lendas-tela {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #1e1822;
+}
+.lendas-tela canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  image-rendering: pixelated;
+}
+.lendas-tela.mirando canvas {
+  cursor: crosshair;
+}
+
+.lendas-acoes {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+@media (max-width: 560px) {
+  .lendas-acoes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.lendas-acoes button {
+  padding: 8px 6px;
+  border-radius: 8px;
+  border: 2px solid var(--border);
+  background: var(--bg-elevated, rgba(255, 255, 255, 0.05));
+  color: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.lendas-acoes button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.lendas-acoes button.escolhida {
+  border-color: var(--accent, #f0c93a);
+  background: rgba(240, 201, 58, 0.16);
+}
+.lendas-acoes small {
+  color: #8ab8e0;
+}
+
+.lendas-alvos {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+.lendas-alvos button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.lendas-turma {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 0;
+  padding: 6px 8px;
+  list-style: none;
+  border-radius: 8px;
+  background: rgba(30, 24, 34, 0.55);
+  border: 1px solid var(--border);
+  font-size: 13px;
+}
+.lendas-turma li {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) minmax(70px, 140px) auto 18px;
+  align-items: center;
+  gap: 8px;
+}
+.lendas-turma li.eu .minijogo-nome {
+  font-weight: 700;
+  color: var(--accent, #f0c93a);
+}
+.lendas-turma li.caido {
+  opacity: 0.5;
+}
+.lendas-turma.descanso li.lendas-fogueira {
+  display: block;
+  text-align: center;
+  font-size: 26px;
+}
+.lendas-vida {
+  position: relative;
+  display: block;
+  height: 10px;
+  border-radius: 5px;
+  background: #3a2a34;
+  overflow: hidden;
+}
+.lendas-vida i {
+  display: block;
+  height: 100%;
+  background: #7bc86a;
+  transition: width 0.3s;
+}
+.lendas-vida.inimigo {
+  width: 50px;
+  height: 6px;
+}
+.lendas-vida.inimigo i {
+  background: #e5564c;
+}
+.lendas-vida small {
+  position: absolute;
+  inset: 0;
+  font-size: 9px;
+  line-height: 10px;
+  text-align: center;
+  color: #fbf3e4;
+}
+.lendas-energia {
+  display: flex;
+  gap: 2px;
+}
+.lendas-energia i {
+  width: 5px;
+  height: 9px;
+  border-radius: 2px;
+  background: #3a2a34;
+}
+.lendas-energia i.cheia {
+  background: #8ab8e0;
+}
+.lendas-marca {
+  text-align: center;
+}
+
+.lendas-espolio {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.lendas-peca {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px;
+  border-radius: 10px;
+  background: rgba(240, 201, 58, 0.08);
+  border: 1px solid var(--border);
+}
+.lendas-peca-emoji {
+  font-size: 40px;
+}
+.lendas-peca-troca {
+  font-size: 16px;
+}
+.lendas-peca-troca .melhor {
+  color: #7bc86a;
+}
+.lendas-peca-troca .pior {
+  color: #e5564c;
+}
