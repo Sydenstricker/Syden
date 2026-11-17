@@ -150,6 +150,8 @@ export class CenaDoSkate {
   /** A altura que a câmera segue (amortecida à parte: na rampa ela sobe junto, sem tranco). */
   private camY = 0;
   private anguloDaCamera = Math.PI;
+  /** Para que lado da pista a câmera sai (o lado para onde o coelho olha, que troca com a base), amortecido. */
+  private ladoDaCamera = 1;
   private camAlvo = new THREE.Vector3();
   private quadro = 0;
   /** O voo do vert: a altura de onde saiu (para virar o coelho no ar). */
@@ -317,8 +319,9 @@ export class CenaDoSkate {
     const { horizonte } = montarEntorno(c, modelos, this.descartaveis, this.sombras);
     c.background = new THREE.Color(horizonte);
     c.fog = new THREE.Fog(horizonte, 26, 95);
-    c.add(new THREE.HemisphereLight('#fff6e8', '#8aa27a', 1.5));
-    const sol = new THREE.DirectionalLight('#fff1d6', 2.1);
+    // um pouco menos de céu e de sol (eram 1,5 e 2,1): com o ACES, o claro do coelho e do concreto estourava em branco
+    c.add(new THREE.HemisphereLight('#fff6e8', '#8aa27a', 1.25));
+    const sol = new THREE.DirectionalLight('#fff1d6', 1.9);
     sol.position.set(LARGURA / 2 - 6, 12, PROFUNDIDADE / 2 + 5);
     sol.target.position.set(LARGURA / 2, 0, PROFUNDIDADE / 2);
     c.add(sol.target);
@@ -490,7 +493,15 @@ export class CenaDoSkate {
     const fz = Math.cos(ca);
     // olha um pouco à frente e um pouco acima do coelho (na parede do quarter, o alto dela fica à vista)
     const foco = a_.foco.set(x + fx * 1.1, (y + this.camY) * 0.5 + 0.4, z + fz * 1.1);
-    const pos = a_.pos.set(x - fx * 2.5, this.camY + 1.3, z - fz * 2.5);
+    // DE TRÊS QUARTOS (16/11/2026, a auditoria do "coelho branco, sem textura"): bem atrás e alta, a câmera só via as costas
+    // dele, uma bola clara sobre o moletom. Ela sai ~40° para o lado PARA ONDE ELE OLHA (de lado na prancha: o rumo da base) e
+    // mais baixa: o rosto, o focinho e as orelhas de três quartos, e a pista à frente continua no meio da tela (o foco não
+    // mudou). A troca de base (pousar de costas) a leva ao outro lado devagar.
+    const lado = k.base > 0 ? 1 : -1;
+    this.ladoDaCamera = this.quadro < 3 ? lado : this.ladoDaCamera + (lado - this.ladoDaCamera) * Math.min(1, dt * 2);
+    const lx = Math.sin(ca + 0.7 * this.ladoDaCamera);
+    const lz = Math.cos(ca + 0.7 * this.ladoDaCamera);
+    const pos = a_.pos.set(x - lx * 2.45, this.camY + 1.05, z - lz * 2.45);
     // A CÂMERA DO VERT (pedido dele, 06/11/2026, com a foto de referência): subindo a parede do quarter e no voo que sai dela,
     // a câmera sai de trás e vai para o lado da pista, alta, olhando de cima para o coelho com a rampa embaixo dele — o voo e
     // o pouso à vista. Atrás e embaixo, como antes, ela olhava por cima da beirada para fora da pista, e o coelho flutuava

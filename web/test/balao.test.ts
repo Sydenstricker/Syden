@@ -1,7 +1,8 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { Chao, chaoEm } from '../src/corrida/pista';
-import { montarArena } from '../src/balao/arena';
+import { largadaDa, montarArena } from '../src/balao/arena';
+import { novoKart, passo } from '../src/corrida/fisica';
 import { criarPartida, type EventoDoBalao, type ResultadoDoSolo } from '../src/balao/partida';
 import { ARENAS, BALOES, caminhoDoRepolho, DURACAO_PASSOS, itemDaCaixa, MARGEM_DO_KART, naParede, RAIO_DA_BATIDA } from '../src/balao/sim';
 
@@ -44,6 +45,37 @@ test('as largadas e as caixas ficam no chão de andar, longe das paredes', () =>
       assert.notEqual(chaoEm(p, x, y), Chao.Parede);
     }
   }
+});
+
+test('de cada largada, segurar ↑ leva o kart para longe (nenhuma olha para um obstáculo)', () => {
+  for (const p of arenas) {
+    for (let i = 0; i < p.arena.largadas.length; i++) {
+      const l = largadaDa(p.arena, i);
+      const k = novoKart(p);
+      Object.assign(k, { x: l.x, y: l.y, angulo: l.angulo, rumo: l.angulo });
+      for (let n = 0; n < 90; n++) passo(k, { acelera: true, freia: false, vira: 0, derrapa: false }, p);
+      assert.ok(Math.hypot(k.x - l.x, k.y - l.y) > 60, `${p.arena.id}, largada ${i}: andou só ${Math.hypot(k.x - l.x, k.y - l.y).toFixed(0)} em 1,5 s`);
+    }
+  }
+});
+
+test('o pulo: o botão apertado em linha reta pula uma vez (segurar não pula de novo) e não muda o caminho no chão', () => {
+  const p = arenas[0];
+  const l = largadaDa(p.arena, 0);
+  const com = novoKart(p), sem = novoKart(p);
+  for (const k of [com, sem]) Object.assign(k, { x: l.x, y: l.y, angulo: l.angulo, rumo: l.angulo });
+  let pulos = 0, alto = 0;
+  for (let n = 0; n < 60; n++) {
+    const antes = com.vpulo;
+    passo(com, { acelera: true, freia: false, vira: 0, derrapa: n >= 20 }, p);
+    passo(sem, { acelera: true, freia: false, vira: 0, derrapa: false }, p);
+    if (antes <= 0 && com.vpulo > 0) pulos++;
+    alto = Math.max(alto, com.pulo);
+  }
+  assert.equal(pulos, 1);
+  assert.ok(alto > 4, `o pulo subiu só ${alto}`);
+  assert.equal(com.x, sem.x);
+  assert.equal(com.y, sem.y);
 });
 
 test('o repolho quica e não entra em parede; o mesmo lançamento dá sempre o mesmo caminho', () => {

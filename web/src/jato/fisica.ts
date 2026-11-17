@@ -31,6 +31,17 @@ export const TEMPO_DA_QUEDA = 0.8;
 export const PASSOS_DO_RESGATE = 36;
 /** O raio da nave contra a borda. */
 const RAIO = 5;
+/**
+ * O PREÇO DA BORDA (16/11/2026, achado da auditoria: raspando na borda com ↑ apertado, a nave explodia em ~8 s, e quem começa
+ * não fechava uma volta). Cobra-se a BATIDA, pela força com que a nave chega; o RASPAR, depois dela, quase não custa: o castigo
+ * de quem raspa é a velocidade que ele perde (0,94 a cada passo). E o quique de volta para a borda logo depois de uma batida é
+ * a mesma batida: só conta como outra passado o RESPIRO.
+ */
+const BATIDA = 2;
+const BATIDA_POR_VELOCIDADE = 0.05;
+const RASPAR = 0.01;
+const RASPAR_POR_VELOCIDADE = 0.002;
+const RESPIRO = 0.6;
 /** O quanto a nave vira por segundo, a toda (com o freio de ar, mais, e perdendo velocidade). */
 export const GIRO = 3.0;
 export const GIRO_COM_FREIO = 4.2;
@@ -77,6 +88,8 @@ export interface Nave {
   bateu: boolean;
   /** Estava encostado na borda no passo anterior (a primeira batida cobra mais que o raspar). */
   encostado: boolean;
+  /** Segundos desde a última batida cobrada (o quique logo depois dela é a mesma batida). */
+  desdeBatida: number;
   /** Pegou uma placa neste passo / está na recarga / usou o turbo neste passo / completou uma volta neste passo. */
   placa: boolean;
   recarga: boolean;
@@ -91,7 +104,7 @@ export function novaNave(p: PistaDoJato): Nave {
   const { x, y, angulo, indice } = p.largada;
   return {
     x, y, angulo, rumo: angulo, v: 0, energia: ENERGIA_MAXIMA, turbo: 0, banco: 0, indice, volta: 0, meio: false, voltas: [], passos: 0,
-    terminou: false, explodiu: false, caindo: 0, resgate: 0, de: null, para: null, seguro: p.la[indice], bateu: false, encostado: false,
+    terminou: false, explodiu: false, caindo: 0, resgate: 0, de: null, para: null, seguro: p.la[indice], bateu: false, encostado: false, desdeBatida: RESPIRO,
     placa: false, recarga: false, usouTurbo: false, fezVolta: false, turboAntes: false, queda: 0,
   };
 }
@@ -199,6 +212,7 @@ export function passo(n: Nave, c: ComandosDoJato, p: PistaDoJato): void {
   n.banco += (c.vira - n.banco) * Math.min(1, 9 * dt);
 
   // ANDAR
+  n.desdeBatida += dt;
   n.x += Math.cos(n.rumo) * n.v * dt;
   n.y += Math.sin(n.rumo) * n.v * dt;
   n.indice = pontoMaisPerto(p, n.x, n.y, n.indice);
@@ -218,7 +232,9 @@ export function passo(n: Nave, c: ComandosDoJato, p: PistaDoJato): void {
       n.v = Math.hypot(rx, ry) * 0.94;
       n.rumo = Math.atan2(ry, rx);
       n.angulo = giraPara(n.angulo, n.rumo, 0.25);
-      n.energia -= (n.encostado ? 0.08 : 3) + vn * 0.07;
+      const batida = !n.encostado && n.desdeBatida >= RESPIRO;
+      n.energia -= batida ? BATIDA + vn * BATIDA_POR_VELOCIDADE : RASPAR + vn * RASPAR_POR_VELOCIDADE;
+      if (batida) n.desdeBatida = 0;
       n.bateu = !n.encostado;
     }
     n.encostado = true;

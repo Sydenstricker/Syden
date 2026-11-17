@@ -1,3 +1,4 @@
+import { temWebGL } from './temWebGL';
 import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { ComandosDoJogo } from './ComandosDosJogos';
@@ -63,6 +64,8 @@ const CONTAGEM = 3 * 60;
 const MEDALHAS = ['🥇', '🥈', '🥉'];
 /** Os avatares prontos dos robôs (só as cores do coelho). */
 const AVATARES_DOS_ROBOS = [5, 9, 13];
+/** Os nomes dos robôs, os mesmos dos outros jogos (NOMES_DOS_ROBOS em server/src/minijogo-robos.ts): próprios, sem tradução. */
+const NOMES_DOS_ROBOS = ['Tico', 'Lola', 'Bento'];
 
 declare global {
   interface Window {
@@ -336,14 +339,6 @@ function rodarCorrida(cfg: ConfigDaCorrida): () => void {
   };
 }
 
-function temWebGL(): boolean {
-  try {
-    const c = document.createElement('canvas');
-    return !!(c.getContext('webgl2') || c.getContext('webgl'));
-  } catch {
-    return false;
-  }
-}
 
 function Comandos({ solo = false }: { solo?: boolean }) {
   const t = useT();
@@ -541,7 +536,7 @@ function CarrinhosSolo({ estado, eu, agir }: { estado: EstadoCarrinhos & Partida
             faixa,
             semente: semente + i * 104729,
             habilidade: [0.92, 0.8, 0.68][i] ?? 0.75,
-            nome: `🤖 ${i + 1}`,
+            nome: `🤖 ${NOMES_DOS_ROBOS[i % NOMES_DOS_ROBOS.length]}`,
             avatar: AVATARES_DOS_ROBOS[i] ?? 1,
           })),
           fantasmas: (estado.fantasmas ?? []).map((f) => ({ nome: f.nome, entradas: f.entradas })),

@@ -1,4 +1,4 @@
-import { H, HORIZONTE, projetar, W, type Camera, type Desenho, type Figura } from '../corrida/render';
+import { H, HORIZONTE, projetar, W, type Camera, type Figura } from '../corrida/render';
 import { MUNDO } from '../corrida/pista';
 import type { Solido } from './arena';
 import type { Arena } from './sim';
@@ -27,6 +27,12 @@ function lente() {
 
 /** Perto disto da câmera, o pedaço sai da tela por baixo (e a conta explodiria): não se desenha. */
 const PERTO = 6;
+/**
+ * Até esta distância da câmera, o pedaço vai ficando transparente (16/11/2026, a auditoria): com o kart encostado num fardo,
+ * a câmera, que fica atrás dele, caía quase em cima do fardo, e a tampa e a face viravam um polígono amarelo chapado cobrindo
+ * meia tela (e o próprio kart). Esmaecendo, o kart e a arena continuam à vista, e o bloco ainda se lê pela beirada.
+ */
+const ESMAECE = 34;
 
 export function solidosNaTela(cam: Camera, solidos: Solido[]): Figura[] {
   lente();
@@ -51,69 +57,77 @@ export function solidosNaTela(cam: Camera, solidos: Solido[]): Figura[] {
       // a face de fora aparece quando a câmera está do lado de fora dela
       const deFora = p.nx * (cam.x - p.ax) + p.ny * (cam.y - p.ay) > 0;
       const cores = s.cores;
+      const perto = Math.min(a0[2], b0[2], tampa ? tampa[2] : Infinity);
+      const alfa = perto >= ESMAECE ? 1 : Math.max(0.12, (perto - PERTO) / (ESMAECE - PERTO)) ** 1.5;
+      const desenharPedaco = (ctx: CanvasRenderingContext2D) => {
+        if (s.tampa) {
+          // a tampa (o triângulo deste pedaço até o meio), da cor dela também no traço, para não ficar fresta entre eles
+          if (tampa) {
+            ctx.fillStyle = ctx.strokeStyle = cores.topo;
+            ctx.beginPath();
+            ctx.moveTo(a1[0], a1[1]);
+            ctx.lineTo(b1[0], b1[1]);
+            ctx.lineTo(tampa[0], tampa[1]);
+            ctx.closePath();
+            ctx.fill();
+            // esmaecida, o traço passaria por cima do triângulo vizinho e riscaria a tampa
+            if (alfa === 1) ctx.stroke();
+          }
+          if (!deFora) {
+            // o lado de trás do bloco: só a beira da tampa
+            ctx.strokeStyle = cores.linha;
+            ctx.beginPath();
+            ctx.moveTo(a1[0], a1[1]);
+            ctx.lineTo(b1[0], b1[1]);
+            ctx.stroke();
+            return;
+          }
+        }
+        // a face (num bloco, só a de fora; na mureta, a que estiver virada para a câmera)
+        ctx.fillStyle = ctx.strokeStyle = deFora ? p.fora : p.dentro;
+        ctx.beginPath();
+        ctx.moveTo(a0[0], a0[1]);
+        ctx.lineTo(b0[0], b0[1]);
+        ctx.lineTo(b1[0], b1[1]);
+        ctx.lineTo(a1[0], a1[1]);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        if (cores.risco) {
+          ctx.strokeStyle = cores.risco.cor;
+          ctx.beginPath();
+          if (cores.risco.tipo === 'pe') {
+            // a corda do fardo, no meio do pedaço
+            const mx0 = (a0[0] + b0[0]) / 2, my0 = (a0[1] + b0[1]) / 2, mx1 = (a1[0] + b1[0]) / 2, my1 = (a1[1] + b1[1]) / 2;
+            ctx.moveTo(mx0, my0);
+            ctx.lineTo(mx1, my1);
+          } else {
+            // a tábua (ou o travessão da cerca), a meia altura
+            ctx.moveTo((a0[0] + a1[0]) / 2, (a0[1] + a1[1]) / 2);
+            ctx.lineTo((b0[0] + b1[0]) / 2, (b0[1] + b1[1]) / 2);
+          }
+          ctx.stroke();
+        }
+        // o contorno: a beira de cima, o pé e as arestas dos cantos (na cerca, os postes)
+        ctx.strokeStyle = cores.linha;
+        ctx.beginPath();
+        ctx.moveTo(a1[0], a1[1]);
+        ctx.lineTo(b1[0], b1[1]);
+        ctx.moveTo(a0[0], a0[1]);
+        ctx.lineTo(b0[0], b0[1]);
+        if (p.canto) {
+          ctx.moveTo(a0[0], a0[1]);
+          ctx.lineTo(a1[0], a1[1]);
+        }
+        ctx.stroke();
+      };
       figuras.push({
         z: (a0[2] + b0[2]) / 2,
         desenhar: (ctx) => {
           ctx.lineWidth = 1;
-          if (s.tampa) {
-            // a tampa (o triângulo deste pedaço até o meio), da cor dela também no traço, para não ficar fresta entre eles
-            if (tampa) {
-              ctx.fillStyle = ctx.strokeStyle = cores.topo;
-              ctx.beginPath();
-              ctx.moveTo(a1[0], a1[1]);
-              ctx.lineTo(b1[0], b1[1]);
-              ctx.lineTo(tampa[0], tampa[1]);
-              ctx.closePath();
-              ctx.fill();
-              ctx.stroke();
-            }
-            if (!deFora) {
-              // o lado de trás do bloco: só a beira da tampa
-              ctx.strokeStyle = cores.linha;
-              ctx.beginPath();
-              ctx.moveTo(a1[0], a1[1]);
-              ctx.lineTo(b1[0], b1[1]);
-              ctx.stroke();
-              return;
-            }
-          }
-          // a face (num bloco, só a de fora; na mureta, a que estiver virada para a câmera)
-          ctx.fillStyle = ctx.strokeStyle = deFora ? p.fora : p.dentro;
-          ctx.beginPath();
-          ctx.moveTo(a0[0], a0[1]);
-          ctx.lineTo(b0[0], b0[1]);
-          ctx.lineTo(b1[0], b1[1]);
-          ctx.lineTo(a1[0], a1[1]);
-          ctx.closePath();
-          ctx.fill();
-          ctx.stroke();
-          if (cores.risco) {
-            ctx.strokeStyle = cores.risco.cor;
-            ctx.beginPath();
-            if (cores.risco.tipo === 'pe') {
-              // a corda do fardo, no meio do pedaço
-              const mx0 = (a0[0] + b0[0]) / 2, my0 = (a0[1] + b0[1]) / 2, mx1 = (a1[0] + b1[0]) / 2, my1 = (a1[1] + b1[1]) / 2;
-              ctx.moveTo(mx0, my0);
-              ctx.lineTo(mx1, my1);
-            } else {
-              // a tábua (ou o travessão da cerca), a meia altura
-              ctx.moveTo((a0[0] + a1[0]) / 2, (a0[1] + a1[1]) / 2);
-              ctx.lineTo((b0[0] + b1[0]) / 2, (b0[1] + b1[1]) / 2);
-            }
-            ctx.stroke();
-          }
-          // o contorno: a beira de cima, o pé e as arestas dos cantos (na cerca, os postes)
-          ctx.strokeStyle = cores.linha;
-          ctx.beginPath();
-          ctx.moveTo(a1[0], a1[1]);
-          ctx.lineTo(b1[0], b1[1]);
-          ctx.moveTo(a0[0], a0[1]);
-          ctx.lineTo(b0[0], b0[1]);
-          if (p.canto) {
-            ctx.moveTo(a0[0], a0[1]);
-            ctx.lineTo(a1[0], a1[1]);
-          }
-          ctx.stroke();
+          ctx.globalAlpha = alfa;
+          desenharPedaco(ctx);
+          ctx.globalAlpha = 1;
         },
       });
     }
@@ -262,46 +276,6 @@ export function pontoNoMapaDaArena(ctx: CanvasRenderingContext2D, a: Arena, x0: 
   ctx.fillRect(px - 1, py - 1, 3, 3);
 }
 
-/** O quadro do item na mão, no alto e no meio (como o da corrida). */
-export function quadroDoItem(d: Desenho, item: string | null) {
-  const ctx = d.ctx;
-  const x = W / 2 - 13, y = 6;
-  ctx.fillStyle = '#1e1822';
-  ctx.fillRect(x - 1, y - 1, 28, 24);
-  ctx.fillStyle = '#3a3040';
-  ctx.fillRect(x, y, 26, 22);
-  ctx.fillStyle = '#fbf3e4';
-  ctx.fillRect(x + 1, y + 1, 24, 1);
-  if (!item) return;
-  const nome = item === 'alface' ? 'escudo' : item;
-  const fig = d.figuras[nome];
-  if (!fig) return;
-  const escala = item === 'lama' ? 1.2 : item === 'alface' ? 0.9 : 1.6;
-  const w = Math.round(fig.width * escala), h = Math.round(fig.height * escala);
-  ctx.drawImage(fig, Math.round(x + 13 - w / 2), Math.round(y + 11 - h / 2), w, h);
-}
-
-/** Os meus balões, no canto de cima à esquerda: os que sobram cheios, os perdidos vazios. */
-export function meusBaloes(ctx: CanvasRenderingContext2D, quantos: number, total: number, cor: string) {
-  for (let i = 0; i < total; i++) {
-    const x = 12 + i * 13, y = 13;
-    ctx.fillStyle = '#1e1822';
-    ctx.beginPath();
-    ctx.ellipse(x, y, 5.5, 6.5, 0, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.fillStyle = i < quantos ? cor : '#5a5060';
-    ctx.beginPath();
-    ctx.ellipse(x, y, 4.5, 5.5, 0, 0, Math.PI * 2);
-    ctx.fill();
-    if (i < quantos) {
-      ctx.fillStyle = '#fff8ec';
-      ctx.fillRect(x - 2, y - 3, 1, 2);
-    }
-    ctx.fillStyle = '#1e1822';
-    ctx.fillRect(x, y + 6, 1, 4);
-  }
-}
-
 /** A moldura do retrovisor (olhando para trás), como a da corrida. */
 export function retrovisor(ctx: CanvasRenderingContext2D) {
   ctx.fillStyle = '#1e1822';
@@ -317,7 +291,8 @@ export function retrovisor(ctx: CanvasRenderingContext2D) {
 export function semaforo(ctx: CanvasRenderingContext2D, contagem: number) {
   const acesas = contagem > 0 ? Math.min(3, Math.max(0, 3 - Math.floor((contagem - 1) / 60))) : 3;
   const verde = contagem <= 0;
-  const x0 = W / 2 - 27, y0 = 34;
+  // abaixo do quadro do item, que é HTML por cima da tela (16/11/2026)
+  const x0 = W / 2 - 27, y0 = 46;
   ctx.fillStyle = '#1e1822';
   ctx.fillRect(x0 - 4, y0 - 4, 62, 22);
   ctx.fillStyle = '#3a3040';

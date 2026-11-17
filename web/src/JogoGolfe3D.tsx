@@ -1,3 +1,4 @@
+import { temWebGL } from './temWebGL';
 import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { ComandosDoJogo } from './ComandosDosJogos';
@@ -573,13 +574,4 @@ function situacao(fase: string, acabou: boolean, caiu: boolean, dentro: boolean,
       {dentro ? t('No buraco!') : t('Acabaram as tacadas.')} {t('Você terminou! Agora é torcer pelos outros.')}
     </p>
   );
-}
-
-function temWebGL(): boolean {
-  try {
-    const c = document.createElement('canvas');
-    return !!(c.getContext('webgl2') || c.getContext('webgl'));
-  } catch {
-    return false;
-  }
 }

@@ -55,9 +55,11 @@ export interface Kart {
   carga: number;
   /** Tempo de turbo que falta (s). */
   turbo: number;
-  /** O pulinho do começo da derrapagem (altura, para o desenho). */
+  /** O pulinho (altura, para o desenho): o do começo da derrapagem, ou o PULO de quem aperta o botão em linha reta. */
   pulo: number;
   vpulo: number;
+  /** O botão de derrapar estava apertado no passo de antes (o pulo sai na hora em que ele desce, não enquanto segura). */
+  segurava: boolean;
   /** O ponto da linha do meio mais perto (para contar a volta). */
   indice: number;
   volta: number;
@@ -82,7 +84,7 @@ export interface Kart {
 export function novoKart(p: Pista): Kart {
   const { x, y, angulo } = p.largada;
   return {
-    x, y, angulo, rumo: angulo, v: 0, deriva: 0, carga: 0, turbo: 0, pulo: 0, vpulo: 0,
+    x, y, angulo, rumo: angulo, v: 0, deriva: 0, carga: 0, turbo: 0, pulo: 0, vpulo: 0, segurava: false,
     indice: p.lx.length - 3, volta: 0, meio: false, voltas: [], passos: 0, terminou: false, chao: Chao.Asfalto, bateu: false, rodando: 0, toca: 0, chuva: 0,
   };
 }
@@ -139,12 +141,18 @@ export function passo(k: Kart, c: Comandos, p: Pista): void {
   }
   if (k.v > teto && !c.acelera) k.v -= Math.min(k.v - teto, 170 * dt);
 
-  // A DERRAPAGEM: começa com o botão apertado, virando, e em velocidade; dura enquanto ele estiver apertado.
-  if (k.deriva === 0 && c.derrapa && c.vira !== 0 && k.v > 70 && k.pulo === 0) {
+  // O PULO (16/11/2026, relato dele no Estoura-balão: "não tem pulo"): o botão de derrapar, apertado em linha reta (ou devagar
+  // demais para derrapar), dá um pulinho de verdade, mais alto que o da derrapagem. Só o desenho: a posição no chão, que é o que
+  // o servidor confere e o que os itens pegam, não muda, e o fantasma e o tempo da volta continuam os mesmos.
+  const aperta = c.derrapa && !k.segurava;
+  k.segurava = c.derrapa;
+  // A DERRAPAGEM: começa com o botão apertado, virando, e em velocidade; dura enquanto ele estiver apertado. Começa também
+  // no meio do pulo (apertou em linha reta e virou no ar), sem pular de novo.
+  if (k.deriva === 0 && c.derrapa && c.vira !== 0 && k.v > 70 && (k.pulo === 0 || k.vpulo !== 0)) {
     k.deriva = Math.sign(c.vira);
     k.carga = 0;
-    k.vpulo = 34;
-  }
+    if (k.pulo === 0) k.vpulo = 34;
+  } else if (aperta && k.pulo === 0 && k.vpulo === 0) k.vpulo = 52;
   if (k.deriva !== 0 && (!c.derrapa || k.v < 45)) {
     const nivel = nivelDaCarga(k);
     if (nivel > 0 && c.derrapa === false) k.turbo = Math.max(k.turbo, nivel === 2 ? 1.25 : 0.7);

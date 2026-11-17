@@ -3,7 +3,7 @@
    "carrega primeiro a versão 2D depois a 3D"); o 2D aparece aos olhos só no estilo 2D, sem WebGL ou se a cena falhar. */
 .mesa3d-tabuleiro {
   position: relative;
-  width: min(100%, 60vh, 440px);
+  width: min(100%, 60vh, 600px);
   aspect-ratio: 1 / 0.86;
   margin: 0 auto;
   border-radius: 10px;
@@ -69,7 +69,8 @@
 .mesa3d-domino {
   position: relative;
   width: 100%;
-  aspect-ratio: 1 / 0.72;
+  /* mais deitada que antes (0,72): no painel largo, a mesa alta empurrava a vez para fora da tela */
+  aspect-ratio: 1 / 0.6;
   min-height: 260px;
   border-radius: 14px;
   overflow: hidden;
@@ -97,4 +98,26 @@
 .truco > .truco-acoes {
   min-height: 4.75rem;
   justify-content: flex-start;
+}
+
+/* O PAINEL DO DOMINÓ NÃO PULA (16/11/2026, relato dele: "o tabuleiro se move"): o "Comprar" e os três últimos lances aparecem e
+   somem embaixo da mesa; com o lugar deles reservado, a mesa fica parada. */
+.dom-vez .minijogo-acoes.dom-comprar {
+  min-height: 2.75rem;
+}
+.dom-lances {
+  min-height: calc(3 * 1.4em);
+  line-height: 1.4;
+}
+.dom-lances li {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* O NOME DE QUEM SENTA EM FRENTE VAI PARA O CANTO, como o meu (16/11/2026, achado da auditoria): no meio, em cima, ele
+   cobria as cartas dele na cena. */
+.truco-mesa.mesa3d-truco > .truco-lugar.cima {
+  left: 12px;
+  transform: none;
 }

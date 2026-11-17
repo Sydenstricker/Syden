@@ -1,3 +1,4 @@
+import { temWebGL } from './temWebGL';
 import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { ComandosDoJogo } from './ComandosDosJogos';
@@ -340,14 +341,6 @@ function rodarPercurso(cfg: ConfigDoPercurso): () => void {
   };
 }
 
-function temWebGL(): boolean {
-  try {
-    const c = document.createElement('canvas');
-    return !!(c.getContext('webgl2') || c.getContext('webgl'));
-  } catch {
-    return false;
-  }
-}
 
 function Comandos({ solo = false }: { solo?: boolean }) {
   const t = useT();

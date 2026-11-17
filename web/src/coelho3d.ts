@@ -21,6 +21,8 @@ import type { User } from './types';
  *  - Uma LUZ DE BORDA (fresnel) suave, que separa o coelho do fundo.
  *  - O CONTORNO de desenho animado (a malha de novo, por trás e inflada na TELA, ~1,5 px): o que faz um modelo de cor
  *    chapada ler como personagem, e não como massinha.
+ *  - (16/11/2026, a auditoria dos jogos 3D) a luz LISA de volta, com o relevo e amaciada no alto (ver o shader), e o moletom
+ *    do mascote mais claro: a luz em degraus e o sol forte dos jogos ainda deixavam a cabeça um branco chapado.
  */
 
 export const URL_DO_COELHO = `${import.meta.env.BASE_URL}cidades3d/coelho-animado.glb`;
@@ -68,8 +70,15 @@ export interface CoresDoCoelho {
 }
 
 const hex = ([r, g, b]: [number, number, number]) => `rgb(${r},${g},${b})`;
-/** O mascote como é: o pelo da textura, o moletom do mascote em 2D. */
-export const CORES_DO_MASCOTE: CoresDoCoelho = { pelo: null, roupa: hex(MOLETOM_DO_MASCOTE[0]) };
+/**
+ * O mascote como é: o pelo da textura e o moletom do mascote em 2D, CLAREADO. O do 2D, (61, 43, 54), é quase preto: no 3D a
+ * luz não aparecia nele, e de costas o coelho virava uma bola clara sobre um borrão escuro (a auditoria de 16/11/2026). O
+ * mesmo tom de ameixa, uns 75% mais claro, mostra as dobras e a sombra e continua lendo como o moletom escuro do mascote.
+ */
+export const CORES_DO_MASCOTE: CoresDoCoelho = {
+  pelo: null,
+  roupa: hex(MOLETOM_DO_MASCOTE[0].map((c) => Math.round(c * 1.75)) as [number, number, number]),
+};
 
 /** As cores do avatar pronto (as do kart); sem avatar pronto, o mascote. */
 export function coresDoAvatar(avatar: number | string | null | undefined): CoresDoCoelho {
@@ -151,11 +160,10 @@ function ambienteDoCoelho(): THREE.Texture {
  */
 export function materialDoCoelho(base: THREE.MeshStandardMaterial, cores: CoresDoCoelho = CORES_DO_MASCOTE): MaterialDoCoelho {
   const m = base.clone();
-  // Na luz em degraus o relevo (as dobras do moletom) quebraria cada faixa em manchas: os degraus saem da forma do corpo,
-  // como no render da Briga.
-  m.normalMap = null;
-  // e sem o reflexo do sol (a mancha branca no alto da cabeça, que nos degraus vira uma tampa): só a cor e a luz
-  m.roughness = 1;
+  // O RELEVO do Meshy fica (as costuras e as bordas da pintura; carregarCoelho o põe no material do GLB): até 16/11/2026 ele
+  // saía aqui, por causa da luz em degraus, e o coelho perdia o pouco desenho que a textura lisa tem. O fosco é quase o do
+  // GLB (0,8): um brilho largo e fraco, que desenha o volume da cabeça sem virar a tampa branca de antes.
+  m.roughness = 0.85;
   m.metalness = 0;
   const uPelo = { value: new THREE.Color(cores.pelo ?? '#ffffff') };
   const uTrocaPelo = { value: cores.pelo ? 1 : 0 };
@@ -205,17 +213,17 @@ export function materialDoCoelho(base: THREE.MeshStandardMaterial, cores: CoresD
       .replace(
         '#include <opaque_fragment>',
         `{
-          // A LUZ EM DEGRAUS, como a do coelho da Briga (o render do Blender: 3 degraus que só multiplicam a cor; pedido dele,
-          // 06/11/2026: "o da briga tem textura, o do skate não"). A luz da cena (o sol, o céu, a noite do quarto) continua
-          // decidindo QUANTO chega; aqui só se arredonda isso a degraus de ~1,41× (um passo a cada meio log2), e a luz lisa,
-          // que numa pintura de cor chapada vira massa, passa a desenhar a forma em faixas.
+          // A LUZ QUE CHEGA AO COELHO, AMACIADA NO ALTO (16/11/2026, a auditoria do "coelho branco, sem textura"). Os jogos
+          // somam céu, sol e o ambiente do coelho, e chegava a ele 3 a 4× a luz: a cor clara do pelo passava do ombro do ACES e
+          // virava o mesmo branco, sem a lavanda, o rosado das orelhas nem a sombra do lado de lá. Até 0,8× a luz passa como
+          // veio (a noite do quarto não muda); acima, ela cresce cada vez menos (no máximo ~1,4×), e o lado do sol e o da sombra
+          // continuam diferentes. Antes (06/11/2026) era a luz em DEGRAUS, que achatava a pintura em faixas chapadas.
           float lCor = max(dot(diffuseColor.rgb, vec3(0.3, 0.59, 0.11)), 1e-3);
           float lLuz = max(dot(outgoingLight, vec3(0.3, 0.59, 0.11)), 1e-4);
           float chega = lLuz / lCor;
-          // PARA BAIXO, nunca para o mais perto: arredondar para cima levava o coelho do sol forte (o Rolê) a 1,4× ou 2× a luz, e
-          // a cor clara do avatar estourava em branco (relato dele, 06/11/2026: "o coelho ainda está branco, sem textura").
-          float degrau = exp2(floor(log2(chega) * 2.0) / 2.0);
-          outgoingLight *= degrau / chega;
+          float acima = max(chega - 0.8, 0.0);
+          float alvo = min(chega, 0.8) + acima / (1.0 + acima * 1.6);
+          outgoingLight *= alvo / chega;
         }
         {
           float borda = 1.0 - clamp(abs(dot(normalize(normal), normalize(vViewPosition))), 0.0, 1.0);
@@ -224,10 +232,11 @@ export function materialDoCoelho(base: THREE.MeshStandardMaterial, cores: CoresD
         #include <opaque_fragment>`,
       );
   };
-  m.customProgramCacheKey = () => 'coelho3d-paleta-degraus';
+  m.customProgramCacheKey = () => 'coelho3d-paleta-macia';
   if (typeof document !== 'undefined') {
     m.envMap = ambienteDoCoelho();
-    m.envMapIntensity = 1;
+    // pela metade: inteiro, ele chegava igual de todos os lados e apagava a diferença entre o lado do sol e o da sombra
+    m.envMapIntensity = 0.55;
   }
   const pintar = (c: CoresDoCoelho) => {
     uTrocaPelo.value = c.pelo ? 1 : 0;

@@ -1,3 +1,4 @@
+import { temWebGL } from './temWebGL';
 import { Bell } from 'lucide-react';
 import { useEffect, useRef, useState, type MouseEvent as ME, type PointerEvent as PE, type WheelEvent as WE } from 'react';
 import { ComandosDoJogo } from './ComandosDosJogos';
@@ -1109,13 +1110,4 @@ function desenharMapa(tela: HTMLCanvasElement | null, sim: Sim, vista: Vista) {
   c.forEach((p, i) => (i ? g.lineTo(p.x * k, p.y * k) : g.moveTo(p.x * k, p.y * k)));
   g.closePath();
   g.stroke();
-}
-
-function temWebGL(): boolean {
-  try {
-    const c = document.createElement('canvas');
-    return !!(c.getContext('webgl2') || c.getContext('webgl'));
-  } catch {
-    return false;
-  }
 }

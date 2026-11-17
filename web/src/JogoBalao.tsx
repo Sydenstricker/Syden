@@ -10,7 +10,7 @@ import type { Comandos } from './corrida/fisica';
 import type { PosicaoDoRival, Rival } from './corrida/laco';
 import { H, W } from './corrida/render';
 import { NOMES_DAS_ARENAS } from './balao/nomes';
-import { rodarBalao, TIPOS_DO_BALAO, type EventoDoBalao, type Participante } from './balao/laco';
+import { figuraDoItem, rodarBalao, TIPOS_DO_BALAO, type EventoDoBalao, type Participante } from './balao/laco';
 import { corDoBalao } from './balao/render';
 import { ARENAS, BALOES, type ItemDoBalao } from './balao/sim';
 import './balao/balao.css';
@@ -279,7 +279,7 @@ function BotoesDeToque({ controles, item }: { controles: ReturnType<typeof useCo
     onPointerCancel: () => tocarLado(qual, false),
     onPointerLeave: () => tocarLado(qual, false),
   });
-  const segurar = (campo: 'usa' | 'olha') => ({
+  const segurar = (campo: 'usa' | 'olha' | 'derrapa') => ({
     onPointerDown: () => (comandos.current[campo] = true),
     onPointerUp: () => (comandos.current[campo] = false),
     onPointerCancel: () => (comandos.current[campo] = false),
@@ -289,6 +289,9 @@ function BotoesDeToque({ controles, item }: { controles: ReturnType<typeof useCo
     <div className="corrida-toque">
       <button type="button" aria-label={t('Virar para a esquerda')} {...lado('toqueEsquerda')}>
         ◀
+      </button>
+      <button type="button" aria-label={t('Pular')} {...segurar('derrapa')}>
+        ⤒
       </button>
       {item && (
         <button type="button" aria-label={t('Usar o item')} {...segurar('usa')}>
@@ -313,6 +316,41 @@ const relogio = (ms: number) => {
   const s = Math.ceil(ms / 1000);
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 };
+
+/**
+ * O QUE É MEU, GRANDE, POR CIMA DA TELA (16/11/2026, relato dele: "os ícones estão muito pequenos"): desenhados na tela de
+ * 320 × 180, os meus balões tinham 9 pontos e o quadro do item 26 × 22. Em HTML, eles acompanham o tamanho do painel: os
+ * balões no canto de cima à esquerda e o quadro do item no meio, com a figura do item (a mesma pixel art da arena) ampliada.
+ * Só desenho: a lista de todos (BaloesDeTodos) e o botão do item dizem o mesmo ao leitor de tela.
+ */
+function MeuPainel({ quantos, cor, item }: { quantos: number; cor: string; item: ItemDoBalao | null }) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const c = ref.current;
+    const g = c?.getContext('2d');
+    if (!c || !g) return;
+    g.clearRect(0, 0, c.width, c.height);
+    const fig = item ? figuraDoItem(item) : null;
+    if (!fig) return;
+    g.imageSmoothingEnabled = false;
+    // a figura inteira, no maior múltiplo inteiro que cabe (pixel art só amplia em inteiros)
+    const k = Math.max(1, Math.floor(Math.min((c.width - 4) / fig.width, (c.height - 4) / fig.height)));
+    const w = fig.width * k, h = fig.height * k;
+    g.drawImage(fig, Math.round((c.width - w) / 2), Math.round((c.height - h) / 2), w, h);
+  }, [item]);
+  return (
+    <div className="balao-meu" aria-hidden="true">
+      <span className="balao-meus-baloes">
+        {Array.from({ length: BALOES }, (_, i) => (
+          <i key={i} className={i < quantos ? 'cheio' : undefined} style={i < quantos ? { background: cor } : undefined} />
+        ))}
+      </span>
+      <span className={`balao-item${item ? ' com-item' : ''}`}>
+        <canvas ref={ref} width={32} height={32} />
+      </span>
+    </div>
+  );
+}
 
 /** Os balões de cada um, no canto: o nome e as bolinhas da cor dele. */
 function BaloesDeTodos({ participantes, baloes, eu }: { participantes: Participante[]; baloes: Map<number, number>; eu: number }) {
@@ -344,7 +382,8 @@ function Comandos_({ piloto, solo = false }: { piloto: boolean; solo?: boolean }
     <ComandosDoJogo
       itens={[
         { teclas: ['setas'], rotulo: t('Dirigir') },
-        { teclas: ['espaco'], rotulo: t('Derrapar') },
+        // o Espaço pula (em linha reta) e, virando, derrapa (16/11/2026)
+        { teclas: ['espaco'], rotulo: t('Pular') },
         { teclas: ['e'], rotulo: t('Usar o item') },
         { teclas: ['q'], rotulo: t('Olhar para trás') },
         ...(solo ? [comandoDaPausa(t)] : []),
@@ -432,6 +471,7 @@ function PartidaSolo({
           <span className="corrida-relogio">{relogio(restante.restanteMs)}</span>
         </div>
         <BaloesDeTodos participantes={participantes.current} baloes={baloes} eu={eu} />
+        {!acabou && <MeuPainel quantos={baloes.get(eu) ?? BALOES} cor={corDoBalao(0)} item={item} />}
         {!acabou && <BotoesDeToque controles={controles} item={item} />}
           {!acabou && pausado && <TelaDePausa aoContinuar={continuar} icone={false} />}
       </div>
@@ -556,6 +596,9 @@ function PartidaNaSala({
         </div>
         <BaloesDeTodos participantes={participantes.current} baloes={baloes} eu={eu} />
         {piloto && !euVivo && <p className="balao-aviso">{t('Sem balões: agora é assistir. ◀ ▶ trocam de quem.')}</p>}
+        {euVivo && (
+          <MeuPainel quantos={baloes.get(eu) ?? 0} cor={corDoBalao(participantes.current.find((q) => q.id === eu)?.largada ?? 0)} item={item} />
+        )}
         {euVivo && <BotoesDeToque controles={controles} item={item} />}
       </div>
       <Comandos_ piloto={euVivo} />

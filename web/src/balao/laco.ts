@@ -8,14 +8,12 @@ import {
   corDoBalao,
   estouroNaTela,
   mapaDaArena,
-  meusBaloes,
   pontoNoMapaDaArena,
-  quadroDoItem,
   retrovisor,
   semaforo,
   solidosNaTela,
 } from './render';
-import { BALOES, DURACAO_PASSOS, INVULNERAVEL, PASSOS_POR_SEGUNDO, repolhoNoPasso, VIDA_DA_LAMA, type ItemDoBalao } from './sim';
+import { DURACAO_PASSOS, INVULNERAVEL, PASSOS_POR_SEGUNDO, repolhoNoPasso, VIDA_DA_LAMA, type ItemDoBalao } from './sim';
 
 export { TIPOS_DO_BALAO, type EventoDoBalao, type Participante } from './partida';
 
@@ -54,6 +52,14 @@ export interface OpcoesDoBalao {
   aoFim?: (r: ResultadoDoSolo) => void;
 }
 
+/** As figuras da última tela aberta: o quadro do item (em HTML, JogoBalao.tsx) desenha a do item com elas. */
+let figurasDaTela: Record<string, HTMLCanvasElement> | null = null;
+
+/** A figura do item na mão (o desenho da arena, em pixel art), para o quadro do item, que é HTML. */
+export function figuraDoItem(item: ItemDoBalao): HTMLCanvasElement | null {
+  return figurasDaTela?.[item === 'alface' ? 'escudo' : item] ?? null;
+}
+
 let coelhoPronto: HTMLImageElement | null = null;
 async function coelho(): Promise<HTMLImageElement> {
   if (!coelhoPronto) {
@@ -78,6 +84,7 @@ export function rodarBalao(o: OpcoesDoBalao): () => void {
   let quadro = 0;
   let pararExtra = () => {};
   const d: Desenho = prepararDesenho(o.canvas, temaDaArena(o.arena));
+  figurasDaTela = d.figuras;
 
   void (async () => {
     d.coelho = await coelho();
@@ -163,8 +170,9 @@ export function rodarBalao(o: OpcoesDoBalao): () => void {
       // as caixas: as que estão lá para mim (quem assiste vê todas)
       for (let i = 0; i < arena.caixas.length; i++) {
         if (euJogo && meu!.caixaVolta[i] > n) continue;
-        // do tamanho de quase um kart (3,4: uns 9 de largura no mundo), e a área de pegar acompanha (RAIO_DA_CAIXA)
-        const f = figuraNoChao(d, cam, 'caixa', arena.caixas[i][0], arena.caixas[i][1], 3.4 + 0.15 * Math.sin(tempo * 3.8));
+        // do tamanho do kart (4,4: uns 12 de largura no mundo; era 3,4, e de longe a caixa sumia), dentro da área de pegar
+        // (RAIO_DA_CAIXA, 16)
+        const f = figuraNoChao(d, cam, 'caixa', arena.caixas[i][0], arena.caixas[i][1], 4.4 + 0.2 * Math.sin(tempo * 3.8));
         if (f) figuras.push(f);
       }
       // os itens no chão e rolando
@@ -216,9 +224,8 @@ export function rodarBalao(o: OpcoesDoBalao): () => void {
       for (const f of figuras) f.desenhar(d.ctx);
       if (euJogo && !olhando && meu!.kart.turbo > 0) faiscas(d.ctx, W / 2, 168, 2, tempo, meu!.kart.deriva);
       if (olhando) retrovisor(d.ctx);
-      // o que fica na tela: os meus balões, o item na mão, o mapa pequeno e a contagem
-      if (meu) meusBaloes(d.ctx, baloesDe(meu.id), BALOES, corDoBalao(porId.get(meu.id)?.largada ?? 0));
-      if (euJogo && n > 0) quadroDoItem(d, meu!.naMao);
+      // o que fica na tela: o mapa pequeno e a contagem. Os meus balões e o item na mão são HTML por cima (JogoBalao.tsx,
+      // 16/11/2026): desenhados aqui, na tela de 320 × 180, eram ícones de 9 pontos
       d.ctx.globalAlpha = 0.85;
       d.ctx.drawImage(mapa, W - 60, H - 60);
       d.ctx.globalAlpha = 1;

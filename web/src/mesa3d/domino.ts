@@ -4,11 +4,16 @@ import { fundoAconchegante, mesaDeFeltro } from './ambiente';
 import { carregarModelo, copiaDe, giro, iluminar, MesaBase } from './base';
 
 /**
- * O DOMINÓ EM 3D (05/11/2026, pedido dele): as pedras do KayKit (`domino_tile_a-b`, o 6-6 inteiro) num feltro. A corrente
- * deita no meio e QUEBRA EM LINHAS como no 2D, com as duplas atravessadas; a minha mão fica em pé na minha frente, e as que
- * servem acendem; as dos outros, de costas, em fila no alto, na ordem da lista de nomes de cima. A pedra jogada vai da mão (ou
- * do alto, se foi de outro) para o lugar dela na corrente, e as outras escorregam para abrir espaço. A pedra que serve nas duas
- * pontas, escolhida, acende as duas pontas da corrente para o clique. As regras moram no servidor; a tela só mostra e pede.
+ * O DOMINÓ EM 3D (05/11/2026, pedido dele): as pedras do KayKit (`domino_tile_a-b`, o 6-6 inteiro) num feltro. A minha mão
+ * fica em pé na minha frente, e as que servem acendem; as dos outros, de costas, em fila no alto, na ordem da lista de nomes de
+ * cima. A pedra que serve nas duas pontas, escolhida, acende as duas pontas da corrente para o clique. As regras moram no
+ * servidor; a tela só mostra e pede.
+ *
+ * A CORRENTE É ESTÁVEL, COMO NA MESA DE VERDADE (16/11/2026, relato dele: "o tabuleiro se move; deveria ficar estável na
+ * mesa"): a primeira pedra fica no meio, as novas crescem a partir das duas pontas, e NADA do que já foi jogado se mexe. Antes
+ * a corrente quebrava em linhas centradas, refeitas a cada lance, e toda pedra escorregava. Quando uma ponta chega perto da
+ * borda, ela VIRA A ESQUINA (uma pedra atravessada) e volta na linha de baixo (a da direita) ou na de cima (a da esquerda),
+ * em cobrinha. Quem entra no meio da mão vê a corrente montada a partir da pedra do meio.
  */
 
 export type Pedra = [number, number];
@@ -32,7 +37,11 @@ const CURTO = 1 * ESCALA;
 const LONGO = 2 * ESCALA;
 const GROSSO = 0.277 * ESCALA;
 const FOLGA = 0.04;
-const LINHA = 6.6;
+/** Até onde a corrente vai para os lados antes de virar a esquina, e a linha do meio dela. */
+const LIMITE_X = 3.55;
+const Z_DO_MEIO = -0.3;
+/** A distância entre uma linha da cobrinha e a seguinte: uma pedra deitada e um respiro (as duplas atravessadas não encostam). */
+const ENTRE_LINHAS = LONGO + 0.12;
 const chaveDa = (p: Pedra) => `${Math.min(p[0], p[1])}-${Math.max(p[0], p[1])}`;
 const DE_PE = giro(1.13, 0, 0);
 
@@ -53,6 +62,47 @@ interface Lugar {
 }
 const NA_MAO = 1.3;
 
+/** Uma ponta da corrente: onde ela acaba, para que lado cresce (só no x: a esquina é uma pedra só) e para que lado vira. */
+interface Cabeca {
+  x: number;
+  z: number;
+  dx: 1 | -1;
+  vira: 1 | -1;
+}
+
+/** O giro que põe a metade `perto` virada para trás (−d) e a outra para a frente; no modelo, a metade menor está no −z. */
+function rumoDa(p: Pedra, perto: number, dx: number, dz: number): number {
+  if (p[0] === p[1]) return dx !== 0 ? 0 : Math.PI / 2; // a dupla, atravessada
+  const menor = Math.min(p[0], p[1]);
+  // para onde aponta a metade menor: para trás se ela é a que encosta, senão para a frente
+  const ux = perto === menor ? -dx : dx;
+  const uz = perto === menor ? -dz : dz;
+  return Math.atan2(-ux, -uz);
+}
+
+/**
+ * Deita a pedra `p` na ponta `h` (`perto` é o número que encosta na corrente) e devolve o lugar dela e a ponta nova. Não cabendo
+ * antes do LIMITE_X, ela vira a esquina: deita atravessada, ligando esta linha à seguinte, e a ponta volta no sentido contrário.
+ */
+function encaixar(h: Cabeca, p: Pedra, perto: number): { lugar: Lugar; cabeca: Cabeca } {
+  const dupla = p[0] === p[1];
+  const comp = (dupla ? CURTO : LONGO) + FOLGA;
+  const y = GROSSO / 2 + 0.002;
+  if (Math.abs(h.x + h.dx * comp) <= LIMITE_X) {
+    return {
+      lugar: { pos: new THREE.Vector3(h.x + (h.dx * comp) / 2, y, h.z), q: giro(0, rumoDa(p, perto, h.dx, 0), 0), alvo: null },
+      cabeca: { ...h, x: h.x + h.dx * comp },
+    };
+  }
+  // A ESQUINA: a pedra de pé no sentido da virada, logo depois do fim da linha, entre esta linha e a próxima
+  const x = h.x + h.dx * ((dupla ? LONGO : CURTO) / 2 + FOLGA);
+  const z = h.z + (h.vira * ENTRE_LINHAS) / 2;
+  return {
+    lugar: { pos: new THREE.Vector3(x, y, z), q: giro(0, rumoDa(p, perto, 0, h.vira), 0), alvo: null },
+    cabeca: { x: h.x, z: h.z + h.vira * ENTRE_LINHAS, dx: (h.dx === 1 ? -1 : 1) as 1 | -1, vira: h.vira },
+  };
+}
+
 export class Domino3D extends MesaBase<DominoDaCena> {
   private modelos = new Map<string, GLTF>();
   private pecas = new Map<string, Peca>();
@@ -60,6 +110,8 @@ export class Domino3D extends MesaBase<DominoDaCena> {
   private matPonta = new THREE.MeshBasicMaterial({ color: '#7be39a', transparent: true, opacity: 0.6, depthWrite: false });
   private pontas: THREE.Mesh[] = [];
   private montado = false;
+  /** A corrente já deitada: as chaves na ordem da mesa, o lugar de cada pedra (que nunca muda) e as duas pontas. */
+  private deitada: { chaves: string[]; lugares: Map<string, Lugar>; esquerda: Cabeca; direita: Cabeca } | null = null;
 
   protected async carregarTudo() {
     const nomes: string[] = [];
@@ -82,10 +134,11 @@ export class Domino3D extends MesaBase<DominoDaCena> {
   }
 
   protected enquadrar(aspecto: number) {
-    const longe = Math.max(1, 1.38 / aspecto);
-    this.camera.fov = 38;
-    this.camera.position.set(0, 7.8 * longe, 4.9 * longe);
-    this.camera.lookAt(0, 0, 0.45);
+    // perto o bastante para ler os pontos da corrente; numa caixa estreita, recua para a mão e as pedras de cima caberem
+    const longe = Math.max(1, 1.45 / aspecto);
+    this.camera.fov = 36;
+    this.camera.position.set(0, 6.9 * longe, 4.6 * longe);
+    this.camera.lookAt(0, 0, 0.3);
   }
 
   private nova(p: Pedra): Peca {
@@ -106,40 +159,57 @@ export class Domino3D extends MesaBase<DominoDaCena> {
     return { obj, mat: mat ?? new THREE.MeshStandardMaterial(), alvo: null, onde: '' };
   }
 
-  /** Onde cada pedra da corrente deita: as linhas enchem da esquerda para a direita e ficam centradas. */
-  private corrente(mesa: Pedra[]): Lugar[] {
-    const linhas: { pedras: { p: Pedra; dupla: boolean }[]; largura: number }[] = [];
-    let atual: { pedras: { p: Pedra; dupla: boolean }[]; largura: number } = { pedras: [], largura: 0 };
-    for (const p of mesa) {
-      const dupla = p[0] === p[1];
-      const w = (dupla ? CURTO : LONGO) + FOLGA;
-      if (atual.pedras.length && atual.largura + w > LINHA) {
-        linhas.push(atual);
-        atual = { pedras: [], largura: 0 };
-      }
-      atual.pedras.push({ p, dupla });
-      atual.largura += w;
+  /**
+   * Onde cada pedra da corrente deita. Se a mesa nova é a de antes com pedras nas pontas, só as novas ganham lugar (o das outras
+   * não muda); senão (mão nova, ou a primeira vista no meio da mão), a corrente se deita de novo a partir da pedra do meio.
+   */
+  private corrente(mesa: Pedra[]): { lugares: Lugar[]; esquerda: Cabeca | null; direita: Cabeca | null } {
+    const chaves = mesa.map(chaveDa);
+    const antes = this.deitada;
+    let ini = -1;
+    if (antes && antes.chaves.length && antes.chaves.length <= chaves.length) {
+      ini = chaves.indexOf(antes.chaves[0]);
+      if (ini >= 0 && antes.chaves.some((c, k) => chaves[ini + k] !== c)) ini = -1;
     }
-    if (atual.pedras.length) linhas.push(atual);
-    const passo = LONGO + 0.22;
-    const z0 = -0.55 - ((linhas.length - 1) * passo) / 2;
-    const lugares: Lugar[] = [];
-    linhas.forEach((l, k) => {
-      let x = -l.largura / 2;
-      for (const { p, dupla } of l.pedras) {
-        const w = (dupla ? CURTO : LONGO) + FOLGA;
-        // o número da esquerda (p[0]) fica à esquerda; no modelo, o menor está no -z
-        const rumo = dupla ? 0 : p[0] <= p[1] ? Math.PI / 2 : -Math.PI / 2;
-        lugares.push({ pos: new THREE.Vector3(x + w / 2, GROSSO / 2 + 0.002, z0 + k * passo), q: giro(0, rumo, 0), alvo: null });
-        x += w;
+    if (ini < 0) {
+      if (!mesa.length) {
+        this.deitada = null;
+        return { lugares: [], esquerda: null, direita: null };
       }
-    });
-    return lugares;
+      // a primeira pedra (ou a do meio, para quem chega com a mão andando) no meio da mesa, deitada como veio
+      const k = Math.floor((mesa.length - 1) / 2);
+      const p = mesa[k];
+      const w = (p[0] === p[1] ? CURTO : LONGO) + FOLGA;
+      const lugar: Lugar = { pos: new THREE.Vector3(0, GROSSO / 2 + 0.002, Z_DO_MEIO), q: giro(0, rumoDa(p, p[0], 1, 0), 0), alvo: null };
+      this.deitada = {
+        chaves: [chaves[k]],
+        lugares: new Map([[chaves[k], lugar]]),
+        esquerda: { x: -w / 2, z: Z_DO_MEIO, dx: -1, vira: -1 },
+        direita: { x: w / 2, z: Z_DO_MEIO, dx: 1, vira: 1 },
+      };
+      ini = k;
+    }
+    const c = this.deitada!;
+    // as novas da esquerda, da mais perto da corrente para a mais longe; o número que encosta é o da direita da pedra
+    for (let k = ini - 1; k >= 0; k--) {
+      const { lugar, cabeca } = encaixar(c.esquerda, mesa[k], mesa[k][1]);
+      c.lugares.set(chaves[k], lugar);
+      c.esquerda = cabeca;
+    }
+    // as novas da direita; o número que encosta é o da esquerda da pedra
+    for (let k = ini + c.chaves.length; k < mesa.length; k++) {
+      const { lugar, cabeca } = encaixar(c.direita, mesa[k], mesa[k][0]);
+      c.lugares.set(chaves[k], lugar);
+      c.direita = cabeca;
+    }
+    c.chaves = chaves;
+    for (const ch of [...c.lugares.keys()]) if (!chaves.includes(ch)) c.lugares.delete(ch);
+    return { lugares: chaves.map((ch) => c.lugares.get(ch)!), esquerda: c.esquerda, direita: c.direita };
   }
 
   protected aplicar(d: DominoDaCena) {
     const quer = new Map<string, Lugar>();
-    const corrente = this.corrente(d.mesa);
+    const { lugares: corrente, esquerda, direita } = this.corrente(d.mesa);
     d.mesa.forEach((p, k) => quer.set(chaveDa(p), corrente[k]));
     const nm = d.mao.length;
     const largura = Math.min(CURTO * NA_MAO + 0.14, 8.2 / Math.max(1, nm));
@@ -203,16 +273,16 @@ export class Domino3D extends MesaBase<DominoDaCena> {
       }
     }
 
-    // as duas pontas, quando a escolhida serve nas duas
-    const pronta = d.escolhida !== null && corrente.length > 0;
+    // as duas pontas, quando a escolhida serve nas duas: a luz fica onde uma pedra deitada cairia
+    const pronta = d.escolhida !== null && corrente.length > 0 && !!esquerda && !!direita;
     this.pontas.forEach((m, k) => {
       m.visible = pronta;
       if (!pronta) return;
-      const ponta = k === 0 ? corrente[0] : corrente[corrente.length - 1];
-      const pedra = k === 0 ? d.mesa[0] : d.mesa[d.mesa.length - 1];
-      const meio = (pedra[0] === pedra[1] ? CURTO : LONGO) / 2;
-      m.position.set(ponta.pos.x + (k === 0 ? -1 : 1) * (meio + LONGO * 0.6 + 0.05), 0.006, ponta.pos.z);
-      m.rotation.z = Math.PI / 2;
+      const h = k === 0 ? esquerda! : direita!;
+      const { lugar } = encaixar(h, [0, 1], 0);
+      m.position.set(lugar.pos.x, 0.006, lugar.pos.z);
+      // deitada no x, ou de pé na esquina
+      m.rotation.z = Math.abs(lugar.pos.z - h.z) < 0.01 ? Math.PI / 2 : 0;
     });
   }
 

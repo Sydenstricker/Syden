@@ -248,14 +248,17 @@ export function JogoDomino({ estado: bruto, eu, jogador, restante, agir }: { est
       {estado.fase === 'jogando' && (
         <div className="dom-vez" aria-live="polite">
           <p className="minijogo-situacao">{minhaVez ? t('Sua vez!') : t('Vez de {nome}.', { nome: nomeDe(estado.vez ?? 0) })}</p>
-          {minhaVez && estado.devoComprar && (
-            <div className="minijogo-acoes">
-              <span>{t('Nenhuma pedra serve: compre.')}</span>
-              <button type="button" className="btn-primary" onClick={() => agir({ tipo: 'comprar' })}>
-                {t('Comprar')}
-              </button>
-            </div>
-          )}
+          {/* o lugar do "Comprar" e o dos três últimos lances ficam sempre reservados: aparecendo e sumindo, empurravam a mesa */}
+          <div className="minijogo-acoes dom-comprar">
+            {minhaVez && estado.devoComprar && (
+              <>
+                <span>{t('Nenhuma pedra serve: compre.')}</span>
+                <button type="button" className="btn-primary" onClick={() => agir({ tipo: 'comprar' })}>
+                  {t('Comprar')}
+                </button>
+              </>
+            )}
+          </div>
           <Relogio restante={restante} total={TEMPO_DA_VEZ} />
           <ol className="dom-lances">
             {[...estado.historico]

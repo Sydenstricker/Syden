@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useT } from './i18n';
 import { Relogio } from './Minijogo';
 import { Mar3D } from './naval3d/Mar3D';
+import { temWebGL } from './temWebGL';
 import { FROTA, casasDoNavio, encosta, inicioDoNavio } from './naval3d/montagem';
 import type { FrotaDaCena } from './naval3d/cena';
 import type { Partida } from './minijogos';
@@ -136,7 +137,7 @@ export function JogoNaval({
       </div>
 
       {/* a frota que se vê no 3D: no 2D, o casco é um só */}
-      {temWebGLNaval() && (
+      {temWebGL() && (
         <div className="naval-frotas" role="radiogroup" aria-label={t('Navios')}>
           {(['piratas', 'moderna'] as const).map((f) => (
             <button
@@ -553,14 +554,4 @@ function FiguraModerna() {
       <path d="M8 12h2M12 12h2M16 12h2M20 12h2" stroke="#2f5d8a" strokeWidth="1.4" />
     </svg>
   );
-}
-
-/** A escolha da frota é só do 3D (no 2D o casco é um só): aparece onde o 3D pode abrir. */
-function temWebGLNaval(): boolean {
-  try {
-    const c = document.createElement('canvas');
-    return !!(c.getContext('webgl2') || c.getContext('webgl'));
-  } catch {
-    return false;
-  }
 }

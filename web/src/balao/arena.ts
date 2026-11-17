@@ -156,7 +156,32 @@ const COR = {
   turboFundo: rgb(150, 70, 40),
   zebraA: rgb(196, 70, 62),
   zebraB: rgb(232, 226, 210),
+  flor: [rgb(236, 120, 150), rgb(246, 214, 96), rgb(236, 236, 230), rgb(186, 140, 220)],
+  trilha: [rgb(196, 162, 112), rgb(184, 150, 102)],
 };
+
+/** Um ruído suave de 0 a 1 (a média de quatro cantos de uma grade de `lado`), para o piso e a grama não serem xadrez. */
+function ruidoSuave(x: number, y: number, lado: number, semente: number) {
+  const h = (i: number, j: number) => {
+    let v = Math.imul(i, 374761393) ^ Math.imul(j, 668265263) ^ Math.imul(semente, 2246822519);
+    v = Math.imul(v ^ (v >>> 13), 1274126177);
+    return ((v ^ (v >>> 16)) >>> 0) / 4294967296;
+  };
+  const gx = x / lado, gy = y / lado;
+  const i = Math.floor(gx), j = Math.floor(gy), u = gx - i, v = gy - j;
+  const su = u * u * (3 - 2 * u), sv = v * v * (3 - 2 * v);
+  const a = h(i, j) + (h(i + 1, j) - h(i, j)) * su;
+  const b = h(i, j + 1) + (h(i + 1, j + 1) - h(i, j + 1)) * su;
+  return a + (b - a) * sv;
+}
+
+/** Mistura duas cores (do formato da textura) em `t` (0 a 1). */
+function misturar(c1: number, c2: number, t: number) {
+  const r = Math.round((c1 & 0xff) + ((c2 & 0xff) - (c1 & 0xff)) * t);
+  const g = Math.round(((c1 >> 8) & 0xff) + (((c2 >> 8) & 0xff) - ((c1 >> 8) & 0xff)) * t);
+  const b = Math.round(((c1 >> 16) & 0xff) + (((c2 >> 16) & 0xff) - ((c1 >> 16) & 0xff)) * t);
+  return rgb(r, g, b);
+}
 
 let guardada: ArenaPintada | null = null;
 
@@ -202,8 +227,16 @@ export function montarArena(a: Arena): ArenaPintada {
         // fora da arena: o gramado (ou a areia) do tema, e a cerca logo depois da borda
         tipo = Chao.Parede;
         if (borda > -6) cor = T.cerca[(((tx >> 3) + (ty >> 3)) & 1)];
-        else {
-          cor = T.grama[Math.floor((x + y * 0.6) / 28) & 1];
+        else if (borda > -26 && borda < -12) {
+          // A TRILHA em volta da cerca (16/11/2026, "o cenário é simples demais"): terra batida, com as bordas comidas
+          const beira = Math.min(borda + 26, -12 - borda);
+          cor = beira < 1.5 + ruidoSuave(x, y, 6, 3) * 2 ? T.gramaEscura : COR.trilha[ruidoSuave(x, y, 9, 4) > 0.55 ? 1 : 0];
+          if (((ruido >>> 5) & 0x3f) === 0) cor = T.gramaPonto;
+        } else {
+          // a grama em faixas de cortador, com manchas mais escuras e mais claras (o ruído), e os pontinhos
+          const faixa = T.grama[Math.floor((x + y * 0.6) / 28) & 1];
+          const mancha = ruidoSuave(x, y, 40, 1);
+          cor = mancha < 0.3 ? misturar(faixa, T.gramaEscura, 0.45) : mancha > 0.78 ? misturar(faixa, T.gramaPonto, 0.25) : faixa;
           if (((ruido >>> 4) & 0x3f) === 0) cor = T.gramaPonto;
         }
       } else if (borda < MARGEM_DO_KART + 5) {
@@ -214,9 +247,16 @@ export function montarArena(a: Arena): ArenaPintada {
         if (tipo === Chao.Parede) cor = escurecer(cor);
       } else {
         tipo = Chao.Asfalto;
-        // o piso de jogar: em placas grandes, com os riscos das rodas
-        cor = visual.piso[(Math.floor(x / 48) + Math.floor(y / 48)) & 1];
+        // O PISO DE JOGAR (16/11/2026): era um xadrez de duas cores; agora a terra (a areia, a neve batida) é manchada pelo
+        // ruído, com as marcas de pneu em volta do centro e as pedrinhas. Só a cor: o chão continua o mesmo para o kart.
+        const m = ruidoSuave(x, y, 34, 2) * 0.7 + ruidoSuave(x, y, 9, 5) * 0.3;
+        cor = misturar(visual.piso[0], visual.piso[1], m);
+        if (m < 0.28) cor = misturar(cor, visual.risco, 0.5);
+        const rc = Math.hypot(x - cx, y - cy);
+        // as marcas de pneu: anéis finos e interrompidos, por onde os karts rodam
+        if ((Math.abs(rc - 150) < 1.2 || Math.abs(rc - 158) < 1.2 || Math.abs(rc - 232) < 1.2) && ruidoSuave(x, y, 22, 6) > 0.4) cor = misturar(cor, visual.risco, 0.8);
         if (((ruido >>> 6) & 0x7f) === 0) cor = visual.risco;
+        else if (((ruido >>> 9) & 0xff) === 1) cor = misturar(visual.piso[0], rgb(250, 248, 240), 0.5);
       }
       chao[k] = tipo;
       textura[k] = cor;
@@ -300,16 +340,46 @@ export function montarArena(a: Arena): ArenaPintada {
     const [x0, y0, x1, y1] = a.retangulo!;
     solidos.push(solido([[x0, y0], [x1, y0], [x1, y1], [x0, y1]], 6, false, SOLIDO.cerca, 20));
   }
-  // e as árvores de fora da arena, longe da cerca, para o horizonte não ficar vazio
-  for (let i = 0, tent = 0; i < 70 && tent < 3000; tent++) {
+  // O LADO DE FORA (16/11/2026, relato dele: "o cenário é simples demais"), no jeito das pistas da corrida: as árvores em
+  // volta (mais perto e mais juntas que antes, de tamanhos diferentes, com a sombra), os canteiros de cenoura e as flores
+  // (onde o tema tem grama: na praia e na neve, só as árvores do tema). Tudo fora da cerca: dentro, nada de pé que não bloqueie.
+  const comFlores = !T.areia && T.arvore !== 'pinheiro-neve';
+  const ocupado = (x: number, y: number, d: number) => enfeites.some((e) => Math.hypot(e.x - x, e.y - y) < d);
+  for (let i = 0, tent = 0; i < 130 && tent < 6000; tent++) {
     const x = 30 + sorte() * (MUNDO - 60), y = 30 + sorte() * (MUNDO - 60);
-    if (ateABorda(x, y) > -24) continue;
-    if (enfeites.some((e) => Math.hypot(e.x - x, e.y - y) < 30)) continue;
-    enfeites.push({ x, y, figura: T.arvore, tamanho: 2.6 });
+    const b = ateABorda(x, y);
+    // a primeira fileira logo depois da trilha, as outras mais soltas até o horizonte
+    if (b > -34 || ocupado(x, y, b > -90 ? 20 : 30)) continue;
+    // as da primeira fileira, grandes: de dentro da arena, são elas que aparecem por cima da cerca
+    const tamanho = b > -90 ? 3.4 + sorte() * 1.3 : 2.2 + sorte() * 1.1;
+    enfeites.push({ x, y, figura: T.arvore, tamanho });
+    pintarCirculo(chao, textura, x + 4, y + 3, 7 + tamanho * 2, (_d, tx, ty) => [chao[ty * RES + tx] as Chao, escurecer(textura[ty * RES + tx])]);
+    i++;
+  }
+  for (let i = 0, tent = 0; i < 46 && tent < 4000; tent++) {
+    const x = 30 + sorte() * (MUNDO - 60), y = 30 + sorte() * (MUNDO - 60);
+    const b = ateABorda(x, y);
+    if (b > -30 || b < -160 || ocupado(x, y, 16)) continue;
+    if (comFlores && T.canteiros && i % 3 === 0) {
+      // um canteiro: a terra com sulcos e três cenouras
+      pintarCirculo(chao, textura, x, y, 9, (d, tx, ty) => [Chao.Parede, d > 8 ? COR.caixoteBorda : (ty >> 2) % 2 ? COR.sulco : COR.terra[tx & 1]]);
+      for (let c = -1; c <= 1; c++) enfeites.push({ x: x + c * 5, y: y + (c & 1) * 2, figura: 'cenoura', tamanho: 1 });
+    } else if (comFlores) {
+      // uma moita de flores: os pontinhos coloridos no chão e a figura de pé
+      const cor = COR.flor[Math.floor(sorte() * COR.flor.length)];
+      for (let f = 0; f < 14; f++) {
+        const fx = Math.floor((x + (sorte() - 0.5) * 22) * K), fy = Math.floor((y + (sorte() - 0.5) * 22) * K);
+        if (fx > 0 && fy > 0 && fx < RES - 1 && fy < RES - 1) textura[fy * RES + fx] = textura[fy * RES + fx + 1] = cor;
+      }
+      enfeites.push({ x, y, figura: 'flor', tamanho: 1.3 });
+    } else {
+      // na praia e na neve: uma árvore pequena a mais
+      enfeites.push({ x, y, figura: T.arvore, tamanho: 1.5 + sorte() * 0.6 });
+    }
     i++;
   }
 
-  const [lx0, ly0] = a.largadas[0];
+  const l0 = largadaDa(a, 0);
   return {
     def,
     arena: a,
@@ -322,7 +392,7 @@ export function montarArena(a: Arena): ArenaPintada {
     objetos: [],
     enfeites,
     solidos,
-    largada: { x: lx0, y: ly0, angulo: Math.atan2(cy - ly0, cx - lx0) },
+    largada: l0,
   };
 }
 
@@ -346,11 +416,27 @@ function pintarCirculo(
   }
 }
 
-/** A largada `i` (a direção é para o centro): x, y e o ângulo. */
+/**
+ * A largada `i`: x, y e o ângulo. A direção é para o centro, MAS LIVRE (16/11/2026, a auditoria): na Horta, as largadas dos
+ * cantos olhavam bem para a árvore do canto, e quem segurava ↑ na largada (e o piloto automático) ficava empacado nela.
+ * Olhando do centro para os lados, de 15 em 15°, vale a primeira direção com uns 90 de chão livre à frente. Só a tela e a
+ * física deste computador leem o ângulo: o servidor confere a posição, não para onde o kart aponta.
+ */
 export function largadaDa(a: Arena, i: number): { x: number; y: number; angulo: number } {
   const [x, y] = a.largadas[i % a.largadas.length];
   const [cx, cy] = centroDa(a);
-  return { x, y, angulo: Math.atan2(cy - y, cx - x) };
+  const centro = Math.atan2(cy - y, cx - x);
+  const passo = Math.PI / 12;
+  for (let k = 0; k <= 6; k++) {
+    for (const lado of k === 0 ? [0] : [1, -1]) {
+      const ang = centro + lado * k * passo;
+      const fx = Math.cos(ang), fy = Math.sin(ang);
+      let livreAFrente = true;
+      for (let d = 6; d <= 90 && livreAFrente; d += 4) livreAFrente = livre(a, x + fx * d, y + fy * d);
+      if (livreAFrente) return { x, y, angulo: ang };
+    }
+  }
+  return { x, y, angulo: centro };
 }
 
 /** O ponto é livre para o kart (para os testes e os robôs): fora das paredes e da margem do kart. */

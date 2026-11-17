@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { temWebGL } from '../temWebGL';
 import { DesenhoDaPonte } from './desenho';
 import type { Fase } from './sim';
 import type { VistaDaPonte } from './vista';
@@ -13,7 +14,7 @@ export function useVistaDaPonte(fase: Fase) {
   const caixa3d = useRef<HTMLDivElement>(null);
   const tela2d = useRef<HTMLCanvasElement>(null);
   const vista = useRef<VistaDaPonte | null>(null);
-  const [modo, setModo] = useState<'carregando' | '3d' | '2d'>(() => (temWebGL() ? 'carregando' : '2d'));
+  const [modo, setModo] = useState<'carregando' | '3d' | '2d'>(() => (webGLDaPonte() ? 'carregando' : '2d'));
   const naReserva = modo === '2d';
 
   useEffect(() => {
@@ -69,7 +70,7 @@ declare global {
   }
 }
 
-function temWebGL(): boolean {
+function webGLDaPonte(): boolean {
   // só no site de desenvolvimento: o e2e confere o 2D de reserva (localStorage 'ponte2d')
   if (import.meta.env.DEV) {
     try {
@@ -78,10 +79,5 @@ function temWebGL(): boolean {
       /* sem */
     }
   }
-  try {
-    const c = document.createElement('canvas');
-    return !!(c.getContext('webgl2') || c.getContext('webgl'));
-  } catch {
-    return false;
-  }
+  return temWebGL();
 }

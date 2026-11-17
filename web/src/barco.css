@@ -123,13 +123,14 @@
   image-rendering: pixelated;
 }
 
+/* nos cantos, como o da corrida: no meio, o placar cobria o semáforo da largada (achado da auditoria, 16/11/2026) */
 .barco-placar {
   position: absolute;
   top: 6px;
   left: 8px;
   right: 8px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   gap: 18px;
   pointer-events: none;
   color: #f6f0ff;

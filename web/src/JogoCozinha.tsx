@@ -1,3 +1,4 @@
+import { temWebGL } from './temWebGL';
 import { useEffect, useRef, useState } from 'react';
 import { ComandosDoJogo } from './ComandosDosJogos';
 import { tocar } from './somDosJogos';
@@ -317,13 +318,4 @@ function CozinhaNaTela({ estado, eu, jogador, agir }: { estado: EstadoCozinha & 
       )}
     </div>
   );
-}
-
-function temWebGL(): boolean {
-  try {
-    const c = document.createElement('canvas');
-    return !!(c.getContext('webgl2') || c.getContext('webgl'));
-  } catch {
-    return false;
-  }
 }

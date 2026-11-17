@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { api } from '../api';
 import { Mascote } from '../Mascote';
+import { temWebGL } from '../temWebGL';
 import type { AcoesDoQuarto } from '../Quarto';
 import type { ArrumacaoDoPixel } from './arrumacao';
 import type { CenaDoQuarto3D, EstadoDoCoelho } from './cena';
@@ -145,11 +146,5 @@ export function Quarto3D({
   );
 }
 
-export function temWebGL(): boolean {
-  try {
-    const c = document.createElement('canvas');
-    return !!(c.getContext('webgl2') || c.getContext('webgl'));
-  } catch {
-    return false;
-  }
-}
+/** O salão 3D pergunta por aqui. */
+export { temWebGL };

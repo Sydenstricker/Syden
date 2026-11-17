@@ -19,7 +19,7 @@
 }
 
 .naval-montagem .naval-grade-montagem {
-  width: min(100%, 52vh, 320px);
+  width: min(100%, 46vh, 420px);
 }
 
 .naval-grade-montagem .naval-casa {

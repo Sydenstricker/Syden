@@ -133,6 +133,8 @@ export class MarNaval3D {
     private caixa: HTMLElement,
     private aoAtirar: (casa: number) => void,
     private toques?: ToquesDaMontagem,
+    /** O contexto da placa se perdeu (o navegador o tomou, ou a placa reiniciou): quem mostra volta à grade 2D. */
+    private aoPerder?: () => void,
   ) {
     this.renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'low-power' });
     this.renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.75));
@@ -149,6 +151,7 @@ export class MarNaval3D {
     const tela = this.renderer.domElement;
     tela.className = 'naval-3d-tela';
     caixa.appendChild(tela);
+    tela.addEventListener('webglcontextlost', this.perdeu);
     this.observador = new ResizeObserver(() => this.medir());
     this.observador.observe(caixa);
 
@@ -486,11 +489,17 @@ export class MarNaval3D {
     this.renderer.render(this.cena, this.camera);
   };
 
+  private perdeu = (ev: Event) => {
+    ev.preventDefault();
+    if (!this.morta) this.aoPerder?.();
+  };
+
   destruir() {
     this.morta = true;
     this.renderer.setAnimationLoop(null);
     this.observador.disconnect();
     const tela = this.renderer.domElement;
+    tela.removeEventListener('webglcontextlost', this.perdeu);
     tela.removeEventListener('pointerdown', this.aoApertar);
     tela.removeEventListener('pointerup', this.aoSoltar);
     tela.removeEventListener('pointermove', this.aoPassar);

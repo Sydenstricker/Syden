@@ -1,3 +1,4 @@
+import { temWebGL } from '../temWebGL';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type { CenaDasCidades, DadosDaCena } from './cena';
 
@@ -55,13 +56,4 @@ export function Tabuleiro3D({ dados, aoEscolher, reserva, meio, rotulo }: { dado
       {estado === 'pronta' && meio && <div className="cid-tabuleiro-3d-meio">{meio}</div>}
     </div>
   );
-}
-
-function temWebGL(): boolean {
-  try {
-    const c = document.createElement('canvas');
-    return !!(c.getContext('webgl2') || c.getContext('webgl'));
-  } catch {
-    return false;
-  }
 }

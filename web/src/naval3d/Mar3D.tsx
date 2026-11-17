@@ -1,3 +1,4 @@
+import { temWebGL } from '../temWebGL';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type { MarDaCena, MarNaval3D, ToquesDaMontagem } from './cena';
 
@@ -32,6 +33,13 @@ export function Mar3D({
     if (estado === 'falhou' || !caixa.current) return;
     let viva = true;
     let criada: MarNaval3D | null = null;
+    // sem a cena (não carregou, ou o contexto da placa se perdeu no meio da partida): a grade 2D, que já está na página
+    const cair = () => {
+      criada?.destruir();
+      criada = null;
+      cena.current = null;
+      if (viva) setEstado('falhou');
+    };
     import('./cena')
       .then(async ({ MarNaval3D }) => {
         if (!viva || !caixa.current) return;
@@ -39,18 +47,14 @@ export function Mar3D({
           passar: (casa) => toquesAgora.current?.passar(casa),
           apertar: (casa) => toquesAgora.current?.apertar(casa),
           soltar: (casa) => toquesAgora.current?.soltar(casa),
-        });
+        }, cair);
         criada.atualizar(ultimo.current);
         await criada.montar();
         if (!viva) return;
         cena.current = criada;
         setEstado('pronta');
       })
-      .catch(() => {
-        criada?.destruir();
-        criada = null;
-        if (viva) setEstado('falhou');
-      });
+      .catch(cair);
     return () => {
       viva = false;
       criada?.destruir();
@@ -71,13 +75,4 @@ export function Mar3D({
       <div className="naval-3d-grade-acessivel">{grade}</div>
     </div>
   );
-}
-
-function temWebGL(): boolean {
-  try {
-    const c = document.createElement('canvas');
-    return !!(c.getContext('webgl2') || c.getContext('webgl'));
-  } catch {
-    return false;
-  }
 }

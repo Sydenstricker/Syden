@@ -78,6 +78,9 @@ import {
   type PartidaPublica,
 } from './minijogos';
 
+/** Os jogos com placar entre as rodadas, mais baixo que a mesa: o painel guarda a altura (ver `seguraAltura`). */
+const SEGURA_A_ALTURA = new Set(['golfe', 'golfe3d', 'caca']);
+
 /**
  * O botão de videogame da sala de voz e o painel do jogo (12/10/2026). O botão fica na barra, ao lado do
  * compartilhar tela e do soundboard: sem partida, ele abre a estante de jogos; com partida, mostra ou
@@ -271,15 +274,39 @@ export function PainelDoMinijogo({
   const soAssiste = partida !== null && !naEspera && !souJogador(partida) && !JOGOS_DE_MESA.includes(partida.jogo);
   const jogoNaTela = partida && !naEspera ? partida : null;
 
+  // A ALTURA DO PAINEL NÃO ENCOLHE ENTRE UM BURACO E OUTRO (16/11/2026, achado da auditoria): no golfe e na caça, o placar entre
+  // os buracos (ou as ondas) é bem mais baixo que a mesa, e o painel, que mora em cima da barra da sala, subia e descia inteiro.
+  // Durante a partida, ele guarda a maior altura que já teve.
+  const painel = useRef<HTMLDivElement>(null);
+  const seguraAltura = partida && !naEspera && !partida.terminada && SEGURA_A_ALTURA.has(partida.jogo) ? partida.partidaId : null;
+  useEffect(() => {
+    const el = painel.current;
+    if (!el || !seguraAltura) return;
+    let maior = 0;
+    const medir = new ResizeObserver(() => {
+      const h = Math.ceil(el.getBoundingClientRect().height);
+      if (h > maior) {
+        maior = h;
+        el.style.minHeight = `${h}px`;
+      }
+    });
+    medir.observe(el);
+    return () => {
+      medir.disconnect();
+      el.style.minHeight = '';
+    };
+  }, [seguraAltura]);
+
   return (
     <div
+      ref={painel}
       className={`minijogo${partida ? ` jogando-${partida.jogo}` : correndo ? ' jogando-corrida' : pulando ? ' jogando-plataforma' : ' na-estante'}`}
       role="dialog"
-      aria-label={partida ? t(nomeDoJogo(partida.jogo)) : correndo ? t(nomeDoJogo('corrida')) : pulando ? t(nomeDoJogo('plataforma')) : t('Mini-games')}
+      aria-label={partida ? t(nomeDoJogo(partida.jogo)) : correndo ? t(nomeDoJogo('corrida')) : pulando ? t(nomeDoJogo('plataforma')) : escolhendo ? t(nomeDoJogo(escolhendo)) : t('Mini-games')}
     >
       <div className="minijogo-topo">
         <strong>
-          <Gamepad2 size={16} aria-hidden="true" /> {partida ? t(nomeDoJogo(partida.jogo)) : correndo ? t(nomeDoJogo('corrida')) : pulando ? t(nomeDoJogo('plataforma')) : t('Mini-games')}
+          <Gamepad2 size={16} aria-hidden="true" /> {partida ? t(nomeDoJogo(partida.jogo)) : correndo ? t(nomeDoJogo('corrida')) : pulando ? t(nomeDoJogo('plataforma')) : escolhendo ? t(nomeDoJogo(escolhendo)) : t('Mini-games')}
         </strong>
         {/* As abas da estante (pedido dele, 14/10/2026): o que se joga sozinho e o que é da turma. */}
         {!partida && !escolhendoCategoria && !sozinho && !soSolo && (

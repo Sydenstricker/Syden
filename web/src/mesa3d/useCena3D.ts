@@ -1,3 +1,4 @@
+import { temWebGL } from '../temWebGL';
 import { useEffect, useRef, useState } from 'react';
 import './mesa3d.css';
 
@@ -57,13 +58,4 @@ export function useCena3D<D>(importar: () => Promise<CriarCena<D>>, dados: D, ao
     cena.current?.atualizar(ultimo.current);
   }, [chave]);
   return { caixa, estado };
-}
-
-function temWebGL(): boolean {
-  try {
-    const c = document.createElement('canvas');
-    return !!(c.getContext('webgl2') || c.getContext('webgl'));
-  } catch {
-    return false;
-  }
 }

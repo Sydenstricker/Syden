@@ -833,10 +833,11 @@ export class CenaDaCozinha {
         (this.luz.material as THREE.MeshBasicMaterial).opacity = this.calmo ? 0.3 : 0.24 + Math.sin(tempo * 5) * 0.1;
       }
     }
-    // a câmera, de cima e da frente
+    // a câmera, de cima e da frente; mira um pouco atrás do meio da cozinha, para ela encher a tela (16/11/2026, achado da
+    // auditoria: mirando o meio, o terço de baixo da tela ficava vazio e a parede do fundo cortada)
     const d = 21.5 * this.distancia;
     this.camera.position.set(0, d * 0.88, d * 0.6);
-    this.camera.lookAt(0, 0, 0.25);
+    this.camera.lookAt(0, 0, -1.6);
     this.renderer.render(this.cena, this.camera);
   };
 
