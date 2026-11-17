@@ -428,13 +428,26 @@ const tabFiel = linhas
   .map((l) => `<tr><td>${l.video.nome}</td><td>${l.variante.nome}</td><td>${l.modelo.nome}</td><td>${pct(l.fiel.proprio)}</td><td>${pct(l.fiel.referencia)}</td><td>${(l.fiel.area * 100).toFixed(1)}%</td></tr>`)
   .join('');
 const tabArrasto = arrastos.map((a) => `<tr><td>${a.modelo.nome}</td><td>${a.variante}, ${a.passo} px/quadro</td><td>${a.suave.nome}</td><td>${a.medio.toFixed(1)} px</td><td>${a.max.toFixed(1)} px</td><td>${a.assenta}</td><td>${a.resto.toFixed(2)} px</td></tr>`).join('');
-const blocos = feitos.map((f) => `<h3>${f.v.nome} · ${f.va.nome}</h3><video src="video/${f.arq}" controls loop muted playsinline></video>`).join('\n');
+// O papel de cada modelo no app (pedido dele, 17/11/2026: "adicionar o modelo no canto dos vídeos para eu saber e avaliar
+// melhor"). Cada quadrado do mosaico leva o modelo e a coluna, por cima do vídeo (o vídeo em si não muda).
+const PAPEL = { pphumanseg: 'Leve, o de hoje', 'ppmatting-v2-fp16': 'Completo', 'ppseg-v2-retrato': 'candidato a novo Leve' };
+const rotulos = mods
+  .flatMap((m, r) =>
+    COLUNAS.map(
+      (c, k) =>
+        `<span class="rot" style="top:${((r / mods.length) * 100).toFixed(4)}%;left:${((k / NC) * 100).toFixed(4)}%"><b>${m.nome}</b>${PAPEL[m.id] ? ` · ${PAPEL[m.id]}` : ''}<br>${c.nome}</span>`,
+    ),
+  )
+  .join('');
+const blocos = feitos
+  .map((f) => `<h3>${f.v.nome} · ${f.va.nome}</h3><div class="mosaico"><video src="video/${f.arq}" controls loop muted playsinline></video>${rotulos}</div>`)
+  .join('\n');
 const creditos = videos.map((v) => `<li><a href="https://commons.wikimedia.org/wiki/File:${encodeURIComponent(v.commons.replaceAll(' ', '_'))}">${v.commons}</a> · ${v.autor} · ${v.licenca} · trecho de ${v.inicio} s a ${v.inicio + v.duracao} s</li>`).join('');
 writeFileSync(
   join(RES, 'video-comparar.html'),
-  `<!doctype html><meta charset="utf-8"><title>Fundo da câmera em vídeo</title><style>body{font:14px system-ui;background:#16181d;color:#ddd;margin:16px;max-width:1300px}table{border-collapse:collapse;margin-bottom:16px}td,th{border:1px solid #444;padding:3px 8px;text-align:left}video{width:100%;max-width:1280px}a{color:#9cf}</style>
+  `<!doctype html><meta charset="utf-8"><title>Fundo da câmera em vídeo</title><style>body{font:14px system-ui;background:#16181d;color:#ddd;margin:16px;max-width:1300px}table{border-collapse:collapse;margin-bottom:16px}td,th{border:1px solid #444;padding:3px 8px;text-align:left}a{color:#9cf}.mosaico{position:relative;max-width:1280px}.mosaico video{display:block;width:100%}.rot{position:absolute;margin:4px;padding:2px 6px;background:rgba(0,0,0,.7);color:#fff;font:12px/1.3 system-ui;border-radius:3px;pointer-events:none}</style>
 <h1>Fundo da câmera: a webcam simulada</h1>
-<p>${L} × ${A} a ${QPS} quadros por segundo, 2 núcleos (onnxruntime-node). Em cada vídeo: em cima o PP-HumanSeg, embaixo o MediaPipe paisagem; as colunas: ${COLUNAS.map((c) => c.nome).join(' · ')}. O fundo é o quarto, onde o tremor mais aparece.</p>
+<p>${L} × ${A} a ${QPS} quadros por segundo, 2 núcleos (onnxruntime-node). Em cada vídeo, uma linha por modelo (de cima para baixo: ${mods.map((m) => m.nome).join(' · ')}) e as colunas: ${COLUNAS.map((c) => c.nome).join(' · ')}. Cada quadrado diz o modelo e a coluna no canto. O fundo é o quarto, onde o tremor mais aparece.</p>
 <h2>Tempo por quadro</h2><table><tr><th>Modelo</th><th>Modelo (mediana)</th><th>p90</th><th>Com o preparo</th><th>p90</th><th>Núcleos a 15 qps</th></tr>${tabTempo}</table>
 <h2>Tremor (a média dos vídeos)</h2><p>IoU entre quadros seguidos (100% = nada mudou; a fala e a cabeça mexem de verdade, então nunca é 100%), a pior (p5), os pixels que trocam de lado por pixel de contorno, e quanto o alfa muda por quadro na faixa macia.</p>
 <table><tr><th>Suavização</th><th>IoU</th><th>IoU p5</th><th>Trocas / contorno</th><th>Δ alfa</th></tr>${tabTremor}</table>
