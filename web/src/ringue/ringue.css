@@ -1,0 +1,179 @@
+/* O RINGUE DA TOCA (JogoRingue.tsx): o ringue num canvas de pixel art ampliado, e as faixas por cima. */
+
+/* O ringue pede tela: o painel dos mini-games fica largo enquanto se luta. */
+.minijogo.jogando-ringue {
+  width: min(980px, 96vw);
+}
+
+.ringue {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ringue-moldura {
+  position: relative;
+  width: 100%;
+  max-width: calc(68vh * 384 / 216);
+  margin: 0 auto;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #1b1a2b;
+}
+
+.ringue-tela {
+  display: block;
+  width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+  touch-action: none;
+}
+
+.ringue-faixa {
+  position: absolute;
+  left: 50%;
+  top: 38%;
+  transform: translate(-50%, -50%);
+  padding: 6px 18px;
+  border-radius: 8px;
+  background: rgba(20, 16, 32, 0.78);
+  color: #fff6e0;
+  font-weight: 800;
+  font-size: clamp(16px, 3.4vw, 30px);
+  text-align: center;
+  pointer-events: none;
+  white-space: nowrap;
+  max-width: 92%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ringue-faixa.venceu {
+  color: #ffd84a;
+}
+.ringue-faixa.perdeu {
+  color: #f0a0a0;
+}
+
+.ringue-espera {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: clamp(36px, 8vw, 72px);
+  font-weight: 800;
+  color: #fff6e0;
+  text-shadow: 0 3px 0 rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+
+/* Na sala: em que luta cada um da turma está (os pontos são os adversários, os vencidos em dourado). */
+.ringue-turma {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  margin: 0;
+  padding: 6px 8px;
+  list-style: none;
+  border-radius: 8px;
+  background: rgba(20, 16, 32, 0.6);
+  color: #fff6e0;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-width: 40%;
+  pointer-events: none;
+}
+.ringue-turma li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.ringue-turma li.caido {
+  opacity: 0.6;
+}
+.ringue-turma .minijogo-nome {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ringue-turma-luta {
+  display: flex;
+  gap: 3px;
+  flex: none;
+}
+.ringue-turma-luta i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Os botões da tela de toque: a defesa à esquerda, os socos à direita. */
+.ringue-botoes {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.ringue-botoes > div {
+  display: flex;
+  gap: 6px;
+}
+.ringue-botao {
+  min-width: 48px;
+  min-height: 48px;
+  border-radius: 12px;
+  border: 1px solid var(--border, rgba(127, 127, 127, 0.4));
+  background: var(--bg-elevated, rgba(127, 127, 127, 0.12));
+  color: var(--text-strong, inherit);
+  font-size: 20px;
+  touch-action: none;
+  user-select: none;
+}
+.ringue-botao.forte {
+  color: #e0a800;
+}
+
+.ringue-fim {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 0;
+}
+.ringue-fim-lutas {
+  font-size: 1.4em;
+  font-weight: 800;
+  margin: 0;
+}
+.ringue-recorde {
+  color: var(--accent);
+  font-weight: 700;
+}
+.ringue-placar {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: min(360px, 100%);
+}
+.ringue-placar li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.ringue-placar li.eu {
+  background: var(--bg-elevated, rgba(127, 127, 127, 0.12));
+}
+.ringue-placar .minijogo-nome {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ringue-placar-pos {
+  width: 1.6em;
+  text-align: center;
+}
