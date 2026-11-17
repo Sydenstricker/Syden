@@ -3418,4 +3418,8 @@ export default {
   'Para baixar e jogar junto': "Ladattavaksi ja yhdessä pelattavaksi",
   'Trens, navios e cidades, em cooperação': "Junia, laivoja ja kaupunkeja, yhteistyössä",
   'Civilização por turnos, com partida pela internet': "Vuoropohjainen sivilisaatio, peleillä netin yli",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "Areena",
+  'Golpe forte': "Voimakas isku",
+  'Aventura': "Seikkailu",
 } satisfies Record<string, string>;

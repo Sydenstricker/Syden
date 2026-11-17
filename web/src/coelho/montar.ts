@@ -10,7 +10,7 @@ import type { Receita } from './receita';
 
 export const DIRECOES = ['south-east', 'south-west', 'north-west', 'north-east'] as const;
 export type Direcao = (typeof DIRECOES)[number];
-export type Animacao = 'parado' | 'acenando';
+export type Animacao = 'parado' | 'acenando' | 'andando';
 
 interface EntradaDaAnimacao {
   n: number;

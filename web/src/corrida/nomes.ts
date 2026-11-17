@@ -68,6 +68,8 @@ export const NOMES_DAS_PISTAS: Record<string, string> = {
   lendas: chave('Lendas da Toca'),
   // e o dos Bichos da Toca (server/src/minijogo-bichos.ts): só quem venceu a luta da sala; os pontos são os bichos que ficaram acordados
   bichos: chave('Bichos da Toca'),
+  // e o da Arena dos coelhos (server/src/arena/motor.ts): quem venceu (cada um por si, até o 3º); os pontos são o dano causado
+  'bichos-arena': chave('Arena'),
   // e o do Duelo de aviõezinhos (server/src/minijogo-duelo.ts): os pontos são as vidas que sobraram
   duelo: chave('Duelo de aviõezinhos'),
   // e o da Torre do celeiro (server/src/minijogo-torre.ts)

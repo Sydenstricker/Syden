@@ -3398,4 +3398,8 @@ export default {
   'Para baixar e jogar junto': "Завантажити й грати разом",
   'Trens, navios e cidades, em cooperação': "Потяги, кораблі й міста, у кооперативі",
   'Civilização por turnos, com partida pela internet': "Покрокова цивілізація, з грою через інтернет",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "Арена",
+  'Golpe forte': "Сильний удар",
+  'Aventura': "Пригода",
 } satisfies Record<string, string>;

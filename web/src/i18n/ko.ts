@@ -3337,4 +3337,8 @@ export default {
   'Para baixar e jogar junto': "내려받아 같이 하기",
   'Trens, navios e cidades, em cooperação': "기차, 배, 도시를 협력해서",
   'Civilização por turnos, com partida pela internet': "턴제 문명, 인터넷 대전 지원",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "아레나",
+  'Golpe forte': "강공격",
+  'Aventura': "모험",
 } satisfies Record<string, string>;

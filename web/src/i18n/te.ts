@@ -3330,4 +3330,8 @@ export default {
   'Para baixar e jogar junto': "డౌన్‌లోడ్ చేసి కలిసి ఆడటానికి",
   'Trens, navios e cidades, em cooperação': "రైళ్లు, ఓడలు, నగరాలు, కలిసికట్టుగా",
   'Civilização por turnos, com partida pela internet': "వంతుల వారీ నాగరికత, ఇంటర్నెట్ ఆటతో",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "రంగస్థలం",
+  'Golpe forte': "బలమైన దెబ్బ",
+  'Aventura': "సాహసం",
 } satisfies Record<string, string>;

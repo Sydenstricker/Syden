@@ -3428,4 +3428,8 @@ export default {
   'Para baixar e jogar junto': "Барои боргирӣ ва якҷоя бозӣ кардан",
   'Trens, navios e cidades, em cooperação': "Қатораҳо, киштиҳо ва шаҳрҳо, якҷоя",
   'Civilização por turnos, com partida pela internet': "Тамаддуни навбатӣ, бо бозӣ тавассути интернет",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "Арена",
+  'Golpe forte': "Зарбаи қавӣ",
+  'Aventura': "Саргузашт",
 } satisfies Record<string, string>;

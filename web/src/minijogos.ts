@@ -511,7 +511,7 @@ export interface EstadoBriga {
   partidaId: string;
 }
 
-export type IdDoJogo = 'corrida' | 'festa' | 'tabuleiro' | 'cidades' | 'golfe' | 'caca' | 'nave' | 'estelar' | 'balao' | 'jato' | 'barco' | 'chefe' | 'duelo' | 'torre' | 'plataforma' | 'blocos' | 'briga' | 'masmorra' | 'comando' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'damas' | 'naval' | 'domino' | 'truco' | 'xadrez' | 'partida-de-xadrez' | 'cozinha' | 'skate' | 'futebol' | 'golfe3d' | 'tocas' | 'transito' | 'carrinhos' | 'ponte' | 'gincana' | 'planador' | 'ringue' | 'pinball' | 'lendas' | 'bichos' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
+export type IdDoJogo = 'corrida' | 'festa' | 'tabuleiro' | 'cidades' | 'golfe' | 'caca' | 'nave' | 'estelar' | 'balao' | 'jato' | 'barco' | 'chefe' | 'duelo' | 'torre' | 'plataforma' | 'blocos' | 'briga' | 'masmorra' | 'comando' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'damas' | 'naval' | 'domino' | 'truco' | 'xadrez' | 'partida-de-xadrez' | 'cozinha' | 'skate' | 'futebol' | 'golfe3d' | 'tocas' | 'transito' | 'carrinhos' | 'ponte' | 'gincana' | 'planador' | 'ringue' | 'pinball' | 'lendas' | 'bichos' | 'arena' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
 
 /**
  * As duas abas da estante (pedido dele, 14/10/2026). SOLO: a partida é só de quem joga, começa sem convite, não ocupa
@@ -896,7 +896,8 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
   },
 ];
 
-export const nomeDoJogo = (id: string) => JOGOS.find((j) => j.id === id)?.nome ?? id;
+// a Arena dos coelhos (17/11/2026) é um modo dos Bichos da Toca, escolhido na largada: o nome é o deles
+export const nomeDoJogo = (id: string) => JOGOS.find((j) => j.id === (id === 'arena' ? 'bichos' : id))?.nome ?? id;
 
 /**
  * AS PALAVRAS DO DESENHA E ADIVINHA: uma lista escrita para o Syden, de coisas fáceis de desenhar, sem

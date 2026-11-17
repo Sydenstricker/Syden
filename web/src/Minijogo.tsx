@@ -33,6 +33,8 @@ import { JogoComando } from './JogoComando';
 import type { EstadoComando } from './comando/regras';
 import { JogoLendas, type EstadoLendas } from './JogoLendas';
 import { JogoBichos } from './JogoBichos';
+import { EscolhaDosBichos, JogoArena } from './JogoArena';
+import type { EstadoArena } from './arena/regras';
 import { JogoAvioes, type EstadoDosAvioes } from './JogoAvioes';
 import { EscolhaDaTorre, JogoTorre, type EstadoTorre } from './JogoTorre';
 import type { EstadoChefe } from './chefe/regras';
@@ -231,7 +233,7 @@ export function PainelDoMinijogo({
     comecou.current = true;
     if (comecarCom === 'corrida') setCorrendo(true);
     else if (comecarCom === 'plataforma') setPulando(true);
-    else if (pedeCategoria(comecarCom) || comecarCom === 'briga' || comecarCom === 'ponte' || comecarCom === 'cidades' || comecarCom === 'tabuleiro' || ROBOS_NO_SOLO[comecarCom]) setEscolhendo(comecarCom);
+    else if (pedeCategoria(comecarCom) || comecarCom === 'briga' || comecarCom === 'bichos' || comecarCom === 'ponte' || comecarCom === 'cidades' || comecarCom === 'tabuleiro' || ROBOS_NO_SOLO[comecarCom]) setEscolhendo(comecarCom);
     else void tentar(() => aoComecar(comecarCom, {}, true));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [comecarCom]);
@@ -425,6 +427,14 @@ export function PainelDoMinijogo({
           aoVoltar={() => setEscolhendo(null)}
         />
       )}
+      {/* Os Bichos da Toca (17/11/2026): a luta por turnos (no Solo, a aventura; na sala, a mesa) ou a Arena dos coelhos. */}
+      {!partida && escolhendo === 'bichos' && (
+        <EscolhaDosBichos
+          solo={aba === 'solo'}
+          aoEscolher={(e) => tentar(() => aoComecar(e.modo === 'arena' ? 'arena' : 'bichos', e.corpo, aba === 'solo').then(() => setEscolhendo(null)))}
+          aoVoltar={() => setEscolhendo(null)}
+        />
+      )}
       {/* A Ponte da toca: a fase (no Solo, cada uma tem o seu recorde; na sala, a mesma para a turma). */}
       {!partida && escolhendo === 'ponte' && (
         <EscolhaDaPonte
@@ -462,7 +472,7 @@ export function PainelDoMinijogo({
                         : setEscolhendo('plataforma')
                     : (jogo.id === 'balao' || jogo.id === 'jato' || jogo.id === 'barco' || jogo.id === 'torre' || jogo.id === 'gincana') && aba === 'coletivo'
                       ? setEscolhendo(jogo.id)
-                    : jogo.id === 'briga' || jogo.id === 'ponte' || jogo.id === 'tabuleiro' || jogo.id === 'cidades' || (aba === 'solo' && ROBOS_NO_SOLO[jogo.id]) || pedeCategoria(jogo.id, aba === 'solo')
+                    : jogo.id === 'briga' || jogo.id === 'bichos' || jogo.id === 'ponte' || jogo.id === 'tabuleiro' || jogo.id === 'cidades' || (aba === 'solo' && ROBOS_NO_SOLO[jogo.id]) || pedeCategoria(jogo.id, aba === 'solo')
                       ? setEscolhendo(jogo.id)
                       : tentar(() => aoComecar(jogo.id, {}, aba === 'solo'))
                 }
@@ -555,6 +565,16 @@ export function PainelDoMinijogo({
       )}
       {jogoNaTela?.jogo === 'bichos' && (
         <JogoBichos key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')} estado={jogoNaTela} eu={eu} jogador={souJogador(partida)} agir={agir} />
+      )}
+      {jogoNaTela?.jogo === 'arena' && (
+        <JogoArena
+          key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
+          estado={jogoNaTela as unknown as EstadoArena & Partida}
+          eu={eu}
+          jogador={souJogador(partida)}
+          socket={socket}
+          channelId={channelId}
+        />
       )}
       {jogoNaTela?.jogo === 'lendas' && (
         <JogoLendas

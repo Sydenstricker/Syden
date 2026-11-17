@@ -3364,4 +3364,8 @@ export default {
   'Para baixar e jogar junto': "Biex tniżżel u tilgħab flimkien",
   'Trens, navios e cidades, em cooperação': "Ferroviji, vapuri u bliet, f'kooperazzjoni",
   'Civilização por turnos, com partida pela internet': "Ċiviltà bid-dawrien, b'logħob fuq l-internet",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "Arena",
+  'Golpe forte': "Daqqa qawwija",
+  'Aventura': "Avventura",
 } satisfies Record<string, string>;

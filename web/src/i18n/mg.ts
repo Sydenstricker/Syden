@@ -3418,4 +3418,8 @@ export default {
   'Para baixar e jogar junto': "Halaina sy hilalaovana miaraka",
   'Trens, navios e cidades, em cooperação': "Lamasinina, sambo ary tanàna, miara-miasa",
   'Civilização por turnos, com partida pela internet': "Sivilizasiona mifandimby, misy lalao amin'ny aterineto",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "Kianja",
+  'Golpe forte': "Kapoka mahery",
+  'Aventura': "Fitsangatsanganana",
 } satisfies Record<string, string>;

@@ -3354,4 +3354,8 @@ export default {
   'Para baixar e jogar junto': "Ke tānaki mai pea va'inga fakataha",
   'Trens, navios e cidades, em cooperação': "Lēlue, vaka mo e kolo, fengāue'aki",
   'Civilização por turnos, com partida pela internet': "Sivilaise fakafetongitongi, mo e va'inga 'i he 'initaneti",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "Malaʻe fakavaʻe",
+  'Golpe forte': "Taaʻi mālohi",
+  'Aventura': "ʻEveniti fakaʻofoʻofa",
 } satisfies Record<string, string>;

@@ -3354,4 +3354,8 @@ export default {
   'Para baixar e jogar junto': "Le híoslódáil agus le himirt le chéile",
   'Trens, navios e cidades, em cooperação': "Traenacha, longa agus cathracha, i gcomhar",
   'Civilização por turnos, com partida pela internet': "Sibhialtacht de réir seala, le cluichí ar an idirlíon",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "Airéine",
+  'Golpe forte': "Buille láidir",
+  'Aventura': "Eachtra",
 } satisfies Record<string, string>;

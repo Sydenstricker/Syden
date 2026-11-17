@@ -3356,4 +3356,8 @@ export default {
   'Para baixar e jogar junto': "Ka ibudata ma soro egwu",
   'Trens, navios e cidades, em cooperação': "Ụgbọ okporo ígwè, ụgbọ mmiri na obodo, na nkwado",
   'Civilização por turnos, com partida pela internet': "Mmepe obodo n'usoro, na egwuregwu n'ịntanetị",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "Ọgbọ egwuregwu",
+  'Golpe forte': "Ọkpọ siri ike",
+  'Aventura': "Njem ịnyịnya ụzọ",
 } satisfies Record<string, string>;

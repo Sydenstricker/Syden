@@ -678,7 +678,28 @@ medido contra o piloto automático); os Coletivos sem e2e com o LiveKit, só o t
   equipe de 6, nível e uma evolução, o desafio da Nena. A aventura mora no servidor (`bichos_aventuras`). **Sala, a mesa:** duas
   pessoas com as equipes guardadas (sem equipe, a emprestada); pódio só de quem vence (`pista: 'bichos'`). Regras em duas cópias
   (`server/src/bichos-regras.ts` ↔ `web/src/bichos/regras.ts`). **Pendente, aprovado por ele: a ARENA EM TEMPO REAL** (times de 3,
-  1×1 ou 3 cada um por si, a rede da Briga); minha recomendação, arena VISTA DE LADO no primeiro passo (as folhas são de lado).
+  1×1 ou 3 cada um por si, a rede da Briga). **A câmera é a do Poke2D Arena** (decisão dele, 17/11/2026; poke2darena.com, só a
+  mecânica): arena VISTA DE CIMA, andar livre em todas as direções, mirar pelo mouse (joystick de 360° no toque), arrancada para
+  desviar (sem pulo), a câmera SEGUE quem joga e setas na borda apontam o que caiu fora da tela; zonas de perigo marcadas no chão
+  antes de bater, suprimentos (energia, cura, velocidade) em pontos fixos, troca do bicho ativo com recarga. A vista de lado, que eu
+  tinha recomendado só porque as folhas eram de lado, caiu. **Quem luta na arena são OS COELHOS** (decisão dele, mesmo dia: "para
+  tornar mais único e facilitar nosso trabalho"): cada um com o próprio coelho (a receita do criador: corpo, cores, acessórios), em
+  pixel art do PixelLab, nunca renderizado do Blender (a regra de 09/11: no 2D, tudo PixelLab). Os bichos dão o elemento e os golpes:
+  trocar o bicho ativo troca os ataques e a cor dos efeitos. O que existe hoje: o mascote-base nas 8 direções parado e nos estados, e
+  as ANIMAÇÕES (andar, acenar) só nas 4 diagonais (o quarto só anda na diagonal). A arena nasce nas 4 diagonais, sem crédito (a
+  arrancada é o andar com rastro, o golpe é o acenar com o efeito por código, levar golpe é piscar e recuar); as 4 retas (norte, sul,
+  leste, oeste) de andar e acenar vêm quando houver crédito, ~20 gerações por corpo mais os acessórios nelas.
+  **FEITA em 17/11/2026 (`arena`):** na largada dos Bichos se escolhe a luta por turnos (no Solo, a aventura; na sala, a mesa) ou a
+  ARENA (`EscolhaDosBichos` em JogoArena.tsx), com 1×1, 3×3 (os robôs completam) e cada um por si; no Solo, contra 1 a 5 robôs ou
+  o 3×3. O coelho de cada um vem de `arena/coelhos.ts` (as retas entram quando `coelho-camadas.py` as exportar); o bicho da frente
+  (os três primeiros da aventura; sem ela, a emprestada) dá o kit de golpes (`KITS`), a cor e a defesa pela roda de bichos-regras.ts,
+  amaciada (`fatorDaArena`: 1,5 e 0,67); o nível não conta. Cenários grama e praia, por código. **A rede é a da Briga e do Comando**
+  (`server/src/arena/motor.ts`), as contas em duas cópias (`server/src/arena/conta.ts` ↔ `web/src/arena/conta.ts`). Troféu `pista:
+  'bichos-arena'` (no Solo, nada); sem tabela nova; fora das conquistas da turma até ele decidir. Ninguém jogou com gente (o
+  equilíbrio é chute medido contra o piloto); a sala só pelo teste do servidor, sem e2e com o LiveKit. Sobra possível: mentir a
+  posição dentro da velocidade, e um programa que mire sozinho. A `LinhaDoTempo` da tela assume o passo de 50 ms: nas balas e nas
+  zonas a arena conta pela chegada do quadro. Testes: `server/test/minijogos-bichos-arena.test.ts`, `web/test/arena.test.ts`,
+  `e2e/bichos-arena.mjs` (passou, Solo).
   Testes: `server/test/minijogos-bichos.test.ts`, `e2e/bichos.mjs`.
 - **AS LENDAS DA TOCA** (`lendas`, nas duas abas): o RPG de turnos da turma, SÓ A MECÂNICA do gênero dos anos 90 (a turma de heróis,
   a energia das habilidades, o ataque combinado, o equipamento depois da luta). Um caminho de cinco paradas: floresta, deserto, a

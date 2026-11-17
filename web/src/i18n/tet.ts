@@ -3350,4 +3350,8 @@ export default {
   'Para baixar e jogar junto': "Atu download no halimar hamutuk",
   'Trens, navios e cidades, em cooperação': "Komboiu, ró no sidade, hamutuk",
   'Civilização por turnos, com partida pela internet': "Sivilizasaun tuir tempu, ho jogu liuhosi internet",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "Arena",
+  'Golpe forte': "Baku makaas",
+  'Aventura': "Aventura",
 } satisfies Record<string, string>;

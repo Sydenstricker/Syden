@@ -3333,4 +3333,8 @@ export default {
   'Para baixar e jogar junto': "பதிவிறக்கி ஒன்றாக விளையாட",
   'Trens, navios e cidades, em cooperação': "ரயில்கள், கப்பல்கள், நகரங்கள், கூட்டாக",
   'Civilização por turnos, com partida pela internet': "முறைப்படியான நாகரிகம், இணையம் வழி விளையாட்டுடன்",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "அரங்கம்",
+  'Golpe forte': "வலுவான தாக்குதல்",
+  'Aventura': "சாகசம்",
 } satisfies Record<string, string>;

@@ -3361,4 +3361,8 @@ export default {
   'Para baixar e jogar junto': "ดาวน์โหลดแล้วเล่นด้วยกัน",
   'Trens, navios e cidades, em cooperação': "รถไฟ เรือ และเมือง แบบร่วมมือ",
   'Civilização por turnos, com partida pela internet': "อารยธรรมแบบผลัดตา เล่นผ่านอินเทอร์เน็ต",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "สนามประลอง",
+  'Golpe forte': "ท่าโจมตีแรง",
+  'Aventura': "การผจญภัย",
 } satisfies Record<string, string>;

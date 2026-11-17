@@ -3420,4 +3420,8 @@ export default {
   'Para baixar e jogar junto': "Lejupielādei un kopīgai spēlei",
   'Trens, navios e cidades, em cooperação': "Vilcieni, kuģi un pilsētas, sadarbojoties",
   'Civilização por turnos, com partida pela internet': "Gājienu civilizācija, ar spēli internetā",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "Arēna",
+  'Golpe forte': "Spēcīgs sitiens",
+  'Aventura': "Piedzīvojums",
 } satisfies Record<string, string>;

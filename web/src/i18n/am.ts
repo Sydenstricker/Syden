@@ -3348,4 +3348,8 @@ export default {
   'Para baixar e jogar junto': "አውርዶ አብሮ ለመጫወት",
   'Trens, navios e cidades, em cooperação': "ባቡሮች፣ መርከቦች እና ከተሞች፣ በትብብር",
   'Civilização por turnos, com partida pela internet': "በተራ የሚጫወት ስልጣኔ፣ በኢንተርኔት ጨዋታ",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "መድረክ",
+  'Golpe forte': "ጠንካራ ምት",
+  'Aventura': "ጀብዱ",
 } satisfies Record<string, string>;

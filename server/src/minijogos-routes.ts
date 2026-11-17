@@ -42,6 +42,7 @@ import { naval } from './minijogo-naval.js';
 import { truco } from './minijogo-truco.js';
 import { lendas } from './minijogo-lendas.js';
 import { bichos } from './minijogo-bichos.js';
+import { arena } from './minijogo-arena.js';
 import { catalogo, criarQuiz, TEMAS } from './minijogo-quiz.js';
 import { stop } from './minijogo-stop.js';
 import { sudoku } from './minijogo-sudoku.js';
@@ -132,6 +133,8 @@ export const JOGOS: Record<string, Definicao> = {
   lendas,
   // Bichos da Toca (16/11/2026): a aventura de juntar bichos no Solo, e a luta por turnos entre duas pessoas na sala
   bichos,
+  // a Arena dos coelhos (17/11/2026): o modo de luta em tempo real dos Bichos da Toca, com a rede da Briga e do Comando
+  arena,
   // o ringue da toca (16/11/2026): boxe de reflexo contra o circuito de três adversários do computador, refeito no servidor
   ringue,
   // o pinball da horta (16/11/2026): a mesa de 16 bits, refeita no servidor pelos comandos de cada passo
@@ -153,6 +156,7 @@ export const JOGOS_SOLO = new Set([
   'cidades', 'gomoku', 'mancala', 'damas', 'naval', 'domino', 'truco', 'tabuleiro', 'partida-de-xadrez', 'cozinha', 'skate', 'futebol', 'golfe3d', 'tocas', 'transito', 'carrinhos', 'ponte', 'gincana', 'planador',
   'lendas',
   'bichos',
+  'arena',
   'ringue',
   'pinball',
   ...Object.keys(TEMAS),

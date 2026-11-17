@@ -3363,4 +3363,8 @@ export default {
   'Para baixar e jogar junto': "Láti gbà sílẹ̀ kí ẹ sì jọ ṣeré",
   'Trens, navios e cidades, em cooperação': "Ọkọ̀ ojú-irin, ọkọ̀ ojú-omi àti ìlú, ní ìfọwọ́sowọ́pọ̀",
   'Civilização por turnos, com partida pela internet': "Ọ̀làjú ní ìyípo, pẹ̀lú eré lórí ẹ̀rọ ayélujára",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "Pápá ìjà",
+  'Golpe forte': "Ìkọlù líle",
+  'Aventura': "Ìrìn-àjò",
 } satisfies Record<string, string>;

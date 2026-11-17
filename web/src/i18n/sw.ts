@@ -3348,4 +3348,8 @@ export default {
   'Para baixar e jogar junto': "Kupakua na kucheza pamoja",
   'Trens, navios e cidades, em cooperação': "Treni, meli na miji, kwa ushirikiano",
   'Civilização por turnos, com partida pela internet': "Ustaarabu kwa zamu, na michezo kupitia intaneti",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "Uwanja",
+  'Golpe forte': "Pigo kali",
+  'Aventura': "Safari ya kusisimua",
 } satisfies Record<string, string>;

@@ -3410,4 +3410,8 @@ export default {
   'Para baixar e jogar junto': "Për ta shkarkuar dhe luajtur bashkë",
   'Trens, navios e cidades, em cooperação': "Trena, anije dhe qytete, në bashkëpunim",
   'Civilização por turnos, com partida pela internet': "Qytetërim me radhë, me lojë në internet",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "Arena",
+  'Golpe forte': "Goditje e fortë",
+  'Aventura': "Aventurë",
 } satisfies Record<string, string>;

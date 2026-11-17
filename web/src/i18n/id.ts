@@ -3346,4 +3346,8 @@ export default {
   'Para baixar e jogar junto': "Untuk diunduh dan dimainkan bersama",
   'Trens, navios e cidades, em cooperação': "Kereta, kapal, dan kota, secara kooperatif",
   'Civilização por turnos, com partida pela internet': "Peradaban giliran, dengan permainan lewat internet",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "Arena",
+  'Golpe forte': "Serangan kuat",
+  'Aventura': "Petualangan",
 } satisfies Record<string, string>;

@@ -3420,4 +3420,8 @@ export default {
   'Para baixar e jogar junto': "Letöltésre és közös játékra",
   'Trens, navios e cidades, em cooperação': "Vonatok, hajók és városok, együttműködve",
   'Civilização por turnos, com partida pela internet': "Körökre osztott civilizáció, interneten játszott partikkal",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "Aréna",
+  'Golpe forte': "Erős ütés",
+  'Aventura': "Kaland",
 } satisfies Record<string, string>;

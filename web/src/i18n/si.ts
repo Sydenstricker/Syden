@@ -3418,4 +3418,8 @@ export default {
   'Para baixar e jogar junto': "බාගත කර එකට ක්‍රීඩා කිරීමට",
   'Trens, navios e cidades, em cooperação': "දුම්රිය, නැව් සහ නගර, සහයෝගයෙන්",
   'Civilização por turnos, com partida pela internet': "වාරයෙන් වාරයට ශිෂ්ටාචාරය, අන්තර්ජාලයෙන් ක්‍රීඩාව සමඟ",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "ක්‍රීඩාංගණය",
+  'Golpe forte': "බලවත් පහර",
+  'Aventura': "වික්‍රමය",
 } satisfies Record<string, string>;

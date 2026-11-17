@@ -1,0 +1,219 @@
+/* A ARENA DOS COELHOS (17/11/2026, JogoArena.tsx): usa as classes da Briga na horta (.briga, .briga-hud, .briga-tela…) e
+   acrescenta só o seu. O painel largo, como os outros jogos de ação. */
+.minijogo.jogando-arena {
+  width: min(760px, 94vw);
+}
+
+.arena-hud li {
+  border-left: 3px solid var(--cor, var(--accent));
+}
+
+.arena-hud li.arena-fora {
+  opacity: 0.5;
+}
+
+.arena-quem {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.arena-hud .bichos-vida {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+.arena-time {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: var(--cor);
+}
+
+.arena-tela {
+  cursor: crosshair;
+}
+
+.arena-relogio {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 1px 8px;
+  border-radius: 6px;
+  background: #1e1822b0;
+  color: #fbf3e4;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+.arena-minha-barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.arena-bichos {
+  display: flex;
+  gap: 6px;
+}
+
+.arena-bicho {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 4px 6px 3px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background: var(--bg-raised);
+  color: inherit;
+  font-size: 0.65rem;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+/* a recarga da troca: a faixa de baixo enche */
+.arena-bicho::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: calc(var(--carga, 1) * 100%);
+  background: var(--accent);
+  opacity: 0.6;
+}
+
+.arena-bicho.ativo {
+  border-color: var(--accent);
+  cursor: default;
+}
+
+.arena-bicho:disabled:not(.ativo) {
+  opacity: 0.7;
+}
+
+.arena-bicho kbd,
+.arena-golpe kbd {
+  font-size: 0.6rem;
+  padding: 0 4px;
+  border-radius: 3px;
+  background: var(--bg-hover);
+}
+
+.arena-golpes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.arena-golpe {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 7px;
+  border-radius: 6px;
+  background: var(--bg-raised);
+  font-size: 0.72rem;
+  opacity: 0.65;
+  overflow: hidden;
+}
+
+.arena-golpe::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  width: calc(var(--carga, 0) * 100%);
+  background: var(--accent);
+  opacity: 0.18;
+  pointer-events: none;
+}
+
+.arena-golpe.pronto {
+  opacity: 1;
+  outline: 1px solid var(--accent);
+}
+
+/* o toque: o joystick nasce onde o dedo encosta (só na tela de toque) */
+.arena-toque {
+  position: absolute;
+  inset: 0;
+  display: none;
+  touch-action: none;
+}
+
+@media (pointer: coarse) {
+  .arena-toque {
+    display: block;
+  }
+}
+
+.arena-manche {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  margin: -40px 0 0 -40px;
+  border-radius: 50%;
+  background: #ffffff22;
+  border: 2px solid #ffffff55;
+  pointer-events: none;
+}
+
+.arena-manche > span {
+  position: absolute;
+  left: 25px;
+  top: 25px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #ffffffaa;
+}
+
+.arena-toque-botoes {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  display: grid;
+  grid-template-columns: repeat(5, 36px);
+  gap: 4px;
+}
+
+.arena-toque-botoes button {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: #1e1822b0;
+  color: #fbf3e4;
+  font-weight: 700;
+}
+
+.arena-modos {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.arena-modos .cid-robos-botao {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 120px;
+}
+
+.arena-modo-figura {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 40px;
+}

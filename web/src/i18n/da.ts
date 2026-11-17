@@ -3412,4 +3412,8 @@ export default {
   'Para baixar e jogar junto': "Til at hente og spille sammen",
   'Trens, navios e cidades, em cooperação': "Tog, skibe og byer, i samarbejde",
   'Civilização por turnos, com partida pela internet': "Civilisation i ture, med spil over internettet",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "Arena",
+  'Golpe forte': "Kraftigt slag",
+  'Aventura': "Eventyr",
 } satisfies Record<string, string>;

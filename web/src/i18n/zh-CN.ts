@@ -3336,4 +3336,8 @@ export default {
   'Para baixar e jogar junto': "下载后一起玩",
   'Trens, navios e cidades, em cooperação': "火车、轮船和城市，合作建设",
   'Civilização por turnos, com partida pela internet': "回合制文明，支持联网对战",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "竞技场",
+  'Golpe forte': "重击",
+  'Aventura': "冒险",
 } satisfies Record<string, string>;

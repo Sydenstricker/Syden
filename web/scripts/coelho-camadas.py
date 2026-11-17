@@ -24,11 +24,13 @@ LADO = 144
 CORPOS = ['mascote', 'orelha-caida', 'musculoso', 'mascote-f-moletom', 'musculoso-f-curta']
 DIRS = ['south-east', 'south-west', 'north-east', 'north-west']
 ACESSORIOS = ['bone', 'bandana']
-# o que o app usa hoje: o palco da Aparência (parado e o aceno ao clicar). As poses do quarto e do salão são do irmão deste,
-# coelho-cena.py (para a página da cena, montar.mjs).
-ANIMACOES = {'parado': DIRS, 'acenando': ['south-east', 'south-west']}
-# a pasta de cada animação, quando não é a do nome (o andar do mascote é o v3)
-PASTA = {('mascote', 'andando'): 'andando-v3'}
+# o que o app usa hoje: o palco da Aparência (parado e o aceno ao clicar) e a ARENA DOS BICHOS (17/11/2026: parado, andando e
+# o aceno, que vira o golpe, nas direções que o desenho tiver; a que falta, o jogo troca pela mais perto). As poses do quarto e
+# do salão são do irmão deste, coelho-cena.py (para a página da cena, montar.mjs).
+ANIMACOES = {'parado': DIRS, 'acenando': DIRS, 'andando': DIRS}
+# as pastas de cada animação, quando não é a do nome (o andar do mascote é o v3: o de frente na v3, as outras direções na v3b;
+# a "andando" dele é a caminhada antiga, por esqueleto e noutra escala). A primeira pasta que tiver a direção vale.
+PASTA = {('mascote', 'andando'): ['andando-v3', 'andando-v3b']}
 
 rel = json.load(open(os.path.join(P, 'camadas', 'relatorio.json'), encoding='utf-8'))
 os.makedirs(SAIDA, exist_ok=True)
@@ -52,8 +54,9 @@ for c in CORPOS:
                 salvar(Image.open(camada).convert('RGBA'), os.path.join(SAIDA, c, f'{acc}-{d}.png'))
                 corpo['camadas'].setdefault(acc, []).append(d)
     for an, dirs in ANIMACOES.items():
-        pasta = os.path.join(P, c, 'baixa-120', 'animacoes', PASTA.get((c, an), an))
+        pastas = [os.path.join(P, c, 'baixa-120', 'animacoes', x) for x in PASTA.get((c, an), [an])]
         for d in dirs:
+            pasta = next((x for x in pastas if os.path.exists(os.path.join(x, f'{d}-0.png'))), pastas[0])
             quadros = []
             k = 0
             while os.path.exists(os.path.join(pasta, f'{d}-{k}.png')):

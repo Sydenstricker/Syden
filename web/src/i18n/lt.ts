@@ -3420,4 +3420,8 @@ export default {
   'Para baixar e jogar junto': "Atsisiųsti ir žaisti kartu",
   'Trens, navios e cidades, em cooperação': "Traukiniai, laivai ir miestai, bendradarbiaujant",
   'Civilização por turnos, com partida pela internet': "Ėjimų civilizacija, su žaidimu internetu",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "Arena",
+  'Golpe forte': "Stiprus smūgis",
+  'Aventura': "Nuotykis",
 } satisfies Record<string, string>;

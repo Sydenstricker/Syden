@@ -3388,4 +3388,8 @@ export default {
   'Para baixar e jogar junto': "Buufachuu fi waliin taphachuuf",
   'Trens, navios e cidades, em cooperação': "Baaburoota, doonii fi magaalota, waliin hojjechuun",
   'Civilização por turnos, com partida pela internet': "Qaroomina walitti aansee, tapha interneetiin",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "Dirree",
+  'Golpe forte': "Rukuttaa jabaa",
+  'Aventura': "Imala sodaachisaa",
 } satisfies Record<string, string>;

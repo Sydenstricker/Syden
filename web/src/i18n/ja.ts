@@ -3329,4 +3329,8 @@ export default {
   'Para baixar e jogar junto': "ダウンロードして一緒に遊ぶ",
   'Trens, navios e cidades, em cooperação': "列車、船、都市を協力して",
   'Civilização por turnos, com partida pela internet': "ターン制の文明ゲーム、ネット対戦つき",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "アリーナ",
+  'Golpe forte': "強攻撃",
+  'Aventura': "冒険",
 } satisfies Record<string, string>;

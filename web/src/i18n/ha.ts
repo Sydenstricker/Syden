@@ -3350,4 +3350,8 @@ export default {
   'Para baixar e jogar junto': "Don saukewa da yin wasa tare",
   'Trens, navios e cidades, em cooperação': "Jiragen ƙasa, jiragen ruwa da birane, tare",
   'Civilização por turnos, com partida pela internet': "Wayewa bi da bi, tare da wasa ta intanet",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "Fage",
+  'Golpe forte': "Bugu mai ƙarfi",
+  'Aventura': "Kasada",
 } satisfies Record<string, string>;

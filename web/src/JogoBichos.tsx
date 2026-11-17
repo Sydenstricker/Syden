@@ -141,7 +141,7 @@ function somDo(e: Evento) {
 }
 
 /** O selo do elemento: a cor e o nome. */
-function Selo({ especie }: { especie: string }) {
+export function Selo({ especie }: { especie: string }) {
   const t = useT();
   const el = ESPECIES[especie]?.elemento;
   if (!el) return null;
@@ -152,7 +152,7 @@ function Selo({ especie }: { especie: string }) {
   );
 }
 
-function BarraDeVida({ pv, pvMax }: { pv: number; pvMax: number }) {
+export function BarraDeVida({ pv, pvMax }: { pv: number; pvMax: number }) {
   const pct = Math.max(0, Math.min(100, (pv / Math.max(1, pvMax)) * 100));
   return (
     <span className={`bichos-vida${pct < 25 ? ' pouca' : pct < 50 ? ' meia' : ''}`} aria-label={`${pv}/${pvMax}`}>
@@ -162,7 +162,7 @@ function BarraDeVida({ pv, pvMax }: { pv: number; pvMax: number }) {
 }
 
 /** Um bicho pequeno, desenhado numa tela própria (a folha pode chegar depois: tenta de novo por alguns segundos). */
-function Retrato({ especie, dormindo = false, tamanho = 48 }: { especie: string; dormindo?: boolean; tamanho?: number }) {
+export function Retrato({ especie, dormindo = false, tamanho = 48 }: { especie: string; dormindo?: boolean; tamanho?: number }) {
   const tela = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     carregarBichos([especie]);

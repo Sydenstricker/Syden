@@ -3387,4 +3387,8 @@ export default {
   'Para baixar e jogar junto': "ဒေါင်းလုဒ်ဆွဲပြီး အတူကစားဖို့",
   'Trens, navios e cidades, em cooperação': "ရထား၊ သင်္ဘောနဲ့ မြို့တွေ၊ ပူးပေါင်းပြီး",
   'Civilização por turnos, com partida pela internet': "အလှည့်ကျ ယဉ်ကျေးမှု၊ အင်တာနက်ကနေ ကစား",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "ကွင်းပြင်",
+  'Golpe forte': "ပြင်းထန်သောတိုက်ခိုက်မှု",
+  'Aventura': "စွန့်စားခန်း",
 } satisfies Record<string, string>;

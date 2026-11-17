@@ -3340,4 +3340,8 @@ export default {
   'Para baixar e jogar junto': "ڈاؤن لوڈ کر کے ساتھ کھیلنے کے لیے",
   'Trens, navios e cidades, em cooperação': "ٹرینیں، جہاز اور شہر، مل کر",
   'Civilização por turnos, com partida pela internet': "باری باری کی تہذیب، انٹرنیٹ پر کھیل کے ساتھ",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "اکھاڑا",
+  'Golpe forte': "زوردار وار",
+  'Aventura': "مہم جوئی",
 } satisfies Record<string, string>;

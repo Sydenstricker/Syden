@@ -3417,4 +3417,8 @@ export default {
   'Para baixar e jogar junto': "Za preuzimanje i zajedničku igru",
   'Trens, navios e cidades, em cooperação': "Vlakovi, brodovi i gradovi, u suradnji",
   'Civilização por turnos, com partida pela internet': "Civilizacija na poteze, s igrom preko interneta",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "Arena",
+  'Golpe forte': "Snažan udarac",
+  'Aventura': "Avantura",
 } satisfies Record<string, string>;

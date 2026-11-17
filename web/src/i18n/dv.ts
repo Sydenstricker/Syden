@@ -3428,4 +3428,8 @@ export default {
   'Para baixar e jogar junto': "ޑައުންލޯޑުކޮށް އެކުގައި ކުޅެން",
   'Trens, navios e cidades, em cooperação': "ރޭލު، ބޯޓު އަދި ސިޓީ، އެކުގައި",
   'Civilização por turnos, com partida pela internet': "އަނބުރާ ކުޅޭ ހަޟާރަތް، އިންޓަނެޓުން ކުޅެވޭ",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "އެރީނާ",
+  'Golpe forte': "ވަރުގަދަ ހަމަލާ",
+  'Aventura': "އެޑްވެންޗަރ",
 } satisfies Record<string, string>;

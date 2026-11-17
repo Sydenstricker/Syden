@@ -3318,4 +3318,8 @@ export default {
   'Para baixar e jogar junto': "Để tải về và chơi cùng nhau",
   'Trens, navios e cidades, em cooperação': "Tàu hỏa, tàu thủy và thành phố, cùng hợp tác",
   'Civilização por turnos, com partida pela internet': "Văn minh theo lượt, có chơi qua mạng",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "Đấu trường",
+  'Golpe forte': "Đòn mạnh",
+  'Aventura': "Phiêu lưu",
 } satisfies Record<string, string>;

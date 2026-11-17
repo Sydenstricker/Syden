@@ -3419,4 +3419,8 @@ export default {
   'Para baixar e jogar junto': "Ukulanda nokudlala ndawonye",
   'Trens, navios e cidades, em cooperação': "Izitimela, imikhumbi namadolobha, ngokubambisana",
   'Civilização por turnos, com partida pela internet': "Impucuko ngokushintshana, nokudlala nge-inthanethi",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "Inkundla",
+  'Golpe forte': "Ukushaya okunamandla",
+  'Aventura': "Uhambo lokuzidela",
 } satisfies Record<string, string>;

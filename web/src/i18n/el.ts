@@ -3354,4 +3354,8 @@ export default {
   'Para baixar e jogar junto': "Για κατέβασμα και κοινό παιχνίδι",
   'Trens, navios e cidades, em cooperação': "Τρένα, πλοία και πόλεις, με συνεργασία",
   'Civilização por turnos, com partida pela internet': "Πολιτισμός με γύρους, με παιχνίδι μέσω ίντερνετ",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "Αρένα",
+  'Golpe forte': "Δυνατό χτύπημα",
+  'Aventura': "Περιπέτεια",
 } satisfies Record<string, string>;

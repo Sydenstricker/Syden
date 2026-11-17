@@ -3428,4 +3428,8 @@ export default {
   'Para baixar e jogar junto': "Pou telechaje epi jwe ansanm",
   'Trens, navios e cidades, em cooperação': "Tren, bato ak vil, an kolaborasyon",
   'Civilização por turnos, com partida pela internet': "Sivilizasyon pa tou, ak pati sou entènèt",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "Arèn",
+  'Golpe forte': "Gwo kou",
+  'Aventura': "Avanti",
 } satisfies Record<string, string>;

@@ -3347,4 +3347,8 @@ export default {
   'Para baixar e jogar junto': "Me ra lavetaki ka qito vata",
   'Trens, navios e cidades, em cooperação': "Sitimanivanua, waqa kei na koro levu, ena veitokoni",
   'Civilização por turnos, com partida pela internet': "iTovo ni bula ena veisau, ena qito ena initaneti",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "Rara ni veivala",
+  'Golpe forte': "Mokuta kaukauwa",
+  'Aventura': "Ilakolako",
 } satisfies Record<string, string>;

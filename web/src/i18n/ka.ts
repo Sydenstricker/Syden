@@ -3436,4 +3436,8 @@ export default {
   'Para baixar e jogar junto': "ჩამოსატვირთად და ერთად სათამაშოდ",
   'Trens, navios e cidades, em cooperação': "მატარებლები, გემები და ქალაქები, თანამშრომლობით",
   'Civilização por turnos, com partida pela internet': "სვლებიანი ცივილიზაცია, ინტერნეტით თამაშით",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "არენა",
+  'Golpe forte': "ძლიერი დარტყმა",
+  'Aventura': "თავგადასავალი",
 } satisfies Record<string, string>;

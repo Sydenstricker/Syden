@@ -3419,4 +3419,8 @@ export default {
   'Para baixar e jogar junto': "ສຳລັບດາວໂຫຼດ ແລະ ຫຼິ້ນນຳກັນ",
   'Trens, navios e cidades, em cooperação': "ລົດໄຟ, ເຮືອ ແລະ ເມືອງ, ຮ່ວມມືກັນ",
   'Civilização por turnos, com partida pela internet': "ອາລະຍະທຳແບບຜັດກັນ, ຫຼິ້ນຜ່ານອິນເຕີເນັດ",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "ເດີ່ນປະລອງ",
+  'Golpe forte': "ການໂຈມຕີແຮງ",
+  'Aventura': "ການຜະຈົນໄພ",
 } satisfies Record<string, string>;

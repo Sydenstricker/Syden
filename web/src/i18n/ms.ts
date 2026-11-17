@@ -3344,4 +3344,8 @@ export default {
   'Dois ou mais no Combo atacam juntos.': "Dua orang atau lebih dalam Kombo menyerang bersama.",
   'Equipar': "Pakai",
   'Deixar': "Tinggalkan",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "Arena",
+  'Golpe forte': "Serangan kuat",
+  'Aventura': "Pengembaraan",
 } satisfies Record<string, string>;

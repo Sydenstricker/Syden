@@ -3418,4 +3418,8 @@ export default {
   'Para baixar e jogar junto': "In la soo dejiyo oo wada ciyaaro",
   'Trens, navios e cidades, em cooperação': "Tareenno, maraakiib iyo magaalooyin, iskaashi",
   'Civilização por turnos, com partida pela internet': "Ilbaxnimo wareeg ah, oo ciyaar internet leh",
+  // A Arena dos coelhos, nos Bichos da Toca (17/11/2026)
+  'Arena': "Garoon",
+  'Golpe forte': "Weerar xoog leh",
+  'Aventura': "Tacabur",
 } satisfies Record<string, string>;
