@@ -1,0 +1,199 @@
+/* A ROTA ESTELAR (JogoEstelar.tsx): a cena 3D larga, o painel por cima (escudo, vidas, bombas, pontos, carga) e os botões de toque. */
+
+.minijogo.jogando-estelar {
+  width: min(900px, 96vw);
+}
+
+.estelar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.estelar-moldura {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 70vh;
+  border-radius: 10px;
+  overflow: hidden;
+  /* o céu do planeta (cena.ts, COR_DO_CEU): enquanto carrega, a caixa já é o lugar do jogo */
+  background: #c9a7d8;
+  touch-action: none;
+}
+
+/* o golpe: a borda pisca de vermelho por um instante */
+.estelar-moldura.atingida::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 40px 8px rgba(255, 50, 50, 0.65);
+  pointer-events: none;
+}
+
+.estelar-caixa {
+  position: absolute;
+  inset: 0;
+}
+.estelar-caixa.escondida {
+  visibility: hidden;
+}
+.estelar-tela {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.estelar-painel {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  color: #fff;
+  font-weight: 800;
+  text-shadow:
+    0 2px 0 rgba(16, 20, 50, 0.6),
+    0 0 6px rgba(16, 20, 50, 0.4);
+  font-variant-numeric: tabular-nums;
+}
+
+.estelar-escudo {
+  position: absolute;
+  top: 12px;
+  left: 14px;
+  width: min(34%, 220px);
+  height: 12px;
+  border-radius: 6px;
+  background: rgba(16, 20, 50, 0.55);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85);
+  overflow: hidden;
+}
+.estelar-escudo span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(#7dffb0, #2fbf6d);
+  transition: width 0.2s;
+}
+.estelar-escudo span.baixo {
+  background: linear-gradient(#ffb36a, #e0453a);
+}
+
+.estelar-vidas,
+.estelar-bombas {
+  position: absolute;
+  left: 14px;
+  display: inline-flex;
+  gap: 4px;
+}
+.estelar-vidas {
+  top: 32px;
+}
+.estelar-bombas {
+  top: 50px;
+}
+/* uma vida: a naveta em miniatura, em CSS */
+.estelar-vida {
+  width: 16px;
+  height: 12px;
+  background:
+    linear-gradient(#f28a2e, #f28a2e) center top / 4px 5px no-repeat,
+    linear-gradient(#f3f1ea, #f3f1ea) center 4px / 16px 4px no-repeat,
+    linear-gradient(#f3f1ea, #f3f1ea) center / 6px 12px no-repeat;
+  filter: drop-shadow(0 1px 0 rgba(16, 20, 50, 0.6));
+}
+.estelar-bomba {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff3c4 0 15%, #ff5a6e 20% 100%);
+  box-shadow: 0 0 0 1px #2b2633;
+}
+
+.estelar-pontos {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  font-size: calc(18px * var(--escala-do-texto, 1));
+}
+.estelar-esquadrilha {
+  position: absolute;
+  top: 34px;
+  right: 14px;
+  font-size: calc(14px * var(--escala-do-texto, 1));
+  opacity: 0.9;
+}
+
+/* a carga do tiro: uma barrinha embaixo do meio, que fica rosa quando trava */
+.estelar-carga {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  width: 120px;
+  height: 6px;
+  margin-left: -60px;
+  border-radius: 3px;
+  background: rgba(16, 20, 50, 0.5);
+  overflow: hidden;
+}
+.estelar-carga span {
+  display: block;
+  height: 100%;
+  background: #8dffb0;
+}
+.estelar-carga span.cheia {
+  background: #ff7ae0;
+}
+
+.estelar-contagem {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: calc(64px * var(--escala-do-texto, 1));
+}
+
+.estelar-toque {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  gap: 10px;
+}
+.estelar-botao {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  background: rgba(16, 20, 50, 0.45);
+  color: #fff;
+  font-size: 22px;
+  touch-action: none;
+}
+.estelar-botao.fogo {
+  width: 68px;
+  height: 68px;
+  background: rgba(47, 191, 109, 0.55);
+}
+
+.estelar-fim {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.estelar-desfecho {
+  font-size: calc(22px * var(--escala-do-texto, 1));
+  font-weight: 800;
+  margin: 0;
+}
+.estelar-recorde {
+  color: var(--accent);
+  font-weight: 700;
+}
+.estelar-total {
+  color: var(--text-muted);
+  font-weight: 600;
+  margin: 0;
+}
