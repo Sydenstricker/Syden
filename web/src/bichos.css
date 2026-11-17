@@ -1,0 +1,279 @@
+/* BICHOS DA TOCA (JogoBichos.tsx): o campo de cima, a luta de lado e a mesa da sala. */
+.bichos {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--text, inherit);
+}
+.bichos-titulo {
+  text-align: center;
+  font-weight: 600;
+  margin: 4px 0;
+}
+
+/* a escolha do primeiro bicho */
+.bichos-iniciais {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.bichos-inicial-cartao {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--border, #0002);
+  background: var(--bg-elevated, #fff1);
+  cursor: pointer;
+}
+.bichos-inicial-cartao:hover,
+.bichos-inicial-cartao:focus-visible {
+  outline: 2px solid var(--accent, #6b8);
+}
+.bichos-retrato {
+  image-rendering: pixelated;
+  flex: none;
+}
+
+.bichos-selo {
+  display: inline-block;
+  padding: 0 6px;
+  border-radius: 8px;
+  font-size: 11px;
+  line-height: 16px;
+  color: #fff;
+  background: var(--cor);
+  text-shadow: 0 1px 0 #0005;
+}
+
+/* o campo */
+.bichos-mapa {
+  flex-direction: row;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.bichos-campo {
+  position: relative;
+  flex: 1 1 420px;
+  min-width: 0;
+}
+.bichos-tela-campo {
+  width: 100%;
+  height: auto;
+  image-rendering: pixelated;
+  border-radius: 8px;
+  display: block;
+}
+.bichos-aviso {
+  position: absolute;
+  left: 50%;
+  top: 10px;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 4px 12px;
+  border-radius: 10px;
+  background: #1e1822d9;
+  color: #fbf3e4;
+  font-size: 13px;
+}
+.bichos-setas {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  display: grid;
+  grid-template-columns: repeat(3, 30px);
+  grid-template-rows: repeat(3, 30px);
+  gap: 2px;
+  opacity: 0.85;
+}
+.bichos-setas button {
+  border: none;
+  border-radius: 6px;
+  background: #1e1822b3;
+  color: #fbf3e4;
+  font-size: 12px;
+  cursor: pointer;
+}
+.bichos-setas .cima { grid-area: 1 / 2; }
+.bichos-setas .esq { grid-area: 2 / 1; }
+.bichos-setas .dir { grid-area: 2 / 3; }
+.bichos-setas .baixo { grid-area: 3 / 2; }
+@media (hover: hover) and (pointer: fine) {
+  .bichos-setas { opacity: 0.5; }
+}
+
+.bichos-lado {
+  flex: 0 1 230px;
+  min-width: 200px;
+  font-size: 13px;
+}
+.bichos-lado h4 {
+  margin: 8px 0 4px;
+}
+.bichos-dica {
+  margin: 0 0 6px;
+  opacity: 0.75;
+  font-size: 12px;
+}
+.bichos-cesta {
+  display: flex;
+  gap: 10px;
+  margin: 0;
+}
+.bichos-equipe,
+.bichos-troca {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.bichos-equipe li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.bichos-equipe-nome {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 6px;
+  flex: 1;
+  min-width: 0;
+}
+.bichos-equipe-nome .bichos-vida,
+.bichos-equipe-nome .bichos-xp {
+  flex-basis: 100%;
+}
+
+/* as barras */
+.bichos-vida,
+.bichos-xp {
+  display: block;
+  height: 6px;
+  border-radius: 3px;
+  background: #0003;
+  overflow: hidden;
+}
+.bichos-vida > span {
+  display: block;
+  height: 100%;
+  background: #4fb26a;
+  transition: width 0.45s ease-out;
+}
+.bichos-vida.meia > span { background: #e0b23a; }
+.bichos-vida.pouca > span { background: #d8543f; }
+.bichos-xp { height: 3px; }
+.bichos-xp > span {
+  display: block;
+  height: 100%;
+  background: #5a8fd8;
+}
+
+/* a luta */
+.bichos-palco {
+  position: relative;
+}
+.bichos-tela-luta {
+  width: 100%;
+  height: auto;
+  display: block;
+  image-rendering: pixelated;
+  border-radius: 8px;
+}
+.bichos-cartao {
+  position: absolute;
+  min-width: 140px;
+  max-width: 46%;
+  padding: 4px 8px 6px;
+  border-radius: 8px;
+  background: #fbf3e4e8;
+  color: #2a2230;
+  font-size: 12px;
+  box-shadow: 0 1px 3px #0003;
+}
+.bichos-cartao.outro { left: 8px; top: 8px; }
+.bichos-cartao.meu { right: 8px; bottom: 8px; }
+.bichos-cartao .bichos-vida { margin-top: 3px; }
+.bichos-pv { float: right; }
+.bichos-pontinhos {
+  display: flex;
+  gap: 3px;
+  margin-top: 3px;
+}
+.bichos-pontinhos i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #4fb26a;
+}
+.bichos-pontinhos i.dorme { background: #a7a0ad; }
+
+.bichos-narracao {
+  min-height: 2.6em;
+  margin: 0;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--bg-elevated, #0001);
+  font-size: 14px;
+}
+.bichos-golpes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.bichos-golpe {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 2px solid var(--cor);
+  background: color-mix(in srgb, var(--cor) 18%, transparent);
+  color: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.bichos-golpe small {
+  font-weight: 400;
+  font-size: 11px;
+  opacity: 0.8;
+}
+.bichos-golpe:disabled { opacity: 0.5; cursor: default; }
+.bichos-acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+.bichos-acoes small {
+  opacity: 0.7;
+  margin-left: 2px;
+}
+.bichos-troca button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 3px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border, #0002);
+  background: var(--bg-elevated, #fff1);
+  color: inherit;
+  cursor: pointer;
+  text-align: start;
+}
+.bichos-troca button > span:first-of-type { flex: 1; }
+.bichos-troca .bichos-vida { width: 80px; }
+.bichos-troca button:disabled { opacity: 0.5; cursor: default; }
+.bichos-placa {
+  margin: 0;
+  text-align: center;
+  font-weight: 600;
+}
+.bichos-placa .eu { color: var(--accent, #4a8); }
