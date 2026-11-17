@@ -139,6 +139,61 @@ export const MODELOS = [
     saida: 'unica',
     licenca: 'Apache 2.0 (PaddleSeg; conversão nossa, paddle2onnx)',
   },
+  // OS CANDIDATOS DE 17/11/2026 (README, "Mais candidatos"): licença conferida na fonte (o cartão do Hugging Face e o LICENSE do
+  // repositório). `configs`: onde medir (os de 1024 levam segundos por quadro no processador); `rodadas`: quantas para o tempo.
+  {
+    id: 'birefnet-lite-512',
+    nome: 'BiRefNet lite (512 × 512, 16 bits)',
+    arquivo: 'novos/birefnet-lite-512/birefnet-lite-512-fp16.onnx',
+    url: 'https://huggingface.co/shozebDev/birefnet-lite-512-onnx/resolve/a1ef059c89d8982b4b5f801915024d8e2d55ea87/onnx/model_fp16.onnx',
+    entrada: [512, 512],
+    normal: 'imagenet',
+    saida: 'sigmoide',
+    configs: ['dml'],
+    licenca: 'MIT (ZhengPeng7/BiRefNet; a conversão de 512 das figurinhas, shozebDev, MIT)',
+  },
+  {
+    id: 'u2net-humano',
+    nome: 'U²-Net humano (320 × 320)',
+    arquivo: 'novos/u2net-humano/u2net_human_seg.onnx',
+    url: 'https://github.com/danielgatis/rembg/releases/download/v0.0.0/u2net_human_seg.onnx',
+    entrada: [320, 320],
+    normal: 'imagenet',
+    saida: 'minmax',
+    configs: ['cpu-2', 'dml'],
+    licenca: 'Apache 2.0 (xuebinqin/U-2-Net; a conversão do rembg, MIT)',
+  },
+  {
+    id: 'ben2',
+    nome: 'BEN2 base (1024 × 1024, 16 bits)',
+    arquivo: 'novos/ben2/model_fp16.onnx',
+    url: 'https://huggingface.co/onnx-community/BEN2-ONNX/resolve/main/onnx/model_fp16.onnx',
+    entrada: [1024, 1024],
+    normal: 'imagenet',
+    saida: 'unica',
+    configs: ['dml'],
+    rodadas: 3,
+    aquecer: 1,
+    licenca: 'MIT (PramaLLC/BEN2, o modelo base; conversão onnx-community, MIT)',
+  },
+  {
+    id: 'birefnet-retrato',
+    nome: 'BiRefNet retrato (1024 × 1024, 16 bits)',
+    arquivo: 'novos/birefnet-portrait/model_fp16.onnx',
+    url: 'https://huggingface.co/onnx-community/BiRefNet-portrait-ONNX/resolve/main/onnx/model_fp16.onnx',
+    entrada: [1024, 1024],
+    normal: 'imagenet',
+    saida: 'sigmoide',
+    configs: ['dml'],
+    rodadas: 2,
+    aquecer: 1,
+    licenca: 'MIT (ZhengPeng7/BiRefNet-portrait; conversão onnx-community, MIT)',
+  },
+  // O REALCE DO ESCURO (realce.mjs): o mesmo modelo, com o quadro clareado só na entrada dele
+  ...['auto', 'auto-suave', 'inverso', 'temporal', 'temporal-auto'].flatMap((r) => [
+    { id: `ppmatting-v2-fp16-${r}`, nome: `PP-MattingV2 512, 16 bits, realce ${r}`, arquivo: 'ppmatting-v2-fp16.onnx', entrada: [512, 512], normal: 'menos-um-um', saida: 'unica', realce: r, licenca: 'Apache 2.0 (PaddleSeg)' },
+    { id: `pphumanseg-${r}`, nome: `PP-HumanSeg 192, realce ${r}`, arquivo: 'pphumanseg.onnx', entrada: [192, 192], normal: 'menos-um-um', saida: 'duas-classes', realce: r, licenca: 'Apache 2.0 (PaddleSeg; OpenCV Zoo)' },
+  ]),
 ];
 
 // Fotos do Wikimedia Commons (licenças livres; só para medir, nada disto vai ao Syden). `escura`: a mesma foto com pouca

@@ -2438,6 +2438,13 @@ saúde na primeira descida do Automático. Pendente, decisão dele: o PP-HumanSe
 contra 13,8 ms), com a mesma qualidade, e é candidato a novo Leve. Não medido: webcam e escuro de verdade (o 85/100 vem de vídeos
 escurecidos por código), outras placas além da RTX 3070, um jogo de verdade na frente. Medida: `e2e/fundo-da-camera/README.md` (os
 comparativos lado a lado em `resultados/`, fora do git); testes: `desktop/test/fundo-camera.test.mjs` e `e2e/fundo-da-camera-no-app.mjs`.
+**Mais candidatos, medidos no mesmo dia (relato dele: "mesmo o Completo não é perfeito, olhe os artefatos"): NÃO HÁ COMPLETO MELHOR que
+caiba ao vivo.** O U²-Net humano (15 ms na placa) é pior e 10× maior; BEN2 e BiRefNet retrato recortam melhor com luz, mas levam 1 s e
+13 s por quadro; MatAnyone (não comercial), IS-Net (AGPL), ViTMatte e SAM 2 (pedem marcação) ficaram fora. **O escuro derruba o Completo
+pelo RUÍDO, não pela falta de luz**: clarear a entrada piora; a média dos quadros na entrada ajuda (72 → 82% no pior vídeo) sem chegar ao
+Leve. A regra "câmera escura vai ao Leve" fica; o que decide o próximo passo é medir uma webcam de verdade num quarto escuro. **A troca de
+modelo não se vê** (`e2e/fundo-da-camera-luz.mjs`, a luz acendendo e apagando como um interruptor, no app): a máscara muda até 0,9% no
+quadro da troca, contra até 1,7% da própria luz mudando e 0,4% parada; desce ao Leve ~0,7 s depois de apagar e volta em ~0,3 s.
 
 ## Fonte de terceiro: embutir é REDISTRIBUIR, e quase nenhuma "grátis" permite isso
 

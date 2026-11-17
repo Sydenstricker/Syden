@@ -18,6 +18,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { filtroGuiado } from './guiado.mjs';
 import { MODELOS, VIDEOS } from './lista.mjs';
+import { realcar } from './realce.mjs';
 
 const require = createRequire(import.meta.url);
 const ort = require('onnxruntime-node');
@@ -28,6 +29,9 @@ mkdirSync(VID, { recursive: true });
 const L = 640, A = 360, QPS = 15; // o quadro da webcam simulada
 const GL = 320, GA = 180; // a grade comum onde as máscaras são comparadas (a metade do quadro)
 const so = process.env.SO?.split(',');
+// SAIDA=nome escreve resultados/<nome>.html, <nome>-numeros.json e os vídeos com o nome na frente, sem apagar os de antes
+const SAIDA = process.env.SAIDA ?? 'video-comparar';
+const PREFIXO = SAIDA === 'video-comparar' ? '' : SAIDA + '-';
 
 // ---- a webcam simulada: o ffmpeg corta, reduz, tira a 15 qps e degrada ----
 const VARIANTES = [
@@ -38,6 +42,14 @@ const VARIANTES = [
   // a webcam USB barata manda MJPEG; q 18 é a compressão de quem está no limite da USB 2
   { id: 'comprimida', nome: 'compressão MJPEG', filtro: '', mjpeg: 18 },
 ];
+// SEPARAR_ESCURO=1 (17/11/2026, README "O escuro: o modelo ou o nosso vídeo?"): o escuro da medida junta duas coisas, pouca luz
+// e o ruído forte. Estas duas versões separam: só o escurecer, sem ruído; e o ruído equivalente ao do escuro numa imagem clara
+// (o ruído de 22/14 no escuro, depois de desfeita a gama, vale uns 2,5 vezes isso; aqui fica em 55/35)
+if (process.env.SEPARAR_ESCURO)
+  VARIANTES.push(
+    { id: 'escura-sem-ruido', nome: 'escuro sem ruído', filtro: ",lutrgb=r='pow(val/255\\,1.8)*90':g='pow(val/255\\,1.8)*90':b='pow(val/255\\,1.8)*90'" },
+    { id: 'ruido-forte', nome: 'ruído forte, com luz', filtro: ',noise=c0s=55:c1s=35:c2s=35:allf=t' },
+  );
 
 function quadrosDe(v, variante) {
   const base = `[0:v]fps=${QPS},scale=${L}:${A}:force_original_aspect_ratio=increase,crop=${L}:${A}${variante.filtro},format=rgb24`;
@@ -71,8 +83,11 @@ function preparador(m) {
   };
   const [x0s, axs] = tab(w, L), [y0s, ays] = tab(h, A);
   const t = new Float32Array(3 * w * h);
-  const [mul, soma] = m.normal === 'menos-um-um' ? [2 / 255, -1] : [1 / 255, 0];
+  // por canal: v × mul + soma (o ImageNet tem média e desvio por canal)
+  const IMG = [[0.485, 0.229], [0.456, 0.224], [0.406, 0.225]];
+  const ms = [0, 1, 2].map((k) => (m.normal === 'menos-um-um' ? [2 / 255, -1] : m.normal === 'imagenet' ? [1 / 255 / IMG[k][1], -IMG[k][0] / IMG[k][1]] : [1 / 255, 0]));
   return (rgb) => {
+    rgb = realcar(rgb, L, A, 3, m.realce);
     for (let y = 0; y < h; y++) {
       const r0 = y0s[y] * L, r1 = r0 + L, ay = ays[y];
       for (let x = 0; x < w; x++) {
@@ -80,7 +95,7 @@ function preparador(m) {
         const p00 = (r0 + c0) * 3, p01 = p00 + 3, p10 = (r1 + c0) * 3, p11 = p10 + 3;
         for (let k = 0; k < 3; k++) {
           const v = (rgb[p00 + k] * (1 - ax) + rgb[p01 + k] * ax) * (1 - ay) + (rgb[p10 + k] * (1 - ax) + rgb[p11 + k] * ax) * ay;
-          t[k * w * h + y * w + x] = v * mul + soma;
+          t[k * w * h + y * w + x] = v * ms[k][0] + ms[k][1];
         }
       }
     }
@@ -92,7 +107,12 @@ function preparador(m) {
 function mascara(m, saida) {
   const [w, h] = m.entrada, n = w * h, d = saida.data, r = new Float32Array(n);
   if (m.saida === 'unica') for (let i = 0; i < n; i++) r[i] = d[i];
-  else
+  else if (m.saida === 'sigmoide') for (let i = 0; i < n; i++) r[i] = 1 / (1 + Math.exp(-d[i]));
+  else if (m.saida === 'minmax') {
+    let mn = Infinity, mx = -Infinity;
+    for (let i = 0; i < n; i++) (mn = Math.min(mn, d[i])), (mx = Math.max(mx, d[i]));
+    for (let i = 0; i < n; i++) r[i] = (d[i] - mn) / Math.max(1e-6, mx - mn);
+  } else
     for (let i = 0; i < n; i++) {
       const a = d[i], b = d[n + i];
       r[i] = a >= 0 && b >= 0 && Math.abs(a + b - 1) < 0.01 ? b : 1 / (1 + Math.exp(a - b));
@@ -395,7 +415,7 @@ const feitos = [];
 if (!process.env.SEM_VIDEO)
   for (const v of videos)
     for (const vaId of ['limpa', 'escura']) {
-      const arq = `${v.id}-${vaId}.mp4`;
+      const arq = `${PREFIXO}${v.id}-${vaId}.mp4`;
       await videoLadoALado(`${v.id}/${vaId}`, arq);
       feitos.push({ v, va: VARIANTES.find((x) => x.id === vaId), arq });
       console.log('vídeo', arq, (statSync(join(VID, arq)).size / 1e6).toFixed(1), 'MB');
@@ -407,7 +427,8 @@ const resumo = []; // por modelo × variante × suavização, a média dos víde
 for (const m of mods)
   for (const va of VARIANTES)
     for (const sv of SUAVES) {
-      const ls = linhas.filter((l) => l.modelo === m && l.variante === va).map((l) => l.suaves[sv.id]);
+      const ls = linhas.filter((l) => l.modelo === m && l.variante === va).map((l) => l.suaves[sv.id]).filter(Boolean);
+      if (!ls.length) continue; // GUIADO=0 pula o guiado
       resumo.push({ modelo: m.id, variante: va.id, suave: sv.id, iou: media(ls.map((x) => x.iou)), iouP5: Math.min(...ls.map((x) => x.iouP5)), trocas: media(ls.map((x) => x.trocas)), dAlfa: media(ls.map((x) => x.dAlfa)) });
     }
 const tabTempo = mods.map((m) => `<tr><td>${m.nome}</td><td>${mediana(tempos[m.id].modelo).toFixed(1)} ms</td><td>${p90(tempos[m.id].modelo).toFixed(1)} ms</td><td>${mediana(tempos[m.id].total).toFixed(1)} ms</td><td>${p90(tempos[m.id].total).toFixed(1)} ms</td><td>${((mediana(tempos[m.id].total) * QPS) / 1000).toFixed(2)}</td></tr>`).join('');
@@ -418,6 +439,7 @@ const tabTremor = mods
         `<tr><th colspan="5">${m.nome} · ${va.nome}</th></tr>` +
         SUAVES.map((sv) => {
           const r = resumo.find((x) => x.modelo === m.id && x.variante === va.id && x.suave === sv.id);
+          if (!r) return '';
           return `<tr><td>${sv.nome}</td><td>${pct(r.iou)}</td><td>${pct(r.iouP5)}</td><td>${r.trocas.toFixed(3)}</td><td>${sv.id === 'hist' || sv.id === 'ema50h' ? '— (dura)' : r.dAlfa.toFixed(3)}</td></tr>`;
         }).join(''),
     ).join(''),
@@ -430,7 +452,7 @@ const tabFiel = linhas
 const tabArrasto = arrastos.map((a) => `<tr><td>${a.modelo.nome}</td><td>${a.variante}, ${a.passo} px/quadro</td><td>${a.suave.nome}</td><td>${a.medio.toFixed(1)} px</td><td>${a.max.toFixed(1)} px</td><td>${a.assenta}</td><td>${a.resto.toFixed(2)} px</td></tr>`).join('');
 // O papel de cada modelo no app (pedido dele, 17/11/2026: "adicionar o modelo no canto dos vídeos para eu saber e avaliar
 // melhor"). Cada quadrado do mosaico leva o modelo e a coluna, por cima do vídeo (o vídeo em si não muda).
-const PAPEL = { pphumanseg: 'Leve, o de hoje', 'ppmatting-v2-fp16': 'Completo', 'ppseg-v2-retrato': 'candidato a novo Leve' };
+const PAPEL = { pphumanseg: 'Leve, o de hoje', 'ppmatting-v2-fp16': 'Completo, o de hoje', 'ppseg-v2-retrato': 'candidato a novo Leve', 'u2net-humano': 'candidato', 'birefnet-lite-512': 'candidato (lento)', 'ppmatting-v2-fp16-auto': 'Completo + realce', 'ppmatting-v2-fp16-auto-suave': 'Completo + realce', 'ppmatting-v2-fp16-inverso': 'Completo + realce ideal', 'pphumanseg-auto-suave': 'Leve + realce' };
 const rotulos = mods
   .flatMap((m, r) =>
     COLUNAS.map(
@@ -444,7 +466,7 @@ const blocos = feitos
   .join('\n');
 const creditos = videos.map((v) => `<li><a href="https://commons.wikimedia.org/wiki/File:${encodeURIComponent(v.commons.replaceAll(' ', '_'))}">${v.commons}</a> · ${v.autor} · ${v.licenca} · trecho de ${v.inicio} s a ${v.inicio + v.duracao} s</li>`).join('');
 writeFileSync(
-  join(RES, 'video-comparar.html'),
+  join(RES, `${SAIDA}.html`),
   `<!doctype html><meta charset="utf-8"><title>Fundo da câmera em vídeo</title><style>body{font:14px system-ui;background:#16181d;color:#ddd;margin:16px;max-width:1300px}table{border-collapse:collapse;margin-bottom:16px}td,th{border:1px solid #444;padding:3px 8px;text-align:left}a{color:#9cf}.mosaico{position:relative;max-width:1280px}.mosaico video{display:block;width:100%}.rot{position:absolute;margin:4px;padding:2px 6px;background:rgba(0,0,0,.7);color:#fff;font:12px/1.3 system-ui;border-radius:3px;pointer-events:none}</style>
 <h1>Fundo da câmera: a webcam simulada</h1>
 <p>${L} × ${A} a ${QPS} quadros por segundo, 2 núcleos (onnxruntime-node). Em cada vídeo, uma linha por modelo (de cima para baixo: ${mods.map((m) => m.nome).join(' · ')}) e as colunas: ${COLUNAS.map((c) => c.nome).join(' · ')}. Cada quadrado diz o modelo e a coluna no canto. O fundo é o quarto, onde o tremor mais aparece.</p>
@@ -457,5 +479,5 @@ writeFileSync(
 <h2>Os vídeos</h2>${blocos}
 <h2>Créditos</h2><ul>${creditos}</ul>`,
 );
-writeFileSync(join(RES, 'video-numeros.json'), JSON.stringify({ tempos: Object.fromEntries(mods.map((m) => [m.id, { modelo: mediana(tempos[m.id].modelo), modeloP90: p90(tempos[m.id].modelo), total: mediana(tempos[m.id].total), totalP90: p90(tempos[m.id].total) }])), resumo, porVideo: linhas.map((l) => ({ video: l.video.id, variante: l.variante.id, modelo: l.modelo.id, fiel: l.fiel, suaves: l.suaves })), arrastos: arrastos.map((a) => ({ modelo: a.modelo.id, variante: a.variante, passo: a.passo, suave: a.suave.id, medio: a.medio, max: a.max, assenta: a.assenta, resto: a.resto })) }, null, 2));
+writeFileSync(join(RES, SAIDA === 'video-comparar' ? 'video-numeros.json' : `${SAIDA}-numeros.json`), JSON.stringify({ tempos: Object.fromEntries(mods.map((m) => [m.id, { modelo: mediana(tempos[m.id].modelo), modeloP90: p90(tempos[m.id].modelo), total: mediana(tempos[m.id].total), totalP90: p90(tempos[m.id].total) }])), resumo, porVideo: linhas.map((l) => ({ video: l.video.id, variante: l.variante.id, modelo: l.modelo.id, fiel: l.fiel, suaves: l.suaves })), arrastos: arrastos.map((a) => ({ modelo: a.modelo.id, variante: a.variante, passo: a.passo, suave: a.suave.id, medio: a.medio, max: a.max, assenta: a.assenta, resto: a.resto })) }, null, 2));
 console.log('\nresultados/video-comparar.html');

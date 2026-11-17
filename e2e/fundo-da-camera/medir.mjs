@@ -11,6 +11,7 @@ import { chromium } from 'playwright-core';
 import { filtroGuiado } from './guiado.mjs';
 import { FOTOS, MODELOS } from './lista.mjs';
 import { ampliar, qualidadeDaBorda } from './qualidade.mjs';
+import { realcar } from './realce.mjs';
 
 const require = createRequire(import.meta.url);
 const ort = require('onnxruntime-node');
@@ -20,6 +21,8 @@ mkdirSync(RES, { recursive: true });
 const L = 640, A = 360; // o quadro da câmera
 const RODADAS = Number(process.env.RODADAS ?? 40);
 const so = process.env.SO?.split(',');
+// SAIDA=nome escreve resultados/<nome>.html e <nome>-tempos.json, sem apagar o comparar.html de antes
+const SAIDA = process.env.SAIDA ?? 'comparar';
 
 // ---- as fotos, reduzidas a 640 × 360 pelo Chrome (corte no meio, como a câmera em 16:9) ----
 const navegador = await chromium.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
@@ -55,7 +58,9 @@ for (const f of FOTOS) {
 }
 
 // ---- pré e pós de cada modelo ----
+const IMAGENET = [[0.485, 0.229], [0.456, 0.224], [0.406, 0.225]];
 function entrada(m, rgba, deslocar = 0) {
+  rgba = realcar(rgba, L, A, 4, m.realce);
   const [w, h] = m.entrada;
   const t = new Float32Array(3 * w * h);
   const nhwc = m.saida === 'multiclasse';
@@ -69,6 +74,7 @@ function entrada(m, rgba, deslocar = 0) {
         let v = (p(y0, x0) * (1 - ax) + p(y0, x0 + 1) * ax) * (1 - ay) + (p(y0 + 1, x0) * (1 - ax) + p(y0 + 1, x0 + 1) * ax) * ay;
         v /= 255;
         if (m.normal === 'menos-um-um') v = (v - 0.5) / 0.5;
+        else if (m.normal === 'imagenet') v = (v - IMAGENET[k][0]) / IMAGENET[k][1];
         t[nhwc ? (y * w + x) * 3 + k : k * w * h + y * w + x] = v;
       }
     }
@@ -80,7 +86,13 @@ function mascara(m, saida) {
   const [w, h] = m.entrada, n = w * h, d = saida.data;
   const r = new Float32Array(n);
   if (m.saida === 'unica') for (let i = 0; i < n; i++) r[i] = d[i];
-  else if (m.saida === 'duas-classes') {
+  else if (m.saida === 'sigmoide') for (let i = 0; i < n; i++) r[i] = 1 / (1 + Math.exp(-d[i]));
+  else if (m.saida === 'minmax') {
+    // o U²-Net: a saída já passou pela sigmoide, e o rembg a estica entre o menor e o maior do quadro
+    let mn = Infinity, mx = -Infinity;
+    for (let i = 0; i < n; i++) (mn = Math.min(mn, d[i])), (mx = Math.max(mx, d[i]));
+    for (let i = 0; i < n; i++) r[i] = (d[i] - mn) / Math.max(1e-6, mx - mn);
+  } else if (m.saida === 'duas-classes') {
     for (let i = 0; i < n; i++) {
       const a = d[i], b = d[n + i];
       r[i] = a >= 0 && b >= 0 && Math.abs(a + b - 1) < 0.01 ? b : 1 / (1 + Math.exp(a - b)); // já é softmax? senão, aplica
@@ -128,7 +140,7 @@ for (const m of MODELOS.filter((m) => !so || so.includes(m.id))) {
   const linha = { modelo: m, tempos: {}, mascaras: [], estabilidade: [], cruas: [] };
   // CONFIGS=cpu-2,dml mede só essas (os refinados levam segundos por quadro no processador); as máscaras saem da de 4
   // núcleos, ou da última da lista
-  const configs = process.env.CONFIGS ? CONFIGS.filter((c) => process.env.CONFIGS.split(',').includes(c.id)) : CONFIGS;
+  const configs = m.configs ? CONFIGS.filter((c) => m.configs.includes(c.id)) : process.env.CONFIGS ? CONFIGS.filter((c) => process.env.CONFIGS.split(',').includes(c.id)) : CONFIGS;
   const daMascara = configs.some((c) => c.id === 'cpu-4') ? 'cpu-4' : configs.at(-1).id;
   for (const c of configs) {
     let sessao;
@@ -140,9 +152,9 @@ for (const m of MODELOS.filter((m) => !so || so.includes(m.id))) {
     }
     const nome = sessao.inputNames[0];
     const tens = entrada(m, quadros[0].rgba);
-    for (let i = 0; i < 5; i++) await sessao.run({ [nome]: tens });
+    for (let i = 0; i < (m.aquecer ?? 5); i++) await sessao.run({ [nome]: tens });
     const so_modelo = [], com_pre = [];
-    for (let i = 0; i < RODADAS; i++) {
+    for (let i = 0; i < (m.rodadas ?? RODADAS); i++) {
       const t0 = performance.now();
       const t = entrada(m, quadros[i % quadros.length].rgba);
       const t1 = performance.now();
@@ -198,6 +210,25 @@ for (const r of resultados) {
   if (g.mascaras.length) comGuiado.push(g);
 }
 const media = (xs) => xs.reduce((s, x) => s + x, 0) / Math.max(1, xs.length);
+// NO ESCURO (17/11/2026): a franja e o corte não veem a pessoa que SOME (máscara vazia não tem borda). Cada foto escura é a
+// mesma foto clara escurecida, no mesmo enquadramento: a IoU entre as duas máscaras do MESMO modelo diz quanto ele se manteve.
+for (const r of resultados) {
+  if (!r.cruas?.length) continue;
+  r.fielEscura = [];
+  quadros.forEach((q, qi) => {
+    if (!q.escura) return;
+    const ci = quadros.findIndex((c) => c.arquivo === q.arquivo && !c.escura);
+    const a = r.cruas[qi], b = r.cruas[ci];
+    let inter = 0, uniao = 0;
+    for (let i = 0; i < a.length; i++) {
+      const p = a[i] > 0.5, c = b[i] > 0.5;
+      inter += p && c ? 1 : 0;
+      uniao += p || c ? 1 : 0;
+    }
+    r.fielEscura.push(uniao ? inter / uniao : 1);
+  });
+  console.log('escuro', r.modelo.id.padEnd(24), r.fielEscura.map((x) => (x * 100).toFixed(1) + '%').join(' · '));
+}
 for (const r of [...resultados, ...comGuiado]) {
   const b = r.borda;
   if (!b?.length) continue;
@@ -278,7 +309,7 @@ const tabela = resultados
     const est = r.estabilidade.reduce((s, x) => s + x, 0) / r.estabilidade.length;
     const mb = (readFileSync(join(AQUI, 'modelos', r.modelo.arquivo)).length / 1e6).toFixed(1);
     const bd = r.bordaMedia ? `<td>${(r.bordaMedia.franja * 100).toFixed(1)}%</td><td>${(r.bordaMedia.corte * 100).toFixed(1)}%</td><td>${r.bordaMedia.largura.toFixed(2)} px</td>` : '<td>–</td><td>–</td><td>–</td>';
-    return `<tr><td>${r.modelo.nome}</td><td>${mb} MB</td><td>${t('cpu-1')}</td><td>${t('cpu-2')}</td><td>${t('cpu-4')}</td><td>${t('dml')}</td><td>${(est * 100).toFixed(1)}%</td>${bd}<td>${r.modelo.licenca}</td></tr>`;
+    return `<tr><td>${r.modelo.nome}</td><td>${mb} MB</td><td>${t('cpu-1')}</td><td>${t('cpu-2')}</td><td>${t('cpu-4')}</td><td>${t('dml')}</td><td>${(est * 100).toFixed(1)}%</td><td>${r.fielEscura ? r.fielEscura.map((x) => (x * 100).toFixed(0) + '%').join(' · ') : '–'}</td>${bd}<td>${r.modelo.licenca}</td></tr>`;
   })
   .join('\n');
 const blocos = FOTOS.map(
@@ -292,11 +323,11 @@ const blocos = FOTOS.map(
       .join(''),
 ).join('\n');
 writeFileSync(
-  join(RES, 'comparar.html'),
+  join(RES, `${SAIDA}.html`),
   `<!doctype html><meta charset="utf-8"><title>Fundo da câmera</title><style>body{font:14px system-ui;background:#16181d;color:#ddd;margin:16px}table{border-collapse:collapse}td,th{border:1px solid #444;padding:4px 8px}img{width:100%;max-width:1920px}figure{margin:0 0 14px}</style>
 <h1>Fundo da câmera: os candidatos</h1><p>Quadro de 640 × 360. Tempo: a mediana do modelo por quadro, depois de aquecido. Estabilidade: quanto a máscara concorda com ela mesma com a câmera 3 px ao lado (100% = nada treme). Franja: quanto do que aparece na borda é fundo (a parede vazando); corte: quanto da pessoa a borda joga fora; largura: a espessura da borda em px (qualidade.mjs). As linhas "+ filtro guiado" têm o tempo do filtro na placa medido no app, não aqui.</p>
-<table><tr><th>Modelo</th><th>Arquivo</th><th>1 núcleo</th><th>2 núcleos</th><th>4 núcleos</th><th>Placa</th><th>Estabilidade</th><th>Franja</th><th>Corte</th><th>Largura da borda</th><th>Licença</th></tr>${tabela}</table>
+<table><tr><th>Modelo</th><th>Arquivo</th><th>1 núcleo</th><th>2 núcleos</th><th>4 núcleos</th><th>Placa</th><th>Estabilidade</th><th>No escuro (IoU com a mesma foto clara)</th><th>Franja</th><th>Corte</th><th>Largura da borda</th><th>Licença</th></tr>${tabela}</table>
 <p>Cada linha: fundo apagado · desfocado · imagem (o quarto).</p>${blocos}`,
 );
-writeFileSync(join(RES, 'tempos.json'), JSON.stringify(resultados.map((r) => ({ id: r.modelo.id, tempos: r.tempos, estabilidade: r.estabilidade, borda: r.borda, bordaMedia: r.bordaMedia })), null, 2));
+writeFileSync(join(RES, SAIDA === 'comparar' ? 'tempos.json' : `${SAIDA}-tempos.json`), JSON.stringify(resultados.map((r) => ({ id: r.modelo.id, tempos: r.tempos, estabilidade: r.estabilidade, fielEscura: r.fielEscura, borda: r.borda, bordaMedia: r.bordaMedia })), null, 2));
 console.log('\nresultados/comparar.html');

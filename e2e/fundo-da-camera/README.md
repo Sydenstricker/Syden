@@ -273,3 +273,168 @@ processador (6,8 contra 13,8 ms), franja menor nas fotos e o mesmo tremor no esc
 - Outra placa que não a RTX 3070 (AMD, Intel integrada, notebook híbrido): a abertura mede e decide, mas o tempo nelas não foi visto.
 - Um jogo de verdade na frente com o refinado (o e2e simula pelo `SYDEN_TESTE_JOGO`), e o aperto real de um jogo na placa.
 - O custo da página com o quadro de 512 × 512.
+
+## Mais candidatos, e o escuro: do modelo ou do nosso vídeo? (17/11/2026)
+
+Pedido dele, olhando `resultados/video-comparar.html`: "mesmo o Completo não é perfeito, olhe os artefatos" (no vídeo escurecido,
+o PP-MattingV2 perde o ombro e a roupa e deixa um bloco no rosto) e "não temos mais modelos para testar?".
+
+```
+node e2e/fundo-da-camera/baixar.mjs     # baixa também os novos (modelos/novos/, ~1,1 GB)
+RODADAS=20 SAIDA=comparar-candidatos SO=pphumanseg,ppmatting-v2-fp16,u2net-humano,birefnet-lite-512,ben2,birefnet-retrato,\
+ppmatting-v2-fp16-auto,ppmatting-v2-fp16-auto-suave,ppmatting-v2-fp16-inverso,pphumanseg-auto-suave,pphumanseg-inverso \
+  CONFIGS=cpu-2,dml node e2e/fundo-da-camera/medir.mjs        # ~12 min (o BiRefNet retrato leva 13 s por foto)
+SAIDA=video-candidatos MODELOS_DO_VIDEO=ppmatting-v2-fp16,pphumanseg,u2net-humano,birefnet-lite-512 \
+  PLACA=ppmatting-v2-fp16,u2net-humano,birefnet-lite-512 SUAVES_DO_VIDEO=crua,guiado node e2e/fundo-da-camera/medir-video.mjs
+SAIDA=video-realce MODELOS_DO_VIDEO=ppmatting-v2-fp16,ppmatting-v2-fp16-auto,ppmatting-v2-fp16-auto-suave,ppmatting-v2-fp16-inverso \
+  PLACA=<os mesmos> SUAVES_DO_VIDEO=crua,guiado node e2e/fundo-da-camera/medir-video.mjs
+SEPARAR_ESCURO=1 SEM_VIDEO=1 GUIADO=0 SAIDA=video-escuro \
+  MODELOS_DO_VIDEO=ppmatting-v2-fp16,pphumanseg,ppmatting-v2-fp16-inverso,birefnet-lite-512 PLACA=<os da placa> node ...medir-video.mjs
+SEM_VIDEO=1 GUIADO=0 SAIDA=video-temporal \
+  MODELOS_DO_VIDEO=ppmatting-v2-fp16,ppmatting-v2-fp16-temporal,ppmatting-v2-fp16-temporal-auto PLACA=<os mesmos> node ...medir-video.mjs
+```
+
+`SAIDA=` escreve `resultados/<nome>.html` (e os vídeos com o nome na frente) sem apagar os comparativos de antes. O que entrou no
+banco: a normalização do ImageNet e as saídas por sigmoide e por "menor e maior" (o U²-Net); `configs`, `rodadas` e `aquecer` por
+modelo na lista; o REALCE só na entrada do modelo (`realce.mjs`, um modelo da lista com `realce:`); a IoU de cada foto escura com a
+mesma foto clara (a franja e o corte não veem a pessoa que SOME: máscara vazia não tem borda); e as versões `escura-sem-ruido` e
+`ruido-forte` do vídeo (`SEPARAR_ESCURO=1`). (`GUIADO=0` no vídeo quebrava o resumo; consertado.)
+
+### As licenças (conferidas na fonte, o código E os pesos)
+
+| Modelo | Código | Pesos e conversão ONNX | Arquivo |
+|---|---|---|---|
+| BiRefNet lite, 512 (o das figurinhas) | [MIT](https://github.com/ZhengPeng7/BiRefNet/blob/main/LICENSE) | [MIT](https://huggingface.co/ZhengPeng7/BiRefNet_lite); conversão [shozebDev, MIT](https://huggingface.co/shozebDev/birefnet-lite-512-onnx) | 98 MB (16 bits) |
+| BiRefNet retrato, 1024 | MIT | [MIT](https://huggingface.co/ZhengPeng7/BiRefNet-portrait); conversão [onnx-community, MIT](https://huggingface.co/onnx-community/BiRefNet-portrait-ONNX) | 490 MB (16 bits) |
+| BEN2 base, 1024 | [MIT](https://github.com/PramaLLC/BEN2/blob/main/LICENSE) | [MIT](https://huggingface.co/PramaLLC/BEN2) (o "completo" deles é o comercial, por API; o base é aberto); conversão [onnx-community, MIT](https://huggingface.co/onnx-community/BEN2-ONNX) | 219 MB (16 bits) |
+| U²-Net humano, 320 | [Apache 2.0](https://github.com/xuebinqin/U-2-Net/blob/master/LICENSE) | Apache 2.0 (do repositório); o ONNX é o do [rembg, MIT](https://github.com/danielgatis/rembg/releases/tag/v0.0.0) | 176 MB |
+| ViTMatte small | [MIT](https://github.com/hustvl/ViTMatte/blob/main/LICENSE) | [Apache 2.0](https://huggingface.co/hustvl/vitmatte-small-composition-1k); ONNX do [Xenova](https://huggingface.co/Xenova/vitmatte-small-composition-1k), sem licença declarada | 104 MB |
+
+Ressalva comum: os pesos são MIT/Apache, mas os conjuntos de TREINO (DIS5K, P3M-10k, Composition-1k da Adobe) têm termos próprios,
+alguns só de pesquisa. O cartão de cada modelo declara MIT/Apache para os pesos, e é isso que fica anotado.
+
+**Fora, e por quê:**
+- MatAnyone: [S-Lab License](https://github.com/pq-yang/MatAnyone/blob/main/LICENSE), não comercial. Robust Video Matting: GPL-3.
+- IS-Net / DIS: o código é [Apache 2.0](https://github.com/xuebinqin/DIS/blob/main/LICENSE.md), mas a conversão
+  [onnx-community/ISNet-ONNX](https://huggingface.co/onnx-community/ISNet-ONNX) está marcada AGPL-3.0; e é um modelo de objeto
+  qualquer a 1024, da classe do BiRefNet de 1024 (segundos por quadro, abaixo). Não medido.
+- BackgroundMattingV2 ([MIT](https://github.com/PeterL1n/BackgroundMattingV2)): pede uma FOTO DO FUNDO VAZIO antes (a pessoa sai
+  da frente da câmera). Muda o produto; não medido.
+- ViTMatte: pede o TRIMAPA (que poderia vir do Leve), e é lento: **50 ms a 320 × 192, 98 ms a 512 × 288, 133 ms a 640 × 384** na
+  placa (32 bits, entrada aleatória, só o tempo). Fora pelo tempo.
+- SAM 2 ([Apache 2.0](https://github.com/facebookresearch/sam2/blob/main/LICENSE)): pede um ponto ou uma caixa e é pesado; não é desta
+  classe. Não medido.
+- SINet / ExtremeC3Net ([MIT, NAVER](https://github.com/clovaai/ext_portrait_segmentation)): minúsculo (~0,1 M parâmetros), da
+  classe do Leve para baixo, e o único ONNX pronto é o da Qualcomm (fora pela licença deles). P3M-Net (código
+  [MIT](https://github.com/JizhiziLi/P3M)): sem ONNX, e converter pediria rodar o código do repositório. PortraitNet: sem LICENSE no
+  repositório. BiRefNet lite "matting" (MIT): sem ONNX publicado. Não medidos.
+- O BiRefNet lite e o BEN2 de 1024 só existem com a entrada FIXA em 1024: **BiRefNet lite 1024, 6,3 s por quadro na placa**;
+  BEN2 1,1 s; BiRefNet retrato 12–13 s. Os dois últimos ficaram nas fotos como referência de qualidade, não como candidatos.
+
+### Por que o BiRefNet é lento na placa
+
+O BiRefNet lite de 512 (o mesmo arquivo das figurinhas) leva **76–82 ms por quadro pelo DirectML** (229 ms no vídeo, com as outras
+sessões abertas no mesmo processo). O registro da sessão diz por quê: **724 dos 3.133 nós caem no processador** (184 Gather, mais
+Concat, Where, Equal, Slice: a convolução deformável do decodificador, desmontada em indexações), e cada ida e volta entre a placa e
+o processador custa. A versão de 32 bits da mesma conversão: 1,75 s. Com CUDA ou TensorRT ele seria outro (o autor fala em 17 qps a
+1024 numa RTX 4090), mas o app só tem o DirectML.
+
+### O resultado
+
+Fotos: as 9 de sempre, a média; "no escuro": a IoU da máscara da foto escura com a da mesma foto clara (fone da Gamescom ·
+videochamada). Vídeo: a média dos três; "fiel no escuro": a IoU com a máscara do mesmo modelo no vídeo limpo (cc0 / Torwali /
+hackathon). Tempo: só o modelo, a mediana, nas fotos (o modelo sozinho no processo; duas rodadas, a faixa).
+
+| Modelo | Arquivo | Placa | 2 núcleos | Fotos: franja / corte / largura | + filtro guiado | Fotos no escuro | Vídeo: trocas limpa / escura | Fiel no escuro | IoU p5 escura |
+|---|---|---|---|---|---|---|---|---|---|
+| PP-HumanSeg 192 (o Leve) | 6,2 MB | 1,8 ms | 8,5–12,1 ms | 49,1% / 42,0% / 5,1 px | 45,3 / 32,2 / 6,6 | 93% · 92% | 0,206 / 0,557 | 94 / 98 / 99% | 89,6% |
+| **PP-MattingV2 512, 16 bits (o Completo)** | 18,1 MB | **5,4–5,6 ms** | ~335 ms | 44,0% / 38,7% / 1,0 px | 41,9 / 34,5 / 3,0 | 95% · 99% | 0,259 / 1,130 | 85 / **73** / 100% | 55,6% |
+| U²-Net humano 320 | 176 MB | 14,1–14,9 ms | 661–671 ms | 56,4% / 31,5% / 1,7 px | 44,7 / 33,5 / 3,6 | 87% · **32%** | 0,255 / 1,477 | 86 / 79 / 100% | 35,7% |
+| BiRefNet lite 512 | 98 MB | 76–82 ms | – | 34,4% / 43,8% / 1,3 px | 37,1 / 31,9 / 3,1 | **0%** · 32% | 0,184 / 524 | **48** / 99 / 100% | 0% |
+| BEN2 base 1024 | 219 MB | 1.081–1.092 ms | – | 32,3% / 59,0% / 1,2 px | 36,0 / 40,6 / 3,6 | 99% · 81% | – | – | – |
+| BiRefNet retrato 1024 | 490 MB | 12,5–13,0 s | – | 41,8% / 46,3% / 1,0 px | 40,2 / 38,4 / 3,2 | 99% · 88% | – | – | – |
+
+(As fotos escuras levam ruído sorteado. "Trocas 524" do BiRefNet: num vídeo escuro a máscara SOME em parte dos quadros, e a troca é
+medida por pixel de contorno de um contorno quase vazio.)
+
+A olho (`resultados/comparar-candidatos.html`): o **BEN2** e o **BiRefNet retrato** são os mais limpos com luz (o BEN2 não deixa a
+mão solta no ar que o PP-MattingV2 deixa no fone da Gamescom), e o corte alto deles nas contas vem de jogarem fora o notebook e a mão
+que o PP-MattingV2 mantém, não de comerem a pessoa; mas custam 1 s e 13 s por quadro. O **BiRefNet lite** some com a pessoa na foto
+escura do fone (a máscara vazia) e em parte dos quadros de um vídeo escuro. O **U²-Net** deixa mais fundo na borda que todos
+(franja 56%), perde a pessoa na videochamada escura (32%) e treme mais que o Completo no escuro.
+
+**Nenhum candidato novo ganha do PP-MattingV2 512 dentro do orçamento** (meta abaixo de 30 ms na placa): o único que cabe, o U²-Net
+(15 ms), é pior com luz e no escuro e tem 10 vezes o tamanho. Os que recortam melhor com luz (BEN2, BiRefNet retrato) passam do
+orçamento por duas ordens de grandeza, e só existem com a entrada fixa de 1024. **Nenhum serve como Leve**: o U²-Net leva 670 ms no
+processador. O candidato a Leve continua o PP-HumanSeg v2 de retrato (a seção anterior).
+
+### O escuro: do modelo ou do nosso vídeo?
+
+O "quarto escuro" da medida junta duas coisas: escurecer (gama 1,8 até 90 de 255) e um ruído FORTE (σ 22/14 no nível escuro). Para
+separar, duas versões novas (`SEPARAR_ESCURO=1`): só o escurecer, sem ruído; e um ruído equivalente (σ 55/35, o do escuro depois de
+desfeita a gama) numa imagem com luz. Fiel = IoU com o mesmo modelo no vídeo limpo (cc0 / Torwali / hackathon); trocas por pixel
+de contorno, a máscara crua.
+
+| | Completo | Completo + realce ideal ("inverso") | Leve | BiRefNet lite |
+|---|---|---|---|---|
+| escuro (o de sempre) | 84,7 / 72,5 / 99,8% · trocas 1,13 | 82,8 / 54,9 / 99,7%¹ · 1,58 | 93,9 / 97,7 / 99,3% · 0,56 | 48,3 / 99,0 / 99,8% |
+| **escuro sem ruído** | 89,4 / 92,9 / 99,9% · 0,34 | **98,6 / 98,9 / 100%**¹ · 0,27 | 95,0 / 99,1 / 99,4% · 0,24 | 99,2 / 99,7 / 99,9% |
+| **ruído forte, com luz** | **59,2 / 30,6 / 77,1%** · 4,09 | – | 92,3 / 34,8 / 98,5% · 1,49 | 82,3 / 98,2 / 99,6% |
+
+¹ Contra o Completo no vídeo limpo SEM realce (o "inverso" num vídeo claro estoura o branco, então comparar com ele mesmo não serve).
+
+**A resposta: o que derruba o Completo é o RUÍDO, não a falta de luz.** Só escuro, ele cai pouco (89–93% no pior vídeo), e o realce
+que desfaz o escuro o devolve a 98,6–100%. Só ruído, com luz, ele desaba (31–77%) e treme 16 vezes mais que no vídeo limpo. No escuro
+de sempre, clarear a entrada PIORA (o realce amplia o ruído junto): o "inverso", que desfaz a conta exata, dá 54,9% no Torwali contra
+72,5% sem nada; o realce automático (esticar o brilho e a gama, `auto`) também piora (61,8%, trocas 1,58); com uma média 3 × 3 antes
+(`auto-suave`) melhora o cc0 (88,8%) e destrói o Torwali (39%: o vídeo de 400 × 222 já é borrado). Nas FOTOS escuras o realce quase
+não muda nada (o Completo já fica em 95–99% nelas: o ruído delas é σ 7, um terço do do vídeo).
+
+**O que ajuda: tirar o ruído no TEMPO, antes do modelo** (`temporal`: a média dos quadros de entrada por pixel, α 0,75, como o filtro
+de ruído de uma webcam; só na entrada do modelo). No escuro, as trocas do Completo caem de 1,13 para **0,45** (−60%), a pior IoU
+entre quadros (p5) sobe de 55,6% para 75,8%, e o Torwali de 72,5% para 81,6%; com o ruído leve, de 0,45 para 0,25. O preço: no vídeo
+LIMPO e balançado (o cc0, filmado com o celular na mão) a máscara fica só 91,5% parecida com a do Completo sem ela (o rastro do
+movimento na entrada), então ela só faria sentido ligada no escuro. E mesmo com ela o Completo no escuro (trocas 0,45, p5 76%, fiel
+82–100%) ainda fica atrás do Leve (0,56 cru e 0,25 como a página monta, p5 90%, fiel 94–99%). A média em JavaScript desta medida soma
+~8 ms ao preparo; na placa seria uma conta por pixel. O arrasto medido (0,6–1 px) é contra a máscara do mesmo modelo, que já tem o
+rastro: o rastro da entrada não foi medido à parte. Os tempos "com o preparo" dos modelos com realce estão inflados pelo realce em
+JavaScript sem otimizar (até +30 ms); o do modelo não muda.
+
+**Conclusão para o app:** a regra que já existe (no Automático, a câmera escura vai ao Leve) continua certa para o escuro destes
+vídeos. **E o veredito depende de uma webcam de verdade**: o nosso ruído é forte (σ 22 no escuro, sem a redução de ruído que o
+processador de imagem de uma webcam faz). Se uma webcam real no escuro chegar perto do "escuro sem ruído", um realce de brilho na
+entrada recupera o Completo inteiro (98,6–100%), e o limite de brilho do Automático poderia descer. É a medida que falta.
+
+### Os comparativos
+
+- `resultados/comparar-candidatos.html`: as fotos, com a coluna nova "No escuro" (o `comparar.html` de antes ficou como estava).
+- `resultados/video-candidatos.html`: em cada vídeo (limpo e escuro), as linhas PP-MattingV2 512 (o Completo) · PP-HumanSeg (o
+  Leve) · U²-Net humano · BiRefNet lite 512; as colunas, a crua e a que se adapta com o filtro guiado (como o app monta).
+- `resultados/video-realce.html`: o Completo sem realce · com o `auto` · com o `auto-suave` · com o `inverso`.
+- `resultados/video-escuro-numeros.json` e `video-temporal-numeros.json` (e os `.html` deles, só tabelas): a separação e a média no
+  tempo.
+
+### O que NÃO foi medido
+
+- Webcam de verdade no escuro (a pergunta que decide, acima).
+- O BEN2, o BiRefNet retrato e o BiRefNet lite numa entrada menor que a do arquivo: as conversões têm a entrada fixa, e convertê-los
+  de novo pede rodar o código dos repositórios.
+- A média no tempo no Leve, e com o filtro guiado.
+- Outra placa além da RTX 3070.
+
+## A luz que acende e apaga: a troca de modelo se vê? (17/11/2026)
+
+`node e2e/fundo-da-camera-luz.mjs` (o app de verdade, com a API, o site e o LiveKit de teste). A câmera falsa toca o
+mensagem-hackathon com a luz trocando de repente a cada 5 s (`PERIODO=`), o escuro e o ruído da variante "escura" (brilho médio
+~173 aceso, ~53 apagado). Com o fundo apagado, grava cada quadro que vai para a chamada em três rodadas (Automático, Leve sempre,
+Completo sempre) e mede quanto da máscara (80 × 45) mudou de um quadro para o outro. A página: `resultados/luz.html`.
+
+| | Parada (mediana · p95) | A luz mudando | A troca de modelo |
+|---|---|---|---|
+| Automático | 0,39% · 0,78% | 1,1–1,7% | 0,50–0,89% |
+| Leve sempre | 0,42% · 0,78% | 1,1–1,5% | — |
+| Completo sempre | 0,44% · 0,83% | 0,9–1,7% | — |
+
+A troca mexe menos que a própria luz: não se vê. Desce ao Leve ~0,7–0,8 s depois de apagar (a média do brilho, 0,8 por quadro) e
+volta ao Completo ~0,3 s depois de acender. O pior quadro da pessoa é igual com e sem troca (o "meio" medido pega ~19% de parede
+em qualquer rodada). O interruptor seco é o pior caso: a webcam de verdade ainda ajusta a exposição aos poucos.

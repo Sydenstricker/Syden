@@ -24,7 +24,10 @@ async function baixar(url, destino) {
   console.log('baixado', destino.replace(AQUI, '.'));
 }
 
-for (const m of MODELOS.filter((m) => m.url)) await baixar(m.url, join(AQUI, 'modelos', m.arquivo));
+for (const m of MODELOS.filter((m) => m.url)) {
+  mkdirSync(dirname(join(AQUI, 'modelos', m.arquivo)), { recursive: true });
+  await baixar(m.url, join(AQUI, 'modelos', m.arquivo));
+}
 for (const f of FOTOS) {
   if (!f.commons) continue;
   await baixar(`https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(f.commons)}?width=1280`, join(AQUI, 'fotos', f.arquivo));
