@@ -41,11 +41,15 @@ const comunidade = await pedir('POST', '/api/communities', token, { name: 'Fundo
 
 const env = { ...process.env, SYDEN_URL: 'http://localhost:5174/app/', SYDEN_PASTA_DE_DADOS: join(pasta, 'dados') };
 delete env.ELECTRON_RUN_AS_NODE;
+// EMPACOTADO=1: o app como vai para as pessoas (desktop/release/win-unpacked, gerado com npm run dist:loja em desktop/).
+const EMPACOTADO = Boolean(process.env.EMPACOTADO);
+const cameraFalsa = ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream', `--use-file-for-fake-video-capture=${y4m}`];
 const app = await _electron.launch({
-  executablePath: resolve('node_modules/electron/dist/electron.exe'),
-  args: ['--use-fake-ui-for-media-stream', '--use-fake-device-for-media-stream', `--use-file-for-fake-video-capture=${y4m}`, resolve('desktop')],
+  executablePath: resolve(EMPACOTADO ? 'desktop/release/win-unpacked/Syden.exe' : 'node_modules/electron/dist/electron.exe'),
+  args: EMPACOTADO ? cameraFalsa : [...cameraFalsa, resolve('desktop')],
   env,
 });
+if (EMPACOTADO) ok('abriu o app empacotado (desktop/release/win-unpacked)');
 const page = vigiar(await app.firstWindow());
 page.on('console', (m) => /fundo da câmera/i.test(m.text()) && console.log('  [console]', m.text().slice(0, 200)));
 await app.context().addInitScript((tk) => localStorage.setItem('janja.token', tk), token);
