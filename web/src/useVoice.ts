@@ -57,6 +57,7 @@ import {
   KBPS_DO_LEVE,
 } from './streamStats';
 import { lembrarDoFluido } from './recomendarModo';
+import { presetPersonalizado, tamanhoNativo } from './telaPersonalizada';
 import { filaUltimaVale } from './fila';
 import { desktopBridge } from './desktop';
 import { aoMudarDestacadas, haJanelaDestacada } from './janelaDestacada';
@@ -65,6 +66,7 @@ import { ehEfeitoVisual, type EfeitoVisualId } from './efeitosVisuais';
 import type { DisparoVisual } from './CamadaDeEfeitos';
 import { type VoiceEffectId } from './voiceEffects';
 import { ProcessadorDoMicrofone, supressaoDisponivel } from './microfone';
+import { type EfeitoDoFundo, fundoDaCameraDisponivel, ProcessadorDoFundo } from './fundoDaCamera';
 import { type AppAudio, captureAppAudio } from './screenAudio';
 import { definirSurdez, sounds } from './sounds';
 import type { MinhaProtecao, Regras } from './protecao';
@@ -94,7 +96,7 @@ function readLocalMedia(lp: LocalParticipant): LocalMedia {
 }
 
 // Qualidade do compartilhamento de tela escolhida nas configurações.
-export const SCREEN_PRESETS: Record<ScreenQuality, VideoPreset> = {
+export const SCREEN_PRESETS: Record<Exclude<ScreenQuality, 'custom'>, VideoPreset> = {
   standard: ScreenSharePresets.h1080fps30, // até 5 Mbps
   smooth: new VideoPreset(1920, 1080, 8_000_000, 60), // jogos; até 8 Mbps
 };
@@ -111,7 +113,7 @@ export const SCREEN_PRESETS: Record<ScreenQuality, VideoPreset> = {
  * anunciado para internet fraca e entregava fotos a quem jogava. Planilha e slide nítidos ficam para o
  * Padrão decidir sozinho pela imagem parada — a pendência "Texto borrado na transmissão" do CLAUDE.md.
  */
-const SCREEN_HINTS: Record<ScreenQuality, { contentHint: 'motion' | 'detail'; degradation: RTCDegradationPreference }> = {
+const SCREEN_HINTS: Record<Exclude<ScreenQuality, 'custom'>, { contentHint: 'motion' | 'detail'; degradation: RTCDegradationPreference }> = {
   standard: { contentHint: 'motion', degradation: 'maintain-framerate' },
   smooth: { contentHint: 'motion', degradation: 'maintain-framerate' },
 };
@@ -164,10 +166,26 @@ const SCREEN_HINTS: Record<ScreenQuality, { contentHint: 'motion' | 'detail'; de
  * segura: a de 540p se segura com 1,8 (a mesma taxa por pixel) e a 1,5 desaba. No Fluido ela continua a 30 quadros.
  */
 const CAMADA_MENOR = new VideoPreset(960, 540, 1_800_000, 30);
-const SCREEN_LAYERS: Record<ScreenQuality, VideoPreset[]> = {
+const SCREEN_LAYERS: Record<Exclude<ScreenQuality, 'custom'>, VideoPreset[]> = {
   standard: [CAMADA_MENOR],
   smooth: [CAMADA_MENOR],
 };
+
+/**
+ * O que cada modo publica. Padrão e Fluido são as tabelas acima; o Personalizado (telaPersonalizada.ts, 16/11/2026) sai da
+ * escolha de quem transmite, e a Nativa, do tamanho de verdade desta tela.
+ */
+function configDaTela(modo: ScreenQuality): { preset: VideoPreset; hints: { contentHint: 'motion' | 'detail'; degradation: RTCDegradationPreference }; camadas: VideoPreset[] } {
+  if (modo !== 'custom') return { preset: SCREEN_PRESETS[modo], hints: SCREEN_HINTS[modo], camadas: SCREEN_LAYERS[modo] };
+  const s = getSettings();
+  const nativo = tamanhoNativo(window.screen.width, window.screen.height, window.devicePixelRatio);
+  const p = presetPersonalizado(s.resolucaoDaTela, s.quadrosDaTela, nativo);
+  return {
+    preset: new VideoPreset(p.largura, p.altura, p.taxa, p.quadros),
+    hints: { contentHint: p.conteudo, degradation: p.degradacao },
+    camadas: p.menor ? [new VideoPreset(p.menor.largura, p.menor.altura, p.menor.taxa, p.menor.quadros)] : [],
+  };
+}
 
 // De quanto em quanto tempo a otimização dinâmica confere como a transmissão está indo.
 const SCREEN_CHECK_MS = 4000;
@@ -359,7 +377,7 @@ export function useVoice(socket: Socket | null) {
       audioOutput: settings.audioOutput ? { deviceId: settings.audioOutput } : undefined,
       publishDefaults: {
         screenShareEncoding: ScreenSharePresets.h1080fps30.encoding,
-        screenShareSimulcastLayers: SCREEN_LAYERS[settings.screenQuality],
+        screenShareSimulcastLayers: configDaTela(settings.screenQuality).camadas,
         dtx: true,
         red: true,
       },
@@ -1487,6 +1505,56 @@ export function useVoice(socket: Socket | null) {
     await lp.setMicrophoneEnabled(ligar).catch(console.error);
   }, [room, setDeafenedState]);
 
+  /**
+   * O FUNDO DA CÂMERA (só no app; ver fundoDaCamera.ts): posto na câmera ao publicá-la e trocado na hora quando a pessoa muda
+   * a escolha, sem reabrir a câmera. Numa fila, para duas trocas seguidas não se cruzarem.
+   */
+  const fundoRef = useRef<ProcessadorDoFundo | null>(null);
+  const filaDoFundo = useRef<Promise<void>>(Promise.resolve());
+  const aplicarFundo = useCallback(() => {
+    filaDoFundo.current = filaDoFundo.current.then(async () => {
+      const faixa = room.localParticipant.getTrackPublication(Track.Source.Camera)?.videoTrack as LocalVideoTrack | undefined;
+      if (!faixa) {
+        fundoRef.current = null;
+        return;
+      }
+      const efeito = getSettings().fundoDaCamera;
+      const atual = faixa.getProcessor() instanceof ProcessadorDoFundo ? (faixa.getProcessor() as ProcessadorDoFundo) : null;
+      try {
+        if (efeito === 'nenhum' || !(await fundoDaCameraDisponivel())) {
+          if (atual) await faixa.stopProcessor();
+          fundoRef.current = null;
+        } else if (atual) {
+          await atual.trocar(efeito);
+        } else {
+          const novo = new ProcessadorDoFundo(efeito);
+          await faixa.setProcessor(novo, true);
+          fundoRef.current = novo;
+        }
+      } catch (e) {
+        console.error(e);
+        reportProblem('câmera', `fundo da câmera: ${e instanceof Error ? e.message : String(e)}`.slice(0, 200));
+      }
+    });
+    return filaDoFundo.current;
+  }, [room]);
+  useEffect(() => {
+    const aoPublicar = (pub: TrackPublication) => {
+      if (pub.source === Track.Source.Camera) void aplicarFundo();
+    };
+    room.on(RoomEvent.LocalTrackPublished, aoPublicar);
+    return () => {
+      room.off(RoomEvent.LocalTrackPublished, aoPublicar);
+    };
+  }, [room, aplicarFundo]);
+  const setFundoDaCamera = useCallback(
+    (efeito: EfeitoDoFundo) => {
+      updateSettings({ fundoDaCamera: efeito });
+      return aplicarFundo();
+    },
+    [aplicarFundo],
+  );
+
   const toggleCamera = useCallback(async () => {
     const lp = room.localParticipant;
     try {
@@ -1587,8 +1655,7 @@ export function useVoice(socket: Socket | null) {
       const lp = room.localParticipant;
       const noAr = lp.getTrackPublication(Track.Source.ScreenShare)?.videoTrack;
       const quality = noAr ? modoNoArRef.current : getSettings().screenQuality;
-      const preset = SCREEN_PRESETS[quality];
-      const hints = SCREEN_HINTS[quality];
+      const { preset, hints, camadas } = configDaTela(quality);
       try {
         // No app, o seletor é nosso e abre na aba que o menu pediu.
         desktopBridge?.prepararSeletor?.(surface === 'window' ? 'window' : 'screen');
@@ -1629,7 +1696,7 @@ export function useVoice(socket: Socket | null) {
             // VP8 (exige servidor acima da 1.13.6). Quem assiste sem VP9 recebe a reserva em VP8, que
             // o LiveKit só codifica quando alguém pede.
             ...(codec === 'vp9' && { scalabilityMode: 'L1T3' as const }),
-            screenShareSimulcastLayers: SCREEN_LAYERS[quality],
+            screenShareSimulcastLayers: camadas,
           });
           modoNoArRef.current = quality;
         }
@@ -1913,10 +1980,14 @@ export function useVoice(socket: Socket | null) {
               estimativaKbps: estimativa,
               codec: codecs.get(String(camada.codecId ?? '')) ?? null,
               naPlaca: typeof camada.powerEfficientEncoder === 'boolean' ? camada.powerEfficientEncoder : null,
-              modo: modoNoArRef.current === 'smooth' ? 'Fluido' : leve.ligado ? 'Padrão, no leve' : 'Padrão',
+              modo: modoNoArRef.current === 'smooth' ? 'Fluido' : modoNoArRef.current === 'custom' ? 'Personalizado' : leve.ligado ? 'Padrão, no leve' : 'Padrão',
             }),
           );
         }
+
+        // NO PERSONALIZADO, o Syden não muda nada: quem transmite escolheu justamente para corrigir uma decisão errada dele
+        // (telaPersonalizada.ts). O diário, acima, continua contando os apertos.
+        if (modoNoArRef.current === 'custom') return;
 
         if (modoNoArRef.current === 'smooth' && !fluido.em30) {
           fluido = proximoFluido(fluido, { fps, limitedBy });
@@ -2247,6 +2318,7 @@ export function useVoice(socket: Socket | null) {
     toggleMute,
     toggleDeafen,
     toggleCamera,
+    setFundoDaCamera,
     shareScreen,
     stopScreen,
     switchDevice,

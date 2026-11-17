@@ -3235,4 +3235,15 @@ export default {
   'Resposta: {quando}': "Ìdáhùn: {quando}",
   'Seu palpite': "Àsọtẹ́lẹ̀ rẹ",
   'Seu palpite está salvo. Dá para mudar até fechar.': "A ti fi àsọtẹ́lẹ̀ rẹ pamọ́. O lè yí i padà títí tí yóò fi tì.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Ẹ̀yìn kámẹ́rà",
+  'Desfocado': "Mú kó ṣókùnkùn",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Ó máa ń mú ohun tí ó hàn lẹ́yìn rẹ ṣókùnkùn, pa á rẹ́ tàbí pààrọ̀ rẹ̀. Àwòrán kámẹ́rà kì í jáde kúrò nínú kọ̀mpútà rẹ fún èyí.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Ti àbínibí",
+  'Resolução': "Ìpinnu àwòrán",
+  'Quadros por segundo': "Fírémù ní ìṣẹ́jú-àáyá",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Fún ìgbà tí àṣàyàn aládàáṣe bá ṣàṣìṣe: ìpinnu àwòrán àti fírémù yóò dúró bí o ṣe yàn án, láti ìbẹ̀rẹ̀ dé òpin ìgbóhùnsáfẹ́fẹ́.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Àwọn ipa ohùn àti kámẹ́rà tí a ń ṣe lórí kọ̀mpútà rẹ, láìfi nǹkan kankan ránṣẹ́ sí sáfà.",
 } satisfies Record<string, string>;

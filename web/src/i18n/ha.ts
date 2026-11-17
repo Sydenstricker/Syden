@@ -3222,4 +3222,15 @@ export default {
   'Resposta: {quando}': "Amsa: {quando}",
   'Seu palpite': "Hasashenku",
   'Seu palpite está salvo. Dá para mudar até fechar.': "An adana hasashenku. Kuna iya canza shi har sai an rufe.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Bayan kyamara",
+  'Desfocado': "Dushe",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Yana dushe, goge ko canza abin da ke bayanku. Hoton kyamara ba ya fita daga kwamfutarku saboda wannan.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Na asali",
+  'Resolução': "Ƙuduri",
+  'Quadros por segundo': "Firam a cikin daƙiƙa",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Don lokacin da zaɓin kai tsaye ya yi kuskure: ƙuduri da firam ɗin za su kasance yadda kuka zaɓa, daga farko har ƙarshen yaɗawa.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Tasirin murya da kyamara da ake yi a kwamfutarku, ba tare da aika komai zuwa sabar ba.",
 } satisfies Record<string, string>;

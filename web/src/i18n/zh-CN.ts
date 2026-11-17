@@ -3207,4 +3207,16 @@ export default {
   'Resposta: {quando}': "答案：{quando}",
   'Seu palpite': "你的预测",
   'Seu palpite está salvo. Dá para mudar até fechar.': "你的预测已保存。截止前都可以修改。",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "摄像头背景",
+  'Desfocado': "模糊",
+  'Apagado': "抹去",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "把你身后的画面模糊、抹去或换成别的。为此，摄像头画面不会离开你的电脑。",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "原生",
+  'Resolução': "分辨率",
+  'Quadros por segundo': "每秒帧数",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "用于自动选择出错的时候：分辨率和帧数从直播开始到结束都保持你选的设置。",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "在你的电脑上完成的声音和摄像头效果，不向服务器发送任何东西。",
 } satisfies Record<string, string>;

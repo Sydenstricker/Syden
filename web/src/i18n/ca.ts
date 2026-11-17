@@ -3286,4 +3286,15 @@ export default {
   'Resposta: {quando}': "Resposta: {quando}",
   'Seu palpite': "El teu pronòstic",
   'Seu palpite está salvo. Dá para mudar até fechar.': "El teu pronòstic s’ha desat. Pots canviar-lo fins que es tanqui.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Fons de la càmera",
+  'Desfocado': "Difuminar",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Difumina, esborra o substitueix el que es veu darrere teu. La imatge de la càmera no surt del teu ordinador per fer-ho.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Nativa",
+  'Resolução': "Resolució",
+  'Quadros por segundo': "Fotogrames per segon",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Per quan l'elecció automàtica s'equivoca: la resolució i els fotogrames són els que triïs, de principi a fi de la transmissió.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Els efectes de veu i de càmera que es fan al teu ordinador, sense enviar res a cap servidor.",
 } satisfies Record<string, string>;

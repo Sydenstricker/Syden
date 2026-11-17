@@ -3300,4 +3300,15 @@ export default {
   'Resposta: {quando}': "Repons: {quando}",
   'Seu palpite': "Pwonostik ou",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Pwonostik ou anrejistre. Ou ka chanje l jiskaske li fèmen.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Dèyè kamera a",
+  'Desfocado': "Twouble",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Li twouble, efase oswa ranplase sa ki parèt dèyè w. Imaj kamera a pa soti nan òdinatè w pou sa.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Natif",
+  'Resolução': "Rezolisyon",
+  'Quadros por segundo': "Imaj pa segonn",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Pou lè chwa otomatik la twonpe l: rezolisyon an ak imaj yo rete sa w chwazi, depi kòmansman rive nan fen difizyon an.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Efè vwa ak kamera ki fèt sou òdinatè w, san voye anyen bay yon sèvè.",
 } satisfies Record<string, string>;

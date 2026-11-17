@@ -3215,4 +3215,15 @@ export default {
   'Resposta: {quando}': "Answer: {quando}",
   'Seu palpite': "Your guess",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Your guess is saved. You can change it until it closes.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Camera background",
+  'Desfocado': "Blur",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Blurs, removes or replaces what shows up behind you. The camera image doesn't leave your computer for this.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Native",
+  'Resolução': "Resolution",
+  'Quadros por segundo': "Frames per second",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "For when the automatic choice gets it wrong: the resolution and frames stay the ones you pick, from start to end of the stream.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "The voice and camera effects made on your computer, without sending anything to a server.",
 } satisfies Record<string, string>;

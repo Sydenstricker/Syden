@@ -3236,4 +3236,15 @@ export default {
   'Resposta: {quando}': "Tweġiba: {quando}",
   'Seu palpite': "It-tbassir tiegħek",
   'Seu palpite está salvo. Dá para mudar até fechar.': "It-tbassir tiegħek ġie salvat. Tista’ tibdlu sa ma tingħalaq.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Sfond tal-kamera",
+  'Desfocado': "Ċajpar",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Iċajpar, iħassar jew jibdel dak li jidher warajk. L-istampa tal-kamera ma toħroġx mill-kompjuter tiegħek għal dan.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Nattiva",
+  'Resolução': "Riżoluzzjoni",
+  'Quadros por segundo': "Frejms kull sekonda",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Għal meta l-għażla awtomatika tiżbalja: ir-riżoluzzjoni u l-frejms jibqgħu dawk li tagħżel, mill-bidu sal-aħħar tax-xandira.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "L-effetti tal-vuċi u tal-kamera magħmulin fuq il-kompjuter tiegħek, mingħajr ma jintbagħat xejn lil server.",
 } satisfies Record<string, string>;

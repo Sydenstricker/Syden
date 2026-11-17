@@ -3290,4 +3290,15 @@ export default {
   'Resposta: {quando}': "Vastaus: {quando}",
   'Seu palpite': "Sinun veikkauksesi",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Veikkauksesi on tallennettu. Voit muuttaa sitä, kunnes kisa sulkeutuu.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Kameran tausta",
+  'Desfocado': "Sumenna",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Sumentaa, poistaa tai vaihtaa sen, mitä takanasi näkyy. Kameran kuva ei lähde tätä varten tietokoneeltasi.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Natiivi",
+  'Resolução': "Tarkkuus",
+  'Quadros por segundo': "Kuvaa sekunnissa",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Kun automaattinen valinta osuu väärin: tarkkuus ja kuvat pysyvät valitsemissasi lähetyksen alusta loppuun.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Äänen ja kameran tehosteet, jotka tehdään tietokoneellasi lähettämättä mitään palvelimelle.",
 } satisfies Record<string, string>;

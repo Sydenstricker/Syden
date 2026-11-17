@@ -3282,4 +3282,15 @@ export default {
   'Resposta: {quando}': "Përgjigjja: {quando}",
   'Seu palpite': "Parashikimi yt",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Parashikimi yt u ruajt. Mund ta ndryshosh deri sa të mbyllet.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Sfondi i kamerës",
+  'Desfocado': "Turbullo",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Turbullon, fshin ose zëvendëson atë që duket pas teje. Pamja e kamerës nuk del nga kompjuteri yt për këtë.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Origjinale",
+  'Resolução': "Rezolucioni",
+  'Quadros por segundo': "Kuadro në sekondë",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Për kur zgjedhja automatike gabon: rezolucioni dhe kuadrot mbeten ato që zgjedh ti, nga fillimi deri në fund të transmetimit.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Efektet e zërit dhe të kamerës që bëhen në kompjuterin tënd, pa dërguar asgjë në një server.",
 } satisfies Record<string, string>;

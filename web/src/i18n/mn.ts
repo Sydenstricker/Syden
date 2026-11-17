@@ -3304,4 +3304,15 @@ export default {
   'Resposta: {quando}': "Хариулт: {quando}",
   'Seu palpite': "Чиний таамаг",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Таамаг чинь хадгалагдлаа. Хаагдах хүртэл өөрчилж болно.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Камерын дэвсгэр",
+  'Desfocado': "Бүдгэрүүлэх",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Ард чинь харагдаж буй зүйлийг бүдгэрүүлж, арилгаж эсвэл сольдог. Үүний тулд камерын дүрс компьютерээс чинь гардаггүй.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Үндсэн",
+  'Resolução': "Нягтрал",
+  'Quadros por segundo': "Секундэд кадр",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Автомат сонголт алдах үед: нягтрал болон кадр нь дамжуулалтын эхнээс төгсгөл хүртэл чиний сонгосноор үлдэнэ.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Компьютер дээр чинь хийгддэг дуу хоолой болон камерын эффект, сервер рүү юу ч илгээхгүйгээр.",
 } satisfies Record<string, string>;

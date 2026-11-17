@@ -3310,4 +3310,15 @@ export default {
   'Resposta: {quando}': "Javob: {quando}",
   'Seu palpite': "Sening bashorating",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Bashorating saqlandi. Yopilguncha o‘zgartirishing mumkin.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Kamera foni",
+  'Desfocado': "Xiralashtirish",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Orqangda ko'rinadigan narsani xiralashtiradi, o'chiradi yoki almashtiradi. Buning uchun kamera tasviri kompyuteringdan chiqmaydi.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Asl",
+  'Resolução': "Aniqlik",
+  'Quadros por segundo': "Soniyasiga kadr",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Avtomatik tanlov adashganda: aniqlik va kadrlar efirning boshidan oxirigacha o'zing tanlagandek qoladi.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Kompyuteringda bajariladigan ovoz va kamera effektlari, serverga hech narsa yubormasdan.",
 } satisfies Record<string, string>;

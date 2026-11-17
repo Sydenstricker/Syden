@@ -58,6 +58,14 @@ interface DesktopBridge {
     preparar(): Promise<boolean>;
     recortar(pixels: Uint8Array): Promise<Uint8Array>;
   };
+  /**
+   * O fundo da câmera (PP-HumanSeg nativo, desde 16/11/2026; ver desktop/src/fundo-camera e fundoDaCamera.ts). abrir() faz uma
+   * MessagePort chegar à página por window.postMessage('syden-fundo-camera-porta'). Versões antigas do app não têm.
+   */
+  fundoCamera?: {
+    disponivel(): Promise<boolean>;
+    abrir(): void;
+  };
   /** Som do computador sem o do próprio Syden; só existe no Windows, com o módulo nativo. */
   screenAudio?: {
     available(): Promise<boolean>;

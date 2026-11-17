@@ -3228,4 +3228,15 @@ export default {
   'Resposta: {quando}': "Azịza: {quando}",
   'Seu palpite': "Amụma gị",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Echekwala amụma gị. Ị nwere ike ịgbanwe ya ruo mgbe o mechiri.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Azụ igwefoto",
+  'Desfocado': "Mee ka ọ ghara ịdị nkọ",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Ọ na-eme ka ihe dị n'azụ gị ghara ịdị nkọ, hichapụ ya ma ọ bụ dochie ya. Onyonyo igwefoto anaghị apụ na kọmputa gị maka nke a.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Nke mbụ",
+  'Resolução': "Mkpebi",
+  'Quadros por segundo': "Okpokoro kwa sekọnd",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Maka mgbe nhọrọ akpaghị aka mehiere: mkpebi na okpokoro ga-anọ ka ị họọrọ, site na mmalite ruo na njedebe nke mgbasa.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Mmetụta olu na igwefoto a na-eme na kọmputa gị, na-ezighị ihe ọ bụla na sava.",
 } satisfies Record<string, string>;

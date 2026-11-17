@@ -3291,4 +3291,15 @@ export default {
   'Resposta: {quando}': "ຄຳຕອບ: {quando}",
   'Seu palpite': "ຄຳທາຍຂອງເຈົ້າ",
   'Seu palpite está salvo. Dá para mudar até fechar.': "ບັນທຶກຄຳທາຍແລ້ວ. ປ່ຽນໄດ້ຈົນກວ່າຈະປິດຮັບ.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "ພື້ນຫຼັງກ້ອງ",
+  'Desfocado': "ເຮັດໃຫ້ມົວ",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "ເຮັດໃຫ້ມົວ, ລຶບ ຫຼື ປ່ຽນສິ່ງທີ່ເຫັນຢູ່ທາງຫຼັງເຈົ້າ. ຮູບຈາກກ້ອງບໍ່ອອກຈາກຄອມພິວເຕີຂອງເຈົ້າເພື່ອການນີ້.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "ຕົ້ນສະບັບ",
+  'Resolução': "ຄວາມລະອຽດ",
+  'Quadros por segundo': "ເຟຣມຕໍ່ວິນາທີ",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "ສຳລັບເວລາທີ່ການເລືອກອັດຕະໂນມັດຜິດ: ຄວາມລະອຽດ ແລະ ເຟຣມ ຈະເປັນຕາມທີ່ເຈົ້າເລືອກ ຕັ້ງແຕ່ຕົ້ນຈົນຈົບການຖ່າຍທອດ.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "ເອັບເຟັກສຽງ ແລະ ກ້ອງ ທີ່ເຮັດໃນຄອມພິວເຕີຂອງເຈົ້າ ໂດຍບໍ່ສົ່ງຫຍັງໄປເຊີບເວີ.",
 } satisfies Record<string, string>;

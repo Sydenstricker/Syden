@@ -3219,4 +3219,16 @@ export default {
   'Resposta: {quando}': "Jibu: {quando}",
   'Seu palpite': "Ubashiri wako",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Ubashiri wako umehifadhiwa. Unaweza kuubadilisha hadi yafungwe.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Mandharinyuma ya kamera",
+  'Desfocado': "Fifisha",
+  'Apagado': "Futa",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Hufifisha, hufuta au hubadilisha kinachoonekana nyuma yako. Picha ya kamera haitoki kwenye kompyuta yako kwa ajili ya hili.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Asili",
+  'Resolução': "Ubora wa picha",
+  'Quadros por segundo': "Fremu kwa sekunde",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Kwa wakati chaguo la kiotomatiki linapokosea: ubora wa picha na fremu hubaki kama ulivyochagua, tangu mwanzo hadi mwisho wa matangazo.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Athari za sauti na kamera zinazofanyika kwenye kompyuta yako, bila kutuma chochote kwa seva.",
 } satisfies Record<string, string>;

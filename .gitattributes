@@ -1,2 +1,5 @@
 # Fim de linha LF sempre: os arquivos de deploy rodam em Linux.
 * text=auto eol=lf
+
+# Modelos de rede neural são binários: nada de mexer em fim de linha (o git os tomava por texto).
+*.onnx binary

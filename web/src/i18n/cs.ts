@@ -3289,4 +3289,15 @@ export default {
   'Resposta: {quando}': "Odpověď: {quando}",
   'Seu palpite': "Tvůj tip",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Tvůj tip je uložený. Můžeš ho změnit až do uzavření.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Pozadí kamery",
+  'Desfocado': "Rozmazat",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Rozmaže, vymaže nebo nahradí to, co je za tebou vidět. Obraz z kamery kvůli tomu neopouští tvůj počítač.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Nativní",
+  'Resolução': "Rozlišení",
+  'Quadros por segundo': "Snímky za sekundu",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Pro chvíle, kdy se automatická volba splete: rozlišení a snímky zůstanou, jak si vybereš, od začátku do konce přenosu.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Efekty pro hlas a kameru, které běží na tvém počítači, bez posílání čehokoli na server.",
 } satisfies Record<string, string>;

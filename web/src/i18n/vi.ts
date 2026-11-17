@@ -3190,4 +3190,15 @@ export default {
   'Resposta: {quando}': "Đáp án: {quando}",
   'Seu palpite': "Dự đoán của bạn",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Đã lưu dự đoán của bạn. Có thể đổi cho đến khi đóng.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Phông nền camera",
+  'Desfocado': "Làm mờ",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Làm mờ, xóa hoặc thay thế những gì hiện ra phía sau bạn. Hình ảnh từ camera không rời khỏi máy tính của bạn để làm việc này.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Gốc",
+  'Resolução': "Độ phân giải",
+  'Quadros por segundo': "Khung hình mỗi giây",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Dành cho lúc lựa chọn tự động sai: độ phân giải và khung hình giữ đúng như bạn chọn, từ đầu đến cuối buổi phát.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Các hiệu ứng giọng nói và camera được làm ngay trên máy tính của bạn, không gửi gì lên máy chủ.",
 } satisfies Record<string, string>;

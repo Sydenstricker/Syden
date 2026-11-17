@@ -3205,4 +3205,15 @@ export default {
   'Resposta: {quando}': "பதில்: {quando}",
   'Seu palpite': "உன் கணிப்பு",
   'Seu palpite está salvo. Dá para mudar até fechar.': "உன் கணிப்பு சேமிக்கப்பட்டது. மூடும் வரை மாற்றலாம்.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "கேமரா பின்னணி",
+  'Desfocado': "மங்கலாக்கு",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "உனக்குப் பின்னால் தெரிவதை மங்கலாக்கும், அழிக்கும் அல்லது மாற்றும். இதற்காக கேமரா படம் உன் கணினியை விட்டு வெளியே போகாது.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "இயல்பான",
+  'Resolução': "தெளிவுத்திறன்",
+  'Quadros por segundo': "வினாடிக்கு ஃப்ரேம்கள்",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "தானியங்கித் தேர்வு தவறும்போது: ஒளிபரப்பின் தொடக்கம் முதல் முடிவு வரை தெளிவுத்திறனும் ஃப்ரேம்களும் நீ தேர்ந்தெடுத்தபடியே இருக்கும்.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "உன் கணினியிலேயே நடக்கும் குரல் மற்றும் கேமரா விளைவுகள், எந்த சர்வருக்கும் எதையும் அனுப்பாமல்.",
 } satisfies Record<string, string>;

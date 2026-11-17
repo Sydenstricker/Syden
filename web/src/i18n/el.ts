@@ -3226,4 +3226,15 @@ export default {
   'Resposta: {quando}': "Απάντηση: {quando}",
   'Seu palpite': "Η πρόβλεψή σου",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Η πρόβλεψή σου αποθηκεύτηκε. Μπορείς να την αλλάξεις μέχρι να κλείσει.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Φόντο κάμερας",
+  'Desfocado': "Θόλωση",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Θολώνει, αφαιρεί ή αντικαθιστά ό,τι φαίνεται πίσω σου. Η εικόνα της κάμερας δεν φεύγει από τον υπολογιστή σου γι' αυτό.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Εγγενής",
+  'Resolução': "Ανάλυση",
+  'Quadros por segundo': "Καρέ ανά δευτερόλεπτο",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Για όταν η αυτόματη επιλογή κάνει λάθος: η ανάλυση και τα καρέ μένουν όπως τα διαλέξεις, από την αρχή ως το τέλος της μετάδοσης.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Τα εφέ φωνής και κάμερας που γίνονται στον υπολογιστή σου, χωρίς να στέλνεται τίποτα σε διακομιστή.",
 } satisfies Record<string, string>;

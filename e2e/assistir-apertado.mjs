@@ -115,10 +115,10 @@ try {
     ? ok(`sem foco e folgada, continua em 1080p (o navegador dela gasta ${nucleos1080.toFixed(2)} núcleo)`)
     : falhou('sem foco e folgada, caiu para ' + (await tamanho(bia.page)) + ' ' + (await bia.page.evaluate(() => JSON.stringify(window.apertoDeQuemAssiste))));
 
-  // "fair" por pouco tempo não basta; "serious" desce.
+  // "fair" sozinho não desce (16/11/2026: é o que decodificar a transmissão já causa); "serious" desce.
   await pressao(bia.page, 'fair');
-  await bia.page.waitForTimeout(3000);
-  (await tamanho(bia.page)) === 1920 ? ok('"fair" por 3 s não desce') : falhou('desceu com "fair" por 3 s');
+  await bia.page.waitForTimeout(8000);
+  (await tamanho(bia.page)) === 1920 ? ok('"fair" sem quadros perdidos não desce (8 s)') : falhou('desceu com "fair" sozinho');
   await pressao(bia.page, 'serious');
   (await esperarTamanho(bia.page, 960, 20000)) ? ok('com o processador apertado, a imagem desceu a 960×540') : falhou('apertado, ficou em ' + (await tamanho(bia.page)));
 

@@ -6,6 +6,7 @@ const { setupScreenAudio, screenAudioAvailable, stopScreenAudio, escolherFonteDo
 const { setupRuido, pararRuido } = require('./ruido');
 const { vigiarAVista } = require('./a-vista');
 const { setupRecorte, pararRecorte } = require('./recorte');
+const { setupFundoCamera, pararFundoCamera } = require('./fundo-camera');
 const { anotarQuemAbriu, lerQuemAbriu, mesmaInstalacao, recadoDeDoisSydens } = require('./duas-instalacoes');
 
 // O app carrega o próprio site: melhorias publicadas no GitHub Pages chegam sem reinstalar.
@@ -179,6 +180,7 @@ if (!app.requestSingleInstanceLock(ESTA_INSTALACAO)) {
     stopScreenAudio();
     pararRuido();
     pararRecorte();
+    pararFundoCamera();
   });
   app.whenReady().then(() => {
     /*
@@ -201,6 +203,7 @@ if (!app.requestSingleInstanceLock(ESTA_INSTALACAO)) {
     setupScreenAudio();
     setupRuido();
     setupRecorte();
+    setupFundoCamera();
     // O site avisa quando a pessoa troca de tema, para a faixa do Windows acompanhar.
     ipcMain.on('app:title-bar', (_event, cores) => {
       if (!mainWindow || typeof cores?.color !== 'string' || typeof cores?.symbolColor !== 'string') return;

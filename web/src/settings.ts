@@ -1,3 +1,4 @@
+import type { QuadrosDaTela, ResolucaoDaTela } from './telaPersonalizada';
 import { useSyncExternalStore } from 'react';
 import type { Paleta, Theme } from './theme';
 import { guardarEmBreve } from './preferencias';
@@ -12,16 +13,21 @@ import { guardarEmBreve } from './preferencias';
  * o Leve e transmitia uma sequência de fotos, sem nada avisar. Quem o tinha guardado vira Padrão (ver
  * converterPreferenciasAntigas).
  */
-export type ScreenQuality = 'standard' | 'smooth';
+export type ScreenQuality = 'standard' | 'smooth' | 'custom';
 
 export interface Settings {
   /** Ids de dispositivo; '' = o padrão do sistema. */
   audioInput: string;
   audioOutput: string;
   videoInput: string;
+  /** O fundo da câmera (só no app; ver fundoDaCamera.ts). A imagem escolhida fica à parte, neste aparelho. */
+  fundoDaCamera: 'nenhum' | 'desfocar' | 'apagar' | 'imagem';
   noiseSuppression: boolean;
   echoCancellation: boolean;
   screenQuality: ScreenQuality;
+  /** No modo Personalizado (telaPersonalizada.ts): a resolução e os quadros que quem transmite escolheu. */
+  resolucaoDaTela: ResolucaoDaTela;
+  quadrosDaTela: QuadrosDaTela;
   /** Cores do app: escuro (padrão) ou claro. */
   theme: Theme;
   /** A paleta do tema escuro, escolhida em Aparência (ver theme.ts). */
@@ -82,9 +88,12 @@ const DEFAULTS: Settings = {
   audioInput: '',
   audioOutput: '',
   videoInput: '',
+  fundoDaCamera: 'nenhum',
   noiseSuppression: true,
   echoCancellation: true,
   screenQuality: 'standard',
+  resolucaoDaTela: '1080',
+  quadrosDaTela: 30,
   theme: 'dark',
   paleta: 'd4',
   startMuted: false,

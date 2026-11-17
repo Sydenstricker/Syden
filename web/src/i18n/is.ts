@@ -3291,4 +3291,15 @@ export default {
   'Resposta: {quando}': "Svar: {quando}",
   'Seu palpite': "Spáin þín",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Spáin þín er vistuð. Þú getur breytt henni þar til lokar.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Bakgrunnur myndavélar",
+  'Desfocado': "Móða",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Gerir það sem sést fyrir aftan þig óskýrt, eyðir því eða skiptir því út. Myndin úr myndavélinni fer ekki úr tölvunni þinni til þess.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Upprunaleg",
+  'Resolução': "Upplausn",
+  'Quadros por segundo': "Rammar á sekúndu",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Fyrir þegar sjálfvirka valið fer úrskeiðis: upplausnin og rammarnir verða þeir sem þú velur, frá upphafi til enda útsendingarinnar.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Radd- og myndavélaráhrifin sem verða til í tölvunni þinni, án þess að senda neitt á netþjón.",
 } satisfies Record<string, string>;

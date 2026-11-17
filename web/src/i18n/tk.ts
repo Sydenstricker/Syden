@@ -3301,4 +3301,15 @@ export default {
   'Resposta: {quando}': "Jogap: {quando}",
   'Seu palpite': "Seniň çaklamaň",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Çaklamaň ýatda saklandy. Ýapylýança üýtgedip bilersiň.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Kameranyň fony",
+  'Desfocado': "Bulaşdyr",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Arkaňda görünýän zady bulaşdyrýar, pozýar ýa-da çalyşýar. Munuň üçin kameranyň şekili kompýuteriňden çykmaýar.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Asyl",
+  'Resolução': "Çözgünlik",
+  'Quadros por segundo': "Sekuntda kadr",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Awtomatik saýlaw ýalňyşanda: çözgünlik we kadrlar ýaýlymyň başyndan ahyryna çenli seniň saýlaýşyň ýaly galýar.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Kompýuteriňde edilýän ses we kamera effektleri, serwere hiç zat ibermezden.",
 } satisfies Record<string, string>;

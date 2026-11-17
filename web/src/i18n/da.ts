@@ -3284,4 +3284,15 @@ export default {
   'Resposta: {quando}': "Svar: {quando}",
   'Seu palpite': "Dit tip",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Dit tip er gemt. Du kan ændre det, indtil den lukker.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Kamerabaggrund",
+  'Desfocado': "Slør",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Slører, fjerner eller udskifter det, der ses bag dig. Kamerabilledet forlader ikke din computer for at gøre det.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Oprindelig",
+  'Resolução': "Opløsning",
+  'Quadros por segundo': "Billeder pr. sekund",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Til når det automatiske valg tager fejl: opløsningen og billederne er dem, du vælger, fra start til slut i udsendelsen.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Stemme- og kameraeffekterne, der laves på din computer, uden at sende noget til en server.",
 } satisfies Record<string, string>;

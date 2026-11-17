@@ -3202,4 +3202,15 @@ export default {
   'Resposta: {quando}': "జవాబు: {quando}",
   'Seu palpite': "నీ అంచనా",
   'Seu palpite está salvo. Dá para mudar até fechar.': "నీ అంచనా సేవ్ అయింది. మూసే వరకు మార్చవచ్చు.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "కెమెరా నేపథ్యం",
+  'Desfocado': "మసకబార్చు",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "నీ వెనుక కనిపించేదాన్ని మసకబారుస్తుంది, తుడిచేస్తుంది లేదా మారుస్తుంది. దీని కోసం కెమెరా చిత్రం నీ కంప్యూటర్ నుంచి బయటకు వెళ్లదు.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "స్వతహా",
+  'Resolução': "రిజల్యూషన్",
+  'Quadros por segundo': "సెకనుకు ఫ్రేమ్‌లు",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "ఆటోమేటిక్ ఎంపిక తప్పినప్పుడు: ప్రసారం మొదలు నుంచి చివరి వరకు రిజల్యూషన్, ఫ్రేమ్‌లు నువ్వు ఎంచుకున్నట్టే ఉంటాయి.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "నీ కంప్యూటర్‌లోనే జరిగే గొంతు, కెమెరా ఎఫెక్ట్‌లు, ఏ సర్వర్‌కూ ఏమీ పంపకుండా.",
 } satisfies Record<string, string>;

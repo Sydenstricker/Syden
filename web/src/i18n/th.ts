@@ -3233,4 +3233,15 @@ export default {
   'Resposta: {quando}': "คำตอบ: {quando}",
   'Seu palpite': "คำทายของคุณ",
   'Seu palpite está salvo. Dá para mudar até fechar.': "บันทึกคำทายแล้ว แก้ได้จนกว่าจะปิดรับ",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "พื้นหลังกล้อง",
+  'Desfocado': "เบลอ",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "เบลอ ลบ หรือเปลี่ยนสิ่งที่อยู่ด้านหลังคุณ ภาพจากกล้องไม่ออกจากคอมพิวเตอร์ของคุณเพื่อการนี้",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "ดั้งเดิม",
+  'Resolução': "ความละเอียด",
+  'Quadros por segundo': "เฟรมต่อวินาที",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "สำหรับตอนที่การเลือกอัตโนมัติผิด: ความละเอียดและเฟรมจะเป็นตามที่คุณเลือก ตั้งแต่ต้นจนจบการถ่ายทอด",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "เอฟเฟกต์เสียงและกล้องที่ทำบนคอมพิวเตอร์ของคุณ โดยไม่ส่งอะไรไปยังเซิร์ฟเวอร์",
 } satisfies Record<string, string>;

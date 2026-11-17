@@ -3292,4 +3292,15 @@ export default {
   'Resposta: {quando}': "Atsakymas: {quando}",
   'Seu palpite': "Tavo spėjimas",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Tavo spėjimas išsaugotas. Gali jį pakeisti, kol neuždaryta.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Kameros fonas",
+  'Desfocado': "Sulieti",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Sulieja, ištrina arba pakeičia tai, kas matyti už tavęs. Kameros vaizdas dėl to neišeina iš tavo kompiuterio.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Natūrali",
+  'Resolução': "Raiška",
+  'Quadros por segundo': "Kadrai per sekundę",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Kai automatinis pasirinkimas suklysta: raiška ir kadrai lieka tokie, kokius pasirenki, nuo transliacijos pradžios iki pabaigos.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Balso ir kameros efektai, daromi tavo kompiuteryje, nieko nesiunčiant į serverį.",
 } satisfies Record<string, string>;

@@ -3201,4 +3201,15 @@ export default {
   'Resposta: {quando}': "答え：{quando}",
   'Seu palpite': "あなたの予想",
   'Seu palpite está salvo. Dá para mudar até fechar.': "予想を保存しました。締め切りまで変更できます。",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "カメラの背景",
+  'Desfocado': "ぼかす",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "うしろに映っているものをぼかしたり、消したり、差し替えたりします。そのためにカメラの映像がパソコンの外に出ることはありません。",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "ネイティブ",
+  'Resolução': "解像度",
+  'Quadros por segundo': "フレームレート",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "自動の判断が外れたときのために：解像度とフレームレートは、配信の最初から最後まで選んだとおりになります。",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "声とカメラのエフェクトを、パソコンの中だけで。サーバーには何も送りません。",
 } satisfies Record<string, string>;

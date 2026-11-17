@@ -1,0 +1,10 @@
+Fundo da câmera do app de desktop — de onde vêm os arquivos desta pasta
+
+pphumanseg-192.onnx
+  O PP-HumanSeg (PaddleSeg, Baidu), a 192 × 192, na conversão ONNX do OpenCV Zoo:
+  https://huggingface.co/opencv/human_segmentation_pphumanseg — human_segmentation_pphumanseg_2023mar.onnx
+  (sha256 552d8a984054e59b5d773d24b9b12022b22046ceb2bbc4c9aaeaceb36a9ddf24).
+  Licença Apache 2.0, em PPHUMANSEG-LICENSE.txt. O projeto não publica arquivo NOTICE.
+
+Por que este modelo (medido contra o MediaPipe, o MODNet e outros): ver e2e/fundo-da-camera/README.md e
+desktop/src/fundo-camera/index.js.

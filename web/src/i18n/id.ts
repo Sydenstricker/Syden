@@ -3217,4 +3217,16 @@ export default {
   'Resposta: {quando}': "Jawaban: {quando}",
   'Seu palpite': "Tebakanmu",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Tebakanmu sudah disimpan. Kamu bisa mengubahnya sampai ditutup.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Latar kamera",
+  'Desfocado': "Buramkan",
+  'Apagado': "Hapus",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Memburamkan, menghapus, atau mengganti apa yang terlihat di belakangmu. Gambar kamera tidak keluar dari komputermu untuk ini.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Asli",
+  'Resolução': "Resolusi",
+  'Quadros por segundo': "Bingkai per detik",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Untuk saat pilihan otomatis keliru: resolusi dan bingkai tetap sesuai pilihanmu, dari awal sampai akhir siaran.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Efek suara dan kamera yang dibuat di komputermu, tanpa mengirim apa pun ke server.",
 } satisfies Record<string, string>;

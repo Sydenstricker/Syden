@@ -3292,4 +3292,15 @@ export default {
   'Resposta: {quando}': "Atbilde: {quando}",
   'Seu palpite': "Tava prognoze",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Tava prognoze ir saglabāta. Vari to mainīt līdz slēgšanai.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Kameras fons",
+  'Desfocado': "Izpludināt",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Izpludina, izdzēš vai aizstāj to, kas redzams aiz tevis. Kameras attēls šim nolūkam nepamet tavu datoru.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Dabiskā",
+  'Resolução': "Izšķirtspēja",
+  'Quadros por segundo': "Kadri sekundē",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Kad automātiskā izvēle kļūdās: izšķirtspēja un kadri paliek tādi, kādus tu izvēlies, no pārraides sākuma līdz beigām.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Balss un kameras efekti, kas tiek veidoti tavā datorā, neko nesūtot uz serveri.",
 } satisfies Record<string, string>;

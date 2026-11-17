@@ -3226,4 +3226,15 @@ export default {
   'Resposta: {quando}': "Freagra: {quando}",
   'Seu palpite': "Do thuar",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Sábháladh do thuar. Is féidir leat é a athrú go dtí go ndúnfaidh sé.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Cúlra an cheamara",
+  'Desfocado': "Doiléirigh",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Doiléiríonn, scriosann nó athraíonn sé a bhfuil le feiceáil taobh thiar díot. Ní fhágann íomhá an cheamara do ríomhaire chuige seo.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Dúchasach",
+  'Resolução': "Taifeach",
+  'Quadros por segundo': "Frámaí sa soicind",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Nuair a bhíonn an rogha uathoibríoch mícheart: fanann an taifeach agus na frámaí mar a roghnaíonn tú, ó thús go deireadh an chraolta.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Na héifeachtaí gutha agus ceamara a dhéantar ar do ríomhaire, gan aon rud a sheoladh chuig freastalaí.",
 } satisfies Record<string, string>;

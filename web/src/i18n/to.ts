@@ -3226,4 +3226,15 @@ export default {
   'Resposta: {quando}': "Tali: {quando}",
   'Seu palpite': "Hoʻo tala ki muʻa",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Kuo tauhi hoʻo tala ki muʻá. ʻE lava ke ke liliu ia kae ʻoua kuo tāpuni.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Tu'a 'o e kemipaá",
+  'Desfocado': "Fakafanofano",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "'Oku ne fakafanofano, tamate'i pe fetongi 'a e me'a 'oku hā mai 'i ho tu'á. 'Oku 'ikai ke mavahe 'a e tā 'o e kemipaá mei ho'o komipiutá ki he me'á ni.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Tupu'anga",
+  'Resolução': "Mahino",
+  'Quadros por segundo': "Fakatātā 'i he sekoni",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Ki he taimi 'oku hala ai 'a e fili 'otomētiki: 'e tu'u ma'u 'a e mahino mo e ngaahi fakatātā 'o hangē ko ho'o filí, mei he kamata'anga ki he ngata'anga 'o e fakamafolalá.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Ko e ngaahi ola 'o e le'o mo e kemipaá 'oku fai 'i ho'o komipiutá, 'o 'ikai ke fekau'i ha me'a ki ha sēva.",
 } satisfies Record<string, string>;

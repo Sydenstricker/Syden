@@ -3287,4 +3287,15 @@ export default {
   'Resposta: {quando}': "Одговор: {quando}",
   'Seu palpite': "Твоја прогноза",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Твоја прогноза је сачувана. Можеш да је промениш док се не затвори.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Позадина камере",
+  'Desfocado': "Замути",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Замућује, брише или мења оно што се види иза тебе. Слика са камере због тога не напушта твој рачунар.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Изворна",
+  'Resolução': "Резолуција",
+  'Quadros por segundo': "Сличице у секунди",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "За када аутоматски избор погреши: резолуција и сличице остају какве изабереш, од почетка до краја преноса.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Ефекти за глас и камеру који се раде на твом рачунару, без слања било чега на сервер.",
 } satisfies Record<string, string>;

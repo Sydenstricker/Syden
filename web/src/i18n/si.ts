@@ -3290,4 +3290,15 @@ export default {
   'Resposta: {quando}': "පිළිතුර: {quando}",
   'Seu palpite': "ඔබේ අනාවැකිය",
   'Seu palpite está salvo. Dá para mudar até fechar.': "ඔබේ අනාවැකිය සුරැකිණි. වැසෙන තුරු එය වෙනස් කළ හැක.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "කැමරා පසුබිම",
+  'Desfocado': "බොඳ කරන්න",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "ඔබ පිටුපස පෙනෙන දේ බොඳ කරයි, මකයි හෝ වෙනස් කරයි. මේ සඳහා කැමරා රූපය ඔබේ පරිගණකයෙන් පිටතට යන්නේ නැත.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "මුල්",
+  'Resolução': "විභේදනය",
+  'Quadros por segundo': "තත්පරයට රාමු",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "ස්වයංක්‍රීය තේරීම වැරදුණු විට: විකාශනයේ මුල සිට අග දක්වා විභේදනය සහ රාමු ඔබ තෝරන ලෙසම පවතී.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "ඔබේ පරිගණකයේම කෙරෙන හඬ සහ කැමරා ප්‍රයෝග, සේවාදායකයකට කිසිවක් නොයවා.",
 } satisfies Record<string, string>;

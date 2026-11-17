@@ -3290,4 +3290,15 @@ export default {
   'Resposta: {quando}': "Jawaab: {quando}",
   'Seu palpite': "Saadaalintaada",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Saadaalintaada waa la keydiyay. Waad beddeli kartaa ilaa la xiro.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Gadaasha kamarada",
+  'Desfocado': "Mugdi ka dhig",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Waxay mugdi ka dhigtaa, tirtirtaa ama beddeshaa waxa gadaashaada ka muuqda. Sawirka kamaradu kama baxo kombiyuutarkaaga arrintan darteed.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Asal",
+  'Resolução': "Xallinta",
+  'Quadros por segundo': "Sawirro ilbiriqsi kasta",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Marka doorashada tooska ahi qaldanto: xallinta iyo sawirradu waxay ahaanayaan sidaad dooratay, laga bilaabo bilowga ilaa dhammaadka baahinta.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Saamaynta codka iyo kamarada ee lagu sameeyo kombiyuutarkaaga, iyada oo aan wax loo dirin server.",
 } satisfies Record<string, string>;

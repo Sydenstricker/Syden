@@ -3212,4 +3212,15 @@ export default {
   'Resposta: {quando}': "جواب: {quando}",
   'Seu palpite': "تمہارا اندازہ",
   'Seu palpite está salvo. Dá para mudar até fechar.': "تمہارا اندازہ محفوظ ہو گیا۔ بند ہونے تک اسے بدلا جا سکتا ہے۔",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "کیمرے کا پس منظر",
+  'Desfocado': "دھندلا کرو",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "تمہارے پیچھے جو نظر آتا ہے اسے دھندلا کرتا ہے، مٹاتا ہے یا بدل دیتا ہے۔ اس کے لیے کیمرے کی تصویر تمہارے کمپیوٹر سے باہر نہیں جاتی۔",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "اصل",
+  'Resolução': "ریزولوشن",
+  'Quadros por segundo': "فریم فی سیکنڈ",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "جب خودکار انتخاب غلط ہو: نشریات کے شروع سے آخر تک ریزولوشن اور فریم وہی رہتے ہیں جو تم چنو۔",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "آواز اور کیمرے کے اثرات جو تمہارے کمپیوٹر پر ہی بنتے ہیں، کسی سرور کو کچھ بھیجے بغیر۔",
 } satisfies Record<string, string>;

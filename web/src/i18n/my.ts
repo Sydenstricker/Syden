@@ -3259,4 +3259,15 @@ export default {
   'Resposta: {quando}': "အဖြေ - {quando}",
   'Seu palpite': "သင့် ခန့်မှန်းချက်",
   'Seu palpite está salvo. Dá para mudar até fechar.': "သင့် ခန့်မှန်းချက်ကို သိမ်းပြီးပါပြီ။ မပိတ်မချင်း ပြောင်းနိုင်ပါသည်။",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "ကင်မရာ နောက်ခံ",
+  'Desfocado': "ဝါးအောင်လုပ်",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "သင့်နောက်မှာ မြင်ရတာကို ဝါးအောင်လုပ်၊ ဖျက် သို့မဟုတ် အစားထိုးပေးတယ်။ ဒါအတွက် ကင်မရာပုံက သင့်ကွန်ပျူတာထဲက ထွက်မသွားဘူး။",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "မူလ",
+  'Resolução': "ရုပ်ထွက်",
+  'Quadros por segundo': "တစ်စက္ကန့်လျှင် ဖရိမ်",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "အလိုအလျောက် ရွေးချယ်မှု မှားသွားတဲ့အခါအတွက်- ရုပ်ထွက်နဲ့ ဖရိမ်တွေက ထုတ်လွှင့်မှု အစကနေ အဆုံးထိ သင်ရွေးထားတဲ့အတိုင်း ရှိနေမယ်။",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "သင့်ကွန်ပျူတာထဲမှာပဲ လုပ်တဲ့ အသံနဲ့ ကင်မရာ အထူးပြုချက်များ၊ ဆာဗာကို ဘာမှ မပို့ဘဲ။",
 } satisfies Record<string, string>;

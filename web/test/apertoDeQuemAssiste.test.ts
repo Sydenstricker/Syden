@@ -3,7 +3,6 @@ import { describe, it } from 'node:test';
 import {
   ESTADO_INICIAL,
   FOLGA_PARA_VOLTAR_MS,
-  JUSTO_POR_MS,
   fracaoPerdida,
   proximoApertoDeQuemAssiste as passo,
   type EstadoDoAperto,
@@ -28,17 +27,17 @@ describe('quem assiste sem foco com o computador apertado', () => {
     assert.equal(correr(ESTADO_INICIAL, 0, 60_000, {}).apertado, false);
   });
 
-  it('"serious" aperta na hora; "fair" só depois de alguns segundos seguidos', () => {
+  it('"serious" aperta na hora', () => {
     assert.equal(passo(ESTADO_INICIAL, semFoco(0, { pressao: 'serious' })).apertado, true);
-    assert.equal(correr(ESTADO_INICIAL, 0, JUSTO_POR_MS - 1000, { pressao: 'fair' }).apertado, false);
-    assert.equal(correr(ESTADO_INICIAL, 0, JUSTO_POR_MS, { pressao: 'fair' }).apertado, true);
   });
 
-  it('"fair" com uma leitura normal no meio recomeça a conta', () => {
-    let e = correr(ESTADO_INICIAL, 0, JUSTO_POR_MS - 1000, { pressao: 'fair' });
-    e = passo(e, semFoco(JUSTO_POR_MS));
-    e = correr(e, JUSTO_POR_MS + 1000, JUSTO_POR_MS + 3000, { pressao: 'fair' });
-    assert.equal(e.apertado, false);
+  it('"fair" sozinho nunca aperta, nem por um minuto (é o que decodificar a transmissão já causa)', () => {
+    assert.equal(correr(ESTADO_INICIAL, 0, 60_000, { pressao: 'fair' }).apertado, false);
+    assert.equal(correr(ESTADO_INICIAL, 0, 60_000, { pressao: 'fair', perdaDeQuadros: 0.02 }).apertado, false);
+  });
+
+  it('"fair" com quadros perdidos aperta já na primeira medida', () => {
+    assert.equal(passo(ESTADO_INICIAL, semFoco(0, { pressao: 'fair', perdaDeQuadros: 0.2 })).apertado, true);
   });
 
   it('sem a leitura do processador (Firefox), a perda de quadros basta, em duas medidas seguidas', () => {

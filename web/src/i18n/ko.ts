@@ -3208,4 +3208,16 @@ export default {
   'Resposta: {quando}': "정답: {quando}",
   'Seu palpite': "내 예측",
   'Seu palpite está salvo. Dá para mudar até fechar.': "예측이 저장됐어요. 마감 전까지 바꿀 수 있어요.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "카메라 배경",
+  'Desfocado': "흐리게",
+  'Apagado': "지우기",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "뒤에 보이는 것을 흐리게 하거나, 지우거나, 다른 것으로 바꿔요. 이를 위해 카메라 영상이 컴퓨터 밖으로 나가지 않아요.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "네이티브",
+  'Resolução': "해상도",
+  'Quadros por segundo': "초당 프레임",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "자동 선택이 틀릴 때를 위해: 해상도와 프레임은 방송 처음부터 끝까지 고른 그대로 유지돼요.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "목소리와 카메라 효과를 컴퓨터 안에서만 처리해요. 서버로는 아무것도 보내지 않아요.",
 } satisfies Record<string, string>;

@@ -3260,4 +3260,15 @@ export default {
   'Resposta: {quando}': "Deebii: {quando}",
   'Seu palpite': "Tilmaama kee",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Tilmaamni kee olkaa’ameera. Hanga cufamutti jijjiiruu dandeessa.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Duuba kaameraa",
+  'Desfocado': "Dhokfisi",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Waan duuba kee jiru ni dhokfisa, ni haqa ykn ni jijjiira. Kanaaf suurri kaameraa kompiitara kee keessaa hin bahu.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Kan jalqabaa",
+  'Resolução': "Qulqullina",
+  'Quadros por segundo': "Fireemii sekondii tokkotti",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Yeroo filannoon ofumaan ta'u dogoggoru: qulqullinni fi fireemiin akkuma ati filatteetti, jalqaba hanga dhuma tamsaasaatti turu.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Saffisa sagalee fi kaameraa kompiitara kee irratti hojjetaman, waan tokkollee gara sarvarii osoo hin ergin.",
 } satisfies Record<string, string>;

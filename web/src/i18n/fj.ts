@@ -3219,4 +3219,15 @@ export default {
   'Resposta: {quando}': "Isau: {quando}",
   'Seu palpite': "Nomu vakatovotovo",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Sa maroroi nomu vakatovotovo. O rawa ni veisautaka me yacova ni sa sogo.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Na ivakatakilakila ni kamera",
+  'Desfocado': "Vakavotutaka",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "E vakavotutaka, bokoca se veisautaka na ka e laurai e dakuna. Na itaba ni kamera e sega ni lako tani mai na nomu kompiuta ena vuku ni ka oqo.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Taumada",
+  'Resolução': "Matata",
+  'Quadros por segundo': "iTaba e na sekodi",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Ni cala na digidigi vakai koya: na matata kei na itaba era na tiko me vaka o digia, mai na itekitekivu ki na ivakataotioti ni vakaraitaki.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Na veika ni domo kei na kamera e caka ena nomu kompiuta, ka sega ni vakau e dua na ka ki na seva.",
 } satisfies Record<string, string>;

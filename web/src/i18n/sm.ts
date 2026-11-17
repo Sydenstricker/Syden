@@ -3224,4 +3224,15 @@ export default {
   'Resposta: {quando}': "Tali: {quando}",
   'Seu palpite': "Lau matemate",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Ua teu lau matemate. E mafai ona e suia seʻia tapuni.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Tua o le meapueata",
+  'Desfocado': "Fa'anenefu",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "E fa'anenefu, tape'ese pe sui mea o lo'o iloa atu i ou tua. E le alu ese le ata o le meapueata mai lau komepiuta mo lenei mea.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Muamua",
+  'Resolução': "Manino",
+  'Quadros por segundo': "Ata i le sekone",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Mo le taimi e sese ai le filifiliga otometi: o le manino ma ata e tumau e pei ona e filifilia, mai le amataga se'ia uma le fa'asalalauga.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "O a'afiaga o le leo ma le meapueata e faia i lau komepiuta, e aunoa ma le auina atu o se mea i se 'auʻaunaga.",
 } satisfies Record<string, string>;

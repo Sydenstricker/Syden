@@ -3219,4 +3219,16 @@ export default {
   'Resposta: {quando}': "Antwoord: {quando}",
   'Seu palpite': "Jouw voorspelling",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Je voorspelling is opgeslagen. Je kunt hem wijzigen tot hij sluit.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Camera-achtergrond",
+  'Desfocado': "Vervagen",
+  'Apagado': "Wissen",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Vervaagt, wist of vervangt wat er achter je te zien is. Het camerabeeld verlaat daarvoor je computer niet.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Oorspronkelijk",
+  'Resolução': "Resolutie",
+  'Quadros por segundo': "Beelden per seconde",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Voor als de automatische keuze ernaast zit: de resolutie en de beelden blijven wat jij kiest, van begin tot eind van de uitzending.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "De stem- en camera-effecten die op je computer gebeuren, zonder iets naar een server te sturen.",
 } satisfies Record<string, string>;

@@ -3300,4 +3300,15 @@ export default {
   'Resposta: {quando}': "Ҷавоб: {quando}",
   'Seu palpite': "Пешгӯии ту",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Пешгӯии ту нигоҳ дошта шуд. То пӯшидан метавонӣ онро иваз кунӣ.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Пасзаминаи камера",
+  'Desfocado': "Хира кардан",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Он чиро, ки дар паси ту намоён аст, хира мекунад, пок мекунад ё иваз мекунад. Барои ин тасвири камера аз компютери ту берун намеравад.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Аслӣ",
+  'Resolução': "Ҳалнокӣ",
+  'Quadros por segundo': "Кадр дар сония",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Барои вақте ки интихоби худкор хато мекунад: ҳалнокӣ ва кадрҳо аз аввал то охири пахш ҳамон тавре мемонанд, ки ту интихоб мекунӣ.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Эффектҳои овоз ва камера, ки дар компютери ту сохта мешаванд, бе фиристодани чизе ба сервер.",
 } satisfies Record<string, string>;

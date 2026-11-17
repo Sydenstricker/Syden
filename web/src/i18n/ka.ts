@@ -3308,4 +3308,15 @@ export default {
   'Resposta: {quando}': "პასუხი: {quando}",
   'Seu palpite': "შენი პროგნოზი",
   'Seu palpite está salvo. Dá para mudar até fechar.': "შენი პროგნოზი შენახულია. დახურვამდე შეგიძლია შეცვალო.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "კამერის ფონი",
+  'Desfocado': "გაბუნდოვნება",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "აბუნდოვნებს, შლის ან ცვლის იმას, რაც შენს უკან ჩანს. ამისთვის კამერის გამოსახულება შენს კომპიუტერს არ ტოვებს.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "მშობლიური",
+  'Resolução': "გარჩევადობა",
+  'Quadros por segundo': "კადრი წამში",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "როცა ავტომატური არჩევანი შეცდება: გარჩევადობა და კადრები რჩება ისეთი, როგორსაც აირჩევ, გადაცემის დასაწყისიდან ბოლომდე.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "ხმისა და კამერის ეფექტები, რომლებიც შენს კომპიუტერზე კეთდება, სერვერზე არაფრის გაგზავნის გარეშე.",
 } satisfies Record<string, string>;

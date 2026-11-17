@@ -3242,4 +3242,16 @@ export default {
   'Resposta: {quando}': "Réponse : {quando}",
   'Seu palpite': "Ton prono",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Ton prono est enregistré. Tu peux le changer jusqu’à la clôture.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Arrière-plan de la caméra",
+  'Desfocado': "Flouter",
+  'Apagado': "Effacer",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Floute, efface ou remplace ce qui apparaît derrière toi. L'image de la caméra ne quitte pas ton ordinateur pour ça.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Native",
+  'Resolução': "Résolution",
+  'Quadros por segundo': "Images par seconde",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Pour quand le choix automatique se trompe : la résolution et les images restent celles que tu choisis, du début à la fin de la diffusion.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Les effets de voix et de caméra faits sur ton ordinateur, sans rien envoyer à un serveur.",
 } satisfies Record<string, string>;

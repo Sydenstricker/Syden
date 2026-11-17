@@ -3291,4 +3291,15 @@ export default {
   'Resposta: {quando}': "Impendulo: {quando}",
   'Seu palpite': "Ukuqagela kwakho",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Ukuqagela kwakho kulondoloziwe. Ungakushintsha kuze kuvalwe.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Ingemuva lekhamera",
+  'Desfocado': "Fiphalisa",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Kufiphalisa, kusule noma kushintshe lokho okubonakala ngemuva kwakho. Isithombe sekhamera asiphumi kukhompyutha yakho ngenxa yalokhu.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Okwemvelo",
+  'Resolução': "Ukucaca",
+  'Quadros por segundo': "Amafreyimu ngomzuzwana",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Ngesikhathi ukukhetha okuzenzakalelayo kuphazama: ukucaca namafreyimu kuhlala kunjengoba ukhethile, kusukela ekuqaleni kuze kube sekupheleni kokusakaza.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Imiphumela yezwi neyekhamera eyenziwa kukhompyutha yakho, ngaphandle kokuthumela lutho kuseva.",
 } satisfies Record<string, string>;

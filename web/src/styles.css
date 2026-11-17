@@ -3167,6 +3167,53 @@ textarea {
   outline-offset: 2px;
 }
 
+/* O modo Personalizado da transmissão (telaPersonalizada.ts): a resolução e os quadros, em fileiras de botões. */
+.tela-personalizada {
+  display: grid;
+  gap: 10px;
+  margin: 4px 0 12px;
+}
+
+.tela-personalizada-grupo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.tela-personalizada-grupo .toggle-label {
+  min-width: 150px;
+}
+
+.chip-opcao {
+  position: relative;
+  padding: 6px 12px;
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  background: var(--bg-sidebar);
+  cursor: pointer;
+  font-variant-numeric: tabular-nums;
+}
+
+.chip-opcao:hover {
+  background: var(--bg-raised);
+}
+
+.chip-opcao.selected {
+  border-color: var(--accent);
+}
+
+.chip-opcao input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.chip-opcao:has(input:focus-visible) {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 .quality-options {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -7345,6 +7392,30 @@ textarea {
 
 .effect-option:hover {
   background: var(--bg-raised);
+}
+
+/* O Syden Broadcast (SettingsModal): a segunda palavra da marca na cor de destaque. */
+.syden-broadcast span {
+  color: var(--accent);
+}
+
+/* O fundo da câmera (fundoDaCamera.ts): quatro opções curtas, numa linha quando cabe. */
+.effect-options.fundo-da-camera {
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+}
+
+.fundo-da-camera-imagem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 12px;
+}
+
+.fundo-da-camera-imagem img {
+  width: 128px;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: var(--radius);
 }
 
 .effect-option.selected {
@@ -16175,6 +16246,19 @@ body.arrastando-barra {
   width: 100%;
   min-height: 56px;
   justify-content: center;
+  /* com cara de botão (achado da auditoria, 16/11/2026: sem figura, o nome solto parecia texto, e não escolha) */
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-raised);
+  text-align: center;
+  transition: border-color 120ms ease, background-color 120ms ease;
+}
+
+.quiz-categorias .minijogo-jogo:hover,
+.quiz-categorias .minijogo-jogo:focus-visible {
+  border-color: var(--accent);
 }
 
 .quiz-busca {
@@ -16792,6 +16876,25 @@ body.arrastando-barra {
 .minijogo.jogando-balao,
 .minijogo.jogando-jato,
 .minijogo.jogando-barco {
+  width: min(760px, 94vw);
+}
+
+/* OS JOGOS DE AÇÃO E OS EM 3D NO PAINEL LARGO (16/11/2026, achado da auditoria: "tudo pequeno"). Nos 520 px de sempre, as
+   pedras do dominó tinham ~15 px e os jogos de ação um quadro de cartão-postal. Numa janela estreita, o 94vw manda. */
+.minijogo.jogando-plataforma,
+.minijogo.jogando-briga,
+.minijogo.jogando-chefe,
+.minijogo.jogando-caca,
+.minijogo.jogando-torre,
+.minijogo.jogando-duelo,
+.minijogo.jogando-skate,
+.minijogo.jogando-cozinha,
+.minijogo.jogando-golfe3d,
+.minijogo.jogando-domino,
+.minijogo.jogando-truco,
+.minijogo.jogando-damas,
+.minijogo.jogando-partida-de-xadrez,
+.minijogo.jogando-naval {
   width: min(760px, 94vw);
 }
 
@@ -17976,6 +18079,16 @@ body.arrastando-barra {
   min-width: 130px;
   padding: 16px 12px;
   color: var(--text-strong);
+  /* com cara de botão, como as categorias do quiz (16/11/2026, achado da auditoria) */
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-raised);
+  text-align: center;
+}
+
+.blocos-modos .minijogo-jogo:hover,
+.blocos-modos .minijogo-jogo:focus-visible {
+  border-color: var(--accent);
 }
 
 .blocos-outros {
@@ -19134,7 +19247,7 @@ body.arrastando-barra {
 }
 
 .naval-grade {
-  width: min(100%, 44vh, 260px);
+  width: min(100%, 44vh, 340px);
   aspect-ratio: 1;
   display: grid;
   grid-template-columns: repeat(10, 1fr);
@@ -19561,7 +19674,8 @@ body.arrastando-barra {
   flex-direction: column;
   gap: 8px;
   width: 100%;
-  max-width: 460px;
+  /* no painel largo (16/11/2026); a altura manda numa tela baixa */
+  max-width: min(600px, 60vh);
   margin: 0 auto;
   color: var(--text);
 }
@@ -20139,7 +20253,7 @@ body.arrastando-barra {
    leitor de tela, quando a cena está pronta. */
 .naval-3d {
   position: relative;
-  width: min(100%, 52vh, 340px);
+  width: min(100%, 46vh, 480px);
   aspect-ratio: 1 / 0.9;
   border-radius: 8px;
   overflow: hidden;
@@ -20238,7 +20352,7 @@ body.arrastando-barra {
 }
 .xadrez-3d {
   position: relative;
-  width: min(100%, 60vh, 440px);
+  width: min(100%, 60vh, 600px);
   aspect-ratio: 1 / 0.8;
   margin: 0 auto;
   border-radius: 10px;

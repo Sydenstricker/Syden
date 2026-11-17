@@ -3289,4 +3289,15 @@ export default {
   'Resposta: {quando}': "ចម្លើយ៖ {quando}",
   'Seu palpite': "ការទាយរបស់អ្នក",
   'Seu palpite está salvo. Dá para mudar até fechar.': "ការទាយរបស់អ្នកត្រូវបានរក្សាទុក។ អាចប្ដូរបានរហូតដល់ពេលបិទ។",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "ផ្ទៃខាងក្រោយកាមេរ៉ា",
+  'Desfocado': "ធ្វើឲ្យព្រិល",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "ធ្វើឲ្យព្រិល លុប ឬប្ដូរអ្វីដែលបង្ហាញនៅពីក្រោយអ្នក។ រូបភាពកាមេរ៉ាមិនចេញពីកុំព្យូទ័ររបស់អ្នកសម្រាប់ការនេះទេ។",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "ដើម",
+  'Resolução': "កម្រិតភាពច្បាស់",
+  'Quadros por segundo': "ស៊ុមក្នុងមួយវិនាទី",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "សម្រាប់ពេលការជ្រើសរើសស្វ័យប្រវត្តិខុស៖ កម្រិតភាពច្បាស់ និងស៊ុម នៅតែតាមអ្វីដែលអ្នកជ្រើស ពីដើមដល់ចប់នៃការផ្សាយ។",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "បែបផែនសំឡេង និងកាមេរ៉ា ដែលធ្វើនៅលើកុំព្យូទ័ររបស់អ្នក ដោយមិនផ្ញើអ្វីទៅម៉ាស៊ីនមេឡើយ។",
 } satisfies Record<string, string>;

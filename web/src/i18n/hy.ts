@@ -3309,4 +3309,15 @@ export default {
   'Resposta: {quando}': "Պատասխան՝ {quando}",
   'Seu palpite': "Քո կանխատեսումը",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Քո կանխատեսումը պահպանված է։ Կարող ես փոխել մինչև փակվելը։",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Տեսախցիկի ֆոն",
+  'Desfocado': "Մշուշել",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Մշուշում, ջնջում կամ փոխարինում է այն, ինչ երևում է քո հետևում։ Դրա համար տեսախցիկի պատկերը չի լքում քո համակարգիչը։",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Բնիկ",
+  'Resolução': "Լուծաչափ",
+  'Quadros por segundo': "Կադր վայրկյանում",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Երբ ավտոմատ ընտրությունը սխալվում է՝ լուծաչափն ու կադրերը մնում են քո ընտրածը՝ հեռարձակման սկզբից մինչև վերջ։",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Ձայնի և տեսախցիկի էֆեկտները, որոնք արվում են քո համակարգչում՝ առանց որևէ բան սերվեր ուղարկելու։",
 } satisfies Record<string, string>;

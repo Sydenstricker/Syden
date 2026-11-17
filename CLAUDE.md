@@ -598,6 +598,16 @@ simulação (só + − × ÷ e raiz, que dão o mesmo número em qualquer navega
 tacada perfeita. Troféu com `pista: 'golfe'`, os pontos sendo o total de tacadas. Testes: `server/test/minijogos-golfe.test.ts`,
 `web/test/golfe.test.ts` e `e2e/golfe.mjs`.
 
+**A AUDITORIA DOS MINI-GAMES (16/11/2026, pedido dele: "não quero ficar vendo um por um"), e os consertos:** a Batalha naval
+apagava no meio da partida porque perguntava "tem WebGL?" a cada desenho, criando um contexto que nunca soltava (o mesmo em 13
+jogos 3D). **Regra: a pergunta é só por `web/src/temWebGL.ts`** (uma vez por página, e o contexto do teste é solto na hora), e
+cena 3D nova ouve o `webglcontextlost` e volta ao 2D. Mais: a energia do Jato cobra por batida, e não por passo raspando (o
+iniciante explodia em 5 a 10 s); a corrente do Dominó fica PARADA na mesa (a primeira pedra no meio, as novas pelas pontas, a
+esquina perto da borda); o painel largo (`min(760px, 94vw)`) nos jogos de ação e nos 3D; o coelho 3D com o relevo do Meshy de
+volta e a luz amaciada (`coelho3d.ts`); no Estoura-balão, o pulo (só desenho: não desvia de item), o painel em HTML por cima e a
+largada que não aponta para a árvore. O relatório inteiro foi entregue a ele na conversa; Stop, Desenha, Lobisomem e Palavra
+secreta não foram auditados (pedem uma sala).
+
 **OS AJUSTES DO FLIPERAMA DE 05/11/2026 (pedidos dele, no mesmo dia):**
 - **O Minigolfe em perspectiva**, como a corrida (`web/src/golfe/mode7.ts`): a câmera atrás da bola, o chão é a mesa de cima lida
   a cada quadro, a bandeira e as bolas de pé; a mesa de cima vira o mapa do canto. Na perspectiva, puxar para baixo é a força e
@@ -2149,6 +2159,15 @@ qual — o sinal de que havia escolha demais. O que saiu, e por quê:
 - **Uma opção em cada menu de compartilhar.** No app não existe aba de navegador; no navegador a janela
   sai sempre muda. App: tela inteira e janela. Navegador: tela inteira e aba.
 
+**A EXCEÇÃO, O PERSONALIZADO (16/11/2026, sugestão de quem usa; decisão dele: "é uma forma manual de corrigir eventual leitura
+equivocada do Syden"; o caso foi a gravação do Mundial, que o Padrão encolhia para segurar os quadros de um vídeo).** Ao lado
+de Padrão e Fluido, o terceiro modo: quem transmite escolhe a resolução (HD 720p, Full HD 1080p ou a Nativa da tela, até 4K) e
+os quadros (15, 30 ou 60), e **durante a transmissão o Syden não muda nada** (sem degraus de tamanho, sem o leve, sem a nitidez
+da tela parada, sem a queda do Fluido; o diário continua contando os apertos). Sob aperto o navegador ainda sacrifica algo, e
+o desempate segue os quadros: 15 segura a nitidez, 60 segura os quadros, 30 equilibra. Full HD e a Nativa levam a versão de
+540p para quem tem internet fraca; HD, não. `web/src/telaPersonalizada.ts`; teste `e2e/tela-personalizada.mjs`. Padrão e
+Fluido continuam decidindo sozinhos: o Personalizado é a correção, não o caminho de fábrica.
+
 **A regra que fica:** antes de pôr uma escolha de qualidade na tela, pergunte se o Syden consegue
 medir e decidir sozinho. Quase sempre consegue — e uma escolha que ninguém entende vira o relato
 "um modo deu problema e não sei qual".
@@ -2160,7 +2179,8 @@ seguia inteiro. Agora, **sem foco E com o computador apertado**, a tela e as câ
 com o foco ou com 20 s de folga; apertou de novo depois de voltar, fica até o foco (`apertoDeQuemAssiste.ts`, aplicado por
 `qualidadeQueRecebo.ts`). Folgado e sem foco, nada muda: quem só assiste no segundo monitor não perde nada. Os sinais, porque o
 navegador não deixa ver RAM nem placa: a **pressão do processador** (Compute Pressure API, Chrome e Edge; entrega a leitura sem foco
-enquanto o microfone está aberto, medido) com "serious" na hora ou "fair" por 5 s, e os **quadros perdidos** na decodificação
+enquanto o microfone está aberto, medido) com "serious" na hora ou "fair" JUNTO com quadros perdidos (o "fair" sozinho contava
+por 5 s até 16/11/2026, e saiu: decodificar 1080p já o causa, e quem só assistia ao Mundial caía para 540p), e os **quadros perdidos** na decodificação
 (todo navegador) acima de 10% em duas medidas seguidas (uma só é a troca de versão). Medido (`e2e/assistir-apertado.mjs`, VP8 pelo
 processador, 15 quadros): o navegador de quem assiste de 2,21 para 0,93 núcleo. Uma linha no diário por chamada quando acontece.
 **No app**, o Electron nunca deixa a página "escondida" (o freio de segundo plano desligado: coberta e até minimizada, ela anima a
@@ -2261,6 +2281,29 @@ O DIÁRIO DE SAÚDE ganhou duas linhas: o programa que pausou o vídeo (uma por 
 numa JANELA, ir o som do computador inteiro (`donoDaJanela` em screen-audio.js: app da Store, módulo antigo, ou só o som do
 programa não abriu). A barra de título do app mostra a versão. Tudo isso chega com a versão do app depois da 0.1.10. Os testes do
 app pedem o PC parado: com alguém usando, a janela do teste não vem para a frente e o "coberto" falha.
+
+## O fundo da câmera: só no app, e a imagem não sai do computador
+
+**O SYDEN BROADCAST (16/11/2026, decisão dele):** em Voz e vídeo, os efeitos feitos por um modelo no computador de quem usa
+ficam juntos sob esse nome, como o NVIDIA Broadcast junta os dele: a supressão de ruído (no site também, o GTCRN) e o fundo da
+câmera (só no app). O nome é marca e fica igual nos 80 idiomas. O cancelamento de eco é do navegador e fica em "Processamento de
+voz". Efeito novo do mesmo tipo (um modelo rodando no aparelho) entra nesta seção.
+
+**Pedido dele em 14/11/2026 ("como o NVIDIA Broadcast"), medido em 14–15/11 (`e2e/fundo-da-camera/README.md`), construído em
+16/11 ("pode construir").** Em Configurações → Voz e vídeo, abaixo da câmera: Nenhum, Desfocado, Apagado ou Imagem (a imagem
+fica no aparelho, reduzida a 1280 × 720). Vale na hora, com a câmera ligada. **Só no app** (no site, a rede neural pediria o
+'wasm-unsafe-eval'); onde o app não roda o modelo, a escolha nem aparece.
+- **O modelo é o PP-HumanSeg** (Apache 2.0, 6 MB, versionado em `desktop/fundo-camera/` com a origem e a licença; crédito nos
+  termos, seção 10), num processo à parte (`desktop/src/fundo-camera/`), com 2 núcleos e prioridade baixa. Ele sai sozinho um
+  minuto depois da última câmera. **As threads do onnxruntime NÃO giram à espera** (`allow_spinning: '0'`): girando, ele custava
+  0,55 de um núcleo, contra 0,18 sem girar (medido no app).
+- **O caminho de cada quadro** (`web/src/fundoDaCamera.ts`, o processador da faixa do LiveKit): no máximo 15 vezes por segundo, o
+  quadro reduzido a 192 × 192 vai por uma porta direta ao processo, sem lista de transferência (a porta do Electron não recebe
+  ArrayBuffer transferido). A máscara volta suavizada pela média que se adapta, e a placa monta a saída em WebGL2. **O desfoque é
+  só do fundo**, pesado pela máscara e dividido pelo peso no fim; sem isso, o cabelo e a roupa viravam uma sombra em volta da cabeça.
+- **Se o processo cair ou a placa recusar, o quadro passa como veio**: a câmera nunca fica preta por causa do efeito.
+- Teste: `e2e/fundo-da-camera-no-app.mjs` (o app com a câmera falsa tocando um vídeo do estudo; os quatro modos e o custo) e
+  `desktop/test/fundo-camera.test.mjs`. Sobra: uma franja clara fina da parede em volta do cabelo (o modelo a 192 px).
 
 ## Fonte de terceiro: embutir é REDISTRIBUIR, e quase nenhuma "grátis" permite isso
 

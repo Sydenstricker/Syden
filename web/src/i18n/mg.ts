@@ -3290,4 +3290,15 @@ export default {
   'Resposta: {quando}': "Valiny: {quando}",
   'Seu palpite': "Ny vinavinanao",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Voatahiry ny vinavinanao. Azonao ovaina mandra-pikatony.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Ambadika fakan-tsary",
+  'Desfocado': "Manjavozavoina",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Manjavozavo, mamafa na manolo izay hita ao aorianao. Tsy miala amin'ny solosainao ny sarin'ny fakan-tsary noho izany.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Tany am-boalohany",
+  'Resolução': "Fahamarinana",
+  'Quadros por segundo': "Sary isan-tsegondra",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Rehefa diso ny safidy mandeha ho azy: mijanona araka izay safidinao ny fahamarinana sy ny sary, manomboka amin'ny fiandohana ka hatramin'ny fiafaran'ny fandefasana.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Ireo fiantraikan'ny feo sy ny fakan-tsary atao ao amin'ny solosainao, tsy misy alefa any amin'ny mpizara.",
 } satisfies Record<string, string>;

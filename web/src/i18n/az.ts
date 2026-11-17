@@ -3261,4 +3261,15 @@ export default {
   'Resposta: {quando}': "Cavab: {quando}",
   'Seu palpite': "Sənin proqnozun",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Proqnozun saxlanıldı. Bağlanana qədər dəyişə bilərsən.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Kamera fonu",
+  'Desfocado': "Bulanıqlaşdır",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Arxanda görünəni bulanıqlaşdırır, silir və ya dəyişir. Bunun üçün kamera görüntüsü kompüterindən çıxmır.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Doğma",
+  'Resolução': "Çözünürlük",
+  'Quadros por segundo': "Saniyədə kadr",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Avtomatik seçim səhv edəndə: çözünürlük və kadrlar yayımın əvvəlindən sonuna qədər sənin seçdiyin kimi qalır.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Kompüterində edilən səs və kamera effektləri, serverə heç nə göndərmədən.",
 } satisfies Record<string, string>;

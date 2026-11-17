@@ -3220,4 +3220,15 @@ export default {
   'Resposta: {quando}': "Răspuns: {quando}",
   'Seu palpite': "Pronosticul tău",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Pronosticul tău e salvat. Îl poți schimba până la închidere.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Fundalul camerei",
+  'Desfocado': "Estompează",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Estompează, șterge sau înlocuiește ce se vede în spatele tău. Imaginea camerei nu iese din calculatorul tău pentru asta.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Nativă",
+  'Resolução': "Rezoluție",
+  'Quadros por segundo': "Cadre pe secundă",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Pentru când alegerea automată greșește: rezoluția și cadrele rămân cele pe care le alegi, de la începutul până la sfârșitul transmisiei.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Efectele de voce și de cameră făcute pe calculatorul tău, fără să trimită nimic la un server.",
 } satisfies Record<string, string>;

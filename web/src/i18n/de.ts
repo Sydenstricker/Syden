@@ -3244,4 +3244,16 @@ export default {
   'Resposta: {quando}': "Antwort: {quando}",
   'Seu palpite': "Dein Tipp",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Dein Tipp ist gespeichert. Du kannst ihn ändern, bis es schließt.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Kamerahintergrund",
+  'Desfocado': "Weichzeichnen",
+  'Apagado': "Entfernen",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Zeichnet weich, entfernt oder ersetzt, was hinter dir zu sehen ist. Das Kamerabild verlässt dafür deinen Computer nicht.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Nativ",
+  'Resolução': "Auflösung",
+  'Quadros por segundo': "Bilder pro Sekunde",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Für den Fall, dass die automatische Wahl danebenliegt: Auflösung und Bilder bleiben so, wie du sie wählst, vom Anfang bis zum Ende der Übertragung.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Die Effekte für Stimme und Kamera, die auf deinem Computer laufen, ohne etwas an einen Server zu schicken.",
 } satisfies Record<string, string>;

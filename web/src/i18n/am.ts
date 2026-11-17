@@ -3220,4 +3220,15 @@ export default {
   'Resposta: {quando}': "መልስ፦ {quando}",
   'Seu palpite': "የእርስዎ ግምት",
   'Seu palpite está salvo. Dá para mudar até fechar.': "የእርስዎ ግምት ተቀምጧል። እስኪዘጋ ድረስ መቀየር ይችላሉ።",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "የካሜራ ዳራ",
+  'Desfocado': "አደብዝዝ",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "ከኋላዎ የሚታየውን ያደበዝዛል፣ ያጠፋል ወይም ይቀይራል። ለዚህ የካሜራው ምስል ከኮምፒውተርዎ አይወጣም።",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "የመጀመሪያው",
+  'Resolução': "ጥራት",
+  'Quadros por segundo': "ፍሬሞች በሰከንድ",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "ራስ-ሰር ምርጫው ሲሳሳት፡ የመረጡት ጥራት እና ፍሬሞች ከስርጭቱ መጀመሪያ እስከ መጨረሻ ይቆያሉ።",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "በኮምፒውተርዎ ላይ የሚሰሩ የድምፅ እና የካሜራ ውጤቶች፣ ምንም ነገር ወደ አገልጋይ ሳይላክ።",
 } satisfies Record<string, string>;

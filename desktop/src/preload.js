@@ -169,6 +169,15 @@ contextBridge.exposeInMainWorld('sydenDesktop', {
     /** pixels: Uint8Array RGBA de 512 × 512. Devolve a máscara, um Uint8Array de 512 × 512. */
     recortar: (pixels) => ipcRenderer.invoke('recorte:recortar', pixels),
   },
+  /**
+   * O fundo da câmera (o PP-HumanSeg, nativo, num processo à parte) — ver desktop/src/fundo-camera/index.js. Como no ruído,
+   * a porta chega à página por window.postMessage ('syden-fundo-camera-porta'); ela só aceita quadros de 192 × 192 e devolve
+   * máscaras. A imagem da câmera não sai do computador.
+   */
+  fundoCamera: {
+    disponivel: () => ipcRenderer.invoke('fundo-camera:disponivel'),
+    abrir: () => ipcRenderer.send('fundo-camera:abrir'),
+  },
   /** Recebe 'mute' ou 'deafen' quando a tecla de atalho global é pressionada; devolve a função que desliga. */
   onShortcut: (callback) => {
     const handler = (_event, action) => callback(action);
@@ -181,6 +190,10 @@ contextBridge.exposeInMainWorld('sydenDesktop', {
 // janela, na mesma origem: nenhum quadro de fora a recebe.
 ipcRenderer.on('ruido:porta', (event) => {
   window.postMessage('syden-ruido-porta', window.location.origin, event.ports);
+});
+// A do fundo da câmera, do mesmo jeito (ver fundoCamera acima).
+ipcRenderer.on('fundo-camera:porta', (event) => {
+  window.postMessage('syden-fundo-camera-porta', window.location.origin, event.ports);
 });
 // A do som da transmissão, do mesmo jeito (ver screenAudio.start).
 ipcRenderer.on('screen-audio:porta', (event) => {

@@ -22,7 +22,8 @@ import { Accessibility, Languages,
   Trash2,
   UserX,
   Users,
-  X, ShieldCheck, TerminalSquare, CalendarClock, Gift, Star, Ticket as TicketIcon, BadgeCheck, Gauge, Wrench, ChevronDown } from 'lucide-react';
+  X, ShieldCheck, TerminalSquare, CalendarClock, Gift, Star, Ticket as TicketIcon, BadgeCheck, Gauge, Wrench, ChevronDown, CircleOff, Focus, Eraser, Image as ImageIcon } from 'lucide-react';
+import { type EfeitoDoFundo, fundoDaCameraDisponivel, guardarImagemDoFundo, imagemDoFundo } from './fundoDaCamera';
 import {
   type FormEvent,
   // Apelidados: sem isto o KeyboardEvent do React sombreia o do DOM, e o ouvinte de Escape lá
@@ -2526,20 +2527,6 @@ function VoiceSection({ voice }: { voice: Voice }) {
 
       <h3>{t('Processamento de voz')}</h3>
       <Toggle
-        label={t('Supressão de ruído')}
-        description={t('Reduz barulhos de fundo, como teclado, ventilador e trânsito.')}
-        nota={
-          settings.noiseSuppression && supressao
-            ? supressao.rodando
-              ? t('Com tecnologia {modelo}', { modelo: NOME_DO_MOTOR[supressao.motor] })
-              : t('{modelo} parou. Sua voz está saindo sem supressão de ruído.', { modelo: NOME_DO_MOTOR[supressao.motor] })
-            : undefined
-        }
-        notaDeAlerta={settings.noiseSuppression && supressao?.rodando === false}
-        checked={settings.noiseSuppression}
-        onChange={(value) => void voice.setAudioProcessing({ noiseSuppression: value })}
-      />
-      <Toggle
         label={t('Cancelamento de eco')}
         description={t('Evita que os outros ouçam a própria voz de volta quando você usa caixa de som.')}
         checked={settings.echoCancellation}
@@ -2553,6 +2540,29 @@ function VoiceSection({ voice }: { voice: Voice }) {
         value={settings.videoInput}
         onChange={(id) => void voice.switchDevice('videoinput', id)}
       />
+
+      {/* O SYDEN BROADCAST (16/11/2026, decisão dele): os efeitos feitos por um modelo no computador de quem usa, juntos, como o
+          NVIDIA Broadcast junta os dele. O nome é marca e fica igual nos 80 idiomas. O cancelamento de eco não entra: é do
+          navegador, e mora em "Processamento de voz". No site, só a supressão de ruído (o fundo da câmera é do app). */}
+      <h3 className="syden-broadcast">
+        {MARCA_DO_BROADCAST[0]} <span>{MARCA_DO_BROADCAST[1]}</span>
+      </h3>
+      <p className="settings-hint">{t('Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.')}</p>
+      <Toggle
+        label={t('Supressão de ruído')}
+        description={t('Reduz barulhos de fundo, como teclado, ventilador e trânsito.')}
+        nota={
+          settings.noiseSuppression && supressao
+            ? supressao.rodando
+              ? t('Com tecnologia {modelo}', { modelo: NOME_DO_MOTOR[supressao.motor] })
+              : t('{modelo} parou. Sua voz está saindo sem supressão de ruído.', { modelo: NOME_DO_MOTOR[supressao.motor] })
+            : undefined
+        }
+        notaDeAlerta={settings.noiseSuppression && supressao?.rodando === false}
+        checked={settings.noiseSuppression}
+        onChange={(value) => void voice.setAudioProcessing({ noiseSuppression: value })}
+      />
+      <FundoDaCameraPicker voice={voice} />
 
       <h3>{t('Transmissões dos outros')}</h3>
       <Toggle
@@ -2576,6 +2586,13 @@ function VoiceSection({ voice }: { voice: Voice }) {
               t('1080p · 60 fps'),
               chave('Para jogos. Manda uma imagem só, a melhor: sobra máquina para o jogo, e quem assiste recebe o que ela é.'),
             ],
+            // A exceção escolhida por ele (16/11/2026) ao "o Syden decide": ver telaPersonalizada.ts.
+            [
+              'custom',
+              chave('Personalizado'),
+              `${settings.resolucaoDaTela === 'nativa' ? t('Nativa') : settings.resolucaoDaTela + 'p'} · ${settings.quadrosDaTela} fps`,
+              chave('Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.'),
+            ],
           ] as [ScreenQuality, string, string, string][]
         ).map(([id, title, spec, hint]) => (
           <label key={id} className={`quality-option${settings.screenQuality === id ? ' selected' : ''}`}>
@@ -2591,6 +2608,34 @@ function VoiceSection({ voice }: { voice: Voice }) {
           </label>
         ))}
       </div>
+      {settings.screenQuality === 'custom' && (
+        <div className="tela-personalizada">
+          <div className="tela-personalizada-grupo" role="radiogroup" aria-label={t('Resolução')}>
+            <span className="toggle-label">{t('Resolução')}</span>
+            {(
+              [
+                ['720', 'HD · 720p'],
+                ['1080', 'Full HD · 1080p'],
+                ['nativa', t('Nativa')],
+              ] as const
+            ).map(([id, nome]) => (
+              <label key={id} className={`chip-opcao${settings.resolucaoDaTela === id ? ' selected' : ''}`}>
+                <input type="radio" name="resolucao-da-tela" checked={settings.resolucaoDaTela === id} onChange={() => updateSettings({ resolucaoDaTela: id })} />
+                {nome}
+              </label>
+            ))}
+          </div>
+          <div className="tela-personalizada-grupo" role="radiogroup" aria-label={t('Quadros por segundo')}>
+            <span className="toggle-label">{t('Quadros por segundo')}</span>
+            {([15, 30, 60] as const).map((q) => (
+              <label key={q} className={`chip-opcao${settings.quadrosDaTela === q ? ' selected' : ''}`}>
+                <input type="radio" name="quadros-da-tela" checked={settings.quadrosDaTela === q} onChange={() => updateSettings({ quadrosDaTela: q })} />
+                {q}
+              </label>
+            ))}
+          </div>
+        </div>
+      )}
       <RecomendarModo />
     </>
   );
@@ -2737,6 +2782,64 @@ const PREVIEW_MS = 3000;
  *
  * A escolha vem da CHAMADA, não das configurações guardadas: o efeito acaba junto com a conversa.
  */
+/**
+ * O FUNDO DA CÂMERA (só no app; ver fundoDaCamera.ts): nada, desfocar, apagar ou uma imagem. Vale na hora, também com a câmera
+ * ligada, e fica guardado. Onde o app não roda o modelo (navegador, versão antiga do app), a escolha nem aparece.
+ */
+/** A marca, igual em todos os idiomas: a segunda palavra vai na cor de destaque. */
+const MARCA_DO_BROADCAST = ['Syden', 'Broadcast'] as const;
+
+function FundoDaCameraPicker({ voice }: { voice: Voice }) {
+  const t = useT();
+  const settings = useSettings();
+  const [disponivel, setDisponivel] = useState(false);
+  const [imagem, setImagem] = useState(() => imagemDoFundo());
+  useEffect(() => {
+    let vivo = true;
+    void fundoDaCameraDisponivel().then((sim) => vivo && setDisponivel(sim));
+    return () => {
+      vivo = false;
+    };
+  }, []);
+  if (!disponivel) return null;
+  const OPCOES: [EfeitoDoFundo, string, ReactNode][] = [
+    ['nenhum', chave('Nenhum'), <CircleOff size={18} />],
+    ['desfocar', chave('Desfocado'), <Focus size={18} />],
+    ['apagar', chave('Apagado'), <Eraser size={18} />],
+    ['imagem', chave('Imagem'), <ImageIcon size={18} />],
+  ];
+  const escolhido = settings.fundoDaCamera;
+  async function escolherImagem(arquivo: File) {
+    setImagem(await guardarImagemDoFundo(arquivo));
+    await voice.setFundoDaCamera('imagem');
+  }
+  return (
+    <>
+      <span className="toggle-label">{t('Fundo da câmera')}</span>
+      <p className="settings-hint">{t('Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.')}</p>
+      <div className="effect-options fundo-da-camera" role="radiogroup" aria-label={t('Fundo da câmera')}>
+        {OPCOES.map(([id, nome, icone]) => (
+          <label key={id} className={`effect-option${escolhido === id ? ' selected' : ''}`}>
+            <input type="radio" name="fundo-da-camera" checked={escolhido === id} onChange={() => void voice.setFundoDaCamera(id)} />
+            <span className="effect-option-icon">{icone}</span>
+            <span className="effect-option-text">
+              <strong>{t(nome)}</strong>
+            </span>
+          </label>
+        ))}
+      </div>
+      {escolhido === 'imagem' && (
+        <div className="fundo-da-camera-imagem">
+          {imagem && <img src={imagem} alt="" />}
+          <FilePicker accept="image/png,image/jpeg,image/webp" secondary onFile={(f) => void escolherImagem(f)}>
+            {imagem ? t('Trocar imagem') : t('Escolher imagem')}
+          </FilePicker>
+        </div>
+      )}
+    </>
+  );
+}
+
 function VoiceEffectPicker({ voice }: { voice: Voice }) {
   const t = useT();
   const settings = useSettings();

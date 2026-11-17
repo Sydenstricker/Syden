@@ -3303,4 +3303,15 @@ export default {
   'Resposta: {quando}': "ལན: {quando}",
   'Seu palpite': "ཁྱོད་ཀྱི་སྔོན་ཚོད།",
   'Seu palpite está salvo. Dá para mudar até fechar.': "ཁྱོད་ཀྱི་སྔོན་ཚོད་སྲུང་བཞག་ཡོདཔ། ཁ་མ་བསྡམས་ཚུན་ སོར་ཚུགས།",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "པར་ཆས་ཀྱི་རྒྱབ་ལྗོངས།",
+  'Desfocado': "རབ་རིབ་བཟོ།",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "ཁྱོད་ཀྱི་རྒྱབ་ཁར་མཐོང་མི་དེ་ རབ་རིབ་བཟོ་ནི་དང་ བསུབ་ནི་ ཡང་ན་ སོར་ནི་ཨིན། དེའི་དོན་ལུ་ པར་ཆས་ཀྱི་པར་འདི་ ཁྱོད་ཀྱི་གློག་རིག་ནང་ལས་ ཕྱི་ཁར་མི་འགྱོ།",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "ངོ་མ།",
+  'Resolução': "གསལ་ཚད།",
+  'Quadros por segundo': "སྐར་ཆ་རེ་ལུ་གཟུགས་བརྙན།",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "རང་བཞིན་གྱི་གདམ་ཁ་ནོར་བའི་སྐབས་ལུ་ གསལ་ཚད་དང་ གཟུགས་བརྙན་ཚུ་ ཁྱོད་ཀྱིས་གདམ་མི་ཅིག་ གསར་བརྒྱུད་འགོ་ལས་མཇུག་ཚུན་ སྡོད་འོང་།",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "ཁྱོད་ཀྱི་གློག་རིག་ནང་ལུ་བཟོ་མི་ སྐད་དང་པར་ཆས་ཀྱི་ནུས་ཤུགས་ཚུ་ ཞབས་ཏོག་འཕྲུལ་ཆས་ལུ་ག་ནི་ཡང་མ་གཏང་པར།",
 } satisfies Record<string, string>;

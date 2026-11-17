@@ -3292,4 +3292,15 @@ export default {
   'Resposta: {quando}': "Válasz: {quando}",
   'Seu palpite': "A tipped",
   'Seu palpite está salvo. Dá para mudar até fechar.': "A tipped elmentve. A lezárásig módosíthatod.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Kamera háttere",
+  'Desfocado': "Elmosás",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Elmossa, törli vagy lecseréli azt, ami mögötted látszik. A kamera képe ehhez nem hagyja el a gépedet.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Natív",
+  'Resolução': "Felbontás",
+  'Quadros por segundo': "Képkocka másodpercenként",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Arra az esetre, ha az automatikus választás téved: a felbontás és a képkockák azok maradnak, amiket választasz, a közvetítés elejétől a végéig.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "A hang- és kameraeffektek, amelyek a gépeden készülnek, anélkül, hogy bármit szerverre küldenének.",
 } satisfies Record<string, string>;

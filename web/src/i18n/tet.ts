@@ -3222,4 +3222,15 @@ export default {
   'Resposta: {quando}': "Resposta: {quando}",
   'Seu palpite': "Ita-nia previzaun",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Ita-nia previzaun rai ona. Bele muda to’o taka.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Kotuk kámara nian",
+  'Desfocado': "Halo nakukun",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Halo nakukun, hamoos ka troka buat ne'ebé mosu iha ó-nia kotuk. Imajen kámara nian la sai husi ó-nia komputadór ba ida-ne'e.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Orijinál",
+  'Resolução': "Rezolusaun",
+  'Quadros por segundo': "Fotografia kada segundu",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Ba bainhira eskolla automátika sala: rezolusaun no fotografia sira hela tuir ó-nia hili, husi hahú to'o remata transmisaun.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Efeitu lian no kámara nian ne'ebé halo iha ó-nia komputadór, la haruka buat ida ba servidór.",
 } satisfies Record<string, string>;

@@ -3231,4 +3231,15 @@ export default {
   'Resposta: {quando}': "Igisubizo: {quando}",
   'Seu palpite': "Iteganya ryawe",
   'Seu palpite está salvo. Dá para mudar até fechar.': "Iteganya ryawe ryabitswe. Ushobora kurihindura kugeza afunze.",
+  // O fundo da câmera (16/11/2026)
+  'Fundo da câmera': "Inyuma ya kamera",
+  'Desfocado': "Bihishe",
+  'Desfoca, apaga ou troca o que aparece atrás de você. A imagem da câmera não sai do computador para isso.': "Bihisha, bisiba cyangwa bisimbuza ibigaragara inyuma yawe. Ifoto ya kamera ntisohoka muri mudasobwa yawe kubera ibi.",
+  // A transmissão personalizada (16/11/2026)
+  'Nativa': "Kavukire",
+  'Resolução': "Ubwiza bw'ishusho",
+  'Quadros por segundo': "Amashusho ku isegonda",
+  'Para quando a escolha automática errar: a resolução e os quadros ficam os que você escolher, do começo ao fim da transmissão.': "Iyo guhitamo byikora byibeshye: ubwiza bw'ishusho n'amashusho bigumaho uko wahisemo, kuva itangazwa ritangiye kugeza rirangiye.",
+  // O Syden Broadcast (16/11/2026)
+  'Os efeitos de voz e de câmera feitos no seu computador, sem enviar nada a um servidor.': "Ingaruka z'ijwi n'iza kamera zikorerwa kuri mudasobwa yawe, nta kintu na kimwe cyoherejwe kuri seriveri.",
 } satisfies Record<string, string>;
