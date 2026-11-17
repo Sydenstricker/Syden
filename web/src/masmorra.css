@@ -1,0 +1,39 @@
+/* A MASMORRA DA TOCA (16/11/2026, JogoMasmorra.tsx): a sala de 680 × 440 ampliada com os pixels nítidos, no painel largo dos
+   jogos de ação. O placar e os botões de toque são os da Briga na horta (styles.css, .briga-*). */
+.minijogo.jogando-masmorra {
+  width: min(760px, 94vw);
+}
+
+.masmorra {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  width: 100%;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.masmorra-tela {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #2b211d;
+}
+
+.masmorra-tela canvas {
+  display: block;
+  width: 100%;
+  aspect-ratio: 680 / 440;
+  image-rendering: pixelated;
+}
+
+.masmorra-vazio {
+  opacity: 0.3;
+}
+
+/* sem a coluna da barra de vida, o placar da masmorra é nome, corações e pontos */
+.masmorra .briga-hud li {
+  grid-template-columns: minmax(0, 1fr) auto auto;
+}
