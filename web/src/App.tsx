@@ -14,7 +14,7 @@ import type { User } from './types';
 import { esquecerLinkDaAula, guardarAulaEmCurso, lerLinkDaAula } from './aula';
 import { EntradaNaAula } from './EntradaNaAula';
 import { chave, useT } from './i18n';
-import { avisarBarreira, useBarreira } from './protecao';
+import { avisarBarreira, guardarFaixaDaConta, useBarreira } from './protecao';
 import { TelaDaBarreira } from './TelaDaBarreira';
 import { enviarIdadeDoWindows } from './idadeDoWindows';
 import { AvisoDoResponsavel } from './AvisoDoResponsavel';
@@ -59,6 +59,8 @@ export function App() {
   // recusado). Com ela, a tela é a da pendência, e não o Syden.
   const barreiraAoVivo = useBarreira();
   const barreira = session.status === 'ready' ? (barreiraAoVivo ?? session.user.barreira ?? null) : null;
+  // A faixa para as telas que não recebem a conta (protecao.ts, guardarFaixaDaConta): o que é só para adulto some para menor.
+  guardarFaixaDaConta(session.status === 'ready' ? session.user.faixa : null);
   // O convite do endereço, e o de um link clicado DENTRO do Syden (linkDeConvite.ts): `vez` faz o mesmo link clicado de
   // novo perguntar de novo.
   const [inviteCode, setInviteCode] = useState<(ConviteDoLink & { vez: number }) | null>(() => {

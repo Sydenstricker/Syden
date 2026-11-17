@@ -1,6 +1,7 @@
 import { useId } from 'react';
 import { idiomaAtual } from './i18n';
 import { tamanhoLegivel, type IdDoJogo } from './minijogos';
+import { CapaEstelar } from './estelar/capa';
 
 /**
  * AS CAPAS DA ESTANTE DE JOGOS (12/10/2026). Uma imagem por jogo, desenhada aqui em SVG: nenhuma arte de
@@ -13,8 +14,12 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
       return <CapaCorrida />;
     case 'festa':
       return <CapaFesta />;
+    case 'masmorra':
+      return <CapaMasmorra />;
     case 'briga':
       return <CapaBriga />;
+    case 'comando':
+      return <CapaComando />;
     case 'blocos':
       return <CapaBlocos />;
     case 'plataforma':
@@ -35,6 +40,8 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
       return <CapaPonte />;
     case 'nave':
       return <CapaNave />;
+    case 'estelar':
+      return <CapaEstelar />;
     case 'balao':
       return <CapaBalao />;
     case 'jato':
@@ -43,10 +50,20 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
       return <CapaBarco />;
     case 'carrinhos':
       return <CapaCarrinhos />;
+    case 'pinball':
+      return <CapaPinball />;
+    case 'planador':
+      return <CapaPlanador />;
     case 'gincana':
       return <CapaGincana />;
+    case 'ringue':
+      return <CapaRingue />;
     case 'chefe':
       return <CapaChefe />;
+    case 'lendas':
+      return <CapaLendas />;
+    case 'bichos':
+      return <CapaBichos />;
     case 'duelo':
       return <CapaDuelo />;
     case 'torre':
@@ -97,6 +114,39 @@ export function CapaDoJogo({ jogo }: { jogo: IdDoJogo }) {
 }
 
 /**
+ * O Comando Cenoura: a floresta ao entardecer, uma tábua sobre caixotes, o coelho de lado (o mesmo desenho da Briga) com o
+ * lança-cenouras, a rajada de cenouras na diagonal e uma nuvem de fumaça onde o bicho estava.
+ */
+function CapaComando() {
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#b5773b" />
+      <path d="M0 70 Q30 30 60 60 T120 40 T160 55 V100 H0 Z" fill="#6a4a2a" />
+      <path d="M0 84 Q40 60 80 78 T160 70 V100 H0 Z" fill="#3e3020" />
+      <rect y="96" width="160" height="24" fill="#5a4430" />
+      <rect y="96" width="160" height="2" fill="#6e5538" />
+      <rect x="104" y="70" width="44" height="5" fill="#c08a58" />
+      <rect x="106" y="75" width="12" height="21" fill="#9a6c44" />
+      <rect x="134" y="75" width="12" height="21" fill="#9a6c44" />
+      <g fill="#ff8a2a">
+        <rect x="80" y="44" width="5" height="5" />
+        <rect x="94" y="30" width="5" height="5" />
+        <rect x="108" y="16" width="5" height="5" />
+      </g>
+      <g fill="#e8e2d8">
+        <circle cx="128" cy="22" r="9" />
+        <circle cx="138" cy="16" r="6" />
+        <circle cx="120" cy="14" r="5" />
+      </g>
+      <rect x="62" y="58" width="16" height="6" fill="#f08a2a" transform="rotate(-45 70 61)" />
+      <svg x="18" y="26" width="76" height="76" viewBox="0 0 80 80" style={{ imageRendering: 'pixelated' }}>
+        <image href={`${import.meta.env.BASE_URL}briga/coelho.png`} width="2560" height="80" />
+      </svg>
+    </svg>
+  );
+}
+
+/**
  * A Briga na horta: a cerca, os canteiros, e o coelho (o primeiro desenho do soco da folha web/public/briga/coelho.png)
  * diante de uma raposa desenhada como no jogo.
  */
@@ -124,6 +174,47 @@ function CapaBriga() {
       <rect x="117" y="76" width="9" height="5" fill="#a85a32" />
       <path d="M96 60 l4 -4 l1 5 l5 -1 l-4 4 l3 4 l-5 -1 l-2 5 l-1 -5 l-5 0 z" fill="#fff6c8" />
       <svg x="30" y="30" width="76" height="76" viewBox="1040 0 80 80" style={{ imageRendering: 'pixelated' }}>
+        <image href={`${import.meta.env.BASE_URL}briga/coelho.png`} width="2560" height="80" />
+      </svg>
+    </svg>
+  );
+}
+
+/**
+ * A Masmorra da Toca: uma sala de pedra vista de cima, com a porta trancada ao fundo, o baú, as tochas, um botão no chão e o
+ * coelho da Briga com a pá (o mesmo desenho do jogo).
+ */
+function CapaMasmorra() {
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#8d7768" />
+      <rect x="10" y="22" width="140" height="92" fill="#6f5d53" />
+      <g fill="#5c4c44">
+        <rect x="10" y="44" width="140" height="2" />
+        <rect x="10" y="68" width="140" height="2" />
+        <rect x="10" y="92" width="140" height="2" />
+        <rect x="40" y="22" width="2" height="22" />
+        <rect x="96" y="46" width="2" height="22" />
+        <rect x="62" y="70" width="2" height="22" />
+        <rect x="124" y="94" width="2" height="20" />
+      </g>
+      <rect x="10" y="14" width="140" height="10" fill="#4f3f39" />
+      <rect x="66" y="4" width="28" height="22" fill="#2b211d" />
+      <rect x="69" y="7" width="22" height="19" fill="#9a6b42" />
+      <rect x="75" y="12" width="10" height="9" fill="#e2b84f" />
+      <rect x="78" y="15" width="4" height="4" fill="#2b211d" />
+      <g fill="#f5b04a">
+        <rect x="20" y="8" width="6" height="8" />
+        <rect x="134" y="8" width="6" height="8" />
+      </g>
+      <rect x="22" y="72" width="22" height="18" fill="#2b211d" />
+      <rect x="24" y="74" width="18" height="14" fill="#93633b" />
+      <rect x="24" y="80" width="18" height="2" fill="#e2b84f" />
+      <rect x="31" y="78" width="4" height="6" fill="#e2b84f" />
+      <rect x="118" y="50" width="20" height="18" fill="#2b211d" />
+      <rect x="120" y="52" width="16" height="14" fill="#7fb06a" />
+      <path d="M112 86 a24 24 0 0 0 -18 -22" fill="none" stroke="#fff4d6" strokeWidth="4" strokeLinecap="round" />
+      <svg x="52" y="36" width="76" height="76" viewBox="160 0 80 80" style={{ imageRendering: 'pixelated' }}>
         <image href={`${import.meta.env.BASE_URL}briga/coelho.png`} width="2560" height="80" />
       </svg>
     </svg>
@@ -299,6 +390,51 @@ export function CapaPalavraDoDia() {
       {linhas.map((linha, l) =>
         linha.map((cor, c) => <rect key={`${l}-${c}`} x={22 + c * 24} y={18 + l * 29} width="20" height="24" rx="3" fill={cor} />),
       )}
+    </svg>
+  );
+}
+
+/** O Set with Friends (16/11/2026): três cartas com formas, o trio que se procura. Desenho nosso, sem o visual do jogo. */
+export function CapaTrios() {
+  const cartas = [
+    { x: 18, cor: '#e0607e', forma: 'losango' },
+    { x: 62, cor: '#5fb37a', forma: 'oval' },
+    { x: 106, cor: '#7a6be0', forma: 'onda' },
+  ];
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#2f4858" />
+      {cartas.map((c, i) => (
+        <g key={i} transform={`rotate(${(i - 1) * 6} ${c.x + 18} 60)`}>
+          <rect x={c.x} y="24" width="36" height="72" rx="5" fill="#f6f1e7" />
+          {c.forma === 'losango' && <path d={`M${c.x + 18} 44 l10 16 -10 16 -10 -16z`} fill={c.cor} />}
+          {c.forma === 'oval' && <rect x={c.x + 9} y="48" width="18" height="24" rx="9" fill={c.cor} />}
+          {c.forma === 'onda' && <path d={`M${c.x + 9} 70 q4 -22 9 -10 q5 12 9 -14 q2 20 -9 26 q-5 -12 -9 -2z`} fill={c.cor} />}
+        </g>
+      ))}
+    </svg>
+  );
+}
+
+/** O Fishbowl (16/11/2026): o aquário com os papeizinhos dobrados que a turma escreve. Desenho nosso. */
+export function CapaMimica() {
+  const papeis = [
+    [62, 78, -14, '#ffd58a'],
+    [80, 84, 8, '#9fd3f5'],
+    [96, 76, 20, '#f7a9b8'],
+    [72, 66, -4, '#b9e3a5'],
+    [88, 64, 12, '#ffd58a'],
+  ] as const;
+  const aquario = 'M50 34 h60 q14 22 6 52 q-6 18 -36 18 q-30 0 -36 -18 q-8 -30 6 -52z';
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#3d5a80" />
+      <path d={aquario} fill="#bfe3f2" opacity="0.35" />
+      {papeis.map(([x, y, giro, cor], i) => (
+        <rect key={i} x={x - 8} y={y - 5} width="16" height="10" rx="1.5" fill={cor} transform={`rotate(${giro} ${x} ${y})`} />
+      ))}
+      <path d={aquario} fill="none" stroke="#e8f6fb" strokeWidth="3" />
+      <rect x="46" y="29" width="68" height="7" rx="3.5" fill="#e8f6fb" />
     </svg>
   );
 }
@@ -1001,6 +1137,38 @@ function CapaCidades() {
 /**
  * A Caça às pragas da horta: o céu sobre a cerca e a horta, um corvo de asas abertas no meio da mira, e um gafanhoto pulando.
  */
+/** O pinball da horta: a mesa de grama vista de cima, os três repolhos, a bola prateada e as duas palhetas embaixo. */
+function CapaPinball() {
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#6b3f22" />
+      <path d="M38 120 V40 Q38 8 80 8 Q122 8 122 40 V120 Z" fill="#4f8a3a" />
+      <path d="M38 120 V40 Q38 8 80 8 Q122 8 122 40 V120" fill="none" stroke="#efdcae" strokeWidth="3" />
+      {[
+        [64, 38],
+        [96, 38],
+        [80, 58],
+      ].map(([x, y]) => (
+        <g key={`${x}-${y}`}>
+          <circle cx={x} cy={y} r="9" fill="#2f7a2a" />
+          <circle cx={x} cy={y} r="7" fill="#8fd16a" />
+          <circle cx={x} cy={y} r="2.5" fill="#d9f0b8" />
+        </g>
+      ))}
+      <path d="M112 64 l4 -2 l-2 10 Z" fill="#ee8a2f" />
+      <path d="M48 96 L58 84 L58 100 Z" fill="#b85c1a" />
+      <path d="M112 96 L102 84 L102 100 Z" fill="#b85c1a" />
+      <path d="M58 104 L76 112" stroke="#d2433a" strokeWidth="6" strokeLinecap="round" />
+      <path d="M102 104 L86 98" stroke="#d2433a" strokeWidth="6" strokeLinecap="round" />
+      <path d="M58 104 L76 112" stroke="#f4e7c5" strokeWidth="3" strokeLinecap="round" />
+      <path d="M102 104 L86 98" stroke="#f4e7c5" strokeWidth="3" strokeLinecap="round" />
+      <circle cx="84" cy="84" r="5" fill="#7d8594" />
+      <circle cx="83" cy="83" r="4" fill="#d8dde6" />
+      <circle cx="82" cy="82" r="1.3" fill="#ffffff" />
+    </svg>
+  );
+}
+
 /** O rolê do coelho: o skate no ar sobre a rampa, as rodinhas para cima, e o rastro do pulo. */
 function CapaSkate() {
   return (
@@ -1112,6 +1280,88 @@ function CapaDuelo() {
       <circle cx="70" cy="30" r="3" fill="#7cc34a" stroke="#3f7a2a" strokeWidth="1" />
       {aviao(122, 34, 60, '#d8483c')}
       {aviao(40, 96, -30, '#3f74d8')}
+    </svg>
+  );
+}
+
+/** Bichos da Toca: o mato alto, o coelho com a cenoura estendida e um bichinho saindo do mato; os seis elementos em pontos. */
+function CapaBichos() {
+  const cores = ['#4f9a4a', '#d8642f', '#3f86c8', '#8d7a63', '#7fb8b0', '#d8b02a'];
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#bfe3f2" />
+      <path d="M0 62 Q50 44 100 58 T160 52 V120 H0 Z" fill="#8cc46a" />
+      {/* o mato alto, em "v" */}
+      <g fill="#3f7d3c">
+        {[84, 96, 108, 120, 132, 144].map((x, i) => (
+          <path key={x} d={`M${x} ${100 - (i % 2) * 4} l5 -18 l5 18 z M${x + 6} ${102} l4 -14 l4 14 z`} />
+        ))}
+      </g>
+      {/* o bichinho: um broto redondo de olhos grandes */}
+      <ellipse cx="116" cy="80" rx="14" ry="12" fill="#6fb15a" stroke="#2c5e2c" strokeWidth="1.5" />
+      <path d="M116 68 q-6 -10 -12 -6 q6 2 12 6 q4 -12 12 -8 q-8 2 -12 8" fill="#4f9a4a" />
+      <circle cx="111" cy="79" r="2.4" fill="#2b2622" />
+      <circle cx="121" cy="79" r="2.4" fill="#2b2622" />
+      <circle cx="111.8" cy="78.2" r="0.8" fill="#fff" />
+      <circle cx="121.8" cy="78.2" r="0.8" fill="#fff" />
+      <g fill="#2f6b33">
+        {[90, 104, 128, 142].map((x) => (
+          <path key={x} d={`M${x} 104 l5 -16 l5 16 z`} />
+        ))}
+      </g>
+      {/* o coelho com a cenoura */}
+      <g transform="translate(52 70)">
+        <ellipse cx="-4" cy="-26" rx="3" ry="11" fill="#f7f3ec" stroke="#3a2a1c" strokeWidth="1" />
+        <ellipse cx="5" cy="-27" rx="3" ry="11" fill="#f7f3ec" stroke="#3a2a1c" strokeWidth="1" />
+        <circle cx="0" cy="-10" r="10" fill="#f7f3ec" stroke="#3a2a1c" strokeWidth="1" />
+        <circle cx="4" cy="-11" r="1.4" fill="#2b2622" />
+        <rect x="-9" y="0" width="18" height="20" rx="6" fill="#3d2b36" />
+        <path d="M8 6 l22 -4" stroke="#3d2b36" strokeWidth="5" strokeLinecap="round" />
+        <path d="M30 1 l14 -3 l-13 7 z" fill="#ee8a2c" />
+        <path d="M30 2 l-4 -5 M31 2 l-1 -6" stroke="#4f9a4a" strokeWidth="2" />
+      </g>
+      {cores.map((c, i) => (
+        <circle key={c} cx={18 + i * 12} cy="14" r="4" fill={c} />
+      ))}
+    </svg>
+  );
+}
+
+/** Lendas da Toca: o dragão à esquerda, a turma de quatro coelhos à direita, cada um com o objeto da classe, e o caminho no alto. */
+function CapaLendas() {
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#2a1f3d" />
+      <rect y="78" width="160" height="42" fill="#3a3242" />
+      <rect y="78" width="160" height="2" fill="#5a5068" />
+      {/* o caminho: as cinco paradas */}
+      {[20, 50, 80, 110, 140].map((x, k) => (
+        <circle key={x} cx={x} cy="14" r="5" fill={k === 4 ? '#e5564c' : '#f0c93a'} opacity={k < 2 ? 0.5 : 1} />
+      ))}
+      <rect x="20" y="13" width="120" height="2" fill="#f0c93a" opacity="0.4" />
+      {/* o dragão */}
+      <g transform="translate(44 70)">
+        <path d="M-20 10 Q-30 -10 -14 -18 L-6 -30 L0 -16 Q14 -14 16 2 Q18 16 0 18 Q-16 20 -20 10 Z" fill="#c0392b" />
+        <path d="M-6 -16 L-24 -34 L-12 -10 Z" fill="#8e2a20" />
+        <circle cx="6" cy="-6" r="2.5" fill="#ffe48a" />
+        <path d="M16 -2 L30 -6 L28 2 L36 4 L24 8 Z" fill="#ff9a3a" />
+      </g>
+      {/* a turma: o escudo, a faísca, a erva e a flecha */}
+      {[
+        [104, 66, '#3f74d8', '#a8b8d8'],
+        [128, 74, '#9b59b6', '#f0a0ff'],
+        [108, 92, '#3f7f3a', '#7bc86a'],
+        [134, 98, '#e2a03a', '#f0c93a'],
+      ].map(([x, y, roupa, obj]) => (
+        <g key={String(x) + y} transform={`translate(${x} ${y})`}>
+          <ellipse cx="0" cy="8" rx="7" ry="6" fill={String(roupa)} />
+          <circle cx="0" cy="0" r="5" fill="#f2ecf7" />
+          <path d="M-2 -4 L-3 -12 M2 -4 L3 -12" stroke="#f2ecf7" strokeWidth="2.4" strokeLinecap="round" />
+          <rect x="-12" y="2" width="5" height="7" rx="1" fill={String(obj)} />
+        </g>
+      ))}
+      {/* o golpe junto: o clarão entre os dois lados */}
+      <path d="M76 52 l4 8 l8 1 l-6 6 l2 8 l-8 -4 l-8 4 l2 -8 l-6 -6 l8 -1 Z" fill="#fffbe8" opacity="0.9" />
     </svg>
   );
 }
@@ -1252,6 +1502,35 @@ function CapaGincana() {
         <path d="M-2 -8 L-4 -17 M2 -8 L4 -17" stroke="#f2ecf7" strokeWidth="2.6" strokeLinecap="round" />
         <circle cx="-1.6" cy="-4.5" r="0.8" fill="#2a2a2a" />
         <circle cx="1.6" cy="-4.5" r="0.8" fill="#2a2a2a" />
+      </g>
+    </svg>
+  );
+}
+
+/** O Planador da toca: o céu de fim de tarde, as roças em perspectiva com o alvo, um anel dourado e a asa-delta com o coelho. */
+function CapaPlanador() {
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="54" fill="#7492c4" />
+      <rect y="34" width="160" height="20" fill="#e2aa96" />
+      <path d="M0 54 L0 46 Q30 38 56 46 Q90 36 120 45 Q140 40 160 44 L160 54 Z" fill="#60845a" />
+      <rect y="54" width="160" height="66" fill="#62964a" />
+      <path d="M0 120 L54 54 L80 54 L60 120 Z" fill="#b0a05c" />
+      <path d="M110 120 L92 54 L118 54 L160 104 L160 120 Z" fill="#7aa858" />
+      <ellipse cx="96" cy="96" rx="34" ry="12" fill="#f4e8d2" />
+      <ellipse cx="96" cy="96" rx="25" ry="8.8" fill="#d65848" />
+      <ellipse cx="96" cy="96" rx="16" ry="5.6" fill="#f4e8d2" />
+      <ellipse cx="96" cy="96" rx="7" ry="2.5" fill="#f6d25a" />
+      <ellipse cx="44" cy="44" rx="11" ry="16" fill="none" stroke="#3a2a14" strokeWidth="5" />
+      <ellipse cx="44" cy="44" rx="11" ry="16" fill="none" stroke="#f6c94a" strokeWidth="3" />
+      <g transform="translate(100 34) rotate(-8)">
+        <path d="M0 -10 L-30 6 L0 2 Z" fill="#e8834a" />
+        <path d="M0 -10 L30 6 L0 2 Z" fill="#f2e2c4" />
+        <line x1="0" y1="2" x2="0" y2="10" stroke="#3a2a24" strokeWidth="1" />
+        <rect x="-3" y="10" width="6" height="7" rx="2" fill="#5c4252" />
+        <circle cx="0" cy="9" r="3" fill="#ece2e8" />
+        <rect x="-3" y="2" width="2" height="6" rx="1" fill="#ece2e8" />
+        <rect x="1" y="2" width="2" height="6" rx="1" fill="#ece2e8" />
       </g>
     </svg>
   );
@@ -1704,6 +1983,36 @@ function CapaGolfe() {
       ))}
       <circle cx="98" cy="86" r="4" fill="#f4ecdc" />
       <rect x="96" y="84" width="2" height="2" fill="#fffaf0" />
+    </svg>
+  );
+}
+
+function CapaRingue() {
+  // o ringue visto de trás de quem luta: as cordas, o adversário de guarda (só a silhueta) e a luva de quem joga em primeiro plano
+  return (
+    <svg className="minijogo-capa" viewBox="0 0 160 120" aria-hidden="true">
+      <rect width="160" height="120" fill="#24213a" />
+      <path d="M50 0 L64 0 L96 70 L18 70 Z" fill="#fff0c8" opacity="0.07" />
+      <path d="M96 0 L110 0 L142 70 L64 70 Z" fill="#fff0c8" opacity="0.07" />
+      <path d="M14 66 H146 L170 120 H-10 Z" fill="#7d8fb0" />
+      <path d="M30 72 H130 L150 120 H10 Z" fill="#8fa1c2" />
+      <rect x="14" y="40" width="5" height="30" fill="#c9c4d8" />
+      <rect x="141" y="40" width="5" height="30" fill="#c9c4d8" />
+      <rect x="19" y="44" width="122" height="2" fill="#d8463c" />
+      <rect x="19" y="52" width="122" height="2" fill="#f0ece4" />
+      <rect x="19" y="60" width="122" height="2" fill="#3c6fd8" />
+      <ellipse cx="80" cy="84" rx="22" ry="4" fill="#1e1e32" opacity="0.3" />
+      <path d="M66 84 Q62 58 70 44 Q80 34 90 44 Q98 58 94 84 Z" fill="#5a4a78" />
+      <circle cx="80" cy="38" r="10" fill="#5a4a78" />
+      <circle cx="70" cy="50" r="7" fill="#d8463c" stroke="#1e1a2a" strokeWidth="1.5" />
+      <circle cx="90" cy="50" r="7" fill="#d8463c" stroke="#1e1a2a" strokeWidth="1.5" />
+      <path d="M100 30 l2 6 l6 2 l-6 2 l-2 6 l-2 -6 l-6 -2 l6 -2 Z" fill="#fffbe0" />
+      <ellipse cx="62" cy="118" rx="26" ry="16" fill="#3d2b36" opacity="0.9" />
+      <circle cx="62" cy="96" r="14" fill="#e0d2ed" opacity="0.92" />
+      <ellipse cx="55" cy="74" rx="4" ry="11" fill="#e0d2ed" opacity="0.92" />
+      <ellipse cx="69" cy="74" rx="4" ry="11" fill="#e0d2ed" opacity="0.92" />
+      <circle cx="96" cy="88" r="11" fill="#efe6d6" stroke="#1e1a2a" strokeWidth="1.5" />
+      <circle cx="36" cy="100" r="10" fill="#efe6d6" stroke="#1e1a2a" strokeWidth="1.5" />
     </svg>
   );
 }

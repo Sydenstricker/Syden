@@ -221,17 +221,25 @@ export function registerModeracaoRoutes(app: FastifyInstance, io: IOServer) {
           torreDoCeleiro: db.torresDe(eu.id),
           recordeDaCaca: db.recordeDaCaca(eu.id),
           recordeDaEsquadrilha: db.recordeDaNave(eu.id),
+          recordeDaRotaEstelar: db.recordeEstelar(eu.id),
           recordeDoTransito: db.recordeDoTransito(eu.id),
           // o recorde do Rolê do coelho (a sessão de 1 minuto): a política o promete, e faltava aqui (auditoria de 12/11/2026)
           recordeDoRole: db.recordeDoSkate(eu.id),
           // os recordes dos Carrinhos da toca, com o fantasma (o acelerador de cada passo)
           carrinhosDaToca: db.carrinhosDe(eu.id),
+          recordeDoPinball: db.pinballDe(eu.id),
           // os recordes da Gincana da toca, com o fantasma (os comandos de cada passo)
           gincanaDaToca: db.gincanaDe(eu.id),
+          // os recordes do Planador da toca, por desafio, com o fantasma (os comandos de cada passo)
+          planadorDaToca: db.planadorDe(eu.id),
           // os palpites nos bolões das comunidades (bolao-routes.ts)
           palpitesDoBolao: db.palpitesDe(eu.id),
           // os recordes da Ponte da toca, por fase: o menor custo de uma ponte que passou
           ponteDaToca: db.pontesDe(eu.id),
+          // o recorde do Ringue da toca: as lutas vencidas no circuito, o tempo (em passos de 1/60 s) e o que bateu na última
+          ringueDaToca: db.recordeDoRingue(eu.id),
+          // a aventura dos Bichos da Toca: o lugar no campo, a equipe, os da toca e a cesta (ver minijogo-bichos.ts)
+          bichosDaToca: db.aventuraDosBichos(eu.id),
           // quem entra no quarto, os convidados (ids) e o destaque da estante de troféus (ver trofeus-routes.ts)
           // (com a arrumação: a política diz que ela é guardada, e faltava aqui — auditoria de 03/11/2026)
           quarto: {

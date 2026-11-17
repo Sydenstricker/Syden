@@ -86,17 +86,40 @@ try {
   await duda.screenshot({ path: path.join(FOTOS, 'mini-games-termo.png') });
   await duda.keyboard.press('Escape');
   await quadro.waitFor({ state: 'detached', timeout: 5000 });
+  // Os dois parceiros de 16/11/2026: o Set with Friends e o Fishbowl também rodam aqui dentro (sem anúncio, embutíveis).
+  for (const [nome, endereco] of [['Set with Friends', 'https://setwithfriends.com'], ['Fishbowl', 'https://fishbowl-game.com']]) {
+    await painel.locator('.jogos-de-fora li button', { hasText: nome }).click();
+    await quadro.waitFor({ timeout: 10000 });
+    let carregou = false;
+    for (let i = 0; i < 40 && !carregou; i++) {
+      carregou = duda.frames().some((f) => f.url().startsWith(endereco));
+      if (!carregou) await duda.waitForTimeout(250);
+    }
+    carregou ? ok(`o ${nome} abriu dentro do Syden`) : falhou(`o quadro do ${nome} não carregou`);
+    await duda.waitForTimeout(3000);
+    await duda.screenshot({ path: path.join(FOTOS, `mini-games-${nome.toLowerCase().replace(/ /g, '-')}.png`) });
+    await duda.keyboard.press('Escape');
+    await quadro.waitFor({ state: 'detached', timeout: 5000 });
+  }
+  // Os jogos de computador apontam a página de baixar. Haxball, DDNet e Luanti saíram em 17/11/2026 (a classificação etária).
+  const paraBaixar = await painel.locator('.jogos-de-fora li a').allInnerTexts();
+  const naTela = (await painel.locator('.jogos-de-fora').allInnerTexts()).join(' ');
+  ['OpenTTD', 'Unciv'].every((n) => paraBaixar.some((s) => s.includes(n))) && !/Haxball|DDNet|Luanti/.test(naTela)
+    ? ok('OpenTTD e Unciv estão em "Para baixar e jogar junto", e Haxball, DDNet e Luanti não')
+    : falhou('faltam jogos para baixar: ' + paraBaixar.join(' | '));
+  await foto(duda, 'computador-jogos-de-fora');
   await painel.locator('.jogos-do-syden li button', { hasText: 'Sala 1' }).click();
   await duda.locator('.stage-controls').waitFor({ timeout: 30000 });
   await duda.locator('.minijogo-estante').waitFor({ timeout: 15000 });
   // As abas (14/10/2026; desde 24/10/2026 os seis que se jogam sozinho estão nas duas): Coletivo com os 12, Solo com os 6
   // e o Termo.
   const coletivos = await duda.locator('.minijogo-jogo:not(.minijogo-parceiro)').count();
-  coletivos === 19 ? ok('a Duda caiu na sala com a estante aberta, na aba Coletivo: 19 jogos') : falhou(`a aba Coletivo tem ${coletivos} jogos`);
+  // (os números exatos ficavam velhos a cada jogo novo: confere só que a estante encheu)
+  coletivos >= 19 ? ok(`a Duda caiu na sala com a estante aberta, na aba Coletivo: ${coletivos} jogos`) : falhou(`a aba Coletivo tem ${coletivos} jogos`);
   await duda.locator('.minijogo-abas').getByRole('tab', { name: 'Solo' }).click();
   const solos = await duda.locator('.minijogo-jogo:not(.minijogo-parceiro)').count();
   const parceiros = await duda.locator('.minijogo-parceiro').count();
-  solos === 12 && parceiros === 1 ? ok('a aba Solo tem 12 jogos e o Termo') : falhou(`a aba Solo tem ${solos} jogos e ${parceiros} parceiros`);
+  solos >= 12 && parceiros === 3 ? ok(`a aba Solo tem ${solos} jogos e os 3 parceiros (Termo, Set with Friends, Fishbowl)`) : falhou(`a aba Solo tem ${solos} jogos e ${parceiros} parceiros`);
   await foto(duda, 'estante-solo');
   // O Termo também está na estante da sala: abre NO PALCO (o lugar do vídeo), só para quem clicou, e a barra da call
   // continua à vista embaixo (desenho do Sydenstricker).

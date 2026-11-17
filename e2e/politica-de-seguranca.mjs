@@ -43,7 +43,8 @@
  *                 LiveKit injeta folhas de estilo próprias. Sem isso a tela abre sem formatação nenhuma.
  *   frame-src     o Turnstile da Cloudflare é um quadro dentro da nossa página. E os jogos de parceiro que
  *                 rodam dentro do Syden depois do clique (SiteEmbutido.tsx; `embutir`, em web/src/minijogos.ts):
- *                 o Termo. Cada um só entra aqui com o que carrega declarado na política de privacidade
+ *                 o Termo, o Set with Friends e o Fishbowl (os dois desde 16/11/2026). Cada um só entra aqui com o que
+ *                 carrega declarado na política de privacidade
  *                 (#jogos-de-parceiros) — a mesma condição da medição da Cloudflare.
  *   static.cloudflareinsights.com
  *                 a medição de audiência, que a Cloudflare injeta sozinha nas páginas enquanto o proxy
@@ -71,7 +72,7 @@ export const CSP = [
   "font-src 'self' data: https://fonts.gstatic.com",
   "connect-src 'self' https://api.syden.chat wss://api.syden.chat https://live.syden.chat wss://live.syden.chat",
   "worker-src 'self' blob:",
-  "frame-src 'self' https://challenges.cloudflare.com https://term.ooo",
+  "frame-src 'self' https://challenges.cloudflare.com https://term.ooo https://setwithfriends.com https://fishbowl-game.com",
   "frame-ancestors 'self'",
   "base-uri 'self'",
   "form-action 'self'",

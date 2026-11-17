@@ -25,15 +25,15 @@ import { describe, it } from 'node:test';
 const PAGINAS = [
   {
     arquivo: 'termos.html',
-    data: '16 de novembro de 2026',
-    resumo: 'be51975c41a61dee',
-    traducao: { arquivo: 'en/terms.html', data: 'November 16, 2026', resumo: 'bbfd7580225904ad' },
+    data: '17 de novembro de 2026',
+    resumo: '75b967d15ba512ae',
+    traducao: { arquivo: 'en/terms.html', data: 'November 17, 2026', resumo: '253e7345aa76a750' },
   },
   {
     arquivo: 'privacidade.html',
-    data: '15 de novembro de 2026',
-    resumo: '7986f7debdd08722',
-    traducao: { arquivo: 'en/privacy.html', data: 'November 15, 2026', resumo: 'c69c1db5166cee4f' },
+    data: '17 de novembro de 2026',
+    resumo: '0dc1650eb0bfd285',
+    traducao: { arquivo: 'en/privacy.html', data: 'November 17, 2026', resumo: '72073b666347f8b2' },
   },
 ];
 

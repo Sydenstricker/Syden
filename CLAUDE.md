@@ -312,6 +312,19 @@ esqueleto, e anúncio só se mede com o navegador rodando.
   script): só o teste dentro do Syden prova. Licenças, para hospedar: Drawphone, Wikitrivia, Spyfall, 2048,
   boardgame.io e Sandspiel são MIT, Scribble.rs BSD-3; OpenFront AGPL e o Codenames do horsepaste SEM licença (e a
   marca é da CGE): não.
+- **Pesquisa de 16/11/2026** (pedido dele: "jogos famosos que são gratuitos, para eu já integrar; não tem por que reinventar a
+  roda"), o mesmo método (12 s num Chrome + o texto + o cabeçalho de embutir). **Sem anúncio e embutíveis:** Set with Friends
+  (MIT; carrega Stripe e Firebase, o login pode falhar na moldura), Fishbowl (MIT; GA e PostHog), Out of Context, Just One
+  (marca do jogo de tabuleiro, no Heroku), Snakeout, werewolf-night.com, Protobowl, Little Alchemy 2; Drawphone e o Spyfall do
+  tannerkrewson continuam limpos. **Com anúncio:** Haxball (e não embute), Krunker, bonk.io, Smash Karts, agar.io, diep.io, PlayOK,
+  MegaJogos, StopotS, wavelength.zone, cardgames.io, play2048.co (o 2048 só hospedando o MIT). **Fora:** Freeciv-web (todos os
+  endereços públicos viraram cassino: nunca linkar), Poker Now (sem anúncio, mas é jogo de azar simulado e há adolescentes no
+  Syden), minecraft-web-client (arte da Mojang), Hextris (GPL-3), o Poke2D Arena (fan game de Pokémon sem licença, com AdSense e
+  termos que proíbem hospedar; a MECÂNICA de arena em tempo real foi para os Bichos da Toca). **Por link (de graça, sem loja):**
+  DDNet (zlib), OpenTTD, Wesnoth, SuperTuxKart (GPL; servidor nosso só à parte e sem modificar), Luanti, Unciv. O Rocketcrab (MIT)
+  é um lançador de jogos de festa em moldura, a mesma arquitetura do SiteEmbutido: o catálogo dele foi a fonte. Notas e medidas no
+  scratchpad da sessão; o que entra, decisão dele. **Script que visita muitos sites lê a lista de um arquivo:** com os endereços
+  na linha de comando, o Defender o matou como "Trojan:Win32/Commando.C!ml" (falso positivo).
 - **A promessa da lista é "sem anúncio", não "sem rastreio"** (decisão dele, 13/10/2026: "sem anúncio é honesto"). O
   rastreio de um site que a pessoa abre por vontade própria é entre ela e o site. Por isso o **Termo** entrou (só Google
   Analytics).
@@ -607,6 +620,85 @@ esquina perto da borda); o painel largo (`min(760px, 94vw)`) nos jogos de ação
 volta e a luz amaciada (`coelho3d.ts`); no Estoura-balão, o pulo (só desenho: não desvia de item), o painel em HTML por cima e a
 largada que não aponta para a árvore. O relatório inteiro foi entregue a ele na conversa; Stop, Desenha, Lobisomem e Palavra
 secreta não foram auditados (pedem uma sala).
+
+**OS JOGOS NOVOS DE 16/11/2026 (pedido dele: "implemente esses jogos"; feitos por agentes, um por jogo, com arte só do que já
+existia no projeto). Todos fora das conquistas da turma até ele decidir; em nenhum alguém jogou com gente (o equilíbrio é chute
+medido contra o piloto automático); os Coletivos sem e2e com o LiveKit, só o teste do servidor.**
+- **O COMANDO CENOURA** (`comando`, 1 a 4, nas duas abas): correr e atirar de lado, SÓ A MECÂNICA do gênero. Quatro arenas de uma
+  tela (andarilho, atirador e voador: o cogumelo, o dino e a abelha da Quaternius) e o dragão no fim (fogo rente ao chão, pisão
+  marcado, chamado). O lança-cenouras mira em OITO direções (para baixo, só no ar), granada com recarga de 4 s, tábuas sobre
+  caixotes, três GAIOLAS de coelhinhos que dão reforço por 30 s (leque de três ou rápida), perdido com a vida; 3 vidas de 3 golpes;
+  o bicho vira FUMAÇA, sem sangue. **A rede é a da Briga e do Chefe**: bichos, balas deles, gaiolas e granadas no servidor
+  (`server/src/comando/motor.ts`, `minijogo-comando.ts`); cada tiro com número, origem e direção, o ritmo da arma conferido; o
+  acerto conferido pelo caminho da bala contra o passado do bicho (0,8 s); o golpe levado decidido 200 ms depois. Contas em duas
+  cópias iguais (`server/src/comando/conta.ts` ↔ `web/src/comando/conta.ts`). Sobra possível: o servidor não conhece as tábuas
+  (ficar no alto até H_MAX). Pódio `pista: 'comando'`. Testes: `server/test/minijogos-comando.test.ts` (o piloto vence contra o
+  servidor de verdade com 100 ms em cada sentido) e `e2e/comando.mjs`.
+- **A MASMORRA DA TOCA** (`masmorra`, 1 a 4): masmorra vista de cima, SÓ A MECÂNICA. Sete salas de 17 × 11: entrada, salão dos
+  cogumelos (tranca até limpar), a encruzilhada dos DOIS BOTÕES ao mesmo tempo (sozinho, o bloco segura um), o baú com a CENOURA
+  QUE VAI E VOLTA, o lago (o cristal do outro lado só a cenoura alcança, e ele levanta a ponte), o corredor da porta trancada e o
+  rei-cogumelo. A turma está sempre na MESMA sala. Pá de jardim, arrancada, 5 corações; cair volta à porta da sala em 3 s. **A rede
+  é a da Briga**: o mundo é do servidor; cada coelho anda no próprio computador, conferido pela mesma conta de casas
+  (`masmorra-regras.ts` ↔ `web/src/masmorra/regras.ts`); a posição leva o número de teleporte (`tp`: a atrasada da sala anterior
+  é recusada, senão atravessava a água). Desenho por código; coelho e bichos das folhas da Briga. Pódio `pista: 'masmorra'`.
+  Testes: `server/test/minijogos-masmorra.test.ts`, `web/test/masmorra.test.ts`, `e2e/masmorra.mjs`.
+- **O RINGUE DA TOCA** (`ringue`): boxe de reflexo visto de trás contra três adversários do computador, SÓ A MECÂNICA. O golpe é
+  AVISADO (a luva recua) e no meio do aviso a luva BRILHA: socar no brilho interrompe e dá estrela (a finta do trapaceiro nunca
+  brilha). Esquivar, abaixar, defender; contra-ataque depois de esquivar de golpe forte; soco forte gasta as estrelas; socar a
+  guarda cansa. O ligeiro (macaco), o pesado (yeti) e o trapaceiro (demônio-azul), das folhas da Briga ampliadas; quem cai vê
+  estrelinhas. Rounds de 60 s, três por luta. **Regra num arquivo em duas cópias** (`ringue-sim.ts` ↔ `web/src/ringue/sim.ts`,
+  sem seno, relógio nem import; o acaso por um gerador inteiro com a semente do servidor), o site manda os comandos e o servidor
+  REFAZ. Solo com `ringue_recordes`; sala de 2 a 8 com a mesma semente; pódio `pista: 'ringue'`. Testes: `web/test/ringue.test.ts`,
+  `server/test/minijogos-ringue.test.ts`, `e2e/ringue.mjs`.
+- **A ROTA ESTELAR** (`estelar`): tiro em trilhos em 3D, SÓ A MECÂNICA do gênero (o pedido dele: "um equivalente ao Star Fox").
+  Superfície de um planeta, o JIPE GIGANTE, subida ao espaço, a BIFURCAÇÃO (o lado da nave decide: rochas ou estação) e o POLVO DE
+  LATA, ~2,5 min; escudo, anéis, TIRO TRAVADO (segurar trava no cone), PIRUETA que desvia, 3 bombas, laser duplo. **A rede é a da
+  Esquadrilha** (`estelar-sim.ts` ↔ `web/src/estelar/sim.ts`, byte a byte): a mesma rota para a turma, os outros como alas
+  translúcidas, o servidor refaz cada acerto pela Ficha; o golpe levado é quem leva que diz. Modelos do Space Base Bits (KayKit,
+  CC0, `web/public/estelar/`; o PNG pede `git add -f`); nave, caçador e polvo por código; o coelho 3D na cabine. Solo com
+  `estelar_recordes`; pódio `pista: 'estelar'`. Testes: `web/test/estelar.test.ts`, `server/test/minijogos-estelar.test.ts`,
+  `e2e/estelar.mjs`.
+- **O PLANADOR DA TOCA** (`planador`): voo com pouso no alvo, SÓ A MECÂNICA. Asa-delta pelos anéis até o alvo, mochila a jato até a
+  plataforma com combustível contado, paraquedas (queda livre pelos anéis; sem abrir é batida). Pontos por anel, precisão,
+  suavidade e bônus; tocar rápido demais é BATIDA. No Mode 7 da corrida com a câmera que sobe e inclina. **Regra em duas cópias**
+  (`planador-sim.ts` ↔ `web/src/planador/sim.ts`): o servidor refaz o voo. Solo com `planador_recordes` por desafio e até 3
+  fantasmas (amigos aceitos); sala de 2 a 8 pelos pontos, sem virar recorde. Pódio `pista: 'planador'`. Testes:
+  `web/test/planador.test.ts`, `server/test/minijogos-planador.test.ts`, `e2e/planador.mjs`.
+- **O PINBALL DA HORTA** (`pinball`): duas palhetas, mola, repolhos que rebatem, estilingues, cenouras que caem, a órbita, três
+  pistas (multiplicador até ×5), a toca do coelho que solta o MULTIBOLA, bola salva, TRANCO. Desenho pixel a pixel por código.
+  **Regra em duas cópias** (`pinball-sim.ts` ↔ `web/src/pinball/sim.ts`, só + − × ÷ e raiz): o site manda os comandos em TRECHOS e o
+  servidor anda a mesa até o relógio dele; os pontos são os dele. Solo com `pinball_recordes` (amigos aceitos veem); sala de 2 a 8,
+  3 minutos de mesa, pódio `pista: 'pinball'`. Testes: `web/test/pinball.test.ts`, `server/test/minijogos-pinball.test.ts`,
+  `e2e/pinball.mjs`.
+- **OS BICHOS DA TOCA** (`bichos`, o pedido dele: "um equivalente a Pokémon"): juntar bichos e lutar por turnos, SÓ A MECÂNICA.
+  Nada de nome, bicho, bola, "-dex" nem tabela de franquia: seis elementos nossos (Folha, Brasa, Gota, Pedra, Vento, Faísca; cada
+  um vence dois), os monstros da Quaternius da Briga, amizade com uma CENOURA; nomes próprios inventados (Brotel, Tisco, Bolhim…,
+  a desafiante Nena), iguais em todo idioma. **Solo, a aventura** (`minijogo-bichos.ts`, `bichos-batalha.ts`): o campo de cima, o
+  primeiro bicho entre três, o mato onde o SERVIDOR sorteia, luta por turnos (quem perde "pega no sono"), cenoura, chá, fuga,
+  equipe de 6, nível e uma evolução, o desafio da Nena. A aventura mora no servidor (`bichos_aventuras`). **Sala, a mesa:** duas
+  pessoas com as equipes guardadas (sem equipe, a emprestada); pódio só de quem vence (`pista: 'bichos'`). Regras em duas cópias
+  (`server/src/bichos-regras.ts` ↔ `web/src/bichos/regras.ts`). **Pendente, aprovado por ele: a ARENA EM TEMPO REAL** (times de 3,
+  1×1 ou 3 cada um por si, a rede da Briga); minha recomendação, arena VISTA DE LADO no primeiro passo (as folhas são de lado).
+  Testes: `server/test/minijogos-bichos.test.ts`, `e2e/bichos.mjs`.
+- **AS LENDAS DA TOCA** (`lendas`, nas duas abas): o RPG de turnos da turma, SÓ A MECÂNICA do gênero dos anos 90 (a turma de heróis,
+  a energia das habilidades, o ataque combinado, o equipamento depois da luta). Um caminho de cinco paradas: floresta, deserto, a
+  fogueira (descanso), neve e o castelo do dragão. **A turma é sempre de quatro**: cada pessoa (1 a 4) escolhe a classe, e os robôs
+  completam com as que faltam; as classes têm nome de COISA (Escudo, Faísca, Erva, Flecha), que não diz o sexo de ninguém. **A rede
+  decidiu o turno: a rodada é de ESCOLHA AO MESMO TEMPO** (20 s, contados pelo servidor), e o servidor resolve a rodada inteira pela
+  velocidade de cada um; ninguém espera a vez de ninguém, e quem não escolhe joga pelo robô. O COMBO: quem escolhe "Combo" na mesma
+  rodada ataca junto, e o golpe soma o que cada classe sabe. O servidor decide tudo (`server/src/lendas-regras.ts`, sem banco). Sem
+  tabela própria: só o troféu (`pista: 'lendas'`, só com o dragão vencido e 2 ou mais até o fim). Coelho e monstros das folhas da
+  Briga. Testes: `server/test/minijogos-lendas.test.ts` e `e2e/lendas.mjs` (passou em 17/11/2026, o piloto até a vitória no Solo).
+- **Os jogos de parceiros e os para baixar (pedido dele):** o Set with Friends e o Fishbowl rodam DENTRO do Syden como o Termo
+  (`SITES_PARA_TRANSMITIR`, `embutir`, capas `CapaTrios`/`CapaMimica`; na frame-src do e2e E na Cloudflare, à mão; na política,
+  `#jogos-de-parceiros`); OpenTTD e Unciv em "Para baixar e jogar junto" (`JOGOS_PARA_BAIXAR`). **Haxball, DDNet e Luanti NÃO
+  entram** (decisão dele, 17/11/2026: "para não gerar atrito com a classificação etária"; o Haxball tem anúncio, e os três vivem de
+  servidores públicos com conversa e conteúdo de desconhecidos). **O Set with Friends tem conversa PÚBLICA
+  com desconhecidos, e NÃO APARECE PARA MENOR** (`conversaPublica`, `sitesParaMim`; a faixa da conta por `guardarFaixaDaConta` em
+  protecao.ts; sem faixa conta como menor) — achado da auditoria da classificação de 17/11/2026, que não encontrou nada nos jogos
+  que suba a classificação de 12 anos (violência de desenho, fumaça em vez de sangue, nada de aposta, álcool ou drogas).
+- **Um clone do GTA2, avaliado em 17/11/2026: NÃO**, porque crime, atropelar e atirar em pedestres levam o app a 16/18 e fecham os
+  adolescentes. O que cabe e foi oferecido: a cidade vista de cima SEM crime (entregas, táxi, corridas, perseguições de desenho).
 
 **OS AJUSTES DO FLIPERAMA DE 05/11/2026 (pedidos dele, no mesmo dia):**
 - **O Minigolfe em perspectiva**, como a corrida (`web/src/golfe/mode7.ts`): a câmera atrás da bola, o chão é a mesa de cima lida

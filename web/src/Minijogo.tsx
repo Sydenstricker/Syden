@@ -2,10 +2,11 @@ import { Gamepad2, Trophy, Volume2, VolumeX, X } from 'lucide-react';
 import { aoMudarSomDosJogos, silenciarJogos, somDosJogosMudo, tocar } from './somDosJogos';
 import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
-import { CapaDoJogo, CapaPalavraDoDia } from './CapasDosJogos';
+import { CapaDoJogo, CapaMimica, CapaPalavraDoDia, CapaTrios } from './CapasDosJogos';
 import { IconButton } from './IconButton';
 import { idiomaAtual, useT } from './i18n';
 import { EscolhaDaBriga, JogoBriga } from './JogoBriga';
+import { JogoMasmorra, type EstadoMasmorra } from './JogoMasmorra';
 import { EscolhaDosBlocos, JogoBlocos } from './JogoBlocos';
 import { JogoDesenho } from './JogoDesenho';
 import { JogoDuelo } from './JogoDuelo';
@@ -23,18 +24,26 @@ import { JogoFutebol, type EstadoFutebol } from './JogoFutebol';
 import { JogoTocas, type EstadoTocas } from './JogoTocas';
 import { JogoCaca } from './JogoCaca';
 import { JogoNave, type EstadoNave } from './JogoNave';
+import { JogoEstelar, type EstadoEstelar } from './JogoEstelar';
 import { EscolhaDaArena, JogoBalao, type EstadoBalao } from './JogoBalao';
 import { EscolhaDaPistaDoJato, JogoJato, type EstadoJato } from './JogoJato';
 import { EscolhaDaPistaDoBarco, JogoBarco, type EstadoBarco } from './JogoBarco';
 import { JogoChefe } from './JogoChefe';
+import { JogoComando } from './JogoComando';
+import type { EstadoComando } from './comando/regras';
+import { JogoLendas, type EstadoLendas } from './JogoLendas';
+import { JogoBichos } from './JogoBichos';
 import { JogoAvioes, type EstadoDosAvioes } from './JogoAvioes';
 import { EscolhaDaTorre, JogoTorre, type EstadoTorre } from './JogoTorre';
 import type { EstadoChefe } from './chefe/regras';
 import { JogoCozinha, type EstadoCozinha } from './JogoCozinha';
 import { JogoSkate, type EstadoSkate } from './JogoSkate';
 import { JogoCarrinhos, type EstadoCarrinhos } from './JogoCarrinhos';
+import { JogoPlanador, type EstadoPlanador } from './JogoPlanador';
+import { JogoPinball, type EstadoPinball } from './JogoPinball';
 import { EscolhaDoPercurso, JogoGincana, type EstadoGincana } from './JogoGincana';
 import { JogoTransito, type EstadoTransito } from './JogoTransito';
+import { JogoRingue, type EstadoRingue } from './JogoRingue';
 import { EscolhaDaPonte, JogoPonte, type EstadoPonte } from './JogoPonte';
 import { JogoLobisomem } from './JogoLobisomem';
 import { JogoPalavra } from './JogoPalavra';
@@ -56,7 +65,7 @@ import {
   nomeDoIdioma,
   nomeDoJogo,
   souJogador,
-  SITES_PARA_TRANSMITIR,
+  sitesParaMim,
   type EstadoBriga,
   type EstadoBlocos,
   type EstadoDesenho,
@@ -471,10 +480,10 @@ export function PainelDoMinijogo({
           ))}
           {/* Os jogos de parceiro que rodam dentro do Syden (o Termo): no fim da estante, e abrem SÓ para quem
               clicou — a partida da sala continua livre para os outros. */}
-          {aba === 'solo' && SITES_PARA_TRANSMITIR.filter((site) => site.embutir).map((site) => (
+          {aba === 'solo' && sitesParaMim().filter((site) => site.embutir).map((site) => (
             <li key={site.endereco}>
               <button type="button" className="minijogo-jogo minijogo-parceiro" title={t(site.dica)} onClick={() => aoAbrirSite(site)}>
-                <CapaPalavraDoDia />
+                {site.capa === 'trios' ? <CapaTrios /> : site.capa === 'mimica' ? <CapaMimica /> : <CapaPalavraDoDia />}
                 <span>{site.nome}</span>
               </button>
             </li>
@@ -544,6 +553,29 @@ export function PainelDoMinijogo({
           channelId={channelId}
         />
       )}
+      {jogoNaTela?.jogo === 'bichos' && (
+        <JogoBichos key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')} estado={jogoNaTela} eu={eu} jogador={souJogador(partida)} agir={agir} />
+      )}
+      {jogoNaTela?.jogo === 'lendas' && (
+        <JogoLendas
+          key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
+          estado={jogoNaTela as unknown as EstadoLendas & Partida}
+          eu={eu}
+          jogador={souJogador(partida)}
+          restante={restante}
+          agir={agir}
+        />
+      )}
+      {jogoNaTela?.jogo === 'comando' && (
+        <JogoComando
+          key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
+          estado={jogoNaTela as unknown as EstadoComando & Partida}
+          eu={eu}
+          jogador={souJogador(partida)}
+          socket={socket}
+          channelId={channelId}
+        />
+      )}
       {jogoNaTela?.jogo === 'chefe' && (
         <JogoChefe
           key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
@@ -599,6 +631,26 @@ export function PainelDoMinijogo({
           channelId={channelId}
         />
       )}
+      {jogoNaTela?.jogo === 'estelar' && (
+        <JogoEstelar
+          key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
+          estado={jogoNaTela as unknown as EstadoEstelar & Partida}
+          eu={eu}
+          jogador={souJogador(partida)}
+          socket={socket}
+          channelId={channelId}
+        />
+      )}
+      {jogoNaTela?.jogo === 'masmorra' && (
+        <JogoMasmorra
+          key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
+          estado={jogoNaTela as unknown as EstadoMasmorra & Partida}
+          eu={eu}
+          jogador={souJogador(partida)}
+          socket={socket}
+          channelId={channelId}
+        />
+      )}
       {jogoNaTela?.jogo === 'briga' && (
         <JogoBriga
           key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
@@ -644,6 +696,18 @@ export function PainelDoMinijogo({
       {jogoNaTela?.jogo === 'ponte' && (
         <JogoPonte key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')} estado={jogoNaTela as unknown as EstadoPonte & Partida} eu={eu} jogador={souJogador(partida)} agir={agir} />
       )}
+      {jogoNaTela?.jogo === 'ringue' && (
+        <JogoRingue
+          key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
+          estado={jogoNaTela as unknown as EstadoRingue & Partida}
+          eu={eu}
+          jogador={souJogador(partida)}
+          agir={agir}
+          restante={restante}
+          socket={socket}
+          channelId={channelId}
+        />
+      )}
       {jogoNaTela?.jogo === 'transito' && (
         <JogoTransito key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')} estado={jogoNaTela as unknown as EstadoTransito & Partida} eu={eu} jogador={souJogador(partida)} agir={agir} />
       )}
@@ -651,6 +715,28 @@ export function PainelDoMinijogo({
         <JogoGincana
           key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
           estado={jogoNaTela as unknown as EstadoGincana & Partida}
+          eu={eu}
+          jogador={souJogador(partida)}
+          restante={restante}
+          agir={agir}
+          socket={socket}
+          channelId={channelId}
+        />
+      )}
+      {jogoNaTela?.jogo === 'pinball' && (
+        <JogoPinball
+          key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
+          estado={jogoNaTela as unknown as EstadoPinball & Partida}
+          eu={eu}
+          jogador={souJogador(partida)}
+          restante={restante}
+          agir={agir}
+        />
+      )}
+      {jogoNaTela?.jogo === 'planador' && (
+        <JogoPlanador
+          key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
+          estado={jogoNaTela as unknown as EstadoPlanador & Partida}
           eu={eu}
           jogador={souJogador(partida)}
           restante={restante}

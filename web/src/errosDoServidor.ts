@@ -91,6 +91,13 @@ export const ERROS_TRADUZIDOS = [
   chave('Muitas corridas seguidas. Tente de novo daqui a pouco.'),
   chave('A corrida não está andando.'),
   chave('A corrida está andando.'),
+  // o Planador da toca (server/src/minijogo-planador.ts)
+  chave('Voo inválido.'),
+  chave('Desafio desconhecido.'),
+  chave('O voo está andando.'),
+  chave('O voo não está andando.'),
+  chave('Você não está neste voo.'),
+  chave('Quem começou escolhe o desafio.'),
   // a Torre do celeiro (server/src/minijogo-torre.ts)
   chave('Torre desconhecida.'),
   chave('Subida inválida.'),

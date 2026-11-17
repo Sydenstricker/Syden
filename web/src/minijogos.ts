@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { api } from './api';
 import { chave, idiomaAtual } from './i18n';
+import { contaEhAdulta } from './protecao';
 import type { IdDoQuiz } from './quiz';
 
 /**
@@ -149,7 +150,7 @@ export interface PartidaPublica {
 export const souJogador = (p: PartidaPublica | null) => p !== null && p.souJogador !== false;
 
 /** Os jogos de MESA, de duas pessoas: começam na hora, e sentar é aceitar o convite. */
-export const JOGOS_DE_MESA: readonly IdDoJogo[] = ['gomoku', 'mancala', 'damas', 'naval', 'partida-de-xadrez'];
+export const JOGOS_DE_MESA: readonly IdDoJogo[] = ['gomoku', 'mancala', 'damas', 'naval', 'partida-de-xadrez', 'bichos'];
 
 /**
  * O convite está esperando a MINHA resposta? Antes da largada (ou, na mesa, enquanto ninguém sentou do outro lado),
@@ -510,7 +511,7 @@ export interface EstadoBriga {
   partidaId: string;
 }
 
-export type IdDoJogo = 'corrida' | 'festa' | 'tabuleiro' | 'cidades' | 'golfe' | 'caca' | 'nave' | 'balao' | 'jato' | 'barco' | 'chefe' | 'duelo' | 'torre' | 'plataforma' | 'blocos' | 'briga' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'damas' | 'naval' | 'domino' | 'truco' | 'xadrez' | 'partida-de-xadrez' | 'cozinha' | 'skate' | 'futebol' | 'golfe3d' | 'tocas' | 'transito' | 'carrinhos' | 'ponte' | 'gincana' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
+export type IdDoJogo = 'corrida' | 'festa' | 'tabuleiro' | 'cidades' | 'golfe' | 'caca' | 'nave' | 'estelar' | 'balao' | 'jato' | 'barco' | 'chefe' | 'duelo' | 'torre' | 'plataforma' | 'blocos' | 'briga' | 'masmorra' | 'comando' | 'tamanho' | 'stop' | 'sudoku' | 'gomoku' | 'mancala' | 'damas' | 'naval' | 'domino' | 'truco' | 'xadrez' | 'partida-de-xadrez' | 'cozinha' | 'skate' | 'futebol' | 'golfe3d' | 'tocas' | 'transito' | 'carrinhos' | 'ponte' | 'gincana' | 'planador' | 'ringue' | 'pinball' | 'lendas' | 'bichos' | 'lobisomem' | 'desenho' | 'palavra' | IdDoQuiz;
 
 /**
  * As duas abas da estante (pedido dele, 14/10/2026). SOLO: a partida é só de quem joga, começa sem convite, não ocupa
@@ -547,6 +548,22 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
     id: 'briga',
     nome: chave('Briga na horta'),
     dica: chave('Os coelhos defendem a horta de raposas, corvos e um texugo. Andem juntos, batam em combo e cuidem uns dos outros: de 1 a 4 pessoas.'),
+    abas: ['solo', 'coletivo'],
+  },
+  {
+    // A masmorra vista de cima (JogoMasmorra.tsx, server/src/minijogo-masmorra.ts, masmorra-regras.ts ↔ masmorra/regras.ts): a rede da
+    // Briga, com as salas, a chave, o baú e os botões do chão no servidor.
+    id: 'masmorra',
+    nome: chave('Masmorra da Toca'),
+    dica: chave('Atravessem juntos a toca do rei-cogumelo: salas cheias de bichos, um baú com a cenoura que vai e volta, botões que pedem dois ao mesmo tempo e a porta trancada. De 1 a 4 pessoas.'),
+    abas: ['solo', 'coletivo'],
+  },
+  {
+    // Correr e atirar de lado, em turma (JogoComando.tsx, server/src/minijogo-comando.ts, server/src/comando/): a rede da Briga,
+    // com os bichos e as balas deles no servidor (pedido dele, 16/11/2026).
+    id: 'comando',
+    nome: chave('Comando Cenoura'),
+    dica: chave('Correr e atirar com a turma: o lança-cenouras mira em oito direções, a granada abre caminho e quem solta os coelhinhos presos ganha reforço. O dragão espera no fim: de 1 a 4 pessoas.'),
     abas: ['solo', 'coletivo'],
   },
   {
@@ -750,11 +767,35 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
     abas: ['solo', 'coletivo'],
   },
   {
+    // A mesa de pinball de 16 bits (JogoPinball.tsx, server/src/minijogo-pinball.ts, pinball-sim.ts ↔ pinball/sim.ts): cada um na sua
+    // mesa, e o servidor refaz a partida pelos comandos de cada passo, mandados em trechos (16/11/2026).
+    id: 'pinball',
+    nome: chave('Pinball da Horta'),
+    dica: chave('Uma mesa de pinball na horta: segure a mola, rebata nos repolhos e derrube as três cenouras para acender a toca do coelho, que solta mais uma bola. Três bolas, e sacudir demais trava a mesa.'),
+    abas: ['solo', 'coletivo'],
+  },
+  {
+    // Os desafios de voo com pouso no alvo (JogoPlanador.tsx, server/src/minijogo-planador.ts, planador-sim.ts ↔ planador/sim.ts): a
+    // asa-delta, a mochila a jato e o paraquedas, cada um na própria tela, e o servidor refaz o voo pelos comandos (16/11/2026).
+    id: 'planador',
+    nome: chave('Planador da toca'),
+    dica: chave('Desafios de voo: asa-delta, mochila a jato e paraquedas. Passe pelos anéis e pouse no alvo, perto do centro e de leve.'),
+    abas: ['solo', 'coletivo'],
+  },
+  {
     // A corrida de obstáculos em 3D (JogoGincana.tsx, server/src/minijogo-gincana.ts, gincana-sim.ts ↔ gincana/sim.ts): o coelho
     // corre, pula e se equilibra até a bandeira; o servidor refaz o percurso pelos comandos (pedido dele, 06/11/2026).
     id: 'gincana',
     nome: chave('Gincana da toca'),
     dica: chave('Uma corrida de obstáculos em 3D: corra, pule e se equilibre por plataformas, esteiras, serras e varredores até a bandeira. Caiu, volta à última bandeira. No Solo, contra o relógio e os fantasmas dos amigos.'),
+    abas: ['solo', 'coletivo'],
+  },
+  {
+    // O boxe de reflexo (JogoRingue.tsx, server/src/minijogo-ringue.ts, ringue-sim.ts ↔ ringue/sim.ts): o circuito de três
+    // adversários do computador, cada um na própria tela, e o servidor refaz a luta pelos comandos (16/11/2026).
+    id: 'ringue',
+    nome: chave('Ringue da Toca'),
+    dica: chave('Boxe de reflexo contra três adversários do computador. Leia o aviso de cada golpe, esquive ou defenda e bata na brecha. Bater quando a luva brilha enche a estrela do soco forte.'),
     abas: ['solo', 'coletivo'],
   },
   {
@@ -779,6 +820,22 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
     id: 'duelo',
     nome: chave('Duelo de aviõezinhos'),
     dica: chave('Coelhos em teco-tecos sobre a horta, atirando ervilhas e uma cenoura teleguiada de cada vez. Dois acertos dá para aguentar; o terceiro derruba. O último no ar ganha.'),
+    abas: ['solo', 'coletivo'],
+  },
+  {
+    // O RPG de turnos da turma (JogoLendas.tsx, server/src/lendas-regras.ts): cada um com um herói, os robôs completam os quatro
+    // (pedido dele, 16/11/2026: só a mecânica do gênero).
+    id: 'lendas',
+    nome: chave('Lendas da Toca'),
+    dica: chave('Um RPG de turnos curto: cada um controla um herói da turma. Escolham juntos, combinem ataques e vençam o dragão do castelo.'),
+    abas: ['solo', 'coletivo'],
+  },
+  {
+    // Juntar bichos e lutar por turnos (JogoBichos.tsx, server/src/minijogo-bichos.ts, bichos-regras.ts ↔ bichos/regras.ts): no
+    // Solo, a aventura guardada no servidor; na sala, a luta entre duas pessoas na mesa (pedido dele, 16/11/2026: só a mecânica).
+    id: 'bichos',
+    nome: chave('Bichos da Toca'),
+    dica: chave('Ande pelo campo, faça amizade com os bichos do mato usando uma cenoura e monte uma equipe de até seis. Vença o desafio da casa azul e, na sala, lute com a equipe de um amigo.'),
     abas: ['solo', 'coletivo'],
   },
   {
@@ -811,6 +868,14 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
     id: 'nave',
     nome: chave('Esquadrilha da toca'),
     dica: chave('Aviõezinhos de cenoura contra a praga da horta: desvie das sementes, pegue os reforços e derrube o espantalho mecânico no fim. A turma voa as mesmas ondas, e a esquadrilha soma os pontos.'),
+    abas: ['solo', 'coletivo'],
+  },
+  {
+    // O tiro em trilhos em 3D (JogoEstelar.tsx, server/src/minijogo-estelar.ts, estelar-sim.ts ↔ estelar/sim.ts): a rede da
+    // Esquadrilha, a mesma rota para a turma, cada um na própria tela (16/11/2026).
+    id: 'estelar',
+    nome: chave('Rota Estelar'),
+    dica: chave('Coelhos em naves pela superfície de um planeta e pelo espaço: atire, segure o tiro para travar a mira, gire para desviar dos tiros e escolha o caminho na bifurcação. A turma voa a mesma rota, e o chefe espera no fim.'),
     abas: ['solo', 'coletivo'],
   },
   {
@@ -1333,13 +1398,47 @@ export const pegarPedidoDeAbrir = (channelId: number): boolean =>
  * embutido, está na frame-src da política de segurança (e2e/politica-de-seguranca.mjs e a Cloudflare) e tem o que
  * carrega declarado na política de privacidade (#jogos-de-parceiros).
  */
-export const SITES_PARA_TRANSMITIR: { nome: string; endereco: string; dica: string; idioma?: string; embutir?: boolean }[] = [
+/**
+ * `capa`: a figura na estante dos Mini-games, para os que rodam dentro do Syden. Só entra site SEM anúncio: o Haxball, que tem,
+ * entrou e saiu em 17/11/2026 (decisão dele, para não gerar atrito com a classificação etária).
+ */
+export const SITES_PARA_TRANSMITIR: {
+  nome: string;
+  endereco: string;
+  dica: string;
+  idioma?: string;
+  embutir?: boolean;
+  capa?: 'palavra' | 'trios' | 'mimica';
+  /** Tem conversa PÚBLICA com desconhecidos dentro do site: não aparece para menor de 18 (ECA Digital; ver sitesParaMim). */
+  conversaPublica?: boolean;
+}[] = [
   { nome: 'Lichess', endereco: 'https://lichess.org', dica: chave('Xadrez, contra a turma ou contra o computador') },
   { nome: 'Clues by Sam', endereco: 'https://cluesbysam.com', dica: chave('Um mistério de lógica por dia') },
   { nome: 'Wikitrivia', endereco: 'https://wikitrivia.tomjwatson.com', dica: chave('Pôr acontecimentos na ordem do tempo') },
   { nome: 'JKLM.fun', endereco: 'https://jklm.fun', dica: chave('Palavras e perguntas rápidas, todo mundo junto') },
   { nome: 'Neal.fun', endereco: 'https://neal.fun', dica: chave('Brincadeiras curiosas para fazer junto') },
-  { nome: 'Termo', endereco: 'https://term.ooo', dica: chave('A palavra do dia'), idioma: 'pt', embutir: true },
+  { nome: 'Termo', endereco: 'https://term.ooo', dica: chave('A palavra do dia'), idioma: 'pt', embutir: true, capa: 'palavra' },
+  // Os dois da pesquisa de 16/11/2026 (pedido dele): sem anúncio, deixam ser embutidos, código MIT. O Set carrega o Firebase (a
+  // conta) e o Stripe (um plano pago opcional dele); o Fishbowl, o Google Analytics e o PostHog. Tudo na política de privacidade.
+  { nome: 'Set with Friends', endereco: 'https://setwithfriends.com', dica: chave('Achar trios de cartas, sem palavras'), embutir: true, capa: 'trios', conversaPublica: true },
+  { nome: 'Fishbowl', endereco: 'https://fishbowl-game.com', dica: chave('Mímica e descrever em equipes, com as palavras da turma'), embutir: true, capa: 'mimica' },
+];
+
+/**
+ * OS SITES QUE ESTA CONTA VÊ (auditoria da classificação, 17/11/2026). O Set with Friends tem uma conversa PÚBLICA com
+ * desconhecidos ("você divide a conversa pública com muitos outros"), e dentro do Syden ela furaria a proteção de quem tem
+ * menos de 18 (conversa privada só com amigos aceitos; ECA Digital): para menor, ele não aparece. Sem a faixa, conta como menor.
+ */
+export const sitesParaMim = () => SITES_PARA_TRANSMITIR.filter((site) => !site.conversaPublica || contaEhAdulta());
+
+/**
+ * OS JOGOS DE COMPUTADOR, LIVRES E DE GRAÇA (pedido dele, 16/11/2026, da pesquisa do mesmo dia): não rodam no navegador, então o
+ * Syden só aponta a página oficial de baixar. Nenhum tem loja dentro. DDNet e Luanti entraram e saíram em 17/11/2026
+ * (decisão dele, para não gerar atrito com a classificação etária).
+ */
+export const JOGOS_PARA_BAIXAR: { nome: string; endereco: string; dica: string }[] = [
+  { nome: 'OpenTTD', endereco: 'https://www.openttd.org/downloads/openttd-releases/latest', dica: chave('Trens, navios e cidades, em cooperação') },
+  { nome: 'Unciv', endereco: 'https://yairm210.github.io/Unciv/', dica: chave('Civilização por turnos, com partida pela internet') },
 ];
 
 /**

@@ -5,14 +5,17 @@ import { blocos } from './minijogo-blocos.js';
 import { corrida } from './minijogo-corrida.js';
 import { desenho } from './minijogo-desenho.js';
 import { briga } from './minijogo-briga.js';
+import { masmorra } from './minijogo-masmorra.js';
 import { festa } from './minijogo-festa.js';
 import { golfe } from './minijogo-golfe.js';
 import { caca } from './minijogo-caca.js';
 import { nave } from './minijogo-nave.js';
+import { estelar } from './minijogo-estelar.js';
 import { balao } from './minijogo-balao.js';
 import { jato } from './minijogo-jato.js';
 import { barco } from './minijogo-barco.js';
 import { chefe } from './minijogo-chefe.js';
+import { comando } from './minijogo-comando.js';
 import { dueloDeAvioes } from './minijogo-duelo.js';
 import { torre } from './minijogo-torre.js';
 import type { Contexto, Definicao, Jogo } from './minijogo-motor.js';
@@ -31,9 +34,14 @@ import { transito } from './minijogo-transito.js';
 import { carrinhos } from './minijogo-carrinhos.js';
 import { gincana } from './minijogo-gincana.js';
 import { ponte } from './minijogo-ponte.js';
+import { pinball } from './minijogo-pinball.js';
+import { planador } from './minijogo-planador.js';
+import { ringue } from './minijogo-ringue.js';
 import { domino } from './minijogo-domino.js';
 import { naval } from './minijogo-naval.js';
 import { truco } from './minijogo-truco.js';
+import { lendas } from './minijogo-lendas.js';
+import { bichos } from './minijogo-bichos.js';
 import { catalogo, criarQuiz, TEMAS } from './minijogo-quiz.js';
 import { stop } from './minijogo-stop.js';
 import { sudoku } from './minijogo-sudoku.js';
@@ -74,15 +82,21 @@ export const JOGOS: Record<string, Definicao> = {
   corrida,
   festa,
   briga,
+  // a masmorra da toca (16/11/2026): a turma atravessa as salas juntas, com a rede da Briga
+  masmorra,
   blocos,
   plataforma,
   golfe,
   caca,
   nave,
+  // a Rota Estelar (16/11/2026): o tiro em trilhos em 3D, com a rede da Esquadrilha
+  estelar,
   balao,
   jato,
   barco,
   chefe,
+  // o Comando Cenoura (16/11/2026): correr e atirar de lado, com os bichos no servidor
+  comando,
   duelo: dueloDeAvioes,
   torre,
   tabuleiro: tabuleiroDaTurma,
@@ -112,6 +126,16 @@ export const JOGOS: Record<string, Definicao> = {
   gincana,
   // a ponte da toca (06/11/2026): 30 s para montar a ponte, e ganha a mais barata que leva o tráfego até o outro lado
   ponte,
+  // o planador da toca (16/11/2026): desafios de voo com pouso no alvo, cada um na própria tela
+  planador,
+  // Lendas da Toca (16/11/2026): o RPG de turnos, cada um com um herói da turma e os robôs completando os quatro
+  lendas,
+  // Bichos da Toca (16/11/2026): a aventura de juntar bichos no Solo, e a luta por turnos entre duas pessoas na sala
+  bichos,
+  // o ringue da toca (16/11/2026): boxe de reflexo contra o circuito de três adversários do computador, refeito no servidor
+  ringue,
+  // o pinball da horta (16/11/2026): a mesa de 16 bits, refeita no servidor pelos comandos de cada passo
+  pinball,
   // Os quizzes de adivinhar (minijogo-quiz.ts): um jogo por tema, todos no mesmo motor.
   ...Object.fromEntries(Object.entries(TEMAS).map(([id, tema]) => [id, criarQuiz(tema)])),
 };
@@ -125,8 +149,12 @@ export const JOGOS: Record<string, Definicao> = {
 // (os jogos da turma com adversários do computador, pedido dele de 05/11/2026: Cidades à venda, os de mesa, Dominó, Truco e o
 // Tabuleiro da turma; os robôs vêm de minijogo-robos.ts)
 export const JOGOS_SOLO = new Set([
-  'tamanho', 'xadrez', 'sudoku', 'festa', 'briga', 'blocos', 'golfe', 'caca', 'nave', 'balao', 'jato', 'barco', 'chefe', 'duelo', 'torre',
-  'cidades', 'gomoku', 'mancala', 'damas', 'naval', 'domino', 'truco', 'tabuleiro', 'partida-de-xadrez', 'cozinha', 'skate', 'futebol', 'golfe3d', 'tocas', 'transito', 'carrinhos', 'ponte', 'gincana',
+  'tamanho', 'xadrez', 'sudoku', 'festa', 'briga', 'masmorra', 'blocos', 'golfe', 'caca', 'nave', 'estelar', 'balao', 'jato', 'barco', 'chefe', 'comando', 'duelo', 'torre',
+  'cidades', 'gomoku', 'mancala', 'damas', 'naval', 'domino', 'truco', 'tabuleiro', 'partida-de-xadrez', 'cozinha', 'skate', 'futebol', 'golfe3d', 'tocas', 'transito', 'carrinhos', 'ponte', 'gincana', 'planador',
+  'lendas',
+  'bichos',
+  'ringue',
+  'pinball',
   ...Object.keys(TEMAS),
 ]);
 

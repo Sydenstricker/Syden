@@ -50,6 +50,16 @@ export interface PainelDoMenor {
 
 export const ehMenor = (faixa: Faixa | null | undefined) => faixa === '13-15' || faixa === '16-17';
 
+/**
+ * A FAIXA DA CONTA ABERTA, para as telas que não recebem a conta (a lista de jogos de fora, a estante): o App a grava quando a
+ * sessão fica pronta. Sem conta, ou sem a data, conta como menor: o que é só para adulto não aparece por engano.
+ */
+let faixaAberta: Faixa | null | undefined;
+export const guardarFaixaDaConta = (faixa: Faixa | null | undefined) => {
+  faixaAberta = faixa;
+};
+export const contaEhAdulta = () => !!faixaAberta && !ehMenor(faixaAberta);
+
 // ---------- o aviso de barreira, para a App inteira ----------
 
 let atual: Barreira | null = null;

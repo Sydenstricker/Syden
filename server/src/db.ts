@@ -7508,6 +7508,41 @@ export function guardarRecordeDoTransito(userId: number, pontos: number): boolea
 }
 
 // ---------------------------------------------------------------------------------------------------
+// O RINGUE DA TOCA (16/11/2026): o recorde de cada pessoa no circuito (o que o servidor refez): quantas lutas venceu, em quantos
+// passos de 1/60 s, e o que bateu na luta em que parou. Só o melhor (ringue-sim.ts, `comparar`): um circuito pior não substitui.
+// É da pessoa, e só ela o vê (minijogo-ringue.ts).
+// ---------------------------------------------------------------------------------------------------
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS ringue_recordes (
+    user_id  INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    vencidas INTEGER NOT NULL,
+    passos   INTEGER NOT NULL,
+    dano     INTEGER NOT NULL,
+    em       TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+  );
+`);
+
+export interface RecordeDoRingue {
+  vencidas: number;
+  passos: number;
+  dano: number;
+}
+
+export function recordeDoRingue(userId: number): RecordeDoRingue | null {
+  return (db.prepare('SELECT vencidas, passos, dano FROM ringue_recordes WHERE user_id = ?').get(userId) as RecordeDoRingue | undefined) ?? null;
+}
+
+/** Guarda o circuito que já se sabe ser o melhor da pessoa (quem compara é minijogo-ringue.ts, pela regra). */
+export function guardarRecordeDoRingue(userId: number, r: RecordeDoRingue) {
+  db.prepare(
+    `INSERT INTO ringue_recordes (user_id, vencidas, passos, dano) VALUES (?, ?, ?, ?)
+     ON CONFLICT(user_id) DO UPDATE SET vencidas = excluded.vencidas, passos = excluded.passos, dano = excluded.dano,
+       em = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')`,
+  ).run(userId, r.vencidas, r.passos, r.dano);
+}
+
+// ---------------------------------------------------------------------------------------------------
 // A PONTE DA TOCA (06/11/2026): o recorde de cada pessoa no Solo, POR FASE — o MENOR custo de uma ponte que passou (o custo e o
 // resultado são os que o servidor refez). Só o melhor: uma ponte mais cara não substitui. É da pessoa, e só ela o vê
 // (minijogo-ponte.ts).
@@ -7566,6 +7601,34 @@ export function guardarRecordeDaNave(userId: number, pontos: number): boolean {
   if (atual !== null && atual >= pontos) return false;
   db.prepare(
     `INSERT INTO nave_recordes (user_id, pontos) VALUES (?, ?)
+     ON CONFLICT(user_id) DO UPDATE SET pontos = excluded.pontos, em = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')`,
+  ).run(userId, pontos);
+  return true;
+}
+
+// ---------------------------------------------------------------------------------------------------
+// A ROTA ESTELAR (16/11/2026): o recorde de cada pessoa no Solo (a melhor partida inteira), como o da Esquadrilha. Só o
+// melhor; é da pessoa, e só ela o vê (minijogo-estelar.ts).
+// ---------------------------------------------------------------------------------------------------
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS estelar_recordes (
+    user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    pontos  INTEGER NOT NULL,
+    em      TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+  );
+`);
+
+export function recordeEstelar(userId: number): number | null {
+  return (db.prepare('SELECT pontos FROM estelar_recordes WHERE user_id = ?').get(userId) as { pontos: number } | undefined)?.pontos ?? null;
+}
+
+/** Guarda se for o melhor da pessoa. Devolve true se virou recorde. */
+export function guardarRecordeEstelar(userId: number, pontos: number): boolean {
+  const atual = recordeEstelar(userId);
+  if (atual !== null && atual >= pontos) return false;
+  db.prepare(
+    `INSERT INTO estelar_recordes (user_id, pontos) VALUES (?, ?)
      ON CONFLICT(user_id) DO UPDATE SET pontos = excluded.pontos, em = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')`,
   ).run(userId, pontos);
   return true;
@@ -7780,6 +7843,53 @@ export function torresDe(userId: number) {
 }
 
 // ---------------------------------------------------------------------------------------------------
+// O PINBALL DA HORTA (16/11/2026): o recorde de cada pessoa (a melhor partida, os pontos que o servidor refez pelos comandos).
+// Só o melhor: uma partida pior não substitui. Quem vê: a própria pessoa e os amigos aceitos (minijogo-pinball.ts).
+// ---------------------------------------------------------------------------------------------------
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS pinball_recordes (
+    user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    pontos  INTEGER NOT NULL,
+    em      TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+  );
+`);
+
+export function recordeDoPinball(userId: number): number | null {
+  return (db.prepare('SELECT pontos FROM pinball_recordes WHERE user_id = ?').get(userId) as { pontos: number } | undefined)?.pontos ?? null;
+}
+
+/** Guarda se for o melhor da pessoa. Devolve true se virou recorde. */
+export function guardarRecordeDoPinball(userId: number, pontos: number): boolean {
+  const atual = recordeDoPinball(userId);
+  if (atual !== null && atual >= pontos) return false;
+  db.prepare(
+    `INSERT INTO pinball_recordes (user_id, pontos) VALUES (?, ?)
+     ON CONFLICT(user_id) DO UPDATE SET pontos = excluded.pontos, em = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')`,
+  ).run(userId, pontos);
+  return true;
+}
+
+/** O recorde da pessoa e o dos amigos aceitos dela, do maior ao menor. */
+export function recordesDoPinball(userId: number): { userId: number; username: string; nomeDeExibicao: string | null; pontos: number }[] {
+  return db
+    .prepare(
+      `SELECT r.user_id AS userId, u.username AS username, u.nome_exibicao AS nomeDeExibicao, r.pontos AS pontos
+       FROM pinball_recordes r JOIN users u ON u.id = r.user_id
+       WHERE r.user_id = ? OR r.user_id IN (
+         SELECT CASE WHEN menor_id = ? THEN maior_id ELSE menor_id END FROM friendships
+         WHERE ? IN (menor_id, maior_id) AND situacao = 'aceita')
+       ORDER BY r.pontos DESC LIMIT 30`,
+    )
+    .all(userId, userId, userId) as unknown as { userId: number; username: string; nomeDeExibicao: string | null; pontos: number }[];
+}
+
+/** O recorde da pessoa, com a data (para o "Levar seus dados"). */
+export function pinballDe(userId: number): { pontos: number; em: string } | null {
+  return (db.prepare('SELECT pontos, em FROM pinball_recordes WHERE user_id = ?').get(userId) as { pontos: number; em: string } | undefined) ?? null;
+}
+
+// ---------------------------------------------------------------------------------------------------
 // OS CARRINHOS DA TOCA (06/11/2026): o melhor tempo de cada pessoa na corrida contra o relógio, com as voltas e o FANTASMA,
 // que aqui é o ACELERADOR de cada passo em trechos (o site refaz a corrida do amigo com carrinhos-sim.ts). Só o melhor: uma
 // corrida pior não substitui. Quem vê: a própria pessoa e os amigos aceitos (minijogo-carrinhos.ts).
@@ -7847,6 +7957,77 @@ export function carrinhosDe(userId: number) {
     .prepare('SELECT pista, tempo_ms AS tempoMs, voltas, entradas, em FROM carrinhos_recordes WHERE user_id = ? ORDER BY pista')
     .all(userId) as { pista: string; tempoMs: number; voltas: string; entradas: string; em: string }[];
   return linhas.map((l) => ({ pista: l.pista, tempoMs: l.tempoMs, em: l.em, voltas: JSON.parse(l.voltas) as number[], acelerador: JSON.parse(l.entradas) as number[] }));
+}
+
+// ---------------------------------------------------------------------------------------------------
+// O PLANADOR DA TOCA (16/11/2026): os melhores pontos de cada pessoa em cada desafio de voo, com o FANTASMA, que são os
+// COMANDOS de cada passo em trechos (o site refaz o voo do amigo com planador-sim.ts). Só o melhor: mais pontos, e no empate
+// menos passos. Quem vê: a própria pessoa e os amigos aceitos (minijogo-planador.ts).
+// ---------------------------------------------------------------------------------------------------
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS planador_recordes (
+    user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    desafio    TEXT NOT NULL,
+    pontos     INTEGER NOT NULL,
+    passos     INTEGER NOT NULL,
+    entradas   TEXT NOT NULL,
+    em         TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    PRIMARY KEY (user_id, desafio)
+  );
+`);
+
+export interface RecordeDoPlanador {
+  userId: number;
+  username: string;
+  nomeDeExibicao: string | null;
+  avatarPronto: AvatarDoJogo;
+  desafio: string;
+  pontos: number;
+  passos: number;
+}
+
+/** Os recordes da pessoa e os dos amigos aceitos dela, em todos os desafios, dos mais pontos aos menos (sem o fantasma). */
+export function recordesDoPlanador(userId: number): RecordeDoPlanador[] {
+  return db
+    .prepare(
+      `SELECT r.user_id AS userId, u.username AS username, u.nome_exibicao AS nomeDeExibicao, COALESCE(u.coelho, u.avatar_pronto) AS avatarPronto,
+              r.desafio AS desafio, r.pontos AS pontos, r.passos AS passos
+       FROM planador_recordes r JOIN users u ON u.id = r.user_id
+       WHERE r.user_id = ? OR r.user_id IN (
+         SELECT CASE WHEN menor_id = ? THEN maior_id ELSE menor_id END FROM friendships
+         WHERE ? IN (menor_id, maior_id) AND situacao = 'aceita')
+       ORDER BY r.desafio, r.pontos DESC, r.passos LIMIT 120`,
+    )
+    .all(userId, userId, userId) as unknown as RecordeDoPlanador[];
+}
+
+export function recordeDoPlanador(userId: number, desafio: string): { pontos: number; passos: number; entradas: string } | null {
+  const linha = db
+    .prepare('SELECT pontos, passos, entradas FROM planador_recordes WHERE user_id = ? AND desafio = ?')
+    .get(userId, desafio) as { pontos: number; passos: number; entradas: string } | undefined;
+  return linha ?? null;
+}
+
+/** Guarda se for o melhor da pessoa neste desafio. Devolve os pontos que valiam antes (null se não havia). */
+export function guardarPlanador(userId: number, desafio: string, pontos: number, passos: number, entradas: string): { anterior: number | null; recorde: boolean } {
+  const antes = recordeDoPlanador(userId, desafio);
+  if (antes && (antes.pontos > pontos || (antes.pontos === pontos && antes.passos <= passos))) return { anterior: antes.pontos, recorde: false };
+  db.prepare(
+    `INSERT INTO planador_recordes (user_id, desafio, pontos, passos, entradas, em)
+     VALUES (?, ?, ?, ?, ?, strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+     ON CONFLICT(user_id, desafio) DO UPDATE SET pontos = excluded.pontos, passos = excluded.passos,
+       entradas = excluded.entradas, em = excluded.em`,
+  ).run(userId, desafio, pontos, passos, entradas);
+  return { anterior: antes?.pontos ?? null, recorde: true };
+}
+
+/** Os recordes da pessoa, com o fantasma (para o "Levar seus dados"). */
+export function planadorDe(userId: number) {
+  const linhas = db
+    .prepare('SELECT desafio, pontos, passos, entradas, em FROM planador_recordes WHERE user_id = ? ORDER BY desafio')
+    .all(userId) as { desafio: string; pontos: number; passos: number; entradas: string; em: string }[];
+  return linhas.map((l) => ({ desafio: l.desafio, pontos: l.pontos, passos: l.passos, em: l.em, comandos: JSON.parse(l.entradas) as number[] }));
 }
 
 // ---------------------------------------------------------------------------------------------------
@@ -8047,4 +8228,35 @@ export function palpitesDe(userId: number) {
        WHERE p.user_id = ? ORDER BY p.em`,
     )
     .all(userId) as { communityId: number; pergunta: string; quando: string; em: string }[];
+}
+
+// ---------------------------------------------------------------------------------------------------
+// BICHOS DA TOCA (16/11/2026): a aventura de cada pessoa — onde ela está no campo, a equipe (a espécie, o nível, a experiência
+// e a vida de cada bicho), os que foram morar na toca, a cesta e quantas vezes venceu o desafio. É da pessoa (minijogo-bichos.ts):
+// só ela a vê; na luta da sala, o outro lado vê os bichos e a vida deles. Um JSON só, escrito só pelo servidor.
+// ---------------------------------------------------------------------------------------------------
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS bichos_aventuras (
+    user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+    dados   TEXT NOT NULL,
+    em      TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))
+  );
+`);
+
+export function aventuraDosBichos(userId: number): unknown | null {
+  const l = db.prepare('SELECT dados FROM bichos_aventuras WHERE user_id = ?').get(userId) as { dados: string } | undefined;
+  if (!l) return null;
+  try {
+    return JSON.parse(l.dados);
+  } catch {
+    return null;
+  }
+}
+
+export function guardarAventuraDosBichos(userId: number, dados: unknown) {
+  db.prepare(
+    `INSERT INTO bichos_aventuras (user_id, dados) VALUES (?, ?)
+     ON CONFLICT(user_id) DO UPDATE SET dados = excluded.dados, em = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')`,
+  ).run(userId, JSON.stringify(dados));
 }

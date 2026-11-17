@@ -1,7 +1,7 @@
 import { ExternalLink, Gamepad2, Lightbulb, Send, Volume2 } from 'lucide-react';
 import { Mascote } from './Mascote';
 import { emOrdemAlfabetica, FicharioDeGeneros, naFicha, useFicha } from './FicharioDeGeneros';
-import { type IdDoJogo, JOGOS, nomeDoIdioma, pedirParaAbrirAoEntrar, SITES_PARA_TRANSMITIR, usarMinijogoSolo } from './minijogos';
+import { type IdDoJogo, JOGOS, JOGOS_PARA_BAIXAR, nomeDoIdioma, pedirParaAbrirAoEntrar, sitesParaMim, usarMinijogoSolo } from './minijogos';
 import { PainelDoMinijogo } from './Minijogo';
 import type { Socket } from 'socket.io-client';
 import { SiteEmbutido } from './SiteEmbutido';
@@ -380,7 +380,7 @@ export function Home({
             <section className="jogos-de-fora">
               <h4>{t('Para jogar fora e transmitir')}</h4>
               <ul>
-                {SITES_PARA_TRANSMITIR.map((site) => {
+                {sitesParaMim().map((site) => {
                   const conteudo = (
                     <>
                       {site.embutir ? <Gamepad2 size={14} aria-hidden="true" /> : <ExternalLink size={14} aria-hidden="true" />}
@@ -408,6 +408,21 @@ export function Home({
                     </li>
                   );
                 })}
+              </ul>
+            </section>
+            {/* Os jogos de computador livres e de graça (JOGOS_PARA_BAIXAR): a página oficial de baixar, fora do Syden. */}
+            <section className="jogos-de-fora">
+              <h4>{t('Para baixar e jogar junto')}</h4>
+              <ul>
+                {JOGOS_PARA_BAIXAR.map((jogo) => (
+                  <li key={jogo.endereco}>
+                    <a href={jogo.endereco} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink size={14} aria-hidden="true" />
+                      <span className="vila-sala-nome">{jogo.nome}</span>
+                      <span className="vila-sala-gente">{t(jogo.dica)}</span>
+                    </a>
+                  </li>
+                ))}
               </ul>
             </section>
             </TelaDoComputador>

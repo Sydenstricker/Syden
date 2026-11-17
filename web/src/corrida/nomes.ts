@@ -15,6 +15,8 @@ export const NOMES_DAS_PISTAS: Record<string, string> = {
   festa: chave('Festa dos coelhos'),
   // o pódio da Briga na horta, com a fase vencida (server/src/minijogo-briga.ts)
   briga: chave('Briga na horta'),
+  // e o da Masmorra da Toca (server/src/minijogo-masmorra.ts): os pontos, e MAIS é melhor
+  masmorra: chave('Masmorra da Toca'),
   // e as outras fases da Briga e a campanha (06/11/2026): o troféu diz "Briga na horta · Floresta" (Trofeus.tsx, jogoDoTrofeu)
   'briga-floresta': chave('Floresta'),
   'briga-deserto': chave('Deserto'),
@@ -32,6 +34,8 @@ export const NOMES_DAS_PISTAS: Record<string, string> = {
   golfe: chave('Minigolfe da toca'),
   // e o da Caça às pragas da horta (server/src/minijogo-caca.ts): os pontos, e MAIS é melhor
   caca: chave('Caça às pragas da horta'),
+  // e o da Rota Estelar (server/src/minijogo-estelar.ts): os pontos, e MAIS é melhor
+  estelar: chave('Rota Estelar'),
   // e o do Trânsito da toca (server/src/minijogo-transito.ts): os pontos, e MAIS é melhor
   transito: chave('Trânsito da toca'),
   // e o do Tabuleiro da turma (server/src/minijogo-tabuleiro-da-turma.ts)
@@ -48,10 +52,22 @@ export const NOMES_DAS_PISTAS: Record<string, string> = {
   carrinhos: chave('Carrinhos da toca'),
   // e o da Gincana da toca (server/src/minijogo-gincana.ts)
   gincana: chave('Gincana da toca'),
+  // e o do Ringue da Toca (server/src/minijogo-ringue.ts): os pontos são as lutas vencidas, e o tempo só de quem venceu as três
+  ringue: chave('Ringue da Toca'),
+  // e o do Planador da toca (server/src/minijogo-planador.ts): os pontos do voo, e MAIS é melhor
+  planador: chave('Planador da toca'),
+  // e o do Pinball da Horta (server/src/minijogo-pinball.ts): os pontos, e MAIS é melhor
+  pinball: chave('Pinball da Horta'),
   // e o da Ponte da toca (server/src/minijogo-ponte.ts): os pontos são o custo da ponte, e MENOS é melhor
   ponte: chave('Ponte da toca'),
   // e o do Chefe da turma (server/src/minijogo-chefe.ts): os pontos são o dano dado
   chefe: chave('O chefe da turma'),
+  // e o do Comando Cenoura (server/src/comando/motor.ts): com a fase vencida
+  comando: chave('Comando Cenoura'),
+  // e o das Lendas da Toca (server/src/lendas-regras.ts): os pontos são o dano dado mais a cura
+  lendas: chave('Lendas da Toca'),
+  // e o dos Bichos da Toca (server/src/minijogo-bichos.ts): só quem venceu a luta da sala; os pontos são os bichos que ficaram acordados
+  bichos: chave('Bichos da Toca'),
   // e o do Duelo de aviõezinhos (server/src/minijogo-duelo.ts): os pontos são as vidas que sobraram
   duelo: chave('Duelo de aviõezinhos'),
   // e o da Torre do celeiro (server/src/minijogo-torre.ts)
