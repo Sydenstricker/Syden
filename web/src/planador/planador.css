@@ -1,0 +1,243 @@
+/* O PLANADOR DA TOCA (JogoPlanador.tsx): a tela de 320 × 180 ampliada com os pixels nítidos, e o painel por cima. */
+
+.minijogo.jogando-planador {
+  width: min(820px, 96vw);
+}
+
+.planador {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.planador-titulo {
+  margin: 0;
+}
+
+.planador-moldura {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 72vh;
+  border-radius: 10px;
+  overflow: hidden;
+  /* a cor do céu da corrida, enquanto o primeiro quadro não sai */
+  background: #7492c4;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.planador-tela {
+  width: 100%;
+  height: 100%;
+  display: block;
+  image-rendering: pixelated;
+}
+
+.planador-painel {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  color: #fff;
+  font-weight: 800;
+  text-shadow:
+    0 2px 0 rgba(40, 24, 12, 0.55),
+    0 0 6px rgba(40, 24, 12, 0.35);
+  font-variant-numeric: tabular-nums;
+}
+
+.planador-altura,
+.planador-velocidade,
+.planador-aneis {
+  position: absolute;
+  left: 14px;
+  font-size: calc(18px * var(--escala-do-texto, 1));
+}
+.planador-altura {
+  top: 10px;
+  font-size: calc(24px * var(--escala-do-texto, 1));
+}
+.planador-velocidade {
+  top: 42px;
+  opacity: 0.85;
+}
+.planador-aneis {
+  top: 10px;
+  left: auto;
+  right: 14px;
+}
+
+.planador-combustivel {
+  position: absolute;
+  right: 14px;
+  top: 44px;
+  width: 110px;
+  height: 12px;
+  border: 2px solid #2a1e26;
+  border-radius: 4px;
+  background: rgba(42, 30, 38, 0.45);
+  overflow: hidden;
+}
+.planador-combustivel > span {
+  display: block;
+  height: 100%;
+  background: #f6b24a;
+}
+.planador-combustivel.pouco > span {
+  background: #d65848;
+}
+
+.planador-aviso {
+  position: absolute;
+  left: 50%;
+  top: 38%;
+  transform: translateX(-50%);
+  font-size: calc(26px * var(--escala-do-texto, 1));
+  white-space: nowrap;
+}
+
+.planador-contagem {
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  transform: translate(-50%, -50%);
+  font-size: calc(64px * var(--escala-do-texto, 1));
+}
+
+/* os botões do toque: só em tela de toque */
+.planador-toque {
+  display: none;
+}
+@media (pointer: coarse) {
+  .planador-toque {
+    position: absolute;
+    inset: auto 8px 8px 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    pointer-events: none;
+  }
+  .planador-toque > div {
+    display: flex;
+    gap: 6px;
+  }
+  .planador-toque button {
+    pointer-events: auto;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    background: rgba(42, 30, 38, 0.45);
+    color: #fff;
+    font-size: 20px;
+    touch-action: none;
+  }
+}
+
+.planador-escolha {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.planador-desafios {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.planador-desafio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 10px;
+  border-radius: 12px;
+  border: 2px solid var(--border, rgba(0, 0, 0, 0.15));
+  background: var(--bg-secondary, transparent);
+  color: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.planador-desafio:hover,
+.planador-desafio.escolhido {
+  border-color: var(--accent, #e8834a);
+}
+.planador-desafio small {
+  font-weight: 500;
+  opacity: 0.8;
+}
+.planador-icone {
+  font-size: 34px;
+  line-height: 1;
+}
+
+.planador-fantasmas ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.planador-fantasmas label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.planador-numero {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+.planador-fim {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.planador-recorde {
+  font-size: 20px;
+}
+.planador-aviso-fim {
+  font-weight: 700;
+  color: var(--danger, #d65848);
+}
+
+.planador-pontos {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 2px 18px;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+.planador-pontos dd {
+  margin: 0;
+  text-align: right;
+}
+.planador-pontos .total {
+  font-weight: 800;
+  font-size: 18px;
+  border-top: 1px solid var(--border, rgba(0, 0, 0, 0.2));
+  padding-top: 2px;
+}
+
+.planador-classificacao {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.planador-classificacao li {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.planador-classificacao li.eu {
+  font-weight: 800;
+}
+.planador-posicao {
+  width: 2em;
+  text-align: center;
+}
