@@ -2434,8 +2434,8 @@ isso não é aperto); desce sem piscar (a máscara anterior entra na mesma suavi
 Personalizado da transmissão): Voz e vídeo → Recorte → Automático, Leve ou Completo, e o Automático diz o que está usando
 ("Automático · Completo"). **A escolha manual é respeitada** (nem jogo, nem aperto, nem pouca luz a trocam); só o Completo que não
 roda de jeito nenhum vira o Leve, dito na mesma linha ("Completo indisponível neste computador"), sem janela. Uma linha no diário de
-saúde na primeira descida do Automático. Pendente, decisão dele: o PP-HumanSeg v2 de retrato custa metade do Leve no processador (6,8
-contra 13,8 ms), com a mesma qualidade, e é candidato a novo Leve. Não medido: webcam e escuro de verdade (o 85/100 vem de vídeos
+saúde na primeira descida do Automático. O PP-HumanSeg v2 de retrato custa metade do Leve no processador (6,8
+contra 13,8 ms) com números parecidos, e NÃO entrou: ele viu os vídeos lado a lado e não gostou (17/11/2026). O Leve continua o PP-HumanSeg 192. Não medido: webcam e escuro de verdade (o 85/100 vem de vídeos
 escurecidos por código), outras placas além da RTX 3070, um jogo de verdade na frente. Medida: `e2e/fundo-da-camera/README.md` (os
 comparativos lado a lado em `resultados/`, fora do git); testes: `desktop/test/fundo-camera.test.mjs` e `e2e/fundo-da-camera-no-app.mjs`.
 **Mais candidatos, medidos no mesmo dia (relato dele: "mesmo o Completo não é perfeito, olhe os artefatos"): NÃO HÁ COMPLETO MELHOR que
