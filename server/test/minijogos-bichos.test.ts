@@ -17,9 +17,12 @@ after(fechar);
 
 const ana = await criarConta(app, 'ana-bichos');
 const bia = await criarConta(app, 'bia-bichos');
+// quem senta do outro lado na sala, sem aventura nenhuma: uma conta de verdade, porque o troféu de quem vence guarda o id dele
+const caioConta = await criarConta(app, 'caio-bichos');
 const idDe = async (token: string) => (await comToken(app, token)('GET', '/api/me')).json().id as number;
 const anaId = await idDe(ana.token);
 const biaId = await idDe(bia.token);
+const caioId = await idDe(caioConta.token);
 
 /** Uma sorte de mão: repete a lista em roda. */
 const sorte = (...valores: number[]) => {
@@ -235,7 +238,7 @@ test('na sala: a mesa, a equipe guardada ou a emprestada, os dois escolhendo, e 
   const p = comecar({ solo: false, comunidade: 7 }, Math.random, biaId);
   assert.equal(p.estado(biaId).fase, 'esperando');
   assert.equal(p.jogo.acao(biaId, { tipo: 'golpe', i: 0 }), 'Espere alguém sentar do outro lado.');
-  const caio = 999_999; // alguém sem aventura nenhuma
+  const caio = caioId; // alguém sem aventura nenhuma
   assert.equal(p.jogo.acao(caio, { tipo: 'sentar' }), null);
   let e = p.estado(biaId);
   assert.equal(e.fase, 'escolhendo');
@@ -270,7 +273,7 @@ test('na sala: a mesa, a equipe guardada ou a emprestada, os dois escolhendo, e 
   assert.equal(e.fase, 'fim');
   assert.ok(p.fim.terminou);
   assert.ok([biaId, caio].includes(e.vencedor));
-  if (e.vencedor === biaId) assert.ok(db.trofeusDe(biaId).some((t) => t.pista === 'bichos'));
+  assert.ok(db.trofeusDe(e.vencedor).some((t) => t.pista === 'bichos'), 'o troféu é de quem venceu, seja quem for');
 });
 
 test('na sala, quem sai no meio perde', () => {
