@@ -29,7 +29,23 @@ export const INSIGNIAS = {
    * poderia nascer de um pedido do navegador.
    */
   SEGREDO: 'codigo-secreto',
+  /**
+   * O fliperama com a turma (19/11/2026, decisão dele: "traga as duas coisas"): 5, 15 e 30 mini-games DIFERENTES jogados
+   * na sala com 2 ou mais pessoas (db.jogosDiferentesComGente). Três insígnias separadas, e não níveis com barra: quem
+   * não tem vê só a frase de como se ganha, sem "faltam". É a primeira conquista INDIVIDUAL fora do troféu do kart, e
+   * mede variedade, não horas nem vitórias: jogar com gente coisas diferentes.
+   */
+  FLIPERAMA_5: 'fliperama-5',
+  FLIPERAMA_15: 'fliperama-15',
+  FLIPERAMA_30: 'fliperama-30',
 } as const;
+
+/** Quantos jogos diferentes com a turma cada insígnia do fliperama pede (de 49 na estante do Coletivo). */
+export const DEGRAUS_DO_FLIPERAMA = [
+  { code: INSIGNIAS.FLIPERAMA_5, jogos: 5 },
+  { code: INSIGNIAS.FLIPERAMA_15, jogos: 15 },
+  { code: INSIGNIAS.FLIPERAMA_30, jogos: 30 },
+] as const;
 
 /** Até qual número de cadastro a insígnia dos primeiros vale. */
 export const QUANTOS_PRIMEIROS = 25;
@@ -59,7 +75,35 @@ export function conferirPresentes(user: db.User): string[] {
     if (!regra.vale(user)) continue;
     if (db.darItem(user.id, regra.code, regra.motivo)) novos.push(regra.code);
   }
+  novos.push(...conferirFliperama(user.id));
   return novos;
+}
+
+/**
+ * As insígnias do fliperama desta pessoa. Roda ao entrar (quem jogou antes de elas existirem recebe na próxima vez que
+ * abrir o Syden: as partidas e quem estava nelas já eram guardadas) e no fim de cada partida da sala, para chegar na hora.
+ * A consulta só roda se ainda falta alguma: quem tem as três não paga nada.
+ */
+export function conferirFliperama(userId: number): string[] {
+  const faltam = DEGRAUS_DO_FLIPERAMA.filter((d) => !db.temItem(userId, d.code));
+  if (faltam.length === 0) return [];
+  const jogos = db.jogosDiferentesComGente(userId);
+  const novos: string[] = [];
+  for (const degrau of faltam) {
+    if (jogos >= degrau.jogos && db.darItem(userId, degrau.code, `${degrau.jogos} mini-games diferentes com a turma`)) {
+      novos.push(degrau.code);
+    }
+  }
+  return novos;
+}
+
+/**
+ * O catálogo das insígnias para a pessoa: TODAS as que existem, com o "tem/não tem" e desde quando. Sem progresso, sem
+ * "faltam", sem raridade: a frase de como se ganha mora no app (web/src/insignias.ts), e isto só diz o que ela já tem.
+ */
+export function catalogoDeInsignias(userId: number, codigos: readonly string[]) {
+  const tem = new Map(db.itensDaPessoa(userId).map((item) => [item.code, item.grantedAt]));
+  return codigos.map((codigo) => ({ codigo, tenho: tem.has(codigo), desde: tem.get(codigo) ?? null }));
 }
 
 /**

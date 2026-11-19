@@ -6,7 +6,7 @@ import { CapaDoJogo, CapaMimica, CapaPalavraDoDia, CapaTrios } from './CapasDosJ
 import { IconButton } from './IconButton';
 import { idiomaAtual, useT } from './i18n';
 import { EscolhaDaBriga, JogoBriga } from './JogoBriga';
-import { JogoMasmorra, type EstadoMasmorra } from './JogoMasmorra';
+import { EscolhaDaMasmorra, JogoMasmorra, type EstadoMasmorra } from './JogoMasmorra';
 import { EscolhaDosBlocos, JogoBlocos } from './JogoBlocos';
 import { JogoDesenho } from './JogoDesenho';
 import { JogoDuelo } from './JogoDuelo';
@@ -15,7 +15,7 @@ import { JogoPartidaDeXadrez } from './JogoPartidaDeXadrez';
 import { JogoDomino } from './JogoDomino';
 import { JogoNaval } from './JogoNaval';
 import { JogoTruco } from './JogoTruco';
-import { JogoFesta } from './JogoFesta';
+import { EscolhaDaFesta, JogoFesta } from './JogoFesta';
 import { JogoGolfe } from './JogoGolfe';
 import { canalDoSocket, ligarCanalDaFesta } from './festa/comum';
 import { FicharioDeGeneros, naFicha, useFicha, classeDaFicha, fichaQueVale, emOrdemAlfabetica } from './FicharioDeGeneros';
@@ -23,13 +23,13 @@ import { JogoGolfe3D, type EstadoGolfe3D } from './JogoGolfe3D';
 import { JogoFutebol, type EstadoFutebol } from './JogoFutebol';
 import { JogoTocas, type EstadoTocas } from './JogoTocas';
 import { JogoCaca } from './JogoCaca';
-import { JogoNave, type EstadoNave } from './JogoNave';
+import { EscolhaDaFaseDaNave, JogoNave, type EstadoNave } from './JogoNave';
 import { JogoEstelar, type EstadoEstelar } from './JogoEstelar';
 import { EscolhaDaArena, JogoBalao, type EstadoBalao } from './JogoBalao';
 import { EscolhaDaPistaDoJato, JogoJato, type EstadoJato } from './JogoJato';
 import { EscolhaDaPistaDoBarco, JogoBarco, type EstadoBarco } from './JogoBarco';
-import { JogoChefe } from './JogoChefe';
-import { JogoComando } from './JogoComando';
+import { EscolhaDoChefe, JogoChefe } from './JogoChefe';
+import { EscolhaDoComando, JogoComando } from './JogoComando';
 import type { EstadoComando } from './comando/regras';
 import { JogoLendas, type EstadoLendas } from './JogoLendas';
 import { JogoBichos } from './JogoBichos';
@@ -39,8 +39,9 @@ import { JogoAvioes, type EstadoDosAvioes } from './JogoAvioes';
 import { EscolhaDaTorre, JogoTorre, type EstadoTorre } from './JogoTorre';
 import type { EstadoChefe } from './chefe/regras';
 import { JogoCozinha, type EstadoCozinha } from './JogoCozinha';
-import { JogoSkate, type EstadoSkate } from './JogoSkate';
+import { EscolhaDaPistaDoSkate, JogoSkate, type EstadoSkate } from './JogoSkate';
 import { JogoCarrinhos, type EstadoCarrinhos } from './JogoCarrinhos';
+import { EscolhaDaPistaNaSala } from './carrinhos/EscolhaDaPista';
 import { JogoPlanador, type EstadoPlanador } from './JogoPlanador';
 import { JogoPinball, type EstadoPinball } from './JogoPinball';
 import { EscolhaDoPercurso, JogoGincana, type EstadoGincana } from './JogoGincana';
@@ -51,12 +52,14 @@ import { JogoLobisomem } from './JogoLobisomem';
 import { JogoPalavra } from './JogoPalavra';
 import { EscolhaDaFase, JogoPlataforma, JogoPlataformaNaSala, type EstadoPlataforma } from './JogoPlataforma';
 import { EscolhaDoQuiz, JogoQuiz } from './JogoQuiz';
+import { EscolhaDosJogosDePalavras, JOGOS_COM_ESCOLHA_DE_PALAVRAS } from './EscolhasDasPalavras';
 import { CATEGORIAS_DO_QUIZ, ehQuiz, type EstadoQuiz } from './quiz';
 import { EscolhaDaPista, JogoCorrida, JogoCorridaNaSala, type EstadoCorrida } from './JogoCorrida';
 import { JogoStop } from './JogoStop';
 import { JogoSudoku } from './JogoSudoku';
 import { EscolhaDasRodadas, JogoTabuleiro } from './JogoTabuleiro';
 import { EscolhaDasCidades, JogoCidades } from './JogoCidades';
+import { EscolhaDaMesa, MESAS_COM_ESCOLHAS } from './MesaComum';
 import { cadaUmPorSi, EM_DUPLAS, EscolhaDosRobos, type OpcaoDeRobos } from './EscolhaDosRobos';
 import { IconeDeHud } from './iconesDeHud';
 import { EscolhaDeCategoria, JogoTamanho } from './JogoTamanho';
@@ -206,7 +209,7 @@ export function PainelDoMinijogo({
   /** Os jogos que pedem categoria: clicar na capa abre a escolha, e não a partida. */
   // (a Horta em cascata pede o modo só no Solo: sem fim ou 2 minutos; na sala é sempre o versus)
   const pedeCategoria = (jogo: IdDoJogo, solo = true) =>
-    jogo === 'tamanho' || (jogo === 'blocos' && solo) || (ehQuiz(jogo) && CATEGORIAS_DO_QUIZ[jogo] !== undefined);
+    jogo === 'tamanho' || (jogo === 'blocos' && solo) || (ehQuiz(jogo) && CATEGORIAS_DO_QUIZ[jogo] !== undefined) || JOGOS_COM_ESCOLHA_DE_PALAVRAS.has(jogo);
   /** A aba da estante: a última escolhida volta na próxima vez (só neste navegador). */
   const [ficha, setFicha] = useFicha();
   const [abaEscolhida, setAba] = useState<GrupoDoJogo>(() => {
@@ -233,7 +236,7 @@ export function PainelDoMinijogo({
     comecou.current = true;
     if (comecarCom === 'corrida') setCorrendo(true);
     else if (comecarCom === 'plataforma') setPulando(true);
-    else if (pedeCategoria(comecarCom) || comecarCom === 'briga' || comecarCom === 'bichos' || comecarCom === 'ponte' || comecarCom === 'cidades' || comecarCom === 'tabuleiro' || ROBOS_NO_SOLO[comecarCom]) setEscolhendo(comecarCom);
+    else if (pedeCategoria(comecarCom) || comecarCom === 'briga' || comecarCom === 'comando' || comecarCom === 'chefe' || comecarCom === 'nave' || comecarCom === 'masmorra' || comecarCom === 'bichos' || comecarCom === 'ponte' || comecarCom === 'cidades' || comecarCom === 'tabuleiro' || comecarCom === 'festa' || ROBOS_NO_SOLO[comecarCom] || MESAS_COM_ESCOLHAS.has(comecarCom)) setEscolhendo(comecarCom);
     else void tentar(() => aoComecar(comecarCom, {}, true));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [comecarCom]);
@@ -341,6 +344,14 @@ export function PainelDoMinijogo({
 
       {/* A ESTANTE DE JOGOS (pedido do Sydenstricker: a tela mais limpa). Uma capa por jogo, e clicar já
           começa para a sala inteira. A explicação mora na dica do mouse: a capa diz o que é. */}
+      {/* Os jogos de palavra (19/11/2026): dificuldade, rodadas, categorias, modos e listas da turma (EscolhasDasPalavras.tsx). */}
+      {!partida && escolhendo !== null && JOGOS_COM_ESCOLHA_DE_PALAVRAS.has(escolhendo) && (
+        <EscolhaDosJogosDePalavras
+          jogo={escolhendo}
+          aoEscolher={(corpo) => tentar(() => aoComecar(escolhendo, corpo, aba === 'solo').then(() => setEscolhendo(null)))}
+          aoVoltar={() => setEscolhendo(null)}
+        />
+      )}
       {!partida && escolhendo !== null && ehQuiz(escolhendo) && (
         <EscolhaDoQuiz
           categorias={CATEGORIAS_DO_QUIZ[escolhendo] ?? []}
@@ -351,6 +362,18 @@ export function PainelDoMinijogo({
       {!partida && escolhendo === 'corrida' && (
         <EscolhaDaPista
           aoEscolher={(pista) => tentar(() => aoComecar('corrida', { pista }, false).then(() => setEscolhendo(null)))}
+          aoVoltar={() => setEscolhendo(null)}
+        />
+      )}
+      {!partida && escolhendo === 'masmorra' && (
+        <EscolhaDaMasmorra
+          aoEscolher={(masmorra) => tentar(() => aoComecar('masmorra', { masmorra }, aba === 'solo').then(() => setEscolhendo(null)))}
+          aoVoltar={() => setEscolhendo(null)}
+        />
+      )}
+      {!partida && escolhendo === 'nave' && (
+        <EscolhaDaFaseDaNave
+          aoEscolher={(fase) => tentar(() => aoComecar('nave', { fase }, aba === 'solo').then(() => setEscolhendo(null)))}
           aoVoltar={() => setEscolhendo(null)}
         />
       )}
@@ -379,6 +402,20 @@ export function PainelDoMinijogo({
           aoVoltar={() => setEscolhendo(null)}
         />
       )}
+      {/* O Rolê do coelho na sala: a pista da turma (o parque ou a praça, 19/11/2026); no Solo, a escolha fica dentro do jogo. */}
+      {!partida && escolhendo === 'skate' && (
+        <EscolhaDaPistaDoSkate
+          aoEscolher={(pista) => tentar(() => aoComecar('skate', { pista }, false).then(() => setEscolhendo(null)))}
+          aoVoltar={() => setEscolhendo(null)}
+        />
+      )}
+      {/* Os Carrinhos da toca na sala: a pista (pronta ou do editor, pelo código) e as voltas da turma (19/11/2026). */}
+      {!partida && escolhendo === 'carrinhos' && (
+        <EscolhaDaPistaNaSala
+          aoEscolher={(pedido) => tentar(() => aoComecar('carrinhos', { ...pedido }, false).then(() => setEscolhendo(null)))}
+          aoVoltar={() => setEscolhendo(null)}
+        />
+      )}
       {!partida && escolhendo === 'balao' && (
         <EscolhaDaArena
           aoEscolher={(arena) => tentar(() => aoComecar('balao', { arena }, false).then(() => setEscolhendo(null)))}
@@ -394,11 +431,27 @@ export function PainelDoMinijogo({
           aoVoltar={() => setEscolhendo(null)}
         />
       )}
+      {/* A Festa: a de sempre ou o modo Relâmpago (19/11/2026). */}
+      {!partida && escolhendo === 'festa' && (
+        <EscolhaDaFesta
+          aoEscolher={(modo) => tentar(() => aoComecar('festa', modo ? { modo } : {}, aba === 'solo').then(() => setEscolhendo(null)))}
+          aoVoltar={() => setEscolhendo(null)}
+        />
+      )}
       {/* O Dominó e o Truco no Solo: só quantos robôs (pedido dele, 05/11/2026). */}
       {!partida && escolhendo !== null && ROBOS_NO_SOLO[escolhendo] && (
         <EscolhaDosRobos
           opcoes={ROBOS_NO_SOLO[escolhendo]!}
           aoEscolher={(robos) => tentar(() => aoComecar(escolhendo, { robos }, true).then(() => setEscolhendo(null)))}
+          aoVoltar={() => setEscolhendo(null)}
+        />
+      )}
+      {/* A mesa de duas pessoas e os problemas de xadrez (19/11/2026): o nível do robô, o relógio e as variantes. */}
+      {!partida && escolhendo !== null && MESAS_COM_ESCOLHAS.has(escolhendo) && (
+        <EscolhaDaMesa
+          jogo={escolhendo}
+          solo={aba === 'solo'}
+          aoEscolher={(corpo) => tentar(() => aoComecar(escolhendo, corpo, aba === 'solo').then(() => setEscolhendo(null)))}
           aoVoltar={() => setEscolhendo(null)}
         />
       )}
@@ -424,6 +477,20 @@ export function PainelDoMinijogo({
       {!partida && escolhendo === 'briga' && (
         <EscolhaDaBriga
           aoEscolher={(fase) => tentar(() => aoComecar('briga', { fase }, aba === 'solo').then(() => setEscolhendo(null)))}
+          aoVoltar={() => setEscolhendo(null)}
+        />
+      )}
+      {/* O Comando Cenoura (19/11/2026): a floresta, o deserto ou a campanha. */}
+      {!partida && escolhendo === 'comando' && (
+        <EscolhaDoComando
+          aoEscolher={(fase) => tentar(() => aoComecar('comando', { fase }, aba === 'solo').then(() => setEscolhendo(null)))}
+          aoVoltar={() => setEscolhendo(null)}
+        />
+      )}
+      {/* O Chefe da turma (19/11/2026): a toupeira-rei ou o yeti. */}
+      {!partida && escolhendo === 'chefe' && (
+        <EscolhaDoChefe
+          aoEscolher={(chefe) => tentar(() => aoComecar('chefe', { chefe }, aba === 'solo').then(() => setEscolhendo(null)))}
           aoVoltar={() => setEscolhendo(null)}
         />
       )}
@@ -470,9 +537,9 @@ export function PainelDoMinijogo({
                       ? aba === 'solo'
                         ? setPulando(true)
                         : setEscolhendo('plataforma')
-                    : (jogo.id === 'balao' || jogo.id === 'jato' || jogo.id === 'barco' || jogo.id === 'torre' || jogo.id === 'gincana') && aba === 'coletivo'
+                    : (jogo.id === 'balao' || jogo.id === 'jato' || jogo.id === 'barco' || jogo.id === 'torre' || jogo.id === 'gincana' || jogo.id === 'carrinhos' || jogo.id === 'skate') && aba === 'coletivo'
                       ? setEscolhendo(jogo.id)
-                    : jogo.id === 'briga' || jogo.id === 'bichos' || jogo.id === 'ponte' || jogo.id === 'tabuleiro' || jogo.id === 'cidades' || (aba === 'solo' && ROBOS_NO_SOLO[jogo.id]) || pedeCategoria(jogo.id, aba === 'solo')
+                    : jogo.id === 'briga' || jogo.id === 'comando' || jogo.id === 'chefe' || jogo.id === 'nave' || jogo.id === 'masmorra' || jogo.id === 'bichos' || jogo.id === 'ponte' || jogo.id === 'tabuleiro' || jogo.id === 'festa' || jogo.id === 'cidades' || (aba === 'solo' && ROBOS_NO_SOLO[jogo.id]) || MESAS_COM_ESCOLHAS.has(jogo.id) || pedeCategoria(jogo.id, aba === 'solo')
                       ? setEscolhendo(jogo.id)
                       : tentar(() => aoComecar(jogo.id, {}, aba === 'solo'))
                 }
@@ -812,7 +879,15 @@ export function PainelDoMinijogo({
         />
       )}
       {jogoNaTela?.jogo === 'tocas' && (
-        <JogoTocas key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')} estado={jogoNaTela as unknown as EstadoTocas & Partida} eu={eu} jogador={souJogador(partida)} agir={agir} />
+        <JogoTocas
+          key={String((jogoNaTela as { partidaId?: unknown }).partidaId ?? '')}
+          estado={jogoNaTela as unknown as EstadoTocas & Partida}
+          eu={eu}
+          jogador={souJogador(partida)}
+          agir={agir}
+          socket={socket}
+          channelId={channelId}
+        />
       )}
       {jogoNaTela?.jogo === 'futebol' && (
         <JogoFutebol
@@ -866,12 +941,22 @@ export function PainelDoMinijogo({
               tentar(() =>
                 aoComecar(
                   partida.jogo,
-                  partida.categoria
+                  // os jogos de palavra mandam as escolhas da largada em `largada` (19/11/2026)
+                  JOGOS_COM_ESCOLHA_DE_PALAVRAS.has(partida.jogo) && partida.largada && typeof partida.largada === 'object'
+                    ? (partida.largada as Record<string, unknown>)
+                    : // a mesa de duas pessoas e os problemas de xadrez (19/11/2026): as mesmas escolhas da partida
+                      MESAS_COM_ESCOLHAS.has(partida.jogo) && partida.escolhas && typeof partida.escolhas === 'object'
+                    ? (partida.escolhas as Record<string, unknown>)
+                    : partida.jogo === 'xadrez' && partida.modo === 'corrida'
+                    ? { modo: 'corrida' }
+                    : partida.categoria
                     ? { categoria: partida.categoria }
                     : partida.jogo === 'tabuleiro'
                       ? { rodadas: partida.rodadas, robos: partida.robos }
+                      : partida.jogo === 'festa'
+                      ? { modo: partida.modo }
                       : partida.jogo === 'cidades'
-                        ? { modo: partida.modo, rodadas: partida.rodadas, robos: partida.robos }
+                        ? { modo: partida.modo, rodadas: partida.rodadas, robos: partida.robos, rapida: partida.rapida === true }
                         : ROBOS_NO_SOLO[partida.jogo]
                           ? { robos: partida.robos }
                           : {},

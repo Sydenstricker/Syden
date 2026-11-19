@@ -126,6 +126,10 @@ function textoDoOcorrido(o: OcorridoDasCidades, e: EstadoCidades, nomeDe: (id: n
       return t('{nome} ficou no engarrafamento e perde a próxima vez.', { nome: nomeDe(o.userId) });
     case 'perdeu-vez':
       return t('{nome} ainda está no engarrafamento.', { nome: nomeDe(o.userId) });
+    case 'saiu-do-engarrafamento':
+      return t('{nome} pagou {valor} para sair do engarrafamento.', { nome: nomeDe(o.userId), valor: reais(o.valor) });
+    case 'dados-iguais':
+      return t('{nome} tirou dados iguais e joga de novo.', { nome: nomeDe(o.userId) });
     case 'vendeu-para-pagar':
       return t('{nome} vendeu prédios e hipotecou cidades para pagar ({valor}).', { nome: nomeDe(o.userId), valor: reais(o.valor) });
     case 'faliu':
@@ -547,6 +551,14 @@ export function JogoCidades({
   const pedir = (corpo: Record<string, unknown>) => void agir(corpo);
   const casaDaVez = estado.vez !== null ? (estado.jogadores.find((j) => j.userId === estado.vez)?.pos ?? 0) : 0;
 
+  // no engarrafamento: pagar para sair (19/11/2026), a qualquer hora antes da vez que perderia
+  const sair =
+    ativo && eu_ && eu_.parado > 0 ? (
+      <button type="button" className="btn-secondary cid-sair" disabled={eu_.dinheiro < (estado.sairDoEngarrafamento ?? 50)} onClick={() => pedir({ tipo: 'sair' })}>
+        {t('Pagar {valor} e sair do engarrafamento', { valor: reais(estado.sairDoEngarrafamento ?? 50) })}
+      </button>
+    ) : null;
+
   const placar = (
     <ol className="cid-placar">
       {estado.jogadores.map((j) => {
@@ -570,6 +582,7 @@ export function JogoCidades({
           {estado.rodadas !== null ? t('Rodada {n} de {total}', { n: estado.rodada, total: estado.rodadas }) : t('Rodada {n} · até sobrar um', { n: estado.rodada })}
         </span>
       </div>
+      {sair}
       <div className="cid-corpo">
         <Tabuleiro3D
           dados={{
@@ -740,10 +753,15 @@ const ROBOS = [1, 2, 3, 4, 5];
 export function EscolhaDasCidades({ solo = false, aoEscolher, aoVoltar }: { solo?: boolean; aoEscolher: (corpo: Record<string, unknown>) => void; aoVoltar: () => void }) {
   const t = useT();
   const [robos, setRobos] = useState(3);
-  const comRobos = (corpo: Record<string, unknown>) => aoEscolher(solo ? { ...corpo, robos } : corpo);
+  const [rapida, setRapida] = useState(false);
+  const comRobos = (corpo: Record<string, unknown>) => aoEscolher({ ...(solo ? { ...corpo, robos } : corpo), ...(rapida ? { rapida: true } : {}) });
   return (
     <div className="tab-escolha">
       {solo && <BotoesDosRobos opcoes={ROBOS.map(cadaUmPorSi)} escolhida={robos} aoEscolher={setRobos} />}
+      <label className="mesa-opcao">
+        <input type="checkbox" checked={rapida} onChange={(e) => setRapida(e.target.checked)} />
+        {t('Partida rápida: cada um começa com 2 cidades')}
+      </label>
       <p className="minijogo-situacao">{t('Até quando?')}</p>
       <ul className="tab-rodadas">
         {[10, 20, 30].map((n) => (

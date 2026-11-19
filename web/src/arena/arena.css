@@ -217,3 +217,33 @@
   gap: 4px;
   min-height: 40px;
 }
+
+/* 19/11/2026: o placar de segurar a zona e os números do fim */
+.arena-placar-da-zona {
+  position: absolute;
+  top: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  padding: 1px 8px;
+  border-radius: 6px;
+  background: #1e1822b0;
+  color: #fbf3e4;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+.arena-placar-da-zona span { color: var(--cor); font-weight: 700; }
+.arena-colunas {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0;
+  margin: 0 10px 2px;
+}
+.arena-colunas span,
+.arena-placar .arena-numero {
+  width: 44px;
+  text-align: right;
+  flex: 0 0 44px;
+}
+.arena-placar .minijogo-nome { flex: 1 1 auto; min-width: 0; }

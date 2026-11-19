@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { carregarCoelho, copiarCoelho, type CoelhoCopiado, type CoresDoCoelho } from '../coelho3d';
-import { balasEm, bracoEm, deslocamento, espinhosFora, TREME_PASSOS, VOLTA_DO_BLOCO, VOLTA_INTEIRA, type Coelho, type Percurso } from './sim';
+import { balasEm, bracoEm, deslocamento, espinhosFora, giroEm, TREME_PASSOS, VOLTA_DO_BLOCO, VOLTA_INTEIRA, type Coelho, type Percurso } from './sim';
 
 /**
  * A CENA DA GINCANA DA TOCA (06/11/2026): o percurso de sim.ts montado com as peças do Platformer Pack da KayKit (Kay Lousberg,
@@ -94,7 +94,22 @@ export interface QuadroDoCoelho {
   noChao: boolean;
   pisca: number;
   escondido?: boolean;
+  /** De barriga (o mergulho, ou deitado depois dele): o coelho deita para a frente. */
+  mergulho?: boolean;
 }
+
+/** Uma partícula (a poeira e o confete): SÓ DESENHO, some sozinha. */
+interface Particula {
+  o: THREE.Mesh;
+  vx: number;
+  vy: number;
+  vz: number;
+  vida: number;
+  gira: number;
+  gravidade: number;
+}
+
+const CORES_DO_CONFETE = ['#f2c14e', '#e0574f', '#5bc46a', '#4db4ef', '#c77dde', '#ffffff'];
 
 interface Montado {
   raiz: THREE.Group;
@@ -104,6 +119,8 @@ interface Montado {
   antes: { x: number; z: number } | null;
   tocando: string;
   estica: number;
+  /** A altura de base do corpo (o pé no chão), para o mergulho somar. */
+  peY: number;
 }
 
 export class CenaDaGincana {
@@ -126,6 +143,10 @@ export class CenaDaGincana {
   private camY = 0;
   private descartaveis: { dispose(): void }[] = [];
   private sol: THREE.DirectionalLight | null = null;
+  private particulas: Particula[] = [];
+  private geoParticula = new THREE.BoxGeometry(1, 1, 1);
+  private matPoeira = new THREE.MeshBasicMaterial({ color: '#efe6d2', transparent: true, opacity: 0.8, depthWrite: false });
+  private matsConfete = CORES_DO_CONFETE.map((cor) => new THREE.MeshBasicMaterial({ color: cor, side: THREE.DoubleSide }));
 
   constructor(
     private caixa: HTMLElement,
@@ -280,6 +301,8 @@ export class CenaDaGincana {
     for (const v of p.varredores) {
       const o = this.clonar(modelos.get(v.modelo)!);
       o.position.set(v.cx, v.y, v.cz);
+      // o modelo tem o braço de 2,75; o do campo da sobrevivência é mais comprido
+      if (v.braco !== 2.75) o.scale.set(v.braco / 2.75, 1, v.braco / 2.75);
       c.add(o);
       this.varredores.push(o);
     }
@@ -319,7 +342,7 @@ export class CenaDaGincana {
     this.descartaveis.push(sombra.geometry, sombra.material as THREE.Material);
     this.cena.add(raiz, sombra);
     copia.acoes.get('parado')?.play();
-    this.coelhos.push({ raiz, copia, sombra, rumo: 0, antes: null, tocando: 'parado', estica: 1 });
+    this.coelhos.push({ raiz, copia, sombra, rumo: 0, antes: null, tocando: 'parado', estica: 1, peY: copia.corpo.position.y });
   }
 
   /** A altura do chão debaixo de (x, z) no passo `n`, até a altura `y` (para a sombra), ou null se não há chão. */
@@ -390,7 +413,7 @@ export class CenaDaGincana {
     p.varredores.forEach((v, i) => {
       // o giro entre um passo e outro, pela tabela da regra (o desenho pode usar o arco-tangente)
       const a = bracoEm(v, passoInteiro);
-      const ang = Math.atan2(-a.dz, a.dx) - ((n - passoInteiro) * v.giro * Math.PI * 2) / VOLTA_INTEIRA;
+      const ang = Math.atan2(-a.dz, a.dx) - ((n - passoInteiro) * giroEm(v, passoInteiro) * Math.PI * 2) / VOLTA_INTEIRA;
       this.varredores[i].rotation.y = ang;
     });
     p.canhoes.forEach((k, i) => {
@@ -441,10 +464,14 @@ export class CenaDaGincana {
       }
       const andar = m.copia.acoes.get('andando');
       if (andar) andar.timeScale = Math.min(2.4, Math.max(0.8, andando / 2.6));
-      // no ar, o coelho estica um tico (e encolhe ao pousar)
+      // no ar, o coelho estica um tico (e encolhe ao pousar); de barriga, deita para a frente
       const alvo = q.noChao ? 1 : 1.12;
       m.estica += (alvo - m.estica) * Math.min(1, dt * 12);
       m.copia.corpo.scale.y = m.copia.corpo.scale.x * m.estica;
+      const deita = q.mergulho ? Math.PI / 2.3 : 0;
+      m.copia.corpo.rotation.x += (deita - m.copia.corpo.rotation.x) * Math.min(1, dt * 16);
+      m.copia.corpo.position.y = m.peY + Math.sin(m.copia.corpo.rotation.x) * 0.25;
+
       m.copia.mixer.update(this.calmo ? 0 : dt);
       // a sombra no chão de baixo
       const chao = this.chaoDebaixo(q.x, q.z, q.y, n, i === 0 ? eu : null);
@@ -456,6 +483,8 @@ export class CenaDaGincana {
         m.sombra.scale.setScalar(Math.max(0.4, 1 - alto * 0.12));
       }
     });
+
+    this.andarParticulas(dt);
 
     // A CÂMERA: atrás do primeiro coelho (o meu, ou quem se assiste), olhando o percurso; a altura amortecida
     const alvo = quadros[0] && !quadros[0].escondido ? quadros[0] : null;
@@ -477,8 +506,73 @@ export class CenaDaGincana {
     this.renderer.render(this.cena, this.camera);
   }
 
+  /** A POEIRA de um pouso ou de uma queda (só desenho; com "menos movimento", nada). */
+  poeira(x: number, y: number, z: number, forte = false) {
+    if (this.calmo || this.morta) return;
+    const n = forte ? 14 : 7;
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2 + Math.random() * 0.4;
+      const v = (forte ? 2.6 : 1.6) * (0.6 + Math.random() * 0.6);
+      this.soltar(this.matPoeira, x, y + 0.08, z, Math.cos(a) * v, 0.6 + Math.random() * 0.8, Math.sin(a) * v, 0.35 + Math.random() * 0.2, 0.09 + Math.random() * 0.08, 2);
+    }
+  }
+
+  /** O CONFETE da chegada (ou do fim da sobrevivência): papeizinhos coloridos caindo em volta (só desenho). */
+  confete(x: number, y: number, z: number) {
+    if (this.calmo || this.morta) return;
+    for (let i = 0; i < 60; i++) {
+      const mat = this.matsConfete[i % this.matsConfete.length];
+      const a = Math.random() * Math.PI * 2;
+      const v = 1 + Math.random() * 3;
+      this.soltar(mat, x, y + 1.6, z, Math.cos(a) * v, 4 + Math.random() * 4, Math.sin(a) * v, 1.6 + Math.random() * 1.2, 0.1, 6, true);
+    }
+  }
+
+  private soltar(mat: THREE.Material, x: number, y: number, z: number, vx: number, vy: number, vz: number, vida: number, tamanho: number, gravidade: number, papel = false) {
+    if (this.particulas.length > 260) return;
+    const o = new THREE.Mesh(this.geoParticula, mat);
+    if (papel) o.scale.set(tamanho * 1.6, tamanho * 0.15, tamanho);
+    else o.scale.setScalar(tamanho);
+    o.position.set(x, y, z);
+    o.rotation.set(Math.random() * 3, Math.random() * 3, 0);
+    this.cena.add(o);
+    this.particulas.push({ o, vx, vy, vz, vida, gira: papel ? 6 + Math.random() * 8 : 0, gravidade });
+  }
+
+  private andarParticulas(dt: number) {
+    for (let i = this.particulas.length - 1; i >= 0; i--) {
+      const q = this.particulas[i];
+      q.vida -= dt;
+      if (q.vida <= 0) {
+        this.cena.remove(q.o);
+        this.particulas.splice(i, 1);
+        continue;
+      }
+      q.vy -= q.gravidade * dt;
+      // o papel cai devagar, balançando (o ar segura)
+      if (q.gira) {
+        if (q.vy < -1.4) q.vy = -1.4;
+        q.vx *= 1 - dt * 1.5;
+        q.vz *= 1 - dt * 1.5;
+        q.o.rotation.x += q.gira * dt;
+        q.o.rotation.z += q.gira * 0.7 * dt;
+      } else {
+        q.vx *= 1 - dt * 3;
+        q.vz *= 1 - dt * 3;
+        q.o.scale.multiplyScalar(1 + dt * 1.2);
+      }
+      q.o.position.set(q.o.position.x + q.vx * dt, q.o.position.y + q.vy * dt, q.o.position.z + q.vz * dt);
+    }
+  }
+
   destruir() {
     this.morta = true;
+    for (const q of this.particulas) this.cena.remove(q.o);
+    this.particulas = [];
+    this.geoParticula.dispose();
+    this.matPoeira.dispose();
+    for (const m of this.matsConfete) m.dispose();
+
     this.observador.disconnect();
     for (const m of this.coelhos) m.copia.descartar();
     for (const d of this.descartaveis) d.dispose();

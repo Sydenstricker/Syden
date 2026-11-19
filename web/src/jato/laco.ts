@@ -1,5 +1,6 @@
 import { fantasmaEm, passosEmMs, rivalEm } from './util';
-import { tocar } from '../somDosJogos';
+import { criarMotor, tocar } from '../somDosJogos';
+import { nomeDoPiloto, type Dificuldade } from '../corrida/robos';
 import { AMOSTRA, amostrar, normal, novaNave, PASSO, passo, pilotoAutomatico, progresso, turboLiberado, VTURBO, type ComandosDoJato, type Nave } from './fisica';
 import { coresDoAvatar, coresDoRobo, type CoresDaNave } from './nave';
 import { montarPistaDoJato, naLinha, type DefinicaoDoJato, type PistaDoJato } from './pista';
@@ -20,7 +21,7 @@ import {
   W,
   type Figura,
 } from './render';
-import { criarRobos, roboEm, type Robo } from './robos';
+import { criarRobos, golpear, roboEm, type Robo } from './robos';
 
 /**
  * O LAÇO DOS COELHOS A JATO (05/11/2026): o que o Solo (contra o relógio) e a sala têm em comum — a física em passos fixos, a
@@ -84,7 +85,18 @@ export interface OpcoesDoLaco {
   aoChegar?: (voltas: number[], caminho: number[], posicao: number, total: number) => void;
   /** A energia acabou: a nave explodiu (1,2 s depois, para a explosão se ver). */
   aoExplodir?: (posicao: number, total: number) => void;
+  /** O quanto as naves do computador apertam (no Solo; na sala, sempre o médio, para todos verem o mesmo). */
+  dificuldade?: Dificuldade;
+  /** O GOLPE DE LADO (só no Solo): o botão gira a nave e empurra o robô encostado. */
+  ataque?: boolean;
+  /** A classificação de todas as naves, na hora da chegada (ou da explosão), antes do aoChegar. */
+  aoClassificacao?: (lista: { id: number; nome: string; eu: boolean; passos: number | null }[]) => void;
 }
+
+/** O golpe: quanto dura o giro (passos), quanto espera para o próximo, e o alcance (unidades). */
+export const PASSOS_DO_GIRO = 24;
+export const RECARGA_DO_GIRO = 90;
+export const ALCANCE_DO_GIRO = 22;
 
 export function rodarJato(o: OpcoesDoLaco): () => void {
   const { comandos } = o;
@@ -95,7 +107,25 @@ export function rodarJato(o: OpcoesDoLaco): () => void {
   const mapa = mapaDaPista(p, 56);
   const nave: Nave = novaNave(p);
   const caminho: number[] = [];
-  const robos: Robo[] = criarRobos(p, o.robos);
+  const robos: Robo[] = criarRobos(p, o.robos, undefined, o.dificuldade ?? 'medio');
+  /** O ronco da nave (19/11/2026), só de quem pilota. */
+  const motor = o.piloto ? criarMotor() : null;
+  /** O giro do golpe: até que passo gira, desde quando pode girar de novo, e quem já levou neste giro. */
+  let giroAte = 0;
+  let giroPronto = 0;
+  let ataqueAntes = false;
+  const levaram = new Set<number>();
+  let classificacao: { id: number; nome: string; eu: boolean; passos: number | null }[] | null = null;
+  /** A classificação de todas as naves agora: quem chegou pela chegada, depois pelo quanto andou; quem explodiu, no fim. */
+  const classificar = () => {
+    const n = nave.passos;
+    const linhas = [
+      { id: -1, nome: '', eu: true, chegada: nave.terminou ? nave.voltas[nave.voltas.length - 1] : 0, andou: nave.explodiu ? -10 : progresso(nave, p) },
+      ...robos.map((r, i) => ({ id: -100 - i, nome: nomeDoPiloto(r.i), eu: false, chegada: r.chegada <= n ? r.chegada : 0, andou: roboEm(p, r, n).andou })),
+    ];
+    linhas.sort((a, b) => (a.chegada && b.chegada ? a.chegada - b.chegada : a.chegada ? -1 : b.chegada ? 1 : b.andou - a.andou));
+    return linhas.map((l) => ({ id: l.id, nome: l.nome, eu: l.eu, passos: l.chegada || null }));
+  };
   const minhasCores = coresDoAvatar(o.meuAvatar);
   const coresDosRobos: CoresDaNave[] = robos.map((r) => coresDoRobo(r.i));
   let camAngulo = nave.angulo;
@@ -132,10 +162,10 @@ export function rodarJato(o: OpcoesDoLaco): () => void {
       const luz = Math.floor((contagem - 1) / 60);
       if (luz !== ultimaLuz && o.piloto) {
         ultimaLuz = luz;
-        tocar('vez');
+        tocar('largada');
       }
       contagem--;
-      if (contagem === 0 && o.piloto) tocar('mola');
+      if (contagem === 0 && o.piloto) tocar('chegada');
       return;
     }
     if (!o.piloto) return;
@@ -151,16 +181,42 @@ export function rodarJato(o: OpcoesDoLaco): () => void {
         tremor = 8;
         faisca = 10;
         ladoDaFaisca = Math.sign(naLinha(p, nave.x, nave.y, nave.indice).lado) || 1;
-        tocar('soco');
+        tocar('impacto');
       }
-      if (nave.usouTurbo) tocar('mola');
-      if (nave.placa) tocar('pulo');
+      if (nave.usouTurbo) tocar('turbo');
+      if (nave.placa) tocar('turbo');
       if (nave.caindo > 0 && nave.queda === 0) tocar('queda');
-      if (nave.recarga && !recargaAntes) tocar('moeda');
+      if (nave.recarga && !recargaAntes) tocar('cura');
       recargaAntes = nave.recarga;
-      if (nave.fezVolta && !nave.terminou) tocar('acerto');
+      if (nave.fezVolta && !nave.terminou) tocar('bandeira');
       if (nave.terminou) tocar('chegada');
-      if (nave.explodiu) tocar('erro');
+      if (nave.explodiu) tocar('explosao');
+      if ((nave.terminou || nave.explodiu) && !classificacao) classificacao = classificar();
+      // O GOLPE DE LADO: o botão (na hora em que desce) gira a nave; quem estiver encostado durante o giro é empurrado
+      if (o.ataque) {
+        const apertado = comandos.ataque === true;
+        const aperta = apertado && !ataqueAntes;
+        ataqueAntes = apertado;
+        if (aperta && nave.passos >= giroPronto && !nave.terminou && nave.caindo === 0 && nave.resgate === 0) {
+          giroAte = nave.passos + PASSOS_DO_GIRO;
+          giroPronto = nave.passos + RECARGA_DO_GIRO;
+          levaram.clear();
+          tocar('empurrao');
+        }
+        if (nave.passos < giroAte) {
+          robos.forEach((r, i) => {
+            if (levaram.has(i)) return;
+            const q = roboEm(p, r, nave.passos);
+            const dx = q.x - nave.x, dy = q.y - nave.y;
+            if (dx * dx + dy * dy > ALCANCE_DO_GIRO * ALCANCE_DO_GIRO) return;
+            levaram.add(i);
+            // para que lado ele foi: o lado do robô em relação ao rumo da nave
+            golpear(p, r, nave.passos, -Math.sin(nave.rumo) * dx + Math.cos(nave.rumo) * dy);
+            tocar('impacto');
+            tremor = 4;
+          });
+        }
+      }
     }
     // a câmera vai atrás do rumo, puxada um pouco para o nariz (a nave aparece escorregando na curva)
     if (nave.resgate === 0 && nave.caindo === 0) seguir(nave.rumo + normal(nave.angulo - nave.rumo) * 0.4);
@@ -217,8 +273,9 @@ export function rodarJato(o: OpcoesDoLaco): () => void {
       if (f) figuras.push(f);
     }
     if (o.piloto && !(nave.explodiu && tempo - explodiuEm / 1000 > 0.25)) {
-      const minha = naveNaTela(d, p, cam, nave.x, nave.y, nave.angulo, minhasCores, {
-        banco: nave.banco,
+      const girando = nave.passos < giroAte;
+      const minha = naveNaTela(d, p, cam, nave.x, nave.y, nave.angulo + (girando ? ((giroAte - nave.passos) / PASSOS_DO_GIRO) * Math.PI * 2 : 0), minhasCores, {
+        banco: girando ? Math.sin(tempo * 40) : nave.banco,
         queda: nave.queda,
         turbo: nave.turbo > 0,
         tremor: !o.calmo && tremor > 0 ? (tremor % 2 ? 1 : -1) : 0,
@@ -327,12 +384,16 @@ export function rodarJato(o: OpcoesDoLaco): () => void {
     o.aoPlacar({ volta, ms, pausado: pausado && o.piloto });
     if (nave.terminou && !fimEm) fimEm = agora;
     if (nave.explodiu && !explodiuEm) explodiuEm = agora;
+    // o motor: no semáforo, um ronco baixo; depois, pela velocidade; explodido, pausado ou parado, mudo
+    motor?.ajustar(pausado || nave.explodiu ? 0 : contagem > 0 ? 0.06 : nave.v / VTURBO);
     if (fimEm && agora - fimEm > 1600 && !avisou) {
       avisou = true;
+      if (classificacao) o.aoClassificacao?.(classificacao);
       o.aoChegar?.(nave.voltas.slice(), caminho, minhaPosicao, totalDeNaves);
     }
     if (explodiuEm && agora - explodiuEm > 1200 && !avisou) {
       avisou = true;
+      if (classificacao) o.aoClassificacao?.(classificacao);
       o.aoExplodir?.(minhaPosicao, totalDeNaves);
     }
     quadro = requestAnimationFrame(ciclo);
@@ -342,6 +403,7 @@ export function rodarJato(o: OpcoesDoLaco): () => void {
   return () => {
     vivo = false;
     cancelAnimationFrame(quadro);
+    motor?.parar();
   };
 }
 

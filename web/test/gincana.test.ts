@@ -39,7 +39,8 @@ test('a tabela do giro fecha a volta (720 meios graus voltam ao começo)', () =>
 });
 
 test('os percursos: os modelos estão em web/public/gincana, as bandeiras em ordem, e a chegada no fim', () => {
-  for (const [id, p] of Object.entries(sim.PERCURSOS)) {
+  for (const id of sim.IDS_DOS_PERCURSOS) {
+    const p = sim.PERCURSOS[id];
     const modelos = new Set([...p.caixas.map((c) => c.modelo).filter(Boolean), ...p.rampas.map((r) => r.modelo), ...p.varredores.map((v) => v.modelo), ...p.enfeites.map((e) => e.modelo), 'pillar_2x2x8', 'sawblade', 'cannon_bullet']);
     for (const m of modelos) assert.ok(existsSync(new URL(`../public/gincana/${m}.gltf`, import.meta.url)), `${id}: falta ${m}`);
     for (let k = 1; k < p.postos.length; k++) assert.ok(p.postos[k].z > p.postos[k - 1].z, `${id}: bandeira ${k}`);
@@ -148,12 +149,132 @@ test('a conferência das posições ao vivo: andar passa, teleportar para a fren
   assert.equal(sim.posicaoPossivel(p, longe, { n: 2004, x: b3.x, y: b3.y, z: b3.zVolta }), -1, 'uma bandeira ainda não alcançada não');
 });
 
-test('as entradas: só inteiros, comandos de 0 a 31 e o total dentro de 10 minutos', () => {
+test('as entradas: só inteiros, comandos de 0 a 63 (o mergulho é o 32) e o total dentro de 10 minutos', () => {
   assert.ok(sim.entradasValidas([3, sim.FRENTE | sim.PULO]));
+  assert.ok(sim.entradasValidas([3, sim.FRENTE | sim.MERGULHO]));
   assert.ok(!sim.entradasValidas([]));
   assert.ok(!sim.entradasValidas([1]));
-  assert.ok(!sim.entradasValidas([1, 32]));
+  assert.ok(!sim.entradasValidas([1, 64]));
+
   assert.ok(!sim.entradasValidas([0, 1]));
   assert.ok(!sim.entradasValidas([1.5, 1]));
   assert.ok(!sim.entradasValidas([sim.PASSOS_MAXIMOS + 1, 1]));
+});
+
+// ---------------------------------------------------------------------------------------------------------------------
+// 19/11/2026: o mergulho, a sobrevivência (o varredor que acelera) e os coelhos-robô do Solo
+// ---------------------------------------------------------------------------------------------------------------------
+
+test('o mergulho: um impulso para a frente, um por pulo; ao pousar, deitado um tico (sem pular nem correr)', () => {
+  const p = sim.PERCURSOS['prado-1'];
+  const c = sim.novoCoelho(p);
+  for (let i = 0; i < 10; i++) sim.passo(c, sim.FRENTE, p);
+  const z0 = c.z;
+  assert.equal(sim.passo(c, sim.FRENTE | sim.MERGULHO, p), 'mergulho');
+  assert.ok(c.mergulho && !c.noChao);
+  assert.ok(c.vz > sim.VELOCIDADE, 'mais rápido que correr');
+  // segurar não mergulha de novo
+  for (let i = 0; i < 5; i++) assert.notEqual(sim.passo(c, sim.FRENTE | sim.MERGULHO, p), 'mergulho');
+  let n = 0;
+  while (!c.noChao && n++ < 120) sim.passo(c, sim.FRENTE, p);
+  assert.ok(c.noChao && !c.mergulho && c.deitado > 0, 'pousou de barriga');
+  assert.ok(c.z - z0 > 2, `andou ${c.z - z0}`);
+  // deitado: o pulo não sai
+  assert.notEqual(sim.passo(c, sim.FRENTE | sim.PULO, p), 'pulo');
+  for (let i = 0; i < sim.DEITADO_PASSOS + 2; i++) sim.passo(c, 0, p);
+  assert.equal(c.deitado, 0);
+  // o mergulho só sai de novo depois de soltar
+  sim.passo(c, 0, p);
+  assert.equal(sim.passo(c, sim.MERGULHO, p), 'mergulho');
+});
+
+test('sem o bit do mergulho, a regra é a de antes: o fantasma guardado continua chegando no mesmo passo', () => {
+  // os planos do piloto não usam o mergulho; o teste do piloto acima já confere que eles chegam. Aqui, que o bit 32 muda algo:
+  const p = sim.PERCURSOS['prado-1'];
+  const e = gravar(plano('prado-1'));
+  const com = e.slice();
+  com[1] |= sim.MERGULHO;
+  assert.notDeepEqual({ ...sim.refazer(p, com) }, { ...sim.refazer(p, e) });
+});
+
+test('o varredor que acelera: o giro é a soma das velocidades (inteiros), e o de giro fixo não muda', () => {
+  const v: sim.Varredor = { cx: 0, cz: 0, y: 0, braco: 1, giro: 2, fase: 0, bracos: 2, modelo: '', acel: 1 };
+  let soma = 0;
+  for (let n = 0; n < 3000; n++) {
+    assert.equal(sim.indiceDoGiro(v, n), ((Math.floor((n * n) / (2 * sim.ACEL_DIV)) + 2 * n) % 720 + 720) % 720);
+    soma += 1;
+  }
+  assert.ok(sim.giroEm(v, 6000) > 11, 'em 100 s, gira bem mais rápido');
+  const parado = { ...v, acel: 0 };
+  assert.equal(sim.indiceDoGiro(parado, 1000), 2000 % 720);
+  assert.equal(sim.indiceDoGiro({ ...v, giro: -2 }, 600), ((-1200 - 300) % 720 + 720) % 720);
+  assert.ok(soma > 0);
+});
+
+test('a sobrevivência: cair é sair (sem voltar à bandeira), e quem aguenta até o fim termina no último passo', () => {
+  for (const id of sim.IDS_DA_SOBREVIVENCIA) {
+    const p = sim.PERCURSOS[id];
+    assert.ok(p.sobrevivencia > 0);
+    assert.ok(!sim.IDS_DOS_PERCURSOS.includes(id));
+    for (const m of new Set(p.caixas.map((c) => c.modelo).filter(Boolean))) assert.ok(existsSync(new URL(`../public/gincana/${m}.gltf`, import.meta.url)), `${id}: falta ${m}`);
+    // andar para a esquerda até cair: fora, com o tempo de quando caiu
+    const c = sim.novoCoelho(p);
+    let ev: sim.Evento = null;
+    for (let i = 0; i < 1200 && ev !== 'fora'; i++) ev = sim.passo(c, sim.ESQUERDA, p);
+    assert.equal(ev, 'fora');
+    assert.ok(c.chegou && c.fora);
+    assert.equal(c.chegouEm, c.passo);
+    assert.equal(sim.passo(c, 0, p), null, 'fora, não anda mais');
+    // ficar parado: o bloco cai debaixo dele
+    const q = sim.refazer(p, [600, 0]);
+    assert.ok(q.chegou && q.fora && q.chegouEm < 600, `parado cai em ${q.chegouEm}`);
+  }
+});
+
+test('a sobrevivência: um coelho que foge do varredor e troca de bloco aguenta um bom tempo (o campo não é impossível)', () => {
+  const p = sim.PERCURSOS[sim.IDS_DA_SOBREVIVENCIA[0]];
+  // o piloto da sobrevivência do teste: a cada bloco de 6 passos, a ação que deixa o coelho em pé por mais tempo olhando 30
+  // passos à frente (sem cair)
+  const acoes = [0, sim.FRENTE, sim.TRAS, sim.ESQUERDA, sim.DIREITA, sim.PULO, sim.FRENTE | sim.PULO, sim.TRAS | sim.PULO, sim.ESQUERDA | sim.PULO, sim.DIREITA | sim.PULO];
+  const c = sim.novoCoelho(p);
+  const g = sim.gravador();
+  while (!c.chegou && c.passo < 60 * 40) {
+    let melhor = 0, melhorFolga = -1;
+    for (const a of acoes) {
+      const k = sim.copiarCoelho(c);
+      let folga = 0;
+      for (let i = 0; i < 36 && !k.chegou; i++) {
+        sim.passo(k, i < 6 ? a : 0, p);
+        folga++;
+      }
+      const centro = -Math.abs(k.x) - Math.abs(k.z - 5);
+      const nota = folga * 10 + (k.chegou ? 0 : centro);
+      if (nota > melhorFolga) {
+        melhorFolga = nota;
+        melhor = a;
+      }
+    }
+    for (let i = 0; i < 6 && !c.chegou; i++) {
+      g.anotar(melhor);
+      sim.passo(c, melhor, p);
+    }
+  }
+  assert.ok(c.passo > 60 * 10, `aguentou ${c.passo / 60} s`);
+  // e o servidor refaz igual
+  const r = sim.refazer(p, g.entradas.length ? g.entradas : [1, 0]);
+  if (c.chegou) assert.equal(r.chegouEm, c.chegouEm);
+});
+
+test('os coelhos-robô do Solo: o planejador com erro chega, mais devagar que o piloto, e as entradas são válidas', async () => {
+  const { correrRobo } = await import('../src/gincana/piloto.ts');
+  const id = 'prado-1';
+  const p = sim.PERCURSOS[id];
+  const trechos: number[][] = [];
+  const comandos = correrRobo(p, 5, (t) => trechos.push(t), 0.8);
+  assert.deepEqual(trechos.flat(), comandos, 'os trechos somam os comandos');
+  const e = gravar(comandos);
+  assert.ok(sim.entradasValidas(e));
+  const r = sim.refazer(p, e);
+  assert.ok(r.chegou, 'o robô chega');
+  assert.ok(r.chegouEm >= sim.refazer(p, gravar(plano(id))).chegouEm, 'e não mais rápido que o piloto sem erro');
 });

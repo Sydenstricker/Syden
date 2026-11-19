@@ -36,6 +36,17 @@ export const PARADA = 0.0015;
 /** Abaixo desta velocidade, a bola que passa sobre o buraco cai. */
 export const CAPTURA = 0.065;
 export const QUIQUE_PAREDE = 0.7;
+
+/**
+ * OS ITENS DA PRÓPRIA BOLA, SÓ NA SALA (19/11/2026): cada pessoa tem um de cada por partida e o põe numa tacada; ele vale até a
+ * bola parar e só mexe na bola de quem usou. A BOLA PESADA sente menos a ladeira e quase não quica na parede; o QUIQUE EXTRA
+ * volta da parede quase com a força toda; a MIRA LONGA não muda a física (a tela mostra o caminho inteiro da tacada). O
+ * servidor confere quem ainda tem o item e simula com ele.
+ */
+export type ItemDaBola = 'pesada' | 'quique' | 'mira';
+export const ITENS_DA_BOLA: readonly ItemDaBola[] = ['pesada', 'quique', 'mira'];
+const QUIQUE_DO_ITEM: Partial<Record<ItemDaBola, number>> = { pesada: 0.4, quique: 0.95 };
+const LADEIRA_DO_ITEM: Partial<Record<ItemDaBola, number>> = { pesada: 0.4 };
 /** A gravidade: quanto a inclinação tira (ou dá) de velocidade a cada passo. */
 export const GRAVIDADE = 0.01;
 /** Abaixo desta inclinação, a bola lenta para; acima, ela continua rolando ladeira abaixo. */
@@ -58,6 +69,28 @@ export const ASSENTA = 0.012;
 /** A altura das paredes do kit acima da base da peça; as do castelo e do moinho são torres. */
 export const TOPO_DA_PAREDE = 0.147;
 const TOPO_DA_TORRE = 0.65;
+
+/**
+ * AS PÁS DO MOINHO GIRAM PELO PASSO (19/11/2026): uma volta em VOLTA_DO_MOINHO passos (4 s), quatro pás, e a pá que desce
+ * fecha a entrada da passagem enquanto passa por ela (PA_FECHADA passos de cada lado do meio de cada quarto de volta). É conta de
+ * inteiros: o servidor e o site fecham a passagem no mesmo passo. O desenho gira as pás do modelo pelo mesmo passo
+ * (giroDasPas), e elas descem até o chão (a cena as aumenta para isso).
+ */
+export const VOLTA_DO_MOINHO = 240;
+const QUARTO_DO_MOINHO = VOLTA_DO_MOINHO / 4;
+const PA_FECHADA = 12;
+/** A pá está na entrada da passagem neste passo? */
+export function moinhoFechado(passo: number): boolean {
+  const q = ((passo % QUARTO_DO_MOINHO) + QUARTO_DO_MOINHO) % QUARTO_DO_MOINHO;
+  const meio = QUARTO_DO_MOINHO / 2;
+  return q >= meio - PA_FECHADA && q <= meio + PA_FECHADA;
+}
+/** Quanto da volta as pás já deram (de 0 a 1), para o desenho. Com 0, as pás do modelo estão em "x"; a pá desce no meio do quarto. */
+export const giroDasPas = (passo: number) => (((passo % VOLTA_DO_MOINHO) + VOLTA_DO_MOINHO) % VOLTA_DO_MOINHO) / VOLTA_DO_MOINHO;
+/** Onde a pá fecha, no sistema da peça: a entrada da passagem, na frente das pás do modelo (v = −0,45). */
+const PA_U = 0.15;
+const PA_V0 = -0.5;
+const PA_V1 = -0.39;
 
 export type Peca =
   | 'reta'
@@ -204,6 +237,119 @@ export const BURACOS: Buraco[] = [
   },
 ];
 
+/**
+ * O PARQUE (19/11/2026): o segundo percurso, de nove buracos, com as mesmas peças do Minigolf Kit da Kenney. Quem começa escolhe
+ * o percurso; o recorde do Solo é por percurso. Buraco novo aqui passa pelos mesmos testes (as bordas, o piloto).
+ */
+export const BURACOS_DO_PARQUE: Buraco[] = [
+  {
+    // 1. As duas lombadas.
+    par: 2,
+    inicio: [0, 0],
+    casas: [c('fim', 0, 0, 2), c('lombada', 0, 1), c('lombada', 0, 2), c('reta', 0, 3), c('buraco', 0, 4)],
+  },
+  {
+    // 2. O túnel e a cova.
+    par: 2,
+    inicio: [0, 0],
+    casas: [c('fim', 0, 0, 2), c('reta', 0, 1), c('tunel', 0, 2), c('cova', 0, 3), c('buraco', 0, 4)],
+  },
+  {
+    // 3. A curva para a esquerda, com o montinho.
+    par: 3,
+    inicio: [0, 0],
+    casas: [c('fim', 0, 0, 2), c('reta', 0, 1), c('curva', 0, 2, 0), c('reta', -1, 2, 1), c('monte', -2, 2, 1), c('buraco', -3, 2, 3)],
+  },
+  {
+    // 4. O "S" curto.
+    par: 3,
+    inicio: [0, 0],
+    casas: [c('fim', 0, 0, 2), c('monte', 0, 1), c('curva', 0, 2, 3), c('curva', 1, 2, 1), c('reta', 1, 3), c('lombada', 1, 4), c('buraco', 1, 5)],
+  },
+  {
+    // 5. A rampinha até o castelo.
+    par: 3,
+    inicio: [0, 0],
+    casas: [
+      c('fim', 0, 0, 2),
+      c('rampa-baixa', 0, 1, 0, 0),
+      c('reta', 0, 2, 0, 0.1),
+      c('castelo', 0, 3, 0, 0.1),
+      c('reta', 0, 4, 0, 0.1),
+      c('buraco', 0, 5, 0, 0.1),
+    ],
+  },
+  {
+    // 6. Dois moinhos seguidos.
+    par: 3,
+    inicio: [0, 0],
+    casas: [c('fim', 0, 0, 2), c('reta', 0, 1), c('moinho', 0, 2), c('reta', 0, 3), c('moinho', 0, 4), c('buraco', 0, 5)],
+  },
+  {
+    // 7. O campo largo, com os triângulos antes do losango.
+    par: 3,
+    inicio: [1, 0],
+    casas: [
+      c('canto', 0, 0, 2),
+      c('lado', 1, 0, 1),
+      c('canto', 2, 0, 1),
+      c('lado', 0, 1, 2),
+      c('triangulos', 1, 1),
+      c('lado', 2, 1, 0),
+      c('lado', 0, 2, 2),
+      c('aberto', 1, 2),
+      c('lado', 2, 2, 0),
+      c('lado', 0, 3, 2),
+      c('losango', 1, 3),
+      c('lado', 2, 3, 0),
+      c('lado', 0, 4, 2),
+      c('buraco-aberto', 1, 4),
+      c('lado', 2, 4, 0),
+      c('canto', 0, 5, 3),
+      c('lado', 1, 5, 3),
+      c('canto', 2, 5, 0),
+    ],
+  },
+  {
+    // 8. O buraco no chão, a volta e o estreito.
+    par: 4,
+    inicio: [0, 0],
+    casas: [
+      c('fim', 0, 0, 2),
+      c('reta', 0, 1),
+      c('lacuna', 0, 2),
+      c('curva', 0, 3, 3),
+      c('reta', 1, 3, 1),
+      c('estreito', 2, 3, 1),
+      c('curva', 3, 3, 1),
+      c('reta', 3, 4),
+      c('buraco', 3, 5),
+    ],
+  },
+  {
+    // 9. O "U" do moinho: a lombada, a cova, o moinho de lado e a volta.
+    par: 4,
+    inicio: [0, 0],
+    casas: [
+      c('fim', 0, 0, 2),
+      c('lombada', 0, 1),
+      c('reta', 0, 2),
+      c('curva', 0, 3, 3),
+      c('cova', 1, 3, 1),
+      c('moinho', 2, 3, 1),
+      c('curva', 3, 3, 0),
+      c('reta', 3, 2),
+      c('monte', 3, 1),
+      c('buraco', 3, 0, 2),
+    ],
+  },
+];
+
+/** OS PERCURSOS: o do kit (os oito de sempre) e o do parque. */
+export type Percurso3D = 'kit' | 'parque';
+export const PERCURSOS_3D: Record<Percurso3D, Buraco[]> = { kit: BURACOS, parque: BURACOS_DO_PARQUE };
+export const percursoValido = (x: unknown): Percurso3D | null => (x === 'kit' || x === 'parque' ? x : null);
+
 // ——— as formas das peças, no sistema da peça (u para +x, v para +z, de −0,5 a 0,5) ———
 
 const ret = (x0: number, z0: number, x1: number, z1: number) => [x0, z0, x1, z0, x1, z1, x0, z1];
@@ -340,6 +486,9 @@ export interface Montado {
   perto: number[][];
   /** Todas as paredes, já no buraco (para o desenho e o piloto). */
   paredes: number[][];
+  /** As pás dos moinhos (x1, z1, x2, z2, topo), que só valem com o moinho fechado, e as casas deles. */
+  pas: number[];
+  moinhos: { cx: number; cz: number; giro: number }[];
   buraco: [number, number];
   /** O retângulo do buraco inteiro, para conferir o tempo real. */
   limites: [number, number, number, number];
@@ -365,6 +514,8 @@ export function montar(b: Buraco): Montado {
   const segmentosDaCasa: number[][] = casas.map(() => []);
   const topos: number[] = casas.map(() => 0);
   const paredes: number[][] = [];
+  const pas: number[] = [];
+  const moinhos: { cx: number; cz: number; giro: number }[] = [];
   let buraco: [number, number] = [b.inicio[0], b.inicio[1]];
   for (const [peca, cx, cz, giro, base] of b.casas) {
     const f = FORMAS[peca];
@@ -385,6 +536,14 @@ export function montar(b: Buraco): Montado {
       }
     }
     if (f.buraco) buraco = [cx, cz];
+    if (peca === 'moinho') {
+      moinhos.push({ cx, cz, giro });
+      const q = doBuraco(ret(-PA_U, PA_V0, PA_U, PA_V1));
+      for (let k = 0; k < 4; k++) {
+        const j = (k + 1) % 4;
+        pas.push(q[k * 2], q[k * 2 + 1], q[j * 2], q[j * 2 + 1], base + TOPO_DA_TORRE);
+      }
+    }
     const topo = base + (peca === 'castelo' || peca === 'moinho' || peca === 'tunel' ? TOPO_DA_TORRE : TOPO_DA_PAREDE);
     topos[i] = topo;
   }
@@ -402,7 +561,7 @@ export function montar(b: Buraco): Montado {
       }
     return s;
   });
-  const m: Montado = { x0, z0, colunas, linhas, casas, perto, paredes, buraco, limites: [x0 - 0.5, z0 - 0.5, x1 + 0.5, z1 + 0.5] };
+  const m: Montado = { x0, z0, colunas, linhas, casas, perto, paredes, pas, moinhos, buraco, limites: [x0 - 0.5, z0 - 0.5, x1 + 0.5, z1 + 0.5] };
   MONTADOS.set(b, m);
   return m;
 }
@@ -459,6 +618,8 @@ export interface Tacada {
   dz: number;
   /** A parte para o alto (0, ou sem ela, é rasteira). */
   dy?: number;
+  /** O item da própria bola nesta tacada (só na sala). */
+  item?: ItemDaBola;
 }
 
 export interface Bola {
@@ -477,6 +638,8 @@ export interface Bola {
   tacadas: number;
   ultimaX: number;
   ultimaZ: number;
+  /** O item da última tacada (vale até ela parar); null sem item. */
+  item?: ItemDaBola | null;
 }
 
 export function novaBola(b: Buraco): Bola {
@@ -516,8 +679,32 @@ function baterNoSegmento(bola: Bola, ax: number, az: number, bx: number, bz: num
   bola.z += nz * (RAIO_BOLA - d);
   const vn = bola.vx * nx + bola.vz * nz;
   if (vn < 0) {
-    bola.vx -= (1 + QUIQUE_PAREDE) * vn * nx;
-    bola.vz -= (1 + QUIQUE_PAREDE) * vn * nz;
+    const quique = (bola.item && QUIQUE_DO_ITEM[bola.item]) ?? QUIQUE_PAREDE;
+    bola.vx -= (1 + quique) * vn * nx;
+    bola.vz -= (1 + quique) * vn * nz;
+  }
+}
+
+/** As pás, quando o moinho está fechado no passo da bola. */
+function baterNasPas(m: Montado, bola: Bola) {
+  if (!m.pas.length || !moinhoFechado(bola.passo)) return;
+  for (let k = 0; k < m.pas.length; k += 5) baterNoSegmento(bola, m.pas[k], m.pas[k + 1], m.pas[k + 2], m.pas[k + 3], m.pas[k + 4]);
+}
+
+/**
+ * A bola parou onde a pá passa: vai para o lado (para dentro da passagem ou de volta), para a pá nunca precisar empurrar uma
+ * bola parada, como a tábua da porteira no golfe da toca.
+ */
+function assentarNasPas(m: Montado, bola: Bola) {
+  for (const { cx, cz, giro } of m.moinhos) {
+    const [u, v] = paraAPeca(cx, cz, giro, bola.x, bola.z);
+    if (u <= -PA_U - RAIO_BOLA || u >= PA_U + RAIO_BOLA || v <= PA_V0 - RAIO_BOLA || v >= PA_V1 + RAIO_BOLA) continue;
+    const dentro = PA_V1 + RAIO_BOLA + 0.01;
+    const fora = PA_V0 - RAIO_BOLA - 0.01;
+    const nv = dentro - v < v - fora ? dentro : fora;
+    const [x, z] = paraOBuraco(cx, cz, giro, u, nv);
+    bola.x = x;
+    bola.z = z;
   }
 }
 
@@ -535,6 +722,7 @@ export function tacadaInvalida(bola: Bola, t: Tacada): string | null {
   if (acabouOBuraco(bola)) return 'acabou';
   const dy = t.dy ?? 0;
   if (!Number.isInteger(t.passo) || !Number.isInteger(t.dx) || !Number.isInteger(t.dz) || !Number.isInteger(dy)) return 'numeros';
+  if (t.item !== undefined && !ITENS_DA_BOLA.includes(t.item)) return 'item';
   if (dy < 0 || dy > DY_MAX) return 'forca';
   if (t.passo < bola.passo) return 'cedo';
   const f2 = t.dx * t.dx + t.dz * t.dz + dy * dy;
@@ -557,6 +745,7 @@ export function bater(bola: Bola, t: Tacada) {
   bola.y = 0;
   bola.andando = true;
   bola.tacadas++;
+  bola.item = t.item ?? null;
 }
 
 function noBuraco(m: Montado, bola: Bola): boolean {
@@ -576,8 +765,9 @@ export function avancar(b: Buraco, bola: Bola) {
   }
   // a ladeira: empurra para baixo, na direção da inclinação
   const [, gx, gz] = relevo(b, bola.x, bola.z);
-  bola.vx -= GRAVIDADE * gx;
-  bola.vz -= GRAVIDADE * gz;
+  const ladeira = (bola.item && LADEIRA_DO_ITEM[bola.item]) ?? 1;
+  bola.vx -= GRAVIDADE * gx * ladeira;
+  bola.vz -= GRAVIDADE * gz * ladeira;
   const inclinado = gx * gx + gz * gz > INCLINACAO_PARADA * INCLINACAO_PARADA;
   const v = Math.sqrt(bola.vx * bola.vx + bola.vz * bola.vz);
   const nova = v * ATRITO - FREIO;
@@ -586,7 +776,7 @@ export function avancar(b: Buraco, bola: Bola) {
       bola.x = m.buraco[0];
       bola.z = m.buraco[1];
       bola.dentro = true;
-    }
+    } else assentarNasPas(m, bola);
     return parar(bola);
   }
   if (nova <= 0) {
@@ -606,6 +796,7 @@ export function avancar(b: Buraco, bola: Bola) {
       const s = m.perto[i];
       for (let k = 0; k < s.length; k += 5) baterNoSegmento(bola, s[k], s[k + 1], s[k + 2], s[k + 3], s[k + 4]);
     }
+    baterNasPas(m, bola);
     // fora da pista ou num buraco do chão: volta para onde estava, com uma tacada a mais
     if (!temChao(b, bola.x, bola.z)) {
       bola.x = bola.ultimaX;
@@ -639,6 +830,7 @@ function voar(b: Buraco, m: Montado, bola: Bola) {
       const s = m.perto[i];
       for (let k = 0; k < s.length; k += 5) baterNoSegmento(bola, s[k], s[k + 1], s[k + 2], s[k + 3], s[k + 4]);
     }
+    baterNasPas(m, bola);
     const chao = relevo(b, bola.x, bola.z)[0];
     if (bola.y > chao) continue;
     // chegou à altura do chão: sem chão aqui (fora da pista, um fosso), caiu

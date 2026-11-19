@@ -277,3 +277,81 @@
   font-weight: 600;
 }
 .bichos-placa .eu { color: var(--accent, #4a8); }
+
+/* 19/11/2026: os efeitos da luta, a escada, o caderno da toca e a lojinha */
+.bichos-cesta { flex-wrap: wrap; }
+.bichos-efeitos {
+  display: inline-flex;
+  gap: 3px;
+  margin-left: 4px;
+  font-size: 11px;
+}
+.bichos-golpe { flex-wrap: wrap; }
+.bichos-golpe-efeito { flex-basis: 100%; text-align: left; }
+.bichos-escada {
+  display: flex;
+  gap: 4px;
+  margin: 6px 0;
+  font-size: 16px;
+  color: var(--text-muted, #8b8790);
+}
+.bichos-escada .vencida { color: #e0a92a; }
+.bichos-caderno-botao { width: 100%; margin: 4px 0; }
+.bichos-loja {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 6px 0;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: var(--bg-input, rgba(127, 127, 127, 0.12));
+}
+.bichos-loja h4 { flex-basis: 100%; margin: 0; }
+.bichos-caderno {
+  position: absolute;
+  inset: 6px;
+  overflow: auto;
+  padding: 8px;
+  border-radius: 10px;
+  background: var(--bg-raised, #fbf6ea);
+  color: var(--text, #2b2a33);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+  z-index: 2;
+}
+.bichos-caderno-topo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.bichos-caderno-topo button { margin-left: auto; }
+.bichos-caderno ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.bichos-caderno li {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  padding: 2px 4px;
+  border-radius: 6px;
+  font-size: 12px;
+}
+.bichos-caderno li.pego { background: rgba(224, 169, 42, 0.16); }
+.bichos-caderno li.nao-visto { opacity: 0.55; }
+.bichos-caderno-n { opacity: 0.6; font-variant-numeric: tabular-nums; }
+.bichos-caderno-oculto {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(127, 127, 127, 0.25);
+  font-weight: 700;
+}
+.bichos-caderno-de { flex-basis: 100%; opacity: 0.7; }

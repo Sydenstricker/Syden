@@ -18,7 +18,9 @@ import {
   roteiro,
   tirosDosInimigos,
   type Arma,
+  type FaseDaNave,
   type Inimigo,
+  type Nivel,
   type TiroInimigo,
 } from './sim';
 
@@ -36,6 +38,8 @@ export interface Comandos {
   dy: number;
   fogo: boolean;
   bomba: boolean;
+  /** O loop de esquiva (19/11/2026): um toque. */
+  loop?: boolean;
   /** No toque: o lugar para onde o dedo leva a nave (ela vai até lá na velocidade dela). */
   alvo?: { x: number; y: number } | null;
 }
@@ -48,6 +52,7 @@ export interface Teclas {
   baixo: boolean;
   fogo: boolean;
   bomba: boolean;
+  loop?: boolean;
 }
 
 /** O dedo (ou o mouse com o botão apertado): onde ele começou, onde está, e onde a nave estava; `alvo` é para onde ela vai. */
@@ -73,7 +78,14 @@ export function comandosDoJogador(k: Teclas, dedo: Toque | null): Comandos {
   const dx = (k.direita ? 1 : 0) - (k.esquerda ? 1 : 0);
   const dy = (k.baixo ? 1 : 0) - (k.cima ? 1 : 0);
   const setas = dx !== 0 || dy !== 0;
-  return { dx, dy, fogo: k.fogo || !!dedo, bomba: k.bomba, alvo: dedo && !setas ? dedo.alvo : null };
+  return {
+    dx,
+    dy,
+    fogo: k.fogo || !!dedo,
+    bomba: k.bomba,
+    loop: !!k.loop,
+    alvo: dedo && !setas ? dedo.alvo : null,
+  };
 }
 
 /** Depois de um passo andado pelas setas com o dedo/mouse apertado: o arraste recomeça de onde a nave está agora. */
@@ -91,6 +103,8 @@ export interface Bala {
   y: number;
   arma: Arma;
   b: number;
+  /** Só para o desenho: a bala do nível 2 e 3 é maior. */
+  nivel: Nivel;
 }
 
 /** O que só enfeita a tela: explosões, faíscas e o clarão da bomba. */
@@ -112,6 +126,10 @@ export interface Ocorrido {
   escudo: boolean;
   bomba: boolean;
   chefe: boolean;
+  /** Começou o loop neste passo. */
+  loop: boolean;
+  /** Os inimigos acertados (sem cair) neste passo: piscam branco. */
+  acertados: number[];
 }
 
 const arred = (v: number) => Math.round(v * 100) / 100;
@@ -146,10 +164,11 @@ export class Mundo {
   constructor(
     readonly semente: number,
     readonly jogador: boolean,
+    readonly fase: FaseDaNave = 'horta',
   ) {
-    this.inimigos = roteiro(semente);
+    this.inimigos = roteiro(semente, fase);
     this.tiros = tirosDosInimigos(this.inimigos);
-    this.ficha = new Ficha(this.inimigos);
+    this.ficha = new Ficha(this.inimigos, fase);
     this.ordem = this.inimigos.map((_, i) => i).sort((a, b) => this.inimigos[a].t - this.inimigos[b].t);
   }
 
@@ -168,7 +187,18 @@ export class Mundo {
   avancar(cmd: Comandos, ausente = false): Ocorrido {
     const n = ++this.passo;
     const f = this.ficha;
-    const o: Ocorrido = { disparou: false, acertou: false, derrubou: false, pegou: false, perdeuVida: false, escudo: false, bomba: false, chefe: false };
+    const o: Ocorrido = {
+      disparou: false,
+      acertou: false,
+      derrubou: false,
+      pegou: false,
+      perdeuVida: false,
+      escudo: false,
+      bomba: false,
+      chefe: false,
+      loop: false,
+      acertados: [],
+    };
 
     // os inimigos que entram e os que saem
     while (this.proximoInimigo < this.ordem.length && this.inimigos[this.ordem[this.proximoInimigo]].t <= n) this.ativos.push(this.ordem[this.proximoInimigo++]);
@@ -209,7 +239,12 @@ export class Mundo {
         if (!pos) return false;
         if (perto(pos, this.nave.x, this.nave.y, RAIO_ITEM + RAIO_NAVE) && f.pegar(n, i, this.nave.x, this.nave.y) === null) {
           this.eventos.push(['g', n, i, this.nave.x, this.nave.y]);
-          this.efeitos.push({ tipo: 'pegou', x: this.nave.x, y: this.nave.y, em: n });
+          this.efeitos.push({
+            tipo: 'pegou',
+            x: this.nave.x,
+            y: this.nave.y,
+            em: n,
+          });
           o.pegou = true;
           return false;
         }
@@ -222,15 +257,34 @@ export class Mundo {
           this.eventos.push(['b', n, this.nave.x, this.nave.y]);
           this.limpoAte = n;
           this.tirosAtivos = [];
-          this.efeitos.push({ tipo: 'bomba', x: this.nave.x, y: this.nave.y, em: n });
+          this.efeitos.push({
+            tipo: 'bomba',
+            x: this.nave.x,
+            y: this.nave.y,
+            em: n,
+          });
           o.bomba = true;
           for (const i of f.mortos.keys()) if (!antes.has(i)) this.caiu(i, n, o);
         }
       }
 
-      if (cmd.fogo && n % CADENCIA === 0) {
+      if (cmd.loop && f.loopPronto(n) && f.loop(n, this.nave.x, this.nave.y) === null) {
+        this.eventos.push(['l', n, this.nave.x, this.nave.y]);
+        o.loop = true;
+      }
+
+      if (cmd.fogo && n % CADENCIA === 0 && f.loopEm(n) === null) {
         const arma = f.armaEm(n);
-        for (let b = 0; b < VOLEIAS[arma].length; b++) this.balas.push({ p: n, x: this.nave.x, y: this.nave.y, arma, b });
+        const nivel = f.nivelEm(n);
+        for (let b = 0; b < VOLEIAS[arma].length; b++)
+          this.balas.push({
+            p: n,
+            x: this.nave.x,
+            y: this.nave.y,
+            arma,
+            b,
+            nivel,
+          });
         o.disparou = true;
       }
     }
@@ -249,7 +303,10 @@ export class Mundo {
         this.eventos.push(['a', n, i, bala.p, bala.x, bala.y, bala.arma, bala.b]);
         o.acertou = true;
         if (f.mortos.has(i)) this.caiu(i, n, o);
-        else this.efeitos.push({ tipo: 'faisca', x: pos.x, y: pos.y, em: n });
+        else {
+          this.efeitos.push({ tipo: 'faisca', x: pos.x, y: pos.y, em: n });
+          o.acertados.push(i);
+        }
         return false;
       }
       return true;
@@ -265,7 +322,7 @@ export class Mundo {
     this.tirosAtivos = this.tirosAtivos.filter((tiro) => posicaoTiro(tiro, n) !== null);
 
     // o golpe: quem leva é quem diz
-    if (pilota && n >= f.invulAte) {
+    if (pilota && n >= f.invulAte && !f.invulNoLoop(n)) {
       const { x, y } = this.nave;
       let atingida = this.tirosAtivos.findIndex((tiro) => perto(posicaoTiro(tiro, n)!, x, y, RAIO_NAVE + RAIO_TIRO));
       let corpo = false;
@@ -304,7 +361,14 @@ export class Mundo {
     const p = posicaoInimigo(e, n);
     o.derrubou = true;
     if (e.tipo === 'chefe') o.chefe = true;
-    if (p) this.efeitos.push({ tipo: 'explosao', x: p.x, y: p.y, em: n, grande: e.tipo === 'besouro' || e.tipo === 'chefe' });
+    if (p)
+      this.efeitos.push({
+        tipo: 'explosao',
+        x: p.x,
+        y: p.y,
+        em: n,
+        grande: e.tipo === 'besouro' || e.tipo === 'chefe',
+      });
     if (e.item) this.soltos.push([i, n]);
   }
 

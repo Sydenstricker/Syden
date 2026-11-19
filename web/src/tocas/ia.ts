@@ -33,7 +33,10 @@ import {
   passavel,
   acessivel,
   temVaga,
-} from './sim';
+  MELHORIAS,
+  temMelhoria,
+  type Melhoria,
+} from './sim.js';
 
 export interface Perfil {
   trabalhadores: number;
@@ -51,11 +54,49 @@ export interface Perfil {
   exercitoCom: number;
   /** Durante o ataque, com menos que isto, volta para casa. */
   recuo: number;
+  /** De quantos em quantos passos pensa (10 = uma vez por segundo; quem pensa mais vezes reage antes). */
+  pensa?: number;
+  /** Com tantos trabalhadores, levanta o ferreiro; e as melhorias que estuda lá, em ordem (sem ferreiro: nada). */
+  ferreiroCom?: number;
+  melhorias?: Melhoria[];
+  /** Guardando para a era, ainda faz fazendas se a comida (o que a era mais pede) está curta. */
+  fazendasNaEra?: boolean;
+  /** Nunca ataca nem treina tropa (o tutorial). */
+  pacifico?: boolean;
 }
 
-export const PERFIS: Record<'computador' | 'piloto', Perfil> = {
+/**
+ * OS NÍVEIS (19/11/2026, pedido dele): o fácil pensa a cada 2 s, cresce pouco e ataca tarde, com ondas pequenas; o normal é o
+ * computador de sempre; o difícil pensa duas vezes por segundo, junta mais trabalhadores, estuda as melhorias do ferreiro e ataca
+ * mais cedo, em ondas maiores e mais seguidas. Ninguém trapaceia: os três jogam pelas mesmas regras e só veem o que a névoa
+ * deixaria (o centro do outro é conhecido porque o mapa é espelhado).
+ */
+export type Nivel = 'facil' | 'normal' | 'dificil';
+export const NIVEIS: Nivel[] = ['facil', 'normal', 'dificil'];
+
+export const PERFIS: Record<'computador' | 'piloto' | 'tutorial' | Nivel, Perfil> = {
   computador: { trabalhadores: 16, quartelCom: 9, arqueariaCom: 12, eraCom: 14, torres: 1, catapultas: 1, primeiroAtaque: 4800, onda: 7, intervalo: 1500, recuo: 2, exercitoCom: 11 },
   piloto: { trabalhadores: 22, quartelCom: 9, arqueariaCom: 11, eraCom: 15, torres: 1, catapultas: 3, primeiroAtaque: 5400, onda: 12, intervalo: 600, recuo: 3, exercitoCom: 15 },
+  facil: { trabalhadores: 10, quartelCom: 8, arqueariaCom: 10, eraCom: 10, torres: 0, catapultas: 0, primeiroAtaque: 7200, onda: 5, intervalo: 2400, recuo: 2, exercitoCom: 9, pensa: 20, fazendasNaEra: true },
+  normal: { trabalhadores: 16, quartelCom: 9, arqueariaCom: 12, eraCom: 14, torres: 1, catapultas: 1, primeiroAtaque: 4800, onda: 7, intervalo: 1500, recuo: 2, exercitoCom: 11 },
+  dificil: {
+    trabalhadores: 24,
+    quartelCom: 9,
+    arqueariaCom: 11,
+    eraCom: 16,
+    torres: 2,
+    catapultas: 2,
+    primeiroAtaque: 4200,
+    onda: 11,
+    intervalo: 900,
+    recuo: 3,
+    exercitoCom: 14,
+    pensa: 5,
+    fazendasNaEra: true,
+    ferreiroCom: 13,
+    melhorias: ['machado', 'arado', 'ataqueLanceiro', 'picareta', 'armaduraLanceiro', 'ataqueArqueiro', 'ataqueCavaleiro', 'armaduraArqueiro', 'armaduraCavaleiro'],
+  },
+  tutorial: { trabalhadores: 6, quartelCom: 99, arqueariaCom: 99, eraCom: 99, torres: 0, catapultas: 0, primeiroAtaque: 1e9, onda: 99, intervalo: 1e9, recuo: 0, exercitoCom: 99, pensa: 20, pacifico: true },
 };
 
 export type IA = (sim: Sim) => void;
@@ -65,9 +106,10 @@ export function criarIA(dono: Dono, perfil: Perfil = PERFIS.computador): IA {
   let proximaOnda = perfil.primeiroAtaque;
   const inimigo = (1 - dono) as Dono;
   const alvoFinal = { x: CENTRO_DE[inimigo].gx + 1.5, y: CENTRO_DE[inimigo].gy + 1.5 };
+  const pensa = perfil.pensa ?? 10;
 
   return (sim: Sim) => {
-    if (sim.vencedor !== null || (sim.passo + dono * 5) % 10 !== 0) return;
+    if (sim.vencedor !== null || (sim.passo + dono * 5) % pensa !== 0) return;
     const j = sim.jogadores[dono];
     const centro = sim.predios.find((p) => p.dono === dono && p.tipo === 'centro');
     if (!centro) return;
@@ -111,10 +153,18 @@ export function criarIA(dono: Dono, perfil: Perfil = PERFIS.computador): IA {
     if (pop.max < POP_MAX && pop.usada + naFila >= pop.max - 3 && emObra('casa') === 0) construir('casa', lugarPara(sim, dono, 'casa', c, 3, atras));
     const fazendas = tem('fazenda').length;
     const querComida = Math.round(trab.length * 0.34);
-    if (fazendas < querComida && emObra('fazenda') < 2 && !querEra) construir('fazenda', lugarPara(sim, dono, 'fazenda', c, 3));
+    if (fazendas < querComida && emObra('fazenda') < 2 && (!querEra || (!!perfil.fazendasNaEra && j.recursos.comida < ERA2.custo.comida! / 2))) construir('fazenda', lugarPara(sim, dono, 'fazenda', c, 3));
     if (trab.length >= perfil.quartelCom && !tem('quartel').length) construir('quartel', lugarPara(sim, dono, 'quartel', c, 4, frente), 2);
     if (trab.length >= perfil.arqueariaCom && !tem('arquearia').length && !querEra) construir('arquearia', lugarPara(sim, dono, 'arquearia', c, 4, frente), 2);
     if (tem('arquearia').length && tem('torre').length < perfil.torres && !querEra) construir('torre', lugarParaTorre(sim, dono, c));
+    // o ferreiro, e as melhorias na ordem do perfil (uma por vez; guardando para a era, espera)
+    if (perfil.ferreiroCom !== undefined && trab.length >= perfil.ferreiroCom && !tem('ferreiro').length && tem('quartel').length && !querEra)
+      construir('ferreiro', lugarPara(sim, dono, 'ferreiro', c, 4, atras));
+    const ferreiro = tem('ferreiro', true)[0];
+    if (ferreiro && !ferreiro.estudo && !querEra && perfil.melhorias) {
+      const m = perfil.melhorias.find((k) => !temMelhoria(sim, dono, k));
+      if (m && podePagar(sim, dono, MELHORIAS[m].custo)) comandar(sim, dono, { t: 'melhorar', predio: ferreiro.id, m });
+    }
 
     // ---- os trabalhadores parados vão trabalhar, na proporção; e quem colhe o que sobra muda para o que falta ----
     const conta: Record<Recurso, number> = { comida: 0, madeira: 0, ouro: 0 };
@@ -159,6 +209,7 @@ export function criarIA(dono: Dono, perfil: Perfil = PERFIS.computador): IA {
     }
 
     // ---- a tropa ----
+    if (perfil.pacifico) return;
     const inimigos = sim.unidades.filter((u) => u.dono === inimigo);
     const perto = inimigos.filter((u) => dist2(u, c.x, c.y) < 14 * 14);
     if ((!querEra || exercito.length < 4) && (trab.length >= perfil.exercitoCom || perto.length > 0)) {

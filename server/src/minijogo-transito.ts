@@ -14,10 +14,15 @@
  *
  * Com a turma, todos recebem a MESMA semente (os mesmos carros, na mesma hora), cada um no próprio cruzamento, e os pontos se
  * comparam no fim: os três primeiros vão à estante de troféus (pista 'transito'). No Solo, o RECORDE da pessoa (transito_recordes).
+ *
+ * O SOLO ESCOLHE (19/11/2026): a partida do Solo começa na ESCOLHA ('escolha'): o modo (o minuto, ou "até bater": sem relógio, acaba
+ * na primeira batida) e o mapa (o cruzamento, ou o T). O recorde do minuto no cruzamento continua em transito_recordes; os outros três
+ * vão para a tabela comum dos recordes do Solo (jogo 'transito', variante "<modo>-<mapa>"). Na sala, o minuto no cruzamento, como
+ * sempre. O relógio confere pelo passo em que a partida refeita acabou: ninguém joga mais depressa do que o relógio deixou.
  */
 import * as db from './db.js';
 import type { Definicao } from './minijogo-motor.js';
-import { PASSOS_DA_PARTIDA, refazer } from './transito-sim.js';
+import { MAPAS, MODOS, PASSOS_DA_PARTIDA, PASSOS_SEM_FIM_MAX, refazer, type Mapa, type Modo } from './transito-sim.js';
 
 export const DURACAO_MS = (PASSOS_DA_PARTIDA / 60) * 1000;
 /** A contagem da largada na tela (3 s) e a rede: o fim pode chegar um tico antes do relógio do servidor. */
@@ -26,6 +31,21 @@ export const FOLGA_DO_RELOGIO_MS = 2000;
 export const PRAZO_MS = DURACAO_MS + 10 * 60_000;
 /** Liberações demais para um minuto (quatro ruas, e nunca chegam mais de uns 80 carros). */
 export const LIBERACOES_MAX = 400;
+/** No "até bater", a partida pode durar até 20 minutos: o prazo cresce junto. */
+export const PRAZO_SEM_FIM_MS = 30 * 60_000;
+
+/** A variante do recorde na tabela comum (o minuto no cruzamento fica na tabela antiga, transito_recordes). */
+export const varianteDoRecorde = (modo: Modo, mapa: Mapa) => `${modo}-${mapa}`;
+const ehOClassico = (modo: Modo, mapa: Mapa) => modo === 'minuto' && mapa === 'cruz';
+
+function recordeDe(userId: number, modo: Modo, mapa: Mapa): number | null {
+  return ehOClassico(modo, mapa) ? db.recordeDoTransito(userId) : (db.recordeDoSolo(userId, 'transito', varianteDoRecorde(modo, mapa))?.valor ?? null);
+}
+function guardarRecorde(userId: number, modo: Modo, mapa: Mapa, pontos: number): boolean {
+  return ehOClassico(modo, mapa)
+    ? db.guardarRecordeDoTransito(userId, pontos)
+    : db.guardarRecordeDoSolo(userId, 'transito', varianteDoRecorde(modo, mapa), pontos, false).novo;
+}
 
 interface Motorista {
   pontos: number | null;
@@ -38,15 +58,20 @@ export const transito: Definicao = criarTransito();
 export function criarTransito({ agora = Date.now, aleatorio = Math.random }: { agora?: () => number; aleatorio?: () => number } = {}): Definicao {
   return {
     minimo: 2,
-    comecar(ctx, { naSala }) {
+    comecar(ctx, { naSala, corpo }) {
       const inscritos = [...naSala];
       const solo = inscritos.length === 1;
       const evento = `transito-${ctx.comunidade ?? 0}-${agora()}`;
-      const inicio = agora();
+      let inicio = agora();
       const semente = Math.floor(aleatorio() * 2 ** 31);
-      let fase: 'jogando' | 'fim' = 'jogando';
+      const lerModo = (v: unknown): Modo => (MODOS.includes(v as Modo) ? (v as Modo) : 'minuto');
+      const lerMapa = (v: unknown): Mapa => (MAPAS.includes(v as Mapa) ? (v as Mapa) : 'cruz');
+      // na sala, o de sempre; no Solo, o que vier no corpo, ou a escolha na tela
+      let modo: Modo = solo ? lerModo(corpo?.modo) : 'minuto';
+      let mapa: Mapa = solo ? lerMapa(corpo?.mapa) : 'cruz';
+      let fase: 'escolha' | 'jogando' | 'fim' = solo && ctx.solo && corpo?.modo === undefined ? 'escolha' : 'jogando';
       const motoristas = new Map<number, Motorista>(inscritos.map((id) => [id, { pontos: null, atravessaram: null, batidas: null }]));
-      const recordeAntes = solo ? db.recordeDoTransito(inscritos[0]) : null;
+      let recordeAntes = solo ? recordeDe(inscritos[0], modo, mapa) : null;
       let recordeNovo = false;
 
       const presentes = () => {
@@ -72,7 +97,7 @@ export function criarTransito({ agora = Date.now, aleatorio = Math.random }: { a
         const terminaram = inscritos.filter((id) => motoristas.get(id)!.pontos !== null);
         if (solo) {
           const m = motoristas.get(inscritos[0])!;
-          if (m.pontos !== null && m.pontos > 0) recordeNovo = db.guardarRecordeDoTransito(inscritos[0], m.pontos);
+          if (m.pontos !== null && m.pontos > 0) recordeNovo = guardarRecorde(inscritos[0], modo, mapa, m.pontos);
         } else if (terminaram.length >= 2) {
           for (const l of placar()) {
             if (l.posicao === null || l.posicao > 3 || !l.pontos) continue;
@@ -98,7 +123,7 @@ export function criarTransito({ agora = Date.now, aleatorio = Math.random }: { a
         if (presentes().every((id) => motoristas.get(id)!.pontos !== null)) terminar();
       };
 
-      ctx.agendar(PRAZO_MS, () => terminar());
+      ctx.agendar(fase === 'escolha' ? PRAZO_SEM_FIM_MS : PRAZO_MS, () => terminar());
 
       return {
         publico(quem) {
@@ -106,6 +131,9 @@ export function criarTransito({ agora = Date.now, aleatorio = Math.random }: { a
           return {
             fase,
             semente,
+            modo,
+            mapa,
+            solo,
             duracaoMs: DURACAO_MS,
             meu: meu ? { ...meu } : null,
             placar: placar(),
@@ -114,26 +142,39 @@ export function criarTransito({ agora = Date.now, aleatorio = Math.random }: { a
           };
         },
         acao(quem, corpo) {
-          if (corpo.tipo !== 'fim') return 'Ação desconhecida.';
           const m = motoristas.get(quem);
           if (!m) return 'Você está assistindo esta partida.';
+          if (corpo.tipo === 'jogar') {
+            if (fase !== 'escolha') return 'A partida está andando.';
+            modo = lerModo(corpo.modo);
+            mapa = lerMapa(corpo.mapa);
+            recordeAntes = recordeDe(quem, modo, mapa);
+            inicio = agora();
+            fase = 'jogando';
+            ctx.agendar(modo === 'minuto' ? PRAZO_MS : PRAZO_SEM_FIM_MS, () => terminar());
+            ctx.avisar();
+            return null;
+          }
+          if (corpo.tipo !== 'fim') return 'Ação desconhecida.';
           if (fase !== 'jogando' || m.pontos !== null) return 'Esta rodada já acabou.';
           const lista = corpo.liberacoes;
-          if (!Array.isArray(lista) || lista.length % 2 !== 0 || lista.length > LIBERACOES_MAX * 2) return 'Sessão inválida.';
+          const limite = modo === 'minuto' ? PASSOS_DA_PARTIDA : PASSOS_SEM_FIM_MAX;
+          const maximo = LIBERACOES_MAX * Math.ceil(limite / PASSOS_DA_PARTIDA);
+          if (!Array.isArray(lista) || lista.length % 2 !== 0 || lista.length > maximo * 2) return 'Sessão inválida.';
           const vistos = new Set<number>();
           let anterior = 0;
           for (let i = 0; i < lista.length; i += 2) {
             const p = lista[i];
             const rua = lista[i + 1];
-            if (!Number.isInteger(p) || !Number.isInteger(rua) || p < anterior || p >= PASSOS_DA_PARTIDA || rua < 0 || rua > 3) return 'Sessão inválida.';
+            if (!Number.isInteger(p) || !Number.isInteger(rua) || p < anterior || p >= limite || rua < 0 || rua > 3) return 'Sessão inválida.';
             const chave = p * 4 + rua;
             if (vistos.has(chave)) return 'Sessão inválida.';
             vistos.add(chave);
             anterior = p;
           }
-          // ninguém joga o minuto mais depressa do que o relógio deixou (pausar só alonga)
-          if (DURACAO_MS > agora() - inicio + FOLGA_DO_RELOGIO_MS) return 'Sessão inválida.';
-          const e = refazer(semente, lista as number[]);
+          const e = refazer(semente, lista as number[], { modo, mapa });
+          // ninguém joga mais depressa do que o relógio deixou (pausar só alonga): o minuto, ou até o passo em que a partida acabou
+          if ((e.passo / 60) * 1000 > agora() - inicio + FOLGA_DO_RELOGIO_MS) return 'Sessão inválida.';
           m.pontos = e.pontos;
           m.atravessaram = e.atravessaram;
           m.batidas = e.batidas;

@@ -16,7 +16,13 @@
  *  - PISTA (tábua): a ÚNICA por onde o tráfego passa. Inclinação até 45°, até ~2,2 casas. 150 por casa.
  *  - MADEIRA (viga): a estrutura barata, até ~2,2 casas. 100 por casa. Aguenta pouco.
  *  - AÇO (viga): mais forte e mais longa (até ~3,6 casas), e cara: 300 por casa.
+ *  - CABO (19/11/2026): SÓ PUXA. Frouxo (mais curto que o comprimento de montagem), não faz força nenhuma; esticado, é forte e
+ *    leve, e vai longe (até ~4,4 casas). 60 por casa. Serve para pendurar a pista de um apoio alto, nunca para escorar.
  * O custo de cada peça é o preço × o comprimento, arredondado; o da ponte é a soma.
+ *
+ * O ORÇAMENTO (19/11/2026): cada fase tem um custo-alvo, e o resultado ganha até 3 SELOS (selosDe): passou; passou dentro do
+ * orçamento; passou com no máximo 3/4 dele. O orçamento foi medido: uma busca gulosa a partir da ponte de referência (tirar peças,
+ * trocar aço por madeira ou cabo, e só ficar com o que ainda passa) achou uma ponte de 3/4 dele em cada fase, ou menos.
  *
  * A FÍSICA: massa-mola. Cada ponta de peça é um nó com metade da massa das peças que chegam nele; cada peça é uma mola rígida com
  * amortecimento ao longo dela. Passo fixo de 1/60 s, dividido em 16 subpassos (Euler semi-implícito). A força de cada peça, no
@@ -58,6 +64,7 @@ const AMORTECIMENTO_DO_AR = 0.3;
 export const PISTA = 0;
 export const MADEIRA = 1;
 export const ACO = 2;
+export const CABO = 3;
 
 export interface TipoDePeca {
   /** Custo por casa de comprimento. */
@@ -76,6 +83,7 @@ export const PECAS: readonly TipoDePeca[] = [
   { preco: 150, massa: 0.6, rigidez: 15000, limite: 120, alcance2: 5 },
   { preco: 100, massa: 0.4, rigidez: 15000, limite: 110, alcance2: 5 },
   { preco: 300, massa: 0.8, rigidez: 40000, limite: 300, alcance2: 13 },
+  { preco: 60, massa: 0.15, rigidez: 30000, limite: 220, alcance2: 20 },
 ];
 
 export type IdDoVeiculo = 'carroca' | 'carro' | 'caminhao';
@@ -107,17 +115,19 @@ export interface Fase {
   /** Pilares de pedra (só desenho; o apoio é a âncora): [x, topo, ...]. */
   pedras: readonly number[];
   trafego: readonly IdDoVeiculo[];
+  /** O custo-alvo dos selos (19/11/2026). */
+  orcamento: number;
 }
 
 export const FASES: readonly Fase[] = [
   // 1: o riacho, curto, com apoio embaixo nas duas margens; uma carroça
-  { id: 'riacho', largura: 6, alto: 3, baixo: -2, agua: -2.6, fundo: -4, ancoras: [0, 0, 6, 0, 0, -2, 6, -2], pedras: [], trafego: ['carroca'] },
+  { id: 'riacho', largura: 6, alto: 3, baixo: -2, agua: -2.6, fundo: -4, ancoras: [0, 0, 6, 0, 0, -2, 6, -2], pedras: [], trafego: ['carroca'], orcamento: 2800 },
   // 2: o rio, mais largo; duas carroças
-  { id: 'rio', largura: 8, alto: 3, baixo: -2, agua: -2.6, fundo: -4, ancoras: [0, 0, 8, 0, 0, -2, 8, -2], pedras: [], trafego: ['carroca', 'carroca'] },
+  { id: 'rio', largura: 8, alto: 3, baixo: -2, agua: -2.6, fundo: -4, ancoras: [0, 0, 8, 0, 0, -2, 8, -2], pedras: [], trafego: ['carroca', 'carroca'], orcamento: 5400 },
   // 3: a ravina, sem água e funda; carros e uma carroça
-  { id: 'ravina', largura: 10, alto: 3, baixo: -4, agua: null, fundo: -7, ancoras: [0, 0, 10, 0, 0, -3, 10, -3], pedras: [], trafego: ['carro', 'carroca', 'carro'] },
+  { id: 'ravina', largura: 10, alto: 3, baixo: -4, agua: null, fundo: -7, ancoras: [0, 0, 10, 0, 0, -3, 10, -3], pedras: [], trafego: ['carro', 'carroca', 'carro'], orcamento: 8900 },
   // 4: as margens altas, sem apoio embaixo: só os pilares acima da pista; dois carros
-  { id: 'pilares', largura: 10, alto: 4, baixo: -1, agua: -2, fundo: -4, ancoras: [0, 0, 10, 0, 0, 3, 10, 3], pedras: [], trafego: ['carro', 'carro'] },
+  { id: 'pilares', largura: 10, alto: 4, baixo: -1, agua: -2, fundo: -4, ancoras: [0, 0, 10, 0, 0, 3, 10, 3], pedras: [], trafego: ['carro', 'carro'], orcamento: 3900 },
   // 5: o vão grande, com uma pedra no meio do rio; o caminhão e um carro
   {
     id: 'pedra',
@@ -129,8 +139,70 @@ export const FASES: readonly Fase[] = [
     ancoras: [0, 0, 14, 0, 0, -2, 14, -2, 7, -3],
     pedras: [7, -3],
     trafego: ['caminhao', 'carro'],
+    orcamento: 15100,
+  },
+  // AS FASES DE 19/11/2026 (6 a 15): cada uma com a ponte de referência passando (pontePronta; o teste cobra)
+  // 6: o arroio, curtinho, três carroças em fila
+  { id: 'arroio', largura: 4, alto: 2, baixo: -2, agua: -2.4, fundo: -3.5, ancoras: [0, 0, 4, 0, 0, -2, 4, -2], pedras: [], trafego: ['carroca', 'carroca', 'carroca'], orcamento: 1700 },
+  // 7: a lagoa, sem apoio embaixo
+  { id: 'lagoa', largura: 8, alto: 3, baixo: -2, agua: -2.6, fundo: -4, ancoras: [0, 0, 8, 0], pedras: [], trafego: ['carro'], orcamento: 4900 },
+  // 8: a cascata, curta e funda, com o caminhão
+  { id: 'cascata', largura: 6, alto: 3, baixo: -3, agua: -3.6, fundo: -5, ancoras: [0, 0, 6, 0, 0, -3, 6, -3], pedras: [], trafego: ['caminhao'], orcamento: 4100 },
+  // 9: o brejo, longo e raso, com uma pedra baixa no meio
+  {
+    id: 'brejo',
+    largura: 12,
+    alto: 3,
+    baixo: -2,
+    agua: -2.4,
+    fundo: -3.5,
+    ancoras: [0, 0, 12, 0, 0, -2, 12, -2, 6, -2],
+    pedras: [6, -2],
+    trafego: ['carroca', 'carro', 'carroca'],
+    orcamento: 9100,
+  },
+  // 10: a garganta, sem água, com três carros
+  { id: 'garganta', largura: 12, alto: 4, baixo: -4, agua: null, fundo: -8, ancoras: [0, 0, 12, 0, 0, -3, 12, -3], pedras: [], trafego: ['carro', 'carro', 'carro'], orcamento: 9800 },
+  // 11: as torres, os apoios só no alto, e o caminhão
+  { id: 'torres', largura: 10, alto: 4, baixo: -1, agua: -2, fundo: -4, ancoras: [0, 0, 10, 0, 0, 3, 10, 3], pedras: [], trafego: ['caminhao'], orcamento: 4700 },
+  // 12: as ilhas, o vão de 16 com duas pedras
+  {
+    id: 'ilhas',
+    largura: 16,
+    alto: 3,
+    baixo: -3,
+    agua: -3.6,
+    fundo: -5,
+    ancoras: [0, 0, 16, 0, 0, -2, 16, -2, 5, -3, 11, -3],
+    pedras: [5, -3, 11, -3],
+    trafego: ['carro', 'carro', 'carro'],
+    orcamento: 15500,
+  },
+  // 13: o vale seco, a carroça e o caminhão (nessa ordem: o caminhão comprido na frente da carroça não caberia na fila do desenho)
+  { id: 'vale', largura: 10, alto: 3, baixo: -3, agua: null, fundo: -6, ancoras: [0, 0, 10, 0, 0, -3, 10, -3], pedras: [], trafego: ['carroca', 'caminhao'], orcamento: 9100 },
+  // 14: a enchente, a água quase na pista, sem apoio embaixo
+  { id: 'enchente', largura: 8, alto: 3, baixo: -1, agua: -1.3, fundo: -3, ancoras: [0, 0, 8, 0], pedras: [], trafego: ['carro', 'carroca', 'carro'], orcamento: 6100 },
+  // 15: o grande rio, duas pedras e dois caminhões
+  {
+    id: 'grande',
+    largura: 18,
+    alto: 4,
+    baixo: -3,
+    agua: -3.6,
+    fundo: -5,
+    ancoras: [0, 0, 18, 0, 0, -2, 18, -2, 5, -3, 13, -3],
+    pedras: [5, -3, 13, -3],
+    trafego: ['caminhao', 'carro', 'caminhao'],
+    orcamento: 19600,
   },
 ];
+
+/** Os selos do resultado: 0 (não passou), 1 (passou), 2 (dentro do orçamento), 3 (com no máximo 3/4 dele). */
+export function selosDe(f: Fase, r: { passou: boolean; custo: number }): number {
+  if (!r.passou) return 0;
+  if (r.custo > f.orcamento) return 1;
+  return r.custo * 4 > f.orcamento * 3 ? 2 : 3;
+}
 
 export function faseDe(id: unknown): Fase | null {
   for (const f of FASES) if (f.id === id) return f;
@@ -479,8 +551,13 @@ export function passo(s: Sim): void {
       const uy = dy / l;
       const k = PECAS[b.tipo].rigidez;
       const vrel = (nb.vx - na.vx) * ux + (nb.vy - na.vy) * uy;
-      const elastica = (k * (l - b.l0)) / b.l0;
-      const forca = elastica + k * AMORTECIMENTO_AXIAL * vrel;
+      let elastica = (k * (l - b.l0)) / b.l0;
+      let forca = elastica + k * AMORTECIMENTO_AXIAL * vrel;
+      // o cabo só puxa: frouxo, não faz força nenhuma (nem o amortecimento, que o faria empurrar)
+      if (b.tipo === CABO && l < b.l0) {
+        elastica = 0;
+        forca = 0;
+      } else if (b.tipo === CABO && forca < 0) forca = 0;
       // o esforço é o da mola (o amortecimento só acalma; senão a pancada de uma batida quebraria tudo)
       if ((elastica < 0 ? -elastica : elastica) > (b.forca < 0 ? -b.forca : b.forca)) b.forca = elastica;
       na.fx += forca * ux;
@@ -561,7 +638,10 @@ export function pontePronta(f: Fase): number[] {
   const add = (ax: number, ay: number, bx: number, by: number, tipo: number) => p.push(ax, ay, bx, by, tipo);
   // a pista, de 2 em 2 (o vão é sempre par)
   for (let x = 0; x < L; x += 2) add(x, 0, x + 2, 0, PISTA);
-  const pesada = L >= 10;
+  // de aço: o vão grande, e o que não tem apoio embaixo (a lagoa, a enchente)
+  let apoioEmbaixo = false;
+  for (let i = 1; i < f.ancoras.length; i += 2) if (f.ancoras[i] < 0) apoioEmbaixo = true;
+  const pesada = L >= 10 || !apoioEmbaixo;
   const h = L >= 8 ? 2 : 1;
   const banzo = pesada ? ACO : MADEIRA;
   const diagonal = pesada ? ACO : MADEIRA;

@@ -79,6 +79,10 @@ export interface Kart {
   toca: number;
   /** Debaixo da CHUVA do regador (s que faltam): o asfalto escorrega como o gelo, e o teto cai um pouco. */
   chuva: number;
+  /** A CLASSE (19/11/2026): o teto da velocidade vezes isto. 1 em todo lugar, menos na classe rápida do Solo contra robôs. */
+  classe: number;
+  /** Acelerou cedo demais na largada (s que faltam): as rodas patinam e o kart não sai do lugar. */
+  patina: number;
 }
 
 export function novoKart(p: Pista): Kart {
@@ -86,7 +90,30 @@ export function novoKart(p: Pista): Kart {
   return {
     x, y, angulo, rumo: angulo, v: 0, deriva: 0, carga: 0, turbo: 0, pulo: 0, vpulo: 0, segurava: false,
     indice: p.lx.length - 3, volta: 0, meio: false, voltas: [], passos: 0, terminou: false, chao: Chao.Asfalto, bateu: false, rodando: 0, toca: 0, chuva: 0,
+    classe: 1, patina: 0,
   };
+}
+
+/**
+ * O TURBO DA LARGADA (19/11/2026, a auditoria): quem aperta o acelerador NO TEMPO CERTO do semáforo sai com um turbo curto;
+ * quem aperta cedo demais, patina. `segurou` é por quantos passos o acelerador estava apertado, sem soltar, quando o verde
+ * acendeu, e `contagem` é quantos passos o semáforo teve: quem segurava desde antes de ele começar (a tela de toque, que
+ * acelera sozinha) não ganha nem perde nada. A janela boa vai de 40 a 12 passos antes do verde (a terceira luz já acesa);
+ * apertar antes da terceira luz (60 passos ou mais) patina. Só passos: o mesmo aperto dá sempre o mesmo resultado.
+ */
+export const LARGADA_BOA: [number, number] = [12, 40];
+export const LARGADA_CEDO = 60;
+export function largada(k: Kart, segurou: number, contagem: number): 'turbo' | 'patina' | null {
+  if (segurou <= 0 || segurou >= contagem) return null;
+  if (segurou >= LARGADA_BOA[0] && segurou <= LARGADA_BOA[1]) {
+    k.turbo = Math.max(k.turbo, 0.8);
+    return 'turbo';
+  }
+  if (segurou >= LARGADA_CEDO) {
+    k.patina = 0.7;
+    return 'patina';
+  }
+  return null;
 }
 
 /** O nível do turbo que a derrapagem já carregou: 0 nenhum, 1 azul, 2 laranja. */
@@ -127,8 +154,13 @@ export function passo(k: Kart, c: Comandos, p: Pista): void {
     k.turbo = 0;
   }
 
+  // patinando na largada: as rodas giram em falso, e o acelerador não leva a lugar nenhum
+  if (k.patina > 0) {
+    k.patina = Math.max(0, k.patina - dt);
+    c = { ...c, acelera: false, freia: false };
+  }
   // A VELOCIDADE: o teto depende do chão e do turbo; acelerar aproxima do teto, frear desce, soltar perde um pouco.
-  const teto = (k.turbo > 0 ? (naGrama ? VMAX_GRAMA + 50 : VTURBO) : naGrama ? VMAX_GRAMA : VMAX) * (naChuva ? 0.85 : 1);
+  const teto = (k.turbo > 0 ? (naGrama ? VMAX_GRAMA + 50 : VTURBO) : naGrama ? VMAX_GRAMA : VMAX) * (naChuva ? 0.85 : 1) * (k.classe || 1);
   if (k.turbo > 0) k.turbo = Math.max(0, k.turbo - dt);
   if (c.acelera && !c.freia) {
     if (k.v < teto) k.v += (teto - k.v) * (k.turbo > 0 ? 3.5 : 1.15) * dt + (k.v < 20 ? 30 * dt : 0);

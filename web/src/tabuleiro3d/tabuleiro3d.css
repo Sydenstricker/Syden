@@ -47,3 +47,123 @@
     aspect-ratio: 4 / 3;
   }
 }
+
+/* 19/11/2026: os itens, a loja, a reta final e os prêmios bônus do Tabuleiro da turma (TabuleiroPaineis.tsx). */
+.tab-itens {
+  display: inline-flex;
+  gap: 1px;
+  align-items: center;
+}
+.tab-item-icone {
+  image-rendering: pixelated;
+  flex: 0 0 auto;
+}
+.tab-usar-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.tab-loja-lista {
+  list-style: none;
+  margin: 6px 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+.tab-loja-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 84px;
+  padding: 6px 8px;
+  border: 2px solid var(--border, rgba(127, 127, 127, 0.35));
+  border-radius: 8px;
+  background: var(--bg-raised);
+  color: inherit;
+  font: inherit;
+  font-size: calc(12px * var(--escala-do-texto, 1));
+  cursor: pointer;
+}
+.tab-loja-item:hover:not(:disabled),
+.tab-loja-item:focus-visible {
+  border-color: var(--accent);
+}
+.tab-loja-item:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.tab-reta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 18px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #e07a2e, #f2c46a);
+  color: #2e1e10;
+  animation: tab-reta-entra 0.5s ease-out;
+}
+.tab-reta strong {
+  font-size: calc(24px * var(--escala-do-texto, 1));
+}
+.tab-reta-selo {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: #f2c46a;
+  color: #2e1e10;
+  font-size: calc(12px * var(--escala-do-texto, 1));
+}
+@keyframes tab-reta-entra {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+}
+.tab-premios ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.tab-premio {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  background: var(--bg-raised);
+  animation: tab-premio-entra 0.45s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+.tab-premio.eu {
+  outline: 2px solid var(--accent);
+}
+.tab-premio-titulo {
+  font-weight: 700;
+}
+.tab-premio-quem {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tab-premio-mais {
+  color: #d08e2c;
+}
+@keyframes tab-premio-entra {
+  from {
+    transform: translateY(12px) scale(0.8);
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tab-reta,
+  .tab-premio {
+    animation: none;
+  }
+}

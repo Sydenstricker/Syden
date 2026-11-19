@@ -17,6 +17,14 @@
  * acabar a partida: num minuto, perder tudo num erro aos 10 s tira a graça; travar dói (as filas enchem) sem tirar a pessoa do jogo.
  * A FILA CHEIA também pune: o carro que chega e não cabe buzina e custa 1 ponto, para que esperar não seja a jogada segura.
  * Os pontos: 1 por carro que atravessou (a ambulância vale 3), e +5 a cada 10 seguidos sem batida.
+ *
+ * O QUE ENTROU EM 19/11/2026 (a auditoria dos mini-games):
+ *  - O MODO "ATÉ BATER": sem relógio; a partida acaba na PRIMEIRA batida (ou na terceira fila que transborda: senão quem não solta
+ *    ninguém jogaria para sempre), com teto de 20 minutos. O trânsito acelera até os 2 minutos e fica nisso.
+ *  - O CAMINHÃO (comprido e lento, vale 2) e a MOTO (curta e rápida): cada tipo tem o comprimento, os círculos da batida, a
+ *    rapidez e o valor dele (MEDIDAS). O pacote da Kenney não tem ônibus nem moto: o caminhão é o de lixo da folha, e a moto é
+ *    desenhada por código.
+ *  - O MAPA EM T: a rua de baixo (a entrada 3) não existe, e ninguém vira para ela.
  */
 
 export const PASSO = 1 / 60;
@@ -31,9 +39,6 @@ export const VAO = 0.55;
 /** A faixa de pedestres: o carro para antes dela. */
 export const FAIXA = 0.14;
 export const COMPRIMENTO = 0.38;
-/** Os dois círculos de cada carro (na frente e atrás), para a batida. */
-const MEIO = 0.09;
-const RAIO = 0.1;
 export const TRAVA_PASSOS = 120;
 export const PENA_DA_BATIDA = 3;
 export const PENA_DA_FILA = 1;
@@ -45,7 +50,42 @@ const FREIO = 9;
 export const PELES = 8;
 
 export type Manobra = 'reto' | 'direita' | 'esquerda';
-export type Tipo = 'carro' | 'ambulancia';
+export type Tipo = 'carro' | 'ambulancia' | 'caminhao' | 'moto';
+export type Modo = 'minuto' | 'ate-bater';
+export type Mapa = 'cruz' | 't';
+export const MODOS: Modo[] = ['minuto', 'ate-bater'];
+export const MAPAS: Mapa[] = ['cruz', 't'];
+
+/** No "até bater", a partida não passa disto (20 minutos), e acaba na terceira fila que transborda. */
+export const PASSOS_SEM_FIM_MAX = 20 * 60 * 60;
+export const BUZINAS_DO_FIM = 3;
+
+/** As medidas de cada tipo: o comprimento (a fila), os círculos da batida (o meio e o raio), a rapidez e o valor. */
+export const MEDIDAS: Record<Tipo, { comprimento: number; meio: number; raio: number; rapidez: number; valor: number }> = {
+  carro: { comprimento: 0.38, meio: 0.09, raio: 0.1, rapidez: 1, valor: 1 },
+  ambulancia: { comprimento: 0.38, meio: 0.09, raio: 0.1, rapidez: 1, valor: 3 },
+  caminhao: { comprimento: 0.62, meio: 0.19, raio: 0.11, rapidez: 0.68, valor: 2 },
+  moto: { comprimento: 0.24, meio: 0.04, raio: 0.07, rapidez: 1.4, valor: 1 },
+};
+/** O vão entre dois na fila, de para-choque a para-choque. */
+const FOLGA_DA_FILA = VAO - COMPRIMENTO;
+/** A distância de centro a centro entre `a` (na frente) e `b` (atrás), parados na fila. */
+export const vaoEntre = (a: Tipo, b: Tipo) => (MEDIDAS[a].comprimento + MEDIDAS[b].comprimento) / 2 + FOLGA_DA_FILA;
+
+/** As entradas de cada mapa: no T, a de baixo (3) não existe. */
+export const ENTRADAS: Record<Mapa, number[]> = { cruz: [0, 1, 2, 3], t: [0, 1, 2] };
+
+/** As manobras que o mapa deixa: no T, ninguém vai para a rua de baixo (a entrada 0 vira à direita, a 1 segue reto, a 2 vira à esquerda). */
+export function manobraPermitida(mapa: Mapa, entrada: number, m: Manobra): boolean {
+  if (mapa === 'cruz') return true;
+  if (entrada === 3) return false;
+  return !((entrada === 0 && m === 'direita') || (entrada === 1 && m === 'reto') || (entrada === 2 && m === 'esquerda'));
+}
+
+export interface Opcoes {
+  modo?: Modo;
+  mapa?: Mapa;
+}
 
 export interface Chegada {
   passo: number;
@@ -99,6 +139,10 @@ export interface Estado {
   travaAte: number;
   eventos: Evento[];
   terminou: boolean;
+  modo: Modo;
+  mapa: Mapa;
+  /** O passo em que a partida acaba de qualquer jeito (o minuto, ou o teto do "até bater"). */
+  limite: number;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -204,27 +248,38 @@ function sorteador(semente: number) {
 }
 
 /** A velocidade de quem anda, que sobe com o minuto (casas por segundo). */
-export const velocidade = (passo: number) => 1.3 + (0.9 * passo) / PASSOS_DA_PARTIDA;
+export const velocidade = (passo: number) => 1.3 + (0.9 * Math.min(passo, 2 * PASSOS_DA_PARTIDA)) / PASSOS_DA_PARTIDA;
+
+/** Onde o carro para na faixa (o centro dele), pelo comprimento do tipo. */
+export const paradaDe = (c: { caminho: number; tipo: Tipo }) => CAMINHOS[c.caminho].entra - FAIXA - MEDIDAS[c.tipo].comprimento / 2;
 
 /**
  * Quem chega e quando. Fica mais cheio com o tempo (de um carro a cada ~2,1 s para um a cada ~0,7 s); só reto nos primeiros 10 s,
- * a direita depois dos 10 s, a esquerda depois dos 25 s; ambulância de vez em quando depois dos 20 s.
+ * a direita depois dos 10 s, a esquerda depois dos 25 s; ambulância de vez em quando depois dos 20 s, a moto depois dos 5 s e o
+ * caminhão depois dos 15 s. `ate`: o último passo sorteado (o minuto, ou o teto do "até bater").
  */
-export function sortearChegadas(semente: number): Chegada[] {
+export function sortearChegadas(semente: number, mapa: Mapa = 'cruz', ate = PASSOS_DA_PARTIDA): Chegada[] {
   const r = sorteador(semente);
   const lista: Chegada[] = [];
+  const entradas = ENTRADAS[mapa];
+  const n = entradas.length;
   let passo = 40;
   let ultima = -1;
-  while (passo < PASSOS_DA_PARTIDA) {
-    let entrada = Math.floor(r() * 4);
+  while (passo < ate) {
+    let k = Math.floor(r() * n);
     // a mesma rua duas vezes seguidas, só às vezes: a fila se espalha
-    if (entrada === ultima && r() < 0.5) entrada = (entrada + 1 + Math.floor(r() * 3)) % 4;
-    ultima = entrada;
+    if (k === ultima && r() < 0.5) k = (k + 1 + Math.floor(r() * (n - 1))) % n;
+    ultima = k;
+    const entrada = entradas[k];
     const sm = r();
     let manobra: Manobra = 'reto';
     if (passo >= 1500) manobra = sm < 0.22 ? 'direita' : sm < 0.44 ? 'esquerda' : 'reto';
     else if (passo >= 600) manobra = sm < 0.3 ? 'direita' : 'reto';
-    const tipo: Tipo = passo >= 1200 && r() < 0.07 ? 'ambulancia' : 'carro';
+    // no T, quem iria para a rua que não existe vai para outra
+    if (!manobraPermitida(mapa, entrada, manobra)) manobra = entrada === 1 ? (sm < 0.5 ? 'direita' : 'esquerda') : 'reto';
+    const st = r();
+    const tipo: Tipo =
+      passo >= 1200 && st < 0.07 ? 'ambulancia' : passo >= 900 && st < 0.15 ? 'caminhao' : passo >= 300 && st < 0.26 ? 'moto' : 'carro';
     const pele = Math.floor(r() * PELES);
     lista.push({ passo, entrada, manobra, tipo, pele });
     const ritmo = 1.6 - 1.05 * Math.min(1, passo / 3000);
@@ -237,11 +292,17 @@ export function sortearChegadas(semente: number): Chegada[] {
 // A PARTIDA
 // ---------------------------------------------------------------------------------------------------------------------
 
-export function novaPartida(semente: number): Estado {
+export function novaPartida(semente: number, opcoes: Opcoes = {}): Estado {
+  const modo: Modo = opcoes.modo === 'ate-bater' ? 'ate-bater' : 'minuto';
+  const mapa: Mapa = opcoes.mapa === 't' ? 't' : 'cruz';
+  const limite = modo === 'minuto' ? PASSOS_DA_PARTIDA : PASSOS_SEM_FIM_MAX;
   return {
     semente,
+    modo,
+    mapa,
+    limite,
     passo: 0,
-    chegadas: sortearChegadas(semente),
+    chegadas: sortearChegadas(semente, mapa, limite),
     proxima: 0,
     carros: [],
     proximoId: 1,
@@ -285,15 +346,26 @@ export function liberar(e: Estado, entrada: number): boolean {
   return true;
 }
 
+/**
+ * Só se bate PERTO DO CRUZAMENTO (19/11/2026): com o caminhão lento, o carro que vira e cai na mesma faixa dele, já longe, o
+ * alcançava fora do mapa, e a batida ninguém via chegando. Longe dali, um passa pelo outro.
+ */
+const ZONA = 0.65;
+const pertoDoCruzamento = (c: Carro) => c.x > C0 - ZONA && c.x < C1 + ZONA && c.y > C0 - ZONA && c.y < C1 + ZONA;
+
 function batem(a: Carro, b: Carro): boolean {
-  if (Math.abs(a.x - b.x) + Math.abs(a.y - b.y) > 0.7) return false;
+  if (Math.abs(a.x - b.x) + Math.abs(a.y - b.y) > 0.9) return false;
+  if (!pertoDoCruzamento(a) || !pertoDoCruzamento(b)) return false;
+  const ma = MEDIDAS[a.tipo];
+  const mb = MEDIDAS[b.tipo];
+  const soma = ma.raio + mb.raio;
   for (let i = -1; i <= 1; i += 2) {
-    const ax = a.x + a.dx * MEIO * i;
-    const ay = a.y + a.dy * MEIO * i;
+    const ax = a.x + a.dx * ma.meio * i;
+    const ay = a.y + a.dy * ma.meio * i;
     for (let j = -1; j <= 1; j += 2) {
-      const ddx = ax - (b.x + b.dx * MEIO * j);
-      const ddy = ay - (b.y + b.dy * MEIO * j);
-      if (ddx * ddx + ddy * ddy < 4 * RAIO * RAIO) return true;
+      const ddx = ax - (b.x + b.dx * mb.meio * j);
+      const ddy = ay - (b.y + b.dy * mb.meio * j);
+      if (ddx * ddx + ddy * ddy < soma * soma) return true;
     }
   }
   return false;
@@ -314,10 +386,11 @@ export function passo(e: Estado): void {
     const ch = e.chegadas[e.proxima++];
     let ultimo: Carro | null = null;
     for (const c of e.carros) if (c.entrada === ch.entrada && !c.batido) ultimo = c;
-    if (naFila(e, ch.entrada) >= FILA_MAX || (ultimo !== null && ultimo.s < VAO + 0.05)) {
+    if (naFila(e, ch.entrada) >= FILA_MAX || (ultimo !== null && ultimo.s < vaoEntre(ultimo.tipo, ch.tipo) + 0.05)) {
       e.pontos = Math.max(0, e.pontos - PENA_DA_FILA);
       e.buzinas++;
       e.eventos.push({ tipo: 'buzina', entrada: ch.entrada });
+      if (e.modo === 'ate-bater' && e.buzinas >= BUZINAS_DO_FIM) e.terminou = true;
       continue;
     }
     const caminho = caminhoDe(ch.entrada, ch.manobra);
@@ -330,7 +403,7 @@ export function passo(e: Estado): void {
       pele: ch.pele,
       caminho,
       s: 0,
-      v: velocidade(e.passo),
+      v: velocidade(e.passo) * MEDIDAS[ch.tipo].rapidez,
       liberado: false,
       batido: false,
       x: p.x,
@@ -349,10 +422,11 @@ export function passo(e: Estado): void {
     frente[c.entrada] = c;
     if (c.batido) continue;
     const cam = CAMINHOS[c.caminho];
-    let limite = c.liberado ? Infinity : cam.parada;
+    let limite = c.liberado ? Infinity : paradaDe(c);
     // o da frente, enquanto os dois estão na mesma reta da chegada
-    if (adiante && !adiante.batido && adiante.s < CAMINHOS[adiante.caminho].entra + COMPRIMENTO) limite = Math.min(limite, adiante.s - VAO);
-    let v = Math.min(vmax, c.v + ACELERACAO * PASSO);
+    if (adiante && !adiante.batido && adiante.s < CAMINHOS[adiante.caminho].entra + MEDIDAS[adiante.tipo].comprimento)
+      limite = Math.min(limite, adiante.s - vaoEntre(adiante.tipo, c.tipo));
+    let v = Math.min(vmax * MEDIDAS[c.tipo].rapidez, c.v + ACELERACAO * PASSO);
     if (limite < Infinity) v = Math.min(v, Math.sqrt(2 * FREIO * Math.max(0, limite - c.s)));
     c.v = v;
     c.s += v * PASSO;
@@ -371,7 +445,7 @@ export function passo(e: Estado): void {
     c.dy = p.dy;
   }
   for (const c of saem) {
-    const valor = c.tipo === 'ambulancia' ? 3 : 1;
+    const valor = MEDIDAS[c.tipo].valor;
     e.pontos += valor;
     e.atravessaram++;
     e.sequencia++;
@@ -404,19 +478,20 @@ export function passo(e: Estado): void {
       e.sequencia = 0;
       e.travaAte = Math.max(e.travaAte, e.passo + TRAVA_PASSOS);
       e.eventos.push({ tipo: 'batida', x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 });
+      if (e.modo === 'ate-bater') e.terminou = true;
     }
   }
 
   e.passo++;
-  if (e.passo >= PASSOS_DA_PARTIDA) e.terminou = true;
+  if (e.passo >= e.limite) e.terminou = true;
 }
 
 /** As liberações de uma partida, como vão ao servidor: [passo, entrada, passo, entrada, ...], em ordem de passo. */
 export type Liberacoes = number[];
 
 /** Refaz a partida inteira (o servidor, ao conferir; o teste, ao comparar). As liberações recusadas são só ignoradas. */
-export function refazer(semente: number, liberacoes: Liberacoes): Estado {
-  const e = novaPartida(semente);
+export function refazer(semente: number, liberacoes: Liberacoes, opcoes: Opcoes = {}): Estado {
+  const e = novaPartida(semente, opcoes);
   let i = 0;
   while (!e.terminou) {
     while (i < liberacoes.length && liberacoes[i] === e.passo) {

@@ -1,6 +1,7 @@
 import { temWebGL } from './temWebGL';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useT } from './i18n';
+import { ControlesDaMesa, ComHistorico, type EstadoDaMesa } from './MesaComum';
 import { Relogio } from './Minijogo';
 import type { Partida } from './minijogos';
 import type { Xadrez3D, XadrezDaCena } from './xadrez3d/cena';
@@ -16,8 +17,10 @@ export interface EstadoPartidaDeXadrez {
   jogadores: { userId: number; username: string }[];
   vez: 0 | 1;
   vencedor: 0 | 1 | 'empate' | null;
-  motivo: 'jogo' | 'tempo' | 'desistiu' | null;
+  motivo: 'jogo' | 'tempo' | 'desistiu' | 'acordo' | null;
   casas: string[];
+  /** As peças que saíram, pela cor de quem as perdeu (19/11/2026). */
+  capturadas?: { brancas: string[]; pretas: string[] };
   brancas: 0 | 1;
   ultimo: { de: number; para: number } | null;
   xeque: boolean;
@@ -126,10 +129,20 @@ export function JogoPartidaDeXadrez({
               {peca('k')}
             </span>
             {estado.jogadores[lado]?.username ?? '…'}
+            {/* as peças que este lado já tomou */}
+            <span className="mesa-capturadas" aria-hidden="true">
+              {(lado === estado.brancas ? estado.capturadas?.pretas : estado.capturadas?.brancas)?.map((p, k) => (
+                <span key={k} className={`xadrez-peca ${lado === estado.brancas ? 'preta' : 'branca'}`}>
+                  {peca(p)}
+                </span>
+              ))}
+            </span>
           </span>
         ))}
       </div>
+      <ComHistorico estado={estado as unknown as EstadoDaMesa}>
       <Tabuleiro3D dados={{ casas: estado.casas, girado, escolhida, destinos, ultimo: estado.ultimo, xequeEm }} aoClicar={clicar} reserva={tabuleiro} />
+      </ComHistorico>
       {promovendo && (
         <div className="xadrez-promocao" role="group" aria-label={t('Xadrez')}>
           {(
@@ -162,12 +175,13 @@ export function JogoPartidaDeXadrez({
       <p className={`minijogo-situacao${minhaVez ? ' minha-vez' : ''}`} role="status">
         {situacao}
       </p>
-      {jogando && !estado.solo && <Relogio restante={restante} total={JOGADA_MS} />}
+      {jogando && !estado.solo && !(estado as unknown as EstadoDaMesa).relogio && <Relogio restante={restante} total={JOGADA_MS} />}
       {estado.fase === 'esperando' && !sentado && (
         <button type="button" className="btn-primary duelo-sentar" onClick={() => agir({ tipo: 'sentar' })}>
           {t('Jogar')}
         </button>
       )}
+      <ControlesDaMesa jogo="partida-de-xadrez" estado={estado as unknown as EstadoDaMesa} eu={eu} agir={agir} />
       {jogando && sentado && (
         <button type="button" className="link-button duelo-desistir" onClick={() => agir({ tipo: 'desistir' })}>
           {t('Desistir')}
@@ -178,7 +192,7 @@ export function JogoPartidaDeXadrez({
 }
 
 /** O tabuleiro em 3D, com o de botões por baixo (à mostra até a cena ficar pronta, ou para sempre no estilo 2D). */
-function Tabuleiro3D({ dados, aoClicar, reserva }: { dados: XadrezDaCena; aoClicar: (i: number) => void; reserva: ReactNode }) {
+export function Tabuleiro3D({ dados, aoClicar, reserva }: { dados: XadrezDaCena; aoClicar: (i: number) => void; reserva: ReactNode }) {
   const caixa = useRef<HTMLDivElement>(null);
   const cena = useRef<Xadrez3D | null>(null);
   const [estado, setEstado] = useState<'carregando' | 'pronta' | 'falhou'>(() => (temWebGL() ? 'carregando' : 'falhou'));

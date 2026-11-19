@@ -26,6 +26,8 @@ import {
 
 /** O mesmo do servidor (o teste confere): depois de levar um golpe, piscando. */
 export const INVUL_MS = 2200;
+/** O mesmo do servidor (o teste confere): quanto tempo perto do caído para ele voltar. */
+export const REVIVER_MS = 2000;
 /** A tela desenha a toupeira e os outros ATRASO_MS atrás do quadro mais novo. */
 export const ATRASO_MS = 100;
 export const ENVIO_MS = 66;
@@ -54,6 +56,8 @@ export interface Quadro {
   c: number[];
   /** [id, tipo, x, y, r, x2, y2, ms até o impacto, fria, ms do aviso inteiro] */
   m: number[][];
+  /** As bolas de neve do yeti rolando (19/11/2026): [id, x, y]. */
+  bn?: number[][];
   /** [id, x, y, ms que faltam] */
   t: number[][];
   /** [userId, x, y, lado, ação, ms da ação, vidas, pontos, estado, avatar, segura, bomba, ms piscando, último tiro] */
@@ -91,6 +95,8 @@ export interface ChefeNaTela {
   passos: number;
   fase: number;
   destino: [number, number];
+  /** O yeti (19/11/2026), o segundo chefe; senão, a toupeira. */
+  yeti: boolean;
 }
 export interface MarcaNaTela {
   id: number;
@@ -116,6 +122,8 @@ export interface Vista {
   /** Os torrões que os OUTROS atiraram, onde estão agora. */
   tirosDosOutros: { id: number; x: number; y: number }[];
   bombas: { id: number; x0: number; y0: number; x: number; y: number; resta: number }[];
+  /** As bolas de neve do yeti rolando. */
+  bolas: { id: number; x: number; y: number }[];
   dano: number;
 }
 
@@ -126,7 +134,7 @@ export interface Efeito {
   em: number;
   texto?: string;
 }
-export type Som = 'acerto' | 'erro' | 'tiro' | 'queda' | 'moeda' | 'combo' | 'vez' | 'pulo';
+export type Som = 'acerto' | 'erro' | 'tiro' | 'queda' | 'moeda' | 'combo' | 'vez' | 'pulo' | 'dano' | 'explosao' | 'impacto' | 'cura' | 'derrota';
 
 export interface Meu {
   x: number;
@@ -209,6 +217,9 @@ export class Cliente {
   tiros: MeuTiro[] = [];
   efeitos: Efeito[] = [];
   sons: Som[] = [];
+  /** O tremor que a tela deve dar (0 a 1; a tela lê e zera), e até quando a tela pisca branco. Só desenho (19/11/2026). */
+  tremor = 0;
+  clarao = 0;
   /** Quem piscou por levar um golpe (userId → até quando). */
   piscando = new Map<number, number>();
   private proximoTiro = 1;
@@ -257,23 +268,40 @@ export class Cliente {
           this.eu.acao = 'dor';
           this.eu.t = 0;
           this.eu.piscandoAte = this.eu.relogio + INVUL_MS;
-          this.sons.push('erro');
+          this.sons.push('dano');
+          this.tremor = Math.max(this.tremor, 0.35);
           this.efeitos.push({ tipo: 'pancada', x: this.eu.x, y: this.eu.y, em: agora });
         } else this.piscando.set(r[0], agora + INVUL_MS);
       } else if (tipo === 'k' && r[0] === this.id) {
         this.eu.estado = 2;
         this.eu.acao = 'caido';
         this.eu.segura = false;
+        this.sons.push('derrota');
+      } else if (tipo === 'v') {
+        // REVIVER (19/11/2026): alguém ficou perto do caído por 2 s, e ele volta com uma vida, piscando
+        if (r[0] === this.id) {
+          this.eu.estado = 0;
+          this.eu.vidas = 1;
+          this.eu.acao = 'parado';
+          this.eu.t = 0;
+          this.eu.piscandoAte = this.eu.relogio + INVUL_MS;
+        } else this.piscando.set(r[0], agora + INVUL_MS);
+        this.sons.push('cura');
+        const l = q.j.find((j) => j[0] === r[0]);
+        if (l) this.efeitos.push({ tipo: 'pegou', x: l[1], y: l[2], em: agora });
       } else if (tipo === 'h') {
         // o meu acerto eu já mostrei na hora; o número do dano vem daqui (o servidor é quem sabe se ela estava tonta)
         this.efeitos.push({ tipo: 'acerto', x: r[2], y: r[3], em: agora + ATRASO_MS, texto: `${r[1]}` });
         if (r[0] !== this.id) this.sons.push('acerto');
       } else if (tipo === 'x') {
         this.efeitos.push({ tipo: 'explosao', x: r[0], y: r[1], em: agora });
-        this.sons.push('combo');
+        this.sons.push('explosao');
+        this.tremor = Math.max(this.tremor, 0.45);
       } else if (tipo === 'f') {
         this.efeitos.push({ tipo: 'fase', x: 240, y: 135, em: agora });
-        this.sons.push('vez');
+        this.sons.push('impacto');
+        this.tremor = Math.max(this.tremor, 0.7);
+        this.clarao = agora + 180;
       } else if (tipo === 'c' && r[1] === this.id) {
         this.eu.segura = true;
         this.sons.push('moeda');
@@ -281,6 +309,7 @@ export class Cliente {
       } else if (tipo === 't') {
         this.efeitos.push({ tipo: 'poeira', x: r[0], y: r[1], em: agora + ATRASO_MS });
         this.sons.push('queda');
+        this.tremor = Math.max(this.tremor, 0.5);
       }
     }
   }
@@ -288,7 +317,7 @@ export class Cliente {
   /** O que a tela mostra agora. */
   vista(agora: number): Vista {
     const ultimo = this.linha.ultimo();
-    const vazia: Vista = { passo: 0, fase: null, chefe: null, coelhos: [], marcas: [], noChao: [], tirosDosOutros: [], bombas: [], dano: 0 };
+    const vazia: Vista = { passo: 0, fase: null, chefe: null, coelhos: [], marcas: [], noChao: [], tirosDosOutros: [], bombas: [], bolas: [], dano: 0 };
     if (!ultimo) return vazia;
     const p = this.linha.passoNaTela(agora);
     const agoraNoServidor = this.linha.passoDoServidor(agora);
@@ -305,6 +334,7 @@ export class Cliente {
       passos: cb[5] + (p - volta.b.n),
       fase: cb[6],
       destino: [cb[7], cb[8]],
+      yeti: cb[9] === 1,
     };
     const resta = (passo: number) => (passo - agoraNoServidor) * PASSO_MS;
     return {
@@ -334,6 +364,7 @@ export class Cliente {
         })
         .filter((s) => !s.fora),
       bombas: ultimo.b.map((b) => ({ id: b[0], x0: b[2], y0: b[3], x: b[4], y: b[5], resta: b[6] - (agoraNoServidor - ultimo.n) * PASSO_MS })),
+      bolas: misturar(volta.a.bn ?? [], volta.b.bn ?? [], k, [1, 2]).map((l) => ({ id: l[0], x: l[1], y: l[2] })),
       dano: ultimo.d,
     };
   }
@@ -372,6 +403,8 @@ export class Cliente {
         this.impactos.add(m.id);
         if (this.impactos.size > 300) this.impactos.delete(this.impactos.values().next().value as number);
         if (m.tipo !== 'investida') this.sons.push('queda');
+        // o anel do terremoto chacoalha a tela inteira; a pedra, de leve
+        this.tremor = Math.max(this.tremor, m.tipo === 'anel' ? 0.6 : m.tipo === 'pedra' ? 0.12 : 0);
         if (m.tipo === 'pedra' || m.tipo === 'torrao') this.efeitos.push({ tipo: 'poeira', x: m.tipo === 'torrao' ? m.x2 : m.x, y: m.tipo === 'torrao' ? m.y2 : m.y, em: agora });
       }
     }

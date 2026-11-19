@@ -149,6 +149,43 @@ export const ONDAS: Onda[] = ondasDa('horta');
 /** O tiro (o do bicho que atira e a rajada do chefe): anda pela faixa; pular ou sair da faixa escapa. */
 export const TIRO_VEL = 130;
 export const SOPRO_VEL = 150;
+/**
+ * A CURA QUE CAI (19/11/2026, a auditoria dos mini-games): o bicho derrubado de vez às vezes deixa uma cenoura no chão, e quem
+ * passa por cima com a vida faltando se cura. QUEM DECIDE É O SERVIDOR (os bichos são dele): a queda é sorteada aqui, e quem
+ * pegou também, pela posição que ele já confere. A cenoura some em CURA_MS; o bicho de elite sempre deixa a grande.
+ */
+export const CHANCE_DA_CURA = 0.2;
+export const CHANCE_DA_GRANDE = 0.25;
+export const CURA_PEQUENA = 25;
+export const CURA_GRANDE = 60;
+export const CURA_MS = 15_000;
+export const ALCANCE_DA_CURA: [number, number] = [14, 9];
+/**
+ * O BICHO DE ELITE (19/11/2026): um por fase, na terceira onda, o primeiro que entra. Mais vida (VIDA_DE_ELITE vezes), um
+ * pouco mais de dano e o triplo de pontos; o site o desenha com a aura.
+ */
+export const ONDA_DA_ELITE = 2;
+export const VIDA_DE_ELITE = 2.5;
+export const DANO_DE_ELITE = 3;
+/**
+ * O ARREMESSO (19/11/2026): o 3º soco do combo num bicho ATORDOADO (na dor de um soco anterior) o joga longe, e no caminho ele
+ * derruba os outros bichos (ARREMESSO_DANO, os pontos para quem arremessou). Contato coelho→bicho, então "quem bate tem razão"
+ * vale como em todo acerto; o voo e quem ele derruba, quem decide é o servidor. O chefe e o que voa não são arremessados.
+ */
+export const ARREMESSO_VEL = 230;
+export const ARREMESSO_MS = 650;
+export const ARREMESSO_DANO = 10;
+/**
+ * OS CAIXOTES (19/11/2026): dois em cada arena de onda (menos a do chefe), parados no chão. Os socos os quebram, e de dentro
+ * sai uma cenoura de cura (o servidor decide a grande, como a do bicho); o 3º soco ou a voadora num caixote inteiro o
+ * ARREMESSA pela faixa, derrubando os bichos do caminho, e ele se quebra no fim. Contato coelho→caixote: o servidor confere a
+ * caixa do golpe contra o lugar do caixote (que não anda); o voo e quem ele derruba são do servidor.
+ */
+export const CAIXOTE = { hp: 10, larg: 10, primeiroId: 1_000_000 };
+export const CAIXOTES_NA_ARENA: readonly (readonly [number, number])[] = [
+  [110, 16],
+  [235, 42],
+];
 /** O pulo de quem cai em cima: a altura e o tempo no ar. */
 export const SALTO_ALTO = 34;
 export const SALTO_MS = 700;
@@ -186,6 +223,20 @@ interface Inimigo {
   /** O número do ataque do inimigo (cada mergulho, cada investida): quem já levou não leva de novo no mesmo. */
   ataque: number;
   proximoAtaque: number;
+  /** O bicho de elite da fase (ver ONDA_DA_ELITE). */
+  elite: boolean;
+  /** Arremessado (ver ARREMESSO_MS): por quem, e até quando derruba quem estiver no caminho. */
+  arremessoDe: number | null;
+  arremessoAte: number;
+}
+
+/** Uma cenoura no chão (ver CHANCE_DA_CURA). */
+interface Cura {
+  id: number;
+  grande: boolean;
+  x: number;
+  y: number;
+  ate: number;
 }
 
 /** Um tiro no ar: o servidor o leva pela faixa, e cada passo é uma pancada (a folga vale igual). */
@@ -310,6 +361,29 @@ export function criarBriga({
       let fila: TipoDeInimigo[] = [];
       const tiros: Tiro[] = [];
       let proximoTiro = 1;
+      const curas: Cura[] = [];
+      let proximaCura = 1;
+      /** Os caixotes da fase: os inteiros, e o que voa (arremessado). */
+      const caixotes = new Map<number, { id: number; x: number; y: number; hp: number; voando: { vx: number; ate: number; de: number; acertou: Set<number> } | null }>();
+      const acertosNoCaixote = new Map<number, Set<string>>();
+      let proximoCaixote = CAIXOTE.primeiroId;
+      const porCaixotes = () => {
+        caixotes.clear();
+        acertosNoCaixote.clear();
+        for (let k = 0; k < ONDAS_X.length - 1; k++) {
+          for (const [dx, y] of CAIXOTES_NA_ARENA) {
+            const id = proximoCaixote++;
+            caixotes.set(id, { id, x: ONDAS_X[k] + dx, y, hp: CAIXOTE.hp, voando: null });
+          }
+        }
+      };
+      /** A elite desta onda ainda não entrou. */
+      let eliteNaOnda = false;
+      /** Quando a fase foi vencida ou perdida: o recorde do Solo é o tempo até a vitória, contado pelo relógio daqui. */
+      let acabouEm: number | null = null;
+      let recorde: { ms: number; antes: number | null; novo: boolean } | null = null;
+      const soloDe = solo ? inscritos[0] : null;
+      const melhorDeAntes = soloDe !== null ? (db.recordeDoSolo(soloDe, 'briga', escolha)?.valor ?? null) : null;
       /** A fase vencida na campanha: quando a próxima começa (null fora disso). */
       let trocaEm: number | null = null;
       let proximaEntrada = 0;
@@ -411,6 +485,7 @@ export function criarBriga({
         outros.forEach((t, i) => fila.splice(1 + i * 2, 0, t));
         if (o.chefe && extras > 0) for (let i = 0; i < extras; i++) fila.push(deSoco);
         proximaEntrada = agora() + 600;
+        eliteNaOnda = k === ONDA_DA_ELITE && !o.chefe;
         // a turma desta onda: quem estava na sala quando ela começou
         const p = presentes();
         ficaram = new Set([...ficaram].filter((id) => p.has(id)));
@@ -429,7 +504,9 @@ export function criarBriga({
         const x = doLado === 1 ? arena[1] + 24 : arena[0] - 24;
         const def = bicho(tipo);
         const voa = def.comp === 'mergulho';
-        const hpMax = def.comp === 'chefe' ? def.hp + 90 * (n - 1) : def.hp;
+        const elite = eliteNaOnda && def.comp !== 'chefe';
+        if (elite) eliteNaOnda = false;
+        const hpMax = def.comp === 'chefe' ? def.hp + 90 * (n - 1) : elite ? Math.round(def.hp * VIDA_DE_ELITE) : def.hp;
         const t = agora();
         const ini: Inimigo = {
           id: proximoId++,
@@ -453,6 +530,9 @@ export function criarBriga({
           historia: [],
           ataque: 0,
           proximoAtaque: t + 800 + aleatorio() * 800,
+          elite,
+          arremessoDe: null,
+          arremessoAte: 0,
         };
         inimigos.set(ini.id, ini);
       };
@@ -486,6 +566,60 @@ export function criarBriga({
       };
 
       const voador = (i: Inimigo) => bicho(i.tipo).comp === 'mergulho';
+      /** O dano do golpe do bicho (a elite bate um pouco mais). */
+      const danoDe = (i: Inimigo) => bicho(i.tipo).dano + (i.elite ? DANO_DE_ELITE : 0);
+
+      /** Quem passa por cima de uma cenoura com a vida faltando se cura (a posição é a que o servidor já conferiu). */
+      const passoDasCuras = (t: number) => {
+        for (let k = curas.length - 1; k >= 0; k--) {
+          const c = curas[k];
+          if (t >= c.ate) {
+            curas.splice(k, 1);
+            continue;
+          }
+          const quem = emPe().find(
+            (j) => j.hp < VIDA && j.z < 8 && Math.abs(j.x - c.x) <= ALCANCE_DA_CURA[0] && Math.abs(j.y - c.y) <= ALCANCE_DA_CURA[1],
+          );
+          if (!quem) continue;
+          const cura = c.grande ? CURA_GRANDE : CURA_PEQUENA;
+          quem.hp = Math.min(VIDA, quem.hp + cura);
+          curas.splice(k, 1);
+          evento_('c', c.id, quem.userId, cura);
+        }
+      };
+      /** O bicho arremessado derruba os outros que encontra (cada um, uma vez por arremesso). */
+      const arremessoNoCaminho = (a: Inimigo, t: number) => {
+        const quem = a.arremessoDe === null ? undefined : jogadores.get(a.arremessoDe);
+        for (const o of inimigos.values()) {
+          if (o === a || o.hp <= 0 || voador(o) || bicho(o.tipo).comp === 'chefe') continue;
+          if (o.estado === 'caido' || o.estado === 'levantando' || o.estado === 'morto') continue;
+          if (Math.abs(o.x - a.x) > CORPO[o.tipo] + CORPO[a.tipo] || Math.abs(o.y - a.y) > 10) continue;
+          o.hp = Math.max(0, o.hp - ARREMESSO_DANO);
+          o.vx = Math.sign(a.vx || 1) * 120;
+          mudar(o, 'caido', 1000);
+          evento_('h', o.id, a.arremessoDe ?? 0, 'arremesso', Math.round(o.x), Math.round(o.y), Math.round(o.z));
+          if (quem) {
+            quem.pontos += ARREMESSO_DANO;
+            quem.golpes++;
+          }
+          if (o.hp <= 0) {
+            if (quem) {
+              quem.pontos += PONTOS_NOCAUTE[o.tipo] * (o.elite ? 3 : 1);
+              quem.nocautes++;
+            }
+            evento_('x', o.id, a.arremessoDe ?? 0);
+            talvezCura(o, t);
+          }
+        }
+      };
+      /** O bicho derrubado de vez: às vezes, a cenoura (a elite sempre deixa a grande). */
+      const talvezCura = (i: Inimigo, t: number) => {
+        if (bicho(i.tipo).comp === 'chefe') return;
+        if (!i.elite && aleatorio() >= CHANCE_DA_CURA) return;
+        const grande = i.elite || aleatorio() < CHANCE_DA_GRANDE;
+        const x = Math.max(arena[0] + 12, Math.min(arena[1] - 12, i.x));
+        curas.push({ id: proximaCura++, grande, x, y: Math.max(0, Math.min(PROF, i.y)), ate: t + CURA_MS });
+      };
 
       const passoDaRaposa = (i: Inimigo, dt: number, t: number) => {
         const alvo = maisPerto(i);
@@ -516,7 +650,7 @@ export function criarBriga({
             if (t >= i.ate) {
               mudar(i, 'atacando', 200);
               const x0 = i.x, y0 = i.y, lado = i.lado;
-              pancada(i, `${i.id}-${++i.ataque}`, bicho(i.tipo).dano, false, (j) => {
+              pancada(i, `${i.id}-${++i.ataque}`, danoDe(i), false, (j) => {
                 const dx = (j.x - x0) * lado;
                 return dx >= 4 && dx <= 32 && Math.abs(j.y - y0) <= 8 && j.z < 10;
               });
@@ -566,7 +700,7 @@ export function criarBriga({
             i.x += i.vx * dt;
             i.z += (6 - i.z) * Math.min(1, dt * 8);
             const x1 = i.x, y = i.y;
-            pancada(i, `${i.id}-${i.ataque}`, bicho(i.tipo).dano, false, (j) => {
+            pancada(i, `${i.id}-${i.ataque}`, danoDe(i), false, (j) => {
               const de = Math.min(x0, x1) - CORPO[i.tipo], ate = Math.max(x0, x1) + CORPO[i.tipo];
               return j.x >= de && j.x <= ate && Math.abs(j.y - y) <= 8 && j.z < 14;
             });
@@ -624,7 +758,7 @@ export function criarBriga({
             const x0 = i.x;
             i.x += i.vx * dt;
             const x1 = i.x, y = i.y;
-            pancada(i, `${i.id}-${i.ataque}`, bicho(i.tipo).dano, true, (j) => {
+            pancada(i, `${i.id}-${i.ataque}`, danoDe(i), true, (j) => {
               const de = Math.min(x0, x1) - CORPO[i.tipo], ate = Math.max(x0, x1) + CORPO[i.tipo];
               return j.x >= de && j.x <= ate && Math.abs(j.y - y) <= 11 && j.z < 10;
             });
@@ -639,7 +773,7 @@ export function criarBriga({
               mudar(i, 'pancada', 300);
               const x0 = i.x, y0 = i.y;
               // a pancada no chão: pega em volta, e quem está no ar escapa
-              pancada(i, `${i.id}-${++i.ataque}`, bicho(i.tipo).dano + 2, true, (j) => Math.abs(j.x - x0) <= 54 && Math.abs(j.y - y0) <= 18 && j.z < 6);
+              pancada(i, `${i.id}-${++i.ataque}`, danoDe(i) + 2, true, (j) => Math.abs(j.x - x0) <= 54 && Math.abs(j.y - y0) <= 18 && j.z < 6);
             }
             return;
           case 'pancada':
@@ -649,7 +783,7 @@ export function criarBriga({
             // enche o peito virado para a faixa (o site risca as três linhas)
             ir(i, i.x, i.faixa, 0, 30, dt);
             if (t >= i.ate) {
-              for (const dy of [-14, 0, 14]) atirar(i, Math.max(0, Math.min(PROF, i.faixa + dy)), SOPRO_VEL, bicho(i.tipo).dano - 6);
+              for (const dy of [-14, 0, 14]) atirar(i, Math.max(0, Math.min(PROF, i.faixa + dy)), SOPRO_VEL, danoDe(i) - 6);
               mudar(i, 'sopro', 400);
             }
             return;
@@ -709,7 +843,7 @@ export function criarBriga({
             if (p >= 1) {
               i.z = 0;
               const x0 = i.x, y0 = i.y;
-              pancada(i, `${i.id}-${++i.ataque}`, bicho(i.tipo).dano, true, (j) => Math.abs(j.x - x0) <= 22 && Math.abs(j.y - y0) <= 10 && j.z < 8);
+              pancada(i, `${i.id}-${++i.ataque}`, danoDe(i), true, (j) => Math.abs(j.x - x0) <= 22 && Math.abs(j.y - y0) <= 10 && j.z < 8);
               mudar(i, 'recuperando', 800);
             }
             return;
@@ -746,7 +880,7 @@ export function criarBriga({
           }
           case 'mirando':
             if (t >= i.ate) {
-              atirar(i, i.faixa, TIRO_VEL, bicho(i.tipo).dano);
+              atirar(i, i.faixa, TIRO_VEL, danoDe(i));
               mudar(i, 'atacando', 300);
             }
             return;
@@ -795,7 +929,11 @@ export function criarBriga({
             return true;
           case 'caido':
             i.x += i.vx * dt;
-            i.vx *= 0.85;
+            // o arremessado voa mais reto, e derruba quem encontra no caminho
+            if (i.arremessoDe !== null && t < i.arremessoAte) {
+              i.vx *= 0.93;
+              arremessoNoCaminho(i, t);
+            } else i.vx *= 0.85;
             i.z = Math.max(0, i.z - 120 * dt);
             if (t >= i.ate) {
               if (i.hp <= 0) mudar(i, 'morto', 900);
@@ -903,6 +1041,8 @@ export function criarBriga({
           }
           passoDosTiros(dt, t);
           decidirPancadas(t);
+          passoDasCuras(t);
+          passoDosCaixotes(dt, t);
           // a volta de quem caiu
           for (const j of jogadores.values()) {
             if (j.estado === 'fora' && t >= j.voltaEm) {
@@ -949,6 +1089,8 @@ export function criarBriga({
         etapa++;
         ondas = ondasDa(etapas[etapa]);
         tiros.length = 0;
+        curas.length = 0;
+        porCaixotes();
         pancadas.length = 0;
         inimigos.clear();
         arena = [ONDAS_X[0], ONDAS_X[0] + ARENA_L];
@@ -995,7 +1137,13 @@ export function criarBriga({
             Math.round(i.faixa),
             // no pulo, o x de onde vai cair (o site pisca o círculo ali)
             Math.round(i.alvoX),
+            // 1 se é o bicho de elite da fase (o site desenha a aura)
+            i.elite ? 1 : 0,
           ]),
+          // as cenouras no chão: [id, grande, x, y]
+          c: curas.map((c) => [c.id, c.grande ? 1 : 0, Math.round(c.x), Math.round(c.y)]),
+          // os caixotes: [id, x, y, vida %, voando (1/0)]
+          cx: [...caixotes.values()].map((c) => [c.id, Math.round(c.x), Math.round(c.y), Math.round((c.hp / CAIXOTE.hp) * 100), c.voando ? 1 : 0]),
           j: [...jogadores.values()].map((j) => [
             j.userId,
             Math.round(j.x),
@@ -1022,6 +1170,7 @@ export function criarBriga({
       const acabar = (venceu: boolean, vazia = false) => {
         if (fase === 'vitoria' || fase === 'derrota' || fase === 'fim') return;
         fase = venceu ? 'vitoria' : 'derrota';
+        acabouEm = agora();
         difundir();
         ctx.avisar();
         if (vazia) parar();
@@ -1069,6 +1218,17 @@ export function criarBriga({
           }
         }
         venceuAFase = venceu;
+        // O RECORDE DO SOLO (19/11/2026): o tempo da fase vencida (ou da campanha inteira), pelo relógio do servidor, na tabela
+        // comum; a variante é a fase escolhida. Perder não grava nada.
+        if (venceu && soloDe !== null && acabouEm !== null) {
+          const ms = acabouEm - inicio;
+          const j = jogadores.get(soloDe);
+          try {
+            recorde = { ms, ...db.guardarRecordeDoSolo(soloDe, 'briga', escolha, ms, true, { pontos: j?.pontos ?? 0 }) };
+          } catch {
+            // a conta sumiu no meio (ou o teste sem conta): a partida acaba igual, sem o recorde
+          }
+        }
         ctx.terminar(completa);
       };
 
@@ -1180,6 +1340,85 @@ export function criarBriga({
         }
       };
 
+      /** O caixote se quebra: a cenoura sai de dentro (a grande às vezes). */
+      const quebrarCaixote = (c: { id: number; x: number; y: number }, t: number) => {
+        caixotes.delete(c.id);
+        acertosNoCaixote.delete(c.id);
+        const x = Math.max(arena[0] + 12, Math.min(arena[1] - 12, c.x));
+        curas.push({ id: proximaCura++, grande: aleatorio() < CHANCE_DA_GRANDE, x, y: c.y, ate: t + CURA_MS });
+        evento_('cq', c.id, Math.round(x), Math.round(c.y));
+      };
+      /** O caixote voando: anda pela faixa, derruba os bichos que encontra (cada um uma vez) e se quebra no fim. */
+      const passoDosCaixotes = (dt: number, t: number) => {
+        for (const c of [...caixotes.values()]) {
+          if (!c.voando) continue;
+          c.x += c.voando.vx * dt;
+          const quem = jogadores.get(c.voando.de);
+          for (const o of inimigos.values()) {
+            if (c.voando.acertou.has(o.id) || o.hp <= 0 || voador(o)) continue;
+            if (o.estado === 'caido' || o.estado === 'levantando' || o.estado === 'morto') continue;
+            if (Math.abs(o.x - c.x) > CORPO[o.tipo] + CAIXOTE.larg || Math.abs(o.y - c.y) > 10) continue;
+            c.voando.acertou.add(o.id);
+            o.hp = Math.max(0, o.hp - ARREMESSO_DANO);
+            evento_('h', o.id, c.voando.de, 'arremesso', Math.round(o.x), Math.round(o.y), Math.round(o.z));
+            if (quem) {
+              quem.pontos += ARREMESSO_DANO;
+              quem.golpes++;
+            }
+            if (o.hp <= 0) {
+              if (quem) {
+                quem.pontos += PONTOS_NOCAUTE[o.tipo] * (o.elite ? 3 : 1);
+                quem.nocautes++;
+              }
+              o.vx = Math.sign(c.voando.vx) * 110;
+              mudar(o, 'caido', 1000);
+              evento_('x', o.id, c.voando.de);
+              talvezCura(o, t);
+            } else if (bicho(o.tipo).comp !== 'chefe') {
+              o.vx = Math.sign(c.voando.vx) * 120;
+              mudar(o, 'caido', 1000);
+            }
+          }
+          if (t >= c.voando.ate || c.x < arena[0] + 6 || c.x > arena[1] - 6) quebrarCaixote(c, t);
+        }
+      };
+      /** Um golpe num caixote: a caixa do golpe contra o lugar dele (ele não anda), com as regras do golpe de sempre. */
+      const acertoNoCaixote = (j: Jogador, d: Record<string, unknown>): string | null => {
+        const t = agora();
+        const ataque = j.ataques.find((a) => a.id === d.a);
+        if (!ataque) return 'golpe que não começou';
+        const g = GOLPES[ataque.golpe];
+        if (t - ataque.em > g.dura + 500) return 'golpe velho';
+        if (ataque.acertos >= (ataque.golpe === 'especial' ? 6 * VOLTAS_DO_GIRO : 6)) return 'acertos demais';
+        const c = caixotes.get(d.caixote as number);
+        if (!c || c.voando) return 'caixote fora';
+        const volta = ataque.golpe === 'especial' && numero(d.v) ? d.v : 0;
+        const chave = `${j.userId}:${ataque.id}:${volta}`;
+        const ja = acertosNoCaixote.get(c.id) ?? new Set<string>();
+        if (ja.has(chave)) return 'já acertou';
+        const { x, y, z } = d;
+        if (![x, y, z].every(numero)) return 'números';
+        if (Math.abs((x as number) - j.x) > 30 || Math.abs((y as number) - j.y) > 16 || Math.abs((z as number) - j.z) > 20) return 'longe de si';
+        const [a0, a1] = g.alcance;
+        const dx = (c.x - (x as number)) * (ataque.golpe === 'especial' ? 1 : j.lado);
+        if (!(dx + CAIXOTE.larg >= a0 - FOLGA_ACERTO && dx - CAIXOTE.larg <= a1 + FOLGA_ACERTO && Math.abs(c.y - (y as number)) <= g.fundo + 4)) return 'longe do caixote';
+        if ((z as number) > 26) return 'alto demais';
+        ja.add(chave);
+        acertosNoCaixote.set(c.id, ja);
+        ataque.acertos++;
+        j.golpes++;
+        if ((ataque.golpe === 'soco3' || ataque.golpe === 'voadora') && c.hp === CAIXOTE.hp) {
+          // inteiro, o golpe forte o arremessa
+          c.voando = { vx: j.lado * ARREMESSO_VEL, ate: t + ARREMESSO_MS, de: j.userId, acertou: new Set() };
+          evento_('ca', c.id, j.userId);
+          return null;
+        }
+        c.hp = Math.max(0, c.hp - g.dano);
+        evento_('ch', c.id, j.userId);
+        if (c.hp <= 0) quebrarCaixote(c, t);
+        return null;
+      };
+
       /** Um acerto: devolve por que não valeu, ou null (para o teste; o site não recebe resposta). */
       const acerto = (j: Jogador, d: Record<string, unknown>): string | null => {
         const t = agora();
@@ -1224,6 +1463,8 @@ export function criarBriga({
         if (i.acertos.size > 60) i.acertos = new Set([...i.acertos].slice(-30));
         ataque.acertos++;
         const chefe = bicho(i.tipo).comp === 'chefe';
+        // atordoado: o bicho ainda está na dor de um soco anterior (o 1º e o 2º do combo o deixam assim)
+        const atordoado = i.estado === 'dor';
         const dano = chefe && i.estado === 'cansado' ? Math.round(g.dano * 1.5) : g.dano;
         i.hp = Math.max(0, i.hp - dano);
         j.pontos += dano;
@@ -1231,13 +1472,21 @@ export function criarBriga({
         const empurra: 1 | -1 = ataque.golpe === 'especial' ? (i.x >= j.x ? 1 : -1) : lado;
         evento_('h', i.id, j.userId, ataque.golpe, Math.round(i.x), Math.round(i.y), Math.round(i.z));
         if (i.hp <= 0) {
-          j.pontos += PONTOS_NOCAUTE[i.tipo];
+          j.pontos += PONTOS_NOCAUTE[i.tipo] * (i.elite ? 3 : 1);
           j.nocautes++;
           i.vx = empurra * 110;
           mudar(i, 'caido', 1000);
           evento_('x', i.id, j.userId);
+          talvezCura(i, t);
         } else if (chefe) {
           // o chefe aguenta firme: não cai nem para de atacar (ele pisca no site)
+        } else if (ataque.golpe === 'soco3' && atordoado && !voador(i)) {
+          // O ARREMESSO (19/11/2026): o soco final num bicho atordoado o joga longe, e ele derruba quem estiver no caminho
+          i.vx = empurra * ARREMESSO_VEL;
+          i.arremessoDe = j.userId;
+          i.arremessoAte = t + ARREMESSO_MS;
+          mudar(i, 'caido', 1100);
+          evento_('a', i.id, j.userId);
         } else if (g.derruba || voador(i) || i.estado === 'saltando') {
           i.vx = empurra * 120;
           mudar(i, 'caido', 1000);
@@ -1248,6 +1497,7 @@ export function criarBriga({
         return null;
       };
 
+      porCaixotes();
       comecarOnda(0);
       relogio = intervalo(tick, PASSO_MS);
 
@@ -1272,6 +1522,8 @@ export function criarBriga({
             })),
             resultado: fase === 'fim' ? resultado : null,
             partidaId: evento,
+            // no Solo: o melhor tempo de antes desta fase, e no fim o tempo feito e se virou recorde
+            ...(solo ? { melhorAntes: melhorDeAntes, recorde } : {}),
           };
         },
         acao(quem, corpo) {
@@ -1287,7 +1539,7 @@ export function criarBriga({
           if (d.tipo === 'pos') {
             if (gastar(j.baldes.pos)) posicao(j, d);
           } else if (d.tipo === 'golpe') {
-            if (gastar(j.baldes.golpe)) ultimoMotivo = acerto(j, d);
+            if (gastar(j.baldes.golpe)) ultimoMotivo = d.caixote !== undefined ? acertoNoCaixote(j, d) : acerto(j, d);
           }
           // nada se repassa direto: o quadro de 20 por segundo leva tudo a todos
           return null;
@@ -1297,7 +1549,7 @@ export function criarBriga({
         },
         parar,
         // para o teste
-        ...({ _passo: tick, _inimigos: inimigos, _jogadores: jogadores, _motivo: () => ultimoMotivo, _arena: () => arena } as object),
+        ...({ _passo: tick, _inimigos: inimigos, _jogadores: jogadores, _caixotes: caixotes, _curas: curas, _motivo: () => ultimoMotivo, _arena: () => arena } as object),
       };
     },
   };

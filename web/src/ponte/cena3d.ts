@@ -138,6 +138,21 @@ const texturaDoAco = () =>
     }
   });
 
+/** O cabo (19/11/2026): fios torcidos, escuros. */
+const texturaDoCabo = () =>
+  textura(256, 16, (g) => {
+    g.fillStyle = '#4a4f57';
+    g.fillRect(0, 0, 256, 16);
+    g.strokeStyle = '#6d737c';
+    g.lineWidth = 3;
+    for (let x = -16; x < 256; x += 10) {
+      g.beginPath();
+      g.moveTo(x, 0);
+      g.lineTo(x + 12, 16);
+      g.stroke();
+    }
+  });
+
 /** O corte da terra na frente da maquete: camadas e pedrinhas. */
 const texturaDaTerra = (seca: boolean) =>
   textura(256, 256, (g) => {
@@ -202,12 +217,14 @@ function seloDoPeso(tipo: IdDoVeiculo): THREE.Sprite {
 // AS PEÇAS: uma malha de instâncias por tipo, com o comprimento de cada uma no shader (a textura não estica)
 // =====================================================================================================================
 
-const COR_DO_TIPO = ['#c99560', '#a86d3e', '#b9c5d0'];
+const COR_DO_TIPO = ['#c99560', '#a86d3e', '#b9c5d0', '#4a4f57'];
 /** A espessura (em y) e a fundura (em z) de cada tipo. A pista vai de uma treliça à outra. */
 const PERFIL = [
   { esp: TABUA, fundo: 2 * ZF + 0.14 },
   { esp: 0.2, fundo: 0.15 },
   { esp: 0.17, fundo: 0.15 },
+  // o cabo (19/11/2026): fino
+  { esp: 0.05, fundo: 0.05 },
 ];
 
 class MalhaDePecas {
@@ -716,8 +733,8 @@ export class CenaDaPonte implements VistaDaPonte {
     const c = this.cena;
     const f = this.fase;
     const caixa = this.guardar(new THREE.BoxGeometry(1, 1, 1));
-    const mapas = [this.guardar(texturaDaPista()), this.guardar(texturaDaMadeira()), this.guardar(texturaDoAco())];
-    for (let t = 0; t < 3; t++) {
+    const mapas = [this.guardar(texturaDaPista()), this.guardar(texturaDaMadeira()), this.guardar(texturaDoAco()), this.guardar(texturaDoCabo())];
+    for (let t = 0; t < mapas.length; t++) {
       const mat = this.guardar(materialDePeca(t, mapas[t]));
       const m = new MalhaDePecas(caixa, mat, MAX_PECAS * 4 + 8, t);
       this.guardar(m.malha.geometry);

@@ -50,6 +50,14 @@ export function decidir(k: Cozinha, receita: IdDaReceita): Passo {
     i.estado === 'cru' && PICAVEIS.includes(i.ing) && (precisa(`${i.ing}:picado`) || (i.ing === 'massa' && !!pizza) || (coberturas.includes(i.ing) && !!pizza));
 
   const mao = k.coelho.mao;
+  // ---- o fogo esquecido: o extintor primeiro (19/11/2026) ----
+  const emChamas = E.find((e) => e.chamas);
+  const extintor = de('extintor')[0];
+  if (mao?.tipo === 'extintor') return emChamas ? vai(emChamas) : vai(extintor);
+  if (emChamas && extintor && !mao) return vai(extintor);
+  // ---- o prato limpo: da pilha, ou lavado na pia ----
+  const pia = de('pia')[0];
+  const pegarPrato = (): Passo => (k.pratos > 0 ? vai(pratos) : pia?.sujos ? vai(pia, 'usar') : null);
   // ---- com o prato na mão ----
   if (ehPrato(mao)) {
     if (confere(receita, mao.itens)) return vai(entrega);
@@ -86,7 +94,7 @@ export function decidir(k: Cozinha, receita: IdDaReceita): Passo {
     return vai(lixeira);
   }
   // ---- com a mão vazia ----
-  if (ehItem(montagem.em)) return precisa(chave(montagem.em.item)) ? vai(pratos) : vai(montagem);
+  if (ehItem(montagem.em)) return precisa(chave(montagem.em.item)) ? pegarPrato() : vai(montagem);
   if (prato && sobra) return vai(montagem);
   if (prato && falta.length === 0) return vai(montagem);
   // o que queimou, para a lixeira
@@ -94,8 +102,8 @@ export function decidir(k: Cozinha, receita: IdDaReceita): Passo {
   // o que está no fogão e não serve a este pedido (sobrou de outro), para a lixeira, para o fogão não ficar ocupado
   for (const e of fogoes) if (ehItem(e.em) && !precisa(`${e.em.item.ing}:cozido`)) return vai(e);
   // o que está pronto no fogo
-  for (const e of [...fogoes, forno]) if (ehItem(e.em) && precisa(chave(e.em.item))) return prato ? vai(e) : vai(pratos);
-  if (!prato) return vai(pratos);
+  for (const e of [...fogoes, forno]) if (ehItem(e.em) && precisa(chave(e.em.item))) return prato ? vai(e) : pegarPrato();
+  if (!prato) return pegarPrato();
   // a tábua: picar o que está cru, pegar o que já está picado
   for (const t of tabuas) {
     if (!ehItem(t.em)) continue;

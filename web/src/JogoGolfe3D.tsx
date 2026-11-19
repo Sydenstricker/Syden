@@ -10,6 +10,7 @@ import { tocar } from './somDosJogos';
 import type { CenaDoGolfe3D } from './golfe3d/cena';
 import {
   BURACOS,
+  PERCURSOS_3D,
   DY_MAX,
   FORCA_MAX,
   acabouOBuraco,
@@ -20,8 +21,10 @@ import {
   melhorTacada,
   montar,
   novaBola,
+  relevo,
   tacadaInvalida,
   type Bola,
+  type ItemDaBola,
   type Tacada,
 } from './golfe3d/fisica';
 import './golfe3d/golfe3d.css';
@@ -97,7 +100,44 @@ function arcoDaTacada(b: (typeof BURACOS)[number], bola: Bola, t: Tacada): [numb
   return pontos;
 }
 
+/**
+ * A MIRA LONGA (19/11/2026, o item da sala): o caminho INTEIRO da tacada, pela mesma física (no chão, na altura do relevo),
+ * até a bola parar. Um ponto a cada 3 passos.
+ */
+function caminhoDaTacada(b: (typeof BURACOS)[number], bola: Bola, t: Tacada): [number, number, number][] {
+  const teste = copiarBola(bola);
+  bater(teste, t);
+  const pontos: [number, number, number][] = [];
+  for (let k = 0; k < 900 && teste.andando; k++) {
+    avancar(b, teste);
+    if (k % 3 === 0) pontos.push([teste.x, teste.noAr ? teste.y : relevo(b, teste.x, teste.z)[0], teste.z]);
+  }
+  return pontos;
+}
+
+/** Os itens da própria bola, com a figura de cada um (sem texto: o nome vai no rótulo). */
+const FIGURA_DO_ITEM: Record<ItemDaBola, string> = { pesada: '🪨', quique: '🏀', mira: '🎯' };
+
 const passoDe = (inicio: number, agora: number) => Math.max(0, Math.floor(((agora - inicio) * 60) / 1000));
+
+/** O que o servidor manda além de EstadoGolfe3D (19/11/2026): o percurso, o par, quem escolhe e o recorde do Solo. */
+interface DoPercurso3D {
+  percurso?: 'kit' | 'parque';
+  par?: number;
+  escolhe?: number;
+  recordes?: Record<string, number> | null;
+  recorde?: { antes: number | null; novo: boolean } | null;
+}
+const listaDe = (estado: unknown) => PERCURSOS_3D[(estado as DoPercurso3D).percurso ?? 'kit'] ?? BURACOS;
+
+/** O buraco de quem acertou: na primeira, e a conta contra o par (as mesmas palavras do Minigolfe da toca). */
+function oQueFoiOBuraco3D(tacadas: number, par: number, t: ReturnType<typeof useT>): { texto: string; festa: boolean } {
+  if (tacadas === 1) return { texto: t('Na primeira!'), festa: true };
+  const d = tacadas - par;
+  if (d < 0) return { texto: t('{n} abaixo do par', { n: -d }), festa: true };
+  if (d === 0) return { texto: t('No par'), festa: true };
+  return { texto: t('{n} acima do par', { n: d }), festa: false };
+}
 
 type Props = {
   estado: EstadoGolfe3D & Partida;
@@ -110,11 +150,39 @@ type Props = {
 
 export function JogoGolfe3D({ estado, eu, jogador, agir, socket, channelId }: Props) {
   const t = useT();
+  const extra = estado as unknown as DoPercurso3D;
+  if ((estado.fase as string) === 'escolhendo') {
+    if (extra.escolhe !== eu) return <p className="minijogo-situacao">{t('Esperando a escolha de quem começou…')}</p>;
+    return (
+      <div className="golfe3d-percursos">
+        {(['kit', 'parque'] as const).map((nome) => (
+          <button
+            key={nome}
+            type="button"
+            className="minijogo-jogo"
+            onClick={() => {
+              tocar('clique');
+              void agir({ tipo: 'percurso', percurso: nome });
+            }}
+          >
+            <span className="golfe3d-percurso-nome">{nome === 'kit' ? '⛳' : '🌳'} {PERCURSOS_3D[nome].length}</span>
+            {extra.recordes?.[nome] !== undefined && <span className="golfe3d-percurso-recorde">🏆 {extra.recordes[nome]}</span>}
+          </button>
+        ))}
+      </div>
+    );
+  }
   if (estado.terminada || estado.fase === 'fim') {
     const ficaram = estado.placar.filter((l) => l.posicao !== null);
     const sairam = estado.placar.filter((l) => l.posicao === null);
     return (
       <>
+        {extra.recorde &&
+          (extra.recorde.novo ? (
+            <p className="minijogo-situacao golfe3d-recorde">{t('Novo recorde!')}</p>
+          ) : (
+            extra.recorde.antes !== null && <p className="minijogo-situacao">{t('Seu recorde: {tempo}', { tempo: String(extra.recorde.antes) })}</p>
+          ))}
         <Placar eu={eu} linhas={ficaram.map((l) => ({ ...l, valor: String(l.pontos), posicao: l.posicao ?? undefined }))} />
         {sairam.length > 0 && (
           <ul className="minijogo-placar golfe3d-sairam">
@@ -166,7 +234,15 @@ export function JogoGolfe3D({ estado, eu, jogador, agir, socket, channelId }: Pr
 
 function BuracoEm3D({ estado, eu, jogador, agir, socket, channelId }: Props) {
   const t = useT();
-  const buraco = BURACOS[estado.buraco] ?? BURACOS[0];
+  const lista = listaDe(estado);
+  const buraco = lista[estado.buraco] ?? lista[0];
+  const par = (estado as unknown as DoPercurso3D).par ?? buraco.par;
+  const parRef = useRef(par);
+  parRef.current = par;
+  const tRef = useRef(t);
+  tRef.current = t;
+  /** O selo do buraco (na primeira, contra o par), por uns segundos depois de a bola entrar. */
+  const [selo, setSelo] = useState<{ texto: string; festa: boolean } | null>(null);
   const caixa = useRef<HTMLDivElement>(null);
   const cena = useRef<CenaDoGolfe3D | null>(null);
   const [carga, setCarga] = useState<'carregando' | 'pronta' | 'falhou'>(() => (temWebGL() ? 'carregando' : 'falhou'));
@@ -194,6 +270,11 @@ function BuracoEm3D({ estado, eu, jogador, agir, socket, channelId }: Props) {
   deCimaRef.current = deCima;
   const [forcaNaTela, setForcaNaTela] = useState<number | null>(null);
   /** A tacada por cima (o botão, ou a tecla Q): a bola voa por cima das bordas baixas e dos buracos do chão. */
+  // o item escolhido para a próxima tacada (só na sala; o servidor confere e gasta)
+  const meusItens = ((estado as unknown as { meusItens?: ItemDaBola[] }).meusItens ?? []).filter(Boolean);
+  const [item, setItem] = useState<ItemDaBola | null>(null);
+  const itemRef = useRef<ItemDaBola | null>(item);
+  itemRef.current = item && meusItens.includes(item) ? item : null;
   const [porCima, setPorCima] = useState(false);
   const porCimaRef = useRef(porCima);
   porCimaRef.current = porCima;
@@ -275,10 +356,15 @@ function BuracoEm3D({ estado, eu, jogador, agir, socket, channelId }: Props) {
   const baterAgora = (ux: number, uz: number, f: number) => {
     if (!podeBater() || f < FORCA_MINIMA || inicio.current === null) return;
     const { dx, dz, dy } = vetorDaTacada(ux, uz, f, porCimaRef.current);
-    const tacada: Tacada = { passo: Math.max(bola.current.passo, passoDe(inicio.current, Date.now())), dx, dz, ...(dy ? { dy } : {}) };
+    const usado = itemRef.current;
+    const tacada: Tacada = { passo: Math.max(bola.current.passo, passoDe(inicio.current, Date.now())), dx, dz, ...(dy ? { dy } : {}), ...(usado ? { item: usado } : {}) };
     if (tacadaInvalida(bola.current, tacada)) return;
     bater(bola.current, tacada);
     tocar('tacada');
+    if (usado) {
+      tocar('item');
+      setItem(null);
+    }
     pendentes.current++;
     void Promise.resolve(agir({ tipo: 'tacada', ...tacada })).finally(() => {
       pendentes.current--;
@@ -301,6 +387,7 @@ function BuracoEm3D({ estado, eu, jogador, agir, socket, channelId }: Props) {
     let ultimaForca: number | null = null;
     let tacadasAoRolar: number | null = null;
     let avisoDeQueda: ReturnType<typeof setTimeout> | undefined;
+    let fimDoSelo: ReturnType<typeof setTimeout> | undefined;
     const quadro = () => {
       const agoraMs = Date.now();
       const passoAgora = inicio.current === null ? 0 : passoDe(inicio.current, agoraMs);
@@ -308,7 +395,14 @@ function BuracoEm3D({ estado, eu, jogador, agir, socket, channelId }: Props) {
       if (b.andando && tacadasAoRolar === null) tacadasAoRolar = b.tacadas;
       for (let k = 0; k < 900 && b.andando && b.passo < passoAgora; k++) avancar(buraco, b);
       if (!b.andando && tacadasAoRolar !== null) {
-        if (b.dentro) tocar('buraco');
+        if (b.dentro) {
+          tocar('buraco');
+          const o = oQueFoiOBuraco3D(b.tacadas, parRef.current, tRef.current);
+          if (o.festa) window.setTimeout(() => tocar(b.tacadas === 1 ? 'medalha' : 'acerto'), 250);
+          setSelo(o);
+          clearTimeout(fimDoSelo);
+          fimDoSelo = setTimeout(() => setSelo(null), 3200);
+        }
         if (b.tacadas > tacadasAoRolar) {
           tocar('agua');
           setCaiu(true);
@@ -375,7 +469,10 @@ function BuracoEm3D({ estado, eu, jogador, agir, socket, channelId }: Props) {
       const comeco = inicio.current === null || agoraMs < inicio.current + VISTA_DO_COMECO_MS || faseRef.current === 'preparando';
       // na tacada por cima, a mira é o arco de verdade (a mesma física), com a força de agora (ou a metade, antes de puxar)
       let arco: [number, number, number][] | undefined;
-      if (pode && porCimaRef.current && !deCimaRef.current && !comeco) {
+      if (pode && itemRef.current === 'mira' && !deCimaRef.current && !comeco) {
+        const { dx, dz, dy } = vetorDaTacada(ux, uz, Math.max(FORCA_MINIMA, forca.current || 0.5), porCimaRef.current);
+        arco = caminhoDaTacada(buraco, bola.current, { passo: bola.current.passo, dx, dz, ...(dy ? { dy } : {}) });
+      } else if (pode && porCimaRef.current && !deCimaRef.current && !comeco) {
         const { dx, dz, dy } = vetorDaTacada(ux, uz, Math.max(FORCA_MINIMA, forca.current || 0.5), true);
         arco = arcoDaTacada(buraco, bola.current, { passo: bola.current.passo, dx, dz, dy });
       }
@@ -386,6 +483,8 @@ function BuracoEm3D({ estado, eu, jogador, agir, socket, channelId }: Props) {
         rumo: { ux, uz },
         deCima: deCimaRef.current || comeco,
         tacadas: bola.current.tacadas,
+        // a bola andando está no passo dela; parada, o relógio do buraco
+        passo: bola.current.andando ? bola.current.passo : passoAgora,
       });
       const f = pode ? forca.current : null;
       if (f !== ultimaForca) {
@@ -402,6 +501,7 @@ function BuracoEm3D({ estado, eu, jogador, agir, socket, channelId }: Props) {
     return () => {
       cancelAnimationFrame(id);
       clearTimeout(avisoDeQueda);
+      clearTimeout(fimDoSelo);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [buraco, souJogador, naSala, socket, channelId, eu]);
@@ -464,6 +564,9 @@ function BuracoEm3D({ estado, eu, jogador, agir, socket, channelId }: Props) {
     <div className="golfe3d">
       <div className="golfe3d-topo">
         {souJogador && <span className="golfe3d-tacadas">{t('Tacadas: {n}', { n: tacadas })}</span>}
+        <span className="golfe3d-par" aria-hidden="true">
+          {t('Par {n}', { n: par })}
+        </span>
         {estado.fase === 'jogando' ? <Relogio restante={restante} total={estado.duracaoMs} /> : <span className="minijogo-tempo" />}
         {souJogador && (
           <button
@@ -481,6 +584,27 @@ function BuracoEm3D({ estado, eu, jogador, agir, socket, channelId }: Props) {
             </svg>
           </button>
         )}
+        {souJogador &&
+          naSala &&
+          meusItens.map((i) => {
+            const rotulo = i === 'pesada' ? t('Bola pesada') : i === 'quique' ? t('Quique extra') : t('Mira longa');
+            return (
+              <button
+                key={i}
+                type="button"
+                className="golfe3d-item"
+                aria-pressed={item === i}
+                title={rotulo}
+                aria-label={rotulo}
+                onClick={() => {
+                  tocar('clique');
+                  setItem((v) => (v === i ? null : i));
+                }}
+              >
+                {FIGURA_DO_ITEM[i]}
+              </button>
+            );
+          })}
         <button type="button" className="golfe3d-de-cima" aria-pressed={deCima} title={t('Ver o buraco de cima')} aria-label={t('Ver o buraco de cima')} onClick={() => setDeCima((v) => !v)}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" />
@@ -526,6 +650,11 @@ function BuracoEm3D({ estado, eu, jogador, agir, socket, channelId }: Props) {
         {contagem !== null && (
           <span className="golfe3d-contagem" aria-hidden="true">
             {contagem}
+          </span>
+        )}
+        {selo && (
+          <span className={`golfe3d-selo${selo.festa ? ' festa' : ''}`} role="status">
+            {selo.texto}
           </span>
         )}
       </div>

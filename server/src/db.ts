@@ -8260,3 +8260,110 @@ export function guardarAventuraDosBichos(userId: number, dados: unknown) {
      ON CONFLICT(user_id) DO UPDATE SET dados = excluded.dados, em = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')`,
   ).run(userId, JSON.stringify(dados));
 }
+
+// ---------------------------------------------------------------------------------------------------
+// OS RECORDES DO SOLO, NUMA TABELA SÓ (19/11/2026, a auditoria dos mini-games: Blocos, Cozinha, os dois Minigolfes, o
+// Tamanho, o Futebol, o Sudoku, os quizzes, a Briga, o Comando, a Masmorra, o Chefe e outros não guardavam recorde). Jogo
+// novo NÃO precisa de tabela própria: `jogo` é o id do mini-game e `variante` o modo, a fase ou a categoria ('' quando não
+// há). `valor` é o número que se compara, e `menorMelhor` diz o sentido (tempo e custo: menor; pontos: maior). `extra` é
+// um JSON curto para a tela (o detalhe da partida), nunca um fantasma grande: fantasma continua nas tabelas dos jogos.
+// Só o melhor fica. É da pessoa, e só ela o vê (os jogos com fantasma dos amigos têm as tabelas deles).
+// ---------------------------------------------------------------------------------------------------
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS solo_recordes (
+    user_id  INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    jogo     TEXT NOT NULL,
+    variante TEXT NOT NULL DEFAULT '',
+    valor    REAL NOT NULL,
+    extra    TEXT,
+    em       TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    PRIMARY KEY (user_id, jogo, variante)
+  );
+`);
+
+export interface RecordeDoSolo {
+  jogo: string;
+  variante: string;
+  valor: number;
+  extra: unknown;
+  em: string;
+}
+
+/** O recorde da pessoa neste jogo e variante, ou null. */
+export function recordeDoSolo(userId: number, jogo: string, variante = ''): RecordeDoSolo | null {
+  const r = db
+    .prepare('SELECT jogo, variante, valor, extra, em FROM solo_recordes WHERE user_id = ? AND jogo = ? AND variante = ?')
+    .get(userId, jogo, variante) as { jogo: string; variante: string; valor: number; extra: string | null; em: string } | undefined;
+  return r ? { ...r, extra: r.extra ? JSON.parse(r.extra) : null } : null;
+}
+
+/** Todos os recordes da pessoa num jogo (todas as variantes). */
+export function recordesDoSolo(userId: number, jogo: string): RecordeDoSolo[] {
+  const rs = db
+    .prepare('SELECT jogo, variante, valor, extra, em FROM solo_recordes WHERE user_id = ? AND jogo = ? ORDER BY variante')
+    .all(userId, jogo) as { jogo: string; variante: string; valor: number; extra: string | null; em: string }[];
+  return rs.map((r) => ({ ...r, extra: r.extra ? JSON.parse(r.extra) : null }));
+}
+
+/**
+ * Guarda se for o melhor da pessoa. Devolve o recorde de antes (para a tela comparar) e se virou recorde.
+ * `menorMelhor`: true para tempo e custo, false para pontos.
+ */
+export function guardarRecordeDoSolo(
+  userId: number,
+  jogo: string,
+  variante: string,
+  valor: number,
+  menorMelhor: boolean,
+  extra?: unknown,
+): { antes: number | null; novo: boolean } {
+  if (!Number.isFinite(valor)) return { antes: null, novo: false };
+  const atual = recordeDoSolo(userId, jogo, variante);
+  const antes = atual?.valor ?? null;
+  if (antes !== null && (menorMelhor ? antes <= valor : antes >= valor)) return { antes, novo: false };
+  const texto = extra === undefined ? null : JSON.stringify(extra);
+  if (texto && texto.length > 4000) throw new Error('extra grande demais para o recorde');
+  db.prepare(
+    `INSERT INTO solo_recordes (user_id, jogo, variante, valor, extra) VALUES (?, ?, ?, ?, ?)
+     ON CONFLICT(user_id, jogo, variante) DO UPDATE SET valor = excluded.valor, extra = excluded.extra,
+       em = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')`,
+  ).run(userId, jogo, variante, valor, texto);
+  return { antes, novo: true };
+}
+
+/** Para o "Levar seus dados": todos os recordes da tabela comum. */
+export function recordesDoSoloDe(userId: number): RecordeDoSolo[] {
+  const rs = db
+    .prepare('SELECT jogo, variante, valor, extra, em FROM solo_recordes WHERE user_id = ? ORDER BY jogo, variante')
+    .all(userId) as { jogo: string; variante: string; valor: number; extra: string | null; em: string }[];
+  return rs.map((r) => ({ ...r, extra: r.extra ? JSON.parse(r.extra) : null }));
+}
+
+// ---------- As insígnias do fliperama (19/11/2026) ----------
+
+/**
+ * Quantos mini-games DIFERENTES esta pessoa jogou com gente: partidas na sala (com comunidade) que começaram com 2 ou mais
+ * pessoas de verdade, ela entre elas. É a mesma regra das conquistas da turma: o Solo não é registrado como partida da sala
+ * (as corridas e o Pulo do contra o relógio entram com comunidade 0 e uma pessoa), e os robôs nunca entram em
+ * minijogo_jogadores (ids negativos, só no Solo). A Arena dos Bichos conta como os Bichos: é o mesmo jogo na estante.
+ * Não há dado novo: as partidas e quem estava nelas já eram guardadas para o painel de uso e as conquistas.
+ */
+export function jogosDiferentesComGente(userId: number): number {
+  const linha = db
+    .prepare(
+      `SELECT COUNT(DISTINCT CASE WHEN p.jogo = 'arena' THEN 'bichos' ELSE p.jogo END) AS n
+         FROM minijogo_jogadores j JOIN minijogo_partidas p ON p.id = j.partida_id
+        WHERE j.user_id = ? AND p.community_id <> 0 AND p.jogadores >= 2
+          AND (SELECT COUNT(*) FROM minijogo_jogadores o WHERE o.partida_id = p.id AND o.user_id > 0) >= 2`,
+    )
+    .get(userId) as { n: number };
+  return linha.n;
+}
+
+/** Quem estava numa partida da sala (para entregar as insígnias do fliperama no fim dela). */
+export function jogadoresDaPartida(partidaId: number): number[] {
+  return (db.prepare('SELECT user_id AS id FROM minijogo_jogadores WHERE partida_id = ? AND user_id > 0').all(partidaId) as { id: number }[]).map(
+    (l) => l.id,
+  );
+}

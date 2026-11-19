@@ -19,8 +19,8 @@ export const naTela = (camX: number, x: number, h: number) => ({ sx: Math.round(
 /** O índice da floresta em FASES_DA_BRIGA (o cenário que o Comando usa). */
 const FLORESTA = 1;
 
-export function desenharFundo(g: G, camX: number, tempo: number) {
-  desenharCenario(g, FLORESTA, camX, FIM_DA_FASE, tempo);
+export function desenharFundo(g: G, camX: number, tempo: number, cenario = FLORESTA) {
+  desenharCenario(g, cenario, camX, FIM_DA_FASE, tempo);
   // a trilha onde se corre: uma faixa de terra batida mais clara, com a borda
   g.fillStyle = '#5a4430';
   g.fillRect(0, CHAO_TELA, W, H - CHAO_TELA);
@@ -133,14 +133,15 @@ function estadoNaFolha(e: EstadoDoBicho): EstadoDoInimigo {
 export function desenharBicho(g: G, b: BichoNaTela, camX: number, tempo: number, piscando: boolean) {
   if (b.estado === 'morto') return;
   const { sx, sy } = naTela(camX, b.x, b.h);
+  if (BICHOS[b.tipo].comp === 'capsula') return desenharCapsula(g, sx, sy, tempo, piscando);
   // a sombra no chão
   const c = BICHOS[b.tipo];
   g.fillStyle = '#2e2218';
   const w = Math.max(6, c.larg * 2 - b.h * 0.15);
   g.fillRect(Math.round(sx - w / 2), CHAO_TELA - 1, Math.round(w), 2);
-  desenharBichoDaFolha(g, { tipo: b.tipo, estado: estadoNaFolha(b.estado), lado: b.lado, ms: b.ms, piscando }, sx, sy, tempo);
+  desenharBichoDaFolha(g, { tipo: b.tipo as Exclude<typeof b.tipo, 'capsula'>, estado: estadoNaFolha(b.estado), lado: b.lado, ms: b.ms, piscando }, sx, sy, tempo);
   // a vida dos pequenos, quando já levaram bala
-  if (b.tipo !== 'dragao' && b.hp < 100) {
+  if (c.comp !== 'chefe' && b.hp < 100) {
     g.fillStyle = '#2a1e1a';
     g.fillRect(sx - 8, sy - c.alto - 6, 16, 3);
     g.fillStyle = '#e2574a';
@@ -163,8 +164,9 @@ export function desenharAvisos(g: G, bichos: BichoNaTela[], camX: number, tempo:
       for (let k = 0; k < 40; k++) g.fillRect(sx - 30 - k * 8, y, 4, 2);
     } else if ((b.estado === 'marcando' || b.estado === 'prep-pisao' || b.estado === 'saltando') && pisca(b.ms)) {
       const ax = Math.round(b.alvoX - camX);
-      const r = b.tipo === 'dragao' ? 40 : 10;
-      g.strokeStyle = b.tipo === 'dragao' ? '#ff6a4a' : '#ffd36a';
+      const chefe = BICHOS[b.tipo].comp === 'chefe';
+      const r = chefe ? 40 : 10;
+      g.strokeStyle = chefe ? '#ff6a4a' : '#ffd36a';
       g.lineWidth = 1;
       g.beginPath();
       g.ellipse(ax, CHAO_TELA - 1, r, Math.max(2, r / 4), 0, 0, Math.PI * 2);
@@ -184,13 +186,33 @@ export function desenharBalasInimigas(g: G, balas: { tipo: number; x: number; h:
       g.fillRect(sx - 1, sy - 2, 3, 4);
       g.fillStyle = '#6f9a4e';
       g.fillRect(sx, sy - 5, 1, 2);
-    } else desenharTiro(g, b.tipo === 1 ? 'dragao' : 'dino', sx, sy, b.vx > 0 ? 1 : -1, tempo);
+    } else desenharTiro(g, b.tipo === 3 ? 'yeti' : b.tipo === 1 ? 'dragao' : 'dino', sx, sy, b.vx > 0 ? 1 : -1, tempo);
   }
 }
 
 /** Uma bala de cenoura (a ponta laranja na frente, o rabinho verde atrás). */
-export function desenharBala(g: G, x: number, h: number, dx: number, dh: number, camX: number, minha: boolean) {
+export function desenharBala(g: G, x: number, h: number, dx: number, dh: number, camX: number, minha: boolean, arma: Arma = 'normal', tempo = 0) {
   const { sx, sy } = naTela(camX, x, h);
+  if (arma === 'chama') {
+    // a CHAMA CURTA (19/11/2026): faíscas que tremem, do amarelo ao vermelho
+    const k = Math.floor(tempo / 40 + x) % 3;
+    g.fillStyle = ['#fff2a0', '#ffb040', '#ff6a2a'][k];
+    g.fillRect(sx - 2, sy - 2, 4, 4);
+    g.fillStyle = '#ff8a2a';
+    g.fillRect(Math.round(sx - dx * 4) - 1, Math.round(sy + dh * 4) - 1, 2, 2);
+    return;
+  }
+  if (arma === 'teleguiada') {
+    // a TELEGUIADA: uma cenoura maior, com o rastro de fumaça
+    g.fillStyle = '#c8c0b8';
+    g.fillRect(Math.round(sx - dx * 7) - 1, Math.round(sy + dh * 7) - 1, 2, 2);
+    g.fillRect(Math.round(sx - dx * 10), Math.round(sy + dh * 10), 1, 1);
+    g.fillStyle = '#ff7a1a';
+    g.fillRect(sx - 2, sy - 2, 5, 4);
+    g.fillStyle = '#7ab04a';
+    g.fillRect(Math.round(sx - dx * 4) - 1, Math.round(sy + dh * 4) - 1, 2, 2);
+    return;
+  }
   g.fillStyle = minha ? '#ff8a2a' : '#e8a060';
   g.fillRect(sx - 1, sy - 1, 3, 3);
   g.fillRect(Math.round(sx - dx * 2) - 1, Math.round(sy + dh * 2) - 1, 2, 2);
@@ -285,7 +307,7 @@ export function desenharEfeito(g: G, e: Efeito, camX: number, tempo: number): bo
     }
     return true;
   }
-  if (e.tipo === 'explosao') {
+  if (e.tipo === 'explosao' && !e.pequena) {
     if (idade > 600) return false;
     const k = idade / 600;
     const r = Math.round(GRANADA.raio * (0.4 + k * 0.6));
@@ -293,6 +315,12 @@ export function desenharEfeito(g: G, e: Efeito, camX: number, tempo: number): bo
     bola(g, sx, CHAO_TELA - r * 0.5, Math.round(r * (1 - k * 0.4)));
     g.fillStyle = '#ff7a3a';
     if (k < 0.5) bola(g, sx, CHAO_TELA - r * 0.4, Math.round(r * 0.5));
+    return true;
+  }
+  if (e.tipo === 'explosao' && e.pequena) {
+    if (idade > 300) return false;
+    g.fillStyle = idade < 120 ? '#fff6c8' : '#ffb04a';
+    bola(g, sx, sy, Math.round(3 + idade / 40));
     return true;
   }
   if (e.tipo === 'pisao' || e.tipo === 'semente') {
@@ -304,6 +332,17 @@ export function desenharEfeito(g: G, e: Efeito, camX: number, tempo: number): bo
     g.fillRect(Math.round(sx + r), CHAO_TELA - 3, 3, 2);
     g.fillRect(Math.round(sx - r / 2), CHAO_TELA - 5, 2, 2);
     g.fillRect(Math.round(sx + r / 2), CHAO_TELA - 5, 2, 2);
+    return true;
+  }
+  if (e.tipo === 'clarao') {
+    // O CLARÃO NO CANO (19/11/2026): um instante de luz na ponta do lança-cenouras, na direção da mira
+    if (idade > 70) return false;
+    const [dx, dh] = DIRECOES[((e.dir ?? 0) % 8 + 8) % 8];
+    const r = idade < 35 ? 4 : 2;
+    g.fillStyle = idade < 35 ? '#fff6c8' : '#ffb04a';
+    bola(g, sx + dx * 3, sy - dh * 3, r);
+    g.fillStyle = '#fff6c8';
+    g.fillRect(Math.round(sx + dx * (6 + r)), Math.round(sy - dh * (6 + r)), 2, 2);
     return true;
   }
   if (e.tipo === 'solto') {
@@ -339,6 +378,16 @@ export function desenharMinhaMao(g: G, arma: Arma, restaArma: number, cargaGrana
   } else if (arma === 'rapida') {
     g.fillRect(7, 10, 3, 2);
     g.fillRect(11, 10, 3, 2);
+  } else if (arma === 'chama') {
+    g.fillStyle = '#ff6a2a';
+    g.fillRect(7, 9, 4, 4);
+    g.fillStyle = '#fff2a0';
+    g.fillRect(8, 10, 2, 2);
+  } else if (arma === 'teleguiada') {
+    g.fillStyle = '#ff7a1a';
+    g.fillRect(7, 9, 5, 4);
+    g.fillStyle = '#c8c0b8';
+    g.fillRect(12, 11, 2, 1);
   } else g.fillRect(8, 10, 3, 2);
   if (arma !== 'normal') {
     g.fillStyle = '#5a4a40';
@@ -356,5 +405,53 @@ export function desenharMinhaMao(g: G, arma: Arma, restaArma: number, cargaGrana
   } else {
     g.fillStyle = '#ffd36a';
     g.fillRect(40, 6, 1, 2);
+  }
+}
+
+/** A CÁPSULA VOADORA (19/11/2026): um casulo de metal com a hélice em cima e a luz piscando; derrubada, solta a arma. */
+function desenharCapsula(g: G, sx: number, sy: number, tempo: number, piscando: boolean) {
+  const y = sy - 6;
+  g.fillStyle = '#2e2218';
+  g.fillRect(sx - 8, y - 4, 16, 10);
+  g.fillStyle = piscando ? '#ffffff' : '#8aa0b8';
+  g.fillRect(sx - 7, y - 3, 14, 8);
+  g.fillStyle = piscando ? '#ffffff' : '#c0d0e0';
+  g.fillRect(sx - 6, y - 2, 6, 2);
+  // a faixa do meio, com a luz
+  g.fillStyle = '#4a5a6a';
+  g.fillRect(sx - 7, y + 1, 14, 1);
+  g.fillStyle = Math.floor(tempo / 250) % 2 === 0 ? '#ffd36a' : '#ff6a3a';
+  g.fillRect(sx - 1, y, 2, 2);
+  // a hélice girando
+  const w = 2 + Math.abs(Math.round(Math.sin(tempo / 40) * 7));
+  g.fillStyle = '#3a3a44';
+  g.fillRect(sx, y - 7, 1, 3);
+  g.fillRect(sx - w, y - 8, w * 2 + 1, 1);
+}
+
+/** As armas no chão (a cápsula derrubada): a caixinha com a figura da arma, pulando de leve e com a seta "aqui". */
+export function desenharItens(g: G, camX: number, itens: { arma: Arma; x: number }[], tempo: number) {
+  for (const it of itens) {
+    const sx = Math.round(it.x - camX);
+    if (sx < -20 || sx > W + 20) continue;
+    const y = CHAO_TELA - 8 - (Math.floor(tempo / 300) % 2);
+    g.fillStyle = '#2e2218';
+    g.fillRect(sx - 6, y - 1, 12, 9);
+    g.fillStyle = '#ffd36a';
+    g.fillRect(sx - 5, y, 10, 7);
+    g.fillStyle = it.arma === 'chama' ? '#ff6a2a' : '#ff7a1a';
+    g.fillRect(sx - 3, y + 2, it.arma === 'chama' ? 4 : 6, 3);
+    if (it.arma === 'chama') {
+      g.fillStyle = '#fff2a0';
+      g.fillRect(sx + 1, y + 2, 2, 2);
+    } else {
+      g.fillStyle = '#7ab04a';
+      g.fillRect(sx + 3, y + 3, 2, 1);
+    }
+    if (Math.floor(tempo / 400) % 2 === 0) {
+      g.fillStyle = '#ffd36a';
+      g.fillRect(sx - 2, y - 9, 5, 2);
+      g.fillRect(sx - 1, y - 7, 3, 2);
+    }
   }
 }

@@ -1,0 +1,218 @@
+/* O LOBISOMEM (19/11/2026): o céu do narrador, por CSS (estrelas e lua de noite, sol de dia, a aurora no amanhecer),
+   o preparo, as poções, a conversa dos lobos e a história do fim. O resto mora em styles.css. */
+
+.lobisomem-ceu {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 56px;
+  transition: background 1.2s ease;
+}
+.lobisomem .lobisomem-ceu .lobisomem-faixa.lobisomem-faixa {
+  position: relative;
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+.lobisomem-ceu.ceu-noite {
+  color: #ecebff;
+  background:
+    radial-gradient(1px 1px at 12% 30%, #fff 99%, transparent),
+    radial-gradient(1px 1px at 28% 72%, #fff 99%, transparent),
+    radial-gradient(1.5px 1.5px at 44% 18%, #fffbe0 99%, transparent),
+    radial-gradient(1px 1px at 63% 64%, #fff 99%, transparent),
+    radial-gradient(1px 1px at 81% 26%, #fff 99%, transparent),
+    radial-gradient(1.5px 1.5px at 92% 78%, #e8e4ff 99%, transparent),
+    radial-gradient(1px 1px at 6% 82%, #fff 99%, transparent),
+    linear-gradient(180deg, #0d1030 0%, #1c2148 70%, #2a2a5a 100%);
+}
+.lobisomem-ceu.ceu-aurora {
+  color: #3a2016;
+  background: linear-gradient(180deg, #4b4f8a 0%, #c98a9a 45%, #f6c58a 80%, #ffe4b0 100%);
+}
+.lobisomem-ceu.ceu-dia {
+  color: #1d3550;
+  background: linear-gradient(180deg, #7cc0f0 0%, #a9dbf7 65%, #dff1d8 100%);
+}
+
+/* o astro: a lua de noite (um círculo com a sombra que a recorta), o sol de dia e na aurora */
+.lobisomem-astro {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  width: 28px;
+  height: 28px;
+  margin-top: -14px;
+  border-radius: 50%;
+  transition: all 1.2s ease;
+}
+.ceu-noite .lobisomem-astro {
+  background: #f4f0d8;
+  box-shadow: inset -7px -3px 0 0 #d6d0ae, 0 0 14px 2px rgba(244, 240, 216, 0.35);
+}
+.ceu-dia .lobisomem-astro {
+  background: #ffd84a;
+  box-shadow: 0 0 0 5px rgba(255, 216, 74, 0.35), 0 0 18px 6px rgba(255, 216, 74, 0.45);
+}
+.ceu-aurora .lobisomem-astro {
+  top: 85%;
+  background: #ffb347;
+  box-shadow: 0 0 20px 8px rgba(255, 179, 71, 0.5);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ceu-noite .lobisomem-astro {
+    animation: lobisomem-brilho 4s ease-in-out infinite alternate;
+  }
+}
+@keyframes lobisomem-brilho {
+  to {
+    box-shadow: inset -7px -3px 0 0 #d6d0ae, 0 0 20px 5px rgba(244, 240, 216, 0.5);
+  }
+}
+
+.lobisomem-composicao {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  font-size: calc(15px * var(--escala-do-texto));
+}
+.lobisomem-tempos {
+  margin-left: auto;
+  color: var(--text-muted);
+  font-size: calc(12px * var(--escala-do-texto));
+}
+
+.lobisomem-preparo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--bg-darkest);
+}
+.lobisomem-linha {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.lobisomem-linha > span {
+  flex: 1;
+}
+.lobisomem-linha > strong {
+  min-width: 44px;
+  text-align: center;
+}
+.lobisomem-especiais {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.lobisomem-especial {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 2px solid var(--border);
+  background: var(--bg-dark, transparent);
+  color: var(--text-strong);
+  font: inherit;
+  cursor: pointer;
+}
+.lobisomem-especial.escolhido {
+  border-color: var(--accent);
+}
+.lobisomem-especial:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.lobisomem-pocoes {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #24183a;
+  color: #f0e8ff;
+}
+.lobisomem-pocoes p {
+  margin: 0 0 6px;
+}
+.lobisomem-pocoes .escolhido {
+  border-color: #7bc86a;
+}
+.lobisomem-veneno {
+  flex: 1;
+  text-align: center;
+}
+
+.lobisomem-jogador.acusado {
+  border-color: #e5a03a;
+}
+
+.lobisomem-julgamento {
+  justify-content: center;
+}
+.lobisomem-julgamento .escolhido {
+  border-color: var(--accent);
+}
+
+.lobisomem-conversa,
+.lobisomem-historia {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--bg-darkest);
+}
+.lobisomem-conversa {
+  background: #1c1424;
+  color: #f0e4e4;
+}
+.lobisomem-conversa-titulo {
+  margin: 0 0 6px;
+  font-weight: 700;
+}
+.lobisomem-conversa ol {
+  list-style: none;
+  margin: 0 0 8px;
+  padding: 0;
+  max-height: 140px;
+  overflow-y: auto;
+  font-size: calc(13px * var(--escala-do-texto));
+  overflow-wrap: anywhere;
+}
+.lobisomem-conversa li.eu strong {
+  color: #f0a060;
+}
+.lobisomem-conversa form {
+  display: flex;
+  gap: 6px;
+}
+.lobisomem-conversa input {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #4a3a52;
+  background: #120c18;
+  color: inherit;
+  font: inherit;
+}
+
+.lobisomem-historia ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.lobisomem-historia ul {
+  margin: 2px 0 0;
+  padding-left: 18px;
+  font-size: calc(13px * var(--escala-do-texto));
+}
+.lobisomem-historia-quando {
+  font-weight: 700;
+}

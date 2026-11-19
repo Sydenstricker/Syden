@@ -26,7 +26,7 @@ const comunidade = (await comToken(app, ana.token)('POST', '/api/communities', {
 
 type Meu = { recebidas: number; versao: number; passo: number; pontos: number; lixos: Sim.Lixo[]; jogadas: Sim.Jogada[] | null; fim: boolean };
 
-function comecar(naSala: () => number[], corpo: Record<string, unknown> = {}) {
+function comecar(naSala: () => number[], corpo: Record<string, unknown> = {}, solo = false) {
   const relogio: { ms: number; depois: () => void }[] = [];
   let terminou = false;
   const ctx = {
@@ -36,6 +36,7 @@ function comecar(naSala: () => number[], corpo: Record<string, unknown> = {}) {
     naSala,
     nome: (id: number) => (id === anaId ? 'ana' : id === biaId ? 'bia' : 'carla'),
     comunidade: comunidade.id,
+    solo,
   };
   const jogo = criarBlocos({ agora: () => agora, aleatorio: () => 0.25 }).comecar(ctx, { naSala: naSala(), criadaPor: naSala()[0], corpo });
   assert.ok(typeof jogo !== 'string');
@@ -45,7 +46,7 @@ function comecar(naSala: () => number[], corpo: Record<string, unknown> = {}) {
 /** Uma pessoa jogando com o piloto automático: a partida dela, aqui, e os lotes para o servidor. */
 function cliente(jogo: { acao: (q: number, c: Record<string, unknown>) => string | null; publico: (q: number) => Record<string, unknown> }, quem: number, ritmo = 8) {
   const p = jogo.publico(quem);
-  const s = Sim.simulacao(p.semente as number, p.modo === 'dois-minutos' ? Sim.DOIS_MINUTOS : 0);
+  const s = Sim.simulacao(p.semente as number, p.modo === 'dois-minutos' ? Sim.DOIS_MINUTOS : 0, (p.velocidade as number | undefined) ?? 1, (p.quebraCabeca as number | undefined) ?? -1);
   let enviadas = 0;
   return {
     s,
@@ -400,4 +401,118 @@ test('oito no máximo: o motor sabe (o nono assiste, e não conta como quem jogo
   const { blocos, MAX_JOGADORES } = await import('../src/minijogo-blocos.js');
   assert.equal(MAX_JOGADORES, 8);
   assert.equal(blocos.maximo, MAX_JOGADORES);
+});
+
+// ===== 19/11/2026: o recorde do Solo, a velocidade e o adversário do computador =====
+
+const { lerPedido, REACAO_DO_ROBO } = await import('../src/minijogo-blocos.js');
+const dbm = await import('../src/db.js');
+
+test('o pedido do Solo num texto só: modo, nível do computador e velocidade', () => {
+  assert.deepEqual(lerPedido('sem-fim'), { modo: 'sem-fim', nivel: 'medio', velocidade: 1, fase: -1 });
+  assert.deepEqual(lerPedido('dois-minutos:3'), { modo: 'dois-minutos', nivel: 'medio', velocidade: 3, fase: -1 });
+  assert.deepEqual(lerPedido('robo-dificil:5'), { modo: 'robo', nivel: 'dificil', velocidade: 5, fase: -1 });
+  assert.deepEqual(lerPedido('robo-qualquer:99'), { modo: 'robo', nivel: 'medio', velocidade: 1, fase: -1 });
+  assert.equal(lerPedido(undefined).modo, 'sem-fim');
+  assert.ok(REACAO_DO_ROBO.facil > REACAO_DO_ROBO.medio && REACAO_DO_ROBO.medio > REACAO_DO_ROBO.dificil);
+});
+
+test('a velocidade adianta a subida da pilha: a mesma semente, mais depressa', () => {
+  const lenta = Sim.simulacao(11, 0, 1);
+  const rapida = Sim.simulacao(11, 0, 5);
+  Sim.avancar(lenta, 1200);
+  Sim.avancar(rapida, 1200);
+  assert.ok(rapida.e.linhasGeradas > lenta.e.linhasGeradas, `${rapida.e.linhasGeradas} > ${lenta.e.linhasGeradas}`);
+});
+
+test('o recorde do Solo: um por modo (e por velocidade), com o placar que o servidor refez', () => {
+  const doisMinutos = (corpo: Record<string, unknown>) => {
+    const { jogo, relogio, terminou } = comecar(() => [carlaId], corpo, true);
+    agora += LARGADA_MS;
+    relogio[0].depois();
+    const c = cliente(jogo, carlaId);
+    for (let t = 1; t <= 300 && !terminou(); t++) {
+      agora += 1000;
+      c.jogar(t * 60);
+      c.lote();
+    }
+    assert.equal(terminou(), true);
+    return { jogo, pontos: c.s.e.pontos };
+  };
+  const antes = dbm.recordeDoSolo(carlaId, 'blocos', 'dois-minutos');
+  assert.equal(antes, null);
+  const a = doisMinutos({ modo: 'dois-minutos' });
+  assert.ok(a.pontos > 0);
+  assert.deepEqual(a.jogo.publico(carlaId).recorde, { antes: null, novo: true });
+  assert.equal(dbm.recordeDoSolo(carlaId, 'blocos', 'dois-minutos')?.valor, a.pontos);
+  // a mesma partida de novo (a mesma semente e as mesmas jogadas): empata, e não é recorde novo
+  const b = doisMinutos({ modo: 'dois-minutos' });
+  assert.equal(b.pontos, a.pontos);
+  assert.deepEqual(b.jogo.publico(carlaId).recorde, { antes: a.pontos, novo: false });
+  // outra velocidade é outro recorde
+  const c = doisMinutos({ modo: 'dois-minutos:4' });
+  assert.equal(c.jogo.publico(carlaId).velocidade, 4);
+  assert.equal(dbm.recordeDoSolo(carlaId, 'blocos', 'dois-minutos-v4')?.valor, c.pontos);
+  assert.equal(dbm.recordeDoSolo(carlaId, 'blocos', 'sem-fim'), null);
+});
+
+test('contra o computador: o robô joga no servidor, manda caixotes, alguém chega ao topo, e não há recorde nem pódio', () => {
+  const { jogo, relogio, terminou } = comecar(() => [biaId], { modo: 'robo-dificil' }, true);
+  const p = jogo.publico(biaId);
+  assert.equal(p.modo, 'versus');
+  assert.equal(p.robo, 'dificil');
+  assert.equal(p.recorde, null);
+  const jogadores = p.jogadores as { userId: number; username: string }[];
+  assert.equal(jogadores.length, 2);
+  assert.ok(jogadores[1].userId < 0 && jogadores[1].username.startsWith('🤖'));
+  agora += LARGADA_MS;
+  relogio[0].depois();
+  // quem joga quase não mexe: a pilha dela sobe, a do robô não
+  const b = cliente(jogo, biaId, 600);
+  let caixotes = 0;
+  for (let t = 1; t <= 480 && !terminou(); t++) {
+    agora += 1000;
+    b.jogar(t * 60);
+    b.lote();
+    caixotes = Math.max(caixotes, (jogo.publico(biaId).meu as Meu).lixos.length);
+  }
+  assert.equal(terminou(), true);
+  const resultado = jogo.publico(biaId).resultado as { userId: number; lugar: number | null }[];
+  assert.ok(resultado[0].userId < 0, 'o robô ganhou de quem não jogou');
+  assert.ok(caixotes > 0, 'o robô mandou caixotes');
+  assert.equal(dbm.recordesDoSolo(biaId, 'blocos').length, 0);
+  // contra o robô não vai pódio para a estante
+  assert.equal(jogo.publico(biaId).recorde, null);
+});
+
+test('na sala ninguém pede o computador: "robo-…" sem o Solo joga sozinho, sem robô', () => {
+  const { jogo } = comecar(() => [anaId], { modo: 'robo-facil' }, false);
+  assert.equal((jogo.publico(anaId).jogadores as unknown[]).length, 1);
+  assert.equal(jogo.publico(anaId).robo, null);
+});
+
+test('o quebra-cabeça: "qc-<fase>", a fase vencida vira recorde (menos trocas é melhor), e falhar não grava', () => {
+  assert.deepEqual(lerPedido('qc-0'), { modo: 'quebra-cabeca', nivel: 'medio', velocidade: 1, fase: 0 });
+  assert.equal(lerPedido('qc-99').modo, 'sem-fim');
+  // a fase 1 (".00.0."): a troca da coluna 3 com a 4 limpa
+  const { jogo, relogio, terminou } = comecar(() => [anaId], { modo: 'qc-0' }, true);
+  assert.equal(jogo.publico(anaId).modo, 'quebra-cabeca');
+  assert.equal(jogo.publico(anaId).quebraCabeca, 0);
+  agora += LARGADA_MS;
+  relogio[0].depois();
+  const a = cliente(jogo, anaId);
+  a.s.jogadas.push([10, 0, Sim.LINHAS - 1, 3]);
+  for (let t = 1; t <= 10 && !terminou(); t++) {
+    agora += 1000;
+    Sim.avancar(a.s, t * 60);
+    a.lote();
+  }
+  assert.equal(terminou(), true);
+  assert.equal(jogo.publico(anaId).venceu, true);
+  assert.equal(dbm.recordeDoSolo(anaId, 'blocos', 'qc-0')?.valor, 1);
+  // a fase 13, uma troca à toa e nada mais: as trocas sobram, mas a partida não vence (e não grava)
+  const b = comecar(() => [biaId], { modo: 'qc-12' }, true);
+  agora += LARGADA_MS;
+  b.relogio[0].depois();
+  assert.equal(dbm.recordeDoSolo(biaId, 'blocos', 'qc-12'), null);
 });

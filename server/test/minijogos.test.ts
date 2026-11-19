@@ -153,3 +153,25 @@ test('a categoria escolhida chega na partida; uma que não existe vira "tudo"', 
   assert.equal(tudo.categoria, 'tudo');
   await ana('DELETE', `/api/channels/${sala.id}/minijogo`);
 });
+
+test('o recorde do Solo no "Qual é o tamanho?" (19/11/2026): por categoria, com os pontos do servidor', async () => {
+  const { tamanho, OBJETOS: obj } = await import('../src/minijogos.js');
+  const db = await import('../src/db.js');
+  const id = (await ana('GET', '/api/me')).json().id as number;
+  const jogar = (acerta: boolean) => {
+    let depois: (() => void) | null = null;
+    const ctx = { agendar: (_ms: number, f: () => void) => (depois = f), avisar: () => {}, terminar: () => {}, naSala: () => [id], nome: () => 'ana', solo: true, comunidade: 0 };
+    const jogo = tamanho.comecar(ctx, { naSala: [id], criadaPor: id, corpo: { categoria: 'animais' } });
+    assert.ok(typeof jogo !== 'string');
+    for (let r = 0; r < RODADAS; r++) {
+      const e = jogo.publico(id) as { referencia: { id: string }; objeto: { id: string } };
+      const real = obj[e.objeto.id].cm / obj[e.referencia.id].cm;
+      assert.equal(jogo.acao(id, { tipo: 'palpite', razao: acerta ? real : real * 8, confirmar: true }), null);
+      depois!(); // o fim da revelação
+    }
+    return jogo.publico(id).recorde as { antes: number | null; novo: boolean };
+  };
+  assert.deepEqual(jogar(true), { antes: null, novo: true });
+  assert.equal(db.recordeDoSolo(id, 'tamanho', 'animais')!.valor, RODADAS * 100);
+  assert.deepEqual(jogar(false), { antes: RODADAS * 100, novo: false });
+});

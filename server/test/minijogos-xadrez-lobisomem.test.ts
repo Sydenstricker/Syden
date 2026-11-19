@@ -124,7 +124,10 @@ test('Lobisomem pela sala: cada um vê só o próprio papel, a noite acaba quand
   await entrarNaVoz(await ligar(contas[3].token), sala.id);
 
   const p0 = (await ana('POST', rota, { jogo: 'lobisomem' })).json().partida;
-  assert.equal(p0.fase, 'noite');
+  // o preparo (19/11/2026): quem começou escolhe a composição e dá a largada
+  assert.equal(p0.fase, 'preparo');
+  assert.equal((await bia('POST', `${rota}/acao`, { tipo: 'comecar' })).statusCode, 409, 'só quem começou dá a largada');
+  assert.equal((await ana('POST', `${rota}/acao`, { tipo: 'comecar' })).json().partida.fase, 'noite');
   const pessoas = [ana, bia, caio, davi];
   const estados = await Promise.all(pessoas.map(async (p) => (await p('GET', rota)).json().partida));
   const papelDe = new Map(estados.map((e, i) => [contas[i].user.id, e.meuPapel as string]));
@@ -145,7 +148,7 @@ test('Lobisomem pela sala: cada um vê só o próprio papel, a noite acaba quand
   assert.deepEqual(visao.visoes, [{ alvo: lobo, lobisomem: true }]);
   const manha = (await quem(lobo)('POST', `${rota}/acao`, { tipo: 'noite', alvo: vitima })).json().partida;
   assert.equal(manha.fase, 'amanhecer', 'todos com ação agiram: amanhece na hora');
-  assert.equal(manha.mortoDaNoite, vitima);
+  assert.deepEqual(manha.mortosDaNoite, [vitima]);
   assert.equal(manha.jogadores.find((j: { userId: number }) => j.userId === vitima).papel, 'aldeao', 'o papel de quem morre fica aberto');
   assert.equal((await quem(vitima)('POST', `${rota}/acao`, { tipo: 'voto', alvo: lobo })).statusCode, 409, 'quem morreu só assiste');
 
@@ -153,7 +156,10 @@ test('Lobisomem pela sala: cada um vê só o próprio papel, a noite acaba quand
   await new Promise((ok) => setTimeout(ok, 7300));
   const vivos = [...papelDe.keys()].filter((u) => u !== vitima);
   let fim;
-  for (const u of vivos) fim = (await quem(u)('POST', `${rota}/acao`, { tipo: 'voto', alvo: lobo })).json().partida;
+  for (const u of vivos) await quem(u)('POST', `${rota}/acao`, { tipo: 'voto', alvo: u === lobo ? vivos.find((x) => x !== lobo) : lobo });
+  // a defesa: o acusado termina antes do tempo, e a turma julga
+  assert.equal((await quem(lobo)('POST', `${rota}/acao`, { tipo: 'pronto' })).json().partida.fase, 'julgamento');
+  for (const u of vivos) if (u !== lobo) fim = (await quem(u)('POST', `${rota}/acao`, { tipo: 'julgamento', sim: true })).json().partida;
   assert.equal(fim.fase, 'fim');
   assert.equal(fim.vencedor, 'vila');
   assert.equal(fim.eliminado, lobo);

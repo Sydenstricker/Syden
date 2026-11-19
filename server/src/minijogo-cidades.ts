@@ -130,6 +130,17 @@ export const TEMPO_DA_VEZ = 20_000;
 export const TEMPO_DA_COMPRA = 15_000;
 export const TEMPO_DAS_ACOES = 30_000;
 export const TEMPO_DA_TROCA = 20_000;
+/**
+ * AS REGRAS NOVAS DE 19/11/2026 (a auditoria dos mini-games):
+ * - DADOS IGUAIS jogam de novo, depois das ações; o terceiro par seguido leva direto ao engarrafamento (sem passar pela largada).
+ * - Quem está no engarrafamento pode PAGAR para sair (SAIR_DO_ENGARRAFAMENTO) a qualquer hora antes da vez que perderia.
+ * - A PARTIDA RÁPIDA (`rapida`): cada um começa com 2 cidades sorteadas (nunca um grupo inteiro).
+ * - O ROBÔ PROPÕE a troca que fecha o grupo dele, só a quem é gente e está na sala, e só aceita quem quiser (a pessoa
+ *   responde como a qualquer troca; sem resposta, é não). A mesma cidade ele não pede duas vezes à mesma pessoa.
+ */
+export const SAIR_DO_ENGARRAFAMENTO = 50;
+export const DUPLAS_PARA_ENGARRAFAR = 3;
+export const CIDADES_DA_RAPIDA = 2;
 /** O leilão: o primeiro prazo, e o que cada lance novo devolve ("dou-lhe uma"). */
 export const TEMPO_DO_LEILAO = 12_000;
 export const TEMPO_APOS_LANCE = 8_000;
@@ -174,6 +185,8 @@ export type Ocorrido =
   | { tipo: 'carta'; userId: number; carta: Carta; valor: number | null }
   | { tipo: 'pedagio'; userId: number; valor: number }
   | { tipo: 'engarrafado'; userId: number }
+  | { tipo: 'saiu-do-engarrafamento'; userId: number; valor: number }
+  | { tipo: 'dados-iguais'; userId: number }
   | { tipo: 'perdeu-vez'; userId: number }
   | { tipo: 'vendeu-para-pagar'; userId: number; valor: number }
   | { tipo: 'faliu'; userId: number; credor: number | null }
@@ -212,11 +225,13 @@ export interface OpcoesDasCidades {
   cartas?: Carta[];
   /** Para o teste: cidades que já começam com dono ([casa, dono, prédios]). */
   posses?: [number, number, number?][];
+  /** Para os testes de antes de 19/11/2026, que sorteiam sempre 4 e 4: os dados iguais não jogam de novo. */
+  semDadosIguais?: boolean;
 }
 
 export const cidades: Definicao = criarCidades();
 
-export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinheiroInicial = DINHEIRO_INICIAL, cartas, posses: possesDoTeste = [] }: OpcoesDasCidades = {}): Definicao {
+export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinheiroInicial = DINHEIRO_INICIAL, cartas, posses: possesDoTeste = [], semDadosIguais = false }: OpcoesDasCidades = {}): Definicao {
   return {
     minimo: 2,
     maximo: MAXIMO_DAS_CIDADES,
@@ -230,6 +245,7 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
       // cidades espalhadas ninguém fecha região, ninguém fale, e a partida seguia para sempre na memória do servidor. No teto,
       // ganha o maior patrimônio, como no modo de rodadas.
       const teto = rodadas ?? (robos > 0 ? TETO_ATE_SOBRAR_UM_COM_ROBOS : null);
+      const rapida = corpo.rapida === true;
       const inteiro = (n: number) => Math.floor(aleatorio() * n);
       const idsDosRobos = Array.from({ length: robos }, (_, k) => -(k + 1));
       const ordem = embaralhar([...naSala.slice(0, MAXIMO_DAS_CIDADES - robos), ...idsDosRobos], aleatorio);
@@ -241,6 +257,27 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
       const posses = new Map<number, Posse>(
         possesDoTeste.filter(([, dono]) => jogadores.has(dono)).map(([casa, dono, predios = 0]) => [casa, { dono, predios, hipotecada: false }]),
       );
+      if (rapida) {
+        // 2 cidades sorteadas para cada um, de quem ainda não tem dono; quem fecharia um grupo assim sorteia de novo
+        const grupoDe = (i: number) => CASAS[i].grupo!;
+        for (let tentativa = 0; tentativa < 50; tentativa++) {
+          const livres = embaralhar(CASAS.map((c, i) => (c.tipo === 'cidade' && !posses.has(i) ? i : -1)).filter((i) => i >= 0), aleatorio);
+          const dadas = new Map<number, number>();
+          let ok = true;
+          for (const id of ordem) {
+            const minhas = livres.splice(0, CIDADES_DA_RAPIDA);
+            if (minhas.length < CIDADES_DA_RAPIDA) ok = false;
+            for (const i of minhas) dadas.set(i, id);
+          }
+          for (const [i, dono] of dadas) {
+            const grupo = CASAS.map((c, k) => (c.tipo === 'cidade' && c.grupo === grupoDe(i) ? k : -1)).filter((k) => k >= 0);
+            if (grupo.every((k) => dadas.get(k) === dono || posses.get(k)?.dono === dono)) ok = false;
+          }
+          if (!ok && tentativa < 49) continue;
+          for (const [i, dono] of dadas) posses.set(i, { dono, predios: 0, hipotecada: false });
+          break;
+        }
+      }
       const evento = `cidades-${ctx.comunidade ?? 0}-${agora()}`;
       let fase: 'vez' | 'andando' | 'compra' | 'leilao' | 'acoes' | 'troca' | 'fim' = 'vez';
       let rodada = 1;
@@ -258,6 +295,11 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
       let chegada: { userId: number; salario: boolean; preso: boolean } | null = null;
       let leilao: { casa: number; lance: number; lider: number | null } | null = null;
       let troca: Proposta | null = null;
+      /** Os dados iguais da vez: quantos pares seguidos, e se quem joga joga de novo depois das ações. */
+      let duplas = 0;
+      let deNovo = false;
+      /** As trocas que os robôs já propuseram ("robô:casa:pessoa"): a mesma não volta. */
+      const propostasDosRobos = new Set<string>();
       const historico: (Ocorrido & { id: number })[] = [];
       let idDoOcorrido = 0;
       const contar = (o: Ocorrido) => {
@@ -411,6 +453,14 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
       };
 
       const proximaVez = () => {
+        // os dados iguais: a mesma pessoa joga de novo (se não foi para o engarrafamento nem faliu)
+        const j = jogadores.get(daVez());
+        if (deNovo && j && !j.falido && j.parado === 0 && fase !== 'fim') {
+          deNovo = false;
+          return comecarVez();
+        }
+        deNovo = false;
+        duplas = 0;
         indice++;
         comecarVez();
       };
@@ -442,6 +492,17 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
       const jogarDados = (quem: number) => {
         if (fase !== 'vez' || quem !== daVez()) return;
         const dados: [number, number] = [1 + inteiro(6), 1 + inteiro(6)];
+        if (dados[0] === dados[1] && !semDadosIguais) {
+          duplas++;
+          deNovo = true;
+          // o terceiro par seguido: direto ao engarrafamento, sem passar pela largada
+          if (duplas >= DUPLAS_PARA_ENGARRAFAR) {
+            duplas = 0;
+            deNovo = false;
+            return mover(quem, [jogadores.get(quem)!.pos, ENGARRAFAMENTO], dados, { preso: true });
+          }
+          contar({ tipo: 'dados-iguais', userId: quem });
+        } else deNovo = false;
         const { caminho, passou } = caminhoDe(jogadores.get(quem)!.pos, dados[0] + dados[1]);
         mover(quem, caminho, dados, { salario: passou });
       };
@@ -454,6 +515,8 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
         if (ehRobo(quem))
           ctx.agendar(PAUSA_DO_ROBO, () => {
             if (fase !== 'acoes' || daVez() !== quem) return;
+            // uma troca proposta à pessoa: a vez dele continua quando ela responder
+            if (roboPropoe(quem)) return;
             roboAdministra(quem);
             proximaVez();
           });
@@ -472,6 +535,7 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
         }
         if (preso) {
           j.parado = 1;
+          deNovo = false;
           contar({ tipo: 'engarrafado', userId });
           return abrirAcoes();
         }
@@ -504,6 +568,7 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
             return abrirAcoes();
           case 'engarrafamento':
             j.parado = 1;
+            deNovo = false;
             contar({ tipo: 'engarrafado', userId });
             return abrirAcoes();
           case 'noticia':
@@ -725,6 +790,17 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
         return 'Ação desconhecida.';
       };
 
+      /** Paga para sair do engarrafamento (não perde a próxima vez). Devolve o erro, ou null. */
+      const sairDoEngarrafamento = (quem: number): string | null => {
+        const j = jogadores.get(quem)!;
+        if (j.parado <= 0) return 'Você não está no engarrafamento.';
+        if (j.dinheiro < SAIR_DO_ENGARRAFAMENTO) return 'Dinheiro insuficiente.';
+        j.dinheiro -= SAIR_DO_ENGARRAFAMENTO;
+        j.parado = 0;
+        contar({ tipo: 'saiu-do-engarrafamento', userId: quem, valor: SAIR_DO_ENGARRAFAMENTO });
+        return null;
+      };
+
       // ---- A CABEÇA DOS ROBÔS: regras simples, de quem joga com cuidado, sem trapaça (eles veem só o que a pessoa vê). ----
 
       /** O dinheiro que o robô guarda para não falir no primeiro aluguel. */
@@ -779,9 +855,40 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
         return melhor && { id: melhor.id, valor: melhor.valor };
       };
 
+      /**
+       * A TROCA QUE O ROBÔ PROPÕE: falta uma cidade só para fechar um grupo dele, e ela é de alguém que é gente e está na sala.
+       * Ele oferece dinheiro (o preço e mais 60%, sem passar da reserva); a pessoa aceita se quiser. Devolve se propôs.
+       */
+      const roboPropoe = (quem: number): boolean => {
+        if (trocasNaVez >= TROCAS_POR_VEZ) return false;
+        const j = jogadores.get(quem)!;
+        const sala = ctx.naSala();
+        for (const [i, p] of posses) {
+          const c = CASAS[i];
+          if (c.tipo !== 'cidade' || ehRobo(p.dono) || !sala.includes(p.dono) || jogadores.get(p.dono)!.falido) continue;
+          if (!fechaGrupo(quem, i) || prediosNoGrupo(c.grupo!) > 0) continue;
+          const chave = `${quem}:${i}:${p.dono}`;
+          if (propostasDosRobos.has(chave)) continue;
+          const oferta = Math.min(arred10((p.hipotecada ? c.preco! / 2 : c.preco!) * 1.6), arred10(j.dinheiro - RESERVA));
+          if (oferta < c.preco! / 2) continue;
+          const proposta: Proposta = { de: quem, para: p.dono, darCasas: [], darDinheiro: oferta, pedirCasas: [i], pedirDinheiro: 0 };
+          if (conferirProposta(proposta) !== null) continue;
+          propostasDosRobos.add(chave);
+          trocasNaVez++;
+          troca = proposta;
+          fase = 'troca';
+          ctx.agendar(TEMPO_DA_TROCA, () => fecharTroca(false));
+          ctx.avisar();
+          return true;
+        }
+        return false;
+      };
+
       /** Na vez dele, depois de andar: resgata o que hipotecou, e constrói nos grupos inteiros, por igual. */
       const roboAdministra = (quem: number) => {
         const j = jogadores.get(quem)!;
+        // engarrafado e com folga: paga para sair
+        if (j.parado > 0 && j.dinheiro - SAIR_DO_ENGARRAFAMENTO >= RESERVA * 2) sairDoEngarrafamento(quem);
         const minhas = () => [...posses.entries()].filter(([, p]) => p.dono === quem);
         for (const [i, p] of minhas()) {
           if (!p.hipotecada) continue;
@@ -911,6 +1018,10 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
             interrompida,
             partidaId: evento,
             robos,
+            rapida,
+            deNovo,
+            duplas,
+            sairDoEngarrafamento: SAIR_DO_ENGARRAFAMENTO,
           };
         },
         acao(quem, corpo) {
@@ -926,6 +1037,11 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
             if (valor > jogadores.get(quem)!.dinheiro) return 'Dinheiro insuficiente.';
             darLance(quem, valor);
             return null;
+          }
+          if (tipo === 'sair') {
+            const erro = sairDoEngarrafamento(quem);
+            if (!erro) ctx.avisar();
+            return erro;
           }
           if (tipo === 'responder') {
             if (fase !== 'troca' || !troca) return 'Não há troca agora.';

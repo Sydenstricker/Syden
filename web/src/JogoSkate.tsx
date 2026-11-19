@@ -11,6 +11,8 @@ import {
   gravador,
   NADA,
   novoSkatista,
+  objetivos as objetivosDa,
+  type Objetivo,
   PASSO,
   passo,
   PASSOS_DA_SESSAO,
@@ -23,7 +25,7 @@ import {
   type Skatista,
 } from './skate/fisica';
 import { criarPiloto } from './skate/piloto';
-import { pecaEm } from './skate/pista';
+import { IDS_DAS_PISTAS, pecaEm, PALAVRA, PISTAS, usarPista } from './skate/pista';
 import type { CenaDoSkate, QuadroDoOutro } from './skate/cena';
 import './skate.css';
 
@@ -53,6 +55,65 @@ export interface EstadoSkate {
   /** O recorde de antes, e se esta sessão virou o novo (no Solo; na sala, o de cada um). */
   recorde: { antes: number | null; novo: boolean } | null;
   partidaId: string;
+  /** A pista (19/11/2026: o parque ou a praça), os recordes de cada uma (no Solo) e os objetivos da sessão refeita. */
+  pista?: string;
+  recordes?: Record<string, number | null>;
+  objetivos?: Objetivo[] | null;
+  /** No Solo: o mais de objetivos já cumpridos numa sessão, por pista. */
+  objetivosAntes?: Record<string, number>;
+}
+
+type T = ReturnType<typeof useT>;
+
+/** O nome de uma manobra na tela: as gírias do skate ficam como são; os saltos com nome ("gap:<id>") são nossos e traduzidos. */
+function nomeDaManobra(t: T, nome: string): string {
+  switch (nome) {
+    case 'gap:meio':
+      return t('Salto do meio');
+    case 'gap:caixa':
+      return t('Salto até a caixa');
+    case 'gap:piramide':
+      return t('Salto da pirâmide');
+    case 'gap:esquerda':
+      return t('Salto da rampa da esquerda');
+    case 'gap:quarter':
+      return t('Salto até o quarter');
+    default:
+      return nome;
+  }
+}
+
+/** O texto de um objetivo. */
+function textoDoObjetivo(t: T, o: Objetivo): string {
+  switch (o.id) {
+    case 'letras':
+      return t('Pegue as letras {palavra}', { palavra: PALAVRA });
+    case 'pontos':
+      return t('Faça {n} pontos', { n: mil(o.valor ?? 0) });
+    case 'combo':
+      return t('Faça um combo de {n}', { n: mil(o.valor ?? 0) });
+    case 'fita':
+      return t('Ache a fita escondida');
+    default:
+      return nomeDaManobra(t, o.id);
+  }
+}
+
+/** O nome de uma pista. */
+const nomeDaPista = (t: T, id: string) => (id === 'praca-1' ? t('Praça') : t('Parque'));
+
+/** A lista dos objetivos, com o ✓ dos cumpridos (sem pressão: o que falta só fica sem o ✓). */
+function ListaDeObjetivos({ lista }: { lista: Objetivo[] }) {
+  const t = useT();
+  return (
+    <ul className="skate-objetivos">
+      {lista.map((o) => (
+        <li key={o.id} className={o.feito ? 'feito' : undefined}>
+          <span aria-hidden="true">{o.feito ? '✓' : '·'}</span> {textoDoObjetivo(t, o)}
+        </li>
+      ))}
+    </ul>
+  );
 }
 
 type Props = {
@@ -105,6 +166,14 @@ function Placar({ estado, eu, fim, solo }: { estado: EstadoSkate; eu: number; fi
           estado.recorde.antes !== null && <p className="minijogo-situacao">{t('Seu recorde: {tempo}', { tempo: mil(estado.recorde.antes) })}</p>
         ))}
       {meu && meu.melhorCombo !== null && meu.melhorCombo > 0 && <p className="minijogo-situacao">{t('Melhor combo: {n}', { n: mil(meu.melhorCombo) })}</p>}
+      {estado.objetivos && estado.objetivos.length > 0 && (
+        <>
+          <p className="minijogo-situacao">
+            {t('Objetivos')}: {estado.objetivos.filter((o) => o.feito).length}/{estado.objetivos.length}
+          </p>
+          <ListaDeObjetivos lista={estado.objetivos} />
+        </>
+      )}
       {linhas.length > 1 && (
         <ol className="skate-placar">
           {linhas.map((l) => (
@@ -121,12 +190,74 @@ function Placar({ estado, eu, fim, solo }: { estado: EstadoSkate; eu: number; fi
 }
 
 function SkateSolo({ estado, eu, jogador, agir }: Props) {
+  const t = useT();
   const fim = !!estado.terminada || estado.fase === 'fim';
   const meu = estado.placar.find((l) => l.userId === eu);
+  // A ESCOLHA DA PISTA (19/11/2026), antes do minuto: o servidor recomeça o relógio dele quando ela chega
+  const [pista, setPista] = useState<string | null>(null);
+  const [marcada, setMarcada] = useState(estado.pista ?? IDS_DAS_PISTAS[0]);
   if (fim || (meu && meu.pontos !== null)) return <Placar estado={estado} eu={eu} fim={fim} solo />;
   if (!jogador || !meu) return <p className="minijogo-situacao">…</p>;
+  if (pista === null) {
+    return (
+      <div className="skate-escolha">
+        <ul className="skate-pistas" role="radiogroup">
+          {IDS_DAS_PISTAS.map((id) => (
+            <li key={id}>
+              <button type="button" role="radio" aria-checked={marcada === id} className={marcada === id ? 'escolhida' : undefined} onClick={() => setMarcada(id)}>
+                <MapaDaPista id={id} />
+                <strong>{nomeDaPista(t, id)}</strong>
+                {estado.recordes?.[id] != null && <span>{t('Seu recorde: {tempo}', { tempo: mil(estado.recordes[id]!) })}</span>}
+                {(estado.objetivosAntes?.[id] ?? 0) > 0 && (
+                  <span>
+                    {t('Objetivos')}: {estado.objetivosAntes![id]}/{4 + PISTAS[IDS_DAS_PISTAS.indexOf(id)].objetivos.saltos.length}
+                  </span>
+                )}
+              </button>
+            </li>
+          ))}
+        </ul>
+        <div className="minijogo-acoes">
+          <button
+            type="button"
+            className="btn-primary"
+            onClick={() => {
+              Promise.resolve(agir({ tipo: 'pista', pista: marcada }))
+                .then(() => setPista(marcada))
+                .catch(() => setPista(marcada));
+            }}
+          >
+            {t('Começar')}
+          </button>
+        </div>
+      </div>
+    );
+  }
   // ESC pausa só no Solo (o recorde é dele): na sala, o relógio é o de todos
-  return <Sessao key={estado.partidaId} solo aoTerminar={(entradas) => void agir({ tipo: 'fim', entradas })} />;
+  return <Sessao key={estado.partidaId} solo pista={Math.max(0, IDS_DAS_PISTAS.indexOf(pista))} aoTerminar={(entradas) => void agir({ tipo: 'fim', entradas })} />;
+}
+
+/** O mapa da pista, de cima (as peças com chão, por perfil), para a escolha. */
+function MapaDaPista({ id }: { id: string }) {
+  const p = PISTAS[Math.max(0, IDS_DAS_PISTAS.indexOf(id))];
+  const cor: Record<string, string> = { quarter: '#8fa3b8', rampa: '#d9a65a', caixa: '#c46d4a', corrimao: '#3b4050' };
+  return (
+    <svg className="skate-mapa" viewBox="-0.5 -0.5 13 19" aria-hidden="true">
+      <rect x="0" y="0" width="12" height="18" rx="0.4" fill="#cfd5dc" />
+      {p.pecas
+        .filter((q) => q.perfil)
+        .map((q, i) => {
+          const fino = q.perfil === 'corrimao' ? 0.18 : q.perfil === 'caixa' ? 0.5 : 1;
+          const deLado = q.rot === 1 || q.rot === 3;
+          return (
+            <rect key={i} x={q.x - (deLado ? 0.5 : fino / 2)} y={q.z - (deLado ? fino / 2 : 0.5)} width={deLado ? 1 : fino} height={deLado ? fino : 1} fill={cor[q.perfil!]} />
+          );
+        })}
+      {p.objetivos.letras.map((l, i) => (
+        <circle key={i} cx={l.x} cy={l.z} r="0.28" fill="#f2c14e" stroke="#2a2333" strokeWidth="0.08" />
+      ))}
+    </svg>
+  );
 }
 
 function SkateNaSala({ estado, eu, jogador, agir, restante = 0, socket = null, channelId = 0 }: Props) {
@@ -163,6 +294,7 @@ function SkateNaSala({ estado, eu, jogador, agir, restante = 0, socket = null, c
   return (
     <Sessao
       key={estado.partidaId}
+      pista={Math.max(0, IDS_DAS_PISTAS.indexOf(estado.pista ?? IDS_DAS_PISTAS[0]))}
       corro={corro}
       contagemMs={contagem}
       rivais={rivais.current}
@@ -231,6 +363,11 @@ interface Painel {
   combo: Manobra[];
   modo: Skatista['modo'];
   contagem: number | null;
+  /** A barra de especial (0 a 1), as letras pegas (um bit cada) e quantos objetivos já foram cumpridos. */
+  especial: number;
+  letras: number;
+  feitos: number;
+  total: number;
   /** Na sala: a ordem ao vivo, pelos pontos que cada um diz ter agora (o placar do fim é o que o servidor refez). */
   ordem: { id: string; nome: string; pontos: number; eu: boolean }[];
 }
@@ -268,6 +405,7 @@ function posicaoDoRival(r: Rival, n: number): Posicao | null {
 
 /** O skatista "de mentira" que a câmera segue quando eu só assisto: o desenho de um rival, com o que a cena lê. */
 function skatistaDoRival(q: Posicao, k: Skatista): Skatista {
+  usarPista(k.pista);
   k.x = q.x;
   k.y = q.y;
   k.z = q.z;
@@ -287,6 +425,7 @@ function skatistaDoRival(q: Posicao, k: Skatista): Skatista {
 
 export function Sessao({
   aoTerminar,
+  pista = 0,
   solo = false,
   corro = true,
   contagemMs = CONTAGEM_MS,
@@ -294,6 +433,8 @@ export function Sessao({
   aoPosicao,
 }: {
   aoTerminar: (entradas: Entradas, k: Skatista) => void;
+  /** A pista (o índice em PISTAS). */
+  pista?: number;
   solo?: boolean;
   /** false: só assisto (a câmera segue quem tem mais pontos). */
   corro?: boolean;
@@ -306,7 +447,18 @@ export function Sessao({
   const medidor = useRef<HTMLDivElement>(null);
   const teclado = useTeclado();
   const [estado, setEstado] = useState<'carregando' | 'pronta' | 'falhou'>(() => (temWebGL() ? 'carregando' : 'falhou'));
-  const [painel, setPainel] = useState<Painel>({ pontos: 0, restante: PASSOS_DA_SESSAO, combo: [], modo: 'chao', contagem: Math.ceil(contagemMs / 1000), ordem: [] });
+  const [painel, setPainel] = useState<Painel>({
+    pontos: 0,
+    restante: PASSOS_DA_SESSAO,
+    combo: [],
+    modo: 'chao',
+    contagem: Math.ceil(contagemMs / 1000),
+    ordem: [],
+    especial: 0,
+    letras: 0,
+    feitos: 0,
+    total: 0,
+  });
   const [placas, setPlacas] = useState<Placa[]>([]);
   const terminar = useRef(aoTerminar);
   terminar.current = aoTerminar;
@@ -324,11 +476,15 @@ export function Sessao({
     import('./skate/cena')
       .then(async ({ CenaDoSkate }) => {
         if (!viva || !caixa.current) return;
+        // a cena lê a pista que as contas leem: a desta sessão
+        usarPista(pista);
         cena = new CenaDoSkate(caixa.current);
         await cena.montar(lista.map(([, r]) => ({ cores: coresDoAvatar(r.avatar), nome: r.nome })));
         if (!viva) return;
+        usarPista(pista);
+        cena.montarObjetivos(PISTAS[pista].objetivos, PALAVRA);
         setEstado('pronta');
-        const k = novoSkatista();
+        const k = novoSkatista(pista);
         if (import.meta.env.DEV && corro) window.skateSessaoDoTeste = k;
         const gravar = gravador();
         const piloto = criarPiloto();
@@ -342,7 +498,11 @@ export function Sessao({
         /** Quem só assiste: o passo do mundo desde o verde, e quem a câmera segue (pintado com as cores dele). */
         let nAssistindo = 0;
         let seguido = -1;
-        const deMentira = novoSkatista();
+        const deMentira = novoSkatista(pista);
+        let feitosAntes = 0;
+        let especialCheio = false;
+        let letrasAntes = 0;
+        let fitaAntes = false;
 
         const ouvir = (e: Evento) => {
           switch (e.tipo) {
@@ -356,7 +516,9 @@ export function Sessao({
               tocar('carta');
               break;
             case 'manobra':
-              if (e.nome === 'Kickflip') tocar('clique');
+              if (e.nome.startsWith('gap:')) tocar('bandeira');
+              else if (e.nome.startsWith('Double')) tocar('turbo');
+              else if (e.nome.endsWith('flip') || e.nome.endsWith('Flip') || e.nome.endsWith('Shove-it')) tocar('clique');
               break;
             case 'combo':
               tocar(e.vezes >= 3 ? 'combo' : 'moeda');
@@ -434,6 +596,20 @@ export function Sessao({
             }
           }
           const seguida = !corro && seguido >= 0 ? quadros[seguido] : null;
+          // as letras e a fita: de quem joga, as que ele pegou somem; quem assiste vê todas
+          cena.marcarPegos(corro ? k.letras : 0, corro ? k.fita : false, dt);
+          // o som do que acabou de ser cumprido (um objetivo, a barra cheia)
+          if (corro) {
+            const objs = objetivosDa(k);
+            const feitos = objs.filter((o) => o.feito).length;
+            if (feitos > feitosAntes) tocar('medalha');
+            else if (k.letras !== letrasAntes || (k.fita && !fitaAntes)) tocar('item');
+            feitosAntes = feitos;
+            letrasAntes = k.letras;
+            fitaAntes = k.fita;
+            if (k.especial >= 1 && !especialCheio) tocar('turbo');
+            especialCheio = k.especial >= 1;
+          }
           cena.desenharOutros(
             quadros.map((q, i) => (i === seguido && !corro ? null : q)),
             dt,
@@ -459,6 +635,7 @@ export function Sessao({
                 ].sort((a, b) => b.pontos - a.pontos)
               : [];
             const passoAgora = corro ? k.passo : nAssistindo;
+            const objs = corro ? objetivosDa(k) : [];
             setPainel({
               pontos: corro ? k.pontos : (seguida?.p ?? 0),
               restante: Math.max(0, PASSOS_DA_SESSAO - passoAgora),
@@ -466,6 +643,10 @@ export function Sessao({
               modo: k.modo,
               contagem: contando ? Math.ceil((largada - agora) / 1000) : null,
               ordem,
+              especial: corro ? k.especial : 0,
+              letras: corro ? k.letras : 0,
+              feitos: objs.filter((o) => o.feito).length,
+              total: objs.length,
             });
           }
           if (corro && k.terminou && !mandou) {
@@ -515,7 +696,7 @@ export function Sessao({
             )}
             {combo.length > 0 && (
               <div className="skate-combo">
-                <span className="skate-manobras">{combo.map((m) => m.nome).join(' + ')}</span>
+                <span className="skate-manobras">{combo.map((m) => nomeDaManobra(t, m.nome)).join(' + ')}</span>
                 <span className="skate-valor">
                   {mil(combo.reduce((s, m) => s + m.pontos, 0))} × {combo.length}
                   <small> = {mil(valorDoCombo(combo))}</small>
@@ -539,6 +720,23 @@ export function Sessao({
             <div ref={medidor} className="skate-equilibrio" style={{ visibility: 'hidden' }}>
               <span />
             </div>
+            {corro && (
+              <div className="skate-objetivos-painel">
+                <span className="skate-letras">
+                  {[...PALAVRA].map((l, i) => (
+                    <b key={i} className={painel.letras & (1 << i) ? 'pega' : undefined}>
+                      {l}
+                    </b>
+                  ))}
+                </span>
+                <span className="skate-feitos">
+                  ★ {painel.feitos}/{painel.total}
+                </span>
+                <span className={`skate-especial${painel.especial >= 1 ? ' cheia' : ''}`} title={t('Especial')}>
+                  <span style={{ width: `${Math.round(painel.especial * 100)}%` }} />
+                </span>
+              </div>
+            )}
             {painel.contagem !== null && <span className="skate-contagem">{painel.contagem}</span>}
           </div>
         )}
@@ -552,11 +750,37 @@ export function Sessao({
             { teclas: ['setas-lado'], rotulo: t('Girar') },
             { teclas: ['z'], rotulo: t('Kickflip') },
             { teclas: ['x'], rotulo: t('Grab') },
+            { teclas: ['setas', 'z'], rotulo: t('Outras manobras') },
+
             { teclas: ['c'], rotulo: t('Manual') },
             ...(solo ? [comandoDaPausa(t)] : []),
           ]}
         />
       )}
+    </div>
+  );
+}
+
+/** A escolha da pista na sala (antes do convite): o mapa de cada uma, e clicar começa (19/11/2026). */
+export function EscolhaDaPistaDoSkate({ aoEscolher, aoVoltar }: { aoEscolher: (pista: string) => void; aoVoltar: () => void }) {
+  const t = useT();
+  return (
+    <div className="skate-escolha">
+      <ul className="skate-pistas">
+        {IDS_DAS_PISTAS.map((id) => (
+          <li key={id}>
+            <button type="button" onClick={() => aoEscolher(id)}>
+              <MapaDaPista id={id} />
+              <strong>{nomeDaPista(t, id)}</strong>
+            </button>
+          </li>
+        ))}
+      </ul>
+      <div className="minijogo-acoes">
+        <button type="button" className="btn-secondary" onClick={aoVoltar}>
+          {t('Outros jogos')}
+        </button>
+      </div>
     </div>
   );
 }

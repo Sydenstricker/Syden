@@ -4,6 +4,14 @@ import { idiomaAtual, useT } from './i18n';
 import { Placar, PlacarAoVivo, Relogio } from './Minijogo';
 import type { Partida } from './minijogos';
 import { type EstadoQuiz, type IdDoQuiz, ROTULOS, sugestoes, textoDoValor, type Veredito } from './quiz';
+import { tocar } from './somDosJogos';
+import './jogosDePalavras.css';
+
+/** O que o servidor de 19/11/2026 manda a mais: as pistas e o recorde do Solo. */
+type EstadoQuizNovo = EstadoQuiz & {
+  pistas?: { letra: string | null; coluna: { id: string; valor: unknown } | null; proxima: number | null };
+  recorde?: { antes: number | null; novo: boolean; valor: number | null } | null;
+};
 
 const QUIZ_MS = 3 * 60_000;
 const CLASSE = ['nao-bate', 'em-parte', 'bate'];
@@ -29,7 +37,7 @@ function Bussola({ rumo }: { rumo: number }) {
  */
 export function JogoQuiz({
   tema,
-  estado,
+  estado: estadoBase,
   eu,
   jogador,
   restante,
@@ -43,6 +51,7 @@ export function JogoQuiz({
   agir: (corpo: Record<string, unknown>) => unknown;
 }) {
   const t = useT();
+  const estado = estadoBase as EstadoQuizNovo & Partida;
   const [itens, setItens] = useState<{ id: string; nome: string }[]>([]);
   const [escrito, setEscrito] = useState('');
   const [marcada, setMarcada] = useState(0);
@@ -70,17 +79,44 @@ export function JogoQuiz({
   useEffect(() => setEscrito(''), [estado.rodada, estado.meu.length]);
   useEffect(() => setMarcada(0), [escrito]);
 
+  // OS SONS (19/11/2026): o chute, o acerto, a pista que aparece e a medalha do recorde.
+  const temPista = (estado.pistas?.letra ? 1 : 0) + (estado.pistas?.coluna ? 1 : 0);
+  const antesDoSom = useRef({ chutes: estado.meu.length, acertei: estado.acertei, pista: temPista, rodada: estado.rodada, novo: !!estado.recorde?.novo });
+  useEffect(() => {
+    const a = antesDoSom.current;
+    const novo = !!estado.recorde?.novo;
+    if (novo && !a.novo) tocar('medalha');
+    else if (estado.rodada === a.rodada) {
+      if (estado.acertei && !a.acertei) tocar('acerto');
+      else if (temPista > a.pista) tocar('item');
+      else if (estado.meu.length > a.chutes) tocar('clique');
+    }
+    antesDoSom.current = { chutes: estado.meu.length, acertei: estado.acertei, pista: temPista, rodada: estado.rodada, novo };
+  }, [estado.meu.length, estado.acertei, temPista, estado.rodada, estado.recorde?.novo]);
+
   const chutar = (id: string) => {
     if (!chutando || enviando) return;
     setEnviando(true);
-    void Promise.resolve(agir({ tipo: 'chute', id })).finally(() => {
+    // (a língua vai junto: é nela que o servidor tira a letra da primeira pista)
+    void Promise.resolve(agir({ tipo: 'chute', id, idioma })).finally(() => {
       setEnviando(false);
       campo.current?.focus();
     });
   };
 
   if (estado.terminada) {
-    return <Placar eu={eu} linhas={estado.placar.map((l) => ({ ...l, valor: String(l.pontos) }))} />;
+    const r = estado.recorde;
+    return (
+      <>
+        <Placar eu={eu} linhas={estado.placar.map((l) => ({ ...l, valor: String(l.pontos) }))} />
+        {r?.novo && r.valor !== null && (
+          <p className="minijogo-recorde novo">
+            🏅 {t('Novo recorde!')} {t('Chutes: {n}', { n: r.valor })}
+          </p>
+        )}
+        {r && !r.novo && r.antes !== null && <p className="minijogo-recorde">{t('Seu recorde: {n}', { n: r.antes })}</p>}
+      </>
+    );
   }
 
   const rotulos = ROTULOS[tema];
@@ -146,6 +182,17 @@ export function JogoQuiz({
       <p className="minijogo-situacao" role="status">
         {situacao}
       </p>
+      {/* AS PISTAS (19/11/2026): a letra inicial depois de 5 chutes, e a coluna do tema depois de 10. */}
+      {!estado.acertei && estado.fase === 'chutando' && (estado.pistas?.letra || estado.pistas?.coluna) && (
+        <div className="quiz-pistas" role="status">
+          {estado.pistas.letra && <span className="quiz-pista">💡 {estado.pistas.letra}…</span>}
+          {estado.pistas.coluna && (
+            <span className="quiz-pista">
+              💡 {t(rotulos.colunas[estado.pistas.coluna.id] ?? estado.pistas.coluna.id)}: {celula(estado.pistas.coluna.id, estado.pistas.coluna.valor)}
+            </span>
+          )}
+        </div>
+      )}
 
       {(minhas.length > 0 || estado.resposta) && (
         <div className="quiz-tabela-rolagem">

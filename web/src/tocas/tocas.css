@@ -453,3 +453,197 @@
 .tocas-fim-titulo.venceu {
   color: #9ef0a8;
 }
+
+/* 19/11/2026: a largada do Solo (o mapa e o nível), o fim com os gráficos, a espera da sala, o tutorial e o mercado. */
+.tocas-escolha {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 0;
+}
+.tocas-escolha-titulo {
+  margin: 4px 0 0;
+  font-weight: 800;
+  color: var(--text-strong);
+}
+.tocas-mapas,
+.tocas-niveis {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+.tocas-mapa-opcao,
+.tocas-nivel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg-input);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+.tocas-mapa-opcao:hover,
+.tocas-nivel:hover {
+  background: var(--bg-hover);
+}
+.tocas-mapa-opcao.ativo {
+  border-color: var(--accent, #3f74d8);
+}
+.tocas-miniatura,
+.tocas-mapa-sorteio {
+  width: 88px;
+  height: 88px;
+  border-radius: 6px;
+  image-rendering: pixelated;
+}
+.tocas-mapa-sorteio {
+  display: grid;
+  place-items: center;
+  background: #6f9a52;
+  color: #fff;
+  font-size: 36px;
+  font-weight: 800;
+}
+.tocas-nivel {
+  min-width: 110px;
+  padding: 12px 16px;
+}
+.tocas-nivel strong {
+  font-size: calc(17px * var(--escala-do-texto, 1));
+}
+.tocas-nivel small {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.tocas-recorde {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-weight: 700;
+  color: var(--text-strong);
+}
+.tocas-graficos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+}
+.tocas-grafico {
+  margin: 0;
+  width: min(320px, 100%);
+}
+.tocas-grafico figcaption {
+  font-weight: 700;
+  color: var(--text-strong);
+  margin-bottom: 2px;
+}
+.tocas-grafico svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  touch-action: none;
+}
+.tocas-grafico-eixo {
+  stroke: var(--text-muted);
+  stroke-width: 1;
+}
+.tocas-grafico-grade {
+  stroke: var(--border);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+.tocas-grafico-texto {
+  fill: var(--text-muted);
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+.tocas-grafico-legenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  font-size: 13px;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.tocas-grafico-legenda span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.tocas-grafico-legenda i {
+  display: inline-block;
+  width: 12px;
+  height: 3px;
+  border-radius: 2px;
+}
+.tocas-grafico-momento {
+  color: var(--text-muted);
+}
+.tocas-espera,
+.tocas-tutorial {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: calc(100% - 24px);
+  padding: 6px 14px;
+  border-radius: 10px;
+  background: rgba(20, 24, 32, 0.86);
+  color: #fff;
+  font-weight: 700;
+  text-align: center;
+}
+.tocas-espera {
+  top: 45%;
+}
+.tocas-tutorial {
+  top: 96px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.tocas-tutorial-passos {
+  display: inline-flex;
+  gap: 4px;
+}
+.tocas-tutorial-passos i {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+}
+.tocas-tutorial-passos i.agora {
+  background: #f0d24a;
+}
+.tocas-tutorial-passos i.feito {
+  background: #9ef0a8;
+}
+.tocas-troca {
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+}
+.tocas-troca > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.tocas-troca img {
+  width: 18px;
+  height: 18px;
+}
+.tocas-grafico-ponto {
+  stroke: var(--bg, #ffffff);
+  stroke-width: 2;
+}

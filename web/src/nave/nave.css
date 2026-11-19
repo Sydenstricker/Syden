@@ -122,3 +122,28 @@
   color: var(--accent);
   font-weight: 700;
 }
+
+/* O nível da arma e o loop de esquiva (19/11/2026) */
+.nave-nivel {
+  color: #f5c542;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+.nave-loop {
+  opacity: 0.35;
+  font-weight: 700;
+}
+
+.nave-loop.pronto {
+  opacity: 1;
+  color: #9fd8ff;
+}
+
+/* A escolha da fase: a cor de cada uma no lugar da miniatura */
+.nave-fase-cor {
+  display: block;
+  width: 96px;
+  height: 28px;
+  border-radius: 4px;
+}

@@ -598,3 +598,40 @@ export function desenharEfeito(g: CanvasRenderingContext2D, e: Efeito, tempo: nu
   }
   return false;
 }
+
+/** REVIVER (19/11/2026): o anel verde que enche em volta de quem está caído enquanto alguém fica perto (k de 0 a 1). */
+export function desenharReviver(g: CanvasRenderingContext2D, x: number, y: number, k: number) {
+  g.save();
+  g.lineWidth = 2;
+  g.strokeStyle = 'rgba(30, 20, 15, 0.45)';
+  g.beginPath();
+  g.ellipse(x, y - 30, 11, 11, 0, 0, Math.PI * 2);
+  g.stroke();
+  g.strokeStyle = '#7fe07a';
+  g.beginPath();
+  g.ellipse(x, y - 30, 11, 11, 0, -Math.PI / 2, -Math.PI / 2 + k * Math.PI * 2);
+  g.stroke();
+  g.fillStyle = '#7fe07a';
+  g.fillRect(Math.round(x) - 1, Math.round(y) - 34, 3, 8);
+  g.fillRect(Math.round(x) - 4, Math.round(y) - 31, 9, 2);
+  g.restore();
+}
+
+/** A BOLA DE NEVE do yeti (19/11/2026), rolando: grande, branca, com a sombra e o giro pelo tempo. */
+export function bolaDeNeve(g: CanvasRenderingContext2D, x: number, y: number, tempo: number) {
+  sombra(g, x, y, 14, 4);
+  disco(g, x, y - 12, 13, 13, CONTORNO);
+  disco(g, x, y - 12, 12, 12, '#f2f6fa');
+  disco(g, x - 4, y - 16, 5, 4, '#ffffff');
+  const a = tempo / 120;
+  px(g, Math.round(x + Math.cos(a) * 7), Math.round(y - 12 + Math.sin(a) * 7), 2, 2, '#b8cad8');
+  px(g, Math.round(x - Math.cos(a) * 6), Math.round(y - 12 - Math.sin(a) * 6), 2, 2, '#b8cad8');
+}
+
+/** O monte de neve que anda (o yeti embaixo da neve, indo de uma toca a outra). */
+export function monteDeNeve(g: CanvasRenderingContext2D, x: number, y: number, tempo: number) {
+  sombra(g, x, y + 1, 14, 4);
+  disco(g, x, y - 3, 13, 6, '#c8d6e2');
+  disco(g, x - 2, y - 5, 9, 4, '#eef4f8');
+  for (let k = 0; k < 4; k++) px(g, x - 12 + ((k * 7 + Math.floor(tempo / 90)) % 24), y - 2 - (k % 2) * 4, 3, 2, '#ffffff');
+}

@@ -4,6 +4,9 @@ import { Placar, PlacarAoVivo } from './Minijogo';
 import type { EstadoFesta, LinhaDaFesta, Partida } from './minijogos';
 import { useFormatos, type Formatos, type MicrojogoDaTela, type PropsDoMicro } from './festa/comum';
 import * as registro from './festa/registro';
+import { CoelhoComemorando, Controles, FiguraDoMicro, Vencedores } from './festa/moldura';
+import { JogoRelampago, type EstadoRelampago } from './festa/modoRelampago';
+import { tocar } from './somDosJogos';
 
 /**
  * A FESTA DOS COELHOS (03/11/2026, server/src/minijogo-festa.ts): cinco rodadas de microjogos, cada um na própria tela, e
@@ -45,6 +48,9 @@ export function JogoFesta({
   agir: (corpo: Record<string, unknown>) => unknown;
 }) {
   const t = useT();
+  // o modo Relâmpago (19/11/2026): outra partida, com a tela dela
+  if ((estado as unknown as { modo?: string }).modo === 'relampago')
+    return <JogoRelampago estado={estado as unknown as EstadoRelampago} eu={eu} jogador={jogador} agir={agir} />;
   if (estado.terminada || estado.fase === 'fim') {
     // A CLASSIFICAÇÃO DO SERVIDOR, a mesma dos troféus (revisão independente, 03/11/2026: a tela dava medalha pelo placar de
     // todos, inclusive a quem tinha saído, e ao único que ficou): só quem ficou até o fim, com 2 ou mais, tem posição e
@@ -58,6 +64,19 @@ export function JogoFesta({
         {comPosicao.length > 0 && <Placar eu={eu} linhas={comPosicao.map((l) => ({ ...l, valor: String(l.pontos), posicao: l.posicao ?? undefined }))} />}
         {comPosicao.length === 0 && estado.jogadores.length > 1 && (
           <p className="minijogo-situacao">{t('Menos de duas pessoas ficaram até o fim: desta vez, sem pódio.')}</p>
+        )}
+        {estado.premio && estado.premio.ganhadores.length > 0 && (
+          <div className="festa-premio" style={{ display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'center', flexWrap: 'wrap', margin: '6px 0' }}>
+            {estado.premio.ganhadores.map((id) => (
+              <CoelhoComemorando key={id} avatar={estado.jogadores.find((j) => j.userId === id)?.avatar ?? null} tamanho={40} />
+            ))}
+            <span>
+              <strong>{t('Prêmio bônus: quem venceu mais rodadas')}</strong>
+              <br />
+              {estado.premio.ganhadores.map((id) => estado.jogadores.find((j) => j.userId === id)?.username ?? '').join(', ')}{' '}
+              <strong className="festa-pontos">+{estado.premio.pontos}</strong>
+            </span>
+          </div>
         )}
         {semPosicao.length > 0 && (
           <ol className="minijogo-placar tabuleiro-sem-posicao">
@@ -83,7 +102,7 @@ export function JogoFesta({
 }
 
 /** Uma rodada de microjogo, como o servidor a manda (rodadaDeFesta, em server/src/minijogo-festa.ts), com o relógio da partida. */
-export type EstadoDaRodada = Pick<EstadoFesta, 'rodada' | 'microjogo' | 'dados' | 'duracaoMs' | 'sinal' | 'meu' | 'prontos' | 'jogadores' | 'resposta' | 'linhas'> & {
+export type EstadoDaRodada = Pick<EstadoFesta, 'rodada' | 'microjogo' | 'dados' | 'duracaoMs' | 'sinal' | 'meu' | 'prontos' | 'jogadores' | 'resposta' | 'linhas' | 'dobro'> & {
   fase: 'preparando' | 'jogando' | 'revelando';
   recebidaEm: number;
   restanteMs: number;
@@ -161,13 +180,32 @@ export function RodadaDaFesta({
         }
       : null;
   const mostrarJogo = (estado.fase === 'jogando' && souJogador) || (estado.fase === 'revelando' && !!micro?.naRevelacao);
+  // QUEM VENCEU A RODADA (19/11/2026): o coelho de cada um em 1º lugar comemora, e os pontos sobem
+  const vencedores =
+    estado.fase === 'revelando' && estado.linhas
+      ? estado.linhas
+          .filter((l) => l.posicao === 1 && l.pontos > 0)
+          .map((l) => ({ ...l, avatar: estado.jogadores.find((j) => j.userId === l.userId)?.avatar ?? null }))
+      : [];
+  const ganhei = vencedores.some((v) => v.userId === eu);
+  const somDaRevelacao = useRef<number | null>(null);
+  useEffect(() => {
+    if (estado.fase !== 'revelando' || somDaRevelacao.current === estado.rodada || !estado.linhas) return;
+    somDaRevelacao.current = estado.rodada;
+    if (ganhei) tocar('medalha');
+    else if (vencedores.length) tocar('fim');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [estado.fase, estado.rodada]);
 
   return (
     <>
       {estado.fase === 'preparando' && (
         <div className="festa-preparo">
+          {estado.dobro && <strong className="festa-dobro" style={{ color: '#d08e2c' }}>{t('Última rodada: vale o dobro!')}</strong>}
           <strong className="festa-nome">{t(nome.nome)}</strong>
           <p>{t(nome.dica)}</p>
+          {micro && <FiguraDoMicro micro={micro} dados={estado.dados} />}
+          <Controles id={estado.microjogo as string} />
           <span className="festa-contagem" aria-hidden="true">
             {Math.max(1, Math.ceil(restante / 1000))}
           </span>
@@ -195,6 +233,7 @@ export function RodadaDaFesta({
           ))}
         </ul>
       )}
+      {estado.fase === 'revelando' && <Vencedores vencedores={vencedores} />}
       {estado.fase === 'revelando' && estado.linhas && (
         <ol className="festa-revelacao">
           {estado.linhas.map((l) => (
@@ -217,4 +256,37 @@ function textoDoResultado(m: MicrojogoDaTela<never>, l: LinhaDaFesta, f: Formato
   if (l.motivo === 'nada') return t('Sem resposta');
   if (l.motivo === 'errou' && !m.errouComValor) return t('Errou');
   return m.valor(l.valor ?? 0, f);
+}
+
+/** A largada da Festa (19/11/2026): a festa de sempre (cinco rodadas) ou o modo Relâmpago (microjogos curtos, com vidas). */
+export function EscolhaDaFesta({ aoEscolher, aoVoltar }: { aoEscolher: (modo: 'relampago' | null) => void; aoVoltar: () => void }) {
+  const t = useT();
+  const raio = (
+    <svg width="34" height="34" viewBox="0 0 16 16" aria-hidden="true" shapeRendering="crispEdges">
+      <polygon points="9,0 3,9 7,9 5,16 13,6 9,6 11,0" fill="#f2c46a" />
+    </svg>
+  );
+  return (
+    <div className="tab-escolha">
+      <ul className="tab-rodadas">
+        <li>
+          <button type="button" className="tab-rodadas-botao" onClick={() => aoEscolher(null)}>
+            <CoelhoComemorando avatar={null} tamanho={30} />
+            <strong>{t('Festa')}</strong>
+          </button>
+        </li>
+        <li>
+          <button type="button" className="tab-rodadas-botao" onClick={() => aoEscolher('relampago')}>
+            {raio}
+            <strong>{t('Relâmpago')}</strong>
+          </button>
+        </li>
+      </ul>
+      <div className="minijogo-acoes">
+        <button type="button" className="btn-secondary" onClick={aoVoltar}>
+          {t('Outros jogos')}
+        </button>
+      </div>
+    </div>
+  );
 }

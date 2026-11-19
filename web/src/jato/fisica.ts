@@ -55,6 +55,8 @@ export interface ComandosDoJato {
   turbo: boolean;
   /** O freio de ar: a curva fecha mais, e a nave perde um pouco de velocidade. */
   freioDeAr: boolean;
+  /** O golpe de lado (só no Solo, contra as naves do computador). A física não lê: quem lê é o laço. */
+  ataque?: boolean;
 }
 
 export interface Nave {

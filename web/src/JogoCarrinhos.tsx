@@ -21,11 +21,11 @@ import {
   PASSO,
   pilotoAutomatico,
   VMAX,
-  VOLTA,
-  VOLTAS,
   type Carro,
   type Entradas,
+  type Pista,
 } from './carrinhos/sim';
+import { EscolhaDaPistaDosCarrinhos, pistaDoEstado } from './carrinhos/EscolhaDaPista';
 import type { CenaDosCarrinhos, QuadroDoCarro } from './carrinhos/cena';
 import type { Agir } from './Minijogo';
 import type { Partida } from './minijogos';
@@ -39,6 +39,8 @@ import './carrinhos/carrinhos.css';
  * - NO SOLO, contra o relógio na faixa do recorde, com os fantasmas dos amigos e de 0 a 3 robôs nas outras faixas; o
  *   acelerador de cada passo vai ao servidor, que refaz a corrida e guarda o melhor tempo (server/src/minijogo-carrinhos.ts).
  * - NA SALA, cada um na sua faixa: o servidor dá o verde, repassa as posições e classifica pelo tempo de cada um, refeito.
+ * - AS PISTAS (19/11/2026): cinco prontas, as do editor pelo código e a resistência de 20 voltas, escolhidas em
+ *   carrinhos/EscolhaDaPista.tsx (no Solo, aqui dentro; na sala, antes do convite, por Minijogo.tsx).
  */
 
 export interface EstadoCarrinhos {
@@ -46,6 +48,11 @@ export interface EstadoCarrinhos {
   solo: boolean;
   voltasDaCorrida: number;
   partidaId: string;
+  /** A pista: o id (pronta, ou "p-…" do editor) e o traçado, que o site monta com a mesma regra. */
+  pista?: string;
+  tracado?: string;
+  /** No Solo: os meus tempos nas pistas prontas (a chave do recorde: o id, com "@20" na resistência). */
+  meusTempos?: Record<string, number>;
   // o Solo
   recordes?: { userId: number; nome: string; avatar: number | string | null; tempoMs: number }[];
   meuAvatar?: number | string | null;
@@ -152,6 +159,9 @@ interface Rival {
 
 interface ConfigDaCorrida {
   caixa: HTMLElement;
+  pista: Pista;
+  /** Quantas voltas tem a corrida (5, ou 20 na resistência). */
+  voltas: number;
   /** A minha faixa, ou null para quem só assiste. */
   minhaFaixa: number | null;
   meuNome: string;
@@ -175,11 +185,11 @@ function rodarCorrida(cfg: ConfigDaCorrida): () => void {
   let cena: CenaDosCarrinhos | null = null;
   let id = 0;
   const motor = cfg.minhaFaixa !== null ? criarMotor() : null;
-  const eu = cfg.minhaFaixa !== null ? novoCarro(cfg.minhaFaixa) : null;
+  const eu = cfg.minhaFaixa !== null ? novoCarro(cfg.minhaFaixa, cfg.pista, cfg.voltas) : null;
   if (eu && import.meta.env.DEV) window.carrinhosDoTeste = eu;
   const gravar = gravador();
-  const robos = cfg.robos.map((r) => ({ ...r, carro: novoCarro(r.faixa), piloto: criarRobo(r.semente, r.habilidade) }));
-  const fantasmas = cfg.fantasmas.map((f) => ({ ...f, carro: novoCarro(FAIXA_DO_RECORDE), ler: leitor(f.entradas) }));
+  const robos = cfg.robos.map((r) => ({ ...r, carro: novoCarro(r.faixa, cfg.pista, cfg.voltas), piloto: criarRobo(r.semente, r.habilidade) }));
+  const fantasmas = cfg.fantasmas.map((f) => ({ ...f, carro: novoCarro(FAIXA_DO_RECORDE, cfg.pista, cfg.voltas), ler: leitor(f.entradas) }));
   const rivais = cfg.rivais ? [...cfg.rivais.entries()] : [];
   let antes = new Map<Carro, number>();
   let mandou = false;
@@ -213,11 +223,11 @@ function rodarCorrida(cfg: ConfigDaCorrida): () => void {
 
   const ordem = (): Painel['ordem'] => {
     const linhas: { id: string; nome: string; eu: boolean; chegou: number | null; andou: number }[] = [];
-    if (eu) linhas.push({ id: 'eu', nome: cfg.meuNome, eu: true, chegou: eu.chegou ? eu.voltas[VOLTAS - 1] : null, andou: eu.s / VOLTA[eu.faixa] });
-    robos.forEach((r, i) => linhas.push({ id: `robo${i}`, nome: r.nome, eu: false, chegou: r.carro.chegou ? r.carro.voltas[VOLTAS - 1] : null, andou: r.carro.s / VOLTA[r.faixa] }));
+    if (eu) linhas.push({ id: 'eu', nome: cfg.meuNome, eu: true, chegou: eu.chegou ? eu.voltas[cfg.voltas - 1] : null, andou: eu.s / cfg.pista.volta[eu.faixa] });
+    robos.forEach((r, i) => linhas.push({ id: `robo${i}`, nome: r.nome, eu: false, chegou: r.carro.chegou ? r.carro.voltas[cfg.voltas - 1] : null, andou: r.carro.s / cfg.pista.volta[r.faixa] }));
     for (const [uid, r] of rivais) {
       const p = r.posicoes.at(-1);
-      linhas.push({ id: `r${uid}`, nome: r.nome, eu: false, chegou: null, andou: p ? p.s / VOLTA[r.faixa] : 0 });
+      linhas.push({ id: `r${uid}`, nome: r.nome, eu: false, chegou: null, andou: p ? p.s / cfg.pista.volta[r.faixa] : 0 });
     }
     linhas.sort((a, b) => (a.chegou !== null && b.chegou !== null ? a.chegou - b.chegou : a.chegou !== null ? -1 : b.chegou !== null ? 1 : b.andou - a.andou));
     return linhas.map(({ id, nome, eu }) => ({ id, nome, eu }));
@@ -226,7 +236,7 @@ function rodarCorrida(cfg: ConfigDaCorrida): () => void {
   void import('./carrinhos/cena')
     .then(async ({ CenaDosCarrinhos }) => {
       if (!viva) return;
-      cena = new CenaDosCarrinhos(cfg.caixa);
+      cena = new CenaDosCarrinhos(cfg.caixa, cfg.pista);
       const minhas = eu ? await cfg.minhasCores : null;
       if (!viva) return;
       await cena.montar([
@@ -310,8 +320,8 @@ function rodarCorrida(cfg: ConfigDaCorrida): () => void {
         if (agora - ultimoPainel > 90) {
           ultimoPainel = agora;
           cfg.aoPainel({
-            volta: eu ? Math.min(VOLTAS, eu.voltas.length + 1) : 0,
-            ms: eu ? Math.round(((eu.chegou ? eu.voltas[VOLTAS - 1] : eu.passo) * 1000) / 60) : 0,
+            volta: eu ? Math.min(cfg.voltas, eu.voltas.length + 1) : 0,
+            ms: eu ? Math.round(((eu.chegou ? eu.voltas[cfg.voltas - 1] : eu.passo) * 1000) / 60) : 0,
             acelerador: eu && !eu.chegou ? (contagem > 0 ? cfg.ler() : ultimoG) : 0,
             derrapa: !!eu && eu.derrapa > 0,
             fora: !!eu && eu.fora > 0,
@@ -404,7 +414,7 @@ function Corrida({
         <div className="carrinhos-painel" aria-hidden="true">
           {piloto && (
             <>
-              <span className="carrinhos-volta">🏁 {painel.volta}/{VOLTAS}</span>
+              <span className="carrinhos-volta">🏁 {painel.volta}/{config.voltas}</span>
               <span className="carrinhos-relogio">{tempoLegivel(painel.ms)}</span>
               <span className={`carrinhos-medidor${painel.derrapa ? ' no-limite' : ''}`}>
                 <span style={{ height: `${(painel.acelerador / ACELERADOR_MAXIMO) * 100}%` }} />
@@ -445,6 +455,15 @@ function CarrinhosSolo({ estado, eu, agir }: { estado: EstadoCarrinhos & Partida
   const [erro, setErro] = useState<string | null>(null);
   const [ordemFinal, setOrdemFinal] = useState<Painel['ordem'] | null>(null);
   const meuNome = estado.meuNome ?? '';
+  const pista = pistaDoEstado(estado);
+  const voltas = estado.voltasDaCorrida;
+  // trocou de pista ou de voltas: os fantasmas marcados voltam ao de fábrica (os recordes são outros)
+  const escolhaDaPista = `${pista.id}|${voltas}`;
+  const [escolhaVista, setEscolhaVista] = useState(escolhaDaPista);
+  if (escolhaVista !== escolhaDaPista) {
+    setEscolhaVista(escolhaDaPista);
+    setEscolhidos(null);
+  }
 
   const marcados = (() => {
     if (escolhidos) return escolhidos;
@@ -477,6 +496,13 @@ function CarrinhosSolo({ estado, eu, agir }: { estado: EstadoCarrinhos & Partida
           {meu && <span>{t('Seu recorde: {tempo}', { tempo: tempoLegivel(meu.tempoMs) })}</span>}
           <p className="settings-hint">{t('Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.')}</p>
           <Comandos solo />
+          <EscolhaDaPistaDosCarrinhos
+            pista={pista.id}
+            tracado={pista.tracado}
+            voltas={voltas}
+            meusTempos={estado.meusTempos}
+            aoMudar={(pedido) => tentar({ tipo: 'escolher', ...pedido })}
+          />
           <fieldset className="carrinhos-robos">
             <legend>
               <IconeDeHud nome="robo" /> {t('Quantos adversários do computador?')}
@@ -529,6 +555,8 @@ function CarrinhosSolo({ estado, eu, agir }: { estado: EstadoCarrinhos & Partida
         solo
         ligada={estado.fase === 'correndo'}
         config={{
+          pista,
+          voltas,
           minhaFaixa: FAIXA_DO_RECORDE,
           meuNome,
           minhasCores: minhasCoresDoCoelho(),
@@ -642,6 +670,8 @@ function CarrinhosNaSala({
           solo={false}
           ligada={piloto && !fim}
           config={{
+            pista: pistaDoEstado(estado),
+            voltas: estado.voltasDaCorrida,
             minhaFaixa: piloto ? meu!.faixa : null,
             meuNome: meu?.username ?? '',
             minhasCores: Promise.resolve(coresDoAvatar(meu?.avatar)),

@@ -114,3 +114,94 @@ test('o limite da sala: a partida acaba no passo do limite, mesmo com bola em jo
   assert.ok(k.terminou);
   assert.ok(k.passo <= 600);
 });
+
+// ===== 19/11/2026: a tacada certeira, a bola extra, as missões e a rampa =====
+
+test('a tacada certeira: a força certa da mola leva a bola direto a uma pista e vale 2500', () => {
+  let achou = 0;
+  for (let carga = 1; carga <= 50; carga++) {
+    const k = sim.novaMesa();
+    for (let i = 0; i < carga; i++) sim.passo(k, sim.MOLA);
+    for (let i = 0; i < 400 && k.bola === 1; i++) {
+      sim.passo(k, 0);
+      if (k.eventos.some((e) => e.tipo === 'tacada')) achou++;
+    }
+  }
+  assert.ok(achou >= 1 && achou <= 6, `uma faixa estreita de força (${achou} de 50)`);
+});
+
+test('a bola extra: o marco de pontos dá uma, e a bola que cai volta sem gastar', () => {
+  const k = sim.novaMesa();
+  for (let i = 0; i < 40; i++) sim.passo(k, sim.MOLA);
+  sim.passo(k, 0);
+  k.pontos = sim.MARCOS_DA_BOLA_EXTRA[0];
+  sim.passo(k, 0);
+  assert.equal(k.extras, 1);
+  for (const b of k.bolas) {
+    b.x = 113;
+    b.y = 420;
+    b.vx = 0;
+    b.vy = 100;
+  }
+  k.salva = 0;
+  sim.passo(k, 0);
+  assert.equal(k.bola, 1, 'a mesma bola de novo');
+  assert.equal(k.extras, 0);
+});
+
+test('a rampa: a bola rápida sobe pelo trilho e cai na primeira pista; a lenta passa por baixo', () => {
+  const k = sim.novaMesa();
+  k.bolas = [{ x: 163, y: 241, vx: 0, vy: -600, naMola: false, auto: false, presa: 0, orbita: 0, parada: 0, trilho: 0 }];
+  sim.passo(k, 0);
+  assert.ok(k.bolas[0].trilho > 0, 'no trilho');
+  let pista = false;
+  for (let i = 0; i < 200; i++) {
+    sim.passo(k, 0);
+    if (k.eventos.some((e) => e.tipo === 'pista' && e.n === 0)) pista = true;
+  }
+  assert.ok(pista, 'acendeu a primeira pista');
+  const lenta = sim.novaMesa();
+  lenta.bolas = [{ x: 163, y: 241, vx: 0, vy: -200, naMola: false, auto: false, presa: 0, orbita: 0, parada: 0, trilho: 0 }];
+  sim.passo(lenta, 0);
+  assert.equal(lenta.bolas[0].trilho, 0);
+});
+
+test('as missões: o piloto cumpre algumas, a patente sobe, e a mesa não vira um laço sem fim', () => {
+  let cumpriu = 0;
+  let patente = 1;
+  for (let s = 0; s < 8; s++) {
+    const { k, eventos } = partida(s);
+    cumpriu += k.cumpridas;
+    patente = Math.max(patente, k.patente);
+    assert.ok(k.passo < sim.PASSOS_MAXIMOS, `a partida ${s} acabou pelas bolas, não pelo teto`);
+    assert.ok((eventos.missao ?? 0) > 0);
+  }
+  assert.ok(cumpriu > 0 && patente > 1);
+});
+
+test('a segunda mesa, o pomar: a rampa do lado esquerdo cai na terceira pista, e a toca fica à direita', () => {
+  const g = sim.MESAS[1];
+  assert.ok(g.toca.x > sim.MEIO && g.boca.x1 < sim.MEIO);
+  const k = sim.novaMesa(sim.PASSOS_MAXIMOS, 1);
+  assert.equal(k.mesa, 1);
+  const x = (g.boca.x0 + g.boca.x1) / 2;
+  k.bolas = [{ x, y: g.boca.y + 3, vx: 0, vy: -600, naMola: false, auto: false, presa: 0, orbita: 0, parada: 0, trilho: 0 }];
+  let pista = -1;
+  for (let i = 0; i < 200 && pista < 0; i++) {
+    sim.passo(k, 0);
+    for (const e of k.eventos) if (e.tipo === 'pista') pista = e.n;
+  }
+  assert.equal(pista, 2);
+  assert.equal(sim.mesaValida(7), 0);
+  // o piloto joga o pomar até o fim, e a mesma partida refeita dá os mesmos pontos
+  const a = sim.novaMesa(sim.PASSOS_MAXIMOS, 1);
+  const cmds: number[] = [];
+  while (!a.terminou && a.passo < 20000) {
+    const c = sim.pilotoAutomatico(a);
+    cmds.push(c);
+    sim.passo(a, c);
+  }
+  const b = sim.novaMesa(sim.PASSOS_MAXIMOS, 1);
+  sim.aplicar(b, sim.compactar(cmds));
+  assert.equal(b.pontos, a.pontos);
+});

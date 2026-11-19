@@ -37,3 +37,11 @@
 .masmorra .briga-hud li {
   grid-template-columns: minmax(0, 1fr) auto auto;
 }
+
+/* A escolha da masmorra (19/11/2026): a cor de cada uma no lugar da miniatura */
+.masmorra-escolha-cor {
+  display: block;
+  width: 96px;
+  height: 28px;
+  border-radius: 4px;
+}

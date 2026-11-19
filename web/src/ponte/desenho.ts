@@ -6,7 +6,7 @@
  * o ângulo de cada peça): o que o servidor refaz não passa por este arquivo.
  */
 import { Fila, fimDaFila, naFila, pesoEscrito } from './fila';
-import { CAIU, CHEGOU, cabe, ehAncora, ESPERANDO, MADEIRA, PISTA, VEICULOS, type Fase, type IdDoVeiculo, type Sim, type Veiculo } from './sim';
+import { CABO, CAIU, CHEGOU, cabe, ehAncora, ESPERANDO, MADEIRA, PISTA, VEICULOS, type Fase, type IdDoVeiculo, type Sim, type Veiculo } from './sim';
 import { ALTURA, LARGURA, type OpcoesDaMontagem, type VistaDaPonte } from './vista';
 
 export { ALTURA, LARGURA };
@@ -16,8 +16,10 @@ const COR = [
   { base: '#9a6438', topo: '#c99560', linha: '#6d4223', borda: '#4e2f18' },
   { base: '#c08a50', topo: '#d9a96d', linha: '#93612f', borda: '#5d3a1f' },
   { base: '#8796a5', topo: '#b9c5d0', linha: '#5f6d7a', borda: '#3c4651' },
+  // o cabo (19/11/2026): fino e escuro, com a torção desenhada
+  { base: '#4a4f57', topo: '#6d737c', linha: '#2c3036', borda: '#1f2226' },
 ];
-const ESPESSURA = [0.26, 0.16, 0.14];
+const ESPESSURA = [0.26, 0.16, 0.14, 0.06];
 
 /** Verde (folgada) → amarelo → vermelho (no limite). */
 export function corDoEsforco(e: number): string {
@@ -335,6 +337,14 @@ export class DesenhoDaPonte implements VistaDaPonte {
       for (let x = passo; x < len - 2; x += passo) {
         g.moveTo(x, -th / 2);
         g.lineTo(x, th / 2);
+      }
+      g.stroke();
+    } else if (tipo === CABO) {
+      // a torção
+      g.beginPath();
+      for (let x = 2; x < len - 1; x += Math.max(3, u / 12)) {
+        g.moveTo(x, -th / 2);
+        g.lineTo(x + th, th / 2);
       }
       g.stroke();
     } else if (tipo === MADEIRA) {

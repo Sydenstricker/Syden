@@ -240,6 +240,8 @@ export function registerModeracaoRoutes(app: FastifyInstance, io: IOServer) {
           ringueDaToca: db.recordeDoRingue(eu.id),
           // a aventura dos Bichos da Toca: o lugar no campo, a equipe, os da toca e a cesta (ver minijogo-bichos.ts)
           bichosDaToca: db.aventuraDosBichos(eu.id),
+          // os recordes do Solo da tabela comum (19/11/2026): os jogos que não têm tabela própria, por jogo e variante
+          recordesDoSolo: db.recordesDoSoloDe(eu.id),
           // quem entra no quarto, os convidados (ids) e o destaque da estante de troféus (ver trofeus-routes.ts)
           // (com a arrumação: a política diz que ela é guardada, e faltava aqui — auditoria de 03/11/2026)
           quarto: {

@@ -1,5 +1,6 @@
 import { ComandosDoJogo } from './ComandosDosJogos';
 import { tocar } from './somDosJogos';
+import { criarImpacto } from './impacto';
 import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { Trophy } from 'lucide-react';
@@ -7,7 +8,9 @@ import { useT } from './i18n';
 import type { Partida } from './minijogos';
 import { desenharBarraDoChefe, desenharOndas, desenharSeta, folhaDe } from './briga/desenho';
 import { carregarFolhas } from './briga/sprites';
-import { ACOES, ARMAS, ARMA_MS, GRANADA, W, H } from './comando/conta';
+import { ACOES, ARMAS, ARMA_MS, BICHOS, CAMPANHA_DO_COMANDO, CENARIO_DA_FASE, FASES_DO_COMANDO, GRANADA, W, H } from './comando/conta';
+import { desenharCenario } from './briga/cenarios';
+import { nomeDaFaseDaBriga } from './JogoBriga';
 import {
   desenharAvisos,
   desenharBala,
@@ -18,6 +21,7 @@ import {
   desenharFundo,
   desenharGaiolas,
   desenharGranada,
+  desenharItens,
   desenharMinhaMao,
   desenharPlataformas,
 } from './comando/desenho';
@@ -107,9 +111,18 @@ export function JogoComando({
     const doServidor = estado.resultado;
     const linhas = doServidor ?? estado.jogadores.map((j) => ({ ...j, acertos: 0, derrubados: 0, posicao: 1 + estado.jogadores.filter((o) => o.pontos > j.pontos).length }));
     const regra = { venceu: !!doServidor && estado.venceu, solo: estado.solo === true, ficaram: linhas.filter((l) => l.posicao !== null).length };
+    // O RECORDE DO SOLO (19/11/2026): o tempo da fase vencida, contado pelo servidor
+    const { recorde, melhorAntes } = estado as { recorde?: { ms: number; antes: number | null; novo: boolean } | null; melhorAntes?: number | null };
     return (
       <div className="briga comando">
         <p className="briga-desfecho">{estado.venceu ? t('Vitória!') : t('Derrota')}</p>
+        {recorde && (
+          <p className="minijogo-situacao">
+            {tempoDaFase(recorde.ms)}
+            {recorde.novo ? ` · ${t('Novo recorde!')}` : recorde.antes !== null ? ` · ${t('Seu recorde: {tempo}', { tempo: tempoDaFase(recorde.antes) })}` : ''}
+          </p>
+        )}
+        {!recorde && estado.solo && melhorAntes != null && <p className="minijogo-situacao">{t('Seu recorde: {tempo}', { tempo: tempoDaFase(melhorAntes) })}</p>}
         <div className="minijogo-fim">
           <p className="minijogo-fim-titulo">
             <Trophy size={20} aria-hidden="true" /> {t('Fim de jogo!')}
@@ -129,6 +142,12 @@ export function JogoComando({
   }
   return <Palco estado={estado} eu={eu} jogador={jogador && estado.jogadores.some((j) => j.userId === eu)} socket={socket} channelId={channelId} />;
 }
+
+/** O tempo de uma fase: m:ss.d. */
+const tempoDaFase = (ms: number) => {
+  const s = Math.max(0, ms) / 1000;
+  return `${Math.floor(s / 60)}:${(s % 60).toFixed(1).padStart(4, '0')}`;
+};
 
 function Palco({
   estado,
@@ -160,10 +179,12 @@ function Palco({
     g.imageSmoothingEnabled = false;
     const folha = new Image();
     folha.src = `${import.meta.env.BASE_URL}briga/coelho.png`;
-    carregarFolhas(['cogumelo', 'dino', 'abelha', 'dragao']);
+    carregarFolhas(['cogumelo', 'dino', 'abelha', 'dragao', 'cacto', 'golem', 'redemoinho', 'yeti']);
     const enviar = (dados: unknown) =>
       solo ? socket.emit('minijogo-solo:tempo-real', { dados }) : socket.emit('minijogo:tempo-real', { channelId, dados });
     const cliente = new Cliente(eu, enviar);
+    // O IMPACTO (19/11/2026, só desenho): a granada, o pisão e a queda do dragão tremem a tela
+    const impacto = criarImpacto();
     let quadroId = 0;
     let anterior = performance.now();
     let sobra = 0;
@@ -195,6 +216,10 @@ function Palco({
         cliente.passo(cmd, 1 / 60, agora, v);
       }
       for (const s of cliente.sons.splice(0)) tocar(s);
+      if (cliente.tremor > 0) {
+        impacto.tremer(cliente.tremor, cliente.tremor > 0.6 ? 320 : 200);
+        cliente.tremor = 0;
+      }
       const v = cliente.vista(agora);
 
       const ultimo = cliente.linha.ultimo();
@@ -218,9 +243,13 @@ function Palco({
       if (Math.abs(alvoCam - camX) < 0.5) camX = alvoCam;
       const cx = Math.round(camX);
 
-      desenharFundo(g, cx, tempo);
+      const imp = impacto.quadro(agora);
+      g.save();
+      g.translate(imp.dx, imp.dy);
+      desenharFundo(g, cx, tempo, v.cenario);
       desenharPlataformas(g, cx);
       desenharGaiolas(g, cx, v.gaiolas, folhaDe(folha, null), tempo);
+      desenharItens(g, cx, v.itens, tempo);
       desenharAvisos(g, v.bichos, cx, tempo);
       // quem leva bala pisca branco, alternando (com a arma rápida, branco direto apagava o bicho)
       for (const b of v.bichos) desenharBicho(g, b, cx, tempo, (cliente.bichosPiscando.get(b.id) ?? 0) > agora && Math.floor(agora / 50) % 3 === 0);
@@ -245,11 +274,12 @@ function Palco({
         });
       }
       desenharBalasInimigas(g, v.balas, cx, tempo);
-      for (const b of v.balasDosOutros) desenharBala(g, b.x, b.h, b.dx, b.dh, cx, false);
-      for (const b of cliente.minhasBalas(agora)) desenharBala(g, b.x, b.h, b.dx, b.dh, cx, true);
+      for (const b of v.balasDosOutros) desenharBala(g, b.x, b.h, b.dx, b.dh, cx, false, b.arma, tempo);
+      for (const b of cliente.minhasBalas(agora)) desenharBala(g, b.x, b.h, b.dx, b.dh, cx, true, b.arma, tempo);
       for (const gr of v.granadas) desenharGranada(g, gr.x0, gr.h0, gr.x, Math.max(0, Math.min(1, 1 - gr.resta / GRANADA.voo)), cx);
       for (let k = cliente.efeitos.length - 1; k >= 0; k--) if (!desenharEfeito(g, cliente.efeitos[k], cx, agora)) cliente.efeitos.splice(k, 1);
-      const chefe = v.bichos.find((b) => b.tipo === 'dragao' && b.estado !== 'morto');
+      g.restore();
+      const chefe = v.bichos.find((b) => BICHOS[b.tipo].comp === 'chefe' && b.estado !== 'morto');
       if (chefe) desenharBarraDoChefe(g, chefe.hp);
       desenharOndas(g, v.onda + (v.fase === 'avancando' ? 1 : 0), 5);
       if (v.fase === 'avancando') desenharSeta(g, tempo);
@@ -335,6 +365,61 @@ function Toque({ cmd }: { cmd: Comandos }) {
         <button type="button" aria-label={t('Granada')} {...apertar('granada')}>✿</button>
         <button type="button" aria-label={t('Pular')} {...apertar('pulo')}>⤒</button>
         <button type="button" aria-label={t('Atirar')} {...segurar('atirar')}>●</button>
+      </div>
+    </div>
+  );
+}
+
+/** A miniatura de uma fase na escolha: o cenário dela, desenhado uma vez (de novo quando as camadas da floresta chegam). */
+function MiniaturaDoComando({ cenario }: { cenario: number }) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const g = ref.current?.getContext('2d');
+    if (!g) return;
+    g.imageSmoothingEnabled = false;
+    let vezes = 0;
+    const desenhar = () => desenharCenario(g, cenario, 40, 99_999, 0);
+    desenhar();
+    const h = setInterval(() => {
+      desenhar();
+      if (++vezes >= 6) clearInterval(h);
+    }, 300);
+    return () => clearInterval(h);
+  }, [cenario]);
+  return <canvas ref={ref} width={W} height={H} aria-hidden="true" className="briga-miniatura" />;
+}
+
+/**
+ * A ESCOLHA DA FASE DO COMANDO (19/11/2026): a floresta, o deserto (com o yeti de subchefe) ou a campanha, as duas seguidas.
+ * Os nomes são os das fases da Briga (os mesmos cenários).
+ */
+export function EscolhaDoComando({ aoEscolher, aoVoltar }: { aoEscolher: (fase: string) => void; aoVoltar: () => void }) {
+  const t = useT();
+  return (
+    <div className="corrida-escolha">
+      <ul className="corrida-pistas">
+        {FASES_DO_COMANDO.map((f) => (
+          <li key={f}>
+            <button type="button" className="corrida-pista-botao" onClick={() => aoEscolher(f)}>
+              <MiniaturaDoComando cenario={CENARIO_DA_FASE[f]} />
+              <strong>{nomeDaFaseDaBriga(t, f)}</strong>
+            </button>
+          </li>
+        ))}
+        <li>
+          <button type="button" className="corrida-pista-botao copa" onClick={() => aoEscolher(CAMPANHA_DO_COMANDO)}>
+            <span className="corrida-copa-mapas" aria-hidden="true">
+              <Trophy size={28} />
+            </span>
+            <strong>{nomeDaFaseDaBriga(t, CAMPANHA_DO_COMANDO)}</strong>
+            <small>{FASES_DO_COMANDO.map((f) => nomeDaFaseDaBriga(t, f)).join(' · ')}</small>
+          </button>
+        </li>
+      </ul>
+      <div className="minijogo-acoes">
+        <button type="button" className="btn-secondary" onClick={aoVoltar}>
+          {t('Outros jogos')}
+        </button>
       </div>
     </div>
   );

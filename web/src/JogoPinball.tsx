@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { ComandosDoJogo } from './ComandosDosJogos';
-import { useT } from './i18n';
+import { chave, useT } from './i18n';
+import { criarImpacto } from './impacto';
+import { Star } from 'lucide-react';
 import { comandoDaPausa, TelaDePausa, usePausaComEsc } from './pausaDosJogos';
 import { desenharFundo, desenharMesa, type Texto } from './pinball/desenho';
-import { BOLAS, compactar, DIR, ESQ, LARGURA, MOLA, novaMesa, PASSO, passo, PASSOS_POR_TRECHO, pilotoAutomatico, SACUDIR, type Evento, type Mesa } from './pinball/sim';
+import { BOLAS, compactar, DIR, ESQ, LARGURA, MISSOES, MOLA, novaMesa, PASSO, passo, PASSOS_POR_TRECHO, pilotoAutomatico, SACUDIR, type Evento, type IdDaMissao, type Mesa } from './pinball/sim';
 import { tocar, type Efeito } from './somDosJogos';
 import './pinball/pinball.css';
 
@@ -39,6 +41,9 @@ export interface EstadoPinball {
   meu: MeuResumo | null;
   /** No Solo: o meu recorde e o dos amigos aceitos. */
   recordes?: { userId: number; nome: string; pontos: number }[];
+  /** No Solo (19/11/2026): a mesa da partida (0 a horta, 1 o pomar) e o meu recorde no pomar. */
+  mesa?: number;
+  recordeDoPomar?: number | null;
   resultado?: { pontos: number; recorde: boolean; anterior: number | null } | null;
   /** Na sala: mais pontos primeiro (os pontos refeitos pelo servidor). */
   placar?: { userId: number; username: string; pontos: number; bola: number; terminou: boolean; posicao: number | null }[];
@@ -92,23 +97,32 @@ function Recordes({ estado, eu }: { estado: EstadoPinball; eu: number }) {
 function PinballSolo({ estado, eu, jogador, agir }: Props) {
   const t = useT();
   const [erro, setErro] = useState<string | null>(null);
+  // a mesa (19/11/2026): a horta ou o pomar, escolhida aqui; começa na da última partida
+  const [mesa, setMesa] = useState(estado.mesa ?? 0);
   const jogar = () => {
     setErro(null);
-    Promise.resolve(agir({ tipo: 'jogar' })).catch((e) => setErro((e as Error).message));
+    Promise.resolve(agir({ tipo: 'jogar', mesa })).catch((e) => setErro((e as Error).message));
   };
   if (!jogador) return <p className="minijogo-situacao">…</p>;
   if (estado.fase === 'jogando' && estado.meu && !estado.meu.terminou) {
-    return <Partida key={`${estado.partidaId}-${estado.rodada ?? 0}`} solo meu={estado.meu} limite={estado.limite} agir={agir} />;
+    return <Partida key={`${estado.partidaId}-${estado.rodada ?? 0}`} solo meu={estado.meu} limite={estado.limite} mesa={estado.mesa ?? 0} agir={agir} />;
   }
   const r = estado.resultado;
-  const meu = estado.recordes?.find((x) => x.userId === eu);
+  const meuNaHorta = estado.recordes?.find((x) => x.userId === eu);
+  const meu = mesa === 1 ? (estado.recordeDoPomar != null ? { pontos: estado.recordeDoPomar } : undefined) : meuNaHorta;
   return (
     <div className="pinball pinball-escolha">
-      <Previa />
+      <div className="pinball-mesas" role="radiogroup" aria-label={t('Mesa')}>
+        {[0, 1].map((n) => (
+          <button key={n} type="button" role="radio" aria-checked={mesa === n} aria-label={`${t('Mesa')} ${n + 1}`} className={mesa === n ? 'escolhida' : undefined} onClick={() => setMesa(n)}>
+            <Previa mesa={n} />
+          </button>
+        ))}
+      </div>
       {r && <p className="pinball-fim-pontos">{t('Pontos: {n}', { n: mil(r.pontos) })}</p>}
       {r?.recorde && <p className="minijogo-situacao pinball-novo">{t('Novo recorde!')}</p>}
       {!r?.recorde && meu && <p className="minijogo-situacao">{t('Seu recorde: {tempo}', { tempo: mil(meu.pontos) })}</p>}
-      <Recordes estado={estado} eu={eu} />
+      {mesa === 0 && <Recordes estado={estado} eu={eu} />}
       <Comandos solo />
       <div className="minijogo-acoes">
         <button type="button" className="btn-primary" onClick={jogar}>
@@ -121,16 +135,17 @@ function PinballSolo({ estado, eu, jogador, agir }: Props) {
 }
 
 /** A mesa parada, antes de começar: o desenho da mesa nova, sem laço nenhum. */
-function Previa() {
+function Previa({ mesa = 0 }: { mesa?: number }) {
   const tela = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const c = tela.current?.getContext('2d');
     if (!c) return;
-    desenharMesa(c, desenharFundo(), novaMesa(), [], 0);
+    const fundo = desenharFundo(mesa);
+    desenharMesa(c, fundo, novaMesa(undefined, mesa), [], 0);
     // a folha do coelho chega depois: desenha de novo quando ela carregar
-    const t = setTimeout(() => desenharMesa(c, desenharFundo(), novaMesa(), [], 0), 400);
+    const t = setTimeout(() => desenharMesa(c, fundo, novaMesa(undefined, mesa), [], 0), 400);
     return () => clearTimeout(t);
-  }, []);
+  }, [mesa]);
   return <canvas ref={tela} className="pinball-previa" width={LARGURA} height={400} aria-hidden="true" />;
 }
 
@@ -237,7 +252,30 @@ const SOM: Partial<Record<Evento['tipo'], Efeito>> = {
   tilt: 'erro',
   perdeu: 'queda',
   fim: 'fim',
+  tacada: 'medalha',
+  extra: 'medalha',
+  rampa: 'turbo',
 };
+
+/** O texto de cada missão (19/11/2026), com a meta dela. */
+const TEXTO_DA_MISSAO: Record<IdDaMissao, string> = {
+  cenouras: chave('Derrube {n} cenouras'),
+  repolhos: chave('Acerte {n} repolhos'),
+  orbitas: chave('Faça {n} órbitas'),
+  rampas: chave('Suba {n} rampas'),
+  toca: chave('Ponha a bola na toca'),
+  estilingues: chave('Acerte {n} estilingues'),
+};
+
+/** As faíscas dos rebatedores (19/11/2026, só desenho). */
+interface Faisca {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  ate: number;
+  cor: string;
+}
 
 const CONTAGEM_MS = 0;
 
@@ -247,11 +285,16 @@ interface Painel {
   mult: number;
   restante: number;
   contagem: number | null;
-  aviso: 'salva' | 'multibola' | 'tilt' | 'cuidado' | null;
+  aviso: 'salva' | 'multibola' | 'tilt' | 'cuidado' | 'tacada' | 'extra' | 'missao' | null;
+  missao: number;
+  missaoConta: number;
+  missaoResta: number;
+  patente: number;
 }
 
 function Partida({
   solo = false,
+  mesa = 0,
   meu,
   limite,
   agir,
@@ -260,6 +303,7 @@ function Partida({
   eu,
 }: {
   solo?: boolean;
+  mesa?: number;
   meu: MeuResumo;
   limite: number;
   agir: Agir;
@@ -275,16 +319,36 @@ function Partida({
   confirmado.current = meu.passo;
   const agirRef = useRef(agir);
   agirRef.current = agir;
-  const [painel, setPainel] = useState<Painel>({ pontos: 0, bola: 1, mult: 1, restante: limite, contagem: contagemMs > 0 ? Math.ceil(contagemMs / 1000) : null, aviso: null });
+  const [painel, setPainel] = useState<Painel>({
+    pontos: 0,
+    bola: 1,
+    mult: 1,
+    restante: limite,
+    contagem: contagemMs > 0 ? Math.ceil(contagemMs / 1000) : null,
+    aviso: null,
+    missao: 0,
+    missaoConta: 0,
+    missaoResta: MISSOES[0].passos,
+    patente: 1,
+  });
 
   useEffect(() => {
     const c = tela.current?.getContext('2d');
     if (!c) return;
-    const fundo = desenharFundo();
-    const k = novaMesa(limite);
+    const fundo = desenharFundo(mesa);
+    const k = novaMesa(limite, mesa);
     if (import.meta.env.DEV) window.pinballDoTeste = k;
     const comandos: number[] = [];
     const textos: Texto[] = [];
+    const faiscas: Faisca[] = [];
+    const impacto = criarImpacto({ pixelsPorForca: 3 });
+    const soltarFaiscas = (x: number, y: number, n: number, cor: string) => {
+      for (let i = 0; i < n; i++) {
+        const a = (i / n) * Math.PI * 2 + Math.random() * 0.5;
+        const v = 0.8 + Math.random() * 1.4;
+        faiscas.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, ate: quadro + 14 + Math.floor(Math.random() * 8), cor });
+      }
+    };
     let quadro = 0;
     let acumulado = 0;
     let ultimo = performance.now();
@@ -305,6 +369,20 @@ function Partida({
       if ('pontos' in e && e.pontos > 0) textos.push({ x: e.x, y: e.y, texto: `+${e.pontos}`, ate: quadro + 40, cor: e.pontos >= 1000 ? '#ffd65a' : '#ffffff' });
       if (e.tipo === 'perdeu' && e.bonus > 0) textos.push({ x: LARGURA / 2 - 7, y: 250, texto: `+${e.bonus}`, ate: quadro + 60, cor: '#ffd65a' });
       if (e.tipo === 'multiplicador') textos.push({ x: LARGURA / 2 - 7, y: 280, texto: `×${e.mult}`, ate: quadro + 50, cor: '#ffd65a' });
+      // só desenho: o rebatedor treme a tela de leve e solta faíscas
+      if (e.tipo === 'repolho') {
+        impacto.tremer(0.25, 120);
+        soltarFaiscas(e.x, e.y, 8, '#b8e07a');
+      } else if (e.tipo === 'estilingue') {
+        impacto.tremer(0.18, 100);
+        soltarFaiscas(e.x, e.y, 6, '#ffffff');
+      } else if (e.tipo === 'rampa' || e.tipo === 'tacada') soltarFaiscas(e.x, e.y, 10, '#ffd65a');
+      if (e.tipo === 'tacada') avisar('tacada', 2000);
+      else if (e.tipo === 'extra') avisar('extra', 2200);
+      else if (e.tipo === 'missao' && e.cumpriu) {
+        avisar('missao', 2000);
+        impacto.tremer(0.4, 200);
+      }
       if (e.tipo === 'salva') avisar('salva', 1800);
       else if (e.tipo === 'multibola') avisar('multibola', 2000);
       else if (e.tipo === 'tilt') avisar('tilt', 3000);
@@ -355,11 +433,37 @@ function Partida({
       }
       quadro++;
       for (let i = textos.length - 1; i >= 0; i--) if (textos[i].ate <= quadro) textos.splice(i, 1);
+      const { dx, dy } = impacto.quadro(agora);
+      c.save();
+      c.translate(Math.round(dx), Math.round(dy));
       desenharMesa(c, fundo, k, textos, quadro);
+      for (let i = faiscas.length - 1; i >= 0; i--) {
+        const f = faiscas[i];
+        if (f.ate <= quadro) {
+          faiscas.splice(i, 1);
+          continue;
+        }
+        f.x += f.vx;
+        f.y += f.vy;
+        c.fillStyle = f.cor;
+        c.fillRect(Math.round(f.x), Math.round(f.y), 1, 1);
+      }
+      c.restore();
       if (agora - ultimoPainel > 100) {
         ultimoPainel = agora;
         if (aviso && agora > avisoAte) aviso = k.tilt ? 'tilt' : null;
-        setPainel({ pontos: k.pontos, bola: k.bola, mult: k.mult, restante: k.limite - k.passo, contagem: contando ? Math.ceil((largada - agora) / 1000) : null, aviso: k.tilt ? 'tilt' : aviso });
+        setPainel({
+          pontos: k.pontos,
+          bola: k.bola,
+          mult: k.mult,
+          restante: k.limite - k.passo,
+          contagem: contando ? Math.ceil((largada - agora) / 1000) : null,
+          aviso: k.tilt ? 'tilt' : aviso,
+          missao: k.missao,
+          missaoConta: k.missaoConta,
+          missaoResta: k.missaoResta,
+          patente: k.patente,
+        });
       }
     };
     id = requestAnimationFrame(quadroDoJogo);
@@ -413,10 +517,32 @@ function Partida({
             {!solo && <span className={`pinball-relogio${painel.restante < 1800 ? ' acabando' : ''}`}>{relogio}</span>}
             {painel.aviso && (
               <span className={`pinball-aviso ${painel.aviso}`}>
-                {painel.aviso === 'salva' ? t('Bola salva!') : painel.aviso === 'multibola' ? t('Multibola!') : painel.aviso === 'tilt' ? t('Mesa travada!') : t('Cuidado!')}
+                {painel.aviso === 'salva'
+                  ? t('Bola salva!')
+                  : painel.aviso === 'multibola'
+                    ? t('Multibola!')
+                    : painel.aviso === 'tilt'
+                      ? t('Mesa travada!')
+                      : painel.aviso === 'tacada'
+                        ? t('Tacada certeira!')
+                        : painel.aviso === 'extra'
+                          ? t('Bola extra!')
+                          : painel.aviso === 'missao'
+                            ? t('Missão cumprida!')
+                            : t('Cuidado!')}
               </span>
             )}
             {painel.contagem !== null && <span className="pinball-contagem">{painel.contagem}</span>}
+          </div>
+          {/* A MISSÃO DA VEZ (19/11/2026): o que fazer, quanto falta, o prazo, e a patente da partida */}
+          <div className="pinball-missao" aria-live="polite">
+            <span className="pinball-patente" title={`★ ${painel.patente}`}>
+              <Star size={12} aria-hidden="true" /> {painel.patente}
+            </span>
+            <span className="pinball-missao-texto">{t(TEXTO_DA_MISSAO[MISSOES[painel.missao].id], { n: MISSOES[painel.missao].meta })}</span>
+            <span className="pinball-missao-conta">
+              {painel.missaoConta}/{MISSOES[painel.missao].meta} · {Math.ceil(painel.missaoResta * PASSO)}s
+            </span>
           </div>
           {pausado && <TelaDePausa aoContinuar={continuar} />}
         </div>

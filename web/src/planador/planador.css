@@ -241,3 +241,63 @@
   width: 2em;
   text-align: center;
 }
+
+/* 19/11/2026: o nível, as medalhas, as notas por categoria, o vento e a térmica */
+.planador-nivel {
+  font-size: 11px;
+  letter-spacing: 1px;
+  opacity: 0.85;
+}
+.planador-icone {
+  position: relative;
+}
+.planador-medalha-pequena {
+  position: absolute;
+  right: -14px;
+  bottom: -4px;
+  font-size: 18px;
+}
+.planador-medalha {
+  display: block;
+  text-align: center;
+  font-size: 42px;
+  line-height: 1;
+}
+.planador-nota {
+  color: #f2c14e;
+  letter-spacing: 1px;
+  margin-right: 4px;
+}
+.planador-limites {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin: 4px 0;
+  font-size: 13px;
+}
+.planador-limites span {
+  opacity: 0.45;
+}
+.planador-limites span.tem {
+  opacity: 1;
+  font-weight: 700;
+}
+.planador-vento {
+  position: absolute;
+  top: 64px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+}
+.planador-vento > span {
+  display: inline-block;
+}
+.planador-termica {
+  position: absolute;
+  top: 86px;
+  right: 14px;
+  font-size: 20px;
+  color: #fff3c4;
+}

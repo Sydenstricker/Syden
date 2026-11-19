@@ -218,3 +218,101 @@ test('o que se grava refaz a mesma sessão (os comandos em bits, em trechos)', a
   assert.equal(f.entradasValidas([f.PASSOS_MAXIMOS + 1, 0]), false);
   assert.equal(f.entradasValidas([1.5, 0]), false);
 });
+
+// ---------------------------------------------------------------------------------------------------------------------
+// 19/11/2026: os objetivos, a barra de especial, as variações de flip e grab, e a segunda pista
+// ---------------------------------------------------------------------------------------------------------------------
+
+/** Põe o skatista em (x, z), andando para (rx, rz) a `vel`, e roda `n` passos com o comando que `cmd(i)` der. */
+async function rodarDe(pista: number, x: number, z: number, rx: number, rz: number, vel: number, n: number, cmd: (i: number) => Partial<Comandos> = () => ({})) {
+  const f = await import('../src/skate/fisica');
+  const k = f.novoSkatista(pista);
+  for (let j = 0; j < 2; j++) {
+    Object.assign(k, { x, z, rx, rz, cx: rx, cz: rz, vel });
+    if (!j) f.passo(k, f.NADA);
+  }
+  const nomes: string[] = [];
+  for (let i = 0; i < n; i++) {
+    f.passo(k, { ...f.NADA, ...cmd(i) });
+    for (const e of k.eventos) if (e.tipo === 'manobra') nomes.push(e.nome);
+  }
+  return { k, nomes };
+}
+
+test('a segunda pista (a praça) e as duas pistas no mesmo arquivo: ids diferentes, e o parque é o de sempre', async () => {
+  const p = await import('../src/skate/pista');
+  assert.deepEqual(p.IDS_DAS_PISTAS, ['parque-1', 'praca-1']);
+  assert.notDeepEqual(p.PISTAS[1].trilhos.length, 0);
+  assert.ok(p.PISTAS[1].objetivos.saltos.length >= 2 && p.PISTAS[0].objetivos.letras.length === p.PALAVRA.length);
+  // o piloto automático do parque continua fazendo a sessão inteira na praça sem travar (os objetivos dela ficam para quem joga)
+  const f = await import('../src/skate/fisica');
+  const k = f.novoSkatista(1);
+  const piloto = criarPiloto();
+  while (!k.terminou) f.passo(k, piloto(k));
+  assert.ok(k.pontos > 0);
+  p.usarPista(0);
+});
+
+test('os saltos com nome: a pirâmide da praça e a caixa do parque (contam no combo e no objetivo)', async () => {
+  const f = await import('../src/skate/fisica');
+  const a = await rodarDe(1, 6, 13, 0, -1, 4.2, 150);
+  assert.ok(a.nomes.includes('gap:piramide'), a.nomes.join(','));
+  assert.ok(f.objetivos(a.k).find((o) => o.id === 'gap:piramide')!.feito);
+  const n = Math.hypot(0.4, 1);
+  const b = await rodarDe(0, 6, 2.6, 0.4 / n, 1 / n, 5.5, 150);
+  assert.ok(b.nomes.includes('gap:caixa'), b.nomes.join(','));
+  // e quem só rola pela pirâmide devagar, sem voar até o outro lado, não faz o salto
+  const c = await rodarDe(1, 6, 13, 0, -1, 1.5, 300);
+  assert.ok(!c.nomes.includes('gap:piramide'));
+});
+
+test('as letras e a fita: pega passando perto (a fita só no vert embalado, no canto do quarter)', async () => {
+  const f = await import('../src/skate/fisica');
+  const devagar = await rodarDe(0, 11.2, 14, 0, 1, 4.2, 200);
+  assert.ok(!devagar.k.fita, 'devagar, o vert não chega à fita');
+  const rapido = await rodarDe(0, 11.2, 14, 0, 1, 6.5, 200);
+  assert.ok(rapido.k.fita);
+  assert.ok(f.objetivos(rapido.k).find((o) => o.id === 'fita')!.feito);
+  const vert = await rodarDe(0, 6, 4, 0, -1, 5.5, 200);
+  assert.ok(vert.k.letras & 4, 'o C no alto do quarter');
+  const o = f.objetivos(vert.k).find((x) => x.id === 'letras')!;
+  assert.ok(!o.feito && (o.valor ?? 0) >= 1);
+});
+
+test('as variações (seta na hora de apertar) e a barra de especial: cheia, o flip vira o duplo; cair esvazia', async () => {
+  // um ollie embalado, e no ar ↑ + Z (Heelflip) e ← + X (Melon)
+  const v = await rodarDe(0, 6, 9, 0, -1, 4, 60, (i) => ({ pulo: i < 8, frente: i >= 12 && i < 16, flip: i >= 12 && i < 14, esquerda: i >= 18 && i < 20, grab: i >= 18 && i < 34 }));
+  assert.ok(v.nomes.includes('Heelflip'), v.nomes.join(','));
+  assert.ok(v.nomes.includes('Melon'), v.nomes.join(','));
+  // a barra cheia: o Z puro vira o Double Kickflip
+  const f = await import('../src/skate/fisica');
+  const k = f.novoSkatista(0);
+  Object.assign(k, { x: 6, z: 9, rx: 0, rz: -1, cx: 0, cz: -1, vel: 4, especial: 1 });
+  const nomes: string[] = [];
+  for (let i = 0; i < 30; i++) {
+    f.passo(k, { ...f.NADA, pulo: i < 8, flip: i >= 10 && i < 12 });
+    for (const e of k.eventos) if (e.tipo === 'manobra') nomes.push(e.nome);
+  }
+  assert.ok(nomes.includes('Double Kickflip'), nomes.join(','));
+  // cair (pousar de lado) esvazia a barra
+  const q = f.novoSkatista(0);
+  Object.assign(q, { x: 6, z: 9, rx: 0, rz: -1, cx: 0, cz: -1, vel: 4, especial: 0.8 });
+  for (let i = 0; i < 80; i++) f.passo(q, { ...f.NADA, pulo: i < 8, esquerda: i >= 10 && i < 22 });
+  assert.equal(q.especial, 0);
+});
+
+test('o servidor refaz os objetivos: a mesma sessão dá os mesmos objetivos nas duas cópias', async () => {
+  const f = await import('../src/skate/fisica');
+  const s = await import('../../server/src/skate/fisica');
+  const g = f.gravador();
+  const k = f.novoSkatista(1);
+  const piloto = criarPiloto();
+  while (!k.terminou) {
+    const c = piloto(k);
+    g.anotar(c);
+    f.passo(k, c);
+  }
+  const r = s.refazer(g.entradas, 1);
+  assert.equal(r.k.pontos, k.pontos);
+  assert.deepEqual(s.objetivos(r.k), f.objetivos(k));
+});

@@ -1,4 +1,4 @@
-import { ALTURA, Bloco, blocoEm, movelEm, T, type Fase } from './fases';
+import { ALTURA, BICHO_MEIA, Bloco, blocoEm, bichoEm, movelEm, T, type Fase } from './fases';
 
 /**
  * A FÍSICA DO PULO DO COELHO (03/11/2026): plataforma no espírito dos jogos de 16 bits — corre e acelera, o pulo é mais
@@ -21,6 +21,8 @@ export const VPULO = 310;
 /** Soltar o botão subindo corta o pulo a esta velocidade (o pulo curto). */
 const VCORTE = 110;
 export const VMOLA = 500;
+/** Pisar num bicho: o pulinho (segurando o botão, quase um pulo inteiro). */
+export const VPISAO = 220;
 export const VQUEDA = 430;
 const COIOTE = 6;
 const GUARDADO = 7;
@@ -66,12 +68,44 @@ export interface Coelho {
   chegouEm: number;
   /** Bateu numa mola neste passo (para o desenho). */
   molou: boolean;
+  /** As cenouras já pegas (um bit por cenoura da fase) e a dourada. */
+  cenouras: number;
+  dourada: boolean;
+  /** Os bichos já pisados (um bit por bicho): somem até o fim da fase. */
+  pisados: number;
+  /** O que aconteceu neste passo (para o som e o desenho): pegou cenoura, pisou num bicho, e por que voltou ao posto. */
+  pegou: 'cenoura' | 'dourada' | null;
+  pisou: number;
+  ferido: 'buraco' | 'espinho' | 'bicho' | null;
 }
 
 export function novoCoelho(f: Fase): Coelho {
   return {
-    x: f.largada.x, y: f.largada.y, vx: 0, vy: 0, noChao: true, sobre: -1, coiote: COIOTE, guardado: 0, pulaAntes: false,
-    segurando: false, lado: 1, andado: 0, posto: 0, espera: 0, quedas: 0, passos: 0, terminou: false, chegouEm: 0, molou: false,
+    x: f.largada.x,
+    y: f.largada.y,
+    vx: 0,
+    vy: 0,
+    noChao: true,
+    sobre: -1,
+    coiote: COIOTE,
+    guardado: 0,
+    pulaAntes: false,
+    segurando: false,
+    lado: 1,
+    andado: 0,
+    posto: 0,
+    espera: 0,
+    quedas: 0,
+    passos: 0,
+    terminou: false,
+    chegouEm: 0,
+    molou: false,
+    cenouras: 0,
+    dourada: false,
+    pisados: 0,
+    pegou: null,
+    pisou: -1,
+    ferido: null,
   };
 }
 
@@ -86,22 +120,36 @@ function bateEm(f: Fase, x0: number, y0: number, x1: number, y1: number): boolea
 }
 
 function tocaEspinho(f: Fase, k: Coelho): boolean {
-  const x0 = k.x - MEIA + 2, x1 = k.x + MEIA - 2, y0 = k.y - ALTO + 3, y1 = k.y - 1;
+  const x0 = k.x - MEIA + 2,
+    x1 = k.x + MEIA - 2,
+    y0 = k.y - ALTO + 3,
+    y1 = k.y - 1;
   for (let c = Math.floor(x0 / T); c <= Math.floor(x1 / T); c++) {
     for (let l = Math.floor(y0 / T); l <= Math.floor(y1 / T); l++) {
       if (blocoEm(f, c, l) !== Bloco.Espinho) continue;
       // o espinho ocupa o meio da casa, não ela inteira: encostar no canto não fere
       // pendurado (embaixo de um bloco), a ponta é para baixo, na metade de cima da casa
       const pendurado = blocoEm(f, c, l - 1) === Bloco.Chao && blocoEm(f, c, l + 1) !== Bloco.Chao;
-      const ex0 = c * T + 3, ex1 = c * T + T - 3, ey0 = pendurado ? l * T : l * T + 6, ey1 = pendurado ? l * T + 10 : l * T + T;
+      const ex0 = c * T + 3,
+        ex1 = c * T + T - 3,
+        ey0 = pendurado ? l * T : l * T + 6,
+        ey1 = pendurado ? l * T + 10 : l * T + T;
       if (x1 > ex0 && x0 < ex1 && y1 > ey0 && y0 < ey1) return true;
     }
   }
   return false;
 }
 
+/** Quantas cenouras a pessoa pegou. */
+export function contarCenouras(k: { cenouras: number }): number {
+  let n = 0;
+  for (let b = k.cenouras >>> 0; b; b &= b - 1) n++;
+  return n;
+}
+
 /** Voltar ao último posto. */
-function cair(k: Coelho, f: Fase) {
+function cair(k: Coelho, f: Fase, motivo: 'buraco' | 'espinho' | 'bicho') {
+  k.ferido = motivo;
   const p = f.postos[k.posto];
   k.x = p.x;
   k.y = p.y;
@@ -118,6 +166,9 @@ export function passo(k: Coelho, c: Comandos, f: Fase): void {
   const dt = PASSO;
   k.passos++;
   k.molou = false;
+  k.pegou = null;
+  k.pisou = -1;
+  k.ferido = null;
   if (k.terminou) c = { esquerda: false, direita: true, pula: false };
   if (k.espera > 0) {
     k.espera--;
@@ -129,7 +180,8 @@ export function passo(k: Coelho, c: Comandos, f: Fase): void {
   // EM CIMA DE UMA PLATAFORMA QUE ANDA: ela leva o coelho junto
   if (k.sobre >= 0) {
     const m = f.moveis[k.sobre];
-    const a = movelEm(m, n - 1), b = movelEm(m, n);
+    const a = movelEm(m, n - 1),
+      b = movelEm(m, n);
     const nx = k.x + (b.x - a.x);
     if (!bateEm(f, nx - MEIA, k.y - ALTO, nx + MEIA, k.y)) k.x = nx;
     k.y = b.y;
@@ -186,6 +238,7 @@ export function passo(k: Coelho, c: Comandos, f: Fase): void {
 
   // ANDAR NO Y: o chão e o teto sólidos; a tábua e a plataforma que anda só seguram quem desce por cima
   const yAntes = k.y;
+  const vyAntes = k.vy;
   let ny = k.y + k.vy * dt;
   k.noChao = false;
   const sobreAntes = k.sobre;
@@ -239,9 +292,42 @@ export function passo(k: Coelho, c: Comandos, f: Fase): void {
     }
   }
 
+  // AS CENOURAS (contadas à parte do tempo): encostou, pegou
+  const pega = (c: { x: number; y: number }) => Math.abs(c.x - k.x) < MEIA + 5 && c.y > k.y - ALTO - 4 && c.y < k.y + 4;
+  for (let i = 0; i < f.cenouras.length && i < 31; i++) {
+    if (k.cenouras & (1 << i) || !pega(f.cenouras[i])) continue;
+    k.cenouras |= 1 << i;
+    k.pegou = 'cenoura';
+  }
+  if (f.dourada && !k.dourada && pega(f.dourada)) {
+    k.dourada = true;
+    k.pegou = 'dourada';
+  }
+
+  // OS BICHOS DE PATRULHA: caindo por cima, pisa (e dá um pulinho); encostando de outro jeito, volta ao posto
+  for (let i = 0; i < f.bichos.length && i < 31; i++) {
+    if (k.pisados & (1 << i)) continue;
+    const b = f.bichos[i];
+    const p = bichoEm(b, n);
+    const [mw, mh] = BICHO_MEIA[b.tipo];
+    if (!(k.x + MEIA > p.x - mw && k.x - MEIA < p.x + mw && k.y > p.y - mh && k.y - ALTO < p.y + mh)) continue;
+    if (vyAntes >= 0 && yAntes <= p.y - mh + 5) {
+      k.pisados |= 1 << i;
+      k.pisou = i;
+      k.y = Math.min(k.y, p.y - mh);
+      k.vy = c.pula ? -VPULO : -VPISAO;
+      k.segurando = c.pula;
+      k.noChao = false;
+      k.sobre = -1;
+      continue;
+    }
+    cair(k, f, 'bicho');
+    return;
+  }
+
   // OS PERIGOS: o buraco e o espinho voltam ao posto
   if (k.y > ALTURA + 24 || tocaEspinho(f, k)) {
-    cair(k, f);
+    cair(k, f, k.y > ALTURA + 24 ? 'buraco' : 'espinho');
     return;
   }
   // O POSTO: o mais à direita que já passou, pisando
@@ -265,9 +351,15 @@ export function fantasmaEm(amostras: number[], n: number): { x: number; y: numbe
   const i = Math.max(0, Math.floor(f));
   if (i >= total - 1) return null;
   const t = Math.max(0, f - i);
-  const a = i * 3, b = a + 3;
+  const a = i * 3,
+    b = a + 3;
   // uma volta ao posto não se interpola (o fantasma não atravessa a fase voando)
-  if (Math.abs(amostras[b] - amostras[a]) > 400) return { x: amostras[a] / 10, y: amostras[a + 1] / 10, jeito: amostras[a + 2] };
+  if (Math.abs(amostras[b] - amostras[a]) > 400)
+    return {
+      x: amostras[a] / 10,
+      y: amostras[a + 1] / 10,
+      jeito: amostras[a + 2],
+    };
   return {
     x: (amostras[a] + (amostras[b] - amostras[a]) * t) / 10,
     y: (amostras[a + 1] + (amostras[b + 1] - amostras[a + 1]) * t) / 10,

@@ -221,6 +221,18 @@ export interface Enfeites {
   contagem: number | null;
   /** Acabou: a pilha fica apagada. */
   apagado: boolean;
+  /** As faíscas da cadeia e do combo (19/11/2026, só desenho): andam e somem pela idade. */
+  faiscas?: { x: number; y: number; vx: number; vy: number; idade: number; cor: string }[];
+}
+
+/** As faíscas de uma combinação boa, no meio dela: mais quanto maior a cadeia. Só desenho, com o Math.random da tela. */
+export function faiscasEm(x: number, y: number, n: number): NonNullable<Enfeites['faiscas']> {
+  const cores = ['#f0cf5a', '#fbf3e4', '#e39a8e', '#a9c99a'];
+  return Array.from({ length: n }, (_, k) => {
+    const a = (k / n) * Math.PI * 2 + Math.random() * 0.4;
+    const v = 0.8 + Math.random() * 1.6;
+    return { x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 0.6, idade: 0, cor: cores[k % cores.length] };
+  });
 }
 
 /** Desenha o tabuleiro inteiro (a tela pequena de 96 × 192). */
@@ -305,6 +317,17 @@ export function desenharTabuleiro(ctx: CanvasRenderingContext2D, e: Estado, enfe
     ctx.fillRect(0, 0, LARGURA, ALTURA);
     ctx.globalAlpha = 1;
   }
+  // A PILHA PARADA depois de uma combinação boa (a regra já fazia; a tela não mostrava): uma barra verde que encolhe embaixo
+  if (e.parada > 0 && !enfeites.apagado) {
+    ctx.fillStyle = '#a9c99a';
+    ctx.fillRect(0, ALTURA - 3, Math.max(1, Math.round((LARGURA * Math.min(e.parada, 300)) / 300)), 3);
+  }
+  for (const f of enfeites.faiscas ?? []) {
+    ctx.globalAlpha = Math.max(0, 1 - f.idade / 30);
+    ctx.fillStyle = f.cor;
+    ctx.fillRect(Math.round(f.x + f.vx * f.idade), Math.round(f.y + f.vy * f.idade + 0.05 * f.idade * f.idade), 2, 2);
+  }
+  ctx.globalAlpha = 1;
   for (const a of enfeites.avisos) escrever(ctx, a.texto, a.x, a.y - a.idade / 4, 2, '#f0cf5a');
   if (enfeites.contagem !== null) escrever(ctx, String(enfeites.contagem), LARGURA / 2, ALTURA / 2, 6, '#fbf3e4');
 }

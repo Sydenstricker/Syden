@@ -178,7 +178,11 @@ test('quem fica sem lance perde: sem peças, ou com todas presas', () => {
 test('empate: 20 lances seguidos só de dama, sem comer', () => {
   const e = estadoCom(tabuleiro({ a1: DAMA_CLARA, h2: DAMA_ESCURA }));
   const vaiEVolta: Record<number, number> = { [q('a1')]: q('b2'), [q('b2')]: q('a1'), [q('h2')]: q('g1'), [q('g1')]: q('h2') };
-  const jogar = (lado: 0 | 1) => regrasDasDamas.jogar(e, lado, { lance: e.lances.findIndex((l) => fim(l) === vaiEVolta[l.de]) });
+  // o vai e volta repete a posição: a repetição tripla (19/11/2026) empataria antes; aqui ela fica esquecida, para medir só os 20
+  const jogar = (lado: 0 | 1) => {
+    e.vistas = {};
+    return regrasDasDamas.jogar(e, lado, { lance: e.lances.findIndex((l) => fim(l) === vaiEVolta[l.de]) });
+  };
   for (let k = 0; k < LANCES_PARA_EMPATE - 1; k++) assert.deepEqual(jogar((k % 2) as 0 | 1), { proximo: (k + 1) % 2 }, `lance ${k + 1}`);
   assert.equal(e.semCaptura, LANCES_PARA_EMPATE - 1);
   assert.deepEqual(jogar(1), { proximo: 0, vencedor: 'empate' });

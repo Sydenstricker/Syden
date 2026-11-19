@@ -1,4 +1,5 @@
 import { embaralhar, type Definicao } from './minijogo-motor.js';
+import { guardarRecordeDoSolo, lerRecordeDoSolo } from './recorde-solo-tardio.js';
 
 /**
  * O SUDOKU EM CORRIDA: todo mundo recebe o MESMO tabuleiro, cada um resolve no seu, e a sala vê a barra de
@@ -76,8 +77,20 @@ function preencher(grade: number[], aleatorio: () => number): boolean {
   return false;
 }
 
-/** Um tabuleiro com solução única e `vazias` casas a preencher. */
+/**
+ * Um tabuleiro com solução única e `vazias` casas a preencher. Tirar casas ao acaso nem sempre chega às 58 do "Muito
+ * difícil" (a solução deixa de ser única antes): tenta de novo até chegar, e fica com o mais vazio se não chegar.
+ */
 export function gerarSudoku(aleatorio = Math.random, vazias = VAZIAS): { enigma: number[]; solucao: number[] } {
+  let melhor = umaTentativa(aleatorio, vazias);
+  for (let i = 0; i < 40 && melhor.enigma.filter((n) => n === 0).length < vazias; i++) {
+    const outra = umaTentativa(aleatorio, vazias);
+    if (outra.enigma.filter((n) => n === 0).length > melhor.enigma.filter((n) => n === 0).length) melhor = outra;
+  }
+  return melhor;
+}
+
+function umaTentativa(aleatorio: () => number, vazias: number): { enigma: number[]; solucao: number[] } {
   const solucao = new Array<number>(81).fill(0);
   preencher(solucao, aleatorio);
   const enigma = [...solucao];
@@ -92,20 +105,51 @@ export function gerarSudoku(aleatorio = Math.random, vazias = VAZIAS): { enigma:
   return { enigma, solucao };
 }
 
+/**
+ * AS DIFICULDADES (19/11/2026, a auditoria dos mini-games): quantas casas vazias. "Médio" é o de sempre (45); o gerador garante
+ * a solução única em todas.
+ */
+export const DIFICULDADES = { facil: 35, medio: 45, dificil: 52, extremo: 58 } as const;
+export type Dificuldade = keyof typeof DIFICULDADES;
+/**
+ * CONFERIR SÓ NO FIM (19/11/2026): o número errado não fica vermelho na hora. Com o tabuleiro cheio, "Conferir" mostra as
+ * erradas e soma PENALIDADE_MS por casa errada ao tempo; acerta-se e confere-se de novo.
+ */
+export const PENALIDADE_MS = 30_000;
+/** No "conferir na hora", cada erro custa isto no RECORDE do Solo: sem ele, chutar os 9 números depressa valia recorde. */
+export const PENALIDADE_NA_HORA_MS = 10_000;
+
 interface Jogador {
   tabuleiro: number[];
   erros: number;
   terminouEm: number | null;
+  /** O tempo somado pelas conferências erradas (só no "conferir no fim"). */
+  penalidadeMs: number;
+  /** As casas que a última conferência achou erradas: ficam vermelhas até a pessoa mexer nelas. */
+  marcadas: Set<number>;
 }
 
 export const sudoku: Definicao = {
-  comecar(ctx, { naSala }) {
-    const { enigma, solucao } = gerarSudoku();
+  comecar(ctx, { naSala, criadaPor, corpo }) {
+    const dificuldade: Dificuldade = String(corpo.dificuldade) in DIFICULDADES ? (String(corpo.dificuldade) as Dificuldade) : 'medio';
+    const noFim = corpo.conferencia === 'fim';
+    const { enigma, solucao } = gerarSudoku(Math.random, DIFICULDADES[dificuldade]);
     const inicio = Date.now();
     let fase: 'jogando' | 'fim' = 'jogando';
-    const jogadores = new Map<number, Jogador>(naSala.map((id) => [id, { tabuleiro: [...enigma], erros: 0, terminouEm: null }]));
+    const novo = (): Jogador => ({ tabuleiro: [...enigma], erros: 0, terminouEm: null, penalidadeMs: 0, marcadas: new Set() });
+    const jogadores = new Map<number, Jogador>(naSala.map((id) => [id, novo()]));
     const aPreencher = enigma.filter((n) => n === 0).length;
     const certas = (j: Jogador) => j.tabuleiro.filter((n, i) => enigma[i] === 0 && n === solucao[i]).length;
+    const preenchidas = (j: Jogador) => j.tabuleiro.filter((n, i) => enigma[i] === 0 && n !== 0).length;
+    // O RECORDE DO SOLO, por dificuldade e modo: o tempo que o SERVIDOR mediu, com as penalidades.
+    const variante = `${dificuldade}${noFim ? ':fim' : ''}`;
+    let recorde: { antes: number | null; novo: boolean; valor: number | null } | null = null;
+    if (ctx.solo) {
+      lerRecordeDoSolo(criadaPor, 'sudoku', variante, (r) => {
+        recorde = { antes: r?.valor ?? null, novo: false, valor: null };
+        ctx.avisar();
+      });
+    }
 
     const acabar = () => {
       if (fase === 'fim') return;
@@ -118,6 +162,16 @@ export const sudoku: Definicao = {
       const naSalaAgora = ctx.naSala();
       return [...jogadores.entries()].every(([id, x]) => x.terminouEm !== null || !naSalaAgora.includes(id));
     };
+    const terminar = (quem: number, j: Jogador) => {
+      j.terminouEm = Date.now() - inicio + j.penalidadeMs;
+      if (ctx.solo && quem === criadaPor) {
+        const valor = j.terminouEm + (noFim ? 0 : j.erros * PENALIDADE_NA_HORA_MS);
+        guardarRecordeDoSolo(quem, 'sudoku', variante, valor, true, { erros: j.erros }, (r) => {
+          recorde = { antes: r.antes, novo: r.novo, valor };
+          ctx.avisar();
+        });
+      }
+    };
 
     return {
       publico(quem) {
@@ -125,12 +179,23 @@ export const sudoku: Definicao = {
         return {
           fase,
           enigma,
+          dificuldade,
+          conferencia: noFim ? 'fim' : 'hora',
+          // As escolhas da largada, para o "Jogar de novo".
+          largada: { dificuldade, conferencia: noFim ? 'fim' : 'hora' },
           // O tabuleiro de cada um é só dele; dos outros, a sala vê o quanto já foi.
           meu: meu?.tabuleiro ?? null,
-          errados: meu ? meu.tabuleiro.map((n, i) => (n && n !== solucao[i] ? i : -1)).filter((i) => i >= 0) : [],
+          errados: meu
+            ? noFim
+              ? [...meu.marcadas].filter((i) => meu.tabuleiro[i] !== solucao[i])
+              : meu.tabuleiro.map((n, i) => (n && n !== solucao[i] ? i : -1)).filter((i) => i >= 0)
+            : [],
+          penalidadeMs: meu?.penalidadeMs ?? 0,
           total: aPreencher,
+          recorde,
           corrida: [...jogadores.entries()]
-            .map(([userId, j]) => ({ userId, username: ctx.nome(userId), certas: certas(j), erros: j.erros, tempoMs: j.terminouEm }))
+            // No "conferir no fim", a barra é das casas PREENCHIDAS: a das certas contaria a cada um o que está errado.
+            .map(([userId, j]) => ({ userId, username: ctx.nome(userId), certas: noFim ? preenchidas(j) : certas(j), erros: j.erros, tempoMs: j.terminouEm }))
             .sort(
               (a, b) =>
                 (a.tempoMs ?? Infinity) - (b.tempoMs ?? Infinity) || b.certas - a.certas || a.erros - b.erros || a.username.localeCompare(b.username),
@@ -138,21 +203,32 @@ export const sudoku: Definicao = {
         };
       },
       acao(quem, corpo) {
-        if (corpo.tipo !== 'jogada') return 'Ação desconhecida.';
+        if (corpo.tipo !== 'jogada' && corpo.tipo !== 'conferir') return 'Ação desconhecida.';
         if (fase !== 'jogando') return 'A partida acabou.';
-        const casa = Number(corpo.casa);
-        const valor = Number(corpo.valor);
-        if (!Number.isInteger(casa) || casa < 0 || casa > 80 || enigma[casa] !== 0) return 'Essa casa não está livre.';
-        if (!Number.isInteger(valor) || valor < 0 || valor > 9) return 'Escolha um número de 1 a 9.';
         let j = jogadores.get(quem);
         if (!j) {
-          j = { tabuleiro: [...enigma], erros: 0, terminouEm: null };
+          j = novo();
           jogadores.set(quem, j);
         }
         if (j.terminouEm !== null) return null;
-        j.tabuleiro[casa] = valor;
-        if (valor && valor !== solucao[casa]) j.erros++;
-        if (certas(j) === aPreencher) j.terminouEm = Date.now() - inicio;
+        if (corpo.tipo === 'conferir') {
+          if (!noFim) return 'Nesta partida cada número é conferido na hora.';
+          if (preenchidas(j) < aPreencher) return 'Preencha todas as casas antes de conferir.';
+          const erradas = j.tabuleiro.map((n, i) => (enigma[i] === 0 && n !== solucao[i] ? i : -1)).filter((i) => i >= 0);
+          j.marcadas = new Set(erradas);
+          j.erros += erradas.length;
+          j.penalidadeMs += erradas.length * PENALIDADE_MS;
+          if (erradas.length === 0) terminar(quem, j);
+        } else {
+          const casa = Number(corpo.casa);
+          const valor = Number(corpo.valor);
+          if (!Number.isInteger(casa) || casa < 0 || casa > 80 || enigma[casa] !== 0) return 'Essa casa não está livre.';
+          if (!Number.isInteger(valor) || valor < 0 || valor > 9) return 'Escolha um número de 1 a 9.';
+          j.tabuleiro[casa] = valor;
+          j.marcadas.delete(casa);
+          if (!noFim && valor && valor !== solucao[casa]) j.erros++;
+          if (!noFim && certas(j) === aPreencher) terminar(quem, j);
+        }
         if (todosProntos()) acabar();
         else ctx.avisar();
         return null;

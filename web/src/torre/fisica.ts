@@ -17,6 +17,12 @@ const ATRITO_CHAO = 1100;
 const ATRITO_AR = 250;
 const GRAVIDADE = 980;
 export const VPULO = 310;
+/**
+ * O PULO QUE CRESCE COM A CORRIDA (19/11/2026, a referência dos jogos de subir torre): o pulo ganha IMPULSO × a velocidade
+ * de lado na hora de sair do chão. Correndo no máximo (110/s), o pulo sai a ~349/s e sobe ~27% mais alto que parado.
+ */
+export const IMPULSO = 0.35;
+export const vPuloCom = (vx: number) => VPULO + IMPULSO * Math.min(VMAX, Math.abs(vx));
 const VCORTE = 110;
 export const VQUEDA = 430;
 const COIOTE = 6;
@@ -57,8 +63,25 @@ export interface Coelho {
 
 export function novoCoelho(f: Torre): Coelho {
   return {
-    x: f.largada.x, y: f.largada.y, vx: 0, vy: 0, noChao: true, sobre: -1, coiote: COIOTE, guardado: 0, pulaAntes: false,
-    segurando: false, lado: 1, andado: 0, posto: 0, espera: 0, quedas: 0, passos: 0, terminou: false, chegouEm: 0, atingido: false,
+    x: f.largada.x,
+    y: f.largada.y,
+    vx: 0,
+    vy: 0,
+    noChao: true,
+    sobre: -1,
+    coiote: COIOTE,
+    guardado: 0,
+    pulaAntes: false,
+    segurando: false,
+    lado: 1,
+    andado: 0,
+    posto: 0,
+    espera: 0,
+    quedas: 0,
+    passos: 0,
+    terminou: false,
+    chegouEm: 0,
+    atingido: false,
   };
 }
 
@@ -78,7 +101,10 @@ export const MEIA_CORVO_Y = 4;
 
 /** Alguma ferramenta caindo, ou um corvo, encosta no coelho no passo n? */
 export function atingidoEm(f: Torre, k: { x: number; y: number }, n: number): boolean {
-  const x0 = k.x - MEIA + 1, x1 = k.x + MEIA - 1, y0 = k.y - ALTO + 4, y1 = k.y - 1;
+  const x0 = k.x - MEIA + 1,
+    x1 = k.x + MEIA - 1,
+    y0 = k.y - ALTO + 4,
+    y1 = k.y - 1;
   for (const q of f.quedas) {
     if (Math.abs(q.x - k.x) > 20) continue;
     const p = quedaEm(q, n);
@@ -122,7 +148,8 @@ export function passo(k: Coelho, c: Comandos, f: Torre): void {
   // EM CIMA DE UMA PLATAFORMA QUE ANDA: ela leva o coelho junto
   if (k.sobre >= 0) {
     const m = f.moveis[k.sobre];
-    const a = movelEm(m, n - 1), b = movelEm(m, n);
+    const a = movelEm(m, n - 1),
+      b = movelEm(m, n);
     const nx = k.x + (b.x - a.x);
     if (!bateEm(f, nx - MEIA, k.y - ALTO, nx + MEIA, k.y)) k.x = nx;
     k.y = b.y;
@@ -144,7 +171,7 @@ export function passo(k: Coelho, c: Comandos, f: Torre): void {
   if (k.noChao) k.coiote = COIOTE;
   else if (k.coiote > 0) k.coiote--;
   if (k.guardado > 0 && k.coiote > 0) {
-    k.vy = -VPULO;
+    k.vy = -vPuloCom(k.vx);
     k.segurando = true;
     k.guardado = 0;
     k.coiote = 0;
@@ -244,9 +271,15 @@ export function fantasmaEm(amostras: number[], n: number): { x: number; y: numbe
   const i = Math.max(0, Math.floor(f));
   if (i >= total - 1) return null;
   const t = Math.max(0, f - i);
-  const a = i * 3, b = a + 3;
+  const a = i * 3,
+    b = a + 3;
   // a volta ao posto não se interpola
-  if (Math.abs(amostras[b + 1] - amostras[a + 1]) > 400 || Math.abs(amostras[b] - amostras[a]) > 400) return { x: amostras[a] / 10, y: amostras[a + 1] / 10, jeito: amostras[a + 2] };
+  if (Math.abs(amostras[b + 1] - amostras[a + 1]) > 400 || Math.abs(amostras[b] - amostras[a]) > 400)
+    return {
+      x: amostras[a] / 10,
+      y: amostras[a + 1] / 10,
+      jeito: amostras[a + 2],
+    };
   return {
     x: (amostras[a] + (amostras[b] - amostras[a]) * t) / 10,
     y: (amostras[a + 1] + (amostras[b + 1] - amostras[a + 1]) * t) / 10,

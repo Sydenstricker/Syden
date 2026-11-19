@@ -58,7 +58,7 @@ function comecar(opcoes: Parameters<typeof criarCidades>[0] = {}, inicio = [anaI
     comunidade: solo ? 0 : comunidade.id,
     solo,
   };
-  const jogo = criarCidades({ agora: () => agora, aleatorio, ...opcoes }).comecar(ctx, { naSala: inicio, criadaPor: inicio[0], corpo });
+  const jogo = criarCidades({ agora: () => agora, aleatorio, semDadosIguais: true, ...opcoes }).comecar(ctx, { naSala: inicio, criadaPor: inicio[0], corpo });
   assert.ok(typeof jogo !== 'string');
   return {
     jogo,
@@ -335,7 +335,7 @@ test('robôs só no Solo: na sala, pedir robôs não deixa começar sozinho', ()
     nome: () => 'ana',
     comunidade: comunidade.id,
   };
-  const r = criarCidades({ agora: () => agora, aleatorio }).comecar(ctx, { naSala: [anaId], criadaPor: anaId, corpo: { robos: 3 } });
+  const r = criarCidades({ agora: () => agora, aleatorio, semDadosIguais: true }).comecar(ctx, { naSala: [anaId], criadaPor: anaId, corpo: { robos: 3 } });
   assert.equal(typeof r, 'string');
 });
 

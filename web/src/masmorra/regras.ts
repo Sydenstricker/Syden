@@ -18,7 +18,12 @@ export type Lado = 'n' | 's' | 'o' | 'l';
 export const LADOS: Lado[] = ['n', 's', 'o', 'l'];
 export const OPOSTO: Record<Lado, Lado> = { n: 's', s: 'n', o: 'l', l: 'o' };
 /** A casa de cada porta, na parede. */
-export const PORTA: Record<Lado, [number, number]> = { n: [8, 0], s: [8, 10], o: [0, 5], l: [16, 5] };
+export const PORTA: Record<Lado, [number, number]> = {
+  n: [8, 0],
+  s: [8, 10],
+  o: [0, 5],
+  l: [16, 5],
+};
 /** Onde aparece quem entra pela porta de cada lado (o meio, um pouco para dentro). */
 export const CHEGADA: Record<Lado, [number, number]> = {
   n: [8.5 * TILE, 1.6 * TILE],
@@ -53,8 +58,22 @@ export const BICHOS: Record<TipoDoBicho, { hp: number; raio: number; vel: number
 };
 /** Os estados dos bichos, na ordem do código que vai no quadro. */
 export const ESTADOS = [
-  'entrando', 'parado', 'andando', 'preparando', 'atacando', 'recuperando', 'dor', 'atordoado', 'morto', 'mirando', 'saltando',
-  'prep-investida', 'investida', 'cansado', 'prep-sopro', 'sopro',
+  'entrando',
+  'parado',
+  'andando',
+  'preparando',
+  'atacando',
+  'recuperando',
+  'dor',
+  'atordoado',
+  'morto',
+  'mirando',
+  'saltando',
+  'prep-investida',
+  'investida',
+  'cansado',
+  'prep-sopro',
+  'sopro',
 ] as const;
 export type EstadoDoBicho = (typeof ESTADOS)[number];
 /** As ações do coelho (o que a pessoa diz que ele está fazendo, para os outros o desenharem). */
@@ -66,28 +85,35 @@ export interface Sala {
   id: number;
   /** Onde ela fica no mapa do canto (coluna, linha). */
   mapa: [number, number];
-  /** '#' parede, 'T' tocha, '.' chão, '~' água, '=' ponte (água até o cristal), 'P' botão no chão, 'B' bloco, 'C' baú, 'K' cristal. */
+  /**
+   * '#' parede, 'T' tocha, '.' chão, '~' água, '=' ponte (água até o cristal), 'P' botão no chão, 'B' bloco, 'C' baú, 'K' cristal;
+   * desde 19/11/2026, 'V' vaso (levanta-se e joga-se), 'M' moita (a pá corta) e 'H' o coração grande (um coração a mais para a
+   * turma).
+   */
   grade: string[];
-  portas: Partial<Record<Lado, { para: number; trava?: 'placas' | 'chave' }>>;
+  /** A trava 'rachada' (19/11/2026): a parede rachada no lugar da porta, que só a bomba de semente abre. */
+  portas: Partial<Record<Lado, { para: number; trava?: 'placas' | 'chave' | 'rachada' }>>;
   bichos: { tipo: TipoDoBicho; c: number; l: number }[];
   /** O baú: o que ele guarda, e se só aparece com a sala limpa. */
-  bau?: { guarda: 'cenoura' | 'chave'; aparece?: 'limpa' };
+  bau?: { guarda: 'cenoura' | 'chave' | 'gancho'; aparece?: 'limpa' };
+  /** A sala do chefe: limpa, a masmorra está vencida. */
+  chefe?: boolean;
 }
 
 export const SALAS: Sala[] = [
   {
-    // a entrada: calma, com as tochas
+    // a entrada: calma, com as tochas, as moitas e os vasos (19/11/2026)
     id: 0,
     mapa: [2, 6],
     grade: [
       '#################',
       '#T.............T#',
-      '#...............#',
+      '#.M...........M.#',
       '#...##.....##...#',
       '#...##.....##...#',
       '#...............#',
       '#...............#',
-      '#...............#',
+      '#.V...........V.#',
       '#...............#',
       '#T.............T#',
       '#################',
@@ -96,12 +122,12 @@ export const SALAS: Sala[] = [
     bichos: [],
   },
   {
-    // o salão dos cogumelos: as portas fecham até a sala ficar limpa
+    // o salão dos cogumelos: as portas fecham até a sala ficar limpa; a oeste, a parede rachada (19/11/2026)
     id: 1,
     mapa: [2, 5],
     grade: [
       '#################',
-      '#...............#',
+      '#M.............M#',
       '#..##.......##..#',
       '#..##.......##..#',
       '#...............#',
@@ -109,10 +135,14 @@ export const SALAS: Sala[] = [
       '#...............#',
       '#..##.......##..#',
       '#..##.......##..#',
-      '#...............#',
+      '#M.............M#',
       '#################',
     ],
-    portas: { n: { para: 2 }, s: { para: 0 } },
+    portas: {
+      n: { para: 2 },
+      s: { para: 0 },
+      o: { para: 7, trava: 'rachada' },
+    },
     bichos: [
       { tipo: 'cogumelo', c: 4, l: 5 },
       { tipo: 'cogumelo', c: 12, l: 5 },
@@ -198,7 +228,7 @@ export const SALAS: Sala[] = [
       '#################',
       '#.....#...#.....#',
       '#.....#...#.....#',
-      '#...............#',
+      '#V.............V#',
       '#..#.........#..#',
       '#...............#',
       '#..#.........#..#',
@@ -234,9 +264,207 @@ export const SALAS: Sala[] = [
     ],
     portas: { s: { para: 5 } },
     bichos: [{ tipo: 'rei-cogumelo', c: 8, l: 3 }],
+    chefe: true,
   },
 ];
 export const SALA_DO_CHEFE = 6;
+
+/**
+ * A SALA SECRETA (19/11/2026): atrás da parede rachada do salão dos cogumelos. A bomba de semente abre a parede, e lá dentro
+ * está o CORAÇÃO GRANDE (um coração a mais para a turma inteira, até o fim da partida), entre vasos e moitas.
+ */
+export const SALA_SECRETA = 7;
+SALAS.push({
+  id: SALA_SECRETA,
+  mapa: [1, 5],
+  grade: [
+    '#################',
+    '#M.............M#',
+    '#...............#',
+    '#....V.....V....#',
+    '#...............#',
+    '#.......H.......#',
+    '#...............#',
+    '#....V.....V....#',
+    '#...............#',
+    '#M.............M#',
+    '#################',
+  ],
+  portas: { l: { para: 1 } },
+  bichos: [],
+});
+
+// ---------------- A SEGUNDA MASMORRA: A MINA DOS POSTES (19/11/2026) ----------------
+/**
+ * A MINA DOS POSTES: a segunda masmorra, RAMIFICADA. A entrada dá na encruzilhada, que tem três caminhos: a oeste, a sala do
+ * baú com o GANCHO (aparece com a sala limpa); a leste, o lago, que só se atravessa com o gancho, puxando o coelho até um
+ * POSTE do outro lado (lá está a chave, e outro poste para voltar); e ao norte, a porta trancada do rei-cogumelo. Quem vai ao
+ * lago antes do baú volta: é o "voltar com o item novo para abrir caminho".
+ */
+export type Masmorra = 'toca' | 'mina';
+export const MASMORRAS: Record<Masmorra, { inicio: number; chefe: number }> = {
+  toca: { inicio: 0, chefe: SALA_DO_CHEFE },
+  mina: { inicio: 8, chefe: 12 },
+};
+export const ehMasmorra = (v: unknown): v is Masmorra => v === 'toca' || v === 'mina';
+
+SALAS.push(
+  {
+    // a entrada da mina
+    id: 8,
+    mapa: [2, 6],
+    grade: [
+      '#################',
+      '#T.............T#',
+      '#.M...........M.#',
+      '#...............#',
+      '#...##.....##...#',
+      '#...............#',
+      '#...............#',
+      '#.V...........V.#',
+      '#...............#',
+      '#T.............T#',
+      '#################',
+    ],
+    portas: { n: { para: 9 } },
+    bichos: [],
+  },
+  {
+    // a encruzilhada: três caminhos, e o norte trancado
+    id: 9,
+    mapa: [2, 5],
+    grade: [
+      '#################',
+      '#T.............T#',
+      '#...............#',
+      '#..#.........#..#',
+      '#...............#',
+      '#...............#',
+      '#...............#',
+      '#..#.........#..#',
+      '#...............#',
+      '#T.............T#',
+      '#################',
+    ],
+    portas: { s: { para: 8 }, o: { para: 10 }, l: { para: 11 }, n: { para: 12, trava: 'chave' } },
+    bichos: [
+      { tipo: 'cacto', c: 3, l: 2 },
+      { tipo: 'cacto', c: 13, l: 2 },
+      { tipo: 'cogumelo', c: 8, l: 5 },
+    ],
+  },
+  {
+    // a oeste: limpa a sala, e o baú traz o gancho
+    id: 10,
+    mapa: [1, 5],
+    grade: [
+      '#################',
+      '#...............#',
+      '#..M.........M..#',
+      '#...............#',
+      '#.....#...#.....#',
+      '#..C............#',
+      '#.....#...#.....#',
+      '#...............#',
+      '#..M.........M..#',
+      '#...............#',
+      '#################',
+    ],
+    portas: { l: { para: 9 } },
+    bichos: [
+      { tipo: 'sapo', c: 12, l: 3 },
+      { tipo: 'sapo', c: 12, l: 7 },
+      { tipo: 'cogumelo', c: 8, l: 2 },
+      { tipo: 'cogumelo', c: 8, l: 8 },
+    ],
+    bau: { guarda: 'gancho', aparece: 'limpa' },
+  },
+  {
+    // a leste: o rio no meio da sala; do outro lado, o baú da chave e o poste da volta
+    id: 11,
+    mapa: [3, 5],
+    grade: [
+      '#################',
+      '#......~~.......#',
+      '#......~~.......#',
+      '#......~~.E.....#',
+      '#......~~.......#',
+      '#......~~...C...#',
+      '#......~~.......#',
+      '#....E.~~.......#',
+      '#......~~.......#',
+      '#......~~.......#',
+      '#################',
+    ],
+    portas: { o: { para: 9 } },
+    bichos: [
+      { tipo: 'sapo', c: 3, l: 8 },
+      { tipo: 'cogumelo', c: 3, l: 3 },
+    ],
+    bau: { guarda: 'chave' },
+  },
+  {
+    // o rei-cogumelo da mina, com os postes no meio do salão
+    id: 12,
+    mapa: [2, 4],
+    grade: [
+      '#################',
+      '#...............#',
+      '#.##.........##.#',
+      '#.##...E.E...##.#',
+      '#...............#',
+      '#...............#',
+      '#...............#',
+      '#.##...E.E...##.#',
+      '#.##.........##.#',
+      '#...............#',
+      '#################',
+    ],
+    portas: { s: { para: 9 } },
+    bichos: [
+      { tipo: 'rei-cogumelo', c: 8, l: 4 },
+      { tipo: 'cacto', c: 2, l: 1 },
+      { tipo: 'cacto', c: 14, l: 1 },
+    ],
+    chefe: true,
+  },
+);
+
+/** O gancho: até quantas casas ele alcança um poste ('E'). */
+export const GANCHO = { alcance: 7 };
+
+/**
+ * Para onde o gancho leva quem olha para `dir` de (x, y): a primeira coisa na linha que não é chão nem água (o gancho passa por
+ * cima da água, como o tiro) tem de ser um POSTE, até GANCHO.alcance casas; o coelho vai à casa logo antes dele. Null se não há
+ * poste na linha, ou a casa de chegada não é livre.
+ */
+export function alvoDoGancho(s: Sala, m: Mundo, x: number, y: number, dir: number): { poste: [number, number]; para: [number, number] } | null {
+  const [dx, dy] = DIRS[dir];
+  let c = Math.floor(x / TILE);
+  let l = Math.floor(y / TILE);
+  for (let k = 1; k <= GANCHO.alcance; k++) {
+    const nc = c + dx;
+    const nl = l + dy;
+    if (s.grade[nl]?.[nc] === 'E') {
+      if (k === 1 || solida(s, m, c, l, 'coelho')) return null;
+      return { poste: [nc, nl], para: centro(c, l) };
+    }
+    if (solida(s, m, nc, nl, 'tiro')) return null;
+    c = nc;
+    l = nl;
+  }
+  return null;
+}
+
+// ---------------- OS VASOS, AS MOITAS E A BOMBA DE SEMENTE (19/11/2026) ----------------
+/** O vaso jogado: a velocidade, até onde vai, o raio e o dano no bicho. */
+export const ARREMESSO = { vel: 300, alcance: 180, raio: 14, dano: 2 };
+/** A bomba de semente: quanto demora a estourar, o raio, o dano, e as sementes da turma (no começo e no máximo). */
+export const BOMBA = { pavio: 1500, raio: 64, dano: 2, inicio: 2, maximo: 5 };
+/** Um coração a mais (o coração grande da sala secreta). */
+export const CORACAO_GRANDE = 1;
+/** Pega o vaso ou corta a moita quem está até isto do meio da casa. */
+export const ALCANCE_DA_MAO = TILE + 14;
 
 /** As casas de uma letra na grade de uma sala. */
 export function casasDe(s: Sala, letra: string): [number, number][] {
@@ -256,7 +484,13 @@ export const ARRANCADA_RECARGA_MS = 700;
 /** A pá de jardim: quanto dura, quando pega, o meio do golpe à frente e o raio dele. */
 export const PA = { dura: 320, de: 60, ate: 200, frente: 24, raio: 26 };
 /** A cenoura que vai e volta: velocidade, até onde vai, o raio e a recarga. */
-export const CENOURA = { vel: 380, alcance: 220, raio: 10, recarga: 600, dura: 1500 };
+export const CENOURA = {
+  vel: 380,
+  alcance: 220,
+  raio: 10,
+  recarga: 600,
+  dura: 1500,
+};
 /** Quanto tempo apertando contra o bloco até ele andar uma casa. */
 export const EMPURRAO_MS = 250;
 /** O quanto a quina escorrega (para entrar na porta sem acertar o meio dela). */
@@ -269,6 +503,8 @@ export interface Mundo {
   bau: boolean;
   ponte: boolean;
   abertas: Lado[];
+  /** Os vasos e as moitas que já saíram desta sala (levantados, cortados, quebrados). */
+  fora?: [number, number][];
 }
 export type Quem = 'coelho' | 'bicho' | 'tiro';
 
@@ -280,10 +516,11 @@ export function solida(s: Sala, m: Mundo, c: number, l: number, quem: Quem): boo
     if (pc === c && pl === l) return !(quem === 'coelho' && s.portas[lado] !== undefined && m.abertas.includes(lado));
   }
   const ch = s.grade[l][c];
-  if (ch === '#' || ch === 'T' || ch === 'K') return true;
+  if (ch === '#' || ch === 'T' || ch === 'K' || ch === 'E') return true;
   if (ch === '~') return quem !== 'tiro';
   if (ch === '=') return !m.ponte && quem !== 'tiro';
   if (ch === 'C' && m.bau) return true;
+  if (ch === 'V' || ch === 'M') return !(m.fora ?? []).some(([fc, fl]) => fc === c && fl === l);
   return m.blocos.some(([bc, bl]) => bc === c && bl === l);
 }
 
@@ -345,8 +582,30 @@ export interface Comandos {
   golpe: boolean;
   item: boolean;
   arrancada: boolean;
+  /** A bomba de semente (19/11/2026): o site a manda e apaga. */
+  bomba?: boolean;
 }
-export const comandosVazios = (): Comandos => ({ cima: false, baixo: false, esquerda: false, direita: false, golpe: false, item: false, arrancada: false });
+export const comandosVazios = (): Comandos => ({
+  cima: false,
+  baixo: false,
+  esquerda: false,
+  direita: false,
+  golpe: false,
+  item: false,
+  arrancada: false,
+  bomba: false,
+});
+
+/** O vaso ou a moita logo à frente de quem olha para `dir` (na casa da frente), ou null. */
+export function coisaAFrente(s: Sala, m: Mundo, x: number, y: number, dir: number, letra: 'V' | 'M'): [number, number] | null {
+  const [dx, dy] = DIRS[dir];
+  for (const k of [RAIO + 8, RAIO + 22]) {
+    const c = Math.floor((x + dx * k) / TILE);
+    const l = Math.floor((y + dy * k) / TILE);
+    if (s.grade[l]?.[c] === letra && !(m.fora ?? []).some(([fc, fl]) => fc === c && fl === l)) return [c, l];
+  }
+  return null;
+}
 
 export interface Coelho {
   x: number;
@@ -562,8 +821,16 @@ export interface Quadro {
   /** Os botões do chão (1 apertado), na ordem da grade, e se o enigma já foi resolvido. */
   pl: number[];
   pr: number;
-  /** [tem a cenoura, chaves]. */
+  /** [tem a cenoura, chaves, sementes, tem o gancho]. */
   it: number[];
+  /** Os vasos e as moitas que saíram desta sala: [c, l]. */
+  o?: number[][];
+  /** Os vasos voando: [id, x, y]. As bombas no chão: [id, x, y, ms até estourar]. As sementes no chão: [id, x, y]. */
+  r?: number[][];
+  bs?: number[][];
+  sm?: number[][];
+  /** O coração grande já foi pego (1). */
+  cg?: number;
   /** [id, tipo, x, y, z, estado, lado, hp%, ms no estado, alvoX, alvoY] */
   i: number[][];
   /** Os tiros: [id, x, y]. */
@@ -572,7 +839,10 @@ export interface Quadro {
   c: number[][];
   /** As salas já visitadas. */
   v: number[];
-  /** [userId, x, y, dir, ação, ms da ação, corações, estado (0 em pé, 1 fora), pontos, avatar, último golpe aceito, teleporte] */
+  /**
+   * [userId, x, y, dir, ação, ms da ação, corações, estado (0 em pé, 1 fora), pontos, avatar, último golpe aceito, teleporte,
+   * carrega um vaso (1), o máximo de corações]
+   */
   j: unknown[][];
   e: unknown[][];
 }
@@ -589,6 +859,7 @@ export function mundoDoQuadro(q: Quadro): Mundo {
     bau: q.bau > 0,
     ponte: q.ponte === 1,
     abertas: LADOS.filter((_, k) => q.p[k] === 1),
+    fora: (q.o ?? []).map((o) => [o[0], o[1]] as [number, number]),
   };
 }
 
@@ -626,7 +897,13 @@ export interface VistaDoPiloto {
   /** O enigma dos botões resolvido; os botões apertados agora (ordem da grade). */
   placasResolvidas: boolean;
   bauAberto: boolean;
-  bichos: { tipo: TipoDoBicho; x: number; y: number; z: number; estado: EstadoDoBicho }[];
+  bichos: {
+    tipo: TipoDoBicho;
+    x: number;
+    y: number;
+    z: number;
+    estado: EstadoDoBicho;
+  }[];
 }
 
 /** Aperta as setas na direção de (x, y), pelo caminho. Devolve a distância. */
@@ -747,8 +1024,7 @@ export function piloto(v: VistaDoPiloto, cmd: Comandos) {
     return;
   }
   // 5. a próxima porta
-  const lado: Lado | undefined =
-    sala.id === 2 ? (v.temCenoura ? 'n' : 'o') : sala.id === 3 ? 'l' : sala.portas.n ? 'n' : undefined;
+  const lado: Lado | undefined = sala.id === 2 ? (v.temCenoura ? 'n' : 'o') : sala.id === 3 ? 'l' : sala.portas.n ? 'n' : undefined;
   if (!lado) return;
   const [pc, pl] = PORTA[lado];
   if (m.abertas.includes(lado)) {

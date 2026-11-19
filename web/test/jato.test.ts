@@ -211,3 +211,28 @@ test('na sala, toda posição do piloto automático honesto passa na conferênci
     assert.equal(recusadas, 0, `${def.id}: ${recusadas} de ${mandadas} posições recusadas`);
   }
 });
+
+test('a dificuldade das naves do computador: o médio é o caminho de sempre (o da sala), o difícil chega antes do fácil', () => {
+  for (const def of PISTAS_DO_JATO) {
+    const p = pistas.get(def.id)!;
+    const media = (rs: { chegada: number }[]) => rs.reduce((s, r) => s + r.chegada, 0) / rs.length;
+    const padrao = criarRobos(p, 11), medio = criarRobos(p, 11, undefined, 'medio');
+    assert.deepEqual(padrao.map((r) => r.chegada), medio.map((r) => r.chegada), `${def.id}: o médio é o de sempre`);
+    const facil = criarRobos(p, 11, undefined, 'facil'), dificil = criarRobos(p, 11, undefined, 'dificil');
+    assert.ok(media(dificil) < media(medio) && media(medio) < media(facil), `${def.id}: ${media(dificil)} < ${media(medio)} < ${media(facil)}`);
+    assert.ok(dificil.every((r) => r.chegada < 60 * 60 * 4), `${def.id}: no difícil todas chegam`);
+  }
+});
+
+test('o golpe de lado: o robô empurrado perde velocidade e chega depois, e o caminho antes do golpe não muda', async () => {
+  const { golpear } = await import('../src/jato/robos');
+  const p = pistas.get('cidade-1')!;
+  const [r] = criarRobos(p, 1);
+  const antes = Array.from(r.s.slice(0, 600));
+  const chegada = r.chegada;
+  golpear(p, r, 600, 1);
+  assert.deepEqual(Array.from(r.s.slice(0, 599)), antes.slice(0, 599), 'o passado fica');
+  assert.ok(r.chegada > chegada, `chega depois (${r.chegada} contra ${chegada})`);
+  assert.ok(r.s[620] - r.s[619] < antes[599] - antes[598], 'mais devagar logo depois');
+  assert.ok(r.chegada < 60 * 60 * 4, 'e ainda chega');
+});

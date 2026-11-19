@@ -1,4 +1,4 @@
-import { CAMINHOS, copiar, liberar, passo, primeiroDaFila, naFila, travado, type Estado } from './sim';
+import { copiar, liberar, paradaDe, passo, primeiroDaFila, naFila, travado, ENTRADAS, type Estado } from './sim';
 
 /**
  * O PILOTO AUTOMÁTICO do Trânsito da toca: serve aos testes (um minuto sem batida) e ao e2e (window.transitoPilotoAutomatico, só no
@@ -8,10 +8,10 @@ import { CAMINHOS, copiar, liberar, passo, primeiroDaFila, naFila, travado, type
 export function escolhaDoPiloto(e: Estado, horizonte = 150): number {
   if (travado(e)) return -1;
   const candidatas: { entrada: number; peso: number }[] = [];
-  for (let entrada = 0; entrada < 4; entrada++) {
+  for (const entrada of ENTRADAS[e.mapa]) {
     const c = primeiroDaFila(e, entrada);
-    if (!c || c.s < CAMINHOS[c.caminho].parada - 0.4) continue;
-    candidatas.push({ entrada, peso: naFila(e, entrada) + (c.tipo === 'ambulancia' ? 3 : 0) });
+    if (!c || c.s < paradaDe(c) - 0.4) continue;
+    candidatas.push({ entrada, peso: naFila(e, entrada) + (c.tipo === 'ambulancia' ? 3 : c.tipo === 'caminhao' ? 1 : 0) });
   }
   candidatas.sort((a, b) => b.peso - a.peso || a.entrada - b.entrada);
   for (const { entrada } of candidatas) if (seguro(e, entrada, horizonte)) return entrada;

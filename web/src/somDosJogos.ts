@@ -39,6 +39,19 @@ export type Efeito =
   | 'rangido'
   | 'quebra'
   | 'chiado'
+  // 19/11/2026 (a auditoria): o impacto e os avisos que faltavam aos jogos de ação e às corridas
+  | 'impacto'
+  | 'derrota'
+  | 'dano'
+  | 'explosao'
+  | 'turbo'
+  | 'item'
+  | 'cura'
+  | 'largada'
+  | 'alarme'
+  | 'medalha'
+  | 'desliza'
+  | 'torcida'
   | 'fim';
 
 const CHAVE = 'syden:somDosJogos';
@@ -226,6 +239,56 @@ export function tocar(efeito: Efeito) {
     case 'chiado':
       ruido(a, 0.45, 5200, 0.35, 0, 'highpass');
       ruido(a, 0.3, 2400, 0.25, 0.12, 'bandpass');
+      break;
+    // 19/11/2026 (a auditoria dos mini-games): o golpe que pesa, o bicho que vira fumaça, o golpe levado, a explosão, o turbo,
+    // pegar item, curar, o bipe do semáforo (o último, mais agudo, é 'chegada'), o alarme da pilha alta, a medalha e o deslizar
+    case 'impacto':
+      ruido(a, 0.08, 500, 1);
+      nota(a, 'sine', 140, 45, 0.16, 0.9);
+      nota(a, 'square', 90, 60, 0.06, 0.25);
+      break;
+    case 'derrota':
+      ruido(a, 0.28, 1400, 0.55, 0, 'bandpass');
+      nota(a, 'triangle', 600, 150, 0.26, 0.4);
+      break;
+    case 'dano':
+      nota(a, 'square', 330, 110, 0.18, 0.35);
+      ruido(a, 0.06, 1200, 0.5);
+      break;
+    case 'explosao':
+      ruido(a, 0.5, 380, 1);
+      ruido(a, 0.2, 2200, 0.4, 0.02);
+      nota(a, 'sine', 90, 35, 0.45, 0.9);
+      break;
+    case 'turbo':
+      nota(a, 'sawtooth', 200, 700, 0.35, 0.16);
+      ruido(a, 0.3, 3000, 0.25, 0.04, 'bandpass');
+      break;
+    case 'item':
+      [880, 1175, 1568].forEach((f, i) => nota(a, 'square', f, f, 0.06, 0.2, i * 0.045));
+      break;
+    case 'cura':
+      [523, 659, 784, 1047].forEach((f, i) => nota(a, 'sine', f, f, 0.12, 0.45, i * 0.06));
+      break;
+    case 'largada':
+      nota(a, 'square', 440, 440, 0.16, 0.3);
+      break;
+    case 'alarme':
+      nota(a, 'square', 880, 880, 0.09, 0.22);
+      nota(a, 'square', 660, 660, 0.09, 0.22, 0.12);
+      break;
+    case 'medalha':
+      [784, 988, 1175, 1568].forEach((f, i) => nota(a, 'triangle', f, f, i === 3 ? 0.45 : 0.1, 0.45, i * 0.08));
+      ruido(a, 0.3, 7000, 0.15, 0.3, 'highpass');
+      break;
+    case 'desliza':
+      ruido(a, 0.12, 1800, 0.3, 0, 'bandpass');
+      break;
+    // a torcida do gol (o Futebol, 19/11/2026): um "ôôô" de ruído que cresce e some, e umas palmas por cima
+    case 'torcida':
+      ruido(a, 1.4, 900, 0.45, 0, 'bandpass');
+      ruido(a, 1.1, 1500, 0.3, 0.15, 'bandpass');
+      for (let i = 0; i < 6; i++) ruido(a, 0.04, 3000, 0.35, 0.2 + i * 0.13, 'highpass');
       break;
     case 'fim':
       [784, 659, 784, 1047].forEach((f, i) => nota(a, 'triangle', f, f, i === 3 ? 0.4 : 0.14, 0.45, i * 0.13));

@@ -6,7 +6,7 @@
  */
 import { FOLHAS_DOS_BICHOS } from '../briga/folhasDosBichos';
 import { chave } from '../i18n';
-import { ESPECIES, LARGURA_DO_MAPA, ALTURA_DO_MAPA, MAPA, type Elemento } from './regras';
+import { ESPECIES, LARGURA_DO_MAPA, ALTURA_DO_MAPA, mapaDe, type Elemento } from './regras';
 
 export const CASA_PX = 16;
 export const LARGURA_PX = LARGURA_DO_MAPA * CASA_PX;
@@ -127,15 +127,22 @@ function porta(g: CanvasRenderingContext2D, px: number, py: number) {
   g.fillRect(px + 10, py + 10, 1, 1);
 }
 
-/** O campo inteiro, desenhado uma vez numa imagem (ele não muda). */
-export function desenharCampo(): HTMLCanvasElement {
+/** As cores das casas: a de descansar (telhado vermelho), a do desafio (azul, com a bandeira) e a lojinha (verde, com a placa). */
+const TELHADOS: Record<string, [string, 'casa' | 'desafio' | 'loja']> = { H: ['#c4523f', 'casa'], C: ['#3f6fb0', 'desafio'], L: ['#4f8f4a', 'loja'] };
+
+/** Cada tela do mapa, desenhada uma vez numa imagem (ela não muda). */
+const campos = new Map<string, HTMLCanvasElement>();
+export function desenharCampo(mapa = 'campo'): HTMLCanvasElement {
+  const pronto = campos.get(mapa);
+  if (pronto) return pronto;
+  const linhas = mapaDe(mapa).linhas;
   const c = document.createElement('canvas');
   c.width = LARGURA_PX;
   c.height = ALTURA_PX;
   const g = c.getContext('2d')!;
   for (let y = 0; y < ALTURA_DO_MAPA; y++) {
     for (let x = 0; x < LARGURA_DO_MAPA; x++) {
-      const k = MAPA[y][x];
+      const k = linhas[y][x];
       const px = x * CASA_PX;
       const py = y * CASA_PX;
       if (k === '"' || k === ';') mato(g, px, py, k === ';');
@@ -162,22 +169,84 @@ export function desenharCampo(): HTMLCanvasElement {
       }
     }
   }
-  // as casas por cima, cada uma no retângulo das paredes dela
-  const retangulo = (letra: string) => {
-    let x0 = 99, y0 = 99, x1 = -1, y1 = -1;
-    MAPA.forEach((linha, y) => [...linha].forEach((k, x) => {
-      if (k === letra || k === letra.toLowerCase()) {
-        x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y);
+  // as casas por cima: cada pedaço ligado das paredes de uma letra (com a porta dela, em minúscula) é uma casa
+  const visto = new Set<string>();
+  for (let y = 0; y < ALTURA_DO_MAPA; y++) {
+    for (let x = 0; x < LARGURA_DO_MAPA; x++) {
+      const letra = linhas[y][x].toUpperCase();
+      if (!TELHADOS[letra] || visto.has(`${x},${y}`)) continue;
+      let x0 = x, y0 = y, x1 = x, y1 = y;
+      const fila = [[x, y]];
+      visto.add(`${x},${y}`);
+      while (fila.length) {
+        const [cx, cy] = fila.pop()!;
+        x0 = Math.min(x0, cx); y0 = Math.min(y0, cy); x1 = Math.max(x1, cx); y1 = Math.max(y1, cy);
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+          const nx = cx + dx, ny = cy + dy;
+          if (ny < 0 || ny >= ALTURA_DO_MAPA || nx < 0 || nx >= LARGURA_DO_MAPA || visto.has(`${nx},${ny}`)) continue;
+          if (linhas[ny][nx].toUpperCase() !== letra) continue;
+          visto.add(`${nx},${ny}`);
+          fila.push([nx, ny]);
+        }
       }
-    }));
-    return { x0, y0, w: x1 - x0 + 1, h: y1 - y0 + 1 };
-  };
-  for (const [letra, telhado, desafio] of [['H', '#c4523f', false], ['C', '#3f6fb0', true]] as const) {
-    const r = retangulo(letra);
-    casa(g, r.x0 * CASA_PX, r.y0 * CASA_PX, r.w, r.h, telhado, desafio);
+      const [telhado, tipo] = TELHADOS[letra];
+      casa(g, x0 * CASA_PX, y0 * CASA_PX, x1 - x0 + 1, y1 - y0 + 1, telhado, tipo === 'desafio');
+      if (tipo === 'loja') {
+        // a placa da lojinha: uma cenoura e uma xícara, sem texto
+        const px = x0 * CASA_PX + ((x1 - x0 + 1) * CASA_PX) / 2 - 10;
+        const py = y0 * CASA_PX + (y1 - y0 + 1) * CASA_PX * 0.45 - 4;
+        g.fillStyle = '#7a4f2c';
+        g.fillRect(px - 1, py - 1, 22, 9);
+        g.fillStyle = '#f0e2c4';
+        g.fillRect(px, py, 20, 7);
+        desenharAchado(g, 'cenoura', px + 5, py + 6, 0.6);
+        desenharAchado(g, 'cha', px + 15, py + 6, 0.6);
+      }
+    }
   }
-  MAPA.forEach((linha, y) => [...linha].forEach((k, x) => (k === 'h' || k === 'c') && porta(g, x * CASA_PX, y * CASA_PX)));
+  linhas.forEach((linha, y) => [...linha].forEach((k, x) => 'hcl'.includes(k) && porta(g, x * CASA_PX, y * CASA_PX)));
+  campos.set(mapa, c);
   return c;
+}
+
+/** Um achado no chão (a cenoura, o chá, as moedas), com o pé em (x, y). */
+export function desenharAchado(g: CanvasRenderingContext2D, item: string, x: number, y: number, escala = 1) {
+  g.save();
+  g.translate(Math.round(x), Math.round(y));
+  g.scale(escala, escala);
+  if (item === 'cenoura') {
+    g.fillStyle = '#e8792b';
+    g.beginPath();
+    g.moveTo(-3, -9);
+    g.lineTo(3, -9);
+    g.lineTo(0, 0);
+    g.closePath();
+    g.fill();
+    g.fillStyle = '#4f9a4a';
+    g.fillRect(-2, -12, 1, 3);
+    g.fillRect(0, -13, 1, 4);
+    g.fillRect(2, -12, 1, 3);
+  } else if (item === 'cha') {
+    g.fillStyle = '#fff3d8';
+    g.fillRect(-4, -7, 7, 6);
+    g.fillRect(3, -6, 2, 3);
+    g.fillStyle = '#b8743a';
+    g.fillRect(-3, -6, 5, 2);
+    g.fillStyle = '#c8b28a';
+    g.fillRect(-5, -1, 9, 1);
+  } else {
+    g.fillStyle = '#b8862a';
+    g.beginPath();
+    g.arc(0, -4, 4, 0, Math.PI * 2);
+    g.fill();
+    g.fillStyle = '#f2c84b';
+    g.beginPath();
+    g.arc(0, -4, 3, 0, Math.PI * 2);
+    g.fill();
+    g.fillStyle = '#fff3a8';
+    g.fillRect(-1, -6, 1, 2);
+  }
+  g.restore();
 }
 
 /**
@@ -187,6 +256,9 @@ export function desenharCampo(): HTMLCanvasElement {
 export const NOMES_DOS_GOLPES = [
   chave('Investida'), chave('Semente'), chave('Cipó'), chave('Fogo'), chave('Vulcão'), chave('Chuva'), chave('Onda'),
   chave('Pedrada'), chave('Avalanche'), chave('Sopro'), chave('Tornado'), chave('Choque'), chave('Raio'),
+  // os de 19/11/2026
+  chave('Espinho'), chave('Pólen'), chave('Raiz'), chave('Calor'), chave('Labareda'), chave('Neblina'), chave('Orvalho'),
+  chave('Casca'), chave('Tremor'), chave('Rajada'), chave('Assobio'), chave('Estalo'), chave('Carga'),
 ];
 
 // ---------------- OS BICHOS ----------------
@@ -206,6 +278,49 @@ function folha(desenho: string): HTMLImageElement | null {
   return img.complete && img.naturalWidth ? img : null;
 }
 
+/**
+ * A FORMA CRESCIDA QUE USA A MESMA FOLHA (19/11/2026): a folha com as cores giradas no círculo (`matiz`, em graus), feita uma vez
+ * por código, pixel a pixel, e guardada. Sem arte nova: é a mesma folha da Briga, de outra cor.
+ */
+const recoloridas = new Map<string, HTMLCanvasElement | null>();
+function folhaRecolorida(desenho: string, matiz: number): HTMLCanvasElement | HTMLImageElement | null {
+  const img = folha(desenho);
+  if (!img || !matiz) return img;
+  const chaveDaCor = desenho + '@' + matiz;
+  if (recoloridas.has(chaveDaCor)) return recoloridas.get(chaveDaCor) ?? img;
+  let saida: HTMLCanvasElement | null = null;
+  try {
+    const c = document.createElement('canvas');
+    c.width = img.naturalWidth;
+    c.height = img.naturalHeight;
+    const g = c.getContext('2d', { willReadFrequently: true })!;
+    g.drawImage(img, 0, 0);
+    const dados = g.getImageData(0, 0, c.width, c.height);
+    const p = dados.data;
+    // a rotação da cor em volta do eixo do cinza (a mesma do hue-rotate do CSS): o claro e o escuro ficam
+    const a = (matiz * Math.PI) / 180;
+    const cos = Math.cos(a), sen = Math.sin(a);
+    const m = [
+      0.213 + cos * 0.787 - sen * 0.213, 0.715 - cos * 0.715 - sen * 0.715, 0.072 - cos * 0.072 + sen * 0.928,
+      0.213 - cos * 0.213 + sen * 0.143, 0.715 + cos * 0.285 + sen * 0.14, 0.072 - cos * 0.072 - sen * 0.283,
+      0.213 - cos * 0.213 - sen * 0.787, 0.715 - cos * 0.715 + sen * 0.715, 0.072 + cos * 0.928 + sen * 0.072,
+    ];
+    for (let i = 0; i < p.length; i += 4) {
+      if (!p[i + 3]) continue;
+      const r = p[i], gg = p[i + 1], b = p[i + 2];
+      p[i] = m[0] * r + m[1] * gg + m[2] * b;
+      p[i + 1] = m[3] * r + m[4] * gg + m[5] * b;
+      p[i + 2] = m[6] * r + m[7] * gg + m[8] * b;
+    }
+    g.putImageData(dados, 0, 0);
+    saida = c;
+  } catch {
+    saida = null;
+  }
+  recoloridas.set(chaveDaCor, saida);
+  return saida ?? img;
+}
+
 /** Pede de antemão as folhas destes bichos (a escolha do primeiro, a equipe). */
 export function carregarBichos(especies: string[]) {
   for (const e of especies) if (ESPECIES[e]) folha(ESPECIES[e].desenho);
@@ -220,7 +335,9 @@ export type PoseDoBicho = 'parado' | 'golpe' | 'dor' | 'dormindo';
 export function desenharBicho(g: CanvasRenderingContext2D, especie: string, sx: number, sy: number, lado: number, escala: number, pose: PoseDoBicho, tempo: number) {
   const desenho = ESPECIES[especie]?.desenho;
   const f = desenho ? FOLHAS_DOS_BICHOS[desenho] : undefined;
-  const img = desenho ? folha(desenho) : null;
+  const especieDados = ESPECIES[especie];
+  const img = desenho ? folhaRecolorida(desenho, especieDados?.matiz ?? 0) : null;
+  escala *= especieDados?.escala ?? 1;
   // a sombra no chão
   g.fillStyle = 'rgba(30,40,20,0.25)';
   g.beginPath();
@@ -247,7 +364,7 @@ export function desenharBicho(g: CanvasRenderingContext2D, especie: string, sx: 
 }
 
 /** A altura do bicho na folha, para pôr o nome e a vida em cima. */
-export const alturaDoBicho = (especie: string) => FOLHAS_DOS_BICHOS[ESPECIES[especie]?.desenho ?? '']?.alto ?? 40;
+export const alturaDoBicho = (especie: string) => (FOLHAS_DOS_BICHOS[ESPECIES[especie]?.desenho ?? '']?.alto ?? 40) * (ESPECIES[especie]?.escala ?? 1);
 
 /** O fundo da luta: o céu, os morros, e os dois tablados de grama onde os bichos ficam. */
 export function desenharFundoDaLuta(g: CanvasRenderingContext2D, w: number, h: number, desafio: boolean) {

@@ -21,6 +21,8 @@ const COR_DO_PREDIO: Record<TipoPredio, string> = {
   muralha: '#8c8c88',
   portao: '#7a6a58',
   maravilha: '#e8d79a',
+  ferreiro: '#6f6a74',
+  mercado: '#c2a24e',
 };
 
 export class Vista2D implements Vista {
@@ -92,6 +94,12 @@ export class Vista2D implements Vista {
         g.fillStyle = (x + y) % 2 ? '#7aa65a' : '#76a157';
         g.fillRect(p.x, p.y, e + 0.5, e + 0.5);
       }
+    // a água dos lagos
+    g.fillStyle = '#4f86b8';
+    for (const a of this.sim.agua) {
+      const s = this.paraTela(a.gx, a.gy);
+      g.fillRect(s.x, s.y, e + 0.5, e + 0.5);
+    }
     for (const p of this.sim.pedras) {
       const s = this.paraTela(p.gx, p.gy);
       g.fillStyle = '#8b8577';

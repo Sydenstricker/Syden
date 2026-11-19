@@ -17,16 +17,29 @@ test('as duas cópias das contas são iguais byte a byte', () => {
   assert.ok(doSite.equals(doServidor), 'web/src/arena/conta.ts e server/src/arena/conta.ts diferem');
 });
 
-test('os kits: cada elemento tem os quatro golpes, e o forte e o especial são zonas com aviso', () => {
+test('os kits: cada elemento tem os quatro golpes, e o forte e o especial são próprios de cada um (19/11/2026)', () => {
+  const assinaturas = new Set<string>();
   for (const el of C.ELEMENTOS_DA_ARENA) {
     const k = C.KITS[el];
     assert.ok(k, el);
     for (const tecla of C.TECLAS_DE_GOLPE) assert.ok(k[tecla].dano > 0, `${el} ${tecla}`);
     assert.equal(k.b.forma, 'tiro');
-    assert.equal(k.q.forma, 'zona');
-    assert.ok(k.q.aviso >= 500, 'o golpe forte avisa');
-    assert.equal(k.e.forma, 'zona');
+    for (const g of [k.q, k.e]) {
+      if (g.forma === 'zona') assert.ok(g.aviso >= 400, `${el}: a zona avisa`);
+      assert.ok(C.alcanceDoGolpe(g) > 0);
+    }
+    // (o leque conta as três balas)
+    assert.ok(k.e.dano * Math.max(1, k.e.balas) > k.q.dano, `${el}: o especial vale mais que o forte`);
+    assinaturas.add(JSON.stringify([k.q, k.e]));
   }
+  assert.equal(assinaturas.size, C.ELEMENTOS_DA_ARENA.length, 'nenhum elemento repete o forte e o especial de outro');
+  // o chão: a lama segura nas poças, o gelo escorrega, e nenhum passa da velocidade
+  const [px, py] = C.POCAS_DE_LAMA[0];
+  assert.equal(C.velDoChao('lama', px, py), C.LAMA_SEGURA);
+  assert.equal(C.velDoChao('grama', px, py), 1);
+  const [vx] = C.seguirVelocidade('gelo', 0, 0, C.VEL, 0, 1 / 60);
+  assert.ok(vx > 0 && vx < C.VEL / 4, 'no gelo, a velocidade vem aos poucos');
+  assert.deepEqual(C.seguirVelocidade('grama', 0, 0, C.VEL, 0, 1 / 60), [C.VEL, 0]);
   // os pontos dos suprimentos estão à mesma distância do centro, e nenhum dentro de um obstáculo
   const ds = C.PONTOS_DE_SUPRIMENTO.map(([x, y]) => Math.hypot(x - C.MUNDO_W / 2, y - C.MUNDO_H / 2));
   assert.ok(Math.max(...ds) - Math.min(...ds) < 1);

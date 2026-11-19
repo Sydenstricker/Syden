@@ -17,6 +17,9 @@ import {
   DOMINIO_MAX,
   foraDoCentro,
   forcaDaCarga,
+  subidaDaCarga,
+  ALTURA_DO_CORPO,
+  FRENTE_DO_ALTO,
   frenteDe,
   NADA,
   novoMundo,
@@ -46,7 +49,7 @@ export interface Quadro {
   sa: 0 | 1;
   g: [number, number];
   fim: 0 | 1;
-  /** x, y, vx, vy, dono, versão, proteção */
+  /** x, y, vx, vy, dono, versão, proteção, altura, subida */
   b: number[];
   /** id, x, y, vx, vy, fx, fy, carga, tonto, eco */
   j: number[][];
@@ -210,14 +213,14 @@ export class ClienteDaSala {
     }
     // A BOLA
     const bola = this.vista.bola;
-    const [bx, by, bvx, bvy, dono, versao] = q.b;
+    const [bx, by, bvx, bvy, dono, versao, , bz = 0, bvz = 0] = q.b;
     bola.versao = versao;
-    let alvo: { x: number; y: number; vx: number; vy: number; dono: number };
+    let alvo: { x: number; y: number; vx: number; vy: number; dono: number; z?: number; vz?: number };
     const eu = this.eu;
     if (this.previsto && agora - this.previsto.em > PREVISAO_MS) this.previsto = null;
     if (eu && this.previsto) {
       const p = this.previsto.bola;
-      alvo = { x: p.x, y: p.y, vx: p.vx, vy: p.vy, dono: 0 };
+      alvo = { x: p.x, y: p.y, vx: p.vx, vy: p.vy, dono: 0, z: p.z, vz: p.vz };
     } else if (eu && (dono === eu.id || (dono === 0 && this.posseAte > agora))) {
       const [x, y] = frenteDe(eu);
       alvo = { x, y, vx: eu.vx, vy: eu.vy, dono: eu.id };
@@ -229,9 +232,9 @@ export class ClienteDaSala {
       // solta: a do último quadro, andada até "agora mais a ida da rede"
       const alvoPasso = this.base === null ? q.n : (agora - this.base + this.latencia) / MS_POR_PASSO;
       const k = Math.max(0, Math.min(40, Math.round(alvoPasso - q.n)));
-      const tmp = { bola: { ...bola, x: bx, y: by, vx: bvx, vy: bvy, dono: 0 }, eventos: [] } as unknown as Mundo;
+      const tmp = { bola: { ...bola, x: bx, y: by, vx: bvx, vy: bvy, z: bz, vz: bvz, dono: 0 }, eventos: [] } as unknown as Mundo;
       for (let i = 0; i < k; i++) passoDaBola(tmp, false);
-      alvo = { x: tmp.bola.x, y: tmp.bola.y, vx: tmp.bola.vx, vy: tmp.bola.vy, dono: 0 };
+      alvo = { x: tmp.bola.x, y: tmp.bola.y, vx: tmp.bola.vx, vy: tmp.bola.vy, dono: 0, z: tmp.bola.z, vz: tmp.bola.vz };
     }
     if (dono !== 0 && eu && dono !== eu.id) this.posseAte = 0;
     // o desvio: a bola mostrada não pula quando muda de onde vem (só na volta ao meio, que é um pulo de verdade)
@@ -252,12 +255,14 @@ export class ClienteDaSala {
     bola.y = alvo.y;
     bola.vx = alvo.vx;
     bola.vy = alvo.vy;
+    bola.z = alvo.z ?? 0;
+    bola.vz = alvo.vz ?? 0;
     bola.dono = alvo.dono;
   }
 
-  /** Onde a bola é desenhada (com o desvio). */
-  bolaNaTela(): { x: number; y: number } {
-    return this.mostrada ?? { x: this.vista.bola.x, y: this.vista.bola.y };
+  /** Onde a bola é desenhada (com o desvio), e a altura dela. */
+  bolaNaTela(): { x: number; y: number; z: number } {
+    return { ...(this.mostrada ?? { x: this.vista.bola.x, y: this.vista.bola.y }), z: this.vista.bola.z ?? 0 };
   }
 
   /** Um passo do MEU coelho (60 por segundo). */
@@ -289,15 +294,19 @@ export class ClienteDaSala {
     // o chute (soltar depois de segurar) e o passe
     if (c.chute) {
       if (eu.carga < CARGA_MAX) eu.carga++;
+      if (c.alto) eu.alto = true;
     } else if (eu.carga > 0) {
       const forca = forcaDaCarga(eu.carga);
+      // o chute alto (19/11/2026): mais devagar para a frente, e sobe
+      const vz = eu.alto ? subidaDaCarga(eu.carga) : 0;
       eu.carga = 0;
-      if (podeChutar(this.vista, eu)) this.chutar(vetorDoChute(eu, forca), false, agora);
+      eu.alto = false;
+      if (podeChutar(this.vista, eu)) this.chutar(vetorDoChute(eu, vz ? forca * FRENTE_DO_ALTO : forca), false, agora, vz);
     }
     if (c.passe && eu.carga === 0 && podeChutar(this.vista, eu)) this.chutar(vetorDoPasse(this.vista, eu), true, agora);
     // encostou na bola solta como ela está na tela: fica com ela na hora, esperando o servidor
     const b = this.vista.bola;
-    if (!this.previsto && b.dono === 0 && eu.semDominio === 0 && !(this.vista.centro && eu.time !== this.vista.saida)) {
+    if (!this.previsto && b.dono === 0 && (b.z ?? 0) <= ALTURA_DO_CORPO && eu.semDominio === 0 && !(this.vista.centro && eu.time !== this.vista.saida)) {
       const dx = b.x - eu.x;
       const dy = b.y - eu.y;
       if (dx * dx + dy * dy <= ALCANCE * ALCANCE && b.vx * b.vx + b.vy * b.vy <= DOMINIO_MAX * DOMINIO_MAX) {
@@ -313,13 +322,13 @@ export class ClienteDaSala {
     }
   }
 
-  private chutar([vx, vy]: [number, number], passe: boolean, agora: number) {
+  private chutar([vx, vy]: [number, number], passe: boolean, agora: number, vz = 0) {
     const eu = this.eu!;
     const s = ++this.seq;
-    this.enviar({ tipo: 'chute', x: eu.x, y: eu.y, vx, vy, fx: eu.fx, fy: eu.fy, passe, s });
+    this.enviar({ tipo: 'chute', x: eu.x, y: eu.y, vx, vy, vz, fx: eu.fx, fy: eu.fy, passe, s });
     // a previsão: a bola sai daqui na hora, com a mesma conta do servidor
     const tmp = { bola: { ...this.vista.bola }, eventos: [] as unknown[] } as unknown as Mundo;
-    aplicarChute(tmp, eu, vx, vy, passe);
+    aplicarChute(tmp, eu, vx, vy, passe, vz);
     eu.semDominio = SEM_DOMINIO;
     this.previsto = { bola: tmp.bola, seq: s, em: agora };
     this.posseAte = 0;

@@ -3,16 +3,18 @@ import { Trophy } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { api } from './api';
-import { useT } from './i18n';
+import { chave, useT } from './i18n';
 import { comandoDaPausa, TelaDePausa, usePausaComEsc } from './pausaDosJogos';
 import { passosEmMs, tempoLegivel, type Comandos } from './corrida/fisica';
-import { rodarCorrida, TIPOS_DE_EVENTO, type EventoDeItem, type Item, type LinhaDaOrdem, type PosicaoDoRival, type Rival } from './corrida/laco';
+import { rodarCorrida, TIPOS_DE_EVENTO, type EventoDeItem, type Item, type LinhaDaClassificacao, type LinhaDaOrdem, type PosicaoDoRival, type Rival } from './corrida/laco';
 import { nomeDaPistaEm } from './corrida/nomes';
-import { COPAS, HORTA, linhaDaPista, MUNDO, PISTAS, pistaPorId, type DefinicaoDaPista } from './corrida/pista';
+import { COPAS, espelhar, HORTA, linhaDaPista, MUNDO, PISTAS, pistaPorId, type DefinicaoDaPista } from './corrida/pista';
+import { DIFICULDADES, PONTOS_DA_COPA, somarPontos, type Dificuldade, type PontosNaCopa } from './corrida/robos';
 import { H, pontoNoMapa, W } from './corrida/render';
 import type { Agir } from './Minijogo';
 import type { Partida } from './minijogos';
 import { Trofeus } from './Trofeus';
+import './corrida.css';
 
 /**
  * A CORRIDA DOS COELHOS (03/11/2026, pedido dele): kart de 16 bits. O coelho no kart é o mascote 3D renderizado em 24
@@ -267,8 +269,11 @@ export function EscolhaDaPista({ aoEscolher, aoVoltar }: { aoEscolher: (pista: s
 
 export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void }) {
   const t = useT();
-  const [fase, setFase] = useState<'largada' | 'correndo' | 'fim'>('largada');
+  const [fase, setFase] = useState<'largada' | 'correndo' | 'fim' | 'robos'>('largada');
   const [def, setDef] = useState<DefinicaoDaPista>(HORTA);
+  /** Contra o relógio (com os fantasmas, vale recorde) ou contra o computador (os robôs, uma pista ou uma copa; não vale). */
+  const [modo, setModo] = useState<'relogio' | 'robos'>('relogio');
+  const [contraRobos, setContraRobos] = useState<OpcoesContraRobos>({ escolha: HORTA.id, dificuldade: 'medio', espelho: false, rapida: false });
   const [recordes, setRecordes] = useState<Recorde[] | null>(null);
   const [escolhidos, setEscolhidos] = useState<Set<number>>(new Set());
   const [resultado, setResultado] = useState<Resultado | null>(null);
@@ -374,7 +379,23 @@ export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void
 
   return (
     <div className="corrida">
+      {fase === 'robos' && (
+        <CorridaContraRobos opcoes={contraRobos} eu={eu} meuAvatar={meuAvatar} aoEscolher={() => setFase('largada')} aoVoltar={aoVoltar} />
+      )}
       {fase === 'largada' && (
+        <div className="minijogo-abas corrida-modo" role="tablist">
+          <button type="button" role="tab" aria-selected={modo === 'relogio'} className={modo === 'relogio' ? 'ativa' : undefined} onClick={() => setModo('relogio')}>
+            ⏱ {t('Contra o relógio')}
+          </button>
+          <button type="button" role="tab" aria-selected={modo === 'robos'} className={modo === 'robos' ? 'ativa' : undefined} onClick={() => setModo('robos')}>
+            🤖 {t('Contra o computador')}
+          </button>
+        </div>
+      )}
+      {fase === 'largada' && modo === 'robos' && (
+        <EscolhaContraRobos opcoes={contraRobos} mudar={setContraRobos} aoComecar={() => setFase('robos')} aoVoltar={aoVoltar} />
+      )}
+      {fase === 'largada' && modo === 'relogio' && (
         <div className="corrida-largada">
           {/* a escolha da pista: o mapa de cada uma, e a escolhida em destaque */}
           <ul className="corrida-pistas" role="radiogroup">
@@ -436,7 +457,7 @@ export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void
         </div>
       )}
 
-      {fase !== 'largada' && (
+      {(fase === 'correndo' || fase === 'fim') && (
         <div className="corrida-tela" ref={tela} tabIndex={-1}>
           <canvas ref={canvas} width={W} height={H} />
           {fase === 'correndo' && <Placar placar={placar} voltas={def.voltas} />}
@@ -737,3 +758,252 @@ function CorridaDaSala({
     </>
   );
 }
+
+// =====================================================================================================================
+// CONTRA O COMPUTADOR (a aba Solo, 19/11/2026): sete robôs, uma pista ou uma copa, com os itens. Não vale recorde.
+// =====================================================================================================================
+
+export interface OpcoesContraRobos {
+  /** Uma pista (o id) ou uma copa (o id da copa). */
+  escolha: string;
+  dificuldade: Dificuldade;
+  /** As pistas viradas da esquerda para a direita. */
+  espelho: boolean;
+  /** A classe rápida (o teto 25% mais alto). */
+  rapida: boolean;
+}
+
+const ROBOS_NA_COPA = 7;
+const CLASSE_RAPIDA = 1.25;
+const NOME_DA_DIFICULDADE: Record<Dificuldade, string> = { facil: chave('Fácil'), medio: chave('Médio'), dificil: chave('Difícil') };
+
+function EscolhaContraRobos({
+  opcoes,
+  mudar,
+  aoComecar,
+  aoVoltar,
+}: {
+  opcoes: OpcoesContraRobos;
+  mudar: (o: OpcoesContraRobos) => void;
+  aoComecar: () => void;
+  aoVoltar: () => void;
+}) {
+  const t = useT();
+  return (
+    <div className="corrida-largada">
+      <ul className="corrida-pistas" role="radiogroup">
+        {PISTAS.map((p) => (
+          <li key={p.id}>
+            <button
+              type="button"
+              role="radio"
+              aria-checked={opcoes.escolha === p.id}
+              className={`corrida-pista-botao${opcoes.escolha === p.id ? ' escolhida' : ''}`}
+              onClick={() => mudar({ ...opcoes, escolha: p.id })}
+            >
+              <MapaDaPista def={opcoes.espelho ? espelhar(p) : p} lado={72} />
+              <strong>{nomeDaPistaEm(t, p.id)}</strong>
+            </button>
+          </li>
+        ))}
+        {Object.entries(COPAS).map(([copa, pistas]) => (
+          <li key={copa}>
+            <button
+              type="button"
+              role="radio"
+              aria-checked={opcoes.escolha === copa}
+              className={`corrida-pista-botao copa${opcoes.escolha === copa ? ' escolhida' : ''}`}
+              onClick={() => mudar({ ...opcoes, escolha: copa })}
+            >
+              <span className="corrida-copa-mapas" aria-hidden="true">
+                <Trophy size={40} />
+              </span>
+              <strong>{nomeDaPistaEm(t, copa)}</strong>
+              <small>{pistas.map((p) => nomeDaPistaEm(t, p)).join(' · ')}</small>
+            </button>
+          </li>
+        ))}
+      </ul>
+      <div className="minijogo-abas corrida-dificuldade" role="radiogroup" aria-label={t('Computador')}>
+        {DIFICULDADES.map((d) => (
+          <button key={d} type="button" role="radio" aria-checked={opcoes.dificuldade === d} className={opcoes.dificuldade === d ? 'ativa' : undefined} onClick={() => mudar({ ...opcoes, dificuldade: d })}>
+            {t(NOME_DA_DIFICULDADE[d])}
+          </button>
+        ))}
+      </div>
+      <div className="corrida-opcoes-robos">
+        <label>
+          <input type="checkbox" checked={opcoes.espelho} onChange={() => mudar({ ...opcoes, espelho: !opcoes.espelho })} /> 🪞 {t('Espelho')}
+        </label>
+        <label>
+          <input type="checkbox" checked={opcoes.rapida} onChange={() => mudar({ ...opcoes, rapida: !opcoes.rapida })} /> ⚡ {t('Classe rápida')}
+        </label>
+      </div>
+      <div className="corrida-pista-nome">
+        <ComandosDoJogo
+          itens={[
+            { teclas: ['setas'], rotulo: t('Dirigir') },
+            { teclas: ['espaco'], rotulo: t('Derrapar') },
+            { teclas: ['e'], rotulo: t('Usar o item') },
+            { teclas: ['q'], rotulo: t('Olhar para trás') },
+            comandoDaPausa(t),
+          ]}
+        />
+        <p className="settings-hint">{t('Acelere logo depois da terceira luz vermelha para sair com turbo.')}</p>
+      </div>
+      <div className="minijogo-acoes">
+        <button type="button" className="btn-primary" onClick={aoComecar}>
+          {t('Começar')}
+        </button>
+        <button type="button" className="btn-secondary" onClick={aoVoltar}>
+          {t('Outros jogos')}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function CorridaContraRobos({
+  opcoes,
+  eu,
+  meuAvatar,
+  aoEscolher,
+  aoVoltar,
+}: {
+  opcoes: OpcoesContraRobos;
+  eu: number;
+  meuAvatar: number | string | null;
+  aoEscolher: () => void;
+  aoVoltar: () => void;
+}) {
+  const t = useT();
+  const copa = COPAS[opcoes.escolha] ? opcoes.escolha : null;
+  const pistas = copa ? COPAS[copa] : [opcoes.escolha];
+  const [indice, setIndice] = useState(0);
+  /** Cada corrida (e cada "Jogar de novo") é um laço novo. */
+  const [rodada, setRodada] = useState(0);
+  const [fase, setFase] = useState<'correndo' | 'resultado'>('correndo');
+  const [classificacao, setClassificacao] = useState<LinhaDaClassificacao[] | null>(null);
+  const [pontos, setPontos] = useState<PontosNaCopa[]>([]);
+  const [placar, setPlacar] = usePlacar();
+  const [item, setItem] = useState<{ item: Item | null; usos: number }>({ item: null, usos: 0 });
+  const canvas = useRef<HTMLCanvasElement>(null);
+  const tela = useRef<HTMLDivElement>(null);
+  const controles = useControles(fase === 'correndo');
+  const { pausa, pausado, continuar } = usePausaComEsc(fase === 'correndo');
+  const base = pistaPorId(pistas[indice]);
+  const def = opcoes.espelho ? espelhar(base) : base;
+  const ultima = indice === pistas.length - 1;
+  const nomeDe = (l: { nome: string; eu: boolean }) => (l.eu ? t('você') : l.nome);
+
+  useEffect(() => {
+    if (fase !== 'correndo' || !canvas.current) return;
+    tela.current?.focus();
+    setItem({ item: null, usos: 0 });
+    return rodarCorrida({
+      canvas: canvas.current,
+      comandos: controles.comandos.current,
+      pista: def,
+      piloto: true,
+      pausa,
+      eu,
+      meuAvatar,
+      robos: { quantos: ROBOS_NA_COPA, dificuldade: opcoes.dificuldade },
+      classe: opcoes.rapida ? CLASSE_RAPIDA : 1,
+      itens: { eventos: [], aoEvento: () => {}, aoItem: (i, usos) => setItem({ item: i, usos }) },
+      contagem: CONTAGEM,
+      aoPlacar: setPlacar,
+      aoClassificacao: (lista) => {
+        setClassificacao(lista);
+        // os pontos da copa: 10, 8, 6, 5… pela posição desta corrida
+        setPontos((antes) => somarPontos(antes, lista));
+      },
+      aoChegar: () => setFase('resultado'),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fase === 'correndo', rodada, indice]);
+
+  const proxima = () => {
+    setClassificacao(null);
+    setIndice((i) => i + 1);
+    setFase('correndo');
+  };
+  const deNovo = () => {
+    setClassificacao(null);
+    setPontos([]);
+    setIndice(0);
+    setFase('correndo');
+    setRodada((r) => r + 1);
+  };
+  const minhaPosicao = classificacao ? classificacao.findIndex((l) => l.eu) : -1;
+  const acabou = fase === 'resultado' && (!copa || ultima);
+  const lugar = (i: number) => (acabou && i < 3 ? MEDALHAS[i] : i + 1);
+
+  return (
+    <>
+      {copa && (
+        <div className="corrida-copa-topo">
+          <strong>{nomeDaPistaEm(t, copa)}</strong>
+          <span>
+            {t('Rodada {n} de {total}', { n: indice + 1, total: pistas.length })} · {nomeDaPistaEm(t, base.id)}
+            {opcoes.espelho ? ' 🪞' : ''}
+          </span>
+        </div>
+      )}
+      <div className="corrida-tela" ref={tela} tabIndex={-1}>
+        <canvas ref={canvas} width={W} height={H} />
+        {fase === 'correndo' && <Placar placar={placar} voltas={def.voltas} />}
+        {fase === 'correndo' && <BotoesDeToque controles={controles} item={item.item} usos={item.usos} />}
+        {fase === 'correndo' && pausado && <TelaDePausa aoContinuar={continuar} icone={false} />}
+        {fase === 'resultado' && classificacao && (
+          <div className="corrida-fim">
+            {/* a corrida: a ordem de chegada, com o tempo de quem chegou antes de mim */}
+            {(!copa || !acabou) && (
+              <ol className="corrida-classificacao">
+                {classificacao.map((l, i) => (
+                  <li key={l.id} className={l.eu ? 'eu' : undefined}>
+                    <span className="corrida-posicao">{!copa ? lugar(i) : i + 1}</span>
+                    <span className="corrida-quem">{nomeDe(l)}</span>
+                    <span className="corrida-relogio">{l.passos !== null ? tempoLegivel(passosEmMs(l.passos)) : '…'}</span>
+                    {copa && <span className="corrida-pontos">+{PONTOS_DA_COPA[i] ?? 0}</span>}
+                  </li>
+                ))}
+              </ol>
+            )}
+            {/* a copa: os pontos somados, e no fim o pódio */}
+            {copa && (
+              <ol className="corrida-classificacao">
+                {pontos.map((l, i) => (
+                  <li key={l.id} className={l.eu ? 'eu' : undefined}>
+                    <span className="corrida-posicao">{lugar(i)}</span>
+                    <span className="corrida-quem">{nomeDe(l)}</span>
+                    <span className="corrida-pontos">{l.pontos}</span>
+                  </li>
+                ))}
+              </ol>
+            )}
+            {acabou && !copa && minhaPosicao >= 0 && minhaPosicao < 3 && <strong className="corrida-recorde">{MEDALHAS[minhaPosicao]}</strong>}
+            <div className="minijogo-acoes">
+              {copa && !ultima ? (
+                <button type="button" className="btn-primary" onClick={proxima}>
+                  {t('Próxima pista')}
+                </button>
+              ) : (
+                <button type="button" className="btn-primary" onClick={deNovo}>
+                  {t('Jogar de novo')}
+                </button>
+              )}
+              <button type="button" className="btn-secondary" onClick={aoEscolher}>
+                {t('Escolher a pista')}
+              </button>
+              <button type="button" className="btn-secondary" onClick={aoVoltar}>
+                {t('Outros jogos')}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+

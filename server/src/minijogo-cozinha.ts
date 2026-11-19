@@ -21,23 +21,36 @@
  *
  * O PÓDIO: com a turma (2 ou mais que ficaram até o fim), os três primeiros vão para a estante de troféus do quarto (pista
  * 'cozinha', os pontos sendo os pratos). No Solo, sem troféu.
+ *
+ * AS PLANTAS, A GORJETA, O RECORDE E O FOGO (19/11/2026, a auditoria dos mini-games):
+ * - Quem começa escolhe a PLANTA na largada (FOGO_DAS_PLANTAS: o servidor só conhece as estações de fogo de cada uma). Sem
+ *   escolha em 20 s, a da toca.
+ * - A GORJETA: o pedido entregue logo depois de aparecer na fila (pelo relógio daqui) dá pontos a mais (gorjetaDe). Só bônus.
+ * - O RECORDE DO SOLO, por planta, na tabela comum (solo_recordes): os pontos que ESTE servidor somou.
+ * - O FOGO ESQUECIDO: o que fica no fogo INCENDIO_MS depois de queimar pega fogo (pelo relógio daqui, com a folga a favor de
+ *   quem joga). O "tirei" do fogo em chamas é recusado; só o extintor ({ tipo: 'extintor', estacao }) o limpa, e o que estava
+ *   lá se perde. Os pratos sujos e a pia são só da cozinha da tela: o servidor confere o prato, não a louça.
  */
 import {
   DURACAO_MS,
-  ESTACOES_DE_FOGO,
+  FOGO_DAS_PLANTAS,
   FOLGA_DO_FOGO_MS,
+  PLANTAS_DA_COZINHA,
   PEDIDOS_NA_FILA,
   PONTO,
   RECEITAS,
   chave,
   confere,
+  emChamas,
   estadoNoFogo,
+  gorjetaDe,
   normalizarPrato,
   sortearPedidos,
   tempoInicialNoFogo,
   vaiAoFogo,
   type IdDaReceita,
   type Item,
+  type PlantaDaCozinha,
 } from './cozinha-receitas.js';
 import * as db from './db.js';
 import type { Definicao } from './minijogo-motor.js';
@@ -48,6 +61,8 @@ export const PREPARO_MS = 3000;
 export const INTERVALO_MIN_MS = 400;
 /** Quantos pedidos a partida sorteia (mais do que alguém entrega em 3 minutos). */
 export const PEDIDOS_DA_PARTIDA = 120;
+/** Quem começa tem isto para escolher a planta; depois, vai a da toca. */
+export const ESCOLHA_MS = 20_000;
 
 interface Cozinheiro {
   /** Os índices da sequência que estão na fila desta pessoa. */
@@ -55,6 +70,10 @@ interface Cozinheiro {
   proximo: number;
   pratos: number;
   pontos: number;
+  /** Os pontos de gorjeta (já somados em `pontos`). */
+  gorjetas: number;
+  /** Quando cada pedido apareceu na fila desta pessoa (o índice da sequência → o relógio daqui). */
+  entrou: Map<number, number>;
   ultimaEntrega: number;
   /** O que está no fogo agora (pela estação): o item como entrou e quando o tempo de fogo começou, no relógio daqui. */
   fogo: Map<number, { item: Item; desde: number }>;
@@ -76,12 +95,15 @@ export const cozinha: Definicao = criarCozinha();
 export function criarCozinha({ agora = Date.now, aleatorio = Math.random }: { agora?: () => number; aleatorio?: () => number } = {}): Definicao {
   return {
     minimo: 2,
-    comecar(ctx, { naSala }) {
+    comecar(ctx, { naSala, criadaPor, corpo }) {
       const inscritos = [...naSala];
       const solo = ctx.solo === true || inscritos.length === 1;
       const evento = `cozinha-${ctx.comunidade ?? 0}-${agora()}`;
       const pedidos: IdDaReceita[] = sortearPedidos(aleatorio, PEDIDOS_DA_PARTIDA);
-      let fase: 'preparando' | 'jogando' | 'fim' = 'preparando';
+      const pedida = PLANTAS_DA_COZINHA.includes(corpo.planta as PlantaDaCozinha) ? (corpo.planta as PlantaDaCozinha) : null;
+      let planta: PlantaDaCozinha = pedida ?? 'toca';
+      let fase: 'escolhendo' | 'preparando' | 'jogando' | 'fim' = pedida ? 'preparando' : 'escolhendo';
+      let recorde: { antes: number | null; novo: boolean } | null = null;
       let inicio = 0;
       const cozinheiros = new Map<number, Cozinheiro>(
         inscritos.map((id) => [
@@ -91,6 +113,8 @@ export function criarCozinha({ agora = Date.now, aleatorio = Math.random }: { ag
             proximo: PEDIDOS_NA_FILA,
             pratos: 0,
             pontos: 0,
+            gorjetas: 0,
+            entrou: new Map(),
             ultimaEntrega: -Infinity,
             fogo: new Map(),
             fichas: new Map(),
@@ -125,6 +149,13 @@ export function criarCozinha({ agora = Date.now, aleatorio = Math.random }: { ag
         if (fase === 'fim') return;
         fase = 'fim';
         const turma = new Set(presentes());
+        // o recorde do Solo: os pontos que este servidor somou, por planta
+        if (solo) {
+          const quem = inscritos[0];
+          const c = cozinheiros.get(quem)!;
+          if (turma.has(quem) && c.pontos > 0) recorde = db.guardarRecordeDoSolo(quem, 'cozinha', planta, c.pontos, false, { pratos: c.pratos });
+          else recorde = { antes: db.recordeDoSolo(quem, 'cozinha', planta)?.valor ?? null, novo: false };
+        }
         if (!solo && turma.size >= 2) {
           for (const l of placar()) {
             if (l.posicao === null || l.posicao > 3 || l.pratos <= 0) continue;
@@ -146,23 +177,36 @@ export function criarCozinha({ agora = Date.now, aleatorio = Math.random }: { ag
       const jogar = () => {
         fase = 'jogando';
         inicio = agora();
+        // a fila de começo aparece agora: a gorjeta conta daqui
+        for (const c of cozinheiros.values()) for (const i of c.fila) c.entrou.set(i, inicio);
         ctx.agendar(DURACAO_MS, () => terminar());
         ctx.avisar();
       };
 
-      ctx.agendar(PREPARO_MS, jogar);
+      const escolher = (p: PlantaDaCozinha) => {
+        if (fase !== 'escolhendo') return;
+        planta = p;
+        fase = 'preparando';
+        ctx.agendar(PREPARO_MS, jogar);
+        ctx.avisar();
+      };
+
+      if (fase === 'preparando') ctx.agendar(PREPARO_MS, jogar);
+      else ctx.agendar(ESCOLHA_MS, () => escolher('toca'));
 
       /** "Pus no fogo" e "tirei do fogo": o tempo é medido aqui, e o que sai no ponto vira ficha. */
       const fogo = (c: Cozinheiro, corpo: Record<string, unknown>): string | null => {
         // no "prepare-se" a tela pode adiantar uns milissegundos; depois do fim, nada
         if (fase === 'fim') return 'Esta rodada já acabou.';
         const estacao = corpo.estacao;
-        const tipo = typeof estacao === 'number' ? ESTACOES_DE_FOGO[estacao] : undefined;
+        const tipo = typeof estacao === 'number' ? FOGO_DAS_PLANTAS[planta][estacao] : undefined;
         if (typeof estacao !== 'number' || !tipo) return 'Lance inválido.';
         const agoraMs = agora();
         if (corpo.tirou === true) {
           const la = c.fogo.get(estacao);
           if (!la) return 'Lance inválido.';
+          // em chamas, só o extintor tira (a folga é a favor de quem joga: a chama começa mais tarde aqui)
+          if (emChamas(la.item, agoraMs - la.desde, FOLGA_DO_FOGO_MS)) return 'Lance inválido.';
           c.fogo.delete(estacao);
           if (estadoNoFogo(la.item, agoraMs - la.desde, FOLGA_DO_FOGO_MS) === 'cozido') {
             const k = chave({ ...la.item, estado: 'cozido' });
@@ -186,17 +230,41 @@ export function criarCozinha({ agora = Date.now, aleatorio = Math.random }: { ag
             fase,
             duracaoMs: DURACAO_MS,
             decorridoMs: fase === 'jogando' ? agora() - inicio : null,
-            meu: meu ? { fila: meu.fila.map((indice) => ({ indice, receita: pedidos[indice] })), pratos: meu.pratos, pontos: meu.pontos } : null,
+            meu: meu ? { fila: meu.fila.map((indice) => ({ indice, receita: pedidos[indice] })), pratos: meu.pratos, pontos: meu.pontos, gorjetas: meu.gorjetas } : null,
             placar: placar(),
             solo,
+            planta,
+            /** Quem escolhe a planta (na fase 'escolhendo'). */
+            escolhe: solo ? inscritos[0] : criadaPor,
+            /** No Solo, na escolha: o recorde de cada planta. */
+            recordes:
+              solo && fase === 'escolhendo' && quem === inscritos[0]
+                ? Object.fromEntries(db.recordesDoSolo(quem, 'cozinha').map((r) => [r.variante, r.valor]))
+                : null,
+            recorde,
             partidaId: evento,
           };
         },
         acao(quem, corpo) {
-          if (corpo.tipo !== 'entregar' && corpo.tipo !== 'fogo') return 'Ação desconhecida.';
+          if (corpo.tipo === 'planta') {
+            if (fase !== 'escolhendo') return 'Esta rodada já acabou.';
+            if (quem !== criadaPor && !(solo && inscritos.includes(quem))) return 'Você está assistindo esta partida.';
+            if (!PLANTAS_DA_COZINHA.includes(corpo.planta as PlantaDaCozinha)) return 'Ação desconhecida.';
+            escolher(corpo.planta as PlantaDaCozinha);
+            return null;
+          }
+          if (corpo.tipo !== 'entregar' && corpo.tipo !== 'fogo' && corpo.tipo !== 'extintor') return 'Ação desconhecida.';
           const c = cozinheiros.get(quem);
           if (!c) return 'Você está assistindo esta partida.';
+          if (fase === 'escolhendo') return 'Lance inválido.';
           if (corpo.tipo === 'fogo') return fogo(c, corpo);
+          if (corpo.tipo === 'extintor') {
+            // o extintor limpa a estação de fogo (o que estava lá se perde, sem ficha)
+            const estacao = corpo.estacao;
+            if (fase === 'fim' || typeof estacao !== 'number' || !FOGO_DAS_PLANTAS[planta][estacao] || !c.fogo.has(estacao)) return 'Lance inválido.';
+            c.fogo.delete(estacao);
+            return null;
+          }
           if (fase !== 'jogando') return 'Esta rodada já acabou.';
           const indice = corpo.pedido;
           const prato = normalizarPrato(corpo.prato);
@@ -211,9 +279,14 @@ export function criarCozinha({ agora = Date.now, aleatorio = Math.random }: { ag
           for (const k of cozidos) gastar(c.fichas, k);
           c.ultimaEntrega = agoraMs;
           c.fila = c.fila.filter((i) => i !== indice);
+          // a gorjeta: o quanto o pedido esperou na fila, no relógio daqui
+          const gorjeta = gorjetaDe(agoraMs - (c.entrou.get(indice) ?? inicio));
+          c.entrou.delete(indice);
+          c.entrou.set(c.proximo, agoraMs);
           c.fila.push(c.proximo++);
           c.pratos++;
-          c.pontos += RECEITAS[pedidos[indice]].pontos;
+          c.pontos += RECEITAS[pedidos[indice]].pontos + gorjeta;
+          c.gorjetas += gorjeta;
           ctx.avisar();
           return null;
         },

@@ -137,3 +137,81 @@ test('com o servidor de verdade e 100 ms de rede para cada lado, o piloto autom�
   assert.ok(cliente.latencia > 60 && cliente.latencia < 160, `a ida medida: ${cliente.latencia}`);
   assert.ok(eu.gols >= 0);
 });
+
+// ---------------------------------------------------------------------------------------------------------------------
+// 19/11/2026: a dificuldade dos robôs e o chute alto
+// ---------------------------------------------------------------------------------------------------------------------
+
+test('a dificuldade: o robô difícil corre mais que o fácil, e o normal é o de sempre', () => {
+  const corrida = (nivel: number) => {
+    const m = sim.novoMundo([[1], [-1]], nivel);
+    const r = m.jogadores.find((j) => j.id === -1)!;
+    for (let k = 0; k < 120; k++) sim.passoDoJogador(r, { dx: 1, dy: 0, chute: false, passe: false }, false, sim.NIVEIS_DO_ROBO[m.nivel].fator);
+    return r.vx;
+  };
+  assert.ok(corrida(0) < corrida(1) && corrida(1) < corrida(2));
+  assert.equal(sim.NIVEIS_DO_ROBO[1].fator, sim.FATOR_DO_ROBO);
+  assert.equal(sim.novoMundo([[1], [-1]]).nivel, 1);
+  assert.equal(sim.novoMundo([[1], [-1]], 7).nivel, 1);
+  // o piloto automático contra o fácil marca mais do que contra o difícil, numa série de partidas 1 × 1
+  let facil = 0;
+  let dificil = 0;
+  for (const nivel of [0, 2]) {
+    const m = sim.novoMundo([[1], [-1]], nivel);
+    while (!m.fim) sim.passoDoMundo(m, (j) => sim.comandoDoRobo(m, j));
+    if (nivel === 0) facil = m.placar[0] - m.placar[1];
+    else dificil = m.placar[0] - m.placar[1];
+  }
+  assert.ok(facil > dificil, `${facil} contra ${dificil}`);
+});
+
+test('o chute alto passa por cima de quem está no caminho, cai e quica; o rasteiro bate no corpo', () => {
+  const tiro = (alto: boolean) => {
+    const m = sim.novoMundo([[1], [-1]]);
+    m.pausa = 0;
+    m.centro = false;
+    const eu = m.jogadores.find((j) => j.id === 1)!;
+    const outro = m.jogadores.find((j) => j.id === -1)!;
+    eu.x = 200;
+    eu.y = sim.CY;
+    eu.fx = 1;
+    eu.fy = 0;
+    outro.x = 260;
+    outro.y = sim.CY;
+    m.bola.dono = 1;
+    const parado = { ...sim.NADA };
+    // carrega 30 passos e solta
+    for (let k = 0; k < 30; k++) sim.passoDoMundo(m, (j) => (j.id === 1 ? { ...parado, chute: true, alto } : parado));
+    sim.passoDoMundo(m, () => parado);
+    let maisAlta = 0;
+    let passou = false;
+    for (let k = 0; k < 120; k++) {
+      sim.passoDoMundo(m, () => parado);
+      maisAlta = Math.max(maisAlta, m.bola.z);
+      if (m.bola.x > outro.x + sim.ALCANCE) passou = true;
+    }
+    return { m, maisAlta, passou };
+  };
+  const alto = tiro(true);
+  assert.ok(alto.maisAlta > sim.ALTURA_DO_CORPO, `subiu ${alto.maisAlta}`);
+  assert.ok(alto.passou, 'passou por cima');
+  assert.equal(alto.m.bola.z, 0, 'caiu');
+  const rasteiro = tiro(false);
+  assert.equal(rasteiro.maisAlta, 0);
+  assert.ok(!rasteiro.passou || rasteiro.m.bola.ultimo === -1, 'o rasteiro bate no corpo ou é dominado');
+});
+
+test('o chute alto demais passa por cima do gol e bate no fundo', () => {
+  const m = sim.novoMundo([[1], [-1]]);
+  const b = m.bola;
+  b.x = sim.X1 - 20;
+  b.y = sim.CY;
+  b.vx = 4;
+  b.vy = 0;
+  b.z = sim.ALTURA_DO_GOL + 10;
+  b.vz = 2;
+  let gol = -1;
+  for (let k = 0; k < 20 && gol < 0; k++) gol = sim.passoDaBola(m, true);
+  assert.equal(gol, -1);
+  assert.ok(b.vx < 0, 'voltou do fundo');
+});

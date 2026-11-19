@@ -25,6 +25,10 @@ const PALETAS: Record<Tema, Paleta> = {
   lago: { grama: ['#7aa874', '#71a06b'], fora: ['#5b8a62', '#517e58'], parede: '#d2c09c', paredeSombra: '#968262', enfeite: '#e8d27a', pino: '#c4614e', pinoClaro: '#ead9c0' },
   porteira: { grama: ['#8aab62', '#81a15a'], fora: ['#7a6a4a', '#6e5f42'], parede: '#c4945c', paredeSombra: '#875f38', enfeite: '#e3b45a', pino: '#c4614e', pinoClaro: '#ead9c0' },
   raizes: { grama: ['#709b5d', '#679055'], fora: ['#5a4434', '#4f3b2d'], parede: '#9c7a58', paredeSombra: '#634a34', enfeite: '#b8a4c8', pino: '#b06a8a', pinoClaro: '#e8cfd8' },
+  // os três de 19/11/2026: o moinho (pedra clara), a ponte (madeira, à beira do rio) e o pomar (outono)
+  moinho: { grama: ['#7fa86a', '#77a062'], fora: ['#8c8478', '#7f776c'], parede: '#d6cbb8', paredeSombra: '#958a78', enfeite: '#e8c46a', pino: '#c4614e', pinoClaro: '#ead9c0' },
+  ponte: { grama: ['#80aa6c', '#78a265'], fora: ['#5f8f8a', '#55837e'], parede: '#b98a5a', paredeSombra: '#7d5a38', enfeite: '#f0e0a8', pino: '#c4614e', pinoClaro: '#ead9c0' },
+  pomar: { grama: ['#93a65c', '#8a9d54'], fora: ['#9a6a3e', '#8c5f37'], parede: '#c48a52', paredeSombra: '#85592f', enfeite: '#e0703a', pino: '#d0783a', pinoClaro: '#f0d8b0' },
 };
 
 export const COR_DA_AREIA = '#dcc38e';

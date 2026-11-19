@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import {
   BURACOS,
+  PERCURSOS,
   RAIO_BOLA,
   TACADAS_MAX,
   acabouOBuraco,
@@ -27,8 +28,9 @@ test('a física do minigolfe é o MESMO arquivo no site e no servidor, byte a by
   );
 });
 
-test('os seis buracos: a saída e o buraco dentro da mesa, e o piloto acerta todos dentro do limite', () => {
-  assert.equal(BURACOS.length, 6);
+test('os nove buracos (eram seis até 19/11/2026): a saída e o buraco dentro da mesa, e o piloto acerta todos dentro do limite', () => {
+  assert.equal(BURACOS.length, 9);
+  assert.deepEqual([...PERCURSOS], [6, 9]);
   for (const [i, b] of BURACOS.entries()) {
     for (const [x, y] of [b.inicio, b.buraco]) {
       assert.ok(dentroDoPoligono(b.contorno, x, y), `buraco ${i + 1}: ponto fora da mesa`);
@@ -118,4 +120,28 @@ test('copiarBola não divide nada com a original', () => {
   const c = copiarBola(a);
   bater(c, { passo: 0, dx: 500, dy: 0 });
   assert.equal(a.tacadas, 0);
+});
+
+test('os buracos com obstáculo que anda (a porteira, o moinho, o pomar): a bola nunca para no caminho dele', () => {
+  for (const b of BURACOS.filter((x) => x.movel)) {
+    const m = b.movel!;
+    // a janela para trás do servidor (0,8 s) precisa ficar bem abaixo de meia volta
+    assert.ok((m.periodo * 1000) / 60 >= 1600, `${b.tema}: a volta é curta demais`);
+    for (let passo = 0; passo < m.periodo; passo += 11) {
+      for (const [dx, dy] of [
+        [200, 0],
+        [320, 40],
+        [420, -30],
+        [600, 0],
+      ]) {
+        const bola = novaBola(b);
+        bater(bola, { passo, dx, dy });
+        rolarAteParar(b, bola);
+        const x2 = m.x + m.w + m.dx;
+        const y2 = m.y + m.h + m.dy;
+        const noCaminho = bola.x > m.x - RAIO_BOLA && bola.x < x2 + RAIO_BOLA && bola.y > m.y - RAIO_BOLA && bola.y < y2 + RAIO_BOLA;
+        assert.ok(!noCaminho, `${b.tema}, passo ${passo}: parou em ${bola.x}, ${bola.y}`);
+      }
+    }
+  }
 });

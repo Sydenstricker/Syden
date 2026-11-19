@@ -176,9 +176,10 @@ test('a força e o relógio: o servidor calcula a partir do tempo, e empatados d
   jogo.acao(biaId, { tipo: 'resultado', t: 10_050 });
   jogo.acao(caioId, { tipo: 'resultado', t: 9_800 });
   linhas = jogo.publico(anaId).linhas as Linha[];
+  // a última rodada vale o dobro (19/11/2026)
   assert.deepEqual(linhas.map((l) => [l.userId, l.pontos]), [
-    [biaId, 10],
-    [caioId, 8],
+    [biaId, 20],
+    [caioId, 16],
     [anaId, 0],
   ]);
 });
@@ -286,12 +287,15 @@ test('a partida inteira: 5 rodadas sem repetir, o placar somado, e o troféu do 
   assert.equal(m.terminou(), true);
   assert.equal(jogo.publico(anaId).fase, 'fim');
   const placar = jogo.publico(anaId).placar as { userId: number; pontos: number }[];
+  // 4 × 10, a última em dobro (20), e o prêmio bônus de quem venceu mais rodadas (+5) — 19/11/2026
   assert.deepEqual(placar.map((l) => [l.userId, l.pontos]), [
-    [anaId, 50],
+    [anaId, 65],
     [biaId, 0],
   ]);
+  const premio = jogo.publico(anaId).premio as { ganhadores: number[]; valor: number; pontos: number };
+  assert.deepEqual(premio, { ganhadores: [anaId], valor: 5, pontos: festaMod.PREMIO_DA_FESTA });
   const daAna = (await comToken(app, ana.token)('GET', '/api/corrida-trofeus')).json().trofeus;
-  assert.deepEqual([daAna[0].pista, daAna[0].posicao, daAna[0].pontos, daAna[0].tempoMs], ['festa', 1, 50, null]);
+  assert.deepEqual([daAna[0].pista, daAna[0].posicao, daAna[0].pontos, daAna[0].tempoMs], ['festa', 1, 65, null]);
   assert.deepEqual(daAna[0].rivais.map((r: { userId: number }) => r.userId), [biaId]);
   const daBia = (await comToken(app, bia.token)('GET', '/api/corrida-trofeus')).json().trofeus;
   assert.equal(daBia.filter((t: { pista: string }) => t.pista === 'festa').length, 0, 'sem ponto, sem troféu');
@@ -365,8 +369,9 @@ test('a classificação final só dá posição a quem ficou até o fim, como os
   assert.deepEqual(
     p.classificacao.map((l) => [l.userId, l.posicao, l.saiu, l.pontos]),
     [
-      [caioId, 1, false, 18],
-      [biaId, 2, false, 14],
+      // a segunda (a última) em dobro, e o prêmio bônus do Caio, que venceu a última; a Ana venceu a primeira, mas saiu
+      [caioId, 1, false, 33],
+      [biaId, 2, false, 22],
       [anaId, null, true, 10],
     ],
     'a Ana pontuou, mas saiu: sem posição (e sem medalha)',

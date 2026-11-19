@@ -220,11 +220,25 @@ export function desenharNome(g: CanvasRenderingContext2D, j: JogadorNaTela) {
 }
 
 /** A bola, girando pela distância andada (`giro`, do laço). */
-export function desenharBola(g: CanvasRenderingContext2D, f: Folhas, x: number, y: number, giro: number) {
-  g.fillStyle = 'rgba(0,0,0,0.22)';
+/** `z`: a altura do chute alto (19/11/2026): a sombra fica no chão e encolhe, a bola sobe e cresce um pouco. */
+export function desenharBola(g: CanvasRenderingContext2D, f: Folhas, x: number, chaoY: number, giro: number, z = 0) {
+  const alto = Math.min(1, z / 40);
+  g.fillStyle = `rgba(0,0,0,${0.22 - alto * 0.1})`;
   g.beginPath();
-  g.ellipse(x + 2, y + 3, R_BOLA + 1, R_BOLA - 1, 0, 0, Math.PI * 2);
+  g.ellipse(x + 2, chaoY + 3, (R_BOLA + 1) * (1 - alto * 0.35), (R_BOLA - 1) * (1 - alto * 0.35), 0, 0, Math.PI * 2);
   g.fill();
+  const y = chaoY - z;
+  if (z > 0.5) {
+    g.save();
+    g.translate(x, y);
+    g.scale(1 + alto * 0.35, 1 + alto * 0.35);
+    g.translate(-x, -y);
+  }
+  desenharABola(g, f, x, y, giro);
+  if (z > 0.5) g.restore();
+}
+
+function desenharABola(g: CanvasRenderingContext2D, f: Folhas, x: number, y: number, giro: number) {
   if (!f.bola.complete || !f.bola.naturalWidth) {
     g.fillStyle = '#fff';
     g.beginPath();

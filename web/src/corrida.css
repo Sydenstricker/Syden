@@ -1,0 +1,23 @@
+/* A Corrida dos coelhos contra o computador (19/11/2026): a escolha do modo, da dificuldade e das opções. */
+.corrida-modo {
+  margin: 0 0 8px;
+}
+
+.corrida-dificuldade {
+  margin: 0;
+  justify-content: center;
+}
+
+.corrida-opcoes-robos {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.corrida-opcoes-robos label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}

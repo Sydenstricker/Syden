@@ -5,12 +5,14 @@ import type { Socket } from 'socket.io-client';
 import { useT } from './i18n';
 import { Placar, Relogio } from './Minijogo';
 import type { EstadoGolfe, Partida } from './minijogos';
+import './golfe/golfe.css';
 import { CORES_DAS_BOLAS, desenhar, pintarMesa } from './golfe/desenho';
 import { cameraAtrasDaBola, desenharChao3, desenharFiguras3, H3, prepararDesenho3, W3 } from './golfe/mode7';
 import {
   ALTURA,
   BURACOS,
   FORCA_MAX,
+  PERCURSOS,
   LARGURA,
   acabouOBuraco,
   avancar,
@@ -61,6 +63,30 @@ function vetorDaTacada(ux: number, uy: number, forca: number) {
 
 const passoDe = (inicio: number, agora: number) => Math.max(0, Math.floor(((agora - inicio) * 60) / 1000));
 
+/**
+ * O que o servidor manda além de EstadoGolfe (19/11/2026): o percurso escolhido (6 ou 9), quem escolhe, o par do buraco e, no
+ * Solo, os recordes de cada percurso (na escolha) e o resultado do recorde (no fim).
+ */
+interface DoPercurso {
+  percurso?: number;
+  par?: number;
+  escolhe?: number;
+  recordes?: Record<string, number> | null;
+  recorde?: { antes: number | null; novo: boolean } | null;
+}
+
+/**
+ * O BURACO NA TELA DE QUEM ACERTOU (19/11/2026): na primeira, e a conta contra o par, em palavras nossas e curtas. A tela
+ * comemora (o som da medalha e o selo grande) do par para baixo.
+ */
+function oQueFoiOBuraco(tacadas: number, par: number, t: ReturnType<typeof useT>): { texto: string; festa: boolean } {
+  if (tacadas === 1) return { texto: t('Na primeira!'), festa: true };
+  const d = tacadas - par;
+  if (d < 0) return { texto: t('{n} abaixo do par', { n: -d }), festa: true };
+  if (d === 0) return { texto: t('No par'), festa: true };
+  return { texto: t('{n} acima do par', { n: d }), festa: false };
+}
+
 export function JogoGolfe({
   estado,
   eu,
@@ -77,6 +103,28 @@ export function JogoGolfe({
   channelId: number;
 }) {
   const t = useT();
+  const extra = estado as unknown as DoPercurso;
+  if ((estado.fase as string) === 'escolhendo') {
+    if (extra.escolhe !== eu) return <p className="minijogo-situacao">{t('Esperando a escolha de quem começou…')}</p>;
+    return (
+      <div className="golfe-percursos">
+        {PERCURSOS.map((n) => (
+          <button
+            key={n}
+            type="button"
+            className="minijogo-jogo"
+            onClick={() => {
+              tocar('clique');
+              void agir({ tipo: 'percurso', percurso: n });
+            }}
+          >
+            <span className="golfe-percurso-numero">⛳ {n}</span>
+            {extra.recordes?.[String(n)] !== undefined && <span className="golfe-percurso-recorde">🏆 {extra.recordes[String(n)]}</span>}
+          </button>
+        ))}
+      </div>
+    );
+  }
   if (estado.terminada || estado.fase === 'fim') {
     // menos tacadas na frente; a posição (e a medalha) é só de quem ficou até o fim, a mesma conta do troféu, e quem saiu
     // aparece embaixo, sem posição
@@ -84,6 +132,12 @@ export function JogoGolfe({
     const sairam = estado.placar.filter((l) => l.posicao === null);
     return (
       <>
+        {extra.recorde &&
+          (extra.recorde.novo ? (
+            <p className="minijogo-situacao golfe-recorde">{t('Novo recorde!')}</p>
+          ) : (
+            extra.recorde.antes !== null && <p className="minijogo-situacao">{t('Seu recorde: {tempo}', { tempo: String(extra.recorde.antes) })}</p>
+          ))}
         <Placar eu={eu} linhas={ficaram.map((l) => ({ ...l, valor: String(l.pontos), posicao: l.posicao ?? undefined }))} />
         {sairam.length > 0 && (
           <ul className="minijogo-placar golfe-sairam">
@@ -175,6 +229,13 @@ function MesaDoGolfe({
   const [acabou, setAcabou] = useState(acabouOBuraco(bola.current));
   const [molhou, setMolhou] = useState(false);
   const [agora, setAgora] = useState(Date.now());
+  /** O selo do buraco (na primeira, contra o par), por uns segundos depois de a bola entrar. */
+  const [selo, setSelo] = useState<{ texto: string; festa: boolean } | null>(null);
+  const par = (estado as unknown as DoPercurso).par ?? buraco.par;
+  const parRef = useRef(par);
+  parRef.current = par;
+  const tRef = useRef(t);
+  tRef.current = t;
 
   const outrosDoServidor = useRef(estado.bolas);
   outrosDoServidor.current = estado.bolas;
@@ -258,6 +319,7 @@ function MesaDoGolfe({
     /** As tacadas quando a bola começou a rolar: se subirem durante o rolar, foi a água. */
     let tacadasAoRolar: number | null = null;
     let avisoDaAgua: ReturnType<typeof setTimeout> | undefined;
+    let fimDoSelo: ReturnType<typeof setTimeout> | undefined;
     const quadro = () => {
       const agoraMs = Date.now();
       const passoAgora = inicio.current === null ? 0 : passoDe(inicio.current, agoraMs);
@@ -266,7 +328,14 @@ function MesaDoGolfe({
       // a simulação alcança o relógio (com um teto por quadro, para a aba que volta de muito tempo parada)
       for (let k = 0; k < 900 && b.andando && b.passo < passoAgora; k++) avancar(buraco, b);
       if (!b.andando && tacadasAoRolar !== null) {
-        if (b.dentro) tocar('buraco');
+        if (b.dentro) {
+          tocar('buraco');
+          const o = oQueFoiOBuraco(b.tacadas, parRef.current, tRef.current);
+          if (o.festa) window.setTimeout(() => tocar(b.tacadas === 1 ? 'medalha' : 'acerto'), 250);
+          setSelo(o);
+          clearTimeout(fimDoSelo);
+          fimDoSelo = setTimeout(() => setSelo(null), 3200);
+        }
         if (b.tacadas > tacadasAoRolar) {
           tocar('agua');
           setMolhou(true);
@@ -372,6 +441,7 @@ function MesaDoGolfe({
     return () => {
       cancelAnimationFrame(id);
       clearTimeout(avisoDaAgua);
+      clearTimeout(fimDoSelo);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [buraco, souJogador, naSala, socket, channelId, eu]);
@@ -445,6 +515,9 @@ function MesaDoGolfe({
     <div className="golfe">
       <div className="golfe-topo">
         {souJogador && <span className="golfe-tacadas">{t('Tacadas: {n}', { n: tacadas })}</span>}
+        <span className="golfe-par" aria-hidden="true">
+          ⛳ {estado.rodada}/{estado.rodadas} · {t('Par {n}', { n: par })}
+        </span>
         {estado.fase === 'jogando' && <Relogio restante={restante} total={estado.duracaoMs} />}
       </div>
       <div className="golfe-moldura golfe-moldura-3d">
@@ -510,6 +583,11 @@ function MesaDoGolfe({
         {contagem !== null && (
           <span className="golfe-contagem" aria-hidden="true">
             {contagem}
+          </span>
+        )}
+        {selo && (
+          <span className={`golfe-selo${selo.festa ? ' festa' : ''}`} role="status">
+            {selo.texto}
           </span>
         )}
       </div>

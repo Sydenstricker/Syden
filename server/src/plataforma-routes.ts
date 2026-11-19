@@ -6,7 +6,7 @@
 import type { FastifyInstance } from 'fastify';
 import * as db from './db.js';
 import { Freio } from './freio.js';
-import { FASES_DO_PULO, validarPulo } from './plataforma.js';
+import { cenourasDoCaminho, FASES_DO_PULO, validarPulo } from './plataforma.js';
 import { requireUser } from './routes.js';
 
 /** Sessenta fases guardadas por hora, por conta (uma fase leva mais de 30 s). */
@@ -19,7 +19,14 @@ export function registerPlataformaRoutes(app: FastifyInstance) {
     authed.get<{ Params: { fase: string } }>('/api/plataforma/:fase', async (request, reply) => {
       const { fase } = request.params;
       if (!FASES_DO_PULO[fase]) return reply.code(404).send({ error: 'Fase desconhecida.' });
-      return { recordes: db.recordesDoPulo(request.user.id, fase) };
+      // as cenouras (o melhor número) e a dourada achada, da tabela comum dos recordes do Solo (19/11/2026)
+      const cenouras = db.recordeDoSolo(request.user.id, 'pulo-cenouras', fase)?.valor ?? null;
+      const dourada = db.recordeDoSolo(request.user.id, 'pulo-dourada', fase) !== null;
+      return {
+        recordes: db.recordesDoPulo(request.user.id, fase),
+        cenouras,
+        dourada,
+      };
     });
 
     /** O fantasma de alguém: o meu, ou o de um amigo aceito. */
@@ -34,18 +41,31 @@ export function registerPlataformaRoutes(app: FastifyInstance) {
       }
       const r = db.recordeDoPulo(dono, fase);
       if (!r) return reply.code(404).send(nada);
-      return { tempoMs: r.tempoMs, amostras: JSON.parse(r.amostras) as number[] };
+      return {
+        tempoMs: r.tempoMs,
+        amostras: JSON.parse(r.amostras) as number[],
+      };
     });
 
     authed.post<{ Params: { fase: string }; Body: unknown }>('/api/plataforma/:fase', { bodyLimit: 200_000 }, async (request, reply) => {
       if (freioDePulos.tentar(String(request.user.id))) {
-        return reply.code(429).send({ error: 'Muitas corridas seguidas. Tente de novo daqui a pouco.' });
+        return reply.code(429).send({
+          error: 'Muitas corridas seguidas. Tente de novo daqui a pouco.',
+        });
       }
       const v = validarPulo(request.params.fase, request.body);
       if ('erro' in v) return reply.code(400).send({ error: v.erro });
       db.registrarPulo(request.user.id, v.ok.tempoMs);
       const r = db.guardarPulo(request.user.id, request.params.fase, v.ok.tempoMs, JSON.stringify(v.ok.amostras));
-      return { tempoMs: v.ok.tempoMs, ...r };
+      // AS CENOURAS (19/11/2026): a tela diz quantas pegou, e vale o menor entre isso e o que o caminho passou perto
+      const corpo = request.body as { cenouras?: unknown; dourada?: unknown };
+      const caminho = cenourasDoCaminho(request.params.fase, v.ok.amostras);
+      const pedidas = Number.isInteger(corpo.cenouras) && (corpo.cenouras as number) >= 0 ? (corpo.cenouras as number) : 0;
+      const cenouras = Math.min(pedidas, caminho.cenouras);
+      const dourada = corpo.dourada === true && caminho.dourada;
+      if (cenouras > 0) db.guardarRecordeDoSolo(request.user.id, 'pulo-cenouras', request.params.fase, cenouras, false);
+      if (dourada) db.guardarRecordeDoSolo(request.user.id, 'pulo-dourada', request.params.fase, 1, false);
+      return { tempoMs: v.ok.tempoMs, ...r, cenouras, dourada };
     });
   });
 }

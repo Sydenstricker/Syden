@@ -5,6 +5,11 @@ export const NOMES_DAS_PISTAS_DO_JATO: Record<string, string> = {
   'cidade-1': chave('Cidade à noite'),
   'orbita-1': chave('Órbita'),
   'nuvens-1': chave('Mar de nuvens'),
+  'aurora-1': chave('Aurora'),
+  'tempestade-1': chave('Tempestade'),
+  // as copas do Solo contra o computador (jato/pista.ts, COPAS_DO_JATO)
+  'copa-estelar': chave('Copa estelar'),
+  'copa-da-tempestade': chave('Copa da tempestade'),
 };
 
 export const nomeDaPistaDoJato = (t: (texto: string) => string, id: string) => t(NOMES_DAS_PISTAS_DO_JATO[id] ?? id);

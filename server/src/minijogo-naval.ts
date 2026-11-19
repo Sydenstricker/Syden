@@ -1,4 +1,4 @@
-import { duelo, JOGADA_MS, type Lado } from './minijogo-tabuleiro.js';
+import { duelo, JOGADA_MS, type Lado, type Nivel } from './minijogo-tabuleiro.js';
 import type { Definicao, Jogo } from './minijogo-motor.js';
 
 /**
@@ -40,6 +40,10 @@ export interface EstadoNaval {
   /** A montagem: os navios de cada lado na ordem da FROTA (null: ainda não posto), e quem já apertou "Pronto". */
   frotas: [(number[] | null)[], (number[] | null)[]];
   prontos: [boolean, boolean];
+  /** A variante SALVO (19/11/2026): cada vez é uma rajada, com tantos tiros quantos navios a pessoa ainda tem. */
+  salvo: boolean;
+  /** A última rajada do salvo: as casas e o que cada tiro achou. */
+  rajada: { lado: Lado; tiros: { casa: number; resultado: Resultado }[] } | null;
 }
 
 /** O que se vê de um mar: os tiros (0 nada, 1 água, 2 fogo) e os navios que quem pede pode ver. */
@@ -129,6 +133,36 @@ export function encosta(casas: number[], outros: (number[] | null)[]): boolean {
   });
 }
 
+/** A casa como no papel: a coluna em letra e a linha em número ("B7"). */
+export const nomeDaCasaDoMar = (i: number) => `${'ABCDEFGHIJ'[i % LADO_DO_MAR]}${Math.floor(i / LADO_DO_MAR) + 1}`;
+const SINAL: Record<Resultado, string> = { agua: '·', acertou: '✕', afundou: '✕✕' };
+
+/**
+ * Uma RAJADA do salvo: `corpo.casas`, tantas casas distintas e sem tiro quantos navios `lado` ainda tem. Os tiros caem todos
+ * juntos, a vez passa sempre (acertar não dá outra rajada), e vence quem afunda a frota toda.
+ */
+function rajada(e: EstadoNaval, lado: Lado, corpo: Record<string, unknown>): string | { proximo: Lado; vencedor?: Lado } {
+  const outro: Lado = lado === 0 ? 1 : 0;
+  const alvo = e.mares[outro];
+  const casas = Array.isArray(corpo.casas) ? corpo.casas.map(Number) : [];
+  if (casas.length !== tirosDaRajada(e, lado)) return 'Escolha todas as casas da rajada.';
+  if (new Set(casas).size !== casas.length || casas.some((c) => !Number.isInteger(c) || c < 0 || c >= CASAS_DO_MAR)) return 'Escolha uma casa do mar.';
+  if (casas.some((c) => alvo.tiros[c])) return 'Você já atirou nessa casa.';
+  for (const c of casas) alvo.tiros[c] = true;
+  const tiros = casas.map((casa) => {
+    const navio = alvo.navios.find((x) => x.includes(casa));
+    return { casa, resultado: (!navio ? 'agua' : afundado(alvo, navio) ? 'afundou' : 'acertou') as Resultado };
+  });
+  e.rajada = { lado, tiros };
+  const ultimo = tiros[tiros.length - 1];
+  e.ultimo = { lado, casa: ultimo.casa, resultado: ultimo.resultado };
+  if (alvo.navios.every((x) => afundado(alvo, x))) {
+    e.revelado = true;
+    return { proximo: lado, vencedor: lado };
+  }
+  return { proximo: outro };
+}
+
 /** Quanto tempo a montagem espera: o mesmo da jogada na mesa. */
 export const MONTAGEM_MS = JOGADA_MS;
 
@@ -204,6 +238,91 @@ export function tiroDoRobo(mar: MarPublico, aleatorio: () => number = Math.rando
   return mar.tiros.findIndex((t) => t === 0);
 }
 
+/**
+ * O ROBÔ DIFÍCIL (19/11/2026): CONTA AS POSIÇÕES POSSÍVEIS de cada navio que ainda boia (os tamanhos que restam são públicos)
+ * e atira na casa por onde passam mais delas. Uma posição não pode cobrir água, navio afundado nem a volta dele, nem encostar
+ * num fogo que ela não cobre (seria outro navio encostado); a que cobre fogo de navio ainda vivo vale muito mais, e é assim que
+ * ele caça depois de acertar. Só olha o que a pessoa no lugar dele veria.
+ */
+export function tiroDoRoboDificil(mar: MarPublico, tamanhos: number[], aleatorio: () => number = Math.random, evitar: number[] = []): number {
+  const n = LADO_DO_MAR;
+  const afundadas = new Set(mar.navios.filter((x) => x.afundado).flatMap((x) => x.casas));
+  const fogo = new Set([...mar.tiros.keys()].filter((i) => mar.tiros[i] === 2 && !afundadas.has(i)));
+  const proibida = new Array<boolean>(CASAS_DO_MAR).fill(false);
+  for (let i = 0; i < CASAS_DO_MAR; i++) {
+    if (mar.tiros[i] === 1 || evitar.includes(i)) proibida[i] = true;
+    if (!afundadas.has(i)) continue;
+    const l = Math.floor(i / n);
+    const c = i % n;
+    for (let dl = -1; dl <= 1; dl++) {
+      for (let dc = -1; dc <= 1; dc++) if (l + dl >= 0 && l + dl < n && c + dc >= 0 && c + dc < n) proibida[(l + dl) * n + c + dc] = true;
+    }
+  }
+  const encostaNoFogo = (casas: number[]) => {
+    const dentro = new Set(casas);
+    return casas.some((c) => {
+      const l = Math.floor(c / n);
+      const col = c % n;
+      for (let dl = -1; dl <= 1; dl++) {
+        for (let dc = -1; dc <= 1; dc++) {
+          const ll = l + dl;
+          const cc = col + dc;
+          if (ll >= 0 && ll < n && cc >= 0 && cc < n && fogo.has(ll * n + cc) && !dentro.has(ll * n + cc)) return true;
+        }
+      }
+      return false;
+    });
+  };
+  const peso = new Array<number>(CASAS_DO_MAR).fill(0);
+  for (const tamanho of tamanhos) {
+    for (const deitado of [true, false]) {
+      for (let casa = 0; casa < CASAS_DO_MAR; casa++) {
+        const casas = casasDoNavio(casa, tamanho, deitado);
+        if (!casas || casas.some((c) => proibida[c]) || encostaNoFogo(casas)) continue;
+        const cobre = casas.filter((c) => fogo.has(c)).length;
+        const w = cobre ? 40 ** cobre : 1;
+        for (const c of casas) if (mar.tiros[c] === 0) peso[c] += w;
+      }
+    }
+  }
+  let melhor = -1;
+  let melhorPeso = -1;
+  for (let i = 0; i < CASAS_DO_MAR; i++) {
+    if (mar.tiros[i] !== 0 || evitar.includes(i)) continue;
+    const p = peso[i] + aleatorio() * 0.5;
+    if (p > melhorPeso) {
+      melhorPeso = p;
+      melhor = i;
+    }
+  }
+  return melhor >= 0 ? melhor : mar.tiros.findIndex((t, i) => t === 0 && !evitar.includes(i));
+}
+
+/** O robô FÁCIL: tiros ao acaso, e só às vezes vai atrás do fogo. */
+export function tiroDoRoboFacil(mar: MarPublico, aleatorio: () => number = Math.random, evitar: number[] = []): number {
+  if (aleatorio() < 0.4) {
+    const t = tiroDoRobo(mar, aleatorio);
+    if (!evitar.includes(t)) return t;
+  }
+  const livres = [...mar.tiros.keys()].filter((i) => mar.tiros[i] === 0 && !evitar.includes(i));
+  return livres[Math.min(livres.length - 1, Math.floor(aleatorio() * livres.length))] ?? mar.tiros.findIndex((t) => t === 0);
+}
+
+/** O tiro do robô no nível escolhido. evitar: as casas já escolhidas na mesma rajada do salvo. */
+export function tiroNoNivel(mar: MarPublico, tamanhos: number[], nivel: Nivel, aleatorio: () => number, evitar: number[] = []): number {
+  if (nivel === 'dificil') return tiroDoRoboDificil(mar, tamanhos, aleatorio, evitar);
+  if (nivel === 'facil') return tiroDoRoboFacil(mar, aleatorio, evitar);
+  // o normal não sabe da rajada: as casas já escolhidas contam como água para ele
+  const visto: MarPublico = evitar.length ? { ...mar, tiros: mar.tiros.map((t, i) => (evitar.includes(i) ? 1 : t)) } : mar;
+  return tiroDoRobo(visto, aleatorio);
+}
+
+/** Quantos tiros tem a rajada de lado no salvo: um por navio dele que ainda boia (e não mais que as casas livres). */
+const tirosDaRajada = (e: EstadoNaval, lado: Lado) => {
+  const livres = e.mares[lado === 0 ? 1 : 0].tiros.filter((t) => !t).length;
+  return Math.min(livres, e.mares[lado].navios.filter((navio) => !afundado(e.mares[lado], navio)).length);
+};
+
 export function criarNaval(aleatorio: () => number = Math.random): Definicao {
   return {
     mesa: true,
@@ -217,7 +336,19 @@ export function criarNaval(aleatorio: () => number = Math.random): Definicao {
       };
       const mesa = duelo<EstadoNaval>(
         {
-          inicio: () => (estado = { mares: [novoMar(), novoMar()], ultimo: null, revelado: false, frotas: [vazia(), vazia()], prontos: [false, false] }),
+          escolhas: (corpo) => ({ salvo: corpo.salvo === true }),
+          inicio: (escolhas) =>
+            (estado = {
+              mares: [novoMar(), novoMar()],
+              ultimo: null,
+              revelado: false,
+              frotas: [vazia(), vazia()],
+              prontos: [false, false],
+              salvo: escolhas.salvo === true,
+              rajada: null,
+            }),
+          // o tiro já revelou o mar: voltar seria espiar
+          semVoltar: true,
           montagem: {
             ms: MONTAGEM_MS,
             montar(e, lado, corpo) {
@@ -251,6 +382,7 @@ export function criarNaval(aleatorio: () => number = Math.random): Definicao {
             },
           },
           jogar(e, lado, corpo) {
+            if (e.salvo) return rajada(e, lado, corpo);
             const casa = Number(corpo.casa);
             if (!Number.isInteger(casa) || casa < 0 || casa >= CASAS_DO_MAR) return 'Escolha uma casa do mar.';
             const outro: Lado = lado === 0 ? 1 : 0;
@@ -277,14 +409,37 @@ export function criarNaval(aleatorio: () => number = Math.random): Definicao {
             meu.navios = sortearFrota(aleatorio);
             return null;
           },
-          // o robô mira só pelo que se vê do mar do outro: os tiros, o fogo e os navios já afundados
-          robo: (e, lado, sorte) => ({ casa: tiroDoRobo(marPublico(e.mares[lado === 0 ? 1 : 0], false), sorte) }),
+          // o robô mira só pelo que se vê do mar do outro: os tiros, o fogo, os navios já afundados e os tamanhos que restam
+          robo: (e, lado, sorte, nivel) => {
+            const alvo = e.mares[lado === 0 ? 1 : 0];
+            const visto = marPublico(alvo, false);
+            if (!e.salvo) return { casa: tiroNoNivel(visto, restam(alvo), nivel, sorte) };
+            const casas: number[] = [];
+            for (let k = tirosDaRajada(e, lado); k > 0; k--) casas.push(tiroNoNivel(visto, restam(alvo), nivel, sorte, casas));
+            return { casas };
+          },
+          descrever: (e) =>
+            e.rajada && e.salvo
+              ? e.rajada.tiros.map((t) => nomeDaCasaDoMar(t.casa) + SINAL[t.resultado]).join(' ')
+              : e.ultimo
+                ? nomeDaCasaDoMar(e.ultimo.casa) + SINAL[e.ultimo.resultado]
+                : '',
           publico(e, lado) {
             const mares = [0, 1].map((l) => marPublico(e.mares[l], e.revelado || l === lado));
             return {
               mares,
               restam: [restam(e.mares[0]), restam(e.mares[1])],
               ultimo: e.ultimo,
+              salvo: e.salvo,
+              rajada: e.rajada,
+              // quantos tiros cada lado tem na próxima rajada do salvo
+              tirosDaRajada: e.salvo ? [tirosDaRajada(e, 0), tirosDaRajada(e, 1)] : null,
+              // a precisão de cada lado: os tiros que deu e os que acertaram (no mar do outro)
+              pontaria: [0, 1].map((l) => {
+                const alvo = e.mares[l === 0 ? 1 : 0];
+                const fogo = new Set(alvo.navios.flat());
+                return { tiros: alvo.tiros.filter(Boolean).length, acertos: alvo.tiros.filter((t, c) => t && fogo.has(c)).length };
+              }),
               // na montagem: a frota de quem pede (com o lugar de cada navio, na ordem da FROTA), e quem já está pronto
               montagem: { navios: lado === null ? null : e.frotas[lado], prontos: e.prontos },
             };

@@ -114,7 +114,7 @@ test('o passo é do servidor: 20 por segundo, o quadro leva a toupeira, as marca
   assert.ok(m.quadros.length >= 39);
   const q = m.quadros.at(-1)! as { c: number[]; j: number[][]; f: string };
   assert.equal(q.f, 'lutando');
-  assert.equal(q.c.length, 9);
+  assert.equal(q.c.length, 10);
   assert.equal(q.j.length, 2);
   assert.equal(q.j[0][6], VIDAS);
   m.jogo.parar!();
@@ -322,4 +322,171 @@ test('todos sem vidas: a turma perde; a sala vazia acaba a luta', () => {
   v.andar(100);
   assert.equal((v.quadros.at(-1) as { f: string }).f, 'derrota');
   assert.ok(GRACA_MS > 0 && FIM_MS > 0);
+});
+
+// ---------------- As melhorias de 19/11/2026 ----------------
+
+test('reviver: quem fica perto do caído por 2 s o traz de volta com uma vida; sair de perto zera a conta', () => {
+  const m = comecar();
+  m.chefeEm(240, 120);
+  const bi = m.i._jogadores.get(biaId)!;
+  bi.vidas = 0;
+  bi.estado = 'sem-vidas';
+  bi.x = 300;
+  bi.y = 200;
+  // a Ana longe: nada
+  m.por(anaId, 100, 200);
+  m.andar(2500);
+  assert.equal(bi.estado, 'sem-vidas');
+  // perto por 1 s, sai, volta: a conta recomeça
+  for (let t = 0; t < 1000; t += 50) {
+    m.por(anaId, 310, 200);
+    m.andar(50);
+  }
+  const q = m.quadros.at(-1) as { j: number[][] };
+  assert.ok(q.j.find((l) => l[0] === biaId)![14] > 0, 'o quadro mostra a conta');
+  m.por(anaId, 100, 200);
+  m.andar(100);
+  assert.equal(bi.estado, 'sem-vidas');
+  for (let t = 0; t < mod.REVIVER_MS - 200; t += 50) {
+    m.por(anaId, 310, 200);
+    m.andar(50);
+  }
+  assert.equal(bi.estado, 'sem-vidas', 'a conta recomeçou');
+  for (let t = 0; t < 500; t += 50) {
+    m.por(anaId, 310, 200);
+    m.andar(50);
+  }
+  assert.equal(bi.estado, 'em-pe');
+  assert.equal(bi.vidas, 1);
+  assert.ok(bi.invulAte > agora);
+  assert.ok(m.quadros.slice(-12).some((qq) => ((qq as { e: unknown[][] }).e).some((e) => e[1] === 'v' && e[2] === biaId && e[3] === anaId)));
+  m.jogo.parar!();
+});
+
+test('a cruz de pedras (o golpe da última fase): quatro linhas a partir da toupeira, e quem fica fora delas escapa', () => {
+  const m = comecar();
+  m.chefeEm(240, 160);
+  m.i._chefe.fase = 2;
+  // força a fila da toupeira: a saída com a cruz
+  Object.assign(m.i._chefe, { estado: 'parada', ate: agora + 50, fila: ['cruz'] });
+  m.andar(150);
+  const pedras = [...m.i._marcas.values()].filter((k) => k.tipo === 'pedra');
+  assert.ok(pedras.length >= 8, `pedras ${pedras.length}`);
+  // todas numa das linhas (em + ou em ×) que passam pela toupeira
+  const c = m.i._chefe;
+  for (const p of pedras) {
+    const dx = (p.x as number) - c.x, dy = ((p.y as number) - c.y) / 0.6;
+    const naCruz = Math.abs(dx) < 1 || Math.abs(dy) < 1 || Math.abs(Math.abs(dx) - Math.abs(dy)) < 1;
+    assert.ok(naCruz, `fora da cruz: ${dx}, ${dy}`);
+  }
+  // e quem está fora das linhas não leva (até a última pedra cair)
+  const ana_ = m.i._jogadores.get(anaId)!;
+  const vidas = ana_.vidas;
+  const fim = Math.max(...pedras.map((p) => p.impacto as number)) + 500;
+  const [cx, cy] = [c.x, c.y];
+  while (agora < fim) {
+    m.por(anaId, cx + 60, cy);
+    m.andar(50);
+  }
+  assert.equal(ana_.vidas, vidas);
+  m.jogo.parar!();
+});
+
+test('o recorde do Solo: o tempo até a toupeira cair, guardado na tabela comum', async () => {
+  const db = await import('../src/db.js');
+  const m = comecar([anaId], 0);
+  const inicio = agora;
+  let n = derrubarFase(m, anaId, 1);
+  n = derrubarFase(m, anaId, n);
+  derrubarFase(m, anaId, n);
+  m.disparar();
+  const pub = m.jogo.publico(anaId) as { recorde: { ms: number; novo: boolean } | null };
+  assert.ok(pub.recorde);
+  assert.ok(pub.recorde!.ms > 0 && pub.recorde!.ms <= agora - inicio);
+  const r = db.recordeDoSolo(anaId, 'chefe', '');
+  assert.ok(r && r.valor <= pub.recorde!.ms);
+});
+
+// ---------------- A segunda rodada de 19/11/2026: o yeti ----------------
+
+function comecarYeti(naSala = [anaId, biaId], comunidadeId = comunidade.id) {
+  const quadros: Record<string, unknown>[] = [];
+  const relogio: { ms: number; depois: () => void }[] = [];
+  const ctx = {
+    agendar: (ms: number, depois: () => void) => relogio.splice(0, relogio.length, { ms, depois }),
+    avisar: () => {},
+    terminar: () => {},
+    naSala: () => naSala,
+    nome: (id: number) => (id === anaId ? 'ana' : 'bia'),
+    comunidade: comunidadeId,
+    solo: comunidadeId === 0,
+    difundir: (d: unknown) => quadros.push(d as Record<string, unknown>),
+  };
+  let passo: (() => void) | null = null;
+  const jogo = criarChefeComBanco({ agora: () => agora, aleatorio: () => 0.5, intervalo: (p) => ((passo = p), 1), limpar: () => {} }).comecar(ctx, {
+    naSala,
+    criadaPor: naSala[0],
+    corpo: { chefe: 'yeti' },
+  });
+  assert.ok(typeof jogo !== 'string');
+  const i = jogo as unknown as Interno & { _bolas: Map<number, { x: number; y: number }> };
+  return {
+    jogo,
+    i,
+    quadros,
+    andar(ms: number) {
+      for (let t = 0; t < ms; t += PASSO_MS) {
+        agora += PASSO_MS;
+        passo!();
+      }
+    },
+    por(id: number, x: number, y: number) {
+      i._jogadores.get(id)!.livreAte = agora + 1000;
+      jogo.tempoReal!(id, { tipo: 'pos', x, y, lado: 1, acao: 0, ta: 0 });
+    },
+  };
+}
+
+test('o yeti empurra a bola de neve pela linha: quem fica nela leva, e ela para fria no fim, para devolver', () => {
+  // a Bia sem vidas: a bola vai na direção da Ana
+  const m = comecarYeti();
+  Object.assign(m.i._jogadores.get(biaId)!, { estado: 'sem-vidas', vidas: 0 });
+  Object.assign(m.i._chefe, { x: 120, y: 160, estado: 'parada', ate: agora + 600_000 });
+  m.andar(1000);
+  // a Ana na linha (à direita do yeti), a Bia longe dela
+  m.por(anaId, 260, 160);
+  m.por(biaId, 120, 240);
+  const ana_ = m.i._jogadores.get(anaId)!;
+  const bia_ = m.i._jogadores.get(biaId)!;
+  ana_.invulAte = 0;
+  const vidasAna = ana_.vidas;
+  Object.assign(m.i._chefe, { estado: 'parada', ate: agora + 50, fila: ['rolar'] });
+  m.andar(150);
+  assert.equal(m.i._bolas.size, 1, 'a bola espera o aviso');
+  const linha = [...m.i._marcas.values()].find((k) => k.tipo === 'investida');
+  assert.ok(linha, 'a linha marcada');
+  // a Ana fica parada na linha; a Bia continua longe
+  for (let t = 0; t < 4000 && m.i._bolas.size; t += 50) {
+    m.por(anaId, 260, 160);
+    m.por(biaId, 120, 240);
+    m.andar(50);
+  }
+  m.andar(400);
+  assert.equal(m.i._bolas.size, 0, 'parou');
+  assert.equal(ana_.vidas, vidasAna - 1, 'quem ficou na linha levou');
+  assert.ok([...m.i._noChao.values()].length >= 1, 'a bola ficou no chão, fria');
+  const q = m.quadros.at(-1) as { c: number[] };
+  assert.equal(q.c[9], 1);
+  m.jogo.parar!();
+});
+
+test('o recorde do yeti é separado do da toupeira', async () => {
+  const db = await import('../src/db.js');
+  const m = comecarYeti([anaId], 0);
+  const pub = m.jogo.publico(anaId) as { chefe: string; categoria: string };
+  assert.equal(pub.chefe, 'yeti');
+  assert.equal(pub.categoria, 'yeti');
+  assert.equal(db.recordeDoSolo(anaId, 'chefe', 'yeti'), null);
+  m.jogo.parar!();
 });

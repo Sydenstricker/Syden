@@ -36,6 +36,7 @@
  */
 import * as db from './db.js';
 import { embaralhar, placar, type Definicao } from './minijogo-motor.js';
+import { comecarRelampago } from './minijogo-festa-relampago.js';
 import { microjogosPara, PONTOS_FESTA, RODADAS_FESTA, rodadaDeFesta, type Microjogo, type RodadaDeFesta } from './festa/rodada.js';
 
 export * from './festa/rodada.js';
@@ -47,6 +48,13 @@ export { RELOGIO_ALVO, RELOGIO_MS } from './festa/relogio.js';
 export { SAQUE_DEPOIS_MS, SAQUE_ESPERA_MAX, SAQUE_ESPERA_MIN } from './festa/saque.js';
 export { minimoDaSiga, SIGA_MS, SIGA_PASSO_MS, SIGA_PAUSA_MS, SIGA_SETAS, type DadosSiga } from './festa/siga.js';
 export { ALVO_MS, ALVO_VIDA_MS, type DadosAlvo } from './festa/alvo.js';
+
+/**
+ * A ÚLTIMA RODADA VALE O DOBRO, e no fim vem o PRÊMIO BÔNUS (19/11/2026, pedido dele, a auditoria dos mini-games): quem venceu
+ * mais rodadas (o 1º lugar) ganha PREMIO_DA_FESTA pontos, empatados todos, com zero vitórias ninguém. O prêmio entra no placar
+ * antes do pódio e dos troféus.
+ */
+export const PREMIO_DA_FESTA = 5;
 
 export const festa: Definicao = criarFesta();
 
@@ -60,14 +68,21 @@ export interface OpcoesDaFesta {
 export function criarFesta({ agora = Date.now, aleatorio = Math.random, ordem: ordemDoTeste }: OpcoesDaFesta = {}): Definicao {
   return {
     minimo: 2,
-    comecar(ctx, { naSala }) {
+    comecar(ctx, { naSala, corpo }) {
+      // o modo Relâmpago (19/11/2026), escolhido na largada: outra partida, em minijogo-festa-relampago.ts
+      if (corpo?.modo === 'relampago') return comecarRelampago(ctx, naSala, { agora, aleatorio });
       const inscritos = [...naSala];
       // o empurra-empurra (lote 5) pede 2 ou mais: no Solo, fica de fora do sorteio
       const ordem = ordemDoTeste ?? embaralhar([...microjogosPara(inscritos.length)], aleatorio).slice(0, RODADAS_FESTA);
       const evento = `festa-${ctx.comunidade ?? 0}-${agora()}`;
+      const avatares = new Map(inscritos.map((id) => [id, id < 0 ? null : db.avatarDoJogo(id)]));
       const pontos = new Map<number, number>(inscritos.map((id) => [id, 0]));
       let rodada = 1;
       let terminada = false;
+      /** Quantas rodadas cada um venceu (o prêmio bônus). */
+      const vitorias = new Map<number, number>(inscritos.map((id) => [id, 0]));
+      let premio: { ganhadores: number[]; valor: number; pontos: number } | null = null;
+      const ultima = () => rodada === ordem.length && ordem.length > 1;
       /** Quem estava na sala em TODAS as revelações: só eles são "a turma" do pódio (revisão de 03/11/2026: quem ficava
        * sozinho ganhava o troféu, e quem tinha saído também). */
       let ficaram: Set<number> | null = null;
@@ -79,8 +94,9 @@ export function criarFesta({ agora = Date.now, aleatorio = Math.random, ordem: o
           inscritos,
           agora,
           aleatorio,
-          pontos: PONTOS_FESTA,
+          pontos: ultima() ? PONTOS_FESTA.map((p) => p * 2) : PONTOS_FESTA,
           aoRevelar: (linhas, presentes) => {
+            for (const l of linhas) if (l.posicao === 1) vitorias.set(l.userId, (vitorias.get(l.userId) ?? 0) + 1);
             const agoraNaSala = inscritos.filter((id) => presentes.has(id));
             ficaram = new Set((ficaram ? [...ficaram] : inscritos).filter((id) => agoraNaSala.includes(id)));
             for (const l of linhas) if (l.pontos) pontos.set(l.userId, (pontos.get(l.userId) ?? 0) + l.pontos);
@@ -95,6 +111,14 @@ export function criarFesta({ agora = Date.now, aleatorio = Math.random, ordem: o
 
       const terminar = () => {
         terminada = true;
+        // o prêmio bônus: quem venceu mais rodadas (entre quem ainda está na partida)
+        const candidatos = inscritos.filter((id) => (ficaram ?? new Set(inscritos)).has(id));
+        const maior = Math.max(0, ...candidatos.map((id) => vitorias.get(id) ?? 0));
+        if (maior > 0 && inscritos.length > 1) {
+          const ganhadores = candidatos.filter((id) => vitorias.get(id) === maior);
+          for (const id of ganhadores) pontos.set(id, (pontos.get(id) ?? 0) + PREMIO_DA_FESTA);
+          premio = { ganhadores, valor: maior, pontos: PREMIO_DA_FESTA };
+        }
         // O PÓDIO, com 2 pessoas ou mais que ficaram até o fim: até o 3º lugar (empatados dividem), e só quem fez algum ponto.
         const turma = ficaram ?? new Set<number>();
         if (turma.size >= 2) {
@@ -145,7 +169,10 @@ export function criarFesta({ agora = Date.now, aleatorio = Math.random, ordem: o
             rodada,
             rodadas: ordem.length,
             dados: terminada ? null : r.dados,
-            jogadores: inscritos.map((userId) => ({ userId, username: ctx.nome(userId) })),
+            jogadores: inscritos.map((userId) => ({ userId, username: ctx.nome(userId), avatar: avatares.get(userId) ?? null })),
+            // a última rodada vale o dobro; o prêmio bônus, no fim
+            dobro: !terminada && ultima(),
+            premio: terminada ? premio : null,
             resposta: terminada ? null : r.resposta,
             placar: placar(pontos, ctx.nome),
             // a partida (o site monta a tela de novo a cada uma: o "Jogar de novo" do Solo não herda a rodada 5 da anterior)

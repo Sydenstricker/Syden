@@ -14,8 +14,14 @@ import {
   balaNaCaixa,
   balasDoTiro,
   BICHOS,
+  ALCANCE_DA_ARMA,
   bocaDoLanca,
+  coladoNaFaca,
+  PERTO_DA_GAIOLA as PERTO_DA_ARMA,
+  TELEGUIADA,
+  VEL_DA_ARMA,
   ESTADOS,
+  FACA,
   GRANADA,
   GRAVIDADE,
   INTERVALO,
@@ -68,6 +74,9 @@ export interface Quadro {
   /** [id, userId, x0, h0, x, ms até explodir] */
   g: number[][];
   r: number[];
+  /** O cenário da fase (o índice das fases da Briga), e as armas no chão: [id, arma, x] (19/11/2026). */
+  fs?: number;
+  it?: number[][];
   /** [userId, x, h, lado, ação, ms da ação, mira, vidas, golpes, pontos, estado, avatar, arma, ms de arma, ms piscando, último tiro] */
   j: number[][];
   /** [userId, n, x0, h0, direção, leque, ms desde] */
@@ -125,18 +134,25 @@ export interface Vista {
   granadas: { id: number; x0: number; h0: number; x: number; resta: number }[];
   gaiolas: number[];
   /** As balas que os OUTROS atiraram, onde estão agora. */
-  balasDosOutros: { x: number; h: number; dx: number; dh: number }[];
+  balasDosOutros: { x: number; h: number; dx: number; dh: number; arma: Arma }[];
+  /** As armas no chão (a cápsula derrubada), e o cenário da fase. */
+  itens: { id: number; arma: Arma; x: number }[];
+  cenario: number;
 }
 
 export interface Efeito {
-  tipo: 'faisca' | 'fumaca' | 'explosao' | 'pancada' | 'solto' | 'pisao' | 'semente';
+  tipo: 'faisca' | 'fumaca' | 'explosao' | 'pancada' | 'solto' | 'pisao' | 'semente' | 'clarao';
   x: number;
   h: number;
   em: number;
   /** Na fumaça, o tamanho do bicho (o chefe faz uma nuvem maior). */
   grande?: boolean;
+  /** No clarão do cano: a direção da mira (0 a 7). */
+  dir?: number;
+  /** A explosão pequena (a da teleguiada). */
+  pequena?: boolean;
 }
-export type Som = 'acerto' | 'erro' | 'tiro' | 'queda' | 'moeda' | 'combo' | 'vez' | 'pulo';
+export type Som = 'acerto' | 'erro' | 'tiro' | 'queda' | 'moeda' | 'combo' | 'vez' | 'pulo' | 'dano' | 'derrota' | 'explosao' | 'impacto' | 'soco' | 'item' | 'largada';
 
 export interface Meu {
   x: number;
@@ -162,6 +178,10 @@ export interface Meu {
 interface MinhaBala {
   n: number;
   k: number;
+  arma: Arma;
+  /** A teleguiada anda aqui, virando para o bicho: a posição e a direção de agora. */
+  x?: number;
+  h?: number;
   x0: number;
   h0: number;
   dx: number;
@@ -233,6 +253,8 @@ export class Cliente {
   balas: MinhaBala[] = [];
   efeitos: Efeito[] = [];
   sons: Som[] = [];
+  /** O tremor que a tela deve dar neste quadro (0 a 1; a tela lê e zera). Só desenho (19/11/2026). */
+  tremor = 0;
   /** Quem piscou por levar um golpe (userId → até quando). */
   piscando = new Map<number, number>();
   /** Os bichos que piscam por levar uma bala (id → até quando). */
@@ -241,8 +263,10 @@ export class Cliente {
   private posicionado = false;
   private vistos = new Set<number>();
   private ultimoTiroEm = -Infinity;
+  private ultimaFacaEm = -Infinity;
   private ultimoEnvio = -Infinity;
   private pediuGaiola = new Map<number, number>();
+  private pediuArma = new Map<number, number>();
 
   constructor(
     readonly id: number,
@@ -278,7 +302,8 @@ export class Cliente {
           this.eu.acao = 'dor';
           this.eu.t = 0;
           this.eu.piscandoAte = this.eu.relogio + INVUL_MS;
-          this.sons.push('erro');
+          this.sons.push('dano');
+          this.tremor = Math.max(this.tremor, 0.3);
           this.efeitos.push({ tipo: 'pancada', x: this.eu.x, h: this.eu.h + 20, em: agora });
         } else this.piscando.set(r[0], agora + INVUL_MS);
       } else if (tipo === 'k' && r[0] === this.id) {
@@ -298,11 +323,13 @@ export class Cliente {
       } else if (tipo === 'h') {
         this.bichosPiscando.set(r[0], agora + ATRASO_MS + 120);
       } else if (tipo === 'x') {
-        this.efeitos.push({ tipo: 'fumaca', x: r[1], h: r[2], em: agora + ATRASO_MS, grande: TIPOS[r[3]] === 'dragao' });
-        this.sons.push('combo');
+        this.efeitos.push({ tipo: 'fumaca', x: r[1], h: r[2], em: agora + ATRASO_MS, grande: BICHOS[TIPOS[r[3]] ?? 'cogumelo'].comp === 'chefe' });
+        this.sons.push('derrota');
+        if (BICHOS[TIPOS[r[3]] ?? 'cogumelo'].comp === 'chefe') this.tremor = Math.max(this.tremor, 0.8);
       } else if (tipo === 'g') {
         this.efeitos.push({ tipo: 'explosao', x: r[0], h: 0, em: agora });
-        this.sons.push('queda');
+        this.sons.push('explosao');
+        this.tremor = Math.max(this.tremor, 0.5);
       } else if (tipo === 'l') {
         const [x] = REFENS[r[0]] ?? [0];
         this.efeitos.push({ tipo: 'solto', x, h: 0, em: agora });
@@ -310,10 +337,17 @@ export class Cliente {
       } else if (tipo === 't') {
         this.efeitos.push({ tipo: 'pisao', x: r[0], h: 0, em: agora + ATRASO_MS });
         this.sons.push('queda');
+        this.tremor = Math.max(this.tremor, 0.55);
       } else if (tipo === 's') {
         this.efeitos.push({ tipo: 'semente', x: r[0], h: 0, em: agora + ATRASO_MS });
       } else if (tipo === 'c') {
         this.sons.push('vez');
+      } else if (tipo === 'w') {
+        // alguém pegou a arma da cápsula (o servidor deu a arma no quadro)
+        if (r[1] === this.id) this.sons.push('item');
+      } else if (tipo === 'f') {
+        // a fase seguinte da campanha
+        this.sons.push('largada');
       }
     }
   }
@@ -321,7 +355,7 @@ export class Cliente {
   /** O que a tela mostra agora. */
   vista(agora: number): Vista {
     const ultimo = this.linha.ultimo();
-    if (!ultimo) return { passo: 0, fase: null, onda: 0, arena: [0, 320], bichos: [], coelhos: [], balas: [], granadas: [], gaiolas: [0, 0, 0], balasDosOutros: [] };
+    if (!ultimo) return { passo: 0, fase: null, onda: 0, arena: [0, 320], bichos: [], coelhos: [], balas: [], granadas: [], gaiolas: [0, 0, 0], balasDosOutros: [], itens: [], cenario: 1 };
     const p = this.linha.passoNaTela(agora);
     const agoraNoServidor = this.linha.passoDoServidor(agora);
     const volta = this.linha.emVolta(p)!;
@@ -346,9 +380,11 @@ export class Cliente {
     for (const s of ultimo.p) {
       if (s[0] === this.id) continue;
       const ms = s[6] + (p - ultimo.n) * PASSO_MS;
-      const d = andouABala(ms);
-      if (d >= BALA.alcance || ms < 0) continue;
-      for (const [dx, dh] of balasDoTiro(s[4], s[5] ? 'leque' : 'normal')) balasDosOutros.push({ x: s[2] + dx * d, h: s[3] + dh * d, dx, dh });
+      // a arma do tiro (desde 19/11/2026; antes, o leque ou a de sempre); a teleguiada dos outros vai reta no desenho
+      const arma: Arma = s[7] !== undefined ? (ARMAS[s[7]] ?? 'normal') : s[5] ? 'leque' : 'normal';
+      const d = andouABala(ms, arma);
+      if (d >= ALCANCE_DA_ARMA[arma] || ms < 0) continue;
+      for (const [dx, dh] of balasDoTiro(s[4], arma)) balasDosOutros.push({ x: s[2] + dx * d, h: s[3] + dh * d, dx, dh, arma });
     }
     return {
       passo: p,
@@ -360,6 +396,8 @@ export class Cliente {
       balas,
       granadas: ultimo.g.map((g) => ({ id: g[0], x0: g[2], h0: g[3], x: g[4], resta: g[5] - (agoraNoServidor - ultimo.n) * PASSO_MS })),
       gaiolas: ultimo.r,
+      itens: (ultimo.it ?? []).map((l) => ({ id: l[0], arma: ARMAS[l[1]] ?? 'chama', x: l[2] })),
+      cenario: ultimo.fs ?? 1,
       balasDosOutros,
     };
   }
@@ -386,7 +424,11 @@ export class Cliente {
     // as minhas balas: acertaram um bicho como ele está na minha tela?
     for (const b of this.balas) {
       if (b.acertou) continue;
-      const d = andouABala(agora - b.inicio);
+      if (b.arma === 'teleguiada') {
+        this.passoDaTeleguiada(b, dt, agora, v);
+        continue;
+      }
+      const d = andouABala(agora - b.inicio, b.arma);
       for (const i of v.bichos) {
         if (i.estado === 'morto' || i.hp <= 0) continue;
         const c = BICHOS[i.tipo];
@@ -400,7 +442,7 @@ export class Cliente {
       }
       b.andou = d;
     }
-    this.balas = this.balas.filter((b) => !b.acertou && b.andou < BALA.alcance && b.h0 + b.dh * b.andou > -4);
+    this.balas = this.balas.filter((b) => !b.acertou && b.andou < ALCANCE_DA_ARMA[b.arma] && (b.h ?? b.h0 + b.dh * b.andou) > -4);
     if (!this.jogando()) return;
 
     // correr (dentro da arena da onda: a câmera não deixa sair)
@@ -434,7 +476,19 @@ export class Cliente {
     // a mira e o tiro (segurando, no ritmo da arma)
     eu.mira = miraDe(cmd, eu.lado, noAr);
     if (eu.armaAte && eu.relogio >= eu.armaAte) eu.arma = 'normal';
-    if (cmd.atirar && agora - this.ultimoTiroEm >= INTERVALO[eu.arma] + 8) {
+    // A FACA-CENOURA (19/11/2026): com um bicho colado na frente, atirar vira a facada (o servidor confere pelo passado dele)
+    const colado = cmd.atirar && !noAr ? v.bichos.find((i) => i.estado !== 'morto' && i.hp > 0 && coladoNaFaca(eu.x, eu.h, eu.lado, i.x, i.h, BICHOS[i.tipo].larg, BICHOS[i.tipo].alto, 0)) : undefined;
+    if (colado) {
+      if (agora - this.ultimaFacaEm >= FACA.intervalo) {
+        this.ultimaFacaEm = agora;
+        this.mandarPosicao(agora);
+        this.enviar({ tipo: 'faca', inimigo: colado.id });
+        this.efeitos.push({ tipo: 'faisca', x: colado.x - eu.lado * 4, h: eu.h + 22, em: agora });
+        this.bichosPiscando.set(colado.id, agora + 120);
+        this.sons.push('soco');
+        this.tremor = Math.max(this.tremor, 0.12);
+      }
+    } else if (cmd.atirar && agora - this.ultimoTiroEm >= INTERVALO[eu.arma] + 8) {
       this.ultimoTiroEm = agora;
       const [x0, h0] = bocaDoLanca(eu.x, eu.h, eu.mira);
       const n = this.proximoTiro++;
@@ -442,8 +496,11 @@ export class Cliente {
       this.mandarPosicao(agora);
       this.enviar({ tipo: 'tiro', n, x: Math.round(x0 * 10) / 10, h: Math.round(h0 * 10) / 10, dir: eu.mira });
       const x = Math.round(x0 * 10) / 10, h = Math.round(h0 * 10) / 10;
-      balasDoTiro(eu.mira, eu.arma).forEach(([dx, dh], k) => this.balas.push({ n, k, x0: x, h0: h, dx, dh, inicio: agora, andou: 0, acertou: false }));
+      const arma = eu.arma;
+      balasDoTiro(eu.mira, arma).forEach(([dx, dh], k) => this.balas.push({ n, k, arma, x0: x, h0: h, dx, dh, inicio: agora, andou: 0, acertou: false }));
       this.sons.push('tiro');
+      // o clarão no cano (só desenho)
+      this.efeitos.push({ tipo: 'clarao', x: x0, h: h0, em: agora, dir: eu.mira });
     }
     if (granada && eu.relogio >= eu.granadaEm) {
       eu.granadaEm = eu.relogio + GRANADA.recarga;
@@ -460,6 +517,14 @@ export class Cliente {
       this.mandarPosicao(agora);
       this.enviar({ tipo: 'soltar', gaiola: k });
     });
+    // encostou numa arma no chão (a da cápsula): pega (o servidor confere e dá a arma)
+    for (const it of v.itens) {
+      if (Math.abs(eu.x - it.x) > PERTO_DA_ARMA || eu.h > 20) continue;
+      if ((this.pediuArma.get(it.id) ?? -Infinity) > agora - 500) continue;
+      this.pediuArma.set(it.id, agora);
+      this.mandarPosicao(agora);
+      this.enviar({ tipo: 'arma', item: it.id });
+    }
     if (agora - this.ultimoEnvio >= ENVIO_MS) this.mandarPosicao(agora);
   }
 
@@ -481,11 +546,58 @@ export class Cliente {
     });
   }
 
+  /**
+   * A TELEGUIADA (19/11/2026): anda na velocidade dela e vira até TELEGUIADA.giro rad/s para o bicho mais perto à frente;
+   * encostou na caixa dele como a tela o mostra, o acerto vai ao servidor (que confere pela distância).
+   */
+  private passoDaTeleguiada(b: MinhaBala, dt: number, agora: number, v: Vista) {
+    let x = b.x ?? b.x0, h = b.h ?? b.h0;
+    let alvo: BichoNaTela | null = null;
+    let melhor = Infinity;
+    for (const i of v.bichos) {
+      if (i.estado === 'morto' || i.hp <= 0) continue;
+      const ddx = i.x - x, ddh = i.h + BICHOS[i.tipo].alto / 2 - h;
+      const d = Math.hypot(ddx, ddh);
+      if (ddx * b.dx + ddh * b.dh > -10 && d < melhor) {
+        melhor = d;
+        alvo = i;
+      }
+    }
+    if (alvo) {
+      const ax = alvo.x - x, ah = alvo.h + BICHOS[alvo.tipo].alto / 2 - h;
+      const quer = Math.atan2(ah, ax), tem = Math.atan2(b.dh, b.dx);
+      let dif = quer - tem;
+      while (dif > Math.PI) dif -= 2 * Math.PI;
+      while (dif < -Math.PI) dif += 2 * Math.PI;
+      const novo = tem + Math.max(-TELEGUIADA.giro * dt, Math.min(TELEGUIADA.giro * dt, dif));
+      b.dx = Math.cos(novo);
+      b.dh = Math.sin(novo);
+    }
+    const passo = VEL_DA_ARMA.teleguiada * dt;
+    x += b.dx * passo;
+    h += b.dh * passo;
+    b.x = x;
+    b.h = h;
+    b.andou += passo;
+    for (const i of v.bichos) {
+      if (i.estado === 'morto' || i.hp <= 0) continue;
+      const c = BICHOS[i.tipo];
+      if (x >= i.x - c.larg - BALA.raio && x <= i.x + c.larg + BALA.raio && h >= i.h - BALA.raio && h <= i.h + c.alto + BALA.raio) {
+        b.acertou = true;
+        this.enviar({ tipo: 'acerto', n: b.n, k: b.k, inimigo: i.id });
+        this.efeitos.push({ tipo: 'explosao', x, h: 0, em: agora, pequena: true });
+        this.sons.push('impacto');
+        return;
+      }
+    }
+  }
+
   /** As minhas balas no ar, onde estão agora (para desenhar). */
   minhasBalas(agora: number) {
     return this.balas.map((b) => {
-      const d = andouABala(agora - b.inicio);
-      return { x: b.x0 + b.dx * d, h: b.h0 + b.dh * d, dx: b.dx, dh: b.dh };
+      if (b.arma === 'teleguiada') return { x: b.x ?? b.x0, h: b.h ?? b.h0, dx: b.dx, dh: b.dh, arma: b.arma };
+      const d = andouABala(agora - b.inicio, b.arma);
+      return { x: b.x0 + b.dx * d, h: b.h0 + b.dh * d, dx: b.dx, dh: b.dh, arma: b.arma };
     });
   }
 }

@@ -1,0 +1,66 @@
+/* O Minigolfe da toca, o que entrou em 19/11/2026: a escolha do percurso, o par no topo e o selo do buraco. */
+
+.golfe-percursos {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.golfe-percursos .minijogo-jogo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 120px;
+}
+
+.golfe-percurso-numero {
+  font-size: 1.6rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.golfe-percurso-recorde,
+.golfe-par,
+.golfe-recorde {
+  color: var(--text-strong);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.golfe-selo {
+  position: absolute;
+  left: 50%;
+  top: 38%;
+  transform: translate(-50%, -50%);
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: rgba(40, 32, 26, 0.72);
+  color: #f4ecdc;
+  font-size: 1.3rem;
+  font-weight: 800;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.golfe-selo.festa {
+  background: rgba(196, 140, 40, 0.88);
+  animation: golfe-selo-pula 0.5s ease-out;
+}
+
+@keyframes golfe-selo-pula {
+  from {
+    transform: translate(-50%, -50%) scale(0.6);
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .golfe-selo.festa {
+    animation: none;
+  }
+}

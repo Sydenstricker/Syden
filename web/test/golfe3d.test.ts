@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import {
   BURACOS,
+  BURACOS_DO_PARQUE,
   CHAO,
   DY_MAX,
   avancar,
@@ -24,6 +25,9 @@ import {
   temChao,
 } from '../src/golfe3d/fisica';
 
+/** Os dois percursos (o do kit e, desde 19/11/2026, o do parque): todo buraco passa pelos mesmos testes. */
+const TODOS = [...BURACOS, ...BURACOS_DO_PARQUE];
+
 test('a física do minigolfe 3D é o MESMO arquivo no site e no servidor, byte a byte', () => {
   const site = readFileSync(new URL('../src/golfe3d/fisica.ts', import.meta.url));
   const servidor = readFileSync(new URL('../../server/src/golfe3d-fisica.ts', import.meta.url));
@@ -32,7 +36,7 @@ test('a física do minigolfe 3D é o MESMO arquivo no site e no servidor, byte a
 
 test('os buracos: um buraco cada, a saída no chão, e o piloto acerta todos em poucas tacadas', () => {
   assert.ok(BURACOS.length >= 6 && BURACOS.length <= 9);
-  for (const [i, b] of BURACOS.entries()) {
+  for (const [i, b] of TODOS.entries()) {
     const nome = `buraco ${i + 1}`;
     assert.equal(b.casas.filter(([peca]) => FORMAS[peca].buraco).length, 1, `${nome}: um buraco só`);
     const casas = new Set(b.casas.map(([, x, z]) => `${x},${z}`));
@@ -51,7 +55,7 @@ test('os buracos: um buraco cada, a saída no chão, e o piloto acerta todos em 
 });
 
 test('nas bordas abertas entre duas casas, o chão tem a mesma altura dos dois lados (nada de degrau escondido)', () => {
-  for (const [i, b] of BURACOS.entries()) {
+  for (const [i, b] of TODOS.entries()) {
     const m = montar(b);
     for (const [, x, z] of b.casas) {
       for (const [ox, oz] of [
@@ -78,7 +82,7 @@ test('nas bordas abertas entre duas casas, o chão tem a mesma altura dos dois l
 
 test('a borda da pista é fechada: nenhuma tacada sai pelo lado sem parede (só cai quem acha um buraco do chão)', () => {
   // de vários pontos de cada buraco, tacadas fortes em 16 direções: quem sai da pista sem passar por um fosso é parede faltando
-  for (const [i, b] of BURACOS.entries()) {
+  for (const [i, b] of TODOS.entries()) {
     const m = montar(b);
     const temFosso = b.casas.some(([peca]) => FORMAS[peca].fossos.length > 0);
     if (temFosso) continue;
@@ -206,4 +210,70 @@ test('a tacada por cima tem limite para o alto e conta a força inteira', () => 
   assert.equal(tacadaInvalida(bola, { passo: 0, dx: 0, dz: 300, dy: -1 }), 'forca');
   assert.equal(tacadaInvalida(bola, { passo: 0, dx: 0, dz: 300, dy: 1.5 }), 'numeros');
   assert.equal(tacadaInvalida(bola, { passo: 0, dx: 0, dz: 300, dy: 300 }), null);
+});
+
+test('as pás do moinho giram pelo passo: fechada, a pá devolve a bola; aberta, a bola passa; parada nunca fica embaixo da pá', async () => {
+  const f = await import('../src/golfe3d/fisica');
+  const b = f.BURACOS.find((x) => x.casas.some((c) => c[0] === 'moinho'))!;
+  const moinho = b.casas.find((c) => c[0] === 'moinho')!;
+  // um quarto de volta: a pá fecha no meio, e há tempo aberto dos dois lados
+  const fechados = Array.from({ length: f.VOLTA_DO_MOINHO }, (_, p) => f.moinhoFechado(p)).filter(Boolean).length;
+  assert.ok(fechados > 0 && fechados < f.VOLTA_DO_MOINHO / 2, `${fechados} passos fechado por volta`);
+  // a bola rasteira, da saída da casa de antes, direto para a passagem
+  const tiro = (passo: number) => {
+    const bola = f.novaBola(b);
+    bola.x = moinho[1];
+    bola.z = moinho[2] - 0.6;
+    // o passo em que ela chega à pá: procura um começo que ponha a chegada no meio do "fechado" ou do "aberto"
+    f.bater(bola, { passo, dx: 0, dz: 700 });
+    let passou = false;
+    while (bola.andando) {
+      f.avancar(b, bola);
+      if (bola.z > moinho[2] - 0.3) passou = true;
+    }
+    return { bola, passou };
+  };
+  let viuFechar = false;
+  let viuPassar = false;
+  for (let p = 0; p < f.VOLTA_DO_MOINHO / 4; p += 3) {
+    const { passou } = tiro(p);
+    if (passou) viuPassar = true;
+    else viuFechar = true;
+  }
+  assert.ok(viuFechar && viuPassar, 'a mesma tacada passa ou bate, conforme o passo');
+  // em nenhum passo a bola parada fica no caminho da pá
+  for (let p = 0; p < f.VOLTA_DO_MOINHO / 4; p += 2) {
+    for (const forca of [120, 200, 260]) {
+      const bola = f.novaBola(b);
+      bola.x = moinho[1];
+      bola.z = moinho[2] - 0.6;
+      f.bater(bola, { passo: p, dx: 0, dz: forca });
+      f.rolarAteParar(b, bola);
+      const v = bola.z - moinho[2];
+      assert.ok(!(Math.abs(bola.x - moinho[1]) < 0.15 + f.RAIO_BOLA && v > -0.5 - f.RAIO_BOLA && v < -0.39 + f.RAIO_BOLA), `passo ${p}, força ${forca}: parou embaixo da pá (${v})`);
+    }
+  }
+});
+
+test('os itens da própria bola (19/11/2026): o quique extra volta mais da parede, a pesada menos, e a mira não muda a física', async () => {
+  const f = await import('../src/golfe3d/fisica');
+  const b = f.BURACOS[0];
+  // de lado contra a parede da reta: a velocidade de volta depende do item
+  const volta = (item?: 'pesada' | 'quique' | 'mira') => {
+    const bola = f.novaBola(b);
+    bola.z = 1;
+    f.bater(bola, { passo: 0, dx: 600, dz: 0, ...(item ? { item } : {}) });
+    let vx = 0;
+    for (let k = 0; k < 60 && bola.andando; k++) {
+      f.avancar(b, bola);
+      if (bola.vx < 0) {
+        vx = -bola.vx;
+        break;
+      }
+    }
+    return vx;
+  };
+  assert.ok(volta('quique') > volta() && volta() > volta('pesada'), `${volta('quique')} ${volta()} ${volta('pesada')}`);
+  assert.equal(volta('mira'), volta());
+  assert.equal(f.tacadaInvalida(f.novaBola(b), { passo: 0, dx: 300, dz: 0, item: 'foguete' as never }), 'item');
 });

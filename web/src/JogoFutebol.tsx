@@ -6,9 +6,10 @@ import { coresDoJogador, type AvatarDoJogo } from './coelho/cores';
 import { useT } from './i18n';
 import { comandoDaPausa, TelaDePausa, usePausaComEsc } from './pausaDosJogos';
 import { tocar } from './somDosJogos';
+import { criarImpacto, menosMovimentoNoSistema } from './impacto';
 import { carregarFolhas, COR_DO_TIME, desenharBola, desenharCampo, desenharJogador, desenharNome, type Folhas, type JogadorNaTela } from './futebol/desenho';
 import { ClienteDaSala, type EventoDaTela, type Quadro } from './futebol/sala';
-import { comandoDoRobo, CONTAGEM, H, NADA, novoMundo, PARTIDA_PASSOS, passoDoMundo, W, type Comando, type Evento, type Jogador, type Mundo } from './futebol/sim';
+import { comandoDoRobo, CONTAGEM, H, NADA, NIVEIS_DO_ROBO, novoMundo, PARTIDA_PASSOS, passoDoMundo, W, type Comando, type Evento, type Jogador, type Mundo } from './futebol/sim';
 import './futebol/futebol.css';
 
 /**
@@ -70,23 +71,70 @@ declare global {
 const PELO_DO_MASCOTE: [number, number, number] = [250, 241, 212];
 const peloDe = (avatar: number | string | null | undefined): [number, number, number] => coresDoJogador(avatar)?.pelo || PELO_DO_MASCOTE;
 const FORMATO_GUARDADO = 'syden:futebolFormato';
+const NIVEL_GUARDADO = 'syden:futebolNivel';
+const lerGuardado = (chave: string, padrao: number) => {
+  try {
+    const v = localStorage.getItem(chave);
+    return v === null ? padrao : Number(v);
+  } catch {
+    return padrao;
+  }
+};
+const guardar = (chave: string, valor: number) => {
+  try {
+    localStorage.setItem(chave, String(valor));
+  } catch {
+    // sem o armazenamento, só não se lembra da escolha
+  }
+};
+
+/** A escolha do Solo (19/11/2026): quantos por time, a dificuldade dos robôs e se é a mini-copa (3 jogos, do fácil ao difícil). */
+interface EscolhaDoSolo {
+  formato: number;
+  nivel: number;
+  copa: boolean;
+}
+
+/** A mini-copa: os jogos já feitos (os meus gols e os deles), na ordem. */
+type Copa = [number, number][];
 
 export function JogoFutebol({ estado, eu, jogador, agir, socket = null, channelId = 0 }: Props) {
   const t = useT();
   const fim = estado.terminada || estado.fase === 'fim';
-  const [formato, setFormato] = useState<number | null>(estado.formato ?? null);
-  if (fim) return <TelaDoFim estado={estado} eu={eu} />;
+  const [escolha, setEscolha] = useState<EscolhaDoSolo | null>(estado.formato ? { formato: estado.formato, nivel: lerGuardado(NIVEL_GUARDADO, 1), copa: false } : null);
+  // a mini-copa: os jogos feitos até aqui; entre um e outro, o placar da copa espera o "próximo"
+  const [copa, setCopa] = useState<Copa>([]);
+  const [entreJogos, setEntreJogos] = useState(false);
+  const [copaAcabou, setCopaAcabou] = useState(false);
+  if (fim) return <TelaDoFim estado={estado} eu={eu} copa={escolha?.copa ? copa : null} />;
   if (estado.solo) {
-    if (!formato) return <EscolhaDoFormato aoEscolher={setFormato} />;
+    if (!escolha) return <EscolhaDoFormato aoEscolher={setEscolha} />;
+    const { formato } = escolha;
+    const jogoDaCopa = copa.length;
+    if (escolha.copa && entreJogos) return <TelaDaCopa copa={copa} aoSeguir={() => setEntreJogos(false)} />;
+    if (escolha.copa && copaAcabou) return <p className="minijogo-situacao">{t('Fim de jogo!')}</p>;
     return (
       <PartidaSolo
-        key={estado.partidaId}
+        key={`${estado.partidaId}-${jogoDaCopa}`}
         formato={formato}
+        nivel={escolha.copa ? jogoDaCopa : escolha.nivel}
         eu={eu}
         nome={estado.username ?? ''}
         avatar={estado.avatar ?? null}
         robos={estado.robos ?? []}
-        aoTerminar={(m) => void agir({ tipo: 'fim', formato, gols: m.placar[0], contra: m.placar[1], passos: m.passo, tempo: m.tempo })}
+        aoTerminar={(m) => {
+          // na copa, os dois primeiros jogos ficam aqui; o último vai ao servidor, como uma partida do Solo
+          if (escolha.copa && jogoDaCopa < NIVEIS_DO_ROBO.length - 1) {
+            setCopa((c) => [...c, [m.placar[0], m.placar[1]]]);
+            setEntreJogos(true);
+            return;
+          }
+          if (escolha.copa) {
+            setCopa((c) => [...c, [m.placar[0], m.placar[1]]]);
+            setCopaAcabou(true);
+          }
+          void agir({ tipo: 'fim', formato, gols: m.placar[0], contra: m.placar[1], passos: m.passo, tempo: m.tempo });
+        }}
       />
     );
   }
@@ -98,26 +146,49 @@ export function JogoFutebol({ estado, eu, jogador, agir, socket = null, channelI
 // A ESCOLHA DO SOLO: quantos por time (a pessoa e os robôs do time dela contra os robôs do outro)
 // ---------------------------------------------------------------------------------------------------------------------
 
-function EscolhaDoFormato({ aoEscolher }: { aoEscolher: (n: number) => void }) {
+function EscolhaDoFormato({ aoEscolher }: { aoEscolher: (e: EscolhaDoSolo) => void }) {
   const t = useT();
-  const guardado = (() => {
-    try {
-      return Number(localStorage.getItem(FORMATO_GUARDADO)) || 2;
-    } catch {
-      return 2;
-    }
-  })();
+  const guardado = lerGuardado(FORMATO_GUARDADO, 2) || 2;
+  const [nivel, setNivel] = useState(() => Math.max(0, Math.min(NIVEIS_DO_ROBO.length - 1, lerGuardado(NIVEL_GUARDADO, 1))));
+  const [copa, setCopa] = useState(false);
   const escolher = (n: number) => {
-    try {
-      localStorage.setItem(FORMATO_GUARDADO, String(n));
-    } catch {
-      // sem o armazenamento, só não se lembra da escolha
-    }
+    guardar(FORMATO_GUARDADO, n);
+    guardar(NIVEL_GUARDADO, nivel);
     tocar('clique');
-    aoEscolher(n);
+    aoEscolher({ formato: n, nivel, copa });
   };
   return (
     <div className="futebol-escolha">
+      <div className="futebol-formatos" role="group" aria-label={t('Dificuldade')}>
+        {NIVEIS_DO_ROBO.map((_, n) => (
+          <button
+            key={n}
+            type="button"
+            className={!copa && n === nivel ? 'btn-primary' : 'btn-secondary'}
+            aria-pressed={!copa && n === nivel}
+            disabled={copa}
+            onClick={() => {
+              tocar('clique');
+              setNivel(n);
+            }}
+          >
+            {'★'.repeat(n + 1)}
+          </button>
+        ))}
+        <button
+          type="button"
+          className={copa ? 'btn-primary' : 'btn-secondary'}
+          aria-pressed={copa}
+          title={t('Mini-copa: três jogos, cada um mais difícil')}
+          aria-label={t('Mini-copa: três jogos, cada um mais difícil')}
+          onClick={() => {
+            tocar('clique');
+            setCopa((c) => !c);
+          }}
+        >
+          <Trophy size={16} aria-hidden="true" />
+        </button>
+      </div>
       <p className="minijogo-situacao">{t('Quantos por time?')}</p>
       <div className="futebol-formatos">
         {[1, 2, 3].map((n) => (
@@ -134,9 +205,58 @@ function EscolhaDoFormato({ aoEscolher }: { aoEscolher: (n: number) => void }) {
 // O FIM
 // ---------------------------------------------------------------------------------------------------------------------
 
-function TelaDoFim({ estado, eu }: { estado: EstadoFutebol; eu: number }) {
+/** Os placares da mini-copa, um por jogo, com as estrelas da dificuldade. */
+function PlacaresDaCopa({ copa }: { copa: Copa }) {
+  return (
+    <ol className="futebol-copa">
+      {copa.map(([g, c], n) => (
+        <li key={n} className={g > c ? 'venceu' : g < c ? 'perdeu' : undefined}>
+          <span aria-hidden="true">{'★'.repeat(n + 1)}</span>
+          <span>
+            <span style={{ color: COR_DO_TIME[0] }}>{g}</span> × <span style={{ color: COR_DO_TIME[1] }}>{c}</span>
+          </span>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+function TelaDaCopa({ copa, aoSeguir }: { copa: Copa; aoSeguir: () => void }) {
+  const t = useT();
+  return (
+    <div className="futebol-fim">
+      <p className="futebol-fim-titulo">
+        <Trophy size={20} aria-hidden="true" /> {t('Mini-copa')}
+      </p>
+      <PlacaresDaCopa copa={copa} />
+      <button
+        type="button"
+        className="btn-primary"
+        onClick={() => {
+          tocar('clique');
+          aoSeguir();
+        }}
+      >
+        {t('Próximo jogo')}
+      </button>
+    </div>
+  );
+}
+
+function TelaDoFim({ estado, eu, copa = null }: { estado: EstadoFutebol; eu: number; copa?: Copa | null }) {
   const t = useT();
   const nomeDoTime = (time: 0 | 1) => (time === 0 ? t('Azul') : t('Laranja'));
+  if (estado.solo && copa && copa.length > 0) {
+    const campeao = copa.length === NIVEIS_DO_ROBO.length && copa.every(([g, c]) => g > c);
+    return (
+      <div className="futebol-fim">
+        <p className="futebol-fim-titulo">
+          <Trophy size={20} aria-hidden="true" /> {campeao ? t('Campeão da mini-copa!') : t('Mini-copa')}
+        </p>
+        <PlacaresDaCopa copa={copa} />
+      </div>
+    );
+  }
   if (estado.solo) {
     const r = estado.resultadoDoSolo;
     if (!r) return <p className="minijogo-situacao">{t('Fim de jogo!')}</p>;
@@ -197,9 +317,13 @@ interface Entrada {
   passe: boolean;
   /** O direcional de toque (null: solto). */
   toque: { dx: number; dy: number } | null;
+  /** Segurando o chute alto (C). */
+  alto: boolean;
+  /** Trocar de jogador (Q, só no Solo), até o próximo passo usar. */
+  trocar: boolean;
 }
 
-const entradaVazia = (): Entrada => ({ esquerda: false, direita: false, cima: false, baixo: false, chute: false, passe: false, toque: null });
+const entradaVazia = (): Entrada => ({ esquerda: false, direita: false, cima: false, baixo: false, chute: false, passe: false, toque: null, alto: false, trocar: false });
 
 function useEntrada(ativo: boolean) {
   const entrada = useRef<Entrada>(entradaVazia());
@@ -217,7 +341,10 @@ function useEntrada(ativo: boolean) {
       else if (k === 'arrowup' || k === 'w') c.cima = apertada;
       else if (k === 'arrowdown' || k === 's') c.baixo = apertada;
       else if (k === ' ') c.chute = apertada;
-      else if (k === 'x' || k === 'z') {
+      else if (k === 'c') c.alto = apertada;
+      else if (k === 'q') {
+        if (apertada && !e.repeat) c.trocar = true;
+      } else if (k === 'x' || k === 'z') {
         if (apertada && !e.repeat) c.passe = true;
       } else usou = false;
       if (usou) e.preventDefault();
@@ -252,12 +379,13 @@ function comandoDa(e: Entrada): Comando {
   }
   const passe = e.passe;
   e.passe = false;
-  return { dx, dy, chute: e.chute, passe };
+  // o chute alto se carrega segurando o C (ou o Espaço com o C junto)
+  return { dx, dy, chute: e.chute || e.alto, passe, alto: e.alto };
 }
 
 const ehToque = () => typeof window !== 'undefined' && window.matchMedia?.('(pointer: coarse)').matches;
 
-function ControlesDeToque({ entrada }: { entrada: React.RefObject<Entrada> }) {
+function ControlesDeToque({ entrada, solo = false }: { entrada: React.RefObject<Entrada>; solo?: boolean }) {
   const t = useT();
   const base = useRef<HTMLDivElement>(null);
   const [ponto, setPonto] = useState<{ x: number; y: number } | null>(null);
@@ -295,8 +423,24 @@ function ControlesDeToque({ entrada }: { entrada: React.RefObject<Entrada> }) {
         <span style={ponto ? { transform: `translate(${ponto.x * 30}px, ${ponto.y * 30}px)` } : undefined} />
       </div>
       <div className="futebol-botoes">
+        {solo && (
+          <button type="button" onPointerDown={() => (entrada.current.trocar = true)}>
+            {t('Trocar')}
+          </button>
+        )}
         <button type="button" onPointerDown={() => (entrada.current.passe = true)}>
           {t('Passe')}
+        </button>
+        <button
+          type="button"
+          onPointerDown={(e) => {
+            e.currentTarget.setPointerCapture(e.pointerId);
+            entrada.current.alto = true;
+          }}
+          onPointerUp={() => (entrada.current.alto = false)}
+          onPointerCancel={() => (entrada.current.alto = false)}
+        >
+          {t('Alto')}
         </button>
         <button
           type="button"
@@ -322,8 +466,9 @@ function Comandos({ solo = false }: { solo?: boolean }) {
       itens={[
         { teclas: ['setas'], toque: 'toque-arrastar', rotulo: t('Andar') },
         { teclas: ['espaco'], toque: 'toque-segurar', rotulo: t('Chutar (segure para mais força)') },
+        { teclas: ['c'], toque: 'toque-segurar', rotulo: t('Chute alto (passa por cima)') },
         { teclas: ['x', 'z'], toque: 'toque', rotulo: t('Passe') },
-        ...(solo ? [comandoDaPausa(t)] : []),
+        ...(solo ? [{ teclas: ['q' as const], toque: 'toque' as const, rotulo: t('Trocar de jogador') }, comandoDaPausa(t)] : []),
       ]}
     />
   );
@@ -337,8 +482,24 @@ interface Painel {
   placar: [number, number];
   restante: number;
   contagem: number | null;
-  gol: { time: 0 | 1; contra: boolean; autor: string } | null;
+  gol: { time: 0 | 1; contra: boolean; autor: string; id?: number } | null;
 }
+
+/** A comemoração do gol (19/11/2026, só desenho): quem fez pula até `ate`. */
+interface Festa {
+  id: number;
+  ate: number;
+}
+
+interface Confete {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  giro: number;
+  cor: string;
+}
+const CORES_DO_CONFETE = ['#ffe066', '#ff7aa8', '#7fd3ff', '#9be27a', '#ffffff'];
 
 interface Motor {
   /** Antes dos passos de cada quadro (a sala atualiza a vista). */
@@ -353,7 +514,7 @@ interface Motor {
 }
 
 /** `pausavel`: o Solo, contra o computador (ESC pausa); na sala, a partida é do servidor e segue. */
-function Palco({ criar, deps, pausavel = false }: { criar: (aoGol: (g: Painel['gol']) => void) => Motor; deps: unknown[]; pausavel?: boolean }) {
+function Palco({ criar, deps, pausavel = false }: { criar: (aoGol: (g: Painel['gol']) => void, festa: Festa) => Motor; deps: unknown[]; pausavel?: boolean }) {
   const t = useT();
   const canvas = useRef<HTMLCanvasElement>(null);
   const [painel, setPainel] = useState<Painel>({ placar: [0, 0], restante: PARTIDA_PASSOS, contagem: null, gol: null });
@@ -369,10 +530,32 @@ function Palco({ criar, deps, pausavel = false }: { criar: (aoGol: (g: Painel['g
     g.imageSmoothingEnabled = false;
     let gol: Painel['gol'] = null;
     let golAte = 0;
+    // A COMEMORAÇÃO (19/11/2026): a tela treme, o confete cai da cor de quem marcou, e quem marcou pula (só desenho)
+    const impacto = criarImpacto();
+    const festa: Festa = { id: 0, ate: 0 };
+    let confete: Confete[] = [];
+    const calmo = menosMovimentoNoSistema();
     const motor = criarRef.current((novo) => {
       gol = novo;
       golAte = performance.now() + 2200;
-    });
+      if (!novo) return;
+      impacto.tremer(0.7, 380);
+      if (!novo.contra && novo.id) {
+        festa.id = novo.id;
+        festa.ate = performance.now() + 1800;
+      }
+      if (!calmo) {
+        const lado = novo.time === 0 ? W - 40 : 40;
+        confete = Array.from({ length: 70 }, (_, n) => ({
+          x: lado + (Math.random() - 0.5) * 60,
+          y: H / 2 + (Math.random() - 0.5) * 80,
+          vx: (novo.time === 0 ? -1 : 1) * (1 + Math.random() * 3.5),
+          vy: -2.5 - Math.random() * 3,
+          giro: Math.random() * 6,
+          cor: n % 3 === 0 ? COR_DO_TIME[novo.time] : CORES_DO_CONFETE[n % CORES_DO_CONFETE.length],
+        }));
+      }
+    }, festa);
     let id = 0;
     let ultimo = performance.now();
     let acumulado = 0;
@@ -396,7 +579,27 @@ function Palco({ criar, deps, pausavel = false }: { criar: (aoGol: (g: Painel['g
         n++;
       }
       if (n === 6) acumulado = 0;
+      const { dx, dy } = impacto.quadro(agora);
+      g.save();
+      g.translate(Math.round(dx), Math.round(dy));
       motor.desenhar(g, agora);
+      g.restore();
+      if (confete.length) {
+        for (const c of confete) {
+          c.x += c.vx * dt * 60;
+          c.y += c.vy * dt * 60;
+          c.vy += 0.12 * dt * 60;
+          c.vx *= 0.99;
+          c.giro += dt * 8;
+          g.save();
+          g.translate(c.x, c.y);
+          g.rotate(c.giro);
+          g.fillStyle = c.cor;
+          g.fillRect(-2, -1, 4, 2);
+          g.restore();
+        }
+        confete = confete.filter((c) => c.y < H + 10);
+      }
       if (agora - ultimoPainel > 100) {
         ultimoPainel = agora;
         if (gol && agora > golAte) gol = null;
@@ -449,17 +652,20 @@ function desenharMundo(
   campo: HTMLCanvasElement,
   folhas: Folhas,
   m: Mundo,
-  bola: { x: number; y: number },
+  bola: { x: number; y: number; z?: number },
   giro: number,
   quem: (j: Jogador) => { nome: string; pelo: [number, number, number]; eu: boolean },
   agora: number,
+  festa?: Festa,
 ) {
+  // quem fez o gol pula (o desenho sobe; a sombra fica)
+  const pulo = (j: Jogador) => (festa && j.id === festa.id && performance.now() < festa.ate ? Math.abs(Math.sin((festa.ate - performance.now()) / 110)) * 9 : 0);
   g.drawImage(campo, 0, 0);
   const lista: JogadorNaTela[] = m.jogadores.map((j) => ({
     id: j.id,
     time: j.time,
     x: j.x,
-    y: j.y,
+    y: j.y - pulo(j),
     fx: j.fx,
     fy: j.fy,
     vel: Math.sqrt(j.vx * j.vx + j.vy * j.vy),
@@ -470,9 +676,11 @@ function desenharMundo(
   // quem está mais embaixo, por cima
   lista.sort((a, b) => a.y - b.y);
   const bolaAntes = m.bola.dono === 0;
-  if (bolaAntes) desenharBola(g, folhas, bola.x, bola.y, giro);
+  // a bola alta vai por cima de todo mundo
+  const z = bola.z ?? 0;
+  if (bolaAntes && z < 4) desenharBola(g, folhas, bola.x, bola.y, giro, z);
   for (const j of lista) desenharJogador(g, folhas, j, agora);
-  if (!bolaAntes) desenharBola(g, folhas, bola.x, bola.y, giro);
+  if (!bolaAntes || z >= 4) desenharBola(g, folhas, bola.x, bola.y, giro, z);
   for (const j of lista) desenharNome(g, j);
 }
 
@@ -489,7 +697,8 @@ function somDoEvento(e: Evento | EventoDaTela, meuTime: 0 | 1 | null, nome: (id:
       break;
     case 'gol':
       tocar(meuTime === null ? 'acerto' : e.time === meuTime ? 'combo' : 'erro');
-      aoGol({ time: e.time, contra: e.contra, autor: e.autor ? nome(e.autor) : '' });
+      tocar('torcida');
+      aoGol({ time: e.time, contra: e.contra, autor: e.autor ? nome(e.autor) : '', id: e.autor });
       break;
     case 'reinicio':
       tocar('vez');
@@ -506,6 +715,7 @@ function somDoEvento(e: Evento | EventoDaTela, meuTime: 0 | 1 | null, nome: (id:
 
 function PartidaSolo({
   formato,
+  nivel,
   eu,
   nome,
   avatar,
@@ -513,6 +723,7 @@ function PartidaSolo({
   aoTerminar,
 }: {
   formato: number;
+  nivel: number;
   eu: number;
   nome: string;
   avatar: number | string | null;
@@ -531,11 +742,27 @@ function PartidaSolo({
     <>
       <Palco
         pausavel
-        deps={[formato]}
-        criar={(aoGol) => {
+        deps={[formato, nivel]}
+        criar={(aoGol, festa) => {
           // a pessoa e (formato − 1) robôs contra (formato) robôs: -1, -2… do meu lado primeiro
           const ids = Array.from({ length: formato * 2 - 1 }, (_, k) => -(k + 1));
-          const m = novoMundo([[eu, ...ids.slice(0, formato - 1)], ids.slice(formato - 1)]);
+          const m = novoMundo([[eu, ...ids.slice(0, formato - 1)], ids.slice(formato - 1)], nivel);
+          // A TROCA DE JOGADOR (19/11/2026): a tecla passa o comando ao do meu time mais perto da bola; o que eu deixei vira robô
+          let controlado = eu;
+          const trocar = () => {
+            const b = m.bola;
+            let melhor: Jogador | null = null;
+            for (const j of m.jogadores) {
+              if (j.time !== 0 || j.id === controlado) continue;
+              if (!melhor || (j.x - b.x) ** 2 + (j.y - b.y) ** 2 < (melhor.x - b.x) ** 2 + (melhor.y - b.y) ** 2) melhor = j;
+            }
+            if (!melhor) return;
+            const antes = m.jogadores.find((j) => j.id === controlado);
+            if (antes) antes.robo = true;
+            melhor.robo = false;
+            controlado = melhor.id;
+            tocar('clique');
+          };
           const campo = desenharCampo();
           const folhas = carregarFolhas();
           const pelo = peloDe(avatar);
@@ -546,8 +773,12 @@ function PartidaSolo({
             pausaSemFoco: true,
             passo() {
               if (m.fim) return;
+              if (entrada.current.trocar) {
+                entrada.current.trocar = false;
+                trocar();
+              }
               passoDoMundo(m, (j) => {
-                if (j.id !== eu) return comandoDoRobo(m, j);
+                if (j.id !== controlado) return comandoDoRobo(m, j);
                 if (import.meta.env.DEV && window.futebolPilotoAutomatico) return comandoDoRobo(m, j);
                 return comandoDa(entrada.current);
               });
@@ -561,7 +792,17 @@ function PartidaSolo({
             desenhar(g, agora) {
               giro += Math.sqrt((m.bola.x - antes.x) ** 2 + (m.bola.y - antes.y) ** 2) / 5;
               antes = { x: m.bola.x, y: m.bola.y };
-              desenharMundo(g, campo, folhas, m, m.bola, giro, (j) => ({ nome: nomeDe(j.id), pelo: j.id === eu ? pelo : PELO_DO_MASCOTE, eu: j.id === eu }), agora);
+              desenharMundo(
+                g,
+                campo,
+                folhas,
+                m,
+                m.bola,
+                giro,
+                (j) => ({ nome: nomeDe(j.id), pelo: j.id === eu ? pelo : PELO_DO_MASCOTE, eu: j.id === controlado }),
+                agora,
+                festa,
+              );
             },
             painel() {
               return {
@@ -573,7 +814,7 @@ function PartidaSolo({
           };
         }}
       />
-      {toque && <ControlesDeToque entrada={entrada} />}
+      {toque && <ControlesDeToque entrada={entrada} solo />}
     </>
   );
 }
@@ -598,7 +839,7 @@ function PartidaNaSala({ estado, eu, socket, channelId }: { estado: EstadoFutebo
       {eu === null && <p className="minijogo-situacao">{t('Assistindo')}</p>}
       <Palco
         deps={[socket, channelId]}
-        criar={(aoGol) => {
+        criar={(aoGol, festa) => {
           const campo = desenharCampo();
           const folhas = carregarFolhas();
           const enviar = (dados: unknown) => socket?.emit('minijogo:tempo-real', { channelId, dados });
@@ -643,6 +884,7 @@ function PartidaNaSala({ estado, eu, socket, channelId }: { estado: EstadoFutebo
                   return { nome: p?.username ?? '', pelo: peloDe(p?.avatar), eu: j.id === eu };
                 },
                 agora,
+                festa,
               );
             },
             painel() {

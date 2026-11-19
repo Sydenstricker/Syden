@@ -2,7 +2,9 @@ import { Check, Hand } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useT } from './i18n';
 import { Placar, PlacarAoVivo, Relogio, type Agir } from './Minijogo';
-import { CATEGORIAS_DO_STOP, type EstadoStop, type Partida } from './minijogos';
+import { nomeDaCategoriaDoStop, type EstadoStop, type Partida } from './minijogos';
+import { tocar } from './somDosJogos';
+import './jogosDePalavras.css';
 
 /**
  * O STOP na sala de voz (ver server/src/minijogo-stop.ts). Três momentos por rodada:
@@ -41,6 +43,16 @@ export function JogoStop({
 
   const enviar = (lista: string[]) => void aoAgir({ tipo: 'respostas', respostas: lista }).catch(() => {});
 
+  // OS SONS (19/11/2026): a letra nova, o STOP de alguém, e os pontos da rodada (a medalha quando os meus somam bem).
+  const antesDoSom = useRef({ fase: estado.fase, rodada: estado.rodada });
+  useEffect(() => {
+    const a = antesDoSom.current;
+    if (estado.rodada !== a.rodada || (estado.fase === 'escrevendo' && a.fase !== 'escrevendo')) tocar('vez');
+    else if (estado.fase === 'parando' && a.fase === 'escrevendo') tocar('alarme');
+    else if (estado.fase === 'resultado' && a.fase !== 'resultado') tocar('moeda');
+    antesDoSom.current = { fase: estado.fase, rodada: estado.rodada };
+  }, [estado.fase, estado.rodada]);
+
   // Alguém apertou STOP: manda já o que está escrito, sem esperar a pausa da digitação.
   useEffect(() => {
     if (estado.fase !== 'parando') return;
@@ -68,7 +80,7 @@ export function JogoStop({
         <div className="stop-campos">
           {estado.categorias.map((categoria, i) => (
             <label key={categoria} className="stop-campo">
-              <span>{t(CATEGORIAS_DO_STOP[categoria] ?? categoria)}</span>
+              <span>{nomeDaCategoriaDoStop(categoria, t)}</span>
               <input
                 value={textos[i] ?? ''}
                 maxLength={40}
@@ -85,7 +97,7 @@ export function JogoStop({
             </label>
           ))}
         </div>
-        <Relogio restante={restante} total={escrevendo ? 90_000 : 2_000} />
+        <Relogio restante={restante} total={escrevendo ? ((estado as { tempoMs?: number }).tempoMs ?? 90_000) : 2_000} />
         {escrevendo ? (
           <div className="stop-rodape">
             <span className="minijogo-situacao">{t('{n} de {total} já completaram.', { n: estado.completos.length, total: jogadores })}</span>
@@ -125,7 +137,7 @@ export function JogoStop({
       <div className="stop-conferencia">
         {estado.categorias.map((categoria, c) => (
           <section key={categoria}>
-            <h4>{t(CATEGORIAS_DO_STOP[categoria] ?? categoria)}</h4>
+            <h4>{nomeDaCategoriaDoStop(categoria, t)}</h4>
             <ul>
               {(estado.respostas ?? []).map((pessoa) => {
                 const r = pessoa.respostas[c];
@@ -139,7 +151,10 @@ export function JogoStop({
                       disabled={!podeContestar}
                       aria-pressed={podeContestar ? r.contestei : undefined}
                       title={podeContestar ? (r.contestei ? t('Desfazer') : t('Não vale')) : undefined}
-                      onClick={() => agir({ tipo: 'contestar', categoria: c, alvo: pessoa.userId })}
+                      onClick={() => {
+                        tocar('clique');
+                        agir({ tipo: 'contestar', categoria: c, alvo: pessoa.userId });
+                      }}
                     >
                       <span className="stop-quem">{pessoa.username}</span>
                       <span className="stop-texto">{r.texto.trim() || '—'}</span>

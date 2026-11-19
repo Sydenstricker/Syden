@@ -1,4 +1,4 @@
-import { ALTURA, Bloco, blocoEm, LINHAS, movelEm, T, type Fase, type Tema } from './fases';
+import { ALTURA, BICHO_MEIA, Bloco, blocoEm, bichoEm, LINHAS, movelEm, T, type Fase, type Tema } from './fases';
 
 /**
  * O DESENHO DO PULO DO COELHO (03/11/2026): tudo por código, numa tela de 320 × 180 ampliada com os pixels nítidos, como
@@ -88,7 +88,15 @@ export function prepararPintura(canvas: HTMLCanvasElement, fase: Fase): Pintura 
   const ctx = canvas.getContext('2d')!;
   ctx.imageSmoothingEnabled = false;
   const cores = CORES[fase.tema];
-  return { ctx, fase, cores, mapa: pintarMapa(fase, cores), longe: camadaLonge(fase.tema, cores), perto: camadaPerto(fase.tema, cores), coelho: null };
+  return {
+    ctx,
+    fase,
+    cores,
+    mapa: pintarMapa(fase, cores),
+    longe: camadaLonge(fase.tema, cores),
+    perto: camadaPerto(fase.tema, cores),
+    coelho: null,
+  };
 }
 
 function pintarMapa(f: Fase, cores: Cores): HTMLCanvasElement {
@@ -96,7 +104,8 @@ function pintarMapa(f: Fase, cores: Cores): HTMLCanvasElement {
   for (let l = 0; l < LINHAS; l++) {
     for (let col = 0; col < f.colunas; col++) {
       const b = blocoEm(f, col, l);
-      const x = col * T, y = l * T;
+      const x = col * T,
+        y = l * T;
       if (b === Bloco.Vazio && l === LINHAS - 1) {
         // o fundo do buraco escurece: cair ali é voltar ao posto
         for (let k = 0; k < 8; k++) {
@@ -170,13 +179,15 @@ function pintarMapa(f: Fase, cores: Cores): HTMLCanvasElement {
     ctx.fillRect(p.x + 3, p.y - 21, 2, 2);
   });
   // a chegada: o mastro e a bandeira quadriculada
-  const cx = f.chegada, chao = chaoDebaixo(f, cx);
+  const cx = f.chegada,
+    chao = chaoDebaixo(f, cx);
   ctx.fillStyle = '#5a4a50';
   ctx.fillRect(cx - 1, chao - 70, 3, 70);
-  for (let i = 0; i < 4; i++) for (let j = 0; j < 3; j++) {
-    ctx.fillStyle = (i + j) % 2 ? '#2e2630' : '#f4ead8';
-    ctx.fillRect(cx + 2 + i * 5, chao - 70 + j * 5, 5, 5);
-  }
+  for (let i = 0; i < 4; i++)
+    for (let j = 0; j < 3; j++) {
+      ctx.fillStyle = (i + j) % 2 ? '#2e2630' : '#f4ead8';
+      ctx.fillRect(cx + 2 + i * 5, chao - 70 + j * 5, 5, 5);
+    }
   ctx.fillStyle = '#e3b45a';
   ctx.fillRect(cx - 2, chao - 73, 5, 4);
   return c;
@@ -234,7 +245,8 @@ function camadaPerto(tema: Tema, cores: Cores): HTMLCanvasElement {
   } else if (tema === 'toca') {
     // estalactites e cristais
     for (let i = 0; i < 20; i++) {
-      const x = i * 32 + Math.floor(sorte(i, 2) * 20), comp = 8 + Math.floor(sorte(i, 3) * 26);
+      const x = i * 32 + Math.floor(sorte(i, 2) * 20),
+        comp = 8 + Math.floor(sorte(i, 3) * 26);
       for (let k = 0; k < comp; k += 2) ctx.fillRect(x + Math.floor(k / 6), k, Math.max(1, 6 - Math.floor(k / 4)), 2);
       ctx.fillStyle = '#8a7ea0';
       if (i % 3 === 0) ctx.fillRect(x + 4, H - 30 - Math.floor(sorte(i, 4) * 30), 3, 6);
@@ -268,9 +280,118 @@ export interface Figura {
   alpha?: number;
   nome?: string;
   piscando?: boolean;
+  /** O amassa-e-estica (só desenho): a largura e a altura, com o pé parado no lugar. */
+  escala?: [number, number];
 }
 
-export function pintar(p: Pintura, camX: number, camY: number, n: number, figuras: Figura[]) {
+/** O que a fase tem de vivo para quem corre (19/11/2026): as cenouras pegas, a dourada e os bichos pisados (bits). */
+export interface Vivos {
+  cenouras: number;
+  dourada: boolean;
+  pisados: number;
+}
+
+/** Uma partícula só de desenho: a poeira do pulo e do pouso, o estouro do espinho, o brilho da cenoura. */
+export interface Particula {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+  vida: number;
+  total: number;
+  cor: string;
+  tam: number;
+  /** Cai com a gravidade (o estouro), ou só some (a poeira). */
+  pesa?: boolean;
+}
+
+/** Anda as partículas `dt` segundos e tira as que acabaram. */
+export function andarParticulas(ps: Particula[], dt: number) {
+  for (let i = ps.length - 1; i >= 0; i--) {
+    const q = ps[i];
+    q.vida -= dt;
+    if (q.vida <= 0) {
+      ps.splice(i, 1);
+      continue;
+    }
+    q.x += q.vx * dt;
+    q.y += q.vy * dt;
+    if (q.pesa) q.vy += 500 * dt;
+    else q.vx *= 0.9;
+  }
+}
+
+export function desenharParticulas(ctx: CanvasRenderingContext2D, ps: Particula[], camX: number, camY: number) {
+  for (const q of ps) {
+    ctx.globalAlpha = Math.max(0, Math.min(1, q.vida / q.total));
+    ctx.fillStyle = q.cor;
+    const t = Math.max(1, Math.round(q.tam * (q.pesa ? 1 : 0.5 + q.vida / q.total)));
+    ctx.fillRect(Math.round(q.x - camX - t / 2), Math.round(q.y - camY - t / 2), t, t);
+  }
+  ctx.globalAlpha = 1;
+}
+
+/** A cenoura de juntar (ou a dourada), balançando um pouco pelo passo. */
+function cenoura(ctx: CanvasRenderingContext2D, x: number, y: number, n: number, dourada: boolean) {
+  const b = Math.floor(((n + x) % 60) / 30);
+  const yy = y - b;
+  ctx.fillStyle = dourada ? '#a8781e' : '#b04e1e';
+  ctx.fillRect(x - 2, yy - 3, 5, 5);
+  ctx.fillRect(x - 1, yy + 2, 3, 2);
+  ctx.fillRect(x, yy + 4, 1, 1);
+  ctx.fillStyle = dourada ? '#f4d060' : '#ec8a3a';
+  ctx.fillRect(x - 1, yy - 3, 3, 5);
+  ctx.fillRect(x, yy + 2, 1, 2);
+  ctx.fillStyle = dourada ? '#fff4c0' : '#f8b878';
+  ctx.fillRect(x - 1, yy - 2, 1, 2);
+  ctx.fillStyle = '#5e9a40';
+  ctx.fillRect(x - 2, yy - 6, 1, 3);
+  ctx.fillRect(x, yy - 7, 1, 4);
+  ctx.fillRect(x + 2, yy - 6, 1, 3);
+  if (dourada && Math.floor(n / 12) % 4 === 0) {
+    ctx.fillStyle = '#fffbe8';
+    ctx.fillRect(x + 4, yy - 6, 1, 3);
+    ctx.fillRect(x + 3, yy - 5, 3, 1);
+  }
+}
+
+/** O besouro (anda no chão) e a abelha (voa), por código. */
+function bicho(ctx: CanvasRenderingContext2D, tipo: 'besouro' | 'abelha', x: number, y: number, lado: number, n: number) {
+  const [mw, mh] = BICHO_MEIA[tipo];
+  if (tipo === 'besouro') {
+    const pe = Math.floor(n / 6) % 2;
+    const yb = y + mh;
+    ctx.fillStyle = '#2a2026';
+    for (let i = 0; i < 3; i++) ctx.fillRect(x - 5 + i * 4 + (i % 2 === pe ? 1 : 0), yb - 2, 1, 2);
+    ctx.fillStyle = '#3c5a3a';
+    ctx.fillRect(x - mw, yb - 11, mw * 2, 8);
+    ctx.fillRect(x - mw + 2, yb - 14, mw * 2 - 4, 3);
+    ctx.fillStyle = '#5e8a4e';
+    ctx.fillRect(x - mw + 2, yb - 12, 4, 2);
+    ctx.fillStyle = '#1e2a1e';
+    ctx.fillRect(x - 0, yb - 14, 1, 11);
+    ctx.fillStyle = '#2a2026';
+    const cx = x + lado * (mw - 1);
+    ctx.fillRect(cx - 2, yb - 9, 4, 5);
+    ctx.fillStyle = '#f4ead8';
+    ctx.fillRect(cx + (lado > 0 ? 1 : -2), yb - 8, 1, 1);
+    return;
+  }
+  const asa = Math.floor(n / 3) % 2;
+  ctx.fillStyle = '#e8eef4b0';
+  ctx.fillRect(x - 4, y - mh - 3 + asa * 2, 4, 3);
+  ctx.fillRect(x + 1, y - mh - 3 + asa * 2, 4, 3);
+  ctx.fillStyle = '#e8b830';
+  ctx.fillRect(x - mw, y - 3, mw * 2, 7);
+  ctx.fillStyle = '#2a2026';
+  ctx.fillRect(x - 2, y - 3, 2, 7);
+  ctx.fillRect(x + 2, y - 3, 1, 7);
+  ctx.fillRect(x - lado * (mw + 1), y, 2, 1);
+  ctx.fillStyle = '#f4ead8';
+  ctx.fillRect(x + lado * (mw - 2), y - 2, 1, 1);
+}
+
+export function pintar(p: Pintura, camX: number, camY: number, n: number, figuras: Figura[], vivos?: Vivos) {
   const { ctx, cores, fase } = p;
   const ceu = ctx.createLinearGradient(0, 0, 0, H);
   ceu.addColorStop(0, cores.ceu[0]);
@@ -279,7 +400,10 @@ export function pintar(p: Pintura, camX: number, camY: number, n: number, figura
   ctx.fillStyle = ceu;
   ctx.fillRect(0, 0, W, H);
   // o fundo corre mais devagar que a fase (o de longe, bem mais)
-  for (const [camada, fator] of [[p.longe, 0.18], [p.perto, 0.42]] as const) {
+  for (const [camada, fator] of [
+    [p.longe, 0.18],
+    [p.perto, 0.42],
+  ] as const) {
     const dx = -Math.floor((camX * fator) % 640);
     const dy = -Math.floor(camY * fator * 0.5);
     ctx.drawImage(camada, dx, dy);
@@ -292,6 +416,19 @@ export function pintar(p: Pintura, camX: number, camY: number, n: number, figura
     ctx.fillStyle = cores.tabua[1];
     ctx.fillRect(Math.round(q.x - camX) + 2, Math.round(q.y - camY) + 6, m.w - 4, 1);
   }
+  // as cenouras, a dourada e os bichos (quem assiste vê todos: as cenouras de cada um são dele)
+  fase.cenouras.forEach((c, i) => {
+    if (vivos && vivos.cenouras & (1 << i)) return;
+    if (c.x < camX - 8 || c.x > camX + W + 8) return;
+    cenoura(ctx, Math.round(c.x - camX), Math.round(c.y - camY), n, false);
+  });
+  if (fase.dourada && !vivos?.dourada) cenoura(ctx, Math.round(fase.dourada.x - camX), Math.round(fase.dourada.y - camY), n, true);
+  fase.bichos.forEach((b, i) => {
+    if (vivos && vivos.pisados & (1 << i)) return;
+    const q = bichoEm(b, n);
+    if (q.x < camX - 16 || q.x > camX + W + 16) return;
+    bicho(ctx, b.tipo, Math.round(q.x - camX), Math.round(q.y - camY), q.lado, n);
+  });
   for (const f of figuras) desenharCoelho(p, f, camX, camY);
 }
 
@@ -299,11 +436,13 @@ function desenharCoelho(p: Pintura, f: Figura, camX: number, camY: number) {
   const { ctx } = p;
   if (!p.coelho || f.piscando) return;
   const quadro = Math.abs(f.jeito) === 2 ? 2 : f.andado === null ? PARADO : Math.floor(f.andado / 6) % 8;
-  const x = Math.round(f.x - camX), y = Math.round(f.y - camY);
+  const x = Math.round(f.x - camX),
+    y = Math.round(f.y - camY);
   ctx.save();
   ctx.globalAlpha = f.alpha ?? 1;
   ctx.translate(x, y);
   if (f.jeito < 0) ctx.scale(-1, 1);
+  if (f.escala) ctx.scale(f.escala[0], f.escala[1]);
   ctx.drawImage(p.coelho, quadro * QUADRO_W, 0, QUADRO_W, QUADRO_H, -Math.floor(QUADRO_W / 2), -QUADRO_H + 1, QUADRO_W, QUADRO_H);
   ctx.restore();
   if (f.nome) {
@@ -321,7 +460,8 @@ function desenharCoelho(p: Pintura, f: Figura, camX: number, camY: number) {
 export function semaforo(ctx: CanvasRenderingContext2D, contagem: number) {
   const acesas = contagem > 0 ? Math.min(3, Math.max(0, 3 - Math.floor((contagem - 1) / 60))) : 3;
   const verde = contagem === 0;
-  const x0 = W / 2 - 27, y0 = 14;
+  const x0 = W / 2 - 27,
+    y0 = 14;
   ctx.fillStyle = '#1e1822';
   ctx.fillRect(x0 - 4, y0 - 4, 62, 22);
   ctx.fillStyle = '#3a3040';
@@ -335,7 +475,9 @@ export function semaforo(ctx: CanvasRenderingContext2D, contagem: number) {
 
 /** A barra do quanto se andou da fase, no alto: os fantasmas e os outros em pontinhos, você em laranja. */
 export function barraDoCaminho(ctx: CanvasRenderingContext2D, pontos: { andou: number; cor: string }[]) {
-  const x0 = 60, x1 = W - 60, y = 6;
+  const x0 = 60,
+    x1 = W - 60,
+    y = 6;
   ctx.fillStyle = '#1e1822a0';
   ctx.fillRect(x0 - 2, y - 2, x1 - x0 + 4, 6);
   ctx.fillStyle = '#f4ead860';

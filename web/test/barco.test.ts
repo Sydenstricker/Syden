@@ -175,3 +175,78 @@ test('na sala, toda posição do piloto automático honesto passa na conferênci
     assert.equal(recusadas, 0, `${def.id}: ${recusadas} de ${mandadas} posições recusadas`);
   }
 });
+
+/** Põe o barco parado em `s` da linha do meio, no `lado`, olhando a pista, com a velocidade `v` para a frente. */
+function barcoEm(p: PistaDoBarco, s: number, lado: number, v: number) {
+  const b = novoBarco(p);
+  const q = pontoNaLinha(p, s);
+  b.x = q.x - q.dy * lado;
+  b.y = q.y + q.dx * lado;
+  b.angulo = Math.atan2(q.dy, q.dx);
+  b.vx = q.dx * v;
+  b.vy = q.dy * v;
+  b.indice = q.indice;
+  return b;
+}
+
+test('o slalom: do lado certo da boia enche o turbo (e a terceira seguida dá o grande); do lado errado tira e freia', async () => {
+  const { TURBO_DO_SLALOM, TURBO_DA_SERIE } = await import('../src/barco/fisica');
+  const p = pistas.get('lago-1')!;
+  const reto: ComandosDoBarco = { acelera: true, freia: false, vira: 0 };
+  for (const boia of p.slalom) {
+    // começa 20 antes da boia, do lado certo (com folga) ou do errado
+    for (const certo of [true, false]) {
+      const b = barcoEm(p, boia.s - 20, boia.lado + boia.passar * (certo ? 12 : -12), 120);
+      b.turbo = 0.3;
+      let viu = 0;
+      for (let i = 0; i < 20 && !viu; i++) {
+        passo(b, reto, p);
+        viu = b.slalom;
+      }
+      assert.equal(viu, certo ? 1 : -1, `boia em ${boia.s.toFixed(0)}: ${certo ? 'certo' : 'errado'}`);
+      if (certo) assert.ok(b.turbo > TURBO_DO_SLALOM - 0.1);
+      else assert.equal(b.turbo, 0);
+    }
+  }
+  // a série: três certas seguidas dão o turbo grande
+  const b = barcoEm(p, p.slalom[0].s - 20, p.slalom[0].lado + p.slalom[0].passar * 12, 120);
+  b.serie = 2;
+  for (let i = 0; i < 20 && !b.slalom; i++) passo(b, reto, p);
+  assert.ok(b.turbo > TURBO_DA_SERIE - 0.1, 'a terceira certa seguida');
+});
+
+test('a rampa: rápido por cima dela, o barco salta, não vira no ar, e cai na água; devagar, não salta', () => {
+  const p = pistas.get('lago-1')!;
+  const r = p.rampas[0];
+  const b = barcoEm(p, r.s - 20, r.lado, 150);
+  let saltou = false, pousou = false, maior = 0;
+  for (let i = 0; i < 200 && !pousou; i++) {
+    const antes = b.angulo;
+    passo(b, { acelera: true, freia: false, vira: 1 }, p);
+    if (b.saltou) saltou = true;
+    if (b.altura > 0 && !b.saltou) assert.equal(b.angulo, antes, 'no ar o nariz não vira');
+    maior = Math.max(maior, b.altura);
+    if (b.pousou) pousou = true;
+  }
+  assert.ok(saltou && pousou && maior > 5, `saltou ${saltou}, pousou ${pousou}, altura ${maior}`);
+  const devagar = barcoEm(p, r.s - 10, r.lado, 30);
+  for (let i = 0; i < 60; i++) passo(devagar, { acelera: false, freia: false, vira: 0 }, p);
+  assert.equal(devagar.altura, 0);
+});
+
+test('os barcos do computador: todos chegam, o difícil antes do fácil, e o piloto automático ganha do médio na maioria', async () => {
+  const { criarRobosDoBarco, roboDoBarcoEm } = await import('../src/barco/robos');
+  for (const def of PISTAS_DO_BARCO) {
+    const p = pistas.get(def.id)!;
+    const media = (rs: { chegada: number }[]) => rs.reduce((s, r) => s + r.chegada, 0) / rs.length;
+    const facil = criarRobosDoBarco(p, 5, 'facil'), medio = criarRobosDoBarco(p, 5, 'medio'), dificil = criarRobosDoBarco(p, 5, 'dificil');
+    for (const rs of [facil, medio, dificil]) assert.ok(rs.every((r) => r.chegada < 60 * 60 * 5), `${def.id}: todos chegam`);
+    assert.ok(media(dificil) < media(medio) && media(medio) < media(facil), `${def.id}: ${media(dificil)} < ${media(medio)} < ${media(facil)}`);
+    for (const r of medio) assert.ok(aguaEm(p, roboDoBarcoEm(p, r, 0).x, roboDoBarcoEm(p, r, 0).y) > 0, `${def.id}: a grade é na água`);
+    const b = novoBarco(p);
+    while (!b.terminou && b.passos < 60 * 60 * 5) passo(b, pilotoAutomatico(b, p), p);
+    const atras = medio.filter((r) => r.chegada > b.voltas.at(-1)!).length;
+    console.log(def.id, 'robôs (s):', [facil, medio, dificil].map((rs) => (media(rs) / 60).toFixed(1)), 'piloto:', (b.voltas.at(-1)! / 60).toFixed(1));
+    assert.ok(atras >= 3, `${def.id}: o piloto automático ganhou de ${atras} de 5 no médio`);
+  }
+});

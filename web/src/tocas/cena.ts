@@ -40,6 +40,8 @@ const MODELOS_DOS_PREDIOS: Record<TipoPredio, [string, string]> = {
   muralha: ['m/wall_straight', 'm/wall_straight'],
   portao: ['m/wall_straight_gate', 'm/wall_straight_gate'],
   maravilha: ['m/building_castle_{cor}', 'm/building_castle_{cor}'],
+  ferreiro: ['m/building_blacksmith_{cor}', 'm/building_blacksmith_{cor}'],
+  mercado: ['m/building_market_{cor}', 'm/building_market_{cor}'],
 };
 /** As obras: o canteiro, as paredes subindo e o andaime, pelo andamento. */
 const OBRAS = ['m/building_stage_A', 'm/building_stage_B', 'm/building_stage_C'];
@@ -406,6 +408,16 @@ export class CenaDasTocas implements Vista {
         g.fillStyle = `hsl(${92 + s * 14}, 38%, ${l}%)`;
         g.fillRect(x * px, y * px, px, px);
       }
+    // a água dos lagos (o mapa de lagos): pintada no chão, com a margem de terra
+    for (const a of this.sim.agua) {
+      g.fillStyle = '#7d6a4e';
+      g.fillRect(a.gx * px - 1, a.gy * px - 1, px + 2, px + 2);
+    }
+    for (const a of this.sim.agua) {
+      const s = sorte(a.gx * 7 + a.gy * 29);
+      g.fillStyle = `hsl(${205 + s * 8}, 45%, ${42 + s * 6}%)`;
+      g.fillRect(a.gx * px, a.gy * px, px, px);
+    }
     for (const p of this.sim.pedras) {
       g.fillStyle = '#8c7b62';
       g.fillRect(p.gx * px - 2, p.gy * px - 2, px + 4, px + 4);

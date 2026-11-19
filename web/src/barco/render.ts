@@ -380,6 +380,98 @@ export function enfeitesNaTela(d: Desenho, p: PistaDoBarco, cam: Camera, tempo: 
   }
 }
 
+/**
+ * AS BOIAS DE SLALOM (19/11/2026): um cone boiando, vermelho quando se passa com ele à esquerda e amarelo quando à direita,
+ * com a seta em cima apontando o lado certo (sem texto). A seta é do ponto de vista de quem vem pela pista.
+ */
+export function slalomNaTela(p: PistaDoBarco, cam: Camera, tempo: number, figuras: Figura[]) {
+  p.slalom.forEach((s, i) => {
+    const pr = projetar(cam, s.x, s.y);
+    if (!pr) return;
+    const e = pr.escala * 3.4;
+    if (e < 0.3 || pr.sx + 12 * e < 0 || pr.sx - 12 * e > W) return;
+    const cor = s.passar > 0 ? '#e84a4a' : '#f2c63a';
+    const sobe = Math.sin(tempo * 2.4 + i) * 0.6 * e;
+    figuras.push({
+      z: pr.z,
+      desenhar: (ctx) => {
+        const cx = pr.sx, base = pr.sy + sobe;
+        // o cone: o contorno escuro, a cor e a faixa branca
+        ctx.fillStyle = '#1a1018';
+        ctx.beginPath();
+        ctx.moveTo(cx, base - 11 * e - 1);
+        ctx.lineTo(cx - 4 * e - 1, base + 1);
+        ctx.lineTo(cx + 4 * e + 1, base + 1);
+        ctx.fill();
+        ctx.fillStyle = cor;
+        ctx.beginPath();
+        ctx.moveTo(cx, base - 11 * e);
+        ctx.lineTo(cx - 4 * e, base);
+        ctx.lineTo(cx + 4 * e, base);
+        ctx.fill();
+        ctx.fillStyle = '#fff6e0';
+        ctx.fillRect(Math.round(cx - 2.2 * e), Math.round(base - 6 * e), Math.max(1, Math.round(4.4 * e)), Math.max(1, Math.round(1.4 * e)));
+        // a seta: o lado por onde se passa (passar > 0: pela direita do cone; < 0: pela esquerda), vista de quem vem
+        const rel = Math.cos(cam.angulo - Math.atan2(s.y - cam.y, s.x - cam.x)) >= 0 ? 1 : -1;
+        const lado = s.passar * rel;
+        const ax = cx + lado * 8 * e, ay = base - 13 * e;
+        if (Math.floor(tempo * 3 + i) % 2 === 0) {
+          ctx.fillStyle = cor;
+          ctx.beginPath();
+          ctx.moveTo(ax + lado * 4 * e, ay);
+          ctx.lineTo(ax - lado * 1 * e, ay - 3 * e);
+          ctx.lineTo(ax - lado * 1 * e, ay + 3 * e);
+          ctx.fill();
+        }
+        // a marola em volta
+        ctx.globalAlpha = 0.5;
+        ctx.strokeStyle = '#f4fcff';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.ellipse(cx, base, Math.max(1, 6 * e), Math.max(1, 1.4 * e), 0, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+      },
+    });
+  });
+}
+
+/** AS RAMPAS (19/11/2026): uma prancha de madeira inclinada, saindo da água, com as listras de aviso. */
+export function rampasNaTela(p: PistaDoBarco, cam: Camera, figuras: Figura[]) {
+  const MEIA = 14, COMPRIDO = 16, ALTO = 7;
+  for (const r of p.rampas) {
+    const fx = Math.cos(r.angulo), fy = Math.sin(r.angulo), nx = -fy, ny = fx;
+    const pr = projetar(cam, r.x, r.y);
+    if (!pr) continue;
+    // a prancha sobe de trás (na água) para a frente (no alto)
+    const tras: P3[] = [
+      [r.x - fx * COMPRIDO + nx * MEIA, r.y - fy * COMPRIDO + ny * MEIA, 0],
+      [r.x - fx * COMPRIDO - nx * MEIA, r.y - fy * COMPRIDO - ny * MEIA, 0],
+      [r.x - nx * MEIA, r.y - ny * MEIA, ALTO],
+      [r.x + nx * MEIA, r.y + ny * MEIA, ALTO],
+    ];
+    const frente: P3[] = [
+      [r.x - nx * MEIA, r.y - ny * MEIA, ALTO],
+      [r.x + nx * MEIA, r.y + ny * MEIA, ALTO],
+      [r.x + nx * MEIA, r.y + ny * MEIA, 0],
+      [r.x - nx * MEIA, r.y - ny * MEIA, 0],
+    ];
+    figuras.push({
+      z: pr.z + 1,
+      desenhar: (ctx) => {
+        poligono(ctx, cam, frente, '#5a3a24');
+        poligono(ctx, cam, tras, '#b07a48');
+        // as listras de aviso no meio da prancha
+        for (let k = 0; k < 3; k++) {
+          const t0 = 0.2 + k * 0.25, t1 = t0 + 0.1;
+          const ponto = (t: number, l: number): P3 => [r.x - fx * COMPRIDO * (1 - t) + nx * MEIA * l, r.y - fy * COMPRIDO * (1 - t) + ny * MEIA * l, ALTO * t];
+          poligono(ctx, cam, [ponto(t0, 1), ponto(t0, -1), ponto(t1, -1), ponto(t1, 1)], k % 2 ? '#f2c63a' : '#fff0d0');
+        }
+      },
+    });
+  }
+}
+
 /** As argolas de turbo: um anel listrado de laranja e creme boiando, de pé, que brilha e balança. */
 export function argolasNaTela(p: PistaDoBarco, cam: Camera, tempo: number, figuras: Figura[]) {
   p.argolas.forEach((a, i) => {
@@ -558,10 +650,12 @@ export function barcoNaTela(
   y: number,
   angulo: number,
   cores: CoresDoBarco,
-  o: { banco?: number; fantasma?: boolean; nome?: string; tremor?: number; tempo: number; v?: number; derrapa?: number; calmo?: boolean },
+  o: { banco?: number; fantasma?: boolean; nome?: string; tremor?: number; tempo: number; v?: number; derrapa?: number; calmo?: boolean; altura?: number },
 ): Figura | null {
   const pr = projetar(cam, x, y);
   if (!pr) return null;
+  // no salto, o barco sobe e a sombra fica na água
+  const noAr = o.altura ? (projetar(cam, x, y, o.altura)?.sy ?? pr.sy) - pr.sy : 0;
   // o barco é desenhado maior que a escala do mundo (como o kart): é ele que se olha a corrida inteira
   const e = pr.escala * ESCALA_DO_BARCO;
   const w = LADO * e;
@@ -573,7 +667,7 @@ export function barcoNaTela(
   const banco = (o.banco ?? 0) + ondas;
   const linha = banco < -0.5 ? 0 : banco > 0.5 ? 2 : 1;
   const sobe = o.calmo ? 0 : Math.sin(o.tempo * 3.1 + y * 0.05) * 0.9 * e;
-  const nx = pr.sx - PE_X * e, ny = pr.sy - PE_Y * e + sobe + (o.tremor ?? 0);
+  const nx = pr.sx - PE_X * e, ny = pr.sy - PE_Y * e + sobe + (o.tremor ?? 0) + noAr;
   const v = o.v ?? 0;
   return {
     z: pr.z,
@@ -589,8 +683,8 @@ export function barcoNaTela(
       if (o.fantasma) ctx.globalAlpha = 0.45;
       ctx.drawImage(folha.canvas, k * LADO, linha * LADO, LADO, LADO, Math.round(nx), Math.round(ny), Math.round(w), Math.round(w));
       ctx.globalAlpha = 1;
-      // a espuma em volta do casco, na linha d'água, quando anda
-      if (!o.fantasma && v > 40) {
+      // a espuma em volta do casco, na linha d'água, quando anda (no ar, não)
+      if (!o.fantasma && v > 40 && !noAr) {
         ctx.fillStyle = '#ffffff';
         ctx.globalAlpha = Math.min(0.9, v / 200);
         const larg = 13 * e;
@@ -641,7 +735,16 @@ export function respingo(ctx: CanvasRenderingContext2D, lado: number, tempo: num
  * O PAINEL: a posição no canto direito ("2/4"), a velocidade numa barra embaixo e, no turbo, a barrinha laranja que acaba.
  * Tudo desenho e número: nenhuma palavra.
  */
-export function painel(ctx: CanvasRenderingContext2D, o: { posicao: number; total: number; v: number; vmax: number; turbo: number }) {
+export function painel(ctx: CanvasRenderingContext2D, o: { posicao: number; total: number; v: number; vmax: number; turbo: number; serie?: number }) {
+  // a série do slalom: uma bolinha por boia certa seguida (até três; a terceira dá o turbo grande)
+  if (o.serie) {
+    for (let i = 0; i < Math.min(3, o.serie); i++) {
+      ctx.fillStyle = '#140e1c';
+      ctx.fillRect(7 + i * 7, H - 26, 6, 6);
+      ctx.fillStyle = o.serie >= 3 ? '#ffd860' : '#e84a4a';
+      ctx.fillRect(8 + i * 7, H - 25, 4, 4);
+    }
+  }
   if (o.total > 1) {
     ctx.textAlign = 'right';
     ctx.font = 'bold 22px monospace';

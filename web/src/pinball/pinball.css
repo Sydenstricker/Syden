@@ -201,3 +201,65 @@
   border-radius: 6px;
   box-shadow: 0 0 0 3px #2c1a0e;
 }
+
+/* 19/11/2026: os avisos novos e a faixa da missão, embaixo da mesa (dentro da moldura) */
+.pinball-aviso.tacada,
+.pinball-aviso.extra,
+.pinball-aviso.missao {
+  color: #ffd65a;
+}
+.pinball-missao {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(42, 26, 16, 0.72);
+  color: #fff;
+  font-size: calc(12px * var(--escala-do-texto, 1));
+  pointer-events: none;
+}
+.pinball-patente {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: #ffd65a;
+  font-weight: 800;
+}
+.pinball-missao-texto {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pinball-missao-conta {
+  font-variant-numeric: tabular-nums;
+  opacity: 0.85;
+}
+
+/* 19/11/2026: a escolha da mesa no Solo (a horta e o pomar, pela prévia de cada uma) */
+.pinball-mesas {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+.pinball-mesas button {
+  padding: 3px;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background: none;
+  opacity: 0.7;
+}
+.pinball-mesas button.escolhida {
+  border-color: var(--accent);
+  opacity: 1;
+}
+.pinball-mesas .pinball-previa {
+  height: min(36vh, 300px);
+  width: auto;
+}

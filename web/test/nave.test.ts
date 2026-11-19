@@ -87,12 +87,28 @@ test('a ficha recusa a trapaça óbvia', () => {
 });
 
 test('atirar andando: as setas com o fogo seguram os dois, e o clique do mouse não prende a nave (relato de 06/11/2026)', () => {
-  const solto = { esquerda: false, direita: false, cima: false, baixo: false, fogo: false, bomba: false };
+  const solto = {
+    esquerda: false,
+    direita: false,
+    cima: false,
+    baixo: false,
+    fogo: false,
+    bomba: false,
+  };
   // o teclado: seta e fogo juntos dão os dois
   const c = comandosDoJogador({ ...solto, direita: true, cima: true, fogo: true }, null);
   assert.deepEqual([c.dx, c.dy, c.fogo, c.alvo], [1, -1, true, null]);
   // o mouse apertado atira; com a seta segurada, ela anda (o alvo do clique não prende a nave)
-  const dedo: Toque = { id: 1, dedoX: 50, dedoY: 50, naveX: 90, naveY: 210, ultimoX: 50, ultimoY: 50, alvo: { x: 90, y: 210 } };
+  const dedo: Toque = {
+    id: 1,
+    dedoX: 50,
+    dedoY: 50,
+    naveX: 90,
+    naveY: 210,
+    ultimoX: 50,
+    ultimoY: 50,
+    alvo: { x: 90, y: 210 },
+  };
   const m = comandosDoJogador({ ...solto, esquerda: true }, dedo);
   assert.deepEqual([m.dx, m.fogo, m.alvo], [-1, true, null]);
   // sem seta, o arraste volta a mandar, a partir de onde a nave parou
@@ -108,7 +124,18 @@ test('atirar andando: as setas com o fogo seguram os dois, e o clique do mouse n
   let recusas = 0;
   for (let n = 0; n < 1500 && !mundo.ficha.acabou; n++) {
     const lado = Math.floor(n / 40) % 2 === 0;
-    const o = mundo.avancar(comandosDoJogador({ ...solto, direita: lado, esquerda: !lado, cima: n % 160 < 20, fogo: true }, null));
+    const o = mundo.avancar(
+      comandosDoJogador(
+        {
+          ...solto,
+          direita: lado,
+          esquerda: !lado,
+          cima: n % 160 < 20,
+          fogo: true,
+        },
+        null,
+      ),
+    );
     if (o.disparou) {
       disparos++;
       xs.add(mundo.nave.x);
@@ -123,4 +150,84 @@ test('atirar andando: as setas com o fogo seguram os dois, e o clique do mouse n
   assert.equal(recusas, 0, 'o servidor recusou um acerto feito em movimento');
   assert.ok(servidor.mortos.size > 0, 'nenhum acerto andando');
   assert.equal(servidor.pontos, mundo.ficha.pontos);
+});
+
+// ---------------- O nível da arma, o loop e as fases (19/11/2026) ----------------
+
+test('pegar a mesma arma de novo sobe o nível (até 3), e o nível bate mais forte', async () => {
+  const sim = await import('../src/nave/sim');
+  const inimigos = roteiro(5);
+  const f = new Ficha(inimigos);
+  // três itens de tiro duplo, de mentira: o primeiro dá o nível 1, os outros sobem
+  f.armas.push([10, 1, 1]);
+  assert.equal(f.nivelEm(10), 1);
+  // a regra da pegada, pelo caminho de verdade
+  const g = new Ficha(
+    inimigos.map((e) => ({
+      ...e,
+      item: e.tipo === 'chefe' ? null : ('duplo' as const),
+    })),
+  );
+  const meio = (i: number) => g.inimigos[i].t + Math.floor(g.inimigos[i].dur / 2);
+  const caem = g.inimigos
+    .map((_, i) => i)
+    .filter((i) => g.inimigos[i].tipo === 'corvo')
+    .slice(0, 4)
+    .sort((a, b) => meio(a) - meio(b));
+  let q = 0;
+  for (const i of caem) {
+    q = Math.max(q + 1, meio(i));
+    g.mortos.set(i, q);
+    const item = sim.posicaoItem(g.inimigos[i], q, q)!;
+    g.posicoes = [];
+    assert.equal(g.pegar(q, i, item.x, item.y), null);
+  }
+  assert.equal(g.armaEm(q), 1);
+  assert.equal(g.nivelEm(q), 3, 'quatro pegadas: o nível para no 3');
+  assert.equal(sim.DANO_DO_NIVEL[3], 2);
+  // perder a vida volta ao tiro simples, nível 1
+  g.posicoes = [];
+  assert.equal(g.atingida(q + 1, 90, 200), null);
+  assert.equal(g.armaEm(q + 1), 0);
+  assert.equal(g.nivelEm(q + 1), 1);
+});
+
+test('o loop: só depois da recarga, invulnerável no meio, e sem atirar durante a volta', async () => {
+  const sim = await import('../src/nave/sim');
+  const f = new Ficha(roteiro(7));
+  assert.equal(f.loop(100, 90, 200), null);
+  assert.equal(f.loop(100 + sim.LOOP_RECARGA - 1, 90, 200), 'Loop inválido.', 'antes da recarga');
+  assert.equal(f.invulNoLoop(100 + sim.LOOP_INVUL[0]), true);
+  assert.equal(f.invulNoLoop(100 + sim.LOOP_INVUL[1]), false);
+  // atingida no meio do loop: nada acontece
+  assert.equal(f.atingida(100 + 10, 90, 200 - 2), null);
+  assert.equal(f.vidas, sim.VIDAS);
+  // o disparo no meio do loop não vale
+  const e = f.inimigos.findIndex((i) => i.tipo === 'corvo');
+  assert.equal(f.acerto(112, e, 105, 90, 200, 0, 0), 'Disparo inválido.');
+  assert.equal(f.loop(100 + sim.LOOP_RECARGA, 90, 200), null, 'depois da recarga');
+});
+
+test('as fases curtas: duas ondas e um chefe novo, e o piloto automático vence com o servidor aceitando tudo', async () => {
+  const sim = await import('../src/nave/sim');
+  for (const fase of ['pomar', 'celeiro'] as const) {
+    const r = roteiro(3, fase);
+    const tempos = sim.temposDaFase(fase);
+    assert.equal(r.at(-1)?.t, tempos.chefeT);
+    assert.deepEqual(r.at(-1)?.rota, [sim.FASES_DA_NAVE[fase].chefe]);
+    assert.ok(tempos.fim < FIM, 'mais curta que a horta');
+    const m = new Mundo(3, true, fase);
+    const servidor = new Ficha(roteiro(3, fase), fase);
+    let recusas = 0;
+    for (let n = 0; n <= tempos.fim && !m.ficha.acabou; n++) {
+      m.avancar(pilotar(m));
+      if (n % 6 === 0) for (const ev of m.eventos.splice(0)) if (servidor.aplicar(ev) !== null) recusas++;
+    }
+    for (const ev of m.eventos.splice(0)) if (servidor.aplicar(ev) !== null) recusas++;
+    assert.equal(recusas, 0, `${fase}: o servidor recusou eventos honestos`);
+    assert.equal(servidor.total(tempos.fim, true), m.ficha.total(tempos.fim, true));
+    console.log(`${fase}: ${m.ficha.total(tempos.fim, true)} pontos, ${m.ficha.vidas} vidas, chefe ${m.ficha.chefeEm}, loops ${m.ficha.loops.length}`);
+  }
+  // a horta continua a mesma: o roteiro de sempre
+  assert.deepEqual(roteiro(42), roteiro(42, 'horta'));
 });

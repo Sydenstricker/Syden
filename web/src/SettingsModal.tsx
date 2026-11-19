@@ -63,8 +63,7 @@ import { IdiomaSection } from './IdiomaSection';
 import { API_URL, api, loadToken, mediaUrl, saveToken } from './api';
 import { FamiliaSection } from './Familia';
 import { procurarRepetidos } from './somParecido';
-import { Insignia } from './Medalha';
-import { acharInsignia } from './insignias';
+import { CatalogoDeInsignias } from './CatalogoDeInsignias';
 import { type ScreenQuality, updateSettings, useSettings } from './settings';
 import { type Recomendacao, recomendarParaEsteComputador } from './recomendarModo';
 import { Avatar } from './Avatar';
@@ -405,76 +404,6 @@ function EmailDaConta() {
 }
 
 /**
- * As insígnias que a pessoa tem, e a escolha de quais exibir no perfil. A escolha é dela: pode mostrar
- * todas, uma só ou nenhuma. A ordem dos cliques é a ordem em que elas aparecem no perfil.
- */
-function MinhasInsignias() {
-  const t = useT();
-  const [itens, setItens] = useState<string[] | null>(null);
-  const [vitrine, setVitrine] = useState<string[]>([]);
-  const [limite, setLimite] = useState(5);
-  const [erro, setErro] = useState<string | null>(null);
-
-  useEffect(() => {
-    void api<{ itens: { code: string }[]; vitrine: string[]; limite: number }>('/api/me/itens')
-      .then((resposta) => {
-        setItens(resposta.itens.map((i) => i.code));
-        setVitrine(resposta.vitrine ?? []);
-        setLimite(resposta.limite);
-      })
-      .catch(() => setItens([]));
-  }, []);
-
-  function alternar(codigo: string) {
-    const nova = vitrine.includes(codigo) ? vitrine.filter((c) => c !== codigo) : [...vitrine, codigo];
-    if (nova.length > limite) return setErro(t('Dá para exibir no máximo {limite} insígnias ao mesmo tempo.', { limite }));
-    setErro(null);
-    setVitrine(nova); // a tela responde na hora; se o servidor recusar, a mensagem aparece embaixo
-    void api('/api/me/vitrine', { method: 'PUT', body: { codigos: nova } }).catch((e) => setErro((e as Error).message));
-  }
-
-  if (itens === null) return null;
-
-  return (
-    <>
-      <h3>{t('Minhas insígnias')}</h3>
-      {itens.length === 0 ? (
-        <p className="settings-hint">
-          {t('Você ainda não tem nenhuma. Elas chegam como presente ou como recompensa — por exemplo, quando uma ideia sua entra no Syden.')}
-        </p>
-      ) : (
-        <>
-          <p className="settings-hint">{t('Clique para escolher quais aparecem no seu perfil (até {limite}).', { limite })}</p>
-          <div className="insignias-grade">
-            {itens.map((codigo) => {
-              const insignia = acharInsignia(codigo);
-              if (!insignia) return null;
-              const exibindo = vitrine.includes(codigo);
-              return (
-                <button
-                  key={codigo}
-                  type="button"
-                  className={`insignia-escolha${exibindo ? ' exibindo' : ''}`}
-                  onClick={() => alternar(codigo)}
-                  aria-pressed={exibindo}
-                >
-                  <Insignia arte={insignia.arte} titulo={insignia.nome} moldura={insignia.moldura} tamanho={40} />
-                  <span>
-                    <strong>{insignia.nome}</strong>
-                    <small>{exibindo ? t('Aparecendo no perfil') : insignia.descricao}</small>
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </>
-      )}
-      {erro && <p className="form-error">{erro}</p>}
-    </>
-  );
-}
-
-/**
  * "Sair dos outros aparelhos". Serve para o dia em que alguém esquece o Syden aberto no computador de
  * outra pessoa, ou perde o celular: sem isto, a sessão de lá continuaria valendo por 30 dias e não
  * haveria nada a fazer a respeito.
@@ -600,7 +529,8 @@ function AccountSection({ user, onDeleted, aoTrocarAvatar }: { user: User; onDel
 
       <EntradasLigadas />
 
-      <MinhasInsignias />
+      {/* O catálogo das insígnias e a vitrine (19/11/2026): o mesmo do Guarda-roupa. */}
+      <CatalogoDeInsignias />
 
       <OutrosAparelhos />
 

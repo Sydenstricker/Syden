@@ -15,11 +15,15 @@ import {
   ESQUERDA,
   gravador,
   leitor,
+  limitesDasMedalhas,
+  medalha,
   novoVoo,
   passo,
   PASSO,
   pilotoAutomatico,
+  pontosMaximos,
   proximoAlvo,
+  subidaEm,
   type Desafio,
   type Entradas,
   type Resultado,
@@ -33,6 +37,7 @@ import {
   figuraDoVoador,
   figurasDoChao,
   figurasDosAneis,
+  figurasDasTermicas,
   montarCamera,
   prepararTela,
   setaDoRumo,
@@ -155,6 +160,9 @@ interface Painel {
   combustivel: number | null;
   contagem: number | null;
   batida: boolean;
+  /** O vento visto da câmera (o ângulo da seta) e a força; e se a asa está numa térmica agora. */
+  vento: { graus: number; forca: number } | null;
+  subindo: boolean;
 }
 
 /** Um rival da sala: as posições que o servidor repassou, pelo passo do voo dele. */
@@ -199,7 +207,8 @@ function rodarVoo(cfg: ConfigDoVoo): () => void {
   let viva = true;
   let id = 0;
   const d = cfg.desafio;
-  const tela = prepararTela(cfg.canvas);
+  const tela = prepararTela(cfg.canvas, d.tema);
+  const calmo = !!window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
   const chao = chaoDe(d);
   const eu = cfg.piloto ? novoVoo(d) : null;
   if (eu && import.meta.env.DEV) window.planadorDoTeste = eu;
@@ -289,6 +298,7 @@ function rodarVoo(cfg: ConfigDoVoo): () => void {
     const pegos = eu ? eu.aneis : d.aneis.map(() => -1);
     const prox = eu ? d.aneis.findIndex((_, i) => eu.aneis[i] < 0) : -1;
     figuras.push(...figurasDosAneis(cam, d, pegos, prox, relogio));
+    if (d.termicas.length) figuras.push(...figurasDasTermicas(cam, d, relogio, calmo));
     const plataforma = figuraDaPlataforma(cam, d);
     if (plataforma) figuras.push(plataforma);
     for (const f of fantasmas) figuras.push(...figuraDoVoador(cam, voador(f.voo, f.avatar, { fantasma: true, nome: f.nome }), relogio));
@@ -313,6 +323,9 @@ function rodarVoo(cfg: ConfigDoVoo): () => void {
         combustivel: eu && d.tipo === 'mochila' ? eu.combustivel / d.combustivel : null,
         contagem: contagem > 0 ? Math.ceil(contagem / 60) : null,
         batida: eu?.fim?.como === 'batida',
+        // o vento visto da câmera: 0 é "de frente para quem voa", em graus no sentido do relógio
+        vento: d.vento[0] || d.vento[1] ? { graus: ((Math.atan2(d.vento[1], d.vento[0]) - camAng) * 180) / Math.PI + 90, forca: Math.hypot(d.vento[0], d.vento[1]) } : null,
+        subindo: eu && d.termicas.length ? subidaEm(d, eu.x, eu.y) > 0.5 : false,
       });
     }
     if (eu?.fim && !mandou) {
@@ -402,6 +415,12 @@ function Voo3({
               <span style={{ width: `${painel.combustivel * 100}%` }} />
             </span>
           )}
+          {painel.vento && (
+            <span className="planador-vento" title={t('Vento')}>
+              <span style={{ transform: `rotate(${Math.round(painel.vento.graus)}deg)` }}>➤</span> {painel.vento.forca.toLocaleString(undefined, { maximumFractionDigits: 1 })} m/s
+            </span>
+          )}
+          {painel.subindo && <span className="planador-termica">⇧</span>}
           {painel.batida && <span className="planador-aviso">{t('Pouso forte demais!')}</span>}
           {painel.contagem !== null && <span className="planador-contagem">{painel.contagem}</span>}
         </div>
@@ -422,30 +441,59 @@ function Voo3({
   );
 }
 
-/** Os pontos de um voo, linha a linha. */
-function Pontos({ r, tipo }: { r: Resultado; tipo: Tipo }) {
+/** A MEDALHA (19/11/2026): bronze, prata ou ouro, como figura (sem texto). */
+const FIGURA_DA_MEDALHA = ['', '🥉', '🥈', '🥇'];
+
+/** A nota de uma categoria, em estrelas de 0 a 3 (a fração do máximo dela): só a marca, sem pressão. */
+const estrelas = (valor: number, maximo: number) => {
+  const n = maximo > 0 ? Math.round((valor / maximo) * 3) : 0;
+  return '★'.repeat(n) + '☆'.repeat(3 - n);
+};
+
+/** Os pontos de um voo, linha a linha, cada categoria com a nota; e a medalha. */
+function Pontos({ r, d }: { r: Resultado; d: Desafio }) {
   const t = useT();
+  const tipo = d.tipo;
+  const m = medalha(d, r.total);
   return (
-    <dl className="planador-pontos">
-      <dt>{t('Anéis')}</dt>
-      <dd>
-        {r.aneis} · {r.pontosAneis}
-      </dd>
-      <dt>{t('Precisão')}</dt>
-      <dd>
-        {r.como === 'pousou' ? `${r.distancia.toLocaleString()} m · ` : ''}
-        {r.precisao}
-      </dd>
-      <dt>{t('Suavidade')}</dt>
-      <dd>{r.suavidade}</dd>
-      <dt>{tipo === 'mochila' ? t('Combustível') : t('Tempo')}</dt>
-      <dd>
-        {tipo !== 'mochila' ? `${tempoLegivel(Math.round((r.passos * 1000) / 60))} · ` : ''}
-        {r.bonus}
-      </dd>
-      <dt className="total">{t('Total')}</dt>
-      <dd className="total">{r.total}</dd>
-    </dl>
+    <>
+      {m > 0 && (
+        <span className="planador-medalha" aria-hidden="true">
+          {FIGURA_DA_MEDALHA[m]}
+        </span>
+      )}
+      <dl className="planador-pontos">
+        <dt>{t('Anéis')}</dt>
+        <dd>
+          <span className="planador-nota">{estrelas(r.aneis, d.aneis.length)}</span> {r.aneis} · {r.pontosAneis}
+        </dd>
+        <dt>{t('Precisão')}</dt>
+        <dd>
+          <span className="planador-nota">{estrelas(r.precisao, 50)}</span> {r.como === 'pousou' ? `${r.distancia.toLocaleString()} m · ` : ''}
+          {r.precisao}
+        </dd>
+        <dt>{t('Suavidade')}</dt>
+        <dd>
+          <span className="planador-nota">{estrelas(r.suavidade, 30)}</span> {r.suavidade}
+        </dd>
+        <dt>{tipo === 'mochila' ? t('Combustível') : t('Tempo')}</dt>
+        <dd>
+          <span className="planador-nota">{estrelas(r.bonus, 20)}</span> {tipo !== 'mochila' ? `${tempoLegivel(Math.round((r.passos * 1000) / 60))} · ` : ''}
+          {r.bonus}
+        </dd>
+        <dt className="total">{t('Total')}</dt>
+        <dd className="total">
+          {r.total} / {pontosMaximos(d)}
+        </dd>
+      </dl>
+      <p className="planador-limites" aria-hidden="true">
+        {limitesDasMedalhas(d).map((l, i) => (
+          <span key={i} className={r.total >= l ? 'tem' : undefined}>
+            {FIGURA_DA_MEDALHA[i + 1]} {l}
+          </span>
+        ))}
+      </p>
+    </>
   );
 }
 
@@ -455,12 +503,28 @@ function EscolhaDoDesafio({ aoEscolher, recordes, eu, escolhido }: { aoEscolher:
     <div className="planador-desafios" role="list">
       {DESAFIOS.map((d) => {
         const meu = recordes?.find((r) => r.desafio === d.id && r.userId === eu);
+        const m = meu ? medalha(d, meu.pontos) : 0;
         return (
-          <button key={d.id} type="button" role="listitem" className={`planador-desafio ${d.tipo}${escolhido === d.id ? ' escolhido' : ''}`} aria-current={escolhido === d.id || undefined} onClick={() => aoEscolher(d.id)}>
+          <button
+            key={d.id}
+            type="button"
+            role="listitem"
+            className={`planador-desafio ${d.tipo} tema-${d.tema}${escolhido === d.id ? ' escolhido' : ''}`}
+            aria-current={escolhido === d.id || undefined}
+            aria-label={`${t(NOMES_DOS_DESAFIOS[d.tipo])} · ${t('Nível {n}', { n: d.nivel })}`}
+            onClick={() => aoEscolher(d.id)}
+          >
             <span className="planador-icone" aria-hidden="true">
               {ICONES[d.tipo]}
+              {m > 0 && <span className="planador-medalha-pequena">{FIGURA_DA_MEDALHA[m]}</span>}
             </span>
             <span>{t(NOMES_DOS_DESAFIOS[d.tipo])}</span>
+            <span className="planador-nivel" aria-hidden="true">
+              {'●'.repeat(d.nivel)}
+              {'○'.repeat(Math.max(0, 4 - d.nivel))}
+              {(d.vento[0] || d.vento[1]) ? ' 🌬' : ''}
+              {d.termicas.length ? ' ⇧' : ''}
+            </span>
             {meu && <small>{t('Seu recorde: {n} pontos', { n: meu.pontos })}</small>}
           </button>
         );
@@ -571,7 +635,8 @@ function PlanadorSolo({ estado, eu, agir }: { estado: EstadoPlanador & Partida; 
         <div className="planador-fim">
           {r.recorde && <strong className="planador-recorde">{t('Novo recorde!')}</strong>}
           {r.como === 'batida' && <span className="planador-aviso-fim">{t('Pouso forte demais!')}</span>}
-          <Pontos r={r} tipo={desafio.tipo} />
+          <Pontos r={r} d={desafio} />
+
           {!r.recorde && r.anterior !== null && <span className="settings-hint">{t('Seu recorde: {n} pontos', { n: r.anterior })}</span>}
           <div className="minijogo-acoes">
             <button type="button" className="btn-primary" onClick={() => voar(desafio.id)}>

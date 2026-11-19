@@ -36,8 +36,57 @@
  * vivo, os pontos desempatam); `pontos` é o placar de cada um, e `tempoMs` o quanto a pilha aguentou.
  */
 import * as db from './db.js';
-import { avancar, cabeNoRitmo, DOIS_MINUTOS, jogadaValida, PASSOS_POR_SEGUNDO, retrato, simulacao, trocaNoIntervalo, type Ataque, type Jogada, type Simulacao } from './blocos-sim.js';
+import {
+  avancar,
+  cabeNoRitmo,
+  DOIS_MINUTOS,
+  escolherJogada,
+  jogadaValida,
+  PASSOS_POR_SEGUNDO,
+  retrato,
+  simulacao,
+  trocaNoIntervalo,
+  velocidadeValida,
+  type Ataque,
+  type Jogada,
+  type Simulacao,
+  QUEBRA_CABECAS,
+} from './blocos-sim.js';
 import type { Definicao } from './minijogo-motor.js';
+import { comRobos, ehRobo, idsDosRobos } from './minijogo-robos.js';
+
+/**
+ * O ADVERSÁRIO DO COMPUTADOR (19/11/2026), só no Solo: o piloto automático (o mesmo dos testes, que mora na regra) joga uma
+ * pilha AQUI, no servidor, com a mesma semente, e os caixotes vão e vêm como no versus. O nível é o tempo de reação: de
+ * quantos em quantos passos ele procura uma jogada. Ele anda pelo relógio do servidor a cada lote de quem joga (e na
+ * conferência de 4 s); por isso, contra ele não há pausa, como no versus.
+ */
+export const REACAO_DO_ROBO = { facil: 45, medio: 22, dificil: 10 } as const;
+export type NivelDoRobo = keyof typeof REACAO_DO_ROBO;
+
+/**
+ * O pedido do Solo vem num texto só (\`modo\`): "sem-fim", "dois-minutos" ou "robo-<nível>", com ":<velocidade>" no fim (de 1 a
+ * 5). Assim a escolha não pede campo novo nas rotas.
+ */
+export function lerPedido(pedido: unknown): {
+  modo: 'sem-fim' | 'dois-minutos' | 'robo' | 'quebra-cabeca';
+  nivel: NivelDoRobo;
+  velocidade: number;
+  fase: number;
+} {
+  const [base = '', vel = '1'] = String(pedido ?? '').split(':');
+  const velocidade = velocidadeValida(Number(vel));
+  // O QUEBRA-CABEÇA (19/11/2026): "qc-<fase>", de 0 a QUEBRA_CABECAS.length − 1
+  if (base.startsWith('qc-')) {
+    const n = Number(base.slice(3));
+    if (Number.isInteger(n) && n >= 0 && n < QUEBRA_CABECAS.length) return { modo: 'quebra-cabeca', nivel: 'medio', velocidade: 1, fase: n };
+  }
+  if (base.startsWith('robo-')) {
+    const n = base.slice(5);
+    return { modo: 'robo', nivel: n in REACAO_DO_ROBO ? (n as NivelDoRobo) : 'medio', velocidade, fase: -1 };
+  }
+  return { modo: base === 'dois-minutos' ? 'dois-minutos' : 'sem-fim', nivel: 'medio', velocidade, fase: -1 };
+}
 
 /** A contagem antes de começar (o site mostra 3, 2, 1). */
 export const LARGADA_MS = 3000;
@@ -56,7 +105,7 @@ export const MAX_JOGADORES = 8;
 /** Sem novidade forte, o aviso à sala (para quem assiste ver as pilhas andarem) sai no máximo a cada tanto. */
 const AVISO_MS = 2000;
 
-export type Modo = 'versus' | 'sem-fim' | 'dois-minutos';
+export type Modo = 'versus' | 'sem-fim' | 'dois-minutos' | 'quebra-cabeca';
 
 interface Jogador {
   userId: number;
@@ -89,19 +138,44 @@ export function criarBlocos({ agora = Date.now, aleatorio = Math.random }: Opcoe
     // oito pilhas: o nono que aceitar assiste. Sem o `maximo`, o motor o registrava como quem jogou (nas contas e nas
     // conquistas) e aqui ele virava espectador calado (revisão independente, 03/11/2026)
     maximo: MAX_JOGADORES,
-    comecar(ctx, { naSala, corpo }) {
-      const inscritos = naSala.slice(0, MAX_JOGADORES);
-      const pedido = corpo.modo ?? corpo.categoria;
+    comecar(ctxDaSala, { naSala, corpo }) {
+      const pedido = lerPedido(corpo.modo ?? corpo.categoria);
+      // contra o computador só no Solo, e só uma pessoa
+      const robos = pedido.modo === 'robo' && naSala.length === 1 && ctxDaSala.solo ? idsDosRobos(1) : [];
+      const ctx = comRobos(ctxDaSala, robos);
+      const reacao = REACAO_DO_ROBO[pedido.nivel];
+      const inscritos = [...naSala.slice(0, MAX_JOGADORES), ...robos];
       const versus = inscritos.length >= 2;
-      const modo: Modo = versus ? 'versus' : pedido === 'dois-minutos' ? 'dois-minutos' : 'sem-fim';
+      const contraORobo = robos.length > 0;
+      const modo: Modo = versus ? 'versus' : pedido.modo === 'dois-minutos' ? 'dois-minutos' : pedido.modo === 'quebra-cabeca' ? 'quebra-cabeca' : 'sem-fim';
+      const quebraCabeca = modo === 'quebra-cabeca' ? pedido.fase : -1;
+      // na sala, a velocidade é a de sempre (a turma não escolheu); no Solo, a da largada
+      const velocidade = versus && !contraORobo ? 1 : pedido.velocidade;
       const semente = Math.floor(aleatorio() * 0x7fffffff);
       const evento = `blocos-${ctx.comunidade ?? 0}-${agora()}`;
       const jogadores = new Map<number, Jogador>(
         inscritos.map((userId) => [
           userId,
-          { userId, s: simulacao(semente, modo === 'dois-minutos' ? DOIS_MINUTOS : 0), recebidas: 0, versao: 0, versaoDoSite: 0, eliminadoEm: null, saiu: false, alvo: 0, jogou: false },
+          {
+            userId,
+            s: simulacao(semente, modo === 'dois-minutos' ? DOIS_MINUTOS : 0, velocidade, quebraCabeca),
+            recebidas: 0,
+            versao: 0,
+            versaoDoSite: 0,
+            eliminadoEm: null,
+            saiu: false,
+            alvo: 0,
+            jogou: false,
+          },
         ]),
       );
+      // O RECORDE DO SOLO (19/11/2026), um por modo e velocidade, na tabela comum: o valor é o placar que ESTE servidor refez.
+      // Contra o computador não há recorde (o placar depende dos caixotes dele).
+      // no quebra-cabeça, o recorde é da FASE VENCIDA, e o valor é quantas trocas ela levou (menos é melhor)
+      const varianteDoRecorde = quebraCabeca >= 0 ? `qc-${quebraCabeca}` : velocidade === 1 ? modo : `${modo}-v${velocidade}`;
+      const comRecorde = !versus;
+      const recordeAntes = comRecorde ? (db.recordeDoSolo(inscritos[0], 'blocos', varianteDoRecorde)?.valor ?? null) : null;
+      let recordeNovo = false;
       let fase: 'largada' | 'jogando' | 'fim' = 'largada';
       let inicioEm = 0;
       let lixoId = 0;
@@ -138,10 +212,35 @@ export function criarBlocos({ agora = Date.now, aleatorio = Math.random }: Opcoe
         return forte;
       };
 
+      /** O adversário do computador anda até o relógio do servidor, procurando uma jogada a cada `reacao` passos. */
+      const andarOsRobos = () => {
+        let forte = false;
+        if (fase !== 'jogando') return false;
+        const ate = decorrido();
+        for (const id of robos) {
+          const r = jogadores.get(id)!;
+          r.s.lixos.sort((a, b) => a.n - b.n);
+          while (r.eliminadoEm === null && r.s.e.passo < ate && !r.s.e.fim) {
+            const n = r.s.e.passo;
+            if (n % reacao === 0) {
+              const j = escolherJogada(r.s.e);
+              const jogada: Jogada | null = !j ? null : j.tipo === 'subir' ? [n, 1, 0, 0] : [n, 0, j.l, j.c];
+              if (jogada && cabeNoRitmo(r.s.jogadas, n) && (jogada[1] === 1 || trocaNoIntervalo(r.s.jogadas, n))) {
+                r.s.jogadas.push(jogada);
+                if (jogada[1] !== 1) r.jogou = true;
+              }
+            }
+            if (andar(r, n + 1)) forte = true;
+          }
+        }
+        return forte;
+      };
+
       /** Quem saiu da sala, e (no versus) quem ficou para trás demais. */
       const arrumar = () => {
         let forte = false;
         if (fase !== 'jogando') return false;
+        if (andarOsRobos()) forte = true;
         const naSala = new Set(ctx.naSala());
         for (const j of jogadores.values()) {
           if (j.saiu || naSala.has(j.userId)) continue;
@@ -182,8 +281,18 @@ export function criarBlocos({ agora = Date.now, aleatorio = Math.random }: Opcoe
             .sort((a, b) => ctx.nome(a.userId).localeCompare(ctx.nome(b.userId)))
             .map((j) => linha(j, null)),
         ];
-        // O PÓDIO: só no versus, só entre quem ficou até o fim (2 ou mais), e só quem jogou de verdade
-        if (versus) {
+        if (comRecorde) {
+          const j = todos[0];
+          if (quebraCabeca >= 0) {
+            if (j.s.e.fim === 'limpou') {
+              const usadas = QUEBRA_CABECAS[quebraCabeca].trocas - j.s.e.trocas;
+              recordeNovo = db.guardarRecordeDoSolo(j.userId, 'blocos', varianteDoRecorde, usadas, true).novo;
+            }
+          } else if (j.jogou && j.s.e.pontos > 0) recordeNovo = db.guardarRecordeDoSolo(j.userId, 'blocos', varianteDoRecorde, j.s.e.pontos, false).novo;
+        }
+        // O PÓDIO: só no versus da sala (contra o computador, nada), só entre quem ficou até o fim (2 ou mais), e só quem
+        // jogou de verdade
+        if (versus && !contraORobo) {
           if (turma.length >= 2) {
             for (const { j, lugar } of ordenar(turma)) {
               if (lugar > 3 || !j.jogou) continue;
@@ -256,6 +365,14 @@ export function criarBlocos({ agora = Date.now, aleatorio = Math.random }: Opcoe
             categoria: modo,
             partidaId: evento,
             semente,
+            velocidade,
+            /** O quebra-cabeça: a fase (-1: não é), e, no fim, se ela foi vencida. */
+            quebraCabeca,
+            venceu: quebraCabeca >= 0 && fase === 'fim' ? jogadores.get(inscritos[0])!.s.e.fim === 'limpou' : null,
+            /** Contra o computador (no Solo): o nível dele, ou null. */
+            robo: contraORobo ? pedido.nivel : null,
+            /** No Solo (sem o computador): o recorde de antes e se esta partida o bateu. */
+            recorde: comRecorde ? { antes: recordeAntes, novo: recordeNovo } : null,
             /** Quanto a partida já andou no servidor: quem abre no meio acerta o relógio por ele. */
             decorridoMs: fase === 'jogando' ? agora() - inicioEm : 0,
             jogadores: inscritos.map((userId) => {
@@ -287,6 +404,7 @@ export function criarBlocos({ agora = Date.now, aleatorio = Math.random }: Opcoe
             return null;
           }
           if (fase !== 'jogando') return 'Esta rodada já acabou.';
+          if (ehRobo(quem)) return 'Ação desconhecida.';
           // a versão que o site tem (o lote foi montado com ela): igual à daqui, a lista aceita deixa de ir no estado
           if (inteiro(corpo.versao) && corpo.versao <= j.versao) j.versaoDoSite = corpo.versao;
           if (j.eliminadoEm !== null) return null;

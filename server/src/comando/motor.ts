@@ -39,8 +39,17 @@ import {
   ARENA_L,
   ARMA_MS,
   ARMAS,
+  ALCANCE_DA_ARMA,
   BALA,
+  CAMPANHA_DO_COMANDO,
+  CAPSULA,
+  CENARIO_DA_FASE,
+  coladoNaFaca,
+  FACA,
+  FASES_DO_COMANDO,
   BICHOS,
+  TELEGUIADA,
+  VEL_DA_ARMA,
   balaNaCaixa,
   balasDoTiro,
   COELHO_A,
@@ -60,6 +69,8 @@ import {
   VIDAS,
   VOO_H,
   type Arma,
+  type Comportamento,
+  type MapaDoComando,
   type EstadoDoBicho,
   type TipoDoBicho,
 } from './conta.js';
@@ -91,15 +102,22 @@ export const FOGO = { vel: 150, h: 10, raio: 5 };
 export const SEMENTE = { vel: 170, raio: 5 };
 /** A vida do chefe: no Solo, mais fraco; com mais gente, mais forte. */
 export const vidaDoChefe = (n: number, solo: boolean) => (solo ? 140 : BICHOS.dragao.hp + 60 * (n - 1));
+/** A vida do SUBCHEFE (o yeti, no meio do deserto): metade do caminho. */
+export const vidaDoSubchefe = (n: number, solo: boolean) => (solo ? 70 : BICHOS.yeti.hp + 40 * (n - 1));
 
-/** As ondas: quantos de cada bicho (com mais gente, mais andarilhos). A última é a do chefe. */
-export const ONDAS: Partial<Record<TipoDoBicho, number>>[] = [
-  { cogumelo: 4 },
-  { cogumelo: 3, dino: 2 },
-  { cogumelo: 3, abelha: 3 },
-  { cogumelo: 4, dino: 2, abelha: 2 },
-  { dragao: 1 },
-];
+type Onda = Partial<Record<TipoDoBicho, number>>;
+/** As ondas de cada fase: quantos de cada bicho (com mais gente, mais andarilhos). A última é a do chefe. */
+export const ONDAS_DA_FASE: Record<MapaDoComando, Onda[]> = {
+  floresta: [{ cogumelo: 4 }, { cogumelo: 3, dino: 2 }, { cogumelo: 3, abelha: 3 }, { cogumelo: 4, dino: 2, abelha: 2 }, { dragao: 1 }],
+  // o deserto (19/11/2026): bichos novos das folhas da Briga, e o yeti de subchefe no meio
+  deserto: [{ cacto: 4 }, { cacto: 3, golem: 2 }, { yeti: 1 }, { cacto: 4, golem: 2, redemoinho: 3 }, { dragao: 1 }],
+};
+/** As ondas da floresta (o nome de antes, para quem já importava). */
+export const ONDAS = ONDAS_DA_FASE.floresta;
+/** A CÁPSULA (19/11/2026): em que ondas ela passa, e que arma solta (onda → arma). */
+export const CAPSULAS: Record<number, Arma> = { 1: 'chama', 3: 'teleguiada' };
+/** O tempo entre uma fase e a próxima, na campanha. */
+export const TROCA_DE_FASE_MS = 2500;
 
 interface Ponto {
   t: number;
@@ -132,7 +150,7 @@ interface Bicho {
 
 interface BalaInimiga {
   id: number;
-  tipo: 0 | 1 | 2; // 0 o tiro do atirador, 1 o fogo do chefe, 2 a semente
+  tipo: 0 | 1 | 2 | 3; // 0 o tiro do atirador, 1 o fogo do chefe, 2 a semente, 3 o sopro do yeti
   x: number;
   h: number;
   vx: number;
@@ -143,6 +161,8 @@ interface BalaInimiga {
 
 interface Tiro {
   n: number;
+  /** A arma com que saiu (a chama e a teleguiada têm alcance e conferência próprios). */
+  arma: Arma;
   x0: number;
   h0: number;
   balas: [number, number][];
@@ -198,6 +218,8 @@ interface Jogador {
   historia: Ponto[];
   arma: Arma;
   armaAte: number;
+  /** A última facada aceita (19/11/2026). */
+  ultimaFaca: number;
   ultimoTiro: number;
   ultimaGranada: number;
   tiros: Map<number, Tiro>;
@@ -208,6 +230,9 @@ export interface ServicosDoComando {
   /** O avatar da pessoa nos jogos (a receita do coelho, o número do pronto, ou null: o mascote). */
   avatarDe(userId: number): number | string | null;
   guardarTrofeu(t: { userId: number; evento: string; communityId: number; pista: string; posicao: number; tempoMs: number | null; pontos: number | null; rivais: number[] }): void;
+  /** O recorde do Solo (o tempo da fase vencida, na tabela comum): o melhor de antes, e guardar o novo. Sem banco, nada. */
+  recordeDe?(userId: number, variante: string): number | null;
+  guardarRecorde?(userId: number, variante: string, ms: number, extra: unknown): { antes: number | null; novo: boolean };
 }
 
 export interface OpcoesDoComando {
@@ -236,7 +261,7 @@ export function criarComando({
     minimo: 2,
     // quatro coelhos: o quinto que aceitar assiste
     maximo: 4,
-    comecar(ctx: Contexto, { naSala }) {
+    comecar(ctx: Contexto, { naSala, corpo }) {
       const inscritos = [...naSala].slice(0, 4);
       if (inscritos.length === 0) return 'Ninguém para jogar.';
       const solo = ctx.solo ?? (ctx.comunidade === 0 || ctx.comunidade === undefined);
@@ -255,6 +280,18 @@ export function criarComando({
       let eventos: unknown[][] = [];
       let ultimoMotivo: string | null = null;
       let venceuAFase = false;
+      let venceuEm: number | null = null;
+      let recorde: { ms: number; antes: number | null; novo: boolean } | null = null;
+      // A FASE (19/11/2026): a floresta, o deserto, ou a campanha (as duas seguidas); "categoria" é o que o "Jogar de novo" manda
+      const pedida = typeof corpo?.fase === 'string' ? corpo.fase : typeof corpo?.categoria === 'string' ? corpo.categoria : 'floresta';
+      const escolha: string = pedida === CAMPANHA_DO_COMANDO || (FASES_DO_COMANDO as readonly string[]).includes(pedida) ? pedida : 'floresta';
+      const etapas: MapaDoComando[] = escolha === CAMPANHA_DO_COMANDO ? [...FASES_DO_COMANDO] : [escolha as MapaDoComando];
+      let etapa = 0;
+      let ondas = ONDAS_DA_FASE[etapas[0]];
+      let trocaEm: number | null = null;
+      /** As armas no chão, soltas pelas cápsulas: [id, arma, x, até quando]. */
+      const itens: { id: number; arma: Arma; x: number; ate: number }[] = [];
+      const melhorAntes = solo && servicos.recordeDe ? servicos.recordeDe(inscritos[0], escolha) : null;
       let ficaram = new Set(inscritos);
       const bichos = new Map<number, Bicho>();
       const balas: BalaInimiga[] = [];
@@ -303,6 +340,7 @@ export function criarComando({
             armaAte: 0,
             ultimoTiro: 0,
             ultimaGranada: -Infinity,
+            ultimaFaca: -Infinity,
             tiros: new Map(),
             // a posição vem ~15 por segundo; os tiros, no ritmo da arma (o balde da arma é conferido à parte)
             baldes: { pos: balde(10, 24), tiro: balde(4, 12), acao: balde(6, 8) },
@@ -326,13 +364,17 @@ export function criarComando({
         fase = 'lutando';
         arena = [ONDAS_X[k], ONDAS_X[k] + ARENA_L];
         fila = [];
-        const o = ONDAS[k];
-        if (o.dragao) fila.push('dragao');
-        // os andarilhos primeiro (um a mais por pessoa além da primeira), os outros intercalados
-        for (let i = 0; i < (o.cogumelo ?? 0) + (n - 1); i++) fila.push('cogumelo');
+        const o = ondas[k];
+        const doTipo = (c: Comportamento) => (Object.keys(o) as TipoDoBicho[]).filter((t) => BICHOS[t].comp === c);
+        for (const t of doTipo('chefe')) fila.push(t);
+        // os andarilhos primeiro (um a mais por pessoa além da primeira, só onde a onda tem andarilho), os outros intercalados
+        for (const a of doTipo('andarilho')) for (let i = 0; i < (o[a] ?? 0) + (n - 1); i++) fila.push(a);
         const outros: TipoDoBicho[] = [];
-        for (const t of ['dino', 'abelha'] as TipoDoBicho[]) for (let i = 0; i < (o[t] ?? 0) + (o[t] && n > 2 ? 1 : 0); i++) outros.push(t);
+        for (const t of [...doTipo('atirador'), ...doTipo('voador')]) for (let i = 0; i < (o[t] ?? 0) + (o[t] && n > 2 ? 1 : 0); i++) outros.push(t);
         outros.forEach((t, i) => fila.splice(1 + i * 2, 0, t));
+        // a cápsula passa no alto, de um lado ao outro, com a arma dela
+        const armaDaCapsula = CAPSULAS[k];
+        if (armaDaCapsula) soltarCapsula(armaDaCapsula);
         proximaEntrada = agora() + 700;
         const p = presentes();
         ficaram = new Set([...ficaram].filter((id) => p.has(id)));
@@ -340,25 +382,67 @@ export function criarComando({
         ctx.avisar();
       };
 
-      const vivos = () => [...bichos.values()].filter((b) => b.estado !== 'morto');
-      const maxNaTela = () => (ONDAS[onda].dragao ? 3 : 2 + n);
+      /** Os bichos que contam (a cápsula não segura a onda nem a vaga na tela). */
+      const vivos = () => [...bichos.values()].filter((b) => b.estado !== 'morto' && BICHOS[b.tipo].comp !== 'capsula');
+      const comp = (b: Bicho) => BICHOS[b.tipo].comp;
+      const temChefe = (o: Onda) => (Object.keys(o) as TipoDoBicho[]).some((t) => BICHOS[t].comp === 'chefe');
+      const maxNaTela = () => (temChefe(ondas[onda]) ? 3 : 2 + n);
+      /** O andarilho da fase de agora (o chefe chama esse). */
+      const andarilhoDaFase = (): TipoDoBicho => (etapas[etapa] === 'deserto' ? 'cacto' : 'cogumelo');
+      /** A cápsula entra pela esquerda, no alto, e vai até a direita; derrubada, solta a arma. */
+      const armaDe = new Map<number, Arma>();
+      const soltarCapsula = (arma: Arma) => {
+        const t = agora();
+        const b: Bicho = {
+          id: proximoId++,
+          tipo: 'capsula',
+          x: arena[0] - 16,
+          h: CAPSULA.h,
+          lado: 1,
+          hp: BICHOS.capsula.hp,
+          hpMax: BICHOS.capsula.hp,
+          estado: 'entrando',
+          desde: t,
+          ate: t,
+          alvoX: 0,
+          x0: arena[0] - 16,
+          proximoAtaque: Infinity,
+          golpes: 0,
+          fogoFalta: 0,
+          fogoEm: 0,
+          historia: [],
+        };
+        bichos.set(b.id, b);
+        armaDe.set(b.id, arma);
+      };
+      const passoDaCapsula = (b: Bicho, dt: number, t: number) => {
+        b.x += CAPSULA.vel * dt;
+        // o sobe e desce, pelo tempo de voo (só o servidor anda com ela; a tela interpola o quadro)
+        const s = (t - b.desde) / 1000;
+        b.h = CAPSULA.h + CAPSULA.onda * Math.sin(s * 2.4);
+        if (b.x > arena[1] + 20) {
+          bichos.delete(b.id);
+          armaDe.delete(b.id);
+        }
+      };
 
       const entrar = (tipo: TipoDoBicho) => {
         const t = agora();
-        const doLado: 1 | -1 = tipo === 'dragao' ? 1 : aleatorio() < 0.6 ? 1 : -1;
-        const x = tipo === 'dragao' ? arena[1] - 50 : doLado === 1 ? arena[1] + 20 : arena[0] - 20;
-        const hpMax = tipo === 'dragao' ? vidaDoChefe(n, solo) : BICHOS[tipo].hp;
+        const c = BICHOS[tipo].comp;
+        const doLado: 1 | -1 = c === 'chefe' ? 1 : aleatorio() < 0.6 ? 1 : -1;
+        const x = c === 'chefe' ? arena[1] - 50 : doLado === 1 ? arena[1] + 20 : arena[0] - 20;
+        const hpMax = tipo === 'dragao' ? vidaDoChefe(n, solo) : tipo === 'yeti' ? vidaDoSubchefe(n, solo) : BICHOS[tipo].hp;
         const b: Bicho = {
           id: proximoId++,
           tipo,
           x,
-          h: tipo === 'abelha' ? VOO_H : 0,
+          h: c === 'voador' ? VOO_H : 0,
           lado: doLado === 1 ? -1 : 1,
           hp: hpMax,
           hpMax,
-          estado: tipo === 'abelha' ? 'rondando' : tipo === 'dragao' ? 'chamando' : 'entrando',
+          estado: c === 'voador' ? 'rondando' : c === 'chefe' ? 'chamando' : 'entrando',
           desde: t,
-          ate: t + (tipo === 'dragao' ? 1500 : 900),
+          ate: t + (c === 'chefe' ? 1500 : 900),
           alvoX: 0,
           x0: x,
           proximoAtaque: t + 900 + aleatorio() * 900,
@@ -368,7 +452,7 @@ export function criarComando({
           historia: [],
         };
         bichos.set(b.id, b);
-        if (tipo === 'dragao') {
+        if (c === 'chefe') {
           evento_('c');
           ctx.avisar();
         }
@@ -397,7 +481,7 @@ export function criarComando({
         b.x += Math.sign(dx) * Math.min(Math.abs(dx), vel * dt);
       };
       const pancada = (chave: string, dentro: Pancada['dentro']) => pancadas.push({ em: agora(), chave, dentro });
-      const atirar = (tipo: 0 | 1 | 2, x: number, h: number, vx: number, vh: number, raio: number) => {
+      const atirar = (tipo: 0 | 1 | 2 | 3, x: number, h: number, vx: number, vh: number, raio: number) => {
         balas.push({ id: proximoId++, tipo, x, h, vx, vh, raio, ate: agora() + 4000 });
       };
       const dentroDaArena = (x: number, margem: number) => Math.max(arena[0] + margem, Math.min(arena[1] - margem, x));
@@ -411,7 +495,7 @@ export function criarComando({
             if (!alvo) return;
             const lado = b.x < alvo.x ? -1 : 1;
             // os andarilhos não empilham: o segundo vai pelo outro lado, se couber
-            const outros = vivos().filter((o) => o !== b && o.tipo === 'cogumelo' && Math.sign(o.x - alvo.x) === lado && Math.abs(o.x - alvo.x) < 40);
+            const outros = vivos().filter((o) => o !== b && comp(o) === 'andarilho' && Math.sign(o.x - alvo.x) === lado && Math.abs(o.x - alvo.x) < 40);
             const ladoFinal = outros.length ? -lado : lado;
             let destino = alvo.x + ladoFinal * 20;
             if (destino < arena[0] + 10 || destino > arena[1] - 10) destino = alvo.x - ladoFinal * 20;
@@ -461,7 +545,7 @@ export function criarComando({
           }
           case 'mirando':
             if (t >= b.ate) {
-              atirar(0, b.x + b.lado * (BICHOS.dino.larg + 4), TIRO_INIMIGO.h, b.lado * TIRO_INIMIGO.vel, 0, TIRO_INIMIGO.raio);
+              atirar(0, b.x + b.lado * (BICHOS[b.tipo].larg + 4), TIRO_INIMIGO.h, b.lado * TIRO_INIMIGO.vel, 0, TIRO_INIMIGO.raio);
               mudar(b, 'atacando', 300);
             }
             return;
@@ -528,7 +612,7 @@ export function criarComando({
                 b.alvoX = dentroDaArena(alvo.x, 30);
                 mudar(b, 'prep-pisao', 1000);
               } else if (vivos().length < 3) {
-                for (let k = 0; k < Math.min(2, n + 1); k++) fila.push('cogumelo');
+                for (let k = 0; k < Math.min(2, n + 1); k++) fila.push(andarilhoDaFase());
                 mudar(b, 'chamando', 1200);
                 b.proximoAtaque = t + 1200;
               } else mudar(b, 'recuperando', 400);
@@ -543,7 +627,7 @@ export function criarComando({
             return;
           case 'fogo':
             if (b.fogoFalta > 0 && t >= b.fogoEm) {
-              atirar(1, b.x - 26, FOGO.h, -FOGO.vel, 0, FOGO.raio);
+              atirar(b.tipo === 'yeti' ? 3 : 1, b.x - BICHOS[b.tipo].larg - 2, FOGO.h, -FOGO.vel, 0, FOGO.raio);
               b.fogoFalta--;
               b.fogoEm = t + 300;
             }
@@ -599,7 +683,7 @@ export function criarComando({
 
       const passoComum = (b: Bicho, t: number) => {
         if (b.estado === 'dor') {
-          if (t >= b.ate) mudar(b, b.tipo === 'abelha' ? 'rondando' : 'andando', 0);
+          if (t >= b.ate) mudar(b, comp(b) === 'voador' ? 'rondando' : 'andando', 0);
           return true;
         }
         if (b.estado === 'morto') {
@@ -658,7 +742,7 @@ export function criarComando({
         evento_('h', b.id, j.userId, Math.round(b.x), Math.round(b.h + BICHOS[b.tipo].alto / 2));
         if (b.hp > 0) {
           // o pequeno sente o golpe (e perde a preparação); o chefe só pisca
-          if (b.tipo !== 'dragao' && (b.estado === 'andando' || b.estado === 'rondando' || b.estado === 'entrando')) mudar(b, 'dor', 160);
+          if (comp(b) !== 'chefe' && comp(b) !== 'capsula' && (b.estado === 'andando' || b.estado === 'rondando' || b.estado === 'entrando')) mudar(b, 'dor', 160);
           return;
         }
         j.pontos += BICHOS[b.tipo].pontos;
@@ -666,13 +750,24 @@ export function criarComando({
         // vira fumaça: o site desenha a nuvem, e o bicho some
         mudar(b, 'morto', 500);
         evento_('x', b.id, Math.round(b.x), Math.round(b.h + BICHOS[b.tipo].alto / 2), TIPOS.indexOf(b.tipo));
-        if (b.tipo === 'dragao') {
+        if (comp(b) === 'capsula') {
+          // a arma cai no chão, dentro da arena, e fica um tempo para quem chegar primeiro
+          const arma = armaDe.get(b.id) ?? 'chama';
+          armaDe.delete(b.id);
+          itens.push({ id: proximoId++, arma, x: dentroDaArena(b.x, 16), ate: agora() + CAPSULA.itemMs });
+          return;
+        }
+        if (comp(b) === 'chefe') {
           // o chefe caiu: os que ele chamou viram fumaça junto
           for (const o of vivos()) if (o !== b) mudar(o, 'morto', 500);
           fila = [];
           balas.length = 0;
           pancadas.length = 0;
-          acabar(true);
+          // o subchefe só acaba a onda; o chefe da última onda acaba a fase (na campanha, vem a próxima)
+          if (onda === ondas.length - 1) {
+            if (etapa < etapas.length - 1) trocaEm = agora() + TROCA_DE_FASE_MS;
+            else acabar(true);
+          }
         }
       };
 
@@ -712,9 +807,11 @@ export function criarComando({
           }
           for (const b of [...bichos.values()]) {
             if (!passoComum(b, t)) {
-              if (b.tipo === 'cogumelo') passoDoAndarilho(b, dt, t);
-              else if (b.tipo === 'dino') passoDoAtirador(b, dt, t);
-              else if (b.tipo === 'abelha') passoDoVoador(b, dt, t);
+              const c = comp(b);
+              if (c === 'andarilho') passoDoAndarilho(b, dt, t);
+              else if (c === 'atirador') passoDoAtirador(b, dt, t);
+              else if (c === 'voador') passoDoVoador(b, dt, t);
+              else if (c === 'capsula') passoDaCapsula(b, dt, t);
               else passoDoChefe(b, dt, t);
             }
             if (fase !== 'lutando' && fase !== 'avancando') return;
@@ -744,8 +841,13 @@ export function criarComando({
               ctx.avisar();
             }
           }
-          // a onda acabou: a câmera anda quando alguém chega à frente
-          if (fase === 'lutando' && fila.length === 0 && vivos().length === 0 && onda < ONDAS.length - 1) {
+          // as armas no chão somem com o tempo
+          for (let k = itens.length - 1; k >= 0; k--) if (t >= itens[k].ate) itens.splice(k, 1);
+          // a campanha: vencido o chefe de uma fase, a próxima começa do começo
+          if (trocaEm !== null) {
+            if (t >= trocaEm) proximaEtapa(t);
+          } else if (fase === 'lutando' && fila.length === 0 && vivos().length === 0 && onda < ondas.length - 1) {
+            // a onda acabou: a câmera anda quando alguém chega à frente
             fase = 'avancando';
             arena = [arena[0], ONDAS_X[onda + 1] + ARENA_L];
             ctx.avisar();
@@ -754,9 +856,36 @@ export function criarComando({
           }
           const daTurma = [...jogadores.values()].filter((j) => naSalaAgora.has(j.userId));
           if (daTurma.length && daTurma.every((j) => j.estado === 'sem-vidas')) return acabar(false);
-          if (t - inicio > FASE_MAX_MS) return acabar(false);
+          if (t - inicio > FASE_MAX_MS * etapas.length) return acabar(false);
         }
         difundir();
+      };
+
+      /** A próxima fase da campanha: a arena volta ao começo, a turma em pé lado a lado, as gaiolas fechadas de novo. */
+      const proximaEtapa = (t: number) => {
+        trocaEm = null;
+        etapa++;
+        ondas = ONDAS_DA_FASE[etapas[etapa]];
+        balas.length = 0;
+        pancadas.length = 0;
+        granadas.clear();
+        bichos.clear();
+        armaDe.clear();
+        itens.length = 0;
+        for (let k = 0; k < gaiolas.length; k++) gaiolas[k] = 0;
+        arena = [ONDAS_X[0], ONDAS_X[0] + ARENA_L];
+        let k = 0;
+        for (const j of jogadores.values()) {
+          if (j.estado === 'sem-vidas') continue;
+          j.x = 30 + k++ * 16;
+          j.h = 0;
+          j.invulAte = t + INVUL_VOLTA_MS;
+          j.livreAte = t + 1500;
+          j.historia = [];
+          if (j.estado === 'em-pe') evento_('r', j.userId, Math.round(j.x));
+        }
+        evento_('f', etapa);
+        comecarOnda(0);
       };
 
       const difundir = () => {
@@ -785,6 +914,9 @@ export function criarComando({
           g: [...granadas.values()].map((g) => [g.id, g.userId, Math.round(g.x0), Math.round(g.h0), Math.round(g.x), Math.round(g.explode - t)]),
           // as gaiolas: quem abriu cada uma (0: presa)
           r: gaiolas,
+          // o cenário da fase (o índice das fases da Briga) e as armas no chão: [id, arma, x]
+          fs: CENARIO_DA_FASE[etapas[etapa]],
+          it: itens.map((it) => [it.id, ARMAS.indexOf(it.arma), Math.round(it.x)]),
           // os coelhos: [userId, x, h, lado, ação, ms da ação, mira, vidas, golpes que aguenta, pontos, estado (0 em pé, 1
           // fora, 2 sem vidas), avatar, arma, ms de arma, ms piscando, último tiro aceito]
           j: [...jogadores.values()].map((j) => [
@@ -807,7 +939,7 @@ export function criarComando({
           ]),
           // os tiros (para cada um desenhar as balas dos outros): [userId, n, x0, h0, direção, leque (1/0), ms desde]
           p: [...jogadores.values()].flatMap((j) =>
-            [...j.tiros.values()].filter((s) => t - s.em < 900).map((s) => [j.userId, s.n, Math.round(s.x0), Math.round(s.h0), s.dir, s.balas.length === 3 ? 1 : 0, Math.round(t - s.em)]),
+            [...j.tiros.values()].filter((s) => t - s.em < 900).map((s) => [j.userId, s.n, Math.round(s.x0), Math.round(s.h0), s.dir, s.balas.length === 3 ? 1 : 0, Math.round(t - s.em), ARMAS.indexOf(s.arma)]),
           ),
           e: eventos,
         });
@@ -818,6 +950,7 @@ export function criarComando({
       const acabar = (venceu: boolean, vazia = false) => {
         if (fase !== 'lutando' && fase !== 'avancando') return;
         fase = venceu ? 'vitoria' : 'derrota';
+        if (venceu) venceuEm = agora();
         difundir();
         ctx.avisar();
         if (vazia) parar();
@@ -860,6 +993,15 @@ export function criarComando({
           }
         }
         venceuAFase = venceu;
+        // O RECORDE DO SOLO (19/11/2026): o tempo da fase vencida, pelo relógio daqui, na tabela comum
+        if (venceu && solo && venceuEm !== null && servicos.guardarRecorde) {
+          const ms = venceuEm - inicio;
+          try {
+            recorde = { ms, ...servicos.guardarRecorde(inscritos[0], escolha, ms, { pontos: jogadores.get(inscritos[0])?.pontos ?? 0 }) };
+          } catch {
+            // sem a conta (o teste): a fase acaba igual
+          }
+        }
         ctx.terminar(completa);
       };
 
@@ -906,7 +1048,7 @@ export function criarComando({
         b.porSeg = (1000 / INTERVALO[j.arma]) * 1.1;
         if (!gastar(b)) return 'depressa demais';
         const t = agora();
-        j.tiros.set(num, { n: num, x0: x, h0: h, balas: balasDoTiro(dir, j.arma), dir, em: t, usadas: new Set() });
+        j.tiros.set(num, { n: num, arma: j.arma, x0: x, h0: h, balas: balasDoTiro(dir, j.arma), dir, em: t, usadas: new Set() });
         j.ultimoTiro = num;
         return null;
       };
@@ -921,14 +1063,42 @@ export function criarComando({
         if (!b || b.estado === 'morto' || b.hp <= 0) return 'bicho fora';
         const t = agora();
         const el = t - s.em;
-        if (el > (BALA.alcance / BALA.vel) * 1000 + 700) return 'tiro velho';
+        if (el > (ALCANCE_DA_ARMA[s.arma] / VEL_DA_ARMA[s.arma]) * 1000 + 700) return 'tiro velho';
         const [dx, dh] = s.balas[k];
         const c = BICHOS[b.tipo];
+        if (s.arma === 'teleguiada') {
+          // A TELEGUIADA (19/11/2026) faz curva na tela de quem atirou: o servidor confere que o bicho esteve ao alcance do
+          // caminho que ela pode ter feito até agora (a distância, não a linha), e que a mira apontava para o lado dele
+          const alcance = andouABala(el + 300, 'teleguiada') + c.larg + FOLGA_BALA + 12;
+          const ok = b.historia.some((p) => {
+            if (p.t < t - HISTORIA_MS || p.t < s.em - 400) return false;
+            const ddx = p.x - s.x0, ddh = p.h + c.alto / 2 - s.h0;
+            return Math.hypot(ddx, ddh) <= alcance && ddx * dx + ddh * dh > -20;
+          });
+          if (!ok) return 'longe do bicho';
+          s.usadas.add(k);
+          danificar(j, b, TELEGUIADA.dano);
+          return null;
+        }
         // o caminho da bala (contando ~300 ms de quando ela saiu na tela de quem atirou) passa por alguma posição dele
-        const perto = b.historia.some((p) => p.t >= t - HISTORIA_MS && p.t >= s.em - 400 && balaNaCaixa(s.x0, s.h0, dx, dh, 0, andouABala(el + 300), p.x, p.h, c.larg, c.alto, FOLGA_BALA));
+        const perto = b.historia.some((p) => p.t >= t - HISTORIA_MS && p.t >= s.em - 400 && balaNaCaixa(s.x0, s.h0, dx, dh, 0, andouABala(el + 300, s.arma), p.x, p.h, c.larg, c.alto, FOLGA_BALA));
         if (!perto) return 'longe do bicho';
         s.usadas.add(k);
         danificar(j, b, 1);
+        return null;
+      };
+
+      /** A FACADA (19/11/2026): o bicho colado, conferido pelo passado dele (como a bala), no ritmo da faca. */
+      const faca = (j: Jogador, d: Record<string, unknown>): string | null => {
+        const t = agora();
+        if (t - j.ultimaFaca < FACA.intervalo - 80) return 'depressa demais';
+        const b = bichos.get(d.inimigo as number);
+        if (!b || b.estado === 'morto' || b.hp <= 0) return 'bicho fora';
+        const c = BICHOS[b.tipo];
+        const perto = b.historia.some((p) => p.t >= t - HISTORIA_MS && coladoNaFaca(j.x, j.h, j.lado, p.x, p.h, c.larg, c.alto, FOLGA_BALA));
+        if (!perto) return 'longe do bicho';
+        j.ultimaFaca = t;
+        danificar(j, b, FACA.dano);
         return null;
       };
 
@@ -942,6 +1112,21 @@ export function criarComando({
         j.ultimaGranada = t;
         const g: Granada = { id: proximoId++, userId: j.userId, x0: x, h0: h, x: x + l * GRANADA.alcance, explode: t + GRANADA.voo };
         granadas.set(g.id, g);
+        return null;
+      };
+
+      /** PEGAR A ARMA que a cápsula soltou: de perto, no chão, a primeira pessoa que chega leva. */
+      const pegarArma = (j: Jogador, d: Record<string, unknown>): string | null => {
+        const k = itens.findIndex((it) => it.id === d.item);
+        if (k < 0) return 'arma fora';
+        const it = itens[k];
+        if (Math.abs(j.x - it.x) > PERTO_DA_GAIOLA + 10 || j.h > 30) return 'longe da arma';
+        itens.splice(k, 1);
+        j.arma = it.arma;
+        j.armaAte = agora() + ARMA_MS;
+        j.pontos += 100;
+        evento_('w', it.id, j.userId, ARMAS.indexOf(it.arma));
+        ctx.avisar();
         return null;
       };
 
@@ -967,7 +1152,12 @@ export function criarComando({
           return {
             fase,
             onda: onda + 1,
-            ondas: ONDAS.length,
+            ondas: ondas.length,
+            // a fase escolhida (ou a campanha) e a que está na tela; "categoria" volta no "Jogar de novo"
+            categoria: escolha,
+            mapa: etapas[etapa],
+            etapa: etapa + 1,
+            etapas: etapas.length,
             venceu: fase === 'vitoria' || (fase === 'fim' && venceuAFase),
             jogadores: [...jogadores.values()].map((j) => ({
               userId: j.userId,
@@ -978,6 +1168,7 @@ export function criarComando({
             })),
             resultado: fase === 'fim' ? resultado : null,
             partidaId: evento,
+            ...(solo ? { melhorAntes, recorde } : {}),
           };
         },
         acao(quem, corpo) {
@@ -992,6 +1183,8 @@ export function criarComando({
           if (d.tipo === 'pos') {
             if (gastar(j.baldes.pos)) posicao(j, d);
           } else if (d.tipo === 'tiro') ultimoMotivo = tiro(j, d);
+          else if (d.tipo === 'faca') ultimoMotivo = gastar(j.baldes.acao) ? faca(j, d) : 'depressa demais';
+          else if (d.tipo === 'arma') ultimoMotivo = gastar(j.baldes.acao) ? pegarArma(j, d) : 'depressa demais';
           else if (d.tipo === 'acerto' || d.tipo === 'granada' || d.tipo === 'soltar') {
             // o acerto tem o balde dele: cada bala é um (o leque, três)
             if (d.tipo === 'acerto') ultimoMotivo = acerto(j, d);
@@ -1006,7 +1199,7 @@ export function criarComando({
         },
         parar,
         // para o teste
-        ...({ _passo: tick, _bichos: bichos, _jogadores: jogadores, _balas: balas, _gaiolas: gaiolas, _motivo: () => ultimoMotivo, _arena: () => arena, _fila: () => fila } as object),
+        ...({ _passo: tick, _bichos: bichos, _jogadores: jogadores, _balas: balas, _gaiolas: gaiolas, _itens: itens, _motivo: () => ultimoMotivo, _arena: () => arena, _fila: () => fila } as object),
       };
     },
   };

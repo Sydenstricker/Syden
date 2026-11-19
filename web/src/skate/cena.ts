@@ -3,7 +3,45 @@ import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { carregarCoelho, copiarCoelho, minhasCoresDoCoelho, type CoelhoCopiado, type CoresDoCoelho } from '../coelho3d';
 import { PASSO, type Skatista } from './fisica';
 import { MODELOS_DO_ENTORNO, montarEntorno } from './entorno';
-import { altura, alturaDaPeca, LARGURA, pecaEm, PECAS, perfilDaPeca, PROFUNDIDADE, subidaDaPeca } from './pista';
+import { altura, alturaDaPeca, LARGURA, pecaEm, PECAS, perfilDaPeca, PROFUNDIDADE, subidaDaPeca, type Objetivos } from './pista';
+
+/**
+ * AS LETRAS E A FITA (19/11/2026, os objetivos): pixel art POR CÓDIGO, numa grade de 5 × 7 (a letra) e 9 × 6 (a fita
+ * cassete), desenhada num canvas com o filtro "o pixel mais perto" (fica quadradinho).
+ */
+const FONTE: Record<string, string[]> = {
+  T: ['11111', '00100', '00100', '00100', '00100', '00100', '00100'],
+  O: ['01110', '10001', '10001', '10001', '10001', '10001', '01110'],
+  C: ['01111', '10000', '10000', '10000', '10000', '10000', '01111'],
+  A: ['01110', '10001', '10001', '11111', '10001', '10001', '10001'],
+};
+const FITA = ['111111111', '100000001', '101101101', '100000001', '101111101', '111111111'];
+
+function spritePixel(linhas: string[], cor: string, borda: string): THREE.Sprite {
+  const h = linhas.length, w = linhas[0].length;
+  const c = document.createElement('canvas');
+  c.width = (w + 2) * 4;
+  c.height = (h + 2) * 4;
+  const g = c.getContext('2d')!;
+  // o contorno escuro (cada pixel aceso, um em volta), e o pixel aceso por cima
+  for (const [dx, dy, tinta] of [[0, 0, borda], [1, 1, cor]] as const) {
+    g.fillStyle = tinta;
+    for (let y = 0; y < h; y++)
+      for (let x = 0; x < w; x++) {
+        if (linhas[y][x] !== '1') continue;
+        if (dx === 0) g.fillRect(x * 4, y * 4, 12, 12);
+        else g.fillRect((x + dx) * 4, (y + dy) * 4, 4, 4);
+      }
+  }
+  const tex = new THREE.CanvasTexture(c);
+  tex.magFilter = THREE.NearestFilter;
+  tex.minFilter = THREE.NearestFilter;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true }));
+  const k = 0.06;
+  s.scale.set((w + 2) * k, (h + 2) * k, 1);
+  return s;
+}
 
 /**
  * A CENA DO SKATE (05/11/2026): a pista de pista.ts com as peças do Mini Skate da Kenney (CC0, web/public/skate/License.txt),
@@ -164,6 +202,9 @@ export class CenaDoSkate {
   private modoAntes = '';
   /** A turma (na sala): os fantasmas, cada um com o coelho dele. */
   private outros: Outro[] = [];
+  /** As letras e a fita no ar (a fita é a última), com a altura de cada uma. */
+  private pegaveis: { s: THREE.Sprite; y: number }[] = [];
+  private tempo = 0;
 
   constructor(private caixa: HTMLElement) {
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'low-power' });
@@ -216,7 +257,35 @@ export class CenaDoSkate {
     for (const o of outros) this.montarOutro(coelho, modelos.get('skateboard')!, o);
   }
 
+  /** Põe no ar as letras da palavra e a fita da pista (os objetivos). */
+  montarObjetivos(o: Objetivos, palavra: string) {
+    const cores = ['#f2c14e', '#e0574f', '#5bc46a', '#4db4ef'];
+    o.letras.forEach((p, i) => {
+      const s = spritePixel(FONTE[palavra[i]] ?? FONTE.O, cores[i % cores.length], '#2a2333');
+      s.position.set(p.x, p.y, p.z);
+      this.cena.add(s);
+      this.pegaveis.push({ s, y: p.y });
+      this.descartaveis.push(s.material.map!, s.material);
+    });
+    const f = spritePixel(FITA, '#c77dde', '#2a2333');
+    f.position.set(o.fita.x, o.fita.y, o.fita.z);
+    this.cena.add(f);
+    this.pegaveis.push({ s: f, y: o.fita.y });
+    this.descartaveis.push(f.material.map!, f.material);
+  }
+
+  /** Esconde o que já foi pego (`letras`: um bit por letra) e faz o resto boiar (só desenho). */
+  marcarPegos(letras: number, fita: boolean, dt: number) {
+    this.tempo += dt;
+    this.pegaveis.forEach((p, i) => {
+      const ultima = i === this.pegaveis.length - 1;
+      p.s.visible = ultima ? !fita : !(letras & (1 << i));
+      p.s.position.y = p.y + (this.calmo ? 0 : Math.sin(this.tempo * 2.4 + i) * 0.05);
+    });
+  }
+
   /** Troca as cores do skatista principal (quem só assiste segue o coelho de outra pessoa). */
+
   pintar(cores: CoresDoCoelho) {
     this.copia?.material.pintar(cores);
   }

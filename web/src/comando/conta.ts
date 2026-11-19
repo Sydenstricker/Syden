@@ -71,10 +71,14 @@ export const DIRECOES: readonly (readonly [number, number])[] = [
   [0, -1],
   [R, -R],
 ];
-/** As armas: 0 a de sempre, 1 o leque de três, 2 a rápida. O intervalo entre tiros (ms). */
-export const ARMAS = ['normal', 'leque', 'rapida'] as const;
+/**
+ * As armas: 0 a de sempre, 1 o leque de três, 2 a rápida; desde 19/11/2026, 3 a CHAMA CURTA (uma rajada de faíscas de cenoura
+ * que alcança pouco e sai sem parar) e 4 a TELEGUIADA (lenta, vai atrás do bicho mais perto da mira). A ordem é o código que
+ * vai no quadro: arma nova entra no FIM. O intervalo entre tiros (ms).
+ */
+export const ARMAS = ['normal', 'leque', 'rapida', 'chama', 'teleguiada'] as const;
 export type Arma = (typeof ARMAS)[number];
-export const INTERVALO: Record<Arma, number> = { normal: 210, leque: 280, rapida: 105 };
+export const INTERVALO: Record<Arma, number> = { normal: 210, leque: 280, rapida: 105, chama: 70, teleguiada: 420 };
 /** Quanto dura a arma de reforço (ms). */
 export const ARMA_MS = 30_000;
 /** A bala: velocidade (px/s), alcance (px) e o raio. */
@@ -100,10 +104,16 @@ export function bocaDoLanca(x: number, h: number, dir: number): [number, number]
   return [x + dx * 12, h + 20 + dh * 10];
 }
 
-/** Quanto a bala andou em `ms` (para no alcance). */
-export function andouABala(ms: number): number {
-  const d = (BALA.vel * (ms < 0 ? 0 : ms)) / 1000;
-  return d > BALA.alcance ? BALA.alcance : d;
+/** A velocidade (px/s) e o alcance (px) de cada arma: a chama vai perto, a teleguiada é lenta e vai longe. */
+export const VEL_DA_ARMA: Record<Arma, number> = { normal: 300, leque: 300, rapida: 300, chama: 260, teleguiada: 170 };
+export const ALCANCE_DA_ARMA: Record<Arma, number> = { normal: 240, leque: 240, rapida: 240, chama: 64, teleguiada: 300 };
+/** Quanto a teleguiada vira por segundo (radianos), no desenho de quem atirou: o servidor confere pela distância. */
+export const TELEGUIADA = { giro: 5, dano: 2 };
+
+/** Quanto a bala andou em `ms` (para no alcance da arma). */
+export function andouABala(ms: number, arma: Arma = 'normal'): number {
+  const d = (VEL_DA_ARMA[arma] * (ms < 0 ? 0 : ms)) / 1000;
+  return d > ALCANCE_DA_ARMA[arma] ? ALCANCE_DA_ARMA[arma] : d;
 }
 
 /**
@@ -122,6 +132,20 @@ export function balaNaCaixa(x0: number, h0: number, dx: number, dh: number, d0: 
   }
 }
 
+// ---------------- A FACA-CENOURA ----------------
+/**
+ * O GOLPE DE PERTO (19/11/2026): com o bicho COLADO (a até `alcance` px da caixa dele, do lado para onde se olha, na altura
+ * dele), atirar vira a facada com a cenoura: sem bala, mais dano, no máximo uma a cada `intervalo` ms.
+ */
+export const FACA = { alcance: 12, dano: 2, intervalo: 320 };
+
+/** O bicho com o pé em (bx, bh), de meia largura `larg` e altura `alto`, está colado no coelho em (x, h) olhando para `lado`? */
+export function coladoNaFaca(x: number, h: number, lado: number, bx: number, bh: number, larg: number, alto: number, folga: number): boolean {
+  const dx = (bx - x) * (lado < 0 ? -1 : 1);
+  if (dx < -larg - folga || dx > larg + FACA.alcance + folga) return false;
+  return h + 30 >= bh - folga && h <= bh + alto + folga;
+}
+
 // ---------------- A GRANADA ----------------
 /** Até onde vai (px à frente), quanto voa (ms), o raio da explosão, o dano e a recarga (ms). */
 export const GRANADA = { alcance: 92, voo: 650, raio: 34, dano: 5, recarga: 4000 };
@@ -132,15 +156,38 @@ export const GRANADA = { alcance: 92, voo: 650, raio: 34, dano: 5, recarga: 4000
  * perto e bate, o atirador (o dino) para longe e atira rente ao chão, o voador (a abelha) fica no alto e solta sementes, e o
  * chefe é o dragão. A ordem é o código que vai no quadro: bicho novo entra no FIM.
  */
-export const TIPOS = ['cogumelo', 'dino', 'abelha', 'dragao'] as const;
+export const TIPOS = ['cogumelo', 'dino', 'abelha', 'dragao', 'capsula', 'cacto', 'golem', 'redemoinho', 'yeti'] as const;
 export type TipoDoBicho = (typeof TIPOS)[number];
-/** Meia largura e altura da caixa, a vida e os pontos de quem derruba. */
-export const BICHOS: Record<TipoDoBicho, { larg: number; alto: number; hp: number; pontos: number }> = {
-  cogumelo: { larg: 9, alto: 38, hp: 4, pontos: 100 },
-  dino: { larg: 10, alto: 34, hp: 5, pontos: 120 },
-  abelha: { larg: 9, alto: 22, hp: 3, pontos: 120 },
-  dragao: { larg: 24, alto: 70, hp: 150, pontos: 1000 },
+/**
+ * O que cada bicho FAZ (19/11/2026: a segunda fase traz bichos novos das folhas da Briga com os comportamentos de sempre): o
+ * andarilho, o atirador, o voador, o chefe (o dragão no fim, o yeti como subchefe) e a cápsula voadora, que não ataca e,
+ * derrubada, solta uma arma.
+ */
+export type Comportamento = 'andarilho' | 'atirador' | 'voador' | 'chefe' | 'capsula';
+/** Meia largura e altura da caixa, a vida, os pontos de quem derruba e o comportamento. */
+export const BICHOS: Record<TipoDoBicho, { larg: number; alto: number; hp: number; pontos: number; comp: Comportamento }> = {
+  cogumelo: { larg: 9, alto: 38, hp: 4, pontos: 100, comp: 'andarilho' },
+  dino: { larg: 10, alto: 34, hp: 5, pontos: 120, comp: 'atirador' },
+  abelha: { larg: 9, alto: 22, hp: 3, pontos: 120, comp: 'voador' },
+  dragao: { larg: 24, alto: 70, hp: 150, pontos: 1000, comp: 'chefe' },
+  capsula: { larg: 9, alto: 12, hp: 2, pontos: 150, comp: 'capsula' },
+  cacto: { larg: 10, alto: 40, hp: 5, pontos: 110, comp: 'andarilho' },
+  golem: { larg: 9, alto: 36, hp: 6, pontos: 130, comp: 'atirador' },
+  redemoinho: { larg: 10, alto: 26, hp: 3, pontos: 130, comp: 'voador' },
+  yeti: { larg: 22, alto: 64, hp: 90, pontos: 700, comp: 'chefe' },
 };
+
+/** A CÁPSULA VOADORA: atravessa o alto da arena devagar, ondulando; derrubada, a arma cai no chão e fica ITEM_MS. */
+export const CAPSULA = { vel: 45, h: 84, onda: 8, itemMs: 15_000 };
+
+/**
+ * AS FASES (19/11/2026): a floresta (a de sempre) e o deserto (bichos novos e o yeti de subchefe no meio). Escolhe-se na
+ * largada uma delas ou a campanha (as duas seguidas). O índice é o cenário da Briga em que cada uma acontece.
+ */
+export const FASES_DO_COMANDO = ['floresta', 'deserto'] as const;
+export type MapaDoComando = (typeof FASES_DO_COMANDO)[number];
+export const CAMPANHA_DO_COMANDO = 'campanha';
+export const CENARIO_DA_FASE: Record<MapaDoComando, number> = { floresta: 1, deserto: 2 };
 /** A altura em que o voador paira. */
 export const VOO_H = 66;
 

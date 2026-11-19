@@ -17,11 +17,16 @@
  * outros aparecem como fantasmas, com o nome em cima. No fim, mais pontos ganha; os três primeiros vão à estante de troféus
  * (pista 'skate'). Sem itens, a sessão da sala que bate o recorde da pessoa vira o recorde dela (como no Pulo e na Gincana).
  * Não há pausa: quem tira o foco da janela pausa a própria sessão e só perde o prazo.
+ *
+ * 19/11/2026: OS OBJETIVOS (as letras de "TOCA" no ar, a meta de pontos, a de combo, a fita escondida e os saltos com nome)
+ * contam pela sessão que o servidor refez, e a SEGUNDA PISTA (a Praça, 'praca-1'): o recorde dela mora na tabela comum
+ * (solo_recordes, jogo 'skate', variante = a pista), e o do parque continua em skate_recordes_1min. O mais de objetivos que a
+ * pessoa já cumpriu numa sessão, por pista, também vai à tabela comum ('objetivos-<pista>').
  */
 import * as db from './db.js';
 import type { Contexto, Definicao } from './minijogo-motor.js';
-import { entradasValidas, PASSOS_DA_SESSAO, PASSOS_DE_FOLGA, refazer } from './skate/fisica.js';
-import { LARGURA, PROFUNDIDADE } from './skate/pista.js';
+import { entradasValidas, objetivos, PASSOS_DA_SESSAO, PASSOS_DE_FOLGA, refazer, type Objetivo } from './skate/fisica.js';
+import { IDS_DAS_PISTAS, indiceDaPista, LARGURA, PROFUNDIDADE } from './skate/pista.js';
 
 export { PASSOS_DA_SESSAO, PASSOS_DE_FOLGA };
 export const DURACAO_MS = (PASSOS_DA_SESSAO / 60) * 1000;
@@ -39,29 +44,48 @@ export const PASSOS_A_FRENTE = 180;
 interface Skatista {
   pontos: number | null;
   melhorCombo: number | null;
+  /** Os objetivos da sessão refeita (null: ainda andando). */
+  objetivos: Objetivo[] | null;
   /** A última posição repassada (só o desenho dos outros). */
   ultima: { n: number; x: number; z: number } | null;
 }
 
 export const skate: Definicao = criarSkate();
 
-/** Refaz a sessão pelas entradas; o erro, ou os pontos, o melhor combo e os passos que ela andou. */
-function conferirSessao(corpo: Record<string, unknown>): { erro: string } | { pontos: number; melhorCombo: number; passos: number } {
+/** Refaz a sessão pelas entradas, na pista `pista`; o erro, ou os pontos, o melhor combo, os objetivos e os passos que ela andou. */
+function conferirSessao(corpo: Record<string, unknown>, pista: number): { erro: string } | { pontos: number; melhorCombo: number; passos: number; objetivos: Objetivo[] } {
   if (!entradasValidas(corpo.entradas)) return { erro: 'Sessão inválida.' };
-  const { k, passos } = refazer(corpo.entradas);
+  const { k, passos } = refazer(corpo.entradas, pista);
   // a sessão inteira, e nem um passo além do fim dela
   if (!k.terminou || passos !== k.passo) return { erro: 'Sessão inválida.' };
-  return { pontos: k.pontos, melhorCombo: k.melhorCombo, passos: k.passo };
+  return { pontos: k.pontos, melhorCombo: k.melhorCombo, passos: k.passo, objetivos: objetivos(k) };
 }
+
+/** O recorde de pontos da pessoa na pista (o parque na tabela dele; as outras na tabela comum). */
+const recordeNaPista = (userId: number, pista: number): number | null =>
+  pista === 0 ? db.recordeDoSkate(userId) : (db.recordeDoSolo(userId, 'skate', IDS_DAS_PISTAS[pista])?.valor ?? null);
+
+/** Guarda a sessão (se for a melhor) e o mais de objetivos; devolve se virou o recorde de pontos. */
+function guardarSessao(userId: number, pista: number, pontos: number, melhorCombo: number, objs: Objetivo[]): boolean {
+  const feitos = objs.filter((o) => o.feito).map((o) => o.id);
+  if (feitos.length) db.guardarRecordeDoSolo(userId, 'skate', `objetivos-${IDS_DAS_PISTAS[pista]}`, feitos.length, false, { feitos });
+  if (pontos <= 0) return false;
+  return pista === 0 ? db.guardarRecordeDoSkate(userId, pontos) : db.guardarRecordeDoSolo(userId, 'skate', IDS_DAS_PISTAS[pista], pontos, false, { melhorCombo }).novo;
+}
+
+/** O mais de objetivos que a pessoa já cumpriu numa sessão, em cada pista. */
+const objetivosAntes = (userId: number) =>
+  Object.fromEntries(IDS_DAS_PISTAS.map((id) => [id, db.recordeDoSolo(userId, 'skate', `objetivos-${id}`)?.valor ?? 0]));
 
 export function criarSkate({ agora = Date.now }: { agora?: () => number } = {}): Definicao {
   return {
     minimo: 2,
     maximo: MAXIMO,
-    comecar(ctx, { naSala }) {
+    comecar(ctx, { naSala, corpo }) {
       const inscritos = naSala.slice(0, MAXIMO);
       const solo = ctx.solo ?? inscritos.length === 1;
-      return solo ? sessaoSolo(ctx, inscritos[0], agora) : sessaoNaSala(ctx, inscritos, agora);
+      const pista = Math.max(0, indiceDaPista(corpo?.pista ?? corpo?.categoria));
+      return solo ? sessaoSolo(ctx, inscritos[0], agora, pista) : sessaoNaSala(ctx, inscritos, agora, pista);
     },
   };
 }
@@ -70,18 +94,20 @@ export function criarSkate({ agora = Date.now }: { agora?: () => number } = {}):
 // O SOLO
 // =====================================================================================================================
 
-function sessaoSolo(ctx: Contexto, eu: number, agora: () => number) {
+function sessaoSolo(ctx: Contexto, eu: number, agora: () => number, pistaPedida: number) {
   const evento = `skate-solo-${eu}-${agora()}`;
-  const inicio = agora();
+  let inicio = agora();
+  let pista = pistaPedida;
   let fase: 'jogando' | 'fim' = 'jogando';
-  const s: Skatista = { pontos: null, melhorCombo: null, ultima: null };
-  const recordeAntes = db.recordeDoSkate(eu);
+  const s: Skatista = { pontos: null, melhorCombo: null, objetivos: null, ultima: null };
+  const recordesAntes = IDS_DAS_PISTAS.map((_, i) => recordeNaPista(eu, i));
+  const objsAntes = objetivosAntes(eu);
   let recordeNovo = false;
 
   const terminar = () => {
     if (fase === 'fim') return;
     fase = 'fim';
-    if (s.pontos !== null && s.pontos > 0) recordeNovo = db.guardarRecordeDoSkate(eu, s.pontos);
+    if (s.pontos !== null && s.objetivos) recordeNovo = guardarSessao(eu, pista, s.pontos, s.melhorCombo ?? 0, s.objetivos);
     ctx.terminar(s.pontos !== null);
   };
   ctx.agendar(PRAZO_MS, terminar);
@@ -94,20 +120,34 @@ function sessaoSolo(ctx: Contexto, eu: number, agora: () => number) {
         duracaoMs: DURACAO_MS,
         meu: { pontos: s.pontos, melhorCombo: s.melhorCombo },
         placar: [{ userId: eu, username: ctx.nome(eu), avatar: null, pontos: s.pontos, melhorCombo: s.melhorCombo, posicao: s.pontos === null ? null : 1 }],
-        recorde: { antes: recordeAntes, novo: recordeNovo },
+        recorde: { antes: recordesAntes[pista], novo: recordeNovo },
+        recordes: Object.fromEntries(IDS_DAS_PISTAS.map((id, i) => [id, recordesAntes[i]])),
+        pista: IDS_DAS_PISTAS[pista],
+        objetivos: s.objetivos,
+        objetivosAntes: objsAntes,
         partidaId: evento,
       };
     },
     acao(quem: number, corpo: Record<string, unknown>) {
-      if (corpo.tipo !== 'fim') return 'Ação desconhecida.';
       if (quem !== eu) return 'Você está assistindo esta partida.';
       if (fase !== 'jogando' || s.pontos !== null) return 'Esta rodada já acabou.';
-      const v = conferirSessao(corpo);
+      if (corpo.tipo === 'pista') {
+        // a escolha da pista, na tela antes do minuto: o relógio do servidor recomeça daqui (só fica mais estrito)
+        const i = indiceDaPista(corpo.pista);
+        if (i < 0) return 'Ação desconhecida.';
+        pista = i;
+        inicio = agora();
+        ctx.avisar();
+        return null;
+      }
+      if (corpo.tipo !== 'fim') return 'Ação desconhecida.';
+      const v = conferirSessao(corpo, pista);
       if ('erro' in v) return v.erro;
       // a janela sem foco pausa a sessão (mais tempo), mas ninguém anda mais passos do que o relógio deixou
       if ((v.passos / 60) * 1000 > agora() - inicio + FOLGA_DO_RELOGIO_MS) return 'Sessão inválida.';
       s.pontos = v.pontos;
       s.melhorCombo = v.melhorCombo;
+      s.objetivos = v.objetivos;
       terminar();
       ctx.avisar();
       return null;
@@ -119,13 +159,13 @@ function sessaoSolo(ctx: Contexto, eu: number, agora: () => number) {
 // NA SALA: a mesma pista, o mesmo verde, cada um no próprio computador, os outros como fantasmas
 // =====================================================================================================================
 
-function sessaoNaSala(ctx: Contexto, inscritos: number[], agora: () => number) {
+function sessaoNaSala(ctx: Contexto, inscritos: number[], agora: () => number, pista: number) {
   const evento = `skate-${ctx.comunidade ?? 0}-${agora()}`;
   let fase: 'largada' | 'jogando' | 'fim' = 'largada';
   let verdeEm = 0;
-  const skatistas = new Map<number, Skatista>(inscritos.map((id) => [id, { pontos: null, melhorCombo: null, ultima: null }]));
+  const skatistas = new Map<number, Skatista>(inscritos.map((id) => [id, { pontos: null, melhorCombo: null, objetivos: null, ultima: null }]));
   const avatares = new Map(inscritos.map((id) => [id, db.avatarDoJogo(id)]));
-  const recordes = new Map<number, { antes: number | null; novo: boolean }>(inscritos.map((id) => [id, { antes: db.recordeDoSkate(id), novo: false }]));
+  const recordes = new Map<number, { antes: number | null; novo: boolean }>(inscritos.map((id) => [id, { antes: recordeNaPista(id, pista), novo: false }]));
   /** Quem ficou na sala até o fim (fixado ao fechar): só esses têm posição. */
   let ficaram: Set<number> | null = null;
 
@@ -196,6 +236,9 @@ function sessaoNaSala(ctx: Contexto, inscritos: number[], agora: () => number) {
         meu: meu ? { pontos: meu.pontos, melhorCombo: meu.melhorCombo } : null,
         placar: placar(),
         recorde: recordes.get(quem) ?? null,
+        pista: IDS_DAS_PISTAS[pista],
+        categoria: IDS_DAS_PISTAS[pista],
+        objetivos: meu?.objetivos ?? null,
         partidaId: evento,
       };
     },
@@ -204,13 +247,15 @@ function sessaoNaSala(ctx: Contexto, inscritos: number[], agora: () => number) {
       const s = skatistas.get(quem);
       if (!s) return 'Você está assistindo esta partida.';
       if (fase !== 'jogando' || s.pontos !== null) return 'Esta rodada já acabou.';
-      const v = conferirSessao(corpo);
+      const v = conferirSessao(corpo, pista);
       if ('erro' in v) return v.erro;
       if ((v.passos / 60) * 1000 > agora() - verdeEm + FOLGA_DO_RELOGIO_MS) return 'Sessão inválida.';
       s.pontos = v.pontos;
       s.melhorCombo = v.melhorCombo;
+      s.objetivos = v.objetivos;
       // sem itens, a sessão da sala vale como a do Solo: se for a melhor da pessoa, vira o recorde
-      if (v.pontos > 0 && db.guardarRecordeDoSkate(quem, v.pontos)) recordes.get(quem)!.novo = true;
+      if (guardarSessao(quem, pista, v.pontos, v.melhorCombo, v.objetivos)) recordes.get(quem)!.novo = true;
+
       conferir();
       ctx.avisar();
       return null;

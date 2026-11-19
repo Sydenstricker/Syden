@@ -25,13 +25,21 @@ export interface Alvo {
   cura?: number;
   ko?: boolean;
   volta?: boolean;
+  /** O golpe passou direto (o fantasma), quase não entrou (o golem), ou roubou energia (o ladrão). */
+  errou?: boolean;
+  resistiu?: boolean;
+  energia?: number;
 }
 export interface Evento {
   id: number;
-  tipo: 'ataque' | 'habilidade' | 'defender' | 'combo' | 'inimigo' | 'sopro' | 'preparar' | 'tonto';
+  tipo: 'ataque' | 'habilidade' | 'defender' | 'combo' | 'inimigo' | 'sopro' | 'preparar' | 'tonto' | 'espinhos' | 'veneno' | 'renovar' | 'regenera';
   de: Ator;
   alvos: Alvo[];
+  /** Qual habilidade (19/11/2026: três por classe). */
+  hab?: string;
   membros?: number[];
+  /** O combo de três classes ou mais tem nome. */
+  nome?: string;
   protegido?: boolean;
 }
 export interface HeroiNaTela {
@@ -49,6 +57,9 @@ export interface InimigoNaTela {
   chefe: boolean;
   tonto: boolean;
   preparando: boolean;
+  /** O traço (o servidor manda; a tela mostra figura e texto curto) e o veneno da Erva. */
+  traco?: string;
+  envenenado?: boolean;
 }
 
 /** Os lugares de cada um no chão (o pé). */
@@ -249,6 +260,12 @@ export function desenharCena(g: CanvasRenderingContext2D, cena: Cena, folhas: Ma
         g.fillStyle = '#fbf3e4';
         g.fillText(letraDoInimigo(i.id), sx - w / 2 - 7, topo + 3);
         if (i.tonto) estrelasDeTonto(g, sx, topo - 6, agora);
+        // o veneno da Erva: as bolhas verdes ao lado da barra
+        if (i.envenenado) {
+          g.fillStyle = Math.floor(agora / 300) % 2 ? '#7bc86a' : '#a8e08a';
+          g.fillRect(sx + w / 2 + 3, topo - 1, 3, 3);
+          g.fillRect(sx + w / 2 + 6, topo - 4, 2, 2);
+        }
         // o fôlego do dragão: o "!" que avisa o sopro da próxima rodada
         if (i.preparando && Math.floor(agora / 250) % 2 === 0) numero(g, '!', sx + 14, topo - 4, '#ff9a3a');
         // a marca do alvo (o que eu escolhi, ou todos enquanto escolho)
@@ -329,9 +346,53 @@ function posicaoDe(a: Ator, cena: Cena) {
 function desenharEfeito(g: CanvasRenderingContext2D, e: Evento, p: number, cena: Cena, agora: number) {
   const de = posicaoDe(e.de, cena);
   const classe = 'h' in e.de ? cena.herois.find((h) => h.userId === (e.de as { h: number }).h)?.classe : null;
+  // a habilidade pelo id (19/11/2026); o servidor antigo não mandava, e a primeira de cada classe é a de antes
+  const hab = e.tipo === 'habilidade' ? (e.hab ?? (classe ? { escudo: 'proteger', faisca: 'chuva', erva: 'curar', flecha: 'tiro' }[classe] : null)) : null;
   if (e.tipo === 'defender') {
     anelDeEscudo(g, de.x, de.y + 24, '#8ab8e0');
-  } else if (e.tipo === 'habilidade' && classe === 'escudo') {
+  } else if (hab === 'provocar') {
+    // provocar: o anel vermelho e o "!" em cima do Escudo
+    anelDeEscudo(g, de.x, de.y + 24, Math.floor(agora / 120) % 2 ? '#e5564c' : '#f0c93a');
+    numero(g, '!', de.x, de.y - 34, '#e5564c');
+  } else if (hab === 'muralha') {
+    // a muralha: a cúpula em cada um da turma
+    for (const a of e.alvos) {
+      const o = posicaoDe(a.quem, cena);
+      anelDeEscudo(g, o.x, o.y + 24, p > 0.2 ? '#f0c93a' : '#8ab8e0');
+    }
+  } else if (hab === 'acelerar') {
+    // acelerar: os riscos de vento atrás de cada um
+    g.fillStyle = '#fffbe8';
+    for (const a of e.alvos) {
+      const o = posicaoDe(a.quem, cena);
+      for (let k = 0; k < 3; k++) g.fillRect(Math.round(o.x + 8 + ((p * 40 + k * 9) % 24)), o.y - 8 + k * 7, 6, 1);
+    }
+  } else if (hab === 'raio') {
+    // o raio: de cima até o alvo, em zigue-zague
+    const alvo = e.alvos[0] ? posicaoDe(e.alvos[0].quem, cena) : de;
+    if (p > 0.15 && p < 0.6) {
+      g.fillStyle = Math.floor(agora / 60) % 2 ? '#ffe48a' : '#fffbe8';
+      for (let y = 0; y < alvo.y; y += 4) g.fillRect(Math.round(alvo.x + ((y / 4) % 2 ? 2 : -2)), y, 2, 4);
+    }
+  } else if (hab === 'veneno' || e.tipo === 'veneno') {
+    // o veneno: as bolhas verdes subindo de cada alvo
+    for (const a of e.alvos) {
+      const o = posicaoDe(a.quem, cena);
+      for (let k = 0; k < 4; k++) {
+        g.fillStyle = k % 2 ? '#7bc86a' : '#a8e08a';
+        g.fillRect(o.x - 6 + k * 4, Math.round(o.y + 6 - ((p * 26 + k * 7) % 26)), 2, 2);
+      }
+    }
+  } else if (hab === 'rajada') {
+    // as três flechas, uma atrás da outra
+    e.alvos.forEach((a, k) => {
+      const alvo = posicaoDe(a.quem, cena);
+      const t = Math.max(0, Math.min(1, (p - k * 0.15) * 3));
+      if (t <= 0 || t >= 1) return;
+      g.fillStyle = '#e8e0d0';
+      g.fillRect(Math.round(de.x + (alvo.x - de.x) * t), Math.round(de.y + (alvo.y - de.y) * t), 8, 1);
+    });
+  } else if (e.tipo === 'habilidade' && hab === 'proteger') {
     // proteger: a cúpula azul que cobre o Escudo
     anelDeEscudo(g, de.x, de.y + 24, '#f0c93a');
     anelDeEscudo(g, de.x, de.y + 24, Math.floor(agora / 120) % 2 ? '#8ab8e0' : '#f0c93a');
@@ -358,7 +419,7 @@ function desenharEfeito(g: CanvasRenderingContext2D, e: Evento, p: number, cena:
       g.fillStyle = 'rgba(255, 251, 232, 0.35)';
       g.fillRect(0, 0, W, H);
     }
-  } else if (e.tipo === 'habilidade' && classe === 'flecha') {
+  } else if (hab === 'tiro' || hab === 'atordoar') {
     const alvo = e.alvos[0] ? posicaoDe(e.alvos[0].quem, cena) : de;
     const t = Math.min(1, p * 2.5);
     const x = de.x + (alvo.x - de.x) * t;
@@ -372,10 +433,13 @@ function desenharEfeito(g: CanvasRenderingContext2D, e: Evento, p: number, cena:
   for (const a of e.alvos) {
     const o = posicaoDe(a.quem, cena);
     if ((a.dano ?? 0) > 0 && p > 0.3) {
-      if (e.tipo === 'habilidade' && classe === 'faisca') faiscas(g, o.x, o.y, Math.min(1, (p - 0.3) * 2), ['#ffe48a', '#f0a0ff', '#fffbe8']);
-      else if (e.tipo !== 'sopro' && e.tipo !== 'combo') risco(g, o.x, o.y, (p - 0.3) * 2);
+      if (hab === 'chuva' || hab === 'raio') faiscas(g, o.x, o.y, Math.min(1, (p - 0.3) * 2), ['#ffe48a', '#f0a0ff', '#fffbe8']);
+      else if (e.tipo !== 'sopro' && e.tipo !== 'combo' && e.tipo !== 'veneno') risco(g, o.x, o.y, (p - 0.3) * 2);
       numero(g, String(a.dano), o.x, o.y - 18 - Math.round(p * 10), '#fbf3e4');
     }
+    // o golpe que passou direto (o fantasma) e a energia roubada (o ladrão)
+    if (a.errou && p > 0.3) numero(g, '×', o.x, o.y - 18 - Math.round(p * 10), '#b8c0d8');
+    if (a.energia && p > 0.4) numero(g, '⚡' + a.energia, o.x + 12, o.y - 8 - Math.round(p * 8), '#8ab8e0');
     if ((a.cura ?? 0) > 0 && p > 0.3) {
       g.fillStyle = '#7bc86a';
       for (let k = 0; k < 4; k++) {

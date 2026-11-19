@@ -8,6 +8,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
 import {
   ACO,
+  CABO,
   comparar,
   conferir,
   custo,
@@ -20,6 +21,7 @@ import {
   PISTA,
   pontePronta,
   SAIDA,
+  selosDe,
   semSoltas,
   simular,
 } from '../src/ponte/sim';
@@ -165,5 +167,46 @@ describe('ponte da toca', () => {
     }
     for (const l of ['LICENCA-Kenney-Car-Kit.txt', 'LICENCA-KayKit-Halloween-Bits.txt'])
       assert.match(readFileSync(new URL(l, pasta), 'utf8'), /Creative Commons Zero, CC0/, l);
+  });
+
+  // ===== 19/11/2026: as fases novas, o orçamento com os selos e o cabo =====
+
+  it('15 fases, ids diferentes, cada uma com o orçamento acima da ponte mais barata que a busca achou', () => {
+    assert.equal(FASES.length, 15);
+    assert.equal(new Set(FASES.map((f) => f.id)).size, 15);
+    for (const f of FASES) assert.ok(f.orcamento > 0 && f.orcamento % 100 === 0, f.id);
+  });
+
+  it('os selos: 0 sem passar, 1 passando, 2 no orçamento, 3 com até 3/4 dele', () => {
+    const f = faseDe('riacho')!;
+    assert.equal(selosDe(f, { passou: false, custo: 1 }), 0);
+    assert.equal(selosDe(f, { passou: true, custo: f.orcamento + 1 }), 1);
+    assert.equal(selosDe(f, { passou: true, custo: f.orcamento }), 2);
+    assert.equal(selosDe(f, { passou: true, custo: (f.orcamento * 3) / 4 }), 3);
+  });
+
+  it('o vale com 3 selos: a ponte que a busca achou (com cabos) passa, e o servidor confere igual', () => {
+    const f = faseDe('vale')!;
+    const p = [0,0,2,0,0,2,0,4,0,0,4,0,6,0,0,6,0,8,0,0,8,0,10,0,0,3,2,5,2,2,5,2,7,2,2,7,2,9,2,2,2,0,3,2,2,3,2,4,0,3,4,0,5,2,1,5,2,6,0,3,6,0,7,2,3,7,2,8,0,1,8,0,9,2,3,9,2,10,0,2,0,-3,2,0,2];
+    assert.equal(conferir(f, p), null);
+    const r = simular(f, p);
+    assert.ok(r.passou);
+    assert.equal(selosDe(f, r), 3);
+    assert.ok(p.some((v, i) => i % 5 === 4 && v === CABO), 'usa cabo');
+  });
+
+  it('o cabo só puxa: pendurado de um apoio alto ele segura; escorando por baixo, não faz força', () => {
+    const pendurado = montar(faseDe('pilares')!, [...soPista(10), 0, 3, 2, 0, CABO]);
+    for (let i = 0; i < 40; i++) passo(pendurado);
+    const cabo = pendurado.barras[pendurado.barras.length - 1];
+    assert.ok(cabo.forca > 0, 'puxando');
+    const escora = montar(faseDe('riacho')!, [...soPista(6), 0, -2, 2, 0, CABO]);
+    for (let i = 0; i < 40; i++) passo(escora);
+    const e = escora.barras[escora.barras.length - 1];
+    assert.ok(e.forca >= 0, 'nunca empurra');
+    // trocado por madeira, a mesma escora empurra
+    const madeira = montar(faseDe('riacho')!, [...soPista(6), 0, -2, 2, 0, MADEIRA]);
+    for (let i = 0; i < 40; i++) passo(madeira);
+    assert.ok(madeira.barras[madeira.barras.length - 1].forca < 0, 'a madeira empurra');
   });
 });

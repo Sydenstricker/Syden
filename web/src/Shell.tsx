@@ -864,6 +864,17 @@ export function Shell({
       .catch(() => {});
   }, []);
 
+  // As insígnias do fliperama chegam no fim de uma partida da sala (server/src/minijogos-routes.ts), depois do placar.
+  useEffect(() => {
+    if (!socket) return;
+    const aoGanhar = ({ codigos }: { codigos: string[] }) =>
+      setPorRevelar((fila) => [...fila, ...codigos.filter((c) => !fila.includes(c))]);
+    socket.on('itens:novos', aoGanhar);
+    return () => {
+      socket.off('itens:novos', aoGanhar);
+    };
+  }, [socket]);
+
   /**
    * O código secreto (codigoSecreto.ts): achou, o servidor diz se a insígnia é nova, e a nova entra na mesma
    * fila da tela de destaque das outras — a revelação é a de sempre. Achar de novo não mostra nada.

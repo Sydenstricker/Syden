@@ -38,6 +38,7 @@ import { eficacia, ESPECIES, EQUIPE_EMPRESTADA, type Elemento } from '../bichos-
 import { idsDosRobos, nomeDoRobo, ehRobo, MAXIMO_DE_ROBOS } from '../minijogo-robos.js';
 import {
   ACOES,
+  alcanceDoGolpe,
   alcanceLivre,
   alvoDaZona,
   andar,
@@ -62,16 +63,20 @@ import {
   PASSO_MS,
   perto,
   PERTO_DO_SUPRIMENTO,
+  PONTOS_DA_ZONA,
   PONTOS_DE_SUPRIMENTO,
   PV,
   RAIO,
   RAPIDO,
   RECARGA_DA_TROCA,
+  seguirVelocidade,
   SUPRIMENTOS,
   TECLAS_DE_GOLPE,
   unitario,
   VEL,
+  velDoChao,
   VIDAS,
+  ZONA_DO_OBJETIVO,
   type Cenario,
   type Golpe,
   type Suprimento,
@@ -143,6 +148,8 @@ interface Zona {
   dano: number;
   elemento: string;
   bate: number;
+  /** Quanto tempo ela avisa antes de bater (para a tela desenhar o enchimento). */
+  aviso: number;
 }
 
 interface Pancada {
@@ -156,6 +163,8 @@ interface Pancada {
   dentro: (p: Ponto) => boolean;
   /** A bala de robô: já acertou alguém, ou acabou? */
   bala?: { tiro: TiroAceito; k: number };
+  /** A zona: quando foi marcada (quem estava dentro e escapou conta um DESVIO). */
+  marcadaEm?: number;
 }
 
 interface Balde {
@@ -201,6 +210,12 @@ interface Lutador {
   dano: number;
   quedas: number;
   eliminadoEm: number;
+  /** Os números do fim (19/11/2026): quanto levou, e quantas marcas no chão viu de dentro e escapou. */
+  levou: number;
+  desvios: number;
+  /** O robô: a velocidade de agora (o gelo escorrega). */
+  vx: number;
+  vy: number;
   /** O robô: o alvo, a próxima decisão, o lado para onde ronda, e a mira com o erro dele. */
   ia: { alvo: number | null; decide: number; ronda: 1 | -1; rondaAte: number; erro: number };
 }
@@ -292,6 +307,11 @@ export function criarArena({
       // no Solo, cada um por si com 1 robô é o 1×1
       const lugares = montarTimes(solo ? humanos.slice(0, 1) : humanos, formato, solo ? pedidos : 0, solo ? 2 : 3);
       const cenario: Cenario = (CENARIOS as readonly unknown[]).includes(corpo.cenario) ? (corpo.cenario as Cenario) : CENARIOS[Math.floor(aleatorio() * CENARIOS.length)];
+      /** O modo: a luta de sempre, ou SEGURAR A ZONA (ver conta.ts, ZONA_DO_OBJETIVO). */
+      const objetivo: 'luta' | 'zona' = corpo.objetivo === 'zona' ? 'zona' : 'luta';
+      const pontosDaZona = new Map<number, number>();
+      let msNaZona = 0;
+      let donoDaZona = -1;
       const evento = `arena-${ctx.comunidade ?? 0}-${agora()}`;
       const inicio = agora();
       let fase: 'lutando' | 'vitoria' | 'fim' = 'lutando';
@@ -365,6 +385,10 @@ export function criarArena({
             dano: 0,
             quedas: 0,
             eliminadoEm: 0,
+            levou: 0,
+            desvios: 0,
+            vx: 0,
+            vy: 0,
             ia: { alvo: null, decide: t + 600 + aleatorio() * 400, ronda: aleatorio() < 0.5 ? 1 : -1, rondaAte: t + 1500, erro: 0 },
           };
           return [id, l];
@@ -389,6 +413,7 @@ export function criarArena({
         const efic = eficacia(elemento as Elemento, elementoDe(alvo) as Elemento);
         const dano = Math.max(1, Math.round(base * fatorDaArena(efic)));
         alvo.pv = Math.max(0, alvo.pv - dano);
+        alvo.levou += dano;
         const atacante = lutadores.get(dono);
         if (atacante) {
           atacante.dano += dano;
@@ -396,7 +421,8 @@ export function criarArena({
         }
         evento_('h', alvo.id, dono, dano, efic >= 2 ? 1 : efic <= 0.5 ? 2 : 0, ELEMENTOS_DA_ARENA.indexOf(elemento as never));
         if (alvo.pv > 0) return;
-        alvo.vidas = Math.max(0, alvo.vidas - 1);
+        // segurando a zona, ninguém fica sem vidas: quem cai sempre volta
+        if (objetivo === 'luta') alvo.vidas = Math.max(0, alvo.vidas - 1);
         alvo.estado = alvo.vidas === 0 ? 'sem-vidas' : 'fora';
         alvo.voltaEm = t + VOLTA_MS;
         if (alvo.estado === 'sem-vidas') alvo.eliminadoEm = t;
@@ -424,7 +450,15 @@ export function criarArena({
               const antes = l.historia.filter((h) => h.t <= p.em);
               janela = antes.length ? [antes[antes.length - 1]] : [{ t: p.em, x: l.x, y: l.y }];
             }
-            if (!janela.every((h) => p.dentro(h))) continue;
+            if (!janela.every((h) => p.dentro(h))) {
+              // estava dentro da marca quando ela apareceu, e saiu: um desvio
+              if (p.marcadaEm !== undefined) {
+                const antes = l.historia.filter((h) => h.t <= p.marcadaEm!);
+                const la = antes.length ? antes[antes.length - 1] : l.historia[0];
+                if (la && p.dentro(la)) l.desvios++;
+              }
+              continue;
+            }
             ja.add(l.id);
             ferir(l, p.dono, p.dano, p.elemento, t);
             if (p.bala) {
@@ -439,9 +473,10 @@ export function criarArena({
       };
 
       const marcarZona = (dono: number, time: number, x: number, y: number, raio: number, dano: number, elemento: string, aviso: number) => {
-        const z: Zona = { id: proximoId++, dono, time, x, y, raio, dano, elemento, bate: agora() + aviso };
+        const marcadaEm = agora();
+        const z: Zona = { id: proximoId++, dono, time, x, y, raio, dano, elemento, bate: marcadaEm + aviso, aviso };
         zonas.push(z);
-        pancadas.push({ em: z.bate, chave: `z${z.id}`, dono, time, dano, elemento, dentro: (p) => perto(p.x, p.y, x, y, raio + RAIO * 0.5) });
+        pancadas.push({ em: z.bate, chave: `z${z.id}`, dono, time, dano, elemento, dentro: (p) => perto(p.x, p.y, x, y, raio + RAIO * 0.5), marcadaEm });
         return z;
       };
 
@@ -542,6 +577,9 @@ export function criarArena({
           const d = distancia(l, { x: px, y: py });
           if ((s.tipo === 'cura' && l.pv < 55 && d < 420) || d < 160) rumo = { x: px, y: py };
         }
+        // segurando a zona: fora dela, o rumo é o meio (o suprimento de cura com pouca vida ainda vem antes)
+        const longeDaZona = objetivo === 'zona' && !perto(l.x, l.y, ZONA_DO_OBJETIVO.x, ZONA_DO_OBJETIVO.y, ZONA_DO_OBJETIVO.raio * 0.6);
+        if (!fugindo && !rumo && longeDaZona) rumo = { x: ZONA_DO_OBJETIVO.x, y: ZONA_DO_OBJETIVO.y };
         if (!fugindo && rumo) {
           const [ux, uy] = unitario(rumo.x - l.x, rumo.y - l.y);
           vx += ux;
@@ -580,11 +618,16 @@ export function criarArena({
         // andar (ou a arrancada)
         const arrancando = t < l.arrancadaAte;
         const [ux, uy] = arrancando ? [l.mx, l.my] : unitario(vx, vy);
-        const mexe = arrancando || vx * vx + vy * vy > 0.01;
-        if (mexe) {
-          const vel = arrancando ? ARRANCADA.vel : VEL * 0.85 * (t < l.rapidoAte ? RAPIDO.mult : 1);
-          [l.x, l.y] = andar(cenario, l.x, l.y, ux * vel * dt, uy * vel * dt);
+        const quer = arrancando || vx * vx + vy * vy > 0.01;
+        if (arrancando) {
+          [l.vx, l.vy] = [ux * ARRANCADA.vel, uy * ARRANCADA.vel];
+        } else {
+          // o chão: a lama segura, o gelo escorrega (a mesma conta do site)
+          const vel = quer ? VEL * 0.85 * (t < l.rapidoAte ? RAPIDO.mult : 1) * velDoChao(cenario, l.x, l.y) : 0;
+          [l.vx, l.vy] = seguirVelocidade(cenario, l.vx, l.vy, ux * vel, uy * vel, dt);
         }
+        const mexe = l.vx * l.vx + l.vy * l.vy > 1;
+        if (mexe) [l.x, l.y] = andar(cenario, l.x, l.y, l.vx * dt, l.vy * dt);
         if (l.acao !== ACOES.indexOf('golpe') || t - l.tAcao > 300) l.acao = ACOES.indexOf(arrancando ? 'arrancada' : mexe ? 'andando' : 'parado');
         // pegar o suprimento em que encostou
         for (const s of [...suprimentos]) {
@@ -606,8 +649,10 @@ export function criarArena({
           golpear(l, tecla, ++l.ultimoTiro, ox, oy, mx, my, alvo.x, alvo.y, t);
           l.tAcao = t;
         };
-        if (prontoParaGolpe(l, 'e', t) && d < kit.e.alcance) return usar('e');
-        if (prontoParaGolpe(l, 'q', t) && d < kit.q.alcance && aleatorio() < 0.15) return usar('q');
+        // o forte e o especial: cada elemento tem a forma dele (a roda pega de perto; o tiro, com a árvore fora do caminho)
+        const alcanca = (g: Golpe) => d < alcanceDoGolpe(g) * 0.9 && (g.forma !== 'tiro' || visivel);
+        if (prontoParaGolpe(l, 'e', t) && alcanca(kit.e)) return usar('e');
+        if (prontoParaGolpe(l, 'q', t) && alcanca(kit.q) && aleatorio() < 0.15) return usar('q');
         const s = kit.s;
         if (prontoParaGolpe(l, 's', t) && aleatorio() < 0.3) {
           if (s.forma === 'roda' && d < s.raio + RAIO) return usar('s');
@@ -720,6 +765,32 @@ export function criarArena({
         decidirPancadas(t);
         for (let k = zonas.length - 1; k >= 0; k--) if (t >= zonas[k].bate + GRACA_MS) zonas.splice(k, 1);
         if (fase !== 'lutando') return;
+        if (objetivo === 'zona') {
+          // a zona: um ponto por segundo para o time que está sozinho dentro dela
+          const dentro = new Set(emPe().filter((l) => perto(l.x, l.y, ZONA_DO_OBJETIVO.x, ZONA_DO_OBJETIVO.y, ZONA_DO_OBJETIVO.raio)).map((l) => l.time));
+          const dono = dentro.size === 1 ? [...dentro][0] : -1;
+          if (dono !== donoDaZona) {
+            donoDaZona = dono;
+            msNaZona = 0;
+          }
+          if (dono >= 0) {
+            msNaZona += PASSO_MS;
+            if (msNaZona >= 1000) {
+              msNaZona -= 1000;
+              const n = (pontosDaZona.get(dono) ?? 0) + 1;
+              pontosDaZona.set(dono, n);
+              if (n >= PONTOS_DA_ZONA) return acabar(dono);
+            }
+          }
+          if (t - inicio >= PARTIDA_MS) {
+            const ordem = [...pontosDaZona.entries()].sort((a, b) => b[1] - a[1]);
+            return acabar(ordem.length && (ordem.length === 1 || ordem[0][1] > ordem[1][1]) ? ordem[0][0] : null);
+          }
+          // um lado inteiro saiu da sala: quem sobrou vence
+          const timesPresentes = new Set([...lutadores.values()].filter(conta).map((l) => l.time));
+          if (timesPresentes.size <= 1) return acabar(timesPresentes.size === 1 ? [...timesPresentes][0] : null);
+          return difundir();
+        }
         // quem ficou: os times com alguém de pé (ou voltando)
         const vivos = new Set([...lutadores.values()].filter((l) => l.estado !== 'sem-vidas' && conta(l)).map((l) => l.time));
         if (vivos.size <= 1) return acabar(vivos.size === 1 ? [...vivos][0] : null);
@@ -772,8 +843,10 @@ export function criarArena({
                   .filter((_, k) => !s.usadas.has(k) && andouABala(s.golpe, t - s.em) < s.livre[k]),
               ),
           ),
-          // as zonas marcadas: [id, x, y, raio, ms até bater, elemento (-1 a arena), dono, time]
-          z: zonas.map((z) => [z.id, Math.round(z.x), Math.round(z.y), z.raio, Math.round(z.bate - t), ELEMENTOS_DA_ARENA.indexOf(z.elemento as never), z.dono, z.time]),
+          // as zonas marcadas: [id, x, y, raio, ms até bater, elemento (-1 a arena), dono, time, ms do aviso inteiro]
+          z: zonas.map((z) => [z.id, Math.round(z.x), Math.round(z.y), z.raio, Math.round(z.bate - t), ELEMENTOS_DA_ARENA.indexOf(z.elemento as never), z.dono, z.time, z.aviso]),
+          // segurando a zona: [time, pontos] e o time que está nela agora (-1: ninguém, ou disputada)
+          ...(objetivo === 'zona' ? { o: [...pontosDaZona.entries()], od: donoDaZona } : {}),
           // os suprimentos no chão: [id, ponto, tipo]
           s: suprimentos.map((s) => [s.id, s.ponto, SUPRIMENTOS.indexOf(s.tipo)]),
           e: eventos,
@@ -797,7 +870,7 @@ export function criarArena({
         relogio = null;
       };
 
-      let resultado: { userId: number; username: string; time: number; dano: number; quedas: number; vidas: number; posicao: number | null; robo: boolean }[] | null = null;
+      let resultado: { userId: number; username: string; time: number; dano: number; quedas: number; vidas: number; levou: number; desvios: number; pontos: number; posicao: number | null; robo: boolean }[] | null = null;
       const terminar = (completa = true) => {
         parar();
         fase = 'fim';
@@ -819,6 +892,9 @@ export function criarArena({
             dano: l.dano,
             quedas: l.quedas,
             vidas: l.vidas,
+            levou: l.levou,
+            desvios: l.desvios,
+            pontos: pontosDaZona.get(l.time) ?? 0,
             posicao: l.robo || ficaram.has(l.id) ? (vencedor === null && fimDoTime.get(l.time) === Infinity ? 1 : posicaoDoTime(l.time)) : null,
             robo: l.robo,
           }))
@@ -951,6 +1027,7 @@ export function criarArena({
             fase,
             formato,
             cenario,
+            objetivo,
             solo,
             vencedor,
             jogadores: [...lutadores.values()].map((l) => ({

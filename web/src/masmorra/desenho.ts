@@ -186,6 +186,18 @@ function desenharPorta(g: CanvasRenderingContext2D, lado: Lado, estado: number) 
   if (!vertical) g.rotate(lado === 'o' ? -Math.PI / 2 : Math.PI / 2);
   else if (lado === 's') g.rotate(Math.PI);
   // daqui para baixo, a porta "de cima" (norte): o vão vai de -20 a 20, a parte de dentro fica embaixo (y = 20)
+  if (estado === 4) {
+    // a parede rachada (19/11/2026): a parede de sempre, com as rachaduras (a bomba de semente abre)
+    px(g, -18, -16, 36, 36, COR.topo);
+    px(g, -2, -16, 4, 10, COR.contorno);
+    px(g, -6, -8, 6, 4, COR.contorno);
+    px(g, 2, -6, 4, 12, COR.contorno);
+    px(g, -10, 2, 10, 4, COR.contorno);
+    px(g, 4, 6, 8, 4, COR.contorno);
+    px(g, -12, 8, 4, 8, COR.contorno);
+    g.restore();
+    return;
+  }
   px(g, -24, -20, 48, 40, COR.contorno);
   if (estado === 1) {
     px(g, -18, -20, 36, 40, '#1d1512');
@@ -205,7 +217,7 @@ function desenharPorta(g: CanvasRenderingContext2D, lado: Lado, estado: number) 
 }
 
 /** A sala inteira, do fundo: chão, água, ponte, paredes, tochas, botões, portas e o baú. */
-export function desenharSala(g: CanvasRenderingContext2D, s: Sala, m: Mundo, portas: number[], placas: number[], bau: number, tempo: number) {
+export function desenharSala(g: CanvasRenderingContext2D, s: Sala, m: Mundo, portas: number[], placas: number[], bau: number, tempo: number, coracaoGrandePego = false) {
   for (let l = 0; l < LINHAS; l++) {
     for (let c = 0; c < COLS; c++) {
       const ch = s.grade[l][c];
@@ -222,6 +234,97 @@ export function desenharSala(g: CanvasRenderingContext2D, s: Sala, m: Mundo, por
   if (b && bau) desenharBau(g, b[0], b[1], bau === 2);
   const k = casasDe(s, 'K')[0];
   if (k) desenharCristal(g, k[0], k[1], m.ponte, tempo);
+  // os vasos e as moitas que ainda estão na sala, e o coração grande (19/11/2026)
+  const fora = new Set((m.fora ?? []).map(([c, l]) => `${c},${l}`));
+  casasDe(s, 'M').forEach(([c, l]) => !fora.has(`${c},${l}`) && desenharMoita(g, c * TILE + 20, l * TILE + 20, tempo));
+  casasDe(s, 'V').forEach(([c, l]) => !fora.has(`${c},${l}`) && desenharVaso(g, c * TILE + 20, l * TILE + 22));
+  casasDe(s, 'E').forEach(([c, l]) => desenharPoste(g, c, l));
+  const h = casasDe(s, 'H')[0];
+  if (h && !coracaoGrandePego) desenharCoracaoGrande(g, h[0] * TILE + 20, h[1] * TILE + 18 + Math.sin(tempo / 260) * 2);
+}
+
+/** O poste da mina (19/11/2026): a estaca de madeira com a argola de ferro, onde o gancho pega. */
+export function desenharPoste(g: CanvasRenderingContext2D, c: number, l: number) {
+  const x = c * TILE + 20;
+  const y = l * TILE + 20;
+  px(g, x - 14, y + 8, 28, 8, 'rgba(30, 20, 18, 0.35)');
+  px(g, x - 8, y - 18, 16, 32, COR.contorno);
+  px(g, x - 6, y - 16, 12, 28, COR.madeira);
+  px(g, x - 6, y - 16, 4, 28, '#9a6b42');
+  px(g, x - 10, y - 20, 20, 6, COR.tabuaEscura);
+  px(g, x - 8, y - 8, 16, 2, '#8d96a3');
+  px(g, x - 10, y - 10, 4, 6, '#8d96a3');
+  px(g, x + 6, y - 10, 4, 6, '#8d96a3');
+}
+
+/** O gancho (o item da mina): a corda enrolada com a garra de ferro. */
+export function desenharGancho(g: CanvasRenderingContext2D, x: number, y: number) {
+  px(g, x - 10, y - 4, 14, 14, COR.contorno);
+  px(g, x - 8, y - 2, 10, 10, '#c8a26a');
+  px(g, x - 6, y, 6, 6, '#8a6a3c');
+  px(g, x + 2, y - 10, 4, 12, '#8d96a3');
+  px(g, x + 2, y - 12, 10, 4, '#8d96a3');
+  px(g, x + 10, y - 10, 4, 6, '#8d96a3');
+}
+
+/** A corda do gancho, do poste até quem foi puxado (um instante). */
+export function desenharCorda(g: CanvasRenderingContext2D, x0: number, y0: number, x1: number, y1: number) {
+  g.strokeStyle = '#c8a26a';
+  g.lineWidth = 3;
+  g.beginPath();
+  g.moveTo(x0, y0);
+  g.lineTo(x1, y1);
+  g.stroke();
+  g.lineWidth = 1;
+}
+
+/** O vaso de barro (19/11/2026): levanta-se e joga-se. (x, y) é o meio dele. */
+export function desenharVaso(g: CanvasRenderingContext2D, x: number, y: number) {
+  px(g, x - 14, y - 14, 28, 30, COR.contorno);
+  px(g, x - 12, y - 8, 24, 22, '#b86a3e');
+  px(g, x - 8, y - 14, 16, 6, '#b86a3e');
+  px(g, x - 10, y - 12, 20, 2, '#7a4226');
+  px(g, x - 8, y - 4, 4, 12, '#d88a58');
+  px(g, x - 12, y + 4, 24, 2, '#7a4226');
+}
+
+/** A moita: a pá corta. */
+export function desenharMoita(g: CanvasRenderingContext2D, x: number, y: number, tempo: number) {
+  const b = Math.floor(tempo / 500 + x) % 2;
+  px(g, x - 18, y - 12, 36, 28, '#2f4a26');
+  px(g, x - 16, y - 14 + b, 14, 14, '#4f7a3a');
+  px(g, x, y - 16 + b, 16, 16, '#5e8c44');
+  px(g, x - 14, y - 2, 28, 14, '#4f7a3a');
+  px(g, x - 8, y - 10 + b, 4, 4, '#86b25e');
+  px(g, x + 6, y - 12 + b, 4, 4, '#86b25e');
+}
+
+/** O coração grande da sala secreta: um coração a mais. */
+export function desenharCoracaoGrande(g: CanvasRenderingContext2D, x: number, y: number) {
+  g.save();
+  g.translate(x, y);
+  g.scale(1.8, 1.8);
+  desenharCoracao(g, 0, 0, true);
+  g.restore();
+  px(g, x - 2, y - 26, 4, 6, '#fde7a0');
+  px(g, x + 18, y - 16, 4, 4, '#fde7a0');
+}
+
+/** A bomba de semente: a semente grande, com o pavio que pisca mais depressa no fim. */
+export function desenharBomba(g: CanvasRenderingContext2D, x: number, y: number, falta: number) {
+  const pisca = Math.floor(falta / (falta < 500 ? 60 : 160)) % 2 === 0;
+  px(g, x - 12, y - 10, 24, 22, COR.contorno);
+  px(g, x - 10, y - 8, 20, 18, pisca ? '#c94a3a' : '#7a5a2e');
+  px(g, x - 6, y - 6, 6, 4, '#e8c08a');
+  px(g, x - 2, y - 16, 4, 6, '#6fb04a');
+}
+
+/** A semente no chão (a turma pega e usa como bomba). */
+export function desenharSemente(g: CanvasRenderingContext2D, x: number, y: number) {
+  px(g, x - 8, y - 6, 16, 14, COR.contorno);
+  px(g, x - 6, y - 4, 12, 10, '#7a5a2e');
+  px(g, x - 4, y - 2, 4, 2, '#e8c08a');
+  px(g, x - 2, y - 10, 4, 4, '#6fb04a');
 }
 
 // ---------------- OS ITENS E OS EFEITOS ----------------
@@ -304,7 +407,7 @@ export interface Efeito {
   y: number;
   em: number;
   /** No 'item': qual. */
-  item?: 'cenoura' | 'chave';
+  item?: 'cenoura' | 'chave' | 'gancho';
 }
 
 /** Desenha um efeito; devolve false quando ele acabou. */
@@ -350,6 +453,7 @@ export function desenharEfeito(g: CanvasRenderingContext2D, e: Efeito, tempo: nu
   g.arc(e.x, y, 16, 0, Math.PI * 2);
   g.fill();
   if (e.item === 'chave') desenharChave(g, e.x, y);
+  else if (e.item === 'gancho') desenharGancho(g, e.x, y);
   else desenharCenoura(g, e.x, y, -0.6, 1.3);
   return true;
 }
@@ -369,17 +473,45 @@ export function desenharTiro(g: CanvasRenderingContext2D, x: number, y: number, 
   px(g, x - 2, y - 4, 2, 2, '#e8f8c8');
 }
 
-/** O mapa do canto: as salas vistas, a de agora acesa. */
-export function desenharMapa(g: CanvasRenderingContext2D, atual: number, vistas: number[]) {
-  const T = 10;
+/**
+ * O MAPA DO CANTO (melhorado em 19/11/2026): as salas vistas e os corredores entre elas, a de agora acesa, a do chefe com a
+ * coroa depois de vista, e os pontinhos da turma DENTRO da sala de agora (onde cada um está).
+ */
+export function desenharMapa(g: CanvasRenderingContext2D, atual: number, vistas: number[], turma: { x: number; y: number; eu: boolean }[] = [], chefe = -1) {
+  const T = 14;
   const x0 = W - 4 * T - 10;
   const y0 = 8;
   g.fillStyle = 'rgba(30, 20, 18, 0.55)';
   g.fillRect(x0 - 4, y0 - 4, 4 * T + 8, 7 * T + 8);
+  const meio = (s: Sala) => [x0 + s.mapa[0] * T + T / 2, y0 + (s.mapa[1] - 1) * T + T / 2];
+  // os corredores: entre duas salas vistas ligadas por uma porta
+  g.fillStyle = '#7a6656';
+  for (const s of SALAS) {
+    if (!vistas.includes(s.id)) continue;
+    for (const p of Object.values(s.portas)) {
+      if (!p || !vistas.includes(p.para)) continue;
+      const [ax, ay] = meio(s);
+      const [bx, by] = meio(SALAS[p.para]);
+      g.fillRect(Math.min(ax, bx) - 1, Math.min(ay, by) - 1, Math.abs(bx - ax) + 2, Math.abs(by - ay) + 2);
+    }
+  }
   for (const s of SALAS) {
     if (!vistas.includes(s.id)) continue;
     const [c, l] = s.mapa;
     g.fillStyle = s.id === atual ? '#ffd27a' : '#9c8574';
     g.fillRect(x0 + c * T + 1, y0 + (l - 1) * T + 1, T - 2, T - 2);
+    if (s.id === chefe) {
+      g.fillStyle = '#c94a3a';
+      g.fillRect(x0 + c * T + 4, y0 + (l - 1) * T + 4, T - 8, 3);
+      g.fillRect(x0 + c * T + 4, y0 + (l - 1) * T + 2, 2, 2);
+      g.fillRect(x0 + c * T + T - 6, y0 + (l - 1) * T + 2, 2, 2);
+    }
+  }
+  // onde a turma está, dentro da sala de agora
+  const s = SALAS[atual];
+  if (!s) return;
+  for (const p of turma) {
+    g.fillStyle = p.eu ? '#ffffff' : '#5fb0e8';
+    g.fillRect(Math.round(x0 + s.mapa[0] * T + 1 + (p.x / W) * (T - 4)), Math.round(y0 + (s.mapa[1] - 1) * T + 1 + (p.y / H) * (T - 4)), 2, 2);
   }
 }

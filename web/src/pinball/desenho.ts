@@ -8,10 +8,10 @@
  * O desenho pode usar o que quiser (só a regra é que não tem seno): ele lê a mesa e não a muda.
  */
 import {
+  MESAS,
   ALVOS_X,
   ALVOS_Y,
   ALTURA,
-  CIRCULOS,
   DIRECOES,
   ESTILINGUE_DIR,
   ESTILINGUE_ESQ,
@@ -28,8 +28,6 @@ import {
   RAIA_ESQ,
   RAIA_X,
   RAIO,
-  REPOLHOS,
-  TOCA,
   type Mesa,
 } from './sim';
 
@@ -135,7 +133,18 @@ function contorno(): [number, number][] {
   return [[8, ALTURA], ...PONTOS_DO_ARCO.map(([x, y]) => [x, y] as [number, number]), [RAIA_DIR, ALTURA]];
 }
 
-export function desenharFundo(): HTMLCanvasElement {
+/**
+ * O TEMA DE CADA MESA (19/11/2026): a horta (verde) e o pomar no outono (a grama dourada; os rebatedores viram abóboras). Só a
+ * cor da grama e o desenho dos rebatedores mudam.
+ */
+const TEMAS = [
+  { grama: '#4f8a3a', gramaEscura: COR.gramaEscura, gramaClara: COR.gramaClara },
+  { grama: '#8a7d34', gramaEscura: '#7d702e', gramaClara: '#a8963f' },
+];
+
+export function desenharFundo(mesa = 0): HTMLCanvasElement {
+  const tema = TEMAS[mesa] ?? TEMAS[0];
+  const g = MESAS[mesa] ?? MESAS[0];
   const tela = document.createElement('canvas');
   tela.width = LARGURA;
   tela.height = ALTURA;
@@ -150,10 +159,10 @@ export function desenharFundo(): HTMLCanvasElement {
       else if (r > 0.93) ponto(c, x, y, COR.madeiraClara);
     }
   // a grama
-  poligono(c, contorno(), COR.grama);
+  poligono(c, contorno(), tema.grama);
   // os canteiros: faixas diagonais um tom abaixo, e o salpicado da grama
   const dentro = c.getImageData(0, 0, LARGURA, ALTURA);
-  const verde = [0x4f, 0x8a, 0x3a];
+  const verde = [parseInt(tema.grama.slice(1, 3), 16), parseInt(tema.grama.slice(3, 5), 16), parseInt(tema.grama.slice(5, 7), 16)];
   for (let y = 0; y < ALTURA; y++)
     for (let x = 0; x < LARGURA; x++) {
       const i = (y * LARGURA + x) * 4;
@@ -161,17 +170,17 @@ export function desenharFundo(): HTMLCanvasElement {
       if (d[i] !== verde[0] || d[i + 1] !== verde[1] || d[i + 2] !== verde[2]) continue;
       const faixa = ((x + y) >> 4) % 2 === 0;
       const r = ruido(x, y);
-      if (faixa) ponto(c, x, y, COR.gramaEscura);
-      if (r > 0.96) ponto(c, x, y, COR.gramaClara);
+      if (faixa) ponto(c, x, y, tema.gramaEscura);
+      if (r > 0.96) ponto(c, x, y, tema.gramaClara);
       else if (r < 0.03) ponto(c, x, y, COR.folhaEscura);
     }
   // a raia da mola é um canal de madeira escura
   c.fillStyle = COR.madeiraEscura;
   c.fillRect(RAIA_ESQ, 140, RAIA_DIR - RAIA_ESQ, MOLA_Y + RAIO - 140);
   // a terra embaixo dos repolhos e em volta da toca
-  for (const r of REPOLHOS) circulo(c, r.x, r.y + 2, r.r + 4, COR.terraEscura);
-  circulo(c, TOCA.x, TOCA.y + 1, 12, COR.terraEscura);
-  circulo(c, TOCA.x, TOCA.y, 10, COR.terra);
+  for (const r of g.repolhos) circulo(c, r.x, r.y + 2, r.r + 4, COR.terraEscura);
+  circulo(c, g.toca.x, g.toca.y + 1, 12, COR.terraEscura);
+  circulo(c, g.toca.x, g.toca.y, 10, COR.terra);
   // a raia da órbita, de terra batida
   c.fillStyle = COR.terra;
   c.fillRect(9, 110, GUIA_DA_ORBITA_X - 10, 80);
@@ -187,7 +196,7 @@ export function desenharFundo(): HTMLCanvasElement {
     linha(c, p.ax + 1, p.ay + 1, p.bx + 1, p.by + 1, COR.cercaSombra, 2);
     linha(c, p.ax, p.ay, p.bx, p.by, COR.cerca, 2);
   }
-  for (const k of CIRCULOS) if (k.tipo === 'poste') circulo(c, k.x, k.y, k.r, COR.cerca);
+  for (const k of g.circulos) if (k.tipo === 'poste') circulo(c, k.x, k.y, k.r, COR.cerca);
   // as setas pintadas no chão da raia da órbita
   for (const [x, y] of [
     [16, 172],
@@ -209,6 +218,18 @@ function cenoura(c: Ctx, x: number, y: number, alt: number, acesa: boolean) {
   ponto(c, x - 1, y - 1, acesa ? COR.folha : COR.madeiraEscura);
   ponto(c, x + 1, y - 2, acesa ? COR.folha : COR.madeiraEscura);
   ponto(c, x, y - 2, acesa ? COR.folhaEscura : COR.madeiraEscura);
+}
+
+/** A abóbora do pomar: o corpo laranja com os gomos e o cabinho. */
+function abobora(c: Ctx, x: number, y: number, r: number, aceso: boolean) {
+  circulo(c, x, y, r + 1, COR.laranjaEscura);
+  circulo(c, x, y, r, aceso ? '#fff2c2' : COR.laranja);
+  const gomo = aceso ? '#f0d890' : COR.laranjaEscura;
+  linha(c, x - r / 2, y - r + 3, x - r / 2, y + r - 3, gomo);
+  linha(c, x, y - r + 2, x, y + r - 2, gomo);
+  linha(c, x + r / 2, y - r + 3, x + r / 2, y + r - 3, gomo);
+  c.fillStyle = COR.folhaEscura;
+  c.fillRect(x - 1, y - r - 2, 3, 4);
 }
 
 function repolho(c: Ctx, x: number, y: number, r: number, aceso: boolean) {
@@ -272,6 +293,8 @@ export function desenharMesa(c: Ctx, fundo: HTMLCanvasElement, k: Mesa, textos: 
   c.imageSmoothingEnabled = false;
   c.drawImage(fundo, 0, 0);
   const pisca = (quadro >> 4) % 2 === 0;
+  const g = MESAS[k.mesa] ?? MESAS[0];
+  const TOCA = g.toca;
 
   // as pistas do alto: uma cenoura acesa em cada
   PISTAS_X.forEach((x, n) => cenoura(c, x, 50, 8, k.pistas[n]));
@@ -298,7 +321,7 @@ export function desenharMesa(c: Ctx, fundo: HTMLCanvasElement, k: Mesa, textos: 
   for (let i = 0; i < 3; i++) cenoura(c, TOCA.x - 8 + i * 8, TOCA.y + 14, 5, !k.alvos[i]);
 
   // os repolhos (piscam quando acertados) e os elásticos dos estilingues
-  for (const r of REPOLHOS) repolho(c, r.x, r.y, r.r, k.passo - k.acesoEm[r.n!] < 6);
+  for (const r of g.repolhos) (k.mesa === 1 ? abobora : repolho)(c, r.x, r.y, r.r, k.passo - k.acesoEm[r.n!] < 6);
   for (const [t, n] of [
     [ESTILINGUE_ESQ, 3],
     [ESTILINGUE_DIR, 4],
@@ -330,6 +353,26 @@ export function desenharMesa(c: Ctx, fundo: HTMLCanvasElement, k: Mesa, textos: 
   // as palhetas
   palheta(c, -1, k.esq);
   palheta(c, 1, k.dir);
+
+  // A RAMPA (19/11/2026): a boca com as três setas que acendem, e o trilho de dois fios até o alto, por cima da mesa
+  for (let i = 0; i < 3; i++) {
+    const acesa = ((quadro >> 3) + i) % 3 === 0;
+    const y = g.boca.y + 10 + i * 6;
+    const xm = (g.boca.x0 + g.boca.x1) / 2;
+    linha(c, xm - 4, y + 3, xm, y, acesa ? COR.luz : COR.apagada);
+    linha(c, xm, y, xm + 4, y + 3, acesa ? COR.luz : COR.apagada);
+  }
+  for (let i = 0; i < g.trilho.length - 1; i++) {
+    const [ax, ay] = g.trilho[i];
+    const [bx, by] = g.trilho[i + 1];
+    const dx = bx - ax;
+    const dy = by - ay;
+    const l = Math.hypot(dx, dy) || 1;
+    const nx = (-dy / l) * 3.5;
+    const ny = (dx / l) * 3.5;
+    linha(c, ax + nx, ay + ny, bx + nx, by + ny, '#c9d3dc');
+    linha(c, ax - nx, ay - ny, bx - nx, by - ny, '#8796a5');
+  }
 
   // as bolas
   for (const b of k.bolas) {

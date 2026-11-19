@@ -220,6 +220,22 @@ export const CANION: DefinicaoDaPista = {
 /** As pistas, na ordem das copas. */
 export const PISTAS = [HORTA, POMAR, PRAIA, BOSQUE, NEVE, CANION];
 export const pistaPorId = (id: string) => PISTAS.find((p) => p.id === id) ?? HORTA;
+
+/**
+ * O MODO ESPELHO (19/11/2026, a auditoria): a mesma pista virada da esquerda para a direita (o x vira 1024 − x), com o
+ * mesmo sentido ao longo da linha do meio — o que era curva para a direita vira curva para a esquerda. Só no Solo contra
+ * os robôs: o id leva "~espelho", e por isso a pista espelhada nunca se mistura com os recordes nem os fantasmas da normal
+ * (o servidor nem a conhece).
+ */
+export function espelhar(def: DefinicaoDaPista): DefinicaoDaPista {
+  if (def.id.endsWith('~espelho')) return def;
+  return {
+    ...def,
+    id: `${def.id}~espelho`,
+    pontos: def.pontos.map(([x, y]) => [MUNDO - x, y] as [number, number]),
+    lagos: def.lagos.map(([x, y, r]) => [MUNDO - x, y, r] as [number, number, number]),
+  };
+}
 /** As copas: três pistas seguidas (o servidor tem a mesma lista: server/src/minijogo-corrida.ts, COPAS). */
 export const COPA = 'copa-da-cenoura';
 export const COPAS: Record<string, string[]> = {

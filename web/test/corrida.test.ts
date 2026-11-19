@@ -198,3 +198,80 @@ test('na sala, toda posição do piloto automático honesto passa na conferênci
     assert.equal(recusadas, 0, `${def.id}: ${recusadas} de ${mandadas} posições recusadas`);
   }
 });
+
+test('o turbo da largada: no tempo certo sai com turbo, cedo demais patina, e quem segurava desde antes não ganha nada', async () => {
+  const { largada, LARGADA_BOA, LARGADA_CEDO } = await import('../src/corrida/fisica');
+  const anda = (segurou: number) => {
+    const k = novoKart(pista);
+    const r = largada(k, segurou, 180);
+    for (let i = 0; i < 60; i++) passo(k, { acelera: true, freia: false, vira: 0, derrapa: false }, pista);
+    return { r, v: k.v };
+  };
+  const bom = anda(LARGADA_BOA[0] + 5), nada = anda(0), cedo = anda(LARGADA_CEDO + 10), tela = anda(180), meio = anda(LARGADA_BOA[1] + 5);
+  assert.equal(bom.r, 'turbo');
+  assert.equal(cedo.r, 'patina');
+  assert.equal(tela.r, null, 'a tela de toque acelera desde antes do semáforo');
+  assert.equal(meio.r, null);
+  assert.ok(bom.v > nada.v + 5, `o turbo sai na frente (${bom.v} contra ${nada.v})`);
+  assert.ok(cedo.v < nada.v - 5, `quem patina fica para trás (${cedo.v} contra ${nada.v})`);
+  // e o fantasma de quem largou com turbo continua passando na conferência do servidor
+  const { validarCorrida } = await import('../../server/src/corrida.ts');
+  const k = novoKart(pista);
+  largada(k, 20, 180);
+  const caminho: number[] = [];
+  while (!k.terminou && k.passos < 60 * 60 * 5) {
+    passo(k, pilotoAutomatico(k, pista, true), pista);
+    if (!k.terminou || caminho.length < 3 * (Math.floor((k.passos - 1) / AMOSTRA) + 1)) amostrar(k, caminho);
+  }
+  const v = validarCorrida(HORTA.id, { voltas: k.voltas, amostras: caminho });
+  assert.ok('ok' in v, `o servidor recusou: ${JSON.stringify(v)}`);
+});
+
+test('os robôs: largam da grade, fecham as voltas nas três dificuldades, o difícil chega antes do fácil, e a classe rápida é mais rápida', async () => {
+  const { andarRobo, criarRobos, largadaDoRobo, ordemDaCorrida, progressoDoRobo, somarPontos, PONTOS_DA_COPA } = await import('../src/corrida/robos');
+  const correr = (dificuldade: 'facil' | 'medio' | 'dificil', classe = 1) => {
+    const robos = criarRobos(pista, 7, dificuldade, classe);
+    for (const r of robos) {
+      assert.equal(chaoEm(pista, r.kart.x, r.kart.y), Chao.Asfalto, 'a casa da grade é no asfalto');
+      largadaDoRobo(r, dificuldade, 180);
+    }
+    for (let n = 0; n < 60 * 60 * 6 && robos.some((r) => !r.kart.terminou); n++) for (const r of robos) andarRobo(r, pista);
+    return robos;
+  };
+  const media = (rs: { chegada: number }[]) => rs.reduce((s, r) => s + r.chegada, 0) / rs.length;
+  const facil = correr('facil'), medio = correr('medio'), dificil = correr('dificil'), rapida = correr('medio', 1.25);
+  for (const rs of [facil, medio, dificil, rapida]) for (const r of rs) assert.ok(r.kart.terminou && r.chegada > 0, `${r.nome} não terminou`);
+  assert.ok(media(dificil) < media(medio) && media(medio) < media(facil), `difícil ${media(dificil)}, médio ${media(medio)}, fácil ${media(facil)}`);
+  assert.ok(media(rapida) < media(medio), `a classe rápida ${media(rapida)} contra ${media(medio)}`);
+  console.log('robôs (média da chegada):', [facil, medio, dificil, rapida].map((rs) => tempoLegivel(passosEmMs(media(rs)))));
+  // a ordem: quem chegou, pela chegada; depois pelo quanto andou
+  const ordem = ordemDaCorrida([
+    { id: 1, chegada: 0, andou: 2.9 },
+    { id: 2, chegada: 5000, andou: 3 },
+    { id: 3, chegada: 4900, andou: 3 },
+    { id: 4, chegada: 0, andou: 2.95 },
+  ]);
+  assert.deepEqual(ordem.map((l) => l.id), [3, 2, 4, 1]);
+  assert.ok(progressoDoRobo(facil[0], pista) === 3);
+  // os pontos da copa somam pela posição, e o empate fica com quem já estava na frente
+  let pontos = somarPontos([], [{ id: 1, nome: 'a', eu: true }, { id: 2, nome: 'b', eu: false }]);
+  assert.deepEqual(pontos.map((l) => [l.id, l.pontos]), [[1, PONTOS_DA_COPA[0]], [2, PONTOS_DA_COPA[1]]]);
+  pontos = somarPontos(pontos, [{ id: 2, nome: 'b', eu: false }, { id: 1, nome: 'a', eu: true }]);
+  assert.deepEqual(pontos.map((l) => l.id), [1, 2]);
+});
+
+test('o espelho: a mesma pista virada, com a largada no asfalto, o mesmo comprimento, e um id que o servidor não conhece', async () => {
+  const { espelhar } = await import('../src/corrida/pista');
+  const { PISTAS: NO_SERVIDOR } = await import('../../server/src/corrida.ts');
+  for (const def of PISTAS) {
+    const e = espelhar(def);
+    assert.notEqual(e.id, def.id);
+    assert.equal(NO_SERVIDOR[e.id], undefined, 'o recorde nunca se mistura');
+    assert.equal(espelhar(e), e, 'espelhar duas vezes não vira outra pista');
+    const p = montarPista(e);
+    assert.equal(chaoEm(p, p.largada.x, p.largada.y), Chao.Asfalto, `${e.id}: a largada`);
+    assert.ok(Math.abs(p.comprimento - montarPista(def).comprimento) < 1, `${e.id}: o comprimento`);
+    const { k } = pilotar(false, p);
+    assert.equal(k.terminou, true, `${e.id}: o piloto automático fecha as voltas`);
+  }
+});

@@ -83,5 +83,13 @@ export function pilotar(m: Mundo): Comandos {
   }
   const e = escolha!;
   const encurralada = e.livre <= 4 && m.passo >= f.invulAte;
-  return { dx: e.dx, dy: e.dy, fogo: true, bomba: encurralada && f.bombas > 0 };
+  // encurralada: o loop de esquiva (19/11/2026) primeiro, se estiver pronto; senão a bomba
+  const loop = encurralada && e.livre >= 2 && f.loopPronto(n0);
+  return {
+    dx: e.dx,
+    dy: e.dy,
+    fogo: true,
+    bomba: encurralada && !loop && f.bombas > 0,
+    loop,
+  };
 }

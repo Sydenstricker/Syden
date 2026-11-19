@@ -1,9 +1,37 @@
-import { Eraser, Trash2, Undo2 } from 'lucide-react';
+import { Eraser, PaintBucket, SkipForward, Trash2, Undo2 } from 'lucide-react';
 import { useEffect, useRef, useState, type PointerEvent, type ReactNode } from 'react';
 import type { Socket } from 'socket.io-client';
 import { useT } from './i18n';
 import { Placar, Relogio } from './Minijogo';
+import { areasDosBaldes, BALDE, imagemDaArea } from './desenho/balde';
 import { CORES_DO_DESENHO, ESPESSURAS_DO_DESENHO, PALAVRAS_DO_DESENHO, primeiraForma, type EstadoDesenho, type Partida } from './minijogos';
+import { tocar } from './somDosJogos';
+import './jogosDePalavras.css';
+
+/** O que o servidor de 19/11/2026 manda a mais: os níveis, o voto de pular. */
+type EstadoDesenhoNovo = EstadoDesenho & {
+  niveis?: (1 | 2 | 3)[] | null;
+  nivel?: 1 | 2 | 3 | null;
+  pular?: { votos: number; precisa: number; votei: boolean };
+};
+
+/** O nível de uma palavra em estrelinhas (fácil ★, média ★★, difícil ★★★): figura, sem texto a traduzir. */
+function Nivel({ n }: { n: number | null | undefined }) {
+  const t = useT();
+  if (!n) return null;
+  return (
+    <span className="desenho-dificuldade" aria-label={t(n === 1 ? 'Fácil' : n === 2 ? 'Médio' : 'Difícil')}>
+      {'★'.repeat(n)}
+    </span>
+  );
+}
+
+/** Um desenho que já foi, para a galeria do fim (só na memória desta tela: some com a partida). */
+interface DesenhoDaGaleria {
+  quem: string;
+  palavra: string;
+  imagem: string;
+}
 
 const ESCOLHENDO_MS = 15_000;
 const DESENHANDO_MS = 80_000;
@@ -26,7 +54,7 @@ type Tracos = Map<number, { c: number; e: number; partes: Map<number, number[]> 
  * traços do servidor substituem os daqui.
  */
 export function JogoDesenho({
-  estado,
+  estado: estadoBase,
   eu,
   restante,
   agir,
@@ -41,6 +69,7 @@ export function JogoDesenho({
   channelId: number;
 }) {
   const t = useT();
+  const estado = estadoBase as EstadoDesenhoNovo & Partida;
   const desenho = estado.quemDesenha === eu;
   const desenhando = estado.fase === 'desenhando';
   const acertei = estado.acertaram.includes(eu);
@@ -51,6 +80,11 @@ export function JogoDesenho({
   const versao = useRef(-1);
   const [cor, setCor] = useState(0);
   const [espessura, setEspessura] = useState(1);
+  /** O balde ligado: o próximo clique no quadro pinta a área, em vez de riscar. */
+  const [balde, setBalde] = useState(false);
+  /** As áreas dos baldes, guardadas enquanto nada antes deles mudar (refazer a grade a cada traço pesaria). */
+  const baldes = useRef<{ chave: string; imagens: Map<number, HTMLCanvasElement> }>({ chave: '', imagens: new Map() });
+  const [galeria, setGaleria] = useState<DesenhoDaGaleria[]>([]);
   const [chute, setChute] = useState('');
   const feed = useRef<HTMLOListElement>(null);
 
@@ -68,8 +102,33 @@ export function JogoDesenho({
     ctx.fillRect(0, 0, tela.width, tela.height);
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    for (const [, traco] of [...tracos.current.entries()].sort(([a], [b]) => a - b)) {
-      const pontos = [...traco.partes.entries()].sort(([a], [b]) => a - b).flatMap(([, p]) => p);
+    const emOrdem = [...tracos.current.entries()].sort(([a], [b]) => a - b);
+    const pontosDe = (traco: { partes: Map<number, number[]> }) => [...traco.partes.entries()].sort(([a], [b]) => a - b).flatMap(([, p]) => p);
+    // OS BALDES: as áreas saem da grade própria (desenho/balde.ts), e só se refazem quando algo ANTES do último balde mudou.
+    const ultimoBalde = Math.max(-1, ...emOrdem.filter(([, tr]) => tr.e === BALDE).map(([k]) => k));
+    if (ultimoBalde >= 0) {
+      const antes = emOrdem.filter(([k]) => k <= ultimoBalde);
+      const chave = `${versao.current}:${antes.map(([k, tr]) => `${k}.${tr.c}.${tr.e}.${pontosDe(tr).length}`).join(',')}`;
+      if (chave !== baldes.current.chave) {
+        const areas = areasDosBaldes(
+          antes.map(([k, tr]) => ({ t: k, c: tr.c, e: tr.e, pontos: pontosDe(tr) })),
+          ESPESSURAS_DO_DESENHO,
+        );
+        const imagens = new Map<number, HTMLCanvasElement>();
+        for (const [k, area] of areas) imagens.set(k, imagemDaArea(area, CORES_DO_DESENHO[tracos.current.get(k)?.c ?? 0] ?? '#000000'));
+        baldes.current = { chave, imagens };
+      }
+    }
+    for (const [k, traco] of emOrdem) {
+      if (traco.e === BALDE) {
+        const imagem = baldes.current.imagens.get(k);
+        if (imagem) {
+          ctx.imageSmoothingEnabled = false;
+          ctx.drawImage(imagem, 0, 0, tela.width, tela.height);
+        }
+        continue;
+      }
+      const pontos = pontosDe(traco);
       if (pontos.length < 2) continue;
       ctx.strokeStyle = CORES_DO_DESENHO[traco.c] ?? '#000';
       ctx.fillStyle = ctx.strokeStyle;
@@ -157,6 +216,16 @@ export function JogoDesenho({
   const podeDesenhar = desenho && desenhando;
   const comecarTraco = (e: PointerEvent<HTMLCanvasElement>) => {
     if (!podeDesenhar) return;
+    if (balde) {
+      // O balde: um traço de um ponto só, com a espessura BALDE, que cada tela pinta igual.
+      const t = Math.max(0, ...tracos.current.keys()) + 1;
+      const dados = { t, i: 0, c: cor, e: BALDE, p: ponto(e) };
+      juntar(dados, 0, dados.p);
+      socket?.emit('minijogo:tempo-real', { channelId, dados });
+      tocar('desliza');
+      redesenhar();
+      return;
+    }
     e.currentTarget.setPointerCapture(e.pointerId);
     const t = Math.max(0, ...tracos.current.keys()) + 1;
     atual.current = { t, i: 0, pendentes: ponto(e), ultimo: null, relogio: setInterval(enviar, ENVIO_MS) };
@@ -179,20 +248,74 @@ export function JogoDesenho({
   };
   useEffect(() => terminarTraco, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // A GALERIA DO FIM (19/11/2026): cada desenho, na revelação, vira uma imagem pequena nesta tela (nada vai ao servidor).
+  useEffect(() => {
+    if (estado.fase !== 'revelando') return;
+    const tela = quadro.current;
+    if (!tela || tela.width === 0) return;
+    const pequena = document.createElement('canvas');
+    pequena.width = 240;
+    pequena.height = 180;
+    pequena.getContext('2d')?.drawImage(tela, 0, 0, 240, 180);
+    let imagem = '';
+    try {
+      imagem = pequena.toDataURL('image/png');
+    } catch {
+      return;
+    }
+    const palavra = estado.palavra?.texto ?? '';
+    setGaleria((g) => [...g, { quem: nome(estado.quemDesenha), palavra, imagem }].slice(-30));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [estado.fase, estado.vez]);
+
+  // OS SONS (19/11/2026): a minha vez de desenhar, cada acerto (o meu mais alto), e o chute errado meu.
+  const antesDoSom = useRef({ acertaram: estado.acertaram.length, chutes: estado.chutes.length, vez: estado.vez, fase: estado.fase });
+  useEffect(() => {
+    const a = antesDoSom.current;
+    if (estado.vez !== a.vez || estado.fase !== a.fase) {
+      if (estado.fase === 'escolhendo' && desenho) tocar('vez');
+    } else if (estado.acertaram.length > a.acertaram) {
+      tocar(estado.acertaram.includes(eu) && !acertouAntes.current ? 'acerto' : 'moeda');
+    } else if (estado.chutes.length > a.chutes && estado.chutes[estado.chutes.length - 1]?.userId === eu) {
+      tocar('erro');
+    }
+    acertouAntes.current = estado.acertaram.includes(eu);
+    antesDoSom.current = { acertaram: estado.acertaram.length, chutes: estado.chutes.length, vez: estado.vez, fase: estado.fase };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [estado.acertaram.length, estado.chutes.length, estado.vez, estado.fase]);
+  const acertouAntes = useRef(acertei);
+
   if (estado.terminada) {
-    return <Placar eu={eu} linhas={estado.placar.map((l) => ({ ...l, valor: String(l.pontos) }))} />;
+    return (
+      <>
+        <Placar eu={eu} linhas={estado.placar.map((l) => ({ ...l, valor: String(l.pontos) }))} />
+        {galeria.length > 0 && (
+          <ul className="desenho-galeria" aria-label={t('Galeria')}>
+            {galeria.map((d, i) => (
+              <li key={i}>
+                <img src={d.imagem} alt={d.palavra} />
+                <strong>{d.palavra}</strong>
+                <span>✏️ {d.quem}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </>
+    );
   }
 
-  // Todas as formas da tradução vão ao servidor (todas valem no chute); o botão mostra só a primeira.
-  const formasDaPalavra = (id: string) => t(PALAVRAS_DO_DESENHO[id] ?? id);
+  // Todas as formas da tradução vão ao servidor (todas valem no chute); o botão mostra só a primeira. As da lista da turma
+  // (com "#") são o que quem começou escreveu, sem tradução.
+  const formasDaPalavra = (id: string) => (id.startsWith('#') ? id.slice(1) : t(PALAVRAS_DO_DESENHO[id] ?? id));
   let topo: ReactNode;
   if (estado.fase === 'escolhendo') {
     topo = desenho ? (
       <div className="desenho-opcoes">
         <span>{t('Escolha o que desenhar:')}</span>
-        {(estado.opcoes ?? []).map((id) => (
+        {(estado.opcoes ?? []).map((id, k) => (
           <button key={id} type="button" className="btn-secondary" onClick={() => agir({ tipo: 'escolher', id, texto: formasDaPalavra(id) })}>
             {primeiraForma(formasDaPalavra(id))}
+            <Nivel n={estado.niveis?.[k]} />
           </button>
         ))}
       </div>
@@ -202,7 +325,12 @@ export function JogoDesenho({
   } else if (estado.fase === 'revelando') {
     topo = t('Era: {palavra}', { palavra: [estado.palavra?.texto ?? '', ...(estado.palavra?.outras ?? [])].join(' / ') });
   } else if (estado.palavra) {
-    topo = desenho ? t('Desenhe: {palavra}', { palavra: estado.palavra.texto }) : t('Você acertou: {palavra}', { palavra: estado.palavra.texto });
+    topo = (
+      <>
+        {desenho ? t('Desenhe: {palavra}', { palavra: estado.palavra.texto }) : t('Você acertou: {palavra}', { palavra: estado.palavra.texto })}
+        <Nivel n={estado.nivel} />
+      </>
+    );
   } else {
     topo = (
       <span className="desenho-mascara" aria-label={t('{n} letras', { n: (estado.mascara ?? []).filter((c) => c !== ' ').length })}>
@@ -211,6 +339,7 @@ export function JogoDesenho({
             {c === '_' ? '' : c}
           </span>
         ))}
+        <Nivel n={estado.nivel} />
       </span>
     );
   }
@@ -231,7 +360,7 @@ export function JogoDesenho({
         <div className="desenho-quadro-e-ferramentas">
           <canvas
             ref={quadro}
-            className={`desenho-quadro${podeDesenhar ? ' meu' : ''}`}
+            className={`desenho-quadro${podeDesenhar ? ' meu' : ''}${podeDesenhar && balde ? ' balde' : ''}`}
             onPointerDown={comecarTraco}
             onPointerMove={moverTraco}
             onPointerUp={terminarTraco}
@@ -260,11 +389,25 @@ export function JogoDesenho({
                   className={`desenho-espessura${espessura === i ? ' escolhida' : ''}`}
                   aria-label={t('Espessura {n}', { n: i + 1 })}
                   aria-pressed={espessura === i}
-                  onClick={() => setEspessura(i)}
+                  onClick={() => {
+                    setEspessura(i);
+                    setBalde(false);
+                  }}
                 >
                   <span style={{ width: 4 + i * 6, height: 4 + i * 6 }} />
                 </button>
               ))}
+              <span className="desenho-separador" />
+              <button
+                type="button"
+                className={`desenho-espessura${balde ? ' escolhida' : ''}`}
+                aria-label={primeiraForma(t('Balde'))}
+                title={primeiraForma(t('Balde'))}
+                aria-pressed={balde}
+                onClick={() => setBalde((b) => !b)}
+              >
+                <PaintBucket size={16} aria-hidden="true" />
+              </button>
               <span className="desenho-separador" />
               <button type="button" className="icon-plain" aria-label={t('Desfazer')} onClick={() => agir({ tipo: 'desfazer' })}>
                 <Undo2 size={16} />
@@ -295,6 +438,17 @@ export function JogoDesenho({
               </li>
             ))}
           </ol>
+          {!desenho && desenhando && estado.pular && (
+            <button
+              type="button"
+              className={`btn-secondary desenho-pular${estado.pular.votei ? ' votei' : ''}`}
+              aria-pressed={estado.pular.votei}
+              title={t('Pular')}
+              onClick={() => agir({ tipo: 'pular' })}
+            >
+              <SkipForward size={14} aria-hidden="true" /> {t('Pular')} {estado.pular.votos}/{estado.pular.precisa}
+            </button>
+          )}
           {!desenho && desenhando && (
             <form
               className="desenho-chute"

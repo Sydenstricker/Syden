@@ -115,6 +115,11 @@ export interface OpcoesDaRodada {
    * por um de mão (server/test/festa-ajuda-aovivo.ts).
    */
   aCada?: (ms: number, fn: () => void) => () => void;
+  /**
+   * As equipes impostas por quem chama (19/11/2026: o Tabuleiro da turma monta o 2 contra 2 e o 1 contra 3 pela cor da casa de
+   * cada um). Sem elas, as do microjogo (se ele tiver).
+   */
+  equipes?: number[][];
 }
 
 const aCadaPadrao = (ms: number, fn: () => void) => {
@@ -124,8 +129,8 @@ const aCadaPadrao = (ms: number, fn: () => void) => {
 };
 
 /** Monta a turma de uma rodada: as equipes saem do microjogo (se ele tiver), na ordem da inscrição. */
-export function turmaDa(micro: MicrojogoDoServidor<unknown, unknown>, jogadores: number[], robos: number[], aleatorio: () => number): Turma {
-  const equipes = micro.equipes ? micro.equipes([...jogadores], aleatorio).filter((e) => e.length > 0) : null;
+export function turmaDa(micro: MicrojogoDoServidor<unknown, unknown>, jogadores: number[], robos: number[], aleatorio: () => number, impostas?: number[][]): Turma {
+  const equipes = impostas ? impostas.map((e) => [...e]).filter((e) => e.length > 0) : micro.equipes ? micro.equipes([...jogadores], aleatorio).filter((e) => e.length > 0) : null;
   const de = new Map<number, number>();
   equipes?.forEach((e, i) => e.forEach((id) => de.set(id, i)));
   return { jogadores: [...jogadores], robos: [...robos], equipes, equipeDe: (quem) => de.get(quem) ?? -1 };
@@ -139,11 +144,11 @@ export function resultadoDoRobo(m: Microjogo, dados: unknown, aleatorio: () => n
   return microjogoDe(m).robo(dados, aleatorio, passouMs);
 }
 
-export function rodadaDeFesta({ ctx, microjogo: m, inscritos, agora, aleatorio, pontos, aoRevelar, aoAcabar, robos = [], aCada = aCadaPadrao }: OpcoesDaRodada): RodadaDeFesta {
+export function rodadaDeFesta({ ctx, microjogo: m, inscritos, agora, aleatorio, pontos, aoRevelar, aoAcabar, robos = [], aCada = aCadaPadrao, equipes: impostas }: OpcoesDaRodada): RodadaDeFesta {
   const micro = microjogoDe(m);
   let fase: 'preparando' | 'jogando' | 'revelando' = 'preparando';
   // a turma (e as equipes) antes do sorteio: o microjogo de equipes sorteia o campo de cada uma
-  const turma = turmaDa(micro, inscritos, robos, aleatorio);
+  const turma = turmaDa(micro, inscritos, robos, aleatorio, impostas);
   const dados = micro.gerar(aleatorio, turma);
   const mem = micro.memoria?.(dados, turma);
   let inicio = 0;

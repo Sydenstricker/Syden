@@ -9,7 +9,7 @@ import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import * as conta from '../src/chefe/conta';
 import { pilotoAutomatico } from '../src/chefe/piloto';
-import { Cliente, comandosVazios, INVUL_MS, marcaDoLugar, type Quadro } from '../src/chefe/regras';
+import { Cliente, comandosVazios, INVUL_MS, marcaDoLugar, REVIVER_MS, type Quadro } from '../src/chefe/regras';
 
 const ler = (p: string) => readFileSync(fileURLToPath(new URL(p, import.meta.url)), 'utf8');
 
@@ -20,6 +20,7 @@ test('as contas do chefe são duas cópias iguais byte a byte (servidor e site)'
 test('as medidas do site que não moram nas contas são as do servidor', async () => {
   const s = await import('../../server/src/chefe/motor.ts');
   assert.equal(INVUL_MS, s.INVUL_MS);
+  assert.equal(REVIVER_MS, s.REVIVER_MS);
 });
 
 test('as contas: o torrão anda em linha e para no alcance; a bomba vai até o alcance; a investida para na borda', () => {
@@ -49,7 +50,7 @@ test('a medalha do fim é a do troféu', () => {
  * A partida inteira: o servidor de verdade num relógio de mão (um passo a cada 50 ms), cada pessoa com o cliente da tela e o
  * piloto, e a rede com IDA ms em cada sentido. Devolve o último quadro e o público do fim.
  */
-async function partida(ids: number[], IDA = 100, sementeInicial = 7) {
+async function partida(ids: number[], IDA = 100, sementeInicial = 7, corpo: Record<string, unknown> = {}) {
   const { criarChefe } = await import('../../server/src/chefe/motor.ts');
   let semente = sementeInicial;
   const aleatorio = () => {
@@ -79,7 +80,7 @@ async function partida(ids: number[], IDA = 100, sementeInicial = 7) {
   const jogo = criarChefe({ agora: () => agora, aleatorio, intervalo: (p) => ((passo = p), 1), limpar: () => {} }).comecar(ctx, {
     naSala: ids,
     criadaPor: ids[0],
-    corpo: {},
+    corpo,
   });
   assert.ok(typeof jogo !== 'string');
   const clientes = ids.map((id) => {
@@ -137,4 +138,12 @@ test('com quatro, a turma vence junta, e o dano da turma é a soma do de cada um
     publico.danoDaTurma,
   );
   assert.ok(r.filter((l) => l.pontos > 0).length >= 3, 'quase todo mundo acertou alguma coisa');
+});
+
+test('o yeti (19/11/2026): sozinho, com 200 ms de ida e volta, o piloto vence, devolvendo as bolas de neve', async (t) => {
+  const { ultimo, publico, segundos } = await partida([7], 100, 11, { chefe: 'yeti' });
+  t.diagnostic(`a luta com o yeti levou ${Math.round(segundos)} s; vidas: ${ultimo.j[0][6]}; dano: ${ultimo.d}`);
+  assert.equal(ultimo.c[9], 1, 'o quadro diz que é o yeti');
+  assert.equal(ultimo.f, 'vitoria', `fase ${ultimo.f}, o yeti na fase ${ultimo.c[6] + 1} com ${ultimo.c[4]}%`);
+  assert.equal(publico.chefe, 'yeti');
 });

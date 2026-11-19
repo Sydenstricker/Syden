@@ -48,6 +48,34 @@ export const CASAS_DA_VOLTA: { x: number; z: number; /** Para fora da volta (uni
   },
 );
 
+/**
+ * AS BIFURCAÇÕES (19/11/2026): os ramais do servidor (RAMAIS em server/src/minijogo-tabuleiro-da-turma.ts; o teste confere que
+ * são os mesmos). Cada casa do ramal fica POR FORA da casa da volta que ela acompanha, a DISTANCIA_DO_RAMAL dela: os dois ramais
+ * estão nas pontas da volta (os lados de fora, à esquerda e à direita), onde ela é convexa e há chão até o anel.
+ */
+export const RAMAIS_DA_VOLTA: { de: number; ate: number; tamanho: number }[] = [
+  { de: 5, ate: 10, tamanho: 4 },
+  { de: 20, ate: 25, tamanho: 4 },
+];
+export const DISTANCIA_DO_RAMAL = 0.74;
+/** As casas dos ramais, na numeração do servidor (de NUMERO_DE_CASAS em diante). */
+export const CASAS_DOS_RAMAIS: typeof CASAS_DA_VOLTA = RAMAIS_DA_VOLTA.flatMap((r) =>
+  Array.from({ length: r.tamanho }, (_, j) => {
+    const c = CASAS_DA_VOLTA[r.de + 1 + j];
+    return { x: c.x + c.fora[0] * DISTANCIA_DO_RAMAL, z: c.z + c.fora[1] * DISTANCIA_DO_RAMAL, fora: c.fora, rumo: c.rumo };
+  }),
+);
+/** Todas as casas, na numeração do servidor: a volta e os ramais. */
+export const TODAS_AS_CASAS_3D = [...CASAS_DA_VOLTA, ...CASAS_DOS_RAMAIS];
+/** As casas da volta que têm um ramal por fora: a barraca da dourada fica por DENTRO delas. */
+export const COM_RAMAL_POR_FORA = new Set(RAMAIS_DA_VOLTA.flatMap((r) => Array.from({ length: r.tamanho }, (_, j) => r.de + 1 + j)));
+/** Onde fica a barraca da dourada (no chão) quando ela está na casa `i` da volta: por fora, ou por dentro se lá fora há ramal. */
+export function chaoDaBarraca(i: number, distancia: number): { x: number; z: number; lado: number } {
+  const c = CASAS_DA_VOLTA[((i % NUMERO_DE_CASAS) + NUMERO_DE_CASAS) % NUMERO_DE_CASAS];
+  const lado = COM_RAMAL_POR_FORA.has(i) ? -1 : 1;
+  return { x: c.x + c.fora[0] * distancia * lado, z: c.z + c.fora[1] * distancia * lado, lado };
+}
+
 /** As ruas: o anel dos carros em volta da volta, e quatro ruas saindo dele para fora (o resto da cidade). */
 export const ANEL = { rx: 6.3, rz: 4.4, canto: 1.3, largura: 0.8 };
 export const RUAS_PARA_FORA: { x0: number; z0: number; x1: number; z1: number }[] = [

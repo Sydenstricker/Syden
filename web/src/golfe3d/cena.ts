@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { carregarCoelho, copiarCoelho, CORES_DO_MASCOTE } from '../coelho3d';
-import { RAIO_BOLA, RAIO_BURACO, montar, relevo, type Buraco, type Peca } from './fisica';
+import { RAIO_BOLA, RAIO_BURACO, giroDasPas, montar, relevo, type Buraco, type Peca } from './fisica';
 
 /**
  * A CENA DO MINIGOLFE 3D (05/11/2026): o buraco montado peça a peça com o Minigolf Kit da Kenney (CC0,
@@ -96,6 +96,8 @@ export interface QuadroDoGolfe {
   deCima: boolean;
   /** Conta as tacadas dadas aqui: mudou, o taco balança. */
   tacadas: number;
+  /** O passo do relógio do buraco: as pás do moinho giram por ele (19/11/2026), como na física. */
+  passo?: number;
 }
 
 export class CenaDoGolfe3D {
@@ -266,7 +268,11 @@ export class CenaDoGolfe3D {
       this.cena.add(o);
       if (peca === 'moinho')
         o.traverse((n) => {
-          if (n.name === 'blades') this.pas.push(n);
+          if (n.name === 'blades') {
+            // as pás descem até o chão da passagem: é a pá que fecha a entrada (a física, giroDasPas e moinhoFechado)
+            n.scale.set(1.2, 1.2, 1);
+            this.pas.push(n);
+          }
         });
       if (base > 0) {
         const p = this.clonar(modelos.get('supports-low')!);
@@ -628,8 +634,9 @@ export class CenaDoGolfe3D {
 
     this.atualizarCoelho(q, dt, agora);
 
-    // as pás do moinho giram (só o desenho: elas não chegam ao chão)
-    if (!this.calmo) for (const p of this.pas) p.rotation.z += dt * 1.2;
+    // as pás do moinho giram pelo passo do buraco, o mesmo da física: a pá que desce fecha a passagem (19/11/2026). Com
+    // "menos movimento" também giram, porque elas são o obstáculo
+    if (q.passo !== undefined) for (const p of this.pas) p.rotation.z = giroDasPas(q.passo) * Math.PI * 2;
     // as nuvens andam devagar
     if (!this.calmo) this.nuvens.rotation.y += dt * 0.006;
 

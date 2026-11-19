@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useT } from './i18n';
 import { Placar, Relogio } from './Minijogo';
 import type { EstadoCaca, Partida } from './minijogos';
-import { desenhar, pintarCenario, type Queda } from './caca/desenho';
-import { ALTURA, LARGURA, posicao, pontosDoAcerto, pragaAtingida } from './caca/voo';
+import { desenhar, desenharCoelhoDaMoita, pintarCenario, type Queda } from './caca/desenho';
+import { ALTURA, LARGURA, multiplicador, posicao, pontosDoAcerto, pragaAtingida, pragasDaOnda } from './caca/voo';
 
 /**
  * A CAÇA ÀS PRAGAS DA HORTA (04/11/2026, server/src/minijogo-caca.ts). Corvos e gafanhotos atravessam a horta, e cada um mira
@@ -39,8 +39,13 @@ export function JogoCaca({ estado, eu, jogador, agir }: { estado: EstadoCaca & P
     );
   }
   if (estado.fase === 'placar') {
+    // o fim da onda: o coelho da moita (alegre com a onda boa, rindo com a ruim) e a onda perfeita
+    const meu = estado.meu as (EstadoCaca['meu'] & { perfeita?: boolean }) | null;
+    const alegre = meu ? meu.abatidas.length >= Math.ceil(pragasDaOnda(estado.onda) * 0.6) : null;
     return (
       <div className="caca">
+        {meu && alegre !== null && <CoelhoDaMoita key={estado.onda} alegre={alegre} />}
+        {meu?.perfeita && <p className="minijogo-situacao caca-recorde">{t('Onda perfeita!')}</p>}
         <table className="golfe-placar">
           <thead>
             <tr>
@@ -87,6 +92,8 @@ function Horta({ estado, eu, jogador, agir }: { estado: EstadoCaca & Partida; eu
   const abatidas = useRef(new Set<number>(estado.meu?.abatidas ?? []));
   const [municao, setMunicao] = useState(estado.meu?.municao ?? 0);
   const [pontos, setPontos] = useState(estado.meu?.pontos ?? 0);
+  /** O COMBO (19/11/2026): acertos seguidos sem errar; o servidor conta, e a tela antecipa. */
+  const combo = useRef((estado.meu as { combo?: number } | null)?.combo ?? 0);
   const municaoRef = useRef(municao);
   municaoRef.current = municao;
   const pendentes = useRef(0);
@@ -101,6 +108,7 @@ function Horta({ estado, eu, jogador, agir }: { estado: EstadoCaca & Partida; eu
     const m = estado.meu;
     if (!m || pendentes.current > 0 || Date.now() - calmoDesde.current < 300) return;
     abatidas.current = new Set(m.abatidas);
+    combo.current = (m as { combo?: number }).combo ?? combo.current;
     setMunicao(m.municao);
     setPontos(m.pontos);
   }, [estado.meu]);
@@ -118,13 +126,17 @@ function Horta({ estado, eu, jogador, agir }: { estado: EstadoCaca & Partida; eu
     tocar('tiro');
     const i = pragaAtingida(pragas, abatidas.current, x, y, ms);
     if (i >= 0) {
-      tocar('acerto');
       abatidas.current.add(i);
       const p = pragas[i];
+      combo.current++;
+      tocar(p.dourada ? 'moeda' : multiplicador(combo.current) > 1 ? 'combo' : 'acerto');
       const pos = posicao(p, ms)!;
-      const ganhou = pontosDoAcerto(p, ms);
-      quedas.current.push({ x: pos.x, y: pos.y, tipo: p.tipo, dir: p.vx >= 0 ? 1 : -1, em: agoraMs, pontos: ganhou });
+      const ganhou = pontosDoAcerto(p, ms) * multiplicador(combo.current);
+      quedas.current.push({ x: pos.x, y: pos.y, tipo: p.tipo, dir: p.vx >= 0 ? 1 : -1, em: agoraMs, pontos: ganhou, dourada: p.dourada });
       setPontos((n) => n + ganhou);
+    } else {
+      combo.current = 0;
+      tocar('erro');
     }
     pendentes.current++;
     void Promise.resolve(agir({ tipo: 'tiro', x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10, ms: Math.round(ms) })).finally(() => {
@@ -172,6 +184,7 @@ function Horta({ estado, eu, jogador, agir }: { estado: EstadoCaca & Partida; eu
         agora: agoraMs,
         mira: souJogador ? mira.current : null,
         tiro: ultimoTiro.current,
+        multiplicador: multiplicador(combo.current),
       });
       if (agoraMs - ultimoRelogio > 250) {
         ultimoRelogio = agoraMs;
@@ -248,4 +261,26 @@ function Horta({ estado, eu, jogador, agir }: { estado: EstadoCaca & Partida; eu
       {souJogador && <ComandosDoJogo itens={[{ teclas: ['mouse-clique'], toque: 'toque', rotulo: t('Atirar') }]} />}
     </div>
   );
+}
+
+/** O coelho que sobe da moita no fim da onda (caca/desenho.ts); com "menos movimento", parado já em cima. */
+function CoelhoDaMoita({ alegre }: { alegre: boolean }) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const ctx = ref.current?.getContext('2d');
+    if (!ctx) return;
+    const parado = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const inicio = performance.now();
+    let id = 0;
+    const quadro = () => {
+      const s = parado ? 2000 : performance.now() - inicio;
+      if (!document.hidden && document.hasFocus()) desenharCoelhoDaMoita(ctx, 96, 64, alegre, s);
+      if (!parado && s < 4000) id = requestAnimationFrame(quadro);
+    };
+    tocar(alegre ? 'medalha' : 'erro');
+    id = requestAnimationFrame(quadro);
+    if (parado) desenharCoelhoDaMoita(ctx, 96, 64, alegre, 2000);
+    return () => cancelAnimationFrame(id);
+  }, [alegre]);
+  return <canvas ref={ref} width={96} height={64} className="caca-moita" aria-hidden="true" style={{ display: 'block', margin: '0 auto', width: 192, height: 128, imageRendering: 'pixelated' }} />;
 }

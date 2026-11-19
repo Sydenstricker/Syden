@@ -26,9 +26,13 @@
  * OS TROFÉUS: o pódio de uma partida com 2 pessoas ou mais que ficaram até o fim vai para o quarto de quem ficou nele, na
  * mesma estante da corrida e da festa (pista 'golfe', os pontos = o total de tacadas: MENOR é melhor). Só quem acertou
  * algum buraco tem um resultado de verdade. No Solo, sem troféu.
+ *
+ * OS PERCURSOS E O RECORDE (19/11/2026): quem começa escolhe os seis buracos de sempre ou os nove (PERCURSOS; sem escolha em
+ * 20 s, os seis). No Solo, o total de tacadas que ESTE servidor simulou vira o recorde da pessoa naquele percurso (a tabela
+ * comum, solo_recordes, menos é melhor), só com todos os buracos acertados.
  */
 import * as db from './db.js';
-import { ALTURA, BURACOS, LARGURA, TACADAS_MAX, acabouOBuraco, bater, novaBola, pontosDoBuraco, rolarAteParar, tacadaInvalida, type Bola } from './golfe-fisica.js';
+import { ALTURA, BURACOS, LARGURA, PERCURSOS, TACADAS_MAX, acabouOBuraco, bater, novaBola, pontosDoBuraco, rolarAteParar, tacadaInvalida, type Bola } from './golfe-fisica.js';
 import type { Definicao } from './minijogo-motor.js';
 
 /** O buraco na tela antes de valer (o "prepare-se"). */
@@ -45,6 +49,8 @@ export const ATRASO_MAX_MS = 800;
 export const INTERVALO_MIN_MS = 150;
 /** Depois que a última bola para, o tempo de vê-la entrar antes do placar. */
 export const DEPOIS_DE_PARAR_MS = 900;
+/** Quem começa tem isto para escolher o percurso; depois, os seis. */
+export const ESCOLHA_MS = 20_000;
 /** O pontinho de cada um, no máximo a cada isto. */
 const TEMPO_REAL_MS = 50;
 
@@ -66,23 +72,29 @@ export const golfe: Definicao = criarGolfe();
 export function criarGolfe({ agora = Date.now }: { agora?: () => number } = {}): Definicao {
   return {
     minimo: 2,
-    comecar(ctx, { naSala }) {
+    comecar(ctx, { naSala, criadaPor, corpo }) {
       const inscritos = [...naSala];
       const solo = inscritos.length === 1;
+      const pedido = PERCURSOS.includes(corpo.percurso as number) ? (corpo.percurso as number) : null;
+      let percurso = pedido ?? PERCURSOS[0];
+      let escolhendo = pedido === null;
+      let recorde: { antes: number | null; novo: boolean } | null = null;
       const duracao = solo ? BURACO_SOLO_MS : BURACO_MS;
       const evento = `golfe-${ctx.comunidade ?? 0}-${agora()}`;
       let indice = 0;
-      let fase: 'preparando' | 'jogando' | 'placar' | 'fim' = 'preparando';
+      let fase: 'escolhendo' | 'preparando' | 'jogando' | 'placar' | 'fim' = escolhendo ? 'escolhendo' : 'preparando';
       let inicio = 0;
       /** O buraco já vai fechar (todos terminaram, ou o tempo acabou): esperando as bolas pararem na tela. */
       let fechando = false;
-      let bolas = new Map<number, Bola>();
+      let bolas = new Map<number, Bola>(inscritos.map((id) => [id, novaBola(BURACOS[0])]));
       const ultimaTacada = new Map<number, number>();
       const ultimoTempoReal = new Map<number, number>();
       const pontos = new Map<number, number>(inscritos.map((id) => [id, 0]));
       const doBuraco = new Map<number, number>();
       /** Quem acertou ao menos um buraco: só esses têm um resultado de verdade para o pódio. */
       const acertaram = new Set<number>();
+      /** Quantos buracos cada um acertou (o recorde do Solo pede todos). */
+      const acertouTodos = new Map<number, number>();
       /** Quem estava na sala no fim de TODOS os buracos: só eles são "a turma" do pódio. */
       let ficaram: Set<number> | null = null;
 
@@ -132,9 +144,12 @@ export function criarGolfe({ agora = Date.now }: { agora?: () => number } = {}):
           const p = pontosDoBuraco(bola);
           doBuraco.set(id, p);
           pontos.set(id, (pontos.get(id) ?? 0) + p);
-          if (bola.dentro) acertaram.add(id);
+          if (bola.dentro) {
+            acertaram.add(id);
+            acertouTodos.set(id, (acertouTodos.get(id) ?? 0) + 1);
+          }
         }
-        if (indice >= BURACOS.length - 1) return terminar();
+        if (indice >= percurso - 1) return terminar();
         fase = 'placar';
         ctx.agendar(PLACAR_ENTRE_MS, () => {
           indice++;
@@ -159,6 +174,14 @@ export function criarGolfe({ agora = Date.now }: { agora?: () => number } = {}):
       const terminar = () => {
         fase = 'fim';
         const turma = ficaram ?? new Set<number>();
+        // o recorde do Solo: só com todos os buracos acertados, pelo total que o servidor simulou
+        if (solo) {
+          const quem = inscritos[0];
+          const total = pontos.get(quem) ?? 0;
+          const todos = [...doBuraco.keys()].length > 0 && acertouTodos.get(quem) === percurso;
+          if (todos && turma.has(quem)) recorde = db.guardarRecordeDoSolo(quem, 'golfe', String(percurso), total, true);
+          else recorde = { antes: db.recordeDoSolo(quem, 'golfe', String(percurso))?.valor ?? null, novo: false };
+        }
         if (turma.size >= 2) {
           // a posição do placar já é só entre quem ficou (empatados dividem; menos tacadas é melhor): a tela e o troféu batem
           for (const l of placar()) {
@@ -186,7 +209,14 @@ export function criarGolfe({ agora = Date.now }: { agora?: () => number } = {}):
         if (aqui.length === 0 || aqui.every((id) => acabouOBuraco(bolas.get(id)!))) fechar();
       };
 
-      preparar();
+      const escolher = (n: number) => {
+        if (!escolhendo) return;
+        escolhendo = false;
+        percurso = n;
+        preparar();
+      };
+      if (escolhendo) ctx.agendar(ESCOLHA_MS, () => escolher(PERCURSOS[0]));
+      else preparar();
 
       const numero = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
 
@@ -196,8 +226,18 @@ export function criarGolfe({ agora = Date.now }: { agora?: () => number } = {}):
           return {
             fase,
             rodada: indice + 1,
-            rodadas: BURACOS.length,
+            rodadas: percurso,
             buraco: indice,
+            percurso,
+            par: BURACOS[indice].par,
+            /** Quem escolhe o percurso (na fase 'escolhendo'). */
+            escolhe: solo ? inscritos[0] : criadaPor,
+            /** No Solo, na escolha: o recorde de cada percurso (as tacadas). */
+            recordes:
+              solo && fase === 'escolhendo' && quem === inscritos[0]
+                ? Object.fromEntries(db.recordesDoSolo(quem, 'golfe').map((r) => [r.variante, r.valor]))
+                : null,
+            recorde,
             duracaoMs: duracao,
             /** Quanto do buraco já passou (jogando): o relógio da tela de cada um sai daqui. */
             decorridoMs: fase === 'jogando' ? agora() - inicio : null,
@@ -215,6 +255,13 @@ export function criarGolfe({ agora = Date.now }: { agora?: () => number } = {}):
           };
         },
         acao(quem, corpo) {
+          if (corpo.tipo === 'percurso') {
+            if (fase !== 'escolhendo') return 'Esta rodada já acabou.';
+            if (quem !== criadaPor && !(solo && inscritos.includes(quem))) return 'Você está assistindo esta partida.';
+            if (!PERCURSOS.includes(corpo.percurso as number)) return 'Ação desconhecida.';
+            escolher(corpo.percurso as number);
+            return null;
+          }
           if (corpo.tipo !== 'tacada') return 'Ação desconhecida.';
           if (!inscritos.includes(quem)) return 'Você está assistindo esta partida.';
           if (fase !== 'jogando' || fechando) return 'Esta rodada já acabou.';

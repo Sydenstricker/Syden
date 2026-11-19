@@ -1,5 +1,5 @@
 import { PREDIOS, VEICULOS } from './atlas.gerado';
-import { C0, C1, CAMINHOS, FILA_MAX, MAPA, TRAVA_PASSOS, naFila, primeiroDaFila, type Carro, type Estado } from './sim';
+import { C0, C1, CAMINHOS, ENTRADAS, FILA_MAX, MAPA, TRAVA_PASSOS, naFila, primeiroDaFila, type Carro, type Estado, type Mapa } from './sim';
 
 /**
  * O DESENHO DO TRÂNSITO DA TOCA: a cidade em isométrico, num canvas 2D. Os prédios e os carros são da Kenney (CC0, as folhas de
@@ -26,9 +26,10 @@ const OY = 40;
 
 export const tela = (x: number, y: number): [number, number] => [OX + (x - y) * MEIA_L, OY + (x + y) * MEIA_A];
 
-const ehRua = (i: number, j: number) => i === C0 || j === C0;
+/** No T (19/11/2026), o braço de baixo da rua da coluna C0 (o da entrada 3) não existe: ali fica a cidade. */
+const ehRua = (i: number, j: number, mapa: Mapa = 'cruz') => j === C0 || (i === C0 && (mapa === 'cruz' || j < C0));
 /** As casas na frente das ruas ficam baixas (calçada e arbustos): um prédio ali esconderia a faixa de perto. */
-const ehCalcada = (i: number, j: number) => !ehRua(i, j) && (i === C1 || j === C1);
+const ehCalcada = (i: number, j: number, mapa: Mapa = 'cruz') => !ehRua(i, j, mapa) && (i === C1 || j === C1 || (mapa === 't' && i === C0 && j === C1));
 
 /** Um número fixo por casa, para o prédio e o arbusto não mudarem de uma partida para outra. */
 const misturar = (i: number, j: number) => ((i * 73856093) ^ (j * 19349663)) >>> 0;
@@ -70,7 +71,7 @@ const retangulo = (x0: number, y0: number, x1: number, y1: number): [number, num
 ];
 
 /** A camada do chão, desenhada uma vez. */
-function desenharChao(): HTMLCanvasElement {
+function desenharChao(mapa: Mapa): HTMLCanvasElement {
   const c = document.createElement('canvas');
   c.width = LARGURA;
   c.height = ALTURA;
@@ -81,7 +82,7 @@ function desenharChao(): HTMLCanvasElement {
       [k, MAPA - 1, 'sw'],
       [MAPA - 1, k, 'se'],
     ] as const) {
-      const rua = ehRua(i, j);
+      const rua = ehRua(i, j, mapa);
       const [ax, ay] = face === 'sw' ? tela(i, j + 1) : tela(i + 1, j);
       const [bx, by] = tela(i + 1, j + 1);
       const faixa = (t: number, h: number, cor: string) => {
@@ -105,8 +106,8 @@ function desenharChao(): HTMLCanvasElement {
   }
   for (let i = 0; i < MAPA; i++)
     for (let j = 0; j < MAPA; j++) {
-      if (ehRua(i, j)) losango(ctx, retangulo(i, j, i + 1, j + 1), i === C0 && j === C0 ? COR.asfaltoCruz : COR.asfalto);
-      else if (ehCalcada(i, j)) {
+      if (ehRua(i, j, mapa)) losango(ctx, retangulo(i, j, i + 1, j + 1), i === C0 && j === C0 ? COR.asfaltoCruz : COR.asfalto);
+      else if (ehCalcada(i, j, mapa)) {
         losango(ctx, retangulo(i, j, i + 1, j + 1), COR.calcadaBorda);
         losango(ctx, retangulo(i + 0.04, j + 0.04, i + 0.96, j + 0.96), COR.calcada);
       }
@@ -119,7 +120,7 @@ function desenharChao(): HTMLCanvasElement {
       const a = k + t + 0.1;
       const b = k + t + 0.35;
       losango(ctx, retangulo(a, m - 0.02, b, m + 0.02), COR.meio);
-      losango(ctx, retangulo(m - 0.02, a, m + 0.02, b), COR.meio);
+      if (mapa === 'cruz' || k < C0) losango(ctx, retangulo(m - 0.02, a, m + 0.02, b), COR.meio);
     }
   }
   for (let n = 0; n < 5; n++) {
@@ -128,7 +129,7 @@ function desenharChao(): HTMLCanvasElement {
     losango(ctx, retangulo(C0 - 0.14, a, C0 - 0.02, b), COR.faixa);
     losango(ctx, retangulo(C1 + 0.02, a, C1 + 0.14, b), COR.faixa);
     losango(ctx, retangulo(a, C0 - 0.14, b, C0 - 0.02), COR.faixa);
-    losango(ctx, retangulo(a, C1 + 0.02, b, C1 + 0.14), COR.faixa);
+    if (mapa === 'cruz') losango(ctx, retangulo(a, C1 + 0.02, b, C1 + 0.14), COR.faixa);
   }
   return c;
 }
@@ -191,13 +192,15 @@ export class DesenhoDoTransito {
   private fumacas: Fumaca[] = [];
   private placas: Placa[] = [];
   private mostrarTeclas: boolean;
+  private mapa: Mapa;
 
   constructor(
     private ctx: CanvasRenderingContext2D,
     private img: Imagens,
-    { teclas = true }: { teclas?: boolean } = {},
+    { teclas = true, mapa = 'cruz' }: { teclas?: boolean; mapa?: Mapa } = {},
   ) {
-    this.chao = desenharChao();
+    this.mapa = mapa;
+    this.chao = desenharChao(mapa);
     this.mostrarTeclas = teclas;
   }
 
@@ -213,7 +216,7 @@ export class DesenhoDoTransito {
   entradaEm(px: number, py: number): number {
     let melhor = -1;
     let dist = 46 * 46;
-    for (let e = 0; e < 4; e++) {
+    for (const e of ENTRADAS[this.mapa]) {
       const cam = CAMINHOS[e * 3];
       const [ax, ay] = tela(cam.pts[0], cam.pts[1]);
       const [bx, by] = tela(cam.pts[2], cam.pts[3]);
@@ -247,8 +250,8 @@ export class DesenhoDoTransito {
     for (let i = 0; i < MAPA; i++)
       for (let j = 0; j < MAPA; j++) {
         const h = misturar(i, j);
-        if (!ehRua(i, j) && !ehCalcada(i, j)) coisas.push({ chave: i + j + 1, f: () => this.predio(i, j, h % PREDIOS.length) });
-        else if (ehCalcada(i, j) && h % 3 === 0) {
+        if (!ehRua(i, j, this.mapa) && !ehCalcada(i, j, this.mapa)) coisas.push({ chave: i + j + 1, f: () => this.predio(i, j, h % PREDIOS.length) });
+        else if (ehCalcada(i, j, this.mapa) && h % 3 === 0) {
           // um arbusto no canto da calçada mais longe da rua
           const x = i + (i === C1 ? 0.75 : 0.5);
           const y = j + (j === C1 ? 0.75 : 0.5);
@@ -266,7 +269,7 @@ export class DesenhoDoTransito {
 
     this.fumacas = this.fumacas.filter((f) => f.ate > e.passo);
     for (const f of this.fumacas) this.fumaca(f, e.passo, tempo);
-    if (this.mostrarTeclas) for (let k = 0; k < 4; k++) this.plaquinha(k, naFila(e, k), tempo);
+    if (this.mostrarTeclas) for (const k of ENTRADAS[this.mapa]) this.plaquinha(k, naFila(e, k), tempo);
     this.placas = this.placas.filter((p) => p.ate > e.passo);
     for (const p of this.placas) {
       const [sx, sy] = tela(p.x, p.y);
@@ -331,11 +334,13 @@ export class DesenhoDoTransito {
 
   private carro(c: Carro, passo: number, tempo: number, primeiro: boolean) {
     const { ctx } = this;
-    const pele = c.tipo === 'ambulancia' ? VEICULOS.length - 1 : c.pele % (VEICULOS.length - 1);
+    // a ambulância é a última pele da folha; o caminhão (19/11/2026) é o de lixo (a penúltima), maior; os carros, as outras
+    const pele = c.tipo === 'ambulancia' ? VEICULOS.length - 1 : c.tipo === 'caminhao' ? VEICULOS.length - 2 : c.pele % (VEICULOS.length - 2);
     const [x, y, w, h] = VEICULOS[pele][direcao(c.dx, c.dy)];
     // um tico maiores que na folha, para ler bem numa janela menor
-    const dw = w * ESCALA_DO_CARRO;
-    const dh = h * ESCALA_DO_CARRO;
+    const escala = c.tipo === 'caminhao' ? ESCALA_DO_CARRO * 1.4 : ESCALA_DO_CARRO;
+    const dw = w * escala;
+    const dh = c.tipo === 'moto' ? 22 : h * escala;
     let [sx, sy] = tela(c.x, c.y);
     if (c.batido) sx += Math.sin(tempo / 25 + c.id) * 1.5;
     // o carro que vem de fora do mapa aparece aos poucos
@@ -345,7 +350,8 @@ export class DesenhoDoTransito {
     ctx.beginPath();
     ctx.ellipse(sx, sy + 2, 15, 7, 0, 0, Math.PI * 2);
     ctx.fill();
-    ctx.drawImage(this.img.veiculos, x, y, w, h, Math.round(sx - dw / 2), Math.round(sy - dh + 9), dw, dh);
+    if (c.tipo === 'moto') this.moto(sx, sy, c);
+    else ctx.drawImage(this.img.veiculos, x, y, w, h, Math.round(sx - dw / 2), Math.round(sy - dh + 9), dw, dh);
     if (c.tipo === 'ambulancia' && !c.batido) {
       const azul = Math.floor(passo / 12) % 2 === 0;
       ctx.fillStyle = azul ? '#4aa8ff' : '#ff4a4a';
@@ -370,6 +376,41 @@ export class DesenhoDoTransito {
       ctx.stroke();
     }
     ctx.globalAlpha = 1;
+  }
+
+  /** A MOTO, por código (o pacote da Kenney não tem): duas rodas na direção da rua, o corpo na cor da pele e quem pilota de capacete. */
+  private moto(sx: number, sy: number, c: Carro) {
+    const { ctx } = this;
+    const [ax, ay] = tela(c.x - c.dx * 0.1, c.y - c.dy * 0.1);
+    const [bx, by] = tela(c.x + c.dx * 0.1, c.y + c.dy * 0.1);
+    const cores = ['#d9483b', '#3b7bd9', '#e0b23a', '#4aa86b', '#9a5ad9', '#e07a3a', '#3a3f4a', '#d94a9a'];
+    const cor = cores[c.pele % cores.length];
+    ctx.fillStyle = '#26282e';
+    for (const [rx, ry] of [
+      [ax, ay],
+      [bx, by],
+    ]) {
+      ctx.beginPath();
+      ctx.ellipse(rx, ry - 3, 4, 3, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.strokeStyle = cor;
+    ctx.lineWidth = 5;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(ax, ay - 6);
+    ctx.lineTo(bx, by - 6);
+    ctx.stroke();
+    ctx.lineCap = 'butt';
+    // quem pilota: o corpo e o capacete, um pouco atrás do meio
+    const px = (ax * 0.6 + bx * 0.4);
+    const py = (ay * 0.6 + by * 0.4);
+    ctx.fillStyle = '#4a5160';
+    ctx.fillRect(Math.round(px - 3), Math.round(py - 16), 6, 8);
+    ctx.fillStyle = cor;
+    ctx.beginPath();
+    ctx.arc(px, py - 19, 4, 0, Math.PI * 2);
+    ctx.fill();
   }
 
   private seta(sx: number, sy: number, vx: number, vy: number) {

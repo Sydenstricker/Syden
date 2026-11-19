@@ -15,11 +15,34 @@ import { embaralhar, placar, type Definicao } from './minijogo-motor.js';
  * resposta cai quando MAIS DA METADE dos outros jogadores a contesta.
  */
 
-/** As categorias: o nome de cada uma mora no site, traduzido. Seis são sorteadas por partida. */
-export const CATEGORIAS = ['nome', 'animal', 'fruta', 'cor', 'objeto', 'lugar', 'profissao', 'comida', 'marca', 'filme', 'corpo', 'esporte'];
+/**
+ * As categorias: o nome de cada uma mora no site, traduzido (CATEGORIAS_DO_STOP, em web/src/minijogos.ts; um teste confere
+ * que as listas batem). Eram 12; desde 19/11/2026 são 57, todas NOSSAS (escritas para o Syden), e quem começa escolhe quais
+ * (sem escolher, saem 6 sorteadas).
+ */
+export const CATEGORIAS = [
+  'nome', 'animal', 'fruta', 'cor', 'objeto', 'lugar', 'profissao', 'comida', 'marca', 'filme', 'corpo', 'esporte',
+  'legume', 'bebida', 'doce', 'planta', 'pais', 'cidade', 'instrumento', 'artista', 'personagem', 'jogo', 'roupa', 'veiculo',
+  'casa', 'cozinha', 'escola', 'ferramenta', 'brinquedo', 'inseto', 'ave', 'mar', 'qualidade', 'defeito', 'sentimento',
+  'verbo', 'pet', 'aplicativo', 'loja', 'natureza', 'materia', 'idioma', 'danca', 'festa', 'praia', 'presente', 'medo',
+  'famoso', 'desenho', 'livro', 'outra-lingua', 'tempero', 'superpoder', 'cheiro', 'redondo', 'voa', 'mochila',
+];
 export const CATEGORIAS_POR_PARTIDA = 6;
+/** Quantas categorias cabem numa partida (as da lista e as livres, juntas). */
+export const MINIMO_DE_CATEGORIAS = 3;
+export const MAXIMO_DE_CATEGORIAS = 12;
+/**
+ * AS CATEGORIAS LIVRES (19/11/2026): quem começa escreve as dela ("Time de futebol", "Coisa do nosso grupo"). São conteúdo
+ * de quem cria, como o nome de um canal: aparecem como foram escritas e NÃO passam pela tradução. Vão no estado com um "#"
+ * na frente, para o site saber que não são da lista.
+ */
+export const MAXIMO_DE_LIVRES = 6;
+export const TAMANHO_DA_LIVRE = 30;
 export const RODADAS_STOP = 3;
+export const RODADAS_POSSIVEIS = [1, 2, 3, 4, 5, 6];
 export const ESCREVENDO_MS = 90_000;
+/** Os tempos para escrever que quem começa pode escolher. */
+export const TEMPOS_POSSIVEIS = [60_000, 90_000, 120_000, 180_000];
 /** Depois do STOP, um instante para a última palavra digitada chegar ao servidor. */
 export const PARANDO_MS = 2_000;
 export const CONFERINDO_MS = 60_000;
@@ -52,13 +75,55 @@ export function pontuarCategoria(respostas: Map<number, string>, valida: (userId
   return pontos;
 }
 
+/**
+ * As categorias da partida, pelo que quem começou escolheu. Sem lista escolhida, 6 sorteadas (menos as livres que couberem).
+ * Devolve o erro, se houver.
+ */
+export function categoriasDaPartida(corpo: Record<string, unknown>, aleatorio = Math.random): string[] | string {
+  const livres = [
+    ...new Set(
+      (Array.isArray(corpo.livres) ? corpo.livres : [])
+        .map((x) => String(x ?? '').replace(/\s+/g, ' ').trim().slice(0, TAMANHO_DA_LIVRE))
+        .filter(Boolean),
+    ),
+  ]
+    .slice(0, MAXIMO_DE_LIVRES)
+    .map((x) => `#${x}`);
+  let daLista: string[];
+  if (Array.isArray(corpo.categorias)) {
+    daLista = [...new Set(corpo.categorias.map(String))].filter((c) => CATEGORIAS.includes(c));
+  } else {
+    daLista = embaralhar([...CATEGORIAS], aleatorio).slice(0, Math.max(0, CATEGORIAS_POR_PARTIDA - livres.length));
+  }
+  const todas = [...daLista, ...livres];
+  if (todas.length < MINIMO_DE_CATEGORIAS) return 'Escolha pelo menos 3 categorias.';
+  if (todas.length > MAXIMO_DE_CATEGORIAS) return 'Escolha no máximo 12 categorias.';
+  return todas;
+}
+
 export const stop: Definicao = {
   comecar(ctx, { naSala, corpo }) {
-    const letras = [...new Set(Array.from(typeof corpo.letras === 'string' ? corpo.letras : LETRAS_PADRAO).filter((l) => l.trim()))].slice(0, 60);
-    if (letras.length < RODADAS_STOP) return 'Faltam letras para sortear.';
+    const rodadas = RODADAS_POSSIVEIS.includes(Number(corpo.rodadas)) ? Number(corpo.rodadas) : RODADAS_STOP;
+    const escrevendoMs = TEMPOS_POSSIVEIS.includes(Number(corpo.tempoMs)) ? Number(corpo.tempoMs) : ESCREVENDO_MS;
+    // As letras excluídas por quem começa (o "sem K, W, Y" de cada mesa): comparadas sem acento e sem maiúscula.
+    const excluidas = new Set(Array.from(typeof corpo.excluir === 'string' ? corpo.excluir.slice(0, 120) : '').map(normalizar).filter(Boolean));
+    const letras = [...new Set(Array.from(typeof corpo.letras === 'string' ? corpo.letras : LETRAS_PADRAO).filter((l) => l.trim()))]
+      .slice(0, 60)
+      .filter((l) => !excluidas.has(normalizar(l)));
+    if (letras.length < rodadas) return 'Faltam letras para sortear.';
     const confere = corpo.confere !== false;
-    const categorias = embaralhar([...CATEGORIAS]).slice(0, CATEGORIAS_POR_PARTIDA);
+    const escolhidas = categoriasDaPartida(corpo);
+    if (typeof escolhidas === 'string') return escolhidas;
+    const categorias: string[] = escolhidas;
     const sorteio = embaralhar([...letras]);
+    /** O que vale para "Jogar de novo": as mesmas escolhas (as letras e o confere vêm do site de quem clica). */
+    const largada = {
+      rodadas,
+      tempoMs: escrevendoMs,
+      excluir: [...excluidas].join(''),
+      ...(Array.isArray(corpo.categorias) ? { categorias: categorias.filter((c) => !c.startsWith('#')) } : {}),
+      livres: categorias.filter((c) => c.startsWith('#')).map((c) => c.slice(1)),
+    };
 
     let rodada = 1;
     let fase: Fase = 'escrevendo';
@@ -91,7 +156,7 @@ export const stop: Definicao = {
       prontos.clear();
       quemParou = null;
       fase = 'escrevendo';
-      ctx.agendar(ESCREVENDO_MS, parar);
+      ctx.agendar(escrevendoMs, parar);
       ctx.avisar();
     }
 
@@ -118,7 +183,7 @@ export const stop: Definicao = {
       for (const [userId, lista] of pontosDaRodada) pontos.set(userId, (pontos.get(userId) ?? 0) + lista.reduce((a, b) => a + b, 0));
       fase = 'resultado';
       ctx.agendar(RESULTADO_MS, () => {
-        if (rodada >= RODADAS_STOP) {
+        if (rodada >= rodadas) {
           fase = 'fim';
           return ctx.terminar();
         }
@@ -134,7 +199,9 @@ export const stop: Definicao = {
         const aberto = fase === 'conferindo' || fase === 'resultado' || fase === 'fim';
         return {
           rodada,
-          rodadas: RODADAS_STOP,
+          rodadas,
+          tempoMs: escrevendoMs,
+          largada,
           fase,
           letra,
           categorias,

@@ -61,3 +61,28 @@ test('o miolo (horta, praça e toca) cabe dentro da volta, sem encostar nas casa
     assert.ok(dist(c, TOCA) > TOCA.raio + RAIO_DA_CASA + 0.3);
   }
 });
+
+test('os ramais (19/11/2026): os mesmos do servidor, por fora da volta, sem encostar em nada', async () => {
+  const { RAMAIS, VOLTA } = await import('../../server/src/minijogo-tabuleiro-da-turma');
+  const { RAMAIS_DA_VOLTA, CASAS_DOS_RAMAIS, TODAS_AS_CASAS_3D, chaoDaBarraca } = await import('../src/tabuleiro3d/volta');
+  assert.deepEqual(RAMAIS_DA_VOLTA, RAMAIS.map((r) => ({ de: r.de, ate: r.ate, tamanho: r.casas.length })));
+  assert.equal(TODAS_AS_CASAS_3D.length, VOLTA + CASAS_DOS_RAMAIS.length);
+  // nenhuma casa encosta em outra (a volta e os ramais juntos)
+  for (let i = 0; i < TODAS_AS_CASAS_3D.length; i++)
+    for (let j = i + 1; j < TODAS_AS_CASAS_3D.length; j++)
+      assert.ok(dist(TODAS_AS_CASAS_3D[i], TODAS_AS_CASAS_3D[j]) > RAIO_DA_CASA * 2.2, `casas ${i} e ${j} encostadas`);
+  for (const c of CASAS_DOS_RAMAIS) {
+    // dentro da rua do anel
+    const qx = Math.abs(c.x) - (ANEL.rx - ANEL.canto);
+    const qz = Math.abs(c.z) - (ANEL.rz - ANEL.canto);
+    const doAnel = ANEL.canto - Math.hypot(Math.max(qx, 0), Math.max(qz, 0)) - Math.min(Math.max(qx, qz), 0);
+    assert.ok(doAnel > ANEL.largura / 2 + RAIO_DA_CASA, `casa do ramal em ${c.x},${c.z} em cima da rua`);
+    for (const l of lotesDaCidade()) assert.ok(dist(l, c) > 1.6, 'prédio em cima do ramal');
+  }
+  // a barraca da dourada não fica em cima de casa nenhuma, nem do miolo
+  for (let i = 1; i < VOLTA; i++) {
+    const b = chaoDaBarraca(i, 0.66);
+    for (const c of TODAS_AS_CASAS_3D) assert.ok(dist(b, c) > RAIO_DA_CASA + 0.12, `a barraca da casa ${i} em cima de outra`);
+    assert.ok(dist(b, TOCA) > TOCA.raio + 0.2 && dist(b, PRACA) > PRACA.raio + 0.1);
+  }
+});

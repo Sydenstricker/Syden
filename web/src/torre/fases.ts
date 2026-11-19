@@ -53,7 +53,7 @@ export interface Corvo {
   desloc: number;
 }
 
-export type Tema = 'celeiro' | 'paiol' | 'silo';
+export type Tema = 'celeiro' | 'paiol' | 'silo' | 'moinho' | 'pombal';
 
 export interface Torre {
   id: string;
@@ -82,7 +82,7 @@ export function blocoEm(f: Torre, c: number, l: number): Bloco {
 
 /** O vaivém de 0 a 1 e de volta, suave nas pontas (sem cosseno: o mesmo número em qualquer computador). */
 export function vaivem(n: number, periodo: number, desloc: number): number {
-  const u = (((n + desloc) % periodo) + periodo) % periodo / periodo;
+  const u = ((((n + desloc) % periodo) + periodo) % periodo) / periodo;
   const t = u < 0.5 ? 2 * u : 2 - 2 * u;
   return t * t * (3 - 2 * t);
 }
@@ -119,12 +119,16 @@ export function tempoDeQueda(q: Queda): number {
 }
 
 export function corvoEm(k: Corvo, n: number): { x: number; y: number; lado: number } {
-  const u = (((n + k.desloc) % k.periodo) + k.periodo) % k.periodo / k.periodo;
+  const u = ((((n + k.desloc) % k.periodo) + k.periodo) % k.periodo) / k.periodo;
   const t = u < 0.5 ? 2 * u : 2 - 2 * u;
   // um tico de onda no voo: sobe e desce 3 px, em triângulo
   const v = ((n + k.desloc) % 40) / 40;
   const onda = (v < 0.5 ? v * 4 - 1 : 3 - v * 4) * 3;
-  return { x: k.x0 + (k.x1 - k.x0) * t, y: k.y + onda, lado: u < 0.5 ? (k.x1 > k.x0 ? 1 : -1) : k.x1 > k.x0 ? -1 : 1 };
+  return {
+    x: k.x0 + (k.x1 - k.x0) * t,
+    y: k.y + onda,
+    lado: u < 0.5 ? (k.x1 > k.x0 ? 1 : -1) : k.x1 > k.x0 ? -1 : 1,
+  };
 }
 
 // =====================================================================================================================
@@ -137,7 +141,18 @@ function montador(id: string, tema: Tema) {
   const ops: Op[] = [];
   const pendentes: ((linhas: number) => void)[] = [];
   let topo = 0;
-  const f: Torre = { id, tema, linhas: 0, blocos: new Uint8Array(0), largada: { x: 0, y: 0 }, chegada: 0, postos: [], moveis: [], quedas: [], corvos: [] };
+  const f: Torre = {
+    id,
+    tema,
+    linhas: 0,
+    blocos: new Uint8Array(0),
+    largada: { x: 0, y: 0 },
+    chegada: 0,
+    postos: [],
+    moveis: [],
+    quedas: [],
+    corvos: [],
+  };
   /** O y (de cima para baixo) do topo da casa na linha b (a partir de baixo): onde fica o pé de quem pisa nela. */
   const yDe = (b: number, linhas: number) => (linhas - 1 - b) * T;
   const marcar = (b: number) => {
@@ -146,8 +161,7 @@ function montador(id: string, tema: Tema) {
   const por = (c0: number, c1: number, b0: number, b1: number, bloco: Bloco) => {
     marcar(b1 - 1);
     ops.push((blocos, linhas) => {
-      for (let c = Math.max(0, c0); c < Math.min(COLUNAS, c1); c++)
-        for (let b = b0; b < b1; b++) blocos[(linhas - 1 - b) * COLUNAS + c] = bloco;
+      for (let c = Math.max(0, c0); c < Math.min(COLUNAS, c1); c++) for (let b = b0; b < b1; b++) blocos[(linhas - 1 - b) * COLUNAS + c] = bloco;
     });
   };
   const m = {
@@ -186,16 +200,42 @@ function montador(id: string, tema: Tema) {
     movel(tipo: Movel['tipo'], c0: number, b0: number, c1: number, b1: number, w: number, periodo: number, desloc = 0) {
       marcar(Math.max(b0, b1));
       pendentes.push((linhas) =>
-        f.moveis.push({ tipo, x0: c0 * T, y0: yDe(b0, linhas), x1: c1 * T, y1: yDe(b1, linhas), w: w * T, periodo, desloc }),
+        f.moveis.push({
+          tipo,
+          x0: c0 * T,
+          y0: yDe(b0, linhas),
+          x1: c1 * T,
+          y1: yDe(b1, linhas),
+          w: w * T,
+          periodo,
+          desloc,
+        }),
       );
     },
     /** O que cai: na coluna c, do alto da linha b0 até pousar na casa da linha b1 (a de baixo). */
     queda(tipo: Ferramenta, c: number, b0: number, b1: number, periodo: number, desloc = 0) {
-      pendentes.push((linhas) => f.quedas.push({ tipo, x: c * T + T / 2, y0: yDe(b0, linhas) + 6, y1: yDe(b1, linhas) - 6, periodo, desloc }));
+      pendentes.push((linhas) =>
+        f.quedas.push({
+          tipo,
+          x: c * T + T / 2,
+          y0: yDe(b0, linhas) + 6,
+          y1: yDe(b1, linhas) - 6,
+          periodo,
+          desloc,
+        }),
+      );
     },
     /** O corvo: na linha b (meia casa acima dela), da coluna c0 à c1 e de volta. */
     corvo(b: number, c0: number, c1: number, periodo: number, desloc = 0) {
-      pendentes.push((linhas) => f.corvos.push({ y: yDe(b, linhas) - 12, x0: c0 * T + T / 2, x1: c1 * T + T / 2, periodo, desloc }));
+      pendentes.push((linhas) =>
+        f.corvos.push({
+          y: yDe(b, linhas) - 12,
+          x0: c0 * T + T / 2,
+          x1: c1 * T + T / 2,
+          periodo,
+          desloc,
+        }),
+      );
     },
     pronto(): Torre {
       // o telhado: 6 linhas acima do topo, para o cata-vento e o céu da janela
@@ -255,7 +295,14 @@ function celeiro(): Torre {
   m.chao(3);
   let b = escada(m, 0, [6, 11, 14, 10, 6, 2]);
   m.andar(b, 4);
-  b = fenos(m, b, [[12, 3], [15, 3], [11, 3], [7, 3], [3, 3], [0, 2]]);
+  b = fenos(m, b, [
+    [12, 3],
+    [15, 3],
+    [11, 3],
+    [7, 3],
+    [3, 3],
+    [0, 2],
+  ]);
   m.andar(b, 2);
   let e0 = b;
   b = escada(m, b, [4, 9, 13, 9, 5, 1, 5]);
@@ -273,7 +320,15 @@ function celeiro(): Torre {
   m.andar(b, 14);
   b = prateleiras(m, b, [200, 240, 220, 260]);
   m.andar(b, 8);
-  b = fenos(m, b, [[2, 3], [6, 3], [10, 3], [14, 3], [15, 3], [11, 3], [7, 3]]);
+  b = fenos(m, b, [
+    [2, 3],
+    [6, 3],
+    [10, 3],
+    [14, 3],
+    [15, 3],
+    [11, 3],
+    [7, 3],
+  ]);
   m.andar(b, 8);
   e0 = b;
   b = escada(m, b, [12, 8, 4, 0, 4, 8]);
@@ -308,7 +363,15 @@ function paiol(): Torre {
   b = prateleiras(m, b, [220, 180, 260, 200, 240]);
   m.andar(b, 9);
   let c0 = b;
-  b = fenos(m, b, [[13, 3], [9, 3], [5, 3], [1, 3], [0, 3], [4, 3], [8, 3]]);
+  b = fenos(m, b, [
+    [13, 3],
+    [9, 3],
+    [5, 3],
+    [1, 3],
+    [0, 3],
+    [4, 3],
+    [8, 3],
+  ]);
   m.corvo(c0 + 4, 17, 0, 280, 40);
   m.corvo(c0 + 10, 0, 17, 240, 160);
   m.andar(b, 10);
@@ -335,7 +398,13 @@ function paiol(): Torre {
 function silo(): Torre {
   const m = montador('silo-1', 'silo');
   m.chao(8);
-  let b = fenos(m, 0, [[11, 3], [14, 3], [10, 3], [6, 3], [2, 3]]);
+  let b = fenos(m, 0, [
+    [11, 3],
+    [14, 3],
+    [10, 3],
+    [6, 3],
+    [2, 3],
+  ]);
   m.andar(b, 3);
   b = elevadores(m, b, 'esquerda', 260);
   m.andar(b, 12);
@@ -357,7 +426,15 @@ function silo(): Torre {
   m.corvo(c0 + 3, 17, 0, 250, 60);
   m.corvo(c0 + 9, 0, 17, 270, 190);
   m.andar(b, 4);
-  b = fenos(m, b, [[1, 3], [5, 3], [9, 3], [13, 3], [15, 3], [11, 3], [7, 3]]);
+  b = fenos(m, b, [
+    [1, 3],
+    [5, 3],
+    [9, 3],
+    [13, 3],
+    [15, 3],
+    [11, 3],
+    [7, 3],
+  ]);
   m.andar(b, 2);
   p0 = b;
   b = prateleiras(m, b, [190, 230, 210, 250]);
@@ -378,5 +455,115 @@ function silo(): Torre {
   return m.pronto();
 }
 
-export const TORRES: Torre[] = [celeiro(), paiol(), silo()];
+/** O MOINHO (19/11/2026, de manhã cedo): as prateleiras que andam e as vigas, com pouca coisa caindo. Para correr e pular longe. */
+function moinho(): Torre {
+  const m = montador('moinho-1', 'moinho');
+  m.chao(9);
+  let b = prateleiras(m, 0, [200, 230, 210]);
+  m.andar(b, 2);
+  b = elevadores(m, b, 'esquerda', 260);
+  m.andar(b, 12);
+  let p0 = b;
+  b = prateleiras(m, b, [190, 240, 200, 250]);
+  m.corvo(p0 + 5, 0, 17, 300, 40);
+  m.andar(b, 15);
+  let e0 = b;
+  b = escada(m, b, [12, 8, 4, 0, 4, 8]);
+  m.queda('saco', 10, b, e0 + 4, 180, 0);
+  m.queda('pa', 6, b, e0 + 6, 200, 90);
+  m.andar(b, 10);
+  b = elevadores(m, b, 'direita', 240);
+  m.andar(b, 6);
+  b = fenos(m, b, [
+    [2, 3],
+    [6, 3],
+    [10, 3],
+    [14, 3],
+    [15, 3],
+  ]);
+  m.andar(b, 14);
+  p0 = b;
+  b = prateleiras(m, b, [220, 180, 240]);
+  m.corvo(p0 + 3, 17, 0, 260, 120);
+  m.andar(b, 4);
+  e0 = b;
+  b = escada(m, b, [3, 7, 11, 15, 11, 7, 3]);
+  m.queda('regador', 9, b, e0 + 4, 170, 50);
+  m.queda('ancinho', 5, b, e0 + 8, 190, 0);
+  m.andar(b, 2);
+  b = elevadores(m, b, 'esquerda', 280);
+  m.andar(b, 12);
+  b = escada(m, b, [12, 8, 4, 8]);
+  m.topo(b);
+  return m.pronto();
+}
+
+/** O POMBAL (19/11/2026, ao entardecer): corvos por toda parte e ferramentas sobre a escada. Para esperar a hora certa. */
+function pombal(): Torre {
+  const m = montador('pombal-1', 'pombal');
+  m.chao(4);
+  let b = escada(m, 0, [7, 11, 14, 10, 6, 2]);
+  let c0 = 0;
+  m.corvo(c0 + 5, 17, 0, 240, 0);
+  m.andar(b, 2);
+  c0 = b;
+  b = fenos(m, b, [
+    [2, 3],
+    [6, 3],
+    [10, 3],
+    [14, 3],
+    [15, 3],
+    [11, 3],
+    [7, 3],
+  ]);
+  m.andar(b, 9);
+  b = elevadores(m, b, 'direita', 280);
+  m.andar(b, 5);
+  let e0 = b;
+  b = escada(m, b, [2, 6, 10, 14, 10, 6, 2]);
+  m.queda('regador', 4, b, e0 + 2, 170, 0);
+  m.queda('saco', 8, b, e0 + 4, 190, 70);
+  m.queda('ancinho', 12, b, e0 + 6, 160, 30);
+  m.queda('pa', 15, b, e0 + 8, 200, 110);
+  m.andar(b, 3);
+  c0 = b;
+  b = escada(m, b, [6, 10, 14, 10, 6]);
+  m.corvo(c0 + 3, 0, 17, 220, 30);
+  m.corvo(c0 + 7, 17, 0, 260, 150);
+  m.andar(b, 8);
+  b = elevadores(m, b, 'esquerda', 300);
+  m.andar(b, 12);
+  e0 = b;
+  b = escada(m, b, [13, 9, 5, 1, 5, 9, 13]);
+  m.queda('saco', 15, b, e0 + 2, 180, 40);
+  m.queda('pa', 11, b, e0 + 4, 170, 0);
+  m.corvo(e0 + 9, 0, 17, 250, 90);
+  m.andar(b, 14);
+  b = escada(m, b, [10, 6, 2, 6]);
+  m.topo(b);
+  return m.pronto();
+}
+
+export const TORRES: Torre[] = [celeiro(), paiol(), silo(), moinho(), pombal()];
+
+/**
+ * AS MEDALHAS DE CADA TORRE (19/11/2026), sobre o tempo do PILOTO AUTOMÁTICO (em passos: web/test/torre.test.ts confere que é
+ * o dele). Ouro: até o tempo dele; prata: até 25% a mais; bronze: até 60% a mais. Só desenho e conversa: o recorde continua o
+ * tempo, e o servidor não guarda medalha.
+ */
+export const TEMPO_DO_PILOTO: Record<string, number> = {
+  'celeiro-1': 2632,
+  'paiol-1': 2297,
+  'silo-1': 2645,
+  'moinho-1': 2352,
+  'pombal-1': 2177,
+};
+export const MEDALHAS_DA_TORRE = [1, 1.25, 1.6] as const;
+/** 0 ouro, 1 prata, 2 bronze, ou null. */
+export function medalhaDaTorre(id: string, passos: number): 0 | 1 | 2 | null {
+  const base = TEMPO_DO_PILOTO[id];
+  if (!base) return null;
+  const i = MEDALHAS_DA_TORRE.findIndex((m) => passos <= Math.round(base * m));
+  return i < 0 ? null : (i as 0 | 1 | 2);
+}
 export const torrePorId = (id: string) => TORRES.find((f) => f.id === id) ?? TORRES[0];

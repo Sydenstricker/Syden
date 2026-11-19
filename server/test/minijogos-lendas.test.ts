@@ -4,7 +4,7 @@
  */
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { criarLendas, ROTA, type Heroi } from '../src/lendas-regras.js';
+import { atributos, criarLendas, HABILIDADES, INIMIGOS, nomeDoCombo, PASSOS_DA_ROTA, rotaDaSemente, TRACOS, type Heroi, type Inimigo } from '../src/lendas-regras.js';
 import type { Contexto, Jogo } from '../src/minijogo-motor.js';
 
 /** Um sorteio repetível (mulberry32). */
@@ -19,12 +19,13 @@ function semente(s: number) {
 }
 
 interface Montagem {
-  jogo: Jogo & { _herois: Map<number, Heroi> };
+  jogo: Jogo & { _herois: Map<number, Heroi>; _inimigos: () => Inimigo[]; _caminho: { passos: string[][]; evento: string }; _escolhidas: (string | null)[] };
   ver: (quem?: number) => Record<string, any>;
   tique: () => void;
   terminou: () => boolean;
   sala: number[];
   trofeus: { userId: number; posicao: number; pontos: number | null; rivais: number[]; pista: string }[];
+  recordes: { userId: number; rodadas: number; tempoMs: number }[];
 }
 
 function montar(naSala: number[], { solo = false, s = 1 } = {}): Montagem {
@@ -32,6 +33,7 @@ function montar(naSala: number[], { solo = false, s = 1 } = {}): Montagem {
   let relogio: (() => void) | null = null;
   const sala = [...naSala];
   const trofeus: Montagem['trofeus'] = [];
+  const recordes: Montagem['recordes'] = [];
   const ctx: Contexto = {
     agendar: (_ms, depois) => (relogio = depois),
     avisar: () => {},
@@ -42,7 +44,12 @@ function montar(naSala: number[], { solo = false, s = 1 } = {}): Montagem {
     solo,
   };
   let t = 1_000;
-  const def = criarLendas({ agora: () => t++, aleatorio: semente(s), servicos: { avatarDe: () => null, guardarTrofeu: (x) => trofeus.push(x) } });
+  const def = criarLendas({ agora: () => t++, aleatorio: semente(s), servicos: {
+      avatarDe: () => null,
+      guardarTrofeu: (x) => trofeus.push(x),
+      guardarRecorde: (userId, rodadas, extra) => (recordes.push({ userId, rodadas, ...extra }), { antes: null, novo: true }),
+    },
+  });
   const jogo = def.comecar(ctx, { naSala, criadaPor: naSala[0], corpo: {} });
   assert.equal(typeof jogo, 'object');
   return {
@@ -56,6 +63,7 @@ function montar(naSala: number[], { solo = false, s = 1 } = {}): Montagem {
     terminou: () => terminou,
     sala,
     trofeus,
+    recordes,
   };
 }
 
@@ -96,7 +104,7 @@ test('os robôs fecham a aventura quase sempre, e o caminho passa por todas as p
     assert.equal(v.fase, 'fim');
     if (v.venceu) {
       vitorias++;
-      assert.equal(paradas.size, ROTA.length, 'passou pelas cinco paradas');
+      assert.equal(paradas.size, PASSOS_DA_ROTA, 'passou pelos cinco passos');
     }
   }
   // o equilíbrio: a turma de robôs vence a maioria (quem joga de verdade, com combo e sem perder vez, vence mais)
@@ -172,8 +180,15 @@ test('o espólio: cada um decide se veste; o robô veste o que é melhor', () =>
   assert.ok(v.meuEspolio.item, 'tenho uma peça');
   const { peca, valor } = v.meuEspolio.item;
   assert.equal(m.jogo.acao(1, { tipo: 'espolio', equipar: true }), null);
+  assert.equal(m.ver().fase, 'espolio', 'falta a melhoria');
+  assert.equal(v.meuEspolio.melhorias.length, 2);
+  assert.equal(m.jogo.acao(1, { tipo: 'melhoria', escolha: 2 }), 'Agora não dá.');
+  assert.equal(m.jogo.acao(1, { tipo: 'melhoria', escolha: 1 }), null);
   const depois = m.ver();
-  assert.equal(depois.fase, 'mapa', 'todos decidiram: segue');
+  assert.equal(depois.fase, 'rumo', 'todos decidiram: o próximo passo é uma bifurcação');
+  assert.equal(depois.herois[0].nivel, 1);
+  assert.deepEqual(depois.herois[0].melhorias, [v.meuEspolio.melhorias[1]]);
+  assert.equal(depois.herois[0].habilidades.length, 2, 'o nível 1 libera a segunda habilidade');
   assert.equal(depois.herois[0].equip[peca], valor);
   assert.equal(depois.parada, 1);
 });
@@ -198,5 +213,216 @@ test('o troféu: só com o dragão vencido, só quem é gente, e com 2 ou mais a
     const m = montar([1], { solo: true, s });
     correr(m);
     assert.equal(m.trofeus.length, 0);
+  }
+});
+
+// ---------------- 19/11/2026: as habilidades, os traços, o nível, o caminho, os combos com nome e o recorde ----------------
+
+/** Anda até a primeira luta (cada pessoa com a classe pedida). */
+function ateALuta(m: Montagem, classes: Record<number, string>) {
+  for (const [id, c] of Object.entries(classes)) m.jogo.acao(Number(id), { tipo: 'classe', classe: c });
+  for (let k = 0; k < 10 && m.ver().fase !== 'escolha'; k++) m.tique();
+  assert.equal(m.ver().fase, 'escolha');
+}
+
+test('as habilidades: três por classe, a segunda e a terceira só com o nível; a do alvo pede o alvo', () => {
+  for (const c of ['escudo', 'faisca', 'erva', 'flecha'] as const) {
+    assert.equal(HABILIDADES[c].length, 3);
+    assert.deepEqual(HABILIDADES[c].map((h) => h.nivel), [0, 1, 2]);
+  }
+  const m = montar([1], { s: 21 });
+  ateALuta(m, { 1: 'faisca' });
+  assert.equal(m.ver().herois[0].habilidades.length, 1, 'no começo, só a primeira');
+  assert.equal(m.jogo.acao(1, { tipo: 'acao', acao: 'habilidade', hab: 1, alvo: 0 }), 'Agora não dá.', 'o raio ainda não');
+  m.jogo._herois.get(1)!.nivel = 2;
+  assert.equal(m.jogo.acao(1, { tipo: 'acao', acao: 'habilidade', hab: 1 }), 'Agora não dá.', 'o raio pede o alvo');
+  assert.equal(m.jogo.acao(1, { tipo: 'acao', acao: 'habilidade', hab: 1, alvo: 0 }), null);
+  const v = m.ver();
+  assert.equal(v.fase, 'acao');
+  const raio = v.eventos.find((e: { hab?: string }) => e.hab === 'raio');
+  assert.ok(raio && raio.alvos[0].dano > 25, 'o raio bateu forte');
+});
+
+test('o Escudo provoca: todos os golpes vão nele', () => {
+  const m = montar([1, 2, 3, 4], { s: 4 });
+  ateALuta(m, { 1: 'escudo', 2: 'faisca', 3: 'erva', 4: 'flecha' });
+  m.jogo._herois.get(1)!.nivel = 2;
+  // os inimigos sem traço que mude o golpe
+  for (const i of m.jogo._inimigos()) i.traco = 'furia';
+  assert.equal(m.jogo.acao(1, { tipo: 'acao', acao: 'habilidade', hab: 1 }), null);
+  for (const id of [2, 3, 4]) m.jogo.acao(id, { tipo: 'acao', acao: 'defender' });
+  const v = m.ver();
+  const golpes = v.eventos.filter((e: { tipo: string }) => e.tipo === 'inimigo');
+  assert.ok(golpes.length > 0);
+  assert.ok(golpes.every((e: { alvos: { quem: { h: number } }[] }) => e.alvos[0].quem.h === 1), 'todo golpe no Escudo');
+  assert.ok(v.eventos.some((e: { hab?: string }) => e.hab === 'provocar'));
+});
+
+test('os traços: cada inimigo tem um, que vai à tela; o cacto devolve, o golem resiste, a abelha age duas vezes', () => {
+  for (const [tipo, d] of Object.entries(INIMIGOS)) assert.ok(TRACOS.includes(d.traco), `${tipo} sem traço`);
+  const m = montar([1], { s: 9 });
+  ateALuta(m, { 1: 'escudo' });
+  assert.ok(m.ver().inimigos.every((i: { traco: string }) => (TRACOS as readonly string[]).includes(i.traco)));
+  const [a, b, c] = m.jogo._inimigos();
+  Object.assign(a, { traco: 'espinhos', hp: 500, hpMax: 500, atk: 1, vel: 0, chefe: false });
+  Object.assign(b, { traco: 'pedra', hp: 500, hpMax: 500, atk: 1, vel: 0, chefe: false });
+  Object.assign(c, { traco: 'ligeiro', hp: 500, hpMax: 500, atk: 1, vel: 1, chefe: false });
+  // os robôs só defendem, para a conta ficar só minha
+  for (const id of [-1, -2, -3]) m.jogo._herois.get(id)!.escolha = { acao: 'defender', alvo: null };
+  m.jogo.acao(1, { tipo: 'acao', acao: 'atacar', alvo: 0 });
+  let v = m.ver();
+  const volta = v.eventos.find((e: { tipo: string }) => e.tipo === 'espinhos');
+  assert.ok(volta && volta.alvos[0].quem.h === 1 && volta.alvos[0].dano > 0, 'o cacto devolveu');
+  assert.equal(v.eventos.filter((e: { tipo: string; de: { i?: number } }) => e.tipo === 'inimigo' && e.de.i === 2).length, 2, 'a abelha agiu duas vezes');
+  // o golem: o golpe físico quase não entra
+  m.tique();
+  for (const id of [-1, -2, -3]) m.jogo._herois.get(id)!.escolha = { acao: 'defender', alvo: null };
+  m.jogo.acao(1, { tipo: 'acao', acao: 'atacar', alvo: 1 });
+  v = m.ver();
+  const golpe = v.eventos.find((e: { tipo: string; de: { h?: number } }) => e.tipo === 'ataque' && e.de.h === 1);
+  assert.equal(golpe.alvos[0].resistiu, true);
+  assert.ok(golpe.alvos[0].dano <= 5, `o golem quase não sentiu: ${golpe.alvos[0].dano}`);
+});
+
+test('o veneno da Erva tira vida no fim da rodada, e conta para quem envenenou', () => {
+  const m = montar([1], { s: 12 });
+  ateALuta(m, { 1: 'erva' });
+  const h = m.jogo._herois.get(1)!;
+  h.nivel = 1;
+  Object.assign(m.jogo._inimigos()[0], { traco: 'furia', hp: 400, hpMax: 400 });
+  m.jogo.acao(1, { tipo: 'acao', acao: 'habilidade', hab: 1, alvo: 0 });
+  const v = m.ver();
+  const tique = v.eventos.find((e: { tipo: string }) => e.tipo === 'veneno');
+  assert.ok(tique, 'houve o veneno no fim da rodada');
+  assert.ok(tique.alvos.some((a: { quem: { i?: number }; dano: number }) => a.quem.i === 0 && a.dano === Math.round(atributos(h).mag * 0.8)));
+  assert.equal(v.inimigos[0].envenenado, true);
+});
+
+test('o caminho: a semente decide, a bifurcação tem duas opções, a turma vota', () => {
+  assert.deepEqual(rotaDaSemente(42), rotaDaSemente(42));
+  const r = rotaDaSemente(42);
+  assert.deepEqual(r.passos.map((p) => p.length), [1, 2, 2, 2, 1]);
+  assert.deepEqual(r.passos[4], ['castelo']);
+  const vistas = new Set<string>();
+  for (let s = 1; s < 40; s++) vistas.add(rotaDaSemente(s).passos.flat().join(','));
+  assert.ok(vistas.size > 5, 'os caminhos mudam de partida para partida');
+
+  const m = montar([1, 2], { s: 14 });
+  ateALuta(m, { 1: 'escudo', 2: 'erva' });
+  for (let k = 0; k < 400 && m.ver().fase !== 'espolio'; k++) m.tique();
+  for (const id of [1, 2]) {
+    m.jogo.acao(id, { tipo: 'espolio', equipar: false });
+    m.jogo.acao(id, { tipo: 'melhoria', escolha: 0 });
+  }
+  let v = m.ver();
+  assert.equal(v.fase, 'rumo');
+  assert.equal(v.rumo.opcoes.length, 2);
+  assert.equal(m.jogo.acao(1, { tipo: 'rumo', lado: 3 }), 'Agora não dá.');
+  m.jogo.acao(1, { tipo: 'rumo', lado: 1 });
+  assert.equal(m.ver().fase, 'rumo', 'falta a outra pessoa');
+  assert.deepEqual(m.ver(2).rumo.votos, { 1: 1 }, 'o voto é aberto');
+  m.jogo.acao(2, { tipo: 'rumo', lado: 1 });
+  v = m.ver();
+  assert.equal(v.fase, 'mapa');
+  assert.equal(v.rota[1].escolhida, v.rota[1].opcoes[1].id, 'a maioria decidiu');
+});
+
+test('o caminho: empate no voto, o servidor sorteia (e as duas opções saem)', () => {
+  const lados = new Set<string>();
+  for (let s = 1; s < 30; s++) {
+    const m = montar([1, 2], { s });
+    ateALuta(m, { 1: 'escudo', 2: 'erva' });
+    for (let k = 0; k < 400 && m.ver().fase !== 'espolio' && !m.terminou(); k++) m.tique();
+    if (m.terminou()) continue;
+    for (const id of [1, 2]) {
+      m.jogo.acao(id, { tipo: 'espolio', equipar: false });
+      m.jogo.acao(id, { tipo: 'melhoria', escolha: 0 });
+    }
+    m.jogo.acao(1, { tipo: 'rumo', lado: 0 });
+    m.jogo.acao(2, { tipo: 'rumo', lado: 1 });
+    const v = m.ver();
+    lados.add(v.rota[1].escolhida === v.rota[1].opcoes[0].id ? 'a' : 'b');
+  }
+  assert.equal(lados.size, 2);
+});
+
+test('a loja: cada um leva uma das três peças (ou nada), e o robô leva a que mais melhora', () => {
+  for (let s = 1; s < 200; s++) {
+    const m = montar([1], { s, solo: true });
+    if (!m.jogo._caminho.passos[2].includes('loja')) continue;
+    m.jogo._escolhidas[1] = m.jogo._caminho.passos[1][0];
+    m.jogo._escolhidas[2] = 'loja';
+    m.jogo.acao(1, { tipo: 'classe', classe: 'flecha' });
+    for (let k = 0; k < 3000 && m.ver().fase !== 'loja' && !m.terminou(); k++) m.tique();
+    if (m.terminou()) continue;
+    const v = m.ver();
+    assert.deepEqual(v.minhaLoja.itens.map((x: { peca: string }) => x.peca), ['arma', 'armadura', 'amuleto']);
+    assert.equal(m.jogo.acao(1, { tipo: 'loja', item: 5 }), 'Agora não dá.');
+    const arma = v.minhaLoja.itens[0].valor;
+    assert.equal(m.jogo.acao(1, { tipo: 'loja', item: 0 }), null);
+    const depois = m.ver();
+    assert.notEqual(depois.fase, 'loja', 'todos decidiram: segue');
+    assert.equal(depois.herois[0].equip.arma, arma);
+    return;
+  }
+  assert.fail('nenhuma semente com loja');
+});
+
+test('o evento: cada partida sorteia um, e ele age na turma', () => {
+  for (let s = 1; s < 200; s++) {
+    const m = montar([1], { s, solo: true });
+    if (!m.jogo._caminho.passos[2].includes('evento')) continue;
+    m.jogo._escolhidas[1] = m.jogo._caminho.passos[1][0];
+    m.jogo._escolhidas[2] = 'evento';
+    m.jogo.acao(1, { tipo: 'classe', classe: 'erva' });
+    for (let k = 0; k < 3000 && m.ver().fase !== 'evento' && !m.terminou(); k++) m.tique();
+    if (m.terminou()) continue;
+    const v = m.ver();
+    assert.ok(['fonte', 'bau', 'treino'].includes(v.evento));
+    if (v.evento === 'fonte') assert.ok(v.herois.every((h: { hp: number; hpMax: number }) => h.hp === h.hpMax));
+    return;
+  }
+  assert.fail('nenhuma semente com evento');
+});
+
+test('os combos com nome: três classes diferentes ou as quatro', () => {
+  assert.equal(nomeDoCombo(['escudo', 'faisca']), null);
+  assert.equal(nomeDoCombo(['faisca', 'escudo', 'erva']), 'luz');
+  assert.equal(nomeDoCombo(['flecha', 'escudo', 'faisca']), 'tempestade');
+  assert.equal(nomeDoCombo(['flecha', 'erva', 'escudo']), 'raiz');
+  assert.equal(nomeDoCombo(['flecha', 'erva', 'faisca']), 'polen');
+  assert.equal(nomeDoCombo(['flecha', 'erva', 'faisca', 'escudo']), 'coracao');
+  assert.equal(nomeDoCombo(['faisca', 'faisca', 'erva']), null, 'duas Faíscas e uma Erva não têm nome');
+
+  const m = montar([1, 2, 3], { s: 31 });
+  ateALuta(m, { 1: 'escudo', 2: 'faisca', 3: 'flecha' });
+  for (const i of m.jogo._inimigos()) Object.assign(i, { traco: 'furia', hp: 900, hpMax: 900 });
+  for (const id of [1, 2, 3]) m.jogo.acao(id, { tipo: 'acao', acao: 'combo', alvo: 0 });
+  const v = m.ver();
+  const combo = v.eventos.find((e: { tipo: string }) => e.tipo === 'combo');
+  assert.ok(combo.membros.length >= 3);
+  assert.equal(combo.nome, combo.membros.length === 4 ? 'coracao' : 'tempestade');
+});
+
+test('o recorde do Solo: as rodadas contadas pelo servidor, só com o dragão vencido e só no Solo', () => {
+  let achou = false;
+  for (let s = 1; s < 40 && !achou; s++) {
+    const m = montar([1], { solo: true, s });
+    correr(m, 6000);
+    const v = m.ver();
+    if (!v.venceu) {
+      assert.equal(m.recordes.length, 0, 'derrota não guarda recorde');
+      continue;
+    }
+    achou = true;
+    assert.deepEqual(m.recordes.map((r) => [r.userId, r.rodadas]), [[1, v.rodadasTotais]]);
+    assert.equal(v.recorde.valor, v.rodadasTotais);
+    assert.equal(v.recorde.novo, true);
+  }
+  assert.ok(achou);
+  for (let s = 1; s < 10; s++) {
+    const m = montar([1, 2], { s });
+    correr(m, 6000);
+    assert.equal(m.recordes.length, 0, 'na sala, nada');
   }
 });

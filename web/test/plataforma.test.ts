@@ -39,7 +39,10 @@ test('o fantasma honesto passa no servidor, e as medidas das fases batem com as 
     assert.deepEqual(s.largada, [f.largada.x, f.largada.y]);
     assert.equal(s.chegada, f.chegada);
     assert.equal(s.largura, f.colunas * T);
-    assert.deepEqual(s.postos, f.postos.map((p) => [p.x, p.y]));
+    assert.deepEqual(
+      s.postos,
+      f.postos.map((p) => [p.x, p.y]),
+    );
     // os trechos rápidos são os das plataformas que andam de lado
     const deLado = f.moveis.filter((m) => m.x0 !== m.x1).map((m) => [Math.min(m.x0, m.x1), Math.max(m.x0, m.x1) + m.w]);
     assert.deepEqual(s.rapidos, deLado, `${f.id}: os trechos rápidos`);
@@ -136,12 +139,119 @@ test('a largada e os postos estão em cima de chão', () => {
 
 test('as posições de um rival: a velha some, e a corrida nova dele (o passo voltando muito) recomeça a lista', async () => {
   const { guardarPosicaoDoRival } = await import('../src/plataforma/laco');
-  const r = { nome: 'bia', posicoes: [] as { n: number; x: number; y: number; j: number; andou: number }[] };
+  const r = {
+    nome: 'bia',
+    posicoes: [] as {
+      n: number;
+      x: number;
+      y: number;
+      j: number;
+      andou: number;
+    }[],
+  };
   const p = (n: number, x: number) => ({ n, x, y: 176, j: 1, andou: 0 });
   guardarPosicaoDoRival(r, p(1, 56));
   guardarPosicaoDoRival(r, p(600, 1200));
   guardarPosicaoDoRival(r, p(596, 1190));
-  assert.deepEqual(r.posicoes.map((q) => q.n), [1, 600], 'a que chegou fora de ordem, por pouco, fica de fora');
+  assert.deepEqual(
+    r.posicoes.map((q) => q.n),
+    [1, 600],
+    'a que chegou fora de ordem, por pouco, fica de fora',
+  );
   guardarPosicaoDoRival(r, p(5, 60));
-  assert.deepEqual(r.posicoes.map((q) => q.n), [5], 'recarregou: a lista recomeça, e o coelho dela não fica congelado');
+  assert.deepEqual(
+    r.posicoes.map((q) => q.n),
+    [5],
+    'recarregou: a lista recomeça, e o coelho dela não fica congelado',
+  );
+});
+
+// ---------------- As cenouras e os bichos (19/11/2026) ----------------
+
+test('as cenouras e a dourada do servidor são as mesmas do site, e as copas também', async () => {
+  const { CENOURAS_DO_PULO } = await import('../../server/src/plataforma.ts');
+  for (const f of FASES) {
+    const s = CENOURAS_DO_PULO[f.id];
+    assert.ok(s, `${f.id}: as cenouras no servidor`);
+    assert.deepEqual(
+      s.cenouras,
+      f.cenouras.map((c) => [c.x, c.y]),
+    );
+    assert.deepEqual(s.dourada, f.dourada ? [f.dourada.x, f.dourada.y] : null);
+    assert.ok(f.cenouras.length <= 30, `${f.id}: no máximo 30 cenouras (um bit cada)`);
+    assert.ok(f.dourada, `${f.id}: tem dourada`);
+  }
+  assert.deepEqual(COPAS_DO_PULO['copa-dos-bichos'], ['corrego-1', 'mina-1', 'ninho-1']);
+});
+
+test('a corrida honesta: o servidor conta pelo menos as cenouras que o coelho pegou', async () => {
+  const { contarCenouras } = await import('../src/plataforma/fisica');
+  const { cenourasDoCaminho } = await import('../../server/src/plataforma.ts');
+  for (const f of FASES) {
+    const { k, caminho } = planos.get(f.id)!;
+    const n = contarCenouras(k);
+    assert.ok(n > 0, `${f.id}: pegou alguma cenoura`);
+    const s = cenourasDoCaminho(f.id, caminho);
+    assert.ok(s.cenouras >= n, `${f.id}: o servidor viu ${s.cenouras}, o coelho pegou ${n}`);
+    if (k.dourada) assert.ok(s.dourada, `${f.id}: o servidor viu a dourada`);
+  }
+  // um caminho que não sai da largada não pega nada
+  const parado: number[] = [];
+  for (let i = 0; i < 100; i++) parado.push(56 * 10, 176 * 10, 1);
+  assert.deepEqual(cenourasDoCaminho('prado-1', parado), {
+    cenouras: 0,
+    dourada: false,
+  });
+});
+
+test('toda dourada se alcança (o piloto acha o caminho até ela), e o servidor a reconhece pelo fantasma', async () => {
+  const { cenourasDoCaminho } = await import('../../server/src/plataforma.ts');
+  for (const f of FASES) {
+    const d = f.dourada!;
+    const plano = planejar(f, novoCoelho(f), 500, 5, 60 * 60, {
+      x: d.x,
+      y: d.y,
+      feito: (k) => k.dourada,
+    });
+    assert.ok(plano, `${f.id}: a dourada não se alcança`);
+    const k = novoCoelho(f);
+    const caminho: number[] = [];
+    for (const c of plano) {
+      passo(k, c, f);
+      amostrar(k, caminho);
+    }
+    assert.equal(k.dourada, true, `${f.id}: pegou a dourada`);
+    assert.equal(cenourasDoCaminho(f.id, caminho).dourada, true, `${f.id}: o servidor viu`);
+  }
+});
+
+test('os bichos: pisar por cima dá um pulinho e o tira da fase; encostar de lado volta ao posto', async () => {
+  const { bichoEm, BICHO_MEIA, fasePorId } = await import('../src/plataforma/fases');
+  const f = fasePorId('corrego-1');
+  const b = f.bichos[0];
+  // caindo em cima do besouro
+  const k = novoCoelho(f);
+  for (let i = 0; i < 30; i++) passo(k, { esquerda: false, direita: false, pula: false }, f);
+  const n = k.passos + 1;
+  const q = bichoEm(b, n);
+  k.x = q.x;
+  k.y = q.y - BICHO_MEIA.besouro[1] - 1;
+  k.vy = 200;
+  k.noChao = false;
+  passo(k, { esquerda: false, direita: false, pula: false }, f);
+  assert.equal(k.pisou, 0, 'pisou');
+  assert.ok(k.vy < 0, 'e subiu');
+  assert.equal(k.quedas, 0);
+  assert.ok(k.pisados & 1);
+  // de lado: volta ao posto
+  const j = novoCoelho(f);
+  for (let i = 0; i < 30; i++) passo(j, { esquerda: false, direita: false, pula: false }, f);
+  const r = bichoEm(b, j.passos + 1);
+  j.x = r.x - 4;
+  j.y = r.y + BICHO_MEIA.besouro[1];
+  j.noChao = true;
+  passo(j, { esquerda: false, direita: false, pula: false }, f);
+  assert.equal(j.quedas, 1, 'encostou de lado');
+  assert.equal(j.ferido, 'bicho');
+  assert.equal(j.x, f.postos[0].x);
 });

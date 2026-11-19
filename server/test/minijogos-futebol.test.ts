@@ -319,3 +319,30 @@ test('o Solo: o placar do fim, conferido (o tamanho e o relógio)', async () => 
   assert.equal(p.jogo.acao(anaId, fim), 'Esta rodada já acabou.');
   assert.equal((await trofeus(ana.token)).length, antes, 'o Solo não dá troféu');
 });
+
+test('o chute alto na sala (19/11/2026): a subida tem teto, vai no quadro, e a bola alta ninguém domina', () => {
+  const p = comecar([anaId, biaId]);
+  p.largar();
+  const a = p.eu(anaId);
+  a.x = 200;
+  a.y = 200;
+  a.fx = 1;
+  a.fy = 0;
+  sim.darBola(p.m, a);
+  sim.contatos(p.m);
+  p.andar(PASSO_MS);
+  assert.equal(p.chute(anaId, { x: a.x, y: a.y, vx: 7, vy: 0, vz: sim.SUBIDA_MAX + 1, s: 1 }), 'força');
+  assert.equal(p.chute(anaId, { x: a.x, y: a.y, vx: 7, vy: 0, vz: -1, s: 2 }), 'força');
+  assert.equal(p.chute(anaId, { x: a.x, y: a.y, vx: 7, vy: 0, vz: sim.SUBIDA_MAX, fx: 1, fy: 0, s: 3 }), null);
+  p.andar(PASSO_MS * 4);
+  assert.ok(p.m.bola.z > sim.ALTURA_DO_CORPO, `a bola subiu: ${p.m.bola.z}`);
+  const q = p.quadros[p.quadros.length - 1].b as number[];
+  assert.ok(q[7] > 0, 'a altura vai no quadro');
+  // a Bia, encostada na bola alta pela tela dela, não fica com ela
+  const b = p.eu(biaId);
+  const bola = p.m.bola;
+  assert.equal(p.pos(biaId, { x: bola.x, y: bola.y }), null);
+  assert.equal(p.m.bola.dono, 0);
+  assert.notEqual(b.id, 0);
+  p.jogo.parar!();
+});

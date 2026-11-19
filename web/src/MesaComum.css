@@ -1,0 +1,183 @@
+/* A mesa comum (MesaComum.tsx, 19/11/2026): a escolha antes de começar, os controles, o relógio e o histórico. */
+.mesa-escolha {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.mesa-grupo {
+  border: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.mesa-grupo legend {
+  font-weight: 600;
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+.mesa-botoes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.mesa-botoes .tab-rodadas-botao {
+  min-width: 72px;
+  padding: 8px 10px;
+}
+
+.tab-rodadas-botao.escolhida {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.mesa-opcao {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  cursor: pointer;
+}
+
+.mesa-como-jogar {
+  text-align: center;
+}
+
+.mesa-regras {
+  text-align: left;
+  margin: 6px auto 0;
+  padding-left: 18px;
+  max-width: 460px;
+  font-size: 0.9em;
+  color: var(--text-muted);
+}
+
+.mesa-controles {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  margin-top: 6px;
+}
+
+.mesa-controles .mesa-botoes button {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.mesa-relogio {
+  display: flex;
+  gap: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.mesa-relogio-lado {
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+}
+
+.mesa-relogio-lado.correndo {
+  border-color: var(--accent);
+}
+
+.mesa-relogio-lado.pouco strong {
+  color: #e5484d;
+}
+
+.mesa-oferta {
+  margin: 0;
+  font-weight: 600;
+}
+
+.mesa-historico {
+  list-style: none;
+  margin: 6px 0 0;
+  padding: 6px 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  max-height: 96px;
+  overflow-y: auto;
+  border-radius: 8px;
+  background: var(--bg-raised);
+  font-size: 0.85em;
+  font-variant-numeric: tabular-nums;
+}
+
+.mesa-historico-n {
+  color: var(--text-muted);
+}
+
+.mesa-capturadas {
+  display: flex;
+  gap: 2px;
+  min-height: 1.2em;
+  font-size: 0.9em;
+}
+
+.cid-sair {
+  margin: 6px auto;
+  display: block;
+}
+
+/* A semeadura da Mancala, semente a semente (JogoDuelo.tsx). */
+.mancala-casa.semeando,
+.mancala-deposito.semeando {
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+/* O salvo da Batalha naval: as casas da rajada escolhidas antes de atirar. */
+.naval-mira {
+  outline: 2px dashed var(--accent);
+  outline-offset: -3px;
+}
+
+.naval-pontaria {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* O histórico NA LATERAL quando há largura (19/11/2026), embaixo no estreito: a largura é a da mesa, não a da janela. */
+.mesa-com-historico {
+  container-type: inline-size;
+  width: 100%;
+}
+
+.mesa-com-historico-linha {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+}
+
+.mesa-com-historico-tabuleiro {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+@container (min-width: 620px) {
+  .mesa-com-historico-linha {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .mesa-com-historico-linha .mesa-historico {
+    flex: 0 0 150px;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    max-height: 420px;
+    margin-top: 0;
+  }
+}

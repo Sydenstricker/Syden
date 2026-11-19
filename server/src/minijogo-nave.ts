@@ -17,8 +17,13 @@
  * O PÓDIO: com a turma (2 ou mais que ficaram até o fim), os três primeiros vão para a estante de troféus do quarto (pista
  * 'nave', os pontos), e a tela mostra também o placar da esquadrilha (a soma de todos: é cooperativo). NO SOLO, sem troféu, e a
  * partida pode virar o RECORDE da pessoa (nave_recordes).
+ *
+ * DESDE 19/11/2026: a FASE é escolhida na largada (a horta de sempre, o pomar e o celeiro, curtas e com chefes novos:
+ * nave-sim.ts); o recorde da horta continua em nave_recordes, e o das outras vai à tabela comum do Solo. A ESQUADRILHA
+ * INTACTA: com a turma (2 ou mais que ficaram), se ninguém perdeu vida, cada um ganha SEM_QUEDA pontos no fim (a medalha que
+ * vale mais). E o loop de esquiva ('l') passa pela mesma ficha.
  */
-import { FIM, Ficha, PASSOS_POR_S, roteiro, type Inimigo } from './nave-sim.js';
+import { ehFaseDaNave, Ficha, PASSOS_POR_S, roteiro, SEM_QUEDA, temposDaFase, type Inimigo } from './nave-sim.js';
 import * as db from './db.js';
 import type { Definicao } from './minijogo-motor.js';
 
@@ -44,19 +49,24 @@ export function criarNave({ agora = Date.now, aleatorio = Math.random }: { agora
   return {
     minimo: 2,
     maximo: 8,
-    comecar(ctx, { naSala }) {
+    comecar(ctx, { naSala, corpo }) {
       const inscritos = [...naSala];
       const solo = inscritos.length === 1;
       const evento = `nave-${ctx.comunidade ?? 0}-${agora()}`;
       const semente = Math.floor(aleatorio() * 2147483647);
-      const inimigos: Inimigo[] = roteiro(semente);
+      const faseDaNave = ehFaseDaNave(corpo?.fase) ? corpo.fase : ehFaseDaNave(corpo?.categoria) ? corpo.categoria : 'horta';
+      const tempos = temposDaFase(faseDaNave);
+      const FIM = tempos.fim;
+      const inimigos: Inimigo[] = roteiro(semente, faseDaNave);
       let fase: 'preparando' | 'jogando' | 'fim' = 'preparando';
       let inicio = 0;
-      const pilotos = new Map<number, Piloto>(inscritos.map((id) => [id, { ficha: new Ficha(inimigos), recusas: 0 }]));
+      const pilotos = new Map<number, Piloto>(inscritos.map((id) => [id, { ficha: new Ficha(inimigos, faseDaNave), recusas: 0 }]));
       /** Quem estava na sala no fim: só eles são "a turma" do pódio. */
       let ficaram: Set<number> | null = null;
       let recordeNovo = false;
-      const recordeAntes = solo ? db.recordeDaNave(inscritos[0]) : null;
+      const recordeAntes = !solo ? null : faseDaNave === 'horta' ? db.recordeDaNave(inscritos[0]) : (db.recordeDoSolo(inscritos[0], 'nave', faseDaNave)?.valor ?? null);
+      /** A esquadrilha intacta: decidido no fim, com quem ficou. */
+      let intacta = false;
       let fechando = false;
 
       const presentes = () => {
@@ -74,7 +84,7 @@ export function criarNave({ agora = Date.now, aleatorio = Math.random }: { agora
             return {
               userId,
               username: ctx.nome(userId),
-              pontos: f.total(n, fim),
+              pontos: f.total(n, fim) + (fim && intacta ? SEM_QUEDA : 0),
               vidas: f.vidas,
               chefe: f.chefeEm !== null,
               acabou: f.acabou,
@@ -90,10 +100,14 @@ export function criarNave({ agora = Date.now, aleatorio = Math.random }: { agora
         if (fase === 'fim') return;
         fase = 'fim';
         ficaram = new Set(presentes());
+        intacta = !solo && ficaram.size >= 2 && [...ficaram].every((id) => pilotos.get(id)!.ficha.mortes.length === 0);
         const linhas = placar(true);
         if (solo) {
           const l = linhas[0];
-          if (ficaram.has(inscritos[0]) && l.pontos > 0) recordeNovo = db.guardarRecordeDaNave(inscritos[0], l.pontos);
+          if (ficaram.has(inscritos[0]) && l.pontos > 0) {
+            recordeNovo =
+              faseDaNave === 'horta' ? db.guardarRecordeDaNave(inscritos[0], l.pontos) : db.guardarRecordeDoSolo(inscritos[0], 'nave', faseDaNave, l.pontos, false).novo;
+          }
         } else if (ficaram.size >= 2) {
           for (const l of linhas) {
             if (l.posicao === null || l.posicao > 3 || l.pontos <= 0) continue;
@@ -137,6 +151,10 @@ export function criarNave({ agora = Date.now, aleatorio = Math.random }: { agora
           const linhas = placar(fase === 'fim');
           return {
             fase,
+            faseDaNave,
+            // o "Jogar de novo" do painel manda a categoria de volta: a mesma fase
+            categoria: faseDaNave,
+            intacta,
             semente,
             duracaoMs: Math.round((FIM * 1000) / PASSOS_POR_S),
             decorridoMs: fase === 'jogando' ? agora() - inicio : null,

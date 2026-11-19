@@ -8,6 +8,7 @@ import { CriadorDoCoelho } from './coelho/CriadorDoCoelho';
 import { LinhaDoPersonagem, PixelGrande } from './personagemUi';
 import { chave, useT } from './i18n';
 import { acharInsignia } from './insignias';
+import { CatalogoDeInsignias } from './CatalogoDeInsignias';
 import { Insignia } from './Medalha';
 import { acharVisual, COMO_SE_GANHA } from './guardaRoupa';
 import { aplicarCorDeDestaque, corLegivel, destaqueDaPaleta } from './corDeDestaque';
@@ -745,17 +746,19 @@ function EnfeitesDoPerfil({ user, aoAbrirPacotes }: { user: User; aoAbrirPacotes
 
       {erro && <p className="form-error">{erro}</p>}
 
+      {/* O catálogo das insígnias (19/11/2026): todas as que existem e a escolha da vitrine, o mesmo de Minha conta. */}
       {aba === 'insignia' && (
-        <p className="settings-hint">
-          {t('Insígnias não se compram: vêm de ter feito alguma coisa. Quais delas aparecem no seu perfil, e em que ordem, você escolhe mais abaixo, em Minha conta.')}
-        </p>
+        <>
+          <p className="settings-hint">{t('Insígnias não se compram: vêm de ter feito alguma coisa.')}</p>
+          <CatalogoDeInsignias />
+        </>
       )}
 
       {escondidas > 0 && (
         <p className="settings-hint">{t('Escondidas por não terem todas as letras deste nome: {n}', { n: algarismos(escondidas) })}</p>
       )}
 
-      {aba !== 'pacotes' && (
+      {aba !== 'pacotes' && aba !== 'insignia' && (
         <div className="guarda-roupa-grade">
           {doTipo.map((item) => (
             <Cartao

@@ -94,6 +94,45 @@ export const FOLGA_DO_FOGO_MS = 400;
  */
 export const ESTACOES_DE_FOGO: Readonly<Record<number, 'fogao' | 'forno'>> = { 1: 'fogao', 2: 'fogao', 3: 'fogao', 10: 'forno' };
 
+/**
+ * AS PLANTAS (19/11/2026): quem começa escolhe a cozinha na largada. A da toca (a de sempre), a dos balcões longe, a da
+ * passagem estreita (uma bancada no meio, com uma passagem só) e a de dois andares de bancada (a bancada do meio aberta nas
+ * pontas). O recorde do Solo é por planta. Cada uma tem as suas estações de fogo, e o servidor só conhece isto delas.
+ */
+export type PlantaDaCozinha = 'toca' | 'longe' | 'estreita' | 'andares';
+export const PLANTAS_DA_COZINHA: readonly PlantaDaCozinha[] = ['toca', 'longe', 'estreita', 'andares'];
+export const FOGO_DAS_PLANTAS: Readonly<Record<PlantaDaCozinha, Readonly<Record<number, 'fogao' | 'forno'>>>> = {
+  toca: ESTACOES_DE_FOGO,
+  longe: { 9: 'forno', 15: 'fogao', 16: 'fogao', 17: 'fogao' },
+  estreita: { 10: 'forno', 32: 'fogao', 33: 'fogao', 34: 'fogao' },
+  andares: { 10: 'forno', 34: 'fogao', 35: 'fogao', 36: 'fogao' },
+};
+export const plantaValida = (x: unknown): PlantaDaCozinha => (PLANTAS_DA_COZINHA.includes(x as PlantaDaCozinha) ? (x as PlantaDaCozinha) : 'toca');
+
+/**
+ * A FRIGIDEIRA ESQUECIDA PEGA FOGO (19/11/2026): o que fica no fogo isto depois de queimar vira chama, e a estação só volta a
+ * servir depois do extintor. O servidor mede pelo relógio dele, com a folga a favor de quem joga (a chama começa mais tarde
+ * para ele): no fogo em chamas, ele não aceita o "tirei", só o extintor.
+ */
+export const INCENDIO_MS = 6000;
+export function emChamas(i: Item, tempo: number, folga = 0): boolean {
+  const p = PONTO[i.ing];
+  return !!p && tempo >= p.queima + INCENDIO_MS + folga;
+}
+
+/**
+ * A GORJETA (19/11/2026): o pedido entregue logo depois de aparecer na fila dá pontos a mais, pelo relógio do servidor. Só
+ * bônus: o pedido demorado não perde nada.
+ */
+export const GORJETA: readonly { ateMs: number; pontos: number }[] = [
+  { ateMs: 25_000, pontos: 2 },
+  { ateMs: 45_000, pontos: 1 },
+];
+export function gorjetaDe(esperaMs: number): number {
+  for (const g of GORJETA) if (esperaMs <= g.ateMs) return g.pontos;
+  return 0;
+}
+
 /** O que a estação de fogo aceita: no fogão, o que é dele (cru, ou já no ponto para continuar); no forno, a massa aberta. */
 export function vaiAoFogo(tipo: 'fogao' | 'forno', i: Item): boolean {
   if (tipo === 'fogao') return DO_FOGAO.includes(i.ing) && i.estado !== 'picado';

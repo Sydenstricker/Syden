@@ -1,4 +1,4 @@
-import { duelo, type Lado, type Regras } from './minijogo-tabuleiro.js';
+import { duelo, type Lado, type Nivel, type Regras } from './minijogo-tabuleiro.js';
 
 /**
  * AS DAMAS BRASILEIRAS (04/11/2026): o tabuleiro de 64 casas, pela regra da Confederação Brasileira de Damas. Só a
@@ -160,7 +160,19 @@ export interface EstadoDasDamas {
   ultimo: Lance | null;
   /** Lances seguidos só de dama e sem comer. */
   semCaptura: number;
+  /** Quantas vezes cada posição (o tabuleiro e a cor da vez) já apareceu: a terceira empata (19/11/2026). */
+  vistas: Record<string, number>;
 }
+
+/** A REPETIÇÃO TRIPLA (19/11/2026): a mesma posição, com a mesma cor na vez, pela terceira vez empata a partida. */
+export const REPETICOES_PARA_EMPATE = 3;
+const chaveDaPosicao = (casas: number[], vez: Cor) => `${casas.join('')}${vez}`;
+
+/** As casas escuras numeradas de 1 a 32, de cima para baixo e da esquerda para a direita (a notação do papel). */
+export const numeroDaCasa = (i: number) => Math.floor(i / 2) + 1;
+
+/** O lance escrito: "22-18" o simples, "22x15x6" o que come (as casas por onde a peça passa). */
+export const notacaoDoLance = (l: Lance) => [l.de, ...l.caminho].map(numeroDaCasa).join(l.comidas.length ? 'x' : '-');
 
 const ladoDaCor = (e: EstadoDasDamas, cor: Cor): Lado => (cor === 0 ? e.claras : e.claras === 0 ? 1 : 0);
 const contar = (casas: number[], cor: Cor) => casas.filter((p) => corDa(p) === cor).length;
@@ -168,7 +180,7 @@ const contar = (casas: number[], cor: Cor) => casas.filter((p) => corDa(p) === c
 export const regrasDasDamas: Regras<EstadoDasDamas> = {
   inicio() {
     const casas = posicaoInicial();
-    return { casas, claras: 0, vezDaCor: 0, comecou: false, lances: lancesDe(casas, 0), ultimo: null, semCaptura: 0 };
+    return { casas, claras: 0, vezDaCor: 0, comecou: false, lances: lancesDe(casas, 0), ultimo: null, semCaptura: 0, vistas: { [chaveDaPosicao(casas, 0)]: 1 } };
   },
   aoComecar(estado, primeiro) {
     estado.claras = primeiro;
@@ -195,8 +207,13 @@ export const regrasDasDamas: Regras<EstadoDasDamas> = {
     const outro: Lado = lado === 0 ? 1 : 0;
     if (estado.lances.length === 0) return { proximo: outro, vencedor: lado };
     if (estado.semCaptura >= LANCES_PARA_EMPATE) return { proximo: outro, vencedor: 'empate' };
+    const chave = chaveDaPosicao(estado.casas, estado.vezDaCor);
+    estado.vistas ??= {};
+    estado.vistas[chave] = (estado.vistas[chave] ?? 0) + 1;
+    if (estado.vistas[chave] >= REPETICOES_PARA_EMPATE) return { proximo: outro, vencedor: 'empate' };
     return { proximo: outro };
   },
+  descrever: (estado) => (estado.ultimo ? notacaoDoLance(estado.ultimo) : ''),
   publico(estado, lado) {
     const daVez = estado.comecou && lado !== null && ladoDaCor(estado, estado.vezDaCor) === lado;
     return {
@@ -205,6 +222,8 @@ export const regrasDasDamas: Regras<EstadoDasDamas> = {
       ultimo: estado.ultimo,
       restam: [contar(estado.casas, 0), contar(estado.casas, 1)],
       semCaptura: estado.semCaptura,
+      // o empate pela regra: a mesma posição pela terceira vez
+      repetida: Object.values(estado.vistas ?? {}).some((n) => n >= REPETICOES_PARA_EMPATE),
       lances: daVez ? estado.lances : [],
     };
   },
@@ -235,7 +254,7 @@ function valorDaPosicao(casas: number[], cor: Cor): number {
  * para a pessoa (comer obrigatório, lei da maioria: ele não tem regra própria). Conta o material; quem fica sem lance perde.
  * Um tantinho de sorte desempata os lances iguais. Devolve o índice do lance na lista de quem tem a vez.
  */
-export function lanceDoRobo(casas: number[], cor: Cor, aleatorio: () => number = Math.random, profundidade = PROFUNDIDADE_DAS_DAMAS): number {
+export function lanceDoRobo(casas: number[], cor: Cor, aleatorio: () => number = Math.random, profundidade = PROFUNDIDADE_DAS_DAMAS, ruido = 0.05): number {
   const lances = lancesDe(casas, cor);
   const outra: Cor = cor === 0 ? 1 : 0;
   const busca = (tab: number[], vezDe: Cor, falta: number, alfa: number, beta: number): number => {
@@ -264,7 +283,7 @@ export function lanceDoRobo(casas: number[], cor: Cor, aleatorio: () => number =
   lances.forEach((l, k) => {
     const copia = casas.slice();
     aplicar(copia, l);
-    const v = busca(copia, outra, profundidade - 1, -Infinity, Infinity) + aleatorio() * 0.05;
+    const v = busca(copia, outra, profundidade - 1, -Infinity, Infinity) + aleatorio() * ruido;
     if (v > melhorValor) {
       melhorValor = v;
       escolha = k;
@@ -273,8 +292,18 @@ export function lanceDoRobo(casas: number[], cor: Cor, aleatorio: () => number =
   return escolha;
 }
 
+/** Os NÍVEIS do robô das Damas (19/11/2026): quantos lances ele olha e quanto sorteia entre os parecidos. */
+export const NIVEL_DAS_DAMAS: Record<Nivel, { profundidade: number; ruido: number }> = {
+  facil: { profundidade: 2, ruido: 0.9 },
+  normal: { profundidade: PROFUNDIDADE_DAS_DAMAS, ruido: 0.05 },
+  dificil: { profundidade: 6, ruido: 0.01 },
+};
+
 export const damas = duelo<EstadoDasDamas>({
   ...regrasDasDamas,
   // o tabuleiro das damas é aberto: o robô vê o mesmo que a pessoa
-  robo: (estado, _lado, aleatorio) => ({ lance: lanceDoRobo(estado.casas, estado.vezDaCor, aleatorio) }),
+  robo: (estado, _lado, aleatorio, nivel) => {
+    const { profundidade, ruido } = NIVEL_DAS_DAMAS[nivel];
+    return { lance: lanceDoRobo(estado.casas, estado.vezDaCor, aleatorio, profundidade, ruido) };
+  },
 });

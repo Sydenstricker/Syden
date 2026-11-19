@@ -88,3 +88,58 @@ test('entradas inválidas', () => {
   assert.ok(!sim.entradasValidas([d.passosMaximos + 1, 0], d));
   assert.ok(sim.entradasValidas([10, 31, 5, 0], d));
 });
+
+// ---------------------------------------------------------------------------------------------------------------------
+// 19/11/2026: mais desafios por veículo, o vento, as térmicas e as medalhas
+// ---------------------------------------------------------------------------------------------------------------------
+
+test('3 a 4 desafios por veículo, em escala (o nível sobe), com ids diferentes', () => {
+  for (const tipo of ['asa', 'mochila', 'queda'] as const) {
+    const lista = sim.DESAFIOS.filter((d) => d.tipo === tipo);
+    assert.ok(lista.length >= 3 && lista.length <= 4, tipo);
+    assert.deepEqual(lista.map((d) => d.nivel), lista.map((_, i) => i + 1), `${tipo}: os níveis em ordem`);
+  }
+  assert.equal(new Set(sim.DESAFIOS.map((d) => d.id)).size, sim.DESAFIOS.length);
+  // os três de antes continuam sem vento e sem térmica (o recorde deles continua valendo)
+  for (const id of ['asa-1', 'mochila-1', 'queda-1']) {
+    const d = sim.desafioPorId(id)!;
+    assert.deepEqual(d.vento, [0, 0]);
+    assert.equal(d.termicas.length, 0);
+  }
+});
+
+test('a térmica levanta a asa, e o vento a leva de lado (as mesmas contas, só + − × ÷)', () => {
+  const d = sim.desafioPorId('asa-2')!;
+  const t = d.termicas[0];
+  const dentro = sim.novoVoo(d);
+  Object.assign(dentro, { x: t.x, y: t.y + 40, hx: 0, hy: -1 });
+  const fora = sim.novoVoo({ ...d, termicas: [] });
+  Object.assign(fora, { x: t.x, y: t.y + 40, hx: 0, hy: -1 });
+  for (let i = 0; i < 300; i++) {
+    sim.passo(dentro, 0);
+    sim.passo(fora, 0);
+  }
+  assert.ok(dentro.h > fora.h + 3, `${dentro.h} contra ${fora.h}`);
+  assert.equal(sim.subidaEm(d, t.x + t.raio + 1, t.y), 0);
+  const ventoso = sim.desafioPorId('queda-2')!;
+  const a = sim.novoVoo(ventoso);
+  const b = sim.novoVoo({ ...ventoso, vento: [0, 0] });
+  for (let i = 0; i < 120; i++) {
+    sim.passo(a, 0);
+    sim.passo(b, 0);
+  }
+  assert.ok(Math.abs(a.x - b.x - ventoso.vento[0] * 2) < 0.01, 'em 2 s, o vento leva o salto 2 s de vento');
+});
+
+test('as medalhas: bronze, prata e ouro pela fração dos pontos máximos; o piloto honesto ganha ao menos o bronze em todos', () => {
+  for (const d of sim.DESAFIOS) {
+    const [b, p, o] = sim.limitesDasMedalhas(d);
+    assert.ok(b < p && p < o && o <= sim.pontosMaximos(d));
+    assert.equal(sim.medalha(d, b - 1), 0);
+    assert.equal(sim.medalha(d, b), 1);
+    assert.equal(sim.medalha(d, p), 2);
+    assert.equal(sim.medalha(d, o), 3);
+    const { v } = voar(d, sim.pilotoAutomatico);
+    assert.ok(sim.medalha(d, v.fim!.total) >= 1, `${d.id}: ${v.fim!.total}`);
+  }
+});

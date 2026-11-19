@@ -1,11 +1,15 @@
 import { ComandosDoJogo } from './ComandosDosJogos';
 import { tocar } from './somDosJogos';
+import { criarImpacto } from './impacto';
 import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { Trophy } from 'lucide-react';
 import { useT } from './i18n';
 import type { Partida } from './minijogos';
 import { desenharCoelho, desenhoDoCoelho, folhaDe } from './briga/desenho';
+import { carregarFolhas, desenharBichoDaFolha } from './briga/sprites';
+import type { EstadoDoInimigo } from './briga/regras';
+import type { ChefeNaTela } from './chefe/regras';
 import type { Acao } from './briga/regras';
 import { ACOES, BOMBA, H, W, type AcaoDoCoelho } from './chefe/conta';
 import {
@@ -14,14 +18,17 @@ import {
   desenharChefe,
   desenharEfeito,
   desenharMarcaNoChao,
+  bolaDeNeve,
   desenharNoAr,
+  monteDeNeve,
+  desenharReviver,
   desenharTorraoNoChao,
   desenharVidaDoChefe,
   sombra,
   torrao,
 } from './chefe/desenho';
 import { pilotoAutomatico } from './chefe/piloto';
-import { Cliente, comandosVazios, ehQuadro, marcaDoLugar, type Comandos, type EstadoChefe } from './chefe/regras';
+import { Cliente, comandosVazios, ehQuadro, marcaDoLugar, REVIVER_MS, type Comandos, type EstadoChefe } from './chefe/regras';
 import './chefe/chefe.css';
 
 /**
@@ -110,10 +117,19 @@ export function JogoChefe({
     const doServidor = estado.resultado;
     const linhas = doServidor ?? estado.jogadores.map((j) => ({ ...j, acertos: 0, posicao: 1 + estado.jogadores.filter((o) => o.pontos > j.pontos).length }));
     const regra = { venceu: !!doServidor && estado.venceu, solo: estado.solo === true, ficaram: linhas.filter((l) => l.posicao !== null).length };
+    const { recorde, melhorAntes } = estado as { recorde?: { ms: number; antes: number | null; novo: boolean } | null; melhorAntes?: number | null };
     return (
       <div className="briga chefe">
-        <p className="briga-desfecho">{estado.venceu ? t('A toupeira-rei caiu!') : t('A turma caiu.')}</p>
+        <p className="briga-desfecho">{estado.venceu ? ((estado as { chefe?: string }).chefe === 'yeti' ? t('O yeti caiu!') : t('A toupeira-rei caiu!')) : t('A turma caiu.')}</p>
         <p className="chefe-dano-final">{t('Dano da turma: {n}', { n: estado.danoDaTurma })}</p>
+        {/* O RECORDE DO SOLO (19/11/2026): o tempo até a toupeira cair, contado pelo servidor */}
+        {recorde && (
+          <p className="minijogo-situacao">
+            {tempoDaLuta(recorde.ms)}
+            {recorde.novo ? ` · ${t('Novo recorde!')}` : recorde.antes !== null ? ` · ${t('Seu recorde: {tempo}', { tempo: tempoDaLuta(recorde.antes) })}` : ''}
+          </p>
+        )}
+        {!recorde && estado.solo && melhorAntes != null && <p className="minijogo-situacao">{t('Seu recorde: {tempo}', { tempo: tempoDaLuta(melhorAntes) })}</p>}
         <div className="minijogo-fim">
           <p className="minijogo-fim-titulo">
             <Trophy size={20} aria-hidden="true" /> {t('Fim de jogo!')}
@@ -133,6 +149,12 @@ export function JogoChefe({
   }
   return <Palco estado={estado} eu={eu} jogador={jogador && estado.jogadores.some((j) => j.userId === eu)} socket={socket} channelId={channelId} />;
 }
+
+/** O tempo da luta: m:ss.d. */
+const tempoDaLuta = (ms: number) => {
+  const s = Math.max(0, ms) / 1000;
+  return `${Math.floor(s / 60)}:${(s % 60).toFixed(1).padStart(4, '0')}`;
+};
 
 function Palco({
   estado,
@@ -164,11 +186,14 @@ function Palco({
     if (!c || !g || !socket) return;
     g.imageSmoothingEnabled = false;
     const folha = new Image();
+    carregarFolhas(['yeti']);
     folha.src = `${import.meta.env.BASE_URL}briga/coelho.png`;
     const enviar = (dados: unknown) =>
       solo ? socket.emit('minijogo-solo:tempo-real', { dados }) : socket.emit('minijogo:tempo-real', { channelId, dados });
     const cliente = new Cliente(eu, enviar);
     const piscandoChefe = { ate: 0 };
+    // O IMPACTO (19/11/2026, só desenho): o anel, a cruz, a bomba e a troca de fase tremem a tela; a troca de fase pisca
+    const impacto = criarImpacto();
     let quadroId = 0;
     let anterior = performance.now();
     let sobra = 0;
@@ -202,6 +227,10 @@ function Palco({
         cliente.passo(cmd, 1 / 60, agora, v);
       }
       for (const s of cliente.sons.splice(0)) tocar(s);
+      if (cliente.tremor > 0) {
+        impacto.tremer(cliente.tremor, cliente.tremor >= 0.6 ? 300 : 180);
+        cliente.tremor = 0;
+      }
       const v = cliente.vista(agora);
 
       // o placar de cima, umas 5 vezes por segundo
@@ -222,15 +251,20 @@ function Palco({
       // a janela sem foco não desenha (o jogo segue: é de turma, e a posição continua indo)
       if (!piloto() && (document.hidden || !document.hasFocus())) return;
       const tempo = menosMovimento ? Math.floor(agora / 400) * 400 : agora;
+      const imp = impacto.quadro(agora);
+      g.save();
+      g.translate(imp.dx, imp.dy);
       desenharArena(g);
+      const coisas0: { y: number; desenhar: () => void }[] = [];
       for (const m of v.marcas) desenharMarcaNoChao(g, m, tempo);
       for (const tc of v.noChao) desenharTorraoNoChao(g, tc.x, tc.y, tc.resta, tempo);
+      for (const b of v.bolas) coisas0.push({ y: b.y, desenhar: () => bolaDeNeve(g, b.x, b.y, tempo) });
 
       // os bichos, de trás para a frente
-      const coisas: { y: number; desenhar: () => void }[] = [];
+      const coisas: { y: number; desenhar: () => void }[] = [...coisas0];
       if (v.chefe) {
         const ch = v.chefe;
-        coisas.push({ y: ch.y, desenhar: () => desenharChefe(g, ch, tempo, piscandoChefe.ate > agora) });
+        coisas.push({ y: ch.y, desenhar: () => (ch.yeti ? desenharYeti(g, ch, tempo, piscandoChefe.ate > agora) : desenharChefe(g, ch, tempo, piscandoChefe.ate > agora)) });
       }
       const imagem = folhaDe(folha, null);
       for (const l of v.coelhos) {
@@ -294,6 +328,14 @@ function Palco({
       }
       for (const b of v.bombas) desenharBomba(g, b.x0, b.y0, b.x, b.y, Math.max(0, Math.min(1, 1 - b.resta / BOMBA.voo)));
       for (let k = cliente.efeitos.length - 1; k >= 0; k--) if (!desenharEfeito(g, cliente.efeitos[k], agora)) cliente.efeitos.splice(k, 1);
+      // REVIVER: o anel que enche em volta de quem está caído e tem alguém perto
+      for (const l of v.coelhos) if (l[8] === 2 && (l[14] ?? 0) > 0) desenharReviver(g, l[1], l[2], Math.min(1, l[14] / REVIVER_MS));
+      g.restore();
+      // o clarão da troca de fase (sem ele com "menos movimento")
+      if (cliente.clarao > agora && !menosMovimento) {
+        g.fillStyle = `rgba(255, 246, 200, ${((cliente.clarao - agora) / 180) * 0.55})`;
+        g.fillRect(0, 0, W, H);
+      }
       if (v.chefe) desenharVidaDoChefe(g, v.chefe.fase, v.chefe.hp, fases);
     };
     quadroId = requestAnimationFrame(quadro);
@@ -307,7 +349,9 @@ function Palco({
   const nome = (id: number) => pessoas.current.get(id)?.nome ?? '';
   const aviso =
     hud.fase === 'vitoria'
-      ? t('A toupeira-rei caiu!')
+      ? (estado as { chefe?: string }).chefe === 'yeti'
+        ? t('O yeti caiu!')
+        : t('A toupeira-rei caiu!')
       : hud.fase === 'derrota'
         ? t('A turma caiu.')
         : jogador && hud.meuEstado === 2
@@ -391,4 +435,92 @@ function Toque({ cmd }: { cmd: Comandos }) {
       </div>
     </div>
   );
+}
+
+/** O estado do chefe no nome que o desenho dos bichos da Briga entende (o yeti é o da folha da Briga). */
+function estadoDoYeti(c: ChefeNaTela): EstadoDoInimigo {
+  switch (c.estado) {
+    case 'prep-terremoto':
+    case 'prep-pedras':
+    case 'prep-investida':
+    case 'prep-torroes':
+      return 'preparando';
+    case 'terremoto':
+    case 'pedras':
+    case 'investida':
+    case 'jogando':
+      return 'atacando';
+    case 'tonta':
+    case 'fase':
+      return 'dor';
+    case 'caida':
+      return 'caido';
+    default:
+      return 'esperando';
+  }
+}
+
+/** O YETI (19/11/2026): a folha dele da Briga, de pé na arena; embaixo da neve, o monte que anda. */
+function desenharYeti(g: CanvasRenderingContext2D, c: ChefeNaTela, tempo: number, piscando: boolean) {
+  if (c.estado === 'embaixo') return monteDeNeve(g, Math.round(c.x), Math.round(c.y), tempo);
+  g.save();
+  g.fillStyle = 'rgba(30, 20, 15, 0.3)';
+  g.beginPath();
+  g.ellipse(c.x, c.y, 22, 6, 0, 0, Math.PI * 2);
+  g.fill();
+  g.restore();
+  desenharBichoDaFolha(g, { tipo: 'yeti', estado: estadoDoYeti(c), lado: c.lado >= 0 ? 1 : -1, ms: c.passos * 50, piscando }, Math.round(c.x), Math.round(c.y), tempo);
+}
+
+/** A ESCOLHA DO CHEFE (19/11/2026): a toupeira-rei, a de sempre, ou o yeti, que empurra bolas de neve para devolver. */
+export function EscolhaDoChefe({ aoEscolher, aoVoltar }: { aoEscolher: (chefe: string) => void; aoVoltar: () => void }) {
+  const t = useT();
+  return (
+    <div className="corrida-escolha">
+      <ul className="corrida-pistas">
+        <li>
+          <button type="button" className="corrida-pista-botao" onClick={() => aoEscolher('toupeira')}>
+            <MiniaturaDoChefe yeti={false} />
+            <strong>{t('Toupeira-rei')}</strong>
+          </button>
+        </li>
+        <li>
+          <button type="button" className="corrida-pista-botao" onClick={() => aoEscolher('yeti')}>
+            <MiniaturaDoChefe yeti />
+            <strong>{t('Yeti')}</strong>
+          </button>
+        </li>
+      </ul>
+      <div className="minijogo-acoes">
+        <button type="button" className="btn-secondary" onClick={aoVoltar}>
+          {t('Outros jogos')}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/** A miniatura da escolha: a arena com o chefe no meio (o yeti, quando a folha dele chega). */
+function MiniaturaDoChefe({ yeti }: { yeti: boolean }) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const g = ref.current?.getContext('2d');
+    if (!g) return;
+    g.imageSmoothingEnabled = false;
+    if (yeti) carregarFolhas(['yeti']);
+    const chefe: ChefeNaTela = { x: 240, y: 170, estado: 'parada', lado: 1, hp: 100, passos: 0, fase: 0, destino: [240, 170], yeti };
+    let vezes = 0;
+    const desenhar = () => {
+      desenharArena(g);
+      if (yeti) desenharYeti(g, chefe, 0, false);
+      else desenharChefe(g, chefe, 0, false);
+    };
+    desenhar();
+    const h = setInterval(() => {
+      desenhar();
+      if (++vezes >= 6) clearInterval(h);
+    }, 300);
+    return () => clearInterval(h);
+  }, [yeti]);
+  return <canvas ref={ref} width={W} height={H} aria-hidden="true" className="briga-miniatura" />;
 }

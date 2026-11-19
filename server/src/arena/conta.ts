@@ -36,7 +36,7 @@ export const ESPECIAL_POR_DANO = 0.8;
 export const RAPIDO = { mult: 1.4, ms: 6000 };
 
 // ---------------- OS CENÁRIOS ----------------
-export const CENARIOS = ['grama', 'praia'] as const;
+export const CENARIOS = ['grama', 'praia', 'gelo', 'lama'] as const;
 export type Cenario = (typeof CENARIOS)[number];
 
 /**
@@ -64,7 +64,67 @@ export const OBSTACULOS: Record<Cenario, readonly (readonly [number, number, num
     [300, 448, 18],
     [980, 448, 18],
   ],
+  // 19/11/2026: o lago congelado (montes de neve) e o brejo (tocos)
+  gelo: [
+    [450, 260, 24],
+    [830, 636, 24],
+    [450, 636, 24],
+    [830, 260, 24],
+    [640, 448, 28],
+    [280, 300, 18],
+    [1000, 596, 18],
+  ],
+  lama: [
+    [440, 330, 22],
+    [840, 566, 22],
+    [440, 566, 22],
+    [840, 330, 22],
+    [640, 448, 30],
+    [260, 200, 20],
+    [1020, 696, 20],
+  ],
 };
+
+/**
+ * A REGRA DE CADA CHÃO (19/11/2026), igual no site e no servidor (os robôs andam por ela):
+ * - no GELO o coelho ESCORREGA: a velocidade vai para a desejada aos poucos (ACEL_NO_GELO por segundo), também ao parar; a
+ *   arrancada não escorrega;
+ * - na LAMA, as POÇAS (círculos no chão, simétricos pelo centro) seguram: dentro delas, LAMA_SEGURA da velocidade.
+ * Nenhum dos dois passa da velocidade do coelho: a conferência do servidor continua a mesma.
+ */
+export const ACEL_NO_GELO = 2.6;
+export const LAMA_SEGURA = 0.5;
+export const POCAS_DE_LAMA: readonly (readonly [number, number, number])[] = [
+  [640, 250, 70],
+  [640, 646, 70],
+  [300, 600, 60],
+  [980, 296, 60],
+  [300, 296, 50],
+  [980, 600, 50],
+];
+
+/** Quanto do andar normal o chão deixa, aqui (a lama segura; o resto, 1). */
+export function velDoChao(cenario: Cenario, x: number, y: number): number {
+  if (cenario !== 'lama') return 1;
+  for (const [px, py, r] of POCAS_DE_LAMA) if ((x - px) * (x - px) + (y - py) * (y - py) <= r * r) return LAMA_SEGURA;
+  return 1;
+}
+
+/** A velocidade de agora indo para a desejada (vx, vy em px/s): no gelo aos poucos, nos outros na hora. */
+export function seguirVelocidade(cenario: Cenario, vx: number, vy: number, querX: number, querY: number, dt: number): [number, number] {
+  if (cenario !== 'gelo') return [querX, querY];
+  const k = dt * ACEL_NO_GELO > 1 ? 1 : dt * ACEL_NO_GELO;
+  return [vx + (querX - vx) * k, vy + (querY - vy) * k];
+}
+
+// ---------------- O MODO DE OBJETIVO ----------------
+/**
+ * SEGURAR A ZONA (19/11/2026): um círculo no meio da arena; a cada segundo em que só um time tem gente de pé dentro dele, esse
+ * time faz um ponto. Quem chega a PONTOS_DA_ZONA vence (no tempo, quem tem mais). Ninguém fica sem vidas: quem cai volta. Funciona
+ * com a internet lenta porque quem conta é o servidor, pelas posições que ele já confere.
+ */
+export const ZONA_DO_OBJETIVO = { x: 640, y: 448, raio: 110 };
+export const PONTOS_DA_ZONA = 60;
 
 /** Onde cada um nasce e volta: [x, y]. Nos times, o 0 à esquerda e o 1 à direita; cada um por si, em roda. */
 export const NASCER_TIME: readonly (readonly (readonly [number, number])[])[] = [
@@ -181,19 +241,24 @@ const tiro = (dano: number, recarga: number, vel: number, alcance: number, raio:
 const roda = (dano: number, recarga: number, raio: number): Golpe => ({ forma: 'roda', dano, recarga, vel: 0, alcance: 0, raio, balas: 0, abre: 0, aviso: 0 });
 const zona = (dano: number, recarga: number, alcance: number, raio: number, aviso: number): Golpe => ({ forma: 'zona', dano, recarga, vel: 0, alcance, raio, balas: 0, abre: 0, aviso });
 
-/** O golpe forte e o especial são a mesma forma em todo elemento (a cor e a vantagem mudam). */
-const FORTE = zona(26, 6000, 170, 44, 700);
-const ESPECIAL = zona(40, 0, 190, 72, 650);
-
-/** Os kits; `nomes`: o golpe do bicho (GOLPES, em bichos-regras.ts) que dá nome ao básico e ao forte, para a tela. */
+/**
+ * O golpe forte e o especial de cada elemento (19/11/2026; antes eram a mesma zona em todos): as mesmas três formas, com números
+ * que dizem quem o bicho é. A folha planta um campo grande e lento; a brasa explode em volta; a gota abre um leque de ondas; a
+ * pedra derruba a avalanche pesada; o vento gira e sopra o leque largo; a faísca atira o raio rápido e cai num ponto só.
+ */
 export const KITS: Record<string, { b: Golpe; s: Golpe; q: Golpe; e: Golpe; nomes: readonly [string, string] }> = {
-  folha: { b: tiro(8, 500, 240, 230, 6), s: tiro(7, 2600, 250, 200, 6, 3, 2), q: FORTE, e: ESPECIAL, nomes: ['semente', 'cipo'] },
-  brasa: { b: tiro(9, 500, 220, 210, 7), s: roda(15, 3000, 58), q: FORTE, e: ESPECIAL, nomes: ['fogo', 'vulcao'] },
-  gota: { b: tiro(7, 500, 270, 250, 6), s: tiro(6, 2600, 280, 220, 5, 3, 1), q: FORTE, e: ESPECIAL, nomes: ['chuva', 'onda'] },
-  pedra: { b: tiro(10, 500, 190, 200, 8), s: zona(18, 3000, 130, 36, 450), q: FORTE, e: ESPECIAL, nomes: ['pedrada', 'avalanche'] },
-  vento: { b: tiro(7, 500, 300, 220, 6), s: roda(12, 2600, 66), q: FORTE, e: ESPECIAL, nomes: ['sopro', 'tornado'] },
-  faisca: { b: tiro(7, 500, 330, 240, 5), s: tiro(15, 3000, 420, 260, 8), q: FORTE, e: ESPECIAL, nomes: ['choque', 'raio'] },
+  folha: { b: tiro(8, 500, 240, 230, 6), s: tiro(7, 2600, 250, 200, 6, 3, 2), q: zona(24, 6000, 180, 40, 600), e: zona(38, 0, 200, 92, 850), nomes: ['semente', 'cipo'] },
+  brasa: { b: tiro(9, 500, 220, 210, 7), s: roda(15, 3000, 58), q: zona(30, 6000, 160, 40, 650), e: roda(42, 0, 104), nomes: ['fogo', 'vulcao'] },
+  gota: { b: tiro(7, 500, 270, 250, 6), s: tiro(6, 2600, 280, 220, 5, 3, 1), q: tiro(13, 6000, 300, 280, 8, 3, 1), e: zona(34, 0, 220, 80, 650), nomes: ['chuva', 'onda'] },
+  pedra: { b: tiro(10, 500, 190, 200, 8), s: zona(18, 3000, 130, 36, 450), q: zona(34, 6500, 150, 50, 850), e: roda(46, 0, 96), nomes: ['pedrada', 'avalanche'] },
+  vento: { b: tiro(7, 500, 300, 220, 6), s: roda(12, 2600, 66), q: roda(22, 5500, 88), e: tiro(18, 0, 380, 320, 10, 3, 2), nomes: ['sopro', 'tornado'] },
+  faisca: { b: tiro(7, 500, 330, 240, 5), s: tiro(15, 3000, 420, 260, 8), q: tiro(28, 6000, 520, 320, 9), e: zona(44, 0, 240, 60, 450), nomes: ['choque', 'raio'] },
 };
+
+/** De quão longe o golpe pega alguém: a roda, o raio dela; o tiro, o alcance; a zona, o alcance mais o raio dela. */
+export function alcanceDoGolpe(g: Golpe): number {
+  return g.forma === 'roda' ? g.raio + RAIO : g.forma === 'tiro' ? g.alcance : g.alcance + g.raio;
+}
 export const ELEMENTOS_DA_ARENA = ['folha', 'brasa', 'gota', 'pedra', 'vento', 'faisca'] as const;
 
 /** A vantagem do elemento na arena: o 2 e o 0,5 da luta por turnos viram 1,5 e 0,67 (no tempo real, o dobro decidia sozinho). */

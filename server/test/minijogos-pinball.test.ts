@@ -170,3 +170,24 @@ test('na sala: o verde, a ordem pelos pontos refeitos, o fim quando todos acabam
   const trofeus = db.trofeusParaLevar(vencedor) as { pista: string }[];
   assert.ok(trofeus.some((t) => t.pista === 'pinball'));
 });
+
+test('o pomar (19/11/2026): a pessoa escolhe a mesa, e o recorde dele é à parte, na tabela comum', () => {
+  const daHorta = db.recordeDoPinball(caioId);
+  const { ctx } = contexto([caioId], { solo: true });
+  const jogo = pinball.comecar(ctx, { naSala: [caioId], criadaPor: caioId, corpo: {} });
+  assert.equal(jogo.acao(caioId, { tipo: 'jogar', mesa: 1 }), null);
+  assert.equal(jogo.publico(caioId).mesa, 1);
+  const k = sim.novaMesa(sim.PASSOS_MAXIMOS, 1);
+  const comandos: number[] = [];
+  while (!k.terminou) {
+    const c = sim.pilotoAutomatico(k);
+    comandos.push(c);
+    sim.passo(k, c);
+  }
+  mandar(jogo, caioId, comandos);
+  const e = jogo.publico(caioId) as { resultado: { pontos: number; recorde: boolean }; recordeDoPomar: number | null };
+  assert.equal(e.resultado.pontos, k.pontos);
+  assert.ok(e.resultado.recorde);
+  assert.equal(e.recordeDoPomar, k.pontos);
+  assert.equal(db.recordeDoPinball(caioId), daHorta, 'o da horta não mudou');
+});

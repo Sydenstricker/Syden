@@ -1,5 +1,5 @@
 import { coresDoJogador, type AvatarDoJogo } from '../coelho/cores';
-import { HORTA, sorteio } from '../corrida/pista';
+import { CANION, HORTA, NEVE, sorteio, type DefinicaoDaPista } from '../corrida/pista';
 import { prepararDesenho } from '../corrida/render';
 import { MUNDO, type Desafio, type Voo } from './sim';
 
@@ -76,14 +76,66 @@ export interface Tela {
   flor: HTMLCanvasElement;
 }
 
-export function prepararTela(canvas: HTMLCanvasElement): Tela {
+/** O CENÁRIO de cada desafio (19/11/2026): os temas das pistas da corrida (o céu, os morros, a árvore e as cores do chão). */
+const PISTA_DO_TEMA: Record<Desafio['tema'], DefinicaoDaPista> = { horta: HORTA, neve: NEVE, canion: CANION };
+
+/** As roças (dois tons cada), a cerca viva, o rio e a margem, e o chão de fora do mapa, por tema. */
+const CORES_DO_CHAO: Record<Desafio['tema'], { rocas: [number, number][]; cerca: number; agua: [number, number]; margem: number; fora: [number, number]; estrada: [number, number] }> = {
+  horta: {
+    rocas: [
+      [rgb(98, 150, 70), rgb(90, 140, 64)],
+      [rgb(122, 160, 74), rgb(112, 150, 68)],
+      [rgb(176, 160, 92), rgb(164, 148, 84)],
+      [rgb(84, 132, 66), rgb(76, 122, 58)],
+      [rgb(150, 112, 74), rgb(138, 102, 66)],
+      [rgb(136, 170, 88), rgb(126, 160, 80)],
+    ],
+    cerca: rgb(70, 108, 56),
+    agua: [rgb(70, 128, 168), rgb(84, 144, 182)],
+    margem: rgb(196, 182, 140),
+    fora: [rgb(76, 122, 56), rgb(118, 150, 72)],
+    estrada: [rgb(138, 104, 70), rgb(170, 132, 90)],
+  },
+  neve: {
+    rocas: [
+      [rgb(232, 236, 244), rgb(222, 228, 238)],
+      [rgb(244, 246, 250), rgb(236, 240, 246)],
+      [rgb(210, 218, 232), rgb(200, 208, 224)],
+      [rgb(226, 232, 242), rgb(216, 224, 236)],
+      [rgb(190, 200, 218), rgb(182, 192, 212)],
+      [rgb(238, 242, 248), rgb(230, 234, 244)],
+    ],
+    cerca: rgb(150, 164, 190),
+    agua: [rgb(150, 190, 220), rgb(170, 206, 230)],
+    margem: rgb(200, 210, 226),
+    fora: [rgb(214, 220, 236), rgb(190, 198, 220)],
+    estrada: [rgb(150, 156, 176), rgb(176, 182, 200)],
+  },
+  canion: {
+    rocas: [
+      [rgb(214, 150, 96), rgb(204, 140, 88)],
+      [rgb(196, 122, 80), rgb(186, 114, 74)],
+      [rgb(226, 178, 120), rgb(216, 168, 112)],
+      [rgb(176, 104, 70), rgb(166, 96, 64)],
+      [rgb(232, 196, 140), rgb(222, 186, 132)],
+      [rgb(204, 134, 90), rgb(194, 126, 84)],
+    ],
+    cerca: rgb(150, 86, 60),
+    agua: [rgb(70, 128, 150), rgb(86, 144, 164)],
+    margem: rgb(232, 204, 150),
+    fora: [rgb(196, 128, 84), rgb(214, 150, 96)],
+    estrada: [rgb(150, 100, 70), rgb(186, 136, 96)],
+  },
+};
+
+export function prepararTela(canvas: HTMLCanvasElement, tema: Desafio['tema'] = 'horta'): Tela {
   canvas.width = W;
   canvas.height = H;
   const ctx = canvas.getContext('2d')!;
   ctx.imageSmoothingEnabled = false;
   const imagem = ctx.createImageData(W, H);
   // o céu, as árvores e as flores são os da corrida (desenhados por código lá)
-  const corrida = prepararDesenho(document.createElement('canvas'), HORTA.tema);
+  const corrida = prepararDesenho(document.createElement('canvas'), (PISTA_DO_TEMA[tema] ?? HORTA).tema);
   const ceuH = 58;
   return {
     ctx,
@@ -118,15 +170,9 @@ export function chaoDe(d: Desafio): Chao {
   const N = MUNDO;
   const px = new Uint32Array(N * N);
   const sorte = sorteio(d.id.length * 977 + 13);
-  // a colcha de roças: quadros de 64 m, cada um de uma cor, com as fileiras do plantio
-  const rocas = [
-    [rgb(98, 150, 70), rgb(90, 140, 64)],
-    [rgb(122, 160, 74), rgb(112, 150, 68)],
-    [rgb(176, 160, 92), rgb(164, 148, 84)],
-    [rgb(84, 132, 66), rgb(76, 122, 58)],
-    [rgb(150, 112, 74), rgb(138, 102, 66)],
-    [rgb(136, 170, 88), rgb(126, 160, 80)],
-  ];
+  // a colcha de roças: quadros de 64 m, cada um de uma cor, com as fileiras do plantio (as cores do tema)
+  const tc = CORES_DO_CHAO[d.tema] ?? CORES_DO_CHAO.horta;
+  const rocas = tc.rocas;
   const Q = 64;
   const cores: number[] = [];
   for (let i = 0; i < (N / Q) * (N / Q); i++) cores.push(Math.floor(sorte() * rocas.length));
@@ -137,7 +183,7 @@ export function chaoDe(d: Desafio): Chao {
       const faixa = ((par ? x : y) >> 2) & 1;
       let cor = rocas[cores[q]][faixa];
       // as cercas vivas entre as roças
-      if (x % Q < 2 || y % Q < 2) cor = rgb(70, 108, 56);
+      if (x % Q < 2 || y % Q < 2) cor = tc.cerca;
       px[y * N + x] = cor;
     }
   }
@@ -147,7 +193,7 @@ export function chaoDe(d: Desafio): Chao {
     for (let x = Math.floor(meio - 20); x <= meio + 20; x++) {
       if (x < 0 || x >= N) continue;
       const dx = Math.abs(x - meio);
-      px[y * N + x] = dx < 14 ? (((x + y) >> 3) & 1 ? rgb(70, 128, 168) : rgb(84, 144, 182)) : rgb(196, 182, 140);
+      px[y * N + x] = dx < 14 ? (((x + y) >> 3) & 1 ? tc.agua[0] : tc.agua[1]) : tc.margem;
     }
   }
   // as estradinhas de terra
@@ -156,7 +202,7 @@ export function chaoDe(d: Desafio): Chao {
       for (let k = -3; k <= 3; k++) {
         const x = horizontal ? i : onde + k, y = horizontal ? onde + k : i;
         if (x < 0 || y < 0 || x >= N || y >= N) continue;
-        px[y * N + x] = Math.abs(k) === 3 ? rgb(138, 104, 70) : rgb(170, 132, 90);
+        px[y * N + x] = Math.abs(k) === 3 ? tc.estrada[0] : tc.estrada[1];
       }
     }
   };
@@ -193,7 +239,7 @@ export function chaoDe(d: Desafio): Chao {
     if (Math.abs(y - 192) < 8 || Math.abs(y - 704) < 8 || Math.abs(x - 832) < 8) continue;
     arvores.push([x, y]);
   }
-  const chao: Chao = { pontos: px, arvores, nevoa: HORTA.tema.ceu.baixo, fora: rgb(76, 122, 56), fora2: rgb(118, 150, 72) };
+  const chao: Chao = { pontos: px, arvores, nevoa: (PISTA_DO_TEMA[d.tema] ?? HORTA).tema.ceu.baixo, fora: tc.fora[0], fora2: tc.fora[1] };
   chaos.set(d.id, chao);
   return chao;
 }
@@ -331,7 +377,36 @@ export function figurasDosAneis(cam: Camera, d: Desafio, pegos: number[], proxim
   return lista;
 }
 
+/**
+ * AS TÉRMICAS (19/11/2026): o ar que sobe, desenhado como fiapos claros subindo em espiral dentro da coluna (só desenho; a
+ * conta é a de sim.ts). Com "menos movimento", parados.
+ */
+export function figurasDasTermicas(cam: Camera, d: Desafio, tempo: number, calmo: boolean): Figura[] {
+  const lista: Figura[] = [];
+  d.termicas.forEach((t, i) => {
+    for (let k = 0; k < 14; k++) {
+      const fase = (k * 0.618 + i * 0.3) % 1;
+      const sobe = calmo ? fase : (fase + tempo * 0.12) % 1;
+      const ang = k * 2.39 + (calmo ? 0 : tempo * 0.8);
+      const r = t.raio * (0.25 + 0.6 * ((k * 0.37) % 1));
+      const p = projetar(cam, t.x + Math.cos(ang) * r, t.y + Math.sin(ang) * r, 4 + sobe * 110);
+      if (!p || p.z > 700) continue;
+      const tam = Math.max(1, Math.min(4, p.k * 1.4));
+      const alfa = 0.55 * Math.sin(sobe * Math.PI);
+      lista.push({
+        z: p.z,
+        desenhar: (ctx) => {
+          ctx.fillStyle = `rgba(255, 252, 236, ${alfa.toFixed(2)})`;
+          ctx.fillRect(Math.round(p.sx - tam / 2), Math.round(p.sy - tam * 1.5), Math.max(1, Math.round(tam)), Math.max(2, Math.round(tam * 3)));
+        },
+      });
+    }
+  });
+  return lista;
+}
+
 /** A plataforma da mochila: uma torre redonda de pedra com o topo marcado. */
+
 export function figuraDaPlataforma(cam: Camera, d: Desafio): Figura | null {
   if (d.tipo !== 'mochila') return null;
   const { x, y, h, raio } = d.alvo;

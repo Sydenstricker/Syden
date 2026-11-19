@@ -16,7 +16,7 @@
  * O PÓDIO: com a turma (2 ou mais que ficaram até o fim), os três primeiros vão para a estante de troféus do quarto (pista
  * 'caca', os pontos). NO SOLO, sem troféu, e a partida inteira pode virar o RECORDE da pessoa (caca_recordes).
  */
-import { ONDAS, fimDaOnda, municaoDaOnda, pontosDoAcerto, pragaAtingida, sortearOnda, type Praga, LARGURA, ALTURA } from './caca-voo.js';
+import { BONUS_PERFEITA, ONDAS, fimDaOnda, multiplicador, municaoDaOnda, pontosDoAcerto, pragaAtingida, sortearOnda, type Praga, LARGURA, ALTURA } from './caca-voo.js';
 import * as db from './db.js';
 import type { Definicao } from './minijogo-motor.js';
 
@@ -38,6 +38,10 @@ interface Cacador {
   ultimoTiro: number;
   /** Quantas pragas abateu na partida inteira, e de quantas. */
   acertos: number;
+  /** O COMBO (19/11/2026): acertos seguidos sem errar tiro (multiplica os pontos); e se a última onda foi perfeita. */
+  combo: number;
+  perfeita: boolean;
+  perfeitas: number;
 }
 
 export const caca: Definicao = criarCaca();
@@ -54,7 +58,7 @@ export function criarCaca({ agora = Date.now, aleatorio = Math.random }: { agora
       let inicio = 0;
       let pragas: Praga[] = [];
       const cacadores = new Map<number, Cacador>(
-        inscritos.map((id) => [id, { pontos: 0, abatidas: new Set(), municao: 0, daOnda: 0, ultimoTiro: -Infinity, acertos: 0 }]),
+        inscritos.map((id) => [id, { pontos: 0, abatidas: new Set(), municao: 0, daOnda: 0, ultimoTiro: -Infinity, acertos: 0, combo: 0, perfeita: false, perfeitas: 0 }]),
       );
       let totalDePragas = 0;
       /** Quem estava na sala no fim de TODAS as ondas: só eles são "a turma" do pódio. */
@@ -76,6 +80,7 @@ export function criarCaca({ agora = Date.now, aleatorio = Math.random }: { agora
           c.abatidas = new Set();
           c.municao = municaoDaOnda(onda);
           c.daOnda = 0;
+          c.perfeita = false;
         }
         ctx.agendar(PREPARO_MS, jogar);
         ctx.avisar();
@@ -90,6 +95,15 @@ export function criarCaca({ agora = Date.now, aleatorio = Math.random }: { agora
 
       const fechar = () => {
         if (fase !== 'jogando') return;
+        // A ONDA PERFEITA (19/11/2026): quem abateu todas ganha o bônus (contado aqui, pelas abatidas que o servidor conferiu)
+        for (const c of cacadores.values()) {
+          if (pragas.length > 0 && c.abatidas.size === pragas.length) {
+            c.perfeita = true;
+            c.perfeitas++;
+            c.pontos += BONUS_PERFEITA;
+            c.daOnda += BONUS_PERFEITA;
+          }
+        }
         const aqui = new Set(presentes());
         ficaram = new Set((ficaram ? [...ficaram] : inscritos).filter((id) => aqui.has(id)));
         if (onda >= ONDAS) return terminar();
@@ -166,7 +180,7 @@ export function criarCaca({ agora = Date.now, aleatorio = Math.random }: { agora
             pragas: fase === 'preparando' || fase === 'jogando' ? pragas : [],
             duracaoMs: fimDaOnda(pragas),
             decorridoMs: fase === 'jogando' ? agora() - inicio : null,
-            meu: meu ? { pontos: meu.pontos, daOnda: meu.daOnda, municao: meu.municao, abatidas: [...meu.abatidas] } : null,
+            meu: meu ? { pontos: meu.pontos, daOnda: meu.daOnda, municao: meu.municao, abatidas: [...meu.abatidas], combo: meu.combo, perfeita: meu.perfeita } : null,
             placar: placar(),
             totalDePragas,
             recorde: solo ? { antes: recordeAntes, novo: recordeNovo } : null,
@@ -190,11 +204,12 @@ export function criarCaca({ agora = Date.now, aleatorio = Math.random }: { agora
           const i = pragaAtingida(pragas, c.abatidas, x, y, ms);
           if (i >= 0) {
             c.abatidas.add(i);
-            const p = pontosDoAcerto(pragas[i], ms);
+            c.combo++;
+            const p = pontosDoAcerto(pragas[i], ms) * multiplicador(c.combo);
             c.pontos += p;
             c.daOnda += p;
             c.acertos++;
-          }
+          } else c.combo = 0;
           conferir();
           ctx.avisar();
           return null;

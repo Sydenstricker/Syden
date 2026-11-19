@@ -25,6 +25,20 @@
  * mais longe que o desenho (a folha de FOLGA_ACERTO). Não dá para atravessar parede, bater do outro lado da sala, abrir porta
  * de longe nem acertar o cristal sem a cenoura.
  *
+ * OS VASOS, AS MOITAS, A BOMBA E A SALA SECRETA (19/11/2026): o vaso se levanta (a pá, de frente para ele) e se joga; a pá
+ * corta a moita; a bomba de semente estoura sozinha. Tudo isso é do SERVIDOR: o vaso voa aqui (e acerta o bicho que ele vê),
+ * o que sai da moita e do vaso quebrado (coração, semente ou nada) é sorteado aqui, e a bomba estoura aqui. Quem pede só diz
+ * "levantei", "joguei", "cortei" ou "soltei a bomba", e o servidor confere a distância e a direção como confere o empurrão.
+ * A bomba ao lado da PAREDE RACHADA do salão dos cogumelos abre a sala secreta, e o CORAÇÃO GRANDE de lá dá um coração a mais
+ * a cada um da turma. A bomba também machuca quem está perto (a mesma folga de quem apanha).
+ *
+ * A SEGUNDA MASMORRA (19/11/2026): a MINA DOS POSTES, escolhida na largada (corpo.masmorra = 'mina'), ramificada e com o
+ * GANCHO no lugar da cenoura. O gancho é do servidor como a porta: quem o usa diz só a direção, e o servidor procura o poste
+ * na linha (alvoDoGancho, a mesma conta do site), põe o coelho na casa antes dele e conta o teleporte (tp), como na troca de
+ * sala; a posição velha, do outro lado da água, chega depois e é recusada.
+ *
+ * O RECORDE DO SOLO (19/11/2026): o tempo da masmorra vencida sozinho vai à tabela comum dos recordes do Solo ('masmorra').
+ *
  * OS TROFÉUS: com o rei-cogumelo vencido e 2 pessoas ou mais que ficaram até o fim, o pódio (até o 3º, empatados dividem, só quem
  * fez ponto) vai para a estante do quarto (corrida_trofeus, "pista" 'masmorra', com os pontos). Fora das conquistas da turma até
  * ele decidir. No Solo, nada.
@@ -33,7 +47,14 @@ import * as db from './db.js';
 import type { Contexto, Definicao } from './minijogo-motor.js';
 import {
   ACOES,
+  alvoDoGancho,
+  ehMasmorra,
+  MASMORRAS,
+  ALCANCE_DA_MAO,
+  ARREMESSO,
   BICHOS,
+  BOMBA,
+  CORACAO_GRANDE,
   CENOURA,
   centro,
   CHEGADA,
@@ -78,9 +99,17 @@ export const FOLGA_VEL = 1.3;
 export const ACUMULO = 18;
 export const ARRANCADA_EXTRA = Math.ceil(((ARRANCADA_VEL - VEL) * ARRANCADA_MS) / 1000) + 8;
 /** Os pontos: cada acerto, o baú, o cristal, os botões; cair tira. */
-export const PONTOS = { acerto: 5, bau: 30, cristal: 30, placas: 20, queda: -10 };
+export const PONTOS = {
+  acerto: 5,
+  bau: 30,
+  cristal: 30,
+  placas: 20,
+  queda: -10,
+};
 /** A chance de um bicho deixar um coração ao sumir. */
 export const CHANCE_DE_CORACAO = 0.3;
+/** O que sai do vaso quebrado e da moita cortada: coração, semente, ou nada (sorteado pelo servidor). */
+export const CHANCE_NA_MOITA = { coracao: 0.3, semente: 0.25 };
 
 interface Ponto {
   t: number;
@@ -170,6 +199,9 @@ interface Jogador {
   ultimoEmpurrao: number;
   tp: number;
   baldes: { pos: Balde; acao: Balde; pa: Balde };
+  /** Carregando um vaso por cima da cabeça (19/11/2026). */
+  carrega: boolean;
+  hpMax: number;
 }
 
 interface Pancada {
@@ -205,7 +237,7 @@ export function criarMasmorra({
   return {
     minimo: 2,
     maximo: 4,
-    comecar(ctx: Contexto, { naSala }) {
+    comecar(ctx: Contexto, { naSala, corpo }) {
       const inscritos = [...naSala].slice(0, 4);
       if (inscritos.length === 0) return 'Ninguém para jogar.';
       const solo = ctx.comunidade === 0 || ctx.comunidade === undefined;
@@ -213,7 +245,12 @@ export function criarMasmorra({
       const inicio = agora();
       const n = inscritos.length;
       let fase: Fase = 'jogando';
-      let sala: Sala = SALAS[0];
+      // qual masmorra (19/11/2026): a toca de sempre, ou a mina dos postes
+      const qual = ehMasmorra(corpo?.masmorra) ? corpo.masmorra : ehMasmorra(corpo?.categoria) ? corpo.categoria : 'toca';
+      const daMasmorra = MASMORRAS[qual];
+      /** A variante do recorde do Solo: a toca guarda a de antes (''). */
+      const variante = qual === 'toca' ? '' : qual;
+      let sala: Sala = SALAS[daMasmorra.inicio];
       /** Por onde a turma entrou na sala de agora (null na entrada: o começo). */
       let entrada: Lado | null = null;
       let passo = 0;
@@ -229,12 +266,37 @@ export function criarMasmorra({
       const pancadas: Pancada[] = [];
       const levaram = new Map<string, Set<number>>();
       const coracoes: { id: number; x: number; y: number }[] = [];
+      // os vasos e as moitas que saíram de cada sala, os vasos voando, as bombas e as sementes no chão (19/11/2026)
+      const foraDaSala = new Map<number, Set<string>>();
+      const foraAqui = () => {
+        let f = foraDaSala.get(sala.id);
+        if (!f) foraDaSala.set(sala.id, (f = new Set()));
+        return f;
+      };
+      const arremessos: {
+        id: number;
+        x: number;
+        y: number;
+        dx: number;
+        dy: number;
+        andou: number;
+        dono: number;
+      }[] = [];
+      const bombas: { id: number; x: number; y: number; em: number }[] = [];
+      const sementesNoChao: { id: number; x: number; y: number }[] = [];
+      let sementes = BOMBA.inicio;
+      let coracaoGrande = false;
+      const rachadas = new Set<string>();
+      let tempoDaVitoria: number | null = null;
+      const recordeAntes = solo ? (db.recordeDoSolo(inscritos[0], 'masmorra', variante)?.valor ?? null) : null;
+      let recordeNovo = false;
       // o mundo que fica: o que cada sala já resolveu
       const limpas = new Set<number>();
       const bausAbertos = new Set<number>();
       const resolvidas = new Set<number>();
       const destrancadas = new Set<string>();
-      const visitadas = new Set<number>([0]);
+      const visitadas = new Set<number>([daMasmorra.inicio]);
+      let temGancho = false;
       let ponte = false;
       let temCenoura = false;
       let chaves = 0;
@@ -243,7 +305,12 @@ export function criarMasmorra({
       /** Os blocos de cada sala resolvida ficam onde pararam. */
       const blocosGuardados = new Map<number, { id: number; c: number; l: number }[]>();
 
-      const balde = (max: number, porSeg: number): Balde => ({ fichas: max, em: agora(), max, porSeg });
+      const balde = (max: number, porSeg: number): Balde => ({
+        fichas: max,
+        em: agora(),
+        max,
+        porSeg,
+      });
       const gastar = (b: Balde) => {
         const t = agora();
         b.fichas = Math.min(b.max, b.fichas + ((t - b.em) / 1000) * b.porSeg);
@@ -287,7 +354,13 @@ export function criarMasmorra({
               ultimaCenoura: -1e9,
               ultimoEmpurrao: -1e9,
               tp: 1,
-              baldes: { pos: balde(30, 24), acao: balde(20, 10), pa: balde(3, 4) },
+              baldes: {
+                pos: balde(30, 24),
+                acao: balde(20, 10),
+                pa: balde(3, 4),
+              },
+              carrega: false,
+              hpMax: CORACOES,
             },
           ];
         }),
@@ -301,6 +374,7 @@ export function criarMasmorra({
         if (sala.bichos.length && !limpas.has(sala.id)) return false;
         if (p.trava === 'placas') return resolvidas.has(sala.id);
         if (p.trava === 'chave') return destrancadas.has(`${sala.id}:${lado}`);
+        if (p.trava === 'rachada') return rachadas.has(`${sala.id}:${lado}`);
         return true;
       };
       const mundo = (): Mundo => ({
@@ -308,6 +382,7 @@ export function criarMasmorra({
         bau: bauNaSala(),
         ponte,
         abertas: LADOS.filter(portaAberta),
+        fora: [...foraAqui()].map((k) => k.split(',').map(Number) as [number, number]),
       });
       const emPe = () => [...jogadores.values()].filter((j) => j.estado === 'em-pe');
 
@@ -355,6 +430,10 @@ export function criarMasmorra({
         tiros.length = 0;
         pancadas.length = 0;
         coracoes.length = 0;
+        arremessos.length = 0;
+        bombas.length = 0;
+        sementesNoChao.length = 0;
+        for (const j of jogadores.values()) j.carrega = false;
         if (!limpas.has(destino)) for (const b of sala.bichos) novoBicho(b.tipo, ...centro(b.c, b.l));
         // o bloco volta ao lugar se o enigma não foi resolvido (o empurrado para o canto não prende ninguém)
         blocos = resolvidas.has(destino) ? (blocosGuardados.get(destino) ?? []) : casasDe(sala, 'B').map(([c, l]) => ({ id: proximoId++, c, l }));
@@ -409,9 +488,23 @@ export function criarMasmorra({
         return bateu;
       };
       const pancada = (b: Bicho, px: number, py: number, raio: number, dano: number, chave = `${b.id}:${b.ataque}`) =>
-        pancadas.push({ em: agora(), chave, dentro: (x, y) => Math.hypot(x - px, y - py) <= raio + RAIO, dano, deX: b.x, deY: b.y });
+        pancadas.push({
+          em: agora(),
+          chave,
+          dentro: (x, y) => Math.hypot(x - px, y - py) <= raio + RAIO,
+          dano,
+          deX: b.x,
+          deY: b.y,
+        });
       const atirar = (x: number, y: number, dx: number, dy: number, vel: number) =>
-        tiros.push({ id: proximoId++, x, y, vx: dx * vel, vy: dy * vel, ate: agora() + 4000 });
+        tiros.push({
+          id: proximoId++,
+          x,
+          y,
+          vx: dx * vel,
+          vy: dy * vel,
+          ate: agora() + 4000,
+        });
 
       const passoDoBicho = (b: Bicho, t: number, dt: number) => {
         const vel = BICHOS[b.tipo].vel;
@@ -557,7 +650,11 @@ export function criarMasmorra({
             if (b.hp <= b.hpMax / 2 && !b.invocou) {
               b.invocou = true;
               const m = mundo();
-              for (const [ox, oy] of [[-70, 30], [70, 30]]) if (livre(sala, m, b.x + ox, b.y + oy, 14, 'bicho')) novoBicho('cogumelo', b.x + ox, b.y + oy);
+              for (const [ox, oy] of [
+                [-70, 30],
+                [70, 30],
+              ])
+                if (livre(sala, m, b.x + ox, b.y + oy, 14, 'bicho')) novoBicho('cogumelo', b.x + ox, b.y + oy);
               mudar(b, 'prep-sopro', 700);
             } else if (b.ataque % 2 === 0) mudar(b, 'prep-investida', 800);
             else {
@@ -621,7 +718,7 @@ export function criarMasmorra({
           for (const j of jogadores.values()) {
             if (j.estado === 'fora' && t >= j.voltaEm) {
               j.estado = 'em-pe';
-              j.hp = CORACOES;
+              j.hp = j.hpMax;
               j.invulAte = t + 2000;
               colocar(j, 0, t);
               evento_('r', j.userId);
@@ -642,13 +739,47 @@ export function criarMasmorra({
               continue;
             }
             const { x, y } = tr;
-            pancadas.push({ em: t, chave: `tiro:${tr.id}`, dentro: (px, py) => Math.hypot(px - x, py - y) <= 8 + RAIO, dano: 1, deX: x - tr.vx * 0.1, deY: y - tr.vy * 0.1, tiro: tr.id });
+            pancadas.push({
+              em: t,
+              chave: `tiro:${tr.id}`,
+              dentro: (px, py) => Math.hypot(px - x, py - y) <= 8 + RAIO,
+              dano: 1,
+              deX: x - tr.vx * 0.1,
+              deY: y - tr.vy * 0.1,
+              tiro: tr.id,
+            });
           }
           decidir(t);
+          andarArremessos(dt);
+          estourarBombas(t);
+          // as sementes no chão: quem passa por cima pega (são da turma)
+          for (let k = sementesNoChao.length - 1; k >= 0; k--) {
+            const sm = sementesNoChao[k];
+            const j = emPe().find((p) => Math.hypot(p.x - sm.x, p.y - sm.y) < 26);
+            if (!j || sementes >= BOMBA.maximo) continue;
+            sementes++;
+            sementesNoChao.splice(k, 1);
+            evento_('sm', j.userId);
+          }
+          // o coração grande: quem chega nele dá um coração a mais a cada um da turma
+          const grande = casasDe(sala, 'H')[0];
+          if (grande && !coracaoGrande) {
+            const [hx, hy] = centro(grande[0], grande[1]);
+            const j = emPe().find((p) => Math.hypot(p.x - hx, p.y - hy) < 28);
+            if (j) {
+              coracaoGrande = true;
+              for (const o of jogadores.values()) {
+                o.hpMax += CORACAO_GRANDE;
+                if (o.estado === 'em-pe') o.hp = o.hpMax;
+              }
+              j.pontos += PONTOS.bau;
+              evento_('g', j.userId);
+            }
+          }
           // os corações no chão: quem passa por cima e não está cheio pega
           for (let k = coracoes.length - 1; k >= 0; k--) {
             const c = coracoes[k];
-            const j = emPe().find((p) => p.hp < CORACOES && Math.hypot(p.x - c.x, p.y - c.y) < 26);
+            const j = emPe().find((p) => p.hp < p.hpMax && Math.hypot(p.x - c.x, p.y - c.y) < 26);
             if (!j) continue;
             j.hp++;
             coracoes.splice(k, 1);
@@ -661,6 +792,7 @@ export function criarMasmorra({
             if (j) {
               bausAbertos.add(sala.id);
               if (sala.bau!.guarda === 'cenoura') temCenoura = true;
+              else if (sala.bau!.guarda === 'gancho') temGancho = true;
               else chaves++;
               j.pontos += PONTOS.bau;
               evento_('b', sala.bau!.guarda, j.userId);
@@ -685,7 +817,7 @@ export function criarMasmorra({
           if (sala.bichos.length && !limpas.has(sala.id) && bichos.size === 0) {
             limpas.add(sala.id);
             evento_('l', sala.id);
-            if (sala.id === SALA_DO_CHEFE) return void (acabar(true), difundir());
+            if (sala.chefe || sala.id === SALA_DO_CHEFE) return void (acabar(true), difundir());
           }
           if (t - inicio > MAX_MS) acabar(false);
         }
@@ -703,6 +835,7 @@ export function criarMasmorra({
             const p = sala.portas[lado];
             if (!p) return 0;
             if (m.abertas.includes(lado)) return 1;
+            if (p.trava === 'rachada') return 4;
             return p.trava === 'chave' && !(sala.bichos.length && !limpas.has(sala.id)) ? 3 : 2;
           }),
           b: blocos.map((b) => [b.id, b.c, b.l]),
@@ -710,7 +843,12 @@ export function criarMasmorra({
           ponte: ponte ? 1 : 0,
           pl: placasApertadas,
           pr: resolvidas.has(sala.id) ? 1 : 0,
-          it: [temCenoura ? 1 : 0, chaves],
+          it: [temCenoura ? 1 : 0, chaves, sementes, temGancho ? 1 : 0],
+          o: [...foraAqui()].map((k) => k.split(',').map(Number)),
+          r: arremessos.map((a) => [a.id, Math.round(a.x), Math.round(a.y)]),
+          bs: bombas.map((b) => [b.id, Math.round(b.x), Math.round(b.y), Math.max(0, BOMBA.pavio - (agora() - b.em))]),
+          sm: sementesNoChao.map((sm) => [sm.id, Math.round(sm.x), Math.round(sm.y)]),
+          cg: coracaoGrande ? 1 : 0,
           i: [...bichos.values()].map((b) => [
             b.id,
             TIPOS.indexOf(b.tipo),
@@ -740,6 +878,8 @@ export function criarMasmorra({
             j.avatar ?? 0,
             j.ultimoAtaque,
             j.tp,
+            j.carrega ? 1 : 0,
+            j.hpMax,
           ]),
           e: eventos,
         });
@@ -748,6 +888,7 @@ export function criarMasmorra({
 
       const acabar = (ganhou: boolean, vazia = false) => {
         if (fase !== 'jogando') return;
+        if (ganhou) tempoDaVitoria = agora() - inicio;
         fase = ganhou ? 'vitoria' : 'derrota';
         ctx.avisar();
         if (vazia) parar();
@@ -759,7 +900,17 @@ export function criarMasmorra({
         relogio = null;
       };
 
-      let resultado: { userId: number; username: string; pontos: number; acertos: number; nocautes: number; quedas: number; posicao: number | null }[] | null = null;
+      let resultado:
+        | {
+            userId: number;
+            username: string;
+            pontos: number;
+            acertos: number;
+            nocautes: number;
+            quedas: number;
+            posicao: number | null;
+          }[]
+        | null = null;
       const terminar = (ganhou: boolean, completa = true) => {
         parar();
         fase = 'fim';
@@ -767,13 +918,27 @@ export function criarMasmorra({
         const presentes = new Set(ctx.naSala());
         const turma = new Set([...ficaram].filter((id) => presentes.has(id)));
         const linhas = [...jogadores.values()]
-          .map((j) => ({ userId: j.userId, username: ctx.nome(j.userId), pontos: j.pontos, acertos: j.acertos, nocautes: j.nocautes, quedas: j.quedas }))
+          .map((j) => ({
+            userId: j.userId,
+            username: ctx.nome(j.userId),
+            pontos: j.pontos,
+            acertos: j.acertos,
+            nocautes: j.nocautes,
+            quedas: j.quedas,
+          }))
           .sort((a, b) => b.pontos - a.pontos || a.username.localeCompare(b.username));
         const daTurma = linhas.filter((l) => turma.has(l.userId));
         resultado = [
-          ...daTurma.map((l) => ({ ...l, posicao: 1 + daTurma.filter((o) => o.pontos > l.pontos).length })),
+          ...daTurma.map((l) => ({
+            ...l,
+            posicao: 1 + daTurma.filter((o) => o.pontos > l.pontos).length,
+          })),
           ...linhas.filter((l) => !turma.has(l.userId)).map((l) => ({ ...l, posicao: null })),
         ];
+        // O RECORDE DO SOLO: o tempo da masmorra vencida sozinho (o relógio é o do servidor)
+        if (ganhou && solo && tempoDaVitoria !== null && ficaram.has(inscritos[0])) {
+          recordeNovo = db.guardarRecordeDoSolo(inscritos[0], 'masmorra', variante, tempoDaVitoria, true).novo;
+        }
         // O PÓDIO: o chefe vencido, 2 pessoas ou mais que ficaram até o fim, até o 3º (empatados dividem), só quem fez ponto
         if (ganhou && !solo && turma.size >= 2) {
           for (const l of resultado) {
@@ -967,7 +1132,184 @@ export function criarMasmorra({
         return null;
       };
 
-      entrarNa(0, null);
+      // ---------------- OS VASOS, AS MOITAS E A BOMBA (19/11/2026) ----------------
+      /** O que sai do vaso e da moita: o servidor sorteia. */
+      const soltarAlgo = (x: number, y: number) => {
+        const r = aleatorio();
+        if (r < CHANCE_NA_MOITA.coracao) coracoes.push({ id: proximoId++, x, y });
+        else if (r < CHANCE_NA_MOITA.coracao + CHANCE_NA_MOITA.semente) sementesNoChao.push({ id: proximoId++, x, y });
+      };
+      /** A casa (c, l) é um vaso (ou moita) que ainda está na sala? */
+      const aindaNaSala = (c: number, l: number, letra: 'V' | 'M') => sala.grade[l]?.[c] === letra && !foraAqui().has(`${c},${l}`);
+      const pertoDaCasa = (j: Jogador, c: number, l: number) => {
+        const [cx, cy] = centro(c, l);
+        return Math.hypot(j.x - cx, j.y - cy) <= ALCANCE_DA_MAO;
+      };
+      const quebrar = (c: number, l: number) => {
+        foraAqui().add(`${c},${l}`);
+        const [cx, cy] = centro(c, l);
+        soltarAlgo(cx, cy);
+        evento_('q', Math.round(cx), Math.round(cy));
+      };
+
+      /** Levantar o vaso da frente. */
+      const levantar = (j: Jogador, d: Record<string, unknown>): string | null => {
+        if (j.carrega) return 'já carrega';
+        if (!numero(d.c) || !numero(d.l)) return 'casa';
+        const c = Math.floor(d.c);
+        const l = Math.floor(d.l);
+        if (!aindaNaSala(c, l, 'V')) return 'sem vaso';
+        if (!pertoDaCasa(j, c, l)) return 'longe';
+        foraAqui().add(`${c},${l}`);
+        j.carrega = true;
+        evento_('v', j.userId);
+        return null;
+      };
+
+      /** Jogar o vaso: ele voa para onde o coelho olha, e o servidor o anda. */
+      const jogar = (j: Jogador): string | null => {
+        if (!j.carrega) return 'sem vaso';
+        j.carrega = false;
+        const [dx, dy] = DIRS[j.dir];
+        arremessos.push({
+          id: proximoId++,
+          x: j.x,
+          y: j.y - 10,
+          dx,
+          dy,
+          andou: 0,
+          dono: j.userId,
+        });
+        return null;
+      };
+
+      /** A pá na moita: o golpe tem de ser recente, e a moita perto. */
+      const cortar = (j: Jogador, d: Record<string, unknown>): string | null => {
+        const a = j.ataques.find((x) => x.id === d.a);
+        if (!a || a.g !== 'pa' || agora() - a.em > PA.dura + 500) return 'sem golpe';
+        if (!numero(d.c) || !numero(d.l)) return 'casa';
+        const c = Math.floor(d.c);
+        const l = Math.floor(d.l);
+        if (!aindaNaSala(c, l, 'M')) return 'sem moita';
+        if (!pertoDaCasa(j, c, l)) return 'longe';
+        j.pontos += 1;
+        quebrar(c, l);
+        return null;
+      };
+
+      /** Soltar a bomba de semente aos pés. */
+      const soltarBomba = (j: Jogador): string | null => {
+        if (sementes <= 0) return 'sem semente';
+        if (bombas.some((b) => agora() - b.em < 400)) return 'cedo';
+        sementes--;
+        bombas.push({ id: proximoId++, x: j.x, y: j.y, em: agora() });
+        return null;
+      };
+
+      const andarArremessos = (dt: number) => {
+        const m = mundo();
+        for (let k = arremessos.length - 1; k >= 0; k--) {
+          const a = arremessos[k];
+          const passo_ = ARREMESSO.vel * dt;
+          a.x += a.dx * passo_;
+          a.y += a.dy * passo_;
+          a.andou += passo_;
+          const alvo = [...bichos.values()].find(
+            (b) => b.estado !== 'morto' && b.hp > 0 && b.z < 14 && Math.hypot(b.x - a.x, b.y - a.y) <= ARREMESSO.raio + BICHOS[b.tipo].raio,
+          );
+          const bateu = solida(sala, m, Math.floor(a.x / TILE), Math.floor(a.y / TILE), 'tiro');
+          if (!alvo && !bateu && a.andou < ARREMESSO.alcance) continue;
+          arremessos.splice(k, 1);
+          if (alvo) {
+            const dono = jogadores.get(a.dono);
+            alvo.hp = Math.max(0, alvo.hp - ARREMESSO.dano);
+            if (dono) dono.pontos += PONTOS.acerto;
+            evento_('h', alvo.id, a.dono, Math.round(alvo.x), Math.round(alvo.y));
+            if (alvo.hp <= 0) {
+              if (dono) {
+                dono.pontos += BICHOS[alvo.tipo].pontos;
+                dono.nocautes++;
+              }
+              alvo.z = 0;
+              mudar(alvo, 'morto', 500);
+              evento_('x', alvo.id, Math.round(alvo.x), Math.round(alvo.y));
+            } else if (alvo.tipo !== 'rei-cogumelo') mudar(alvo, 'atordoado', 1000);
+          }
+          // o vaso quebra onde parou (um pouco antes da parede)
+          const qx = bateu ? a.x - a.dx * 12 : a.x;
+          const qy = bateu ? a.y - a.dy * 12 : a.y;
+          soltarAlgo(qx, qy);
+          evento_('q', Math.round(qx), Math.round(qy));
+        }
+      };
+
+      const estourarBombas = (t: number) => {
+        for (let k = bombas.length - 1; k >= 0; k--) {
+          const b = bombas[k];
+          if (t - b.em < BOMBA.pavio) continue;
+          bombas.splice(k, 1);
+          evento_('e', Math.round(b.x), Math.round(b.y));
+          // os bichos em volta
+          for (const bi of bichos.values()) {
+            if (bi.estado === 'morto' || bi.hp <= 0 || Math.hypot(bi.x - b.x, bi.y - b.y) > BOMBA.raio + BICHOS[bi.tipo].raio) continue;
+            bi.hp = Math.max(0, bi.hp - BOMBA.dano);
+            evento_('h', bi.id, 0, Math.round(bi.x), Math.round(bi.y));
+            if (bi.hp <= 0) {
+              bi.z = 0;
+              mudar(bi, 'morto', 500);
+              evento_('x', bi.id, Math.round(bi.x), Math.round(bi.y));
+            } else if (bi.tipo !== 'rei-cogumelo') mudar(bi, 'atordoado', 1200);
+          }
+          // quem está perto também leva (com a folga de sempre)
+          const { x, y } = b;
+          pancadas.push({
+            em: t,
+            chave: `bomba:${b.id}`,
+            dentro: (px, py) => Math.hypot(px - x, py - y) <= BOMBA.raio - 8,
+            dano: 1,
+            deX: x,
+            deY: y,
+          });
+          // os vasos e as moitas em volta quebram
+          for (const letra of ['V', 'M'] as const) {
+            for (const [c, l] of casasDe(sala, letra)) {
+              if (!aindaNaSala(c, l, letra)) continue;
+              const [cx, cy] = centro(c, l);
+              if (Math.hypot(cx - x, cy - y) <= BOMBA.raio + 16) quebrar(c, l);
+            }
+          }
+          // a parede rachada
+          for (const lado of LADOS) {
+            const porta_ = sala.portas[lado];
+            if (porta_?.trava !== 'rachada' || rachadas.has(`${sala.id}:${lado}`)) continue;
+            const [px, py] = centro(...PORTA[lado]);
+            if (Math.hypot(px - x, py - y) > BOMBA.raio + 24) continue;
+            rachadas.add(`${sala.id}:${lado}`);
+            evento_('a', 'rachada');
+          }
+        }
+      };
+
+      /** O gancho: o servidor acha o poste na linha e puxa o coelho até a casa antes dele. */
+      const gancho = (j: Jogador, d: Record<string, unknown>): string | null => {
+        if (!temGancho) return 'sem gancho';
+        if (!numero(d.dir) || d.dir < 0 || d.dir > 3) return 'direção';
+        const dir = Math.floor(d.dir);
+        const alvo = alvoDoGancho(sala, mundo(), j.x, j.y, dir);
+        if (!alvo) return 'sem poste';
+        const t = agora();
+        j.dir = dir;
+        [j.x, j.y] = alvo.para;
+        j.historia = [];
+        j.livreAte = t + 600;
+        j.carrega = false;
+        j.tp++;
+        const [px, py] = centro(alvo.poste[0], alvo.poste[1]);
+        evento_('gh', j.userId, Math.round(px), Math.round(py));
+        return null;
+      };
+
+      entrarNa(daMasmorra.inicio, null);
       // o começo: na entrada, ninguém vem de porta nenhuma (a chegada é a do sul)
       relogio = intervalo(tick, PASSO_MS);
 
@@ -977,8 +1319,23 @@ export function criarMasmorra({
             fase,
             sala: sala.id,
             venceu: fase === 'vitoria' || (fase === 'fim' && venceu),
-            jogadores: [...jogadores.values()].map((j) => ({ userId: j.userId, username: ctx.nome(j.userId), avatar: j.avatar, pontos: j.pontos })),
+            jogadores: [...jogadores.values()].map((j) => ({
+              userId: j.userId,
+              username: ctx.nome(j.userId),
+              avatar: j.avatar,
+              pontos: j.pontos,
+            })),
             resultado: fase === 'fim' ? resultado : null,
+            masmorra: qual,
+            // o "Jogar de novo" do painel manda a categoria de volta: a mesma masmorra
+            categoria: qual,
+            recorde: solo
+              ? {
+                  tempoMs: tempoDaVitoria,
+                  antes: recordeAntes,
+                  novo: recordeNovo,
+                }
+              : null,
             partidaId: evento,
           };
         },
@@ -1000,6 +1357,11 @@ export function criarMasmorra({
           else if (d.tipo === 'cristal') ultimoMotivo = cristal(j, d);
           else if (d.tipo === 'empurrar') ultimoMotivo = empurrar(j, d);
           else if (d.tipo === 'porta') ultimoMotivo = porta(j, d);
+          else if (d.tipo === 'levantar') ultimoMotivo = levantar(j, d);
+          else if (d.tipo === 'jogar') ultimoMotivo = jogar(j);
+          else if (d.tipo === 'cortar') ultimoMotivo = cortar(j, d);
+          else if (d.tipo === 'bomba') ultimoMotivo = soltarBomba(j);
+          else if (d.tipo === 'gancho') ultimoMotivo = gancho(j, d);
           return null;
         },
         conferir() {
@@ -1007,7 +1369,17 @@ export function criarMasmorra({
         },
         parar,
         // para o teste
-        ...({ _passo: tick, _bichos: bichos, _jogadores: jogadores, _motivo: () => ultimoMotivo, _sala: () => sala.id } as object),
+        ...({
+          _passo: tick,
+          _bichos: bichos,
+          _jogadores: jogadores,
+          _motivo: () => ultimoMotivo,
+          _sala: () => sala.id,
+          _entrar: (destino: number, lado: Lado | null) => entrarNa(destino, lado),
+          _sementes: () => sementes,
+          _coracoes: coracoes,
+          _sementesNoChao: sementesNoChao,
+        } as object),
       };
     },
   };

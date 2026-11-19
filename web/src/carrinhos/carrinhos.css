@@ -236,3 +236,93 @@
   text-align: center;
   font-size: calc(18px * var(--escala-do-texto, 1));
 }
+
+/* A ESCOLHA DA PISTA E O EDITOR (EscolhaDaPista.tsx, 19/11/2026): os mapas das pistas, as peças e o código. */
+.carrinhos-escolha-pista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.carrinhos-pistas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 8px;
+}
+.carrinhos-pista {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: #c79b6e;
+  color: #2d1c10;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+.carrinhos-pista.escolhido {
+  outline: 3px solid var(--accent);
+  outline-offset: 1px;
+}
+.carrinhos-montar {
+  background: var(--bg-raised);
+  color: var(--text);
+  justify-content: center;
+  min-height: 84px;
+  font-size: calc(12px * var(--escala-do-texto, 1));
+}
+.carrinhos-mapa {
+  width: 100%;
+  height: 64px;
+  display: block;
+}
+.carrinhos-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.carrinhos-editor .carrinhos-mapa {
+  height: 180px;
+  background: #c79b6e;
+  border-radius: var(--radius);
+}
+.carrinhos-pecas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.carrinhos-pecas button {
+  min-width: 44px;
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+  color: var(--text);
+  font-size: 18px;
+  cursor: pointer;
+}
+.carrinhos-pecas button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.carrinhos-codigo {
+  display: flex;
+  gap: 6px;
+}
+.carrinhos-codigo input {
+  flex: 1;
+  min-width: 0;
+  font-family: monospace;
+}

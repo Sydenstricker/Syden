@@ -8,22 +8,43 @@
  * tempo, as voltas e as saídas da pista são os dele; o que o site diz não conta. E o tempo não passa do que passou de verdade
  * desde a largada (com a contagem de folga).
  *
+ * AS PISTAS (19/11/2026): cinco traçados prontos (TRACADOS em carrinhos-sim.ts) e os do EDITOR, que chegam como o código de
+ * texto ("SYDP1-…") e são conferidos aqui com a mesma função do site (`pistaPedida` → `validarTracado`): o que não fecha, se
+ * cruza, é curto ou tem cruzamentos ímpares, não corre. Cinco voltas ou a RESISTÊNCIA (vinte).
+ *
  * NO SOLO (ctx.solo), contra o relógio, sempre na faixa do recorde (FAIXA_DO_RECORDE: os tempos se comparam), com até 3
  * fantasmas (o meu e os dos AMIGOS ACEITOS, a regra do kart) e de 0 a 3 robôs nas outras faixas (os robôs são do site: o
- * resultado deles não vem ao servidor nem conta em nada). O melhor tempo vira o recorde (carrinhos_recordes).
+ * resultado deles não vem ao servidor nem conta em nada). O melhor tempo vira o recorde (carrinhos_recordes), um por pista e
+ * número de voltas (`chaveDoRecorde`).
  *
- * NA SALA (2 a 4), cada um na sua faixa, pela ordem de quem aceitou: o servidor dá o verde, repassa as posições (a distância na
- * faixa e se o carro está fora) e classifica pelo tempo de cada um, refeito. A primeira chegada abre 30 s para os outros. A
- * corrida da sala NÃO vira recorde: a faixa é outra. O pódio vai para a estante de troféus (pista 'carrinhos').
+ * NA SALA (2 a 4), cada um na sua faixa, pela ordem de quem aceitou, na pista e no número de voltas de quem convidou: o
+ * servidor dá o verde, repassa as posições (a distância na faixa e se o carro está fora) e classifica pelo tempo de cada um,
+ * refeito. A primeira chegada abre 30 s para os outros. A corrida da sala NÃO vira recorde: a faixa é outra. O pódio vai
+ * para a estante de troféus (pista 'carrinhos').
  */
 import * as db from './db.js';
-import { entradasValidas, FAIXA_DO_RECORDE, FAIXAS, refazer, VMAX, VOLTA, VOLTAS } from './carrinhos-sim.js';
+import {
+  codigoDaPista,
+  entradasValidas,
+  FAIXA_DO_RECORDE,
+  FAIXAS,
+  IDS_DAS_PISTAS,
+  PISTA_PADRAO,
+  PISTAS,
+  pistaPedida,
+  refazer,
+  VMAX,
+  VOLTAS,
+  VOLTAS_DA_RESISTENCIA,
+  type Pista,
+} from './carrinhos-sim.js';
 import type { Definicao } from './minijogo-motor.js';
 
 export const PISTA_DOS_CARRINHOS = 'toca-1';
 export const LARGADA_MS = 4000;
 export const PRAZO_MS = 30_000;
-const CORRIDA_MS = 4 * 60_000;
+/** A corrida da sala: 4 minutos em cinco voltas, 16 na resistência. */
+const corridaMs = (voltas: number) => (voltas === VOLTAS ? 4 : 16) * 60_000;
 const SOLO_PARADO_MS = 30 * 60_000;
 export const FOLGA_MS = 3000;
 const PASSOS_DE_FOLGA = 180;
@@ -32,12 +53,23 @@ export const MAX_ROBOS = FAIXAS - 1;
 
 const tempoDe = (passos: number) => Math.round((passos * 1000) / 60);
 
+/** A RESISTÊNCIA (19/11/2026): vinte voltas em vez de cinco; o recorde é outro. */
+export const voltasPedidas = (v: unknown) => (v === VOLTAS_DA_RESISTENCIA ? VOLTAS_DA_RESISTENCIA : VOLTAS);
+
+/**
+ * A chave do recorde em carrinhos_recordes: o id da pista pronta, ou o CÓDIGO da pista do editor (o texto inteiro: quem tem o
+ * código corre a mesma pista, e o recorde de um amigo nela aparece como nas prontas); com '@20' na resistência. A Toca em
+ * cinco voltas é 'toca-1', a chave de antes: os recordes de antes continuam valendo.
+ */
+export const chaveDoRecorde = (pista: Pista, voltas: number) =>
+  (PISTAS[pista.id] === pista ? pista.id : codigoDaPista(pista.tracado)) + (voltas === VOLTAS ? '' : `@${voltas}`);
+
 /** Refaz a corrida pelas entradas; erro se não chegou. */
-function conferirCorrida(faixa: number, corpo: Record<string, unknown>): { erro: string } | { passos: number; voltas: number[]; entradas: number[]; saidas: number } {
+function conferirCorrida(pista: Pista, voltas: number, faixa: number, corpo: Record<string, unknown>): { erro: string } | { passos: number; voltas: number[]; entradas: number[]; saidas: number } {
   if (!entradasValidas(corpo.entradas)) return { erro: 'Corrida inválida.' };
-  const c = refazer(faixa, corpo.entradas);
+  const c = refazer(faixa, corpo.entradas, pista, voltas);
   if (!c.chegou) return { erro: 'Corrida inválida.' };
-  return { passos: c.voltas[VOLTAS - 1], voltas: c.voltas, entradas: corpo.entradas, saidas: c.saidas };
+  return { passos: c.voltas[voltas - 1], voltas: c.voltas, entradas: corpo.entradas, saidas: c.saidas };
 }
 
 export const carrinhos: Definicao = criarCarrinhos();
@@ -47,8 +79,11 @@ export function criarCarrinhos(agora: () => number = Date.now): Definicao {
   return {
     minimo: 2,
     maximo: FAIXAS,
-    comecar(ctx, { naSala }) {
-      return ctx.solo ? solo(ctx, naSala[0], agora) : sala(ctx, naSala, agora);
+    comecar(ctx, { naSala, corpo }) {
+      if (ctx.solo) return solo(ctx, naSala[0], agora);
+      const pista = pistaPedida(corpo.pista, corpo.codigo);
+      if (!pista) return 'Pista inválida.';
+      return sala(ctx, naSala, pista, voltasPedidas(corpo.voltas), agora);
     },
   };
 }
@@ -62,33 +97,62 @@ function solo(ctx: Parameters<Definicao['comecar']>[0], eu: number, agora: () =>
   let rodada = 0;
   let robos = 0;
   let correuEm = 0;
+  let pista: Pista = PISTA_PADRAO;
+  let voltas = VOLTAS;
   let fantasmas: { userId: number; nome: string; avatar: number | string | null; tempoMs: number; entradas: number[] }[] = [];
   let resultado: { tempoMs: number; voltas: number[]; saidas: number; recorde: boolean; anterior: number | null } | null = null;
   const evento = `carrinhos-solo-${eu}-${agora()}`;
   const parado = () => ctx.agendar(SOLO_PARADO_MS, () => ctx.terminar(false));
   parado();
 
+  /** Troca a pista e as voltas pelo pedido; erro se a pista não vale (o que não veio, fica). */
+  const escolher = (c: Record<string, unknown>): string | null => {
+    if (c.pista !== undefined || c.codigo !== undefined) {
+      const p = pistaPedida(c.pista, c.codigo);
+      if (!p) return 'Pista inválida.';
+      pista = p;
+    }
+    if (c.voltas !== undefined) voltas = voltasPedidas(c.voltas);
+    return null;
+  };
+
   return {
-    publico: () => ({
-      fase,
-      solo: true,
-      voltasDaCorrida: VOLTAS,
-      recordes: db
-        .recordesDosCarrinhos(eu, PISTA_DOS_CARRINHOS)
-        .map(({ userId, username, nomeDeExibicao, avatarPronto, tempoMs }) => ({ userId, nome: nomeDeExibicao || username, avatar: avatarPronto, tempoMs })),
-      meuAvatar: db.avatarDoJogo(eu),
-      meuNome: ctx.nome(eu),
-      fantasmas: fase === 'correndo' ? fantasmas : [],
-      robos,
-      rodada,
-      resultado,
-      partidaId: evento,
-    }),
+    publico: () => {
+      // os meus tempos em cada pista pronta (nas cinco e nas vinte voltas), para a escolha mostrar
+      const meus: Record<string, number> = {};
+      for (const id of IDS_DAS_PISTAS) {
+        for (const n of [VOLTAS, VOLTAS_DA_RESISTENCIA]) {
+          const chave = chaveDoRecorde(PISTAS[id], n);
+          const r = db.recordeDosCarrinhos(eu, chave);
+          if (r) meus[chave] = r.tempoMs;
+        }
+      }
+      return {
+        fase,
+        solo: true,
+        voltasDaCorrida: voltas,
+        pista: pista.id,
+        tracado: pista.tracado,
+        recordes: db
+          .recordesDosCarrinhos(eu, chaveDoRecorde(pista, voltas))
+          .map(({ userId, username, nomeDeExibicao, avatarPronto, tempoMs }) => ({ userId, nome: nomeDeExibicao || username, avatar: avatarPronto, tempoMs })),
+        meusTempos: meus,
+        meuAvatar: db.avatarDoJogo(eu),
+        meuNome: ctx.nome(eu),
+        fantasmas: fase === 'correndo' ? fantasmas : [],
+        robos,
+        rodada,
+        resultado,
+        partidaId: evento,
+      };
+    },
     acao(quem: number, c: Record<string, unknown>) {
       if (quem !== eu) return 'Você está assistindo esta partida.';
       parado();
       if (c.tipo === 'escolher') {
         if (fase === 'correndo') return 'A corrida está andando.';
+        const erro = escolher(c);
+        if (erro) return erro;
         fase = 'escolha';
         resultado = null;
         ctx.avisar();
@@ -96,15 +160,18 @@ function solo(ctx: Parameters<Definicao['comecar']>[0], eu: number, agora: () =>
       }
       if (c.tipo === 'correr') {
         if (fase === 'correndo') return 'A corrida está andando.';
+        const erro = escolher(c);
+        if (erro) return erro;
         robos = Number.isInteger(c.robos) ? Math.max(0, Math.min(MAX_ROBOS, c.robos as number)) : 0;
         // os fantasmas: o meu e os dos amigos aceitos (sem bloqueio), no máximo três; o que não pode, some calado
         const pedidos = Array.isArray(c.fantasmas)
           ? [...new Set(c.fantasmas.filter((id): id is number => Number.isInteger(id) && (id as number) > 0))].slice(0, MAX_FANTASMAS)
           : [];
+        const chave = chaveDoRecorde(pista, voltas);
         fantasmas = [];
         for (const id of pedidos) {
           if (id !== eu && (db.amizadeEntre(eu, id)?.situacao !== 'aceita' || db.haBloqueio(eu, id))) continue;
-          const r = db.recordeDosCarrinhos(id, PISTA_DOS_CARRINHOS);
+          const r = db.recordeDosCarrinhos(id, chave);
           if (!r) continue;
           const u = db.findUserById(id);
           fantasmas.push({ userId: id, nome: u?.nomeDeExibicao || u?.username || '?', avatar: (u?.coelho ?? u?.avatarPronto ?? null), tempoMs: r.tempoMs, entradas: JSON.parse(r.entradas) as number[] });
@@ -118,12 +185,12 @@ function solo(ctx: Parameters<Definicao['comecar']>[0], eu: number, agora: () =>
       }
       if (c.tipo === 'chegada') {
         if (fase !== 'correndo') return 'A corrida não está andando.';
-        const v = conferirCorrida(FAIXA_DO_RECORDE, c);
+        const v = conferirCorrida(pista, voltas, FAIXA_DO_RECORDE, c);
         if ('erro' in v) return v.erro;
         const tempoMs = tempoDe(v.passos);
         // o tempo não passa do que de fato passou desde que a corrida começou (a contagem fica de folga)
         if (tempoMs > agora() - correuEm + FOLGA_MS) return 'Corrida inválida.';
-        const r = db.guardarCarrinhos(eu, PISTA_DOS_CARRINHOS, tempoMs, v.voltas, JSON.stringify(v.entradas));
+        const r = db.guardarCarrinhos(eu, chaveDoRecorde(pista, voltas), tempoMs, v.voltas, JSON.stringify(v.entradas));
         fase = 'resultado';
         resultado = { tempoMs, voltas: v.voltas.map(tempoDe), saidas: v.saidas, recorde: r.recorde, anterior: r.anterior };
         ctx.avisar();
@@ -146,7 +213,7 @@ interface Piloto {
   ultima: { n: number; s: number; em: number } | null;
 }
 
-function sala(ctx: Parameters<Definicao['comecar']>[0], naSala: number[], agora: () => number) {
+function sala(ctx: Parameters<Definicao['comecar']>[0], naSala: number[], pista: Pista, voltas: number, agora: () => number) {
   const evento = `carrinhos-${ctx.comunidade ?? 0}-${agora()}`;
   let fase: 'largada' | 'correndo' | 'fim' = 'largada';
   let verdeEm = 0;
@@ -205,7 +272,7 @@ function sala(ctx: Parameters<Definicao['comecar']>[0], naSala: number[], agora:
   ctx.agendar(LARGADA_MS, () => {
     fase = 'correndo';
     verdeEm = agora();
-    ctx.agendar(CORRIDA_MS, fechar);
+    ctx.agendar(corridaMs(voltas), fechar);
     ctx.avisar();
   });
 
@@ -213,7 +280,7 @@ function sala(ctx: Parameters<Definicao['comecar']>[0], naSala: number[], agora:
   const posicaoPossivel = (p: Piloto, n: number, s: number) => {
     if (!Number.isInteger(n) || n < 1) return false;
     if (n > ((agora() - verdeEm) * 60) / 1000 + PASSOS_DE_FOLGA) return false;
-    if (s < 0 || s > VOLTAS * VOLTA[p.faixa] + 12) return false;
+    if (s < 0 || s > voltas * pista.volta[p.faixa] + 12) return false;
     const u = p.ultima ?? { n: 0, s: 0 };
     if (n <= u.n) return false;
     return s >= u.s - 0.01 && s - u.s <= ((n - u.n) * VMAX) / 60 + 0.5;
@@ -223,7 +290,9 @@ function sala(ctx: Parameters<Definicao['comecar']>[0], naSala: number[], agora:
     publico: () => ({
       fase,
       solo: false,
-      voltasDaCorrida: VOLTAS,
+      voltasDaCorrida: voltas,
+      pista: pista.id,
+      tracado: pista.tracado,
       pilotos: classificacao().map(({ userId, username, faixa, tempoMs, voltas, posicao }) => ({ userId, username, faixa, tempoMs, voltas, posicao, avatar: avatares.get(userId) ?? null })),
       prazo: prazoAberto,
       partidaId: evento,
@@ -234,13 +303,13 @@ function sala(ctx: Parameters<Definicao['comecar']>[0], naSala: number[], agora:
       if (c.tipo !== 'chegada') return 'Ação desconhecida.';
       if (fase !== 'correndo') return 'A corrida não está andando.';
       if (p.tempoMs !== null) return null;
-      const v = conferirCorrida(p.faixa, c);
+      const v = conferirCorrida(pista, voltas, p.faixa, c);
       if ('erro' in v) return v.erro;
       const tempoMs = tempoDe(v.passos);
       if (tempoMs > agora() - verdeEm + FOLGA_MS) return 'Corrida inválida.';
       p.tempoMs = tempoMs;
       p.voltas = v.voltas.map(tempoDe);
-      p.andou = VOLTAS * VOLTA[p.faixa];
+      p.andou = voltas * pista.volta[p.faixa];
       if (!prazoAberto) {
         prazoAberto = true;
         ctx.agendar(PRAZO_MS, fechar);

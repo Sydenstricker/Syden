@@ -24,13 +24,13 @@ export function pilotoAutomatico(eu: Meu, v: Vista, cmd: Comandos) {
     if (t < 0.32 && t > -0.05) pula = true;
   }
   for (const b of vivos) {
-    if (b.tipo === 'cogumelo' && b.estado === 'preparando' && b.ms > 300 && Math.abs(b.x - eu.x) < 40) pula = true;
+    if (BICHOS[b.tipo].comp === 'andarilho' && b.estado === 'preparando' && b.ms > 300 && Math.abs(b.x - eu.x) < 40) pula = true;
   }
   // ---- o perigo: sair de baixo ----
   let foge: number | null = null;
   for (const b of vivos) {
-    if (b.tipo === 'abelha' && b.estado === 'marcando' && Math.abs(b.alvoX - eu.x) < 24) foge = b.alvoX;
-    if (b.tipo === 'dragao' && (b.estado === 'prep-pisao' || b.estado === 'saltando') && Math.abs(b.alvoX - eu.x) < 56) foge = b.alvoX;
+    if (BICHOS[b.tipo].comp === 'voador' && b.estado === 'marcando' && Math.abs(b.alvoX - eu.x) < 24) foge = b.alvoX;
+    if (BICHOS[b.tipo].comp === 'chefe' && (b.estado === 'prep-pisao' || b.estado === 'saltando') && Math.abs(b.alvoX - eu.x) < 56) foge = b.alvoX;
   }
   for (const b of v.balas) if (b.tipo === 2 && Math.abs(b.x - eu.x) < 18 && b.h > eu.h) foge = b.x;
 
@@ -39,7 +39,8 @@ export function pilotoAutomatico(eu: Meu, v: Vista, cmd: Comandos) {
   let melhor = Infinity;
   for (const b of vivos) {
     if (b.x < a0 - 4 || b.x > a1 + 4) continue;
-    const d = Math.abs(b.x - eu.x) + (b.tipo === 'abelha' ? 40 : 0);
+    const c = BICHOS[b.tipo].comp;
+    const d = Math.abs(b.x - eu.x) + (c === 'voador' ? 40 : c === 'capsula' ? 100 : 0);
     if (d < melhor) {
       melhor = d;
       alvo = b;
@@ -56,26 +57,30 @@ export function pilotoAutomatico(eu: Meu, v: Vista, cmd: Comandos) {
   } else if (alvo) {
     const dx = alvo.x - eu.x;
     olhar = dx >= 0 ? 1 : -1;
-    if (alvo.tipo === 'abelha') {
+    if (BICHOS[alvo.tipo].comp === 'voador' || BICHOS[alvo.tipo].comp === 'capsula') {
       // embaixo dele, mirando para cima (ou na diagonal, se já está perto)
-      const cimaDe = alvo.h + BICHOS.abelha.alto / 2 - (eu.h + 20);
+      const cimaDe = alvo.h + BICHOS[alvo.tipo].alto / 2 - (eu.h + 20);
       if (Math.abs(dx) < 10) mira = 'cima';
       else if (Math.abs(Math.abs(dx) - cimaDe) < 14) mira = 'diagonal';
       else ir = Math.abs(dx) > cimaDe ? Math.sign(dx) : -Math.sign(dx);
       if (mira === 'diagonal') ir = Math.sign(dx);
     } else {
       // os do chão: a uma distância, olhando para eles
-      const longe = alvo.tipo === 'dragao' ? 110 : alvo.tipo === 'cogumelo' ? 56 : 80;
-      const perto = alvo.tipo === 'dragao' ? 80 : alvo.tipo === 'cogumelo' ? 34 : 20;
+      const longe = BICHOS[alvo.tipo].comp === 'chefe' ? 110 : BICHOS[alvo.tipo].comp === 'andarilho' ? 56 : 80;
+      const perto = BICHOS[alvo.tipo].comp === 'chefe' ? 80 : BICHOS[alvo.tipo].comp === 'andarilho' ? 34 : 20;
       if (Math.abs(dx) > longe) ir = Math.sign(dx);
       else if (Math.abs(dx) < perto) {
         // recua, se há espaço; senão fica
         const para = -Math.sign(dx) || -1;
         if ((para < 0 && eu.x - 30 > a0) || (para > 0 && eu.x + 30 < a1)) ir = para;
       }
-      if (alvo.tipo === 'dragao' && Math.abs(dx) <= GRANADA.alcance + 20 && Math.abs(dx) >= GRANADA.alcance - 30 && eu.lado === olhar) cmd.granada = true;
-      if (alvo.tipo !== 'dragao' && Math.abs(dx) >= 60 && Math.abs(dx) <= 115 && eu.lado === olhar) cmd.granada = true;
+      if (BICHOS[alvo.tipo].comp === 'chefe' && Math.abs(dx) <= GRANADA.alcance + 20 && Math.abs(dx) >= GRANADA.alcance - 30 && eu.lado === olhar) cmd.granada = true;
+      if (BICHOS[alvo.tipo].comp !== 'chefe' && Math.abs(dx) >= 60 && Math.abs(dx) <= 115 && eu.lado === olhar) cmd.granada = true;
     }
+  } else if (v.itens.some((it) => it.x > a0 && it.x < a1)) {
+    // a arma que a cápsula soltou: vai até ela (o cliente pega ao encostar)
+    const it = v.itens.find((i) => i.x > a0 && i.x < a1)!;
+    ir = Math.abs(it.x - eu.x) > 4 ? Math.sign(it.x - eu.x) : 0;
   } else if (v.fase === 'avancando') {
     // a onda acabou: para a direita (as gaiolas estão no caminho)
     ir = 1;

@@ -35,6 +35,28 @@ export const VEL = 2;
 export const VEL_COM_BOLA = 1.85;
 /** O robô corre um pouco menos que gente: a graça é a pessoa poder ganhar dele. */
 export const FATOR_DO_ROBO = 0.86;
+/**
+ * A DIFICULDADE DOS ROBÔS (19/11/2026, no Solo): fácil, normal e difícil. O fator da corrida (o normal é o de sempre) e a mira
+ * (o quanto o chute dele pode sair do gol: 1 já é a trave; acima, às vezes vai para fora). Na sala, sempre o normal.
+ */
+export const NIVEIS_DO_ROBO: readonly { fator: number; mira: number }[] = [
+  { fator: 0.76, mira: 1.45 },
+  { fator: FATOR_DO_ROBO, mira: 1.2 },
+  { fator: 0.95, mira: 0.95 },
+];
+/**
+ * O CHUTE ALTO (19/11/2026): a bola sobe (a altura é só uma conta, z, em pixels da tela) e PASSA POR CIMA de quem está no
+ * caminho enquanto estiver acima da altura do corpo; acima da altura do gol, passa por cima da rede e bate no fundo. Sai mais
+ * devagar que o chute rasteiro, e a subida cresce com a carga.
+ */
+export const GRAVIDADE = 0.12;
+export const SUBIDA_MIN = 2.2;
+export const SUBIDA_MAX = 3.4;
+export const ALTURA_DO_CORPO = 12;
+export const ALTURA_DO_GOL = 18;
+export const QUIQUE_DO_CHAO = 0.45;
+/** O chute alto sai com isto da força do rasteiro. */
+export const FRENTE_DO_ALTO = 0.8;
 /** O quanto a velocidade chega à desejada a cada passo (o arranque e a freada). */
 export const ACEL = 0.3;
 export const ATRITO = 0.983;
@@ -73,6 +95,9 @@ export interface Bola {
   y: number;
   vx: number;
   vy: number;
+  /** A altura (o chute alto) e a velocidade para cima. */
+  z: number;
+  vz: number;
   /** Quem a conduz (0: ninguém; as contas têm id positivo, os robôs negativo). */
   dono: number;
   /** O último que tocou nela (o autor do gol). */
@@ -97,6 +122,8 @@ export interface Jogador {
   fy: number;
   /** Os passos segurando o chute (0: não está carregando). */
   carga: number;
+  /** O chute que está carregando é o alto. */
+  alto: boolean;
   semDominio: number;
   esperaRoubo: number;
   /** Os passos tonto, depois de perder a bola num roubo: não anda. */
@@ -116,6 +143,8 @@ export interface Comando {
   chute: boolean;
   /** O passe, só no passo em que foi apertado. */
   passe: boolean;
+  /** Segurando o chute ALTO (vale o que estava apertado enquanto carregava). */
+  alto?: boolean;
 }
 
 export type Evento =
@@ -147,9 +176,11 @@ export interface Mundo {
   reinicios: number;
   fim: boolean;
   eventos: Evento[];
+  /** A dificuldade dos robôs (o índice em NIVEIS_DO_ROBO). */
+  nivel: number;
 }
 
-export const NADA: Comando = { dx: 0, dy: 0, chute: false, passe: false };
+export const NADA: Comando = { dx: 0, dy: 0, chute: false, passe: false, alto: false };
 
 /** As formações (em relação ao meio, para quem ataca a direita): o último é o que fica atrás. */
 const FORMACOES: number[][][] = [
@@ -167,7 +198,7 @@ export function posicaoInicial(time: 0 | 1, slot: number, porTime: number, saida
 }
 
 /** Um mundo novo: `times` são os ids de cada time, na ordem da formação. */
-export function novoMundo(times: [number[], number[]]): Mundo {
+export function novoMundo(times: [number[], number[]], nivel = 1): Mundo {
   const porTime = Math.max(1, Math.min(MAXIMO_POR_TIME, Math.max(times[0].length, times[1].length)));
   const jogadores: Jogador[] = [];
   for (const time of [0, 1] as const) {
@@ -183,6 +214,7 @@ export function novoMundo(times: [number[], number[]]): Mundo {
         fx: time === 0 ? 1 : -1,
         fy: 0,
         carga: 0,
+        alto: false,
         semDominio: 0,
         esperaRoubo: 0,
         tonto: 0,
@@ -200,12 +232,13 @@ export function novoMundo(times: [number[], number[]]): Mundo {
     saida: 0,
     centro: true,
     porTime,
-    bola: { x: CX, y: CY, vx: 0, vy: 0, dono: 0, ultimo: 0, protege: 0, versao: 0 },
+    bola: { x: CX, y: CY, vx: 0, vy: 0, z: 0, vz: 0, dono: 0, ultimo: 0, protege: 0, versao: 0 },
     jogadores,
     placar: [0, 0],
     reinicios: 0,
     fim: false,
     eventos: [],
+    nivel: nivel >= 0 && nivel < NIVEIS_DO_ROBO.length ? Math.floor(nivel) : 1,
   };
   posicionar(m, 0);
   m.reinicios = 0;
@@ -223,6 +256,7 @@ export function posicionar(m: Mundo, saida: 0 | 1) {
     j.fx = j.time === 0 ? 1 : -1;
     j.fy = 0;
     j.carga = 0;
+    j.alto = false;
     j.semDominio = 0;
     j.esperaRoubo = 0;
     j.tonto = 0;
@@ -232,6 +266,8 @@ export function posicionar(m: Mundo, saida: 0 | 1) {
   b.y = CY;
   b.vx = 0;
   b.vy = 0;
+  b.z = 0;
+  b.vz = 0;
   b.dono = 0;
   b.protege = 0;
   b.versao++;
@@ -269,9 +305,9 @@ export function foraDoCentro(m: Mundo, j: { x: number; y: number; time: 0 | 1 })
   j.y = CY + (dy / d) * r;
 }
 
-/** Anda um passo com o comando (o chute e o passe são do passo do mundo). */
-export function passoDoJogador(j: Jogador, c: Comando, comBola: boolean) {
-  const max = (comBola ? VEL_COM_BOLA : VEL) * (j.robo ? FATOR_DO_ROBO : 1);
+/** Anda um passo com o comando (o chute e o passe são do passo do mundo). `fator`: o do robô (pela dificuldade). */
+export function passoDoJogador(j: Jogador, c: Comando, comBola: boolean, fator = FATOR_DO_ROBO) {
+  const max = (comBola ? VEL_COM_BOLA : VEL) * (j.robo ? fator : 1);
   let dx = limitar(c.dx, -1, 1);
   let dy = limitar(c.dy, -1, 1);
   const n = Math.sqrt(dx * dx + dy * dy);
@@ -297,6 +333,11 @@ export function frenteDe(j: { x: number; y: number; fx: number; fy: number }): [
 
 export function forcaDaCarga(carga: number): number {
   return CHUTE_MIN + (CHUTE_MAX - CHUTE_MIN) * limitar(carga / CARGA_MAX, 0, 1);
+}
+
+/** A subida do chute alto pela carga. */
+export function subidaDaCarga(carga: number): number {
+  return SUBIDA_MIN + (SUBIDA_MAX - SUBIDA_MIN) * limitar(carga / CARGA_MAX, 0, 1);
 }
 
 /** O chute vai para onde o jogador está virado. */
@@ -341,8 +382,11 @@ export function podeChutar(m: Mundo, j: Jogador): boolean {
   return dx * dx + dy * dy <= (ALCANCE + 2) * (ALCANCE + 2);
 }
 
-/** A bola sai com a velocidade (vx, vy): da frente de quem a conduzia, ou de onde estava, se foi de primeira. */
-export function aplicarChute(m: Mundo, j: Jogador, vx: number, vy: number, passe: boolean) {
+/**
+ * A bola sai com a velocidade (vx, vy): da frente de quem a conduzia, ou de onde estava, se foi de primeira. `vz`: a subida do
+ * chute alto (0 no rasteiro).
+ */
+export function aplicarChute(m: Mundo, j: Jogador, vx: number, vy: number, passe: boolean, vz = 0) {
   const b = m.bola;
   if (b.dono === j.id) {
     const [x, y] = frenteDe(j);
@@ -356,16 +400,19 @@ export function aplicarChute(m: Mundo, j: Jogador, vx: number, vy: number, passe
   }
   b.vx = vx;
   b.vy = vy;
+  b.z = 0;
+  b.vz = limitar(vz, 0, SUBIDA_MAX);
   b.dono = 0;
   b.protege = 0;
   b.ultimo = j.id;
   b.versao++;
   j.semDominio = SEM_DOMINIO;
   j.carga = 0;
+  j.alto = false;
   m.eventos.push(passe ? { tipo: 'passe', id: j.id } : { tipo: 'chute', id: j.id, forca: Math.sqrt(vx * vx + vy * vy) });
 }
 
-const naBoca = (y: number) => y > CY - GOL_MEIA + R_BOLA && y < CY + GOL_MEIA - R_BOLA;
+const naBocaDoGol = (y: number) => y > CY - GOL_MEIA + R_BOLA && y < CY + GOL_MEIA - R_BOLA;
 
 /**
  * Um passo da bola solta: anda, perde força, quica nas paredes e na rede. Devolve o time que fez o gol (0 ou 1), ou -1. O time 0
@@ -382,6 +429,17 @@ export function passoDaBola(m: Mundo, contar: boolean): number {
     b.vx = 0;
     b.vy = 0;
   }
+  // o chute alto: sobe, cai e quica no chão
+  if (b.z > 0 || b.vz > 0) {
+    b.z += b.vz;
+    b.vz -= GRAVIDADE;
+    if (b.z <= 0) {
+      b.z = 0;
+      b.vz = b.vz < -1 ? -b.vz * QUIQUE_DO_CHAO : 0;
+    }
+  }
+  // acima da altura do gol, a boca é parede (passa por cima da rede e bate no fundo)
+  const naBoca = (y: number) => naBocaDoGol(y) && b.z <= ALTURA_DO_GOL;
   // as paredes de cima e de baixo
   if (b.y < Y0 + R_BOLA) {
     b.y = 2 * (Y0 + R_BOLA) - b.y;
@@ -493,6 +551,8 @@ export function contatos(m: Mundo) {
     b.y = y;
     b.vx = d.vx;
     b.vy = d.vy;
+    b.z = 0;
+    b.vz = 0;
     if (b.protege > 0) {
       b.protege--;
       return;
@@ -509,6 +569,8 @@ export function contatos(m: Mundo) {
     }
     return;
   }
+  // a bola alta passa por cima de todo mundo
+  if (b.z > ALTURA_DO_CORPO) return;
   const v2 = b.vx * b.vx + b.vy * b.vy;
   for (const p of m.jogadores) {
     if (p.semDominio > 0 || (m.centro && p.time !== m.saida)) continue;
@@ -548,7 +610,10 @@ export function marcarGol(m: Mundo, time: 0 | 1) {
   m.pausa = GOL_PAUSA;
   m.reinicioEm = GOL_REINICIO;
   m.saida = time === 0 ? 1 : 0;
-  for (const j of m.jogadores) j.carga = 0;
+  for (const j of m.jogadores) {
+    j.carga = 0;
+    j.alto = false;
+  }
 }
 
 /**
@@ -578,15 +643,19 @@ export function passoDoMundo(m: Mundo, comando: (j: Jogador) => Comando | null) 
     if (!c0) continue;
     // tonto: não anda nem chuta (a velocidade vai caindo)
     const c = j.tonto > 0 ? NADA : c0;
-    passoDoJogador(j, c, m.bola.dono === j.id);
+    passoDoJogador(j, c, m.bola.dono === j.id, NIVEIS_DO_ROBO[m.nivel]?.fator ?? FATOR_DO_ROBO);
     if (c.chute) {
       if (j.carga < CARGA_MAX) j.carga++;
+      if (c.alto) j.alto = true;
     } else if (j.carga > 0) {
       const forca = forcaDaCarga(j.carga);
+      const alto = j.alto;
+      const vz = alto ? subidaDaCarga(j.carga) : 0;
       j.carga = 0;
+      j.alto = false;
       if (podeChutar(m, j)) {
-        const [vx, vy] = vetorDoChute(j, forca);
-        aplicarChute(m, j, vx, vy, false);
+        const [vx, vy] = vetorDoChute(j, alto ? forca * FRENTE_DO_ALTO : forca);
+        aplicarChute(m, j, vx, vy, false, vz);
       }
     }
     if (c.passe && j.carga === 0 && podeChutar(m, j)) {
@@ -647,7 +716,7 @@ export function comandoDoRobo(m: Mundo, j: Jogador): Comando {
     let gk: Jogador | null = null;
     for (const p of m.jogadores) if (p.time !== j.time && (!gk || Math.abs(p.x - golX) < Math.abs(gk.x - golX))) gk = p;
     // a mira varia um pouco (pelo relógio, que é igual nos dois lados): às vezes no canto, às vezes para fora
-    const mira = 0.3 + (((m.tempo * 37) % 100) / 100) * 0.9;
+    const mira = 0.3 + (((m.tempo * 37) % 100) / 100) * ((NIVEIS_DO_ROBO[m.nivel]?.mira ?? 1.2) - 0.3);
     const alvoY = CY + (gk && gk.y < CY ? 1 : -1) * GOL_MEIA * mira;
     const gx = golX + sentido * 6 - j.x;
     const gy = alvoY - j.y;

@@ -7,13 +7,13 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
 import { escolhaDoPiloto } from '../src/transito/piloto';
-import { CAMINHOS, liberar, MAPA, novaPartida, passo, refazer, sortearChegadas, PASSOS_DA_PARTIDA, type Estado } from '../src/transito/sim';
+import { CAMINHOS, liberar, MAPA, novaPartida, passo, refazer, sortearChegadas, PASSOS_DA_PARTIDA, manobraPermitida, MEDIDAS, type Estado, type Opcoes } from '../src/transito/sim';
 import { PREDIOS, VEICULOS } from '../src/transito/atlas.gerado';
 
-function jogarComPiloto(semente: number): { e: Estado; lista: number[] } {
-  const e = novaPartida(semente);
+function jogarComPiloto(semente: number, opcoes: Opcoes = {}, ate = Infinity): { e: Estado; lista: number[] } {
+  const e = novaPartida(semente, opcoes);
   const lista: number[] = [];
-  while (!e.terminou) {
+  while (!e.terminou && e.passo < ate) {
     if (e.passo % 6 === 0) {
       const q = escolhaDoPiloto(e);
       if (q >= 0 && liberar(e, q)) lista.push(e.passo, q);
@@ -95,5 +95,43 @@ describe('trânsito da toca', () => {
     assert.equal(VEICULOS.length, 9);
     assert.ok(VEICULOS.every((v) => v.length === 4));
     assert.ok(PREDIOS.length >= 10);
+  });
+
+  // ===== 19/11/2026: o "até bater", o mapa em T, o caminhão e a moto =====
+
+  it('o caminhão e a moto chegam, cada um com as medidas dele, e o piloto continua sem batida', () => {
+    const tipos = new Set(sortearChegadas(7).map((c) => c.tipo));
+    assert.ok(tipos.has('caminhao') && tipos.has('moto') && tipos.has('ambulancia') && tipos.has('carro'));
+    assert.ok(MEDIDAS.caminhao.comprimento > MEDIDAS.carro.comprimento && MEDIDAS.caminhao.rapidez < 1);
+    assert.ok(MEDIDAS.moto.comprimento < MEDIDAS.carro.comprimento && MEDIDAS.moto.rapidez > 1);
+  });
+
+  it('o mapa em T: ninguém vem de baixo nem vai para baixo, e o piloto joga o minuto sem batida', () => {
+    for (const semente of [3, 77, 4040]) {
+      const ch = sortearChegadas(semente, 't');
+      assert.ok(ch.every((c) => c.entrada !== 3 && manobraPermitida('t', c.entrada, c.manobra)), `semente ${semente}`);
+      const { e } = jogarComPiloto(semente, { mapa: 't' });
+      assert.equal(e.passo, PASSOS_DA_PARTIDA);
+      assert.equal(e.batidas, 0, `semente ${semente}`);
+      assert.ok(e.atravessaram >= 30, `semente ${semente}: só ${e.atravessaram}`);
+    }
+  });
+
+  it('"até bater": passa do minuto com o piloto, e acaba na primeira batida (refeita igual)', () => {
+    const { e, lista } = jogarComPiloto(9, { modo: 'ate-bater' }, 2 * PASSOS_DA_PARTIDA);
+    assert.ok(e.passo >= 2 * PASSOS_DA_PARTIDA || e.terminou, 'o piloto aguenta');
+    assert.equal(e.terminou, false, 'o piloto aguenta dois minutos sem bater');
+    // soltar tudo de uma vez bate cedo, e a partida acaba ali
+    const cego: number[] = [];
+    for (let p = 0; p < 2000; p += 6) for (let r = 0; r < 4; r++) cego.push(p, r);
+    const b = refazer(9, cego, { modo: 'ate-bater' });
+    assert.equal(b.terminou, true);
+    assert.equal(b.batidas, 1);
+    assert.ok(b.passo < 2000);
+    // não soltar ninguém: a terceira fila que transborda acaba
+    const parado = refazer(9, [], { modo: 'ate-bater' });
+    assert.equal(parado.buzinas, 3);
+    assert.ok(parado.passo < 60 * 60);
+    assert.ok(lista.length > 0);
   });
 });

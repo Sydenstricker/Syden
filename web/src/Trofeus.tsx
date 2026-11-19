@@ -46,7 +46,7 @@ const MEDALHA = ['', '🥇', '🥈', '🥉'];
 /** De qual mini-game é o troféu: as pistas e as copas são da corrida, as fases e a copa do pulo são do Pulo do coelho, e os
  *  outros jogos guardam o próprio id. Pista ou fase nova entra aqui. */
 const DA_CORRIDA = new Set(['horta-1', 'pomar-1', 'praia-1', 'bosque-1', 'neve-1', 'canion-1', 'copa-da-cenoura', 'copa-do-repolho']);
-const DO_PULO = new Set(['prado-1', 'toca-1', 'copas-1', 'copa-do-pulo']);
+const DO_PULO = new Set(['prado-1', 'toca-1', 'copas-1', 'copa-do-pulo', 'corrego-1', 'mina-1', 'ninho-1', 'copa-dos-bichos']);
 // as fases da Briga e a campanha (06/11/2026) são da Briga; a horta guarda a pista de antes, 'briga'
 // a Arena dos coelhos (17/11/2026) é dos Bichos da Toca
 export const jogoDoTrofeu = (pista: string) =>

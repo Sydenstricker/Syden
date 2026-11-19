@@ -3,8 +3,9 @@
  * avançar de era, atacar): nada de nome, arte ou texto de jogo nenhum.
  *
  * DETERMINÍSTICA, EM PASSO FIXO, E SEPARADA DA TELA. Dez passos por segundo; o mesmo começo (a semente) e os mesmos comandos, no
- * mesmo passo, dão a mesma partida, em qualquer computador. É isso que deixa a sala de duas pessoas possível depois, em
- * "lockstep": só os COMANDOS andam pela rede, e cada computador simula a partida inteira. Por isso:
+ * mesmo passo, dão a mesma partida, em qualquer computador. É isso que deixa o servidor REFAZER a partida do Solo e a sala de
+ * duas pessoas andar em "lockstep" (19/11/2026): só os COMANDOS andam pela rede, e cada computador simula a partida inteira. Este
+ * arquivo e o ia.ts são IGUAIS BYTE A BYTE aos de server/src/tocas/ (o teste confere): mudou um, copie para o outro. Por isso:
  *  - nada de Math.random (o sorteio é o da semente, `aleatorio`), nem de relógio, nem de seno e cosseno: só + − × ÷ e raiz,
  *    que dão o mesmo número em qualquer navegador;
  *  - tudo anda em ordem fixa (as listas na ordem dos ids), e o que muda o jogo só entra por `comandar` (a pessoa, o computador
@@ -39,9 +40,59 @@ export const FLECHAS_DO_SINO = { cada: 2, max: 5 } as const;
 export type Dono = 0 | 1;
 export type Recurso = 'comida' | 'madeira' | 'ouro';
 export type TipoUnidade = 'trabalhador' | 'lanceiro' | 'arqueiro' | 'cavaleiro' | 'catapulta';
-export type TipoPredio = 'centro' | 'casa' | 'fazenda' | 'quartel' | 'arquearia' | 'torre' | 'muralha' | 'portao' | 'maravilha';
+export type TipoPredio = 'centro' | 'casa' | 'fazenda' | 'quartel' | 'arquearia' | 'torre' | 'muralha' | 'portao' | 'maravilha' | 'ferreiro' | 'mercado';
 export type Custo = Partial<Record<Recurso, number>>;
 export const RECURSOS: Recurso[] = ['comida', 'madeira', 'ouro'];
+
+/**
+ * OS TIPOS DE MAPA (19/11/2026): o de sempre ('campo'), a 'floresta' (bosques fechados e um corredor entre as bases), o 'ouro' no
+ * meio (a mina grande no centro do mapa, cercada de pedras, e a de casa menor) e os 'lagos' (água que não se atravessa). A base de
+ * cada um (o centro, a mina de casa e os bosques de perto) é IGUAL nos quatro, e tudo é espelhado: ninguém nasce com vantagem.
+ */
+export type TipoDoMapa = 'campo' | 'floresta' | 'ouro' | 'lagos';
+export const MAPAS: TipoDoMapa[] = ['campo', 'floresta', 'ouro', 'lagos'];
+
+/**
+ * O FERREIRO (19/11/2026): as melhorias, uma vez cada, por linha de tropa (o ataque e a armadura dos lanceiros, dos cavaleiros e
+ * dos arqueiros) e de coleta (madeira, ouro, comida). A ORDEM desta lista é a dos bits em `Jogador.melhorias`: nova vai no fim.
+ */
+export type Melhoria =
+  | 'ataqueLanceiro'
+  | 'armaduraLanceiro'
+  | 'ataqueCavaleiro'
+  | 'armaduraCavaleiro'
+  | 'ataqueArqueiro'
+  | 'armaduraArqueiro'
+  | 'machado'
+  | 'picareta'
+  | 'arado';
+export const ORDEM_DAS_MELHORIAS: Melhoria[] = ['ataqueLanceiro', 'armaduraLanceiro', 'ataqueCavaleiro', 'armaduraCavaleiro', 'ataqueArqueiro', 'armaduraArqueiro', 'machado', 'picareta', 'arado'];
+export interface DadosDaMelhoria {
+  custo: Custo;
+  /** Passos de estudo no ferreiro. */
+  tempo: number;
+  /** A tropa que ela melhora (ataque ou armadura), ou o recurso que se colhe mais depressa. */
+  linha?: TipoUnidade;
+  tipo: 'ataque' | 'armadura' | 'coleta';
+  recurso?: Recurso;
+}
+export const MELHORIAS: Record<Melhoria, DadosDaMelhoria> = {
+  ataqueLanceiro: { custo: { comida: 100, ouro: 50 }, tempo: 300, linha: 'lanceiro', tipo: 'ataque' },
+  armaduraLanceiro: { custo: { comida: 100, ouro: 50 }, tempo: 300, linha: 'lanceiro', tipo: 'armadura' },
+  ataqueCavaleiro: { custo: { comida: 120, ouro: 80 }, tempo: 300, linha: 'cavaleiro', tipo: 'ataque' },
+  armaduraCavaleiro: { custo: { comida: 120, ouro: 80 }, tempo: 300, linha: 'cavaleiro', tipo: 'armadura' },
+  ataqueArqueiro: { custo: { madeira: 100, ouro: 60 }, tempo: 300, linha: 'arqueiro', tipo: 'ataque' },
+  armaduraArqueiro: { custo: { comida: 80, ouro: 60 }, tempo: 300, linha: 'arqueiro', tipo: 'armadura' },
+  machado: { custo: { comida: 100, madeira: 50 }, tempo: 250, tipo: 'coleta', recurso: 'madeira' },
+  picareta: { custo: { comida: 100, madeira: 75 }, tempo: 250, tipo: 'coleta', recurso: 'ouro' },
+  arado: { custo: { madeira: 125 }, tempo: 250, tipo: 'coleta', recurso: 'comida' },
+};
+/** O que cada melhoria faz: o golpe da linha ×1,25, o golpe que a linha leva ×0,75, e 3 passos a menos por unidade colhida. */
+export const EFEITO_DAS_MELHORIAS = { ataque: 1.25, armadura: 0.75, coleta: 3 } as const;
+/** O MERCADO (a era 2): 100 de um recurso por outro, ao preço de quem troca (o que se vende barateia, o que se compra encarece). */
+export const MERCADO = { lote: 100, taxa: 70, passo: 6, min: 40, max: 250 } as const;
+/** De quanto em quanto tempo a partida guarda o gráfico do fim (recursos colhidos e o tamanho do exército): 15 s. */
+export const AMOSTRA_DO_HISTORICO = 15 * 10;
 
 export interface DadosDaUnidade {
   vida: number;
@@ -102,6 +153,8 @@ export const PREDIOS: Record<TipoPredio, DadosDoPredio> = {
   muralha: { tam: 1, vida: 500, custo: { madeira: 6 }, tempo: 40, era: 1, visao: 2, construivel: true },
   portao: { tam: 1, vida: 600, custo: { madeira: 25 }, tempo: 80, era: 1, visao: 2, construivel: true },
   maravilha: { tam: 4, vida: 2400, custo: { comida: 400, madeira: 600, ouro: 500 }, tempo: 1500, era: 2, visao: 6, construivel: true },
+  ferreiro: { tam: 2, vida: 600, custo: { madeira: 120 }, tempo: 250, era: 1, visao: 3, construivel: true },
+  mercado: { tam: 3, vida: 800, custo: { madeira: 175 }, tempo: 300, era: 2, visao: 4, construivel: true },
 };
 
 /** Avançar de era: no centro da vila, com o custo e o tempo; a era 2 deixa a vida e o golpe maiores, e abre a catapulta e a Maravilha. */
@@ -184,6 +237,9 @@ export interface Predio {
   reuniao: { x: number; y: number; alvo?: number } | null;
   /** O SINO do centro (06/11/2026, pedido dele): tocado, todos os trabalhadores do dono vão para dentro; tocado de novo, voltam. */
   sino: boolean;
+  /** A melhoria em estudo no ferreiro (uma por vez), e quantos passos já andou. */
+  estudo: Melhoria | null;
+  estudoPassos: number;
 }
 
 export interface Fonte {
@@ -202,6 +258,10 @@ export interface Jogador {
   maravilha: number;
   visivel: Uint8Array;
   explorado: Uint8Array;
+  /** As melhorias do ferreiro já feitas: um bit por melhoria, na ordem de ORDEM_DAS_MELHORIAS. */
+  melhorias: number;
+  /** O preço de cada recurso no mercado de quem troca (100 no começo). */
+  precos: Record<Recurso, number>;
 }
 
 export type Evento =
@@ -217,6 +277,8 @@ export type Evento =
   /** Mandou trabalhador a um lugar cheio (a fazenda, a mina) e não havia outro com vaga perto. */
   | { t: 'cheio'; dono: Dono; id: number }
   | { t: 'sino'; dono: Dono; tocado: boolean }
+  | { t: 'melhoria'; dono: Dono; m: Melhoria }
+  | { t: 'troca'; dono: Dono; de: Recurso; para: Recurso; ganho: number }
   | { t: 'fim'; vencedor: Dono; motivo: Motivo };
 
 export type Motivo = 'centro' | 'maravilha' | 'tempo';
@@ -235,7 +297,18 @@ export type Comando =
   | { t: 'era'; predio: number }
   /** O sino do centro: o primeiro toque abriga todos os trabalhadores, o segundo os devolve ao que faziam. */
   | { t: 'sino'; predio: number }
+  /** Estudar uma melhoria no ferreiro. */
+  | { t: 'melhorar'; predio: number; m: Melhoria }
+  /** Trocar no mercado: um lote de `de` por `para`. */
+  | { t: 'trocar'; predio: number; de: Recurso; para: Recurso }
   | { t: 'parar'; ids: number[] };
+
+/** Uma amostra do gráfico do fim: o passo, o que cada um já colheu e quantos soldados cada um tinha. */
+export interface Amostra {
+  passo: number;
+  colhido: [number, number];
+  exercito: [number, number];
+}
 
 export interface Sim {
   passo: number;
@@ -260,6 +333,12 @@ export interface Sim {
   acabadas: Map<number, { tipo: Fonte['tipo']; gx: number; gy: number }>;
   /** A mina (o bloco de ouro encostado) de cada casa de ouro, pelo id da fonte; não se apaga quando a casa acaba. */
   minaDe: Map<number, number>;
+  mapa: TipoDoMapa;
+  /** As casas de água (o mapa de lagos): como a pedra, ninguém passa nem constrói. */
+  agua: { gx: number; gy: number }[];
+  /** Tudo o que cada um já levou ao estoque (o gráfico do fim). */
+  colhido: [number, number];
+  historico: Amostra[];
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -287,9 +366,18 @@ export const CENTRO_DE: [{ gx: number; gy: number }, { gx: number; gy: number }]
   { gx: TAMANHO - 6 - 3, gy: TAMANHO - 34 - 3 },
 ];
 
-export function novaPartida(semente: number): Sim {
+export function novaPartida(semente: number, opcoes: { mapa?: TipoDoMapa } = {}): Sim {
   const vazio = () => new Uint8Array(TAMANHO * TAMANHO);
-  const jog = (): Jogador => ({ recursos: { comida: 200, madeira: 200, ouro: 100 }, era: 1, maravilha: 0, visivel: vazio(), explorado: vazio() });
+  const jog = (): Jogador => ({
+    recursos: { comida: 200, madeira: 200, ouro: 100 },
+    era: 1,
+    maravilha: 0,
+    visivel: vazio(),
+    explorado: vazio(),
+    melhorias: 0,
+    precos: { comida: 100, madeira: 100, ouro: 100 },
+  });
+  const mapa: TipoDoMapa = opcoes.mapa && MAPAS.includes(opcoes.mapa) ? opcoes.mapa : 'campo';
   const sim: Sim = {
     passo: 0,
     semente,
@@ -309,6 +397,10 @@ export function novaPartida(semente: number): Sim {
     rnd: aleatorio(semente),
     acabadas: new Map(),
     minaDe: new Map(),
+    mapa,
+    agua: [],
+    colhido: [0, 0],
+    historico: [],
   };
   gerarMapa(sim);
   juntarMinas(sim);
@@ -324,7 +416,33 @@ export function novaPartida(semente: number): Sim {
     }
   }
   verNevoa(sim);
+  amostrar(sim);
   return sim;
+}
+
+/** Uma amostra do gráfico do fim (o que cada um já colheu e o tamanho do exército). */
+function amostrar(sim: Sim) {
+  const exercito: [number, number] = [0, 0];
+  for (const u of sim.unidades) if (UNIDADES[u.tipo].combate) exercito[u.dono]++;
+  sim.historico.push({ passo: sim.passo, colhido: [sim.colhido[0], sim.colhido[1]], exercito });
+}
+
+/**
+ * O CORREDOR dos mapas fechados (floresta, lagos): as casas a até 2,5 da reta entre os dois centros, no trecho do meio. Nada
+ * nasce nelas, e por isso sempre há um caminho de uma base à outra (o teste confere em muitas sementes).
+ */
+function noCorredor(x: number, y: number): boolean {
+  const ax = CENTRO_DE[0].gx + 1.5;
+  const ay = CENTRO_DE[0].gy + 1.5;
+  const dx = CENTRO_DE[1].gx + 1.5 - ax;
+  const dy = CENTRO_DE[1].gy + 1.5 - ay;
+  const px = x + 0.5 - ax;
+  const py = y + 0.5 - ay;
+  const q = dx * dx + dy * dy;
+  const t = (px * dx + py * dy) / q;
+  if (t < 0.12 || t > 0.88) return false;
+  const cruz = px * dy - py * dx;
+  return (cruz * cruz) / q <= 2.5 * 2.5;
 }
 
 /** Põe na casa e no espelho dela, só se as duas estiverem livres e longe dos centros. */
@@ -332,11 +450,15 @@ function gerarMapa(sim: Sim) {
   const r = sim.rnd;
   const longeDosCentros = (x: number, y: number, folga: number) =>
     CENTRO_DE.every((c) => x < c.gx - folga || x >= c.gx + 3 + folga || y < c.gy - folga || y >= c.gy + 3 + folga);
+  /** Nos mapas novos, o que se sorteia não entra no corredor nem perto dos centros (a base fica com espaço para crescer). */
+  let reservar = false;
+  const reservada = (x: number, y: number) => reservar && (noCorredor(x, y) || !longeDosCentros(x, y, 6));
   const par = (x: number, y: number, por: (x: number, y: number) => void, folga = 4) => {
     const mx = TAMANHO - 1 - x;
     const my = TAMANHO - 1 - y;
     if (!dentro(x, y) || sim.grade[ind(x, y)] !== 0 || sim.grade[ind(mx, my)] !== 0) return false;
     if (!longeDosCentros(x, y, folga) || !longeDosCentros(mx, my, folga)) return false;
+    if (reservada(x, y) || reservada(mx, my)) return false;
     por(x, y);
     if (mx !== x || my !== y) por(mx, my);
     return true;
@@ -373,19 +495,84 @@ function gerarMapa(sim: Sim) {
       }
     }
   };
-  // o ouro de cada base (um bloco de 2 × 3), e o do meio, que é de quem chegar
-  for (let x = 13; x <= 14; x++) for (let y = 29; y <= 31; y++) par(x, y, ouro);
-  for (const [x, y] of [[21, 21], [21, 22]] as [number, number][]) par(x, y, ouro, 0);
-  // as pedras (montanhas): obstáculos que desenham o caminho
-  for (const [x, y] of [[16, 16], [17, 16], [16, 17], [17, 17], [26, 12], [27, 12], [26, 13], [27, 13], [9, 22], [10, 22], [9, 23], [10, 23]] as [number, number][]) par(x, y, pedra, 2);
-  // os bosques: um perto de cada base, um na borda, e os do meio, que fecham as passagens pela metade
+  const agua = (x: number, y: number) => {
+    sim.grade[ind(x, y)] = -2;
+    sim.agua.push({ gx: x, gy: y });
+  };
+  /** Um lago: cresce como o bosque, mas de água. */
+  const lagoa = (cx: number, cy: number, n: number) => {
+    const lista: [number, number][] = [];
+    if (par(cx, cy, agua, 6)) lista.push([cx, cy]);
+    let feitas = lista.length;
+    for (let tent = 0; tent < n * 10 && feitas < n && lista.length; tent++) {
+      const [bx, by] = lista[Math.floor(r() * lista.length)];
+      const x = bx + Math.floor(r() * 3) - 1;
+      const y = by + Math.floor(r() * 3) - 1;
+      if (par(x, y, agua, 6)) {
+        lista.push([x, y]);
+        feitas++;
+      }
+    }
+  };
+  /** Um ponto sorteado na metade de baixo (a da base 0; a outra é o espelho), longe das bordas. */
+  const sorteado = () => ({ x: 2 + Math.floor(r() * (TAMANHO - 4)), y: Math.floor(TAMANHO / 2) + Math.floor(r() * (TAMANHO / 2 - 2)) });
+
+  if (sim.mapa === 'campo') {
+    // o ouro de cada base (um bloco de 2 × 3), e o do meio, que é de quem chegar
+    for (let x = 13; x <= 14; x++) for (let y = 29; y <= 31; y++) par(x, y, ouro);
+    for (const [x, y] of [[21, 21], [21, 22]] as [number, number][]) par(x, y, ouro, 0);
+    // as pedras (montanhas): obstáculos que desenham o caminho
+    for (const [x, y] of [[16, 16], [17, 16], [16, 17], [17, 17], [26, 12], [27, 12], [26, 13], [27, 13], [9, 22], [10, 22], [9, 23], [10, 23]] as [number, number][]) par(x, y, pedra, 2);
+    // os bosques: um perto de cada base, um na borda, e os do meio, que fecham as passagens pela metade
+    bosque(16, 39, 26);
+    bosque(3, 26, 22);
+    bosque(11, 41, 10);
+    bosque(22, 32, 14);
+    bosque(13, 10, 18);
+    bosque(31, 22, 10);
+    bosque(4, 14, 12);
+    for (let i = 0; i < 26; i++) par(Math.floor(r() * TAMANHO), Math.floor(r() * TAMANHO), arvore, 5);
+    return;
+  }
+
+  // OS MAPAS NOVOS: a base é a de sempre (o ouro de casa, menor no mapa do ouro, e os bosques de perto)...
+  if (sim.mapa === 'ouro') for (let x = 13; x <= 14; x++) for (let y = 30; y <= 31; y++) par(x, y, ouro);
+  else for (let x = 13; x <= 14; x++) for (let y = 29; y <= 31; y++) par(x, y, ouro);
   bosque(16, 39, 26);
   bosque(3, 26, 22);
   bosque(11, 41, 10);
-  bosque(22, 32, 14);
-  bosque(13, 10, 18);
-  bosque(31, 22, 10);
-  bosque(4, 14, 12);
+  // ... e o resto muda com o tipo, longe das bases e fora do corredor
+  if (sim.mapa === 'ouro') {
+    // a mina grande do meio (4 × 4), com as quinas fechadas por pedras e os lados abertos
+    for (let x = 20; x <= 23; x++) for (let y = 20; y <= 23; y++) par(x, y, ouro, 0);
+    for (const [x, y] of [[18, 18], [19, 18], [18, 19], [24, 18], [25, 18], [25, 19]] as [number, number][]) par(x, y, pedra, 2);
+    reservar = true;
+    bosque(22, 34, 14);
+    bosque(4, 14, 12);
+    bosque(30, 26, 10);
+    for (let i = 0; i < 30; i++) par(Math.floor(r() * TAMANHO), Math.floor(r() * TAMANHO), arvore, 5);
+    return;
+  }
+  for (const [x, y] of [[21, 21], [21, 22]] as [number, number][]) par(x, y, ouro, 0);
+  reservar = true;
+  if (sim.mapa === 'floresta') {
+    // bosques grandes e fechados por todo lado: o caminho é o corredor e o que se abrir no machado
+    for (let i = 0; i < 9; i++) {
+      const p = sorteado();
+      bosque(p.x, p.y, 18 + Math.floor(r() * 16));
+    }
+    for (let i = 0; i < 70; i++) par(Math.floor(r() * TAMANHO), Math.floor(r() * TAMANHO), arvore, 5);
+    return;
+  }
+  // os lagos: três de cada lado, e menos árvores
+  lagoa(14, 16, 18 + Math.floor(r() * 8));
+  lagoa(27, 34, 12 + Math.floor(r() * 8));
+  const p = sorteado();
+  lagoa(p.x, p.y, 10 + Math.floor(r() * 8));
+  for (let i = 0; i < 4; i++) {
+    const q = sorteado();
+    bosque(q.x, q.y, 10 + Math.floor(r() * 8));
+  }
   for (let i = 0; i < 26; i++) par(Math.floor(r() * TAMANHO), Math.floor(r() * TAMANHO), arvore, 5);
 }
 
@@ -470,6 +657,8 @@ function novoPredio(sim: Sim, dono: Dono, tipo: TipoPredio, gx: number, gy: numb
     era,
     reuniao: null,
     sino: false,
+    estudo: null,
+    estudoPassos: 0,
   };
   sim.predios.push(p);
   sim.porId.set(p.id, p);
@@ -961,6 +1150,12 @@ function aplicar(sim: Sim, dono: Dono, c: Comando) {
         p.pesquisa = 0;
         return;
       }
+      if (p.estudo) {
+        pagar(sim, dono, MELHORIAS[p.estudo].custo, -1);
+        p.estudo = null;
+        p.estudoPassos = 0;
+        return;
+      }
       const tipo = p.fila.pop();
       if (!tipo) return;
       pagar(sim, dono, UNIDADES[tipo].custo, -1);
@@ -975,7 +1170,122 @@ function aplicar(sim: Sim, dono: Dono, c: Comando) {
       p.pesquisa = 1;
       return;
     }
+    case 'melhorar': {
+      const p = sim.porId.get(c.predio);
+      const d = MELHORIAS[c.m];
+      if (!ePredio(p) || p.dono !== dono || p.tipo !== 'ferreiro' || !p.pronto || p.estudo || !d) return;
+      // a mesma melhoria em dois ferreiros ao mesmo tempo também não
+      if (temMelhoria(sim, dono, c.m) || sim.predios.some((q) => q.dono === dono && q.estudo === c.m)) return;
+      if (!podePagar(sim, dono, d.custo)) return;
+      pagar(sim, dono, d.custo);
+      p.estudo = c.m;
+      p.estudoPassos = 0;
+      return;
+    }
+    case 'trocar': {
+      const p = sim.porId.get(c.predio);
+      if (!ePredio(p) || p.dono !== dono || p.tipo !== 'mercado' || !p.pronto || c.de === c.para) return;
+      if (!RECURSOS.includes(c.de) || !RECURSOS.includes(c.para) || j.recursos[c.de] < MERCADO.lote) return;
+      const ganho = precoDaTroca(sim, dono, c.de, c.para);
+      j.recursos[c.de] -= MERCADO.lote;
+      j.recursos[c.para] += ganho;
+      j.precos[c.de] = Math.max(MERCADO.min, j.precos[c.de] - MERCADO.passo);
+      j.precos[c.para] = Math.min(MERCADO.max, j.precos[c.para] + MERCADO.passo);
+      sim.eventos.push({ t: 'troca', dono, de: c.de, para: c.para, ganho });
+      return;
+    }
   }
+}
+
+/** Quanto de `para` um lote de `de` dá no mercado agora (sempre inteiro). */
+export function precoDaTroca(sim: Sim, dono: Dono, de: Recurso, para: Recurso): number {
+  const j = sim.jogadores[dono];
+  return Math.floor((MERCADO.taxa * j.precos[de]) / j.precos[para]);
+}
+
+export function temMelhoria(sim: Sim, dono: Dono, m: Melhoria): boolean {
+  return (sim.jogadores[dono].melhorias & (1 << ORDEM_DAS_MELHORIAS.indexOf(m))) !== 0;
+}
+
+/** A melhoria de ataque ou armadura da linha de `tipo`, se o dono já a tem. */
+function comMelhoria(sim: Sim, dono: Dono, tipo: TipoUnidade, qual: 'ataque' | 'armadura'): boolean {
+  for (const m of ORDEM_DAS_MELHORIAS) {
+    const d = MELHORIAS[m];
+    if (d.linha === tipo && d.tipo === qual && temMelhoria(sim, dono, m)) return true;
+  }
+  return false;
+}
+
+/** Os passos de trabalho para colher uma unidade do recurso (a melhoria de coleta tira alguns). */
+export function ritmoDe(sim: Sim, dono: Dono, rec: Recurso): number {
+  for (const m of ORDEM_DAS_MELHORIAS) {
+    const d = MELHORIAS[m];
+    if (d.tipo === 'coleta' && d.recurso === rec && temMelhoria(sim, dono, m)) return RITMO[rec] - EFEITO_DAS_MELHORIAS.coleta;
+  }
+  return RITMO[rec];
+}
+
+/**
+ * O COMANDO QUE VEIO DE FORA (a rede: o servidor refaz a partida do Solo e a sala troca comandos), limpo: só os campos que a
+ * simulação lê, com os tipos certos. Qualquer coisa estranha vira null e não entra.
+ */
+export function limparComando(c: unknown): Comando | null {
+  if (!c || typeof c !== 'object') return null;
+  const o = c as Record<string, unknown>;
+  const num = (v: unknown) => typeof v === 'number' && Number.isFinite(v) && Math.abs(v) < 1e6;
+  const int = (v: unknown) => Number.isInteger(v) && Math.abs(v as number) < 1e9;
+  const ids = (v: unknown) => (Array.isArray(v) && v.length <= 80 && v.every(int) ? (v as number[]).slice() : null);
+  const de = <K extends string>(v: unknown, lista: Record<K, unknown>) => (typeof v === 'string' && Object.prototype.hasOwnProperty.call(lista, v) ? (v as K) : null);
+  const rec = (v: unknown) => (typeof v === 'string' && (RECURSOS as string[]).includes(v) ? (v as Recurso) : null);
+  switch (o.t) {
+    case 'mover': {
+      const l = ids(o.ids);
+      if (!l || !num(o.x) || !num(o.y)) return null;
+      return o.atacando ? { t: 'mover', ids: l, x: o.x as number, y: o.y as number, atacando: true } : { t: 'mover', ids: l, x: o.x as number, y: o.y as number };
+    }
+    case 'alvo': {
+      const l = ids(o.ids);
+      return l && int(o.alvo) ? { t: 'alvo', ids: l, alvo: o.alvo as number } : null;
+    }
+    case 'parar': {
+      const l = ids(o.ids);
+      return l ? { t: 'parar', ids: l } : null;
+    }
+    case 'construir': {
+      const l = ids(o.ids);
+      const tipo = de(o.tipo, PREDIOS);
+      return l && tipo && int(o.gx) && int(o.gy) ? { t: 'construir', ids: l, tipo, gx: o.gx as number, gy: o.gy as number } : null;
+    }
+    case 'muralha': {
+      const l = ids(o.ids);
+      return l && int(o.gx0) && int(o.gy0) && int(o.gx1) && int(o.gy1)
+        ? { t: 'muralha', ids: l, gx0: o.gx0 as number, gy0: o.gy0 as number, gx1: o.gx1 as number, gy1: o.gy1 as number }
+        : null;
+    }
+    case 'treinar': {
+      const u = de(o.unidade, UNIDADES);
+      return int(o.predio) && u ? { t: 'treinar', predio: o.predio as number, unidade: u } : null;
+    }
+    case 'cancelar':
+    case 'era':
+    case 'sino':
+      return int(o.predio) ? { t: o.t, predio: o.predio as number } : null;
+    case 'reuniao': {
+      if (!int(o.predio) || !num(o.x) || !num(o.y)) return null;
+      const base = { t: 'reuniao' as const, predio: o.predio as number, x: o.x as number, y: o.y as number };
+      return int(o.alvo) ? { ...base, alvo: o.alvo as number } : base;
+    }
+    case 'melhorar': {
+      const m = de(o.m, MELHORIAS);
+      return int(o.predio) && m ? { t: 'melhorar', predio: o.predio as number, m } : null;
+    }
+    case 'trocar': {
+      const a = rec(o.de);
+      const b = rec(o.para);
+      return int(o.predio) && a && b ? { t: 'trocar', predio: o.predio as number, de: a, para: b } : null;
+    }
+  }
+  return null;
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -999,6 +1309,7 @@ export function passo(sim: Sim) {
   if (sim.passo % 5 === 0) verNevoa(sim);
   conferirFim(sim);
   sim.passo++;
+  if (sim.passo % AMOSTRA_DO_HISTORICO === 0 || sim.vencedor !== null) amostrar(sim);
 }
 
 function predioPensa(sim: Sim, p: Predio) {
@@ -1030,6 +1341,16 @@ function predioPensa(sim: Sim, p: Predio) {
           else aplicar(sim, p.dono, { t: 'mover', ids: [u.id], x: r.x, y: r.y });
         }
       }
+    }
+  }
+  // o ferreiro estuda
+  if (p.estudo) {
+    p.estudoPassos++;
+    if (p.estudoPassos >= MELHORIAS[p.estudo].tempo) {
+      j.melhorias |= 1 << ORDEM_DAS_MELHORIAS.indexOf(p.estudo);
+      sim.eventos.push({ t: 'melhoria', dono: p.dono, m: p.estudo });
+      p.estudo = null;
+      p.estudoPassos = 0;
     }
   }
   // quem atira: a torre e o centro
@@ -1103,6 +1424,7 @@ function avancarEra(sim: Sim, dono: Dono) {
 }
 
 function ferir(sim: Sim, alvo: Unidade | Predio, dano: number, de: number) {
+  if (eUnidade(alvo) && comMelhoria(sim, alvo.dono, alvo.tipo, 'armadura')) dano *= EFEITO_DAS_MELHORIAS.armadura;
   alvo.vida -= dano;
   if (eUnidade(alvo)) {
     alvo.atacadoPor = de;
@@ -1125,6 +1447,7 @@ function danoDe(sim: Sim, u: Unidade, alvo: Unidade | Predio): number {
   let dano = ePredio(alvo) ? d.contraPredio : d.ataque;
   if (eUnidade(alvo) && d.bonus && d.bonus.contra === alvo.tipo) dano *= d.bonus.vezes;
   if (sim.jogadores[u.dono].era === 2) dano *= ERA2.ataque;
+  if (comMelhoria(sim, u.dono, u.tipo, 'ataque')) dano *= EFEITO_DAS_MELHORIAS.ataque;
   return dano;
 }
 
@@ -1376,7 +1699,7 @@ function pensar(sim: Sim, u: Unidade) {
         olhar(u, c.x, c.y);
         u.acao = 'trabalhando';
         u.trabalho++;
-        if (u.trabalho >= RITMO[rec]) {
+        if (u.trabalho >= ritmoDe(sim, u.dono, rec)) {
           u.trabalho = 0;
           u.carga = { rec, qtd: (u.carga?.qtd ?? 0) + 1 };
           if (eFonte(alvo)) {
@@ -1399,6 +1722,7 @@ function pensar(sim: Sim, u: Unidade) {
       }
       if (distancia(u.x, u.y, deposito) <= 0.8) {
         sim.jogadores[u.dono].recursos[u.carga.rec] += u.carga.qtd;
+        sim.colhido[u.dono] += u.carga.qtd;
         sim.eventos.push({ t: 'entregou', dono: u.dono, rec: u.carga.rec, qtd: u.carga.qtd });
         u.carga = null;
         u.caminho = [];
@@ -1455,6 +1779,7 @@ function pensar(sim: Sim, u: Unidade) {
         // entra: a carga vai para o estoque, e ele some do mapa
         if (u.carga) {
           sim.jogadores[u.dono].recursos[u.carga.rec] += u.carga.qtd;
+        sim.colhido[u.dono] += u.carga.qtd;
           sim.eventos.push({ t: 'entregou', dono: u.dono, rec: u.carga.rec, qtd: u.carga.qtd });
           u.carga = null;
         }
@@ -1685,8 +2010,16 @@ export function assinatura(sim: Sim): string {
     mais(p.id);
     mais(p.vida);
     mais(p.progresso);
+    mais(p.estudoPassos);
   }
-  for (const j of sim.jogadores) for (const k of RECURSOS) mais(j.recursos[k]);
+  for (const j of sim.jogadores) {
+    for (const k of RECURSOS) {
+      mais(j.recursos[k]);
+      mais(j.precos[k]);
+    }
+    mais(j.melhorias);
+    mais(j.era);
+  }
   return (h >>> 0).toString(16);
 }
 

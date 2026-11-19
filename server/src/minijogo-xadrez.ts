@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import { Chess, type Move } from 'chess.js';
 import { type Definicao, placar } from './minijogo-motor.js';
 
 /**
@@ -14,7 +15,8 @@ import { type Definicao, placar } from './minijogo-motor.js';
  * isso não há biblioteca de regras aqui — mover, rocar, comer en passant e promover bastam.
  */
 
-type Problema = [id: string, fen: string, lances: string, nota: number];
+/** O quinto campo, os temas do Lichess separados por espaço, só existe no arquivo gerado depois de 19/11/2026. */
+type Problema = [id: string, fen: string, lances: string, nota: number, temas?: string];
 
 export const PROBLEMAS: Problema[] = JSON.parse(readFileSync(new URL('../assets/problemas-de-xadrez.json', import.meta.url), 'utf8'));
 
@@ -73,129 +75,264 @@ interface Tentativa {
   tempoMs: number | null;
   ultimo: string | null;
   erro: string | null;
+  /** A posição de verdade (o chess.js), só para dizer à tela quais casas cada peça alcança: quem decide é a solução. */
+  jogo: Chess | null;
 }
 
-export const xadrez: Definicao = {
-  comecar(ctx, { naSala }) {
-    if (PROBLEMAS.length < 4) return 'Os problemas de xadrez não estão no servidor.';
-    const porFaixa = PROBLEMAS.length / 4;
-    const usados = new Set<number>();
-    const sortear = (faixa: number) => {
-      for (;;) {
-        const i = Math.floor(faixa * porFaixa + Math.random() * porFaixa);
-        if (!usados.has(i)) {
-          usados.add(i);
-          return PROBLEMAS[i];
-        }
-      }
-    };
+/**
+ * O MODO CORRIDA (19/11/2026, só no Solo): 3 minutos de problemas em sequência, do mais fácil ao mais difícil (a faixa sobe a
+ * cada três), e o erro tira 10 segundos e passa ao próximo. Vale quantos a pessoa resolveu, e o melhor fica na tabela comum
+ * de recordes (`xadrez`, variante `corrida`), contado pelo servidor.
+ */
+export const CORRIDA_MS = 3 * 60_000;
+export const PENALIDADE_MS = 10_000;
+export const PROBLEMAS_POR_FAIXA_NA_CORRIDA = 3;
 
-    let rodada = 1;
-    let fase: 'resolvendo' | 'solucao' | 'fim' = 'resolvendo';
-    let problema = sortear(FAIXA_DA_RODADA[0]);
-    let inicio = Date.now();
-    let posicao: string[] = [];
-    let cor: 'w' | 'b' = 'w';
-    let lances: string[] = [];
-    let solucao: string[] = [];
-    const tentativas = new Map<number, Tentativa>();
-    const pontos = new Map(naSala.map((id) => [id, 0]));
+/**
+ * OS TEMAS (19/11/2026): o arquivo do Lichess traz os temas de cada problema ("mateIn1", "fork", "pin"…), e o script os
+ * guarda como quinto campo. Escolhendo um tema, só os problemas dele entram; o arquivo antigo, sem temas, não tem nenhum.
+ */
+export const TEMAS_DOS_PROBLEMAS = ['mateIn1', 'mateIn2', 'fork', 'pin', 'skewer', 'discoveredAttack', 'hangingPiece', 'endgame', 'sacrifice', 'promotion'] as const;
+export const temasDe = (p: Problema) => (p[4] ?? '').split(' ').filter(Boolean);
 
-    const nova = (): Tentativa => ({ casas: posicao, passo: 1, estado: 'resolvendo', tempoMs: null, ultimo: lances[0], erro: null });
+/** A posição do problema no chess.js, com o lance do adversário já feito (null se o FEN não abrir). */
+function posicaoDe(fen: string, primeiro: string): Chess | null {
+  try {
+    const jogo = new Chess(fen);
+    jogo.move({ from: primeiro.slice(0, 2), to: primeiro.slice(2, 4), promotion: primeiro[4] });
+    return jogo;
+  } catch {
+    return null;
+  }
+}
 
-    function novoProblema() {
-      const [, fen, texto] = problema;
-      lances = texto.split(' ');
-      const inicial = lerFen(fen);
-      // O primeiro lance é do adversário: quem resolve joga com a outra cor.
-      cor = inicial.vez === 'w' ? 'b' : 'w';
-      posicao = jogar(inicial.casas, lances[0]);
-      solucao = lances.reduce((casas, l) => jogar(casas, l), inicial.casas);
-      tentativas.clear();
-      for (const id of pontos.keys()) tentativas.set(id, nova());
-      fase = 'resolvendo';
-      inicio = Date.now();
-      ctx.agendar(RESOLVENDO_MS, mostrarSolucao);
-      ctx.avisar();
-    }
+/** As casas que as peças de quem tem a vez alcançam, de-para (o destaque da tela). */
+function lancesDaTentativa(t: Tentativa): { de: number; para: number }[] {
+  if (!t.jogo || t.estado !== 'resolvendo') return [];
+  const vistos = new Set<string>();
+  const lista: { de: number; para: number }[] = [];
+  for (const m of t.jogo.moves({ verbose: true }) as Move[]) {
+    if (vistos.has(m.from + m.to)) continue;
+    vistos.add(m.from + m.to);
+    lista.push({ de: casa(m.from), para: casa(m.to) });
+  }
+  return lista;
+}
 
-    function mostrarSolucao() {
-      if (fase !== 'resolvendo') return;
-      const acertaram = [...tentativas.entries()].filter(([, t]) => t.estado === 'acertou');
-      for (const [id] of acertaram) pontos.set(id, (pontos.get(id) ?? 0) + 1);
-      // O ponto extra é de quem acertou primeiro.
-      const primeiro = acertaram.sort(([, a], [, b]) => (a.tempoMs ?? 0) - (b.tempoMs ?? 0))[0];
-      if (primeiro) pontos.set(primeiro[0], (pontos.get(primeiro[0]) ?? 0) + 1);
-      fase = 'solucao';
-      ctx.agendar(SOLUCAO_MS, () => {
-        if (rodada >= RODADAS_XADREZ) {
-          fase = 'fim';
-          return ctx.terminar();
-        }
-        rodada++;
-        problema = sortear(FAIXA_DA_RODADA[rodada - 1]);
-        novoProblema();
-      });
-      ctx.avisar();
-    }
-
-    novoProblema();
-    return {
-      publico(quem) {
-        const minha = tentativas.get(quem) ?? nova();
-        const resolvido = fase !== 'resolvendo';
-        return {
-          rodada,
-          rodadas: RODADAS_XADREZ,
-          fase,
-          problema: problema[0],
-          nota: problema[3],
-          cor,
-          // Na solução, todo mundo vê o fim do problema; antes, cada um vê o próprio tabuleiro.
-          casas: resolvido ? solucao : minha.casas,
-          ultimo: resolvido ? lances[lances.length - 1] : minha.ultimo,
-          estado: minha.estado,
-          erro: minha.erro,
-          jogadores: [...tentativas.entries()].map(([userId, t]) => ({ userId, username: ctx.nome(userId), estado: t.estado, tempoMs: t.tempoMs })),
-          placar: placar(pontos, ctx.nome),
-        };
-      },
-      acao(quem, corpo) {
-        if (corpo.tipo !== 'lance') return 'Ação desconhecida.';
-        if (fase !== 'resolvendo') return 'Este problema já acabou.';
-        const lance = String(corpo.lance ?? '').toLowerCase();
-        if (!/^[a-h][1-8][a-h][1-8][qrbn]?$/.test(lance)) return 'Lance inválido.';
-        let t = tentativas.get(quem);
-        if (!t) {
-          t = nova();
-          tentativas.set(quem, t);
-          if (!pontos.has(quem)) pontos.set(quem, 0);
-        }
-        if (t.estado !== 'resolvendo') return null;
-        if (!confere(lance, lances[t.passo])) {
-          t.estado = 'errou';
-          t.erro = lance;
-        } else {
-          t.casas = jogar(t.casas, lances[t.passo]);
-          t.ultimo = lances[t.passo];
-          t.passo++;
-          if (t.passo < lances.length) {
-            // A resposta do adversário vem sozinha.
-            t.casas = jogar(t.casas, lances[t.passo]);
-            t.ultimo = lances[t.passo];
-            t.passo++;
-          }
-          if (t.passo >= lances.length) {
-            t.estado = 'acertou';
-            t.tempoMs = Date.now() - inicio;
-          }
-        }
-        // Todo mundo da sala já acertou ou errou: a solução aparece na hora.
-        const naSalaAgora = ctx.naSala();
-        if ([...tentativas.entries()].every(([id, x]) => x.estado !== 'resolvendo' || !naSalaAgora.includes(id))) mostrarSolucao();
-        else ctx.avisar();
-        return null;
-      },
-    };
-  },
+const andar = (t: Tentativa, uci: string) => {
+  t.casas = jogar(t.casas, uci);
+  t.ultimo = uci;
+  try {
+    t.jogo?.move({ from: uci.slice(0, 2), to: uci.slice(2, 4), promotion: uci[4] });
+  } catch {
+    t.jogo = null;
+  }
 };
+
+/**
+ * Onde a corrida guarda o recorde (a tabela comum de db.ts). Vem de fora, das rotas: importar o banco aqui o abriria antes de o
+ * teste escolher o dele. Sem ela, a corrida roda e o recorde não se grava.
+ */
+export interface RecordesDoXadrez {
+  recordeDoSolo(userId: number, jogo: string, variante?: string): { valor: number } | null;
+  guardarRecordeDoSolo(userId: number, jogo: string, variante: string, valor: number, menorMelhor: boolean, extra?: unknown): { antes: number | null; novo: boolean };
+}
+
+export function criarXadrez({ agora = Date.now, aleatorio = Math.random, recordes = null as RecordesDoXadrez | null } = {}): Definicao {
+  return {
+    comecar(ctx, { naSala, criadaPor, corpo }) {
+      const tema = typeof corpo?.tema === 'string' && (TEMAS_DOS_PROBLEMAS as readonly string[]).includes(corpo.tema) ? corpo.tema : null;
+      const lista = tema ? PROBLEMAS.filter((p) => temasDe(p).includes(tema)) : PROBLEMAS;
+      if (lista.length < 4) return tema ? 'Ainda não há problemas desse tema.' : 'Os problemas de xadrez não estão no servidor.';
+      const corrida = ctx.solo === true && corpo?.modo === 'corrida';
+      // a lista vem em ordem de nota (o script guarda as faixas em ordem): quatro faixas iguais
+      const ordenada = [...lista].sort((a, b) => a[3] - b[3]);
+      const porFaixa = ordenada.length / 4;
+      const usados = new Set<number>();
+      const sortear = (faixa: number) => {
+        for (let k = 0; ; k++) {
+          const i = Math.floor(faixa * porFaixa + aleatorio() * porFaixa);
+          if (!usados.has(i) || k > 200) {
+            usados.add(i);
+            return ordenada[Math.min(ordenada.length - 1, i)];
+          }
+        }
+      };
+
+      let rodada = 1;
+      let fase: 'resolvendo' | 'solucao' | 'fim' = 'resolvendo';
+      let problema = sortear(FAIXA_DA_RODADA[0]);
+      let inicio = agora();
+      let fen = '';
+      let posicao: string[] = [];
+      let cor: 'w' | 'b' = 'w';
+      let lances: string[] = [];
+      let solucao: string[] = [];
+      const tentativas = new Map<number, Tentativa>();
+      const pontos = new Map(naSala.map((id) => [id, 0]));
+      // a corrida
+      let fimDaCorrida = inicio + CORRIDA_MS;
+      let resolvidos = 0;
+      let erros = 0;
+      let recorde: { antes: number | null; novo: boolean } | null = null;
+      const recordeAntes = corrida ? (recordes?.recordeDoSolo(criadaPor, 'xadrez', 'corrida')?.valor ?? null) : null;
+
+      const nova = (): Tentativa => ({ casas: posicao, passo: 1, estado: 'resolvendo', tempoMs: null, ultimo: lances[0], erro: null, jogo: posicaoDe(fen, lances[0]) });
+
+      function montar() {
+        const [, f, texto] = problema;
+        fen = f;
+        lances = texto.split(' ');
+        const inicial = lerFen(fen);
+        // O primeiro lance é do adversário: quem resolve joga com a outra cor.
+        cor = inicial.vez === 'w' ? 'b' : 'w';
+        posicao = jogar(inicial.casas, lances[0]);
+        solucao = lances.reduce((casas, l) => jogar(casas, l), inicial.casas);
+        tentativas.clear();
+        for (const id of pontos.keys()) tentativas.set(id, nova());
+      }
+
+      function novoProblema() {
+        montar();
+        fase = 'resolvendo';
+        inicio = agora();
+        ctx.agendar(RESOLVENDO_MS, mostrarSolucao);
+        ctx.avisar();
+      }
+
+      function mostrarSolucao() {
+        if (fase !== 'resolvendo') return;
+        const acertaram = [...tentativas.entries()].filter(([, t]) => t.estado === 'acertou');
+        for (const [id] of acertaram) pontos.set(id, (pontos.get(id) ?? 0) + 1);
+        // O ponto extra é de quem acertou primeiro.
+        const primeiro = acertaram.sort(([, a], [, b]) => (a.tempoMs ?? 0) - (b.tempoMs ?? 0))[0];
+        if (primeiro) pontos.set(primeiro[0], (pontos.get(primeiro[0]) ?? 0) + 1);
+        fase = 'solucao';
+        ctx.agendar(SOLUCAO_MS, () => {
+          if (rodada >= RODADAS_XADREZ) {
+            fase = 'fim';
+            return ctx.terminar();
+          }
+          rodada++;
+          problema = sortear(FAIXA_DA_RODADA[rodada - 1]);
+          novoProblema();
+        });
+        ctx.avisar();
+      }
+
+      // ---- a corrida: o relógio é um só, e cada problema vem na hora
+      const faixaDaCorrida = () => Math.min(3, Math.floor((resolvidos + erros) / PROBLEMAS_POR_FAIXA_NA_CORRIDA));
+      const acabarCorrida = () => {
+        if (fase === 'fim') return;
+        fase = 'fim';
+        pontos.set(criadaPor, resolvidos);
+        // o número é do servidor: ele conferiu cada lance contra a solução
+        recorde = resolvidos > 0 && recordes ? recordes.guardarRecordeDoSolo(criadaPor, 'xadrez', 'corrida', resolvidos, false, { erros }) : { antes: recordeAntes, novo: false };
+        ctx.terminar();
+      };
+      const proximoDaCorrida = () => {
+        const falta = fimDaCorrida - agora();
+        if (falta <= 0) return acabarCorrida();
+        problema = sortear(faixaDaCorrida());
+        montar();
+        rodada = resolvidos + erros + 1;
+        ctx.agendar(falta, acabarCorrida);
+        ctx.avisar();
+      };
+
+      if (corrida) {
+        montar();
+        ctx.agendar(CORRIDA_MS, acabarCorrida);
+      } else novoProblema();
+
+      return {
+        publico(quem) {
+          const minha = tentativas.get(quem) ?? nova();
+          const resolvido = fase !== 'resolvendo';
+          return {
+            modo: corrida ? 'corrida' : 'rodadas',
+            tema,
+            rodada,
+            rodadas: corrida ? null : RODADAS_XADREZ,
+            fase,
+            problema: problema[0],
+            nota: problema[3],
+            cor,
+            // Na solução, todo mundo vê o fim do problema; antes, cada um vê o próprio tabuleiro.
+            casas: resolvido && !corrida ? solucao : minha.casas,
+            ultimo: resolvido && !corrida ? lances[lances.length - 1] : minha.ultimo,
+            estado: minha.estado,
+            erro: minha.erro,
+            // as casas que cada peça alcança (o destaque da tela, como na partida)
+            lances: fase === 'resolvendo' ? lancesDaTentativa(minha) : [],
+            // no Solo, quem errou pode tentar o mesmo problema de novo
+            podeTentarDeNovo: ctx.solo === true && !corrida && fase === 'resolvendo' && minha.estado === 'errou',
+            corrida: corrida
+              ? { restanteMs: Math.max(0, fimDaCorrida - agora()), resolvidos, erros, recordeAntes, recorde }
+              : null,
+            jogadores: [...tentativas.entries()].map(([userId, t]) => ({ userId, username: ctx.nome(userId), estado: t.estado, tempoMs: t.tempoMs })),
+            placar: placar(pontos, ctx.nome),
+          };
+        },
+        acao(quem, corpo) {
+          if (corpo.tipo === 'de-novo') {
+            if (!ctx.solo || corrida) return 'Só no Solo dá para tentar de novo.';
+            if (fase !== 'resolvendo') return 'Este problema já acabou.';
+            const t = tentativas.get(quem);
+            if (!t || t.estado !== 'errou') return 'Você ainda está resolvendo.';
+            tentativas.set(quem, nova());
+            ctx.avisar();
+            return null;
+          }
+          if (corpo.tipo !== 'lance') return 'Ação desconhecida.';
+          if (fase !== 'resolvendo') return 'Este problema já acabou.';
+          const lance = String(corpo.lance ?? '').toLowerCase();
+          if (!/^[a-h][1-8][a-h][1-8][qrbn]?$/.test(lance)) return 'Lance inválido.';
+          let t = tentativas.get(quem);
+          if (!t) {
+            if (corrida) return 'Esta corrida não é sua.';
+            t = nova();
+            tentativas.set(quem, t);
+            if (!pontos.has(quem)) pontos.set(quem, 0);
+          }
+          if (t.estado !== 'resolvendo') return null;
+          if (!confere(lance, lances[t.passo])) {
+            t.estado = 'errou';
+            t.erro = lance;
+          } else {
+            andar(t, lances[t.passo]);
+            t.passo++;
+            // A resposta do adversário vem sozinha.
+            if (t.passo < lances.length) {
+              andar(t, lances[t.passo]);
+              t.passo++;
+            }
+            if (t.passo >= lances.length) {
+              t.estado = 'acertou';
+              t.tempoMs = agora() - inicio;
+            }
+          }
+          if (corrida) {
+            if (t.estado === 'errou') {
+              erros++;
+              fimDaCorrida -= PENALIDADE_MS;
+              proximoDaCorrida();
+            } else if (t.estado === 'acertou') {
+              resolvidos++;
+              proximoDaCorrida();
+            } else ctx.avisar();
+            return null;
+          }
+          // Todo mundo da sala já acertou ou errou: a solução aparece na hora. No Solo, quem errou ainda pode tentar de novo.
+          const naSalaAgora = ctx.naSala();
+          const todos = [...tentativas.entries()].every(([id, x]) => x.estado !== 'resolvendo' || !naSalaAgora.includes(id));
+          if (todos && !(ctx.solo && t.estado === 'errou')) mostrarSolucao();
+          else ctx.avisar();
+          return null;
+        },
+      };
+    },
+  };
+}
+
+export const xadrez: Definicao = criarXadrez();

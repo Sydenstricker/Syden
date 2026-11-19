@@ -90,7 +90,30 @@ export const AVISO = { terremoto: 1400, pedras: 1350, investida: 1200, torrao: 1
 /** A vida da toupeira em CADA fase: no Solo, mais fraca. */
 export const vidaPorFase = (n: number, solo: boolean) => (solo ? 50 : 70 + 35 * (n - 1));
 
-type Golpe = 'terremoto' | 'pedras' | 'investida' | 'torroes';
+/**
+ * REVIVER O AMIGO CAÍDO (19/11/2026, a auditoria dos mini-games): quem ficou sem vidas volta com UMA vida se alguém da turma,
+ * em pé, ficar perto dele (REVIVER_RAIO) por REVIVER_MS seguidos. Quem decide é o servidor, pelas posições que ele já confere;
+ * sair de perto zera a conta. Quem volta fica piscando (INVUL_MS) e sem a bomba da fase.
+ */
+export const REVIVER_RAIO = 26;
+export const REVIVER_MS = 2000;
+/**
+ * A CRUZ DE PEDRAS (19/11/2026): o golpe novo, só da última fase. As pedras caem em quatro linhas a partir da toupeira (em +
+ * ou em ×), uma depois da outra para fora; escapa quem sai das linhas. Usa a marca da pedra: o site não precisa de desenho novo.
+ */
+export const CRUZ_PASSO = 30;
+export const CRUZ_INTERVALO_MS = 110;
+
+/**
+ * O SEGUNDO CHEFE, O YETI (19/11/2026), escolhido na largada, sobre o mesmo motor: no lugar da investida, ele EMPURRA UMA BOLA
+ * DE NEVE que rola pela linha marcada (quem fica nela leva) e PARA no fim, fria: o coelho que passa por cima a pega e a atira de
+ * volta, como o torrão frio. Os outros golpes são os da toupeira (os torrões viram bolas de neve no desenho).
+ */
+export const CHEFES = ['toupeira', 'yeti'] as const;
+export type QualChefe = (typeof CHEFES)[number];
+export const BOLA_DE_NEVE = { raio: 14, vel: 200 };
+
+type Golpe = 'terremoto' | 'pedras' | 'investida' | 'torroes' | 'cruz' | 'rolar';
 
 interface Ponto {
   t: number;
@@ -168,12 +191,17 @@ interface Jogador {
   bomba: boolean;
   ultimoTiro: number;
   baldes: { pos: Balde; acao: Balde };
+  /** Sem vidas: desde quando alguém está perto para reviver (null: ninguém perto). */
+  reviverDesde: number | null;
 }
 
 export interface ServicosDoChefe {
   /** O coelho pronto do avatar da pessoa (ou null: o mascote). */
   avatarDe(userId: number): number | string | null;
   guardarTrofeu(t: { userId: number; evento: string; communityId: number; pista: string; posicao: number; tempoMs: number | null; pontos: number | null; rivais: number[] }): void;
+  /** O recorde do Solo (o tempo da vitória, na tabela comum): o melhor de antes, e guardar o novo. Sem banco, nada. */
+  recordeDe?(userId: number, variante: string): number | null;
+  guardarRecorde?(userId: number, variante: string, ms: number, extra: unknown): { antes: number | null; novo: boolean };
 }
 
 export interface OpcoesDoChefe {
@@ -201,7 +229,7 @@ export function criarChefe({
   return {
     minimo: 2,
     maximo: 8,
-    comecar(ctx: Contexto, { naSala }) {
+    comecar(ctx: Contexto, { naSala, corpo }) {
       const inscritos = [...naSala].slice(0, 8);
       if (inscritos.length === 0) return 'Ninguém para jogar.';
       const solo = ctx.solo ?? (ctx.comunidade === 0 || ctx.comunidade === undefined);
@@ -218,6 +246,16 @@ export function criarChefe({
       let danoDaTurma = 0;
       let venceuALuta = false;
       let ultimoMotivo: string | null = null;
+      let venceuEm: number | null = null;
+      let recorde: { ms: number; antes: number | null; novo: boolean } | null = null;
+      // QUAL CHEFE (19/11/2026): a toupeira (a de sempre) ou o yeti; "categoria" é o que o "Jogar de novo" manda
+      const pedido = typeof corpo?.chefe === 'string' ? corpo.chefe : typeof corpo?.categoria === 'string' ? corpo.categoria : 'toupeira';
+      const qual: QualChefe = pedido === 'yeti' ? 'yeti' : 'toupeira';
+      /** A variante do recorde: a toupeira continua sem nome (a de antes), o yeti com o dele. */
+      const variante = qual === 'toupeira' ? '' : qual;
+      const melhorAntes = solo && servicos.recordeDe ? servicos.recordeDe(inscritos[0], variante) : null;
+      /** As bolas de neve rolando: de onde, para onde, quando começa e a marca da linha. */
+      const bolas = new Map<number, { id: number; x: number; y: number; dx: number; dy: number; fim: [number, number]; comeca: number; marca: number }>();
 
       // ---------------- A TOUPEIRA ----------------
       const chefe = {
@@ -287,6 +325,7 @@ export function criarChefe({
             bomba: true,
             ultimoTiro: 0,
             baldes: { pos: balde(10, 24), acao: balde(8, 10) },
+            reviverDesde: null,
           },
         ]),
       );
@@ -320,7 +359,10 @@ export function criarChefe({
 
       // ---------------- OS GOLPES ----------------
       const sortearGolpe = (): Golpe => {
-        const opcoes = (['terremoto', 'pedras', 'investida'] as Golpe[]).filter((g) => g !== chefe.ultimoGolpe);
+        // a cruz é só da última fase
+        const corrida: Golpe = qual === 'yeti' ? 'rolar' : 'investida';
+        const todos: Golpe[] = chefe.fase === FASES.length - 1 ? ['terremoto', 'pedras', corrida, 'cruz'] : ['terremoto', 'pedras', corrida];
+        const opcoes = todos.filter((g) => g !== chefe.ultimoGolpe);
         return opcoes[Math.min(opcoes.length - 1, Math.floor(aleatorio() * opcoes.length))];
       };
       const montarFila = () => {
@@ -356,6 +398,39 @@ export function criarChefe({
             novaMarca('pedra', x, y, 16, 0, 0, ultimo);
           }
           mudar('prep-pedras', ultimo - t);
+        } else if (g === 'cruz') {
+          // as quatro linhas, em + ou em ×, a pedra mais perto primeiro
+          const R = Math.SQRT1_2;
+          const dirs: [number, number][] = aleatorio() < 0.5 ? [[1, 0], [-1, 0], [0, 1], [0, -1]] : [[R, R], [-R, R], [R, -R], [-R, -R]];
+          let ultimo = t;
+          for (let k = 1; k <= 14; k++) {
+            let alguma = false;
+            for (const [dx, dy] of dirs) {
+              const x = chefe.x + dx * k * CRUZ_PASSO;
+              const y = chefe.y + dy * k * CRUZ_PASSO * 0.6;
+              if (x < ARENA.x0 || x > ARENA.x1 || y < ARENA.y0 || y > ARENA.y1) continue;
+              alguma = true;
+              ultimo = t + AVISO.pedras * f.k + k * CRUZ_INTERVALO_MS;
+              novaMarca('pedra', x, y, 15, 0, 0, ultimo);
+            }
+            if (!alguma) break;
+          }
+          mudar('prep-pedras', Math.max(300, ultimo - t));
+        } else if (g === 'rolar') {
+          // a bola de neve: a linha até a borda, na direção de alguém; ela rola depois do aviso e para no fim, fria
+          const alvos = emPe();
+          const alvo = alvos.length ? alvos[Math.min(alvos.length - 1, Math.floor(aleatorio() * alvos.length))] : null;
+          let [dx, dy] = alvo ? normalizar(alvo.x - chefe.x, alvo.y - chefe.y) : [0, 0];
+          if (dx === 0 && dy === 0) [dx, dy] = normalizar(sorteio(-1, 1) || 1, sorteio(-1, 1));
+          chefe.lado = dx >= 0 ? 1 : -1;
+          const x0 = chefe.x + dx * (CORPO_CHEFE + 4), y0 = chefe.y + dy * (CORPO_CHEFE + 4);
+          const fim = fimDaInvestida(x0, y0, dx, dy, 18);
+          const comeca = t + AVISO.investida * f.k;
+          const rola = (distancia(x0, y0, fim[0], fim[1]) / BOLA_DE_NEVE.vel) * 1000;
+          // a marca fica "por cair" até a bola parar: a linha inteira é perigo enquanto ela rola
+          const m = novaMarca('investida', x0, y0, BOLA_DE_NEVE.raio, fim[0], fim[1], comeca + rola);
+          bolas.set(m.id, { id: m.id, x: x0, y: y0, dx, dy, fim, comeca, marca: m.id });
+          mudar('prep-pedras', comeca - t);
         } else if (g === 'investida') {
           const alvos = emPe();
           const alvo = alvos.length ? alvos[Math.min(alvos.length - 1, Math.floor(aleatorio() * alvos.length))] : null;
@@ -478,6 +553,27 @@ export function criarChefe({
         }
       };
 
+      // ---------------- A BOLA DE NEVE DO YETI ----------------
+      const rolarBolas = (t: number, dt: number) => {
+        for (const b of [...bolas.values()]) {
+          if (t < b.comeca) continue;
+          const x0 = b.x, y0 = b.y;
+          const falta = distancia(b.x, b.y, b.fim[0], b.fim[1]);
+          const anda = Math.min(falta, BOLA_DE_NEVE.vel * dt);
+          b.x += b.dx * anda;
+          b.y += b.dy * anda;
+          const x1 = b.x, y1 = b.y;
+          pancada(`bola-${b.id}`, (h) => distSegmento(h.x, h.y, x0, y0, x1, y1) <= BOLA_DE_NEVE.raio + CORPO_COELHO);
+          if (falta - anda < 0.5) {
+            // parou: fria, no chão, para devolver
+            bolas.delete(b.id);
+            marcas.delete(b.marca);
+            noChao.set(b.id, { id: b.id, x: b.x, y: b.y, ate: t + TORRAO.noChaoMs });
+            evento_('t', Math.round(b.x), Math.round(b.y));
+          }
+        }
+      };
+
       // ---------------- AS MARCAS QUE CHEGAM AO CHÃO ----------------
       const resolverMarcas = (t: number) => {
         for (const m of [...marcas.values()]) {
@@ -543,6 +639,7 @@ export function criarChefe({
         if (chefe.hp > 0) return;
         // a fase caiu
         marcas.clear();
+        bolas.clear();
         pancadas.length = 0;
         chefe.fila = [];
         if (chefe.fase < FASES.length - 1) {
@@ -570,6 +667,33 @@ export function criarChefe({
         }
       };
 
+      // ---------------- REVIVER ----------------
+      const reviver = (t: number) => {
+        const vivos = emPe();
+        for (const j of jogadores.values()) {
+          if (j.estado !== 'sem-vidas' || !naSalaAgora.has(j.userId)) {
+            j.reviverDesde = null;
+            continue;
+          }
+          const quem = vivos.find((o) => distancia(o.x, o.y, j.x, j.y) <= REVIVER_RAIO);
+          if (!quem) {
+            j.reviverDesde = null;
+            continue;
+          }
+          if (j.reviverDesde === null) j.reviverDesde = t;
+          if (t - j.reviverDesde < REVIVER_MS) continue;
+          j.estado = 'em-pe';
+          j.vidas = 1;
+          j.reviverDesde = null;
+          j.invulAte = t + INVUL_MS;
+          j.livreAte = t + 600;
+          j.historia = [];
+          j.ultimaEm = t;
+          evento_('v', j.userId, quem.userId);
+          ctx.avisar();
+        }
+      };
+
       // ---------------- O PASSO ----------------
       const tick = () => {
         if (fase === 'fim') return;
@@ -583,9 +707,11 @@ export function criarChefe({
           passoDoChefe(t, dt);
           if (fase !== 'lutando') return;
           resolverMarcas(t);
+          rolarBolas(t, dt);
           explodirBombas(t);
           if (fase !== 'lutando') return;
           decidirPancadas(t);
+          reviver(t);
           chefe.historia.push({ t, x: chefe.x, y: chefe.y, estado: chefe.estado });
           while (chefe.historia.length && chefe.historia[0].t < t - 1500) chefe.historia.shift();
           for (const [k, tiro] of tiros) if (t - tiro.em > 3000) tiros.delete(k);
@@ -614,6 +740,8 @@ export function criarChefe({
             chefe.fase,
             Math.round(chefe.destino[0]),
             Math.round(chefe.destino[1]),
+            // qual chefe: 0 a toupeira, 1 o yeti
+            qual === 'yeti' ? 1 : 0,
           ],
           // as marcas: [id, tipo, x, y, r, x2, y2, ms até o impacto, fria, ms do aviso inteiro]
           m: [...marcas.values()].map((m) => [m.id, MARCAS.indexOf(m.tipo), Math.round(m.x), Math.round(m.y), m.r, Math.round(m.x2), Math.round(m.y2), ms(m.impacto), m.frio ? 1 : 0, Math.round(m.impacto - m.inicio)]),
@@ -636,11 +764,15 @@ export function criarChefe({
             j.bomba ? 1 : 0,
             Math.max(0, ms(j.invulAte)),
             j.ultimoTiro,
+            // quanto já se ficou perto para reviver (ms; 0 sem ninguém)
+            j.reviverDesde === null ? 0 : Math.round(t - j.reviverDesde),
           ]),
           // os torrões atirados: [id, userId, x0, y0, dx×1000, dy×1000, ms desde o tiro]
           p: [...tiros.values()].map((s) => [s.id, s.userId, Math.round(s.x0), Math.round(s.y0), Math.round(s.dx * 1000), Math.round(s.dy * 1000), Math.round(t - s.em)]),
           // as bombas: [id, userId, x0, y0, x, y, ms até explodir]
           b: [...bombas.values()].map((b) => [b.id, b.userId, Math.round(b.x0), Math.round(b.y0), Math.round(b.x), Math.round(b.y), ms(b.explode)]),
+          // as bolas de neve rolando: [id, x, y]
+          bn: [...bolas.values()].filter((b) => t >= b.comeca).map((b) => [b.id, Math.round(b.x), Math.round(b.y)]),
           d: danoDaTurma,
           e: eventos,
         });
@@ -651,6 +783,7 @@ export function criarChefe({
       const acabar = (venceu: boolean, vazia = false) => {
         if (fase !== 'lutando') return;
         fase = venceu ? 'vitoria' : 'derrota';
+        if (venceu) venceuEm = agora();
         difundir();
         ctx.avisar();
         if (vazia) parar();
@@ -693,6 +826,15 @@ export function criarChefe({
           }
         }
         venceuALuta = venceu;
+        // O RECORDE DO SOLO (19/11/2026): o tempo até a toupeira cair, pelo relógio daqui, na tabela comum
+        if (venceu && solo && venceuEm !== null && servicos.guardarRecorde) {
+          const ms = venceuEm - inicio;
+          try {
+            recorde = { ms, ...servicos.guardarRecorde(inscritos[0], variante, ms, { pontos: jogadores.get(inscritos[0])?.pontos ?? 0 }) };
+          } catch {
+            // sem a conta (o teste): a luta acaba igual
+          }
+        }
         ctx.terminar(completa);
       };
 
@@ -799,6 +941,9 @@ export function criarChefe({
             })),
             resultado: fase === 'fim' ? resultado : null,
             partidaId: evento,
+            categoria: qual,
+            chefe: qual,
+            ...(solo ? { melhorAntes, recorde } : {}),
           };
         },
         acao(quem, corpo) {
@@ -827,7 +972,7 @@ export function criarChefe({
         },
         parar,
         // para o teste
-        ...({ _passo: tick, _chefe: chefe, _jogadores: jogadores, _marcas: marcas, _noChao: noChao, _motivo: () => ultimoMotivo } as object),
+        ...({ _passo: tick, _chefe: chefe, _jogadores: jogadores, _marcas: marcas, _noChao: noChao, _bolas: bolas, _motivo: () => ultimoMotivo } as object),
       };
     },
   };

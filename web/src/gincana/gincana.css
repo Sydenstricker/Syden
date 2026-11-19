@@ -254,3 +254,74 @@
   width: 2em;
   text-align: center;
 }
+
+/* 19/11/2026: o mergulho no toque, os robôs do Solo e as rodadas na sala */
+.gincana-botoes-acao {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+.gincana-mergulho {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  font-size: 22px !important;
+}
+.gincana-robos {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  margin: 0;
+}
+.gincana-robos legend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.gincana-robos [role='radiogroup'] {
+  display: flex;
+  gap: 8px;
+}
+.gincana-robos button {
+  min-width: 44px;
+  padding: 6px 10px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+  color: var(--text);
+  font-weight: 700;
+  cursor: pointer;
+}
+.gincana-robos button.escolhido {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast, #fff);
+}
+.gincana-rodada {
+  display: block;
+  text-align: center;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.gincana-entre {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: stretch;
+  padding: 12px 0;
+}
+.gincana-entre > strong {
+  text-align: center;
+  font-size: 1.1em;
+}
+.gincana-classificacao li.passou .gincana-posicao {
+  color: #3f9b4e;
+  font-weight: 700;
+}
+.gincana-classificacao li.ficou {
+  opacity: 0.6;
+}
+.gincana-final {
+  text-align: center;
+  font-weight: 700;
+}

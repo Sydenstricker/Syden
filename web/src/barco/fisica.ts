@@ -34,6 +34,14 @@ export const RAIO_DA_ARGOLA = 11;
 const RAIO = 6;
 /** Acima desta velocidade de lado, o barco está derrapando (a espuma e o som). */
 export const DERRAPA = 42;
+/** O SLALOM: o turbo que cada boia certa dá (s), e o da terceira certa seguida; errar zera o turbo e freia um pouco. */
+export const TURBO_DO_SLALOM = 0.6;
+export const TURBO_DA_SERIE = 1.2;
+export const FREIO_DO_ERRO = 0.85;
+/** A RAMPA: a meia largura dela (de cada lado do meio dela), a velocidade mínima para saltar, e a gravidade do salto. */
+export const MEIA_RAMPA = 14;
+export const SALTO_MINIMO = 70;
+export const GRAVIDADE = 200;
 
 export interface ComandosDoBarco {
   acelera: boolean;
@@ -71,6 +79,15 @@ export interface Barco {
   lateral: number;
   /** A velocidade para a frente em relação à água. */
   frente: number;
+  /** Quantas boias de slalom certas seguidas; e neste passo: 1 passou uma certa, −1 errou uma, 0 nenhuma. */
+  serie: number;
+  slalom: number;
+  /** O salto da rampa: a altura (só o desenho e o ar: no ar, o motor e o leme não pegam) e a velocidade de subida. */
+  altura: number;
+  vz: number;
+  /** Neste passo: saltou de uma rampa / caiu na água depois do salto. */
+  saltou: boolean;
+  pousou: boolean;
 }
 
 export function novoBarco(p: PistaDoBarco): Barco {
@@ -78,6 +95,7 @@ export function novoBarco(p: PistaDoBarco): Barco {
   return {
     x, y, vx: 0, vy: 0, angulo, giro: 0, turbo: 0, banco: 0, indice, volta: 0, meio: false, voltas: [], passos: 0, terminou: false,
     bateu: false, boia: false, fezVolta: false, encostado: false, lateral: 0, frente: 0,
+    serie: 0, slalom: 0, altura: 0, vz: 0, saltou: false, pousou: false,
   };
 }
 
@@ -95,6 +113,9 @@ export function passo(b: Barco, c: ComandosDoBarco, p: PistaDoBarco): void {
   b.bateu = false;
   b.boia = false;
   b.fezVolta = false;
+  b.slalom = 0;
+  b.saltou = false;
+  b.pousou = false;
   // depois da chegada, o barco vai parando sozinho
   if (b.terminou) c = { acelera: false, freia: false, vira: 0 };
   b.passos++;
@@ -119,12 +140,16 @@ export function passo(b: Barco, c: ComandosDoBarco, p: PistaDoBarco): void {
   let vl = -rx * sa + ry * ca;
   const empuxo = b.turbo > 0 ? 2 * EMPUXO : EMPUXO;
   if (b.turbo > 0) b.turbo = Math.max(0, b.turbo - dt);
-  if (c.acelera && !c.freia) vf += empuxo * dt;
-  else if (c.freia) vf -= (vf > 0 ? 260 : 80) * dt;
-  // o arrasto: pouco para a frente, mais de lado; a ré é lenta
-  vf -= vf * ARRASTO * dt;
-  if (vf < -50) vf = -50;
-  vl -= vl * ARRASTO_DE_LADO * dt;
+  // NO AR (o salto da rampa): o motor e o leme não pegam, e a água não segura; o barco segue o rumo que tinha
+  const noAr = b.altura > 0;
+  if (!noAr) {
+    if (c.acelera && !c.freia) vf += empuxo * dt;
+    else if (c.freia) vf -= (vf > 0 ? 260 : 80) * dt;
+    // o arrasto: pouco para a frente, mais de lado; a ré é lenta
+    vf -= vf * ARRASTO * dt;
+    if (vf < -50) vf = -50;
+    vl -= vl * ARRASTO_DE_LADO * dt;
+  }
   b.frente = vf;
   b.lateral = vl;
   b.vx = ax + vf * ca - vl * sa;
@@ -132,9 +157,10 @@ export function passo(b: Barco, c: ComandosDoBarco, p: PistaDoBarco): void {
 
   // O GIRO, com inércia: parado, o barco vira devagar (o remo); de ré, o leme vira ao contrário
   const forca = Math.min(1, (Math.abs(vf) + 18) / 80);
-  const alvo = c.vira * GIRO * forca * (vf < -5 ? -1 : 1);
+  const alvo = noAr ? 0 : c.vira * GIRO * forca * (vf < -5 ? -1 : 1);
   b.giro += (alvo - b.giro) * Math.min(1, 5 * dt);
-  b.angulo = normal(b.angulo + b.giro * dt);
+  // no ar, o barco não vira (o leme está fora da água): o nariz fica onde estava na rampa
+  if (!noAr) b.angulo = normal(b.angulo + b.giro * dt);
   b.banco += (Math.max(-1, Math.min(1, -vl / 70 + c.vira * 0.35)) - b.banco) * Math.min(1, 6 * dt);
 
   // ANDAR
@@ -161,6 +187,48 @@ export function passo(b: Barco, c: ComandosDoBarco, p: PistaDoBarco): void {
     }
     b.encostado = true;
   } else b.encostado = false;
+
+  // O SLALOM: cruzou o s de uma boia (para a frente, sem dar a volta na linha): do lado certo enche o turbo, do errado o tira
+  const depois = naLinha(p, b.x, b.y, b.indice);
+  if (depois.s > aqui.s && depois.s - aqui.s < 40) {
+    for (const s of p.slalom) {
+      if (aqui.s < s.s && depois.s >= s.s) {
+        if ((depois.lado - s.lado) * s.passar > 0) {
+          b.serie++;
+          b.slalom = 1;
+          b.turbo = Math.max(b.turbo, b.serie >= 3 ? TURBO_DA_SERIE : TURBO_DO_SLALOM);
+        } else {
+          b.serie = 0;
+          b.slalom = -1;
+          b.turbo = 0;
+          b.vx *= FREIO_DO_ERRO;
+          b.vy *= FREIO_DO_ERRO;
+        }
+      }
+    }
+    // A RAMPA: passar por cima dela, rápido, dá um salto (a altura pela velocidade)
+    if (b.altura === 0) {
+      for (const r of p.rampas) {
+        if (aqui.s < r.s && depois.s >= r.s && Math.abs(depois.lado - r.lado) <= MEIA_RAMPA && b.frente > SALTO_MINIMO) {
+          b.vz = Math.min(110, 40 + b.frente * 0.3);
+          b.altura = 0.01;
+          b.saltou = true;
+        }
+      }
+    }
+  }
+  // o salto: sobe e cai; na água de novo, o tranco tira um pouco da velocidade
+  if (b.altura > 0) {
+    b.altura += b.vz * dt;
+    b.vz -= GRAVIDADE * dt;
+    if (b.altura <= 0) {
+      b.altura = 0;
+      b.vz = 0;
+      b.pousou = true;
+      b.vx *= 0.92;
+      b.vy *= 0.92;
+    }
+  }
 
   // A VOLTA: a linha de chegada é o ponto 0 da linha do meio; conta quando o barco passa por ela para a frente, tendo
   // passado pela metade da pista (a mesma regra do kart e do jato)
@@ -201,6 +269,15 @@ export function pilotoAutomatico(b: Barco, p: PistaDoBarco): ComandosDoBarco {
   for (const [f, lado] of p.def.boias) {
     const ds = (((f * p.comprimento - aqui.s) % p.comprimento) + p.comprimento) % p.comprimento;
     if (ds < 110) alvoLado = lado * p.def.meiaLargura;
+  }
+  // e a boia de slalom que vem logo à frente: passa do lado certo dela, com folga
+  let maisPerto = 120;
+  for (const s of p.slalom) {
+    const ds = (((s.s - aqui.s) % p.comprimento) + p.comprimento) % p.comprimento;
+    if (ds < maisPerto) {
+      maisPerto = ds;
+      alvoLado = s.lado + s.passar * 14;
+    }
   }
   const q = pontoNaLinha(p, aqui.s + 22 + v * 0.3);
   const mx = q.x - q.dy * alvoLado, my = q.y + q.dx * alvoLado;

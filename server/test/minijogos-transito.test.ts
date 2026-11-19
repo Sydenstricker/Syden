@@ -119,3 +119,50 @@ test('com a turma, a mesma semente, e o pódio vai à estante de troféus', () =
   assert.equal(placar[0].posicao, 1);
   assert.ok(db.trofeusDe(anaId).some((t) => t.pista === 'transito' && t.posicao === 1));
 });
+
+// ===== 19/11/2026: a escolha do Solo, o "até bater" e o mapa em T, com o recorde de cada um =====
+
+test('o Solo começa na escolha; "até bater" no T vai para a tabela comum, e o relógio confere pelo passo do fim', () => {
+  let terminou = false;
+  const ctx = {
+    agendar: () => {},
+    avisar: () => {},
+    terminar: () => (terminou = true),
+    naSala: () => [biaId],
+    nome: () => 'bia',
+    comunidade: 0,
+    solo: true,
+  };
+  const jogo = criarTransito({ agora: () => agora, aleatorio: () => 0.1717 }).comecar(ctx as never, { naSala: [biaId], criadaPor: biaId, corpo: {} });
+  assert.ok(typeof jogo !== 'string');
+  assert.equal(jogo.publico(biaId).fase, 'escolha');
+  assert.equal(jogo.acao(biaId, { tipo: 'fim', liberacoes: [] }), 'Esta rodada já acabou.');
+  assert.equal(jogo.acao(biaId, { tipo: 'jogar', modo: 'ate-bater', mapa: 't' }), null);
+  const p = jogo.publico(biaId) as { fase: string; modo: string; mapa: string; semente: number };
+  assert.deepEqual([p.fase, p.modo, p.mapa], ['jogando', 'ate-bater', 't']);
+  // uma partida que bate cedo: soltar tudo
+  const cego: number[] = [];
+  for (let passo = 0; passo < 3000; passo += 6) for (let rua = 0; rua < 3; rua++) cego.push(passo, rua);
+  const esperado = sim.refazer(p.semente, cego, { modo: 'ate-bater', mapa: 't' });
+  assert.equal(esperado.batidas, 1);
+  // o relógio: o passo do fim ainda não passou no servidor
+  assert.equal(jogo.acao(biaId, { tipo: 'fim', liberacoes: cego }), 'Sessão inválida.');
+  agora += (esperado.passo / 60) * 1000;
+  assert.equal(jogo.acao(biaId, { tipo: 'fim', liberacoes: cego }), null);
+  assert.ok(terminou);
+  const fim = jogo.publico(biaId) as unknown as Estado;
+  assert.equal(fim.meu!.pontos, esperado.pontos);
+  if (esperado.pontos > 0) {
+    assert.equal(db.recordeDoSolo(biaId, 'transito', 'ate-bater-t')?.valor, esperado.pontos);
+    assert.equal(fim.recorde!.novo, true);
+  }
+  // o recorde antigo (o minuto no cruzamento) não foi tocado
+  assert.equal(db.recordeDoTransito(biaId), null);
+});
+
+test('na sala, o minuto no cruzamento, sem escolha', () => {
+  const p = comecar([anaId, biaId]);
+  const e = p.jogo.publico(anaId) as { fase: string; modo: string; mapa: string };
+  assert.deepEqual([e.fase, e.modo, e.mapa], ['jogando', 'minuto', 'cruz']);
+  assert.equal(p.jogo.acao(anaId, { tipo: 'jogar', modo: 'ate-bater' }), 'A partida está andando.');
+});

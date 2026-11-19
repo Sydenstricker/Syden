@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type PointerEvent as EventoDoPonteiro } fr
 import { idiomaAtual, useT } from './i18n';
 import { Placar, Relogio } from './Minijogo';
 import { FIGURAS_DO_TAMANHO } from './figurasDoTamanho';
+import { tocar } from './somDosJogos';
 import { CATEGORIAS_DO_TAMANHO, NA_DIAGONAL, OBJETOS, PARTE_MEDIDA, primeiraForma, SETA_DA_MEDIDA, tamanhoLegivel, type EstadoTamanho, type Medida, type Partida } from './minijogos';
 
 const ESTIMANDO_MS = 25_000;
@@ -19,6 +20,9 @@ const LIMITE = Math.log(50);
 const PIXELS_PARA_DOBRAR = 120;
 /** O palpite vai ao servidor enquanto a pessoa mexe, mas não a cada pixel. */
 const ESPERA_PARA_MANDAR = 400;
+
+/** Os pontos que contam como "na mosca" para o som da medalha (100 é o exato; o erro de uns 2% ainda dá 99). */
+const NA_MOSCA = 95;
 
 const limitar = (log: number) => Math.min(LIMITE, Math.max(-LIMITE, log));
 
@@ -83,15 +87,44 @@ export function JogoTamanho({
     },
     [],
   );
+  // OS SONS (19/11/2026; o jogo era mudo): o deslizar enquanto se mexe, a revelação e a medalha de quem acertou na mosca
+  const ultimoDeslize = useRef(0);
+  const meusPontos = estado.palpites?.find((p) => p.userId === eu)?.pontos ?? null;
+  useEffect(() => {
+    if (!revelando) return;
+    tocar('vez');
+    if (meusPontos === null) return;
+    const id = window.setTimeout(() => tocar(meusPontos >= NA_MOSCA ? 'medalha' : meusPontos >= 50 ? 'acerto' : 'erro'), 450);
+    return () => window.clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [revelando, estado.rodada]);
+  const recorde = (estado as unknown as { recorde?: { antes: number | null; novo: boolean } | null }).recorde ?? null;
+  useEffect(() => {
+    if (estado.terminada && recorde?.novo) tocar('medalha');
+  }, [estado.terminada, recorde?.novo]);
 
   if (estado.terminada) {
-    return <Placar eu={eu} linhas={estado.placar.map((l) => ({ ...l, valor: String(l.pontos) }))} />;
+    return (
+      <>
+        {recorde &&
+          (recorde.novo ? (
+            <p className="minijogo-situacao">{t('Novo recorde!')}</p>
+          ) : (
+            recorde.antes !== null && <p className="minijogo-situacao">{t('Seu recorde: {n} pontos', { n: recorde.antes })}</p>
+          ))}
+        <Placar eu={eu} linhas={estado.placar.map((l) => ({ ...l, valor: String(l.pontos) }))} />
+      </>
+    );
   }
 
   const travado = revelando || confirmei;
   const mudar = (novo: number) => {
     if (travado) return;
     const valor = limitar(novo);
+    if (Date.now() - ultimoDeslize.current > 110) {
+      ultimoDeslize.current = Date.now();
+      tocar('desliza');
+    }
     setMexido({ rodada: estado.rodada, log: valor });
     if (envio.current) clearTimeout(envio.current);
     envio.current = setTimeout(() => {

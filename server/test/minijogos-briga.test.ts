@@ -829,3 +829,204 @@ test('a campanha: vencido o chefe, a fase seguinte começa do começo, com todo 
   m.relogio[0].depois();
   assert.equal((await trofeus(ana.token, 'briga-campanha')).length, antes + 1);
 });
+
+// ---------------- As melhorias de 19/11/2026 ----------------
+
+test('a cura que cai: o servidor sorteia a cenoura, e quem passa por cima com a vida faltando se cura', () => {
+  // 0.1: sempre cai, e é a grande
+  const m = comecar([anaId, biaId], comunidade.id, () => 0.1);
+  const r = umaRaposa(m);
+  m.andar(300);
+  r.hp = 1;
+  r.historia.push({ t: agora, x: r.x, y: r.y, z: 0 });
+  teleportar(m, anaId, r.x - 20, r.y);
+  m.pos(anaId, { x: r.x - 20, y: r.y, ataque: { id: 1, g: 'soco1' } });
+  assert.equal(m.golpe(anaId, { a: 1, inimigo: r.id, x: r.x - 20, y: r.y }), null);
+  m.andar(PASSO_MS);
+  const c = (m.quadros.at(-1)!.c as number[][])[0];
+  assert.ok(c, 'a cenoura está no chão');
+  assert.equal(c[1], 1, 'a grande');
+  const j = m.interno._jogadores.get(biaId)!;
+  // com a vida cheia, passar por cima não gasta a cenoura
+  teleportar(m, biaId, c[2], c[3]);
+  m.andar(PASSO_MS);
+  assert.equal((m.quadros.at(-1)!.c as number[][]).length, 1);
+  j.hp = 30;
+  m.pos(biaId, { x: c[2], y: c[3] });
+  m.andar(PASSO_MS);
+  assert.equal(j.hp, 90);
+  assert.equal((m.quadros.at(-1)!.c as number[][]).length, 0);
+  assert.ok(m.quadros.slice(-3).some((q) => (q.e as unknown[][]).some((e) => e[1] === 'c' && e[3] === biaId)));
+});
+
+test('a cenoura some sozinha, e com o sorteio contra ela não cai', () => {
+  const m = comecar([anaId, biaId], comunidade.id, () => 0.5);
+  const r = umaRaposa(m);
+  m.andar(300);
+  r.hp = 1;
+  r.historia.push({ t: agora, x: r.x, y: r.y, z: 0 });
+  teleportar(m, anaId, r.x - 20, r.y);
+  m.pos(anaId, { x: r.x - 20, y: r.y, ataque: { id: 1, g: 'soco1' } });
+  assert.equal(m.golpe(anaId, { a: 1, inimigo: r.id, x: r.x - 20, y: r.y }), null);
+  m.andar(PASSO_MS);
+  assert.equal((m.quadros.at(-1)!.c as number[][]).length, 0);
+  const m2 = comecar([anaId, biaId], comunidade.id, () => 0.1);
+  const r2 = umaRaposa(m2);
+  m2.andar(300);
+  r2.hp = 1;
+  r2.historia.push({ t: agora, x: r2.x, y: r2.y, z: 0 });
+  teleportar(m2, anaId, r2.x - 20, r2.y);
+  m2.pos(anaId, { x: r2.x - 20, y: r2.y, ataque: { id: 1, g: 'soco1' } });
+  m2.golpe(anaId, { a: 1, inimigo: r2.id, x: r2.x - 20, y: r2.y });
+  m2.andar(PASSO_MS);
+  assert.equal((m2.quadros.at(-1)!.c as number[][]).length, 1);
+  m2.andar(mod.CURA_MS + 100);
+  assert.equal((m2.quadros.at(-1)!.c as number[][]).length, 0);
+});
+
+test('o bicho de elite: um por fase, na terceira onda, com mais vida e a marca no quadro', () => {
+  const m = comecar([anaId], comunidade.id);
+  m.andar(PASSO_MS);
+  const q0 = m.quadros.at(-1)!;
+  assert.ok((q0.i as number[][]).every((l) => l[11] === 0), 'na primeira onda, ninguém');
+  passarOndas(m, mod.ONDA_DA_ELITE);
+  for (let k = 0; k < 100 && m.interno._inimigos.size === 0; k++) m.andar(PASSO_MS);
+  const q = m.quadros.at(-1)!;
+  const elites = (q.i as number[][]).filter((l) => l[11] === 1);
+  assert.equal(elites.length, 1);
+  const ini = m.interno._inimigos.get(elites[0][0]) as unknown as { hp: number; tipo: string };
+  assert.ok(ini.hp > 40, `vida ${ini.hp}`);
+});
+
+test('o arremesso: o 3º soco num bicho atordoado o joga, e ele derruba o outro no caminho (pontos para quem arremessou)', () => {
+  const m = comecar([anaId, biaId], comunidade.id);
+  // duas raposas, uma atrás da outra
+  const r = umaRaposa(m);
+  let outra: Ini | undefined;
+  for (let k = 0; k < 200 && !outra; k++) {
+    m.andar(PASSO_MS);
+    outra = [...m.interno._inimigos.values()].find((i) => i !== r && i.tipo === 'raposa' && i.estado !== 'entrando');
+  }
+  assert.ok(outra, 'a segunda raposa');
+  const ana_ = m.interno._jogadores.get(anaId)!;
+  const ataque = (id: number, g: string) => {
+    for (const i of [r, outra!]) i.historia.push({ t: agora, x: i.x, y: i.y, z: 0 });
+    ana_.livreAte = agora + 1000;
+    m.pos(anaId, { x: r.x - 20, y: r.y, ataque: { id, g } });
+    return m.golpe(anaId, { a: id, inimigo: r.id, x: r.x - 20, y: r.y });
+  };
+  // a outra fica logo atrás da primeira, do lado para onde ela vai voar
+  const pontosAntes = ana_.pontos;
+  assert.equal(ataque(1, 'soco1'), null);
+  m.andar(250);
+  assert.equal(ataque(2, 'soco2'), null);
+  assert.equal(r.estado, 'dor');
+  outra!.x = r.x + 30;
+  outra!.y = r.y;
+  outra!.estado = 'andando';
+  m.andar(PASSO_MS);
+  outra!.x = r.x + 30;
+  outra!.y = r.y;
+  assert.equal(ataque(3, 'soco3'), null);
+  assert.equal(r.estado, 'caido');
+  assert.ok(m.quadros.length > 0);
+  for (let k = 0; k < 10; k++) {
+    outra!.y = r.y;
+    m.andar(PASSO_MS);
+  }
+  assert.equal(outra!.estado, 'caido', 'a do caminho caiu');
+  assert.ok(ana_.pontos >= pontosAntes + 4 + 5 + 9 + mod.ARREMESSO_DANO);
+});
+
+test('o recorde do Solo: o tempo da fase vencida, pelo relógio do servidor, guardado na tabela comum', async () => {
+  const db = await import('../src/db.js');
+  const antes = db.recordeDoSolo(anaId, 'briga', 'horta');
+  const m = comecar([anaId], 0);
+  const inicio = agora;
+  vencer(m);
+  const pub = m.jogo.publico(anaId) as { recorde: { ms: number; novo: boolean } | null };
+  assert.ok(pub.recorde, 'o recorde vai no público');
+  assert.ok(pub.recorde!.ms > 0 && pub.recorde!.ms <= agora - inicio);
+  const depois = db.recordeDoSolo(anaId, 'briga', 'horta');
+  assert.ok(depois);
+  if (antes === null) assert.equal(pub.recorde!.novo, true);
+  assert.equal(depois!.valor, Math.min(antes?.valor ?? Infinity, pub.recorde!.ms));
+  // perder não grava
+  const m2 = comecar([anaId], 0, () => 0.5, { fase: 'neve' });
+  m2.sair(anaId);
+  m2.andar(PASSO_MS);
+  assert.equal(db.recordeDoSolo(anaId, 'briga', 'neve'), null);
+});
+
+// ---------------- A segunda rodada de 19/11/2026: os caixotes ----------------
+
+interface Caixote {
+  id: number;
+  x: number;
+  y: number;
+  hp: number;
+  voando: unknown;
+}
+const caixotesDe = (m: ReturnType<typeof comecar>) => (m.interno as unknown as { _caixotes: Map<number, Caixote> })._caixotes;
+
+test('os caixotes: dois por arena, no quadro; os socos quebram e de dentro sai a cenoura', () => {
+  const m = comecar([anaId, biaId], comunidade.id, () => 0.9);
+  m.andar(PASSO_MS);
+  const q = m.quadros.at(-1)!;
+  assert.equal((q.cx as number[][]).length, mod.CAIXOTES_NA_ARENA.length * (ONDAS_X.length - 1));
+  const c = [...caixotesDe(m).values()].find((k) => k.x < 320)!;
+  const j = m.interno._jogadores.get(anaId)!;
+  // o soco 1 e o 2 tiram vida; de longe não vale
+  teleportar(m, anaId, c.x - 20, c.y);
+  m.pos(anaId, { x: c.x - 20, y: c.y, ataque: { id: 1, g: 'soco1' } });
+  assert.equal(m.golpe(anaId, { a: 1, caixote: c.id, x: c.x - 80, y: c.y }), 'longe de si');
+  assert.equal(m.golpe(anaId, { a: 1, caixote: c.id, x: c.x - 20, y: c.y }), null);
+  assert.equal(m.golpe(anaId, { a: 1, caixote: c.id, x: c.x - 20, y: c.y }), 'já acertou');
+  assert.equal(c.hp, mod.CAIXOTE.hp - 4);
+  m.andar(250);
+  j.livreAte = agora + 1000;
+  m.pos(anaId, { x: c.x - 20, y: c.y, ataque: { id: 2, g: 'soco2' } });
+  assert.equal(m.golpe(anaId, { a: 2, caixote: c.id, x: c.x - 20, y: c.y }), null);
+  // o 3º, num caixote já rachado, quebra (não arremessa)
+  m.andar(250);
+  j.livreAte = agora + 1000;
+  m.pos(anaId, { x: c.x - 20, y: c.y, ataque: { id: 3, g: 'soco3' } });
+  assert.equal(m.golpe(anaId, { a: 3, caixote: c.id, x: c.x - 20, y: c.y }), null);
+  assert.equal(caixotesDe(m).has(c.id), false, 'quebrou');
+  m.andar(PASSO_MS);
+  const curas = m.quadros.at(-1)!.c as number[][];
+  assert.equal(curas.length, 1, 'a cenoura saiu de dentro');
+  assert.equal(curas[0][1], 0, 'com o sorteio alto, a pequena');
+  assert.ok(m.quadros.slice(-3).some((qq) => (qq.e as unknown[][]).some((e) => e[1] === 'cq' && e[2] === c.id)));
+});
+
+test('o caixote inteiro arremessado pelo 3º soco voa pela faixa, derruba o bicho do caminho e se quebra', () => {
+  const m = comecar([anaId, biaId], comunidade.id);
+  const r = umaRaposa(m);
+  m.andar(300);
+  const c = [...caixotesDe(m).values()].find((k) => k.x < 320)!;
+  const j = m.interno._jogadores.get(anaId)!;
+  const pontos = j.pontos;
+  // o combo de três no ar (o 1º e o 2º num lugar sem caixote, o 3º no caixote)
+  for (const [id, g] of [[1, 'soco1'], [2, 'soco2']] as const) {
+    j.livreAte = agora + 1000;
+    m.pos(anaId, { x: 30, y: 2, ataque: { id, g } });
+    m.andar(250);
+  }
+  // a raposa fica parada no caminho do caixote
+  r.x = c.x + 40;
+  r.y = c.y;
+  r.estado = 'andando';
+  teleportar(m, anaId, c.x - 20, c.y);
+  m.pos(anaId, { x: c.x - 20, y: c.y, ataque: { id: 3, g: 'soco3' } });
+  assert.equal(m.golpe(anaId, { a: 3, caixote: c.id, x: c.x - 20, y: c.y }), null);
+  assert.ok(caixotesDe(m).get(c.id)?.voando, 'voa');
+  for (let k = 0; k < 20 && caixotesDe(m).has(c.id); k++) {
+    r.x = Math.max(r.x, c.x + 5);
+    r.y = c.y;
+    m.andar(PASSO_MS);
+  }
+  assert.equal(caixotesDe(m).has(c.id), false, 'quebrou no fim do voo');
+  assert.equal(r.estado, 'caido', 'a raposa do caminho caiu');
+  assert.ok(j.pontos >= pontos + mod.ARREMESSO_DANO);
+});

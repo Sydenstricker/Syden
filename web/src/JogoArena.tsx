@@ -9,7 +9,7 @@ import { ESPECIES, GOLPES } from './bichos/regras';
 import { useT } from './i18n';
 import { primeiraForma, type Partida } from './minijogos';
 import { tocar } from './somDosJogos';
-import { H, KITS, MUNDO_H, MUNDO_W, OBSTACULOS, PV, TECLAS_DE_GOLPE, W, type TeclaDeGolpe } from './arena/conta';
+import { H, KITS, MUNDO_H, MUNDO_W, OBSTACULOS, PONTOS_DA_ZONA, PV, TECLAS_DE_GOLPE, W, type TeclaDeGolpe } from './arena/conta';
 import { prepararCoelho, quadroDaArena, receitaDoAvatar } from './arena/coelhos';
 import {
   chaoDo,
@@ -23,6 +23,7 @@ import {
   desenharSombra,
   desenharSuprimento,
   desenharZona,
+  desenharZonaDoObjetivo,
   MAO,
 } from './arena/desenho';
 import { pilotoAutomatico } from './arena/piloto';
@@ -143,6 +144,8 @@ interface Hud {
   especial: number;
   meuEstado: number;
   fase: string | null;
+  /** Segurando a zona: [time, pontos]. */
+  zona: [number, number][] | null;
 }
 
 export function JogoArena({
@@ -160,7 +163,16 @@ export function JogoArena({
 }) {
   const t = useT();
   if (estado.terminada || estado.fase === 'fim') {
-    const linhas = estado.resultado ?? estado.jogadores.map((j) => ({ ...j, dano: 0, quedas: 0, vidas: 0, posicao: null }));
+    const linhas = estado.resultado ?? estado.jogadores.map((j) => ({ ...j, dano: 0, quedas: 0, vidas: 0, posicao: null, levou: undefined, desvios: undefined, pontos: undefined }));
+    const zona = estado.objetivo === 'zona';
+    // os números de cada um (19/11/2026), em ícones com o nome no título: o dano causado, os nocautes, o dano levado e os desvios
+    const colunas: [string, string, (l: (typeof linhas)[number]) => number | undefined][] = [
+      ...(zona ? [['🚩', t('Pontos'), (l: (typeof linhas)[number]) => l.pontos] as [string, string, (l: (typeof linhas)[number]) => number | undefined]] : []),
+      ['⚔️', t('Dano'), (l) => l.dano],
+      ['💫', t('Nocautes'), (l) => l.quedas],
+      ['🩹', t('Dano levado'), (l) => l.levou],
+      ['💨', t('Desvios'), (l) => l.desvios],
+    ];
     const meu = estado.jogadores.find((j) => j.userId === eu);
     const pessoas = estado.jogadores.filter((j) => !j.robo).length;
     const regra = { solo: estado.solo, pessoas, maximo: estado.formato === 'todos' ? 3 : 1 };
@@ -171,7 +183,14 @@ export function JogoArena({
           <p className="minijogo-fim-titulo">
             <Trophy size={20} aria-hidden="true" /> {t('Fim de jogo!')}
           </p>
-          <ol className="minijogo-placar">
+          <p className="arena-colunas" aria-hidden="true">
+            {colunas.map(([icone, nome]) => (
+              <span key={icone} title={nome}>
+                {icone}
+              </span>
+            ))}
+          </p>
+          <ol className="minijogo-placar arena-placar">
             {linhas.map((l) => (
               <li key={l.userId} className={l.userId === eu ? 'eu' : ''}>
                 <span className="minijogo-medalha">{marcaDoLugar(l.posicao, regra)}</span>
@@ -179,7 +198,11 @@ export function JogoArena({
                   <span className="arena-time" style={{ '--cor': corDoTime(l.time, estado.formato) } as CSSProperties} aria-hidden="true" />
                   {l.username}
                 </span>
-                <span className="minijogo-pontos">{l.dano}</span>
+                {colunas.map(([icone, nome, valor]) => (
+                  <span key={icone} className="minijogo-pontos arena-numero" title={nome} aria-label={`${nome}: ${valor(l) ?? 0}`}>
+                    {valor(l) ?? 0}
+                  </span>
+                ))}
               </li>
             ))}
           </ol>
@@ -334,6 +357,7 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoArena
           especial: meu.especial,
           meuEstado: meu.estado,
           fase: v.fase,
+          zona: v.zona ? [...v.zona.pontos.entries()] : null,
         });
       }
 
@@ -351,7 +375,10 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoArena
 
       g.drawImage(chao, cx, cy, W, H, 0, 0, W, H);
       // o aviso de cada zona, pelo tamanho dela (a da arena, a do especial, a do forte e a pedrada da pedra)
-      for (const z of v.zonas) desenharZona(g, z, cx, cy, tempo, z.dono === 0 ? 1500 : z.raio === KITS.folha.e.raio ? KITS.folha.e.aviso : z.raio === KITS.pedra.s.raio ? KITS.pedra.s.aviso : KITS.folha.q.aviso);
+      // segurando a zona: o círculo do meio, na cor de quem o segura sozinho
+      if (estado.objetivo === 'zona') desenharZonaDoObjetivo(g, cx, cy, v.zona && v.zona.dono >= 0 ? corDoTime(v.zona.dono, estado.formato) : null, tempo);
+      // o aviso de cada zona: o servidor manda quanto ele dura inteiro
+      for (const z of v.zonas) desenharZona(g, z, cx, cy, tempo, z.aviso);
       for (const s of v.suprimentos) desenharSuprimento(g, s.tipo, s.x - cx, s.y - cy, tempo);
       // de pé, na ordem do y: os obstáculos e os coelhos
       const dePe: { y: number; desenhar: () => void }[] = OBSTACULOS[estado.cenario].map((o, i) => ({ y: o[1], desenhar: () => desenharObstaculo(g, estado.cenario, i, cx, cy) }));
@@ -434,6 +461,16 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoArena
       <div className="briga-tela arena-tela">
         <canvas ref={canvas} width={W} height={H} />
         {hud && <span className="arena-relogio">{`${Math.floor(segundos / 60)}:${String(segundos % 60).padStart(2, '0')}`}</span>}
+        {hud && estado.objetivo === 'zona' && (
+          <span className="arena-placar-da-zona" aria-label={t('Segurar a zona')}>
+            🚩
+            {[...new Set(estado.jogadores.map((j) => j.time))].map((time) => (
+              <span key={time} style={{ '--cor': corDoTime(time, estado.formato) } as CSSProperties}>
+                {`${hud.zona?.find(([tm]) => tm === time)?.[1] ?? 0}/${PONTOS_DA_ZONA}`}
+              </span>
+            ))}
+          </span>
+        )}
         {aviso && <p className="briga-aviso">{aviso}</p>}
         {jogador && <Toque cmd={cmd} canvas={canvas} toque={toque} />}
       </div>
@@ -618,6 +655,8 @@ const OPCOES_DO_SOLO: { formato: FormatoDaArena; robos: number; lados: Figura[][
 export function EscolhaDosBichos({ solo, aoEscolher, aoVoltar }: { solo: boolean; aoEscolher: (e: ModoDosBichos) => void; aoVoltar: () => void }) {
   const t = useT();
   const [arena, setArena] = useState(false);
+  // o modo de objetivo (19/11/2026): segurar a zona do meio, em vez de lutar até sobrar um
+  const [zona, setZona] = useState(false);
   if (!arena) {
     return (
       <div className="tab-escolha arena-escolha">
@@ -653,6 +692,11 @@ export function EscolhaDosBichos({ solo, aoEscolher, aoVoltar }: { solo: boolean
   return (
     <div className="tab-escolha arena-escolha">
       {solo && <p className="minijogo-situacao">{t('Quantos adversários do computador?')}</p>}
+      <div className="minijogo-acoes">
+        <button type="button" className={zona ? 'btn-primary' : 'btn-secondary'} aria-pressed={zona} onClick={() => setZona((z) => !z)}>
+          🚩 {t('Segurar a zona')}
+        </button>
+      </div>
       <ul className="tab-rodadas cid-robos">
         {opcoes.map((o) => (
           <li key={o.rotulo}>
@@ -661,7 +705,7 @@ export function EscolhaDosBichos({ solo, aoEscolher, aoVoltar }: { solo: boolean
               className="cid-robos-botao"
               aria-label={o.rotulo}
               title={o.rotulo}
-              onClick={() => aoEscolher({ modo: 'arena', corpo: { formato: o.formato, ...('robos' in o ? { robos: o.robos } : {}) } })}
+              onClick={() => aoEscolher({ modo: 'arena', corpo: { formato: o.formato, ...('robos' in o ? { robos: o.robos } : {}), ...(zona ? { objetivo: 'zona' } : {}) } })}
             >
               <MesaDosRobos lados={o.lados} />
             </button>

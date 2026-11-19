@@ -56,6 +56,13 @@ export interface DefinicaoDoBarco {
   correntezas: [number, number, number][];
   /** As pontes: a fração da volta em que cada uma atravessa. */
   pontes: number[];
+  /**
+   * AS BOIAS DE SLALOM (19/11/2026, a auditoria): [fração da volta, onde a boia fica (−1 a 1, em meias larguras), por que lado
+   * passar (−1: com a boia à direita de quem passa; 1: com a boia à esquerda)]. Passar do lado certo enche o turbo; errar o tira.
+   */
+  slalom?: [number, number, number][];
+  /** AS RAMPAS (19/11/2026): [fração da volta, de que lado do meio (−1 a 1, em meias larguras)]. Passar rápido por cima dá um salto. */
+  rampas?: [number, number][];
   semente: number;
   tema: TemaDoBarco;
 }
@@ -74,6 +81,8 @@ export const LAGO_DA_HORTA: DefinicaoDoBarco = {
   boias: [[0.15, -0.3], [0.42, 0.35], [0.66, -0.2], [0.88, 0.3]],
   correntezas: [],
   pontes: [],
+  slalom: [[0.26, -0.25, 1], [0.31, 0.25, -1], [0.36, -0.25, 1], [0.74, 0.25, -1], [0.79, -0.25, 1]],
+  rampas: [[0.55, 0], [0.95, -0.3]],
   semente: 7,
   tema: {
     tipo: 'lago',
@@ -99,6 +108,8 @@ export const RIACHO: DefinicaoDoBarco = {
   boias: [[0.1, 0.3], [0.37, -0.3], [0.6, 0.3], [0.84, -0.3]],
   correntezas: [[0.18, 0.3, 60], [0.46, 0.53, -32], [0.7, 0.8, 55]],
   pontes: [0.33, 0.9],
+  slalom: [[0.14, -0.25, 1], [0.2, 0.25, -1], [0.64, 0.25, -1], [0.68, -0.25, 1]],
+  rampas: [[0.42, 0], [0.76, 0.2]],
   semente: 23,
   tema: {
     tipo: 'riacho',
@@ -124,6 +135,8 @@ export const MANGUE: DefinicaoDoBarco = {
   boias: [[0.12, -0.3], [0.4, 0.3], [0.62, -0.3], [0.86, 0.25]],
   correntezas: [[0.26, 0.36, 45], [0.74, 0.8, -28]],
   pontes: [0.55],
+  slalom: [[0.2, 0.25, -1], [0.24, -0.25, 1], [0.48, 0.25, -1], [0.52, -0.25, 1], [0.92, 0, 1]],
+  rampas: [[0.3, 0.3], [0.7, -0.2]],
   semente: 41,
   tema: {
     tipo: 'mangue',
@@ -138,6 +151,13 @@ export const MANGUE: DefinicaoDoBarco = {
 };
 
 export const PISTAS_DO_BARCO = [LAGO_DA_HORTA, RIACHO, MANGUE];
+
+/** A copa do Solo contra os barcos do computador (19/11/2026): as três pistas seguidas, pontos pela posição. Só no site. */
+export const COPAS_DO_BARCO: Record<string, string[]> = {
+  'copa-da-regata': ['lago-1', 'riacho-1', 'mangue-1'],
+};
+/** Os pontos por posição na copa, entre os 6 barcos. */
+export const PONTOS_DA_COPA_DO_BARCO = [10, 8, 6, 4, 2, 1];
 export const pistaDoBarcoPorId = (id: string) => PISTAS_DO_BARCO.find((p) => p.id === id) ?? LAGO_DA_HORTA;
 
 /** Só a linha do meio (o mapa da escolha, os marcos do servidor): a mesma conta dos Coelhos a jato. */
@@ -176,6 +196,10 @@ export interface PistaDoBarco {
   enfeites: { x: number; y: number; tipo: Enfeite; tam: number }[];
   /** As boias de turbo, no mundo. */
   argolas: { x: number; y: number; angulo: number }[];
+  /** As boias de slalom: onde estão (o s da linha do meio e o lado, em unidades) e por que lado passar. */
+  slalom: { x: number; y: number; s: number; lado: number; passar: number }[];
+  /** As rampas: onde estão (o s e o lado) e para onde a pista vai ali (o desenho). */
+  rampas: { x: number; y: number; s: number; lado: number; angulo: number }[];
   /** As pontes: as duas cabeceiras e o rumo da pista ali. */
   pontes: { ax: number; ay: number; bx: number; by: number; dx: number; dy: number }[];
   largada: { x: number; y: number; angulo: number; indice: number };
@@ -381,6 +405,14 @@ export function montarPistaDoBarco(def: DefinicaoDoBarco = LAGO_DA_HORTA): Pista
     const q = pontoNaLinha(l, f * comprimento);
     return { x: q.x - q.dy * lado * hw, y: q.y + q.dx * lado * hw, angulo: Math.atan2(q.dy, q.dx) };
   });
+  const slalom = (def.slalom ?? []).map(([f, lado, passar]) => {
+    const q = pontoNaLinha(l, f * comprimento);
+    return { x: q.x - q.dy * lado * hw, y: q.y + q.dx * lado * hw, s: f * comprimento, lado: lado * hw, passar: Math.sign(passar) || 1 };
+  });
+  const rampas = (def.rampas ?? []).map(([f, lado]) => {
+    const q = pontoNaLinha(l, f * comprimento);
+    return { x: q.x - q.dy * lado * hw, y: q.y + q.dx * lado * hw, s: f * comprimento, lado: lado * hw, angulo: Math.atan2(q.dy, q.dx) };
+  });
   const pontes = def.pontes.map((f) => {
     const q = pontoNaLinha(l, f * comprimento);
     const m = hw + 8;
@@ -389,7 +421,7 @@ export function montarPistaDoBarco(def: DefinicaoDoBarco = LAGO_DA_HORTA): Pista
   // na ponte, as estacas: duas de cada lado, na beira
   for (const pt of pontes) for (const t of [0.04, 0.96]) enfeites.push({ x: pt.ax + (pt.bx - pt.ax) * t, y: pt.ay + (pt.by - pt.ay) * t, tipo: 'estaca', tam: 1 });
 
-  return { def, lx, ly, la, comprimento, curva, correnteza, textura, agua, aoS, enfeites, argolas, pontes, largada: largadaDoBarco(def) };
+  return { def, lx, ly, la, comprimento, curva, correnteza, textura, agua, aoS, enfeites, argolas, slalom, rampas, pontes, largada: largadaDoBarco(def) };
 }
 
 /** Onde está um ponto em relação à linha do meio, perto do ponto `i`: o quanto se andou (s), o lado e a direção ali. */

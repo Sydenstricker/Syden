@@ -127,7 +127,63 @@ export const NUVENS: DefinicaoDoJato = {
   },
 };
 
-export const PISTAS_DO_JATO = [CIDADE, ORBITA, NUVENS];
+/** A AURORA (19/11/2026, a auditoria: mais pistas): no espaço, com o céu verde, um "S" no meio e um grampo no fim. */
+export const AURORA: DefinicaoDoJato = {
+  id: 'aurora-1',
+  pontos: [
+    [180, 240], [420, 130], [650, 170], [800, 120], [910, 300], [820, 470], [650, 430], [540, 540], [690, 660],
+    [880, 700], [850, 890], [600, 910], [400, 800], [230, 880], [110, 700], [180, 500],
+  ],
+  meiaLargura: 36,
+  voltas: 3,
+  placas: [[0.1, 0.4], [0.33, -0.3], [0.6, 0.4], [0.84, -0.4]],
+  recargas: [[0.02, 0.09]],
+  abertos: [[0.46, 0.52]],
+  semente: 41,
+  tema: {
+    ceu: { topo: [6, 16, 22], meio: [20, 70, 70], baixo: [60, 150, 120] },
+    fundo: 'espaco',
+    piso: [rgb(56, 78, 84), rgb(62, 84, 90), rgb(50, 72, 78)],
+    costura: rgb(36, 52, 58),
+    luz: rgb(140, 255, 190),
+    borda: [rgb(120, 255, 180), rgb(200, 120, 255)],
+    nevoa: [30, 90, 84],
+  },
+};
+
+/** A TEMPESTADE (19/11/2026): por cima das nuvens escuras, curta e cheia de curvas, com dois trechos abertos. */
+export const TEMPESTADE: DefinicaoDoJato = {
+  id: 'tempestade-1',
+  pontos: [
+    [260, 200], [520, 150], [760, 230], [860, 420], [700, 520], [520, 470], [380, 560], [460, 720], [700, 700],
+    [820, 840], [560, 920], [300, 860], [160, 680], [150, 420],
+  ],
+  meiaLargura: 36,
+  voltas: 4,
+  placas: [[0.12, -0.4], [0.4, 0.3], [0.7, -0.3], [0.9, 0.4]],
+  recargas: [[0.03, 0.1]],
+  abertos: [[0.27, 0.32], [0.78, 0.83]],
+  semente: 53,
+  tema: {
+    ceu: { topo: [30, 30, 50], meio: [80, 78, 110], baixo: [130, 128, 150] },
+    fundo: 'nuvens',
+    piso: [rgb(78, 76, 96), rgb(84, 82, 102), rgb(72, 70, 90)],
+    costura: rgb(54, 52, 70),
+    luz: rgb(200, 220, 255),
+    borda: [rgb(255, 236, 120), rgb(140, 170, 255)],
+    nevoa: [110, 108, 132],
+  },
+};
+
+export const PISTAS_DO_JATO = [CIDADE, ORBITA, NUVENS, AURORA, TEMPESTADE];
+
+/** As copas do Solo contra o computador (19/11/2026): três pistas seguidas, pontos pela posição. Só no site: não vale nada no servidor. */
+export const COPAS_DO_JATO: Record<string, string[]> = {
+  'copa-estelar': ['cidade-1', 'orbita-1', 'nuvens-1'],
+  'copa-da-tempestade': ['aurora-1', 'tempestade-1', 'orbita-1'],
+};
+/** Os pontos por posição na copa, entre as 12 naves. */
+export const PONTOS_DA_COPA_DO_JATO = [15, 12, 10, 8, 7, 6, 5, 4, 3, 2, 1, 0];
 export const pistaDoJatoPorId = (id: string) => PISTAS_DO_JATO.find((p) => p.id === id) ?? CIDADE;
 
 export interface PistaDoJato {

@@ -14,7 +14,7 @@ const { app, fechar } = await servidorDeTeste();
 const mod = await import('../src/minijogo-arena.js');
 const { criarArena, criarArenaComBanco, montarTimes, equipeDaArena, PASSO_MS, GRACA_MS, KITS, PV, VIDAS, ARRANCADA, VEL, FORMATOS } = mod;
 const site = await import('../../web/src/arena/regras.ts');
-const { ESPECIES } = await import('../src/bichos-regras.js');
+const { ESPECIES, eficacia } = await import('../src/bichos-regras.js');
 const { pilotoAutomatico } = await import('../../web/src/arena/piloto.ts');
 after(fechar);
 
@@ -411,4 +411,117 @@ test('o 3×3 com robôs e o cada um por si do Solo terminam', async (t) => {
   t.diagnostic(`cada um por si: ${Math.round(b.segundos)} s; vencedor ${b.publico.vencedor}`);
   assert.equal((b.publico.jogadores as unknown[]).length, 4);
   assert.ok(b.segundos < 4 * 60 + 5);
+});
+
+// ---------------------------------------------------------------- 19/11/2026: kits próprios, números do fim, chãos novos, a zona
+test('o forte e o especial de cada elemento: o servidor confere a forma de cada um (a roda da brasa, o leque do vento)', () => {
+  const m = comecar();
+  m.andar(2100);
+  const a = m.l(anaId);
+  // a brasa: o especial é a roda grande, em volta de quem bate, só com o especial cheio
+  a.equipe = ['tisco', 'zunzi', 'brotel'];
+  a.ativo = 0;
+  m.por(anaId, 300, 380);
+  m.por(biaId, 380, 380);
+  m.andar(200);
+  const b = m.l(biaId);
+  // ela com um bicho de faísca (neutro para a brasa)
+  b.equipe = ['miasso', 'miasso', 'miasso'];
+  const vale = (el: string, dano: number) => Math.max(1, Math.round(dano * mod.fatorDaArena(eficacia(el as never, 'faisca'))));
+  assert.equal(m.manda(anaId, { tipo: 'golpe', n: 1, tecla: 'e', x: 316, y: 380, dx: 1, dy: 0 }), 'recarga', 'vazio, não');
+  (a as unknown as { especial: number }).especial = mod.ESPECIAL_MAX;
+  assert.equal(m.manda(anaId, { tipo: 'golpe', n: 1, tecla: 'e', x: 316, y: 380, dx: 1, dy: 0 }), null);
+  assert.equal(b.pv, PV - vale('brasa', KITS.brasa.e.dano), 'a roda da brasa (80 px) pegou quem estava a 80 px');
+  assert.equal(m.i._zonas.length, 0, 'e não marca nada no chão');
+  // o vento: o especial é um leque de três; o acerto da bala do lado é conferido pelo caminho dela
+  const pv = b.pv;
+  assert.equal(m.manda(anaId, { tipo: 'trocar', i: 1 }), null);
+  (a as unknown as { especial: number }).especial = mod.ESPECIAL_MAX;
+  m.andar(300);
+  assert.equal(m.manda(anaId, { tipo: 'golpe', n: 2, tecla: 'e', x: 316, y: 380, dx: 1, dy: 0 }), null);
+  assert.equal(m.manda(anaId, { tipo: 'acerto', n: 2, k: 3, alvo: biaId }), 'bala', 'o leque tem três balas');
+  m.andar(250);
+  assert.equal(m.manda(anaId, { tipo: 'acerto', n: 2, k: 0, alvo: biaId }), null);
+  assert.equal(b.pv, pv - vale('vento', KITS.vento.e.dano));
+  assert.equal(m.manda(anaId, { tipo: 'acerto', n: 2, k: 0, alvo: biaId }), 'bala usada');
+  m.jogo.parar!();
+});
+
+test('os números do fim: o dano causado, o levado e os desvios de quem saiu da marca', () => {
+  const m = comecar();
+  m.andar(2100);
+  m.por(anaId, 300, 380);
+  m.por(biaId, 420, 380);
+  m.andar(300);
+  const g = KITS.folha.q;
+  assert.equal(m.manda(anaId, { tipo: 'golpe', n: 1, tecla: 'q', x: 316, y: 380, dx: 1, dy: 0, ax: 420, ay: 380 }), null);
+  // ela estava dentro e sai antes de bater
+  for (let t = 0; t < g.aviso + GRACA_MS + 100; t += PASSO_MS) {
+    m.manda(biaId, { tipo: 'pos', x: t > g.aviso / 2 ? 520 : 420, y: 380, mx: 1, my: 0, acao: 0, ta: 0 });
+    m.andar(PASSO_MS);
+  }
+  const b = m.l(biaId) as unknown as { desvios: number; levou: number; pv: number };
+  assert.equal(b.pv, PV);
+  assert.equal(b.desvios, 1, 'um desvio');
+  // agora um básico que acerta: conta o dano dos dois lados
+  m.por(biaId, 450, 380);
+  m.andar(800);
+  assert.equal(m.manda(anaId, { tipo: 'golpe', n: 2, tecla: 'b', x: 316, y: 380, dx: 1, dy: 0 }), null);
+  m.andar(500);
+  assert.equal(m.manda(anaId, { tipo: 'acerto', n: 2, k: 0, alvo: biaId }), null);
+  assert.ok(b.levou > 0);
+  assert.equal((m.l(anaId) as unknown as { dano: number }).dano, b.levou);
+  m.jogo.parar!();
+});
+
+test('segurar a zona: um ponto por segundo para quem está sozinho no meio, ninguém fica sem vidas, e quem chega ao fim vence', () => {
+  const m = comecar([anaId, biaId], { formato: '1x1', cenario: 'grama', objetivo: 'zona' });
+  assert.equal((m.jogo.publico(anaId) as { objetivo: string }).objetivo, 'zona');
+  m.andar(2100);
+  const z = mod.ZONA_DO_OBJETIVO;
+  // fora da árvore do meio (o tiro do teste não pode bater nela)
+  m.por(anaId, z.x - 60, z.y + 70);
+  m.por(biaId, 200, 200);
+  // os dois dentro: disputada, ninguém pontua
+  m.andar(3000);
+  const q = () => m.quadros.at(-1) as { o?: number[][]; od?: number };
+  const pontosDe = (time: number) => q().o?.find(([t]) => t === time)?.[1] ?? 0;
+  assert.ok(pontosDe(0) >= 2, `a ana sozinha pontua (${pontosDe(0)})`);
+  assert.equal(q().od, 0);
+  m.por(biaId, z.x + 60, z.y + 70);
+  const antes = pontosDe(0);
+  m.andar(2000);
+  assert.equal(pontosDe(0), antes, 'disputada: ninguém pontua');
+  assert.equal(q().od, -1);
+  // quem cai volta, sem perder vida
+  const b = m.l(biaId);
+  b.pv = 1;
+  m.manda(anaId, { tipo: 'golpe', n: 1, tecla: 'b', x: z.x - 44, y: z.y + 70, dx: 1, dy: 0 });
+  m.andar(400);
+  assert.equal(m.manda(anaId, { tipo: 'acerto', n: 1, k: 0, alvo: biaId }), null);
+  assert.equal(b.vidas, VIDAS, 'segurando a zona, ninguém perde vida');
+  // a ana fica sozinha até o fim (sem levar as marcas da arena no caminho)
+  m.l(anaId).invulAte = Infinity;
+  m.por(biaId, 200, 200);
+  m.andar((mod.PONTOS_DA_ZONA + 5) * 1000);
+  assert.equal((m.jogo.publico(anaId) as { vencedor: number }).vencedor, m.l(anaId).time);
+  m.disparar();
+  const r = (m.jogo.publico(anaId) as { resultado: { userId: number; pontos: number }[] }).resultado;
+  assert.equal(r.find((x) => x.userId === anaId)!.pontos, mod.PONTOS_DA_ZONA);
+  m.jogo.parar!();
+});
+
+test('os chãos novos: na lama a poça segura o robô, no gelo ele escorrega, e as partidas terminam', () => {
+  for (const cenario of ['gelo', 'lama'] as const) {
+    const m = comecar([anaId], { formato: 'todos', cenario, robos: 2 });
+    assert.equal(m.i._cenario, cenario);
+    const robos = [...m.i._lutadores.values()].filter((l) => l.id < 0);
+    const antes = robos.map((l) => [l.x, l.y]);
+    m.andar(3000);
+    assert.ok(robos.some((l, k) => Math.hypot(l.x - antes[k][0], l.y - antes[k][1]) > 20), `${cenario}: os robôs andam`);
+    m.jogo.parar!();
+  }
+  // a conta do chão é a mesma do site (as duas cópias de conta.ts)
+  const [px, py] = mod.POCAS_DE_LAMA[0];
+  assert.equal(mod.velDoChao('lama', px, py), mod.LAMA_SEGURA);
 });

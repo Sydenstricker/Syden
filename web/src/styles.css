@@ -5800,6 +5800,42 @@ textarea {
   flex: 0 0 auto;
 }
 
+/* O catálogo (19/11/2026): a que a pessoa ainda não tem é uma silhueta, com a frase de como se ganha legível. */
+.insignia-escolha.nao-tenho {
+  border-style: dashed;
+  background: transparent;
+  cursor: default;
+}
+
+.insignia-escolha.nao-tenho:hover {
+  border-color: var(--bg-raised);
+}
+
+.insignia-escolha.nao-tenho .medalha {
+  filter: grayscale(1) brightness(0.45);
+  opacity: 0.6;
+}
+
+.insignia-escolha.nao-tenho strong {
+  color: var(--text-muted);
+}
+
+/* A vitrine na ordem do perfil, com as setas para trocar de lugar. */
+.insignias-na-vitrine {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin: 8px 0 4px;
+  padding: 0;
+  list-style: none;
+}
+
+.insignias-na-vitrine li {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
 /* A fileira de insígnias no cartão de perfil e no menu do botão direito. */
 .insignias-fileira {
   display: flex;
@@ -18089,6 +18125,69 @@ body.arrastando-barra {
 .blocos-modos .minijogo-jogo:hover,
 .blocos-modos .minijogo-jogo:focus-visible {
   border-color: var(--accent);
+}
+
+/* 19/11/2026: cinco modos (com os três níveis do computador) e a velocidade da largada */
+.blocos-modos {
+  flex-wrap: wrap;
+}
+
+.blocos-modos .minijogo-jogo {
+  min-width: 100px;
+}
+
+.blocos-robos {
+  display: flex;
+  gap: 2px;
+  min-height: 40px;
+  align-items: center;
+}
+
+.blocos-velocidade {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0 8px;
+}
+
+.blocos-velocidade button {
+  min-width: 34px;
+  padding: 4px 8px;
+}
+
+/* 19/11/2026: as fases do quebra-cabeça */
+.blocos-quebra-cabecas {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 8px;
+  margin: 6px 0;
+}
+
+.blocos-quebra-cabecas ul {
+  display: grid;
+  grid-template-columns: repeat(10, 34px);
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.blocos-quebra-cabecas button {
+  width: 34px;
+  padding: 4px 0;
+}
+
+.blocos-quebra-cabecas button.vencida {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+@media (max-width: 480px) {
+  .blocos-quebra-cabecas ul {
+    grid-template-columns: repeat(5, 34px);
+  }
 }
 
 .blocos-outros {

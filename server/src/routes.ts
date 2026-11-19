@@ -30,7 +30,7 @@ import { salaDaPessoa,
   videoCortado,
 } from './realtime.js';
 import { healthReport, recordClientError } from './health.js';
-import { INSIGNIAS, LIMITE_DA_VITRINE, conferirPresentes } from './presentes.js';
+import { INSIGNIAS, LIMITE_DA_VITRINE, catalogoDeInsignias, conferirPresentes } from './presentes.js';
 import { pessoaDeVerdade, turnstileLigado } from './turnstile.js';
 import { providerActions, providerMetrics, type PeriodoDoProvedor } from './provider.js';
 import { apagarAviso, avisoDeAgora, avisoGuardado, guardarAviso, imagemDoAviso, lerAviso } from './aviso.js';
@@ -868,6 +868,19 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
 
     authed.get('/api/me/itens', async (request) => ({
       itens: db.itensDaPessoa(request.user.id),
+      vitrine: request.user.vitrine,
+      limite: LIMITE_DA_VITRINE,
+    }));
+
+    /**
+     * O CATÁLOGO DAS INSÍGNIAS (19/11/2026): todas as que existem, com o que a pessoa tem, mais a vitrine. Sem contagem,
+     * sem "faltam" e sem raridade (regra das conquistas): a frase de como se ganha cada uma mora no app.
+     */
+    authed.get('/api/me/insignias', async (request) => ({
+      insignias: catalogoDeInsignias(
+        request.user.id,
+        CATALOGO.filter((item) => item.tipo === 'insignia').map((item) => item.codigo),
+      ),
       vitrine: request.user.vitrine,
       limite: LIMITE_DA_VITRINE,
     }));

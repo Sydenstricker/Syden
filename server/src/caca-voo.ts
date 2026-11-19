@@ -29,6 +29,8 @@ export interface Praga {
   freq: number;
   /** Quanto tempo ela fica na tela antes de fugir (ms). */
   vida: number;
+  /** A PRAGA DOURADA (19/11/2026): rara, mais rápida, e vale DOURADA_VEZES os pontos. */
+  dourada?: boolean;
 }
 
 /** O raio de acerto, em unidades: o gafanhoto é menor e vale mais. */
@@ -38,6 +40,17 @@ export const PONTOS: Record<TipoDePraga, number> = { corvo: 100, gafanhoto: 150 
 export const BONUS_RAPIDEZ = 50;
 
 export const ONDAS = 5;
+
+/** A dourada vale isto vezes os pontos, voa nesta fração da vida de uma comum, e aparece (no máximo uma por onda, da 2ª em diante) com esta chance. */
+export const DOURADA_VEZES = 3;
+export const DOURADA_VIDA = 0.65;
+export const DOURADA_CHANCE = 0.6;
+/** A onda em que as pragas vêm DUAS DE CADA VEZ, de lados opostos. */
+export const ONDA_DE_PARES = 4;
+/** A ONDA PERFEITA (todas abatidas) dá este bônus. */
+export const BONUS_PERFEITA = 500;
+/** O COMBO: acertos seguidos (sem errar tiro) multiplicam os pontos do acerto; `combo` conta este acerto. */
+export const multiplicador = (combo: number) => (combo >= 8 ? 3 : combo >= 4 ? 2 : 1);
 
 /** Onde a praga está em `ms` (desde o começo da onda), ou null se ainda não apareceu ou já fugiu. */
 export function posicao(p: Praga, ms: number): { x: number; y: number } | null {
@@ -50,7 +63,7 @@ export function posicao(p: Praga, ms: number): { x: number; y: number } | null {
 /** Os pontos de um acerto em `ms`: o do bicho, mais a rapidez. */
 export function pontosDoAcerto(p: Praga, ms: number): number {
   const fracao = Math.max(0, Math.min(1, 1 - (ms - p.t) / p.vida));
-  return PONTOS[p.tipo] + Math.round(BONUS_RAPIDEZ * fracao);
+  return (PONTOS[p.tipo] + Math.round(BONUS_RAPIDEZ * fracao)) * (p.dourada ? DOURADA_VEZES : 1);
 }
 
 /**
@@ -86,10 +99,15 @@ export function sortearOnda(n: number, aleatorio: () => number = Math.random): P
   const quantas = pragasDaOnda(n);
   const ritmo = 1 + (n - 1) * 0.22;
   const pragas: Praga[] = [];
+  const pares = n === ONDA_DE_PARES;
   let t = 600;
+  let ladoDoPar = true;
   for (let i = 0; i < quantas; i++) {
     const gafanhoto = aleatorio() < Math.min(0.5, 0.15 + n * 0.07);
-    const daEsquerda = aleatorio() < 0.5;
+    const sorteado = aleatorio() < 0.5;
+    // na onda de pares, a segunda do par sai do lado oposto ao da primeira
+    const daEsquerda: boolean = pares && i % 2 === 1 ? !ladoDoPar : sorteado;
+    ladoDoPar = daEsquerda;
     const vida = Math.round((gafanhoto ? 2600 : 3400) / ritmo);
     // a distância que ela anda na vida: a tela inteira, e um pouco mais (para sair por fora)
     const distancia = LARGURA + 40;
@@ -103,8 +121,19 @@ export function sortearOnda(n: number, aleatorio: () => number = Math.random): P
       const subida = (aleatorio() - 0.5) * 40;
       pragas.push({ tipo: 'corvo', t, x0, y0, vx, vy: subida / (vida / 1000), amp: 6 + aleatorio() * 14, freq: 0.5 + aleatorio() * 0.9, vida });
     }
-    // às vezes a próxima sai junto (até duas na tela ao mesmo tempo, como nos fliperamas)
-    t += aleatorio() < 0.3 ? 250 : Math.round((900 + aleatorio() * 900) / ritmo);
+    // às vezes a próxima sai junto (até duas na tela ao mesmo tempo, como nos fliperamas); na onda de pares, sempre juntas
+    const junto = aleatorio() < 0.3;
+    const intervalo = Math.round((900 + aleatorio() * 900) / ritmo);
+    t += pares ? (i % 2 === 0 ? 0 : intervalo + 300) : junto ? 250 : intervalo;
+  }
+  // a dourada: uma praga da onda, sorteada, voa mais depressa
+  if (n >= 2 && quantas > 0 && aleatorio() < DOURADA_CHANCE) {
+    const p = pragas[Math.min(quantas - 1, Math.floor(aleatorio() * quantas))];
+    const vida = Math.round(p.vida * DOURADA_VIDA);
+    p.vx = (p.vx * p.vida) / vida;
+    p.vy = (p.vy * p.vida) / vida;
+    p.vida = vida;
+    p.dourada = true;
   }
   return pragas;
 }

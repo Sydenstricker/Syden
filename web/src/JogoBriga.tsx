@@ -1,15 +1,20 @@
 import { ComandosDoJogo } from './ComandosDosJogos';
 import { tocar } from './somDosJogos';
+import { criarImpacto } from './impacto';
 import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import {
   CHAO,
   desenharArrancada,
+  desenharAuraDeElite,
   desenharAviso,
   desenharBarraDoChefe,
   desenharBarraDoEspecial,
   desenharBicho,
+  desenharCaixote,
+  desenharCenouraDeCura,
   desenharCoelho,
+  desenharCurou,
   desenharEfeito,
   desenharGiro,
   desenharOndas,
@@ -142,6 +147,12 @@ interface Hud {
 const desfecho = (t: (s: string) => string, categoria: string | undefined, venceu: boolean) =>
   !categoria || categoria === 'horta' ? (venceu ? t('A horta está salva!') : t('A horta caiu.')) : venceu ? t('Vitória!') : t('Derrota');
 
+/** O tempo de uma fase: m:ss.d. */
+const tempoDaBriga = (ms: number) => {
+  const s = Math.max(0, ms) / 1000;
+  return `${Math.floor(s / 60)}:${(s % 60).toFixed(1).padStart(4, '0')}`;
+};
+
 /** O nome de uma fase, ou da campanha, já traduzido (os das pistas da estante de troféus: "Floresta", "Neve"...). */
 export const nomeDaFaseDaBriga = (t: (s: string) => string, id: string) => (id === 'horta' ? nomeDaPistaEm(t, 'horta-1') : nomeDaPistaEm(t, pistaDaBriga(id)));
 
@@ -167,9 +178,20 @@ export function JogoBriga({
       ? doServidor.map((l) => ({ ...l, posicao: l.posicao ?? null }))
       : estado.jogadores.map((j) => ({ ...j, posicao: 1 + estado.jogadores.filter((o) => o.pontos > j.pontos).length }));
     const regra = { venceu: !!doServidor && estado.venceu, solo: estado.solo === true, ficaram: linhas.filter((l) => l.posicao !== null).length };
+    // O RECORDE DO SOLO (19/11/2026): o tempo da fase vencida, contado pelo servidor
+    const { recorde, melhorAntes } = estado as { recorde?: { ms: number; antes: number | null; novo: boolean } | null; melhorAntes?: number | null };
     return (
       <div className="briga">
         <p className="briga-desfecho">{desfecho(t, (estado as { categoria?: string }).categoria, estado.venceu)}</p>
+        {recorde && (
+          <p className="minijogo-situacao">
+            {tempoDaBriga(recorde.ms)}
+            {recorde.novo ? ` · ${t('Novo recorde!')}` : recorde.antes !== null ? ` · ${t('Seu recorde: {tempo}', { tempo: tempoDaBriga(recorde.antes) })}` : ''}
+          </p>
+        )}
+        {!recorde && estado.solo && melhorAntes != null && (
+          <p className="minijogo-situacao">{t('Seu recorde: {tempo}', { tempo: tempoDaBriga(melhorAntes) })}</p>
+        )}
         <div className="minijogo-fim">
           <p className="minijogo-fim-titulo">
             <Trophy size={20} aria-hidden="true" /> {t('Fim de jogo!')}
@@ -231,6 +253,18 @@ function Palco({
     const piscandoInimigo = new Map<number, number>();
     // quando cada um apanhou por último: a barra de vida do placar fica vermelha um instante
     const apanhouEm = new Map<number, number>();
+    // O IMPACTO (19/11/2026, só desenho): o tremor, a pausa no acerto e o piscar; a barrinha de vida de quem apanhou, por 2 s;
+    // o estado anterior de cada bicho (o chefe pisando e o bicho que cai do pulo tremem a tela); quem se curou
+    const impacto = criarImpacto();
+    const vidaAte = new Map<number, number>();
+    const estadoAntes = new Map<number, string>();
+    const curou: { quem: number; em: number }[] = [];
+    let congeladoEm = 0;
+    const somDoAcerto = (golpe: string, meu: boolean) => {
+      const forte = golpe === 'soco3' || golpe === 'especial' || golpe === 'voadora' || golpe === 'arremesso';
+      tocar(forte ? 'impacto' : 'soco');
+      if (meu) impacto.acerto({ forca: forte ? 0.35 : 0.12, pausaMs: golpe === 'soco3' ? 70 : golpe === 'voadora' ? 50 : 0 });
+    };
     let voltaEm = 0;
     let ultimoEnvio = 0;
     let ultimoHud = 0;
@@ -282,14 +316,38 @@ function Palco({
         vistos.add(id);
         if (vistos.size > 500) vistos.delete(vistos.values().next().value as number);
         if (tipo === 'h') {
-          const [ini, quem, , x, y, z] = r as unknown as number[];
+          const [ini, quem, golpe, x, y, z] = r as unknown as [number, number, string, number, number, number];
           piscandoInimigo.set(ini, agoraMs + 140);
-          // o meu acerto eu já mostrei na hora
-          if (quem !== eu) efeitos.push({ tipo: 'faisca', x, y, z, em: agoraMs + 100 });
+          vidaAte.set(ini, agoraMs + 2000);
+          // o meu acerto eu já mostrei na hora (o arremesso é do servidor: ele derruba no caminho)
+          if (quem !== eu || golpe === 'arremesso') {
+            efeitos.push({ tipo: 'faisca', x, y, z, em: agoraMs + 100 });
+            somDoAcerto(golpe, false);
+            if (golpe === 'arremesso') impacto.tremer(0.3);
+          }
+        } else if (tipo === 'a') {
+          // o arremesso: o bicho voa
+          tocar('empurrao');
+          impacto.tremer(0.25);
+        } else if (tipo === 'cq') {
+          // o caixote quebrou: as lascas (e a cenoura aparece no quadro)
+          tocar('quebra');
+          efeitos.push({ tipo: 'poeira', x: r[1], y: r[2], z: 0, em: agoraMs });
+        } else if (tipo === 'ca') {
+          // o caixote arremessado
+          tocar('empurrao');
+          impacto.tremer(0.25);
+        } else if (tipo === 'ch' && r[1] !== eu) {
+          tocar('soco');
+        } else if (tipo === 'c') {
+          curou.push({ quem: r[1], em: agoraMs });
+          if (r[1] === eu) tocar('cura');
         } else if (tipo === 'p' && r[0] === eu) {
           apanhar(eu_, r[2] === 1, r[3]);
           apanhouEm.set(eu, agoraMs);
           efeitos.push({ tipo: 'faisca', x: eu_.x, y: eu_.y, z: eu_.z, em: agoraMs });
+          tocar(r[2] === 1 ? 'queda' : 'dano');
+          impacto.tremer(r[2] === 1 ? 0.4 : 0.2);
         } else if (tipo === 'p') {
           piscandoOutros.set(r[0], agoraMs + 400);
           apanhouEm.set(r[0], agoraMs);
@@ -307,8 +365,26 @@ function Palco({
         } else if (tipo === 'x') {
           const ini = q.i.find((l) => l[0] === r[0]);
           if (ini) efeitos.push({ tipo: 'poeira', x: ini[2], y: ini[3], z: 0, em: agoraMs + 100 });
+          tocar('derrota');
         }
       }
+      // o chefe que pisa (a pancada) e o bicho que cai do pulo tremem a tela
+      for (const l of q.i) {
+        const est = ESTADOS[l[5]] ?? 'andando';
+        const antes = estadoAntes.get(l[0]);
+        if (antes !== undefined && antes !== est) {
+          const comp = bicho(TIPOS[l[1]] ?? 'raposa').comp;
+          if (comp === 'chefe' && est === 'pancada') {
+            impacto.tremer(0.6, 260);
+            tocar('queda');
+          } else if (comp === 'pulo' && antes === 'saltando' && est !== 'caido') {
+            impacto.tremer(0.3);
+            tocar('queda');
+          }
+        }
+        estadoAntes.set(l[0], est);
+      }
+      if (estadoAntes.size > 200) for (const k of [...estadoAntes.keys()].slice(0, 100)) estadoAntes.delete(k);
     };
     const evento = solo ? 'minijogo-solo:tempo-real' : 'minijogo:tempo-real';
     socket.on(evento, aoQuadro);
@@ -324,8 +400,12 @@ function Palco({
       const meuEstado = ultimo?.j.find((l) => l[0] === eu)?.[10] ?? 0;
       const jogando = jogador && (fase === 'lutando' || fase === 'avancando') && meuEstado === 0;
 
+      // a pausa no acerto: o que se desenha fica parado no instante do golpe (o meu coelho e o envio seguem)
+      const imp = impacto.quadro(agoraMs);
+      if (!imp.congelado) congeladoEm = agoraMs;
+      const tela = imp.congelado ? congeladoEm : agoraMs;
       // o que está na tela agora: os inimigos e os outros, interpolados
-      const volta = linha.emVolta(linha.passoNaTela(agoraMs));
+      const volta = linha.emVolta(linha.passoNaTela(tela));
       const inimigos = volta ? misturar(volta.a.i, volta.b.i, volta.k, [2, 3, 4]) : [];
       const outros = volta ? misturar(volta.a.j, volta.b.j, volta.k, [1, 2, 3]) : [];
       const naTelaAgora: InimigoNaTela[] = inimigos.map((l) => ({
@@ -360,11 +440,31 @@ function Palco({
         if (novo.comecou) {
           // o golpe que começou vai na hora, antes de qualquer acerto dele
           mandarPosicao(novo.comecou);
-          tocar(novo.comecou.golpe === 'especial' ? 'combo' : 'soco');
+          // o som do soco é o do ACERTO (abaixo); começar só soa no giro e na voadora
+          if (novo.comecou.golpe === 'especial') tocar('combo');
+          else if (novo.comecou.golpe === 'voadora') tocar('pulo');
         }
         // a arrancada também vai na hora: o servidor dá a folga de distância dela a partir dessa posição
         if (novo.arrancou) mandarPosicao();
         if (golpeAtivo(eu_) && eu_.golpe) {
+          // OS CAIXOTES (19/11/2026): o golpe que encosta num caixote inteiro vai ao servidor, que confere e decide (quebra ou arremessa)
+          for (const c_ of ultimo?.cx ?? []) {
+            if (c_[4] === 1 || eu_.acertados.has(c_[0])) continue;
+            const comoBicho: InimigoNaTela = { id: c_[0], tipo: 'raposa', x: c_[1], y: c_[2], z: 0, estado: 'andando', faixa: c_[2], alvoX: c_[1] };
+            if (!encosta(eu_.golpe, eu_.x, eu_.y, eu_.z, eu_.lado, comoBicho)) continue;
+            eu_.acertados.add(c_[0]);
+            enviar({
+              tipo: 'golpe',
+              a: eu_.ataque,
+              caixote: c_[0],
+              x: Math.round(eu_.x * 10) / 10,
+              y: Math.round(eu_.y * 10) / 10,
+              z: Math.round(eu_.z),
+              ...(eu_.golpe === 'especial' ? { v: eu_.volta } : {}),
+            });
+            efeitos.push({ tipo: 'faisca', x: c_[1], y: c_[2], z: 0, em: agoraMs });
+            somDoAcerto(eu_.golpe, true);
+          }
           for (const i of naTelaAgora) {
             if (eu_.acertados.has(i.id) || !apanhavel(i, eu_.golpe) || !encosta(eu_.golpe, eu_.x, eu_.y, eu_.z, eu_.lado, i)) continue;
             eu_.acertados.add(i.id);
@@ -380,6 +480,8 @@ function Palco({
             });
             efeitos.push({ tipo: 'faisca', x: i.x, y: i.y, z: i.z, em: agoraMs });
             piscandoInimigo.set(i.id, agoraMs + 140);
+            vidaAte.set(i.id, agoraMs + 2000);
+            somDoAcerto(eu_.golpe, true);
           }
         }
       }
@@ -399,9 +501,22 @@ function Palco({
         return;
       }
 
-      // O DESENHO, do fundo para a frente (quem está mais à frente na faixa é desenhado por cima)
+      // O DESENHO, do fundo para a frente (quem está mais à frente na faixa é desenhado por cima); o tremor desloca tudo
+      g.save();
+      g.translate(imp.dx, imp.dy);
       desenharCenario(g, fs, cam, FIM_DA_FASE, agoraMs);
       const coisas: { y: number; desenhar: () => void }[] = [];
+      // os caixotes: [id, x, y, vida %, voando]; o que voa vem interpolado entre os quadros
+      const caixotesNaTela = volta ? misturar(volta.a.cx ?? [], volta.b.cx ?? [], volta.k, [1]) : [];
+      for (const c_ of caixotesNaTela) {
+        const { sx } = naTela(cam, c_[1], c_[2], 0);
+        coisas.push({ y: c_[2], desenhar: () => desenharCaixote(g, sx, CHAO + Math.round(c_[2]), c_[3], c_[4] === 1, agoraMs) });
+      }
+      // as cenouras de cura no chão: [id, grande, x, y]
+      for (const c_ of ultimo?.c ?? []) {
+        const { sx } = naTela(cam, c_[2], c_[3], 0);
+        coisas.push({ y: c_[3] - 0.5, desenhar: () => desenharCenouraDeCura(g, sx, CHAO + Math.round(c_[3]), c_[1] === 1, agoraMs) });
+      }
       for (const l of inimigos) {
         const tipo = TIPOS[l[1]] ?? 'raposa';
         const est = ESTADOS[l[5]] ?? 'andando';
@@ -416,9 +531,12 @@ function Palco({
             const queda = comp === 'pulo' ? Math.round((l[10] ?? l[2]) - cam) : undefined;
             desenharAviso(g, tipo, est, sx, CHAO + Math.round(comp !== 'soco' ? l[9] ?? l[3] : l[3]), l[6], agoraMs, chao, queda);
             const piscando = (piscandoInimigo.get(l[0]) ?? 0) > agoraMs;
-            if (daFolha) desenharBichoDaFolha(g, { tipo, estado: est, lado: l[6], ms: l[8] * 50, piscando }, sx, sy, agoraMs);
-            else desenharBicho(g, { tipo, estado: est, lado: l[6], passos: l[8], hp: l[7], piscando }, sx, sy, agoraMs);
-            if (comp !== 'chefe' && l[7] < 100 && est !== 'morto') {
+            const alto = daFolha ? alturaDoBicho(tipo) : tipo === 'corvo' ? 18 : 48;
+            if (l[11] === 1 && est !== 'morto') desenharAuraDeElite(g, sx, sy, alto, CORPO[tipo] + 4, agoraMs);
+            if (daFolha) desenharBichoDaFolha(g, { tipo, estado: est, lado: l[6], ms: l[8] * 50, piscando }, sx, sy, tela);
+            else desenharBicho(g, { tipo, estado: est, lado: l[6], passos: l[8], hp: l[7], piscando }, sx, sy, tela);
+            // a barrinha de vida aparece por 2 s depois de cada acerto
+            if (comp !== 'chefe' && l[7] < 100 && est !== 'morto' && (vidaAte.get(l[0]) ?? 0) > agoraMs) {
               const alto = daFolha ? alturaDoBicho(tipo) + 5 : tipo === 'corvo' ? 22 : 54;
               g.fillStyle = '#2a1e1a';
               g.fillRect(sx - 8, sy - alto, 16, 3);
@@ -485,6 +603,14 @@ function Palco({
       }
       coisas.sort((a, b) => a.y - b.y).forEach((c_) => c_.desenhar());
       for (let k = efeitos.length - 1; k >= 0; k--) if (!desenharEfeito(g, efeitos[k], cam, agoraMs)) efeitos.splice(k, 1);
+      // o "+" de quem se curou, em cima dele
+      for (let k = curou.length - 1; k >= 0; k--) {
+        const c_ = curou[k];
+        const pos = c_.quem === eu && jogador ? [eu_.x, eu_.y, eu_.z] : outros.find((l) => l[0] === c_.quem)?.slice(1, 4);
+        const { sx, sy } = pos ? naTela(cam, pos[0], pos[1], pos[2]) : { sx: 0, sy: 0 };
+        if (!pos || !desenharCurou(g, sx, sy, agoraMs - c_.em)) curou.splice(k, 1);
+      }
+      g.restore();
       const chefe = inimigos.find((l) => bicho(TIPOS[l[1]] ?? 'raposa').comp === 'chefe');
       if (chefe) desenharBarraDoChefe(g, chefe[7]);
       if (ultimo) desenharOndas(g, ultimo.o, ONDAS_X.length);

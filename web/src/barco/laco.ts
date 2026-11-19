@@ -1,6 +1,8 @@
 import { fantasmaEm, passosEmMs, rivalEm } from '../jato/util';
-import { tocar } from '../somDosJogos';
+import { criarMotor, tocar } from '../somDosJogos';
+import { nomeDoPiloto, type Dificuldade } from '../corrida/robos';
 import { coresDoAvatar } from './barquinho';
+import { criarRobosDoBarco, roboDoBarcoEm, type RoboDoBarco } from './robos';
 import { AMOSTRA, amostrar, DERRAPA, normal, novoBarco, PASSO, passo, pilotoAutomatico, progresso, rapidez, VTURBO, type Barco, type ComandosDoBarco } from './fisica';
 import { montarPistaDoBarco, naLinha, type DefinicaoDoBarco, type PistaDoBarco } from './pista';
 import {
@@ -19,8 +21,10 @@ import {
   pontesNaTela,
   pontoNoMapa,
   prepararDesenho,
+  rampasNaTela,
   respingo,
   semaforo,
+  slalomNaTela,
   W,
   type Esteira,
   type Figura,
@@ -82,6 +86,10 @@ export interface OpcoesDoLaco {
   aoPosicao?: (p: PosicaoNaSala) => void;
   /** 1,6 s depois da linha de chegada: as voltas (em passos), o caminho inteiro, e a minha posição entre as pessoas. */
   aoChegar?: (voltas: number[], caminho: number[], posicao: number, total: number) => void;
+  /** OS BARCOS DO COMPUTADOR (19/11/2026, só no Solo): quantos e o quanto apertam. */
+  robos?: { quantos: number; dificuldade: Dificuldade };
+  /** A classificação de todos os barcos na hora da chegada, antes do aoChegar. */
+  aoClassificacao?: (lista: { id: number; nome: string; eu: boolean; passos: number | null }[]) => void;
 }
 
 export function rodarBarco(o: OpcoesDoLaco): () => void {
@@ -113,6 +121,14 @@ export function rodarBarco(o: OpcoesDoLaco): () => void {
   let total = 1;
   let ultimaLuz = -1;
   let derrapaAntes = false;
+  /** O ronco do motor (19/11/2026), só de quem pilota. */
+  const motor = o.piloto ? criarMotor() : null;
+  const robos: RoboDoBarco[] = o.robos ? criarRobosDoBarco(p, o.robos.quantos, o.robos.dificuldade) : [];
+  const coresDosRobos = robos.map((r) => coresDoAvatar(((r.i * 5 + 3) % 16) + 1));
+  const esteirasDosRobos = robos.map(() => novaEsteira());
+  let classificacao: { id: number; nome: string; eu: boolean; passos: number | null }[] | null = null;
+  /** O respingo da volta à água depois do salto (dos dois lados). */
+  let pouso = 0;
 
   const auto = () => import.meta.env.DEV && (window as { barcoPilotoAutomatico?: boolean }).barcoPilotoAutomatico === true;
 
@@ -125,10 +141,10 @@ export function rodarBarco(o: OpcoesDoLaco): () => void {
       const luz = Math.floor((contagem - 1) / 60);
       if (luz !== ultimaLuz && o.piloto) {
         ultimaLuz = luz;
-        tocar('vez');
+        tocar('largada');
       }
       contagem--;
-      if (contagem === 0 && o.piloto) tocar('mola');
+      if (contagem === 0 && o.piloto) tocar('chegada');
       return;
     }
     if (!o.piloto) return;
@@ -147,12 +163,30 @@ export function rodarBarco(o: OpcoesDoLaco): () => void {
         ladoDaBatida = Math.sign(naLinha(p, barco.x, barco.y, barco.indice).lado) || 1;
         tocar('agua');
       }
-      if (barco.boia) tocar('pulo');
+      if (barco.boia) tocar('turbo');
+      if (barco.slalom > 0) tocar(barco.serie >= 3 ? 'combo' : 'acerto');
+      if (barco.slalom < 0) tocar('erro');
+      if (barco.saltou) tocar('pulo');
+      if (barco.pousou) {
+        tocar('agua');
+        pouso = 24;
+        tremor = 5;
+      }
       const derrapa = Math.abs(barco.lateral) > DERRAPA && rapidez(barco) > 90;
       if (derrapa && !derrapaAntes) tocar('queda');
       derrapaAntes = derrapa;
-      if (barco.fezVolta && !barco.terminou) tocar('acerto');
+      if (barco.fezVolta && !barco.terminou) tocar('bandeira');
       if (barco.terminou) tocar('chegada');
+      if (barco.terminou && robos.length && !classificacao) {
+        // a classificação na hora da minha chegada: quem chegou antes, eu, e os outros pelo quanto andaram
+        const n = barco.passos;
+        const linhas = [
+          { id: -1, nome: '', eu: true, chegada: barco.voltas[barco.voltas.length - 1], andou: p.def.voltas },
+          ...robos.map((r) => ({ id: -100 - r.i, nome: nomeDoPiloto(r.i), eu: false, chegada: r.chegada <= n ? r.chegada : 0, andou: roboDoBarcoEm(p, r, n).andou })),
+        ];
+        linhas.sort((a, b) => (a.chegada && b.chegada ? a.chegada - b.chegada : a.chegada ? -1 : b.chegada ? 1 : b.andou - a.andou));
+        classificacao = linhas.map((l) => ({ id: l.id, nome: l.nome, eu: l.eu, passos: l.chegada || null }));
+      }
     }
     // a câmera vai atrás do nariz, devagar (o barco aparece escorregando na curva)
     seguir(barco.angulo + normal(Math.atan2(barco.vy, barco.vx) - barco.angulo) * (rapidez(barco) > 30 ? 0.35 : 0));
@@ -199,7 +233,19 @@ export function rodarBarco(o: OpcoesDoLaco): () => void {
     const figuras: Figura[] = [];
     enfeitesNaTela(d, p, cam, tempo, figuras);
     argolasNaTela(p, cam, tempo, figuras);
+    slalomNaTela(p, cam, tempo, figuras);
+    rampasNaTela(p, cam, figuras);
     pontesNaTela(p, cam, figuras);
+    // os barcos do computador, com a esteira e o nome em cima
+    robos.forEach((r, i) => {
+      const q = roboDoBarcoEm(p, r, n);
+      const e = esteirasDosRobos[i];
+      const ultimo = e.pontos.at(-1);
+      if (!ultimo || Math.hypot(q.x - ultimo.x, q.y - ultimo.y) > 1.5) marcarEsteira(e, q.x, q.y, q.angulo, q.v);
+      esteiraNaTela(cam, e, figuras, 0.8);
+      const f = barcoNaTela(cam, q.x, q.y, q.angulo, coresDosRobos[i], { nome: nomeDoPiloto(r.i), banco: q.banco, v: q.v, tempo: tempo + i, calmo: o.calmo });
+      if (f) figuras.push(f);
+    });
     (o.fantasmas ?? []).forEach((fa, i) => {
       const g = fantasmaEm(fa.amostras, n);
       if (!g) return;
@@ -213,7 +259,8 @@ export function rodarBarco(o: OpcoesDoLaco): () => void {
       if (f) figuras.push(f);
     }
     if (o.piloto) {
-      esteiraNaTela(cam, minhaEsteira, figuras);
+      // a espuma de quem joga é mais forte, e mais ainda no turbo
+      esteiraNaTela(cam, minhaEsteira, figuras, barco.turbo > 0 ? 1.6 : 1.25);
       const derrapa = Math.abs(barco.lateral) > DERRAPA * 0.7 ? barco.lateral / (DERRAPA * 2) : 0;
       const meu = barcoNaTela(cam, barco.x, barco.y, barco.angulo, minhasCores, {
         banco: barco.banco,
@@ -222,6 +269,7 @@ export function rodarBarco(o: OpcoesDoLaco): () => void {
         tremor: !o.calmo && tremor > 0 ? (tremor % 2 ? 1 : -1) : 0,
         tempo,
         calmo: o.calmo,
+        altura: barco.altura,
       });
       if (meu) figuras.push({ ...meu, z: meu.z - 0.01 });
     }
@@ -229,6 +277,10 @@ export function rodarBarco(o: OpcoesDoLaco): () => void {
     for (const f of figuras) f.desenhar(d.ctx);
     const ctx = d.ctx;
     if (o.piloto && batida > 0) respingo(ctx, ladoDaBatida, tempo, batida / 24);
+    if (o.piloto && pouso > 0 && !o.calmo) {
+      respingo(ctx, -1, tempo, pouso / 24);
+      respingo(ctx, 1, tempo + 0.5, pouso / 24);
+    }
     // o turbo: a borda da tela esquenta
     if (o.piloto && barco.turbo > 0 && !o.calmo) {
       ctx.fillStyle = '#ffb04a33';
@@ -243,14 +295,16 @@ export function rodarBarco(o: OpcoesDoLaco): () => void {
     if (o.piloto) chaves.push({ id: -1, nome: '', eu: true, chave: barco.terminou ? 1000 - barco.voltas[barco.voltas.length - 1] / 1e5 : progresso(barco, p) });
     for (const r of rivais) chaves.push({ id: r.id, nome: r.nome, eu: false, chave: r.pos.andou });
     for (const [id, r] of o.rivais ?? []) if (!chaves.some((c) => c.id === id)) chaves.push({ id, nome: r.nome, eu: false, chave: -1 });
+    for (const r of robos) chaves.push({ id: -100 - r.i, nome: '', eu: false, chave: n >= r.chegada ? 1000 - r.chegada / 1e5 : roboDoBarcoEm(p, r, n).andou });
     chaves.sort((a, b) => b.chave - a.chave);
     minhaPosicao = Math.max(1, chaves.findIndex((c) => c.eu) + 1);
     total = chaves.length;
     if (o.aoOrdem) {
-      const chave = chaves.map((c) => c.id).join(',');
+      const pessoas = chaves.filter((c) => c.id >= -1);
+      const chave = pessoas.map((c) => c.id).join(',');
       if (chave !== ordemAntes) {
         ordemAntes = chave;
-        o.aoOrdem(chaves.map(({ id, nome, eu }) => ({ id, nome, eu })));
+        o.aoOrdem(pessoas.map(({ id, nome, eu }) => ({ id, nome, eu })));
       }
     }
 
@@ -262,9 +316,13 @@ export function rodarBarco(o: OpcoesDoLaco): () => void {
       const g = fantasmaEm(fa.amostras, n);
       if (g) pontoNoMapa(ctx, W - 60, H - 60, 56, g.x, g.y, '#d8b8ff');
     }
+    for (const r of robos) {
+      const q = roboDoBarcoEm(p, r, n);
+      pontoNoMapa(ctx, W - 60, H - 60, 56, q.x, q.y, '#a8a0b8', 2);
+    }
     for (const r of rivais) pontoNoMapa(ctx, W - 60, H - 60, 56, r.pos.x, r.pos.y, '#2a6ae0');
     if (o.piloto) pontoNoMapa(ctx, W - 60, H - 60, 56, barco.x, barco.y, '#ff8a2a');
-    if (o.piloto) painel(ctx, { posicao: minhaPosicao, total, v, vmax: VTURBO * 0.8, turbo: barco.turbo });
+    if (o.piloto) painel(ctx, { posicao: minhaPosicao, total, v, vmax: VTURBO * 0.8, turbo: barco.turbo, serie: barco.serie });
     if (contagem > 0 || (o.piloto && barco.passos < 40)) semaforo(ctx, contagem);
     if (pausado && o.piloto) {
       ctx.fillStyle = '#100a188c';
@@ -291,6 +349,7 @@ export function rodarBarco(o: OpcoesDoLaco): () => void {
         acumulado -= PASSO;
         if (tremor > 0) tremor--;
         if (batida > 0) batida--;
+        if (pouso > 0) pouso--;
       }
     }
     if (!o.piloto && o.rivais) {
@@ -302,8 +361,11 @@ export function rodarBarco(o: OpcoesDoLaco): () => void {
     const ms = passosEmMs(barco.terminou ? barco.voltas[barco.voltas.length - 1] : barco.passos);
     o.aoPlacar({ volta, ms, pausado: pausado && o.piloto });
     if (barco.terminou && !fimEm) fimEm = agora;
+    // o motor: no semáforo, um ronco baixo; depois, pela velocidade (no ar, mais agudo); pausado, mudo
+    motor?.ajustar(pausado ? 0 : contagem > 0 ? 0.06 : Math.min(1, rapidez(barco) / VTURBO + (barco.altura > 0 ? 0.25 : 0)));
     if (fimEm && agora - fimEm > 1600 && !avisou) {
       avisou = true;
+      if (classificacao) o.aoClassificacao?.(classificacao);
       o.aoChegar?.(barco.voltas.slice(), caminho, minhaPosicao, total);
     }
     quadro = requestAnimationFrame(ciclo);
@@ -313,5 +375,6 @@ export function rodarBarco(o: OpcoesDoLaco): () => void {
   return () => {
     vivo = false;
     cancelAnimationFrame(quadro);
+    motor?.parar();
   };
 }

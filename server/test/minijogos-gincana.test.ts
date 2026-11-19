@@ -174,3 +174,107 @@ test('na sala: o verde, as posições conferidas, a classificação pelo tempo r
   assert.equal(db.recordeDaGincana(anaId, 'prado-1')?.tempoMs, Math.round((passos * 1000) / 60));
   assert.ok(FOLGA_MS > 0);
 });
+
+// ---------------------------------------------------------------------------------------------------------------------
+// 19/11/2026: a sobrevivência (o campo) no Solo, e as rodadas na sala
+// ---------------------------------------------------------------------------------------------------------------------
+
+test('o Solo na sobrevivência: o quanto aguentou, refeito, vira o recorde da tabela comum (mais é melhor), sem fantasma', () => {
+  const campo = sim.IDS_DA_SOBREVIVENCIA[0];
+  const p = sim.PERCURSOS[campo];
+  const { ctx } = contexto([caioId], { solo: true });
+  const jogo = gincana.comecar(ctx, { naSala: [caioId], criadaPor: caioId, corpo: {} }) as Jogo;
+  assert.equal(jogo.acao(caioId, { tipo: 'correr', percurso: campo, fantasmas: [caioId] }), null);
+  assert.deepEqual(jogo.publico().fantasmas, []);
+  const parado = [600, 0];
+  const passos = sim.refazer(p, parado).chegouEm;
+  agora += 30_000;
+  // os comandos que não terminam (nem caiu, nem aguentou até o fim) não valem
+  assert.equal(jogo.acao(caioId, { tipo: 'chegada', entradas: [5, 0] }), 'Corrida inválida.');
+  assert.equal(jogo.acao(caioId, { tipo: 'chegada', entradas: parado }), null);
+  const r = jogo.publico().resultado as { tempoMs: number; recorde: boolean; sobrevivencia: boolean };
+  assert.ok(r.sobrevivencia && r.recorde);
+  assert.equal(r.tempoMs, Math.round((passos * 1000) / 60));
+  assert.equal(db.recordeDoSolo(caioId, 'gincana', campo)?.valor, r.tempoMs);
+  // de novo, aguentando mais (anda um bloco antes de parar): o recorde sobe
+  const mais = [20, sim.FRENTE, 600, 0];
+  assert.ok(sim.refazer(p, mais).chegouEm > passos);
+  jogo.acao(caioId, { tipo: 'correr', percurso: campo });
+  agora += 30_000;
+  assert.equal(jogo.acao(caioId, { tipo: 'chegada', entradas: mais }), null);
+  assert.ok((jogo.publico().resultado as { recorde: boolean }).recorde);
+  const meus = (jogo.publico().recordes as { percurso: string; tempoMs: number }[]).filter((x) => x.percurso === campo);
+  assert.equal(meus.length, 1);
+  assert.equal(meus[0].tempoMs, Math.round((sim.refazer(p, mais).chegouEm * 1000) / 60));
+});
+
+test('as rodadas: a cota passa de uma corrida para a outra (a corrida fecha quando ela chega), e a sobrevivência decide', async () => {
+  const { cota, ENTRE_MS, RODADAS } = await import('../src/minijogo-gincana.js');
+  assert.equal(cota(2, 0.7), 2, 'com 2, os dois vão à final');
+  assert.equal(cota(3, 0.7), 2);
+  assert.equal(cota(8, 0.7), 6);
+  assert.equal(cota(6, 0.5), 3);
+  assert.equal(cota(1, 0.5), 1);
+  const comRodadas = criarGincana(() => agora, () => 0.5);
+  const naSala = [anaId, biaId, caioId];
+  const { ctx, relogio, terminou } = contexto(naSala, { comunidadeId: comunidade.id });
+  const jogo = comRodadas.comecar(ctx, { naSala, criadaPor: anaId, corpo: { percurso: RODADAS } }) as Jogo;
+  const ultimo = () => relogio[relogio.length - 1];
+  const verde = () => {
+    agora += LARGADA_MS;
+    ultimo().depois();
+    assert.equal(jogo.publico().fase, 'correndo');
+  };
+  assert.equal(jogo.publico().modo, 'rodadas');
+  assert.equal(jogo.publico().rodadas, 3);
+  assert.equal(jogo.publico().categoria, RODADAS);
+
+  // RODADA 1 (de 3, quem passa: 2): a ana e a bia chegam, e a rodada fecha sem esperar o caio
+  verde();
+  const r1 = jogo.publico().percurso as string;
+  assert.ok(sim.IDS_DOS_PERCURSOS.includes(r1));
+  const h1 = honesto(r1);
+  agora += Math.round((h1.passos * 1000) / 60);
+  assert.equal(jogo.acao(anaId, { tipo: 'chegada', entradas: h1.entradas }), null);
+  assert.equal(jogo.publico().fase, 'correndo');
+  assert.equal(jogo.acao(biaId, { tipo: 'chegada', entradas: h1.entradas }), null);
+  assert.equal(jogo.publico().fase, 'entre');
+  assert.deepEqual(new Set(jogo.publico().passaram as number[]), new Set([anaId, biaId]));
+  // o caio ficou de fora: na próxima rodada, ele não corre
+  agora += ENTRE_MS;
+  ultimo().depois();
+  assert.equal(jogo.publico().fase, 'largada');
+  assert.equal(jogo.publico().rodada, 2);
+
+  // RODADA 2: uma corrida diferente; os dois chegam (a cota de 2 é 2) e vão à final
+  verde();
+  const r2 = jogo.publico().percurso as string;
+  assert.notEqual(r2, r1);
+  assert.equal(jogo.acao(caioId, { tipo: 'chegada', entradas: honesto(r2).entradas }), 'Você não está nesta corrida.');
+  const h2 = honesto(r2);
+  agora += Math.round((h2.passos * 1000) / 60);
+  assert.equal(jogo.acao(biaId, { tipo: 'chegada', entradas: h2.entradas }), null);
+  assert.equal(jogo.acao(anaId, { tipo: 'chegada', entradas: h2.entradas }), null);
+  assert.equal(jogo.publico().fase, 'entre');
+  agora += ENTRE_MS;
+  ultimo().depois();
+
+  // A FINAL, a sobrevivência: a bia aguenta mais que a ana e ganha
+  verde();
+  const campo = jogo.publico().percurso as string;
+  assert.ok(sim.IDS_DA_SOBREVIVENCIA.includes(campo));
+  agora += 20_000;
+  assert.equal(jogo.acao(anaId, { tipo: 'chegada', entradas: [600, 0] }), null);
+  assert.ok(!terminou());
+  assert.equal(jogo.acao(biaId, { tipo: 'chegada', entradas: [20, sim.FRENTE, 600, 0] }), null);
+  assert.ok(terminou());
+  const linhas = jogo.publico().corredores as { userId: number; posicao: number | null; rodada: number }[];
+  assert.deepEqual(linhas.map((l) => l.userId), [biaId, anaId, caioId]);
+  assert.deepEqual(linhas.map((l) => l.posicao), [1, 2, 3]);
+  assert.equal(linhas[2].rodada, 1, 'o caio caiu na primeira');
+  // o pódio: a bia em primeiro, com o tempo que aguentou na final
+  const aguentou = Math.round((sim.refazer(sim.PERCURSOS[campo], [20, sim.FRENTE, 600, 0]).chegouEm * 1000) / 60);
+  const daBia = db.trofeusDe(biaId).find((t) => t.pista === 'gincana' && t.tempoMs === aguentou);
+  assert.equal(daBia?.posicao, 1);
+
+});

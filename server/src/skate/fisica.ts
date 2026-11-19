@@ -18,7 +18,7 @@
  * somados vezes o número de manobras. O combo se fecha quando o skatista roda no chão sem manobra por um instante; cair
  * (pousar torto, com o flip pela metade, perder o equilíbrio, bater de frente) perde o combo inteiro.
  */
-import { altura, alturaDaPeca, dentro, LARGURA, MARGEM, pecaEm, PROFUNDIDADE, perfilDaPeca, subidaDaPeca, TRILHOS, type Trilho } from './pista.js';
+import { altura, alturaDaPeca, dentro, LARGURA, MARGEM, OBJETIVOS, pecaEm, PROFUNDIDADE, perfilDaPeca, subidaDaPeca, TRILHOS, usarPista, type Area, type Trilho } from './pista.js';
 
 export const PASSO = 1 / 60;
 /** A sessão: 1 minuto (eram 2 até 06/11/2026, pedido dele). */
@@ -52,6 +52,15 @@ const GRACA = 14;
 const QUEDA_PASSOS = 75;
 const PAREDE = 0.07;
 const DEGRAU_PARA_BAIXO = 0.012;
+/**
+ * A BARRA DE ESPECIAL (19/11/2026, a referência do gênero): enche com os pontos das manobras (ESPECIAL_POR_PONTO por ponto),
+ * esvazia ao cair e devagar no chão sem combo. Cheia, os flips viram os "Double" (mais pontos, mais tempo no ar para fechar).
+ */
+const ESPECIAL_POR_PONTO = 1 / 2400;
+const ESPECIAL_VAZA = 0.0012;
+const FLIP_DUPLO_PASSOS = 30;
+/** Quão perto (do meio do coelho) se pega uma letra ou a fita. */
+const PEGA = 0.5;
 
 export interface Comandos {
   frente: boolean;
@@ -83,6 +92,8 @@ export type Evento =
   | { tipo: 'queda'; perdeu: number };
 
 export interface Skatista {
+  /** A pista (o índice em PISTAS, pista.ts). */
+  pista: number;
   passo: number;
   x: number;
   y: number;
@@ -131,12 +142,24 @@ export interface Skatista {
   /** Os comandos do passo anterior (para saber o que acabou de ser apertado). */
   antes: Comandos;
   terminou: boolean;
+  /** A barra de especial (0 a 1). */
+  especial: number;
+  /** O grab segurado agora: o nome dele (pela seta na hora de apertar). */
+  grabNome: string;
+  /** Os OBJETIVOS (19/11/2026): as letras já pegas (um bit por letra), a fita, os saltos com nome feitos (um bit cada). */
+  letras: number;
+  fita: boolean;
+  saltos: number;
+  /** De onde saiu do chão neste voo (para o salto com nome). */
+  sx: number;
+  sz: number;
   /** O que aconteceu neste passo (o desenho e o som leem; o próximo passo limpa). */
   eventos: Evento[];
 }
 
-export function novoSkatista(): Skatista {
+export function novoSkatista(pista = 0): Skatista {
   return {
+    pista,
     passo: 0,
     x: 6,
     y: 0,
@@ -174,6 +197,13 @@ export function novoSkatista(): Skatista {
     antes: NADA,
     terminou: false,
     eventos: [],
+    especial: 0,
+    grabNome: 'Grab',
+    letras: 0,
+    fita: false,
+    saltos: 0,
+    sx: 0,
+    sz: 0,
   };
 }
 
@@ -187,9 +217,27 @@ function valorBase(nome: string, seg: number): number {
     case 'Ollie':
       return 50;
     case 'Kickflip':
+    case 'Heelflip':
       return 150;
+    case 'Pop Shove-it':
+      return 120;
+    case 'Varial Flip':
+      return 200;
+    case 'Double Kickflip':
+    case 'Double Heelflip':
+      return 400;
+    case 'Double Shove-it':
+      return 320;
+    case 'Double Varial':
+      return 520;
     case 'Grab':
       return 150 + Math.floor(300 * seg);
+    case 'Nosegrab':
+    case 'Tailgrab':
+      return 160 + Math.floor(300 * seg);
+    case 'Indy':
+    case 'Melon':
+      return 175 + Math.floor(320 * seg);
     case 'Grind':
       return 100 + Math.floor(200 * seg);
     case 'Stall':
@@ -200,6 +248,11 @@ function valorBase(nome: string, seg: number): number {
     case 'Air':
       return 50 + Math.floor(150 * seg);
     default: {
+      // os saltos com nome ("gap:<id>"), pelo valor da pista
+      if (nome.startsWith('gap:')) {
+        const s = OBJETIVOS.saltos.find((x) => x.id === nome.slice(4));
+        return s ? s.pontos : 0;
+      }
       // os giros: "180", "360", "540"…
       const g = Number(nome);
       return g >= 180 ? (g / 180) * ((g / 180) + 1) * 75 : 0;
@@ -214,6 +267,45 @@ function somar(k: Skatista, nome: string, seg = 0) {
   if (pontos <= 0) return;
   k.combo.push({ nome, pontos });
   k.eventos.push({ tipo: 'manobra', nome, pontos });
+  k.especial = Math.min(1, k.especial + pontos * ESPECIAL_POR_PONTO);
+}
+
+/** O flip pela seta segurada na hora de apertar: nada, Kickflip; ↑, Heelflip; ↓, Pop Shove-it; ← ou →, Varial Flip. */
+function nomeDoFlip(c: Comandos, duplo: boolean): string {
+  if (c.frente) return duplo ? 'Double Heelflip' : 'Heelflip';
+  if (c.tras) return duplo ? 'Double Shove-it' : 'Pop Shove-it';
+  if (c.esquerda !== c.direita) return duplo ? 'Double Varial' : 'Varial Flip';
+  return duplo ? 'Double Kickflip' : 'Kickflip';
+}
+
+/** O grab pela seta: nada, Grab; ↑, Nosegrab; ↓, Tailgrab; ←, Melon; →, Indy. */
+function nomeDoGrab(c: Comandos): string {
+  if (c.frente) return 'Nosegrab';
+  if (c.tras) return 'Tailgrab';
+  if (c.esquerda && !c.direita) return 'Melon';
+  if (c.direita && !c.esquerda) return 'Indy';
+  return 'Grab';
+}
+
+const naArea = (a: Area, x: number, z: number) => x >= a.x0 && x <= a.x1 && z >= a.z0 && z <= a.z1;
+
+/** O voo acabou em (x, z) (pousou de pé, ou pegou uma linha): os saltos com nome que ele fez. */
+function conferirSaltos(k: Skatista) {
+  OBJETIVOS.saltos.forEach((s, i) => {
+    if (naArea(s.de, k.sx, k.sz) && naArea(s.ate, k.x, k.z)) {
+      somar(k, `gap:${s.id}`);
+      k.saltos |= 1 << i;
+    }
+  });
+}
+
+/** As letras e a fita: passou perto, pegou (de qualquer jeito: no chão, no ar, na linha). */
+function pegarNoAr(k: Skatista) {
+  const o = OBJETIVOS;
+  const cy = k.y + 0.4;
+  const perto = (p: { x: number; y: number; z: number }) => (p.x - k.x) * (p.x - k.x) + (p.y - cy) * (p.y - cy) + (p.z - k.z) * (p.z - k.z) < PEGA * PEGA;
+  for (let i = 0; i < o.letras.length; i++) if (!(k.letras & (1 << i)) && perto(o.letras[i])) k.letras |= 1 << i;
+  if (!k.fita && perto(o.fita)) k.fita = true;
 }
 
 export const valorDoCombo = (combo: Manobra[]) => combo.reduce((s, m) => s + m.pontos, 0) * combo.length;
@@ -230,6 +322,7 @@ function fecharCombo(k: Skatista) {
 function cair(k: Skatista) {
   const perdeu = valorDoCombo(k.combo);
   k.combo = [];
+  k.especial = 0;
   k.modo = 'caido';
   k.queda = QUEDA_PASSOS;
   k.flip = 0;
@@ -286,6 +379,8 @@ function decolar(k: Skatista, s: number, saida: Skatista['saida'], extra: number
     }
   }
   k.modo = 'ar';
+  k.sx = k.x;
+  k.sz = k.z;
   k.noAr = 0;
   k.giro = 0;
   k.flip = 0;
@@ -415,6 +510,7 @@ const tremor = (n: number) => (((n * 37) % 23) - 11) * 0.00003;
 export function passo(k: Skatista, comandos: Comandos) {
   k.eventos = [];
   if (k.terminou) return;
+  usarPista(k.pista);
   const acabouOTempo = k.passo >= PASSOS_DA_SESSAO;
   // acabado o tempo, não começa nada novo: só deixa fechar o que está no ar
   const c = acabouOTempo ? { ...NADA, esquerda: comandos.esquerda, direita: comandos.direita, frente: comandos.frente, tras: comandos.tras } : comandos;
@@ -437,6 +533,7 @@ export function passo(k: Skatista, comandos: Comandos) {
     }
     case 'chao': {
       if (k.combo.length && ++k.desdePouso > GRACA) fecharCombo(k);
+      if (!k.combo.length && k.especial > 0) k.especial = Math.max(0, k.especial - ESPECIAL_VAZA);
       if (apertou('manual') && k.vel > 0.5) {
         k.modo = 'manual';
         k.equilibrio = 0;
@@ -558,12 +655,16 @@ export function passo(k: Skatista, comandos: Comandos) {
       }
       if (k.flip > 0) k.flip--;
       if (apertou('flip') && k.flip === 0) {
-        k.flip = FLIP_PASSOS;
-        somar(k, 'Kickflip');
+        // a barra cheia faz o flip duplo (mais pontos, e mais tempo para fechar antes de pousar)
+        const duplo = k.especial >= 1;
+        k.flip = duplo ? FLIP_DUPLO_PASSOS : FLIP_PASSOS;
+        somar(k, nomeDoFlip(c, duplo));
       }
-      if (c.grab) k.grab++;
-      else if (k.grab > 0) {
-        if (k.grab >= 6) somar(k, 'Grab', k.grab * PASSO);
+      if (c.grab) {
+        if (k.grab === 0) k.grabNome = nomeDoGrab(c);
+        k.grab++;
+      } else if (k.grab > 0) {
+        if (k.grab >= 6) somar(k, k.grabNome, k.grab * PASSO);
         k.grab = 0;
       }
       if (apertou('manual')) k.manualArmado = true;
@@ -614,6 +715,7 @@ export function passo(k: Skatista, comandos: Comandos) {
     }
   }
 
+  if (!acabouOTempo) pegarNoAr(k);
   if (acabouOTempo) {
     const parado = k.modo === 'chao' || k.modo === 'caido';
     if ((parado && (k.combo.length === 0 || k.desdePouso > GRACA)) || k.passo >= PASSOS_DA_SESSAO + PASSOS_DE_FOLGA) {
@@ -659,6 +761,7 @@ function comecarGrind(k: Skatista, i: number) {
   const tr: Trilho = TRILHOS[i];
   if (k.flip > FLIP_TOLERANCIA) return cair(k);
   fecharAr(k);
+  conferirSaltos(k);
   const h = Math.sqrt(k.vx * k.vx + k.vz * k.vz);
   const p = k.vx * tr.dx + k.vz * tr.dz;
   // quase sem caminho ao longo da linha (o vert, que sobe e desce reto), o sentido é o da prancha
@@ -685,7 +788,7 @@ function comecarGrind(k: Skatista, i: number) {
 
 /** As manobras do voo que só fecham ao pousar (ou ao pegar a linha): o grab segurado, o giro, o "Air" das rampas. */
 function fecharAr(k: Skatista) {
-  if (k.grab >= 6) somar(k, 'Grab', k.grab * PASSO);
+  if (k.grab >= 6) somar(k, k.grabNome, k.grab * PASSO);
   k.grab = 0;
   const g = Math.abs(k.giro);
   // o giro arredonda para a meia volta mais perto (com 45° de folga: o pouso torto já caiu antes)
@@ -727,6 +830,7 @@ function pousar(k: Skatista) {
   // de costas: o coelho troca de base
   if (k.cx * rx + k.cz * rz < 0) k.base = -k.base;
   fecharAr(k);
+  conferirSaltos(k);
   k.rx = rx;
   k.rz = rz;
   k.cx = rx;
@@ -756,8 +860,32 @@ export function comboAberto(k: Skatista): Manobra[] {
     extra.push({ nome, pontos: valorBase(nome, k.duracao * PASSO) });
   }
   if (k.modo === 'manual') extra.push({ nome: 'Manual', pontos: valorBase('Manual', k.duracao * PASSO) });
-  if (k.modo === 'ar' && k.grab >= 6) extra.push({ nome: 'Grab', pontos: valorBase('Grab', k.grab * PASSO) });
+  if (k.modo === 'ar' && k.grab >= 6) extra.push({ nome: k.grabNome, pontos: valorBase(k.grabNome, k.grab * PASSO) });
   return [...k.combo, ...extra];
+}
+
+/** Um objetivo da sessão, e se ele foi cumprido. `id`: 'letras', 'pontos', 'combo', 'fita' ou 'gap:<id do salto>'. */
+export interface Objetivo {
+  id: string;
+  feito: boolean;
+  /** A meta (pontos, combo) ou quantas letras já pegou. */
+  valor?: number;
+}
+
+/** OS OBJETIVOS da sessão (19/11/2026), pelo que o skatista fez (o servidor os conta na sessão que ele refez). */
+export function objetivos(k: Skatista): Objetivo[] {
+  usarPista(k.pista);
+  const o = OBJETIVOS;
+  const todas = (1 << o.letras.length) - 1;
+  let letras = 0;
+  for (let i = 0; i < o.letras.length; i++) if (k.letras & (1 << i)) letras++;
+  return [
+    { id: 'letras', feito: (k.letras & todas) === todas, valor: letras },
+    { id: 'pontos', feito: k.pontos >= o.pontos, valor: o.pontos },
+    { id: 'combo', feito: k.melhorCombo >= o.combo, valor: o.combo },
+    { id: 'fita', feito: k.fita },
+    ...o.saltos.map((s, i) => ({ id: `gap:${s.id}`, feito: (k.saltos & (1 << i)) !== 0 })),
+  ];
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -798,8 +926,9 @@ export function entradasValidas(e: unknown): e is Entradas {
 }
 
 /** Refaz a sessão inteira pelas entradas, até ela terminar. `passos` diz quantos passos as entradas tinham. */
-export function refazer(e: Entradas): { k: Skatista; passos: number } {
-  const k = novoSkatista();
+export function refazer(e: Entradas, pista = 0): { k: Skatista; passos: number } {
+  const k = novoSkatista(pista);
+
   let passos = 0;
   for (let i = 0; i < e.length; i += 2) {
     const c = deBits(e[i + 1]);

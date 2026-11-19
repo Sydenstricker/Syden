@@ -72,7 +72,7 @@ try {
     for (const linha of linhas) {
       lidas++;
       // PuzzleId,FEN,Moves,Rating,RatingDeviation,Popularity,NbPlays,Themes,GameUrl,OpeningTags
-      const [id, fen, lances, nota, desvio, popularidade, partidas] = linha.split(',');
+      const [id, fen, lances, nota, desvio, popularidade, partidas, temas] = linha.split(',');
       if (id === 'PuzzleId') continue;
       const lista = lances.split(' ');
       const meus = lista.filter((_, i) => i % 2 === 1);
@@ -81,7 +81,8 @@ try {
       if (Number(popularidade) < 90 || Number(partidas) < 2000 || Number(desvio) > 80) continue;
       const i = FAIXAS.findIndex(([de, ate]) => Number(nota) >= de && Number(nota) < ate);
       if (i < 0 || faixas[i].length >= POR_FAIXA) continue;
-      faixas[i].push([id, fen, lances, Number(nota)]);
+      // os temas do Lichess (19/11/2026): o jogo deixa escolher por tema; o servidor aceita o arquivo antigo, sem eles
+      faixas[i].push([id, fen, lances, Number(nota), temas ?? '']);
     }
     if (cheias()) break;
   }

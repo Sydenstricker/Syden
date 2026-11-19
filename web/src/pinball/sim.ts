@@ -13,6 +13,15 @@
  * navegador). Passos fixos de 1/60 s com 8 subpassos; o tempo da partida é o número de passos.
  *
  * As medidas são os pixels da mesa desenhada (240 × 400, y para baixo), e a "gravidade" é a inclinação da mesa.
+ *
+ * O QUE ENTROU EM 19/11/2026 (a auditoria dos mini-games: "uma mesa sem missões"):
+ *  - A TACADA CERTEIRA: a bola lançada pela mola que entra numa pista do alto antes de tocar em qualquer outra coisa vale 2500. É
+ *    a força certa da mola (medida: só uma faixa estreita de carga leva a bola direto às pistas).
+ *  - A BOLA EXTRA nos marcos de pontos (MARCOS_DA_BOLA_EXTRA): a bola que cai depois disso volta sem gastar uma das três.
+ *  - AS MISSÕES, em ciclo (MISSOES): uma de cada vez, com o prazo contado só com bola em jogo; cumprida, vale 1000 × a PATENTE
+ *    da partida, e a patente sobe (até 9). Perdida no prazo, vem a seguinte, sem castigo.
+ *  - A RAMPA com trilho: a bola rápida que sobe pela boca dela (à direita, acima do estilingue) vai pelo trilho até o alto e cai
+ *    na primeira pista. Ela não tem parede: a bola lenta passa por baixo dela.
  */
 
 export const LARGURA = 240;
@@ -51,6 +60,64 @@ export const ESQ = 1;
 export const DIR = 2;
 export const MOLA = 4;
 export const SACUDIR = 8;
+
+/** A bola extra: cada marco de pontos dá uma (19/11/2026). */
+export const MARCOS_DA_BOLA_EXTRA = [40_000, 120_000, 300_000];
+/** A tacada certeira: quanto vale, e por quanto tempo depois do lançamento ela pode acontecer. */
+export const PONTOS_DA_TACADA = 2500;
+const TACADA_PASSOS = 240;
+
+/** AS MISSÕES, em ciclo: o evento que conta, quantos, e o prazo (em passos com bola em jogo). */
+export type IdDaMissao = 'cenouras' | 'repolhos' | 'orbitas' | 'rampas' | 'toca' | 'estilingues';
+export const MISSOES: readonly { id: IdDaMissao; evento: string; meta: number; passos: number }[] = [
+  { id: 'cenouras', evento: 'cenoura', meta: 3, passos: 1200 },
+  { id: 'repolhos', evento: 'repolho', meta: 10, passos: 1200 },
+  { id: 'orbitas', evento: 'orbita', meta: 2, passos: 2400 },
+  { id: 'rampas', evento: 'rampa', meta: 2, passos: 2400 },
+  { id: 'toca', evento: 'toca', meta: 1, passos: 2400 },
+  { id: 'estilingues', evento: 'estilingue', meta: 6, passos: 1200 },
+];
+export const PONTOS_DA_MISSAO = 1000;
+export const PATENTE_MAXIMA = 9;
+
+/** A RAMPA: a boca (o sensor, em y) e o trilho até o alto, que solta a bola na primeira pista. */
+export const BOCA_DA_RAMPA = { x0: 148, x1: 178, y: 238 };
+const VELOCIDADE_DA_BOCA = 400;
+export const TRILHO: [number, number][] = [
+  [163, 238],
+  [170, 200],
+  [178, 150],
+  [180, 100],
+  [162, 58],
+  [124, 28],
+  [84, 34],
+];
+const TRILHO_POR_PASSO = 5;
+export const PONTOS_DA_RAMPA = 750;
+/** O comprimento acumulado do trilho até cada ponto. */
+export const TRILHO_ACC: number[] = acumulado(TRILHO);
+
+/** O comprimento acumulado de um trilho até cada ponto. */
+function acumulado(trilho: readonly [number, number][]): number[] {
+  const l = [0];
+  for (let i = 1; i < trilho.length; i++) {
+    const dx = trilho[i][0] - trilho[i - 1][0];
+    const dy = trilho[i][1] - trilho[i - 1][1];
+    l.push(l[i - 1] + Math.sqrt(dx * dx + dy * dy));
+  }
+  return l;
+}
+
+/** O ponto do trilho a `d` do começo (o da mesa `g`; sem ela, o da horta). */
+export function pontoDoTrilho(d: number, g: { trilho: readonly [number, number][]; trilhoAcc: readonly number[] } = { trilho: TRILHO, trilhoAcc: TRILHO_ACC }): [number, number] {
+  const tr = g.trilho;
+  const acc = g.trilhoAcc;
+  let i = 1;
+  while (i < tr.length - 1 && acc[i] < d) i++;
+  const l = acc[i] - acc[i - 1];
+  const t = l > 0 ? Math.min(1, Math.max(0, (d - acc[i - 1]) / l)) : 0;
+  return [tr[i - 1][0] + (tr[i][0] - tr[i - 1][0]) * t, tr[i - 1][1] + (tr[i][1] - tr[i - 1][1]) * t];
+}
 
 // =====================================================================================================================
 // A MESA: paredes (segmentos), postes e rebatedores (círculos), as palhetas, a toca e os sensores
@@ -231,6 +298,42 @@ export const CIRCULOS: Circulo[] = [
   { x: GUIA_DIR[0][0], y: GUIA_DIR[0][1], r: 3, tipo: 'poste' },
 ];
 
+/**
+ * AS MESAS (19/11/2026): a HORTA (0, a de sempre) e o POMAR (1), com as mesmas paredes, palhetas e cenouras, e o miolo trocado:
+ * os três rebatedores em triângulo de ponta para cima, a toca do lado direito e a rampa do lado esquerdo (espelhada, caindo na
+ * terceira pista). Cada mesa tem o recorde dela.
+ */
+export interface Geometria {
+  repolhos: Circulo[];
+  circulos: Circulo[];
+  toca: { x: number; y: number };
+  /** Para que lado a toca devolve a bola (1: direita). */
+  tocaLado: 1 | -1;
+  boca: { x0: number; x1: number; y: number };
+  trilho: [number, number][];
+  trilhoAcc: number[];
+}
+const postes = CIRCULOS.filter((c) => c.tipo === 'poste');
+const REPOLHOS_DO_POMAR: Circulo[] = [
+  { x: 86, y: 150, r: 12, tipo: 'repolho', n: 0 },
+  { x: 140, y: 150, r: 12, tipo: 'repolho', n: 1 },
+  { x: 113, y: 112, r: 12, tipo: 'repolho', n: 2 },
+];
+const TRILHO_DO_POMAR: [number, number][] = TRILHO.map(([x, y]) => [m(x), y]);
+export const MESAS: readonly Geometria[] = [
+  { repolhos: REPOLHOS, circulos: CIRCULOS, toca: TOCA, tocaLado: 1, boca: BOCA_DA_RAMPA, trilho: TRILHO, trilhoAcc: TRILHO_ACC },
+  {
+    repolhos: REPOLHOS_DO_POMAR,
+    circulos: [...REPOLHOS_DO_POMAR, ...postes],
+    toca: { x: m(TOCA.x), y: TOCA.y },
+    tocaLado: -1,
+    boca: { x0: m(BOCA_DA_RAMPA.x1), x1: m(BOCA_DA_RAMPA.x0), y: BOCA_DA_RAMPA.y },
+    trilho: TRILHO_DO_POMAR,
+    trilhoAcc: acumulado(TRILHO_DO_POMAR),
+  },
+];
+export const mesaValida = (n: unknown): number => (Number.isInteger(n) && (n as number) >= 0 && (n as number) < MESAS.length ? (n as number) : 0);
+
 // =====================================================================================================================
 // O ESTADO
 // =====================================================================================================================
@@ -250,6 +353,8 @@ export interface Bola {
   orbita: number;
   /** Há quantos passos está quase parada fora das palhetas (a busca da bola: parada demais, a mesa a empurra). */
   parada: number;
+  /** No trilho da rampa: quanto já andou nele + 1 (0: fora dele). */
+  trilho: number;
 }
 
 export type Evento =
@@ -268,9 +373,15 @@ export type Evento =
   | { tipo: 'aviso' }
   | { tipo: 'tilt' }
   | { tipo: 'perdeu'; bonus: number }
+  | { tipo: 'tacada'; x: number; y: number; pontos: number }
+  | { tipo: 'extra' }
+  | { tipo: 'rampa'; x: number; y: number; pontos: number }
+  | { tipo: 'missao'; missao: IdDaMissao; cumpriu: boolean; pontos: number; x: number; y: number }
   | { tipo: 'fim' };
 
 export interface Mesa {
+  /** Qual mesa (o índice em MESAS). */
+  mesa: number;
   passo: number;
   /** O teto de passos desta partida (na sala, o tempo da rodada). */
   limite: number;
@@ -306,12 +417,25 @@ export interface Mesa {
   eventos: Evento[];
   /** Para o desenho: o último passo em que cada repolho e cada estilingue foi acertado. */
   acesoEm: number[];
+  /** A tacada certeira: os passos que ainda valem (0: não vale mais). */
+  tacada: number;
+  /** Os marcos de bola extra já alcançados, e as bolas extras guardadas. */
+  marcos: number;
+  extras: number;
+  /** A missão da vez (o índice em MISSOES, que gira), quanto já contou, os passos que faltam e a patente. */
+  missao: number;
+  missaoConta: number;
+  missaoResta: number;
+  patente: number;
+  /** Missões cumpridas na partida. */
+  cumpridas: number;
 }
 
-const bolaNaMola = (auto: boolean): Bola => ({ x: RAIA_X, y: MOLA_Y, vx: 0, vy: 0, naMola: true, auto, presa: 0, orbita: 0, parada: 0 });
+const bolaNaMola = (auto: boolean): Bola => ({ x: RAIA_X, y: MOLA_Y, vx: 0, vy: 0, naMola: true, auto, presa: 0, orbita: 0, parada: 0, trilho: 0 });
 
-export function novaMesa(limite = PASSOS_MAXIMOS): Mesa {
+export function novaMesa(limite = PASSOS_MAXIMOS, mesa = 0): Mesa {
   return {
+    mesa: mesaValida(mesa),
     passo: 0,
     limite: Math.max(1, Math.min(PASSOS_MAXIMOS, limite)),
     pontos: 0,
@@ -337,7 +461,42 @@ export function novaMesa(limite = PASSOS_MAXIMOS): Mesa {
     terminou: false,
     eventos: [],
     acesoEm: [-99, -99, -99, -99, -99],
+    tacada: 0,
+    marcos: 0,
+    extras: 0,
+    missao: 0,
+    missaoConta: 0,
+    missaoResta: MISSOES[0].passos,
+    patente: 1,
+    cumpridas: 0,
   };
+}
+
+/** Conta os eventos do passo na missão da vez (só o que pontuou: a mesa travada não conta). */
+function contarMissao(k: Mesa) {
+  const m = MISSOES[k.missao];
+  let n = 0;
+  for (const e of k.eventos) {
+    if (e.tipo === m.evento || (m.id === 'toca' && e.tipo === 'multibola')) {
+      if ('pontos' in e && e.pontos <= 0) continue;
+      n++;
+    }
+  }
+  if (n === 0 || k.tilt) return;
+  k.missaoConta += n;
+  if (k.missaoConta >= m.meta) {
+    const pontos = marcar(k, PONTOS_DA_MISSAO * k.patente, 0);
+    k.eventos.push({ tipo: 'missao', missao: m.id, cumpriu: true, pontos, x: MEIO, y: 230 });
+    k.cumpridas++;
+    if (k.patente < PATENTE_MAXIMA) k.patente++;
+    proximaMissao(k);
+  }
+}
+
+function proximaMissao(k: Mesa) {
+  k.missao = (k.missao + 1) % MISSOES.length;
+  k.missaoConta = 0;
+  k.missaoResta = MISSOES[k.missao].passos;
 }
 
 /** A ponta da palheta (para o desenho e para a conta): `lado` −1 esquerda, 1 direita. */
@@ -353,6 +512,7 @@ export function pontaDaPalheta(lado: -1 | 1, estado: number): { x: number; y: nu
 
 function marcar(k: Mesa, pontos: number, bonus: number) {
   if (k.tilt) return 0;
+  k.tacada = 0;
   k.pontos += pontos;
   k.reserva += bonus;
   return pontos;
@@ -419,7 +579,7 @@ function colidirComParedes(k: Mesa, b: Bola) {
       } else if (!k.alvos.some(Boolean)) k.alvosVoltam = 90;
     }
   }
-  for (const c of CIRCULOS) {
+  for (const c of MESAS[k.mesa].circulos) {
     const dx = b.x - c.x;
     const dy = b.y - c.y;
     const d2 = dx * dx + dy * dy;
@@ -465,6 +625,7 @@ function colidirComPalheta(b: Bola, lado: -1 | 1, agora: number, antes: number) 
 
 function lancar(k: Mesa, b: Bola, carga: number) {
   b.naMola = false;
+  if (!b.auto) k.tacada = TACADA_PASSOS;
   b.vy = -(MOLA_MIN + carga * MOLA_POR_PASSO);
   b.vx = 0;
   k.eventos.push({ tipo: 'mola', forca: carga / MOLA_MAX_CARGA });
@@ -537,9 +698,31 @@ export function passo(k: Mesa, comando: number) {
   }
   if (k.tremor > 0) k.tremor--;
   if (k.salva > 0) k.salva--;
+  if (k.tacada > 0) k.tacada--;
+  // o prazo da missão só anda com bola em jogo (fora da mola)
+  if (k.bolas.some((b) => !b.naMola) && --k.missaoResta <= 0) {
+    k.eventos.push({ tipo: 'missao', missao: MISSOES[k.missao].id, cumpriu: false, pontos: 0, x: MEIO, y: 230 });
+    proximaMissao(k);
+  }
   if (k.alvosVoltam > 0 && --k.alvosVoltam === 0) k.alvos = [true, true, true];
 
   for (const b of k.bolas) {
+    if (b.trilho > 0) {
+      // no trilho da rampa: anda por ele, e sai no fim, caindo na primeira pista
+      b.trilho += TRILHO_POR_PASSO;
+      const g = MESAS[k.mesa];
+      const fim = g.trilhoAcc[g.trilhoAcc.length - 1];
+      const [x, y] = pontoDoTrilho(b.trilho - 1, g);
+      b.x = x;
+      b.y = y;
+      if (b.trilho - 1 >= fim) {
+        // sai com a sobra do lado de quem entrou (guardada em vx): a rampa não devolve a bola sempre igual
+        b.trilho = 0;
+        b.vx = b.vx < -120 ? -120 : b.vx > 120 ? 120 : b.vx;
+        b.vy = 80;
+      }
+      continue;
+    }
     if (b.orbita > 0) b.orbita--;
     // A BUSCA DA BOLA: presa num canto (entre um poste e a parede, em cima de um poste), parada 5 s com as palhetas em repouso,
     // a mesa a empurra sozinha, como as máquinas de verdade fazem
@@ -552,9 +735,10 @@ export function passo(k: Mesa, comando: number) {
     } else b.parada = 0;
     if (b.presa > 0 && --b.presa === 0) {
       // a toca devolve a bola para as palhetas
-      b.vx = 110;
+      const g = MESAS[k.mesa];
+      b.vx = 110 * g.tocaLado;
       b.vy = 60;
-      b.x = TOCA.x + 8;
+      b.x = g.toca.x + 8 * g.tocaLado;
     }
   }
 
@@ -564,7 +748,7 @@ export function passo(k: Mesa, comando: number) {
     k.esq = esq ? Math.min(POSICOES, k.esq + 1) : Math.max(0, k.esq - 1);
     k.dir = dir ? Math.min(POSICOES, k.dir + 1) : Math.max(0, k.dir - 1);
     for (const b of k.bolas) {
-      if (b.naMola || b.presa > 0) continue;
+      if (b.naMola || b.presa > 0 || b.trilho > 0) continue;
       const px = b.x;
       const py = b.y;
       b.vy += G * DT;
@@ -581,7 +765,25 @@ export function passo(k: Mesa, comando: number) {
       colidirComPalheta(b, 1, k.dir, dirAntes);
       // os sensores: as pistas do alto (descendo), a raia da órbita (subindo) e o alto da direita
       if (py < PISTA_Y && b.y >= PISTA_Y) {
+        // a tacada certeira: direto da mola para uma pista, sem tocar em mais nada
+        if (k.tacada > 0 && !k.tilt && b.x > PISTAS_X[0] - 12 && b.x < PISTAS_X[2] + 12) {
+          k.tacada = 0;
+          k.pontos += PONTOS_DA_TACADA;
+          k.eventos.push({ tipo: 'tacada', x: b.x, y: PISTA_Y, pontos: PONTOS_DA_TACADA });
+        }
         for (let n = 0; n < 3; n++) if (b.x > PISTAS_X[n] - 12 && b.x < PISTAS_X[n] + 12 && !k.pistas[n]) acenderPista(k, n, b);
+      }
+      // a rampa: a bola rápida que sobe pela boca vai para o trilho
+      const g = MESAS[k.mesa];
+      if (py > g.boca.y && b.y <= g.boca.y && b.x > g.boca.x0 && b.x < g.boca.x1 && b.vy < -VELOCIDADE_DA_BOCA && !k.tilt) {
+        b.trilho = 1;
+        b.x = g.trilho[0][0];
+        b.y = g.trilho[0][1];
+        // vx guarda o lado da entrada (metade), para a saída
+        b.vx = b.vx * 0.5;
+        b.vy = 0;
+        k.eventos.push({ tipo: 'rampa', x: g.trilho[0][0], y: g.trilho[0][1], pontos: marcar(k, PONTOS_DA_RAMPA, 150) });
+        continue;
       }
       if (py > ORBITA_Y && b.y <= ORBITA_Y && b.x < GUIA_DA_ORBITA_X) b.orbita = 120;
       if (b.orbita > 0 && b.x > 196 && b.y < 110) {
@@ -590,12 +792,13 @@ export function passo(k: Mesa, comando: number) {
         k.eventos.push({ tipo: 'orbita', x: b.x, y: b.y, pontos: marcar(k, jackpot ? 5000 : 1000, 200), jackpot });
       }
       // a toca: a bola que passa devagar por cima cai nela
-      const tx = b.x - TOCA.x;
-      const ty = b.y - TOCA.y;
+      const toca = g.toca;
+      const tx = b.x - toca.x;
+      const ty = b.y - toca.y;
       if (tx * tx + ty * ty < RAIO_DA_TOCA * RAIO_DA_TOCA && b.vx * b.vx + b.vy * b.vy < 300 * 300) {
         b.presa = TOCA_PRESA;
-        b.x = TOCA.x;
-        b.y = TOCA.y;
+        b.x = toca.x;
+        b.y = toca.y;
         b.vx = 0;
         b.vy = 0;
         if (k.tocaAcesa && !k.tilt) {
@@ -605,8 +808,8 @@ export function passo(k: Mesa, comando: number) {
             k.fila++;
             k.salva = Math.max(k.salva, SALVA_MULTIBOLA);
           }
-          k.eventos.push({ tipo: 'multibola', x: TOCA.x, y: TOCA.y, pontos: marcar(k, 2500, 500) });
-        } else k.eventos.push({ tipo: 'toca', x: TOCA.x, y: TOCA.y, pontos: marcar(k, 500, 100) });
+          k.eventos.push({ tipo: 'multibola', x: toca.x, y: toca.y, pontos: marcar(k, 2500, 500) });
+        } else k.eventos.push({ tipo: 'toca', x: toca.x, y: toca.y, pontos: marcar(k, 500, 100) });
       }
       // a bola que volta à raia da mola, fraca, para nela de novo
       if (b.x > RAIA_ESQ && b.y >= MOLA_Y - 0.5 && b.vy > -50) {
@@ -627,7 +830,7 @@ export function passo(k: Mesa, comando: number) {
       for (let j = i + 1; j < k.bolas.length; j++) {
         const a = k.bolas[i];
         const c = k.bolas[j];
-        if (a.naMola || c.naMola || a.presa || c.presa) continue;
+        if (a.naMola || c.naMola || a.presa || c.presa || a.trilho || c.trilho) continue;
         const dx = c.x - a.x;
         const dy = c.y - a.y;
         const d2 = dx * dx + dy * dy;
@@ -671,6 +874,11 @@ export function passo(k: Mesa, comando: number) {
       k.tilt = false;
       k.tremor = 0;
       k.multibola = false;
+      if (k.extras > 0) {
+        // a bola extra: a mesma bola de novo
+        k.extras--;
+        k.bola--;
+      }
       k.bola++;
       if (k.bola > BOLAS) {
         k.bola = BOLAS;
@@ -681,6 +889,13 @@ export function passo(k: Mesa, comando: number) {
         k.salvaPronta = true;
       }
     }
+  }
+  // A MISSÃO conta o que aconteceu no passo; e o marco de pontos dá a bola extra
+  if (!k.terminou) contarMissao(k);
+  while (k.marcos < MARCOS_DA_BOLA_EXTRA.length && k.pontos >= MARCOS_DA_BOLA_EXTRA[k.marcos]) {
+    k.marcos++;
+    k.extras++;
+    k.eventos.push({ tipo: 'extra' });
   }
   if (!k.terminou && k.passo >= k.limite) {
     k.terminou = true;

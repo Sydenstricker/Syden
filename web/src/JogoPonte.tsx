@@ -1,5 +1,5 @@
 import { forwardRef, useEffect, useRef, useState } from 'react';
-import { Check, Coins, Eraser, Hammer, Play, Undo2 } from 'lucide-react';
+import { Check, Coins, Eraser, Hammer, Play, Star, Undo2 } from 'lucide-react';
 import { ComandosDoJogo } from './ComandosDosJogos';
 import { chave, useT } from './i18n';
 import { comandoDaPausa, TelaDePausa, usePausaComEsc } from './pausaDosJogos';
@@ -19,6 +19,7 @@ import {
   PECAS,
   PISTA,
   pontePronta,
+  selosDe,
   semSoltas,
   type Fase,
   type Sim,
@@ -82,7 +83,18 @@ declare global {
   }
 }
 
-const NOMES_DAS_PECAS = [chave('Pista'), chave('Madeira'), chave('Aço')];
+const NOMES_DAS_PECAS = [chave('Pista'), chave('Madeira'), chave('Aço'), chave('Cabo')];
+
+/** OS SELOS (19/11/2026): três estrelas, acesas pelo resultado contra o orçamento da fase (selosDe). Sem texto. */
+function Selos({ n }: { n: number }) {
+  return (
+    <span className="ponte-selos" aria-label={`${n}/3`} role="img">
+      {[1, 2, 3].map((k) => (
+        <Star key={k} size={16} aria-hidden="true" className={k <= n ? 'aceso' : undefined} />
+      ))}
+    </span>
+  );
+}
 
 export function JogoPonte({ estado, eu, jogador, agir }: Props) {
   const fase = faseDe(estado.faseDaPonte);
@@ -296,7 +308,8 @@ function Montagem({
       contandoRef.current = decorrido < contagemMs;
       const restante = Math.max(0, total - Math.max(decorrido, contagemMs));
       setRelogio((r) => (r.contagem === contagem && Math.ceil(r.restante / 1000) === Math.ceil(restante / 1000) ? r : { contagem, restante }));
-      if (decorrido >= total) {
+      // SEM PRESSA NO SOLO (19/11/2026): lá a montagem não tem relógio; só a sala manda sozinha no fim dos 30 s
+      if (decorrido >= total && !solo) {
         clearInterval(id);
         mandar();
       }
@@ -539,7 +552,7 @@ function Montagem({
       }
       if (parado()) return;
       const i = io.current;
-      if (k === '1' || k === '2' || k === '3') {
+      if (k === '1' || k === '2' || k === '3' || k === '4') {
         setTipo(Number(k) - 1);
         setApagar(false);
         return;
@@ -610,9 +623,10 @@ function Montagem({
           onPointerLeave={() => (io.current.mouse = null)}
         />
         <div className="ponte-painel" aria-hidden="true">
-          <span className={`ponte-relogio${seg <= 5 ? ' acabando' : ''}`}>{`0:${String(seg).padStart(2, '0')}`}</span>
-          <span className="ponte-custo">
+          {!solo && <span className={`ponte-relogio${seg <= 5 ? ' acabando' : ''}`}>{`0:${String(seg).padStart(2, '0')}`}</span>}
+          <span className={`ponte-custo${total > fase.orcamento ? ' estourou' : ''}`}>
             <Coins size={15} aria-hidden="true" /> {total}
+            <small className="ponte-orcamento">/ {fase.orcamento}</small>
           </span>
           {resultadoDoTeste && <ResultadoDaSimulacao {...resultadoDoTeste} />}
         </div>
@@ -783,6 +797,7 @@ function Resultados({ estado, fase, eu, minhas, fim }: { estado: EstadoPonte; fa
         <div className="ponte-painel">
           {fim && linhas.length > 1 && nomeDeQuem && <span className="ponte-de-quem minijogo-nome">{nomeDeQuem}</span>}
           {estado.meu && quem === eu && <ResultadoDaSimulacao {...estado.meu} />}
+          {estado.meu && quem === eu && estado.meu.passou && <Selos n={selosDe(fase, estado.meu)} />}
         </div>
       </div>
       {estado.recorde &&

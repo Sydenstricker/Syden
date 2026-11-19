@@ -12,6 +12,9 @@ export * from './comando/conta.js';
 const servicos: NonNullable<OpcoesDoComando['servicos']> = {
   avatarDe: (userId) => db.avatarDoJogo(userId),
   guardarTrofeu: (t) => db.guardarTrofeu(t),
+  // o recorde do Solo: o tempo da fase vencida, na tabela comum; a variante é a fase (ou a campanha)
+  recordeDe: (userId, variante) => db.recordeDoSolo(userId, 'comando', variante)?.valor ?? null,
+  guardarRecorde: (userId, variante, ms, extra) => db.guardarRecordeDoSolo(userId, 'comando', variante, ms, true, extra),
 };
 
 /** Com o banco (o avatar e o troféu); as outras opções, trocáveis no teste. */

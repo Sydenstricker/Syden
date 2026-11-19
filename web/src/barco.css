@@ -275,3 +275,56 @@
 .barco-classificacao .barco-quem {
   text-align: left;
 }
+
+/* O Solo contra os barcos do computador (19/11/2026): a copa, a dificuldade e a classificação de todos os barcos. */
+.barco-copa {
+  width: 72px;
+  height: 72px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  background: #1e3440;
+  color: #ffc46a;
+}
+
+.barco-dificuldade {
+  margin: 0;
+  justify-content: center;
+}
+
+.barco-classificacao-solo {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: min(320px, 90%);
+  font-size: 0.85rem;
+}
+
+.barco-classificacao-solo li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 2px 10px;
+  border-radius: 6px;
+  background: rgba(127, 127, 127, 0.1);
+}
+
+.barco-classificacao-solo li.eu {
+  background: rgba(255, 196, 106, 0.28);
+}
+
+.barco-classificacao-solo .barco-quem {
+  flex: 1;
+  text-align: left;
+}
+
+.barco-classificacao-solo .barco-posicao,
+.barco-pontos {
+  min-width: 1.6em;
+  text-align: center;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}

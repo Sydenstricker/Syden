@@ -2,13 +2,13 @@ import { ComandosDoJogo } from './ComandosDosJogos';
 import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { tempoLegivel } from './corrida/fisica';
-import { useT } from './i18n';
+import { chave, useT } from './i18n';
 import { comandoDaPausa, TelaDePausa, usePausaComEsc } from './pausaDosJogos';
 import type { Agir } from './Minijogo';
 import type { Partida } from './minijogos';
 import { H, W } from './plataforma/desenho';
 import { guardarPosicaoDoRival, type LinhaDaOrdem, type PosicaoDoRival, type Rival } from './plataforma/laco';
-import { Bloco, COLUNAS, TORRES, torrePorId, type Torre } from './torre/fases';
+import { Bloco, COLUNAS, MEDALHAS_DA_TORRE, medalhaDaTorre, TEMPO_DO_PILOTO, TORRES, torrePorId, type Torre } from './torre/fases';
 import type { Comandos } from './torre/fisica';
 import { rodarTorre } from './torre/laco';
 import { nomeDaTorre } from './torre/nomes';
@@ -30,13 +30,34 @@ export interface EstadoTorre {
   pista: string;
   partidaId: string;
   // o Solo
-  recordes?: { userId: number; nome: string; avatar: number | string | null; tempoMs: number }[];
+  recordes?: {
+    userId: number;
+    nome: string;
+    avatar: number | string | null;
+    tempoMs: number;
+  }[];
   meuAvatar?: number | string | null;
-  fantasmas?: { userId: number; nome: string; avatar: number | string | null; tempoMs: number; amostras: number[] }[];
+  fantasmas?: {
+    userId: number;
+    nome: string;
+    avatar: number | string | null;
+    tempoMs: number;
+    amostras: number[];
+  }[];
   rodada?: number;
-  resultado?: { tempoMs: number; recorde: boolean; anterior: number | null } | null;
+  resultado?: {
+    tempoMs: number;
+    recorde: boolean;
+    anterior: number | null;
+  } | null;
   // a sala
-  pilotos?: { userId: number; username: string; tempoMs: number | null; posicao: number | null; avatar: number | string | null }[];
+  pilotos?: {
+    userId: number;
+    username: string;
+    tempoMs: number | null;
+    posicao: number | null;
+    avatar: number | string | null;
+  }[];
   prazo?: boolean;
 }
 
@@ -48,11 +69,17 @@ const menosMovimento = () => window.matchMedia?.('(prefers-reduced-motion: reduc
 
 /** O TECLADO E O TOQUE (os do Pulo do coelho): setas (ou A e D) andam, Espaço (ou seta para cima, W) pula. */
 function useControles(ativo: boolean) {
-  const comandos = useRef<Comandos>({ esquerda: false, direita: false, pula: false });
+  const comandos = useRef<Comandos>({
+    esquerda: false,
+    direita: false,
+    pula: false,
+  });
   const teclas = useRef({ esquerda: false, direita: false, pula: false });
   const toque = useRef({ esquerda: false, direita: false, pula: false });
   const juntar = () => {
-    const c = comandos.current, a = teclas.current, b = toque.current;
+    const c = comandos.current,
+      a = teclas.current,
+      b = toque.current;
     c.esquerda = a.esquerda || b.esquerda;
     c.direita = a.direita || b.direita;
     c.pula = a.pula || b.pula;
@@ -75,8 +102,16 @@ function useControles(ativo: boolean) {
     const desce = (e: KeyboardEvent) => tecla(e, true);
     const sobe = (e: KeyboardEvent) => tecla(e, false);
     const soltarTudo = () => {
-      Object.assign(teclas.current, { esquerda: false, direita: false, pula: false });
-      Object.assign(toque.current, { esquerda: false, direita: false, pula: false });
+      Object.assign(teclas.current, {
+        esquerda: false,
+        direita: false,
+        pula: false,
+      });
+      Object.assign(toque.current, {
+        esquerda: false,
+        direita: false,
+        pula: false,
+      });
       juntar();
     };
     const escondeu = () => document.hidden && soltarTudo();
@@ -160,7 +195,13 @@ function MiniaturaDaTorre({ torre }: { torre: Torre }) {
   useEffect(() => {
     const ctx = ref.current?.getContext('2d');
     if (!ctx) return;
-    const fundo: Record<string, string> = { celeiro: '#9a4a3a', paiol: '#7a5a3e', silo: '#3e4458' };
+    const fundo: Record<string, string> = {
+      celeiro: '#9a4a3a',
+      paiol: '#7a5a3e',
+      silo: '#3e4458',
+      moinho: '#6a7a6e',
+      pombal: '#8a5a6a',
+    };
     ctx.fillStyle = fundo[torre.tema];
     ctx.fillRect(0, 0, COLUNAS * 2, alto);
     for (let l = 0; l < torre.linhas; l += 2) {
@@ -175,6 +216,37 @@ function MiniaturaDaTorre({ torre }: { torre: Torre }) {
     ctx.fillRect(COLUNAS - 1, Math.max(0, torre.chegada / 32 - 4), 2, 4);
   }, [torre, alto]);
   return <canvas ref={ref} width={COLUNAS * 2} height={alto} aria-hidden="true" className="torre-miniatura" />;
+}
+
+const FIGURA_DA_MEDALHA = ['🥇', '🥈', '🥉'];
+const NOME_DA_MEDALHA = [chave('Ouro'), chave('Prata'), chave('Bronze')];
+
+/**
+ * AS MEDALHAS DA TORRE (19/11/2026): ouro, prata e bronze pelo tempo, sobre o do piloto automático (torre/fases.ts). Na
+ * escolha, os três tempos a bater; no fim, a que a subida ganhou. Só tela: o servidor guarda o tempo, não a medalha.
+ */
+function MedalhasDaTorre({ torre, tempoMs }: { torre: string; tempoMs?: number }) {
+  const t = useT();
+  const base = TEMPO_DO_PILOTO[torre];
+  if (!base) return null;
+  if (tempoMs !== undefined) {
+    const m = medalhaDaTorre(torre, Math.round((tempoMs * 60) / 1000));
+    if (m === null) return null;
+    return (
+      <span className="torre-medalha" title={t(NOME_DA_MEDALHA[m])}>
+        {FIGURA_DA_MEDALHA[m]}
+      </span>
+    );
+  }
+  return (
+    <span className="torre-medalhas">
+      {MEDALHAS_DA_TORRE.map((fator, i) => (
+        <span key={i} title={t(NOME_DA_MEDALHA[i])}>
+          {FIGURA_DA_MEDALHA[i]} {tempoLegivel(Math.round((Math.round(base * fator) * 1000) / 60))}
+        </span>
+      ))}
+    </span>
+  );
 }
 
 /** A ESCOLHA DA TORRE na sala (antes do convite). */
@@ -201,7 +273,15 @@ export function EscolhaDaTorre({ aoEscolher, aoVoltar }: { aoEscolher: (torre: s
   );
 }
 
-export function JogoTorre(props: { estado: EstadoTorre & Partida; eu: number; jogador: boolean; restante: number; agir: Agir; socket: Socket | null; channelId: number }) {
+export function JogoTorre(props: {
+  estado: EstadoTorre & Partida;
+  eu: number;
+  jogador: boolean;
+  restante: number;
+  agir: Agir;
+  socket: Socket | null;
+  channelId: number;
+}) {
   return props.estado.solo ? <TorreSolo {...props} /> : <TorreNaSala {...props} />;
 }
 
@@ -261,7 +341,12 @@ function TorreSolo({ estado, eu, agir }: { estado: EstadoTorre & Partida; eu: nu
           ))}
         </ul>
         <div className="corrida-pista-nome">
-          {meu && <span>{t('Seu recorde: {tempo}', { tempo: tempoLegivel(meu.tempoMs) })}</span>}
+          {meu && (
+            <span>
+              {t('Seu recorde: {tempo}', { tempo: tempoLegivel(meu.tempoMs) })} <MedalhasDaTorre torre={estado.pista} tempoMs={meu.tempoMs} />
+            </span>
+          )}
+          <MedalhasDaTorre torre={estado.pista} />
           <Comandos solo />
         </div>
         <fieldset className="corrida-fantasmas">
@@ -271,7 +356,12 @@ function TorreSolo({ estado, eu, agir }: { estado: EstadoTorre & Partida; eu: nu
               {recordes.map((r) => (
                 <li key={r.userId}>
                   <label>
-                    <input type="checkbox" checked={marcados.has(r.userId)} disabled={!marcados.has(r.userId) && marcados.size >= MAX_FANTASMAS} onChange={() => alternar(r.userId)} />
+                    <input
+                      type="checkbox"
+                      checked={marcados.has(r.userId)}
+                      disabled={!marcados.has(r.userId) && marcados.size >= MAX_FANTASMAS}
+                      onChange={() => alternar(r.userId)}
+                    />
                     <span className="corrida-quem">{r.nome}</span>
                     <span className="corrida-tempo">{tempoLegivel(r.tempoMs)}</span>
                   </label>
@@ -300,6 +390,7 @@ function TorreSolo({ estado, eu, agir }: { estado: EstadoTorre & Partida; eu: nu
           <div className="corrida-fim">
             {r.recorde && <strong className="corrida-recorde">{t('Novo recorde!')}</strong>}
             <span className="corrida-relogio grande">{tempoLegivel(r.tempoMs)}</span>
+            <MedalhasDaTorre torre={estado.pista} tempoMs={r.tempoMs} />
             {quedas > 0 && <span aria-hidden="true">✖ {quedas}</span>}
             {!r.recorde && r.anterior !== null && <span className="settings-hint">{t('Seu recorde: {tempo}', { tempo: tempoLegivel(r.anterior) })}</span>}
             <div className="minijogo-acoes">
@@ -347,10 +438,13 @@ function SubidaSolo({
       comandos: controles.comandos.current,
       torre: def,
       piloto: true,
-        pausa,
+      pausa,
       eu: 0,
       meuAvatar: estado.meuAvatar ?? null,
-      fantasmas: (estado.fantasmas ?? []).map((f) => ({ amostras: f.amostras, avatar: f.avatar })),
+      fantasmas: (estado.fantasmas ?? []).map((f) => ({
+        amostras: f.amostras,
+        avatar: f.avatar,
+      })),
       contagem: CONTAGEM,
       calmo: menosMovimento(),
       aoPlacar: (p) => {
@@ -371,7 +465,7 @@ function SubidaSolo({
       <canvas ref={canvas} width={W} height={H} />
       {!acabou && <Placar placar={placar} />}
       {!acabou && <BotoesDeToque controles={controles} />}
-          {!acabou && pausado && <TelaDePausa aoContinuar={continuar} icone={false} />}
+      {!acabou && pausado && <TelaDePausa aoContinuar={continuar} icone={false} />}
     </>
   );
 }
@@ -409,11 +503,17 @@ function TorreNaSala({
   const fim = estado.fase === 'fim' || estado.terminada;
   const pilotos = estado.pilotos ?? [];
   const seguir = useRef<{ id: number | null }>({ id: null });
-  const [assistindo, setAssistindo] = useState<{ alvo: { id: number; nome: string } | null; subindo: { id: number; nome: string }[] }>({ alvo: null, subindo: [] });
+  const [assistindo, setAssistindo] = useState<{
+    alvo: { id: number; nome: string } | null;
+    subindo: { id: number; nome: string }[];
+  }>({ alvo: null, subindo: [] });
   const trocarDeAmigo = (passo: number) => {
     const lista = assistindo.subindo;
     if (lista.length < 2) return;
-    const i = Math.max(0, lista.findIndex((r) => r.id === assistindo.alvo?.id));
+    const i = Math.max(
+      0,
+      lista.findIndex((r) => r.id === assistindo.alvo?.id),
+    );
     seguir.current.id = lista[(i + passo + lista.length) % lista.length].id;
   };
   // aberta no meio da subida (a página recarregada): esta subida a pessoa ASSISTE (a regra do Pulo na sala)
@@ -431,7 +531,12 @@ function TorreNaSala({
     if (r) {
       r.nome = p.username;
       r.avatar = p.avatar;
-    } else rivais.current.set(p.userId, { nome: p.username, posicoes: [], avatar: p.avatar });
+    } else
+      rivais.current.set(p.userId, {
+        nome: p.username,
+        posicoes: [],
+        avatar: p.avatar,
+      });
   }
 
   // AS POSIÇÕES DOS OUTROS chegam pelo socket, já com quem mandou (o servidor carimba)

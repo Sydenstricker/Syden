@@ -1,0 +1,258 @@
+/* Os jogos de palavra e de raciocínio da sala (Sudoku, Stop, Palavra secreta, Desenha e adivinha, quizzes): o que entrou em
+   19/11/2026 com a auditoria dos mini-games. O resto do estilo deles continua em styles.css. */
+
+/* ---- Sudoku: o lápis, o destaque e as ferramentas ---- */
+.sudoku-casa.vizinha {
+  background: color-mix(in srgb, var(--accent) 7%, var(--bg-darkest));
+}
+
+.sudoku-casa.vizinha.mesmo {
+  background: color-mix(in srgb, var(--accent) 14%, var(--bg-darkest));
+}
+
+.sudoku-notas {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  width: 100%;
+  height: 100%;
+  font-size: clamp(7px, 1.1vh, 10px);
+  font-weight: 500;
+  line-height: 1;
+  color: var(--text-muted);
+}
+
+.sudoku-notas span {
+  display: grid;
+  place-items: center;
+}
+
+.sudoku-notas span.mesmo {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.sudoku-numeros button.lapis {
+  font-size: 0.8em;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.sudoku-ferramentas {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 32px;
+}
+
+.sudoku-ferramentas .icon-plain.ligado {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  border-radius: 6px;
+}
+
+.sudoku-penalidade {
+  color: #ff6b6b;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.minijogo-recorde {
+  margin: 4px 0 0;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: calc(13px * var(--escala-do-texto, 1));
+}
+
+.minijogo-recorde.novo {
+  color: var(--text-strong);
+  font-weight: 700;
+}
+
+/* ---- A largada dos jogos de palavra (as escolhas antes do convite) ---- */
+.escolha-palavras {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.escolha-palavras fieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.escolha-palavras legend {
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: var(--text-strong);
+}
+
+.escolha-palavras .opcoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.escolha-palavras .opcoes button {
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg-darkest);
+  color: var(--text-normal, var(--text-strong));
+  font: inherit;
+  font-size: calc(13px * var(--escala-do-texto, 1));
+  cursor: pointer;
+}
+
+.escolha-palavras .opcoes button[aria-pressed='true'] {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 24%, var(--bg-darkest));
+  color: var(--text-strong);
+}
+
+.escolha-palavras .opcoes.letras button {
+  min-width: 2.2em;
+  padding: 4px 6px;
+}
+
+.escolha-palavras .opcoes.letras button[aria-pressed='true'] {
+  text-decoration: line-through;
+  opacity: 0.6;
+  border-color: var(--border);
+  background: var(--bg-darkest);
+}
+
+.escolha-palavras textarea,
+.escolha-palavras input[type='text'] {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg-darkest);
+  color: var(--text-strong);
+  font: inherit;
+  resize: vertical;
+}
+
+.escolha-palavras .contagem {
+  color: var(--text-muted);
+  font-size: calc(12px * var(--escala-do-texto, 1));
+}
+
+.escolha-palavras label.marcar {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+/* ---- Palavra secreta: o dueto e o quarteto ---- */
+.palavra-quadros {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.palavra-quadros.varias .palavra-quadro {
+  gap: 3px;
+}
+
+.palavra-quadros.varias .palavra-linha {
+  grid-template-columns: repeat(5, 28px);
+  gap: 3px;
+}
+
+.palavra-quadros.varias .palavra-casa {
+  height: 28px;
+  font-size: 15px;
+  border-width: 1px;
+}
+
+.palavra-quadro.resolvido {
+  opacity: 0.75;
+}
+
+.palavra-minis {
+  display: flex;
+  gap: 4px;
+}
+
+.palavra-sequencia {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: calc(13px * var(--escala-do-texto, 1));
+}
+
+/* ---- Desenha e adivinha: o balde, o pular e a galeria ---- */
+.desenho-quadro.balde {
+  cursor: cell;
+}
+
+.desenho-pular {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: calc(12px * var(--escala-do-texto, 1));
+  color: var(--text-muted);
+}
+
+.desenho-dificuldade {
+  display: inline-flex;
+  gap: 1px;
+  margin-inline-start: 4px;
+  color: var(--accent);
+  font-size: 0.8em;
+}
+
+.desenho-galeria {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+}
+
+.desenho-galeria li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: calc(12px * var(--escala-do-texto, 1));
+}
+
+.desenho-galeria img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: #fff;
+}
+
+.desenho-galeria strong {
+  color: var(--text-strong);
+}
+
+/* ---- Quiz: as pistas ---- */
+.quiz-pistas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+
+.quiz-pista {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 16%, var(--bg-darkest));
+  color: var(--text-strong);
+  font-size: calc(13px * var(--escala-do-texto, 1));
+}

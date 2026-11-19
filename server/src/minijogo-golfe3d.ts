@@ -1,4 +1,11 @@
 /**
+ * OS PERCURSOS, O RECORDE E AS PÁS (19/11/2026, a auditoria dos mini-games): quem começa escolhe o percurso do kit (os oito de
+ * sempre) ou o do parque (nove, PERCURSOS_3D; sem escolha em 20 s, o do kit). No Solo, o total de tacadas que ESTE servidor
+ * simulou vira o recorde da pessoa naquele percurso (a tabela comum, solo_recordes, menos é melhor), só com todos os buracos
+ * acertados. As pás do moinho giram pelo passo e fecham a passagem (golfe3d-fisica.ts): como o passo da tacada tem a janela de
+ * 0,8 s, quem mexe no passo pelo console escolhe o momento da pá, entre amigos.
+ */
+/**
  * O MINIGOLFE 3D (05/11/2026): oito buracos montados com as peças do Minigolf Kit da Kenney (CC0), no site em 3D
  * (web/src/JogoGolfe3D.tsx). É um jogo SEPARADO do Minigolfe da toca (minijogo-golfe.ts), de propósito: os dois ficam na
  * estante para a turma dizer qual prefere. Só a mecânica do minigolfe; nada de nome, arte ou som de ninguém.
@@ -18,7 +25,7 @@
  * 'golfe3d', os pontos = o total de tacadas: MENOR é melhor). Só quem acertou algum buraco. No Solo, sem troféu.
  */
 import * as db from './db.js';
-import { BURACOS, TACADAS_MAX, acabouOBuraco, bater, montar, novaBola, pontosDoBuraco, rolarAteParar, tacadaInvalida, type Bola } from './golfe3d-fisica.js';
+import { ITENS_DA_BOLA, PERCURSOS_3D, TACADAS_MAX, percursoValido, type ItemDaBola, type Percurso3D, acabouOBuraco, bater, montar, novaBola, pontosDoBuraco, rolarAteParar, tacadaInvalida, type Bola } from './golfe3d-fisica.js';
 import type { Definicao } from './minijogo-motor.js';
 
 export const PREPARO_MS = 3000;
@@ -29,6 +36,8 @@ export const FOLGA_FUTURO_MS = 400;
 export const ATRASO_MAX_MS = 800;
 export const INTERVALO_MIN_MS = 150;
 export const DEPOIS_DE_PARAR_MS = 900;
+/** Quem começa tem isto para escolher o percurso; depois, o do kit. */
+export const ESCOLHA_MS = 20_000;
 const TEMPO_REAL_MS = 50;
 
 const msDoPasso = (passo: number) => (passo * 1000) / 60;
@@ -46,18 +55,30 @@ export const golfe3d: Definicao = criarGolfe3D();
 export function criarGolfe3D({ agora = Date.now }: { agora?: () => number } = {}): Definicao {
   return {
     minimo: 2,
-    comecar(ctx, { naSala }) {
+    comecar(ctx, { naSala, criadaPor, corpo }) {
       const inscritos = [...naSala];
       const solo = inscritos.length === 1;
+      const pedido = percursoValido(corpo.percurso);
+      let percurso: Percurso3D = pedido ?? 'kit';
+      let lista = PERCURSOS_3D[percurso];
+      let escolhendo = pedido === null;
+      let recorde: { antes: number | null; novo: boolean } | null = null;
+      /**
+       * OS ITENS DA PRÓPRIA BOLA (19/11/2026), só na sala: um de cada por pessoa e por partida. O servidor confere que a pessoa
+       * ainda o tem, gasta, e simula a tacada com ele (golfe3d-fisica.ts). No Solo, nenhum: o recorde é da tacada limpa.
+       */
+      const itens = new Map<number, Set<ItemDaBola>>(inscritos.map((id) => [id, new Set(solo ? [] : ITENS_DA_BOLA)]));
+      /** Quantos buracos cada um acertou (o recorde do Solo pede todos). */
+      const acertos = new Map<number, number>();
       const duracao = solo ? BURACO_SOLO_MS : BURACO_MS;
       const evento = `golfe3d-${ctx.comunidade ?? 0}-${agora()}`;
       // o coelho de cada um, com as cores do avatar pronto (lido uma vez, na largada)
       const avatares = new Map(inscritos.map((id) => [id, db.avatarDoJogo(id)]));
       let indice = 0;
-      let fase: 'preparando' | 'jogando' | 'placar' | 'fim' = 'preparando';
+      let fase: 'escolhendo' | 'preparando' | 'jogando' | 'placar' | 'fim' = escolhendo ? 'escolhendo' : 'preparando';
       let inicio = 0;
       let fechando = false;
-      let bolas = new Map<number, Bola>();
+      let bolas = new Map<number, Bola>(inscritos.map((id) => [id, novaBola(lista[0])]));
       const ultimaTacada = new Map<number, number>();
       const ultimoTempoReal = new Map<number, number>();
       const pontos = new Map<number, number>(inscritos.map((id) => [id, 0]));
@@ -73,7 +94,7 @@ export function criarGolfe3D({ agora = Date.now }: { agora?: () => number } = {}
       const preparar = () => {
         fase = 'preparando';
         fechando = false;
-        bolas = new Map(inscritos.map((id) => [id, novaBola(BURACOS[indice])]));
+        bolas = new Map(inscritos.map((id) => [id, novaBola(lista[indice])]));
         ultimaTacada.clear();
         ctx.agendar(PREPARO_MS, jogar);
         ctx.avisar();
@@ -108,9 +129,12 @@ export function criarGolfe3D({ agora = Date.now }: { agora?: () => number } = {}
           const p = pontosDoBuraco(bola);
           doBuraco.set(id, p);
           pontos.set(id, (pontos.get(id) ?? 0) + p);
-          if (bola.dentro) acertaram.add(id);
+          if (bola.dentro) {
+            acertaram.add(id);
+            acertos.set(id, (acertos.get(id) ?? 0) + 1);
+          }
         }
-        if (indice >= BURACOS.length - 1) return terminar();
+        if (indice >= lista.length - 1) return terminar();
         fase = 'placar';
         ctx.agendar(PLACAR_ENTRE_MS, () => {
           indice++;
@@ -132,6 +156,11 @@ export function criarGolfe3D({ agora = Date.now }: { agora?: () => number } = {}
       const terminar = () => {
         fase = 'fim';
         const turma = ficaram ?? new Set<number>();
+        if (solo) {
+          const quem = inscritos[0];
+          if (acertos.get(quem) === lista.length && turma.has(quem)) recorde = db.guardarRecordeDoSolo(quem, 'golfe3d', percurso, pontos.get(quem) ?? 0, true);
+          else recorde = { antes: db.recordeDoSolo(quem, 'golfe3d', percurso)?.valor ?? null, novo: false };
+        }
         if (turma.size >= 2) {
           for (const l of placar()) {
             const posicao = l.posicao;
@@ -157,7 +186,15 @@ export function criarGolfe3D({ agora = Date.now }: { agora?: () => number } = {}
         if (aqui.length === 0 || aqui.every((id) => acabouOBuraco(bolas.get(id)!))) fechar();
       };
 
-      preparar();
+      const escolher = (p: Percurso3D) => {
+        if (!escolhendo) return;
+        escolhendo = false;
+        percurso = p;
+        lista = PERCURSOS_3D[p];
+        preparar();
+      };
+      if (escolhendo) ctx.agendar(ESCOLHA_MS, () => escolher('kit'));
+      else preparar();
 
       const numero = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
 
@@ -167,8 +204,16 @@ export function criarGolfe3D({ agora = Date.now }: { agora?: () => number } = {}
           return {
             fase,
             rodada: indice + 1,
-            rodadas: BURACOS.length,
+            rodadas: lista.length,
             buraco: indice,
+            percurso,
+            par: lista[indice].par,
+            escolhe: solo ? inscritos[0] : criadaPor,
+            recordes:
+              solo && fase === 'escolhendo' && quem === inscritos[0]
+                ? Object.fromEntries(db.recordesDoSolo(quem, 'golfe3d').map((r) => [r.variante, r.valor]))
+                : null,
+            recorde,
             duracaoMs: duracao,
             decorridoMs: fase === 'jogando' ? agora() - inicio : null,
             fechando,
@@ -178,11 +223,21 @@ export function criarGolfe3D({ agora = Date.now }: { agora?: () => number } = {}
               return { userId, username: ctx.nome(userId), avatar: avatares.get(userId) ?? null, x: b.x, z: b.z, tacadas: b.tacadas, dentro: b.dentro, acabou: acabouOBuraco(b) };
             }),
             meu: meu ? { ...meu } : null,
+            /** Os itens que eu ainda tenho (só na sala). */
+            meusItens: [...(itens.get(quem) ?? [])],
             placar: placar(),
             partidaId: evento,
           };
         },
         acao(quem, corpo) {
+          if (corpo.tipo === 'percurso') {
+            if (fase !== 'escolhendo') return 'Esta rodada já acabou.';
+            if (quem !== criadaPor && !(solo && inscritos.includes(quem))) return 'Você está assistindo esta partida.';
+            const p = percursoValido(corpo.percurso);
+            if (!p) return 'Ação desconhecida.';
+            escolher(p);
+            return null;
+          }
           if (corpo.tipo !== 'tacada') return 'Ação desconhecida.';
           if (!inscritos.includes(quem)) return 'Você está assistindo esta partida.';
           if (fase !== 'jogando' || fechando) return 'Esta rodada já acabou.';
@@ -191,7 +246,9 @@ export function criarGolfe3D({ agora = Date.now }: { agora?: () => number } = {}
           // a parte para o alto (a tacada por cima) é opcional: sem ela, rasteira
           const dy = corpo.dy === undefined ? 0 : corpo.dy;
           if (!numero(passo) || !numero(dx) || !numero(dz) || !numero(dy)) return 'Tacada inválida.';
-          const tacada = { passo, dx, dz, dy };
+          const item = corpo.item === undefined ? undefined : (corpo.item as ItemDaBola);
+          if (item !== undefined && !itens.get(quem)!.has(item)) return 'Tacada inválida.';
+          const tacada = { passo, dx, dz, dy, ...(item ? { item } : {}) };
           if (tacadaInvalida(bola, tacada)) return 'Tacada inválida.';
           const agoraMs = agora();
           const passou = agoraMs - inicio;
@@ -199,8 +256,9 @@ export function criarGolfe3D({ agora = Date.now }: { agora?: () => number } = {}
           if (quando > passou + FOLGA_FUTURO_MS || quando < passou - ATRASO_MAX_MS) return 'Tacada inválida.';
           if (agoraMs - (ultimaTacada.get(quem) ?? -Infinity) < INTERVALO_MIN_MS) return 'Tacada inválida.';
           ultimaTacada.set(quem, agoraMs);
+          if (item) itens.get(quem)!.delete(item);
           bater(bola, tacada);
-          rolarAteParar(BURACOS[indice], bola);
+          rolarAteParar(lista[indice], bola);
           conferir();
           ctx.avisar();
           return null;
@@ -209,7 +267,7 @@ export function criarGolfe3D({ agora = Date.now }: { agora?: () => number } = {}
         tempoReal(quem, dados) {
           if (fase !== 'jogando' || !bolas.has(quem) || !dados || typeof dados !== 'object') return null;
           const { x, z } = dados as Record<string, unknown>;
-          const [x0, z0, x1, z1] = montar(BURACOS[indice]).limites;
+          const [x0, z0, x1, z1] = montar(lista[indice]).limites;
           if (!numero(x) || !numero(z) || x < x0 || z < z0 || x > x1 || z > z1) return null;
           const agoraMs = agora();
           if (agoraMs - (ultimoTempoReal.get(quem) ?? -Infinity) < TEMPO_REAL_MS) return null;

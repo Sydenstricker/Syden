@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useT } from './i18n';
+import { ControlesDaMesa, ComHistorico, type EstadoDaMesa } from './MesaComum';
 import { Relogio } from './Minijogo';
 import { Mar3D } from './naval3d/Mar3D';
 import { temWebGL } from './temWebGL';
@@ -24,7 +25,12 @@ export interface EstadoNaval {
   jogadores: { userId: number; username: string }[];
   vez: 0 | 1;
   vencedor: 0 | 1 | 'empate' | null;
-  motivo: 'jogo' | 'tempo' | 'desistiu' | null;
+  motivo: 'jogo' | 'tempo' | 'desistiu' | 'acordo' | null;
+  /** O salvo (19/11/2026): cada vez é uma rajada, com `tirosDaRajada[lado]` tiros. */
+  salvo?: boolean;
+  tirosDaRajada?: [number, number] | null;
+  /** A pontaria de cada lado: os tiros que deu e os que acertaram. */
+  pontaria?: { tiros: number; acertos: number }[];
   mares: [MarNaval, MarNaval];
   /** Os tamanhos dos navios que ainda boiam, por lado. */
   restam: [number[], number[]];
@@ -122,6 +128,15 @@ export function JogoNaval({
   }
 
   // Quem joga vê primeiro o mar onde atira; quem assiste, os dois na ordem da mesa.
+  // o salvo: as casas da rajada escolhidas antes de atirar (somem quando a vez muda)
+  const [mira, setMira] = useState<number[]>([]);
+  const tirosDaVez = estado.salvo && sentado ? (estado.tirosDaRajada?.[meuLado] ?? 0) : 0;
+  const vezChave = `${estado.vez}:${(estado as unknown as EstadoDaMesa).historico?.length ?? 0}:${estado.fase}`;
+  useEffect(() => setMira([]), [vezChave]);
+  const mirar = (casa: number) => {
+    if (!estado.salvo) return agir({ tipo: 'jogada', casa });
+    setMira((m) => (m.includes(casa) ? m.filter((c) => c !== casa) : m.length < tirosDaVez ? [...m, casa] : m));
+  };
   const ordem: (0 | 1)[] = sentado ? [meuLado === 0 ? 1 : 0, meuLado as 0 | 1] : [0, 1];
 
   return (
@@ -156,6 +171,7 @@ export function JogoNaval({
         </div>
       )}
 
+      <ComHistorico estado={estado as unknown as EstadoDaMesa}>
       {montando && sentado ? (
         <MontagemDaFrota
           frotaVista={frota}
@@ -180,26 +196,51 @@ export function JogoNaval({
                 daVez={jogando && estado.vez !== lado}
                 podeAtirar={alvo && minhaVez}
                 ultima={ultimo && ultimo.lado !== lado ? ultimo.casa : null}
-                atirar={(casa) => agir({ tipo: 'jogada', casa })}
+                atirar={mirar}
+                mira={alvo ? mira : []}
                 frota={frota}
               />
             );
           })}
         </div>
       )}
+      </ComHistorico>
 
       <p className={`minijogo-situacao${minhaVez || (montando && sentado && !euPronto) ? ' minha-vez' : ''}`} role="status">
         {situacao}
         {resultado && <span className={`naval-resultado ${ultimo?.resultado}`}> {resultado}</span>}
       </p>
+      {estado.salvo && minhaVez && (
+        <div className="minijogo-acoes">
+          <span>
+            {t('Rajada: {n} de {total}', { n: mira.length, total: tirosDaVez })} {mira.map(coordenada).join(' ')}
+          </span>
+          <button type="button" className="btn-primary" disabled={mira.length !== tirosDaVez} onClick={() => agir({ tipo: 'jogada', casas: mira })}>
+            {t('Atirar a rajada')}
+          </button>
+        </div>
+      )}
+      {estado.fase === 'fim' && estado.pontaria && (
+        <div className="naval-pontaria">
+          {[0, 1].map((lado) => {
+            const p = estado.pontaria![lado];
+            return p ? (
+              <span key={lado}>
+                {t('{nome}: {tiros} tiros, {pct}% de acerto', { nome: nome(lado), tiros: p.tiros, pct: p.tiros ? Math.round((p.acertos / p.tiros) * 100) : 0 })}
+              </span>
+            ) : null;
+          })}
+        </div>
+      )}
       {/* no Solo, contra o computador, pensar não tem prazo */}
-      {jogando && !estado.solo && <Relogio restante={restante} total={JOGADA_MS} />}
+      {jogando && !estado.solo && !(estado as unknown as EstadoDaMesa).relogio && <Relogio restante={restante} total={JOGADA_MS} />}
       {montando && !estado.solo && <Relogio restante={restante} total={MONTAGEM_MS} />}
       {estado.fase === 'esperando' && !sentado && (
         <button type="button" className="btn-primary duelo-sentar" onClick={() => agir({ tipo: 'sentar' })}>
           {t('Jogar')}
         </button>
       )}
+      <ControlesDaMesa jogo="naval" estado={estado as unknown as EstadoDaMesa} eu={eu} agir={agir} />
       {(jogando || montando) && sentado && (
         <button type="button" className="link-button duelo-desistir" onClick={() => agir({ tipo: 'desistir' })}>
           {t('Desistir')}
@@ -470,7 +511,10 @@ function MarDaTela({
   ultima,
   atirar,
   frota,
+  mira = [],
 }: {
+  /** As casas da rajada do salvo já escolhidas. */
+  mira?: number[];
   frota: FrotaDaCena;
   titulo: string;
   mar: MarNaval;
@@ -487,7 +531,7 @@ function MarDaTela({
     <section className={`naval-mar${meu ? ' meu' : ''}${alvo ? ' alvo' : ''}${daVez ? ' na-mira' : ''}`}>
       <h4 className="naval-titulo">{titulo}</h4>
       <Mar3D
-        dados={{ tiros: mar.tiros, navios: mar.navios, meu, podeAtirar, ultima, frota }}
+        dados={{ tiros: mar.tiros, navios: mar.navios, meu, podeAtirar, ultima, frota, mirada: mira }}
         aoAtirar={atirar}
         grade={
       <div className="naval-grade">
@@ -513,7 +557,7 @@ function MarDaTela({
           <button
             key={casa}
             type="button"
-            className={`naval-casa${tiro === 1 ? ' agua' : tiro === 2 ? ' fogo' : ''}${ultima === casa ? ' ultima' : ''}`}
+            className={`naval-casa${tiro === 1 ? ' agua' : tiro === 2 ? ' fogo' : ''}${ultima === casa ? ' ultima' : ''}${mira.includes(casa) ? ' naval-mira' : ''}`}
             style={{ gridRow: Math.floor(casa / LADO) + 1, gridColumn: (casa % LADO) + 1 }}
             disabled={!podeAtirar || tiro !== 0}
             aria-label={coordenada(casa)}

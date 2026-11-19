@@ -152,3 +152,21 @@ test('a sala: o desafio que já vem no convite larga direto, e o desconhecido n�
   assert.ok(typeof jogo !== 'string');
   assert.equal((jogo.publico(anaId) as { fase: string }).fase, 'largada');
 });
+
+test('19/11/2026: os desafios novos (com vento e térmica) passam pelo servidor, cada um com o seu recorde', () => {
+  const { ctx } = contexto([caioId], { solo: true });
+  const jogo = planador.comecar(ctx, { naSala: [caioId], criadaPor: caioId, corpo: {} });
+  assert.ok(typeof jogo !== 'string');
+  for (const id of ['asa-3', 'mochila-3', 'queda-3']) {
+    assert.equal(jogo.acao(caioId, { tipo: 'voar', desafio: id }), null);
+    const { entradas, r } = voo(id);
+    agora += ms(r.passos) + 1000;
+    assert.equal(jogo.acao(caioId, { tipo: 'pouso', entradas }), null, id);
+    const p = jogo.publico(caioId) as { resultado: { total: number; como: string } };
+    assert.equal(p.resultado.como, 'pousou', id);
+    assert.equal(p.resultado.total, r.total, id);
+    assert.equal(db.recordeDoPlanador(caioId, id)?.pontos, r.total, id);
+    assert.ok(sim.medalha(sim.desafioPorId(id)!, r.total) >= 1, id);
+    jogo.acao(caioId, { tipo: 'escolher' });
+  }
+});

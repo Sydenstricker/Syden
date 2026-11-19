@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { copiarCoelho, minhasCoresDoCoelho, type CoelhoCopiado } from '../coelho3d';
 import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { alvo, assinatura, progresso, type Coisa, type Cozinha, type Estacao } from './cozinha';
+import { alvo, assinatura, naIlha, progresso, type Coisa, type Cozinha, type Estacao } from './cozinha';
 import { IDS_DAS_RECEITAS, INGREDIENTES, RECEITAS, confere, itemDaChave, type IdDaReceita, type Ingrediente, type Item } from './receitas';
 
 /**
@@ -36,6 +36,8 @@ const TOPO: Record<Estacao['tipo'], number> = {
   sorvete: 1.35,
   lixeira: 1.0,
   entrega: 1.0,
+  pia: 1.0,
+  extintor: 1.0,
 };
 
 const MODELOS = [
@@ -60,6 +62,9 @@ const MODELOS = [
   'crate_mushrooms',
   'crate',
   'dishrack_plates',
+  'kitchencounter_sink',
+  'kitchencounter_sink_backsplash',
+  'plate_dirty',
   'icecream_cone_stacked',
   'icecream_container',
   'icecream_container_icecream_chocolate',
@@ -429,6 +434,8 @@ export class CenaDaCozinha {
   /** O rumo da estação: a frente dela olha para o chão livre. */
   private rumoDa(e: Estacao) {
     if (e.l === 0) return 0;
+    // a bancada do meio olha para a câmera (usa-se dos dois lados)
+    if (naIlha(e)) return Math.PI;
     if (e.l === 4) return Math.PI;
     return e.c === 0 ? Math.PI / 2 : -Math.PI / 2;
   }
@@ -517,8 +524,15 @@ export class CenaDaCozinha {
         break;
       }
       case 'pratos':
+        // a pilha de pratos limpos é desenhada a cada quadro (ela acaba e volta da pia)
         balcao();
-        emCima('dishrack_plates', 1.15);
+        break;
+      case 'pia':
+        balcao(e.l === 0 ? 'kitchencounter_sink_backsplash' : 'kitchencounter_sink');
+        break;
+      case 'extintor':
+        // o extintor mora num balcão; ele mesmo é desenhado a cada quadro (sai quando o coelho o leva)
+        balcao();
         break;
       case 'sorvete': {
         balcao();
@@ -680,7 +694,42 @@ export class CenaDaCozinha {
   }
 
   private modeloDaCoisa(c: Coisa): THREE.Group {
+    if (c.tipo === 'extintor') return this.modeloDoExtintor();
     return c.tipo === 'prato' ? this.modeloDoPrato(c.itens) : this.modeloDoItem(c.item);
+  }
+
+  /** O extintor, feito aqui: o cilindro vermelho, a válvula e a mangueira. */
+  private modeloDoExtintor(): THREE.Group {
+    const g = new THREE.Group();
+    const vermelho = new THREE.MeshStandardMaterial({ color: '#d8432f', roughness: 0.45 });
+    const metal = new THREE.MeshStandardMaterial({ color: '#3a3533', metalness: 0.5, roughness: 0.4 });
+    const corpo = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.17, 0.62, 18), vermelho);
+    corpo.position.y = 0.31;
+    const topo = new THREE.Mesh(new THREE.SphereGeometry(0.17, 18, 8, 0, Math.PI * 2, 0, Math.PI / 2), vermelho);
+    topo.position.y = 0.62;
+    const valvula = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.12, 0.22), metal);
+    valvula.position.set(0, 0.8, 0.04);
+    const bico = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.05, 0.3, 10), metal);
+    bico.rotation.x = Math.PI / 2.4;
+    bico.position.set(0, 0.74, 0.22);
+    g.add(corpo, topo, valvula, bico);
+    for (const m of [corpo, topo, valvula, bico]) this.descartaveis.push(m.geometry);
+    this.descartaveis.push(vermelho, metal);
+    g.userData.altura = 0.86;
+    return g;
+  }
+
+  /** Uma pilha de pratos (limpos ou sujos). */
+  private pilhaDePratos(n: number, sujos: boolean): THREE.Group {
+    const g = new THREE.Group();
+    for (let i = 0; i < n; i++) {
+      const p = this.copia(sujos ? 'plate_dirty' : 'plate', 0.95);
+      p.position.y = i * 0.07;
+      p.rotation.y = i * 0.7;
+      g.add(p);
+    }
+    g.userData.altura = n * 0.07;
+    return g;
   }
 
   // ---------- o coelho ----------
@@ -781,13 +830,27 @@ export class CenaDaCozinha {
     if (k && this.coelho) {
       // o que está em cima de cada estação
       for (const e of k.estacoes) {
-        const sinal = assinatura(e.em);
+        // a pilha de pratos limpos, os sujos na pia e o extintor no lugar (quando o coelho não o leva) são o estado da estação
+        const proprio =
+          e.tipo === 'pratos' ? `limpos:${k.pratos}` : e.tipo === 'pia' ? `sujos:${e.sujos ?? 0}` : e.tipo === 'extintor' ? (k.coelho.mao?.tipo === 'extintor' ? '' : 'ext') : null;
+        const sinal = proprio ?? assinatura(e.em);
         const atual = this.emCima.get(e.id);
         if ((atual?.sinal ?? '') !== sinal) {
           if (atual) this.cena.remove(atual.grupo);
           this.emCima.delete(e.id);
-          if (e.em) {
-            const grupo = this.modeloDaCoisa(e.em);
+          const grupo =
+            proprio === null
+              ? e.em
+                ? this.modeloDaCoisa(e.em)
+                : null
+              : e.tipo === 'pratos'
+                ? this.pilhaDePratos(k.pratos, false)
+                : e.tipo === 'pia'
+                  ? this.pilhaDePratos(e.sujos ?? 0, true)
+                  : proprio
+                    ? this.modeloDoExtintor()
+                    : null;
+          if (grupo) {
             grupo.position.set(e.x, TOPO[e.tipo], e.z);
             if (e.tipo === 'forno') {
               // a pizza aparece na boca do forno
@@ -801,6 +864,7 @@ export class CenaDaCozinha {
         }
         this.barra(e, tempo);
         this.fumaca(e, tempo);
+        this.chamas(e, tempo);
       }
       // o coelho
       const c = k.coelho;
@@ -947,6 +1011,37 @@ export class CenaDaCozinha {
       const giro = n * 2.1 + tempo * 0.8;
       m.position.set(Math.sin(giro) * 0.18 * fase01, fase01 * (escura ? 1.8 : 1.3), Math.cos(giro) * 0.18 * fase01);
       m.scale.setScalar((0.5 + fase01 * (escura ? 1.5 : 1.0)) * Math.sin(Math.PI * Math.min(0.999, fase01 + 0.08)));
+    });
+  }
+
+  /** As chamas do fogo esquecido (19/11/2026): cones laranja e amarelos tremendo, feitos aqui. */
+  private chamasDe = new Map<number, THREE.Group>();
+  private chamas(e: Estacao, tempo: number) {
+    let g = this.chamasDe.get(e.id);
+    if (!e.chamas) {
+      if (g) g.visible = false;
+      return;
+    }
+    if (!g) {
+      g = new THREE.Group();
+      const geo = new THREE.ConeGeometry(0.22, 0.7, 10);
+      const mats = ['#ff7a1a', '#ffc23a', '#ff4a1a'].map((cor) => new THREE.MeshBasicMaterial({ color: cor, transparent: true, opacity: 0.9, depthWrite: false }));
+      this.descartaveis.push(geo, ...mats);
+      for (let n = 0; n < 5; n++) {
+        const m = new THREE.Mesh(geo, mats[n % 3]);
+        const a = (n / 5) * Math.PI * 2;
+        m.position.set(Math.cos(a) * 0.22, 0.35, Math.sin(a) * 0.22);
+        g.add(m);
+      }
+      g.position.set(e.x, TOPO[e.tipo], e.z);
+      this.cena.add(g);
+      this.chamasDe.set(e.id, g);
+    }
+    g.visible = true;
+    g.children.forEach((o, n) => {
+      const s = this.calmo ? 1 : 0.75 + Math.abs(Math.sin(tempo * (9 + n) + n * 1.7)) * 0.55;
+      o.scale.set(1, s, 1);
+      o.position.y = 0.35 * s;
     });
   }
 

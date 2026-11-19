@@ -10,7 +10,7 @@
  * O relógio:
  *  - NA SALA, é o do servidor: a contagem (3 s) e os 30 s de montagem valem para todos ao mesmo tempo, e a ponte que chega depois
  *    disso (com uma folga para a rede) é recusada. Quem não mandou fica sem ponte, no fim do placar.
- *  - NO SOLO, o relógio é o do computador (o ESC e a janela sem foco pausam a montagem, como nos outros jogos solo); o servidor só
+ *  - NO SOLO, SEM PRESSA (19/11/2026): a montagem não tem relógio nenhum (antes eram os 30 s, pausáveis); o servidor só
  *    fecha a partida depois de um prazo largo. O recorde é da pessoa e só ela o vê: pausar para pensar engana só a si mesma.
  *
  * O placar: quem passou, pelo MENOR custo; depois quem não passou, por quanto o tráfego andou; empatados dividem a posição. No fim,
@@ -25,8 +25,8 @@ export const CONTAGEM_MS = 3000;
 export const MONTAGEM_MS = (MONTAGEM_PASSOS / 60) * 1000;
 /** A rede: a ponte mandada no último instante chega um pouco depois do relógio do servidor. */
 export const FOLGA_MS = 2500;
-/** No Solo a montagem pausa; ninguém volta, e a partida fecha sozinha depois disto. */
-export const PRAZO_DO_SOLO_MS = 10 * 60_000;
+/** No Solo a montagem não tem relógio (sem pressa, 19/11/2026); a partida largada fecha sozinha depois disto. */
+export const PRAZO_DO_SOLO_MS = 30 * 60_000;
 /** Na sala, depois do fim da montagem e da folga, quem não mandou fica sem ponte (e a simulação de todos acontece na tela). */
 export const PRAZO_DA_SALA_MS = CONTAGEM_MS + MONTAGEM_MS + FOLGA_MS;
 

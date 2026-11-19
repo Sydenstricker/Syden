@@ -46,7 +46,7 @@ type Estado = {
   interrompida: boolean;
 };
 
-function comecar(opcoes: Parameters<typeof criarTabuleiro>[0] = {}, inicio = [anaId, biaId], corpo: Record<string, unknown> = {}) {
+function comecar(opcoes: Parameters<typeof criarTabuleiro>[0] = {}, inicio = [anaId, biaId], corpo: Record<string, unknown> = {}, solo = false) {
   const sala = { ids: [...inicio] };
   const relogio: { ms: number; depois: () => void }[] = [];
   let terminou = false;
@@ -61,6 +61,7 @@ function comecar(opcoes: Parameters<typeof criarTabuleiro>[0] = {}, inicio = [an
     naSala: () => sala.ids,
     nome: (id: number) => (id === anaId ? 'ana' : id === biaId ? 'bia' : 'caio'),
     comunidade: comunidade.id,
+    solo,
   };
   const jogo = criarTabuleiro({ agora: () => agora, aleatorio, ...opcoes }).comecar(ctx, { naSala: inicio, criadaPor: inicio[0], corpo });
   assert.ok(typeof jogo !== 'string');
@@ -86,7 +87,7 @@ const de = (e: Estado, id: number) => e.participantes.find((p) => p.userId === i
 test('o tabuleiro: 30 casas, a largada na primeira', () => {
   assert.equal(CASAS.length, 30);
   assert.equal(CASAS[0], 'i');
-  assert.ok(CASAS.slice(1).every((c) => c === '+' || c === '-' || c === '?'));
+  assert.ok(CASAS.slice(1).every((c) => '+-?$d'.includes(c)));
 });
 
 test('só quem está na vez joga o dado, e quem sorteia é o servidor', () => {

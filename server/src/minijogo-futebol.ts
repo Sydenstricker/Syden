@@ -31,6 +31,7 @@ import type { Contexto, Definicao, Jogo } from './minijogo-motor.js';
 import { ehRobo, idsDosRobos, MAXIMO_DE_ROBOS, nomeDoRobo } from './minijogo-robos.js';
 import {
   ALCANCE,
+  ALTURA_DO_CORPO,
   aplicarChute,
   CHUTE_MAX,
   comandoDoRobo,
@@ -49,6 +50,7 @@ import {
   passoDoMundo,
   PASSOS_POR_SEGUNDO,
   prenderNoCampo,
+  SUBIDA_MAX,
   VEL,
   type Evento,
   type Jogador,
@@ -98,6 +100,8 @@ interface Instante {
   tempo: number;
   x: number;
   y: number;
+  /** A altura (o chute alto): no alto, ninguém domina. */
+  z: number;
   vx: number;
   vy: number;
   dono: number;
@@ -181,7 +185,7 @@ export function criarFutebol({
 
       const guardarInstante = () => {
         const b = m.bola;
-        historia.push({ tempo: m.tempo, x: b.x, y: b.y, vx: b.vx, vy: b.vy, dono: b.dono, versao: b.versao });
+        historia.push({ tempo: m.tempo, x: b.x, y: b.y, z: b.z, vx: b.vx, vy: b.vy, dono: b.dono, versao: b.versao });
         while (historia.length > HISTORIA_PASSOS + 2) historia.shift();
       };
       guardarInstante();
@@ -222,7 +226,7 @@ export function criarFutebol({
           sa: m.saida,
           g: m.placar,
           fim: m.fim ? 1 : 0,
-          b: [r1(b.x), r1(b.y), r2(b.vx), r2(b.vy), b.dono, b.versao, b.protege],
+          b: [r1(b.x), r1(b.y), r2(b.vx), r2(b.vy), b.dono, b.versao, b.protege, r1(b.z), r2(b.vz)],
           j: m.jogadores.map((j) => [
             j.id,
             r1(j.x),
@@ -328,7 +332,7 @@ export function criarFutebol({
           for (let k = historia.length - 1; k >= 0; k--) {
             const h = historia[k];
             if (m.tempo - h.tempo > HISTORIA_PASSOS) break;
-            if (h.versao !== b.versao || h.dono !== 0) continue;
+            if (h.versao !== b.versao || h.dono !== 0 || h.z > ALTURA_DO_CORPO) continue;
             if (h.vx * h.vx + h.vy * h.vy > DOMINIO_MAX * DOMINIO_MAX) continue;
             const ex = h.x - j.x;
             const ey = h.y - j.y;
@@ -348,6 +352,9 @@ export function criarFutebol({
       const chute = (p: Pessoa, j: Jogador, d: Record<string, unknown>): string | null => {
         const { x, y, vx, vy, fx, fy, s } = d;
         if (![x, y, vx, vy, s].every(numero)) return 'números';
+        // o chute alto (19/11/2026): a subida, de 0 ao máximo; o passe é sempre rasteiro
+        const vz = numero(d.vz) && d.passe !== true ? (d.vz as number) : 0;
+        if (vz < 0 || vz > SUBIDA_MAX + 0.01) return 'força';
         if (!Number.isInteger(s) || (s as number) <= p.ultimoChute) return 'chute repetido';
         p.ultimoChute = s as number;
         if (m.pausa > 0 || m.fim) return 'pausa';
@@ -369,6 +376,7 @@ export function criarFutebol({
             break;
           }
           if (h.dono === 0) {
+            if (h.z > ALTURA_DO_CORPO) continue;
             const bx = h.x - (x as number);
             const by = h.y - (y as number);
             if (bx * bx + by * by <= (ALCANCE + FOLGA_ALCANCE) * (ALCANCE + FOLGA_ALCANCE)) {
@@ -395,9 +403,10 @@ export function criarFutebol({
           b.dono = 0;
           b.x = achou.x;
           b.y = achou.y;
+          b.z = achou.z;
         }
         m.eventos = [];
-        aplicarChute(m, j, vx as number, vy as number, d.passe === true);
+        aplicarChute(m, j, vx as number, vy as number, d.passe === true, vz);
         eventos.push(...m.eventos);
         const passaram = Math.min(HISTORIA_PASSOS, m.tempo - achou.tempo);
         for (let k = 0; k < passaram; k++) {

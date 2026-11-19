@@ -40,11 +40,17 @@ const MEDALHAS = ['🥇', '🥈', '🥉'];
 
 /** O TECLADO E O TOQUE: setas (ou A e D) correm, Espaço (ou seta para cima, W) pula. Só enquanto `ativo`. */
 function useControles(ativo: boolean) {
-  const comandos = useRef<Comandos>({ esquerda: false, direita: false, pula: false });
+  const comandos = useRef<Comandos>({
+    esquerda: false,
+    direita: false,
+    pula: false,
+  });
   const teclas = useRef({ esquerda: false, direita: false, pula: false });
   const toque = useRef({ esquerda: false, direita: false, pula: false });
   const juntar = () => {
-    const c = comandos.current, a = teclas.current, b = toque.current;
+    const c = comandos.current,
+      a = teclas.current,
+      b = toque.current;
     c.esquerda = a.esquerda || b.esquerda;
     c.direita = a.direita || b.direita;
     c.pula = a.pula || b.pula;
@@ -68,8 +74,16 @@ function useControles(ativo: boolean) {
     const desce = (e: KeyboardEvent) => tecla(e, true);
     const sobe = (e: KeyboardEvent) => tecla(e, false);
     const soltarTudo = () => {
-      Object.assign(teclas.current, { esquerda: false, direita: false, pula: false });
-      Object.assign(toque.current, { esquerda: false, direita: false, pula: false });
+      Object.assign(teclas.current, {
+        esquerda: false,
+        direita: false,
+        pula: false,
+      });
+      Object.assign(toque.current, {
+        esquerda: false,
+        direita: false,
+        pula: false,
+      });
       juntar();
     };
     const escondeu = () => document.hidden && soltarTudo();
@@ -120,20 +134,46 @@ function BotoesDeToque({ controles }: { controles: ReturnType<typeof useControle
   );
 }
 
-/** O placar de cima: o relógio, e quantas vezes caiu. */
-function Placar({ placar }: { placar: { ms: number; quedas: number } }) {
+/** As cenouras juntadas (19/11/2026): contadas à parte do tempo, e a dourada, quando achada. */
+function Cenouras({ n, total, dourada }: { n: number; total: number; dourada: boolean }) {
+  const t = useT();
+  if (total === 0) return null;
+  return (
+    <span className="pulo-cenouras" title={t('Cenouras: {n} de {total}', { n, total })}>
+      <span aria-hidden="true">🥕</span> {n}/{total}
+      {dourada && (
+        <span className="pulo-dourada" title={t('Cenoura dourada achada')}>
+          {' '}
+          ⭐
+        </span>
+      )}
+    </span>
+  );
+}
+
+/** O placar de cima: o relógio, quantas vezes caiu e as cenouras. */
+function Placar({ placar, total }: { placar: { ms: number; quedas: number; cenouras: number; dourada: boolean }; total: number }) {
   return (
     <div className="pulo-placar" aria-live="off">
       <span className="corrida-relogio">{tempoLegivel(placar.ms)}</span>
       {placar.quedas > 0 && <span aria-hidden="true">✖ {placar.quedas}</span>}
+      <Cenouras n={placar.cenouras} total={total} dourada={placar.dourada} />
     </div>
   );
 }
 
 function usePlacar() {
-  const [placar, setPlacar] = useState({ ms: 0, pausado: false, quedas: 0 });
-  const atualizar = (p: { ms: number; pausado: boolean; quedas: number }) =>
-    setPlacar((a) => (Math.floor(a.ms / 10) === Math.floor(p.ms / 10) && a.pausado === p.pausado && a.quedas === p.quedas ? a : p));
+  const [placar, setPlacar] = useState({
+    ms: 0,
+    pausado: false,
+    quedas: 0,
+    cenouras: 0,
+    dourada: false,
+  });
+  const atualizar = (p: { ms: number; pausado: boolean; quedas: number; cenouras: number; dourada: boolean }) =>
+    setPlacar((a) =>
+      Math.floor(a.ms / 10) === Math.floor(p.ms / 10) && a.pausado === p.pausado && a.quedas === p.quedas && a.cenouras === p.cenouras && a.dourada === p.dourada ? a : p,
+    );
   return [placar, atualizar] as const;
 }
 
@@ -143,7 +183,11 @@ function MiniaturaDaFase({ fase }: { fase: Fase }) {
   useEffect(() => {
     const ctx = ref.current?.getContext('2d');
     if (!ctx) return;
-    const cores: Record<string, [string, string, string]> = { prado: ['#ecc8a6', '#8c6248', '#78a85a'], toca: ['#44363a', '#6e5a4e', '#7e8a62'], copas: ['#d8dcc8', '#7a5a40', '#6a9a52'] };
+    const cores: Record<string, [string, string, string]> = {
+      prado: ['#ecc8a6', '#8c6248', '#78a85a'],
+      toca: ['#44363a', '#6e5a4e', '#7e8a62'],
+      copas: ['#d8dcc8', '#7a5a40', '#6a9a52'],
+    };
     const [ceu, chao, topo] = cores[fase.tema];
     ctx.fillStyle = ceu;
     ctx.fillRect(0, 0, 96, 28);
@@ -205,7 +249,19 @@ export function JogoPlataforma({ eu, aoVoltar }: { eu: number; aoVoltar: () => v
   const [def, setDef] = useState<Fase>(FASES[0]);
   const [recordes, setRecordes] = useState<Recorde[] | null>(null);
   const [escolhidos, setEscolhidos] = useState<Set<number>>(new Set());
-  const [resultado, setResultado] = useState<{ tempoMs: number; recorde: boolean | null; anterior: number | null; quedas: number } | null>(null);
+  const [resultado, setResultado] = useState<{
+    tempoMs: number;
+    recorde: boolean | null;
+    anterior: number | null;
+    quedas: number;
+    cenouras: number;
+    dourada: boolean;
+  } | null>(null);
+  /** O melhor número de cenouras e se a dourada já foi achada, nesta fase (a tabela comum dos recordes do Solo). */
+  const [achados, setAchados] = useState<{
+    cenouras: number | null;
+    dourada: boolean;
+  }>({ cenouras: null, dourada: false });
   const [erro, setErro] = useState<string | null>(null);
   const [placar, setPlacar] = usePlacar();
   const [vendoTrofeus, setVendoTrofeus] = useState(false);
@@ -220,9 +276,13 @@ export function JogoPlataforma({ eu, aoVoltar }: { eu: number; aoVoltar: () => v
   const id = def.id;
 
   const lerRecordes = (qual = id) =>
-    api<{ recordes: Recorde[] }>(`/api/plataforma/${qual}`)
+    api<{ recordes: Recorde[]; cenouras?: number | null; dourada?: boolean }>(`/api/plataforma/${qual}`)
       .then((r) => {
         setRecordes(r.recordes);
+        setAchados({
+          cenouras: r.cenouras ?? null,
+          dourada: r.dourada === true,
+        });
         return r.recordes;
       })
       .catch(() => {
@@ -271,14 +331,37 @@ export function JogoPlataforma({ eu, aoVoltar }: { eu: number; aoVoltar: () => v
           quedas.current = p.quedas;
           setPlacar(p);
         },
-        aoChegar: (passos, caminho) => {
+        aoChegar: (passos, caminho, achou) => {
           if (!vivo) return;
           const tempoMs = passosEmMs(passos);
-          setResultado({ tempoMs, recorde: null, anterior: null, quedas: quedas.current });
+          setResultado({
+            tempoMs,
+            recorde: null,
+            anterior: null,
+            quedas: quedas.current,
+            ...achou,
+          });
           setFase('fim');
-          api<{ recorde: boolean; anterior: number | null; tempoMs: number }>(`/api/plataforma/${id}`, { method: 'POST', body: { passos, amostras: caminho } })
+          api<{ recorde: boolean; anterior: number | null; tempoMs: number }>(`/api/plataforma/${id}`, {
+            method: 'POST',
+            body: {
+              passos,
+              amostras: caminho,
+              cenouras: achou.cenouras,
+              dourada: achou.dourada,
+            },
+          })
             .then((r) => {
-              setResultado((a) => (a ? { ...a, tempoMs: r.tempoMs, recorde: r.recorde, anterior: r.anterior } : a));
+              setResultado((a) =>
+                a
+                  ? {
+                      ...a,
+                      tempoMs: r.tempoMs,
+                      recorde: r.recorde,
+                      anterior: r.anterior,
+                    }
+                  : a,
+              );
               void lerRecordes();
             })
             .catch((e) => setErro((e as Error).message));
@@ -324,7 +407,14 @@ export function JogoPlataforma({ eu, aoVoltar }: { eu: number; aoVoltar: () => v
             ))}
           </ul>
           <div className="corrida-pista-nome">
-            {meu && <span>{t('Seu recorde: {tempo}', { tempo: tempoLegivel(meu.tempoMs) })}</span>}
+            {meu && (
+              <span>
+                {t('Seu recorde: {tempo}', {
+                  tempo: tempoLegivel(meu.tempoMs),
+                })}
+              </span>
+            )}
+            {achados.cenouras !== null && <Cenouras n={achados.cenouras} total={def.cenouras.length} dourada={achados.dourada} />}
             <ComandosDoJogo itens={[{ teclas: ['setas-lado'], rotulo: t('Correr') }, { teclas: ['espaco'], rotulo: t('Pular') }, comandoDaPausa(t)]} />
             <p className="settings-hint">{t('Setas para correr, Espaço para pular (segure para ir mais alto).')}</p>
           </div>
@@ -369,7 +459,7 @@ export function JogoPlataforma({ eu, aoVoltar }: { eu: number; aoVoltar: () => v
       {fase !== 'largada' && (
         <div className="corrida-tela pulo-tela" ref={tela} tabIndex={-1}>
           <canvas key={rodada} ref={canvas} width={W} height={H} />
-          {fase === 'correndo' && <Placar placar={placar} />}
+          {fase === 'correndo' && <Placar placar={placar} total={def.cenouras.length} />}
           {fase === 'correndo' && <BotoesDeToque controles={controles} />}
           {fase === 'correndo' && pausado && <TelaDePausa aoContinuar={continuar} icone={false} />}
           {fase === 'fim' && resultado && (
@@ -377,8 +467,13 @@ export function JogoPlataforma({ eu, aoVoltar }: { eu: number; aoVoltar: () => v
               {resultado.recorde && <strong className="corrida-recorde">{t('Novo recorde!')}</strong>}
               <span className="corrida-relogio grande">{tempoLegivel(resultado.tempoMs)}</span>
               {resultado.quedas > 0 && <span aria-hidden="true">✖ {resultado.quedas}</span>}
+              <Cenouras n={resultado.cenouras} total={def.cenouras.length} dourada={resultado.dourada} />
               {resultado.recorde === false && resultado.anterior !== null && (
-                <span className="settings-hint">{t('Seu recorde: {tempo}', { tempo: tempoLegivel(resultado.anterior) })}</span>
+                <span className="settings-hint">
+                  {t('Seu recorde: {tempo}', {
+                    tempo: tempoLegivel(resultado.anterior),
+                  })}
+                </span>
               )}
               <div className="minijogo-acoes">
                 <button
@@ -417,7 +512,12 @@ export function JogoPlataforma({ eu, aoVoltar }: { eu: number; aoVoltar: () => v
  * `posicao` vem do servidor: só entre quem ficou até o fim (empatados dividem, a mesma conta do troféu); null para quem
  * saiu, que vem depois, sem posição nem medalha.
  */
-type LinhaDoPulo = { userId: number; username: string; tempoMs: number | null; posicao: number | null };
+type LinhaDoPulo = {
+  userId: number;
+  username: string;
+  tempoMs: number | null;
+  posicao: number | null;
+};
 
 /** O Pulo do coelho da sala, como o servidor o manda (server/src/minijogo-plataforma.ts). */
 export interface EstadoPlataforma {
@@ -428,7 +528,15 @@ export interface EstadoPlataforma {
   corrida?: number;
   corridas?: number;
   pilotos: LinhaDoPulo[];
-  placarDaCopa?: { userId: number; username: string; pontos: number; soma: number | null; posicao: number | null }[] | null;
+  placarDaCopa?:
+    | {
+        userId: number;
+        username: string;
+        pontos: number;
+        soma: number | null;
+        posicao: number | null;
+      }[]
+    | null;
   ultima?: LinhaDoPulo[] | null;
   prazo: boolean;
 }
@@ -457,7 +565,11 @@ export function JogoPlataformaNaSala(props: {
     <div className="corrida-copa-topo">
       <strong>{nomeDaPistaEm(t, estado.categoria ?? '')}</strong>
       <span>
-        {t('Rodada {n} de {total}', { n: estado.corrida ?? 1, total: estado.corridas ?? 3 })} · {nomeDaPistaEm(t, estado.pista)}
+        {t('Rodada {n} de {total}', {
+          n: estado.corrida ?? 1,
+          total: estado.corridas ?? 3,
+        })}{' '}
+        · {nomeDaPistaEm(t, estado.pista)}
       </span>
     </div>
   );
@@ -531,11 +643,17 @@ function FaseDaSala({
   const [chegou, setChegou] = useState(false);
   // depois de chegar, a câmera vai para quem ainda corre (o laço escolhe; as setas e os botões trocam)
   const seguir = useRef<{ id: number | null }>({ id: null });
-  const [assistindo, setAssistindo] = useState<{ alvo: { id: number; nome: string } | null; correndo: { id: number; nome: string }[] }>({ alvo: null, correndo: [] });
+  const [assistindo, setAssistindo] = useState<{
+    alvo: { id: number; nome: string } | null;
+    correndo: { id: number; nome: string }[];
+  }>({ alvo: null, correndo: [] });
   const trocarDeAmigo = (passo: number) => {
     const lista = assistindo.correndo;
     if (lista.length < 2) return;
-    const i = Math.max(0, lista.findIndex((r) => r.id === assistindo.alvo?.id));
+    const i = Math.max(
+      0,
+      lista.findIndex((r) => r.id === assistindo.alvo?.id),
+    );
     seguir.current.id = lista[(i + passo + lista.length) % lista.length].id;
   };
   // ABERTA NO MEIO DA FASE (a página recarregada, o painel aberto depois do verde): esta fase a pessoa ASSISTE (revisão
@@ -627,7 +745,7 @@ function FaseDaSala({
     <>
       <div className="corrida-tela pulo-tela" ref={tela} tabIndex={-1}>
         <canvas ref={canvas} width={W} height={H} />
-        {!fim && piloto && <Placar placar={placar} />}
+        {!fim && piloto && <Placar placar={placar} total={def.cenouras.length} />}
         {!comTempos && ordem.length > 1 && (
           <ol className="corrida-ordem" aria-live="off">
             {ordem.map((l, i) => (
@@ -670,7 +788,14 @@ function FaseDaSala({
         )}
       </div>
       {inscrito && abriuNoMeio && !fim && <p className="settings-hint corrida-dica">{t('Esta fase já tinha começado quando você abriu: você assiste.')}</p>}
-      {piloto && !fim && <ComandosDoJogo itens={[{ teclas: ['setas-lado'], rotulo: t('Correr') }, { teclas: ['espaco'], rotulo: t('Pular') }]} />}
+      {piloto && !fim && (
+        <ComandosDoJogo
+          itens={[
+            { teclas: ['setas-lado'], rotulo: t('Correr') },
+            { teclas: ['espaco'], rotulo: t('Pular') },
+          ]}
+        />
+      )}
       {piloto && !fim && <p className="settings-hint corrida-dica">{t('Setas para correr, Espaço para pular (segure para ir mais alto).')}</p>}
     </>
   );

@@ -12,6 +12,9 @@ export * from './chefe/conta.js';
 const servicos: NonNullable<OpcoesDoChefe['servicos']> = {
   avatarDe: (userId) => db.avatarDoJogo(userId),
   guardarTrofeu: (t) => db.guardarTrofeu(t),
+  // o recorde do Solo: o tempo da vitória, na tabela comum
+  recordeDe: (userId, variante) => db.recordeDoSolo(userId, 'chefe', variante)?.valor ?? null,
+  guardarRecorde: (userId, variante, ms, extra) => db.guardarRecordeDoSolo(userId, 'chefe', variante, ms, true, extra),
 };
 
 /** Com o banco (o avatar e o troféu); as outras opções, trocáveis no teste. */

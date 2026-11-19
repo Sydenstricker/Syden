@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { embaralhar, placar, type Definicao } from './minijogo-motor.js';
+import { guardarRecordeDoSolo, lerRecordeDoSolo } from './recorde-solo-tardio.js';
 
 /**
  * A PALAVRA SECRETA (14/10/2026): o Termo da turma, em corrida. Todo mundo recebe a MESMA palavra de 5 letras e tem 6
@@ -67,51 +68,142 @@ export function cores(chute: string, palavra: string): number[] {
   return saida;
 }
 
+/**
+ * OS MODOS (19/11/2026, a auditoria dos mini-games):
+ * - DUETO e QUARTETO: 2 ou 4 palavras ao mesmo tempo, e cada chute vale para todas as que ainda faltam (7 e 9 chutes).
+ * - DIFÍCIL: a letra já revelada tem de ser usada — o verde no mesmo lugar, o amarelo em algum lugar.
+ * - SOLO: uma palavra (ou um dueto, um quarteto) de cada vez; "Jogar de novo" traz a próxima.
+ */
+export const PALAVRAS_POR_MODO = { normal: 1, dueto: 2, quarteto: 4 } as const;
+export type ModoDaPalavra = keyof typeof PALAVRAS_POR_MODO;
+export const CHUTES_POR_MODO: Record<ModoDaPalavra, number> = { normal: CHUTES, dueto: 7, quarteto: 9 };
+export const PALAVRA_SOLO_MS = 10 * 60_000;
+
+/**
+ * A SEQUÊNCIA DO SOLO, e por que é ela o recorde (decisão de 19/11/2026). O pedido era um recorde sem "volte todo dia". A média
+ * de chutes pede muitas partidas para dizer alguma coisa, e a primeira partida virava recorde fácil de não bater nunca. As
+ * VITÓRIAS SEGUIDAS NA MESMA SESSÃO dizem quanto a pessoa está jogando bem agora: acertar soma 1, errar zera, e a sequência mora
+ * só na memória do servidor e SE PERDE com 30 minutos parada (é da sessão, não do calendário: ninguém é chamado de volta amanhã).
+ * O recorde guardado (a tabela comum, maior é melhor) é a maior sequência, por modo e com ou sem o difícil.
+ */
+export const SESSAO_MS = 30 * 60_000;
+const sequencias = new Map<string, { seguidas: number; em: number }>();
+/** Para os testes. */
+export const _sequencias = sequencias;
+
+/**
+ * O chute do modo difícil respeita as dicas? O verde de antes no mesmo lugar, e cada letra revelada (verde ou amarela) tantas
+ * vezes quantas ela foi revelada. `anteriores`: os chutes de antes, sem acento, com as cores de UMA palavra.
+ */
+export function respeitaAsDicas(chute: string, anteriores: { chave: string; cores: number[] }[]): boolean {
+  for (const { chave, cores: cs } of anteriores) {
+    if (cs.length !== 5) continue;
+    const precisa = new Map<string, number>();
+    for (let i = 0; i < 5; i++) {
+      if (cs[i] === 2 && chute[i] !== chave[i]) return false;
+      if (cs[i] >= 1) precisa.set(chave[i], (precisa.get(chave[i]) ?? 0) + 1);
+    }
+    for (const [letra, n] of precisa) if ([...chute].filter((l) => l === letra).length < n) return false;
+  }
+  return true;
+}
+
+interface Chute {
+  texto: string;
+  /** Sem acento: é o que se compara no modo difícil. */
+  chave: string;
+  /** As cores para cada palavra da rodada ([] na palavra que já tinha sido acertada antes deste chute). */
+  cores: number[][];
+}
+
 interface Quadro {
-  chutes: { texto: string; cores: number[] }[];
+  chutes: Chute[];
+  /** Para cada palavra: em que chute (1, 2…) ela foi acertada, ou null. */
+  resolvidas: (number | null)[];
   acertouEm: number | null;
 }
 
 /** Os pontos de quem acerta: menos chutes, mais pontos (6 no primeiro chute, 1 no sexto), e +1 para o primeiro a acertar. */
-export const pontosDoAcerto = (chutes: number) => CHUTES + 1 - chutes;
+export const pontosDoAcerto = (chutes: number, maximo = CHUTES) => Math.max(1, maximo + 1 - chutes);
 
-/** Para os testes: as palavras da próxima partida, em vez do sorteio. */
+/** Para os testes: as palavras da próxima partida, em vez do sorteio (rodada a rodada; no dueto, duas por rodada). */
 export const _teste: { palavras: string[] | null } = { palavras: null };
 
 export const palavra: Definicao = {
-  comecar(ctx, { naSala }) {
-    if (SORTEIO.length < RODADAS_PALAVRA) return 'As palavras não estão no servidor.';
-    const sorteadas = _teste.palavras ?? embaralhar([...SORTEIO]).slice(0, RODADAS_PALAVRA);
+  comecar(ctx, { naSala, criadaPor, corpo }) {
+    const modo: ModoDaPalavra = String(corpo.modo) in PALAVRAS_POR_MODO ? (String(corpo.modo) as ModoDaPalavra) : 'normal';
+    const dificil = corpo.dificil === true;
+    const porRodada = PALAVRAS_POR_MODO[modo];
+    const maxChutes = CHUTES_POR_MODO[modo];
+    const rodadas = ctx.solo ? 1 : RODADAS_PALAVRA;
+    const tempo = ctx.solo ? PALAVRA_SOLO_MS : PALAVRA_MS;
+    if (SORTEIO.length < rodadas * porRodada) return 'As palavras não estão no servidor.';
+    const sorteadas = _teste.palavras ?? embaralhar([...SORTEIO]).slice(0, rodadas * porRodada);
+    const largada = { modo, dificil };
     let rodada = 1;
     let fase: 'chutando' | 'revelando' | 'fim' = 'chutando';
     let inicio = Date.now();
     const quadros = new Map<number, Quadro>();
     const pontos = new Map(naSala.map((id) => [id, 0]));
-    // Todo mundo da sala acertou ou gastou os 6 chutes (quem saiu da sala não segura os outros): a palavra aparece na hora.
+    // A sequência do Solo (ver SESSAO_MS): mostrada desde o começo, e decidida no fim.
+    const chaveDaSequencia = `${criadaPor}:${modo}${dificil ? ':dificil' : ''}`;
+    const varianteDoRecorde = `${modo}${dificil ? ':dificil' : ''}`;
+    let sequencia: { atual: number; recorde: number | null; novo: boolean } | null = null;
+    if (ctx.solo) {
+      const s = sequencias.get(chaveDaSequencia);
+      const atual = s && Date.now() - s.em <= SESSAO_MS ? s.seguidas : 0;
+      const seq = { atual, recorde: null as number | null, novo: false };
+      sequencia = seq;
+      lerRecordeDoSolo(criadaPor, 'palavra', varianteDoRecorde, (r) => {
+        if (!seq.novo) seq.recorde = r?.valor ?? null;
+        ctx.avisar();
+      });
+    }
+    // Todo mundo da sala acertou ou gastou os chutes (quem saiu da sala não segura os outros): a palavra aparece na hora.
     const todosProntos = () => {
       const naSalaAgora = ctx.naSala();
-      return [...quadros.entries()].every(([id, x]) => x.acertouEm !== null || x.chutes.length >= CHUTES || !naSalaAgora.includes(id));
+      return [...quadros.entries()].every(([id, x]) => x.acertouEm !== null || x.chutes.length >= maxChutes || !naSalaAgora.includes(id));
     };
-    const secreta = () => semAcento(sorteadas[rodada - 1]);
+    const daRodada = () => sorteadas.slice((rodada - 1) * porRodada, rodada * porRodada);
+    const secretas = () => daRodada().map((p) => semAcento(p).replace(/ç/g, 'c'));
+    const quadroNovo = (): Quadro => ({ chutes: [], resolvidas: Array<number | null>(porRodada).fill(null), acertouEm: null });
 
     function novaRodada() {
       quadros.clear();
-      for (const id of pontos.keys()) quadros.set(id, { chutes: [], acertouEm: null });
+      for (const id of pontos.keys()) quadros.set(id, quadroNovo());
       fase = 'chutando';
       inicio = Date.now();
-      ctx.agendar(PALAVRA_MS, revelar);
+      ctx.agendar(tempo, revelar);
       ctx.avisar();
     }
 
     function revelar() {
       if (fase !== 'chutando') return;
-      const acertaram = [...quadros.entries()].filter(([, q]) => q.acertouEm !== null);
-      for (const [id, q] of acertaram) pontos.set(id, (pontos.get(id) ?? 0) + pontosDoAcerto(q.chutes.length));
-      const primeiro = acertaram.sort(([, a], [, b]) => (a.acertouEm ?? 0) - (b.acertouEm ?? 0))[0];
+      // Cada palavra acertada vale pelos chutes que levou; quem acertou todas primeiro ganha +1.
+      for (const [id, q] of quadros) {
+        for (const n of q.resolvidas) if (n !== null) pontos.set(id, (pontos.get(id) ?? 0) + pontosDoAcerto(n, maxChutes));
+      }
+      const primeiro = [...quadros.entries()]
+        .filter(([, q]) => q.acertouEm !== null)
+        .sort(([, a], [, b]) => (a.acertouEm ?? 0) - (b.acertouEm ?? 0))[0];
       if (primeiro) pontos.set(primeiro[0], (pontos.get(primeiro[0]) ?? 0) + 1);
+      if (ctx.solo && sequencia) {
+        const s = sequencia;
+        const venceu = (quadros.get(criadaPor)?.acertouEm ?? null) !== null;
+        const seguidas = venceu ? s.atual + 1 : 0;
+        sequencias.set(chaveDaSequencia, { seguidas, em: Date.now() });
+        s.atual = seguidas;
+        if (seguidas > 0) {
+          guardarRecordeDoSolo(criadaPor, 'palavra', varianteDoRecorde, seguidas, false, { chutes: quadros.get(criadaPor)?.chutes.length ?? 0 }, (r) => {
+            s.novo = r.novo;
+            s.recorde = r.novo ? seguidas : r.antes;
+            ctx.avisar();
+          });
+        }
+      }
       fase = 'revelando';
       ctx.agendar(REVELACAO_MS, () => {
-        if (rodada >= RODADAS_PALAVRA) {
+        if (rodada >= rodadas) {
           fase = 'fim';
           return ctx.terminar();
         }
@@ -125,23 +217,33 @@ export const palavra: Definicao = {
     return {
       publico(quem) {
         const meu = quadros.get(quem);
+        const aberta = fase !== 'chutando';
         return {
           rodada,
-          rodadas: RODADAS_PALAVRA,
+          rodadas,
           fase,
-          chutes: CHUTES,
-          // O meu quadro com as letras; dos outros, só as cores.
-          meu: meu?.chutes ?? [],
-          acertei: meu?.acertouEm !== null && meu !== undefined,
-          palavra: fase === 'chutando' ? null : sorteadas[rodada - 1],
+          chutes: maxChutes,
+          palavras: porRodada,
+          dificil,
+          modo,
+          largada,
+          // O meu quadro com as letras; dos outros, só as cores. `cores` é a da primeira palavra (a tela de antes do dueto).
+          meu: (meu?.chutes ?? []).map((c) => ({ texto: c.texto, cores: c.cores[0] ?? [], coresTodas: c.cores })),
+          resolvidas: meu?.resolvidas ?? Array<number | null>(porRodada).fill(null),
+          acertei: meu !== undefined && meu.acertouEm !== null,
+          // A palavra COM acento (a nossa grafia: "avião", "dança").
+          palavra: aberta ? daRodada()[0] : null,
+          palavrasReveladas: aberta ? daRodada() : null,
           outros: [...quadros.entries()].map(([userId, q]) => ({
             userId,
             username: ctx.nome(userId),
-            cores: q.chutes.map((c) => c.cores),
+            cores: q.chutes.map((c) => c.cores[0] ?? []),
+            coresTodas: q.chutes.map((c) => c.cores),
             acertou: q.acertouEm !== null,
             // Na revelação a sala vê também as letras de todo mundo.
-            letras: fase === 'chutando' ? null : q.chutes.map((c) => c.texto),
+            letras: aberta ? q.chutes.map((c) => c.texto) : null,
           })),
+          sequencia,
           placar: placar(pontos, ctx.nome),
         };
       },
@@ -154,16 +256,27 @@ export const palavra: Definicao = {
         if (!valida(limpa)) return 'Essa palavra não está na lista.';
         let q = quadros.get(quem);
         if (!q) {
-          q = { chutes: [], acertouEm: null };
+          q = quadroNovo();
           quadros.set(quem, q);
           if (!pontos.has(quem)) pontos.set(quem, 0);
         }
-        if (q.acertouEm !== null || q.chutes.length >= CHUTES) return null;
+        const quadro = q;
+        if (quadro.acertouEm !== null || quadro.chutes.length >= maxChutes) return null;
         // O mesmo chute duas vezes não gasta outra tentativa (Enter apertado duas vezes com a internet lenta).
-        if (q.chutes.some((c) => semAcento(c.texto).replace(/ç/g, 'c') === limpa)) return 'Você já chutou essa palavra.';
-        const grafia = limpa === secreta() ? (GRAFIA_SORTEADA.get(limpa) ?? limpa) : (GRAFIA.get(limpa) ?? limpa);
-        q.chutes.push({ texto: grafia, cores: cores(limpa, secreta()) });
-        if (limpa === secreta()) q.acertouEm = Date.now() - inicio;
+        if (quadro.chutes.some((c) => c.chave === limpa)) return 'Você já chutou essa palavra.';
+        const alvo = secretas();
+        if (dificil) {
+          const respeita = alvo.every(
+            (_, b) => quadro.resolvidas[b] !== null || respeitaAsDicas(limpa, quadro.chutes.map((c) => ({ chave: c.chave, cores: c.cores[b] ?? [] }))),
+          );
+          if (!respeita) return 'No modo difícil, use as letras já reveladas.';
+        }
+        const grafia = alvo.includes(limpa) ? (GRAFIA_SORTEADA.get(limpa) ?? limpa) : (GRAFIA.get(limpa) ?? limpa);
+        quadro.chutes.push({ texto: grafia, chave: limpa, cores: alvo.map((p, b) => (quadro.resolvidas[b] !== null ? [] : cores(limpa, p))) });
+        alvo.forEach((p, b) => {
+          if (quadro.resolvidas[b] === null && p === limpa) quadro.resolvidas[b] = quadro.chutes.length;
+        });
+        if (quadro.resolvidas.every((n) => n !== null)) quadro.acertouEm = Date.now() - inicio;
         if (todosProntos()) revelar();
         else ctx.avisar();
         return null;

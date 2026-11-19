@@ -1,5 +1,5 @@
 import type { Mundo } from './mundo';
-import { ALTURA, LARGURA, posicaoBala, posicaoInimigo, posicaoItem, posicaoTiro, type Inimigo } from './sim';
+import { ALTURA, LARGURA, LOOP_DURA, posicaoBala, posicaoInimigo, posicaoItem, posicaoTiro, type Inimigo } from './sim';
 
 /**
  * O DESENHO DA ESQUADRILHA DA TOCA (05/11/2026), todo por código, numa tela de 180 × 240 ampliada em pixels inteiros: a horta
@@ -43,41 +43,9 @@ const NAVE = [
   '....Gg.g.gG....',
   '...G...g...G...',
 ];
-const CORVO_A = [
-  'k...........k',
-  'kk.........kk',
-  '.kkk.....kkk.',
-  '..kkkKKKkkk..',
-  '...kkKKKkk...',
-  '.....KKK.....',
-  '....kkkkk....',
-  '....krkrk....',
-  '......y......',
-];
-const CORVO_B = [
-  '.............',
-  '.............',
-  'kkkk.....kkkk',
-  '.kkkkKKKkkkk.',
-  '...kkKKKkk...',
-  '.....KKK.....',
-  '....kkkkk....',
-  '....krkrk....',
-  '......y......',
-];
-const VESPA_A = [
-  '....k....',
-  'c..kyk..c',
-  'cc.yyy.cc',
-  '.cckkkcc.',
-  '..yyyyy..',
-  '..kkkkk..',
-  '..yyyyy..',
-  '...kkk...',
-  '..kyyyk..',
-  '..ekkke..',
-  '...k.k...',
-];
+const CORVO_A = ['k...........k', 'kk.........kk', '.kkk.....kkk.', '..kkkKKKkkk..', '...kkKKKkk...', '.....KKK.....', '....kkkkk....', '....krkrk....', '......y......'];
+const CORVO_B = ['.............', '.............', 'kkkk.....kkkk', '.kkkkKKKkkkk.', '...kkKKKkk...', '.....KKK.....', '....kkkkk....', '....krkrk....', '......y......'];
+const VESPA_A = ['....k....', 'c..kyk..c', 'cc.yyy.cc', '.cckkkcc.', '..yyyyy..', '..kkkkk..', '..yyyyy..', '...kkk...', '..kyyyk..', '..ekkke..', '...k.k...'];
 const VESPA_B = VESPA_A.map((l, i) => (i <= 3 ? l.replace(/c/g, '.') : l)).map((l, i) => (i === 3 ? '..ckkkc..' : i === 4 ? '.cyyyyyc.' : l));
 const BESOURO = [
   '..k.........k..',
@@ -120,7 +88,8 @@ function figura(mapa: string[], ponta = '#e2483d'): HTMLCanvasElement {
   cacheDeFiguras.set(chave, c);
   return c;
 }
-const no = (ctx: CanvasRenderingContext2D, img: HTMLCanvasElement, x: number, y: number) => ctx.drawImage(img, Math.round(x - img.width / 2), Math.round(y - img.height / 2));
+const no = (ctx: CanvasRenderingContext2D, img: HTMLCanvasElement, x: number, y: number) =>
+  ctx.drawImage(img, Math.round(x - img.width / 2), Math.round(y - img.height / 2));
 
 /** Um sorteio só para o enfeite (não precisa bater com o servidor, só ficar igual de um quadro para o outro). */
 function enfeite(semente: number) {
@@ -265,6 +234,8 @@ export interface Desenho {
   minhaCor: string;
   /** Menos movimento: sem tremer a tela, sem clarão. */
   calmo: boolean;
+  /** O inimigo que pisca branco agora (acabou de levar um tiro: só desenho). */
+  piscando?: (i: number) => boolean;
 }
 
 function desenharInimigo(ctx: CanvasRenderingContext2D, e: Inimigo, x: number, y: number, n: number, dano: number) {
@@ -272,7 +243,62 @@ function desenharInimigo(ctx: CanvasRenderingContext2D, e: Inimigo, x: number, y
   if (e.tipo === 'corvo') no(ctx, figura(bate ? CORVO_A : CORVO_B), x, y);
   else if (e.tipo === 'vespa') no(ctx, figura(Math.floor(n / 3) % 2 ? VESPA_A : VESPA_B), x, y);
   else if (e.tipo === 'besouro') no(ctx, figura(BESOURO), x, y);
+  else if (e.rota[0] === 1) desenharVespeiro(ctx, x, y, n, dano / e.vida);
+  else if (e.rota[0] === 2) desenharTrator(ctx, x, y, n, dano / e.vida);
   else desenharChefe(ctx, x, y, n, dano / e.vida);
+}
+
+/** O VESPEIRO (19/11/2026, o chefe do pomar): a colmeia de papel, listrada, com as vespas zunindo em volta. */
+function desenharVespeiro(ctx: CanvasRenderingContext2D, cx: number, cy: number, n: number, ferido: number) {
+  const x = Math.round(cx);
+  const y = Math.round(cy);
+  const r = (cor: string, dx: number, dy: number, w: number, h: number) => {
+    ctx.fillStyle = cor;
+    ctx.fillRect(x + dx, y + dy, w, h);
+  };
+  r('#6a4a2a', -2, -26, 4, 6);
+  const larg = [10, 14, 17, 19, 20, 19, 17, 14, 10];
+  larg.forEach((w, k) => {
+    r(k % 2 ? '#b8862e' : '#e0b450', -w, -20 + k * 4, w * 2, 4);
+    r('#8a6020', -w, -20 + k * 4 + 3, w * 2, 1);
+  });
+  const pisca = ferido > 0.6 && Math.floor(n / 6) % 2 === 0;
+  r('#2b2633', -4, 6, 8, 6);
+  r(pisca ? '#ffe08a' : '#e2483d', -2, 8, 4, 2);
+  for (let k = 0; k < 4; k++) {
+    const a = (n / 20 + k / 4) * Math.PI * 2;
+    const vx = Math.round(Math.cos(a) * 26);
+    const vy = Math.round(Math.sin(a) * 18);
+    r('#f5c542', vx - 2, vy - 1, 4, 3);
+    r('#2b2633', vx, vy - 1, 1, 3);
+  }
+}
+
+/** O TRATOR (19/11/2026, o chefe do celeiro): o trator velho com a grade de ferro na frente e a fumaça da chaminé. */
+function desenharTrator(ctx: CanvasRenderingContext2D, cx: number, cy: number, n: number, ferido: number) {
+  const x = Math.round(cx);
+  const y = Math.round(cy);
+  const r = (cor: string, dx: number, dy: number, w: number, h: number) => {
+    ctx.fillStyle = cor;
+    ctx.fillRect(x + dx, y + dy, w, h);
+  };
+  r('#2b2633', -26, -12, 10, 24);
+  r('#2b2633', 16, -12, 10, 24);
+  for (let k = 0; k < 4; k++) {
+    const d = (Math.floor(n / 4) + k * 2) % 8;
+    r('#5a5058', -26, -12 + d * 3, 10, 1);
+    r('#5a5058', 16, -12 + d * 3, 10, 1);
+  }
+  r('#a83a2e', -16, -16, 32, 28);
+  r('#d4553f', -15, -15, 30, 6);
+  r('#5c6470', -12, 6, 24, 8);
+  for (let dx = -10; dx <= 8; dx += 4) r('#8d96a3', dx, 7, 2, 6);
+  const pisca = ferido > 0.6 && Math.floor(n / 6) % 2 === 0;
+  r(pisca ? '#ffe08a' : '#f5c542', -10, -6, 5, 4);
+  r(pisca ? '#ffe08a' : '#f5c542', 5, -6, 5, 4);
+  r('#3a3f47', 8, -26, 4, 10);
+  const f = Math.floor(n / 10) % 3;
+  r('rgba(140,130,130,0.7)', 7 - f, -32 - f * 3, 6 + f, 4);
 }
 
 /** O ESPANTALHO MECÂNICO: chapéu de palha, cara de saco com olhos acesos, a camisa remendada e os braços de cano com hélices. */
@@ -374,7 +400,12 @@ export function desenhar(ctx: CanvasRenderingContext2D, d: Desenho) {
     if (m.mortoEm(i) !== null) continue;
     const e = m.inimigos[i];
     const p = posicaoInimigo(e, n);
-    if (p) desenharInimigo(ctx, e, p.x, p.y, n, m.ficha.dano.get(i) ?? 0);
+    if (!p) continue;
+    // o piscar branco do acerto (só desenho)
+    const branco = d.piscando?.(i) ?? false;
+    if (branco) ctx.filter = 'brightness(4)';
+    desenharInimigo(ctx, e, p.x, p.y, n, m.ficha.dano.get(i) ?? 0);
+    if (branco) ctx.filter = 'none';
   }
 
   // os outros da esquadrilha, meio transparentes, com o nome
@@ -399,17 +430,33 @@ export function desenhar(ctx: CanvasRenderingContext2D, d: Desenho) {
   for (const b of m.balas) {
     const p = posicaoBala(b.p, b.x, b.y, b.arma, b.b, n);
     if (!p) continue;
-    ctx.fillStyle = '#ffb347';
-    ctx.fillRect(Math.round(p.x) - 1, Math.round(p.y) - 2, 2, 5);
+    // o nível da arma (19/11/2026): a bala do 2 é mais larga, a do 3 também mais comprida e com brilho
+    const larga = b.nivel >= 2 ? 3 : 2;
+    const longa = b.nivel >= 3 ? 7 : 5;
+    ctx.fillStyle = b.nivel >= 3 ? '#ff8a3a' : '#ffb347';
+    ctx.fillRect(Math.round(p.x) - 1, Math.round(p.y) - 2, larga, longa);
     ctx.fillStyle = '#fff3c4';
-    ctx.fillRect(Math.round(p.x) - 1, Math.round(p.y) - 3, 2, 1);
+    ctx.fillRect(Math.round(p.x) - 1, Math.round(p.y) - 3, larga, 1);
   }
 
   // a nave de quem joga (pisca enquanto está protegida)
   const f = m.ficha;
   if (m.pilotando) {
     const piscando = n < f.invulAte && Math.floor(n / 4) % 2 === 0;
-    if (!piscando) no(ctx, figura(NAVE, d.minhaCor), m.nave.x, m.nave.y);
+    // o loop de esquiva (19/11/2026): a nave vira de cabeça para baixo e volta, um pouco maior no meio (mais perto da câmera)
+    const loop = f.loopEm(n);
+    if (loop !== null && !piscando) {
+      const u = (n - loop) / LOOP_DURA;
+      const vira = Math.cos(u * Math.PI * 2);
+      const perto = 1 + 0.35 * Math.sin(u * Math.PI);
+      ctx.save();
+      ctx.translate(Math.round(m.nave.x), Math.round(m.nave.y));
+      ctx.scale(perto, Math.max(0.15, Math.abs(vira)) * perto);
+      ctx.translate(-Math.round(m.nave.x), -Math.round(m.nave.y));
+      if (f.invulNoLoop(n)) ctx.globalAlpha = 0.75;
+      no(ctx, figura(NAVE, d.minhaCor), m.nave.x, m.nave.y);
+      ctx.restore();
+    } else if (!piscando) no(ctx, figura(NAVE, d.minhaCor), m.nave.x, m.nave.y);
     if (f.escudo) {
       ctx.strokeStyle = Math.floor(n / 6) % 2 ? 'rgba(120,200,255,0.9)' : 'rgba(200,235,255,0.7)';
       ctx.lineWidth = 1;

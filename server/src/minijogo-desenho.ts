@@ -1,5 +1,6 @@
 import { embaralhar, placar, type Definicao } from './minijogo-motor.js';
 import { normalizar } from './minijogo-stop.js';
+import { BONUS_DO_NIVEL, nivelDoDesenho, PALAVRAS_NOVAS_DO_DESENHO, type NivelDoDesenho } from './desenho-palavras.js';
 
 /**
  * O DESENHA E ADIVINHA (o Gartic do Syden). Três rodadas, e em cada uma cada pessoa desenha uma vez: escolhe uma de três
@@ -44,6 +45,8 @@ export const PALAVRAS_DO_DESENHO = [
   'escova-de-cabelo', 'pente', 'pasta-de-dente', 'sabonete', 'toalha', 'banheira', 'chuveiro', 'privada',
   'geladeira', 'fogao', 'torradeira', 'liquidificador', 'ventilador', 'ar-condicionado', 'tomada', 'pilha',
   'lanterna',
+  // as 364 de 19/11/2026, com os níveis (desenho-palavras.ts)
+  ...PALAVRAS_NOVAS_DO_DESENHO,
 ];
 
 export const ESCOLHENDO_MS = 15_000;
@@ -56,6 +59,19 @@ export const RODADAS_DO_DESENHO = 3;
 /** As cores e as espessuras que o site oferece (o índice é o que viaja). */
 export const CORES = 12;
 export const ESPESSURAS = 3;
+/**
+ * O BALDE (19/11/2026): pintar uma área fechada. Viaja como um traço de UM ponto com esta "espessura", na mesma sequência dos
+ * outros traços; quem pinta é cada tela, numa grade própria, igual em todas (ver web/src/desenho/balde.ts).
+ */
+export const BALDE = 9;
+export const BALDES_POR_DESENHO = 60;
+/**
+ * A LISTA PRÓPRIA DA SALA (19/11/2026): quem começa escreve as palavras. São conteúdo de quem cria (como o nome de um canal),
+ * aparecem como foram escritas e NÃO passam pela tradução; no estado vão com um "#" na frente. Valem como médias no bônus.
+ */
+export const MAXIMO_NA_LISTA = 200;
+export const TAMANHO_NA_LISTA = 30;
+
 /** Teto de pontos por desenho: um rabisco que nunca termina não enche a memória do servidor. */
 export const PONTOS_POR_DESENHO = 30_000;
 
@@ -81,10 +97,26 @@ interface Traco {
 
 type Fase = 'escolhendo' | 'desenhando' | 'revelando' | 'fim';
 
+/** O nível de uma palavra: as da lista da turma contam como médias. */
+const nivelDe = (id: string): NivelDoDesenho => (id.startsWith('#') ? 2 : nivelDoDesenho(id));
+
 export const desenho: Definicao = {
   minimo: 2,
-  comecar(ctx, { naSala }) {
+  comecar(ctx, { naSala, corpo }) {
     if (naSala.length < 2) return 'O desenho precisa de pelo menos 2 pessoas na sala.';
+    const daTurma = [
+      ...new Set(
+        (Array.isArray(corpo.lista) ? corpo.lista : [])
+          .slice(0, MAXIMO_NA_LISTA * 2)
+          .map((x) => String(x ?? '').replace(/\s+/g, ' ').trim().slice(0, TAMANHO_NA_LISTA))
+          .filter(Boolean),
+      ),
+    ]
+      .slice(0, MAXIMO_NA_LISTA)
+      .map((x) => `#${x}`);
+    const soDaTurma = corpo.soLista === true && daTurma.length > 0;
+    if (soDaTurma && daTurma.length < 3) return 'A lista precisa de pelo menos 3 palavras.';
+    const largada = daTurma.length ? { lista: daTurma.map((x) => x.slice(1)), soLista: soDaTurma } : {};
     // TRÊS RODADAS, e em cada uma todo mundo desenha uma vez, na mesma ordem (pedido dele, 02/11/2026: "pelo menos uns
     // 3 rounds"; antes cada um desenhava uma vez só, e com duas pessoas a partida acabava em dois desenhos).
     const pessoas = embaralhar([...naSala]).slice(0, MAXIMO_DE_VEZES);
@@ -107,10 +139,22 @@ export const desenho: Definicao = {
     let versao = 0;
     let dicas: number[] = [];
     let dicaRelogio: ReturnType<typeof setTimeout> | null = null;
+    /** Quem votou para pular o desenho da vez (19/11/2026): com mais da metade de quem chuta, a palavra aparece e a vez passa. */
+    const pular = new Set<number>();
 
+    /** Uma palavra de cada nível (fácil, média, difícil), ou da lista da turma. Sem repetir na partida, enquanto der. */
     function sortearOpcoes() {
-      const livres = PALAVRAS_DO_DESENHO.filter((id) => !usadas.has(id));
-      return embaralhar(livres.length >= 3 ? livres : [...PALAVRAS_DO_DESENHO]).slice(0, 3);
+      const livres = (lista: string[]) => {
+        const sobra = lista.filter((id) => !usadas.has(id));
+        return embaralhar(sobra.length ? sobra : [...lista]);
+      };
+      if (soDaTurma) {
+        const sobra = daTurma.filter((id) => !usadas.has(id));
+        return embaralhar(sobra.length >= 3 ? sobra : [...daTurma]).slice(0, 3);
+      }
+      const nivel = (n: NivelDoDesenho) => livres(PALAVRAS_DO_DESENHO.filter((id) => nivelDoDesenho(id) === n))[0];
+      // com a lista da turma junto, uma das três é dela (no lugar da média)
+      return [nivel(1), daTurma.length ? livres(daTurma)[0] : nivel(2), nivel(3)];
     }
 
     function proximaVez() {
@@ -131,6 +175,7 @@ export const desenho: Definicao = {
       pontosNoDesenho = 0;
       versao++;
       dicas = [];
+      pular.clear();
       fase = 'escolhendo';
       ctx.agendar(ESCOLHENDO_MS, () => escolher(opcoes[0], null));
       ctx.avisar();
@@ -145,7 +190,8 @@ export const desenho: Definicao = {
         .split('|')
         .map((f) => f.trim())
         .filter(Boolean);
-      palavra = { id, texto: formas[0] ?? id, outras: formas.slice(1) };
+      // a palavra da lista da turma é ela mesma (não tem tradução: o que quem desenha mandou não conta)
+      palavra = id.startsWith('#') ? { id, texto: id.slice(1), outras: [] } : { id, texto: formas[0] ?? id, outras: formas.slice(1) };
       fase = 'desenhando';
       inicio = Date.now();
       ctx.agendar(DESENHANDO_MS, revelar);
@@ -178,6 +224,11 @@ export const desenho: Definicao = {
       ctx.avisar();
     }
 
+    /** Quem chuta agora: os da sala menos quem desenha. */
+    function quemChuta() {
+      return ctx.naSala().filter((id) => id !== quemDesenha);
+    }
+
     proximaVez();
     return {
       publico(quem) {
@@ -192,6 +243,11 @@ export const desenho: Definicao = {
           rodadas: RODADAS_DO_DESENHO,
           quemDesenha,
           opcoes: desenhando && fase === 'escolhendo' ? opcoes : null,
+          niveis: desenhando && fase === 'escolhendo' ? opcoes.map(nivelDe) : null,
+          // o nível da palavra da vez: todo mundo vê (é o que diz quanto o acerto vale)
+          nivel: palavra ? nivelDe(palavra.id) : null,
+          pular: { votos: pular.size, precisa: Math.floor(quemChuta().length / 2) + 1, votei: pular.has(quem) },
+          largada,
           palavra: aberta && palavra ? palavra : null,
           // Para quem chuta: o tamanho da palavra, com as letras de dica já abertas.
           mascara: palavra && !aberta ? Array.from(texto).map((ch, i) => (!ch.trim() ? ' ' : dicas.includes(i) ? ch : '_')) : null,
@@ -223,10 +279,12 @@ export const desenho: Definicao = {
           const certas = [palavra.texto, ...palavra.outras, palavra.id].map(comparavel);
           if (certas.includes(chute)) {
             acertaram.push(quem);
-            // Quanto antes, mais: de 100 (na hora) a 40 (no fim), e quem desenha ganha 25 por acerto.
+            // Quanto antes, mais: de 100 (na hora) a 40 (no fim), e quem desenha ganha 25 por acerto. Vezes o bônus do nível
+            // (19/11/2026): a média vale 25% a mais, a difícil 50% a mais.
             const fracao = Math.max(0, 1 - (Date.now() - inicio) / DESENHANDO_MS);
-            pontos.set(quem, (pontos.get(quem) ?? 0) + Math.round(40 + 60 * fracao));
-            pontos.set(quemDesenha, (pontos.get(quemDesenha) ?? 0) + 25);
+            const bonus = BONUS_DO_NIVEL[nivelDe(palavra.id)];
+            pontos.set(quem, (pontos.get(quem) ?? 0) + Math.round((40 + 60 * fracao) * bonus));
+            pontos.set(quemDesenha, (pontos.get(quemDesenha) ?? 0) + Math.round(25 * bonus));
             chutes.push({ userId: quem, texto: '', perto: false });
             // Todo mundo da sala acertou: revela sem esperar o relógio.
             if (ctx.naSala().every((id) => id === quemDesenha || acertaram.includes(id))) revelar();
@@ -235,6 +293,17 @@ export const desenho: Definicao = {
           }
           chutes.push({ userId: quem, texto, perto: certas.some((c) => quaseIgual(chute, c)) });
           ctx.avisar();
+          return null;
+        }
+        if (corpo.tipo === 'pular') {
+          if (fase !== 'desenhando') return 'Agora não é hora de pular.';
+          if (quem === quemDesenha) return 'Quem desenha não vota para pular.';
+          if (pular.has(quem)) pular.delete(quem);
+          else pular.add(quem);
+          // Mais da metade de quem chuta (e está na sala) quer pular: a palavra aparece, e quem desenha não ganha nada a mais.
+          const naSala = quemChuta();
+          if ([...pular].filter((id) => naSala.includes(id)).length * 2 > naSala.length) revelar();
+          else ctx.avisar();
           return null;
         }
         if (corpo.tipo === 'limpar' || corpo.tipo === 'desfazer') {
@@ -258,8 +327,13 @@ export const desenho: Definicao = {
         if (fase !== 'desenhando' || quem !== quemDesenha || typeof dados !== 'object' || dados === null) return null;
         const { t, i, c, e, p } = dados as Record<string, unknown>;
         const inteiro = (x: unknown, max: number) => Number.isInteger(x) && (x as number) >= 0 && (x as number) <= max;
-        if (!inteiro(t, 100_000) || !inteiro(i, 5_000) || !inteiro(c, CORES - 1) || !inteiro(e, ESPESSURAS - 1)) return null;
+        // (o balde é um traço de um ponto só, com a "espessura" BALDE)
+        const balde = e === BALDE;
+        if (!inteiro(t, 100_000) || !inteiro(i, 5_000) || !inteiro(c, CORES - 1) || (!balde && !inteiro(e, ESPESSURAS - 1))) return null;
         if (!Array.isArray(p) || p.length === 0 || p.length > 400 || p.length % 2 !== 0 || !p.every((x) => inteiro(x, 1000))) return null;
+        if (balde && (p.length !== 2 || i !== 0)) return null;
+        // cada balde custa a cada tela refazer a grade inteira: um desenho tem no máximo BALDES_POR_DESENHO
+        if (balde && !tracos.has(t as number) && [...tracos.values()].filter((tr) => tr.e === BALDE).length >= BALDES_POR_DESENHO) return null;
         // A conta é do que FICA GUARDADO: reenviar uma parte que já existe troca os pontos dela pelos novos. Antes só a parte
         // nova contava, e um programa reenviando o mesmo pedaço com 200 pontos enchia o servidor (auditoria de 12/11/2026).
         const traco = tracos.get(t as number) ?? { c: c as number, e: e as number, partes: new Map() };

@@ -245,3 +245,96 @@
 .skate-ordem li.eu {
   color: #ffe08a;
 }
+
+/* 19/11/2026: os objetivos (as letras, os cumpridos), a barra de especial e a escolha da pista */
+.skate-objetivos-painel {
+  position: absolute;
+  top: 46px;
+  left: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  font-size: calc(14px * var(--escala-do-texto, 1));
+}
+.skate-letras {
+  display: flex;
+  gap: 2px;
+}
+.skate-letras b {
+  width: 1.3em;
+  text-align: center;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.35);
+  color: rgba(255, 255, 255, 0.4);
+}
+.skate-letras b.pega {
+  background: #f2c14e;
+  color: #2a2333;
+}
+.skate-especial {
+  display: block;
+  width: 90px;
+  height: 7px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+.skate-especial > span {
+  display: block;
+  height: 100%;
+  background: #4db4ef;
+}
+.skate-especial.cheia > span {
+  background: #f2c14e;
+}
+.skate-objetivos {
+  list-style: none;
+  margin: 4px 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+}
+.skate-objetivos li {
+  opacity: 0.65;
+}
+.skate-objetivos li.feito {
+  opacity: 1;
+  font-weight: 600;
+}
+.skate-escolha {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+.skate-pistas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.skate-pistas button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  border: 2px solid var(--border);
+  background: var(--bg-raised);
+  color: var(--text);
+  cursor: pointer;
+}
+.skate-pistas button.escolhida {
+  border-color: var(--accent);
+}
+.skate-mapa {
+  width: 72px;
+  height: 108px;
+}

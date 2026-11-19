@@ -182,6 +182,8 @@ export interface Queda {
   dir: number;
   em: number;
   pontos: number;
+  /** A dourada: os pontos sobem em dourado. */
+  dourada?: boolean;
 }
 
 export interface Quadro {
@@ -195,6 +197,8 @@ export interface Quadro {
   mira: { x: number; y: number } | null;
   /** O clarão do último tiro. */
   tiro: { x: number; y: number; em: number } | null;
+  /** O multiplicador do combo agora (1, 2 ou 3): aparece no canto quando passa de 1. */
+  multiplicador?: number;
 }
 
 export function desenhar(ctx: CanvasRenderingContext2D, q: Quadro) {
@@ -206,6 +210,7 @@ export function desenhar(ctx: CanvasRenderingContext2D, q: Quadro) {
       const pos = posicao(p, q.ms!);
       if (!pos) return;
       const dir = p.vx >= 0 ? 1 : -1;
+      if (p.dourada) brilhoDourado(ctx, pos.x, pos.y, q.ms! + i * 41);
       if (p.tipo === 'corvo') corvo(ctx, pos.x, pos.y, dir, q.ms! + i * 37);
       else gafanhoto(ctx, pos.x, pos.y, dir, q.ms! + i * 53);
     });
@@ -230,7 +235,7 @@ export function desenhar(ctx: CanvasRenderingContext2D, q: Quadro) {
       ctx.fillRect(queda.x + Math.cos(a) * 22 * s, queda.y + Math.sin(a) * 16 * s + 20 * s * s, 2, 1);
     }
     ctx.globalAlpha = Math.max(0, 1 - s / 1.2);
-    ctx.fillStyle = '#fff8d6';
+    ctx.fillStyle = queda.dourada ? '#ffd23a' : '#fff8d6';
     ctx.strokeStyle = '#4a3420';
     ctx.lineWidth = 2;
     ctx.font = 'bold 9px system-ui, sans-serif';
@@ -240,12 +245,34 @@ export function desenhar(ctx: CanvasRenderingContext2D, q: Quadro) {
     ctx.fillText(texto, queda.x, queda.y - 10 - 18 * s);
     ctx.restore();
   }
-  // o clarão do tiro
-  if (q.tiro && q.agora - q.tiro.em < 120) {
-    ctx.fillStyle = `rgba(255, 250, 210, ${1 - (q.agora - q.tiro.em) / 120})`;
+  // o clarão do tiro: a tela inteira acende um instante, e o ponto do tiro com o anel que abre (19/11/2026)
+  if (q.tiro && q.agora - q.tiro.em < 140) {
+    const k = (q.agora - q.tiro.em) / 140;
+    if (k < 0.35) {
+      ctx.fillStyle = `rgba(255, 250, 220, ${0.16 * (1 - k / 0.35)})`;
+      ctx.fillRect(0, 0, LARGURA, ALTURA);
+    }
+    ctx.fillStyle = `rgba(255, 250, 210, ${1 - k})`;
     ctx.beginPath();
-    ctx.arc(q.tiro.x, q.tiro.y, 5, 0, Math.PI * 2);
+    ctx.arc(q.tiro.x, q.tiro.y, 6 - 2 * k, 0, Math.PI * 2);
     ctx.fill();
+    ctx.strokeStyle = `rgba(255, 220, 140, ${1 - k})`;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(q.tiro.x, q.tiro.y, 6 + 10 * k, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  // o combo no canto (só o número: ×2, ×3)
+  if (q.multiplicador && q.multiplicador > 1) {
+    ctx.save();
+    ctx.font = 'bold 12px system-ui, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = '#4a3420';
+    ctx.fillStyle = q.multiplicador >= 3 ? '#ffd23a' : '#fff8d6';
+    ctx.strokeText(`×${q.multiplicador}`, LARGURA - 6, 16);
+    ctx.fillText(`×${q.multiplicador}`, LARGURA - 6, 16);
+    ctx.restore();
   }
   // a mira
   if (q.mira) {
@@ -271,4 +298,120 @@ function desenharMira(ctx: CanvasRenderingContext2D, x: number, y: number) {
   ctx.moveTo(x, y + 4);
   ctx.lineTo(x, y + 11);
   ctx.stroke();
+}
+
+/** O BRILHO DA DOURADA (19/11/2026): um halo amarelo atrás da praga, com faíscas que giram. */
+function brilhoDourado(ctx: CanvasRenderingContext2D, x: number, y: number, ms: number) {
+  ctx.save();
+  ctx.globalAlpha = 0.45 + 0.2 * Math.sin(ms / 90);
+  ctx.fillStyle = '#ffd23a';
+  ctx.beginPath();
+  ctx.ellipse(x, y, 13, 9, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = '#fff6c8';
+  for (let k = 0; k < 4; k++) {
+    const a = ms / 160 + (k * Math.PI) / 2;
+    ctx.fillRect(Math.round(x + Math.cos(a) * 15), Math.round(y + Math.sin(a) * 10), 2, 2);
+  }
+  ctx.restore();
+}
+
+/**
+ * O COELHO DA MOITA (19/11/2026): no fim da onda, ele sobe de trás da moita. Alegre (os braços para cima) quando a onda foi
+ * boa; rindo (a mão na barriga, os olhos fechados de rir) quando quase tudo fugiu. Por código, sem texto. `s` é o tempo (ms)
+ * desde que a cena começou.
+ */
+export function desenharCoelhoDaMoita(ctx: CanvasRenderingContext2D, w: number, h: number, alegre: boolean, s: number) {
+  ctx.clearRect(0, 0, w, h);
+  const sobe = Math.min(1, s / 450);
+  const cx = Math.round(w / 2);
+  const base = h - 8;
+  const y = Math.round(base - 34 * sobe + (alegre ? Math.abs(Math.sin(s / 160)) * -3 : Math.sin(s / 70) * 1.5));
+  // o coelho (atrás da moita)
+  ctx.save();
+  ctx.fillStyle = '#f2ece2';
+  ctx.strokeStyle = '#4a3420';
+  ctx.lineWidth = 1;
+  // as orelhas
+  for (const d of [-1, 1]) {
+    ctx.beginPath();
+    ctx.ellipse(cx + d * 5, y - 22, 3, 9, d * 0.15, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = '#f2b7b0';
+    ctx.beginPath();
+    ctx.ellipse(cx + d * 5, y - 22, 1.3, 6, d * 0.15, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#f2ece2';
+  }
+  // o corpo e a cabeça
+  ctx.beginPath();
+  ctx.ellipse(cx, y + 8, 10, 12, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(cx, y - 6, 9, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+  // os braços
+  ctx.lineWidth = 3;
+  ctx.strokeStyle = '#f2ece2';
+  ctx.beginPath();
+  if (alegre) {
+    const balanco = Math.sin(s / 120) * 3;
+    ctx.moveTo(cx - 8, y + 4);
+    ctx.lineTo(cx - 15, y - 10 + balanco);
+    ctx.moveTo(cx + 8, y + 4);
+    ctx.lineTo(cx + 15, y - 10 - balanco);
+  } else {
+    ctx.moveTo(cx - 8, y + 4);
+    ctx.lineTo(cx - 2, y + 11);
+    ctx.moveTo(cx + 8, y + 4);
+    ctx.lineTo(cx + 2, y + 11);
+  }
+  ctx.stroke();
+  // o rosto
+  ctx.fillStyle = '#2a2a2a';
+  ctx.strokeStyle = '#2a2a2a';
+  ctx.lineWidth = 1;
+  if (alegre) {
+    ctx.fillRect(cx - 4, y - 8, 2, 2);
+    ctx.fillRect(cx + 2, y - 8, 2, 2);
+    ctx.beginPath();
+    ctx.arc(cx, y - 4, 3, 0.15 * Math.PI, 0.85 * Math.PI);
+    ctx.stroke();
+  } else {
+    // os olhos fechados de rir e a boca aberta
+    ctx.beginPath();
+    ctx.moveTo(cx - 5, y - 7);
+    ctx.lineTo(cx - 3, y - 9);
+    ctx.lineTo(cx - 1, y - 7);
+    ctx.moveTo(cx + 1, y - 7);
+    ctx.lineTo(cx + 3, y - 9);
+    ctx.lineTo(cx + 5, y - 7);
+    ctx.stroke();
+    ctx.fillStyle = '#7a2e2e';
+    ctx.beginPath();
+    ctx.ellipse(cx, y - 2, 3, 2 + Math.abs(Math.sin(s / 70)), 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.restore();
+  // a moita, na frente
+  ctx.fillStyle = '#4f8a35';
+  for (const [dx, r] of [[-16, 10], [0, 13], [16, 10], [-8, 9], [8, 9]] as const) {
+    ctx.beginPath();
+    ctx.arc(cx + dx, base, r, Math.PI, 0);
+    ctx.fill();
+  }
+  ctx.fillStyle = '#6aa64a';
+  for (const [dx, dy] of [[-12, -6], [4, -9], [14, -4], [-3, -3]] as const) ctx.fillRect(cx + dx, base + dy, 2, 2);
+  // as estrelinhas da alegria
+  if (alegre) {
+    ctx.fillStyle = '#ffd23a';
+    for (let k = 0; k < 3; k++) {
+      const a = s / 300 + (k * 2 * Math.PI) / 3;
+      ctx.fillRect(Math.round(cx + Math.cos(a) * 24), Math.round(y - 12 + Math.sin(a) * 8), 2, 2);
+    }
+  }
 }

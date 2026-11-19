@@ -17,10 +17,16 @@
  * NA SALA, de 2 a 8: o mesmo verde para todos, cada um na sua mesa, durante 3 minutos de mesa (ou até as três bolas acabarem).
  * A ordem ao vivo é a dos pontos que o servidor já refez. Mais pontos ganha; os três primeiros vão à estante de troféus
  * (pista 'pinball'). Sem itens, a partida da sala que bate o recorde da pessoa vira o recorde dela (como no skate).
+ *
+ * A SEGUNDA MESA (19/11/2026): no Solo, a pessoa escolhe a mesa ao jogar (o POMAR, MESAS[1] em pinball-sim.ts). O recorde do
+ * pomar é só dela, na tabela comum dos recordes do Solo (jogo 'pinball', variante 'pomar'); o da horta continua em
+ * pinball_recordes, com a lista dos amigos. Na sala, a horta.
  */
 import * as db from './db.js';
 import type { Contexto, Definicao } from './minijogo-motor.js';
-import { aplicar, entradasValidas, novaMesa, PASSOS_MAXIMOS, type Mesa } from './pinball-sim.js';
+import { aplicar, entradasValidas, mesaValida, novaMesa, PASSOS_MAXIMOS, type Mesa } from './pinball-sim.js';
+
+const recordeDoPomar = (userId: number) => db.recordeDoSolo(userId, 'pinball', 'pomar')?.valor ?? null;
 
 export const LARGADA_MS = 4000;
 /** Na sala: 3 minutos de mesa, e a turma espera quem pausou mais 1 minuto. */
@@ -83,6 +89,7 @@ function partidaSolo(ctx: Contexto, eu: number, agora: () => number) {
   let rodada = 0;
   let j: Jogador | null = null;
   let resultado: { pontos: number; recorde: boolean; anterior: number | null } | null = null;
+  let mesa = 0;
   const parado = () => ctx.agendar(SOLO_PARADO_MS, () => ctx.terminar(rodada > 0));
   parado();
 
@@ -95,8 +102,10 @@ function partidaSolo(ctx: Contexto, eu: number, agora: () => number) {
       solo: true,
       rodada,
       limite: PASSOS_MAXIMOS,
+      mesa,
       meu: j ? resumo(j.mesa) : null,
       recordes: recordes(),
+      recordeDoPomar: recordeDoPomar(eu),
       resultado,
       partidaId: evento,
     }),
@@ -105,7 +114,8 @@ function partidaSolo(ctx: Contexto, eu: number, agora: () => number) {
       parado();
       if (corpo.tipo === 'jogar') {
         if (fase === 'jogando' && j && !j.mesa.terminou && j.mesa.passo > 0) return 'A partida está andando.';
-        j = { mesa: novaMesa(PASSOS_MAXIMOS), inicio: agora() };
+        mesa = mesaValida(corpo.mesa);
+        j = { mesa: novaMesa(PASSOS_MAXIMOS, mesa), inicio: agora() };
         fase = 'jogando';
         rodada++;
         resultado = null;
@@ -117,8 +127,10 @@ function partidaSolo(ctx: Contexto, eu: number, agora: () => number) {
         const erro = lerTrecho(j, corpo, agora());
         if (erro) return erro;
         if (j.mesa.terminou) {
-          const anterior = db.recordeDoPinball(eu);
-          const recorde = j.mesa.pontos > 0 && db.guardarRecordeDoPinball(eu, j.mesa.pontos);
+          const pomar = j.mesa.mesa === 1;
+          const anterior = pomar ? recordeDoPomar(eu) : db.recordeDoPinball(eu);
+          const recorde =
+            j.mesa.pontos > 0 && (pomar ? db.guardarRecordeDoSolo(eu, 'pinball', 'pomar', j.mesa.pontos, false).novo : db.guardarRecordeDoPinball(eu, j.mesa.pontos));
           resultado = { pontos: j.mesa.pontos, recorde, anterior };
           fase = 'resultado';
           ctx.avisar();

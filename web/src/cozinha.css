@@ -144,3 +144,38 @@
   text-shadow: 0 2px 8px rgb(0 0 0 / 0.35);
   pointer-events: none;
 }
+
+/* A escolha da planta (19/11/2026): um mapinha por cozinha, sem texto, e o recorde do Solo embaixo. */
+.cozinha-plantas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 10px;
+}
+
+.cozinha-plantas .minijogo-jogo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.cozinha-planta {
+  max-width: 100%;
+  height: auto;
+}
+
+.cozinha-planta-recorde,
+.cozinha-gorjeta {
+  color: var(--text-strong);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.cozinha-recorde {
+  color: var(--text-strong);
+  font-weight: 700;
+}

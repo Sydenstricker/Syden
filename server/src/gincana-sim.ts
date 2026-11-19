@@ -30,7 +30,12 @@ export const TRAS = 2;
 export const ESQUERDA = 4;
 export const DIREITA = 8;
 export const PULO = 16;
-export const COMANDO_MAXIMO = 31;
+/**
+ * O MERGULHO (19/11/2026): um impulso de barriga para a frente (ou para onde se aperta), um por pulo; ao tocar o chão, o coelho
+ * fica deitado um tico, sem correr nem pular. Corta caminho num vão, mas quem mergulha errado cai.
+ */
+export const MERGULHO = 32;
+export const COMANDO_MAXIMO = 63;
 
 export const RAIO = 0.3;
 export const ALTURA = 0.95;
@@ -66,6 +71,13 @@ export const RAIO_DA_BALA = 0.7;
 /** O braço do varredor: a grossura e a altura dele, acima do chão. */
 const GROSSURA_DO_BRACO = 0.35;
 const ALTURA_DO_BRACO = 1.4;
+/** O mergulho: a velocidade de saída, o tico para cima, quanto ainda se corrige no ar e quanto tempo fica deitado. */
+export const MERGULHO_V = 10.5;
+const MERGULHO_VY = 4.5;
+const ACEL_MERGULHO = 0.015;
+export const DEITADO_PASSOS = 20;
+/** O varredor que acelera: a cada ACEL_DIV passos, `acel` meios graus por passo a mais. */
+export const ACEL_DIV = 600;
 
 /**
  * A CONFERÊNCIA DAS POSIÇÕES AO VIVO (na sala): o mais rápido que um coelho anda, somando tudo o que o leva (a corrida, a
@@ -146,6 +158,8 @@ export interface Varredor {
   fase: number;
   bracos: 2 | 4;
   modelo: string;
+  /** Quanto o giro acelera (0: sempre igual). Ver ACEL_DIV. */
+  acel: number;
 }
 
 /** O canhão: atira balas que rolam no x, de (x, y, z), a `vx`, por `alcance`, uma a cada `periodo`. */
@@ -187,6 +201,11 @@ export interface Percurso {
   /** As caixas e as rampas por fatia de z (FATIA), para não olhar o percurso inteiro a cada passo. */
   fatias: number[][];
   fatiasDasRampas: number[][];
+  /**
+   * A RODADA DE SOBREVIVÊNCIA (19/11/2026): 0 num percurso de chegar; senão, quantos passos no máximo. Nela não há volta à
+   * bandeira: caiu (ou levou serra), está fora, e o tempo que aguentou é o resultado (quem fica mais ganha).
+   */
+  sobrevivencia: number;
 }
 
 const FATIA = 4;
@@ -227,10 +246,17 @@ const GIRO_SEN: number[] = [];
   }
 }
 
-/** O índice do giro do varredor no passo `n` (0 a 719). */
+/** O índice do giro do varredor no passo `n` (0 a 719). Com aceleração, a soma das velocidades (só inteiros: exato). */
 export function indiceDoGiro(v: Varredor, n: number): number {
-  const k = (v.fase + n * v.giro) % VOLTA_INTEIRA;
+  let k = v.fase + n * v.giro;
+  if (v.acel) k += (v.giro > 0 ? 1 : -1) * Math.floor((v.acel * n * n) / (2 * ACEL_DIV));
+  k %= VOLTA_INTEIRA;
   return k < 0 ? k + VOLTA_INTEIRA : k;
+}
+
+/** A velocidade do giro no passo `n` (meios graus por passo, com o sinal): para o desenho entre um passo e outro. */
+export function giroEm(v: Varredor, n: number): number {
+  return v.giro + (v.giro > 0 ? 1 : -1) * ((v.acel * n) / ACEL_DIV);
 }
 
 /** A direção do primeiro braço do varredor no passo `n`. */
@@ -277,7 +303,9 @@ export type Trecho =
   | { t: 'canhoes'; comp: number; zs: number[]; periodo: number }
   | { t: 'mola'; sobe: number }
   | { t: 'posto' }
-  | { t: 'chegada' };
+  | { t: 'chegada' }
+  /** O campo da sobrevivência: `lado` × `lado` blocos que caem (de 2 × 2), o do meio firme, e o varredor que acelera. */
+  | { t: 'campo'; lado: number; giro: number; acel: number; bracos: 2 | 4; segundos: number };
 
 export function montar(id: string, roteiro: Trecho[]): Percurso {
   const p: Percurso = {
@@ -294,6 +322,7 @@ export function montar(id: string, roteiro: Trecho[]): Percurso {
     enfeites: [],
     fatias: [],
     fatiasDasRampas: [],
+    sobrevivencia: 0,
   };
   let z = 0;
   let topo = 0;
@@ -371,7 +400,7 @@ export function montar(id: string, roteiro: Trecho[]): Percurso {
       case 'varredor': {
         const z0 = z;
         caixa({ x0: -3, x1: 3, y0: topo - 1, y1: topo, z0, z1: z0 + 6, modelo: 'platform_6x6x1_blue' });
-        p.varredores.push({ cx: 0, cz: z0 + 3, y: topo, braco: 2.75, giro: tr.giro, fase: 0, bracos: tr.bracos, modelo: tr.bracos === 4 ? 'swiper_quad_blue' : 'swiper_double_blue' });
+        p.varredores.push({ cx: 0, cz: z0 + 3, y: topo, braco: 2.75, giro: tr.giro, fase: 0, bracos: tr.bracos, modelo: tr.bracos === 4 ? 'swiper_quad_blue' : 'swiper_double_blue', acel: 0 });
         z += 6;
         break;
       }
@@ -443,6 +472,35 @@ export function montar(id: string, roteiro: Trecho[]): Percurso {
         poste(-w / 2 + 0.4, z0 + 0.6, 0.15, 2);
         break;
       }
+      case 'campo': {
+        // o coelho nasce na fileira da frente; o meio é firme (o eixo do varredor), e o resto cai e volta
+        const meio = Math.floor(tr.lado / 2);
+        const z0 = z;
+        for (let l = 0; l < tr.lado; l++) {
+          for (let k = 0; k < tr.lado; k++) {
+            const x0 = -tr.lado + k * 2, zz = z0 + l * 2;
+            if (l === meio && k === meio) caixa({ x0, x1: x0 + 2, y0: topo - 1, y1: topo, z0: zz, z1: zz + 2, modelo: 'platform_2x2x1_blue' });
+            else caixa({ tipo: 'cai', k: p.blocos++, x0, x1: x0 + 2, y0: topo - 1, y1: topo, z0: zz, z1: zz + 2, modelo: 'platform_2x2x1_red' });
+          }
+        }
+        p.postos.push({ z: 0, x: 0, y: topo, zVolta: z0 + 1 });
+        p.varredores.push({
+          cx: 0,
+          cz: z0 + tr.lado,
+          y: topo,
+          braco: tr.lado - 0.4,
+          giro: tr.giro,
+          fase: 0,
+          bracos: tr.bracos,
+          modelo: tr.bracos === 4 ? 'swiper_quad_blue' : 'swiper_double_blue',
+          acel: tr.acel,
+        });
+        z += tr.lado * 2;
+        // a chegada fica fora do alcance: na sobrevivência ninguém chega, aguenta
+        p.chegada = { z: z + 1000, y: 1000 };
+        p.sobrevivencia = tr.segundos * 60;
+        break;
+      }
       case 'chegada': {
         const z0 = z;
         chao(6, 'green', 'chegada');
@@ -454,7 +512,7 @@ export function montar(id: string, roteiro: Trecho[]): Percurso {
       }
     }
   }
-  p.comprimento = p.chegada.z;
+  p.comprimento = p.sobrevivencia ? z : p.chegada.z;
   // as fatias: cada caixa entra em todas as fatias que ela pode tocar, com o movimento inteiro
   const nFatias = Math.floor(z / FATIA) + 2;
   for (let f = 0; f < nFatias; f++) {
@@ -581,8 +639,21 @@ export const ROTEIROS: Record<string, Trecho[]> = {
   ],
 };
 
-export const PERCURSOS: Record<string, Percurso> = Object.fromEntries(Object.entries(ROTEIROS).map(([id, r]) => [id, montar(id, r)]));
+/**
+ * AS RODADAS DE SOBREVIVÊNCIA (19/11/2026): um campo de blocos que caem e voltam, com o varredor girando cada vez mais rápido.
+ * Ganha quem fica mais tempo (no máximo `segundos`).
+ */
+export const ROTEIROS_DE_SOBREVIVENCIA: Record<string, Trecho[]> = {
+  'campo-1': [{ t: 'campo', lado: 5, giro: 2, acel: 1, bracos: 2, segundos: 120 }],
+};
+
+export const PERCURSOS: Record<string, Percurso> = Object.fromEntries(
+  [...Object.entries(ROTEIROS), ...Object.entries(ROTEIROS_DE_SOBREVIVENCIA)].map(([id, r]) => [id, montar(id, r)]),
+);
+/** Os percursos de chegar (a corrida). */
 export const IDS_DOS_PERCURSOS = Object.keys(ROTEIROS);
+/** Os de sobrevivência. */
+export const IDS_DA_SOBREVIVENCIA = Object.keys(ROTEIROS_DE_SOBREVIVENCIA);
 
 // =====================================================================================================================
 // O COELHO
@@ -616,9 +687,16 @@ export interface Coelho {
   chegouEm: number;
   /** Os blocos que caem: o passo em que cada um foi pisado (−1: inteiro). */
   cai: number[];
+  /** No ar, de barriga (o mergulho deste pulo já foi usado). */
+  mergulho: boolean;
+  mergulhoAntes: boolean;
+  /** Os passos que ainda fica deitado depois do mergulho. */
+  deitado: number;
+  /** Na sobrevivência: caiu, está fora (o `chegouEm` é o quanto aguentou). */
+  fora: boolean;
 }
 
-export type Evento = null | 'pulo' | 'queda' | 'machucou' | 'empurrao' | 'mola' | 'posto' | 'chegou';
+export type Evento = null | 'pulo' | 'queda' | 'machucou' | 'empurrao' | 'mola' | 'posto' | 'chegou' | 'mergulho' | 'fora';
 
 export function novoCoelho(p: Percurso): Coelho {
   const l = p.postos[0];
@@ -645,6 +723,10 @@ export function novoCoelho(p: Percurso): Coelho {
     chegou: false,
     chegouEm: 0,
     cai: new Array(p.blocos).fill(-1),
+    mergulho: false,
+    mergulhoAntes: false,
+    deitado: 0,
+    fora: false,
   };
 }
 
@@ -682,6 +764,21 @@ function voltarAoPosto(c: Coelho, p: Percurso) {
   c.golpe = 0;
   c.quedas++;
   c.pisca = PISCA_PASSOS;
+  c.mergulho = false;
+  c.deitado = 0;
+}
+
+/** Caiu ou se machucou: no percurso de chegar, volta à bandeira; na sobrevivência, está fora. */
+function perdeu(c: Coelho, p: Percurso, ev: 'queda' | 'machucou'): Evento {
+  if (p.sobrevivencia) {
+    c.chegou = true;
+    c.fora = true;
+    c.chegouEm = c.passo;
+    c.quedas++;
+    return 'fora';
+  }
+  voltarAoPosto(c, p);
+  return ev;
 }
 
 /** Um passo de 1/60 s com os comandos `e` (os bits FRENTE, TRAS, ESQUERDA, DIREITA, PULO). */
@@ -719,9 +816,32 @@ export function passo(c: Coelho, e: number, p: Percurso): Evento {
     dx *= DIAGONAL;
     dz *= DIAGONAL;
   }
-  const acel = c.noChao ? ACEL_CHAO : ACEL_AR;
-  c.vx += (dx * VELOCIDADE - c.vx) * acel;
-  c.vz += (dz * VELOCIDADE - c.vz) * acel;
+  if (c.deitado > 0) {
+    // deitado depois do mergulho: escorrega e para, sem correr
+    c.deitado--;
+    c.vx *= 0.82;
+    c.vz *= 0.82;
+  } else {
+    const acel = c.mergulho ? ACEL_MERGULHO : c.noChao ? ACEL_CHAO : ACEL_AR;
+    c.vx += (dx * VELOCIDADE - c.vx) * acel;
+    c.vz += (dz * VELOCIDADE - c.vz) * acel;
+  }
+  // o mergulho: na hora de apertar, um por pulo (ou um saindo do chão), nunca deitado
+  const mergulha = (e & MERGULHO) !== 0;
+  if (mergulha && !c.mergulhoAntes && !c.mergulho && c.deitado === 0) {
+    const parado = dx === 0 && dz === 0;
+    c.vx = parado ? 0 : dx * MERGULHO_V;
+    c.vz = parado ? MERGULHO_V : dz * MERGULHO_V;
+    if (c.vy < MERGULHO_VY) c.vy = MERGULHO_VY;
+    c.mergulho = true;
+    c.noChao = false;
+    c.sobre = -1;
+    c.coiote = 0;
+    c.guarda = 0;
+    c.segurando = false;
+    ev = 'mergulho';
+  }
+  c.mergulhoAntes = mergulha;
   const freio = c.noChao ? 0.85 : 0.97;
   c.kx *= freio;
   c.kz *= freio;
@@ -736,7 +856,7 @@ export function passo(c: Coelho, e: number, p: Percurso): Evento {
   else if (c.coiote > 0) c.coiote--;
   if (c.guarda > 0) {
     c.guarda--;
-    if (c.coiote > 0) {
+    if (c.coiote > 0 && c.deitado === 0 && !c.mergulho) {
       c.vy = IMPULSO;
       c.noChao = false;
       c.sobre = -1;
@@ -842,6 +962,10 @@ export function passo(c: Coelho, e: number, p: Percurso): Evento {
     c.vy = 0;
     c.noChao = true;
     c.sobre = sobre;
+    if (c.mergulho) {
+      c.mergulho = false;
+      c.deitado = DEITADO_PASSOS;
+    }
   }
 
   // 6. o que o chão faz
@@ -856,8 +980,7 @@ export function passo(c: Coelho, e: number, p: Percurso): Evento {
       c.segurando = false;
       ev = 'mola';
     } else if (b.tipo === 'espinhos' && espinhosFora(b, m)) {
-      voltarAoPosto(c, p);
-      return 'machucou';
+      return perdeu(c, p, 'machucou');
     }
   }
 
@@ -868,8 +991,7 @@ export function passo(c: Coelho, e: number, p: Percurso): Evento {
     const ox = c.x - (s.cx + d.dx), oz = c.z - (s.cz + d.dz);
     const r = s.raio + RAIO;
     if (ox * ox + oz * oz < r * r && c.y < s.y + 0.3 && c.y + ALTURA > s.y - 0.1) {
-      voltarAoPosto(c, p);
-      return 'machucou';
+      return perdeu(c, p, 'machucou');
     }
   }
   if (c.golpe === 0) {
@@ -888,7 +1010,8 @@ export function passo(c: Coelho, e: number, p: Percurso): Evento {
         const r = RAIO + GROSSURA_DO_BRACO;
         if (px * px + pz * pz < r * r) {
           // para o lado em que o braço gira, e um tico para fora
-          const sentido = v.giro > 0 ? 1 : -1;
+          // (o do campo, que acelera, empurra mais quanto mais rápido gira)
+          const sentido = (v.giro > 0 ? 1 : -1) * (v.acel ? 1 + ((v.acel * m) / ACEL_DIV) * 0.12 : 1);
           c.kx = -az * sentido * EMPURRAO + ax * 2;
           c.kz = ax * sentido * EMPURRAO + az * 2;
           c.vx = c.vz = 0;
@@ -896,6 +1019,8 @@ export function passo(c: Coelho, e: number, p: Percurso): Evento {
           c.noChao = false;
           c.sobre = -1;
           c.golpe = GOLPE_PASSOS;
+          c.mergulho = false;
+          c.deitado = 0;
           ev = 'empurrao';
           break;
         }
@@ -929,10 +1054,18 @@ export function passo(c: Coelho, e: number, p: Percurso): Evento {
   }
 
   // 8. caiu do mapa
-  if (c.y < FUNDO) {
-    voltarAoPosto(c, p);
-    return 'queda';
+  if (c.y < FUNDO) return perdeu(c, p, 'queda');
+
+  // a sobrevivência: aguentou até o fim (não há bandeira nem chegada)
+  if (p.sobrevivencia) {
+    if (m >= p.sobrevivencia) {
+      c.chegou = true;
+      c.chegouEm = m;
+      return 'chegou';
+    }
+    return ev;
   }
+
 
   // 9. as bandeiras e a chegada (pisando)
   if (c.noChao) {

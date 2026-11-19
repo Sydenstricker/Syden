@@ -27,6 +27,8 @@ function perigo(x: number, y: number, v: Vista): number {
       if (distancia(x, y, cx, cy) <= m.r + margem) p += peso;
     }
   }
+  // a bola de neve rolando: longe dela
+  for (const b of v.bolas) if (distancia(x, y, b.x, b.y) < 40) p += 800;
   const c = v.chefe;
   if (c && (c.estado === 'investida' || c.estado === 'prep-investida')) {
     // o caminho da investida já está nas marcas; o corpo dela, perto, também

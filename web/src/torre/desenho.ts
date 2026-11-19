@@ -50,6 +50,25 @@ const CORES: Record<Tema, Cores> = {
     feno: ['#b8a060', '#94803e', '#cab478'],
     ceu: ['#1e2442', '#3a4064'],
   },
+  // o moinho, de manhã cedo, e o pombal, ao entardecer (19/11/2026)
+  moinho: {
+    fundo: ['#6a7a6e', '#5c6c62', '#7a8a7c'],
+    fresta: '#f0f0d0',
+    parede: ['#3e4a44', '#2e3833'],
+    viga: ['#5e5048', '#4a3e38', '#726258'],
+    tabua: ['#c4a274', '#8c7050'],
+    feno: ['#e4c870', '#c0a24a', '#f2de98'],
+    ceu: ['#c8e0f0', '#f4f0d8'],
+  },
+  pombal: {
+    fundo: ['#8a5a6a', '#7a4e5c', '#9a6878'],
+    fresta: '#f8c8a0',
+    parede: ['#4e3038', '#3a242a'],
+    viga: ['#5a4048', '#463238', '#6e5058'],
+    tabua: ['#bc8a6c', '#84604a'],
+    feno: ['#e2b45a', '#ba8c3a', '#f0d088'],
+    ceu: ['#d87a7a', '#f8c898'],
+  },
 };
 
 export interface Pintura {

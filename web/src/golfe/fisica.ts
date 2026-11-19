@@ -42,7 +42,13 @@ export const PASSOS_MAX_DA_TACADA = 60 * 20;
 /** O limite de tacadas no buraco (a água conta uma). Quem chega nele sem acertar fica com TACADAS_MAX + 1. */
 export const TACADAS_MAX = 6;
 
-export type Tema = 'jardim' | 'horta' | 'toca' | 'lago' | 'porteira' | 'raizes';
+export type Tema = 'jardim' | 'horta' | 'toca' | 'lago' | 'porteira' | 'raizes' | 'moinho' | 'ponte' | 'pomar';
+
+/**
+ * OS PERCURSOS (19/11/2026): os seis de sempre, ou os nove (os seis e mais o moinho, a ponte e o pomar). Quem começa escolhe;
+ * o recorde do Solo é por percurso.
+ */
+export const PERCURSOS: readonly number[] = [6, 9];
 
 /** O obstáculo que anda: um retângulo que vai e volta (dx, dy) num período de passos. */
 export interface Movel {
@@ -72,7 +78,7 @@ export interface Buraco {
   movel: Movel | null;
 }
 
-/** OS SEIS BURACOS. A ordem é a do jogo. Buraco novo: o contorno sem cantos mais estreitos que a bola, e o teste do piloto. */
+/** OS NOVE BURACOS (eram seis até 19/11/2026). A ordem é a do jogo. Buraco novo: o contorno sem cantos mais estreitos que a bola, e o teste do piloto. */
 export const BURACOS: Buraco[] = [
   {
     // 1. O jardim: reto, com um canteiro de areia no meio do caminho.
@@ -154,6 +160,54 @@ export const BURACOS: Buraco[] = [
     areia: [[64, 80, 22, 28]],
     agua: [[96, 20, 18, 12]],
     movel: null,
+  },
+  {
+    // 7. O moinho (19/11/2026): a parede com uma porta só, e a pá que sobe e desce passando por ela.
+    tema: 'moinho',
+    par: 3,
+    inicio: [30, 64],
+    buraco: [162, 64],
+    contorno: [16, 30, 176, 30, 176, 98, 16, 98],
+    blocos: [
+      [86, 30, 108, 30, 108, 56, 86, 56],
+      [86, 72, 108, 72, 108, 98, 86, 98],
+    ],
+    pinos: [],
+    areia: [[128, 44, 16, 14]],
+    agua: [],
+    movel: { x: 94, y: 34, w: 6, h: 14, dx: 0, dy: 46, periodo: 140 },
+  },
+  {
+    // 8. A ponte: o rio corta a mesa, e só a ponte estreita passa (a saída em cima, o buraco embaixo).
+    tema: 'ponte',
+    par: 3,
+    inicio: [30, 36],
+    buraco: [160, 92],
+    contorno: [16, 20, 176, 20, 176, 108, 16, 108],
+    blocos: [],
+    pinos: [[44, 92, 5]],
+    areia: [],
+    agua: [
+      [70, 20, 52, 38],
+      [70, 70, 52, 38],
+    ],
+    movel: null,
+  },
+  {
+    // 9. O pomar: a volta em "U" pela porteira que corre de lado, com cogumelos na curva e areia na chegada.
+    tema: 'pomar',
+    par: 4,
+    inicio: [30, 36],
+    buraco: [30, 92],
+    contorno: [16, 16, 176, 16, 176, 112, 16, 112],
+    blocos: [[16, 56, 138, 56, 138, 72, 16, 72]],
+    pinos: [
+      [162, 30, 5],
+      [162, 98, 5],
+    ],
+    areia: [[62, 84, 26, 22]],
+    agua: [],
+    movel: { x: 140, y: 58, w: 8, h: 12, dx: 26, dy: 0, periodo: 150 },
   },
 ];
 

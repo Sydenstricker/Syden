@@ -30,7 +30,8 @@
 }
 
 .golfe3d-de-cima,
-.golfe3d-por-cima {
+.golfe3d-por-cima,
+.golfe3d-item {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -44,7 +45,8 @@
   cursor: pointer;
 }
 .golfe3d-de-cima[aria-pressed="true"],
-.golfe3d-por-cima[aria-pressed="true"] {
+.golfe3d-por-cima[aria-pressed="true"],
+.golfe3d-item[aria-pressed="true"] {
   color: var(--accent);
   border-color: var(--accent);
 }
@@ -161,4 +163,54 @@
 
 .golfe3d-sairam {
   opacity: 0.6;
+}
+
+/* 19/11/2026: a escolha do percurso, o par no topo e o selo do buraco */
+.golfe3d-percursos {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.golfe3d-percursos .minijogo-jogo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 120px;
+}
+
+.golfe3d-percurso-nome {
+  font-size: 1.6rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.golfe3d-percurso-recorde,
+.golfe3d-par,
+.golfe3d-recorde {
+  color: var(--text-strong);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.golfe3d-selo {
+  position: absolute;
+  left: 50%;
+  top: 30%;
+  transform: translate(-50%, -50%);
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: rgba(40, 32, 26, 0.72);
+  color: #f4ecdc;
+  font-size: 1.3rem;
+  font-weight: 800;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.golfe3d-selo.festa {
+  background: rgba(196, 140, 40, 0.88);
 }

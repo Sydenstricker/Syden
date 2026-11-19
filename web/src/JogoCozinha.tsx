@@ -6,22 +6,31 @@ import { useT } from './i18n';
 import { Placar, PlacarAoVivo, Relogio } from './Minijogo';
 import type { Partida } from './minijogos';
 import type { CenaDaCozinha, Icones } from './cozinha/cena';
-import { irPara, novaCozinha, passo, espaco, progresso, usar, type Cozinha, type Evento } from './cozinha/cozinha';
+import { COLUNAS, LINHAS, irPara, novaCozinha, passo, espaco, progresso, usar, type Cozinha, type Evento, type TipoDeEstacao } from './cozinha/cozinha';
 import { pilotar } from './cozinha/piloto';
-import { RECEITAS, confere, itemDaChave, type IdDaReceita, type Item } from './cozinha/receitas';
+import { PLANTAS_DA_COZINHA, RECEITAS, confere, itemDaChave, type IdDaReceita, type Item, type PlantaDaCozinha } from './cozinha/receitas';
 import './cozinha.css';
 
 /** A Cozinha da toca (server/src/minijogo-cozinha.ts): cada um na própria cozinha, os mesmos pedidos para todos. */
 export interface EstadoCozinha {
-  fase: 'preparando' | 'jogando' | 'fim';
+  /** 'escolhendo': quem começou escolhe a planta (19/11/2026). */
+  fase: 'escolhendo' | 'preparando' | 'jogando' | 'fim';
   duracaoMs: number;
   /** Quanto da partida já passou, no servidor (só jogando). */
   decorridoMs: number | null;
   /** A minha fila de pedidos (o índice na sequência da partida e a receita), os pratos entregues e os pontos. */
-  meu: { fila: { indice: number; receita: IdDaReceita }[]; pratos: number; pontos: number } | null;
+  meu: { fila: { indice: number; receita: IdDaReceita }[]; pratos: number; pontos: number; gorjetas?: number } | null;
   /** Mais pratos primeiro (os pontos desempatam); a posição só entre quem está na sala. */
   placar: { userId: number; username: string; pratos: number; pontos: number; posicao: number | null }[];
   solo: boolean;
+  /** A planta da cozinha (a da toca até alguém escolher). */
+  planta?: PlantaDaCozinha;
+  /** Quem escolhe a planta. */
+  escolhe?: number;
+  /** No Solo, na escolha: o recorde de cada planta (os pontos). */
+  recordes?: Partial<Record<PlantaDaCozinha, number>> | null;
+  /** No fim do Solo: se a partida virou o recorde, e o recorde de antes. */
+  recorde?: { antes: number | null; novo: boolean } | null;
   partidaId: string;
 }
 
@@ -42,11 +51,76 @@ export interface EstadoCozinha {
  * se desenha, mas o fogo continua. Não há pausa: o relógio da partida é do servidor, também no Solo.
  */
 export function JogoCozinha({ estado, eu, jogador, agir }: { estado: EstadoCozinha & Partida; eu: number; jogador: boolean; agir: (corpo: Record<string, unknown>) => unknown }) {
+  const t = useT();
   if (estado.terminada || estado.fase === 'fim') {
     const ficaram = estado.placar.filter((l) => l.posicao !== null);
-    return <Placar eu={eu} linhas={(ficaram.length ? ficaram : estado.placar).map((l) => ({ ...l, valor: `🍽️ ${l.pratos}`, posicao: l.posicao ?? undefined }))} />;
+    const meu = estado.placar.find((l) => l.userId === eu);
+    return (
+      <>
+        {estado.recorde &&
+          (estado.recorde.novo ? (
+            <p className="minijogo-situacao cozinha-recorde">
+              {t('Novo recorde!')} {meu ? `· ${t('+{n} pontos', { n: meu.pontos })}` : ''}
+            </p>
+          ) : (
+            estado.recorde.antes !== null && <p className="minijogo-situacao">{t('Seu recorde: {n} pontos', { n: estado.recorde.antes })}</p>
+          ))}
+        <Placar eu={eu} linhas={(ficaram.length ? ficaram : estado.placar).map((l) => ({ ...l, valor: `🍽️ ${l.pratos} · ${l.pontos}`, posicao: l.posicao ?? undefined }))} />
+      </>
+    );
+  }
+  if (estado.fase === 'escolhendo') {
+    if (estado.escolhe !== eu) return <p className="minijogo-situacao">{t('Esperando a escolha de quem começou…')}</p>;
+    return (
+      <ul className="cozinha-plantas">
+        {PLANTAS_DA_COZINHA.map((p) => (
+          <li key={p}>
+            <button
+              type="button"
+              className="minijogo-jogo"
+              onClick={() => {
+                tocar('clique');
+                void agir({ tipo: 'planta', planta: p });
+              }}
+            >
+              <MapaDaPlanta planta={p} />
+              {estado.recordes?.[p] !== undefined && <span className="cozinha-planta-recorde">🏆 {estado.recordes[p]}</span>}
+            </button>
+          </li>
+        ))}
+      </ul>
+    );
   }
   return <CozinhaNaTela key={estado.partidaId} estado={estado} eu={eu} jogador={jogador} agir={agir} />;
+}
+
+/** As cores do mapinha de cada planta, por estação (sem texto: o desenho diz). */
+const COR_DO_MAPA: Record<TipoDeEstacao, string> = {
+  caixote: '#b98a5a',
+  balcao: '#d9cbb4',
+  tabua: '#8fbf6a',
+  fogao: '#e0533c',
+  forno: '#c4632a',
+  pratos: '#f4f1ea',
+  sorvete: '#e9a3c2',
+  lixeira: '#7f8a87',
+  entrega: '#e8b64a',
+  pia: '#7cb6d8',
+  extintor: '#b8322a',
+};
+
+/** O mapinha de uma planta, visto de cima: cada estação um quadrado da cor dela, e o chão livre em volta. */
+function MapaDaPlanta({ planta }: { planta: PlantaDaCozinha }) {
+  const k = novaCozinha(planta);
+  const casa = 9;
+  return (
+    <svg className="cozinha-planta" viewBox={`0 0 ${COLUNAS * casa} ${LINHAS * casa}`} width={COLUNAS * casa * 1.6} height={LINHAS * casa * 1.6} aria-hidden="true">
+      <rect x={0} y={0} width={COLUNAS * casa} height={LINHAS * casa} fill="#efe2cc" rx={2} />
+      {k.estacoes.map((e) => (
+        <rect key={e.id} x={e.c * casa + 0.6} y={e.l * casa + 0.6} width={casa - 1.2} height={casa - 1.2} rx={1.5} fill={COR_DO_MAPA[e.tipo]} />
+      ))}
+    </svg>
+  );
 }
 
 const DIRECOES: Record<string, [number, number]> = {
@@ -72,6 +146,11 @@ const SOM: Partial<Record<Evento['tipo'], Parameters<typeof tocar>[0]>> = {
   'jogou-fora': 'queda',
   entregue: 'chegada',
   recusado: 'erro',
+  esfrega: 'agua',
+  lavou: 'acerto',
+  sujo: 'clique',
+  incendio: 'alarme',
+  apagou: 'desliza',
 };
 
 /** Os ingredientes de cada pedido, para o desenho da fila dizer de quais caixotes tirar. */
@@ -94,7 +173,7 @@ function CozinhaNaTela({ estado, eu, jogador, agir }: { estado: EstadoCozinha & 
   const caixa = useRef<HTMLDivElement>(null);
   const k = useRef<Cozinha>(null as unknown as Cozinha);
   if (!k.current) {
-    k.current = novaCozinha();
+    k.current = novaCozinha(estado.planta ?? 'toca');
     k.current.relogio = Date.now();
   }
   const [carga, setCarga] = useState<'carregando' | 'pronta' | 'falhou'>(() => (temWebGL() ? 'carregando' : 'falhou'));
@@ -130,6 +209,13 @@ function CozinhaNaTela({ estado, eu, jogador, agir }: { estado: EstadoCozinha & 
   }, [estado.meu]);
   const ultimaEntrega = useRef(0);
   const ultimoChiado = useRef(0);
+  // a gorjeta (19/11/2026): quando o servidor soma uma, a moedinha toca
+  const gorjetas = estado.meu?.gorjetas ?? 0;
+  const gorjetasAntes = useRef(gorjetas);
+  useEffect(() => {
+    if (gorjetas > gorjetasAntes.current) tocar('moeda');
+    gorjetasAntes.current = gorjetas;
+  }, [gorjetas]);
   const [recusado, setRecusado] = useState(0);
 
   const jogando = () => estado.fase === 'jogando' || (inicio.current !== null && Date.now() >= inicio.current);
@@ -158,7 +244,14 @@ function CozinhaNaTela({ estado, eu, jogador, agir }: { estado: EstadoCozinha & 
       const som = SOM[e.tipo];
       if (som) tocar(som);
       if (e.tipo === 'recusado') setRecusado(Date.now());
-      if (e.tipo === 'fogo') enviar(e.pos ? { tipo: 'fogo', estacao: e.estacao, item: e.pos } : { tipo: 'fogo', estacao: e.estacao, tirou: true });
+      if (e.tipo === 'fogo')
+        enviar(
+          e.extintor
+            ? { tipo: 'extintor', estacao: e.estacao }
+            : e.pos
+              ? { tipo: 'fogo', estacao: e.estacao, item: e.pos }
+              : { tipo: 'fogo', estacao: e.estacao, tirou: true },
+        );
       if (e.tipo === 'entregue' && pedidoDaEntrega.current !== null) {
         const pedido = pedidoDaEntrega.current;
         pedidoDaEntrega.current = null;
@@ -218,7 +311,7 @@ function CozinhaNaTela({ estado, eu, jogador, agir }: { estado: EstadoCozinha & 
           const e = k.current.estacoes[estacao];
           // na tábua com algo para picar e no pote de sorvete, o clique é o E; no resto, o Espaço
           const picar = e.tipo === 'tabua' && e.em?.tipo === 'item' && e.em.item.estado === 'cru' && !k.current.coelho.mao;
-          irPara(k.current, estacao, picar || e.tipo === 'sorvete' ? 'usar' : 'espaco');
+          irPara(k.current, estacao, picar || e.tipo === 'sorvete' || e.tipo === 'pia' ? 'usar' : 'espaco');
         });
         criada.usar(k.current);
         // a cozinha à mão do e2e (só no site de desenvolvimento)
@@ -277,6 +370,11 @@ function CozinhaNaTela({ estado, eu, jogador, agir }: { estado: EstadoCozinha & 
         {souJogador && (
           <span className="cozinha-pratos">
             🍽️ {pratos}
+          </span>
+        )}
+        {souJogador && gorjetas > 0 && (
+          <span className="cozinha-pratos cozinha-gorjeta" aria-hidden="true">
+            ⭐ {gorjetas}
           </span>
         )}
         {estado.fase === 'jogando' && <Relogio restante={restante} total={estado.duracaoMs} />}

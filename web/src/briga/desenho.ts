@@ -612,3 +612,95 @@ export function desenharOndas(g: CanvasRenderingContext2D, onda: number, total: 
     g.fillRect(W / 2 - total * 5 + k * 10 + 1, 5, 5, 5);
   }
 }
+
+/**
+ * A CENOURA DE CURA no chão (19/11/2026): a pequena e a grande, por código, flutuando de leve. O servidor decide onde ela cai
+ * e quem a pega; aqui é só o desenho.
+ */
+export function desenharCenouraDeCura(g: CanvasRenderingContext2D, sx: number, chao: number, grande: boolean, tempo: number) {
+  const s = grande ? 2 : 1;
+  const sobe = Math.round(Math.sin(tempo / 220) * 1.5);
+  const y = chao - 4 - sobe;
+  g.fillStyle = 'rgba(30, 20, 15, 0.35)';
+  g.fillRect(sx - 3 * s, chao - 1, 6 * s, 2);
+  // o corpo, afinando para a ponta de baixo
+  g.fillStyle = '#e8792e';
+  for (let k = 0; k < 5 * s; k++) {
+    const w = Math.max(1, Math.round((3 * s * (5 * s - k)) / (5 * s)));
+    g.fillRect(sx - Math.floor(w / 2), y - 5 * s + k, w, 1);
+  }
+  g.fillStyle = '#b8521c';
+  g.fillRect(sx - 1, y - 3 * s, 1, 1);
+  g.fillRect(sx + 1, y - 2 * s, 1, 1);
+  // as folhas
+  g.fillStyle = '#5fae4a';
+  g.fillRect(sx - s, y - 5 * s - 2 * s, s, 2 * s);
+  g.fillRect(sx + 1, y - 5 * s - 3 * s, s, 3 * s);
+  if (grande && Math.floor(tempo / 300) % 2 === 0) {
+    g.fillStyle = '#fff6c8';
+    g.fillRect(sx + 4, y - 10, 1, 1);
+  }
+}
+
+/** A AURA do bicho de elite: um contorno que pulsa em volta do corpo, por baixo do desenho dele. */
+export function desenharAuraDeElite(g: CanvasRenderingContext2D, sx: number, sy: number, alto: number, largo: number, tempo: number) {
+  const pulso = 0.35 + 0.25 * Math.sin(tempo / 160);
+  g.save();
+  g.globalAlpha = pulso;
+  g.fillStyle = '#c66bff';
+  g.beginPath();
+  g.ellipse(sx, sy - alto / 2, largo + 5, alto / 2 + 5, 0, 0, Math.PI * 2);
+  g.fill();
+  g.globalAlpha = Math.min(1, pulso + 0.3);
+  g.fillStyle = '#f0d2ff';
+  for (let k = 0; k < 4; k++) {
+    const a = tempo / 400 + (k * Math.PI) / 2;
+    g.fillRect(Math.round(sx + Math.cos(a) * (largo + 4)), Math.round(sy - alto / 2 + Math.sin(a) * (alto / 2 + 3)), 1, 1);
+  }
+  g.restore();
+}
+
+/** O "+" verde de quem pegou a cura, subindo. Devolve false quando acabou. */
+export function desenharCurou(g: CanvasRenderingContext2D, sx: number, sy: number, idade: number): boolean {
+  if (idade > 700) return false;
+  g.save();
+  g.globalAlpha = 1 - idade / 700;
+  g.fillStyle = '#7fe07a';
+  const y = Math.round(sy - 40 - idade / 30);
+  g.fillRect(sx - 1, y - 3, 3, 7);
+  g.fillRect(sx - 3, y - 1, 7, 3);
+  g.restore();
+  return true;
+}
+
+/**
+ * O CAIXOTE (19/11/2026): de madeira, por código; rachado quando já apanhou, girando quando voa (arremessado).
+ */
+export function desenharCaixote(g: CanvasRenderingContext2D, sx: number, chao: number, vida: number, voando: boolean, tempo: number) {
+  g.fillStyle = 'rgba(30, 20, 15, 0.35)';
+  g.fillRect(sx - 9, chao - 1, 18, 2);
+  g.save();
+  g.translate(sx, chao - 9 - (voando ? 4 : 0));
+  if (voando) g.rotate(Math.floor(tempo / 60) * (Math.PI / 8));
+  g.fillStyle = '#5a3a22';
+  g.fillRect(-9, -9, 18, 18);
+  g.fillStyle = '#b07a48';
+  g.fillRect(-8, -8, 16, 16);
+  g.fillStyle = '#8a5a34';
+  g.fillRect(-8, -1, 16, 2);
+  g.fillRect(-1, -8, 2, 16);
+  g.fillStyle = '#c89260';
+  g.fillRect(-7, -7, 5, 1);
+  if (vida < 100) {
+    // as rachaduras
+    g.fillStyle = '#3a2414';
+    g.fillRect(-5, -6, 1, 4);
+    g.fillRect(-4, -2, 1, 3);
+    g.fillRect(3, 2, 1, 4);
+    if (vida < 60) {
+      g.fillRect(4, -7, 1, 5);
+      g.fillRect(-6, 4, 3, 1);
+    }
+  }
+  g.restore();
+}

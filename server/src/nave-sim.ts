@@ -26,6 +26,29 @@ export const INICIO_ONDAS = 120;
 export const CHEFE_T = INICIO_ONDAS + ONDAS * ONDA_PASSOS + 60;
 export const FIM = CHEFE_T + 2700;
 
+/**
+ * AS FASES (19/11/2026): a HORTA é a de sempre (cinco ondas e o espantalho mecânico). O POMAR e o CELEIRO são curtas (duas
+ * ondas, já mais cheias) e cada uma tem um chefe com um padrão novo: o VESPEIRO gira tiros em espiral, e o TRATOR solta
+ * paredes de tiros com um vão (achar o vão é o jogo). Escolhidas na largada; o recorde do Solo é por fase.
+ */
+export type FaseDaNave = 'horta' | 'pomar' | 'celeiro';
+export const FASES_DA_NAVE: Record<FaseDaNave, { ondas: number; dificuldade: number; chefe: 0 | 1 | 2; vidaDoChefe: number }> = {
+  horta: { ondas: 5, dificuldade: 0, chefe: 0, vidaDoChefe: 320 },
+  pomar: { ondas: 2, dificuldade: 1, chefe: 1, vidaDoChefe: 260 },
+  celeiro: { ondas: 2, dificuldade: 2, chefe: 2, vidaDoChefe: 280 },
+};
+export const ehFaseDaNave = (v: unknown): v is FaseDaNave => v === 'horta' || v === 'pomar' || v === 'celeiro';
+/** As ondas, a entrada do chefe e o fim de cada fase, em passos. */
+export function temposDaFase(fase: FaseDaNave): {
+  ondas: number;
+  chefeT: number;
+  fim: number;
+} {
+  const ondas = FASES_DA_NAVE[fase].ondas;
+  const chefeT = INICIO_ONDAS + ondas * ONDA_PASSOS + 60;
+  return { ondas, chefeT, fim: chefeT + 2700 };
+}
+
 /** A nave: a velocidade (unidades por passo, já contando a diagonal), o raio que leva dano, e onde nasce. */
 export const VEL_NAVE = 2;
 export const RAIO_NAVE = 3;
@@ -48,10 +71,29 @@ export const RAIO_ITEM = 9;
 export const BOMBA_CHEFE = 40;
 
 export type Arma = 0 | 1 | 2;
+/**
+ * O NÍVEL DA ARMA (19/11/2026): pegar de novo a arma que já se tem sobe o nível dela (até 3); pegar a outra volta ao 1.
+ * Cada nível bate mais forte: o dano de cada bala.
+ */
+export type Nivel = 1 | 2 | 3;
+export const DANO_DO_NIVEL: Record<Nivel, number> = { 1: 1, 2: 1.5, 3: 2 };
+/**
+ * O LOOP DE ESQUIVA (19/11/2026): a nave dá uma volta no ar por LOOP_DURA passos; no meio dela (LOOP_INVUL), nada a atinge, e
+ * durante a volta inteira ela não atira. Depois, LOOP_RECARGA passos até o próximo.
+ */
+export const LOOP_DURA = 36;
+export const LOOP_INVUL: [number, number] = [6, 30];
+export const LOOP_RECARGA = 300;
+/** A esquadrilha intacta: no fim, se ninguém da turma perdeu vida, cada um ganha isto (a medalha que vale mais). */
+export const SEM_QUEDA = 1500;
 /** As armas: 0 é o tiro simples, 1 o duplo, 2 o espalhado. */
 export const ARMAS = ['simples', 'duplo', 'espalhado'] as const;
 /** As balas de cada disparo: o deslocamento de onde sai, e a velocidade (unidades por passo). */
-export const VOLEIAS: readonly (readonly { ox: number; vx: number; vy: number }[])[] = [
+export const VOLEIAS: readonly (readonly {
+  ox: number;
+  vx: number;
+  vy: number;
+}[])[] = [
   [{ ox: 0, vx: 0, vy: -5 }],
   [
     { ox: -4, vx: 0, vy: -5 },
@@ -66,10 +108,20 @@ export const VOLEIAS: readonly (readonly { ox: number; vx: number; vy: number }[
 
 export type Item = 'duplo' | 'espalhado' | 'escudo';
 export type TipoDeInimigo = 'corvo' | 'vespa' | 'besouro' | 'chefe';
-export type Padrao = 'reto' | 'leque3' | 'leque5' | 'roda8' | 'roda12' | 'chuva';
+export type Padrao = 'reto' | 'leque3' | 'leque5' | 'roda8' | 'roda12' | 'chuva' | 'roda8b' | 'parede' | 'parede2';
 
-export const RAIO: Record<TipoDeInimigo, number> = { corvo: 7, vespa: 6, besouro: 10, chefe: 20 };
-export const PONTOS: Record<TipoDeInimigo, number> = { corvo: 100, vespa: 150, besouro: 400, chefe: 5000 };
+export const RAIO: Record<TipoDeInimigo, number> = {
+  corvo: 7,
+  vespa: 6,
+  besouro: 10,
+  chefe: 20,
+};
+export const PONTOS: Record<TipoDeInimigo, number> = {
+  corvo: 100,
+  vespa: 150,
+  besouro: 400,
+  chefe: 5000,
+};
 /** Cada bala no chefe vale isto, além do abate. */
 export const PONTOS_NO_CHEFE = 10;
 /** Por onda atravessada com vida, e por vida que sobra no fim. */
@@ -121,7 +173,10 @@ export function posicaoInimigo(e: Inimigo, n: number): { x: number; y: number } 
     const a = (1 - u) * (1 - u);
     const b = 2 * u * (1 - u);
     const c = u * u;
-    return { x: a * r[0] + b * r[2] + c * r[4], y: a * r[1] + b * r[3] + c * r[5] };
+    return {
+      x: a * r[0] + b * r[2] + c * r[4],
+      y: a * r[1] + b * r[3] + c * r[5],
+    };
   }
   if (e.tipo === 'vespa') {
     // desce em zigue-zague: [x0, y0, vy, amplitude, período]
@@ -138,18 +193,33 @@ export function posicaoInimigo(e: Inimigo, n: number): { x: number; y: number } 
     const k = s - entrada - pausa;
     return { x: x0 + vx * k, y: alvo + 0.012 * k * k };
   }
-  // o chefe: entra devagar e passeia de um lado para o outro
+  // o chefe: entra devagar e passeia de um lado para o outro (o vespeiro mais depressa; o trator mais baixo e devagar)
+  const variante = r[0] ?? 0;
+  const alto = variante === 2 ? 64 : 56;
   if (s < 180) {
     const u = s / 180;
-    return { x: LARGURA / 2, y: -40 + 96 * (1 - (1 - u) * (1 - u)) };
+    return { x: LARGURA / 2, y: -40 + (alto + 40) * (1 - (1 - u) * (1 - u)) };
   }
   const k = s - 180;
+  if (variante === 1)
+    return {
+      x: LARGURA / 2 + 62 * vaivem(k / 360),
+      y: 50 + 14 * vaivem(k / 180),
+    };
+  if (variante === 2)
+    return {
+      x: LARGURA / 2 + 48 * vaivem(k / 900),
+      y: alto + 4 * vaivem(k / 450),
+    };
   return { x: LARGURA / 2 + 55 * vaivem(k / 600), y: 56 + 8 * vaivem(k / 300) };
 }
 
 /** As direções de cada padrão de tiro (comprimento 1), sem seno: os vetores saem de raízes. */
 const R2 = Math.sqrt(0.5);
 const R3 = Math.sqrt(3) / 2;
+/** O cosseno e o seno de 22,5°, por raízes. */
+const C22 = Math.sqrt((1 + R2) / 2);
+const S22 = Math.sqrt((1 - R2) / 2);
 function normal(x: number, y: number): [number, number] {
   const d = Math.sqrt(x * x + y * y);
   return [x / d, y / d];
@@ -182,10 +252,48 @@ export const DIRECOES: Record<Padrao, [number, number][]> = {
     [0.5, -R3],
     [R3, -0.5],
   ],
-  chuva: [[0, 1], [0, 1], [0, 1], [0, 1], [0, 1]],
+  chuva: [
+    [0, 1],
+    [0, 1],
+    [0, 1],
+    [0, 1],
+    [0, 1],
+  ],
+  // a roda girada de 22,5°: alternada com a roda8, vira a espiral do vespeiro
+  roda8b: [
+    [C22, S22],
+    [S22, C22],
+    [-S22, C22],
+    [-C22, S22],
+    [-C22, -S22],
+    [-S22, -C22],
+    [S22, -C22],
+    [C22, -S22],
+  ],
+  // a parede do trator: tiros lado a lado com um vão (à esquerda, e na parede2 à direita)
+  parede: [
+    [0, 1],
+    [0, 1],
+    [0, 1],
+    [0, 1],
+    [0, 1],
+    [0, 1],
+    [0, 1],
+  ],
+  parede2: [
+    [0, 1],
+    [0, 1],
+    [0, 1],
+    [0, 1],
+    [0, 1],
+    [0, 1],
+    [0, 1],
+  ],
 };
-/** Na chuva, os tiros saem lado a lado. */
+/** Na chuva, os tiros saem lado a lado; na parede, com um vão. */
 const CHUVA_OX = [-24, -12, 0, 12, 24];
+const PAREDE_OX = [-36, 0, 12, 24, 36, 48, 60];
+const PAREDE2_OX = [-60, -48, -36, -24, -12, 0, 36];
 
 /** Um tiro de inimigo: quando sai, de onde, a velocidade, e de quem é (morto antes disso, não atira). */
 export interface TiroInimigo {
@@ -205,8 +313,15 @@ export function tirosDosInimigos(inimigos: Inimigo[]): TiroInimigo[] {
       const p = posicaoInimigo(e, e.t + s);
       if (!p) continue;
       DIRECOES[padrao].forEach(([dx, dy], k) => {
-        const ox = padrao === 'chuva' ? CHUVA_OX[k] : 0;
-        tiros.push({ t: e.t + s, x0: p.x + ox, y0: p.y + 4, vx: dx * e.vt, vy: dy * e.vt, dono });
+        const ox = padrao === 'chuva' ? CHUVA_OX[k] : padrao === 'parede' ? PAREDE_OX[k] : padrao === 'parede2' ? PAREDE2_OX[k] : 0;
+        tiros.push({
+          t: e.t + s,
+          x0: p.x + ox,
+          y0: p.y + 4,
+          vx: dx * e.vt,
+          vy: dy * e.vt,
+          dono,
+        });
       });
     }
   });
@@ -251,12 +366,16 @@ export const fimDaOnda = (k: number) => INICIO_ONDAS + k * ONDA_PASSOS;
  * seguidos: uma fila de corvos que mergulha de um lado ao outro, vespas descendo em zigue-zague, ou besouros que param e
  * atiram em leque. Dois inimigos por onda soltam um item (o primeiro da partida é sempre o tiro duplo).
  */
-export function roteiro(semente: number): Inimigo[] {
+export function roteiro(semente: number, faseDaNave: FaseDaNave = 'horta'): Inimigo[] {
   const r = sorteio(semente);
   const inimigos: Inimigo[] = [];
   let primeiroItem = true;
-  for (let n = 1; n <= ONDAS; n++) {
-    const base = INICIO_ONDAS + (n - 1) * ONDA_PASSOS;
+  const def = FASES_DA_NAVE[faseDaNave];
+  const tempos = temposDaFase(faseDaNave);
+  for (let onda = 1; onda <= def.ondas; onda++) {
+    const base = INICIO_ONDAS + (onda - 1) * ONDA_PASSOS;
+    // nas fases curtas, as ondas já começam mais cheias
+    const n = onda + def.dificuldade;
     const vt = 1 + 0.12 * n;
     const candidatos: number[] = [];
     let t = base + 30;
@@ -340,12 +459,29 @@ export function roteiro(semente: number): Inimigo[] {
       primeiroItem = false;
     }
   }
-  // o espantalho mecânico: alterna a roda, o leque e a chuva, cada vez mais depressa
+  // o chefe: o espantalho mecânico alterna a roda, o leque e a chuva, cada vez mais depressa; o vespeiro gira a roda em
+  // espiral (a roda e a roda girada, bem seguidas); o trator solta paredes com o vão de um lado e do outro
   const tiros: [number, Padrao][] = [];
-  const ciclo: Padrao[] = ['roda12', 'leque5', 'chuva', 'leque5'];
+  const ciclos: Padrao[][] = [
+    ['roda12', 'leque5', 'chuva', 'leque5'],
+    ['roda8', 'roda8b', 'roda8', 'roda8b', 'leque3'],
+    ['parede', 'leque3', 'parede2', 'leque5'],
+  ];
+  const ciclo = ciclos[def.chefe];
+  const ritmo = def.chefe === 1 ? 40 : def.chefe === 2 ? 95 : 80;
+  const minimo = def.chefe === 1 ? 26 : 50;
   let k = 0;
-  for (let s = 200; s < FIM - CHEFE_T - 30; s += Math.max(50, 80 - Math.floor(s / 400) * 4), k++) tiros.push([s, ciclo[k % ciclo.length]]);
-  inimigos.push({ tipo: 'chefe', t: CHEFE_T, dur: FIM - CHEFE_T, rota: [], vida: 320, item: null, tiros, vt: 1.3 });
+  for (let s = 200; s < tempos.fim - tempos.chefeT - 30; s += Math.max(minimo, ritmo - Math.floor(s / 400) * 4), k++) tiros.push([s, ciclo[k % ciclo.length]]);
+  inimigos.push({
+    tipo: 'chefe',
+    t: tempos.chefeT,
+    dur: tempos.fim - tempos.chefeT,
+    rota: def.chefe === 0 ? [] : [def.chefe],
+    vida: def.vidaDoChefe,
+    item: null,
+    tiros,
+    vt: def.chefe === 1 ? 1.1 : 1.3,
+  });
   return inimigos;
 }
 
@@ -367,8 +503,10 @@ export class Ficha {
   bombas = 1;
   escudo = false;
   invulAte = -1;
-  /** [passo, arma] a cada troca, em ordem. */
-  armas: [number, Arma][] = [[0, 0]];
+  /** [passo, arma, nível] a cada troca, em ordem. */
+  armas: [number, Arma, Nivel][] = [[0, 0, 1]];
+  /** Os passos em que começou cada loop de esquiva. */
+  loops: number[] = [];
   /** Quem caiu, e em que passo. */
   mortos = new Map<number, number>();
   /** O dano em quem ainda não caiu. */
@@ -387,7 +525,14 @@ export class Ficha {
   /** Os que caíram desde a última vez que alguém leu (o servidor repassa à turma). */
   novos: number[] = [];
 
-  constructor(readonly inimigos: Inimigo[]) {}
+  readonly tempos: { ondas: number; chefeT: number; fim: number };
+
+  constructor(
+    readonly inimigos: Inimigo[],
+    readonly fase: FaseDaNave = 'horta',
+  ) {
+    this.tempos = temposDaFase(fase);
+  }
 
   get acabou() {
     return this.morteFinal !== null || this.chefeEm !== null;
@@ -399,6 +544,26 @@ export class Ficha {
     let a: Arma = 0;
     for (const [p, arma] of this.armas) if (p <= n) a = arma;
     return a;
+  }
+  nivelEm(n: number): Nivel {
+    let v: Nivel = 1;
+    for (const [p, , nivel] of this.armas) if (p <= n) v = nivel;
+    return v;
+  }
+  /** O loop que está acontecendo no passo n (o passo em que começou), ou null. */
+  loopEm(n: number): number | null {
+    for (let i = this.loops.length - 1; i >= 0; i--) if (this.loops[i] <= n && n < this.loops[i] + LOOP_DURA) return this.loops[i];
+    return null;
+  }
+  /** No meio do loop, nada atinge a nave. */
+  invulNoLoop(n: number): boolean {
+    const l = this.loopEm(n);
+    return l !== null && n >= l + LOOP_INVUL[0] && n < l + LOOP_INVUL[1];
+  }
+  /** O próximo loop pode começar no passo n? */
+  loopPronto(n: number): boolean {
+    const ultimo = this.loops[this.loops.length - 1];
+    return ultimo === undefined || n >= ultimo + LOOP_RECARGA;
   }
 
   /** O lugar dito bate com os outros (a nave não anda mais que VEL_NAVE por passo)? E o guarda, se bater. */
@@ -433,7 +598,7 @@ export class Ficha {
   }
 
   private tempo(q: unknown): string | null {
-    if (!inteiro(q) || q < 0 || q > FIM) return 'Evento inválido.';
+    if (!inteiro(q) || q < 0 || q > this.tempos.fim) return 'Evento inválido.';
     if (q < this.ultimoQ) return 'Evento fora de ordem.';
     return null;
   }
@@ -455,6 +620,8 @@ export class Ficha {
     if (!inteiro(i) || !inteiro(p) || !inteiro(b) || !inteiro(arma) || i < 0 || i >= this.inimigos.length) return 'Evento inválido.';
     if (p < 0 || p % CADENCIA !== 0 || q - p < 0 || q - p > VIDA_BALA || !this.vivoEm(p)) return 'Disparo inválido.';
     if (arma !== this.armaEm(p) || b < 0 || b >= VOLEIAS[arma].length) return 'Disparo inválido.';
+    // no loop, a nave não atira
+    if (this.loopEm(p) !== null) return 'Disparo inválido.';
     if (this.mortos.has(i)) return 'Este já caiu.';
     const chave = `${p}:${b}`;
     if (this.usados.has(chave)) return 'Disparo inválido.';
@@ -465,7 +632,7 @@ export class Ficha {
     if (!this.lugar(p, x, y)) return 'Lugar inválido.';
     this.ultimoQ = q;
     this.usados.add(chave);
-    const dano = (this.dano.get(i) ?? 0) + 1;
+    const dano = (this.dano.get(i) ?? 0) + DANO_DO_NIVEL[this.nivelEm(p)];
     if (dano >= e.vida) this.derrubar(i, q);
     else {
       this.dano.set(i, dano);
@@ -488,7 +655,11 @@ export class Ficha {
     this.ultimoQ = q;
     this.pegos.add(i);
     if (e.item === 'escudo') this.escudo = true;
-    else this.armas.push([q, e.item === 'duplo' ? 1 : 2]);
+    else {
+      const arma: Arma = e.item === 'duplo' ? 1 : 2;
+      const nivel = this.armaEm(q) === arma ? (Math.min(3, this.nivelEm(q) + 1) as Nivel) : 1;
+      this.armas.push([q, arma, nivel]);
+    }
     return null;
   }
 
@@ -497,7 +668,7 @@ export class Ficha {
     const erro = this.tempo(q);
     if (erro) return erro;
     if (!this.vivoEm(q) || this.chefeEm !== null) return 'Evento inválido.';
-    if (q < this.invulAte) return null;
+    if (q < this.invulAte || this.invulNoLoop(q)) return null;
     if (!this.lugar(q, x, y)) return 'Lugar inválido.';
     this.ultimoQ = q;
     if (this.escudo) {
@@ -507,7 +678,7 @@ export class Ficha {
     }
     this.vidas--;
     this.mortes.push(q);
-    this.armas.push([q, 0]);
+    this.armas.push([q, 0, 1]);
     this.bombas = 1;
     this.invulAte = q + INVUL_MORTE;
     if (this.vidas <= 0) this.morteFinal = q;
@@ -538,14 +709,28 @@ export class Ficha {
     return null;
   }
 
+  /** O loop de esquiva no passo `q`, com a nave em (x, y): só depois da recarga. */
+  loop(q: number, x: number, y: number): string | null {
+    const erro = this.tempo(q);
+    if (erro) return erro;
+    if (!this.vivoEm(q) || this.chefeEm !== null || !this.loopPronto(q)) return 'Loop inválido.';
+    if (!this.lugar(q, x, y)) return 'Lugar inválido.';
+    this.ultimoQ = q;
+    this.loops.push(q);
+    return null;
+  }
+
   /** Um lugar da nave, mandado de tempos em tempos (só confere e guarda). */
   posicao(q: number, x: number, y: number): string | null {
-    if (!inteiro(q) || q < 0 || q > FIM) return 'Evento inválido.';
+    if (!inteiro(q) || q < 0 || q > this.tempos.fim) return 'Evento inválido.';
     if (!this.vivoEm(q)) return null;
     return this.lugar(q, x, y) ? null : 'Lugar inválido.';
   }
 
-  /** Um evento do jeito que vai pela rede: ['a', q, i, p, x, y, arma, b], ['g', q, i, x, y], ['d', q, x, y], ['b', q, x, y]. */
+  /**
+   * Um evento do jeito que vai pela rede: ['a', q, i, p, x, y, arma, b], ['g', q, i, x, y], ['d', q, x, y], ['b', q, x, y] e,
+   * desde 19/11/2026, o loop ['l', q, x, y].
+   */
   aplicar(ev: unknown): string | null {
     if (!Array.isArray(ev)) return 'Evento inválido.';
     const [tipo, q] = ev;
@@ -553,6 +738,7 @@ export class Ficha {
     if (tipo === 'g') return this.pegar(q, ev[2], ev[3], ev[4]);
     if (tipo === 'd') return this.atingida(q, ev[2], ev[3]);
     if (tipo === 'b') return this.bomba(q, ev[2], ev[3]);
+    if (tipo === 'l') return this.loop(q, ev[2], ev[3]);
     return 'Evento inválido.';
   }
 
@@ -560,7 +746,7 @@ export class Ficha {
   ondasVivas(n: number): number {
     const ate = this.morteFinal === null ? n : Math.min(n, this.morteFinal - 1);
     let k = 0;
-    for (let o = 1; o <= ONDAS; o++) if (fimDaOnda(o) <= ate) k++;
+    for (let o = 1; o <= this.tempos.ondas; o++) if (fimDaOnda(o) <= ate) k++;
     return k;
   }
 

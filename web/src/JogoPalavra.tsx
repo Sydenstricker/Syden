@@ -1,12 +1,26 @@
 import { Delete } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useT } from './i18n';
 import { Placar, Relogio } from './Minijogo';
 import type { EstadoPalavra, Partida } from './minijogos';
+import { tocar } from './somDosJogos';
+import './jogosDePalavras.css';
 
 const PALAVRA_MS = 3 * 60_000;
+const PALAVRA_SOLO_MS = 10 * 60_000;
 const TECLADO = ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'];
 const CLASSE = ['nao-tem', 'outro-lugar', 'no-lugar'];
+
+/** O que o servidor de 19/11/2026 manda a mais: o dueto e o quarteto, o modo difícil e a sequência do Solo. */
+type EstadoPalavraNovo = Omit<EstadoPalavra, 'meu' | 'outros'> & {
+  palavras?: number;
+  dificil?: boolean;
+  meu: { texto: string; cores: number[]; coresTodas?: number[][] }[];
+  resolvidas?: (number | null)[];
+  palavrasReveladas?: string[] | null;
+  outros: (EstadoPalavra['outros'][number] & { coresTodas?: number[][][] })[];
+  sequencia?: { atual: number; recorde: number | null; novo: boolean } | null;
+};
 
 /** Sem acento e em minúscula: é assim que o servidor confere o chute. */
 const limpar = (texto: string) =>
@@ -16,13 +30,19 @@ const limpar = (texto: string) =>
     .toLowerCase()
     .replace(/ç/g, 'c');
 
+/** As cores de um chute para cada palavra (servidor antigo: só a primeira). */
+const coresDe = (c: { cores: number[]; coresTodas?: number[][] }) => c.coresTodas ?? [c.cores];
+
 /**
  * A PALAVRA SECRETA, EM CORRIDA (ver server/src/minijogo-palavra.ts): o Termo da turma. Cada um chuta no seu quadro,
  * pelo teclado do computador ou pelo da tela, e embaixo a sala vê os quadros dos outros só com as cores. Na revelação,
  * a palavra e as letras de todo mundo aparecem.
+ *
+ * DESDE 19/11/2026: no Solo (uma palavra de cada vez, com a sequência de vitórias da sessão), o dueto e o quarteto (um quadro
+ * por palavra, o mesmo chute em todos) e o modo difícil (quem confere é o servidor).
  */
 export function JogoPalavra({
-  estado,
+  estado: estadoBase,
   eu,
   jogador,
   restante,
@@ -37,6 +57,9 @@ export function JogoPalavra({
   agir: (corpo: Record<string, unknown>) => unknown;
 }) {
   const t = useT();
+  const estado = estadoBase as unknown as EstadoPalavraNovo & Partida;
+  const nPalavras = estado.palavras ?? 1;
+  const resolvidas = estado.resolvidas ?? [estado.acertei ? estado.meu.length : null];
   const [escrito, setEscrito] = useState('');
   // Um chute por vez (revisão de 16/10/2026): Enter segurado, ou duas vezes com a internet lenta, mandava o mesmo
   // chute de novo e gastava duas das 6 tentativas.
@@ -47,6 +70,21 @@ export function JogoPalavra({
   useEffect(() => setEscrito(''), [estado.rodada]);
   // O chute foi aceito (o quadro cresceu): a linha de escrever fica vazia. Recusado, o texto fica para corrigir.
   useEffect(() => setEscrito(''), [estado.meu.length]);
+
+  // OS SONS (19/11/2026): cada palavra acertada, o último chute que não acertou, e a medalha da sequência nova.
+  const acertadas = resolvidas.filter((n) => n !== null).length;
+  const antesDoSom = useRef({ chutes: estado.meu.length, acertadas, rodada: estado.rodada, novo: !!estado.sequencia?.novo });
+  useEffect(() => {
+    const a = antesDoSom.current;
+    const novo = !!estado.sequencia?.novo;
+    if (estado.rodada === a.rodada) {
+      if (novo && !a.novo) tocar('medalha');
+      else if (acertadas > a.acertadas) tocar('acerto');
+      else if (estado.meu.length > a.chutes && estado.meu.length >= estado.chutes) tocar('derrota');
+      else if (estado.meu.length > a.chutes) tocar('carta');
+    }
+    antesDoSom.current = { chutes: estado.meu.length, acertadas, rodada: estado.rodada, novo };
+  }, [estado.meu.length, acertadas, estado.rodada, estado.sequencia?.novo, estado.chutes]);
 
   const tecla = (k: string) => {
     if (!chutando) return;
@@ -79,25 +117,47 @@ export function JogoPalavra({
     return () => window.removeEventListener('keydown', ouvir);
   });
 
+  const reveladas = (estado.palavrasReveladas ?? (estado.palavra ? [estado.palavra] : [])).map((p) => p.toUpperCase()).join(' · ');
+
   if (estado.terminada) {
-    return <Placar eu={eu} linhas={estado.placar.map((l) => ({ ...l, valor: String(l.pontos) }))} />;
+    return (
+      <>
+        {estado.solo ? (
+          reveladas && (
+            <p className="minijogo-situacao" role="status">
+              {t('A palavra era: {palavra}', { palavra: reveladas })}
+            </p>
+          )
+        ) : (
+          <Placar eu={eu} linhas={estado.placar.map((l) => ({ ...l, valor: String(l.pontos) }))} />
+        )}
+        <Sequencia sequencia={estado.sequencia} />
+      </>
+    );
   }
 
-  // A cor de cada tecla: a melhor que ela já teve nos meus chutes.
+  // A cor de cada tecla: a melhor que ela já teve nos meus chutes. No dueto e no quarteto, só as palavras que ainda faltam
+  // contam (a tecla de uma palavra acertada não diz mais nada).
   const corDaTecla = new Map<string, number>();
   for (const c of estado.meu) {
-    [...limpar(c.texto)].forEach((letra, i) => corDaTecla.set(letra, Math.max(corDaTecla.get(letra) ?? -1, c.cores[i])));
+    coresDe(c).forEach((cs, b) => {
+      if (cs.length !== 5 || (nPalavras > 1 && resolvidas[b] !== null)) return;
+      [...limpar(c.texto)].forEach((letra, i) => corDaTecla.set(letra, Math.max(corDaTecla.get(letra) ?? -1, cs[i])));
+    });
   }
 
-  const linhas = Array.from({ length: estado.chutes }, (_, l) => {
-    const feito = estado.meu[l];
-    if (feito) return { letras: [...feito.texto], cores: feito.cores };
-    if (l === estado.meu.length && chutando) return { letras: [...escrito.padEnd(5)], cores: null, atual: true };
-    return { letras: [...'     '], cores: null };
-  });
+  /** As linhas do quadro de uma palavra: depois de acertada, as linhas seguintes ficam vazias. */
+  const linhasDe = (b: number) =>
+    Array.from({ length: estado.chutes }, (_, l) => {
+      const feito = estado.meu[l];
+      const cs = feito ? coresDe(feito)[b] : undefined;
+      if (feito && cs && cs.length === 5) return { letras: [...feito.texto], cores: cs, atual: false };
+      if (!feito && l === estado.meu.length && chutando && resolvidas[b] === null) return { letras: [...escrito.padEnd(5)], cores: null, atual: true };
+      return { letras: [...'     '], cores: null, atual: false };
+    });
 
   let situacao: string;
-  if (estado.fase === 'revelando') situacao = t('A palavra era: {palavra}', { palavra: (estado.palavra ?? '').toUpperCase() });
+  if (estado.fase === 'revelando') situacao = t('A palavra era: {palavra}', { palavra: reveladas });
   else if (estado.acertei) situacao = t('Acertou! Agora é torcer pelos outros.');
   else if (estado.meu.length >= estado.chutes) situacao = t('Acabaram os seus chutes. Espere a palavra.');
   else situacao = t('Escreva uma palavra de 5 letras e aperte Enter.');
@@ -105,13 +165,17 @@ export function JogoPalavra({
   const outros = estado.outros.filter((o) => o.userId !== eu);
   return (
     <div className="palavra">
-      <div className="palavra-quadro" aria-label={t('Seu quadro')}>
-        {linhas.map((linha, l) => (
-          <div key={l} className={`palavra-linha${'atual' in linha ? ' atual' : ''}`}>
-            {linha.letras.map((letra, i) => (
-              <span key={i} className={`palavra-casa${linha.cores ? ` ${CLASSE[linha.cores[i]]}` : ''}`}>
-                {letra.trim().toUpperCase()}
-              </span>
+      <div className={`palavra-quadros${nPalavras > 1 ? ' varias' : ''}`}>
+        {Array.from({ length: nPalavras }, (_, b) => (
+          <div key={b} className={`palavra-quadro${nPalavras > 1 && resolvidas[b] !== null ? ' resolvido' : ''}`} aria-label={t('Seu quadro')}>
+            {linhasDe(b).map((linha, l) => (
+              <div key={l} className={`palavra-linha${linha.atual ? ' atual' : ''}`}>
+                {linha.letras.map((letra, i) => (
+                  <span key={i} className={`palavra-casa${linha.cores ? ` ${CLASSE[linha.cores[i]]}` : ''}`}>
+                    {letra.trim().toUpperCase()}
+                  </span>
+                ))}
+              </div>
             ))}
           </div>
         ))}
@@ -150,14 +214,20 @@ export function JogoPalavra({
                 {o.username}
                 {o.acertou && ' ✓'}
               </span>
-              <div className="palavra-mini">
-                {o.cores.map((linha, l) => (
-                  <div key={l}>
-                    {linha.map((c, i) => (
-                      <span key={i} className={CLASSE[c]}>
-                        {o.letras ? [...o.letras[l]][i].toUpperCase() : ''}
-                      </span>
-                    ))}
+              <div className="palavra-minis">
+                {Array.from({ length: nPalavras }, (_, b) => (
+                  <div key={b} className="palavra-mini">
+                    {(o.coresTodas ?? o.cores.map((c) => [c])).map((todas, l) =>
+                      (todas[b] ?? []).length === 5 ? (
+                        <div key={l}>
+                          {todas[b].map((c, i) => (
+                            <span key={i} className={CLASSE[c]}>
+                              {o.letras ? ([...o.letras[l]][i] ?? '').toUpperCase() : ''}
+                            </span>
+                          ))}
+                        </div>
+                      ) : null,
+                    )}
                   </div>
                 ))}
               </div>
@@ -165,7 +235,23 @@ export function JogoPalavra({
           ))}
         </ul>
       )}
-      {estado.fase === 'chutando' && <Relogio restante={restante} total={PALAVRA_MS} />}
+      {estado.solo && <Sequencia sequencia={estado.sequencia} />}
+      {estado.fase === 'chutando' && <Relogio restante={restante} total={estado.solo ? PALAVRA_SOLO_MS : PALAVRA_MS} />}
     </div>
+  );
+}
+
+/**
+ * A SEQUÊNCIA DO SOLO (ver SESSAO_MS em server/src/minijogo-palavra.ts): as vitórias seguidas desta sessão e o recorde. Sem
+ * contagem de dias: errar zera, e meia hora parada também.
+ */
+function Sequencia({ sequencia }: { sequencia: EstadoPalavraNovo['sequencia'] }) {
+  const t = useT();
+  if (!sequencia) return null;
+  return (
+    <p className="palavra-sequencia" role="status">
+      {t('Vitórias seguidas: {n}', { n: sequencia.atual })}
+      {sequencia.novo ? ` · 🏅 ${t('Novo recorde!')}` : sequencia.recorde !== null ? ` · ${t('Seu recorde: {n}', { n: sequencia.recorde })}` : ''}
+    </p>
   );
 }

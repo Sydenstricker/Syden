@@ -272,3 +272,71 @@ test('trocar na vertical (pedido dele, 05/11/2026): a casa com a de baixo, e tr�
   assert.equal(Sim.podeTrocarNaVertical(g, n - 1, 0), false, 'em cima do 1 está o caixote');
   assert.equal(Sim.podeTrocarNaVertical(g, n, 0), false, 'abaixo da última linha não há casa');
 });
+
+// ===== 19/11/2026: o quebra-cabeça =====
+
+/** Anda até tudo parar (nada caindo, sumindo nem marcado de cadeia), ou até a partida acabar. */
+function estabilizar(e: Sim.Estado) {
+  for (let k = 0; k < 2000 && !e.fim; k++) {
+    let parado = k > 0;
+    for (let i = 0; i < e.tipo.length; i++) if (e.tipo[i] !== Sim.VAZIO && e.estado[i] !== Sim.PARADO) parado = false;
+    if (parado && e.cadeia.every((x) => !x)) return;
+    Sim.passo(e);
+  }
+}
+function trocasPossiveis(e: Sim.Estado): Sim.Jogada[] {
+  const r: Sim.Jogada[] = [];
+  const C = Sim.COLUNAS;
+  for (let l = 0; l < Sim.LINHAS; l++)
+    for (let c = 0; c < C; c++) {
+      const i = l * C + c;
+      if (c < C - 1 && Sim.podeTrocar(e, l, c) && e.tipo[i] !== e.tipo[i + 1]) r.push([e.passo, 0, l, c]);
+      if (l < Sim.LINHAS - 1 && Sim.podeTrocarNaVertical(e, l, c) && e.tipo[i] !== e.tipo[i + C]) r.push([e.passo, 2, l, c]);
+    }
+  return r;
+}
+/** Dá para limpar em até `d` trocas? (A busca, que o quebra-cabeça de verdade não sabe: só confere a fase.) */
+function limpaEm(e: Sim.Estado, d: number): Sim.Jogada[] | null {
+  for (const j of trocasPossiveis(e)) {
+    const f = JSON.parse(JSON.stringify(e)) as Sim.Estado;
+    Sim.passo(f, [j]);
+    estabilizar(f);
+    if (f.fim === 'limpou') return [j];
+    if (d > 1 && !f.fim) {
+      const resto = limpaEm(f, d - 1);
+      if (resto) return [j, ...resto];
+    }
+  }
+  return null;
+}
+
+test('quebra-cabeça: 20 fases, cada uma sem trio no começo, que se limpa nas trocas dela e não em menos', () => {
+  assert.equal(Sim.QUEBRA_CABECAS.length, 20);
+  Sim.QUEBRA_CABECAS.forEach((q, n) => {
+    const e = Sim.criar(1, 0, 1, n);
+    assert.equal(e.trocas, q.trocas);
+    // parada: nada some sozinho
+    const f = JSON.parse(JSON.stringify(e)) as Sim.Estado;
+    for (let i = 0; i < 30; i++) Sim.passo(f);
+    assert.ok(f.estado.every((s) => s !== Sim.LIMPANDO) && !f.fim, `fase ${n + 1} parada`);
+    if (q.trocas > 1) assert.equal(limpaEm(e, q.trocas - 1), null, `fase ${n + 1} limpa em menos de ${q.trocas}`);
+    assert.ok(limpaEm(e, q.trocas), `fase ${n + 1} não limpa em ${q.trocas}`);
+  });
+});
+
+test('quebra-cabeça: a pilha não sobe, o "subir" não faz nada, e acabadas as trocas a fase falha', () => {
+  const s = Sim.simulacao(1, 0, 1, 12);
+  s.jogadas.push([5, 1, 0, 0]);
+  Sim.avancar(s, 600);
+  assert.equal(s.e.subida, 0);
+  assert.equal(s.e.fim, null);
+  // três trocas que não limpam
+  const e = Sim.criar(1, 0, 1, 12);
+  for (let k = 0; k < 3 && !e.fim; k++) {
+    const j = trocasPossiveis(e)[0];
+    Sim.passo(e, [[e.passo, j[1], j[2], j[3]]]);
+    estabilizar(e);
+  }
+  if (e.fim !== 'limpou') assert.equal(e.fim, 'falhou');
+  assert.equal(e.trocas, 0);
+});

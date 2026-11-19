@@ -60,7 +60,7 @@ interface Interno {
   _fila: () => string[];
 }
 
-function comecar(naSala = [anaId, biaId], comunidadeId = comunidade.id) {
+function comecar(naSala = [anaId, biaId], comunidadeId = comunidade.id, corpo: Record<string, unknown> = {}) {
   let terminou = false;
   const quadros: Record<string, unknown>[] = [];
   const relogio: { ms: number; depois: () => void }[] = [];
@@ -78,7 +78,7 @@ function comecar(naSala = [anaId, biaId], comunidadeId = comunidade.id) {
   const jogo = criarComandoComBanco({ agora: () => agora, aleatorio: () => 0.5, intervalo: (p) => ((passo = p), 1), limpar: () => {} }).comecar(ctx, {
     naSala,
     criadaPor: naSala[0],
-    corpo: {},
+    corpo,
   });
   assert.ok(typeof jogo !== 'string');
   const i = jogo as unknown as Interno;
@@ -304,7 +304,7 @@ test('ninguém da turma na sala: a fase acaba, sem troféu', () => {
  * A fase inteira: o servidor de verdade num relógio de mão, cada pessoa com o cliente da tela e o piloto, e a rede com IDA ms
  * em cada sentido.
  */
-async function partida(ids: number[], IDA = 100, sementeInicial = 7) {
+async function partida(ids: number[], IDA = 100, sementeInicial = 7, corpo: Record<string, unknown> = {}) {
   let semente = sementeInicial;
   const aleatorio = () => {
     semente = (semente * 1103515245 + 12345) % 2147483648;
@@ -336,13 +336,13 @@ async function partida(ids: number[], IDA = 100, sementeInicial = 7) {
     intervalo: (p) => ((passo = p), 1),
     limpar: () => {},
     servicos: { avatarDe: () => null, guardarTrofeu: (t) => trofeus.push(t) },
-  }).comecar(ctx, { naSala: ids, criadaPor: ids[0], corpo: {} });
+  }).comecar(ctx, { naSala: ids, criadaPor: ids[0], corpo });
   assert.ok(typeof jogo !== 'string');
   const clientes = ids.map((id) => ({ c: new site.Cliente(id, (dados: unknown) => rede.push({ em: t0 + IDA, para: 0, de: id, dados })), cmd: site.comandosVazios() }));
   let ultimo: import('../../web/src/comando/regras.ts').Quadro | null = null;
   let k = 0;
   const inicio = t0;
-  for (let ms = 0; ms < 8 * 60_000 && !terminou; ms += 1000 / 60) {
+  for (let ms = 0; ms < 16 * 60_000 && !terminou; ms += 1000 / 60) {
     t0 += 1000 / 60;
     if (++k % 3 === 0) passo!();
     for (let i = 0; i < rede.length; ) {
@@ -387,4 +387,232 @@ test('com três, a turma vence junta, e o pódio vai à estante', async (t) => {
   const r = publico.resultado as { pontos: number; posicao: number | null }[];
   assert.ok(r.every((l) => l.pontos > 0), 'todo mundo acertou alguma coisa');
   assert.ok(trofeus.length >= 2 && trofeus.every((x) => x.pista === 'comando' && x.posicao <= 3));
+});
+
+// ---------------- As melhorias de 19/11/2026 ----------------
+
+test('a faca-cenoura: só com o bicho colado (pelo passado dele), no ritmo da faca, e tira mais que a bala', () => {
+  const m = comecar();
+  m.por(anaId, 100);
+  const b = m.bicho('cogumelo', 112);
+  m.andar(200);
+  const hp = b.hp;
+  assert.equal(m.manda(anaId, { tipo: 'faca', inimigo: b.id }), null);
+  assert.equal(b.hp, hp - mod.FACA.dano);
+  // logo de novo: depressa demais
+  assert.equal(m.manda(anaId, { tipo: 'faca', inimigo: b.id }), 'depressa demais');
+  // longe: não
+  const longe = m.bicho('cogumelo', 200);
+  m.andar(mod.FACA.intervalo + 50);
+  assert.equal(m.manda(anaId, { tipo: 'faca', inimigo: longe.id }), 'longe do bicho');
+  // atrás de quem olha para a frente: não
+  const atras = m.bicho('cogumelo', 80);
+  m.andar(mod.FACA.intervalo + 50);
+  assert.equal(m.manda(anaId, { tipo: 'faca', inimigo: atras.id }), 'longe do bicho');
+  m.jogo.parar!();
+});
+
+test('o recorde do Solo: o tempo da fase vencida, pelo relógio do servidor, na tabela comum', async () => {
+  const db = await import('../src/db.js');
+  const m = comecar([anaId], 0);
+  const inicio = agora;
+  m.andar(5000);
+  // o atalho do teste: as ondas sem bichos, a turma avançando, e o dragão derrubado na faca
+  const pub0 = m.jogo.publico(anaId) as { ondas: number };
+  let guarda = 0;
+  while ((m.quadros.at(-1) as { f: string } | undefined)?.f !== 'vitoria' && guarda++ < 2000) {
+    const q = m.quadros.at(-1) as { f: string; a: [number, number] } | undefined;
+    const ultima = (m.jogo.publico(anaId) as { onda: number }).onda === pub0.ondas;
+    if (!ultima) {
+      m.i._fila().length = 0;
+      m.i._bichos.clear();
+    } else {
+      const dragao = [...m.i._bichos.values()].find((b) => b.tipo === 'dragao' && b.hp > 0);
+      for (const b of m.i._bichos.values()) if (b !== dragao) b.hp = 0;
+      if (dragao) {
+        dragao.hp = 1;
+        dragao.historia.push({ t: agora, x: dragao.x, h: 0 });
+        m.por(anaId, dragao.x - BICHOS.dragao.larg - 4);
+        m.manda(anaId, { tipo: 'faca', inimigo: dragao.id });
+      }
+    }
+    if (q?.f === 'avancando') m.por(anaId, q.a[1] - 20);
+    m.andar(PASSO_MS * 8);
+  }
+  assert.equal((m.quadros.at(-1) as { f: string }).f, 'vitoria', `ondas ${pub0.ondas}`);
+  m.disparar();
+  const pub = m.jogo.publico(anaId) as { recorde: { ms: number; novo: boolean } | null };
+  assert.ok(pub.recorde, 'o recorde vai no público');
+  assert.ok(pub.recorde!.ms > 0 && pub.recorde!.ms <= agora - inicio);
+  const r = db.recordeDoSolo(anaId, 'comando', 'floresta');
+  assert.ok(r && r.valor <= pub.recorde!.ms);
+});
+
+// ---------------- A segunda rodada de 19/11/2026: as armas, a cápsula e o deserto ----------------
+
+interface ComItens {
+  _itens: { id: number; arma: string; x: number }[];
+}
+
+/** Limpa as ondas até a de número `alvo` (1 = a primeira). */
+function irAteAOnda(m: ReturnType<typeof comecar>, alvo: number) {
+  for (let k = 0; k < 2000 && (m.jogo.publico(anaId) as { onda: number }).onda < alvo; k++) {
+    m.i._fila().length = 0;
+    m.i._bichos.clear();
+    const q = m.quadros.at(-1) as { f: string; a: [number, number] } | undefined;
+    if (q?.f === 'avancando') m.por(anaId, q.a[1] - 20);
+    m.andar(PASSO_MS);
+  }
+}
+
+test('a cápsula passa na segunda onda; derrubada, a arma cai no chão e quem chega primeiro pega', () => {
+  const m = comecar([anaId], 0);
+  m.andar(200);
+  irAteAOnda(m, 2);
+  const capsula = [...m.i._bichos.values()].find((b) => b.tipo === 'capsula');
+  assert.ok(capsula, 'a cápsula entrou');
+  // derrubada a tiros (o tiro sai de baixo dela, para cima)
+  const ana_ = m.i._jogadores.get(anaId)!;
+  let n = 100;
+  for (let k = 0; k < BICHOS.capsula.hp; k++) {
+    m.andar(300);
+    m.por(anaId, capsula!.x);
+    capsula!.historia.push({ t: agora, x: capsula!.x, h: capsula!.h });
+    assert.equal(m.manda(anaId, { tipo: 'tiro', n: ++n, x: ana_.x, h: 20, dir: 2 }), null);
+    m.andar(150);
+    capsula!.historia.push({ t: agora, x: capsula!.x, h: capsula!.h });
+    assert.equal(m.manda(anaId, { tipo: 'acerto', n, k: 0, inimigo: capsula!.id }), null);
+  }
+  assert.equal(capsula!.estado, 'morto');
+  const itens = (m.jogo as unknown as ComItens)._itens;
+  assert.equal(itens.length, 1);
+  assert.equal(itens[0].arma, mod.CAPSULAS[1]);
+  m.andar(PASSO_MS);
+  assert.deepEqual((m.quadros.at(-1) as { it: number[][] }).it[0].slice(0, 2), [itens[0].id, mod.ARMAS.indexOf(mod.CAPSULAS[1])]);
+  // de longe, não; de perto, sim
+  m.por(anaId, itens[0].x + 80);
+  m.andar(200);
+  assert.equal(m.manda(anaId, { tipo: 'arma', item: itens[0].id }), 'longe da arma');
+  m.por(anaId, itens[0].x);
+  m.andar(200);
+  assert.equal(m.manda(anaId, { tipo: 'arma', item: itens[0].id }), null);
+  assert.equal(ana_.arma, mod.CAPSULAS[1]);
+  assert.equal(itens.length, 0);
+  m.jogo.parar!();
+});
+
+test('a cápsula não segura a onda: sem os outros bichos, a onda acaba com ela no ar', () => {
+  const m = comecar([anaId], 0);
+  m.andar(200);
+  irAteAOnda(m, 2);
+  assert.ok([...m.i._bichos.values()].some((b) => b.tipo === 'capsula'));
+  m.i._fila().length = 0;
+  for (const b of [...m.i._bichos.values()]) if (b.tipo !== 'capsula') m.i._bichos.delete(b.id);
+  m.andar(200);
+  assert.equal((m.quadros.at(-1) as { f: string }).f, 'avancando');
+  m.jogo.parar!();
+});
+
+test('a chama: rápida e curta (o servidor confere o ritmo e o alcance); a teleguiada: confere pela distância', () => {
+  const m = comecar();
+  m.por(anaId, 100);
+  const j = m.i._jogadores.get(anaId)!;
+  j.arma = 'chama';
+  j.armaAte = agora + 600_000;
+  // o ritmo: a chama sai a cada 70 ms; o dobro disso, o balde corta
+  let n = 0;
+  let recusados = 0;
+  for (let k = 0; k < 40; k++) {
+    m.andar(PASSO_MS);
+    if (m.manda(anaId, { tipo: 'tiro', n: ++n, x: 100, h: 20, dir: 0 }) !== null) recusados++;
+    if (m.manda(anaId, { tipo: 'tiro', n: ++n, x: 100, h: 20, dir: 0 }) !== null) recusados++;
+  }
+  assert.ok(recusados > 20, `o dobro do ritmo é cortado (${recusados})`);
+  // o alcance: um bicho a 120 px a chama não alcança; a 40 px, sim
+  const longe = m.bicho('cogumelo', 220);
+  const perto = m.bicho('cogumelo', 140);
+  m.andar(400);
+  for (const b of [longe, perto]) b.historia.push({ t: agora, x: b.x, h: 0 });
+  assert.equal(m.manda(anaId, { tipo: 'tiro', n: ++n, x: 100, h: 20, dir: 0 }), null);
+  m.andar(150);
+  for (const b of [longe, perto]) b.historia.push({ t: agora, x: b.x, h: 0 });
+  assert.equal(m.manda(anaId, { tipo: 'acerto', n, k: 0, inimigo: longe.id }), 'longe do bicho');
+  assert.equal(m.manda(anaId, { tipo: 'acerto', n, k: 0, inimigo: perto.id }), null);
+  // a teleguiada faz a curva na tela; o servidor aceita o bicho ao alcance do caminho até agora, do lado da mira
+  j.arma = 'teleguiada';
+  const voador = m.bicho('abelha', 230, 66);
+  m.andar(500);
+  assert.equal(m.manda(anaId, { tipo: 'tiro', n: ++n, x: 100, h: 20, dir: 0 }), null);
+  m.andar(50);
+  voador.historia.push({ t: agora, x: voador.x, h: voador.h });
+  assert.equal(m.manda(anaId, { tipo: 'acerto', n, k: 0, inimigo: voador.id }), 'longe do bicho', 'ainda não deu tempo de chegar');
+  m.andar(600);
+  voador.historia.push({ t: agora, x: voador.x, h: voador.h });
+  const hp = voador.hp;
+  assert.equal(m.manda(anaId, { tipo: 'acerto', n, k: 0, inimigo: voador.id }), null);
+  assert.equal(voador.hp, hp - mod.TELEGUIADA.dano);
+  // para trás da mira, não
+  const atras = m.bicho('cogumelo', 20);
+  m.andar(500);
+  assert.equal(m.manda(anaId, { tipo: 'tiro', n: ++n, x: 100, h: 20, dir: 0 }), null);
+  m.andar(500);
+  atras.historia.push({ t: agora, x: atras.x, h: 0 });
+  assert.equal(m.manda(anaId, { tipo: 'acerto', n, k: 0, inimigo: atras.id }), 'longe do bicho');
+  m.jogo.parar!();
+});
+
+test('o deserto: os bichos dele entram, o yeti é o subchefe da terceira onda e não acaba a fase', () => {
+  const m = comecar([anaId], 0, { fase: 'deserto' });
+  m.andar(4000);
+  const q = m.quadros.at(-1) as { fs: number };
+  assert.equal(q.fs, mod.CENARIO_DA_FASE.deserto);
+  assert.ok([...m.i._bichos.values()].some((b) => b.tipo === 'cacto'), 'o cacto anda no deserto');
+  irAteAOnda(m, 3);
+  m.andar(1500);
+  const yeti = [...m.i._bichos.values()].find((b) => b.tipo === 'yeti');
+  assert.ok(yeti, 'o yeti entrou');
+  assert.equal(yeti!.hp, mod.vidaDoSubchefe(1, true));
+  // derrubado na faca: a onda acaba, mas a fase segue
+  yeti!.hp = 1;
+  yeti!.historia.push({ t: agora, x: yeti!.x, h: 0 });
+  m.por(anaId, yeti!.x - BICHOS.yeti.larg - 4);
+  assert.equal(m.manda(anaId, { tipo: 'faca', inimigo: yeti!.id }), null);
+  m.i._fila().length = 0;
+  for (const b of [...m.i._bichos.values()]) if (b.tipo !== 'yeti') m.i._bichos.delete(b.id);
+  m.andar(1000);
+  assert.equal((m.quadros.at(-1) as { f: string }).f, 'avancando');
+  m.jogo.parar!();
+});
+
+test('a campanha: vencido o dragão da floresta, o deserto começa do começo; o recorde é da campanha inteira', async () => {
+  const db = await import('../src/db.js');
+  const m = comecar([anaId], 0, { fase: 'campanha' });
+  let viuDeserto = false;
+  for (let k = 0; k < 4000 && (m.quadros.at(-1) as { f: string } | undefined)?.f !== 'vitoria'; k++) {
+    const q = m.quadros.at(-1) as { f: string; a: [number, number]; fs: number } | undefined;
+    if (q?.fs === mod.CENARIO_DA_FASE.deserto) viuDeserto = true;
+    const pub = m.jogo.publico(anaId) as { onda: number; ondas: number };
+    const dragao = [...m.i._bichos.values()].find((b) => b.tipo === 'dragao' && b.hp > 0);
+    if (pub.onda < pub.ondas) m.i._fila().length = 0;
+    for (const b of [...m.i._bichos.values()]) if (b.tipo !== 'dragao') m.i._bichos.delete(b.id);
+    if (dragao) {
+      dragao.hp = 1;
+      dragao.historia.push({ t: agora, x: dragao.x, h: 0 });
+      m.por(anaId, dragao.x - BICHOS.dragao.larg - 4);
+      m.manda(anaId, { tipo: 'faca', inimigo: dragao.id });
+    }
+    if (q?.f === 'avancando') m.por(anaId, q.a[1] - 20);
+    m.andar(PASSO_MS * 8);
+  }
+  assert.equal((m.quadros.at(-1) as { f: string }).f, 'vitoria');
+  assert.ok(viuDeserto, 'passou pelo deserto');
+  assert.equal((m.jogo.publico(anaId) as { etapa: number }).etapa, 2);
+  m.disparar();
+  assert.ok(db.recordeDoSolo(anaId, 'comando', 'campanha'));
+});
+
+test('no deserto, o piloto vence sozinho com 200 ms de ida e volta', async (t) => {
+  const { ultimo, segundos } = await partida([7], 100, 5, { fase: 'deserto' });
+  t.diagnostic(`o deserto levou ${Math.round(segundos)} s; vidas ${ultimo.j[0][7]}, pontos ${ultimo.j[0][9]}`);
+  assert.equal(ultimo.f, 'vitoria', `fase ${ultimo.f} na onda ${ultimo.o + 1}`);
 });

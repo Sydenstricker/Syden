@@ -18,6 +18,7 @@
  * é o que decide quem chegou mais perto.
  */
 
+import * as db from './db.js';
 import { embaralhar, placar, type Definicao } from './minijogo-motor.js';
 
 export type Medida = 'altura' | 'comprimento' | 'diametro';
@@ -87,6 +88,36 @@ export const OBJETOS: Record<string, { cm: number; medida: Medida }> = {
   terra: { cm: 1_274_200_000, medida: 'diametro' },
   jupiter: { cm: 13_982_000_000, medida: 'diametro' },
   sol: { cm: 139_140_000_000, medida: 'diametro' },
+  // 19/11/2026: a comida e os veículos
+  limao: { cm: 7, medida: 'comprimento' },
+  maca: { cm: 8, medida: 'altura' },
+  rosquinha: { cm: 9, medida: 'diametro' },
+  pera: { cm: 11, medida: 'altura' },
+  hamburguer: { cm: 11, medida: 'diametro' },
+  uva: { cm: 15, medida: 'altura' },
+  cenoura: { cm: 17, medida: 'comprimento' },
+  milho: { cm: 19, medida: 'comprimento' },
+  berinjela: { cm: 20, medida: 'comprimento' },
+  baguete: { cm: 60, medida: 'comprimento' },
+  skate: { cm: 80, medida: 'comprimento' },
+  patinete: { cm: 100, medida: 'comprimento' },
+  motocicleta: { cm: 210, medida: 'comprimento' },
+  ambulancia: { cm: 600, medida: 'comprimento' },
+  'caminhao-de-bombeiros': { cm: 1000, medida: 'comprimento' },
+  helicoptero: { cm: 1300, medida: 'comprimento' },
+  tangerina: { cm: 7, medida: 'diametro' },
+  pessego: { cm: 7, medida: 'altura' },
+  batata: { cm: 10, medida: 'comprimento' },
+  pimentao: { cm: 10, medida: 'altura' },
+  manga: { cm: 13, medida: 'altura' },
+  pretzel: { cm: 15, medida: 'comprimento' },
+  pepino: { cm: 20, medida: 'comprimento' },
+  treno: { cm: 120, medida: 'comprimento' },
+  lambreta: { cm: 180, medida: 'comprimento' },
+  van: { cm: 500, medida: 'comprimento' },
+  caminhonete: { cm: 530, medida: 'comprimento' },
+  'carro-de-corrida': { cm: 550, medida: 'comprimento' },
+  caminhao: { cm: 700, medida: 'comprimento' },
 };
 
 /**
@@ -124,6 +155,15 @@ export const CATEGORIAS: Record<string, string[]> = {
     'carro', 'trator', 'casa', 'onibus', 'cacto', 'coqueiro', 'baleia-azul', 'braquiossauro', 'aviao', 'moai',
     'estatua-da-liberdade', 'campo-de-futebol', 'foguete', 'roda-gigante', 'titanic', 'torre-eiffel', 'monte-fuji',
     'everest', 'lua', 'terra', 'jupiter', 'sol',
+  ],
+  // 19/11/2026
+  comida: [
+    'morango', 'ovo', 'pessego', 'maca', 'pimentao', 'pera', 'manga', 'uva', 'abacaxi', 'limao', 'tangerina', 'rosquinha',
+    'batata', 'hamburguer', 'pretzel', 'cenoura', 'milho', 'banana', 'pepino', 'berinjela', 'baguete',
+  ],
+  veiculos: [
+    'skate', 'patinete', 'treno', 'bicicleta', 'lambreta', 'motocicleta', 'carro', 'van', 'caminhonete', 'carro-de-corrida',
+    'ambulancia', 'caminhao', 'caminhao-de-bombeiros', 'onibus', 'helicoptero', 'aviao', 'titanic',
   ],
 };
 
@@ -189,6 +229,8 @@ export const tamanho: Definicao = {
     /** Os pontos de cada um na última revelação. */
     const daRodada = new Map<number, number>();
     const pontos = new Map(naSala.map((id) => [id, 0]));
+    /** No fim do Solo: se a partida virou o recorde da categoria, e o recorde de antes. */
+    let recorde: { antes: number | null; novo: boolean } | null = null;
 
     function novaRodada() {
       par = sortearPar(usados, ids);
@@ -213,6 +255,15 @@ export const tamanho: Definicao = {
       ctx.agendar(REVELANDO_MS, () => {
         if (rodada >= RODADAS) {
           fase = 'fim';
+          // O RECORDE DO SOLO (19/11/2026), por categoria, na tabela comum: os pontos que este servidor deu
+          if (ctx.solo && naSala.length === 1) {
+            const quem = naSala[0];
+            const feitos = pontos.get(quem) ?? 0;
+            recorde =
+              feitos > 0
+                ? db.guardarRecordeDoSolo(quem, 'tamanho', categoria, feitos, false)
+                : { antes: db.recordeDoSolo(quem, 'tamanho', categoria)?.valor ?? null, novo: false };
+          }
           return ctx.terminar();
         }
         rodada++;
@@ -239,6 +290,7 @@ export const tamanho: Definicao = {
           confirmaram: [...confirmaram],
           palpites: revelado ? [...palpites].map(([userId, palpite]) => ({ userId, palpite, pontos: daRodada.get(userId) ?? 0 })) : null,
           placar: placar(pontos, ctx.nome),
+          recorde,
         };
       },
       acao(quem, corpo) {

@@ -1,5 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { useT } from './i18n';
+import { ControlesDaMesa, ComHistorico, type EstadoDaMesa } from './MesaComum';
 import { Relogio } from './Minijogo';
 import type { Partida } from './minijogos';
 import type { DamasDaCena } from './mesa3d/damas';
@@ -21,7 +22,9 @@ export interface EstadoDamas {
   jogadores: { userId: number; username: string }[];
   vez: 0 | 1;
   vencedor: 0 | 1 | 'empate' | null;
-  motivo: 'jogo' | 'tempo' | 'desistiu' | null;
+  motivo: 'jogo' | 'tempo' | 'desistiu' | 'acordo' | null;
+  /** A mesma posição pela terceira vez (19/11/2026). */
+  repetida?: boolean;
   /** 64 casas, linha 0 no alto (o lado das escuras): 0 vazia, 1 pedra clara, 2 dama clara, 3 pedra escura, 4 dama escura. */
   casas: number[];
   /** O lado da mesa que joga com as claras. */
@@ -117,7 +120,7 @@ export function JogoDamas({
   } else if (jogando) {
     situacao = minhaVez ? t('Sua vez!') : t('Vez de {nome}.', { nome: nome(estado.vez) });
   } else if (estado.vencedor === 'empate') {
-    situacao = t('Empate!');
+    situacao = estado.repetida ? t('Empate: a mesma posição pela terceira vez.') : t('Empate!');
   } else if (estado.vencedor === null) {
     situacao = t('Ninguém sentou para jogar.');
   } else {
@@ -146,6 +149,7 @@ export function JogoDamas({
         ))}
       </div>
 
+      <ComHistorico estado={estado as unknown as EstadoDaMesa}>
       <TabuleiroDasDamas
         dados={{
           casas: estado.casas,
@@ -193,17 +197,19 @@ export function JogoDamas({
           </div>
         }
       />
+      </ComHistorico>
 
       <p className={`minijogo-situacao${minhaVez ? ' minha-vez' : ''}`} role="status">
         {situacao}
       </p>
       {/* no Solo, contra o computador, pensar não tem prazo */}
-      {jogando && !partida.solo && <Relogio restante={restante} total={JOGADA_MS} />}
+      {jogando && !partida.solo && !(estado as unknown as EstadoDaMesa).relogio && <Relogio restante={restante} total={JOGADA_MS} />}
       {estado.fase === 'esperando' && meuLado < 0 && (
         <button type="button" className="btn-primary duelo-sentar" onClick={() => agir({ tipo: 'sentar' })}>
           {t('Jogar')}
         </button>
       )}
+      <ControlesDaMesa jogo="damas" estado={estado as unknown as EstadoDaMesa} eu={eu} agir={agir} />
       {jogando && meuLado >= 0 && (
         <button type="button" className="link-button duelo-desistir" onClick={() => agir({ tipo: 'desistir' })}>
           {t('Desistir')}

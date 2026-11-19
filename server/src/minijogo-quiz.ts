@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { embaralhar, placar, type Definicao } from './minijogo-motor.js';
+import { guardarRecordeDoSolo, lerRecordeDoSolo } from './recorde-solo-tardio.js';
 
 /**
  * O QUIZ DE ADIVINHAR (24/10/2026): o formato dos "-dle" (Loldle e companhia), em corrida na sala. Sai um item secreto
@@ -53,6 +54,11 @@ export interface Tema {
    * chutes. "tudo" é a de reserva, quando o pedido não diz qual (ou diz uma que não existe).
    */
   categorias?: Record<string, (item: ItemDoQuiz) => boolean>;
+  /**
+   * A coluna que vira a SEGUNDA PISTA (19/11/2026): depois de PISTA_COLUNA chutes sem acertar, o valor dela no secreto aparece
+   * (o tipo do monstro, a mitologia da figura, a sub-região do país). A primeira pista é a letra inicial do nome.
+   */
+  pista?: string;
 }
 
 /** Os itens de uma categoria do tema (todos, se o tema não tem categorias ou se ela não existe). */
@@ -124,6 +130,7 @@ export const TEMAS: Record<string, Tema> = {
    */
   monstros: {
     itens: lerItens('monstros.json'),
+    pista: 'tipo',
     colunas: [
       { id: 'tipo', tipo: 'igual' },
       { id: 'tamanho', tipo: 'ordem' },
@@ -149,6 +156,7 @@ export const TEMAS: Record<string, Tema> = {
       africa: (f) => String(f.mitologia).endsWith(' africa'),
       europa: (f) => String(f.mitologia).endsWith(' europa'),
     },
+    pista: 'mitologia',
     colunas: [
       { id: 'mitologia', tipo: 'partes' },
       { id: 'tipo', tipo: 'igual' },
@@ -163,6 +171,7 @@ export const TEMAS: Record<string, Tema> = {
    */
   paises: {
     itens: lerItens('paises.json').map((p) => ({ ...p, nome: p.id })),
+    pista: 'subregiao',
     colunas: [
       { id: 'local', tipo: 'distancia' },
       { id: 'regiao', tipo: 'igual' },
@@ -195,6 +204,21 @@ export const RODADAS_QUIZ = 3;
 export const QUIZ_MS = 3 * 60_000;
 export const REVELACAO_QUIZ_MS = 8_000;
 
+/** AS PISTAS (19/11/2026): a letra inicial depois de 5 chutes sem acertar, e a coluna do tema (`pista`) depois de 10. */
+export const PISTA_LETRA = 5;
+export const PISTA_COLUNA = 10;
+
+/** A primeira letra do nome na língua de quem lê (a primeira "letra" de verdade: em japonês, o primeiro caractere). */
+export function letraInicial(tema: Tema, item: ItemDoQuiz, idioma: string): string {
+  const nome = tema.nomePor ? tema.nomePor(item, idioma) : nomeDoItem(item, idioma);
+  const primeira = Array.from(nome.trim())[0] ?? '';
+  try {
+    return primeira.toLocaleUpperCase(idioma);
+  } catch {
+    return primeira.toUpperCase();
+  }
+}
+
 /** Os pontos de quem acerta: 10 no primeiro chute, um a menos por chute, nunca menos de 1; +1 para o primeiro. */
 export const pontosDoQuiz = (chutes: number) => Math.max(1, 11 - chutes);
 
@@ -213,10 +237,25 @@ export function criarQuiz(tema: Tema): Definicao {
     vereditos: tema.colunas.map((c) => comparar(c, chute[c.id], secreto[c.id])),
   });
   const valores = (item: ItemDoQuiz) => Object.fromEntries(tema.colunas.map((c) => [c.id, item[c.id]]));
+  // o id do jogo (o do tema em TEMAS), para o recorde do Solo
+  const idDoJogo = Object.entries(TEMAS).find(([, t]) => t === tema)?.[0] ?? 'quiz';
 
   return {
-    comecar(ctx, { naSala, corpo }) {
+    comecar(ctx, { naSala, criadaPor, corpo }) {
       const categoria = tema.categorias?.[String(corpo.categoria)] ? String(corpo.categoria) : tema.categorias ? 'tudo' : null;
+      /** A língua de cada um (vem com o chute): é nela que sai a letra da primeira pista. */
+      const idiomas = new Map<number, string>();
+      /** Quantos chutes cada um levou em cada rodada acertada (o recorde do Solo é a soma das três). */
+      const chutesPorRodada = new Map<number, number[]>();
+      // O RECORDE DO SOLO (19/11/2026), por tema e categoria: os chutes somados das três rodadas, só se acertou as três.
+      const variante = categoria && categoria !== 'tudo' ? categoria : '';
+      let recorde: { antes: number | null; novo: boolean; valor: number | null } | null = null;
+      if (ctx.solo) {
+        lerRecordeDoSolo(criadaPor, idDoJogo, variante, (r) => {
+          if (!recorde?.novo) recorde = { antes: r?.valor ?? null, novo: false, valor: null };
+          ctx.avisar();
+        });
+      }
       const daPartida = new Set(itensDaCategoria(tema, categoria).map((i) => i.id));
       const sorteio = tema.itens.filter((i) => daPartida.has(i.id)).filter(tema.sorteavel ?? (() => true));
       if (sorteio.length < RODADAS_QUIZ) return 'A lista do quiz não está no servidor.';
@@ -249,6 +288,14 @@ export function criarQuiz(tema: Tema): Definicao {
         ctx.agendar(REVELACAO_QUIZ_MS, () => {
           if (rodada >= RODADAS_QUIZ) {
             fase = 'fim';
+            const meus = chutesPorRodada.get(criadaPor) ?? [];
+            if (ctx.solo && meus.length === RODADAS_QUIZ) {
+              const valor = meus.reduce((a, b) => a + b, 0);
+              guardarRecordeDoSolo(criadaPor, idDoJogo, variante, valor, true, { rodadas: meus }, (r) => {
+                recorde = { antes: r.antes, novo: r.novo, valor };
+                ctx.avisar();
+              });
+            }
             return ctx.terminar();
           }
           rodada++;
@@ -262,11 +309,21 @@ export function criarQuiz(tema: Tema): Definicao {
         publico(quem) {
           const meu = quadros.get(quem);
           const aberto = fase !== 'chutando';
+          // As pistas de quem ainda não acertou (e na revelação, as que já tinha).
+          const nChutes = meu?.linhas.length ?? 0;
+          const pistas = {
+            letra: nChutes >= PISTA_LETRA ? letraInicial(tema, secreto(), idiomas.get(quem) ?? 'en') : null,
+            coluna: nChutes >= PISTA_COLUNA && tema.pista ? { id: tema.pista, valor: secreto()[tema.pista] } : null,
+            // quantos chutes faltam para a próxima (null quando já saíram as duas)
+            proxima: nChutes < PISTA_LETRA ? PISTA_LETRA : nChutes < PISTA_COLUNA && tema.pista ? PISTA_COLUNA : null,
+          };
           return {
             rodada,
             rodadas: RODADAS_QUIZ,
             fase,
             categoria,
+            pistas,
+            recorde,
             colunas: tema.colunas,
             // As minhas linhas com os valores do que chutei (o site traduz e mostra); dos outros, só as cores.
             meu: (meu?.linhas ?? []).map((l) => ({ ...l, valores: valores(porId.get(l.id)!) })),
@@ -297,12 +354,14 @@ export function criarQuiz(tema: Tema): Definicao {
           if (q.acertouEm !== null) return null;
           // O mesmo chute duas vezes não conta outra vez (Enter apertado duas vezes com a internet lenta).
           if (q.linhas.some((l) => l.id === item.id)) return 'Você já chutou esse.';
+          if (typeof corpo.idioma === 'string' && /^[A-Za-z-]{2,20}$/.test(corpo.idioma)) idiomas.set(quem, corpo.idioma);
           q.linhas.push(linha(item, secreto()));
           if (item.id === secreto().id) {
             // OS PONTOS ENTRAM NA HORA DO ACERTO (pedido dele, 02/11/2026: "pontuação ao vivo"), e não na revelação: o
             // placar da sala anda enquanto a rodada corre. O mesmo total de antes: o do chute, e +1 para o primeiro.
             const primeiro = ![...quadros.values()].some((o) => o.acertouEm !== null);
             q.acertouEm = Date.now() - inicio;
+            chutesPorRodada.set(quem, [...(chutesPorRodada.get(quem) ?? []), q.linhas.length]);
             pontos.set(quem, (pontos.get(quem) ?? 0) + pontosDoQuiz(q.linhas.length) + (primeiro ? 1 : 0));
           }
           if (todosAcertaram()) revelar();

@@ -48,10 +48,11 @@ import { stop } from './minijogo-stop.js';
 import { sudoku } from './minijogo-sudoku.js';
 import { gomoku, mancala } from './minijogo-tabuleiro.js';
 import { tabuleiroDaTurma } from './minijogo-tabuleiro-da-turma.js';
-import { xadrez } from './minijogo-xadrez.js';
+import { criarXadrez } from './minijogo-xadrez.js';
 import { PLACAR_MS, tamanho } from './minijogos.js';
 import { communityRoom, emitToUser, quemEstaNaSala, salaDeVozDe } from './realtime.js';
 import { manages, requireUser } from './routes.js';
+import { conferirFliperama } from './presentes.js';
 
 /**
  * As rotas dos mini-games (ver minijogo-motor.ts). Como o palco: as ações vão por HTTP, e a cada mudança a
@@ -76,7 +77,8 @@ export const JOGOS: Record<string, Definicao> = {
   sudoku,
   gomoku,
   mancala,
-  xadrez,
+  // a corrida dos problemas guarda o recorde na tabela comum (19/11/2026)
+  xadrez: criarXadrez({ recordes: db }),
   lobisomem,
   desenho,
   palavra,
@@ -159,6 +161,8 @@ export const JOGOS_SOLO = new Set([
   'arena',
   'ringue',
   'pinball',
+  // a Palavra secreta no Solo (19/11/2026): uma palavra de cada vez, com a sequência de vitórias da sessão
+  'palavra',
   ...Object.keys(TEMAS),
 ]);
 
@@ -252,6 +256,23 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
       if (solos.get(p.criadaPor) === p) solos.delete(p.criadaPor);
     } else if (partidas.get(p.channelId) === p) partidas.delete(p.channelId);
     avisar(p);
+    if (!p.solo && p.registro !== null) entregarDoFliperama(p.registro);
+  }
+
+  /**
+   * As insígnias do fliperama (presentes.ts) chegam quando a partida da sala SAI DA TELA, depois do placar: a tela de
+   * destaque não cobre o resultado nem o meio do jogo. A partida conta desde a largada (a regra das conquistas), então a
+   * que foi encerrada no meio também conta. `darItem` recusa repetido: rodar de novo não entrega duas vezes.
+   */
+  function entregarDoFliperama(registro: number) {
+    try {
+      for (const userId of db.jogadoresDaPartida(registro)) {
+        const novos = conferirFliperama(userId);
+        if (novos.length > 0) emitToUser(io, userId, 'itens:novos', { codigos: novos });
+      }
+    } catch (erro) {
+      app.log.error({ err: erro }, 'minijogo: falha ao conferir as insígnias do fliperama');
+    }
   }
 
   const pessoas = (p: Partida, ids: Iterable<number>) => [...ids].map((userId) => ({ userId, username: nomeNa(p, userId) }));
@@ -450,6 +471,8 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
         else if (atual && !atual.terminada) return reply.code(409).send({ error: 'Já tem uma partida acontecendo nesta sala.' });
         if (atual?.relogio) clearTimeout(atual.relogio);
         atual?.instancia?.parar?.();
+        // a de antes, terminada, sai sem passar por encerrar: as insígnias dela chegam aqui
+        if (atual?.terminada && atual.registro !== null) entregarDoFliperama(atual.registro);
 
         const convidar = request.body?.convidar === true;
         const { convidar: _, ...corpo } = request.body ?? {};

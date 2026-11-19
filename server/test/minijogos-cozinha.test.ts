@@ -22,12 +22,15 @@ const biaId = await idDe(bia.token);
 type IdDaReceita = import('../src/cozinha-receitas.js').IdDaReceita;
 interface Estado {
   fase: string;
-  meu: { fila: { indice: number; receita: IdDaReceita }[]; pratos: number; pontos: number } | null;
+  meu: { fila: { indice: number; receita: IdDaReceita }[]; pratos: number; pontos: number; gorjetas: number } | null;
   placar: { userId: number; pratos: number; pontos: number; posicao: number | null }[];
   solo: boolean;
+  planta: string;
+  recorde: { antes: number | null; novo: boolean } | null;
+  recordes: Record<string, number> | null;
 }
 
-function comecar(naSala: number[], { comunidade = 0, solo = false } = {}) {
+function comecar(naSala: number[], { comunidade = 0, solo = false, corpo = { planta: 'toca' } as Record<string, unknown> } = {}) {
   const relogio: { ms: number; depois: () => void }[] = [];
   let terminou = false;
   let sala = naSala;
@@ -42,7 +45,7 @@ function comecar(naSala: number[], { comunidade = 0, solo = false } = {}) {
   };
   let semente = 11;
   const aleatorio = () => ((semente = (semente * 16807) % 2147483647) - 1) / 2147483646;
-  const jogo = criarCozinha({ agora: () => agora, aleatorio }).comecar(ctx, { naSala, criadaPor: naSala[0], corpo: {} });
+  const jogo = criarCozinha({ agora: () => agora, aleatorio }).comecar(ctx, { naSala, criadaPor: naSala[0], corpo });
   assert.ok(typeof jogo !== 'string');
   return {
     jogo,
@@ -150,7 +153,9 @@ test('os mesmos pedidos para todos, cada um anda na fila no próprio ritmo', () 
   assert.equal(erro, null);
   const depois = p.estado(anaId).meu!;
   assert.equal(depois.pratos, 1);
-  assert.equal(depois.pontos, receitas.RECEITAS[pedido.receita].pontos);
+  // entregue na hora: a gorjeta maior vem junto
+  assert.equal(depois.pontos, receitas.RECEITAS[pedido.receita].pontos + receitas.gorjetaDe(0));
+  assert.equal(depois.gorjetas, receitas.gorjetaDe(0));
   assert.ok(!depois.fila.some((f) => f.indice === pedido.indice));
   assert.equal(depois.fila.length, receitas.PEDIDOS_NA_FILA);
   assert.equal(depois.fila[depois.fila.length - 1].indice, receitas.PEDIDOS_NA_FILA);
@@ -311,4 +316,96 @@ test('as receitas novas do fogo: café da manhã, x-bacon e os bifes', () => {
   }
   // a massa aberta continua aberta até o ponto
   assert.equal(r.estadoNoFogo({ ing: 'massa', estado: 'picado', com: ['queijo'] }, 100), 'picado');
+});
+
+// ---------------------------------------------------------------------------------------------------------------------
+// 19/11/2026: a planta, a gorjeta, o recorde do Solo e o fogo esquecido
+// ---------------------------------------------------------------------------------------------------------------------
+
+test('sem planta pedida, quem começou escolhe; os outros não; sem escolha, vai a da toca', () => {
+  const p = comecar([anaId, biaId], { corpo: {} });
+  assert.equal(p.estado(anaId).fase, 'escolhendo');
+  assert.equal(p.jogo.acao(biaId, { tipo: 'planta', planta: 'longe' }), 'Você está assistindo esta partida.');
+  assert.equal(p.jogo.acao(anaId, { tipo: 'planta', planta: 'nenhuma' }), 'Ação desconhecida.');
+  assert.equal(p.jogo.acao(anaId, { tipo: 'fogo', estacao: 1, item: { ing: 'carne', estado: 'cru' } }), 'Lance inválido.');
+  assert.equal(p.jogo.acao(anaId, { tipo: 'planta', planta: 'estreita' }), null);
+  assert.equal(p.estado(biaId).planta, 'estreita');
+  assert.equal(p.estado(biaId).fase, 'preparando');
+  assert.equal(p.jogo.acao(anaId, { tipo: 'planta', planta: 'toca' }), 'Esta rodada já acabou.');
+  // as estações de fogo são as da planta escolhida
+  p.andar();
+  const fogao = Number(Object.entries(receitas.FOGO_DAS_PLANTAS.estreita).find(([, t]) => t === 'fogao')![0]);
+  assert.equal(p.jogo.acao(anaId, { tipo: 'fogo', estacao: 1, item: { ing: 'carne', estado: 'cru' } }), 'Lance inválido.');
+  assert.equal(p.jogo.acao(anaId, { tipo: 'fogo', estacao: fogao, item: { ing: 'carne', estado: 'cru' } }), null);
+  // o relógio da escolha: sem escolher, a da toca
+  const q = comecar([anaId], { solo: true, corpo: {} });
+  q.andar();
+  assert.equal(q.estado(anaId).planta, 'toca');
+  assert.equal(q.estado(anaId).fase, 'preparando');
+});
+
+test('a gorjeta é pelo relógio do servidor: rápido ganha mais, demorado não perde', () => {
+  const p = comecar([anaId], { solo: true });
+  p.andar();
+  const fila = p.estado(anaId).meu!.fila;
+  // o segundo pedido fica na fila 30 s, o terceiro 60 s
+  agora += 1000;
+  assert.equal(entregarCerto(p, anaId).erro, null);
+  agora += 29_000;
+  const r1 = fila[1].receita;
+  assert.equal(entregarCerto(p, anaId).erro, null);
+  agora += 30_000;
+  const r2 = fila[2].receita;
+  assert.equal(entregarCerto(p, anaId).erro, null);
+  const pontos = (id: IdDaReceita) => receitas.RECEITAS[id].pontos;
+  const meu = p.estado(anaId).meu!;
+  assert.equal(meu.gorjetas, 2 + 1 + 0);
+  assert.equal(meu.pontos, pontos(fila[0].receita) + pontos(r1) + pontos(r2) + 3);
+  // o pedido que entrou depois conta do momento em que entrou na fila
+  agora += 5_000;
+  const antes = p.estado(anaId).meu!.gorjetas;
+  assert.equal(entregarCerto(p, anaId).erro, null);
+  assert.ok(p.estado(anaId).meu!.gorjetas >= antes);
+});
+
+test('o recorde do Solo: por planta, com os pontos do servidor, e só quando melhora', () => {
+  const ze = comecar([biaId], { solo: true, corpo: { planta: 'toca' } });
+  ze.andar();
+  for (let n = 0; n < 2; n++) assert.equal(entregarCerto(ze, biaId).erro, null);
+  const feitos = ze.estado(biaId).meu!.pontos;
+  ze.andar();
+  assert.deepEqual(ze.estado(biaId).recorde, { antes: null, novo: true });
+  assert.equal(db.recordeDoSolo(biaId, 'cozinha', 'toca')!.valor, feitos);
+  // de novo, com menos: não vira recorde, e a tela recebe o de antes
+  const de2 = comecar([biaId], { solo: true, corpo: { planta: 'toca' } });
+  de2.andar();
+  de2.andar();
+  assert.deepEqual(de2.estado(biaId).recorde, { antes: feitos, novo: false });
+  // na escolha, o recorde de cada planta
+  const de3 = comecar([biaId], { solo: true, corpo: {} });
+  assert.equal(de3.estado(biaId).recordes!.toca, feitos);
+  // na sala, nada de recorde
+  const sala = comecar([anaId, biaId]);
+  sala.andar();
+  sala.andar();
+  assert.equal(sala.estado(anaId).recorde, null);
+});
+
+test('a frigideira esquecida pega fogo no relógio do servidor: o "tirei" é recusado, o extintor limpa sem ficha', () => {
+  const p = comecar([anaId], { solo: true });
+  p.andar();
+  const ovo = receitas.PONTO.ovo!;
+  assert.equal(p.jogo.acao(anaId, { tipo: 'fogo', estacao: FOGAO, item: { ing: 'ovo', estado: 'cru' } }), null);
+  // queimou, mas ainda não pegou fogo (com a folga): tira
+  agora += ovo.queima + receitas.INCENDIO_MS;
+  assert.equal(p.jogo.acao(anaId, { tipo: 'fogo', estacao: FOGAO, tirou: true }), null);
+  // de novo, e agora passa da chama: só o extintor
+  assert.equal(p.jogo.acao(anaId, { tipo: 'fogo', estacao: FOGAO, item: { ing: 'ovo', estado: 'cru' } }), null);
+  agora += ovo.queima + receitas.INCENDIO_MS + receitas.FOLGA_DO_FOGO_MS + 10;
+  assert.equal(p.jogo.acao(anaId, { tipo: 'fogo', estacao: FOGAO, tirou: true }), 'Lance inválido.');
+  assert.equal(p.jogo.acao(anaId, { tipo: 'extintor', estacao: 0 }), 'Lance inválido.');
+  assert.equal(p.jogo.acao(anaId, { tipo: 'extintor', estacao: FOGAO }), null);
+  // a estação ficou livre, e o extintor numa estação vazia não vale
+  assert.equal(p.jogo.acao(anaId, { tipo: 'extintor', estacao: FOGAO }), 'Lance inválido.');
+  assert.equal(p.jogo.acao(anaId, { tipo: 'fogo', estacao: FOGAO, item: { ing: 'ovo', estado: 'cru' } }), null);
 });

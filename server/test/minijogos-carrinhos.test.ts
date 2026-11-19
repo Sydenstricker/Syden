@@ -7,7 +7,7 @@ import { after, test } from 'node:test';
 import { comToken, criarConta, servidorDeTeste } from './ajuda.js';
 
 const { app, fechar } = await servidorDeTeste();
-const { criarCarrinhos, FOLGA_MS, LARGADA_MS, PISTA_DOS_CARRINHOS } = await import('../src/minijogo-carrinhos.js');
+const { chaveDoRecorde, criarCarrinhos, FOLGA_MS, LARGADA_MS, PISTA_DOS_CARRINHOS } = await import('../src/minijogo-carrinhos.js');
 const sim = await import('../src/carrinhos-sim.js');
 const db = await import('../src/db.js');
 let agora = 1_000_000;
@@ -24,15 +24,15 @@ const caioId = await idDe(caio.token);
 const comunidade = (await comToken(app, ana.token)('POST', '/api/communities', { name: 'Turma dos carrinhos' })).json() as { id: number };
 
 /** Uma corrida honesta: o piloto automático na faixa, gravado em trechos. */
-function corrida(faixa: number, margem = 0.3) {
-  const c = sim.novoCarro(faixa);
+function corrida(faixa: number, margem = 0.3, pista = sim.PISTA_PADRAO, voltas = sim.VOLTAS) {
+  const c = sim.novoCarro(faixa, pista, voltas);
   const g = sim.gravador();
   while (!c.chegou) {
     const a = sim.pilotoAutomatico(c, margem);
     g.anotar(a);
     sim.passo(c, a);
   }
-  return { entradas: g.entradas, passos: c.voltas[sim.VOLTAS - 1], saidas: c.saidas };
+  return { entradas: g.entradas, passos: c.voltas[voltas - 1], saidas: c.saidas };
 }
 
 function contexto(naSala: number[], { comunidadeId = 0, solo = false } = {}) {
@@ -60,7 +60,7 @@ test('a regra: o piloto automático fecha as cinco voltas sem sair; acelerador c
   let saiu = -1;
   while (saiu < 0 && c.passo < 2000) if (sim.passo(c, 8) === 'saiu') saiu = c.passo;
   assert.ok(saiu > 0, 'saiu da pista');
-  assert.ok(sim.trechoEm(0, c.s).sentido !== 0, 'saiu numa curva');
+  assert.ok(sim.trechoEm(c.pista, 0, c.s).sentido !== 0, 'saiu numa curva');
   const onde = c.s;
   let voltou = -1;
   while (voltou < 0) if (sim.passo(c, 8) === 'voltou') voltou = c.passo;
@@ -157,4 +157,72 @@ test('a sala: cada um na sua faixa, o verde do servidor, as posições conferida
   assert.equal(fim.at(-1)!.userId, caioId);
   const trofeus = db.trofeusParaLevar(anaId) as { pista: string }[];
   assert.ok(trofeus.some((t) => t.pista === 'carrinhos'));
+});
+
+test('as pistas (19/11/2026): no Solo, cada pista e cada número de voltas tem o seu recorde; a Toca em cinco é a chave de antes', () => {
+  assert.equal(chaveDoRecorde(sim.PISTA_PADRAO, sim.VOLTAS), PISTA_DOS_CARRINHOS, 'os recordes de antes continuam valendo');
+  assert.equal(chaveDoRecorde(sim.PISTAS['zigue-1'], sim.VOLTAS_DA_RESISTENCIA), 'zigue-1@20');
+  const { ctx } = contexto([caioId], { solo: true });
+  const jogo = carrinhos.comecar(ctx, { naSala: [caioId], criadaPor: caioId, corpo: {} });
+  assert.ok(typeof jogo !== 'string');
+  const pub = () => jogo.publico(caioId) as { pista: string; tracado: string; voltasDaCorrida: number; resultado: { tempoMs: number; recorde: boolean } | null; meusTempos: Record<string, number> };
+  assert.equal(pub().pista, 'toca-1');
+  assert.equal(jogo.acao(caioId, { tipo: 'escolher', pista: 'nao-existe' }), 'Pista inválida.');
+  assert.equal(jogo.acao(caioId, { tipo: 'escolher', pista: 'caracol-1', voltas: 20 }), null);
+  assert.equal(pub().pista, 'caracol-1');
+  assert.equal(pub().voltasDaCorrida, 20);
+  // a corrida de 20 voltas no caracol, refeita pelo servidor
+  assert.equal(jogo.acao(caioId, { tipo: 'correr' }), null);
+  const longa = corrida(sim.FAIXA_DO_RECORDE, 0.3, sim.PISTAS['caracol-1'], 20);
+  // as entradas de cinco voltas na Toca não chegam ao fim aqui
+  agora += 30 * 60_000;
+  assert.equal(jogo.acao(caioId, { tipo: 'chegada', entradas: corrida(sim.FAIXA_DO_RECORDE).entradas }), 'Corrida inválida.');
+  assert.equal(jogo.acao(caioId, { tipo: 'chegada', entradas: longa.entradas }), null);
+  assert.equal(pub().resultado?.tempoMs, Math.round((longa.passos * 1000) / 60));
+  assert.equal(db.recordeDosCarrinhos(caioId, 'caracol-1@20')?.tempoMs, pub().resultado?.tempoMs);
+  assert.equal(db.recordeDosCarrinhos(caioId, 'caracol-1'), null, 'as cinco voltas são outro recorde');
+  assert.equal(pub().meusTempos['caracol-1@20'], pub().resultado?.tempoMs);
+});
+
+test('o editor: o servidor confere o código colado, refaz a corrida sobre ele e guarda o recorde pelo código', () => {
+  const tracado = 'RRRRR++RRRRR++';
+  const codigo = sim.codigoDaPista(tracado);
+  const pista = sim.pistaPedida(undefined, codigo)!;
+  assert.ok(pista && pista.tracado === tracado);
+  const { ctx } = contexto([caioId], { solo: true });
+  const jogo = carrinhos.comecar(ctx, { naSala: [caioId], criadaPor: caioId, corpo: {} });
+  assert.ok(typeof jogo !== 'string');
+  // o que não fecha, se cruza ou não é código, não corre
+  assert.equal(jogo.acao(caioId, { tipo: 'correr', codigo: 'SYDP1-RRRR+RR' }), 'Pista inválida.');
+  assert.equal(jogo.acao(caioId, { tipo: 'correr', codigo: sim.codigoDaPista('R+R++R+--R--') }), 'Pista inválida.');
+  assert.equal(jogo.acao(caioId, { tipo: 'correr', codigo: 'oi' }), 'Pista inválida.');
+  assert.equal(jogo.acao(caioId, { tipo: 'correr', codigo }), null);
+  assert.equal((jogo.publico(caioId) as { tracado: string }).tracado, tracado);
+  const c = corrida(sim.FAIXA_DO_RECORDE, 0.3, pista);
+  agora += 10 * 60_000;
+  // a corrida da Toca não serve na pista do editor
+  assert.equal(jogo.acao(caioId, { tipo: 'chegada', entradas: corrida(sim.FAIXA_DO_RECORDE).entradas }), 'Corrida inválida.');
+  assert.equal(jogo.acao(caioId, { tipo: 'chegada', entradas: c.entradas }), null);
+  assert.equal(db.recordeDosCarrinhos(caioId, codigo)?.tempoMs, Math.round((c.passos * 1000) / 60), 'o recorde mora no código da pista');
+});
+
+test('a sala: a pista do editor e a resistência vão a todos; código que não vale não começa', () => {
+  assert.equal(carrinhos.comecar(contexto([anaId, biaId]).ctx, { naSala: [anaId, biaId], criadaPor: anaId, corpo: { codigo: 'SYDP1-RRRR+RR' } }), 'Pista inválida.');
+  const tracado = 'RRRRR++RRRRR++';
+  const { ctx, relogio } = contexto([anaId, biaId], { comunidadeId: comunidade.id });
+  const jogo = carrinhos.comecar(ctx, { naSala: [anaId, biaId], criadaPor: anaId, corpo: { codigo: sim.codigoDaPista(tracado), voltas: 20 } });
+  assert.ok(typeof jogo !== 'string');
+  const p = jogo.publico(biaId) as { tracado: string; voltasDaCorrida: number };
+  assert.equal(p.tracado, tracado);
+  assert.equal(p.voltasDaCorrida, 20);
+  agora += LARGADA_MS;
+  relogio[0].depois();
+  const pista = sim.pistaPedida(undefined, sim.codigoDaPista(tracado))!;
+  const a = corrida(0, 0.3, pista, 20);
+  agora += 30 * 60_000;
+  assert.equal(jogo.acao(anaId, { tipo: 'chegada', entradas: corrida(0, 0.3, pista).entradas }), 'Corrida inválida.', 'cinco voltas não bastam');
+  assert.equal(jogo.acao(anaId, { tipo: 'chegada', entradas: a.entradas }), null);
+  const ana = (jogo.publico(anaId) as { pilotos: { userId: number; tempoMs: number | null }[] }).pilotos.find((x) => x.userId === anaId)!;
+  assert.equal(ana.tempoMs, Math.round((a.passos * 1000) / 60));
+  assert.equal(db.recordeDosCarrinhos(anaId, sim.codigoDaPista(tracado) + '@20'), null, 'a corrida da sala não vira recorde');
 });

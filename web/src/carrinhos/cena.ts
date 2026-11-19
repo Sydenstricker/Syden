@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { carregarCoelho, copiarCoelho, type CoelhoCopiado, type CoresDoCoelho } from '../coelho3d';
-import { FAIXAS, FORA_PASSOS, PECAS, poseNaFaixa, trechoEm, VOLTA, type Peca } from './sim';
+import { COMPRIMENTO_DA_RETA, FAIXAS, FORA_PASSOS, poseNaFaixa, trechoEm, type Peca, type Pista } from './sim';
 
 /**
  * A CENA DOS CARRINHOS DA TOCA (06/11/2026): a pista de sim.ts montada com as peças largas do Toy Car Kit da Kenney (CC0,
@@ -16,8 +16,8 @@ import { FAIXAS, FORA_PASSOS, PECAS, poseNaFaixa, trechoEm, VOLTA, type Peca } f
 const BASE = `${import.meta.env.BASE_URL}carrinhos/`;
 /** O fundo da cena (o chão do quarto), que é também a cor da caixa enquanto carrega. */
 export const COR_DO_FUNDO = '#c79b6e';
-const MODELO_DA_PECA: Record<Peca['tipo'], string> = { reta: 'track-road-wide-straight', pequena: 'track-road-wide-corner-small', grande: 'track-road-wide-corner-large' };
-const RAIO_DA_PECA: Record<Peca['tipo'], number> = { reta: 0, pequena: 2, grande: 4 };
+const MODELO_DA_PECA: Record<Peca['tipo'], string> = { reta: 'track-road-wide-straight', pequena: 'track-road-wide-corner-small', grande: 'track-road-wide-corner-large', cruzamento: 'track-road-wide-straight' };
+const RAIO_DA_PECA: Record<Peca['tipo'], number> = { reta: 0, pequena: 2, grande: 4, cruzamento: 0 };
 /** Um carro por faixa. */
 const CARROS = ['vehicle-racer', 'vehicle-speedster', 'vehicle-racer-low', 'vehicle-vintage-racer'];
 const ENFEITES = ['tree', 'tree-pine', 'item-cone', 'gate-finish'];
@@ -94,7 +94,10 @@ export class CenaDosCarrinhos {
   /** O meio da pista: tudo é montado em volta da origem. */
   private meio = { x: 0, z: 0, largura: 1, fundo: 1 };
 
-  constructor(private caixa: HTMLElement) {
+  constructor(
+    private caixa: HTMLElement,
+    private tracado: Pista,
+  ) {
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'low-power' });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -157,8 +160,8 @@ export class CenaDosCarrinhos {
     // o tamanho da pista: as faixas de fora, mais a largura da zebra e um pouco de tapete
     const xs: number[] = [], zs: number[] = [];
     for (const f of [0, FAIXAS - 1]) {
-      for (let s = 0; s < VOLTA[f]; s += 0.25) {
-        const p = poseNaFaixa(f, s);
+      for (let s = 0; s < this.tracado.volta[f]; s += 0.25) {
+        const p = poseNaFaixa(this.tracado, f, s);
         xs.push(p.x);
         zs.push(p.z);
       }
@@ -211,7 +214,7 @@ export class CenaDosCarrinhos {
     barra.position.y = -0.01;
     c.add(barra);
 
-    for (const p of PECAS) {
+    for (const p of this.tracado.pecas) {
       const o = this.clonar(modelos.get(MODELO_DA_PECA[p.tipo])!);
       const g = new THREE.Group();
       g.add(o);
@@ -226,8 +229,25 @@ export class CenaDosCarrinhos {
       pista.add(g);
     }
 
+    // O CRUZAMENTO (19/11/2026): a peça é a reta da Kenney, e as faixas trocando de lado são riscos claros por cima, por
+    // código (o kit não tem peça de cruzamento). Um risco por faixa, do começo dela ao fim do outro lado.
+    const risco = new THREE.MeshBasicMaterial({ color: '#f3ead2', transparent: true, opacity: 0.85 });
+    for (let f = 0; f < FAIXAS; f++) {
+      for (const t of this.tracado.trechos[f]) {
+        if (!t.ladoX && !t.ladoZ) continue;
+        const ax = t.x, az = t.z;
+        const bx = t.x + Math.cos(t.rumo) * COMPRIMENTO_DA_RETA + t.ladoX, bz = t.z + Math.sin(t.rumo) * COMPRIMENTO_DA_RETA + t.ladoZ;
+        const tamanho = Math.hypot(bx - ax, bz - az);
+        const m = new THREE.Mesh(new THREE.PlaneGeometry(tamanho, 0.09), risco);
+        m.rotation.x = -Math.PI / 2;
+        m.rotation.z = -Math.atan2(bz - az, bx - ax);
+        m.position.set((ax + bx) / 2, ALTURA_DA_PISTA + 0.012 + f * 0.001, (az + bz) / 2);
+        pista.add(m);
+      }
+    }
+
     // a largada: um pórtico em cada fileira, no começo da primeira reta
-    const largada = PECAS.filter((_, i) => i < 2);
+    const largada = this.tracado.pecas.slice(0, 2);
     for (const p of largada) {
       const o = this.clonar(modelos.get('gate-finish')!);
       o.position.set(p.x, 0, p.z);
@@ -236,7 +256,7 @@ export class CenaDosCarrinhos {
     }
     // árvores e cones em volta, longe do traçado (um sorteio sempre igual)
     const r = sorteio(7);
-    const perto = (x: number, z: number) => PECAS.some((p) => Math.hypot(p.x + 2 * Math.cos(p.rumo) - x, p.z + 2 * Math.sin(p.rumo) - z) < 4.2);
+    const perto = (x: number, z: number) => this.tracado.pecas.some((p) => Math.hypot(p.x + 2 * Math.cos(p.rumo) - x, p.z + 2 * Math.sin(p.rumo) - z) < 4.2);
     let postos = 0;
     for (let k = 0; k < 400 && postos < 26; k++) {
       const x = this.meio.x + (r() - 0.5) * (this.meio.largura + 1);
@@ -308,7 +328,7 @@ export class CenaDosCarrinhos {
         m.raiz.visible = false;
         return;
       }
-      const pose = poseNaFaixa(m.faixa, q.s);
+      const pose = poseNaFaixa(this.tracado, m.faixa, q.s);
       m.raiz.position.set(pose.x, ALTURA_DA_PISTA, pose.z);
       m.raiz.rotation.set(0, giroDoCarro(pose.rumo), 0);
       m.corpo.position.set(0, 0, 0);
@@ -319,7 +339,7 @@ export class CenaDosCarrinhos {
         // O VOO: o carro segue reto (a tangente) e sobe, girando, e cai deitado no tapete ao lado da pista
         const t = Math.min(1, (FORA_PASSOS - q.fora) / 45);
         const longe = Math.min(3, 0.35 * q.saiuA) * (1 - (1 - t) * (1 - t));
-        const tr = trechoEm(m.faixa, q.s);
+        const tr = trechoEm(this.tracado, m.faixa, q.s);
         // para fora da curva: o lado contrário ao centro
         const fora = -tr.sentido;
         // (o carro gira em volta do meio dele, então sobe metade da altura para não afundar no tapete)
@@ -336,7 +356,7 @@ export class CenaDosCarrinhos {
       } else {
         if (q.derrapa > 0) {
           // a traseira escorrega para fora da curva e o carro treme
-          const tr = trechoEm(m.faixa, q.s);
+          const tr = trechoEm(this.tracado, m.faixa, q.s);
           const k = Math.min(1, q.derrapa);
           m.corpo.rotation.y = tr.sentido * 0.45 * k + Math.sin(this.relogio * 47) * 0.06 * k;
           m.corpo.position.x = Math.sin(this.relogio * 61) * 0.03 * k;

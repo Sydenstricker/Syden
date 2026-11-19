@@ -6,7 +6,7 @@
  *
  * O mundo é visto de cima, em três quartos: as balas andam no chão (a sombra é onde elas estão) e são desenhadas à altura da mão.
  */
-import { BORDA, MUNDO_H, MUNDO_W, OBSTACULOS, PONTOS_DE_SUPRIMENTO, RAIO, W, H, type Cenario, type Suprimento } from './conta';
+import { BORDA, MUNDO_H, MUNDO_W, OBSTACULOS, POCAS_DE_LAMA, PONTOS_DE_SUPRIMENTO, RAIO, W, H, ZONA_DO_OBJETIVO, type Cenario, type Suprimento } from './conta';
 import { COR_DO_ELEMENTO } from '../bichos/desenho';
 import type { Efeito, ZonaNaTela } from './regras';
 
@@ -48,6 +48,27 @@ export function chaoDo(cenario: Cenario): HTMLCanvasElement {
           g.fillStyle = '#e6b53f';
           g.fillRect(x + 7, y + 7, 1, 1);
         }
+      } else if (cenario === 'gelo') {
+        // o lago congelado: o gelo azulado, com riscos e manchas de neve
+        g.fillStyle = r < 0.33 ? '#cfe6f2' : r < 0.66 ? '#c6e0ee' : '#d8ecf6';
+        g.fillRect(x, y, CASA, CASA);
+        if (r > 0.86) {
+          g.fillStyle = '#eef8fd';
+          g.fillRect(x + 2, y + 5, 9, 1);
+          g.fillRect(x + 6, y + 9, 7, 1);
+        } else if (r < 0.05) {
+          g.fillStyle = '#ffffff';
+          g.fillRect(x + 4, y + 4, 6, 5);
+        }
+      } else if (cenario === 'lama') {
+        // o brejo: a terra úmida, com tufos
+        g.fillStyle = r < 0.33 ? '#8d9a5a' : r < 0.66 ? '#86935a' : '#93a062';
+        g.fillRect(x, y, CASA, CASA);
+        if (r > 0.85) {
+          g.fillStyle = '#6f7d42';
+          g.fillRect(x + 5, y + 8, 2, 5);
+          g.fillRect(x + 9, y + 7, 2, 6);
+        }
       } else {
         g.fillStyle = r < 0.33 ? '#e9d49c' : r < 0.66 ? '#e4cd93' : '#eddaa6';
         g.fillRect(x, y, CASA, CASA);
@@ -74,8 +95,21 @@ export function chaoDo(cenario: Cenario): HTMLCanvasElement {
       }
     }
   }
+  if (cenario === 'lama') {
+    // as poças de lama (a regra: dentro delas, o coelho anda mais devagar)
+    for (const [px, py, pr] of POCAS_DE_LAMA) {
+      for (let y = -pr; y <= pr; y += 4) {
+        for (let x = -pr; x <= pr; x += 4) {
+          if (x * x + y * y > pr * pr) continue;
+          const borda = x * x + y * y > (pr - 8) * (pr - 8);
+          g.fillStyle = borda ? '#6a5236' : ruido(px + x, py + y, 5) < 0.15 ? '#8a6c48' : '#5c4630';
+          g.fillRect(px + x, py + y, 4, 4);
+        }
+      }
+    }
+  }
   // a cerca em volta: tábuas e postes
-  const tabua = cenario === 'grama' ? ['#9b6b43', '#7d5434', '#b3804f'] : ['#b48a5e', '#8f6a45', '#c9a274'];
+  const tabua = cenario === 'grama' || cenario === 'lama' ? ['#9b6b43', '#7d5434', '#b3804f'] : cenario === 'gelo' ? ['#8a7a6c', '#6c5e52', '#a89888'] : ['#b48a5e', '#8f6a45', '#c9a274'];
   const cerca = (x: number, y: number, w: number, h: number) => {
     g.fillStyle = tabua[1];
     g.fillRect(x, y, w, h);
@@ -93,7 +127,7 @@ export function chaoDo(cenario: Cenario): HTMLCanvasElement {
   for (const [px, py] of PONTOS_DE_SUPRIMENTO) {
     for (let k = 0; k < 12; k++) {
       const a = (k / 12) * Math.PI * 2;
-      g.fillStyle = cenario === 'grama' ? '#b9b4a2' : '#c7b48c';
+      g.fillStyle = cenario === 'praia' ? '#c7b48c' : cenario === 'gelo' ? '#9fb6c4' : '#b9b4a2';
       g.fillRect(Math.round(px + Math.cos(a) * 18) - 2, Math.round(py + Math.sin(a) * 12) - 1, 4, 3);
     }
   }
@@ -110,6 +144,37 @@ export function desenharObstaculo(g: CanvasRenderingContext2D, cenario: Cenario,
   g.beginPath();
   g.ellipse(x, y + 2, r + 4, (r + 4) * 0.45, 0, 0, Math.PI * 2);
   g.fill();
+  if (cenario === 'gelo') {
+    // o monte de neve: três bolas brancas com a sombra azul
+    for (const [dx, dy, k, cor] of [
+      [0, -r * 0.45, 1, '#a9c8dc'],
+      [-r * 0.15, -r * 0.62, 0.78, '#e6f2f8'],
+      [-r * 0.3, -r * 0.8, 0.4, '#ffffff'],
+    ] as const) {
+      g.fillStyle = cor;
+      g.beginPath();
+      g.ellipse(x + dx, y + dy, r * k, r * 0.72 * k, 0, 0, Math.PI * 2);
+      g.fill();
+    }
+    return;
+  }
+  if (cenario === 'lama') {
+    // o toco: o tronco cortado com os anéis em cima
+    g.fillStyle = '#6e4a2d';
+    g.fillRect(x - r * 0.8, y - r * 1.1, r * 1.6, r * 1.1);
+    g.fillStyle = '#58391f';
+    g.fillRect(x - r * 0.8, y - r * 1.1, r * 0.4, r * 1.1);
+    g.fillStyle = '#c59a62';
+    g.beginPath();
+    g.ellipse(x, y - r * 1.1, r * 0.8, r * 0.35, 0, 0, Math.PI * 2);
+    g.fill();
+    g.strokeStyle = '#9b7444';
+    g.lineWidth = 1;
+    g.beginPath();
+    g.ellipse(x, y - r * 1.1, r * 0.45, r * 0.18, 0, 0, Math.PI * 2);
+    g.stroke();
+    return;
+  }
   if (cenario === 'grama' && r >= 24) {
     // a árvore: o tronco e a copa redonda em três tons
     g.fillStyle = '#6e4a2d';
@@ -427,4 +492,29 @@ export function desenharSetaNaBorda(g: CanvasRenderingContext2D, x: number, y: n
   g.lineTo(px + uy * 6 - ux * 4, py - ux * 6 - uy * 4);
   g.fill();
   if (icone) desenharIconeDoSuprimento(g, icone, Math.round(px - ux * 14), Math.round(py - uy * 14));
+}
+
+/**
+ * SEGURAR A ZONA (19/11/2026): o círculo do meio, no chão. Com a cor do time que está sozinho nele (`cor`), ou pontilhado
+ * (ninguém, ou disputado). `tempo` faz a borda andar devagar.
+ */
+export function desenharZonaDoObjetivo(g: CanvasRenderingContext2D, cx: number, cy: number, cor: string | null, tempo: number) {
+  const x = Math.round(ZONA_DO_OBJETIVO.x - cx), y = Math.round(ZONA_DO_OBJETIVO.y - cy);
+  const r = ZONA_DO_OBJETIVO.raio;
+  g.globalAlpha = cor ? 0.22 : 0.1;
+  g.fillStyle = cor ?? '#ffffff';
+  g.beginPath();
+  g.ellipse(x, y, r, r, 0, 0, Math.PI * 2);
+  g.fill();
+  g.globalAlpha = 0.85;
+  g.strokeStyle = cor ?? '#fff6c8';
+  g.lineWidth = 3;
+  g.setLineDash([10, 8]);
+  g.lineDashOffset = -Math.floor(tempo / 60) % 18;
+  g.beginPath();
+  g.arc(x, y, r, 0, Math.PI * 2);
+  g.stroke();
+  g.setLineDash([]);
+  g.lineDashOffset = 0;
+  g.globalAlpha = 1;
 }

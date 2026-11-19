@@ -14,7 +14,7 @@ export function criarRobo(semente: number, habilidade: number) {
   let trecho: Trecho | null = null;
   let margem = 0.5;
   return (c: Carro): number => {
-    const t = trechoEm(c.faixa, c.s);
+    const t = trechoEm(c.pista, c.faixa, c.s);
     if (t !== trecho) {
       trecho = t;
       const erro = aleatorio() < 0.03 * (1.3 - habilidade);

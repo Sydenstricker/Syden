@@ -29,6 +29,15 @@ export const PISTAS_DO_JATO: Record<
     voltas: 5, comprimento: 2258, linha: [240, 220], largada: [183.2, 300.7], meiaLargura: 36,
     marcos: [[437, 172], [641, 183], [808, 291], [813, 477], [779, 663], [688, 825], [491, 861], [308, 777], [202, 602], [161, 403]],
   },
+  // as duas de 19/11/2026 (a auditoria: mais pistas)
+  'aurora-1': {
+    voltas: 3, comprimento: 3408, linha: [180, 240], largada: [166.2, 337.2], meiaLargura: 36,
+    marcos: [[460, 129], [753, 124], [905, 344], [674, 430], [624, 623], [892, 734], [713, 919], [433, 810], [169, 827], [167, 544]],
+  },
+  'tempestade-1': {
+    voltas: 4, comprimento: 3232, linha: [260, 200], largada: [197.7, 277.1], meiaLargura: 36,
+    marcos: [[545, 152], [803, 275], [760, 503], [480, 480], [438, 705], [721, 709], [716, 892], [426, 907], [191, 747], [143, 462]],
+  },
 };
 
 export const ANDAR_POR_VOLTA = 0.7;

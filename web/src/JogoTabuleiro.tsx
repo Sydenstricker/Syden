@@ -8,6 +8,8 @@ import type { EfeitoDaCasa, EstadoTabuleiro, Partida } from './minijogos';
 import { tocar } from './somDosJogos';
 import type { DadosDoTabuleiro3D } from './tabuleiro3d/cena';
 import { TabuleiroDaTurma3D } from './tabuleiro3d/TabuleiroDaTurma3D';
+import { Bifurcacao, EscolhaDoDuelo, ItensDe, Loja, NOME_DO_ITEM, PremiosBonus, UsarItens } from './TabuleiroPaineis';
+import type { ItemDoTabuleiro } from './minijogos';
 
 /**
  * O TABULEIRO DA TURMA (03/11/2026, server/src/minijogo-tabuleiro-da-turma.ts): o tabuleiro de festa, só a mecânica, desenhado
@@ -20,6 +22,18 @@ import { TabuleiroDaTurma3D } from './tabuleiro3d/TabuleiroDaTurma3D';
 const PASSO_MS = 280;
 const TEMPO_DA_VEZ = 20_000;
 const TEMPO_DA_LOJA = 12_000;
+const TEMPO_DO_CAMINHO = 10_000;
+const TEMPO_DOS_ITENS = 12_000;
+const TEMPO_DO_DUELO = 12_000;
+const PREMIO_MS = 2500;
+const PREMIOS_TOTAL_MS = 3 * PREMIO_MS + 2000;
+/** As fases em que a peça de quem jogou anda na tela. */
+const FASES_DO_ANDAR = ['andando', 'loja', 'caminho', 'itens', 'duelo'];
+/** Os ramais de sempre (o servidor manda os dele; estes são só para quem desenha sem estado). */
+const RAMAIS_PADRAO: EstadoTabuleiro['ramais'] = [
+  { de: 5, ate: 10, inicio: 30, tamanho: 4 },
+  { de: 20, ate: 25, inicio: 34, tamanho: 4 },
+];
 
 const CASA = 28;
 const COLUNAS = 11;
@@ -27,7 +41,16 @@ const LINHAS = 6;
 const BORDA = 4;
 
 /** Onde fica cada casa (0 a 29): a fileira de cima da esquerda para a direita, desce pela direita, volta por baixo e sobe. */
-export function lugarDaCasa(i: number): { x: number; y: number } {
+export function lugarDaCasa(i: number, ramais: EstadoTabuleiro['ramais'] = RAMAIS_PADRAO): { x: number; y: number } {
+  // as casas dos ramais (19/11/2026): uma casa para dentro da casa da volta que cada uma acompanha
+  const ramal = ramais.find((r) => i >= r.inicio && i < r.inicio + r.tamanho);
+  if (ramal) {
+    const v = lugarDaCasa(ramal.de + 1 + (i - ramal.inicio), []);
+    const c0 = (v.x - BORDA) / CASA;
+    const l0 = (v.y - BORDA) / CASA;
+    const [c1, l1] = l0 === 0 ? [c0, 1] : l0 === LINHAS - 1 ? [c0, LINHAS - 2] : c0 === COLUNAS - 1 ? [COLUNAS - 2, l0] : [1, l0];
+    return { x: BORDA + c1 * CASA, y: BORDA + l1 * CASA };
+  }
   let c: number;
   let l: number;
   if (i <= 10) [c, l] = [i, 0];
@@ -42,6 +65,9 @@ const COR_DA_CASA: Record<string, [string, string]> = {
   '+': ['#8fb86a', '#5e8a44'],
   '-': ['#c46a52', '#8e4434'],
   '?': ['#8e7cc3', '#5f5290'],
+  // 19/11/2026: a loja de itens e o duelo
+  $: ['#5fb8b0', '#3e8a84'],
+  d: ['#f0a04a', '#b8702e'],
 };
 
 /** As cores de quem não tem avatar pronto: uma por lugar na ordem. */
@@ -68,9 +94,14 @@ function efeitosNaCena(ultimo: EstadoTabuleiro['ultimo'], participantes: EstadoT
     case 'achado':
       return [um(ultimo.userId, `+${e.valor} 🥕`, true)];
     case 'menos':
+    case 'praga':
       return e.valor ? [um(ultimo.userId, `−${e.valor} 🥕`, false)] : [];
     case 'chuva':
       return participantes.map((p) => um(p.userId, `+${e.valor} 🥕`, true));
+    case 'mutirao':
+      return participantes.map((p) => um(p.userId, `= ${e.valor} 🥕`, true));
+    case 'escudo':
+      return [um(ultimo.userId, '🛡', true)];
     default:
       return [];
   }
@@ -99,6 +130,11 @@ function useSonsDoAndar(ultimo: EstadoTabuleiro['ultimo'], passo: number, chegou
       else if (e && e.tipo === 'menos' && e.valor) tocar('erro');
     }
   }, [ultimo, passo, chegou]);
+}
+
+/** O item usado na vez (a figura dele). */
+function IconeDoUsado({ item }: { item: ItemDoTabuleiro }) {
+  return <ItensDe itens={[item]} />;
 }
 
 /** A peça: um coelho de frente, de pixels grandes, com a roupa embaixo. */
@@ -182,6 +218,8 @@ export function useAgora(ligado: boolean) {
 
 /** O desenho do tabuleiro: a horta no meio, a volta de casas, a dourada e as peças. */
 function Tabuleiro({ estado, posDe }: { estado: EstadoTabuleiro; posDe: (userId: number) => number }) {
+  const ramais = estado.ramais ?? RAMAIS_PADRAO;
+  const lugar = (i: number) => lugarDaCasa(i, ramais);
   const largura = BORDA * 2 + COLUNAS * CASA;
   const altura = BORDA * 2 + LINHAS * CASA;
   // quantas peças em cada casa, para não ficarem uma em cima da outra
@@ -195,7 +233,7 @@ function Tabuleiro({ estado, posDe }: { estado: EstadoTabuleiro; posDe: (userId:
     const lin = Math.floor(i / 4);
     return { dx: (col - (Math.min(ids.length, 4) - 1) / 2) * 6, dy: lin * 5 - 2 };
   };
-  const dourada = lugarDaCasa(estado.dourada);
+  const dourada = lugar(estado.dourada);
   return (
     <svg className="tab-tabuleiro" viewBox={`0 0 ${largura} ${altura}`} aria-hidden="true" shapeRendering="crispEdges">
       {/* a grama e a horta do meio */}
@@ -218,18 +256,18 @@ function Tabuleiro({ estado, posDe }: { estado: EstadoTabuleiro; posDe: (userId:
         </g>
       ))}
       {/* a toca, no meio */}
-      <rect x={BORDA + CASA * 4.6} y={BORDA + CASA * 1.9} width="48" height="22" fill="#8e7a5a" />
-      <rect x={BORDA + CASA * 4.6 + 4} y={BORDA + CASA * 1.9 - 4} width="40" height="6" fill="#a08a66" />
-      <rect x={BORDA + CASA * 4.6 + 12} y={BORDA + CASA * 1.9 + 6} width="24" height="16" fill="#3a2c22" />
-      <rect x={BORDA + CASA * 4.6 + 16} y={BORDA + CASA * 1.9 + 2} width="16" height="4" fill="#3a2c22" />
+      <rect x={BORDA + CASA * 4.6} y={BORDA + CASA * 2.3} width="48" height="22" fill="#8e7a5a" />
+      <rect x={BORDA + CASA * 4.6 + 4} y={BORDA + CASA * 2.3 - 4} width="40" height="6" fill="#a08a66" />
+      <rect x={BORDA + CASA * 4.6 + 12} y={BORDA + CASA * 2.3 + 6} width="24" height="16" fill="#3a2c22" />
+      <rect x={BORDA + CASA * 4.6 + 16} y={BORDA + CASA * 2.3 + 2} width="16" height="4" fill="#3a2c22" />
       {/* o lago, à direita */}
-      <rect x={BORDA + CASA * 7} y={BORDA + CASA * 1.5} width="60" height="40" fill="#5f8fa8" />
-      <rect x={BORDA + CASA * 7 - 4} y={BORDA + CASA * 1.5 + 6} width="68" height="28" fill="#5f8fa8" />
-      <rect x={BORDA + CASA * 7 + 8} y={BORDA + CASA * 1.5 + 8} width="14" height="2" fill="#9cc2d2" />
-      <rect x={BORDA + CASA * 7 + 30} y={BORDA + CASA * 1.5 + 22} width="18" height="2" fill="#9cc2d2" />
+      <rect x={BORDA + CASA * 7} y={BORDA + CASA * 2.2} width="60" height="40" fill="#5f8fa8" />
+      <rect x={BORDA + CASA * 7 - 4} y={BORDA + CASA * 2.2 + 6} width="68" height="28" fill="#5f8fa8" />
+      <rect x={BORDA + CASA * 7 + 8} y={BORDA + CASA * 2.2 + 8} width="14" height="2" fill="#9cc2d2" />
+      <rect x={BORDA + CASA * 7 + 30} y={BORDA + CASA * 2.2 + 22} width="18" height="2" fill="#9cc2d2" />
       {/* as casas */}
       {estado.casas.map((tipo, i) => {
-        const { x, y } = lugarDaCasa(i);
+        const { x, y } = lugar(i);
         const [cor, sombra] = COR_DA_CASA[tipo] ?? COR_DA_CASA.i;
         const cx = x + CASA / 2;
         const cy = y + CASA / 2;
@@ -251,6 +289,28 @@ function Tabuleiro({ estado, posDe }: { estado: EstadoTabuleiro; posDe: (userId:
                 <rect x={cx - 3} y={cy - 5} width="6" height="6" fill="#f2c46a" />
               </>
             )}
+            {tipo === '$' && (
+              <>
+                {/* a sacola da loja */}
+                <rect x={cx - 3} y={cy - 8} width="6" height="2" fill="#f3ead8" />
+                <rect x={cx - 4} y={cy - 7} width="2" height="3" fill="#f3ead8" />
+                <rect x={cx + 2} y={cy - 7} width="2" height="3" fill="#f3ead8" />
+                <rect x={cx - 6} y={cy - 4} width="12" height="9" fill="#f3ead8" />
+                <rect x={cx - 2} y={cy - 1} width="4" height="3" fill="#f2c46a" />
+              </>
+            )}
+            {tipo === 'd' && (
+              <>
+                {/* o duelo: duas cenouras cruzadas */}
+                {[-1, 1].map((lado) => (
+                  <g key={lado}>
+                    {[0, 1, 2, 3, 4].map((k) => (
+                      <rect key={k} x={lado > 0 ? cx - 7 + k * 3 : cx + 4 - k * 3} y={cy - 8 + k * 3} width="3" height="3" fill={k === 0 ? '#7fae5a' : '#f3ead8'} />
+                    ))}
+                  </g>
+                ))}
+              </>
+            )}
             {tipo === 'i' && (
               <>
                 <rect x={cx - 6} y={cy - 9} width="2" height="14" fill="#5a3a2a" />
@@ -270,7 +330,7 @@ function Tabuleiro({ estado, posDe }: { estado: EstadoTabuleiro; posDe: (userId:
         .map((p, i) => ({ p, i }))
         .sort((a, b) => Number(a.p.userId === estado.vez) - Number(b.p.userId === estado.vez))
         .map(({ p, i }) => {
-          const { x, y } = lugarDaCasa(posDe(p.userId));
+          const { x, y } = lugar(posDe(p.userId));
           const { dx, dy } = deslocamento(p.userId);
           const cores = coresDe(p.avatar, i);
           return (
@@ -297,6 +357,16 @@ function textoDoEfeito(efeito: EfeitoDaCasa | null, nome: string, nomeDe: (id: n
       return t('{nome} achou {n} cenouras escondidas.', { nome, n: efeito.valor });
     case 'troca':
       return t('{nome} trocou de lugar com {outro}.', { nome, outro: nomeDe(efeito.com) });
+    case 'praga':
+      return t('Praga na horta: {nome} perde {n} cenouras.', { nome, n: efeito.valor });
+    case 'vento':
+      return t('O vento levou a cenoura dourada para outra casa.');
+    case 'mutirao':
+      return t('Mutirão: a turma dividiu as cenouras, {n} para cada.', { n: efeito.valor });
+    case 'brinde':
+      return t('{nome} ganhou um item: {item}.', { nome, item: t(NOME_DO_ITEM[efeito.item]) });
+    case 'escudo':
+      return t('O escudo segurou a perda.');
     default:
       return null;
   }
@@ -320,8 +390,10 @@ export function JogoTabuleiro({
   // O ANDAR NA TELA: a peça de quem jogou passa casa a casa pelo caminho, a partir de quando o estado chegou aqui.
   const andando = useRef<{ id: number; em: number } | null>(null);
   const [pedido, setPedido] = useState('');
+  const [usando, setUsando] = useState<ItemDoTabuleiro | null>(null);
   const ultimo = estado.ultimo;
-  if (ultimo && (estado.fase === 'andando' || estado.fase === 'loja') && andando.current?.id !== ultimo.id) {
+  const noAndar = FASES_DO_ANDAR.includes(estado.fase);
+  if (ultimo && noAndar && andando.current?.id !== ultimo.id) {
     andando.current = { id: ultimo.id, em: estado.recebidaEm };
   }
   const duracao = ultimo ? (ultimo.caminho.length - 1) * PASSO_MS : 0;
@@ -348,7 +420,20 @@ export function JogoTabuleiro({
     if (ultimo && ultimo.userId === userId && !chegou) return ultimo.caminho[Math.max(0, passo)];
     return p.pos;
   };
-  useSonsDoAndar(ultimo, animando ? passo : -1, chegou && (estado.fase === 'andando' || estado.fase === 'loja'));
+  useSonsDoAndar(ultimo, animando ? passo : -1, chegou && noAndar);
+  // os prêmios bônus: um a cada PREMIO_MS, a partir de quando a fase começou (pelo relógio da partida)
+  const agoraDosPremios = useAgora(estado.fase === 'premios');
+  const premiosMostrados =
+    estado.fase === 'premios'
+      ? Math.min(3, Math.floor((PREMIOS_TOTAL_MS - Math.max(0, estado.restanteMs - (agoraDosPremios - estado.recebidaEm))) / PREMIO_MS) + 1)
+      : estado.premios
+        ? 3
+        : 0;
+  const premiosAntes = useRef(0);
+  useEffect(() => {
+    if (premiosMostrados > premiosAntes.current && estado.fase === 'premios') tocar('medalha');
+    premiosAntes.current = premiosMostrados;
+  }, [premiosMostrados, estado.fase]);
 
   if (estado.terminada || estado.fase === 'fim') {
     // Só quem ficou até o fim tem posição e medalha (as mesmas dos troféus); quem saiu vem depois, sem posição. Na partida
@@ -366,6 +451,7 @@ export function JogoTabuleiro({
           <p className="minijogo-situacao">{t('Menos de duas pessoas ficaram até o fim: desta vez, sem pódio.')}</p>
         )}
         {comPosicao.length > 0 && <Placar eu={eu} linhas={comPosicao.map((l) => ({ ...l, posicao: l.posicao ?? undefined, valor: valor(l) }))} />}
+        {!estado.interrompida && estado.premios && <PremiosBonus premios={estado.premios} mostrados={3} nomeDe={nomeDe} eu={eu} />}
         {semPosicao.length > 0 && (
           <ol className="minijogo-placar tabuleiro-sem-posicao">
             {semPosicao.map((l) => (
@@ -383,6 +469,7 @@ export function JogoTabuleiro({
   }
 
   const minhaVez = jogador && estado.vez === eu;
+  const meus: ItemDoTabuleiro[] = estado.participantes.find((p) => p.userId === eu)?.itens ?? [];
   // o pedido já foi (o segundo clique não manda de novo, e a tela não pisca um erro)
   const chaveDaVez = `${estado.rodada}-${estado.vez}-${estado.fase}-${ultimo?.id ?? 0}`;
   const pedir = (corpo: Record<string, unknown>) => {
@@ -403,22 +490,45 @@ export function JogoTabuleiro({
               <CenouraDourada tamanho={14} /> {p.douradas}
             </span>
             <span className="tab-placar-conta">🥕 {p.cenouras}</span>
+            <ItensDe itens={p.itens ?? []} />
           </li>
         );
       })}
     </ol>
   );
 
-  if (estado.fase === 'minijogo' && estado.mini) {
+  if ((estado.fase === 'minijogo' || estado.fase === 'duelo-jogo') && estado.mini) {
+    const mini = estado.mini;
+    const inscritos = mini.inscritos ?? estado.participantes.map((p) => p.userId);
+    const duelo = estado.fase === 'duelo-jogo' ? estado.duelo : null;
     return (
       <div className="tabuleiro-jogo">
         {placar}
-        <div className={`festa festa-jogo-${estado.mini.microjogo}`}>
+        {duelo && duelo.contra !== null && (
+          <p className="minijogo-situacao tab-duelo-titulo">{t('{nome} desafiou {outro}!', { nome: nomeDe(duelo.de), outro: nomeDe(duelo.contra) })}</p>
+        )}
+        {!duelo && mini.formato !== 'todos' && (
+          <p className="minijogo-situacao tab-formato">{mini.formato === '2x2' ? t('2 contra 2') : t('1 contra 3')}</p>
+        )}
+        {duelo && mini.fase === 'revelando' && (
+          <p className="minijogo-situacao tab-efeito">
+            {duelo.vencedor !== null
+              ? t('{nome} levou {n} cenouras de {outro}.', {
+                  nome: nomeDe(duelo.vencedor),
+                  n: duelo.valor,
+                  outro: nomeDe(duelo.vencedor === duelo.de ? (duelo.contra ?? 0) : duelo.de),
+                })
+              : t('Empate: ninguém leva nada.')}
+          </p>
+        )}
+        <div className={`festa festa-jogo-${mini.microjogo}`}>
           <RodadaDaFesta
-            key={`${estado.partidaId}-${estado.rodada}`}
+            key={`${estado.partidaId}-${mini.rodada}`}
             estado={{
-              ...estado.mini,
-              jogadores: estado.participantes.map((p) => ({ userId: p.userId, username: p.username })),
+              ...mini,
+              jogadores: estado.participantes
+                .filter((p) => inscritos.includes(p.userId))
+                .map((p) => ({ userId: p.userId, username: p.username, avatar: p.avatar })),
               recebidaEm: estado.recebidaEm,
               restanteMs: estado.restanteMs,
             }}
@@ -440,26 +550,61 @@ export function JogoTabuleiro({
           casas: vista.casas,
           pecas: vista.participantes.map((p, i) => ({ userId: p.userId, pos: posDe(p.userId), ...coresDe3D(p.avatar, i), vez: p.userId === estado.vez, presente: p.presente })),
           dourada: vista.dourada,
-          andando: ultimo && (estado.fase === 'andando' || estado.fase === 'loja') ? { id: ultimo.id, userId: ultimo.userId, dado: ultimo.dado } : null,
-          efeitos: chegou && estado.fase === 'andando' ? efeitosNaCena(ultimo, estado.participantes) : [],
+          andando: ultimo && noAndar ? { id: ultimo.id, userId: ultimo.userId, dado: ultimo.dado } : null,
+          efeitos: [
+            ...(chegou && estado.fase === 'andando' ? efeitosNaCena(ultimo, estado.participantes) : []),
+            // os prêmios bônus: a estrela sobe de quem ganhou, um prêmio de cada vez
+            ...(estado.premios ?? []).slice(0, premiosMostrados).flatMap((p, k) =>
+              p.ganhadores.map((userId) => ({ id: `premio-${estado.partidaId}-${k}-${userId}`, userId, texto: '+1 ★', bom: true })),
+            ),
+          ],
         }}
         reserva={<Tabuleiro estado={vista} posDe={posDe} />}
       />
       <div className="tab-vez" aria-live="polite">
+        {estado.retaFinal && estado.fase !== 'reta' && estado.fase !== 'premios' && <span className="tab-reta-selo">{t('Reta final: as casas valem o dobro.')}</span>}
+        {estado.fase === 'reta' && (
+          <div className="tab-reta">
+            <strong>{t('Reta final!')}</strong>
+            <span>{t('Reta final: as casas valem o dobro.')}</span>
+          </div>
+        )}
+        {estado.fase === 'premios' && estado.premios && <PremiosBonus premios={estado.premios} mostrados={premiosMostrados} nomeDe={nomeDe} eu={eu} />}
         {estado.fase === 'vez' && (
           <>
             <p className="minijogo-situacao">{minhaVez ? t('Sua vez!') : t('Vez de {nome}.', { nome: quemJoga })}</p>
+            {estado.usado && (
+              <p className="minijogo-situacao tab-efeito">
+                <IconeDoUsado item={estado.usado.item} /> {t('{nome} usou: {item}.', { nome: nomeDe(estado.usado.userId), item: t(NOME_DO_ITEM[estado.usado.item]) })}
+              </p>
+            )}
             {minhaVez && (
               <button type="button" className="btn-primary tab-jogar" disabled={pedido === chaveDaVez} onClick={() => pedir({ tipo: 'dado' })}>
                 <Dado n={5} tamanho={24} /> {t('Jogar o dado')}
               </button>
             )}
+            {minhaVez && !estado.usado && (
+              <UsarItens
+                itens={meus}
+                outros={vista.participantes.filter((p) => p.userId !== eu && p.presente)}
+                escolhendo={usando}
+                setEscolhendo={setUsando}
+                pedir={(corpo) => {
+                  setUsando(null);
+                  pedir(corpo);
+                }}
+                desligado={pedido === chaveDaVez}
+              />
+            )}
             <Relogio restante={restante} total={TEMPO_DA_VEZ} />
           </>
         )}
-        {(estado.fase === 'andando' || estado.fase === 'loja') && ultimo && (
+        {noAndar && ultimo && (
           <div className="tab-jogada">
-            <Dado n={ultimo.dado} />
+            {(ultimo.dados ?? [ultimo.dado]).map((d, k) => (
+              <Dado key={k} n={d} />
+            ))}
+            {ultimo.dados && ultimo.dados.length > 1 && <strong>= {ultimo.dado}</strong>}
             <span className="minijogo-nome">{nomeDe(ultimo.userId)}</span>
             {estado.fase === 'andando' && chegou && (
               <>
@@ -468,9 +613,36 @@ export function JogoTabuleiro({
                 {textoDoEfeito(ultimo.efeito, nomeDe(ultimo.userId), nomeDe, t) && (
                   <strong className="tab-efeito">{textoDoEfeito(ultimo.efeito, nomeDe(ultimo.userId), nomeDe, t)}</strong>
                 )}
+                {estado.compra && <strong className="tab-efeito">{t('{nome} comprou: {item}.', { nome: nomeDe(ultimo.userId), item: t(NOME_DO_ITEM[estado.compra]) })}</strong>}
               </>
             )}
           </div>
+        )}
+        {estado.fase === 'caminho' && chegou && (
+          <>
+            {minhaVez ? <Bifurcacao pedir={pedir} desligado={pedido === chaveDaVez} /> : <p className="minijogo-situacao">{t('{nome} está escolhendo o caminho.', { nome: quemJoga })}</p>}
+            <Relogio restante={restante} total={TEMPO_DO_CAMINHO + duracao + PASSO_MS} />
+          </>
+        )}
+        {estado.fase === 'itens' && chegou && (
+          <>
+            {minhaVez ? (
+              <Loja cenouras={eu === estado.vez ? (estado.participantes.find((p) => p.userId === eu)?.cenouras ?? 0) : 0} precos={estado.precos} pedir={pedir} desligado={pedido === chaveDaVez} />
+            ) : (
+              <p className="minijogo-situacao">{t('{nome} está na loja.', { nome: quemJoga })}</p>
+            )}
+            <Relogio restante={restante} total={TEMPO_DOS_ITENS + duracao + PASSO_MS} />
+          </>
+        )}
+        {estado.fase === 'duelo' && chegou && (
+          <>
+            {minhaVez ? (
+              <EscolhaDoDuelo outros={estado.participantes.filter((p) => p.userId !== eu && p.presente)} pedir={pedir} desligado={pedido === chaveDaVez} />
+            ) : (
+              <p className="minijogo-situacao">{t('{nome} vai escolher quem enfrentar.', { nome: quemJoga })}</p>
+            )}
+            <Relogio restante={restante} total={TEMPO_DO_DUELO + duracao + PASSO_MS} />
+          </>
         )}
         {estado.fase === 'loja' && chegou && (
           <>

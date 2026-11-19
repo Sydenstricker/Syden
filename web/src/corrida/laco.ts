@@ -3,6 +3,7 @@ import {
   amostrar,
   atingir,
   fantasmaEm,
+  largada,
   nivelDaCarga,
   novoKart,
   PASSO,
@@ -14,7 +15,10 @@ import {
   TEMPO_DA_TOCA,
   type Comandos,
   type Kart,
+  VTURBO,
 } from './fisica';
+import { criarMotor, tocar } from '../somDosJogos';
+import { andarRobo, CASA_DE_QUEM_JOGA, criarRobos, largadaDoRobo, ordemDaCorrida, porNaGrade, progressoDoRobo, type Dificuldade, type RoboDoKart } from './robos';
 import { HORTA, montarPista, type DefinicaoDaPista, type Pista } from './pista';
 import {
   cameraAtras,
@@ -156,6 +160,24 @@ export interface OpcoesDoLaco {
   aoPosicao?: (p: PosicaoDoRival) => void;
   /** 1,6 s depois da linha de chegada: as voltas (em passos) e o caminho inteiro. */
   aoChegar?: (voltas: number[], caminho: number[]) => void;
+  /**
+   * OS ROBÔS (19/11/2026, só no Solo contra o computador): quantos e o quanto apertam. Com eles, quem joga larga na última
+   * fila da grade, e a chegada avisa a classificação (aoClassificacao) antes do aoChegar.
+   */
+  robos?: { quantos: number; dificuldade: Dificuldade };
+  /** A classe rápida (o teto vezes isto), só contra os robôs. */
+  classe?: number;
+  /** A classificação na hora em que quem joga cruzou a chegada: quem chegou antes, eu, e quem ainda corria (pelo quanto andou). */
+  aoClassificacao?: (lista: LinhaDaClassificacao[]) => void;
+}
+
+export interface LinhaDaClassificacao {
+  id: number;
+  nome: string;
+  eu: boolean;
+  /** O tempo da corrida em passos (null: não tinha chegado quando eu cheguei). */
+  passos: number | null;
+  avatar: number | string | null;
 }
 
 /** Onde um rival estava no passo `n`, entre duas posições; depois da última, um pouco à frente dela (no máximo 1/4 s). */
@@ -266,6 +288,8 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
   let vivo = true;
   let quadro = 0;
   const d: Desenho = prepararDesenho(o.canvas, o.pista.tema);
+  /** O ronco do motor (19/11/2026, a auditoria: a corrida não tinha som nenhum), só de quem pilota. */
+  let motor: ReturnType<typeof criarMotor> | null = null;
 
   void (async () => {
     d.coelho = await coelho();
@@ -273,6 +297,24 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
     const p = pistaDaCorrida(o.pista);
     const mapa = mapaDaPista(p, 56);
     const kart: Kart = novoKart(p);
+    kart.classe = o.classe ?? 1;
+    if (o.piloto) motor = criarMotor();
+    // OS ROBÔS (só no Solo contra o computador): karts de verdade, cada um com os comandos dele, que entram na mesma lista
+    // dos rivais da sala (o desenho, o nome em cima, a ordem e os itens servem igual); quem joga larga na última fila
+    const robos: RoboDoKart[] = o.robos ? criarRobos(p, o.robos.quantos, o.robos.dificuldade, kart.classe) : [];
+    if (robos.length) porNaGrade(kart, p, CASA_DE_QUEM_JOGA);
+    const todosOsRivais: Map<number, Rival> | undefined = o.rivais ?? (robos.length ? new Map() : undefined);
+    for (const r of robos) todosOsRivais!.set(r.id, { nome: r.nome, avatar: r.avatar, posicoes: [] });
+    /** Os itens dos robôs: o que cada um tem na mão, quando vai usar, o escudo, e as caixas que ele já pegou. */
+    const maoDoRobo = new Map<number, { item: Item; usos: number; usarEm: number }>();
+    const escudoDoRobo = new Map<number, { id: string; ate: number }>();
+    /** A posição de cada um na corrida agora (0 = na frente), e quem está logo à frente dele (o alvo do repolho-roxo). */
+    const posicaoDe = new Map<number, number>();
+    const aFrenteDe = new Map<number, number | null>();
+    let classificacao: LinhaDaClassificacao[] | null = null;
+    /** Por quantos passos o acelerador está apertado durante o semáforo (o turbo da largada). */
+    let segurou = 0;
+    let luzAntes = -1;
     const caminho: number[] = [];
     let camAngulo = kart.angulo;
     let contagem = o.contagem;
@@ -296,6 +338,8 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
           return [-18, -6, 6, 18].map((lado) => ({ x: q.x - q.dy * lado, y: q.y + q.dx * lado, ate: 0 }));
         })
       : [];
+    /** Cada robô pega as caixas dele (como cada pessoa na sala): até que passo cada caixa está pega para ele. */
+    const caixasDoRobo = new Map(robos.map((r) => [r.id, caixas.map(() => 0)]));
     let meuItem: Item | null = null;
     /** Quantos usos o item na mão ainda tem (as três cenouras; os outros, 1). */
     let usos = 0;
@@ -323,21 +367,58 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
 
     const andar = () => {
       if (contagem > 0) {
+        // o bipe de cada luz do semáforo, e o turbo da largada: por quantos passos o acelerador já está apertado
+        const luz = Math.floor((contagem - 1) / 60);
+        if (luz !== luzAntes && o.piloto) {
+          luzAntes = luz;
+          tocar('largada');
+        }
+        segurou = comandos.acelera ? segurou + 1 : 0;
         contagem--;
+        if (contagem === 0 && o.piloto) {
+          tocar('chegada');
+          const r = largada(kart, segurou, o.contagem);
+          if (r === 'turbo') tocar('turbo');
+          else if (r === 'patina') tocar('derrapa');
+          for (const robo of robos) largadaDoRobo(robo, o.robos!.dificuldade, o.contagem);
+        }
         return;
       }
       if (!o.piloto) return;
       const jaTinhaChegado = kart.terminou;
       const auto = import.meta.env.DEV && (window as { corridaPilotoAutomatico?: boolean }).corridaPilotoAutomatico;
       const c = auto ? { ...pilotoAutomatico(kart, p, true), usa: meuItem !== null } : comandos;
+      const derivaAntes = kart.deriva, turboAntes = kart.turbo, voltaAntes = kart.volta;
       passo(kart, c, p);
+      // OS ROBÔS andam o mesmo passo, e a posição deles entra na lista dos rivais (no passo da minha corrida)
+      for (const r of robos) {
+        andarRobo(r, p);
+        const rv = todosOsRivais!.get(r.id)!;
+        const andou = r.kart.terminou ? p.def.voltas + 0.5 - r.chegada / 1e6 : progressoDoRobo(r, p);
+        rv.posicoes.push({ n: kart.passos, x: r.kart.x, y: r.kart.y, a: r.kart.angulo, andou });
+        if (rv.posicoes.length > 240) rv.posicoes.splice(0, 120);
+      }
       if (!jaTinhaChegado) {
         amostrar(kart, caminho);
         if ((kart.passos - 1) % AMOSTRA === 0) {
           o.aoPosicao?.({ n: kart.passos, x: +kart.x.toFixed(1), y: +kart.y.toFixed(1), a: +kart.angulo.toFixed(3), andou: +progresso(kart, p).toFixed(3) });
         }
+        // OS SONS do que aconteceu neste passo
+        if (derivaAntes === 0 && kart.deriva !== 0) tocar('derrapa');
+        if (kart.turbo > turboAntes + 0.05) tocar('turbo');
+        if (kart.bateu && tremor === 0) tocar('impacto');
+        if (kart.volta > voltaAntes) tocar(kart.terminou ? 'chegada' : 'bandeira');
+        if (kart.terminou && robos.length) {
+          // a classificação na hora da minha chegada: quem já tinha chegado, eu, e os outros pelo quanto andaram
+          const linhas = [
+            { id: o.eu, nome: '', eu: true, chegada: kart.voltas[kart.voltas.length - 1], andou: p.def.voltas, avatar: o.meuAvatar ?? null },
+            ...robos.map((r) => ({ id: r.id, nome: r.nome, eu: false, chegada: r.chegada, andou: progressoDoRobo(r, p), avatar: r.avatar as number | string | null })),
+          ];
+          classificacao = ordemDaCorrida(linhas).map((l) => ({ id: l.id, nome: l.nome, eu: l.eu, passos: l.chegada || null, avatar: l.avatar }));
+        }
       }
       if (o.itens && !kart.terminou) usarItens(c);
+      if (o.itens && robos.length) itensDosRobos();
       if (kart.bateu) tremor = 6;
       // a câmera vai atrás do rumo, puxada um pouco para o nariz: na derrapagem, o kart aparece virado
       seguir(kart.rumo + (kart.angulo - kart.rumo) * 0.35);
@@ -351,6 +432,7 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
           if (cx.ate <= n && Math.hypot(cx.x - kart.x, cx.y - kart.y) < 8) {
             cx.ate = n + 120;
             pegarItem(sortearItem(minhaPosicao, quantos));
+            tocar('item');
             break;
           }
         }
@@ -363,6 +445,7 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
         const q = pontoNaLinha(p, p.la[kart.indice]);
         const lado = +(-(kart.x - q.x) * q.dy + (kart.y - q.y) * q.dx).toFixed(1);
         const s = +(p.la[kart.indice] + 16).toFixed(1);
+        tocar(meuItem === 'cenoura' || meuItem === 'cenouras' ? 'turbo' : meuItem === 'alface' ? 'cura' : meuItem === 'toca' ? 'pulo' : 'empurrao');
         if (meuItem === 'cenoura' || meuItem === 'cenouras') kart.turbo = Math.max(kart.turbo, 1.1);
         else if (meuItem === 'repolho') lancar({ tipo: 'repolho', id, dono: o.eu, n, s, lado });
         else if (meuItem === 'repolho-roxo') lancar({ tipo: 'repolho-roxo', id, dono: o.eu, n, s, lado, alvo: aFrente });
@@ -388,12 +471,15 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
         // O REGADOR: chove em mim se eu estava na frente de quem o usou, no passo em que ele usou
         if (e.tipo === 'regador') {
           if (regadoresVistos.has(e.id) || n < e.n) continue;
-          const dono = o.rivais?.get(e.dono);
+          const dono = todosOsRivais?.get(e.dono);
           const pos = dono ? rivalEm(dono.posicoes, e.n) : null;
           if (!pos) continue;
           regadoresVistos.add(e.id);
-          andouDoDono.set(e.id, pos.andou);
-          if (progresso(kart, p) > pos.andou && kart.toca === 0 && n - e.n < PASSOS_DA_CHUVA) kart.chuva = TEMPO_DA_CHUVA;
+          if (!andouDoDono.has(e.id)) andouDoDono.set(e.id, pos.andou);
+          if (progresso(kart, p) > (andouDoDono.get(e.id) ?? pos.andou) && kart.toca === 0 && n - e.n < PASSOS_DA_CHUVA) {
+            kart.chuva = TEMPO_DA_CHUVA;
+            tocar('agua');
+          }
           continue;
         }
         if (e.tipo === 'alface' || e.tipo === 'toca') continue;
@@ -418,8 +504,92 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
           lancar({ tipo: 'gastou', id: meuEscudo.id });
           meuEscudo = null;
           tremor = 4;
+          tocar('quebra');
         } else {
           atingir(kart, e.tipo === 'lama' ? 0.7 : 1);
+          tocar(e.tipo === 'lama' ? 'desliza' : 'dano');
+        }
+      }
+    };
+
+    /**
+     * OS ITENS DOS ROBÔS (19/11/2026): cada um pega as caixas dele, sorteia pela posição como quem joga, e usa o item depois
+     * de um tempo (o sorteio dele). Os itens dos robôs são eventos como os de qualquer um, e o que pega quem joga já é
+     * conferido acima; aqui se confere o que pega cada robô (a mesma regra: quem leva decide).
+     */
+    const itensDosRobos = () => {
+      const n = kart.passos;
+      const eventos = o.itens!.eventos;
+      const sumiram = new Set(eventos.filter((e) => e.tipo === 'acertou').map((e) => e.id));
+      for (const r of robos) {
+        const k = r.kart;
+        if (k.terminou) continue;
+        let mao = maoDoRobo.get(r.id);
+        const minhas = caixasDoRobo.get(r.id)!;
+        if (!mao) {
+          for (let i = 0; i < caixas.length; i++) {
+            if (minhas[i] <= n && Math.hypot(caixas[i].x - k.x, caixas[i].y - k.y) < 8) {
+              minhas[i] = n + 120;
+              const item = sortearItem(posicaoDe.get(r.id) ?? 0, quantos, r.sorte);
+              mao = { item, usos: item === 'cenouras' ? 3 : 1, usarEm: n + 30 + Math.floor(r.sorte() * 150) };
+              maoDoRobo.set(r.id, mao);
+              break;
+            }
+          }
+        }
+        if (mao && n >= mao.usarEm && k.rodando === 0) {
+          const id = `${r.id}-${n}`;
+          const q = pontoNaLinha(p, p.la[k.indice]);
+          const lado = +(-(k.x - q.x) * q.dy + (k.y - q.y) * q.dx).toFixed(1);
+          const s = +(p.la[k.indice] + 16).toFixed(1);
+          const it = mao.item;
+          if (it === 'cenoura' || it === 'cenouras') k.turbo = Math.max(k.turbo, 1.1);
+          else if (it === 'repolho') lancar({ tipo: 'repolho', id, dono: r.id, n, s, lado });
+          else if (it === 'repolho-roxo') lancar({ tipo: 'repolho-roxo', id, dono: r.id, n, s, lado, alvo: aFrenteDe.get(r.id) ?? null });
+          else if (it === 'lama') lancar({ tipo: 'lama', id, dono: r.id, n, x: +(k.x - Math.cos(k.angulo) * 12).toFixed(1), y: +(k.y - Math.sin(k.angulo) * 12).toFixed(1) });
+          else {
+            if (it === 'alface') escudoDoRobo.set(r.id, { id, ate: n + VIDA_DA_ALFACE });
+            else if (it === 'toca') k.toca = TEMPO_DA_TOCA;
+            else andouDoDono.set(id, progressoDoRobo(r, p));
+            lancar({ tipo: it, id, dono: r.id, n });
+          }
+          mao.usos--;
+          if (mao.usos <= 0) maoDoRobo.delete(r.id);
+          else mao.usarEm = n + 40;
+        }
+        const escudo = escudoDoRobo.get(r.id);
+        if (escudo && n >= escudo.ate) escudoDoRobo.delete(r.id);
+        // o robô foi atingido?
+        for (const e of eventos) {
+          if (e.tipo === 'acertou' || e.tipo === 'gastou' || e.dono === r.id) continue;
+          if (e.tipo === 'regador') {
+            const chave = `${r.id}|${e.id}`;
+            if (regadoresVistos.has(chave) || n < e.n) continue;
+            regadoresVistos.add(chave);
+            const dono = andouDoDono.get(e.id);
+            if (dono !== undefined && progressoDoRobo(r, p) > dono && k.toca === 0 && n - e.n < PASSOS_DA_CHUVA) k.chuva = TEMPO_DA_CHUVA;
+            continue;
+          }
+          if (e.tipo === 'alface' || e.tipo === 'toca') continue;
+          if (sumiram.has(e.id) || k.rodando > 0 || k.toca > 0) continue;
+          let pegou = false;
+          if (e.tipo === 'repolho-roxo') {
+            if (e.alvo === r.id) pegou = roxoAlcancou(p, e, n, p.la[k.indice]);
+            else if (e.alvo === null) {
+              const q = roxoEm(p, e, n);
+              pegou = !!q && Math.hypot(q.x - k.x, q.y - k.y) < 9;
+            }
+          } else {
+            const alvo = e.tipo === 'repolho' ? repolhoEm(p, e, n) : e.tipo === 'lama' && n >= e.n && n - e.n < VIDA_DA_LAMA ? e : null;
+            pegou = !!alvo && Math.hypot(alvo.x - k.x, alvo.y - k.y) < (e.tipo === 'repolho' ? 9 : 8);
+          }
+          if (!pegou) continue;
+          sumiram.add(e.id);
+          lancar({ tipo: 'acertou', id: e.id });
+          if (escudo && escudoDoRobo.has(r.id)) {
+            lancar({ tipo: 'gastou', id: escudo.id });
+            escudoDoRobo.delete(r.id);
+          } else atingir(k, e.tipo === 'lama' ? 0.7 : 1);
         }
       }
     };
@@ -434,7 +604,7 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
     /** Os rivais no passo `n`, com o nome. */
     const rivaisEm = (n: number) => {
       const lista: { id: number; nome: string; avatar: number | string | null; pos: PosicaoDoRival }[] = [];
-      for (const [id, r] of o.rivais ?? []) {
+      for (const [id, r] of todosOsRivais ?? []) {
         const pos = rivalEm(r.posicoes, n);
         if (pos) lista.push({ id, nome: r.nome, avatar: r.avatar ?? null, pos });
       }
@@ -561,15 +731,21 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
       }
 
       // a ordem de quem está na frente: eu pelo meu progresso, os rivais pelo deles no mesmo passo
-      if (o.rivais) {
+      if (todosOsRivais) {
         const linhas = rivais.map((r) => ({ id: r.id, nome: r.nome, eu: false, andou: r.pos.andou }));
-        if (o.piloto) linhas.push({ id: o.eu, nome: '', eu: true, andou: kart.terminou ? p.def.voltas : progresso(kart, p) });
+        // contra os robôs, quem chegou fica na ordem de chegada (o robô que chegou antes de mim, na frente)
+        const minhaChegada = kart.terminou ? (robos.length ? p.def.voltas + 0.5 - kart.voltas[kart.voltas.length - 1] / 1e6 : p.def.voltas) : 0;
+        if (o.piloto) linhas.push({ id: o.eu, nome: '', eu: true, andou: kart.terminou ? minhaChegada : progresso(kart, p) });
         // quem ainda não mandou posição nenhuma fica no fim, na ordem de chegada da lista
-        for (const [id, r] of o.rivais) if (!linhas.some((l) => l.id === id)) linhas.push({ id, nome: r.nome, eu: false, andou: -1 });
+        for (const [id, r] of todosOsRivais) if (!linhas.some((l) => l.id === id)) linhas.push({ id, nome: r.nome, eu: false, andou: -1 });
         linhas.sort((a, b) => b.andou - a.andou);
         minhaPosicao = Math.max(0, linhas.findIndex((l) => l.eu));
         quantos = linhas.length;
         aFrente = minhaPosicao > 0 ? linhas[minhaPosicao - 1].id : null;
+        linhas.forEach((l, i) => {
+          posicaoDe.set(l.id, i);
+          aFrenteDe.set(l.id, i > 0 ? linhas[i - 1].id : null);
+        });
         const chave = linhas.map((l) => l.id).join(',');
         if (chave !== ordemAntes && o.aoOrdem) {
           ordemAntes = chave;
@@ -593,18 +769,24 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
         }
       }
       // quem assiste não pode ver o futuro: o passo mostrado não passa do último que chegou de alguém
-      if (!o.piloto && o.rivais) {
-        const ultimo = Math.max(0, ...[...o.rivais.values()].map((r) => r.posicoes.at(-1)?.n ?? 0));
+      if (!o.piloto && todosOsRivais) {
+        const ultimo = Math.max(0, ...[...todosOsRivais.values()].map((r) => r.posicoes.at(-1)?.n ?? 0));
         // e quem abriu no meio da corrida não começa do começo: vai para perto do agora
         nAssistindo = Math.min(Math.max(nAssistindo, ultimo - 12), ultimo);
       }
       if (!document.hidden) desenhar();
       const volta = Math.min(p.def.voltas, kart.volta + 1);
       const ms = passosEmMs(kart.terminou ? kart.voltas[kart.voltas.length - 1] : kart.passos);
+      // o motor: no semáforo, um ronco baixo que sobe com o acelerador; depois, pela velocidade; parado e pausado, mudo
+      if (motor) {
+        const ronco = pausado ? 0 : contagem > 0 ? (comandos.acelera ? 0.35 : 0.06) : Math.abs(kart.v) / VTURBO;
+        motor.ajustar(kart.terminou && Math.abs(kart.v) < 10 ? 0 : ronco);
+      }
       o.aoPlacar({ volta, ms, pausado: pausado && o.piloto });
       if (kart.terminou && !fimEm) fimEm = agora;
       if (fimEm && agora - fimEm > 1600 && !avisouChegada) {
         avisouChegada = true;
+        if (classificacao) o.aoClassificacao?.(classificacao);
         o.aoChegar?.(kart.voltas.slice(), caminho);
       }
       quadro = requestAnimationFrame(ciclo);
@@ -615,6 +797,8 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
   return () => {
     vivo = false;
     cancelAnimationFrame(quadro);
+    motor?.parar();
+    motor = null;
   };
 }
 

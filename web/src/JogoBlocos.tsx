@@ -1,15 +1,27 @@
 import { ComandosDoJogo } from './ComandosDosJogos';
 import { tocar } from './somDosJogos';
-import { ChevronsUp, Infinity as SemFim, Timer } from 'lucide-react';
+import { ArrowLeftRight, Bot, Check, ChevronsUp, Gauge, Infinity as SemFim, Puzzle, Timer, Trophy } from 'lucide-react';
+import { criarImpacto } from './impacto';
 import { useEffect, useRef, useState } from 'react';
-import { ALTURA, desenharMiniatura, desenharTabuleiro, LARGURA, PECA, type Enfeites } from './blocos/desenho';
+import { ALTURA, desenharMiniatura, desenharTabuleiro, faiscasEm, LARGURA, PECA, type Enfeites } from './blocos/desenho';
 import { MAX_NA_FILA, registrarEntrada, type Entrada } from './blocos/entrada';
 import { acertarComOServidor, foraDoJogo, pedirSincroniaUmaVez } from './blocos/acerto';
 import { escolherJogada } from './blocos/piloto';
 import * as Sim from './blocos/sim';
 import { useT } from './i18n';
 import { Placar, type Agir } from './Minijogo';
-import type { EstadoBlocos, Partida } from './minijogos';
+import type { EstadoBlocos as EstadoBlocosBase, Partida } from './minijogos';
+
+/** O estado, com o que entrou em 19/11/2026 (a velocidade da largada, o adversário do computador e o recorde do Solo). */
+type EstadoBlocos = Omit<EstadoBlocosBase, 'modo'> & {
+  modo: EstadoBlocosBase['modo'] | 'quebra-cabeca';
+  velocidade?: number;
+  /** O quebra-cabeça: a fase (-1: não é), e, no fim, se foi vencida. */
+  quebraCabeca?: number;
+  venceu?: boolean | null;
+  robo?: 'facil' | 'medio' | 'dificil' | null;
+  recorde?: { antes: number | null; novo: boolean } | null;
+};
 
 /**
  * A HORTA EM CASCATA (03/11/2026, server/src/minijogo-blocos.ts): trocar e combinar com a pilha subindo. Cada um joga na
@@ -35,6 +47,9 @@ interface Caixa {
   escolhida: Casa | null;
   arrasto: (Casa & { moveu: boolean }) | null;
   avisos: Enfeites['avisos'];
+  faiscas: NonNullable<Enfeites['faiscas']>;
+  /** O alarme da pilha alta já tocou (volta a tocar depois que a pilha baixa). */
+  alarmou: boolean;
   subindo: boolean;
   pausaMs: number;
   pausadoDesde: number | null;
@@ -63,6 +78,11 @@ export function JogoBlocos({ estado, eu, jogador, aoAgir }: { estado: EstadoBloc
           eu={eu}
           linhas={resultado.filter((r) => r.lugar !== null).map((r) => ({ userId: r.userId, username: r.username, valor: String(r.pontos), posicao: r.lugar ?? undefined }))}
         />
+        {(estado.quebraCabeca ?? -1) >= 0 ? (
+          <FimDoQuebraCabeca fase={estado.quebraCabeca!} venceu={estado.venceu === true} recorde={estado.recorde ?? null} />
+        ) : (
+          <RecordeDosBlocos recorde={estado.recorde ?? null} />
+        )}
         {sairam.length > 0 && (
           <ul className="minijogo-placar blocos-sairam">
             {sairam.map((r) => (
@@ -95,25 +115,152 @@ export function JogoBlocos({ estado, eu, jogador, aoAgir }: { estado: EstadoBloc
   );
 }
 
-/** A escolha do Solo: sem fim, ou 2 minutos contra o relógio. */
+const MARCA_DOS_QUEBRA_CABECAS = 'syden.blocos.quebra-cabecas';
+/** As fases vencidas, lembradas NO APARELHO só para a escolha mostrar o visto (o recorde de verdade é o do servidor). */
+function fasesVencidasNoAparelho(): Set<number> {
+  try {
+    return new Set(JSON.parse(localStorage.getItem(MARCA_DOS_QUEBRA_CABECAS) ?? '[]') as number[]);
+  } catch {
+    return new Set();
+  }
+}
+
+function FimDoQuebraCabeca({ fase, venceu, recorde }: { fase: number; venceu: boolean; recorde: { antes: number | null; novo: boolean } | null }) {
+  const t = useT();
+  useEffect(() => {
+    if (!venceu) return;
+    try {
+      const v = fasesVencidasNoAparelho();
+      v.add(fase);
+      localStorage.setItem(MARCA_DOS_QUEBRA_CABECAS, JSON.stringify([...v]));
+    } catch {
+      /* sem armazenamento: só não lembra */
+    }
+  }, [fase, venceu]);
+  return (
+    <p className="minijogo-situacao">
+      {venceu ? (
+        <>
+          <Check size={16} aria-hidden="true" /> {t('Fase vencida!')} {recorde?.novo && <Trophy size={16} aria-label={t('Novo recorde!')} />}
+        </>
+      ) : (
+        t('Acabaram as trocas.')
+      )}
+    </p>
+  );
+}
+
+function RecordeDosBlocos({ recorde }: { recorde: { antes: number | null; novo: boolean } | null }) {
+  const t = useT();
+  if (!recorde) return null;
+  if (recorde.novo)
+    return (
+      <p className="minijogo-situacao">
+        <Trophy size={16} aria-hidden="true" /> {t('Novo recorde!')}
+      </p>
+    );
+  if (recorde.antes === null) return null;
+  return (
+    <p className="minijogo-situacao">
+      <Trophy size={16} aria-hidden="true" /> {t('Seu recorde: {n} pontos', { n: recorde.antes })}
+    </p>
+  );
+}
+
+/**
+ * A escolha do Solo: sem fim, 2 minutos contra o relógio, ou contra o computador (três níveis de reação, que são as figuras de
+ * um, dois e três robôs: sem texto novo), e a velocidade em que a pilha começa (19/11/2026). Vai num texto só ao servidor:
+ * "<modo>:<velocidade>" (minijogo-blocos.ts, lerPedido).
+ */
 export function EscolhaDosBlocos({ aoEscolher, aoVoltar }: { aoEscolher: (modo: string) => void; aoVoltar: () => void }) {
   const t = useT();
+  const [velocidade, setVelocidade] = useState(() => {
+    try {
+      return Sim.velocidadeValida(Number(localStorage.getItem('syden.blocos.velocidade') ?? 1));
+    } catch {
+      return 1;
+    }
+  });
+  const escolher = (modo: string) => {
+    try {
+      localStorage.setItem('syden.blocos.velocidade', String(velocidade));
+    } catch {
+      /* sem armazenamento: só não lembra */
+    }
+    aoEscolher(`${modo}:${velocidade}`);
+  };
+  const [vencidas] = useState(fasesVencidasNoAparelho);
+  const niveis = [
+    { id: 'facil', robos: 1 },
+    { id: 'medio', robos: 2 },
+    { id: 'dificil', robos: 3 },
+  ];
   return (
     <>
       <ul className="blocos-modos">
         <li>
-          <button type="button" className="minijogo-jogo" onClick={() => aoEscolher('sem-fim')}>
+          <button type="button" className="minijogo-jogo" onClick={() => escolher('sem-fim')}>
             <SemFim size={40} aria-hidden="true" />
             <span>{t('Sem fim')}</span>
           </button>
         </li>
         <li>
-          <button type="button" className="minijogo-jogo" onClick={() => aoEscolher('dois-minutos')}>
+          <button type="button" className="minijogo-jogo" onClick={() => escolher('dois-minutos')}>
             <Timer size={40} aria-hidden="true" />
             <span>{t('2 minutos')}</span>
           </button>
         </li>
+        {niveis.map((n) => (
+          <li key={n.id}>
+            <button
+              type="button"
+              className="minijogo-jogo"
+              onClick={() => escolher(`robo-${n.id}`)}
+              aria-label={`${t('Robô')} ${n.robos}`}
+              title={`${t('Robô')} ${n.robos}`}
+            >
+              <span className="blocos-robos" aria-hidden="true">
+                {Array.from({ length: n.robos }, (_, i) => (
+                  <Bot key={i} size={n.robos === 1 ? 40 : 24} />
+                ))}
+              </span>
+              <span aria-hidden="true">{'★'.repeat(n.robos)}</span>
+            </button>
+          </li>
+        ))}
       </ul>
+      <div className="blocos-quebra-cabecas">
+        <Puzzle size={20} aria-hidden="true" />
+        <ul>
+          {Sim.QUEBRA_CABECAS.map((q, i) => (
+            <li key={i}>
+              <button
+                type="button"
+                className={`btn-secondary${vencidas.has(i) ? ' vencida' : ''}`}
+                aria-label={t('Fase {n} de {total}', { n: i + 1, total: Sim.QUEBRA_CABECAS.length })}
+                onClick={() => aoEscolher(`qc-${i}`)}
+              >
+                {vencidas.has(i) ? <Check size={14} aria-hidden="true" /> : i + 1}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="blocos-velocidade" role="radiogroup" aria-label={t('Velocidade')}>
+        <Gauge size={20} aria-hidden="true" />
+        {Array.from({ length: Sim.VELOCIDADES }, (_, i) => i + 1).map((v) => (
+          <button
+            key={v}
+            type="button"
+            role="radio"
+            aria-checked={velocidade === v}
+            className={velocidade === v ? 'btn-primary' : 'btn-secondary'}
+            onClick={() => setVelocidade(v)}
+          >
+            {v}
+          </button>
+        ))}
+      </div>
       <div className="minijogo-acoes">
         <button type="button" className="btn-secondary" onClick={aoVoltar}>
           {t('Outros jogos')}
@@ -160,7 +307,7 @@ function MeuTabuleiro({ estado, eu, aoAgir }: { estado: EstadoBlocos & Partida; 
   }
 
   const [caixa] = useState<Caixa>(() => ({
-    s: Sim.simulacao(estado.semente, limiteDo(estado.modo)),
+    s: Sim.simulacao(estado.semente, limiteDo(estado.modo), estado.velocidade ?? 1, estado.quebraCabeca ?? -1),
     enviadasIdx: 0,
     deBase: 0,
     versao: 0,
@@ -169,6 +316,8 @@ function MeuTabuleiro({ estado, eu, aoAgir }: { estado: EstadoBlocos & Partida; 
     escolhida: null,
     arrasto: null,
     avisos: [],
+    faiscas: [],
+    alarmou: false,
     subindo: false,
     pausaMs: 0,
     pausadoDesde: null,
@@ -180,7 +329,7 @@ function MeuTabuleiro({ estado, eu, aoAgir }: { estado: EstadoBlocos & Partida; 
     recusadaAte: 0,
     pediuSincronia: false,
   }));
-  const [painel, setPainel] = useState({ pontos: 0, passo: 0, fim: false, lixos: 0, recusada: false });
+  const [painel, setPainel] = useState({ pontos: 0, passo: 0, fim: false, lixos: 0, recusada: false, trocas: 0 });
 
   // O QUE O SERVIDOR DISSE: as jogadas que ele já leu, os caixotes que vêm, e (se ele recusou alguma) a lista aceita
   useEffect(() => {
@@ -203,7 +352,7 @@ function MeuTabuleiro({ estado, eu, aoAgir }: { estado: EstadoBlocos & Partida; 
     if (novos.some((l) => l.n < g.s.e.passo)) refazer = true;
     if (refazer) {
       // o caixote chegou atrasado (ou uma jogada não valeu): a partida é refeita do começo, igual à do servidor
-      const s = Sim.simulacao(estado.semente, limiteDo(estado.modo));
+      const s = Sim.simulacao(estado.semente, limiteDo(estado.modo), estado.velocidade ?? 1, estado.quebraCabeca ?? -1);
       s.jogadas = jogadas;
       s.lixos = meu.lixos.slice();
       Sim.avancar(s, g.s.e.passo);
@@ -220,6 +369,7 @@ function MeuTabuleiro({ estado, eu, aoAgir }: { estado: EstadoBlocos & Partida; 
     if (!ctx) return;
     let quadro = 0;
     let id = 0;
+    const impacto = criarImpacto({ pixelsPorForca: 3 });
     const alvo = () => {
       if (atual.current.fase !== 'jogando' || inicio.current === null) return 0;
       const agora = Date.now();
@@ -247,6 +397,9 @@ function MeuTabuleiro({ estado, eu, aoAgir }: { estado: EstadoBlocos & Partida; 
         }
         if (n) g.avisos.push({ texto: r.cadeia >= 2 ? 'x' + r.cadeia : String(r.combo), x: x / n, y: y / n, idade: 0 });
         if (n) tocar(r.cadeia >= 2 || r.combo >= 4 ? 'combo' : 'acerto');
+        // só desenho (19/11/2026): faíscas, e a tela treme na cadeia grande
+        if (n) g.faiscas.push(...faiscasEm(x / n, y / n, Math.min(24, 6 + 4 * Math.max(r.cadeia, r.combo - 2))));
+        if (r.cadeia >= 3) impacto.acerto({ forca: Math.min(1, 0.25 + 0.15 * r.cadeia), pausaMs: 40 });
       }
     };
     const quadroDoJogo = () => {
@@ -273,16 +426,27 @@ function MeuTabuleiro({ estado, eu, aoAgir }: { estado: EstadoBlocos & Partida; 
       }
       for (const a of g.avisos) a.idade++;
       g.avisos = g.avisos.filter((a) => a.idade < 60);
+      for (const f of g.faiscas) f.idade++;
+      g.faiscas = g.faiscas.filter((f) => f.idade < 30);
+      // O ALARME: a pilha a duas casas do teto (uma vez; volta a tocar depois que ela baixa)
+      let alto = false;
+      for (let i = 0; i < Sim.COLUNAS * 2; i++) if (g.s.e.tipo[i] !== Sim.VAZIO) alto = true;
+      if (alto && !g.alarmou && e.fase === 'jogando' && !g.s.e.fim) tocar('alarme');
+      g.alarmou = alto;
       const contagem = e.fase === 'largada' && inicio.current !== null ? Math.max(1, Math.ceil((inicio.current - Date.now()) / 1000)) : null;
       const fim = g.s.e.fim !== null || e.meu?.fim === true;
-      desenharTabuleiro(ctx, g.s.e, { cursor: g.cursor, escolhida: g.escolhida, avisos: g.avisos, contagem, apagado: fim });
+      const { dx, dy } = impacto.quadro(performance.now());
+      ctx.save();
+      ctx.translate(Math.round(dx), Math.round(dy));
+      desenharTabuleiro(ctx, g.s.e, { cursor: g.cursor, escolhida: g.escolhida, avisos: g.avisos, faiscas: g.faiscas, contagem, apagado: fim });
+      ctx.restore();
       if (++quadro % 6 === 0) {
         const lixos = g.s.e.fila.reduce((a, l) => a + l.altura, 0) + g.s.lixos.filter((l) => l.n >= g.s.e.passo).reduce((a, l) => a + l.altura, 0);
         const recusada = Date.now() < g.recusadaAte;
         setPainel((p) =>
-          p.pontos === g.s.e.pontos && p.passo === g.s.e.passo && p.fim === fim && p.lixos === lixos && p.recusada === recusada
+          p.pontos === g.s.e.pontos && p.passo === g.s.e.passo && p.fim === fim && p.lixos === lixos && p.recusada === recusada && p.trocas === g.s.e.trocas
             ? p
-            : { pontos: g.s.e.pontos, passo: g.s.e.passo, fim, lixos, recusada },
+            : { pontos: g.s.e.pontos, passo: g.s.e.passo, fim, lixos, recusada, trocas: g.s.e.trocas },
         );
       }
     };
@@ -441,6 +605,7 @@ function MeuTabuleiro({ estado, eu, aoAgir }: { estado: EstadoBlocos & Partida; 
   };
 
   const restante = estado.modo === 'dois-minutos' ? Sim.DOIS_MINUTOS - painel.passo : painel.passo;
+  const quebra = (estado.quebraCabeca ?? -1) >= 0;
   const fora = foraDoJogo(estado, eu);
   return (
     <div className="blocos-jogo">
@@ -448,7 +613,13 @@ function MeuTabuleiro({ estado, eu, aoAgir }: { estado: EstadoBlocos & Partida; 
         <span>
           {t('Placar')}: <strong>{painel.pontos}</strong>
         </span>
-        {!versus && <span className="blocos-relogio">{tempoLegivel(restante)}</span>}
+        {quebra ? (
+          <span className="blocos-relogio" aria-label={t('Trocas')}>
+            <ArrowLeftRight size={14} aria-hidden="true" /> {painel.trocas}
+          </span>
+        ) : (
+          !versus && <span className="blocos-relogio">{tempoLegivel(restante)}</span>
+        )}
         {painel.lixos > 0 && (
           <span className="blocos-lixo" aria-hidden="true">
             {Array.from({ length: Math.min(8, painel.lixos) }, (_, i) => (
@@ -478,7 +649,7 @@ function MeuTabuleiro({ estado, eu, aoAgir }: { estado: EstadoBlocos & Partida; 
           {t('Uma jogada não valeu.')}
         </p>
       )}
-      {!painel.fim && (
+      {!painel.fim && !quebra && (
         <button
           type="button"
           className="btn-secondary blocos-subir"

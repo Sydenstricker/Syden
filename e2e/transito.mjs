@@ -29,7 +29,10 @@ try {
   const painel = duda.locator('.jogos-painel');
   await painel.waitFor();
   await painel.locator('.jogos-solo button', { hasText: 'Trânsito da toca' }).click();
+  // a escolha do Solo (19/11/2026): o modo e o mapa já vêm marcados (o minuto, o cruzamento); a demonstração de 5 s se pula
+  await duda.locator('.transito-escolha .btn-primary').click();
   await duda.locator('.transito-tela').waitFor({ timeout: 10000 });
+  await duda.locator('.transito-demo').click({ timeout: 10000 }).catch(() => {});
   ok('no quarto, sem chamada, o Trânsito começou sozinho');
   await foto(duda, 'contagem');
 

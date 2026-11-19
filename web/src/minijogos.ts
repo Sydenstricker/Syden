@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { api } from './api';
 import { chave, idiomaAtual } from './i18n';
+import { PALAVRAS_NOVAS_DO_DESENHO } from './desenhoPalavras';
 import { contaEhAdulta } from './protecao';
 import type { IdDoQuiz } from './quiz';
 
@@ -77,13 +78,43 @@ export const OBJETOS: Record<string, { nome: string }> = {
   terra: { nome: chave('Terra') },
   jupiter: { nome: chave('Júpiter') },
   sol: { nome: chave('Sol') },
+  // 19/11/2026: a comida e os veículos
+  limao: { nome: chave('Limão') },
+  maca: { nome: chave('Maçã') },
+  rosquinha: { nome: chave('Rosquinha') },
+  pera: { nome: chave('Pera') },
+  hamburguer: { nome: chave('Hambúrguer') },
+  uva: { nome: chave('Cacho de uva') },
+  cenoura: { nome: chave('Cenoura') },
+  milho: { nome: chave('Espiga de milho') },
+  berinjela: { nome: chave('Berinjela') },
+  baguete: { nome: chave('Baguete') },
+  skate: { nome: chave('Skate') },
+  patinete: { nome: chave('Patinete') },
+  motocicleta: { nome: chave('Motocicleta') },
+  ambulancia: { nome: chave('Ambulância') },
+  'caminhao-de-bombeiros': { nome: chave('Caminhão de bombeiros') },
+  helicoptero: { nome: chave('Helicóptero') },
+  tangerina: { nome: chave('Tangerina') },
+  pessego: { nome: chave('Pêssego') },
+  batata: { nome: chave('Batata') },
+  pimentao: { nome: chave('Pimentão') },
+  manga: { nome: chave('Manga') },
+  pretzel: { nome: chave('Pretzel') },
+  pepino: { nome: chave('Pepino') },
+  treno: { nome: chave('Trenó') },
+  lambreta: { nome: chave('Lambreta') },
+  van: { nome: chave('Van') },
+  caminhonete: { nome: chave('Caminhonete') },
+  'carro-de-corrida': { nome: chave('Carro de corrida') },
+  caminhao: { nome: chave('Caminhão') },
 };
 
 /**
  * As figuras desenhadas NA DIAGONAL (o lápis, o avião, o foguete): o comprimento delas é o da diagonal do
  * desenho, e não a largura nem a altura.
  */
-export const NA_DIAGONAL = new Set(['lapis', 'banana', 'violao', 'aviao', 'foguete']);
+export const NA_DIAGONAL = new Set(['lapis', 'banana', 'violao', 'aviao', 'foguete', 'limao', 'cenoura', 'milho', 'berinjela', 'baguete', 'skate', 'batata', 'pepino']);
 
 /** Figuras em que o objeto medido é só PARTE do desenho: em Júpiter, o anel passa para fora da esfera. */
 export const PARTE_MEDIDA: Record<string, number> = { jupiter: 0.72 };
@@ -97,6 +128,8 @@ export const CATEGORIAS_DO_TAMANHO: { id: string; nome: string; figuras: [string
   { id: 'animais', nome: chave('Animais'), figuras: ['coelho', 'zebra', 'elefante'] },
   { id: 'dia-a-dia', nome: chave('Dia a dia'), figuras: ['lapis', 'violao', 'bicicleta'] },
   { id: 'gigantes', nome: chave('Gigantes'), figuras: ['onibus', 'torre-eiffel', 'everest'] },
+  { id: 'comida', nome: chave('Comida'), figuras: ['morango', 'hamburguer', 'baguete'] },
+  { id: 'veiculos', nome: chave('Veículos'), figuras: ['patinete', 'ambulancia', 'helicoptero'] },
 ];
 
 export type Medida = 'altura' | 'comprimento' | 'diametro';
@@ -248,23 +281,51 @@ export interface EstadoXadrez {
   placar: LinhaDoPlacar[];
 }
 
-export type Papel = 'lobisomem' | 'vidente' | 'anjo' | 'aldeao';
+export type Papel = 'lobisomem' | 'vidente' | 'anjo' | 'armadilha' | 'caldeirao' | 'aldeao';
+export type PapelEspecial = 'vidente' | 'anjo' | 'armadilha' | 'caldeirao';
 
-/** O Lobisomem (server/src/minijogo-lobisomem.ts). */
+/** O Lobisomem (server/src/minijogo-lobisomem.ts; o preparo, a defesa, as poções e a história desde 19/11/2026). */
 export interface EstadoLobisomem {
-  fase: 'noite' | 'amanhecer' | 'dia' | 'veredito' | 'fim';
+  fase: 'preparo' | 'noite' | 'amanhecer' | 'armadilha' | 'dia' | 'defesa' | 'julgamento' | 'veredito' | 'fim';
   dia: number;
+  duracao: number;
+  criadaPor: number;
+  composicao: { lobos: number; especiais: PapelEspecial[]; noiteMs: number; diaMs: number };
+  lobosMax: number;
   meuPapel: Papel | null;
   vivo: boolean;
   jogadores: { userId: number; username: string; vivo: boolean; papel: Papel | null }[];
   ataque: Record<string, number> | null;
+  conversa: { id: number; de: number; texto: string }[] | null;
   visoes: { alvo: number; lobisomem: boolean }[] | null;
   protegido: number | null;
   viuHoje: boolean | null;
+  etapa: 'lobos' | 'pocao' | null;
+  pocoes: { cura: boolean; veneno: boolean; curouHoje: boolean; envenenouHoje: number | null; decidiu: boolean } | null;
+  alvoDosLobos: number | null;
   votos: Record<string, number> | null;
-  mortoDaNoite: number | null;
+  acusado: number | null;
+  julgou: number[] | null;
+  meuJulgamento: boolean | null;
+  julgamento: Record<string, boolean> | null;
+  mortosDaNoite: number[];
   eliminado: number | null;
+  armadilha: { quem: number; alvo: number | null } | null;
   vencedor: 'vila' | 'lobisomens' | null;
+  historia: LinhaDaHistoriaDoLobisomem[] | null;
+}
+export interface LinhaDaHistoriaDoLobisomem {
+  dia: number;
+  tipo: 'ataque' | 'protecao' | 'visao' | 'cura' | 'veneno' | 'mortes' | 'acusado' | 'julgamento' | 'armadilha';
+  de?: number;
+  alvo?: number | null;
+  salvo?: boolean;
+  lobisomem?: boolean;
+  mortos?: number[];
+  votos?: number;
+  sim?: number;
+  nao?: number;
+  saiu?: boolean;
 }
 
 /** O desenha e adivinha (server/src/minijogo-desenho.ts). */
@@ -335,7 +396,11 @@ export interface EstadoFesta {
   jogandoHaMs?: number | null;
   meu: { motivo: LinhaDaFesta['motivo']; valor: number | null } | null;
   prontos: number[];
-  jogadores: { userId: number; username: string }[];
+  jogadores: { userId: number; username: string; avatar?: number | string | null }[];
+  /** A última rodada vale o dobro (19/11/2026). */
+  dobro?: boolean;
+  /** O prêmio bônus do fim: quem venceu mais rodadas ganha `pontos`. */
+  premio?: { ganhadores: number[]; valor: number; pontos: number } | null;
   /** Os copos: onde estava a cenoura (só na revelação). */
   resposta: number | null;
   linhas: LinhaDaFesta[] | null;
@@ -343,20 +408,48 @@ export interface EstadoFesta {
 }
 
 /** O Tabuleiro da turma (server/src/minijogo-tabuleiro-da-turma.ts). As casas: 'i' a largada, '+' ganha, '-' perde, '?' evento. */
+export type ItemDoTabuleiro = 'duplo' | 'escolhido' | 'troca' | 'ima' | 'escudo';
 export type EfeitoDaCasa =
-  | { tipo: 'mais' | 'menos' | 'chuva' | 'achado'; valor: number }
+  | { tipo: 'mais' | 'menos' | 'chuva' | 'achado' | 'praga' | 'mutirao'; valor: number }
   | { tipo: 'troca'; com: number }
-  | { tipo: 'nada' };
+  | { tipo: 'brinde'; item: ItemDoTabuleiro }
+  | { tipo: 'vento' | 'escudo' | 'nada' };
 
+/** As casas desde 19/11/2026: também '$' a loja de itens e 'd' o duelo; as dos ramais vêm depois das da volta. */
 export interface EstadoTabuleiro {
-  fase: 'vez' | 'loja' | 'andando' | 'minijogo' | 'fim';
+  fase: 'vez' | 'caminho' | 'loja' | 'andando' | 'itens' | 'duelo' | 'duelo-jogo' | 'minijogo' | 'reta' | 'premios' | 'fim';
   rodada: number;
   rodadas: number;
-  casas: ('i' | '+' | '-' | '?')[];
+  casas: ('i' | '+' | '-' | '?' | '$' | 'd')[];
+  /** Quantas casas tem a volta (as seguintes são dos ramais). */
+  volta: number;
+  /** As bifurcações: o ramal sai depois de `de` e volta em `ate`; as casas dele são `inicio` … `inicio + tamanho − 1`. */
+  ramais: { de: number; ate: number; inicio: number; tamanho: number }[];
   dourada: number;
   preco: number;
+  precos: Record<ItemDoTabuleiro, number>;
+  maximoDeItens: number;
+  /** As 3 últimas rodadas: as casas valem o dobro. */
+  retaFinal: boolean;
   vez: number | null;
-  participantes: { userId: number; username: string; avatar: number | string | null; pos: number; cenouras: number; douradas: number; presente: boolean }[];
+  participantes: {
+    userId: number;
+    username: string;
+    avatar: number | string | null;
+    pos: number;
+    cenouras: number;
+    douradas: number;
+    itens: ItemDoTabuleiro[];
+    presente: boolean;
+  }[];
+  /** O item usado nesta vez. */
+  usado: { userId: number; item: ItemDoTabuleiro; alvo?: number; casa?: number } | null;
+  /** O item comprado na loja desta vez. */
+  compra: ItemDoTabuleiro | null;
+  /** O duelo desta vez. */
+  duelo: { de: number; contra: number | null; vencedor: number | null; valor: number } | null;
+  /** Os prêmios bônus do fim. */
+  premios: { tipo: 'microjogos' | 'andarilho' | 'eventos'; ganhadores: number[]; valor: number }[] | null;
   /**
    * O último andar: o dado, as casas por onde passou (a primeira é a de onde saiu) e o que a casa fez. `antes`: as contas, as
    * posições e a dourada de quando a peça saiu, para a tela não mostrar o resultado antes de ela chegar.
@@ -365,13 +458,24 @@ export interface EstadoTabuleiro {
     id: number;
     userId: number;
     dado: number;
+    /** Os dados que saíram (dois, no dado duplo). */
+    dados: number[];
+    /** O dado escolhido (o item). */
+    escolhido: boolean;
     caminho: number[];
     efeito: EfeitoDaCasa | null;
     comprou: boolean;
     antes: { dourada: number; pecas: { userId: number; pos: number; cenouras: number; douradas: number }[] };
   } | null;
-  /** O microjogo entre as rodadas: a rodada da Festa. */
-  mini: (Omit<EstadoFesta, 'rodadas' | 'jogadores' | 'placar' | 'fase'> & { fase: 'preparando' | 'jogando' | 'revelando' }) | null;
+  /** O microjogo entre as rodadas (ou o do duelo): a rodada da Festa, com quem joga e o formato. */
+  mini:
+    | (Omit<EstadoFesta, 'rodadas' | 'jogadores' | 'placar' | 'fase'> & {
+        fase: 'preparando' | 'jogando' | 'revelando';
+        inscritos: number[];
+        formato: 'todos' | '2x2' | '1x3' | 'duelo';
+        equipes?: number[][] | null;
+      })
+    | null;
   /** No fim, só quem ficou até o fim tem posição; quem saiu (e todos, na partida interrompida) vem com null. */
   classificacao: { userId: number; username: string; douradas: number; cenouras: number; posicao: number | null }[];
   /** Faltou gente: acabou antes do fim, sem troféu. */
@@ -392,6 +496,8 @@ export type OcorridoDasCidades = { id: number } & (
   | { tipo: 'pedagio'; userId: number; valor: number }
   | { tipo: 'engarrafado'; userId: number }
   | { tipo: 'perdeu-vez'; userId: number }
+  | { tipo: 'saiu-do-engarrafamento'; userId: number; valor: number }
+  | { tipo: 'dados-iguais'; userId: number }
   | { tipo: 'vendeu-para-pagar'; userId: number; valor: number }
   | { tipo: 'faliu'; userId: number; credor: number | null }
   | { tipo: 'troca'; de: number; para: number; aceita: boolean }
@@ -431,6 +537,12 @@ export interface EstadoCidades {
   partidaId: string;
   /** Quantos adversários do computador (só no Solo; 0 com a turma). */
   robos?: number;
+  /** A partida rápida (19/11/2026): cada um começou com 2 cidades sorteadas. */
+  rapida?: boolean;
+  /** Dados iguais: quem está na vez joga de novo depois das ações. */
+  deNovo?: boolean;
+  /** Quanto custa sair do engarrafamento. */
+  sairDoEngarrafamento?: number;
 }
 
 /** A Caça às pragas da horta (server/src/minijogo-caca.ts): cinco ondas de corvos e gafanhotos, mais pontos ganha. */
@@ -694,7 +806,8 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
     id: 'palavra',
     nome: chave('Palavra secreta'),
     dica: chave('Todo mundo tenta adivinhar a mesma palavra de 5 letras, em 6 chutes. A sala vê as cores dos outros, mas não as letras. Quem acertar com menos chutes ganha mais pontos.'),
-    abas: ['coletivo'],
+    // no Solo desde 19/11/2026: uma palavra de cada vez (o dueto e o quarteto também)
+    abas: ['solo', 'coletivo'],
     // As palavras são do dicionário do servidor, que por enquanto só existe em português.
     idioma: 'pt',
   },
@@ -714,11 +827,11 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
   },
   {
     // Tocas e Torres (JogoTocas.tsx, web/src/tocas/, server/src/minijogo-tocas.ts): o gênero da estratégia em tempo real, só a
-    // mecânica. Contra o computador; a sala (lockstep: só comandos na rede) é o degrau seguinte.
+    // mecânica. No Solo, contra o computador (três níveis); na sala, de duas pessoas, em lockstep (19/11/2026: só os comandos na rede).
     id: 'tocas',
     nome: chave('Tocas e Torres'),
-    dica: chave('Estratégia em tempo real contra o computador: colete comida, madeira e ouro, construa a vila, avance de era e treine o exército. Ganha quem derrubar o centro da vila do outro, ou construir a Maravilha e mantê-la de pé por 2 minutos.'),
-    abas: ['solo'],
+    dica: chave('Estratégia em tempo real, contra o computador ou contra outra pessoa da sala: colete comida, madeira e ouro, construa a vila, avance de era e treine o exército. Ganha quem derrubar o centro da vila do outro, ou construir a Maravilha e mantê-la de pé por 2 minutos.'),
+    abas: ['solo', 'coletivo'],
   },
   {
     // O minigolfe em 3D (JogoGolfe3D.tsx, server/src/minijogo-golfe3d.ts): as peças do Kenney Minigolf Kit, a mesma regra do da toca.
@@ -1168,6 +1281,8 @@ export const PALAVRAS_DO_DESENHO: Record<string, string> = {
   tomada: chave('Tomada'),
   pilha: chave('Pilha'),
   lanterna: chave('Lanterna'),
+  // as 364 de 19/11/2026, com fácil, média e difícil (desenhoPalavras.ts)
+  ...PALAVRAS_NOVAS_DO_DESENHO,
 };
 
 /**
@@ -1194,7 +1309,57 @@ export const CATEGORIAS_DO_STOP: Record<string, string> = {
   filme: chave('Filme ou série'),
   corpo: chave('Parte do corpo'),
   esporte: chave('Esporte'),
+  // As novas de 19/11/2026 (nossas; quem começa escolhe quais entram): a mesma lista que server/src/minijogo-stop.ts.
+  legume: chave('Legume ou verdura'),
+  bebida: chave('Bebida'),
+  doce: chave('Doce ou sobremesa'),
+  planta: chave('Planta ou flor'),
+  pais: chave('País'),
+  cidade: chave('Cidade'),
+  instrumento: chave('Instrumento musical'),
+  artista: chave('Artista ou banda'),
+  personagem: chave('Personagem'),
+  jogo: chave('Jogo ou brincadeira'),
+  roupa: chave('Roupa ou acessório'),
+  veiculo: chave('Meio de transporte'),
+  casa: chave('Coisa da casa'),
+  cozinha: chave('Coisa da cozinha'),
+  escola: chave('Material escolar'),
+  ferramenta: chave('Ferramenta'),
+  brinquedo: chave('Brinquedo'),
+  inseto: chave('Inseto'),
+  ave: chave('Ave'),
+  mar: chave('Bicho do mar'),
+  qualidade: chave('Qualidade de uma pessoa'),
+  defeito: chave('Defeito de uma pessoa'),
+  sentimento: chave('Sentimento'),
+  verbo: chave('Verbo'),
+  pet: chave('Nome de bicho de estimação'),
+  aplicativo: chave('Aplicativo ou site'),
+  loja: chave('Loja ou comércio'),
+  natureza: chave('Coisa da natureza'),
+  materia: chave('Matéria da escola'),
+  idioma: chave('Idioma'),
+  danca: chave('Dança ou ritmo'),
+  festa: chave('Coisa de festa'),
+  praia: chave('Coisa de praia'),
+  presente: chave('Presente'),
+  medo: chave('Coisa que dá medo'),
+  famoso: chave('Pessoa famosa'),
+  desenho: chave('Desenho animado'),
+  livro: chave('Livro'),
+  'outra-lingua': chave('Palavra de outra língua'),
+  tempero: chave('Tempero'),
+  superpoder: chave('Superpoder'),
+  cheiro: chave('Coisa com cheiro bom'),
+  redondo: chave('Coisa redonda'),
+  voa: chave('Coisa que voa'),
+  mochila: chave('Coisa que cabe numa mochila'),
 };
+
+/** O nome de uma categoria do Stop: as livres (com "#") como quem começou as escreveu, sem tradução; as da lista, traduzidas. */
+export const nomeDaCategoriaDoStop = (categoria: string, t: (texto: string) => string) =>
+  categoria.startsWith('#') ? categoria.slice(1) : t(CATEGORIAS_DO_STOP[categoria] ?? categoria);
 
 /**
  * AS LETRAS DO STOP NA ESCRITA DE QUEM COMEÇA. Sortear "W" para quem escreve em cirílico não tem jogo.
@@ -1274,7 +1439,8 @@ export function usarMinijogo(channelId: number | null, socket: Socket | null) {
   const comecar = useCallback(
     async (jogo: IdDoJogo, escolhas: Record<string, unknown> = {}) => {
       if (channelId === null) return;
-      const extras = jogo === 'stop' ? letrasDoStop(idiomaAtual()) : escolhas;
+      // (no Stop, as letras da escrita de quem começa, e por cima as escolhas da largada: rodadas, tempo, categorias)
+      const extras = jogo === 'stop' ? { ...letrasDoStop(idiomaAtual()), ...escolhas } : escolhas;
       // Convidar: a sala responde se joga, e quem começou dá a largada (ver o convite no servidor).
       const { partida: p } = await api<{ partida: PartidaPublica }>(`/api/channels/${channelId}/minijogo`, {
         method: 'POST',

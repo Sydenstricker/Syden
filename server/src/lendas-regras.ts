@@ -1,46 +1,56 @@
 /**
  * LENDAS DA TOCA (16/11/2026): um RPG de turnos curto para a turma, do GÊNERO dos RPGs de turno dos anos 90 — só a mecânica
- * (a turma de heróis, a vez de cada um, a energia das habilidades, o ataque combinado de dois heróis, o equipamento que cai
- * depois da luta). Nada de nome, personagem, magia, arte ou música de jogo nenhum: as classes, os golpes e o caminho são
- * nossos, os heróis são o coelho da Briga (com as cores de cada um) e os inimigos são os monstros da Quaternius (CC0) que a
- * Briga já usa.
+ * (a turma de heróis, a vez de cada um, a energia das habilidades, o ataque combinado, o equipamento que cai depois da luta,
+ * o nível que sobe, o caminho que se escolhe). Nada de nome, personagem, magia, arte ou música de jogo nenhum: as classes, os
+ * golpes e o caminho são nossos, os heróis são o coelho da Briga (com as cores de cada um) e os inimigos são os monstros da
+ * Quaternius (CC0) que a Briga já usa.
  *
- * A AVENTURA: um caminho de cinco paradas — a floresta, o deserto, a fogueira (descanso), a neve e o castelo, onde mora o
- * dragão. Três lutas, o descanso e o chefe. Depois de cada luta, cada herói ganha uma peça de equipamento (arma, armadura ou
- * amuleto) e decide se a veste.
+ * A AVENTURA (19/11/2026): um caminho de cinco PASSOS, SORTEADO a cada partida pela semente — uma luta, uma BIFURCAÇÃO de
+ * duas lutas, uma bifurcação entre a fogueira (descanso) e uma loja de espólio ou um evento, outra bifurcação de duas lutas
+ * e o castelo, onde mora o dragão. Na bifurcação, a turma VOTA (quem é gente; empate, o servidor sorteia).
+ *
+ * O NÍVEL SOBE DENTRO DA PARTIDA (nada fica de uma partida para outra): depois de cada luta, cada herói escolhe 1 de 2
+ * melhorias da classe dele, e o nível novo libera a habilidade seguinte da classe (são três por classe). Cada luta também dá
+ * uma peça de equipamento (arma, armadura ou amuleto), que cada um decide se veste.
+ *
+ * CADA INIMIGO TEM UM TRAÇO (em dados, `TRACOS`, e mostrado na tela): o cacto devolve parte do golpe de perto, a abelha age
+ * duas vezes, o golem quase não sente golpe físico (só cai com magia), o fantasma desvia de metade dos golpes físicos...
  *
  * A TURMA É SEMPRE DE QUATRO: cada pessoa (1 a 4) escolhe a classe do seu herói, e os lugares que sobram são de robôs
- * (minijogo-robos.ts), que pegam as classes que faltam. No Solo, a pessoa joga um herói e três robôs completam a turma.
- * As classes têm nome de COISA, e não de gente (Escudo, Faísca, Erva, Flecha): não dizem o sexo de ninguém em língua nenhuma.
+ * (minijogo-robos.ts), que pegam as classes que faltam. As classes têm nome de COISA, e não de gente (Escudo, Faísca, Erva,
+ * Flecha): não dizem o sexo de ninguém em língua nenhuma.
  *
  * A REDE DECIDIU A FORMA DO TURNO: a rodada é de ESCOLHA AO MESMO TEMPO. Todos escolhem juntos (20 s, que o servidor conta),
- * e o servidor resolve a rodada inteira pela velocidade de cada um, heróis e inimigos misturados. Ninguém espera a vez de
- * ninguém, e 200 ms de internet não mudam nada. Quem não escolheu a tempo, ou saiu da sala, joga pelo robô.
+ * e o servidor resolve a rodada inteira pela velocidade de cada um, heróis e inimigos misturados. Quem não escolheu a tempo,
+ * ou saiu da sala, joga pelo robô.
  *
- * O COMBO: dois heróis ou mais que escolhem "Combo" na mesma rodada atacam JUNTOS, na vez do mais rápido, e o golpe junta o
- * que cada classe sabe (a Faísca espalha nos outros inimigos, a Erva cura a turma, o Escudo deixa o alvo tonto, a Flecha
- * acerta mais forte). Custa energia de cada um; sozinho no combo, o herói só ataca, e não gasta nada. O robô atende: quem
- * escolhe Combo e não tem par ganha um robô com energia de parceiro.
+ * O COMBO: dois heróis ou mais que escolhem "Combo" na mesma rodada atacam JUNTOS, e o golpe junta o que cada classe sabe. Com
+ * três ou quatro classes diferentes, o combo tem NOME (`COMBOS`) e bate mais forte. O robô atende: quem escolhe Combo e não
+ * tem par ganha um robô de parceiro (na luta do chefe, todos os robôs com energia vão junto).
  *
- * O SERVIDOR DECIDE TUDO (o dano, o sorteio, a ordem); o site só escolhe a ação e o alvo, e desenha o que veio.
+ * O SERVIDOR DECIDE TUDO (o dano, o sorteio, a ordem, o caminho); o site só escolhe a ação e o alvo, e desenha o que veio.
+ * No Solo, a vitória guarda o RECORDE (as rodadas até o dragão, contadas aqui) na tabela comum dos recordes do Solo.
  *
- * Este arquivo não fala com o banco (o avatar e o troféu chegam por `servicos`), para o teste rodar a regra sem servidor. O
- * que o Syden registra é minijogo-lendas.ts.
+ * Este arquivo não fala com o banco (o avatar, o troféu e o recorde chegam por `servicos`), para o teste rodar a regra sem
+ * servidor. O que o Syden registra é minijogo-lendas.ts.
  */
-import { embaralhar, type Contexto, type Definicao, type Jogo } from './minijogo-motor.js';
+import { embaralhar, type Definicao, type Jogo } from './minijogo-motor.js';
 import { comRobos, ehRobo, idsDosRobos } from './minijogo-robos.js';
 
 // ---------------- OS RELÓGIOS ----------------
 /** A escolha de cada rodada, na sala. */
 export const TEMPO_DA_ESCOLHA = 20_000;
-/** A escolha da classe e a do espólio. */
+/** A escolha da classe, a do espólio (com a melhoria), a da loja e o voto do caminho. */
 export const TEMPO_DA_CLASSE = 30_000;
-export const TEMPO_DO_ESPOLIO = 15_000;
+export const TEMPO_DO_ESPOLIO = 20_000;
+export const TEMPO_DA_LOJA = 20_000;
+export const TEMPO_DO_RUMO = 15_000;
 /** No Solo, pensar não segura ninguém (a regra das mesas): o relógio é longo. */
 export const TEMPO_SOLO = 30 * 60_000;
-/** O mapa entre uma parada e outra, e o descanso na fogueira. */
+/** O mapa entre uma parada e outra, o descanso na fogueira e o evento. */
 export const MAPA_MS = 2_500;
 export const DESCANSO_MS = 3_000;
+export const EVENTO_DA_PARADA_MS = 4_000;
 /** Cada acontecimento da rodada, na tela (o site anima no mesmo passo). */
 export const EVENTO_MS = 850;
 export const ACAO_FOLGA_MS = 700;
@@ -58,55 +68,186 @@ interface Base {
   def: number;
   mag: number;
   vel: number;
-  /** O custo da habilidade, em energia. */
-  custo: number;
 }
 export const BASES: Record<Classe, Base> = {
   // aguenta, e protege a turma
-  escudo: { hp: 150, en: 6, atk: 14, def: 10, mag: 4, vel: 4, custo: 2 },
+  escudo: { hp: 150, en: 6, atk: 14, def: 10, mag: 4, vel: 4 },
   // pouca vida, acerta todos os inimigos
-  faisca: { hp: 85, en: 10, atk: 6, def: 3, mag: 16, vel: 6, custo: 3 },
+  faisca: { hp: 85, en: 10, atk: 6, def: 3, mag: 16, vel: 6 },
   // cura a turma (e levanta quem caiu)
-  erva: { hp: 95, en: 10, atk: 7, def: 5, mag: 13, vel: 5, custo: 4 },
+  erva: { hp: 95, en: 10, atk: 7, def: 5, mag: 13, vel: 5 },
   // a mais rápida, um tiro forte que atravessa a defesa
-  flecha: { hp: 100, en: 8, atk: 15, def: 5, mag: 5, vel: 9, custo: 2 },
+  flecha: { hp: 100, en: 8, atk: 15, def: 5, mag: 5, vel: 9 },
 };
 export const CUSTO_DO_COMBO = 2;
 
+/**
+ * AS HABILIDADES (19/11/2026): três por classe, a primeira desde o começo e as outras liberadas pelo nível (as lutas
+ * vencidas). `alvo: 'inimigo'` pede o inimigo na escolha.
+ */
+export interface DefDaHabilidade {
+  id: string;
+  custo: number;
+  alvo: 'inimigo' | 'nenhum';
+  nivel: number;
+}
+export const HABILIDADES: Record<Classe, DefDaHabilidade[]> = {
+  escudo: [
+    // leva o golpe no lugar de quem está atrás, com metade
+    { id: 'proteger', custo: 2, alvo: 'nenhum', nivel: 0 },
+    // todos os golpes de um só inimigo vão no Escudo nesta rodada, e doem menos
+    { id: 'provocar', custo: 2, alvo: 'nenhum', nivel: 1 },
+    // o escudo da turma: todo golpe nesta rodada dói bem menos, até o sopro
+    { id: 'muralha', custo: 4, alvo: 'nenhum', nivel: 2 },
+  ],
+  faisca: [
+    // acerta todos os inimigos
+    { id: 'chuva', custo: 3, alvo: 'nenhum', nivel: 0 },
+    // um raio forte num inimigo só (é magia: o golem sente)
+    { id: 'raio', custo: 3, alvo: 'inimigo', nivel: 1 },
+    // a turma inteira mais rápida nas duas rodadas seguintes
+    { id: 'acelerar', custo: 4, alvo: 'nenhum', nivel: 2 },
+  ],
+  erva: [
+    // cura a turma e levanta quem caiu
+    { id: 'curar', custo: 4, alvo: 'nenhum', nivel: 0 },
+    // o veneno de espinho: tira vida do inimigo no fim de três rodadas
+    { id: 'veneno', custo: 2, alvo: 'inimigo', nivel: 1 },
+    // a turma recupera um pouco de vida no fim de três rodadas
+    { id: 'renovar', custo: 3, alvo: 'nenhum', nivel: 2 },
+  ],
+  flecha: [
+    // um tiro forte, que passa da defesa
+    { id: 'tiro', custo: 2, alvo: 'inimigo', nivel: 0 },
+    // o tiro que deixa tonto: o inimigo perde a próxima vez
+    { id: 'atordoar', custo: 3, alvo: 'inimigo', nivel: 1 },
+    // três flechas em inimigos ao acaso
+    { id: 'rajada', custo: 3, alvo: 'nenhum', nivel: 2 },
+  ],
+};
+
+/** AS MELHORIAS de cada nível: o que cada uma soma, e quais cada classe pode receber. */
+export const MELHORIAS = {
+  vida: { hp: 20 },
+  forca: { atk: 4 },
+  magia: { mag: 4 },
+  pele: { def: 3 },
+  pressa: { vel: 2 },
+  folego: { en: 2 },
+} as const;
+export type Melhoria = keyof typeof MELHORIAS;
+/** Na ordem de preferência do robô. */
+export const MELHORIAS_DA_CLASSE: Record<Classe, Melhoria[]> = {
+  escudo: ['vida', 'pele', 'forca', 'folego'],
+  faisca: ['magia', 'folego', 'vida', 'pressa'],
+  erva: ['magia', 'folego', 'vida', 'pele'],
+  flecha: ['forca', 'pressa', 'vida', 'pele'],
+};
+
+/** OS COMBOS COM NOME: três classes diferentes ou as quatro (a chave é a lista em ordem alfabética). */
+export const COMBOS: Record<string, string> = {
+  'erva+escudo+faisca': 'luz',
+  'escudo+faisca+flecha': 'tempestade',
+  'erva+escudo+flecha': 'raiz',
+  'erva+faisca+flecha': 'polen',
+  'erva+escudo+faisca+flecha': 'coracao',
+};
+export function nomeDoCombo(classes: Iterable<Classe | null>): string | null {
+  const lista = [...new Set([...classes].filter(Boolean) as Classe[])].sort();
+  return lista.length >= 3 ? (COMBOS[lista.join('+')] ?? null) : null;
+}
+
 // ---------------- O CAMINHO E OS INIMIGOS ----------------
+/**
+ * OS TRAÇOS (19/11/2026): cada inimigo tem um, que a tela mostra com figura e texto curto.
+ * - espinhos: devolve parte do golpe de perto a quem bateu;
+ * - ligeiro: age duas vezes por rodada;
+ * - pedra: golpe físico quase não entra (só cai com magia);
+ * - etereo: metade dos golpes físicos passa direto;
+ * - peconha: o golpe envenena;
+ * - regenera: recupera vida no fim da rodada;
+ * - furia: com menos da metade da vida, bate mais forte;
+ * - ladrao: o golpe rouba energia;
+ * - sopro: o chefe enche o fôlego e, na rodada seguinte, o fogo pega a turma inteira.
+ */
+export const TRACOS = ['espinhos', 'ligeiro', 'pedra', 'etereo', 'peconha', 'regenera', 'furia', 'ladrao', 'sopro'] as const;
+export type Traco = (typeof TRACOS)[number];
+
 /** Os ids dos bichos são os da Briga (web/src/briga/folhasDosBichos.ts): o site os desenha pela folha deles. */
 export interface DefDoInimigo {
   hp: number;
   atk: number;
   def: number;
   vel: number;
+  traco: Traco;
   chefe?: boolean;
 }
 export const INIMIGOS: Record<string, DefDoInimigo> = {
-  // (o equilíbrio é chute medido contra os robôs: a turma toda de robôs vence ~4 de 5, e quase sempre perde no dragão)
-  cogumelo: { hp: 102, atk: 22, def: 3, vel: 3 },
-  sapo: { hp: 85, atk: 26, def: 2, vel: 6 },
-  abelha: { hp: 68, atk: 24, def: 1, vel: 9 },
-  cacto: { hp: 136, atk: 29, def: 6, vel: 3 },
-  dino: { hp: 119, atk: 33, def: 4, vel: 5 },
-  redemoinho: { hp: 94, atk: 31, def: 2, vel: 10 },
-  espinhento: { hp: 153, atk: 33, def: 7, vel: 4 },
-  golem: { hp: 187, atk: 31, def: 9, vel: 2 },
-  macaco: { hp: 136, atk: 37, def: 4, vel: 8 },
-  diabinho: { hp: 119, atk: 35, def: 4, vel: 9 },
-  fantasma: { hp: 119, atk: 33, def: 3, vel: 7 },
-  dragao: { hp: 572, atk: 42, def: 8, vel: 6, chefe: true },
+  // (o equilíbrio é chute medido contra os robôs: a turma toda de robôs vence a maioria, e quase sempre perde no dragão)
+  cogumelo: { hp: 117, atk: 28, def: 3, vel: 3, traco: 'regenera' },
+  sapo: { hp: 98, atk: 30, def: 2, vel: 6, traco: 'peconha' },
+  abelha: { hp: 69, atk: 23, def: 1, vel: 9, traco: 'ligeiro' },
+  raposa: { hp: 94, atk: 30, def: 2, vel: 7, traco: 'ladrao' },
+  corvo: { hp: 67, atk: 21, def: 1, vel: 10, traco: 'ligeiro' },
+  texugo: { hp: 138, atk: 30, def: 4, vel: 3, traco: 'furia' },
+  cacto: { hp: 150, atk: 34, def: 6, vel: 3, traco: 'espinhos' },
+  dino: { hp: 132, atk: 36, def: 4, vel: 5, traco: 'furia' },
+  redemoinho: { hp: 92, atk: 28, def: 2, vel: 10, traco: 'ligeiro' },
+  espinhento: { hp: 167, atk: 39, def: 7, vel: 4, traco: 'espinhos' },
+  golem: { hp: 173, atk: 36, def: 9, vel: 2, traco: 'pedra' },
+  macaco: { hp: 150, atk: 41, def: 4, vel: 8, traco: 'furia' },
+  diabinho: { hp: 132, atk: 41, def: 4, vel: 9, traco: 'ladrao' },
+  fantasma: { hp: 126, atk: 39, def: 3, vel: 7, traco: 'etereo' },
+  yeti: { hp: 340, atk: 42, def: 6, vel: 4, traco: 'sopro', chefe: true },
+  dragao: { hp: 900, atk: 60, def: 10, vel: 6, traco: 'sopro', chefe: true },
 };
 
-export type TipoDeParada = 'luta' | 'descanso' | 'chefe';
-/** O caminho: a parada, o cenário (o da Briga, web/src/briga/cenarios.ts) e quem mora nela. */
-export const ROTA: { id: string; tipo: TipoDeParada; inimigos: string[] }[] = [
-  { id: 'floresta', tipo: 'luta', inimigos: ['cogumelo', 'sapo', 'abelha'] },
-  { id: 'deserto', tipo: 'luta', inimigos: ['cacto', 'dino', 'redemoinho'] },
-  { id: 'fogueira', tipo: 'descanso', inimigos: [] },
-  { id: 'neve', tipo: 'luta', inimigos: ['espinhento', 'golem', 'macaco'] },
-  { id: 'castelo', tipo: 'chefe', inimigos: ['diabinho', 'dragao', 'fantasma'] },
-];
+export type TipoDeParada = 'luta' | 'descanso' | 'loja' | 'evento' | 'chefe';
+/** Uma parada possível: o id (que a tela desenha), o cenário da Briga (web/src/briga/cenarios.ts) e quem mora nela. */
+export interface Parada {
+  id: string;
+  tipo: TipoDeParada;
+  cenario: string;
+  inimigos: string[];
+}
+export const PARADAS: Record<string, Parada> = {
+  floresta: { id: 'floresta', tipo: 'luta', cenario: 'floresta', inimigos: ['cogumelo', 'sapo', 'abelha'] },
+  horta: { id: 'horta', tipo: 'luta', cenario: 'horta', inimigos: ['raposa', 'corvo', 'texugo'] },
+  deserto: { id: 'deserto', tipo: 'luta', cenario: 'deserto', inimigos: ['cacto', 'dino', 'redemoinho'] },
+  ruinas: { id: 'ruinas', tipo: 'luta', cenario: 'castelo', inimigos: ['fantasma', 'sapo', 'diabinho'] },
+  neve: { id: 'neve', tipo: 'luta', cenario: 'neve', inimigos: ['espinhento', 'golem', 'macaco'] },
+  geleira: { id: 'geleira', tipo: 'luta', cenario: 'neve', inimigos: ['macaco', 'yeti'] },
+  fogueira: { id: 'fogueira', tipo: 'descanso', cenario: 'floresta', inimigos: [] },
+  loja: { id: 'loja', tipo: 'loja', cenario: 'floresta', inimigos: [] },
+  evento: { id: 'evento', tipo: 'evento', cenario: 'floresta', inimigos: [] },
+  castelo: { id: 'castelo', tipo: 'chefe', cenario: 'castelo', inimigos: ['diabinho', 'dragao', 'fantasma'] },
+};
+/** Os cinco passos: cada um é uma parada só, ou a bifurcação entre duas (sorteadas pela semente). */
+export const PASSOS_DA_ROTA = 5;
+export const EVENTOS = ['fonte', 'bau', 'treino'] as const;
+export type EventoDaParada = (typeof EVENTOS)[number];
+
+/** Um sorteio repetível (mulberry32): a mesma semente dá o mesmo caminho. */
+export function sorteioDaSemente(s: number) {
+  return () => {
+    s |= 0;
+    s = (s + 0x6d2b79f5) | 0;
+    let t = Math.imul(s ^ (s >>> 15), 1 | s);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+/** O CAMINHO da partida, pela semente: quais paradas formam cada passo, e qual evento cai no ponto de interrogação. */
+export function rotaDaSemente(semente: number): { passos: string[][]; evento: EventoDaParada } {
+  const r = sorteioDaSemente(semente);
+  const um = <T>(xs: readonly T[]) => xs[Math.floor(r() * xs.length)];
+  const dois = <T>(xs: T[]) => embaralhar([...xs], r);
+  return {
+    passos: [[um(['floresta', 'horta'])], dois(['deserto', 'ruinas']), dois(['fogueira', um(['loja', 'evento'])]), dois(['neve', 'geleira']), ['castelo']],
+    evento: um(EVENTOS),
+  };
+}
 
 // ---------------- O EQUIPAMENTO ----------------
 export const PECAS = ['arma', 'armadura', 'amuleto'] as const;
@@ -116,27 +257,40 @@ export interface Item {
   /** A arma soma no ataque e na magia; a armadura, na defesa; o amuleto, na vida máxima. */
   valor: number;
 }
+/** O valor de uma peça na parada `n` (a da neve é melhor que a da floresta). */
+export function valorDaPeca(peca: Peca, n: number, sorte: number) {
+  return peca === 'amuleto' ? 10 + n * 4 + Math.floor(sorte * 8) : 2 + n + Math.floor(sorte * 3);
+}
 
 // ---------------- OS TIPOS ----------------
 export type Acao = 'atacar' | 'habilidade' | 'defender' | 'combo';
 export const ACOES: readonly Acao[] = ['atacar', 'habilidade', 'defender', 'combo'];
 export interface Escolha {
   acao: Acao;
-  /** O inimigo (índice), para atacar, a Flecha e o combo. */
+  /** O inimigo (índice), para atacar, as habilidades com alvo e o combo. */
   alvo: number | null;
+  /** Qual habilidade (0 a 2). */
+  hab?: number;
 }
 
+type Bonus = Record<'hp' | 'atk' | 'mag' | 'def' | 'vel' | 'en', number>;
 export interface Heroi {
   userId: number;
   classe: Classe | null;
   hp: number;
   equip: Record<Peca, number>;
+  /** O que as melhorias somaram, e o nível (as lutas vencidas). */
+  bonus: Bonus;
+  nivel: number;
+  melhorias: Melhoria[];
   en: number;
   escolha: Escolha | null;
-  /** Quem escolheu foi o robô (o tempo acabou, ou a pessoa saiu): a tela não marca como escolha dela. */
   pontos: number;
   defendendo: boolean;
   protegendo: boolean;
+  provocando: boolean;
+  /** Envenenado pelo sapo: as rodadas que faltam e o dano de cada uma. */
+  veneno: { rodadas: number; dano: number } | null;
 }
 
 export interface Inimigo {
@@ -148,10 +302,13 @@ export interface Inimigo {
   def: number;
   vel: number;
   chefe: boolean;
-  /** Tonto pelo combo do Escudo: perde a próxima vez. */
+  traco: Traco;
+  /** Tonto pelo combo do Escudo ou pelo tiro da Flecha: perde a próxima vez. */
   tonto: boolean;
   /** O chefe enchendo o fôlego: na próxima rodada, o sopro pega a turma inteira (a tela avisa). */
   preparando: boolean;
+  /** O veneno da Erva: as rodadas que faltam, o dano e quem envenenou (os pontos). */
+  veneno: { rodadas: number; dano: number; de: number } | null;
 }
 
 /** Quem age ou leva: um herói (pelo id da pessoa) ou um inimigo (pelo índice). */
@@ -164,15 +321,36 @@ export interface Alvo {
   ko?: boolean;
   /** Levantou (a cura da Erva em quem tinha caído). */
   volta?: boolean;
+  /** O golpe passou direto (o fantasma). */
+  errou?: boolean;
+  /** O golpe quase não entrou (o golem). */
+  resistiu?: boolean;
+  /** Perdeu energia (o ladrão). */
+  energia?: number;
 }
-export type TipoDeEvento = 'ataque' | 'habilidade' | 'defender' | 'combo' | 'inimigo' | 'sopro' | 'preparar' | 'tonto';
+export type TipoDeEvento =
+  | 'ataque'
+  | 'habilidade'
+  | 'defender'
+  | 'combo'
+  | 'inimigo'
+  | 'sopro'
+  | 'preparar'
+  | 'tonto'
+  | 'espinhos'
+  | 'veneno'
+  | 'renovar'
+  | 'regenera';
 export interface Evento {
   id: number;
   tipo: TipoDeEvento;
   de: Ator;
   alvos: Alvo[];
-  /** No combo: quem atacou junto. */
+  /** Na habilidade: qual (o id da tabela). */
+  hab?: string;
+  /** No combo: quem atacou junto, e o nome (com três classes ou mais). */
   membros?: number[];
+  nome?: string;
   /** O herói do Escudo que levou o golpe no lugar de outro. */
   protegido?: boolean;
 }
@@ -183,23 +361,28 @@ export interface OpcoesDasLendas {
   servicos?: {
     avatarDe(userId: number): number | string | null;
     guardarTrofeu(t: { userId: number; evento: string; communityId: number; pista: string; posicao: number; tempoMs: number | null; pontos: number | null; rivais: number[] }): void;
+    /** O recorde do Solo (a tabela comum): as rodadas até o dragão, menor é melhor. */
+    guardarRecorde?(userId: number, rodadas: number, extra: { tempoMs: number }): { antes: number | null; novo: boolean };
   };
 }
 
 // ---------------- AS CONTAS (puras, exportadas para o teste) ----------------
-/** Os números do herói com o equipamento. */
-export function atributos(h: Pick<Heroi, 'classe' | 'equip'>) {
+const SEM_BONUS: Bonus = { hp: 0, atk: 0, mag: 0, def: 0, vel: 0, en: 0 };
+/** Os números do herói com o equipamento e as melhorias. */
+export function atributos(h: Pick<Heroi, 'classe' | 'equip'> & Partial<Pick<Heroi, 'bonus'>>) {
   const b = BASES[h.classe ?? 'escudo'];
+  const x = h.bonus ?? SEM_BONUS;
   return {
-    hpMax: b.hp + h.equip.amuleto,
-    enMax: b.en,
-    atk: b.atk + h.equip.arma,
-    mag: b.mag + h.equip.arma,
-    def: b.def + h.equip.armadura,
-    vel: b.vel,
-    custo: b.custo,
+    hpMax: b.hp + h.equip.amuleto + x.hp,
+    enMax: b.en + x.en,
+    atk: b.atk + h.equip.arma + x.atk,
+    mag: b.mag + h.equip.arma + x.mag,
+    def: b.def + h.equip.armadura + x.def,
+    vel: b.vel + x.vel,
   };
 }
+/** As habilidades que o herói já tem (pelo nível). */
+export const habilidadesDe = (h: Pick<Heroi, 'classe' | 'nivel'>) => (h.classe ? HABILIDADES[h.classe].filter((d) => d.nivel <= h.nivel) : []);
 
 /** As cores dos robôs: três coelhos prontos, para a turma não ser de quatro mascotes iguais. */
 const AVATARES_DOS_ROBOS = [4, 9, 13, 2];
@@ -215,14 +398,35 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
       const ctx = comRobos(ctxDaSala, robos);
       const solo = ctxDaSala.solo === true;
       const ordem = [...humanos, ...robos];
-      const partidaId = `lendas-${ctx.comunidade ?? 0}-${agora()}`;
+      const inicio = agora();
+      const partidaId = `lendas-${ctx.comunidade ?? 0}-${inicio}`;
       const sorteio = (a: number, b: number) => a + (b - a) * aleatorio();
       const variar = (x: number) => x * sorteio(0.9, 1.1);
+      /** O CAMINHO desta partida (a semente vai à tela: quem quiser, compara caminhos). */
+      const semente = Math.floor(aleatorio() * 2 ** 31);
+      const caminho = rotaDaSemente(semente);
+      /** A parada escolhida em cada passo (as de uma opção só já vêm escolhidas). */
+      const escolhidas: (string | null)[] = caminho.passos.map((p) => (p.length === 1 ? p[0] : null));
 
       const herois = new Map<number, Heroi>(
         ordem.map((userId) => [
           userId,
-          { userId, classe: null, hp: 0, equip: { arma: 0, armadura: 0, amuleto: 0 }, en: 0, escolha: null, pontos: 0, defendendo: false, protegendo: false },
+          {
+            userId,
+            classe: null,
+            hp: 0,
+            equip: { arma: 0, armadura: 0, amuleto: 0 },
+            bonus: { ...SEM_BONUS },
+            nivel: 0,
+            melhorias: [],
+            en: 0,
+            escolha: null,
+            pontos: 0,
+            defendendo: false,
+            protegendo: false,
+            provocando: false,
+            veneno: null,
+          },
         ]),
       );
       const avatares = new Map<number, number | string | null>(
@@ -231,24 +435,38 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
       /** Quem escolheu pelo robô nesta fase (o tempo acabou, ou saiu): a tela mostra a escolha com outra marca. */
       const peloRobo = new Set<number>();
 
-      let fase: 'classes' | 'mapa' | 'descanso' | 'escolha' | 'acao' | 'espolio' | 'fim' = 'classes';
+      let fase: 'classes' | 'mapa' | 'rumo' | 'descanso' | 'loja' | 'evento' | 'escolha' | 'acao' | 'espolio' | 'fim' = 'classes';
       let parada = 0;
       let rodada = 0;
+      /** As rodadas de todas as lutas (o recorde do Solo). */
+      let rodadasTotais = 0;
       let inimigos: Inimigo[] = [];
       let eventos: Evento[] = [];
       let proximoEvento = 1;
       /** O número da resolução: o site sabe que chegou rodada nova para animar. */
       let resolucao = 0;
       let espolio = new Map<number, Item>();
+      /** As duas melhorias que cada um pode escolher depois da luta, e a escolhida. */
+      let ofertas = new Map<number, Melhoria[]>();
+      const melhorou = new Set<number>();
+      /** A loja: as três peças de cada um. */
+      let vitrine = new Map<number, Item[]>();
       const decidiram = new Set<number>();
+      /** O voto do caminho: pessoa → opção (0 ou 1). */
+      const votosDoRumo = new Map<number, number>();
+      /** A turma acelerada (as rodadas que faltam) e a Erva renovando (as rodadas e de quem). */
+      let rapidez = 0;
+      let renovar: { rodadas: number; de: number } | null = null;
+      let muralha = false;
       let venceu = false;
       let resultado: { userId: number; username: string; pontos: number; posicao: number | null }[] | null = null;
+      let recorde: { valor: number; antes: number | null; novo: boolean } | null = null;
 
       const presente = (id: number) => ctx.naSala().includes(id);
-      const humanosPresentes = () => humanos.filter(presente);
       const vivos = () => ordem.map((id) => herois.get(id)!).filter((h) => h.hp > 0);
       const inimigosVivos = () => inimigos.filter((i) => i.hp > 0);
       const relogio = (ms: number) => (solo ? TEMPO_SOLO : ms);
+      const paradaAtual = () => PARADAS[escolhidas[parada] ?? caminho.passos[parada][0]];
 
       // ---------------- AS CLASSES ----------------
       const classeDoRobo = (): Classe => {
@@ -274,15 +492,42 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
         if (humanos.every((id) => herois.get(id)!.classe)) fecharClasses();
       };
 
-      // ---------------- O MAPA ----------------
+      // ---------------- O MAPA E O RUMO ----------------
       const irAoMapa = () => {
-        fase = 'mapa';
         eventos = [];
+        // a bifurcação ainda sem escolha: a turma vota antes de andar
+        if (escolhidas[parada] === null) return abrirRumo();
+        fase = 'mapa';
         ctx.agendar(MAPA_MS, entrarNaParada);
         ctx.avisar();
       };
+      const abrirRumo = () => {
+        fase = 'rumo';
+        votosDoRumo.clear();
+        ctx.agendar(relogio(TEMPO_DO_RUMO), fecharRumo);
+        if (!conferirRumo()) ctx.avisar();
+      };
+      const conferirRumo = () => {
+        if (fase !== 'rumo') return false;
+        const votam = humanos.filter(presente);
+        if (votam.every((id) => votosDoRumo.has(id))) {
+          fecharRumo();
+          return true;
+        }
+        return false;
+      };
+      const fecharRumo = () => {
+        if (fase !== 'rumo') return;
+        const conta = [0, 0];
+        for (const v of votosDoRumo.values()) conta[v]++;
+        // empate (ou ninguém votou): o servidor sorteia
+        const lado = conta[0] === conta[1] ? Math.floor(aleatorio() * 2) : conta[0] > conta[1] ? 0 : 1;
+        escolhidas[parada] = caminho.passos[parada][lado];
+        irAoMapa();
+      };
+
       const entrarNaParada = () => {
-        const p = ROTA[parada];
+        const p = paradaAtual();
         if (p.tipo === 'descanso') {
           fase = 'descanso';
           // a fogueira: metade da vida de volta, quem caiu levanta, a energia cheia
@@ -290,32 +535,63 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
             const a = atributos(h);
             h.hp = Math.min(a.hpMax, Math.max(h.hp, 0) + Math.round(a.hpMax * 0.5));
             h.en = a.enMax;
+            h.veneno = null;
           }
-          ctx.agendar(DESCANSO_MS, () => {
-            parada++;
-            irAoMapa();
-          });
+          ctx.agendar(DESCANSO_MS, seguir);
           ctx.avisar();
           return;
         }
+        if (p.tipo === 'evento') {
+          fase = 'evento';
+          for (const h of herois.values()) {
+            const a = atributos(h);
+            if (caminho.evento === 'fonte') {
+              // a fonte: a vida e a energia cheias, e quem caiu levanta
+              h.hp = a.hpMax;
+              h.en = a.enMax;
+              h.veneno = null;
+            } else if (caminho.evento === 'bau') {
+              // o baú: uma peça para cada um, vestida se for melhor
+              const item: Item = { peca: PECAS[Math.floor(aleatorio() * PECAS.length)], valor: 0 };
+              item.valor = valorDaPeca(item.peca, parada + 1, aleatorio());
+              if (item.valor > h.equip[item.peca]) vestirPeca(h, item);
+            } else {
+              // o treino: todo mundo mais forte, no golpe e na magia
+              h.bonus.atk += 3;
+              h.bonus.mag += 3;
+            }
+          }
+          ctx.agendar(EVENTO_DA_PARADA_MS, seguir);
+          ctx.avisar();
+          return;
+        }
+        if (p.tipo === 'loja') return abrirLoja();
         inimigos = p.inimigos.map((tipo, id) => {
           const d = INIMIGOS[tipo];
-          return { id, tipo, hp: d.hp, hpMax: d.hp, atk: d.atk, def: d.def, vel: d.vel, chefe: !!d.chefe, tonto: false, preparando: false };
+          return { id, tipo, hp: d.hp, hpMax: d.hp, atk: d.atk, def: d.def, vel: d.vel, chefe: !!d.chefe, traco: d.traco, tonto: false, preparando: false, veneno: null };
         });
         rodada = 0;
+        rapidez = 0;
+        renovar = null;
         novaRodada();
+      };
+      const seguir = () => {
+        parada++;
+        irAoMapa();
       };
 
       // ---------------- A ESCOLHA ----------------
       const novaRodada = () => {
         fase = 'escolha';
         rodada++;
+        rodadasTotais++;
         eventos = [];
         peloRobo.clear();
         for (const h of herois.values()) {
           h.escolha = null;
           h.defendendo = false;
           h.protegendo = false;
+          h.provocando = false;
         }
         // os robôs escolhem na hora; quem é gente tem o relógio
         for (const id of robos) escolherPeloRobo(herois.get(id)!);
@@ -343,68 +619,112 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
         resolver();
       };
 
+      const podeUsar = (h: Heroi, k: number) => {
+        const d = h.classe ? HABILIDADES[h.classe][k] : undefined;
+        return !!d && d.nivel <= h.nivel && h.en >= d.custo;
+      };
+
       /** O robô: regras de quem joga com cuidado, vendo o que a turma vê. */
       const escolherPeloRobo = (h: Heroi, porGente = false) => {
         if (h.hp <= 0 || !h.classe) return;
         if (porGente) peloRobo.add(h.userId);
-        const a = atributos(h);
         const vivosI = inimigosVivos();
         if (!vivosI.length) return (h.escolha = { acao: 'defender', alvo: null });
-        // o alvo: o inimigo com menos vida (fechar a conta), e o chefe por último quando há outros
-        const fraco = [...vivosI].sort((x, y) => x.hp - y.hp)[0];
+        // o alvo do golpe físico: o mais fraco que sente golpe (o golem e o fantasma por último)
+        const fisicoRuim = (i: Inimigo) => i.traco === 'pedra' || i.traco === 'etereo';
+        const porVida = [...vivosI].sort((x, y) => Number(fisicoRuim(x)) - Number(fisicoRuim(y)) || x.hp - y.hp);
+        const fraco = porVida[0];
         const sopro = vivosI.some((i) => i.preparando);
+        const chefe = vivosI.find((i) => i.chefe);
         const turma = vivos();
         const caidos = ordem.filter((id) => herois.get(id)!.hp <= 0).length;
         const falta = turma.reduce((s, x) => s + (atributos(x).hpMax - x.hp), 0);
         const total = turma.reduce((s, x) => s + atributos(x).hpMax, 0);
-        const podeHab = h.en >= a.custo;
+        const fracos = turma.filter((x) => x.hp < atributos(x).hpMax * 0.5).length;
+        const hab = (k: number, alvo: number | null = null): Escolha => ({ acao: 'habilidade', alvo, hab: k });
         let e: Escolha = { acao: 'atacar', alvo: fraco.id };
         switch (h.classe) {
           case 'erva':
-            if (podeHab && (caidos > 0 || falta > total * 0.3 || turma.some((x) => x.hp < atributos(x).hpMax * 0.35))) e = { acao: 'habilidade', alvo: null };
+            if (podeUsar(h, 0) && (caidos > 0 || falta > total * 0.3 || turma.some((x) => x.hp < atributos(x).hpMax * 0.35))) e = hab(0);
+            else if (podeUsar(h, 2) && !renovar && falta > total * 0.15 && h.en >= 3 + 4) e = hab(2);
             else if (sopro) e = { acao: 'defender', alvo: null };
+            else if (podeUsar(h, 1) && h.en >= 2 + 4) {
+              const alvo = [...vivosI].filter((i) => !i.veneno && i.hp > 50).sort((x, y) => y.hp - x.hp)[0];
+              if (alvo) e = hab(1, alvo.id);
+            }
             break;
           case 'escudo':
-            if (sopro) e = { acao: 'defender', alvo: null };
-            else if (podeHab && turma.some((x) => x !== h && x.hp < atributos(x).hpMax * 0.4)) e = { acao: 'habilidade', alvo: null };
+            if (podeUsar(h, 2) && (sopro || fracos >= 2)) e = hab(2);
+            else if (sopro) e = { acao: 'defender', alvo: null };
+            else if (podeUsar(h, 1) && h.hp > atributos(h).hpMax * 0.5 && turma.some((x) => x !== h && x.hp < atributos(x).hpMax * 0.5)) e = hab(1);
+            else if (podeUsar(h, 0) && turma.some((x) => x !== h && x.hp < atributos(x).hpMax * 0.4)) e = hab(0);
             break;
-          case 'faisca':
-            if (podeHab && vivosI.length >= 2) e = { acao: 'habilidade', alvo: null };
-            else if (sopro && !podeHab) e = { acao: 'defender', alvo: null };
+          case 'faisca': {
+            const pedra = vivosI.find((i) => i.traco === 'pedra');
+            if (podeUsar(h, 2) && chefe && rapidez === 0 && h.en >= 4 + 3) e = hab(2);
+            else if (podeUsar(h, 0) && vivosI.length >= 2) e = hab(0);
+            else if (podeUsar(h, 1)) e = hab(1, (pedra ?? chefe ?? fraco).id);
+            else if (sopro) e = { acao: 'defender', alvo: null };
             break;
+          }
           case 'flecha': {
-            const forte = vivosI.find((i) => i.chefe) ?? fraco;
-            if (podeHab) e = { acao: 'habilidade', alvo: forte.id };
+            const forte = chefe ?? fraco;
+            if (podeUsar(h, 1) && (sopro || (chefe && !chefe.tonto && chefe.preparando))) e = hab(1, (vivosI.find((i) => i.preparando) ?? forte).id);
+            else if (podeUsar(h, 2) && vivosI.length >= 2 && !vivosI.every(fisicoRuim)) e = hab(2);
+            else if (podeUsar(h, 0)) e = hab(0, forte.id);
             break;
           }
         }
-        // o robô atende o chamado de combo de quem é gente (um só por rodada), se tem energia e não está curando a turma
+        // o robô atende o chamado de combo de quem é gente, se tem energia e não está curando a turma
         const chamado = [...herois.values()].find((x) => x !== h && x.escolha?.acao === 'combo' && !ehRobo(x.userId));
         const jaTemPar = [...herois.values()].filter((x) => x.escolha?.acao === 'combo').length >= 2;
-        if (chamado && !jaTemPar && h.en >= CUSTO_DO_COMBO && e.acao !== 'habilidade' && e.acao !== 'defender') e = { acao: 'combo', alvo: chamado.escolha!.alvo };
+        if (chamado && (!jaTemPar || chefe) && h.en >= CUSTO_DO_COMBO && e.acao !== 'defender' && !(h.classe === 'erva' && e.acao === 'habilidade')) {
+          e = { acao: 'combo', alvo: chamado.escolha!.alvo };
+        }
         h.escolha = e;
       };
 
-      /** Alguém de gente escolheu Combo: um robô (que ainda não está no combo) vira o par, se a turma não tem outro. */
+      /** Alguém de gente escolheu Combo: um robô vira o par (na luta do chefe, todos os robôs com energia vão junto). */
       const atenderCombo = (quem: Heroi) => {
-        const noCombo = [...herois.values()].filter((x) => x.hp > 0 && x.escolha?.acao === 'combo');
-        if (noCombo.length >= 2) return;
-        const par = robos
+        const chefe = inimigosVivos().some((i) => i.chefe);
+        const candidatos = robos
           .map((id) => herois.get(id)!)
           .filter((x) => x.hp > 0 && x.en >= CUSTO_DO_COMBO && x.escolha?.acao !== 'combo')
           // quem estava só atacando primeiro; a Erva curando e quem se defende do sopro ficam
-          .sort((x, y) => Number(x.escolha?.acao !== 'atacar') - Number(y.escolha?.acao !== 'atacar'))[0];
-        if (par && (par.escolha?.acao === 'atacar' || par.classe === 'flecha' || par.classe === 'faisca')) par.escolha = { acao: 'combo', alvo: quem.escolha!.alvo };
+          .sort((x, y) => Number(x.escolha?.acao !== 'atacar') - Number(y.escolha?.acao !== 'atacar'))
+          .filter((x) => x.escolha?.acao === 'atacar' || (x.classe !== 'erva' && x.escolha?.acao !== 'defender'));
+        const noCombo = [...herois.values()].filter((x) => x.hp > 0 && x.escolha?.acao === 'combo').length;
+        const vao = chefe ? candidatos : noCombo >= 2 ? [] : candidatos.slice(0, 1);
+        for (const par of vao) par.escolha = { acao: 'combo', alvo: quem.escolha!.alvo };
       };
 
       // ---------------- A RESOLUÇÃO ----------------
       const evento = (e: Omit<Evento, 'id'>) => eventos.push({ ...e, id: proximoEvento++ });
-      const ferirInimigo = (i: Inimigo, dano: number, quem: Heroi[]): Alvo => {
-        const d = Math.max(1, Math.round(dano));
+      /** Os espinhos que um golpe de perto acordou: viram um acontecimento logo depois do golpe. */
+      let espinhos: { de: Inimigo; dano: number; em: Heroi[] }[] = [];
+      const ferirInimigo = (i: Inimigo, dano: number, quem: Heroi[], tipo: 'fisico' | 'magia' = 'fisico', contato = false): Alvo => {
+        if (tipo === 'fisico' && i.traco === 'etereo' && aleatorio() < 0.5) return { quem: { i: i.id }, dano: 0, errou: true };
+        let d = Math.max(1, Math.round(dano));
+        const resistiu = tipo === 'fisico' && i.traco === 'pedra';
+        if (resistiu) d = Math.max(1, Math.round(d / 4));
         const real = Math.min(i.hp, d);
         i.hp -= real;
         for (const h of quem) h.pontos += Math.round(real / quem.length);
-        return { quem: { i: i.id }, dano: d, ko: i.hp <= 0 };
+        if (contato && i.traco === 'espinhos' && real > 0) espinhos.push({ de: i, dano: Math.max(1, Math.round(real * 0.3)), em: quem });
+        return { quem: { i: i.id }, dano: d, ko: i.hp <= 0, ...(resistiu ? { resistiu } : {}) };
+      };
+      const soltarEspinhos = () => {
+        for (const s of espinhos) {
+          const alvos = s.em
+            .filter((h) => h.hp > 0)
+            .map((h) => {
+              const final = Math.max(1, Math.round(s.dano / s.em.length));
+              h.hp = Math.max(0, h.hp - final);
+              return { quem: { h: h.userId }, dano: final, ko: h.hp <= 0 } as Alvo;
+            });
+          if (alvos.length) evento({ tipo: 'espinhos', de: { i: s.de.id }, alvos });
+        }
+        espinhos = [];
       };
       const alvoVivo = (alvo: number | null) => {
         const i = inimigos.find((x) => x.id === alvo && x.hp > 0);
@@ -416,18 +736,24 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
         const a = atributos(h);
         const { acao } = h.escolha;
         if (acao === 'defender') return; // já valeu desde o começo da rodada
-        if (acao === 'habilidade' && h.en >= a.custo) {
-          h.en -= a.custo;
-          switch (h.classe) {
-            case 'escudo':
-              return; // o "proteger" já valeu desde o começo da rodada
-            case 'faisca':
-              return evento({
-                tipo: 'habilidade',
-                de: { h: h.userId },
-                alvos: inimigosVivos().map((i) => ferirInimigo(i, variar(a.mag) - i.def * 0.25, [h])),
-              });
-            case 'erva': {
+        const k = h.escolha.hab ?? 0;
+        const def = h.classe ? HABILIDADES[h.classe][k] : undefined;
+        // (o "proteger", o "provocar" e a "muralha" já valeram desde o começo da rodada, e já pagaram)
+        if (acao === 'habilidade' && def && h.classe === 'escudo') return;
+        if (acao === 'habilidade' && def && podeUsar(h, k)) {
+          h.en -= def.custo;
+          const de = { h: h.userId };
+          switch (def.id) {
+            case 'chuva':
+              return evento({ tipo: 'habilidade', hab: def.id, de, alvos: inimigosVivos().map((i) => ferirInimigo(i, variar(a.mag) - i.def * 0.25, [h], 'magia')) });
+            case 'raio': {
+              const i = alvoVivo(h.escolha.alvo);
+              return evento({ tipo: 'habilidade', hab: def.id, de, alvos: [ferirInimigo(i, variar(a.mag * 2.2) - i.def * 0.25, [h], 'magia')] });
+            }
+            case 'acelerar':
+              rapidez = 3;
+              return evento({ tipo: 'habilidade', hab: def.id, de, alvos: vivos().map((x) => ({ quem: { h: x.userId } })) });
+            case 'curar': {
               const alvos: Alvo[] = [];
               for (const x of herois.values()) {
                 const ax = atributos(x);
@@ -442,17 +768,40 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
                   alvos.push({ quem: { h: x.userId }, cura });
                 }
               }
-              return evento({ tipo: 'habilidade', de: { h: h.userId }, alvos });
+              return evento({ tipo: 'habilidade', hab: def.id, de, alvos });
             }
-            case 'flecha': {
+            case 'veneno': {
               const i = alvoVivo(h.escolha.alvo);
-              return evento({ tipo: 'habilidade', de: { h: h.userId }, alvos: [ferirInimigo(i, variar(a.atk * 2), [h])] });
+              i.veneno = { rodadas: 3, dano: Math.round(a.mag * 0.8), de: h.userId };
+              return evento({ tipo: 'habilidade', hab: def.id, de, alvos: [{ quem: { i: i.id } }] });
+            }
+            case 'renovar':
+              renovar = { rodadas: 3, de: h.userId };
+              return evento({ tipo: 'habilidade', hab: def.id, de, alvos: vivos().map((x) => ({ quem: { h: x.userId } })) });
+            case 'tiro': {
+              const i = alvoVivo(h.escolha.alvo);
+              return evento({ tipo: 'habilidade', hab: def.id, de, alvos: [ferirInimigo(i, variar(a.atk * 2), [h])] });
+            }
+            case 'atordoar': {
+              const i = alvoVivo(h.escolha.alvo);
+              const alvo = ferirInimigo(i, variar(a.atk * 1.2), [h]);
+              if (i.hp > 0 && !alvo.errou) i.tonto = true;
+              return evento({ tipo: 'habilidade', hab: def.id, de, alvos: [alvo] });
+            }
+            case 'rajada': {
+              const alvos: Alvo[] = [];
+              for (let n = 0; n < 3 && inimigosVivos().length; n++) {
+                const vs = inimigosVivos();
+                alvos.push(ferirInimigo(vs[Math.floor(aleatorio() * vs.length)], variar(a.atk * 0.8), [h]));
+              }
+              return evento({ tipo: 'habilidade', hab: def.id, de, alvos });
             }
           }
         }
-        // atacar (e o combo sem par, e a habilidade sem energia)
+        // atacar (e o combo sem par, e a habilidade sem energia); a Flecha atira de longe, os outros batem de perto
         const i = alvoVivo(h.escolha.alvo);
-        evento({ tipo: 'ataque', de: { h: h.userId }, alvos: [ferirInimigo(i, variar(a.atk) - i.def * 0.5, [h])] });
+        evento({ tipo: 'ataque', de: { h: h.userId }, alvos: [ferirInimigo(i, variar(a.atk) - i.def * 0.5, [h], 'fisico', h.classe !== 'flecha')] });
+        soltarEspinhos();
       };
 
       const agirCombo = (membros: Heroi[], alvo: number | null) => {
@@ -466,22 +815,35 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
         }
         for (const h of ainda) h.en -= CUSTO_DO_COMBO;
         const classes = new Set(ainda.map((h) => h.classe));
+        const nome = nomeDoCombo(classes);
         const i = alvoVivo(alvo);
         let forca = ainda.reduce((s, h) => s + Math.max(atributos(h).atk, atributos(h).mag), 0) * 1.5;
         if (classes.has('flecha')) forca *= 1.25;
-        const alvos: Alvo[] = [ferirInimigo(i, variar(forca), ainda)];
-        if (classes.has('faisca')) for (const o of inimigosVivos()) if (o !== i) alvos.push(ferirInimigo(o, variar(forca * 0.4) - o.def * 0.25, ainda));
+        // o combo com nome: três classes ou mais batem mais forte
+        if (nome) forca *= classes.size >= 4 ? 1.35 : 1.15;
+        const tipo = classes.has('faisca') ? 'magia' : 'fisico';
+        const alvos: Alvo[] = [ferirInimigo(i, variar(forca), ainda, tipo, true)];
+        if (classes.has('faisca')) for (const o of inimigosVivos()) if (o !== i) alvos.push(ferirInimigo(o, variar(forca * 0.4) - o.def * 0.25, ainda, 'magia'));
         if (classes.has('escudo') && i.hp > 0) i.tonto = true;
         if (classes.has('erva')) {
           for (const x of vivos()) {
-            const cura = Math.min(atributos(x).hpMax - x.hp, 15);
+            const cura = Math.min(atributos(x).hpMax - x.hp, nome ? 25 : 15);
             x.hp += cura;
             alvos.push({ quem: { h: x.userId }, cura });
           }
         }
-        evento({ tipo: 'combo', de: { h: ainda[0].userId }, membros: ainda.map((h) => h.userId), alvos });
+        evento({ tipo: 'combo', de: { h: ainda[0].userId }, membros: ainda.map((h) => h.userId), alvos, ...(nome ? { nome } : {}) });
+        soltarEspinhos();
       };
 
+      /** O quanto um golpe dói em `h` nesta rodada (a defesa, o escudo, a provocação e a muralha). */
+      const doer = (h: Heroi, dano: number) => {
+        let d = dano - atributos(h).def * 0.5;
+        if (h.defendendo || h.protegendo) d *= 0.5;
+        if (h.provocando) d *= 0.7;
+        if (muralha) d *= 0.6;
+        return Math.max(1, Math.round(d));
+      };
       const ferirHeroi = (alvo: Heroi, dano: number): Alvo & { protegido?: boolean } => {
         let h = alvo;
         let protegido = false;
@@ -491,10 +853,7 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
           h = escudo;
           protegido = true;
         }
-        const a = atributos(h);
-        let d = dano - a.def * 0.5;
-        if (h.defendendo || h.protegendo) d *= 0.5;
-        const final = Math.max(1, Math.round(d));
+        const final = doer(h, dano);
         h.hp = Math.max(0, h.hp - final);
         return { quem: { h: h.userId }, dano: final, ko: h.hp <= 0, protegido };
       };
@@ -507,11 +866,11 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
         }
         if (i.chefe && i.preparando) {
           i.preparando = false;
-          // o sopro: a turma inteira (o "proteger" não segura fogo que vem de todo lado: só o defender)
+          // o sopro: a turma inteira (o "proteger" e o "provocar" não seguram fogo que vem de todo lado: o defender e a muralha sim)
           const alvos = vivos().map((h) => {
-            const a = atributos(h);
-            let d = variar(i.atk * 0.85) - a.def * 0.5;
+            let d = variar(i.atk * 0.85) - atributos(h).def * 0.5;
             if (h.defendendo || h.protegendo) d *= 0.5;
+            if (muralha) d *= 0.6;
             const final = Math.max(1, Math.round(d));
             h.hp = Math.max(0, h.hp - final);
             return { quem: { h: h.userId }, dano: final, ko: h.hp <= 0 } as Alvo;
@@ -522,55 +881,119 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
           i.preparando = true;
           return evento({ tipo: 'preparar', de: { i: i.id }, alvos: [] });
         }
-        // o alvo: ao acaso, com o Escudo chamando mais atenção
+        // o alvo: quem provoca; senão, ao acaso, com o Escudo chamando mais atenção
         const turma = vivos();
-        const pesos = turma.map((h) => (h.classe === 'escudo' ? 2 : 1));
-        let r = aleatorio() * pesos.reduce((s, p) => s + p, 0);
-        let alvo = turma[turma.length - 1];
-        for (let k = 0; k < turma.length; k++) {
-          r -= pesos[k];
-          if (r < 0) {
-            alvo = turma[k];
-            break;
+        let alvo = turma.find((h) => h.provocando);
+        if (!alvo) {
+          const pesos = turma.map((h) => (h.classe === 'escudo' ? 2 : 1));
+          let r = aleatorio() * pesos.reduce((s, p) => s + p, 0);
+          alvo = turma[turma.length - 1];
+          for (let k = 0; k < turma.length; k++) {
+            r -= pesos[k];
+            if (r < 0) {
+              alvo = turma[k];
+              break;
+            }
           }
         }
-        const { protegido, ...a } = ferirHeroi(alvo, variar(i.atk));
+        const forca = i.traco === 'furia' && i.hp < i.hpMax / 2 ? 1.4 : 1;
+        const { protegido, ...a } = ferirHeroi(alvo, variar(i.atk * forca));
+        const levou = 'h' in a.quem ? herois.get(a.quem.h)! : alvo;
+        if (levou.hp > 0 && i.traco === 'peconha') levou.veneno = { rodadas: 2, dano: Math.round(i.atk * 0.25) };
+        if (i.traco === 'ladrao' && levou.en > 0) {
+          levou.en -= 1;
+          a.energia = -1;
+        }
         evento({ tipo: 'inimigo', de: { i: i.id }, alvos: [a], protegido });
+      };
+
+      /** O fim da rodada: os venenos, a renovação da Erva e o cogumelo que regenera. */
+      const fimDaRodada = () => {
+        const venenoEm: Alvo[] = [];
+        for (const h of vivos()) {
+          if (!h.veneno) continue;
+          const d = Math.min(h.hp, h.veneno.dano);
+          h.hp = Math.max(0, h.hp - d);
+          venenoEm.push({ quem: { h: h.userId }, dano: d, ko: h.hp <= 0 });
+          if (--h.veneno.rodadas <= 0) h.veneno = null;
+        }
+        for (const i of inimigosVivos()) {
+          if (!i.veneno) continue;
+          const real = Math.min(i.hp, i.veneno.dano);
+          i.hp -= real;
+          const quem = herois.get(i.veneno.de);
+          if (quem) quem.pontos += real;
+          venenoEm.push({ quem: { i: i.id }, dano: real, ko: i.hp <= 0 });
+          if (--i.veneno.rodadas <= 0) i.veneno = null;
+        }
+        if (venenoEm.length) evento({ tipo: 'veneno', de: venenoEm[0].quem, alvos: venenoEm });
+        if (renovar && vivos().length) {
+          const de = herois.get(renovar.de);
+          const alvos: Alvo[] = [];
+          for (const h of vivos()) {
+            const cura = Math.min(atributos(h).hpMax - h.hp, Math.round(atributos(h).hpMax * 0.08));
+            h.hp += cura;
+            if (de) de.pontos += cura;
+            alvos.push({ quem: { h: h.userId }, cura });
+          }
+          evento({ tipo: 'renovar', de: { h: renovar.de }, alvos });
+          if (--renovar.rodadas <= 0) renovar = null;
+        }
+        for (const i of inimigosVivos()) {
+          if (i.traco !== 'regenera' || i.hp >= i.hpMax) continue;
+          const cura = Math.min(i.hpMax - i.hp, Math.round(i.hpMax * 0.06));
+          i.hp += cura;
+          evento({ tipo: 'regenera', de: { i: i.id }, alvos: [{ quem: { i: i.id }, cura }] });
+        }
+        if (rapidez > 0) rapidez--;
       };
 
       const resolver = () => {
         if (fase !== 'escolha') return;
         eventos = [];
-        // o que vale desde o começo da rodada: defender e proteger
+        muralha = false;
+        // o que vale desde o começo da rodada: defender, proteger, provocar e a muralha (e já pagam a energia)
         for (const h of vivos()) {
-          const a = atributos(h);
+          const k = h.escolha?.hab ?? 0;
+          const habEscudo = h.escolha?.acao === 'habilidade' && h.classe === 'escudo' && podeUsar(h, k);
           h.defendendo = h.escolha?.acao === 'defender';
-          h.protegendo = h.escolha?.acao === 'habilidade' && h.classe === 'escudo' && h.en >= a.custo;
+          h.protegendo = habEscudo && k === 0;
+          h.provocando = habEscudo && k === 1;
+          if (habEscudo) {
+            h.en -= HABILIDADES.escudo[k].custo;
+            if (k === 2) muralha = true;
+            evento({ tipo: 'habilidade', hab: HABILIDADES.escudo[k].id, de: { h: h.userId }, alvos: k === 2 ? vivos().map((x) => ({ quem: { h: x.userId } })) : [] });
+          }
           if (h.defendendo) evento({ tipo: 'defender', de: { h: h.userId }, alvos: [] });
-          if (h.protegendo) evento({ tipo: 'habilidade', de: { h: h.userId }, alvos: [] });
         }
         // o combo: quem o escolheu e tem energia; com dois ou mais, age na vez do mais rápido
         const noCombo = vivos().filter((h) => h.escolha?.acao === 'combo' && h.en >= CUSTO_DO_COMBO);
         const combo = noCombo.length >= 2 ? noCombo : [];
         const alvoDoCombo = combo.length ? (combo.find((h) => !ehRobo(h.userId))?.escolha?.alvo ?? combo[0].escolha!.alvo) : null;
-        // a ordem: pela velocidade, com um pouco de sorte
+        // a ordem: pela velocidade, com um pouco de sorte (a turma acelerada vai antes)
+        const pressa = rapidez > 0 ? 5 : 0;
         const fila: { vel: number; agir: () => void }[] = [];
         let comboNaFila = false;
         for (const h of vivos()) {
           if (combo.includes(h)) {
             if (comboNaFila) continue;
             comboNaFila = true;
-            fila.push({ vel: Math.max(...combo.map((x) => atributos(x).vel)) + aleatorio() * 3, agir: () => agirCombo(combo, alvoDoCombo) });
+            fila.push({ vel: Math.max(...combo.map((x) => atributos(x).vel)) + pressa + aleatorio() * 3, agir: () => agirCombo(combo, alvoDoCombo) });
             continue;
           }
-          fila.push({ vel: atributos(h).vel + aleatorio() * 3, agir: () => agirHeroi(h) });
+          fila.push({ vel: atributos(h).vel + pressa + aleatorio() * 3, agir: () => agirHeroi(h) });
         }
-        for (const i of inimigosVivos()) fila.push({ vel: i.vel + aleatorio() * 3, agir: () => agirInimigo(i) });
+        for (const i of inimigosVivos()) {
+          fila.push({ vel: i.vel + aleatorio() * 3, agir: () => agirInimigo(i) });
+          // o ligeiro age duas vezes (a segunda, mais para o fim da rodada)
+          if (i.traco === 'ligeiro') fila.push({ vel: i.vel * 0.4 + aleatorio() * 3, agir: () => agirInimigo(i) });
+        }
         embaralhar(fila, aleatorio).sort((a, b) => b.vel - a.vel);
         for (const f of fila) {
           if (!inimigosVivos().length || !vivos().length) break;
           f.agir();
         }
+        if (inimigosVivos().length && vivos().length) fimDaRodada();
         // a energia volta um pouco a cada rodada (mais a quem se defendeu)
         for (const h of vivos()) h.en = Math.min(atributos(h).enMax, h.en + (h.defendendo ? 2 : 1));
         resolucao++;
@@ -583,31 +1006,51 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
         if (fase !== 'acao') return;
         if (!vivos().length || rodada >= RODADAS_MAX) return fim(false);
         if (inimigosVivos().length) return novaRodada();
-        if (ROTA[parada].tipo === 'chefe') return fim(true);
-        // a luta acabou: quem caiu levanta com um pouco de vida, e a energia enche
+        if (paradaAtual().tipo === 'chefe') return fim(true);
+        // a luta acabou: quem caiu levanta com um pouco de vida, a energia enche, e o nível sobe
         for (const h of herois.values()) {
           const a = atributos(h);
           if (h.hp <= 0) h.hp = Math.round(a.hpMax * 0.3);
           h.en = a.enMax;
-          h.defendendo = h.protegendo = false;
+          h.defendendo = h.protegendo = h.provocando = false;
           h.escolha = null;
+          h.veneno = null;
+          h.nivel++;
         }
         abrirEspolio();
       };
 
-      // ---------------- O ESPÓLIO ----------------
+      // ---------------- O EQUIPAMENTO ----------------
+      const vestirPeca = (h: Heroi, item: Item) => {
+        const antes = atributos(h).hpMax;
+        h.equip[item.peca] = item.valor;
+        h.hp = Math.max(1, h.hp + atributos(h).hpMax - antes);
+      };
+      const aplicarMelhoria = (h: Heroi, m: Melhoria) => {
+        const antes = atributos(h);
+        for (const [k, v] of Object.entries(MELHORIAS[m]) as [keyof Bonus, number][]) h.bonus[k] += v;
+        const depois = atributos(h);
+        h.hp = Math.max(1, h.hp + depois.hpMax - antes.hpMax);
+        h.en = Math.min(depois.enMax, h.en + depois.enMax - antes.enMax);
+        h.melhorias.push(m);
+      };
+
+      // ---------------- O ESPÓLIO E O NÍVEL ----------------
       const abrirEspolio = () => {
         fase = 'espolio';
         espolio = new Map();
+        ofertas = new Map();
         decidiram.clear();
+        melhorou.clear();
         peloRobo.clear();
         for (const id of ordem) {
           const peca = PECAS[Math.floor(aleatorio() * PECAS.length)];
           // a peça melhora com o caminho: a da neve é melhor que a da floresta
-          const valor = peca === 'amuleto' ? 10 + parada * 4 + Math.floor(aleatorio() * 8) : 2 + parada + Math.floor(aleatorio() * 3);
-          espolio.set(id, { peca, valor });
+          espolio.set(id, { peca, valor: valorDaPeca(peca, parada, aleatorio()) });
+          const h = herois.get(id)!;
+          ofertas.set(id, embaralhar([...MELHORIAS_DA_CLASSE[h.classe ?? 'escudo']], aleatorio).slice(0, 2));
         }
-        for (const id of ordem) if (ehRobo(id) || !presente(id)) decidirEspolio(id, null);
+        for (const id of ordem) if (ehRobo(id) || !presente(id)) decidirTudo(id);
         ctx.agendar(relogio(TEMPO_DO_ESPOLIO), fecharEspolio);
         if (!conferirEspolio()) ctx.avisar();
       };
@@ -617,28 +1060,73 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
         const h = herois.get(id)!;
         const item = espolio.get(id)!;
         if (equipar === null && !ehRobo(id)) peloRobo.add(id);
-        const vestir = equipar ?? item.valor > h.equip[item.peca];
-        if (vestir) {
-          const antes = atributos(h).hpMax;
-          h.equip[item.peca] = item.valor;
-          h.hp = Math.max(1, h.hp + atributos(h).hpMax - antes);
-        }
+        if (equipar ?? item.valor > h.equip[item.peca]) vestirPeca(h, item);
         decidiram.add(id);
+      };
+      /** `k` null: o robô escolhe (a primeira da ordem de preferência da classe). */
+      const decidirMelhoria = (id: number, k: number | null) => {
+        if (melhorou.has(id)) return;
+        const h = herois.get(id)!;
+        const oferta = ofertas.get(id)!;
+        const pref = MELHORIAS_DA_CLASSE[h.classe ?? 'escudo'];
+        const m = k === null ? [...oferta].sort((a, b) => pref.indexOf(a) - pref.indexOf(b))[0] : oferta[k];
+        aplicarMelhoria(h, m);
+        melhorou.add(id);
+      };
+      const decidirTudo = (id: number) => {
+        decidirEspolio(id, null);
+        decidirMelhoria(id, null);
       };
       const conferirEspolio = () => {
         if (fase !== 'espolio') return false;
-        for (const id of humanos) if (!presente(id)) decidirEspolio(id, null);
-        if (ordem.every((id) => decidiram.has(id))) {
-          parada++;
-          irAoMapa();
+        for (const id of humanos) if (!presente(id)) decidirTudo(id);
+        if (ordem.every((id) => decidiram.has(id) && melhorou.has(id))) {
+          seguir();
           return true;
         }
         return false;
       };
       const fecharEspolio = () => {
         if (fase !== 'espolio') return;
-        for (const id of ordem) decidirEspolio(id, null);
+        for (const id of ordem) decidirTudo(id);
         conferirEspolio();
+      };
+
+      // ---------------- A LOJA ----------------
+      const abrirLoja = () => {
+        fase = 'loja';
+        vitrine = new Map();
+        decidiram.clear();
+        peloRobo.clear();
+        for (const id of ordem) vitrine.set(id, PECAS.map((peca) => ({ peca, valor: valorDaPeca(peca, parada + 1, aleatorio()) })));
+        for (const id of ordem) if (ehRobo(id) || !presente(id)) decidirLoja(id, null);
+        ctx.agendar(relogio(TEMPO_DA_LOJA), fecharLoja);
+        if (!conferirLoja()) ctx.avisar();
+      };
+      /** `k` null: o robô leva a peça que mais melhora (em proporção); -1: não leva nada. */
+      const decidirLoja = (id: number, k: number | null) => {
+        if (decidiram.has(id)) return;
+        const h = herois.get(id)!;
+        const itens = vitrine.get(id)!;
+        if (k === null && !ehRobo(id)) peloRobo.add(id);
+        const ganho = (x: Item) => (x.valor - h.equip[x.peca]) / (x.peca === 'amuleto' ? 4 : 1);
+        const escolhido = k === null ? [...itens].sort((a, b) => ganho(b) - ganho(a))[0] : k >= 0 ? itens[k] : undefined;
+        if (escolhido && (k !== null || ganho(escolhido) > 0)) vestirPeca(h, escolhido);
+        decidiram.add(id);
+      };
+      const conferirLoja = () => {
+        if (fase !== 'loja') return false;
+        for (const id of humanos) if (!presente(id)) decidirLoja(id, null);
+        if (ordem.every((id) => decidiram.has(id))) {
+          seguir();
+          return true;
+        }
+        return false;
+      };
+      const fecharLoja = () => {
+        if (fase !== 'loja') return;
+        for (const id of ordem) decidirLoja(id, null);
+        conferirLoja();
       };
 
       // ---------------- O FIM ----------------
@@ -655,6 +1143,11 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
           ...l,
           posicao: contam.includes(l) ? 1 + contam.filter((o) => o.pontos > l.pontos).length : null,
         }));
+        // O RECORDE DO SOLO: as rodadas que o SERVIDOR contou, da primeira luta ao dragão
+        if (ganhou && solo && servicos?.guardarRecorde && ficaram.length) {
+          const r = servicos.guardarRecorde(humanos[0], rodadasTotais, { tempoMs: agora() - inicio });
+          recorde = { valor: rodadasTotais, ...r };
+        }
         // O PÓDIO: o dragão vencido, 2 pessoas ou mais que ficaram, até o 3º, fora do Solo
         if (ganhou && !solo && contam.length >= 2 && servicos) {
           const evento_ = `lendas-${ctx.comunidade ?? 0}-${agora()}`;
@@ -681,14 +1174,26 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
       const jogo: Jogo & Record<string, unknown> = {
         publico(quem) {
           const meu = herois.get(quem);
+          const p = paradaAtual();
           return {
             partidaId,
             fase,
             parada,
-            rota: ROTA.map((p) => ({ id: p.id, tipo: p.tipo })),
+            semente,
+            // o caminho: as opções de cada passo e a escolhida
+            rota: caminho.passos.map((opcoes, k) => ({
+              opcoes: opcoes.map((id) => ({ id, tipo: PARADAS[id].tipo })),
+              escolhida: escolhidas[k],
+            })),
+            cenario: p.cenario,
+            tipoDaParada: p.tipo,
+            evento: fase === 'evento' ? caminho.evento : null,
+            rumo: fase === 'rumo' ? { opcoes: caminho.passos[parada], votos: Object.fromEntries(votosDoRumo) } : null,
             rodada,
+            rodadasTotais,
             resolucao,
             venceu,
+            rapidez: rapidez > 0,
             herois: ordem.map((id) => {
               const h = herois.get(id)!;
               const a = atributos(h);
@@ -706,22 +1211,50 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
                 atk: a.atk,
                 mag: a.mag,
                 def: a.def,
-                custo: a.custo,
+                vel: a.vel,
+                nivel: h.nivel,
+                melhorias: h.melhorias,
+                habilidades: habilidadesDe(h).map((d) => ({ id: d.id, custo: d.custo, alvo: d.alvo })),
+                envenenado: !!h.veneno,
                 equip: h.equip,
                 pontos: h.pontos,
                 // os outros só sabem SE escolheu; a ação de cada um aparece quando a rodada se resolve (como numa mesa)
-                escolheu: fase === 'escolha' ? !!h.escolha : fase === 'espolio' ? decidiram.has(id) : !!h.classe,
+                escolheu:
+                  fase === 'escolha'
+                    ? !!h.escolha
+                    : fase === 'espolio'
+                      ? decidiram.has(id) && melhorou.has(id)
+                      : fase === 'loja'
+                        ? decidiram.has(id)
+                        : fase === 'rumo'
+                          ? votosDoRumo.has(id)
+                          : !!h.classe,
                 peloRobo: peloRobo.has(id),
                 // o combo é a exceção: a turma precisa ver quem chamou, para ir junto
                 noCombo: fase === 'escolha' && h.escolha?.acao === 'combo',
                 alvoDoCombo: fase === 'escolha' && h.escolha?.acao === 'combo' ? h.escolha.alvo : null,
               };
             }),
-            inimigos: inimigos.map((i) => ({ id: i.id, tipo: i.tipo, hp: i.hp, hpMax: i.hpMax, chefe: i.chefe, tonto: i.tonto, preparando: i.preparando })),
+            inimigos: inimigos.map((i) => ({
+              id: i.id,
+              tipo: i.tipo,
+              hp: i.hp,
+              hpMax: i.hpMax,
+              chefe: i.chefe,
+              traco: i.traco,
+              tonto: i.tonto,
+              preparando: i.preparando,
+              envenenado: !!i.veneno,
+            })),
             eventos,
             minhaEscolha: meu?.escolha ?? null,
-            meuEspolio: fase === 'espolio' && meu ? { item: espolio.get(quem) ?? null, atual: meu.equip, decidi: decidiram.has(quem) } : null,
+            meuEspolio:
+              fase === 'espolio' && meu
+                ? { item: espolio.get(quem) ?? null, atual: meu.equip, decidi: decidiram.has(quem), melhorias: ofertas.get(quem) ?? [], melhorei: melhorou.has(quem) }
+                : null,
+            minhaLoja: fase === 'loja' && meu ? { itens: vitrine.get(quem) ?? [], atual: meu.equip, decidi: decidiram.has(quem) } : null,
             resultado,
+            recorde: fase === 'fim' ? recorde : null,
           };
         },
 
@@ -738,18 +1271,29 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
             else ctx.avisar();
             return null;
           }
+          if (tipo === 'rumo') {
+            const lado = corpo.lado;
+            if (fase !== 'rumo' || (lado !== 0 && lado !== 1)) return 'Agora não dá.';
+            votosDoRumo.set(quem, lado);
+            if (!conferirRumo()) ctx.avisar();
+            return null;
+          }
           if (tipo === 'acao') {
             if (fase !== 'escolha' || h.hp <= 0) return 'Agora não dá.';
             const acao = corpo.acao as Acao;
             if (!ACOES.includes(acao)) return 'Agora não dá.';
             const alvo = Number.isInteger(corpo.alvo) ? (corpo.alvo as number) : null;
-            const a = atributos(h);
-            if (acao === 'habilidade' && h.en < a.custo) return 'Sem energia.';
+            const k = acao === 'habilidade' ? (Number.isInteger(corpo.hab) ? (corpo.hab as number) : 0) : undefined;
+            const def = k === undefined || !h.classe ? undefined : HABILIDADES[h.classe][k];
+            if (acao === 'habilidade') {
+              if (!def || def.nivel > h.nivel) return 'Agora não dá.';
+              if (h.en < def.custo) return 'Sem energia.';
+            }
             if (acao === 'combo' && h.en < CUSTO_DO_COMBO) return 'Sem energia.';
-            if ((acao === 'atacar' || acao === 'combo' || (acao === 'habilidade' && h.classe === 'flecha')) && !inimigos.some((i) => i.id === alvo && i.hp > 0)) {
+            if ((acao === 'atacar' || acao === 'combo' || def?.alvo === 'inimigo') && !inimigos.some((i) => i.id === alvo && i.hp > 0)) {
               return 'Agora não dá.';
             }
-            h.escolha = { acao, alvo };
+            h.escolha = { acao, alvo, ...(k !== undefined ? { hab: k } : {}) };
             peloRobo.delete(quem);
             if (acao === 'combo') atenderCombo(h);
             if (!conferirEscolhas()) ctx.avisar();
@@ -761,6 +1305,20 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
             if (!conferirEspolio()) ctx.avisar();
             return null;
           }
+          if (tipo === 'melhoria') {
+            const k = corpo.escolha;
+            if (fase !== 'espolio' || melhorou.has(quem) || (k !== 0 && k !== 1)) return 'Agora não dá.';
+            decidirMelhoria(quem, k);
+            if (!conferirEspolio()) ctx.avisar();
+            return null;
+          }
+          if (tipo === 'loja') {
+            const k = corpo.item;
+            if (fase !== 'loja' || decidiram.has(quem) || !Number.isInteger(k) || (k as number) < -1 || (k as number) > 2) return 'Agora não dá.';
+            decidirLoja(quem, k as number);
+            if (!conferirLoja()) ctx.avisar();
+            return null;
+          }
           return 'Agora não dá.';
         },
 
@@ -768,11 +1326,15 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
           if (fase === 'classes') conferirClasses();
           else if (fase === 'escolha') conferirEscolhas();
           else if (fase === 'espolio') conferirEspolio();
+          else if (fase === 'loja') conferirLoja();
+          else if (fase === 'rumo') conferirRumo();
         },
 
         // para o teste
         _herois: herois,
         _inimigos: () => inimigos,
+        _caminho: caminho,
+        _escolhidas: escolhidas,
       };
       return jogo;
     },

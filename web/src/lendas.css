@@ -287,3 +287,100 @@
 .lendas-peca-troca .pior {
   color: #e5564c;
 }
+
+/* 19/11/2026: a bifurcação no caminho, o voto, o evento, a loja, as habilidades, os traços, o nível e o combo com nome */
+.lendas-caminho li.bifurcacao {
+  width: auto;
+  min-width: 34px;
+  padding: 0 4px;
+  border-radius: 17px;
+  gap: 2px;
+  display: flex;
+  font-size: 15px;
+}
+.lendas-caminho li span.outra {
+  opacity: 0.3;
+}
+.lendas-rumo-opcoes,
+.lendas-loja {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+}
+.lendas-loja > .btn-secondary {
+  align-self: center;
+}
+.lendas-evento {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+.lendas-evento p {
+  margin: 0;
+  font-weight: 600;
+}
+.lendas-acoes {
+  grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+}
+.lendas-tracos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.lendas-tracos strong {
+  color: var(--text-strong, inherit);
+}
+.lendas-combo-nome {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 10%;
+  margin: 0;
+  text-align: center;
+  font-size: clamp(16px, 4vw, 26px);
+  font-weight: 800;
+  color: #ffe48a;
+  text-shadow: 0 2px 0 #1e1822, 0 0 12px rgba(240, 160, 255, 0.7);
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .lendas-combo-nome {
+    animation: lendas-combo 0.85s ease-out;
+  }
+}
+@keyframes lendas-combo {
+  from {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+  30% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.lendas-nivel {
+  color: #f0c93a;
+  font-weight: 700;
+}
+.lendas-melhorias {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.lendas-melhoria {
+  font-size: 18px;
+  min-width: 96px;
+}
+.lendas-recorde {
+  margin: 0 0 6px;
+  text-align: center;
+  font-weight: 600;
+}

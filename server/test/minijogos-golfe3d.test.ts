@@ -26,7 +26,7 @@ const cris = await criarConta(app, 'cris-golfe3d');
 const crisId = await idDe(cris.token);
 const comunidade = (await comToken(app, ana.token)('POST', '/api/communities', { name: 'Turma do golfe 3D' })).json() as { id: number };
 
-function comecar(naSala: number[] | (() => number[]), comunidadeId = 0) {
+function comecar(naSala: number[] | (() => number[]), comunidadeId = 0, percurso: string = 'kit') {
   const relogio: { ms: number; depois: () => void }[] = [];
   let terminou = false;
   const sala = typeof naSala === 'function' ? naSala : () => naSala;
@@ -38,7 +38,7 @@ function comecar(naSala: number[] | (() => number[]), comunidadeId = 0) {
     nome: (id: number) => (id === anaId ? 'ana' : id === crisId ? 'cris' : 'bia'),
     comunidade: comunidadeId,
   };
-  const jogo = criarGolfe3D({ agora: () => agora }).comecar(ctx, { naSala: sala(), criadaPor: sala()[0], corpo: {} });
+  const jogo = criarGolfe3D({ agora: () => agora }).comecar(ctx, { naSala: sala(), criadaPor: sala()[0], corpo: { percurso } });
   assert.ok(typeof jogo !== 'string');
   let inicio = 0;
   return {
@@ -60,7 +60,7 @@ const meu = (jogo: { publico(q: number): Record<string, unknown> }, id: number) 
 
 /** Joga o buraco até o fim com o piloto, tacada por tacada, no relógio certo. Devolve as tacadas. */
 function jogarBuraco(m: ReturnType<typeof comecar>, id: number) {
-  const b = BURACOS[m.jogo.publico(id).buraco as number];
+  const b = fisica.PERCURSOS_3D[(m.jogo.publico(id).percurso as 'kit' | 'parque') ?? 'kit'][m.jogo.publico(id).buraco as number];
   const d = mapaDeDistancia(b);
   while (!meu(m.jogo, id).dentro && meu(m.jogo, id).tacadas < TACADAS_MAX) {
     const bola = meu(m.jogo, id);
@@ -283,4 +283,53 @@ test('sozinho: mais tempo no buraco, e sem pódio', async () => {
   assert.equal(m.terminou(), true);
   const depois = (await comToken(app, ana.token)('GET', '/api/corrida-trofeus')).json().trofeus.length;
   assert.equal(depois, antes, 'sem troféu');
+});
+
+test('o percurso e o recorde (19/11/2026): sem pedido, quem começou escolhe; no Solo, o total vira o recorde do percurso', async () => {
+  const db = await import('../src/db.js');
+  const ctx = { agendar: () => {}, avisar: () => {}, terminar: () => {}, naSala: () => [anaId, biaId], nome: () => 'x', comunidade: 0 };
+  const jogo = criarGolfe3D({ agora: () => agora }).comecar(ctx, { naSala: [anaId, biaId], criadaPor: anaId, corpo: {} });
+  assert.ok(typeof jogo !== 'string');
+  assert.equal(jogo.publico(anaId).fase, 'escolhendo');
+  assert.equal(jogo.acao(biaId, { tipo: 'percurso', percurso: 'parque' }), 'Você está assistindo esta partida.');
+  assert.equal(jogo.acao(anaId, { tipo: 'percurso', percurso: 'lua' }), 'Ação desconhecida.');
+  assert.equal(jogo.acao(anaId, { tipo: 'percurso', percurso: 'parque' }), null);
+  assert.equal(jogo.publico(biaId).fase, 'preparando');
+  assert.equal(jogo.publico(biaId).rodadas, 9);
+  // a Cris sozinha no parque, com o piloto
+  const m = comecar([crisId], 0, 'parque');
+  const n = m.jogo.publico(crisId).rodadas as number;
+  for (let i = 0; i < n; i++) {
+    m.andar();
+    jogarBuraco(m, crisId);
+    while (m.jogo.publico(crisId).fase === 'jogando') m.andar();
+    if (i < n - 1) m.andar();
+  }
+  const fim = m.jogo.publico(crisId);
+  assert.equal(fim.fase, 'fim');
+  assert.deepEqual(fim.recorde, { antes: null, novo: true });
+  assert.equal(db.recordeDoSolo(crisId, 'golfe3d', 'parque')!.valor, (fim.placar as { pontos: number }[])[0].pontos);
+});
+
+test('os itens da própria bola na sala (19/11/2026): um de cada por partida, conferidos e gastos pelo servidor; no Solo, nenhum', () => {
+  const m = comecar([anaId, biaId]);
+  m.andar();
+  agora += 1000;
+  const itens = (id: number) => m.jogo.publico(id).meusItens as string[];
+  assert.deepEqual(itens(anaId).sort(), ['mira', 'pesada', 'quique']);
+  const p = passoDeAgora(m.inicio());
+  assert.equal(m.jogo.acao(anaId, { tipo: 'tacada', passo: p, dx: 0, dz: 200, item: 'quique' }), null);
+  assert.deepEqual(itens(anaId).sort(), ['mira', 'pesada']);
+  assert.equal((m.jogo.publico(anaId).meu as { item: string }).item, 'quique');
+  // de novo, não: já gastou
+  const bola = m.jogo.publico(anaId).meu as { passo: number };
+  agora = Math.max(agora, m.inicio() + (bola.passo * 1000) / 60) + 300;
+  assert.equal(m.jogo.acao(anaId, { tipo: 'tacada', passo: passoDeAgora(m.inicio()), dx: 0, dz: 200, item: 'quique' }), 'Tacada inválida.');
+  assert.equal(m.jogo.acao(anaId, { tipo: 'tacada', passo: passoDeAgora(m.inicio()), dx: 0, dz: 200, item: 'turbo' }), 'Tacada inválida.');
+  // a Bia continua com os três
+  assert.equal(itens(biaId).length, 3);
+  // sozinha, sem itens
+  const s = comecar([crisId]);
+  s.andar();
+  assert.deepEqual(s.jogo.publico(crisId).meusItens, []);
 });

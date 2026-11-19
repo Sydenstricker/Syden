@@ -26,10 +26,12 @@ import {
   RAIO,
   RAPIDO,
   RECARGA_DA_TROCA,
+  seguirVelocidade,
   SUPRIMENTOS,
   TECLAS_DE_GOLPE,
   unitario,
   VEL,
+  velDoChao,
   VIDAS,
   type AcaoDoCoelho,
   type Cenario,
@@ -55,10 +57,13 @@ export interface EstadoArena {
   fase: FaseDaArena;
   formato: FormatoDaArena;
   cenario: Cenario;
+  /** A luta de sempre, ou segurar a zona (19/11/2026). */
+  objetivo?: 'luta' | 'zona';
   solo: boolean;
   vencedor: number | null;
   jogadores: { userId: number; username: string; avatar: number | string | null; time: number; equipe: string[]; robo: boolean }[];
-  resultado: { userId: number; username: string; time: number; dano: number; quedas: number; vidas: number; posicao: number | null; robo: boolean }[] | null;
+  /** No fim, por pessoa: o dano causado, os nocautes, o dano levado, os desvios (marcas no chão de onde escapou) e, segurando a zona, os pontos do time. */
+  resultado: { userId: number; username: string; time: number; dano: number; quedas: number; vidas: number; levou?: number; desvios?: number; pontos?: number; posicao: number | null; robo: boolean }[] | null;
   partidaId: string;
 }
 
@@ -72,8 +77,11 @@ export interface Quadro {
   j: number[][];
   /** [dono, n, k, x0, y0, dx ×1000, dy ×1000, ms desde, elemento, tecla, até onde vai] */
   p: number[][];
-  /** [id, x, y, raio, ms até bater, elemento, dono, time] */
+  /** [id, x, y, raio, ms até bater, elemento, dono, time, ms do aviso inteiro] */
   z: number[][];
+  /** Segurando a zona: [time, pontos], e o time que está nela agora (-1: ninguém, ou disputada). */
+  o?: number[][];
+  od?: number;
   /** [id, ponto, tipo] */
   s: number[][];
   e: unknown[][];
@@ -160,6 +168,8 @@ export interface ZonaNaTela {
   elemento: string | null;
   dono: number;
   time: number;
+  /** Quanto ela avisa, inteiro (ms). */
+  aviso: number;
 }
 export interface Vista {
   passo: number;
@@ -169,6 +179,8 @@ export interface Vista {
   balas: BalaNaTela[];
   zonas: ZonaNaTela[];
   suprimentos: { id: number; x: number; y: number; tipo: Suprimento }[];
+  /** Segurando a zona: os pontos de cada time, e quem está nela. */
+  zona: { pontos: Map<number, number>; dono: number } | null;
 }
 
 export interface Efeito {
@@ -211,6 +223,9 @@ export interface Meu {
   recuoX: number;
   recuoY: number;
   recuoAte: number;
+  /** A velocidade de agora (px/s): no gelo, ela escorrega. */
+  vx: number;
+  vy: number;
 }
 
 interface MinhaBala {
@@ -286,7 +301,7 @@ export class Cliente {
   eu: Meu = {
     x: 0, y: 0, mx: 1, my: 0, acao: 'parado', t: 0, piscandoAte: 0, vidas: VIDAS, pv: PV, estado: 0, time: 0, ativo: 0, especial: 0,
     rapidoAte: 0, arrancadaAte: 0, arrancadaEm: -Infinity, dx: 1, dy: 0, trocaEm: -Infinity, pronto: { b: 0, s: 0, q: 0, e: 0 },
-    recuoX: 0, recuoY: 0, recuoAte: 0,
+    recuoX: 0, recuoY: 0, recuoAte: 0, vx: 0, vy: 0,
   };
   balas: MinhaBala[] = [];
   efeitos: Efeito[] = [];
@@ -383,7 +398,8 @@ export class Cliente {
       } else if (tipo === 'r') {
         // a roda de alguém: [quem, elemento, tecla]
         const l = q.j.find((x) => x[0] === r[0]);
-        if (l && r[0] !== this.id) this.efeitos.push({ tipo: 'roda', x: l[1], y: l[2], em: agora + ATRASO_MS, elemento: elementoDoIndice(r[1]), raio: KITS[elementoDoIndice(r[1]) ?? 'folha'].s.raio });
+        const golpeDaRoda = KITS[elementoDoIndice(r[1]) ?? 'folha'][TECLAS_DE_GOLPE[r[2]] ?? 's'];
+        if (l && r[0] !== this.id) this.efeitos.push({ tipo: 'roda', x: l[1], y: l[2], em: agora + ATRASO_MS, elemento: elementoDoIndice(r[1]), raio: golpeDaRoda.raio });
       } else if (tipo === 'g') {
         // pegou um suprimento: [quem, tipo, ponto]
         const [px, py] = PONTOS_DE_SUPRIMENTO[r[2]] ?? [0, 0];
@@ -400,7 +416,7 @@ export class Cliente {
   /** O que a tela mostra agora. */
   vista(agora: number): Vista {
     const ultimo = this.linha.ultimo();
-    if (!ultimo) return { passo: 0, fase: null, resta: 0, coelhos: [], balas: [], zonas: [], suprimentos: [] };
+    if (!ultimo) return { passo: 0, fase: null, resta: 0, coelhos: [], balas: [], zonas: [], suprimentos: [], zona: null };
     const p = this.linha.passoNaTela(agora);
     const volta = this.linha.emVolta(p)!;
     // o tempo desde que o quadro mais novo chegou (e não pelo passo: o relógio de 50 ms do servidor atrasa em alguns sistemas)
@@ -436,12 +452,13 @@ export class Cliente {
     }
     // as zonas: o tempo que falta, contado da chegada do quadro mais novo até agora (sem o atraso da tela: é o relógio delas)
     const agoraNoServidor = desde;
-    const zonas = ultimo.z.map((z) => ({ id: z[0], x: z[1], y: z[2], raio: z[3], resta: z[4] - agoraNoServidor, elemento: elementoDoIndice(z[5]), dono: z[6], time: z[7] }));
+    const zonas = ultimo.z.map((z) => ({ id: z[0], x: z[1], y: z[2], raio: z[3], resta: z[4] - agoraNoServidor, elemento: elementoDoIndice(z[5]), dono: z[6], time: z[7], aviso: z[8] ?? 700 }));
     const suprimentos = ultimo.s.map((s) => {
       const [x, y] = PONTOS_DE_SUPRIMENTO[s[1]] ?? [0, 0];
       return { id: s[0], x, y, tipo: SUPRIMENTOS[s[2]] ?? 'cura' };
     });
-    return { passo: p, fase: ultimo.f, resta: Math.max(0, ultimo.r - agoraNoServidor), coelhos, balas, zonas, suprimentos };
+    const zona = ultimo.o ? { pontos: new Map(ultimo.o.map(([time, n]) => [time, n] as [number, number])), dono: ultimo.od ?? -1 } : null;
+    return { passo: p, fase: ultimo.f, resta: Math.max(0, ultimo.r - agoraNoServidor), coelhos, balas, zonas, suprimentos, zona };
   }
 
   /** Pode jogar agora (a partida segue e eu estou de pé)? */
@@ -515,10 +532,14 @@ export class Cliente {
       this.sons.push('pulo');
     }
     const arrancando = agora < eu.arrancadaAte;
-    if (arrancando) [eu.x, eu.y] = andar(this.cenario, eu.x, eu.y, eu.dx * ARRANCADA.vel * dt, eu.dy * ARRANCADA.vel * dt);
-    else if (anda) {
-      const vel = VEL * (agora < eu.rapidoAte ? RAPIDO.mult : 1);
-      [eu.x, eu.y] = andar(this.cenario, eu.x, eu.y, ux * vel * dt, uy * vel * dt);
+    if (arrancando) {
+      [eu.vx, eu.vy] = [eu.dx * ARRANCADA.vel, eu.dy * ARRANCADA.vel];
+      [eu.x, eu.y] = andar(this.cenario, eu.x, eu.y, eu.vx * dt, eu.vy * dt);
+    } else {
+      // o chão (conta.ts): a lama segura, o gelo escorrega, também ao parar
+      const vel = anda ? VEL * (agora < eu.rapidoAte ? RAPIDO.mult : 1) * velDoChao(this.cenario, eu.x, eu.y) : 0;
+      [eu.vx, eu.vy] = seguirVelocidade(this.cenario, eu.vx, eu.vy, ux * vel, uy * vel, dt);
+      if (eu.vx * eu.vx + eu.vy * eu.vy > 1) [eu.x, eu.y] = andar(this.cenario, eu.x, eu.y, eu.vx * dt, eu.vy * dt);
     }
     if (agora < eu.recuoAte) [eu.x, eu.y] = andar(this.cenario, eu.x, eu.y, eu.recuoX * 60 * dt, eu.recuoY * 60 * dt);
     if (eu.acao !== 'dor' && !(eu.acao === 'golpe' && eu.t < GOLPE_MS)) {

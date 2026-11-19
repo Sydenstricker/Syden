@@ -1,14 +1,15 @@
 import { ComandosDoJogo } from './ComandosDosJogos';
+import { criarImpacto } from './impacto';
 import { tocar } from './somDosJogos';
 import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
-import { useT } from './i18n';
+import { chave, useT } from './i18n';
 import { Placar, Relogio } from './Minijogo';
 import type { Partida } from './minijogos';
 import { CORES_DA_ESQUADRILHA, desenhar, pintarHorta, type Outro } from './nave/desenho';
 import { Mundo, comandosDoJogador, reancorar, type Comandos, type Teclas, type Toque } from './nave/mundo';
 import { pilotar } from './nave/piloto';
-import { ALTURA, FIM, LARGURA, PASSOS_POR_S } from './nave/sim';
+import { ALTURA, ehFaseDaNave, LARGURA, PASSOS_POR_S, SEM_QUEDA, temposDaFase, type FaseDaNave } from './nave/sim';
 import './nave/nave.css';
 
 /**
@@ -29,13 +30,61 @@ export interface EstadoNave {
   semente: number;
   duracaoMs: number;
   decorridoMs: number | null;
-  jogadores: { userId: number; username: string; pontos: number; vidas: number; chefe: boolean; acabou: boolean; posicao: number | null }[];
+  jogadores: {
+    userId: number;
+    username: string;
+    pontos: number;
+    vidas: number;
+    chefe: boolean;
+    acabou: boolean;
+    posicao: number | null;
+  }[];
   /** A soma de todos: o placar da esquadrilha. */
   esquadrilha: number;
-  meu: { vidas: number; bombas: number; escudo: boolean; mortos: number[]; acabou: boolean } | null;
+  meu: {
+    vidas: number;
+    bombas: number;
+    escudo: boolean;
+    mortos: number[];
+    acabou: boolean;
+  } | null;
   recorde: { antes: number | null; novo: boolean } | null;
   solo: boolean;
   partidaId: string;
+  /** A fase escolhida na largada (19/11/2026); sem ela, a horta. */
+  faseDaNave?: FaseDaNave;
+  /** No fim: ninguém da turma perdeu vida (cada um ganhou SEM_QUEDA). */
+  intacta?: boolean;
+}
+
+const FASES: { id: FaseDaNave; nome: string; cor: string }[] = [
+  { id: 'horta', nome: chave('Horta'), cor: '#6fa356' },
+  { id: 'pomar', nome: chave('Pomar'), cor: '#d9883a' },
+  { id: 'celeiro', nome: chave('Celeiro'), cor: '#a83a2e' },
+];
+
+/** A ESCOLHA DA FASE (19/11/2026): a horta de sempre, ou uma das curtas com chefe novo. */
+export function EscolhaDaFaseDaNave({ aoEscolher, aoVoltar }: { aoEscolher: (fase: FaseDaNave) => void; aoVoltar: () => void }) {
+  const t = useT();
+  return (
+    <div className="corrida-escolha">
+      <ul className="corrida-pistas">
+        {FASES.map((f) => (
+          <li key={f.id}>
+            <button type="button" className="corrida-pista-botao" onClick={() => aoEscolher(f.id)}>
+              <span className="nave-fase-cor" style={{ background: f.cor }} aria-hidden="true" />
+              <strong>{t(f.nome)}</strong>
+            </button>
+          </li>
+        ))}
+      </ul>
+      <div className="minijogo-acoes">
+        <button type="button" className="btn-secondary" onClick={aoVoltar}>
+          {t('Outros jogos')}
+        </button>
+      </div>
+    </div>
+  );
 }
 
 /** Um lote a cada isto (o lugar da nave e os eventos). */
@@ -62,15 +111,35 @@ export function JogoNave({
     const venceram = estado.jogadores.some((l) => l.chefe);
     return (
       <div className="nave-fim">
-        <p className="nave-desfecho">{venceram ? t('O espantalho caiu!') : t('A praga venceu desta vez.')}</p>
+        <p className="nave-desfecho">
+          {venceram ? ((estado.faseDaNave ?? 'horta') === 'horta' ? t('O espantalho caiu!') : t('O chefe caiu!')) : t('A praga venceu desta vez.')}
+        </p>
+        {estado.intacta && (
+          <p className="minijogo-situacao nave-intacta">
+            <span aria-hidden="true">🏅</span> {t('Esquadrilha intacta: ninguém caiu (+{n})', { n: SEM_QUEDA })}
+          </p>
+        )}
         {estado.recorde &&
           (estado.recorde.novo ? (
             <p className="minijogo-situacao nave-recorde">{t('Novo recorde!')}</p>
           ) : (
-            estado.recorde.antes !== null && <p className="minijogo-situacao">{t('Seu recorde: {tempo}', { tempo: String(estado.recorde.antes) })}</p>
+            estado.recorde.antes !== null && (
+              <p className="minijogo-situacao">
+                {t('Seu recorde: {tempo}', {
+                  tempo: String(estado.recorde.antes),
+                })}
+              </p>
+            )
           ))}
         {!estado.solo && <p className="nave-esquadrilha-total">{t('Placar da esquadrilha: {n}', { n: estado.esquadrilha })}</p>}
-        <Placar eu={eu} linhas={(ficaram.length ? ficaram : estado.jogadores).map((l) => ({ ...l, valor: String(l.pontos), posicao: l.posicao ?? undefined }))} />
+        <Placar
+          eu={eu}
+          linhas={(ficaram.length ? ficaram : estado.jogadores).map((l) => ({
+            ...l,
+            valor: String(l.pontos),
+            posicao: l.posicao ?? undefined,
+          }))}
+        />
       </div>
     );
   }
@@ -98,7 +167,7 @@ function Ceu({ estado, eu, jogador, socket, channelId }: { estado: EstadoNave & 
   }
   const mundo = useRef<Mundo | null>(null);
   if (!mundo.current) {
-    const m = new Mundo(estado.semente, souJogador);
+    const m = new Mundo(estado.semente, souJogador, ehFaseDaNave(estado.faseDaNave) ? estado.faseDaNave : 'horta');
     // quem volta no meio (recarregou a página): o que o servidor já sabe
     if (estado.meu && estado.decorridoMs !== null) {
       for (const i of estado.meu.mortos) m.ficha.mortos.set(i, 0);
@@ -116,8 +185,28 @@ function Ceu({ estado, eu, jogador, socket, channelId }: { estado: EstadoNave & 
   const nomes = useRef(new Map<number, string>());
   for (const l of estado.jogadores) nomes.current.set(l.userId, l.username);
 
-  const [hud, setHud] = useState({ pontos: 0, vidas: 3, bombas: 1, escudo: false, arma: 0, esquadrilha: 0, passo: -1, acabou: false, seguindo: null as string | null });
-  const teclas = useRef<Teclas>({ esquerda: false, direita: false, cima: false, baixo: false, fogo: false, bomba: false });
+  const [hud, setHud] = useState({
+    pontos: 0,
+    vidas: 3,
+    bombas: 1,
+    escudo: false,
+    arma: 0,
+    nivel: 1,
+    loop: true,
+    esquadrilha: 0,
+    passo: -1,
+    acabou: false,
+    seguindo: null as string | null,
+  });
+  const teclas = useRef<Teclas>({
+    esquerda: false,
+    direita: false,
+    cima: false,
+    baixo: false,
+    fogo: false,
+    bomba: false,
+    loop: false,
+  });
   const toque = useRef<Toque | null>(null);
   const [eToque, setEToque] = useState(false);
 
@@ -129,7 +218,17 @@ function Ceu({ estado, eu, jogador, socket, channelId }: { estado: EstadoNave & 
       const { userId, p, x, y, vidas, pts, m, fim } = msg.dados;
       if (typeof userId !== 'number' || userId === eu || typeof p !== 'number' || typeof x !== 'number' || typeof y !== 'number') return;
       let o = outros.current.get(userId);
-      if (!o) outros.current.set(userId, (o = { amostras: [], vidas: 3, pts: 0, fim: false, mortos: new Map() }));
+      if (!o)
+        outros.current.set(
+          userId,
+          (o = {
+            amostras: [],
+            vidas: 3,
+            pts: 0,
+            fim: false,
+            mortos: new Map(),
+          }),
+        );
       const ultima = o.amostras[o.amostras.length - 1];
       if (!ultima || p > ultima.p) o.amostras.push({ p, x, y });
       if (o.amostras.length > 30) o.amostras.splice(0, o.amostras.length - 30);
@@ -160,6 +259,9 @@ function Ceu({ estado, eu, jogador, socket, channelId }: { estado: EstadoNave & 
       KeyZ: 'fogo',
       KeyJ: 'fogo',
       KeyX: 'bomba',
+      KeyC: 'loop',
+      ShiftLeft: 'loop',
+      ShiftRight: 'loop',
     };
     const mudar = (valor: boolean) => (e: KeyboardEvent) => {
       const alvo = e.target as HTMLElement | null;
@@ -189,6 +291,9 @@ function Ceu({ estado, eu, jogador, socket, channelId }: { estado: EstadoNave & 
     const m = mundo.current;
     if (!tela || !ctx || !m) return;
     const horta = pintarHorta();
+    // o tremor da bomba e do golpe, e o piscar branco do acerto: só desenho (impacto.ts)
+    const impacto = criarImpacto({ pixelsPorForca: 4 });
+    const FIM = temposDaFase(m.fase).fim;
     const calmo = typeof window.matchMedia === 'function' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let id = 0;
     let ultimoLote = 0;
@@ -219,31 +324,47 @@ function Ceu({ estado, eu, jogador, socket, channelId }: { estado: EstadoNave & 
         const o = m.avancar(cmd, semFoco || atrasado);
         if (toque.current && (cmd.dx || cmd.dy)) reancorar(toque.current, m.nave);
         if (cmd.bomba) teclas.current.bomba = false;
+        if (cmd.loop) teclas.current.loop = false;
         if (!atrasado) {
           if (o.disparou && agoraMs - ultimoSomDeTiro > 240) {
             ultimoSomDeTiro = agoraMs;
             tocar('tiro');
           }
-          if (o.chefe) tocar('fim');
-          else if (o.derrubou) tocar('acerto');
-          if (o.pegou) tocar('moeda');
-          if (o.perdeuVida) tocar('queda');
+          if (o.chefe) {
+            tocar('fim');
+            impacto.tremer(1, 500);
+          } else if (o.derrubou) tocar('acerto');
+          for (const i of o.acertados) impacto.acerto({ piscar: i, piscarMs: 70 });
+          if (o.pegou) tocar('item');
+          if (o.perdeuVida) {
+            tocar('dano');
+            impacto.acerto({ forca: 0.7, pausaMs: 60 });
+          }
           if (o.escudo) tocar('soco');
-          if (o.bomba) tocar('combo');
+          if (o.bomba) {
+            tocar('explosao');
+            impacto.tremer(1, 450);
+          }
+          if (o.loop) tocar('desliza');
         }
       }
       // quem não pilota segue alguém: o que tem mais pontos e ainda está no ar
       let seguindo: number | null = null;
       if (!m.pilotando) {
         let melhor = -1;
-        for (const [uid, o] of outros.current) if (!o.fim && o.pts > melhor) (melhor = o.pts), (seguindo = uid);
+        for (const [uid, o] of outros.current) if (!o.fim && o.pts > melhor) ((melhor = o.pts), (seguindo = uid));
         m.seguir(seguindo === null ? null : outros.current.get(seguindo)!.mortos);
       }
 
       // o lote: o lugar da nave e os eventos desde o último
       if (souJogador && m.passo >= 0 && agoraMs - ultimoLote >= LOTE_MS && (m.pilotando || m.eventos.length)) {
         ultimoLote = agoraMs;
-        enviar({ p: m.passo, x: m.nave.x, y: m.nave.y, ev: m.eventos.splice(0) });
+        enviar({
+          p: m.passo,
+          x: m.nave.x,
+          y: m.nave.y,
+          ev: m.eventos.splice(0),
+        });
       }
 
       if (semFoco && !piloto()) return;
@@ -257,13 +378,35 @@ function Ceu({ estado, eu, jogador, socket, channelId }: { estado: EstadoNave & 
         for (let k = a.length - 1; k > 0; k--) {
           if (a[k - 1].p <= p && p <= a[k].p) {
             const u = (p - a[k - 1].p) / Math.max(1, a[k].p - a[k - 1].p);
-            pos = { p, x: a[k - 1].x + (a[k].x - a[k - 1].x) * u, y: a[k - 1].y + (a[k].y - a[k - 1].y) * u };
+            pos = {
+              p,
+              x: a[k - 1].x + (a[k].x - a[k - 1].x) * u,
+              y: a[k - 1].y + (a[k].y - a[k - 1].y) * u,
+            };
             break;
           }
         }
-        naTela.push({ x: pos.x, y: pos.y, cor: coresRef.current.get(uid) ?? '#ffffff', nome: nomes.current.get(uid) ?? '', vivo: !o.fim || o.vidas > 0 });
+        naTela.push({
+          x: pos.x,
+          y: pos.y,
+          cor: coresRef.current.get(uid) ?? '#ffffff',
+          nome: nomes.current.get(uid) ?? '',
+          vivo: !o.fim || o.vidas > 0,
+        });
       }
-      desenhar(ctx, { horta, passo: passoNaTela, mundo: m, outros: naTela, minhaCor: coresRef.current.get(eu) ?? CORES_DA_ESQUADRILHA[0], calmo });
+      const tremor = impacto.quadro();
+      ctx.save();
+      ctx.translate(tremor.dx, tremor.dy);
+      desenhar(ctx, {
+        horta,
+        passo: passoNaTela,
+        mundo: m,
+        outros: naTela,
+        minhaCor: coresRef.current.get(eu) ?? CORES_DA_ESQUADRILHA[0],
+        calmo,
+        piscando: (i) => impacto.piscando(i),
+      });
+      ctx.restore();
 
       if (agoraMs - ultimoHud > 200) {
         ultimoHud = agoraMs;
@@ -276,6 +419,8 @@ function Ceu({ estado, eu, jogador, socket, channelId }: { estado: EstadoNave & 
           bombas: f.bombas,
           escudo: f.escudo,
           arma: f.armaEm(m.passo),
+          nivel: f.nivelEm(m.passo),
+          loop: f.loopPronto(m.passo),
           esquadrilha: soma,
           passo: m.passo,
           acabou: f.acabou,
@@ -291,7 +436,10 @@ function Ceu({ estado, eu, jogador, socket, channelId }: { estado: EstadoNave & 
   /** O dedo (ou o mouse arrastando) em unidades do céu: a nave acompanha o arraste, e atira sozinha enquanto há toque. */
   const noCeu = (e: React.PointerEvent<HTMLCanvasElement>) => {
     const r = e.currentTarget.getBoundingClientRect();
-    return { x: ((e.clientX - r.left) * LARGURA) / r.width, y: ((e.clientY - r.top) * ALTURA) / r.height };
+    return {
+      x: ((e.clientX - r.left) * LARGURA) / r.width,
+      y: ((e.clientY - r.top) * ALTURA) / r.height,
+    };
   };
 
   const ms = hud.passo < 0 ? 0 : (hud.passo * 1000) / PASSOS_POR_S;
@@ -314,6 +462,14 @@ function Ceu({ estado, eu, jogador, socket, channelId }: { estado: EstadoNave & 
                 <span key={k} className="nave-bomba-icone" aria-hidden="true" />
               ))}
             </span>
+            {hud.arma > 0 && (
+              <span className="nave-nivel" title={t('Nível da arma: {n}', { n: hud.nivel })}>
+                {'▲'.repeat(hud.nivel)}
+              </span>
+            )}
+            <span className={`nave-loop${hud.loop ? ' pronto' : ''}`} title={t('Loop')} aria-hidden="true">
+              ↻
+            </span>
             <span className="golfe-tacadas">{t('Pontos: {n}', { n: hud.pontos })}</span>
           </>
         )}
@@ -332,7 +488,16 @@ function Ceu({ estado, eu, jogador, socket, channelId }: { estado: EstadoNave & 
             e.currentTarget.setPointerCapture(e.pointerId);
             const p = noCeu(e);
             const m = mundo.current!;
-            toque.current = { id: e.pointerId, dedoX: p.x, dedoY: p.y, naveX: m.nave.x, naveY: m.nave.y, ultimoX: p.x, ultimoY: p.y, alvo: { x: m.nave.x, y: m.nave.y } };
+            toque.current = {
+              id: e.pointerId,
+              dedoX: p.x,
+              dedoY: p.y,
+              naveX: m.nave.x,
+              naveY: m.nave.y,
+              ultimoX: p.x,
+              ultimoY: p.y,
+              alvo: { x: m.nave.x, y: m.nave.y },
+            };
           }}
           onPointerMove={(e) => {
             const d = toque.current;
@@ -340,7 +505,10 @@ function Ceu({ estado, eu, jogador, socket, channelId }: { estado: EstadoNave & 
             const p = noCeu(e);
             d.ultimoX = p.x;
             d.ultimoY = p.y;
-            d.alvo = { x: d.naveX + (p.x - d.dedoX) * 1.4, y: d.naveY + (p.y - d.dedoY) * 1.4 };
+            d.alvo = {
+              x: d.naveX + (p.x - d.dedoX) * 1.4,
+              y: d.naveY + (p.y - d.dedoY) * 1.4,
+            };
           }}
           onPointerUp={(e) => {
             if (toque.current?.id === e.pointerId) toque.current = null;
@@ -369,7 +537,11 @@ function Ceu({ estado, eu, jogador, socket, channelId }: { estado: EstadoNave & 
         )}
       </div>
       {souJogador && estado.fase === 'preparando' && (
-        <p className="minijogo-situacao">{t('Desvie das sementes e derrube a praga. O espantalho vem no fim.')}</p>
+        <p className="minijogo-situacao">
+          {(estado.faseDaNave ?? 'horta') === 'horta'
+            ? t('Desvie das sementes e derrube a praga. O espantalho vem no fim.')
+            : t('Desvie das sementes e derrube a praga. O chefe vem no fim.')}
+        </p>
       )}
       {souJogador && hud.acabou && hud.vidas <= 0 && <p className="minijogo-situacao">{t('Sem vidas: agora é torcer pela esquadrilha.')}</p>}
       {!pilotando && hud.seguindo && <p className="minijogo-situacao">{t('Assistindo: {nome}', { nome: hud.seguindo })}</p>}
@@ -379,6 +551,7 @@ function Ceu({ estado, eu, jogador, socket, channelId }: { estado: EstadoNave & 
             { teclas: ['setas'], toque: 'toque-arrastar', rotulo: t('Voar') },
             { teclas: ['z', 'espaco'], rotulo: t('Atirar') },
             { teclas: ['x'], rotulo: t('Bomba') },
+            { teclas: ['c'], rotulo: t('Loop') },
           ]}
         />
       )}

@@ -203,3 +203,81 @@ test('no Solo, sem troféu, e a partida pode virar o recorde da pessoa', () => {
 
 void PREPARO_MS;
 void PLACAR_ENTRE_MS;
+
+// ---------------- As melhorias de 19/11/2026 ----------------
+
+test('o combo: acertos seguidos multiplicam, e um tiro errado zera', () => {
+  const p = comecar([anaId, biaId]);
+  p.andar();
+  const e = p.estado(anaId);
+  // todas as pragas da onda, em ordem de quando aparecem, cada uma no meio da vida
+  const ordem = e.pragas.map((pr, i) => ({ i, ...mirar(pr) })).sort((a, b) => a.ms - b.ms);
+  let esperado = 0;
+  let combo = 0;
+  for (const [k, tiro] of ordem.entries()) {
+    if (k === 2) {
+      // um erro no meio: o combo zera
+      p.irPara(Math.max(p.naOnda(), tiro.ms - 400) + 130);
+      assert.equal(p.jogo.acao(anaId, { tipo: 'tiro', x: 160, y: 178, ms: p.naOnda() }), null);
+      combo = 0;
+    }
+    p.irPara(Math.max(tiro.ms, p.naOnda() + 130));
+    const antes = p.estado(anaId).meu.pontos;
+    assert.equal(p.jogo.acao(anaId, { tipo: 'tiro', x: tiro.x, y: tiro.y, ms: tiro.ms }), null);
+    const depois = p.estado(anaId).meu as { pontos: number; combo: number };
+    if (depois.pontos === antes) continue; // outra praga na frente (raro): não conta
+    combo++;
+    esperado += voo.pontosDoAcerto(e.pragas[tiro.i], tiro.ms) * voo.multiplicador(combo);
+    assert.equal(depois.combo, combo);
+  }
+  assert.equal(voo.multiplicador(1), 1);
+  assert.equal(voo.multiplicador(4), 2);
+  assert.equal(voo.multiplicador(8), 3);
+  assert.ok(p.estado(anaId).meu.pontos >= esperado);
+});
+
+test('a onda perfeita dá o bônus a quem abateu todas', () => {
+  const p = comecar([anaId, biaId]);
+  p.andar();
+  const e = p.estado(anaId);
+  const ordem = e.pragas.map((pr, i) => ({ i, ...mirar(pr) })).sort((a, b) => a.ms - b.ms);
+  for (const tiro of ordem) {
+    p.irPara(Math.max(tiro.ms, p.naOnda() + 130));
+    // se outra está na frente, mira de novo nesta, um pouco depois
+    p.jogo.acao(anaId, { tipo: 'tiro', x: tiro.x, y: tiro.y, ms: tiro.ms });
+  }
+  const meu = p.estado(anaId).meu;
+  assert.equal(meu.abatidas.length, e.pragas.length, 'todas abatidas');
+  const antes = meu.pontos;
+  p.andar(); // a onda fecha
+  const depois = p.estado(anaId).meu as { pontos: number; perfeita: boolean };
+  assert.equal(depois.perfeita, true);
+  assert.equal(depois.pontos, antes + voo.BONUS_PERFEITA);
+  assert.equal((p.estado(biaId).meu as { perfeita: boolean }).perfeita, false);
+});
+
+test('a dourada é rara, mais rápida e vale o triplo; a onda de pares vem de dois em dois, de lados opostos', () => {
+  let semente = 3;
+  const aleatorio = () => ((semente = (semente * 16807) % 2147483647) - 1) / 2147483646;
+  let douradas = 0;
+  for (let k = 0; k < 40; k++) {
+    for (let n = 1; n <= voo.ONDAS; n++) {
+      const ps = voo.sortearOnda(n, aleatorio);
+      const d = ps.filter((pr) => pr.dourada);
+      assert.ok(d.length <= 1);
+      if (n === 1) assert.equal(d.length, 0, 'a primeira onda não tem dourada');
+      douradas += d.length;
+      for (const pr of d) {
+        assert.equal(voo.pontosDoAcerto(pr, pr.t + pr.vida), voo.PONTOS[pr.tipo] * voo.DOURADA_VEZES);
+        assert.ok(pr.vida < (pr.tipo === 'gafanhoto' ? 2600 : 3400));
+      }
+      if (n === voo.ONDA_DE_PARES) {
+        for (let i = 0; i + 1 < ps.length; i += 2) {
+          assert.equal(ps[i].t, ps[i + 1].t, 'o par sai junto');
+          assert.notEqual(Math.sign(ps[i].vx), Math.sign(ps[i + 1].vx), 'de lados opostos');
+        }
+      }
+    }
+  }
+  assert.ok(douradas > 40 && douradas < 160, `douradas ${douradas}`);
+});

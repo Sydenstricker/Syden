@@ -1,13 +1,16 @@
 import { ComandosDoJogo } from './ComandosDosJogos';
+import { Trophy } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { DIFICULDADES, somarPontos, type Dificuldade, type PontosNaCopa } from './corrida/robos';
+import { BARCOS_DO_COMPUTADOR } from './barco/robos';
 import type { Socket } from 'socket.io-client';
-import { useT } from './i18n';
+import { chave, useT } from './i18n';
 import { comandoDaPausa, TelaDePausa, usePausaComEsc } from './pausaDosJogos';
-import { tempoLegivel } from './jato/util';
+import { passosEmMs, tempoLegivel } from './jato/util';
 import type { ComandosDoBarco } from './barco/fisica';
 import { rodarBarco, type LinhaDaOrdem, type PosicaoNaSala, type RivalDoBarco } from './barco/laco';
 import { nomeDaPistaDoBarco } from './barco/nomes';
-import { LAGO_DA_HORTA, linhaDoBarco, MUNDO, PISTAS_DO_BARCO, pistaDoBarcoPorId, type DefinicaoDoBarco } from './barco/pista';
+import { COPAS_DO_BARCO, LAGO_DA_HORTA, linhaDoBarco, MUNDO, PISTAS_DO_BARCO, PONTOS_DA_COPA_DO_BARCO, pistaDoBarcoPorId, type DefinicaoDoBarco } from './barco/pista';
 import { H, W } from './barco/render';
 import type { Agir } from './Minijogo';
 import type { Partida } from './minijogos';
@@ -215,12 +218,35 @@ export function JogoBarco(props: { estado: EstadoBarco & Partida; eu: number; jo
 // O SOLO: contra o relógio
 // =====================================================================================================================
 
+const NOME_DA_DIFICULDADE: Record<Dificuldade, string> = { facil: chave('Fácil'), medio: chave('Médio'), dificil: chave('Difícil') };
+
+type LinhaDaChegada = { id: number; nome: string; eu: boolean; passos: number | null };
+
+/**
+ * A COPA DO SOLO (19/11/2026, a auditoria): três pistas seguidas contra as naves do computador, pontos pela posição entre as
+ * 12. Mora só no site: cada corrida da copa é uma corrida do Solo como as outras (o servidor confere e guarda o recorde, porque
+ * as naves do computador nunca tocam a de quem joga), e a copa só soma as posições.
+ */
+interface CopaDoBarco {
+  id: string;
+  indice: number;
+  pontos: PontosNaCopa[];
+  /** A corrida desta pista já entrou nos pontos (a chegada avisa uma vez só). */
+  somada: boolean;
+}
+
 function BarcoSolo({ estado, eu, agir }: { estado: EstadoBarco & Partida; eu: number; agir: Agir }) {
   const t = useT();
   const recordes = estado.recordes ?? [];
   const def = pistaDoBarcoPorId(estado.pista);
   const [escolhidos, setEscolhidos] = useState<Set<number> | null>(null);
+  const [chegada, setChegada] = useState<{ posicao: number; total: number } | null>(null);
+  const [classificacao, setClassificacao] = useState<LinhaDaChegada[] | null>(null);
   const [erro, setErro] = useState<string | null>(null);
+  const [dificuldade, setDificuldade] = useState<Dificuldade>('medio');
+  /** A copa escolhida na tela da escolha (ainda não começada), e a copa andando. */
+  const [copaEscolhida, setCopaEscolhida] = useState<string | null>(null);
+  const [copa, setCopa] = useState<CopaDoBarco | null>(null);
 
   // os fantasmas que vêm marcados: o meu e os dos amigos logo acima de mim (o próximo alvo); refeito ao trocar de pista
   const marcados = (() => {
@@ -234,30 +260,63 @@ function BarcoSolo({ estado, eu, agir }: { estado: EstadoBarco & Partida; eu: nu
 
   const tentar = (corpo: Record<string, unknown>) => {
     setErro(null);
-    agir(corpo).catch((e) => setErro((e as Error).message));
+    return agir(corpo).catch((e) => setErro((e as Error).message));
   };
-  const correr = () => tentar({ tipo: 'correr', fantasmas: [...marcados] });
+  /** Uma corrida: na copa, sem fantasmas (a copa é contra as naves do computador). */
+  const correr = (comCopa: boolean) => {
+    setChegada(null);
+    setClassificacao(null);
+    return tentar({ tipo: 'correr', fantasmas: comCopa ? [] : [...marcados] });
+  };
+  /** Vai à pista `pista` (se não estiver nela) e corre. */
+  const correrEm = async (pista: string, comCopa: boolean) => {
+    if (pista !== estado.pista) await tentar({ tipo: 'pista', pista });
+    await correr(comCopa);
+  };
+  const comecar = () => {
+    if (copaEscolhida) {
+      setCopa({ id: copaEscolhida, indice: 0, pontos: [], somada: false });
+      void correrEm(COPAS_DO_BARCO[copaEscolhida][0], true);
+    } else {
+      setCopa(null);
+      void correr(false);
+    }
+  };
+  const proximaDaCopa = () => {
+    if (!copa) return;
+    const indice = copa.indice + 1;
+    setCopa({ ...copa, indice, somada: false });
+    void correrEm(COPAS_DO_BARCO[copa.id][indice], true);
+  };
   const alternar = (id: number) => {
     const n = new Set(marcados);
     if (n.has(id)) n.delete(id);
     else if (n.size < MAX_FANTASMAS) n.add(id);
     setEscolhidos(n);
   };
+  const aoClassificar = (lista: LinhaDaChegada[]) => {
+    setClassificacao(lista);
+    setCopa((c) => (c && !c.somada ? { ...c, somada: true, pontos: somarPontos(c.pontos, lista, PONTOS_DA_COPA_DO_BARCO) } : c));
+  };
   const meu = recordes.find((r) => r.userId === eu) ?? null;
   const outros = recordes.filter((r) => r.userId !== eu);
+  const nomeDe = (l: { nome: string; eu: boolean }) => (l.eu ? t('você') : l.nome);
 
   if (estado.fase === 'escolha') {
     return (
-      <div className="barco">
+      <div className="jato">
         <ul className="barco-pistas" role="radiogroup">
           {PISTAS_DO_BARCO.map((p) => (
             <li key={p.id}>
               <button
                 type="button"
                 role="radio"
-                aria-checked={p.id === estado.pista}
-                className={`barco-pista-botao${p.id === estado.pista ? ' escolhida' : ''}`}
-                onClick={() => p.id !== estado.pista && tentar({ tipo: 'pista', pista: p.id })}
+                aria-checked={!copaEscolhida && p.id === estado.pista}
+                className={`barco-pista-botao${!copaEscolhida && p.id === estado.pista ? ' escolhida' : ''}`}
+                onClick={() => {
+                  setCopaEscolhida(null);
+                  if (p.id !== estado.pista) void tentar({ tipo: 'pista', pista: p.id });
+                }}
               >
                 <MapaDaPista def={p} lado={72} />
                 <strong>{nomeDaPistaDoBarco(t, p.id)}</strong>
@@ -265,31 +324,58 @@ function BarcoSolo({ estado, eu, agir }: { estado: EstadoBarco & Partida; eu: nu
               </button>
             </li>
           ))}
+          {Object.entries(COPAS_DO_BARCO).map(([id, pistas]) => (
+            <li key={id}>
+              <button
+                type="button"
+                role="radio"
+                aria-checked={copaEscolhida === id}
+                className={`barco-pista-botao${copaEscolhida === id ? ' escolhida' : ''}`}
+                onClick={() => setCopaEscolhida(id)}
+              >
+                <span className="barco-copa" aria-hidden="true">
+                  <Trophy size={40} />
+                </span>
+                <strong>{nomeDaPistaDoBarco(t, id)}</strong>
+                <small>{pistas.map((p) => nomeDaPistaDoBarco(t, p)).join(' · ')}</small>
+              </button>
+            </li>
+          ))}
         </ul>
+        <div className="minijogo-abas barco-dificuldade" role="radiogroup" aria-label={t('Computador')}>
+          {DIFICULDADES.map((d) => (
+            <button key={d} type="button" role="radio" aria-checked={dificuldade === d} className={dificuldade === d ? 'ativa' : undefined} onClick={() => setDificuldade(d)}>
+              {t(NOME_DA_DIFICULDADE[d])}
+            </button>
+          ))}
+        </div>
         <div className="barco-pista-nome">
-          {meu && <span>{t('Seu recorde: {tempo}', { tempo: tempoLegivel(meu.tempoMs) })}</span>}
+          {meu && !copaEscolhida && <span>{t('Seu recorde: {tempo}', { tempo: tempoLegivel(meu.tempoMs) })}</span>}
           <Comandos solo />
           <p className="settings-hint">{t('O barco desliza: tire o pé antes da curva. As argolas laranja dão um empurrão.')}</p>
+          <p className="settings-hint">{t('Passe as boias de slalom pelo lado da seta: acertar enche o turbo, errar tira.')}</p>
         </div>
-        <fieldset className="barco-fantasmas">
-          <legend>{t('Correr contra')}</legend>
-          {recordes.length > 0 && (
-            <ul>
-              {recordes.map((r) => (
-                <li key={r.userId}>
-                  <label>
-                    <input type="checkbox" checked={marcados.has(r.userId)} disabled={!marcados.has(r.userId) && marcados.size >= MAX_FANTASMAS} onChange={() => alternar(r.userId)} />
-                    <span className="barco-quem">{r.nome}</span>
-                    <span className="barco-relogio">{tempoLegivel(r.tempoMs)}</span>
-                  </label>
-                </li>
-              ))}
-            </ul>
-          )}
-          {outros.length === 0 && <p className="settings-hint">{t('Nenhum amigo correu nesta pista ainda.')}</p>}
-        </fieldset>
+        {!copaEscolhida && (
+          <fieldset className="barco-fantasmas">
+            <legend>{t('Correr contra')}</legend>
+            {recordes.length > 0 && (
+              <ul>
+                {recordes.map((r) => (
+                  <li key={r.userId}>
+                    <label>
+                      <input type="checkbox" checked={marcados.has(r.userId)} disabled={!marcados.has(r.userId) && marcados.size >= MAX_FANTASMAS} onChange={() => alternar(r.userId)} />
+                      <span className="barco-quem">{r.nome}</span>
+                      <span className="barco-relogio">{tempoLegivel(r.tempoMs)}</span>
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {outros.length === 0 && <p className="settings-hint">{t('Nenhum amigo correu nesta pista ainda.')}</p>}
+          </fieldset>
+        )}
         <div className="minijogo-acoes">
-          <button type="button" className="btn-primary" onClick={correr}>
+          <button type="button" className="btn-primary" onClick={comecar}>
             {t('Começar')}
           </button>
         </div>
@@ -299,26 +385,95 @@ function BarcoSolo({ estado, eu, agir }: { estado: EstadoBarco & Partida; eu: nu
   }
 
   const r = estado.resultado;
+  const pistasDaCopa = copa ? COPAS_DO_BARCO[copa.id] : [];
+  const ultimaDaCopa = copa ? copa.indice === pistasDaCopa.length - 1 : true;
+  const lugar = (i: number, fim: boolean) => (fim && i < 3 ? MEDALHAS[i] : i + 1);
   return (
-    <div className="barco">
-      <CorridaSolo key={`${estado.partidaId}-${estado.rodada ?? 0}`} estado={estado} def={def} agir={agir} aoErro={setErro} />
+    <div className="jato">
+      {copa && (
+        <div className="barco-topo">
+          <strong>{nomeDaPistaDoBarco(t, copa.id)}</strong>
+          <span>
+            {t('Rodada {n} de {total}', { n: copa.indice + 1, total: pistasDaCopa.length })} · {nomeDaPistaDoBarco(t, def.id)}
+          </span>
+        </div>
+      )}
+      <CorridaSolo
+        key={`${estado.partidaId}-${estado.rodada ?? 0}`}
+        estado={estado}
+        def={def}
+        agir={agir}
+        dificuldade={dificuldade}
+        semFantasmas={copa !== null}
+        aoChegar={setChegada}
+        aoClassificar={aoClassificar}
+        aoErro={setErro}
+      />
       {estado.fase === 'resultado' && r && (
         <div className="barco-fim-solo">
-          {r.recorde && <strong className="barco-recorde">{t('Novo recorde!')}</strong>}
-          <span className="barco-relogio grande">{tempoLegivel(r.tempoMs)}</span>
-          <ol className="barco-voltas">
-            {r.voltas.map((v, i) => (
-              <li key={i}>
-                🏁 {i + 1} · {tempoLegivel(v - (i ? r.voltas[i - 1] : 0))}
-              </li>
-            ))}
-          </ol>
-          {!r.recorde && r.anterior !== null && <span className="settings-hint">{t('Seu recorde: {tempo}', { tempo: tempoLegivel(r.anterior) })}</span>}
+          {
+            <>
+              {r.recorde && <strong className="barco-recorde">{t('Novo recorde!')}</strong>}
+              <span className="barco-relogio grande">{tempoLegivel(r.tempoMs)}</span>
+              {chegada && <span>{t('Posição: {posicao} de {total}', { posicao: chegada.posicao, total: chegada.total })}</span>}
+              {!copa && (
+                <ol className="barco-voltas">
+                  {r.voltas.map((v, i) => (
+                    <li key={i}>
+                      🏁 {i + 1} · {tempoLegivel(v - (i ? r.voltas[i - 1] : 0))}
+                    </li>
+                  ))}
+                </ol>
+              )}
+              {!r.recorde && r.anterior !== null && <span className="settings-hint">{t('Seu recorde: {tempo}', { tempo: tempoLegivel(r.anterior) })}</span>}
+            </>
+          }
+          {/* a corrida: todas as naves, na ordem da chegada */}
+          {classificacao && !copa && (
+            <ol className="barco-classificacao barco-classificacao-solo">
+              {classificacao.map((l, i) => (
+                <li key={l.id} className={l.eu ? 'eu' : undefined}>
+                  <span className="barco-posicao">{lugar(i, true)}</span>
+                  <span className="barco-quem">{nomeDe(l)}</span>
+                  <span className="barco-relogio">{l.passos !== null ? tempoLegivel(passosEmMs(l.passos)) : '…'}</span>
+                </li>
+              ))}
+            </ol>
+          )}
+          {/* a copa: os pontos desta corrida e os somados; no fim, o pódio */}
+          {copa && classificacao && (
+            <ol className="barco-classificacao barco-classificacao-solo">
+              {copa.pontos.map((l, i) => {
+                const nesta = classificacao.findIndex((c) => c.id === l.id);
+                return (
+                  <li key={l.id} className={l.eu ? 'eu' : undefined}>
+                    <span className="barco-posicao">{lugar(i, ultimaDaCopa)}</span>
+                    <span className="barco-quem">{nomeDe(l)}</span>
+                    <small>+{PONTOS_DA_COPA_DO_BARCO[nesta] ?? 0}</small>
+                    <span className="barco-pontos">{l.pontos}</span>
+                  </li>
+                );
+              })}
+            </ol>
+          )}
           <div className="minijogo-acoes">
-            <button type="button" className="btn-primary" onClick={correr}>
-              {t('Jogar de novo')}
-            </button>
-            <button type="button" className="btn-secondary" onClick={() => tentar({ tipo: 'escolher' })}>
+            {copa && !ultimaDaCopa ? (
+              <button type="button" className="btn-primary" onClick={proximaDaCopa}>
+                {t('Próxima pista')}
+              </button>
+            ) : (
+              <button type="button" className="btn-primary" onClick={() => (copa ? comecar() : void correr(false))}>
+                {t('Jogar de novo')}
+              </button>
+            )}
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={() => {
+                setCopa(null);
+                void tentar({ tipo: 'escolher' });
+              }}
+            >
               {t('Escolher a pista')}
             </button>
           </div>
@@ -329,7 +484,25 @@ function BarcoSolo({ estado, eu, agir }: { estado: EstadoBarco & Partida; eu: nu
   );
 }
 
-function CorridaSolo({ estado, def, agir, aoErro }: { estado: EstadoBarco & Partida; def: DefinicaoDoBarco; agir: Agir; aoErro: (e: string) => void }) {
+function CorridaSolo({
+  estado,
+  def,
+  agir,
+  dificuldade,
+  semFantasmas,
+  aoChegar,
+  aoClassificar,
+  aoErro,
+}: {
+  estado: EstadoBarco & Partida;
+  def: DefinicaoDoBarco;
+  agir: Agir;
+  dificuldade: Dificuldade;
+  semFantasmas: boolean;
+  aoChegar: (c: { posicao: number; total: number }) => void;
+  aoClassificar: (lista: LinhaDaChegada[]) => void;
+  aoErro: (e: string) => void;
+}) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const tela = useRef<HTMLDivElement>(null);
   const [placar, setPlacar] = usePlacar();
@@ -345,14 +518,17 @@ function CorridaSolo({ estado, def, agir, aoErro }: { estado: EstadoBarco & Part
       comandos: controles.comandos.current,
       pista: def,
       piloto: true,
-        pausa,
+      pausa,
       meuAvatar: estado.meuAvatar ?? null,
-      fantasmas: (estado.fantasmas ?? []).map((f) => ({ amostras: f.amostras, avatar: f.avatar })),
+      fantasmas: semFantasmas ? [] : (estado.fantasmas ?? []).map((f) => ({ amostras: f.amostras, avatar: f.avatar })),
+      robos: { quantos: BARCOS_DO_COMPUTADOR, dificuldade },
       contagem: CONTAGEM,
       calmo: menosMovimento(),
       aoPlacar: setPlacar,
-      aoChegar: (voltas, caminho) => {
+      aoClassificacao: aoClassificar,
+      aoChegar: (voltas, caminho, posicao, total) => {
         setAcabou(true);
+        aoChegar({ posicao, total });
         agir({ tipo: 'chegada', voltas, amostras: caminho }).catch((e) => aoErro((e as Error).message));
       },
     });
@@ -364,7 +540,7 @@ function CorridaSolo({ estado, def, agir, aoErro }: { estado: EstadoBarco & Part
       <canvas ref={canvas} width={W} height={H} />
       {!acabou && <Placar placar={placar} voltas={def.voltas} />}
       {!acabou && <BotoesDeToque controles={controles} />}
-          {!acabou && pausado && <TelaDePausa aoContinuar={continuar} icone={false} />}
+      {!acabou && pausado && <TelaDePausa aoContinuar={continuar} icone={false} />}
     </div>
   );
 }

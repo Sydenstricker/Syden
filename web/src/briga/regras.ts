@@ -404,12 +404,16 @@ export interface Quadro {
   f: 'lutando' | 'avancando' | 'vitoria' | 'derrota' | 'fim';
   o: number;
   a: [number, number];
-  /** [id, tipo, x, y, z, estado, lado, hp%, passos no estado, faixa, x da queda do pulo] */
+  /** [id, tipo, x, y, z, estado, lado, hp%, passos no estado, faixa, x da queda do pulo, elite (1/0)] */
   i: number[][];
   /** A fase na tela (o índice em FASES_DA_BRIGA). */
   fs?: number;
   /** Os tiros no ar: [id, tipo, x, y, lado]. */
   t?: number[][];
+  /** As cenouras de cura no chão (19/11/2026): [id, grande (1/0), x, y]. */
+  c?: number[][];
+  /** Os caixotes (19/11/2026): [id, x, y, vida %, voando (1/0)]. */
+  cx?: number[][];
   /** [userId, x, y, z, lado, ação, ms da ação, hp, vidas, pontos, estado (0 em pé, 1 fora, 2 sem vidas), avatar, último golpe aceito] */
   j: number[][];
   e: unknown[][];

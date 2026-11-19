@@ -24,13 +24,19 @@ const biaId = await idDe(bia.token);
 interface Estado {
   fase: string;
   semente: number;
-  jogadores: { userId: number; pontos: number; vidas: number; chefe: boolean; posicao: number | null }[];
+  jogadores: {
+    userId: number;
+    pontos: number;
+    vidas: number;
+    chefe: boolean;
+    posicao: number | null;
+  }[];
   esquadrilha: number;
   meu: { vidas: number; mortos: number[] } | null;
   recorde: { antes: number | null; novo: boolean } | null;
 }
 
-function comecar(naSala: number[], comunidade = 0) {
+function comecar(naSala: number[], comunidade = 0, corpo: Record<string, unknown> = {}) {
   let relogio: { ms: number; depois: () => void; em: number } | null = null;
   let terminou = false;
   const ctx = {
@@ -43,7 +49,11 @@ function comecar(naSala: number[], comunidade = 0) {
   };
   let semente = 11;
   const aleatorio = () => ((semente = (semente * 16807) % 2147483647) - 1) / 2147483646;
-  const jogo = criarNave({ agora: () => agora, aleatorio }).comecar(ctx, { naSala, criadaPor: naSala[0], corpo: {} });
+  const jogo = criarNave({ agora: () => agora, aleatorio }).comecar(ctx, {
+    naSala,
+    criadaPor: naSala[0],
+    corpo,
+  });
   assert.ok(typeof jogo !== 'string');
   let inicio = 0;
   return {
@@ -78,13 +88,18 @@ test('as duas cópias da regra são iguais (o site joga com a mesma conta que o 
 });
 
 /** Joga com o piloto automático; a cada 6 passos, o lote vai ao servidor. `quem` pilota; os outros só deixam o tempo passar. */
-function jogar(p: ReturnType<typeof comecar>, quem: number, ate = sim.FIM) {
-  const m = new Mundo(p.estado(quem).semente, true);
+function jogar(p: ReturnType<typeof comecar>, quem: number, ate = sim.FIM, fase: sim.FaseDaNave = 'horta') {
+  const m = new Mundo(p.estado(quem).semente, true, fase);
   for (let n = 0; n <= ate && !p.terminou(); n++) {
     m.avancar(pilotar(m));
     if (n % 6 === 0 || m.ficha.acabou) {
       p.irAoPasso(m.passo);
-      p.jogo.tempoReal!(quem, { p: m.passo, x: m.nave.x, y: m.nave.y, ev: m.eventos.splice(0) });
+      p.jogo.tempoReal!(quem, {
+        p: m.passo,
+        x: m.nave.x,
+        y: m.nave.y,
+        ev: m.eventos.splice(0),
+      });
     }
     if (m.ficha.acabou && !m.eventos.length) break;
   }
@@ -121,9 +136,13 @@ test('com a turma: a Ana pilota, a Bia fica parada até acabar o tempo; o pódio
   const fim = p.estado(biaId);
   assert.equal(fim.jogadores[0].userId, anaId);
   assert.equal(fim.jogadores[0].posicao, 1);
-  assert.equal(fim.jogadores[0].pontos, m.ficha.total(sim.FIM, true));
+  // a esquadrilha intacta (19/11/2026): ninguém perdeu vida, e cada um ganha SEM_QUEDA no fim
+  const intacta = m.ficha.mortes.length === 0;
+  assert.equal(fim.intacta, intacta);
+  const bonus = intacta ? sim.SEM_QUEDA : 0;
+  assert.equal(fim.jogadores[0].pontos, m.ficha.total(sim.FIM, true) + bonus);
   // a Bia não morreu (ninguém disse que ela foi atingida): sobreviveu às ondas, e isso vale pontos
-  assert.equal(fim.jogadores[1].pontos, sim.SOBREVIVER * sim.ONDAS + sim.POR_VIDA * sim.VIDAS);
+  assert.equal(fim.jogadores[1].pontos, sim.SOBREVIVER * sim.ONDAS + sim.POR_VIDA * sim.VIDAS + bonus);
   assert.equal(fim.esquadrilha, fim.jogadores[0].pontos + fim.jogadores[1].pontos);
   assert.ok(db.trofeusDe(anaId).some((t) => t.pista === 'nave' && t.posicao === 1));
   assert.ok(db.trofeusDe(biaId).some((t) => t.pista === 'nave' && t.posicao === 2));
@@ -163,7 +182,15 @@ test('o servidor confere o relógio, a cadência, a arma e o lugar', () => {
   const p2 = comecar([anaId, biaId]);
   p2.andar();
   p2.irAoPasso(q + 2);
-  const r = p2.jogo.tempoReal!(anaId, { p: q, x, y, ev: [['a', q, i, disparo, x, y, 0, 0], ['a', q, i, disparo, x, y, 0, 0]] }) as { m?: number[] };
+  const r = p2.jogo.tempoReal!(anaId, {
+    p: q,
+    x,
+    y,
+    ev: [
+      ['a', q, i, disparo, x, y, 0, 0],
+      ['a', q, i, disparo, x, y, 0, 0],
+    ],
+  }) as { m?: number[] };
   assert.deepEqual(r.m, [i], 'o corvo caiu, e a turma fica sabendo');
   const ganhou = p2.estado(anaId).jogadores.find((l) => l.userId === anaId)!.pontos;
   assert.equal(ganhou, sim.PONTOS.corvo);
@@ -191,3 +218,23 @@ test('três golpes tiram as três vidas; a partida acaba para quem caiu e para q
 });
 
 void PREPARO_MS;
+
+test('a fase curta (19/11/2026): o pomar no Solo, com o chefe novo; o recorde vai à tabela comum, por fase', () => {
+  const p = comecar([anaId], 0, { fase: 'pomar' });
+  p.andar();
+  const e = p.estado(anaId) as unknown as {
+    faseDaNave: string;
+    duracaoMs: number;
+  };
+  assert.equal(e.faseDaNave, 'pomar');
+  assert.equal(e.duracaoMs, Math.round((sim.temposDaFase('pomar').fim * 1000) / sim.PASSOS_POR_S));
+  const m = jogar(p, anaId, sim.temposDaFase('pomar').fim, 'pomar');
+  p.andar();
+  assert.ok(p.terminou());
+  const fim = p.estado(anaId);
+  assert.equal(fim.jogadores[0].pontos, m.ficha.total(sim.temposDaFase('pomar').fim, true));
+  assert.equal(db.recordeDoSolo(anaId, 'nave', 'pomar')?.valor, fim.jogadores[0].pontos);
+  // uma fase que não existe vira a horta
+  const q = comecar([anaId], 0, { fase: 'lua' });
+  assert.equal((q.estado(anaId) as unknown as { faseDaNave: string }).faseDaNave, 'horta');
+});

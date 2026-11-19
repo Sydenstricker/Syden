@@ -8,12 +8,13 @@ import {
   COR_DO_ELEMENTO,
   desenharBicho,
   desenharCampo,
+  desenharAchado,
   desenharFundoDaLuta,
   LARGURA_PX,
   NOME_DO_ELEMENTO,
   type PoseDoBicho,
 } from './bichos/desenho';
-import { andavel, DIRECOES, ESPECIES, GOLPES, INICIAIS, TAMANHO_DA_EQUIPE } from './bichos/regras';
+import { antesDe, DESAFIANTES, DIRECOES, ESPECIES, GOLPES, INICIAIS, mapaDe, passoNoMapa, PRECOS, TAMANHO_DA_EQUIPE, type DadosDoGolpe } from './bichos/regras';
 import { useT } from './i18n';
 import { useJanelaComFoco } from './janelaComFoco';
 import { primeiraForma, type Partida } from './minijogos';
@@ -36,6 +37,10 @@ interface BichoNaLuta {
   pv: number;
   pvMax: number;
   golpes?: string[];
+  /** Os efeitos da luta (19/11/2026): o cochilo ou o veneno, e os degraus de ataque e defesa. */
+  estado?: 'cochilo' | 'veneno';
+  atqD?: number;
+  defD?: number;
 }
 interface LadoNaTela {
   ativo: number;
@@ -56,6 +61,15 @@ interface EstadoSolo {
   fase: 'inicial' | 'mapa' | 'batalha';
   partidaId: string;
   avatar: number | string | null;
+  /** A tela do mapa (campo, bosque, serra). */
+  mapa?: string;
+  moedas?: number;
+  caderno?: { vistos: string[]; pegos: string[] };
+  escada?: number[];
+  vencidos?: string[];
+  achados?: string[];
+  /** De pé na porta da lojinha. */
+  loja?: boolean;
   x: number;
   y: number;
   equipe: BichoDaEquipe[];
@@ -63,11 +77,13 @@ interface EstadoSolo {
   cenouras: number;
   chas: number;
   desafios: number;
-  luta: { tipo: 'mato' | 'desafio'; acabou: string | null; meu: LadoNaTela; outro: LadoNaTela; chance: number } | null;
+  luta: { tipo: 'mato' | 'desafio' | 'pessoa'; acabou: string | null; meu: LadoNaTela; outro: LadoNaTela; chance: number } | null;
   eventos: Evento[];
 }
 interface EstadoSala {
   modo: 'sala';
+  /** Todos lutam neste nível (19/11/2026). */
+  nivel?: number;
   fase: 'esperando' | 'escolhendo' | 'fim';
   partidaId: string;
   lugares: { userId: number; username: string; emprestada: boolean }[];
@@ -88,12 +104,27 @@ function textoDo(e: Evento, t: ReturnType<typeof useT>, nomeDaPessoa: (id: numbe
   switch (e.t) {
     case 'golpe': {
       const frase = t('{nome} usou {golpe}!', { nome, golpe: primeiraForma(t(GOLPES[String(e.golpe)]?.nome ?? '')) });
+      if (e.apoio) return frase;
       if (e.efic === 2) return `${frase} ${t('Funcionou muito bem!')}`;
       if (e.efic === 0.5) return `${frase} ${t('Não funcionou muito bem.')}`;
       return frase;
     }
     case 'sono':
       return t('{nome} pegou no sono.', { nome });
+    case 'errou':
+      return t('{nome} errou o golpe.', { nome });
+    case 'efeito':
+      return `${ICONE_DO_EFEITO[String(e.efeito)] ?? ''} ${textoDoEfeito(String(e.efeito), nome, t)}`.trim();
+    case 'moedas':
+      return `🪙 ${t('Você ganhou {n} moedas.', { n: Number(e.n) })}`;
+    case 'raro':
+      return t('Um bicho raro apareceu: {nome}!', { nome });
+    case 'espera':
+      return t('{nome} espera você vencer {antes} primeiro.', { nome: String(e.nome), antes: String(e.antes) });
+    case 'achou':
+      return `${ICONE_DO_ITEM[String(e.item)] ?? ''} +${Number(e.qtd)}`;
+    case 'comprou':
+      return `${ICONE_DO_ITEM[String(e.item)] ?? ''} +1`;
     case 'troca':
       return t('{nome} entrou na luta!', { nome });
     case 'cha':
@@ -131,8 +162,56 @@ function textoDo(e: Evento, t: ReturnType<typeof useT>, nomeDaPessoa: (id: numbe
   }
 }
 
+/** O ícone de cada efeito da luta (na narração e no cartão do bicho). */
+const ICONE_DO_EFEITO: Record<string, string> = {
+  cochilou: '💤', cochilando: '💤', acordou: '☀️', envenenou: '🟣', veneno: '🟣', 'atq+': '⚔️▲', 'atq-': '⚔️▼', 'def+': '🛡️▲', 'def-': '🛡️▼',
+  cura: '💚', falhou: '✖',
+};
+const ICONE_DO_ITEM: Record<string, string> = { cenoura: '🥕', cha: '🍵', moedas: '🪙' };
+
+function textoDoEfeito(efeito: string, nome: string, t: ReturnType<typeof useT>): string {
+  switch (efeito) {
+    case 'cochilou':
+      return t('{nome} cochilou.', { nome });
+    case 'cochilando':
+      return t('{nome} está cochilando.', { nome });
+    case 'acordou':
+      return t('{nome} acordou.', { nome });
+    case 'envenenou':
+      return t('O veneno pegou {nome}.', { nome });
+    case 'veneno':
+      return t('{nome} sentiu o veneno.', { nome });
+    case 'atq+':
+      return t('{nome} ficou com mais ataque.', { nome });
+    case 'atq-':
+      return t('{nome} ficou com menos ataque.', { nome });
+    case 'def+':
+      return t('{nome} ficou com mais defesa.', { nome });
+    case 'def-':
+      return t('{nome} ficou com menos defesa.', { nome });
+    case 'cura':
+      return t('{nome} recuperou vida.', { nome });
+    default:
+      return t('Não fez efeito.');
+  }
+}
+
+/** O ícone do que um golpe faz além do dano (nos botões): o efeito, ir primeiro, a precisão. */
+function iconesDoGolpe(g: DadosDoGolpe): string {
+  const ef = g.efeito;
+  const partes: string[] = [];
+  if (ef) partes.push(ef.tipo === 'cochilo' ? '💤' : ef.tipo === 'veneno' ? '🟣' : ef.tipo === 'cura' ? '💚' : `${ef.tipo === 'atq' ? '⚔️' : '🛡️'}${(ef.valor ?? 1) > 0 ? '▲' : '▼'}`);
+  if (g.prioridade) partes.push('⏩');
+  if (g.precisao !== undefined && g.precisao < 1) partes.push(`🎯${Math.round(g.precisao * 100)}%`);
+  return partes.join(' ');
+}
+
 function somDo(e: Evento) {
-  if (e.t === 'golpe') tocar('soco');
+  if (e.t === 'golpe') tocar(e.apoio ? 'item' : 'soco');
+  else if (e.t === 'errou') tocar('erro');
+  else if (e.t === 'efeito') tocar(e.efeito === 'cura' ? 'cura' : e.efeito === 'veneno' ? 'dano' : 'item');
+  else if (e.t === 'moedas' || e.t === 'achou' || e.t === 'comprou') tocar('moeda');
+  else if (e.t === 'raro') tocar('medalha');
   else if (e.t === 'amigo' || e.t === 'venceuDesafio') tocar('chegada');
   else if (e.t === 'recusou' || e.t === 'naoFugiu') tocar('erro');
   else if (e.t === 'nivel' || e.t === 'evoluiu') tocar('moeda');
@@ -205,7 +284,7 @@ function useNarracao(eventos: Evento[], lados: [LadoNaTela, LadoNaTela] | null, 
   const [fila, setFila] = useState<Evento[]>([]);
   const [vista, setVista] = useState<[LadoNaTela, LadoNaTela] | null>(lados);
   const [atual, setAtual] = useState<Evento | null>(null);
-  const [golpe, setGolpe] = useState<{ lado: number; em: number } | null>(null);
+  const [golpe, setGolpe] = useState<{ lado: number; em: number; apoio?: boolean } | null>(null);
   const partida = useRef(partidaId);
 
   useEffect(() => {
@@ -239,7 +318,18 @@ function useNarracao(eventos: Evento[], lados: [LadoNaTela, LadoNaTela] | null, 
       if (e.t === 'golpe') {
         const alvo = n[1 - l];
         if (alvo?.equipe[alvo.ativo]) alvo.equipe[alvo.ativo].pv = Number(e.pv);
-        setGolpe({ lado: l, em: performance.now() });
+        setGolpe({ lado: l, em: performance.now(), apoio: !!e.apoio });
+      } else if (e.t === 'efeito' && n[l]?.equipe[n[l].ativo]) {
+        const b = n[l].equipe[n[l].ativo];
+        if (e.pv !== undefined) b.pv = Number(e.pv);
+        const ef = String(e.efeito);
+        if (ef === 'cochilou') b.estado = 'cochilo';
+        else if (ef === 'envenenou') b.estado = 'veneno';
+        else if (ef === 'acordou') delete b.estado;
+        else if (/^(atq|def)[+-]$/.test(ef)) {
+          const k = ef.startsWith('atq') ? 'atqD' : 'defD';
+          b[k] = Math.max(-3, Math.min(3, (b[k] ?? 0) + (ef.endsWith('+') ? 1 : -1)));
+        }
       } else if (e.t === 'troca' && n[l]) n[l].ativo = Number(e.i);
       else if (e.t === 'cha' && n[l]?.equipe[n[l].ativo]) n[l].equipe[n[l].ativo].pv = Number(e.pv);
       return n;
@@ -258,7 +348,7 @@ function useNarracao(eventos: Evento[], lados: [LadoNaTela, LadoNaTela] | null, 
 
 // ------------------------------------------------------------------ A TELA DA LUTA
 /** O palco da luta, de lado: o meu embaixo à esquerda, o outro em cima à direita. `meu`: o índice do meu lado no par. */
-function PalcoDaLuta({ lados, meu, golpe, desafio }: { lados: [LadoNaTela, LadoNaTela]; meu: number; golpe: { lado: number; em: number } | null; desafio: boolean }) {
+function PalcoDaLuta({ lados, meu, golpe, desafio }: { lados: [LadoNaTela, LadoNaTela]; meu: number; golpe: { lado: number; em: number; apoio?: boolean } | null; desafio: boolean }) {
   const t = useT();
   const tela = useRef<HTMLCanvasElement>(null);
   const comFoco = useJanelaComFoco();
@@ -289,7 +379,7 @@ function PalcoDaLuta({ lados, meu, golpe, desafio }: { lados: [LadoNaTela, LadoN
             if (gp.lado === lado) {
               pose = 'golpe';
               dx = vira * Math.sin((desde / 380) * Math.PI) * 14;
-            } else if (desde > 160) {
+            } else if (desde > 160 && !gp.apoio) {
               pose = 'dor';
               dx = -vira * 3 * Math.sin(desde / 20);
             }
@@ -310,6 +400,7 @@ function PalcoDaLuta({ lados, meu, golpe, desafio }: { lados: [LadoNaTela, LadoN
     return (
       <div className={`bichos-cartao ${onde}`}>
         <strong>{nomeDe(b.especie)}</strong> <Selo especie={b.especie} /> <small>{`${t('Nível')} ${b.nivel}`}</small>
+        <EfeitosDoBicho bicho={b} />
         <BarraDeVida pv={b.pv} pvMax={b.pvMax} />
         {onde === 'meu' && <small className="bichos-pv">{`${b.pv}/${b.pvMax}`}</small>}
         <span className="bichos-pontinhos" aria-hidden="true">
@@ -329,6 +420,28 @@ function PalcoDaLuta({ lados, meu, golpe, desafio }: { lados: [LadoNaTela, LadoN
   );
 }
 
+/** Os efeitos que o bicho carrega na luta, em ícones (o cochilo, o veneno, os degraus). */
+function EfeitosDoBicho({ bicho }: { bicho: BichoNaLuta }) {
+  const t = useT();
+  const partes: [string, string][] = [];
+  if (bicho.estado === 'cochilo') partes.push(['💤', t('{nome} está cochilando.', { nome: nomeDe(bicho.especie) })]);
+  if (bicho.estado === 'veneno') partes.push(['🟣', t('{nome} sentiu o veneno.', { nome: nomeDe(bicho.especie) })]);
+  for (const [k, icone] of [['atqD', '⚔️'], ['defD', '🛡️']] as const) {
+    const d = bicho[k] ?? 0;
+    if (d) partes.push([`${icone}${(d > 0 ? '▲' : '▼').repeat(Math.abs(d))}`, '']);
+  }
+  if (!partes.length) return null;
+  return (
+    <span className="bichos-efeitos">
+      {partes.map(([icone, titulo]) => (
+        <span key={icone} title={titulo || undefined}>
+          {icone}
+        </span>
+      ))}
+    </span>
+  );
+}
+
 /** Os botões dos golpes do bicho da frente, com o elemento de cada um. */
 function Golpes({ bicho, desligado, aoEscolher }: { bicho: BichoNaLuta; desligado: boolean; aoEscolher: (i: number) => void }) {
   const t = useT();
@@ -340,6 +453,7 @@ function Golpes({ bicho, desligado, aoEscolher }: { bicho: BichoNaLuta; desligad
           <button key={g} type="button" className="bichos-golpe" disabled={desligado} style={{ '--cor': COR_DO_ELEMENTO[el] } as CSSProperties} onClick={() => aoEscolher(i)}>
             {primeiraForma(t(GOLPES[g].nome))}
             {el !== 'nenhum' && <small>{primeiraForma(t(NOME_DO_ELEMENTO[el]))}</small>}
+            {iconesDoGolpe(GOLPES[g]) && <small className="bichos-golpe-efeito">{iconesDoGolpe(GOLPES[g])}</small>}
           </button>
         );
       })}
@@ -375,16 +489,16 @@ function Aventura({ estado, agir }: { estado: EstadoSolo; agir: (corpo: Record<s
   const [trocando, setTrocando] = useState(false);
   const [aviso, setAviso] = useState<string | null>(null);
 
-  // o aviso do campo (descansou): aparece um pouco e some
+  // o aviso do campo (descansou, achou algo, comprou, a casa da escada ainda fechada): aparece um pouco e some
   // (o que já tinha acontecido antes de a tela abrir não volta a avisar)
   const ultimoAviso = useRef(estado.eventos.length ? estado.eventos[estado.eventos.length - 1].id : 0);
   useEffect(() => {
-    const e = [...estado.eventos].reverse().find((x) => x.t === 'descansou');
+    const e = [...estado.eventos].reverse().find((x) => ['descansou', 'achou', 'comprou', 'espera'].includes(x.t));
     if (e && e.id > ultimoAviso.current) {
       ultimoAviso.current = e.id;
       if (estado.fase === 'mapa') {
-        setAviso(t('Seus bichos descansaram.'));
-        tocar('moeda');
+        setAviso(e.t === 'descansou' ? t('Seus bichos descansaram.') : textoDo(e, t, () => ''));
+        tocar(e.t === 'espera' ? 'erro' : 'moeda');
         const r = setTimeout(() => setAviso(null), 2500);
         return () => clearTimeout(r);
       }
@@ -468,17 +582,22 @@ function Aventura({ estado, agir }: { estado: EstadoSolo; agir: (corpo: Record<s
 declare global {
   interface Window {
     /** Para o e2e (só no site de desenvolvimento): onde o coelho está, e quantos passos esperam o servidor. */
-    bichosDoTeste?: { x: number; y: number; fila: number };
+    bichosDoTeste?: { x: number; y: number; fila: number; mapa?: string };
     bichosEstado?: EstadoBichos;
   }
 }
 
-/** O campo visto de cima, com o coelho andando casa a casa (cada passo vai ao servidor, que confere e sorteia o mato). */
+/**
+ * O campo visto de cima, com o coelho andando casa a casa (cada passo vai ao servidor, que confere e sorteia o mato). Desde
+ * 19/11/2026, as telas do mapa (campo, Bosque, Serra: passa-se pela borda), as pessoas do caminho, os achados no chão, a lojinha
+ * (de pé na porta dela) e o caderno da toca.
+ */
 function Campo({ estado, agir, aviso }: { estado: EstadoSolo; agir: (corpo: Record<string, unknown>) => Promise<void>; aviso: string | null }) {
   const t = useT();
   const tela = useRef<HTMLCanvasElement>(null);
   const comFoco = useJanelaComFoco();
-  const campo = useMemo(() => (typeof document !== 'undefined' ? desenharCampo() : null), []);
+  const [caderno, setCaderno] = useState(false);
+  const mapaDoServidor = estado.mapa ?? 'campo';
   const coelho = useMemo(() => {
     if (typeof Image === 'undefined') return null;
     const img = new Image();
@@ -486,7 +605,7 @@ function Campo({ estado, agir, aviso }: { estado: EstadoSolo; agir: (corpo: Reco
     return img;
   }, []);
   // a posição na tela anda na frente do servidor; os passos esperam numa fila curta
-  const pos = useRef({ x: estado.x, y: estado.y, deX: estado.x, deY: estado.y, desde: 0, lado: 1 });
+  const pos = useRef({ mapa: mapaDoServidor, x: estado.x, y: estado.y, deX: estado.x, deY: estado.y, desde: 0, lado: 1 });
   const fila = useRef<string[]>([]);
   const enviando = useRef(false);
   const ultimoPasso = useRef(0);
@@ -496,10 +615,10 @@ function Campo({ estado, agir, aviso }: { estado: EstadoSolo; agir: (corpo: Reco
   // sem passo pendente, a posição é a do servidor
   useEffect(() => {
     if (!enviando.current && !fila.current.length) {
-      pos.current = { ...pos.current, x: estado.x, y: estado.y, deX: estado.x, deY: estado.y };
+      pos.current = { ...pos.current, mapa: mapaDoServidor, x: estado.x, y: estado.y, deX: estado.x, deY: estado.y };
     }
-    if (import.meta.env.DEV) window.bichosDoTeste = { x: estado.x, y: estado.y, fila: fila.current.length };
-  }, [estado.x, estado.y]);
+    if (import.meta.env.DEV) window.bichosDoTeste = { x: estado.x, y: estado.y, fila: fila.current.length, mapa: mapaDoServidor };
+  }, [estado.x, estado.y, mapaDoServidor]);
 
   const mandar = () => {
     if (enviando.current) return;
@@ -512,9 +631,9 @@ function Campo({ estado, agir, aviso }: { estado: EstadoSolo; agir: (corpo: Reco
       // o servidor pôs numa luta (ou discordou do lugar): para tudo e fica onde ele diz
       if (e.fase !== 'mapa' || fila.current.length === 0) {
         fila.current = [];
-        pos.current = { ...pos.current, x: e.x, y: e.y, deX: e.x, deY: e.y };
+        pos.current = { ...pos.current, mapa: e.mapa ?? 'campo', x: e.x, y: e.y, deX: e.x, deY: e.y };
       }
-      if (import.meta.env.DEV) window.bichosDoTeste = { x: e.x, y: e.y, fila: fila.current.length };
+      if (import.meta.env.DEV) window.bichosDoTeste = { x: e.x, y: e.y, fila: fila.current.length, mapa: e.mapa ?? 'campo' };
       mandar();
     });
   };
@@ -522,12 +641,15 @@ function Campo({ estado, agir, aviso }: { estado: EstadoSolo; agir: (corpo: Reco
   const passo = (dir: string) => {
     const agora = performance.now();
     if (agora - ultimoPasso.current < 140 || fila.current.length >= 2) return;
-    const [dx, dy] = DIRECOES[dir];
+    const [dx] = DIRECOES[dir];
     const p = pos.current;
     if (dx) p.lado = dx;
-    if (!andavel(p.x + dx, p.y + dy)) return;
+    const destino = passoNoMapa(p.mapa, p.x, p.y, dir);
+    if (!destino) return;
     ultimoPasso.current = agora;
-    pos.current = { x: p.x + dx, y: p.y + dy, deX: p.x, deY: p.y, desde: agora, lado: p.lado };
+    // trocou de tela: sem deslizar de uma ponta à outra
+    const mesma = destino.mapa === p.mapa;
+    pos.current = { mapa: destino.mapa, x: destino.x, y: destino.y, deX: mesma ? p.x : destino.x, deY: mesma ? p.y : destino.y, desde: agora, lado: p.lado };
     fila.current.push(dir);
     tocar('clique');
     mandar();
@@ -547,40 +669,63 @@ function Campo({ estado, agir, aviso }: { estado: EstadoSolo; agir: (corpo: Reco
   }, []);
 
   useEffect(() => {
-    if (!comFoco) return;
+    if (!comFoco || typeof document === 'undefined') return;
     let quadro = 0;
     const desenhar = (tempo: number) => {
       const c = tela.current;
       const g = c?.getContext('2d');
-      if (c && g && campo) {
+      const p = pos.current;
+      if (c && g) {
         g.imageSmoothingEnabled = false;
-        g.drawImage(campo, 0, 0);
-        const p = pos.current;
-        const k = Math.min(1, (tempo - p.desde) / 140);
-        const x = (p.deX + (p.x - p.deX) * k) * CASA_PX + CASA_PX / 2;
-        const y = (p.deY + (p.y - p.deY) * k) * CASA_PX + CASA_PX - 2;
-        const andando = k < 1;
-        const folha = coelho ? folhaDe(coelho, estadoRef.current.avatar) : null;
-        g.fillStyle = 'rgba(30,40,20,0.3)';
-        g.beginPath();
-        g.ellipse(x, y, 6, 2, 0, 0, Math.PI * 2);
-        g.fill();
-        if (folha) {
-          const escala = 0.42;
+        g.drawImage(desenharCampo(p.mapa), 0, 0);
+        const e = estadoRef.current;
+        const dados = mapaDe(p.mapa);
+        // os achados que ainda estão no chão (balançando um pouco)
+        for (const a of dados.achados) {
+          if (e.achados?.includes(a.id)) continue;
+          desenharAchado(g, a.item, a.x * CASA_PX + CASA_PX / 2, a.y * CASA_PX + CASA_PX - 2 - (Math.floor(tempo / 400) % 2));
+        }
+        const coelhoEm = (x: number, y: number, lado: number, avatar: number | string | null, andando: boolean, escala = 0.42) => {
+          g.fillStyle = 'rgba(30,40,20,0.3)';
+          g.beginPath();
+          g.ellipse(x, y, 6, 2, 0, 0, Math.PI * 2);
+          g.fill();
+          const folha = coelho ? folhaDe(coelho, avatar) : null;
+          if (!folha) return;
           const q = desenhoDoCoelho(andando ? 'andando' : 'parado', tempo, false);
           g.save();
           g.translate(Math.round(x), Math.round(y));
-          g.scale(p.lado * escala, escala);
+          g.scale(lado * escala, escala);
           g.drawImage(folha, q * FOLHA.lado, 0, FOLHA.lado, FOLHA.lado, -FOLHA.peX, -FOLHA.peY, FOLHA.lado, FOLHA.lado);
           g.restore();
+        };
+        // as pessoas do caminho (a que já foi vencida ganha a estrelinha; a que ainda desafia, o "!")
+        for (const pe of dados.pessoas) {
+          const px = pe.x * CASA_PX + CASA_PX / 2;
+          const py = pe.y * CASA_PX + CASA_PX - 2;
+          coelhoEm(px, py, pe.olha === 'e' ? -1 : 1, pe.avatar, false);
+          if (e.vencidos?.includes(pe.id)) {
+            g.fillStyle = '#f2c84b';
+            g.fillRect(px - 1, py - 26, 3, 3);
+          } else {
+            g.fillStyle = '#ffffff';
+            g.fillRect(px - 1, py - 28, 2, 4);
+            g.fillRect(px - 1, py - 23, 2, 1);
+          }
         }
+        const k = Math.min(1, (tempo - p.desde) / 140);
+        const x = (p.deX + (p.x - p.deX) * k) * CASA_PX + CASA_PX / 2;
+        const y = (p.deY + (p.y - p.deY) * k) * CASA_PX + CASA_PX - 2;
+        coelhoEm(x, y, p.lado, e.avatar, k < 1);
       }
       quadro = requestAnimationFrame(desenhar);
     };
     quadro = requestAnimationFrame(desenhar);
     return () => cancelAnimationFrame(quadro);
-  }, [comFoco, campo, coelho]);
+  }, [comFoco, coelho]);
 
+  const moedas = estado.moedas ?? 0;
+  const escada = estado.escada ?? [];
   return (
     <div className="bichos bichos-mapa">
       <div className="bichos-campo">
@@ -592,15 +737,38 @@ function Campo({ estado, agir, aviso }: { estado: EstadoSolo; agir: (corpo: Reco
           <button type="button" className="dir" aria-label={t('Para a direita')} onClick={() => passo('d')}>▶</button>
           <button type="button" className="baixo" aria-label={t('Para baixo')} onClick={() => passo('b')}>▼</button>
         </div>
+        {caderno && <CadernoDaToca estado={estado} aoFechar={() => setCaderno(false)} />}
       </div>
       <aside className="bichos-lado">
         <p className="bichos-dica">{t('Setas ou WASD para andar.')}</p>
         <p className="bichos-cesta">
           <span title={t('Cenoura')}>🥕 {estado.cenouras}</span>
           <span title={t('Chá')}>🍵 {estado.chas}</span>
+          <span title={t('Moedas')}>🪙 {moedas}</span>
           <span title={t('Toca')}>🏠 {estado.toca}</span>
           {estado.desafios > 0 && <span>🏅 {estado.desafios}</span>}
         </p>
+        {/* a escada dos desafios: uma estrela por casa vencida, com o nome de quem desafia */}
+        <p className="bichos-escada" aria-label={`${escada.length}/${DESAFIANTES.length}`}>
+          {DESAFIANTES.map((d, i) => (
+            <span key={d.nome} className={escada.includes(i) ? 'vencida' : ''} title={d.nome}>
+              {escada.includes(i) ? '★' : '☆'}
+            </span>
+          ))}
+        </p>
+        <button type="button" className="btn-secondary bichos-caderno-botao" onClick={() => setCaderno((c) => !c)} aria-pressed={caderno}>
+          📖 {t('Caderno da toca')} <small>{`${estado.caderno?.pegos.length ?? 0}/${Object.keys(ESPECIES).length}`}</small>
+        </button>
+        {estado.loja && (
+          <div className="bichos-loja" role="group" aria-label={t('Lojinha')}>
+            <h4>🏪 {t('Lojinha')}</h4>
+            {(Object.keys(PRECOS) as (keyof typeof PRECOS)[]).map((item) => (
+              <button key={item} type="button" className="btn-secondary" disabled={moedas < PRECOS[item]} onClick={() => void agir({ tipo: 'comprar', item })}>
+                {item === 'cenoura' ? '🥕' : '🍵'} +1 <small>🪙 {PRECOS[item]}</small>
+              </button>
+            ))}
+          </div>
+        )}
         <h4>{t('Equipe')} <small>{`${estado.equipe.length}/${TAMANHO_DA_EQUIPE}`}</small></h4>
         <ul className="bichos-equipe">
           {estado.equipe.map((b, i) => (
@@ -627,6 +795,44 @@ function Campo({ estado, agir, aviso }: { estado: EstadoSolo; agir: (corpo: Reco
   );
 }
 
+/**
+ * O CADERNO DA TOCA (19/11/2026): todas as espécies, na ordem; a vista mostra o desenho e o nome, a que já foi amiga ganha a
+ * marca. A que ainda não foi vista é só o número e um "?". A forma crescida diz de quem ela cresce.
+ */
+function CadernoDaToca({ estado, aoFechar }: { estado: EstadoSolo; aoFechar: () => void }) {
+  const t = useT();
+  const vistos = new Set(estado.caderno?.vistos ?? []);
+  const pegos = new Set(estado.caderno?.pegos ?? []);
+  const ordem = Object.keys(ESPECIES);
+  return (
+    <div className="bichos-caderno" role="dialog" aria-label={t('Caderno da toca')}>
+      <div className="bichos-caderno-topo">
+        <strong>📖 {t('Caderno da toca')}</strong>
+        <small>{`👁 ${vistos.size} · 🤝 ${pegos.size} / ${ordem.length}`}</small>
+        <button type="button" className="link-button" onClick={aoFechar}>
+          {t('Fechar')}
+        </button>
+      </div>
+      <ul>
+        {ordem.map((e, i) => {
+          const visto = vistos.has(e);
+          const antes = antesDe(e);
+          return (
+            <li key={e} className={(pegos.has(e) ? 'pego' : '') + (visto ? '' : ' nao-visto')}>
+              <small className="bichos-caderno-n">{String(i + 1).padStart(2, '0')}</small>
+              {visto ? <Retrato especie={e} tamanho={40} /> : <span className="bichos-caderno-oculto" aria-hidden="true">?</span>}
+              <span>{visto ? nomeDe(e) : '???'}</span>
+              {visto && <Selo especie={e} />}
+              {pegos.has(e) && <span aria-hidden="true">🤝</span>}
+              {visto && antes && vistos.has(antes) && <small className="bichos-caderno-de">{`◀ ${nomeDe(antes)}`}</small>}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
 // ------------------------------------------------------------------ A SALA: A LUTA ENTRE DUAS PESSOAS
 function LutaNaSala({ estado, eu, jogador, agir }: { estado: EstadoSala; eu: number; jogador: boolean; agir: (corpo: Record<string, unknown>) => Promise<void> }) {
   const t = useT();
@@ -643,6 +849,7 @@ function LutaNaSala({ estado, eu, jogador, agir }: { estado: EstadoSala; eu: num
         <p className="bichos-titulo">
           {meuLado >= 0 ? t('Esperando alguém da sala sentar do outro lado…') : t('{nome} quer jogar. Sente do outro lado!', { nome: dono?.username ?? '' })}
         </p>
+        {estado.nivel && <p className="bichos-dica">{t('Na mesa, todos os bichos lutam no nível {n}.', { n: estado.nivel })}</p>}
         {meuLado < 0 && jogador !== false && (
           <div className="bichos-acoes">
             <button type="button" className="btn-primary" onClick={() => void agir({ tipo: 'sentar' })}>

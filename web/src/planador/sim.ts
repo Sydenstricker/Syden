@@ -73,7 +73,18 @@ export interface Desafio {
   /** Tocar o chão mais rápido que isto (para baixo, ou de lado) é batida. */
   limiteVs: number;
   limiteVh: number;
+  /** A ESCALA DE DIFICULDADE (19/11/2026): 1 a 4, dentro do veículo. */
+  nivel: number;
+  /** O VENTO de lado (m/s, no chão): leva a asa e o paraquedas, e empurra a mochila. [0, 0] é sem vento. */
+  vento: [number, number];
+  /** AS TÉRMICAS: colunas de ar que sobem (a asa ganha altura dentro delas), com a força no meio (m/s) e o raio. */
+  termicas: { x: number; y: number; raio: number; forca: number }[];
+  /** O cenário do chão e do céu (só desenho): o da horta, o da neve ou o do cânion (os temas das pistas da corrida). */
+  tema: 'horta' | 'neve' | 'canion';
 }
+
+/** O que todo desafio antigo é: sem vento, sem térmica, na horta. */
+const CALMO = { vento: [0, 0] as [number, number], termicas: [], tema: 'horta' as const };
 
 /** Um anel em pé no caminho de (ax, ay) para (x, y): olha na direção do caminho (desenho). */
 function emPe(ax: number, ay: number, x: number, y: number, h: number, raio: number): Anel {
@@ -84,7 +95,10 @@ function emPe(ax: number, ay: number, x: number, y: number, h: number, raio: num
 
 const deitado = (x: number, y: number, h: number, raio: number): Anel => ({ x, y, h, raio, deitado: true, nx: 0, ny: -1 });
 
-/** Os três desafios. Desafio novo é id novo: os recordes não se misturam. */
+/**
+ * OS DESAFIOS (19/11/2026: eram três; agora quatro na asa e três na mochila e no salto, em escala de dificuldade). Desafio novo
+ * é id novo: os recordes não se misturam. A ordem é a da tela: o veículo, e dentro dele o nível.
+ */
 export const DESAFIOS: Desafio[] = [
   {
     id: 'asa-1',
@@ -104,6 +118,90 @@ export const DESAFIOS: Desafio[] = [
     passosMaximos: 3 * 60 * 60,
     limiteVs: 3.5,
     limiteVh: 17,
+    nivel: 1,
+    ...CALMO,
+  },
+  {
+    // 2: a térmica no caminho (passar por ela levanta a asa para os anéis de cima)
+    id: 'asa-2',
+    tipo: 'asa',
+    x: 512, y: 960, h: 90, hx: 0, hy: -1, v: 14,
+    aneis: [
+      emPe(512, 960, 500, 860, 80, 6),
+      emPe(500, 860, 480, 760, 86, 6),
+      emPe(480, 760, 560, 660, 74, 6),
+      emPe(560, 660, 610, 560, 56, 6),
+      emPe(610, 560, 560, 460, 38, 6),
+      emPe(560, 460, 520, 380, 22, 6),
+    ],
+    alvo: { x: 500, y: 250, h: 0, raio: 0 },
+    escala: 22,
+    combustivel: 0,
+    par: 60 * 60,
+    passosMaximos: 3 * 60 * 60,
+    limiteVs: 3.5,
+    limiteVh: 17,
+    nivel: 2,
+    vento: [0, 0],
+    termicas: [{ x: 495, y: 830, raio: 28, forca: 5 }],
+    tema: 'horta',
+  },
+  {
+    // 3: vento de lado o voo inteiro, e duas térmicas
+    id: 'asa-3',
+    tipo: 'asa',
+    x: 400, y: 960, h: 100, hx: 0, hy: -1, v: 14,
+    aneis: [
+      emPe(400, 960, 420, 860, 92, 6),
+      emPe(420, 860, 500, 770, 80, 6),
+      emPe(500, 770, 470, 660, 82, 6),
+      emPe(470, 660, 560, 570, 64, 6),
+      emPe(560, 570, 640, 470, 44, 6),
+      emPe(640, 470, 600, 370, 26, 6),
+    ],
+    alvo: { x: 560, y: 240, h: 0, raio: 0 },
+    escala: 20,
+    combustivel: 0,
+    par: 65 * 60,
+    passosMaximos: 3 * 60 * 60,
+    limiteVs: 3.5,
+    limiteVh: 17,
+    nivel: 3,
+    vento: [1.6, 0],
+    termicas: [
+      { x: 480, y: 730, raio: 26, forca: 5 },
+      { x: 540, y: 600, raio: 22, forca: 4 },
+    ],
+    tema: 'canion',
+  },
+  {
+    // 4: o comprido, na neve: vento de través e o alvo menor
+    id: 'asa-4',
+    tipo: 'asa',
+    x: 600, y: 980, h: 110, hx: 0, hy: -1, v: 14,
+    aneis: [
+      emPe(600, 980, 580, 880, 100, 5.5),
+      emPe(580, 880, 500, 790, 88, 5.5),
+      emPe(500, 790, 430, 690, 84, 5.5),
+      emPe(430, 690, 470, 580, 70, 5.5),
+      emPe(470, 580, 560, 490, 52, 5.5),
+      emPe(560, 490, 600, 390, 36, 5.5),
+      emPe(600, 390, 560, 300, 20, 5.5),
+    ],
+    alvo: { x: 520, y: 180, h: 0, raio: 0 },
+    escala: 16,
+    combustivel: 0,
+    par: 75 * 60,
+    passosMaximos: 3 * 60 * 60,
+    limiteVs: 3.2,
+    limiteVh: 16,
+    nivel: 4,
+    vento: [-1.2, 0.8],
+    termicas: [
+      { x: 470, y: 740, raio: 26, forca: 5 },
+      { x: 450, y: 630, raio: 22, forca: 4 },
+    ],
+    tema: 'neve',
   },
   {
     id: 'mochila-1',
@@ -122,6 +220,56 @@ export const DESAFIOS: Desafio[] = [
     passosMaximos: 2 * 60 * 60,
     limiteVs: 4,
     limiteVh: 6,
+    nivel: 1,
+    ...CALMO,
+  },
+  {
+    // 2: mais alto e mais longe, com um vento de lado
+    id: 'mochila-2',
+    tipo: 'mochila',
+    x: 512, y: 900, h: 0, hx: 0, hy: -1, v: 0,
+    aneis: [
+      emPe(512, 900, 512, 850, 20, 5),
+      emPe(512, 850, 470, 790, 32, 5),
+      emPe(470, 790, 530, 730, 26, 5),
+      emPe(530, 730, 560, 670, 34, 5),
+      emPe(560, 670, 520, 620, 22, 5),
+    ],
+    alvo: { x: 512, y: 570, h: 16, raio: 6 },
+    escala: 6,
+    combustivel: 5400,
+    par: 0,
+    passosMaximos: 2 * 60 * 60,
+    limiteVs: 4,
+    limiteVh: 6,
+    nivel: 2,
+    vento: [1.2, 0],
+    termicas: [],
+    tema: 'canion',
+  },
+  {
+    // 3: a plataforma pequena lá no alto, com o vento de través
+    id: 'mochila-3',
+    tipo: 'mochila',
+    x: 512, y: 900, h: 0, hx: 0, hy: -1, v: 0,
+    aneis: [
+      emPe(512, 900, 520, 840, 26, 4.5),
+      emPe(520, 840, 470, 780, 40, 4.5),
+      emPe(470, 780, 540, 720, 30, 4.5),
+      emPe(540, 720, 490, 660, 44, 4.5),
+      emPe(490, 660, 512, 600, 36, 4.5),
+    ],
+    alvo: { x: 512, y: 550, h: 26, raio: 4 },
+    escala: 4,
+    combustivel: 6000,
+    par: 0,
+    passosMaximos: 2 * 60 * 60,
+    limiteVs: 3.5,
+    limiteVh: 5,
+    nivel: 3,
+    vento: [-1.4, 0.8],
+    termicas: [],
+    tema: 'neve',
   },
   {
     id: 'queda-1',
@@ -135,8 +283,77 @@ export const DESAFIOS: Desafio[] = [
     passosMaximos: 2 * 60 * 60,
     limiteVs: 4,
     limiteVh: 10,
+    nivel: 1,
+    ...CALMO,
+  },
+  {
+    // 2: os anéis mais espalhados e o vento levando para o lado
+    id: 'queda-2',
+    tipo: 'queda',
+    x: 512, y: 520, h: 420, hx: 0, hy: -1, v: 0,
+    aneis: [deitado(510, 508, 360, 9), deitado(514, 498, 290, 9), deitado(519, 488, 220, 9), deitado(524, 478, 155, 9), deitado(529, 468, 95, 9)],
+    alvo: { x: 536, y: 400, h: 0, raio: 0 },
+    escala: 18,
+    combustivel: 0,
+    par: 55 * 60,
+    passosMaximos: 2 * 60 * 60,
+    limiteVs: 4,
+    limiteVh: 10,
+    nivel: 2,
+    vento: [1.5, 0],
+    termicas: [],
+    tema: 'canion',
+  },
+  {
+    // 3: os anéis menores, o vento de través e o alvo pequeno, na neve
+    id: 'queda-3',
+    tipo: 'queda',
+    x: 512, y: 520, h: 460, hx: 0, hy: -1, v: 0,
+    aneis: [
+      deitado(508, 508, 400, 8),
+      deitado(502, 498, 330, 8),
+      deitado(508, 488, 262, 8),
+      deitado(502, 478, 196, 8),
+      deitado(508, 468, 136, 8),
+      deitado(503, 458, 84, 8),
+    ],
+    alvo: { x: 500, y: 400, h: 0, raio: 0 },
+    escala: 14,
+    combustivel: 0,
+    par: 60 * 60,
+    passosMaximos: 2 * 60 * 60,
+    limiteVs: 3.6,
+    limiteVh: 9,
+    nivel: 3,
+    vento: [-1.6, 1],
+    termicas: [],
+    tema: 'neve',
   },
 ];
+
+/**
+ * AS MEDALHAS (19/11/2026): bronze, prata e ouro pelos pontos, em fração do máximo do desafio (os anéis todos, a mosca, o
+ * pouso perfeito e o bônus inteiro). Sem pressão: é a marca do voo, nada some nem expira.
+ */
+export const pontosMaximos = (d: Desafio) => d.aneis.length * 10 + 50 + 30 + 20;
+export const FRACOES_DAS_MEDALHAS = [0.5, 0.7, 0.85] as const;
+export const limitesDasMedalhas = (d: Desafio) => FRACOES_DAS_MEDALHAS.map((f) => Math.ceil(pontosMaximos(d) * f));
+/** 0 (nenhuma), 1 bronze, 2 prata, 3 ouro. */
+export function medalha(d: Desafio, total: number): number {
+  const l = limitesDasMedalhas(d);
+  return total >= l[2] ? 3 : total >= l[1] ? 2 : total >= l[0] ? 1 : 0;
+}
+
+/** O empurrão de uma térmica no ponto (m/s para cima; 0 fora dela). */
+export function subidaEm(d: Desafio, x: number, y: number): number {
+  let s = 0;
+  for (const t of d.termicas) {
+    const dx = x - t.x, dy = y - t.y;
+    const q = (dx * dx + dy * dy) / (t.raio * t.raio);
+    if (q < 1) s += t.forca * (1 - q);
+  }
+  return s;
+}
 
 export const desafioPorId = (id: unknown): Desafio | null => DESAFIOS.find((d) => d.id === id) ?? null;
 
@@ -297,11 +514,12 @@ export function passo(v: Voo, cmd: number): Evento {
     if (vira !== 0) afunda += 0.4;
     // a energia: o que a velocidade ganhou sai da altura, e metade do que ela perdeu vira altura (o arredondar do pouso)
     const energia = ((v.v * v.v - vAntes * vAntes) / (2 * G)) * (v.v > vAntes ? 1 : 0.5);
-    const dh = -afunda * PASSO - energia;
+    // a térmica levanta (o ar que sobe), e o vento leva de lado
+    const dh = -afunda * PASSO - energia + (d.termicas.length ? subidaEm(d, v.x, v.y) * PASSO : 0);
     v.vz = dh / PASSO;
     v.h += dh;
-    v.x += v.hx * v.v * PASSO;
-    v.y += v.hy * v.v * PASSO;
+    v.x += (v.hx * v.v + d.vento[0]) * PASSO;
+    v.y += (v.hy * v.v + d.vento[1]) * PASSO;
   } else if (d.tipo === 'queda') {
     if (!v.aberto) {
       girar(v, vira, GIRO.livre);
@@ -319,8 +537,8 @@ export function passo(v: Voo, cmd: number): Evento {
       v.vz = aproximar(v.vz, alvoVz, (v.vz < alvoVz - 1 ? 30 : 3) * PASSO);
     }
     v.h += v.vz * PASSO;
-    v.x += v.hx * v.v * PASSO;
-    v.y += v.hy * v.v * PASSO;
+    v.x += (v.hx * v.v + d.vento[0]) * PASSO;
+    v.y += (v.hy * v.v + d.vento[1]) * PASSO;
   } else {
     girar(v, vira, GIRO.mochila);
     let ax = 0, ay = 0, az = -G;
@@ -336,8 +554,10 @@ export function passo(v: Voo, cmd: number): Evento {
       v.combustivel--;
       v.jato |= cima ? 2 : 4;
     }
-    v.vx += (ax - v.vx * 0.7) * PASSO;
-    v.vy += (ay - v.vy * 0.7) * PASSO;
+    // o arrasto é contra o ar, e o ar anda com o vento (no chão, parado, o vento não leva ninguém)
+    v.vx += (ax - (v.vx - (v.decolou ? d.vento[0] : 0)) * 0.7) * PASSO;
+    v.vy += (ay - (v.vy - (v.decolou ? d.vento[1] : 0)) * 0.7) * PASSO;
+
     v.vz += (az - v.vz * 0.1) * PASSO;
     v.h += v.vz * PASSO;
     if (!v.decolou) {

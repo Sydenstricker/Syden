@@ -20,7 +20,7 @@ const SAIDA = path.join(RAIZ, 'web', 'public', 'tocas');
 
 /** Do Medieval Hexagon (caminho dentro de Assets/gltf, sem extensão); "{cor}" vira um arquivo por time. */
 const MEDIEVAL = [
-  ...['townhall', 'castle', 'home_A', 'home_B', 'barracks', 'archeryrange', 'tower_A', 'tower_B', 'tower_base', 'windmill'].map((n) => `buildings/{cor}/building_${n}_{cor}`),
+  ...['townhall', 'castle', 'home_A', 'home_B', 'barracks', 'archeryrange', 'tower_A', 'tower_B', 'tower_base', 'windmill', 'blacksmith', 'market'].map((n) => `buildings/{cor}/building_${n}_{cor}`),
   ...['catapult', 'projectile_arrow', 'spear', 'bow', 'sword', 'shield'].map((n) => `units/{cor}/${n}_{cor}_accent`),
   'decoration/props/flag_{cor}',
   ...['building_grain', 'wall_straight', 'wall_straight_gate', 'building_stage_A', 'building_stage_B', 'building_stage_C', 'building_destroyed'].map((n) => `buildings/neutral/${n}`),

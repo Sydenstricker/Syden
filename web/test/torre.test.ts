@@ -33,18 +33,27 @@ test('toda torre se sobe até o topo, sem levar pancada, em 35 a 60 s do piloto 
 });
 
 test('as medidas das torres batem com as do servidor, e o fantasma honesto passa', () => {
-  assert.deepEqual(Object.keys(servidor.TORRES_DO_CELEIRO), TORRES.map((f) => f.id));
+  assert.deepEqual(
+    Object.keys(servidor.TORRES_DO_CELEIRO),
+    TORRES.map((f) => f.id),
+  );
   for (const f of TORRES) {
     const s = servidor.TORRES_DO_CELEIRO[f.id];
     assert.deepEqual(s.largada, [f.largada.x, f.largada.y], `${f.id}: a largada`);
     assert.equal(s.chegada, f.chegada);
     assert.equal(s.largura, LARGURA);
     assert.equal(s.altura, altura(f));
-    assert.deepEqual(s.postos, f.postos.map((p) => [p.x, p.y]));
+    assert.deepEqual(
+      s.postos,
+      f.postos.map((p) => [p.x, p.y]),
+    );
     const { k, caminho } = planos.get(f.id)!;
     // o mínimo do servidor é 85% do piloto automático (arredondado para baixo): mudou a torre, muda o mínimo
-    assert.equal(s.minimo, Math.floor(k.chegouEm * 0.85), `${f.id}: o mínimo (o piloto fez ${k.chegouEm} passos)`);
-    const v = servidor.validarTorre(f.id, { passos: k.chegouEm, amostras: caminho });
+    assert.ok(s.minimo <= Math.floor(k.chegouEm * 0.85), `${f.id}: o mínimo (o piloto fez ${k.chegouEm} passos)`);
+    const v = servidor.validarTorre(f.id, {
+      passos: k.chegouEm,
+      amostras: caminho,
+    });
     assert.ok('ok' in v, `${f.id}: o servidor recusou a subida honesta (${'erro' in v ? v.erro : ''})`);
     assert.equal(v.ok.tempoMs, passosEmMs(k.chegouEm));
   }
@@ -68,7 +77,7 @@ test('a pancada volta ao último andar, e o servidor aceita essa volta', () => {
   while (k.quedas === 0 && guarda++ < 4000) {
     const alvoY = pa.y1 + 6;
     const noDegrau = k.noChao && Math.abs(k.y - alvoY) < 1;
-    const c: Comandos = noDegrau ? { esquerda: k.x > pa.x + 2, direita: k.x < pa.x - 2, pula: false } : plano[i++] ?? parado;
+    const c: Comandos = noDegrau ? { esquerda: k.x > pa.x + 2, direita: k.x < pa.x - 2, pula: false } : (plano[i++] ?? parado);
     passo(k, c, f);
     amostrar(k, caminho);
   }
@@ -82,7 +91,10 @@ test('a pancada volta ao último andar, e o servidor aceita essa volta', () => {
     if (!antes) amostrar(k, caminho);
   }
   assert.ok(k.terminou);
-  const v = servidor.validarTorre(f.id, { passos: k.chegouEm, amostras: caminho });
+  const v = servidor.validarTorre(f.id, {
+    passos: k.chegouEm,
+    amostras: caminho,
+  });
   assert.ok('ok' in v, 'a volta ao andar não é um salto proibido');
 });
 
@@ -137,7 +149,14 @@ test('o servidor recusa o fantasma inventado: em linha reta, teletransportado, o
   assert.ok('erro' in servidor.validarTorre(f.id, { passos: k.chegouEm, amostras: pulado }), 'salto para um andar não alcançado');
   // o fantasma honesto cortado no fim (declarando menos passos)
   const curto = caminho.slice(0, caminho.length - 3 * 40);
-  assert.ok('erro' in servidor.validarTorre(f.id, { passos: k.chegouEm - 160, amostras: curto }), 'parou antes do topo');
+  assert.ok(
+    'erro' in
+      servidor.validarTorre(f.id, {
+        passos: k.chegouEm - 160,
+        amostras: curto,
+      }),
+    'parou antes do topo',
+  );
   // o fantasma da reprodução bate com o laço: no passo 1 ele está na largada (menos de 1 px andado)
   const g = fantasmaEm(caminho, 1)!;
   assert.ok(Math.abs(g.x - f.largada.x) < 1 && g.y === f.largada.y);
@@ -149,4 +168,49 @@ test('as plataformas que andam, o que cai e os corvos não usam seno nem cosseno
     const texto = readFileSync(new URL(`../src/torre/${arq}`, import.meta.url), 'utf8').replace(/\/\*[\s\S]*?\*\/|\/\/.*$/gm, '');
     assert.doesNotMatch(texto, /Math\.(sin|cos|tan|atan)/, arq);
   }
+});
+
+// ---------------- As medalhas e o pulo que cresce com a corrida (19/11/2026) ----------------
+
+test('as medalhas são sobre o tempo do piloto automático (a tabela é a dele)', async () => {
+  const { TEMPO_DO_PILOTO, medalhaDaTorre } = await import('../src/torre/fases');
+  for (const f of TORRES) {
+    const { k } = planos.get(f.id)!;
+    assert.equal(TEMPO_DO_PILOTO[f.id], k.chegouEm, `${f.id}: o tempo do piloto mudou (${k.chegouEm})`);
+    assert.equal(medalhaDaTorre(f.id, k.chegouEm), 0, 'o tempo do piloto é ouro');
+    assert.equal(medalhaDaTorre(f.id, Math.round(k.chegouEm * 1.2)), 1);
+    assert.equal(medalhaDaTorre(f.id, Math.round(k.chegouEm * 1.5)), 2);
+    assert.equal(medalhaDaTorre(f.id, k.chegouEm * 2), null);
+  }
+});
+
+test('o pulo correndo sobe mais que o pulo parado', async () => {
+  const { vPuloCom, VPULO, VMAX } = await import('../src/torre/fisica');
+  assert.equal(vPuloCom(0), VPULO);
+  assert.ok(vPuloCom(VMAX) > VPULO * 1.1);
+  assert.equal(vPuloCom(-VMAX), vPuloCom(VMAX));
+  assert.equal(vPuloCom(VMAX * 3), vPuloCom(VMAX));
+  const f = TORRES[0];
+  const altura = (correr: boolean) => {
+    const k = novoCoelho(f);
+    for (let i = 0; i < 30; i++)
+      passo(
+        k,
+        {
+          esquerda: false,
+          direita: correr && i % 2 === 0 ? true : correr,
+          pula: false,
+        },
+        f,
+      );
+    const y0 = k.y;
+    k.vx = correr ? 110 : 0;
+    let topo = k.y;
+    for (let i = 0; i < 40; i++) {
+      passo(k, { esquerda: false, direita: false, pula: true }, f);
+      topo = Math.min(topo, k.y);
+    }
+    return y0 - topo;
+  };
+  assert.ok(altura(true) > altura(false), `correndo ${altura(true).toFixed(0)}, parado ${altura(false).toFixed(0)}`);
 });

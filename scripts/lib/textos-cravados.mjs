@@ -162,6 +162,9 @@ const FORMA_DE_CODIGO = [
   /^(?:translate|rotate|scale|matrix|skew[XY]?)\(/, // transformação de SVG
   // valor de CSS no style={{…}} (os microjogos da Festa, 05/11/2026): medidas, grades, bordas, cores, sem palavra de frase
   /^(?:\s*(?:-?[\d.]+(?:px|em|rem|vw|vh|fr|%|ms|s|deg)?|min|max|calc|repeat|minmax|solid|dashed|dotted|auto|none|#[0-9a-f]{3,8}|[(),/+*-]))+\s*$/i,
+  // cor, posição e família de letra no style={{…}} ou no canvas (os mini-games, 19/11/2026): rgba(…), "top center",
+  // "system-ui, sans-serif"
+  /^(?:\s*(?:rgba?|hsla?|top|bottom|left|right|center|system-ui|sans-serif|serif|monospace|-?[\d.]+%?|[(),/]))+\s*$/i,
 ];
 
 /** Verbo de HTTP e cabeçalho: maiúsculos, mas ninguém os lê na tela. */
@@ -184,7 +187,7 @@ const PEDACO_DE_CLASSE = /^\s+[a-z-]+\s*$|^\s*[a-z-]+\s+$/;
 const PALAVRA_SOLTA = />\s*([A-ZÀ-Ú][A-Za-zÀ-ú]{2,30})\s*</g;
 
 /** O que NÃO se traduz: o nome do produto, e palavras que são as mesmas em toda língua. */
-const NAO_TRADUZ = new Set(['Syden', 'Discord', 'Windows', 'Minecraft', 'GIF', 'PNG', 'JPG', 'WEBP', 'Emojis', 'Soundboard']);
+const NAO_TRADUZ = new Set(['Syden', 'Discord', 'Windows', 'Minecraft', 'GIF', 'PNG', 'JPG', 'WEBP', 'Emojis', 'Soundboard', 'Kalah', 'Oware']);
 
 /** Linha de TypeScript, e não de tela: `Promise<T>` casa com a busca de palavra solta, e não é texto. */
 const PARECE_TIPO = /\b(Promise|Array|Record|Map|Set|Partial|Pick|Omit)\s*</;

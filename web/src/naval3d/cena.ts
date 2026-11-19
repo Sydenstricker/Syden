@@ -57,6 +57,8 @@ export interface MarDaCena {
   meu: boolean;
   podeAtirar: boolean;
   ultima: number | null;
+  /** O salvo (19/11/2026): as casas da rajada já escolhidas, marcadas no mar antes de atirar. */
+  mirada?: number[];
   /** A frota que a pessoa escolheu ver (de fábrica, a pirata). */
   frota?: FrotaDaCena;
   /**
@@ -128,6 +130,9 @@ export class MarNaval3D {
   private chaveDoFantasma = '';
   private casaGeo = new THREE.PlaneGeometry(0.94, 0.94);
   private sobre: number | null = null;
+  /** As marcas da rajada do salvo, refeitas a cada mudança. */
+  private rajada = new THREE.Group();
+  private matDaRajada = new THREE.MeshBasicMaterial({ color: '#ff8a3d', transparent: true, opacity: 0.6, depthWrite: false });
 
   constructor(
     private caixa: HTMLElement,
@@ -303,6 +308,15 @@ export class MarNaval3D {
       this.marcas.set(casa, marca);
       if (casa === d.ultima) this.estourar(casa, tiro === 2);
     });
+    // as casas da rajada do salvo
+    this.rajada.clear();
+    for (const casa of d.mirada ?? []) {
+      const m = new THREE.Mesh(this.casaGeo, this.matDaRajada);
+      m.rotation.x = -Math.PI / 2;
+      m.position.set(centro(casa).x, 0.06, centro(casa).z);
+      this.rajada.add(m);
+    }
+    if (!this.rajada.parent) this.cena.add(this.rajada);
     this.mira.visible = this.mira.visible && d.podeAtirar;
     this.renderer.domElement.style.cursor = d.podeAtirar ? 'crosshair' : d.montagem ? 'pointer' : '';
     this.montarFantasma(d);
@@ -514,6 +528,7 @@ export class MarNaval3D {
       for (const mat of mats) mat?.dispose();
     });
     this.renderer.forceContextLoss();
+    this.matDaRajada.dispose();
     this.renderer.dispose();
     tela.remove();
   }

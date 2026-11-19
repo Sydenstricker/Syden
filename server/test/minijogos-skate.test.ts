@@ -231,3 +231,24 @@ test('na sala, quem sai não segura a partida, e o prazo fecha quem pausou', () 
   // ninguém mandou: a partida acaba como interrompida
   assert.equal(q.terminou(), false);
 });
+
+test('19/11/2026: a praça no Solo (escolhida antes do minuto) tem o recorde dela na tabela comum, e os objetivos são os refeitos', () => {
+  const { jogo } = comecar([biaId], { solo: true });
+  assert.equal(jogo.acao(biaId, { tipo: 'pista', pista: 'nenhuma' }), 'Ação desconhecida.');
+  assert.equal(jogo.acao(biaId, { tipo: 'pista', pista: 'praca-1' }), null);
+  assert.equal(jogo.publico(biaId).pista, 'praca-1');
+  const g = fisica.gravador();
+  const k = fisica.novoSkatista(1);
+  const piloto = criarPiloto();
+  while (!k.terminou) {
+    const c = piloto(k);
+    g.anotar(c);
+    fisica.passo(k, c);
+  }
+  agora += ((k.passo / 60) * 1000) | 0;
+  assert.equal(jogo.acao(biaId, { tipo: 'fim', entradas: g.entradas }), null);
+  const p = jogo.publico(biaId) as unknown as { objetivos: { id: string; feito: boolean }[]; placar: { pontos: number }[] };
+  assert.equal(p.placar[0].pontos, k.pontos);
+  assert.deepEqual(p.objetivos, fisica.objetivos(k));
+  assert.equal(db.recordeDoSolo(biaId, 'skate', 'praca-1')?.valor, k.pontos);
+});

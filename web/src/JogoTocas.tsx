@@ -1,12 +1,14 @@
 import { temWebGL } from './temWebGL';
-import { Bell } from 'lucide-react';
-import { useEffect, useRef, useState, type MouseEvent as ME, type PointerEvent as PE, type WheelEvent as WE } from 'react';
+import { Bell, Trophy } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState, type MouseEvent as ME, type PointerEvent as PE, type WheelEvent as WE } from 'react';
+import type { Socket } from 'socket.io-client';
 import { ComandosDoJogo } from './ComandosDosJogos';
 import { chave, useT } from './i18n';
 import { cursorDeHud, IconeDeHud, type NomeDoIconeDeHud } from './iconesDeHud';
 import { tocar } from './somDosJogos';
-import { criarIA, PERFIS, type IA } from './tocas/ia';
+import { criarIA, NIVEIS, PERFIS, type IA, type Nivel } from './tocas/ia';
 import {
+  assinatura,
   casasDaMuralha,
   centroDe,
   comandar,
@@ -14,9 +16,14 @@ import {
   ePredio,
   ERA2,
   eUnidade,
+  limparComando,
   lugarDeColeta,
+  MAPAS,
+  MELHORIAS,
+  MERCADO,
   novaPartida,
   ocupantes,
+  ORDEM_DAS_MELHORIAS,
   passo,
   PASSO,
   PASSOS_DA_MARAVILHA,
@@ -24,13 +31,20 @@ import {
   podeConstruir,
   podePagar,
   populacao,
+  precoDaTroca,
   PREDIOS,
   RECURSOS,
   TAMANHO,
+  temMelhoria,
   UNIDADES,
+  type Amostra,
+  type Comando,
   type Custo,
+  type Dono,
+  type Melhoria,
   type Recurso,
   type Sim,
+  type TipoDoMapa,
   type TipoPredio,
   type TipoUnidade,
 } from './tocas/sim';
@@ -40,25 +54,57 @@ import './tocas/tocas.css';
 
 /**
  * TOCAS E TORRES (05/11/2026): estratégia em tempo real, SÓ A MECÂNICA do gênero (coletar, construir, treinar, avançar de era,
- * atacar), numa partida de 10 a 15 minutos contra o computador. Nada de nome, arte, texto ou som de jogo nenhum; os modelos são
- * CC0 (KayKit: Medieval Hexagon e Resource Bits) e os coelhos são o nosso coelho 3D. Sem música (a regra do "nunca fazer a nossa"); os
- * efeitos são os de somDosJogos.ts.
+ * atacar), numa partida de 10 a 15 minutos. Nada de nome, arte, texto ou som de jogo nenhum; os modelos são CC0 (KayKit: Medieval
+ * Hexagon e Resource Bits) e os coelhos são o nosso coelho 3D. Sem música (a regra do "nunca fazer a nossa"); os efeitos são os de
+ * somDosJogos.ts.
  *
- * A PARTIDA É DESTE COMPUTADOR: a simulação (tocas/sim.ts) anda em passos fixos de 1/10 s, separada da tela, e o computador
- * adversário (tocas/ia.ts) joga pelo mesmo caminho dos comandos da pessoa. A janela sem foco PAUSA tudo. No fim, o resultado
- * vai ao servidor (server/src/minijogo-tocas.ts), que só confere o bom senso: é o Solo, sem troféu nem conquista. A sala de duas
- * pessoas é o próximo degrau (lockstep: só os comandos andariam pela rede).
+ * A SIMULAÇÃO (tocas/sim.ts) anda em passos fixos de 1/10 s, separada da tela, e é a MESMA do servidor (server/src/tocas/, iguais
+ * byte a byte). O que a pessoa faz vira COMANDO (`ordenar`):
+ *  - no SOLO (19/11/2026), contra o computador (tocas/ia.ts, três níveis), a partida anda aqui, e os comandos vão ao servidor em
+ *    trechos, com o passo em que entraram; ele refaz a partida, e o fim e o recorde são dele. A janela sem foco PAUSA tudo. Há
+ *    também o TUTORIAL, em cinco passos que a própria partida confere, contra um computador que não ataca.
+ *  - na SALA (19/11/2026), de duas pessoas, em LOCKSTEP: o comando vale 3 turnos (600 ms) depois, e cada turno só anda quando o
+ *    servidor manda as partes dos dois (server/src/minijogo-tocas.ts). Sem foco a partida segue (só não se desenha): ela é de duas
+ *    pessoas.
  *
  * O mouse faz quase tudo: arrastar escolhe, o botão direito manda (andar, coletar, construir junto, atacar), a roda aproxima, e o
  * botão do meio, o direito arrastado ou as setas movem o mapa. No toque: tocar escolhe, tocar no destino manda, arrastar move.
  */
 
+type MotivoDoFim = 'centro' | 'maravilha' | 'tempo' | 'desistiu' | 'saiu' | 'desencontro' | 'parou';
+export interface ResultadoTocas {
+  venceu: boolean;
+  vencedor?: Dono | null;
+  motivo: MotivoDoFim;
+  passos: number;
+  conferido?: boolean;
+  historico?: Amostra[];
+  recorde?: { antes: number | null; novo: boolean } | null;
+}
+
 export interface EstadoTocas {
-  fase: 'jogando' | 'fim';
+  fase: 'escolha' | 'jogando' | 'fim';
+  sala?: boolean;
   semente: number;
+  mapa: TipoDoMapa;
+  nivel?: Nivel;
+  tutorial?: boolean;
   partidaId: string;
-  resultado: { venceu: boolean; motivo: 'centro' | 'maravilha' | 'tempo' | 'desistiu'; passos: number } | null;
+  resultado: ResultadoTocas | null;
   passosMax: number;
+  /** O Solo: até que passo o servidor já refez a partida, e os recordes por nível (em ms). */
+  confirmado?: number;
+  recordes?: Record<string, number>;
+  /** A sala: quem sou eu (o dono), quem joga, o turno e os turnos já resolvidos (para quem recarrega). */
+  eu?: Dono | null;
+  jogadores?: { userId: number; username: string }[];
+  passosPorTurno?: number;
+  atraso?: number;
+  hashCada?: number;
+  resolvido?: number;
+  meuProximo?: number | null;
+  turnos?: [number, Comando[], Comando[]][];
+  espera?: Dono[];
 }
 
 type Props = {
@@ -66,6 +112,8 @@ type Props = {
   eu: number;
   jogador: boolean;
   agir: (corpo: Record<string, unknown>) => unknown;
+  socket?: Socket | null;
+  channelId?: number;
 };
 
 const NOME: Record<TipoUnidade | TipoPredio, string> = {
@@ -83,8 +131,23 @@ const NOME: Record<TipoUnidade | TipoPredio, string> = {
   muralha: chave('Muralha'),
   portao: chave('Portão'),
   maravilha: chave('Maravilha'),
+  ferreiro: chave('Ferreiro'),
+  mercado: chave('Mercado'),
 };
 const NOME_DO_RECURSO: Record<Recurso, string> = { comida: chave('Comida'), madeira: chave('Madeira'), ouro: chave('Ouro') };
+const NOME_DO_NIVEL: Record<Nivel, string> = { facil: chave('Fácil'), normal: chave('Normal'), dificil: chave('Difícil') };
+const NOME_DO_MAPA: Record<TipoDoMapa, string> = { campo: chave('Campo'), floresta: chave('Floresta'), ouro: chave('Ouro no meio'), lagos: chave('Lagos') };
+const NOME_DA_MELHORIA: Record<Melhoria, string> = {
+  ataqueLanceiro: chave('Ataque dos lanceiros'),
+  armaduraLanceiro: chave('Armadura dos lanceiros'),
+  ataqueCavaleiro: chave('Ataque dos cavaleiros'),
+  armaduraCavaleiro: chave('Armadura dos cavaleiros'),
+  ataqueArqueiro: chave('Ataque dos arqueiros'),
+  armaduraArqueiro: chave('Armadura dos arqueiros'),
+  machado: chave('Machado afiado'),
+  picareta: chave('Picareta'),
+  arado: chave('Arado'),
+};
 /**
  * Os ÍCONES do painel (05/11/2026, pedido dele: "temos os recursos com assets, não podemos usá-los como UI?"): os próprios
  * modelos da KayKit (Resource Bits, e a casa do Medieval Hexagon), fotografados uma vez em PNG transparente (web/public/tocas/icones/),
@@ -93,40 +156,257 @@ const NOME_DO_RECURSO: Record<Recurso, string> = { comida: chave('Comida'), made
 const ICONE = (nome: Recurso | 'populacao') => `${import.meta.env.BASE_URL}tocas/icones/${nome}.png`;
 /** A taxa "+x" de cada recurso: o que chegou ao estoque no último minuto da partida (o tempo da simulação, que pausa junto). */
 const JANELA_DA_TAXA = 60 * PASSOS_POR_SEGUNDO;
-const CONSTRUIVEIS: TipoPredio[] = ['casa', 'fazenda', 'quartel', 'arquearia', 'torre', 'muralha', 'portao', 'maravilha'];
+const CONSTRUIVEIS: TipoPredio[] = ['casa', 'fazenda', 'quartel', 'arquearia', 'ferreiro', 'torre', 'muralha', 'portao', 'mercado', 'maravilha'];
+/** O Solo manda os comandos ao servidor a cada tanto, em trechos de no máximo tanto (o servidor recusa mais de 1200). */
+const TRECHO_MS = 2000;
+const MAIOR_TRECHO = 1000;
 
 const relogio = (passos: number) => {
   const s = Math.floor(passos / PASSOS_POR_SEGUNDO);
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 };
 
-export function JogoTocas({ estado, jogador, agir }: Props) {
+export function JogoTocas({ estado, jogador, agir, socket = null, channelId = 0 }: Props) {
   const t = useT();
+  const estadoRef = useRef(estado);
+  estadoRef.current = estado;
   const r = estado.resultado;
-  if (r) {
-    const texto =
-      r.motivo === 'desistiu'
-        ? t('Você desistiu.')
-        : r.motivo === 'tempo'
-          ? t('O tempo acabou: ganhou quem tinha mais.')
-          : r.motivo === 'maravilha'
-            ? r.venceu
-              ? t('A sua Maravilha ficou de pé por 2 minutos.')
-              : t('A Maravilha do computador ficou de pé por 2 minutos.')
-            : r.venceu
-              ? t('Você derrubou o centro da vila do computador.')
-              : t('O computador derrubou o seu centro da vila.');
-    return (
-      <div className="tocas-fim">
-        <p className={`tocas-fim-titulo${r.venceu ? ' venceu' : ''}`}>{r.venceu ? t('Vitória!') : t('Derrota')}</p>
-        <p className="minijogo-situacao">{texto}</p>
-        <p className="minijogo-situacao">{relogio(r.passos)}</p>
-      </div>
-    );
-  }
-  if (estado.terminada || estado.fase === 'fim' || !jogador) return <p className="minijogo-situacao">…</p>;
-  return <Partida key={estado.partidaId} semente={estado.semente} agir={agir} />;
+  const meuDono: Dono | null = estado.sala ? (estado.eu ?? null) : 0;
+  const outro = estado.sala ? estado.jogadores?.[1 - (meuDono ?? 0)]?.username ?? '' : null;
+  if (r) return <FimDaPartida estado={estado} r={r} eu={meuDono ?? 0} outro={outro} />;
+  if (estado.fase === 'escolha') return jogador ? <Escolha estado={estado} agir={agir} /> : <p className="minijogo-situacao">…</p>;
+  if (estado.terminada || estado.fase === 'fim' || !jogador || meuDono === null) return <p className="minijogo-situacao">…</p>;
+  return (
+    <Partida
+      key={estado.partidaId}
+      semente={estado.semente}
+      mapa={estado.mapa}
+      eu={meuDono}
+      sala={!!estado.sala}
+      nivel={estado.nivel ?? 'normal'}
+      tutorial={!!estado.tutorial}
+      outro={outro}
+      agir={agir}
+      estadoRef={estadoRef}
+      socket={socket}
+      channelId={channelId}
+    />
+  );
 }
+
+/** A LARGADA DO SOLO: o nível do computador (com o recorde de cada um), o mapa e o tutorial. */
+function Escolha({ estado, agir }: { estado: EstadoTocas; agir: Props['agir'] }) {
+  const t = useT();
+  const [mapa, setMapa] = useState<TipoDoMapa | null>(null);
+  return (
+    <div className="tocas-escolha">
+      <p className="tocas-escolha-titulo">{t('Mapa')}</p>
+      <div className="tocas-mapas">
+        <button type="button" className={`tocas-mapa-opcao${mapa === null ? ' ativo' : ''}`} aria-pressed={mapa === null} onClick={() => setMapa(null)}>
+          <span className="tocas-mapa-sorteio" aria-hidden="true">?</span>
+          <span>{t('Sorteado')}</span>
+        </button>
+        {MAPAS.map((m) => (
+          <button key={m} type="button" className={`tocas-mapa-opcao${mapa === m ? ' ativo' : ''}`} aria-pressed={mapa === m} onClick={() => setMapa(m)}>
+            <MiniaturaDoMapa semente={estado.semente} mapa={m} />
+            <span>{t(NOME_DO_MAPA[m])}</span>
+          </button>
+        ))}
+      </div>
+      <p className="tocas-escolha-titulo">{t('Nível do computador')}</p>
+      <div className="tocas-niveis">
+        {NIVEIS.map((n) => {
+          const rec = estado.recordes?.[n];
+          return (
+            <button key={n} type="button" className={`tocas-nivel tocas-nivel-${n}`} onClick={() => void agir({ tipo: 'comecar', nivel: n, ...(mapa ? { mapa } : {}) })}>
+              <strong>{t(NOME_DO_NIVEL[n])}</strong>
+              {rec !== undefined && (
+                <small title={t('Recorde')}>
+                  <Trophy size={12} aria-hidden="true" /> {relogio(rec / 100)}
+                </small>
+              )}
+            </button>
+          );
+        })}
+      </div>
+      <div className="minijogo-acoes">
+        <button type="button" className="btn-secondary" onClick={() => void agir({ tipo: 'comecar', tutorial: true })}>
+          {t('Tutorial')}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/** O mapa de cima, pequeno, com a semente desta partida: o tipo se vê antes de escolher. */
+function MiniaturaDoMapa({ semente, mapa }: { semente: number; mapa: TipoDoMapa }) {
+  const tela = useRef<HTMLCanvasElement>(null);
+  const sim = useMemo(() => novaPartida(semente, { mapa }), [semente, mapa]);
+  useEffect(() => {
+    const g = tela.current?.getContext('2d');
+    if (!g) return;
+    const k = 2;
+    g.fillStyle = '#6f9a52';
+    g.fillRect(0, 0, TAMANHO * k, TAMANHO * k);
+    g.fillStyle = '#4f86b8';
+    for (const a of sim.agua) g.fillRect(a.gx * k, a.gy * k, k, k);
+    for (const f of sim.fontes) {
+      g.fillStyle = f.tipo === 'arvore' ? '#2f5a2c' : '#f0cf3c';
+      g.fillRect(f.gx * k, f.gy * k, k, k);
+    }
+    g.fillStyle = '#8b8577';
+    for (const p of sim.pedras) g.fillRect(p.gx * k, p.gy * k, k, k);
+    for (const p of sim.predios) {
+      g.fillStyle = CORES[p.dono];
+      g.fillRect(p.gx * k, p.gy * k, p.tam * k, p.tam * k);
+    }
+  }, [sim]);
+  return <canvas ref={tela} className="tocas-miniatura" width={TAMANHO * 2} height={TAMANHO * 2} aria-hidden="true" />;
+}
+
+/** O FIM: quem ganhou, o porquê, o tempo, o recorde e os gráficos da partida (o que cada um colheu e o tamanho do exército). */
+function FimDaPartida({ estado, r, eu, outro }: { estado: EstadoTocas; r: ResultadoTocas; eu: Dono; outro: string | null }) {
+  const t = useT();
+  const deles = outro ?? t('Computador');
+  const texto =
+    r.motivo === 'desistiu'
+      ? r.venceu
+        ? t('{nome} desistiu.', { nome: deles })
+        : t('Você desistiu.')
+      : r.motivo === 'saiu'
+        ? r.venceu
+          ? t('{nome} saiu da sala.', { nome: deles })
+          : t('Você ficou fora da sala por muito tempo.')
+        : r.motivo === 'desencontro' || r.motivo === 'parou'
+          ? t('A partida se desencontrou entre os computadores e foi encerrada.')
+          : r.motivo === 'tempo'
+            ? t('O tempo acabou: ganhou quem tinha mais.')
+            : r.motivo === 'maravilha'
+              ? r.venceu
+                ? t('A sua Maravilha ficou de pé por 2 minutos.')
+                : outro
+                  ? t('A Maravilha de {nome} ficou de pé por 2 minutos.', { nome: outro })
+                  : t('A Maravilha do computador ficou de pé por 2 minutos.')
+              : r.venceu
+                ? outro
+                  ? t('Você derrubou o centro da vila de {nome}.', { nome: outro })
+                  : t('Você derrubou o centro da vila do computador.')
+                : outro
+                  ? t('{nome} derrubou o seu centro da vila.', { nome: outro })
+                  : t('O computador derrubou o seu centro da vila.');
+  const empate = r.vencedor === null && estado.sala;
+  return (
+    <div className="tocas-fim">
+      <p className={`tocas-fim-titulo${r.venceu ? ' venceu' : ''}`}>{empate ? t('Fim da partida') : r.venceu ? t('Vitória!') : t('Derrota')}</p>
+      <p className="minijogo-situacao">{texto}</p>
+      <p className="minijogo-situacao">
+        {relogio(r.passos)}
+        {estado.tutorial ? '' : estado.nivel && !estado.sala ? ` · ${t(NOME_DO_NIVEL[estado.nivel])}` : ''} · {t(NOME_DO_MAPA[estado.mapa] ?? NOME_DO_MAPA.campo)}
+      </p>
+      {r.recorde?.novo && (
+        <p className="tocas-recorde">
+          <Trophy size={16} aria-hidden="true" /> {r.recorde.antes === null ? t('Primeira vitória neste nível!') : t('Novo recorde! Antes: {tempo}', { tempo: relogio(r.recorde.antes / 100) })}
+        </p>
+      )}
+      {r.historico && r.historico.length > 1 && (
+        <div className="tocas-graficos">
+          <Grafico titulo={t('Recursos colhidos')} amostras={r.historico} valor={(a, d) => a.colhido[d]} eu={eu} nomes={[t('Você'), deles]} />
+          <Grafico titulo={t('Exército')} amostras={r.historico} valor={(a, d) => a.exercito[d]} eu={eu} nomes={[t('Você'), deles]} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * Um gráfico de linhas pequeno: o tempo da partida embaixo, um eixo só, as duas linhas nas cores dos times (a minha e a do outro),
+ * com a legenda e o valor final ao lado de cada uma. Passar o mouse mostra o momento e os dois valores.
+ */
+function Grafico({ titulo, amostras, valor, eu, nomes }: { titulo: string; amostras: Amostra[]; valor: (a: Amostra, d: Dono) => number; eu: Dono; nomes: [string, string] }) {
+  const L = 280;
+  const A = 110;
+  const M = { e: 30, d: 8, c: 8, b: 18 };
+  const fim = amostras[amostras.length - 1].passo || 1;
+  const maior = Math.max(1, ...amostras.flatMap((a) => [valor(a, 0), valor(a, 1)]));
+  const x = (p: number) => M.e + (p / fim) * (L - M.e - M.d);
+  const y = (v: number) => A - M.b - (v / maior) * (A - M.b - M.c);
+  const [foco, setFoco] = useState<number | null>(null);
+  const ordem: Dono[] = [eu, (1 - eu) as Dono];
+  const linha = (d: Dono) => amostras.map((a, i) => `${i ? 'L' : 'M'}${x(a.passo).toFixed(1)},${y(valor(a, d)).toFixed(1)}`).join('');
+  const aoMover = (e: PE<SVGSVGElement>) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    const px = ((e.clientX - r.left) / r.width) * L;
+    let melhor = 0;
+    for (let i = 1; i < amostras.length; i++) if (Math.abs(x(amostras[i].passo) - px) < Math.abs(x(amostras[melhor].passo) - px)) melhor = i;
+    setFoco(melhor);
+  };
+  const f = foco !== null ? amostras[foco] : null;
+  return (
+    <figure className="tocas-grafico">
+      <figcaption>{titulo}</figcaption>
+      <svg viewBox={`0 0 ${L} ${A}`} role="img" aria-label={`${titulo}: ${nomes[0]} ${valor(amostras[amostras.length - 1], eu)}, ${nomes[1]} ${valor(amostras[amostras.length - 1], (1 - eu) as Dono)}`} onPointerMove={aoMover} onPointerLeave={() => setFoco(null)}>
+        <line x1={M.e} x2={L - M.d} y1={y(0)} y2={y(0)} className="tocas-grafico-eixo" />
+        <line x1={M.e} x2={L - M.d} y1={y(maior)} y2={y(maior)} className="tocas-grafico-grade" />
+        <text x={M.e - 4} y={y(maior) + 4} textAnchor="end" className="tocas-grafico-texto">
+          {maior}
+        </text>
+        <text x={M.e - 4} y={y(0) + 4} textAnchor="end" className="tocas-grafico-texto">
+          0
+        </text>
+        <text x={L - M.d} y={A - 4} textAnchor="end" className="tocas-grafico-texto">
+          {relogio(fim)}
+        </text>
+        {ordem.map((d) => (
+          <path key={d} d={linha(d)} fill="none" stroke={CORES[d]} strokeWidth={2} strokeLinejoin="round" strokeLinecap="round" />
+        ))}
+        {f && (
+          <>
+            <line x1={x(f.passo)} x2={x(f.passo)} y1={M.c} y2={y(0)} className="tocas-grafico-grade" />
+            {ordem.map((d) => (
+              <circle key={d} cx={x(f.passo)} cy={y(valor(f, d))} r={4} fill={CORES[d]} className="tocas-grafico-ponto" />
+            ))}
+          </>
+        )}
+      </svg>
+      <div className="tocas-grafico-legenda">
+        {f && <span className="tocas-grafico-momento">{relogio(f.passo)}</span>}
+        {ordem.map((d, i) => (
+          <span key={d}>
+            <i style={{ background: CORES[d] }} aria-hidden="true" /> {nomes[i]} {valor(f ?? amostras[amostras.length - 1], d)}
+          </span>
+        ))}
+      </div>
+    </figure>
+  );
+}
+
+/**
+ * O TUTORIAL (19/11/2026): cinco passos que a própria partida confere (nada de botão "próximo": o passo vira quando a coisa
+ * aconteceu de verdade na simulação), contra um computador que não ataca.
+ */
+const PASSOS_DO_TUTORIAL: { texto: string; feito: (sim: Sim, eu: Dono, inicio: TutorialInicio) => boolean }[] = [
+  {
+    texto: chave('Escolha um trabalhador e clique com o botão direito numa árvore para colher madeira.'),
+    feito: (sim, eu) => sim.unidades.some((u) => u.dono === eu && u.tipo === 'trabalhador' && (u.carga?.rec === 'madeira' || sim.colhido[eu] > 0)),
+  },
+  {
+    texto: chave('Com um trabalhador escolhido, construa uma Casa: ela aumenta a população.'),
+    feito: (sim, eu) => sim.predios.some((p) => p.dono === eu && p.tipo === 'casa' && p.pronto),
+  },
+  {
+    texto: chave('Construa uma Fazenda e deixe um trabalhador colhendo comida nela.'),
+    feito: (sim, eu) => sim.predios.some((p) => p.dono === eu && p.tipo === 'fazenda' && p.pronto && ocupantes(sim, eu, p.id) > 0),
+  },
+  {
+    texto: chave('Escolha o centro da vila e treine mais um trabalhador.'),
+    feito: (sim, eu, i) => sim.unidades.filter((u) => u.dono === eu && u.tipo === 'trabalhador').length > i.trabalhadores,
+  },
+  {
+    texto: chave('Construa um Quartel e treine um Lanceiro.'),
+    feito: (sim, eu) => sim.unidades.some((u) => u.dono === eu && u.tipo === 'lanceiro'),
+  },
+];
+type TutorialInicio = { trabalhadores: number };
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -159,14 +439,51 @@ interface Painel {
 
 type Colocando = { tipo: TipoPredio; inicio: { x: number; y: number } | null };
 
-function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
+function Partida({
+  semente,
+  mapa: tipoDoMapa,
+  eu,
+  sala,
+  nivel,
+  tutorial,
+  outro,
+  agir,
+  estadoRef,
+  socket,
+  channelId,
+}: {
+  semente: number;
+  mapa: TipoDoMapa;
+  eu: Dono;
+  sala: boolean;
+  nivel: Nivel;
+  tutorial: boolean;
+  outro: string | null;
+  agir: Props['agir'];
+  estadoRef: { current: EstadoTocas };
+  socket: Socket | null;
+  channelId: number;
+}) {
   const t = useT();
   const caixa = useRef<HTMLDivElement>(null);
   const mapa = useRef<HTMLCanvasElement>(null);
   const caixaSel = useRef<HTMLDivElement>(null);
   const simRef = useRef<Sim | null>(null);
-  if (!simRef.current) simRef.current = novaPartida(semente);
+  if (!simRef.current) simRef.current = novaPartida(semente, { mapa: tipoDoMapa });
   const sim = simRef.current;
+  /** O nome de quem está do outro lado: a pessoa da sala, ou o computador. */
+  const deles = outro ?? t('Computador');
+  /**
+   * O COMANDO DA PESSOA. No Solo entra na partida já (no próximo passo) e o laço o anota para o servidor; na sala espera o turno
+   * dele (3 turnos adiante), e só entra quando volta do servidor junto com o do outro.
+   */
+  const pendentes = useRef<Comando[]>([]);
+  const ordenar = (c: Comando) => {
+    if (sala) pendentes.current.push(c);
+    else comandar(sim, eu, c);
+  };
+  const [espera, setEspera] = useState<string | null>(null);
+  const [passoDoTutorial, setPassoDoTutorial] = useState(0);
   const vistaRef = useRef<Vista | null>(null);
   const [pronta, setPronta] = useState(false);
   const [sel, setSel] = useState<number[]>([]);
@@ -175,7 +492,7 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
   const colocandoRef = useRef<Colocando | null>(null);
   /** O que chegou ao estoque, com o passo: a conta da taxa. */
   const entregas = useRef<{ passo: number; rec: Recurso; qtd: number }[]>([]);
-  const [painel, setPainel] = useState<Painel>(() => lerPainel(sim, 0, []));
+  const [painel, setPainel] = useState<Painel>(() => lerPainel(sim, eu, 0, []));
   const [aviso, setAviso] = useState<string | null>(null);
   const [acabou, setAcabou] = useState(false);
   const teclas = useRef(new Set<string>());
@@ -205,12 +522,12 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
   const lerSelos = () => {
     const camada = camadaDosSelos.current;
     if (!camada) return;
-    const j = sim.jogadores[0];
+    const j = sim.jogadores[eu];
     const querem = new Map<string, { x: number; y: number; alto: number; rec: Recurso; n: number; cap: number }>();
     for (const p of sim.predios) {
-      if (p.dono !== 0 || p.tipo !== 'fazenda' || !p.pronto) continue;
+      if (p.dono !== eu || p.tipo !== 'fazenda' || !p.pronto) continue;
       const l = lugarDeColeta(sim, p.id)!;
-      querem.set(`f${p.id}`, { x: p.gx + p.tam / 2, y: p.gy + p.tam / 2, alto: 1.15, rec: 'comida', n: ocupantes(sim, 0, l.chave), cap: l.cap });
+      querem.set(`f${p.id}`, { x: p.gx + p.tam / 2, y: p.gy + p.tam / 2, alto: 1.15, rec: 'comida', n: ocupantes(sim, eu, l.chave), cap: l.cap });
     }
     const minas = new Map<number, { sx: number; sy: number; k: number; visto: boolean; cap: number }>();
     for (const f of sim.fontes) {
@@ -224,7 +541,7 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
       if (j.explorado[f.gy * TAMANHO + f.gx]) m.visto = true;
       minas.set(l.chave, m);
     }
-    for (const [chave, m] of minas) if (m.visto) querem.set(`m${chave}`, { x: m.sx / m.k, y: m.sy / m.k, alto: 0.7, rec: 'ouro', n: ocupantes(sim, 0, chave), cap: m.cap });
+    for (const [chave, m] of minas) if (m.visto) querem.set(`m${chave}`, { x: m.sx / m.k, y: m.sy / m.k, alto: 0.7, rec: 'ouro', n: ocupantes(sim, eu, chave), cap: m.cap });
     for (const [k, s] of selos.current)
       if (!querem.has(k)) {
         s.el.remove();
@@ -286,7 +603,7 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
     const v = vistaRef.current;
     const c = caixa.current;
     if (!v || !c) return;
-    const acao = colocandoRef.current ? '' : acaoDoMouse(sim, v, selRef.current, px, py);
+    const acao = colocandoRef.current ? '' : acaoDoMouse(sim, eu, v, selRef.current, px, py);
     if (acao === cursorAtual.current) return;
     cursorAtual.current = acao;
     c.style.cursor = acao ? cursores.current[acao] ?? '' : '';
@@ -299,8 +616,9 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
     let viva = true;
     let id = 0;
     let vista: Vista | null = null;
-    const ia: IA = criarIA(1, PERFIS.computador);
-    const piloto: IA = criarIA(0, PERFIS.piloto);
+    // no Solo, o computador do nível escolhido (o mesmo que o servidor usa para refazer a partida); na sala, ninguém
+    const ia: IA | null = sala ? null : criarIA((1 - eu) as Dono, tutorial ? PERFIS.tutorial : PERFIS[nivel]);
+    const piloto: IA = criarIA(eu, PERFIS.piloto);
     if (import.meta.env.DEV) window.tocasPartidaDoTeste = sim;
     const usar = async (v: Vista) => {
       vista = v;
@@ -311,14 +629,14 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
       setPronta(true);
       comecar();
     };
-    const de2D = () => usar(new Vista2D(caixa.current!, sim, 0));
+    const de2D = () => usar(new Vista2D(caixa.current!, sim, eu));
     // o jogo tem a estética dele (decisão dele, 06/11/2026: "para os mini jogos, é uma estética única"): abre sempre em 3D, e o
     // 2D fica para quando não há WebGL ou a cena falha
     if (temWebGL())
       import('./tocas/cena')
         .then(({ CenaDasTocas }) => {
           if (!viva || !caixa.current) return;
-          return usar(new CenaDasTocas(caixa.current, sim, 0));
+          return usar(new CenaDasTocas(caixa.current, sim, eu));
         })
         .catch(() => {
           vista?.destruir();
@@ -336,17 +654,17 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
     };
     let mandou = false;
     const ouvir = () => {
-      const vis = sim.jogadores[0].visivel;
+      const vis = sim.jogadores[eu].visivel;
       for (const e of sim.eventos) {
         switch (e.t) {
           case 'treinou':
-            if (e.dono === 0) som('chegada', 300);
+            if (e.dono === eu) som('chegada', 300);
             break;
           case 'pronto':
-            if (e.dono === 0) som('acerto', 300);
+            if (e.dono === eu) som('acerto', 300);
             break;
           case 'entregou':
-            if (e.dono === 0) {
+            if (e.dono === eu) {
               som('moeda', 1500);
               entregas.current.push({ passo: sim.passo, rec: e.rec, qtd: e.qtd });
             }
@@ -359,31 +677,163 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
             break;
           case 'era':
             som('vez');
-            if (e.dono === 0) avisar(t('Você avançou para a era 2!'));
+            if (e.dono === eu) avisar(t('Você avançou para a era 2!'));
+            else if (outro) avisar(t('{nome} avançou para a era 2.', { nome: outro }));
             else avisar(t('O computador avançou para a era 2.'));
             break;
           case 'maravilha':
             som('vez');
-            avisar(e.dono === 0 ? t('A sua Maravilha está pronta: defenda-a por 2 minutos!') : t('O computador terminou uma Maravilha: derrube-a em 2 minutos!'));
+            avisar(
+              e.dono === eu
+                ? t('A sua Maravilha está pronta: defenda-a por 2 minutos!')
+                : outro
+                  ? t('{nome} terminou uma Maravilha: derrube-a em 2 minutos!', { nome: outro })
+                  : t('O computador terminou uma Maravilha: derrube-a em 2 minutos!'),
+            );
             break;
           case 'atacado':
             // só o ataque em casa (quem está atacando lá longe já sabe que está brigando)
-            if (e.dono === 0 && pertoDeCasa(sim, e.x, e.y)) {
-              som('erro', 4000);
+            if (e.dono === eu && pertoDeCasa(sim, eu, e.x, e.y)) {
+              som('alarme', 4000);
               avisar(t('A sua vila está sob ataque!'));
             }
             break;
           case 'cheio':
-            if (e.dono === 0) {
+            if (e.dono === eu) {
               som('erro', 600);
               avisar(t('Este lugar já está cheio.'));
             }
             break;
           case 'sino':
-            if (e.dono === 0) som('vez');
+            if (e.dono === eu) som('vez');
+            break;
+          case 'melhoria':
+            if (e.dono === eu) {
+              som('medalha');
+              avisar(t('Melhoria pronta: {nome}', { nome: t(NOME_DA_MELHORIA[e.m]) }));
+            }
+            break;
+          case 'troca':
+            if (e.dono === eu) som('moeda');
             break;
         }
       }
+    };
+
+    // ---- O SOLO: os comandos anotados com o passo, e os trechos ao servidor (que refaz a partida) ----
+    const anotados: [number, Comando][] = [];
+    let enviando = false;
+    const enviarTrecho = () => {
+      if (sala || enviando || !viva) return;
+      const de = estadoRef.current.confirmado ?? 0;
+      if (de >= sim.passo) return;
+      const ate = Math.min(sim.passo, de + MAIOR_TRECHO);
+      const ultimo = ate === sim.passo;
+      const corpo: Record<string, unknown> = { tipo: 'trecho', de, ate, lote: anotados.filter(([p]) => p >= de && p < ate) };
+      if (ultimo) corpo.h = assinatura(sim);
+      if (ultimo && sim.vencedor !== null) corpo.fim = { venceu: sim.vencedor === eu, motivo: sim.motivo };
+      enviando = true;
+      Promise.resolve(agirRef.current(corpo))
+        .catch(() => {})
+        .finally(() => {
+          enviando = false;
+        });
+    };
+    const trechos = sala ? 0 : window.setInterval(enviarTrecho, TRECHO_MS);
+    /** No Solo, os comandos meus que estão na fila (a tela e o piloto) vão limpos para a partida e para a anotação. */
+    const anotar = () => {
+      const fila = sim.fila;
+      sim.fila = [];
+      for (const f of fila) {
+        if (f.dono !== eu) {
+          sim.fila.push(f);
+          continue;
+        }
+        const c = limparComando(f.c);
+        if (!c) continue;
+        sim.fila.push({ dono: eu, c });
+        anotados.push([sim.passo, c]);
+      }
+    };
+
+    // ---- A SALA: o lockstep (os turnos que voltam do servidor; a minha parte de cada um vai antes) ----
+    const e0 = estadoRef.current;
+    const B = e0.passosPorTurno ?? 2;
+    const D = e0.atraso ?? 3;
+    const HC = e0.hashCada ?? 25;
+    const meuProximo = e0.meuProximo ?? D;
+    const recebidos = new Map<number, [Comando[], Comando[]]>();
+    /** Os turnos com algum comando, guardados: quem se perdeu (a dessincronia) refaz a partida por eles. */
+    const historia = new Map<number, [Comando[], Comando[]]>();
+    let turno = 0;
+    let passoNoTurno = 0;
+    let refazer = false;
+    let esperandoDesde = 0;
+    const andarTurno = (s: Sim, c: [Comando[], Comando[]] | undefined) => {
+      if (c) {
+        for (const x of c[0]) comandar(s, 0, x);
+        for (const x of c[1]) comandar(s, 1, x);
+      }
+    };
+    if (sala) {
+      // quem chega (ou recarregou a página) refaz a partida até onde o servidor já resolveu
+      for (const [k, c0, c1] of e0.turnos ?? []) historia.set(k, [c0, c1]);
+      const ate = e0.resolvido ?? D;
+      for (; turno < ate && sim.vencedor === null; turno++) {
+        andarTurno(sim, historia.get(turno));
+        for (let i = 0; i < B && sim.vencedor === null; i++) passo(sim);
+      }
+    }
+    const refazerPartida = () => {
+      const nova = novaPartida(semente, { mapa: tipoDoMapa });
+      for (let k = 0; k < turno && nova.vencedor === null; k++) {
+        andarTurno(nova, historia.get(k));
+        for (let i = 0; i < B && nova.vencedor === null; i++) passo(nova);
+      }
+      Object.assign(sim, nova);
+    };
+    const chegada = (msg: { channelId?: number; dados?: Record<string, unknown> }) => {
+      const d = msg?.dados;
+      if (!d || msg.channelId !== channelId) return;
+      if (d.tocas === 'turno' && Number.isInteger(d.k) && (d.k as number) >= turno) recebidos.set(d.k as number, d.c as [Comando[], Comando[]]);
+      else if (d.tocas === 'ressincronizar' && d.dono === eu) refazer = true;
+      else if (d.tocas === 'espera') {
+        const donos = (d.donos as Dono[]) ?? [];
+        setEspera(!donos.length ? null : donos.includes(eu) ? t('Esperando a sua conexão…') : t('Esperando {nome}…', { nome: deles }));
+      }
+    };
+    if (sala) socket?.on('minijogo:tempo-real', chegada);
+    /** Um passo da sala; false quando o turno ainda não chegou. */
+    const passoDaSala = (): boolean => {
+      if (passoNoTurno === 0) {
+        if (turno >= D && !recebidos.has(turno)) return false;
+        if (refazer) {
+          refazer = false;
+          refazerPartida();
+        }
+        if (turno + D >= meuProximo) {
+          const dados: Record<string, unknown> = { k: turno + D, c: pendentes.current.splice(0, 30) };
+          if (turno % HC === 0) Object.assign(dados, { h: assinatura(sim), hk: turno });
+          socket?.emit('minijogo:tempo-real', { channelId, dados });
+        }
+        const c = recebidos.get(turno);
+        recebidos.delete(turno);
+        if (c && (c[0].length || c[1].length)) historia.set(turno, c);
+        // o piloto automático do e2e: o que ele manda vai pelo mesmo caminho do clique (o turno daqui a 3)
+        if (import.meta.env.DEV && window.tocasPilotoAutomatico) {
+          piloto(sim);
+          pendentes.current.push(...sim.fila.map((f) => f.c));
+          sim.fila = [];
+        }
+        andarTurno(sim, c);
+      }
+      passo(sim);
+      passoNoTurno++;
+      if (passoNoTurno >= B) {
+        passoNoTurno = 0;
+        turno++;
+      }
+      return true;
     };
 
     const comecar = () => {
@@ -392,30 +842,54 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
       let ultimoPainel = 0;
       let ultimoMapa = 0;
       let avisouCasa = false;
+      let tutorialInicio: TutorialInicio = { trabalhadores: 0 };
+      let passoTut = 0;
       const quadro = () => {
         if (!viva || !vista) return;
         id = requestAnimationFrame(quadro);
         const agora = performance.now();
         const dt = Math.min(0.1, (agora - ultimo) / 1000);
         ultimo = agora;
-        // sem foco (o jogo de verdade, outra janela) ou escondida: nem a partida anda, nem se desenha
-        if (document.hidden || !document.hasFocus()) return;
+        const semFoco = document.hidden || !document.hasFocus();
+        // no Solo, sem foco (o jogo de verdade, outra janela) ou escondida: nem a partida anda, nem se desenha. Na sala a partida
+        // é de duas pessoas: ela segue (só não se desenha)
+        if (semFoco && !sala) return;
         if (sim.vencedor === null) {
-          const vel = import.meta.env.DEV ? Math.max(1, window.tocasVelocidade ?? 1) : 1;
-          acumulado += dt * vel;
+          const vel = import.meta.env.DEV && !sala ? Math.max(1, window.tocasVelocidade ?? 1) : 1;
+          acumulado += sala ? Math.min(dt, 0.25) : dt * vel;
           let n = 0;
+          let parado = false;
           while (acumulado >= PASSO && n < 4 * vel) {
-            ia(sim);
-            if (import.meta.env.DEV && window.tocasPilotoAutomatico) piloto(sim);
-            passo(sim);
-            vista.eventos?.(sim);
+            if (sala) {
+              if (!passoDaSala()) {
+                parado = true;
+                break;
+              }
+            } else {
+              if (import.meta.env.DEV && window.tocasPilotoAutomatico) piloto(sim);
+              anotar();
+              ia?.(sim);
+              passo(sim);
+            }
+            if (!semFoco) vista.eventos?.(sim);
             ouvir();
             acumulado -= PASSO;
             n++;
             if (sim.vencedor !== null) break;
           }
-          if (n >= 4 * vel) acumulado = 0;
+          if (sala) {
+            // esperando o turno: guarda até meio segundo de folga para alcançar, e diz de quem é a espera
+            if (parado) {
+              acumulado = Math.min(acumulado, 0.5);
+              if (!esperandoDesde) esperandoDesde = agora;
+              else if (agora - esperandoDesde > 1500) setEspera((e) => e ?? t('Esperando {nome}…', { nome: deles }));
+            } else if (esperandoDesde) {
+              esperandoDesde = 0;
+              setEspera(null);
+            }
+          } else if (n >= 4 * vel) acumulado = 0;
         }
+        if (semFoco) return;
         // as setas e o WASD movem o mapa
         const k = teclas.current;
         if (k.size) {
@@ -437,21 +911,29 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
           });
           if (vivos.length !== selRef.current.length) escolher(vivos);
           entregas.current = entregas.current.filter((x) => x.passo > sim.passo - JANELA_DA_TAXA);
-          setPainel(lerPainel(sim, Math.floor(agora / 200), entregas.current));
+          setPainel(lerPainel(sim, eu, Math.floor(agora / 200), entregas.current));
           // quem terminou o treino e não sai por falta de casa: avisa uma vez por vez que trava
-          const travado = sim.predios.some((p) => p.dono === 0 && p.fila.length > 0 && p.pesquisa === 0 && p.treino >= UNIDADES[p.fila[0]].tempo);
+          const travado = sim.predios.some((p) => p.dono === eu && p.fila.length > 0 && p.pesquisa === 0 && p.treino >= UNIDADES[p.fila[0]].tempo);
           if (travado && !avisouCasa) avisar(t('A população está no máximo: construa uma Casa.'));
           avisouCasa = travado;
+          // o tutorial: o passo vira quando a coisa aconteceu na partida
+          if (tutorial && passoTut < PASSOS_DO_TUTORIAL.length && PASSOS_DO_TUTORIAL[passoTut].feito(sim, eu, tutorialInicio)) {
+            passoTut++;
+            tutorialInicio = { trabalhadores: sim.unidades.filter((u) => u.dono === eu && u.tipo === 'trabalhador').length };
+            som(passoTut === PASSOS_DO_TUTORIAL.length ? 'medalha' : 'acerto');
+            setPassoDoTutorial(passoTut);
+          }
         }
         if (agora - ultimoMapa > 250) {
           ultimoMapa = agora;
-          desenharMapa(mapa.current, sim, vista);
+          desenharMapa(mapa.current, sim, eu, vista);
         }
         if (sim.vencedor !== null && !mandou) {
           mandou = true;
-          som('fim');
+          som(sim.vencedor === eu ? 'fim' : 'derrota');
           setAcabou(true);
-          void agirRef.current({ tipo: 'fim', venceu: sim.vencedor === 0, motivo: sim.motivo, passos: sim.passo });
+          // no Solo, o último trecho já vai (com o fim, para o servidor conferir); na sala, quem decide é a cópia do servidor
+          enviarTrecho();
         }
       };
       id = requestAnimationFrame(quadro);
@@ -460,6 +942,8 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
     return () => {
       viva = false;
       cancelAnimationFrame(id);
+      if (trechos) clearInterval(trechos);
+      if (sala) socket?.off('minijogo:tempo-real', chegada);
       vista?.destruir();
       vistaRef.current = null;
       ultimoSom = new Map();
@@ -467,6 +951,7 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
     // a partida nasce uma vez
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
 
   // ---- o teclado ----
   useEffect(() => {
@@ -496,14 +981,14 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
   }, []);
 
   // ---- o que a pessoa faz ----
-  const minhasUnidades = () => selRef.current.map((x) => sim.porId.get(x)).filter(eUnidade).filter((u) => u.dono === 0);
+  const minhasUnidades = () => selRef.current.map((x) => sim.porId.get(x)).filter(eUnidade).filter((u) => u.dono === eu);
   const trabalhadoresEscolhidos = () => minhasUnidades().filter((u) => u.tipo === 'trabalhador').map((u) => u.id);
 
   /** O meu prédio escolhido que treina alguém (o centro, o quartel, a arquearia), pronto. */
   const predioQueTreina = () => {
     if (selRef.current.length !== 1) return null;
     const p = sim.porId.get(selRef.current[0]);
-    if (!ePredio(p) || p.dono !== 0 || !p.pronto) return null;
+    if (!ePredio(p) || p.dono !== eu || !p.pronto) return null;
     return (Object.keys(UNIDADES) as TipoUnidade[]).some((k) => UNIDADES[k].de === p.tipo) ? p : null;
   };
   const mandar = (px: number, py: number) => {
@@ -517,7 +1002,7 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
       const e = alvo !== null ? sim.porId.get(alvo) : undefined;
       const p = e && e.id !== quemTreina.id ? centroDe(e) : v.chao(px, py);
       if (!p) return;
-      comandar(sim, 0, { t: 'reuniao', predio: quemTreina.id, x: p.x, y: p.y, ...(e && e.id !== quemTreina.id ? { alvo: e.id } : {}) });
+      ordenar({ t: 'reuniao', predio: quemTreina.id, x: p.x, y: p.y, ...(e && e.id !== quemTreina.id ? { alvo: e.id } : {}) });
       v.sinal(p.x, p.y, false);
       tocar('clique');
       return;
@@ -526,16 +1011,16 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
     const ids = us.map((u) => u.id);
     const alvo = v.pegar(px, py);
     const e = alvo !== null ? sim.porId.get(alvo) : undefined;
-    if (e && !(eUnidade(e) && e.dono === 0)) {
-      comandar(sim, 0, { t: 'alvo', ids, alvo: e.id });
+    if (e && !(eUnidade(e) && e.dono === eu)) {
+      ordenar({ t: 'alvo', ids, alvo: e.id });
       const c = centroDe(e);
-      v.sinal(c.x, c.y, !eFonte(e) && e.dono !== 0);
+      v.sinal(c.x, c.y, !eFonte(e) && e.dono !== eu);
       tocar('clique');
       return;
     }
     const p = v.chao(px, py);
     if (!p) return;
-    comandar(sim, 0, { t: 'mover', ids, x: p.x, y: p.y });
+    ordenar({ t: 'mover', ids, x: p.x, y: p.y });
     v.sinal(p.x, p.y, false);
     tocar('clique');
   };
@@ -553,9 +1038,9 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
     const casa = casaDoFantasma(p, c.tipo);
     if (c.tipo === 'muralha') {
       const casas = c.inicio ? casasDaMuralha(c.inicio.x, c.inicio.y, casa.x, casa.y) : [casa];
-      const ok = casas.every((k) => podeConstruir(sim, 0, 'muralha', k.x, k.y)) && podePagar(sim, 0, vezes(PREDIOS.muralha.custo, casas.length));
+      const ok = casas.every((k) => podeConstruir(sim, eu, 'muralha', k.x, k.y)) && podePagar(sim, eu, vezes(PREDIOS.muralha.custo, casas.length));
       v.fantasma = { tipo: 'muralha', casas, ok };
-    } else v.fantasma = { tipo: c.tipo, casas: [casa], ok: podeConstruir(sim, 0, c.tipo, casa.x, casa.y) && podePagar(sim, 0, PREDIOS[c.tipo].custo) };
+    } else v.fantasma = { tipo: c.tipo, casas: [casa], ok: podeConstruir(sim, eu, c.tipo, casa.x, casa.y) && podePagar(sim, eu, PREDIOS[c.tipo].custo) };
   };
   const porPredio = (px: number, py: number, manter: boolean) => {
     const c = colocandoRef.current;
@@ -573,16 +1058,16 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
         tocar('clique');
         return;
       }
-      comandar(sim, 0, { t: 'muralha', ids, gx0: c.inicio.x, gy0: c.inicio.y, gx1: casa.x, gy1: casa.y });
+      ordenar({ t: 'muralha', ids, gx0: c.inicio.x, gy0: c.inicio.y, gx1: casa.x, gy1: casa.y });
       tocar('clique');
       colocar(manter ? { tipo: 'muralha', inicio: null } : null);
       return;
     }
-    if (!podeConstruir(sim, 0, c.tipo, casa.x, casa.y) || !podePagar(sim, 0, PREDIOS[c.tipo].custo)) {
+    if (!podeConstruir(sim, eu, c.tipo, casa.x, casa.y) || !podePagar(sim, eu, PREDIOS[c.tipo].custo)) {
       tocar('erro');
       return;
     }
-    comandar(sim, 0, { t: 'construir', ids, tipo: c.tipo, gx: casa.x, gy: casa.y });
+    ordenar({ t: 'construir', ids, tipo: c.tipo, gx: casa.x, gy: casa.y });
     tocar('clique');
     if (!manter) colocar(null);
   };
@@ -596,14 +1081,14 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
       return;
     }
     const e = sim.porId.get(id);
-    if (somar && eUnidade(e) && e.dono === 0) {
+    if (somar && eUnidade(e) && e.dono === eu) {
       const ja = selRef.current.filter((x) => eUnidade(sim.porId.get(x)));
       escolher(ja.includes(id) ? ja.filter((x) => x !== id) : [...ja, id]);
     } else escolher([id]);
   };
 
   const irAoCentro = () => {
-    const c = sim.predios.find((p) => p.dono === 0 && p.tipo === 'centro');
+    const c = sim.predios.find((p) => p.dono === eu && p.tipo === 'centro');
     if (!c) return;
     vistaRef.current?.centrar(c.gx + 1.5, c.gy + 1.5);
     escolher([c.id]);
@@ -677,7 +1162,7 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
       if (colocandoRef.current) return porPredio(p.x, p.y, false);
       const id = v.pegar(p.x, p.y);
       const e2 = id !== null ? sim.porId.get(id) : undefined;
-      const minha = e2 && (eUnidade(e2) || ePredio(e2)) && e2.dono === 0;
+      const minha = e2 && (eUnidade(e2) || ePredio(e2)) && e2.dono === eu;
       if (minha) return escolher([id!]);
       if (minhasUnidades().length || predioQueTreina()) return mandar(p.x, p.y);
       return escolher(id !== null ? [id] : []);
@@ -711,7 +1196,7 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
     const p = local(e);
     const id = v.pegar(p.x, p.y);
     const u = id !== null ? sim.porId.get(id) : undefined;
-    if (!eUnidade(u) || u.dono !== 0) return;
+    if (!eUnidade(u) || u.dono !== eu) return;
     const c = caixa.current!;
     escolher(v.noRetangulo(0, 0, c.clientWidth, c.clientHeight).filter((x) => (sim.porId.get(x) as { tipo?: string })?.tipo === u.tipo));
   };
@@ -725,7 +1210,7 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
     if (e.button === 2) {
       const ids = minhasUnidades().map((u) => u.id);
       if (ids.length) {
-        comandar(sim, 0, { t: 'mover', ids, x, y });
+        ordenar({ t: 'mover', ids, x, y });
         tocar('clique');
       }
       return;
@@ -735,7 +1220,7 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
 
   // ---- os botões ----
   const escolhidos = sel.map((x) => sim.porId.get(x)).filter(Boolean) as NonNullable<ReturnType<typeof sim.porId.get>>[];
-  const unidades = escolhidos.filter(eUnidade).filter((u) => u.dono === 0);
+  const unidades = escolhidos.filter(eUnidade).filter((u) => u.dono === eu);
   const trabalhadores = unidades.filter((u) => u.tipo === 'trabalhador');
   const predio = escolhidos.length === 1 && ePredio(escolhidos[0]) ? escolhidos[0] : null;
   const unico = escolhidos.length === 1 ? escolhidos[0] : null;
@@ -755,7 +1240,7 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
   const botaoConstruir = (tipo: TipoPredio) => {
     const d = PREDIOS[tipo];
     const travado = painel.era < d.era;
-    const pode = !travado && podePagar(sim, 0, d.custo);
+    const pode = !travado && podePagar(sim, eu, d.custo);
     return (
       <button
         key={tipo}
@@ -778,7 +1263,7 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
   const botaoTreinar = (tipo: TipoUnidade) => {
     const d = UNIDADES[tipo];
     const travado = painel.era < d.era;
-    const pode = !travado && podePagar(sim, 0, d.custo) && !!predio && predio.fila.length < 5 && predio.pronto;
+    const pode = !travado && podePagar(sim, eu, d.custo) && !!predio && predio.fila.length < 5 && predio.pronto;
     return (
       <button
         key={tipo}
@@ -794,12 +1279,12 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
             // o que impede, dito (antes, o clique sem recurso não fazia nada à vista: "cliquei no cavaleiro e não saiu")
             if (predio.fila.length >= 5) avisar(t('A fila está cheia.'));
             else {
-              const falta = RECURSOS.filter((k) => (d.custo[k] ?? 0) > sim.jogadores[0].recursos[k]);
+              const falta = RECURSOS.filter((k) => (d.custo[k] ?? 0) > sim.jogadores[eu].recursos[k]);
               avisar(t('Falta: {lista}', { lista: falta.map((k) => t(NOME_DO_RECURSO[k])).join(', ') }));
             }
             return;
           }
-          comandar(sim, 0, { t: 'treinar', predio: predio.id, unidade: tipo });
+          ordenar({ t: 'treinar', predio: predio.id, unidade: tipo });
           tocar('clique');
         }}
       >
@@ -813,8 +1298,76 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
    * O SINO do centro da vila (06/11/2026, pedido dele): o primeiro toque manda todos os trabalhadores para dentro (o centro atira
    * mais com eles lá), o segundo os devolve ao que faziam. Mora no atalho e no painel do centro.
    */
+  /** O FERREIRO (19/11/2026): uma melhoria por botão, com o custo; a que já está em estudo noutro ferreiro fica apagada. */
+  const botaoMelhoria = (m: Melhoria) => {
+    const d = MELHORIAS[m];
+    const ocupado = !!predio?.estudo || sim.predios.some((p) => p.dono === eu && p.estudo === m);
+    const pode = !ocupado && podePagar(sim, eu, d.custo);
+    return (
+      <button
+        key={m}
+        type="button"
+        className="tocas-botao"
+        disabled={ocupado}
+        aria-disabled={!pode}
+        onClick={() => {
+          if (!predio) return;
+          if (!pode) {
+            tocar('erro');
+            const falta = RECURSOS.filter((k) => (d.custo[k] ?? 0) > sim.jogadores[eu].recursos[k]);
+            if (falta.length) avisar(t('Falta: {lista}', { lista: falta.map((k) => t(NOME_DO_RECURSO[k])).join(', ') }));
+            return;
+          }
+          ordenar({ t: 'melhorar', predio: predio.id, m });
+          tocar('clique');
+        }}
+      >
+        <span className="tocas-botao-nome">{t(NOME_DA_MELHORIA[m])}</span>
+        {custo(d.custo)}
+      </button>
+    );
+  };
+
+  /**
+   * O MERCADO (a novidade da era 2): cada botão é uma troca, em figuras (o recurso que sai, a seta, o que entra e quanto). O
+   * preço anda: vender o mesmo barateia.
+   */
+  const botoesDoMercado = (predioId: number) =>
+    RECURSOS.flatMap((de) =>
+      RECURSOS.filter((para) => para !== de).map((para) => {
+        const ganho = precoDaTroca(sim, eu, de, para);
+        const pode = painel.recursos[de] >= MERCADO.lote;
+        const rotulo = t('Trocar {qtd} de {de} por {ganho} de {para}', { qtd: MERCADO.lote, de: t(NOME_DO_RECURSO[de]), ganho, para: t(NOME_DO_RECURSO[para]) });
+        return (
+          <button
+            key={`${de}-${para}`}
+            type="button"
+            className="tocas-botao tocas-troca"
+            aria-disabled={!pode}
+            title={rotulo}
+            aria-label={rotulo}
+            onClick={() => {
+              if (!pode) return void tocar('erro');
+              ordenar({ t: 'trocar', predio: predioId, de, para });
+              tocar('clique');
+            }}
+          >
+            <span className={`tocas-rec-${de}${pode ? '' : ' falta'}`}>
+              <img src={ICONE(de)} alt="" />
+              {MERCADO.lote}
+            </span>
+            <span aria-hidden="true">→</span>
+            <span className={`tocas-rec-${para}`}>
+              <img src={ICONE(para)} alt="" />
+              {ganho}
+            </span>
+          </button>
+        );
+      }),
+    );
+
   const botaoSino = (classe: string) => {
-    const meuCentro = sim.predios.find((p) => p.dono === 0 && p.tipo === 'centro');
+    const meuCentro = sim.predios.find((p) => p.dono === eu && p.tipo === 'centro');
     const rotulo = painel.sino ? t('Tocar o sino de novo: todos de volta ao trabalho') : t('Tocar o sino: todos os trabalhadores para dentro do centro da vila');
     return (
       <button
@@ -826,7 +1379,7 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
         disabled={!meuCentro || acabou}
         onClick={() => {
           if (!meuCentro) return;
-          comandar(sim, 0, { t: 'sino', predio: meuCentro.id });
+          ordenar({ t: 'sino', predio: meuCentro.id });
           tocar('clique');
         }}
       >
@@ -857,7 +1410,7 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
         <span className="tocas-era">{t('Era {n}', { n: painel.era })}</span>
         <span className="tocas-relogio">{relogio(painel.passo)}</span>
         {maravilha[0] > 0 && <span className="tocas-maravilha">{t('Maravilha: {tempo}', { tempo: relogio(PASSOS_DA_MARAVILHA - maravilha[0]) })}</span>}
-        {maravilha[1] > 0 && <span className="tocas-maravilha inimiga">{t('Maravilha do computador: {tempo}', { tempo: relogio(PASSOS_DA_MARAVILHA - maravilha[1]) })}</span>}
+        {maravilha[1] > 0 && <span className="tocas-maravilha inimiga">{outro ? t('Maravilha de {nome}: {tempo}', { nome: outro, tempo: relogio(PASSOS_DA_MARAVILHA - maravilha[1]) }) : t('Maravilha do computador: {tempo}', { tempo: relogio(PASSOS_DA_MARAVILHA - maravilha[1]) })}</span>}
         <button type="button" className="tocas-desistir" disabled={acabou} onClick={() => void agir({ tipo: 'desistir', passos: sim.passo })}>
           {t('Desistir')}
         </button>
@@ -878,7 +1431,18 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
         <div ref={camadaDosSelos} className="tocas-selos" aria-hidden="true" />
         {aviso && <div className="tocas-aviso">{aviso}</div>}
         {acabou && (
-          <div className="tocas-acabou">{sim.vencedor === 0 ? t('Vitória!') : t('Derrota')}</div>
+          <div className="tocas-acabou">{sim.vencedor === eu ? t('Vitória!') : t('Derrota')}</div>
+        )}
+        {espera && !acabou && <div className="tocas-espera" role="status">{espera}</div>}
+        {tutorial && !acabou && (
+          <div className="tocas-tutorial" role="status">
+            <span className="tocas-tutorial-passos" aria-hidden="true">
+              {PASSOS_DO_TUTORIAL.map((_, i) => (
+                <i key={i} className={i < passoDoTutorial ? 'feito' : i === passoDoTutorial ? 'agora' : ''} />
+              ))}
+            </span>
+            {passoDoTutorial < PASSOS_DO_TUTORIAL.length ? t(PASSOS_DO_TUTORIAL[passoDoTutorial].texto) : t('Pronto! Agora é com você: derrube o centro da vila do computador.')}
+          </div>
         )}
       <div className="tocas-baixo">
         <canvas ref={mapa} className="tocas-mapa" width={TAMANHO * 3} height={TAMANHO * 3} onPointerDown={aoTocarNoMapa} onPointerMove={(e) => e.buttons === 1 && aoTocarNoMapa(e)} onContextMenu={(e) => e.preventDefault()} />
@@ -893,7 +1457,7 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
             title={t('Trabalhador parado')}
             aria-label={`${t('Trabalhador parado')}: ${painel.ociosos}`}
             onClick={() => {
-              const ociosos = sim.unidades.filter((u) => u.dono === 0 && u.tipo === 'trabalhador' && u.ordem.tipo === 'parado' && !u.abrigado);
+              const ociosos = sim.unidades.filter((u) => u.dono === eu && u.tipo === 'trabalhador' && u.ordem.tipo === 'parado' && !u.abrigado);
               if (!ociosos.length) return void tocar('erro');
               const atual = selRef.current.length === 1 ? ociosos.findIndex((u) => u.id === selRef.current[0]) : -1;
               const u = ociosos[(atual + 1) % ociosos.length];
@@ -909,7 +1473,7 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
             className="tocas-atalho"
             title={t('Exército')}
             aria-label={t('Exército')}
-            onClick={() => escolher(sim.unidades.filter((u) => u.dono === 0 && UNIDADES[u.tipo].combate).map((u) => u.id))}
+            onClick={() => escolher(sim.unidades.filter((u) => u.dono === eu && UNIDADES[u.tipo].combate).map((u) => u.id))}
           >
             <IconeDeHud nome="punho" tamanho={22} />
           </button>
@@ -920,7 +1484,7 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
             <>
               <p className="tocas-info-nome">
                 {eFonte(unico) ? t(unico.tipo === 'arvore' ? 'Madeira' : 'Ouro') : t(NOME[unico.tipo])}
-                {!eFonte(unico) && unico.dono !== 0 && <span className="tocas-inimigo"> · {t('Computador')}</span>}
+                {!eFonte(unico) && unico.dono !== eu && <span className="tocas-inimigo"> · {deles}</span>}
               </p>
               {eFonte(unico) ? (
                 <p className="tocas-info-linha">{Math.floor(unico.qtd)}</p>
@@ -938,11 +1502,15 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
                 </p>
               )}
               {predio && !predio.pronto && <p className="tocas-info-linha">{Math.floor((predio.progresso / PREDIOS[predio.tipo].tempo) * 100)}%</p>}
-              {predio && predio.dono === 0 && (predio.fila.length > 0 || predio.pesquisa > 0) && (
+              {predio && predio.dono === eu && (predio.fila.length > 0 || predio.pesquisa > 0 || !!predio.estudo) && (
                 <div className="tocas-fila">
                   {predio.pesquisa > 0 ? (
                     <span className="tocas-fila-item">
                       {t('Avançando de era…')} {Math.floor((predio.pesquisa / ERA2.tempo) * 100)}%
+                    </span>
+                  ) : predio.estudo ? (
+                    <span className="tocas-fila-item">
+                      {t(NOME_DA_MELHORIA[predio.estudo])} {Math.floor((predio.estudoPassos / MELHORIAS[predio.estudo].tempo) * 100)}%
                     </span>
                   ) : (
                     predio.fila.map((u, i) => (
@@ -952,7 +1520,7 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
                       </span>
                     ))
                   )}
-                  <button type="button" className="tocas-cancelar" onClick={() => comandar(sim, 0, { t: 'cancelar', predio: predio.id })} aria-label={t('Cancelar')}>
+                  <button type="button" className="tocas-cancelar" onClick={() => ordenar({ t: 'cancelar', predio: predio.id })} aria-label={t('Cancelar')}>
                     ✕
                   </button>
                 </div>
@@ -972,18 +1540,20 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
         </div>
         <div className="tocas-acoes">
           {trabalhadores.length > 0 && CONSTRUIVEIS.map(botaoConstruir)}
-          {predio && predio.dono === 0 && predio.pronto && (
+          {predio && predio.dono === eu && predio.pronto && (
             <>
               {(Object.keys(UNIDADES) as TipoUnidade[]).filter((k) => UNIDADES[k].de === predio.tipo).map(botaoTreinar)}
               {predio.tipo === 'centro' && botaoSino('tocas-botao')}
+              {predio.tipo === 'ferreiro' && ORDEM_DAS_MELHORIAS.filter((m) => !temMelhoria(sim, eu, m)).map(botaoMelhoria)}
+              {predio.tipo === 'mercado' && botoesDoMercado(predio.id)}
               {predio.tipo === 'centro' && painel.era === 1 && predio.pesquisa === 0 && (
                 <button
                   type="button"
                   className="tocas-botao era"
-                  aria-disabled={!podePagar(sim, 0, ERA2.custo)}
+                  aria-disabled={!podePagar(sim, eu, ERA2.custo)}
                   onClick={() => {
-                    if (!podePagar(sim, 0, ERA2.custo)) return void tocar('erro');
-                    comandar(sim, 0, { t: 'era', predio: predio.id });
+                    if (!podePagar(sim, eu, ERA2.custo)) return void tocar('erro');
+                    ordenar({ t: 'era', predio: predio.id });
                     tocar('clique');
                   }}
                 >
@@ -1009,8 +1579,8 @@ function Partida({ semente, agir }: { semente: number; agir: Props['agir'] }) {
   );
 }
 
-function pertoDeCasa(sim: Sim, x: number, y: number): boolean {
-  const c = sim.predios.find((p) => p.dono === 0 && p.tipo === 'centro');
+function pertoDeCasa(sim: Sim, eu: Dono, x: number, y: number): boolean {
+  const c = sim.predios.find((p) => p.dono === eu && p.tipo === 'centro');
   if (!c) return false;
   const dx = x - (c.gx + 1.5);
   const dy = y - (c.gy + 1.5);
@@ -1021,13 +1591,13 @@ function pertoDeCasa(sim: Sim, x: number, y: number): boolean {
 type Acao = 'mover' | 'recolher' | 'atacar' | 'construir' | 'reunir';
 const ICONE_DA_ACAO: Record<Acao, NomeDoIconeDeHud> = { mover: 'mao', recolher: 'cesta', atacar: 'mira', construir: 'chave', reunir: 'bandeira' };
 
-function acaoDoMouse(sim: Sim, v: Vista, sel: number[], px: number, py: number): Acao | '' {
+function acaoDoMouse(sim: Sim, eu: Dono, v: Vista, sel: number[], px: number, py: number): Acao | '' {
   const escolhidos = sel.map((x) => sim.porId.get(x));
-  const us = escolhidos.filter(eUnidade).filter((u) => u.dono === 0 && !u.abrigado);
+  const us = escolhidos.filter(eUnidade).filter((u) => u.dono === eu && !u.abrigado);
   if (!us.length) {
     // o prédio que treina, escolhido sozinho: o direito marca o ponto de reunião
     const p = escolhidos.length === 1 ? escolhidos[0] : undefined;
-    if (ePredio(p) && p.dono === 0 && p.pronto && (Object.keys(UNIDADES) as TipoUnidade[]).some((k) => UNIDADES[k].de === p.tipo)) return 'reunir';
+    if (ePredio(p) && p.dono === eu && p.pronto && (Object.keys(UNIDADES) as TipoUnidade[]).some((k) => UNIDADES[k].de === p.tipo)) return 'reunir';
     return '';
   }
   const id = v.pegar(px, py);
@@ -1035,7 +1605,7 @@ function acaoDoMouse(sim: Sim, v: Vista, sel: number[], px: number, py: number):
   const trabalhador = us.some((u) => u.tipo === 'trabalhador');
   if (!e) return v.chao(px, py) ? 'mover' : '';
   if (eFonte(e)) return trabalhador ? 'recolher' : 'mover';
-  if (e.dono !== 0) return 'atacar';
+  if (e.dono !== eu) return 'atacar';
   if (ePredio(e) && trabalhador) {
     if (!e.pronto) return 'construir';
     if (e.tipo === 'fazenda') return 'recolher';
@@ -1049,8 +1619,8 @@ function vezes(c: Custo, n: number): Custo {
   return r;
 }
 
-function lerPainel(sim: Sim, versao: number, entregas: { passo: number; rec: Recurso; qtd: number }[]): Painel {
-  const j = sim.jogadores[0];
+function lerPainel(sim: Sim, eu: Dono, versao: number, entregas: { passo: number; rec: Recurso; qtd: number }[]): Painel {
+  const j = sim.jogadores[eu];
   const taxa: Record<Recurso, number> = { comida: 0, madeira: 0, ouro: 0 };
   for (const e of entregas) if (e.passo > sim.passo - JANELA_DA_TAXA) taxa[e.rec] += e.qtd;
   // no primeiro minuto, a média do que já passou (senão a taxa começaria pequena demais)
@@ -1059,24 +1629,24 @@ function lerPainel(sim: Sim, versao: number, entregas: { passo: number; rec: Rec
   return {
     recursos: { ...j.recursos },
     taxa,
-    pop: populacao(sim, 0),
+    pop: populacao(sim, eu),
     era: j.era,
     passo: sim.passo,
-    maravilha: [sim.jogadores[0].maravilha, sim.jogadores[1].maravilha],
-    ociosos: sim.unidades.filter((u) => u.dono === 0 && u.tipo === 'trabalhador' && u.ordem.tipo === 'parado' && !u.abrigado).length,
-    sino: !!sim.predios.find((p) => p.dono === 0 && p.tipo === 'centro')?.sino,
-    abrigados: sim.unidades.filter((u) => u.dono === 0 && u.abrigado).length,
+    maravilha: [sim.jogadores[eu].maravilha, sim.jogadores[1 - eu].maravilha],
+    ociosos: sim.unidades.filter((u) => u.dono === eu && u.tipo === 'trabalhador' && u.ordem.tipo === 'parado' && !u.abrigado).length,
+    sino: !!sim.predios.find((p) => p.dono === eu && p.tipo === 'centro')?.sino,
+    abrigados: sim.unidades.filter((u) => u.dono === eu && u.abrigado).length,
     versao,
   };
 }
 
 /** O minimapa: o mapa inteiro, a névoa, os prédios e as unidades, e o retângulo do que a tela mostra. */
-function desenharMapa(tela: HTMLCanvasElement | null, sim: Sim, vista: Vista) {
+function desenharMapa(tela: HTMLCanvasElement | null, sim: Sim, eu: Dono, vista: Vista) {
   if (!tela) return;
   const g = tela.getContext('2d');
   if (!g) return;
   const k = tela.width / TAMANHO;
-  const j = sim.jogadores[0];
+  const j = sim.jogadores[eu];
   g.fillStyle = '#6f9a52';
   g.fillRect(0, 0, tela.width, tela.height);
   for (const f of sim.fontes) {
@@ -1084,15 +1654,17 @@ function desenharMapa(tela: HTMLCanvasElement | null, sim: Sim, vista: Vista) {
     g.fillStyle = f.tipo === 'arvore' ? '#2f5a2c' : '#f0cf3c';
     g.fillRect(f.gx * k, f.gy * k, k, k);
   }
+  g.fillStyle = '#4f86b8';
+  for (const a of sim.agua) if (j.explorado[a.gy * TAMANHO + a.gx]) g.fillRect(a.gx * k, a.gy * k, k, k);
   g.fillStyle = '#8b8577';
   for (const p of sim.pedras) if (j.explorado[p.gy * TAMANHO + p.gx]) g.fillRect(p.gx * k, p.gy * k, k, k);
   for (const p of sim.predios) {
-    if (p.dono !== 0 && !j.explorado[p.gy * TAMANHO + p.gx]) continue;
+    if (p.dono !== eu && !j.explorado[p.gy * TAMANHO + p.gx]) continue;
     g.fillStyle = CORES[p.dono];
     g.fillRect(p.gx * k, p.gy * k, p.tam * k, p.tam * k);
   }
   for (const u of sim.unidades) {
-    if (u.abrigado || (u.dono !== 0 && !j.visivel[Math.floor(u.y) * TAMANHO + Math.floor(u.x)])) continue;
+    if (u.abrigado || (u.dono !== eu && !j.visivel[Math.floor(u.y) * TAMANHO + Math.floor(u.x)])) continue;
     g.fillStyle = u.dono === 0 ? '#bcd3ff' : '#ffb3a8';
     g.fillRect(u.x * k - 1.5, u.y * k - 1.5, 3, 3);
   }
