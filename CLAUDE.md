@@ -677,6 +677,41 @@ secreta não foram auditados (pedem uma sala).
 
 **AS INSÍGNIAS: O CATÁLOGO E AS DO FLIPERAMA (19/11/2026, decisão dele, vendo as insígnias do Discord: "traga as duas coisas").** O catálogo (`CatalogoDeInsignias.tsx`, o mesmo em Minha conta e no Guarda-roupa → Insígnias) mostra TODAS as insígnias: as da pessoa inteiras, as outras esmaecidas com a frase de como se ganham (`comoSeGanha` em `insignias.ts`); sem barra, sem "faltam", sem contagem, sem raridade e sem prazo, a regra das conquistas. É também onde se monta a vitrine: o clique põe e tira, as setas trocam a ordem, "Esconder todas" esvazia. O servidor dá a lista por `GET /api/me/insignias`. **As três do fliperama** (`fliperama-5`, `-15`, `-30`; bronze, prata e ouro, com a arte em pixel art por código em `arteDoFliperama.ts`) medem VARIEDADE: mini-games diferentes jogados NA SALA com 2 ou mais pessoas (`db.jogosDiferentesComGente`: a regra das conquistas da turma; Solo, robôs e o contra o relógio não contam; a Arena conta como os Bichos). São insígnias separadas, e não níveis com barra. **É a primeira conquista INDIVIDUAL fora do troféu do kart**, por decisão dele, e não dá vantagem nenhuma. Quem decide é o servidor (`presentes.ts`): ao entrar (as partidas antigas contam, porque `minijogo_jogadores` já existia) e quando a partida da sala sai da tela, depois do placar (`itens:novos` → a tela de destaque de sempre). Sem dado novo: `user_items` já está no "Levar seus dados". Testes: `server/test/insignias-fliperama.test.ts`, `web/test/insignias.test.ts`; `e2e/catalogo-de-insignias.mjs` escrito, não rodado.
 
+**AS PENDÊNCIAS DOS LOTES DE 19/11/2026 (pedido dele: "anote o que ficou de fora para eu continuar futuramente").**
+- **Ficou de fora, para fazer:**
+  - **Ponte levadiça** (Ponte da toca). Na regra, duas peças no mesmo ponto da grade são sempre um nó só, e o tráfego passa
+    de uma pista para outra pelos nós. Uma ponte que abre pede uma JUNTA NOVA (dois nós no mesmo lugar que se separam e
+    voltam a encostar) e contato entre peças, nas duas cópias da física.
+  - **Tocas e Torres:** o 2×2 com robôs completando a sala, e quem ASSISTE (hoje quem não joga vê só "…").
+  - **Arena dos Bichos, o "mato que esconde":** pede que o servidor esconda posições no quadro de cada um, que é outra rede.
+  - **Quizzes:** as colunas novas da mitologia (não há dados: `mitologia.json` só tem mitologia, tipo, forma e domínios;
+    viriam do Wikidata) e o modo BANDEIRA nos países (não há bandeiras em domínio público no repositório).
+  - **Problemas de xadrez por TEMA:** o script (`server/scripts/problemas-de-xadrez.mjs`) já guarda os temas e o servidor
+    aceita `tema`, mas o arquivo em `server/assets/` é o antigo. Falta baixar o do Lichess (~250 MB), regenerar (talvez
+    subir `POR_FAIXA`) e pôr a escolha na tela.
+  - **Testes de navegador:** nenhum e2e novo foi rodado. O `e2e/masmorra.mjs` pode precisar clicar na escolha da masmorra,
+    que agora aparece antes da partida; o `e2e/catalogo-de-insignias.mjs` está escrito e não rodado. Ninguém jogou nada
+    disso com gente: o equilíbrio de todos os jogos é chute medido contra os pilotos.
+- **Decisões dele, em aberto:**
+  1. Os nomes **Armadilha** (o caçador) e **Caldeirão** (a bruxa) no Lobisomem.
+  2. O **robô de xadrez** segura o servidor ~0,8 s por lance no meio da partida (no normal já era assim): ir para um
+     processo à parte?
+  3. O **Pomar** do pinball é bem mais generoso que a Horta (partidas do piloto até ~24 min): apertar?
+  4. As pistas do **editor dos Carrinhos** não conferem o equilíbrio das faixas (um oval dá ~2,3%): avisar na tela ou recusar?
+  5. A **Torre do Celeiro** mudou a física (o pulo cresce com a corrida) sem trocar os ids: os recordes antigos valem.
+  6. O **nível normal das Tocas e Torres** ainda trava sem comida às vezes; ligar `fazendasNaEra` nele muda o equilíbrio testado.
+  7. Os números chutados: o nível 20 da mesa dos Bichos e os preços da lojinha; os preços dos itens e o duelo de 5 cenouras
+     do Tabuleiro; o +5 da Festa; a gorjeta da Cozinha.
+  8. Quais modos novos entram nas **conquistas da turma** (a Arena, o Relâmpago, as Tocas na sala…: hoje nenhum).
+  9. **Cazaque e uzbeque:** os textos antigos dos jogos tratam por сіз / siz e os novos por сен / sen (a regra do "você");
+     uniformizar. No hebraico, a chave "Você" do placar ficou "אני" (eu), como a 'você' que já existia.
+  10. Alinhar termos antigos com os novos: no russo, "Pista" era "Полотно" e os novos usam "Трасса"; no montenegrino,
+      "Kolovoz" e "Staza".
+- O material de trabalho dos lotes (os relatórios por grupo, com o que cada agente fez, e os scripts de tradução
+  `extrair.mjs`, `aplicar.mjs` e `orfas.mjs`) está fora do repositório, em
+  `C:\Users\fsc_r\.claude\projects\u--Repos-Syden\retomar-19-11\`. O `orfas.mjs` pegou por engano uma linha do
+  `paises.ts` (restaurada): se usar de novo, só nos arquivos de idioma.
+
 **OS JOGOS NOVOS DE 16/11/2026 (pedido dele: "implemente esses jogos"; feitos por agentes, um por jogo, com arte só do que já
 existia no projeto). Todos fora das conquistas da turma até ele decidir; em nenhum alguém jogou com gente (o equilíbrio é chute
 medido contra o piloto automático); os Coletivos sem e2e com o LiveKit, só o teste do servidor.**
