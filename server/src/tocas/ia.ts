@@ -36,6 +36,8 @@ import {
   MELHORIAS,
   temMelhoria,
   type Melhoria,
+  aliados,
+  equipeDe,
 } from './sim.js';
 
 export interface Perfil {
@@ -104,12 +106,17 @@ export type IA = (sim: Sim) => void;
 export function criarIA(dono: Dono, perfil: Perfil = PERFIS.computador): IA {
   let atacando = false;
   let proximaOnda = perfil.primeiroAtaque;
-  const inimigo = (1 - dono) as Dono;
-  const alvoFinal = { x: CENTRO_DE[inimigo].gx + 1.5, y: CENTRO_DE[inimigo].gy + 1.5 };
+  // no Solo e no 1×1, o outro é o único inimigo; no 2×2 (20/11/2026), o alvo é o centro inimigo de pé mais perto do meu
+  const outraEquipe = (1 - equipeDe(dono)) as 0 | 1;
+  let inimigo: Dono = outraEquipe;
+  const alvoFinal = { x: CENTRO_DE[outraEquipe].gx + 1.5, y: CENTRO_DE[outraEquipe].gy + 1.5 };
   const pensa = perfil.pensa ?? 10;
+  // O MEIO-TEMPO em que pensa: 0 ou 5 passos depois do redondo. Pensar no "5" é medido como vantagem (no 1×1 entre dois
+  // computadores iguais, o dono 1 ganha mais); no 2×2, cada equipe tem um de cada (0 e 2: 0 e 5; 1 e 3: 5 e 0). No 1×1, igual a antes.
+  const fase = (((dono >> 1) ^ dono) & 1) * 5;
 
   return (sim: Sim) => {
-    if (sim.vencedor !== null || (sim.passo + dono * 5) % pensa !== 0) return;
+    if (sim.vencedor !== null || (sim.passo + fase) % pensa !== 0) return;
     const j = sim.jogadores[dono];
     const centro = sim.predios.find((p) => p.dono === dono && p.tipo === 'centro');
     if (!centro) return;
@@ -121,6 +128,20 @@ export function criarIA(dono: Dono, perfil: Perfil = PERFIS.computador): IA {
     const pop = populacao(sim, dono);
     const naFila = predios.reduce((s, p) => s + p.fila.length, 0);
     const c = centroDe(centro);
+    if (sim.quatro) {
+      let melhor = Infinity;
+      for (const p of sim.predios) {
+        if (p.tipo !== 'centro' || aliados(p.dono, dono)) continue;
+        const q = centroDe(p);
+        const d2 = dist2(q, c.x, c.y);
+        if (d2 < melhor) {
+          melhor = d2;
+          inimigo = p.dono;
+          alvoFinal.x = q.x;
+          alvoFinal.y = q.y;
+        }
+      }
+    }
     // guardar para a era: quando chega a hora, a tropa espera
     const querEra = j.era === 1 && trab.length >= perfil.eraCom && tem('quartel', true).length > 0 && centro.pesquisa === 0;
 
@@ -210,7 +231,7 @@ export function criarIA(dono: Dono, perfil: Perfil = PERFIS.computador): IA {
 
     // ---- a tropa ----
     if (perfil.pacifico) return;
-    const inimigos = sim.unidades.filter((u) => u.dono === inimigo);
+    const inimigos = sim.unidades.filter((u) => !aliados(u.dono, dono));
     const perto = inimigos.filter((u) => dist2(u, c.x, c.y) < 14 * 14);
     if ((!querEra || exercito.length < 4) && (trab.length >= perfil.exercitoCom || perto.length > 0)) {
       const escolha = tropaContra(inimigos, exercito.length);
@@ -240,7 +261,7 @@ export function criarIA(dono: Dono, perfil: Perfil = PERFIS.computador): IA {
       if (exercito.length < perfil.recuo) {
         atacando = false;
         proximaOnda = sim.passo + perfil.intervalo;
-        if (exercito.length) comandar(sim, dono, { t: 'mover', ids: exercito.map((u) => u.id), x: c.x, y: c.y + (dono === 0 ? -4 : 4) });
+        if (exercito.length) comandar(sim, dono, { t: 'mover', ids: exercito.map((u) => u.id), x: c.x, y: c.y + (c.y > meio ? -4 : 4) });
         return;
       }
       // quem parou (o alvo do caminho caiu) segue para o centro; quem chegou de reforço também

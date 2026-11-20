@@ -21,7 +21,7 @@ import { canalDoSocket, ligarCanalDaFesta } from './festa/comum';
 import { FicharioDeGeneros, naFicha, useFicha, classeDaFicha, fichaQueVale, emOrdemAlfabetica } from './FicharioDeGeneros';
 import { JogoGolfe3D, type EstadoGolfe3D } from './JogoGolfe3D';
 import { JogoFutebol, type EstadoFutebol } from './JogoFutebol';
-import { JogoTocas, type EstadoTocas } from './JogoTocas';
+import { EscolhaDaSalaDasTocas, JogoTocas, type EstadoTocas } from './JogoTocas';
 import { JogoCaca } from './JogoCaca';
 import { EscolhaDaFaseDaNave, JogoNave, type EstadoNave } from './JogoNave';
 import { JogoEstelar, type EstadoEstelar } from './JogoEstelar';
@@ -502,6 +502,13 @@ export function PainelDoMinijogo({
           aoVoltar={() => setEscolhendo(null)}
         />
       )}
+      {/* Tocas e Torres na sala (20/11/2026): 1×1 ou 2×2 (os robôs completam), e o mapa. No Solo, a escolha é a do jogo. */}
+      {!partida && escolhendo === 'tocas' && (
+        <EscolhaDaSalaDasTocas
+          aoEscolher={(corpo) => tentar(() => aoComecar('tocas', corpo, false).then(() => setEscolhendo(null)))}
+          aoVoltar={() => setEscolhendo(null)}
+        />
+      )}
       {/* A Ponte da toca: a fase (no Solo, cada uma tem o seu recorde; na sala, a mesma para a turma). */}
       {!partida && escolhendo === 'ponte' && (
         <EscolhaDaPonte
@@ -537,7 +544,7 @@ export function PainelDoMinijogo({
                       ? aba === 'solo'
                         ? setPulando(true)
                         : setEscolhendo('plataforma')
-                    : (jogo.id === 'balao' || jogo.id === 'jato' || jogo.id === 'barco' || jogo.id === 'torre' || jogo.id === 'gincana' || jogo.id === 'carrinhos' || jogo.id === 'skate') && aba === 'coletivo'
+                    : (jogo.id === 'balao' || jogo.id === 'jato' || jogo.id === 'barco' || jogo.id === 'torre' || jogo.id === 'gincana' || jogo.id === 'carrinhos' || jogo.id === 'skate' || jogo.id === 'tocas') && aba === 'coletivo'
                       ? setEscolhendo(jogo.id)
                     : jogo.id === 'briga' || jogo.id === 'comando' || jogo.id === 'chefe' || jogo.id === 'nave' || jogo.id === 'masmorra' || jogo.id === 'bichos' || jogo.id === 'ponte' || jogo.id === 'tabuleiro' || jogo.id === 'festa' || jogo.id === 'cidades' || (aba === 'solo' && ROBOS_NO_SOLO[jogo.id]) || MESAS_COM_ESCOLHAS.has(jogo.id) || pedeCategoria(jogo.id, aba === 'solo')
                       ? setEscolhendo(jogo.id)
@@ -579,7 +586,8 @@ export function PainelDoMinijogo({
       )}
       {soAssiste && !partida.terminada && <p className="minijogo-assistindo-aviso">{t('Você está assistindo. Dá para entrar na próxima partida.')}</p>}
 
-      <div className={`minijogo-corpo${soAssiste ? ' so-assistindo' : ''}`} inert={soAssiste || undefined}>
+      {/* quem assiste as Tocas e Torres move a câmera (20/11/2026): o painel não fica inerte para elas */}
+      <div className={`minijogo-corpo${soAssiste ? ' so-assistindo' : ''}`} inert={(soAssiste && partida.jogo !== 'tocas') || undefined}>
       {jogoNaTela?.jogo === 'tamanho' && <JogoTamanho estado={jogoNaTela as unknown as EstadoTamanho & Partida} eu={eu} restante={restante} agir={agir} />}
       {jogoNaTela?.jogo === 'stop' && <JogoStop estado={jogoNaTela as unknown as EstadoStop & Partida} eu={eu} restante={restante} agir={agir} aoAgir={aoAgir} />}
       {jogoNaTela?.jogo === 'sudoku' && <JogoSudoku estado={jogoNaTela as unknown as EstadoSudoku & Partida} eu={eu} restante={restante} agir={agir} />}

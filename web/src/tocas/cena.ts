@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
-import { PREDIOS, TAMANHO, eFonte, ePredio, eUnidade, type Fonte, type Predio, type Recurso, type Sim, type TipoPredio, type Unidade } from './sim';
+import { PREDIOS, TAMANHO, eFonte, ePredio, eUnidade, type Fonte, type Predio, type Recurso, type Dono, type Sim, type TipoPredio, type Unidade } from './sim';
 import { CORES, golpeDoMartelo, passeioNaFazenda, type Vista } from './vista';
 
 /**
@@ -46,7 +46,8 @@ const MODELOS_DOS_PREDIOS: Record<TipoPredio, [string, string]> = {
 /** As obras: o canteiro, as paredes subindo e o andaime, pelo andamento. */
 const OBRAS = ['m/building_stage_A', 'm/building_stage_B', 'm/building_stage_C'];
 const TIME = ['blue', 'red'] as const;
-const doTime = (nome: string, dono: number) => nome.replaceAll('{cor}', TIME[dono]);
+// a cor é a da EQUIPE (no 2×2, os aliados com a mesma; 20/11/2026)
+const doTime = (nome: string, dono: number) => nome.replaceAll('{cor}', TIME[dono & 1]);
 const ARVORES = ['m/tree_single_A', 'm/tree_single_B', 'm/trees_A_small'];
 const TOCO = 'm/tree_single_A_cut';
 const OURO = 'm/rock_single_E@0,0,1.4+recursos/Gold_Nuggets@0.05,0.1,0.7';
@@ -307,10 +308,19 @@ export class CenaDasTocas implements Vista {
   private armas = new Map<string, THREE.Object3D>();
   private tempo = 0;
 
+  /** O mapa inteiro, para quem assiste. */
+  private readonly semNevoa = new Uint8Array(TAMANHO * TAMANHO).fill(1);
+  /** O que se vê: o da minha equipe (a simulação divide a visão), ou tudo para quem assiste. */
+  private get nevoa(): { visivel: Uint8Array; explorado: Uint8Array } {
+    return this.assistindo ? { visivel: this.semNevoa, explorado: this.semNevoa } : this.sim.jogadores[this.eu];
+  }
+
   constructor(
     private caixa: HTMLElement,
     private sim: Sim,
-    private eu: 0 | 1 = 0,
+    private eu: Dono = 0,
+    /** Quem ASSISTE a sala (20/11/2026): o mapa todo à vista, sem névoa. */
+    private assistindo = false,
   ) {
     this.renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
@@ -370,7 +380,7 @@ export class CenaDasTocas implements Vista {
       const m = o as THREE.Mesh;
       if (m.isMesh && !base) base = m.material as THREE.MeshStandardMaterial;
     });
-    this.matCoelho = CORES.map((cor) => materialDoCoelho(base ?? new THREE.MeshStandardMaterial(), cor));
+    this.matCoelho = CORES.slice(0, 2).map((cor) => materialDoCoelho(base ?? new THREE.MeshStandardMaterial(), cor));
     this.descartaveis.push(...this.matCoelho);
     this.montarMundo();
     this.montarArmas();
@@ -615,13 +625,13 @@ export class CenaDasTocas implements Vista {
     dentro.add(obj);
     dentro.rotation.y = giro;
     // a do computador olha para o outro lado (o mapa é espelhado)
-    if (p.dono === 1 && !muro) dentro.rotation.y = Math.PI;
+    if ((p.dono & 1) === 1 && !muro) dentro.rotation.y = Math.PI;
     return { obj: dentro, chave };
   }
 
   private atualizarPredios() {
     const vivos = new Set<number>();
-    const visivel = this.sim.jogadores[this.eu].explorado;
+    const visivel = this.nevoa.explorado;
     for (const p of this.sim.predios) {
       vivos.add(p.id);
       let c = this.predios.get(p.id);
@@ -722,7 +732,7 @@ export class CenaDasTocas implements Vista {
       const k = ALTURA[u.tipo] / (caixa.max.y - caixa.min.y);
       c.scale.setScalar(k);
       c.position.y = -caixa.min.y * k;
-      const mat = this.matCoelho[u.dono];
+      const mat = this.matCoelho[u.dono & 1];
       c.traverse((o) => {
         const m = o as THREE.Mesh;
         if (m.isMesh) {
@@ -736,12 +746,12 @@ export class CenaDasTocas implements Vista {
       corpo = c;
       const h = ALTURA[u.tipo];
       mao.position.set(-0.17 * h / 0.7, 0.36 * h / 0.7, 0.12 * h / 0.7);
-      const arma = this.armas.get(`${u.tipo}|${u.dono}`);
+      const arma = this.armas.get(`${u.tipo}|${u.dono & 1}`);
       if (arma) {
         const a = arma.clone();
         if (u.tipo === 'cavaleiro') {
           a.position.set(0, 0.05, 0.05);
-          const e = this.armas.get(`escudo|${u.dono}`)!.clone();
+          const e = this.armas.get(`escudo|${u.dono & 1}`)!.clone();
           e.position.set(0.32 * h / 0.7, -0.05, 0.08);
           mao.add(e);
         }
@@ -767,7 +777,7 @@ export class CenaDasTocas implements Vista {
 
   private atualizarUnidades(alfa: number, dt: number) {
     const vivos = new Set<number>();
-    const vis = this.sim.jogadores[this.eu].visivel;
+    const vis = this.nevoa.visivel;
     for (const u of this.sim.unidades) {
       vivos.add(u.id);
       let b = this.bonecos.get(u.id);
@@ -845,7 +855,7 @@ export class CenaDasTocas implements Vista {
   // ---------- seleção, vida, pilhas, tiros ----------
 
   private atualizarMarcas() {
-    const vis = this.sim.jogadores[this.eu].visivel;
+    const vis = this.nevoa.visivel;
     // os anéis de quem está escolhido
     for (const [id, a] of this.aneis)
       if (!this.selecao.has(id) || !this.sim.porId.has(id)) {
@@ -918,12 +928,12 @@ export class CenaDasTocas implements Vista {
       const b = this.bonecos.get(u.id);
       if (!b || !b.raiz.visible) continue;
       const h = u.tipo === 'catapulta' ? 0.9 : ALTURA[u.tipo];
-      barra(u.id, b.raiz.position.x, h + 0.18, b.raiz.position.z, 0.5, u.vida / u.vidaMax, u.dono !== this.eu);
+      barra(u.id, b.raiz.position.x, h + 0.18, b.raiz.position.z, 0.5, u.vida / u.vidaMax, (u.dono & 1) !== (this.eu & 1));
     }
     for (const p of this.sim.predios) {
       if (p.vida >= p.vidaMax * 0.999 && !this.selecao.has(p.id)) continue;
       if (p.dono !== this.eu && !vis[p.gy * T + p.gx]) continue;
-      barra(p.id, p.gx + p.tam / 2, p.tam === 1 ? 1.5 : p.tam * 0.75 + 0.6, p.gy + p.tam / 2, Math.min(2.2, 0.5 + p.tam * 0.45), p.vida / p.vidaMax, p.dono !== this.eu);
+      barra(p.id, p.gx + p.tam / 2, p.tam === 1 ? 1.5 : p.tam * 0.75 + 0.6, p.gy + p.tam / 2, Math.min(2.2, 0.5 + p.tam * 0.45), p.vida / p.vidaMax, (p.dono & 1) !== (this.eu & 1));
     }
     for (const [id, b] of this.barras)
       if (!querBarra.has(id)) {
@@ -980,7 +990,7 @@ export class CenaDasTocas implements Vista {
 
   /** O que a simulação contou neste passo (os tiros, o que caiu). A tela chama a cada passo andado. */
   eventos(sim: Sim) {
-    const vis = sim.jogadores[this.eu].visivel;
+    const vis = this.nevoa.visivel;
     const agora = performance.now();
     for (const e of sim.eventos) {
       if (e.t === 'golpe' && e.arma !== 'corpo') {
@@ -1013,7 +1023,7 @@ export class CenaDasTocas implements Vista {
         const tam = PREDIOS[e.tipo as TipoPredio].tam;
         const o = this.molde('m/building_destroyed', tam * 0.8);
         o.position.set(e.x, 0, e.y);
-        o.rotation.y = e.dono === 1 ? Math.PI : 0;
+        o.rotation.y = (e.dono & 1) === 1 ? Math.PI : 0;
         this.cena.add(o);
         this.escombros.push({ obj: o, ate: agora + 12_000 });
       }
@@ -1111,7 +1121,7 @@ export class CenaDasTocas implements Vista {
   }
 
   private atualizarNevoa() {
-    const j = this.sim.jogadores[this.eu];
+    const j = this.nevoa;
     const d = this.nevoaDados;
     for (let i = 0; i < T * T; i++) {
       const v = j.visivel[i] ? 255 : j.explorado[i] ? 120 : 22;
@@ -1224,7 +1234,7 @@ export class CenaDasTocas implements Vista {
     if (gx < 0 || gy < 0 || gx >= T || gy >= T) return null;
     const g = this.sim.grade[gy * T + gx];
     const e = g > 0 ? this.sim.porId.get(g) : undefined;
-    if (e && (eFonte(e) || ePredio(e)) && this.sim.jogadores[this.eu].explorado[gy * T + gx]) return e.id;
+    if (e && (eFonte(e) || ePredio(e)) && this.nevoa.explorado[gy * T + gx]) return e.id;
     return null;
   }
 

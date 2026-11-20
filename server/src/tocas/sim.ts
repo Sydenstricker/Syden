@@ -37,7 +37,14 @@ export const CAPACIDADE = { fazenda: 1, mina: 5 } as const;
 /** O sino com gente dentro: o centro solta uma flecha a mais a cada 2 abrigados, até 5 a mais. */
 export const FLECHAS_DO_SINO = { cada: 2, max: 5 } as const;
 
-export type Dono = 0 | 1;
+/**
+ * O DONO de cada coisa: 0 e 1 no Solo e no 1×1; de 0 a 3 no 2×2 da sala (20/11/2026). A EQUIPE é o bit de baixo (0 e 2 contra
+ * 1 e 3): no 1×1, equipe e dono são o mesmo número, e por isso tudo o que pergunta "é aliado?" dá o mesmo de antes.
+ */
+export type Dono = 0 | 1 | 2 | 3;
+export const equipeDe = (d: number): 0 | 1 => (d & 1) as 0 | 1;
+/** Da mesma equipe (o próprio dono incluído): não se atacam, dividem a visão e passam pelo portão um do outro. */
+export const aliados = (a: number, b: number): boolean => (a & 1) === (b & 1);
 export type Recurso = 'comida' | 'madeira' | 'ouro';
 export type TipoUnidade = 'trabalhador' | 'lanceiro' | 'arqueiro' | 'cavaleiro' | 'catapulta';
 export type TipoPredio = 'centro' | 'casa' | 'fazenda' | 'quartel' | 'arquearia' | 'torre' | 'muralha' | 'portao' | 'maravilha' | 'ferreiro' | 'mercado';
@@ -306,14 +313,15 @@ export type Comando =
 /** Uma amostra do gráfico do fim: o passo, o que cada um já colheu e quantos soldados cada um tinha. */
 export interface Amostra {
   passo: number;
-  colhido: [number, number];
-  exercito: [number, number];
+  colhido: number[];
+  exercito: number[];
 }
 
 export interface Sim {
   passo: number;
   semente: number;
-  jogadores: [Jogador, Jogador];
+  /** Dois (o Solo e o 1×1) ou quatro (o 2×2). */
+  jogadores: Jogador[];
   unidades: Unidade[];
   predios: Predio[];
   fontes: Fonte[];
@@ -327,7 +335,7 @@ export interface Sim {
   motivo: Motivo | null;
   porId: Map<number, Unidade | Predio | Fonte>;
   /** O último aviso de ataque, por dono (para não repetir a cada golpe). */
-  avisoEm: [number, number];
+  avisoEm: number[];
   rnd: () => number;
   /** O que era cada fonte que acabou (quem voltava a ela acha uma parecida perto). */
   acabadas: Map<number, { tipo: Fonte['tipo']; gx: number; gy: number }>;
@@ -337,8 +345,12 @@ export interface Sim {
   /** As casas de água (o mapa de lagos): como a pedra, ninguém passa nem constrói. */
   agua: { gx: number; gy: number }[];
   /** Tudo o que cada um já levou ao estoque (o gráfico do fim). */
-  colhido: [number, number];
+  colhido: number[];
   historico: Amostra[];
+  /** O 2×2: quatro bases, uma em cada canto, e o mapa espelhado nos dois eixos. */
+  quatro: boolean;
+  /** Onde nasceu o centro da vila de cada dono. */
+  centros: { gx: number; gy: number }[];
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -366,7 +378,21 @@ export const CENTRO_DE: [{ gx: number; gy: number }, { gx: number; gy: number }]
   { gx: TAMANHO - 6 - 3, gy: TAMANHO - 34 - 3 },
 ];
 
-export function novaPartida(semente: number, opcoes: { mapa?: TipoDoMapa } = {}): Sim {
+/**
+ * O 2×2 (20/11/2026): uma base em cada canto, e os ALIADOS EM CANTOS OPOSTOS: a equipe 0 (os donos 0 e 2) embaixo à esquerda
+ * e em cima à direita, a 1 (1 e 3) nos outros dois. O mapa é espelhado nos dois eixos, então as quatro bases são iguais; e com a
+ * aliança na diagonal, cada equipe tem uma base de cada lado e de cada altura. Medido com quatro computadores: com os aliados
+ * lado a lado, a equipe da direita ganhava 8 de 10 (a ordem em que a simulação varre as casas não é simétrica); na diagonal,
+ * 12 a 16 em 28 partidas.
+ */
+export const CENTROS_DO_2X2: { gx: number; gy: number }[] = [
+  { gx: 6, gy: 34 },
+  { gx: 6, gy: TAMANHO - 34 - 3 },
+  { gx: TAMANHO - 6 - 3, gy: TAMANHO - 34 - 3 },
+  { gx: TAMANHO - 6 - 3, gy: 34 },
+];
+
+export function novaPartida(semente: number, opcoes: { mapa?: TipoDoMapa; quatro?: boolean } = {}): Sim {
   const vazio = () => new Uint8Array(TAMANHO * TAMANHO);
   const jog = (): Jogador => ({
     recursos: { comida: 200, madeira: 200, ouro: 100 },
@@ -378,10 +404,12 @@ export function novaPartida(semente: number, opcoes: { mapa?: TipoDoMapa } = {})
     precos: { comida: 100, madeira: 100, ouro: 100 },
   });
   const mapa: TipoDoMapa = opcoes.mapa && MAPAS.includes(opcoes.mapa) ? opcoes.mapa : 'campo';
+  const quatro = opcoes.quatro === true;
+  const n = quatro ? 4 : 2;
   const sim: Sim = {
     passo: 0,
     semente,
-    jogadores: [jog(), jog()],
+    jogadores: Array.from({ length: n }, jog),
     unidades: [],
     predios: [],
     fontes: [],
@@ -393,19 +421,22 @@ export function novaPartida(semente: number, opcoes: { mapa?: TipoDoMapa } = {})
     vencedor: null,
     motivo: null,
     porId: new Map(),
-    avisoEm: [-999, -999],
+    avisoEm: Array.from({ length: n }, () => -999),
     rnd: aleatorio(semente),
     acabadas: new Map(),
     minaDe: new Map(),
     mapa,
     agua: [],
-    colhido: [0, 0],
+    colhido: Array.from({ length: n }, () => 0),
     historico: [],
+    quatro,
+    centros: quatro ? CENTROS_DO_2X2 : CENTRO_DE,
   };
-  gerarMapa(sim);
+  if (quatro) gerarMapaDe4(sim);
+  else gerarMapa(sim);
   juntarMinas(sim);
-  for (const d of [0, 1] as Dono[]) {
-    const c = CENTRO_DE[d];
+  for (const d of donos(sim)) {
+    const c = sim.centros[d];
     const p = novoPredio(sim, d, 'centro', c.gx, c.gy);
     p.pronto = true;
     p.progresso = PREDIOS.centro.tempo;
@@ -422,9 +453,14 @@ export function novaPartida(semente: number, opcoes: { mapa?: TipoDoMapa } = {})
 
 /** Uma amostra do gráfico do fim (o que cada um já colheu e o tamanho do exército). */
 function amostrar(sim: Sim) {
-  const exercito: [number, number] = [0, 0];
+  const exercito = sim.jogadores.map(() => 0);
   for (const u of sim.unidades) if (UNIDADES[u.tipo].combate) exercito[u.dono]++;
-  sim.historico.push({ passo: sim.passo, colhido: [sim.colhido[0], sim.colhido[1]], exercito });
+  sim.historico.push({ passo: sim.passo, colhido: [...sim.colhido], exercito });
+}
+
+/** Os donos da partida, em ordem: [0, 1] ou [0, 1, 2, 3]. */
+export function donos(sim: Sim): Dono[] {
+  return sim.jogadores.map((_, d) => d as Dono);
 }
 
 /**
@@ -432,10 +468,13 @@ function amostrar(sim: Sim) {
  * nasce nelas, e por isso sempre há um caminho de uma base à outra (o teste confere em muitas sementes).
  */
 function noCorredor(x: number, y: number): boolean {
-  const ax = CENTRO_DE[0].gx + 1.5;
-  const ay = CENTRO_DE[0].gy + 1.5;
-  const dx = CENTRO_DE[1].gx + 1.5 - ax;
-  const dy = CENTRO_DE[1].gy + 1.5 - ay;
+  return noCorredorEntre(x, y, CENTRO_DE[0], CENTRO_DE[1]);
+}
+function noCorredorEntre(x: number, y: number, a: { gx: number; gy: number }, b: { gx: number; gy: number }): boolean {
+  const ax = a.gx + 1.5;
+  const ay = a.gy + 1.5;
+  const dx = b.gx + 1.5 - ax;
+  const dy = b.gy + 1.5 - ay;
   const px = x + 0.5 - ax;
   const py = y + 0.5 - ay;
   const q = dx * dx + dy * dy;
@@ -576,6 +615,95 @@ function gerarMapa(sim: Sim) {
   for (let i = 0; i < 26; i++) par(Math.floor(r() * TAMANHO), Math.floor(r() * TAMANHO), arvore, 5);
 }
 
+/**
+ * O MAPA DO 2×2 (20/11/2026): tudo o que se põe vai para a casa e as três imagens dela (o espelho nos dois eixos), então as
+ * quatro bases são iguais. A base de cada um é a do 1×1 (o ouro de casa e os bosques de perto); os CORREDORES ligam cada base à
+ * do canto oposto (o X pelo meio) e à da aliada (pela borda), e nada do que se sorteia nasce neles.
+ */
+function gerarMapaDe4(sim: Sim) {
+  const r = sim.rnd;
+  const M = TAMANHO - 1;
+  const C = sim.centros;
+  const longeDosCentros = (x: number, y: number, folga: number) =>
+    C.every((c) => x < c.gx - folga || x >= c.gx + 3 + folga || y < c.gy - folga || y >= c.gy + 3 + folga);
+  const noCorredor4 = (x: number, y: number) =>
+    noCorredorEntre(x, y, C[0], C[1]) || noCorredorEntre(x, y, C[2], C[3]) || noCorredorEntre(x, y, C[0], C[2]) || noCorredorEntre(x, y, C[1], C[3]);
+  let reservar = false;
+  /** Põe na casa e nas três imagens dela, só se todas estiverem livres (e fora do que está reservado). */
+  const nas4 = (x: number, y: number, por: (x: number, y: number) => void, folga = 4) => {
+    const casas: [number, number][] = [];
+    for (const [a, b] of [[x, y], [M - x, y], [x, M - y], [M - x, M - y]] as [number, number][]) if (!casas.some(([c, d]) => c === a && d === b)) casas.push([a, b]);
+    for (const [a, b] of casas) {
+      if (!dentro(a, b) || sim.grade[ind(a, b)] !== 0 || !longeDosCentros(a, b, folga)) return false;
+      if (reservar && (noCorredor4(a, b) || !longeDosCentros(a, b, 6))) return false;
+    }
+    for (const [a, b] of casas) por(a, b);
+    return true;
+  };
+  const arvore = (x: number, y: number) => {
+    const f: Fonte = { id: sim.proximoId++, tipo: 'arvore', gx: x, gy: y, qtd: MADEIRA_DA_ARVORE, variante: Math.floor(r() * 3) };
+    sim.fontes.push(f);
+    sim.porId.set(f.id, f);
+    sim.grade[ind(x, y)] = f.id;
+  };
+  const ouro = (x: number, y: number) => {
+    const f: Fonte = { id: sim.proximoId++, tipo: 'ouro', gx: x, gy: y, qtd: OURO_DA_PEDRA, variante: 0 };
+    sim.fontes.push(f);
+    sim.porId.set(f.id, f);
+    sim.grade[ind(x, y)] = f.id;
+  };
+  const pedra = (x: number, y: number) => {
+    sim.grade[ind(x, y)] = -1;
+    sim.pedras.push({ gx: x, gy: y });
+  };
+  const agua = (x: number, y: number) => {
+    sim.grade[ind(x, y)] = -2;
+    sim.agua.push({ gx: x, gy: y });
+  };
+  /** Um bosque (ou um lago): começa numa casa e cresce para as vizinhas, sorteando. */
+  const crescer = (cx: number, cy: number, n: number, por: (x: number, y: number) => void, folga: number) => {
+    const lista: [number, number][] = [[cx, cy]];
+    let feitas = 0;
+    for (let tent = 0; tent < n * 8 && feitas < n; tent++) {
+      const [bx, by] = lista[Math.floor(r() * lista.length)];
+      const x = bx + Math.floor(r() * 3) - 1;
+      const y = by + Math.floor(r() * 3) - 1;
+      if (nas4(x, y, por, folga)) {
+        lista.push([x, y]);
+        feitas++;
+      }
+    }
+  };
+  /** Um ponto sorteado no quarto de baixo e da esquerda (o da base 0; os outros são o espelho). */
+  const sorteado = () => ({ x: 2 + Math.floor(r() * (TAMANHO / 2 - 2)), y: Math.floor(TAMANHO / 2) + Math.floor(r() * (TAMANHO / 2 - 2)) });
+
+  // a base de cada um: o ouro de casa (menor no mapa do ouro) e os bosques de perto
+  for (let x = 13; x <= 14; x++) for (let y = sim.mapa === 'ouro' ? 30 : 29; y <= 31; y++) nas4(x, y, ouro);
+  crescer(16, 39, 26, arvore, 4);
+  crescer(11, 41, 10, arvore, 4);
+  // o meio: a mina de quem chegar (maior, e cercada de pedras, no mapa do ouro)
+  if (sim.mapa === 'ouro') {
+    for (let x = 20; x <= 21; x++) for (let y = 20; y <= 21; y++) nas4(x, y, ouro, 0);
+    for (const [x, y] of [[18, 18], [19, 18], [18, 19]] as [number, number][]) nas4(x, y, pedra, 2);
+  } else {
+    nas4(21, 21, ouro, 0);
+    for (const [x, y] of [[16, 16], [17, 16], [16, 17], [17, 17]] as [number, number][]) nas4(x, y, pedra, 2);
+  }
+  reservar = true;
+  const bosques = sim.mapa === 'floresta' ? 6 : sim.mapa === 'lagos' ? 2 : 3;
+  const soltas = sim.mapa === 'floresta' ? 40 : sim.mapa === 'lagos' ? 12 : 16;
+  if (sim.mapa === 'lagos')
+    for (let i = 0; i < 2; i++) {
+      const p = sorteado();
+      crescer(p.x, p.y, 8 + Math.floor(r() * 8), agua, 6);
+    }
+  for (let i = 0; i < bosques; i++) {
+    const p = sorteado();
+    crescer(p.x, p.y, (sim.mapa === 'floresta' ? 14 : 8) + Math.floor(r() * 10), arvore, 4);
+  }
+  for (let i = 0; i < soltas; i++) nas4(Math.floor(r() * TAMANHO), Math.floor(r() * TAMANHO), arvore, 5);
+}
+
 /** As casas de ouro encostadas (nas 8 direções) viram uma mina só, numerada de 1 na ordem das fontes. */
 function juntarMinas(sim: Sim) {
   const ouros = sim.fontes.filter((f) => f.tipo === 'ouro');
@@ -616,7 +744,7 @@ function novaUnidade(sim: Sim, dono: Dono, tipo: TipoUnidade, x: number, y: numb
     ax: x,
     ay: y,
     rx: 0,
-    ry: dono === 0 ? -1 : 1,
+    ry: equipeDe(dono) === 0 ? -1 : 1,
     vida,
     vidaMax: vida,
     ordem: { tipo: 'parado' },
@@ -707,7 +835,7 @@ export function passavel(sim: Sim, i: number, dono: Dono): boolean {
   if (g === 0) return true;
   if (g < 0) return false;
   const e = sim.porId.get(g);
-  return ePredio(e) && e.tipo === 'portao' && e.dono === dono;
+  return ePredio(e) && e.tipo === 'portao' && aliados(e.dono, dono);
 }
 
 export function populacao(sim: Sim, dono: Dono): { usada: number; max: number } {
@@ -1055,9 +1183,9 @@ function aplicar(sim: Sim, dono: Dono, c: Comando) {
             u.ordem = { tipo: 'mover', x: alvo.gx + 0.5, y: alvo.gy + 0.5 };
             cheio = true;
           }
-        } else if (alvo.dono !== dono) {
+        } else if (!aliados(alvo.dono, dono)) {
           u.ordem = { tipo: 'atacar', alvo: alvo.id };
-        } else if (ePredio(alvo) && u.tipo === 'trabalhador') {
+        } else if (ePredio(alvo) && u.tipo === 'trabalhador' && alvo.dono === dono) {
           if (!alvo.pronto) u.ordem = { tipo: 'construir', alvo: alvo.id };
           else if (alvo.tipo === 'fazenda') {
             if (!irColetar(sim, u, alvo.id)) {
@@ -1360,7 +1488,7 @@ function predioPensa(sim: Sim, p: Predio) {
       const c = centroDe(p);
       const perto: { u: Unidade; dist: number }[] = [];
       for (const u of sim.unidades) {
-        if (u.dono === p.dono || u.vida <= 0 || u.abrigado) continue;
+        if (aliados(u.dono, p.dono) || u.vida <= 0 || u.abrigado) continue;
         const dist = distancia(u.x, u.y, p);
         if (dist <= d.alcance!) perto.push({ u, dist });
       }
@@ -1459,7 +1587,7 @@ function procurarInimigo(sim: Sim, u: Unidade, raio: number): number {
   let melhorP = 0;
   let distP = Infinity;
   for (const o of sim.unidades) {
-    if (o.dono === u.dono || o.vida <= 0 || o.abrigado) continue;
+    if (aliados(o.dono, u.dono) || o.vida <= 0 || o.abrigado) continue;
     const dx = o.x - u.x;
     const dy = o.y - u.y;
     const q = dx * dx + dy * dy;
@@ -1470,7 +1598,7 @@ function procurarInimigo(sim: Sim, u: Unidade, raio: number): number {
   }
   if (melhorU && u.tipo !== 'catapulta') return melhorU;
   for (const p of sim.predios) {
-    if (p.dono === u.dono || p.vida <= 0) continue;
+    if (aliados(p.dono, u.dono) || p.vida <= 0) continue;
     const dist = distancia(u.x, u.y, p);
     if (dist <= raio + (u.tipo === 'catapulta' ? 2 : 0) && dist < distP) {
       distP = dist;
@@ -1642,7 +1770,7 @@ function pensar(sim: Sim, u: Unidade) {
     }
     case 'atacar': {
       const alvo = sim.porId.get(o.alvo!);
-      if (!alvo || eFonte(alvo) || alvo.vida <= 0 || alvo.dono === u.dono || (eUnidade(alvo) && alvo.abrigado)) {
+      if (!alvo || eFonte(alvo) || alvo.vida <= 0 || aliados(alvo.dono, u.dono) || (eUnidade(alvo) && alvo.abrigado)) {
         u.ordem = o.depois ?? { tipo: 'parado' };
         u.caminho = [];
         return;
@@ -1932,9 +2060,9 @@ function limparMortos(sim: Sim) {
   }
 }
 
-/** O que cada um vê agora (e o que já viu): unidades e prédios iluminam um círculo. */
+/** O que cada um vê agora (e o que já viu): unidades e prédios iluminam um círculo. No 2×2, a equipe divide a visão. */
 export function verNevoa(sim: Sim) {
-  for (const d of [0, 1] as Dono[]) {
+  for (const d of donos(sim)) {
     const j = sim.jogadores[d];
     j.visivel.fill(0);
     const luz = (cx: number, cy: number, r: number) => {
@@ -1954,8 +2082,8 @@ export function verNevoa(sim: Sim) {
           }
         }
     };
-    for (const u of sim.unidades) if (u.dono === d) luz(u.x, u.y, UNIDADES[u.tipo].visao);
-    for (const p of sim.predios) if (p.dono === d) luz(p.gx + p.tam / 2, p.gy + p.tam / 2, PREDIOS[p.tipo].visao + p.tam / 2);
+    for (const u of sim.unidades) if (aliados(u.dono, d)) luz(u.x, u.y, UNIDADES[u.tipo].visao);
+    for (const p of sim.predios) if (aliados(p.dono, d)) luz(p.gx + p.tam / 2, p.gy + p.tam / 2, PREDIOS[p.tipo].visao + p.tam / 2);
   }
 }
 
@@ -1969,25 +2097,36 @@ export function pontos(sim: Sim, dono: Dono): number {
   return p;
 }
 
+/** Os pontos da equipe (no 1×1, os do dono). */
+export function pontosDaEquipe(sim: Sim, equipe: 0 | 1): number {
+  let p = 0;
+  for (const d of donos(sim)) if (equipeDe(d) === equipe) p += pontos(sim, d);
+  return p;
+}
+
+/**
+ * O FIM. `vencedor` é a EQUIPE que ganhou (no 1×1, o próprio dono). No 2×2, quem perde o centro da vila fica sem base, mas a
+ * equipe só perde quando os dois centros caíram; a Maravilha de um vale para a equipe, e no tempo contam os pontos somados.
+ */
 function conferirFim(sim: Sim) {
   const terminar = (vencedor: Dono, motivo: Motivo) => {
     sim.vencedor = vencedor;
     sim.motivo = motivo;
     sim.eventos.push({ t: 'fim', vencedor, motivo });
   };
-  for (const d of [0, 1] as Dono[]) {
-    if (!sim.predios.some((p) => p.dono === d && p.tipo === 'centro')) return terminar((1 - d) as Dono, 'centro');
+  for (const e of [0, 1] as Dono[]) {
+    if (!sim.predios.some((p) => equipeDe(p.dono) === e && p.tipo === 'centro')) return terminar((1 - e) as Dono, 'centro');
   }
-  for (const d of [0, 1] as Dono[]) {
+  for (const d of donos(sim)) {
     const j = sim.jogadores[d];
     if (sim.predios.some((p) => p.dono === d && p.tipo === 'maravilha' && p.pronto)) {
       j.maravilha++;
-      if (j.maravilha >= PASSOS_DA_MARAVILHA) return terminar(d, 'maravilha');
+      if (j.maravilha >= PASSOS_DA_MARAVILHA) return terminar(equipeDe(d), 'maravilha');
     } else j.maravilha = 0;
   }
   if (sim.passo + 1 >= PASSOS_MAX) {
-    const a = pontos(sim, 0);
-    const b = pontos(sim, 1);
+    const a = pontosDaEquipe(sim, 0);
+    const b = pontosDaEquipe(sim, 1);
     return terminar(a >= b ? 0 : 1, 'tempo');
   }
 }

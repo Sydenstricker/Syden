@@ -32,8 +32,8 @@ export interface Vista {
   fantasma: { tipo: TipoPredio; casas: { x: number; y: number }[]; ok: boolean } | null;
 }
 
-/** As cores dos times: a pessoa (azul) e o computador (vermelho). */
-export const CORES = ['#3f74d8', '#d8483c'] as const;
+/** As cores dos donos: a pessoa (azul) e o computador (vermelho); no 2×2 (20/11/2026), os aliados em tons da mesma equipe (o 2 com o 0, o 3 com o 1). */
+export const CORES = ['#3f74d8', '#d8483c', '#58b6e8', '#e8913c'] as const;
 
 /**
  * O TRABALHADOR NA FAZENDA (06/11/2026, pedido dele: "deveria ficar se movimentando em cima da fazenda, para mostrar que está

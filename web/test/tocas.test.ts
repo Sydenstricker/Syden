@@ -4,6 +4,7 @@ import { criarIA, PERFIS } from '../src/tocas/ia';
 import {
   assinatura,
   CAPACIDADE,
+  aliados,
   CENTRO_DE,
   FLECHAS_DO_SINO,
   lugarDeColeta,
@@ -398,4 +399,31 @@ test('o sino: todos os trabalhadores se abrigam no centro, que atira mais; o seg
   };
   // determinístico (pronto para o lockstep): a mesma partida com o sino dá o mesmo resultado
   assert.equal(rodar(), rodar());
+});
+
+test('o 2×2 (20/11/2026): quatro computadores, a mesma partida duas vezes; aliados nunca se acertam e dividem a visão', () => {
+  const rodar = () => {
+    const sim = novaPartida(4242, { mapa: 'campo', quatro: true });
+    const ias = [0, 1, 2, 3].map((d) => criarIA(d as Dono, PERFIS.normal));
+    let fogoAmigo = 0;
+    while (sim.vencedor === null && sim.passo < 7000) {
+      for (const ia of ias) ia(sim);
+      passo(sim);
+      for (const e of sim.eventos) {
+        if (e.t !== 'golpe') continue;
+        const alvo = sim.porId.get(e.alvo) as { dono?: number } | undefined;
+        if (alvo && alvo.dono !== undefined && aliados(alvo.dono, e.dono)) fogoAmigo++;
+      }
+    }
+    return { sim, fogoAmigo };
+  };
+  const a = rodar();
+  const b = rodar();
+  assert.equal(assinatura(a.sim), assinatura(b.sim));
+  assert.equal(a.fogoAmigo, 0);
+  // a visão é da equipe: o que o 0 vê, o 2 vê
+  assert.deepEqual(a.sim.jogadores[0].visivel, a.sim.jogadores[2].visivel);
+  assert.notDeepEqual(a.sim.jogadores[0].visivel, a.sim.jogadores[1].visivel);
+  // os quatro cresceram
+  for (const d of [0, 1, 2, 3]) assert.ok(a.sim.colhido[d] > 300, `o ${d} colheu ${a.sim.colhido[d]}`);
 });

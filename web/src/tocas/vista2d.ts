@@ -1,4 +1,4 @@
-import { PREDIOS, TAMANHO, ePredio, eFonte, type Sim, type TipoPredio, type TipoUnidade } from './sim';
+import { PREDIOS, TAMANHO, ePredio, eFonte, type Dono, type Sim, type TipoPredio, type TipoUnidade } from './sim';
 import { CORES, golpeDoMartelo, passeioNaFazenda, type Vista } from './vista';
 
 /**
@@ -40,10 +40,19 @@ export class Vista2D implements Vista {
   /** O tempo da tela (só anda quando ela desenha: sem foco, para). */
   private tempo = 0;
 
+  /** O mapa inteiro, para quem assiste. */
+  private readonly semNevoa = new Uint8Array(TAMANHO * TAMANHO).fill(1);
+  /** O que se vê: o da minha equipe (a simulação divide a visão), ou tudo para quem assiste. */
+  private get nevoa(): { visivel: Uint8Array; explorado: Uint8Array } {
+    return this.assistindo ? { visivel: this.semNevoa, explorado: this.semNevoa } : this.sim.jogadores[this.eu];
+  }
+
   constructor(
     private caixa: HTMLElement,
     private sim: Sim,
-    private eu: 0 | 1 = 0,
+    private eu: Dono = 0,
+    /** Quem ASSISTE a sala (20/11/2026): o mapa todo à vista, sem névoa. */
+    private assistindo = false,
   ) {
     this.tela.className = 'tocas-tela';
     caixa.appendChild(this.tela);
@@ -82,7 +91,7 @@ export class Vista2D implements Vista {
     g.fillStyle = '#000000';
     g.fillRect(0, 0, w, h);
     const e = this.escala;
-    const j = this.sim.jogadores[this.eu];
+    const j = this.nevoa;
     const x0 = Math.max(0, Math.floor(this.cx - w / 2 / e) - 1);
     const x1 = Math.min(T - 1, Math.ceil(this.cx + w / 2 / e) + 1);
     const y0 = Math.max(0, Math.floor(this.cy - h / 2 / e) - 1);
@@ -128,7 +137,7 @@ export class Vista2D implements Vista {
       this.sinalDoPredio(p.tipo, s.x + lado / 2, s.y + lado / 2 + e * 0.08, lado);
       g.globalAlpha = 1;
       if (this.selecao.has(p.id)) this.contorno(s.x, s.y, lado, lado, p.dono === this.eu ? '#ffffff' : '#f0d24a');
-      if (p.vida < p.vidaMax * 0.999 || this.selecao.has(p.id)) this.barra(s.x + lado * 0.1, s.y - 6, lado * 0.8, p.vida / p.vidaMax, p.dono !== this.eu);
+      if (p.vida < p.vidaMax * 0.999 || this.selecao.has(p.id)) this.barra(s.x + lado * 0.1, s.y - 6, lado * 0.8, p.vida / p.vidaMax, (p.dono & 1) !== (this.eu & 1));
     }
     // o martelo das obras em que alguém trabalha agora
     const batendo = new Set<number>();
@@ -166,7 +175,7 @@ export class Vista2D implements Vista {
         g.fillStyle = u.carga.rec === 'madeira' ? '#8a5a32' : u.carga.rec === 'ouro' ? '#f0d24a' : '#d04a4a';
         g.fillRect(s.x + r * 0.5, s.y - r * 1.1, r * 0.7, r * 0.7);
       }
-      if (u.vida < u.vidaMax || this.selecao.has(u.id)) this.barra(s.x - e * 0.3, s.y - r - 6, e * 0.6, u.vida / u.vidaMax, u.dono !== this.eu);
+      if (u.vida < u.vidaMax || this.selecao.has(u.id)) this.barra(s.x - e * 0.3, s.y - r - 6, e * 0.6, u.vida / u.vidaMax, (u.dono & 1) !== (this.eu & 1));
     }
     // a névoa
     for (let y = y0; y <= y1; y++)
@@ -346,7 +355,7 @@ export class Vista2D implements Vista {
 
   pegar(px: number, py: number): number | null {
     const p = this.chao(px, py);
-    const j = this.sim.jogadores[this.eu];
+    const j = this.nevoa;
     let melhor: number | null = null;
     let dist = 0.5 * 0.5;
     for (const u of this.sim.unidades) {

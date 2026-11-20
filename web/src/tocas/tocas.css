@@ -492,7 +492,8 @@
 .tocas-nivel:hover {
   background: var(--bg-hover);
 }
-.tocas-mapa-opcao.ativo {
+.tocas-mapa-opcao.ativo,
+.tocas-nivel.ativo {
   border-color: var(--accent, #3f74d8);
 }
 .tocas-miniatura,
@@ -646,4 +647,36 @@
 .tocas-grafico-ponto {
   stroke: var(--bg, #ffffff);
   stroke-width: 2;
+}
+
+/* O 2×2 e quem assiste (20/11/2026): quem é quem no topo, na cor de cada um; e o aviso de que só se assiste. */
+.tocas-aliado {
+  color: #9cc8ff;
+  font-weight: 500;
+}
+.tocas-assistindo {
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--bg-active);
+  font-weight: 600;
+}
+.tocas-jogadores {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 2px 10px;
+  font-weight: 500;
+}
+.tocas-jogador {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.tocas-jogador.eu {
+  font-weight: 700;
+}
+.tocas-jogador i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4);
 }
