@@ -1,11 +1,13 @@
 import { Component, useEffect, useState, type ReactNode } from 'react';
+import { TeclaDesenhada, type Figura } from '../TeclaDesenhada';
 import { coresDoJogador, type AvatarDoJogo } from '../coelho/cores';
 import { menosMovimento, type MicrojogoDaTela, type PropsDoMicro } from './comum';
 
 /**
  * A MOLDURA DA FESTA, menos magra (19/11/2026, pedido dele na auditoria dos mini-games): no "prepare-se", o desenho dos
  * controles (as teclas e o toque) e a figura do microjogo (a própria tela dele, parada e pequena); na revelação, quem venceu
- * comemorando, com os pontos subindo. Tudo desenhado por código e sem texto: as teclas se reconhecem pelo desenho.
+ * comemorando, com os pontos subindo. Sem texto: as teclas se reconhecem pelo desenho (as figuras da Kenney desde 20/11/2026;
+ * antes, desenhadas aqui por código).
  */
 
 /** Como se joga cada microjogo: 'aperto' (Espaço ou Enter), 'setas' (as setas ou WASD), 'numeros' (1, 2, 3…), 'clique' (mouse ou toque). */
@@ -58,86 +60,41 @@ export const CONTROLES: Record<string, Controle[]> = {
   trinca: ['aperto', 'setas', 'clique'],
 };
 
-const TECLA = '#f3ead8';
-const BORDA = '#a89276';
-const TINTA = '#5a3a2a';
+/** As figuras de cada controle no teclado e no mouse (as setas valem também como WASD; o aperto é o Espaço, ou o Enter). */
+const FIGURAS: Record<Controle, Figura[]> = {
+  aperto: ['espaco'],
+  setas: ['setas', 'wasd'],
+  numeros: ['1', '2', '3'],
+  clique: ['mouse-clique'],
+};
 
-/** Uma tecla: a sombra embaixo e o tampo. */
-function Tecla({ x, y, w, h, children }: { x: number; y: number; w: number; h: number; children?: ReactNode }) {
-  return (
-    <g>
-      <rect x={x} y={y + 2} width={w} height={h} rx="2" fill={BORDA} />
-      <rect x={x} y={y} width={w} height={h} rx="2" fill={TECLA} />
-      {children}
-    </g>
-  );
-}
-
-/** O desenho de um controle (sem texto). */
-function DesenhoDoControle({ c }: { c: Controle }) {
-  if (c === 'aperto')
-    return (
-      <svg width="64" height="26" viewBox="0 0 64 26" aria-hidden="true" shapeRendering="crispEdges">
-        <Tecla x={2} y={6} w={60} h={16}>
-          <rect x="22" y="15" width="20" height="2" fill={TINTA} />
-          <rect x="22" y="12" width="2" height="5" fill={TINTA} />
-          <rect x="40" y="12" width="2" height="5" fill={TINTA} />
-        </Tecla>
-      </svg>
-    );
-  if (c === 'setas') {
-    const seta = (x: number, y: number, giro: number) => (
-      <Tecla x={x} y={y} w={14} h={12}>
-        <g transform={`rotate(${giro} ${x + 7} ${y + 6})`}>
-          <rect x={x + 6} y={y + 3} width="2" height="7" fill={TINTA} />
-          <rect x={x + 4} y={y + 5} width="6" height="2" fill={TINTA} />
-          <rect x={x + 5} y={y + 4} width="4" height="1" fill={TINTA} />
-        </g>
-      </Tecla>
-    );
-    return (
-      <svg width="52" height="34" viewBox="0 0 52 34" aria-hidden="true" shapeRendering="crispEdges">
-        {seta(19, 2, 0)}
-        {seta(3, 18, 270)}
-        {seta(19, 18, 180)}
-        {seta(35, 18, 90)}
-      </svg>
-    );
-  }
-  if (c === 'numeros')
-    return (
-      <svg width="52" height="22" viewBox="0 0 52 22" aria-hidden="true">
-        {[1, 2, 3].map((n, i) => (
-          <Tecla key={n} x={2 + i * 17} y={2} w={14} h={14}>
-            <text x={9 + i * 17} y={13} fontSize="10" fontWeight="700" textAnchor="middle" fill={TINTA} fontFamily="system-ui, sans-serif">
-              {n}
-            </text>
-          </Tecla>
-        ))}
-      </svg>
-    );
-  // o clique: o mouse e o dedo
-  return (
-    <svg width="46" height="30" viewBox="0 0 46 30" aria-hidden="true" shapeRendering="crispEdges">
-      <rect x="3" y="4" width="14" height="22" rx="6" fill={TECLA} stroke={BORDA} strokeWidth="2" />
-      <rect x="9" y="5" width="2" height="7" fill={BORDA} />
-      <rect x="4" y="5" width="5" height="7" fill="#f2c46a" />
-      <rect x="29" y="3" width="5" height="14" fill="#e8c4a8" />
-      <rect x="26" y="13" width="14" height="13" fill="#e8c4a8" />
-      <rect x="29" y="3" width="5" height="3" fill="#f3ead8" />
-      <rect x="24" y="16" width="3" height="6" fill="#e8c4a8" />
-    </svg>
-  );
-}
-
-/** Os controles do microjogo, lado a lado. */
+/**
+ * Os controles do microjogo, lado a lado e sem texto: as teclas e o mouse são as figuras dos Input Prompts da Kenney
+ * (TeclaDesenhada.tsx, as mesmas da Briga e do Comando). Na tela de toque, as teclas somem e fica o toque (as classes de
+ * ComandosDosJogos.tsx escondem uma lista e mostram a outra).
+ */
 export function Controles({ id }: { id: string }) {
   const lista = CONTROLES[id] ?? ['clique'];
   return (
-    <div className="festa-controles" aria-hidden="true" style={{ display: 'flex', gap: 14, justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap', margin: '6px 0' }}>
-      {lista.map((c) => (
-        <DesenhoDoControle key={c} c={c} />
-      ))}
+    <div className="jogo-comandos festa-controles" aria-hidden="true" style={{ margin: '6px 0' }}>
+      <ul className="jogo-comandos-teclado">
+        {lista.map((c) => (
+          <li key={c}>
+            <span className="jogo-comando-figuras">
+              {FIGURAS[c].map((f) => (
+                <TeclaDesenhada key={f} f={f} />
+              ))}
+            </span>
+          </li>
+        ))}
+      </ul>
+      <ul className="jogo-comandos-toque">
+        <li>
+          <span className="jogo-comando-figuras">
+            <TeclaDesenhada f="toque" />
+          </span>
+        </li>
+      </ul>
     </div>
   );
 }

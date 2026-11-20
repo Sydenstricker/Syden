@@ -5,43 +5,9 @@
  * gesto some: lá os botões da tela já são os comandos).
  */
 
-export type Figura =
-  | 'setas'
-  | 'setas-lado'
-  /** As letras W, A, S e D no arranjo das setas (montado das teclas da Kenney; pedido dele, 09/11/2026). */
-  | 'wasd'
-  | 'espaco'
-  | 'z'
-  | 'x'
-  | 'c'
-  | 'e'
-  | 'q'
-  | 'esc'
-  | 'mouse-clique'
-  | 'mouse-direito'
-  | 'mouse-arrastar'
-  | 'toque'
-  | 'toque-arrastar'
-  | 'toque-segurar';
+import { TeclaDesenhada as Icone, type Figura } from './TeclaDesenhada';
 
-const ARQUIVO: Record<Figura, string> = {
-  setas: 'keyboard_arrows',
-  'setas-lado': 'keyboard_arrows_horizontal',
-  wasd: 'keyboard_wasd',
-  espaco: 'keyboard_space',
-  z: 'keyboard_z',
-  x: 'keyboard_x',
-  c: 'keyboard_c',
-  e: 'keyboard_e',
-  q: 'keyboard_q',
-  esc: 'keyboard_escape',
-  'mouse-clique': 'mouse_left',
-  'mouse-direito': 'mouse_right',
-  'mouse-arrastar': 'mouse_move',
-  toque: 'touch_tap',
-  'toque-arrastar': 'touch_swipe_move',
-  'toque-segurar': 'touch_tap_hold',
-};
+export type { Figura };
 
 export interface Comando {
   /** As figuras do teclado e do mouse (mais de uma: "Z ou Espaço"). */
@@ -49,28 +15,6 @@ export interface Comando {
   /** O gesto na tela de toque; sem ele, o comando não aparece lá. */
   toque?: Figura;
   rotulo: string;
-}
-
-/**
- * As figuras vêm no pacote do site, como texto (import.meta.glob), e entram na página como SVG: o branco da Kenney vira a cor do
- * texto do tema, e o vermelho (a tecla ou o botão que se usa) vira a cor de destaque. Como imagem ou máscara, o destaque sumia.
- */
-const SVGS = import.meta.glob('./comandos/*.svg', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
-const pintado = new Map<Figura, string>();
-function svgDe(f: Figura): string {
-  let s = pintado.get(f);
-  if (s === undefined) {
-    s = (SVGS['./comandos/' + ARQUIVO[f] + '.svg'] ?? '')
-      .replace(/fill="#FFFFFF"/gi, 'style="fill:var(--text-strong)"')
-      .replace(/fill="#E73246"/gi, 'style="fill:var(--accent)"')
-      .replace(/<svg width="64" height="64"/, '<svg viewBox="0 0 64 64" width="100%" height="100%"');
-    pintado.set(f, s);
-  }
-  return s;
-}
-
-function Icone({ f }: { f: Figura }) {
-  return <span className={'jogo-comando-icone' + (f === 'espaco' || f === 'setas' || f === 'setas-lado' || f === 'wasd' ? ' largo' : '')} dangerouslySetInnerHTML={{ __html: svgDe(f) }} />;
 }
 
 export function ComandosDoJogo({ itens }: { itens: Comando[] }) {
