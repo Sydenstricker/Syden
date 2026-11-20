@@ -6,7 +6,25 @@
  * o ângulo de cada peça): o que o servidor refaz não passa por este arquivo.
  */
 import { Fila, fimDaFila, naFila, pesoEscrito } from './fila';
-import { CABO, CAIU, CHEGOU, cabe, ehAncora, ESPERANDO, MADEIRA, PISTA, VEICULOS, type Fase, type IdDoVeiculo, type Sim, type Veiculo } from './sim';
+import {
+  BARCO_EM,
+  CABO,
+  CAIU,
+  CHEGOU,
+  cabe,
+  ehAncora,
+  ehPista,
+  ESPERANDO,
+  FECHA_EM,
+  LEVADICA,
+  MADEIRA,
+  PISTA,
+  VEICULOS,
+  type Fase,
+  type IdDoVeiculo,
+  type Sim,
+  type Veiculo,
+} from './sim';
 import { ALTURA, LARGURA, type OpcoesDaMontagem, type VistaDaPonte } from './vista';
 
 export { ALTURA, LARGURA };
@@ -18,8 +36,10 @@ const COR = [
   { base: '#8796a5', topo: '#b9c5d0', linha: '#5f6d7a', borda: '#3c4651' },
   // o cabo (19/11/2026): fino e escuro, com a torção desenhada
   { base: '#4a4f57', topo: '#6d737c', linha: '#2c3036', borda: '#1f2226' },
+  // a levadiça (20/11/2026): a tábua mais clara, com a dobradiça no eixo e as faixas de aviso na ponta
+  { base: '#d19a5e', topo: '#e5b67c', linha: '#8a5a2c', borda: '#5d3a1f' },
 ];
-const ESPESSURA = [0.26, 0.16, 0.14, 0.06];
+const ESPESSURA = [0.26, 0.16, 0.14, 0.06, 0.26];
 
 /** Verde (folgada) → amarelo → vermelho (no limite). */
 export function corDoEsforco(e: number): string {
@@ -330,7 +350,7 @@ export class DesenhoDaPonte implements VistaDaPonte {
     g.fillRect(0, -th / 2, len, th * 0.38);
     g.strokeStyle = c.linha;
     g.lineWidth = Math.max(1, u / 40);
-    if (tipo === PISTA) {
+    if (ehPista(tipo)) {
       // as tábuas atravessadas
       const passo = 0.3 * u;
       g.beginPath();
@@ -371,6 +391,32 @@ export class DesenhoDaPonte implements VistaDaPonte {
     g.strokeStyle = c.borda;
     g.lineWidth = Math.max(1, u / 32);
     g.strokeRect(0, -th / 2, len, th);
+    if (tipo === LEVADICA) {
+      // as faixas de aviso na ponta (a que abre) e a dobradiça no eixo
+      const faixa = Math.min(len * 0.3, 0.35 * u);
+      g.save();
+      g.beginPath();
+      g.rect(len - faixa, -th / 2, faixa, th);
+      g.clip();
+      for (let x = len - faixa - th; x < len + th; x += th * 0.7) {
+        g.fillStyle = Math.round((x - len) / (th * 0.7)) % 2 ? '#e0a43a' : '#2f2f2f';
+        g.beginPath();
+        g.moveTo(x, th / 2);
+        g.lineTo(x + th * 0.7, th / 2);
+        g.lineTo(x + th * 1.4, -th / 2);
+        g.lineTo(x + th * 0.7, -th / 2);
+        g.fill();
+      }
+      g.restore();
+      g.fillStyle = '#3a3530';
+      g.beginPath();
+      g.arc(0, 0, th * 0.62, 0, Math.PI * 2);
+      g.fill();
+      g.fillStyle = '#c9c1b6';
+      g.beginPath();
+      g.arc(0, 0, th * 0.22, 0, Math.PI * 2);
+      g.fill();
+    }
     g.restore();
   }
 
@@ -428,6 +474,8 @@ export class DesenhoDaPonte implements VistaDaPonte {
         g.arc(this.sx(x), this.sy(y), Math.max(1.5, this.u / 26), 0, Math.PI * 2);
         g.fill();
       }
+    this.canalMarcado();
+    this.barcos(-1);
     for (let i = 0; i + 4 < pecas.length; i += 5) {
       const apagando = o.apagando === i / 5;
       this.peca(pecas[i], pecas[i + 1], pecas[i + 2], pecas[i + 3], pecas[i + 4], apagando ? '#d0524c' : null, apagando ? 0.8 : 1);
@@ -496,6 +544,8 @@ export class DesenhoDaPonte implements VistaDaPonte {
     const dt = this.ultimo ? Math.min(0.1, (agora - this.ultimo) / 1000) : 0;
     this.ultimo = agora;
     g.drawImage(this.cenario(), 0, 0);
+    const barco = s.passo < BARCO_EM ? -1 : s.passo < FECHA_EM ? (s.passo - BARCO_EM) / (FECHA_EM - BARCO_EM) : 2;
+    if (barco < 0.5) this.barcos(barco);
     // as peças inteiras, pintadas pelo esforço; as quebradas, dois tocos caídos de cada ponta
     for (const b of s.barras) {
       const a = s.nos[b.a];
@@ -508,6 +558,8 @@ export class DesenhoDaPonte implements VistaDaPonte {
       }
     }
     for (const n of s.nos) if (n.m > 0.31 || n.fixo) this.no(n.x, n.y, n.fixo);
+    // o barco: atrás da ponte enquanto vem de lá do fundo, na frente dela quando passa
+    if (barco >= 0.5) this.barcos(barco);
     const fila = this.fila.atualizar(s, dt);
     s.veiculos.forEach((v, i) => {
       if (v.estado === CHEGOU) return;
@@ -538,6 +590,92 @@ export class DesenhoDaPonte implements VistaDaPonte {
       g.fillRect(this.sx(p.x) - p.tam / 2, this.sy(p.y) - p.tam / 2, p.tam, p.tam);
     }
     g.globalAlpha = 1;
+  }
+
+  /** O canal do barco na montagem (20/11/2026): a faixa clara tracejada, do rio até acima da grade, que precisa ficar livre. */
+  private canalMarcado() {
+    const f = this.fase;
+    const canais = f.canais ?? [];
+    const g = this.ctx;
+    const base = f.agua ?? f.fundo;
+    for (let c = 0; c + 1 < canais.length; c += 2) {
+      const x0 = this.sx(canais[c]);
+      const x1 = this.sx(canais[c + 1]);
+      const y0 = this.sy(f.alto + 0.8);
+      const y1 = this.sy(base);
+      g.fillStyle = 'rgba(255, 255, 255, 0.12)';
+      g.fillRect(x0, y0, x1 - x0, y1 - y0);
+      g.save();
+      g.setLineDash([6, 6]);
+      g.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+      g.lineWidth = 1.5;
+      g.beginPath();
+      g.moveTo(x0, y0);
+      g.lineTo(x0, y1);
+      g.moveTo(x1, y0);
+      g.lineTo(x1, y1);
+      g.stroke();
+      g.restore();
+    }
+  }
+
+  /**
+   * O BARCO de cada canal (20/11/2026): o rio corre para o fundo, então ele vem de lá de trás (pequeno e apagado) e passa na frente
+   * da ponte (grande); `k` < 0 espera lá atrás, de 0 a 1 passando, > 1 já passou. O mastro passa de qualquer altura da grade.
+   */
+  private barcos(k: number) {
+    const f = this.fase;
+    const canais = f.canais ?? [];
+    if (k > 1 || canais.length === 0) return;
+    const g = this.ctx;
+    const u = this.u;
+    const base = f.agua ?? f.fundo;
+    const escala = k < 0 ? 0.45 : 0.45 + 0.85 * k;
+    const alfa = k < 0 ? 0.55 : k < 0.85 ? 0.6 + 0.4 * Math.min(1, k * 2) : (1 - k) / 0.15;
+    for (let c = 0; c + 1 < canais.length; c += 2) {
+      const cx = this.sx((canais[c] + canais[c + 1]) / 2);
+      const cy = this.sy(base) + 0.05 * u;
+      const e = escala * u;
+      const mastro = (f.alto + 1.2 - base) * u * Math.max(0.75, escala);
+      g.save();
+      g.globalAlpha = Math.max(0, Math.min(1, alfa));
+      // o casco, de frente
+      g.fillStyle = '#b4552f';
+      g.beginPath();
+      g.moveTo(cx - 0.62 * e, cy - 0.32 * e);
+      g.lineTo(cx + 0.62 * e, cy - 0.32 * e);
+      g.lineTo(cx + 0.38 * e, cy + 0.16 * e);
+      g.lineTo(cx - 0.38 * e, cy + 0.16 * e);
+      g.closePath();
+      g.fill();
+      g.fillStyle = '#f5f1e6';
+      g.fillRect(cx - 0.62 * e, cy - 0.36 * e, 1.24 * e, 0.07 * e);
+      // o mastro e a vela
+      g.strokeStyle = '#5b4632';
+      g.lineWidth = Math.max(2, 0.07 * e);
+      g.beginPath();
+      g.moveTo(cx, cy - 0.32 * e);
+      g.lineTo(cx, cy - mastro);
+      g.stroke();
+      g.fillStyle = '#f5f1e6';
+      g.strokeStyle = 'rgba(90, 70, 50, 0.6)';
+      g.lineWidth = 1;
+      g.beginPath();
+      g.moveTo(cx + 0.06 * e, cy - mastro + 0.15 * u);
+      g.lineTo(cx + 0.06 * e, cy - 0.5 * e);
+      g.lineTo(cx + 0.7 * e, cy - 0.5 * e);
+      g.closePath();
+      g.fill();
+      g.stroke();
+      // a bandeirinha no alto
+      g.fillStyle = '#d0524c';
+      g.beginPath();
+      g.moveTo(cx, cy - mastro);
+      g.lineTo(cx - 0.32 * e, cy - mastro + 0.1 * e);
+      g.lineTo(cx, cy - mastro + 0.2 * e);
+      g.fill();
+      g.restore();
+    }
   }
 
   /**

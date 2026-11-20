@@ -254,7 +254,8 @@
   .ponte-peca-botao small {
     display: none;
   }
-  .ponte-amostra {
+  /* com a barra na frente: a regra geral das amostras (26 px) vem depois neste arquivo e ganhava desta (20/11/2026) */
+  .ponte-barra .ponte-amostra {
     width: 20px;
   }
   .ponte-pecas,
@@ -269,6 +270,19 @@
   }
   .ponte-contagem {
     font-size: 40px;
+  }
+}
+
+/* a tela de celular em pé, com a quarta peça (o cabo, 19/11/2026): a faixa inteira numa linha só */
+@container (max-width: 400px) {
+  .ponte-peca-botao,
+  .ponte-acao {
+    min-width: 32px;
+    min-height: 34px;
+    padding: 3px 5px;
+  }
+  .ponte-barra .ponte-amostra {
+    width: 18px;
   }
 }
 
@@ -406,4 +420,13 @@
 .ponte-selos .aceso {
   color: #ffd54a;
   fill: #ffd54a;
+}
+
+/* 20/11/2026: a levadiça, a pista com as faixas de aviso nas pontas (a dobradiça à esquerda) */
+.ponte-amostra.tipo-4 {
+  height: 9px;
+  background:
+    linear-gradient(90deg, #3a3530 0 4px, transparent 4px),
+    repeating-linear-gradient(135deg, #e0a43a 0 3px, #2f2f2f 3px 6px) right / 7px 100% no-repeat,
+    repeating-linear-gradient(90deg, #d19a5e 0 6px, #6d4223 6px 7px);
 }

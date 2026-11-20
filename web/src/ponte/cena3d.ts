@@ -2,7 +2,22 @@ import * as THREE from 'three';
 import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { carregarCoelho, copiarCoelho, type CoelhoCopiado } from '../coelho3d';
 import { Fila, fimDaFila, naFila, pesoEscrito } from './fila';
-import { ACO, CAIU, CHEGOU, cabe, ehAncora, ESPERANDO, MAX_PECAS, PISTA, VEICULOS, type Fase, type IdDoVeiculo, type Sim } from './sim';
+import {
+  ACO,
+  BARCO_EM,
+  CAIU,
+  CHEGOU,
+  cabe,
+  ehAncora,
+  ehPista,
+  ESPERANDO,
+  FECHA_EM,
+  MAX_PECAS,
+  VEICULOS,
+  type Fase,
+  type IdDoVeiculo,
+  type Sim,
+} from './sim';
 import { ALTURA, COR_DO_FUNDO, LARGURA, MODELOS_DA_PONTE, type OpcoesDaMontagem, type VistaDaPonte } from './vista';
 
 /**
@@ -153,6 +168,35 @@ const texturaDoCabo = () =>
     }
   });
 
+/** A levadiça (20/11/2026): as tábuas mais claras, com a faixa de aviso amarela e preta nas duas beiradas. */
+const texturaDaLevadica = () =>
+  textura(256, 128, (g) => {
+    const tabuas = 7;
+    for (let i = 0; i < tabuas; i++) {
+      const x0 = (i * 256) / tabuas;
+      g.fillStyle = ['#dcaa70', '#d19a5e', '#e2b47c', '#d6a266'][i % 4];
+      g.fillRect(x0, 0, 256 / tabuas, 128);
+      g.fillStyle = '#7a4c25';
+      g.fillRect(x0, 0, 3, 128);
+    }
+    for (const y0 of [0, 112]) {
+      g.save();
+      g.beginPath();
+      g.rect(0, y0, 256, 16);
+      g.clip();
+      for (let x = -32, k = 0; x < 288; x += 16, k++) {
+        g.fillStyle = k % 2 ? '#2f2f2f' : '#e0a43a';
+        g.beginPath();
+        g.moveTo(x, y0 + 16);
+        g.lineTo(x + 16, y0 + 16);
+        g.lineTo(x + 32, y0);
+        g.lineTo(x + 16, y0);
+        g.fill();
+      }
+      g.restore();
+    }
+  });
+
 /** O corte da terra na frente da maquete: camadas e pedrinhas. */
 const texturaDaTerra = (seca: boolean) =>
   textura(256, 256, (g) => {
@@ -217,7 +261,7 @@ function seloDoPeso(tipo: IdDoVeiculo): THREE.Sprite {
 // AS PEÇAS: uma malha de instâncias por tipo, com o comprimento de cada uma no shader (a textura não estica)
 // =====================================================================================================================
 
-const COR_DO_TIPO = ['#c99560', '#a86d3e', '#b9c5d0', '#4a4f57'];
+const COR_DO_TIPO = ['#c99560', '#a86d3e', '#b9c5d0', '#4a4f57', '#d19a5e'];
 /** A espessura (em y) e a fundura (em z) de cada tipo. A pista vai de uma treliça à outra. */
 const PERFIL = [
   { esp: TABUA, fundo: 2 * ZF + 0.14 },
@@ -225,6 +269,8 @@ const PERFIL = [
   { esp: 0.17, fundo: 0.15 },
   // o cabo (19/11/2026): fino
   { esp: 0.05, fundo: 0.05 },
+  // a levadiça (20/11/2026): atravessada como a pista
+  { esp: TABUA, fundo: 2 * ZF + 0.14 },
 ];
 
 class MalhaDePecas {
@@ -266,7 +312,7 @@ class MalhaDePecas {
     const a = this.aux;
     a.position.set((ax + bx) / 2, (ay + by) / 2, z);
     a.rotation.set(0, 0, Math.atan2(dy, dx));
-    a.scale.set(l + (this.tipo === PISTA ? 0.02 : 0.06), p.esp, p.fundo);
+    a.scale.set(l + (ehPista(this.tipo) ? 0.02 : 0.06), p.esp, p.fundo);
     a.updateMatrix();
     this.malha.setMatrixAt(this.n, a.matrix);
     this.malha.setColorAt(this.n, cor);
@@ -276,7 +322,7 @@ class MalhaDePecas {
 
   /** As duas treliças (a pista é uma só, atravessada). */
   porPeca(ax: number, ay: number, bx: number, by: number, cor: THREE.Color) {
-    if (this.tipo === PISTA) this.por(ax, ay, bx, by, 0, cor);
+    if (ehPista(this.tipo)) this.por(ax, ay, bx, by, 0, cor);
     else {
       this.por(ax, ay, bx, by, ZF, cor);
       this.por(ax, ay, bx, by, -ZF, cor);
@@ -384,6 +430,8 @@ export class CenaDaPonte implements VistaDaPonte {
   private sobre!: THREE.Mesh;
   private veiculos: VeiculoNaCena[] = [];
   private agua: THREE.Mesh | null = null;
+  /** Os barcos dos canais (20/11/2026), um por canal. */
+  private barcos: THREE.Group[] = [];
   private tempoDaAgua = { value: 0 };
   private particulas: Particula[] = [];
   private malhaDasParticulas!: THREE.InstancedMesh;
@@ -717,6 +765,51 @@ export class CenaDaPonte implements VistaDaPonte {
       c.add(g);
     }
 
+    // ---- os canais (20/11/2026): as boias nas beiradas e o barco de mastro alto, que vem do fundo do rio ----
+    const canais = f.canais ?? [];
+    if (canais.length > 0) {
+      const base = f.agua ?? f.fundo;
+      const casco = this.guardar(new THREE.MeshStandardMaterial({ color: '#b4552f', roughness: 0.8, flatShading: true }));
+      const borda = this.guardar(new THREE.MeshStandardMaterial({ color: '#f5f1e6', roughness: 0.8 }));
+      const vela = this.guardar(new THREE.MeshStandardMaterial({ color: '#f5f1e6', roughness: 0.9, side: THREE.DoubleSide }));
+      const bandeira = this.guardar(new THREE.MeshStandardMaterial({ color: '#d0524c', roughness: 0.8, side: THREE.DoubleSide }));
+      const geoCasco = this.guardar(new THREE.CylinderGeometry(0.62, 0.38, 0.5, 4, 1).rotateY(Math.PI / 4).scale(1, 1, 2.6));
+      const geoFriso = this.guardar(new THREE.BoxGeometry(1.2, 0.06, 3.05));
+      const alto = f.alto + 1.4 - base;
+      const geoMastro = this.guardar(new THREE.CylinderGeometry(0.045, 0.06, alto, 8));
+      const geoVela = this.guardar(new THREE.BufferGeometry());
+      geoVela.setAttribute('position', new THREE.Float32BufferAttribute([0.06, 0.55, 0.05, 0.06, alto - 0.3, 0.05, 0.95, 0.55, 0.05], 3));
+      geoVela.computeVertexNormals();
+      const geoBandeira = this.guardar(new THREE.BufferGeometry());
+      geoBandeira.setAttribute('position', new THREE.Float32BufferAttribute([0, alto, 0.06, 0, alto - 0.22, 0.06, -0.4, alto - 0.11, 0.06], 3));
+      geoBandeira.computeVertexNormals();
+      const boia = this.guardar(new THREE.MeshStandardMaterial({ color: '#e0574e', roughness: 0.6 }));
+      const geoBoia = this.guardar(new THREE.SphereGeometry(0.13, 12, 8));
+      for (let k = 0; k + 1 < canais.length; k += 2) {
+        const g = new THREE.Group();
+        const m = new THREE.Mesh(geoCasco, casco);
+        m.position.y = 0.12;
+        g.add(m);
+        const friso = new THREE.Mesh(geoFriso, borda);
+        friso.position.y = 0.38;
+        g.add(friso);
+        const mastro = new THREE.Mesh(geoMastro, tronco);
+        mastro.position.y = alto / 2;
+        g.add(mastro);
+        g.add(new THREE.Mesh(geoVela, vela), new THREE.Mesh(geoBandeira, bandeira));
+        g.traverse((o) => (o.castShadow = this.sombras));
+        g.position.set((canais[k] + canais[k + 1]) / 2, base, -16);
+        c.add(g);
+        this.barcos.push(g);
+        for (const x of [canais[k] + 0.2, canais[k + 1] - 0.2])
+          for (const z of [ZF + 1.1, -ZF - 1.1]) {
+            const b = new THREE.Mesh(geoBoia, boia);
+            b.position.set(x, base + 0.04, z);
+            c.add(b);
+          }
+      }
+    }
+
     // ---- a bandeira de chegada ----
     const mastro = new THREE.Mesh(this.guardar(new THREE.CylinderGeometry(0.04, 0.04, 1.8, 8)), tronco);
     mastro.position.set(L + 2.6, 0.9, -1.25);
@@ -733,7 +826,13 @@ export class CenaDaPonte implements VistaDaPonte {
     const c = this.cena;
     const f = this.fase;
     const caixa = this.guardar(new THREE.BoxGeometry(1, 1, 1));
-    const mapas = [this.guardar(texturaDaPista()), this.guardar(texturaDaMadeira()), this.guardar(texturaDoAco()), this.guardar(texturaDoCabo())];
+    const mapas = [
+      this.guardar(texturaDaPista()),
+      this.guardar(texturaDaMadeira()),
+      this.guardar(texturaDoAco()),
+      this.guardar(texturaDoCabo()),
+      this.guardar(texturaDaLevadica()),
+    ];
     for (let t = 0; t < mapas.length; t++) {
       const mat = this.guardar(materialDePeca(t, mapas[t]));
       const m = new MalhaDePecas(caixa, mat, MAX_PECAS * 4 + 8, t);
@@ -773,6 +872,18 @@ export class CenaDaPonte implements VistaDaPonte {
     const geoLinhas = this.guardar(new THREE.BufferGeometry());
     geoLinhas.setAttribute('position', new THREE.Float32BufferAttribute(linhas, 3));
     this.grade.add(new THREE.LineSegments(geoLinhas, this.guardar(new THREE.LineBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.18, depthWrite: false }))));
+    // o canal do barco (20/11/2026): a faixa clara do rio até acima da grade, que precisa ficar livre
+    const canais = f.canais ?? [];
+    for (let k = 0; k + 1 < canais.length; k += 2) {
+      const base = f.agua ?? f.fundo;
+      const topo = f.alto + 0.8;
+      const faixa = new THREE.Mesh(
+        this.guardar(new THREE.PlaneGeometry(canais[k + 1] - canais[k], topo - base)),
+        this.guardar(new THREE.MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.13, depthWrite: false })),
+      );
+      faixa.position.set((canais[k] + canais[k + 1]) / 2, (topo + base) / 2, ZF - 0.03);
+      this.grade.add(faixa);
+    }
     const pontos: [number, number][] = [];
     for (let x = 0; x <= f.largura; x++) for (let y = f.baixo; y <= f.alto; y++) if (cabe(f, x, y) && !ehAncora(f, x, y)) pontos.push([x, y]);
     const geoPonto = this.guardar(new THREE.CircleGeometry(0.065, 12));
@@ -967,6 +1078,16 @@ export class CenaDaPonte implements VistaDaPonte {
     });
   }
 
+  /** O barco de cada canal: `k` < 0 espera lá no fundo do rio, de 0 a 1 vem e passa por baixo da ponte, > 1 já foi. */
+  private porBarcos(k: number) {
+    for (const b of this.barcos) {
+      b.visible = k <= 1;
+      b.position.z = k < 0 ? -16 : -16 + k * (16 + ZD - 1);
+      b.position.y = (this.fase.agua ?? this.fase.fundo) + 0.03 * Math.sin(this.relogio * 2.2 + b.position.x);
+      b.rotation.z = 0.03 * Math.sin(this.relogio * 1.7 + b.position.x);
+    }
+  }
+
   private esconderMontagem() {
     this.grade.visible = false;
     this.fantasma.visible = false;
@@ -1009,8 +1130,8 @@ export class CenaDaPonte implements VistaDaPonte {
       this.fantasma.children.forEach((c, i) => {
         const m = c as THREE.Mesh;
         m.material = mat;
-        m.visible = fz.tipo !== PISTA || i === 0;
-        m.position.set((fz.ax + fz.bx) / 2, (fz.ay + fz.by) / 2, fz.tipo === PISTA ? 0 : i === 0 ? ZF : -ZF);
+        m.visible = !ehPista(fz.tipo) || i === 0;
+        m.position.set((fz.ax + fz.bx) / 2, (fz.ay + fz.by) / 2, ehPista(fz.tipo) ? 0 : i === 0 ? ZF : -ZF);
         m.rotation.set(0, 0, Math.atan2(dy, dx));
         m.scale.set(Math.max(0.01, l), p.esp * 1.15, p.fundo * 1.1);
       });
@@ -1023,6 +1144,7 @@ export class CenaDaPonte implements VistaDaPonte {
     ponto(this.cursor, o.cursor);
     ponto(this.sobre, o.cursor ? null : o.sobre);
     this.porVeiculos(null, this.fila.parada(), dt);
+    this.porBarcos(-1);
     this.animarEfeitos(dt);
     this.desenhar(t0);
   }
@@ -1035,7 +1157,7 @@ export class CenaDaPonte implements VistaDaPonte {
       const a = s.nos[b.a];
       const c = s.nos[b.b];
       // o meio da peça se solta e cai, girando, e as lascas voam
-      const zs = b.tipo === PISTA ? [0] : [ZF, -ZF];
+      const zs = ehPista(b.tipo) ? [0] : [ZF, -ZF];
       for (const z of zs) this.soltarPedaco(a.x, a.y, c.x, c.y, b.tipo, z);
       const mx = (a.x + c.x) / 2;
       const my = (a.y + c.y) / 2;
@@ -1070,6 +1192,7 @@ export class CenaDaPonte implements VistaDaPonte {
     for (const n of s.nos) if (!n.fixo && n.m > 0.31) nos.push([n.x, n.y]);
     this.porNos(nos);
     this.porVeiculos(s, this.fila.atualizar(s, dt), dt);
+    this.porBarcos(s.passo < BARCO_EM ? -1 : s.passo < FECHA_EM ? (s.passo - BARCO_EM) / (FECHA_EM - BARCO_EM) : 2);
     this.animarEfeitos(dt);
     this.desenhar(t0);
   }

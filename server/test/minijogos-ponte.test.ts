@@ -174,3 +174,17 @@ test('na sala, quem não passou fica atrás de quem passou, pelo quanto andou, e
   );
   assert.equal(db.trofeusDe(caioId).length, antes, 'a ponte que caiu não ganha troféu');
 });
+
+test('a levadiça (20/11/2026): o servidor refaz a fase do barco, e recusa a levadiça numa fase sem canal', () => {
+  const canal = sim.faseDe('canal')!;
+  const boa = sim.pontePronta(canal);
+  const p = comecar([caioId], { fase: 'canal' });
+  assert.equal(p.jogo.acao(caioId, { tipo: 'ponte', pecas: boa }), null);
+  const esperado = sim.simular(canal, boa);
+  assert.equal(esperado.passou, true);
+  assert.deepEqual(p.estado(caioId).meu, { passou: true, progresso: 1000, custo: esperado.custo, passos: esperado.passos });
+  assert.equal(db.recordeDaPonte(caioId, 'canal'), esperado.custo);
+
+  const outra = comecar([caioId], { fase: 'riacho' });
+  assert.equal(outra.jogo.acao(caioId, { tipo: 'ponte', pecas: [0, 0, 2, 0, sim.LEVADICA] }), 'Sessão inválida.');
+});

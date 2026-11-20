@@ -49,7 +49,9 @@ try {
     await p.locator('.ponte-fase-botao').nth(n - 1).click();
     await p.locator(`.ponte-tela[data-modo="${modo}"]`).waitFor({ timeout: 20000 });
   };
-  const custo = async () => Number((await duda.locator('.ponte-custo').innerText()).replace(/\D/g, ''));
+  /** O custo montado, sem o orçamento da fase que vem ao lado (desde 19/11/2026). */
+  const custo = async () =>
+    Number((await duda.locator('.ponte-custo').evaluate((el) => el.textContent.replace(el.querySelector('small')?.textContent ?? '', ''))).replace(/\D/g, ''));
   /** O ponto (x, y) da grade na tela, para o mouse. */
   const naTela = async (x, y) => {
     const [px, py] = await duda.evaluate(([a, b]) => window.ponteParaTela(a, b), [x, y]);
@@ -105,7 +107,10 @@ try {
 
   // a ponte de referência, o teste aqui mesmo e a volta à montagem
   await duda.evaluate(() => window.ponteMontar());
-  await duda.waitForFunction(() => document.querySelector('.ponte-custo')?.textContent.replace(/\D/g, '') !== '441');
+  await duda.waitForFunction(() => {
+    const el = document.querySelector('.ponte-custo');
+    return el && el.textContent.replace(el.querySelector('small')?.textContent ?? '', '').replace(/\D/g, '') !== '441';
+  });
   const montada = await custo();
   await duda.getByRole('button', { name: 'Testar' }).click();
   await duda.waitForFunction(() => (window.ponteDoTeste?.veiculos ?? []).some((v) => v.x > 2.5), null, { timeout: 20000 });

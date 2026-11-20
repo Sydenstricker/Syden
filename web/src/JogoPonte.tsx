@@ -7,10 +7,13 @@ import { tocar } from './somDosJogos';
 import { useVistaDaPonte } from './ponte/usarVista';
 import { ALTURA, COR_DO_FUNDO, LARGURA, type VistaDaPonte } from './ponte/vista';
 import {
+  ABRE_EM,
   cabe,
   custo as custoDe,
   faseDe,
   FASES,
+  FECHADA_EM,
+  LEVADICA,
   MAX_PECAS,
   montar,
   passo,
@@ -21,6 +24,7 @@ import {
   pontePronta,
   selosDe,
   semSoltas,
+  temCanal,
   type Fase,
   type Sim,
 } from './ponte/sim';
@@ -83,7 +87,10 @@ declare global {
   }
 }
 
-const NOMES_DAS_PECAS = [chave('Pista'), chave('Madeira'), chave('Aço'), chave('Cabo')];
+const NOMES_DAS_PECAS = [chave('Pista'), chave('Madeira'), chave('Aço'), chave('Cabo'), chave('Levadiça')];
+
+/** As peças que a fase oferece: a levadiça só nas fases do barco (20/11/2026). */
+const pecasDaFase = (f: Fase) => PECAS.map((p, i) => ({ p, i })).filter(({ i }) => i !== LEVADICA || temCanal(f));
 
 /** OS SELOS (19/11/2026): três estrelas, acesas pelo resultado contra o orçamento da fase (selosDe). Sem texto. */
 function Selos({ n }: { n: number }) {
@@ -154,6 +161,18 @@ function MiniaturaDaPonte({ fase }: { fase: Fase }) {
       <rect x={X(fase.largura)} y={Y(0)} width={160 - X(fase.largura)} height={90 - Y(0)} fill="#a77a4f" />
       <rect x="0" y={Y(0) - 2} width={X(0)} height="3" fill="#79b35a" />
       <rect x={X(fase.largura)} y={Y(0) - 2} width={160 - X(fase.largura)} height="3" fill="#79b35a" />
+      {/* o barco de mastro alto em cada canal (20/11/2026): a fase pede a levadiça */}
+      {Array.from({ length: (fase.canais?.length ?? 0) / 2 }, (_, i) => {
+        const cx = (fase.canais![i * 2] + fase.canais![i * 2 + 1]) / 2;
+        const ay = fase.agua ?? fase.fundo;
+        return (
+          <g key={`b${i}`}>
+            <path d={`M${X(cx - 0.7)} ${Y(ay + 0.35)} L${X(cx + 0.7)} ${Y(ay + 0.35)} L${X(cx + 0.45)} ${Y(ay - 0.1)} L${X(cx - 0.45)} ${Y(ay - 0.1)} Z`} fill="#b4552f" />
+            <line x1={X(cx)} y1={Y(ay + 0.35)} x2={X(cx)} y2={Y(fase.alto + 0.6)} stroke="#5b4632" strokeWidth="1.4" />
+            <path d={`M${X(cx + 0.08)} ${Y(fase.alto + 0.4)} L${X(cx + 0.08)} ${Y(ay + 0.8)} L${X(cx + 0.75)} ${Y(ay + 0.8)} Z`} fill="#f5f1e6" />
+          </g>
+        );
+      })}
       {Array.from({ length: fase.ancoras.length / 2 }, (_, i) => (
         <circle key={i} cx={X(fase.ancoras[i * 2])} cy={Y(fase.ancoras[i * 2 + 1])} r="3.2" fill="#d0524c" stroke="#fff3e0" strokeWidth="1" />
       ))}
@@ -200,6 +219,11 @@ function avancar(s: Sim, d: VistaDaPonte | null, conta: { acumulado: number; ran
       if (ev.tipo === 'quebrou') tocar('quebra');
       else if (ev.tipo === 'chegou') tocar('chegada');
       else if (ev.tipo === 'caiu') tocar(s.fase.agua === null ? 'queda' : 'agua');
+    }
+    // a levadiça: o aviso quando ela começa a abrir para o barco, e o encaixe quando volta a fechar
+    if (temCanal(s.fase)) {
+      if (s.passo === ABRE_EM + 1) tocar('alarme');
+      else if (s.passo === FECHADA_EM) tocar('encaixe');
     }
     conta.acumulado -= PASSO;
     n++;
@@ -552,7 +576,7 @@ function Montagem({
       }
       if (parado()) return;
       const i = io.current;
-      if (k === '1' || k === '2' || k === '3' || k === '4') {
+      if (k === '1' || k === '2' || k === '3' || k === '4' || (k === '5' && temCanal(fase))) {
         setTipo(Number(k) - 1);
         setApagar(false);
         return;
@@ -645,7 +669,7 @@ function Montagem({
         )}
         <div className="ponte-barra">
           <div className="ponte-pecas" role="radiogroup" aria-label={t('Ponte')}>
-            {PECAS.map((p, i) => (
+            {pecasDaFase(fase).map(({ p, i }) => (
               <button
                 key={i}
                 type="button"

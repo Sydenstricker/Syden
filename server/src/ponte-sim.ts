@@ -30,6 +30,16 @@
  * que anda: cada veículo, na velocidade dele, apoia o peso nas duas pontas da peça de pista embaixo dele (pela posição), e segue a
  * altura dela. Sem pista embaixo (quebrou, ou nunca houve), ele CAI; afundou abaixo da água ou do fundo, também.
  *
+ * A LEVADIÇA (20/11/2026, a pendência dos lotes de 19/11): nas fases do CANAL, um barco de mastro alto passa pelo rio depois que a
+ * ponte assenta, e o que estiver atravessado no canal dele QUEBRA (o mastro passa de qualquer altura da grade). A peça LEVADIÇA é
+ * uma pista que abre: a ponta A é o EIXO (um nó comum) e a ponta B é a PONTA, um nó só dela, mesmo que outras peças cheguem ao
+ * mesmo ponto da grade. Esta é a JUNTA NOVA: dois nós no mesmo lugar, a ponta e o nó de lá (ou, sem nó de lá, a primeira ponta que
+ * chega ao ponto), presos por uma TRAVA (uma mola de comprimento zero). Quando o barco vem, as travas soltam e cada levadiça GIRA
+ * em volta do eixo até ficar em pé (o giro é pela parametrização racional do círculo: só + − × ÷, sem seno); o barco passa; ela
+ * volta deitada, e a trava só prende de novo se a ponta voltou a ENCOSTAR no nó de lá (a menos de DISTANCIA_DA_TRAVA): a diferença
+ * que sobrar some aos poucos, sem tranco. O tráfego só sai depois que ela fechou. Sem canal na fase, a levadiça não existe (a
+ * conferência recusa), e as fases de antes rodam exatamente a conta de antes: os recordes continuam valendo.
+ *
  * O RESULTADO: passou se todos os veículos chegaram ao outro lado. Senão, o quanto o tráfego andou (de 0 a 1000, a média dos
  * veículos), contado no instante em que o primeiro caiu: os de trás freiam.
  */
@@ -65,6 +75,30 @@ export const PISTA = 0;
 export const MADEIRA = 1;
 export const ACO = 2;
 export const CABO = 3;
+/** A levadiça (20/11/2026): uma pista que abre para o barco passar. Só nas fases com canal. */
+export const LEVADICA = 4;
+
+/** O tráfego anda por cima da pista e da levadiça. */
+export const ehPista = (tipo: number) => tipo === PISTA || tipo === LEVADICA;
+
+/**
+ * O BARCO (só nas fases com canal), em passos desde o começo: a levadiça abre em ABRIR passos, o barco passa em BARCO passos, ela
+ * fecha em FECHAR passos, e o tráfego sai depois de mais um tempinho (ESPERA_DO_BARCO).
+ */
+export const ABRE_EM = 60;
+const ABRIR = 60;
+export const BARCO_EM = ABRE_EM + ABRIR;
+const BARCO = 120;
+export const FECHA_EM = BARCO_EM + BARCO;
+const FECHAR = 60;
+export const FECHADA_EM = FECHA_EM + FECHAR;
+const ESPERA_DO_BARCO = FECHADA_EM + 30;
+/** A folga do canal: a peça precisa entrar mais que isto nele para o barco a levar (a levadiça em pé fica no eixo, na beira). */
+const MARGEM_DO_CANAL = 0.25;
+/** A trava: a rigidez da mola de comprimento zero, a distância em que a ponta volta a prender, e em quantos passos a diferença some. */
+const RIGIDEZ_DA_TRAVA = 20000;
+const DISTANCIA_DA_TRAVA = 0.3;
+const ACOMODAR = 30;
 
 export interface TipoDePeca {
   /** Custo por casa de comprimento. */
@@ -84,6 +118,8 @@ export const PECAS: readonly TipoDePeca[] = [
   { preco: 100, massa: 0.4, rigidez: 15000, limite: 110, alcance2: 5 },
   { preco: 300, massa: 0.8, rigidez: 40000, limite: 300, alcance2: 13 },
   { preco: 60, massa: 0.15, rigidez: 30000, limite: 220, alcance2: 20 },
+  // a levadiça: a pista com o mecanismo (a dobradiça e o contrapeso), mais pesada e bem mais cara
+  { preco: 400, massa: 0.7, rigidez: 20000, limite: 160, alcance2: 5 },
 ];
 
 export type IdDoVeiculo = 'carroca' | 'carro' | 'caminhao';
@@ -117,6 +153,8 @@ export interface Fase {
   trafego: readonly IdDoVeiculo[];
   /** O custo-alvo dos selos (19/11/2026). */
   orcamento: number;
+  /** Os canais por onde passa o barco (20/11/2026): [de, até, ...] em x. Sem canal, sem barco nem levadiça. */
+  canais?: readonly number[];
 }
 
 export const FASES: readonly Fase[] = [
@@ -195,7 +233,39 @@ export const FASES: readonly Fase[] = [
     trafego: ['caminhao', 'carro', 'caminhao'],
     orcamento: 19600,
   },
+  // AS FASES DO BARCO (20/11/2026): o canal no meio do rio, entre pilares de pedra, pede uma levadiça
+  // 16: o canal, um só
+  {
+    id: 'canal',
+    largura: 10,
+    alto: 3,
+    baixo: -2,
+    agua: -2.6,
+    fundo: -4,
+    ancoras: [0, 0, 10, 0, 0, -2, 10, -2, 3, -2, 7, -2],
+    pedras: [3, -2, 7, -2],
+    trafego: ['carroca', 'carro'],
+    orcamento: 5100,
+    canais: [4, 6],
+  },
+  // 17: o porto, dois canais e o caminhão
+  {
+    id: 'porto',
+    largura: 16,
+    alto: 3,
+    baixo: -3,
+    agua: -3.6,
+    fundo: -5,
+    ancoras: [0, 0, 16, 0, 0, -2, 16, -2, 3, -3, 7, -3, 9, -3, 13, -3],
+    pedras: [3, -3, 7, -3, 9, -3, 13, -3],
+    trafego: ['carro', 'caminhao', 'carro'],
+    orcamento: 14000,
+    canais: [4, 6, 10, 12],
+  },
 ];
+
+/** A fase tem barco (e por isso a levadiça)? */
+export const temCanal = (f: Fase) => !!f.canais && f.canais.length > 0;
 
 /** Os selos do resultado: 0 (não passou), 1 (passou), 2 (dentro do orçamento), 3 (com no máximo 3/4 dele). */
 export function selosDe(f: Fase, r: { passou: boolean; custo: number }): number {
@@ -229,7 +299,7 @@ export function pecaCabe(tipo: number, ax: number, ay: number, bx: number, by: n
   const dy = by - ay;
   const d2 = dx * dx + dy * dy;
   if (d2 === 0 || d2 > p.alcance2) return false;
-  if (tipo === PISTA && (dx === 0 || dy * dy > dx * dx)) return false;
+  if (ehPista(tipo) && (dx === 0 || dy * dy > dx * dx)) return false;
   return true;
 }
 
@@ -276,6 +346,7 @@ export function conferir(f: Fase, pecas: unknown): string | null {
   for (let i = 0; i < lista.length; i += 5) {
     const [ax, ay, bx, by, tipo] = [lista[i], lista[i + 1], lista[i + 2], lista[i + 3], lista[i + 4]];
     if (tipo < 0 || tipo >= PECAS.length) return 'tipo';
+    if (tipo === LEVADICA && !temCanal(f)) return 'tipo';
     if (!cabe(f, ax, ay) || !cabe(f, bx, by)) return 'fora-da-grade';
     if (!pecaCabe(tipo, ax, ay, bx, by)) return 'comprimento';
     const ka = chave(ax, ay);
@@ -324,6 +395,8 @@ export interface No {
   /** Onde ele está na grade (a montagem). */
   gx: number;
   gy: number;
+  /** A ponta de uma levadiça girando: a posição é a do giro, e a física não a anda. */
+  movido: boolean;
 }
 
 export interface Barra {
@@ -354,6 +427,25 @@ export interface Veiculo {
   inclinacao: number;
 }
 
+/** Uma levadiça: a peça, o eixo, a ponta (o nó só dela) e onde a ponta estava em relação ao eixo quando começou a abrir. */
+export interface Levadica {
+  barra: number;
+  eixo: number;
+  ponta: number;
+  ox: number;
+  oy: number;
+}
+
+/** A trava entre a ponta de uma levadiça e o nó de lá: presa, ela é uma mola de comprimento zero (menos a diferença que ainda some). */
+export interface Trava {
+  ponta: number;
+  outro: number;
+  presa: boolean;
+  dx: number;
+  dy: number;
+  resta: number;
+}
+
 export type Evento = { tipo: 'quebrou'; barra: number } | { tipo: 'chegou'; veiculo: number } | { tipo: 'caiu'; veiculo: number };
 
 export interface Sim {
@@ -370,6 +462,10 @@ export interface Sim {
   fimEm: number;
   custo: number;
   eventos: Evento[];
+  levadicas: Levadica[];
+  travas: Trava[];
+  /** O quanto as levadiças estão abertas (0 deitadas, 1 em pé), para o desenho. */
+  abertura: number;
 }
 
 export function montar(f: Fase, pecas: readonly number[]): Sim {
@@ -379,15 +475,22 @@ export function montar(f: Fase, pecas: readonly number[]): Sim {
     const k = chave(x, y);
     const i = indice.get(k);
     if (i !== undefined) return i;
-    nos.push({ x, y, vx: 0, vy: 0, fx: 0, fy: 0, m: MASSA_DA_JUNTA, fixo: ehAncora(f, x, y), gx: x, gy: y });
+    nos.push({ x, y, vx: 0, vy: 0, fx: 0, fy: 0, m: MASSA_DA_JUNTA, fixo: ehAncora(f, x, y), gx: x, gy: y, movido: false });
     indice.set(k, nos.length - 1);
     return nos.length - 1;
   };
   for (let i = 0; i < f.ancoras.length; i += 2) noEm(f.ancoras[i], f.ancoras[i + 1]);
   const barras: Barra[] = [];
+  const levadicas: Levadica[] = [];
   for (let i = 0; i + 4 < pecas.length; i += 5) {
     const a = noEm(pecas[i], pecas[i + 1]);
-    const b = noEm(pecas[i + 2], pecas[i + 3]);
+    let b: number;
+    if (pecas[i + 4] === LEVADICA) {
+      // a ponta da levadiça é um nó SÓ DELA (a junta nova): a trava a liga ao nó de lá depois
+      nos.push({ x: pecas[i + 2], y: pecas[i + 3], vx: 0, vy: 0, fx: 0, fy: 0, m: MASSA_DA_JUNTA, fixo: false, gx: pecas[i + 2], gy: pecas[i + 3], movido: false });
+      b = nos.length - 1;
+      levadicas.push({ barra: barras.length, eixo: a, ponta: b, ox: 0, oy: 0 });
+    } else b = noEm(pecas[i + 2], pecas[i + 3]);
     const dx = pecas[i + 2] - pecas[i];
     const dy = pecas[i + 3] - pecas[i + 1];
     const l0 = Math.sqrt(dx * dx + dy * dy);
@@ -397,8 +500,32 @@ export function montar(f: Fase, pecas: readonly number[]): Sim {
     nos[b].m += meia;
     barras.push({ a, b, tipo, l0, forca: 0, esforco: 0, inteira: true });
   }
+  // as travas: cada ponta presa ao nó comum do mesmo ponto; sem nó comum ali, a primeira ponta que chega é o nó de lá das outras
+  const travas: Trava[] = [];
+  for (const l of levadicas) {
+    const n = nos[l.ponta];
+    const k = chave(n.gx, n.gy);
+    const outro = indice.get(k);
+    if (outro === undefined) indice.set(k, l.ponta);
+    else travas.push({ ponta: l.ponta, outro, presa: true, dx: 0, dy: 0, resta: 0 });
+  }
   const veiculos: Veiculo[] = f.trafego.map((tipo) => ({ tipo, x: SAIDA, y: 0, vy: 0, estado: ESPERANDO, inclinacao: 0 }));
-  return { fase: f, nos, barras, veiculos, passo: 0, terminou: false, passou: false, progresso: 0, fimEm: 0, custo: custo(pecas), eventos: [] };
+  return {
+    fase: f,
+    nos,
+    barras,
+    veiculos,
+    passo: 0,
+    terminou: false,
+    passou: false,
+    progresso: 0,
+    fimEm: 0,
+    custo: custo(pecas),
+    eventos: [],
+    levadicas,
+    travas,
+    abertura: 0,
+  };
 }
 
 interface Apoio {
@@ -415,7 +542,7 @@ function apoioEm(s: Sim, x: number, yAntes: number): Apoio | null {
   let distancia = 0.8;
   for (let i = 0; i < s.barras.length; i++) {
     const b = s.barras[i];
-    if (!b.inteira || b.tipo !== PISTA) continue;
+    if (!b.inteira || !ehPista(b.tipo)) continue;
     let na = s.nos[b.a];
     let nb = s.nos[b.b];
     if (na.x > nb.x) {
@@ -460,13 +587,17 @@ export function passo(s: Sim): void {
   if (s.terminou) return;
   const f = s.fase;
   const fundo = f.agua ?? f.fundo;
+  const barco = temCanal(f);
+
+  // 0. A LEVADIÇA abre, fica em pé enquanto o barco passa, e fecha (só nas fases com canal)
+  if (barco && s.passo >= ABRE_EM && s.passo < FECHADA_EM) girarLevadicas(s);
 
   // 1. O TRÁFEGO anda (por passo) e escolhe onde se apoia; as cargas ficam valendo no passo inteiro.
   const cargas: number[] = []; // [barra, t, peso, ...]
   for (let i = 0; i < s.veiculos.length; i++) {
     const v = s.veiculos[i];
     const tipo = VEICULOS[v.tipo];
-    if (v.estado === ESPERANDO && s.fimEm === 0 && s.passo >= ESPERA) {
+    if (v.estado === ESPERANDO && s.fimEm === 0 && s.passo >= (barco ? ESPERA_DO_BARCO : ESPERA)) {
       const frente = i > 0 ? s.veiculos[i - 1] : null;
       if (!frente || frente.estado === CHEGOU || frente.x - SAIDA >= DISTANCIA) v.estado = ANDANDO;
     }
@@ -565,8 +696,20 @@ export function passo(s: Sim): void {
       nb.fx -= forca * ux;
       nb.fy -= forca * uy;
     }
+    // as travas presas: a mola de comprimento zero entre a ponta e o nó de lá (menos a diferença que ainda some)
+    for (const tr of s.travas) {
+      if (!tr.presa) continue;
+      const np = nos[tr.ponta];
+      const no = nos[tr.outro];
+      const fx = RIGIDEZ_DA_TRAVA * (no.x - np.x - tr.dx) + RIGIDEZ_DA_TRAVA * AMORTECIMENTO_AXIAL * (no.vx - np.vx);
+      const fy = RIGIDEZ_DA_TRAVA * (no.y - np.y - tr.dy) + RIGIDEZ_DA_TRAVA * AMORTECIMENTO_AXIAL * (no.vy - np.vy);
+      np.fx += fx;
+      np.fy += fy;
+      no.fx -= fx;
+      no.fy -= fy;
+    }
     for (const n of nos) {
-      if (n.fixo || n.m <= 0) continue;
+      if (n.fixo || n.movido || n.m <= 0) continue;
       n.vx = (n.vx + (n.fx / n.m) * H) * ar;
       n.vy = (n.vy + (n.fy / n.m) * H) * ar;
       n.x += n.vx * H;
@@ -592,6 +735,34 @@ export function passo(s: Sim): void {
       s.eventos.push({ tipo: 'quebrou', barra: i });
     }
   }
+  // o barco passando leva o que estiver atravessado no canal (acima da água)
+  if (barco && s.passo >= BARCO_EM && s.passo < FECHA_EM) {
+    const canais = f.canais!;
+    for (let i = 0; i < barras.length; i++) {
+      const b = barras[i];
+      if (!b.inteira) continue;
+      const na = nos[b.a];
+      const nb = nos[b.b];
+      const x0 = na.x < nb.x ? na.x : nb.x;
+      const x1 = na.x < nb.x ? nb.x : na.x;
+      const y1 = na.y < nb.y ? nb.y : na.y;
+      if (y1 <= fundo) continue;
+      for (let c = 0; c + 1 < canais.length; c += 2) {
+        if (x1 > canais[c] + MARGEM_DO_CANAL && x0 < canais[c + 1] - MARGEM_DO_CANAL) {
+          b.inteira = false;
+          s.eventos.push({ tipo: 'quebrou', barra: i });
+          break;
+        }
+      }
+    }
+  }
+  // a diferença das travas que acabaram de prender some aos poucos
+  for (const tr of s.travas) {
+    if (!tr.presa || tr.resta <= 0) continue;
+    tr.dx -= tr.dx / tr.resta;
+    tr.dy -= tr.dy / tr.resta;
+    tr.resta--;
+  }
 
   s.passo++;
   let todos = true;
@@ -604,6 +775,77 @@ export function passo(s: Sim): void {
     fechar(s);
     s.progresso = progresso;
   } else if (s.passo >= LIMITE_DA_SIMULACAO) fechar(s);
+}
+
+/**
+ * O GIRO DAS LEVADIÇAS, no começo do passo: no primeiro passo as travas soltam e cada ponta guarda onde estava em relação ao eixo;
+ * depois a ponta é levada pelo giro (a abertura sobe de 0 a 1, fica, e desce); no último, ela volta à física e a trava prende de
+ * novo se encostou. O ângulo vem da parametrização racional do círculo (u = tan(θ/2), de 0 a 1: de deitada a em pé), com a
+ * abertura amaciada: cos = (1 − u²)/(1 + u²), sen = 2u/(1 + u²).
+ */
+function girarLevadicas(s: Sim) {
+  const p = s.passo;
+  const nos = s.nos;
+  let a: number;
+  if (p < BARCO_EM) a = (p - ABRE_EM + 1) / ABRIR;
+  else if (p < FECHA_EM) a = 1;
+  else a = 1 - (p - FECHA_EM + 1) / FECHAR;
+  s.abertura = a;
+  if (p === ABRE_EM) {
+    for (const l of s.levadicas) {
+      if (!s.barras[l.barra].inteira) continue;
+      const e = nos[l.eixo];
+      const n = nos[l.ponta];
+      l.ox = n.x - e.x;
+      l.oy = n.y - e.y;
+      n.movido = true;
+      for (const tr of s.travas) if (tr.ponta === l.ponta || tr.outro === l.ponta) tr.presa = false;
+    }
+  }
+  const u = a * a * (3 - 2 * a);
+  const c = (1 - u * u) / (1 + u * u);
+  const sn = (2 * u) / (1 + u * u);
+  for (const l of s.levadicas) {
+    const n = nos[l.ponta];
+    if (!n.movido) continue;
+    // quebrou no meio do giro: a ponta volta à física
+    if (!s.barras[l.barra].inteira) {
+      n.movido = false;
+      continue;
+    }
+    const e = nos[l.eixo];
+    // a ponta sobe: a da direita do eixo gira para a esquerda (anti-horário), a da esquerda para a direita
+    const lado = l.ox < 0 ? -1 : 1;
+    const x = e.x + l.ox * c - lado * l.oy * sn;
+    const y = e.y + lado * l.ox * sn + l.oy * c;
+    n.vx = (x - n.x) / PASSO;
+    n.vy = (y - n.y) / PASSO;
+    n.x = x;
+    n.y = y;
+  }
+  if (p === FECHADA_EM - 1) {
+    for (const l of s.levadicas) {
+      const n = nos[l.ponta];
+      if (!n.movido) continue;
+      n.movido = false;
+      n.vx = nos[l.eixo].vx;
+      n.vy = nos[l.eixo].vy;
+    }
+    s.abertura = 0;
+    for (const tr of s.travas) {
+      if (tr.presa) continue;
+      const np = nos[tr.ponta];
+      const no = nos[tr.outro];
+      if (np.movido || no.movido) continue;
+      const dx = no.x - np.x;
+      const dy = no.y - np.y;
+      if (dx * dx + dy * dy > DISTANCIA_DA_TRAVA * DISTANCIA_DA_TRAVA) continue;
+      tr.presa = true;
+      tr.dx = dx;
+      tr.dy = dy;
+      tr.resta = ACOMODAR;
+    }
+  }
 }
 
 export interface Resultado {
@@ -633,6 +875,7 @@ export function comparar(a: { passou: boolean; progresso: number; custo: number 
  * que a fase tem solução.
  */
 export function pontePronta(f: Fase): number[] {
+  if (temCanal(f)) return ponteComLevadica(f);
   const p: number[] = [];
   const L = f.largura;
   const add = (ax: number, ay: number, bx: number, by: number, tipo: number) => p.push(ax, ay, bx, by, tipo);
@@ -671,6 +914,46 @@ export function pontePronta(f: Fase): number[] {
       add(ax - 1, -1, ax - 3, 0, ACO);
       add(ax + 1, -1, ax + 3, 0, ACO);
     }
+  }
+  return p;
+}
+
+/**
+ * A de referência das fases do barco: a mesma treliça em cada trecho entre os canais (que não atravessa canal nenhum), uma
+ * levadiça deitada em cada canal (o eixo na beira da esquerda), e cada pilar de pedra escorando os nós do trecho dele.
+ */
+function ponteComLevadica(f: Fase): number[] {
+  const p: number[] = [];
+  const L = f.largura;
+  const canais = f.canais!;
+  const add = (ax: number, ay: number, bx: number, by: number, tipo: number) => p.push(ax, ay, bx, by, tipo);
+  const bordas: number[] = [0];
+  for (let c = 0; c + 1 < canais.length; c += 2) bordas.push(canais[c], canais[c + 1]);
+  bordas.push(L);
+  for (let k = 0; k + 1 < bordas.length; k += 2) {
+    const s0 = bordas[k];
+    const s1 = bordas[k + 1];
+    const comprido = s1 - s0 >= 8;
+    const h = comprido ? 2 : 1;
+    const tipo = comprido ? ACO : MADEIRA;
+    for (let x = s0; x < s1; x += 2) add(x, 0, x + 2, 0, PISTA);
+    for (let x = s0 + 1; x < s1 - 1; x += 2) add(x, h, x + 2, h, tipo);
+    for (let x = s0; x < s1; x += 2) {
+      add(x, 0, x + 1, h, tipo);
+      add(x + 1, h, x + 2, 0, tipo);
+    }
+  }
+  for (let c = 0; c + 1 < canais.length; c += 2) add(canais[c], 0, canais[c + 1], 0, LEVADICA);
+  for (let i = 0; i < f.ancoras.length; i += 2) {
+    const ax = f.ancoras[i];
+    const ay = f.ancoras[i + 1];
+    if (ay >= 0) continue;
+    if (ax === 0) add(ax, ay, 2, 0, ACO);
+    else if (ax === L) add(ax, ay, L - 2, 0, ACO);
+    // o pilar escora os nós da pista do trecho dele a uma casa de distância (dois, para o trecho do meio não girar em volta de um)
+    else
+      for (let k = 0; k + 1 < bordas.length; k += 2)
+        for (let x = bordas[k]; x <= bordas[k + 1]; x += 2) if (x === ax - 1 || x === ax + 1) add(ax, ay, x, 0, ACO);
   }
   return p;
 }

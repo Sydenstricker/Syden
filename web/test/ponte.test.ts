@@ -8,12 +8,16 @@ import { existsSync, readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
 import {
   ACO,
+  BARCO_EM,
   CABO,
   comparar,
   conferir,
   custo,
   faseDe,
   FASES,
+  FECHA_EM,
+  FECHADA_EM,
+  LEVADICA,
   MADEIRA,
   montar,
   passo,
@@ -24,6 +28,7 @@ import {
   selosDe,
   semSoltas,
   simular,
+  temCanal,
 } from '../src/ponte/sim';
 import { Fila, filaInicial, fimDaFila, naFila } from '../src/ponte/fila';
 import { MODELOS_DA_PONTE } from '../src/ponte/vista';
@@ -171,9 +176,9 @@ describe('ponte da toca', () => {
 
   // ===== 19/11/2026: as fases novas, o orçamento com os selos e o cabo =====
 
-  it('15 fases, ids diferentes, cada uma com o orçamento acima da ponte mais barata que a busca achou', () => {
-    assert.equal(FASES.length, 15);
-    assert.equal(new Set(FASES.map((f) => f.id)).size, 15);
+  it('17 fases, ids diferentes, cada uma com o orçamento acima da ponte mais barata que a busca achou', () => {
+    assert.equal(FASES.length, 17);
+    assert.equal(new Set(FASES.map((f) => f.id)).size, 17);
     for (const f of FASES) assert.ok(f.orcamento > 0 && f.orcamento % 100 === 0, f.id);
   });
 
@@ -208,5 +213,120 @@ describe('ponte da toca', () => {
     const madeira = montar(faseDe('riacho')!, [...soPista(6), 0, -2, 2, 0, MADEIRA]);
     for (let i = 0; i < 40; i++) passo(madeira);
     assert.ok(madeira.barras[madeira.barras.length - 1].forca < 0, 'a madeira empurra');
+  });
+
+  // ===== 20/11/2026: a levadiça e as fases do barco =====
+
+  it('as 15 fases de antes dão o mesmo resultado de antes da levadiça (os recordes continuam valendo)', () => {
+    // a de referência de cada uma: o custo, os passos até o fim e a altura do último nó no passo 200, medidos antes da mudança
+    const antes: Record<string, [number, number, number]> = {
+      riacho: [3844, 361, 994391207],
+      rio: [5290, 491, 1992448653],
+      ravina: [12774, 589, 1991555673],
+      pilares: [11458, 444, 1994663813],
+      pedra: [20676, 670, -1012780208],
+      arroio: [3062, 470, 996653066],
+      lagoa: [8368, 340, 1985080900],
+      cascata: [4310, 388, 995946602],
+      brejo: [17940, 671, -2944566090],
+      garganta: [15016, 548, 1989651505],
+      torres: [11458, 497, 1994912747],
+      ilhas: [26802, 628, -1009197213],
+      vale: [12774, 577, 1991992131],
+      enchente: [8368, 539, 1985080907],
+      grande: [29044, 890, -1009901847],
+    };
+    for (const [id, [c, passos, y]] of Object.entries(antes)) {
+      const f = faseDe(id)!;
+      assert.equal(temCanal(f), false, id);
+      const p = pontePronta(f);
+      const r = simular(f, p);
+      assert.deepEqual([r.custo, r.passos], [c, passos], id);
+      const s = montar(f, p);
+      for (let i = 0; i < 200; i++) passo(s);
+      assert.equal(Math.round(s.nos[s.nos.length - 1].y * 1e9), y, id);
+    }
+  });
+
+  it('a levadiça só existe nas fases do barco, e segue a regra da pista (até 45°, até ~2,2 casas)', () => {
+    assert.equal(conferir(faseDe('riacho')!, [0, 0, 2, 0, LEVADICA]), 'tipo');
+    const f = faseDe('canal')!;
+    assert.equal(conferir(f, [0, 0, 2, 0, LEVADICA]), null);
+    assert.equal(conferir(f, [0, 0, 1, 2, LEVADICA]), 'comprimento');
+    assert.equal(conferir(f, [0, 0, 3, 0, LEVADICA]), 'comprimento');
+    assert.equal(custo([0, 0, 2, 0, LEVADICA]), 800);
+  });
+
+  it('o barco leva o que atravessa o canal: sem a levadiça a ponte cai; com ela, abre, o barco passa, fecha e o tráfego passa', () => {
+    for (const id of ['canal', 'porto']) {
+      const f = faseDe(id)!;
+      const boa = pontePronta(f);
+      assert.ok(boa.some((v, i) => i % 5 === 4 && v === LEVADICA), id);
+      // a mesma ponte com pista no lugar da levadiça: o barco a quebra no canal, e o tráfego cai
+      const semLevadica = boa.map((v, i) => (i % 5 === 4 && v === LEVADICA ? PISTA : v));
+      const s0 = montar(f, semLevadica);
+      let quebrouNoBarco = false;
+      while (!s0.terminou) {
+        passo(s0);
+        if (s0.passo > BARCO_EM && s0.passo <= FECHA_EM && s0.eventos.some((e) => e.tipo === 'quebrou')) quebrouNoBarco = true;
+      }
+      assert.ok(quebrouNoBarco, `${id}: o barco não quebrou a pista`);
+      assert.equal(s0.passou, false, id);
+
+      const s = montar(f, boa);
+      assert.equal(s.travas.length, s.levadicas.length, `${id}: cada ponta presa ao nó de lá`);
+      const pontaAntes = s.levadicas.map((l) => s.nos[l.ponta].y);
+      while (s.passo < BARCO_EM + 10) passo(s);
+      assert.equal(s.abertura, 1);
+      for (const l of s.levadicas) {
+        // em pé: a ponta em cima do eixo, e as travas soltas
+        assert.ok(Math.abs(s.nos[l.ponta].x - s.nos[l.eixo].x) < 0.05, `${id}: a levadiça não ficou em pé`);
+        assert.ok(s.nos[l.ponta].y - s.nos[l.eixo].y > 1.9);
+      }
+      assert.ok(s.travas.every((t) => !t.presa));
+      while (s.passo < FECHADA_EM + 1) passo(s);
+      assert.ok(s.travas.every((t) => t.presa), `${id}: a ponta não voltou a prender`);
+      s.levadicas.forEach((l, i) => assert.ok(Math.abs(s.nos[l.ponta].y - pontaAntes[i]) < 0.05));
+      assert.ok(s.veiculos.every((v) => v.x === SAIDA), `${id}: o tráfego saiu antes de fechar`);
+      while (!s.terminou) passo(s);
+      assert.equal(s.passou, true, id);
+      assert.ok(s.barras.every((b) => b.inteira), `${id}: quebrou alguma peça`);
+    }
+  });
+
+  it('a levadiça abre para os dois lados (o eixo à direita também passa), e duas pontas no mesmo ponto travam uma na outra', () => {
+    const f = faseDe('canal')!;
+    const virada = pontePronta(f);
+    for (let i = 0; i < virada.length; i += 5)
+      if (virada[i + 4] === LEVADICA) {
+        virada[i] = 6;
+        virada[i + 2] = 4;
+      }
+    assert.equal(conferir(f, virada), null);
+    assert.equal(simular(f, virada).passou, true);
+    // as duas metades, cada uma de um lado, se encontram no meio (sem nó comum ali): a segunda ponta trava na primeira
+    const semLevadica: number[] = [];
+    const boa = pontePronta(f);
+    for (let i = 0; i < boa.length; i += 5) if (boa[i + 4] !== LEVADICA) semLevadica.push(...boa.slice(i, i + 5));
+    const par = [...semLevadica, 4, 0, 5, 0, LEVADICA, 6, 0, 5, 0, LEVADICA];
+    assert.equal(conferir(f, par), null);
+    const s = montar(f, par);
+    assert.equal(s.travas.length, 1);
+    assert.deepEqual([s.travas[0].ponta, s.travas[0].outro], [s.levadicas[1].ponta, s.levadicas[0].ponta]);
+    while (s.passo < FECHADA_EM + 1) passo(s);
+    assert.equal(s.travas[0].presa, true);
+  });
+
+  it('com a levadiça, a mesma lista dá sempre o mesmo resultado, passo a passo', () => {
+    const f = faseDe('porto')!;
+    const lista = pontePronta(f).map((v, i) => (i % 5 === 4 && v === ACO ? MADEIRA : v));
+    const a = montar(f, semSoltas(f, lista));
+    const b = montar(f, semSoltas(f, lista));
+    while (!a.terminou) {
+      passo(a);
+      passo(b);
+      for (let i = 0; i < a.nos.length; i++) assert.ok(a.nos[i].x === b.nos[i].x && a.nos[i].y === b.nos[i].y);
+    }
+    assert.deepEqual([a.passo, a.passou, a.progresso], [b.passo, b.passou, b.progresso]);
   });
 });
