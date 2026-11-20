@@ -450,7 +450,7 @@ test('Batalha naval: no salvo, a rajada tem um tiro por navio vivo, a vez passa 
 // PARTIDA DE XADREZ
 // ---------------------------------------------------------------------------------------------------------------------------
 
-test('Xadrez: o histórico em notação algébrica, as peças capturadas, e voltar refaz a partida', () => {
+test('Xadrez: o histórico em notação algébrica, as peças capturadas, e voltar refaz a partida', async () => {
   const p = partida(partidaDeXadrez, { solo: false, naSala: [anaId, biaId] });
   p.jogo.acao(biaId, { tipo: 'sentar' });
   const v0 = p.ver();
@@ -466,11 +466,19 @@ test('Xadrez: o histórico em notação algébrica, as peças capturadas, e volt
   assert.deepEqual(v.capturadas, { brancas: [], pretas: ['p'] });
 
   const solo = partida(partidaDeXadrez, { corpo: { nivel: 'facil' } });
-  if (solo.ver().vez !== 0) solo.andar();
+  // o robô pensa no worker (xadrez-robo.ts): a vez da pessoa volta um instante depois da pausa
+  const minhaVez = async () => {
+    for (let i = 0; i < 400 && !(solo.ver().vez === 0 && solo.ver().lances.length); i++) await new Promise((r) => setTimeout(r, 20));
+  };
+  if (solo.ver().vez !== 0) {
+    solo.andar();
+    await minhaVez();
+  }
   const antes = solo.ver().casas.join();
   const lance = solo.ver().lances[0];
   assert.equal(solo.jogo.acao(anaId, { tipo: 'jogada', de: lance.de, para: lance.para }), null);
   solo.andar();
+  await minhaVez();
   assert.notEqual(solo.ver().casas.join(), antes);
   assert.equal(solo.jogo.acao(anaId, { tipo: 'voltar' }), null);
   assert.equal(solo.ver().casas.join(), antes);

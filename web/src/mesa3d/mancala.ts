@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { fundoAconchegante, materialDeMadeira } from './ambiente';
 import { iluminar, marcaPlana, MesaBase } from './base';
+import { previaDaSemeadura, type VarianteDaMancala } from '../mancalaPrevia';
 
 /**
  * A MANCALA EM 3D (19/11/2026, o lote 4 da auditoria): o tabuleiro de madeira feito por código (duas fileiras de seis covas e
@@ -18,6 +19,8 @@ export interface MancalaDaCena {
   destaque: number | null;
   ultima: number | null;
   clicaveis: number[];
+  /** A regra da partida, para a prévia da semeadura (sem ela, a do Kalah). */
+  variante?: VarianteDaMancala;
 }
 
 const CORES = ['#e5484d', '#f2b84b', '#4f7df5', '#3fb27f', '#c86bd9'];
@@ -36,6 +39,9 @@ export class Mancala3D extends MesaBase<MancalaDaCena> {
     textura: THREE.CanvasTexture;
     valor: number;
   }[] = [];
+  /** O selo da prévia (↻ joga de novo, +N captura), em cima da cova onde a última semente cai. */
+  private selo: { sprite: THREE.Sprite; tela: HTMLCanvasElement; textura: THREE.CanvasTexture; texto: string } | null = null;
+  protected previaNoToque = true;
 
   /** Onde fica cada casa na mesa, vista pelo `meuLado`: as minhas na fileira de perto, da esquerda para a direita. */
   private lugar(i: number, meuLado: 0 | 1): { x: number; z: number; deposito: boolean } {
@@ -186,6 +192,11 @@ export class Mancala3D extends MesaBase<MancalaDaCena> {
     if (d.destaque !== null) marcar(d.destaque, '#f5b83d', 0.55);
     else if (d.ultima !== null) marcar(d.ultima, '#e3c45a', 0.35);
     if (this.sobre !== null && d.clicaveis.includes(this.sobre)) marcar(this.sobre, '#6fd08a', 0.5);
+    // A PRÉVIA (20/11/2026): a cova escolhida acende onde a última semente cai, com o selo do que o lance faz
+    const previa = this.sobre !== null && d.clicaveis.includes(this.sobre) ? previaDaSemeadura(d.casas, d.meuLado, this.sobre, d.variante) : null;
+    if (previa) marcar(previa.ultima, previa.deNovo || previa.captura ? '#f5b83d' : '#9fd6ff', 0.55);
+    const texto = previa?.deNovo ? '↻' : previa?.captura ? `+${previa.captura}` : '';
+    this.mostrarSelo(texto, previa ? this.lugar(previa.ultima, d.meuLado) : null);
     // o clique: um lugar parado sobre cada cova que vale
     const deitado = new THREE.Quaternion();
     for (const i of d.clicaveis) {
@@ -193,6 +204,45 @@ export class Mancala3D extends MesaBase<MancalaDaCena> {
       this.alvoFixo(i, new THREE.Vector3(x, TOPO + 0.01, z), deitado, 1.7, 1.7);
     }
     this.soAlvosFixos(d.clicaveis);
+  }
+
+  private mostrarSelo(texto: string, onde: { x: number; z: number; deposito: boolean } | null) {
+    if (!texto || !onde) {
+      if (this.selo) this.selo.sprite.visible = false;
+      return;
+    }
+    if (!this.selo) {
+      const tela = document.createElement('canvas');
+      tela.width = 128;
+      tela.height = 64;
+      const textura = new THREE.CanvasTexture(tela);
+      textura.colorSpace = THREE.SRGBColorSpace;
+      const mat = new THREE.SpriteMaterial({ map: textura, depthTest: false });
+      this.descartaveis.push(textura, mat);
+      const sprite = new THREE.Sprite(mat);
+      sprite.scale.set(1.6, 0.8, 1);
+      sprite.renderOrder = 3;
+      this.cena.add(sprite);
+      this.selo = { sprite, tela, textura, texto: '' };
+    }
+    const s = this.selo;
+    if (s.texto !== texto) {
+      s.texto = texto;
+      const g = s.tela.getContext('2d')!;
+      g.clearRect(0, 0, 128, 64);
+      g.fillStyle = '#f5b83d';
+      g.beginPath();
+      g.roundRect(8, 6, 112, 52, 26);
+      g.fill();
+      g.fillStyle = '#3a2410';
+      g.font = 'bold 38px sans-serif';
+      g.textAlign = 'center';
+      g.textBaseline = 'middle';
+      g.fillText(texto, 64, 34);
+      s.textura.needsUpdate = true;
+    }
+    s.sprite.position.set(onde.x, TOPO + 1.7, onde.z);
+    s.sprite.visible = true;
   }
 
   protected aoMudarSobre() {

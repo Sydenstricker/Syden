@@ -680,3 +680,24 @@
   border-radius: 50%;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.4);
 }
+
+/* A letra do atalho no canto do botão (20/11/2026); no toque não há teclado, e ela some. */
+.tocas-botao {
+  position: relative;
+}
+.tocas-tecla {
+  position: absolute;
+  top: 3px;
+  right: 4px;
+  font: 600 0.62rem/1 ui-monospace, monospace;
+  padding: 1px 3px;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  background: var(--bg-darkest, transparent);
+}
+@media (pointer: coarse) {
+  .tocas-tecla {
+    display: none;
+  }
+}

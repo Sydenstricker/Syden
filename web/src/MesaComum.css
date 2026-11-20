@@ -22,6 +22,11 @@
   text-align: center;
 }
 
+/* os três modos dos Problemas de xadrez e o "Outros jogos" quebram linha no celular (20/11/2026) */
+.mesa-escolha .minijogo-acoes {
+  flex-wrap: wrap;
+}
+
 .mesa-botoes {
   display: flex;
   flex-wrap: wrap;
@@ -180,4 +185,82 @@
     max-height: 420px;
     margin-top: 0;
   }
+}
+
+/* A figura do "Como jogar" (20/11/2026), em cima das frases. */
+.mesa-regras-figura {
+  display: flex;
+  justify-content: center;
+  margin-top: 6px;
+}
+
+/* A régua da força do Truco (JogoTruco.tsx): do mais fraco ao mais forte, as manilhas da mão no fim. */
+.truco-regua {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 3px;
+  margin: 2px 0 6px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.truco-regua-valor,
+.truco-regua-manilha {
+  min-width: 1.4em;
+  padding: 1px 4px;
+  border-radius: 4px;
+  text-align: center;
+  background: #fbf8f1;
+  color: #2a2420;
+  border: 1px solid #c9bfae;
+}
+.truco-regua-manilha {
+  border-color: #d9a321;
+  box-shadow: inset 0 0 0 1px #d9a321;
+}
+.truco-regua-manilha.vermelha {
+  color: #c0392b;
+}
+.truco-regua-seta {
+  color: var(--text-muted);
+  padding: 0 2px;
+}
+
+/* O Dominó: duas pedras encostadas pelo mesmo número. */
+.dom-figura {
+  display: inline-flex;
+  gap: 1px;
+}
+
+/* O Sudoku: um bloco de 3 × 3 com os nove números. */
+.sudoku-figura {
+  display: grid;
+  grid-template-columns: repeat(3, 1.4em);
+  border: 2px solid var(--text-muted);
+  font-weight: 700;
+  text-align: center;
+}
+.sudoku-figura span {
+  border: 1px solid var(--border);
+}
+
+/* Capitais: quantos prédios e quantas vezes o aluguel sem prédio. */
+.cid-figura-predios {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.cid-figura-degrau {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.cid-figura-pilha {
+  display: flex;
+  min-height: 10px;
 }

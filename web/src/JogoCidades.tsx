@@ -4,6 +4,7 @@ import { Placar, Relogio } from './Minijogo';
 import { coresDe, Dado, Peca, useAgora } from './JogoTabuleiro';
 import { BotoesDosRobos, cadaUmPorSi } from './EscolhaDosRobos';
 import { Tabuleiro3D } from './cidades3d/Tabuleiro3D';
+import { ComoJogar } from './MesaComum';
 import type { CartaDasCidades, EstadoCidades, OcorridoDasCidades, Partida, PropostaDasCidades } from './minijogos';
 
 /**
@@ -279,6 +280,8 @@ function CartaoDaCasa({
   const c = estado.casas[i];
   const p = estado.posses.find((x) => x.casa === i);
   const meu = p?.dono === eu;
+  // a linha de agora na tabela: sem prédio e com a região inteira, o aluguel dobra (o servidor manda o valor de agora)
+  const regiaoInteira = !!p && !p.hipotecada && p.predios === 0 && c.tipo === 'cidade' && p.aluguel === (c.aluguel ?? 0) * 2 && (c.aluguel ?? 0) > 0;
   return (
     <div className="cid-cartao">
       <p className="cid-cartao-nome">
@@ -297,11 +300,11 @@ function CartaoDaCasa({
             <>
               <table className="cid-cartao-tabela">
                 <tbody>
-                  <tr className={p && p.predios === 0 ? 'agora' : ''}>
+                  <tr className={p && p.predios === 0 && !regiaoInteira ? 'agora' : ''}>
                     <th>{t('Aluguel')}</th>
                     <td>{reais(c.aluguel ?? 0)}</td>
                   </tr>
-                  <tr>
+                  <tr className={regiaoInteira ? 'agora' : ''}>
                     <th>{t('Com a região inteira')}</th>
                     <td>{reais((c.aluguel ?? 0) * 2)}</td>
                   </tr>
@@ -737,9 +740,28 @@ export function JogoCidades({
                 <li key={o.id}>{textoDoOcorrido(o, estado, nomeDe, t)}</li>
               ))}
           </ol>
+          <ComoJogar jogo="cidades" figura={<FiguraDosPredios multiplicador={estado.multiplicador} />} />
         </div>
       </div>
     </div>
+  );
+}
+
+/** A figura do "Como jogar": cada número de prédios e quantas vezes o aluguel sem prédio ele cobra. */
+function FiguraDosPredios({ multiplicador }: { multiplicador: number[] }) {
+  return (
+    <span className="cid-figura-predios" aria-hidden="true">
+      {multiplicador.map((m, k) => (
+        <span key={k} className="cid-figura-degrau">
+          <span className="cid-figura-pilha">
+            {Array.from({ length: k }, (_, q) => (
+              <span key={q} className="cid-predio" />
+            ))}
+          </span>
+          <span>×{m}</span>
+        </span>
+      ))}
+    </span>
   );
 }
 
@@ -779,6 +801,7 @@ export function EscolhaDasCidades({ solo = false, aoEscolher, aoVoltar }: { solo
           </button>
         </li>
       </ul>
+      <ComoJogar jogo="cidades" />
       <div className="minijogo-acoes">
         <button type="button" className="btn-secondary" onClick={aoVoltar}>
           {t('Outros jogos')}

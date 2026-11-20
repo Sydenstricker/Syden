@@ -1,5 +1,7 @@
 import { Chess, type Move } from 'chess.js';
-import { duelo, type Lado, type Nivel } from './minijogo-tabuleiro.js';
+import { duelo, type Lado } from './minijogo-tabuleiro.js';
+import { lanceDoMotor, NIVEIS_DO_MOTOR } from './xadrez-motor.js';
+import { pensarNoWorker } from './xadrez-robo.js';
 
 /**
  * A PARTIDA DE XADREZ (05/11/2026, pedido dele: "adicione xadrez também, com os assets que estão na pasta"). A mesa de duas
@@ -53,131 +55,24 @@ export function lancesDe(jogo: Chess): LanceDoXadrez[] {
   return lista;
 }
 
-// ---- O ROBÔ: dois lances à frente (o dele e a resposta), mais as capturas que sobram na mesa, contando o material, com um tico de posição e de sorte. Joga com sentido e perde para
-// quem joga bem; o custo fica em poucos milissegundos, porque roda dentro do servidor.
-const VALOR: Record<string, number> = { p: 100, n: 320, b: 330, r: 500, q: 900, k: 0 };
-/** O material e a posição. `fim`: conferir o mate e o empate (caro: gera os lances; nas capturas, fica de fora). */
-function avaliar(jogo: Chess, cor: 'w' | 'b', fim = true): number {
-  if (fim && jogo.isCheckmate()) return jogo.turn() === cor ? -100_000 : 100_000;
-  if (fim && (jogo.isDraw() || jogo.isStalemate())) return 0;
-  let s = 0;
-  const tab = jogo.board();
-  for (let l = 0; l < 8; l++)
-    for (let c = 0; c < 8; c++) {
-      const p = tab[l][c];
-      if (!p) continue;
-      // o centro vale um pouco, e o peão que avança também
-      const centro = 3.5 - Math.max(Math.abs(3.5 - l), Math.abs(3.5 - c));
-      const avanco = p.type === 'p' ? (p.color === 'w' ? 7 - l : l) * 4 : 0;
-      const v = VALOR[p.type] + (p.type === 'k' ? 0 : centro * 6) + avanco;
-      s += p.color === cor ? v : -v;
-    }
-  return s;
-}
-function ordenar(moves: Move[]): Move[] {
-  return moves.sort((a, b) => (b.captured ? VALOR[b.captured] - VALOR[a.piece] / 10 : 0) - (a.captured ? VALOR[a.captured] - VALOR[b.piece] / 10 : 0));
-}
-/** No fim da busca, as capturas que estão na mesa (só as que ganham material): a troca não fica pela metade. */
-function capturas(jogo: Chess, cor: 'w' | 'b', alfa: number, beta: number, resto: number): number {
-  const parado = avaliar(jogo, cor, false);
-  if (resto === 0) return parado;
-  const meu = jogo.turn() === cor;
-  let melhor = parado;
-  for (const m of ordenar((jogo.moves({ verbose: true }) as Move[]).filter((x) => x.captured))) {
-    jogo.move(m);
-    const v = capturas(jogo, cor, alfa, beta, resto - 1);
-    jogo.undo();
-    if (meu ? v > melhor : v < melhor) melhor = v;
-    if (meu) alfa = Math.max(alfa, v);
-    else beta = Math.min(beta, v);
-    if (beta <= alfa) break;
-  }
-  return melhor;
-}
-/** A hora em que a busca funda do difícil desiste (ela roda no servidor: nunca pode segurar a mesa). */
-let limite = Infinity;
-/** Até quantas capturas seguidas a busca segue no fim (o nível difícil vai mais longe). */
-let restoDasTrocas = 1;
-class Estourou extends Error {}
-function minimax(jogo: Chess, prof: number, alfa: number, beta: number, cor: 'w' | 'b'): number {
-  if (performance.now() > limite) throw new Estourou();
-  if (prof === 0) return capturas(jogo, cor, alfa, beta, restoDasTrocas);
-  // os lances uma vez só: sem nenhum, é mate ou afogamento (o isGameOver geraria os lances de novo)
-  const lances = jogo.moves({ verbose: true }) as Move[];
-  if (!lances.length) return jogo.inCheck() ? (jogo.turn() === cor ? -100_000 : 100_000) : 0;
-  const meu = jogo.turn() === cor;
-  let melhor = meu ? -Infinity : Infinity;
-  for (const m of ordenar(lances)) {
-    jogo.move(m);
-    const v = minimax(jogo, prof - 1, alfa, beta, cor);
-    jogo.undo();
-    if (meu) {
-      melhor = Math.max(melhor, v);
-      alfa = Math.max(alfa, v);
-    } else {
-      melhor = Math.min(melhor, v);
-      beta = Math.min(beta, v);
-    }
-    if (beta <= alfa) break;
-  }
-  return melhor;
-}
-/**
- * Os NÍVEIS do robô (19/11/2026): quantos lances ele olha depois do dele (0: só as capturas que sobram), até onde segue as
- * trocas no fim da busca, e quanto sorteia entre os lances parecidos (em centésimos de peão). Olhar mais um lance inteiro (o
- * dele, a resposta e o seguinte) custava segundos com o chess.js, dentro do servidor; o difícil segue as trocas até o fim e
- * quase não sorteia. Ainda assim, ele tem um teto de tempo (PENSAR_MS): passou, joga o lance do fácil sem o sorteio.
- */
-export const NIVEL_DO_XADREZ: Record<Nivel, { profundidade: number; ruido: number; trocas: number }> = {
-  facil: { profundidade: 0, ruido: 160, trocas: 1 },
-  normal: { profundidade: 1, ruido: 18, trocas: 1 },
-  dificil: { profundidade: 1, ruido: 2, trocas: 2 },
-};
-export const PENSAR_MS = 1_200;
+// ---- O ROBÔ (20/11/2026, pedido dele: "adicione dificuldade no xadrez"): o motor próprio (xadrez-motor.ts, alfa-beta com
+// aprofundamento iterativo, quiescência e tabelas de casa), num worker (xadrez-robo.ts), para a conta nunca segurar o servidor. Os
+// cinco NÍVEIS saem do motor (NIVEIS_DO_MOTOR): o Iniciante e o Fácil olham pouco e erram de propósito; o Mestre pensa ~1,6 s
+// e vê vários lances à frente. Antes, o robô olhava um lance só com o chess.js (3 mil posições por segundo), e o difícil
+// segurava o servidor ~0,8 s.
+export const NIVEIS_DO_XADREZ = ['iniciante', 'facil', 'normal', 'dificil', 'mestre'] as const;
+export type NivelDoXadrez = (typeof NIVEIS_DO_XADREZ)[number];
+export const NIVEL_DO_XADREZ = NIVEIS_DO_MOTOR;
+const nivelDe = (nivel: string): NivelDoXadrez => ((NIVEIS_DO_XADREZ as readonly string[]).includes(nivel) ? (nivel as NivelDoXadrez) : 'normal');
+const semente = (aleatorio: () => number) => Math.floor(aleatorio() * 0x7fffffff) + 1;
+/** Os FEN das posições de antes da atual (a repetição de três vezes conta as da partida). */
+const historicoDe = (jogo: Chess) => (jogo.history({ verbose: true }) as Move[]).map((m) => m.before);
 
-export function lanceDoRobo(fen: string, aleatorio: () => number, nivel: Nivel = 'normal'): LanceDoXadrez | null {
-  const { profundidade, ruido, trocas } = NIVEL_DO_XADREZ[nivel];
-  const jogo = new Chess(fen);
-  const cor = jogo.turn();
-  const moves = ordenar(jogo.moves({ verbose: true }) as Move[]);
-  if (!moves.length) return null;
-  const buscar = (prof: number, comRuido: number) => {
-    let melhor: Move = moves[0];
-    let melhorV = -Infinity;
-    for (const m of moves) {
-      jogo.move(m);
-      try {
-        // a janela da raiz: o que não supera o melhor até aqui (com a folga da sorte) é cortado cedo
-        const v = minimax(jogo, prof, melhorV - comRuido, Infinity, cor) + aleatorio() * comRuido;
-        if (v > melhorV) {
-          melhorV = v;
-          melhor = m;
-        }
-      } finally {
-        jogo.undo();
-      }
-    }
-    return melhor;
-  };
-  restoDasTrocas = trocas;
-  // só o difícil tem teto: o normal e o fácil são os de sempre
-  limite = nivel === 'dificil' ? performance.now() + PENSAR_MS : Infinity;
-  try {
-    return paraLance(buscar(profundidade, ruido));
-  } catch (e) {
-    if (!(e instanceof Estourou)) throw e;
-    // a busca interrompida deixou lances feitos no tabuleiro: ele volta à posição de antes, e joga o lance curto
-    limite = Infinity;
-    restoDasTrocas = 1;
-    jogo.load(fen);
-    return paraLance(buscar(0, 0));
-  } finally {
-    limite = Infinity;
-    restoDasTrocas = 1;
-  }
+/** O lance do robô NA PRÓPRIA THREAD (os testes e a medida dos níveis; a mesa usa o worker). */
+export function lanceDoRobo(fen: string, aleatorio: () => number, nivel: string = 'normal', historico: string[] = []): LanceDoXadrez | null {
+  const l = lanceDoMotor(fen, nivelDe(nivel), historico, semente(aleatorio)).lance;
+  return l ? { de: l.de, para: l.para } : null;
 }
-const paraLance = (m: Move): LanceDoXadrez => ({ de: casaDe(m.from), para: casaDe(m.to) });
-
 
 /** As peças que saíram do tabuleiro, por cor de quem as perdeu (letras como em `casasDe`). */
 export function capturadasDe(jogo: Chess): { brancas: string[]; pretas: string[] } {
@@ -244,9 +139,11 @@ export const partidaDeXadrez = duelo<EstadoDaPartida>({
     for (const san of c.lances) jogo.move(san);
     Object.assign(estado, { jogo, brancas: c.brancas, ultimo: c.ultimo, fimPor: c.fimPor });
   },
-  // o tabuleiro é aberto: o robô vê o mesmo que a pessoa
-  robo: (estado, _lado, aleatorio, nivel) => {
-    const l = lanceDoRobo(estado.jogo.fen(), aleatorio, nivel);
-    return l ? { de: l.de, para: l.para } : {};
+  // o tabuleiro é aberto: o robô vê o mesmo que a pessoa. A posição é copiada AGORA (a conta volta depois, no worker).
+  niveis: NIVEIS_DO_XADREZ,
+  roboAssincrono: async (estado, _lado, aleatorio, nivel) => {
+    const l = await pensarNoWorker({ fen: estado.jogo.fen(), historico: historicoDe(estado.jogo), nivel: nivelDe(nivel), semente: semente(aleatorio) });
+    // a peça da promoção que o motor escolheu (quase sempre a dama)
+    return l ? { de: l.de, para: l.para, promocao: l.promocao } : {};
   },
 });

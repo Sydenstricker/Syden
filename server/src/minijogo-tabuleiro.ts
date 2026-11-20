@@ -66,6 +66,14 @@ export interface Regras<T> {
    * Batalha naval, sem olhar a frota escondida), no `nivel` escolhido. O jogo sem `robo` não tem Solo contra o computador.
    */
   robo?(estado: T, lado: Lado, aleatorio: () => number, nivel: Nivel): Record<string, unknown>;
+  /**
+   * A jogada do computador que PENSA FORA DA THREAD do servidor (o xadrez, 20/11/2026: o worker de xadrez-robo.ts). A mesa
+   * começa a conta na hora e joga quando a conta e a pausa acabam; se a partida mudou nesse meio (voltar, desistir), a resposta
+   * é jogada fora. Com ela, `niveis` diz os níveis que o jogo aceita (os outros jogos ficam nos três de sempre).
+   */
+  roboAssincrono?(estado: T, lado: Lado, aleatorio: () => number, nivel: string): Promise<Record<string, unknown>>;
+  /** Os níveis do robô que o jogo aceita (sem isto, os de `NIVEIS`). */
+  niveis?: readonly string[];
   /** O lance que acabou de valer, escrito para o histórico (chamado DEPOIS de `jogar`, com o estado novo). */
   descrever?(estado: T, lado: Lado, corpo: Record<string, unknown>): string;
   /**
@@ -92,8 +100,9 @@ export interface Regras<T> {
 }
 
 /** As escolhas comuns da mesa (o nível do robô e o relógio), conferidas. */
-export function escolhasDaMesa(corpo: Record<string, unknown>): { nivel: Nivel; relogio: string | null } {
-  const nivel = NIVEIS.includes(corpo.nivel as Nivel) ? (corpo.nivel as Nivel) : 'normal';
+export function escolhasDaMesa(corpo: Record<string, unknown>, niveis: readonly string[] = NIVEIS): { nivel: Nivel; relogio: string | null } {
+  // o xadrez aceita mais níveis (`Regras.niveis`): o tipo continua Nivel para os jogos de três
+  const nivel = typeof corpo.nivel === 'string' && niveis.includes(corpo.nivel) ? (corpo.nivel as Nivel) : 'normal';
   const relogio = typeof corpo.relogio === 'string' && RELOGIOS[corpo.relogio] ? corpo.relogio : null;
   return { nivel, relogio };
 }
@@ -108,12 +117,14 @@ export function duelo<T>(regras: Regras<T>, aleatorio = Math.random, agora: () =
       let vez: Lado = 0;
       let vencedor: Lado | 'empate' | null = null;
       let motivo: 'jogo' | 'tempo' | 'desistiu' | 'acordo' | null = null;
-      const comuns = escolhasDaMesa(corpo ?? {});
+      const comuns = escolhasDaMesa(corpo ?? {}, regras.niveis);
       const proprias = regras.escolhas?.(corpo ?? {}) ?? {};
       const escolhas = { ...proprias, nivel: comuns.nivel, relogio: comuns.relogio };
       const estado = regras.inicio(proprias);
       // no Solo, contra o computador: ele senta na hora
-      const contraORobo = ctx.solo === true && regras.robo !== undefined;
+      const contraORobo = ctx.solo === true && (regras.robo !== undefined || regras.roboAssincrono !== undefined);
+      /** Muda a cada lance, volta ou fim: a conta do robô que voltar depois de uma mudança não vale mais. */
+      let geracao = 0;
       const nome = (id: number) => (ehRobo(id) ? nomeDoRobo(id) : ctx.nome(id));
       const historico: { lado: Lado; texto: string }[] = [];
       /** As cópias de antes de cada lance da pessoa (só no Solo), para voltar. */
@@ -131,6 +142,7 @@ export function duelo<T>(regras: Regras<T>, aleatorio = Math.random, agora: () =
 
       const acabar = (quem: Lado | 'empate' | null, porque: typeof motivo) => {
         fase = 'fim';
+        geracao++;
         vencedor = quem;
         motivo = porque;
         if (tempo) restam[vez] = Math.max(0, restam[vez] - (agora() - desde));
@@ -139,7 +151,11 @@ export function duelo<T>(regras: Regras<T>, aleatorio = Math.random, agora: () =
 
       /** A vez de agora: o robô joga depois da pausa; gente tem o prazo (o relógio da partida, ou o prazo por lance). */
       const prazo = () => {
-        if (ehRobo(lugares[vez] ?? 0)) return ctx.agendar(PAUSA_DO_ROBO, jogarORobo);
+        if (ehRobo(lugares[vez] ?? 0)) {
+          // o robô que pensa fora da thread começa a conta já, e joga quando a conta e a pausa acabam
+          if (regras.roboAssincrono) return pensarORobo();
+          return ctx.agendar(PAUSA_DO_ROBO, jogarORobo);
+        }
         const ms = tempo ? Math.max(0, restam[vez] - (agora() - desde)) : contraORobo ? JOGADA_SOLO_MS : JOGADA_MS;
         ctx.agendar(ms, () => {
           if (fase === 'jogando') acabar(vez === 0 ? 1 : 0, 'tempo');
@@ -176,6 +192,7 @@ export function duelo<T>(regras: Regras<T>, aleatorio = Math.random, agora: () =
         const r = regras.jogar(estado, lado, corpo);
         if (typeof r === 'string') return r;
         if (antes) pilha.push(antes);
+        geracao++;
         oferta = null;
         const texto = regras.descrever?.(estado, lado, corpo);
         if (texto) historico.push({ lado, texto });
@@ -200,6 +217,34 @@ export function duelo<T>(regras: Regras<T>, aleatorio = Math.random, agora: () =
         // a jogada do robô passa pela mesma conferência; se as regras a recusassem (não deveria), ele desiste em vez de
         // prender a mesa
         if (jogada(lado, { ...regras.robo!(estado, lado, aleatorio, comuns.nivel), tipo: 'jogada' }) !== null) acabar(lado === 0 ? 1 : 0, 'desistiu');
+      }
+
+      /** O robô de conta longa (o xadrez): a conta e a pausa correm juntas; a resposta só vale se nada mudou na mesa. */
+      function pensarORobo() {
+        const lado = vez;
+        const minha = geracao;
+        let corpo: Record<string, unknown> | null = null;
+        let pausou = false;
+        const tentar = () => {
+          if (!corpo || !pausou) return;
+          if (fase !== 'jogando' || geracao !== minha || vez !== lado || !ehRobo(lugares[lado])) return;
+          try {
+            if (jogada(lado, { ...corpo, tipo: 'jogada' }) !== null) acabar(lado === 0 ? 1 : 0, 'desistiu');
+          } catch {
+            acabar(lado === 0 ? 1 : 0, 'desistiu');
+          }
+        };
+        ctx.agendar(PAUSA_DO_ROBO, () => {
+          pausou = true;
+          tentar();
+        });
+        regras
+          .roboAssincrono!(estado, lado, aleatorio, comuns.nivel)
+          .catch(() => (regras.robo ? regras.robo(estado, lado, aleatorio, comuns.nivel) : {}))
+          .then((c) => {
+            corpo = c;
+            tentar();
+          });
       }
 
       if (contraORobo) sentar(-1);
@@ -251,6 +296,7 @@ export function duelo<T>(regras: Regras<T>, aleatorio = Math.random, agora: () =
             const copia = pilha.pop();
             if (!copia) return 'Não há lance para voltar.';
             restaurar(copia.estado);
+            geracao++;
             historico.length = copia.historico;
             vez = copia.vez;
             if (tempo) desde = agora();

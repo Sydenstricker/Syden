@@ -1,6 +1,8 @@
 import { CheckCheck, Eraser, Pencil, Undo2 } from 'lucide-react';
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { useT } from './i18n';
+import { faltamDo } from './contasDasMesas';
+import { ComoJogar } from './MesaComum';
 import { Placar, Relogio } from './Minijogo';
 import type { EstadoSudoku, Partida } from './minijogos';
 import { tocar } from './somDosJogos';
@@ -186,11 +188,23 @@ export function JogoSudoku({
         })}
       </div>
       <div className="sudoku-numeros">
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
-          <button key={n} type="button" disabled={terminei} className={lapis ? 'lapis' : undefined} onClick={() => por(n)}>
-            {n}
-          </button>
-        ))}
+        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => {
+          // QUANTOS FALTAM (20/11/2026): cada número aparece 9 vezes; o que fechou se apaga. No "conferir no fim" ele só
+          // esmaece, porque um número errado pode estar contando e a pessoa precisa poder trocá-lo.
+          const faltam = faltamDo(tabuleiro, estado.errados, n);
+          const fechou = faltam === 0;
+          const classes = [lapis && 'lapis', fechou && 'fechado'].filter(Boolean).join(' ') || undefined;
+          return (
+            <button key={n} type="button" disabled={terminei || (fechou && !noFim)} className={classes} onClick={() => por(n)}>
+              {n}
+              {!fechou && (
+                <span className="sudoku-faltam" aria-hidden="true">
+                  {faltam}
+                </span>
+              )}
+            </button>
+          );
+        })}
         <button type="button" disabled={terminei} aria-label={t('Apagar')} title={t('Apagar')} onClick={() => por(0)}>
           <Eraser size={16} />
         </button>
@@ -234,6 +248,16 @@ export function JogoSudoku({
         ))}
       </ul>
       <Relogio restante={restante} total={SUDOKU_MS} />
+      <ComoJogar
+        jogo="sudoku"
+        figura={
+          <span className="sudoku-figura" aria-hidden="true">
+            {[5, 3, 7, 6, 1, 9, 8, 2, 4].map((n) => (
+              <span key={n}>{n}</span>
+            ))}
+          </span>
+        }
+      />
     </div>
   );
 }

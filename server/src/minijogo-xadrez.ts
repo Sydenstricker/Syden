@@ -77,6 +77,8 @@ interface Tentativa {
   erro: string | null;
   /** A posição de verdade (o chess.js), só para dizer à tela quais casas cada peça alcança: quem decide é a solução. */
   jogo: Chess | null;
+  /** A DICA pedida neste passo: a casa da peça que move (o servidor a tira da solução). */
+  dica: number | null;
 }
 
 /**
@@ -87,6 +89,17 @@ interface Tentativa {
 export const CORRIDA_MS = 3 * 60_000;
 export const PENALIDADE_MS = 10_000;
 export const PROBLEMAS_POR_FAIXA_NA_CORRIDA = 3;
+
+/**
+ * O MODO SEQUÊNCIA (20/11/2026, só no Solo): um problema atrás do outro, cada acerto um pouco mais difícil (a nota sobe pela
+ * lista ordenada, do mais fácil ao mais difícil em PASSOS_DA_SEQUENCIA acertos), e o PRIMEIRO ERRO acaba (o tempo de um problema
+ * passar também). Vale quantos a pessoa acertou SEM dica, na tabela comum (`xadrez`, variante `sequencia`), contado pelo servidor.
+ *
+ * A DICA (20/11/2026, todos os modos): acende a peça que move no passo de agora, tirada da solução pelo servidor. Custa: nas
+ * rodadas, o problema não dá ponto; na sequência, o acerto passa mas não conta; na corrida, -10 s (PENALIDADE_MS) a cada dica.
+ */
+export const PASSOS_DA_SEQUENCIA = 40;
+export const SEQUENCIA_MS = 2 * 60_000;
 
 /**
  * OS TEMAS (19/11/2026): o arquivo do Lichess traz os temas de cada problema ("mateIn1", "fork", "pin"…), e o script os
@@ -145,6 +158,7 @@ export function criarXadrez({ agora = Date.now, aleatorio = Math.random, recorde
       const lista = tema ? PROBLEMAS.filter((p) => temasDe(p).includes(tema)) : PROBLEMAS;
       if (lista.length < 4) return tema ? 'Ainda não há problemas desse tema.' : 'Os problemas de xadrez não estão no servidor.';
       const corrida = ctx.solo === true && corpo?.modo === 'corrida';
+      const sequencia = ctx.solo === true && !corrida && corpo?.modo === 'sequencia';
       // a lista vem em ordem de nota (o script guarda as faixas em ordem): quatro faixas iguais
       const ordenada = [...lista].sort((a, b) => a[3] - b[3]);
       const porFaixa = ordenada.length / 4;
@@ -175,9 +189,16 @@ export function criarXadrez({ agora = Date.now, aleatorio = Math.random, recorde
       let resolvidos = 0;
       let erros = 0;
       let recorde: { antes: number | null; novo: boolean } | null = null;
-      const recordeAntes = corrida ? (recordes?.recordeDoSolo(criadaPor, 'xadrez', 'corrida')?.valor ?? null) : null;
+      const varianteDoRecorde = corrida ? 'corrida' : sequencia ? 'sequencia' : null;
+      const recordeAntes = varianteDoRecorde ? (recordes?.recordeDoSolo(criadaPor, 'xadrez', varianteDoRecorde)?.valor ?? null) : null;
+      // a sequência
+      let acertos = 0;
+      let comDicaNaSequencia = 0;
+      /** Quem pediu dica no problema de agora (o "de novo" do Solo não apaga). */
+      const pediuDica = new Set<number>();
+      let dicas = 0;
 
-      const nova = (): Tentativa => ({ casas: posicao, passo: 1, estado: 'resolvendo', tempoMs: null, ultimo: lances[0], erro: null, jogo: posicaoDe(fen, lances[0]) });
+      const nova = (): Tentativa => ({ casas: posicao, passo: 1, estado: 'resolvendo', tempoMs: null, ultimo: lances[0], erro: null, jogo: posicaoDe(fen, lances[0]), dica: null });
 
       function montar() {
         const [, f, texto] = problema;
@@ -189,6 +210,7 @@ export function criarXadrez({ agora = Date.now, aleatorio = Math.random, recorde
         posicao = jogar(inicial.casas, lances[0]);
         solucao = lances.reduce((casas, l) => jogar(casas, l), inicial.casas);
         tentativas.clear();
+        pediuDica.clear();
         for (const id of pontos.keys()) tentativas.set(id, nova());
       }
 
@@ -202,7 +224,8 @@ export function criarXadrez({ agora = Date.now, aleatorio = Math.random, recorde
 
       function mostrarSolucao() {
         if (fase !== 'resolvendo') return;
-        const acertaram = [...tentativas.entries()].filter(([, t]) => t.estado === 'acertou');
+        // quem acertou com dica não leva ponto (nem o extra)
+        const acertaram = [...tentativas.entries()].filter(([id, t]) => t.estado === 'acertou' && !pediuDica.has(id));
         for (const [id] of acertaram) pontos.set(id, (pontos.get(id) ?? 0) + 1);
         // O ponto extra é de quem acertou primeiro.
         const primeiro = acertaram.sort(([, a], [, b]) => (a.tempoMs ?? 0) - (b.tempoMs ?? 0))[0];
@@ -240,9 +263,41 @@ export function criarXadrez({ agora = Date.now, aleatorio = Math.random, recorde
         ctx.avisar();
       };
 
+      // ---- a sequência: a nota sobe a cada acerto, e o primeiro erro acaba
+      const sortearDaSequencia = () => {
+        const passo = ordenada.length / PASSOS_DA_SEQUENCIA;
+        for (let k = 0; ; k++) {
+          const i = Math.min(ordenada.length - 1, Math.floor((acertos + comDicaNaSequencia) * passo + aleatorio() * passo));
+          if (!usados.has(i) || k > 200) {
+            usados.add(i);
+            return ordenada[i];
+          }
+        }
+      };
+      const acabarSequencia = () => {
+        if (fase === 'fim') return;
+        fase = 'fim';
+        pontos.set(criadaPor, acertos);
+        // o número é do servidor: ele conferiu cada lance contra a solução, e o acerto com dica não conta
+        recorde = acertos > 0 && recordes ? recordes.guardarRecordeDoSolo(criadaPor, 'xadrez', 'sequencia', acertos, false, { comDica: comDicaNaSequencia }) : { antes: recordeAntes, novo: false };
+        ctx.terminar();
+      };
+      const proximoDaSequencia = () => {
+        problema = sortearDaSequencia();
+        montar();
+        rodada = acertos + comDicaNaSequencia + 1;
+        inicio = agora();
+        ctx.agendar(SEQUENCIA_MS, acabarSequencia);
+        ctx.avisar();
+      };
+
       if (corrida) {
         montar();
         ctx.agendar(CORRIDA_MS, acabarCorrida);
+      } else if (sequencia) {
+        problema = sortearDaSequencia();
+        montar();
+        ctx.agendar(SEQUENCIA_MS, acabarSequencia);
       } else novoProblema();
 
       return {
@@ -250,10 +305,10 @@ export function criarXadrez({ agora = Date.now, aleatorio = Math.random, recorde
           const minha = tentativas.get(quem) ?? nova();
           const resolvido = fase !== 'resolvendo';
           return {
-            modo: corrida ? 'corrida' : 'rodadas',
+            modo: corrida ? 'corrida' : sequencia ? 'sequencia' : 'rodadas',
             tema,
             rodada,
-            rodadas: corrida ? null : RODADAS_XADREZ,
+            rodadas: corrida || sequencia ? null : RODADAS_XADREZ,
             fase,
             problema: problema[0],
             nota: problema[3],
@@ -266,9 +321,13 @@ export function criarXadrez({ agora = Date.now, aleatorio = Math.random, recorde
             // as casas que cada peça alcança (o destaque da tela, como na partida)
             lances: fase === 'resolvendo' ? lancesDaTentativa(minha) : [],
             // no Solo, quem errou pode tentar o mesmo problema de novo
-            podeTentarDeNovo: ctx.solo === true && !corrida && fase === 'resolvendo' && minha.estado === 'errou',
+            podeTentarDeNovo: ctx.solo === true && !corrida && !sequencia && fase === 'resolvendo' && minha.estado === 'errou',
+            // a dica: a casa da peça que move no passo de agora (só depois de pedida), e se este problema já a custou
+            dica: fase === 'resolvendo' && minha.estado === 'resolvendo' ? minha.dica : null,
+            comDica: pediuDica.has(quem),
+            sequencia: sequencia ? { acertos, comDica: comDicaNaSequencia, recordeAntes, recorde } : null,
             corrida: corrida
-              ? { restanteMs: Math.max(0, fimDaCorrida - agora()), resolvidos, erros, recordeAntes, recorde }
+              ? { restanteMs: Math.max(0, fimDaCorrida - agora()), resolvidos, erros, dicas, recordeAntes, recorde }
               : null,
             jogadores: [...tentativas.entries()].map(([userId, t]) => ({ userId, username: ctx.nome(userId), estado: t.estado, tempoMs: t.tempoMs })),
             placar: placar(pontos, ctx.nome),
@@ -281,6 +340,27 @@ export function criarXadrez({ agora = Date.now, aleatorio = Math.random, recorde
             const t = tentativas.get(quem);
             if (!t || t.estado !== 'errou') return 'Você ainda está resolvendo.';
             tentativas.set(quem, nova());
+            ctx.avisar();
+            return null;
+          }
+          if (corpo.tipo === 'dica') {
+            if (fase !== 'resolvendo') return 'Este problema já acabou.';
+            const t = tentativas.get(quem);
+            if (!t || t.estado !== 'resolvendo') return 'Você não está resolvendo este problema.';
+            // a mesma dica de novo não custa de novo
+            if (t.dica !== null) return null;
+            t.dica = casa(lances[t.passo].slice(0, 2));
+            pediuDica.add(quem);
+            if (corrida) {
+              dicas++;
+              fimDaCorrida -= PENALIDADE_MS;
+              const falta = fimDaCorrida - agora();
+              if (falta <= 0) {
+                acabarCorrida();
+                return null;
+              }
+              ctx.agendar(falta, acabarCorrida);
+            }
             ctx.avisar();
             return null;
           }
@@ -300,6 +380,8 @@ export function criarXadrez({ agora = Date.now, aleatorio = Math.random, recorde
             t.estado = 'errou';
             t.erro = lance;
           } else {
+            // o passo andou: a dica era deste passo
+            t.dica = null;
             andar(t, lances[t.passo]);
             t.passo++;
             // A resposta do adversário vem sozinha.
@@ -311,6 +393,15 @@ export function criarXadrez({ agora = Date.now, aleatorio = Math.random, recorde
               t.estado = 'acertou';
               t.tempoMs = agora() - inicio;
             }
+          }
+          if (sequencia) {
+            if (t.estado === 'errou') acabarSequencia();
+            else if (t.estado === 'acertou') {
+              if (pediuDica.has(quem)) comDicaNaSequencia++;
+              else acertos++;
+              proximoDaSequencia();
+            } else ctx.avisar();
+            return null;
           }
           if (corrida) {
             if (t.estado === 'errou') {

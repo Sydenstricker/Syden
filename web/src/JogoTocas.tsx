@@ -168,6 +168,30 @@ const NOME_DA_MELHORIA: Record<Melhoria, string> = {
 const ICONE = (nome: Recurso | 'populacao') => `${import.meta.env.BASE_URL}tocas/icones/${nome}.png`;
 /** A taxa "+x" de cada recurso: o que chegou ao estoque no último minuto da partida (o tempo da simulação, que pausa junto). */
 const JANELA_DA_TAXA = 60 * PASSOS_POR_SEGUNDO;
+/**
+ * A LETRA DE CADA BOTÃO DO PAINEL (20/11/2026): a de construir vale com trabalhadores escolhidos, a de treinar com o prédio
+ * escolhido, então uma letra pode servir aos dois. Fora das teclas que já andam com a câmera (WASD), do H (o centro), do ponto e
+ * dos números (os grupos). A letra é igual em todo idioma (o botão a mostra).
+ */
+const LETRA_DO_PREDIO: Partial<Record<TipoPredio, string>> = {
+  casa: 'c',
+  fazenda: 'f',
+  quartel: 'q',
+  arquearia: 'r',
+  ferreiro: 'e',
+  torre: 't',
+  muralha: 'm',
+  portao: 'p',
+  mercado: 'k',
+  maravilha: 'v',
+};
+const LETRA_DA_UNIDADE: Record<TipoUnidade, string> = {
+  trabalhador: 't',
+  lanceiro: 'l',
+  arqueiro: 'r',
+  cavaleiro: 'c',
+  catapulta: 'p',
+};
 const CONSTRUIVEIS: TipoPredio[] = ['casa', 'fazenda', 'quartel', 'arquearia', 'ferreiro', 'torre', 'muralha', 'portao', 'mercado', 'maravilha'];
 /** O Solo manda os comandos ao servidor a cada tanto, em trechos de no máximo tanto (o servidor recusa mais de 1200). */
 const TRECHO_MS = 2000;
@@ -1105,7 +1129,13 @@ function Partida({
       } else if (k === 'escape') {
         if (colocandoRef.current) colocar(null);
         else escolher([]);
-      } else if (k === 'h') irAoCentro();
+      } else if (k === 'h' && !e.ctrlKey && !e.metaKey && !e.altKey) irAoCentro();
+      else if (atalhoDeGrupo(e)) e.preventDefault();
+      else if (k === '.' && !e.ctrlKey && !e.metaKey) proximoOcioso();
+      else if (!e.ctrlKey && !e.metaKey && !e.altKey && atalhosDoPainel.current.has(k)) {
+        e.preventDefault();
+        atalhosDoPainel.current.get(k)!();
+      }
     };
     const sobe = (e: KeyboardEvent) => teclas.current.delete(e.key.toLowerCase());
     const soltar = () => teclas.current.clear();
@@ -1233,6 +1263,67 @@ function Partida({
     vistaRef.current?.centrar(c.gx + 1.5, c.gy + 1.5);
     escolher([c.id]);
   };
+
+  // ---- os atalhos de teclado (20/11/2026, a segunda auditoria; SÓ TELA: nada disto entra na simulação) ----
+  /** O ponto (.) e o atalho com o peão: o próximo trabalhador parado, com a câmera nele. */
+  const proximoOcioso = () => {
+    if (assistindo) return;
+    const ociosos = sim.unidades.filter((u) => u.dono === eu && u.tipo === 'trabalhador' && u.ordem.tipo === 'parado' && !u.abrigado);
+    if (!ociosos.length) return void tocar('erro');
+    const atual = selRef.current.length === 1 ? ociosos.findIndex((u) => u.id === selRef.current[0]) : -1;
+    const u = ociosos[(atual + 1) % ociosos.length];
+    escolher([u.id]);
+    vistaRef.current?.centrar(u.x, u.y);
+  };
+  /**
+   * OS GRUPOS: Ctrl+número (ou Shift+número: no navegador, Ctrl+1…9 troca de aba e a página não consegue impedir) guarda a
+   * seleção; o número sozinho a chama, e duas vezes seguidas leva a câmera até ela. Só os ids: quem morreu sai do grupo.
+   */
+  const grupos = useRef(new Map<number, number[]>());
+  const ultimoGrupo = useRef<{ n: number; quando: number } | null>(null);
+  const atalhoDeGrupo = (e: KeyboardEvent): boolean => {
+    const m = /^(?:Digit|Numpad)([1-9])$/.exec(e.code);
+    if (!m || e.altKey || e.metaKey) return false;
+    const n = Number(m[1]);
+    if (e.ctrlKey || e.shiftKey) {
+      const meus = selRef.current.filter((id) => {
+        const x = sim.porId.get(id) as { dono?: Dono } | undefined;
+        return x?.dono === eu;
+      });
+      if (!meus.length) grupos.current.delete(n);
+      else grupos.current.set(n, meus);
+      tocar('clique');
+      return true;
+    }
+    const ids = (grupos.current.get(n) ?? []).filter((id) => {
+      const x = sim.porId.get(id) as { dono?: Dono; vida?: number } | undefined;
+      return x?.dono === eu && (x.vida ?? 1) > 0;
+    });
+    if (!ids.length) return true;
+    grupos.current.set(n, ids);
+    escolher(ids);
+    const agora = performance.now();
+    const de = ultimoGrupo.current;
+    if (de && de.n === n && agora - de.quando < 450) {
+      let sx = 0;
+      let sy = 0;
+      for (const id of ids) {
+        const x = sim.porId.get(id)!;
+        if (eUnidade(x)) {
+          sx += x.x;
+          sy += x.y;
+        } else if (ePredio(x)) {
+          sx += x.gx + PREDIOS[x.tipo].tam / 2;
+          sy += x.gy + PREDIOS[x.tipo].tam / 2;
+        }
+      }
+      vistaRef.current?.centrar(sx / ids.length, sy / ids.length);
+      ultimoGrupo.current = null;
+    } else ultimoGrupo.current = { n, quando: agora };
+    return true;
+  };
+  /** As letras dos botões do painel que estão à vista agora (refeitas a cada desenho: a letra só vale para o botão que se vê). */
+  const atalhosDoPainel = useRef(new Map<string, () => void>());
 
   // ---- o ponteiro ----
   const ptrs = useRef(new Map<number, { x: number; y: number }>());
@@ -1365,6 +1456,17 @@ function Partida({
   const predio = escolhidos.length === 1 && ePredio(escolhidos[0]) ? escolhidos[0] : null;
   const unico = escolhidos.length === 1 ? escolhidos[0] : null;
   void painel.versao;
+  atalhosDoPainel.current.clear();
+  /** A letra do botão: guardada para o teclado e mostrada no canto dele (no toque, o CSS a esconde). */
+  const tecla = (letra: string | undefined, acao: () => void) => {
+    if (!letra) return null;
+    atalhosDoPainel.current.set(letra, acao);
+    return (
+      <kbd className="tocas-tecla" aria-hidden="true">
+        {letra.toUpperCase()}
+      </kbd>
+    );
+  };
 
   const custo = (c: Custo) => (
     <span className="tocas-custo">
@@ -1381,6 +1483,10 @@ function Partida({
     const d = PREDIOS[tipo];
     const travado = painel.era < d.era;
     const pode = !travado && podePagar(sim, eu, d.custo);
+    const aoClicar = () => {
+      if (!pode) return void tocar('erro');
+      colocar(colocando?.tipo === tipo ? null : { tipo, inicio: null });
+    };
     return (
       <button
         key={tipo}
@@ -1388,14 +1494,13 @@ function Partida({
         className={`tocas-botao${colocando?.tipo === tipo ? ' ativo' : ''}`}
         disabled={travado}
         aria-disabled={!pode}
+        aria-keyshortcuts={travado ? undefined : LETRA_DO_PREDIO[tipo]}
         title={travado ? t('Pede a era 2') : undefined}
-        onClick={() => {
-          if (!pode) return void tocar('erro');
-          colocar(colocando?.tipo === tipo ? null : { tipo, inicio: null });
-        }}
+        onClick={aoClicar}
       >
         <span className="tocas-botao-nome">{t(NOME[tipo])}</span>
         {custo(d.custo)}
+        {tecla(travado ? undefined : LETRA_DO_PREDIO[tipo], aoClicar)}
       </button>
     );
   };
@@ -1404,6 +1509,21 @@ function Partida({
     const d = UNIDADES[tipo];
     const travado = painel.era < d.era;
     const pode = !travado && podePagar(sim, eu, d.custo) && !!predio && predio.fila.length < 5 && predio.pronto;
+    const aoClicar = () => {
+      if (!predio) return;
+      if (!pode) {
+        tocar('erro');
+        // o que impede, dito (antes, o clique sem recurso não fazia nada à vista: "cliquei no cavaleiro e não saiu")
+        if (predio.fila.length >= 5) avisar(t('A fila está cheia.'));
+        else {
+          const falta = RECURSOS.filter((k) => (d.custo[k] ?? 0) > sim.jogadores[eu].recursos[k]);
+          avisar(t('Falta: {lista}', { lista: falta.map((k) => t(NOME_DO_RECURSO[k])).join(', ') }));
+        }
+        return;
+      }
+      ordenar({ t: 'treinar', predio: predio.id, unidade: tipo });
+      tocar('clique');
+    };
     return (
       <button
         key={tipo}
@@ -1411,25 +1531,13 @@ function Partida({
         className="tocas-botao"
         disabled={travado}
         aria-disabled={!pode}
+        aria-keyshortcuts={travado ? undefined : LETRA_DA_UNIDADE[tipo]}
         title={travado ? t('Pede a era 2') : undefined}
-        onClick={() => {
-          if (!predio) return;
-          if (!pode) {
-            tocar('erro');
-            // o que impede, dito (antes, o clique sem recurso não fazia nada à vista: "cliquei no cavaleiro e não saiu")
-            if (predio.fila.length >= 5) avisar(t('A fila está cheia.'));
-            else {
-              const falta = RECURSOS.filter((k) => (d.custo[k] ?? 0) > sim.jogadores[eu].recursos[k]);
-              avisar(t('Falta: {lista}', { lista: falta.map((k) => t(NOME_DO_RECURSO[k])).join(', ') }));
-            }
-            return;
-          }
-          ordenar({ t: 'treinar', predio: predio.id, unidade: tipo });
-          tocar('clique');
-        }}
+        onClick={aoClicar}
       >
         <span className="tocas-botao-nome">{t(NOME[tipo])}</span>
         {custo(d.custo)}
+        {tecla(travado ? undefined : LETRA_DA_UNIDADE[tipo], aoClicar)}
       </button>
     );
   };
@@ -1624,14 +1732,7 @@ function Partida({
             className={`tocas-atalho${painel.ociosos ? ' alerta' : ''}`}
             title={t('Trabalhador parado')}
             aria-label={`${t('Trabalhador parado')}: ${painel.ociosos}`}
-            onClick={() => {
-              const ociosos = sim.unidades.filter((u) => u.dono === eu && u.tipo === 'trabalhador' && u.ordem.tipo === 'parado' && !u.abrigado);
-              if (!ociosos.length) return void tocar('erro');
-              const atual = selRef.current.length === 1 ? ociosos.findIndex((u) => u.id === selRef.current[0]) : -1;
-              const u = ociosos[(atual + 1) % ociosos.length];
-              escolher([u.id]);
-              vistaRef.current?.centrar(u.x, u.y);
-            }}
+            onClick={proximoOcioso}
           >
             <IconeDeHud nome="peao" tamanho={22} />
             {painel.ociosos > 0 && <span className="tocas-atalho-numero">{painel.ociosos}</span>}

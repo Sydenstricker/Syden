@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useT } from './i18n';
+import { ComoJogar } from './MesaComum';
 import { Relogio } from './Minijogo';
 import type { Partida } from './minijogos';
 import type { DominoDaCena } from './mesa3d/domino';
@@ -333,6 +334,15 @@ export function JogoDomino({ estado: bruto, eu, jogador, restante, agir }: { est
           })}
         </div>
       )}
+      <ComoJogar
+        jogo="domino"
+        figura={
+          <span className="dom-figura" dir="ltr">
+            <PedraDesenhada a={6} b={3} deitada u={12} />
+            <PedraDesenhada a={3} b={1} deitada u={12} />
+          </span>
+        }
+      />
     </div>
   );
 }

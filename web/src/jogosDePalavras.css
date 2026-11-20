@@ -298,3 +298,20 @@
     transition: none;
   }
 }
+
+/* Quantos faltam de cada número (20/11/2026): o número pequeno no canto do botão; o número fechado se apaga. */
+.sudoku-numeros button {
+  position: relative;
+}
+.sudoku-faltam {
+  position: absolute;
+  top: 1px;
+  right: 3px;
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.sudoku-numeros button.fechado {
+  opacity: 0.3;
+}

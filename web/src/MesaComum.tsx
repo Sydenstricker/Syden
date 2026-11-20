@@ -14,6 +14,9 @@ import './MesaComum.css';
 export const MESAS_COM_ESCOLHAS = new Set<string>(['gomoku', 'mancala', 'damas', 'naval', 'partida-de-xadrez', 'xadrez']);
 
 const NIVEIS = ['facil', 'normal', 'dificil'] as const;
+/** O xadrez tem cinco (20/11/2026: o motor próprio, server/src/xadrez-motor.ts). */
+const NIVEIS_DO_XADREZ = ['iniciante', 'facil', 'normal', 'dificil', 'mestre'] as const;
+type NivelDaMesa = (typeof NIVEIS_DO_XADREZ)[number];
 const RELOGIOS = ['3+2', '5+3', '10+0', '15+10'] as const;
 
 /** Os jogos de mesa (os problemas de xadrez não são: lá a escolha é o modo). */
@@ -31,17 +34,20 @@ export function EscolhaDaMesa({
   aoVoltar: () => void;
 }) {
   const t = useT();
-  const [nivel, setNivel] = useState<(typeof NIVEIS)[number]>('normal');
+  const [nivel, setNivel] = useState<NivelDaMesa>('normal');
+  const niveis: readonly NivelDaMesa[] = jogo === 'partida-de-xadrez' ? NIVEIS_DO_XADREZ : NIVEIS;
   const [relogio, setRelogio] = useState<string | null>(null);
   const [exato, setExato] = useState(false);
   const [troca, setTroca] = useState(false);
   const [sementes, setSementes] = useState(4);
   const [variante, setVariante] = useState<'kalah' | 'oware'>('kalah');
   const [salvo, setSalvo] = useState(false);
-  const nomeDoNivel = {
+  const nomeDoNivel: Record<NivelDaMesa, string> = {
+    iniciante: t('Iniciante'),
     facil: t('Fácil'),
     normal: t('Normal'),
     dificil: t('Difícil'),
+    mestre: t('Mestre'),
   };
 
   const comecar = (extra: Record<string, unknown> = {}) => {
@@ -62,7 +68,7 @@ export function EscolhaDaMesa({
         <fieldset className="mesa-grupo">
           <legend>{t('Nível do computador')}</legend>
           <div className="mesa-botoes">
-            {NIVEIS.map((n) => (
+            {niveis.map((n) => (
               <button
                 key={n}
                 type="button"
@@ -163,6 +169,9 @@ export function EscolhaDaMesa({
             <button type="button" className="btn-primary" onClick={() => comecar({ modo: 'corrida' })}>
               {t('Corrida de 3 minutos')}
             </button>
+            <button type="button" className="btn-primary" onClick={() => comecar({ modo: 'sequencia' })}>
+              {t('Sequência')}
+            </button>
           </>
         ) : (
           <button type="button" className="btn-primary" onClick={() => comecar()}>
@@ -177,8 +186,11 @@ export function EscolhaDaMesa({
   );
 }
 
-/** As regras curtas de cada jogo, num botão que abre e fecha. */
-export function ComoJogar({ jogo }: { jogo: string }) {
+/**
+ * As regras curtas de cada jogo, num botão que abre e fecha. `figura` vai em cima das frases (20/11/2026: Truco, Dominó, Capitais
+ * e Sudoku ganharam o "Como jogar", cada um com o desenho dele).
+ */
+export function ComoJogar({ jogo, figura }: { jogo: string; figura?: ReactNode }) {
   const t = useT();
   const [aberto, setAberto] = useState(false);
   const regras: Record<string, string[]> = {
@@ -206,6 +218,30 @@ export function ComoJogar({ jogo }: { jogo: string }) {
     xadrez: [
       t('Ache o melhor lance da posição. A resposta do outro lado vem sozinha.'),
       t('Na corrida, são 3 minutos de problemas, do mais fácil ao mais difícil: cada erro tira 10 segundos.'),
+      t('Na sequência, cada acerto traz um problema mais difícil, e o primeiro erro acaba.'),
+      t('A dica acende a peça que move. O problema com dica não pontua; na corrida, ela tira 10 segundos.'),
+    ],
+    truco: [
+      t('Cada um recebe 3 cartas. Leva a mão quem ganhar 2 das 3 rodadas.'),
+      t('A manilha é o valor seguinte ao da vira e ganha de todas. Entre elas: ouros, espadas, copas e paus, o zap.'),
+      t('Peça truco e a mão vale 3. Quem responde aceita, corre ou aumenta para 6, 9 ou 12.'),
+      t('Com 11 pontos, a dupla vê as cartas e decide se joga a mão de onze. Vence quem chegar a 12.'),
+    ],
+    domino: [
+      t('Encoste uma pedra numa ponta da mesa com o mesmo número.'),
+      t('Sem pedra que sirva, compre. Sem nada para comprar, a vez passa.'),
+      t('Quem bate fica sem pedras e leva os pontos das mãos dos outros. Trancado, leva quem tem menos pontos na mão.'),
+    ],
+    cidades: [
+      t('Ande pelo dado e compre a capital onde parar. Quem para na cidade de outro paga aluguel.'),
+      t('Com a região inteira, construa até 4 prédios: o aluguel sobe a cada um.'),
+      t('A cidade que ninguém compra vai a leilão. Hipotecar uma cidade dá dinheiro, mas ela não cobra aluguel.'),
+      t('Ganha o maior patrimônio no fim das rodadas, ou quem sobrar.'),
+    ],
+    sudoku: [
+      t('Cada linha, coluna e bloco de 3 × 3 tem os números de 1 a 9, sem repetir.'),
+      t('Escolha a casa e depois o número. O lápis anota só para você.'),
+      t('O número pequeno no botão diz quantos ainda faltam.'),
     ],
   };
   if (!regras[jogo]) return null;
@@ -214,6 +250,7 @@ export function ComoJogar({ jogo }: { jogo: string }) {
       <button type="button" className="link-button" aria-expanded={aberto} onClick={() => setAberto(!aberto)}>
         <CircleHelp size={14} aria-hidden="true" /> {t('Como jogar')}
       </button>
+      {aberto && figura && <div className="mesa-regras-figura">{figura}</div>}
       {aberto && (
         <ul className="mesa-regras">
           {regras[jogo].map((r) => (

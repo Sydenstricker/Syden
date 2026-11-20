@@ -1,4 +1,4 @@
-import { Check, ExternalLink, RotateCcw, Trophy, X } from 'lucide-react';
+import { Check, ExternalLink, Lightbulb, RotateCcw, Trophy, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useT } from './i18n';
 import { Tabuleiro3D } from './JogoPartidaDeXadrez';
@@ -9,6 +9,7 @@ import type { EstadoXadrez, Partida } from './minijogos';
 const RESOLVENDO_MS = 60_000;
 const SOLUCAO_MS = 7_000;
 const CORRIDA_MS = 3 * 60_000;
+const SEQUENCIA_MS = 2 * 60_000;
 
 /**
  * As peças são as letras do xadrez em Unicode — as cheias para os dois lados, pintadas pela cor (assim
@@ -32,7 +33,16 @@ const segundos = (ms: number) => `${Math.floor(ms / 60_000)}:${String(Math.round
 
 /** O que o servidor manda desde 19/11/2026: as casas que cada peça alcança, o "de novo" do Solo e a corrida. */
 type Estado = EstadoXadrez & {
-  modo?: 'rodadas' | 'corrida';
+  modo?: 'rodadas' | 'corrida' | 'sequencia';
+  /** A dica (20/11/2026): a casa da peça que move, depois de pedida; `comDica`, se este problema já a custou. */
+  dica?: number | null;
+  comDica?: boolean;
+  sequencia?: {
+    acertos: number;
+    comDica: number;
+    recordeAntes: number | null;
+    recorde: { antes: number | null; novo: boolean } | null;
+  } | null;
   lances?: { de: number; para: number }[];
   podeTentarDeNovo?: boolean;
   corrida?: {
@@ -68,11 +78,33 @@ export function JogoXadrez({
   const estado = bruto as Estado & Partida;
   const [escolhida, setEscolhida] = useState<number | null>(null);
   const corrida = estado.modo === 'corrida' ? estado.corrida : null;
+  const sequencia = estado.modo === 'sequencia' ? estado.sequencia : null;
   // o problema mudou (ou o tabuleiro andou): a peça escolhida não vale mais
   const assinatura = `${estado.problema}:${estado.casas.join('')}`;
   useEffect(() => setEscolhida(null), [assinatura]);
+  // a dica chegou: a peça que move fica escolhida, com as casas dela acesas
+  const dica = estado.dica ?? null;
+  useEffect(() => {
+    if (dica !== null) setEscolhida(dica);
+  }, [dica]);
 
   if (estado.terminada) {
+    if (sequencia) {
+      return (
+        <div className="xadrez xadrez-fim-da-corrida">
+          <p className="minijogo-situacao" role="status">
+            {t('Acertos em sequência: {n}', { n: sequencia.acertos })}
+          </p>
+          {sequencia.recorde?.novo ? (
+            <p className="minijogo-situacao">
+              <Trophy size={16} aria-hidden="true" /> {t('Novo recorde!')}
+            </p>
+          ) : sequencia.recordeAntes !== null ? (
+            <p className="minijogo-situacao">{t('Seu recorde: {n}', { n: sequencia.recordeAntes })}</p>
+          ) : null}
+        </div>
+      );
+    }
     if (corrida) {
       return (
         <div className="xadrez xadrez-fim-da-corrida">
@@ -121,6 +153,7 @@ export function JogoXadrez({
   let situacao: string;
   if (estado.fase === 'solucao') situacao = t('A solução do problema.');
   else if (estado.estado === 'acertou') situacao = t('Acertou! Agora é torcer pelos outros.');
+  else if (estado.estado === 'errou' && sequencia) situacao = t('Esse não era o lance.');
   else if (estado.estado === 'errou') situacao = estado.podeTentarDeNovo ? t('Esse não era o lance.') : t('Esse não era o lance. Espere a solução.');
   else situacao = estado.cor === 'w' ? t('Você joga com as brancas. Ache o melhor lance.') : t('Você joga com as pretas. Ache o melhor lance.');
 
@@ -150,6 +183,23 @@ export function JogoXadrez({
 
   return (
     <div className="xadrez">
+      {sequencia && (
+        <p className="minijogo-situacao">
+          <Check size={14} aria-hidden="true" /> {sequencia.acertos}
+          {sequencia.comDica > 0 && (
+            <>
+              {' '}
+              · <Lightbulb size={14} aria-hidden="true" /> {sequencia.comDica}
+            </>
+          )}
+          {sequencia.recordeAntes !== null && (
+            <>
+              {' '}
+              · <Trophy size={14} aria-hidden="true" /> {sequencia.recordeAntes}
+            </>
+          )}
+        </p>
+      )}
       {corrida && (
         <p className="minijogo-situacao">
           <Check size={14} aria-hidden="true" /> {corrida.resolvidos} · <X size={14} aria-hidden="true" /> {corrida.erros}
@@ -176,6 +226,13 @@ export function JogoXadrez({
       <p className={`minijogo-situacao${resolvendo ? ' minha-vez' : ''}`} role="status">
         {situacao}
       </p>
+      {resolvendo && dica === null && (
+        <div className="minijogo-acoes">
+          <button type="button" className="btn-secondary" onClick={() => agir({ tipo: 'dica' })} title={corrida ? t('Dica: tira 10 segundos') : t('Dica: este problema não pontua')}>
+            <Lightbulb size={14} aria-hidden="true" /> {t('Dica')}
+          </button>
+        </div>
+      )}
       {estado.podeTentarDeNovo && (
         <div className="minijogo-acoes">
           <button type="button" className="btn-secondary" onClick={() => agir({ tipo: 'de-novo' })}>
@@ -183,7 +240,7 @@ export function JogoXadrez({
           </button>
         </div>
       )}
-      {!corrida && (
+      {!corrida && !sequencia && (
         <ul className="xadrez-jogadores">
           {estado.jogadores.map((j) => (
             <li key={j.userId} className={`${j.estado}${j.userId === eu ? ' eu' : ''}`}>
@@ -200,7 +257,7 @@ export function JogoXadrez({
           ))}
         </ul>
       )}
-      <Relogio restante={restante} total={corrida ? CORRIDA_MS : estado.fase === 'solucao' ? SOLUCAO_MS : RESOLVENDO_MS} />
+      <Relogio restante={restante} total={corrida ? CORRIDA_MS : sequencia ? SEQUENCIA_MS : estado.fase === 'solucao' ? SOLUCAO_MS : RESOLVENDO_MS} />
       <ComoJogar jogo="xadrez" />
       <p className="xadrez-credito">
         {estado.fase === 'solucao' ? (

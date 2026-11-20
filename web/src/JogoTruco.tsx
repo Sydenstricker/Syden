@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useT } from './i18n';
+import { reguaDaForca } from './contasDasMesas';
+import { ComoJogar } from './MesaComum';
 import { Relogio } from './Minijogo';
 import type { Partida } from './minijogos';
 import type { TrucoDaCena } from './mesa3d/truco';
@@ -83,6 +85,31 @@ function Carta({ carta, manilha, coberta, pequena, onClick, desligada }: { carta
     <span className={`${classe}${cor}${virada}`} aria-label={`${valor}${NAIPE[naipe]}`}>
       {face}
     </span>
+  );
+}
+
+/**
+ * A RÉGUA DA FORÇA (20/11/2026, a segunda auditoria: quem não conhece o truco não sabia que o 3 ganha do ás): os valores do
+ * mais fraco ao mais forte, e depois as quatro manilhas da mão, na ordem. Só figura: valores e naipes.
+ */
+function ReguaDaForca({ manilha }: { manilha: string }) {
+  const t = useT();
+  const { valores, manilhas } = reguaDaForca(manilha);
+  return (
+    <div className="truco-regua" role="img" aria-label={t('Força das cartas')} dir="ltr">
+      {valores.map((v) => (
+        <span key={v} className="truco-regua-valor">
+          {v}
+        </span>
+      ))}
+      {manilhas.length > 0 && <span className="truco-regua-seta" aria-hidden="true">›</span>}
+      {manilhas.map((c) => (
+        <span key={c} className={`truco-regua-manilha${VERMELHO.has(c.slice(-1)) ? ' vermelha' : ''}`}>
+          {c.slice(0, -1)}
+          {NAIPE[c.slice(-1)]}
+        </span>
+      ))}
+    </div>
   );
 }
 
@@ -202,6 +229,7 @@ export function JogoTruco({ estado: partida, eu, jogador, restante, agir }: { es
           })}
         </span>
       </div>
+      {estado.manilha && <ReguaDaForca manilha={estado.manilha} />}
 
       <div className={`truco-mesa jogadores-${n}${cena !== 'falhou' ? ' mesa3d-truco' : ''}`}>
         {cena !== 'falhou' && <div ref={caixa} className={`mesa3d-caixa${cena === 'pronta' ? '' : ' escondida'}`} />}
@@ -347,6 +375,7 @@ export function JogoTruco({ estado: partida, eu, jogador, restante, agir }: { es
           ))}
         </div>
       )}
+      <ComoJogar jogo="truco" />
     </div>
   );
 }

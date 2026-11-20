@@ -83,17 +83,28 @@ test('o robô joga lances legais, em pouco tempo, e a partida contra lances ao a
   assert.ok(maisLento < 1500, `o lance mais lento levou ${maisLento.toFixed(0)} ms`);
 });
 
-test('no Solo, o robô senta na hora e responde ao lance da pessoa', () => {
+/** Espera a condição (o robô pensa no worker, fora da thread): até 8 s. */
+async function esperar(cond: () => boolean) {
+  for (let i = 0; i < 400 && !cond(); i++) await new Promise((r) => setTimeout(r, 20));
+  assert.ok(cond(), 'a condição não chegou');
+}
+
+test('no Solo, o robô senta na hora e responde ao lance da pessoa', async () => {
   const m = mesa(true);
   const v = m.jogo.publico(1) as { fase: string; vez: 0 | 1; brancas: 0 | 1; jogadores: { userId: number }[] };
   assert.equal(v.fase, 'jogando');
   assert.ok(v.jogadores.some((j) => j.userId < 0), 'o adversário é o robô');
   // se o robô abre, joga primeiro
-  if (v.jogadores[v.vez].userId < 0) m.andar();
+  const lancesDaPessoa = () => (m.jogo.publico(1) as { lances: { de: number; para: number }[] }).lances;
+  if (v.jogadores[v.vez].userId < 0) {
+    m.andar();
+    await esperar(() => lancesDaPessoa().length > 0);
+  }
   const minha = m.jogo.publico(1) as { lances: { de: number; para: number }[] };
   assert.ok(minha.lances.length > 0);
   assert.equal(m.jogo.acao(1, { tipo: 'jogada', ...minha.lances[0] }), null);
   m.andar();
+  await esperar(() => lancesDaPessoa().length > 0);
   const depois = m.jogo.publico(1) as { lances: unknown[] };
   assert.ok(depois.lances.length > 0, 'o robô jogou, e a vez voltou');
 });

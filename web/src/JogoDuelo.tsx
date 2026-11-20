@@ -96,7 +96,13 @@ export function JogoDuelo({
 
       <ComHistorico estado={estado}>
         {jogo === 'gomoku' ? (
-          <TabuleiroGomoku estado={estado} podeJogar={minhaVez && !decidindo} jogar={(casa) => agir({ tipo: 'jogada', casa })} />
+          <TabuleiroGomoku
+            estado={estado}
+            podeJogar={minhaVez && !decidindo}
+            // na abertura da troca a pessoa põe pedras das duas cores: aí a prévia é só o ponto
+            minhaCor={meuLado >= 0 && !naAbertura ? corDoLado(meuLado) + 1 : undefined}
+            jogar={(casa) => agir({ tipo: 'jogada', casa })}
+          />
         ) : (
           <TabuleiroMancala estado={estado} meuLado={meuLado === 1 ? 1 : 0} podeJogar={minhaVez} jogar={(casa) => agir({ tipo: 'jogada', casa })} />
         )}
@@ -133,7 +139,7 @@ export function JogoDuelo({
   );
 }
 
-function TabuleiroGomoku({ estado, podeJogar, jogar }: { estado: Estado; podeJogar: boolean; jogar: (casa: number) => void }) {
+function TabuleiroGomoku({ estado, podeJogar, minhaCor, jogar }: { estado: Estado; podeJogar: boolean; minhaCor?: number; jogar: (casa: number) => void }) {
   const lado = estado.lado ?? 15;
   const linha = new Set(estado.linha ?? []);
   const dados: GomokuDaCena = {
@@ -142,6 +148,7 @@ function TabuleiroGomoku({ estado, podeJogar, jogar }: { estado: Estado; podeJog
     ultima: estado.ultima,
     linha: estado.linha ?? [],
     clicaveis: podeJogar ? estado.casas.flatMap((c, i) => (c ? [] : [i])) : [],
+    minhaCor,
   };
   return (
     <Em3D importar={importarGomoku} dados={dados} aoClicar={jogar}>
@@ -281,6 +288,7 @@ function TabuleiroMancala({ estado, meuLado, podeJogar, jogar }: { estado: Estad
     destaque,
     ultima: estado.ultima,
     clicaveis: podeJogar && !animando ? minhas.filter((i) => casas[i] > 0) : [],
+    variante: estado.variante ?? 'kalah',
   };
   return (
     <Em3D importar={importarMancala} dados={dados} aoClicar={jogar}>

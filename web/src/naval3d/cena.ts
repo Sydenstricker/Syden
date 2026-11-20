@@ -130,6 +130,9 @@ export class MarNaval3D {
   private chaveDoFantasma = '';
   private casaGeo = new THREE.PlaneGeometry(0.94, 0.94);
   private sobre: number | null = null;
+  /** O tipo do último ponteiro que apertou (o toque tem prévia), e a casa da prévia do toque. */
+  private tipoDoPonteiro = 'mouse';
+  private previa: number | null = null;
   /** As marcas da rajada do salvo, refeitas a cada mudança. */
   private rajada = new THREE.Group();
   private matDaRajada = new THREE.MeshBasicMaterial({ color: '#ff8a3d', transparent: true, opacity: 0.6, depthWrite: false });
@@ -416,6 +419,7 @@ export class MarNaval3D {
     return c >= 0 && l >= 0 && c < LADO && l < LADO ? l * LADO + c : null;
   }
   private aoApertar = (e: PointerEvent) => {
+    this.tipoDoPonteiro = e.pointerType;
     if (!this.dados?.montagem || !this.toques || e.button > 0) return;
     const casa = this.casaNoPonto(e);
     if (casa === null) return;
@@ -445,8 +449,9 @@ export class MarNaval3D {
     this.mira.visible = true;
     this.mira.position.set(centro(casa).x, 0.05, centro(casa).z);
   };
-  private aoSair = () => {
-    this.mira.visible = false;
+  private aoSair = (e: PointerEvent) => {
+    // no toque, o dedo que sobe também "sai" da tela: a mira da prévia tem de ficar
+    if (e.pointerType !== 'touch') this.mira.visible = false;
     if (this.dados?.montagem && this.toques && this.sobre !== null) {
       this.sobre = null;
       this.toques.passar(null);
@@ -456,7 +461,25 @@ export class MarNaval3D {
     const d = this.dados;
     if (!d?.podeAtirar || d.montagem) return;
     const casa = this.casaNoPonto(e);
-    if (casa !== null && d.tiros[casa] === 0) this.aoAtirar(casa);
+    const livre = casa !== null && d.tiros[casa] === 0;
+    // O TOQUE COM PRÉVIA (20/11/2026): no celular a casa é menor que o dedo. O primeiro toque põe a mira, o segundo na
+    // MESMA casa atira, e tocar outra casa leva a mira para lá. O mouse continua com um clique só (a mira já o segue).
+    if (this.tipoDoPonteiro === 'touch') {
+      if (!livre) {
+        this.previa = null;
+        this.mira.visible = false;
+        return;
+      }
+      if (casa !== this.previa) {
+        this.previa = casa;
+        this.mira.visible = true;
+        this.mira.position.set(centro(casa).x, 0.05, centro(casa).z);
+        return;
+      }
+      this.previa = null;
+      this.mira.visible = false;
+    }
+    if (livre) this.aoAtirar(casa);
   };
 
   private desenhar = () => {

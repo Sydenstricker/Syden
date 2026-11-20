@@ -18,6 +18,8 @@ export interface GomokuDaCena {
   linha: number[];
   /** As casas que o clique aceita agora (vazio fora da vez). */
   clicaveis: number[];
+  /** A cor da pedra que a pessoa põe agora (1 escura, 2 clara), para a pedra-fantasma da prévia; sem ela, só o ponto. */
+  minhaCor?: number;
 }
 
 const TOPO = 0.12;
@@ -33,6 +35,36 @@ export class Gomoku3D extends MesaBase<GomokuDaCena> {
   private geoCasa = new THREE.PlaneGeometry(0.9, 0.9);
   private geoPonto = new THREE.CircleGeometry(0.18, 20);
   private n = 15;
+  /** A pedra-fantasma da prévia (o mouse por cima ou o primeiro toque), uma por cor, meio transparente. */
+  private fantasmas = new Map<number, THREE.Object3D>();
+  private matsDoFantasma: THREE.Material[] = [];
+  protected previaNoToque = true;
+
+  private fantasma(cor: number): THREE.Object3D | null {
+    let f = this.fantasmas.get(cor);
+    if (f) return f;
+    const g = this.modelos.get(cor);
+    if (!g) return null;
+    f = copiaDe(g, false);
+    f.scale.setScalar(0.82);
+    f.traverse((o) => {
+      const m = o as THREE.Mesh;
+      if (!m.isMesh) return;
+      const meio = (orig: THREE.Material) => {
+        const mat = orig.clone();
+        mat.transparent = true;
+        mat.opacity = 0.5;
+        mat.depthWrite = false;
+        this.matsDoFantasma.push(mat);
+        return mat;
+      };
+      m.material = Array.isArray(m.material) ? m.material.map(meio) : meio(m.material);
+    });
+    f.visible = false;
+    this.cena.add(f);
+    this.fantasmas.set(cor, f);
+    return f;
+  }
 
   private pos(i: number) {
     const meio = (this.n - 1) / 2;
@@ -153,7 +185,14 @@ export class Gomoku3D extends MesaBase<GomokuDaCena> {
     };
     if (d.ultima !== null) marcar(d.ultima, '#e3c45a', 0.55);
     for (const i of d.linha) marcar(i, '#6fd08a', 0.7);
-    if (this.sobre !== null && d.clicaveis.includes(this.sobre)) marcar(this.sobre, '#6fd08a', 0.6, true);
+    for (const f of this.fantasmas.values()) f.visible = false;
+    if (this.sobre !== null && d.clicaveis.includes(this.sobre)) {
+      const f = d.minhaCor ? this.fantasma(d.minhaCor) : null;
+      if (f) {
+        f.position.copy(this.pos(this.sobre));
+        f.visible = true;
+      } else marcar(this.sobre, '#6fd08a', 0.6, true);
+    }
   }
 
   protected aoMudarSobre() {
@@ -174,6 +213,7 @@ export class Gomoku3D extends MesaBase<GomokuDaCena> {
 
   destruir() {
     for (const m of this.marcas) (m.material as THREE.Material).dispose();
+    for (const m of this.matsDoFantasma) m.dispose();
     super.destruir();
   }
 }

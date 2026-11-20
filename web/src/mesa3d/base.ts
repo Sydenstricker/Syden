@@ -81,6 +81,13 @@ export abstract class MesaBase<D> {
   protected sobre: number | null = null;
   /** O que é desta cena (materiais e geometrias próprios): vai embora no fim. Os modelos são do cache. */
   protected descartaveis: { dispose(): void }[] = [];
+  /**
+   * O TOQUE COM PRÉVIA (20/11/2026, a segunda auditoria: no celular, a casa do Cinco em linha é menor que o dedo, e a pedra caía
+   * no primeiro toque, às vezes na casa vizinha). Ligado, o primeiro toque só mostra a prévia (o mesmo `sobre` do mouse), o
+   * segundo na MESMA casa confirma, e tocar outra casa leva a prévia para lá. O mouse continua com um clique só.
+   */
+  protected previaNoToque = false;
+  private previa: number | null = null;
   private movimentos: Movimento[] = [];
   /** Os lugares de clique PARADOS (ver alvoFixo), pelo número do alvo. */
   private alvosFixos = new Map<number, THREE.Mesh>();
@@ -234,8 +241,23 @@ export abstract class MesaBase<D> {
     this.apertou = null;
     if (!a || Math.hypot(e.clientX - a.x, e.clientY - a.y) > 8 || !this.pronta) return;
     const alvo = this.alvoNoPonto(e);
+    if (this.previaNoToque && e.pointerType === 'touch') {
+      if (alvo !== null && alvo === this.previa) {
+        this.mostrarPrevia(null);
+        this.aoClicar(alvo);
+      } else this.mostrarPrevia(alvo);
+      return;
+    }
     if (alvo !== null) this.aoClicar(alvo);
   };
+  /** A prévia do toque é o mesmo realce do mouse por cima (`sobre`). */
+  private mostrarPrevia(alvo: number | null) {
+    this.previa = alvo;
+    if (alvo === this.sobre) return;
+    this.sobre = alvo;
+    this.aoMudarSobre();
+    this.sujo = true;
+  }
   private aoPassar = (e: PointerEvent) => {
     if (e.pointerType !== 'mouse' || !this.pronta) return;
     const alvo = this.alvoNoPonto(e);
@@ -246,7 +268,9 @@ export abstract class MesaBase<D> {
       this.sujo = true;
     }
   };
-  private aoSair = () => {
+  private aoSair = (e: PointerEvent) => {
+    // no toque, o dedo que sobe também "sai" da tela: a prévia tem de ficar
+    if (e.pointerType === 'touch' && this.previaNoToque) return;
     if (this.sobre === null) return;
     this.sobre = null;
     this.aoMudarSobre();
