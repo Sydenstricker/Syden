@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { CEUS, carregarCeu, cupulaDoCeu, giroPara, type CupulaDoCeu } from '../ceus';
 import { carregarCoelho, copiarCoelho, type CoelhoCopiado, type CoresDoCoelho } from '../coelho3d';
 import { BIFURCA, BOMBA_RAIO, CHAO, CHEFE_T, LIM_X, LIM_Y, RAIO_ANEL, SUBCHEFE_T, Z_FIM_DO_CHAO, passoDoAnel, posicaoBala, posicaoInimigo, posicaoItem, zNave, type Ramo, type Tipo } from './sim';
 import { posicaoTiro, type Mundo } from './mundo';
@@ -181,6 +182,8 @@ export class CenaEstelar {
   private hemi!: THREE.HemisphereLight;
   private ceu = new THREE.Color(COR_DO_CEU);
   private espaco = new THREE.Color(COR_DO_ESPACO);
+  /** O céu da Kenney (o planeta e a galáxia), quando as duas imagens chegam; até lá, a cor lisa de sempre. */
+  private cupula: CupulaDoCeu | null = null;
   private gTiro = new THREE.Object3D();
 
   constructor(
@@ -238,6 +241,7 @@ export class CenaEstelar {
     if (this.morta) return;
     MODELOS.forEach((n, i) => this.modelos.set(n, lista[i]));
     this.montarMundo();
+    void this.ceuDaKenney();
     for (const n of naves) this.naves.push(this.montarNave(g, n));
     for (const [k, cores] of alas.entries()) {
       const nave = this.montarNave(g, { cores, pintura: k === 0 ? '#9fd3ff' : '#c9f29b' });
@@ -248,6 +252,23 @@ export class CenaEstelar {
   // ---------------------------------------------------------------------------------------------------------------
   // O MUNDO
   // ---------------------------------------------------------------------------------------------------------------
+
+  /**
+   * O CÉU DA KENNEY (Skyboxes e Skyboxes Space, CC0; 20/11/2026): o céu lilás do planeta com o sol grande, que passa na subida
+   * ao espaço com a galáxia bem na frente de quem voa. A névoa e o fundo passam às cores do horizonte das duas imagens, e
+   * abaixo do horizonte a cúpula é a cor da névoa (o chão ao longe some nela). Sem as imagens, a cor lisa de sempre.
+   */
+  private async ceuDaKenney() {
+    const [a, b] = await Promise.all([carregarCeu('alienigena'), carregarCeu('galaxia')]).catch(() => [null, null]);
+    if (!a || !b || this.morta) return;
+    const s = this.sol.position;
+    const c = cupulaDoCeu(a, b, giroPara(CEUS.alienigena.sol, s.x, s.z), giroPara(CEUS.galaxia.sol, 0, 1), CEUS.alienigena.horizonte);
+    this.descartaveis.push(c.mesh.geometry, c.material);
+    this.ceu.set(CEUS.alienigena.horizonte);
+    this.espaco.set(CEUS.galaxia.horizonte);
+    this.cena.add(c.mesh);
+    this.cupula = c;
+  }
 
   private montarMundo() {
     const c = this.cena;
@@ -660,6 +681,10 @@ export class CenaEstelar {
     fog.near = 70 + subida * 200;
     fog.far = 230 + subida * 500;
     (this.estrelas.material as THREE.PointsMaterial).opacity = subida;
+    if (this.cupula) {
+      this.cupula.misturar(subida);
+      this.cupula.chao.copy(bg);
+    }
     this.hemi.intensity = 1.5 - subida * 0.5;
     this.hemi.groundColor.set(subida > 0.5 ? '#2a2f5a' : '#8a4a2a');
     // o chão desce na subida (a nave sobe para o espaço)

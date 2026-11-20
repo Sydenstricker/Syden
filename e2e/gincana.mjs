@@ -30,7 +30,7 @@ try {
   await painel.waitFor();
   await painel.locator('.jogos-solo button', { hasText: 'Gincana da toca' }).click();
   await lia.locator('.gincana-escolha').waitFor({ timeout: 10000 });
-  (await lia.locator('.gincana-percurso').count()) === 3 ? ok('no quarto, sem chamada, a Gincana abriu na escolha dos três percursos') : falhou('sem os três percursos');
+  (await lia.locator('.gincana-percurso').count()) === 4 ? ok('no quarto, sem chamada, a Gincana abriu na escolha dos percursos (os três e a sobrevivência)') : falhou('sem os quatro percursos');
   await foto(lia, 'escolha');
   await lia.getByRole('button', { name: 'Começar' }).click();
   await lia.locator('.gincana-caixa:not(.escondida)').waitFor({ timeout: 30000 });

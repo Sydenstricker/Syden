@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { CEUS, carregarCeu, cupulaDoCeu, giroPara } from '../ceus';
 import { carregarCoelho, copiarCoelho, CORES_DO_MASCOTE } from '../coelho3d';
 import { RAIO_BOLA, RAIO_BURACO, giroDasPas, montar, relevo, type Buraco, type Peca } from './fisica';
 
@@ -383,6 +384,7 @@ export class CenaDoGolfe3D {
     cupula.frustumCulled = false;
     this.ceu = cupula;
     this.cena.add(cupula);
+    void this.ceuDaKenney(sol);
 
     // as nuvens: bolas achatadas, cada nuvem de 4 a 7, num anel alto que gira devagar
     const geoNuvem = this.proprio(new THREE.IcosahedronGeometry(1, 2));
@@ -421,6 +423,25 @@ export class CenaDoGolfe3D {
       morro.rotation.y = r() * Math.PI;
       this.cena.add(morro);
     }
+  }
+
+  /**
+   * O CÉU DE DIA DA KENNEY (Skyboxes, CC0; 20/11/2026): quando a imagem chega, ela substitui a cúpula em degradê, com o sol da
+   * imagem do lado do sol da cena, e a névoa passa à cor do horizonte dela (os morros e o gramado somem nele sem emenda). Sem a
+   * imagem, fica a cúpula de antes.
+   */
+  private async ceuDaKenney(sol: THREE.Vector3) {
+    const t = await carregarCeu('dia').catch(() => null);
+    if (!t || this.morta || !this.ceu) return;
+    const horizonte = CEUS.dia.horizonte;
+    const c = cupulaDoCeu(t, null, giroPara(CEUS.dia.sol, sol.x, sol.z), 0, horizonte);
+    this.proprio(c.mesh.geometry);
+    this.proprio(c.material);
+    this.cena.remove(this.ceu);
+    this.ceu = c.mesh;
+    this.cena.add(c.mesh);
+    (this.cena.fog as THREE.Fog).color.set(horizonte);
+    this.cena.background = new THREE.Color(horizonte);
   }
 
   /**

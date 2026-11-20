@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { CEUS, carregarCeu, cupulaDoCeu, giroPara, type Ceu } from '../ceus';
 import { carregarCoelho, copiarCoelho, type CoelhoCopiado, type CoresDoCoelho } from '../coelho3d';
 import { balasEm, bracoEm, deslocamento, espinhosFora, giroEm, TREME_PASSOS, VOLTA_DO_BLOCO, VOLTA_INTEIRA, type Coelho, type Percurso } from './sim';
 
@@ -17,6 +18,8 @@ const BASE = `${import.meta.env.BASE_URL}gincana/`;
 /** O céu (é também a cor da caixa enquanto carrega). */
 export const COR_DO_FUNDO = '#a8dcf5';
 const COR_DO_MAR = '#4fa9d9';
+/** O céu da Kenney que entra quando a imagem chega. */
+const CEU_DA_GINCANA: Ceu = 'dia';
 const ALTURA_DO_COELHO = 1.05;
 const MAR = -11;
 /** A ponta dos espinhos, escondida dentro da base. */
@@ -205,6 +208,22 @@ export class CenaDaGincana {
     for (const c of coelhos) this.montarCoelho(g, c);
   }
 
+  /**
+   * O CÉU DA KENNEY (Skyboxes, CC0; 20/11/2026): quando a imagem chega, ela entra no lugar da cor lisa, com o sol da imagem do
+   * lado do sol da cena, e a névoa passa à cor do horizonte dela (o mar ao longe some nele sem emenda). Sem a imagem, a cor lisa.
+   */
+  private async ceuDaKenney(sol: THREE.Vector3) {
+    const qual = CEU_DA_GINCANA;
+    const t = await carregarCeu(qual).catch(() => null);
+    if (!t || this.morta) return;
+    const horizonte = CEUS[qual].horizonte;
+    const c = cupulaDoCeu(t, null, giroPara(CEUS[qual].sol, sol.x, sol.z), 0, horizonte);
+    this.descartaveis.push(c.mesh.geometry, c.material);
+    this.cena.add(c.mesh);
+    (this.cena.fog as THREE.Fog).color.set(horizonte);
+    this.cena.background = new THREE.Color(horizonte);
+  }
+
   private montarMundo(modelos: Map<string, GLTF>) {
     const c = this.cena;
     const p = this.p;
@@ -226,6 +245,7 @@ export class CenaDaGincana {
       s.far = 80;
     }
     this.sol = sol;
+    void this.ceuDaKenney(sol.position);
 
     // o mar lá embaixo, e as nuvens em volta
     const mar = new THREE.Mesh(new THREE.PlaneGeometry(600, 900), new THREE.MeshStandardMaterial({ color: COR_DO_MAR, roughness: 0.6 }));
