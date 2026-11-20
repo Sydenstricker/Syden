@@ -14,7 +14,7 @@ import {
   NOME_DO_ELEMENTO,
   type PoseDoBicho,
 } from './bichos/desenho';
-import { antesDe, DESAFIANTES, DIRECOES, ESPECIES, GOLPES, INICIAIS, mapaDe, passoNoMapa, PRECOS, TAMANHO_DA_EQUIPE, type DadosDoGolpe } from './bichos/regras';
+import { antesDe, DESAFIANTES, DIRECOES, eficacia, ELEMENTOS, ESPECIES, GOLPES, VENCE, INICIAIS, mapaDe, passoNoMapa, PRECOS, TAMANHO_DA_EQUIPE, type DadosDoGolpe } from './bichos/regras';
 import { useT } from './i18n';
 import { useJanelaComFoco } from './janelaComFoco';
 import { primeiraForma, type Partida } from './minijogos';
@@ -442,15 +442,25 @@ function EfeitosDoBicho({ bicho }: { bicho: BichoNaLuta }) {
   );
 }
 
-/** Os botões dos golpes do bicho da frente, com o elemento de cada um. */
-function Golpes({ bicho, desligado, aoEscolher }: { bicho: BichoNaLuta; desligado: boolean; aoEscolher: (i: number) => void }) {
+/**
+ * Os botões dos golpes do bicho da frente, com o elemento de cada um. A VANTAGEM (20/11/2026): contra o bicho da frente do
+ * outro lado, o selo ×2 (vale o dobro) ou ½ (vale a metade), pela mesma roda da regra (`eficacia`, bichos/regras.ts).
+ */
+function Golpes({ bicho, contra, desligado, aoEscolher }: { bicho: BichoNaLuta; contra?: BichoNaLuta | null; desligado: boolean; aoEscolher: (i: number) => void }) {
   const t = useT();
+  const defesa = contra ? (ESPECIES[contra.especie]?.elemento ?? 'nenhum') : 'nenhum';
   return (
     <div className="bichos-golpes">
       {(bicho.golpes ?? []).map((g, i) => {
         const el = GOLPES[g]?.elemento ?? 'nenhum';
+        const vale = GOLPES[g]?.poder ? eficacia(el, defesa) : 1;
         return (
           <button key={g} type="button" className="bichos-golpe" disabled={desligado} style={{ '--cor': COR_DO_ELEMENTO[el] } as CSSProperties} onClick={() => aoEscolher(i)}>
+            {vale !== 1 && (
+              <span className={`bichos-golpe-vantagem ${vale > 1 ? 'forte' : 'fraco'}`} aria-label={vale > 1 ? '×2' : '×½'}>
+                {vale > 1 ? '×2' : '½'}
+              </span>
+            )}
             {primeiraForma(t(GOLPES[g].nome))}
             {el !== 'nenhum' && <small>{primeiraForma(t(NOME_DO_ELEMENTO[el]))}</small>}
             {iconesDoGolpe(GOLPES[g]) && <small className="bichos-golpe-efeito">{iconesDoGolpe(GOLPES[g])}</small>}
@@ -549,7 +559,7 @@ function Aventura({ estado, agir }: { estado: EstadoSolo; agir: (corpo: Record<s
         )}
         {!ocupado && !luta.acabou && !meu.precisaTrocar && !trocando && frente && (
           <>
-            <Golpes bicho={frente} desligado={ocupado} aoEscolher={(i) => fazer({ tipo: 'golpe', i })} />
+            <Golpes bicho={frente} contra={luta.outro.equipe[luta.outro.ativo]} desligado={ocupado} aoEscolher={(i) => fazer({ tipo: 'golpe', i })} />
             <div className="bichos-acoes">
               {luta.tipo === 'mato' && (
                 <button type="button" className="btn-secondary bichos-cenoura" disabled={estado.cenouras <= 0} onClick={() => fazer({ tipo: 'cenoura' })}>
@@ -655,6 +665,34 @@ function Campo({ estado, agir, aviso }: { estado: EstadoSolo; agir: (corpo: Reco
     mandar();
   };
 
+  /**
+   * SEGURAR A SETA DA TELA (20/11/2026): anda como a tecla segurada, um passo a cada 140 ms (o próprio `passo` segura o ritmo e
+   * espera a fila do servidor), até o dedo sair. O Enter no botão (detail 0) continua dando um passo.
+   */
+  const repetindo = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pararSeta = () => {
+    if (repetindo.current) clearInterval(repetindo.current);
+    repetindo.current = null;
+  };
+  useEffect(() => pararSeta, []);
+  const segurarSeta = (dir: string) => ({
+    onPointerDown: (e: React.PointerEvent<HTMLButtonElement>) => {
+      if (e.pointerType === 'mouse' && e.button > 0) return;
+      e.preventDefault();
+      e.currentTarget.setPointerCapture?.(e.pointerId);
+      pararSeta();
+      passo(dir);
+      repetindo.current = setInterval(() => passo(dir), 40);
+    },
+    onPointerUp: pararSeta,
+    onPointerCancel: pararSeta,
+    onLostPointerCapture: pararSeta,
+    onClick: (e: React.MouseEvent) => {
+      if (e.detail === 0) passo(dir);
+    },
+    onContextMenu: (e: React.MouseEvent) => e.preventDefault(),
+  });
+
   useEffect(() => {
     const teclas: Record<string, string> = { ArrowUp: 'c', ArrowDown: 'b', ArrowLeft: 'e', ArrowRight: 'd', w: 'c', s: 'b', a: 'e', d: 'd', W: 'c', S: 'b', A: 'e', D: 'd' };
     const ouvir = (ev: KeyboardEvent) => {
@@ -732,10 +770,10 @@ function Campo({ estado, agir, aviso }: { estado: EstadoSolo; agir: (corpo: Reco
         <canvas ref={tela} className="bichos-tela-campo" width={LARGURA_PX} height={ALTURA_PX} />
         {aviso && <p className="bichos-aviso">{aviso}</p>}
         <div className="bichos-setas">
-          <button type="button" className="cima" aria-label={t('Para cima')} onClick={() => passo('c')}>▲</button>
-          <button type="button" className="esq" aria-label={t('Para a esquerda')} onClick={() => passo('e')}>◀</button>
-          <button type="button" className="dir" aria-label={t('Para a direita')} onClick={() => passo('d')}>▶</button>
-          <button type="button" className="baixo" aria-label={t('Para baixo')} onClick={() => passo('b')}>▼</button>
+          <button type="button" className="cima" aria-label={t('Para cima')} {...segurarSeta('c')}>▲</button>
+          <button type="button" className="esq" aria-label={t('Para a esquerda')} {...segurarSeta('e')}>◀</button>
+          <button type="button" className="dir" aria-label={t('Para a direita')} {...segurarSeta('d')}>▶</button>
+          <button type="button" className="baixo" aria-label={t('Para baixo')} {...segurarSeta('b')}>▼</button>
         </div>
         {caderno && <CadernoDaToca estado={estado} aoFechar={() => setCaderno(false)} />}
       </div>
@@ -799,6 +837,75 @@ function Campo({ estado, agir, aviso }: { estado: EstadoSolo; agir: (corpo: Reco
  * O CADERNO DA TOCA (19/11/2026): todas as espécies, na ordem; a vista mostra o desenho e o nome, a que já foi amiga ganha a
  * marca. A que ainda não foi vista é só o número e um "?". A forma crescida diz de quem ela cresce.
  */
+/**
+ * A RODA DOS ELEMENTOS (20/11/2026), no caderno: os seis em círculo, e uma seta de cada um para os dois que ele vence (o golpe
+ * dele vale o dobro contra eles). A mesma tabela da regra (`VENCE`), desenhada; o nome de cada um aparece ao passar o mouse e
+ * para o leitor de tela, que lê a roda como uma lista.
+ */
+/** A figura de cada elemento na roda: sem texto, igual em todo idioma (o nome vem no "title" e no leitor de tela). */
+const FIGURA_DO_ELEMENTO: Record<(typeof ELEMENTOS)[number], string> = { folha: '🍃', brasa: '🔥', gota: '💧', pedra: '🪨', vento: '🌀', faisca: '⚡' };
+
+function RodaDosElementos() {
+  const t = useT();
+  const R = 62, C = 90, BOLA = 15;
+  const pos = (i: number) => {
+    const a = -Math.PI / 2 + (i * 2 * Math.PI) / ELEMENTOS.length;
+    return [C + R * Math.cos(a), C + R * Math.sin(a)] as const;
+  };
+  const nome = (el: (typeof ELEMENTOS)[number]) => primeiraForma(t(NOME_DO_ELEMENTO[el]));
+  return (
+    <figure className="bichos-roda">
+      <svg viewBox="0 0 180 180" width="180" height="180" aria-hidden="true">
+        <defs>
+          {ELEMENTOS.map((el) => (
+            <marker key={el} id={`roda-${el}`} viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
+              <path d="M0,0 L8,4 L0,8 z" fill={COR_DO_ELEMENTO[el]} />
+            </marker>
+          ))}
+        </defs>
+        {ELEMENTOS.flatMap((el, i) =>
+          VENCE[el].map((alvo) => {
+            const [x0, y0] = pos(i);
+            const [x1, y1] = pos(ELEMENTOS.indexOf(alvo as (typeof ELEMENTOS)[number]));
+            const d = Math.hypot(x1 - x0, y1 - y0) || 1;
+            const ux = (x1 - x0) / d, uy = (y1 - y0) / d;
+            return (
+              <line
+                key={`${el}-${alvo}`}
+                x1={x0 + ux * (BOLA + 2)}
+                y1={y0 + uy * (BOLA + 2)}
+                x2={x1 - ux * (BOLA + 3)}
+                y2={y1 - uy * (BOLA + 3)}
+                stroke={COR_DO_ELEMENTO[el]}
+                strokeWidth="2"
+                opacity="0.85"
+                markerEnd={`url(#roda-${el})`}
+              />
+            );
+          }),
+        )}
+        {ELEMENTOS.map((el, i) => {
+          const [x, y] = pos(i);
+          return (
+            <g key={el}>
+              <title>{nome(el)}</title>
+              <circle cx={x} cy={y} r={BOLA} fill={COR_DO_ELEMENTO[el]} stroke="rgba(0,0,0,0.35)" strokeWidth="1.5" />
+              <text x={x} y={y + 5} textAnchor="middle" fontSize="14">
+                {FIGURA_DO_ELEMENTO[el]}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+      <ul className="so-para-leitor">
+        {ELEMENTOS.map((el) => (
+          <li key={el}>{`${nome(el)} → ${VENCE[el].map((v) => nome(v as (typeof ELEMENTOS)[number])).join(', ')}`}</li>
+        ))}
+      </ul>
+    </figure>
+  );
+}
+
 function CadernoDaToca({ estado, aoFechar }: { estado: EstadoSolo; aoFechar: () => void }) {
   const t = useT();
   const vistos = new Set(estado.caderno?.vistos ?? []);
@@ -813,6 +920,7 @@ function CadernoDaToca({ estado, aoFechar }: { estado: EstadoSolo; aoFechar: () 
           {t('Fechar')}
         </button>
       </div>
+      <RodaDosElementos />
       <ul>
         {ordem.map((e, i) => {
           const visto = vistos.has(e);
@@ -890,7 +998,7 @@ function LutaNaSala({ estado, eu, jogador, agir }: { estado: EstadoSala; eu: num
           ) : (
             frente && (
               <>
-                <Golpes bicho={frente} desligado={ocupado} aoEscolher={(i) => fazer({ tipo: 'golpe', i })} />
+                <Golpes bicho={frente} contra={estado.lados[1 - ver]?.equipe[estado.lados[1 - ver].ativo]} desligado={ocupado} aoEscolher={(i) => fazer({ tipo: 'golpe', i })} />
                 <div className="bichos-acoes">
                   {meu.equipe.some((b, i) => b.pv > 0 && i !== meu.ativo) && (
                     <button type="button" className="btn-secondary" onClick={() => setTrocando(true)}>

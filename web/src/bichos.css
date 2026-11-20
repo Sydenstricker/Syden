@@ -355,3 +355,45 @@
   font-weight: 700;
 }
 .bichos-caderno-de { flex-basis: 100%; opacity: 0.7; }
+
+/* 20/11/2026: segurar a seta na tela repete o passo (sem o navegador rolar nem selecionar) */
+.bichos-setas button {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* A VANTAGEM no botão do golpe, contra o bicho da frente: ×2 (vale o dobro) ou ½ (a metade) */
+.bichos-golpe {
+  position: relative;
+}
+.bichos-golpe-vantagem {
+  position: absolute;
+  top: -8px;
+  right: -6px;
+  padding: 0 5px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 16px;
+  color: #fff;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+}
+.bichos-golpe-vantagem.forte {
+  background: #3f9a4a;
+}
+.bichos-golpe-vantagem.fraco {
+  background: #8a8a8a;
+}
+
+/* A roda dos elementos, no topo do caderno */
+.bichos-roda {
+  display: flex;
+  justify-content: center;
+  margin: 4px 0 8px;
+}
+.bichos-roda svg {
+  width: min(180px, 38vw);
+  max-width: 100%;
+  height: auto;
+}

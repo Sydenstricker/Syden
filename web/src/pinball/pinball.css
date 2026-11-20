@@ -78,6 +78,28 @@
   background: #d8dde6;
 }
 
+/* o tranco no toque (20/11/2026): no canto de cima, à esquerda, longe das palhetas e da mola */
+.pinball-tranco {
+  position: absolute;
+  top: 32px;
+  left: 8px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  background: rgba(42, 26, 16, 0.6);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.pinball-tranco:active {
+  background: rgba(255, 214, 90, 0.5);
+}
+
 .pinball-mult {
   position: absolute;
   top: 34px;
@@ -262,4 +284,11 @@
 .pinball-mesas .pinball-previa {
   height: min(36vh, 300px);
   width: auto;
+}
+/* na tela estreita (20/11/2026, medido a 390 px): as duas mesas da largada cabem lado a lado, sem rolar para o lado */
+@media (max-width: 560px) {
+  .pinball-mesas .pinball-previa {
+    height: auto;
+    width: min(36vw, 180px);
+  }
 }

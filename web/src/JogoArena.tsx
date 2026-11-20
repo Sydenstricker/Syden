@@ -9,7 +9,7 @@ import { ESPECIES, GOLPES } from './bichos/regras';
 import { useT } from './i18n';
 import { primeiraForma, type Partida } from './minijogos';
 import { tocar } from './somDosJogos';
-import { H, KITS, moitaEm, MUNDO_H, MUNDO_W, OBSTACULOS, PONTOS_DA_ZONA, PV, TECLAS_DE_GOLPE, W, type TeclaDeGolpe } from './arena/conta';
+import { CENARIOS, H, KITS, MATO, moitaEm, MUNDO_H, MUNDO_W, OBSTACULOS, PONTOS_DA_ZONA, PV, TECLAS_DE_GOLPE, W, type Cenario, type TeclaDeGolpe } from './arena/conta';
 import { prepararCoelho, quadroDaArena, receitaDoAvatar } from './arena/coelhos';
 import {
   chaoDo,
@@ -48,6 +48,8 @@ declare global {
   interface Window {
     /** Só no desenvolvimento: o coelho anda, mira e bate sozinho. */
     arenaPilotoAutomatico?: boolean;
+    /** Só no desenvolvimento: para onde a mira aponta agora, onde estou e o cenário (o e2e do toque lê). */
+    arenaMiraDoTeste?: { alvoX: number | null; alvoY: number | null; x: number; y: number; cenario: string };
   }
 }
 
@@ -220,7 +222,19 @@ interface MiraDoToque {
   mira: boolean;
   dx: number;
   dy: number;
+  /** Quem joga pelo toque (sem mouse): sem dedo mirando, a mira vai sozinha no adversário visível mais perto. */
+  usado?: boolean;
+  /**
+   * O GOLPE FORTE OU O ESPECIAL SEGURADO (20/11/2026, como nas arenas de celular): arrastar a partir do botão mira para onde
+   * o dedo foi (a linha aparece na tela), e soltar dispara; tocar sem arrastar mira no adversário mais perto.
+   */
+  golpe?: { tecla: 'forte' | 'especial'; dx: number; dy: number; arrastou: boolean } | null;
+  /** O golpe solto, à espera do próximo quadro (que acerta a mira antes do passo que o usa). */
+  disparo?: { tecla: 'forte' | 'especial'; dx: number; dy: number; arrastou: boolean } | null;
 }
+
+/** Até onde o arraste do botão vai: este tanto de pixels de dedo é o alcance inteiro do golpe. */
+const ARRASTE_DO_GOLPE = 60;
 
 const corDoTime = (time: number, formato: FormatoDaArena) => (formato === 'todos' ? CORES_DOS_TIMES[time % CORES_DOS_TIMES.length] : time === 0 ? CORES_DOS_TIMES[0] : CORES_DOS_TIMES[1]);
 
@@ -330,13 +344,47 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoArena
       // a mira do mouse: a tela (o mouse) mais a câmera
       const m = mouse.current;
       const tq = toque.current;
-      if (tq.mira) {
+      // o golpe segurado no botão (ou o que acabou de ser solto): a mira pelo arraste, ou no adversário mais perto
+      const doBotao = tq.disparo ?? tq.golpe ?? null;
+      const maisPerto = () => {
+        if (!jogador) return null;
+        const eu0 = cliente.eu;
+        let melhor: { x: number; y: number } | null = null;
+        let dm = Infinity;
+        for (const o of cliente.vista(agora).coelhos) {
+          if (o.id === eu || o.time === eu0.time || o.estado !== 0 || o.escondido) continue;
+          const d = (o.x - eu0.x) ** 2 + (o.y - eu0.y) ** 2;
+          if (d < dm) [dm, melhor] = [d, { x: o.x, y: o.y }];
+        }
+        return melhor;
+      };
+      if (doBotao) {
+        if (doBotao.arrastou) {
+          const alcance = KITS[cliente.meuElemento()]?.[doBotao.tecla === 'forte' ? 'q' : 'e']?.alcance ?? 120;
+          cmd.alvoX = cliente.eu.x + doBotao.dx * alcance;
+          cmd.alvoY = cliente.eu.y + doBotao.dy * alcance;
+        } else {
+          const alvo = maisPerto();
+          cmd.alvoX = alvo ? alvo.x : null;
+          cmd.alvoY = alvo ? alvo.y : null;
+        }
+        if (tq.disparo) {
+          cmd[tq.disparo.tecla] = true;
+          tq.disparo = null;
+        }
+      } else if (tq.mira) {
         cmd.alvoX = cliente.eu.x + tq.dx;
         cmd.alvoY = cliente.eu.y + tq.dy;
       } else if (m && camX >= 0) {
         cmd.alvoX = camX + m.x;
         cmd.alvoY = camY + m.y;
+      } else if (tq.usado) {
+        // no toque, sem dedo mirando: o adversário visível mais perto (antes, a mira congelava no último ponto)
+        const alvo = maisPerto();
+        cmd.alvoX = alvo ? alvo.x : null;
+        cmd.alvoY = alvo ? alvo.y : null;
       }
+      if (import.meta.env.DEV) window.arenaMiraDoTeste = { alvoX: cmd.alvoX, alvoY: cmd.alvoY, x: cliente.eu.x, y: cliente.eu.y, cenario: estado.cenario };
       // O MEU COELHO: passos fixos de 1/60 s
       sobra += dt;
       while (sobra >= 1 / 60) {
@@ -416,6 +464,24 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoArena
         if (o.estado !== 0 || o.escondido || o.id === eu) continue;
         const sx = o.x - cx, sy = o.y - cy - 40;
         if (sx < 0 || sx > W || sy < -40 || sy > H) desenharSetaNaBorda(g, sx, sy, corDoTime(o.time, estado.formato));
+      }
+      // a linha de mira do golpe segurado no botão de toque (do coelho ao ponto que o golpe vai mirar)
+      if (jogador && tq.golpe && cliente.eu.estado === 0 && cmd.alvoX !== null && cmd.alvoY !== null) {
+        const x0 = Math.round(cliente.eu.x - cx), y0 = Math.round(cliente.eu.y - cy - MAO);
+        const x1 = Math.round(cmd.alvoX - cx), y1 = Math.round(cmd.alvoY - cy);
+        g.save();
+        g.strokeStyle = tq.golpe.tecla === 'especial' ? '#ffd65acc' : '#ffffffcc';
+        g.lineWidth = 2;
+        g.setLineDash([4, 3]);
+        g.beginPath();
+        g.moveTo(x0, y0);
+        g.lineTo(x1, y1);
+        g.stroke();
+        g.setLineDash([]);
+        g.beginPath();
+        g.arc(x1, y1, 5, 0, Math.PI * 2);
+        g.stroke();
+        g.restore();
       }
       // a mira do mouse
       if (jogador && m && !piloto()) {
@@ -558,10 +624,11 @@ function Toque({ cmd, canvas, toque }: { cmd: Comandos; canvas: React.RefObject<
     const r = c.getBoundingClientRect();
     const dx = ((e.clientX - r.left) * W) / r.width - W / 2;
     const dy = ((e.clientY - r.top) * H) / r.height - (H / 2 - 20);
-    if (dx * dx + dy * dy > 16) toque.current = { mira: true, dx, dy };
+    if (dx * dx + dy * dy > 16) Object.assign(toque.current, { mira: true, dx, dy });
   };
   const aperta = (e: React.PointerEvent) => {
     if (e.pointerType === 'mouse') return;
+    toque.current.usado = true;
     const r = camada.current!.getBoundingClientRect();
     const x = e.clientX - r.left, y = e.clientY - r.top;
     (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
@@ -573,7 +640,7 @@ function Toque({ cmd, canvas, toque }: { cmd: Comandos; canvas: React.RefObject<
       cmd.moverY = 0;
     } else {
       dedos.current.set(e.pointerId, 'mirar');
-      toque.current = { ...toque.current, mira: true };
+      toque.current.mira = true;
       mirar(e);
       cmd.atacar = true;
     }
@@ -602,14 +669,50 @@ function Toque({ cmd, canvas, toque }: { cmd: Comandos; canvas: React.RefObject<
       setManche(null);
     } else if (tipo === 'mirar') {
       cmd.atacar = false;
-      toque.current = { mira: false, dx: 0, dy: 0 };
+      Object.assign(toque.current, { mira: false, dx: 0, dy: 0 });
     }
   };
-  const apertar = (k: 'arrancada' | 'secundario' | 'forte' | 'especial') => ({
+  const apertar = (k: 'arrancada' | 'secundario') => ({
     onPointerDown: (e: React.PointerEvent) => {
       e.preventDefault();
       e.stopPropagation();
+      toque.current.usado = true;
       cmd[k] = true;
+    },
+  });
+  /** Q e E: segurar e arrastar mira (a linha na tela), soltar dispara; o toque sem arraste mira no adversário mais perto. */
+  const inicio = useRef<{ id: number; x: number; y: number } | null>(null);
+  const segurar = (k: 'forte' | 'especial') => ({
+    onPointerDown: (e: React.PointerEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.pointerType !== 'mouse') toque.current.usado = true;
+      e.currentTarget.setPointerCapture?.(e.pointerId);
+      inicio.current = { id: e.pointerId, x: e.clientX, y: e.clientY };
+      toque.current.golpe = { tecla: k, dx: 0, dy: 0, arrastou: false };
+    },
+    onPointerMove: (e: React.PointerEvent<HTMLButtonElement>) => {
+      const i = inicio.current, g = toque.current.golpe;
+      if (!i || i.id !== e.pointerId || !g) return;
+      e.stopPropagation();
+      const dx = e.clientX - i.x, dy = e.clientY - i.y;
+      const d = Math.hypot(dx, dy);
+      if (d < 12 && !g.arrastou) return;
+      const f = Math.min(1, d / ARRASTE_DO_GOLPE) / (d || 1);
+      Object.assign(g, { dx: dx * f, dy: dy * f, arrastou: true });
+    },
+    onPointerUp: (e: React.PointerEvent<HTMLButtonElement>) => {
+      const i = inicio.current, g = toque.current.golpe;
+      if (!i || i.id !== e.pointerId || !g) return;
+      e.stopPropagation();
+      inicio.current = null;
+      toque.current.golpe = null;
+      toque.current.disparo = g;
+    },
+    onPointerCancel: (e: React.PointerEvent<HTMLButtonElement>) => {
+      if (inicio.current?.id !== e.pointerId) return;
+      inicio.current = null;
+      toque.current.golpe = null;
     },
   });
   return (
@@ -622,8 +725,8 @@ function Toque({ cmd, canvas, toque }: { cmd: Comandos; canvas: React.RefObject<
       <div className="arena-toque-botoes">
         <button type="button" aria-label={t('Arrancada')} {...apertar('arrancada')}>»</button>
         <button type="button" aria-label={t('Habilidade')} {...apertar('secundario')}>◐</button>
-        <button type="button" aria-label={t('Golpe forte')} {...apertar('forte')}>Q</button>
-        <button type="button" aria-label={t('Especial')} {...apertar('especial')}>E</button>
+        <button type="button" aria-label={t('Golpe forte')} {...segurar('forte')}>Q</button>
+        <button type="button" aria-label={t('Especial')} {...segurar('especial')}>E</button>
         <button
           type="button"
           aria-label={t('Trocar')}
@@ -660,11 +763,70 @@ const OPCOES_DO_SOLO: { formato: FormatoDaArena; robos: number; lados: Figura[][
   { formato: '3x3', robos: 5, lados: [['eu', 'robo', 'robo'], ['robo', 'robo', 'robo']], rotulo: '3 × 3' },
 ];
 
+/** A miniatura do cenário na largada: o chão do mundo inteiro, reduzido, com os obstáculos e as moitas por cima. */
+function PreviaDoCenario({ cenario }: { cenario: Cenario }) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const g = ref.current?.getContext('2d');
+    if (!g) return;
+    const k = PREVIA_W / MUNDO_W;
+    g.imageSmoothingEnabled = true;
+    g.drawImage(chaoDo(cenario), 0, 0, PREVIA_W, PREVIA_H);
+    g.fillStyle = 'rgba(30, 40, 20, 0.55)';
+    for (const [ox, oy, r] of OBSTACULOS[cenario]) {
+      g.beginPath();
+      g.arc(ox * k, oy * k, Math.max(2, r * k), 0, Math.PI * 2);
+      g.fill();
+    }
+    g.fillStyle = 'rgba(40, 110, 40, 0.7)';
+    for (const [mx, my, mr] of MATO[cenario]) {
+      g.beginPath();
+      g.arc(mx * k, my * k, Math.max(2, mr * k), 0, Math.PI * 2);
+      g.fill();
+    }
+  }, [cenario]);
+  return <canvas ref={ref} className="arena-previa-cenario" width={PREVIA_W} height={PREVIA_H} aria-hidden="true" />;
+}
+const PREVIA_W = 120;
+const PREVIA_H = Math.round((PREVIA_W * MUNDO_H) / MUNDO_W);
+
+/**
+ * O CENÁRIO NA LARGADA (20/11/2026): sorteado de fábrica (o "?"), ou um dos quatro pela miniatura. O servidor já aceitava
+ * `corpo.cenario` (server/src/arena/motor.ts); sem ele, sorteia.
+ */
+function EscolhaDoCenario({ cenario, aoMudar }: { cenario: Cenario | null; aoMudar: (c: Cenario | null) => void }) {
+  const t = useT();
+  return (
+    <div className="arena-cenarios" role="radiogroup" aria-label={t('Mapa')}>
+      <button type="button" role="radio" aria-checked={cenario === null} className={'arena-cenario' + (cenario === null ? ' escolhido' : '')} onClick={() => aoMudar(null)} title={t('Sorteado')} aria-label={t('Sorteado')}>
+        <span className="arena-cenario-sorteio" aria-hidden="true">
+          ?
+        </span>
+      </button>
+      {CENARIOS.map((c, i) => (
+        <button
+          key={c}
+          type="button"
+          role="radio"
+          aria-checked={cenario === c}
+          className={'arena-cenario' + (cenario === c ? ' escolhido' : '')}
+          onClick={() => aoMudar(c)}
+          aria-label={`${t('Mapa')} ${i + 1}`}
+          title={`${t('Mapa')} ${i + 1}`}
+        >
+          <PreviaDoCenario cenario={c} />
+        </button>
+      ))}
+    </div>
+  );
+}
+
 export function EscolhaDosBichos({ solo, aoEscolher, aoVoltar }: { solo: boolean; aoEscolher: (e: ModoDosBichos) => void; aoVoltar: () => void }) {
   const t = useT();
   const [arena, setArena] = useState(false);
   // o modo de objetivo (19/11/2026): segurar a zona do meio, em vez de lutar até sobrar um
   const [zona, setZona] = useState(false);
+  const [cenario, setCenario] = useState<Cenario | null>(null);
   if (!arena) {
     return (
       <div className="tab-escolha arena-escolha">
@@ -705,6 +867,7 @@ export function EscolhaDosBichos({ solo, aoEscolher, aoVoltar }: { solo: boolean
           🚩 {t('Segurar a zona')}
         </button>
       </div>
+      <EscolhaDoCenario cenario={cenario} aoMudar={setCenario} />
       <ul className="tab-rodadas cid-robos">
         {opcoes.map((o) => (
           <li key={o.rotulo}>
@@ -713,7 +876,7 @@ export function EscolhaDosBichos({ solo, aoEscolher, aoVoltar }: { solo: boolean
               className="cid-robos-botao"
               aria-label={o.rotulo}
               title={o.rotulo}
-              onClick={() => aoEscolher({ modo: 'arena', corpo: { formato: o.formato, ...('robos' in o ? { robos: o.robos } : {}), ...(zona ? { objetivo: 'zona' } : {}) } })}
+              onClick={() => aoEscolher({ modo: 'arena', corpo: { formato: o.formato, ...('robos' in o ? { robos: o.robos } : {}), ...(zona ? { objetivo: 'zona' } : {}), ...(cenario ? { cenario } : {}) } })}
             >
               <MesaDosRobos lados={o.lados} />
             </button>

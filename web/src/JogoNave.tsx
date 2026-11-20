@@ -10,7 +10,7 @@ import { carregarArte } from './nave/arte';
 import { CORES_DA_ESQUADRILHA, desenhar, pintarChao, type Outro } from './nave/desenho';
 import { Mundo, comandosDoJogador, reancorar, type Comandos, type Teclas, type Toque } from './nave/mundo';
 import { pilotar } from './nave/piloto';
-import { ALTURA, ehFaseDaNave, LARGURA, PASSOS_POR_S, SEM_QUEDA, temposDaFase, type FaseDaNave } from './nave/sim';
+import { ALTURA, ehFaseDaNave, LARGURA, LOOP_RECARGA, PASSOS_POR_S, SEM_QUEDA, temposDaFase, type FaseDaNave } from './nave/sim';
 import './nave/nave.css';
 
 /**
@@ -194,6 +194,8 @@ function Ceu({ estado, eu, jogador, socket, channelId }: { estado: EstadoNave & 
     arma: 0,
     nivel: 1,
     loop: true,
+    /** A recarga do loop, de 0 (acabou de usar) a 1 (pronto): o anel do botão de toque. */
+    loopCarga: 1,
     esquadrilha: 0,
     passo: -1,
     acabou: false,
@@ -427,6 +429,7 @@ function Ceu({ estado, eu, jogador, socket, channelId }: { estado: EstadoNave & 
           arma: f.armaEm(m.passo),
           nivel: f.nivelEm(m.passo),
           loop: f.loopPronto(m.passo),
+          loopCarga: f.loops.length === 0 ? 1 : Math.max(0, Math.min(1, (m.passo - f.loops[f.loops.length - 1]) / LOOP_RECARGA)),
           esquadrilha: soma,
           passo: m.passo,
           acabou: f.acabou,
@@ -544,6 +547,22 @@ function Ceu({ estado, eu, jogador, socket, channelId }: { estado: EstadoNave & 
             <span className="nave-bomba-icone" aria-hidden="true" />
           </button>
         )}
+        {/* O LOOP NO TOQUE (20/11/2026): ao lado da bomba, com o anel da recarga enchendo até ficar pronto */}
+        {pilotando && eToque && (
+          <button
+            type="button"
+            className={`nave-botao-loop${hud.loop ? ' pronto' : ''}`}
+            aria-label={t('Loop')}
+            aria-disabled={!hud.loop}
+            style={{ '--carga': `${Math.round(hud.loopCarga * 360)}deg` } as React.CSSProperties}
+            onPointerDown={(e) => {
+              e.stopPropagation();
+              if (hud.loop) teclas.current.loop = true;
+            }}
+          >
+            <span aria-hidden="true">↻</span>
+          </button>
+        )}
       </div>
       {souJogador && estado.fase === 'preparando' && (
         <p className="minijogo-situacao">
@@ -559,8 +578,8 @@ function Ceu({ estado, eu, jogador, socket, channelId }: { estado: EstadoNave & 
           itens={[
             { teclas: ['setas'], toque: 'toque-arrastar', rotulo: t('Voar') },
             { teclas: ['z', 'espaco'], rotulo: t('Atirar') },
-            { teclas: ['x'], rotulo: t('Bomba') },
-            { teclas: ['c'], rotulo: t('Loop') },
+            { teclas: ['x'], toque: 'toque', rotulo: t('Bomba') },
+            { teclas: ['c'], toque: 'toque', rotulo: t('Loop') },
           ]}
         />
       )}

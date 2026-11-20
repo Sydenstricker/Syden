@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ComandosDoJogo } from './ComandosDosJogos';
 import { chave, useT } from './i18n';
 import { criarImpacto } from './impacto';
-import { Star } from 'lucide-react';
+import { Star, Vibrate } from 'lucide-react';
 import { comandoDaPausa, TelaDePausa, usePausaComEsc } from './pausaDosJogos';
 import { desenharFundo, desenharMesa, type Texto } from './pinball/desenho';
 import { BOLAS, compactar, DIR, ESQ, LARGURA, MISSOES, MOLA, novaMesa, PASSO, passo, PASSOS_POR_TRECHO, pilotoAutomatico, SACUDIR, type Evento, type IdDaMissao, type Mesa } from './pinball/sim';
@@ -188,7 +188,7 @@ function Comandos({ solo }: { solo?: boolean }) {
       itens={[
         { teclas: ['setas-lado'], toque: 'toque', rotulo: t('Palhetas') },
         { teclas: ['espaco'], toque: 'toque-segurar', rotulo: t('Mola') },
-        { teclas: ['c'], rotulo: t('Sacudir') },
+        { teclas: ['c'], toque: 'toque', rotulo: t('Sacudir') },
         ...(solo ? [comandoDaPausa(t)] : []),
       ]}
     />
@@ -202,6 +202,8 @@ function Comandos({ solo }: { solo?: boolean }) {
 function useComandos() {
   const bits = useRef(0);
   const toque = useRef(0);
+  /** MULTITOQUE (20/11/2026): cada dedo guarda o seu comando, e o toque da mesa é a soma; levantar um dedo só solta o dele. */
+  const dedos = useRef(new Map<number, number>());
   useEffect(() => {
     const tecla = (e: KeyboardEvent, apertada: boolean) => {
       const alvo = e.target as HTMLElement | null;
@@ -218,6 +220,7 @@ function useComandos() {
     const soltar = () => {
       bits.current = 0;
       toque.current = 0;
+      dedos.current.clear();
     };
     window.addEventListener('keydown', desce);
     window.addEventListener('keyup', sobe);
@@ -228,7 +231,14 @@ function useComandos() {
       window.removeEventListener('blur', soltar);
     };
   }, []);
-  return { bits, toque };
+  const dedo = (id: number, comando: number | null) => {
+    if (comando === null) dedos.current.delete(id);
+    else dedos.current.set(id, comando);
+    let soma = 0;
+    for (const c of dedos.current.values()) soma |= c;
+    toque.current = soma;
+  };
+  return { bits, toque, dedo };
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -313,7 +323,11 @@ function Partida({
 }) {
   const t = useT();
   const tela = useRef<HTMLCanvasElement>(null);
-  const { bits, toque } = useComandos();
+  const { bits, toque, dedo } = useComandos();
+  /** O tranco pedido pelo botão de toque: vale um passo (o toque rápido não se perde entre dois passos), e solta no seguinte. */
+  const tranco = useRef(false);
+  /** A tela de toque se revela no primeiro dedo na mesa: só então aparece o botão do tranco. */
+  const [eToque, setToque] = useState(false);
   const { pausa, pausado, continuar } = usePausaComEsc(solo);
   const confirmado = useRef(meu.passo);
   confirmado.current = meu.passo;
@@ -423,7 +437,14 @@ function Partida({
         while (acumulado >= PASSO && n < 6 && !k.terminou) {
           acumulado -= PASSO;
           n++;
-          const comando = import.meta.env.DEV && window.pinballPilotoAutomatico ? pilotoAutomatico(k) : bits.current | toque.current;
+          let comando = import.meta.env.DEV && window.pinballPilotoAutomatico ? pilotoAutomatico(k) : bits.current | toque.current;
+          if (tranco.current) {
+            // o passo anterior sem o tranco, para a mesa ver o "apertou" (ela só sacode na borda do comando)
+            if ((k.antes & SACUDIR) === 0) {
+              comando |= SACUDIR;
+              tranco.current = false;
+            }
+          }
           comandos.push(comando);
           passo(k, comando);
           for (const e of k.eventos) ouvir(e);
@@ -476,17 +497,23 @@ function Partida({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /** O toque: a metade esquerda é a palheta esquerda, a direita a direita; segurar embaixo da raia da mola puxa a mola. */
+  /**
+   * O toque, com MULTITOQUE (20/11/2026): a metade esquerda é a palheta esquerda, a direita a direita, e segurar embaixo da
+   * raia da mola puxa a mola. Cada dedo é dono do seu lado (pelo pointerId): os dois polegares seguram as duas palhetas, e
+   * levantar um solta só o lado dele.
+   */
   const tocou = (e: React.PointerEvent<HTMLCanvasElement>, apertou: boolean) => {
     if (e.pointerType === 'mouse') return;
     if (!apertou) {
-      toque.current = 0;
+      dedo(e.pointerId, null);
       return;
     }
+    e.currentTarget.setPointerCapture?.(e.pointerId);
     const r = e.currentTarget.getBoundingClientRect();
     const x = (e.clientX - r.left) / r.width;
     const y = (e.clientY - r.top) / r.height;
-    toque.current = x > 0.88 && y > 0.6 ? MOLA : x < 0.5 ? ESQ : DIR;
+    dedo(e.pointerId, x > 0.88 && y > 0.6 ? MOLA : x < 0.5 ? ESQ : DIR);
+    setToque(true);
   };
 
   const seg = Math.ceil(painel.restante * PASSO);
@@ -504,8 +531,24 @@ function Partida({
             onPointerDown={(e) => tocou(e, true)}
             onPointerUp={(e) => tocou(e, false)}
             onPointerCancel={(e) => tocou(e, false)}
+            onLostPointerCapture={(e) => tocou(e, false)}
             onContextMenu={(e) => e.preventDefault()}
           />
+          {/* O TRANCO NO TOQUE (20/11/2026): o botão do canto sacode a mesa (o comando da tecla C), um tranco por toque */}
+          {eToque && (
+            <button
+              type="button"
+              className="pinball-tranco"
+              aria-label={t('Sacudir')}
+              onPointerDown={(e) => {
+                e.stopPropagation();
+                tranco.current = true;
+              }}
+              onContextMenu={(e) => e.preventDefault()}
+            >
+              <Vibrate size={22} aria-hidden="true" />
+            </button>
+          )}
           <div className="pinball-painel" aria-hidden="true">
             <span className="pinball-pontos">{mil(painel.pontos)}</span>
             <span className="pinball-bolas">

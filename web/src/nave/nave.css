@@ -91,6 +91,39 @@
   touch-action: none;
 }
 
+/* o loop no toque (20/11/2026), à esquerda da bomba; o anel em volta é a recarga, e cheio ele acende */
+.nave-botao-loop {
+  position: absolute;
+  right: 66px;
+  bottom: 10px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  padding: 3px;
+  background: conic-gradient(#9fd8ff var(--carga, 360deg), rgba(43, 38, 51, 0.55) 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+  user-select: none;
+}
+.nave-botao-loop span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: rgba(43, 38, 51, 0.8);
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 24px;
+  font-weight: 700;
+}
+.nave-botao-loop.pronto span {
+  color: #9fd8ff;
+}
+
 .nave-botao-bomba .nave-bomba-icone {
   width: 20px;
   height: 20px;
