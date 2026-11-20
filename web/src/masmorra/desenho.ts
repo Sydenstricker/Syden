@@ -41,6 +41,238 @@ const px = (g: CanvasRenderingContext2D, x: number, y: number, w: number, h: num
 
 const parede = (s: Sala, c: number, l: number) => c < 0 || l < 0 || c >= COLS || l >= LINHAS || s.grade[l][c] === '#' || s.grade[l][c] === 'T';
 
+// ---------------- O CENÁRIO DO TINY DUNGEON (20/11/2026) ----------------
+/**
+ * O CENÁRIO EM PIXEL ART DE VERDADE: as peças do Tiny Dungeon da Kenney (CC0, 16 × 16; web/public/masmorra/cenario.png, montada
+ * por web/scripts/masmorra-cenario.mjs), ampliadas em 2× — o mesmo "pixel" de 2 px do resto do desenho e das folhas da Briga.
+ * Do pacote só o cenário e os objetos: o coelho e os bichos continuam os nossos. A casa da regra tem 40 px e a peça 32, então
+ * o chão e o tijolo são TEXTURA presa ao quadro (corre por baixo da grade), e as bordas de pedra são desenhadas aqui, nas cores
+ * do pacote. Enquanto a tira carrega (ou se falhar), o desenho por código de antes.
+ */
+const KIT = {
+  areia: '#eaa56c',
+  terra: '#763b36',
+  contorno: '#3f2631',
+  noite: '#262b44',
+  pedra: '#c0cbdc',
+  pedraMeio: '#8b9bb4',
+  pedraEscura: '#52607c',
+  telha: '#bd6c4a',
+};
+const PECAS = {
+  chao: 0,
+  chaoPintas: 1,
+  chaoPedras: 2,
+  tijolo: 3,
+  tijoloGrade: 4,
+  tabua: 5,
+  tabuaBeira: 6,
+  portaAberta: 7,
+  porta: 8,
+  bau: 9,
+  bauAberto: 10,
+  barril: 11,
+  bloco: 12,
+} as const;
+const P = 32;
+let kit: HTMLCanvasElement[] | null = null;
+let kitPedido = false;
+/** As peças já ampliadas em 2× (um canvas cada, para servirem também de textura). Null enquanto a tira não chegou. */
+function pecas(): HTMLCanvasElement[] | null {
+  if (kit || kitPedido || typeof document === 'undefined') return kit;
+  kitPedido = true;
+  const img = new Image();
+  img.onload = () => {
+    const n = Math.floor(img.width / 16);
+    const lista: HTMLCanvasElement[] = [];
+    for (let k = 0; k < n; k++) {
+      const c = document.createElement('canvas');
+      c.width = P;
+      c.height = P;
+      const g = c.getContext('2d');
+      if (!g) return;
+      g.imageSmoothingEnabled = false;
+      g.drawImage(img, k * 16, 0, 16, 16, 0, 0, P, P);
+      lista.push(c);
+    }
+    kit = lista;
+  };
+  img.src = `${import.meta.env.BASE_URL}masmorra/cenario.png`;
+  return null;
+}
+const peca = (g: CanvasRenderingContext2D, k: number, x: number, y: number) => kit && g.drawImage(kit[k], Math.round(x), Math.round(y));
+
+/** O fundo parado de cada sala (o chão, as paredes, a ponte), feito uma vez: muda só com a ponte. */
+const fundos = new Map<string, HTMLCanvasElement>();
+const aberto = (s: Sala, c: number, l: number) => c >= 0 && l >= 0 && c < COLS && l < LINHAS && !parede(s, c, l);
+/** Um número de 0 a 1 que não muda de quadro para quadro (a variação do chão). */
+const sorteio = (a: number, b: number, sal: number) => {
+  const v = Math.sin(a * 127.1 + b * 311.7 + sal * 74.7) * 43758.5453;
+  return v - Math.floor(v);
+};
+
+function fundoDaSala(s: Sala, ponteLevantada: boolean): HTMLCanvasElement | null {
+  const k = pecas();
+  if (!k) return null;
+  const chave = `${s.id}|${ponteLevantada ? 1 : 0}`;
+  const pronto = fundos.get(chave);
+  if (pronto) return pronto;
+  const c = document.createElement('canvas');
+  c.width = W;
+  c.height = H;
+  const g = c.getContext('2d');
+  if (!g) return null;
+  g.imageSmoothingEnabled = false;
+  const mina = s.id >= 8;
+  // o chão: a areia numa grade própria de 32 px, com pintas e pedrinhas aqui e ali (mais na mina)
+  for (let y = 0; y < H; y += P) {
+    for (let x = 0; x < W; x += P) {
+      const r = sorteio(x / P, y / P, s.id);
+      const qual = r < (mina ? 0.07 : 0.025) ? PECAS.chaoPedras : r < 0.3 ? PECAS.chaoPintas : PECAS.chao;
+      g.drawImage(k[qual], x, y);
+    }
+  }
+  // a sombra das paredes no chão (de cima e da esquerda)
+  for (let l = 0; l < LINHAS; l++) {
+    for (let col = 0; col < COLS; col++) {
+      if (parede(s, col, l)) continue;
+      if (parede(s, col, l - 1)) {
+        g.fillStyle = 'rgba(63, 38, 49, 0.28)';
+        g.fillRect(col * TILE, l * TILE, TILE, 6);
+      }
+      if (parede(s, col - 1, l)) {
+        g.fillStyle = 'rgba(63, 38, 49, 0.18)';
+        g.fillRect(col * TILE, l * TILE + (parede(s, col, l - 1) ? 6 : 0), 4, TILE - (parede(s, col, l - 1) ? 6 : 0));
+      }
+    }
+  }
+  // a ponte de tábuas (levantada pelo cristal): a textura das tábuas e a beira de pedra dos dois lados
+  if (ponteLevantada) {
+    const casas = casasDe(s, '=');
+    if (casas.length) {
+      const x0 = Math.min(...casas.map(([cc]) => cc)) * TILE;
+      const x1 = (Math.max(...casas.map(([cc]) => cc)) + 1) * TILE;
+      const y0 = Math.min(...casas.map(([, ll]) => ll)) * TILE;
+      const y1 = (Math.max(...casas.map(([, ll]) => ll)) + 1) * TILE;
+      g.save();
+      g.beginPath();
+      g.rect(x0, y0, x1 - x0, y1 - y0);
+      g.clip();
+      for (let y = y0; y < y1; y += P) for (let x = x0; x < x1; x += P) g.drawImage(k[PECAS.tabua], x, y);
+      for (let y = y0; y < y1; y += P) {
+        g.drawImage(k[PECAS.tabuaBeira], 0, 0, 8, P, x0, y, 8, P);
+        g.save();
+        g.translate(x1, y);
+        g.scale(-1, 1);
+        g.drawImage(k[PECAS.tabuaBeira], 0, 0, 8, P, 0, 0, 8, P);
+        g.restore();
+      }
+      g.restore();
+    }
+  }
+  // as paredes
+  for (let l = 0; l < LINHAS; l++) for (let col = 0; col < COLS; col++) if (parede(s, col, l)) paredeDoKit(g, k, s, col, l);
+  fundos.set(chave, c);
+  return c;
+}
+
+/**
+ * A parede vista de cima e um pouco de frente, como no pacote: o topo de terra com a beira de pedra para o lado do chão e, onde
+ * dá para o chão embaixo, a cornija e a face de tijolo (a textura da peça, presa ao quadro).
+ */
+function paredeDoKit(g: CanvasRenderingContext2D, k: HTMLCanvasElement[], s: Sala, c: number, l: number) {
+  const x = c * TILE;
+  const y = l * TILE;
+  const N = aberto(s, c, l - 1);
+  const S = aberto(s, c, l + 1);
+  const O = aberto(s, c - 1, l);
+  const L = aberto(s, c + 1, l);
+  const FACE = 22;
+  const CORNIJA = 10;
+  const fimDoTopo = S ? TILE - FACE - CORNIJA : TILE;
+  g.fillStyle = KIT.terra;
+  g.fillRect(x, y, TILE, TILE);
+  // os blocos DENTRO da sala têm o alto de pedra (com a terra, o topo leria como buraco): lajes presas ao quadro, desencontradas
+  if (c > 0 && l > 0 && c < COLS - 1 && l < LINHAS - 1) {
+    g.save();
+    g.beginPath();
+    g.rect(x, y, TILE, fimDoTopo);
+    g.clip();
+    g.fillStyle = KIT.pedraMeio;
+    g.fillRect(x, y, TILE, fimDoTopo);
+    for (let yy = Math.floor(y / 16) * 16; yy < y + fimDoTopo; yy += 16) {
+      const desvio = (yy / 16) % 2 ? 8 : 0;
+      for (let xx = Math.floor(x / 16) * 16 - 16 + desvio; xx < x + TILE; xx += 16) {
+        g.fillStyle = KIT.pedra;
+        g.fillRect(xx + 2, yy + 2, 14, 12);
+        g.fillStyle = '#a4b0c6';
+        g.fillRect(xx + 2, yy + 12, 14, 2);
+      }
+    }
+    g.restore();
+  }
+  if (S) {
+    // a face de tijolo: a textura presa ao quadro, com a grade de vez em quando
+    g.save();
+    g.beginPath();
+    g.rect(x, y + TILE - FACE, TILE, FACE);
+    g.clip();
+    const comGrade = sorteio(c, l, s.id + 3) < (s.id >= 8 ? 0.22 : 0.1) && c % 2 === 1;
+    for (let yy = Math.floor((y + TILE - FACE) / P) * P; yy < y + TILE; yy += P) {
+      for (let xx = Math.floor(x / P) * P; xx < x + TILE; xx += P) g.drawImage(k[PECAS.tijolo], xx, yy);
+    }
+    if (comGrade) g.drawImage(k[PECAS.tijoloGrade], 0, 8, 32, 14, x + 4, y + TILE - FACE + 4, 32, 14);
+    g.restore();
+    // a cornija: a pedra clara com as juntas, a meia sombra e a linha escura
+    const yc = y + fimDoTopo;
+    g.fillStyle = KIT.contorno;
+    g.fillRect(x, yc, TILE, 2);
+    g.fillStyle = KIT.pedra;
+    g.fillRect(x, yc + 2, TILE, 4);
+    g.fillStyle = KIT.pedraMeio;
+    g.fillRect(x, yc + 6, TILE, 2);
+    g.fillStyle = KIT.pedraEscura;
+    g.fillRect(x, yc + 8, TILE, 2);
+    g.fillStyle = KIT.pedraMeio;
+    for (let xx = Math.ceil(x / 16) * 16; xx < x + TILE; xx += 16) g.fillRect(xx, yc + 2, 2, 4);
+    // a base do tijolo encostada no chão
+    g.fillStyle = 'rgba(38, 43, 68, 0.35)';
+    g.fillRect(x, y + TILE - 2, TILE, 2);
+    if (O) {
+      g.fillStyle = KIT.contorno;
+      g.fillRect(x, yc, 2, TILE - fimDoTopo);
+    }
+    if (L) {
+      g.fillStyle = KIT.contorno;
+      g.fillRect(x + TILE - 2, yc, 2, TILE - fimDoTopo);
+    }
+  }
+  // a beira de pedra no topo, para cada lado que dá para o chão: contorno, pedra, contorno
+  const beira = (bx: number, by: number, bw: number, bh: number, vertical: boolean) => {
+    g.fillStyle = KIT.contorno;
+    g.fillRect(bx, by, bw, bh);
+    g.fillStyle = KIT.pedra;
+    if (vertical) g.fillRect(bx + 2, by, bw - 4, bh);
+    else g.fillRect(bx, by + 2, bw, bh - 4);
+  };
+  if (N) beira(x, y, TILE, 8, false);
+  if (O) beira(x, y, 8, fimDoTopo, true);
+  if (L) beira(x + TILE - 8, y, 8, fimDoTopo, true);
+  if (N && O) beira(x, y, 8, 8, false);
+  if (N && L) beira(x + TILE - 8, y, 8, 8, false);
+  // os cantos de dentro: a parede dos dois lados e o chão na diagonal
+  const canto = (bx: number, by: number) => {
+    g.fillStyle = KIT.contorno;
+    g.fillRect(bx, by, 8, 8);
+    g.fillStyle = KIT.pedra;
+    g.fillRect(bx + 2, by + 2, 4, 4);
+  };
+  if (!N && !O && aberto(s, c - 1, l - 1)) canto(x, y);
+  if (!N && !L && aberto(s, c + 1, l - 1)) canto(x + TILE - 8, y);
+  if (!S && !O && aberto(s, c - 1, l + 1)) canto(x, y + TILE - 8);
+  if (!S && !L && aberto(s, c + 1, l + 1)) canto(x + TILE - 8, y + TILE - 8);
+}
+
 /** O chão de pedra: lajes desencontradas, um pouco diferentes de casa para casa. */
 function chao(g: CanvasRenderingContext2D, s: Sala, c: number, l: number) {
   const x = c * TILE;
@@ -87,6 +319,38 @@ function agua(g: CanvasRenderingContext2D, c: number, l: number, tempo: number) 
   px(g, x, y, TILE, 2, COR.contorno);
 }
 
+/** A água no cenário do pacote (que não traz água): o fundo e as marolas por código, nas cores dele, com a beira escura. */
+function aguaDoKit(g: CanvasRenderingContext2D, s: Sala, m: Mundo, c: number, l: number, tempo: number) {
+  const x = c * TILE;
+  const y = l * TILE;
+  const molhada = (cc: number, ll: number) => {
+    if (cc < 0 || ll < 0 || cc >= COLS || ll >= LINHAS) return true;
+    const ch = s.grade[ll][cc];
+    return ch === '~' || (ch === '=' && !m.ponte);
+  };
+  g.fillStyle = '#3a6a94';
+  g.fillRect(x, y, TILE, TILE);
+  g.fillStyle = '#335d85';
+  g.fillRect(x + ((c * 13 + l * 7) % 3) * 8, y + 18 + ((c + l) % 2) * 8, 16, 2);
+  const f = Math.floor(tempo / 400 + c + l * 3) % 4;
+  g.fillStyle = '#5f93bd';
+  g.fillRect(x + 4 + f * 6, y + 12, 10, 2);
+  g.fillRect(x + 22 - f * 4, y + 28, 12, 2);
+  g.fillStyle = '#8fc0e0';
+  if (f === 1) g.fillRect(x + 10, y + 12, 2, 2);
+  // a beira: a sombra da margem de cima dentro da água, e o contorno do pacote em volta
+  if (!molhada(c, l - 1)) {
+    g.fillStyle = KIT.noite;
+    g.fillRect(x, y, TILE, 6);
+    g.fillStyle = '#2c4f74';
+    g.fillRect(x, y + 6, TILE, 4);
+  }
+  g.fillStyle = KIT.contorno;
+  if (!molhada(c, l + 1)) g.fillRect(x, y + TILE - 2, TILE, 2);
+  if (!molhada(c - 1, l)) g.fillRect(x, y, 2, TILE);
+  if (!molhada(c + 1, l)) g.fillRect(x + TILE - 2, y, 2, TILE);
+}
+
 function ponte(g: CanvasRenderingContext2D, c: number, l: number) {
   const x = c * TILE;
   const y = l * TILE;
@@ -114,6 +378,22 @@ function tocha(g: CanvasRenderingContext2D, c: number, l: number, tempo: number)
 function placa(g: CanvasRenderingContext2D, c: number, l: number, apertada: boolean) {
   const x = c * TILE;
   const y = l * TILE;
+  if (kit) {
+    // o botão de pedra nas cores do pacote (o dele tem 10 px, pequeno demais para a casa): apertado, afunda e acende verde
+    px(g, x + 6, y + 6, 28, 28, KIT.contorno);
+    px(g, x + 8, y + 8, 24, 24, KIT.pedraEscura);
+    if (apertada) {
+      px(g, x + 10, y + 12, 20, 18, KIT.pedraMeio);
+      px(g, x + 14, y + 16, 12, 10, '#6fbf6a');
+      px(g, x + 16, y + 18, 4, 2, '#b8f0a0');
+    } else {
+      px(g, x + 10, y + 8, 20, 20, KIT.pedra);
+      px(g, x + 10, y + 26, 20, 4, KIT.pedraMeio);
+      px(g, x + 14, y + 12, 12, 10, KIT.telha);
+      px(g, x + 16, y + 14, 8, 6, KIT.areia);
+    }
+    return;
+  }
   px(g, x + 4, y + 4, 32, 32, COR.contorno);
   px(g, x + 6, y + (apertada ? 8 : 6), 28, apertada ? 26 : 26, apertada ? '#7fb06a' : COR.ouroEscuro);
   px(g, x + 10, y + (apertada ? 12 : 10), 20, 18, apertada ? '#a6d48a' : COR.ouro);
@@ -121,6 +401,11 @@ function placa(g: CanvasRenderingContext2D, c: number, l: number, apertada: bool
 }
 
 export function desenharBloco(g: CanvasRenderingContext2D, x: number, y: number) {
+  if (pecas()) {
+    sombra(g, x, y + 14, 34);
+    peca(g, PECAS.bloco, x - 16, y - 18);
+    return;
+  }
   // o cubo de pedra visto de cima e um pouco de frente
   px(g, x - 20, y - 26, 40, 46, COR.contorno);
   px(g, x - 18, y - 24, 36, 28, '#a8907d');
@@ -132,6 +417,11 @@ export function desenharBloco(g: CanvasRenderingContext2D, x: number, y: number)
 export function desenharBau(g: CanvasRenderingContext2D, c: number, l: number, aberto: boolean) {
   const x = c * TILE;
   const y = l * TILE;
+  if (pecas()) {
+    sombra(g, x + 20, y + 36, 32);
+    peca(g, aberto ? PECAS.bauAberto : PECAS.bau, x + 4, y + 6);
+    return;
+  }
   px(g, x + 2, y + 6, 36, 32, COR.contorno);
   px(g, x + 4, y + 18, 32, 18, COR.madeira);
   px(g, x + 4, y + 22, 32, 2, COR.ouroEscuro);
@@ -186,6 +476,32 @@ function desenharPorta(g: CanvasRenderingContext2D, lado: Lado, estado: number) 
   if (!vertical) g.rotate(lado === 'o' ? -Math.PI / 2 : Math.PI / 2);
   else if (lado === 's') g.rotate(Math.PI);
   // daqui para baixo, a porta "de cima" (norte): o vão vai de -20 a 20, a parte de dentro fica embaixo (y = 20)
+  if (kit) {
+    if (estado === 4) {
+      // a parede rachada: a parede do fundo já está desenhada, só as rachaduras por cima
+      px(g, -2, -4, 4, 8, KIT.contorno);
+      px(g, -6, 2, 6, 4, KIT.contorno);
+      px(g, 2, 4, 4, 8, KIT.contorno);
+      px(g, -10, 8, 8, 4, KIT.contorno);
+      px(g, 4, 12, 8, 2, KIT.contorno);
+      px(g, -12, 12, 4, 6, KIT.contorno);
+      px(g, -4, 0, 2, 2, KIT.pedra);
+      px(g, 6, 10, 2, 2, KIT.pedra);
+    } else {
+      peca(g, estado === 1 ? PECAS.portaAberta : PECAS.porta, -16, -12);
+      if (estado === 3) {
+        // o cadeado na porta trancada
+        px(g, -8, 0, 16, 14, KIT.contorno);
+        px(g, -6, 2, 12, 10, '#feae34');
+        px(g, -6, -6, 12, 8, KIT.contorno);
+        px(g, -4, -4, 8, 6, KIT.pedraMeio);
+        px(g, -2, -2, 4, 4, KIT.contorno);
+        px(g, -2, 4, 4, 6, KIT.contorno);
+      }
+    }
+    g.restore();
+    return;
+  }
   if (estado === 4) {
     // a parede rachada (19/11/2026): a parede de sempre, com as rachaduras (a bomba de semente abre)
     px(g, -18, -16, 36, 36, COR.topo);
@@ -218,13 +534,25 @@ function desenharPorta(g: CanvasRenderingContext2D, lado: Lado, estado: number) 
 
 /** A sala inteira, do fundo: chão, água, ponte, paredes, tochas, botões, portas e o baú. */
 export function desenharSala(g: CanvasRenderingContext2D, s: Sala, m: Mundo, portas: number[], placas: number[], bau: number, tempo: number, coracaoGrandePego = false) {
-  for (let l = 0; l < LINHAS; l++) {
-    for (let c = 0; c < COLS; c++) {
-      const ch = s.grade[l][c];
-      if (ch === '#' || ch === 'T') blocoDeParede(g, s, c, l);
-      else if (ch === '~' || (ch === '=' && !m.ponte)) agua(g, c, l, tempo);
-      else if (ch === '=') ponte(g, c, l);
-      else chao(g, s, c, l);
+  const fundo = fundoDaSala(s, m.ponte);
+  if (fundo) {
+    // o cenário do Tiny Dungeon: o fundo parado de uma vez, e por cima só a água, que mexe
+    g.drawImage(fundo, 0, 0);
+    for (let l = 0; l < LINHAS; l++) {
+      for (let c = 0; c < COLS; c++) {
+        const ch = s.grade[l][c];
+        if (ch === '~' || (ch === '=' && !m.ponte)) aguaDoKit(g, s, m, c, l, tempo);
+      }
+    }
+  } else {
+    for (let l = 0; l < LINHAS; l++) {
+      for (let c = 0; c < COLS; c++) {
+        const ch = s.grade[l][c];
+        if (ch === '#' || ch === 'T') blocoDeParede(g, s, c, l);
+        else if (ch === '~' || (ch === '=' && !m.ponte)) agua(g, c, l, tempo);
+        else if (ch === '=') ponte(g, c, l);
+        else chao(g, s, c, l);
+      }
     }
   }
   casasDe(s, 'T').forEach(([c, l]) => tocha(g, c, l, tempo));
@@ -247,6 +575,20 @@ export function desenharSala(g: CanvasRenderingContext2D, s: Sala, m: Mundo, por
 export function desenharPoste(g: CanvasRenderingContext2D, c: number, l: number) {
   const x = c * TILE + 20;
   const y = l * TILE + 20;
+  if (kit) {
+    // a mesma estaca, nas cores do pacote: a madeira, o contorno e a argola de ferro
+    px(g, x - 14, y + 10, 28, 8, 'rgba(63, 38, 49, 0.35)');
+    px(g, x - 8, y - 20, 16, 36, KIT.contorno);
+    px(g, x - 6, y - 16, 12, 30, KIT.telha);
+    px(g, x - 6, y - 16, 4, 30, KIT.areia);
+    px(g, x + 2, y - 16, 4, 30, KIT.terra);
+    px(g, x - 10, y - 22, 20, 8, KIT.contorno);
+    px(g, x - 8, y - 20, 16, 4, KIT.pedraMeio);
+    px(g, x - 12, y - 8, 24, 8, KIT.contorno);
+    px(g, x - 10, y - 6, 20, 4, KIT.pedra);
+    px(g, x - 4, y - 6, 8, 4, KIT.pedraEscura);
+    return;
+  }
   px(g, x - 14, y + 8, 28, 8, 'rgba(30, 20, 18, 0.35)');
   px(g, x - 8, y - 18, 16, 32, COR.contorno);
   px(g, x - 6, y - 16, 12, 28, COR.madeira);
@@ -280,6 +622,11 @@ export function desenharCorda(g: CanvasRenderingContext2D, x0: number, y0: numbe
 
 /** O vaso de barro (19/11/2026): levanta-se e joga-se. (x, y) é o meio dele. */
 export function desenharVaso(g: CanvasRenderingContext2D, x: number, y: number) {
+  if (pecas()) {
+    // o barril do pacote faz o papel do vaso (levanta-se e joga-se do mesmo jeito)
+    peca(g, PECAS.barril, x - 16, y - 18);
+    return;
+  }
   px(g, x - 14, y - 14, 28, 30, COR.contorno);
   px(g, x - 12, y - 8, 24, 22, '#b86a3e');
   px(g, x - 8, y - 14, 16, 6, '#b86a3e');
