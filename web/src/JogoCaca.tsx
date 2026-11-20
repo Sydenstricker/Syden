@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useT } from './i18n';
 import { Placar, Relogio } from './Minijogo';
 import type { EstadoCaca, Partida } from './minijogos';
-import { desenhar, desenharCoelhoDaMoita, pintarCenario, type Queda } from './caca/desenho';
+import { type Arte, carregarArte, desenhar, desenharCoelhoDaMoita, ESCALA, pintarCenario, pintarFrente, type Queda } from './caca/desenho';
 import { ALTURA, LARGURA, multiplicador, posicao, pontosDoAcerto, pragaAtingida, pragasDaOnda } from './caca/voo';
 
 /**
@@ -21,6 +21,9 @@ import { ALTURA, LARGURA, multiplicador, posicao, pontosDoAcerto, pragaAtingida,
 
 /** Um tiro a cada isto, no máximo (o servidor recusa mais rápido que 120 ms). */
 const INTERVALO_MS = 150;
+
+// a arte da barraca começa a vir junto com o jogo, para chegar antes do fim do "prepare-se"
+void carregarArte();
 
 export function JogoCaca({ estado, eu, jogador, agir }: { estado: EstadoCaca & Partida; eu: number; jogador: boolean; agir: (corpo: Record<string, unknown>) => unknown }) {
   const t = useT();
@@ -152,7 +155,17 @@ function Horta({ estado, eu, jogador, agir }: { estado: EstadoCaca & Partida; eu
     const tela = canvas.current;
     const ctx = tela?.getContext('2d');
     if (!tela || !ctx) return;
-    const cenario = pintarCenario();
+    // o cenário de código fica até a arte da barraca chegar (caca/desenho.ts)
+    let cenario = pintarCenario();
+    let frente: HTMLCanvasElement | null = null;
+    let arte: Arte | null = null;
+    let vivo = true;
+    void carregarArte().then((a) => {
+      if (!vivo || !a) return;
+      arte = a;
+      cenario = pintarCenario(a);
+      frente = pintarFrente(a);
+    });
     let id = 0;
     let ultimoRelogio = 0;
     let pilotoEm = 0;
@@ -177,6 +190,8 @@ function Horta({ estado, eu, jogador, agir }: { estado: EstadoCaca & Partida; eu
       }
       desenhar(ctx, {
         cenario,
+        frente,
+        arte,
         ms: ms !== null && ms >= 0 ? ms : null,
         pragas,
         abatidas: abatidas.current,
@@ -193,7 +208,10 @@ function Horta({ estado, eu, jogador, agir }: { estado: EstadoCaca & Partida; eu
       id = requestAnimationFrame(quadro);
     };
     id = requestAnimationFrame(quadro);
-    return () => cancelAnimationFrame(id);
+    return () => {
+      vivo = false;
+      cancelAnimationFrame(id);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pragas, souJogador]);
 
@@ -226,8 +244,10 @@ function Horta({ estado, eu, jogador, agir }: { estado: EstadoCaca & Partida; eu
         <canvas
           ref={canvas}
           className={`golfe-tela caca-tela${souJogador ? ' caca-mirando' : ''}`}
-          width={LARGURA}
-          height={ALTURA}
+          width={LARGURA * ESCALA}
+          height={ALTURA * ESCALA}
+          // a arte da barraca é vetorial: sem o "pixelated" dos outros jogos, e na proporção da horta (16:9)
+          style={{ imageRendering: 'auto', aspectRatio: `${LARGURA} / ${ALTURA}` }}
           onPointerMove={(e) => {
             mira.current = naHorta(e);
           }}
