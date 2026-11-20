@@ -31,6 +31,8 @@ try {
   const painel = leo.locator('.jogos-painel');
   await painel.waitFor();
   await painel.locator('.jogos-solo button', { hasText: 'Masmorra da Toca' }).click();
+  // Desde 19/11/2026, a escolha da masmorra vem antes da partida: a toca de sempre (este teste anda por ela).
+  await leo.locator('.corrida-pista-botao', { hasText: 'Toca do rei-cogumelo' }).click();
   await leo.locator('.masmorra-tela canvas').waitFor({ timeout: 15000 });
   await leo.waitForFunction(() => window.masmorraDoTeste?.fase === 'jogando', null, { timeout: 15000 });
   const inicio = await teste(leo);

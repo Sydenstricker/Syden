@@ -157,6 +157,16 @@ atrasada e empurrando tudo, o que o olho lê como travamento. Carregamento em et
 precisa ser escondido — o que não pode é a etapa intermediária **declarar** um estado que não é o
 real. Na dúvida, guarde o lugar e não diga nada (ver `web/src/lugarDaBarra.ts`).
 
+**O celular não tem botão direito (20/11/2026, relato dele: "no celular a experiência é incompleta; não consegui clicar na
+comunidade para compartilhar o link").** Medido num iPhone simulado: o convite só existia no botão direito do ícone e no salão, e
+tocar em "Início" na lista não abria o salão; a lista de pessoas sumia abaixo de 900 px, e com ela o perfil e a conversa privada.
+Agora: o **convite fica na capa da comunidade** (o botão com o boneco e o +, para todo membro), e no toque ele abre a FOLHA DE
+COMPARTILHAR do sistema, no computador copia (`mandarConvite` em `linkDeConvite.ts`, o mesmo do "Chamar alguém" do salão); o
+**"Início" abre o salão**; o botão de pessoas abre a lista como **gaveta** (`.members.aberta-no-celular`, abaixo do cartão de perfil);
+e o **toque longo é o botão direito** (`toqueLongo.ts`: segurar ~550 ms dispara o `contextmenu` no lugar do dedo, e todos os menus
+de sempre respondem; o Android já fazia, o iPhone não). **Regra para o que vier: função que só existe no botão direito ou no
+"passar o mouse" não existe no celular** — ela precisa de um botão, ou pelo menos responder ao toque longo. Teste: `e2e/celular.mjs`.
+
 ## Sem anúncios é promessa, não estilo
 
 A listagem na Microsoft Store diz **"sem anúncios e sem assinatura"**, em letras grandes. Isso decide
@@ -428,6 +438,18 @@ Wikidata). Franquia de terceiro entra como mais um tema SÓ com licença por esc
 **O crédito de terceiro mora nos TERMOS, seção 10 "Créditos" (decisão dele, 25/10/2026), e não na tela do jogo:** a CC BY
 4.0 aceita "qualquer maneira razoável", e o parágrafo do SRD em inglês no meio do quiz era ruído. Material livre novo
 (dados, figuras, fontes) ganha a linha dele lá, nas duas línguas; se foi traduzido ou adaptado, a linha diz isso.
+**AS COLUNAS NOVAS DA MITOLOGIA E O MODO BANDEIRA (20/11/2026, as pendências dos lotes):** a mitologia ganhou o **Gênero** da
+figura (nunca o de quem lê: masculino, feminino, "varia", e "—" para bicho sem gênero) e a **Família**, os dois do Wikidata (CC0)
+por `server/scripts/quiz-mitologia.mjs`; os que o Wikidata não diz foram conferidos à mão em `GENERO_A_MAO`. A família é a figura e
+os parentes dela que estão na lista, nos dois sentidos, numa coluna de tipo novo, `parentes`: verde só a própria figura, amarelo se
+é parente ou tem parente em comum (alguns vínculos do Wikidata soam estranhos, como Afrodite–Gaia: ficou como a fonte diz). Os países
+ganharam o **modo Bandeira**, escolhido na largada como categoria ('bandeira'), com o recorde do Solo à parte (o clássico segue na
+variante ''): a bandeira se abre em 6 pedaços, um a cada chute, e as colunas continuam dando a dica. As bandeiras são do flag-icons
+(MIT, crédito nos termos), tiradas por `server/scripts/quiz-bandeiras.mjs` para `server/assets/quiz/bandeiras/` com a licença ao lado.
+**Não ficam em `web/public`: o nome do arquivo seria a resposta.** A tela as pede por uma ficha sorteada a cada rodada
+(`/api/minijogos/quiz-bandeira/:ficha`), e o SVG sai sem nada que diga o país. Sobra possível: ver a bandeira inteira pelas
+ferramentas do navegador. De fora: símbolo e animal da mitologia (o Wikidata não tem para quase nenhuma). Testes:
+`server/test/minijogos-quiz.test.ts` e `web/test/quiz.test.ts`.
 
 **A CORRIDA DOS COELHOS (ideia dele, 03/11/2026): kart de 16 bits, com o Super Mario Kart de referência.** O que ficou
 decidido na conversa, antes do código:
@@ -657,6 +679,17 @@ secreta não foram auditados (pedem uma sala).
 
 **A ARENA DOS BICHOS (19/11/2026):** o forte e o especial passaram a ser de cada elemento, nas duas cópias de `conta.ts`; o servidor confere cada forma. A tela do fim mostra o dano, os nocautes, o dano levado e os DESVIOS, contados pelo servidor. Dois cenários com regra própria, o GELO (escorrega) e a LAMA (as poças seguram), sem passar da velocidade normal. O modo "Segurar a zona" (o time sozinho no círculo faz um ponto por segundo; 60 vence; o servidor conta). "Mato que esconde" ficou de fora: pediria esconder posições no quadro.
 
+**O MATO QUE ESCONDE (20/11/2026, a pendência dos lotes de 19/11):** moitas de mato alto nos quatro cenários da Arena (`MATO` em
+`arena/conta.ts`, as duas cópias), simétricas pelo centro e longe de onde se nasce, dos suprimentos e da zona do meio; valem em todos
+os modos, sem opção na largada. Quem está com o pé numa moita some para os adversários (o próprio time continua vendo) e reaparece com
+um adversário de pé a menos de 80 px, na mesma moita, ou por 1,2 s depois de golpear ou de levar golpe. **Quem esconde é o servidor:**
+o quadro vai por time (`difundirPorPessoa`, que o motor dos minijogos ganhou, opcional), e quem está escondido vai só com a vida e as
+vidas (a posição zerada, a coluna 17 ligada); quem só assiste vê como quem não tem aliado (na sala de voz, ele podia soprar). A tela de
+quem atira não acerta quem não vê, então o servidor anda essa bala e confere ele mesmo (`passoDasBalasNoMato`). Os robôs só miram em
+quem o time deles vê e, sem ninguém à vista, vão olhar as moitas. As folhas são de pé, na ordem do y com os coelhos; eu e os aliados no
+mato ficamos meio transparentes. Números chutados (80 px, 1,2 s). Testes: `server/test/minijogos-bichos-arena.test.ts` e
+`web/test/arena.test.ts`.
+
 **AS LENDAS (19/11/2026):** três HABILIDADES por classe, a 2ª e a 3ª liberadas pelo NÍVEL, que sobe a cada luta vencida, com 1 de 2 melhorias da classe (nada passa de uma partida para outra). Cada inimigo tem um TRAÇO (`TRACOS`), mostrado com figura e frase. O CAMINHO é sorteado pela semente (`rotaDaSemente`), com bifurcações votadas pela turma (empate, sorteio do servidor), fogueira, loja ou evento, e o yeti na geleira. Os COMBOS COM NOME de três classes ou das quatro. No Solo, o recorde são as rodadas até o dragão, na tabela comum. Uma turma toda de robôs vence ~81%.
 
 **O LOBISOMEM (19/11/2026):** a partida abre no PREPARO (quem começou escolhe os lobisomens, os papéis e os tempos; a composição aparece para todos). Os papéis novos têm nome de COISA, porque "Caçador" e "Bruxa" diriam o sexo de quem recebe: a **Armadilha** (quem sai do jogo leva alguém junto) e o **Caldeirão** (vê quem os lobos atacaram; uma poção salva e uma envenena, cada uma uma vez); sem o Caldeirão vivo, a etapa dele dura um tempo sorteado, para o relógio não contar nada. A DEFESA de 20 s e o julgamento no SIM ou NÃO. A CONVERSA DE TEXTO só dos lobisomens à noite (só na memória; some no amanhecer). A HISTÓRIA da partida no fim. O céu em CSS e os sons sintetizados.
@@ -669,7 +702,22 @@ secreta não foram auditados (pedem uma sala).
 
 **COZINHA, FUTEBOL, OS MINIGOLFES E O TAMANHO (19/11/2026):** a COZINHA ganhou quatro PLANTAS escolhidas na largada (`PLANTAS`, `FOGO_DAS_PLANTAS`), a GORJETA por rapidez pelo relógio do servidor (só bônus), o recorde por planta, os pratos sujos e a pia (só da tela) e a FRIGIDEIRA ESQUECIDA que pega fogo (o servidor só aceita o extintor). O FUTEBOL, a dificuldade dos robôs, a troca de jogador (Q), a mini-copa e o CHUTE ALTO (C, a bola com altura nas duas cópias; ninguém domina a bola alta), e a comemoração do gol com a torcida. Os dois MINIGOLFES continuam lado a lado: o percurso escolhido na largada, o recorde por percurso e o selo do par; na toca, 9 buracos; no 3D, o Parque (9) e AS PÁS DO MOINHO GIRANDO pelo passo (`moinhoFechado`), e os ITENS DA PRÓPRIA BOLA só na sala (bola pesada, quique extra, mira longa). O TAMANHO ganhou som, o recorde por categoria e as categorias Comida e Veículos (29 objetos do Fluent Emoji, conferidos inteiros).
 
-**TOCAS E TORRES (19/11/2026):** a simulação e o computador viraram DUAS CÓPIAS IGUAIS (`web/src/tocas/{sim,ia}.ts` ↔ `server/src/tocas/`; o comando de fora passa por `limparComando`), e o Solo é REFEITO pelo servidor (o recorde, por nível, só com todas as assinaturas batendo). Três NÍVEIS (o normal é o de antes; o difícil ganhou as 32 partidas contra o fácil; ligar `fazendasNaEra` no normal é decisão dele). Quatro MAPAS espelhados (campo, floresta, ouro no meio, lagos; a água é `grade = -2`). O FERREIRO (9 melhorias) e o MERCADO (a novidade da era 2). O TUTORIAL de 5 passos. O FIM com os gráficos. **A SALA 1×1 EM LOCKSTEP**: turnos de 2 passos, o comando vale 3 turnos depois (600 ms), assinatura a cada 25 turnos (na 1ª diferença, refaz; na 2ª, acaba sem troféu), e o pódio `'tocas'`. Pendentes: o 2×2 com robôs e quem assiste.
+**TOCAS E TORRES (19/11/2026):** a simulação e o computador viraram DUAS CÓPIAS IGUAIS (`web/src/tocas/{sim,ia}.ts` ↔ `server/src/tocas/`; o comando de fora passa por `limparComando`), e o Solo é REFEITO pelo servidor (o recorde, por nível, só com todas as assinaturas batendo). Três NÍVEIS (o normal é o de antes; o difícil ganhou as 32 partidas contra o fácil; ligar `fazendasNaEra` no normal é decisão dele). Quatro MAPAS espelhados (campo, floresta, ouro no meio, lagos; a água é `grade = -2`). O FERREIRO (9 melhorias) e o MERCADO (a novidade da era 2). O TUTORIAL de 5 passos. O FIM com os gráficos. **A SALA 1×1 EM LOCKSTEP**: turnos de 2 passos, o comando vale 3 turnos depois (600 ms), assinatura a cada 25 turnos (na 1ª diferença, refaz; na 2ª, acaba sem troféu), e o pódio `'tocas'`.
+
+**O 2×2 E QUEM ASSISTE NAS TOCAS E TORRES (20/11/2026, as pendências dos lotes):** quem convida escolhe 1×1 ou 2×2 e o mapa
+(`EscolhaDaSalaDasTocas` em JogoTocas.tsx; `corpo.formato`). No 2×2 jogam de 2 a 4 pessoas, e os ROBÔS (o computador normal,
+`NIVEL_DOS_ROBOS`, com o 🤖) completam o que falta. Eles jogam DENTRO da simulação: o servidor e cada computador da sala chamam a mesma
+IA antes de cada passo, depois dos comandos do turno, e a parte do robô no turno vai vazia. As equipes são os donos 0 e 2 contra 1 e 3
+(`equipeDe`, `aliados` em sim.ts; o Solo e o 1×1 conferidos contra a versão anterior em 36 partidas, assinatura igual). Os aliados
+ficam EM CANTOS OPOSTOS (`CENTROS_DO_2X2`): lado a lado, a equipe da direita ganhava 8 de 10 entre computadores (a varredura das casas
+não é simétrica); na diagonal, 12 a 16 em 28. O mapa é `gerarMapaDe4`, espelhado nos dois eixos, com corredores entre as bases.
+Aliados não se atacam, dividem a visão e o portão; a equipe só perde com os dois centros caídos, e `vencedor` passou a ser a equipe.
+Quem fica 1 minuto fora ou desiste com a aliada de pé LARGA: a base fica parada e a partida segue; sem ninguém pela equipe, ela perde.
+QUEM ASSISTE (quem está na sala e não joga) recebe os turnos, anda a mesma partida sem névoa, move a câmera e não manda nada (o painel
+não fica `inert` para as Tocas, Minijogo.tsx). Pendentes: a assinatura de quem assiste (dessincronia dele não é detectada), um robô
+que assume quem larga, as duas pessoas na MESMA equipe contra robôs (hoje, com 2, cada uma fica numa equipe com um robô), a dica em
+`minijogos.ts` (ainda diz "contra outra pessoa"), e2e. Testes: `server/test/minijogos-tocas-2x2.test.ts` e o do 2×2 em
+`web/test/tocas.test.ts`.
 
 **A MESA COMUM E OS JOGOS DELA (19/11/2026):** Cinco em linha, Mancala, Damas, Xadrez e Batalha naval ganharam juntos (`duelo` em `minijogo-tabuleiro.ts`, `web/src/MesaComum.tsx`) o NÍVEL DO ROBÔ no Solo, o RELÓGIO DE PARTIDA na sala (3+2, 5+3, 10+0, 15+10), o "Como jogar", VOLTAR O LANCE no Solo (a Batalha naval não volta), a OFERTA DE EMPATE na sala e o HISTÓRICO, ao lado do tabuleiro a partir de 620 px da mesa. O Cinco em linha, o "exatamente 5" e a TROCA na abertura; a Mancala, de 3 a 6 sementes e o OWARE, com a semeadura animada; os dois agora em 3D (`mesa3d/gomoku.ts`, `mesa3d/mancala.ts`). As Damas, a repetição tripla. A Batalha naval, a pontaria no fim, o robô que conta as posições possíveis e o SALVO. A Partida de xadrez, a notação algébrica e as capturadas; o difícil olha 1 lance (2 levava segundos no servidor), e **o robô de xadrez segura o servidor ~0,8 s por lance: um processo à parte é decisão dele**. Os PROBLEMAS DE XADREZ, o 3D da partida, o "tente de novo" e a CORRIDA de 3 minutos (recorde na tabela comum); o script guarda os temas do Lichess, mas o arquivo em `server/assets/` ainda é o antigo (regenerar pede baixar ~250 MB: decisão dele). O CAPITAIS, dados iguais jogam de novo, pagar 50 para sair do engarrafamento, a partida rápida e o robô que PROPÕE a troca que fecha o grupo dele.
 
@@ -679,19 +727,15 @@ secreta não foram auditados (pedem uma sala).
 
 **AS PENDÊNCIAS DOS LOTES DE 19/11/2026 (pedido dele: "anote o que ficou de fora para eu continuar futuramente").**
 - **Ficou de fora, para fazer:**
-  - **Ponte levadiça** (Ponte da toca). Na regra, duas peças no mesmo ponto da grade são sempre um nó só, e o tráfego passa
-    de uma pista para outra pelos nós. Uma ponte que abre pede uma JUNTA NOVA (dois nós no mesmo lugar que se separam e
-    voltam a encostar) e contato entre peças, nas duas cópias da física.
-  - **Tocas e Torres:** o 2×2 com robôs completando a sala, e quem ASSISTE (hoje quem não joga vê só "…").
-  - **Arena dos Bichos, o "mato que esconde":** pede que o servidor esconda posições no quadro de cada um, que é outra rede.
-  - **Quizzes:** as colunas novas da mitologia (não há dados: `mitologia.json` só tem mitologia, tipo, forma e domínios;
-    viriam do Wikidata) e o modo BANDEIRA nos países (não há bandeiras em domínio público no repositório).
+  - ~~Ponte levadiça, Tocas 2×2 e quem assiste, o mato que esconde, as colunas da mitologia e o modo bandeira~~: **feitos em
+    20/11/2026** (ver as seções de cada jogo).
   - **Problemas de xadrez por TEMA:** o script (`server/scripts/problemas-de-xadrez.mjs`) já guarda os temas e o servidor
     aceita `tema`, mas o arquivo em `server/assets/` é o antigo. Falta baixar o do Lichess (~250 MB), regenerar (talvez
     subir `POR_FAIXA`) e pôr a escolha na tela.
-  - **Testes de navegador:** nenhum e2e novo foi rodado. O `e2e/masmorra.mjs` pode precisar clicar na escolha da masmorra,
-    que agora aparece antes da partida; o `e2e/catalogo-de-insignias.mjs` está escrito e não rodado. Ninguém jogou nada
-    disso com gente: o equilíbrio de todos os jogos é chute medido contra os pilotos.
+  - **Testes de navegador (rodados em 20/11/2026):** passaram `masmorra.mjs` (clicando na escolha da masmorra),
+    `catalogo-de-insignias.mjs`, `bichos-arena.mjs` (com o mato), `ponte.mjs` (a faixa do celular quebrava em 2 linhas desde o
+    cabo: a amostra de 20 px perdia para a regra geral, que vinha depois no CSS) e `ponte-levadica.mjs`. Não rodados: `quiz.mjs` (pede o
+    LiveKit) e nenhum das Tocas 2×2. Ninguém jogou nada disso com gente: o equilíbrio é chute medido contra os pilotos.
 - **Decisões dele, em aberto:**
   1. Os nomes **Armadilha** (o caçador) e **Caldeirão** (a bruxa) no Lobisomem.
   2. O **robô de xadrez** segura o servidor ~0,8 s por lance no meio da partida (no normal já era assim): ir para um
@@ -1177,6 +1221,17 @@ cima (multiplicar sujava a madeira). Os veículos são o sedã e o caminhão de 
 espirra e faz onda. Abre direto no 3D (a caixa com a cor do céu enquanto carrega); sem WebGL, se a cena falhar ou o contexto cair, o 2D
 de reserva (`desenho.ts`, com a mesma fila; no site de desenvolvimento, `localStorage.ponte2d` força). Os modelos em `web/public/ponte/`
 com as licenças; o crédito nos termos, seção 10. Medido no Chrome de teste (sem placa): ~1,3 ms por quadro do lado do JavaScript.
+
+**A PONTE LEVADIÇA (20/11/2026, a pendência dos lotes de 19/11):** peça nova, a LEVADIÇA (`LEVADICA = 4`, 400 por casa), uma
+pista que abre, só nas fases do barco (`canais` na `Fase`; nas outras, a conferência recusa). A ponta A é o EIXO; a B é a PONTA, um
+nó só dela mesmo em cima de outro nó (a JUNTA NOVA), presa ao nó comum do ponto por uma TRAVA (mola de comprimento zero; sem nó comum,
+à primeira ponta que chegou). No passo 60 as travas soltam e ela gira até ficar em pé (a parametrização racional do círculo, só + − ×
+÷; a ponta fica fora da física, `movido`); do 120 ao 240 o barco passa e quebra o que entra no canal; ela deita de novo e a trava só
+prende se a ponta encostou; o tráfego sai no 330. Duas fases novas: o Canal (16) e o Porto (17, dois canais e o caminhão), com a
+referência `ponteComLevadica` e os orçamentos da busca gulosa. **As 15 fases de antes rodam a conta de antes**, comparadas bit a bit
+com a cópia antiga em 298 pontes; `web/test/ponte.test.ts` guarda o resultado de cada uma, e os recordes valem. Duas meias-levadiças
+se encontrando no meio travam, mas não seguram carga (as peças só fazem força ao comprido). Testes: `web/test/ponte.test.ts`,
+`server/test/minijogos-ponte.test.ts`, `e2e/ponte-levadica.mjs` (passou). Os tempos e a peça são chute: ninguém jogou com gente.
 
 **OS CLÁSSICOS DE MESA (04/11/2026, pedido dele, depois da pesquisa de jogos sem manutenção):** Dominó, Truco, Damas e
 Batalha naval, só no Coletivo. Regra pública e nenhum conteúdo para manter. **Damas e Batalha naval são de MESA**, no `duelo`
