@@ -868,6 +868,29 @@ medido contra o piloto automático); os Coletivos sem e2e com o LiveKit, só o t
   silenciar (lembrado no aparelho; "Desativar áudio" da chamada também cala). **Música, não:** a regra do "nunca fazer a nossa"
   vale; entra quando houver trilha de terceiro com licença, e o mesmo botão já a silencia.
 
+**OS ASSETS LIVRES (20/11/2026, pedido dele: "faça uma pesquisa por assets para os minigames", e depois "faça tudo"; feito por
+agentes, um por frente).** Créditos nos termos, seção 10.
+- **Os sons são amostras da Kenney (CC0)**, com o sintetizado de reserva: `somDosJogos.ts` toca a amostra do efeito
+  (`sonsDosJogosAmostras.ts`: versões e volume por efeito; `web/public/sons/`, com `FONTES.txt`), baixada no primeiro uso, com um
+  sorteio leve de altura e volume. Água, derrapagem, serra, chiado, torcida e o motor do kart seguem sintetizados (nenhum pacote serviu).
+  As amostras saem de `web/scripts/sons-dos-jogos.mjs` (ffmpeg). **Ninguém ouviu as escolhas**: foram pelo nome e pela medida de volume.
+- **A MÚSICA ENTROU, de terceiro e livre** (aprovado por ele com a REGRA DE ORIGEM: autor com histórico conhecido, faixa com página
+  própria e licença declarada nela, nada de coletânea de terceiros nem de música feita com IA, nada de SA/NC; a origem de cada faixa em
+  `web/public/musica/LEIA-ME.txt`). Hoje: três faixas CC0 de Juhani Junkala ("5 Chiptunes (Action)"), uma na Corrida, uma no Jato e
+  uma na Regata, SÓ com a corrida rodando (`musicaDosJogos.ts`, `useMusicaDoJogo`): volume baixo, cala com o mudo dos jogos, com o
+  "Desativar áudio" e sem foco. "Pure Raceway"/"Joyful Jungle" (MintoDog) ficaram de fora pela regra (conta nova e prolífica).
+  Compor continua proibido; jogo de ritmo continua esperando música licenciada que sirva.
+- **Arte de cenário da Kenney (CC0), só cenário e objetos (os personagens continuam nossos):** a Caça virou barraca de tiro (Shooting
+  Gallery e Crosshair Pack, `web/public/caca/`; patos e alvos do pacote, NÃO: lembram o Duck Hunt); a Masmorra, o Tiny Dungeon
+  (`web/public/masmorra/cenario.png`, por `web/scripts/masmorra-cenario.mjs`; o "vaso" aparece como barril, porque o pacote não tem vaso
+  — a confirmar com ele); o Pulo, o Pixel Platformer (as figuras de 18 px perdem as colunas do meio para caber na grade de 16); a
+  Esquadrilha, o chão, as explosões e os itens do Pixel Shmup (`nave/arte.ts`). Céus da Kenney (Skyboxes, `web/src/ceus.ts`) na Rota
+  Estelar, no Minigolfe 3D e na Gincana. Em todos, o desenho por código continua como reserva enquanto a imagem carrega.
+- **Ficou como estava, de propósito:** as cartas do Truco e as pedras do Dominó (o KayKit de hoje é melhor que o Playing Cards da Kenney,
+  e a Kenney não tem dominó); o parallax do ansimuz no Pulo (brigava com os blocos chapados). As teclas da Briga e do Comando já eram
+  o Input Prompts; só a Festa as desenhava por código, e agora usa `TeclaDesenhada.tsx` (as setas destacadas e o ␣ no lugar de "SPACE").
+- **Para baixar da Kenney**, o curl recebe 403: o zip sai pela página num Chrome de verdade (ou `/download-link/<id>` com o cookie dela).
+
 **O XADREZ (05/11/2026, pedido dele: "adicione xadrez também, com os assets"):** a partida inteira, ao lado dos Problemas de
 xadrez, na mesa de duas pessoas e no Solo contra o robô (`server/src/minijogo-partida-de-xadrez.ts`, id `partida-de-xadrez`). As
 regras são do chess.js (BSD-2): o servidor gera os lances e o site só escolhe; a promoção é sempre a dama. O robô olha o lance dele
