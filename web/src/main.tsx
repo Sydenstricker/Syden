@@ -13,6 +13,7 @@ import { aplicarCorDeDestaque } from './corDeDestaque';
 import { aplicarEscalaDoTexto } from './escalaDoTexto';
 import { aoMudarAjustes, getSettings } from './settings';
 import { vigiarFocoDaJanela } from './janelaComFoco';
+import { instalarToqueLongo } from './toqueLongo';
 
 // O tema e o idioma vêm antes de qualquer tela: assim ninguém vê o app piscar do escuro para o claro,
 // nem em português para depois virar inglês.
@@ -34,6 +35,7 @@ aplicarLarguras(lerLarguras());
 // Sem foco, nada se mexe: a marca que pausa as animações (janelaComFoco.ts).
 vigiarFocoDaJanela();
 
+instalarToqueLongo();
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ErroGeral>

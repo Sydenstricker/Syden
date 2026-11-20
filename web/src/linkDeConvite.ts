@@ -33,3 +33,34 @@ export function abrirConviteNoSyden(evento: { preventDefault(): void; ctrlKey?: 
   evento.preventDefault();
   window.dispatchEvent(new CustomEvent<ConviteDoLink>(EVENTO_DO_CONVITE, { detail: convite }));
 }
+
+/** O endereço do convite de uma comunidade, o mesmo que o salão e o menu da barra copiam. */
+export function enderecoDoConvite(code: string): string {
+  const raiz = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/';
+  return `${window.location.origin}${raiz}?convite=${encodeURIComponent(code)}`;
+}
+
+/**
+ * MANDAR O CONVITE (20/11/2026, relato dele: "no celular não consegui clicar na comunidade para compartilhar o link"). Na
+ * tela de toque, abre a folha de compartilhar do próprio sistema (WhatsApp, Telegram…), que é o que se faz com um link no
+ * celular; no computador, ou onde ela não existe, copia. 'cancelado' é a pessoa fechando a folha: não é erro.
+ */
+export async function mandarConvite(code: string, nome: string): Promise<'compartilhado' | 'copiado' | 'cancelado' | 'falhou'> {
+  const url = enderecoDoConvite(code);
+  const toque = typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches;
+  if (toque && typeof navigator.share === 'function') {
+    try {
+      await navigator.share({ title: nome, url });
+      return 'compartilhado';
+    } catch (e) {
+      if ((e as Error).name === 'AbortError') return 'cancelado';
+      // Sem permissão (a folha só abre num toque de verdade): cai na cópia.
+    }
+  }
+  try {
+    await navigator.clipboard.writeText(url);
+    return 'copiado';
+  } catch {
+    return 'falhou';
+  }
+}

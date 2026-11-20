@@ -38,6 +38,7 @@ export function MemberList({
   onWatchStream,
   onSendMessage,
   aoEditarPerfil,
+  abertaNoCelular = false,
 }: {
   online: PresenceEntry[];
   voiceMembers: VoiceMember[];
@@ -53,6 +54,8 @@ export function MemberList({
   onSendMessage: (userId: number) => void;
   /** O lápis do seu próprio cartão de perfil: abre Configurações → Guarda-roupa. */
   aoEditarPerfil?: () => void;
+  /** Tela estreita: a lista aparece como gaveta por cima (ver .members.aberta-no-celular). */
+  abertaNoCelular?: boolean;
 }) {
   const t = useT();
   const { members, cargos } = useDirectory();
@@ -151,7 +154,7 @@ export function MemberList({
   const grupos = naOrdem.map((g) => ({ ...g, gente: aqui.filter((m) => grupoDe(m) === g.chave) }));
 
   return (
-    <aside className="members">
+    <aside className={`members${abertaNoCelular ? ' aberta-no-celular' : ''}`}>
       <Puxador barra="membros" lado="esquerda" />
       {grupos.map(({ chave: chaveDoGrupo, titulo, className, gente }) =>
         gente.length === 0 ? null : (

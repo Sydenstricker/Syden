@@ -20958,3 +20958,96 @@ body.arrastando-barra {
   display: inline-flex;
   color: #f5d76e;
 }
+
+/* O CONVITE NA CAPA (Sidebar.tsx, 20/11/2026): no canto de baixo da faixa, ao lado do nome, longe do lápis e do botão de
+   baixar o app, que moram no alto. */
+.convite-da-capa {
+  position: absolute;
+  right: 8px;
+  bottom: 10px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.45);
+  color: #f2f3f5;
+  cursor: pointer;
+}
+
+.convite-da-capa:hover,
+.convite-da-capa:focus-visible {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.convite-da-capa.copiado {
+  color: var(--green, #3ba55d);
+}
+
+.sidebar-header:has(.convite-da-capa) .sidebar-brand {
+  padding-right: 36px;
+}
+
+@media (pointer: coarse) {
+  .convite-da-capa {
+    width: 38px;
+    height: 38px;
+    bottom: 6px;
+  }
+
+  .sidebar-header:has(.convite-da-capa) .sidebar-brand {
+    padding-right: 44px;
+  }
+
+  /* O TOQUE LONGO abre o menu (toqueLongo.ts): sem isto, o iPhone selecionaria o texto ou abriria a bolha do sistema. */
+  .rail-item,
+  .member,
+  .voice-member,
+  .user-panel,
+  .tile {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+
+/* AS PESSOAS NO CELULAR (20/11/2026): abaixo de 900 px a coluna de membros não cabe e sumia de vez, e com ela o caminho
+   para o perfil de alguém e a conversa privada. O botão de pessoas do cabeçalho a abre como gaveta, por cima. */
+.pessoas-so-no-celular {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .pessoas-so-no-celular {
+    display: grid;
+  }
+
+  .members.aberta-no-celular {
+    display: block;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(300px, 86vw);
+    /* Abaixo do cartão de perfil e dos menus (60), que se abrem de dentro dela. */
+    z-index: 56;
+    padding-top: calc(16px + env(safe-area-inset-top, 0px));
+    box-shadow: -8px 0 24px rgba(0, 0, 0, 0.45);
+  }
+
+  .members.aberta-no-celular .puxador {
+    display: none;
+  }
+
+  .fundo-das-pessoas {
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    padding: 0;
+  }
+}

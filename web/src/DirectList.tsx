@@ -74,7 +74,10 @@ export function DirectList({
 
         {conversas.length === 0 && (
           <p className="direct-empty">
-            {t('Nenhuma conversa ainda. Clique com o botão direito em alguém da comunidade e escolha "Enviar mensagem".')}
+            {/* No toque não há botão direito: o caminho é a lista de pessoas e o cartão de perfil (20/11/2026). */}
+            {typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches
+              ? t('Nenhuma conversa ainda. Toque em alguém na lista de pessoas da comunidade e escolha "Enviar mensagem".')
+              : t('Nenhuma conversa ainda. Clique com o botão direito em alguém da comunidade e escolha "Enviar mensagem".')}
           </p>
         )}
 

@@ -1,5 +1,5 @@
 import { RoomAudioRenderer, RoomContext } from '@livekit/components-react';
-import { UserX } from 'lucide-react';
+import { UserX, Users } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { type Socket, io } from 'socket.io-client';
 import { API_URL, ApiError, api, loadToken } from './api';
@@ -940,6 +940,11 @@ export function Shell({
    * conversa aparece ao lado. Dentro do palco só daria para mexer no que está dentro do palco.
    */
   const [sessao, setSessao] = useState(false);
+  // AS PESSOAS NO CELULAR (20/11/2026): abaixo de 900 px a coluna de membros vira gaveta, aberta pelo botão do cabeçalho.
+  const [pessoasNoCelular, setPessoasNoCelular] = useState(false);
+  const telaEstreita = () => typeof matchMedia === 'function' && matchMedia('(max-width: 900px)').matches;
+  // Trocou de canal, de comunidade ou de tela (inclusive pelo "Enviar mensagem" do perfil): a gaveta fecha.
+  useEffect(() => setPessoasNoCelular(false), [selectedId, view, communityId]);
 
   /** Onde a sessão conversa: o primeiro canal de texto da comunidade, que é o geral em quase todas. */
   const canalDaSessao = channels.find((c) => c.type === 'text');
@@ -1230,6 +1235,8 @@ export function Shell({
               setShowUsage(false);
               setPainel(null);
               setMostrandoBoasVindas(true);
+              // No celular, o salão é a outra coluna: sem isto, tocar em "Início" só acendia a linha e a lista continuava.
+              setMobileChannels(false);
             }}
             onOpenJogos={() => {
               setPainel('jogos');
@@ -1469,6 +1476,16 @@ export function Shell({
               role={community?.role ?? 'member'}
               mensagensIniciais={preCarregado?.channelId === selected.id ? preCarregado.mensagens : undefined}
               onMobileBack={() => setMobileChannels(true)}
+              acoesDoCabecalho={
+                <button
+                  className="header-toggle pessoas-so-no-celular"
+                  title={t('Mostrar a lista de pessoas')}
+                  aria-label={t('Mostrar a lista de pessoas')}
+                  onClick={() => setPessoasNoCelular(true)}
+                >
+                  <Users size={20} />
+                </button>
+              }
             />
           )}
           {/* O `!mostrandoBoasVindas` é o que falta na frase do comentário lá em cima: o canal de
@@ -1484,7 +1501,7 @@ export function Shell({
                 canaisDeTexto={channels.filter((c) => c.type === 'text')}
                 onMobileBack={() => setMobileChannels(true)}
                 membersOpen={preferences.showMembers}
-                onToggleMembers={() => updateSettings({ showMembers: !preferences.showMembers })}
+                onToggleMembers={() => (telaEstreita() ? setPessoasNoCelular(true) : updateSettings({ showMembers: !preferences.showMembers }))}
                 sessao={sessao}
                 aoAlternarSessao={() => setSessao((ligada) => !ligada)}
                 simples={modoSala}
@@ -1525,8 +1542,12 @@ export function Shell({
           )}
         </main>
         {/* A lista de pessoas acompanha tanto o canal de texto quanto a sala de voz (aí, se a pessoa quiser). */}
-        {view === 'community' && (selected?.type === 'text' || (selected?.type === 'voice' && preferences.showMembers)) && (
+        {view === 'community' && pessoasNoCelular && (
+          <button className="fundo-das-pessoas" aria-label={t('Fechar')} onClick={() => setPessoasNoCelular(false)} />
+        )}
+        {view === 'community' && (selected?.type === 'text' || (selected?.type === 'voice' && (preferences.showMembers || pessoasNoCelular))) && (
           <MemberList
+            abertaNoCelular={pessoasNoCelular}
             online={onlineHere}
             voiceMembers={voiceMembers}
             channels={channels}

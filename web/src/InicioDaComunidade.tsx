@@ -1,4 +1,5 @@
 import { CalendarDays, Gamepad2, Medal, Hash, Link2, Mic, Sparkles, Trophy, X } from 'lucide-react';
+import { mandarConvite } from './linkDeConvite';
 import { Calendario } from './Calendario';
 import { Bolao } from './Bolao';
 import { Conquistas } from './Conquistas';
@@ -164,14 +165,11 @@ export function InicioDaComunidade({
 
   /** Copia o link de convite. O aviso de "copiado" some sozinho: confirmação que fica vira enfeite. */
   async function copiarConvite() {
-    const endereco = `${window.location.origin}/app/?convite=${community.inviteCode}`;
-    try {
-      await navigator.clipboard.writeText(endereco);
+    // No celular, a folha de compartilhar do sistema; no computador, a cópia (linkDeConvite.ts, 20/11/2026).
+    const r = await mandarConvite(community.inviteCode!, community.name);
+    if (r === 'copiado') {
       setCopiado(true);
       setTimeout(() => setCopiado(false), 2000);
-    } catch {
-      // Navegador sem permissão de área de transferência: não há o que fazer, e travar a tela por
-      // causa disso seria pior do que o botão não responder.
     }
   }
 

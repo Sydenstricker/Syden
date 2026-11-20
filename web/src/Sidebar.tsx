@@ -22,7 +22,10 @@ import {
   Home,
   Trophy,
   Signal,
+  UserPlus,
+  Check,
 } from 'lucide-react';
+import { mandarConvite } from './linkDeConvite';
 import { nivelDoPing, usePing } from './ping';
 import { type KeyboardEvent, type ReactNode, useState } from 'react';
 import { ALGORITMOS_DA_CHAMADA } from './chaveDaChamada';
@@ -147,6 +150,7 @@ export function Sidebar({
   // QUEM ADMINISTRA CLICA NA CAPA E CAI NA CAPA (pedido dele, 02/11/2026): antes ela só se trocava em Configurações →
   // Comunidade, rolando até achar. Para os outros a faixa continua sendo só desenho.
   const capaEditavel = !directMode && managesCommunity && aoEditarCapa;
+  const [conviteCopiado, setConviteCopiado] = useState(false);
   // Assistindo junto: a sala ganha a pipoca, e quem está na plateia também (ver assistindo.ts).
   const assistindoJunto = (channelId: number) => salaAssistindoJunto(voiceMembers, channelId);
   const plateia = quemAssiste(voiceMembers);
@@ -208,6 +212,25 @@ export function Sidebar({
           >
             <Download size={18} />
           </a>
+        )}
+        {/* O CONVITE NA CAPA (20/11/2026): antes, só o botão direito no ícone da comunidade e a janela do salão o davam, e o
+            toque não tem botão direito ("no celular não consegui clicar na comunidade para compartilhar o link"). Todo membro
+            recebe o código desde 03/10/2026. No celular abre a folha de compartilhar do sistema; no computador, copia. */}
+        {!directMode && community.inviteCode && (
+          <button
+            className={`convite-da-capa${conviteCopiado ? ' copiado' : ''}`}
+            title={conviteCopiado ? t('Link copiado!') : t('Copiar link de convite')}
+            aria-label={conviteCopiado ? t('Link copiado!') : t('Copiar link de convite')}
+            onClick={async () => {
+              const r = await mandarConvite(community.inviteCode!, community.name);
+              if (r === 'copiado') {
+                setConviteCopiado(true);
+                setTimeout(() => setConviteCopiado(false), 2000);
+              }
+            }}
+          >
+            {conviteCopiado ? <Check size={16} aria-hidden="true" /> : <UserPlus size={16} aria-hidden="true" />}
+          </button>
         )}
         {/* O lápis diz que a faixa se clica (e dá a quem usa teclado um lugar para chegar). */}
         {capaEditavel && (
