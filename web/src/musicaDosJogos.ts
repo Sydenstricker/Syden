@@ -18,16 +18,113 @@ import { aoMudarSomDosJogos, somDosJogosMudo } from './somDosJogos';
  * buffer é sem emenda, como o autor fez. O arquivo só é baixado na primeira vez que a trilha é pedida.
  */
 
-export type Trilha = 'corrida' | 'jato' | 'regata';
-
-const ARQUIVOS: Record<Trilha, string> = {
+/** As trilhas, pelo nome da faixa (uma faixa serve a vários jogos: `TRILHA_DO_JOGO`). */
+export const ARQUIVOS = {
   corrida: 'musica/junkala-level-1.ogg',
   jato: 'musica/junkala-level-2.ogg',
   regata: 'musica/junkala-level-3.ogg',
-};
+  // ação e arcade
+  'stage-1': 'musica/junkala-stage-1.ogg',
+  'stage-2': 'musica/junkala-stage-2.ogg',
+  'boss-fight': 'musica/junkala-boss-fight.ogg',
+  'stage-select': 'musica/junkala-stage-select.ogg',
+  ending: 'musica/junkala-ending.ogg',
+  'heavy-metal': 'musica/junkala-heavy-metal.ogg',
+  'super-action-6': 'musica/junkala-super-action-6.ogg',
+  'super-action-7': 'musica/junkala-super-action-7.ogg',
+  'super-action-9': 'musica/junkala-super-action-9.ogg',
+  'space-upbeat': 'musica/junkala-space-upbeat.ogg',
+  // esporte e festa
+  'retro-sports-3': 'musica/junkala-retro-sports-3.ogg',
+  'retro-sports-final': 'musica/junkala-retro-sports-final.ogg',
+  sporty: 'musica/junkala-sporty.ogg',
+  bazaar: 'musica/junkala-bazaar.ogg',
+  'sunshine-coast': 'musica/junkala-sunshine-coast.ogg',
+  'home-town': 'musica/junkala-home-town.ogg',
+  'where-time-stands-still': 'musica/junkala-where-time-stands-still.ogg',
+  // aventura e estratégia
+  grasslands: 'musica/junkala-grasslands.ogg',
+  'thael-mines': 'musica/junkala-thael-mines.ogg',
+  'tropical-island': 'musica/junkala-tropical-island.ogg',
+  'army-approaching': 'musica/junkala-army-approaching.ogg',
+  'preparing-for-battle': 'musica/junkala-preparing-for-battle.ogg',
+  // calma: quebra-cabeça e mesa
+  'summer-memories': 'musica/junkala-summer-memories.ogg',
+  'peaceful-days': 'musica/junkala-peaceful-days.ogg',
+  'a-place-i-call-home': 'musica/junkala-a-place-i-call-home.ogg',
+} as const;
+
+export type Trilha = keyof typeof ARQUIVOS;
 
 /** O volume da música, abaixo dos efeitos (que saem a 0,16): ela é o fundo. */
 export const VOLUME = 0.09;
+/** Nas mesas e nos quebra-cabeças pensados, ainda mais baixo: ali se pensa e se conversa. */
+export const VOLUME_CALMO = 0.055;
+const CALMAS: ReadonlySet<Trilha> = new Set<Trilha>(['peaceful-days', 'a-place-i-call-home']);
+export function volumeDa(trilha: Trilha): number {
+  return CALMAS.has(trilha) ? VOLUME_CALMO : VOLUME;
+}
+
+/**
+ * A trilha de cada jogo da estante, tocada por `useMusicaDaPartida` (Minijogo.tsx) enquanto a partida corre. Ficam DE FORA
+ * (null) os jogos em que a CONVERSA é o jogo: Stop, Lobisomem, Desenha e adivinha, Palavra secreta, os quizzes e o Truco
+ * (fala-se "truco"). Corrida, Jato e Regata pedem a deles no próprio componente (a pausa, a largada) e não estão aqui; o
+ * Minigolfe da toca (2D) saiu da estante. Jogo que não está aqui fica em silêncio.
+ */
+export const TRILHA_DO_JOGO: Readonly<Record<string, Trilha | null>> = {
+  // ação, arcade, plataforma
+  plataforma: 'stage-1',
+  gincana: 'stage-2',
+  torre: 'ending',
+  blocos: 'stage-select',
+  chefe: 'boss-fight',
+  ringue: 'boss-fight',
+  nave: 'super-action-6',
+  comando: 'super-action-7',
+  transito: 'super-action-7',
+  briga: 'super-action-9',
+  pinball: 'super-action-9',
+  arena: 'heavy-metal',
+  duelo: 'heavy-metal',
+  balao: 'heavy-metal',
+  estelar: 'space-upbeat',
+  caca: 'bazaar',
+  // esporte e festa
+  futebol: 'retro-sports-3',
+  carrinhos: 'retro-sports-final',
+  skate: 'retro-sports-final',
+  festa: 'sporty',
+  cozinha: 'sunshine-coast',
+  tabuleiro: 'home-town',
+  cidades: 'where-time-stands-still',
+  planador: 'tropical-island',
+  golfe3d: 'tropical-island',
+  // RPG, aventura, estratégia
+  bichos: 'grasslands',
+  masmorra: 'thael-mines',
+  lendas: 'army-approaching',
+  tocas: 'preparing-for-battle',
+  // quebra-cabeça e mesa
+  ponte: 'summer-memories',
+  tamanho: 'summer-memories',
+  sudoku: 'a-place-i-call-home',
+  xadrez: 'a-place-i-call-home',
+  gomoku: 'peaceful-days',
+  mancala: 'peaceful-days',
+  damas: 'peaceful-days',
+  'partida-de-xadrez': 'peaceful-days',
+  naval: 'peaceful-days',
+  domino: 'peaceful-days',
+  // a conversa é o jogo: sem música, de propósito
+  stop: null,
+  lobisomem: null,
+  desenho: null,
+  palavra: null,
+  truco: null,
+  monstros: null,
+  mitologia: null,
+  paises: null,
+};
 const ENTRADA_S = 1.2;
 const SAIDA_S = 0.6;
 
@@ -148,7 +245,7 @@ const motorWeb: Motor = {
       const g = saida.gain;
       g.cancelScheduledValues(inicio);
       g.setValueAtTime(0.0001, inicio);
-      g.exponentialRampToValueAtTime(VOLUME, inicio + ENTRADA_S);
+      g.exponentialRampToValueAtTime(volumeDa(trilha), inicio + ENTRADA_S);
     });
   },
   parar() {
@@ -219,6 +316,21 @@ export function useMusicaDoJogo(trilha: Trilha | null) {
     pedirMusica(trilha);
     return () => pedirMusica(null);
   }, [trilha]);
+}
+
+/**
+ * A música da partida da estante (Minijogo.tsx): a trilha de `TRILHA_DO_JOGO` enquanto a partida corre (`rodando`: nem o
+ * convite, nem o placar do fim). O jogo que não está na tabela (Corrida, Jato e Regata, que pedem a deles por dentro) NÃO é
+ * tocado por aqui, nem para pedir silêncio: senão o pedido de fora calaria o de dentro.
+ */
+export function useMusicaDaPartida(jogo: string | null, rodando: boolean) {
+  const naTabela = jogo !== null && Object.prototype.hasOwnProperty.call(TRILHA_DO_JOGO, jogo);
+  const trilha = naTabela && rodando ? TRILHA_DO_JOGO[jogo!] : null;
+  useEffect(() => {
+    if (!naTabela) return;
+    pedirMusica(trilha);
+    return () => pedirMusica(null);
+  }, [naTabela, trilha]);
 }
 
 // os testes de navegador leem o que está tocando (só no site de desenvolvimento)

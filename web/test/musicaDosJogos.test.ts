@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { criarMaestro, type Motor, type Trilha } from '../src/musicaDosJogos';
+import { existsSync, readFileSync } from 'node:fs';
+import { ARQUIVOS, criarMaestro, TRILHA_DO_JOGO, VOLUME, volumeDa, type Motor, type Trilha } from '../src/musicaDosJogos';
+import { JOGOS } from '../src/minijogos';
 
 /** Um motor falso: guarda o que toca agora e quanto tempo "passou" em cada trilha. */
 function motorFalso() {
@@ -87,5 +89,36 @@ describe('a música dos jogos', () => {
     maestro.conferir();
     maestro.pedir('jato');
     assert.deepEqual(m.log, ['tocar jato 0']);
+  });
+});
+
+describe('a trilha de cada jogo', () => {
+  const pasta = new URL('../public/', import.meta.url);
+  const leiaMe = readFileSync(new URL('musica/LEIA-ME.txt', pasta), 'utf8');
+
+  it('todo arquivo existe e tem a origem no LEIA-ME', () => {
+    for (const arquivo of Object.values(ARQUIVOS)) {
+      assert.ok(existsSync(new URL(arquivo, pasta)), arquivo);
+      assert.ok(leiaMe.includes(arquivo.replace('musica/', '')), `${arquivo} sem origem no LEIA-ME`);
+    }
+  });
+
+  it('todo jogo da estante tem a sua decisão (trilha ou silêncio), menos os que pedem a deles por dentro', () => {
+    const porDentro = new Set(['corrida', 'jato', 'barco', 'golfe']);
+    for (const { id } of JOGOS) {
+      if (porDentro.has(id)) assert.ok(!(id in TRILHA_DO_JOGO), id);
+      else assert.ok(id in TRILHA_DO_JOGO, `${id} sem decisão de música`);
+    }
+    assert.ok('arena' in TRILHA_DO_JOGO);
+  });
+
+  it('onde a conversa é o jogo, silêncio; nas mesas, mais baixo', () => {
+    for (const id of ['stop', 'lobisomem', 'desenho', 'palavra', 'truco', 'monstros', 'mitologia', 'paises']) {
+      assert.equal(TRILHA_DO_JOGO[id], null, id);
+    }
+    for (const id of ['gomoku', 'mancala', 'damas', 'partida-de-xadrez', 'naval', 'domino']) {
+      const trilha = TRILHA_DO_JOGO[id] as Trilha;
+      assert.ok(trilha && volumeDa(trilha) < VOLUME, id);
+    }
   });
 });

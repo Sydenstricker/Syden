@@ -2,15 +2,83 @@ MÚSICA DOS MINI-GAMES: SÓ DE TERCEIROS, COM LICENÇA (ver "Música: nunca faze
 
 Regra de origem: autor com histórico conhecido, faixa com página própria e licença declarada nela, nada de
 coletânea montada por terceiros, nada feito com IA, nada de CC BY-SA ou NC. Aqui só os arquivos usados,
-convertidos para OGG Vorbis (q2, ~95 kbps) a partir dos WAV originais, sem cortar nada (os laços são do autor).
+convertidos para OGG Vorbis (q2, ~95 kbps), sem cortar nada (os laços são do autor). Quais jogos tocam cada
+faixa: TRILHA_DO_JOGO em web/src/musicaDosJogos.ts.
+
+Todas as faixas são de Juhani Junkala (SubspaceAudio), compositor e designer de som de formação clássica, com
+mais de 20 anos de carreira (https://juhanijunkala.com/), publicadas por ele mesmo na conta dele no OpenGameArt
+(https://opengameart.org/users/subspaceaudio), cada pacote com a página própria e a licença CC0 1.0
+(https://creativecommons.org/publicdomain/zero/1.0/) declarada nela. Conferido em 20/11/2026.
 
 junkala-level-1.ogg  ← "Level 1"  (Corrida dos coelhos)
 junkala-level-2.ogg  ← "Level 2"  (Coelhos a jato)
 junkala-level-3.ogg  ← "Level 3"  (Regata da toca)
-  Autor:     Juhani Junkala (SubspaceAudio), compositor com mais de 20 anos de carreira
+junkala-ending.ogg   ← "Ending"   (A torre do celeiro)
   Obra:      "5 Chiptunes (Action)", parte do "Retro Game Music Pack"
   Página:    https://opengameart.org/content/5-chiptunes-action
   Arquivo:   https://opengameart.org/sites/default/files/5%20Action%20Chiptunes%20By%20Juhani%20Junkala.zip
-  Licença:   CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/), declarada na página e no INFO.txt
-             do pacote, copiado ao lado como LICENCA-Juhani-Junkala.txt
-  Conferido: 20/11/2026
+  Licença:   CC0 1.0, na página e no INFO.txt do pacote, copiado ao lado como LICENCA-Juhani-Junkala.txt
+  Conversão: dos WAV originais; os três primeiros sem mudar o volume, o "Ending" com +4,5 dB e limitador.
+
+junkala-stage-1.ogg       ← "1. Stage 1"     (Pulo do coelho)
+junkala-stage-2.ogg       ← "2. Stage2"      (Gincana da toca)
+junkala-boss-fight.ogg    ← "3. Boss Fight"  (Chefe da turma, Ringue da toca)
+junkala-stage-select.ogg  ← "4. Stage Select" (Horta em cascata)
+  Obra:      "4 Chiptunes (Adventure)" (26/05/2017)
+  Página:    https://opengameart.org/content/4-chiptunes-adventure
+  Arquivo:   https://opengameart.org/sites/default/files/Juhani%20Junkala%20%5BChiptune%20Adventures%5D%20WAV.zip
+  Licença:   CC0 1.0, na página e no INFO.txt do pacote, copiado ao lado como LICENCA-Juhani-Junkala-2017.txt
+
+junkala-heavy-metal.ogg         ← "006 [Heavy Metal Chiptunes] bgm_stage_F (faster)" (Arena dos bichos, Duelo de aviõezinhos, Estoura-balão)
+junkala-retro-sports-3.ogg      ← "129 [Retro Sports] bgm_stage_3"                  (Futebol dos coelhos)
+junkala-retro-sports-final.ogg  ← "133 [Retro Sports] bgm_stage_final"              (Carrinhos da toca, Rolê do coelho)
+junkala-super-action-6.ogg      ← "215 [Super Action Chiptunes] bgm_stage_6"        (Esquadrilha da toca)
+junkala-super-action-7.ogg      ← "216 [Super Action Chiptunes] bgm_stage_7"        (Comando cenoura, Trânsito da toca)
+junkala-super-action-9.ogg      ← "218 [Super Action Chiptunes] bgm_stage_9"        (Briga na horta, Pinball da horta)
+junkala-sporty.ogg              ← "384 [Misc Extras] bgm_menu_title_6_sporty"       (Festa dos coelhos)
+junkala-space-upbeat.ogg        ← "397 [Misc Extras] bgm_space_upbeat_F"            (Rota estelar)
+  Obra:      "12 Music Loops" (20/12/2024; tiradas do pacote "400 Indie Game Music Loops" do próprio autor)
+  Página:    https://opengameart.org/content/12-music-loops
+  Arquivo:   https://opengameart.org/sites/default/files/12_indie_game_music_loops_0.zip
+  Licença:   CC0 1.0, declarada na página (o zip não traz arquivo de licença; vale a da página).
+  Fora, de propósito: "373 bgm_gojira_battle_A" (o nome lembra uma franquia).
+
+junkala-grasslands.ogg     ← "Exploration1 - Grasslands"      (Bichos da toca, a luta por turnos)
+junkala-thael-mines.ogg    ← "Exploration3 - Tha'el Mines"    (Masmorra da toca)
+junkala-tropical-island.ogg ← "Exploration6 - Tropical Island" (Planador da toca, Minigolfe 3D)
+  Obra:      "JRPG Pack 1 Exploration" (12/05/2017)
+  Página:    https://opengameart.org/content/jrpg-pack-1-exploration
+  Arquivo:   https://opengameart.org/sites/default/files/JRPG%20Music%20Pack%20%231%20%5BExploration%5D%20by%20Juhani%20Junkala.zip
+  Licença:   CC0 1.0, na página e no INFO.txt do pacote (o mesmo texto de LICENCA-Juhani-Junkala-2017.txt)
+
+junkala-home-town.ogg               ← "Town1 - Home Town"               (Tabuleiro da turma)
+junkala-where-time-stands-still.ogg ← "Town2 - Where Time Stands Still" (Capitais)
+junkala-sunshine-coast.ogg          ← "Town3 - Sunshine Coast"          (Cozinha da toca)
+junkala-bazaar.ogg                  ← "Town4 - Bazaar"                  (Caça às pragas)
+  Obra:      "JRPG Pack 2 Towns" (12/05/2017)
+  Página:    https://opengameart.org/content/jrpg-pack-2-towns
+  Arquivo:   https://opengameart.org/sites/default/files/JRPG%20Music%20Pack%20%232%20%5BTowns%5D%20by%20Juhani%20Junkala.zip
+  Licença:   CC0 1.0, na página e no INFO.txt do pacote (o mesmo texto de LICENCA-Juhani-Junkala-2017.txt)
+
+junkala-a-place-i-call-home.ogg ← "Calm1 - A Place I Call Home" (Sudoku, Problemas de xadrez; volume mais baixo)
+junkala-peaceful-days.ogg       ← "Calm3 - Peaceful Days"       (as mesas: Cinco em linha, Mancala, Damas, Xadrez,
+                                                                  Batalha naval, Dominó; volume mais baixo)
+junkala-summer-memories.ogg     ← "Calm5 - Summer Memories"     (Ponte da toca, Qual é o tamanho?)
+  Obra:      "JRPG Pack 4 Calm" (14/05/2017)
+  Página:    https://opengameart.org/content/jrpg-pack-4-calm
+  Arquivo:   https://opengameart.org/sites/default/files/JRPG%20Music%20Pack%20%234%20%5BCalm%5D%20by%20Juhani%20Junkala_0.zip
+  Licença:   CC0 1.0, na página e no INFO.txt do pacote (o mesmo texto de LICENCA-Juhani-Junkala-2017.txt)
+
+junkala-army-approaching.ogg     ← "Action2 - Army Approaching"   (Lendas da toca)
+junkala-preparing-for-battle.ogg ← "Action3 - Preparing For Battle" (Tocas e Torres)
+  Obra:      "JRPG Pack 5 Action"
+  Página:    https://opengameart.org/content/jrpg-pack-5-action
+  Arquivo:   https://opengameart.org/sites/default/files/JRPG%20Music%20Pack%20%235%20%5BAction%5D%20by%20Juhani%20Junkala.zip
+  Licença:   CC0 1.0, na página e no INFO.txt do pacote (o mesmo texto de LICENCA-Juhani-Junkala-2017.txt)
+
+O VOLUME DAS FAIXAS DE 20/11/2026: medido em LUFS (ebur128) e levado perto das três primeiras (que medem -7 LUFS), com um
+limitador (alimiter a -1 dB) onde o ganho passaria do teto: ação e esporte em torno de -9 a -10 LUFS, as de cidade e
+aventura em torno de -10,5 a -11,5, e as calmas em torno de -12. O jogo ainda toca as calmas das mesas mais baixo
+(VOLUME_CALMO). Os originais ficam fora do repositório, em e2e/3D/Assets/junkala-*/.
+
+SEM MÚSICA, DE PROPÓSITO: Stop, Lobisomem, Desenha e adivinha, Palavra secreta, os quizzes e o Truco (a conversa é o jogo).
