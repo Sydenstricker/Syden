@@ -106,6 +106,22 @@ test('o Solo: o percurso honesto vira recorde; comandos que não chegam, inváli
   assert.ok(db.gincanaDe(anaId).length === 1);
 });
 
+test('o Solo: recomeçar e sair no meio da corrida (20/11/2026); o relógio recomeça junto', () => {
+  const { ctx } = contexto([anaId], { solo: true });
+  const jogo = gincana.comecar(ctx, { naSala: [anaId], criadaPor: anaId, corpo: {} }) as Jogo;
+  assert.equal(jogo.acao(anaId, { tipo: 'correr', percurso: 'ponte-2' }), null);
+  const rodada = jogo.publico().rodada as number;
+  agora += 120_000;
+  // recomeçou no meio: a rodada é nova, e o relógio do servidor conta de agora (chegar já é cedo demais)
+  assert.equal(jogo.acao(anaId, { tipo: 'correr', percurso: 'ponte-2' }), null);
+  assert.equal(jogo.publico().rodada, rodada + 1);
+  assert.equal(jogo.acao(anaId, { tipo: 'chegada', entradas: honesto('ponte-2').entradas }), 'Corrida inválida.');
+  // o "Sair" da pausa: de volta à escolha, e a corrida que andava não conta
+  assert.equal(jogo.acao(anaId, { tipo: 'escolher' }), null);
+  assert.equal(jogo.publico().fase, 'escolha');
+  assert.equal(jogo.acao(anaId, { tipo: 'chegada', entradas: honesto('ponte-2').entradas }), 'A corrida não está andando.');
+});
+
 test('o Solo: o fantasma é só de amigo aceito', () => {
   // a bia guarda um recorde; a ana não é amiga dela
   const { ctx } = contexto([biaId], { solo: true });

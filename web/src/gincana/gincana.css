@@ -101,7 +101,7 @@
   font-size: calc(64px * var(--escala-do-texto, 1));
 }
 
-/* os botões de toque: a cruz à esquerda, o pulo à direita */
+/* os botões de toque: a alavanca à esquerda (toqueDosJogos.tsx, 20/11/2026), o pulo e o mergulho à direita */
 .gincana-toque {
   position: absolute;
   inset: auto 0 0 0;
@@ -118,27 +118,6 @@
   color: #fff;
   font-size: 18px;
   touch-action: none;
-}
-.gincana-cruz {
-  display: grid;
-  grid-template-columns: repeat(3, 46px);
-  grid-template-rows: repeat(3, 46px);
-  gap: 2px;
-}
-.gincana-cruz button {
-  border-radius: 10px;
-}
-.gincana-cruz .cima {
-  grid-area: 1 / 2;
-}
-.gincana-cruz .esquerda {
-  grid-area: 2 / 1;
-}
-.gincana-cruz .direita {
-  grid-area: 2 / 3;
-}
-.gincana-cruz .baixo {
-  grid-area: 3 / 2;
 }
 .gincana-pulo {
   width: 76px;

@@ -338,3 +338,55 @@
   width: 72px;
   height: 108px;
 }
+
+/* 20/11/2026: os controles de toque (a alavanca à esquerda, os quatro botões no losango do controle à direita). Só na tela de
+   toque (quem desenha decide pelo pointer: coarse); os botões são figura, com o nome para o leitor de tela. */
+.skate-toque {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 8px;
+  pointer-events: none;
+  z-index: 2;
+}
+.skate-toque-botoes {
+  display: grid;
+  grid-template-columns: repeat(3, 42px);
+  grid-template-rows: repeat(3, 42px);
+  gap: 2px;
+  pointer-events: none;
+}
+.skate-toque-botoes button {
+  pointer-events: auto;
+  border-radius: 50%;
+  border: 2px solid rgba(251, 243, 228, 0.6);
+  background: rgba(30, 24, 34, 0.45);
+  color: #fbf3e4;
+  font-size: 1.2rem;
+  padding: 0;
+}
+.skate-toque-botoes .manual {
+  grid-area: 1 / 2;
+}
+.skate-toque-botoes .flip {
+  grid-area: 2 / 1;
+}
+.skate-toque-botoes .grab {
+  grid-area: 2 / 3;
+}
+.skate-toque-botoes .pulo {
+  grid-area: 3 / 2;
+  background: rgba(30, 24, 34, 0.6);
+}
+@media (max-width: 480px) {
+  .skate-toque .alavanca-dos-jogos {
+    width: 88px;
+    height: 88px;
+  }
+  .skate-toque-botoes {
+    grid-template-columns: repeat(3, 36px);
+    grid-template-rows: repeat(3, 36px);
+  }
+}

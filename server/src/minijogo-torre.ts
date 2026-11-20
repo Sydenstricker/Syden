@@ -93,7 +93,7 @@ function solo(ctx: Ctx, eu: number, torreInicial: string, agora: () => number) {
         return null;
       }
       if (c.tipo === 'escolher') {
-        if (fase === 'correndo') return 'A subida está andando.';
+        // no meio da subida também (20/11/2026: o "Sair" da pausa): a subida que estava andando só não conta
         fase = 'escolha';
         resultado = null;
         ctx.avisar();

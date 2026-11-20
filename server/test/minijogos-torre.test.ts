@@ -90,6 +90,12 @@ test('no Solo: escolher a torre, subir, e o melhor tempo vira o recorde; o reló
   assert.equal(db.recordeDaTorre(anaId, 'paiol-1')?.tempoMs, 40_000);
   assert.equal(m.terminou(), false, 'a partida solo não acaba sozinha');
   assert.ok(j.acao(biaId, { tipo: 'correr' }), 'quem não é dono da partida solo só assiste');
+  // o "Sair" da pausa (20/11/2026): escolher no meio da subida volta à escolha, e a subida que andava não conta
+  assert.equal(j.acao(anaId, { tipo: 'correr', fantasmas: [] }), null);
+  assert.equal(j.acao(anaId, { tipo: 'escolher' }), null);
+  assert.equal(j.publico(anaId).fase, 'escolha');
+  agora += 60_000;
+  assert.ok(j.acao(anaId, subida('paiol-1', 2400)), 'chegar depois de sair não vale');
 });
 
 test('os fantasmas: o meu e os dos amigos aceitos; o de quem não é amigo não vem', async () => {

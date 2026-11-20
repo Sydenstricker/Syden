@@ -6,7 +6,8 @@ import { api } from './api';
 import { tempoLegivel } from './corrida/fisica';
 import { nomeDaPistaEm } from './corrida/nomes';
 import { useT } from './i18n';
-import { comandoDaPausa, TelaDePausa, usePausaComEsc } from './pausaDosJogos';
+import { comandoDaPausa, TelaDePausa, usePausaComEsc, useTeclaDeRecomecar } from './pausaDosJogos';
+import { useGrupoDeToque } from './toqueDosJogos';
 import type { Agir } from './Minijogo';
 import type { Partida } from './minijogos';
 import { H, W } from './plataforma/desenho';
@@ -14,6 +15,7 @@ import { COPAS_DO_PULO, FASES, fasePorId, type Fase } from './plataforma/fases';
 import { passosEmMs, type Comandos } from './plataforma/fisica';
 import { guardarPosicaoDoRival, rodarFase, type LinhaDaOrdem, type PosicaoDoRival, type Rival } from './plataforma/laco';
 import { Trofeus } from './Trofeus';
+import { useMusicaDoJogo } from './musicaDosJogos';
 
 /**
  * O PULO DO COELHO (03/11/2026): corrida de plataforma de 16 bits, só a mecânica (correr, pular mais alto segurando, a
@@ -106,28 +108,28 @@ function useControles(ativo: boolean) {
   return { comandos, tocar };
 }
 
+/**
+ * Os botões de toque. O dedo é seguido pela POSIÇÃO (20/11/2026, a segunda auditoria): o polegar desliza de ◀ para ▶ sem
+ * levantar, e o pulo vale junto com outro dedo (toqueDosJogos.ts).
+ */
 function BotoesDeToque({ controles }: { controles: ReturnType<typeof useControles> }) {
   const t = useT();
-  const botao = (qual: 'esquerda' | 'direita' | 'pula') => ({
-    onPointerDown: (e: React.PointerEvent) => {
-      e.preventDefault();
-      controles.tocar(qual, true);
-    },
-    onPointerUp: () => controles.tocar(qual, false),
-    onPointerCancel: () => controles.tocar(qual, false),
-    onPointerLeave: () => controles.tocar(qual, false),
+  const grupo = useGrupoDeToque((s) => {
+    controles.tocar('esquerda', s.has('esquerda'));
+    controles.tocar('direita', s.has('direita'));
+    controles.tocar('pula', s.has('pula'));
   });
   return (
-    <div className="pulo-toque">
+    <div className="pulo-toque" {...grupo}>
       <div>
-        <button type="button" aria-label={t('Para a esquerda')} {...botao('esquerda')}>
+        <button type="button" data-toque="esquerda" aria-label={t('Para a esquerda')}>
           ◀
         </button>
-        <button type="button" aria-label={t('Para a direita')} {...botao('direita')}>
+        <button type="button" data-toque="direita" aria-label={t('Para a direita')}>
           ▶
         </button>
       </div>
-      <button type="button" className="pulo-toque-pular" aria-label={t('Pular')} {...botao('pula')}>
+      <button type="button" className="pulo-toque-pular" data-toque="pula" aria-label={t('Pular')}>
         ⤒
       </button>
     </div>
@@ -271,8 +273,18 @@ export function JogoPlataforma({ eu, aoVoltar }: { eu: number; aoVoltar: () => v
   const controles = useControles(fase === 'correndo');
   // ESC pausa (só aqui, no Solo: na sala o relógio é o de todos)
   const { pausa, pausado, continuar } = usePausaComEsc(fase === 'correndo');
+  // a música só com a fase rodando (a da sala vem de Minijogo.tsx, pela TRILHA_DO_JOGO)
+  useMusicaDoJogo(fase === 'correndo' && !pausado ? 'stage-1' : null);
   /** Cada "Jogar de novo" é uma corrida nova. */
   const [rodada, setRodada] = useState(0);
+  /** RECOMEÇAR NA HORA (20/11/2026): a tecla R ou o botão da pausa largam a mesma fase do zero; nada vai ao servidor. */
+  const recomecar = () => {
+    continuar();
+    setResultado(null);
+    setFase('correndo');
+    setRodada((r) => r + 1);
+  };
+  useTeclaDeRecomecar(fase === 'correndo', recomecar);
   const quedas = useRef(0);
   const id = def.id;
 
@@ -462,7 +474,17 @@ export function JogoPlataforma({ eu, aoVoltar }: { eu: number; aoVoltar: () => v
           <canvas key={rodada} ref={canvas} width={W} height={H} />
           {fase === 'correndo' && <Placar placar={placar} total={def.cenouras.length} />}
           {fase === 'correndo' && <BotoesDeToque controles={controles} />}
-          {fase === 'correndo' && pausado && <TelaDePausa aoContinuar={continuar} icone={false} />}
+          {fase === 'correndo' && pausado && (
+            <TelaDePausa
+              aoContinuar={continuar}
+              aoRecomecar={recomecar}
+              aoSair={() => {
+                continuar();
+                setFase('largada');
+              }}
+              icone={false}
+            />
+          )}
           {fase === 'fim' && resultado && (
             <div className="corrida-fim">
               {resultado.recorde && <strong className="corrida-recorde">{t('Novo recorde!')}</strong>}

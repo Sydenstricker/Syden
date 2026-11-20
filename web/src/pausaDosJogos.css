@@ -30,3 +30,25 @@
   align-items: center;
   gap: 6px;
 }
+
+/* 20/11/2026: o Continuar, e quando o jogo os liga, o Jogar de novo (R) e o Sair */
+.pausa-do-jogo-botoes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 12px;
+}
+.pausa-do-jogo .btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.pausa-do-jogo kbd {
+  font: inherit;
+  font-size: 0.75em;
+  padding: 0 5px;
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  opacity: 0.7;
+}

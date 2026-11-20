@@ -1,0 +1,39 @@
+/* Os controles de toque dos jogos (toqueDosJogos.tsx): a alavanca e o retorno dos botões do grupo. As cores são as dos botões de
+   toque dos jogos vizinhos (corrida-toque, pulo-toque). */
+
+.alavanca-dos-jogos {
+  position: relative;
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  border: 2px solid rgba(251, 243, 228, 0.6);
+  background: rgba(30, 24, 34, 0.35);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  pointer-events: auto;
+  flex: none;
+}
+.alavanca-dos-jogos-pino {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 46px;
+  height: 46px;
+  margin: -23px 0 0 -23px;
+  border-radius: 50%;
+  background: rgba(251, 243, 228, 0.75);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+[data-toque] {
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+[data-toque].apertado {
+  filter: brightness(1.35);
+  transform: scale(0.94);
+}

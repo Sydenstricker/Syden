@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { tempoLegivel } from './corrida/fisica';
 import { chave, useT } from './i18n';
-import { comandoDaPausa, TelaDePausa, usePausaComEsc } from './pausaDosJogos';
+import { comandoDaPausa, TelaDePausa, usePausaComEsc, useTeclaDeRecomecar } from './pausaDosJogos';
+import { useGrupoDeToque } from './toqueDosJogos';
 import type { Agir } from './Minijogo';
 import type { Partida } from './minijogos';
 import { H, W } from './plataforma/desenho';
@@ -134,28 +135,25 @@ function useControles(ativo: boolean) {
   return { comandos, tocar };
 }
 
+/** Os botões de toque, com o dedo seguido pela posição (20/11/2026): o polegar desliza de ◀ para ▶ sem levantar. */
 function BotoesDeToque({ controles }: { controles: ReturnType<typeof useControles> }) {
   const t = useT();
-  const botao = (qual: 'esquerda' | 'direita' | 'pula') => ({
-    onPointerDown: (e: React.PointerEvent) => {
-      e.preventDefault();
-      controles.tocar(qual, true);
-    },
-    onPointerUp: () => controles.tocar(qual, false),
-    onPointerCancel: () => controles.tocar(qual, false),
-    onPointerLeave: () => controles.tocar(qual, false),
+  const grupo = useGrupoDeToque((s) => {
+    controles.tocar('esquerda', s.has('esquerda'));
+    controles.tocar('direita', s.has('direita'));
+    controles.tocar('pula', s.has('pula'));
   });
   return (
-    <div className="pulo-toque">
+    <div className="pulo-toque" {...grupo}>
       <div>
-        <button type="button" aria-label={t('Para a esquerda')} {...botao('esquerda')}>
+        <button type="button" data-toque="esquerda" aria-label={t('Para a esquerda')}>
           ◀
         </button>
-        <button type="button" aria-label={t('Para a direita')} {...botao('direita')}>
+        <button type="button" data-toque="direita" aria-label={t('Para a direita')}>
           ▶
         </button>
       </div>
-      <button type="button" className="pulo-toque-pular" aria-label={t('Pular')} {...botao('pula')}>
+      <button type="button" className="pulo-toque-pular" data-toque="pula" aria-label={t('Pular')}>
         ⤒
       </button>
     </div>
@@ -320,6 +318,9 @@ function TorreSolo({ estado, eu, agir }: { estado: EstadoTorre & Partida; eu: nu
   };
   const meu = recordes.find((r) => r.userId === eu) ?? null;
   const outros = recordes.filter((r) => r.userId !== eu);
+  // RECOMEÇAR NA HORA (20/11/2026): a tecla R ou a pausa pedem a subida de novo (o servidor aceita no meio dela: a anterior só
+  // não conta, e o relógio dele recomeça junto)
+  useTeclaDeRecomecar(estado.fase === 'correndo', correr);
 
   if (estado.fase === 'escolha') {
     return (
@@ -385,7 +386,7 @@ function TorreSolo({ estado, eu, agir }: { estado: EstadoTorre & Partida; eu: nu
   return (
     <div className="torre">
       <div className="corrida-tela torre-tela">
-        <SubidaSolo key={`${estado.partidaId}-${estado.rodada ?? 0}`} estado={estado} def={def} agir={agir} aoQuedas={setQuedas} aoErro={setErro} />
+        <SubidaSolo key={`${estado.partidaId}-${estado.rodada ?? 0}`} estado={estado} def={def} agir={agir} aoQuedas={setQuedas} aoErro={setErro} aoRecomecar={correr} aoSair={() => tentar({ tipo: 'escolher' })} />
         {estado.fase === 'resultado' && r && (
           <div className="corrida-fim">
             {r.recorde && <strong className="corrida-recorde">{t('Novo recorde!')}</strong>}
@@ -416,12 +417,16 @@ function SubidaSolo({
   agir,
   aoQuedas,
   aoErro,
+  aoRecomecar,
+  aoSair,
 }: {
   estado: EstadoTorre & Partida;
   def: Torre;
   agir: Agir;
   aoQuedas: (n: number) => void;
   aoErro: (e: string) => void;
+  aoRecomecar: () => void;
+  aoSair: () => void;
 }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const [placar, setPlacar] = usePlacar();
@@ -465,7 +470,7 @@ function SubidaSolo({
       <canvas ref={canvas} width={W} height={H} />
       {!acabou && <Placar placar={placar} />}
       {!acabou && <BotoesDeToque controles={controles} />}
-      {!acabou && pausado && <TelaDePausa aoContinuar={continuar} icone={false} />}
+      {!acabou && pausado && <TelaDePausa aoContinuar={continuar} aoRecomecar={aoRecomecar} aoSair={aoSair} icone={false} />}
     </>
   );
 }

@@ -4,7 +4,9 @@ import type { Socket } from 'socket.io-client';
 import { ComandosDoJogo } from './ComandosDosJogos';
 import { coresDoAvatar } from './coelho3d';
 import { useT } from './i18n';
-import { comandoDaPausa, TelaDePausa, usePausaComEsc } from './pausaDosJogos';
+import { lerControle } from './controleDosJogos';
+import { comandoDaPausa, TelaDePausa, usePausaComEsc, useTeclaDeRecomecar } from './pausaDosJogos';
+import { Alavanca, direcoesDaAlavanca, useGrupoDeToque } from './toqueDosJogos';
 import { tocar } from './somDosJogos';
 import {
   comboAberto,
@@ -196,6 +198,34 @@ function SkateSolo({ estado, eu, jogador, agir }: Props) {
   // A ESCOLHA DA PISTA (19/11/2026), antes do minuto: o servidor recomeça o relógio dele quando ela chega
   const [pista, setPista] = useState<string | null>(null);
   const [marcada, setMarcada] = useState(estado.pista ?? IDS_DAS_PISTAS[0]);
+  /** O TREINO LIVRE (20/11/2026): a pista sem relógio, só no site (o servidor nem sabe). */
+  const [livre, setLivre] = useState<string | null>(null);
+  /** Cada "Jogar de novo" (a pausa ou a tecla R) é uma sessão nova, do zero. */
+  const [rodada, setRodada] = useState(0);
+  const andando = livre !== null || (pista !== null && !fim && !!meu && meu.pontos === null);
+  const recomecar = () => {
+    // no minuto que vale, o relógio do servidor recomeça junto (só fica mais estrito); no treino, nada vai ao servidor
+    if (livre === null && pista !== null) Promise.resolve(agir({ tipo: 'pista', pista })).catch(() => {});
+    setRodada((r) => r + 1);
+  };
+  const sair = () => {
+    setLivre(null);
+    setPista(null);
+  };
+  useTeclaDeRecomecar(andando, recomecar);
+  if (livre !== null) {
+    return (
+      <Sessao
+        key={`livre-${rodada}`}
+        solo
+        livre
+        pista={Math.max(0, IDS_DAS_PISTAS.indexOf(livre))}
+        aoTerminar={() => {}}
+        aoRecomecar={recomecar}
+        aoSair={sair}
+      />
+    );
+  }
   if (fim || (meu && meu.pontos !== null)) return <Placar estado={estado} eu={eu} fim={fim} solo />;
   if (!jogador || !meu) return <p className="minijogo-situacao">…</p>;
   if (pista === null) {
@@ -229,12 +259,24 @@ function SkateSolo({ estado, eu, jogador, agir }: Props) {
           >
             {t('Começar')}
           </button>
+          <button type="button" className="btn-secondary" onClick={() => setLivre(marcada)}>
+            {t('Treino livre')}
+          </button>
         </div>
       </div>
     );
   }
   // ESC pausa só no Solo (o recorde é dele): na sala, o relógio é o de todos
-  return <Sessao key={estado.partidaId} solo pista={Math.max(0, IDS_DAS_PISTAS.indexOf(pista))} aoTerminar={(entradas) => void agir({ tipo: 'fim', entradas })} />;
+  return (
+    <Sessao
+      key={`${estado.partidaId}-${rodada}`}
+      solo
+      pista={Math.max(0, IDS_DAS_PISTAS.indexOf(pista))}
+      aoTerminar={(entradas) => void agir({ tipo: 'fim', entradas })}
+      aoRecomecar={recomecar}
+      aoSair={sair}
+    />
+  );
 }
 
 /** O mapa da pista, de cima (as peças com chão, por perfil), para a escolha. */
@@ -305,8 +347,75 @@ function SkateNaSala({ estado, eu, jogador, agir, restante = 0, socket = null, c
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
-// O TECLADO: setas andam (e giram no ar), Espaço pula (segurar carrega), Z flip, X grab, C manual
+// O TECLADO: setas andam (e giram no ar), Espaço pula (segurar carrega), Z flip, X grab, C manual.
+// O TOQUE E O CONTROLE (20/11/2026, a segunda auditoria: "só teclado"): a alavanca e os quatro botões na tela, e o direcional
+// (ou o analógico) e A, X, B, Y no controle de videogame. Os MESMOS comandos do teclado, somados: a física e o servidor não
+// mudam, e a seta junto com o botão dá as variações (Heelflip, Melon…) como no teclado.
 // ---------------------------------------------------------------------------------------------------------------------
+
+/** O controle de videogame em comandos do skate: o direcional ou o analógico andam, A pula, X flip, B grab, Y manual. */
+function comandosDoControle(): Comandos | null {
+  const c = lerControle();
+  if (!c) return null;
+  return {
+    frente: c.vertical < -0.4,
+    tras: c.vertical > 0.4,
+    esquerda: c.direcao < -0.4,
+    direita: c.direcao > 0.4,
+    pulo: c.a,
+    flip: c.x,
+    grab: c.b,
+    manual: c.y,
+  };
+}
+
+function useComandos() {
+  const teclado = useTeclado();
+  const toque = useRef<Comandos>({ ...NADA });
+  const juntos = useRef<Comandos>({ ...NADA });
+  /** Os comandos deste passo: o teclado, o toque e o controle, somados. */
+  const ler = (): Comandos => {
+    const a = teclado.current;
+    const b = toque.current;
+    const c = comandosDoControle() ?? NADA;
+    const j = juntos.current;
+    for (const k of Object.keys(NADA) as (keyof Comandos)[]) j[k] = a[k] || b[k] || c[k];
+    return j;
+  };
+  const alavanca = (x: number, y: number) => Object.assign(toque.current, direcoesComoComandos(x, y));
+  const botoes = (s: ReadonlySet<string>) => Object.assign(toque.current, { pulo: s.has('pulo'), flip: s.has('flip'), grab: s.has('grab'), manual: s.has('manual') });
+  return { ler, alavanca, botoes };
+}
+
+const direcoesComoComandos = (x: number, y: number) => {
+  const d = direcoesDaAlavanca(x, y);
+  return { frente: d.cima, tras: d.baixo, esquerda: d.esquerda, direita: d.direita };
+};
+
+/** Os controles na tela de toque: a alavanca à esquerda, e os quatro botões à direita, no losango do controle (A embaixo). */
+function ToqueDoSkate({ comandos }: { comandos: ReturnType<typeof useComandos> }) {
+  const t = useT();
+  const grupo = useGrupoDeToque(comandos.botoes);
+  return (
+    <div className="skate-toque">
+      <Alavanca aoMudar={comandos.alavanca} rotulo={t('Andar')} />
+      <div className="skate-toque-botoes" {...grupo}>
+        <button type="button" className="manual" data-toque="manual" aria-label={t('Manual')}>
+          ⇅
+        </button>
+        <button type="button" className="flip" data-toque="flip" aria-label={t('Kickflip')}>
+          ⟲
+        </button>
+        <button type="button" className="grab" data-toque="grab" aria-label={t('Grab')}>
+          ✋
+        </button>
+        <button type="button" className="pulo" data-toque="pulo" aria-label={t('Pular')}>
+          ⤒
+        </button>
+      </div>
+    </div>
+  );
+}
 
 function useTeclado() {
   const comandos = useRef<Comandos>({ ...NADA });
@@ -431,6 +540,9 @@ export function Sessao({
   contagemMs = CONTAGEM_MS,
   rivais,
   aoPosicao,
+  livre = false,
+  aoRecomecar,
+  aoSair,
 }: {
   aoTerminar: (entradas: Entradas, k: Skatista) => void;
   /** A pista (o índice em PISTAS). */
@@ -441,11 +553,17 @@ export function Sessao({
   contagemMs?: number;
   rivais?: Map<number, Rival>;
   aoPosicao?: (dados: Posicao) => void;
+  /** O TREINO LIVRE (20/11/2026, só no Solo e só no site): sem relógio, sem fim, nada vai ao servidor. */
+  livre?: boolean;
+  /** No Solo: o "Jogar de novo" e o "Sair" da pausa. */
+  aoRecomecar?: () => void;
+  aoSair?: () => void;
 }) {
   const t = useT();
   const caixa = useRef<HTMLDivElement>(null);
   const medidor = useRef<HTMLDivElement>(null);
-  const teclado = useTeclado();
+  const entrada = useComandos();
+  const [toque] = useState(() => !!window.matchMedia?.('(pointer: coarse)').matches);
   const [estado, setEstado] = useState<'carregando' | 'pronta' | 'falhou'>(() => (temWebGL() ? 'carregando' : 'falhou'));
   const [painel, setPainel] = useState<Painel>({
     pontos: 0,
@@ -561,8 +679,12 @@ export function Sessao({
                 continue;
               }
               antes = { x: k.x, y: k.y, z: k.z };
-              comandos = import.meta.env.DEV && window.skatePilotoAutomatico ? piloto(k) : teclado.current;
-              gravar.anotar(comandos);
+              comandos = import.meta.env.DEV && window.skatePilotoAutomatico ? piloto(k) : entrada.ler();
+              if (livre) {
+                // o treino não acaba: o passo volta antes do fim do minuto (por um múltiplo de 23, o ciclo da deriva da física,
+                // para o skate andar igual), e nada é gravado
+                if (k.passo >= PASSOS_DA_SESSAO - 600) k.passo -= 23 * 78;
+              } else gravar.anotar(comandos);
               passo(k, comandos);
               for (const e of k.eventos) ouvir(e);
               if (k.passo % 4 === 0 || k.terminou) {
@@ -649,7 +771,7 @@ export function Sessao({
               total: objs.length,
             });
           }
-          if (corro && k.terminou && !mandou) {
+          if (corro && k.terminou && !mandou && !livre) {
             mandou = true;
             tocar('fim');
             terminar.current(gravar.entradas, k);
@@ -683,7 +805,7 @@ export function Sessao({
         {estado === 'pronta' && (
           <div className="skate-painel" aria-hidden="true">
             <span className="skate-pontos">{mil(painel.pontos)}</span>
-            <span className={`skate-relogio${painel.restante < 600 ? ' acabando' : ''}`}>{relogio}</span>
+            {!livre && <span className={`skate-relogio${painel.restante < 600 ? ' acabando' : ''}`}>{relogio}</span>}
             {painel.ordem.length > 1 && (
               <ol className="skate-ordem">
                 {painel.ordem.map((l) => (
@@ -740,7 +862,8 @@ export function Sessao({
             {painel.contagem !== null && <span className="skate-contagem">{painel.contagem}</span>}
           </div>
         )}
-        {pausado && <TelaDePausa aoContinuar={continuar} />}
+        {estado === 'pronta' && corro && toque && <ToqueDoSkate comandos={entrada} />}
+        {pausado && <TelaDePausa aoContinuar={continuar} aoRecomecar={aoRecomecar} aoSair={aoSair} />}
       </div>
       {corro && (
         <ComandosDoJogo

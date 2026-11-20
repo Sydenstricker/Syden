@@ -121,15 +121,15 @@ function solo(ctx: Parameters<Definicao['comecar']>[0], eu: number, agora: () =>
     acao(quem: number, c: Record<string, unknown>) {
       if (quem !== eu) return 'Você está assistindo esta partida.';
       parado();
+      // 20/11/2026 (o "Jogar de novo" e o "Sair" da pausa, e a tecla R): escolher e correr de novo valem no meio da corrida; a
+      // que estava andando só não conta, e o relógio do servidor recomeça junto (só fica mais estrito)
       if (c.tipo === 'escolher') {
-        if (fase === 'correndo') return 'A corrida está andando.';
         fase = 'escolha';
         resultado = null;
         ctx.avisar();
         return null;
       }
       if (c.tipo === 'correr') {
-        if (fase === 'correndo') return 'A corrida está andando.';
         percurso = percursoPedido(c);
         // os fantasmas: o meu e os dos amigos aceitos (sem bloqueio), no máximo três; o que não pode, some calado
         const pedidos = Array.isArray(c.fantasmas)

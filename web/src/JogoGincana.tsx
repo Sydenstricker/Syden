@@ -4,7 +4,8 @@ import type { Socket } from 'socket.io-client';
 import { ComandosDoJogo } from './ComandosDosJogos';
 import { useT } from './i18n';
 import { IconeDeHud } from './iconesDeHud';
-import { comandoDaPausa, TelaDePausa, usePausaComEsc, type Pausa } from './pausaDosJogos';
+import { comandoDaPausa, TelaDePausa, usePausaComEsc, useTeclaDeRecomecar, type Pausa } from './pausaDosJogos';
+import { Alavanca, direcoesDaAlavanca, useGrupoDeToque } from './toqueDosJogos';
 import { tocar } from './somDosJogos';
 import { coresDoAvatar, minhasCoresDoCoelho, type CoresDoCoelho } from './coelho3d';
 import { tempoLegivel } from './jato/util';
@@ -142,18 +143,35 @@ function useComandos(ativo: boolean) {
     if (e & ESQUERDA && e & DIREITA) e &= ~(ESQUERDA | DIREITA);
     return e;
   };
-  /** Os botões da tela de toque: cada um liga o seu bit enquanto o dedo está nele. */
-  const botao = (bit: number) => ({
-    onPointerDown: (ev: React.PointerEvent) => {
-      ev.preventDefault();
-      toque.current |= bit;
-      (ev.currentTarget as HTMLElement).setPointerCapture?.(ev.pointerId);
-    },
-    onPointerUp: () => (toque.current &= ~bit),
-    onPointerCancel: () => (toque.current &= ~bit),
-    onContextMenu: (ev: React.MouseEvent) => ev.preventDefault(),
-  });
-  return { ler, botao };
+  /**
+   * A TELA DE TOQUE (20/11/2026, a segunda auditoria: os quatro botões não davam a diagonal): a ALAVANCA dá as oito direções
+   * (o ângulo do dedo vira FRENTE|ESQUERDA e as outras, nos mesmos bits do teclado), e o pulo e o mergulho são um grupo em que
+   * o dedo é seguido pela posição (toqueDosJogos.ts). A regra não muda.
+   */
+  const alavanca = (x: number, y: number) => {
+    const d = direcoesDaAlavanca(x, y);
+    toque.current = (toque.current & ~(FRENTE | TRAS | ESQUERDA | DIREITA)) | (d.cima ? FRENTE : 0) | (d.baixo ? TRAS : 0) | (d.esquerda ? ESQUERDA : 0) | (d.direita ? DIREITA : 0);
+  };
+  const botoes = (s: ReadonlySet<string>) => {
+    toque.current = (toque.current & ~(PULO | MERGULHO)) | (s.has('pulo') ? PULO : 0) | (s.has('mergulho') ? MERGULHO : 0);
+  };
+  return { ler, alavanca, botoes };
+}
+
+/** Os botões de ação na tela de toque (o pulo e o mergulho), num grupo só. */
+function BotoesDeAcao({ aoMudar }: { aoMudar: (s: ReadonlySet<string>) => void }) {
+  const t = useT();
+  const grupo = useGrupoDeToque(aoMudar);
+  return (
+    <div className="gincana-botoes-acao" {...grupo}>
+      <button type="button" className="gincana-mergulho" data-toque="mergulho" aria-label={t('Mergulhar')}>
+        ➶
+      </button>
+      <button type="button" className="gincana-pulo" data-toque="pulo" aria-label={t('Pular')}>
+        ⤒
+      </button>
+    </div>
+  );
 }
 
 interface Painel {
@@ -528,12 +546,17 @@ function Percorrer({
   ligada,
   aoChegar,
   aoPosicao,
+  aoRecomecar,
+  aoSair,
 }: {
   config: Omit<ConfigDoPercurso, 'caixa' | 'ler' | 'aoPainel' | 'aoPronta' | 'aoFalhar' | 'aoChegar' | 'aoPosicao' | 'pausa'>;
   solo: boolean;
   ligada: boolean;
   aoChegar: (entradas: Entradas, ordem: Painel['ordem']) => void;
   aoPosicao?: ConfigDoPercurso['aoPosicao'];
+  /** No Solo (20/11/2026): o "Jogar de novo" e o "Sair" da pausa. */
+  aoRecomecar?: () => void;
+  aoSair?: () => void;
 }) {
   const t = useT();
   const caixa = useRef<HTMLDivElement>(null);
@@ -603,31 +626,11 @@ function Percorrer({
       )}
       {estado === 'pronta' && config.corro && ligada && !chegou && toque && (
         <div className="gincana-toque">
-          <div className="gincana-cruz">
-            <button type="button" className="cima" aria-label="↑" {...comandos.botao(FRENTE)}>
-              ▲
-            </button>
-            <button type="button" className="esquerda" aria-label="←" {...comandos.botao(ESQUERDA)}>
-              ◀
-            </button>
-            <button type="button" className="direita" aria-label="→" {...comandos.botao(DIREITA)}>
-              ▶
-            </button>
-            <button type="button" className="baixo" aria-label="↓" {...comandos.botao(TRAS)}>
-              ▼
-            </button>
-          </div>
-          <div className="gincana-botoes-acao">
-            <button type="button" className="gincana-mergulho" aria-label={t('Mergulhar')} {...comandos.botao(MERGULHO)}>
-              ➶
-            </button>
-            <button type="button" className="gincana-pulo" aria-label={t('Pular')} {...comandos.botao(PULO)}>
-              ⤒
-            </button>
-          </div>
+          <Alavanca aoMudar={comandos.alavanca} rotulo={t('Andar')} />
+          <BotoesDeAcao aoMudar={comandos.botoes} />
         </div>
       )}
-      {pausado && <TelaDePausa aoContinuar={continuar} />}
+      {pausado && <TelaDePausa aoContinuar={continuar} aoRecomecar={aoRecomecar} aoSair={aoSair} />}
     </div>
   );
 }
@@ -685,6 +688,10 @@ function GincanaSolo({ estado, eu, agir }: { estado: EstadoGincana & Partida; eu
   };
   const meu = recordes.find((r) => r.userId === eu) ?? null;
   const outros = recordes.filter((r) => r.userId !== eu);
+  const doCampo = !!PERCURSOS[estado.percurso]?.sobrevivencia;
+  // RECOMEÇAR NA HORA (20/11/2026): a tecla R e a pausa pedem a corrida de novo; o servidor aceita no meio (a de antes não conta)
+  const deNovo = () => tentar({ tipo: 'correr', percurso: estado.percurso, fantasmas: doCampo ? [] : [...marcados] });
+  useTeclaDeRecomecar(estado.fase === 'correndo', deNovo);
 
   if (estado.fase === 'escolha') {
     return (
@@ -754,7 +761,6 @@ function GincanaSolo({ estado, eu, agir }: { estado: EstadoGincana & Partida; eu
   }
 
   const r = estado.resultado;
-  const doCampo = !!PERCURSOS[estado.percurso]?.sobrevivencia;
   return (
     <div className="gincana">
       <Percorrer
@@ -771,6 +777,8 @@ function GincanaSolo({ estado, eu, agir }: { estado: EstadoGincana & Partida; eu
           contagem: CONTAGEM,
         }}
         aoChegar={(entradas) => agir({ tipo: 'chegada', entradas }).catch((e) => setErro((e as Error).message))}
+        aoRecomecar={deNovo}
+        aoSair={() => tentar({ tipo: 'escolher' })}
       />
       {estado.fase === 'resultado' && r && (
         <div className="gincana-fim-solo">
@@ -782,7 +790,7 @@ function GincanaSolo({ estado, eu, agir }: { estado: EstadoGincana & Partida; eu
           {r.quedas > 0 && !r.sobrevivencia && <span className="settings-hint">{t('Quedas: {n}', { n: r.quedas })}</span>}
           {!r.recorde && r.anterior !== null && <span className="settings-hint">{t('Seu recorde: {tempo}', { tempo: tempoLegivel(r.anterior) })}</span>}
           <div className="minijogo-acoes">
-            <button type="button" className="btn-primary" onClick={() => tentar({ tipo: 'correr', percurso: estado.percurso, fantasmas: doCampo ? [] : [...marcados] })}>
+            <button type="button" className="btn-primary" onClick={deNovo}>
               {t('Jogar de novo')}
             </button>
             <button type="button" className="btn-secondary" onClick={() => tentar({ tipo: 'escolher' })}>
