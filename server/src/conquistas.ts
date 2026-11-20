@@ -30,7 +30,17 @@ const ENCONTRO_DEPOIS = HORA;
 /** Os jogos que existem (server/src/minijogos-routes.ts, JOGOS): "Repertório" completo é jogar todos. */
 // Os seis do fliperama de 03/11/2026 entraram no mesmo dia (decisão dele), e Cidades à venda em 04/11/2026 (também dele), e no mesmo dia a Caça às pragas e os quatro clássicos de mesa (dele: "elas devem contar"). A corrida fica de fora: o troféu coletivo dela é
 // a Copa da turma. Os quizzes também (ver CLAUDE.md).
-export const JOGOS_DAS_CONQUISTAS = ['tamanho', 'stop', 'sudoku', 'gomoku', 'mancala', 'xadrez', 'lobisomem', 'desenho', 'palavra', 'festa', 'golfe', 'tabuleiro', 'cidades', 'blocos', 'plataforma', 'briga', 'caca', 'domino', 'truco', 'damas', 'naval'] as const;
+// O MINIGOLFE (20/11/2026, decisão dele: "o minigolfe que fica é o 3D"): o da toca saiu da estante, e o lugar dele na lista é do
+// 3D. As partidas antigas do da toca contam como do 3D (NO_LUGAR_DE), então quem já tinha o lugar não o perde, e quem começa agora
+// o alcança pelo 3D: o Repertório completo continua de 21. "A turma do jogo" do minigolfe guarda o id antigo, 'turma-golfe'
+// (ID_DA_CONQUISTA), para os degraus já alcançados manterem a data.
+export const JOGOS_DAS_CONQUISTAS = ['tamanho', 'stop', 'sudoku', 'gomoku', 'mancala', 'xadrez', 'lobisomem', 'desenho', 'palavra', 'festa', 'golfe3d', 'tabuleiro', 'cidades', 'blocos', 'plataforma', 'briga', 'caca', 'domino', 'truco', 'damas', 'naval'] as const;
+
+/** O jogo que saiu da estante conta pelo que ficou no lugar dele. */
+const NO_LUGAR_DE: Record<string, string> = { golfe: 'golfe3d' };
+/** O id da conquista "A turma do jogo" que não é 'turma-' + o jogo (o do minigolfe nasceu com o da toca). */
+const ID_DA_CONQUISTA: Record<string, string> = { golfe3d: 'turma-golfe' };
+const idDaTurmaDo = (jogo: string) => ID_DA_CONQUISTA[jogo] ?? 'turma-' + jogo;
 
 export interface Conquista {
   id: string;
@@ -53,7 +63,7 @@ export const CONQUISTAS: Conquista[] = [
   { id: 'todo-mundo-joga', grupo: 'jogos', degraus: [5, 15, 30] },
   // O TROFÉU COLETIVO DA CORRIDA (03/11/2026, decisão dele): cada Copa da Cenoura que a turma correu até o fim, com 2 ou mais
   { id: 'copa-da-turma', grupo: 'jogos', degraus: [1, 5, 20] },
-  ...JOGOS_DAS_CONQUISTAS.map((jogo): Conquista => ({ id: 'turma-' + jogo, grupo: 'jogos', degraus: [10, 50, 200], jogo })),
+  ...JOGOS_DAS_CONQUISTAS.map((jogo): Conquista => ({ id: idDaTurmaDo(jogo), grupo: 'jogos', degraus: [10, 50, 200], jogo })),
   { id: 'palco-aberto', grupo: 'karaoke', degraus: [10, 50, 200] },
   { id: 'coral', grupo: 'karaoke', degraus: [3, 8, 20] },
   { id: 'setlist', grupo: 'karaoke', degraus: [10, 30, 100] },
@@ -179,7 +189,8 @@ export function medir(d: DadosDasConquistas, agora = Date.now()): Record<string,
   const porJogoRecente = new Map<string, Map<number, number>>();
   const novatosQueJogaram = new Set<number>();
   let vila = 0;
-  for (const p of d.partidas) {
+  for (const p0 of d.partidas) {
+    const p = NO_LUGAR_DE[p0.jogo] ? { ...p0, jogo: NO_LUGAR_DE[p0.jogo] } : p0;
     porJogo.set(p.jogo, (porJogo.get(p.jogo) ?? 0) + 1);
     if (p.jogo === 'lobisomem' && p.jogadores > vila) vila = p.jogadores;
     const veteranos = p.quem.filter((id) => !novatoEm(id, p.em));
@@ -201,7 +212,7 @@ export function medir(d: DadosDasConquistas, agora = Date.now()): Record<string,
   m['todo-mundo-joga'] = { valor: jogaram.size };
   m['copa-da-turma'] = { valor: d.copas ?? 0 };
   for (const jogo of JOGOS_DAS_CONQUISTAS) {
-    m['turma-' + jogo] = { valor: porJogo.get(jogo) ?? 0, exemplos: maiores(porJogoRecente.get(jogo) ?? new Map(), membros) };
+    m[idDaTurmaDo(jogo)] = { valor: porJogo.get(jogo) ?? 0, exemplos: maiores(porJogoRecente.get(jogo) ?? new Map(), membros) };
   }
 
   // ---- karaokê

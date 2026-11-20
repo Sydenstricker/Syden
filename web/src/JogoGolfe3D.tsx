@@ -520,11 +520,21 @@ function BuracoEm3D({ estado, eu, jogador, agir, socket, channelId }: Props) {
         setPorCima((v) => !v);
         return;
       }
+      // VER O BURACO (20/11/2026, a auditoria): a tecla C liga e desliga a vista de cima a qualquer hora, como o botão do olho
+      if ((e.key === 'c' || e.key === 'C') && !e.ctrlKey && !e.metaKey && !e.altKey && !e.repeat) {
+        e.preventDefault();
+        setDeCima((v) => !v);
+        return;
+      }
       const n = nome(e);
       if (!n || e.ctrlKey || e.metaKey || e.altKey || !podeBater()) return;
       e.preventDefault();
       if (e.repeat) return;
-      if (n === 'espaco') teclas.current.cargaDesde = Date.now();
+      // começar a dar a força volta a câmera para trás da bola: de cima, a mira não aparece
+      if (n === 'espaco') {
+        teclas.current.cargaDesde = Date.now();
+        setDeCima(false);
+      }
       teclas.current[n] = true;
     };
     const sobe = (e: KeyboardEvent) => {
@@ -605,7 +615,7 @@ function BuracoEm3D({ estado, eu, jogador, agir, socket, channelId }: Props) {
               </button>
             );
           })}
-        <button type="button" className="golfe3d-de-cima" aria-pressed={deCima} title={t('Ver o buraco de cima')} aria-label={t('Ver o buraco de cima')} onClick={() => setDeCima((v) => !v)}>
+        <button type="button" className="golfe3d-de-cima" aria-pressed={deCima} title={t('Ver o buraco de cima') + ' (C)'} aria-label={t('Ver o buraco de cima')} onClick={() => setDeCima((v) => !v)}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z" />
             <circle cx="12" cy="12" r="3" />
@@ -618,6 +628,7 @@ function BuracoEm3D({ estado, eu, jogador, agir, socket, channelId }: Props) {
           className={arraste.current ? 'golfe3d-caixa mirando' : 'golfe3d-caixa'}
           onPointerDown={(e) => {
             if (!podeBater() || e.button > 0) return;
+            if (deCimaRef.current) setDeCima(false);
             e.currentTarget.setPointerCapture(e.pointerId);
             arraste.current = { id: e.pointerId, x: e.clientX, y: e.clientY, ang: angulo.current };
             forca.current = 0;
@@ -667,6 +678,7 @@ function BuracoEm3D({ estado, eu, jogador, agir, socket, channelId }: Props) {
             { teclas: ['setas-lado'], rotulo: t('Mirar') },
             { teclas: ['espaco'], rotulo: t('Força') },
             { teclas: ['q'], rotulo: t('Tacada por cima') },
+            { teclas: ['c'], toque: 'toque', rotulo: t('Ver o buraco de cima') },
           ]}
         />
       )}

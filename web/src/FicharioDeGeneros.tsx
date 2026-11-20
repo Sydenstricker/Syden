@@ -40,7 +40,7 @@ export const GENEROS_DOS_JOGOS: Partial<Record<IdDoJogo | string, Genero[]>> = {
   carrinhos: ['esporte'],
   planador: ['esporte', 'acao'],
   pinball: ['acao'],
-  golfe: ['esporte'],
+  // (o Minigolfe da toca saiu da estante em 20/11/2026: fica o 3D)
   golfe3d: ['esporte'],
   futebol: ['esporte'],
   skate: ['esporte', 'acao'],

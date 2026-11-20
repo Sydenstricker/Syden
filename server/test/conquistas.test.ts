@@ -78,6 +78,36 @@ test('novato que conversou conta no acolhimento, e quem o acolheu é o bom exemp
   assert.equal(m['primeira-cancao'].valor, 1);
 });
 
+test('o minigolfe (20/11/2026): o lugar do da toca é do 3D, as partidas antigas contam, e "A turma do jogo" guarda o id antigo', async () => {
+  const { CONQUISTAS, JOGOS_DAS_CONQUISTAS } = await import('../src/conquistas.js');
+  assert.ok(!(JOGOS_DAS_CONQUISTAS as readonly string[]).includes('golfe'));
+  assert.ok((JOGOS_DAS_CONQUISTAS as readonly string[]).includes('golfe3d'));
+  assert.equal(JOGOS_DAS_CONQUISTAS.length, 21, 'o Repertório completo continua de 21');
+  const turma = CONQUISTAS.find((c) => c.id === 'turma-golfe');
+  assert.equal(turma?.jogo, 'golfe3d');
+  assert.ok(!CONQUISTAS.some((c) => c.id === 'turma-golfe3d'));
+  const membros = [1, 2].map((userId) => ({ userId, entrou: AGORA - 100 * D }));
+  // a turma antiga: só o da toca
+  const antiga = medir(dados({ membros, partidas: [{ jogo: 'golfe', jogadores: 2, em: AGORA - H, quem: [1, 2] }] }), AGORA);
+  assert.equal(antiga.repertorio.valor, 1);
+  assert.equal(antiga['turma-golfe'].valor, 1);
+  // a turma nova: só o 3D; e quem jogou os dois não ganha dois lugares no Repertório
+  const nova = medir(dados({ membros, partidas: [{ jogo: 'golfe3d', jogadores: 2, em: AGORA - H, quem: [1, 2] }] }), AGORA);
+  assert.equal(nova.repertorio.valor, 1);
+  const as2 = medir(
+    dados({
+      membros,
+      partidas: [
+        { jogo: 'golfe', jogadores: 2, em: AGORA - 2 * H, quem: [1, 2] },
+        { jogo: 'golfe3d', jogadores: 2, em: AGORA - H, quem: [1, 2] },
+      ],
+    }),
+    AGORA,
+  );
+  assert.equal(as2.repertorio.valor, 1);
+  assert.equal(as2['turma-golfe'].valor, 2);
+});
+
 test('jogos, karaokê e marcos', () => {
   const m = medir(
     dados({

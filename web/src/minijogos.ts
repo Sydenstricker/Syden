@@ -820,10 +820,13 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
   },
   {
     // O minigolfe (JogoGolfe.tsx, server/src/minijogo-golfe.ts): todos no mesmo buraco, ao mesmo tempo, cada um na própria tela.
+    // FORA DA ESTANTE desde 20/11/2026 (decisão dele: "o minigolfe que fica é o 3D"): sem aba nenhuma, ele não aparece para
+    // começar, e o servidor recusa partida nova (JOGOS_APOSENTADOS). A linha fica para o NOME nos troféus, nos recordes e no
+    // painel de uso das partidas antigas.
     id: 'golfe',
     nome: chave('Minigolfe da toca'),
     dica: chave('Seis buracos de minigolfe, todos jogando o mesmo ao mesmo tempo. Puxe a bola para trás e solte para dar a tacada. Ganha quem somar menos tacadas.'),
-    abas: ['solo', 'coletivo'],
+    abas: [],
   },
   {
     // Tocas e Torres (JogoTocas.tsx, web/src/tocas/, server/src/minijogo-tocas.ts): o gênero da estratégia em tempo real, só a
@@ -835,7 +838,7 @@ export const JOGOS: { id: IdDoJogo; nome: string; dica: string; abas: GrupoDoJog
   },
   {
     // O minigolfe em 3D (JogoGolfe3D.tsx, server/src/minijogo-golfe3d.ts): as peças do Kenney Minigolf Kit, a mesma regra do da toca.
-    // Os dois ficam na estante para a turma dizer qual prefere (pedido dele, 05/11/2026).
+    // Os dois ficaram lado a lado para a turma dizer qual preferia (05/11/2026); em 20/11/2026 ele decidiu: fica o 3D.
     id: 'golfe3d',
     nome: chave('Minigolfe 3D'),
     dica: chave('Oito buracos em 3D, com rampas, castelo e moinho, todos jogando o mesmo ao mesmo tempo. Arraste para mirar e dar a força, e solte. Ganha quem somar menos tacadas.'),

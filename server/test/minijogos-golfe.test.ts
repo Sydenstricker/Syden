@@ -272,16 +272,22 @@ test('o pontinho dos outros: só números dentro da mesa, carimbados, e não mai
   assert.equal(tempoReal(999, { x: 10, y: 10 }), null, 'quem não joga');
 });
 
-test('sozinho: o golfe começa pela rota do Solo, com mais tempo, e sem pódio', async () => {
+test('fora da estante (20/11/2026, fica o 3D): partida nova de golfe não começa, nem no Solo nem na sala', async () => {
   const comAna = comToken(app, ana.token);
   const r = await comAna('POST', '/api/minijogo-solo', { jogo: 'golfe', percurso: 6 });
-  assert.equal(r.statusCode, 200, r.body);
-  const p = r.json().partida;
-  assert.equal(p.jogo, 'golfe');
-  assert.equal(p.fase, 'preparando');
-  assert.equal(p.rodadas, 6);
-  assert.equal(p.duracaoMs, golfeMod.BURACO_SOLO_MS);
+  assert.equal(r.statusCode, 400, r.body);
+  assert.equal(r.json().error, 'Este jogo saiu da estante.');
+  const r3d = await comAna('POST', '/api/minijogo-solo', { jogo: 'golfe3d' });
+  assert.equal(r3d.statusCode, 200, r3d.body);
   await comAna('DELETE', '/api/minijogo-solo');
+});
+
+test('sozinho (a máquina, ainda registrada): mais tempo por buraco no Solo', () => {
+  const m = comecarSolo(6);
+  assert.equal(m.jogo.publico(crisId).fase, 'preparando');
+  assert.equal(m.jogo.publico(crisId).rodadas, 6);
+  m.andar();
+  assert.equal(m.jogo.publico(crisId).duracaoMs, golfeMod.BURACO_SOLO_MS);
 });
 
 test('o percurso (19/11/2026): sem pedido, quem começou escolhe 6 ou 9; os outros não', () => {
