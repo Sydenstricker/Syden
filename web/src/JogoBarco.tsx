@@ -14,6 +14,7 @@ import { COPAS_DO_BARCO, LAGO_DA_HORTA, linhaDoBarco, MUNDO, PISTAS_DO_BARCO, PO
 import { H, W } from './barco/render';
 import type { Agir } from './Minijogo';
 import type { Partida } from './minijogos';
+import { useMusicaDoJogo } from './musicaDosJogos';
 import './barco.css';
 
 /**
@@ -510,6 +511,8 @@ function CorridaSolo({
   const controles = useControles(estado.fase === 'correndo' && !acabou);
   // ESC pausa (só aqui, no Solo: na sala o relógio é o de todos)
   const { pausa, pausado, continuar } = usePausaComEsc(estado.fase === 'correndo' && !acabou);
+  // a música só com a corrida rodando (nem a pausa, nem o placar)
+  useMusicaDoJogo(estado.fase === 'correndo' && !acabou && !pausado ? 'regata' : null);
   useEffect(() => {
     if (!canvas.current) return;
     tela.current?.focus();
@@ -579,6 +582,8 @@ function BarcoNaSala({
   const fim = estado.fase === 'fim' || estado.terminada;
   const piloto = jogador && pilotos.some((p) => p.userId === eu);
   const controles = useControles(piloto && !chegou && !fim);
+  // a música enquanto a corrida roda; quem chegou já está no placar
+  useMusicaDoJogo(!fim && !chegou ? 'regata' : null);
   const rivais = useRef(new Map<number, RivalDoBarco>());
   const def = pistaDoBarcoPorId(estado.pista ?? LAGO_DA_HORTA.id);
 

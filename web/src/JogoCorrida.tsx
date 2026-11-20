@@ -14,6 +14,7 @@ import { H, pontoNoMapa, W } from './corrida/render';
 import type { Agir } from './Minijogo';
 import type { Partida } from './minijogos';
 import { Trofeus } from './Trofeus';
+import { useMusicaDoJogo } from './musicaDosJogos';
 import './corrida.css';
 
 /**
@@ -286,6 +287,8 @@ export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void
   const controles = useControles(fase === 'correndo');
   // ESC pausa (só aqui, no Solo: na sala o relógio é o de todos)
   const { pausa, pausado, continuar } = usePausaComEsc(fase === 'correndo');
+  // a música só com a corrida rodando (nem a largada, nem a pausa, nem o placar)
+  useMusicaDoJogo(fase === 'correndo' && !pausado ? 'corrida' : null);
   /** Cada "Jogar de novo" é uma corrida nova, sem voltar à tela da largada. */
   const [rodada, setRodada] = useState(0);
   const tela = useRef<HTMLDivElement>(null);
@@ -634,6 +637,8 @@ function CorridaDaSala({
   const [item, setItem] = useState<{ item: Item | null; usos: number }>({ item: null, usos: 0 });
   const piloto = jogador && estado.pilotos.some((p) => p.userId === eu);
   const controles = useControles(piloto && !chegou && !fim);
+  // a música enquanto a corrida roda; quem chegou já está no placar
+  useMusicaDoJogo(!fim && !chegou ? 'corrida' : null);
   const rivais = useRef(new Map<number, Rival>());
   const eventos = useRef<EventoDeItem[]>([]);
   const def = pistaPorId(estado.pista);
@@ -891,6 +896,7 @@ function CorridaContraRobos({
   const tela = useRef<HTMLDivElement>(null);
   const controles = useControles(fase === 'correndo');
   const { pausa, pausado, continuar } = usePausaComEsc(fase === 'correndo');
+  useMusicaDoJogo(fase === 'correndo' && !pausado ? 'corrida' : null);
   const base = pistaPorId(pistas[indice]);
   const def = opcoes.espelho ? espelhar(base) : base;
   const ultima = indice === pistas.length - 1;

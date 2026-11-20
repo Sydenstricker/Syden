@@ -1,0 +1,16 @@
+MÚSICA DOS MINI-GAMES: SÓ DE TERCEIROS, COM LICENÇA (ver "Música: nunca fazer a nossa" no CLAUDE.md)
+
+Regra de origem: autor com histórico conhecido, faixa com página própria e licença declarada nela, nada de
+coletânea montada por terceiros, nada feito com IA, nada de CC BY-SA ou NC. Aqui só os arquivos usados,
+convertidos para OGG Vorbis (q2, ~95 kbps) a partir dos WAV originais, sem cortar nada (os laços são do autor).
+
+junkala-level-1.ogg  ← "Level 1"  (Corrida dos coelhos)
+junkala-level-2.ogg  ← "Level 2"  (Coelhos a jato)
+junkala-level-3.ogg  ← "Level 3"  (Regata da toca)
+  Autor:     Juhani Junkala (SubspaceAudio), compositor com mais de 20 anos de carreira
+  Obra:      "5 Chiptunes (Action)", parte do "Retro Game Music Pack"
+  Página:    https://opengameart.org/content/5-chiptunes-action
+  Arquivo:   https://opengameart.org/sites/default/files/5%20Action%20Chiptunes%20By%20Juhani%20Junkala.zip
+  Licença:   CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/), declarada na página e no INFO.txt
+             do pacote, copiado ao lado como LICENCA-Juhani-Junkala.txt
+  Conferido: 20/11/2026

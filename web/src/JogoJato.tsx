@@ -13,6 +13,7 @@ import { CIDADE, COPAS_DO_JATO, linhaDoJato, MUNDO, PISTAS_DO_JATO, PONTOS_DA_CO
 import { H, W } from './jato/render';
 import type { Agir } from './Minijogo';
 import type { Partida } from './minijogos';
+import { useMusicaDoJogo } from './musicaDosJogos';
 import './jato.css';
 
 /**
@@ -523,6 +524,8 @@ function CorridaSolo({
   const controles = useControles(estado.fase === 'correndo' && !acabou);
   // ESC pausa (só aqui, no Solo: na sala o relógio é o de todos)
   const { pausa, pausado, continuar } = usePausaComEsc(estado.fase === 'correndo' && !acabou);
+  // a música só com a corrida rodando (nem a pausa, nem o placar)
+  useMusicaDoJogo(estado.fase === 'correndo' && !acabou && !pausado ? 'jato' : null);
   useEffect(() => {
     if (!canvas.current) return;
     tela.current?.focus();
@@ -598,6 +601,8 @@ function JatoNaSala({
   const fim = estado.fase === 'fim' || estado.terminada;
   const piloto = jogador && pilotos.some((p) => p.userId === eu);
   const controles = useControles(piloto && !chegou && !fim);
+  // a música enquanto a corrida roda; quem chegou já está no placar
+  useMusicaDoJogo(!fim && !chegou ? 'jato' : null);
   const rivais = useRef(new Map<number, RivalDoJato>());
   const def = pistaDoJatoPorId(estado.pista ?? CIDADE.id);
 
