@@ -1,0 +1,65 @@
+De onde vem cada efeito sonoro dos mini-games (todos da Kenney, kenney.nl, CC0; gerados por web/scripts/sons-dos-jogos.mjs,
+sem o silêncio do começo e com o pico a -1 dB).
+
+clique-1.ogg	Kenney Interface-Sounds: select_001.ogg
+clique-2.ogg	Kenney Interface-Sounds: select_002.ogg
+clique-3.ogg	Kenney Interface-Sounds: click_001.ogg
+vez-1.ogg	Kenney Interface-Sounds: bong_001.ogg
+pulo-1.ogg	Kenney Digital-Audio: phaserUp4.ogg
+pulo-2.ogg	Kenney Digital-Audio: phaserUp6.ogg
+mola-1.ogg	Kenney Digital-Audio: phaseJump2.ogg
+queda-1.ogg	Kenney Digital-Audio: pepSound1.ogg
+moeda-1.ogg	Kenney Digital-Audio: highUp.ogg
+acerto-1.ogg	Kenney Interface-Sounds: confirmation_001.ogg
+acerto-2.ogg	Kenney Interface-Sounds: confirmation_003.ogg
+erro-1.ogg	Kenney Interface-Sounds: error_002.ogg
+erro-2.ogg	Kenney Interface-Sounds: error_004.ogg
+dado-1.ogg	Kenney Casino-Audio: dice-throw-1.ogg
+dado-2.ogg	Kenney Casino-Audio: dice-throw-2.ogg
+dado-3.ogg	Kenney Casino-Audio: dice-throw-3.ogg
+carta-1.ogg	Kenney Casino-Audio: card-place-1.ogg
+carta-2.ogg	Kenney Casino-Audio: card-place-2.ogg
+carta-3.ogg	Kenney Casino-Audio: card-place-3.ogg
+tacada-1.ogg	Kenney Impact-Sounds: impactGeneric_light_000.ogg
+tacada-2.ogg	Kenney Impact-Sounds: impactGeneric_light_001.ogg
+tacada-3.ogg	Kenney Impact-Sounds: impactGeneric_light_002.ogg
+buraco-1.ogg	Kenney Music-Jingles: Pizzicato jingles/jingles_PIZZI08.ogg
+tiro-1.ogg	Kenney Sci-fi-Sounds: laserSmall_000.ogg
+tiro-2.ogg	Kenney Sci-fi-Sounds: laserSmall_001.ogg
+tiro-3.ogg	Kenney Sci-fi-Sounds: laserSmall_002.ogg
+soco-1.ogg	Kenney Impact-Sounds: impactPunch_medium_000.ogg
+soco-2.ogg	Kenney Impact-Sounds: impactPunch_medium_001.ogg
+soco-3.ogg	Kenney Impact-Sounds: impactPunch_medium_002.ogg
+combo-1.ogg	Kenney Digital-Audio: pepSound3.ogg
+chegada-1.ogg	Kenney Music-Jingles: 8-Bit jingles/jingles_NES01.ogg
+empurrao-1.ogg	Kenney Impact-Sounds: impactSoft_heavy_000.ogg
+empurrao-2.ogg	Kenney Impact-Sounds: impactSoft_heavy_001.ogg
+bandeira-1.ogg	Kenney Interface-Sounds: maximize_008.ogg
+encaixe-1.ogg	Kenney Impact-Sounds: impactWood_light_000.ogg
+encaixe-2.ogg	Kenney Impact-Sounds: impactWood_light_001.ogg
+encaixe-3.ogg	Kenney Impact-Sounds: impactWood_light_002.ogg
+rangido-1.ogg	Kenney RPG-Audio: creak1.ogg
+rangido-2.ogg	Kenney RPG-Audio: creak2.ogg
+rangido-3.ogg	Kenney RPG-Audio: creak3.ogg
+quebra-1.ogg	Kenney Impact-Sounds: impactPlank_medium_000.ogg
+quebra-2.ogg	Kenney Impact-Sounds: impactPlank_medium_001.ogg
+impacto-1.ogg	Kenney Impact-Sounds: impactPunch_heavy_000.ogg
+impacto-2.ogg	Kenney Impact-Sounds: impactPunch_heavy_001.ogg
+impacto-3.ogg	Kenney Impact-Sounds: impactPunch_heavy_002.ogg
+derrota-1.ogg	Kenney Digital-Audio: phaserDown1.ogg
+dano-1.ogg	Kenney Impact-Sounds: impactPlate_light_000.ogg
+dano-2.ogg	Kenney Impact-Sounds: impactPlate_light_001.ogg
+explosao-1.ogg	Kenney Sci-fi-Sounds: explosionCrunch_000.ogg
+explosao-2.ogg	Kenney Sci-fi-Sounds: explosionCrunch_001.ogg (os primeiros 0.9 s)
+explosao-3.ogg	Kenney Sci-fi-Sounds: explosionCrunch_002.ogg (os primeiros 0.9 s)
+turbo-1.ogg	Kenney Sci-fi-Sounds: thrusterFire_000.ogg (os primeiros 0.6 s)
+item-1.ogg	Kenney Digital-Audio: powerUp5.ogg
+item-2.ogg	Kenney Digital-Audio: powerUp7.ogg
+cura-1.ogg	Kenney Digital-Audio: powerUp11.ogg
+largada-1.ogg	Kenney Digital-Audio: tone1.ogg (os primeiros 0.3 s)
+alarme-1.ogg	Kenney Digital-Audio: twoTone1.ogg
+medalha-1.ogg	Kenney Music-Jingles: 8-Bit jingles/jingles_NES03.ogg
+desliza-1.ogg	Kenney Casino-Audio: card-slide-1.ogg
+desliza-2.ogg	Kenney Casino-Audio: card-slide-2.ogg
+desliza-3.ogg	Kenney Casino-Audio: card-slide-3.ogg
+fim-1.ogg	Kenney Music-Jingles: 8-Bit jingles/jingles_NES09.ogg

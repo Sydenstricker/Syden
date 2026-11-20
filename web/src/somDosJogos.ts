@@ -1,5 +1,6 @@
 import { usar } from './audioOcioso';
 import { estaSurdo } from './sounds';
+import { AMOSTRAS, arquivosDoEfeito } from './sonsDosJogosAmostras';
 
 /**
  * OS EFEITOS SONOROS DOS MINI-GAMES (05/11/2026, pedido dele: "seria interessante ter música e SFX nos mini-games, com opção de
@@ -11,48 +12,56 @@ import { estaSurdo } from './sounds';
  *
  * Silenciar é do aparelho ('syden:somDosJogos'), vale para todos os jogos e é lembrado. "Desativar áudio" na chamada também
  * cala os jogos (estaSurdo): quem ensurdeceu não quer bipe nenhum.
+ *
+ * AS AMOSTRAS DA KENNEY (20/11/2026): a maior parte dos efeitos agora toca uma gravação dos pacotes de áudio da Kenney (CC0;
+ * a tabela em sonsDosJogosAmostras.ts, os arquivos em web/public/sons/). Cada efeito é baixado e decodificado no PRIMEIRO uso
+ * (ou antes, por preCarregarSonsDosJogos); até chegar, ou se falhar, toca o sintetizado de sempre, que fica aqui como reserva.
+ * Cada toque sorteia uma das versões e varia um pouco a altura e o volume, para o mesmo golpe repetido não cansar. O motor do
+ * kart (criarMotor) continua sintetizado: ele acompanha a velocidade a cada quadro, e uma gravação não faz isso.
  */
 
-export type Efeito =
-  | 'clique'
-  | 'vez'
-  | 'pulo'
-  | 'mola'
-  | 'queda'
-  | 'moeda'
-  | 'acerto'
-  | 'erro'
-  | 'dado'
-  | 'carta'
-  | 'tacada'
-  | 'buraco'
-  | 'agua'
-  | 'tiro'
-  | 'soco'
-  | 'combo'
-  | 'chegada'
-  | 'derrapa'
-  | 'serra'
-  | 'empurrao'
-  | 'bandeira'
-  | 'encaixe'
-  | 'rangido'
-  | 'quebra'
-  | 'chiado'
+export const EFEITOS = [
+  'clique',
+  'vez',
+  'pulo',
+  'mola',
+  'queda',
+  'moeda',
+  'acerto',
+  'erro',
+  'dado',
+  'carta',
+  'tacada',
+  'buraco',
+  'agua',
+  'tiro',
+  'soco',
+  'combo',
+  'chegada',
+  'derrapa',
+  'serra',
+  'empurrao',
+  'bandeira',
+  'encaixe',
+  'rangido',
+  'quebra',
+  'chiado',
   // 19/11/2026 (a auditoria): o impacto e os avisos que faltavam aos jogos de ação e às corridas
-  | 'impacto'
-  | 'derrota'
-  | 'dano'
-  | 'explosao'
-  | 'turbo'
-  | 'item'
-  | 'cura'
-  | 'largada'
-  | 'alarme'
-  | 'medalha'
-  | 'desliza'
-  | 'torcida'
-  | 'fim';
+  'impacto',
+  'derrota',
+  'dano',
+  'explosao',
+  'turbo',
+  'item',
+  'cura',
+  'largada',
+  'alarme',
+  'medalha',
+  'desliza',
+  'torcida',
+  'fim',
+] as const;
+export type Efeito = (typeof EFEITOS)[number];
 
 const CHAVE = 'syden:somDosJogos';
 let mudo = (() => {
@@ -133,6 +142,70 @@ function ruido(a: AudioContext, dur: number, freq: number, vol = 1, atraso = 0, 
   s.start(t);
 }
 
+/** O que já se sabe de cada efeito: as versões decodificadas, 'baixando' ou 'falhou' (fica no sintetizado até recarregar). */
+const decodificadas = new Map<Efeito, AudioBuffer[] | 'baixando' | 'falhou'>();
+let saidaDasAmostras: GainNode | null = null;
+const BASE = ((import.meta as { env?: { BASE_URL?: string } }).env?.BASE_URL ?? '/') as string;
+
+/** Baixa e decodifica as versões de um efeito (uma vez só). Uma versão que falha fica de fora; todas falhando, 'falhou'. */
+function carregar(a: AudioContext, efeito: Efeito) {
+  if (decodificadas.has(efeito)) return;
+  const arquivos = arquivosDoEfeito(efeito);
+  if (!arquivos.length) return;
+  decodificadas.set(efeito, 'baixando');
+  void Promise.all(
+    arquivos.map((arq) =>
+      fetch(BASE + arq)
+        .then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(String(r.status)))))
+        .then((dados) => a.decodeAudioData(dados))
+        .catch(() => null),
+    ),
+  ).then((lista) => {
+    const boas = lista.filter((b): b is AudioBuffer => b !== null);
+    decodificadas.set(efeito, boas.length ? boas : 'falhou');
+  });
+}
+
+/** Os efeitos mais comuns, baixados juntos no primeiro som da visita (são ~5 kB cada). */
+const COMUNS: Efeito[] = ['clique', 'acerto', 'erro', 'moeda', 'fim', 'medalha', 'chegada', 'largada'];
+let comunsPedidos = false;
+
+/**
+ * Baixa antes as amostras de uns efeitos (ou das comuns), para o primeiro toque já sair gravado. Leve: só baixa e decodifica,
+ * não toca nada nem acorda o contexto de áudio por mais tempo que o de um som (audioOcioso).
+ */
+export function preCarregarSonsDosJogos(efeitos: readonly Efeito[] = COMUNS) {
+  if (mudo || estaSurdo()) return;
+  const a = audio();
+  if (!a) return;
+  for (const e of efeitos) carregar(a, e);
+}
+
+/** Toca uma gravação, se já chegou. Devolve false para quem chama tocar o sintetizado. */
+function tocarAmostra(a: AudioContext, efeito: Efeito): boolean {
+  const ja = decodificadas.get(efeito);
+  if (!Array.isArray(ja)) {
+    carregar(a, efeito);
+    return false;
+  }
+  const info = AMOSTRAS[efeito];
+  if (!info) return false;
+  if (!saidaDasAmostras) {
+    saidaDasAmostras = a.createGain();
+    saidaDasAmostras.gain.value = 0.3;
+    saidaDasAmostras.connect(a.destination);
+  }
+  const fonte = a.createBufferSource();
+  fonte.buffer = ja[Math.floor(Math.random() * ja.length)];
+  // a variação: até ±4% na altura (menos de um semitom) e até −15% no volume
+  if (info.variar !== false) fonte.playbackRate.value = 0.96 + Math.random() * 0.08;
+  const g = a.createGain();
+  g.gain.value = info.vol * (0.85 + Math.random() * 0.15);
+  fonte.connect(g).connect(saidaDasAmostras);
+  fonte.start();
+  return true;
+}
+
 const ultimo = new Map<Efeito, number>();
 
 /** Toca um efeito (se o som dos jogos estiver ligado). O mesmo efeito não repete em menos de 40 ms. */
@@ -143,6 +216,11 @@ export function tocar(efeito: Efeito) {
   ultimo.set(efeito, agora);
   const a = audio();
   if (!a || !saida) return;
+  if (!comunsPedidos) {
+    comunsPedidos = true;
+    for (const e of COMUNS) carregar(a, e);
+  }
+  if (tocarAmostra(a, efeito)) return;
   switch (efeito) {
     case 'clique':
       nota(a, 'triangle', 660, 520, 0.06, 0.5);
