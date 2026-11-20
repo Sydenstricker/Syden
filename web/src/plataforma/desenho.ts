@@ -5,6 +5,10 @@ import { ALTURA, BICHO_MEIA, Bloco, blocoEm, bichoEm, LINHAS, movelEm, T, type F
  * os jogos de 16 bits. O fundo em camadas que correm em velocidades diferentes (o céu parado, os morros devagar, o que está
  * perto mais depressa), a fase inteira pintada uma vez numa imagem grande (os blocos não mudam), e por cima o que se mexe:
  * as plataformas que andam, os fantasmas, os outros e o coelho.
+ *
+ * Desde 20/11/2026 o CENÁRIO (blocos, tábuas, molas, espinhos, placas, bandeira e fundo) é do Pixel Platformer da Kenney (CC0;
+ * ver "O CENÁRIO DA KENNEY" mais abaixo). O desenho por código continua: é o que aparece enquanto as imagens carregam, e se
+ * não carregarem. O coelho, os bichos e as cenouras são os nossos.
  */
 
 export const W = 320;
@@ -64,6 +68,8 @@ export interface Pintura {
   longe: HTMLCanvasElement;
   perto: HTMLCanvasElement;
   coelho: HTMLImageElement | null;
+  /** Se o mapa e o fundo já são os da Kenney (até as imagens chegarem, o desenho por código). */
+  kenney: boolean;
 }
 
 /** Um número "aleatório" fixo por casa (o mesmo desenho toda vez). */
@@ -88,7 +94,8 @@ export function prepararPintura(canvas: HTMLCanvasElement, fase: Fase): Pintura 
   const ctx = canvas.getContext('2d')!;
   ctx.imageSmoothingEnabled = false;
   const cores = CORES[fase.tema];
-  return {
+  carregarKenney();
+  const p: Pintura = {
     ctx,
     fase,
     cores,
@@ -96,7 +103,18 @@ export function prepararPintura(canvas: HTMLCanvasElement, fase: Fase): Pintura 
     longe: camadaLonge(fase.tema, cores),
     perto: camadaPerto(fase.tema, cores),
     coelho: null,
+    kenney: false,
   };
+  trocarPelaKenney(p);
+  return p;
+}
+
+/** Assim que as imagens da Kenney chegam, o mapa e o fundo são pintados de novo com elas (uma vez). */
+function trocarPelaKenney(p: Pintura) {
+  if (p.kenney || !kenney) return;
+  p.mapa = pintarMapaKenney(p.fase, kenney);
+  [p.longe, p.perto] = camadasKenney(p.fase, kenney);
+  p.kenney = true;
 }
 
 function pintarMapa(f: Fase, cores: Cores): HTMLCanvasElement {
@@ -107,11 +125,7 @@ function pintarMapa(f: Fase, cores: Cores): HTMLCanvasElement {
       const x = col * T,
         y = l * T;
       if (b === Bloco.Vazio && l === LINHAS - 1) {
-        // o fundo do buraco escurece: cair ali é voltar ao posto
-        for (let k = 0; k < 8; k++) {
-          ctx.fillStyle = `#2e2630${(['18', '30', '48', '60', '78', '90', 'a8', 'c0'] as const)[k]}`;
-          ctx.fillRect(x, y + 8 + k, T, 1);
-        }
+        fundoDoBuraco(ctx, x, y);
       } else if (b === Bloco.Chao) {
         ctx.fillStyle = cores.chao[0];
         ctx.fillRect(x, y, T, T);
@@ -193,6 +207,14 @@ function pintarMapa(f: Fase, cores: Cores): HTMLCanvasElement {
   return c;
 }
 
+/** O fundo do buraco escurece: cair ali é voltar ao posto. */
+function fundoDoBuraco(ctx: CanvasRenderingContext2D, x: number, y: number) {
+  for (let k = 0; k < 8; k++) {
+    ctx.fillStyle = `#2e2630${(['18', '30', '48', '60', '78', '90', 'a8', 'c0'] as const)[k]}`;
+    ctx.fillRect(x, y + 8 + k, T, 1);
+  }
+}
+
 /** Onde está o chão debaixo de x (para pôr a bandeira). */
 function chaoDebaixo(f: Fase, x: number): number {
   const c = Math.floor(x / T);
@@ -232,8 +254,8 @@ function camadaLonge(tema: Tema, cores: Cores): HTMLCanvasElement {
   return c;
 }
 
-function camadaPerto(tema: Tema, cores: Cores): HTMLCanvasElement {
-  const [c, ctx] = tela(640, H);
+function camadaPerto(tema: Tema, cores: Cores, largura = 640, cristal: string | null = '#8a7ea0'): HTMLCanvasElement {
+  const [c, ctx] = tela(largura, H);
   ctx.fillStyle = cores.perto;
   if (tema === 'copas') {
     // troncos e folhagem
@@ -244,12 +266,14 @@ function camadaPerto(tema: Tema, cores: Cores): HTMLCanvasElement {
     }
   } else if (tema === 'toca') {
     // estalactites e cristais
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < Math.floor(largura / 32); i++) {
       const x = i * 32 + Math.floor(sorte(i, 2) * 20),
         comp = 8 + Math.floor(sorte(i, 3) * 26);
       for (let k = 0; k < comp; k += 2) ctx.fillRect(x + Math.floor(k / 6), k, Math.max(1, 6 - Math.floor(k / 4)), 2);
-      ctx.fillStyle = '#8a7ea0';
-      if (i % 3 === 0) ctx.fillRect(x + 4, H - 30 - Math.floor(sorte(i, 4) * 30), 3, 6);
+      if (cristal && i % 3 === 0) {
+        ctx.fillStyle = cristal;
+        ctx.fillRect(x + 4, H - 30 - Math.floor(sorte(i, 4) * 30), 3, 6);
+      }
       ctx.fillStyle = cores.perto;
     }
   } else {
@@ -268,6 +292,268 @@ function camadaPerto(tema: Tema, cores: Cores): HTMLCanvasElement {
     }
   }
   return c;
+}
+
+/**
+ * O CENÁRIO DA KENNEY (20/11/2026): os blocos, as tábuas, as molas, os espinhos, a placa do posto, a bandeira e o fundo vêm do
+ * Pixel Platformer da Kenney (CC0, web/public/plataforma/LICENCA-Kenney-Pixel-Platformer.txt). O coelho, os bichos e as
+ * cenouras continuam os nossos. As casas do pacote são de 18 px e as da fase de 16: cada figura perde as DUAS colunas (e as
+ * duas linhas) do meio, e não é encolhida — a borda e o contorno ficam inteiros, os pixels continuam do tamanho de um, e a
+ * colisão não muda (é a grade de sempre). Enquanto as imagens não chegam (ou se não chegarem), vale o desenho por código acima.
+ */
+const K = 18;
+const COLUNAS_DO_PACOTE = 20;
+/** Qual linha do pacote é o "topo" de cada tema: grama no prado e nas copas, terra batida na toca. */
+const TOPO_DO_TEMA: Record<Tema, number> = { prado: 1, copas: 1, toca: 3 };
+
+interface Kenney {
+  blocos: HTMLImageElement;
+  fundos: HTMLImageElement;
+  /** As figuras já cortadas para 16 px, pela chave "índice:modo". */
+  cortes: Map<string, HTMLCanvasElement>;
+}
+
+let kenney: Kenney | null = null;
+let carregando: Promise<void> | null = null;
+
+function imagem(nome: string): Promise<HTMLImageElement> {
+  const img = new Image();
+  img.src = `${import.meta.env.BASE_URL}plataforma/${nome}`;
+  return img.decode().then(() => img);
+}
+
+function carregarKenney() {
+  carregando ??= Promise.all([imagem('kenney-blocos.png'), imagem('kenney-fundos.png')])
+    .then(([blocos, fundos]) => {
+      kenney = { blocos, fundos, cortes: new Map() };
+    })
+    .catch(() => undefined);
+}
+
+/**
+ * Uma figura do pacote cortada para 16 × 16: fora as colunas 8 e 9; e, nas linhas, as do meio ('meio'), as duas de cima
+ * ('cima', para o que fica em pé no chão) ou as duas de baixo ('baixo', para o que fica no alto da casa).
+ */
+function corte(k: Kenney, i: number, modo: 'meio' | 'cima' | 'baixo' = 'meio'): HTMLCanvasElement {
+  const chave = `${i}:${modo}`;
+  let c = k.cortes.get(chave);
+  if (c) return c;
+  const [tc, ctx] = tela(T, T);
+  const sx = (i % COLUNAS_DO_PACOTE) * K,
+    sy = Math.floor(i / COLUNAS_DO_PACOTE) * K;
+  const linhas: [number, number, number][] =
+    modo === 'meio'
+      ? [
+          [0, 0, 8],
+          [10, 8, 8],
+        ]
+      : [[modo === 'cima' ? 2 : 0, 0, 16]];
+  for (const [de, para, quantas] of linhas) {
+    ctx.drawImage(k.blocos, sx, sy + de, 8, quantas, 0, para, 8, quantas);
+    ctx.drawImage(k.blocos, sx + 10, sy + de, 8, quantas, 8, para, 8, quantas);
+  }
+  c = tc;
+  k.cortes.set(chave, c);
+  return c;
+}
+
+/** Uma figura inteira do pacote (18 × 18), com o canto de cima à esquerda em (x, y). */
+function inteira(ctx: CanvasRenderingContext2D, k: Kenney, i: number, x: number, y: number) {
+  ctx.drawImage(k.blocos, (i % COLUNAS_DO_PACOTE) * K, Math.floor(i / COLUNAS_DO_PACOTE) * K, K, K, x, y, K, K);
+}
+
+/**
+ * Uma prancha de largura qualquer feita da figura `i` (a tábua de madeira 146, a de pedra 147): a ponta da esquerda (8 px), a
+ * coluna do meio repetida e a ponta da direita, sem as pontas onde a prancha continua na casa vizinha.
+ */
+function prancha(ctx: CanvasRenderingContext2D, k: Kenney, i: number, x: number, y: number, w: number, pontaE = true, pontaD = true) {
+  const sx = (i % COLUNAS_DO_PACOTE) * K,
+    sy = Math.floor(i / COLUNAS_DO_PACOTE) * K;
+  const alt = 10;
+  let de = x,
+    ate = x + w;
+  if (pontaE) {
+    ctx.drawImage(k.blocos, sx, sy, 8, alt, x, y, 8, alt);
+    de += 8;
+  }
+  if (pontaD) {
+    ctx.drawImage(k.blocos, sx + 10, sy, 8, alt, x + w - 8, y, 8, alt);
+    ate -= 8;
+  }
+  for (let xx = de; xx < ate; xx++) ctx.drawImage(k.blocos, sx + 8, sy, 1, alt, xx, y, 1, alt);
+}
+
+const solidoParaOAzulejo = (f: Fase, c: number, l: number) => l >= LINHAS || blocoEm(f, c, l) === Bloco.Chao;
+
+/** A figura de um bloco de chão pelos vizinhos: o topo (grama), os lados, o fundo e as quinas de dentro. */
+function figuraDoChao(f: Fase, c: number, l: number): number {
+  const s = (dc: number, dl: number) => solidoParaOAzulejo(f, c + dc, l + dl);
+  const cima = !s(0, -1),
+    esq = !s(-1, 0),
+    dir = !s(1, 0),
+    baixo = !s(0, 1);
+  const col = esq && dir ? 0 : esq ? 1 : dir ? 3 : 2;
+  if (cima) return (baixo ? TOPO_DO_TEMA[f.tema] - 1 : TOPO_DO_TEMA[f.tema]) * COLUNAS_DO_PACOTE + col;
+  if (col === 2 && !baixo) {
+    // as quinas de dentro: o vizinho em diagonal vazio, com os dois do lado cheios
+    if (!s(-1, -1)) return 25;
+    if (!s(1, -1)) return 24;
+    if (!s(-1, 1)) return 5;
+    if (!s(1, 1)) return 4;
+  }
+  return (baixo ? 7 : 6) * COLUNAS_DO_PACOTE + col;
+}
+
+function pintarMapaKenney(f: Fase, k: Kenney): HTMLCanvasElement {
+  const [c, ctx] = tela(f.colunas * T, ALTURA);
+  const plantas = f.tema !== 'toca';
+  for (let l = 0; l < LINHAS; l++) {
+    for (let col = 0; col < f.colunas; col++) {
+      const b = blocoEm(f, col, l);
+      const x = col * T,
+        y = l * T;
+      if (b === Bloco.Vazio && l === LINHAS - 1) {
+        if (f.tema === 'prado') agua(ctx, k, x, y);
+        else fundoDoBuraco(ctx, x, y);
+      } else if (b === Bloco.Chao) {
+        ctx.drawImage(corte(k, figuraDoChao(f, col, l)), x, y);
+      } else if (b === Bloco.Tabua) {
+        prancha(ctx, k, 146, x, y, T, blocoEm(f, col - 1, l) !== Bloco.Tabua, blocoEm(f, col + 1, l) !== Bloco.Tabua);
+      } else if (b === Bloco.Espinho) {
+        const pendurado = blocoEm(f, col, l - 1) === Bloco.Chao && blocoEm(f, col, l + 1) !== Bloco.Chao;
+        const fig = corte(k, 68, 'cima');
+        if (pendurado) {
+          ctx.save();
+          ctx.translate(x, y + T);
+          ctx.scale(1, -1);
+          ctx.drawImage(fig, 0, 0);
+          ctx.restore();
+        } else ctx.drawImage(fig, x, y);
+      } else if (b === Bloco.Mola) {
+        ctx.drawImage(corte(k, 108, 'cima'), x, y);
+      }
+    }
+  }
+  // um ou outro broto na grama (só enfeite, longe dos postos e da chegada)
+  if (plantas) {
+    const perto = (x: number) => f.postos.some((p) => Math.abs(p.x - x) < 24) || Math.abs(f.chegada - x) < 32;
+    for (let col = 1; col < f.colunas - 1; col++)
+      for (let l = 1; l < LINHAS; l++) {
+        if (blocoEm(f, col, l) !== Bloco.Chao || blocoEm(f, col, l - 1) !== Bloco.Vazio) continue;
+        const s = sorte(col, l, 77);
+        if (s > 0.06 || perto(col * T + T / 2)) continue;
+        inteira(ctx, k, 124, col * T - 1, l * T - K + 3);
+      }
+  }
+  // os postos: a placa com a seta
+  f.postos.forEach((p, i) => {
+    if (i === 0) return;
+    inteira(ctx, k, 88, p.x - 9, p.y - K);
+  });
+  // o mastro da chegada (a bandeira, que tremula, vai a cada quadro)
+  const cx = f.chegada,
+    chao = chaoDebaixo(f, cx);
+  const sx = (131 % COLUNAS_DO_PACOTE) * K,
+    sy = Math.floor(131 / COLUNAS_DO_PACOTE) * K;
+  for (let yy = chao - 54; yy < chao; yy += 9) ctx.drawImage(k.blocos, sx, sy, 6, 9, cx - 3, yy, 6, 9);
+  return c;
+}
+
+/**
+ * No prado e no córrego, o fundo do buraco é o rio (a água do pacote, 33): as ondas seguem a grade de 18 px do mundo, para
+ * continuarem de uma casa para a outra sem emenda.
+ */
+function agua(ctx: CanvasRenderingContext2D, k: Kenney, x: number, y: number) {
+  const sx = (33 % COLUNAS_DO_PACOTE) * K,
+    sy = Math.floor(33 / COLUNAS_DO_PACOTE) * K;
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(x, y, T, T);
+  ctx.clip();
+  for (let xx = Math.floor(x / K) * K; xx < x + T; xx += K) ctx.drawImage(k.blocos, sx, sy, K, 12, xx, y + 4, K, 12);
+  ctx.restore();
+}
+
+/** A bandeira da chegada, em dois quadros. */
+function bandeira(ctx: CanvasRenderingContext2D, k: Kenney, f: Fase, camX: number, camY: number, n: number) {
+  const cx = f.chegada;
+  if (cx < camX - 24 || cx > camX + W + 24) return;
+  inteira(ctx, k, Math.floor(n / 20) % 2 ? 112 : 111, Math.round(cx - 3 - camX), Math.round(chaoDebaixo(f, cx) - 54 - K - camY));
+}
+
+/** A largura das faixas do fundo da Kenney: 27 figuras de 24 px (a de 640 do desenho por código não fecha em 24). */
+const LARGURA_DO_FUNDO = 27 * 24;
+const ALTURA_DO_FUNDO = H + 24;
+
+/**
+ * O fundo de cada fase, das figuras de 24 px do pacote (8 por linha: o céu, o horizonte e o chão de cada paisagem). Prado e
+ * Córrego com as nuvens longe e as árvores perto, Galhos e Ninho com a mata verde desbotada (para a grama da fase se destacar), e a Toca e a Mina na parede de terra do
+ * próprio bloco, escurecida, com as estalactites por código na frente.
+ */
+const FUNDOS: Record<string, { longe: number[]; perto: number[]; chao: number; desbotar: number }> = {
+  prado: { longe: [8, 10], perto: [9, 9, 11], chao: 16, desbotar: 0 },
+  corrego: { longe: [10, 8], perto: [11, 11, 9], chao: 16, desbotar: 0 },
+  copas: { longe: [8, 10], perto: [15, 15, 14], chao: 22, desbotar: 0.45 },
+  ninho: { longe: [10, 8], perto: [14, 15, 15], chao: 22, desbotar: 0.45 },
+};
+/** O céu é sempre o azul do pacote (o verde das copas ficava da cor da grama e escondia o chão). */
+const CEU_DO_FUNDO = 0;
+
+function figuraDoFundo(ctx: CanvasRenderingContext2D, k: Kenney, i: number, x: number, y: number) {
+  ctx.drawImage(k.fundos, (i % 8) * 24, Math.floor(i / 8) * 24, 24, 24, x, y, 24, 24);
+}
+
+function camadasKenney(f: Fase, k: Kenney): [HTMLCanvasElement, HTMLCanvasElement] {
+  const [longe, cl] = tela(LARGURA_DO_FUNDO, ALTURA_DO_FUNDO);
+  const [perto, cp] = tela(LARGURA_DO_FUNDO, ALTURA_DO_FUNDO);
+  if (f.tema === 'toca') {
+    const mina = f.id.startsWith('mina');
+    const terra = corte(k, 122);
+    for (let y = 0; y < ALTURA_DO_FUNDO; y += T) for (let x = 0; x < LARGURA_DO_FUNDO; x += T) cl.drawImage(terra, x, y);
+    cl.globalCompositeOperation = 'multiply';
+    cl.fillStyle = mina ? '#5c6480' : '#7a5c5c';
+    cl.fillRect(0, 0, LARGURA_DO_FUNDO, ALTURA_DO_FUNDO);
+    cl.globalCompositeOperation = 'source-over';
+    const p = camadaPerto('toca', { ...CORES.toca, perto: mina ? '#2e3044' : '#3a2a2a' }, LARGURA_DO_FUNDO, null);
+    cp.drawImage(p, 0, 0);
+    return [longe, perto];
+  }
+  const fundo = FUNDOS[f.id.split('-')[0]] ?? FUNDOS[f.tema];
+  const yLonge = 88,
+    yPerto = 92;
+  // longe: o céu, a faixa do horizonte e, embaixo, a cor do chão
+  for (let x = 0; x < LARGURA_DO_FUNDO; x += 24) {
+    for (let y = 0; y < yLonge; y += 24) figuraDoFundo(cl, k, CEU_DO_FUNDO, x, y - ((24 - (yLonge % 24)) % 24));
+    figuraDoFundo(cl, k, fundo.longe[Math.floor(sorte(x, 1) * fundo.longe.length)], x, yLonge);
+    for (let y = yLonge + 24; y < ALTURA_DO_FUNDO; y += 24) figuraDoFundo(cl, k, fundo.chao, x, y);
+  }
+  // perto: só as árvores (o céu delas sai), e o chão embaixo
+  const [faixa, cf] = tela(24, 24);
+  for (let x = 0; x < LARGURA_DO_FUNDO; x += 24) {
+    cf.clearRect(0, 0, 24, 24);
+    figuraDoFundo(cf, k, fundo.perto[Math.floor(sorte(x, 2) * fundo.perto.length)], 0, 0);
+    const d = cf.getImageData(0, 0, 24, 24);
+    // fica só a cor das árvores, que é a da última linha (o chão): o céu e as nuvens saem
+    const chao = d.data.slice((23 * 24) * 4, (23 * 24) * 4 + 4);
+    for (let i = 0; i < d.data.length; i += 4) {
+      const igualAoChao = d.data[i] === chao[0] && d.data[i + 1] === chao[1] && d.data[i + 2] === chao[2];
+      if (!igualAoChao) d.data[i + 3] = 0;
+    }
+    cf.putImageData(d, 0, 0);
+    cp.drawImage(faixa, x, yPerto);
+    for (let y = yPerto + 24; y < ALTURA_DO_FUNDO; y += 24) figuraDoFundo(cp, k, fundo.chao, x, y);
+  }
+  if (fundo.desbotar > 0) {
+    // a mata vai para trás: misturada com o céu, só onde há desenho
+    const ceu = cl.getImageData(0, 0, 1, 1).data;
+    cp.globalCompositeOperation = 'source-atop';
+    cp.globalAlpha = fundo.desbotar;
+    cp.fillStyle = `rgb(${ceu[0]}, ${ceu[1]}, ${ceu[2]})`;
+    cp.fillRect(0, 0, LARGURA_DO_FUNDO, ALTURA_DO_FUNDO);
+    cp.globalAlpha = 1;
+    cp.globalCompositeOperation = 'source-over';
+  }
+  return [longe, perto];
 }
 
 export interface Figura {
@@ -392,6 +678,7 @@ function bicho(ctx: CanvasRenderingContext2D, tipo: 'besouro' | 'abelha', x: num
 }
 
 export function pintar(p: Pintura, camX: number, camY: number, n: number, figuras: Figura[], vivos?: Vivos) {
+  trocarPelaKenney(p);
   const { ctx, cores, fase } = p;
   const ceu = ctx.createLinearGradient(0, 0, 0, H);
   ceu.addColorStop(0, cores.ceu[0]);
@@ -404,14 +691,20 @@ export function pintar(p: Pintura, camX: number, camY: number, n: number, figura
     [p.longe, 0.18],
     [p.perto, 0.42],
   ] as const) {
-    const dx = -Math.floor((camX * fator) % 640);
+    const larg = camada.width;
+    const dx = -Math.floor((camX * fator) % larg);
     const dy = -Math.floor(camY * fator * 0.5);
     ctx.drawImage(camada, dx, dy);
-    ctx.drawImage(camada, dx + 640, dy);
+    ctx.drawImage(camada, dx + larg, dy);
   }
   ctx.drawImage(p.mapa, Math.floor(camX), Math.floor(camY), W, H, 0, 0, W, H);
+  if (p.kenney && kenney) bandeira(ctx, kenney, fase, camX, camY, n);
   for (const m of fase.moveis) {
     const q = movelEm(m, n);
+    if (p.kenney && kenney) {
+      prancha(ctx, kenney, 147, Math.round(q.x - camX), Math.round(q.y - camY), m.w);
+      continue;
+    }
     tabua(ctx, Math.round(q.x - camX), Math.round(q.y - camY), m.w, cores);
     ctx.fillStyle = cores.tabua[1];
     ctx.fillRect(Math.round(q.x - camX) + 2, Math.round(q.y - camY) + 6, m.w - 4, 1);

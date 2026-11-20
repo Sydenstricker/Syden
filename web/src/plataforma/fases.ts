@@ -1,6 +1,6 @@
 /**
  * AS FASES DO PULO DO COELHO (03/11/2026): três fases curtas de plataforma, desenhadas POR CÓDIGO como uma grade de
- * blocos de 16 px (nenhuma arte de terceiro). Cada fase é montada por um roteiro de chamadas (chão, buraco, tábua, mola,
+ * blocos de 16 px (a grade é nossa; o desenho dos blocos vem do Pixel Platformer da Kenney, em desenho.ts). Cada fase é montada por um roteiro de chamadas (chão, buraco, tábua, mola,
  * espinhos, plataforma que anda), e não por um mapa escrito à mão: mexer num trecho não desalinha o resto.
  *
  * O id da fase leva a versão ("prado-1"): mudar o traçado é fase nova, e os recordes e fantasmas da antiga não se misturam.

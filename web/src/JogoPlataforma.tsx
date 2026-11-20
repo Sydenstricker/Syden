@@ -183,10 +183,11 @@ function MiniaturaDaFase({ fase }: { fase: Fase }) {
   useEffect(() => {
     const ctx = ref.current?.getContext('2d');
     if (!ctx) return;
+    // as cores do cenário da Kenney (plataforma/desenho.ts): o céu, a terra e o topo (a grama, ou a terra batida da toca)
     const cores: Record<string, [string, string, string]> = {
-      prado: ['#ecc8a6', '#8c6248', '#78a85a'],
-      toca: ['#44363a', '#6e5a4e', '#7e8a62'],
-      copas: ['#d8dcc8', '#7a5a40', '#6a9a52'],
+      prado: ['#dff6f5', '#cb815e', '#2eb082'],
+      toca: ['#4a2e28', '#cb815e', '#f4ac66'],
+      copas: ['#c8ecdc', '#cb815e', '#2eb082'],
     };
     const [ceu, chao, topo] = cores[fase.tema];
     ctx.fillStyle = ceu;
