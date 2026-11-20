@@ -167,6 +167,25 @@ export const ALCANCE_DA_CURA: [number, number] = [14, 9];
 export const ONDA_DA_ELITE = 2;
 export const VIDA_DE_ELITE = 2.5;
 export const DANO_DE_ELITE = 3;
+
+/**
+ * A DIFICULDADE DO SOLO (20/11/2026, a segunda auditoria dos mini-games): fácil, normal ou difícil, escolhida na largada. Mexe
+ * só nos bichos, e tudo no servidor: a vida e o dano deles, quantos ficam na tela ao mesmo tempo e a JANELA DO AVISO (a
+ * preparação de cada golpe, que paga a internet; no difícil ela encolhe, mas nunca abaixo de ~0,4 s, o dobro da GRACA_MS). Na
+ * sala, sempre o normal. O recorde é por fase E dificuldade: o normal guarda a variante de sempre (a fase), para os recordes
+ * antigos valerem; os outros, "<fase>@facil" e "<fase>@dificil".
+ */
+export const DIFICULDADES_DA_BRIGA = ['facil', 'normal', 'dificil'] as const;
+export type DificuldadeDaBriga = (typeof DIFICULDADES_DA_BRIGA)[number];
+export const AJUSTE_DA_DIFICULDADE: Record<DificuldadeDaBriga, { vida: number; dano: number; naTela: number; aviso: number }> = {
+  facil: { vida: 0.7, dano: 0.65, naTela: -1, aviso: 1.3 },
+  normal: { vida: 1, dano: 1, naTela: 0, aviso: 1 },
+  dificil: { vida: 1.3, dano: 1.3, naTela: 1, aviso: 0.8 },
+};
+/** Os estados de AVISO (a preparação visível de um golpe): a dificuldade estica ou encurta só eles. */
+const ESTADOS_DE_AVISO = new Set(['preparando', 'mirando', 'prep-investida', 'prep-pancada', 'prep-sopro']);
+/** A variante do recorde do Solo: a fase, e a dificuldade quando não é a normal. */
+export const varianteDaBriga = (fase: string, dificuldade: DificuldadeDaBriga) => (dificuldade === 'normal' ? fase : `${fase}@${dificuldade}`);
 /**
  * O ARREMESSO (19/11/2026): o 3º soco do combo num bicho ATORDOADO (na dor de um soco anterior) o joga longe, e no caminho ele
  * derruba os outros bichos (ARREMESSO_DANO, os pontos para quem arremessou). Contato coelho→bicho, então "quem bate tem razão"
@@ -352,6 +371,13 @@ export function criarBriga({
       let etapa = 0;
       let ondas = ondasDa(etapas[0]);
       const solo = ctx.comunidade === 0 || ctx.comunidade === undefined;
+      // a dificuldade (20/11/2026): só no Solo; na sala, o normal
+      const dificuldade: DificuldadeDaBriga =
+        solo && typeof corpo?.dificuldade === 'string' && (DIFICULDADES_DA_BRIGA as readonly string[]).includes(corpo.dificuldade)
+          ? (corpo.dificuldade as DificuldadeDaBriga)
+          : 'normal';
+      const ajuste = AJUSTE_DA_DIFICULDADE[dificuldade];
+      const variante = varianteDaBriga(escolha, dificuldade);
       const evento = `briga-${ctx.comunidade ?? 0}-${agora()}`;
       const n = inscritos.length;
       const inicio = agora();
@@ -383,7 +409,7 @@ export function criarBriga({
       let acabouEm: number | null = null;
       let recorde: { ms: number; antes: number | null; novo: boolean } | null = null;
       const soloDe = solo ? inscritos[0] : null;
-      const melhorDeAntes = soloDe !== null ? (db.recordeDoSolo(soloDe, 'briga', escolha)?.valor ?? null) : null;
+      const melhorDeAntes = soloDe !== null ? (db.recordeDoSolo(soloDe, 'briga', variante)?.valor ?? null) : null;
       /** A fase vencida na campanha: quando a próxima começa (null fora disso). */
       let trocaEm: number | null = null;
       let proximaEntrada = 0;
@@ -497,7 +523,7 @@ export function criarBriga({
       };
 
       const naTela = () => [...inimigos.values()].filter((i) => i.estado !== 'morto').length;
-      const maxNaTela = () => (ondas[onda].chefe ? 1 + n : 2 + n);
+      const maxNaTela = () => Math.max(1, (ondas[onda].chefe ? 1 + n : 2 + n) + ajuste.naTela);
 
       const entrar = (tipo: TipoDeInimigo) => {
         const doLado: 1 | -1 = aleatorio() < 0.5 ? -1 : 1;
@@ -506,7 +532,8 @@ export function criarBriga({
         const voa = def.comp === 'mergulho';
         const elite = eliteNaOnda && def.comp !== 'chefe';
         if (elite) eliteNaOnda = false;
-        const hpMax = def.comp === 'chefe' ? def.hp + 90 * (n - 1) : elite ? Math.round(def.hp * VIDA_DE_ELITE) : def.hp;
+        const hpBase = def.comp === 'chefe' ? def.hp + 90 * (n - 1) : elite ? Math.round(def.hp * VIDA_DE_ELITE) : def.hp;
+        const hpMax = Math.max(1, Math.round(hpBase * ajuste.vida));
         const t = agora();
         const ini: Inimigo = {
           id: proximoId++,
@@ -541,7 +568,8 @@ export function criarBriga({
       const mudar = (i: Inimigo, estado: EstadoDoInimigo, ms: number) => {
         i.estado = estado;
         i.desde = agora();
-        i.ate = agora() + ms;
+        // a janela do aviso, pela dificuldade (só os estados de preparação)
+        i.ate = agora() + (ajuste.aviso !== 1 && ESTADOS_DE_AVISO.has(estado) ? Math.round(ms * ajuste.aviso) : ms);
       };
       const maisPerto = (i: Inimigo) => {
         let melhor: Jogador | null = null;
@@ -567,7 +595,7 @@ export function criarBriga({
 
       const voador = (i: Inimigo) => bicho(i.tipo).comp === 'mergulho';
       /** O dano do golpe do bicho (a elite bate um pouco mais). */
-      const danoDe = (i: Inimigo) => bicho(i.tipo).dano + (i.elite ? DANO_DE_ELITE : 0);
+      const danoDe = (i: Inimigo) => Math.max(1, Math.round((bicho(i.tipo).dano + (i.elite ? DANO_DE_ELITE : 0)) * ajuste.dano));
 
       /** Quem passa por cima de uma cenoura com a vida faltando se cura (a posição é a que o servidor já conferiu). */
       const passoDasCuras = (t: number) => {
@@ -1224,7 +1252,7 @@ export function criarBriga({
           const ms = acabouEm - inicio;
           const j = jogadores.get(soloDe);
           try {
-            recorde = { ms, ...db.guardarRecordeDoSolo(soloDe, 'briga', escolha, ms, true, { pontos: j?.pontos ?? 0 }) };
+            recorde = { ms, ...db.guardarRecordeDoSolo(soloDe, 'briga', variante, ms, true, { pontos: j?.pontos ?? 0 }) };
           } catch {
             // a conta sumiu no meio (ou o teste sem conta): a partida acaba igual, sem o recorde
           }
@@ -1509,6 +1537,8 @@ export function criarBriga({
             ondas: ondas.length,
             // a fase escolhida (ou a campanha) e a que está na tela; "categoria" volta no "Jogar de novo"
             categoria: escolha,
+            // a dificuldade do Solo (20/11/2026; na sala, sempre 'normal'): também volta no "Jogar de novo"
+            dificuldade,
             cenario: etapas[etapa],
             etapa: etapa + 1,
             etapas: etapas.length,

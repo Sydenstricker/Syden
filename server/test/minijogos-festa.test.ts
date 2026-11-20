@@ -574,3 +574,71 @@ test('a medida da rede: segurar o eco não alarga a folga além do teto, e eco d
   assert.equal((jogo.publico(anaId).meu as { motivo: string }).motivo, 'invalido');
   assert.equal(jogo.acao(biaId, { tipo: 'eco', eco: 999 }), null, 'eco desconhecido, ou fora do "prepare-se": ignorado, sem erro');
 });
+
+/* ------------------------------------- os robôs no Solo e as rodadas (20/11/2026) ------------------------------------- */
+
+test('no Solo, contra robôs: eles entram no placar, sem troféu, e os pontos viram o recorde por rodadas e robôs', async () => {
+  const db = await import('../src/db.js');
+  const m = contexto([anaId], 0);
+  const ctx = { ...m.ctx, solo: true };
+  const ordem: Microjogo[] = ['relogio', 'relogio', 'relogio', 'relogio', 'relogio'];
+  const jogo = criarFesta({ agora: () => agora, aleatorio: meio, ordem }).comecar(ctx, { naSala: [anaId], criadaPor: anaId, corpo: { robos: 2 } });
+  assert.ok(typeof jogo !== 'string');
+  const p0 = jogo.publico(anaId) as { robos: number; jogadores: { userId: number; username: string }[]; recordeAntes: number | null };
+  assert.equal(p0.robos, 2);
+  assert.deepEqual(p0.jogadores.map((j) => j.userId), [anaId, -1, -2]);
+  assert.ok(p0.jogadores[1].username.startsWith('🤖'));
+  const antes = db.recordeDoSolo(anaId, 'festa', festaMod.varianteDaFesta(5, 2))?.valor ?? null;
+  const trofeusDaAna = async () => ((await comToken(app, ana.token)('GET', '/api/corrida-trofeus')).json().trofeus as unknown[]).length;
+  const trofeusAntes = await trofeusDaAna();
+  assert.equal(p0.recordeAntes, antes);
+  for (let r = 1; r <= 5; r++) {
+    m.andar(); // começa
+    agora += 10_100;
+    jogo.acao(anaId, { tipo: 'resultado', t: 10_000 });
+    // a Ana respondeu: os robôs não seguram a rodada
+    while (jogo.publico(anaId).fase === 'jogando') m.andar();
+    const linhas = jogo.publico(anaId).linhas as Linha[];
+    assert.ok(linhas.some((l) => l.userId === -1) && linhas.some((l) => l.userId === -2), 'os robôs têm resultado');
+    m.andar();
+  }
+  assert.equal(m.terminou(), true);
+  const fim = jogo.publico(anaId) as { placar: { userId: number; pontos: number }[]; recorde: { pontos: number; novo: boolean } | null; classificacao: { userId: number; posicao: number | null }[] };
+  assert.equal(fim.placar.length, 3);
+  assert.ok(fim.classificacao.every((l) => l.posicao !== null), 'o placar tem posição com os robôs');
+  const meus = fim.placar.find((l) => l.userId === anaId)!.pontos;
+  assert.ok(fim.recorde);
+  assert.equal(fim.recorde!.pontos, meus);
+  assert.equal(db.recordeDoSolo(anaId, 'festa', 'r5-2')?.valor, Math.max(antes ?? 0, meus));
+  assert.equal(await trofeusDaAna(), trofeusAntes, 'contra o computador, sem troféu');
+});
+
+test('as rodadas: 5, 10 ou 15 na largada (outro número vira 5); com robôs, os microjogos de 2 ou mais entram no sorteio', () => {
+  for (const [pedidas, esperadas] of [[10, 10], [15, 15], [7, 5], [undefined, 5]] as const) {
+    const m = contexto([anaId, biaId], comunidade.id);
+    const jogo = criarFesta({ agora: () => agora, aleatorio: meio }).comecar(m.ctx, { naSala: [anaId, biaId], criadaPor: anaId, corpo: { rodadas: pedidas } });
+    assert.ok(typeof jogo !== 'string');
+    assert.equal(jogo.publico(anaId).rodadas, esperadas);
+    jogo.parar?.();
+  }
+  // na sala, os robôs pedidos não entram
+  const m = contexto([anaId, biaId], comunidade.id);
+  const naSala = criarFesta({ agora: () => agora, aleatorio: meio }).comecar(m.ctx, { naSala: [anaId, biaId], criadaPor: anaId, corpo: { robos: 3 } });
+  assert.ok(typeof naSala !== 'string');
+  assert.equal((naSala.publico(anaId) as { robos: number }).robos, 0);
+  naSala.parar?.();
+  const sozinho = festaMod.microjogosPara(1);
+  const comRobos = festaMod.microjogosPara(3);
+  assert.ok(comRobos.length > sozinho.length, 'os de contato só entram com mais de um');
+});
+
+test('sozinho pela rota do Solo, com robôs e 10 rodadas', async () => {
+  const comAna = comToken(app, ana.token);
+  const r = await comAna('POST', '/api/minijogo-solo', { jogo: 'festa', robos: 3, rodadas: 10 });
+  assert.equal(r.statusCode, 200, r.body);
+  const p = r.json().partida;
+  assert.equal(p.rodadas, 10);
+  assert.equal(p.robos, 3);
+  assert.equal(p.jogadores.length, 4);
+  await comAna('DELETE', '/api/minijogo-solo');
+});

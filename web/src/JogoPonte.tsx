@@ -28,6 +28,8 @@ import {
   type Fase,
   type Sim,
 } from './ponte/sim';
+import { api } from './api';
+import { dificuldadeDaFase, guardarPonte, lerPonteGuardada } from './ponte/escolha';
 import './ponte/ponte.css';
 
 /**
@@ -118,7 +120,10 @@ export function JogoPonte({ estado, eu, jogador, agir }: Props) {
         solo={estado.solo}
         contagemMs={estado.contagemMs}
         montagemMs={estado.montagemMs}
+        // no Solo, a montagem começa da última ponte desta fase neste aparelho (20/11/2026)
+        inicial={estado.solo ? lerPonteGuardada(fase.id) : null}
         aoMandar={(pecas) => {
+          if (estado.solo) guardarPonte(fase.id, pecas);
           setMinhas(pecas);
           void agir({ tipo: 'ponte', pecas });
         }}
@@ -180,19 +185,60 @@ function MiniaturaDaPonte({ fase }: { fase: Fase }) {
   );
 }
 
-export function EscolhaDaPonte({ aoEscolher, aoVoltar }: { aoEscolher: (fase: string) => void; aoVoltar: () => void }) {
+/** A marca de dificuldade de uma fase (20/11/2026): três martelinhos, acesos de 1 a 3. Sem texto. */
+function MarcaDeDificuldade({ n }: { n: number }) {
   const t = useT();
+  return (
+    <span className="ponte-dificuldade" role="img" aria-label={`${t('Dificuldade')}: ${n}/3`}>
+      {[1, 2, 3].map((k) => (
+        <Hammer key={k} size={12} aria-hidden="true" className={k <= n ? 'aceso' : undefined} />
+      ))}
+    </span>
+  );
+}
+
+/**
+ * A ESCOLHA DA FASE: a miniatura, o número, a marca de dificuldade e, no Solo, os SELOS e o RECORDE de cada fase (20/11/2026; o
+ * recorde vem do servidor, /api/minijogos/ponte/recordes, e só a pessoa o vê).
+ */
+export function EscolhaDaPonte({ aoEscolher, aoVoltar, solo = false }: { aoEscolher: (fase: string) => void; aoVoltar: () => void; solo?: boolean }) {
+  const t = useT();
+  const [recordes, setRecordes] = useState<Record<string, number>>({});
+  useEffect(() => {
+    if (!solo) return;
+    let vivo = true;
+    api<{ recordes: Record<string, number> }>('/api/minijogos/ponte/recordes')
+      .then((r) => vivo && setRecordes(r.recordes ?? {}))
+      .catch(() => {});
+    return () => {
+      vivo = false;
+    };
+  }, [solo]);
   return (
     <div className="ponte-escolha">
       <ul className="ponte-fases">
-        {FASES.map((f, i) => (
-          <li key={f.id}>
-            <button type="button" className="ponte-fase-botao" aria-label={t('Fase {n} de {total}', { n: i + 1, total: FASES.length })} onClick={() => aoEscolher(f.id)}>
-              <MiniaturaDaPonte fase={f} />
-              <strong>{i + 1}</strong>
-            </button>
-          </li>
-        ))}
+        {FASES.map((f, i) => {
+          const recorde = recordes[f.id];
+          return (
+            <li key={f.id}>
+              <button type="button" className="ponte-fase-botao" aria-label={t('Fase {n} de {total}', { n: i + 1, total: FASES.length })} onClick={() => aoEscolher(f.id)}>
+                <MiniaturaDaPonte fase={f} />
+                <span className="ponte-fase-linha">
+                  <strong>{i + 1}</strong>
+                  <MarcaDeDificuldade n={dificuldadeDaFase(f.id)} />
+                </span>
+                {recorde !== undefined && (
+                  <span className="ponte-fase-linha">
+                    <Selos n={selosDe(f, { passou: true, custo: recorde })} />
+                    <small>
+                      <Coins size={12} aria-hidden="true" /> {recorde}
+                    </small>
+                  </span>
+                )}
+              </button>
+            </li>
+          );
+        })}
       </ul>
       <div className="minijogo-acoes">
         <button type="button" className="btn-secondary" onClick={aoVoltar}>
@@ -271,18 +317,21 @@ function Montagem({
   contagemMs,
   montagemMs,
   aoMandar,
+  inicial = null,
 }: {
   fase: Fase;
   solo: boolean;
   contagemMs: number;
   montagemMs: number;
   aoMandar: (pecas: number[]) => void;
+  /** A ponte de onde a montagem começa (a última desta fase, no Solo). */
+  inicial?: number[] | null;
 }) {
   const t = useT();
   const tela = useRef<HTMLDivElement>(null);
   const { caixa3d, tela2d, vista: desenho, modo } = useVistaDaPonte(fase);
-  const [pecas, setPecasEstado] = useState<number[]>([]);
-  const pecasRef = useRef<number[]>([]);
+  const [pecas, setPecasEstado] = useState<number[]>(() => inicial ?? []);
+  const pecasRef = useRef<number[]>(inicial ?? []);
   const historico = useRef<number[][]>([]);
   const [tipo, setTipo] = useState(PISTA);
   const tipoRef = useRef(PISTA);

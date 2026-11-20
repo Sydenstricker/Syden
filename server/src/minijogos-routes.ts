@@ -166,6 +166,14 @@ export const JOGOS_SOLO = new Set([
   ...Object.keys(TEMAS),
 ]);
 
+/**
+ * OS JOGOS QUE SAÍRAM DA ESTANTE (20/11/2026, decisão dele: "o minigolfe que fica é o 3D"). A máquina continua registrada em
+ * JOGOS (o código e os testes dela ficam, e o nome segue nos troféus, recordes e partidas antigas), mas partida NOVA não
+ * começa, nem na sala nem no Solo: um site antigo que ainda mostre o jogo recebe o erro, e não uma partida.
+ */
+export const JOGOS_APOSENTADOS = new Set(['golfe']);
+const SAIU_DA_ESTANTE = 'Este jogo saiu da estante.';
+
 interface Partida {
   channelId: number;
   communityId: number;
@@ -412,6 +420,11 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
       return { svg };
     });
 
+    // Os recordes da Ponte da toca, para a escolha da fase (20/11/2026): o menor custo de cada fase. É da pessoa e só ela o vê.
+    authed.get('/api/minijogos/ponte/recordes', async (request) => ({
+      recordes: Object.fromEntries(db.pontesDe(request.user.id).map((r) => [r.fase, r.custo])),
+    }));
+
     // ---- A PARTIDA SOLO (ver JOGOS_SOLO): da pessoa, sem sala. ----
     authed.get('/api/minijogo-solo', async (request) => {
       const p = solos.get(request.user.id);
@@ -420,6 +433,7 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
 
     authed.post<{ Body: Record<string, unknown> & { jogo?: string } }>('/api/minijogo-solo', async (request, reply) => {
       const jogo = request.body?.jogo ?? '';
+      if (JOGOS_APOSENTADOS.has(jogo)) return reply.code(400).send({ error: SAIU_DA_ESTANTE });
       if (!JOGOS_SOLO.has(jogo) || !JOGOS[jogo]) return reply.code(400).send({ error: 'Este jogo não se joga sozinho.' });
       // Começar outra troca a de antes: a partida solo é uma só por pessoa.
       const antes = solos.get(request.user.id);
@@ -474,6 +488,7 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
         if (!canal) return reply;
         const definicao = JOGOS[request.body?.jogo ?? ''];
         if (!definicao) return reply.code(400).send({ error: 'Jogo desconhecido.' });
+        if (JOGOS_APOSENTADOS.has(request.body?.jogo ?? '')) return reply.code(400).send({ error: SAIU_DA_ESTANTE });
         if (!estaNaSala(request.user.id, canal.id)) return reply.code(403).send({ error: 'Entre na sala de voz para jogar com a turma.' });
         const atual = partidas.get(canal.id);
         // O convite de quem já saiu da sala não segura a sala: um jogo novo o substitui.

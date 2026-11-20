@@ -19,6 +19,9 @@
  * É jogo entre amigos: conferência razoável, não perfeita (a mesma da Festa: um programa que espere a hora certa passa, como
  * passaria um dedo perfeito). Não usa o eco da rodada da Festa: a folga é a de quem não mediu (ATRASO_MAXIMO + FOLGA_DA_REDE).
  *
+ * O RECORDE DO SOLO (20/11/2026, a segunda auditoria): sozinho, os ACERTOS da partida, contados aqui, vão à tabela comum
+ * (jogo 'festa-relampago', sem variante). Na sala, não.
+ *
  * OS TROFÉUS: com 2 ou mais que ficaram até o fim, o pódio (pela ordem de queda, e no empate pelos acertos) vai para a estante,
  * com a "pista" 'festa-relampago' e os pontos sendo os acertos.
  */
@@ -138,6 +141,17 @@ export function comecarRelampago(ctx: Contexto, naSala: number[], { agora, aleat
   /** Quem esteve na sala em todos os microjogos: só eles levam troféu. */
   const ficaram = new Set(inscritos);
   const folga = ATRASO_MAXIMO + FOLGA_DA_REDE;
+  /** O recorde do Solo (20/11/2026): de quem joga sozinho. */
+  const soloDe = inscritos.length === 1 && inscritos[0] > 0 && (ctx.solo === true || !ctx.comunidade) ? inscritos[0] : null;
+  let recordeAntes: number | null = null;
+  if (soloDe !== null) {
+    try {
+      recordeAntes = db.recordeDoSolo(soloDe, 'festa-relampago')?.valor ?? null;
+    } catch {
+      // sem a conta (o teste sem banco): sem recorde
+    }
+  }
+  let recorde: { acertos: number; antes: number | null; novo: boolean } | null = null;
 
   const vivos = () => inscritos.filter((id) => pessoas.get(id)!.caiu === null);
 
@@ -189,6 +203,14 @@ export function comecarRelampago(ctx: Contexto, naSala: number[], { agora, aleat
   const terminar = () => {
     fase = 'fim';
     dados = null;
+    if (soloDe !== null) {
+      const acertos = pessoas.get(soloDe)!.acertos;
+      try {
+        recorde = { acertos, ...(acertos > 0 ? db.guardarRecordeDoSolo(soloDe, 'festa-relampago', '', acertos, false) : { antes: recordeAntes, novo: false }) };
+      } catch {
+        recorde = { acertos, antes: recordeAntes, novo: false };
+      }
+    }
     const turma = inscritos.filter((id) => ficaram.has(id));
     if (turma.length >= 2) {
       for (const l of classificacao(turma)) {
@@ -241,6 +263,8 @@ export function comecarRelampago(ctx: Contexto, naSala: number[], { agora, aleat
         classificacao: fase === 'fim' ? classificacao(turma.length >= 2 ? turma : inscritos).map((l) => ({ ...l, posicao: turma.length >= 2 ? l.posicao : null, saiu: !ficaram.has(l.userId) })) : null,
         placar: classificacao(inscritos).map(({ userId, username, pontos }) => ({ userId, username, pontos })),
         partidaId: evento,
+        // o recorde do Solo (20/11/2026): o de antes, e no fim os acertos e se virou recorde
+        ...(soloDe !== null ? { recordeAntes, recorde: fase === 'fim' ? recorde : null } : {}),
       };
     },
     acao(quem, corpo) {

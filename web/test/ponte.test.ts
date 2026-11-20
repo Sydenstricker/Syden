@@ -330,3 +330,38 @@ describe('ponte da toca', () => {
     assert.deepEqual([a.passo, a.passou, a.progresso], [b.passo, b.passou, b.progresso]);
   });
 });
+
+describe('a escolha da fase (20/11/2026)', () => {
+  it('toda fase tem a marca de dificuldade, de 1 a 3', async () => {
+    const { DIFICULDADE_DAS_FASES, fasesSemDificuldade } = await import('../src/ponte/escolha');
+    assert.deepEqual(fasesSemDificuldade(), []);
+    for (const v of Object.values(DIFICULDADE_DAS_FASES)) assert.ok(v >= 1 && v <= 3);
+    for (const id of Object.keys(DIFICULDADE_DAS_FASES)) assert.ok(faseDe(id), `fase que não existe: ${id}`);
+  });
+
+  it('a última ponte de cada fase fica no aparelho, e a que não vale mais pela regra é esquecida', async () => {
+    const guardado = new Map<string, string>();
+    const antes = (globalThis as { localStorage?: unknown }).localStorage;
+    (globalThis as { localStorage?: unknown }).localStorage = {
+      getItem: (k: string) => guardado.get(k) ?? null,
+      setItem: (k: string, v: string) => void guardado.set(k, v),
+    };
+    try {
+      const { guardarPonte, lerPonteGuardada } = await import('../src/ponte/escolha');
+      const f = FASES[0];
+      assert.equal(lerPonteGuardada(f.id), null);
+      const ponte = pontePronta(f);
+      guardarPonte(f.id, ponte);
+      assert.deepEqual(lerPonteGuardada(f.id), ponte);
+      // cada fase com a sua
+      assert.equal(lerPonteGuardada(FASES[1].id), null);
+      // estragada (ou de uma regra antiga que não confere mais): esquecida
+      guardado.set(`syden:ponte:${f.id}`, '[1,2,3]');
+      assert.equal(lerPonteGuardada(f.id), null);
+      guardado.set(`syden:ponte:${f.id}`, 'não é json');
+      assert.equal(lerPonteGuardada(f.id), null);
+    } finally {
+      (globalThis as { localStorage?: unknown }).localStorage = antes;
+    }
+  });
+});

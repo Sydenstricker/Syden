@@ -1,0 +1,22 @@
+/* O aviso de aceleração do modo Relâmpago (20/11/2026, modoRelampago.tsx): o raio e as setas, por cima, sem texto. */
+.festa-acelera {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(242, 160, 60, 0.38) 0%, rgba(242, 160, 60, 0) 70%);
+  animation: festa-acelera 1.4s ease-out both;
+  z-index: 2;
+}
+@keyframes festa-acelera {
+  0% { transform: scale(0.6); opacity: 0; }
+  20% { transform: scale(1.1); opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: scale(1.25); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .festa-acelera { animation: none; }
+}

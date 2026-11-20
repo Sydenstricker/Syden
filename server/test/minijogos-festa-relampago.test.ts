@@ -30,7 +30,7 @@ type Estado = {
   classificacao: { userId: number; posicao: number | null; pontos: number }[] | null;
 };
 
-function comecar(naSala = [anaId, biaId], semente = 3) {
+function comecar(naSala = [anaId, biaId], semente = 3, solo = false) {
   let s = semente;
   const aleatorio = () => (s = (s * 16807) % 2147483647) / 2147483647;
   const relogio: { ms: number; depois: () => void }[] = [];
@@ -41,7 +41,8 @@ function comecar(naSala = [anaId, biaId], semente = 3) {
     terminar: () => (terminou = true),
     naSala: () => naSala,
     nome: (id: number) => (id === anaId ? 'ana' : 'bia'),
-    comunidade: comunidade.id,
+    comunidade: solo ? 0 : comunidade.id,
+    solo,
   };
   const jogo = criarFesta({ agora: () => agora, aleatorio }).comecar(ctx as never, { naSala, criadaPor: naSala[0], corpo: { modo: 'relampago' } });
   assert.ok(typeof jogo !== 'string');
@@ -200,4 +201,35 @@ test('sozinho: vai até as vidas acabarem, sem pódio', () => {
   assert.equal(e.indice, 5 + rel.VIDAS_RELAMPAGO - 1, 'cinco acertos, depois três erros');
   assert.equal(e.jogadores[0].acertos, 5);
   assert.equal(e.classificacao![0].posicao, null, 'sozinho, sem pódio');
+});
+
+test('o recorde do Solo: os acertos contados pelo servidor, na tabela comum (e na sala, nada)', async () => {
+  const db = await import('../src/db.js');
+  const antes = db.recordeDoSolo(anaId, 'festa-relampago')?.valor ?? null;
+  const m = comecar([anaId], 8, true);
+  assert.equal((m.estado() as unknown as { recordeAntes: number | null }).recordeAntes, antes);
+  m.andar();
+  let voltas = 0;
+  let acertou = 0;
+  while (m.estado().fase !== 'fim' && voltas++ < 300) {
+    const e = m.estado();
+    if (e.fase === 'jogando' && acertou < 7) {
+      const c = respostaCerta(e.dados!);
+      const largou = agora;
+      agora = largou + c.t + 100;
+      m.jogo.acao(anaId, { tipo: 'acerto', k: e.indice, t: c.t, r: c.r });
+      acertou++;
+      const r = m.relogio[0];
+      agora = largou + r.ms;
+      r.depois();
+      continue;
+    }
+    m.andar();
+  }
+  const fim = m.estado() as unknown as { recorde: { acertos: number; novo: boolean } };
+  assert.equal(fim.recorde.acertos, 7);
+  assert.equal(db.recordeDoSolo(anaId, 'festa-relampago')?.valor, Math.max(antes ?? 0, 7));
+  // na sala, o público não tem recorde
+  const sala = comecar([anaId, biaId], 9);
+  assert.equal('recordeAntes' in sala.estado(), false);
 });

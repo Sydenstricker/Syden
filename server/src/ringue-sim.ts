@@ -130,6 +130,11 @@ export interface Adversario {
   fintas: Golpe[];
   /** A vida com que levanta da primeira e da segunda queda. */
   levanta: [number, number];
+  /**
+   * O ADVERSÁRIO QUE MUDA (20/11/2026): no último round, ou com menos de um terço da vida, ele entra na FÚRIA: soma estas ações
+   * às dele (um golpe ou uma cadeia nova) e espera menos entre uma e outra. Até lá, a luta é a de antes, passo a passo.
+   */
+  furia: { acoes: Acao[]; espera: [number, number] };
 }
 
 export const ADVERSARIOS: Adversario[] = [
@@ -151,6 +156,11 @@ export const ADVERSARIOS: Adversario[] = [
     resposta: golpe('direto', 22, null, 12, 24),
     fintas: [],
     levanta: [70, 45],
+    // a fúria do ligeiro: a cadeia de três (dois diretos sem brilho e o gancho que brilha), e quase sem respiro
+    furia: {
+      acoes: [{ peso: 3, golpes: [golpe('direto', 26, null, 10, 20), golpe('direto', 26, null, 10, 20), golpe('gancho-d', 30, [8, 20], 14, 40)] }],
+      espera: [16, 40],
+    },
   },
   {
     // O PESADO: espera muito, avisa muito, e quando acerta dói; esquivado, fica aberto um tempão. Guarda quase sempre alta.
@@ -172,6 +182,8 @@ export const ADVERSARIOS: Adversario[] = [
     resposta: golpe('direto', 24, null, 14, 30),
     fintas: [],
     levanta: [80, 55],
+    // a fúria do pesado: a pancada de baixo (a guarda segura, abaixar é dar o queixo), e espera menos
+    furia: { acoes: [{ peso: 2, golpes: [golpe('de-baixo', 44, [14, 30], 26, 60)] }], espera: [34, 70] },
   },
   {
     // O TRAPACEIRO: finge golpes (sem o brilho: o brilho nunca mente), provoca de guarda aberta e solta golpes rápidos.
@@ -193,6 +205,11 @@ export const ADVERSARIOS: Adversario[] = [
     resposta: golpe('direto', 22, null, 10, 24),
     fintas: [golpe('gancho-e', 32, null, 14, 40), golpe('gancho-d', 32, null, 14, 40)],
     levanta: [70, 50],
+    // a fúria do trapaceiro: o gancho sem brilho emendado na pancada de cima
+    furia: {
+      acoes: [{ peso: 2, golpes: [golpe('gancho-e', 28, null, 12, 16), golpe('por-cima', 34, [8, 20], 18, 44)] }],
+      espera: [14, 44],
+    },
   },
 ];
 
@@ -242,6 +259,8 @@ export interface Oponente {
   levantaEm: number;
   /** Passos desde o último soco que levou (o desenho pisca). */
   levou: number;
+  /** Entrou na fúria (o último round ou menos de um terço da vida): não sai mais nesta luta. */
+  furia: boolean;
 }
 
 export type Evento =
@@ -257,7 +276,8 @@ export type Evento =
   | { tipo: 'queda'; quem: 'jogador' | 'adversario' }
   | { tipo: 'contagem'; n: number }
   | { tipo: 'levantou'; quem: 'jogador' | 'adversario' }
-  | { tipo: 'fim-da-luta'; venceu: boolean; nocaute: boolean };
+  | { tipo: 'fim-da-luta'; venceu: boolean; nocaute: boolean }
+  | { tipo: 'furia' };
 
 export type Fase = 'apresentacao' | 'luta' | 'intervalo' | 'resultado';
 
@@ -317,6 +337,7 @@ function novoOponente(adv: number): Oponente {
     bloqueados: 0,
     levantaEm: 11,
     levou: 99,
+    furia: false,
   };
 }
 
@@ -351,15 +372,25 @@ export function novaLuta(semente: number): Luta {
 // O ADVERSÁRIO
 // ------------------------------------------------------------------------------------------------------------------
 
+/** A fúria (20/11/2026): no último round, ou com menos de um terço da vida, uma vez por luta. */
+function conferirFuria(l: Luta) {
+  const a = l.a;
+  if (a.furia || (l.round < ROUNDS && a.vida * 3 >= ADVERSARIOS[l.adv].vida)) return;
+  a.furia = true;
+  l.eventos.push({ tipo: 'furia' });
+}
+
 /** De volta à guarda, esperando `espera` passos (−1: o sorteio do jeito dele), com a guarda sorteada. */
 function voltarAGuarda(l: Luta, espera: number) {
   const a = l.a;
   const A = ADVERSARIOS[l.adv];
+  conferirFuria(l);
   a.estado = 'guarda';
   a.t = 0;
   a.golpe = null;
   a.cadeia = 0;
-  a.dura = espera >= 0 ? espera : A.espera[0] + sortear(l, A.espera[1] - A.espera[0] + 1);
+  const de = a.furia ? A.furia.espera : A.espera;
+  a.dura = espera >= 0 ? espera : de[0] + sortear(l, de[1] - de[0] + 1);
   const total = A.guardas[0] + A.guardas[1] + A.guardas[2];
   const r = sortear(l, total);
   a.guarda = r < A.guardas[0] ? -1 : r < A.guardas[0] + A.guardas[1] ? 0 : 1;
@@ -380,11 +411,13 @@ function proximaAcao(l: Luta) {
     avisar(l, a.fila.shift()!);
     return;
   }
+  conferirFuria(l);
+  const acoes = a.furia ? A.acoes.concat(A.furia.acoes) : A.acoes;
   let total = 0;
-  for (const x of A.acoes) total += x.peso;
+  for (const x of acoes) total += x.peso;
   let r = sortear(l, total);
-  let escolhida = A.acoes[0];
-  for (const x of A.acoes) {
+  let escolhida = acoes[0];
+  for (const x of acoes) {
     if (r < x.peso) {
       escolhida = x;
       break;

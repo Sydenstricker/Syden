@@ -430,3 +430,24 @@
     repeating-linear-gradient(135deg, #e0a43a 0 3px, #2f2f2f 3px 6px) right / 7px 100% no-repeat,
     repeating-linear-gradient(90deg, #d19a5e 0 6px, #6d4223 6px 7px);
 }
+
+/* A escolha (20/11/2026): a marca de dificuldade e, no Solo, os selos e o recorde da fase. */
+.ponte-fase-linha {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+.ponte-dificuldade {
+  display: inline-flex;
+  gap: 1px;
+  color: var(--text-muted, rgba(128, 128, 128, 0.55));
+  opacity: 0.6;
+}
+.ponte-dificuldade .aceso {
+  color: #e0884a;
+  opacity: 1;
+}
+.ponte-fase-botao .ponte-selos {
+  color: rgba(128, 128, 128, 0.45);
+}

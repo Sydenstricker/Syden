@@ -63,6 +63,11 @@ import { Trophy } from 'lucide-react';
 import { useT } from './i18n';
 import type { EstadoBriga, Partida } from './minijogos';
 
+/** A dificuldade do Solo (20/11/2026): a regra mora no servidor (AJUSTE_DA_DIFICULDADE, em server/src/minijogo-briga.ts). */
+export type DificuldadeDaBriga = 'facil' | 'normal' | 'dificil';
+/** A última dificuldade escolhida, lembrada no aparelho. */
+const DIFICULDADE_GUARDADA = 'syden:briga-dificuldade';
+
 /**
  * A BRIGA NA HORTA (03/11/2026, server/src/minijogo-briga.ts): briga de rua de lado, com a turma, contra os bichos de cada
  * fase. Só a mecânica dos fliperamas de quatro jogadores do começo dos anos 90; o cenário é daqui (briga/desenho.ts,
@@ -756,21 +761,69 @@ function MiniaturaDaFase({ indice }: { indice: number }) {
  * A ESCOLHA DA FASE (06/11/2026): no Solo e na sala, quem começa escolhe uma fase ou a campanha (todas seguidas). Todas
  * abertas de fábrica, sem progressão obrigatória, como o resto do Syden.
  */
-export function EscolhaDaBriga({ aoEscolher, aoVoltar }: { aoEscolher: (fase: string) => void; aoVoltar: () => void }) {
+export function EscolhaDaBriga({
+  aoEscolher,
+  aoVoltar,
+  solo = false,
+}: {
+  /** A fase e, no Solo, a dificuldade (20/11/2026; na sala, o servidor joga sempre no normal). */
+  aoEscolher: (fase: string, dificuldade?: DificuldadeDaBriga) => void;
+  aoVoltar: () => void;
+  solo?: boolean;
+}) {
   const t = useT();
+  const [dificuldade, setDificuldade] = useState<DificuldadeDaBriga>(() => {
+    try {
+      const d = localStorage.getItem(DIFICULDADE_GUARDADA);
+      return d === 'facil' || d === 'dificil' ? d : 'normal';
+    } catch {
+      return 'normal';
+    }
+  });
+  const nomes: Record<DificuldadeDaBriga, string> = { facil: t('Fácil'), normal: t('Normal'), dificil: t('Difícil') };
+  const escolher = (fase: string) => {
+    if (!solo) return aoEscolher(fase);
+    try {
+      localStorage.setItem(DIFICULDADE_GUARDADA, dificuldade);
+    } catch {
+      // sem armazenamento: só não lembra
+    }
+    aoEscolher(fase, dificuldade);
+  };
   return (
     <div className="corrida-escolha">
+      {solo && (
+        <fieldset className="mesa-grupo">
+          <legend>{t('Dificuldade')}</legend>
+          <div className="mesa-botoes">
+            {(['facil', 'normal', 'dificil'] as const).map((d) => (
+              <button
+                key={d}
+                type="button"
+                className={`tab-rodadas-botao${dificuldade === d ? ' escolhida' : ''}`}
+                aria-pressed={dificuldade === d}
+                onClick={() => {
+                  tocar('clique');
+                  setDificuldade(d);
+                }}
+              >
+                {nomes[d]}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+      )}
       <ul className="corrida-pistas">
         {FASES_DA_BRIGA.map((f, k) => (
           <li key={f.id}>
-            <button type="button" className="corrida-pista-botao" onClick={() => aoEscolher(f.id)}>
+            <button type="button" className="corrida-pista-botao" onClick={() => escolher(f.id)}>
               <MiniaturaDaFase indice={k} />
               <strong>{nomeDaFaseDaBriga(t, f.id)}</strong>
             </button>
           </li>
         ))}
         <li>
-          <button type="button" className="corrida-pista-botao copa" onClick={() => aoEscolher(CAMPANHA)}>
+          <button type="button" className="corrida-pista-botao copa" onClick={() => escolher(CAMPANHA)}>
             <span className="corrida-copa-mapas" aria-hidden="true">
               <Trophy size={28} />
             </span>

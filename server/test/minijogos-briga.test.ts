@@ -1030,3 +1030,55 @@ test('o caixote inteiro arremessado pelo 3º soco voa pela faixa, derruba o bich
   assert.equal(r.estado, 'caido', 'a raposa do caminho caiu');
   assert.ok(j.pontos >= pontos + mod.ARREMESSO_DANO);
 });
+
+// ---------------- A dificuldade do Solo (20/11/2026) ----------------
+
+test('a dificuldade do Solo: a vida, o dano e o aviso dos bichos; na sala, sempre o normal', () => {
+  const vidaDa = (corpo: Record<string, unknown>, sala = [anaId], com = 0) => {
+    const m = comecar(sala, com, () => 0.5, corpo);
+    const r = umaRaposa(m);
+    const pub = m.jogo.publico(anaId) as { dificuldade: string };
+    return { hp: r.hp, dificuldade: pub.dificuldade, m, r };
+  };
+  const normal = vidaDa({});
+  const facil = vidaDa({ dificuldade: 'facil' });
+  const dificil = vidaDa({ dificuldade: 'dificil' });
+  assert.equal(normal.dificuldade, 'normal');
+  assert.equal(facil.dificuldade, 'facil');
+  assert.equal(dificil.dificuldade, 'dificil');
+  assert.ok(facil.hp < normal.hp && normal.hp < dificil.hp, `${facil.hp} < ${normal.hp} < ${dificil.hp}`);
+  // na sala, a dificuldade pedida não vale
+  const sala = vidaDa({ dificuldade: 'dificil' }, [anaId, biaId], comunidade.id);
+  assert.equal(sala.dificuldade, 'normal');
+  assert.equal(sala.hp, normal.hp);
+  // pedido desconhecido vira o normal
+  assert.equal(vidaDa({ dificuldade: 'impossivel' }).dificuldade, 'normal');
+  // o aviso (a preparação do soco) é mais curto no difícil e mais longo no fácil
+  const preparo = (x: ReturnType<typeof vidaDa>) => {
+    const j = x.m.interno._jogadores.get(anaId)!;
+    for (let k = 0; k < 400; k++) {
+      teleportar(x.m, anaId, 160, 28);
+      x.m.andar(PASSO_MS);
+      if (x.r.estado === 'preparando') {
+        const i = x.r as unknown as { desde: number; ate: number };
+        return i.ate - i.desde;
+      }
+    }
+    throw new Error(`a raposa não preparou (${j.x})`);
+  };
+  const pn = preparo(normal);
+  assert.ok(preparo(facil) > pn && pn > preparo(dificil));
+  assert.ok(preparo(vidaDa({ dificuldade: 'dificil' })) > 2 * GRACA_MS, 'o aviso nunca fica abaixo do dobro da folga');
+  for (const x of [normal, facil, dificil, sala]) x.m.jogo.parar?.();
+});
+
+test('o recorde do Solo é por fase e dificuldade; o normal fica na variante de sempre', async () => {
+  const db = await import('../src/db.js');
+  assert.equal(mod.varianteDaBriga('horta', 'normal'), 'horta');
+  assert.equal(mod.varianteDaBriga('horta', 'facil'), 'horta@facil');
+  const m = comecar([anaId], 0, () => 0.5, { dificuldade: 'facil' });
+  vencer(m);
+  const pub = m.jogo.publico(anaId) as { recorde: { ms: number } | null };
+  assert.ok(pub.recorde);
+  assert.equal(db.recordeDoSolo(anaId, 'briga', 'horta@facil')?.valor, pub.recorde!.ms);
+});

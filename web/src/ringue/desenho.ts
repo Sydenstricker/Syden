@@ -116,6 +116,8 @@ export class DesenhoDoRingue {
   private flashAte = 0;
   /** O adversário pisca branco quando leva (pelo relógio da tela: no chão, a luta dele não anda). */
   private piscaAte = 0;
+  /** O clarão vermelho de quando ele entra na fúria. */
+  private furiaAte = 0;
 
   constructor(g: CanvasRenderingContext2D, avatar: AvatarDoJogo) {
     this.g = g;
@@ -137,6 +139,11 @@ export class DesenhoDoRingue {
         this.tremeAte = agora + 220;
         this.flashAte = agora + 90;
       } else if (e.tipo === 'raspou') this.tremeAte = agora + 100;
+      // a fúria (20/11/2026): ele bufa, a tela treme e a luz fica vermelha por um instante
+      else if (e.tipo === 'furia') {
+        this.tremeAte = agora + 400;
+        this.furiaAte = agora + 600;
+      }
     }
   }
 
@@ -151,6 +158,10 @@ export class DesenhoDoRingue {
     g.restore();
     if (this.flashAte > agora) {
       g.fillStyle = 'rgba(255,248,236,0.45)';
+      g.fillRect(0, 0, LARGURA, ALTURA);
+    }
+    if (this.furiaAte > agora) {
+      g.fillStyle = `rgba(220,40,30,${(0.3 * (this.furiaAte - agora)) / 600})`;
       g.fillRect(0, 0, LARGURA, ALTURA);
     }
     this.painel(l, agora, dicaDoLevantar);
@@ -281,10 +292,32 @@ export class DesenhoDoRingue {
     }
     if (l.queda === 'adversario') quadro = QUADRO.caido + 2;
     const x = folha(A.bicho);
+    // a fúria: o vapor vermelho atrás dele, pulsando (só desenho)
+    if (a.furia && l.queda !== 'adversario' && a.estado !== 'caido') {
+      const p = 0.5 + 0.5 * Math.sin(agora / 140);
+      g.fillStyle = `rgba(230,50,40,${0.16 + 0.12 * p})`;
+      g.beginPath();
+      g.ellipse(MEIO + dx, PE_Y + dy - alto * 0.5, alto * (0.42 + 0.04 * p), alto * 0.58, 0, 0, Math.PI * 2);
+      g.fill();
+    }
     if (x && f) {
       const L = f.lado;
       const piscando = this.piscaAte > agora && Math.floor(agora / 40) % 2 === 0;
       g.drawImage(piscando && x.branca ? x.branca : x.img, quadro * L, 0, L, L, Math.round(MEIO + dx - f.peX * s), Math.round(PE_Y + dy - f.peY * s), L * s, L * s);
+    }
+    // a marca da fúria em cima da cabeça: quatro cantos vermelhos que pulsam
+    if (a.furia && l.queda !== 'adversario' && a.estado !== 'caido') {
+      const cx = MEIO + dx + alto * 0.24;
+      const cy = PE_Y + dy - alto * 0.92;
+      const r = 5 + (Math.floor(agora / 180) % 2);
+      g.strokeStyle = '#e8322a';
+      g.lineWidth = 3;
+      for (const [sx, sy] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) {
+        g.beginPath();
+        g.moveTo(cx + sx * 2, cy + sy * r);
+        g.quadraticCurveTo(cx + sx * 2, cy + sy * 2, cx + sx * r, cy + sy * 2);
+        g.stroke();
+      }
     }
     if (l.queda === 'adversario' || a.estado === 'caido') {
       // em cima da cabeça dele, que cai para a esquerda da tela (acima das orelhas do coelho)

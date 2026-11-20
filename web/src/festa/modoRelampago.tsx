@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useT } from '../i18n';
 import { Placar } from '../Minijogo';
 import { tocar } from '../somDosJogos';
+import './relampago.css';
 import { useRelogio, useTeclas } from './comum';
 import { CoelhoComemorando } from './moldura';
 
@@ -33,6 +34,27 @@ export interface EstadoRelampago {
   recebidaEm: number;
   restanteMs: number;
   terminada?: boolean;
+  /** O recorde do Solo (20/11/2026): o de antes, e no fim os acertos e se virou recorde. Na sala, ausentes. */
+  recordeAntes?: number | null;
+  recorde?: { acertos: number; antes: number | null; novo: boolean } | null;
+}
+
+/** A cada quantos acertos meus a tela avisa que está acelerando (só desenho e som). */
+const AVISO_A_CADA = 5;
+const AVISO_MS = 1400;
+
+/** O AVISO DE ACELERAÇÃO (20/11/2026): o raio, as setas para a frente e a cor quente, por cima, sem texto. */
+function AvisoDeAceleracao() {
+  return (
+    <div aria-hidden="true" className="festa-acelera">
+      <svg width="64" height="64" viewBox="0 0 16 16" shapeRendering="crispEdges">
+        <polygon points="9,0 3,9 7,9 5,16 13,6 9,6 11,0" fill="#f2c46a" stroke="#b5651d" strokeWidth="0.6" />
+      </svg>
+      <svg width="58" height="40" viewBox="0 0 29 20">
+        <path d="M2 2 L12 10 L2 18 M15 2 L25 10 L15 18" fill="none" stroke="#e8742a" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </div>
+  );
 }
 
 /** O mesmo do servidor (barraDoPare). */
@@ -199,6 +221,20 @@ export function JogoRelampago({
     setRespondi(estado.indice);
     void agir({ tipo: 'acerto', k: estado.indice, t: Math.round(Math.min(tempo, estado.duracaoMs)), r });
   };
+  // O AVISO DE ACELERAÇÃO (20/11/2026): a cada 5 acertos meus, o raio e o som do turbo (só tela; o ritmo é do servidor)
+  const [avisoAte, setAvisoAte] = useState(0);
+  const avisado = useRef(0);
+  const meusAcertos = minha?.acertos ?? 0;
+  useEffect(() => {
+    if (!vivo || meusAcertos <= 0 || meusAcertos % AVISO_A_CADA !== 0 || avisado.current >= meusAcertos) return;
+    avisado.current = meusAcertos;
+    tocar('turbo');
+    const ate = Date.now() + AVISO_MS;
+    setAvisoAte(ate);
+    const h = setTimeout(() => setAvisoAte((a) => (a === ate ? 0 : a)), AVISO_MS);
+    return () => clearTimeout(h);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [meusAcertos]);
   // o som do resultado de cada microjogo
   const ouvido = useRef(-1);
   useEffect(() => {
@@ -221,12 +257,21 @@ export function JogoRelampago({
             <p className="minijogo-fim-titulo">✓ {minha?.acertos ?? 0}</p>
           </div>
         )}
+        {/* o recorde do Solo (20/11/2026): os acertos, contados pelo servidor */}
+        {estado.recorde?.novo ? (
+          <p className="minijogo-situacao">{t('Novo recorde!')}</p>
+        ) : (
+          (estado.recorde?.antes ?? estado.recordeAntes ?? null) !== null && (
+            <p className="minijogo-situacao">{t('Seu recorde: {tempo}', { tempo: `✓ ${estado.recorde?.antes ?? estado.recordeAntes}` })}</p>
+          )
+        )}
       </div>
     );
   }
 
   return (
-    <div className="festa festa-relampago" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
+    <div className="festa festa-relampago" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, position: 'relative' }}>
+      {avisoAte > 0 && <AvisoDeAceleracao />}
       <ul className="festa-prontos">
         {estado.jogadores.map((j) => (
           <li key={j.userId} className={j.userId === eu ? 'pronto' : ''} style={{ opacity: j.caiu ? 0.45 : 1 }}>

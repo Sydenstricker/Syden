@@ -1,5 +1,6 @@
 import { Gamepad2, Trophy, Volume2, VolumeX, X } from 'lucide-react';
 import { aoMudarSomDosJogos, silenciarJogos, somDosJogosMudo, tocar } from './somDosJogos';
+import { useMusicaDaPartida } from './musicaDosJogos';
 import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { CapaDoJogo, CapaMimica, CapaPalavraDoDia, CapaTrios } from './CapasDosJogos';
@@ -287,6 +288,8 @@ export function PainelDoMinijogo({
   // Quem não aceitou o convite vê a partida, mas não mexe nela (a mesa cuida de quem senta).
   const soAssiste = partida !== null && !naEspera && !souJogador(partida) && !JOGOS_DE_MESA.includes(partida.jogo);
   const jogoNaTela = partida && !naEspera ? partida : null;
+  // a música do jogo (20/11/2026), só com a partida correndo: nem o convite, nem o placar do fim
+  useMusicaDaPartida(partida?.jogo ?? null, !!partida && !naEspera && !partida.terminada);
 
   // A ALTURA DO PAINEL NÃO ENCOLHE ENTRE UM BURACO E OUTRO (16/11/2026, achado da auditoria): no golfe e na caça, o placar entre
   // os buracos (ou as ondas) é bem mais baixo que a mesa, e o painel, que mora em cima da barra da sala, subia e descia inteiro.
@@ -434,7 +437,8 @@ export function PainelDoMinijogo({
       {/* A Festa: a de sempre ou o modo Relâmpago (19/11/2026). */}
       {!partida && escolhendo === 'festa' && (
         <EscolhaDaFesta
-          aoEscolher={(modo) => tentar(() => aoComecar('festa', modo ? { modo } : {}, aba === 'solo').then(() => setEscolhendo(null)))}
+          solo={aba === 'solo'}
+          aoEscolher={(corpo) => tentar(() => aoComecar('festa', corpo, aba === 'solo').then(() => setEscolhendo(null)))}
           aoVoltar={() => setEscolhendo(null)}
         />
       )}
@@ -476,7 +480,8 @@ export function PainelDoMinijogo({
       )}
       {!partida && escolhendo === 'briga' && (
         <EscolhaDaBriga
-          aoEscolher={(fase) => tentar(() => aoComecar('briga', { fase }, aba === 'solo').then(() => setEscolhendo(null)))}
+          solo={aba === 'solo'}
+          aoEscolher={(fase, dificuldade) => tentar(() => aoComecar('briga', { fase, dificuldade }, aba === 'solo').then(() => setEscolhendo(null)))}
           aoVoltar={() => setEscolhendo(null)}
         />
       )}
@@ -512,6 +517,7 @@ export function PainelDoMinijogo({
       {/* A Ponte da toca: a fase (no Solo, cada uma tem o seu recorde; na sala, a mesma para a turma). */}
       {!partida && escolhendo === 'ponte' && (
         <EscolhaDaPonte
+          solo={aba === 'solo'}
           aoEscolher={(fase) => tentar(() => aoComecar('ponte', { fase }, aba === 'solo').then(() => setEscolhendo(null)))}
           aoVoltar={() => setEscolhendo(null)}
         />
@@ -958,11 +964,13 @@ export function PainelDoMinijogo({
                     : partida.jogo === 'xadrez' && partida.modo === 'corrida'
                     ? { modo: 'corrida' }
                     : partida.categoria
-                    ? { categoria: partida.categoria }
+                    ? // a dificuldade do Solo da Briga (20/11/2026) volta junto
+                      { categoria: partida.categoria, ...(partida.jogo === 'briga' && partida.dificuldade ? { dificuldade: partida.dificuldade } : {}) }
                     : partida.jogo === 'tabuleiro'
                       ? { rodadas: partida.rodadas, robos: partida.robos }
                       : partida.jogo === 'festa'
-                      ? { modo: partida.modo }
+                      ? // as rodadas e, no Solo, os robôs (20/11/2026) voltam junto
+                        { modo: partida.modo, rodadas: partida.rodadas, robos: partida.robos }
                       : partida.jogo === 'cidades'
                         ? { modo: partida.modo, rodadas: partida.rodadas, robos: partida.robos, rapida: partida.rapida === true }
                         : ROBOS_NO_SOLO[partida.jogo]

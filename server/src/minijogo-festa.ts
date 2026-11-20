@@ -37,6 +37,7 @@
 import * as db from './db.js';
 import { embaralhar, placar, type Definicao } from './minijogo-motor.js';
 import { comecarRelampago } from './minijogo-festa-relampago.js';
+import { comRobos, idsDosRobos, quantosRobos } from './minijogo-robos.js';
 import { microjogosPara, PONTOS_FESTA, RODADAS_FESTA, rodadaDeFesta, type Microjogo, type RodadaDeFesta } from './festa/rodada.js';
 
 export * from './festa/rodada.js';
@@ -56,6 +57,23 @@ export { ALVO_MS, ALVO_VIDA_MS, type DadosAlvo } from './festa/alvo.js';
  */
 export const PREMIO_DA_FESTA = 5;
 
+/**
+ * QUANTAS RODADAS (20/11/2026, a segunda auditoria dos mini-games): 5, 10 ou 15, escolhidas na largada (sem escolha, as 5 de
+ * sempre). O sorteio continua sem repetir microjogo na partida.
+ */
+export const RODADAS_DA_FESTA = [5, 10, 15] as const;
+
+/**
+ * OS ROBÔS NO SOLO (20/11/2026, a segunda auditoria: sozinha, a pessoa jogava contra ninguém, ganhava os 10 pontos de toda rodada
+ * e os microjogos de contato nunca saíam). De 1 a 5, escolhidos na largada (minijogo-robos.ts), jogam pela mesma rodada que o
+ * Tabuleiro da turma já usa com robôs: o resultado de cada um é o `robo()` do microjogo (ou o do próprio microjogo ao vivo). Com
+ * eles, o placar tem gente, e os microjogos de 2 ou mais entram no sorteio. Contra o computador não há troféu; há o RECORDE DO
+ * SOLO (a tabela comum, jogo 'festa'): os pontos que o servidor somou, por rodadas e robôs (a variante "r<rodadas>-<robôs>"),
+ * porque 15 rodadas contra 5 robôs não se comparam com 5 contra 1. Sem robôs, a festa de antes, sem recorde (todo valor seria
+ * o máximo).
+ */
+export const varianteDaFesta = (rodadas: number, robos: number) => `r${rodadas}-${robos}`;
+
 export const festa: Definicao = criarFesta();
 
 export interface OpcoesDaFesta {
@@ -68,12 +86,29 @@ export interface OpcoesDaFesta {
 export function criarFesta({ agora = Date.now, aleatorio = Math.random, ordem: ordemDoTeste }: OpcoesDaFesta = {}): Definicao {
   return {
     minimo: 2,
-    comecar(ctx, { naSala, corpo }) {
+    comecar(ctxDaSala, { naSala, corpo }) {
       // o modo Relâmpago (19/11/2026), escolhido na largada: outra partida, em minijogo-festa-relampago.ts
-      if (corpo?.modo === 'relampago') return comecarRelampago(ctx, naSala, { agora, aleatorio });
-      const inscritos = [...naSala];
-      // o empurra-empurra (lote 5) pede 2 ou mais: no Solo, fica de fora do sorteio
-      const ordem = ordemDoTeste ?? embaralhar([...microjogosPara(inscritos.length)], aleatorio).slice(0, RODADAS_FESTA);
+      if (corpo?.modo === 'relampago') return comecarRelampago(ctxDaSala, naSala, { agora, aleatorio });
+      // os robôs, só no Solo (quantosRobos devolve 0 na sala)
+      const robos = idsDosRobos(quantosRobos(ctxDaSala, corpo ?? {}));
+      const ctx = comRobos(ctxDaSala, robos);
+      const inscritos = [...naSala, ...robos];
+      const pedidas = Math.floor(Number(corpo?.rodadas));
+      const rodadas = (RODADAS_DA_FESTA as readonly number[]).includes(pedidas) ? pedidas : RODADAS_FESTA;
+      // o empurra-empurra (lote 5) pede 2 ou mais: sozinho, sem robôs, fica de fora do sorteio
+      const ordem = ordemDoTeste ?? embaralhar([...microjogosPara(inscritos.length)], aleatorio).slice(0, rodadas);
+      /** O recorde do Solo: de quem joga, contra 1 ou mais robôs. */
+      const soloDe = robos.length > 0 && naSala.length === 1 && naSala[0] > 0 ? naSala[0] : null;
+      const variante = varianteDaFesta(ordem.length, robos.length);
+      let recordeAntes: number | null = null;
+      if (soloDe !== null) {
+        try {
+          recordeAntes = db.recordeDoSolo(soloDe, 'festa', variante)?.valor ?? null;
+        } catch {
+          // sem a conta (o teste sem banco): sem recorde
+        }
+      }
+      let recorde: { pontos: number; antes: number | null; novo: boolean } | null = null;
       const evento = `festa-${ctx.comunidade ?? 0}-${agora()}`;
       const avatares = new Map(inscritos.map((id) => [id, id < 0 ? null : db.avatarDoJogo(id)]));
       const pontos = new Map<number, number>(inscritos.map((id) => [id, 0]));
@@ -94,6 +129,7 @@ export function criarFesta({ agora = Date.now, aleatorio = Math.random, ordem: o
           inscritos,
           agora,
           aleatorio,
+          robos,
           pontos: ultima() ? PONTOS_FESTA.map((p) => p * 2) : PONTOS_FESTA,
           aoRevelar: (linhas, presentes) => {
             for (const l of linhas) if (l.posicao === 1) vitorias.set(l.userId, (vitorias.get(l.userId) ?? 0) + 1);
@@ -119,9 +155,19 @@ export function criarFesta({ agora = Date.now, aleatorio = Math.random, ordem: o
           for (const id of ganhadores) pontos.set(id, (pontos.get(id) ?? 0) + PREMIO_DA_FESTA);
           premio = { ganhadores, valor: maior, pontos: PREMIO_DA_FESTA };
         }
+        // O RECORDE DO SOLO (20/11/2026): os pontos somados aqui, contra os robôs
+        if (soloDe !== null) {
+          const meus = pontos.get(soloDe) ?? 0;
+          try {
+            recorde = { pontos: meus, ...(meus > 0 ? db.guardarRecordeDoSolo(soloDe, 'festa', variante, meus, false) : { antes: recordeAntes, novo: false }) };
+          } catch {
+            recorde = { pontos: meus, antes: recordeAntes, novo: false };
+          }
+        }
         // O PÓDIO, com 2 pessoas ou mais que ficaram até o fim: até o 3º lugar (empatados dividem), e só quem fez algum ponto.
+        // Contra o computador, nenhum (o troféu é um registro entre amigos).
         const turma = ficaram ?? new Set<number>();
-        if (turma.size >= 2) {
+        if (turma.size >= 2 && !robos.length) {
           const ordemFinal = placar(new Map([...pontos].filter(([id]) => turma.has(id))), ctx.nome);
           for (const l of ordemFinal) {
             const posicao = 1 + ordemFinal.filter((o) => o.pontos > l.pontos).length;
@@ -168,6 +214,9 @@ export function criarFesta({ agora = Date.now, aleatorio = Math.random, ordem: o
             fase: terminada ? 'fim' : r.fase,
             rodada,
             rodadas: ordem.length,
+            // os robôs do Solo (20/11/2026): quantos, e o recorde (o de antes, e no fim os pontos feitos e se virou recorde)
+            robos: robos.length,
+            ...(soloDe !== null ? { recordeAntes, recorde: terminada ? recorde : null } : {}),
             dados: terminada ? null : r.dados,
             jogadores: inscritos.map((userId) => ({ userId, username: ctx.nome(userId), avatar: avatares.get(userId) ?? null })),
             // a última rodada vale o dobro; o prêmio bônus, no fim

@@ -191,6 +191,9 @@ function somDe(e: Evento) {
     case 'fim-da-luta':
       tocar(e.venceu ? 'fim' : 'erro');
       break;
+    case 'furia':
+      tocar('alarme');
+      break;
   }
 }
 
@@ -398,8 +401,8 @@ function Ringue({
         <div className="ringue-botoes">
           <div>
             {botao(ESQ, t('Esquivar'), '◀', 'esquiva')}
-            {botao(BAIXO, t('Abaixar e defender'), '▼', 'abaixa')}
-            {botao(CIMA, t('Abaixar e defender'), '▲', 'defende')}
+            {botao(BAIXO, t('Abaixar'), '▼', 'abaixa')}
+            {botao(CIMA, t('Defender'), '▲', 'defende')}
             {botao(DIR, t('Esquivar'), '▶', 'esquiva')}
           </div>
           <div>
@@ -418,6 +421,102 @@ function Ringue({
           ...(solo ? [comandoDaPausa(t)] : []),
         ]}
       />
+      <ComoJogarNoRingue />
+    </div>
+  );
+}
+
+/**
+ * O "COMO JOGAR" DO RINGUE (20/11/2026, a segunda auditoria): três quadros, cada um com o desenho e uma frase — o brilho da
+ * luva, a esquiva que vira contra-ataque, e a estrela que vira o soco forte. Fechado de fábrica.
+ */
+function ComoJogarNoRingue() {
+  const t = useT();
+  const [aberto, setAberto] = useState(false);
+  const luva = (x: number, y: number, cor: string) => <circle cx={x} cy={y} r={9} fill={cor} stroke="#2a1f2e" strokeWidth={2} />;
+  const soco = (x: number, y: number) => (
+    <text x={x} y={y} fontSize={16} textAnchor="middle" dominantBaseline="middle">
+      👊
+    </text>
+  );
+  const estrela = (x: number, y: number, r = 6) => {
+    const pts = Array.from({ length: 10 }, (_, k) => {
+      const a = (Math.PI / 5) * k - Math.PI / 2;
+      const rr = k % 2 ? r * 0.45 : r;
+      return `${(x + Math.cos(a) * rr).toFixed(1)},${(y + Math.sin(a) * rr).toFixed(1)}`;
+    }).join(' ');
+    return <polygon points={pts} fill="#ffd84a" stroke="#8a6a10" strokeWidth={1} />;
+  };
+  const quadros = [
+    {
+      // a luva do adversário brilhando, e o soco que chega nela
+      figura: (
+        <>
+          {luva(26, 30, '#d8463c')}
+          <circle cx={26} cy={30} r={15} fill="none" stroke="#fff3a0" strokeWidth={3} opacity={0.9} />
+          {estrela(36, 18, 5)}
+          <path d="M44 30 L58 30" stroke="#f3e6c8" strokeWidth={2.5} markerEnd="url(#ringue-seta)" />
+          {soco(68, 31)}
+        </>
+      ),
+      frase: t('Soque quando a luva brilhar: o golpe para e você ganha uma estrela.'),
+    },
+    {
+      // o golpe passando ao lado, o coelho de lado, e o soco logo depois
+      figura: (
+        <>
+          {luva(20, 22, '#3c6fd8')}
+          <path d="M28 26 Q40 44 22 50" fill="none" stroke="#f3e6c8" strokeWidth={2.5} strokeDasharray="3 3" />
+          <path d="M40 46 L54 32" stroke="#f3e6c8" strokeWidth={2.5} markerEnd="url(#ringue-seta)" />
+          {soco(66, 28)}
+          {estrela(74, 14, 5)}
+        </>
+      ),
+      frase: t('Esquive do golpe e soque logo depois: é o contra-ataque, e vale estrela.'),
+    },
+    {
+      // as três estrelas viram o soco forte
+      figura: (
+        <>
+          {estrela(14, 30)}
+          {estrela(28, 30)}
+          {estrela(42, 30)}
+          <path d="M50 30 L60 30" stroke="#f3e6c8" strokeWidth={2.5} markerEnd="url(#ringue-seta)" />
+          <text x={70} y={31} fontSize={22} textAnchor="middle" dominantBaseline="middle">
+            👊
+          </text>
+        </>
+      ),
+      frase: t('Com estrelas, o soco forte (★) gasta todas de uma vez e dói mais.'),
+    },
+  ];
+  return (
+    <div className="mesa-como-jogar ringue-como-jogar">
+      <button type="button" className="link-button" aria-expanded={aberto} onClick={() => setAberto(!aberto)}>
+        {t('Como jogar')}
+      </button>
+      {aberto && (
+        <svg width={0} height={0} style={{ position: 'absolute' }} aria-hidden="true">
+          <defs>
+            <marker id="ringue-seta" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+              <path d="M0 0 L10 5 L0 10 z" fill="#f3e6c8" />
+            </marker>
+          </defs>
+        </svg>
+      )}
+      {aberto && (
+        <ol className="ringue-quadros">
+          {quadros.map((q, k) => (
+            <li key={k}>
+              <svg viewBox="0 0 84 60" aria-hidden="true">
+                <rect x={0} y={0} width={84} height={60} rx={6} fill="#2b2440" />
+                {q.figura}
+              </svg>
+              <span>{q.frase}</span>
+            </li>
+          ))}
+        </ol>
+      )}
     </div>
   );
 }

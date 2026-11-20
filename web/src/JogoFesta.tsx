@@ -7,6 +7,7 @@ import * as registro from './festa/registro';
 import { CoelhoComemorando, Controles, FiguraDoMicro, Vencedores } from './festa/moldura';
 import { JogoRelampago, type EstadoRelampago } from './festa/modoRelampago';
 import { tocar } from './somDosJogos';
+import { BotoesDosRobos, cadaUmPorSi } from './EscolhaDosRobos';
 
 /**
  * A FESTA DOS COELHOS (03/11/2026, server/src/minijogo-festa.ts): cinco rodadas de microjogos, cada um na própria tela, e
@@ -19,6 +20,9 @@ import { tocar } from './somDosJogos';
  * CADA MICROJOGO MORA EM festa/<id>.tsx (05/11/2026), junto pelo registro festa/registro.ts; o guia de como fazer um novo
  * está no topo de server/src/festa/registro.ts. Aqui fica só a rodada comum e a partida.
  */
+
+/** Quantos robôs a pessoa escolheu da última vez (no aparelho). */
+const ROBOS_GUARDADOS = 'syden:festa-robos';
 
 /** As telas pelo id. */
 const TELAS = new Map<string, MicrojogoDaTela<never>>(Object.values(registro).map((m) => [m.id, m as unknown as MicrojogoDaTela<never>]));
@@ -78,6 +82,8 @@ export function JogoFesta({
             </span>
           </div>
         )}
+        {/* o recorde do Solo contra os robôs (20/11/2026): os pontos somados pelo servidor */}
+        <RecordeDaFesta estado={estado as unknown as RecordeNoEstado} />
         {semPosicao.length > 0 && (
           <ol className="minijogo-placar tabuleiro-sem-posicao">
             {semPosicao.map((l) => (
@@ -258,9 +264,36 @@ function textoDoResultado(m: MicrojogoDaTela<never>, l: LinhaDaFesta, f: Formato
   return m.valor(l.valor ?? 0, f);
 }
 
-/** A largada da Festa (19/11/2026): a festa de sempre (cinco rodadas) ou o modo Relâmpago (microjogos curtos, com vidas). */
-export function EscolhaDaFesta({ aoEscolher, aoVoltar }: { aoEscolher: (modo: 'relampago' | null) => void; aoVoltar: () => void }) {
+/**
+ * A largada da Festa (19/11/2026): a festa de sempre ou o modo Relâmpago (microjogos curtos, com vidas). Desde 20/11/2026 a festa
+ * escolhe as RODADAS (5, 10 ou 15) e, no Solo, os ROBÔS (1 a 5; a última escolha fica no aparelho).
+ */
+export function EscolhaDaFesta({
+  aoEscolher,
+  aoVoltar,
+  solo = false,
+}: {
+  aoEscolher: (corpo: { modo?: 'relampago'; rodadas?: number; robos?: number }) => void;
+  aoVoltar: () => void;
+  solo?: boolean;
+}) {
   const t = useT();
+  const [robos, setRobos] = useState(() => {
+    try {
+      const n = Number(localStorage.getItem(ROBOS_GUARDADOS));
+      return n >= 1 && n <= 5 ? n : 3;
+    } catch {
+      return 3;
+    }
+  });
+  const escolherRobos = (n: number) => {
+    setRobos(n);
+    try {
+      localStorage.setItem(ROBOS_GUARDADOS, String(n));
+    } catch {
+      // sem armazenamento: só não lembra
+    }
+  };
   const raio = (
     <svg width="34" height="34" viewBox="0 0 16 16" aria-hidden="true" shapeRendering="crispEdges">
       <polygon points="9,0 3,9 7,9 5,16 13,6 9,6 11,0" fill="#f2c46a" />
@@ -270,17 +303,28 @@ export function EscolhaDaFesta({ aoEscolher, aoVoltar }: { aoEscolher: (modo: 'r
     <div className="tab-escolha">
       <ul className="tab-rodadas">
         <li>
-          <button type="button" className="tab-rodadas-botao" onClick={() => aoEscolher(null)}>
-            <CoelhoComemorando avatar={null} tamanho={30} />
-            <strong>{t('Festa')}</strong>
-          </button>
-        </li>
-        <li>
-          <button type="button" className="tab-rodadas-botao" onClick={() => aoEscolher('relampago')}>
+          <button type="button" className="tab-rodadas-botao" onClick={() => aoEscolher({ modo: 'relampago' })}>
             {raio}
             <strong>{t('Relâmpago')}</strong>
           </button>
         </li>
+      </ul>
+      {/* a festa de sempre: no Solo, contra quantos robôs; e quantas rodadas (clicar começa) */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 8 }}>
+        <CoelhoComemorando avatar={null} tamanho={30} />
+        <strong>{t('Festa')}</strong>
+      </div>
+      {solo && <BotoesDosRobos opcoes={[1, 2, 3, 4, 5].map(cadaUmPorSi)} escolhida={robos} aoEscolher={escolherRobos} />}
+      <p className="minijogo-situacao">{t('Quantas rodadas?')}</p>
+      <ul className="tab-rodadas">
+        {[5, 10, 15].map((n) => (
+          <li key={n}>
+            <button type="button" className="tab-rodadas-botao" onClick={() => aoEscolher(solo ? { rodadas: n, robos } : { rodadas: n })}>
+              <span aria-hidden="true">{'🎉'.repeat(n / 5)}</span>
+              <strong>{n}</strong>
+            </button>
+          </li>
+        ))}
       </ul>
       <div className="minijogo-acoes">
         <button type="button" className="btn-secondary" onClick={aoVoltar}>
@@ -289,4 +333,18 @@ export function EscolhaDaFesta({ aoEscolher, aoVoltar }: { aoEscolher: (modo: 'r
       </div>
     </div>
   );
+}
+
+interface RecordeNoEstado {
+  recordeAntes?: number | null;
+  recorde?: { pontos: number; antes: number | null; novo: boolean } | null;
+}
+
+/** O recorde do Solo contra os robôs, no fim (20/11/2026): só quando o servidor manda (no Solo com robôs). */
+function RecordeDaFesta({ estado }: { estado: RecordeNoEstado }) {
+  const t = useT();
+  if (estado.recorde?.novo) return <p className="minijogo-situacao">{t('Novo recorde!')}</p>;
+  const antes = estado.recorde?.antes ?? estado.recordeAntes ?? null;
+  if (antes === null) return null;
+  return <p className="minijogo-situacao">{t('Seu recorde: {tempo}', { tempo: String(antes) })}</p>;
 }

@@ -188,3 +188,14 @@ test('a levadiça (20/11/2026): o servidor refaz a fase do barco, e recusa a lev
   const outra = comecar([caioId], { fase: 'riacho' });
   assert.equal(outra.jogo.acao(caioId, { tipo: 'ponte', pecas: [0, 0, 2, 0, sim.LEVADICA] }), 'Sessão inválida.');
 });
+
+test('a escolha da fase lê os recordes da pessoa (20/11/2026): o menor custo de cada fase, só os dela', async () => {
+  const caioId = await idDe(caio.token);
+  db.guardarRecordeDaPonte(caioId, 'riacho', 2500);
+  db.guardarRecordeDaPonte(caioId, 'riacho', 2700);
+  const r = await comToken(app, caio.token)('GET', '/api/minijogos/ponte/recordes');
+  assert.equal(r.statusCode, 200, r.body);
+  assert.equal(r.json().recordes.riacho, 2500);
+  const daBia = (await comToken(app, bia.token)('GET', '/api/minijogos/ponte/recordes')).json().recordes;
+  assert.notEqual(daBia.riacho, 2500);
+});

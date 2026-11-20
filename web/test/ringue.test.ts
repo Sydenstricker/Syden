@@ -103,4 +103,28 @@ describe('ringue da toca', () => {
     }
     assert.ok(levantou >= 1, 'levantou apertando');
   });
+
+  it('o adversário que muda: abaixo de 1/3 da vida (ou no 3º round) entra na fúria, com golpes novos e menos espera', () => {
+    for (const A of ADVERSARIOS) {
+      assert.ok(A.furia.acoes.length > 0, `${A.bicho}: a fúria traz golpe novo`);
+      assert.ok(A.furia.espera[1] < A.espera[1], `${A.bicho}: e espera menos`);
+    }
+    // o piloto que bate: cada luta passa pela fúria quando a vida do adversário cai abaixo de um terço
+    const { l, eventos } = lutar(42);
+    assert.equal(l.vencidas, ADVERSARIOS.length);
+    assert.ok((eventos.furia ?? 0) >= ADVERSARIOS.length, `fúrias: ${eventos.furia}`);
+    // no 3º round, mesmo com a vida cheia: quem só defende chega lá e vê a fúria
+    const parado = novaLuta(5);
+    let viu = false;
+    while (!parado.terminou && !viu) {
+      passo(parado, 0);
+      if (parado.eventos.some((e) => e.tipo === 'furia')) {
+        viu = true;
+        assert.ok(parado.round === 3 || parado.a.vida * 3 < ADVERSARIOS[parado.adv].vida);
+        assert.equal(parado.a.furia, true);
+      }
+    }
+    // (quem não defende cai antes do 3º round: aí a fúria não precisa aparecer)
+    if (!viu) assert.ok(parado.terminou);
+  });
 });
