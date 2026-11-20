@@ -1,4 +1,5 @@
-import { readFileSync } from 'node:fs';
+import { randomBytes } from 'node:crypto';
+import { existsSync, readFileSync } from 'node:fs';
 import { embaralhar, placar, type Definicao } from './minijogo-motor.js';
 import { guardarRecordeDoSolo, lerRecordeDoSolo } from './recorde-solo-tardio.js';
 
@@ -28,7 +29,13 @@ export type TipoDeColuna =
   /** Texto de palavras: igual, ou com alguma palavra em comum ("leal e mau" contra "caótico e mau"). */
   | 'partes'
   /** Um ponto [latitude, longitude]: a distância e o rumo até o secreto (o Worldle). Amarelo até PERTO_KM. */
-  | 'distancia';
+  | 'distancia'
+  /**
+   * A FAMÍLIA (20/11/2026): uma lista que começa pelo próprio item e segue com os parentes dele que estão na lista. Verde só
+   * o próprio secreto; amarelo quando o chute é parente dele ou os dois têm um parente em comum. (Num 'conjunto', Dagda e
+   * Brígida, com a mesma família de dois, dariam verde um para o outro.)
+   */
+  | 'parentes';
 
 export interface Coluna {
   id: string;
@@ -59,6 +66,11 @@ export interface Tema {
    * (o tipo do monstro, a mitologia da figura, a sub-região do país). A primeira pista é a letra inicial do nome.
    */
   pista?: string;
+  /**
+   * O MODO BANDEIRA (20/11/2026): a categoria que liga a bandeira do secreto na tela, e o SVG de cada item (null: sem
+   * bandeira, e o item fica fora dessa categoria).
+   */
+  bandeiras?: { categoria: string; svg: (item: ItemDoQuiz) => string | null };
 }
 
 /** Os itens de uma categoria do tema (todos, se o tema não tem categorias ou se ela não existe). */
@@ -110,6 +122,12 @@ export function comparar(coluna: Coluna, chute: unknown, secreto: unknown): Vere
       const { km, rumo } = distanciaERumo(chute as [number, number], secreto as [number, number]);
       return km === 0 ? { cor: 2, km: 0 } : { cor: km <= PERTO_KM ? 1 : 0, km, rumo };
     }
+    case 'parentes': {
+      const a = chute as string[];
+      const b = new Set(secreto as string[]);
+      if (a[0] === (secreto as string[])[0]) return { cor: 2 };
+      return { cor: a.some((x) => b.has(x)) ? 1 : 0 };
+    }
     case 'partes': {
       if (chute === secreto) return { cor: 2 };
       const b = new Set(String(secreto).split(' '));
@@ -120,6 +138,41 @@ export function comparar(coluna: Coluna, chute: unknown, secreto: unknown): Vere
 
 const lerItens = (arquivo: string): ItemDoQuiz[] =>
   JSON.parse(readFileSync(new URL(`../assets/quiz/${arquivo}`, import.meta.url), 'utf8')) as ItemDoQuiz[];
+
+/**
+ * AS BANDEIRAS (o modo Bandeira dos países): os SVG do flag-icons (MIT), em server/assets/quiz/bandeiras/, tirados por
+ * server/scripts/quiz-bandeiras.mjs sem nada que diga o país. Lidas na primeira vez que se pedem.
+ */
+const BANDEIRAS = new URL('../assets/quiz/bandeiras/', import.meta.url);
+const svgs = new Map<string, string | null>();
+function svgDaBandeira(pais: string): string | null {
+  if (!/^[A-Z]{2}$/.test(pais)) return null;
+  if (!svgs.has(pais)) {
+    const arquivo = new URL(`${pais.toLowerCase()}.svg`, BANDEIRAS);
+    svgs.set(pais, existsSync(arquivo) ? readFileSync(arquivo, 'utf8') : null);
+  }
+  return svgs.get(pais)!;
+}
+
+/**
+ * A FICHA DA BANDEIRA: a tela pede a bandeira da rodada por um número sorteado (GET /api/minijogos/quiz-bandeira/:ficha),
+ * e nunca pelo código do país, que seria a resposta no endereço. Vale até a partida acabar, com folga.
+ */
+const fichas = new Map<string, { svg: string; ate: number }>();
+const FICHA_MS = 15 * 60_000;
+function novaFicha(svg: string): string {
+  const agora = Date.now();
+  for (const [ficha, f] of fichas) if (f.ate < agora) fichas.delete(ficha);
+  const ficha = randomBytes(16).toString('hex');
+  fichas.set(ficha, { svg, ate: agora + FICHA_MS });
+  return ficha;
+}
+/** O SVG da bandeira de uma ficha (null: ficha que não existe ou que venceu). */
+export function bandeiraDaFicha(ficha: string): string | null {
+  const f = fichas.get(ficha);
+  if (!f || f.ate < Date.now()) return null;
+  return f.svg;
+}
 
 /** Os temas. O id é o do jogo na estante (minijogos-routes.ts, JOGOS). */
 export const TEMAS: Record<string, Tema> = {
@@ -162,6 +215,9 @@ export const TEMAS: Record<string, Tema> = {
       { id: 'tipo', tipo: 'igual' },
       { id: 'forma', tipo: 'igual' },
       { id: 'dominios', tipo: 'conjunto' },
+      // As duas do Wikidata (20/11/2026, server/scripts/quiz-mitologia.mjs): o gênero da FIGURA e a família dela na lista.
+      { id: 'genero', tipo: 'igual' },
+      { id: 'familia', tipo: 'parentes' },
     ],
   },
   /**
@@ -179,6 +235,13 @@ export const TEMAS: Record<string, Tema> = {
       { id: 'populacao', tipo: 'ordem' },
     ],
     sorteavel: (p) => Number(p.populacao) >= 500_000,
+    // O MODO BANDEIRA (20/11/2026): quem começa escolhe o clássico ou a bandeira. Na bandeira, ela aparece na tela e se
+    // revela aos poucos, e as colunas continuam dando a dica. O recorde do Solo é à parte (a variante 'bandeira').
+    categorias: {
+      tudo: () => true,
+      bandeira: (p) => svgDaBandeira(p.id) !== null,
+    },
+    bandeiras: { categoria: 'bandeira', svg: (p) => svgDaBandeira(p.id) },
     nomePor: (p, idioma) => {
       try {
         return new Intl.DisplayNames([idioma, 'en'], { type: 'region' }).of(p.id) ?? p.id;
@@ -260,6 +323,9 @@ export function criarQuiz(tema: Tema): Definicao {
       const sorteio = tema.itens.filter((i) => daPartida.has(i.id)).filter(tema.sorteavel ?? (() => true));
       if (sorteio.length < RODADAS_QUIZ) return 'A lista do quiz não está no servidor.';
       const secretos = (_testeQuiz.itens ?? embaralhar([...sorteio]).slice(0, RODADAS_QUIZ).map((i) => i.id)).map((id) => porId.get(id)!);
+      // No modo Bandeira, uma ficha por rodada (a bandeira de cada secreto, pedida pela ficha).
+      const comBandeira = tema.bandeiras && categoria === tema.bandeiras.categoria ? tema.bandeiras : null;
+      const fichasDaPartida = comBandeira ? secretos.map((s) => novaFicha(comBandeira.svg(s) ?? '')) : null;
       let rodada = 1;
       let fase: 'chutando' | 'revelando' | 'fim' = 'chutando';
       let inicio = Date.now();
@@ -322,6 +388,8 @@ export function criarQuiz(tema: Tema): Definicao {
             rodadas: RODADAS_QUIZ,
             fase,
             categoria,
+            // a ficha da bandeira desta rodada (só no modo Bandeira): a tela a revela aos poucos, um pedaço por chute
+            bandeira: fichasDaPartida ? fichasDaPartida[rodada - 1] : null,
             pistas,
             recorde,
             colunas: tema.colunas,

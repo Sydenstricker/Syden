@@ -1,0 +1,7 @@
+As bandeiras do quiz de países (modo Bandeira).
+
+Arte: flag-icons 7.5.0, de Panayiotis Lipiridis (https://github.com/lipis/flag-icons), licença MIT
+(o texto completo em LICENCA-flag-icons.txt). Só as dos 193 países do quiz, na proporção 4:3.
+
+Mudança nossa: o código do país na frente dos ids e das classes de dentro do SVG virou "q-", e o id da
+raiz saiu, para o arquivo não dizer a resposta. Refeito por server/scripts/quiz-bandeiras.mjs.

@@ -9,6 +9,12 @@
 // - tipo: divindade, heroi (herói ou heroína) ou criatura.
 // - forma: humana, hibrida (cabeça ou corpo de bicho: Anúbis, Ganesha, a sereia) ou animal.
 // - dominios: o que a figura governa ou representa, de uma lista fixa (DOMINIOS), de 1 a 3.
+// - genero (20/11/2026): o da FIGURA, nunca o de quem lê. Vem do Wikidata ("sexo ou gênero", P21): masculino, feminino,
+//   "varia" (o Wikidata dá mais de um: Loki) ou '' (bicho sem gênero dito: o Boitatá; a tela mostra "—"). Os que o Wikidata
+//   não diz estão em GENERO_A_MAO, conferidos à mão.
+// - familia (20/11/2026): a própria figura e os PARENTES dela que estão na lista (pai, mãe, cônjuge, filhos e irmãos, P22,
+//   P25, P26, P40, P3373, nos dois sentidos: se Zeus diz que Atena é filha, Atena tem Zeus). A coluna é de CONJUNTO: um
+//   parente em comum (ou ser parente do secreto) fica amarelo. A tela mostra os parentes, sem a própria figura.
 //
 // O navegador de quem joga nunca fala com o Wikidata: a lista sai daqui para server/assets/quiz/.
 //
@@ -22,6 +28,23 @@ const DOMINIOS = new Set([
   'magia', 'trapaca', 'amor', 'familia', 'fertilidade', 'colheita', 'caca', 'animais', 'cura', 'artes', 'oficios', 'viagem',
   'justica', 'protecao', 'festa', 'riqueza', 'criacao', 'tempo', 'caos',
 ]);
+
+// O "sexo ou gênero" do Wikidata: os de gente e os de bicho ("organismo macho") dão no mesmo.
+const GENERO_DO_WIKIDATA = { Q6581097: 'masculino', Q44148: 'masculino', Q6581072: 'feminino', Q43445: 'feminino' };
+// Os que o Wikidata não diz (conferidos em 20/11/2026), pelo artigo da Wikipédia em inglês. '' = não se aplica.
+const GENERO_A_MAO = {
+  Fūjin: 'masculino',
+  'Inari Ōkami': 'varia', // aparece como homem, como mulher e sem gênero, conforme o lugar
+  Kitsune: 'varia', // a raposa das histórias é macho ou fêmea
+  'Kappa (folklore)': '',
+  Pangu: 'masculino',
+  'Chinese dragon': '',
+  'Tupã (mythology)': 'masculino',
+  Boitatá: '',
+  Mapinguari: '',
+  'Headless Mule': 'feminino', // a mulher amaldiçoada
+};
+const PARENTESCO = ['P22', 'P25', 'P26', 'P40', 'P3373'];
 
 // [artigo da Wikipédia em inglês, mitologia, tipo, forma, domínios]
 const FIGURAS = [
@@ -197,7 +220,7 @@ for (let i = 0; i < FIGURAS.length; i += 40) {
   const ids = lote.map((f) => qid.get(destino.get(f[0])));
   const faltando = lote.filter((_, j) => !ids[j]).map((f) => f[0]);
   if (faltando.length) throw new Error(`a Wikipédia não achou: ${faltando.join(', ')}`);
-  const { entities } = await pedir(`https://www.wikidata.org/w/api.php?action=wbgetentities&format=json&props=labels|descriptions&ids=${ids.join('|')}`);
+  const { entities } = await pedir(`https://www.wikidata.org/w/api.php?action=wbgetentities&format=json&props=labels|descriptions|claims&ids=${ids.join('|')}`);
   lote.forEach(([titulo, mitologia, tipo, forma, dominios], j) => {
     for (const d of dominios) if (!DOMINIOS.has(d)) throw new Error(`domínio desconhecido: ${d} (${titulo})`);
     const e = entities[ids[j]];
@@ -216,11 +239,31 @@ for (let i = 0; i < FIGURAS.length; i += 40) {
     // "kitsune", "mapinguari": o Wikidata escreve o nome comum em minúscula, e na lista ele é nome próprio.
     for (const [idioma, texto] of Object.entries(nome)) nome[idioma] = texto.charAt(0).toLocaleUpperCase(idioma) + texto.slice(1);
     if (!nome.en) throw new Error(`sem nome em inglês: ${titulo}`);
+    // O gênero da figura: o do Wikidata, ou o conferido à mão quando ele não diz.
+    const generos = new Set((e.claims.P21 ?? []).map((c) => c.mainsnak.datavalue?.value?.id).filter(Boolean).map((q) => GENERO_DO_WIKIDATA[q] ?? 'varia'));
+    const genero = titulo in GENERO_A_MAO ? GENERO_A_MAO[titulo] : generos.size === 1 ? [...generos][0] : generos.size > 1 ? 'varia' : null;
+    if (genero === null) throw new Error(`sem gênero no Wikidata nem em GENERO_A_MAO: ${titulo}`);
+    const parentes = PARENTESCO.flatMap((p) => (e.claims[p] ?? []).map((c) => c.mainsnak.datavalue?.value?.id)).filter(Boolean);
     // O id é o do Wikidata: estável, e não muda quando a Wikipédia renomeia o artigo.
-    itens.push({ id: e.id, nome, mitologia, tipo, forma, dominios, sobre: e.descriptions.en?.value ?? '' });
+    itens.push({ id: e.id, nome, mitologia, tipo, forma, dominios, genero, parentes, sobre: e.descriptions.en?.value ?? '' });
   });
 }
+// A FAMÍLIA: a figura e os parentes que estão na lista, nos dois sentidos (o Wikidata às vezes só diz de um lado).
+const naLista = new Set(itens.map((i) => i.id));
+const familia = new Map(itens.map((i) => [i.id, new Set([i.id])]));
+for (const item of itens) {
+  for (const p of item.parentes) {
+    if (!naLista.has(p) || p === item.id) continue;
+    familia.get(item.id).add(p);
+    familia.get(p).add(item.id);
+  }
+}
+for (const item of itens) {
+  delete item.parentes;
+  // a própria figura primeiro, e os parentes na ordem da lista
+  item.familia = [item.id, ...itens.map((i) => i.id).filter((id) => id !== item.id && familia.get(item.id).has(id))];
+}
 // "sobre" (a descrição do Wikidata) só serve para conferir à mão que o artigo é o certo; não vai para o jogo.
-for (const item of itens) console.log(`${item.id.padEnd(9)} ${item.nome.en.padEnd(24)} ${item.nome['pt-BR'] ?? '—'} | ${item.sobre}`);
+for (const item of itens) console.log(`${item.id.padEnd(9)} ${item.nome.en.padEnd(24)} ${item.nome['pt-BR'] ?? '—'} | ${item.genero || '—'} | ${item.familia.slice(1).map((id) => itens.find((i) => i.id === id).nome.en).join(', ') || '—'} | ${item.sobre}`);
 writeFileSync(SAIDA, `${JSON.stringify(itens.map(({ sobre, ...resto }) => resto)).replace(/\},\{"id"/g, '},\n{"id"')}\n`);
 console.log(`${itens.length} figuras em ${SAIDA.pathname}`);

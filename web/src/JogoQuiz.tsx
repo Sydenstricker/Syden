@@ -3,7 +3,7 @@ import { api } from './api';
 import { idiomaAtual, useT } from './i18n';
 import { Placar, PlacarAoVivo, Relogio } from './Minijogo';
 import type { Partida } from './minijogos';
-import { type EstadoQuiz, type IdDoQuiz, ROTULOS, sugestoes, textoDoValor, type Veredito } from './quiz';
+import { type EstadoQuiz, type IdDoQuiz, ordemDosPedacos, PEDACOS_DA_BANDEIRA, ROTULOS, sugestoes, textoDoValor, textoDosParentes, type Veredito } from './quiz';
 import { tocar } from './somDosJogos';
 import './jogosDePalavras.css';
 
@@ -28,6 +28,44 @@ function Bussola({ rumo }: { rumo: number }) {
       <path d="M12 0.6 L14 3.6 L10 3.6 Z" fill="currentColor" />
       <path transform={`rotate(${rumo} 12 12)`} d="M12 4 L16.5 10 L13.3 10 L13.3 18 L10.7 18 L10.7 10 L7.5 10 Z" fill="currentColor" />
     </svg>
+  );
+}
+
+/**
+ * A BANDEIRA DO MODO BANDEIRA (20/11/2026): o servidor dá uma ficha por rodada, e o SVG vem por ela (nunca pelo código do
+ * país, que seria a resposta no endereço). Começa com um pedaço à vista, e cada chute errado abre mais um; quem acertou, e
+ * todos na revelação, a veem inteira. A ordem dos pedaços sai da ficha: a mesma para quem joga a mesma rodada.
+ */
+function BandeiraDoQuiz({ ficha, abertos }: { ficha: string; abertos: number }) {
+  const t = useT();
+  const [endereco, setEndereco] = useState<string | null>(null);
+  useEffect(() => {
+    let vivo = true;
+    let url: string | null = null;
+    setEndereco(null);
+    void api<{ svg: string }>(`/api/minijogos/quiz-bandeira/${encodeURIComponent(ficha)}`)
+      .then((r) => {
+        if (!vivo) return;
+        url = URL.createObjectURL(new Blob([r.svg], { type: 'image/svg+xml' }));
+        setEndereco(url);
+      })
+      .catch(() => {});
+    return () => {
+      vivo = false;
+      if (url) URL.revokeObjectURL(url);
+    };
+  }, [ficha]);
+  const ordem = useMemo(() => ordemDosPedacos(ficha), [ficha]);
+  const aberto = new Set(ordem.slice(0, abertos));
+  return (
+    <div className="quiz-bandeira">
+      {endereco && <img src={endereco} alt={t('Bandeira')} draggable={false} />}
+      <div className="quiz-bandeira-pedacos" aria-hidden="true">
+        {Array.from({ length: PEDACOS_DA_BANDEIRA }, (_, i) => (
+          <span key={i} className={aberto.has(i) ? 'aberto' : ''} />
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -121,8 +159,10 @@ export function JogoQuiz({
 
   const rotulos = ROTULOS[tema];
   const colunas = estado.colunas;
-  const celula = (coluna: string, valor: unknown) => textoDoValor(tema, coluna, valor, t);
   const tipoDe = new Map(colunas.map((c) => [c.id, c.tipo]));
+  // A família (a mitologia) mostra os nomes dos parentes, na língua de quem lê.
+  const celula = (coluna: string, valor: unknown) =>
+    tipoDe.get(coluna) === 'parentes' ? textoDosParentes(valor, (id) => nome.get(id)) : textoDoValor(tema, coluna, valor, t);
   /** A coluna de distância (o Worldle) mostra os km e uma seta para onde fica o secreto, e não o valor cru. */
   const distancia = (v: Veredito) =>
     v.km === 0 ? (
@@ -178,6 +218,12 @@ export function JogoQuiz({
             </ul>
           )}
         </div>
+      )}
+      {estado.bandeira && (
+        <BandeiraDoQuiz
+          ficha={estado.bandeira}
+          abertos={estado.fase !== 'chutando' || estado.acertei ? PEDACOS_DA_BANDEIRA : Math.min(PEDACOS_DA_BANDEIRA, 1 + estado.meu.length)}
+        />
       )}
       <p className="minijogo-situacao" role="status">
         {situacao}

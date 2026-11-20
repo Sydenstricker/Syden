@@ -32,12 +32,20 @@ export const CATEGORIAS_DO_QUIZ: Partial<Record<IdDoQuiz, { id: string; nome: st
     { id: 'africa', nome: chave('África') },
     { id: 'europa', nome: chave('Europa') },
   ],
+  // O MODO BANDEIRA (20/11/2026): não é uma categoria de países, é o jeito de jogar; mas vai pelo mesmo caminho (a escolha
+  // antes de começar, o recorde do Solo à parte). Os textos já existiam ("Clássico" dos móveis, "Bandeira" do item).
+  paises: [
+    { id: 'tudo', nome: chave('Clássico') },
+    { id: 'bandeira', nome: chave('Bandeira') },
+  ],
 };
 
 export interface EstadoQuiz {
   rodada: number;
   /** A categoria escolhida ao começar (null num tema sem categorias). */
   categoria?: string | null;
+  /** No modo Bandeira, a ficha da bandeira da rodada (GET /api/minijogos/quiz-bandeira/:ficha). */
+  bandeira?: string | null;
   rodadas: number;
   fase: 'chutando' | 'revelando' | 'fim';
   colunas: { id: string; tipo: string }[];
@@ -125,6 +133,8 @@ export const ROTULOS: Record<IdDoQuiz, Rotulos> = {
       tipo: chave('Tipo'),
       forma: chave('Forma'),
       dominios: chave('Domínios'),
+      genero: chave('Gênero'),
+      familia: chave('Família'),
     },
     valores: {
       // O valor guarda o continente depois da mitologia ("grega europa"), para o amarelo; a tela mostra só a mitologia.
@@ -140,6 +150,12 @@ export const ROTULOS: Record<IdDoQuiz, Rotulos> = {
         'mesopotamica asia': chave('Mesopotâmica'),
         'asteca americas': chave('Asteca'),
         'brasileira americas': chave('Brasileira'),
+      },
+      // O gênero da FIGURA (do Wikidata), nunca o de quem lê. '' (o Boitatá, o dragão chinês) aparece como "—".
+      genero: {
+        masculino: chave('Masculino'),
+        feminino: chave('Feminino'),
+        varia: chave('Varia'),
       },
       tipo: {
         divindade: chave('Divindade'),
@@ -246,9 +262,21 @@ export function textoDoValor(tema: IdDoQuiz, coluna: string, valor: unknown, tra
     if (valor.length === 0) return mapa?.[''] ? t(mapa['']) : '—';
     return valor.map((v) => (mapa?.[String(v)] ? t(mapa[String(v)]) : String(v))).join(', ');
   }
+  if (valor === '' || valor === null || valor === undefined) return '—';
   if (mapa?.[String(valor)]) return t(mapa[String(valor)]);
   if (typeof valor === 'number' && rotulos.numero?.[coluna]) return rotulos.numero[coluna](valor);
   return String(valor);
+}
+
+/**
+ * A FAMÍLIA na célula (a coluna de tipo 'parentes'): a lista começa pelo próprio item, que não aparece; os parentes vão
+ * pelo nome na língua de quem lê, até três, e o resto vira "+N". Sem parente na lista, "—".
+ */
+export function textoDosParentes(lista: unknown, nomeDe: (id: string) => string | undefined, mostrar = 3): string {
+  const parentes = (Array.isArray(lista) ? lista.slice(1) : []).map(String);
+  if (parentes.length === 0) return '—';
+  const nomes = parentes.slice(0, mostrar).map((id) => nomeDe(id) ?? id);
+  return parentes.length > mostrar ? `${nomes.join(', ')} +${parentes.length - mostrar}` : nomes.join(', ');
 }
 
 /** Sem acento e em minúscula: é assim que a busca da lista compara o que se escreve com os nomes. */
@@ -266,4 +294,23 @@ export function sugestoes(itens: { id: string; nome: string }[], escrito: string
   const comeca = livres.filter((i) => paraBusca(i.nome).startsWith(busca));
   const contem = livres.filter((i) => !paraBusca(i.nome).startsWith(busca) && paraBusca(i.nome).includes(busca));
   return [...comeca, ...contem].slice(0, limite);
+}
+
+/** A bandeira do modo Bandeira em 3 × 2 pedaços (a grade em .quiz-bandeira-pedacos, jogosDePalavras.css). */
+export const PEDACOS_DA_BANDEIRA = 6;
+
+/**
+ * Em que ordem os pedaços da bandeira se abrem: sorteada pela ficha da rodada (a mesma para todos, e outra a cada rodada),
+ * para nem sempre começar pelo canto de cima, que em muitas bandeiras é a parte que mais diz.
+ */
+export function ordemDosPedacos(ficha: string): number[] {
+  let semente = 0;
+  for (const letra of ficha) semente = (Math.imul(semente, 31) + letra.charCodeAt(0)) >>> 0;
+  const ordem = Array.from({ length: PEDACOS_DA_BANDEIRA }, (_, i) => i);
+  for (let i = ordem.length - 1; i > 0; i--) {
+    semente = (Math.imul(semente, 1103515245) + 12345) >>> 0;
+    const j = semente % (i + 1);
+    [ordem[i], ordem[j]] = [ordem[j], ordem[i]];
+  }
+  return ordem;
 }

@@ -5,7 +5,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import type { Contexto } from '../src/minijogo-motor.js';
-import { _testeQuiz, catalogo, comparar, criarQuiz, distanciaERumo, nomeDoItem, pontosDoQuiz, RODADAS_QUIZ, TEMAS } from '../src/minijogo-quiz.js';
+import { _testeQuiz, bandeiraDaFicha, catalogo, comparar, criarQuiz, distanciaERumo, nomeDoItem, pontosDoQuiz, RODADAS_QUIZ, TEMAS } from '../src/minijogo-quiz.js';
 
 test('Quiz: cada tipo de coluna compara do seu jeito', () => {
   assert.deepEqual(comparar({ id: 'x', tipo: 'igual' }, 'dragon', 'dragon'), { cor: 2 });
@@ -145,4 +145,48 @@ test('Quiz: a corrida — os outros veem as cores, nunca os chutes, até a revel
   }
   s.disparar();
   assert.ok(s.terminou());
+});
+
+test('Quiz: as colunas novas da mitologia — o gênero da figura e a família na lista (Wikidata)', () => {
+  const porNome = new Map(TEMAS.mitologia.itens.map((f) => [nomeDoItem(f, 'en'), f]));
+  const f = (nome: string) => porNome.get(nome)!;
+  assert.equal(f('Zeus').genero, 'masculino');
+  assert.equal(f('Hera').genero, 'feminino');
+  assert.equal(f('Boitatá').genero, '', 'bicho sem gênero dito: vazio, e a tela mostra "—"');
+  for (const figura of TEMAS.mitologia.itens) {
+    assert.ok(['masculino', 'feminino', 'varia', ''].includes(String(figura.genero)), `${figura.id}: gênero ${figura.genero}`);
+    const familia = figura.familia as string[];
+    assert.equal(familia[0], figura.id, `${figura.id}: a família começa pela própria figura`);
+    // nos dois sentidos: se A tem B na família, B tem A
+    for (const outro of familia.slice(1)) assert.ok((TEMAS.mitologia.itens.find((i) => i.id === outro)!.familia as string[]).includes(figura.id));
+  }
+  const coluna = { id: 'familia', tipo: 'parentes' } as const;
+  assert.equal(comparar(coluna, f('Zeus').familia, f('Zeus').familia).cor, 2);
+  assert.equal(comparar(coluna, f('Hera').familia, f('Zeus').familia).cor, 1, 'parente do secreto: amarelo');
+  assert.equal(comparar(coluna, f('Brigid').familia, f('The Dagda').familia).cor, 1, 'a mesma família de dois não dá verde');
+  assert.equal(comparar(coluna, f('Achilles').familia, f('Zeus').familia).cor, 0, 'sem parente na lista: vermelho');
+});
+
+test('Quiz: o modo Bandeira dos países — a ficha por rodada, o SVG sem o código, e a categoria', () => {
+  assert.equal(catalogo(TEMAS.paises, 'pt-BR', 'bandeira').length, 193, 'todos os países têm bandeira');
+  _testeQuiz.itens = ['BR', 'JP', 'AR'];
+  const s = sala([1]);
+  const jogo = criarQuiz(TEMAS.paises).comecar(s.ctx, { naSala: [1], criadaPor: 1, corpo: { categoria: 'bandeira' } });
+  const classico = criarQuiz(TEMAS.paises).comecar(sala([1]).ctx, { naSala: [1], criadaPor: 1, corpo: {} });
+  _testeQuiz.itens = null;
+  assert.ok(typeof jogo !== 'string' && typeof classico !== 'string');
+  assert.equal((classico.publico(1) as { bandeira: unknown }).bandeira, null, 'no clássico não há bandeira');
+  const visto = jogo.publico(1) as { categoria: string; bandeira: string };
+  assert.equal(visto.categoria, 'bandeira');
+  assert.match(visto.bandeira, /^[0-9a-f]{32}$/, 'a ficha é sorteada, nunca o código do país');
+  const svg = bandeiraDaFicha(visto.bandeira)!;
+  assert.ok(svg.startsWith('<svg'));
+  assert.ok(!/flag-icons|[\s"'#.(]br-/i.test(svg), 'o SVG não diz o país');
+  assert.equal(bandeiraDaFicha('0'.repeat(32)), null);
+  // a próxima rodada tem outra ficha, com outra bandeira
+  assert.equal(jogo.acao(1, { tipo: 'chute', id: 'BR' }), null);
+  s.disparar();
+  const segunda = (jogo.publico(1) as { bandeira: string }).bandeira;
+  assert.notEqual(segunda, visto.bandeira);
+  assert.notEqual(bandeiraDaFicha(segunda), svg);
 });

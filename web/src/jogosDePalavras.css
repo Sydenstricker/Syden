@@ -256,3 +256,45 @@
   color: var(--text-strong);
   font-size: calc(13px * var(--escala-do-texto, 1));
 }
+
+/* ---- Quiz: a bandeira do modo Bandeira, revelada aos poucos (um pedaço por chute) ---- */
+.quiz-bandeira {
+  position: relative;
+  width: min(240px, 70vw);
+  aspect-ratio: 4 / 3;
+  margin: 0 auto;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--bg-darkest);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--text-strong) 18%, transparent);
+}
+
+.quiz-bandeira img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.quiz-bandeira-pedacos {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+}
+
+.quiz-bandeira-pedacos span {
+  background: var(--bg-darkest);
+  border: 1px solid color-mix(in srgb, var(--text-strong) 10%, transparent);
+  transition: opacity 0.4s ease;
+}
+
+.quiz-bandeira-pedacos span.aberto {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .quiz-bandeira-pedacos span {
+    transition: none;
+  }
+}
