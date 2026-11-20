@@ -1,5 +1,6 @@
+import { arte, L, ladrilhoNo, pintarChaoDeLadrilhos } from './arte';
 import type { Mundo } from './mundo';
-import { ALTURA, LARGURA, LOOP_DURA, posicaoBala, posicaoInimigo, posicaoItem, posicaoTiro, type Inimigo } from './sim';
+import { ALTURA, LARGURA, LOOP_DURA, posicaoBala, posicaoInimigo, posicaoItem, posicaoTiro, type FaseDaNave, type Inimigo } from './sim';
 
 /**
  * O DESENHO DA ESQUADRILHA DA TOCA (05/11/2026), todo por código, numa tela de 180 × 240 ampliada em pixels inteiros: a horta
@@ -193,6 +194,15 @@ export function pintarHorta(): HTMLCanvasElement {
   return c;
 }
 
+/**
+ * O chão da fase: em ladrilhos do Pixel Shmup quando a folha já chegou (`arte.ts`), senão a horta por código de sempre (a
+ * reserva, igual nas três fases).
+ */
+export function pintarChao(fase: FaseDaNave): HTMLCanvasElement {
+  const f = arte();
+  return f ? pintarChaoDeLadrilhos(f, fase, LARGURA, ALTURA_DO_ROLO) : pintarHorta();
+}
+
 /** As nuvens: passam mais depressa que o chão, com a sombra delas na horta. */
 const NUVENS = [
   [20, 0, 1],
@@ -202,18 +212,35 @@ const NUVENS = [
   [40, 610, 1],
 ];
 const ALTURA_DAS_NUVENS = 720;
+/**
+ * A nuvem em pixels de borda dura (20/11/2026: antes eram arcos com a borda borrada, que destoavam dos ladrilhos), feita uma vez
+ * por tamanho e cor. Cada pixel é pintado uma vez só, então a transparência fica igual onde os círculos se cruzam.
+ */
+const cacheDeNuvens = new Map<string, HTMLCanvasElement>();
+const BOLOS = [
+  [0, 0, 10],
+  [11, 2, 8],
+  [-10, 3, 7],
+  [4, -5, 7],
+];
 function nuvem(ctx: CanvasRenderingContext2D, x: number, y: number, k: number, cor: string) {
-  ctx.fillStyle = cor;
-  for (const [dx, dy, r] of [
-    [0, 0, 10],
-    [11, 2, 8],
-    [-10, 3, 7],
-    [4, -5, 7],
-  ]) {
-    ctx.beginPath();
-    ctx.arc(x + dx * k, y + dy * k, r * k, 0, Math.PI * 2);
-    ctx.fill();
+  const chave = `${k}|${cor}`;
+  let c = cacheDeNuvens.get(chave);
+  if (!c) {
+    const m = Math.ceil(24 * k);
+    c = document.createElement('canvas');
+    c.width = c.height = m * 2;
+    const g = c.getContext('2d')!;
+    g.fillStyle = cor;
+    for (let py = 0; py < m * 2; py++)
+      for (let px = 0; px < m * 2; px++) {
+        const ux = px + 0.5 - m;
+        const uy = py + 0.5 - m;
+        if (BOLOS.some(([dx, dy, r]) => (ux - dx * k) ** 2 + (uy - dy * k) ** 2 <= (r * k) ** 2)) g.fillRect(px, py, 1, 1);
+      }
+    cacheDeNuvens.set(chave, c);
   }
+  ctx.drawImage(c, Math.round(x) - c.width / 2, Math.round(y) - c.height / 2);
 }
 
 export interface Outro {
@@ -349,6 +376,17 @@ function desenharChefe(ctx: CanvasRenderingContext2D, cx: number, cy: number, n:
 function desenharItem(ctx: CanvasRenderingContext2D, item: string, x: number, y: number, n: number) {
   const cx = Math.round(x);
   const cy = Math.round(y);
+  const f = arte();
+  if (f) {
+    // o selo do pacote (dois tiros, o leque, o escudo), com o brilho piscando por trás para chamar o olho
+    if (Math.floor(n / 10) % 2) {
+      ctx.fillStyle = 'rgba(255,247,224,0.85)';
+      ctx.fillRect(cx - 7, cy - 6, 14, 12);
+      ctx.fillRect(cx - 6, cy - 7, 12, 14);
+    }
+    ladrilhoNo(ctx, f, item === 'duplo' ? L.itemDuplo : item === 'espalhado' ? L.itemEspalhado : L.itemEscudo, cx, cy);
+    return;
+  }
   const cor = item === 'duplo' ? '#f08a24' : item === 'espalhado' ? '#9b6bd6' : '#4aa3df';
   ctx.fillStyle = Math.floor(n / 10) % 2 ? '#fff7e0' : '#2b2633';
   ctx.fillRect(cx - 6, cy - 5, 12, 10);
@@ -485,11 +523,23 @@ export function desenhar(ctx: CanvasRenderingContext2D, d: Desenho) {
   }
 
   // as explosões e as faíscas
+  const folha = arte();
   for (const e of m.efeitos) {
     const idade = n - e.em;
     const x = Math.round(e.x);
     const y = Math.round(e.y);
-    if (e.tipo === 'faisca') {
+    if (folha && e.tipo === 'faisca') {
+      if (idade <= 4) ladrilhoNo(ctx, folha, L.faisca, x, y);
+    } else if (folha && (e.tipo === 'explosao' || e.tipo === 'perdeu')) {
+      // os quadros do pacote (clarão, estrela, estouro, faísca) e a fumaça, em 2× nas grandes
+      const k = e.grande ? 2 : 1;
+      if (idade < 20) ladrilhoNo(ctx, folha, L.explosao[Math.floor(idade / 5)], x, y, k);
+      else if (idade < 34) {
+        ctx.globalAlpha = 1 - (idade - 20) / 14;
+        ladrilhoNo(ctx, folha, L.fumaca, x, y - Math.floor((idade - 20) / 4), k);
+        ctx.globalAlpha = 1;
+      }
+    } else if (e.tipo === 'faisca') {
       if (idade > 6) continue;
       ctx.fillStyle = '#fff7e0';
       ctx.fillRect(x - 1, y - 1, 3, 3);

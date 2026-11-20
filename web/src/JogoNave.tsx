@@ -6,7 +6,8 @@ import type { Socket } from 'socket.io-client';
 import { chave, useT } from './i18n';
 import { Placar, Relogio } from './Minijogo';
 import type { Partida } from './minijogos';
-import { CORES_DA_ESQUADRILHA, desenhar, pintarHorta, type Outro } from './nave/desenho';
+import { carregarArte } from './nave/arte';
+import { CORES_DA_ESQUADRILHA, desenhar, pintarChao, type Outro } from './nave/desenho';
 import { Mundo, comandosDoJogador, reancorar, type Comandos, type Teclas, type Toque } from './nave/mundo';
 import { pilotar } from './nave/piloto';
 import { ALTURA, ehFaseDaNave, LARGURA, PASSOS_POR_S, SEM_QUEDA, temposDaFase, type FaseDaNave } from './nave/sim';
@@ -290,7 +291,12 @@ function Ceu({ estado, eu, jogador, socket, channelId }: { estado: EstadoNave & 
     const ctx = tela?.getContext('2d');
     const m = mundo.current;
     if (!tela || !ctx || !m) return;
-    const horta = pintarHorta();
+    // o chão da fase: o desenho por código até a folha de ladrilhos chegar (nave/arte.ts), e ela no lugar quando chega
+    let horta = pintarChao(m.fase);
+    let vivo = true;
+    void carregarArte().then((f) => {
+      if (f && vivo) horta = pintarChao(m.fase);
+    });
     // o tremor da bomba e do golpe, e o piscar branco do acerto: só desenho (impacto.ts)
     const impacto = criarImpacto({ pixelsPorForca: 4 });
     const FIM = temposDaFase(m.fase).fim;
@@ -429,7 +435,10 @@ function Ceu({ estado, eu, jogador, socket, channelId }: { estado: EstadoNave & 
       }
     };
     id = requestAnimationFrame(quadro);
-    return () => cancelAnimationFrame(id);
+    return () => {
+      vivo = false;
+      cancelAnimationFrame(id);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [socket, channelId, souJogador, estado.solo, eu]);
 
