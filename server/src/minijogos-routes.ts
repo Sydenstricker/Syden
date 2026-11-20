@@ -43,7 +43,7 @@ import { truco } from './minijogo-truco.js';
 import { lendas } from './minijogo-lendas.js';
 import { bichos } from './minijogo-bichos.js';
 import { arena } from './minijogo-arena.js';
-import { catalogo, criarQuiz, TEMAS } from './minijogo-quiz.js';
+import { bandeiraDaFicha, catalogo, criarQuiz, TEMAS } from './minijogo-quiz.js';
 import { stop } from './minijogo-stop.js';
 import { sudoku } from './minijogo-sudoku.js';
 import { gomoku, mancala } from './minijogo-tabuleiro.js';
@@ -311,6 +311,10 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
         if (p.solo) return emitToUser(io, p.criadaPor, 'minijogo-solo:tempo-real', { dados });
         for (const id of quemEstaNaSala(p.channelId)) emitToUser(io, id, 'minijogo:tempo-real', { channelId: p.channelId, dados });
       },
+      difundirPorPessoa: (fazer) => {
+        if (p.solo) return emitToUser(io, p.criadaPor, 'minijogo-solo:tempo-real', { dados: fazer(p.criadaPor) });
+        for (const id of quemEstaNaSala(p.channelId)) emitToUser(io, id, 'minijogo:tempo-real', { channelId: p.channelId, dados: fazer(id) });
+      },
     };
     // O relógio do convite sai antes: um jogo que não marca relógio ao começar herdaria o fim do convite.
     if (p.relogio) clearTimeout(p.relogio);
@@ -400,6 +404,12 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
       const tema = TEMAS[request.params.tema];
       if (!tema) return reply.code(404).send({ error: 'Quiz desconhecido.' });
       return { itens: catalogo(tema, String(request.query.idioma ?? 'pt-BR').slice(0, 20), request.query.categoria) };
+    });
+    // A bandeira da rodada do modo Bandeira, pela ficha que a partida deu (nunca pelo código do país, que é a resposta).
+    authed.get<{ Params: { ficha: string } }>('/api/minijogos/quiz-bandeira/:ficha', async (request, reply) => {
+      const svg = bandeiraDaFicha(String(request.params.ficha));
+      if (!svg) return reply.code(404).send({ error: 'Bandeira não encontrada.' });
+      return { svg };
     });
 
     // ---- A PARTIDA SOLO (ver JOGOS_SOLO): da pessoa, sem sala. ----

@@ -117,6 +117,59 @@ export function seguirVelocidade(cenario: Cenario, vx: number, vy: number, querX
   return [vx + (querX - vx) * k, vy + (querY - vy) * k];
 }
 
+// ---------------- O MATO QUE ESCONDE ----------------
+/**
+ * O MATO ALTO (20/11/2026): moitas no chão de cada cenário, [x, y, raio], simétricas pelo centro e longe de onde se nasce, dos
+ * suprimentos e da zona do meio. Quem está com o pé dentro de uma moita SOME para os adversários (os aliados continuam vendo), a
+ * não ser que:
+ * - um adversário de pé esteja a menos de PERTO_REVELA dele, ou na MESMA moita;
+ * - ele tenha golpeado, ou levado um golpe, há menos de REVELADO_MS.
+ * Quem esconde é o SERVIDOR: o quadro de cada um só leva a posição de quem essa pessoa pode ver (minijogo-motor.ts,
+ * difundirPorPessoa). Não segura bala nem atrapalha o andar: é só esconderijo.
+ */
+export const MATO: Record<Cenario, readonly (readonly [number, number, number])[]> = {
+  grama: [
+    [300, 560, 50],
+    [980, 336, 50],
+    [540, 300, 46],
+    [740, 596, 46],
+    [110, 800, 44],
+    [1170, 96, 44],
+  ],
+  praia: [
+    [300, 600, 48],
+    [980, 296, 48],
+    [530, 140, 46],
+    [750, 756, 46],
+    [380, 800, 44],
+    [900, 96, 44],
+  ],
+  gelo: [
+    [300, 620, 48],
+    [980, 276, 48],
+    [540, 140, 46],
+    [740, 756, 46],
+  ],
+  lama: [
+    [530, 130, 46],
+    [750, 766, 46],
+    [160, 760, 46],
+    [1120, 136, 46],
+  ],
+};
+export const PERTO_REVELA = 80;
+export const REVELADO_MS = 1200;
+
+/** Em qual moita está o pé em (x, y) (-1: em nenhuma). */
+export function moitaEm(cenario: Cenario, x: number, y: number): number {
+  const m = MATO[cenario];
+  for (let k = 0; k < m.length; k++) {
+    const [mx, my, r] = m[k];
+    if ((x - mx) * (x - mx) + (y - my) * (y - my) <= r * r) return k;
+  }
+  return -1;
+}
+
 // ---------------- O MODO DE OBJETIVO ----------------
 /**
  * SEGURAR A ZONA (19/11/2026): um círculo no meio da arena; a cada segundo em que só um time tem gente de pé dentro dele, esse

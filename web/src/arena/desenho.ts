@@ -6,7 +6,7 @@
  *
  * O mundo é visto de cima, em três quartos: as balas andam no chão (a sombra é onde elas estão) e são desenhadas à altura da mão.
  */
-import { BORDA, MUNDO_H, MUNDO_W, OBSTACULOS, POCAS_DE_LAMA, PONTOS_DE_SUPRIMENTO, RAIO, W, H, ZONA_DO_OBJETIVO, type Cenario, type Suprimento } from './conta';
+import { BORDA, MATO, MUNDO_H, MUNDO_W, OBSTACULOS, POCAS_DE_LAMA, PONTOS_DE_SUPRIMENTO, RAIO, W, H, ZONA_DO_OBJETIVO, type Cenario, type Suprimento } from './conta';
 import { COR_DO_ELEMENTO } from '../bichos/desenho';
 import type { Efeito, ZonaNaTela } from './regras';
 
@@ -123,6 +123,18 @@ export function chaoDo(cenario: Cenario): HTMLCanvasElement {
   cerca(0, MUNDO_H - BORDA, MUNDO_W, BORDA);
   cerca(0, 0, BORDA, MUNDO_H);
   cerca(MUNDO_W - BORDA, 0, BORDA, MUNDO_H);
+  // o chão do mato: a terra escura embaixo das folhas (as folhas são de pé: desenharFolhasDoMato)
+  const [base, escura] = CORES_DO_MATO[cenario];
+  for (const [mx, my, mr] of MATO[cenario]) {
+    for (let y = -mr; y <= mr; y += 4) {
+      for (let x = -mr; x <= mr; x += 4) {
+        const d2 = x * x + y * y;
+        if (d2 > mr * mr) continue;
+        g.fillStyle = d2 > (mr - 6) * (mr - 6) || ruido(mx + x, my + y, 7) < 0.25 ? escura : base;
+        g.fillRect(mx + x, my + y, 4, 4);
+      }
+    }
+  }
   // os quatro pontos dos suprimentos: um círculo de pedrinhas no chão
   for (const [px, py] of PONTOS_DE_SUPRIMENTO) {
     for (let k = 0; k < 12; k++) {
@@ -517,4 +529,65 @@ export function desenharZonaDoObjetivo(g: CanvasRenderingContext2D, cx: number, 
   g.setLineDash([]);
   g.lineDashOffset = 0;
   g.globalAlpha = 1;
+}
+
+// ---------------- O MATO ----------------
+/** O mato de cada cenário: [chão, chão escuro, folha escura, folha, ponta clara]. A grama alta, o capim da duna, o junco do gelo e a taboa do brejo. */
+const CORES_DO_MATO: Record<Cenario, readonly [string, string, string, string, string]> = {
+  grama: ['#4c8338', '#3e6f2e', '#3a6b2a', '#5a9a41', '#86c25c'],
+  praia: ['#b9ac6c', '#a39758', '#8c8a46', '#a9a85a', '#d6cf86'],
+  gelo: ['#9fbfb4', '#86a89c', '#5f8a7c', '#7fa898', '#d8eee6'],
+  lama: ['#5f6a35', '#4c5629', '#4f5c28', '#6d7c3a', '#a5824e'],
+};
+
+/** As folhas de cada moita, em fileiras: [y da fileira, [dx, altura, tom][]]. As mesmas sempre (pelo ruído). */
+const folhasDasMoitas = new Map<string, [number, [number, number, number][]][]>();
+function folhasDa(cenario: Cenario, i: number) {
+  const chave = cenario + i;
+  let f = folhasDasMoitas.get(chave);
+  if (f) return f;
+  const [mx, my, mr] = MATO[cenario][i];
+  f = [];
+  for (let y = -mr + 4; y <= mr; y += 6) {
+    const linha: [number, number, number][] = [];
+    for (let x = -mr; x <= mr; x += 4) {
+      const r = ruido(mx + x, my + y, 9);
+      if (x * x + y * y > (mr - 2) * (mr - 2) || r < 0.3) continue;
+      linha.push([x + Math.floor(r * 3), 10 + Math.floor(ruido(mx + x, my + y, 11) * 10), r < 0.55 ? 2 : r < 0.85 ? 3 : 4]);
+    }
+    if (linha.length) f.push([my + y, linha]);
+  }
+  folhasDasMoitas.set(chave, f);
+  return f;
+}
+
+/**
+ * As folhas do mato, DE PÉ: uma entrada por fileira, para a tela as desenhar na ordem do y junto com os coelhos (quem está dentro
+ * fica com as pernas atrás das folhas da frente). Balançam devagar com o tempo (parado com "menos movimento").
+ */
+export function fileirasDoMato(g: CanvasRenderingContext2D, cenario: Cenario, cx: number, cy: number, tempo: number): { y: number; desenhar: () => void }[] {
+  const saida: { y: number; desenhar: () => void }[] = [];
+  const cores = CORES_DO_MATO[cenario];
+  MATO[cenario].forEach(([mx, my, mr], i) => {
+    if (mx + mr < cx - 10 || mx - mr > cx + W + 10 || my + mr < cy - 10 || my - mr > cy + H + 30) return;
+    for (const [fy, linha] of folhasDa(cenario, i)) {
+      saida.push({
+        y: fy,
+        desenhar: () => {
+          const y = Math.round(fy - cy);
+          for (const [dx, alt, tom] of linha) {
+            const x = Math.round(mx + dx - cx);
+            const balanca = Math.round(Math.sin(tempo / 700 + (mx + dx) * 0.13) * 1.4);
+            g.fillStyle = cores[tom];
+            g.fillRect(x, y - alt, 2, alt);
+            g.fillRect(x + balanca, y - alt - 3, 2, 4);
+            if (tom === 4) continue;
+            g.fillStyle = cores[4];
+            g.fillRect(x + balanca, y - alt - 3, 1, 2);
+          }
+        },
+      });
+    }
+  });
+  return saida;
 }

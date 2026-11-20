@@ -73,7 +73,10 @@ export interface Quadro {
   f: FaseDaArena;
   /** ms que faltam. */
   r: number;
-  /** [id, x, y, mira x ×100, mira y ×100, ação, ms da ação, vidas, vida, estado, time, bicho, especial, ms rápido, ms piscando, último golpe, ms para voltar] */
+  /**
+   * [id, x, y, mira x ×100, mira y ×100, ação, ms da ação, vidas, vida, estado, time, bicho, especial, ms rápido, ms piscando,
+   * último golpe, ms para voltar, escondido]. Escondido (1): no MATO, fora da vista do meu time; o servidor nem manda a posição.
+   */
   j: number[][];
   /** [dono, n, k, x0, y0, dx ×1000, dy ×1000, ms desde, elemento, tecla, até onde vai] */
   p: number[][];
@@ -147,6 +150,8 @@ export interface CoelhoNaTela {
   rapido: boolean;
   piscando: boolean;
   voltaMs: number;
+  /** No mato, longe da minha vista: a posição não veio (a tela não desenha, a bala não acerta, o piloto não mira). */
+  escondido: boolean;
 }
 export interface BalaNaTela {
   dono: number;
@@ -282,12 +287,15 @@ export class LinhaDoTempo {
   }
 }
 
-/** Entre duas linhas do quadro (o mesmo id na coluna 0): as colunas `colunas` andam, o resto é o do mais novo. */
+/**
+ * Entre duas linhas do quadro (o mesmo id na coluna 0): as colunas `colunas` andam, o resto é o do mais novo. Quem estava ou
+ * está escondido no mato (a coluna 17) não anda: a posição dele não veio.
+ */
 export function misturar(a: number[][], b: number[][], k: number, colunas: number[]): number[][] {
   const antes = new Map(a.map((l) => [l[0], l]));
   return b.map((l) => {
     const v = antes.get(l[0]);
-    if (!v) return l;
+    if (!v || v[17] || l[17]) return l;
     const r = [...l];
     for (const c of colunas) r[c] = v[c] + (l[c] - v[c]) * k;
     return r;
@@ -362,12 +370,14 @@ export class Cliente {
       if (tipo === 'h') {
         // [alvo, dono, dano, eficácia (0, 1 vale mais, 2 vale menos), elemento]
         const [alvo, dono, dano, efic, el] = r;
-        const de = q.j.find((l) => l[0] === dono);
+        const de = q.j.find((l) => l[0] === dono && !l[17]);
         const quem = alvo === this.id ? this.eu : null;
-        const ax = quem ? quem.x : (q.j.find((l) => l[0] === alvo)?.[1] ?? 0);
-        const ay = quem ? quem.y : (q.j.find((l) => l[0] === alvo)?.[2] ?? 0);
+        const linhaDoAlvo = q.j.find((l) => l[0] === alvo);
+        const ax = quem ? quem.x : (linhaDoAlvo?.[1] ?? 0);
+        const ay = quem ? quem.y : (linhaDoAlvo?.[2] ?? 0);
         const [ux, uy] = de ? unitario(ax - de[1], ay - de[2]) : [0, 0];
-        this.efeitos.push({ tipo: 'numero', x: ax, y: ay, em: agora + (quem ? 0 : ATRASO_MS), texto: String(dano), forca: efic, elemento: elementoDoIndice(el) });
+        // o número sobe de quem eu vejo (quem leva um golpe aparece no mato; por garantia)
+        if (quem || (linhaDoAlvo && !linhaDoAlvo[17])) this.efeitos.push({ tipo: 'numero', x: ax, y: ay, em: agora + (quem ? 0 : ATRASO_MS), texto: String(dano), forca: efic, elemento: elementoDoIndice(el) });
         if (alvo === this.id) {
           this.eu.acao = 'dor';
           this.eu.t = 0;
@@ -399,7 +409,7 @@ export class Cliente {
         // a roda de alguém: [quem, elemento, tecla]
         const l = q.j.find((x) => x[0] === r[0]);
         const golpeDaRoda = KITS[elementoDoIndice(r[1]) ?? 'folha'][TECLAS_DE_GOLPE[r[2]] ?? 's'];
-        if (l && r[0] !== this.id) this.efeitos.push({ tipo: 'roda', x: l[1], y: l[2], em: agora + ATRASO_MS, elemento: elementoDoIndice(r[1]), raio: golpeDaRoda.raio });
+        if (l && !l[17] && r[0] !== this.id) this.efeitos.push({ tipo: 'roda', x: l[1], y: l[2], em: agora + ATRASO_MS, elemento: elementoDoIndice(r[1]), raio: golpeDaRoda.raio });
       } else if (tipo === 'g') {
         // pegou um suprimento: [quem, tipo, ponto]
         const [px, py] = PONTOS_DE_SUPRIMENTO[r[2]] ?? [0, 0];
@@ -439,6 +449,7 @@ export class Cliente {
       rapido: l[13] > 0,
       piscando: l[14] > 0,
       voltaMs: l[16],
+      escondido: l[17] === 1,
     }));
     const balas: BalaNaTela[] = [];
     for (const b of ultimo.p) {
@@ -499,7 +510,7 @@ export class Cliente {
       if (b.acertou) continue;
       const d = Math.min(andouABala(b.golpe, agora - b.inicio), b.livre);
       for (const o of v.coelhos) {
-        if (o.id === this.id || o.time === eu.time || o.estado !== 0 || o.piscando) continue;
+        if (o.id === this.id || o.time === eu.time || o.estado !== 0 || o.piscando || o.escondido) continue;
         if (balaPassaPerto(b.x0, b.y0, b.dx, b.dy, b.andou, d, o.x, o.y, RAIO + b.golpe.raio)) {
           b.acertou = true;
           this.enviar({ tipo: 'acerto', n: b.n, k: b.k, alvo: o.id });

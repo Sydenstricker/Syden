@@ -119,3 +119,27 @@ test('o golpe: o básico sai na recarga dele, mirado no mouse, e o forte vai com
   c.passo(cmd, 1 / 60, (agora += 1000 / 60), c.vista(agora));
   assert.notEqual(enviados.filter((d) => d.tipo === 'golpe').at(-1)!.tecla, 'e');
 });
+
+test('o mato (20/11/2026): quem vem escondido não aparece na vista, não anda entre quadros e a minha bala não o acerta', () => {
+  const enviados: Record<string, unknown>[] = [];
+  const c = new Cliente(7, 'grama', new Map([[7, ['brotel']], [8, ['tisco']]]), (d) => enviados.push(d as Record<string, unknown>));
+  const eu = [7, 300, 380, 100, 0, 0, 0, 3, 100, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  const visivel = (x: number) => [8, x, 380, -100, 0, 0, 0, 3, 100, 0, 1, 0, 0, 0, 0, 0, 0, 0];
+  const escondido = [8, 0, 0, 0, 0, 0, 0, 3, 100, 0, 1, 0, 0, 0, 0, 0, 0, 1];
+  c.chegou(quadro(1, 300, 380, { j: [eu, visivel(400)] }), 0);
+  c.chegou(quadro(2, 300, 380, { j: [eu, escondido] }), 50);
+  const v = c.vista(500);
+  const ele = v.coelhos.find((o) => o.id === 8)!;
+  assert.equal(ele.escondido, true, 'marcado escondido (a vida continua no placar)');
+  assert.equal(ele.pv, 100);
+  // entre o quadro visível e o escondido, ele não escorrega para (0, 0)
+  const meio = c.vista(50 + 100 + 25).coelhos.find((o) => o.id === 8)!;
+  assert.ok(meio.escondido || meio.x === 400, `x ${meio.x}`);
+  // a minha bala passa por onde ele estava: a tela não manda acerto de quem ela não vê
+  let agora = 600;
+  const cmd = { ...comandosVazios(), atacar: true, alvoX: 500, alvoY: 380 };
+  for (let k = 0; k < 40; k++) c.passo(cmd, 1 / 60, (agora += 1000 / 60), c.vista(agora));
+  assert.equal(enviados.filter((d) => d.tipo === 'acerto').length, 0);
+  // as moitas são as mesmas nas duas pontas
+  assert.equal(C.moitaEm('grama', C.MATO.grama[0][0], C.MATO.grama[0][1]), 0);
+});

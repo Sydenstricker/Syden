@@ -34,6 +34,11 @@ export interface Contexto {
    * traço do desenho, sem o "mudou, busque de novo".
    */
   difundir?(dados: unknown): void;
+  /**
+   * O mesmo `difundir`, mas o que vai é feito PARA CADA UM (o mato da Arena, 20/11/2026: quem está escondido não vai no quadro
+   * dos adversários). `fazer` recebe quem vai receber, e quem só assiste também recebe o dele.
+   */
+  difundirPorPessoa?(fazer: (quem: number) => unknown): void;
 }
 
 export interface Jogo {

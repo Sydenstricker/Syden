@@ -9,7 +9,7 @@ import { ESPECIES, GOLPES } from './bichos/regras';
 import { useT } from './i18n';
 import { primeiraForma, type Partida } from './minijogos';
 import { tocar } from './somDosJogos';
-import { H, KITS, MUNDO_H, MUNDO_W, OBSTACULOS, PONTOS_DA_ZONA, PV, TECLAS_DE_GOLPE, W, type TeclaDeGolpe } from './arena/conta';
+import { H, KITS, moitaEm, MUNDO_H, MUNDO_W, OBSTACULOS, PONTOS_DA_ZONA, PV, TECLAS_DE_GOLPE, W, type TeclaDeGolpe } from './arena/conta';
 import { prepararCoelho, quadroDaArena, receitaDoAvatar } from './arena/coelhos';
 import {
   chaoDo,
@@ -24,6 +24,7 @@ import {
   desenharSuprimento,
   desenharZona,
   desenharZonaDoObjetivo,
+  fileirasDoMato,
   MAO,
 } from './arena/desenho';
 import { pilotoAutomatico } from './arena/piloto';
@@ -285,7 +286,10 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoArena
       desenharMarca(g, x, y, meu ? 'eu' : o.time === cliente.eu.time && jogador ? 'amigo' : 'outro');
       const q = quadroDaArena(p.receita, anim, o.mx, o.my, ms);
       let topo = y - 90;
+      // no mato, eu e quem é do meu time aparecemos meio transparentes: é assim que se sabe que está escondido
+      const escondido = (meu || (jogador && o.time === cliente.eu.time)) && moitaEm(estado.cenario, o.x, o.y) >= 0;
       if (q) {
+        if (escondido) g.globalAlpha = 0.5;
         if (o.acao === 'arrancada') {
           // o rastro da arrancada: o mesmo desenho, para trás, apagando
           for (let k = 3; k >= 1; k--) {
@@ -295,6 +299,7 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoArena
           g.globalAlpha = 1;
         }
         g.drawImage(q.c, Math.round(x - q.pe[0]), Math.round(y - q.pe[1]));
+        g.globalAlpha = 1;
         if (ferido && ferido.ate > agora && Math.floor(agora / 60) % 2 === 0) {
           g.globalAlpha = 0.5;
           g.globalCompositeOperation = 'lighter';
@@ -364,7 +369,7 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoArena
       // a janela sem foco não desenha (sem foco nada se mexe)
       if (!piloto() && (document.hidden || !document.hasFocus())) return;
       // a câmera: o meu coelho (ou, para quem assiste ou está fora, o primeiro de pé)
-      const foco = jogador && cliente.eu.estado === 0 ? cliente.eu : (v.coelhos.find((o) => o.estado === 0) ?? { x: MUNDO_W / 2, y: MUNDO_H / 2 });
+      const foco = jogador && cliente.eu.estado === 0 ? cliente.eu : (v.coelhos.find((o) => o.estado === 0 && !o.escondido) ?? { x: MUNDO_W / 2, y: MUNDO_H / 2 });
       const ax = Math.max(0, Math.min(MUNDO_W - W, foco.x - W / 2));
       const ay = Math.max(0, Math.min(MUNDO_H - H, foco.y - 24 - H / 2));
       if (camX < 0) [camX, camY] = [ax, ay];
@@ -382,8 +387,11 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoArena
       for (const s of v.suprimentos) desenharSuprimento(g, s.tipo, s.x - cx, s.y - cy, tempo);
       // de pé, na ordem do y: os obstáculos e os coelhos
       const dePe: { y: number; desenhar: () => void }[] = OBSTACULOS[estado.cenario].map((o, i) => ({ y: o[1], desenhar: () => desenharObstaculo(g, estado.cenario, i, cx, cy) }));
+      // as folhas do mato, fileira por fileira (quem está dentro fica com as pernas atrás das da frente)
+      dePe.push(...fileirasDoMato(g, estado.cenario, cx, cy, tempo));
       for (const o of v.coelhos) {
-        if (o.estado !== 0 || (o.id === eu && jogador)) continue;
+        // quem está no mato fora da minha vista nem tem posição no quadro
+        if (o.estado !== 0 || o.escondido || (o.id === eu && jogador)) continue;
         dePe.push({ y: o.y, desenhar: () => desenharCoelho(o, agora, false) });
       }
       if (jogador && cliente.eu.estado === 0) {
@@ -405,7 +413,7 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoArena
         if (sx < 0 || sx > W || sy < 0 || sy > H) desenharSetaNaBorda(g, sx, sy, '#fff6c8', s.tipo);
       }
       for (const o of v.coelhos) {
-        if (o.estado !== 0 || o.id === eu) continue;
+        if (o.estado !== 0 || o.escondido || o.id === eu) continue;
         const sx = o.x - cx, sy = o.y - cy - 40;
         if (sx < 0 || sx > W || sy < -40 || sy > H) desenharSetaNaBorda(g, sx, sy, corDoTime(o.time, estado.formato));
       }

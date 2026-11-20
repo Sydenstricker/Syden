@@ -20,7 +20,13 @@
  *   encosta em alguém COMO ELE APARECE NESSA TELA, o acerto vem ao servidor, que confere o caminho dela contra o PASSADO do alvo.
  * - QUEM APANHA TEM FOLGA: o golpe forte, o especial e as zonas da arena são MARCADOS no chão antes, e só são decididos GRACA_MS
  *   depois de bater; a pessoa só leva se TODAS as posições que mandou nessa janela estavam dentro. As balas dos robôs também.
- * - A vida, as zonas e os suprimentos são do servidor; o quadro de 20 por segundo leva tudo a todos pelo `difundir`.
+ * - A vida, as zonas e os suprimentos são do servidor; o quadro de 20 por segundo vai a todos pelo `difundirPorPessoa`.
+ * - O MATO QUE ESCONDE (20/11/2026; as moitas e a regra em conta.ts, MATO): o quadro é feito POR TIME. Quem está escondido
+ *   de um time vai no quadro desse time só com o id, a vida e as vidas (a posição, a mira e a ação zeradas, e a coluna 17
+ *   ligada): esconder só na tela seria trapaça fácil pelo console. Quem só assiste vê como quem não tem aliado nenhum (na sala
+ *   de voz, quem assiste podia "soprar" a posição). Os robôs só miram em quem o time deles vê, e vão olhar as moitas. A bala
+ *   de uma pessoa não acerta, na tela dela, quem ela não vê: o servidor anda essa bala e confere ele mesmo contra quem estava
+ *   escondido dela (passoDasBalasNoMato). As rodas e as zonas já eram do servidor, e pegam quem está escondido.
  *
  * O que continua possível pelo console, entre amigos: mentir a posição dentro do limite de velocidade (desviar "perfeito"), e
  * mandar o acerto de uma bala que a tela errou por pouco (a folga é de FOLGA_BALA px e de ~300 ms de caminho). Não dá para bater
@@ -58,17 +64,21 @@ import {
   fatorDaArena,
   foraDosObstaculos,
   KITS,
+  MATO,
+  moitaEm,
   NASCER_TIME,
   NASCER_TODOS,
   PASSO_MS,
   perto,
   PERTO_DO_SUPRIMENTO,
+  PERTO_REVELA,
   PONTOS_DA_ZONA,
   PONTOS_DE_SUPRIMENTO,
   PV,
   RAIO,
   RAPIDO,
   RECARGA_DA_TROCA,
+  REVELADO_MS,
   seguirVelocidade,
   SUPRIMENTOS,
   TECLAS_DE_GOLPE,
@@ -216,8 +226,11 @@ interface Lutador {
   /** O robô: a velocidade de agora (o gelo escorrega). */
   vx: number;
   vy: number;
-  /** O robô: o alvo, a próxima decisão, o lado para onde ronda, e a mira com o erro dele. */
-  ia: { alvo: number | null; decide: number; ronda: 1 | -1; rondaAte: number; erro: number };
+  /** O robô: o alvo, a próxima decisão, o lado para onde ronda, a mira com o erro dele, e a moita que vai olhar. */
+  ia: { alvo: number | null; decide: number; ronda: 1 | -1; rondaAte: number; erro: number; procura: number };
+  /** O mato: até quando está à vista de todos (golpeou ou levou um golpe), e a última vez em que cada time não o via. */
+  reveladoAte: number;
+  escondidoDe: Map<number, number>;
 }
 
 export interface ServicosDaArena {
@@ -389,7 +402,9 @@ export function criarArena({
             desvios: 0,
             vx: 0,
             vy: 0,
-            ia: { alvo: null, decide: t + 600 + aleatorio() * 400, ronda: aleatorio() < 0.5 ? 1 : -1, rondaAte: t + 1500, erro: 0 },
+            ia: { alvo: null, decide: t + 600 + aleatorio() * 400, ronda: aleatorio() < 0.5 ? 1 : -1, rondaAte: t + 1500, erro: 0, procura: -1 },
+            reveladoAte: 0,
+            escondidoDe: new Map(),
           };
           return [id, l];
         }),
@@ -406,6 +421,25 @@ export function criarArena({
       const emPe = () => [...lutadores.values()].filter((l) => l.estado === 'em-pe' && conta(l));
       const elementoDe = (l: Lutador) => ESPECIES[l.equipe[l.ativo]]?.elemento ?? 'folha';
       const inimigos = (a: number, b: Lutador) => a !== b.time;
+      const times = [...new Set([...lutadores.values()].map((l) => l.time))];
+
+      // ---------------- O MATO ----------------
+      /**
+       * O time `time` vê `o` agora? (null: quem só assiste, sem aliado nenhum.) O próprio time vê sempre; fora do mato, caído,
+       * ou revelado, todos veem; no mato, só quem do time está de pé perto dele ou na mesma moita.
+       */
+      const ve = (time: number | null, o: Lutador, t: number): boolean => {
+        if (time !== null && o.time === time) return true;
+        if (o.estado !== 'em-pe' || t < o.reveladoAte) return true;
+        const m = moitaEm(cenario, o.x, o.y);
+        if (m < 0) return true;
+        if (time === null) return false;
+        for (const v of lutadores.values()) {
+          if (v.time !== time || v.estado !== 'em-pe' || !conta(v)) continue;
+          if (perto(v.x, v.y, o.x, o.y, PERTO_REVELA) || moitaEm(cenario, v.x, v.y) === m) return true;
+        }
+        return false;
+      };
 
       // ---------------- O DANO ----------------
       const ferir = (alvo: Lutador, dono: number, base: number, elemento: string, t: number) => {
@@ -414,6 +448,8 @@ export function criarArena({
         const dano = Math.max(1, Math.round(base * fatorDaArena(efic)));
         alvo.pv = Math.max(0, alvo.pv - dano);
         alvo.levou += dano;
+        // quem leva um golpe se mexe no mato: aparece por um instante
+        alvo.reveladoAte = t + REVELADO_MS;
         const atacante = lutadores.get(dono);
         if (atacante) {
           atacante.dano += dano;
@@ -496,6 +532,8 @@ export function criarArena({
         const g = KITS[elemento][tecla];
         if (tecla === 'e') l.especial = 0;
         else l.proximo[tecla] = Math.max(l.proximo[tecla], t - FOLGA_RECARGA) + g.recarga;
+        // golpear de dentro do mato revela quem golpeou, por um instante
+        l.reveladoAte = t + REVELADO_MS;
         l.acao = ACOES.indexOf('golpe');
         l.tAcao = 0;
         if (g.forma === 'tiro') {
@@ -520,7 +558,8 @@ export function criarArena({
 
       const passoDoRobo = (l: Lutador, dt: number, t: number) => {
         if (l.estado !== 'em-pe') return;
-        const vivos = emPe().filter((o) => inimigos(l.time, o));
+        // só quem o time dele vê (o mato esconde também dos robôs)
+        const vivos = emPe().filter((o) => inimigos(l.time, o) && ve(l.time, o, t));
         // o alvo e a estratégia, no reflexo dele
         if (t >= l.ia.decide) {
           l.ia.decide = t + DECISAO_DO_ROBO + aleatorio() * 120;
@@ -535,6 +574,10 @@ export function criarArena({
           }
           l.ia.alvo = melhor?.id ?? null;
           l.ia.erro = (aleatorio() - 0.5) * 0.3;
+          // ninguém à vista: vai olhar uma moita (a que já olhava, até chegar nela)
+          const moitas = MATO[cenario];
+          if (melhor) l.ia.procura = -1;
+          else if (l.ia.procura < 0 || perto(l.x, l.y, moitas[l.ia.procura][0], moitas[l.ia.procura][1], 30)) l.ia.procura = Math.floor(aleatorio() * moitas.length);
           // trocar o bicho quando o da frente apanha do alvo e outro da equipe não
           const alvo = melhor;
           if (alvo && t - l.trocaEm >= RECARGA_DA_TROCA && aleatorio() < 0.5) {
@@ -550,7 +593,12 @@ export function criarArena({
             }
           }
         }
-        const alvo = l.ia.alvo !== null ? lutadores.get(l.ia.alvo) : undefined;
+        let alvo = l.ia.alvo !== null ? lutadores.get(l.ia.alvo) : undefined;
+        // sumiu no mato entre uma decisão e outra: o robô perde o alvo
+        if (alvo && !ve(l.time, alvo, t)) {
+          alvo = undefined;
+          l.ia.alvo = null;
+        }
         const kit = KITS[elementoDe(l)];
         let vx = 0,
           vy = 0;
@@ -580,6 +628,7 @@ export function criarArena({
         // segurando a zona: fora dela, o rumo é o meio (o suprimento de cura com pouca vida ainda vem antes)
         const longeDaZona = objetivo === 'zona' && !perto(l.x, l.y, ZONA_DO_OBJETIVO.x, ZONA_DO_OBJETIVO.y, ZONA_DO_OBJETIVO.raio * 0.6);
         if (!fugindo && !rumo && longeDaZona) rumo = { x: ZONA_DO_OBJETIVO.x, y: ZONA_DO_OBJETIVO.y };
+        if (!fugindo && !rumo && !alvo && l.ia.procura >= 0) rumo = { x: MATO[cenario][l.ia.procura][0], y: MATO[cenario][l.ia.procura][1] };
         if (!fugindo && rumo) {
           const [ux, uy] = unitario(rumo.x - l.x, rumo.y - l.y);
           vx += ux;
@@ -693,6 +742,43 @@ export function criarArena({
         }
       };
 
+      /**
+       * As balas das PESSOAS contra quem está escondido delas: a tela de quem atira não desenha quem está no mato (o quadro não o
+       * leva), então não manda esse acerto. O servidor anda a bala e confere ele mesmo, contra a posição de agora de quem esteve
+       * escondido desse time nos últimos 400 ms. A bala acerta uma vez (se a tela mandar o acerto também: 'bala usada').
+       */
+      const passoDasBalasNoMato = (t: number) => {
+        for (const l of lutadores.values()) {
+          if (l.robo) continue;
+          for (const s of l.tiros.values()) {
+            const d1 = andouABala(s.golpe, t - s.em);
+            s.balas.forEach(([bx, by], k) => {
+              if (s.usadas.has(k)) return;
+              const d0 = s.andou[k];
+              const fim = Math.min(d1, s.livre[k]);
+              if (fim <= d0) return;
+              s.andou[k] = fim;
+              const r = RAIO + s.golpe.raio;
+              for (const o of emPe()) {
+                if (!inimigos(l.time, o) || o.invulAte > t) continue;
+                if (t - (o.escondidoDe.get(l.time) ?? -Infinity) > 400) continue;
+                const pontos = [{ x: o.x, y: o.y }, ...o.historia.filter((h) => h.t >= t - 2 * PASSO_MS)];
+                if (pontos.some((p) => balaPassaPerto(s.x0, s.y0, bx, by, d0, fim, p.x, p.y, r))) {
+                  s.usadas.add(k);
+                  ferir(o, l.id, s.golpe.dano, s.elemento, t);
+                  return;
+                }
+              }
+            });
+          }
+        }
+      };
+
+      /** Quem cada time não vê agora (para a conferência das balas acima). */
+      const anotarEscondidos = (t: number) => {
+        for (const o of lutadores.values()) for (const time of times) if (!ve(time, o, t)) o.escondidoDe.set(time, t);
+      };
+
       // ---------------- AS ZONAS DA ARENA E OS SUPRIMENTOS ----------------
       const zonaDaArena = (t: number) => {
         if (t < proximaZona) return;
@@ -759,7 +845,9 @@ export function criarArena({
           // os tiros velhos das pessoas saem (os dos robôs saem quando as balas acabam)
           if (!l.robo) for (const [k, s] of l.tiros) if (t - s.em > 2500) l.tiros.delete(k);
         }
+        anotarEscondidos(t);
         passoDasBalasDosRobos(t);
+        passoDasBalasNoMato(t);
         zonaDaArena(t);
         cairSuprimento(t);
         decidirPancadas(t);
@@ -806,32 +894,50 @@ export function criarArena({
 
       const difundir = () => {
         const t = agora();
-        ctx.difundir?.({
+        // os coelhos: [id, x, y, mira x ×100, mira y ×100, ação, ms da ação, vidas, vida, estado (0 de pé, 1 fora, 2 sem
+        // vidas), time, bicho da frente, especial, ms de velocidade, ms piscando, último golpe aceito, ms para voltar, escondido
+        // (1: no mato, longe da vista de quem recebe; a posição, a mira e a ação vão zeradas)]
+        const linhas = new Map(
+          [...lutadores.values()].map((l) => [
+            l.id,
+            [
+              l.id,
+              Math.round(l.x * 10) / 10,
+              Math.round(l.y * 10) / 10,
+              Math.round(l.mx * 100),
+              Math.round(l.my * 100),
+              l.acao,
+              l.robo ? Math.max(0, Math.round(t - l.tAcao)) : l.tAcao,
+              l.vidas,
+              l.pv,
+              l.estado === 'em-pe' ? 0 : l.estado === 'fora' ? 1 : 2,
+              l.time,
+              l.ativo,
+              Math.floor(l.especial),
+              Math.max(0, Math.round(l.rapidoAte - t)),
+              Math.max(0, Math.round(l.invulAte - t)),
+              l.ultimoTiro,
+              l.estado === 'fora' ? Math.max(0, Math.round(l.voltaEm - t)) : 0,
+              0,
+            ],
+          ]),
+        );
+        const escondida = (l: Lutador) => [l.id, 0, 0, 0, 0, 0, 0, l.vidas, l.pv, 0, l.time, l.ativo, Math.floor(l.especial), 0, 0, 0, 0, 1];
+        /** As linhas que um time vê (null: quem só assiste). Com a partida decidida, todos veem tudo. */
+        const porTime = new Map<number | null, number[][]>();
+        const doTime = (time: number | null) => {
+          let j = porTime.get(time);
+          if (!j) {
+            j = [...lutadores.values()].map((l) => (fase !== 'lutando' || ve(time, l, t) ? linhas.get(l.id)! : escondida(l)));
+            porTime.set(time, j);
+          }
+          return j;
+        };
+        const comum = {
           tipo: 'q',
           n: passo,
           f: fase,
           r: Math.max(0, PARTIDA_MS - (t - inicio)),
-          // os coelhos: [id, x, y, mira x ×100, mira y ×100, ação, ms da ação, vidas, vida, estado (0 de pé, 1 fora, 2 sem
-          // vidas), time, bicho da frente, especial, ms de velocidade, ms piscando, último golpe aceito, ms para voltar]
-          j: [...lutadores.values()].map((l) => [
-            l.id,
-            Math.round(l.x * 10) / 10,
-            Math.round(l.y * 10) / 10,
-            Math.round(l.mx * 100),
-            Math.round(l.my * 100),
-            l.acao,
-            l.robo ? Math.max(0, Math.round(t - l.tAcao)) : l.tAcao,
-            l.vidas,
-            l.pv,
-            l.estado === 'em-pe' ? 0 : l.estado === 'fora' ? 1 : 2,
-            l.time,
-            l.ativo,
-            Math.floor(l.especial),
-            Math.max(0, Math.round(l.rapidoAte - t)),
-            Math.max(0, Math.round(l.invulAte - t)),
-            l.ultimoTiro,
-            l.estado === 'fora' ? Math.max(0, Math.round(l.voltaEm - t)) : 0,
-          ]),
           // as balas no ar (de todos, para cada um desenhar as dos outros): [dono, n, k, x0, y0, dx ×1000, dy ×1000, ms desde,
           // elemento, tecla, até onde vai]
           p: [...lutadores.values()].flatMap((l) =>
@@ -850,7 +956,11 @@ export function criarArena({
           // os suprimentos no chão: [id, ponto, tipo]
           s: suprimentos.map((s) => [s.id, s.ponto, SUPRIMENTOS.indexOf(s.tipo)]),
           e: eventos,
-        });
+        };
+        const quadroPara = (quem: number | null) => ({ ...comum, j: doTime(quem === null ? null : (lutadores.get(quem)?.time ?? null)) });
+        // sem o envio por pessoa (um teste antigo), vai o quadro de quem só assiste: nunca o de quem vê tudo
+        if (ctx.difundirPorPessoa) ctx.difundirPorPessoa(quadroPara);
+        else ctx.difundir?.(quadroPara(null));
         eventos = [];
       };
 

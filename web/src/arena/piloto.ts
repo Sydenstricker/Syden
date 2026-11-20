@@ -2,9 +2,10 @@
  * O PILOTO AUTOMÁTICO DA ARENA (só para os testes: server/test/minijogos-bichos-arena.test.ts e a tela, por
  * window.arenaPilotoAutomatico no site de desenvolvimento). Olha a mesma vista que a pessoa vê: sai das marcas no chão, faz a
  * arrancada quando uma bala vem, mira no inimigo mais perto (pelo mouse que ele não tem: o alvo), bate quando ele está no
- * alcance, troca para o bicho que vale mais contra o dele e vai buscar a cura com pouca vida.
+ * alcance, troca para o bicho que vale mais contra o dele e vai buscar a cura com pouca vida. Sem ninguém à vista (o mato
+ * esconde), vai olhar as moitas, uma de cada vez.
  */
-import { alcanceLivre, balaPassaPerto, KITS, RAIO, type Cenario } from './conta';
+import { alcanceLivre, balaPassaPerto, KITS, MATO, RAIO, type Cenario } from './conta';
 import { eficacia, ESPECIES, type Elemento } from '../bichos/regras';
 import type { Cliente, Comandos, Vista } from './regras';
 
@@ -13,7 +14,7 @@ export function pilotoAutomatico(c: Cliente, v: Vista, cmd: Comandos, agora: num
   cmd.esquerda = cmd.direita = cmd.cima = cmd.baixo = false;
   cmd.atacar = false;
   const cenario: Cenario = c.cenario;
-  const inimigos = v.coelhos.filter((o) => o.id !== c.id && o.time !== eu.time && o.estado === 0);
+  const inimigos = v.coelhos.filter((o) => o.id !== c.id && o.time !== eu.time && o.estado === 0 && !o.escondido);
   let vx = 0,
     vy = 0;
 
@@ -69,6 +70,16 @@ export function pilotoAutomatico(c: Cliente, v: Vista, cmd: Comandos, agora: num
     const lado = Math.floor(agora / 2500) % 2 ? 1 : -1;
     vx += (dx / d) * vai - (dy / d) * lado * 0.7;
     vy += (dy / d) * vai + (dx / d) * lado * 0.7;
+  } else if (!fugindo) {
+    // ninguém à vista: olhar uma moita (troca a cada 4 s)
+    const moitas = MATO[cenario];
+    const [mx, my] = moitas[(Math.floor(agora / 4000) + Math.abs(c.id)) % moitas.length];
+    const dx = mx - eu.x, dy = my - eu.y;
+    const d = Math.hypot(dx, dy) || 1;
+    if (d > 20) {
+      vx += dx / d;
+      vy += dy / d;
+    }
   }
   if (Math.abs(vx) > 0.2) (vx > 0 ? (cmd.direita = true) : (cmd.esquerda = true));
   if (Math.abs(vy) > 0.2) (vy > 0 ? (cmd.baixo = true) : (cmd.cima = true));

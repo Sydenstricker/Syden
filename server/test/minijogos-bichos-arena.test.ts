@@ -55,6 +55,9 @@ interface Interno {
 function comecar(naSala = [anaId, biaId], corpo: Record<string, unknown> = { formato: '1x1', cenario: 'grama' }) {
   let terminou = false;
   const quadros: Record<string, unknown>[] = [];
+  /** O quadro de cada um (o mato: cada time recebe o seu), e o último `fazer`, para pedir o de quem só assiste. */
+  const dele = new Map<number, Record<string, unknown>>();
+  let fazer: ((quem: number) => unknown) | null = null;
   const relogio: { ms: number; depois: () => void }[] = [];
   const ctx = {
     agendar: (ms: number, depois: () => void) => relogio.splice(0, relogio.length, { ms, depois }),
@@ -65,6 +68,11 @@ function comecar(naSala = [anaId, biaId], corpo: Record<string, unknown> = { for
     comunidade: comunidade.id,
     solo: false,
     difundir: (d: unknown) => quadros.push(d as Record<string, unknown>),
+    difundirPorPessoa: (f: (quem: number) => unknown) => {
+      fazer = f;
+      quadros.push(f(naSala[0]) as Record<string, unknown>);
+      for (const id of naSala) dele.set(id, f(id) as Record<string, unknown>);
+    },
   };
   let passo: (() => void) | null = null;
   const jogo = criarArenaComBanco({ agora: () => agora, aleatorio: () => 0.5, intervalo: (p) => ((passo = p), 1), limpar: () => {} }).comecar(ctx, {
@@ -78,6 +86,11 @@ function comecar(naSala = [anaId, biaId], corpo: Record<string, unknown> = { for
     jogo,
     i,
     quadros,
+    /** A linha de `alvo` no último quadro que `quem` recebeu (null: quem só assiste). */
+    linha(quem: number | null, alvo: number) {
+      const q = (quem !== null && dele.has(quem) ? dele.get(quem) : fazer!(quem ?? -12345)) as { j: number[][] };
+      return q.j.find((l) => l[0] === alvo)!;
+    },
     terminou: () => terminou,
     andar(ms: number) {
       for (let t = 0; t < ms; t += PASSO_MS) {
@@ -330,8 +343,9 @@ async function partida(ids: number[], corpo: Record<string, unknown>, IDA = 100,
     nome: (id: number) => `p${id}`,
     comunidade: solo ? 0 : 5,
     solo,
-    difundir: (d: unknown) => {
-      for (const id of ids) rede.push({ em: t0 + IDA, para: id, de: 0, dados: d });
+    // o mato: cada um recebe o quadro do time dele
+    difundirPorPessoa: (fazer: (quem: number) => unknown) => {
+      for (const id of ids) rede.push({ em: t0 + IDA, para: id, de: 0, dados: fazer(id) });
     },
   };
   const jogo = criarArena({
@@ -524,4 +538,127 @@ test('os chãos novos: na lama a poça segura o robô, no gelo ele escorrega, e 
   // a conta do chão é a mesma do site (as duas cópias de conta.ts)
   const [px, py] = mod.POCAS_DE_LAMA[0];
   assert.equal(mod.velDoChao('lama', px, py), mod.LAMA_SEGURA);
+});
+
+// ---------------------------------------------------------------- 20/11/2026: o mato que esconde
+test('o mato: as moitas são simétricas e longe de onde se nasce, dos suprimentos e da zona do meio', () => {
+  for (const cenario of mod.CENARIOS) {
+    const moitas = mod.MATO[cenario];
+    assert.ok(moitas.length >= 4, cenario);
+    moitas.forEach(([x, y, r], k) => {
+      assert.ok(moitas.some(([a, b, rr]) => a === mod.MUNDO_W - x && b === mod.MUNDO_H - y && rr === r), `${cenario}: a moita (${x}, ${y}) tem a do outro lado`);
+      for (const [a, b] of [...mod.NASCER_TIME.flat(), ...mod.NASCER_TODOS, ...mod.PONTOS_DE_SUPRIMENTO]) assert.ok(Math.hypot(a - x, b - y) > r + 30, `${cenario}: a moita (${x}, ${y}) longe de (${a}, ${b})`);
+      const z = mod.ZONA_DO_OBJETIVO;
+      assert.ok(Math.hypot(z.x - x, z.y - y) > z.raio + r, `${cenario}: fora da zona do meio`);
+      assert.equal(mod.moitaEm(cenario, x, y), k);
+    });
+  }
+  assert.equal(mod.moitaEm('grama', 640, 448), -1);
+});
+
+test('o mato esconde: o adversário NÃO recebe a posição de quem está escondido; a própria pessoa recebe', () => {
+  const [mx, my] = mod.MATO.grama[0];
+  const m = comecar();
+  m.andar(2100);
+  m.por(anaId, mx, my);
+  m.por(biaId, 600, 700);
+  m.andar(200);
+  const paraBia = m.linha(biaId, anaId);
+  assert.equal(paraBia[17], 1, 'escondida');
+  assert.deepEqual(paraBia.slice(1, 7), [0, 0, 0, 0, 0, 0], 'sem posição, mira nem ação');
+  assert.equal(paraBia[8], PV, 'a vida continua (o placar)');
+  const paraAna = m.linha(anaId, anaId);
+  assert.equal(paraAna[17], 0);
+  assert.equal(paraAna[1], mx, 'ela se vê');
+  assert.equal(m.linha(null, anaId)[17], 1, 'quem só assiste também não vê');
+  assert.equal(m.linha(anaId, biaId)[17], 0, 'a bia, fora do mato, a ana vê');
+  m.jogo.parar!();
+});
+
+test('o mato: no 3×3 o aliado vê quem está escondido, e o adversário não', () => {
+  const [mx, my] = mod.MATO.grama[0];
+  const m = comecar([anaId, biaId], { formato: '3x3', cenario: 'grama' });
+  m.andar(2100);
+  const a = m.l(anaId);
+  assert.notEqual(m.l(biaId).time, a.time);
+  const aliado = [...m.i._lutadores.values()].find((l) => l.time === a.time && l.id !== anaId)!;
+  m.por(anaId, mx, my);
+  m.andar(PASSO_MS);
+  assert.equal(m.linha(aliado.id, anaId)[17], 0, 'o aliado vê');
+  assert.equal(m.linha(aliado.id, anaId)[1], mx);
+  // ninguém do outro time chegou perto (nasceram do outro lado)
+  assert.ok([...m.i._lutadores.values()].filter((l) => l.time !== a.time).every((l) => Math.hypot(l.x - mx, l.y - my) > mod.PERTO_REVELA));
+  assert.equal(m.linha(biaId, anaId)[17], 1, 'o adversário não vê');
+  m.jogo.parar!();
+});
+
+test('o mato revela: com o adversário perto, na mesma moita, ou depois de golpear (por REVELADO_MS)', () => {
+  const [mx, my, mr] = mod.MATO.grama[0];
+  const m = comecar();
+  m.andar(2100);
+  m.por(anaId, mx, my);
+  m.por(biaId, mx + mod.PERTO_REVELA - 10, my);
+  m.andar(PASSO_MS);
+  assert.equal(m.linha(biaId, anaId)[17], 0, 'perto: vê');
+  assert.equal(m.linha(biaId, anaId)[1], mx);
+  // as duas na mesma moita, a mais de PERTO_REVELA uma da outra
+  assert.ok(2 * mr - 8 > mod.PERTO_REVELA);
+  m.por(anaId, mx - mr + 4, my);
+  m.por(biaId, mx + mr - 4, my);
+  m.andar(PASSO_MS);
+  assert.equal(m.linha(biaId, anaId)[17], 0, 'na mesma moita: vê');
+  assert.equal(m.linha(anaId, biaId)[17], 0, 'e é vista');
+  // longe outra vez: some
+  m.por(anaId, mx, my);
+  m.por(biaId, 600, 700);
+  m.andar(PASSO_MS);
+  assert.equal(m.linha(biaId, anaId)[17], 1);
+  // golpear (para cima, longe dela) revela por um instante
+  assert.equal(m.manda(anaId, { tipo: 'golpe', n: 1, tecla: 'b', x: mx, y: my - 16, dx: 0, dy: -1 }), null);
+  m.andar(PASSO_MS);
+  assert.equal(m.linha(biaId, anaId)[17], 0, 'golpeou: aparece');
+  assert.equal(m.linha(biaId, anaId)[1], mx);
+  m.andar(mod.REVELADO_MS);
+  assert.equal(m.linha(biaId, anaId)[17], 1, 'passou: some de novo');
+  m.jogo.parar!();
+});
+
+test('o mato: a bala de quem não vê acerta mesmo assim (o servidor confere), e quem leva aparece', () => {
+  const [mx, my] = mod.MATO.grama[0];
+  const m = comecar();
+  m.andar(2100);
+  m.por(anaId, mx, my);
+  m.por(biaId, mx + 150, my);
+  m.andar(PASSO_MS);
+  assert.equal(m.linha(biaId, anaId)[17], 1);
+  const a = m.l(anaId);
+  // a bia atira às cegas no mato; a tela dela nunca manda o acerto
+  assert.equal(m.manda(biaId, { tipo: 'golpe', n: 1, tecla: 'b', x: mx + 134, y: my, dx: -1, dy: 0 }), null);
+  m.andar(900);
+  assert.ok(a.pv < PV, `levou (${a.pv})`);
+  assert.equal(m.linha(biaId, anaId)[17], 0, 'quem leva um golpe aparece');
+  assert.equal(m.manda(biaId, { tipo: 'acerto', n: 1, k: 0, alvo: anaId }), 'bala usada', 'a bala acerta uma vez só');
+  m.jogo.parar!();
+});
+
+test('o mato: o robô não mira em quem está escondido, e mira quando ela sai', () => {
+  const [mx, my] = mod.MATO.grama[0];
+  const m = comecar([anaId], { formato: 'todos', cenario: 'grama', robos: 1 });
+  const [robo, outro] = [...m.i._lutadores.values()].filter((l) => l.id < 0) as unknown as { x: number; y: number; ultimoTiro: number; estado: string; ia: { alvo: number | null } }[];
+  // fora da sala do teste, cada um por si pede 3: o outro robô fica de fora, para a ana ser a única à vista
+  outro.estado = 'sem-vidas';
+  m.por(anaId, mx, my);
+  for (let k = 0; k < 80; k++) {
+    m.manda(anaId, { tipo: 'pos', x: mx, y: my, mx: 1, my: 0, acao: 0, ta: 0 });
+    m.andar(PASSO_MS);
+    if (Math.hypot(robo.x - mx, robo.y - my) < mod.PERTO_REVELA + 20) break;
+    assert.notEqual(robo.ia.alvo, anaId, 'escondida: não é o alvo');
+  }
+  assert.equal(robo.ultimoTiro, 0, 'nem um golpe');
+  assert.equal(m.l(anaId).pv, PV);
+  // fora do mato, o robô a vê
+  m.por(anaId, 640, 300);
+  m.andar(800);
+  assert.equal(robo.ia.alvo, anaId);
+  m.jogo.parar!();
 });
