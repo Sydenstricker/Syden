@@ -8,7 +8,10 @@ import { chave, useT } from './i18n';
 import { comandoDaPausa, TelaDePausa, usePausaComEsc } from './pausaDosJogos';
 import { passosEmMs, tempoLegivel } from './jato/util';
 import type { ComandosDoBarco } from './barco/fisica';
-import { rodarBarco, type LinhaDaOrdem, type PosicaoNaSala, type RivalDoBarco } from './barco/laco';
+import { DiferencaDaVolta, MedalhasDaCorrida } from './SelosDaCorrida';
+import { voltasDoCaminho } from './medalhasDaCorrida';
+import { TEMPO_DO_PILOTO_DO_BARCO } from './barco/medalhas';
+import { pistaDoBarco, rodarBarco, type LinhaDaOrdem, type PosicaoNaSala, type RivalDoBarco } from './barco/laco';
 import { nomeDaPistaDoBarco } from './barco/nomes';
 import { COPAS_DO_BARCO, LAGO_DA_HORTA, linhaDoBarco, MUNDO, PISTAS_DO_BARCO, PONTOS_DA_COPA_DO_BARCO, pistaDoBarcoPorId, type DefinicaoDoBarco } from './barco/pista';
 import { H, W } from './barco/render';
@@ -32,6 +35,8 @@ export interface EstadoBarco {
   pista: string;
   voltasDaCorrida: number;
   partidaId: string;
+  /** Na sala: quantos barcos do computador completam a água (o servidor decide; eles não entram na classificação). */
+  robos?: number;
   // o Solo
   recordes?: { userId: number; nome: string; avatar: number | string | null; tempoMs: number }[];
   meuAvatar?: number | string | null;
@@ -351,7 +356,12 @@ function BarcoSolo({ estado, eu, agir }: { estado: EstadoBarco & Partida; eu: nu
           ))}
         </div>
         <div className="barco-pista-nome">
-          {meu && !copaEscolhida && <span>{t('Seu recorde: {tempo}', { tempo: tempoLegivel(meu.tempoMs) })}</span>}
+          {meu && !copaEscolhida && (
+            <span>
+              {t('Seu recorde: {tempo}', { tempo: tempoLegivel(meu.tempoMs) })} <MedalhasDaCorrida base={TEMPO_DO_PILOTO_DO_BARCO[estado.pista]} tempoMs={meu.tempoMs} />
+            </span>
+          )}
+          {!copaEscolhida && <MedalhasDaCorrida base={TEMPO_DO_PILOTO_DO_BARCO[estado.pista]} />}
           <Comandos solo />
           <p className="settings-hint">{t('O barco desliza: tire o pé antes da curva. As argolas laranja dão um empurrão.')}</p>
           <p className="settings-hint">{t('Passe as boias de slalom pelo lado da seta: acertar enche o turbo, errar tira.')}</p>
@@ -406,6 +416,7 @@ function BarcoSolo({ estado, eu, agir }: { estado: EstadoBarco & Partida; eu: nu
         agir={agir}
         dificuldade={dificuldade}
         semFantasmas={copa !== null}
+        eu={eu}
         aoChegar={setChegada}
         aoClassificar={aoClassificar}
         aoErro={setErro}
@@ -415,7 +426,9 @@ function BarcoSolo({ estado, eu, agir }: { estado: EstadoBarco & Partida; eu: nu
           {
             <>
               {r.recorde && <strong className="barco-recorde">{t('Novo recorde!')}</strong>}
-              <span className="barco-relogio grande">{tempoLegivel(r.tempoMs)}</span>
+              <span className="barco-relogio grande">
+                {tempoLegivel(r.tempoMs)} <MedalhasDaCorrida base={TEMPO_DO_PILOTO_DO_BARCO[def.id]} tempoMs={r.tempoMs} />
+              </span>
               {chegada && <span>{t('Posição: {posicao} de {total}', { posicao: chegada.posicao, total: chegada.total })}</span>}
               {!copa && (
                 <ol className="barco-voltas">
@@ -491,6 +504,7 @@ function CorridaSolo({
   agir,
   dificuldade,
   semFantasmas,
+  eu,
   aoChegar,
   aoClassificar,
   aoErro,
@@ -500,6 +514,7 @@ function CorridaSolo({
   agir: Agir;
   dificuldade: Dificuldade;
   semFantasmas: boolean;
+  eu: number;
   aoChegar: (c: { posicao: number; total: number }) => void;
   aoClassificar: (lista: LinhaDaChegada[]) => void;
   aoErro: (e: string) => void;
@@ -513,9 +528,17 @@ function CorridaSolo({
   const { pausa, pausado, continuar } = usePausaComEsc(estado.fase === 'correndo' && !acabou);
   // a música só com a corrida rodando (nem a pausa, nem o placar)
   useMusicaDoJogo(estado.fase === 'correndo' && !acabou && !pausado ? 'regata' : null);
+  /** A DIFERENÇA da última volta para o fantasma de referência (some em 3 s). */
+  const [diferenca, setDiferenca] = useState<number | null>(null);
+  const relogio = useRef(0);
+  useEffect(() => () => clearTimeout(relogio.current), []);
   useEffect(() => {
     if (!canvas.current) return;
     tela.current?.focus();
+    // o fantasma de referência da diferença: o meu recorde, se ele corre; senão, o mais rápido dos marcados
+    const fantasmas = semFantasmas ? [] : (estado.fantasmas ?? []);
+    const referencia = fantasmas.find((f) => f.userId === eu) ?? [...fantasmas].sort((a, b) => a.tempoMs - b.tempoMs)[0];
+    const voltasDaReferencia = referencia ? voltasDoCaminho(referencia.amostras, pistaDoBarco(def), def.voltas, Math.round((referencia.tempoMs * 60) / 1000)) : [];
     return rodarBarco({
       canvas: canvas.current,
       comandos: controles.comandos.current,
@@ -526,6 +549,13 @@ function CorridaSolo({
       fantasmas: semFantasmas ? [] : (estado.fantasmas ?? []).map((f) => ({ amostras: f.amostras, avatar: f.avatar })),
       robos: { quantos: BARCOS_DO_COMPUTADOR, dificuldade },
       contagem: CONTAGEM,
+      aoVolta: (volta, passos) => {
+        const ref = voltasDaReferencia[volta - 1];
+        if (!ref) return;
+        setDiferenca(passosEmMs(passos) - passosEmMs(ref));
+        clearTimeout(relogio.current);
+        relogio.current = window.setTimeout(() => setDiferenca(null), 3000);
+      },
       calmo: menosMovimento(),
       aoPlacar: setPlacar,
       aoClassificacao: aoClassificar,
@@ -542,6 +572,7 @@ function CorridaSolo({
     <div className="barco-tela" ref={tela} tabIndex={-1}>
       <canvas ref={canvas} width={W} height={H} />
       {!acabou && <Placar placar={placar} voltas={def.voltas} />}
+      {!acabou && <DiferencaDaVolta ms={diferenca} />}
       {!acabou && <BotoesDeToque controles={controles} />}
       {!acabou && pausado && <TelaDePausa aoContinuar={continuar} icone={false} />}
     </div>
@@ -630,6 +661,8 @@ function BarcoNaSala({
       piloto,
       meuAvatar: pilotos.find((p) => p.userId === eu)?.avatar ?? null,
       rivais: rivais.current,
+      // os barcos do computador da sala (20/11/2026): o servidor diz quantos, e todos os veem iguais (sempre no médio)
+      robos: estado.robos ? { quantos: estado.robos, dificuldade: 'medio' } : undefined,
       contagem,
       calmo: menosMovimento(),
       aoPlacar: setPlacar,

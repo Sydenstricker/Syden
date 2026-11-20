@@ -274,6 +274,33 @@ export class CenaDosCarrinhos {
   }
 
   private pista: THREE.Group | null = null;
+  /** A MARCA DA CURVA CHEGANDO (20/11/2026): a seta pintada na minha faixa, na entrada da próxima curva. */
+  private marca: THREE.Mesh | null = null;
+
+  /**
+   * Põe (ou tira, com null) a marca da curva que vem na faixa: âmbar; vermelha quando já é hora de soltar o acelerador. Com
+   * "menos movimento", ela não pulsa. Só desenho.
+   */
+  marcarCurva(m: { faixa: number; s: number; solte: boolean; calmo: boolean } | null) {
+    if (this.morta || !this.pista) return;
+    if (!m) {
+      if (this.marca) this.marca.visible = false;
+      return;
+    }
+    if (!this.marca) {
+      const g = new THREE.CircleGeometry(0.42, 3);
+      g.rotateX(-Math.PI / 2);
+      this.marca = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: '#ffb02a', transparent: true, opacity: 0.85, depthWrite: false }));
+      this.pista.add(this.marca);
+    }
+    const pose = poseNaFaixa(this.tracado, m.faixa, m.s);
+    this.marca.position.set(pose.x, ALTURA_DA_PISTA + 0.03, pose.z);
+    this.marca.rotation.set(0, -pose.rumo, 0);
+    const mat = this.marca.material as THREE.MeshBasicMaterial;
+    mat.color.set(m.solte ? '#ff4a3a' : '#ffb02a');
+    mat.opacity = m.calmo ? 0.85 : 0.55 + 0.35 * Math.abs(Math.sin(this.relogio * (m.solte ? 9 : 4)));
+    this.marca.visible = true;
+  }
 
   private montarCarro(c: CarroNaCena, modelo: GLTF, coelho: GLTF) {
     const raiz = new THREE.Group();

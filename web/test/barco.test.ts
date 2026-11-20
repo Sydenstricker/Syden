@@ -250,3 +250,18 @@ test('os barcos do computador: todos chegam, o difícil antes do fácil, e o pil
     assert.ok(atras >= 3, `${def.id}: o piloto automático ganhou de ${atras} de 5 no médio`);
   }
 });
+
+test('as medalhas: o tempo guardado é o do piloto automático, e as voltas do fantasma saem do caminho dele (20/11/2026)', async () => {
+  const { TEMPO_DO_PILOTO_DO_BARCO } = await import('../src/barco/medalhas.ts');
+  const { passosDoPiloto } = await import('../src/barco/robos.ts');
+  const { medalhaPelosPassos, voltasDoCaminho } = await import('../src/medalhasDaCorrida.ts');
+  for (const def of PISTAS_DO_BARCO) {
+    const p = pistas.get(def.id)!;
+    assert.equal(TEMPO_DO_PILOTO_DO_BARCO[def.id], passosDoPiloto(p), `${def.id}: mexeu na pista ou na física, meça de novo`);
+    assert.equal(medalhaPelosPassos(TEMPO_DO_PILOTO_DO_BARCO[def.id], passosDoPiloto(p)), 0, 'o piloto leva o ouro');
+    const { b, caminho } = pilotar(p);
+    const voltas = voltasDoCaminho(caminho, p, def.voltas, b.voltas[def.voltas - 1]);
+    assert.equal(voltas.length, def.voltas);
+    voltas.forEach((v, i) => assert.ok(Math.abs(v - b.voltas[i]) <= AMOSTRA, `${def.id}, volta ${i + 1}: ${v} contra ${b.voltas[i]}`));
+  }
+});

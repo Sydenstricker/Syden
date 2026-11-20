@@ -190,3 +190,16 @@ test('na sala, sozinho no fim (os outros saíram): a corrida fecha sem troféu',
   assert.equal(db.trofeusDe(anaId).filter((t) => t.pista === 'barco').length, antes, 'com um só até o fim, não há pódio');
   assert.equal(j.acao(caioId, corridaDe(1000, 'riacho-1')), 'Você não está nesta corrida.');
 });
+
+test('na sala, os barcos do computador completam a água (20/11/2026): 6 ao todo, e nenhum na classificação', async () => {
+  const { BARCOS_NA_SALA } = await import('../src/minijogo-barco.js');
+  const m = contexto([anaId, biaId], { comunidadeId: comunidade.id });
+  const j = barco.comecar(m.ctx, { naSala: [anaId, biaId], criadaPor: anaId, corpo: { pista: 'lago-1' } });
+  assert.ok(typeof j !== 'string');
+  const pub = j.publico(anaId) as { robos: number; pilotos: { userId: number }[] };
+  assert.equal(pub.robos, BARCOS_NA_SALA - 2);
+  assert.deepEqual(pub.pilotos.map((p) => p.userId).sort(), [anaId, biaId].sort(), 'só as pessoas correm de verdade');
+  const solo = barco.comecar(contexto([anaId], { solo: true }).ctx, { naSala: [anaId], criadaPor: anaId, corpo: {} });
+  assert.ok(typeof solo !== 'string');
+  assert.equal((solo.publico(anaId) as { robos?: number }).robos, undefined, 'no Solo, os robôs são escolha do site');
+});

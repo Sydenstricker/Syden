@@ -28,6 +28,12 @@ const SOLO_PARADO_MS = 30 * 60_000;
 export const FOLGA_MS = 3000;
 export const PASSOS_DE_FOLGA = 180;
 export const MAXIMO_NA_SALA = 8;
+/**
+ * Quantos barcos ao todo na água da sala (20/11/2026): a turma, e o computador completa, como no Solo (1 + 5). Os do
+ * computador saem iguais em todo computador (web/src/barco/robos.ts, sempre no médio), não tocam ninguém e não entram na
+ * classificação, no pódio nem no recorde: é só para a corrida de dois não ficar vazia.
+ */
+export const BARCOS_NA_SALA = 6;
 export const MAX_FANTASMAS = 3;
 /** O quanto o barco anda por passo, no máximo: o turbo da boia (~330 por segundo) com a correnteza (60), com folga. */
 const ANDA_POR_PASSO = (390 / 60) * 1.1;
@@ -254,6 +260,7 @@ function sala(ctx: Parameters<Definicao['comecar']>[0], naSala: number[], pista:
       solo: false,
       pista,
       voltasDaCorrida: def.voltas,
+      robos: Math.max(0, BARCOS_NA_SALA - inscritos.length),
       pilotos: classificacao().map(({ userId, username, tempoMs, voltas, posicao }) => ({ userId, username, tempoMs, voltas, posicao, avatar: avatares.get(userId) ?? null })),
       prazo: prazoAberto,
       partidaId: evento,

@@ -1,26 +1,34 @@
 import { temWebGL } from './temWebGL';
-import { useEffect, useRef, useState } from 'react';
+import { Trophy } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { ComandosDoJogo } from './ComandosDosJogos';
-import { useT } from './i18n';
+import { chave, useT } from './i18n';
+import { lerControle } from './controleDosJogos';
+import { DIFICULDADES, somarPontos, type Dificuldade, type PontosNaCopa } from './corrida/robos';
+import { MedalhasDaCorrida } from './SelosDaCorrida';
+import { FATORES_DOS_CARRINHOS, tempoDoPilotoNosCarrinhos } from './carrinhos/medalhas';
 import { IconeDeHud } from './iconesDeHud';
 import { comandoDaPausa, TelaDePausa, usePausaComEsc, type Pausa } from './pausaDosJogos';
 import { criarMotor, tocar } from './somDosJogos';
 import { coresDoAvatar, minhasCoresDoCoelho, type CoresDoCoelho } from './coelho3d';
 import { tempoLegivel } from './jato/util';
-import { criarRobo } from './carrinhos/robo';
+import { criarRobo, HABILIDADE_DOS_ROBOS } from './carrinhos/robo';
 import {
   ACELERADOR_MAXIMO,
   FAIXA_DO_RECORDE,
   FAIXAS,
   FORA_PASSOS,
   gravador,
+  IDS_DAS_PISTAS,
   leitor,
   novoCarro,
   passo,
   PASSO,
   pilotoAutomatico,
+  trechoEm,
   VMAX,
+  VOLTAS,
   type Carro,
   type Entradas,
   type Pista,
@@ -114,15 +122,11 @@ function useAcelerador(ativo: boolean) {
   }, [ativo]);
   const ler = (): number => {
     if (apertado.current.tecla || apertado.current.ponteiro) return ACELERADOR_MAXIMO;
-    // o gatilho direito do controle (ou o botão A, tudo)
-    const pads = navigator.getGamepads?.() ?? [];
-    for (const p of pads) {
-      if (!p) continue;
-      const gatilho = p.buttons[7]?.value ?? 0;
-      if (p.buttons[0]?.pressed) return ACELERADOR_MAXIMO;
-      if (gatilho > 0.05) return Math.round(gatilho * ACELERADOR_MAXIMO);
-    }
-    return 0;
+    // o controle de videogame (controleDosJogos.ts): o A acelera tudo; o gatilho direito, o meio-termo
+    const pad = lerControle();
+    if (!pad) return 0;
+    if (pad.a) return ACELERADOR_MAXIMO;
+    return pad.acelerar > 0.05 ? Math.round(pad.acelerar * ACELERADOR_MAXIMO) : 0;
   };
   const ponteiro = {
     onPointerDown: (e: React.PointerEvent) => {
@@ -179,6 +183,9 @@ interface ConfigDaCorrida {
   aoFalhar: () => void;
 }
 
+/** Até onde à frente (em unidades da pista; a reta tem 4) a marca da curva aparece. */
+const ALCANCE_DA_MARCA = 6;
+
 /** O laço da corrida (Solo e sala): a física a 60 por segundo, a cena no ritmo da tela. Devolve quem para tudo. */
 function rodarCorrida(cfg: ConfigDaCorrida): () => void {
   let viva = true;
@@ -200,6 +207,25 @@ function rodarCorrida(cfg: ConfigDaCorrida): () => void {
   let semFoco = 0;
   /** O acelerador do último passo (o medidor do painel mostra o que foi usado, inclusive pelo piloto automático). */
   let ultimoG = 0;
+  /** Quem pediu menos movimento: a marca da curva não pulsa e o aparelho não vibra. */
+  const calmo = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+  let tremiaAntes = false;
+
+  /**
+   * A CURVA CHEGANDO (20/11/2026): a próxima curva da minha faixa a até ALCANCE_DA_MARCA (a de agora não conta: já se está
+   * nela), com o lugar em que ela começa; `solte` quando o piloto automático, sem margem nenhuma, já soltaria o acelerador.
+   */
+  const curvaAFrente = (c: Carro) => {
+    const v = cfg.pista.volta[c.faixa];
+    const atual = trechoEm(cfg.pista, c.faixa, c.s);
+    for (let k = 0.25; k <= ALCANCE_DA_MARCA; k += 0.25) {
+      const t = trechoEm(cfg.pista, c.faixa, c.s + k);
+      if (t === atual || t.sentido === 0) continue;
+      const d = c.s + k - Math.floor((c.s + k) / v) * v;
+      return { s: c.s + k - (d - t.inicio), solte: pilotoAutomatico(c, 0) === 0 };
+    }
+    return null;
+  };
 
   const todos = (): Carro[] => [...(eu ? [eu] : []), ...robos.map((r) => r.carro), ...fantasmas.map((f) => f.carro)];
 
@@ -290,6 +316,10 @@ function rodarCorrida(cfg: ConfigDaCorrida): () => void {
               ultimaDerrapa = agora;
               tocar('derrapa');
             }
+            // o tremor no limite: uma vibração curta, quando começa (o celular que vibra; nada com "menos movimento")
+            const treme = eu.derrapa > 0;
+            if (treme && !tremiaAntes && !calmo) navigator.vibrate?.(25);
+            tremiaAntes = treme;
             if (eu.passo % 4 === 0 || ev === 'chegou') cfg.aoPosicao?.({ n: eu.passo, s: eu.s, f: eu.fora > 0 ? 1 : 0, d: eu.derrapa });
           } else if (eu) passo(eu, 0);
           for (const r of robos) passo(r.carro, r.piloto(r.carro));
@@ -315,6 +345,8 @@ function rodarCorrida(cfg: ConfigDaCorrida): () => void {
             return { s: p.s, fora, pisca: 0, derrapa: p.d, saiuA: 8 };
           }),
         ];
+        const curva = eu && !eu.chegou && eu.fora === 0 && contagem === 0 ? curvaAFrente(eu) : null;
+        cena.marcarCurva(curva && eu ? { faixa: eu.faixa, s: curva.s, solte: curva.solte, calmo } : null);
         cena.desenhar(quadros, dt);
         motor?.ajustar(eu && !eu.chegou && eu.fora === 0 && contagem === 0 ? eu.v / VMAX : 0);
         if (agora - ultimoPainel > 90) {
@@ -447,8 +479,30 @@ export function JogoCarrinhos(props: { estado: EstadoCarrinhos & Partida; eu: nu
 // O SOLO
 // =====================================================================================================================
 
+const NOME_DA_DIFICULDADE: Record<Dificuldade, string> = { facil: chave('Fácil'), medio: chave('Médio'), dificil: chave('Difícil') };
+
+/** Os pontos do CAMPEONATO por posição entre os quatro carros. */
+const PONTOS_DO_CAMPEONATO = [10, 6, 3, 1];
+/** Os ids da ordem da corrida ('eu', 'robo0'…) como números, para somar os pontos (−1 a pessoa, −100 − i os robôs). */
+const idDaOrdem = (id: string) => (id === 'eu' ? -1 : -100 - Number(id.slice(4)));
+
+/**
+ * O CAMPEONATO DO SOLO (20/11/2026, a segunda auditoria): os cinco traçados prontos seguidos, em 5 voltas, contra três robôs,
+ * com pontos pela posição e o pódio no fim. Mora só no site, como a copa do Jato: cada corrida é uma corrida do Solo como as
+ * outras (o servidor refaz e guarda o recorde, porque os robôs nunca tocam o carro de quem joga), e o campeonato só soma.
+ */
+interface Campeonato {
+  indice: number;
+  pontos: PontosNaCopa[];
+  /** A corrida desta pista já entrou nos pontos. */
+  somada: boolean;
+}
+
 function CarrinhosSolo({ estado, eu, agir }: { estado: EstadoCarrinhos & Partida; eu: number; agir: Agir }) {
   const t = useT();
+  const [dificuldade, setDificuldade] = useState<Dificuldade>('medio');
+  const [campeonatoEscolhido, setCampeonatoEscolhido] = useState(false);
+  const [campeonato, setCampeonato] = useState<Campeonato | null>(null);
   const recordes = estado.recordes ?? [];
   const [escolhidos, setEscolhidos] = useState<Set<number> | null>(null);
   const [robos, setRobos] = useState(estado.robos ?? 3);
@@ -480,6 +534,29 @@ function CarrinhosSolo({ estado, eu, agir }: { estado: EstadoCarrinhos & Partida
     setOrdemFinal(null);
     tentar({ tipo: 'correr', fantasmas: [...marcados], robos });
   };
+  /** Uma corrida do campeonato: a pista da vez, 5 voltas, os três robôs e nenhum fantasma. */
+  const correrNoCampeonato = (indice: number) => {
+    setOrdemFinal(null);
+    tentar({ tipo: 'correr', pista: IDS_DAS_PISTAS[indice], voltas: VOLTAS, fantasmas: [], robos: FAIXAS - 1 });
+  };
+  const comecar = () => {
+    if (campeonatoEscolhido) {
+      setCampeonato({ indice: 0, pontos: [], somada: false });
+      correrNoCampeonato(0);
+    } else {
+      setCampeonato(null);
+      correr();
+    }
+  };
+  const proximaDoCampeonato = () => {
+    if (!campeonato) return;
+    const indice = campeonato.indice + 1;
+    setCampeonato({ ...campeonato, indice, somada: false });
+    correrNoCampeonato(indice);
+  };
+  const ultimaDoCampeonato = campeonato ? campeonato.indice === IDS_DAS_PISTAS.length - 1 : true;
+  /** O tempo do piloto (a régua das medalhas) na pista e nas voltas escolhidas; null nas do editor. */
+  const baseDaMedalha = useMemo(() => tempoDoPilotoNosCarrinhos(pista.id, voltas), [pista.id, voltas]);
   const alternar = (id: number) => {
     const n = new Set(marcados);
     if (n.has(id)) n.delete(id);
@@ -496,44 +573,72 @@ function CarrinhosSolo({ estado, eu, agir }: { estado: EstadoCarrinhos & Partida
           {meu && <span>{t('Seu recorde: {tempo}', { tempo: tempoLegivel(meu.tempoMs) })}</span>}
           <p className="settings-hint">{t('Segure para acelerar e solte antes da curva: quando o carro treme, ele está no limite.')}</p>
           <Comandos solo />
-          <EscolhaDaPistaDosCarrinhos
-            pista={pista.id}
-            tracado={pista.tracado}
-            voltas={voltas}
-            meusTempos={estado.meusTempos}
-            aoMudar={(pedido) => tentar({ tipo: 'escolher', ...pedido })}
-          />
-          <fieldset className="carrinhos-robos">
-            <legend>
-              <IconeDeHud nome="robo" /> {t('Quantos adversários do computador?')}
-            </legend>
-            <div role="radiogroup">
-              {Array.from({ length: FAIXAS }, (_, n) => (
-                <button key={n} type="button" role="radio" aria-checked={robos === n} className={robos === n ? 'escolhido' : ''} onClick={() => setRobos(n)}>
-                  {n}
+          <button
+            type="button"
+            className={`carrinhos-campeonato${campeonatoEscolhido ? ' escolhido' : ''}`}
+            aria-pressed={campeonatoEscolhido}
+            onClick={() => setCampeonatoEscolhido((c) => !c)}
+          >
+            <Trophy size={28} aria-hidden="true" />
+            <span>
+              <strong>{t('Campeonato')}</strong>
+              <small>{t('Os cinco traçados seguidos contra o computador, com pontos.')}</small>
+            </span>
+          </button>
+          {!campeonatoEscolhido && (
+            <EscolhaDaPistaDosCarrinhos
+              pista={pista.id}
+              tracado={pista.tracado}
+              voltas={voltas}
+              meusTempos={estado.meusTempos}
+              aoMudar={(pedido) => tentar({ tipo: 'escolher', ...pedido })}
+            />
+          )}
+          {!campeonatoEscolhido && <MedalhasDaCorrida base={baseDaMedalha} fatores={FATORES_DOS_CARRINHOS} />}
+          {(campeonatoEscolhido || robos > 0) && (
+            <div className="minijogo-abas carrinhos-dificuldade" role="radiogroup" aria-label={t('Computador')}>
+              {DIFICULDADES.map((d) => (
+                <button key={d} type="button" role="radio" aria-checked={dificuldade === d} className={dificuldade === d ? 'ativa' : undefined} onClick={() => setDificuldade(d)}>
+                  {t(NOME_DA_DIFICULDADE[d])}
                 </button>
               ))}
             </div>
-          </fieldset>
-          <fieldset className="carrinhos-fantasmas">
-            <legend>{t('Correr contra')}</legend>
-            {recordes.length > 0 && (
-              <ul>
-                {recordes.map((r) => (
-                  <li key={r.userId}>
-                    <label>
-                      <input type="checkbox" checked={marcados.has(r.userId)} disabled={!marcados.has(r.userId) && marcados.size >= MAX_FANTASMAS} onChange={() => alternar(r.userId)} />
-                      <span className="carrinhos-quem">{r.nome}</span>
-                      <span className="carrinhos-tempo">{tempoLegivel(r.tempoMs)}</span>
-                    </label>
-                  </li>
-                ))}
-              </ul>
-            )}
-            {outros.length === 0 && <p className="settings-hint">{t('Nenhum amigo correu nesta pista ainda.')}</p>}
-          </fieldset>
+          )}
+          {!campeonatoEscolhido && (
+            <>
+              <fieldset className="carrinhos-robos">
+                <legend>
+                  <IconeDeHud nome="robo" /> {t('Quantos adversários do computador?')}
+                </legend>
+                <div role="radiogroup">
+                  {Array.from({ length: FAIXAS }, (_, n) => (
+                    <button key={n} type="button" role="radio" aria-checked={robos === n} className={robos === n ? 'escolhido' : ''} onClick={() => setRobos(n)}>
+                      {n}
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
+              <fieldset className="carrinhos-fantasmas">
+                <legend>{t('Correr contra')}</legend>
+                {recordes.length > 0 && (
+                  <ul>
+                    {recordes.map((r) => (
+                      <li key={r.userId}>
+                        <label>
+                          <input type="checkbox" checked={marcados.has(r.userId)} disabled={!marcados.has(r.userId) && marcados.size >= MAX_FANTASMAS} onChange={() => alternar(r.userId)} />
+                          <span className="carrinhos-quem">{r.nome}</span>
+                          <span className="carrinhos-tempo">{tempoLegivel(r.tempoMs)}</span>
+                        </label>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {outros.length === 0 && <p className="settings-hint">{t('Nenhum amigo correu nesta pista ainda.')}</p>}
+              </fieldset>
+            </>
+          )}
           <div className="minijogo-acoes">
-            <button type="button" className="btn-primary" onClick={correr}>
+            <button type="button" className="btn-primary" onClick={comecar}>
               {t('Começar')}
             </button>
           </div>
@@ -550,6 +655,12 @@ function CarrinhosSolo({ estado, eu, agir }: { estado: EstadoCarrinhos & Partida
   const minhaPosicao = ordemFinal ? ordemFinal.findIndex((l) => l.eu) : -1;
   return (
     <div className="carrinhos">
+      {campeonato && (
+        <div className="carrinhos-topo">
+          <strong>{t('Campeonato')}</strong>
+          <span>{t('Rodada {n} de {total}', { n: campeonato.indice + 1, total: IDS_DAS_PISTAS.length })}</span>
+        </div>
+      )}
       <Corrida
         key={`${estado.partidaId}-${estado.rodada ?? 0}`}
         solo
@@ -563,7 +674,7 @@ function CarrinhosSolo({ estado, eu, agir }: { estado: EstadoCarrinhos & Partida
           robos: faixasDosRobos.map((faixa, i) => ({
             faixa,
             semente: semente + i * 104729,
-            habilidade: [0.92, 0.8, 0.68][i] ?? 0.75,
+            habilidade: HABILIDADE_DOS_ROBOS[dificuldade][i] ?? 0.75,
             nome: `🤖 ${NOMES_DOS_ROBOS[i % NOMES_DOS_ROBOS.length]}`,
             avatar: AVATARES_DOS_ROBOS[i] ?? 1,
           })),
@@ -572,6 +683,9 @@ function CarrinhosSolo({ estado, eu, agir }: { estado: EstadoCarrinhos & Partida
         }}
         aoChegar={(entradas, ordem) => {
           setOrdemFinal(ordem);
+          setCampeonato((c) =>
+            c && !c.somada ? { ...c, somada: true, pontos: somarPontos(c.pontos, ordem.map((l) => ({ id: idDaOrdem(l.id), nome: l.nome, eu: l.eu })), PONTOS_DO_CAMPEONATO) } : c,
+          );
           agir({ tipo: 'chegada', entradas }).catch((e) => setErro((e as Error).message));
         }}
       />
@@ -579,7 +693,9 @@ function CarrinhosSolo({ estado, eu, agir }: { estado: EstadoCarrinhos & Partida
         <div className="carrinhos-fim-solo">
           {nRobos > 0 && minhaPosicao >= 0 && <span className="carrinhos-posicao">{MEDALHAS[minhaPosicao] ?? `${minhaPosicao + 1}º`}</span>}
           {r.recorde && <strong className="carrinhos-recorde">{t('Novo recorde!')}</strong>}
-          <span className="carrinhos-tempo grande">{tempoLegivel(r.tempoMs)}</span>
+          <span className="carrinhos-tempo grande">
+            {tempoLegivel(r.tempoMs)} <MedalhasDaCorrida base={baseDaMedalha} tempoMs={r.tempoMs} fatores={FATORES_DOS_CARRINHOS} />
+          </span>
           <ol className="carrinhos-voltas">
             {r.voltas.map((v, i) => (
               <li key={i}>
@@ -589,12 +705,41 @@ function CarrinhosSolo({ estado, eu, agir }: { estado: EstadoCarrinhos & Partida
           </ol>
           {r.saidas > 0 && <span className="settings-hint">{t('Saídas da pista: {n}', { n: r.saidas })}</span>}
           {!r.recorde && r.anterior !== null && <span className="settings-hint">{t('Seu recorde: {tempo}', { tempo: tempoLegivel(r.anterior) })}</span>}
+          {/* o campeonato: os pontos desta corrida e os somados; no fim, o pódio */}
+          {campeonato && ordemFinal && (
+            <ol className="carrinhos-classificacao carrinhos-campeonato-pontos">
+              {campeonato.pontos.map((l, i) => {
+                const nesta = ordemFinal.findIndex((o) => idDaOrdem(o.id) === l.id);
+                return (
+                  <li key={l.id} className={l.eu ? 'eu' : undefined}>
+                    <span className="carrinhos-posicao">{ultimaDoCampeonato && i < 3 ? MEDALHAS[i] : i + 1}</span>
+                    <span className="carrinhos-quem">{l.eu ? t('você') : l.nome}</span>
+                    <small>+{PONTOS_DO_CAMPEONATO[nesta] ?? 0}</small>
+                    <span className="carrinhos-tempo">{l.pontos}</span>
+                  </li>
+                );
+              })}
+            </ol>
+          )}
           <div className="minijogo-acoes">
-            <button type="button" className="btn-primary" onClick={correr}>
-              {t('Jogar de novo')}
-            </button>
-            <button type="button" className="btn-secondary" onClick={() => tentar({ tipo: 'escolher' })}>
-              {t('Correr contra')}
+            {campeonato && !ultimaDoCampeonato ? (
+              <button type="button" className="btn-primary" onClick={proximaDoCampeonato}>
+                {t('Próxima pista')}
+              </button>
+            ) : (
+              <button type="button" className="btn-primary" onClick={() => (campeonato ? comecar() : correr())}>
+                {t('Jogar de novo')}
+              </button>
+            )}
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={() => {
+                setCampeonato(null);
+                tentar({ tipo: 'escolher' });
+              }}
+            >
+              {campeonato ? t('Escolher a pista') : t('Correr contra')}
             </button>
           </div>
         </div>

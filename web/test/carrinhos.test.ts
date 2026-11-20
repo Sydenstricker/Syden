@@ -154,3 +154,38 @@ test('os robôs terminam, às vezes saindo da pista, e o melhor é mais rápido 
   for (let i = 0; i < 12; i++) saidas += correr(i % 4, criarRobo(100 + i, 0.6), sim.PISTAS[sim.IDS_DAS_PISTAS[i % sim.IDS_DAS_PISTAS.length]]).saidas;
   assert.ok(saidas > 0, 'os robôs erram de vez em quando');
 });
+
+test('a dificuldade dos robôs (20/11/2026): o difícil aperta de verdade, o fácil folga, e o médio é o de antes', async () => {
+  const { HABILIDADE_DOS_ROBOS } = await import('../src/carrinhos/robo.ts');
+  assert.deepEqual(HABILIDADE_DOS_ROBOS.medio, [0.92, 0.8, 0.68], 'o médio é o de antes');
+  for (const id of ['toca-1', 'caracol-1']) {
+    const pista = sim.PISTAS[id];
+    const base = correr(sim.FAIXA_DO_RECORDE, (k) => sim.pilotoAutomatico(k, 0.15), pista).voltas.at(-1)!;
+    const media = (d: 'facil' | 'medio' | 'dificil') => {
+      let soma = 0, n = 0;
+      for (let s = 1; s <= 6; s++) for (const h of HABILIDADE_DOS_ROBOS[d]) {
+        soma += correr([0, 2, 3][s % 3], criarRobo(s * 7919, h), pista).voltas.at(-1)!;
+        n++;
+      }
+      return soma / n / base;
+    };
+    const [f, m, d] = [media('facil'), media('medio'), media('dificil')];
+    assert.ok(f > m && m > d, `${id}: ${f.toFixed(3)} > ${m.toFixed(3)} > ${d.toFixed(3)}`);
+    assert.ok(d < 1.03, `${id}: o difícil fica a menos de 3% do piloto quase perfeito (${d.toFixed(3)})`);
+    assert.ok(f > 1.08, `${id}: o fácil fica bem atrás (${f.toFixed(3)})`);
+  }
+});
+
+test('as medalhas: só nos traçados prontos, sobre o piloto quase perfeito; o piloto dos testes leva o ouro (20/11/2026)', async () => {
+  const { FATORES_DOS_CARRINHOS, tempoDoPilotoNosCarrinhos } = await import('../src/carrinhos/medalhas.ts');
+  const { medalhaPelosPassos } = await import('../src/medalhasDaCorrida.ts');
+  assert.equal(tempoDoPilotoNosCarrinhos('p-qualquer', sim.VOLTAS), null, 'a pista do editor não tem medalha');
+  for (const id of sim.IDS_DAS_PISTAS) {
+    const base = tempoDoPilotoNosCarrinhos(id, sim.VOLTAS)!;
+    assert.ok(base > 0);
+    const piloto = correr(sim.FAIXA_DO_RECORDE, (k) => sim.pilotoAutomatico(k, 0.3), sim.PISTAS[id]).voltas.at(-1)!;
+    assert.equal(medalhaPelosPassos(base, piloto, FATORES_DOS_CARRINHOS), 0, `${id}: ${piloto} contra ${base}`);
+    const cheio = correr(sim.FAIXA_DO_RECORDE, () => sim.ACELERADOR_MAXIMO, sim.PISTAS[id]).voltas.at(-1)!;
+    assert.equal(medalhaPelosPassos(base, cheio, FATORES_DOS_CARRINHOS), null, `${id}: o acelerador cheio não ganha medalha`);
+  }
+});

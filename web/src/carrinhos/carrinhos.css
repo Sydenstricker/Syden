@@ -326,3 +326,47 @@
   min-width: 0;
   font-family: monospace;
 }
+
+/* O campeonato, a dificuldade dos robôs e o topo da corrida do campeonato (20/11/2026) */
+.carrinhos-campeonato {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.carrinhos-campeonato span {
+  display: flex;
+  flex-direction: column;
+}
+
+.carrinhos-campeonato small {
+  opacity: 0.8;
+}
+
+.carrinhos-campeonato.escolhido {
+  border-color: var(--accent, #e8a020);
+  box-shadow: 0 0 0 1px var(--accent, #e8a020) inset;
+}
+
+.carrinhos-dificuldade {
+  margin: 0;
+  justify-content: center;
+}
+
+.carrinhos-topo {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.carrinhos-campeonato-pontos small {
+  opacity: 0.75;
+}

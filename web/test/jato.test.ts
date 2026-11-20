@@ -236,3 +236,45 @@ test('o golpe de lado: o robô empurrado perde velocidade e chega depois, e o ca
   assert.ok(r.s[620] - r.s[619] < antes[599] - antes[598], 'mais devagar logo depois');
   assert.ok(r.chegada < 60 * 60 * 4, 'e ainda chega');
 });
+
+test('as medalhas: o tempo guardado é o do piloto automático, e as voltas do fantasma saem do caminho dele (20/11/2026)', async () => {
+  const { TEMPO_DO_PILOTO_DO_JATO } = await import('../src/jato/medalhas.ts');
+  const { diferencaLegivel, medalhaPelosPassos, voltasDoCaminho } = await import('../src/medalhasDaCorrida.ts');
+  for (const def of PISTAS_DO_JATO) {
+    const p = pistas.get(def.id)!;
+    const { n, caminho } = pilotar(p);
+    const fim = n.voltas[def.voltas - 1];
+    assert.equal(TEMPO_DO_PILOTO_DO_JATO[def.id], fim, `${def.id}: mexeu na pista ou na física, meça de novo`);
+    assert.equal(medalhaPelosPassos(fim, fim), 0);
+    assert.equal(medalhaPelosPassos(fim, Math.round(fim * 1.2)), 2);
+    assert.equal(medalhaPelosPassos(fim, Math.round(fim * 1.5)), null);
+    const voltas = voltasDoCaminho(caminho, p, def.voltas, fim);
+    assert.equal(voltas.length, def.voltas);
+    voltas.forEach((v, i) => assert.ok(Math.abs(v - n.voltas[i]) <= AMOSTRA, `${def.id}, volta ${i + 1}: ${v} contra ${n.voltas[i]}`));
+  }
+  assert.equal(diferencaLegivel(-420), '−0.42');
+  assert.equal(diferencaLegivel(1104), '+1.10');
+});
+
+test('a eliminação: sai a última a passar pela linha de cada volta, e a última volta não elimina (20/11/2026)', async () => {
+  const { criarEliminacao } = await import('../src/jato/eliminacao.ts');
+  const e = criarEliminacao(3);
+  const a = { id: -1, voltas: 0, andou: 0.9 }, b = { id: -100, voltas: 0, andou: 0.8 }, c = { id: -101, voltas: 0, andou: 0.7 };
+  assert.equal(e.passo(10, [a, b, c]), null);
+  a.voltas = 1;
+  assert.equal(e.passo(11, [a, b, c]), null, 'ainda falta gente passar');
+  c.voltas = 1;
+  assert.equal(e.passo(12, [a, b, c]), null);
+  b.voltas = 1;
+  assert.equal(e.passo(13, [a, b, c])?.id, -100, 'a última a passar sai');
+  assert.equal(e.volta, 2);
+  // na segunda volta, dois passam no mesmo passo: sai quem andou menos
+  a.voltas = c.voltas = 2;
+  a.andou = 2.05;
+  c.andou = 2.01;
+  assert.equal(e.passo(20, [a, c])?.id, -101);
+  // a terceira volta é a chegada
+  a.voltas = 3;
+  assert.equal(e.passo(30, [a]), null);
+  assert.deepEqual(e.fora, [-100, -101]);
+});

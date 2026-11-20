@@ -1,0 +1,35 @@
+/* As medalhas de tempo e a diferença por volta das corridas (20/11/2026): Jato, Regata e Carrinhos */
+.corrida-medalhas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.corrida-medalha {
+  font-size: 1.6em;
+  line-height: 1;
+}
+
+.corrida-diferenca {
+  position: absolute;
+  top: 34px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+  pointer-events: none;
+  text-shadow: 0 1px 0 #0006;
+}
+
+.corrida-diferenca.na-frente {
+  background: #2f9a4ae6;
+}
+
+.corrida-diferenca.atras {
+  background: #c8404ae6;
+}

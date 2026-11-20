@@ -22,6 +22,8 @@ import {
   type Figura,
 } from './render';
 import { criarRobos, golpear, roboEm, type Robo } from './robos';
+import { comandosDoJatoComControle } from './controle';
+import { criarEliminacao } from './eliminacao';
 
 /**
  * O LAÇO DOS COELHOS A JATO (05/11/2026): o que o Solo (contra o relógio) e a sala têm em comum — a física em passos fixos, a
@@ -91,6 +93,16 @@ export interface OpcoesDoLaco {
   ataque?: boolean;
   /** A classificação de todas as naves, na hora da chegada (ou da explosão), antes do aoChegar. */
   aoClassificacao?: (lista: { id: number; nome: string; eu: boolean; passos: number | null }[]) => void;
+  /** Cada volta que a pessoa fecha (1, 2…), com o passo em que fechou (a diferença para o fantasma, 20/11/2026). */
+  aoVolta?: (volta: number, passos: number) => void;
+  /**
+   * O MODO ELIMINAÇÃO (20/11/2026, só no Solo e só no site): ao fim de cada volta (menos a última), a última nave a passar pela
+   * linha sai da corrida. Se for a da pessoa, a corrida acaba ali (aoEliminada, 1,2 s depois, com a classificação antes).
+   */
+  eliminacao?: boolean;
+  aoEliminada?: (volta: number, posicao: number, total: number) => void;
+  /** Uma nave do computador saiu (na eliminação): o nome, para a tela dizer. */
+  aoSaiu?: (nome: string) => void;
 }
 
 /** O golpe: quanto dura o giro (passos), quanto espera para o próximo, e o alcance (unidades). */
@@ -100,6 +112,8 @@ export const ALCANCE_DO_GIRO = 22;
 
 export function rodarJato(o: OpcoesDoLaco): () => void {
   const { comandos } = o;
+  /** O que vale no passo: o teclado e o toque (`comandos`) somados ao controle de videogame. */
+  const juntos: ComandosDoJato = { ...comandos };
   let vivo = true;
   let quadro = 0;
   const d = prepararDesenho(o.canvas, o.pista.tema);
@@ -123,9 +137,44 @@ export function rodarJato(o: OpcoesDoLaco): () => void {
       { id: -1, nome: '', eu: true, chegada: nave.terminou ? nave.voltas[nave.voltas.length - 1] : 0, andou: nave.explodiu ? -10 : progresso(nave, p) },
       ...robos.map((r, i) => ({ id: -100 - i, nome: nomeDoPiloto(r.i), eu: false, chegada: r.chegada <= n ? r.chegada : 0, andou: roboEm(p, r, n).andou })),
     ];
-    linhas.sort((a, b) => (a.chegada && b.chegada ? a.chegada - b.chegada : a.chegada ? -1 : b.chegada ? 1 : b.andou - a.andou));
+    // na eliminação, quem saiu fica atrás de quem continua, e quem saiu depois na frente de quem saiu antes
+    const saiu = (id: number) => eliminados.indexOf(id);
+    linhas.sort((a, b) => {
+      const ea = saiu(a.id), eb = saiu(b.id);
+      if (ea >= 0 || eb >= 0) return ea < 0 ? -1 : eb < 0 ? 1 : eb - ea;
+      return a.chegada && b.chegada ? a.chegada - b.chegada : a.chegada ? -1 : b.chegada ? 1 : b.andou - a.andou;
+    });
     return linhas.map((l) => ({ id: l.id, nome: l.nome, eu: l.eu, passos: l.chegada || null }));
   };
+  /** A ELIMINAÇÃO (eliminacao.ts): quem já saiu (os ids da ordem: −1 a pessoa, −100 − i os robôs), na ordem em que saiu. */
+  const eliminacao = criarEliminacao(p.def.voltas);
+  const eliminados = eliminacao.fora;
+  let euFora = false;
+  let foraNaVolta = 0;
+  let eliminadaEm = 0;
+  const conferirEliminacao = () => {
+    if (!o.eliminacao || euFora || nave.terminou || nave.explodiu) return;
+    const n = nave.passos;
+    const k = eliminacao.volta;
+    const vivos = [{ id: -1, andou: progresso(nave, p), voltas: nave.voltas.length }];
+    robos.forEach((r, i) => {
+      if (eliminados.includes(-100 - i)) return;
+      const a = roboEm(p, r, n).andou;
+      vivos.push({ id: -100 - i, andou: a, voltas: Math.floor(a) });
+    });
+    const saiu = eliminacao.passo(n, vivos);
+    if (!saiu) return;
+    if (saiu.id === -1) {
+      euFora = true;
+      foraNaVolta = k;
+      tocar('derrota');
+      classificacao = classificar();
+      return;
+    }
+    tocar('queda');
+    o.aoSaiu?.(nomeDoPiloto(robos[-100 - saiu.id].i));
+  };
+  const fora = (i: number) => eliminados.includes(-100 - i);
   const minhasCores = coresDoAvatar(o.meuAvatar);
   const coresDosRobos: CoresDaNave[] = robos.map((r) => coresDoRobo(r.i));
   let camAngulo = nave.angulo;
@@ -169,9 +218,13 @@ export function rodarJato(o: OpcoesDoLaco): () => void {
       return;
     }
     if (!o.piloto) return;
+    // fora da corrida (a eliminação), tudo para, como na explosão
+    if (euFora) return;
     const jaTinhaChegado = nave.terminou || nave.explodiu;
-    const c = auto() ? pilotoAutomatico(nave, p) : comandos;
+    const c = auto() ? pilotoAutomatico(nave, p) : comandosDoJatoComControle(comandos, juntos);
     passo(nave, c, p);
+    if (!jaTinhaChegado && nave.fezVolta) o.aoVolta?.(nave.voltas.length, nave.passos);
+    conferirEliminacao();
     if (!jaTinhaChegado) {
       amostrar(nave, caminho);
       if ((nave.passos - 1) % AMOSTRA === 0) {
@@ -194,7 +247,7 @@ export function rodarJato(o: OpcoesDoLaco): () => void {
       if ((nave.terminou || nave.explodiu) && !classificacao) classificacao = classificar();
       // O GOLPE DE LADO: o botão (na hora em que desce) gira a nave; quem estiver encostado durante o giro é empurrado
       if (o.ataque) {
-        const apertado = comandos.ataque === true;
+        const apertado = juntos.ataque === true;
         const aperta = apertado && !ataqueAntes;
         ataqueAntes = apertado;
         if (aperta && nave.passos >= giroPronto && !nave.terminou && nave.caindo === 0 && nave.resgate === 0) {
@@ -205,7 +258,7 @@ export function rodarJato(o: OpcoesDoLaco): () => void {
         }
         if (nave.passos < giroAte) {
           robos.forEach((r, i) => {
-            if (levaram.has(i)) return;
+            if (levaram.has(i) || fora(i)) return;
             const q = roboEm(p, r, nave.passos);
             const dx = q.x - nave.x, dy = q.y - nave.y;
             if (dx * dx + dy * dy > ALCANCE_DO_GIRO * ALCANCE_DO_GIRO) return;
@@ -258,6 +311,7 @@ export function rodarJato(o: OpcoesDoLaco): () => void {
     postesNaTela(d, p, cam, figuras);
     // as naves do computador
     robos.forEach((r, i) => {
+      if (fora(i)) return;
       const q = roboEm(p, r, n);
       const f = naveNaTela(d, p, cam, q.x, q.y, q.angulo, coresDosRobos[i], { banco: q.banco, tempo: tempo + i, turbo: false });
       if (f) figuras.push(f);
@@ -272,7 +326,7 @@ export function rodarJato(o: OpcoesDoLaco): () => void {
       const f = naveNaTela(d, p, cam, r.pos.x, r.pos.y, r.pos.a, coresDoAvatar(r.avatar), { nome: r.nome, banco: r.pos.b, turbo: r.pos.t, tempo });
       if (f) figuras.push(f);
     }
-    if (o.piloto && !(nave.explodiu && tempo - explodiuEm / 1000 > 0.25)) {
+    if (o.piloto && !(nave.explodiu && tempo - explodiuEm / 1000 > 0.25) && !euFora) {
       const girando = nave.passos < giroAte;
       const minha = naveNaTela(d, p, cam, nave.x, nave.y, nave.angulo + (girando ? ((giroAte - nave.passos) / PASSOS_DO_GIRO) * Math.PI * 2 : 0), minhasCores, {
         banco: girando ? Math.sin(tempo * 40) : nave.banco,
@@ -303,10 +357,10 @@ export function rodarJato(o: OpcoesDoLaco): () => void {
     const robosAgora = robos.map((r) => ({ chegou: n >= r.chegada, chegada: r.chegada, andou: roboEm(p, r, n).andou }));
     const minhaChave = nave.terminou ? 1000 - nave.voltas[nave.voltas.length - 1] / 1e5 : progresso(nave, p);
     const chaves: { id: number; nome: string; eu: boolean; chave: number }[] = [];
-    if (o.piloto) chaves.push({ id: -1, nome: '', eu: true, chave: minhaChave });
+    if (o.piloto && !euFora) chaves.push({ id: -1, nome: '', eu: true, chave: minhaChave });
     for (const r of rivais) chaves.push({ id: r.id, nome: r.nome, eu: false, chave: r.pos.andou });
     for (const [id, r] of o.rivais ?? []) if (!chaves.some((c) => c.id === id)) chaves.push({ id, nome: r.nome, eu: false, chave: r.fora ? -5 : -1 });
-    robosAgora.forEach((r, i) => chaves.push({ id: -100 - i, nome: '', eu: false, chave: r.chegou ? 1000 - r.chegada / 1e5 : r.andou }));
+    robosAgora.forEach((r, i) => !fora(i) && chaves.push({ id: -100 - i, nome: '', eu: false, chave: r.chegou ? 1000 - r.chegada / 1e5 : r.andou }));
     chaves.sort((a, b) => b.chave - a.chave);
     minhaPosicao = Math.max(1, chaves.findIndex((c) => c.eu) + 1);
     totalDeNaves = chaves.length;
@@ -324,6 +378,7 @@ export function rodarJato(o: OpcoesDoLaco): () => void {
     ctx.drawImage(mapa, W - 60, H - 60);
     ctx.globalAlpha = 1;
     for (let i = 0; i < robos.length; i++) {
+      if (fora(i)) continue;
       const q = roboEm(p, robos[i], n);
       pontoNoMapa(ctx, W - 60, H - 60, 56, q.x, q.y, '#a8a0b8', 2);
     }
@@ -384,8 +439,9 @@ export function rodarJato(o: OpcoesDoLaco): () => void {
     o.aoPlacar({ volta, ms, pausado: pausado && o.piloto });
     if (nave.terminou && !fimEm) fimEm = agora;
     if (nave.explodiu && !explodiuEm) explodiuEm = agora;
+    if (euFora && !eliminadaEm) eliminadaEm = agora;
     // o motor: no semáforo, um ronco baixo; depois, pela velocidade; explodido, pausado ou parado, mudo
-    motor?.ajustar(pausado || nave.explodiu ? 0 : contagem > 0 ? 0.06 : nave.v / VTURBO);
+    motor?.ajustar(pausado || nave.explodiu || euFora ? 0 : contagem > 0 ? 0.06 : nave.v / VTURBO);
     if (fimEm && agora - fimEm > 1600 && !avisou) {
       avisou = true;
       if (classificacao) o.aoClassificacao?.(classificacao);
@@ -395,6 +451,12 @@ export function rodarJato(o: OpcoesDoLaco): () => void {
       avisou = true;
       if (classificacao) o.aoClassificacao?.(classificacao);
       o.aoExplodir?.(minhaPosicao, totalDeNaves);
+    }
+    if (eliminadaEm && agora - eliminadaEm > 1200 && !avisou) {
+      avisou = true;
+      if (classificacao) o.aoClassificacao?.(classificacao);
+      // a posição: logo atrás de todas as que continuam
+      o.aoEliminada?.(foraNaVolta, robos.length + 2 - eliminados.length, robos.length + 1);
     }
     quadro = requestAnimationFrame(ciclo);
   };

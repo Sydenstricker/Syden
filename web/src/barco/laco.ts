@@ -3,6 +3,7 @@ import { criarMotor, tocar } from '../somDosJogos';
 import { nomeDoPiloto, type Dificuldade } from '../corrida/robos';
 import { coresDoAvatar } from './barquinho';
 import { criarRobosDoBarco, roboDoBarcoEm, type RoboDoBarco } from './robos';
+import { comandosDoBarcoComControle } from './controle';
 import { AMOSTRA, amostrar, DERRAPA, normal, novoBarco, PASSO, passo, pilotoAutomatico, progresso, rapidez, VTURBO, type Barco, type ComandosDoBarco } from './fisica';
 import { montarPistaDoBarco, naLinha, type DefinicaoDoBarco, type PistaDoBarco } from './pista';
 import {
@@ -86,14 +87,21 @@ export interface OpcoesDoLaco {
   aoPosicao?: (p: PosicaoNaSala) => void;
   /** 1,6 s depois da linha de chegada: as voltas (em passos), o caminho inteiro, e a minha posição entre as pessoas. */
   aoChegar?: (voltas: number[], caminho: number[], posicao: number, total: number) => void;
-  /** OS BARCOS DO COMPUTADOR (19/11/2026, só no Solo): quantos e o quanto apertam. */
+  /**
+   * OS BARCOS DO COMPUTADOR (19/11/2026 no Solo; 20/11/2026 também na sala, sempre no médio): quantos e o quanto apertam. O
+   * caminho deles é o mesmo em todo computador (sai da pista e do número de cada um), então a turma vê os mesmos barcos.
+   */
   robos?: { quantos: number; dificuldade: Dificuldade };
   /** A classificação de todos os barcos na hora da chegada, antes do aoChegar. */
   aoClassificacao?: (lista: { id: number; nome: string; eu: boolean; passos: number | null }[]) => void;
+  /** Cada volta que a pessoa fecha (1, 2…), com o passo em que fechou (a diferença para o fantasma, 20/11/2026). */
+  aoVolta?: (volta: number, passos: number) => void;
 }
 
 export function rodarBarco(o: OpcoesDoLaco): () => void {
   const { comandos } = o;
+  /** O que vale no passo: o teclado e o toque (`comandos`) somados ao controle de videogame. */
+  const juntos: ComandosDoBarco = { ...comandos };
   let vivo = true;
   let quadro = 0;
   const p = pistaDoBarco(o.pista);
@@ -149,8 +157,9 @@ export function rodarBarco(o: OpcoesDoLaco): () => void {
     }
     if (!o.piloto) return;
     const jaTinhaChegado = barco.terminou;
-    const c = auto() ? pilotoAutomatico(barco, p) : comandos;
+    const c = auto() ? pilotoAutomatico(barco, p) : comandosDoBarcoComControle(comandos, juntos);
     passo(barco, c, p);
+    if (!jaTinhaChegado && barco.fezVolta) o.aoVolta?.(barco.voltas.length, barco.passos);
     if (barco.passos % 2 === 0) marcarEsteira(minhaEsteira, barco.x, barco.y, Math.atan2(barco.vy, barco.vx), rapidez(barco));
     if (!jaTinhaChegado) {
       amostrar(barco, caminho);

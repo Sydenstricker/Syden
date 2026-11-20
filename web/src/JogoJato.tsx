@@ -7,7 +7,10 @@ import { chave, useT } from './i18n';
 import { comandoDaPausa, TelaDePausa, usePausaComEsc } from './pausaDosJogos';
 import { passosEmMs, tempoLegivel } from './jato/util';
 import type { ComandosDoJato } from './jato/fisica';
-import { rodarJato, type LinhaDaOrdem, type PosicaoNaSala, type RivalDoJato } from './jato/laco';
+import { DiferencaDaVolta, MedalhasDaCorrida } from './SelosDaCorrida';
+import { voltasDoCaminho } from './medalhasDaCorrida';
+import { TEMPO_DO_PILOTO_DO_JATO } from './jato/medalhas';
+import { pistaDoJato, rodarJato, type LinhaDaOrdem, type PosicaoNaSala, type RivalDoJato } from './jato/laco';
 import { nomeDaPistaDoJato } from './jato/nomes';
 import { CIDADE, COPAS_DO_JATO, linhaDoJato, MUNDO, PISTAS_DO_JATO, PONTOS_DA_COPA_DO_JATO, pistaDoJatoPorId, type DefinicaoDoJato } from './jato/pista';
 import { H, W } from './jato/render';
@@ -260,6 +263,9 @@ function JatoSolo({ estado, eu, agir }: { estado: EstadoJato & Partida; eu: numb
   /** A copa escolhida na tela da escolha (ainda não começada), e a copa andando. */
   const [copaEscolhida, setCopaEscolhida] = useState<string | null>(null);
   const [copa, setCopa] = useState<CopaDoJato | null>(null);
+  /** O MODO ELIMINAÇÃO (20/11/2026, só no site): escolhido na largada; e a volta em que a pessoa saiu, se saiu. */
+  const [eliminacao, setEliminacao] = useState(false);
+  const [eliminada, setEliminada] = useState<number | null>(null);
 
   // os fantasmas que vêm marcados: o meu e os dos amigos logo acima de mim (o próximo alvo); refeito ao trocar de pista
   const marcados = (() => {
@@ -279,6 +285,7 @@ function JatoSolo({ estado, eu, agir }: { estado: EstadoJato & Partida; eu: numb
   const correr = (comCopa: boolean) => {
     setChegada(null);
     setClassificacao(null);
+    setEliminada(null);
     return tentar({ tipo: 'correr', fantasmas: comCopa ? [] : [...marcados] });
   };
   /** Vai à pista `pista` (se não estiver nela) e corre. */
@@ -362,8 +369,21 @@ function JatoSolo({ estado, eu, agir }: { estado: EstadoJato & Partida; eu: numb
             </button>
           ))}
         </div>
+        {!copaEscolhida && (
+          <label className="jato-eliminacao">
+            <input type="checkbox" checked={eliminacao} onChange={(e) => setEliminacao(e.target.checked)} />
+            <span>
+              <strong>{t('Eliminação')}</strong> <small>{t('A última nave de cada volta sai.')}</small>
+            </span>
+          </label>
+        )}
         <div className="jato-pista-nome">
-          {meu && !copaEscolhida && <span>{t('Seu recorde: {tempo}', { tempo: tempoLegivel(meu.tempoMs) })}</span>}
+          {meu && !copaEscolhida && (
+            <span>
+              {t('Seu recorde: {tempo}', { tempo: tempoLegivel(meu.tempoMs) })} <MedalhasDaCorrida base={TEMPO_DO_PILOTO_DO_JATO[estado.pista]} tempoMs={meu.tempoMs} />
+            </span>
+          )}
+          {!copaEscolhida && <MedalhasDaCorrida base={TEMPO_DO_PILOTO_DO_JATO[estado.pista]} />}
           <Comandos solo />
           <p className="settings-hint">{t('A energia é a vida e o turbo: bater na borda gasta, a faixa cor-de-rosa recarrega.')}</p>
         </div>
@@ -417,18 +437,31 @@ function JatoSolo({ estado, eu, agir }: { estado: EstadoJato & Partida; eu: numb
         agir={agir}
         dificuldade={dificuldade}
         semFantasmas={copa !== null}
+        eliminacao={eliminacao && copa === null}
+        eu={eu}
+        aoEliminada={(volta, posicao, total) => {
+          setEliminada(volta);
+          setChegada({ posicao, total });
+        }}
         aoChegar={setChegada}
         aoClassificar={aoClassificar}
         aoErro={setErro}
       />
       {estado.fase === 'resultado' && r && (
         <div className="jato-fim-solo">
-          {r.explodiu ? (
+          {r.explodiu && eliminada !== null ? (
+            <>
+              <strong className="jato-explodiu">{t('Fora da corrida na volta {n}.', { n: eliminada })}</strong>
+              {chegada && <span>{t('Posição: {posicao} de {total}', { posicao: chegada.posicao, total: chegada.total })}</span>}
+            </>
+          ) : r.explodiu ? (
             <strong className="jato-explodiu">{t('A nave explodiu: a energia acabou.')}</strong>
           ) : (
             <>
               {r.recorde && <strong className="jato-recorde">{t('Novo recorde!')}</strong>}
-              <span className="jato-relogio grande">{r.tempoMs !== null ? tempoLegivel(r.tempoMs) : '—'}</span>
+              <span className="jato-relogio grande">
+                {r.tempoMs !== null ? tempoLegivel(r.tempoMs) : '—'} {r.tempoMs !== null && <MedalhasDaCorrida base={TEMPO_DO_PILOTO_DO_JATO[def.id]} tempoMs={r.tempoMs} />}
+              </span>
               {chegada && <span>{t('Posição: {posicao} de {total}', { posicao: chegada.posicao, total: chegada.total })}</span>}
               {!copa && (
                 <ol className="jato-voltas">
@@ -449,7 +482,7 @@ function JatoSolo({ estado, eu, agir }: { estado: EstadoJato & Partida; eu: numb
                 <li key={l.id} className={l.eu ? 'eu' : undefined}>
                   <span className="jato-posicao">{lugar(i, !r.explodiu)}</span>
                   <span className="jato-quem">{nomeDe(l)}</span>
-                  <span className="jato-relogio">{l.passos !== null ? tempoLegivel(passosEmMs(l.passos)) : l.eu && r.explodiu ? '💥' : '…'}</span>
+                  <span className="jato-relogio">{l.passos !== null ? tempoLegivel(passosEmMs(l.passos)) : l.eu && r.explodiu ? (eliminada !== null ? '✖' : '💥') : '…'}</span>
                 </li>
               ))}
             </ol>
@@ -504,6 +537,9 @@ function CorridaSolo({
   agir,
   dificuldade,
   semFantasmas,
+  eliminacao,
+  eu,
+  aoEliminada,
   aoChegar,
   aoClassificar,
   aoErro,
@@ -513,6 +549,9 @@ function CorridaSolo({
   agir: Agir;
   dificuldade: Dificuldade;
   semFantasmas: boolean;
+  eliminacao: boolean;
+  eu: number;
+  aoEliminada: (volta: number, posicao: number, total: number) => void;
   aoChegar: (c: { posicao: number; total: number }) => void;
   aoClassificar: (lista: LinhaDaChegada[]) => void;
   aoErro: (e: string) => void;
@@ -526,9 +565,22 @@ function CorridaSolo({
   const { pausa, pausado, continuar } = usePausaComEsc(estado.fase === 'correndo' && !acabou);
   // a música só com a corrida rodando (nem a pausa, nem o placar)
   useMusicaDoJogo(estado.fase === 'correndo' && !acabou && !pausado ? 'jato' : null);
+  /** A DIFERENÇA da última volta para o fantasma de referência (some em 3 s), e quem saiu na eliminação (some em 2 s). */
+  const [diferenca, setDiferenca] = useState<number | null>(null);
+  const [saiu, setSaiu] = useState<string | null>(null);
+  const relogios = useRef<number[]>([]);
+  const mostrar = <T,>(definir: (v: T | null) => void, v: T, ms: number) => {
+    definir(v);
+    relogios.current.push(window.setTimeout(() => definir(null), ms));
+  };
+  useEffect(() => () => relogios.current.forEach((r) => clearTimeout(r)), []);
   useEffect(() => {
     if (!canvas.current) return;
     tela.current?.focus();
+    // o fantasma de referência da diferença: o meu recorde, se ele corre; senão, o mais rápido dos marcados
+    const fantasmas = semFantasmas ? [] : (estado.fantasmas ?? []);
+    const referencia = fantasmas.find((f) => f.userId === eu) ?? [...fantasmas].sort((a, b) => a.tempoMs - b.tempoMs)[0];
+    const voltasDaReferencia = referencia ? voltasDoCaminho(referencia.amostras, pistaDoJato(def), def.voltas, Math.round((referencia.tempoMs * 60) / 1000)) : [];
     return rodarJato({
       canvas: canvas.current,
       comandos: controles.comandos.current,
@@ -537,9 +589,22 @@ function CorridaSolo({
       pausa,
       meuAvatar: estado.meuAvatar ?? null,
       fantasmas: semFantasmas ? [] : (estado.fantasmas ?? []).map((f) => ({ amostras: f.amostras, avatar: f.avatar })),
-      robos: estado.robos,
+      // na eliminação, menos naves: a última volta fica com três (a pessoa e duas do computador, se ninguém sair antes)
+      robos: eliminacao ? def.voltas + 1 : estado.robos,
       dificuldade,
       ataque: true,
+      eliminacao,
+      aoVolta: (volta, passos) => {
+        const ref = voltasDaReferencia[volta - 1];
+        if (ref) mostrar(setDiferenca, passosEmMs(passos) - passosEmMs(ref), 3000);
+      },
+      aoSaiu: (nome) => mostrar(setSaiu, nome, 2000),
+      aoEliminada: (volta, posicao, total) => {
+        setAcabou(true);
+        aoEliminada(volta, posicao, total);
+        // para o servidor, é uma corrida que não chegou (como a explosão): nada de recorde
+        agir({ tipo: 'explodiu' }).catch((e) => aoErro((e as Error).message));
+      },
       contagem: CONTAGEM,
       calmo: menosMovimento(),
       aoPlacar: setPlacar,
@@ -561,6 +626,12 @@ function CorridaSolo({
     <div className="jato-tela" ref={tela} tabIndex={-1}>
       <canvas ref={canvas} width={W} height={H} />
       {!acabou && <Placar placar={placar} voltas={def.voltas} />}
+      {!acabou && <DiferencaDaVolta ms={diferenca} />}
+      {!acabou && saiu && (
+        <span className="jato-saiu" aria-live="polite">
+          ✖ {saiu}
+        </span>
+      )}
       {!acabou && <BotoesDeToque controles={controles} ataque />}
       {!acabou && pausado && <TelaDePausa aoContinuar={continuar} icone={false} />}
     </div>

@@ -1,4 +1,18 @@
 import { FOLGA, pilotoAutomatico, trechoEm, type Carro, type Trecho } from './sim';
+import type { Dificuldade } from '../corrida/robos';
+
+/**
+ * A HABILIDADE DOS ROBÔS POR DIFICULDADE (20/11/2026), um número por robô (o primeiro, o segundo e o terceiro). O médio é o de
+ * antes. Medido em 20/11/2026 nas cinco pistas prontas, 24 corridas por valor, contra o tempo do piloto quase perfeito (margem
+ * 0,15): 0,35–0,5 ficam 9–16% atrás; o médio de antes, 3–9%; 1,1–1,2 ficam a 0,3–1,8%, ou seja, À FRENTE do piloto dos testes
+ * (margem 0,3: 1,4–2,1% atrás), errando menos de uma vez por corrida. Acima de 1, a margem fica perto de zero (às vezes um
+ * pouco negativa, dentro da folga: o carro treme, mas não sai).
+ */
+export const HABILIDADE_DOS_ROBOS: Record<Dificuldade, number[]> = {
+  facil: [0.5, 0.42, 0.35],
+  medio: [0.92, 0.8, 0.68],
+  dificil: [1.2, 1.15, 1.1],
+};
 
 /**
  * OS ROBÔS DAS OUTRAS FAIXAS (no Solo): o piloto automático de sim.ts, com uma MARGEM sorteada a cada trecho da pista (quanto
