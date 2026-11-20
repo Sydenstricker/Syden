@@ -172,3 +172,16 @@
     transition: none;
   }
 }
+
+/* os botões de toque no celular em pé (~390 px): seis numa linha só (20/11/2026, com o da ré) */
+@media (pointer: coarse) and (max-width: 440px) {
+  .balao-toque {
+    gap: 6px;
+    padding: 6px;
+  }
+  .balao-toque button {
+    width: 48px;
+    height: 48px;
+    font-size: 1.2rem;
+  }
+}

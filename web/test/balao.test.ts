@@ -231,3 +231,51 @@ test('a batida: devagar, encostar não estoura nada', () => {
   for (let i = 0; i < 20; i++) partida.passo();
   assert.equal(eventos.filter((e) => e.tipo === 'estourou').length, 0);
 });
+
+test('a dificuldade dos robôs do Solo: o médio é o robô de antes, o fácil estoura bem menos, e contra o difícil se aguenta menos', async () => {
+  const { novaMemoria } = await import('../src/balao/robo');
+  // o médio é o de antes: o mesmo jeito, sem atraso de reação e sem teto
+  const m = novaMemoria(0.4, 'medio');
+  assert.equal(m.jeito, 0.4);
+  assert.equal(m.reacao, 1);
+  assert.equal(m.vmax, Infinity);
+  assert.deepEqual(novaMemoria(0.4), m);
+  /** Os balões MEUS que os robôs estouram (eu no piloto automático, o robô médio, contra três deles). */
+  const estourosDos = (dificuldade: 'facil' | 'medio' | 'dificil') => {
+    let total = 0;
+    let aguentei = 0;
+    for (const p of arenas) {
+      for (const semente of [11, 22, 33, 44]) {
+        const robos = [-1, -2, -3];
+        const participantes = [1, ...robos].map((id, i) => ({ id, nome: String(id), avatar: null, largada: i }));
+        const eventos: EventoDoBalao[] = [];
+        let fim = false;
+        const partida = criarPartida({
+          arena: p,
+          comandos: { acelera: false, freia: false, vira: 0, derrapa: false },
+          eu: 1,
+          piloto: true,
+          autopiloto: () => true,
+          participantes,
+          robos,
+          dificuldade,
+          semente,
+          baloes: new Map(participantes.map((q) => [q.id, BALOES])),
+          rivais: new Map(),
+          eventos,
+          aoFim: () => (fim = true),
+        });
+        while (!fim && partida.n < DURACAO_PASSOS + 10) partida.passo();
+        total += eventos.filter((e) => e.tipo === 'estourou' && e.alvo === 1).length;
+        // e quanto tempo eu aguentei (o passo do meu último balão, ou o fim)
+        const ultimo = eventos.find((e) => e.tipo === 'estourou' && e.alvo === 1 && e.baloes === 0);
+        aguentei += ultimo && 'n' in ultimo ? ultimo.n : partida.n;
+      }
+    }
+    return { total, aguentei: Math.round(aguentei / 60) };
+  };
+  const facil = estourosDos('facil'), medio = estourosDos('medio'), dificil = estourosDos('dificil');
+  console.log(`os meus balões estourados pelos robôs: fácil ${JSON.stringify(facil)}, médio ${JSON.stringify(medio)}, difícil ${JSON.stringify(dificil)}`);
+  assert.ok(medio.total > facil.total * 1.5, `médio ${medio.total} contra fácil ${facil.total}`);
+  assert.ok(dificil.aguentei < medio.aguentei, `aguentei ${dificil.aguentei} s contra o difícil e ${medio.aguentei} s contra o médio`);
+});

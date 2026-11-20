@@ -1,7 +1,9 @@
 import { PASSO, type Comandos } from '../corrida/fisica';
+import { comandosComControle } from '../corrida/controle';
 import type { Rival } from '../corrida/laco';
 import { cameraAtras, desenharChao, faiscas, figuraNoChao, H, kartNaTela, prepararDesenho, W, type Desenho, type Figura } from '../corrida/render';
 import { arenaPintada, largadaDa, temaDaArena } from './arena';
+import type { DificuldadeDoBalao } from './robo';
 import { criarPartida, type EventoDoBalao, type Participante, type ResultadoDoSolo } from './partida';
 import {
   baloesNaTela,
@@ -34,6 +36,8 @@ export interface OpcoesDoBalao {
   piloto: boolean;
   participantes: Participante[];
   robos?: number[];
+  /** A dificuldade dos robôs (só o Solo). */
+  dificuldade?: DificuldadeDoBalao;
   semente: number;
   /** O performance.now() do sinal verde (no futuro, durante a contagem). */
   verdeEm: number;
@@ -79,7 +83,9 @@ declare global {
 }
 
 export function rodarBalao(o: OpcoesDoBalao): () => void {
-  const { comandos } = o;
+  // o que o teclado e o toque apertam (quem chama escreve), somado a cada quadro ao controle de videogame (corrida/controle.ts)
+  const doTeclado = o.comandos;
+  const comandos: Comandos = { ...doTeclado };
   let vivo = true;
   let quadro = 0;
   let pararExtra = () => {};
@@ -103,6 +109,7 @@ export function rodarBalao(o: OpcoesDoBalao): () => void {
       autopiloto: () => import.meta.env.DEV && window.balaoPilotoAutomatico === true,
       participantes: o.participantes,
       robos: o.robos,
+      dificuldade: o.dificuldade,
       semente: o.semente,
       baloes: o.baloes,
       rivais: o.rivais,
@@ -247,6 +254,7 @@ export function rodarBalao(o: OpcoesDoBalao): () => void {
 
     const ciclo = (agora: number) => {
       if (!vivo) return;
+      comandosComControle(doTeclado, comandos);
       const dt = Math.min(0.25, (agora - antes) / 1000);
       antes = agora;
       const semFoco = document.hidden || !document.hasFocus();

@@ -18,7 +18,8 @@ import {
   VTURBO,
 } from './fisica';
 import { criarMotor, tocar } from '../somDosJogos';
-import { andarRobo, CASA_DE_QUEM_JOGA, criarRobos, largadaDoRobo, ordemDaCorrida, porNaGrade, progressoDoRobo, type Dificuldade, type RoboDoKart } from './robos';
+import { comandosComControle } from './controle';
+import { andarRobo, CASA_DE_QUEM_JOGA, criarRobos, largadaDoRobo, ordemDaCorrida, porNaGrade, progressoDoRobo, type DificuldadeDaCorrida, type RoboDoKart } from './robos';
 import { HORTA, montarPista, type DefinicaoDaPista, type Pista } from './pista';
 import {
   cameraAtras,
@@ -164,7 +165,7 @@ export interface OpcoesDoLaco {
    * OS ROBÔS (19/11/2026, só no Solo contra o computador): quantos e o quanto apertam. Com eles, quem joga larga na última
    * fila da grade, e a chegada avisa a classificação (aoClassificacao) antes do aoChegar.
    */
-  robos?: { quantos: number; dificuldade: Dificuldade };
+  robos?: { quantos: number; dificuldade: DificuldadeDaCorrida };
   /** A classe rápida (o teto vezes isto), só contra os robôs. */
   classe?: number;
   /** A classificação na hora em que quem joga cruzou a chegada: quem chegou antes, eu, e quem ainda corria (pelo quanto andou). */
@@ -284,7 +285,9 @@ export function sortearItem(posicao: number, total: number, sorte = Math.random)
 }
 
 export function rodarCorrida(o: OpcoesDoLaco): () => void {
-  const { comandos } = o;
+  // o que o teclado e o toque apertam (quem chama escreve), somado a cada quadro ao controle de videogame (controle.ts)
+  const doTeclado = o.comandos;
+  const comandos: Comandos = { ...doTeclado };
   let vivo = true;
   let quadro = 0;
   const d: Desenho = prepararDesenho(o.canvas, o.pista.tema);
@@ -357,7 +360,7 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
       usos = item === 'cenouras' ? 3 : item ? 1 : 0;
       // o botão de toque some com o item antes de o dedo levantar: a tecla "usar" volta sozinha, senão o próximo item
       // precisaria de dois toques (revisão de 03/11/2026)
-      if (item === null) comandos.usa = false;
+      if (item === null) doTeclado.usa = comandos.usa = false;
       o.itens?.aoItem?.(item, usos);
     };
     const lancar = (e: EventoDeItem) => {
@@ -392,7 +395,7 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
       passo(kart, c, p);
       // OS ROBÔS andam o mesmo passo, e a posição deles entra na lista dos rivais (no passo da minha corrida)
       for (const r of robos) {
-        andarRobo(r, p);
+        andarRobo(r, p, progresso(kart, p));
         const rv = todosOsRivais!.get(r.id)!;
         const andou = r.kart.terminou ? p.def.voltas + 0.5 - r.chegada / 1e6 : progressoDoRobo(r, p);
         rv.posicoes.push({ n: kart.passos, x: r.kart.x, y: r.kart.y, a: r.kart.angulo, andou });
@@ -756,6 +759,7 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
 
     const ciclo = (agora: number) => {
       if (!vivo) return;
+      comandosComControle(doTeclado, comandos);
       const dt = Math.min(0.1, (agora - antes) / 1000);
       antes = agora;
       pausado = document.hidden || !document.hasFocus() || !!o.pausa?.ativa;

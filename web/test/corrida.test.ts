@@ -275,3 +275,59 @@ test('o espelho: a mesma pista virada, com a largada no asfalto, o mesmo comprim
     assert.equal(k.terminou, true, `${e.id}: o piloto automático fecha as voltas`);
   }
 });
+
+test('as medalhas: o tempo do ouro de cada pista é o do piloto automático derrapando', async () => {
+  const { TEMPO_DO_PILOTO, medalhaDaCorrida } = await import('../src/corrida/parciais');
+  for (const def of PISTAS) {
+    const { k } = pilotar(true, montarPista(def));
+    assert.equal(TEMPO_DO_PILOTO[def.id], k.voltas[2], `${def.id}: o piloto fez ${k.voltas[2]} passos`);
+    assert.equal(medalhaDaCorrida(def.id, k.voltas[2]), 0);
+    assert.equal(medalhaDaCorrida(def.id, Math.round(k.voltas[2] * 1.05)), 1);
+    assert.equal(medalhaDaCorrida(def.id, Math.round(k.voltas[2] * 1.15)), 2);
+    assert.equal(medalhaDaCorrida(def.id, Math.round(k.voltas[2] * 1.3)), null);
+  }
+});
+
+test('as parciais: o fantasma cruza todos os marcos em ordem, e contra ele mesmo a diferença é zero', async () => {
+  const { criarParciais, diferencaLegivel, parciaisDoFantasma, PARCIAIS_POR_VOLTA } = await import('../src/corrida/parciais');
+  for (const derrapar of [false, true]) {
+    const { k, caminho } = pilotar(derrapar);
+    const marcos = parciaisDoFantasma(pista, 3, caminho);
+    const total = 3 * PARCIAIS_POR_VOLTA - 1;
+    for (let i = 1; i <= total; i++) assert.ok(marcos[i] > (marcos[i - 1] ?? 0), `o marco ${i}: ${marcos[i]}`);
+    // o fim de cada volta é um marco: perto do passo em que a volta acabou (as amostras são de 4 em 4)
+    for (const v of [1, 2]) assert.ok(Math.abs(marcos[v * PARCIAIS_POR_VOLTA] - k.voltas[v - 1]) <= 8, `volta ${v}: ${k.voltas[v - 1]}, marco ${marcos[v * PARCIAIS_POR_VOLTA]}`);
+    assert.equal(marcos[total + 1], undefined, 'a chegada não é marco');
+    // o mesmo kart, seguido pelas posições a cada AMOSTRA passos como a tela faz, passa na mesma hora do fantasma
+    const seguir = criarParciais(pista, 3);
+    for (let j = 0; j * 3 < caminho.length; j++) {
+      for (const m of seguir.andar(caminho[j * 3] / 10, caminho[j * 3 + 1] / 10)) assert.equal(1 + j * AMOSTRA - marcos[m], 0);
+    }
+  }
+  assert.equal(diferencaLegivel(-420), '−0.42');
+  assert.equal(diferencaLegivel(1100), '+1.10');
+});
+
+test('o mestre: mais rápido que o difícil e que o piloto automático, e o empurrão só vale para quem vem atrás', async () => {
+  const { andarRobo, criarRobos, largadaDoRobo, MESTRE_CLASSE, MESTRE_EMPURRAO } = await import('../src/corrida/robos');
+  const correr = (dificuldade: 'dificil' | 'mestre', quemJoga?: number) => {
+    const robos = criarRobos(pista, 7, dificuldade);
+    for (const r of robos) largadaDoRobo(r, dificuldade, 180);
+    for (let n = 0; n < 60 * 60 * 6 && robos.some((r) => !r.kart.terminou); n++) for (const r of robos) andarRobo(r, pista, quemJoga);
+    return robos.reduce((s, r) => s + r.chegada, 0) / robos.length;
+  };
+  const piloto = pilotar(true).k.voltas[2];
+  const dificil = correr('dificil'), mestre = correr('mestre');
+  console.log('difícil', tempoLegivel(passosEmMs(dificil)), 'mestre', tempoLegivel(passosEmMs(mestre)), 'piloto', tempoLegivel(passosEmMs(piloto)));
+  assert.ok(mestre < dificil && mestre < piloto, `mestre ${mestre}, difícil ${dificil}, piloto ${piloto}`);
+  // o empurrão: com quem joga muito à frente, o teto sobe até o máximo; com quem joga atrás, fica o do mestre
+  const [r] = criarRobos(pista, 1, 'mestre');
+  andarRobo(r, pista, 5);
+  assert.ok(Math.abs(r.kart.classe - MESTRE_CLASSE * (1 + MESTRE_EMPURRAO)) < 1e-9);
+  andarRobo(r, pista, -5);
+  assert.ok(Math.abs(r.kart.classe - MESTRE_CLASSE) < 1e-9);
+  // fora do mestre, nada muda
+  const [d] = criarRobos(pista, 1, 'dificil');
+  andarRobo(d, pista, 5);
+  assert.equal(d.kart.classe, 1);
+});

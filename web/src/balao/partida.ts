@@ -1,7 +1,7 @@
 import { atingir, novoKart, PASSO, passo, type Comandos, type Kart } from '../corrida/fisica';
 import { rivalEm, type Rival } from '../corrida/laco';
 import { largadaDa, type ArenaPintada } from './arena';
-import { comandoDoRobo, novaMemoria, type MemoriaDoRobo } from './robo';
+import { comandoDoRobo, novaMemoria, type DificuldadeDoBalao, type MemoriaDoRobo } from './robo';
 import {
   BALOES,
   BATIDA_DE_NOVO,
@@ -97,6 +97,8 @@ export interface OpcoesDaPartida {
   participantes: Participante[];
   /** Os ids que andam AQUI, pelo cérebro do robô (o Solo). */
   robos?: number[];
+  /** A dificuldade deles (só o Solo; sem ela, o médio, que é o robô de antes). */
+  dificuldade?: DificuldadeDoBalao;
   semente: number;
   /** Quantos balões cada um tem, pela verdade (o servidor; no Solo, a partida escreve aqui). */
   baloes: Map<number, number>;
@@ -135,7 +137,7 @@ export function criarPartida(o: OpcoesDaPartida) {
       usavaAntes: false,
       ultimoEstouro: -Infinity,
       escudo: null,
-      memoria: robo ? novaMemoria(((Math.abs(id) * 37) % 10) / 10) : null,
+      memoria: robo ? novaMemoria(((Math.abs(id) * 37) % 10) / 10, o.dificuldade) : null,
       levados: new Set(),
       previstos: new Map(),
       estouros: 0,

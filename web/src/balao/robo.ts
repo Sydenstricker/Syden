@@ -12,6 +12,21 @@ import { naParede, type Arena, type ItemDoBalao } from './sim';
  * O mesmo cérebro é o PILOTO AUTOMÁTICO dos testes (window.balaoPilotoAutomatico, só no site de desenvolvimento).
  */
 
+/**
+ * A DIFICULDADE DOS COELHOS DO COMPUTADOR (20/11/2026, a segunda auditoria), só no Solo e só no site:
+ * - fácil: a mira solta (o jeito de 0 a 0,35), REAGE a cada 20 passos (1/3 s: entre uma decisão e outra, repete a anterior) e
+ *   não passa de 95 de velocidade (o kart vai a 140), e espera o dobro para usar o item;
+ * - médio: o de antes (o jeito sorteado de 0 a 0,9, reação a cada passo, sem teto) — a sala e os testes de antes usam este;
+ * - difícil: a mira caprichada (o jeito de 0,7 a 1), reação a cada passo, o item usado com 30% da espera, e o repolho e a cenoura arriscados de 1,6× mais longe.
+ */
+export type DificuldadeDoBalao = 'facil' | 'medio' | 'dificil';
+export const DIFICULDADES_DO_BALAO: DificuldadeDoBalao[] = ['facil', 'medio', 'dificil'];
+const NIVEL: Record<DificuldadeDoBalao, { jeito: [number, number]; reacao: number; vmax: number; pressa: number; alcance: number }> = {
+  facil: { jeito: [0, 0.35], reacao: 20, vmax: 95, pressa: 2, alcance: 1 },
+  medio: { jeito: [0, 1], reacao: 1, vmax: Infinity, pressa: 1, alcance: 1 },
+  dificil: { jeito: [0.7, 1], reacao: 1, vmax: Infinity, pressa: 0.3, alcance: 1.6 },
+};
+
 export interface MemoriaDoRobo {
   /** Quantos passos seguidos quase parado (para saber que empacou), e quantos de ré ainda faltam. */
   parado: number;
@@ -20,9 +35,33 @@ export interface MemoriaDoRobo {
   jeito: number;
   /** Há quantos passos está com o item na mão. */
   segurando: number;
+  /** De quantos em quantos passos decide de novo (1 = todo passo), quantos faltam, e a última decisão. */
+  reacao: number;
+  falta: number;
+  ultimo: Comandos | null;
+  /** A velocidade que ele não passa, e o quanto da espera do item ele espera (1 = toda). */
+  vmax: number;
+  pressa: number;
+  /** O quanto mais longe ele arrisca o repolho e a cenoura (1 = o de antes). */
+  alcance: number;
 }
 
-export const novaMemoria = (jeito: number): MemoriaDoRobo => ({ parado: 0, re: 0, jeito, segurando: 0 });
+/** `jeito` de 0 a 1 (o sorteio de cada robô); a dificuldade o leva à faixa dela. O médio é o robô de antes, igual. */
+export const novaMemoria = (jeito: number, dificuldade: DificuldadeDoBalao = 'medio'): MemoriaDoRobo => {
+  const nv = NIVEL[dificuldade];
+  return {
+    parado: 0,
+    re: 0,
+    jeito: nv.jeito[0] + (nv.jeito[1] - nv.jeito[0]) * jeito,
+    segurando: 0,
+    reacao: nv.reacao,
+    falta: 0,
+    ultimo: null,
+    vmax: nv.vmax,
+    pressa: nv.pressa,
+    alcance: nv.alcance,
+  };
+};
 
 export interface VisaoDoRobo {
   arena: Arena;
@@ -49,6 +88,19 @@ function livreAFrente(arena: Arena, k: Kart, a: number, ate: number) {
 }
 
 export function comandoDoRobo(k: Kart, v: VisaoDoRobo, m: MemoriaDoRobo): Comandos {
+  // A REAÇÃO: entre uma decisão e outra, repete a anterior (sem usar o item de novo)
+  if (m.reacao > 1 && m.ultimo && m.falta > 0) {
+    m.falta--;
+    if (v.item) m.segurando++;
+    return { ...m.ultimo, usa: false };
+  }
+  const c = decidir(k, v, m);
+  m.ultimo = c;
+  m.falta = m.reacao - 1;
+  return c;
+}
+
+function decidir(k: Kart, v: VisaoDoRobo, m: MemoriaDoRobo): Comandos {
   // EMPACOU (encostado numa parede, ou atrás de um obstáculo): ré virando, por um tempo
   if (m.re > 0) {
     m.re--;
@@ -101,17 +153,17 @@ export function comandoDoRobo(k: Kart, v: VisaoDoRobo, m: MemoriaDoRobo): Comand
   // O ITEM
   let usa = false;
   const mira = 0.1 + 0.25 * (1 - m.jeito);
-  const espera = 20 + Math.round(60 * m.jeito);
+  const espera = Math.round((20 + Math.round(60 * m.jeito)) * m.pressa);
   if (v.item && m.segurando > espera) {
     if (v.item === 'alface') usa = true;
     else if (v.item === 'cenoura' && rival.alvo) {
       // a cenoura é para BATER (o turbo estoura o balão de quem é alcançado): com alguém perto e na frente
       const a = Math.atan2(rival.alvo.y - k.y, rival.alvo.x - k.x);
-      usa = (rival.distancia < 110 && Math.abs(diferenca(a, k.angulo)) < mira * 2) || m.segurando > 300;
+      usa = (rival.distancia < 110 * m.alcance && Math.abs(diferenca(a, k.angulo)) < mira * 2) || m.segurando > 300;
     } else if (v.item === 'cenoura') usa = m.segurando > 300;
     else if (v.item === 'repolho' && rival.alvo) {
       const a = Math.atan2(rival.alvo.y - k.y, rival.alvo.x - k.x);
-      usa = rival.distancia < 220 && Math.abs(diferenca(a, k.angulo)) < mira;
+      usa = rival.distancia < 220 * m.alcance && Math.abs(diferenca(a, k.angulo)) < mira;
     } else if (v.item === 'lama') {
       // alguém atrás e perto: a lama fica no caminho
       usa = v.rivais.some((r) => {
@@ -123,5 +175,5 @@ export function comandoDoRobo(k: Kart, v: VisaoDoRobo, m: MemoriaDoRobo): Comand
   }
   // devagar nas curvas fechadas, para não bater
   const freia = Math.abs(dif) > 1.6 && k.v > 60;
-  return { acelera: !freia, freia, vira, derrapa: false, usa };
+  return { acelera: !freia && k.v < m.vmax, freia, vira, derrapa: false, usa };
 }

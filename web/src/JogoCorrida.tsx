@@ -6,10 +6,11 @@ import { api } from './api';
 import { chave, useT } from './i18n';
 import { comandoDaPausa, TelaDePausa, usePausaComEsc } from './pausaDosJogos';
 import { passosEmMs, tempoLegivel, type Comandos } from './corrida/fisica';
-import { rodarCorrida, TIPOS_DE_EVENTO, type EventoDeItem, type Item, type LinhaDaClassificacao, type LinhaDaOrdem, type PosicaoDoRival, type Rival } from './corrida/laco';
+import { diferencaLegivel, criarParciais, MEDALHAS_DA_CORRIDA, medalhaDaCorrida, parciaisDoFantasma, TEMPO_DO_PILOTO } from './corrida/parciais';
+import { pistaDaCorrida, rodarCorrida, TIPOS_DE_EVENTO, type EventoDeItem, type Item, type LinhaDaClassificacao, type LinhaDaOrdem, type PosicaoDoRival, type Rival } from './corrida/laco';
 import { nomeDaPistaEm } from './corrida/nomes';
 import { COPAS, espelhar, HORTA, linhaDaPista, MUNDO, PISTAS, pistaPorId, type DefinicaoDaPista } from './corrida/pista';
-import { DIFICULDADES, PONTOS_DA_COPA, somarPontos, type Dificuldade, type PontosNaCopa } from './corrida/robos';
+import { DIFICULDADES_DA_CORRIDA, PONTOS_DA_COPA, somarPontos, type DificuldadeDaCorrida, type PontosNaCopa } from './corrida/robos';
 import { H, pontoNoMapa, W } from './corrida/render';
 import type { Agir } from './Minijogo';
 import type { Partida } from './minijogos';
@@ -56,10 +57,12 @@ const MEDALHAS = ['🥇', '🥈', '🥉'];
  */
 function useControles(ativo: boolean) {
   const comandos = useRef<Comandos>({ acelera: false, freia: false, vira: 0, derrapa: false, usa: false, olha: false });
-  const lados = useRef({ esquerda: false, direita: false, toqueEsquerda: false, toqueDireita: false });
+  /** As setas do teclado, e o VOLANTE do toque (−1 … 1, proporcional: a física aceita o volante parcial). */
+  const lados = useRef({ esquerda: false, direita: false, toque: 0 });
   const virar = () => {
     const l = lados.current;
-    comandos.current.vira = (l.direita || l.toqueDireita ? 1 : 0) - (l.esquerda || l.toqueEsquerda ? 1 : 0);
+    const teclado = (l.direita ? 1 : 0) - (l.esquerda ? 1 : 0);
+    comandos.current.vira = teclado !== 0 ? teclado : l.toque;
   };
   useEffect(() => {
     if (!ativo) return;
@@ -87,7 +90,7 @@ function useControles(ativo: boolean) {
     const soltarTudo = () => {
       const toque = window.matchMedia?.('(pointer: coarse)').matches ?? false;
       Object.assign(c, { acelera: toque, freia: false, vira: 0, derrapa: false, usa: false, olha: false });
-      Object.assign(lados.current, { esquerda: false, direita: false, toqueEsquerda: false, toqueDireita: false });
+      Object.assign(lados.current, { esquerda: false, direita: false, toque: 0 });
     };
     const escondeu = () => document.hidden && soltarTudo();
     window.addEventListener('keydown', desce);
@@ -104,11 +107,11 @@ function useControles(ativo: boolean) {
       Object.assign(c, { acelera: false, freia: false, vira: 0, derrapa: false, usa: false, olha: false });
     };
   }, [ativo]);
-  const tocar = (lado: 'toqueEsquerda' | 'toqueDireita', apertado: boolean) => {
-    lados.current[lado] = apertado;
+  const volante = (vira: number) => {
+    lados.current.toque = vira;
     virar();
   };
-  return { comandos, tocar };
+  return { comandos, volante };
 }
 
 /** A figura do item no botão de toque (as três cenouras com quantas faltam). */
@@ -123,55 +126,131 @@ const EMOJI_DO_ITEM: Record<Item, string> = {
   regador: '🌧️',
 };
 
+/**
+ * O VOLANTE DO TOQUE (20/11/2026, a segunda auditoria): no lugar dos dois botões ◀ ▶, uma faixa larga em que o dedo vira o
+ * quanto está longe do meio: tocar na ponta é a curva inteira (como os botões de antes), e arrastar dá a curva parcial. O
+ * meio tem uma folga, para o dedo parado não virar sozinho.
+ */
+function Volante({ aoVirar }: { aoVirar: (vira: number) => void }) {
+  const t = useT();
+  const ponto = useRef<HTMLSpanElement>(null);
+  const mostrar = (vira: number) => {
+    if (ponto.current) ponto.current.style.transform = `translateX(calc(${vira} * var(--volante-curso)))`;
+  };
+  const ler = (e: React.PointerEvent<HTMLDivElement>) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    const f = (e.clientX - (r.left + r.width / 2)) / ((r.width / 2) * 0.8);
+    const folga = 0.12;
+    const vira = Math.abs(f) <= folga ? 0 : Math.sign(f) * Math.min(1, (Math.abs(f) - folga) / (1 - folga));
+    aoVirar(vira);
+    mostrar(vira);
+  };
+  const soltar = () => {
+    aoVirar(0);
+    mostrar(0);
+  };
+  return (
+    <div
+      className="corrida-volante"
+      role="group"
+      aria-label={t('Dirigir')}
+      onPointerDown={(e) => {
+        e.currentTarget.setPointerCapture?.(e.pointerId);
+        ler(e);
+      }}
+      onPointerMove={(e) => {
+        if (e.currentTarget.hasPointerCapture?.(e.pointerId)) ler(e);
+      }}
+      onPointerUp={soltar}
+      onPointerCancel={soltar}
+      onLostPointerCapture={soltar}
+      onContextMenu={(e) => e.preventDefault()}
+    >
+      <span aria-hidden="true">◀</span>
+      <span className="corrida-volante-ponto" ref={ponto} aria-hidden="true" />
+      <span aria-hidden="true">▶</span>
+    </div>
+  );
+}
+
 function BotoesDeToque({ controles, item, usos = 1 }: { controles: ReturnType<typeof useControles>; item?: Item | null; usos?: number }) {
   const t = useT();
-  const { comandos, tocar } = controles;
-  const lado = (qual: 'toqueEsquerda' | 'toqueDireita') => ({
-    onPointerDown: () => tocar(qual, true),
-    onPointerUp: () => tocar(qual, false),
-    onPointerCancel: () => tocar(qual, false),
-    onPointerLeave: () => tocar(qual, false),
+  const { comandos, volante } = controles;
+  const segurar = (campo: 'usa' | 'olha' | 'derrapa' | 'freia') => ({
+    onPointerDown: () => (comandos.current[campo] = true),
+    onPointerUp: () => (comandos.current[campo] = false),
+    onPointerCancel: () => (comandos.current[campo] = false),
+    onPointerLeave: () => (comandos.current[campo] = false),
+    onContextMenu: (e: React.MouseEvent) => e.preventDefault(),
   });
   return (
     <div className="corrida-toque">
-      <button type="button" aria-label={t('Virar para a esquerda')} {...lado('toqueEsquerda')}>
-        ◀
-      </button>
+      <Volante aoVirar={volante} />
       {item && (
-        <button
-          type="button"
-          aria-label={t('Usar o item')}
-          onPointerDown={() => (comandos.current.usa = true)}
-          onPointerUp={() => (comandos.current.usa = false)}
-          onPointerCancel={() => (comandos.current.usa = false)}
-        >
+        <button type="button" aria-label={t('Usar o item')} {...segurar('usa')} onPointerLeave={undefined}>
           {EMOJI_DO_ITEM[item]}
           {usos > 1 && <small>×{usos}</small>}
         </button>
       )}
-      <button
-        type="button"
-        aria-label={t('Olhar para trás')}
-        onPointerDown={() => (comandos.current.olha = true)}
-        onPointerUp={() => (comandos.current.olha = false)}
-        onPointerCancel={() => (comandos.current.olha = false)}
-        onPointerLeave={() => (comandos.current.olha = false)}
-      >
+      <button type="button" aria-label={t('Olhar para trás')} {...segurar('olha')}>
         👀
       </button>
-      <button
-        type="button"
-        aria-label={t('Derrapar')}
-        onPointerDown={() => (comandos.current.derrapa = true)}
-        onPointerUp={() => (comandos.current.derrapa = false)}
-        onPointerCancel={() => (comandos.current.derrapa = false)}
-      >
+      {/* FREAR E DAR RÉ (20/11/2026): no toque o kart acelera sozinho, e sem isto não havia como frear nem sair de ré de um canto */}
+      <button type="button" aria-label={t('Frear')} {...segurar('freia')}>
+        ▼
+      </button>
+      <button type="button" aria-label={t('Derrapar')} {...segurar('derrapa')} onPointerLeave={undefined}>
         ⤴
       </button>
-      <button type="button" aria-label={t('Virar para a direita')} {...lado('toqueDireita')}>
-        ▶
-      </button>
     </div>
+  );
+}
+
+const FIGURA_DA_MEDALHA = ['🥇', '🥈', '🥉'];
+const NOME_DA_MEDALHA = [chave('Ouro'), chave('Prata'), chave('Bronze')];
+
+/**
+ * AS MEDALHAS DO CONTRA O RELÓGIO (20/11/2026), como as da Torre: na escolha, os três tempos a bater; no fim, a que a corrida
+ * ganhou. Só tela: o servidor guarda o tempo, não a medalha (corrida/parciais.ts).
+ */
+function MedalhasDaCorrida({ pista, tempoMs }: { pista: string; tempoMs?: number }) {
+  const t = useT();
+  const base = TEMPO_DO_PILOTO[pista];
+  if (!base) return null;
+  if (tempoMs !== undefined) {
+    const m = medalhaDaCorrida(pista, Math.round((tempoMs * 60) / 1000));
+    if (m === null) return null;
+    return (
+      <span className="corrida-medalha-ganha" role="img" aria-label={t(NOME_DA_MEDALHA[m])} title={t(NOME_DA_MEDALHA[m])}>
+        {FIGURA_DA_MEDALHA[m]}
+      </span>
+    );
+  }
+  return (
+    <span className="corrida-medalhas">
+      {MEDALHAS_DA_CORRIDA.map((fator, i) => (
+        <span key={i} title={t(NOME_DA_MEDALHA[i])}>
+          <span role="img" aria-label={t(NOME_DA_MEDALHA[i])}>{FIGURA_DA_MEDALHA[i]}</span> {tempoLegivel(passosEmMs(Math.round(base * fator)))}
+        </span>
+      ))}
+    </span>
+  );
+}
+
+/** A diferença da última parcial para o fantasma de referência: verde à frente, vermelho atrás, por 2,5 s. */
+function Parcial({ parcial }: { parcial: { ms: number; vez: number } | null }) {
+  const [visivel, setVisivel] = useState(false);
+  useEffect(() => {
+    if (!parcial) return;
+    setVisivel(true);
+    const id = setTimeout(() => setVisivel(false), 2500);
+    return () => clearTimeout(id);
+  }, [parcial]);
+  if (!parcial || !visivel) return null;
+  return (
+    <span className={`corrida-parcial ${parcial.ms <= 0 ? 'frente' : 'atras'}`} aria-live="off">
+      {diferencaLegivel(parcial.ms)}
+    </span>
   );
 }
 
@@ -281,6 +360,10 @@ export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void
   const [erro, setErro] = useState<string | null>(null);
   const [placar, setPlacar] = usePlacar();
   const [vendoTrofeus, setVendoTrofeus] = useState(false);
+  /** A diferença da última parcial para o fantasma de referência (o meu recorde, ou o mais rápido dos marcados). */
+  const [parcial, setParcial] = useState<{ ms: number; vez: number } | null>(null);
+  /** O tempo do fantasma de referência das parciais: no fim, a diferença final é contra ele. */
+  const tempoDaReferencia = useRef<number | null>(null);
   /** O meu avatar pronto (o servidor diz junto dos recordes): as cores do meu kart. */
   const [meuAvatar, setMeuAvatar] = useState<number | string | null>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -324,17 +407,30 @@ export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void
     let vivo = true;
     let parar = () => {};
     tela.current?.focus();
+    setParcial(null);
     void (async () => {
-      const fantasmas = (
+      // o meu recorde vem sempre (a referência das parciais), mesmo quando não está marcado para aparecer na pista
+      const meuRecorde = recordes?.find((x) => x.userId === eu) ?? null;
+      const ids = [...new Set([...escolhidos, ...(meuRecorde ? [eu] : [])])];
+      const baixados = (
         await Promise.all(
-          [...escolhidos].map((id) =>
+          ids.map((id) =>
             api<{ amostras: number[] }>(`/api/corrida/${pista}/fantasma/${id}`)
-              .then((r) => ({ amostras: r.amostras, avatar: recordes?.find((x) => x.userId === id)?.avatarPronto ?? null }))
+              .then((r) => ({ id, amostras: r.amostras, avatar: recordes?.find((x) => x.userId === id)?.avatarPronto ?? null }))
               .catch(() => null),
           ),
         )
-      ).filter((a): a is { amostras: number[]; avatar: number | string | null } => a !== null);
+      ).filter((a): a is { id: number; amostras: number[]; avatar: number | string | null } => a !== null);
       if (!vivo || !canvas.current) return;
+      const fantasmas = baixados.filter((f) => escolhidos.has(f.id)).map(({ amostras, avatar }) => ({ amostras, avatar }));
+      // AS PARCIAIS: contra o meu recorde; sem ele, contra o mais rápido dos marcados
+      const tempoDe = (id: number) => recordes?.find((x) => x.userId === id)?.tempoMs ?? Infinity;
+      const referencia = baixados.find((f) => f.id === eu) ?? [...baixados].sort((a, b) => tempoDe(a.id) - tempoDe(b.id))[0] ?? null;
+      const p = pistaDaCorrida(def);
+      const marcosDaReferencia = referencia ? parciaisDoFantasma(p, def.voltas, referencia.amostras) : [];
+      const seguir = criarParciais(p, def.voltas);
+      tempoDaReferencia.current = referencia ? tempoDe(referencia.id) : null;
+      let vez = 0;
       parar = rodarCorrida({
         canvas: canvas.current,
         comandos: controles.comandos.current,
@@ -346,6 +442,13 @@ export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void
         fantasmas,
         contagem: CONTAGEM,
         aoPlacar: setPlacar,
+        aoPosicao: referencia
+          ? (pos) => {
+              for (const k of seguir.andar(pos.x, pos.y)) {
+                if (marcosDaReferencia[k]) setParcial({ ms: passosEmMs(pos.n - marcosDaReferencia[k]), vez: ++vez });
+              }
+            }
+          : undefined,
         aoChegar: (voltas, caminho) => {
           const tempoMs = passosEmMs(voltas[voltas.length - 1]);
           setResultado({ tempoMs, voltas: voltas.map(passosEmMs), recorde: null, anterior: null });
@@ -419,6 +522,7 @@ export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void
           </ul>
           <div className="corrida-pista-nome">
             {meu && <span>{t('Seu recorde: {tempo}', { tempo: tempoLegivel(meu.tempoMs) })}</span>}
+            <MedalhasDaCorrida pista={pista} />
             <ComandosDoJogo itens={[{ teclas: ['setas'], rotulo: t('Dirigir') }, { teclas: ['espaco'], rotulo: t('Derrapar') }, { teclas: ['q'], rotulo: t('Olhar para trás') }, comandoDaPausa(t)]} />
             <p className="settings-hint">{t('Setas para dirigir, Espaço para derrapar e carregar o turbo.')}</p>
           </div>
@@ -464,12 +568,19 @@ export function JogoCorrida({ eu, aoVoltar }: { eu: number; aoVoltar: () => void
         <div className="corrida-tela" ref={tela} tabIndex={-1}>
           <canvas ref={canvas} width={W} height={H} />
           {fase === 'correndo' && <Placar placar={placar} voltas={def.voltas} />}
+          {fase === 'correndo' && <Parcial parcial={parcial} />}
           {fase === 'correndo' && <BotoesDeToque controles={controles} />}
           {fase === 'correndo' && pausado && <TelaDePausa aoContinuar={continuar} icone={false} />}
           {fase === 'fim' && resultado && (
             <div className="corrida-fim">
               {resultado.recorde && <strong className="corrida-recorde">{t('Novo recorde!')}</strong>}
+              <MedalhasDaCorrida pista={pista} tempoMs={resultado.tempoMs} />
               <span className="corrida-relogio grande">{tempoLegivel(resultado.tempoMs)}</span>
+              {tempoDaReferencia.current !== null && Number.isFinite(tempoDaReferencia.current) && (
+                <span className={`corrida-parcial no-fim ${resultado.tempoMs <= tempoDaReferencia.current ? 'frente' : 'atras'}`}>
+                  {diferencaLegivel(resultado.tempoMs - tempoDaReferencia.current)}
+                </span>
+              )}
               <ol className="corrida-voltas">
                 {resultado.voltas.map((v, i) => (
                   <li key={i}>
@@ -771,7 +882,7 @@ function CorridaDaSala({
 export interface OpcoesContraRobos {
   /** Uma pista (o id) ou uma copa (o id da copa). */
   escolha: string;
-  dificuldade: Dificuldade;
+  dificuldade: DificuldadeDaCorrida;
   /** As pistas viradas da esquerda para a direita. */
   espelho: boolean;
   /** A classe rápida (o teto 25% mais alto). */
@@ -780,7 +891,7 @@ export interface OpcoesContraRobos {
 
 const ROBOS_NA_COPA = 7;
 const CLASSE_RAPIDA = 1.25;
-const NOME_DA_DIFICULDADE: Record<Dificuldade, string> = { facil: chave('Fácil'), medio: chave('Médio'), dificil: chave('Difícil') };
+const NOME_DA_DIFICULDADE: Record<DificuldadeDaCorrida, string> = { facil: chave('Fácil'), medio: chave('Médio'), dificil: chave('Difícil'), mestre: chave('Mestre') };
 
 function EscolhaContraRobos({
   opcoes,
@@ -830,7 +941,7 @@ function EscolhaContraRobos({
         ))}
       </ul>
       <div className="minijogo-abas corrida-dificuldade" role="radiogroup" aria-label={t('Computador')}>
-        {DIFICULDADES.map((d) => (
+        {DIFICULDADES_DA_CORRIDA.map((d) => (
           <button key={d} type="button" role="radio" aria-checked={opcoes.dificuldade === d} className={opcoes.dificuldade === d ? 'ativa' : undefined} onClick={() => mudar({ ...opcoes, dificuldade: d })}>
             {t(NOME_DA_DIFICULDADE[d])}
           </button>

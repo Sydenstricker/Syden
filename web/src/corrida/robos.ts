@@ -13,6 +13,13 @@ import { pontoMaisPerto, sorteio, type Pista } from './pista';
 
 export type Dificuldade = 'facil' | 'medio' | 'dificil';
 export const DIFICULDADES: Dificuldade[] = ['facil', 'medio', 'dificil'];
+/**
+ * O MESTRE (20/11/2026, a segunda auditoria), só na Corrida: o Jato e a Regata usam `Dificuldade` com as três de sempre. O
+ * mestre tem o teto ACIMA do kart de quem joga (a classe ×1,04) e o EMPURRÃO de quem está atrás: o robô que vem atrás de
+ * quem joga ganha até +5% no teto, cheio a partir de um quarto de volta de distância (andarRobo).
+ */
+export type DificuldadeDaCorrida = Dificuldade | 'mestre';
+export const DIFICULDADES_DA_CORRIDA: DificuldadeDaCorrida[] = [...DIFICULDADES, 'mestre'];
 
 /** Os nomes dos pilotos do computador: inventados, iguais em todo idioma (como os dos Bichos da Toca). */
 export const NOMES_DOS_PILOTOS = ['Tico', 'Lola', 'Bento', 'Nina', 'Juca', 'Dora', 'Pipo', 'Zeca', 'Lia', 'Teco', 'Mia'];
@@ -21,11 +28,16 @@ export const nomeDoPiloto = (i: number) => `🤖 ${NOMES_DOS_PILOTOS[i % NOMES_D
 /** Os pontos por posição na copa (de 8 karts), os mesmos da copa na sala. */
 export const PONTOS_DA_COPA = [10, 8, 6, 5, 4, 3, 2, 1];
 
+/** O teto do mestre (vezes a classe de quem joga) e o empurrão máximo de quem vem atrás. */
+export const MESTRE_CLASSE = 1.04;
+export const MESTRE_EMPURRAO = 0.05;
+
 /** O quanto o robô aperta, por dificuldade: o teto (fração da velocidade máxima), se derrapa, e quanto erra (por segundo). */
-const JEITO: Record<Dificuldade, { teto: [number, number]; derrapa: number; erra: number; largada: number }> = {
-  facil: { teto: [0.84, 0.9], derrapa: 0, erra: 0.08, largada: 0 },
-  medio: { teto: [0.93, 0.98], derrapa: 0.5, erra: 0.03, largada: 0.3 },
-  dificil: { teto: [1, 1], derrapa: 1, erra: 0, largada: 0.8 },
+const JEITO: Record<DificuldadeDaCorrida, { teto: [number, number]; derrapa: number; erra: number; largada: number; classe: number; empurrao: number }> = {
+  facil: { teto: [0.84, 0.9], derrapa: 0, erra: 0.08, largada: 0, classe: 1, empurrao: 0 },
+  medio: { teto: [0.93, 0.98], derrapa: 0.5, erra: 0.03, largada: 0.3, classe: 1, empurrao: 0 },
+  dificil: { teto: [1, 1], derrapa: 1, erra: 0, largada: 0.8, classe: 1, empurrao: 0 },
+  mestre: { teto: [1, 1], derrapa: 1, erra: 0, largada: 1, classe: MESTRE_CLASSE, empurrao: MESTRE_EMPURRAO },
 };
 
 export interface RoboDoKart {
@@ -48,6 +60,9 @@ export interface RoboDoKart {
   sorte: () => number;
   /** O passo em que ele cruzou a chegada (0 = ainda correndo). */
   chegada: number;
+  /** A classe dele sem o empurrão, e o empurrão máximo (0 fora do mestre). */
+  classeBase: number;
+  empurrao: number;
 }
 
 /**
@@ -78,13 +93,13 @@ export function porNaGrade(k: Kart, p: Pista, casa: number) {
 /** A casa da grade de quem joga (a última fila, à esquerda). */
 export const CASA_DE_QUEM_JOGA = 6;
 
-export function criarRobos(p: Pista, quantos: number, dificuldade: Dificuldade, classe = 1): RoboDoKart[] {
+export function criarRobos(p: Pista, quantos: number, dificuldade: DificuldadeDaCorrida, classe = 1): RoboDoKart[] {
   const jeito = JEITO[dificuldade];
   const casas = [0, 1, 2, 3, 4, 5, 7].slice(0, quantos);
   return casas.map((casa, i) => {
-    const sorte = sorteio(p.def.semente * 131 + i * 17 + DIFICULDADES.indexOf(dificuldade) * 7 + 3);
+    const sorte = sorteio(p.def.semente * 131 + i * 17 + DIFICULDADES_DA_CORRIDA.indexOf(dificuldade) * 7 + 3);
     const kart = novoKart(p);
-    kart.classe = classe;
+    kart.classe = classe * jeito.classe;
     porNaGrade(kart, p, casa);
     // os da frente da grade são um tico mais rápidos (como numa copa de verdade)
     const teto = jeito.teto[0] + (jeito.teto[1] - jeito.teto[0]) * (1 - i / Math.max(1, quantos - 1)) * (0.6 + 0.4 * sorte());
@@ -101,12 +116,14 @@ export function criarRobos(p: Pista, quantos: number, dificuldade: Dificuldade, 
       erra: jeito.erra / 60,
       sorte,
       chegada: 0,
+      classeBase: kart.classe,
+      empurrao: jeito.empurrao,
     };
   });
 }
 
 /** O verde para o robô: alguns acertam o turbo da largada (mais na dificuldade alta), nunca patinam. */
-export function largadaDoRobo(r: RoboDoKart, dificuldade: Dificuldade, contagem: number) {
+export function largadaDoRobo(r: RoboDoKart, dificuldade: DificuldadeDaCorrida, contagem: number) {
   if (r.sorte() < JEITO[dificuldade].largada) largada(r.kart, 20, contagem);
 }
 
@@ -135,9 +152,16 @@ export function comandosDoRobo(r: RoboDoKart, p: Pista): Comandos {
   return { acelera: k.v < teto, freia: false, vira, derrapa: r.derrapa && Math.abs(dif) > 0.25 && k.passos >= r.erroAte };
 }
 
-/** Um passo do robô (depois do verde). Devolve true no passo em que ele cruza a chegada. */
-export function andarRobo(r: RoboDoKart, p: Pista): boolean {
+/**
+ * Um passo do robô (depois do verde). Devolve true no passo em que ele cruza a chegada. `quemJoga` é o progresso de quem joga
+ * (voltas e fração), para o empurrão do mestre.
+ */
+export function andarRobo(r: RoboDoKart, p: Pista, quemJoga?: number): boolean {
   const antes = r.kart.terminou;
+  if (r.empurrao > 0 && quemJoga !== undefined && !antes) {
+    const atras = quemJoga - progresso(r.kart, p);
+    r.kart.classe = r.classeBase * (1 + r.empurrao * Math.max(0, Math.min(1, atras / 0.25)));
+  }
   passo(r.kart, comandosDoRobo(r, p), p);
   if (!antes && r.kart.terminou) {
     r.chegada = r.kart.voltas[r.kart.voltas.length - 1];

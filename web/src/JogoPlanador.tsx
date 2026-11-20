@@ -4,6 +4,7 @@ import { ComandosDoJogo, type Comando } from './ComandosDosJogos';
 import { chave, useT } from './i18n';
 import { comandoDaPausa, TelaDePausa, usePausaComEsc, type Pausa } from './pausaDosJogos';
 import { tocar } from './somDosJogos';
+import { lerControle } from './controleDosJogos';
 import { tempoLegivel } from './jato/util';
 import {
   BAIXO,
@@ -128,14 +129,14 @@ function useComandos(ativo: boolean) {
   }, [ativo]);
   const ler = () => {
     let c = teclas.current | toque.current;
-    for (const p of navigator.getGamepads?.() ?? []) {
-      if (!p) continue;
-      const x = p.axes[0] ?? 0, y = p.axes[1] ?? 0;
-      if (x < -0.4 || p.buttons[14]?.pressed) c |= ESQUERDA;
-      if (x > 0.4 || p.buttons[15]?.pressed) c |= DIREITA;
-      if (y < -0.4 || p.buttons[12]?.pressed) c |= CIMA;
-      if (y > 0.4 || p.buttons[13]?.pressed) c |= BAIXO;
-      if (p.buttons[0]?.pressed) c |= BOTAO;
+    // o controle de videogame (controleDosJogos.ts): o analógico passando de ~0,4 (ou o direcional) e o A
+    const pad = lerControle();
+    if (pad) {
+      if (pad.direcao < -0.3) c |= ESQUERDA;
+      if (pad.direcao > 0.3) c |= DIREITA;
+      if (pad.vertical < -0.3) c |= CIMA;
+      if (pad.vertical > 0.3) c |= BAIXO;
+      if (pad.a) c |= BOTAO;
     }
     return c;
   };

@@ -21,3 +21,97 @@
   gap: 6px;
   cursor: pointer;
 }
+
+/* O VOLANTE DO TOQUE (20/11/2026): uma faixa larga no lugar de ◀ ▶; o pontinho mostra o quanto o dedo vira */
+@media (pointer: coarse) {
+  .corrida-toque .corrida-volante {
+    --volante-curso: 42px;
+    position: relative;
+    flex: 0 1 150px;
+    min-width: 112px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px;
+    border-radius: 28px;
+    border: 2px solid rgba(251, 243, 228, 0.6);
+    background: rgba(30, 24, 34, 0.45);
+    color: #fbf3e4;
+    font-size: 1.2rem;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .corrida-volante-ponto {
+    position: absolute;
+    left: calc(50% - 9px);
+    top: calc(50% - 9px);
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #ffc46a;
+    box-shadow: 0 0 0 2px #2a1e2c;
+    pointer-events: none;
+  }
+  /* no celular em pé (~390 px), quatro botões e o volante cabem numa linha só */
+  @media (max-width: 440px) {
+    .corrida-toque {
+      gap: 6px;
+      padding: 6px;
+    }
+    .corrida-toque button {
+      width: 48px;
+      height: 48px;
+      font-size: 1.2rem;
+    }
+    .corrida-toque .corrida-volante {
+      --volante-curso: 32px;
+      height: 48px;
+      min-width: 96px;
+    }
+  }
+}
+
+/* AS PARCIAIS do contra o relógio: a diferença para o fantasma de referência, a cada marco */
+.corrida-parcial {
+  position: absolute;
+  top: 34px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 2px 10px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(0.85rem, 2.4vw, 1.1rem);
+  color: #fbf3e4;
+  pointer-events: none;
+  text-shadow: 0 1px 0 #2a1e2c;
+}
+
+.corrida-parcial.frente {
+  background: rgba(46, 140, 70, 0.85);
+}
+
+.corrida-parcial.atras {
+  background: rgba(190, 60, 52, 0.85);
+}
+
+.corrida-medalhas {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.corrida-medalha-ganha {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+/* no fim, a diferença final fica no meio do resultado, e não no alto da tela */
+.corrida-parcial.no-fim {
+  position: static;
+  transform: none;
+}

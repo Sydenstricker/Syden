@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { ComandosDoJogo } from './ComandosDosJogos';
 import { BotoesDosRobos, cadaUmPorSi } from './EscolhaDosRobos';
-import { useT } from './i18n';
+import { chave, useT } from './i18n';
 import { comandoDaPausa, TelaDePausa, usePausaComEsc } from './pausaDosJogos';
 import { Placar } from './Minijogo';
 import { tocar } from './somDosJogos';
@@ -12,6 +12,7 @@ import { H, W } from './corrida/render';
 import { NOMES_DAS_ARENAS } from './balao/nomes';
 import { figuraDoItem, rodarBalao, TIPOS_DO_BALAO, type EventoDoBalao, type Participante } from './balao/laco';
 import { corDoBalao } from './balao/render';
+import { DIFICULDADES_DO_BALAO, type DificuldadeDoBalao } from './balao/robo';
 import { ARENAS, BALOES, type ItemDoBalao } from './balao/sim';
 import './balao/balao.css';
 
@@ -66,6 +67,8 @@ type Props = {
 
 const ARENA_GUARDADA = 'syden:balaoArena';
 const ROBOS_GUARDADOS = 'syden:balaoRobos';
+const DIFICULDADE_GUARDADA = 'syden:balaoDificuldade';
+const NOME_DA_DIFICULDADE: Record<DificuldadeDoBalao, string> = { facil: chave('Fácil'), medio: chave('Médio'), dificil: chave('Difícil') };
 
 const lerGuardado = (chave: string, padrao: string) => {
   try {
@@ -84,7 +87,7 @@ const guardar = (chave: string, valor: string) => {
 
 export function JogoBalao({ estado, eu, jogador, agir, socket = null, channelId = 0 }: Props) {
   const fim = estado.terminada || estado.fase === 'fim';
-  const [escolha, setEscolha] = useState<{ arena: string; robos: number } | null>(null);
+  const [escolha, setEscolha] = useState<{ arena: string; robos: number; dificuldade: DificuldadeDoBalao } | null>(null);
   if (fim) return <TelaDoFim estado={estado} eu={eu} />;
   if (estado.solo) {
     if (!escolha) return <EscolhaDoSolo aoEscolher={setEscolha} />;
@@ -93,6 +96,7 @@ export function JogoBalao({ estado, eu, jogador, agir, socket = null, channelId 
         key={estado.partidaId}
         arena={escolha.arena}
         quantos={escolha.robos}
+        dificuldade={escolha.dificuldade}
         eu={eu}
         nome={estado.username ?? ''}
         avatar={estado.avatar ?? null}
@@ -168,18 +172,23 @@ export function EscolhaDaArena({ aoEscolher, aoVoltar }: { aoEscolher: (arena: s
   );
 }
 
-function EscolhaDoSolo({ aoEscolher }: { aoEscolher: (e: { arena: string; robos: number }) => void }) {
+function EscolhaDoSolo({ aoEscolher }: { aoEscolher: (e: { arena: string; robos: number; dificuldade: DificuldadeDoBalao }) => void }) {
   const t = useT();
   const [arena, setArena] = useState(() => {
     const g = lerGuardado(ARENA_GUARDADA, 'horta');
     return ARENAS.some((a) => a.id === g) ? g : 'horta';
   });
   const [robos, setRobos] = useState(() => Math.min(5, Math.max(1, Number(lerGuardado(ROBOS_GUARDADOS, '3')) || 3)));
+  const [dificuldade, setDificuldade] = useState<DificuldadeDoBalao>(() => {
+    const g = lerGuardado(DIFICULDADE_GUARDADA, 'medio');
+    return (DIFICULDADES_DO_BALAO as string[]).includes(g) ? (g as DificuldadeDoBalao) : 'medio';
+  });
   const comecar = () => {
     guardar(ARENA_GUARDADA, arena);
     guardar(ROBOS_GUARDADOS, String(robos));
+    guardar(DIFICULDADE_GUARDADA, dificuldade);
     tocar('clique');
-    aoEscolher({ arena, robos });
+    aoEscolher({ arena, robos, dificuldade });
   };
   return (
     <div className="balao-escolha">
@@ -199,6 +208,13 @@ function EscolhaDoSolo({ aoEscolher }: { aoEscolher: (e: { arena: string; robos:
         ))}
       </ul>
       <BotoesDosRobos opcoes={[1, 2, 3, 4, 5].map(cadaUmPorSi)} escolhida={robos} aoEscolher={setRobos} pergunta={t('Quantos adversários do computador?')} />
+      <div className="minijogo-abas corrida-dificuldade" role="radiogroup" aria-label={t('Computador')}>
+        {DIFICULDADES_DO_BALAO.map((d) => (
+          <button key={d} type="button" role="radio" aria-checked={dificuldade === d} className={dificuldade === d ? 'ativa' : undefined} onClick={() => setDificuldade(d)}>
+            {t(NOME_DA_DIFICULDADE[d])}
+          </button>
+        ))}
+      </div>
       <div className="minijogo-acoes">
         <button type="button" className="btn-primary" onClick={comecar}>
           {t('Começar')}
@@ -279,16 +295,20 @@ function BotoesDeToque({ controles, item }: { controles: ReturnType<typeof useCo
     onPointerCancel: () => tocarLado(qual, false),
     onPointerLeave: () => tocarLado(qual, false),
   });
-  const segurar = (campo: 'usa' | 'olha' | 'derrapa') => ({
+  const segurar = (campo: 'usa' | 'olha' | 'derrapa' | 'freia') => ({
     onPointerDown: () => (comandos.current[campo] = true),
     onPointerUp: () => (comandos.current[campo] = false),
     onPointerCancel: () => (comandos.current[campo] = false),
     onPointerLeave: () => (comandos.current[campo] = false),
   });
   return (
-    <div className="corrida-toque">
+    <div className="corrida-toque balao-toque">
       <button type="button" aria-label={t('Virar para a esquerda')} {...lado('toqueEsquerda')}>
         ◀
+      </button>
+      {/* A RÉ (20/11/2026): no toque o kart acelera sozinho, e encostado num muro não havia como sair */}
+      <button type="button" aria-label={t('Frear')} {...segurar('freia')}>
+        ▼
       </button>
       <button type="button" aria-label={t('Pular')} {...segurar('derrapa')}>
         ⤒
@@ -395,6 +415,7 @@ function Comandos_({ piloto, solo = false }: { piloto: boolean; solo?: boolean }
 function PartidaSolo({
   arena,
   quantos,
+  dificuldade,
   eu,
   nome,
   avatar,
@@ -403,6 +424,7 @@ function PartidaSolo({
 }: {
   arena: string;
   quantos: number;
+  dificuldade: DificuldadeDoBalao;
   eu: number;
   nome: string;
   avatar: number | string | null;
@@ -436,6 +458,7 @@ function PartidaSolo({
         pausa,
       participantes: lista,
       robos: lista.filter((q) => q.id !== eu).map((q) => q.id),
+      dificuldade,
       semente: Math.floor(Math.random() * 2 ** 31),
       verdeEm: performance.now() + 3000,
       baloes: new Map(lista.map((q) => [q.id, BALOES])),
