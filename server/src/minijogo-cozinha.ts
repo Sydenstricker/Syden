@@ -30,6 +30,11 @@
  * - O FOGO ESQUECIDO: o que fica no fogo INCENDIO_MS depois de queimar pega fogo (pelo relógio daqui, com a folga a favor de
  *   quem joga). O "tirei" do fogo em chamas é recusado; só o extintor ({ tipo: 'extintor', estacao }) o limpa, e o que estava
  *   lá se perde. Os pratos sujos e a pia são só da cozinha da tela: o servidor confere o prato, não a louça.
+ *
+ * A PACIÊNCIA (20/11/2026, a segunda auditoria): cada pedido vence em prazoDoPedidoMs (60 a 90 s) desde que apareceu na fila,
+ * pelo relógio daqui. Vencido, sai da fila no instante do prazo, entra o próximo e custa PENA_DO_PEDIDO_PERDIDO. Quem vence é
+ * `vencer`, chamado antes de cada ação, ao montar o estado, no fim e na conferência das rotas (a cada 4 s), que avisa a turma; a
+ * tela conta o prazo sozinha (`restaMs`) e esconde a comanda vencida sem esperar.
  */
 import {
   DURACAO_MS,
@@ -37,6 +42,7 @@ import {
   FOLGA_DO_FOGO_MS,
   PLANTAS_DA_COZINHA,
   PEDIDOS_NA_FILA,
+  PENA_DO_PEDIDO_PERDIDO,
   PONTO,
   RECEITAS,
   chave,
@@ -45,6 +51,7 @@ import {
   estadoNoFogo,
   gorjetaDe,
   normalizarPrato,
+  prazoDoPedidoMs,
   sortearPedidos,
   tempoInicialNoFogo,
   vaiAoFogo,
@@ -72,6 +79,8 @@ interface Cozinheiro {
   pontos: number;
   /** Os pontos de gorjeta (já somados em `pontos`). */
   gorjetas: number;
+  /** Os pedidos que venceram na fila (a paciência). */
+  perdidos: number;
   /** Quando cada pedido apareceu na fila desta pessoa (o índice da sequência → o relógio daqui). */
   entrou: Map<number, number>;
   ultimaEntrega: number;
@@ -114,6 +123,7 @@ export function criarCozinha({ agora = Date.now, aleatorio = Math.random }: { ag
             pratos: 0,
             pontos: 0,
             gorjetas: 0,
+            perdidos: 0,
             entrou: new Map(),
             ultimaEntrega: -Infinity,
             fogo: new Map(),
@@ -145,8 +155,39 @@ export function criarCozinha({ agora = Date.now, aleatorio = Math.random }: { ag
         return linhas;
       };
 
+      /** Quando o pedido vence (no relógio daqui). */
+      const venceEm = (c: Cozinheiro, indice: number) => (c.entrou.get(indice) ?? inicio) + prazoDoPedidoMs(pedidos[indice]);
+
+      /**
+       * A paciência: tira da fila o que venceu até `ate`, cada um no instante do prazo dele (o que entra no lugar conta dali), e
+       * cobra a pena. Devolve se mudou algo.
+       */
+      let avisoPendente = false;
+      const vencer = (ate: number): boolean => {
+        if (fase !== 'jogando') return false;
+        let mudou = false;
+        for (const c of cozinheiros.values()) {
+          for (;;) {
+            let qual = -1;
+            for (const i of c.fila) if (venceEm(c, i) <= ate && (qual < 0 || venceEm(c, i) < venceEm(c, qual))) qual = i;
+            if (qual < 0) break;
+            const quando = venceEm(c, qual);
+            c.fila = c.fila.filter((i) => i !== qual);
+            c.entrou.delete(qual);
+            c.entrou.set(c.proximo, quando);
+            c.fila.push(c.proximo++);
+            c.perdidos++;
+            c.pontos = Math.max(0, c.pontos - PENA_DO_PEDIDO_PERDIDO);
+            mudou = true;
+          }
+        }
+        return mudou;
+      };
+
       const terminar = () => {
         if (fase === 'fim') return;
+        // o que venceu antes do fim conta (o depois do fim, não)
+        vencer(Math.min(agora(), inicio + DURACAO_MS));
         fase = 'fim';
         const turma = new Set(presentes());
         // o recorde do Solo: os pontos que este servidor somou, por planta
@@ -225,12 +266,28 @@ export function criarCozinha({ agora = Date.now, aleatorio = Math.random }: { ag
 
       return {
         publico(quem) {
+          // a fila mostrada já sem o que venceu; a turma fica sabendo na próxima conferência
+          if (vencer(agora())) avisoPendente = true;
           const meu = cozinheiros.get(quem);
           return {
             fase,
             duracaoMs: DURACAO_MS,
             decorridoMs: fase === 'jogando' ? agora() - inicio : null,
-            meu: meu ? { fila: meu.fila.map((indice) => ({ indice, receita: pedidos[indice] })), pratos: meu.pratos, pontos: meu.pontos, gorjetas: meu.gorjetas } : null,
+            meu: meu
+              ? {
+                  // restaMs: quanto falta para o pedido vencer, agora (a tela conta sozinha dali); prazoMs: o prazo inteiro
+                  fila: meu.fila.map((indice) => ({
+                    indice,
+                    receita: pedidos[indice],
+                    prazoMs: prazoDoPedidoMs(pedidos[indice]),
+                    restaMs: fase === 'jogando' ? venceEm(meu, indice) - agora() : null,
+                  })),
+                  pratos: meu.pratos,
+                  pontos: meu.pontos,
+                  gorjetas: meu.gorjetas,
+                  perdidos: meu.perdidos,
+                }
+              : null,
             placar: placar(),
             solo,
             planta,
@@ -257,6 +314,7 @@ export function criarCozinha({ agora = Date.now, aleatorio = Math.random }: { ag
           const c = cozinheiros.get(quem);
           if (!c) return 'Você está assistindo esta partida.';
           if (fase === 'escolhendo') return 'Lance inválido.';
+          if (vencer(agora())) ctx.avisar();
           if (corpo.tipo === 'fogo') return fogo(c, corpo);
           if (corpo.tipo === 'extintor') {
             // o extintor limpa a estação de fogo (o que estava lá se perde, sem ficha)
@@ -289,6 +347,11 @@ export function criarCozinha({ agora = Date.now, aleatorio = Math.random }: { ag
           c.gorjetas += gorjeta;
           ctx.avisar();
           return null;
+        },
+        /** A conferência das rotas (a cada 4 s): o pedido que venceu sai, e a turma fica sabendo. */
+        conferir() {
+          if (vencer(agora()) || avisoPendente) ctx.avisar();
+          avisoPendente = false;
         },
       };
     },

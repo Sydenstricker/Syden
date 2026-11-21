@@ -448,11 +448,40 @@ export function useVoice(socket: Socket | null) {
    * pareceria defeito, e o palco diz o motivo. Vem do voice-token ao entrar e da lista da sala (voice:state) depois.
    */
   const [microfoneTravado, setMicrofoneTravado] = useState(false);
+  /** Trava o microfone: a moderação OU a partida (o app não tenta abrir nenhum dos dois). */
   const travadoRef = useRef(false);
-  const definirTravado = useCallback((travado: boolean) => {
-    travadoRef.current = travado;
-    setMicrofoneTravado(travado);
-  }, []);
+  /**
+   * O MICROFONE QUE A PARTIDA DESLIGA (o Lobisomem, 20/11/2026): 'noite' (volta no amanhecer) ou 'fora' (quem saiu do jogo,
+   * até o fim). A trava de verdade é a permissão do LiveKit (server/src/silencio-do-jogo.ts); aqui o app desliga o próprio
+   * microfone na hora, para a faixa não ficar aberta à toa, e o religa quando a partida solta, SE ele estava ligado antes.
+   */
+  const [silencioDoJogo, setSilencioDoJogo] = useState<'noite' | 'fora' | null>(null);
+  const silencioRef = useRef<'noite' | 'fora' | null>(null);
+  /** O microfone estava ligado quando a partida o desligou (ou a pessoa entrou querendo falar): volta quando ela soltar. */
+  const voltarMicrofoneRef = useRef(false);
+  const definirTravado = useCallback(
+    (travado: boolean, jogo: 'noite' | 'fora' | null = null) => {
+      const antes = silencioRef.current;
+      silencioRef.current = jogo;
+      travadoRef.current = travado || jogo !== null;
+      setMicrofoneTravado(travado);
+      setSilencioDoJogo(jogo);
+      const lp = room.localParticipant;
+      if (!antes && jogo) {
+        if (lp.isMicrophoneEnabled) {
+          voltarMicrofoneRef.current = true;
+          void lp.setMicrophoneEnabled(false).catch(() => {});
+        }
+      } else if (antes && !jogo) {
+        // só dentro da chamada (sair dela também passa por aqui), sem a moderação e sem estar ensurdecido
+        if (voltarMicrofoneRef.current && !travado && channelRef.current !== null && !deafenedRef.current) {
+          void lp.setMicrophoneEnabled(true).catch(() => {});
+        }
+        voltarMicrofoneRef.current = false;
+      }
+    },
+    [room],
+  );
   /**
    * Se o microfone já estava desligado ANTES de ensurdecer. Tirar o ensurdecer devolve o microfone a esse estado, como
    * no Discord: quem estava mudo e ensurdeceu continua mudo ao voltar a ouvir. Antes, voltar a ouvir LIGAVA o microfone
@@ -932,7 +961,7 @@ export function useVoice(socket: Socket | null) {
       conferir = undefined;
     };
     const naLista = () => ultima.includes(Number(room.localParticipant.identity));
-    const onState = ({ communityId, members }: { communityId: number; members: { userId: number; travado?: boolean }[] }) => {
+    const onState = ({ communityId, members }: { communityId: number; members: { userId: number; travado?: boolean; silencioDoJogo?: 'noite' | 'fora' | null }[] }) => {
       if (communityId !== comunidadeRef.current) return;
       conferirLista(members);
     };
@@ -941,10 +970,10 @@ export function useVoice(socket: Socket | null) {
       if (comunidadeRef.current !== null || channelId !== channelRef.current) return;
       conferirLista(members);
     };
-    const conferirLista = (members: { userId: number; travado?: boolean }[]) => {
+    const conferirLista = (members: { userId: number; travado?: boolean; silencioDoJogo?: 'noite' | 'fora' | null }[]) => {
       ultima = members.map((m) => m.userId);
       const eu = members.find((m) => m.userId === Number(room.localParticipant.identity));
-      if (eu) definirTravado(!!eu.travado);
+      if (eu) definirTravado(!!eu.travado, eu.silencioDoJogo ?? null);
       if (channelRef.current === null || room.state !== ConnectionState.Connected || naLista() || conferir) return;
       if (substituidaRef.current === channelRef.current) return;
       conferir = setTimeout(() => {
@@ -1113,19 +1142,22 @@ export function useVoice(socket: Socket | null) {
         if (room.state !== ConnectionState.Disconnected) await room.disconnect();
         // A SALA PODE SER OUTRA: a que cria salas devolve a senha da sala temporária da pessoa, e é nela
         // que se entra (ver server/src/salas-temporarias.ts).
-        const { url, token, channelId: destino, e2ee, microfoneTravado: travado } = await api<{
+        const { url, token, channelId: destino, e2ee, microfoneTravado: travado, silencioDoJogo: jogo } = await api<{
           url: string;
           token: string;
           channelId?: number;
           e2ee?: boolean;
           microfoneTravado?: boolean;
+          /** A partida desligou o microfone (o Lobisomem). O servidor manda junto o travado, para os apps antigos. */
+          silencioDoJogo?: 'noite' | 'fora' | null;
         }>(
           conversa ? `/api/direct/${id}/voice-token` : `/api/channels/${id}/voice-token`,
           { method: 'POST' },
         );
         const sala = destino ?? id;
         pedindoSenha = false;
-        definirTravado(!!travado);
+        // o travado do token inclui o da partida (para os apps antigos); a moderação é o que sobra
+        definirTravado(!!travado && !jogo, jogo ?? null);
         // Sala de ponta a ponta num navegador que não sabe cifrar: entrar seria ouvir só ruído e mandar ruído.
         if (e2ee && !chaves) {
           setError(t('Este navegador não consegue entrar em chamadas criptografadas. Atualize-o ou use o app do Syden.'));
@@ -1194,6 +1226,8 @@ export function useVoice(socket: Socket | null) {
       try {
         const settings = getSettings();
         if (settings.startDeafened) setDeafenedState(true);
+        // entrando de noite no Lobisomem querendo falar: o microfone abre quando a partida soltar
+        if (silencioRef.current && !settings.startMuted && !settings.startDeafened) voltarMicrofoneRef.current = true;
         await room.localParticipant.setMicrophoneEnabled(!settings.startMuted && !settings.startDeafened && !travadoRef.current);
         // Entrando mudo, o LiveKit não publica faixa nenhuma e nenhum evento avisa a tela: o estado
         // precisa ser dito na mão, senão o botão mostraria o microfone ligado com ele desligado.
@@ -2313,6 +2347,8 @@ export function useVoice(socket: Socket | null) {
     microfoneSemSom,
     microfoneBloqueado,
     microfoneTravado,
+    /** A partida desligou o microfone: 'noite' ou 'fora' (o Lobisomem), ou null. */
+    silencioDoJogo,
     tentarMicrofoneDeNovo,
     clearError: () => setError(null),
     join,

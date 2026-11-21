@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { existsSync, readFileSync } from 'node:fs';
-import { ARQUIVOS, criarMaestro, TRILHA_DO_JOGO, VOLUME, volumeDa, type Motor, type Trilha } from '../src/musicaDosJogos';
+import { algumJogoPausado, ARQUIVOS, criarMaestro, marcarPausaDoJogo, TRILHA_DO_JOGO, VOLUME, volumeDa, type Motor, type Trilha } from '../src/musicaDosJogos';
 import { JOGOS } from '../src/minijogos';
 
 /** Um motor falso: guarda o que toca agora e quanto tempo "passou" em cada trilha. */
@@ -79,6 +79,20 @@ describe('a música dos jogos', () => {
     assert.equal(m.log.at(-1), 'tocar jato 0');
     maestro.pedir('corrida');
     assert.equal(m.log.at(-1), 'tocar corrida 0');
+  });
+
+  it('a pausa comum dos jogos (20/11/2026): cada pausa aberta cala a música, e só a última fechada a devolve', () => {
+    const a = {};
+    const b = {};
+    assert.equal(algumJogoPausado(), false);
+    marcarPausaDoJogo(a, true);
+    marcarPausaDoJogo(b, true);
+    assert.equal(algumJogoPausado(), true);
+    marcarPausaDoJogo(a, false);
+    assert.equal(algumJogoPausado(), true, 'a outra continua pausada');
+    marcarPausaDoJogo(b, false);
+    marcarPausaDoJogo(b, false);
+    assert.equal(algumJogoPausado(), false);
   });
 
   it('conferir sem mudança não mexe no motor', () => {

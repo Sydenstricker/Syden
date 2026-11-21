@@ -120,6 +120,12 @@ export interface MicrojogoDoServidor<D = unknown, M = unknown> {
    * dividem a posição e os pontos dela (quem não fez nada, sem resultado próprio no `noFim`, fica com zero). A tela recebe as equipes em `dados.turma`.
    */
   equipes?(jogadores: number[], aleatorio: () => number): number[][];
+  /**
+   * ACEITA AS EQUIPES IMPOSTAS (20/11/2026): o microjogo que monta os lados sozinho (pela ordem de chegada: o Cabo, a Torta, o
+   * Revezamento e o Esconde-esconde) e que, quando quem chama a rodada impõe as equipes (`OpcoesDaRodada.equipes`, o 2 contra 2
+   * e o 1 contra 3 do Tabuleiro da turma), joga com ELAS, robôs inclusive. Sem equipes impostas, continua como sempre.
+   */
+  aceitaEquipes?: boolean;
   /** O CANAL AO VIVO (lote 5): ver `AoVivo`. */
   aoVivo?: AoVivo<D, M>;
   /** Confere o 'resultado' de alguém (o primeiro é o que vale) e o transforma no que conta. */

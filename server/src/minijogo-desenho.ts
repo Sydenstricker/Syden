@@ -56,6 +56,12 @@ export const REVELANDO_DESENHO_MS = 5_000;
 // 6, e não 10, desde as 3 rodadas (revisão de 02/11/2026): com 10 pessoas, 30 desenhos davam uns 50 minutos de partida.
 export const MAXIMO_DE_VEZES = 6;
 export const RODADAS_DO_DESENHO = 3;
+/**
+ * A LARGADA (20/11/2026, a segunda auditoria): quem começa escolhe as rodadas (1 a 3) e o tempo de cada desenho, como no Stop.
+ * Fora da lista, vale o de fábrica (3 rodadas, 80 s).
+ */
+export const RODADAS_POSSIVEIS_DO_DESENHO = [1, 2, 3];
+export const TEMPOS_POSSIVEIS_DO_DESENHO = [45_000, 60_000, 80_000, 120_000];
 /** As cores e as espessuras que o site oferece (o índice é o que viaja). */
 export const CORES = 12;
 export const ESPESSURAS = 3;
@@ -116,11 +122,13 @@ export const desenho: Definicao = {
       .map((x) => `#${x}`);
     const soDaTurma = corpo.soLista === true && daTurma.length > 0;
     if (soDaTurma && daTurma.length < 3) return 'A lista precisa de pelo menos 3 palavras.';
-    const largada = daTurma.length ? { lista: daTurma.map((x) => x.slice(1)), soLista: soDaTurma } : {};
+    const rodadas = RODADAS_POSSIVEIS_DO_DESENHO.includes(Number(corpo.rodadas)) ? Number(corpo.rodadas) : RODADAS_DO_DESENHO;
+    const desenhandoMs = TEMPOS_POSSIVEIS_DO_DESENHO.includes(Number(corpo.tempoMs)) ? Number(corpo.tempoMs) : DESENHANDO_MS;
+    const largada = { rodadas, tempoMs: desenhandoMs, ...(daTurma.length ? { lista: daTurma.map((x) => x.slice(1)), soLista: soDaTurma } : {}) };
     // TRÊS RODADAS, e em cada uma todo mundo desenha uma vez, na mesma ordem (pedido dele, 02/11/2026: "pelo menos uns
     // 3 rounds"; antes cada um desenhava uma vez só, e com duas pessoas a partida acabava em dois desenhos).
     const pessoas = embaralhar([...naSala]).slice(0, MAXIMO_DE_VEZES);
-    const ordem = Array.from({ length: RODADAS_DO_DESENHO }, () => pessoas).flat();
+    const ordem = Array.from({ length: rodadas }, () => pessoas).flat();
     const usadas = new Set<string>();
     const pontos = new Map(naSala.map((id) => [id, 0]));
 
@@ -194,7 +202,7 @@ export const desenho: Definicao = {
       palavra = id.startsWith('#') ? { id, texto: id.slice(1), outras: [] } : { id, texto: formas[0] ?? id, outras: formas.slice(1) };
       fase = 'desenhando';
       inicio = Date.now();
-      ctx.agendar(DESENHANDO_MS, revelar);
+      ctx.agendar(desenhandoMs, revelar);
       // As dicas: uma letra aparece na metade do tempo, outra aos três quartos (nunca o espaço).
       const letras = Array.from(palavra.texto)
         .map((ch, i) => (ch.trim() ? i : -1))
@@ -205,11 +213,11 @@ export const desenho: Definicao = {
         if (fase !== 'desenhando' || vez !== turno || sorteadas[n] === undefined) return;
         dicas.push(sorteadas[n]);
         ctx.avisar();
-        if (n === 0) dicaRelogio = setTimeout(() => darDica(1), DESENHANDO_MS / 4);
+        if (n === 0) dicaRelogio = setTimeout(() => darDica(1), desenhandoMs / 4);
         dicaRelogio?.unref?.();
       };
       if (dicaRelogio) clearTimeout(dicaRelogio);
-      dicaRelogio = setTimeout(() => darDica(0), DESENHANDO_MS / 2);
+      dicaRelogio = setTimeout(() => darDica(0), desenhandoMs / 2);
       dicaRelogio.unref?.();
       ctx.avisar();
     }
@@ -240,7 +248,8 @@ export const desenho: Definicao = {
           vez: vez + 1,
           vezes: ordem.length,
           rodada: Math.floor(vez / pessoas.length) + 1,
-          rodadas: RODADAS_DO_DESENHO,
+          rodadas,
+          tempoMs: desenhandoMs,
           quemDesenha,
           opcoes: desenhando && fase === 'escolhendo' ? opcoes : null,
           niveis: desenhando && fase === 'escolhendo' ? opcoes.map(nivelDe) : null,
@@ -281,7 +290,7 @@ export const desenho: Definicao = {
             acertaram.push(quem);
             // Quanto antes, mais: de 100 (na hora) a 40 (no fim), e quem desenha ganha 25 por acerto. Vezes o bônus do nível
             // (19/11/2026): a média vale 25% a mais, a difícil 50% a mais.
-            const fracao = Math.max(0, 1 - (Date.now() - inicio) / DESENHANDO_MS);
+            const fracao = Math.max(0, 1 - (Date.now() - inicio) / desenhandoMs);
             const bonus = BONUS_DO_NIVEL[nivelDe(palavra.id)];
             pontos.set(quem, (pontos.get(quem) ?? 0) + Math.round((40 + 60 * fracao) * bonus));
             pontos.set(quemDesenha, (pontos.get(quemDesenha) ?? 0) + Math.round(25 * bonus));

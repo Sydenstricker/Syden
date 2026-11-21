@@ -264,6 +264,8 @@ export function catalogo(tema: Tema, idioma: string, categoria?: unknown) {
 }
 
 export const RODADAS_QUIZ = 3;
+/** As rodadas que quem começa escolhe (20/11/2026, a segunda auditoria); fora da lista, as 3 de sempre. */
+export const RODADAS_POSSIVEIS_DO_QUIZ = [1, 3, 5];
 export const QUIZ_MS = 3 * 60_000;
 export const REVELACAO_QUIZ_MS = 8_000;
 
@@ -311,7 +313,9 @@ export function criarQuiz(tema: Tema): Definicao {
       /** Quantos chutes cada um levou em cada rodada acertada (o recorde do Solo é a soma das três). */
       const chutesPorRodada = new Map<number, number[]>();
       // O RECORDE DO SOLO (19/11/2026), por tema e categoria: os chutes somados das três rodadas, só se acertou as três.
-      const variante = categoria && categoria !== 'tudo' ? categoria : '';
+      const pedidas = RODADAS_POSSIVEIS_DO_QUIZ.includes(Number(corpo.rodadas)) ? Number(corpo.rodadas) : RODADAS_QUIZ;
+      // o recorde das 3 rodadas continua onde sempre esteve; 1 e 5 rodadas têm o deles ("@1", "@5" na variante)
+      const variante = (categoria && categoria !== 'tudo' ? categoria : '') + (pedidas === RODADAS_QUIZ ? '' : `@${pedidas}`);
       let recorde: { antes: number | null; novo: boolean; valor: number | null } | null = null;
       if (ctx.solo) {
         lerRecordeDoSolo(criadaPor, idDoJogo, variante, (r) => {
@@ -321,8 +325,9 @@ export function criarQuiz(tema: Tema): Definicao {
       }
       const daPartida = new Set(itensDaCategoria(tema, categoria).map((i) => i.id));
       const sorteio = tema.itens.filter((i) => daPartida.has(i.id)).filter(tema.sorteavel ?? (() => true));
-      if (sorteio.length < RODADAS_QUIZ) return 'A lista do quiz não está no servidor.';
-      const secretos = (_testeQuiz.itens ?? embaralhar([...sorteio]).slice(0, RODADAS_QUIZ).map((i) => i.id)).map((id) => porId.get(id)!);
+      if (sorteio.length < pedidas) return 'A lista do quiz não está no servidor.';
+      const secretos = (_testeQuiz.itens ?? embaralhar([...sorteio]).slice(0, pedidas).map((i) => i.id)).slice(0, pedidas).map((id) => porId.get(id)!);
+      const rodadas = secretos.length;
       // No modo Bandeira, uma ficha por rodada (a bandeira de cada secreto, pedida pela ficha).
       const comBandeira = tema.bandeiras && categoria === tema.bandeiras.categoria ? tema.bandeiras : null;
       const fichasDaPartida = comBandeira ? secretos.map((s) => novaFicha(comBandeira.svg(s) ?? '')) : null;
@@ -352,10 +357,10 @@ export function criarQuiz(tema: Tema): Definicao {
         // Os pontos já entraram a cada acerto (ver a ação 'chute').
         fase = 'revelando';
         ctx.agendar(REVELACAO_QUIZ_MS, () => {
-          if (rodada >= RODADAS_QUIZ) {
+          if (rodada >= rodadas) {
             fase = 'fim';
             const meus = chutesPorRodada.get(criadaPor) ?? [];
-            if (ctx.solo && meus.length === RODADAS_QUIZ) {
+            if (ctx.solo && meus.length === rodadas) {
               const valor = meus.reduce((a, b) => a + b, 0);
               guardarRecordeDoSolo(criadaPor, idDoJogo, variante, valor, true, { rodadas: meus }, (r) => {
                 recorde = { antes: r.antes, novo: r.novo, valor };
@@ -385,7 +390,7 @@ export function criarQuiz(tema: Tema): Definicao {
           };
           return {
             rodada,
-            rodadas: RODADAS_QUIZ,
+            rodadas,
             fase,
             categoria,
             // a ficha da bandeira desta rodada (só no modo Bandeira): a tela a revela aos poucos, um pedaço por chute

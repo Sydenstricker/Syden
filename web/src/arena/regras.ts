@@ -65,6 +65,9 @@ export interface EstadoArena {
   /** No fim, por pessoa: o dano causado, os nocautes, o dano levado, os desvios (marcas no chão de onde escapou) e, segurando a zona, os pontos do time. */
   resultado: { userId: number; username: string; time: number; dano: number; quedas: number; vidas: number; levou?: number; desvios?: number; pontos?: number; posicao: number | null; robo: boolean }[] | null;
   partidaId: string;
+  /** O Solo (20/11/2026): a dificuldade dos robôs e as vitórias seguidas da sessão (no fim, já com esta partida). */
+  dificuldade?: 'facil' | 'medio' | 'dificil';
+  sequencia?: { atual: number; recorde: number | null; novo: boolean } | null;
 }
 
 export interface Quadro {

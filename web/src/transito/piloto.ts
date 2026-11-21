@@ -11,7 +11,9 @@ export function escolhaDoPiloto(e: Estado, horizonte = 150): number {
   for (const entrada of ENTRADAS[e.mapa]) {
     const c = primeiroDaFila(e, entrada);
     if (!c || c.s < paradaDe(c) - 0.4) continue;
-    candidatas.push({ entrada, peso: naFila(e, entrada) + (c.tipo === 'ambulancia' ? 3 : c.tipo === 'caminhao' ? 1 : 0) });
+    // a ambulância com pressa (20/11/2026): pesa em qualquer lugar da fila, porque o relógio dela anda
+    const ambulancia = e.carros.some((o) => o.entrada === entrada && o.tipo === 'ambulancia' && !o.liberado && !o.batido && !o.atrasada);
+    candidatas.push({ entrada, peso: naFila(e, entrada) + (ambulancia ? 3 : c.tipo === 'caminhao' ? 1 : 0) });
   }
   candidatas.sort((a, b) => b.peso - a.peso || a.entrada - b.entrada);
   for (const { entrada } of candidatas) if (seguro(e, entrada, horizonte)) return entrada;

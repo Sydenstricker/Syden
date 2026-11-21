@@ -406,6 +406,96 @@ function gafanhoto(ctx: CanvasRenderingContext2D, x: number, y: number, dir: num
   ctx.restore();
 }
 
+/** A JOANINHA (20/11/2026), o bicho amigo: o casco vermelho de bolinhas abrindo um pouco no voo, as asas batendo. */
+function joaninha(ctx: CanvasRenderingContext2D, x: number, y: number, dir: number, ms: number) {
+  const asa = Math.sin(ms / 45);
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(dir, 1);
+  ctx.lineJoin = 'round';
+  // as asas finas, por trás do casco
+  ctx.fillStyle = 'rgba(235, 240, 255, 0.75)';
+  ctx.strokeStyle = 'rgba(80, 90, 110, 0.6)';
+  ctx.lineWidth = 0.5;
+  ctx.beginPath();
+  ctx.ellipse(-1, -4 - 2 * asa, 5, 2, -0.5 - 0.4 * asa, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+  // a cabeça preta, com os olhinhos
+  ctx.fillStyle = '#1d1b22';
+  ctx.beginPath();
+  ctx.arc(5, 0.5, 2.6, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#f5f2e8';
+  ctx.fillRect(6, -0.7, 0.9, 0.9);
+  // o casco
+  ctx.fillStyle = '#d83a2e';
+  ctx.strokeStyle = '#141219';
+  ctx.lineWidth = 0.8;
+  ctx.beginPath();
+  ctx.ellipse(0, 0, 5.5, 4.5, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+  // a risca do meio e as bolinhas
+  ctx.beginPath();
+  ctx.moveTo(-5, 0);
+  ctx.lineTo(5, 0);
+  ctx.stroke();
+  ctx.fillStyle = '#141219';
+  for (const [bx, by] of [[-2.5, -2], [1.5, -2.2], [-1, 2], [2.5, 1.8]] as const) {
+    ctx.beginPath();
+    ctx.arc(bx, by, 0.95, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  // o brilho
+  ctx.fillStyle = 'rgba(255, 230, 220, 0.7)';
+  ctx.fillRect(-3, -3.2, 1.6, 0.8);
+  ctx.restore();
+}
+
+/** A CENOURA da rodada bônus (20/11/2026), girando enquanto sobe e cai. */
+function cenoura(ctx: CanvasRenderingContext2D, x: number, y: number, ms: number) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(ms / 260);
+  ctx.lineJoin = 'round';
+  // a rama
+  ctx.fillStyle = '#4f9a3a';
+  ctx.strokeStyle = '#2f5a1a';
+  ctx.lineWidth = 0.6;
+  ctx.beginPath();
+  ctx.moveTo(-1, -6);
+  ctx.lineTo(-4, -11);
+  ctx.lineTo(0, -8);
+  ctx.lineTo(1, -12);
+  ctx.lineTo(2, -7);
+  ctx.lineTo(5, -10);
+  ctx.lineTo(2, -5);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  // a raiz
+  ctx.fillStyle = '#e07a2a';
+  ctx.strokeStyle = '#7a3a12';
+  ctx.lineWidth = 0.8;
+  ctx.beginPath();
+  ctx.moveTo(-3.5, -6);
+  ctx.lineTo(3.5, -6);
+  ctx.lineTo(0, 8);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  ctx.strokeStyle = '#b85a1c';
+  ctx.lineWidth = 0.5;
+  ctx.beginPath();
+  ctx.moveTo(-2, -2);
+  ctx.lineTo(0, -1.5);
+  ctx.moveTo(1, 2);
+  ctx.lineTo(2.2, 2.4);
+  ctx.stroke();
+  ctx.restore();
+}
+
 /** Uma praga que caiu: gira e despenca, com o "+pontos" subindo. */
 export interface Queda {
   x: number;
@@ -451,6 +541,8 @@ export function desenhar(ctx: CanvasRenderingContext2D, q: Quadro) {
       const dir = p.vx >= 0 ? 1 : -1;
       if (p.dourada) brilhoDourado(ctx, pos.x, pos.y, q.ms! + i * 41);
       if (p.tipo === 'corvo') corvo(ctx, pos.x, pos.y, dir, q.ms! + i * 37);
+      else if (p.tipo === 'joaninha') joaninha(ctx, pos.x, pos.y, dir, q.ms! + i * 29);
+      else if (p.tipo === 'cenoura') cenoura(ctx, pos.x, pos.y, q.ms! + i * 113);
       else gafanhoto(ctx, pos.x, pos.y, dir, q.ms! + i * 53);
     });
   }
@@ -458,6 +550,26 @@ export function desenhar(ctx: CanvasRenderingContext2D, q: Quadro) {
   for (const queda of q.quedas) {
     const s = (q.agora - queda.em) / 1000;
     if (s > 1.2) continue;
+    if (queda.tipo === 'joaninha') {
+      // a joaninha não cai: sai voando assustada, para cima, e some
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, 1 - s / 0.9);
+      joaninha(ctx, queda.x + queda.dir * 40 * s, queda.y - 90 * s, queda.dir, q.agora);
+      ctx.restore();
+      continue;
+    }
+    if (queda.tipo === 'cenoura') {
+      // a cenoura estoura em pedacinhos laranja (e umas folhas)
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, 1 - s / 0.7);
+      for (let k = 0; k < 8; k++) {
+        const a = (k / 8) * Math.PI * 2;
+        ctx.fillStyle = k % 3 === 0 ? '#4f9a3a' : '#e07a2a';
+        ctx.fillRect(queda.x + Math.cos(a) * 26 * s, queda.y + Math.sin(a) * 18 * s + 40 * s * s, 2, 2);
+      }
+      ctx.restore();
+      continue;
+    }
     ctx.save();
     ctx.globalAlpha = Math.max(0, 1 - s / 1.2);
     ctx.translate(queda.x, queda.y + 120 * s * s);
@@ -487,16 +599,18 @@ export function desenhar(ctx: CanvasRenderingContext2D, q: Quadro) {
     if (s > 1.2) continue;
     ctx.save();
     ctx.globalAlpha = Math.max(0, 1 - s / 1.2);
-    const texto = `+${queda.pontos}`;
+    // a pena do amigo é negativa: os algarismos da arte não têm o "menos", e ela vai no desenho por código, em vermelho
+    const negativo = queda.pontos < 0;
+    const texto = negativo ? `−${-queda.pontos}` : `+${queda.pontos}`;
     const y = Math.max(16, queda.y - 10 - 18 * s);
-    if (arte) {
+    if (arte && !negativo) {
       if (queda.dourada) {
         ctx.shadowColor = '#ffd23a';
         ctx.shadowBlur = 14;
       }
       numeroDaArte(ctx, arte, texto, queda.x, y, 12);
     } else {
-      ctx.fillStyle = queda.dourada ? '#ffd23a' : '#fff8d6';
+      ctx.fillStyle = negativo ? '#ff6b5a' : queda.dourada ? '#ffd23a' : '#fff8d6';
       ctx.strokeStyle = '#4a3420';
       ctx.lineWidth = 2;
       ctx.font = 'bold 9px system-ui, sans-serif';

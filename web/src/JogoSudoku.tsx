@@ -14,6 +14,8 @@ const SUDOKU_MS = 20 * 60_000;
 type EstadoSudokuNovo = EstadoSudoku & {
   dificuldade?: 'facil' | 'medio' | 'dificil' | 'extremo';
   conferencia?: 'hora' | 'fim';
+  /** O Sudoku X (20/11/2026): as duas diagonais também valem. */
+  x?: boolean;
   penalidadeMs?: number;
   recorde?: { antes: number | null; novo: boolean; valor: number | null } | null;
 };
@@ -27,7 +29,12 @@ const minutos = (ms: number) => {
 const linha = (i: number) => Math.floor(i / 9);
 const coluna = (i: number) => i % 9;
 const bloco = (i: number) => Math.floor(linha(i) / 3) * 3 + Math.floor(coluna(i) / 3);
-const vizinhas = (a: number, b: number) => linha(a) === linha(b) || coluna(a) === coluna(b) || bloco(a) === bloco(b);
+/** Na diagonal que desce (da esquerda, em cima) e na que sobe: as do Sudoku X. */
+const naDesce = (i: number) => linha(i) === coluna(i);
+const naSobe = (i: number) => linha(i) + coluna(i) === 8;
+/** As casas que se veem: a mesma linha, coluna ou bloco, e no Sudoku X a mesma diagonal. */
+const vizinhas = (a: number, b: number, x = false) =>
+  linha(a) === linha(b) || coluna(a) === coluna(b) || bloco(a) === bloco(b) || (x && ((naDesce(a) && naDesce(b)) || (naSobe(a) && naSobe(b))));
 
 /**
  * O SUDOKU EM CORRIDA (ver server/src/minijogo-sudoku.ts): o tabuleiro é o mesmo para todo mundo, cada um
@@ -58,6 +65,7 @@ export function JogoSudoku({
   const minha = estado.corrida.find((l) => l.userId === eu);
   const terminei = minha?.tempoMs !== null && minha?.tempoMs !== undefined;
   const noFim = estado.conferencia === 'fim';
+  const x = estado.x === true;
   const cheio = tabuleiro.every((n) => n !== 0);
 
   // Partida nova: as anotações e o histórico são de outro tabuleiro.
@@ -118,7 +126,7 @@ export function JogoSudoku({
         for (const [k, lista] of Object.entries(n)) {
           const i = Number(k);
           if (i === casa) continue;
-          nova[i] = vizinhas(i, casa) ? lista.filter((x) => x !== valor) : lista;
+          nova[i] = vizinhas(i, casa, x) ? lista.filter((d) => d !== valor) : lista;
         }
         return nova;
       });
@@ -152,7 +160,7 @@ export function JogoSudoku({
   const destaque = casa !== null ? tabuleiro[casa] : 0;
   return (
     <div className="sudoku">
-      <div className="sudoku-grade" role="grid" tabIndex={0} onKeyDown={teclado}>
+      <div className={`sudoku-grade${x ? ' x' : ''}`} role="grid" tabIndex={0} onKeyDown={teclado}>
         {tabuleiro.map((n, i) => {
           const dada = estado.enigma[i] !== 0;
           const minhasNotas = n === 0 ? (notas[i] ?? []) : [];
@@ -162,7 +170,10 @@ export function JogoSudoku({
             estado.errados.includes(i) && 'errada',
             casa === i && 'escolhida',
             casa !== null && i !== casa && n !== 0 && n === destaque && 'mesmo',
-            casa !== null && i !== casa && vizinhas(i, casa) && 'vizinha',
+            casa !== null && i !== casa && vizinhas(i, casa, x) && 'vizinha',
+            // no Sudoku X, as diagonais riscadas de leve
+            x && naDesce(i) && 'diag-desce',
+            x && naSobe(i) && 'diag-sobe',
             i % 9 === 2 || i % 9 === 5 ? 'borda-direita' : '',
             Math.floor(i / 9) === 2 || Math.floor(i / 9) === 5 ? 'borda-baixo' : '',
           ]
@@ -231,6 +242,7 @@ export function JogoSudoku({
         )}
         {(estado.penalidadeMs ?? 0) > 0 && <span className="sudoku-penalidade">+{minutos(estado.penalidadeMs ?? 0)}</span>}
       </div>
+      {x && !terminei && <p className="sudoku-regra-x">✕ {t('As duas diagonais também têm os números de 1 a 9.')}</p>}
       {terminei && <p className="minijogo-situacao">{t('Você terminou! Agora é torcer pelos outros.')}</p>}
       {terminei && <Recorde recorde={estado.recorde} />}
       <ul className="sudoku-corrida">

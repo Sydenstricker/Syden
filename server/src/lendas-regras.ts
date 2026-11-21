@@ -83,7 +83,8 @@ export const CUSTO_DO_COMBO = 2;
 
 /**
  * AS HABILIDADES (19/11/2026): três por classe, a primeira desde o começo e as outras liberadas pelo nível (as lutas
- * vencidas). `alvo: 'inimigo'` pede o inimigo na escolha.
+ * vencidas). `alvo: 'inimigo'` pede o inimigo na escolha. O GOLPE FINAL (20/11/2026) é a quarta, do nível 3: o nível que a
+ * turma tem quando chega ao castelo (as três lutas do caminho), para a luta do dragão ter a carta guardada de cada classe.
  */
 export interface DefDaHabilidade {
   id: string;
@@ -99,6 +100,8 @@ export const HABILIDADES: Record<Classe, DefDaHabilidade[]> = {
     { id: 'provocar', custo: 2, alvo: 'nenhum', nivel: 1 },
     // o escudo da turma: todo golpe nesta rodada dói bem menos, até o sopro
     { id: 'muralha', custo: 4, alvo: 'nenhum', nivel: 2 },
+    // O GOLPE FINAL (nível 3): o golpe forte de perto que deixa o inimigo tonto
+    { id: 'investida', custo: 4, alvo: 'inimigo', nivel: 3 },
   ],
   faisca: [
     // acerta todos os inimigos
@@ -107,6 +110,8 @@ export const HABILIDADES: Record<Classe, DefDaHabilidade[]> = {
     { id: 'raio', custo: 3, alvo: 'inimigo', nivel: 1 },
     // a turma inteira mais rápida nas duas rodadas seguintes
     { id: 'acelerar', custo: 4, alvo: 'nenhum', nivel: 2 },
+    // O GOLPE FINAL: magia forte em todos os inimigos
+    { id: 'estrelas', custo: 5, alvo: 'nenhum', nivel: 3 },
   ],
   erva: [
     // cura a turma e levanta quem caiu
@@ -115,6 +120,8 @@ export const HABILIDADES: Record<Classe, DefDaHabilidade[]> = {
     { id: 'veneno', custo: 2, alvo: 'inimigo', nivel: 1 },
     // a turma recupera um pouco de vida no fim de três rodadas
     { id: 'renovar', custo: 3, alvo: 'nenhum', nivel: 2 },
+    // O GOLPE FINAL: cura muito a turma e levanta quem caiu com metade da vida
+    { id: 'florescer', custo: 6, alvo: 'nenhum', nivel: 3 },
   ],
   flecha: [
     // um tiro forte, que passa da defesa
@@ -123,6 +130,8 @@ export const HABILIDADES: Record<Classe, DefDaHabilidade[]> = {
     { id: 'atordoar', custo: 3, alvo: 'inimigo', nivel: 1 },
     // três flechas em inimigos ao acaso
     { id: 'rajada', custo: 3, alvo: 'nenhum', nivel: 2 },
+    // O GOLPE FINAL: o tiro enorme que nunca erra (nem no fantasma) e atravessa a pedra
+    { id: 'final', custo: 4, alvo: 'inimigo', nivel: 3 },
   ],
 };
 
@@ -203,25 +212,68 @@ export const INIMIGOS: Record<string, DefDoInimigo> = {
 };
 
 export type TipoDeParada = 'luta' | 'descanso' | 'loja' | 'evento' | 'chefe';
-/** Uma parada possível: o id (que a tela desenha), o cenário da Briga (web/src/briga/cenarios.ts) e quem mora nela. */
+/**
+ * Uma parada possível: o id (que a tela desenha), o cenário da Briga (web/src/briga/cenarios.ts) e quem mora nela.
+ * `inimigos` é o GRUPO DE REFERÊNCIA (o de antes de 20/11/2026): ele dá a medida da força da parada. `bando` são os bichos que
+ * podem aparecer nela, e o grupo de cada partida sai da semente (ver `grupoDaParada`); `chefe`, o chefe que sempre está lá.
+ */
 export interface Parada {
   id: string;
   tipo: TipoDeParada;
   cenario: string;
   inimigos: string[];
+  bando?: string[];
+  chefe?: string;
+  /** Quantos bichos do bando entram (sem o chefe): de 2 a 4, e com o chefe, 1 ou 2. */
+  quantos?: [number, number];
 }
 export const PARADAS: Record<string, Parada> = {
-  floresta: { id: 'floresta', tipo: 'luta', cenario: 'floresta', inimigos: ['cogumelo', 'sapo', 'abelha'] },
-  horta: { id: 'horta', tipo: 'luta', cenario: 'horta', inimigos: ['raposa', 'corvo', 'texugo'] },
-  deserto: { id: 'deserto', tipo: 'luta', cenario: 'deserto', inimigos: ['cacto', 'dino', 'redemoinho'] },
-  ruinas: { id: 'ruinas', tipo: 'luta', cenario: 'castelo', inimigos: ['fantasma', 'sapo', 'diabinho'] },
-  neve: { id: 'neve', tipo: 'luta', cenario: 'neve', inimigos: ['espinhento', 'golem', 'macaco'] },
-  geleira: { id: 'geleira', tipo: 'luta', cenario: 'neve', inimigos: ['macaco', 'yeti'] },
+  floresta: { id: 'floresta', tipo: 'luta', cenario: 'floresta', inimigos: ['cogumelo', 'sapo', 'abelha'], bando: ['cogumelo', 'sapo', 'abelha', 'corvo'] },
+  horta: { id: 'horta', tipo: 'luta', cenario: 'horta', inimigos: ['raposa', 'corvo', 'texugo'], bando: ['raposa', 'corvo', 'texugo', 'abelha'] },
+  deserto: { id: 'deserto', tipo: 'luta', cenario: 'deserto', inimigos: ['cacto', 'dino', 'redemoinho'], bando: ['cacto', 'dino', 'redemoinho', 'raposa'] },
+  ruinas: { id: 'ruinas', tipo: 'luta', cenario: 'castelo', inimigos: ['fantasma', 'sapo', 'diabinho'], bando: ['fantasma', 'sapo', 'diabinho', 'golem'] },
+  neve: { id: 'neve', tipo: 'luta', cenario: 'neve', inimigos: ['espinhento', 'golem', 'macaco'], bando: ['espinhento', 'golem', 'macaco', 'fantasma'] },
+  geleira: { id: 'geleira', tipo: 'luta', cenario: 'neve', inimigos: ['macaco', 'yeti'], bando: ['macaco', 'espinhento', 'golem'], chefe: 'yeti' },
   fogueira: { id: 'fogueira', tipo: 'descanso', cenario: 'floresta', inimigos: [] },
   loja: { id: 'loja', tipo: 'loja', cenario: 'floresta', inimigos: [] },
   evento: { id: 'evento', tipo: 'evento', cenario: 'floresta', inimigos: [] },
-  castelo: { id: 'castelo', tipo: 'chefe', cenario: 'castelo', inimigos: ['diabinho', 'dragao', 'fantasma'] },
+  castelo: { id: 'castelo', tipo: 'chefe', cenario: 'castelo', inimigos: ['diabinho', 'dragao', 'fantasma'], bando: ['diabinho', 'fantasma', 'macaco'], chefe: 'dragao', quantos: [2, 2] },
 };
+
+/** Um bicho do grupo: o tipo e a escala da vida e do golpe (o grupo menor vem mais forte, o maior mais fraco). */
+export interface NoGrupo {
+  tipo: string;
+  k: number;
+}
+/** O peso do golpe de um bicho na conta da força (o ligeiro age duas vezes, a segunda mais no fim da rodada). */
+const pesoDoGolpe = (tipo: string) => INIMIGOS[tipo].atk * (INIMIGOS[tipo].traco === 'ligeiro' ? 1.6 : 1);
+/** A força de um grupo (sem o chefe): a vida somada vezes o golpe somado, como numa batalha de desgaste. */
+const forcaDoGrupo = (tipos: string[]) => tipos.reduce((s, t) => s + INIMIGOS[t].hp, 0) * tipos.reduce((s, t) => s + pesoDoGolpe(t), 0);
+/**
+ * Quanto um grupo de `n` bichos (contando o chefe) vale da força de referência, medido contra a turma de robôs (20/11/2026):
+ * com quatro, a chuva e a rajada da turma pegam mais gente; com dois, o golpe da turma se concentra.
+ */
+export const FORCA_POR_TAMANHO: Record<number, number> = { 2: 0.85, 3: 1, 4: 1.1 };
+
+/**
+ * O GRUPO DE UMA PARADA (20/11/2026), pelo sorteio da semente: de 2 a 4 bichos do bando dela (com o chefe, ele e mais 1 ou 2), e
+ * a vida e o golpe de cada um escalados para o grupo ter a força do grupo de referência. Assim a neve continua a parada mais
+ * forte do caminho, seja qual for o grupo que saiu.
+ */
+export function grupoDaParada(p: Parada, r: () => number): NoGrupo[] {
+  if (!p.bando) return p.inimigos.map((tipo) => ({ tipo, k: 1 }));
+  // (o dragão com um bicho só ao lado venceu a turma de robôs o dobro das vezes: a escolta dele é sempre de dois)
+  const [min, max] = p.quantos ?? (p.chefe ? [1, 2] : [2, 4]);
+  const escolta = min + Math.floor(r() * (max - min + 1));
+  const tipos = embaralhar([...p.bando], r).slice(0, escolta);
+  const referencia = p.inimigos.filter((t) => t !== p.chefe);
+  const alvo = forcaDoGrupo(referencia) * (FORCA_POR_TAMANHO[p.chefe ? tipos.length + 1 : tipos.length] ?? 1);
+  const k = Math.max(0.5, Math.min(1.6, Math.sqrt(alvo / forcaDoGrupo(tipos))));
+  const grupo = tipos.map((tipo) => ({ tipo, k: Math.round(k * 100) / 100 }));
+  // o chefe no meio (a tela o desenha grande; a escolta em cima e embaixo)
+  if (p.chefe) grupo.splice(1, 0, { tipo: p.chefe, k: 1 });
+  return grupo;
+}
 /** Os cinco passos: cada um é uma parada só, ou a bifurcação entre duas (sorteadas pela semente). */
 export const PASSOS_DA_ROTA = 5;
 export const EVENTOS = ['fonte', 'bau', 'treino'] as const;
@@ -238,15 +290,19 @@ export function sorteioDaSemente(s: number) {
   };
 }
 
-/** O CAMINHO da partida, pela semente: quais paradas formam cada passo, e qual evento cai no ponto de interrogação. */
-export function rotaDaSemente(semente: number): { passos: string[][]; evento: EventoDaParada } {
+/**
+ * O CAMINHO da partida, pela semente: quais paradas formam cada passo, qual evento cai no ponto de interrogação, e o GRUPO de
+ * inimigos de cada parada de luta (20/11/2026; sorteado depois do resto, para o caminho de cada semente não mudar).
+ */
+export function rotaDaSemente(semente: number): { passos: string[][]; evento: EventoDaParada; grupos: Record<string, NoGrupo[]> } {
   const r = sorteioDaSemente(semente);
   const um = <T>(xs: readonly T[]) => xs[Math.floor(r() * xs.length)];
   const dois = <T>(xs: T[]) => embaralhar([...xs], r);
-  return {
-    passos: [[um(['floresta', 'horta'])], dois(['deserto', 'ruinas']), dois(['fogueira', um(['loja', 'evento'])]), dois(['neve', 'geleira']), ['castelo']],
-    evento: um(EVENTOS),
-  };
+  const passos = [[um(['floresta', 'horta'])], dois(['deserto', 'ruinas']), dois(['fogueira', um(['loja', 'evento'])]), dois(['neve', 'geleira']), ['castelo']];
+  const evento = um(EVENTOS);
+  const grupos: Record<string, NoGrupo[]> = {};
+  for (const id of passos.flat()) if (PARADAS[id].inimigos.length) grupos[id] = grupoDaParada(PARADAS[id], r);
+  return { passos, evento, grupos };
 }
 
 // ---------------- O EQUIPAMENTO ----------------
@@ -458,6 +514,11 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
       let rapidez = 0;
       let renovar: { rodadas: number; de: number } | null = null;
       let muralha = false;
+      /** O BOTÃO DE ACELERAR (20/11/2026), só no Solo: a tela toca a rodada no dobro da velocidade. O ritmo vale por resolução
+       * (o que vai à tela é o da rodada que está sendo tocada; trocar no meio vale da próxima). */
+      let acelerado = false;
+      let ritmo = 1;
+      const noRitmo = (ms: number) => Math.round(ms * (solo && acelerado ? 0.5 : 1));
       let venceu = false;
       let resultado: { userId: number; username: string; pontos: number; posicao: number | null }[] | null = null;
       let recorde: { valor: number; antes: number | null; novo: boolean } | null = null;
@@ -498,7 +559,7 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
         // a bifurcação ainda sem escolha: a turma vota antes de andar
         if (escolhidas[parada] === null) return abrirRumo();
         fase = 'mapa';
-        ctx.agendar(MAPA_MS, entrarNaParada);
+        ctx.agendar(noRitmo(MAPA_MS), entrarNaParada);
         ctx.avisar();
       };
       const abrirRumo = () => {
@@ -537,7 +598,7 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
             h.en = a.enMax;
             h.veneno = null;
           }
-          ctx.agendar(DESCANSO_MS, seguir);
+          ctx.agendar(noRitmo(DESCANSO_MS), seguir);
           ctx.avisar();
           return;
         }
@@ -561,14 +622,16 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
               h.bonus.mag += 3;
             }
           }
-          ctx.agendar(EVENTO_DA_PARADA_MS, seguir);
+          ctx.agendar(noRitmo(EVENTO_DA_PARADA_MS), seguir);
           ctx.avisar();
           return;
         }
         if (p.tipo === 'loja') return abrirLoja();
-        inimigos = p.inimigos.map((tipo, id) => {
+        // o grupo que a semente sorteou para esta parada (ver grupoDaParada)
+        inimigos = (caminho.grupos[p.id] ?? p.inimigos.map((tipo) => ({ tipo, k: 1 }))).map(({ tipo, k }, id) => {
           const d = INIMIGOS[tipo];
-          return { id, tipo, hp: d.hp, hpMax: d.hp, atk: d.atk, def: d.def, vel: d.vel, chefe: !!d.chefe, traco: d.traco, tonto: false, preparando: false, veneno: null };
+          const hp = Math.round(d.hp * k);
+          return { id, tipo, hp, hpMax: hp, atk: Math.round(d.atk * k), def: d.def, vel: d.vel, chefe: !!d.chefe, traco: d.traco, tonto: false, preparando: false, veneno: null };
         });
         rodada = 0;
         rapidez = 0;
@@ -645,7 +708,8 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
         let e: Escolha = { acao: 'atacar', alvo: fraco.id };
         switch (h.classe) {
           case 'erva':
-            if (podeUsar(h, 0) && (caidos > 0 || falta > total * 0.3 || turma.some((x) => x.hp < atributos(x).hpMax * 0.35))) e = hab(0);
+            if (podeUsar(h, 3) && (caidos > 0 || fracos >= 2)) e = hab(3);
+            else if (podeUsar(h, 0) && (caidos > 0 || falta > total * 0.3 || turma.some((x) => x.hp < atributos(x).hpMax * 0.35))) e = hab(0);
             else if (podeUsar(h, 2) && !renovar && falta > total * 0.15 && h.en >= 3 + 4) e = hab(2);
             else if (sopro) e = { acao: 'defender', alvo: null };
             else if (podeUsar(h, 1) && h.en >= 2 + 4) {
@@ -655,6 +719,7 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
             break;
           case 'escudo':
             if (podeUsar(h, 2) && (sopro || fracos >= 2)) e = hab(2);
+            else if (podeUsar(h, 3) && chefe && !chefe.tonto) e = hab(3, chefe.id);
             else if (sopro) e = { acao: 'defender', alvo: null };
             else if (podeUsar(h, 1) && h.hp > atributos(h).hpMax * 0.5 && turma.some((x) => x !== h && x.hp < atributos(x).hpMax * 0.5)) e = hab(1);
             else if (podeUsar(h, 0) && turma.some((x) => x !== h && x.hp < atributos(x).hpMax * 0.4)) e = hab(0);
@@ -662,6 +727,7 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
           case 'faisca': {
             const pedra = vivosI.find((i) => i.traco === 'pedra');
             if (podeUsar(h, 2) && chefe && rapidez === 0 && h.en >= 4 + 3) e = hab(2);
+            else if (podeUsar(h, 3) && vivosI.length >= 2) e = hab(3);
             else if (podeUsar(h, 0) && vivosI.length >= 2) e = hab(0);
             else if (podeUsar(h, 1)) e = hab(1, (pedra ?? chefe ?? fraco).id);
             else if (sopro) e = { acao: 'defender', alvo: null };
@@ -669,7 +735,8 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
           }
           case 'flecha': {
             const forte = chefe ?? fraco;
-            if (podeUsar(h, 1) && (sopro || (chefe && !chefe.tonto && chefe.preparando))) e = hab(1, (vivosI.find((i) => i.preparando) ?? forte).id);
+            if (podeUsar(h, 3) && chefe && !sopro) e = hab(3, chefe.id);
+            else if (podeUsar(h, 1) && (sopro || (chefe && !chefe.tonto && chefe.preparando))) e = hab(1, (vivosI.find((i) => i.preparando) ?? forte).id);
             else if (podeUsar(h, 2) && vivosI.length >= 2 && !vivosI.every(fisicoRuim)) e = hab(2);
             else if (podeUsar(h, 0)) e = hab(0, forte.id);
             break;
@@ -739,7 +806,7 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
         const k = h.escolha.hab ?? 0;
         const def = h.classe ? HABILIDADES[h.classe][k] : undefined;
         // (o "proteger", o "provocar" e a "muralha" já valeram desde o começo da rodada, e já pagaram)
-        if (acao === 'habilidade' && def && h.classe === 'escudo') return;
+        if (acao === 'habilidade' && def && h.classe === 'escudo' && k < 3) return;
         if (acao === 'habilidade' && def && podeUsar(h, k)) {
           h.en -= def.custo;
           const de = { h: h.userId };
@@ -787,6 +854,39 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
               const alvo = ferirInimigo(i, variar(a.atk * 1.2), [h]);
               if (i.hp > 0 && !alvo.errou) i.tonto = true;
               return evento({ tipo: 'habilidade', hab: def.id, de, alvos: [alvo] });
+            }
+            // OS GOLPES FINAIS (nível 3)
+            case 'investida': {
+              const i = alvoVivo(h.escolha.alvo);
+              const alvo = ferirInimigo(i, variar(a.atk * 2.2 + a.def) - i.def * 0.5, [h], 'fisico', true);
+              if (i.hp > 0 && !alvo.errou) i.tonto = true;
+              evento({ tipo: 'habilidade', hab: def.id, de, alvos: [alvo] });
+              return soltarEspinhos();
+            }
+            case 'estrelas':
+              return evento({ tipo: 'habilidade', hab: def.id, de, alvos: inimigosVivos().map((i) => ferirInimigo(i, variar(a.mag * 1.7) - i.def * 0.25, [h], 'magia')) });
+            case 'florescer': {
+              const alvos: Alvo[] = [];
+              for (const x of herois.values()) {
+                const ax = atributos(x);
+                x.veneno = null;
+                if (x.hp <= 0) {
+                  x.hp = Math.round(ax.hpMax * 0.5);
+                  h.pontos += x.hp;
+                  alvos.push({ quem: { h: x.userId }, cura: x.hp, volta: true });
+                } else {
+                  const cura = Math.min(ax.hpMax - x.hp, Math.round(ax.hpMax * 0.5));
+                  x.hp += cura;
+                  h.pontos += cura;
+                  alvos.push({ quem: { h: x.userId }, cura });
+                }
+              }
+              return evento({ tipo: 'habilidade', hab: def.id, de, alvos });
+            }
+            case 'final': {
+              // (como magia: o fantasma não desvia e a pedra não segura)
+              const i = alvoVivo(h.escolha.alvo);
+              return evento({ tipo: 'habilidade', hab: def.id, de, alvos: [ferirInimigo(i, variar(a.atk * 3), [h], 'magia')] });
             }
             case 'rajada': {
               const alvos: Alvo[] = [];
@@ -955,7 +1055,7 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
         // o que vale desde o começo da rodada: defender, proteger, provocar e a muralha (e já pagam a energia)
         for (const h of vivos()) {
           const k = h.escolha?.hab ?? 0;
-          const habEscudo = h.escolha?.acao === 'habilidade' && h.classe === 'escudo' && podeUsar(h, k);
+          const habEscudo = h.escolha?.acao === 'habilidade' && h.classe === 'escudo' && k < 3 && podeUsar(h, k);
           h.defendendo = h.escolha?.acao === 'defender';
           h.protegendo = habEscudo && k === 0;
           h.provocando = habEscudo && k === 1;
@@ -998,7 +1098,8 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
         for (const h of vivos()) h.en = Math.min(atributos(h).enMax, h.en + (h.defendendo ? 2 : 1));
         resolucao++;
         fase = 'acao';
-        ctx.agendar(ACAO_FOLGA_MS + eventos.length * EVENTO_MS, depoisDaAcao);
+        ritmo = solo && acelerado ? 0.5 : 1;
+        ctx.agendar(noRitmo(ACAO_FOLGA_MS + eventos.length * EVENTO_MS), depoisDaAcao);
         ctx.avisar();
       };
 
@@ -1194,6 +1295,9 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
             resolucao,
             venceu,
             rapidez: rapidez > 0,
+            // o botão de acelerar (só no Solo) e o ritmo da rodada que está sendo tocada (1, ou 0.5 acelerada)
+            acelerado: solo && acelerado,
+            ritmo,
             herois: ordem.map((id) => {
               const h = herois.get(id)!;
               const a = atributos(h);
@@ -1269,6 +1373,13 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
             vestir(h, c);
             if (humanos.every((id) => herois.get(id)!.classe)) fecharClasses();
             else ctx.avisar();
+            return null;
+          }
+          if (tipo === 'acelerar') {
+            // só no Solo: na sala, a turma assiste junta, e ninguém acelera a tela dos outros
+            if (!solo) return 'Agora não dá.';
+            acelerado = corpo.ligado === true;
+            ctx.avisar();
             return null;
           }
           if (tipo === 'rumo') {

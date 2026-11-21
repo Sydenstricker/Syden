@@ -108,6 +108,31 @@
   height: clamp(16px, 3vw, 24px);
 }
 
+/* A paciência do pedido (20/11/2026): a barra que encolhe até o prazo. */
+.cozinha-paciencia {
+  display: block;
+  width: 100%;
+  height: 5px;
+  border-radius: 3px;
+  background: rgb(60 40 20 / 0.15);
+  overflow: hidden;
+}
+
+.cozinha-paciencia > span {
+  display: block;
+  height: 100%;
+  background: #5fae5a;
+  transition: width 0.25s linear;
+}
+
+.cozinha-paciencia.meio > span {
+  background: #e0b23a;
+}
+
+.cozinha-paciencia.fim > span {
+  background: #e0533c;
+}
+
 .cozinha-fila.recusou {
   animation: cozinha-balanca 0.4s ease;
 }

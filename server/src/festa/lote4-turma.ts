@@ -8,7 +8,29 @@
  * `{ entrar: 1 }` assim que o jogo começa, e a turma é a ordem de chegada. Os robôs do Solo não entram: o resultado deles vem
  * do `robo`, como em todo microjogo.
  */
-import { FOLGA_ACIMA, inteiro, numero, type Conferencia, type Largada } from './comum.js';
+import { FOLGA_ACIMA, inteiro, numero, type Conferencia, type Largada, type Turma } from './comum.js';
+
+/**
+ * AS EQUIPES IMPOSTAS (20/11/2026): o Tabuleiro da turma manda o 2 contra 2 e o 1 contra 3 pela cor das casas
+ * (`OpcoesDaRodada.equipes`). Com elas, os lados (e os papéis) saem delas, e não da ordem de chegada; os robôs da turma jogam
+ * pelo próprio microjogo, num ritmo fixo de quem joga bem (sem eles, o lado de um robô ficaria parado). Sem equipes impostas
+ * (a Festa), null: tudo como sempre.
+ */
+export interface Impostas {
+  equipes: number[][];
+  robos: number[];
+}
+export const impostas = (turma?: Turma): Impostas | null =>
+  turma?.equipes && turma.equipes.length === 2 && turma.equipes.every((e) => e.length > 0)
+    ? { equipes: turma.equipes.map((e) => [...e]), robos: [...turma.robos] }
+    : null;
+/** A equipe de alguém nas impostas, ou −1. */
+export const equipeImposta = (im: Impostas, id: number) => im.equipes.findIndex((e) => e.includes(id));
+/** Os robôs de uma turma imposta jogam neste ritmo (toques por segundo), a partir de ROBO_COMECA_MS. */
+export const RITMO_DO_ROBO = 6;
+export const ROBO_COMECA_MS = 600;
+/** Quantos toques um robô já deu, `passou` ms depois do começo (com `desde` como o começo da vez dele). */
+export const toquesDoRobo = (passou: number, desde = 0, ritmo = RITMO_DO_ROBO) => Math.max(0, Math.floor((ritmo * (passou - desde - ROBO_COMECA_MS)) / 1000));
 
 /** Quanto se espera pelos 'entrar' antes de sortear os papéis (a rede de 600 ms cabe com folga). */
 export const JUNTAR_MS = 1200;

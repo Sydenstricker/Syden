@@ -13,6 +13,7 @@ import {
   type EventoDaLuta,
   type Lutador,
 } from './bichos-batalha.js';
+import type { ItemDaLoja } from './bichos-regras.js';
 import {
   andavelNo,
   atributos,
@@ -26,17 +27,24 @@ import {
   EQUIPE_DA_REVANCHE,
   EQUIPE_EMPRESTADA,
   ESPECIES,
+  formaCrescida,
+  GOLPES,
   golpesDe,
+  golpesNovos,
   INICIAIS,
+  INICIAL_RARO,
+  LOJA_ABRE,
   mapaDe,
   MAPAS,
   MOEDAS_DA_REVANCHE,
   NIVEL_DA_SALA,
+  NIVEL_DO_PRESENTE,
   NIVEL_INICIAL,
   NIVEL_MAXIMO,
   nivelDaXp,
   passoNoMapa,
   PRECOS,
+  PRESENTES_DA_REVANCHE,
   quemVe,
   RARO,
   TAMANHO_DA_EQUIPE,
@@ -62,6 +70,13 @@ import type { Contexto, Definicao, Jogo } from './minijogo-motor.js';
  * quanto se jogou no Solo); quem não tem bicho nenhum luta com a EQUIPE_EMPRESTADA. Os dois escolhem ao mesmo tempo, e o turno sai
  * quando os dois escolheram (ou quando o prazo acaba: quem demorou joga pelo computador). O vencedor vai à estante de troféus
  * (pista 'bichos'). A luta da sala não mexe na aventura de ninguém: nem vida, nem experiência.
+ *
+ * 20/11/2026 (lote C da segunda auditoria): A TOCA tem saída (na porta de casa: levar, guardar, trocar e soltar); a EXPERIÊNCIA
+ * se reparte (quem entrou na luta divide, e quem ficou na equipe sem lutar leva uma parte pequena); o GOLPE NOVO com 4 sabidos
+ * espera a pessoa escolher qual esquecer (`aprender`, e os golpes de cada bicho guardados nele); o chá cura uma parte da vida, a
+ * lojinha tem escada (a erva-doce, o chá forte, a cenoura dourada); o mato do Bosque e da Serra é esperto; o caderno fecha (os do
+ * começo raros na Serra depois da escada, e o presente da revanche). NA SALA, cada um leva até 3 bichos, escolhidos na largada
+ * (MONTAGEM_MS), todos crescidos e no nível da sala, e cada escolha tem 30 s.
  */
 
 export interface BichoGuardado {
@@ -70,6 +85,8 @@ export interface BichoGuardado {
   nivel: number;
   xp: number;
   pv: number;
+  /** Os golpes que ele sabe (até 4), escolhidos ao aprender (20/11/2026; sem eles, os últimos 4 aprendidos). */
+  golpes: string[];
 }
 
 export interface Aventura {
@@ -99,6 +116,12 @@ export interface Aventura {
   achados: string[];
   /** Para onde se volta quando todos pegam no sono: a última casa onde descansou. */
   volta: { mapa: string; x: number; y: number };
+  /** Os itens da lojinha com escada (20/11/2026). */
+  chasFortes: number;
+  ervas: number;
+  douradas: number;
+  /** Os golpes que esperam a pessoa escolher qual esquecer (o bicho, pelo id, e o golpe novo), na ordem. */
+  aprender: { id: number; golpe: string }[];
 }
 
 const textos = (l: unknown): string[] => (Array.isArray(l) ? [...new Set(l.filter((x): x is string => typeof x === 'string'))] : []);
@@ -115,7 +138,12 @@ export function lerAventura(dados: unknown): Aventura | null {
     if (!b || typeof b.especie !== 'string' || !ESPECIES[b.especie]) return null;
     const nivel = Math.min(NIVEL_MAXIMO, Math.max(1, Math.floor(Number(b.nivel) || 1)));
     const pvMax = atributos(b.especie, nivel).pvMax;
-    return { id: Math.floor(Number(b.id) || 0), especie: b.especie, nivel, xp: Math.max(xpDoNivel(nivel), Math.floor(Number(b.xp) || 0)), pv: Math.min(pvMax, Math.max(0, Math.floor(Number(b.pv) || 0))) };
+    // os golpes escolhidos (a aventura de antes de 20/11/2026 não os tem: os últimos 4 aprendidos)
+    const golpes = textos(b.golpes).filter((g) => GOLPES[g]).slice(0, 4);
+    return {
+      id: Math.floor(Number(b.id) || 0), especie: b.especie, nivel, xp: Math.max(xpDoNivel(nivel), Math.floor(Number(b.xp) || 0)),
+      pv: Math.min(pvMax, Math.max(0, Math.floor(Number(b.pv) || 0))), golpes: golpes.length ? golpes : golpesDe(b.especie, nivel),
+    };
   };
   const lista = (l: unknown) => (Array.isArray(l) ? l.map(bicho).filter((b): b is BichoGuardado => b !== null) : []);
   const equipe = lista(a.equipe).slice(0, TAMANHO_DA_EQUIPE);
@@ -134,6 +162,16 @@ export function lerAventura(dados: unknown): Aventura | null {
   const escada = (Array.isArray(a.escada) ? a.escada : []).filter((k): k is number => Number.isInteger(k) && k >= 0 && k < DESAFIANTES.length);
   // quem venceu a Nena antes da escada existir já tem o primeiro degrau
   if (desafios > 0 && !escada.includes(0)) escada.push(0);
+  const conta = (n: unknown) => Math.max(0, Math.floor(Number(n) || 0));
+  // o golpe que espera: de um bicho que existe, que ainda não o sabe, uma vez só
+  const porId = new Map([...equipe, ...toca].map((b) => [b.id, b]));
+  const aprender: Aventura['aprender'] = [];
+  for (const p of Array.isArray(a.aprender) ? a.aprender : []) {
+    const b = porId.get(Number(p?.id));
+    if (b && typeof p.golpe === 'string' && GOLPES[p.golpe] && !b.golpes.includes(p.golpe) && !aprender.some((q) => q.id === b.id && q.golpe === p.golpe)) {
+      aprender.push({ id: b.id, golpe: p.golpe });
+    }
+  }
   return {
     v: 1,
     mapa: noLugar ? mapa : 'campo',
@@ -153,6 +191,10 @@ export function lerAventura(dados: unknown): Aventura | null {
     vencidos: textos(a.vencidos),
     achados: textos(a.achados),
     volta,
+    chasFortes: conta(a.chasFortes),
+    ervas: conta(a.ervas),
+    douradas: conta(a.douradas),
+    aprender,
   };
 }
 
@@ -165,7 +207,7 @@ function vistaDoBicho(b: BichoGuardado) {
     nivel: b.nivel,
     pv: b.pv,
     pvMax: a.pvMax,
-    golpes: golpesDe(b.especie, b.nivel),
+    golpes: b.golpes,
     xpDoNivel: b.xp - xpDoNivel(b.nivel),
     xpParaSubir: b.nivel >= NIVEL_MAXIMO ? 0 : xpDoNivel(b.nivel + 1) - xpDoNivel(b.nivel),
   };
@@ -192,6 +234,10 @@ export type EventoDaAventura =
   | { t: 'espera'; nome: string; antes: string }
   | { t: 'comprou'; item: string }
   | { t: 'raro'; especie: string }
+  | { t: 'aprendeu'; especie: string; golpe: string }
+  | { t: 'querAprender'; especie: string; golpe: string }
+  | { t: 'esqueceu'; especie: string; antigo: string; golpe: string }
+  | { t: 'presente'; nome: string; especie: string }
   | { t: 'venceu'; userId: number };
 
 /** A lista de eventos com número: a tela conta só os que ainda não contou. */
@@ -209,9 +255,14 @@ function diario() {
 
 /** Quanto a partida solo espera sem ninguém mexer antes de sair da memória (a aventura já está guardada). */
 export const OCIOSO_MS = 30 * 60_000;
-/** A luta da sala: o prazo de cada escolha, e quanto a mesa espera alguém sentar. */
-export const ESCOLHA_MS = 60_000;
+/** A luta da sala: o prazo de cada escolha (30 s desde 20/11/2026; eram 60), o da escolha da equipe, e quanto a mesa espera alguém sentar. */
+export const ESCOLHA_MS = 30_000;
+export const MONTAGEM_MS = 30_000;
 export const ESPERANDO_MS = 3 * 60_000;
+/** Quantos bichos cada lado leva à mesa da sala (20/11/2026). */
+export const BICHOS_NA_MESA = 3;
+/** A experiência de quem ficou na equipe sem entrar na luta: esta parte do que o bicho deu (20/11/2026). */
+export const PARTE_DE_QUEM_NAO_LUTOU = 0.2;
 /** A fuga do bicho do mato. */
 export const CHANCE_DE_FUGIR = 0.75;
 /** As moedas de vencer um bicho do mato: vezes o nível dele. */
@@ -233,6 +284,10 @@ function aventuraSolo(ctx: Contexto, userId: number, aleatorio: () => number): J
     desafio?: number;
     pessoa?: string;
     moedas: number;
+    /** O bicho do mato escolhe com esperteza (o Bosque e a Serra). */
+    esperto: boolean;
+    /** Os da equipe (índices) que entraram na luta contra o bicho da frente de lá: dividem a experiência dele. */
+    participantes: Set<number>;
   } | null = null;
   const partidaId = `bichos-${userId}-${Date.now()}`;
 
@@ -262,8 +317,9 @@ function aventuraSolo(ctx: Contexto, userId: number, aleatorio: () => number): J
   };
 
   const comecarLuta = (inimigos: Lutador[], tipo: TipoDeLuta, moedas: number, extra: { desafio?: number; pessoa?: string } = {}) => {
-    const meus = av!.equipe.map((b) => lutador(b.especie, b.nivel, b.pv));
-    luta = { b: novaBatalha(meus, inimigos), tipo, acabou: null, moedas, ...extra };
+    const meus = av!.equipe.map((b) => ({ ...lutador(b.especie, b.nivel, b.pv), golpes: [...b.golpes] }));
+    const b = novaBatalha(meus, inimigos);
+    luta = { b, tipo, acabou: null, moedas, esperto: !!mapaDe(av!.mapa).esperto, participantes: new Set([b.lados[0].ativo]), ...extra };
     ver(...inimigos.map((i) => i.especie));
     fase = 'batalha';
   };
@@ -275,17 +331,48 @@ function aventuraSolo(ctx: Contexto, userId: number, aleatorio: () => number): J
     });
   };
 
-  /** O bicho da frente ganhou experiência: sobe de nível (e evolui) aqui e na luta. */
-  const darXp = (xp: number): EventoDaAventura[] => {
+  /** Um bicho novo (o amigo do mato, o presente da revanche): na equipe se cabe, senão na toca. */
+  const receber = (especie: string, nivel: number, pv?: number): EventoDaAventura[] => {
+    const novo: BichoGuardado = {
+      id: av!.proximoId++, especie, nivel, xp: xpDoNivel(nivel), pv: pv ?? atributos(especie, nivel).pvMax, golpes: golpesDe(especie, nivel),
+    };
+    pegar(especie);
+    const cabe = av!.equipe.length < TAMANHO_DA_EQUIPE;
+    (cabe ? av!.equipe : av!.toca).push(novo);
+    return cabe ? [] : [{ t: 'toca', especie }];
+  };
+
+  /**
+   * Os golpes que um bicho passou a poder aprender (subiu de nível, cresceu): com menos de 4 sabidos, aprende na hora; com 4, o
+   * golpe espera a pessoa escolher qual esquecer, ou não aprender (`aprender`, ação 'esquecer').
+   */
+  const aprenderGolpes = (b: BichoGuardado, deEspecie: string, deNivel: number): EventoDaAventura[] => {
+    const saida: EventoDaAventura[] = [];
+    for (const g of golpesNovos(deEspecie, deNivel, b.especie, b.nivel)) {
+      if (b.golpes.includes(g) || av!.aprender.some((p) => p.id === b.id && p.golpe === g)) continue;
+      if (b.golpes.length < 4) {
+        b.golpes.push(g);
+        saida.push({ t: 'aprendeu', especie: b.especie, golpe: g });
+      } else {
+        av!.aprender.push({ id: b.id, golpe: g });
+        saida.push({ t: 'querAprender', especie: b.especie, golpe: g });
+      }
+    }
+    return saida;
+  };
+
+  /** Um bicho da equipe (o índice da luta é o da equipe) ganhou experiência: sobe de nível (e evolui) aqui e na luta. */
+  const darXp = (i: number, xp: number): EventoDaAventura[] => {
     const lado = luta!.b.lados[0];
-    const i = lado.ativo;
     const b = av!.equipe[i];
     const l = lado.equipe[i];
     const saida: EventoDaAventura[] = [];
+    if (!b || !l || xp <= 0) return saida;
     b.xp += xp;
     const novo = nivelDaXp(b.xp);
     if (novo <= b.nivel) return saida;
     const antes = atributos(b.especie, b.nivel).pvMax;
+    const [deEspecie, deNivel] = [b.especie, b.nivel];
     b.nivel = novo;
     saida.push({ t: 'nivel', especie: b.especie, n: novo });
     const evolui = ESPECIES[b.especie].evolui;
@@ -294,11 +381,30 @@ function aventuraSolo(ctx: Contexto, userId: number, aleatorio: () => number): J
       b.especie = evolui.para;
       pegar(evolui.para);
     }
+    saida.push(...aprenderGolpes(b, deEspecie, deNivel));
     const a = atributos(b.especie, b.nivel);
-    b.pv = Math.min(a.pvMax, l.pv + (a.pvMax - antes));
-    // os degraus e o estado da luta continuam com ele
+    // quem dormiu continua dormindo; quem está de pé ganha a vida que o nível deu
+    b.pv = l.pv <= 0 ? 0 : Math.min(a.pvMax, l.pv + (a.pvMax - antes));
+    // os degraus e o estado da luta continuam com ele, e os golpes são os dele
     const { degraus, estado, cochilo } = l;
-    Object.assign(l, lutador(b.especie, b.nivel, b.pv), { degraus, estado, cochilo });
+    Object.assign(l, lutador(b.especie, b.nivel, b.pv), { degraus, estado, cochilo, golpes: [...b.golpes] });
+    return saida;
+  };
+
+  /**
+   * A EXPERIÊNCIA REPARTIDA (20/11/2026): quem entrou na luta contra aquele bicho e está acordado divide o que ele dá; quem ficou
+   * na equipe sem lutar (acordado) leva PARTE_DE_QUEM_NAO_LUTOU. Antes, só o da frente ganhava.
+   */
+  const repartirXp = (xp: number): EventoDaAventura[] => {
+    const lado = luta!.b.lados[0];
+    const acordado = (i: number) => (lado.equipe[i]?.pv ?? 0) > 0;
+    const lutaram = [...luta!.participantes].filter(acordado);
+    const parte = lutaram.length ? Math.max(1, Math.ceil(xp / lutaram.length)) : 0;
+    const saida: EventoDaAventura[] = [];
+    lado.equipe.forEach((_, i) => {
+      if (!acordado(i)) return;
+      saida.push(...darXp(i, lutaram.includes(i) ? parte : Math.floor(xp * PARTE_DE_QUEM_NAO_LUTOU)));
+    });
     return saida;
   };
 
@@ -307,9 +413,12 @@ function aventuraSolo(ctx: Contexto, userId: number, aleatorio: () => number): J
     const saida: EventoDaAventura[] = [...doTurno];
     const l = luta!;
     for (const e of doTurno) {
+      if (e.t === 'troca' && e.lado === 0) l.participantes.add(e.i);
       if (e.t === 'sono' && e.lado === 1) {
         const inimigo = l.b.lados[1].equipe.find((x) => x.especie === e.especie && x.pv === 0)!;
-        saida.push(...darXp(xpGanha(inimigo.especie, inimigo.nivel, l.tipo !== 'mato')));
+        saida.push(...repartirXp(xpGanha(inimigo.especie, inimigo.nivel, l.tipo !== 'mato')));
+        // o próximo bicho de lá começa a conta de novo, com quem está na frente agora
+        l.participantes = new Set([l.b.lados[0].ativo]);
       }
     }
     if (l.b.vencedor === 0) {
@@ -319,8 +428,12 @@ function aventuraSolo(ctx: Contexto, userId: number, aleatorio: () => number): J
           av!.desafios += 1;
           av!.cenouras += 5;
         }
-        if (l.desafio === -1) av!.revanches += 1;
-        else if (l.desafio !== undefined && !av!.escada.includes(l.desafio)) av!.escada = [...av!.escada, l.desafio].sort((p, q) => p - q);
+        if (l.desafio === -1) {
+          av!.revanches += 1;
+          // o presente da revanche: o próximo bicho da Nena que a pessoa ainda não tem
+          const presente = PRESENTES_DA_REVANCHE.find((e) => !av!.pegos.includes(e));
+          if (presente) saida.push({ t: 'presente', nome: DESAFIANTES[0].nome, especie: presente }, ...receber(presente, NIVEL_DO_PRESENTE));
+        } else if (l.desafio !== undefined && !av!.escada.includes(l.desafio)) av!.escada = [...av!.escada, l.desafio].sort((p, q) => p - q);
         saida.push({ t: 'venceuDesafio' });
       } else {
         if (l.pessoa && !av!.vencidos.includes(l.pessoa)) av!.vencidos.push(l.pessoa);
@@ -341,7 +454,8 @@ function aventuraSolo(ctx: Contexto, userId: number, aleatorio: () => number): J
     return saida;
   };
 
-  const vezDoInimigo = (): Escolha => escolhaDoRobo(luta!.b, 1, aleatorio, luta!.tipo !== 'mato');
+  // o bicho do mato escolhe qualquer golpe; do Bosque em diante (`esperto`), como quem desafia
+  const vezDoInimigo = (): Escolha => escolhaDoRobo(luta!.b, 1, aleatorio, luta!.tipo !== 'mato' || luta!.esperto);
 
   /** A escada inteira vencida: a porta da Nena dá a revanche, e o raro aparece na Serra. */
   const posJogo = () => DESAFIANTES.every((_, k) => av!.escada.includes(k));
@@ -390,8 +504,17 @@ function aventuraSolo(ctx: Contexto, userId: number, aleatorio: () => number): J
       const mato = mapaDe(mapa).matos[casa];
       let especie = mato.especies[Math.floor(aleatorio() * mato.especies.length)];
       let nivel = mato.de + Math.floor(aleatorio() * (mato.ate - mato.de + 1));
-      const raro = mapa === RARO.mapa && posJogo() && aleatorio() < RARO.chance;
+      let raro = mapa === RARO.mapa && posJogo() && aleatorio() < RARO.chance;
       if (raro) [especie, nivel] = [RARO.especie, RARO.nivel];
+      else if (mapa === INICIAL_RARO.mapa && posJogo()) {
+        // os do começo que a pessoa ainda não tem, raros na Serra (antes de crescer: no nível de antes da evolução)
+        const faltam = INICIAIS.filter((e) => !av!.pegos.includes(e));
+        if (faltam.length && aleatorio() < INICIAL_RARO.chance) {
+          especie = faltam[Math.floor(aleatorio() * faltam.length)];
+          nivel = Math.min(nivel, (ESPECIES[especie].evolui?.nivel ?? nivel + 1) - 1);
+          raro = true;
+        }
+      }
       comecarLuta([lutador(especie, nivel)], 'mato', nivel * MOEDAS_POR_NIVEL);
       eventos.pôr([raro ? { t: 'raro', especie } : { t: 'apareceu', especie }]);
       guardar();
@@ -432,22 +555,28 @@ function aventuraSolo(ctx: Contexto, userId: number, aleatorio: () => number): J
       if (erro) return erro;
       eventos.pôr(depoisDoTurno(turno(l.b, [e, vezDoInimigo()], aleatorio)));
     } else if (tipo === 'cha') {
-      if (av!.chas <= 0) return 'Acabou o chá.';
-      av!.chas -= 1;
-      eventos.pôr(depoisDoTurno(turno(l.b, [{ tipo: 'cha' }, vezDoInimigo()], aleatorio)));
+      // o chá (uma parte da vida) ou o chá forte
+      const forte = corpo.forte === true;
+      if (forte ? av!.chasFortes <= 0 : av!.chas <= 0) return 'Acabou o chá.';
+      if (forte) av!.chasFortes -= 1;
+      else av!.chas -= 1;
+      eventos.pôr(depoisDoTurno(turno(l.b, [{ tipo: 'cha', forte }, vezDoInimigo()], aleatorio)));
+    } else if (tipo === 'erva') {
+      // a erva-doce: tira o cochilo e o veneno do bicho da frente
+      if (av!.ervas <= 0 || !ativoDe(lado).estado) return 'Ação inválida.';
+      av!.ervas -= 1;
+      eventos.pôr(depoisDoTurno(turno(l.b, [{ tipo: 'erva' }, vezDoInimigo()], aleatorio)));
     } else if (tipo === 'cenoura') {
       if (l.tipo !== 'mato') return 'Só os bichos do mato fazem amizade.';
-      if (av!.cenouras <= 0) return 'Acabaram as cenouras.';
-      av!.cenouras -= 1;
+      const dourada = corpo.dourada === true;
+      if (dourada ? av!.douradas <= 0 : av!.cenouras <= 0) return 'Acabaram as cenouras.';
+      if (dourada) av!.douradas -= 1;
+      else av!.cenouras -= 1;
       const alvo = ativoDe(l.b.lados[1]);
-      if (aleatorio() < chanceDeAmizade(alvo.especie, alvo.pv, alvo.pvMax)) {
-        const novo: BichoGuardado = { id: av!.proximoId++, especie: alvo.especie, nivel: alvo.nivel, xp: xpDoNivel(alvo.nivel), pv: alvo.pv };
+      if (aleatorio() < chanceDeAmizade(alvo.especie, alvo.pv, alvo.pvMax, dourada)) {
         l.acabou = 'amigo';
         devolverVida();
-        pegar(alvo.especie);
-        const cabe = av!.equipe.length < TAMANHO_DA_EQUIPE;
-        (cabe ? av!.equipe : av!.toca).push(novo);
-        eventos.pôr([{ t: 'amigo', especie: alvo.especie }, ...(cabe ? [] : [{ t: 'toca' as const, especie: alvo.especie }])]);
+        eventos.pôr([{ t: 'amigo', especie: alvo.especie }, ...receber(alvo.especie, alvo.nivel, alvo.pv)]);
       } else {
         eventos.pôr([{ t: 'recusou', especie: alvo.especie }, ...depoisDoTurno(turno(l.b, [{ tipo: 'nada' }, vezDoInimigo()], aleatorio))]);
       }
@@ -466,6 +595,75 @@ function aventuraSolo(ctx: Contexto, userId: number, aleatorio: () => number): J
   }
 
   const naLoja = () => !!av && casaNo(av.mapa, av.x, av.y) === 'l';
+  const naCasa = () => !!av && fase === 'mapa' && casaNo(av.mapa, av.x, av.y) === 'h';
+  const doId = (id: unknown) => [...(av?.equipe ?? []), ...(av?.toca ?? [])].find((b) => b.id === Number(id)) ?? null;
+  const aprendendo = () => {
+    const p = av?.aprender[0];
+    const b = p && doId(p.id);
+    return p && b ? { id: b.id, especie: b.especie, golpe: p.golpe, golpes: b.golpes, fila: av!.aprender.length } : null;
+  };
+
+  /** Escolher o golpe que espera: `i` é o golpe a esquecer (0 a 3), ou -1 para não aprender. Vale também no meio da luta. */
+  function esquecer(corpo: Record<string, unknown>): string | null {
+    const p = av?.aprender[0];
+    const b = p && doId(p.id);
+    if (!p || !b) return 'Ação inválida.';
+    const i = Number(corpo.i);
+    if (!Number.isInteger(i) || i < -1 || i >= b.golpes.length) return 'Ação inválida.';
+    av!.aprender.shift();
+    if (i >= 0) {
+      const antigo = b.golpes[i];
+      b.golpes[i] = p.golpe;
+      eventos.pôr([{ t: 'esqueceu', especie: b.especie, antigo, golpe: p.golpe }]);
+      // na luta, o bicho da equipe já usa o golpe novo
+      const k = av!.equipe.indexOf(b);
+      const l = luta?.b.lados[0].equipe[k];
+      if (k >= 0 && l) l.golpes = [...b.golpes];
+    }
+    guardar();
+    return null;
+  }
+
+  /**
+   * A TOCA (20/11/2026; antes, o 7º amigo ia para lá e não voltava): na porta de casa, levar um guardado para a equipe, guardar um
+   * da equipe (fica ao menos um), trocar um pelo outro e soltar um guardado de volta ao mato. Quem sai da toca sai descansado.
+   */
+  function naToca(corpo: Record<string, unknown>): string | null {
+    if (!naCasa()) return 'Ação inválida.';
+    const a = av!;
+    const daToca = a.toca.findIndex((b) => b.id === Number(corpo.id));
+    const i = Number(corpo.i);
+    const daEquipe = Number.isInteger(i) && i >= 0 && i < a.equipe.length ? i : -1;
+    const descansado = (b: BichoGuardado) => ((b.pv = atributos(b.especie, b.nivel).pvMax), b);
+    switch (corpo.acao) {
+      case 'levar':
+        if (daToca < 0 || a.equipe.length >= TAMANHO_DA_EQUIPE) return 'Ação inválida.';
+        a.equipe.push(descansado(a.toca.splice(daToca, 1)[0]));
+        break;
+      case 'guardar':
+        if (daEquipe < 0 || a.equipe.length <= 1) return 'Ação inválida.';
+        a.toca.push(...a.equipe.splice(daEquipe, 1));
+        break;
+      case 'trocar': {
+        if (daToca < 0 || daEquipe < 0) return 'Ação inválida.';
+        const sai = a.equipe[daEquipe];
+        a.equipe[daEquipe] = descansado(a.toca[daToca]);
+        a.toca[daToca] = sai;
+        break;
+      }
+      case 'soltar': {
+        // só da toca: quem está na equipe passa pela toca antes (e a equipe nunca fica vazia)
+        if (daToca < 0) return 'Ação inválida.';
+        const [solto] = a.toca.splice(daToca, 1);
+        a.aprender = a.aprender.filter((p) => p.id !== solto.id);
+        break;
+      }
+      default:
+        return 'Ação inválida.';
+    }
+    guardar();
+    return null;
+  }
 
   return {
     publico() {
@@ -481,8 +679,16 @@ function aventuraSolo(ctx: Contexto, userId: number, aleatorio: () => number): J
         y: av?.y ?? CASA.y,
         equipe: av?.equipe.map(vistaDoBicho) ?? [],
         toca: av?.toca.length ?? 0,
+        // a toca por dentro (20/11/2026): os guardados, e se a pessoa está na porta de casa, onde se mexe nela
+        guardados: av?.toca.map(vistaDoBicho) ?? [],
+        naCasa: naCasa(),
         cenouras: av?.cenouras ?? 0,
         chas: av?.chas ?? 0,
+        chasFortes: av?.chasFortes ?? 0,
+        ervas: av?.ervas ?? 0,
+        douradas: av?.douradas ?? 0,
+        // o golpe que espera a escolha: o primeiro da fila
+        aprender: aprendendo(),
         desafios: av?.desafios ?? 0,
         moedas: av?.moedas ?? 0,
         caderno: { vistos: av?.vistos ?? [], pegos: av?.pegos ?? [] },
@@ -496,6 +702,7 @@ function aventuraSolo(ctx: Contexto, userId: number, aleatorio: () => number): J
           meu: vistaDoLado(l.b.lados[0], true),
           outro: vistaDoLado(l.b.lados[1], false),
           chance: l.tipo === 'mato' ? chanceDeAmizade(ativoDe(l.b.lados[1]).especie, ativoDe(l.b.lados[1]).pv, ativoDe(l.b.lados[1]).pvMax) : 0,
+          chanceDourada: l.tipo === 'mato' ? chanceDeAmizade(ativoDe(l.b.lados[1]).especie, ativoDe(l.b.lados[1]).pv, ativoDe(l.b.lados[1]).pvMax, true) : 0,
         },
         eventos: eventos.lista,
       };
@@ -514,8 +721,10 @@ function aventuraSolo(ctx: Contexto, userId: number, aleatorio: () => number): J
         guardar();
         return null;
       }
+      if (corpo.tipo === 'esquecer') return esquecer(corpo);
       if (fase === 'batalha') return naLuta(corpo);
       if (corpo.tipo === 'andar') return andar(corpo.dir);
+      if (corpo.tipo === 'toca') return naToca(corpo);
       if (corpo.tipo === 'frente') {
         // pôr um bicho da equipe na frente (é ele quem entra primeiro na luta)
         const i = Number(corpo.i);
@@ -527,12 +736,13 @@ function aventuraSolo(ctx: Contexto, userId: number, aleatorio: () => number): J
       if (corpo.tipo === 'comprar') {
         // a lojinha: só de pé na porta dela, e com as moedas do jogo
         if (!naLoja()) return 'A lojinha fica longe daqui.';
-        const item = corpo.item;
-        if (item !== 'cenoura' && item !== 'cha') return 'Ação inválida.';
+        const item = corpo.item as ItemDaLoja;
+        // a escada da lojinha: cada item abre com os degraus da escada dos desafios já vencidos
+        if (typeof item !== 'string' || !Object.hasOwn(PRECOS, item) || av!.escada.length < LOJA_ABRE[item]) return 'Ação inválida.';
         if (av!.moedas < PRECOS[item]) return 'Faltam moedas.';
         av!.moedas -= PRECOS[item];
-        if (item === 'cenoura') av!.cenouras += 1;
-        else av!.chas += 1;
+        const campo = ({ cenoura: 'cenouras', cha: 'chas', erva: 'ervas', chaForte: 'chasFortes', dourada: 'douradas' } as const)[item];
+        av![campo] += 1;
         eventos.pôr([{ t: 'comprou', item }]);
         guardar();
         return null;
@@ -546,8 +756,14 @@ function aventuraSolo(ctx: Contexto, userId: number, aleatorio: () => number): J
 }
 
 // ---------------------------------------------------------------- A SALA
+/** Um bicho que se pode levar à mesa: o id na aventura (ou o índice da emprestada) e a forma crescida. */
+interface OpcaoDaMesa {
+  id: number;
+  especie: string;
+}
+
 function lutaNaSala(ctx: Contexto, criadaPor: number, aleatorio: () => number): Jogo {
-  let fase: 'esperando' | 'escolhendo' | 'fim' = 'esperando';
+  let fase: 'esperando' | 'montando' | 'escolhendo' | 'fim' = 'esperando';
   const lugares: number[] = [criadaPor];
   let b: Batalha | null = null;
   const escolhas: [Escolha | null, Escolha | null] = [null, null];
@@ -555,12 +771,35 @@ function lutaNaSala(ctx: Contexto, criadaPor: number, aleatorio: () => number): 
   const emprestada: boolean[] = [false, false];
   const eventos = diario();
   const partidaId = `bichos-${ctx.comunidade ?? 0}-${Date.now()}`;
+  /** A MESA JUSTA (20/11/2026): o que cada lado pode levar, e os que escolheu (até BICHOS_NA_MESA, na ordem). */
+  const opcoes: [OpcaoDaMesa[], OpcaoDaMesa[]] = [[], []];
+  const montou: [number[] | null, number[] | null] = [null, null];
 
-  /** A equipe guardada de quem senta, com a vida cheia e no nível da sala; sem nenhuma, a emprestada (no mesmo nível). */
-  const equipeDe = (userId: number, lado: number): Lutador[] => {
+  /**
+   * O que quem senta pode levar: os bichos da aventura (a equipe primeiro, depois a toca), cada um na FORMA CRESCIDA; sem
+   * aventura, a emprestada (que vai sem escolha).
+   */
+  const opcoesDe = (userId: number, lado: number): OpcaoDaMesa[] => {
     const av = lerAventura(db.aventuraDosBichos(userId));
     emprestada[lado] = !av;
-    return av ? av.equipe.map((x) => lutador(x.especie, NIVEL_DA_SALA)) : EQUIPE_EMPRESTADA.map(([e]) => lutador(e, NIVEL_DA_SALA));
+    if (!av) return EQUIPE_EMPRESTADA.map(([e], i) => ({ id: i, especie: formaCrescida(e) }));
+    return [...av.equipe, ...av.toca].map((x) => ({ id: x.id, especie: formaCrescida(x.especie) }));
+  };
+
+  /** A escolha que o computador faz por quem não escolheu: os primeiros (a equipe, na ordem dela). */
+  const montarPorQuem = (lado: number) => {
+    if (!montou[lado]) montou[lado] = opcoes[lado].slice(0, BICHOS_NA_MESA).map((o) => o.id);
+  };
+
+  /** Todos lutam crescidos, no nível da sala, com a vida cheia e os últimos 4 golpes que sabem nele. */
+  const equipeDaMesa = (lado: number): Lutador[] =>
+    montou[lado]!.map((id) => lutador(opcoes[lado].find((o) => o.id === id)!.especie, NIVEL_DA_SALA));
+
+  const talvezComecar = () => {
+    if (fase !== 'montando' || !montou[0] || !montou[1]) return;
+    b = novaBatalha(equipeDaMesa(0), equipeDaMesa(1));
+    fase = 'escolhendo';
+    prazo();
   };
 
   /** Quem precisa escolher agora: se alguém tem de trocar, só ele; senão, os dois. */
@@ -620,8 +859,12 @@ function lutaNaSala(ctx: Contexto, criadaPor: number, aleatorio: () => number): 
         fase,
         partidaId,
         nivel: NIVEL_DA_SALA,
+        mesa: BICHOS_NA_MESA,
         lugares: lugares.map((id, l) => ({ userId: id, username: ctx.nome(id), emprestada: emprestada[l] })),
         meuLado: lado,
+        // na largada: o que eu posso levar, e quem já escolheu (o que o outro lado escolheu só aparece na luta)
+        opcoes: fase === 'montando' && lado >= 0 && !montou[lado] ? opcoes[lado] : [],
+        montou: [!!montou[0], !!montou[1]],
         lados: b ? b.lados.map((l, i) => ({ ...vistaDoLado(l, i === lado), escolheu: escolhas[i] !== null })) : null,
         precisaEscolher: b && fase === 'escolhendo' && lado >= 0 ? quemEscolhe().includes(lado) && !escolhas[lado] : false,
         vencedor: vencedor === null ? null : lugares[vencedor],
@@ -633,17 +876,42 @@ function lutaNaSala(ctx: Contexto, criadaPor: number, aleatorio: () => number): 
         if (fase !== 'esperando') return 'A mesa já está cheia.';
         if (lugares.includes(quem)) return 'Você já está na mesa.';
         lugares.push(quem);
-        b = novaBatalha(equipeDe(lugares[0], 0), equipeDe(lugares[1], 1));
-        fase = 'escolhendo';
-        prazo();
+        for (const l of [0, 1]) {
+          opcoes[l] = opcoesDe(lugares[l], l);
+          // a emprestada vai sem escolha
+          if (emprestada[l]) montarPorQuem(l);
+        }
+        fase = 'montando';
+        ctx.agendar(MONTAGEM_MS, () => {
+          if (fase !== 'montando') return;
+          montarPorQuem(0);
+          montarPorQuem(1);
+          talvezComecar();
+          ctx.avisar();
+        });
+        talvezComecar();
         ctx.avisar();
         return null;
       }
       const lado = lugares.indexOf(quem);
       if (lado < 0) return 'Você está assistindo esta partida.';
-      if (fase !== 'escolhendo') return fase === 'fim' ? 'A partida acabou.' : 'Espere alguém sentar do outro lado.';
+      if (fase === 'esperando') return 'Espere alguém sentar do outro lado.';
+      if (fase === 'fim') return 'A partida acabou.';
       if (corpo.tipo === 'desistir') {
         acabar(1 - lado);
+        return null;
+      }
+      if (fase === 'montando') {
+        if (corpo.tipo !== 'equipe') return 'Escolha inválida.';
+        if (montou[lado]) return 'Você já escolheu.';
+        const ids = Array.isArray(corpo.ids) ? corpo.ids.map(Number) : [];
+        const validos = new Set(opcoes[lado].map((o) => o.id));
+        if (!ids.length || ids.length > BICHOS_NA_MESA || new Set(ids).size !== ids.length || !ids.every((id) => validos.has(id))) {
+          return 'Escolha inválida.';
+        }
+        montou[lado] = ids;
+        talvezComecar();
+        ctx.avisar();
         return null;
       }
       if (!quemEscolhe().includes(lado)) return 'Espere o outro lado.';
@@ -658,8 +926,8 @@ function lutaNaSala(ctx: Contexto, criadaPor: number, aleatorio: () => number): 
       return null;
     },
     conferir() {
-      // quem saiu da sala no meio da luta perde
-      if (fase !== 'escolhendo') return;
+      // quem saiu da sala no meio da largada ou da luta perde
+      if (fase !== 'escolhendo' && fase !== 'montando') return;
       const naSala = ctx.naSala();
       const saiu = lugares.findIndex((id) => !naSala.includes(id));
       if (saiu >= 0) {

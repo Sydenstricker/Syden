@@ -13,6 +13,8 @@ type EstadoDesenhoNovo = EstadoDesenho & {
   niveis?: (1 | 2 | 3)[] | null;
   nivel?: 1 | 2 | 3 | null;
   pular?: { votos: number; precisa: number; votei: boolean };
+  /** O tempo de cada desenho, escolhido na largada (20/11/2026). */
+  tempoMs?: number;
 };
 
 /** O nível de uma palavra em estrelinhas (fácil ★, média ★★, difícil ★★★): figura, sem texto a traduzir. */
@@ -344,7 +346,7 @@ export function JogoDesenho({
     );
   }
 
-  const total = { escolhendo: ESCOLHENDO_MS, desenhando: DESENHANDO_MS, revelando: REVELANDO_MS, fim: 1 }[estado.fase];
+  const total = { escolhendo: ESCOLHENDO_MS, desenhando: estado.tempoMs ?? DESENHANDO_MS, revelando: REVELANDO_MS, fim: 1 }[estado.fase];
 
   return (
     <div className="desenho">

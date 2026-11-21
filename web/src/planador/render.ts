@@ -665,3 +665,172 @@ export function setaDoRumo(ctx: CanvasRenderingContext2D, cam: Camera, v: Voo, a
   ctx.fill();
   ctx.restore();
 }
+
+// =====================================================================================================================
+// A SEGUNDA AUDITORIA (20/11/2026): o anel do pouso e o mapa (só desenho; a conta é a de sim.ts)
+// =====================================================================================================================
+
+/** A cor do anel do pouso: verde (folga), amarelo (perto do limite) ou vermelho (assim, é batida). */
+export type CorDoPouso = 'verde' | 'amarelo' | 'vermelho';
+const CORES_DO_POUSO: Record<CorDoPouso, string> = { verde: '#7ed36a', amarelo: '#f6c94a', vermelho: '#e2574a' };
+
+/**
+ * Como o pouso sairia agora, pela descida e pela velocidade de lado contra os limites do desafio (`limiteVs`, `limiteVh`): a
+ * mesma régua do toque em sim.ts. No salto, sem o paraquedas aberto é sempre vermelho.
+ */
+export function corDoPouso(v: Voo): CorDoPouso {
+  const d = v.d;
+  if (d.tipo === 'queda' && !v.aberto) return 'vermelho';
+  const vs = Math.max(0, -v.vz);
+  const vh = d.tipo === 'mochila' ? Math.sqrt(v.vx * v.vx + v.vy * v.vy) : v.v;
+  const r = Math.max(vs / d.limiteVs, vh / d.limiteVh);
+  return r >= 1 ? 'vermelho' : r >= 0.7 ? 'amarelo' : 'verde';
+}
+
+/** A altura do chão debaixo do voo: o topo da plataforma, se a mochila está em cima dela; senão o chão. */
+export function chaoDebaixo(v: Voo): number {
+  const a = v.d.alvo;
+  if (v.d.tipo !== 'mochila') return 0;
+  const dx = v.x - a.x, dy = v.y - a.y;
+  return dx * dx + dy * dy < a.raio * a.raio ? a.h : 0;
+}
+
+/** O anel no chão debaixo do coelho, perto do pouso, na cor do pouso que sairia agora (pisca no vermelho). */
+export function figuraDoPouso(cam: Camera, v: Voo, tempo: number, calmo: boolean): Figura | null {
+  const h0 = chaoDebaixo(v);
+  const c = projetar(cam, v.x, v.y, h0);
+  if (!c) return null;
+  const cor = corDoPouso(v);
+  if (cor === 'vermelho' && !calmo && Math.floor(tempo * 6) % 2) return null;
+  const n = 18;
+  const pts: (Ponto | null)[] = [];
+  for (let i = 0; i <= n; i++) {
+    const th = (i / n) * Math.PI * 2;
+    pts.push(projetar(cam, v.x + Math.cos(th) * 2.2, v.y + Math.sin(th) * 2.2, h0));
+  }
+  return {
+    z: c.z + 0.5,
+    desenhar: (ctx) => {
+      for (const [tinta, larg] of [
+        ['#2a1e26', 3],
+        [CORES_DO_POUSO[cor], 1.5],
+      ] as const) {
+        ctx.strokeStyle = tinta;
+        ctx.lineWidth = larg;
+        ctx.beginPath();
+        let aberto = false;
+        for (const p of pts) {
+          if (!p) {
+            aberto = false;
+            continue;
+          }
+          if (!aberto) ctx.moveTo(p.sx, p.sy);
+          else ctx.lineTo(p.sx, p.sy);
+          aberto = true;
+        }
+        ctx.stroke();
+      }
+    },
+  };
+}
+
+/** O que o mapa mostra: o meu voo, o rumo de cada fantasma (o caminho inteiro) e onde ele está agora. */
+export interface Mapa {
+  eu: Voo | null;
+  /** Os caminhos dos fantasmas, em pontos [x, y] (um a cada alguns passos), e a posição deles agora. */
+  rumos: { caminho: [number, number][]; agora: { x: number; y: number } | null }[];
+  /** Os anéis que ficaram para trás sem passar (piscam). */
+  perdidos: Set<number>;
+  /** O próximo anel (brilha). */
+  proximo: number;
+  tempo: number;
+}
+
+/**
+ * O MAPA DO CANTO (20/11/2026): o desafio visto de cima, com o norte para cima. O alvo, os anéis (o próximo em amarelo; o
+ * PERDIDO, que ficou para trás sem passar, piscando em vermelho; os pegos somem), a LINHA DE RUMO de cada fantasma (o caminho
+ * inteiro dele, para ver por onde ele foi) e os pontos de agora.
+ */
+export function desenharMapa(ctx: CanvasRenderingContext2D, d: Desafio, m: Mapa) {
+  const L = ctx.canvas.width;
+  const A = ctx.canvas.height;
+  ctx.clearRect(0, 0, L, A);
+  // a caixa: o começo, os anéis, o alvo e os caminhos dos fantasmas
+  let x0 = Math.min(d.x, d.alvo.x), x1 = Math.max(d.x, d.alvo.x), y0 = Math.min(d.y, d.alvo.y), y1 = Math.max(d.y, d.alvo.y);
+  const caber = (x: number, y: number) => {
+    if (x < x0) x0 = x;
+    if (x > x1) x1 = x;
+    if (y < y0) y0 = y;
+    if (y > y1) y1 = y;
+  };
+  for (const a of d.aneis) caber(a.x, a.y);
+  for (const r of m.rumos) for (const [x, y] of r.caminho) caber(x, y);
+  const lado = Math.max(40, x1 - x0, y1 - y0) * 1.15;
+  const cx = (x0 + x1) / 2, cy = (y0 + y1) / 2;
+  const k = (L - 8) / lado;
+  const px = (x: number) => L / 2 + (x - cx) * k;
+  const py = (y: number) => A / 2 + (y - cy) * k;
+  const dentro = (x: number, y: number) => ({ x: Math.max(3, Math.min(L - 3, px(x))), y: Math.max(3, Math.min(A - 3, py(y))) });
+
+  ctx.fillStyle = 'rgba(42, 30, 38, 0.55)';
+  ctx.fillRect(0, 0, L, A);
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(0.5, 0.5, L - 1, A - 1);
+
+  // a linha de rumo dos fantasmas
+  ctx.strokeStyle = 'rgba(220, 230, 255, 0.55)';
+  ctx.lineWidth = 1;
+  for (const r of m.rumos) {
+    ctx.beginPath();
+    r.caminho.forEach(([x, y], i) => (i ? ctx.lineTo(px(x), py(y)) : ctx.moveTo(px(x), py(y))));
+    ctx.stroke();
+  }
+  // o alvo
+  const al = dentro(d.alvo.x, d.alvo.y);
+  ctx.fillStyle = '#d65848';
+  ctx.beginPath();
+  ctx.arc(al.x, al.y, 3, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = '#fff3c4';
+  ctx.beginPath();
+  ctx.arc(al.x, al.y, 5, 0, Math.PI * 2);
+  ctx.stroke();
+  // os anéis
+  const pisca = Math.floor(m.tempo * 4) % 2 === 0;
+  d.aneis.forEach((a, i) => {
+    if (m.eu && m.eu.aneis[i] >= 0) return;
+    const p = dentro(a.x, a.y);
+    const perdido = m.perdidos.has(i);
+    if (perdido && !pisca) return;
+    ctx.strokeStyle = perdido ? '#ff6b5a' : i === m.proximo ? '#f6c94a' : 'rgba(255, 243, 196, 0.7)';
+    ctx.lineWidth = perdido || i === m.proximo ? 2 : 1;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
+    ctx.stroke();
+  });
+  // os fantasmas agora
+  ctx.fillStyle = 'rgba(220, 230, 255, 0.85)';
+  for (const r of m.rumos) {
+    if (!r.agora) continue;
+    const p = dentro(r.agora.x, r.agora.y);
+    ctx.fillRect(Math.round(p.x) - 1, Math.round(p.y) - 1, 3, 3);
+  }
+  // eu: o ponto e o risco do rumo
+  if (m.eu) {
+    const p = dentro(m.eu.x, m.eu.y);
+    ctx.strokeStyle = '#2a1e26';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(p.x, p.y);
+    ctx.lineTo(p.x + m.eu.hx * 7, p.y + m.eu.hy * 7);
+    ctx.stroke();
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}

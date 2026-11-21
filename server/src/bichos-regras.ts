@@ -19,6 +19,12 @@
  * quatro desafiantes até o nível ~30, os achados no chão, a lojinha (moedas do jogo, nunca dinheiro) e o pós-jogo (a revanche
  * da Nena e o bicho raro). E na sala, todos lutam no mesmo nível (NIVEL_DA_SALA).
  *
+ * 20/11/2026 (lote C da segunda auditoria): o chá cura uma PARTE da vida (e não 20 fixos), a lojinha abre itens pela escada
+ * (LOJA_ABRE: a erva-doce, o chá forte, a cenoura dourada), o mato do Bosque e da Serra escolhe o golpe com esperteza
+ * (`esperto` no mapa), o caderno fecha (os do começo não escolhidos aparecem raros na Serra depois da escada, e a Nena dá os
+ * bichos dela a quem vence a revanche: `alcancaveis`), o golpe novo é escolhido (`golpesNovos`), e na sala cada um leva até 3
+ * bichos na forma crescida (`formaCrescida`).
+ *
  * Sem import nenhum, de propósito: o arquivo é o mesmo nos dois lados.
  */
 
@@ -206,8 +212,11 @@ export const NIVEL_MAXIMO = 50;
 export const TAMANHO_DA_EQUIPE = 6;
 /** A cesta de quem sai de casa: cenouras para a amizade e chá para a vida. */
 export const CESTA = { cenouras: 5, chas: 3 };
-/** Quanto o chá devolve. */
-export const CURA_DO_CHA = 20;
+/** Quanto o chá devolve: uma parte da vida cheia (20/11/2026; eram 20 fixos, que no nível 30 não faziam nada). E o chá forte. */
+export const CURA_DO_CHA = 0.35;
+export const CURA_DO_CHA_FORTE = 0.75;
+/** A vida que um chá devolve a um bicho com `pvMax` (pelo menos 1). */
+export const curaDoCha = (pvMax: number, forte = false) => Math.max(1, Math.floor(pvMax * (forte ? CURA_DO_CHA_FORTE : CURA_DO_CHA)));
 
 /** O nome de quem cuida da casa do desafio: nome próprio, igual em todo idioma. */
 export const DESAFIANTE = 'Nena';
@@ -225,15 +234,28 @@ export const DESAFIANTES: { nome: string; equipe: [string, number][]; moedas: nu
 ];
 export const EQUIPE_DA_REVANCHE: [string, number][] = [['galoca', 34], ['macalu', 35], ['nevasco', 35], ['dragolim', 36]];
 export const MOEDAS_DA_REVANCHE = 500;
+/**
+ * O PRESENTE DA REVANCHE (20/11/2026): os bichos da Nena não fazem amizade no mato (taxa 0); a cada revanche vencida, ela dá
+ * um deles (o próximo que a pessoa ainda não tem), neste nível. Assim o caderno fecha.
+ */
+export const PRESENTES_DA_REVANCHE = ['galoca', 'macalu', 'dragolim'] as const;
+export const NIVEL_DO_PRESENTE = 30;
+/** Os do começo que a pessoa não escolheu: raros no mato da Serra, só depois da escada inteira (como o raro). */
+export const INICIAL_RARO = { mapa: 'serra', chance: 0.08 };
 
 /** A equipe de quem chega à sala sem bicho nenhum: os três do começo, no mesmo nível, para a luta ser justa. */
 export const EQUIPE_EMPRESTADA: [string, number][] = [['brotel', 9], ['tisco', 9], ['bolhim', 9]];
 /** NA SALA, TODOS LUTAM NESTE NÍVEL (19/11/2026): o troféu não depende de quanto cada um jogou no Solo. */
 export const NIVEL_DA_SALA = 20;
 
-/** A lojinha: o preço em moedas do jogo (ganhas nas lutas; nunca dinheiro). */
-export const PRECOS = { cenoura: 8, cha: 12 } as const;
+/**
+ * A lojinha: o preço em moedas do jogo (ganhas nas lutas; nunca dinheiro). Desde 20/11/2026 ela tem ESCADA: cada item abre com
+ * quantos degraus da escada dos desafios já foram vencidos (LOJA_ABRE). A erva-doce tira o cochilo e o veneno; a cenoura
+ * dourada ajuda a amizade (chanceDeAmizade).
+ */
+export const PRECOS = { cenoura: 8, cha: 12, erva: 15, chaForte: 30, dourada: 40 } as const;
 export type ItemDaLoja = keyof typeof PRECOS;
+export const LOJA_ABRE: Record<ItemDaLoja, number> = { cenoura: 0, cha: 0, erva: 1, chaForte: 2, dourada: 3 };
 
 // ---------------- AS CONTAS ----------------
 export interface Atributos {
@@ -249,11 +271,33 @@ export function atributos(especie: string, nivel: number): Atributos {
   return { pvMax: Math.floor((2 * b.pv * nivel) / 100) + nivel + 10, atq: de(b.atq), def: de(b.def), vel: de(b.vel) };
 }
 
-/** Os golpes que ele sabe no nível: os últimos 4 aprendidos. */
-export function golpesDe(especie: string, nivel: number): string[] {
+/** Todos os golpes que a espécie aprende até o nível, na ordem. */
+export function aprendidos(especie: string, nivel: number): string[] {
   const sabe: string[] = [];
   for (const [n, g] of ESPECIES[especie].aprende) if (n <= nivel && !sabe.includes(g)) sabe.push(g);
-  return sabe.slice(-4);
+  return sabe;
+}
+
+/** Os golpes que ele sabe no nível, sem ninguém ter escolhido: os últimos 4 aprendidos (o bicho novo, a sala, o mato). */
+export function golpesDe(especie: string, nivel: number): string[] {
+  return aprendidos(especie, nivel).slice(-4);
+}
+
+/**
+ * Os golpes que um bicho passa a poder aprender ao subir de `deNivel` para `paraNivel` (e, se cresceu, de `deEspecie` para
+ * `paraEspecie`): o que a espécie de agora aprende até o nível novo e a de antes não tinha aprendido até o nível de antes.
+ * Quem chama tira os que ele já sabe e, com 4 sabidos, pergunta qual esquecer (20/11/2026).
+ */
+export function golpesNovos(deEspecie: string, deNivel: number, paraEspecie: string, paraNivel: number): string[] {
+  const antes = new Set(aprendidos(deEspecie, deNivel));
+  return aprendidos(paraEspecie, paraNivel).filter((g) => !antes.has(g));
+}
+
+/** A forma crescida de uma espécie (a última da linha); quem não cresce é ela mesma. */
+export function formaCrescida(especie: string): string {
+  let e = especie;
+  for (let k = 0; k < 5 && ESPECIES[e]?.evolui; k++) e = ESPECIES[e].evolui!.para;
+  return e;
 }
 
 /** A experiência que leva a cada nível (a total, desde o 1). */
@@ -280,11 +324,15 @@ export function dano(atacante: { especie: string; nivel: number; atq: number }, 
   return Math.max(1, Math.floor(base * eficacia(g.elemento, ESPECIES[defensor.especie].elemento) * mesmo * (0.85 + 0.15 * sorte)));
 }
 
-/** A chance de a amizade dar certo com a cenoura: maior quanto mais cansado o bicho está. */
-export function chanceDeAmizade(especie: string, pv: number, pvMax: number): number {
+/**
+ * A chance de a amizade dar certo com a cenoura: maior quanto mais cansado o bicho está. A cenoura DOURADA (20/11/2026) dobra a
+ * chance, e nunca fica abaixo de 1 em 4 (quem tem taxa 0, os da Nena, continua sem amizade no mato).
+ */
+export function chanceDeAmizade(especie: string, pv: number, pvMax: number, dourada = false): number {
   const taxa = ESPECIES[especie].taxa;
   if (taxa <= 0) return 0;
-  return Math.min(0.95, Math.max(0.05, taxa * (1 - (0.75 * pv) / pvMax)));
+  const c = Math.min(0.95, Math.max(0.05, taxa * (1 - (0.75 * pv) / pvMax)));
+  return dourada ? Math.min(0.95, Math.max(0.25, c * 2)) : c;
 }
 
 /** De quem uma espécie cresce (para o caderno pôr a crescida ao lado). */
@@ -372,6 +420,8 @@ export interface Mapa {
   portas: Record<string, number>;
   pessoas: PessoaDoCaminho[];
   achados: Achado[];
+  /** O bicho do mato escolhe o golpe como quem desafia (20/11/2026: do Bosque em diante). */
+  esperto?: boolean;
 }
 
 export const MAPAS: Record<string, Mapa> = {
@@ -404,6 +454,7 @@ export const MAPAS: Record<string, Mapa> = {
     ],
     matos: { ';': { especies: ['picotim', 'pruvi', 'vultim', 'ventrolo', 'cardao', 'zunzi'], de: 10, ate: 15 } },
     vizinhos: { e: 'campo', c: 'serra' },
+    esperto: true,
     portas: { '17,7': 1 },
     pessoas: [
       { id: 'duda', nome: 'Duda', x: 10, y: 7, olha: 'd', avatar: 4, equipe: [['pruvi', 11], ['zunzi', 12]], moedas: 40 },
@@ -435,6 +486,7 @@ export const MAPAS: Record<string, Mapa> = {
     ],
     matos: { ';': { especies: ['nevasco', 'dinito', 'rochim', 'ventrolo', 'miasso', 'picotim'], de: 17, ate: 24 } },
     vizinhos: { b: 'bosque' },
+    esperto: true,
     portas: { '6,3': 2, '19,3': 3 },
     pessoas: [
       { id: 'tavo', nome: 'Tavo', x: 12, y: 9, olha: 'e', avatar: 7, equipe: [['ventrolo', 18], ['rochim', 19]], moedas: 70 },
@@ -487,4 +539,19 @@ export function quemVe(mapa: string, x: number, y: number): PessoaDoCaminho | nu
     }
   }
   return null;
+}
+
+/**
+ * O CADERNO QUE FECHA (20/11/2026): as espécies que alguém pode ter como amiga numa aventura — os do mato de cada tela, os três
+ * do começo (o escolhido, e os outros raros na Serra), o raro, os presentes da revanche e tudo o que eles viram ao crescer. O
+ * caderno conta sobre esta lista; o que sobrar fora dela (só de quem desafia) a tela conta à parte. O teste confere que é tudo.
+ */
+export function alcancaveis(): Set<string> {
+  const s = new Set<string>([...INICIAIS, RARO.especie, ...PRESENTES_DA_REVANCHE]);
+  for (const m of Object.values(MAPAS)) for (const mato of Object.values(m.matos)) for (const e of mato.especies) s.add(e);
+  for (const e of [...s]) {
+    let x = e;
+    for (let k = 0; k < 5 && ESPECIES[x]?.evolui; k++) s.add((x = ESPECIES[x].evolui!.para));
+  }
+  return s;
 }

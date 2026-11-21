@@ -288,3 +288,41 @@
   color: var(--text-strong, inherit);
   background: var(--bg-soft, rgba(127, 127, 127, 0.15));
 }
+
+/* O FIM COM PRESSÃO (20/11/2026): o relógio vermelho e o aviso do último minuto, por 4 s, no alto da tela. */
+.arena-relogio.final {
+  color: #ff6a5a;
+  animation: arena-pisca 1s steps(2) infinite;
+}
+@keyframes arena-pisca {
+  50% {
+    opacity: 0.55;
+  }
+}
+.arena-ultimo-minuto {
+  position: absolute;
+  top: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(30, 20, 26, 0.78);
+  color: #ffd2c8;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .arena-relogio.final {
+    animation: none;
+  }
+}
+/* As vitórias seguidas do Solo, no fim; e a dificuldade na largada. */
+.arena-sequencia {
+  margin: 0 0 6px;
+  text-align: center;
+}
+.arena-dificuldade {
+  justify-content: center;
+}

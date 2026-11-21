@@ -65,8 +65,11 @@ export function posicaoInicial(): number[] {
   });
 }
 
-/** Todas as cadeias de captura da peça em `de` (cada uma até não dar para comer mais nada). */
-function capturasDaPeca(casas: number[], de: number, saida: Lance[]) {
+/**
+ * Todas as cadeias de captura da peça em `de` (cada uma até não dar para comer mais nada). `paraTras` falso: a PEDRA só come
+ * para a frente (a variante de 20/11/2026); a dama come para todo lado do mesmo jeito.
+ */
+function capturasDaPeca(casas: number[], de: number, saida: Lance[], paraTras = true) {
   const peca = casas[de];
   const cor = corDa(peca)!;
   const dama = eDama(peca);
@@ -79,6 +82,7 @@ function capturasDaPeca(casas: number[], de: number, saida: Lance[]) {
   const buscar = (pos: number) => {
     let continuou = false;
     for (const [dl, dc] of DIRECOES) {
+      if (!dama && !paraTras && dl !== frente(cor)) continue;
       let l = linhaDe(pos) + dl;
       let c = colunaDe(pos) + dc;
       if (dama) {
@@ -110,10 +114,13 @@ function capturasDaPeca(casas: number[], de: number, saida: Lance[]) {
   buscar(de);
 }
 
-/** Os lances que valem para `cor`: se dá para comer, só os que comem mais; senão, os simples. */
-export function lancesDe(casas: number[], cor: Cor): Lance[] {
+/**
+ * Os lances que valem para `cor`: se dá para comer, só os que comem mais; senão, os simples. `paraTras` falso é a variante
+ * em que a pedra não come para trás (20/11/2026).
+ */
+export function lancesDe(casas: number[], cor: Cor, paraTras = true): Lance[] {
   const capturas: Lance[] = [];
-  for (let i = 0; i < 64; i++) if (corDa(casas[i]) === cor) capturasDaPeca(casas, i, capturas);
+  for (let i = 0; i < 64; i++) if (corDa(casas[i]) === cor) capturasDaPeca(casas, i, capturas, paraTras);
   if (capturas.length) {
     const maximo = Math.max(...capturas.map((x) => x.comidas.length));
     return capturas.filter((x) => x.comidas.length === maximo);
@@ -162,6 +169,11 @@ export interface EstadoDasDamas {
   semCaptura: number;
   /** Quantas vezes cada posição (o tabuleiro e a cor da vez) já apareceu: a terceira empata (19/11/2026). */
   vistas: Record<string, number>;
+  /**
+   * A VARIANTE "PEDRA NÃO COME PARA TRÁS" (20/11/2026, o lote C da segunda auditoria), escolhida na largada: falso só nela. A
+   * regra de fábrica continua a brasileira, em que a pedra come também para trás.
+   */
+  paraTras: boolean;
 }
 
 /** A REPETIÇÃO TRIPLA (19/11/2026): a mesma posição, com a mesma cor na vez, pela terceira vez empata a partida. */
@@ -178,9 +190,21 @@ const ladoDaCor = (e: EstadoDasDamas, cor: Cor): Lado => (cor === 0 ? e.claras :
 const contar = (casas: number[], cor: Cor) => casas.filter((p) => corDa(p) === cor).length;
 
 export const regrasDasDamas: Regras<EstadoDasDamas> = {
-  inicio() {
+  escolhas: (corpo) => ({ paraTras: corpo.paraTras !== false }),
+  inicio(escolhas) {
     const casas = posicaoInicial();
-    return { casas, claras: 0, vezDaCor: 0, comecou: false, lances: lancesDe(casas, 0), ultimo: null, semCaptura: 0, vistas: { [chaveDaPosicao(casas, 0)]: 1 } };
+    const paraTras = escolhas.paraTras !== false;
+    return {
+      casas,
+      claras: 0,
+      vezDaCor: 0,
+      comecou: false,
+      lances: lancesDe(casas, 0, paraTras),
+      ultimo: null,
+      semCaptura: 0,
+      vistas: { [chaveDaPosicao(casas, 0)]: 1 },
+      paraTras,
+    };
   },
   aoComecar(estado, primeiro) {
     estado.claras = primeiro;
@@ -203,7 +227,7 @@ export const regrasDasDamas: Regras<EstadoDasDamas> = {
     estado.ultimo = lance;
     estado.semCaptura = deDama && lance.comidas.length === 0 ? estado.semCaptura + 1 : 0;
     estado.vezDaCor = estado.vezDaCor === 0 ? 1 : 0;
-    estado.lances = lancesDe(estado.casas, estado.vezDaCor);
+    estado.lances = lancesDe(estado.casas, estado.vezDaCor, estado.paraTras !== false);
     const outro: Lado = lado === 0 ? 1 : 0;
     if (estado.lances.length === 0) return { proximo: outro, vencedor: lado };
     if (estado.semCaptura >= LANCES_PARA_EMPATE) return { proximo: outro, vencedor: 'empate' };
@@ -224,6 +248,7 @@ export const regrasDasDamas: Regras<EstadoDasDamas> = {
       semCaptura: estado.semCaptura,
       // o empate pela regra: a mesma posição pela terceira vez
       repetida: Object.values(estado.vistas ?? {}).some((n) => n >= REPETICOES_PARA_EMPATE),
+      paraTras: estado.paraTras !== false,
       lances: daVez ? estado.lances : [],
     };
   },
@@ -254,11 +279,12 @@ function valorDaPosicao(casas: number[], cor: Cor): number {
  * para a pessoa (comer obrigatório, lei da maioria: ele não tem regra própria). Conta o material; quem fica sem lance perde.
  * Um tantinho de sorte desempata os lances iguais. Devolve o índice do lance na lista de quem tem a vez.
  */
-export function lanceDoRobo(casas: number[], cor: Cor, aleatorio: () => number = Math.random, profundidade = PROFUNDIDADE_DAS_DAMAS, ruido = 0.05): number {
-  const lances = lancesDe(casas, cor);
+export function lanceDoRobo(casas: number[], cor: Cor, aleatorio: () => number = Math.random, profundidade = PROFUNDIDADE_DAS_DAMAS, ruido = 0.05, paraTras = true): number {
+  const gerar = (tab: number[], c: Cor) => lancesDe(tab, c, paraTras);
+  const lances = gerar(casas, cor);
   const outra: Cor = cor === 0 ? 1 : 0;
   const busca = (tab: number[], vezDe: Cor, falta: number, alfa: number, beta: number): number => {
-    const opcoes = lancesDe(tab, vezDe);
+    const opcoes = gerar(tab, vezDe);
     // sem lance, quem tem a vez perde (quanto mais cedo, pior ou melhor)
     if (!opcoes.length) return vezDe === cor ? -1000 - falta : 1000 + falta;
     if (falta === 0) return valorDaPosicao(tab, cor);
@@ -304,6 +330,6 @@ export const damas = duelo<EstadoDasDamas>({
   // o tabuleiro das damas é aberto: o robô vê o mesmo que a pessoa
   robo: (estado, _lado, aleatorio, nivel) => {
     const { profundidade, ruido } = NIVEL_DAS_DAMAS[nivel];
-    return { lance: lanceDoRobo(estado.casas, estado.vezDaCor, aleatorio, profundidade, ruido) };
+    return { lance: lanceDoRobo(estado.casas, estado.vezDaCor, aleatorio, profundidade, ruido, estado.paraTras !== false) };
   },
 });

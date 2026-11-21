@@ -255,3 +255,16 @@ test('os bichos: pisar por cima dá um pulinho e o tira da fase; encostar de lad
   assert.equal(j.ferido, 'bicho');
   assert.equal(j.x, f.postos[0].x);
 });
+
+test('as medalhas de cada fase: o tempo do piloto automático é o ouro (20/11/2026)', async () => {
+  const { TEMPO_DO_PILOTO_DO_PULO, MEDALHAS_DO_PULO } = await import('../src/plataforma/fases');
+  const { medalhaPelosPassos } = await import('../src/medalhasDaCorrida');
+  for (const f of FASES) {
+    const { k } = planos.get(f.id)!;
+    assert.equal(TEMPO_DO_PILOTO_DO_PULO[f.id], k.chegouEm, `${f.id}: o tempo do piloto mudou (${k.chegouEm})`);
+    assert.equal(medalhaPelosPassos(k.chegouEm, k.chegouEm, MEDALHAS_DO_PULO), 0, 'o tempo do piloto é ouro');
+    assert.equal(medalhaPelosPassos(k.chegouEm, Math.round(k.chegouEm * 1.2), MEDALHAS_DO_PULO), 1);
+    assert.equal(medalhaPelosPassos(k.chegouEm, Math.round(k.chegouEm * 1.5), MEDALHAS_DO_PULO), 2);
+    assert.equal(medalhaPelosPassos(k.chegouEm, k.chegouEm * 2, MEDALHAS_DO_PULO), null);
+  }
+});

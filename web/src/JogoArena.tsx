@@ -6,10 +6,10 @@ import { BarraDeVida, Retrato, Selo } from './JogoBichos';
 import { MesaDosRobos, type Figura } from './EscolhaDosRobos';
 import { carregarBichos } from './bichos/desenho';
 import { ESPECIES, GOLPES } from './bichos/regras';
-import { useT } from './i18n';
+import { chave, useT } from './i18n';
 import { primeiraForma, type Partida } from './minijogos';
 import { tocar } from './somDosJogos';
-import { CENARIOS, H, KITS, MATO, moitaEm, MUNDO_H, MUNDO_W, OBSTACULOS, PONTOS_DA_ZONA, PV, TECLAS_DE_GOLPE, W, type Cenario, type TeclaDeGolpe } from './arena/conta';
+import { CENARIOS, H, KITS, MATO, moitaEm, MUNDO_H, MUNDO_W, OBSTACULOS, PONTOS_DA_ZONA, PV, TECLAS_DE_GOLPE, W, ZONA_FINAL, type Cenario, type TeclaDeGolpe } from './arena/conta';
 import { prepararCoelho, quadroDaArena, receitaDoAvatar } from './arena/coelhos';
 import {
   chaoDo,
@@ -186,6 +186,13 @@ export function JogoArena({
           <p className="minijogo-fim-titulo">
             <Trophy size={20} aria-hidden="true" /> {t('Fim de jogo!')}
           </p>
+          {estado.solo && estado.sequencia && (
+            // AS VITÓRIAS SEGUIDAS DO SOLO (20/11/2026; contadas pelo servidor, só na sessão: sem calendário)
+            <p className="arena-sequencia" role="status">
+              {t('Vitórias seguidas: {n}', { n: estado.sequencia.atual })}
+              {estado.sequencia.novo ? ` · 🏅 ${t('Novo recorde!')}` : estado.sequencia.recorde !== null ? ` · ${t('Seu recorde: {n}', { n: estado.sequencia.recorde })}` : ''}
+            </p>
+          )}
           <p className="arena-colunas" aria-hidden="true">
             {colunas.map(([icone, nome]) => (
               <span key={icone} title={nome}>
@@ -511,6 +518,14 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoArena
   const kit = KITS[ESPECIES[minhaEquipe[hud?.ativo ?? 0] ?? '']?.elemento ?? 'folha'];
   const nomeDoGolpe = (id: string) => primeiraForma(t(GOLPES[id]?.nome ?? ''));
   const segundos = Math.ceil((hud?.resta ?? 0) / 1000);
+  // O FIM COM PRESSÃO (20/11/2026): no último minuto, as zonas vêm mais depressa e maiores; a tela avisa (e o relógio fica vermelho)
+  const ultimoMinuto = !!hud && hud.fase === 'lutando' && hud.resta > 0 && hud.resta <= ZONA_FINAL.falta;
+  const avisouFinal = useRef<string | null>(null);
+  useEffect(() => {
+    if (!ultimoMinuto || avisouFinal.current === estado.partidaId) return;
+    avisouFinal.current = estado.partidaId;
+    tocar('alarme');
+  }, [ultimoMinuto, estado.partidaId]);
 
   return (
     <div className="briga arena">
@@ -534,7 +549,12 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoArena
       </ul>
       <div className="briga-tela arena-tela">
         <canvas ref={canvas} width={W} height={H} />
-        {hud && <span className="arena-relogio">{`${Math.floor(segundos / 60)}:${String(segundos % 60).padStart(2, '0')}`}</span>}
+        {hud && <span className={'arena-relogio' + (ultimoMinuto ? ' final' : '')}>{`${Math.floor(segundos / 60)}:${String(segundos % 60).padStart(2, '0')}`}</span>}
+        {ultimoMinuto && segundos > ZONA_FINAL.falta / 1000 - 4 && (
+          <p className="arena-ultimo-minuto" role="status">
+            <span aria-hidden="true">⏱️</span> {t('Último minuto!')}
+          </p>
+        )}
         {hud && estado.objetivo === 'zona' && (
           <span className="arena-placar-da-zona" aria-label={t('Segurar a zona')}>
             🚩
@@ -821,9 +841,32 @@ function EscolhaDoCenario({ cenario, aoMudar }: { cenario: Cenario | null; aoMud
   );
 }
 
+/** A DIFICULDADE DOS ROBÔS NO SOLO (20/11/2026; o servidor: ROBO_DA_ARENA em server/src/arena/motor.ts), lembrada no aparelho. */
+const DIFICULDADES = ['facil', 'medio', 'dificil'] as const;
+type Dificuldade = (typeof DIFICULDADES)[number];
+const NOME_DA_DIFICULDADE: Record<Dificuldade, string> = { facil: chave('Fácil'), medio: chave('Médio'), dificil: chave('Difícil') };
+const DIFICULDADE_GUARDADA = 'syden:arenaDificuldade';
+function lerDificuldade(): Dificuldade {
+  try {
+    const g = localStorage.getItem(DIFICULDADE_GUARDADA);
+    return (DIFICULDADES as readonly string[]).includes(g ?? '') ? (g as Dificuldade) : 'medio';
+  } catch {
+    return 'medio';
+  }
+}
+
 export function EscolhaDosBichos({ solo, aoEscolher, aoVoltar }: { solo: boolean; aoEscolher: (e: ModoDosBichos) => void; aoVoltar: () => void }) {
   const t = useT();
   const [arena, setArena] = useState(false);
+  const [dificuldade, setDificuldade] = useState<Dificuldade>(lerDificuldade);
+  const escolherDificuldade = (d: Dificuldade) => {
+    setDificuldade(d);
+    try {
+      localStorage.setItem(DIFICULDADE_GUARDADA, d);
+    } catch {
+      /* sem o aparelho guardar, vale só agora */
+    }
+  };
   // o modo de objetivo (19/11/2026): segurar a zona do meio, em vez de lutar até sobrar um
   const [zona, setZona] = useState(false);
   const [cenario, setCenario] = useState<Cenario | null>(null);
@@ -868,6 +911,15 @@ export function EscolhaDosBichos({ solo, aoEscolher, aoVoltar }: { solo: boolean
         </button>
       </div>
       <EscolhaDoCenario cenario={cenario} aoMudar={setCenario} />
+      {solo && (
+        <div className="minijogo-abas arena-dificuldade" role="radiogroup" aria-label={t('Computador')}>
+          {DIFICULDADES.map((d) => (
+            <button key={d} type="button" role="radio" aria-checked={dificuldade === d} className={dificuldade === d ? 'ativa' : undefined} onClick={() => escolherDificuldade(d)}>
+              {t(NOME_DA_DIFICULDADE[d])}
+            </button>
+          ))}
+        </div>
+      )}
       <ul className="tab-rodadas cid-robos">
         {opcoes.map((o) => (
           <li key={o.rotulo}>
@@ -876,7 +928,7 @@ export function EscolhaDosBichos({ solo, aoEscolher, aoVoltar }: { solo: boolean
               className="cid-robos-botao"
               aria-label={o.rotulo}
               title={o.rotulo}
-              onClick={() => aoEscolher({ modo: 'arena', corpo: { formato: o.formato, ...('robos' in o ? { robos: o.robos } : {}), ...(zona ? { objetivo: 'zona' } : {}), ...(cenario ? { cenario } : {}) } })}
+              onClick={() => aoEscolher({ modo: 'arena', corpo: { formato: o.formato, ...('robos' in o ? { robos: o.robos } : {}), ...(zona ? { objetivo: 'zona' } : {}), ...(cenario ? { cenario } : {}), ...(solo ? { dificuldade } : {}) } })}
             >
               <MesaDosRobos lados={o.lados} />
             </button>

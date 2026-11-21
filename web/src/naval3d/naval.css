@@ -157,3 +157,11 @@
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
+
+/* o quadriculado do mar que se mira, no lado da partida (20/11/2026: 8, 10 ou 12; o estilo de antes conta 10) */
+.naval-mar.alvo .naval-grade {
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px) 3px 3px / calc((100% - 6px) / var(--lado, 10)) calc((100% - 6px) / var(--lado, 10)),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px) 3px 3px / calc((100% - 6px) / var(--lado, 10)) calc((100% - 6px) / var(--lado, 10)),
+    linear-gradient(160deg, #23597f, #102f4c);
+}

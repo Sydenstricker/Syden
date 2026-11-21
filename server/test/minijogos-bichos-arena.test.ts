@@ -662,3 +662,148 @@ test('o mato: o robô não mira em quem está escondido, e mira quando ela sai',
   assert.equal(robo.ia.alvo, anaId);
   m.jogo.parar!();
 });
+
+// ---------------------------------------------------------------- 20/11/2026: o fim com pressão, a dificuldade e as vitórias seguidas
+/** Uma partida do Solo com o relógio de mão e o banco de mentira (o recorde vai para `recordes`). */
+function soloDeMao(corpo: Record<string, unknown>, recordes: Map<string, number>) {
+  let t0 = 7_000_000;
+  let passo: (() => void) | null = null;
+  let fim: (() => void) | null = null;
+  const ctx = {
+    agendar: (_ms: number, depois: () => void) => (fim = depois),
+    avisar: () => {},
+    terminar: () => {},
+    naSala: () => [70],
+    nome: () => 'eu',
+    comunidade: 0,
+    solo: true,
+    difundirPorPessoa: () => {},
+  };
+  const jogo = criarArena({
+    agora: () => t0,
+    aleatorio: () => 0.5,
+    intervalo: (p) => ((passo = p), 1),
+    limpar: () => {},
+    servicos: {
+      avatarDe: () => null,
+      equipeDe: () => [],
+      guardarTrofeu: () => {},
+      recordeDoSolo: (_u, v) => recordes.get(v) ?? null,
+      guardarRecorde: (_u, v, valor) => {
+        const antes = recordes.get(v) ?? null;
+        if (antes !== null && antes >= valor) return { antes, novo: false };
+        recordes.set(v, valor);
+        return { antes, novo: true };
+      },
+    },
+  }).comecar(ctx, { naSala: [70], criadaPor: 70, corpo });
+  assert.ok(typeof jogo !== 'string');
+  const i = jogo as unknown as Interno & { _lutadores: Map<number, Lut & { dif: string }> };
+  return {
+    jogo,
+    i,
+    andar(ms: number) {
+      for (let t = 0; t < ms; t += PASSO_MS) {
+        t0 += PASSO_MS;
+        passo!();
+      }
+    },
+    /** Acaba a partida: quem perde fica sem vidas, e o "Vitória!" passa. */
+    acabar(venci: boolean) {
+      for (const l of i._lutadores.values()) if (venci ? l.id !== 70 : l.id === 70) Object.assign(l, { estado: 'sem-vidas', vidas: 0 });
+      t0 += PASSO_MS;
+      passo!();
+      fim!();
+      return jogo.publico(70) as { sequencia: { atual: number; recorde: number | null; novo: boolean }; dificuldade: string; fase: string };
+    },
+  };
+}
+
+test('o fim com pressão: no último minuto, as zonas da arena vêm a cada 3,5 s e maiores', () => {
+  const m = soloDeMao({ robos: 1, cenario: 'grama' }, new Map());
+  // ninguém cai (para a partida chegar ao último minuto)
+  for (const l of m.i._lutadores.values()) l.invulAte = Infinity;
+  const marcadas = () => (m.i._zonas as unknown as { id: number; raio: number; bate: number; dono: number }[]).filter((z) => z.dono === 0);
+  const vistas = new Map<number, { raio: number; bate: number }>();
+  const anotar = () => {
+    for (const z of marcadas()) vistas.set(z.id, { raio: z.raio, bate: z.bate });
+  };
+  for (let s = 0; s < (mod.PARTIDA_MS - mod.ZONA_FINAL.falta) / 1000 - 1; s++) {
+    m.andar(1000);
+    anotar();
+  }
+  const antes = [...vistas.values()];
+  assert.ok(antes.length >= 20 && antes.every((z) => z.raio === mod.ZONA.raio), `antes do último minuto, as de sempre (${antes.length})`);
+  vistas.clear();
+  for (let s = 0; s < 30; s++) {
+    m.andar(1000);
+    anotar();
+  }
+  const finais = [...vistas.values()].sort((a, b) => a.bate - b.bate);
+  assert.ok(finais.length >= 8, `em 30 s do último minuto, ${finais.length} zonas (a cada 3,5 s)`);
+  assert.ok(finais.every((z) => z.raio === mod.ZONA_FINAL.raio && z.raio > mod.ZONA.raio), 'maiores');
+  for (let k = 1; k < finais.length; k++) assert.ok(finais[k].bate - finais[k - 1].bate <= mod.ZONA_FINAL.cada + PASSO_MS, 'a cada 3,5 s');
+});
+
+test('a dificuldade do Solo: só para os robôs adversários, e a sala fica no médio', () => {
+  const m = soloDeMao({ robos: 2, cenario: 'grama', dificuldade: 'dificil' }, new Map());
+  const robos = [...m.i._lutadores.values()].filter((l) => l.id < 0);
+  assert.ok(robos.length === 2 && robos.every((l) => l.dif === 'dificil'));
+  assert.equal((m.jogo.publico(70) as { dificuldade: string }).dificuldade, 'dificil');
+  // no 3×3 do Solo, os aliados ficam no médio
+  const tres = soloDeMao({ formato: '3x3', robos: 5, cenario: 'grama', dificuldade: 'facil' }, new Map());
+  const eu = tres.i._lutadores.get(70)!;
+  for (const l of tres.i._lutadores.values()) if (l.id < 0) assert.equal(l.dif, l.time === eu.time ? 'medio' : 'facil');
+  // valor que não existe: o médio
+  assert.ok([...soloDeMao({ robos: 1, dificuldade: 'impossivel' }, new Map()).i._lutadores.values()].every((l) => l.dif === 'medio'));
+  // na sala, nada de dificuldade nem de sequência
+  const sala = comecar([anaId, biaId], { formato: '3x3', cenario: 'grama', dificuldade: 'dificil' });
+  assert.ok([...(sala.i._lutadores as Map<number, Lut & { dif?: string }>).values()].every((l) => l.dif === 'medio'));
+  const pub = sala.jogo.publico(anaId) as Record<string, unknown>;
+  assert.equal(pub.sequencia, undefined);
+  assert.equal(pub.dificuldade, undefined);
+});
+
+test('as vitórias seguidas do Solo: vencer soma, perder zera, o recorde é a maior (por dificuldade e adversários), contado pelo servidor', () => {
+  mod._sequenciasDaArena.clear();
+  const recordes = new Map<string, number>();
+  const jogar = (venci: boolean, corpo: Record<string, unknown> = { robos: 1, dificuldade: 'dificil' }) => soloDeMao(corpo, recordes).acabar(venci);
+  let p = jogar(true);
+  assert.equal(p.fase, 'fim');
+  assert.deepEqual(p.sequencia, { atual: 1, recorde: 1, novo: true });
+  p = jogar(true);
+  assert.deepEqual(p.sequencia, { atual: 2, recorde: 2, novo: true });
+  assert.equal(recordes.get('dificil:1'), 2);
+  // outra dificuldade, outra sequência
+  assert.deepEqual(jogar(true, { robos: 1, dificuldade: 'facil' }).sequencia, { atual: 1, recorde: 1, novo: true });
+  // perder zera, e o recorde fica
+  p = jogar(false);
+  assert.equal(p.sequencia.atual, 0);
+  assert.equal(p.sequencia.recorde, 2);
+  assert.equal(recordes.get('dificil:1'), 2);
+  p = jogar(true);
+  assert.deepEqual(p.sequencia, { atual: 1, recorde: 2, novo: false });
+  // a sequência é da sessão: 30 minutos parada, recomeça
+  for (const v of mod._sequenciasDaArena.values()) v.em -= mod.SESSAO_DA_ARENA_MS + 1000;
+  const nova = soloDeMao({ robos: 1, dificuldade: 'dificil' }, recordes);
+  assert.equal((nova.jogo.publico(70) as { sequencia: { atual: number } }).sequencia.atual, 0);
+});
+
+test('a dificuldade, medida contra o piloto (3 robôs, cada um por si): mais vida sobra no fácil que no difícil', async (t) => {
+  const medir = async (dificuldade: string) => {
+    let vitorias = 0;
+    let sobra = 0;
+    for (const s of [14, 27, 40, 53]) {
+      const { ultimo, publico } = await partida([81], { robos: 3, cenario: 'grama', dificuldade }, 100, s);
+      const eu = ultimo.j.find((l) => l[0] === 81)!;
+      if (publico.vencedor === eu[10]) vitorias++;
+      sobra += eu[7] * 100 + eu[8];
+    }
+    t.diagnostic(`${dificuldade}: venceu ${vitorias} de 4, vida que sobrou ${sobra}`);
+    return { vitorias, sobra };
+  };
+  const facil = await medir('facil');
+  const dificil = await medir('dificil');
+  assert.ok(facil.sobra > dificil.sobra, 'sobra mais vida no fácil');
+  assert.ok(facil.vitorias >= dificil.vitorias);
+});

@@ -37,9 +37,11 @@ export interface OpcoesDeTeste {
   robos?: number[];
   /** Quem está na sala (padrão: os da rede). */
   naSala?: () => number[];
+  /** As equipes impostas (o 2 contra 2 e o 1 contra 3 do Tabuleiro da turma). */
+  equipes?: number[][];
 }
 
-export function rodadaDeTeste(id: string, { rede = new Map([[1, 200], [2, 300]]), aleatorio = () => 0.5, robos = [], naSala }: OpcoesDeTeste = {}) {
+export function rodadaDeTeste(id: string, { rede = new Map([[1, 200], [2, 300]]), aleatorio = () => 0.5, robos = [], naSala, equipes }: OpcoesDeTeste = {}) {
   let agora = 1_000_000;
   let marcado: { ms: number; depois: () => void } | null = null;
   let acabou = false;
@@ -57,6 +59,7 @@ export function rodadaDeTeste(id: string, { rede = new Map([[1, 200], [2, 300]])
     aleatorio,
     pontos: PONTOS_FESTA,
     robos,
+    equipes,
     aoAcabar: () => (acabou = true),
   });
   // o "prepare-se": cada eco volta depois da ida e volta daquela pessoa

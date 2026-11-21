@@ -5,7 +5,8 @@ import { coresDe, Dado, Peca, useAgora } from './JogoTabuleiro';
 import { BotoesDosRobos, cadaUmPorSi } from './EscolhaDosRobos';
 import { Tabuleiro3D } from './cidades3d/Tabuleiro3D';
 import { ComoJogar } from './MesaComum';
-import type { CartaDasCidades, EstadoCidades, OcorridoDasCidades, Partida, PropostaDasCidades } from './minijogos';
+import { COR_DO_GRUPO, COR_DO_GRUPO_NO_BRASIL, lugarDaCasaDasCidades, voltaDasCidades } from './cidadesVolta';
+import type { EstadoCidades, OcorridoDasCidades, Partida, PropostaDasCidades } from './minijogos';
 
 /**
  * CIDADES À VENDA (04/11/2026, server/src/minijogo-cidades.ts): o jogo de comprar cidades e cobrar aluguel, SÓ A MECÂNICA.
@@ -23,22 +24,8 @@ const TEMPO_DA_TROCA = 20_000;
 const TEMPO_DO_LEILAO = 12_000;
 
 const CASA = 40;
-const COLUNAS = 10;
-const LINHAS = 8;
 
-/** Onde fica cada casa (0 a 31): a fileira de cima da esquerda para a direita, desce pela direita, volta por baixo e sobe. */
-export function lugarDaCasaDasCidades(i: number): { x: number; y: number } {
-  let c: number;
-  let l: number;
-  if (i <= 9) [c, l] = [i, 0];
-  else if (i <= 16) [c, l] = [9, i - 9];
-  else if (i <= 25) [c, l] = [25 - i, 7];
-  else [c, l] = [0, 32 - i];
-  return { x: c * CASA, y: l * CASA };
-}
-
-/** A cor de cada grupo, do Norte ao Sudeste. */
-export const COR_DO_GRUPO = ['#6fa86a', '#3f8a72', '#e0b04a', '#d98448', '#b8743f', '#6d8fc4', '#9a72b8'];
+const coresDoGrupo = (e: EstadoCidades) => (e.casas.length === 40 ? COR_DO_GRUPO_NO_BRASIL : COR_DO_GRUPO);
 
 const ICONE: Record<string, string> = {
   largada: '➜',
@@ -74,8 +61,18 @@ function nomeDaCasa(e: EstadoCidades, i: number, t: T): string {
   return t('Feriado');
 }
 
-function textoDaCarta(carta: CartaDasCidades, valor: number | null, t: T): string {
+/** As siglas de um grupo ("AC · RR"): o nome da região não passa pela tradução, as siglas são as mesmas em toda língua. */
+const siglasDoGrupo = (e: EstadoCidades, grupo: number) =>
+  e.casas
+    .filter((c) => c.tipo === 'cidade' && c.grupo === grupo)
+    .map((c) => c.uf)
+    .join(' · ');
+
+function textoDaCarta(o: Extract<OcorridoDasCidades, { tipo: 'carta' }>, e: EstadoCidades, t: T): string {
+  const { carta, valor } = o;
   const n = valor ?? 0;
+  const lugares = o.grupo !== undefined ? siglasDoGrupo(e, o.grupo) : '';
+  const cidade = o.casa !== undefined ? nomeDaCasa(e, o.casa, t) : '';
   switch (carta) {
     case 'quadrilha':
       return t('Sua quadrilha ganhou o festival junino: receba {valor}.', { valor: reais(n) });
@@ -103,6 +100,47 @@ function textoDaCarta(carta: CartaDasCidades, valor: number | null, t: T): strin
       return t('Você pagou a festa: dê {valor} a cada um.', { valor: reais(n) });
     case 'passagem':
       return t('Ganhou uma passagem: avance até o próximo transporte.');
+    // as notícias novas de 20/11/2026
+    case 'ciencias':
+      return t('Seu projeto ganhou a feira de ciências: receba {valor}.', { valor: reais(n) });
+    case 'restituicao':
+      return t('A restituição do imposto caiu na conta: receba {valor}.', { valor: reais(n) });
+    case 'show':
+      return t('Lotou o show da sua banda: receba {valor}.', { valor: reais(n) });
+    case 'geladeira':
+      return t('A geladeira pifou: pague {valor}.', { valor: reais(n) });
+    case 'dentista':
+      return t('Consulta no dentista: pague {valor}.', { valor: reais(n) });
+    case 'vaquinha':
+      return t('A turma fez uma vaquinha: cada um te dá {valor}.', { valor: reais(n) });
+    case 'churrasco':
+      return t('O churrasco foi por sua conta: dê {valor} a cada um.', { valor: reais(n) });
+    case 'atalho':
+      return t('Achou um atalho: avance 5 casas.');
+    case 'pneu':
+      return t('Pneu furado: volte 2 casas.');
+    case 'proxima-cidade':
+      return t('Viagem de última hora: avance até a próxima cidade.');
+    case 'feriadao':
+      return t('Feriadão: vá até o Feriado.');
+    case 'alta-temporada':
+      return t('Alta temporada em {lugares}: os aluguéis dobram por uma rodada.', { lugares });
+    case 'baixa-temporada':
+      return t('Baixa temporada em {lugares}: os aluguéis caem pela metade por uma rodada.', { lugares });
+    case 'mutirao':
+      return valor === null
+        ? t('Mutirão na vizinhança: um prédio grátis em {cidade}.', { cidade })
+        : t('Mutirão na vizinhança, mas sem onde construir: receba {valor}.', { valor: reais(n) });
+    case 'obras':
+      return t('Obras em {lugares}: cada dono paga {valor} por prédio ali.', { lugares, valor: reais(n) });
+    case 'iptu':
+      return t('Chegou o IPTU: pague {valor} por cidade sua.', { valor: reais(n) });
+    case 'turistas':
+      return t('Turistas na cidade: receba {valor} por cidade sua.', { valor: reais(n) });
+    case 'perdao':
+      return valor === null
+        ? t('O banco perdoou a hipoteca de {cidade}.', { cidade })
+        : t('O banco perdoou os juros: receba {valor}.', { valor: reais(n) });
   }
 }
 
@@ -120,7 +158,7 @@ function textoDoOcorrido(o: OcorridoDasCidades, e: EstadoCidades, nomeDe: (id: n
         ? t('Ninguém deu lance: {cidade} continua à venda.', { cidade: casa(o.casa) })
         : t('{nome} levou {cidade} no leilão por {valor}.', { nome: nomeDe(o.userId), cidade: casa(o.casa), valor: reais(o.valor) });
     case 'carta':
-      return `📰 ${nomeDe(o.userId)}: ${textoDaCarta(o.carta, o.valor, t)}`;
+      return `📰 ${nomeDe(o.userId)}: ${textoDaCarta(o, e, t)}`;
     case 'pedagio':
       return t('{nome} pagou {valor} de pedágio.', { nome: nomeDe(o.userId), valor: reais(o.valor) });
     case 'engarrafado':
@@ -167,8 +205,12 @@ function Tabuleiro({
   aoEscolher: (i: number) => void;
 }) {
   const t = useT();
-  const largura = COLUNAS * CASA;
-  const altura = LINHAS * CASA;
+  const total = estado.casas.length;
+  const { colunas, linhas } = voltaDasCidades(total);
+  const largura = colunas * CASA;
+  const altura = linhas * CASA;
+  const cores = coresDoGrupo(estado);
+  const temporada = estado.temporada ?? null;
   const posse = new Map(estado.posses.map((p) => [p.casa, p]));
   const porCasa = new Map<number, number[]>();
   estado.jogadores
@@ -179,15 +221,15 @@ function Tabuleiro({
     <svg className="cid-tabuleiro" viewBox={`0 0 ${largura} ${altura}`} role="img" aria-label={t('Capitais')}>
       <rect width={largura} height={altura} fill="#2f4a3a" />
       {/* o meio: o mapa de estradas, os dados da última jogada */}
-      <rect x={CASA} y={CASA} width={CASA * 8} height={CASA * 6} fill="#3b5a46" />
-      {Array.from({ length: 7 }, (_, k) => (
-        <rect key={`e${k}`} x={CASA + 12 + k * 44} y={CASA * 4 - 1} width="24" height="2" fill="#e8d9a8" opacity="0.35" />
+      <rect x={CASA} y={CASA} width={CASA * (colunas - 2)} height={CASA * (linhas - 2)} fill="#3b5a46" />
+      {Array.from({ length: Math.floor(((colunas - 2) * CASA - 24) / 44) + 1 }, (_, k) => (
+        <rect key={`e${k}`} x={CASA + 12 + k * 44} y={altura / 2 - 1} width="24" height="2" fill="#e8d9a8" opacity="0.35" />
       ))}
-      {Array.from({ length: 5 }, (_, k) => (
-        <rect key={`v${k}`} x={CASA * 5 - 1} y={CASA + 10 + k * 46} width="2" height="24" fill="#e8d9a8" opacity="0.35" />
+      {Array.from({ length: Math.floor(((linhas - 2) * CASA - 34) / 46) + 1 }, (_, k) => (
+        <rect key={`v${k}`} x={largura / 2 - 1} y={CASA + 10 + k * 46} width="2" height="24" fill="#e8d9a8" opacity="0.35" />
       ))}
       {dados && (
-        <g transform={`translate(${CASA * 5 - 44} ${CASA * 4 - 20})`}>
+        <g transform={`translate(${largura / 2 - 44} ${altura / 2 - 20})`}>
           <foreignObject width="88" height="40">
             <div className="cid-dados-meio">
               <Dado n={dados[0]} tamanho={36} />
@@ -197,10 +239,11 @@ function Tabuleiro({
         </g>
       )}
       {estado.casas.map((c, i) => {
-        const { x, y } = lugarDaCasaDasCidades(i);
+        const { x, y } = lugarDaCasaDasCidades(i, total);
         const p = posse.get(i);
         const dono = p ? corDe(p.dono) : null;
-        const fundo = c.tipo === 'cidade' ? COR_DO_GRUPO[c.grupo ?? 0] : c.tipo === 'transporte' ? '#cfc4ae' : '#e8dcc4';
+        const fundo = c.tipo === 'cidade' ? cores[c.grupo ?? 0] : c.tipo === 'transporte' ? '#cfc4ae' : '#e8dcc4';
+        const naTemporada = temporada !== null && c.tipo === 'cidade' && c.grupo === temporada.grupo;
         return (
           <g
             key={i}
@@ -232,6 +275,15 @@ function Tabuleiro({
                 ))}
               </g>
             )}
+            {naTemporada && (
+              // a temporada da notícia: o selo ×2 (ou ½) no canto, enquanto vale
+              <g pointerEvents="none">
+                <circle cx={x + CASA - 7} cy={y + 7} r="6.5" fill={temporada.fator > 1 ? '#e05a3a' : '#4f8fd6'} stroke="#fff6e4" strokeWidth="1" />
+                <text x={x + CASA - 7} y={y + 9.6} textAnchor="middle" className="cid-temporada">
+                  {temporada.fator > 1 ? '×2' : '½'}
+                </text>
+              </g>
+            )}
           </g>
         );
       })}
@@ -241,17 +293,17 @@ function Tabuleiro({
         .sort((a, b) => Number(a.userId === estado.vez) - Number(b.userId === estado.vez))
         .map((j) => {
           const casa = posDe(j.userId);
-          const { x, y } = lugarDaCasaDasCidades(casa);
+          const { x, y } = lugarDaCasaDasCidades(casa, total);
           const ids = porCasa.get(casa) ?? [j.userId];
           const k = ids.indexOf(j.userId);
           // embaixo da sigla, pequenas, lado a lado (até 3 por fileira)
           const dx = ids.length > 1 ? ((k % 3) - (Math.min(ids.length, 3) - 1) / 2) * 10 : 0;
           const dy = ids.length > 3 && k >= 3 ? -7 : 0;
-          const cores = corDe(j.userId);
+          const daPeca = corDe(j.userId);
           return (
             <g key={j.userId} opacity={j.presente ? 1 : 0.45} pointerEvents="none">
               <g transform={`translate(${x + CASA / 2 + dx} ${y + CASA - 9 + dy}) scale(0.62)`}>
-                <Peca pelo={cores.pelo} roupa={cores.roupa} x={0} y={0} vez={j.userId === estado.vez} />
+                <Peca pelo={daPeca.pelo} roupa={daPeca.roupa} x={0} y={0} vez={j.userId === estado.vez} />
               </g>
             </g>
           );
@@ -285,7 +337,7 @@ function CartaoDaCasa({
   return (
     <div className="cid-cartao">
       <p className="cid-cartao-nome">
-        {c.tipo === 'cidade' && <span className="cid-cartao-cor" style={{ background: COR_DO_GRUPO[c.grupo ?? 0] }} aria-hidden="true" />}
+        {c.tipo === 'cidade' && <span className="cid-cartao-cor" style={{ background: coresDoGrupo(estado)[c.grupo ?? 0] }} aria-hidden="true" />}
         <strong>{nomeDaCasa(estado, i, t)}</strong>
         {c.uf && <span className="cid-cartao-uf">{c.uf}</span>}
       </p>
@@ -399,7 +451,7 @@ function MontarTroca({
           <li key={i}>
             <label>
               <input type="checkbox" checked={escolhidas.includes(i)} onChange={() => alternar(escolhidas, set, i)} />
-              {estado.casas[i].tipo === 'cidade' && <span className="cid-cartao-cor" style={{ background: COR_DO_GRUPO[estado.casas[i].grupo ?? 0] }} aria-hidden="true" />}
+              {estado.casas[i].tipo === 'cidade' && <span className="cid-cartao-cor" style={{ background: coresDoGrupo(estado)[estado.casas[i].grupo ?? 0] }} aria-hidden="true" />}
               {nomeDaCasa(estado, i, t)}
             </label>
           </li>
@@ -584,6 +636,12 @@ export function JogoCidades({
         <span className="cid-rodada">
           {estado.rodadas !== null ? t('Rodada {n} de {total}', { n: estado.rodada, total: estado.rodadas }) : t('Rodada {n} · até sobrar um', { n: estado.rodada })}
         </span>
+        {estado.temporada && (
+          // a temporada que vale agora: o selo e as siglas do grupo (a notícia inteira está no histórico)
+          <span className={`cid-temporada-agora${estado.temporada.fator > 1 ? ' alta' : ''}`}>
+            {estado.temporada.fator > 1 ? '×2' : '½'} {siglasDoGrupo(estado, estado.temporada.grupo)}
+          </span>
+        )}
       </div>
       {sair}
       <div className="cid-corpo">
@@ -596,7 +654,7 @@ export function JogoCidades({
               .map((j) => ({ userId: j.userId, pos: posDe(j.userId), ...corDe(j.userId), vez: j.userId === estado.vez, presente: j.presente })),
             escolhida,
             corDe: (id) => corDe(id).roupa,
-            cores: COR_DO_GRUPO,
+            cores: coresDoGrupo(estado),
             icones: ICONE,
             // os dados rolam na cena (cidades3d/cena.ts); no desenho de reserva, continuam no meio
             dados: estado.ultimo?.dados ? { id: estado.ultimo.id, valores: estado.ultimo.dados } : null,
@@ -776,10 +834,21 @@ export function EscolhaDasCidades({ solo = false, aoEscolher, aoVoltar }: { solo
   const t = useT();
   const [robos, setRobos] = useState(3);
   const [rapida, setRapida] = useState(false);
-  const comRobos = (corpo: Record<string, unknown>) => aoEscolher({ ...(solo ? { ...corpo, robos } : corpo), ...(rapida ? { rapida: true } : {}) });
+  // O TABULEIRO (20/11/2026): as 20 capitais (32 casas, o de fábrica) ou o Brasil inteiro (as 27, 40 casas)
+  const [tabuleiro, setTabuleiro] = useState<'capitais' | 'brasil'>('capitais');
+  const comRobos = (corpo: Record<string, unknown>) =>
+    aoEscolher({ ...(solo ? { ...corpo, robos } : corpo), ...(rapida ? { rapida: true } : {}), ...(tabuleiro === 'brasil' ? { tabuleiro } : {}) });
   return (
     <div className="tab-escolha">
       {solo && <BotoesDosRobos opcoes={ROBOS.map(cadaUmPorSi)} escolhida={robos} aoEscolher={setRobos} />}
+      <div className="opcoes cid-escolha-tabuleiro" role="group" aria-label={t('Tabuleiro')}>
+        <button type="button" aria-pressed={tabuleiro === 'capitais'} onClick={() => setTabuleiro('capitais')}>
+          {t('{n} capitais', { n: 20 })}
+        </button>
+        <button type="button" aria-pressed={tabuleiro === 'brasil'} onClick={() => setTabuleiro('brasil')}>
+          {t('Brasil inteiro')} · {t('{n} capitais', { n: 27 })}
+        </button>
+      </div>
       <label className="mesa-opcao">
         <input type="checkbox" checked={rapida} onChange={(e) => setRapida(e.target.checked)} />
         {t('Partida rápida: cada um começa com 2 cidades')}

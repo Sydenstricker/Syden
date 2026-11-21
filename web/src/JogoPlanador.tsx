@@ -33,7 +33,11 @@ import {
 } from './planador/sim';
 import {
   chaoDe,
+  chaoDebaixo,
+  corDoPouso,
   desenharChao,
+  desenharMapa,
+  figuraDoPouso,
   figuraDaPlataforma,
   figuraDoVoador,
   figurasDoChao,
@@ -42,6 +46,7 @@ import {
   montarCamera,
   prepararTela,
   setaDoRumo,
+  type CorDoPouso,
   type Figura,
   type Voador,
 } from './planador/render';
@@ -164,6 +169,10 @@ interface Painel {
   /** O vento visto da câmera (o ângulo da seta) e a força; e se a asa está numa térmica agora. */
   vento: { graus: number; forca: number } | null;
   subindo: boolean;
+  /** O VARIÔMETRO (20/11/2026): a velocidade vertical (m/s; positiva subindo). */
+  vz: number;
+  /** Perto do pouso, como ele sairia agora (o anel no chão tem a mesma cor); longe do chão, null. */
+  pouso: CorDoPouso | null;
 }
 
 /** Um rival da sala: as posições que o servidor repassou, pelo passo do voo dele. */
@@ -187,6 +196,41 @@ interface ConfigDoVoo {
   aoPainel: (p: Painel) => void;
   aoPousar: (entradas: Entradas, r: Resultado) => void;
   aoPosicao?: (dados: Record<string, number>) => void;
+  /** O mapa do canto (20/11/2026), se a tela tem um. */
+  mapa?: HTMLCanvasElement | null;
+}
+
+/** Abaixo desta altura sobre o chão, o anel do pouso aparece (m). */
+const ALTURA_DO_POUSO = 30;
+/** O caminho do fantasma no mapa: um ponto a cada tantos passos. */
+const PASSOS_DO_RUMO = 6;
+
+/** O caminho inteiro de um fantasma (refeito pelas entradas dele, a mesma conta do voo), para a linha de rumo do mapa. */
+function rumoDoFantasma(d: Desafio, entradas: Entradas): [number, number][] {
+  const v = novoVoo(d);
+  const ler = leitor(entradas);
+  const caminho: [number, number][] = [[v.x, v.y]];
+  while (!v.fim && v.passo < d.passosMaximos) {
+    passo(v, ler());
+    if (v.passo % PASSOS_DO_RUMO === 0 || v.fim) caminho.push([v.x, v.y]);
+  }
+  return caminho;
+}
+
+/** Os anéis que ficaram para trás sem passar: os que faltam antes do próximo (ou todos os que faltam, indo já para o alvo). */
+function aneisPerdidos(v: Voo, proximo: number): Set<number> {
+  const s = new Set<number>();
+  v.d.aneis.forEach((_, i) => {
+    if (v.aneis[i] < 0 && (proximo < 0 || i < proximo)) s.add(i);
+  });
+  return s;
+}
+
+/** O índice do anel que o rumo aponta agora (−1: o alvo). */
+function indiceDoProximo(v: Voo): number {
+  const p = proximoAlvo(v);
+  if (!p.anel) return -1;
+  return v.d.aneis.findIndex((a, i) => v.aneis[i] < 0 && a.x === p.x && a.y === p.y && a.h === p.h);
 }
 
 const voador = (v: Voo, avatar: number | string | null | undefined, extra: Partial<Voador> = {}): Voador => ({
@@ -215,6 +259,9 @@ function rodarVoo(cfg: ConfigDoVoo): () => void {
   if (eu && import.meta.env.DEV) window.planadorDoTeste = eu;
   const gravar = gravador();
   const fantasmas = cfg.fantasmas.map((f) => ({ ...f, voo: novoVoo(d), ler: leitor(f.entradas) }));
+  // a linha de rumo de cada fantasma no mapa (20/11/2026): o caminho inteiro, refeito uma vez
+  const rumos = cfg.mapa ? fantasmas.map((f) => rumoDoFantasma(d, f.entradas)) : [];
+  const ctxDoMapa = cfg.mapa?.getContext('2d') ?? null;
   const rivais = cfg.rivais ? [...cfg.rivais.values()] : [];
   let contagem = cfg.contagem;
   let mandou = false;
@@ -310,6 +357,12 @@ function rodarVoo(cfg: ConfigDoVoo): () => void {
       );
     }
     if (eu) figuras.push(...figuraDoVoador(cam, voador(eu, cfg.meuAvatar), relogio));
+    // O ANEL DO POUSO (20/11/2026): perto do chão, debaixo do coelho, na cor de como o pouso sairia agora
+    const pertoDoPouso = !!eu && !eu.fim && contagem === 0 && (d.tipo !== 'mochila' || eu.decolou) && eu.h - chaoDebaixo(eu) < ALTURA_DO_POUSO;
+    if (pertoDoPouso && eu) {
+      const anel = figuraDoPouso(cam, eu, relogio, calmo);
+      if (anel) figuras.push(anel);
+    }
     figuras.sort((a, b) => b.z - a.z);
     for (const f of figuras) f.desenhar(tela.ctx);
     if (eu && !eu.fim && contagem === 0) setaDoRumo(tela.ctx, cam, eu, proximoAlvo(eu));
@@ -327,7 +380,20 @@ function rodarVoo(cfg: ConfigDoVoo): () => void {
         // o vento visto da câmera: 0 é "de frente para quem voa", em graus no sentido do relógio
         vento: d.vento[0] || d.vento[1] ? { graus: ((Math.atan2(d.vento[1], d.vento[0]) - camAng) * 180) / Math.PI + 90, forca: Math.hypot(d.vento[0], d.vento[1]) } : null,
         subindo: eu && d.termicas.length ? subidaEm(d, eu.x, eu.y) > 0.5 : false,
+        vz: eu && !eu.fim ? eu.vz : 0,
+        pouso: pertoDoPouso && eu ? corDoPouso(eu) : null,
       });
+      // o mapa do canto, no mesmo ritmo do painel
+      if (ctxDoMapa) {
+        const proximo = eu ? indiceDoProximo(eu) : -1;
+        desenharMapa(ctxDoMapa, d, {
+          eu,
+          rumos: rumos.map((caminho, i) => ({ caminho, agora: fantasmas[i].voo.fim ? null : { x: fantasmas[i].voo.x, y: fantasmas[i].voo.y } })),
+          perdidos: eu ? aneisPerdidos(eu, proximo) : new Set(),
+          proximo,
+          tempo: calmo ? 0 : relogio,
+        });
+      }
     }
     if (eu?.fim && !mandou) {
       mandou = true;
@@ -366,6 +432,7 @@ function Voo3({
 }) {
   const t = useT();
   const canvas = useRef<HTMLCanvasElement>(null);
+  const mapa = useRef<HTMLCanvasElement>(null);
   const [painel, setPainel] = useState<Painel | null>(null);
   const [pousou, setPousou] = useState(false);
   const comandos = useComandos(ligada && config.piloto && !pousou);
@@ -380,6 +447,7 @@ function Voo3({
     return rodarVoo({
       ...config,
       canvas: canvas.current,
+      mapa: config.piloto ? mapa.current : null,
       pausa,
       ler: comandos.ler,
       aoPainel: setPainel,
@@ -402,10 +470,16 @@ function Voo3({
   return (
     <div className="planador-moldura">
       <canvas ref={canvas} className="planador-tela" />
+      {/* o mapa do canto (20/11/2026): de cima, o alvo, os anéis (o perdido pisca) e a linha de rumo dos fantasmas */}
+      {config.piloto && <canvas ref={mapa} className="planador-mapa" width={72} height={72} aria-hidden="true" />}
       {painel && config.piloto && (
         <div className="planador-painel" aria-hidden="true">
           <span className="planador-altura">{Math.round(painel.h)} m</span>
           <span className="planador-velocidade">{Math.round(painel.v * 3.6)} km/h</span>
+          {/* O VARIÔMETRO (20/11/2026): sobe ou desce, em m/s; a cor é a do pouso quando ele está perto */}
+          <span className={`planador-vario${painel.vz > 0.2 ? ' sobe' : ''}${painel.pouso ? ` pouso-${painel.pouso}` : ''}`}>
+            {painel.vz > 0.2 ? '▲' : painel.vz < -0.2 ? '▼' : '◆'} {Math.abs(painel.vz).toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} m/s
+          </span>
           {painel.total > 0 && (
             <span className="planador-aneis">
               ◯ {painel.aneis}/{painel.total}

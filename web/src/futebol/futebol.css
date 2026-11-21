@@ -244,3 +244,92 @@
 .futebol-copa li.perdeu {
   opacity: 0.7;
 }
+
+/* A prorrogação do gol de ouro (20/11/2026): o aviso embaixo do placar. */
+.futebol-ouro {
+  position: absolute;
+  top: calc(30px * var(--escala-do-texto, 1));
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 1px 8px;
+  border-radius: 6px;
+  background: rgba(20, 28, 40, 0.55);
+  color: #ffd166;
+  font-size: calc(13px * var(--escala-do-texto, 1));
+  white-space: nowrap;
+}
+
+/* Os pênaltis da mini-copa (20/11/2026). */
+.futebol-penaltis {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  max-width: 420px;
+  margin: 0 auto;
+}
+.futebol-penaltis-cena {
+  width: 100%;
+  max-width: 360px;
+  border-radius: 8px;
+}
+.futebol-penaltis-placar {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.futebol-penaltis-cobrancas {
+  display: flex;
+  gap: 4px;
+}
+.futebol-penaltis-bolinha {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid;
+  background: transparent;
+}
+.futebol-penaltis-bolinha.gol {
+  background: #9be27a;
+}
+.futebol-penaltis-bolinha.perdeu {
+  background: #e05d5d;
+}
+.futebol-penaltis-forca {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  height: 14px;
+  border-radius: 7px;
+  background: rgba(127, 127, 127, 0.25);
+  overflow: hidden;
+}
+.futebol-penaltis-zona {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+}
+.futebol-penaltis-zona.fraca {
+  background: rgba(224, 93, 93, 0.35);
+}
+.futebol-penaltis-zona.forte {
+  background: rgba(155, 226, 122, 0.6);
+}
+.futebol-penaltis-marca {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 4px;
+  margin-left: -2px;
+  background: var(--text, #fff);
+}
+.futebol-penaltis-defender {
+  align-self: center;
+}
+.futebol-penaltis-goleiro {
+  transition: transform 0.25s;
+}
+.futebol-penaltis-bola {
+  transition: cx 0.25s, cy 0.25s;
+}

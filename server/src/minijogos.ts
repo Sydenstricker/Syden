@@ -179,20 +179,49 @@ const combinam = (a: string, b: string) => {
 };
 
 /**
+ * A CURVA DE DIFICULDADE (20/11/2026, a segunda auditoria: as 8 rodadas eram sorteadas iguais). A faixa da razão de cada
+ * rodada: as primeiras com diferença grande (4× a 20×, fácil de ver), o meio de 2,5× a 8×, e as últimas de 1,5× a 3×, onde
+ * o olho engana. Nas três primeiras, a referência preferida é um objeto que todo mundo tem na cabeça (CONHECIDOS).
+ */
+export function faixaDaRodada(rodada: number): { min: number; max: number; conhecida: boolean } {
+  if (rodada <= 3) return { min: 4, max: RAZAO_MAXIMA, conhecida: true };
+  if (rodada <= 5) return { min: 2.5, max: 8, conhecida: false };
+  return { min: RAZAO_MINIMA, max: 3, conhecida: false };
+}
+
+/** As referências que todo mundo tem na cabeça, para as primeiras rodadas. */
+export const CONHECIDOS = new Set([
+  'ovo', 'morango', 'banana', 'maca', 'limao', 'celular', 'lapis', 'bola-de-futebol', 'notebook', 'gato', 'cachorro',
+  'cadeira', 'porta', 'cama', 'pessoa', 'bicicleta', 'cavalo', 'vaca', 'carro', 'casa', 'onibus', 'aviao', 'skate',
+]);
+
+/**
  * Sorteia [referência, objeto] entre `ids`. Primeiro, dois que ainda não saíram; se a categoria já não tem,
  * a REFERÊNCIA pode repetir (o objeto a estimar nunca); só no fim de tudo a lista recomeça. `aleatorio` é
- * trocável para o teste.
+ * trocável para o teste. Com `rodada`, tenta primeiro a faixa da curva de dificuldade (com a referência conhecida, quando
+ * ela pede), depois só a faixa, e por fim qualquer par bom: a categoria pequena nunca fica sem rodada.
  */
-export function sortearPar(usados: Set<string>, ids = Object.keys(OBJETOS), aleatorio = Math.random): [string, string] {
+export function sortearPar(usados: Set<string>, ids = Object.keys(OBJETOS), aleatorio = Math.random, rodada?: number): [string, string] {
   const embaralhados = embaralhar([...ids], aleatorio);
-  for (const refPodeRepetir of [false, true]) {
-    for (const alvo of embaralhados) {
-      if (usados.has(alvo)) continue;
-      const ref = embaralhados.find((r) => r !== alvo && (refPodeRepetir || !usados.has(r)) && combinam(r, alvo));
-      if (ref) return [ref, alvo];
+  const razao = (a: string, b: string) => Math.max(OBJETOS[a].cm, OBJETOS[b].cm) / Math.min(OBJETOS[a].cm, OBJETOS[b].cm);
+  const faixa = rodada === undefined ? null : faixaDaRodada(rodada);
+  const filtros: ((r: string, alvo: string) => boolean)[] = [];
+  if (faixa) {
+    const naFaixa = (r: string, alvo: string) => razao(r, alvo) >= faixa.min && razao(r, alvo) <= faixa.max;
+    if (faixa.conhecida) filtros.push((r, alvo) => naFaixa(r, alvo) && CONHECIDOS.has(r));
+    filtros.push(naFaixa);
+  }
+  filtros.push(() => true);
+  for (const filtro of filtros) {
+    for (const refPodeRepetir of [false, true]) {
+      for (const alvo of embaralhados) {
+        if (usados.has(alvo)) continue;
+        const ref = embaralhados.find((r) => r !== alvo && (refPodeRepetir || !usados.has(r)) && combinam(r, alvo) && filtro(r, alvo));
+        if (ref) return [ref, alvo];
+      }
     }
   }
-  return usados.size > 0 ? sortearPar(new Set(), ids, aleatorio) : ['cavalo', 'girafa'];
+  return usados.size > 0 ? sortearPar(new Set(), ids, aleatorio, rodada) : ['cavalo', 'girafa'];
 }
 
 export type Fase = 'estimando' | 'revelando' | 'fim';
@@ -233,7 +262,7 @@ export const tamanho: Definicao = {
     let recorde: { antes: number | null; novo: boolean } | null = null;
 
     function novaRodada() {
-      par = sortearPar(usados, ids);
+      par = sortearPar(usados, ids, Math.random, rodada);
       par.forEach((id) => usados.add(id));
       palpites.clear();
       confirmaram.clear();

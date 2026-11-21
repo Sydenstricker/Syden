@@ -307,6 +307,7 @@ function Ceu({ estado, eu, jogador, socket, channelId }: { estado: EstadoNave & 
     let ultimoLote = 0;
     let ultimoHud = 0;
     let ultimoSomDeTiro = 0;
+    let ultimoSomDeRaspao = 0;
     const piloto = () => import.meta.env.DEV && !!(window as { navePilotoAutomatico?: boolean }).navePilotoAutomatico;
 
     const enviar = (dados: unknown) => {
@@ -354,6 +355,11 @@ function Ceu({ estado, eu, jogador, socket, channelId }: { estado: EstadoNave & 
             impacto.tremer(1, 450);
           }
           if (o.loop) tocar('desliza');
+          // o raspão (20/11/2026): um "plim" curto, sem repetir em rajada
+          if (o.raspao && agoraMs - ultimoSomDeRaspao > 160) {
+            ultimoSomDeRaspao = agoraMs;
+            tocar('moeda');
+          }
         }
       }
       // quem não pilota segue alguém: o que tem mais pontos e ainda está no ar

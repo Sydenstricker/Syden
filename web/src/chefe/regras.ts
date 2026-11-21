@@ -13,6 +13,9 @@ import {
   MARCAS,
   naArena,
   normalizar,
+  PA,
+  apanhaDaPa,
+  paPega,
   PASSO_MS,
   tiroPega,
   TORRAO,
@@ -83,8 +86,10 @@ export interface Comandos {
   /** Apertos desde o último passo (o passo zera depois de ler). */
   atirar: boolean;
   bomba: boolean;
+  /** O golpe de pá (20/11/2026). */
+  pa: boolean;
 }
-export const comandosVazios = (): Comandos => ({ esquerda: false, direita: false, cima: false, baixo: false, atirar: false, bomba: false });
+export const comandosVazios = (): Comandos => ({ esquerda: false, direita: false, cima: false, baixo: false, atirar: false, bomba: false, pa: false });
 
 export interface ChefeNaTela {
   x: number;
@@ -97,6 +102,8 @@ export interface ChefeNaTela {
   destino: [number, number];
   /** O yeti (19/11/2026), o segundo chefe; senão, a toupeira. */
   yeti: boolean;
+  /** A etapa da maratona (20/11/2026): 0 a toupeira, 1 o yeti; fora dela, 0. */
+  etapa: number;
 }
 export interface MarcaNaTela {
   id: number;
@@ -134,7 +141,7 @@ export interface Efeito {
   em: number;
   texto?: string;
 }
-export type Som = 'acerto' | 'erro' | 'tiro' | 'queda' | 'moeda' | 'combo' | 'vez' | 'pulo' | 'dano' | 'explosao' | 'impacto' | 'cura' | 'derrota';
+export type Som = 'soco' | 'acerto' | 'erro' | 'tiro' | 'queda' | 'moeda' | 'combo' | 'vez' | 'pulo' | 'dano' | 'explosao' | 'impacto' | 'cura' | 'derrota';
 
 export interface Meu {
   x: number;
@@ -228,6 +235,7 @@ export class Cliente {
   private pegando = new Map<number, number>();
   private atirouEm = -Infinity;
   private bombaEm = -Infinity;
+  private paEm = -Infinity;
   private ultimoEnvio = -Infinity;
   private impactos = new Set<number>();
   /** Os passos do servidor em que cada marca cai (o quadro manda "ms até", relativo a ele). */
@@ -335,6 +343,7 @@ export class Cliente {
       fase: cb[6],
       destino: [cb[7], cb[8]],
       yeti: cb[9] === 1,
+      etapa: cb[10] ?? 0,
     };
     const resta = (passo: number) => (passo - agoraNoServidor) * PASSO_MS;
     return {
@@ -385,7 +394,8 @@ export class Cliente {
     eu.t += ms;
     const atirar = cmd.atirar;
     const soltarBomba = cmd.bomba;
-    cmd.atirar = cmd.bomba = false;
+    const golpeDePa = cmd.pa;
+    cmd.atirar = cmd.bomba = cmd.pa = false;
     // os torrões no ar (os meus): acertou a toupeira como ela está na minha tela?
     const c = v.chefe;
     for (const s of this.tiros) {
@@ -456,6 +466,19 @@ export class Cliente {
       eu.acao = 'atirando';
       eu.t = 0;
       this.sons.push('pulo');
+    }
+    // O GOLPE DE PÁ (20/11/2026): de perto, com a recarga; se o chefe está tonto ou parado e encosta NA MINHA TELA, o golpe
+    // vai ao servidor, que confere pelo passado dele (o número do dano volta no evento 'h')
+    if (golpeDePa && agora - this.paEm >= PA.recargaMs) {
+      this.paEm = agora;
+      eu.acao = 'atirando';
+      eu.t = 0;
+      if (c && vulneravel(c.estado)) eu.lado = c.x >= eu.x ? 1 : -1;
+      this.sons.push('soco');
+      if (c && apanhaDaPa(c.estado) && paPega(eu.x, eu.y, c.x, c.y, 0)) {
+        this.mandarPosicao(agora);
+        this.enviar({ tipo: 'pa', x: Math.round(eu.x * 10) / 10, y: Math.round(eu.y * 10) / 10 });
+      }
     }
     if (agora - this.ultimoEnvio >= ENVIO_MS) this.mandarPosicao(agora);
   }

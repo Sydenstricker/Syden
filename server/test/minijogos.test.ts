@@ -132,7 +132,7 @@ test('as categorias: cada uma rende as 8 rodadas sem repetir o objeto, e só com
       const usados = new Set<string>();
       const alvos = new Set<string>();
       for (let r = 0; r < RODADAS; r++) {
-        const [ref, alvo] = sortearPar(usados, ids);
+        const [ref, alvo] = sortearPar(usados, ids, Math.random, r + 1);
         assert.ok(ids.includes(ref) && ids.includes(alvo), `${nome}: ${ref} × ${alvo} fora da categoria`);
         assert.equal(OBJETOS[ref].medida === 'altura', OBJETOS[alvo].medida === 'altura', `${nome}: ${ref} × ${alvo} medidos de jeitos diferentes`);
         assert.ok(!alvos.has(alvo), `${nome}: ${alvo} saiu duas vezes`);
@@ -140,6 +140,38 @@ test('as categorias: cada uma rende as 8 rodadas sem repetir o objeto, e só com
         usados.add(ref).add(alvo);
       }
     }
+  }
+});
+
+test('a curva de dificuldade (20/11/2026): as primeiras rodadas com diferença grande e referência conhecida, as últimas apertadas', async () => {
+  const { CATEGORIAS, CONHECIDOS, faixaDaRodada, sortearPar } = await import('../src/minijogos.js');
+  const razao = (a: string, b: string) => Math.max(OBJETOS[a].cm, OBJETOS[b].cm) / Math.min(OBJETOS[a].cm, OBJETOS[b].cm);
+  for (const [nome, ids] of [['tudo', Object.keys(OBJETOS)], ...Object.entries(CATEGORIAS)] as [string, string[]][]) {
+    let naFaixa = 0;
+    let total = 0;
+    let conhecidas = 0;
+    let comeco = 0;
+    let fim = 0;
+    for (let partida = 0; partida < 40; partida++) {
+      const usados = new Set<string>();
+      for (let r = 1; r <= RODADAS; r++) {
+        const [ref, alvo] = sortearPar(usados, ids, Math.random, r);
+        const f = faixaDaRodada(r);
+        const x = razao(ref, alvo);
+        total++;
+        if (x >= f.min && x <= f.max) naFaixa++;
+        if (r <= 3) {
+          comeco += Math.log(x);
+          if (CONHECIDOS.has(ref)) conhecidas++;
+        }
+        if (r >= 6) fim += Math.log(x);
+        usados.add(ref).add(alvo);
+      }
+    }
+    // a categoria pequena às vezes sai da faixa (vale qualquer par bom), mas quase sempre cabe
+    assert.ok(naFaixa / total > 0.85, `${nome}: só ${naFaixa}/${total} na faixa`);
+    assert.ok(comeco / (3 * 40) > fim / (3 * 40) + 0.5, `${nome}: o começo não é mais fácil que o fim`);
+    if (nome === 'tudo') assert.ok(conhecidas / (3 * 40) > 0.9, `as primeiras com referência conhecida: ${conhecidas}`);
   }
 });
 

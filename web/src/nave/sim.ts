@@ -124,6 +124,22 @@ export const PONTOS: Record<TipoDeInimigo, number> = {
 };
 /** Cada bala no chefe vale isto, além do abate. */
 export const PONTOS_NO_CHEFE = 10;
+/**
+ * O RASPÃO (20/11/2026, a segunda auditoria): o tiro inimigo que passa a até RASPAO_RAIO do centro da nave SEM acertar (mais
+ * longe que RAIO_NAVE + RAIO_TIRO) vale RASPAO_PONTOS, uma vez por tiro. Conta no passo em que o tiro já passou do ponto mais
+ * perto (está se afastando da nave); piscando ou no meio do loop, não conta (ali não há risco).
+ */
+export const RASPAO_RAIO = 10;
+export const RASPAO_PONTOS = 25;
+/** O tiro (de lugar b no passo q) está de raspão na nave em (x, y): perto, sem acertar, e já se afastando? */
+export function deRaspao(b: { x: number; y: number }, vx: number, vy: number, x: number, y: number): boolean {
+  const dx = b.x - x;
+  const dy = b.y - y;
+  const d2 = dx * dx + dy * dy;
+  const acerta = RAIO_NAVE + RAIO_TIRO;
+  return d2 > acerta * acerta && d2 <= RASPAO_RAIO * RASPAO_RAIO && dx * vx + dy * vy > 0;
+}
+
 /** Por onda atravessada com vida, e por vida que sobra no fim. */
 export const SOBREVIVER = 500;
 export const POR_VIDA = 1000;
@@ -524,8 +540,16 @@ export class Ficha {
   ultimoQ = 0;
   /** Os que caíram desde a última vez que alguém leu (o servidor repassa à turma). */
   novos: number[] = [];
+  /** Os passos das bombas (a bomba limpa os tiros que já tinham saído), e os tiros já contados de raspão. */
+  bombasEm: number[] = [];
+  raspados = new Set<number>();
 
   readonly tempos: { ondas: number; chefeT: number; fim: number };
+  private _tiros: TiroInimigo[] | null = null;
+  /** Os tiros dos inimigos, na mesma ordem do site (o índice vai no evento do raspão). */
+  get tirosInimigos(): TiroInimigo[] {
+    return (this._tiros ??= tirosDosInimigos(this.inimigos));
+  }
 
   constructor(
     readonly inimigos: Inimigo[],
@@ -693,6 +717,7 @@ export class Ficha {
     if (!this.lugar(q, x, y)) return 'Lugar inválido.';
     this.ultimoQ = q;
     this.bombas--;
+    this.bombasEm.push(q);
     this.invulAte = Math.max(this.invulAte, q + INVUL_BOMBA);
     this.inimigos.forEach((e, i) => {
       if (this.mortos.has(i)) return;
@@ -720,6 +745,29 @@ export class Ficha {
     return null;
   }
 
+  /**
+   * O RASPÃO (20/11/2026): o tiro `j` (o índice em tirosInimigos) passou de raspão na nave em (x, y), no passo `q`. Confere que
+   * o tiro saiu (o dono estava de pé e nenhuma bomba o limpou), que está ali, perto sem acertar e se afastando, e que a nave
+   * não estava piscando nem no meio do loop. Cada tiro conta uma vez.
+   */
+  raspao(q: number, j: number, x: number, y: number): string | null {
+    const erro = this.tempo(q);
+    if (erro) return erro;
+    if (!this.vivoEm(q) || this.chefeEm !== null || !inteiro(j) || j < 0 || j >= this.tirosInimigos.length) return 'Evento inválido.';
+    if (this.raspados.has(j) || q < this.invulAte || this.invulNoLoop(q)) return 'Raspão inválido.';
+    const tiro = this.tirosInimigos[j];
+    const morto = this.mortos.get(tiro.dono);
+    if (morto !== undefined && morto <= tiro.t) return 'Raspão inválido.';
+    if (this.bombasEm.some((b) => tiro.t <= b && b <= q)) return 'Raspão inválido.';
+    const b = posicaoTiro(tiro, q);
+    if (!b || !numero(x) || !numero(y) || !deRaspao(b, tiro.vx, tiro.vy, x, y)) return 'Raspão inválido.';
+    if (!this.lugar(q, x, y)) return 'Lugar inválido.';
+    this.ultimoQ = q;
+    this.raspados.add(j);
+    this.pontos += RASPAO_PONTOS;
+    return null;
+  }
+
   /** Um lugar da nave, mandado de tempos em tempos (só confere e guarda). */
   posicao(q: number, x: number, y: number): string | null {
     if (!inteiro(q) || q < 0 || q > this.tempos.fim) return 'Evento inválido.';
@@ -728,8 +776,8 @@ export class Ficha {
   }
 
   /**
-   * Um evento do jeito que vai pela rede: ['a', q, i, p, x, y, arma, b], ['g', q, i, x, y], ['d', q, x, y], ['b', q, x, y] e,
-   * desde 19/11/2026, o loop ['l', q, x, y].
+   * Um evento do jeito que vai pela rede: ['a', q, i, p, x, y, arma, b], ['g', q, i, x, y], ['d', q, x, y], ['b', q, x, y],
+   * desde 19/11/2026, o loop ['l', q, x, y], e desde 20/11/2026 o raspão ['r', q, j, x, y].
    */
   aplicar(ev: unknown): string | null {
     if (!Array.isArray(ev)) return 'Evento inválido.';
@@ -739,6 +787,7 @@ export class Ficha {
     if (tipo === 'd') return this.atingida(q, ev[2], ev[3]);
     if (tipo === 'b') return this.bomba(q, ev[2], ev[3]);
     if (tipo === 'l') return this.loop(q, ev[2], ev[3]);
+    if (tipo === 'r') return this.raspao(q, ev[2], ev[3], ev[4]);
     return 'Evento inválido.';
   }
 

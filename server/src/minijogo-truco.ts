@@ -39,6 +39,17 @@ export const VALORES = ['4', '5', '6', '7', 'Q', 'J', 'K', 'A', '2', '3'] as con
 export const NAIPES = ['o', 'e', 'c', 'p'] as const;
 /** O que a mão vale: o normal, o truco, o seis, o nove e o doze. */
 export const VALORES_DA_MAO = [1, 3, 6, 9, 12];
+/** A CONTAGEM MINEIRA (20/11/2026, decisão dele: no mineiro, ela vale junto com as manilhas): 2, 4, 8, 10 e 12. */
+export const VALORES_MINEIROS = [2, 4, 8, 10, 12];
+/**
+ * Os números da mão decidida: os pontos de quem decide (11; no mineiro, 10, a MÃO DE DEZ), quanto a mão vale se a dupla
+ * joga (3; no mineiro, 4) e quanto o outro leva se ela corre (1; no mineiro, 2).
+ */
+export function contagemDa(variante: string) {
+  return variante === MINEIRO
+    ? { valores: VALORES_MINEIROS, decide: 10, jogando: 4, correndo: 2 }
+    : { valores: VALORES_DA_MAO, decide: 11, jogando: 3, correndo: 1 };
+}
 export const PONTOS_PARA_VENCER = 12;
 export const TEMPO_DA_DECISAO = 30_000;
 export const TEMPO_DO_AUSENTE = 2_000;
@@ -62,9 +73,24 @@ export function manilhaDa(vira: Carta): string {
   return VALORES[(i + 1) % VALORES.length];
 }
 
-/** A força da carta: 0 a 9 pelo valor, e as manilhas de 100 a 103 pelo naipe. */
+/**
+ * O TRUCO MINEIRO (20/11/2026, o lote C da segunda auditoria), escolhido na largada: sem vira, e as quatro MANILHAS FIXAS, da
+ * mais fraca à mais forte: o 7 de ouros, o ás de espadas, o 7 de copas e o 4 de paus (o zap). As outras cartas desses valores
+ * são comuns. Na conta, a manilha da mão é a palavra MINEIRO (o valor que nenhuma carta tem), e `forca` sabe as fixas.
+ * E a CONTAGEM MINEIRA (decisão dele, mesmo dia): a mão vale 2, e o truco, o seis, o nove e o doze valem 4, 8, 10 e 12 (os
+ * nomes dos pedidos são os mesmos); no lugar da mão de onze, a MÃO DE DEZ (a dupla com 10 vê as cartas e joga valendo 4, ou
+ * corre e dá 2), e com as duas duplas em 10, a mão de ferro valendo 2. Por dentro, a fase e a ação continuam 'mao-de-onze' e
+ * 'onze' (o nome da decisão, não o número). O resto da regra é a do paulista.
+ */
+export const MINEIRO = 'mineiro';
+export const MANILHAS_MINEIRAS = ['7o', 'Ae', '7c', '4p'] as const;
+
+/** A força da carta: 0 a 9 pelo valor, e as manilhas de 100 a 103 pelo naipe (no mineiro, pela ordem das fixas). */
 export function forca(carta: Carta, manilha: string): number {
-  if (valorDe(carta) === manilha) return 100 + NAIPES.indexOf(naipeDe(carta) as (typeof NAIPES)[number]);
+  if (manilha === MINEIRO) {
+    const fixa = (MANILHAS_MINEIRAS as readonly string[]).indexOf(carta);
+    if (fixa >= 0) return 100 + fixa;
+  } else if (valorDe(carta) === manilha) return 100 + NAIPES.indexOf(naipeDe(carta) as (typeof NAIPES)[number]);
   return VALORES.indexOf(valorDe(carta) as (typeof VALORES)[number]);
 }
 
@@ -150,6 +176,10 @@ export function criarTruco({ agora = Date.now, aleatorio = Math.random, baralhos
       const lugarDe = (userId: number) => lugares.indexOf(userId);
       const membros = (time: 0 | 1) => lugares.filter((_, i) => timeDe(i) === time);
       const evento = `truco-${ctx.comunidade ?? 0}-${agora()}`;
+      // o truco mineiro (20/11/2026): manilhas fixas, sem vira
+      const mineiro = corpo?.variante === MINEIRO;
+      const contagem = contagemDa(mineiro ? MINEIRO : 'paulista');
+      const valores = contagem.valores;
       const fila = baralhos.map((b) => [...b]);
 
       let fase: Fase = 'jogando';
@@ -164,7 +194,7 @@ export function criarTruco({ agora = Date.now, aleatorio = Math.random, baralhos
       let mesa: NaMesa[] = [];
       let lider = 0;
       let vez = 0;
-      let valor = 1;
+      let valor = valores[0];
       /** Quem pode pedir o próximo aumento: null antes do primeiro truco (qualquer um, na vez). */
       let podeAumentar: 0 | 1 | null = null;
       let semTruco = false;
@@ -200,7 +230,7 @@ export function criarTruco({ agora = Date.now, aleatorio = Math.random, baralhos
         return false;
       };
 
-      const proximoValor = (v: number) => VALORES_DA_MAO[VALORES_DA_MAO.indexOf(v) + 1] ?? null;
+      const proximoValor = (v: number) => valores[valores.indexOf(v) + 1] ?? null;
 
       /** O relógio da vez de jogar: 30 s, ou 2 s para quem saiu da sala. */
       let prazoCurto = false;
@@ -227,19 +257,20 @@ export function criarTruco({ agora = Date.now, aleatorio = Math.random, baralhos
         const cartas = fila.shift() ?? embaralhar(baralho(), aleatorio);
         maos = lugares.map((_, s) => cartas.slice(s * 3, s * 3 + 3));
         vira = cartas[n * 3];
-        manilha = manilhaDa(vira);
+        manilha = mineiro ? MINEIRO : manilhaDa(vira);
         resultados = [];
         mesa = [];
         lider = quemComeca;
         vez = quemComeca;
-        valor = 1;
+        valor = valores[0];
         podeAumentar = null;
         pedido = null;
         onze = null;
         semTruco = false;
-        const com11 = ([0, 1] as const).filter((t) => pontos[t] === PONTOS_PARA_VENCER - 1);
+        // com 11 (no mineiro, com 10)
+        const com11 = ([0, 1] as const).filter((t) => pontos[t] === contagem.decide);
         if (com11.length === 2) {
-          // mão de ferro: uma mão comum, valendo 1, sem truco
+          // mão de ferro: uma mão comum, valendo 1 (no mineiro, 2), sem truco
           semTruco = true;
           fase = 'jogando';
           marcarVez();
@@ -288,7 +319,7 @@ export function criarTruco({ agora = Date.now, aleatorio = Math.random, baralhos
 
       const decidirOnze = (lugar: number | null, jogarAMao: boolean) => {
         if (jogarAMao) {
-          valor = 3;
+          valor = contagem.jogando;
           contar({ tipo: 'onze-jogar', lugar });
           fase = 'jogando';
           onze = null;
@@ -297,9 +328,9 @@ export function criarTruco({ agora = Date.now, aleatorio = Math.random, baralhos
           return;
         }
         const outro = (1 - onze!) as 0 | 1;
-        contar({ tipo: 'onze-correu', lugar, time: onze!, pontos: 1 });
+        contar({ tipo: 'onze-correu', lugar, time: onze!, pontos: contagem.correndo });
         onze = null;
-        fecharMao(outro, 1);
+        fecharMao(outro, contagem.correndo);
       };
 
       const jogar = (lugar: number, carta: Carta, coberta: boolean) => {
@@ -416,7 +447,9 @@ export function criarTruco({ agora = Date.now, aleatorio = Math.random, baralhos
       function respostaDoRobo(robo: number) {
         if (fase !== 'truco' || !pedido) return;
         const c = confianca(lugarDe(robo));
-        const exige = 5.5 + (pedido.valor >= 6 ? 1.5 : 0) + (pedido.valor >= 9 ? 1.5 : 0);
+        // pelo degrau do pedido (o seis e o nove pedem mais), e não pelo número: no mineiro o seis vale 8
+        const degrau = valores.indexOf(pedido.valor);
+        const exige = 5.5 + (degrau >= 2 ? 1.5 : 0) + (degrau >= 3 ? 1.5 : 0);
         if (proximoValor(pedido.valor) !== null && c >= exige + 4 && aleatorio() < 0.6) jogo.acao(robo, { tipo: 'aumentar' });
         else jogo.acao(robo, { tipo: c >= exige ? 'aceitar' : 'correr' });
       }
@@ -457,7 +490,11 @@ export function criarTruco({ agora = Date.now, aleatorio = Math.random, baralhos
             meuTime,
             mao: meu >= 0 && fase !== 'fim' ? maos[meu] : [],
             maoDoParceiro: fase === 'mao-de-onze' && onze !== null && meuTime === onze && parceiro >= 0 ? maos[parceiro] : null,
-            vira,
+            vira: mineiro ? null : vira,
+            variante: mineiro ? MINEIRO : 'paulista',
+            // a contagem (o mineiro: 2, 4, 8, 10, 12): a tela tira daqui o nome do pedido (o 2º é o truco, o 3º o seis…)
+            valoresDaMao: valores,
+            maoDecidida: { pontos: contagem.decide, jogando: contagem.jogando, correndo: contagem.correndo },
             manilha,
             numeroDaMao,
             quemComeca,

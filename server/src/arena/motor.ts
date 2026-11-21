@@ -87,6 +87,7 @@ import {
   velDoChao,
   VIDAS,
   ZONA_DO_OBJETIVO,
+  ZONA_FINAL,
   type Cenario,
   type Golpe,
   type Suprimento,
@@ -120,6 +121,35 @@ export const SUPRIMENTO_PRIMEIRO = 8000;
 export const SUPRIMENTO_CADA = 12_000;
 /** O robô decide o alvo e a mira a cada… (o reflexo dele). */
 export const DECISAO_DO_ROBO = 220;
+
+/**
+ * A DIFICULDADE DOS ROBÔS NO SOLO (20/11/2026), escolhida na largada: o reflexo (a cada quanto decide o alvo e a mira), o erro da
+ * mira, a chance de desviar de uma bala que vem (a cada passo), a de sair da zona marcada com a arrancada, e a vontade de usar o
+ * especial, o forte, o secundário e o básico quando dá (a cada passo; 1 = sempre), a velocidade do passo (fração da do coelho) e
+ * quanto prefere quem é gente como alvo (px descontados da distância: no difícil, os robôs vêm em você). O MÉDIO é o robô de
+ * antes, número por número (e é o da sala, e o dos aliados no 3×3). Medido contra o piloto automático (o teste do servidor): o
+ * piloto mira perfeito, e o que separa as três é o quanto de vida sobra a ele, e as vitórias com 3 e 5 robôs.
+ */
+export const DIFICULDADES_DA_ARENA = ['facil', 'medio', 'dificil'] as const;
+export type DificuldadeDaArena = (typeof DIFICULDADES_DA_ARENA)[number];
+export const ROBO_DA_ARENA: Record<
+  DificuldadeDaArena,
+  { reflexo: number; erro: number; desvio: number; fogeDaZona: number; especial: number; forte: number; secundario: number; basico: number; vel: number; focoEmGente: number }
+> = {
+  facil: { reflexo: 420, erro: 0.6, desvio: 0.02, fogeDaZona: 0.2, especial: 0.03, forte: 0.06, secundario: 0.15, basico: 0.45, vel: 0.75, focoEmGente: 0 },
+  medio: { reflexo: DECISAO_DO_ROBO, erro: 0.3, desvio: 0.08, fogeDaZona: 0.5, especial: 1, forte: 0.15, secundario: 0.3, basico: 0.7, vel: 0.85, focoEmGente: 0 },
+  dificil: { reflexo: 140, erro: 0.12, desvio: 0.2, fogeDaZona: 0.85, especial: 1, forte: 0.3, secundario: 0.45, basico: 0.85, vel: 0.95, focoEmGente: 60 },
+};
+
+/**
+ * AS VITÓRIAS SEGUIDAS DO SOLO (20/11/2026), o recorde da Arena: vencer soma 1, qualquer outra coisa (derrota, empate, sair)
+ * zera. A sequência mora só na memória do servidor e se perde com 30 minutos parada: é da sessão, não do calendário (a regra da
+ * Palavra secreta). O recorde guardado (a tabela comum, maior é melhor) é a maior sequência, por dificuldade e adversários.
+ */
+export const SESSAO_DA_ARENA_MS = 30 * 60_000;
+const sequencias = new Map<string, { seguidas: number; em: number }>();
+/** Para os testes. */
+export const _sequenciasDaArena = sequencias;
 
 export const FORMATOS = ['1x1', '3x3', 'todos'] as const;
 export type Formato = (typeof FORMATOS)[number];
@@ -231,6 +261,8 @@ interface Lutador {
   /** O mato: até quando está à vista de todos (golpeou ou levou um golpe), e a última vez em que cada time não o via. */
   reveladoAte: number;
   escondidoDe: Map<number, number>;
+  /** O robô: a dificuldade dele (ROBO_DA_ARENA). */
+  dif: DificuldadeDaArena;
 }
 
 export interface ServicosDaArena {
@@ -239,6 +271,9 @@ export interface ServicosDaArena {
   /** As espécies da equipe guardada da pessoa, na ordem (a da frente primeiro); vazia, a emprestada. */
   equipeDe(userId: number): string[];
   guardarTrofeu(t: { userId: number; evento: string; communityId: number; pista: string; posicao: number; tempoMs: number | null; pontos: number | null; rivais: number[] }): void;
+  /** O recorde de vitórias seguidas do Solo (a tabela comum): ler, e guardar se for maior. */
+  recordeDoSolo?(userId: number, variante: string): number | null;
+  guardarRecorde?(userId: number, variante: string, valor: number): { antes: number | null; novo: boolean };
 }
 
 export interface OpcoesDaArena {
@@ -322,6 +357,18 @@ export function criarArena({
       const cenario: Cenario = (CENARIOS as readonly unknown[]).includes(corpo.cenario) ? (corpo.cenario as Cenario) : CENARIOS[Math.floor(aleatorio() * CENARIOS.length)];
       /** O modo: a luta de sempre, ou SEGURAR A ZONA (ver conta.ts, ZONA_DO_OBJETIVO). */
       const objetivo: 'luta' | 'zona' = corpo.objetivo === 'zona' ? 'zona' : 'luta';
+      /** A dificuldade dos robôs adversários (só no Solo; na sala, e para os aliados, o médio). */
+      const dificuldade: DificuldadeDaArena = solo && (DIFICULDADES_DA_ARENA as readonly unknown[]).includes(corpo.dificuldade) ? (corpo.dificuldade as DificuldadeDaArena) : 'medio';
+      /** A sequência do Solo: a chave é a pessoa e a variante (dificuldade, adversários e o modo). */
+      const varianteDoRecorde = `${dificuldade}:${formato === '3x3' ? '3x3' : lugares.length - 1}${objetivo === 'zona' ? ':zona' : ''}`;
+      const quemJogaSozinho = solo ? humanos[0] : null;
+      const chaveDaSequencia = `${quemJogaSozinho}:${varianteDoRecorde}`;
+      let sequencia: { atual: number; recorde: number | null; novo: boolean } | null = null;
+      if (quemJogaSozinho !== null) {
+        const s = sequencias.get(chaveDaSequencia);
+        const atual = s && agora() - s.em <= SESSAO_DA_ARENA_MS ? s.seguidas : 0;
+        sequencia = { atual, recorde: servicos.recordeDoSolo?.(quemJogaSozinho, varianteDoRecorde) ?? null, novo: false };
+      }
       const pontosDaZona = new Map<number, number>();
       let msNaZona = 0;
       let donoDaZona = -1;
@@ -353,6 +400,7 @@ export function criarArena({
       };
 
       const porTime = new Map<number, number>();
+      const meuTime = quemJogaSozinho === null ? null : (lugares.find(([id]) => id === quemJogaSozinho)?.[1] ?? null);
       const lutadores = new Map<number, Lutador>(
         lugares.map(([id, time]) => {
           const k = porTime.get(time) ?? 0;
@@ -405,6 +453,7 @@ export function criarArena({
             ia: { alvo: null, decide: t + 600 + aleatorio() * 400, ronda: aleatorio() < 0.5 ? 1 : -1, rondaAte: t + 1500, erro: 0, procura: -1 },
             reveladoAte: 0,
             escondidoDe: new Map(),
+            dif: robo && time !== meuTime ? dificuldade : 'medio',
           };
           return [id, l];
         }),
@@ -562,18 +611,18 @@ export function criarArena({
         const vivos = emPe().filter((o) => inimigos(l.time, o) && ve(l.time, o, t));
         // o alvo e a estratégia, no reflexo dele
         if (t >= l.ia.decide) {
-          l.ia.decide = t + DECISAO_DO_ROBO + aleatorio() * 120;
+          l.ia.decide = t + ROBO_DA_ARENA[l.dif].reflexo + aleatorio() * 120;
           let melhor: Lutador | null = null;
           let d = Infinity;
           for (const o of vivos) {
-            const dd = distancia(l, o) - (o.pv < 40 ? 60 : 0);
+            const dd = distancia(l, o) - (o.pv < 40 ? 60 : 0) - (o.robo ? 0 : ROBO_DA_ARENA[l.dif].focoEmGente);
             if (dd < d) {
               d = dd;
               melhor = o;
             }
           }
           l.ia.alvo = melhor?.id ?? null;
-          l.ia.erro = (aleatorio() - 0.5) * 0.3;
+          l.ia.erro = (aleatorio() - 0.5) * ROBO_DA_ARENA[l.dif].erro;
           // ninguém à vista: vai olhar uma moita (a que já olhava, até chegar nela)
           const moitas = MATO[cenario];
           if (melhor) l.ia.procura = -1;
@@ -611,7 +660,7 @@ export function criarArena({
           vx += ux * 2;
           vy += uy * 2;
           fugindo = true;
-          if (z.bate - t < 450 && t - l.arrancadaEm >= ARRANCADA.recarga && aleatorio() < 0.5) {
+          if (z.bate - t < 450 && t - l.arrancadaEm >= ARRANCADA.recarga && aleatorio() < ROBO_DA_ARENA[l.dif].fogeDaZona) {
             l.arrancadaEm = t;
             l.arrancadaAte = t + ARRANCADA.ms;
             l.mx = ux;
@@ -654,7 +703,7 @@ export function criarArena({
               const d = andouABala(s.golpe, t - s.em);
               const [bx, by] = s.balas[0];
               if (d >= s.livre[0] || !balaPassaPerto(s.x0, s.y0, bx, by, d, d + s.golpe.vel * 0.3, l.x, l.y, RAIO + 10)) continue;
-              if (aleatorio() < 0.08) {
+              if (aleatorio() < ROBO_DA_ARENA[l.dif].desvio) {
                 l.arrancadaEm = t;
                 l.arrancadaAte = t + ARRANCADA.ms;
                 const lado = aleatorio() < 0.5 ? 1 : -1;
@@ -672,7 +721,7 @@ export function criarArena({
           [l.vx, l.vy] = [ux * ARRANCADA.vel, uy * ARRANCADA.vel];
         } else {
           // o chão: a lama segura, o gelo escorrega (a mesma conta do site)
-          const vel = quer ? VEL * 0.85 * (t < l.rapidoAte ? RAPIDO.mult : 1) * velDoChao(cenario, l.x, l.y) : 0;
+          const vel = quer ? VEL * ROBO_DA_ARENA[l.dif].vel * (t < l.rapidoAte ? RAPIDO.mult : 1) * velDoChao(cenario, l.x, l.y) : 0;
           [l.vx, l.vy] = seguirVelocidade(cenario, l.vx, l.vy, ux * vel, uy * vel, dt);
         }
         const mexe = l.vx * l.vx + l.vy * l.vy > 1;
@@ -700,15 +749,17 @@ export function criarArena({
         };
         // o forte e o especial: cada elemento tem a forma dele (a roda pega de perto; o tiro, com a árvore fora do caminho)
         const alcanca = (g: Golpe) => d < alcanceDoGolpe(g) * 0.9 && (g.forma !== 'tiro' || visivel);
-        if (prontoParaGolpe(l, 'e', t) && alcanca(kit.e)) return usar('e');
-        if (prontoParaGolpe(l, 'q', t) && alcanca(kit.q) && aleatorio() < 0.15) return usar('q');
+        const jeito = ROBO_DA_ARENA[l.dif];
+        // (o médio sempre usa o especial pronto: sem sorteio, para a sequência dos sorteios ficar a de antes)
+        if (prontoParaGolpe(l, 'e', t) && alcanca(kit.e) && (jeito.especial >= 1 || aleatorio() < jeito.especial)) return usar('e');
+        if (prontoParaGolpe(l, 'q', t) && alcanca(kit.q) && aleatorio() < jeito.forte) return usar('q');
         const s = kit.s;
-        if (prontoParaGolpe(l, 's', t) && aleatorio() < 0.3) {
+        if (prontoParaGolpe(l, 's', t) && aleatorio() < jeito.secundario) {
           if (s.forma === 'roda' && d < s.raio + RAIO) return usar('s');
           if (s.forma === 'zona' && d < s.alcance) return usar('s');
           if (s.forma === 'tiro' && d < s.alcance * 0.9 && visivel) return usar('s');
         }
-        if (prontoParaGolpe(l, 'b', t) && d < kit.b.alcance * 0.95 && visivel && aleatorio() < 0.7) usar('b');
+        if (prontoParaGolpe(l, 'b', t) && d < kit.b.alcance * 0.95 && visivel && aleatorio() < jeito.basico) usar('b');
       };
 
       /** As balas dos robôs andam no servidor: cada trecho é uma pancada (decidida com a folga, nas pessoas). */
@@ -782,13 +833,16 @@ export function criarArena({
       // ---------------- AS ZONAS DA ARENA E OS SUPRIMENTOS ----------------
       const zonaDaArena = (t: number) => {
         if (t < proximaZona) return;
-        proximaZona = t + ZONA.cada;
+        // O FIM COM PRESSÃO (ZONA_FINAL): no último minuto, mais depressa e maiores
+        const final = PARTIDA_MS - (t - inicio) <= ZONA_FINAL.falta;
+        const raio = final ? ZONA_FINAL.raio : ZONA.raio;
+        proximaZona = t + (final ? ZONA_FINAL.cada : ZONA.cada);
         // perto de alguém (para obrigar a mexer), mas num lugar sorteado em volta
         const vivos = emPe();
         if (!vivos.length) return;
         const quem = vivos[Math.floor(aleatorio() * vivos.length)];
-        const [x, y] = foraDosObstaculos(cenario, quem.x + (aleatorio() - 0.5) * 120, quem.y + (aleatorio() - 0.5) * 120, ZONA.raio);
-        marcarZona(0, -1, x, y, ZONA.raio, ZONA.dano, 'nenhum', ZONA.aviso);
+        const [x, y] = foraDosObstaculos(cenario, quem.x + (aleatorio() - 0.5) * 120, quem.y + (aleatorio() - 0.5) * 120, raio);
+        marcarZona(0, -1, x, y, raio, ZONA.dano, 'nenhum', ZONA.aviso);
       };
 
       const cairSuprimento = (t: number) => {
@@ -986,6 +1040,18 @@ export function criarArena({
         fase = 'fim';
         const p = presentes();
         ficaram = new Set([...ficaram].filter((id) => p.has(id)));
+        // AS VITÓRIAS SEGUIDAS DO SOLO: vencer soma, o resto zera (o servidor decidiu quem venceu)
+        if (quemJogaSozinho !== null && sequencia) {
+          const venceu = completa && vencedor !== null && vencedor === meuTime;
+          const seguidas = venceu ? sequencia.atual + 1 : 0;
+          sequencias.set(chaveDaSequencia, { seguidas, em: agora() });
+          sequencia.atual = seguidas;
+          if (seguidas > 0 && servicos.guardarRecorde) {
+            const r = servicos.guardarRecorde(quemJogaSozinho, varianteDoRecorde, seguidas);
+            sequencia.novo = r.novo;
+            sequencia.recorde = r.novo ? seguidas : r.antes;
+          }
+        }
         // a posição de cada time: o vencedor primeiro; os outros, de quem caiu por último para quem caiu primeiro
         const fimDoTime = new Map<number, number>();
         for (const l of lutadores.values()) {
@@ -1140,6 +1206,8 @@ export function criarArena({
             objetivo,
             solo,
             vencedor,
+            // o Solo: a dificuldade dos robôs e as vitórias seguidas (a do fim já com esta partida)
+            ...(solo ? { dificuldade, sequencia } : {}),
             jogadores: [...lutadores.values()].map((l) => ({
               userId: l.id,
               username: ctxNome(l.id),

@@ -139,15 +139,23 @@ test('Stop pela sala: as respostas dos outros ficam escondidas, o STOP exige tud
   const daBia = conferindo.respostas.find((r: { userId: number }) => r.userId === contaBia.user.id).respostas;
   assert.equal(daBia[1].valida, false, '"Zebra" não começa com a letra');
 
-  // A Bia contesta a última da Ana: com um "outro" só, um voto contra basta.
-  assert.equal((await bia('POST', `${rota}/acao`, { tipo: 'contestar', categoria: 5, alvo: contaAna.user.id })).statusCode, 200);
+  // A Bia contesta a última da Ana: com dois, o voto dela sozinho não derruba (20/11/2026); a Ana aceita, e aí cai.
+  assert.equal((await ana('POST', `${rota}/acao`, { tipo: 'aceitar', categoria: 5 })).statusCode, 409, 'sem contestação, nada a aceitar');
+  const contestada = (await bia('POST', `${rota}/acao`, { tipo: 'contestar', categoria: 5, alvo: contaAna.user.id })).json().partida;
+  const daAna = contestada.respostas.find((r: { userId: number }) => r.userId === contaAna.user.id).respostas;
+  assert.equal(daAna[5].valida, true, 'com dois, um voto só não basta');
+  assert.equal(contestada.precisaAceite, true);
   assert.equal((await ana('POST', `${rota}/acao`, { tipo: 'contestar', categoria: 0, alvo: contaAna.user.id })).statusCode, 409, 'a própria, não');
+  assert.equal((await bia('POST', `${rota}/acao`, { tipo: 'aceitar', categoria: 5 })).statusCode, 409, 'só quem escreveu aceita');
+  const aceita = (await ana('POST', `${rota}/acao`, { tipo: 'aceitar', categoria: 5 })).json().partida;
+  assert.equal(aceita.respostas.find((r: { userId: number }) => r.userId === contaAna.user.id).respostas[5].valida, false, 'as duas partes: cai');
   await ana('POST', `${rota}/acao`, { tipo: 'pronto' });
   const resultado = (await bia('POST', `${rota}/acao`, { tipo: 'pronto' })).json().partida;
   assert.equal(resultado.fase, 'resultado', 'todo mundo pronto: conta na hora');
   const placar = Object.fromEntries(resultado.placar.map((l: { username: string; pontos: number }) => [l.username, l.pontos]));
-  // Ana: 5 (repetida com a Bia) + 4 × 10 + 0 (contestada). Bia: 5 da repetida.
+  // Ana: 5 (repetida com a Bia) + 4 × 10 + 0 (contestada), e sem o bônus do STOP (uma dela caiu). Bia: 5 da repetida.
   assert.deepEqual(placar, { 'ana-novos': 45, 'bia-novos': 5 });
+  assert.equal(resultado.bonus, null);
   assert.equal((await ana('DELETE', rota)).statusCode, 200);
 });
 

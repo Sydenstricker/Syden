@@ -567,3 +567,7 @@ export function medalhaDaTorre(id: string, passos: number): 0 | 1 | 2 | null {
   return i < 0 ? null : (i as 0 | 1 | 2);
 }
 export const torrePorId = (id: string) => TORRES.find((f) => f.id === id) ?? TORRES[0];
+
+/** A Copa do Celeiro (20/11/2026), só na sala: as cinco torres seguidas (COPA_DO_CELEIRO em server/src/minijogo-torre.ts). */
+export const COPA_DO_CELEIRO = 'copa-do-celeiro';
+export const TORRES_DA_COPA = ['celeiro-1', 'paiol-1', 'silo-1', 'moinho-1', 'pombal-1'];

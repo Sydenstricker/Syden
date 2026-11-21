@@ -12,7 +12,12 @@ export const LARGURA = 320;
 export const ALTURA = 180;
 export const CHAO = 138;
 
-export type TipoDePraga = 'corvo' | 'gafanhoto';
+/**
+ * O que voa na tela. As PRAGAS são o corvo e o gafanhoto. A JOANINHA (20/11/2026) é o BICHO AMIGO da horta: NÃO se atira
+ * nela, e acertá-la tira AMIGO_PENA pontos e zera o combo. A CENOURA é o alvo da RODADA BÔNUS (20/11/2026), lançada do chão
+ * para cima, entre a 3ª e a 4ª onda, sem limite de munição.
+ */
+export type TipoDePraga = 'corvo' | 'gafanhoto' | 'joaninha' | 'cenoura';
 
 /** Uma praga: quando aparece (ms desde o começo da onda), de onde sai, a velocidade e a ondulação, e quanto fica na tela. */
 export interface Praga {
@@ -34,8 +39,18 @@ export interface Praga {
 }
 
 /** O raio de acerto, em unidades: o gafanhoto é menor e vale mais. */
-export const RAIO: Record<TipoDePraga, number> = { corvo: 12, gafanhoto: 9 };
-export const PONTOS: Record<TipoDePraga, number> = { corvo: 100, gafanhoto: 150 };
+export const RAIO: Record<TipoDePraga, number> = { corvo: 12, gafanhoto: 9, joaninha: 8, cenoura: 9 };
+export const PONTOS: Record<TipoDePraga, number> = { corvo: 100, gafanhoto: 150, joaninha: 0, cenoura: 50 };
+/** Acertar a joaninha custa isto (e zera o combo). */
+export const AMIGO_PENA = 200;
+/** O bicho amigo: não se atira nele. */
+export const ehAmigo = (p: Praga) => p.tipo === 'joaninha';
+/** As pragas de verdade da onda (sem o amigo): é delas que se conta a onda perfeita. */
+export const ehPraga = (p: Praga) => p.tipo === 'corvo' || p.tipo === 'gafanhoto';
+/** Depois desta onda vem a RODADA BÔNUS. */
+export const BONUS_DEPOIS_DA_ONDA = 3;
+/** Quantas cenouras sobem na rodada bônus. */
+export const CENOURAS_DO_BONUS = 14;
 /** O bônus pela rapidez: até isto a mais, para o tiro logo que ela aparece, caindo até zero no fim da vida dela. */
 export const BONUS_RAPIDEZ = 50;
 
@@ -56,12 +71,15 @@ export const multiplicador = (combo: number) => (combo >= 8 ? 3 : combo >= 4 ? 2
 export function posicao(p: Praga, ms: number): { x: number; y: number } | null {
   if (ms < p.t || ms > p.t + p.vida) return null;
   const s = (ms - p.t) / 1000;
-  const onda = p.tipo === 'corvo' ? Math.sin(s * p.freq * 2 * Math.PI) : -Math.abs(Math.sin(s * p.freq * Math.PI));
+  // a cenoura do bônus: lançada para cima, e a gravidade (amp é a metade dela) a traz de volta
+  if (p.tipo === 'cenoura') return { x: p.x0 + p.vx * s, y: p.y0 + p.vy * s + p.amp * s * s };
+  const onda = p.tipo === 'corvo' || p.tipo === 'joaninha' ? Math.sin(s * p.freq * 2 * Math.PI) : -Math.abs(Math.sin(s * p.freq * Math.PI));
   return { x: p.x0 + p.vx * s, y: p.y0 + p.vy * s + p.amp * onda };
 }
 
-/** Os pontos de um acerto em `ms`: o do bicho, mais a rapidez. */
+/** Os pontos de um acerto em `ms`: o do bicho, mais a rapidez. No amigo, a pena (negativa). */
 export function pontosDoAcerto(p: Praga, ms: number): number {
+  if (ehAmigo(p)) return -AMIGO_PENA;
   const fracao = Math.max(0, Math.min(1, 1 - (ms - p.t) / p.vida));
   return (PONTOS[p.tipo] + Math.round(BONUS_RAPIDEZ * fracao)) * (p.dourada ? DOURADA_VEZES : 1);
 }
@@ -135,7 +153,58 @@ export function sortearOnda(n: number, aleatorio: () => number = Math.random): P
     p.vida = vida;
     p.dourada = true;
   }
+  // O BICHO AMIGO (20/11/2026): da 2ª onda em diante, uma joaninha (duas a partir da 4ª) cruza devagar no meio das pragas.
+  // Ela entra no FIM da lista, depois de tudo sorteado: as pragas da onda são as mesmas de antes dela.
+  if (n >= 2 && pragas.length > 0) {
+    const amigos = n >= ONDA_DE_PARES ? 2 : 1;
+    const fimDasPragas = Math.max(...pragas.map((p) => p.t + p.vida));
+    for (let k = 0; k < amigos; k++) {
+      const daEsquerda = aleatorio() < 0.5;
+      const vida = Math.round(4200 / ritmo);
+      const t0 = 600 + aleatorio() * Math.max(0, fimDasPragas - vida - 600);
+      const distancia = LARGURA + 40;
+      pragas.push({
+        tipo: 'joaninha',
+        t: Math.round(t0),
+        x0: daEsquerda ? -20 : LARGURA + 20,
+        y0: 40 + aleatorio() * 60,
+        vx: ((daEsquerda ? 1 : -1) * distancia) / (vida / 1000),
+        vy: 0,
+        amp: 5 + aleatorio() * 8,
+        freq: 0.8 + aleatorio() * 0.6,
+        vida,
+      });
+    }
+  }
   return pragas;
+}
+
+/**
+ * A RODADA BÔNUS (20/11/2026): CENOURAS_DO_BONUS cenouras lançadas do chão para cima, uma depois da outra, cada uma subindo e
+ * caindo de volta. Sem limite de munição e sem combo; é curta.
+ */
+export function sortearBonus(aleatorio: () => number = Math.random): Praga[] {
+  const cenouras: Praga[] = [];
+  let t = 500;
+  for (let k = 0; k < CENOURAS_DO_BONUS; k++) {
+    const vida = Math.round(1800 + aleatorio() * 600);
+    const T = vida / 2000;
+    const altura = CHAO - (24 + aleatorio() * 50);
+    const sobe = CHAO + 4 - altura;
+    cenouras.push({
+      tipo: 'cenoura',
+      t,
+      x0: 30 + aleatorio() * (LARGURA - 60),
+      y0: CHAO + 4,
+      vx: (aleatorio() - 0.5) * 60,
+      vy: (-2 * sobe) / T,
+      amp: sobe / (T * T),
+      freq: 0,
+      vida,
+    });
+    t += Math.round(280 + aleatorio() * 220);
+  }
+  return cenouras;
 }
 
 /** Quando a onda acaba: a última praga fugiu, e mais um respiro. */

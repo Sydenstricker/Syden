@@ -216,3 +216,11 @@
 .lobisomem-historia-quando {
   font-weight: 700;
 }
+
+/* O microfone desligado pela partida (20/11/2026): de noite, ou fora do jogo. Logo abaixo do céu. */
+.lobisomem-microfone {
+  margin: 6px 0 0;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: calc(13px * var(--escala-do-texto));
+}

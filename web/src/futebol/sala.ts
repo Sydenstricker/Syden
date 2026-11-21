@@ -46,6 +46,8 @@ export interface Quadro {
   pa: number;
   r: number;
   ce: 0 | 1;
+  /** A prorrogação do gol de ouro está correndo (20/11/2026). Servidor antigo não manda. */
+  ou?: 0 | 1;
   sa: 0 | 1;
   g: [number, number];
   fim: 0 | 1;

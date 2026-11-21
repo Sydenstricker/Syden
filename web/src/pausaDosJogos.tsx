@@ -4,6 +4,7 @@ import type { Comando } from './ComandosDosJogos';
 import { useT } from './i18n';
 import { IconeDeHud } from './iconesDeHud';
 import { desceu, lerControle } from './controleDosJogos';
+import { marcarPausaDoJogo } from './musicaDosJogos';
 import './pausaDosJogos.css';
 
 /**
@@ -58,6 +59,12 @@ export function usePausaComEsc(ligada: boolean) {
       cancelAnimationFrame(quadro);
     };
   }, [ligada, definir]);
+  // a música dos jogos cala enquanto a pausa está aberta (20/11/2026); o dono é a pausa deste jogo
+  useEffect(() => {
+    const dono = ref.current;
+    marcarPausaDoJogo(dono, pausado);
+    return () => marcarPausaDoJogo(dono, false);
+  }, [pausado]);
   const continuar = useCallback(() => definir(false), [definir]);
   return { pausa: ref.current, pausado, continuar };
 }

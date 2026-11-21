@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { alvo, espaco, irPara, novaCozinha, passo, progresso, usar, PRATOS_INICIAIS, TEMPO_DE_LAVAR_MS, VOLTA_DO_PRATO_MS, type Cozinha, type Evento } from '../src/cozinha/cozinha';
 import { pilotar } from '../src/cozinha/piloto';
-import { ESTACOES_DE_FOGO, FOGO_DAS_PLANTAS, IDS_DAS_RECEITAS, INCENDIO_MS, INGREDIENTES, PLANTAS_DA_COZINHA, PONTO, SABORES, confere, type IdDaReceita, type Item } from '../src/cozinha/receitas';
+import { DURACAO_MS, ESTACOES_DE_FOGO, FOGO_DAS_PLANTAS, IDS_DAS_RECEITAS, INCENDIO_MS, INGREDIENTES, PENA_DO_PEDIDO_PERDIDO, PLANTAS_DA_COZINHA, PONTO, RECEITAS, SABORES, confere, prazoDoPedidoMs, sortearPedidos, type IdDaReceita, type Item } from '../src/cozinha/receitas';
 
 /**
  * A Cozinha da toca (web/src/cozinha/): as regras da cozinha e o piloto automático, sem desenho. O piloto usa os mesmos
@@ -249,4 +249,47 @@ test('o piloto apaga o fogo antes de seguir', () => {
   const { entregue } = cozinhar('x-salada', k, 120);
   assert.ok(entregue);
   assert.ok(!fogao.chamas);
+});
+
+// ===== 20/11/2026: a paciência do pedido =====
+test('com a paciência, o piloto (um prato por vez) ainda entrega a maioria e fecha com pontos, em todas as plantas', () => {
+  const DT_ = 1 / 30;
+  for (const planta of PLANTAS_DA_COZINHA) {
+    for (const semente of [7, 99]) {
+      let s = semente;
+      const r = () => ((s = (s * 16807) % 2147483647) - 1) / 2147483646;
+      const ped = sortearPedidos(r, 60);
+      const k = novaCozinha(planta);
+      // a fila como o servidor a anda: 4 pedidos, o vencido sai e custa a pena, o entregue dá os pontos
+      let t = 0;
+      const entrou = new Map<number, number>([0, 1, 2, 3].map((i) => [i, 0]));
+      let fila = [0, 1, 2, 3];
+      let prox = 4;
+      let pratos = 0;
+      let perdidos = 0;
+      let pontos = 0;
+      let atual: number | null = null;
+      const resta = (i: number) => prazoDoPedidoMs(ped[i]) / 1000 - (t - entrou.get(i)!);
+      const trocar = (i: number) => {
+        fila = fila.filter((x) => x !== i);
+        entrou.set(prox, t);
+        fila.push(prox++);
+      };
+      while (t < DURACAO_MS / 1000) {
+        for (const i of [...fila]) if (resta(i) <= 0) (trocar(i), perdidos++, (pontos = Math.max(0, pontos - PENA_DO_PEDIDO_PERDIDO)));
+        if (atual === null || !fila.includes(atual)) atual = fila.find((i) => resta(i) >= 25) ?? fila[0];
+        const receita = ped[atual];
+        pilotar(k, receita);
+        if (passo(k, null, DT_, (itens) => confere(receita, itens)).some((e) => e.tipo === 'entregue')) {
+          pratos++;
+          pontos += RECEITAS[receita].pontos;
+          trocar(atual);
+          atual = null;
+        }
+        t += DT_;
+      }
+      assert.ok(pratos >= 5 && pratos > perdidos, `${planta}/${semente}: ${pratos} pratos, ${perdidos} perdidos`);
+      assert.ok(pontos >= 60, `${planta}/${semente}: ${pontos} pontos`);
+    }
+  }
 });

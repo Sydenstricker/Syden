@@ -1,11 +1,11 @@
-import { atributos, dano, ESPECIES, eficacia, GOLPES, golpesDe, CURA_DO_CHA, multDoDegrau } from './bichos-regras.js';
+import { atributos, dano, ESPECIES, eficacia, GOLPES, golpesDe, curaDoCha, multDoDegrau } from './bichos-regras.js';
 
 /**
  * A LUTA DOS BICHOS DA TOCA (16/11/2026): por turnos, dois lados, um bicho na frente de cada um. Serve à aventura do Solo (contra o
  * bicho do mato, as pessoas do caminho e as desafiantes) e à luta entre duas pessoas da sala. Quem decide é o servidor: a ordem, o
  * dano e a sorte. O site só escolhe o que fazer.
  *
- * Cada turno, cada lado faz UMA coisa: um golpe, trocar o bicho da frente, dar chá a ele, ou nada (a cenoura recusada, a fuga
+ * Cada turno, cada lado faz UMA coisa: um golpe, trocar o bicho da frente, dar chá ou erva-doce a ele, ou nada (a cenoura recusada, a fuga
  * que não deu). Trocar, o chá e o nada vão primeiro; depois os golpes que vão primeiro (prioridade); os outros, pela velocidade
  * (empate, sorteio). Quem pega no sono antes da vez dele não age. O lado cujo bicho dormiu escolhe outro antes do turno seguinte
  * (`precisaTrocar`); sem nenhum acordado, perde. Ninguém se machuca: o bicho cansado "pega no sono".
@@ -40,7 +40,8 @@ export interface Lado {
   precisaTrocar: boolean;
 }
 
-export type Escolha = { tipo: 'golpe'; i: number } | { tipo: 'trocar'; i: number } | { tipo: 'cha' } | { tipo: 'nada' };
+/** O chá (`forte`: o chá forte) e a erva-doce (tira o cochilo e o veneno) são da aventura; na sala só há golpe e troca. */
+export type Escolha = { tipo: 'golpe'; i: number } | { tipo: 'trocar'; i: number } | { tipo: 'cha'; forte?: boolean } | { tipo: 'erva' } | { tipo: 'nada' };
 
 /** O que um efeito fez: o nome curto que a tela conta (com o ícone). */
 export type QualEfeito = 'cochilou' | 'cochilando' | 'acordou' | 'veneno' | 'envenenou' | 'atq+' | 'atq-' | 'def+' | 'def-' | 'cura' | 'falhou';
@@ -51,7 +52,8 @@ export type EventoDaLuta =
   | { t: 'efeito'; lado: number; especie: string; efeito: QualEfeito; pv?: number; dano?: number }
   | { t: 'sono'; lado: number; especie: string }
   | { t: 'troca'; lado: number; especie: string; i: number }
-  | { t: 'cha'; lado: number; especie: string; pv: number };
+  | { t: 'cha'; lado: number; especie: string; pv: number; forte?: boolean }
+  | { t: 'erva'; lado: number; especie: string };
 
 export interface Batalha {
   lados: [Lado, Lado];
@@ -90,7 +92,7 @@ export function conferirEscolha(b: Batalha, lado: number, e: Escolha | null | un
     if (!Number.isInteger(e.i) || e.i < 0 || e.i >= ativoDe(l).golpes.length) return 'Escolha inválida.';
   } else if (e.tipo === 'trocar') {
     if (!Number.isInteger(e.i) || e.i < 0 || e.i >= l.equipe.length || e.i === l.ativo || l.equipe[e.i].pv <= 0) return 'Escolha inválida.';
-  } else if (e.tipo !== 'cha' && e.tipo !== 'nada') return 'Escolha inválida.';
+  } else if (e.tipo !== 'cha' && e.tipo !== 'erva' && e.tipo !== 'nada') return 'Escolha inválida.';
   return null;
 }
 
@@ -162,8 +164,14 @@ export function turno(b: Batalha, escolhas: [Escolha | null, Escolha | null], al
     const eu = ativoDe(meu);
     if (eu.pv <= 0 || meu.precisaTrocar) continue; // dormiu antes da vez dele
     if (e.tipo === 'cha') {
-      eu.pv = Math.min(eu.pvMax, eu.pv + CURA_DO_CHA);
-      eventos.push({ t: 'cha', lado: l, especie: eu.especie, pv: eu.pv });
+      eu.pv = Math.min(eu.pvMax, eu.pv + curaDoCha(eu.pvMax, !!e.forte));
+      eventos.push({ t: 'cha', lado: l, especie: eu.especie, pv: eu.pv, ...(e.forte ? { forte: true } : {}) });
+      continue;
+    }
+    if (e.tipo === 'erva') {
+      eu.estado = null;
+      eu.cochilo = 0;
+      eventos.push({ t: 'erva', lado: l, especie: eu.especie });
       continue;
     }
     if (e.tipo !== 'golpe') continue;

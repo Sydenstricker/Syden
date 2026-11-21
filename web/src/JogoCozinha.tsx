@@ -19,7 +19,14 @@ export interface EstadoCozinha {
   /** Quanto da partida já passou, no servidor (só jogando). */
   decorridoMs: number | null;
   /** A minha fila de pedidos (o índice na sequência da partida e a receita), os pratos entregues e os pontos. */
-  meu: { fila: { indice: number; receita: IdDaReceita }[]; pratos: number; pontos: number; gorjetas?: number } | null;
+  meu: {
+    /** prazoMs e restaMs (20/11/2026): a paciência do pedido, no relógio do servidor, quando o estado saiu de lá. */
+    fila: { indice: number; receita: IdDaReceita; prazoMs?: number; restaMs?: number | null }[];
+    pratos: number;
+    pontos: number;
+    gorjetas?: number;
+    perdidos?: number;
+  } | null;
   /** Mais pratos primeiro (os pontos desempatam); a posição só entre quem está na sala. */
   placar: { userId: number; username: string; pratos: number; pontos: number; posicao: number | null }[];
   solo: boolean;
@@ -198,7 +205,10 @@ function CozinhaNaTela({ estado, eu, jogador, agir }: { estado: EstadoCozinha & 
     const em = entregues.current.get(indice);
     return em !== undefined && Date.now() - em < 4000;
   };
-  const fila = filaDoServidor.filter((p) => !pendente(p.indice));
+  /** Quanto falta para o pedido vencer, neste relógio (a paciência, 20/11/2026); null: sem prazo (fora da partida). */
+  const restaDe = (p: { restaMs?: number | null }) => (p.restaMs == null ? null : p.restaMs - (Date.now() - estado.recebidaEm));
+  // o vencido some daqui sem esperar o servidor (ele o tira na hora em que alguém pergunta, ou na conferência)
+  const fila = filaDoServidor.filter((p) => !pendente(p.indice) && (restaDe(p) ?? 1) > 0);
   const pratos = (estado.meu?.pratos ?? 0) + filaDoServidor.filter((p) => pendente(p.indice)).length;
   const filaRef = useRef(fila);
   filaRef.current = fila;
@@ -209,6 +219,13 @@ function CozinhaNaTela({ estado, eu, jogador, agir }: { estado: EstadoCozinha & 
   }, [estado.meu]);
   const ultimaEntrega = useRef(0);
   const ultimoChiado = useRef(0);
+  // o pedido que venceu (20/11/2026): o alarme curto
+  const perdidos = estado.meu?.perdidos ?? 0;
+  const perdidosAntes = useRef(perdidos);
+  useEffect(() => {
+    if (perdidos > perdidosAntes.current) tocar('alarme');
+    perdidosAntes.current = perdidos;
+  }, [perdidos]);
   // a gorjeta (19/11/2026): quando o servidor soma uma, a moedinha toca
   const gorjetas = estado.meu?.gorjetas ?? 0;
   const gorjetasAntes = useRef(gorjetas);
@@ -389,6 +406,7 @@ function CozinhaNaTela({ estado, eu, jogador, agir }: { estado: EstadoCozinha & 
                 {icones &&
                   ingredientesDe(p.receita).map((ing, j) => (icones.ingredientes[ing] ? <img key={j} src={icones.ingredientes[ing]} alt="" /> : null))}
               </span>
+              {p.prazoMs ? <Paciencia resta={restaDe(p)} prazo={p.prazoMs} /> : null}
             </li>
           ))}
         </ol>
@@ -415,5 +433,16 @@ function CozinhaNaTela({ estado, eu, jogador, agir }: { estado: EstadoCozinha & 
         />
       )}
     </div>
+  );
+}
+
+/** A PACIÊNCIA DO PEDIDO (20/11/2026): a barra embaixo da comanda, que encolhe até o prazo; amarela na metade, vermelha no fim. */
+function Paciencia({ resta, prazo }: { resta: number | null; prazo: number }) {
+  if (resta === null) return null;
+  const f = Math.max(0, Math.min(1, resta / prazo));
+  return (
+    <span className={`cozinha-paciencia${f < 0.25 ? ' fim' : f < 0.5 ? ' meio' : ''}`}>
+      <span style={{ width: `${f * 100}%` }} />
+    </span>
   );
 }

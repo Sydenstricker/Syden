@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useT } from './i18n';
-import { reguaDaForca } from './contasDasMesas';
+import { ehManilha, reguaDaForca } from './contasDasMesas';
 import { ComoJogar } from './MesaComum';
 import { Relogio } from './Minijogo';
 import type { Partida } from './minijogos';
@@ -26,7 +26,12 @@ export interface EstadoTruco {
   meuTime: 0 | 1 | null;
   mao: string[];
   maoDoParceiro: string[] | null;
-  vira: string;
+  /** A vira (null no truco mineiro, que não tem). */
+  vira: string | null;
+  /** 'mineiro' ou 'paulista' (20/11/2026). */
+  variante?: string;
+  /** A contagem da mão: [1, 3, 6, 9, 12], ou a mineira [2, 4, 8, 10, 12] (20/11/2026). O nome do pedido sai do degrau. */
+  valoresDaMao?: number[];
   manilha: string;
   mesa: { lugar: number; carta: string | null; coberta: boolean }[];
   rodadas: ResultadoDaRodada[];
@@ -70,7 +75,7 @@ function Carta({ carta, manilha, coberta, pequena, onClick, desligada }: { carta
     <>
       <span className="truco-carta-valor">{valor}</span>
       <span className="truco-carta-naipe">{NAIPE[naipe]}</span>
-      {manilha === valor && <span className="truco-carta-manilha" aria-hidden="true" />}
+      {manilha !== undefined && ehManilha(carta, manilha) && <span className="truco-carta-manilha" aria-hidden="true" />}
     </>
   );
   const cor = VERMELHO.has(naipe) ? ' vermelha' : '';
@@ -189,7 +194,11 @@ export function JogoTruco({ estado: partida, eu, jogador, restante, agir }: { es
     if (n === 2 || estado.meuTime === null) return membros(time).join(' & ');
     return time === estado.meuTime ? t('Nós') : t('Eles');
   };
-  const gritos: Record<number, string> = { 3: t('Truco!'), 6: t('Seis!'), 9: t('Nove!'), 12: t('Doze!') };
+  // o grito pelo DEGRAU do pedido, não pelo número: no mineiro o truco vale 4 e o seis vale 8
+  const valores = Array.isArray(estado.valoresDaMao) && estado.valoresDaMao.length === 5 ? estado.valoresDaMao : [1, 3, 6, 9, 12];
+  const nomes = [t('Truco!'), t('Seis!'), t('Nove!'), t('Doze!')];
+  const gritos: Record<number, string> = Object.fromEntries(valores.slice(1).map((v, i) => [v, nomes[i]]));
+  const mineiro = estado.variante === 'mineiro';
   const minhaVez = jogador && estado.fase === 'jogando' && estado.vez === eu;
   const outro = (1 - nosso) as 0 | 1;
   const fim = estado.fase === 'fim';
@@ -252,9 +261,10 @@ export function JogoTruco({ estado: partida, eu, jogador, restante, agir }: { es
           );
         })}
 
-        <div className="truco-monte" aria-label={t('Vira')}>
+        {/* no truco mineiro não há vira: só o monte */}
+        <div className="truco-monte" aria-label={estado.vira ? t('Vira') : undefined}>
           <span className="truco-carta pequena verso" aria-hidden="true" />
-          <Carta carta={estado.vira} pequena />
+          {estado.vira && <Carta carta={estado.vira} pequena />}
         </div>
 
         <div className="truco-centro">
@@ -292,7 +302,15 @@ export function JogoTruco({ estado: partida, eu, jogador, restante, agir }: { es
 
             {estado.fase === 'mao-de-onze' && (
               <>
-                <p className="minijogo-situacao">{estado.decidoOnze ? t('Mão de onze: jogar valendo 3, ou correr e dar 1 ponto?') : t('Mão de onze: esperando a decisão.')}</p>
+                <p className="minijogo-situacao">
+                  {mineiro
+                    ? estado.decidoOnze
+                      ? t('Mão de dez: jogar valendo 4, ou correr e dar 2 pontos?')
+                      : t('Mão de dez: esperando a decisão.')
+                    : estado.decidoOnze
+                      ? t('Mão de onze: jogar valendo 3, ou correr e dar 1 ponto?')
+                      : t('Mão de onze: esperando a decisão.')}
+                </p>
                 {estado.maoDoParceiro && (
                   <div className="truco-parceiro">
                     <span>{t('Cartas do parceiro')}</span>
@@ -321,7 +339,7 @@ export function JogoTruco({ estado: partida, eu, jogador, restante, agir }: { es
               <>
                 <p className="minijogo-situacao">
                   {minhaVez ? t('Sua vez!') : t('Vez de {nome}.', { nome: nomeDe(estado.vezLugar) })}
-                  {estado.semTruco && estado.onze === null && estado.valor === 1 && ` · ${t('Mão de ferro: sem truco.')}`}
+                  {estado.semTruco && estado.onze === null && estado.valor === valores[0] && ` · ${t('Mão de ferro: sem truco.')}`}
                 </p>
                 {minhaVez && (estado.possoPedir || estado.possoCobrir) && (
                   <div className="minijogo-acoes">

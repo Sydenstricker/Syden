@@ -7,6 +7,7 @@ export const NOMES_DAS_TORRES: Record<string, string> = {
   'silo-1': chave('Silo'),
   'moinho-1': chave('Moinho'),
   'pombal-1': chave('Pombal'),
+  'copa-do-celeiro': chave('Copa do Celeiro'),
 };
 
 export const nomeDaTorre = (t: (texto: string) => string, id: string) => t(NOMES_DAS_TORRES[id] ?? id);

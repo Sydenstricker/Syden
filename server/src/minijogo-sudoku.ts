@@ -1,5 +1,6 @@
 import { embaralhar, type Definicao } from './minijogo-motor.js';
 import { guardarRecordeDoSolo, lerRecordeDoSolo } from './recorde-solo-tardio.js';
+import { contarSolucoes, daReserva, encherReserva, gerarPelaTecnica, PEDIDO, preencher } from './sudoku-logica.js';
 
 /**
  * O SUDOKU EM CORRIDA: todo mundo recebe o MESMO tabuleiro, cada um resolve no seu, e a sala vê a barra de
@@ -10,104 +11,47 @@ import { guardarRecordeDoSolo, lerRecordeDoSolo } from './recorde-solo-tardio.js
  * para quem chuta não andar mais rápido do que quem pensa.
  */
 
+// A reserva dos tabuleiros difíceis começa a encher meio minuto depois de o servidor subir (sudoku-logica.ts), sem segurar a subida.
+setTimeout(() => encherReserva(), 30_000).unref();
+
 export const VAZIAS = 45;
 export const SUDOKU_MS = 20 * 60_000;
 
-const linha = (i: number) => Math.floor(i / 9);
-const coluna = (i: number) => i % 9;
-const bloco = (i: number) => Math.floor(linha(i) / 3) * 3 + Math.floor(coluna(i) / 3);
-
-/** Os números que cabem na casa `i`, como máscara de bits (o bit d ligado = o número d cabe). */
-function livres(grade: number[], i: number): number {
-  let usados = 0;
-  for (let j = 0; j < 81; j++) {
-    if (grade[j] && (linha(j) === linha(i) || coluna(j) === coluna(i) || bloco(j) === bloco(i))) usados |= 1 << grade[j];
-  }
-  return ~usados & 0b1111111110;
-}
-
-const quantos = (mascara: number) => {
-  let n = 0;
-  for (let m = mascara; m; m &= m - 1) n++;
-  return n;
-};
-
-/** A casa vazia com menos opções (resolve muito mais rápido do que ir em ordem), ou -1 se não há vazia. */
-function maisApertada(grade: number[]): { casa: number; mascara: number } {
-  let casa = -1;
-  let mascara = 0;
-  let menor = 10;
-  for (let i = 0; i < 81; i++) {
-    if (grade[i]) continue;
-    const m = livres(grade, i);
-    const n = quantos(m);
-    if (n < menor) {
-      casa = i;
-      mascara = m;
-      menor = n;
-      if (n <= 1) break;
-    }
-  }
-  return { casa, mascara };
-}
-
-/** Quantas soluções o tabuleiro tem, contando até `limite` (2 basta para saber se é única). */
-export function contarSolucoes(grade: number[], limite = 2): number {
-  const { casa, mascara } = maisApertada(grade);
-  if (casa === -1) return 1;
-  let total = 0;
-  for (let d = 1; d <= 9 && total < limite; d++) {
-    if (!(mascara & (1 << d))) continue;
-    grade[casa] = d;
-    total += contarSolucoes(grade, limite - total);
-  }
-  grade[casa] = 0;
-  return total;
-}
-
-function preencher(grade: number[], aleatorio: () => number): boolean {
-  const { casa, mascara } = maisApertada(grade);
-  if (casa === -1) return true;
-  for (const d of embaralhar([1, 2, 3, 4, 5, 6, 7, 8, 9], aleatorio)) {
-    if (!(mascara & (1 << d))) continue;
-    grade[casa] = d;
-    if (preencher(grade, aleatorio)) return true;
-  }
-  grade[casa] = 0;
-  return false;
-}
+export { contarSolucoes } from './sudoku-logica.js';
 
 /**
- * Um tabuleiro com solução única e `vazias` casas a preencher. Tirar casas ao acaso nem sempre chega às 58 do "Muito
+ * Um tabuleiro com solução única e `vazias` casas a preencher, só pelo número de casas (o de antes de 20/11/2026; a partida
+ * agora gera pela TÉCNICA, gerarPelaTecnica em sudoku-logica.ts). Tirar casas ao acaso nem sempre chega às 58 do "Muito
  * difícil" (a solução deixa de ser única antes): tenta de novo até chegar, e fica com o mais vazio se não chegar.
  */
-export function gerarSudoku(aleatorio = Math.random, vazias = VAZIAS): { enigma: number[]; solucao: number[] } {
-  let melhor = umaTentativa(aleatorio, vazias);
+export function gerarSudoku(aleatorio = Math.random, vazias = VAZIAS, x = false): { enigma: number[]; solucao: number[] } {
+  let melhor = umaTentativa(aleatorio, vazias, x);
   for (let i = 0; i < 40 && melhor.enigma.filter((n) => n === 0).length < vazias; i++) {
-    const outra = umaTentativa(aleatorio, vazias);
+    const outra = umaTentativa(aleatorio, vazias, x);
     if (outra.enigma.filter((n) => n === 0).length > melhor.enigma.filter((n) => n === 0).length) melhor = outra;
   }
   return melhor;
 }
 
-function umaTentativa(aleatorio: () => number, vazias: number): { enigma: number[]; solucao: number[] } {
+function umaTentativa(aleatorio: () => number, vazias: number, x: boolean): { enigma: number[]; solucao: number[] } {
   const solucao = new Array<number>(81).fill(0);
-  preencher(solucao, aleatorio);
+  preencher(solucao, aleatorio, x);
   const enigma = [...solucao];
   let tiradas = 0;
   for (const i of embaralhar([...Array(81).keys()], aleatorio)) {
     if (tiradas >= vazias) break;
     const guardado = enigma[i];
     enigma[i] = 0;
-    if (contarSolucoes([...enigma]) === 1) tiradas++;
+    if (contarSolucoes([...enigma], 2, x) === 1) tiradas++;
     else enigma[i] = guardado;
   }
   return { enigma, solucao };
 }
 
 /**
- * AS DIFICULDADES (19/11/2026, a auditoria dos mini-games): quantas casas vazias. "Médio" é o de sempre (45); o gerador garante
- * a solução única em todas.
+ * AS DIFICULDADES (19/11/2026, a auditoria dos mini-games): quantas casas vazias, no mínimo. "Médio" é o de sempre (45); o
+ * gerador garante a solução única em todas. DESDE 20/11/2026 quem decide é a TÉCNICA (PEDIDO em sudoku-logica.ts): o Fácil sai só
+ * com singles nus, o Médio pede os escondidos, o Difícil pares ou casas travadas, o Muito difícil o X-wing.
  */
 export const DIFICULDADES = { facil: 35, medio: 45, dificil: 52, extremo: 58 } as const;
 export type Dificuldade = keyof typeof DIFICULDADES;
@@ -133,7 +77,12 @@ export const sudoku: Definicao = {
   comecar(ctx, { naSala, criadaPor, corpo }) {
     const dificuldade: Dificuldade = String(corpo.dificuldade) in DIFICULDADES ? (String(corpo.dificuldade) as Dificuldade) : 'medio';
     const noFim = corpo.conferencia === 'fim';
-    const { enigma, solucao } = gerarSudoku(Math.random, DIFICULDADES[dificuldade]);
+    // O SUDOKU X (20/11/2026): as duas diagonais também valem (cada uma com os nove números)
+    const x = corpo.x === true;
+    const pedido = PEDIDO[dificuldade];
+    const gerado = daReserva(pedido, x) ?? gerarPelaTecnica(pedido, { x, prazoMs: 150 });
+    encherReserva();
+    const { enigma, solucao } = gerado;
     const inicio = Date.now();
     let fase: 'jogando' | 'fim' = 'jogando';
     const novo = (): Jogador => ({ tabuleiro: [...enigma], erros: 0, terminouEm: null, penalidadeMs: 0, marcadas: new Set() });
@@ -142,7 +91,8 @@ export const sudoku: Definicao = {
     const certas = (j: Jogador) => j.tabuleiro.filter((n, i) => enigma[i] === 0 && n === solucao[i]).length;
     const preenchidas = (j: Jogador) => j.tabuleiro.filter((n, i) => enigma[i] === 0 && n !== 0).length;
     // O RECORDE DO SOLO, por dificuldade e modo: o tempo que o SERVIDOR mediu, com as penalidades.
-    const variante = `${dificuldade}${noFim ? ':fim' : ''}`;
+    // o Sudoku X tem o recorde à parte (':x' no fim; as variantes de antes não mudam)
+    const variante = `${dificuldade}${noFim ? ':fim' : ''}${x ? ':x' : ''}`;
     let recorde: { antes: number | null; novo: boolean; valor: number | null } | null = null;
     if (ctx.solo) {
       lerRecordeDoSolo(criadaPor, 'sudoku', variante, (r) => {
@@ -181,8 +131,9 @@ export const sudoku: Definicao = {
           enigma,
           dificuldade,
           conferencia: noFim ? 'fim' : 'hora',
+          x,
           // As escolhas da largada, para o "Jogar de novo".
-          largada: { dificuldade, conferencia: noFim ? 'fim' : 'hora' },
+          largada: { dificuldade, conferencia: noFim ? 'fim' : 'hora', x },
           // O tabuleiro de cada um é só dele; dos outros, a sala vê o quanto já foi.
           meu: meu?.tabuleiro ?? null,
           errados: meu

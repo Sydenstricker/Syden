@@ -12,8 +12,16 @@ import { embaralhar, placar, type Definicao } from './minijogo-motor.js';
  * (japonês, chinês), quem confere é a turma.
  *
  * PONTOS, como no papel: 10 pela resposta que só você deu, 5 pela repetida, 0 pela vazia ou contestada. A
- * resposta cai quando MAIS DA METADE dos outros jogadores a contesta.
+ * resposta cai quando MAIS DA METADE dos outros jogadores a contesta, ou quando quem a escreveu ACEITA a contestação.
+ *
+ * COM DUAS PESSOAS (20/11/2026, a segunda auditoria): "mais da metade de um" era um voto só, e qualquer um derrubava qualquer
+ * resposta do outro. Com dois, a resposta só cai com AS DUAS PARTES: o outro contesta e quem escreveu aceita ("é, girafa não é
+ * cor"). Sem acordo, vale: a conversa decide, e quem escreveu tem a palavra final sobre o que é dele.
+ *
+ * O BÔNUS DO STOP (mesma data): quem apertou STOP leva BONUS_DO_STOP a mais se, depois da conferência, TODAS as respostas dele
+ * ainda valerem. Apertar STOP com uma palavra inventada para cortar os outros deixa de compensar.
  */
+export const BONUS_DO_STOP = 10;
 
 /**
  * As categorias: o nome de cada uma mora no site, traduzido (CATEGORIAS_DO_STOP, em web/src/minijogos.ts; um teste confere
@@ -132,9 +140,13 @@ export const stop: Definicao = {
     const respostas = new Map<number, string[]>();
     /** `${categoria}:${alvo}` → quem contestou. */
     const contestacoes = new Map<string, Set<number>>();
+    /** `${categoria}:${alvo}` que quem escreveu aceitou que não vale. */
+    const aceitas = new Set<string>();
     const prontos = new Set<number>();
     const pontos = new Map(naSala.map((id) => [id, 0]));
     let pontosDaRodada = new Map<number, number[]>();
+    /** O bônus do STOP na rodada que acabou (quem parou, e quanto), para a tela. */
+    let bonusDaRodada: { userId: number; pontos: number } | null = null;
 
     const minhas = (userId: number) => respostas.get(userId) ?? categorias.map(() => '');
     const completas = (userId: number) => minhas(userId).every((r) => r.trim() !== '');
@@ -144,8 +156,13 @@ export const stop: Definicao = {
       const texto = minhas(alvo)[categoria]?.trim() ?? '';
       if (!texto) return false;
       if (confere && !normalizar(texto).startsWith(normalizar(letra))) return false;
+      const chave = `${categoria}:${alvo}`;
+      const contra = contestacoes.get(chave)?.size ?? 0;
+      // quem escreveu aceitou a contestação: cai (em qualquer tamanho de turma)
+      if (contra > 0 && aceitas.has(chave)) return false;
       const outros = jogadores().filter((id) => id !== alvo).length;
-      const contra = contestacoes.get(`${categoria}:${alvo}`)?.size ?? 0;
+      // com um "outro" só, um voto não basta: precisa das duas partes (acima)
+      if (outros <= 1) return true;
       return contra * 2 <= outros;
     }
 
@@ -153,8 +170,10 @@ export const stop: Definicao = {
       letra = sorteio[(rodada - 1) % sorteio.length];
       respostas.clear();
       contestacoes.clear();
+      aceitas.clear();
       prontos.clear();
       quemParou = null;
+      bonusDaRodada = null;
       fase = 'escrevendo';
       ctx.agendar(escrevendoMs, parar);
       ctx.avisar();
@@ -181,6 +200,12 @@ export const stop: Definicao = {
         for (const [userId, p] of pontuarCategoria(daCategoria, (id) => valida(c, id))) pontosDaRodada.get(userId)![c] = p;
       });
       for (const [userId, lista] of pontosDaRodada) pontos.set(userId, (pontos.get(userId) ?? 0) + lista.reduce((a, b) => a + b, 0));
+      // o bônus de quem parou: só com todas as respostas valendo depois da conferência
+      bonusDaRodada = null;
+      if (quemParou !== null && pontos.has(quemParou) && categorias.every((_, c) => valida(c, quemParou!))) {
+        bonusDaRodada = { userId: quemParou, pontos: BONUS_DO_STOP };
+        pontos.set(quemParou, (pontos.get(quemParou) ?? 0) + BONUS_DO_STOP);
+      }
       fase = 'resultado';
       ctx.agendar(RESULTADO_MS, () => {
         if (rodada >= rodadas) {
@@ -218,10 +243,15 @@ export const stop: Definicao = {
                   valida: valida(c, userId),
                   contra: contestacoes.get(`${c}:${userId}`)?.size ?? 0,
                   contestei: contestacoes.get(`${c}:${userId}`)?.has(quem) ?? false,
+                  aceita: aceitas.has(`${c}:${userId}`),
                   pontos: fase === 'conferindo' ? null : (pontosDaRodada.get(userId)?.[c] ?? 0),
                 })),
               }))
             : null,
+          // com dois, a resposta só cai com o aceite de quem a escreveu (a tela troca a dica)
+          precisaAceite: jogadores().length <= 2,
+          bonus: fase === 'resultado' || fase === 'fim' ? bonusDaRodada : null,
+          bonusDoStop: BONUS_DO_STOP,
           prontos: [...prontos],
           placar: placar(pontos, ctx.nome),
         };
@@ -259,6 +289,20 @@ export const stop: Definicao = {
           if (quemContesta.has(quem)) quemContesta.delete(quem);
           else quemContesta.add(quem);
           contestacoes.set(chave, quemContesta);
+          // sem ninguém contestando, o aceite de antes não vale mais
+          if (!quemContesta.size) aceitas.delete(chave);
+          ctx.avisar();
+          return null;
+        }
+        if (corpo.tipo === 'aceitar') {
+          // quem escreveu concorda que a própria resposta contestada não vale (e pode desfazer)
+          if (fase !== 'conferindo') return 'Agora não é hora de conferir.';
+          const categoria = Number(corpo.categoria);
+          if (!(categoria >= 0 && categoria < categorias.length) || !pontos.has(quem)) return 'Resposta não encontrada.';
+          const chave = `${categoria}:${quem}`;
+          if (!(contestacoes.get(chave)?.size ?? 0)) return 'Ninguém contestou esta resposta.';
+          if (aceitas.has(chave)) aceitas.delete(chave);
+          else aceitas.add(chave);
           ctx.avisar();
           return null;
         }

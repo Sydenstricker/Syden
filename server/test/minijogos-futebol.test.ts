@@ -346,3 +346,28 @@ test('o chute alto na sala (19/11/2026): a subida tem teto, vai no quadro, e a b
   assert.notEqual(b.id, 0);
   p.jogo.parar!();
 });
+
+test('na sala (20/11/2026): o tempo de jogo e o gol de ouro de quem começa; fora da lista, os 3 minutos', () => {
+  const p = comecar([anaId, biaId], { corpo: { minutos: 2, golDeOuro: true } });
+  const v = p.jogo.publico(anaId) as { minutos: number; golDeOuro: boolean; duracao: number };
+  assert.deepEqual([v.minutos, v.golDeOuro, v.duracao], [2, true, 2 * 60 * sim.PASSOS_POR_SEGUNDO]);
+  // empatado no fim do tempo: a prorrogação, e o quadro avisa a tela
+  p.largar();
+  p.m.placar = [1, 1];
+  p.m.passo = p.m.duracao - 2;
+  p.andar(PASSO_MS * 2);
+  assert.equal(p.m.prorrogacao, true);
+  assert.equal(p.terminou(), null);
+  assert.equal(p.quadros.at(-1)!.ou, 1);
+  // o gol de ouro acaba a partida, e o resultado diz que foi nele
+  sim.marcarGol(p.m, 0);
+  p.andar(PASSO_MS);
+  assert.equal(p.terminou(), true);
+  const r = (p.jogo.publico(anaId) as { resultado: { venceu: number; golDeOuro: boolean } }).resultado;
+  assert.deepEqual([r.venceu, r.golDeOuro], [0, true]);
+  p.jogo.parar?.();
+  const q = comecar([anaId, biaId], { corpo: { minutos: 9 } });
+  const vq = q.jogo.publico(anaId) as { minutos: number; golDeOuro: boolean; duracao: number };
+  assert.deepEqual([vq.minutos, vq.golDeOuro, vq.duracao], [3, false, sim.PARTIDA_PASSOS]);
+  q.jogo.parar?.();
+});

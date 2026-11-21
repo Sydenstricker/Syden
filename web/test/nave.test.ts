@@ -231,3 +231,57 @@ test('as fases curtas: duas ondas e um chefe novo, e o piloto automático vence 
   // a horta continua a mesma: o roteiro de sempre
   assert.deepEqual(roteiro(42), roteiro(42, 'horta'));
 });
+
+// ---------------- A segunda auditoria (20/11/2026): o raspão ----------------
+
+test('o raspão: o piloto ganha alguns na partida, e o servidor aceita cada um e chega aos mesmos pontos', () => {
+  let total = 0;
+  for (const semente of [1, 2]) {
+    const { m, servidor, recusas } = partida(semente);
+    assert.equal(recusas, 0);
+    assert.equal(servidor.raspados.size, m.ficha.raspados.size);
+    total += servidor.raspados.size;
+  }
+  assert.ok(total > 0, 'o piloto passa de raspão por algum tiro');
+});
+
+test('o raspão: a ficha recusa o tiro longe, o que acerta, o repetido, o que ainda não saiu e o de quem já caiu', async () => {
+  const sim = await import('../src/nave/sim');
+  const inimigos = roteiro(5);
+  const tiros = tirosDosInimigos(inimigos);
+  // um tiro que desce (vy > 0) e, uns passos depois de sair, a nave logo ACIMA dele: ele já passou e se afasta
+  const j = tiros.findIndex((t) => t.vy > 0.5 && Math.abs(t.vx) < 0.01);
+  assert.ok(j >= 0);
+  const tiro = tiros[j];
+  const q = tiro.t + 20;
+  const b = sim.posicaoTiro(tiro, q)!;
+  const x = Math.round(b.x * 100) / 100;
+  const yPerto = Math.round((b.y - 7) * 100) / 100;
+  // nada antes do tiro sair
+  const f0 = new Ficha(inimigos);
+  assert.equal(f0.raspao(tiro.t - 1, j, x, yPerto), 'Raspão inválido.');
+  // longe demais
+  const f1 = new Ficha(inimigos);
+  assert.equal(f1.raspao(q, j, x, b.y - 30), 'Raspão inválido.');
+  // perto demais é golpe, não raspão
+  assert.equal(f1.raspao(q, j, x, b.y - 2), 'Raspão inválido.');
+  // a nave ABAIXO do tiro: ele ainda vem (não passou)
+  assert.equal(f1.raspao(q, j, x, b.y + 7), 'Raspão inválido.');
+  // o raspão de verdade, uma vez só
+  const antes = f1.pontos;
+  assert.equal(f1.raspao(q, j, x, yPerto), null);
+  assert.equal(f1.pontos, antes + sim.RASPAO_PONTOS);
+  assert.equal(f1.raspao(q + 1, j, x, yPerto - 1), 'Raspão inválido.');
+  // o dono caiu antes de atirar: o tiro nunca saiu
+  const f2 = new Ficha(inimigos);
+  f2.mortos.set(tiro.dono, tiro.t - 5);
+  assert.equal(f2.raspao(q, j, x, yPerto), 'Raspão inválido.');
+  // a bomba limpou o tiro
+  const f3 = new Ficha(inimigos);
+  f3.bombasEm.push(tiro.t + 5);
+  assert.equal(f3.raspao(q, j, x, yPerto), 'Raspão inválido.');
+  // no meio do loop não conta
+  const f4 = new Ficha(inimigos);
+  f4.loops.push(q - 10);
+  assert.equal(f4.raspao(q, j, x, yPerto), 'Raspão inválido.');
+});

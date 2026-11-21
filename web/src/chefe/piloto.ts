@@ -3,7 +3,7 @@
  * window.chefePilotoAutomatico no site de desenvolvimento). Olha a mesma vista que a pessoa vê: foge de toda marca no chão
  * que vai cair logo, pega o torrão frio mais perto, fica a uma distância da toupeira e atira; a bomba, quando ela está tonta.
  */
-import { ARENA, BOMBA, CORPO_CHEFE, CORPO_COELHO, distancia, distSegmento, naArena, vulneravel } from './conta';
+import { apanhaDaPa, ARENA, BOMBA, CORPO_CHEFE, CORPO_COELHO, distancia, distSegmento, naArena, paPega, vulneravel } from './conta';
 import type { Comandos, Meu, Vista } from './regras';
 
 const DIRECOES: [number, number][] = [];
@@ -82,5 +82,7 @@ export function pilotoAutomatico(eu: Meu, v: Vista, cmd: Comandos) {
   if (c && vulneravel(c.estado)) {
     if (eu.segura && distancia(eu.x, eu.y, c.x, c.y) < 300) cmd.atirar = true;
     if (eu.bomba && (c.estado === 'tonta' || c.estado === 'parada' || c.estado === 'prep-torroes') && distancia(eu.x, eu.y, c.x, c.y) < BOMBA.alcance) cmd.bomba = true;
+    // a pá (20/11/2026): de perto, com ela tonta ou parada
+    if (apanhaDaPa(c.estado) && paPega(eu.x, eu.y, c.x, c.y, 0)) cmd.pa = true;
   }
 }

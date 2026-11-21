@@ -82,6 +82,12 @@ export const TONTO = 36;
 /** Quem chutou não domina a própria bola no passo seguinte. */
 export const SEM_DOMINIO = 14;
 export const PARTIDA_PASSOS = 3 * 60 * PASSOS_POR_SEGUNDO;
+/**
+ * O TEMPO DE JOGO E O GOL DE OURO (20/11/2026, a segunda auditoria): na sala, quem começa escolhe 2, 3 ou 5 minutos, e se o empate
+ * vai a uma PRORROGAÇÃO curta em que o primeiro gol vence (sem gol nela, fica o empate). O Solo continua nos 3 minutos.
+ */
+export const MINUTOS_POSSIVEIS = [2, 3, 5];
+export const PRORROGACAO_PASSOS = 60 * PASSOS_POR_SEGUNDO;
 /** A contagem antes da largada (3 s), e o gol: 2,5 s parado, e a volta ao meio quando faltar 1 s. */
 export const CONTAGEM = 180;
 export const GOL_PAUSA = 150;
@@ -178,6 +184,12 @@ export interface Mundo {
   eventos: Evento[];
   /** A dificuldade dos robôs (o índice em NIVEIS_DO_ROBO). */
   nivel: number;
+  /** Os passos de bola rolando do tempo normal (PARTIDA_PASSOS, ou o escolhido na sala). */
+  duracao: number;
+  /** O empate no fim do tempo vai à prorrogação do gol de ouro. */
+  golDeOuro: boolean;
+  /** A prorrogação está correndo: o primeiro gol acaba a partida. */
+  prorrogacao: boolean;
 }
 
 export const NADA: Comando = { dx: 0, dy: 0, chute: false, passe: false, alto: false };
@@ -198,7 +210,7 @@ export function posicaoInicial(time: 0 | 1, slot: number, porTime: number, saida
 }
 
 /** Um mundo novo: `times` são os ids de cada time, na ordem da formação. */
-export function novoMundo(times: [number[], number[]], nivel = 1): Mundo {
+export function novoMundo(times: [number[], number[]], nivel = 1, duracao = PARTIDA_PASSOS, golDeOuro = false): Mundo {
   const porTime = Math.max(1, Math.min(MAXIMO_POR_TIME, Math.max(times[0].length, times[1].length)));
   const jogadores: Jogador[] = [];
   for (const time of [0, 1] as const) {
@@ -239,6 +251,9 @@ export function novoMundo(times: [number[], number[]], nivel = 1): Mundo {
     fim: false,
     eventos: [],
     nivel: nivel >= 0 && nivel < NIVEIS_DO_ROBO.length ? Math.floor(nivel) : 1,
+    duracao,
+    golDeOuro,
+    prorrogacao: false,
   };
   posicionar(m, 0);
   m.reinicios = 0;
@@ -606,6 +621,11 @@ export function marcarGol(m: Mundo, time: 0 | 1) {
   const contra = !!autor && autor.time !== time;
   if (autor && !contra) autor.gols++;
   m.eventos.push({ tipo: 'gol', time, autor: autor ? autor.id : 0, contra });
+  // o gol de ouro: na prorrogação, o primeiro gol acaba a partida
+  if (m.prorrogacao) {
+    m.fim = true;
+    m.eventos.push({ tipo: 'fim' });
+  }
   m.bola.dono = 0;
   m.pausa = GOL_PAUSA;
   m.reinicioEm = GOL_REINICIO;
@@ -683,7 +703,12 @@ export function passoDoMundo(m: Mundo, comando: (j: Jogador) => Comando | null) 
     if (j.esperaRoubo > 0) j.esperaRoubo--;
     if (j.tonto > 0) j.tonto--;
   }
-  if (m.passo >= PARTIDA_PASSOS) {
+  if (m.passo >= m.duracao) {
+    // o empate com o gol de ouro ligado: a prorrogação curta (o primeiro gol vence; sem gol, fica o empate)
+    if (m.golDeOuro && m.placar[0] === m.placar[1] && m.passo < m.duracao + PRORROGACAO_PASSOS) {
+      m.prorrogacao = true;
+      return;
+    }
     m.fim = true;
     m.eventos.push({ tipo: 'fim' });
   }

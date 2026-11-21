@@ -9,9 +9,12 @@
  * cada lado, alternando). Os puxões vão ao vivo como um total ('acerto' `{ n, t }`), conferido contra o ritmo de quem aperta
  * muito (`contar`). O servidor não sabe QUAL tecla foi apertada (o "certo" é da tela), só que ninguém puxa mais rápido que isso.
  * As duas equipes dividem a mesma chave: todos os do lado que ganhou ficam juntos em primeiro.
+ *
+ * COM AS EQUIPES IMPOSTAS (20/11/2026: o 2 contra 2 e o 1 contra 3 do Tabuleiro da turma; ver ./lote4-turma.ts): o lado de cada
+ * um é a equipe dele, e os robôs puxam no ritmo de quem joga bem. Pela média, o 1 contra 3 é justo: um puxando bem segura três.
  */
 import { microjogo, sortear, type Largada, type Resultado } from './comum.js';
-import { avisarComFreio, contar, entrar, type Contagem } from './lote4-turma.js';
+import { avisarComFreio, contar, entrar, equipeImposta, impostas, toquesDoRobo, type Contagem, type Impostas } from './lote4-turma.js';
 
 export const CABO_MS = 15000;
 /** O ritmo de quem aperta muito (setas certas por segundo); acima disso não é gente. */
@@ -48,26 +51,32 @@ interface Mem {
   venceu: number | null;
   avisadoEm?: number;
   comeco: number;
+  /** As equipes impostas por quem chamou (o Tabuleiro), ou null. */
+  im: Impostas | null;
 }
 
-const ladoDe = (mem: Mem, id: number) => mem.membros.indexOf(id) % 2;
+const ladoDe = (mem: Mem, id: number) => (mem.im ? equipeImposta(mem.im, id) : mem.membros.indexOf(id) % 2);
+/** Quem puxa: os que entraram e, nas equipes impostas, os robôs delas. */
+const puxadores = (mem: Mem) => (mem.im ? [...mem.membros.filter((id) => ladoDe(mem, id) >= 0), ...mem.im.robos.filter((id) => ladoDe(mem, id) >= 0)] : mem.membros);
+const puxoes = (mem: Mem, id: number, passou: number) =>
+  mem.im?.robos.includes(id) ? toquesDoRobo(Math.min(passou, CABO_MS)) : (mem.placar.get(id)?.n ?? 0);
 
 /** A posição da fita agora: a média do lado 0 menos a do lado 1 (ou das raposas). */
 function fita(mem: Mem, passou: number) {
   const soma = [0, 0];
   const quantos = [0, 0];
-  for (const id of mem.membros) {
+  for (const id of puxadores(mem)) {
     const lado = ladoDe(mem, id);
-    soma[lado] += mem.placar.get(id)?.n ?? 0;
+    soma[lado] += puxoes(mem, id, passou);
     quantos[lado]++;
   }
   const a = quantos[0] ? soma[0] / quantos[0] : 0;
-  const b = quantos[1] ? soma[1] / quantos[1] : (RITMO_DA_RAPOSA * Math.max(0, Math.min(passou, CABO_MS) - RAPOSA_COMECA_MS)) / 1000;
+  const b = quantos[1] ? soma[1] / quantos[1] : mem.im ? 0 : (RITMO_DA_RAPOSA * Math.max(0, Math.min(passou, CABO_MS) - RAPOSA_COMECA_MS)) / 1000;
   return Math.max(-MARCA, Math.min(MARCA, a - b));
 }
 
 function conferirMarca(mem: Mem, passou: number) {
-  if (mem.venceu !== null || mem.membros.length === 0) return;
+  if (mem.venceu !== null || puxadores(mem).length === 0) return;
   const f = fita(mem, passou);
   if (f >= MARCA) mem.venceu = 0;
   else if (f <= -MARCA) mem.venceu = 1;
@@ -75,14 +84,14 @@ function conferirMarca(mem: Mem, passou: number) {
 }
 
 function resultadoDe(mem: Mem, id: number): Resultado {
-  const n = mem.placar.get(id)?.n ?? 0;
+  const n = puxoes(mem, id, CABO_MS);
   const lado = ladoDe(mem, id);
   // quem ganhou: o lado que chegou à marca, ou o que estava na frente no fim (empate: os dois juntos)
   const f = fita(mem, CABO_MS);
   const ganhou = mem.venceu !== null ? mem.venceu === lado : lado === 0 ? f >= 0 : f <= 0;
   if (n === 0) return { motivo: 'errou', valor: 0, chave: [] };
   // sozinho contra as raposas, a chave é da pessoa (os puxões desempatam contra os robôs); em equipe, é do lado
-  const sozinho = mem.membros.length === 1;
+  const sozinho = !mem.im && mem.membros.length === 1;
   return { motivo: null, valor: n, chave: sozinho ? [ganhou ? 0 : 1, -n] : [ganhou ? 0 : 1] };
 }
 
@@ -99,7 +108,8 @@ export default microjogo<DadosCabo, Mem>({
     return { setas };
   },
   duracao: () => CABO_MS + 1000,
-  memoria: () => ({ l: null, membros: [], placar: new Map(), venceu: null, comeco: 0 }),
+  aceitaEquipes: true,
+  memoria: (_dados, turma) => ({ l: null, membros: [], placar: new Map(), venceu: null, comeco: 0, im: impostas(turma) }),
   iniciar(l) {
     const { mem } = l;
     mem.l = l;
@@ -117,7 +127,8 @@ export default microjogo<DadosCabo, Mem>({
   },
   vista({ dados, mem, quem, passou, fase }) {
     const quantos: [number, number] = [0, 0];
-    for (const id of mem.membros) quantos[ladoDe(mem, id)]++;
+    if (mem.im) mem.im.equipes.forEach((e, i) => (quantos[i] = e.length));
+    else for (const id of mem.membros) quantos[ladoDe(mem, id)]++;
     const v: VistaCabo = {
       setas: dados.setas,
       lados: quantos,
@@ -133,7 +144,7 @@ export default microjogo<DadosCabo, Mem>({
       entrar(mem.membros, quem);
       return;
     }
-    if (!mem.membros.includes(quem) || mem.venceu !== null || passou > CABO_MS + 1000) return;
+    if (!mem.membros.includes(quem) || ladoDe(mem, quem) < 0 || mem.venceu !== null || passou > CABO_MS + 1000) return;
     if (contar(mem.placar, c as never, RITMO_MAXIMO)) {
       conferirMarca(mem, passou);
       if (mem.venceu === null) avisarComFreio(mem, agora);
@@ -141,7 +152,7 @@ export default microjogo<DadosCabo, Mem>({
   },
   avaliar: ({ mem, quem }) => (mem.membros.includes(quem) ? resultadoDe(mem, quem) : { motivo: 'invalido', valor: null, chave: [] }),
   *noFim({ mem }) {
-    for (const id of mem.membros) yield [id, resultadoDe(mem, id)] as [number, Resultado];
+    for (const id of puxadores(mem)) yield [id, resultadoDe(mem, id)] as [number, Resultado];
   },
   robo(_dados, aleatorio, passouMs) {
     const n = Math.max(1, Math.floor((Math.min(passouMs, CABO_MS) * (4 + aleatorio() * 2.5)) / 1000));

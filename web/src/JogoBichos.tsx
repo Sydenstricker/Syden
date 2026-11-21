@@ -14,8 +14,8 @@ import {
   NOME_DO_ELEMENTO,
   type PoseDoBicho,
 } from './bichos/desenho';
-import { antesDe, DESAFIANTES, DIRECOES, eficacia, ELEMENTOS, ESPECIES, GOLPES, VENCE, INICIAIS, mapaDe, passoNoMapa, PRECOS, TAMANHO_DA_EQUIPE, type DadosDoGolpe } from './bichos/regras';
-import { useT } from './i18n';
+import { alcancaveis, antesDe, DESAFIANTES, DIRECOES, eficacia, ELEMENTOS, ESPECIES, GOLPES, VENCE, INICIAIS, LOJA_ABRE, mapaDe, passoNoMapa, PRECOS, TAMANHO_DA_EQUIPE, type DadosDoGolpe, type ItemDaLoja } from './bichos/regras';
+import { chave, useT } from './i18n';
 import { useJanelaComFoco } from './janelaComFoco';
 import { primeiraForma, type Partida } from './minijogos';
 import { tocar } from './somDosJogos';
@@ -74,18 +74,31 @@ interface EstadoSolo {
   y: number;
   equipe: BichoDaEquipe[];
   toca: number;
+  /** A toca por dentro, e se a pessoa está na porta de casa, onde se mexe nela (20/11/2026). */
+  guardados?: BichoDaEquipe[];
+  naCasa?: boolean;
   cenouras: number;
   chas: number;
+  /** Os itens da lojinha com escada (20/11/2026). */
+  chasFortes?: number;
+  ervas?: number;
+  douradas?: number;
+  /** O golpe novo que espera a escolha de qual esquecer. */
+  aprender?: { id: number; especie: string; golpe: string; golpes: string[]; fila: number } | null;
   desafios: number;
-  luta: { tipo: 'mato' | 'desafio' | 'pessoa'; acabou: string | null; meu: LadoNaTela; outro: LadoNaTela; chance: number } | null;
+  luta: { tipo: 'mato' | 'desafio' | 'pessoa'; acabou: string | null; meu: LadoNaTela; outro: LadoNaTela; chance: number; chanceDourada?: number } | null;
   eventos: Evento[];
 }
 interface EstadoSala {
   modo: 'sala';
   /** Todos lutam neste nível (19/11/2026). */
   nivel?: number;
-  fase: 'esperando' | 'escolhendo' | 'fim';
+  fase: 'esperando' | 'montando' | 'escolhendo' | 'fim';
   partidaId: string;
+  /** A mesa justa (20/11/2026): quantos bichos cada um leva, o que eu posso levar (crescidos) e quem já escolheu. */
+  mesa?: number;
+  opcoes?: { id: number; especie: string }[];
+  montou?: [boolean, boolean];
   lugares: { userId: number; username: string; emprestada: boolean }[];
   meuLado: number;
   lados: [LadoNaTela, LadoNaTela] | null;
@@ -129,6 +142,16 @@ function textoDo(e: Evento, t: ReturnType<typeof useT>, nomeDaPessoa: (id: numbe
       return t('{nome} entrou na luta!', { nome });
     case 'cha':
       return t('{nome} tomou chá e se sentiu melhor.', { nome });
+    case 'erva':
+      return `🌿 ${t('{nome} tomou erva-doce e ficou bem.', { nome })}`;
+    case 'aprendeu':
+      return t('{nome} aprendeu {golpe}!', { nome, golpe: nomeDoGolpe(e.golpe, t) });
+    case 'querAprender':
+      return t('{nome} quer aprender {golpe}, mas já sabe 4 golpes.', { nome, golpe: nomeDoGolpe(e.golpe, t) });
+    case 'esqueceu':
+      return t('{nome} esqueceu {antigo} e aprendeu {golpe}.', { nome, antigo: nomeDoGolpe(e.antigo, t), golpe: nomeDoGolpe(e.golpe, t) });
+    case 'presente':
+      return `🎁 ${t('{nome} deu {bicho} para você cuidar.', { nome: String(e.nome), bicho: nome })}`;
     case 'apareceu':
       return t('{nome} apareceu no mato!', { nome });
     case 'desafio':
@@ -162,12 +185,17 @@ function textoDo(e: Evento, t: ReturnType<typeof useT>, nomeDaPessoa: (id: numbe
   }
 }
 
+/** O nome de um golpe na língua de quem lê (a primeira forma). */
+const nomeDoGolpe = (g: unknown, t: ReturnType<typeof useT>) => primeiraForma(t(GOLPES[String(g)]?.nome ?? ''));
+
 /** O ícone de cada efeito da luta (na narração e no cartão do bicho). */
 const ICONE_DO_EFEITO: Record<string, string> = {
   cochilou: '💤', cochilando: '💤', acordou: '☀️', envenenou: '🟣', veneno: '🟣', 'atq+': '⚔️▲', 'atq-': '⚔️▼', 'def+': '🛡️▲', 'def-': '🛡️▼',
   cura: '💚', falhou: '✖',
 };
-const ICONE_DO_ITEM: Record<string, string> = { cenoura: '🥕', cha: '🍵', moedas: '🪙' };
+const ICONE_DO_ITEM: Record<string, string> = { cenoura: '🥕', cha: '🍵', moedas: '🪙', erva: '🌿', chaForte: '🫖', dourada: '✨🥕' };
+/** O nome de cada item da lojinha (para o leitor de tela e o "title"; o botão é a figura). */
+const NOME_DO_ITEM: Record<ItemDaLoja, string> = { cenoura: chave('Cenoura'), cha: chave('Chá'), erva: chave('Erva-doce'), chaForte: chave('Chá forte'), dourada: chave('Cenoura dourada') };
 
 function textoDoEfeito(efeito: string, nome: string, t: ReturnType<typeof useT>): string {
   switch (efeito) {
@@ -211,7 +239,10 @@ function somDo(e: Evento) {
   else if (e.t === 'errou') tocar('erro');
   else if (e.t === 'efeito') tocar(e.efeito === 'cura' ? 'cura' : e.efeito === 'veneno' ? 'dano' : 'item');
   else if (e.t === 'moedas' || e.t === 'achou' || e.t === 'comprou') tocar('moeda');
-  else if (e.t === 'raro') tocar('medalha');
+  else if (e.t === 'raro' || e.t === 'presente') tocar('medalha');
+  else if (e.t === 'erva') tocar('cura');
+  else if (e.t === 'aprendeu' || e.t === 'esqueceu') tocar('moeda');
+  else if (e.t === 'querAprender') tocar('vez');
   else if (e.t === 'amigo' || e.t === 'venceuDesafio') tocar('chegada');
   else if (e.t === 'recusou' || e.t === 'naoFugiu') tocar('erro');
   else if (e.t === 'nivel' || e.t === 'evoluiu') tocar('moeda');
@@ -332,6 +363,7 @@ function useNarracao(eventos: Evento[], lados: [LadoNaTela, LadoNaTela] | null, 
         }
       } else if (e.t === 'troca' && n[l]) n[l].ativo = Number(e.i);
       else if (e.t === 'cha' && n[l]?.equipe[n[l].ativo]) n[l].equipe[n[l].ativo].pv = Number(e.pv);
+      else if (e.t === 'erva' && n[l]?.equipe[n[l].ativo]) delete n[l].equipe[n[l].ativo].estado;
       return n;
     });
   }, [fila, atual]);
@@ -547,6 +579,7 @@ function Aventura({ estado, agir }: { estado: EstadoSolo; agir: (corpo: Record<s
         <p className="bichos-narracao" aria-live="polite">
           {narracao.atual ? textoDo(narracao.atual, t, () => '') : ' '}
         </p>
+        {!ocupado && estado.aprender && <EscolhaDoGolpe aprender={estado.aprender} agir={agir} />}
         {!ocupado && luta.acabou && (
           <div className="bichos-acoes">
             <button type="button" className="btn-primary" onClick={() => fazer({ tipo: 'continuar' })}>
@@ -566,9 +599,24 @@ function Aventura({ estado, agir }: { estado: EstadoSolo; agir: (corpo: Record<s
                   🥕 {t('Oferecer cenoura')} <small>{estado.cenouras}</small>
                 </button>
               )}
+              {luta.tipo === 'mato' && (estado.douradas ?? 0) > 0 && (
+                <button type="button" className="btn-secondary bichos-cenoura" title={t('Cenoura dourada')} aria-label={t('Cenoura dourada')} onClick={() => fazer({ tipo: 'cenoura', dourada: true })}>
+                  ✨🥕 <small>{estado.douradas}</small>
+                </button>
+              )}
               <button type="button" className="btn-secondary" disabled={estado.chas <= 0 || frente.pv >= frente.pvMax} onClick={() => fazer({ tipo: 'cha' })}>
                 🍵 {t('Chá')} <small>{estado.chas}</small>
               </button>
+              {(estado.chasFortes ?? 0) > 0 && (
+                <button type="button" className="btn-secondary" title={t('Chá forte')} aria-label={t('Chá forte')} disabled={frente.pv >= frente.pvMax} onClick={() => fazer({ tipo: 'cha', forte: true })}>
+                  🫖 <small>{estado.chasFortes}</small>
+                </button>
+              )}
+              {(estado.ervas ?? 0) > 0 && (
+                <button type="button" className="btn-secondary" title={t('Erva-doce')} aria-label={t('Erva-doce')} disabled={!frente.estado} onClick={() => fazer({ tipo: 'erva' })}>
+                  🌿 <small>{estado.ervas}</small>
+                </button>
+              )}
               {meu.equipe.some((b, i) => b.pv > 0 && i !== meu.ativo) && (
                 <button type="button" className="btn-secondary" onClick={() => setTrocando(true)}>
                   {t('Trocar')}
@@ -607,6 +655,11 @@ function Campo({ estado, agir, aviso }: { estado: EstadoSolo; agir: (corpo: Reco
   const tela = useRef<HTMLCanvasElement>(null);
   const comFoco = useJanelaComFoco();
   const [caderno, setCaderno] = useState(false);
+  /** O guardado escolhido para trocar com um da equipe (na porta de casa). */
+  const [trocandoDaToca, setTrocandoDaToca] = useState<number | null>(null);
+  useEffect(() => {
+    if (!estado.naCasa) setTrocandoDaToca(null);
+  }, [estado.naCasa]);
   const mapaDoServidor = estado.mapa ?? 'campo';
   const coelho = useMemo(() => {
     if (typeof Image === 'undefined') return null;
@@ -776,12 +829,16 @@ function Campo({ estado, agir, aviso }: { estado: EstadoSolo; agir: (corpo: Reco
           <button type="button" className="baixo" aria-label={t('Para baixo')} {...segurarSeta('b')}>▼</button>
         </div>
         {caderno && <CadernoDaToca estado={estado} aoFechar={() => setCaderno(false)} />}
+        {estado.aprender && <EscolhaDoGolpe aprender={estado.aprender} agir={agir} />}
       </div>
       <aside className="bichos-lado">
         <p className="bichos-dica">{t('Setas ou WASD para andar.')}</p>
         <p className="bichos-cesta">
           <span title={t('Cenoura')}>🥕 {estado.cenouras}</span>
           <span title={t('Chá')}>🍵 {estado.chas}</span>
+          {(estado.chasFortes ?? 0) > 0 && <span title={t('Chá forte')}>🫖 {estado.chasFortes}</span>}
+          {(estado.ervas ?? 0) > 0 && <span title={t('Erva-doce')}>🌿 {estado.ervas}</span>}
+          {(estado.douradas ?? 0) > 0 && <span title={t('Cenoura dourada')}>✨🥕 {estado.douradas}</span>}
           <span title={t('Moedas')}>🪙 {moedas}</span>
           <span title={t('Toca')}>🏠 {estado.toca}</span>
           {estado.desafios > 0 && <span>🏅 {estado.desafios}</span>}
@@ -795,16 +852,20 @@ function Campo({ estado, agir, aviso }: { estado: EstadoSolo; agir: (corpo: Reco
           ))}
         </p>
         <button type="button" className="btn-secondary bichos-caderno-botao" onClick={() => setCaderno((c) => !c)} aria-pressed={caderno}>
-          📖 {t('Caderno da toca')} <small>{`${estado.caderno?.pegos.length ?? 0}/${Object.keys(ESPECIES).length}`}</small>
+          📖 {t('Caderno da toca')} <small>{`${(estado.caderno?.pegos ?? []).filter((e) => ALCANCAVEIS.has(e)).length}/${ALCANCAVEIS.size}`}</small>
         </button>
         {estado.loja && (
           <div className="bichos-loja" role="group" aria-label={t('Lojinha')}>
             <h4>🏪 {t('Lojinha')}</h4>
-            {(Object.keys(PRECOS) as (keyof typeof PRECOS)[]).map((item) => (
-              <button key={item} type="button" className="btn-secondary" disabled={moedas < PRECOS[item]} onClick={() => void agir({ tipo: 'comprar', item })}>
-                {item === 'cenoura' ? '🥕' : '🍵'} +1 <small>🪙 {PRECOS[item]}</small>
-              </button>
-            ))}
+            {(Object.keys(PRECOS) as ItemDaLoja[]).map((item) => {
+              // a escada da lojinha: o item fechado mostra o cadeado e quantas estrelas da escada pede
+              const fechado = escada.length < LOJA_ABRE[item];
+              return (
+                <button key={item} type="button" className="btn-secondary" title={t(NOME_DO_ITEM[item])} aria-label={t(NOME_DO_ITEM[item])} disabled={fechado || moedas < PRECOS[item]} onClick={() => void agir({ tipo: 'comprar', item })}>
+                  {ICONE_DO_ITEM[item]} {fechado ? <small>{`🔒 ${'★'.repeat(LOJA_ABRE[item])}`}</small> : <>+1 <small>🪙 {PRECOS[item]}</small></>}
+                </button>
+              );
+            })}
           </div>
         )}
         <h4>{t('Equipe')} <small>{`${estado.equipe.length}/${TAMANHO_DA_EQUIPE}`}</small></h4>
@@ -825,9 +886,20 @@ function Campo({ estado, agir, aviso }: { estado: EstadoSolo; agir: (corpo: Reco
                   {t('Pôr na frente')}
                 </button>
               )}
+              {estado.naCasa && trocandoDaToca !== null && (
+                <button type="button" className="link-button" onClick={() => { setTrocandoDaToca(null); void agir({ tipo: 'toca', acao: 'trocar', id: trocandoDaToca, i }); }}>
+                  ⇄ {t('Trocar')}
+                </button>
+              )}
+              {estado.naCasa && trocandoDaToca === null && estado.equipe.length > 1 && (
+                <button type="button" className="link-button" onClick={() => void agir({ tipo: 'toca', acao: 'guardar', i })}>
+                  {t('Guardar na toca')}
+                </button>
+              )}
             </li>
           ))}
         </ul>
+        {estado.naCasa && <TocaPorDentro estado={estado} agir={agir} trocando={trocandoDaToca} aoTrocar={setTrocandoDaToca} />}
       </aside>
     </div>
   );
@@ -906,16 +978,123 @@ function RodaDosElementos() {
   );
 }
 
+/** As espécies que dá para ter como amiga (o caderno conta sobre elas; 20/11/2026). */
+const ALCANCAVEIS = alcancaveis();
+
+/**
+ * O GOLPE NOVO COM 4 SABIDOS (20/11/2026): o bicho quer aprender e já sabe 4. A pessoa escolhe qual esquecer, ou não aprender;
+ * nada some sozinho. Aparece no campo e na luta (depois da narração), até ser respondido.
+ */
+function EscolhaDoGolpe({ aprender, agir }: { aprender: NonNullable<EstadoSolo['aprender']>; agir: (corpo: Record<string, unknown>) => Promise<void> }) {
+  const t = useT();
+  const nome = nomeDe(aprender.especie);
+  const novo = GOLPES[aprender.golpe];
+  return (
+    <div className="bichos-aprender" role="dialog" aria-label={t('{nome} quer aprender {golpe}, mas já sabe 4 golpes.', { nome, golpe: nomeDoGolpe(aprender.golpe, t) })}>
+      <p>
+        <Retrato especie={aprender.especie} tamanho={40} />
+        <span>{t('{nome} quer aprender {golpe}, mas já sabe 4 golpes.', { nome, golpe: nomeDoGolpe(aprender.golpe, t) })}</span>
+      </p>
+      {novo && (
+        <p className="bichos-aprender-novo" style={{ '--cor': COR_DO_ELEMENTO[novo.elemento] } as CSSProperties}>
+          ✨ {nomeDoGolpe(aprender.golpe, t)}
+          {novo.elemento !== 'nenhum' && <small>{primeiraForma(t(NOME_DO_ELEMENTO[novo.elemento]))}</small>}
+          {iconesDoGolpe(novo) && <small>{iconesDoGolpe(novo)}</small>}
+        </p>
+      )}
+      <p className="bichos-dica">{t('Esquecer qual?')}</p>
+      <div className="bichos-golpes">
+        {aprender.golpes.map((g, i) => {
+          const el = GOLPES[g]?.elemento ?? 'nenhum';
+          return (
+            <button key={g} type="button" className="bichos-golpe" style={{ '--cor': COR_DO_ELEMENTO[el] } as CSSProperties} onClick={() => void agir({ tipo: 'esquecer', i })}>
+              {nomeDoGolpe(g, t)}
+              {el !== 'nenhum' && <small>{primeiraForma(t(NOME_DO_ELEMENTO[el]))}</small>}
+            </button>
+          );
+        })}
+      </div>
+      <div className="bichos-acoes">
+        <button type="button" className="btn-secondary" onClick={() => void agir({ tipo: 'esquecer', i: -1 })}>
+          {t('Não aprender')}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * A TOCA POR DENTRO (20/11/2026), na porta de casa: os guardados, e levar para a equipe, trocar com um dela (o botão "Trocar"
+ * aparece na equipe) ou soltar de volta ao mato (com a pergunta antes: não dá para desfazer). O servidor confere tudo.
+ */
+function TocaPorDentro({ estado, agir, trocando, aoTrocar }: { estado: EstadoSolo; agir: (corpo: Record<string, unknown>) => Promise<void>; trocando: number | null; aoTrocar: (id: number | null) => void }) {
+  const t = useT();
+  const [soltando, setSoltando] = useState<number | null>(null);
+  const guardados = estado.guardados ?? [];
+  const cabe = estado.equipe.length < TAMANHO_DA_EQUIPE;
+  return (
+    <section className="bichos-toca" aria-label={t('Toca')}>
+      <h4>🏠 {t('Toca')} <small>{guardados.length}</small></h4>
+      {!guardados.length && <p className="bichos-dica">{t('A toca está vazia.')}</p>}
+      {trocando !== null && (
+        <p className="bichos-dica">
+          {t('Escolha quem sai da equipe.')}{' '}
+          <button type="button" className="link-button" onClick={() => aoTrocar(null)}>
+            {t('Não')}
+          </button>
+        </p>
+      )}
+      <ul className="bichos-equipe">
+        {guardados.map((b) => (
+          <li key={b.id} className={trocando === b.id ? 'escolhido' : ''}>
+            <Retrato especie={b.especie} tamanho={40} />
+            <span className="bichos-equipe-nome">
+              <strong>{nomeDe(b.especie)}</strong> <Selo especie={b.especie} />
+              <small>{`${t('Nível')} ${b.nivel}`}</small>
+            </span>
+            {soltando === b.id ? (
+              <span className="bichos-toca-soltar">
+                <small>{t('{nome} vai voltar para o mato. Tem certeza?', { nome: nomeDe(b.especie) })}</small>
+                <button type="button" className="link-button" onClick={() => { setSoltando(null); void agir({ tipo: 'toca', acao: 'soltar', id: b.id }); }}>
+                  {t('Sim')}
+                </button>
+                <button type="button" className="link-button" onClick={() => setSoltando(null)}>
+                  {t('Não')}
+                </button>
+              </span>
+            ) : (
+              <span className="bichos-toca-botoes">
+                {cabe && (
+                  <button type="button" className="link-button" onClick={() => void agir({ tipo: 'toca', acao: 'levar', id: b.id })}>
+                    {t('Levar')}
+                  </button>
+                )}
+                <button type="button" className="link-button" aria-pressed={trocando === b.id} onClick={() => aoTrocar(trocando === b.id ? null : b.id)}>
+                  ⇄ {t('Trocar')}
+                </button>
+                <button type="button" className="link-button" onClick={() => setSoltando(b.id)}>
+                  {t('Soltar')}
+                </button>
+              </span>
+            )}
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
 function CadernoDaToca({ estado, aoFechar }: { estado: EstadoSolo; aoFechar: () => void }) {
   const t = useT();
   const vistos = new Set(estado.caderno?.vistos ?? []);
   const pegos = new Set(estado.caderno?.pegos ?? []);
   const ordem = Object.keys(ESPECIES);
+  const soDeQuemDesafia = ordem.length - ALCANCAVEIS.size;
   return (
     <div className="bichos-caderno" role="dialog" aria-label={t('Caderno da toca')}>
       <div className="bichos-caderno-topo">
         <strong>📖 {t('Caderno da toca')}</strong>
-        <small>{`👁 ${vistos.size} · 🤝 ${pegos.size} / ${ordem.length}`}</small>
+        <small>{`👁 ${vistos.size} · 🤝 ${[...pegos].filter((e) => ALCANCAVEIS.has(e)).length} / ${ALCANCAVEIS.size}${soDeQuemDesafia > 0 ? ` · 🏅 ${soDeQuemDesafia}` : ''}`}</small>
         <button type="button" className="link-button" onClick={aoFechar}>
           {t('Fechar')}
         </button>
@@ -949,6 +1128,8 @@ function LutaNaSala({ estado, eu, jogador, agir }: { estado: EstadoSala; eu: num
   const meuLado = estado.meuLado;
   const ver = meuLado >= 0 ? meuLado : 0;
   const nome = (id: number) => estado.lugares.find((l) => l.userId === id)?.username ?? '';
+
+  if (estado.fase === 'montando') return <MontarAMesa estado={estado} agir={agir} />;
 
   if (estado.fase === 'esperando' || !estado.lados || !narracao.vista) {
     const dono = estado.lugares[0];
@@ -1014,6 +1195,59 @@ function LutaNaSala({ estado, eu, jogador, agir }: { estado: EstadoSala; eu: num
           )}
         </>
       )}
+    </div>
+  );
+}
+
+/**
+ * A MESA JUSTA (20/11/2026): na largada, cada um escolhe até 3 bichos (a equipe e a toca), que lutam crescidos e no nível da
+ * sala; a ordem do clique é a ordem da luta. Quem não escolhe em 30 s vai com os primeiros. A emprestada vai sem escolha.
+ */
+function MontarAMesa({ estado, agir }: { estado: EstadoSala; agir: (corpo: Record<string, unknown>) => Promise<void> }) {
+  const t = useT();
+  const [ids, setIds] = useState<number[]>([]);
+  const lado = estado.meuLado;
+  const maximo = estado.mesa ?? 3;
+  const opcoes = estado.opcoes ?? [];
+  const outro = estado.lugares[1 - Math.max(0, lado)];
+  const escolhendo = lado >= 0 && !estado.montou?.[lado] && opcoes.length > 0;
+  const alternar = (id: number) => setIds((l) => (l.includes(id) ? l.filter((x) => x !== id) : l.length < maximo ? [...l, id] : l));
+  if (!escolhendo) {
+    const falta = estado.lugares.find((_, i) => !estado.montou?.[i]);
+    return (
+      <div className="bichos bichos-sala">
+        <p className="bichos-titulo">{t('Esperando {nome} escolher.', { nome: (lado >= 0 ? outro : falta)?.username ?? '' })}</p>
+      </div>
+    );
+  }
+  return (
+    <div className="bichos bichos-sala bichos-montar">
+      <p className="bichos-titulo">{t('Escolha até {n} bichos para a mesa.', { n: maximo })}</p>
+      {estado.nivel && <p className="bichos-dica">{t('Na mesa, todos os bichos lutam no nível {n}.', { n: estado.nivel })}</p>}
+      <ul className="bichos-troca">
+        {opcoes.map((o) => {
+          const n = ids.indexOf(o.id);
+          return (
+            <li key={o.id}>
+              <button type="button" aria-pressed={n >= 0} className={n >= 0 ? 'escolhido' : ''} onClick={() => alternar(o.id)}>
+                <Retrato especie={o.especie} tamanho={36} />
+                <span>
+                  {nomeDe(o.especie)} <Selo especie={o.especie} />
+                </span>
+                {n >= 0 && <strong className="bichos-ordem">{n + 1}</strong>}
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+      <div className="bichos-acoes">
+        <button type="button" className="btn-primary" disabled={!ids.length} onClick={() => void agir({ tipo: 'equipe', ids })}>
+          {t('Pronto')}
+        </button>
+        <button type="button" className="link-button" onClick={() => void agir({ tipo: 'desistir' })}>
+          {t('Desistir')}
+        </button>
+      </div>
     </div>
   );
 }

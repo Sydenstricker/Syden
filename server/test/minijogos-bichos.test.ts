@@ -546,15 +546,275 @@ test('a escada inteira: a porta da Nena dá a revanche em nível alto', () => {
   assert.equal(lerAventura(db.aventuraDosBichos(caio))!.revanches, 1);
 });
 
-test('na sala, todos os bichos lutam no mesmo nível (o da sala), seja qual for o da aventura', () => {
+
+// ---------------------------------------------------------------- 20/11/2026: lote C da segunda auditoria
+/** Um bicho guardado de mão, no nível, com a vida cheia. */
+const guardado = (id: number, especie: string, nivel: number, extra: Record<string, unknown> = {}) => ({
+  id, especie, nivel, xp: regras.xpDoNivel(nivel), pv: regras.atributos(especie, nivel).pvMax, ...extra,
+});
+
+test('na sala (a mesa justa): até 3 bichos escolhidos na largada, todos crescidos e no nível da sala; quem não escolhe vai com os primeiros', () => {
   db.guardarAventuraDosBichos(biaId, {
-    v: 1, x: 3, y: 14, cenouras: 0, chas: 0, desafios: 0, proximoId: 3, toca: [],
+    v: 1, x: 3, y: 14, cenouras: 0, chas: 0, desafios: 0, proximoId: 5,
     equipe: [{ id: 1, especie: 'brotelao', nivel: 44, xp: regras.xpDoNivel(44), pv: 10 }, { id: 2, especie: 'zunzi', nivel: 3, xp: 36, pv: 1 }],
+    toca: [guardado(3, 'rochim', 8), guardado(4, 'picotim', 12)],
   });
-  const p = comecar({ solo: false, comunidade: 7 }, Math.random, biaId);
+  db.guardarAventuraDosBichos(caioId, null); // quem senta sem aventura: a emprestada
+  const p = comecar({ solo: false, comunidade: 7, naSala: () => [biaId, caioId] }, Math.random, biaId);
   p.jogo.acao(caioId, { tipo: 'sentar' });
-  const e = p.estado(biaId);
-  for (const lado of e.lados) for (const b of lado.equipe) assert.equal(b.nivel, regras.NIVEL_DA_SALA);
-  assert.equal(e.lados[0].equipe[0].pv, e.lados[0].equipe[0].pvMax, 'com a vida cheia');
+  let e = p.estado(biaId);
+  assert.equal(e.fase, 'montando');
+  assert.deepEqual(e.opcoes.map((o: any) => o.especie), ['brotelao', 'zunzao', 'rochedo', 'picolosso'], 'a equipe e a toca, crescidos');
+  assert.deepEqual(e.montou, [false, true], 'a emprestada vai sem escolha');
+  assert.deepEqual(p.estado(caioId).opcoes, [], 'cada um só vê as próprias opções');
+  assert.equal(p.jogo.acao(biaId, { tipo: 'golpe', i: 0 }), 'Escolha inválida.');
+  assert.equal(p.jogo.acao(biaId, { tipo: 'equipe', ids: [1, 2, 3, 4] }), 'Escolha inválida.', 'no máximo 3');
+  assert.equal(p.jogo.acao(biaId, { tipo: 'equipe', ids: [3, 3] }), 'Escolha inválida.');
+  assert.equal(p.jogo.acao(biaId, { tipo: 'equipe', ids: [99] }), 'Escolha inválida.');
+  assert.equal(p.jogo.acao(biaId, { tipo: 'equipe', ids: [3, 2] }), null);
+  e = p.estado(biaId);
+  assert.equal(e.fase, 'escolhendo');
+  assert.deepEqual(e.lados[0].equipe.map((b: any) => b.especie), ['rochedo', 'zunzao'], 'na ordem escolhida');
+  assert.deepEqual(e.lados[1].equipe.map((b: any) => b.especie), ['brotelao', 'fornalho', 'bolhao'], 'a emprestada também cresce');
+  for (const lado of e.lados) for (const b of lado.equipe) {
+    assert.equal(b.nivel, regras.NIVEL_DA_SALA);
+    assert.equal(b.pv, b.pvMax, 'com a vida cheia');
+  }
   assert.equal(e.nivel, regras.NIVEL_DA_SALA);
+
+  // o prazo da largada: quem não escolheu leva os primeiros 3
+  const q = comecar({ solo: false, comunidade: 7, naSala: () => [biaId, caioId] }, Math.random, biaId);
+  q.jogo.acao(caioId, { tipo: 'sentar' });
+  q.r.disparar();
+  assert.deepEqual(q.estado(biaId).lados[0].equipe.map((b: any) => b.especie), ['brotelao', 'zunzao', 'rochedo']);
+});
+
+test('na sala, cada escolha tem 30 s', async () => {
+  const m = await import('../src/minijogo-bichos.js');
+  assert.equal(m.ESCOLHA_MS, 30_000);
+  assert.equal(m.MONTAGEM_MS, 30_000);
+  assert.equal(m.BICHOS_NA_MESA, 3);
+});
+
+test('a toca tem saída: na porta de casa, levar, guardar, trocar e soltar (o servidor confere)', () => {
+  const equipe = [1, 2, 3, 4, 5, 6].map((id) => guardado(id, 'zunzi', 5));
+  db.guardarAventuraDosBichos(caioId, {
+    v: 1, mapa: 'campo', x: 3, y: 14, cenouras: 0, chas: 0, desafios: 0, proximoId: 9, equipe,
+    toca: [guardado(7, 'rochim', 8, { pv: 0 }), guardado(8, 'miasso', 6)],
+  });
+  const p = comecar({ solo: true, naSala: () => [caioId] }, sorte(0.99), caioId);
+  let e = p.estado(caioId);
+  assert.equal(e.naCasa, false);
+  assert.deepEqual(e.guardados.map((b: any) => b.especie), ['rochim', 'miasso']);
+  assert.equal(p.jogo.acao(caioId, { tipo: 'toca', acao: 'levar', id: 7 }), 'Ação inválida.', 'longe de casa, não');
+  assert.equal(p.jogo.acao(caioId, { tipo: 'andar', dir: 'c' }), null); // a porta de casa (3,13)
+  e = p.estado(caioId);
+  assert.equal(e.naCasa, true);
+  assert.equal(p.jogo.acao(caioId, { tipo: 'toca', acao: 'levar', id: 7 }), 'Ação inválida.', 'a equipe está cheia');
+  // trocar: o rochim sai da toca descansado, e o da equipe vai para lá
+  assert.equal(p.jogo.acao(caioId, { tipo: 'toca', acao: 'trocar', id: 7, i: 0 }), null);
+  e = p.estado(caioId);
+  assert.equal(e.equipe[0].especie, 'rochim');
+  assert.equal(e.equipe[0].pv, e.equipe[0].pvMax);
+  assert.deepEqual(e.guardados.map((b: any) => b.id), [1, 8]);
+  // guardar e levar
+  assert.equal(p.jogo.acao(caioId, { tipo: 'toca', acao: 'guardar', i: 5 }), null);
+  assert.equal(p.estado(caioId).equipe.length, 5);
+  assert.equal(p.jogo.acao(caioId, { tipo: 'toca', acao: 'levar', id: 8 }), null);
+  assert.equal(p.estado(caioId).equipe.at(-1).especie, 'miasso');
+  // soltar: só da toca, e não volta
+  assert.equal(p.jogo.acao(caioId, { tipo: 'toca', acao: 'soltar', id: 2 }), 'Ação inválida.', 'quem está na equipe não se solta direto');
+  assert.equal(p.jogo.acao(caioId, { tipo: 'toca', acao: 'soltar', id: 1 }), null);
+  e = p.estado(caioId);
+  assert.ok(!e.guardados.some((b: any) => b.id === 1));
+  // a equipe nunca fica vazia
+  for (let k = 0; k < 10; k++) p.jogo.acao(caioId, { tipo: 'toca', acao: 'guardar', i: 0 });
+  assert.equal(p.estado(caioId).equipe.length, 1);
+  assert.equal(p.jogo.acao(caioId, { tipo: 'toca', acao: 'pular' }), 'Ação inválida.');
+  // tudo guardado
+  const g = lerAventura(db.aventuraDosBichos(caioId))!;
+  assert.equal(g.equipe.length, 1);
+  assert.equal(g.toca.length, 6);
+});
+
+test('a experiência repartida: quem entrou na luta divide, e quem ficou na equipe ganha uma parte pequena', () => {
+  db.guardarAventuraDosBichos(caioId, {
+    v: 1, mapa: 'campo', x: 6, y: 12, cenouras: 0, chas: 0, desafios: 0, proximoId: 4,
+    equipe: [guardado(1, 'bolhim', 10), guardado(2, 'zunzi', 10), guardado(3, 'rochim', 10)], toca: [],
+  });
+  // sorte 0: o mato dá o zunzi no nível 2 na hora
+  const p = comecar({ solo: true, naSala: () => [caioId] }, sorte(0), caioId);
+  assert.equal(p.jogo.acao(caioId, { tipo: 'andar', dir: 'c' }), null);
+  assert.equal(p.estado(caioId).fase, 'batalha');
+  assert.equal(p.jogo.acao(caioId, { tipo: 'trocar', i: 1 }), null); // o zunzi entra: os dois lutaram
+  for (let k = 0; k < 20 && !p.estado(caioId).luta.acabou; k++) p.jogo.acao(caioId, { tipo: 'golpe', i: 0 });
+  const e = p.estado(caioId);
+  assert.equal(e.luta.acabou, 'vitoria');
+  const xp = regras.xpGanha('zunzi', 2, false);
+  const ganhou = e.equipe.map((b: any) => b.xpDoNivel);
+  assert.equal(ganhou[0], Math.ceil(xp / 2), 'o bolhim, que começou');
+  assert.equal(ganhou[1], Math.ceil(xp / 2), 'o zunzi, que terminou');
+  assert.equal(ganhou[2], Math.floor(xp * 0.2), 'o rochim, que não lutou');
+  assert.ok(ganhou[2] > 0 && ganhou[2] < ganhou[0]);
+  p.jogo.acao(caioId, { tipo: 'continuar' });
+});
+
+test('o golpe novo com 4 sabidos: avisa, e a pessoa escolhe qual esquecer (ou não aprender); guardado por bicho', () => {
+  // o tisco no 11 sabe investida, fogo, sopro e vulcão; no 12, aprende calor
+  db.guardarAventuraDosBichos(caioId, {
+    v: 1, mapa: 'campo', x: 6, y: 12, cenouras: 0, chas: 0, desafios: 0, proximoId: 2,
+    equipe: [{ ...guardado(1, 'tisco', 11), xp: regras.xpDoNivel(12) - 1 }], toca: [],
+  });
+  const p = comecar({ solo: true, naSala: () => [caioId] }, sorte(0), caioId);
+  assert.equal(p.estado(caioId).equipe[0].golpes.length, 4);
+  assert.equal(p.jogo.acao(caioId, { tipo: 'esquecer', i: 0 }), 'Ação inválida.', 'nada para aprender ainda');
+  p.jogo.acao(caioId, { tipo: 'andar', dir: 'c' });
+  for (let k = 0; k < 20 && !p.estado(caioId).luta.acabou; k++) p.jogo.acao(caioId, { tipo: 'golpe', i: 1 });
+  let e = p.estado(caioId);
+  assert.ok(e.eventos.some((x: any) => x.t === 'querAprender' && x.golpe === 'calor'));
+  assert.deepEqual(e.equipe[0].golpes, ['investida', 'fogo', 'sopro', 'vulcao'], 'não apagou nenhum sozinho');
+  assert.equal(e.aprender.golpe, 'calor');
+  assert.equal(p.jogo.acao(caioId, { tipo: 'esquecer', i: 4 }), 'Ação inválida.');
+  assert.equal(p.jogo.acao(caioId, { tipo: 'esquecer', i: 0 }), null);
+  e = p.estado(caioId);
+  assert.deepEqual(e.equipe[0].golpes, ['calor', 'fogo', 'sopro', 'vulcao']);
+  assert.equal(e.aprender, null);
+  assert.ok(e.eventos.some((x: any) => x.t === 'esqueceu' && x.antigo === 'investida'));
+  assert.deepEqual(lerAventura(db.aventuraDosBichos(caioId))!.equipe[0].golpes, ['calor', 'fogo', 'sopro', 'vulcao'], 'guardado');
+  // "não aprender" deixa como está
+  db.guardarAventuraDosBichos(caioId, {
+    v: 1, mapa: 'campo', x: 3, y: 14, cenouras: 0, chas: 0, desafios: 0, proximoId: 2,
+    equipe: [guardado(1, 'tisco', 12, { golpes: ['investida', 'fogo', 'sopro', 'vulcao'] })], toca: [], aprender: [{ id: 1, golpe: 'calor' }],
+  });
+  const q = comecar({ solo: true, naSala: () => [caioId] }, sorte(0.99), caioId);
+  assert.equal(q.estado(caioId).aprender.golpe, 'calor');
+  assert.equal(q.jogo.acao(caioId, { tipo: 'esquecer', i: -1 }), null);
+  assert.deepEqual(q.estado(caioId).equipe[0].golpes, ['investida', 'fogo', 'sopro', 'vulcao']);
+  // e com menos de 4, aprende sozinho
+  db.guardarAventuraDosBichos(caioId, {
+    v: 1, mapa: 'campo', x: 6, y: 12, cenouras: 0, chas: 0, desafios: 0, proximoId: 2,
+    equipe: [{ ...guardado(1, 'tisco', 11, { golpes: ['fogo', 'vulcao'] }), xp: regras.xpDoNivel(12) - 1 }], toca: [],
+  });
+  const r = comecar({ solo: true, naSala: () => [caioId] }, sorte(0), caioId);
+  r.jogo.acao(caioId, { tipo: 'andar', dir: 'c' });
+  for (let k = 0; k < 20 && !r.estado(caioId).luta.acabou; k++) r.jogo.acao(caioId, { tipo: 'golpe', i: 0 });
+  assert.deepEqual(r.estado(caioId).equipe[0].golpes, ['fogo', 'vulcao', 'calor']);
+});
+
+test('a aventura de antes de 20/11/2026: sem golpes guardados, os últimos 4; golpe que não existe sai', () => {
+  const a = lerAventura({ v: 1, x: 3, y: 14, equipe: [{ id: 1, especie: 'brotelao', nivel: 30 }, { id: 2, especie: 'tisco', nivel: 9, golpes: ['fogo', 'bola-de-fogo'] }], toca: [] })!;
+  assert.deepEqual(a.equipe[0].golpes, regras.golpesDe('brotelao', 30));
+  assert.deepEqual(a.equipe[1].golpes, ['fogo']);
+  assert.deepEqual(a.aprender, []);
+  assert.equal(a.chasFortes, 0);
+});
+
+test('o caderno fecha: toda espécie é alcançável (o mato, os do começo, o raro, os presentes da revanche e quem cresce deles)', () => {
+  assert.deepEqual([...regras.alcancaveis()].sort(), Object.keys(regras.ESPECIES).sort());
+  for (const e of regras.PRESENTES_DA_REVANCHE) assert.equal(regras.ESPECIES[e].taxa, 0, 'os da Nena só vêm de presente');
+});
+
+test('os do começo não escolhidos aparecem raros no mato da Serra, depois da escada inteira', () => {
+  db.guardarAventuraDosBichos(caioId, {
+    v: 1, mapa: 'serra', x: 2, y: 10, cenouras: 0, chas: 0, desafios: 1, proximoId: 2, escada: [0, 1, 2, 3],
+    equipe: [guardado(1, 'brotel', 9)], toca: [],
+  });
+  // o mato dá bicho (0), o nevasco do 17 (0, 0), não é o raro (0.5), é um do começo (0), o primeiro que falta (0)
+  const p = comecar({ solo: true, naSala: () => [caioId] }, sorte(0, 0, 0, 0.5, 0, 0), caioId);
+  assert.equal(p.jogo.acao(caioId, { tipo: 'andar', dir: 'c' }), null);
+  const e = p.estado(caioId);
+  assert.equal(e.fase, 'batalha');
+  const bicho = e.luta.outro.equipe[0];
+  assert.equal(bicho.especie, 'tisco', 'o brotel já é da pessoa: vem o tisco');
+  assert.equal(bicho.nivel, 15, 'antes de crescer');
+  assert.ok(e.eventos.some((x: any) => x.t === 'raro' && x.especie === 'tisco'));
+});
+
+test('a revanche vencida dá um bicho da Nena (o próximo que falta), e o caderno anota', () => {
+  db.guardarAventuraDosBichos(caioId, {
+    v: 1, mapa: 'campo', x: 19, y: 4, cenouras: 0, chas: 0, desafios: 1, proximoId: 2, escada: [0, 1, 2, 3],
+    equipe: [{ id: 1, especie: 'aurelho', nivel: 50, xp: regras.xpDoNivel(50), pv: 999 }], toca: [],
+  });
+  const p = comecar({ solo: true, naSala: () => [caioId] }, sorte(0.99), caioId);
+  for (const esperado of ['galoca', 'macalu']) {
+    assert.equal(p.jogo.acao(caioId, { tipo: 'andar', dir: 'c' }), null);
+    for (let k = 0; k < 60 && !p.estado(caioId).luta.acabou; k++) p.jogo.acao(caioId, { tipo: 'golpe', i: 0 });
+    const e = p.estado(caioId);
+    assert.equal(e.luta.acabou, 'vitoria');
+    assert.ok(e.eventos.some((x: any) => x.t === 'presente' && x.especie === esperado && x.nome === 'Nena'), esperado);
+    const novo = e.equipe.find((b: any) => b.especie === esperado);
+    assert.equal(novo.nivel, regras.NIVEL_DO_PRESENTE);
+    assert.ok(e.caderno.pegos.includes(esperado));
+    p.jogo.acao(caioId, { tipo: 'continuar' });
+    p.jogo.acao(caioId, { tipo: 'andar', dir: 'b' });
+  }
+});
+
+test('o chá cura uma parte da vida (o forte, mais), e a erva-doce tira o cochilo e o veneno', () => {
+  const b = luta.novaBatalha([luta.lutador('brotelao', 40)], [luta.lutador('zunzi', 2)]);
+  const eu = b.lados[0].equipe[0];
+  eu.pv = 1;
+  luta.turno(b, [{ tipo: 'cha' }, { tipo: 'nada' }], () => 0.5);
+  assert.equal(eu.pv, 1 + Math.floor(eu.pvMax * regras.CURA_DO_CHA));
+  assert.ok(eu.pv > 20, 'mais que os 20 de antes num bicho grande');
+  eu.pv = 1;
+  luta.turno(b, [{ tipo: 'cha', forte: true }, { tipo: 'nada' }], () => 0.5);
+  assert.equal(eu.pv, 1 + Math.floor(eu.pvMax * regras.CURA_DO_CHA_FORTE));
+  eu.estado = 'veneno';
+  const ev = luta.turno(b, [{ tipo: 'erva' }, { tipo: 'nada' }], () => 0.5);
+  assert.equal(eu.estado, null);
+  assert.ok(ev.some((x) => x.t === 'erva'));
+  assert.equal(luta.conferirEscolha(b, 0, { tipo: 'erva' }), null);
+});
+
+test('a cenoura dourada dobra a chance da amizade (no mínimo 1 em 4), e não vale para os da Nena', () => {
+  const comum = regras.chanceDeAmizade('cardao', 30, 30);
+  assert.equal(regras.chanceDeAmizade('cardao', 30, 30, true), Math.max(0.25, comum * 2));
+  assert.ok(regras.chanceDeAmizade('aurelho', 1, 100, true) >= 0.25);
+  assert.equal(regras.chanceDeAmizade('dragolim', 1, 30, true), 0);
+});
+
+test('a lojinha tem escada: a erva-doce, o chá forte e a cenoura dourada abrem com os desafios vencidos', () => {
+  const comEscada = (escada: number[]) => {
+    db.guardarAventuraDosBichos(caioId, {
+      v: 1, mapa: 'bosque', x: 4, y: 8, cenouras: 0, chas: 0, desafios: 0, proximoId: 2, moedas: 500, escada,
+      equipe: [guardado(1, 'zunzi', 5)], toca: [],
+    });
+    const p = comecar({ solo: true, naSala: () => [caioId] }, sorte(0.99), caioId);
+    p.jogo.acao(caioId, { tipo: 'andar', dir: 'c' });
+    assert.equal(p.estado(caioId).loja, true);
+    return p;
+  };
+  let p = comEscada([]);
+  for (const item of ['erva', 'chaForte', 'dourada']) assert.equal(p.jogo.acao(caioId, { tipo: 'comprar', item }), 'Ação inválida.', item);
+  assert.equal(p.jogo.acao(caioId, { tipo: 'comprar', item: 'nada' }), 'Ação inválida.');
+  p = comEscada([0, 1, 2]);
+  for (const item of ['erva', 'chaForte', 'dourada']) assert.equal(p.jogo.acao(caioId, { tipo: 'comprar', item }), null, item);
+  const e = p.estado(caioId);
+  assert.deepEqual([e.ervas, e.chasFortes, e.douradas], [1, 1, 1]);
+  assert.equal(e.moedas, 500 - regras.PRECOS.erva - regras.PRECOS.chaForte - regras.PRECOS.dourada);
+});
+
+test('a erva-doce e a cenoura dourada na luta gastam as delas, e a erva só serve com cochilo ou veneno', () => {
+  db.guardarAventuraDosBichos(caioId, {
+    v: 1, mapa: 'campo', x: 6, y: 12, cenouras: 0, chas: 0, desafios: 0, proximoId: 2, ervas: 1, douradas: 1, chasFortes: 1,
+    equipe: [guardado(1, 'bolhim', 10)], toca: [],
+  });
+  const p = comecar({ solo: true, naSala: () => [caioId] }, sorte(0), caioId);
+  p.jogo.acao(caioId, { tipo: 'andar', dir: 'c' });
+  assert.equal(p.jogo.acao(caioId, { tipo: 'erva' }), 'Ação inválida.', 'sem estado, não');
+  assert.equal(p.jogo.acao(caioId, { tipo: 'cenoura' }), 'Acabaram as cenouras.');
+  assert.equal(p.jogo.acao(caioId, { tipo: 'cenoura', dourada: true }), null);
+  const e = p.estado(caioId);
+  assert.equal(e.luta.acabou, 'amigo');
+  assert.equal(e.douradas, 0);
+});
+
+test('o mato do Bosque e da Serra é esperto; o do campo, não', () => {
+  assert.ok(!regras.MAPAS.campo.esperto);
+  assert.equal(regras.MAPAS.bosque.esperto, true);
+  assert.equal(regras.MAPAS.serra.esperto, true);
+  // o esperto escolhe o golpe que mais tira (contra a pedra, a semente da folha, e não a investida)
+  const b = luta.novaBatalha([luta.lutador('rochim', 10)], [Object.assign(luta.lutador('cardao', 10), { golpes: ['investida', 'semente'] })]);
+  assert.deepEqual(luta.escolhaDoRobo(b, 1, () => 0.9, true), { tipo: 'golpe', i: 1 });
 });

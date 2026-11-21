@@ -397,3 +397,47 @@
   max-width: 100%;
   height: auto;
 }
+
+/* 20/11/2026 (lote C): o golpe novo que espera, a toca por dentro e a largada da mesa */
+.bichos-aprender {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  border-radius: 10px;
+  background: var(--bg-raised, #fbf6ea);
+  color: var(--text, #2b2a33);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+.bichos-campo .bichos-aprender {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: 6px;
+  z-index: 3;
+}
+.bichos-aprender p { display: flex; align-items: center; gap: 8px; margin: 0; }
+.bichos-aprender-novo {
+  font-weight: 700;
+  border-left: 4px solid var(--cor, #888);
+  padding-left: 6px;
+}
+.bichos-aprender-novo small { font-weight: 400; opacity: 0.8; }
+.bichos-toca { margin-top: 8px; }
+.bichos-toca h4 { margin: 0 0 4px; }
+.bichos-toca li.escolhido,
+.bichos-troca button.escolhido { outline: 2px solid var(--accent, #e0a92a); outline-offset: -2px; }
+.bichos-toca-botoes,
+.bichos-toca-soltar { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
+.bichos-toca-soltar small { flex-basis: 100%; }
+.bichos-ordem {
+  min-width: 1.4em;
+  text-align: center;
+  border-radius: 50%;
+  background: var(--accent, #e0a92a);
+  color: #2b2a33;
+}
+.bichos-equipe li { flex-wrap: wrap; }
+.bichos-equipe li > .link-button { font-size: 12px; }
+.bichos-cesta { flex-wrap: wrap; }
+.bichos-toca-botoes, .bichos-toca-soltar { flex-basis: 100%; padding-left: 46px; }

@@ -264,3 +264,58 @@
   display: flex;
   min-height: 10px;
 }
+
+/* os mares da Batalha naval (20/11/2026): o lado e a frota em barrinhas */
+.mesa-mar {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.mesa-mar-frota {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2px;
+  max-width: 90px;
+}
+.mesa-mar-frota span {
+  height: 4px;
+  border-radius: 2px;
+  background: currentColor;
+  opacity: 0.6;
+}
+
+/* as capturas do Cinco em linha (20/11/2026): um ponto por captura */
+.duelo-capturas {
+  display: inline-flex;
+  gap: 2px;
+  margin-inline-start: 6px;
+}
+.duelo-capturas span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.25;
+}
+.duelo-capturas span.feita {
+  opacity: 0.9;
+}
+
+/* a casa que acabou de ser capturada (o 2D do Cinco em linha) */
+.gomoku-casa.capturada {
+  box-shadow: inset 0 0 0 3px rgba(229, 72, 77, 0.6);
+}
+
+/* o selo da batida especial do Dominó (20/11/2026) */
+.dom-especial {
+  display: inline-block;
+  margin: 2px auto 4px;
+  padding: 2px 12px;
+  border-radius: 999px;
+  background: #e3b45a;
+  color: #3b2a12;
+  font-weight: 700;
+  transform: rotate(-3deg);
+}

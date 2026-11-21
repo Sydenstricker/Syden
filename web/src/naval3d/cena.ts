@@ -59,6 +59,8 @@ export interface MarDaCena {
   ultima: number | null;
   /** O salvo (19/11/2026): as casas da rajada já escolhidas, marcadas no mar antes de atirar. */
   mirada?: number[];
+  /** O lado do mar (20/11/2026: 8, 10 ou 12; sem ele, 10). A cena o lê ao nascer. */
+  lado?: number;
   /** A frota que a pessoa escolheu ver (de fábrica, a pirata). */
   frota?: FrotaDaCena;
   /**
@@ -80,7 +82,7 @@ export interface ToquesDaMontagem {
   soltar(casa: number | null): void;
 }
 
-const centro = (casa: number) => new THREE.Vector3((casa % LADO) - (LADO - 1) / 2, 0, Math.floor(casa / LADO) - (LADO - 1) / 2);
+const centro = (casa: number, n = LADO) => new THREE.Vector3((casa % n) - (n - 1) / 2, 0, Math.floor(casa / n) - (n - 1) / 2);
 
 /** O navio cabendo nas casas: o comprimento no tamanho dele, a largura em no máximo 0,8 de casa, e as velas achatadas. */
 function navio(g: GLTF, tamanho: number): THREE.Object3D {
@@ -143,6 +145,8 @@ export class MarNaval3D {
     private toques?: ToquesDaMontagem,
     /** O contexto da placa se perdeu (o navegador o tomou, ou a placa reiniciou): quem mostra volta à grade 2D. */
     private aoPerder?: () => void,
+    /** O lado do mar (20/11/2026: 8, 10 ou 12), que a cena não muda depois de nascer. */
+    private n = LADO,
   ) {
     this.renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'low-power' });
     this.renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.75));
@@ -169,23 +173,23 @@ export class MarNaval3D {
     const sol = new THREE.DirectionalLight('#fff1d6', 2.0);
     sol.position.set(-4, 10, 6);
     sol.castShadow = sombras;
-    Object.assign(sol.shadow.camera, { left: -7, right: 7, top: 7, bottom: -7 });
+    Object.assign(sol.shadow.camera, { left: -0.7 * this.n, right: 0.7 * this.n, top: 0.7 * this.n, bottom: -0.7 * this.n });
     c.add(sol);
     // a água: uma malha que ondula devagar, e a borda de areia em volta
-    this.aguaGeo = new THREE.PlaneGeometry(LADO + 0.6, LADO + 0.6, 40, 40);
+    this.aguaGeo = new THREE.PlaneGeometry(this.n + 0.6, this.n + 0.6, 40, 40);
     this.aguaGeo.rotateX(-Math.PI / 2);
     this.base = (this.aguaGeo.attributes.position.array as Float32Array).slice();
     this.agua = new THREE.Mesh(this.aguaGeo, new THREE.MeshStandardMaterial({ color: '#4fa3c7', roughness: 0.35, metalness: 0.05, flatShading: true }));
     this.agua.receiveShadow = true;
     c.add(this.agua);
-    const borda = new THREE.Mesh(new THREE.BoxGeometry(LADO + 1.4, 0.4, LADO + 1.4), new THREE.MeshStandardMaterial({ color: '#e9d3a1', roughness: 1 }));
+    const borda = new THREE.Mesh(new THREE.BoxGeometry(this.n + 1.4, 0.4, this.n + 1.4), new THREE.MeshStandardMaterial({ color: '#e9d3a1', roughness: 1 }));
     // a borda fica abaixo do vale das ondas: alta, ela aparecia em manchas pela água
     borda.position.y = -0.45;
     c.add(borda);
     // a grade
     const pts: number[] = [];
-    const m = LADO / 2;
-    for (let i = 0; i <= LADO; i++) {
+    const m = this.n / 2;
+    for (let i = 0; i <= this.n; i++) {
       const k = i - m;
       pts.push(-m, 0.03, k, m, 0.03, k, k, 0.03, -m, k, 0.03, m);
     }
@@ -237,8 +241,10 @@ export class MarNaval3D {
     const h = Math.max(1, this.caixa.clientHeight);
     this.renderer.setSize(w, h, false);
     this.camera.aspect = w / h;
-    this.camera.position.set(0, 14.4, 10.4);
-    this.camera.lookAt(0, -0.4, 0.4);
+    // o mar maior pede a câmera mais longe, na mesma proporção
+    const k = this.n / LADO;
+    this.camera.position.set(0, 14.4 * k, 10.4 * k);
+    this.camera.lookAt(0, -0.4, 0.4 * k);
     this.camera.updateProjectionMatrix();
   }
 
@@ -274,7 +280,7 @@ export class MarNaval3D {
       }
       const obj = navio(g, n.casas.length);
       const casas = [...n.casas].sort((a, b) => a - b);
-      const meio = centro(casas[0]).add(centro(casas[casas.length - 1])).multiplyScalar(0.5);
+      const meio = centro(casas[0], this.n).add(centro(casas[casas.length - 1], this.n)).multiplyScalar(0.5);
       const deitado = casas.length > 1 && casas[1] - casas[0] === 1;
       obj.position.copy(meio);
       obj.rotation.y = deitado ? Math.PI / 2 : 0;
@@ -306,7 +312,7 @@ export class MarNaval3D {
       if (ja) this.cena.remove(ja);
       const marca = tiro === 1 ? this.respingoDeAgua() : this.fogo();
       marca.userData.tiro = tiro;
-      marca.position.copy(centro(casa));
+      marca.position.copy(centro(casa, this.n));
       this.cena.add(marca);
       this.marcas.set(casa, marca);
       if (casa === d.ultima) this.estourar(casa, tiro === 2);
@@ -316,7 +322,7 @@ export class MarNaval3D {
     for (const casa of d.mirada ?? []) {
       const m = new THREE.Mesh(this.casaGeo, this.matDaRajada);
       m.rotation.x = -Math.PI / 2;
-      m.position.set(centro(casa).x, 0.06, centro(casa).z);
+      m.position.set(centro(casa, this.n).x, 0.06, centro(casa, this.n).z);
       this.rajada.add(m);
     }
     if (!this.rajada.parent) this.cena.add(this.rajada);
@@ -344,7 +350,7 @@ export class MarNaval3D {
     const casa = (c: number, cor: string, opacidade: number, y: number) => {
       const p = new THREE.Mesh(this.casaGeo, new THREE.MeshBasicMaterial({ color: cor, transparent: true, opacity: opacidade, depthWrite: false }));
       p.rotation.x = -Math.PI / 2;
-      p.position.set(centro(c).x, y, centro(c).z);
+      p.position.set(centro(c, this.n).x, y, centro(c, this.n).z);
       this.fantasma.add(p);
     };
     if (e) for (const c of e) casa(c, '#ffe08a', 0.5, 0.06);
@@ -354,7 +360,7 @@ export class MarNaval3D {
     if (!f.ok || !g) return;
     const obj = navio(g, f.casas.length);
     const casas = [...f.casas].sort((a, b) => a - b);
-    obj.position.copy(centro(casas[0]).add(centro(casas[casas.length - 1])).multiplyScalar(0.5));
+    obj.position.copy(centro(casas[0], this.n).add(centro(casas[casas.length - 1], this.n)).multiplyScalar(0.5));
     obj.position.y = 0.04;
     obj.rotation.y = casas.length > 1 && casas[1] - casas[0] === 1 ? Math.PI / 2 : 0;
     obj.traverse((o) => {
@@ -404,7 +410,7 @@ export class MarNaval3D {
     if (this.calmo) return;
     if (this.respingo) this.cena.remove(this.respingo.obj);
     const coluna = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.3, 1, 10, 1, true), new THREE.MeshStandardMaterial({ color: acertou ? '#ffb45a' : '#e8f7ff', transparent: true, opacity: 0.85, side: THREE.DoubleSide }));
-    coluna.position.copy(centro(casa));
+    coluna.position.copy(centro(casa, this.n));
     this.cena.add(coluna);
     this.respingo = { obj: coluna, inicio: performance.now() };
   }
@@ -414,9 +420,9 @@ export class MarNaval3D {
     this.raio.setFromCamera(new THREE.Vector2(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1), this.camera);
     const p = new THREE.Vector3();
     if (!this.raio.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), p)) return null;
-    const c = Math.floor(p.x + LADO / 2);
-    const l = Math.floor(p.z + LADO / 2);
-    return c >= 0 && l >= 0 && c < LADO && l < LADO ? l * LADO + c : null;
+    const c = Math.floor(p.x + this.n / 2);
+    const l = Math.floor(p.z + this.n / 2);
+    return c >= 0 && l >= 0 && c < this.n && l < this.n ? l * this.n + c : null;
   }
   private aoApertar = (e: PointerEvent) => {
     this.tipoDoPonteiro = e.pointerType;
@@ -447,7 +453,7 @@ export class MarNaval3D {
       return;
     }
     this.mira.visible = true;
-    this.mira.position.set(centro(casa).x, 0.05, centro(casa).z);
+    this.mira.position.set(centro(casa, this.n).x, 0.05, centro(casa, this.n).z);
   };
   private aoSair = (e: PointerEvent) => {
     // no toque, o dedo que sobe também "sai" da tela: a mira da prévia tem de ficar
@@ -473,7 +479,7 @@ export class MarNaval3D {
       if (casa !== this.previa) {
         this.previa = casa;
         this.mira.visible = true;
-        this.mira.position.set(centro(casa).x, 0.05, centro(casa).z);
+        this.mira.position.set(centro(casa, this.n).x, 0.05, centro(casa, this.n).z);
         return;
       }
       this.previa = null;

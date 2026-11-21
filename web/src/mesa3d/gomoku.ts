@@ -16,6 +16,8 @@ export interface GomokuDaCena {
   casas: number[];
   ultima: number | null;
   linha: number[];
+  /** As casas que o último lance capturou (a variante da captura, 20/11/2026): marcadas de vermelho. */
+  capturadas?: number[];
   /** As casas que o clique aceita agora (vazio fora da vez). */
   clicaveis: number[];
   /** A cor da pedra que a pessoa põe agora (1 escura, 2 clara), para a pedra-fantasma da prévia; sem ela, só o ponto. */
@@ -185,6 +187,7 @@ export class Gomoku3D extends MesaBase<GomokuDaCena> {
     };
     if (d.ultima !== null) marcar(d.ultima, '#e3c45a', 0.55);
     for (const i of d.linha) marcar(i, '#6fd08a', 0.7);
+    for (const i of d.capturadas ?? []) marcar(i, '#e5484d', 0.55);
     for (const f of this.fantasmas.values()) f.visible = false;
     if (this.sobre !== null && d.clicaveis.includes(this.sobre)) {
       const f = d.minhaCor ? this.fantasma(d.minhaCor) : null;

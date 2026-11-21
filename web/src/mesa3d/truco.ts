@@ -3,6 +3,7 @@ import type { GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { fundoAconchegante, mesaDeFeltro } from './ambiente';
 import { carregarModelo, giro, iluminar, MesaBase } from './base';
 import { desenhoDaFrente, desenhoDoGrao, desenhoDoVerso, materialDaCarta, texturaDaCarta } from './cartas';
+import { ehManilha } from '../contasDasMesas';
 
 /**
  * O TRUCO EM 3D (05/11/2026, pedido dele): a mesa de feltro com as cartas do KayKit (o baralho francês de 52, do qual o
@@ -22,7 +23,7 @@ export interface TrucoDaCena {
   mao: string[];
   maoClicavel: boolean;
   manilha: string;
-  vira: string;
+  vira: string | null;
   mesa: { lugar: number; carta: string | null; coberta: boolean }[];
 }
 
@@ -209,7 +210,7 @@ export class Truco3D extends MesaBase<TrucoDaCena> {
       pos.y = CHAO + k * PILHA;
       const deFrente = !!m.carta && !m.coberta;
       // de pé para quem olha, para ler (só o tortinho de quem jogou)
-      quer.set(chave, { pos, q: this.deitada(torto, deFrente), face: m.carta, alvo: null, manilha: deFrente && m.carta!.slice(0, -1) === d.manilha });
+      quer.set(chave, { pos, q: this.deitada(torto, deFrente), face: m.carta, alvo: null, manilha: deFrente && ehManilha(m.carta!, d.manilha) });
     });
 
     // a minha mão, em pé na minha frente
@@ -220,7 +221,7 @@ export class Truco3D extends MesaBase<TrucoDaCena> {
       const sobe = clicavel && this.sobre === k ? 0.2 : 0;
       const pos = new THREE.Vector3(meio * (LARGURA + 0.12), MAO_Y + sobe + Math.abs(meio) * -0.03, MAO_Z + Math.abs(meio) * 0.06);
       const q = giro(0, -meio * 0.1, 0).multiply(giro(0.95, 0, 0));
-      quer.set(`c:${carta}`, { pos, q, face: carta, alvo: clicavel ? k : null, manilha: carta.slice(0, -1) === d.manilha });
+      quer.set(`c:${carta}`, { pos, q, face: carta, alvo: clicavel ? k : null, manilha: ehManilha(carta, d.manilha) });
       // o lugar do clique fica onde a carta DESCANSA, maior que ela no comprimento para cobrir também a carta erguida
       if (clicavel) this.alvoFixo(k, pos.clone().setY(pos.y - sobe), q, LARGURA + 0.12, ALTURA + 0.45);
     });

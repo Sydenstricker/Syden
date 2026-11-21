@@ -133,6 +133,17 @@ export function gorjetaDe(esperaMs: number): number {
   return 0;
 }
 
+/**
+ * A PACIÊNCIA (20/11/2026, a segunda auditoria: o pedido nunca vencia). Cada pedido tem um prazo, contado de quando apareceu na
+ * fila, pelo relógio do servidor: de 60 s (o sorvete) a 90 s (as pizzas), pelos pontos da receita, que medem o trabalho dela.
+ * Vencido, ele sai da fila (entra outro no lugar) e custa PENA_DO_PEDIDO_PERDIDO pontos (nunca abaixo de zero). Medido com o
+ * piloto automático, que cozinha um prato por vez: entrega de 7 a 11 pratos em 3 minutos e perde de 1 a 4.
+ */
+export const PENA_DO_PEDIDO_PERDIDO = 5;
+export function prazoDoPedidoMs(receita: IdDaReceita): number {
+  return Math.min(90_000, Math.max(60_000, 60_000 + (RECEITAS[receita].pontos - 10) * 1200));
+}
+
 /** O que a estação de fogo aceita: no fogão, o que é dele (cru, ou já no ponto para continuar); no forno, a massa aberta. */
 export function vaiAoFogo(tipo: 'fogao' | 'forno', i: Item): boolean {
   if (tipo === 'fogao') return DO_FOGAO.includes(i.ing) && i.estado !== 'picado';

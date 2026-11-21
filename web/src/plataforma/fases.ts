@@ -540,3 +540,18 @@ export const COPAS_DO_PULO: Record<string, string[]> = {
   // a segunda copa (19/11/2026): as três fases com bichos
   'copa-dos-bichos': ['corrego-1', 'mina-1', 'ninho-1'],
 };
+
+/**
+ * AS MEDALHAS DE CADA FASE (20/11/2026, o lote C da segunda auditoria), como as da Torre do Celeiro: sobre o tempo do PILOTO
+ * AUTOMÁTICO, em passos (web/test/plataforma.test.ts confere que é o dele: mexeu na fase ou na física, medir de novo). Ouro até
+ * ele, prata até 25% a mais, bronze até 60% a mais. Só tela: o servidor guarda o tempo, não a medalha.
+ */
+export const TEMPO_DO_PILOTO_DO_PULO: Record<string, number> = {
+  'prado-1': 1949,
+  'toca-1': 2071,
+  'copas-1': 1955,
+  'corrego-1': 1988,
+  'mina-1': 1909,
+  'ninho-1': 1979,
+};
+export const MEDALHAS_DO_PULO = [1, 1.25, 1.6] as const;

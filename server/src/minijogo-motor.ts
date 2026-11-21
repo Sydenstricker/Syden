@@ -39,6 +39,12 @@ export interface Contexto {
    * dos adversários). `fazer` recebe quem vai receber, e quem só assiste também recebe o dele.
    */
   difundirPorPessoa?(fazer: (quem: number) => unknown): void;
+  /**
+   * O MICROFONE QUE O JOGO DESLIGA (o Lobisomem, 20/11/2026: de noite ninguém fala, e quem saiu do jogo só ouve). O mapa
+   * INTEIRO de agora (quem não está nele fala); vazio devolve o microfone a todos. Só os jogadores da partida; no Solo, nada.
+   * A trava é a permissão do LiveKit (silencio-do-jogo.ts).
+   */
+  silenciar?(motivos: Map<number, 'noite' | 'fora'>): void;
 }
 
 export interface Jogo {

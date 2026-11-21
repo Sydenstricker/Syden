@@ -135,6 +135,10 @@ export const TORRES_DO_CELEIRO: Record<
 
 export const TORRE_PADRAO = 'celeiro-1';
 
+/** A Copa do Celeiro (20/11/2026), só na sala: as cinco torres, na ordem (o site tem a mesma: web/src/torre/fases.ts). */
+export const COPA_DO_CELEIRO = 'copa-do-celeiro';
+export const TORRES_DA_COPA = ['celeiro-1', 'paiol-1', 'silo-1', 'moinho-1', 'pombal-1'];
+
 const AMOSTRA = 4;
 /** Por amostra (4 passos), em décimos: a corrida (110/s) e a prateleira mais rápida (~160/s), com folga. */
 export const DX = 190;

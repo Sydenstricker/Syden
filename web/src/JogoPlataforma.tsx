@@ -11,7 +11,8 @@ import { useGrupoDeToque } from './toqueDosJogos';
 import type { Agir } from './Minijogo';
 import type { Partida } from './minijogos';
 import { H, W } from './plataforma/desenho';
-import { COPAS_DO_PULO, FASES, fasePorId, type Fase } from './plataforma/fases';
+import { COPAS_DO_PULO, FASES, fasePorId, MEDALHAS_DO_PULO, TEMPO_DO_PILOTO_DO_PULO, type Fase } from './plataforma/fases';
+import { MedalhasDaCorrida } from './SelosDaCorrida';
 import { passosEmMs, type Comandos } from './plataforma/fisica';
 import { guardarPosicaoDoRival, rodarFase, type LinhaDaOrdem, type PosicaoDoRival, type Rival } from './plataforma/laco';
 import { Trofeus } from './Trofeus';
@@ -424,9 +425,12 @@ export function JogoPlataforma({ eu, aoVoltar }: { eu: number; aoVoltar: () => v
               <span>
                 {t('Seu recorde: {tempo}', {
                   tempo: tempoLegivel(meu.tempoMs),
-                })}
+                })}{' '}
+                <MedalhasDaCorrida base={TEMPO_DO_PILOTO_DO_PULO[def.id]} tempoMs={meu.tempoMs} fatores={MEDALHAS_DO_PULO} />
               </span>
             )}
+            {/* as medalhas da fase (20/11/2026): os três tempos a bater, sobre o do piloto automático */}
+            <MedalhasDaCorrida base={TEMPO_DO_PILOTO_DO_PULO[def.id]} fatores={MEDALHAS_DO_PULO} />
             {achados.cenouras !== null && <Cenouras n={achados.cenouras} total={def.cenouras.length} dourada={achados.dourada} />}
             <ComandosDoJogo itens={[{ teclas: ['setas-lado'], rotulo: t('Correr') }, { teclas: ['espaco'], rotulo: t('Pular') }, comandoDaPausa(t)]} />
             <p className="settings-hint">{t('Setas para correr, Espaço para pular (segure para ir mais alto).')}</p>
@@ -488,7 +492,9 @@ export function JogoPlataforma({ eu, aoVoltar }: { eu: number; aoVoltar: () => v
           {fase === 'fim' && resultado && (
             <div className="corrida-fim">
               {resultado.recorde && <strong className="corrida-recorde">{t('Novo recorde!')}</strong>}
-              <span className="corrida-relogio grande">{tempoLegivel(resultado.tempoMs)}</span>
+              <span className="corrida-relogio grande">
+                {tempoLegivel(resultado.tempoMs)} <MedalhasDaCorrida base={TEMPO_DO_PILOTO_DO_PULO[def.id]} tempoMs={resultado.tempoMs} fatores={MEDALHAS_DO_PULO} />
+              </span>
               {resultado.quedas > 0 && <span aria-hidden="true">✖ {resultado.quedas}</span>}
               <Cenouras n={resultado.cenouras} total={def.cenouras.length} dourada={resultado.dourada} />
               {resultado.recorde === false && resultado.anterior !== null && (

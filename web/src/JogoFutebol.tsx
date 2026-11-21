@@ -8,9 +8,11 @@ import { comandoDaPausa, TelaDePausa, usePausaComEsc } from './pausaDosJogos';
 import { tocar } from './somDosJogos';
 import { criarImpacto, menosMovimentoNoSistema } from './impacto';
 import { carregarFolhas, COR_DO_TIME, desenharBola, desenharCampo, desenharJogador, desenharNome, type Folhas, type JogadorNaTela } from './futebol/desenho';
+import { Penaltis } from './futebol/CobrancaDePenaltis';
 import { ClienteDaSala, type EventoDaTela, type Quadro } from './futebol/sala';
-import { comandoDoRobo, CONTAGEM, H, NADA, NIVEIS_DO_ROBO, novoMundo, PARTIDA_PASSOS, passoDoMundo, W, type Comando, type Evento, type Jogador, type Mundo } from './futebol/sim';
+import { comandoDoRobo, CONTAGEM, H, NADA, NIVEIS_DO_ROBO, MINUTOS_POSSIVEIS, novoMundo, PARTIDA_PASSOS, passoDoMundo, PRORROGACAO_PASSOS, W, type Comando, type Evento, type Jogador, type Mundo } from './futebol/sim';
 import './futebol/futebol.css';
+import './jogosDePalavras.css';
 
 /**
  * O FUTEBOL DOS COELHOS (05/11/2026, server/src/minijogo-futebol.ts): futebol de campo pequeno, visto de cima, com os jogadores
@@ -42,8 +44,15 @@ export interface EstadoFutebol {
   resultado?: {
     placar: [number, number];
     venceu: 0 | 1 | -1;
+    /** Decidida no gol de ouro (20/11/2026). */
+    golDeOuro?: boolean;
     jogadores: { userId: number; username: string; time: 0 | 1; gols: number; robo: boolean }[];
   } | null;
+  /** O tempo de jogo e o gol de ouro escolhidos por quem começou (20/11/2026). */
+  minutos?: number;
+  golDeOuro?: boolean;
+  /** Os passos do tempo normal. */
+  duracao?: number;
   // no Solo
   formato?: number | null;
   resultadoDoSolo?: { formato: number; gols: number; contra: number } | null;
@@ -72,6 +81,8 @@ const PELO_DO_MASCOTE: [number, number, number] = [250, 241, 212];
 const peloDe = (avatar: number | string | null | undefined): [number, number, number] => coresDoJogador(avatar)?.pelo || PELO_DO_MASCOTE;
 const FORMATO_GUARDADO = 'syden:futebolFormato';
 const NIVEL_GUARDADO = 'syden:futebolNivel';
+const MINUTOS_GUARDADO = 'syden:futebolMinutos';
+const OURO_GUARDADO = 'syden:futebolOuro';
 const lerGuardado = (chave: string, padrao: number) => {
   try {
     const v = localStorage.getItem(chave);
@@ -95,8 +106,14 @@ interface EscolhaDoSolo {
   copa: boolean;
 }
 
-/** A mini-copa: os jogos já feitos (os meus gols e os deles), na ordem. */
-type Copa = [number, number][];
+/**
+ * A mini-copa: os jogos já feitos (os meus gols e os deles, e os pênaltis quando houve), na ordem. DESDE 20/11/2026 É MATA-MATA:
+ * perdeu, acabou; o empate vai aos pênaltis (./futebol/penaltis.ts). Mora só no site: o servidor recebe o último jogo jogado.
+ */
+type JogoDaCopa = [number, number] | [number, number, [number, number]];
+type Copa = JogoDaCopa[];
+/** Ganhei este jogo da copa (no tempo, ou nos pênaltis)? */
+const venceuNaCopa = (j: JogoDaCopa) => (j[2] ? j[2][0] > j[2][1] : j[0] > j[1]);
 
 export function JogoFutebol({ estado, eu, jogador, agir, socket = null, channelId = 0 }: Props) {
   const t = useT();
@@ -106,6 +123,8 @@ export function JogoFutebol({ estado, eu, jogador, agir, socket = null, channelI
   const [copa, setCopa] = useState<Copa>([]);
   const [entreJogos, setEntreJogos] = useState(false);
   const [copaAcabou, setCopaAcabou] = useState(false);
+  /** O jogo da copa que terminou empatado, à espera dos pênaltis (o que vai ao servidor, se for o último). */
+  const [penaltis, setPenaltis] = useState<{ gols: number; contra: number; passos: number; tempo: number } | null>(null);
   if (fim) return <TelaDoFim estado={estado} eu={eu} copa={escolha?.copa ? copa : null} />;
   if (estado.solo) {
     if (!escolha) return <EscolhaDoFormato aoEscolher={setEscolha} />;
@@ -113,6 +132,29 @@ export function JogoFutebol({ estado, eu, jogador, agir, socket = null, channelI
     const jogoDaCopa = copa.length;
     if (escolha.copa && entreJogos) return <TelaDaCopa copa={copa} aoSeguir={() => setEntreJogos(false)} />;
     if (escolha.copa && copaAcabou) return <p className="minijogo-situacao">{t('Fim de jogo!')}</p>;
+    // depois de um jogo da copa (no tempo ou nos pênaltis): perdeu ou era o último, a copa acaba e o jogo vai ao servidor
+    const seguirNaCopa = (jogo: JogoDaCopa, fimDoJogo: { gols: number; contra: number; passos: number; tempo: number }) => {
+      setCopa((c) => [...c, jogo]);
+      if (venceuNaCopa(jogo) && jogoDaCopa < NIVEIS_DO_ROBO.length - 1) {
+        setEntreJogos(true);
+        return;
+      }
+      setCopaAcabou(true);
+      void agir({ tipo: 'fim', formato, ...fimDoJogo });
+    };
+    if (escolha.copa && penaltis) {
+      const empate = penaltis;
+      return (
+        <Penaltis
+          key={`${estado.partidaId}-penaltis-${jogoDaCopa}`}
+          nivel={jogoDaCopa}
+          aoAcabar={(_ganhei, placar) => {
+            setPenaltis(null);
+            seguirNaCopa([empate.gols, empate.contra, placar], empate);
+          }}
+        />
+      );
+    }
     return (
       <PartidaSolo
         key={`${estado.partidaId}-${jogoDaCopa}`}
@@ -123,15 +165,12 @@ export function JogoFutebol({ estado, eu, jogador, agir, socket = null, channelI
         avatar={estado.avatar ?? null}
         robos={estado.robos ?? []}
         aoTerminar={(m) => {
-          // na copa, os dois primeiros jogos ficam aqui; o último vai ao servidor, como uma partida do Solo
-          if (escolha.copa && jogoDaCopa < NIVEIS_DO_ROBO.length - 1) {
-            setCopa((c) => [...c, [m.placar[0], m.placar[1]]]);
-            setEntreJogos(true);
-            return;
-          }
+          // na copa (mata-mata): o empate vai aos pênaltis; a vitória segue; a derrota, ou o último jogo, vai ao servidor
           if (escolha.copa) {
-            setCopa((c) => [...c, [m.placar[0], m.placar[1]]]);
-            setCopaAcabou(true);
+            const fimDoJogo = { gols: m.placar[0], contra: m.placar[1], passos: m.passo, tempo: m.tempo };
+            if (m.placar[0] === m.placar[1]) setPenaltis(fimDoJogo);
+            else seguirNaCopa([m.placar[0], m.placar[1]], fimDoJogo);
+            return;
           }
           void agir({ tipo: 'fim', formato, gols: m.placar[0], contra: m.placar[1], passos: m.passo, tempo: m.tempo });
         }}
@@ -202,6 +241,57 @@ function EscolhaDoFormato({ aoEscolher }: { aoEscolher: (e: EscolhaDoSolo) => vo
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
+// A ESCOLHA DA SALA (20/11/2026, a segunda auditoria): quem começa escolhe o tempo de jogo (2, 3 ou 5 minutos) e se o empate vai
+// ao gol de ouro (a prorrogação curta em que o primeiro gol vence). O servidor confere (fora da lista, os 3 minutos).
+// ---------------------------------------------------------------------------------------------------------------------
+
+export function EscolhaDoFutebolNaSala({ aoEscolher, aoVoltar }: { aoEscolher: (corpo: Record<string, unknown>) => void; aoVoltar: () => void }) {
+  const t = useT();
+  const [minutos, setMinutos] = useState(() => {
+    const m = lerGuardado(MINUTOS_GUARDADO, 3);
+    return MINUTOS_POSSIVEIS.includes(m) ? m : 3;
+  });
+  const [ouro, setOuro] = useState(() => lerGuardado(OURO_GUARDADO, 0) === 1);
+  return (
+    <>
+      <div className="escolha-palavras">
+        <fieldset>
+          <legend>{t('Tempo')}</legend>
+          <div className="opcoes">
+            {MINUTOS_POSSIVEIS.map((n) => (
+              <button key={n} type="button" aria-pressed={n === minutos} onClick={() => setMinutos(n)}>
+                {n} min
+              </button>
+            ))}
+          </div>
+        </fieldset>
+        <label className="marcar">
+          <input type="checkbox" checked={ouro} onChange={(e) => setOuro(e.target.checked)} />
+          {t('Gol de ouro no empate')}
+        </label>
+      </div>
+      <div className="minijogo-acoes">
+        <button
+          type="button"
+          className="btn-primary"
+          onClick={() => {
+            guardar(MINUTOS_GUARDADO, minutos);
+            guardar(OURO_GUARDADO, ouro ? 1 : 0);
+            tocar('clique');
+            aoEscolher({ minutos, golDeOuro: ouro });
+          }}
+        >
+          {t('Começar')}
+        </button>
+        <button type="button" className="btn-secondary" onClick={aoVoltar}>
+          {t('Outros jogos')}
+        </button>
+      </div>
+    </>
+  );
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
 // O FIM
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -209,11 +299,13 @@ function EscolhaDoFormato({ aoEscolher }: { aoEscolher: (e: EscolhaDoSolo) => vo
 function PlacaresDaCopa({ copa }: { copa: Copa }) {
   return (
     <ol className="futebol-copa">
-      {copa.map(([g, c], n) => (
-        <li key={n} className={g > c ? 'venceu' : g < c ? 'perdeu' : undefined}>
+      {copa.map((jogo, n) => (
+        <li key={n} className={venceuNaCopa(jogo) ? 'venceu' : 'perdeu'}>
           <span aria-hidden="true">{'★'.repeat(n + 1)}</span>
           <span>
-            <span style={{ color: COR_DO_TIME[0] }}>{g}</span> × <span style={{ color: COR_DO_TIME[1] }}>{c}</span>
+            <span style={{ color: COR_DO_TIME[0] }}>{jogo[0]}</span> × <span style={{ color: COR_DO_TIME[1] }}>{jogo[1]}</span>
+            {/* os pênaltis, entre parênteses, como no placar de jornal */}
+            {jogo[2] && <small> ({jogo[2][0]} × {jogo[2][1]})</small>}
           </span>
         </li>
       ))}
@@ -247,7 +339,7 @@ function TelaDoFim({ estado, eu, copa = null }: { estado: EstadoFutebol; eu: num
   const t = useT();
   const nomeDoTime = (time: 0 | 1) => (time === 0 ? t('Azul') : t('Laranja'));
   if (estado.solo && copa && copa.length > 0) {
-    const campeao = copa.length === NIVEIS_DO_ROBO.length && copa.every(([g, c]) => g > c);
+    const campeao = copa.length === NIVEIS_DO_ROBO.length && copa.every(venceuNaCopa);
     return (
       <div className="futebol-fim">
         <p className="futebol-fim-titulo">
@@ -282,6 +374,7 @@ function TelaDoFim({ estado, eu, copa = null }: { estado: EstadoFutebol; eu: num
       <p className="futebol-fim-placar">
         <span style={{ color: COR_DO_TIME[0] }}>{r.placar[0]}</span> × <span style={{ color: COR_DO_TIME[1] }}>{r.placar[1]}</span>
       </p>
+      {r.golDeOuro && <p className="minijogo-situacao">{t('Gol de ouro')}</p>}
       <div className="futebol-fim-times">
         {([0, 1] as const).map((time) => (
           <div key={time} className="futebol-fim-time">
@@ -483,6 +576,8 @@ interface Painel {
   restante: number;
   contagem: number | null;
   gol: { time: 0 | 1; contra: boolean; autor: string; id?: number } | null;
+  /** A prorrogação do gol de ouro (20/11/2026): o relógio conta a prorrogação. */
+  ouro?: boolean;
 }
 
 /** A comemoração do gol (19/11/2026, só desenho): quem fez pula até `ate`. */
@@ -631,6 +726,7 @@ function Palco({ criar, deps, pausavel = false }: { criar: (aoGol: (g: Painel['g
               {painel.placar[1]}
             </span>
           </span>
+          {painel.ouro && <span className="futebol-ouro">{t('Gol de ouro')}</span>}
           {painel.contagem !== null && <span className="futebol-contagem">{painel.contagem}</span>}
           {painel.gol && (
             <span className="futebol-gol" style={{ color: COR_DO_TIME[painel.gol.time] }}>
@@ -889,11 +985,14 @@ function PartidaNaSala({ estado, eu, socket, channelId }: { estado: EstadoFutebo
             },
             painel() {
               const q = cliente.ultimo;
-              if (!q) return { placar: estado.placar ?? [0, 0], restante: PARTIDA_PASSOS, contagem: null };
+              const duracao = estado.duracao ?? PARTIDA_PASSOS;
+              if (!q) return { placar: estado.placar ?? [0, 0], restante: duracao, contagem: null };
               const correndo = q.pa === 0 && !q.fim ? Math.round((performance.now() - cliente.ultimoEm) / (1000 / 60)) : 0;
               return {
                 placar: q.g,
-                restante: Math.max(0, PARTIDA_PASSOS - q.p - correndo),
+                // na prorrogação do gol de ouro, o relógio conta o minuto dela
+                restante: Math.max(0, duracao + (q.ou === 1 ? PRORROGACAO_PASSOS : 0) - q.p - correndo),
+                ouro: q.ou === 1,
                 contagem: q.p === 0 && q.pa > 0 ? Math.ceil(q.pa / 60) : null,
               };
             },

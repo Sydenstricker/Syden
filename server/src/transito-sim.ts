@@ -16,15 +16,21 @@
  * A BATIDA: os dois ficam ali, o cruzamento TRAVA por 2 s (ninguém mais sai), perde 3 pontos e a sequência zera. Escolhido em vez de
  * acabar a partida: num minuto, perder tudo num erro aos 10 s tira a graça; travar dói (as filas enchem) sem tirar a pessoa do jogo.
  * A FILA CHEIA também pune: o carro que chega e não cabe buzina e custa 1 ponto, para que esperar não seja a jogada segura.
- * Os pontos: 1 por carro que atravessou (a ambulância vale 3), e +5 a cada 10 seguidos sem batida.
+ * Os pontos: 1 por carro que atravessou (a ambulância até 3, pela pressa: ver abaixo), e +5 a cada 10 seguidos sem batida.
  *
  * O QUE ENTROU EM 19/11/2026 (a auditoria dos mini-games):
  *  - O MODO "ATÉ BATER": sem relógio; a partida acaba na PRIMEIRA batida (ou na terceira fila que transborda: senão quem não solta
- *    ninguém jogaria para sempre), com teto de 20 minutos. O trânsito acelera até os 2 minutos e fica nisso.
+ *    ninguém jogaria para sempre), com teto de 20 minutos. As chegadas apertam até os 50 s e a velocidade até os 2 minutos; dali
+ *    (20/11/2026, a segunda auditoria: o teto chegava cedo e o resto da partida era igual), as duas continuam subindo DEVAGAR
+ *    até os 5 minutos (`ritmoDaChegada`, `velocidade`), e só então ficam. O minuto não mudou: a subida nova começa depois dele.
  *  - O CAMINHÃO (comprido e lento, vale 2) e a MOTO (curta e rápida): cada tipo tem o comprimento, os círculos da batida, a
  *    rapidez e o valor dele (MEDIDAS). O pacote da Kenney não tem ônibus nem moto: o caminhão é o de lixo da folha, e a moto é
  *    desenhada por código.
  *  - O MAPA EM T: a rua de baixo (a entrada 3) não existe, e ninguém vira para ela.
+ *
+ * A AMBULÂNCIA COM PRESSA (20/11/2026, a segunda auditoria): ela traz um RELÓGIO em cima, que começa quando ela chega. Solta em até
+ * 4 s, vale 3; até 7 s, 2; até 10 s, 1 (o valor fica marcado na hora de soltar). Passados 10 s sem soltar, custa 2 pontos ali mesmo
+ * e, quando passar, não vale nada. Tudo pelo passo: o servidor refaz igual.
  */
 
 export const PASSO = 1 / 60;
@@ -48,6 +54,12 @@ const ACELERACAO = 4;
 const FREIO = 9;
 /** Quantas aparências de carro o desenho tem (civis, táxi, polícia...): o sorteio só escolhe o número. */
 export const PELES = 8;
+/** A ambulância: o prazo (10 s) e os degraus do valor pela espera, em passos desde que ela chegou. */
+export const PRAZO_DA_AMBULANCIA = 600;
+export const PENA_DA_AMBULANCIA = 2;
+export function valorDaAmbulancia(espera: number): number {
+  return espera <= 240 ? 3 : espera <= 420 ? 2 : espera <= PRAZO_DA_AMBULANCIA ? 1 : 0;
+}
 
 export type Manobra = 'reto' | 'direita' | 'esquerda';
 export type Tipo = 'carro' | 'ambulancia' | 'caminhao' | 'moto';
@@ -112,6 +124,12 @@ export interface Carro {
   /** Para onde aponta (unitário), para o desenho e a batida. */
   dx: number;
   dy: number;
+  /** O passo em que chegou (o relógio da ambulância). */
+  chegou: number;
+  /** Quanto vale ao atravessar (a ambulância: marcado ao soltar, e 0 depois do prazo). */
+  valor: number;
+  /** A ambulância que passou do prazo sem sair (já custou os pontos). */
+  atrasada: boolean;
 }
 
 export type Evento =
@@ -120,7 +138,8 @@ export type Evento =
   | { tipo: 'batida'; x: number; y: number }
   | { tipo: 'buzina'; entrada: number }
   | { tipo: 'sequencia'; n: number }
-  | { tipo: 'destravou' };
+  | { tipo: 'destravou' }
+  | { tipo: 'atrasou'; id: number; x: number; y: number };
 
 export interface Estado {
   semente: number;
@@ -247,8 +266,24 @@ function sorteador(semente: number) {
   };
 }
 
-/** A velocidade de quem anda, que sobe com o minuto (casas por segundo). */
-export const velocidade = (passo: number) => 1.3 + (0.9 * Math.min(passo, 2 * PASSOS_DA_PARTIDA)) / PASSOS_DA_PARTIDA;
+/** Até onde o "até bater" continua apertando (5 minutos). */
+export const PASSOS_DO_TETO = 5 * PASSOS_DA_PARTIDA;
+const DOIS_MINUTOS = 2 * PASSOS_DA_PARTIDA;
+
+/** A velocidade de quem anda (casas por segundo): sobe até os 2 minutos (3,1) e, dali, devagar até os 5 (3,5). */
+export const velocidade = (passo: number) =>
+  1.3 +
+  (0.9 * Math.min(passo, DOIS_MINUTOS)) / PASSOS_DA_PARTIDA +
+  (passo > DOIS_MINUTOS ? (0.4 * Math.min(passo - DOIS_MINUTOS, PASSOS_DO_TETO - DOIS_MINUTOS)) / (PASSOS_DO_TETO - DOIS_MINUTOS) : 0);
+
+/**
+ * O espaço médio entre duas chegadas, em segundos: de 1,6 a 0,55 até os 50 s e parado até o fim do minuto (o minuto é o de
+ * sempre); no "até bater", de 0,55 a 0,42 até os 5 minutos.
+ */
+export const ritmoDaChegada = (passo: number) =>
+  passo <= PASSOS_DA_PARTIDA
+    ? 1.6 - 1.05 * Math.min(1, passo / 3000)
+    : 0.55 - (0.13 * Math.min(passo - PASSOS_DA_PARTIDA, PASSOS_DO_TETO - PASSOS_DA_PARTIDA)) / (PASSOS_DO_TETO - PASSOS_DA_PARTIDA);
 
 /** Onde o carro para na faixa (o centro dele), pelo comprimento do tipo. */
 export const paradaDe = (c: { caminho: number; tipo: Tipo }) => CAMINHOS[c.caminho].entra - FAIXA - MEDIDAS[c.tipo].comprimento / 2;
@@ -282,7 +317,7 @@ export function sortearChegadas(semente: number, mapa: Mapa = 'cruz', ate = PASS
       passo >= 1200 && st < 0.07 ? 'ambulancia' : passo >= 900 && st < 0.15 ? 'caminhao' : passo >= 300 && st < 0.26 ? 'moto' : 'carro';
     const pele = Math.floor(r() * PELES);
     lista.push({ passo, entrada, manobra, tipo, pele });
-    const ritmo = 1.6 - 1.05 * Math.min(1, passo / 3000);
+    const ritmo = ritmoDaChegada(passo);
     passo += Math.max(20, Math.round(ritmo * 60 * (0.65 + 0.7 * r())));
   }
   return lista;
@@ -342,6 +377,7 @@ export function liberar(e: Estado, entrada: number): boolean {
   const c = primeiroDaFila(e, entrada);
   if (!c) return false;
   c.liberado = true;
+  if (c.tipo === 'ambulancia' && !c.atrasada) c.valor = valorDaAmbulancia(e.passo - c.chegou);
   e.eventos.push({ tipo: 'liberou', entrada });
   return true;
 }
@@ -410,7 +446,19 @@ export function passo(e: Estado): void {
       y: p.y,
       dx: p.dx,
       dy: p.dy,
+      chegou: e.passo,
+      valor: MEDIDAS[ch.tipo].valor,
+      atrasada: false,
     });
+  }
+
+  // a ambulância que esperou demais: custa os pontos uma vez, e depois não vale nada
+  for (const c of e.carros) {
+    if (c.tipo !== 'ambulancia' || c.liberado || c.batido || c.atrasada || e.passo - c.chegou < PRAZO_DA_AMBULANCIA) continue;
+    c.atrasada = true;
+    c.valor = 0;
+    e.pontos = Math.max(0, e.pontos - PENA_DA_AMBULANCIA);
+    e.eventos.push({ tipo: 'atrasou', id: c.id, x: c.x, y: c.y });
   }
 
   // quem anda
@@ -445,7 +493,7 @@ export function passo(e: Estado): void {
     c.dy = p.dy;
   }
   for (const c of saem) {
-    const valor = MEDIDAS[c.tipo].valor;
+    const valor = c.valor;
     e.pontos += valor;
     e.atravessaram++;
     e.sequencia++;

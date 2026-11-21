@@ -143,3 +143,27 @@ test('as medalhas: bronze, prata e ouro pela fração dos pontos máximos; o pil
     assert.ok(sim.medalha(d, v.fim!.total) >= 1, `${d.id}: ${v.fim!.total}`);
   }
 });
+
+// ---------------- A segunda auditoria (20/11/2026): o anel do pouso (só desenho) ----------------
+
+test('o anel do pouso tem a cor do pouso que sairia: o piloto pousa no verde ou no amarelo, e o salto sem paraquedas é vermelho', async () => {
+  const { corDoPouso, chaoDebaixo } = await import('../src/planador/render.ts');
+  for (const d of sim.DESAFIOS) {
+    const v = sim.novoVoo(d);
+    let ultima: string | null = null;
+    while (!v.fim) {
+      const c = sim.pilotoAutomatico(v);
+      const antes = { ...v };
+      sim.passo(v, c);
+      if (!v.fim) ultima = v.h - chaoDebaixo(v) < 30 ? corDoPouso(v) : ultima;
+      else if (v.fim.como === 'pousou') {
+        // o passo do toque: a cor do passo de antes, para o pouso bom, não é vermelha
+        assert.notEqual(corDoPouso(antes as sim.Voo), 'vermelho', `${d.id}: o anel estava vermelho e o pouso foi bom`);
+      }
+    }
+    if (v.fim?.como === 'batida') assert.equal(ultima, 'vermelho', `${d.id}: bateu sem o anel avisar`);
+  }
+  // no salto, com o paraquedas fechado, sempre vermelho
+  const q = sim.novoVoo(sim.DESAFIOS.find((d) => d.tipo === 'queda')!);
+  assert.equal(corDoPouso(q), 'vermelho');
+});

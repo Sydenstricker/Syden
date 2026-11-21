@@ -23,7 +23,7 @@ export function Tabuleiro3D({ dados, aoEscolher, reserva, meio, rotulo }: { dado
     import('./cena')
       .then(async ({ CenaDasCidades }) => {
         if (!viva || !caixa.current) return;
-        criada = new CenaDasCidades(caixa.current, (i) => escolher.current(i));
+        criada = new CenaDasCidades(caixa.current, (i) => escolher.current(i), ultimo.current.casas.length);
         await criada.montar();
         if (!viva) return;
         cena.current = criada;
@@ -40,9 +40,9 @@ export function Tabuleiro3D({ dados, aoEscolher, reserva, meio, rotulo }: { dado
       criada?.destruir();
       cena.current = null;
     };
-    // a cena nasce uma vez por tabuleiro
+    // a cena nasce uma vez por tabuleiro (e de novo se a volta mudar de tamanho: 32 ou 40 casas)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [estado === 'falhou']);
+  }, [estado === 'falhou', dados.casas.length]);
 
   useEffect(() => {
     cena.current?.atualizar(dados);

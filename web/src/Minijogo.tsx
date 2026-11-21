@@ -21,7 +21,7 @@ import { JogoGolfe } from './JogoGolfe';
 import { canalDoSocket, ligarCanalDaFesta } from './festa/comum';
 import { FicharioDeGeneros, naFicha, useFicha, classeDaFicha, fichaQueVale, emOrdemAlfabetica } from './FicharioDeGeneros';
 import { JogoGolfe3D, type EstadoGolfe3D } from './JogoGolfe3D';
-import { JogoFutebol, type EstadoFutebol } from './JogoFutebol';
+import { EscolhaDoFutebolNaSala, JogoFutebol, type EstadoFutebol } from './JogoFutebol';
 import { EscolhaDaSalaDasTocas, JogoTocas, type EstadoTocas } from './JogoTocas';
 import { JogoCaca } from './JogoCaca';
 import { EscolhaDaFaseDaNave, JogoNave, type EstadoNave } from './JogoNave';
@@ -61,7 +61,8 @@ import { JogoSudoku } from './JogoSudoku';
 import { EscolhaDasRodadas, JogoTabuleiro } from './JogoTabuleiro';
 import { EscolhaDasCidades, JogoCidades } from './JogoCidades';
 import { EscolhaDaMesa, MESAS_COM_ESCOLHAS } from './MesaComum';
-import { cadaUmPorSi, EM_DUPLAS, EscolhaDosRobos, type OpcaoDeRobos } from './EscolhaDosRobos';
+import { cadaUmPorSi, EM_DUPLAS, type OpcaoDeRobos } from './EscolhaDosRobos';
+import { EscolhaDasCartas } from './EscolhaDasCartas';
 import { IconeDeHud } from './iconesDeHud';
 import { EscolhaDeCategoria, JogoTamanho } from './JogoTamanho';
 import { JogoXadrez } from './JogoXadrez';
@@ -210,7 +211,7 @@ export function PainelDoMinijogo({
   /** Os jogos que pedem categoria: clicar na capa abre a escolha, e não a partida. */
   // (a Horta em cascata pede o modo só no Solo: sem fim ou 2 minutos; na sala é sempre o versus)
   const pedeCategoria = (jogo: IdDoJogo, solo = true) =>
-    jogo === 'tamanho' || (jogo === 'blocos' && solo) || (ehQuiz(jogo) && CATEGORIAS_DO_QUIZ[jogo] !== undefined) || JOGOS_COM_ESCOLHA_DE_PALAVRAS.has(jogo);
+    jogo === 'tamanho' || (jogo === 'blocos' && solo) || ehQuiz(jogo) || JOGOS_COM_ESCOLHA_DE_PALAVRAS.has(jogo);
   /** A aba da estante: a última escolhida volta na próxima vez (só neste navegador). */
   const [ficha, setFicha] = useFicha();
   const [abaEscolhida, setAba] = useState<GrupoDoJogo>(() => {
@@ -358,7 +359,7 @@ export function PainelDoMinijogo({
       {!partida && escolhendo !== null && ehQuiz(escolhendo) && (
         <EscolhaDoQuiz
           categorias={CATEGORIAS_DO_QUIZ[escolhendo] ?? []}
-          aoEscolher={(categoria) => tentar(() => aoComecar(escolhendo, { categoria }, aba === 'solo').then(() => setEscolhendo(null)))}
+          aoEscolher={(categoria, rodadas) => tentar(() => aoComecar(escolhendo, { ...(categoria ? { categoria } : {}), rodadas }, aba === 'solo').then(() => setEscolhendo(null)))}
           aoVoltar={() => setEscolhendo(null)}
         />
       )}
@@ -442,11 +443,13 @@ export function PainelDoMinijogo({
           aoVoltar={() => setEscolhendo(null)}
         />
       )}
-      {/* O Dominó e o Truco no Solo: só quantos robôs (pedido dele, 05/11/2026). */}
-      {!partida && escolhendo !== null && ROBOS_NO_SOLO[escolhendo] && (
-        <EscolhaDosRobos
-          opcoes={ROBOS_NO_SOLO[escolhendo]!}
-          aoEscolher={(robos) => tentar(() => aoComecar(escolhendo, { robos }, true).then(() => setEscolhendo(null)))}
+      {/* O Dominó e o Truco: a variante (20/11/2026), e no Solo quantos robôs (pedido dele, 05/11/2026). */}
+      {!partida && (escolhendo === 'domino' || escolhendo === 'truco') && (
+        <EscolhaDasCartas
+          jogo={escolhendo}
+          solo={aba === 'solo'}
+          robos={ROBOS_NO_SOLO[escolhendo]!}
+          aoEscolher={(corpo) => tentar(() => aoComecar(escolhendo, corpo, aba === 'solo').then(() => setEscolhendo(null)))}
           aoVoltar={() => setEscolhendo(null)}
         />
       )}
@@ -456,6 +459,13 @@ export function PainelDoMinijogo({
           jogo={escolhendo}
           solo={aba === 'solo'}
           aoEscolher={(corpo) => tentar(() => aoComecar(escolhendo, corpo, aba === 'solo').then(() => setEscolhendo(null)))}
+          aoVoltar={() => setEscolhendo(null)}
+        />
+      )}
+      {/* o tempo de jogo e o gol de ouro do Futebol na sala (20/11/2026) */}
+      {!partida && escolhendo === 'futebol' && aba === 'coletivo' && (
+        <EscolhaDoFutebolNaSala
+          aoEscolher={(corpo) => tentar(() => aoComecar('futebol', corpo, false).then(() => setEscolhendo(null)))}
           aoVoltar={() => setEscolhendo(null)}
         />
       )}
@@ -495,7 +505,8 @@ export function PainelDoMinijogo({
       {/* O Chefe da turma (19/11/2026): a toupeira-rei ou o yeti. */}
       {!partida && escolhendo === 'chefe' && (
         <EscolhaDoChefe
-          aoEscolher={(chefe) => tentar(() => aoComecar('chefe', { chefe }, aba === 'solo').then(() => setEscolhendo(null)))}
+          solo={aba === 'solo'}
+          aoEscolher={(chefe, dificil) => tentar(() => aoComecar('chefe', { chefe, ...(dificil ? { dificil: true } : {}) }, aba === 'solo').then(() => setEscolhendo(null)))}
           aoVoltar={() => setEscolhendo(null)}
         />
       )}
@@ -550,9 +561,9 @@ export function PainelDoMinijogo({
                       ? aba === 'solo'
                         ? setPulando(true)
                         : setEscolhendo('plataforma')
-                    : (jogo.id === 'balao' || jogo.id === 'jato' || jogo.id === 'barco' || jogo.id === 'torre' || jogo.id === 'gincana' || jogo.id === 'carrinhos' || jogo.id === 'skate' || jogo.id === 'tocas') && aba === 'coletivo'
+                    : (jogo.id === 'balao' || jogo.id === 'jato' || jogo.id === 'barco' || jogo.id === 'torre' || jogo.id === 'gincana' || jogo.id === 'carrinhos' || jogo.id === 'skate' || jogo.id === 'tocas' || jogo.id === 'futebol') && aba === 'coletivo'
                       ? setEscolhendo(jogo.id)
-                    : jogo.id === 'briga' || jogo.id === 'comando' || jogo.id === 'chefe' || jogo.id === 'nave' || jogo.id === 'masmorra' || jogo.id === 'bichos' || jogo.id === 'ponte' || jogo.id === 'tabuleiro' || jogo.id === 'festa' || jogo.id === 'cidades' || (aba === 'solo' && ROBOS_NO_SOLO[jogo.id]) || MESAS_COM_ESCOLHAS.has(jogo.id) || pedeCategoria(jogo.id, aba === 'solo')
+                    : jogo.id === 'briga' || jogo.id === 'comando' || jogo.id === 'chefe' || jogo.id === 'nave' || jogo.id === 'masmorra' || jogo.id === 'bichos' || jogo.id === 'ponte' || jogo.id === 'tabuleiro' || jogo.id === 'festa' || jogo.id === 'cidades' || ROBOS_NO_SOLO[jogo.id] || MESAS_COM_ESCOLHAS.has(jogo.id) || pedeCategoria(jogo.id, aba === 'solo')
                       ? setEscolhendo(jogo.id)
                       : tentar(() => aoComecar(jogo.id, {}, aba === 'solo'))
                 }
@@ -963,6 +974,9 @@ export function PainelDoMinijogo({
                     ? (partida.escolhas as Record<string, unknown>)
                     : partida.jogo === 'xadrez' && partida.modo === 'corrida'
                     ? { modo: 'corrida' }
+                    : ehQuiz(partida.jogo)
+                    ? // os quizzes (20/11/2026): a categoria e as rodadas
+                      { ...(partida.categoria ? { categoria: partida.categoria } : {}), rodadas: partida.rodadas }
                     : partida.categoria
                     ? // a dificuldade do Solo da Briga (20/11/2026) volta junto
                       { categoria: partida.categoria, ...(partida.jogo === 'briga' && partida.dificuldade ? { dificuldade: partida.dificuldade } : {}) }
@@ -972,9 +986,13 @@ export function PainelDoMinijogo({
                       ? // as rodadas e, no Solo, os robôs (20/11/2026) voltam junto
                         { modo: partida.modo, rodadas: partida.rodadas, robos: partida.robos }
                       : partida.jogo === 'cidades'
-                        ? { modo: partida.modo, rodadas: partida.rodadas, robos: partida.robos, rapida: partida.rapida === true }
+                        ? { modo: partida.modo, rodadas: partida.rodadas, robos: partida.robos, rapida: partida.rapida === true, tabuleiro: partida.tabuleiro }
+                        : partida.jogo === 'futebol' && partida.solo !== true
+                        ? // o tempo de jogo e o gol de ouro da sala (20/11/2026)
+                          { minutos: partida.minutos, golDeOuro: partida.golDeOuro === true }
                         : ROBOS_NO_SOLO[partida.jogo]
-                          ? { robos: partida.robos }
+                          ? // a variante do Dominó e do Truco (20/11/2026) volta junto
+                            { robos: partida.robos, especiais: partida.especiais === true, variante: partida.variante }
                           : {},
                   partida.solo === true,
                 ),

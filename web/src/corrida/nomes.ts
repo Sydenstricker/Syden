@@ -81,6 +81,8 @@ export const NOMES_DAS_PISTAS: Record<string, string> = {
   duelo: chave('Duelo de aviõezinhos'),
   // e o da Torre do celeiro (server/src/minijogo-torre.ts)
   torre: chave('A torre do celeiro'),
+  // e a Copa do Celeiro, as cinco torres seguidas na sala (20/11/2026): o tempo é a soma
+  'copa-do-celeiro': chave('Copa do Celeiro'),
 };
 
 export const nomeDaPista = (id: string) => NOMES_DAS_PISTAS[id] ?? id;

@@ -8,7 +8,7 @@ import { comToken, criarConta, servidorDeTeste } from './ajuda.js';
 
 const { app, fechar } = await servidorDeTeste();
 const mod = await import('../src/minijogo-chefe.js');
-const { criarChefeComBanco, PASSO_MS, GRACA_MS, TORRAO, BOMBA, VIDAS, vidaPorFase, FIM_MS } = mod;
+const { criarChefeComBanco, PASSO_MS, GRACA_MS, TORRAO, BOMBA, VIDAS, vidaPorFase, FIM_MS, PA, CORPO_CHEFE, AVISO_DIFICIL, varianteDoChefe } = mod;
 after(fechar);
 
 let agora = 5_000_000;
@@ -47,7 +47,7 @@ interface Interno {
   _motivo: () => string | null;
 }
 
-function comecar(naSala = [anaId, biaId], comunidadeId = comunidade.id) {
+function comecar(naSala = [anaId, biaId], comunidadeId = comunidade.id, corpo: Record<string, unknown> = {}) {
   let terminou = false;
   const quadros: Record<string, unknown>[] = [];
   const relogio: { ms: number; depois: () => void }[] = [];
@@ -66,7 +66,7 @@ function comecar(naSala = [anaId, biaId], comunidadeId = comunidade.id) {
   const jogo = criarChefeComBanco({ agora: () => agora, aleatorio: () => 0.5, intervalo: (p) => ((passo = p), 1), limpar: () => {} }).comecar(ctx, {
     naSala,
     criadaPor: naSala[0],
-    corpo: {},
+    corpo,
   });
   assert.ok(typeof jogo !== 'string');
   const i = jogo as unknown as Interno;
@@ -114,7 +114,7 @@ test('o passo é do servidor: 20 por segundo, o quadro leva a toupeira, as marca
   assert.ok(m.quadros.length >= 39);
   const q = m.quadros.at(-1)! as { c: number[]; j: number[][]; f: string };
   assert.equal(q.f, 'lutando');
-  assert.equal(q.c.length, 10);
+  assert.equal(q.c.length, 11);
   assert.equal(q.j.length, 2);
   assert.equal(q.j[0][6], VIDAS);
   m.jogo.parar!();
@@ -489,4 +489,108 @@ test('o recorde do yeti é separado do da toupeira', async () => {
   assert.equal(pub.categoria, 'yeti');
   assert.equal(db.recordeDoSolo(anaId, 'chefe', 'yeti'), null);
   m.jogo.parar!();
+});
+
+// ---------------- A segunda auditoria (20/11/2026): a pá, a maratona e o difícil ----------------
+
+test('o golpe de pá: de perto, 1 de dano, só com ela parada ou tonta, com a recarga, conferido pelo passado', () => {
+  const m = comecar();
+  m.chefeEm(240, 120);
+  // longe: não pega
+  m.por(anaId, 150, 120);
+  assert.equal(m.manda(anaId, { tipo: 'pa', x: 150, y: 120 }), 'longe do chefe');
+  m.andar(PA.recargaMs + 50);
+  // colada nela, parada
+  const x = 240 - CORPO_CHEFE - PA.alcance + 2;
+  m.por(anaId, x, 120);
+  const hp = m.i._chefe.hp;
+  assert.equal(m.manda(anaId, { tipo: 'pa', x, y: 120 }), null);
+  assert.equal(m.i._chefe.hp, hp - PA.dano);
+  assert.equal(m.i._jogadores.get(anaId)!.pontos, PA.dano);
+  // a recarga
+  assert.equal(m.manda(anaId, { tipo: 'pa', x, y: 120 }), 'pá depressa');
+  m.andar(PA.recargaMs);
+  assert.equal(m.manda(anaId, { tipo: 'pa', x, y: 120 }), null);
+  // tonta: continua 1 (sem o dobro)
+  m.chefeEm(240, 120, 'tonta');
+  m.por(anaId, x, 120);
+  const hp2 = m.i._chefe.hp;
+  assert.equal(m.manda(anaId, { tipo: 'pa', x, y: 120 }), null);
+  assert.equal(hp2 - m.i._chefe.hp, PA.dano);
+  // preparando um golpe (nem parada nem tonta no último 0,8 s): não pega
+  m.chefeEm(240, 120, 'prep-terremoto');
+  m.por(anaId, x, 120);
+  assert.equal(m.manda(anaId, { tipo: 'pa', x, y: 120 }), 'longe do chefe');
+  // a origem que a pessoa diz só vale perto da que o servidor viu
+  m.chefeEm(240, 120);
+  m.por(anaId, 120, 200);
+  m.andar(PA.recargaMs);
+  assert.equal(m.manda(anaId, { tipo: 'pa', x, y: 120 }), 'longe do chefe');
+  m.jogo.parar!();
+});
+
+test('a maratona (Solo): a toupeira e depois o yeti, seis fases, um recorde à parte', async () => {
+  const db = await import('../src/db.js');
+  const m = comecar([anaId], 0, { chefe: 'maratona' });
+  const ii = m.i as unknown as { _etapa: () => number; _qual: () => string };
+  let pub = m.jogo.publico(anaId) as { fases: number; faseDoChefe: number; chefe: string; categoria: string };
+  assert.equal(pub.fases, 6);
+  assert.equal(pub.chefe, 'toupeira');
+  assert.equal(pub.categoria, 'maratona');
+  let n = derrubarFase(m, anaId, 1);
+  n = derrubarFase(m, anaId, n);
+  n = derrubarFase(m, anaId, n);
+  // a toupeira caiu, e a luta segue com o yeti
+  assert.equal(m.i._chefe.estado, 'fase');
+  assert.equal(ii._etapa(), 1);
+  assert.equal(ii._qual(), 'yeti');
+  pub = m.jogo.publico(anaId) as typeof pub;
+  assert.equal(pub.faseDoChefe, 4);
+  assert.equal(pub.chefe, 'yeti');
+  m.andar(100);
+  const q = m.quadros.at(-1) as { c: number[]; f: string };
+  assert.equal(q.f, 'lutando');
+  assert.equal(q.c[9], 1);
+  assert.equal(q.c[10], 1);
+  n = derrubarFase(m, anaId, n);
+  n = derrubarFase(m, anaId, n);
+  derrubarFase(m, anaId, n);
+  m.disparar();
+  const fim = m.jogo.publico(anaId) as { venceu: boolean; recorde: { ms: number } | null };
+  assert.equal(fim.venceu, true);
+  assert.ok(fim.recorde);
+  assert.ok(db.recordeDoSolo(anaId, 'chefe', 'maratona'));
+});
+
+test('a maratona só existe no Solo; na sala, é a toupeira', () => {
+  const m = comecar([anaId, biaId], comunidade.id, { chefe: 'maratona', dificil: true });
+  const pub = m.jogo.publico(anaId) as { fases: number; categoria: string; dificil: boolean };
+  assert.equal(pub.fases, 3);
+  assert.equal(pub.categoria, 'toupeira');
+  assert.equal(pub.dificil, false);
+  assert.equal(m.i._chefe.hp, vidaPorFase(2, false));
+  m.jogo.parar!();
+});
+
+test('o difícil (Solo): a vida da sala, os avisos mais curtos e o recorde à parte', async () => {
+  const db = await import('../src/db.js');
+  const m = comecar([anaId], 0, { chefe: 'toupeira', dificil: true });
+  const ii = m.i as unknown as { _F: () => { k: number } };
+  assert.equal(m.i._chefe.hp, vidaPorFase(1, false));
+  assert.ok(Math.abs(ii._F().k - AVISO_DIFICIL) < 1e-9);
+  assert.equal((m.jogo.publico(anaId) as { categoria: string }).categoria, 'toupeira-dificil');
+  let n = derrubarFase(m, anaId, 1);
+  n = derrubarFase(m, anaId, n);
+  derrubarFase(m, anaId, n);
+  m.disparar();
+  assert.ok(db.recordeDoSolo(anaId, 'chefe', 'dificil'));
+  // o "Jogar de novo" manda a categoria: "yeti-dificil" é o yeti no difícil
+  const m2 = comecar([anaId], 0, { categoria: 'yeti-dificil' });
+  const p2 = m2.jogo.publico(anaId) as { chefe: string; dificil: boolean };
+  assert.equal(p2.chefe, 'yeti');
+  assert.equal(p2.dificil, true);
+  m2.jogo.parar!();
+  assert.equal(varianteDoChefe('toupeira', false), '');
+  assert.equal(varianteDoChefe('yeti', false), 'yeti');
+  assert.equal(varianteDoChefe('maratona', true), 'maratona-dificil');
 });

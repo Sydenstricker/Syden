@@ -61,3 +61,17 @@
 .torre-medalha {
   font-size: 1.6em;
 }
+
+/* a Copa do Celeiro na escolha da sala (20/11/2026) */
+.torre-copa .torre-copa-figura {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 96px;
+  color: #e3b45a;
+}
+.torre-copa small {
+  font-size: 0.7rem;
+  opacity: 0.75;
+  text-align: center;
+}

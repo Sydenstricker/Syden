@@ -7,11 +7,13 @@ import './jogosDePalavras.css';
  * A LARGADA DOS JOGOS DE PALAVRA (19/11/2026, a auditoria dos mini-games): o que quem começa escolhe antes do convite (ou do
  * Solo). Cada escolha vai no corpo do começo, e o servidor confere tudo (os números fora da lista viram o de fábrica).
  *
- * - Sudoku: a dificuldade (35, 45, 52 ou 58 casas vazias) e se o número errado aparece na hora ou só no fim.
+ * - Sudoku: a dificuldade (desde 20/11/2026, pela técnica que o tabuleiro pede), se o número errado aparece na hora ou só no fim,
+ *   e o Sudoku X (as duas diagonais também valem).
  * - Stop: rodadas, tempo, as categorias (da lista nossa, traduzida, e as LIVRES, escritas pela turma e nunca traduzidas) e
  *   as letras que ficam fora do sorteio.
  * - Palavra secreta: normal, dueto ou quarteto, e o modo difícil.
- * - Desenha e adivinha: a lista própria da sala (escrita por quem começa, nunca traduzida), sozinha ou junto com a nossa.
+ * - Desenha e adivinha: as rodadas (1 a 3) e o tempo de cada desenho (20/11/2026), e a lista própria da sala (escrita por quem
+ *   começa, nunca traduzida), sozinha ou junto com a nossa.
  */
 export const JOGOS_COM_ESCOLHA_DE_PALAVRAS: ReadonlySet<IdDoJogo> = new Set<IdDoJogo>(['sudoku', 'stop', 'palavra', 'desenho']);
 
@@ -52,6 +54,7 @@ export function EscolhaDosJogosDePalavras({
   // Sudoku
   const [dificuldade, setDificuldade] = useState<'facil' | 'medio' | 'dificil' | 'extremo'>('medio');
   const [conferencia, setConferencia] = useState<'hora' | 'fim'>('hora');
+  const [x, setX] = useState(false);
   // Stop
   const [rodadas, setRodadas] = useState(3);
   const [tempo, setTempo] = useState(90_000);
@@ -64,6 +67,8 @@ export function EscolhaDosJogosDePalavras({
   // Desenho
   const [lista, setLista] = useState('');
   const [soLista, setSoLista] = useState(false);
+  const [rodadasDoDesenho, setRodadasDoDesenho] = useState(3);
+  const [tempoDoDesenho, setTempoDoDesenho] = useState(80_000);
 
   const alternar = (conjunto: Set<string>, item: string, mudar: (s: Set<string>) => void) => {
     const novo = new Set(conjunto);
@@ -76,7 +81,7 @@ export function EscolhaDosJogosDePalavras({
   let conteudo: ReactNode = null;
   let pode = true;
   if (jogo === 'sudoku') {
-    corpo = { dificuldade, conferencia };
+    corpo = { dificuldade, conferencia, ...(x ? { x: true } : {}) };
     conteudo = (
       <>
         <fieldset>
@@ -89,6 +94,17 @@ export function EscolhaDosJogosDePalavras({
               { valor: 'medio', nome: t('Médio') },
               { valor: 'dificil', nome: t('Difícil') },
               { valor: 'extremo', nome: t('Muito difícil') },
+            ]}
+          />
+        </fieldset>
+        <fieldset>
+          <legend>{t('Regra')}</legend>
+          <Opcoes
+            valor={x ? 'x' : 'classico'}
+            aoMudar={(v) => setX(v === 'x')}
+            opcoes={[
+              { valor: 'classico', nome: t('Clássico') },
+              { valor: 'x', nome: `✕ ${t('Sudoku X')}` },
             ]}
           />
         </fieldset>
@@ -177,8 +193,18 @@ export function EscolhaDosJogosDePalavras({
   } else if (jogo === 'desenho') {
     const palavras = linhas(lista, 200, 30);
     pode = !soLista || palavras.length >= 3;
-    corpo = palavras.length ? { lista: palavras, soLista } : {};
+    corpo = { rodadas: rodadasDoDesenho, tempoMs: tempoDoDesenho, ...(palavras.length ? { lista: palavras, soLista } : {}) };
     conteudo = (
+      <>
+      {/* as rodadas e o tempo de cada desenho (20/11/2026), como no Stop */}
+      <fieldset>
+        <legend>{t('Rodadas')}</legend>
+        <Opcoes valor={rodadasDoDesenho} aoMudar={setRodadasDoDesenho} opcoes={[1, 2, 3].map((n) => ({ valor: n, nome: String(n) }))} />
+      </fieldset>
+      <fieldset>
+        <legend>{t('Tempo')}</legend>
+        <Opcoes valor={tempoDoDesenho} aoMudar={setTempoDoDesenho} opcoes={[45_000, 60_000, 80_000, 120_000].map((ms) => ({ valor: ms, nome: `${ms / 1000} s` }))} />
+      </fieldset>
       <fieldset>
         <legend>
           {t('Palavras da turma')} <span className="contagem">({palavras.length})</span>
@@ -189,6 +215,7 @@ export function EscolhaDosJogosDePalavras({
           {t('Só as palavras da turma')}
         </label>
       </fieldset>
+      </>
     );
   }
 

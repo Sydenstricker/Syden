@@ -57,6 +57,8 @@ export interface EstadoDomino {
     lado: number | null;
     pontos: number;
     maos: { userId: number; pedras: PedraDoDomino[]; soma: number }[];
+    /** A batida especial (20/11/2026, só com a opção ligada): o selo na tela. */
+    especial?: 'carroca' | 'la-e-lo' | 'cruzada' | null;
   } | null;
   vencedor: { lado: number; membros: number[] } | null;
   interrompida: boolean;
@@ -275,6 +277,11 @@ export function JogoDomino({ estado: bruto, eu, jogador, restante, agir }: { est
       {aberto && (
         <div className="dom-resultado" aria-live="polite">
           <p className="minijogo-situacao">{r.tipo === 'batida' && r.userId !== null ? t('{nome} bateu!', { nome: nomeDe(r.userId) }) : t('Jogo trancado!')}</p>
+          {r.especial && (
+            <p className="dom-especial">
+              {r.especial === 'carroca' ? t('Carroça!') : r.especial === 'la-e-lo' ? t('Lá-e-ló!') : t('Cruzada!')} <strong>×{r.especial === 'cruzada' ? 4 : 2}</strong>
+            </p>
+          )}
           <p className="dom-marcou">
             {r.lado === null ? t('Empate!') : `${nomeDoLado(r.lado)}: ${t('+{n} pontos', { n: r.pontos })}`}
           </p>

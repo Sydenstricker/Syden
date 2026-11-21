@@ -14,7 +14,11 @@ import type { Acao } from '../briga/regras';
 import { alturaDoBicho, desenharBichoDaFolha } from '../briga/sprites';
 
 export { W, H };
-export const EVENTO_MS = 850;
+/** O tempo de cada acontecimento; no Solo acelerado (20/11/2026), a metade: o servidor manda o ritmo de cada rodada. */
+export let EVENTO_MS = 850;
+export function definirRitmo(ritmo: number) {
+  EVENTO_MS = Math.round(850 * (ritmo > 0 && ritmo <= 1 ? ritmo : 1));
+}
 export const ACAO_FOLGA_MS = 700;
 
 export type Classe = 'escudo' | 'faisca' | 'erva' | 'flecha';
@@ -77,6 +81,14 @@ export function lugarDoInimigo(i: InimigoNaTela, todos: InimigoNaTela[]) {
   const temChefe = todos.some((x) => x.chefe);
   if (i.chefe) return { x: 98, y: CHAO + 44 };
   if (temChefe) return i.id === 0 ? { x: 40, y: CHAO + 18 } : { x: 44, y: CHAO + 64 };
+  // (20/11/2026) o grupo sorteado vai de 2 a 4: com quatro, em dois pares, para ninguém tampar ninguém
+  if (todos.length >= 4)
+    return [
+      { x: 46, y: CHAO + 12 },
+      { x: 108, y: CHAO + 24 },
+      { x: 52, y: CHAO + 50 },
+      { x: 116, y: CHAO + 64 },
+    ][i.id % 4];
   return [
     { x: 58, y: CHAO + 14 },
     { x: 104, y: CHAO + 36 },
@@ -367,6 +379,20 @@ function desenharEfeito(g: CanvasRenderingContext2D, e: Evento, p: number, cena:
       const o = posicaoDe(a.quem, cena);
       for (let k = 0; k < 3; k++) g.fillRect(Math.round(o.x + 8 + ((p * 40 + k * 9) % 24)), o.y - 8 + k * 7, 6, 1);
     }
+  } else if (hab === 'estrelas') {
+    // o golpe final da Faísca: um raio em cada inimigo, um depois do outro
+    e.alvos.forEach((a, k) => {
+      const alvo = posicaoDe(a.quem, cena);
+      if (p < 0.1 + k * 0.08 || p > 0.6 + k * 0.08) return;
+      g.fillStyle = Math.floor(agora / 60 + k) % 2 ? '#ffe48a' : '#f0a0ff';
+      for (let y = 0; y < alvo.y; y += 4) g.fillRect(Math.round(alvo.x + ((y / 4) % 2 ? 2 : -2)), y, 2, 4);
+    });
+  } else if (hab === 'florescer' || hab === 'investida') {
+    // os golpes finais da Erva e do Escudo: o clarão (verde da cura, branco do golpe)
+    if (p > 0.15 && p < 0.45) {
+      g.fillStyle = hab === 'florescer' ? 'rgba(168, 224, 138, 0.35)' : 'rgba(255, 251, 232, 0.35)';
+      g.fillRect(0, 0, W, H);
+    }
   } else if (hab === 'raio') {
     // o raio: de cima até o alvo, em zigue-zague
     const alvo = e.alvos[0] ? posicaoDe(e.alvos[0].quem, cena) : de;
@@ -419,7 +445,7 @@ function desenharEfeito(g: CanvasRenderingContext2D, e: Evento, p: number, cena:
       g.fillStyle = 'rgba(255, 251, 232, 0.35)';
       g.fillRect(0, 0, W, H);
     }
-  } else if (hab === 'tiro' || hab === 'atordoar') {
+  } else if (hab === 'tiro' || hab === 'atordoar' || hab === 'final') {
     const alvo = e.alvos[0] ? posicaoDe(e.alvos[0].quem, cena) : de;
     const t = Math.min(1, p * 2.5);
     const x = de.x + (alvo.x - de.x) * t;
@@ -433,7 +459,7 @@ function desenharEfeito(g: CanvasRenderingContext2D, e: Evento, p: number, cena:
   for (const a of e.alvos) {
     const o = posicaoDe(a.quem, cena);
     if ((a.dano ?? 0) > 0 && p > 0.3) {
-      if (hab === 'chuva' || hab === 'raio') faiscas(g, o.x, o.y, Math.min(1, (p - 0.3) * 2), ['#ffe48a', '#f0a0ff', '#fffbe8']);
+      if (hab === 'chuva' || hab === 'raio' || hab === 'estrelas') faiscas(g, o.x, o.y, Math.min(1, (p - 0.3) * 2), ['#ffe48a', '#f0a0ff', '#fffbe8']);
       else if (e.tipo !== 'sopro' && e.tipo !== 'combo' && e.tipo !== 'veneno') risco(g, o.x, o.y, (p - 0.3) * 2);
       numero(g, String(a.dano), o.x, o.y - 18 - Math.round(p * 10), '#fbf3e4');
     }

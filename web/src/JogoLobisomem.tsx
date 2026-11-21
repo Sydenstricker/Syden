@@ -3,6 +3,7 @@ import { chave, useT } from './i18n';
 import { Relogio } from './Minijogo';
 import type { EstadoLobisomem, LinhaDaHistoriaDoLobisomem, Papel, PapelEspecial, Partida } from './minijogos';
 import { tocar } from './somDosJogos';
+import { ROTULO_DO_SILENCIO } from './silencioDoJogo';
 import './lobisomem.css';
 
 /**
@@ -158,6 +159,13 @@ export function JogoLobisomem({
         <span className="lobisomem-astro" aria-hidden="true" />
         <p className="lobisomem-faixa">{faixa}</p>
       </div>
+
+      {/* O microfone, como no jogo de mesa: de noite ninguém fala, e quem saiu do jogo só ouve (quem o desliga é o servidor) */}
+      {estado.microfone && !estado.terminada && (
+        <p className="lobisomem-microfone" role="status">
+          <span aria-hidden="true">{estado.microfone === 'noite' ? '🌙' : '🔇'}</span> {t(ROTULO_DO_SILENCIO[estado.microfone])}
+        </p>
+      )}
 
       {meu && (
         <div className="lobisomem-papel">

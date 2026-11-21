@@ -75,6 +75,26 @@ export interface ResultadoDaMao {
   lado: number | null;
   pontos: number;
   maos: { userId: number; pedras: Pedra[]; soma: number }[];
+  /** A batida especial (só com `especiais` ligado): a tela põe o selo dela. */
+  especial?: BatidaEspecial | null;
+}
+
+/**
+ * AS BATIDAS ESPECIAIS DA MESA BRASILEIRA (20/11/2026, o lote C da segunda auditoria), uma opção da largada; desligada, a
+ * batida vale como sempre. Bater com CARROÇA (a dupla) vale o dobro; LÁ-E-LÓ (a pedra que serve nas duas pontas, de números
+ * diferentes) também; e a carroça do número que está nas DUAS pontas (a CRUZADA) vale o quádruplo.
+ */
+export type BatidaEspecial = 'carroca' | 'la-e-lo' | 'cruzada';
+export const MULTIPLO_DA_BATIDA: Record<BatidaEspecial, number> = { carroca: 2, 'la-e-lo': 2, cruzada: 4 };
+
+/** A batida especial da última pedra, pelas pontas da mesa ANTES dela (null: batida comum). */
+export function batidaEspecial(pedra: Pedra, pontas: { esquerda: number; direita: number } | null): BatidaEspecial | null {
+  const carroca = pedra[0] === pedra[1];
+  if (!pontas) return carroca ? 'carroca' : null;
+  if (carroca) return pontas.esquerda === pedra[0] && pontas.direita === pedra[0] ? 'cruzada' : 'carroca';
+  const naEsquerda = pedra[0] === pontas.esquerda || pedra[1] === pontas.esquerda;
+  const naDireita = pedra[0] === pontas.direita || pedra[1] === pontas.direita;
+  return pontas.esquerda !== pontas.direita && naEsquerda && naDireita ? 'la-e-lo' : null;
 }
 
 export interface OpcoesDoDomino {
@@ -106,6 +126,8 @@ export function criarDomino({ agora = Date.now, aleatorio = Math.random, distrib
       const membros = (lado: number) => ordem.filter((_, i) => ladoDe(i) === lado);
       const pontos = new Array<number>(lados).fill(0);
       const partidaId = `domino-${ctx.comunidade ?? 0}-${agora()}`;
+      // as batidas especiais da mesa brasileira (20/11/2026): uma opção da largada
+      const especiais = corpo?.especiais === true;
 
       let fase: 'jogando' | 'resultado' | 'fim' = 'jogando';
       let numeroDaMao = 0;
@@ -203,10 +225,12 @@ export function criarDomino({ agora = Date.now, aleatorio = Math.random, distrib
       /** A soma dos adversários de um lado. */
       const somaDosOutros = (lado: number) => ordem.reduce((n, _, i) => (ladoDe(i) === lado ? n : n + somaDe(maos[i])), 0);
 
-      const bater = (lugar: number) => {
+      const bater = (lugar: number, pedra: Pedra, antes: { esquerda: number; direita: number } | null) => {
         contar({ tipo: 'bateu', userId: ordem[lugar] });
         const lado = ladoDe(lugar);
-        fimDaMao({ tipo: 'batida', userId: ordem[lugar], lado, pontos: somaDosOutros(lado), maos: maosAbertas() });
+        const especial = especiais ? batidaEspecial(pedra, antes) : null;
+        const multiplo = especial ? MULTIPLO_DA_BATIDA[especial] : 1;
+        fimDaMao({ tipo: 'batida', userId: ordem[lugar], lado, pontos: somaDosOutros(lado) * multiplo, maos: maosAbertas(), especial });
       };
 
       const trancar = () => {
@@ -271,7 +295,7 @@ export function criarDomino({ agora = Date.now, aleatorio = Math.random, distrib
         else mesa.push(a === e.direita ? [a, b] : [b, a]);
         obrigatoria = null;
         contar({ tipo: 'jogou', userId: ordem[lugar], pedra: [a, b], ponta: e ? ponta : null, sozinho });
-        if (mao.length === 0) return bater(lugar);
+        if (mao.length === 0) return bater(lugar, [a, b], e);
         proximaVez();
       };
 
@@ -330,7 +354,9 @@ export function criarDomino({ agora = Date.now, aleatorio = Math.random, distrib
             const encaixe = !e ? null : ponta === 'esquerda' ? e.esquerda : e.direita;
             const fica = encaixe === null ? [p[0], p[1]] : [p[0] === encaixe ? p[1] : p[0]];
             const tenho = resto.filter((q) => fica.some((n) => q[0] === n || q[1] === n)).length;
-            const valor = p[0] + p[1] + (p[0] === p[1] ? 4 : 0) + Math.min(tenho, 2) * 3 + aleatorio();
+            // com as batidas especiais, guardar uma carroça para bater com ela vale um pouco
+            const guardaCarroca = especiais && resto.length === 1 && resto[0][0] === resto[0][1] ? 3 : 0;
+            const valor = p[0] + p[1] + (p[0] === p[1] ? 4 : 0) + Math.min(tenho, 2) * 3 + guardaCarroca + aleatorio();
             if (!melhor || valor > melhor.valor) melhor = { pedra: p, ponta, valor };
           }
         }
@@ -375,6 +401,7 @@ export function criarDomino({ agora = Date.now, aleatorio = Math.random, distrib
             interrompida,
             // quantos robôs (o "Jogar de novo" do Solo pede os mesmos)
             robos: robos.length,
+            especiais,
           };
         },
         acao(quem, corpo) {

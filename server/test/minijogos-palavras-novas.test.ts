@@ -12,7 +12,7 @@ const { app, fechar } = await servidorDeTeste();
 after(fechar);
 const db = await import('../src/db.js');
 const { DIFICULDADES, gerarSudoku, contarSolucoes, sudoku, PENALIDADE_MS } = await import('../src/minijogo-sudoku.js');
-const { categoriasDaPartida, stop, CATEGORIAS } = await import('../src/minijogo-stop.js');
+const { categoriasDaPartida, stop, CATEGORIAS, BONUS_DO_STOP } = await import('../src/minijogo-stop.js');
 const { palavra, _teste, respeitaAsDicas, _sequencias } = await import('../src/minijogo-palavra.js');
 const { desenho, BALDE, BALDES_POR_DESENHO } = await import('../src/minijogo-desenho.js');
 const { nivelDoDesenho } = await import('../src/desenho-palavras.js');
@@ -136,7 +136,47 @@ test('Stop: rodadas, tempo e letras excluídas de quem começa', () => {
   assert.deepEqual(v.categorias, ['cor', 'animal', 'fruta']);
 });
 
-type VistoPalavra = { meu: { coresTodas: number[][] }[]; resolvidas: (number | null)[]; acertei: boolean; fase: string; palavrasReveladas: string[] | null; sequencia: { atual: number; recorde: number | null; novo: boolean } | null };
+test('Stop (20/11/2026): o bônus de quem para com tudo valendo, e a contestação com dois e com três', () => {
+  type VistoStop = { fase: string; letra: string; categorias: string[]; bonus: { userId: number; pontos: number } | null; placar: { userId: number; pontos: number }[]; respostas: { userId: number; respostas: { valida: boolean }[] }[] | null };
+  const jogar = (ids: number[]) => {
+    const s = sala(ids);
+    const jogo = stop.comecar(s.ctx, { naSala: ids, criadaPor: ids[0], corpo: { letras: 'B', rodadas: 1, categorias: ['cor', 'animal', 'fruta'] } });
+    assert.ok(typeof jogo !== 'string');
+    for (const id of ids) assert.equal(jogo.acao(id, { tipo: 'respostas', respostas: [`b${id}a`, `b${id}b`, `b${id}c`] }), null);
+    assert.equal(jogo.acao(ids[0], { tipo: 'stop' }), null);
+    s.disparar(); // parando → conferindo
+    const ver = (q = ids[0]) => jogo.publico(q) as VistoStop;
+    const pontosDe = (q: number) => ver().placar.find((l) => l.userId === q)!.pontos;
+    return { s, jogo, ver, pontosDe };
+  };
+  // com tudo valendo, quem parou leva o bônus
+  const a = jogar([1, 2]);
+  for (const id of [1, 2]) a.jogo.acao(id, { tipo: 'pronto' });
+  assert.equal(a.ver().fase, 'resultado');
+  assert.deepEqual(a.ver().bonus, { userId: 1, pontos: BONUS_DO_STOP });
+  assert.equal(a.pontosDe(1), 30 + BONUS_DO_STOP);
+  assert.equal(a.pontosDe(2), 30);
+  // com dois: a contestação sozinha não derruba; com o aceite, cai, e o bônus vai junto
+  const b = jogar([1, 2]);
+  b.jogo.acao(2, { tipo: 'contestar', categoria: 0, alvo: 1 });
+  assert.equal(b.ver().respostas![0].respostas[0].valida, true);
+  assert.equal(b.jogo.acao(1, { tipo: 'aceitar', categoria: 0 }), null);
+  assert.equal(b.ver().respostas![0].respostas[0].valida, false);
+  b.jogo.acao(1, { tipo: 'aceitar', categoria: 0 }); // desfaz
+  assert.equal(b.ver().respostas![0].respostas[0].valida, true);
+  b.jogo.acao(1, { tipo: 'aceitar', categoria: 0 });
+  b.s.disparar(); // o tempo da conferência acaba
+  assert.equal(b.ver().bonus, null);
+  assert.equal(b.pontosDe(1), 20);
+  // com três: dois dos dois outros derrubam (mais da metade), um só não
+  const c = jogar([1, 2, 3]);
+  c.jogo.acao(2, { tipo: 'contestar', categoria: 1, alvo: 3 });
+  assert.equal(c.ver().respostas![2].respostas[1].valida, true, 'um de dois: não é mais da metade');
+  c.jogo.acao(1, { tipo: 'contestar', categoria: 1, alvo: 3 });
+  assert.equal(c.ver().respostas![2].respostas[1].valida, false);
+});
+
+type VistoPalavra ={ meu: { coresTodas: number[][] }[]; resolvidas: (number | null)[]; acertei: boolean; fase: string; palavrasReveladas: string[] | null; sequencia: { atual: number; recorde: number | null; novo: boolean } | null };
 
 test('Palavra secreta: o modo difícil exige as letras reveladas', () => {
   assert.ok(respeitaAsDicas('termo', [{ chave: 'terra', cores: [2, 2, 2, 0, 0] }]));
@@ -248,7 +288,23 @@ test('Desenho: a lista da turma, sozinha, dá as opções e a palavra como foi e
   assert.equal((jogo.publico(1) as { fase: string }).fase, 'revelando');
 });
 
-type VistoQuiz = { pistas: { letra: string | null; coluna: { id: string; valor: unknown } | null }; recorde: { novo: boolean } | null };
+test('Desenho (20/11/2026): as rodadas e o tempo da largada; fora da lista, o de fábrica', () => {
+  type V = { vezes: number; rodadas: number; tempoMs: number; largada: { rodadas: number; tempoMs: number } };
+  const s = sala([1, 2, 3]);
+  const jogo = desenho.comecar(s.ctx, { naSala: [1, 2, 3], criadaPor: 1, corpo: { rodadas: 1, tempoMs: 45_000 } });
+  assert.ok(typeof jogo !== 'string');
+  const v = jogo.publico(1) as V;
+  assert.equal(v.rodadas, 1);
+  assert.equal(v.vezes, 3, 'uma rodada: cada um desenha uma vez');
+  assert.equal(v.tempoMs, 45_000);
+  assert.deepEqual([v.largada.rodadas, v.largada.tempoMs], [1, 45_000], 'o "Jogar de novo" repete as escolhas');
+  const padrao = desenho.comecar(sala([1, 2]).ctx, { naSala: [1, 2], criadaPor: 1, corpo: { rodadas: 9, tempoMs: 5 } });
+  assert.ok(typeof padrao !== 'string');
+  const p = padrao.publico(1) as V;
+  assert.deepEqual([p.rodadas, p.tempoMs, p.vezes], [3, 80_000, 6]);
+});
+
+type VistoQuiz ={ pistas: { letra: string | null; coluna: { id: string; valor: unknown } | null }; recorde: { novo: boolean } | null };
 
 test('Quiz: a letra depois de 5 chutes, a coluna depois de 10', () => {
   _testeQuiz.itens = ['adult-red-dragon', 'aboleth', 'lich'];
@@ -278,4 +334,35 @@ test('Quiz no Solo: os chutes das três rodadas viram o recorde do tema', async 
   }
   await esperar(() => (jogo.publico(anaId) as VistoQuiz).recorde?.novo === true);
   assert.equal(db.recordeDoSolo(anaId, 'paises', '')?.valor, 4);
+});
+
+test('Quiz (20/11/2026): as rodadas da largada (1, 3 ou 5), com o recorde de cada uma à parte', async () => {
+  const s = sala([anaId], true);
+  const jogo = criarQuiz(TEMAS.paises).comecar(s.ctx, { naSala: [anaId], criadaPor: anaId, corpo: { rodadas: 1 } });
+  assert.ok(typeof jogo !== 'string');
+  const v = jogo.publico(anaId) as { rodadas: number; resposta: unknown };
+  assert.equal(v.rodadas, 1);
+  // acerta pelo que o servidor revela: chuta errado até o tempo acabar, e lê a resposta
+  s.disparar();
+  const certo = (jogo.publico(anaId) as { resposta: { id: string } }).resposta.id;
+  assert.ok(certo);
+  s.disparar();
+  assert.ok(s.terminou(), 'uma rodada só: acabou');
+  // 5 rodadas: o servidor aceita; fora da lista, as 3 de sempre
+  const cinco = criarQuiz(TEMAS.paises).comecar(sala([1, 2]).ctx, { naSala: [1, 2], criadaPor: 1, corpo: { rodadas: 5 } });
+  assert.ok(typeof cinco !== 'string');
+  assert.equal((cinco.publico(1) as { rodadas: number }).rodadas, 5);
+  const fora = criarQuiz(TEMAS.paises).comecar(sala([1, 2]).ctx, { naSala: [1, 2], criadaPor: 1, corpo: { rodadas: 7 } });
+  assert.ok(typeof fora !== 'string');
+  assert.equal((fora.publico(1) as { rodadas: number }).rodadas, 3);
+  // o recorde de 1 rodada vai à variante "@1"
+  _testeQuiz.itens = ['BR'];
+  const s2 = sala([anaId], true);
+  const um = criarQuiz(TEMAS.paises).comecar(s2.ctx, { naSala: [anaId], criadaPor: anaId, corpo: { rodadas: 1 } });
+  _testeQuiz.itens = null;
+  assert.ok(typeof um !== 'string');
+  um.acao(anaId, { tipo: 'chute', id: 'BR' });
+  s2.disparar();
+  await esperar(() => (um.publico(anaId) as VistoQuiz).recorde?.novo === true);
+  assert.equal(db.recordeDoSolo(anaId, 'paises', '@1')?.valor, 1);
 });

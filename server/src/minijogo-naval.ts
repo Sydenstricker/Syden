@@ -23,6 +23,18 @@ export const LADO_DO_MAR = 10;
 export const CASAS_DO_MAR = LADO_DO_MAR * LADO_DO_MAR;
 export const FROTA = [5, 4, 3, 3, 2] as const;
 
+/**
+ * OS MARES (20/11/2026, o lote C da segunda auditoria), escolhidos na largada: o de 10 × 10 é o de fábrica; o de 8 × 8 tem a
+ * frota menor (partida rápida) e o de 12 × 12 a maior. Cada frota cabe no mar dela sem encostar com folga (o teste sorteia
+ * muitas). O lado do mar e a frota vão no estado: todas as contas abaixo recebem os dois.
+ */
+export const MARES: Record<number, readonly number[]> = {
+  8: [4, 3, 2, 2],
+  10: FROTA,
+  12: [5, 4, 4, 3, 3, 2, 2],
+};
+export const ladoDoMar = (v: unknown): number => (typeof v === 'number' && MARES[v] ? v : LADO_DO_MAR);
+
 /** Um mar: os navios (as casas de cada um) e os tiros que ele levou. */
 interface Mar {
   navios: number[][];
@@ -44,6 +56,9 @@ export interface EstadoNaval {
   salvo: boolean;
   /** A última rajada do salvo: as casas e o que cada tiro achou. */
   rajada: { lado: Lado; tiros: { casa: number; resultado: Resultado }[] } | null;
+  /** O lado do mar (8, 10 ou 12) e a frota dele (MARES). */
+  n: number;
+  frota: readonly number[];
 }
 
 /** O que se vê de um mar: os tiros (0 nada, 1 água, 2 fogo) e os navios que quem pede pode ver. */
@@ -56,8 +71,13 @@ export interface MarPublico {
  * Uma frota válida, sorteada: cada navio num lugar livre, e as casas em volta dele (as oito vizinhas) fechadas para os
  * próximos. Começa pelo maior, que é o mais difícil de encaixar; se um não couber (raro), recomeça.
  */
-export function sortearFrota(aleatorio: () => number = Math.random, fixos: (number[] | null)[] = []): number[][] {
-  const n = LADO_DO_MAR;
+export function sortearFrota(
+  aleatorio: () => number = Math.random,
+  fixos: (number[] | null)[] = [],
+  n = LADO_DO_MAR,
+  frota: readonly number[] = MARES[n] ?? FROTA,
+): number[][] {
+  const casasDoMar = n * n;
   const fechar = (fechada: boolean[], posto: number[]) => {
     for (const c of posto) {
       const l = Math.floor(c / n);
@@ -75,11 +95,11 @@ export function sortearFrota(aleatorio: () => number = Math.random, fixos: (numb
   // nenhum (raro: os postos podem fechar o mar), a frota inteira é sorteada.
   for (let rodada = 0; ; rodada++) {
     const usarFixos = rodada < 300 && fixos.some(Boolean);
-    const fechada = new Array<boolean>(CASAS_DO_MAR).fill(false);
+    const fechada = new Array<boolean>(casasDoMar).fill(false);
     if (usarFixos) for (const posto of fixos) if (posto) fechar(fechada, posto);
     const navios: number[][] = [];
     let coube = true;
-    for (const [i, tamanho] of FROTA.entries()) {
+    for (const [i, tamanho] of frota.entries()) {
       if (usarFixos && fixos[i]) {
         navios.push(fixos[i]!.slice());
         continue;
@@ -106,9 +126,8 @@ export function sortearFrota(aleatorio: () => number = Math.random, fixos: (numb
 }
 
 /** As casas de um navio de `tamanho` que começa em `casa` (a de cima, ou a da esquerda), ou null se ele sai do mar. */
-export function casasDoNavio(casa: number, tamanho: number, deitado: boolean): number[] | null {
-  const n = LADO_DO_MAR;
-  if (!Number.isInteger(casa) || casa < 0 || casa >= CASAS_DO_MAR) return null;
+export function casasDoNavio(casa: number, tamanho: number, deitado: boolean, n = LADO_DO_MAR): number[] | null {
+  if (!Number.isInteger(casa) || casa < 0 || casa >= n * n) return null;
   const l = Math.floor(casa / n);
   const c = casa % n;
   if (deitado ? c + tamanho > n : l + tamanho > n) return null;
@@ -116,8 +135,7 @@ export function casasDoNavio(casa: number, tamanho: number, deitado: boolean): n
 }
 
 /** Se as casas encostam (ou caem em cima) de algum dos outros navios, também na diagonal. */
-export function encosta(casas: number[], outros: (number[] | null)[]): boolean {
-  const n = LADO_DO_MAR;
+export function encosta(casas: number[], outros: (number[] | null)[], n = LADO_DO_MAR): boolean {
   const ocupadas = new Set(outros.flatMap((x) => x ?? []));
   return casas.some((c) => {
     const l = Math.floor(c / n);
@@ -134,7 +152,7 @@ export function encosta(casas: number[], outros: (number[] | null)[]): boolean {
 }
 
 /** A casa como no papel: a coluna em letra e a linha em número ("B7"). */
-export const nomeDaCasaDoMar = (i: number) => `${'ABCDEFGHIJ'[i % LADO_DO_MAR]}${Math.floor(i / LADO_DO_MAR) + 1}`;
+export const nomeDaCasaDoMar = (i: number, n = LADO_DO_MAR) => `${'ABCDEFGHIJKL'[i % n]}${Math.floor(i / n) + 1}`;
 const SINAL: Record<Resultado, string> = { agua: '·', acertou: '✕', afundou: '✕✕' };
 
 /**
@@ -146,7 +164,7 @@ function rajada(e: EstadoNaval, lado: Lado, corpo: Record<string, unknown>): str
   const alvo = e.mares[outro];
   const casas = Array.isArray(corpo.casas) ? corpo.casas.map(Number) : [];
   if (casas.length !== tirosDaRajada(e, lado)) return 'Escolha todas as casas da rajada.';
-  if (new Set(casas).size !== casas.length || casas.some((c) => !Number.isInteger(c) || c < 0 || c >= CASAS_DO_MAR)) return 'Escolha uma casa do mar.';
+  if (new Set(casas).size !== casas.length || casas.some((c) => !Number.isInteger(c) || c < 0 || c >= e.n * e.n)) return 'Escolha uma casa do mar.';
   if (casas.some((c) => alvo.tiros[c])) return 'Você já atirou nessa casa.';
   for (const c of casas) alvo.tiros[c] = true;
   const tiros = casas.map((casa) => {
@@ -188,12 +206,12 @@ const restam = (mar: Mar) => mar.navios.filter((navio) => !afundado(mar, navio))
  * afundados: pela regra, nenhum navio encosta em outro, nem na diagonal, e a diagonal de um acerto também fica de fora.
  */
 export function tiroDoRobo(mar: MarPublico, aleatorio: () => number = Math.random): number {
-  const n = LADO_DO_MAR;
+  const n = Math.round(Math.sqrt(mar.tiros.length));
   const dentro = (l: number, c: number) => l >= 0 && l < n && c >= 0 && c < n;
   const afundadas = new Set(mar.navios.filter((x) => x.afundado).flatMap((x) => x.casas));
   // as casas onde não pode haver navio: em volta dos afundados, e na diagonal de qualquer fogo
-  const vedada = new Array<boolean>(CASAS_DO_MAR).fill(false);
-  for (let i = 0; i < CASAS_DO_MAR; i++) {
+  const vedada = new Array<boolean>(n * n).fill(false);
+  for (let i = 0; i < n * n; i++) {
     if (mar.tiros[i] !== 2) continue;
     const l = Math.floor(i / n);
     const c = i % n;
@@ -245,11 +263,11 @@ export function tiroDoRobo(mar: MarPublico, aleatorio: () => number = Math.rando
  * ele caça depois de acertar. Só olha o que a pessoa no lugar dele veria.
  */
 export function tiroDoRoboDificil(mar: MarPublico, tamanhos: number[], aleatorio: () => number = Math.random, evitar: number[] = []): number {
-  const n = LADO_DO_MAR;
+  const n = Math.round(Math.sqrt(mar.tiros.length));
   const afundadas = new Set(mar.navios.filter((x) => x.afundado).flatMap((x) => x.casas));
   const fogo = new Set([...mar.tiros.keys()].filter((i) => mar.tiros[i] === 2 && !afundadas.has(i)));
-  const proibida = new Array<boolean>(CASAS_DO_MAR).fill(false);
-  for (let i = 0; i < CASAS_DO_MAR; i++) {
+  const proibida = new Array<boolean>(n * n).fill(false);
+  for (let i = 0; i < n * n; i++) {
     if (mar.tiros[i] === 1 || evitar.includes(i)) proibida[i] = true;
     if (!afundadas.has(i)) continue;
     const l = Math.floor(i / n);
@@ -273,11 +291,11 @@ export function tiroDoRoboDificil(mar: MarPublico, tamanhos: number[], aleatorio
       return false;
     });
   };
-  const peso = new Array<number>(CASAS_DO_MAR).fill(0);
+  const peso = new Array<number>(n * n).fill(0);
   for (const tamanho of tamanhos) {
     for (const deitado of [true, false]) {
-      for (let casa = 0; casa < CASAS_DO_MAR; casa++) {
-        const casas = casasDoNavio(casa, tamanho, deitado);
+      for (let casa = 0; casa < n * n; casa++) {
+        const casas = casasDoNavio(casa, tamanho, deitado, n);
         if (!casas || casas.some((c) => proibida[c]) || encostaNoFogo(casas)) continue;
         const cobre = casas.filter((c) => fogo.has(c)).length;
         const w = cobre ? 40 ** cobre : 1;
@@ -287,7 +305,7 @@ export function tiroDoRoboDificil(mar: MarPublico, tamanhos: number[], aleatorio
   }
   let melhor = -1;
   let melhorPeso = -1;
-  for (let i = 0; i < CASAS_DO_MAR; i++) {
+  for (let i = 0; i < n * n; i++) {
     if (mar.tiros[i] !== 0 || evitar.includes(i)) continue;
     const p = peso[i] + aleatorio() * 0.5;
     if (p > melhorPeso) {
@@ -328,24 +346,26 @@ export function criarNaval(aleatorio: () => number = Math.random): Definicao {
     mesa: true,
     comecar(ctx, opcoes) {
       let estado: EstadoNaval | null = null;
-      const novoMar = (): Mar => ({ navios: [], tiros: new Array<boolean>(CASAS_DO_MAR).fill(false) });
-      const vazia = () => FROTA.map(() => null as number[] | null);
+      const novoMar = (n: number): Mar => ({ navios: [], tiros: new Array<boolean>(n * n).fill(false) });
+      const vazia = (frota: readonly number[]) => frota.map(() => null as number[] | null);
       /** O mar de `lado` passa a ter os navios postos da frota dele. */
       const acertar = (e: EstadoNaval, lado: Lado) => {
         e.mares[lado].navios = e.frotas[lado].filter((x): x is number[] => x !== null).map((x) => x.slice());
       };
       const mesa = duelo<EstadoNaval>(
         {
-          escolhas: (corpo) => ({ salvo: corpo.salvo === true }),
+          escolhas: (corpo) => ({ salvo: corpo.salvo === true, mar: ladoDoMar(corpo.mar) }),
           inicio: (escolhas) =>
             (estado = {
-              mares: [novoMar(), novoMar()],
+              mares: [novoMar(ladoDoMar(escolhas.mar)), novoMar(ladoDoMar(escolhas.mar))],
               ultimo: null,
               revelado: false,
-              frotas: [vazia(), vazia()],
+              frotas: [vazia(MARES[ladoDoMar(escolhas.mar)]), vazia(MARES[ladoDoMar(escolhas.mar)])],
               prontos: [false, false],
               salvo: escolhas.salvo === true,
               rajada: null,
+              n: ladoDoMar(escolhas.mar),
+              frota: MARES[ladoDoMar(escolhas.mar)],
             }),
           // o tiro já revelou o mar: voltar seria espiar
           semVoltar: true,
@@ -356,18 +376,18 @@ export function criarNaval(aleatorio: () => number = Math.random): Definicao {
               const frota = e.frotas[lado];
               const acao = corpo.acao;
               if (acao === 'sortear') {
-                e.frotas[lado] = sortearFrota(aleatorio);
+                e.frotas[lado] = sortearFrota(aleatorio, [], e.n, e.frota);
               } else if (acao === 'pronto') {
                 if (frota.some((x) => x === null)) return 'Ponha todos os navios antes.';
                 e.prontos[lado] = true;
               } else if (acao === 'por' || acao === 'tirar') {
                 const i = Number(corpo.navio);
-                if (!Number.isInteger(i) || i < 0 || i >= FROTA.length) return 'Escolha um navio.';
+                if (!Number.isInteger(i) || i < 0 || i >= e.frota.length) return 'Escolha um navio.';
                 if (acao === 'tirar') frota[i] = null;
                 else {
-                  const casas = casasDoNavio(Number(corpo.casa), FROTA[i], corpo.deitado === true);
+                  const casas = casasDoNavio(Number(corpo.casa), e.frota[i], corpo.deitado === true, e.n);
                   if (!casas) return 'O navio não cabe aí.';
-                  if (encosta(casas, frota.filter((_, k) => k !== i))) return 'Os navios não podem encostar um no outro.';
+                  if (encosta(casas, frota.filter((_, k) => k !== i), e.n)) return 'Os navios não podem encostar um no outro.';
                   frota[i] = casas;
                 }
               } else return 'Ação desconhecida.';
@@ -376,7 +396,7 @@ export function criarNaval(aleatorio: () => number = Math.random): Definicao {
             },
             pronto: (e, lado) => e.prontos[lado],
             completar(e, lado) {
-              e.frotas[lado] = sortearFrota(aleatorio, e.frotas[lado]);
+              e.frotas[lado] = sortearFrota(aleatorio, e.frotas[lado], e.n, e.frota);
               acertar(e, lado);
               e.prontos[lado] = true;
             },
@@ -384,7 +404,7 @@ export function criarNaval(aleatorio: () => number = Math.random): Definicao {
           jogar(e, lado, corpo) {
             if (e.salvo) return rajada(e, lado, corpo);
             const casa = Number(corpo.casa);
-            if (!Number.isInteger(casa) || casa < 0 || casa >= CASAS_DO_MAR) return 'Escolha uma casa do mar.';
+            if (!Number.isInteger(casa) || casa < 0 || casa >= e.n * e.n) return 'Escolha uma casa do mar.';
             const outro: Lado = lado === 0 ? 1 : 0;
             const alvo = e.mares[outro];
             if (alvo.tiros[casa]) return 'Você já atirou nessa casa.';
@@ -406,7 +426,7 @@ export function criarNaval(aleatorio: () => number = Math.random): Definicao {
             if (corpo.acao !== 'sortear') return 'Ação desconhecida.';
             const meu = e.mares[lado];
             if (meu.tiros.some(Boolean)) return 'Já atiraram no seu mar: a frota não muda mais.';
-            meu.navios = sortearFrota(aleatorio);
+            meu.navios = sortearFrota(aleatorio, [], e.n, e.frota);
             return null;
           },
           // o robô mira só pelo que se vê do mar do outro: os tiros, o fogo, os navios já afundados e os tamanhos que restam
@@ -420,9 +440,9 @@ export function criarNaval(aleatorio: () => number = Math.random): Definicao {
           },
           descrever: (e) =>
             e.rajada && e.salvo
-              ? e.rajada.tiros.map((t) => nomeDaCasaDoMar(t.casa) + SINAL[t.resultado]).join(' ')
+              ? e.rajada.tiros.map((t) => nomeDaCasaDoMar(t.casa, e.n) + SINAL[t.resultado]).join(' ')
               : e.ultimo
-                ? nomeDaCasaDoMar(e.ultimo.casa) + SINAL[e.ultimo.resultado]
+                ? nomeDaCasaDoMar(e.ultimo.casa, e.n) + SINAL[e.ultimo.resultado]
                 : '',
           publico(e, lado) {
             const mares = [0, 1].map((l) => marPublico(e.mares[l], e.revelado || l === lado));
@@ -431,6 +451,8 @@ export function criarNaval(aleatorio: () => number = Math.random): Definicao {
               restam: [restam(e.mares[0]), restam(e.mares[1])],
               ultimo: e.ultimo,
               salvo: e.salvo,
+              mar: e.n,
+              frota: e.frota,
               rajada: e.rajada,
               // quantos tiros cada lado tem na próxima rajada do salvo
               tirosDaRajada: e.salvo ? [tirosDaRajada(e, 0), tirosDaRajada(e, 1)] : null,

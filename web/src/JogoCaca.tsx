@@ -5,7 +5,7 @@ import { useT } from './i18n';
 import { Placar, Relogio } from './Minijogo';
 import type { EstadoCaca, Partida } from './minijogos';
 import { type Arte, carregarArte, desenhar, desenharCoelhoDaMoita, ESCALA, pintarCenario, pintarFrente, type Queda } from './caca/desenho';
-import { ALTURA, LARGURA, multiplicador, posicao, pontosDoAcerto, pragaAtingida, pragasDaOnda } from './caca/voo';
+import { AMIGO_PENA, ALTURA, LARGURA, ehAmigo, multiplicador, posicao, pontosDoAcerto, pragaAtingida, pragasDaOnda } from './caca/voo';
 
 /**
  * A CAÇA ÀS PRAGAS DA HORTA (04/11/2026, server/src/minijogo-caca.ts). Corvos e gafanhotos atravessam a horta, e cada um mira
@@ -21,6 +21,11 @@ import { ALTURA, LARGURA, multiplicador, posicao, pontosDoAcerto, pragaAtingida,
 
 /** Um tiro a cada isto, no máximo (o servidor recusa mais rápido que 120 ms). */
 const INTERVALO_MS = 150;
+/** A munição da rodada bônus (20/11/2026): sem limite (o servidor manda -1). */
+const SEM_LIMITE = -1;
+/** O que o servidor manda a mais desde 20/11/2026 (a rodada bônus, as pragas abatidas sem a joaninha). */
+type Extra = { bonus?: boolean };
+type MeuExtra = { pragasAbatidas?: number; perfeita?: boolean; combo?: number };
 
 // a arte da barraca começa a vir junto com o jogo, para chegar antes do fim do "prepare-se"
 void carregarArte();
@@ -42,9 +47,11 @@ export function JogoCaca({ estado, eu, jogador, agir }: { estado: EstadoCaca & P
     );
   }
   if (estado.fase === 'placar') {
-    // o fim da onda: o coelho da moita (alegre com a onda boa, rindo com a ruim) e a onda perfeita
-    const meu = estado.meu as (EstadoCaca['meu'] & { perfeita?: boolean }) | null;
-    const alegre = meu ? meu.abatidas.length >= Math.ceil(pragasDaOnda(estado.onda) * 0.6) : null;
+    // o fim da onda: o coelho da moita (alegre com a onda boa, rindo com a ruim) e a onda perfeita; depois da rodada bônus,
+    // só o placar
+    const meu = estado.meu as (EstadoCaca['meu'] & MeuExtra) | null;
+    const bonus = (estado as Extra).bonus === true;
+    const alegre = meu && !bonus ? (meu.pragasAbatidas ?? meu.abatidas.length) >= Math.ceil(pragasDaOnda(estado.onda) * 0.6) : null;
     return (
       <div className="caca">
         {meu && alegre !== null && <CoelhoDaMoita key={estado.onda} alegre={alegre} />}
@@ -75,7 +82,7 @@ export function JogoCaca({ estado, eu, jogador, agir }: { estado: EstadoCaca & P
     );
   }
   // a horta é montada de novo a cada onda e a cada partida: nada da anterior fica para a próxima
-  return <Horta key={`${estado.partidaId}-${estado.onda}`} estado={estado} eu={eu} jogador={jogador} agir={agir} />;
+  return <Horta key={`${estado.partidaId}-${estado.onda}${(estado as Extra).bonus ? "-bonus" : ""}`} estado={estado} eu={eu} jogador={jogador} agir={agir} />;
 }
 
 function Horta({ estado, eu, jogador, agir }: { estado: EstadoCaca & Partida; eu: number; jogador: boolean; agir: (corpo: Record<string, unknown>) => unknown }) {
@@ -91,6 +98,7 @@ function Horta({ estado, eu, jogador, agir }: { estado: EstadoCaca & Partida; eu
   }
 
   const pragas = estado.pragas;
+  const bonus = (estado as Extra).bonus === true;
   /** O que esta tela sabe de mim: as pragas que abati, a munição e os pontos. O servidor corrige quando acalma. */
   const abatidas = useRef(new Set<number>(estado.meu?.abatidas ?? []));
   const [municao, setMunicao] = useState(estado.meu?.municao ?? 0);
@@ -121,14 +129,34 @@ function Horta({ estado, eu, jogador, agir }: { estado: EstadoCaca & Partida; eu
 
   const atirar = (x: number, y: number) => {
     const ms = msDaOnda();
-    if (!souJogador || !jogando || ms === null || ms < 0 || municaoRef.current <= 0) return;
+    if (!souJogador || !jogando || ms === null || ms < 0 || municaoRef.current === 0) return;
     const agoraMs = Date.now();
     if (ultimoTiro.current && agoraMs - ultimoTiro.current.em < INTERVALO_MS) return;
     ultimoTiro.current = { x, y, em: agoraMs };
-    setMunicao((n) => n - 1);
+    if (!bonus) setMunicao((n) => n - 1);
     tocar('tiro');
     const i = pragaAtingida(pragas, abatidas.current, x, y, ms);
-    if (i >= 0) {
+    if (i >= 0 && ehAmigo(pragas[i])) {
+      // a joaninha (20/11/2026): ela foge, e custa pontos e o combo
+      abatidas.current.add(i);
+      combo.current = 0;
+      tocar('dano');
+      const p = pragas[i];
+      const pos = posicao(p, ms)!;
+      quedas.current.push({ x: pos.x, y: pos.y, tipo: p.tipo, dir: p.vx >= 0 ? 1 : -1, em: agoraMs, pontos: -AMIGO_PENA });
+      setPontos((n) => Math.max(0, n - AMIGO_PENA));
+    } else if (i >= 0 && bonus) {
+      // a cenoura da rodada bônus: os pontos dela, sem combo
+      abatidas.current.add(i);
+      tocar('moeda');
+      const p = pragas[i];
+      const pos = posicao(p, ms)!;
+      const ganhou = pontosDoAcerto(p, ms);
+      quedas.current.push({ x: pos.x, y: pos.y, tipo: p.tipo, dir: 1, em: agoraMs, pontos: ganhou });
+      setPontos((n) => n + ganhou);
+    } else if (bonus) {
+      // errar no bônus não custa nada
+    } else if (i >= 0) {
       abatidas.current.add(i);
       const p = pragas[i];
       combo.current++;
@@ -175,7 +203,7 @@ function Horta({ estado, eu, jogador, agir }: { estado: EstadoCaca & Partida; eu
       quedas.current = quedas.current.filter((q) => agoraMs - q.em < 1300);
       // o piloto automático do e2e (só no site de desenvolvimento): mira na primeira praga na tela
       if (import.meta.env.DEV && (window as { cacaPilotoAutomatico?: boolean }).cacaPilotoAutomatico && ms !== null && ms >= 0 && agoraMs > pilotoEm) {
-        const i = pragas.findIndex((p, k) => !abatidas.current.has(k) && posicao(p, ms + 200) && posicao(p, ms));
+        const i = pragas.findIndex((p, k) => !ehAmigo(p) && !abatidas.current.has(k) && posicao(p, ms + 200) && posicao(p, ms));
         if (i >= 0) {
           const pos = posicao(pragas[i], ms)!;
           pilotoEm = agoraMs + 400;
@@ -199,7 +227,7 @@ function Horta({ estado, eu, jogador, agir }: { estado: EstadoCaca & Partida; eu
         agora: agoraMs,
         mira: souJogador ? mira.current : null,
         tiro: ultimoTiro.current,
-        multiplicador: multiplicador(combo.current),
+        multiplicador: bonus ? 1 : multiplicador(combo.current),
       });
       if (agoraMs - ultimoRelogio > 250) {
         ultimoRelogio = agoraMs;
@@ -230,11 +258,18 @@ function Horta({ estado, eu, jogador, agir }: { estado: EstadoCaca & Partida; eu
       <div className="golfe-topo">
         {souJogador && (
           <>
-            <span className="caca-municao" aria-label={t('Munição: {n}', { n: municao })}>
-              {Array.from({ length: municao }, (_, k) => (
-                <span key={k} className="caca-cenoura" aria-hidden="true" />
-              ))}
-            </span>
+            {municao === SEM_LIMITE ? (
+              <span className="caca-municao" aria-label={t('Sem limite de tiros')}>
+                <span className="caca-cenoura" aria-hidden="true" />
+                <strong aria-hidden="true">∞</strong>
+              </span>
+            ) : (
+              <span className="caca-municao" aria-label={t('Munição: {n}', { n: municao })}>
+                {Array.from({ length: Math.max(0, municao) }, (_, k) => (
+                  <span key={k} className="caca-cenoura" aria-hidden="true" />
+                ))}
+              </span>
+            )}
             <span className="golfe-tacadas">{t('Pontos: {n}', { n: pontos })}</span>
           </>
         )}
@@ -269,14 +304,17 @@ function Horta({ estado, eu, jogador, agir }: { estado: EstadoCaca & Partida; eu
       </div>
       {/* a contagem da onda, como nos fliperamas: cada praga, abatida, fugida ou ainda por vir */}
       <div className="caca-placa" aria-hidden="true">
-        {pragas.map((p, i) => (
+        {pragas.map((p, i) => ehAmigo(p) ? null : (
           <span
             key={i}
             className={`caca-marca ${p.tipo}${abatidas.current.has(i) ? ' abatida' : ms !== null && ms > p.t + p.vida ? ' fugiu' : ''}`}
           />
         ))}
       </div>
-      {souJogador && estado.fase === 'preparando' && <p className="minijogo-situacao">{t('Mire e clique nas pragas antes que fujam. Cada tiro gasta uma cenoura.')}</p>}
+      {souJogador && estado.fase === 'preparando' && !bonus && <p className="minijogo-situacao">{t('Mire e clique nas pragas antes que fujam. Cada tiro gasta uma cenoura.')}</p>}
+      {/* a rodada bônus e a joaninha (20/11/2026): a dica no "prepare-se" */}
+      {souJogador && estado.fase === 'preparando' && bonus && <p className="minijogo-situacao caca-recorde">{t('Rodada bônus: acerte as cenouras que sobem, sem limite de tiros.')}</p>}
+      {souJogador && estado.fase === 'preparando' && !bonus && pragas.some(ehAmigo) && <p className="minijogo-situacao">{t('Não atire na joaninha: ela é amiga da horta.')}</p>}
       {souJogador && jogando && municao === 0 && <p className="minijogo-situacao">{t('Acabou a munição desta onda.')}</p>}
       {souJogador && <ComandosDoJogo itens={[{ teclas: ['mouse-clique'], toque: 'toque', rotulo: t('Atirar') }]} />}
     </div>

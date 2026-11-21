@@ -1,5 +1,5 @@
 import { PREDIOS, VEICULOS } from './atlas.gerado';
-import { C0, C1, CAMINHOS, ENTRADAS, FILA_MAX, MAPA, TRAVA_PASSOS, naFila, primeiroDaFila, type Carro, type Estado, type Mapa } from './sim';
+import { C0, C1, CAMINHOS, ENTRADAS, FILA_MAX, MAPA, PRAZO_DA_AMBULANCIA, TRAVA_PASSOS, naFila, primeiroDaFila, valorDaAmbulancia, type Carro, type Estado, type Mapa } from './sim';
 
 /**
  * O DESENHO DO TRÂNSITO DA TOCA: a cidade em isométrico, num canvas 2D. Os prédios e os carros são da Kenney (CC0, as folhas de
@@ -358,6 +358,7 @@ export class DesenhoDoTransito {
       ctx.beginPath();
       ctx.arc(sx, sy - dh + 6, 3.5, 0, Math.PI * 2);
       ctx.fill();
+      if (!c.liberado) this.relogio(sx, sy - dh - 14, passo - c.chegou, c.atrasada, passo);
     }
     // a seta: para onde o carro vai virar, na direção da tela da rua de saída (pisca, como o pisca-pisca)
     if (!c.liberado && !c.batido && c.manobra !== 'reto' && Math.floor(passo / 18) % 2 === 0) {
@@ -376,6 +377,36 @@ export class DesenhoDoTransito {
       ctx.stroke();
     }
     ctx.globalAlpha = 1;
+  }
+
+  /**
+   * O RELÓGIO DA AMBULÂNCIA (20/11/2026): a fatia que sobra do prazo, na cor do que ela vale agora (verde 3, amarelo 2, laranja 1);
+   * passado o prazo, o círculo vermelho piscando.
+   */
+  private relogio(sx: number, sy: number, espera: number, atrasada: boolean, passo: number) {
+    const { ctx } = this;
+    const r = 7;
+    ctx.fillStyle = 'rgba(20, 22, 30, 0.75)';
+    ctx.beginPath();
+    ctx.arc(sx, sy, r + 2, 0, Math.PI * 2);
+    ctx.fill();
+    if (atrasada) {
+      if (Math.floor(passo / 15) % 2 === 0) {
+        ctx.fillStyle = '#ff4a4a';
+        ctx.beginPath();
+        ctx.arc(sx, sy, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      return;
+    }
+    const valor = valorDaAmbulancia(espera);
+    const resta = Math.max(0, 1 - espera / PRAZO_DA_AMBULANCIA);
+    ctx.fillStyle = valor >= 3 ? '#5fd17a' : valor === 2 ? '#f2d04a' : '#f28a3a';
+    ctx.beginPath();
+    ctx.moveTo(sx, sy);
+    ctx.arc(sx, sy, r, -Math.PI / 2, -Math.PI / 2 + resta * Math.PI * 2);
+    ctx.closePath();
+    ctx.fill();
   }
 
   /** A MOTO, por código (o pacote da Kenney não tem): duas rodas na direção da rua, o corpo na cor da pele e quem pilota de capacete. */

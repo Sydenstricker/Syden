@@ -10,9 +10,13 @@
  *
  * A REDE NÃO PESA: as escolhas são simultâneas e secretas, então a que chega um pouco depois do fim (até ESCOLHA_FOLGA_MS)
  * ainda vale, e não dá vantagem a ninguém. A turma e o papel de cada um: ver ./lote4-turma.ts.
+ *
+ * COM AS EQUIPES IMPOSTAS (20/11/2026: o 1 contra 3 do Tabuleiro da turma): a lanterna é da equipe de um, e a de três se esconde,
+ * robôs inclusive (o robô fica onde o sorteio do `gerar` o põe, como quem não escolheu). Só o 1 contra 3: num 2 contra 2 não há
+ * quem fique com a lanterna, e a turma se forma como sempre.
  */
 import { inteiro, microjogo, sortear, type Largada, type Resultado } from './comum.js';
-import { entrar, JUNTAR_MS } from './lote4-turma.js';
+import { entrar, impostas, JUNTAR_MS, type Impostas } from './lote4-turma.js';
 
 export const LUGARES = 4;
 export const RODADAS = 3;
@@ -65,6 +69,8 @@ interface Mem {
   antes: Map<number, number>;
   achados: Map<number, number>;
   mostra: VistaEsconde['mostra'];
+  /** As equipes impostas (só o 1 contra 3), ou null. */
+  im: Impostas | null;
 }
 
 const escondidos = (mem: Mem) => mem.membros.filter((id) => id !== mem.busca);
@@ -131,7 +137,8 @@ export default microjogo<DadosEsconde, Mem>({
     };
   },
   duracao: () => ESCONDE_MS + 300,
-  memoria: () => ({
+  aceitaEquipes: true,
+  memoria: (_dados, turma) => ({
     l: null,
     membros: [],
     busca: null,
@@ -142,11 +149,21 @@ export default microjogo<DadosEsconde, Mem>({
     antes: new Map(),
     achados: new Map(),
     mostra: null,
+    im: ((im) => (im && im.equipes.some((e) => e.length === 1) ? im : null))(impostas(turma)),
   }),
   iniciar(l) {
     const { dados, mem } = l;
     mem.l = l;
     etapa(mem, 'juntando', JUNTAR_MS, () => {
+      if (mem.im) {
+        // o 1 contra 3: a lanterna é da equipe de um; a turma é a imposta inteira (quem não entrou fica onde o sorteio o pôs)
+        const so = mem.im.equipes.find((e) => e.length === 1)!;
+        const outra = mem.im.equipes.find((e) => e !== so)!;
+        mem.membros = [so[0], ...outra];
+        mem.busca = so[0];
+        escolher(dados, mem);
+        return;
+      }
       if (mem.membros.length === 0) {
         l.agendar(ESCONDE_MS - JUNTAR_MS, l.revelar);
         return;
@@ -172,7 +189,7 @@ export default microjogo<DadosEsconde, Mem>({
   acerto({ mem, quem, corpo }) {
     if (corpo.entrar === 1) {
       // quem chega depois de os papéis saírem não entra: a rodada já começou sem ele
-      if (mem.etapa === 'juntando') entrar(mem.membros, quem);
+      if (mem.etapa === 'juntando' && !mem.im) entrar(mem.membros, quem);
       return;
     }
     const { r, lugar } = corpo;

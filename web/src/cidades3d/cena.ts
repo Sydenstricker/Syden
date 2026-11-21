@@ -4,6 +4,7 @@ import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeom
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { carregarModelo as carregarDaMesa } from '../mesa3d/base';
 import { copiarCoelho, type MaterialDoCoelho } from '../coelho3d';
+import { colunaLinhaDasCidades, voltaDasCidades } from '../cidadesVolta';
 
 /**
  * O TABULEIRO 3D DO CIDADES À VENDA (05/11/2026, pedido dele: "3D cartoon fofo, similar ao Mario Party, com os assets da
@@ -66,16 +67,23 @@ export interface DadosDaCena {
 }
 
 const BASE = `${import.meta.env.BASE_URL}cidades3d/`;
-const COLUNAS = 10;
-const LINHAS = 8;
+/**
+ * A VOLTA (20/11/2026): 10 × 8 na de 32 casas, 12 × 10 no Brasil inteiro (40). Muda com definirVolta, chamada pela cena ao nascer
+ * (só existe uma cena do Cidades por vez); a conta é a de cidadesVolta.ts, a mesma do desenho de reserva.
+ */
+let COLUNAS = 10;
+let LINHAS = 8;
+let TOTAL = 32;
 /** A largura de uma casa do meio, ao longo da volta. */
 const LARGURA = 0.95;
 /** A profundidade de todo lote (da beira para dentro), que é também o lado de uma casa do canto. */
 const FUNDO = 1.5;
 /** A calçada, a faixa do lote onde ficam os coelhos. */
 const CALCADA = 0.46;
-const X0 = ((COLUNAS - 2) * LARGURA + 2 * FUNDO) / 2;
-const Z0 = ((LINHAS - 2) * LARGURA + 2 * FUNDO) / 2;
+let X0 = ((COLUNAS - 2) * LARGURA + 2 * FUNDO) / 2;
+let Z0 = ((LINHAS - 2) * LARGURA + 2 * FUNDO) / 2;
+/** Quanto a volta é maior que a de 32: a câmera, a névoa e as sombras crescem junto. */
+let ESCALA_DA_VOLTA = 1;
 const ALTURA_DO_LOTE = 0.12;
 const ALTURA_DO_COELHO = 0.74;
 /** Quantos pixels por unidade no chão pintado de cada lote. */
@@ -122,13 +130,8 @@ export function carregar(arquivo: string): Promise<GLTF> {
   return p;
 }
 
-/** A casa `i` (0 a 31) na grade: a mesma volta de lugarDaCasaDasCidades. */
-function colunaLinha(i: number): [number, number] {
-  if (i <= 9) return [i, 0];
-  if (i <= 16) return [9, i - 9];
-  if (i <= 25) return [25 - i, 7];
-  return [0, 32 - i];
-}
+/** A casa `i` na grade: a mesma volta do desenho de reserva (cidadesVolta.ts). */
+const colunaLinha = (i: number) => colunaLinhaDasCidades(i, TOTAL);
 function centroNaLinha(k: number, n: number, metade: number) {
   if (k === 0) return -metade + FUNDO / 2;
   if (k === n - 1) return metade - FUNDO / 2;
@@ -200,7 +203,18 @@ function plantaDoLote(i: number): Planta {
     portao,
   };
 }
-const PLANTAS = Array.from({ length: 32 }, (_, i) => plantaDoLote(i));
+let PLANTAS: Planta[] = [];
+/** Arruma a volta para `total` casas (32 ou 40). */
+function definirVolta(total: number) {
+  const X0_DE_32 = (8 * LARGURA + 2 * FUNDO) / 2;
+  TOTAL = total === 40 ? 40 : 32;
+  ({ colunas: COLUNAS, linhas: LINHAS } = voltaDasCidades(TOTAL));
+  X0 = ((COLUNAS - 2) * LARGURA + 2 * FUNDO) / 2;
+  Z0 = ((LINHAS - 2) * LARGURA + 2 * FUNDO) / 2;
+  ESCALA_DA_VOLTA = X0 / X0_DE_32;
+  PLANTAS = Array.from({ length: TOTAL }, (_, i) => plantaDoLote(i));
+}
+definirVolta(32);
 
 /** O lugar dos coelhos na casa `i`: o meio da calçada. */
 export function centroDaCasa(i: number): THREE.Vector3 {
@@ -585,7 +599,9 @@ export class CenaDasCidades {
   constructor(
     private caixa: HTMLElement,
     private aoEscolher: (i: number) => void,
+    total = 32,
   ) {
+    definirVolta(total);
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'low-power' });
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -640,14 +656,14 @@ export class CenaDasCidades {
     this.renderer.setSize(w, h, false);
     this.camera.aspect = w / h;
     // de longe o bastante para caber o tabuleiro inteiro, na largura e na altura
-    this.distancia = Math.max(1, 1.25 / this.camera.aspect);
+    this.distancia = Math.max(1, 1.25 / this.camera.aspect) * ESCALA_DA_VOLTA;
     this.camera.updateProjectionMatrix();
   }
 
   private montarFixo() {
     const c = this.cena;
     c.background = new THREE.Color('#bfe4f2');
-    c.fog = new THREE.Fog('#bfe4f2', 22, 42);
+    c.fog = new THREE.Fog('#bfe4f2', 22 * ESCALA_DA_VOLTA, 42 * ESCALA_DA_VOLTA);
     const ceu = new THREE.HemisphereLight('#fff6e8', '#7fae6a', 1.6);
     c.add(ceu);
     const sol = new THREE.DirectionalLight('#fff1d6', 2.2);
@@ -656,10 +672,10 @@ export class CenaDasCidades {
       sol.castShadow = true;
       sol.shadow.mapSize.set(2048, 2048);
       const s = sol.shadow.camera;
-      s.left = -8;
-      s.right = 8;
-      s.top = 7;
-      s.bottom = -7;
+      s.left = -8 * ESCALA_DA_VOLTA;
+      s.right = 8 * ESCALA_DA_VOLTA;
+      s.top = 7 * ESCALA_DA_VOLTA;
+      s.bottom = -7 * ESCALA_DA_VOLTA;
       s.near = 1;
       s.far = 30;
       sol.shadow.bias = -0.0008;
@@ -687,8 +703,8 @@ export class CenaDasCidades {
     c.add(terra);
     this.montarMiolo();
 
-    // os 32 lotes
-    for (let i = 0; i < 32; i++) {
+    // os lotes (32, ou 40 no Brasil inteiro)
+    for (let i = 0; i < TOTAL; i++) {
       const pl = PLANTAS[i];
       const chave = `${pl.hx}x${pl.hz}`;
       let geos = this.geosDoLote.get(chave);
@@ -755,7 +771,7 @@ export class CenaDasCidades {
     {
       const geo = new THREE.IcosahedronGeometry(0.03, 0);
       const m = new THREE.MeshStandardMaterial({ color: '#f7f3ec', roughness: 1, transparent: true, opacity: 0.85, flatShading: true });
-      this.fumaca = new THREE.InstancedMesh(geo, m, 32 * 3);
+      this.fumaca = new THREE.InstancedMesh(geo, m, TOTAL * 3);
       this.fumaca.count = 0;
       this.fumaca.frustumCulled = false;
       c.add(this.fumaca);
@@ -793,7 +809,8 @@ export class CenaDasCidades {
       [-3.55, 2.6],
       [3.55, 2.6],
     ])
-      plantar(x, z, Math.abs(x) > 3 ? 0.24 : 0.32);
+      // (no Brasil inteiro, o miolo é maior: tudo dele se afasta do meio na mesma proporção)
+      plantar(x * ESCALA_DA_VOLTA, z * ESCALA_DA_VOLTA, Math.abs(x) > 3 ? 0.24 : 0.32);
     const vaso = this.modelos.get('suburbio/planter.glb');
     if (vaso)
       for (const [x, z] of [
@@ -828,7 +845,7 @@ export class CenaDasCidades {
   private montarMiolo() {
     const mx = X0 - FUNDO - 0.04;
     const mz = Z0 - FUNDO - 0.04;
-    const RUA = { rx: 3.3, rz: 2.36, canto: 0.55, largura: 0.44 };
+    const RUA = { rx: 3.3 * ESCALA_DA_VOLTA, rz: 2.36 * ESCALA_DA_VOLTA, canto: 0.55, largura: 0.44 };
     {
       const P = 96;
       const cv = document.createElement('canvas');
@@ -880,9 +897,9 @@ export class CenaDasCidades {
   }
 
   private montarTrem() {
-    const curva = this.retanguloCurvo(2.55, 1.5, 0.75, 0.06);
+    const curva = this.retanguloCurvo(2.55 * ESCALA_DA_VOLTA, 1.5 * ESCALA_DA_VOLTA, 0.75, 0.06);
     this.trilho = curva;
-    const n = 180;
+    const n = Math.round(180 * ESCALA_DA_VOLTA);
     const dormente = new THREE.BoxGeometry(0.3, 0.03, 0.065);
     const madeira = new THREE.MeshStandardMaterial({ color: '#8a5a3c', roughness: 0.9 });
     const dormentes = new THREE.InstancedMesh(dormente, madeira, n);
@@ -937,7 +954,7 @@ export class CenaDasCidades {
     if (!this.lotes.length) return;
     const posse = new Map(d.posses.map((p) => [p.casa, p]));
     d.casas.forEach((casa, i) => {
-      if (i >= 32) return;
+      if (i >= TOTAL) return;
       const p = posse.get(i);
       const lote = this.lotes[i];
       const dono = p ? d.corDe(p.dono) : '';

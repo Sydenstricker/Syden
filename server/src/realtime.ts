@@ -7,6 +7,7 @@ import * as db from './db.js';
 import { apagarSeVazia } from './salas-temporarias.js';
 import { pontuarMensagem, pontuarMinutoDeVoz } from './niveis.js';
 import { barreiraDe, hojeEmBrasilia, podeConversarNoParticular, podeVerVideo, regrasDe } from './protecao.js';
+import { motivoDoSilencio } from './silencio-do-jogo.js';
 
 /** Os gêneros que a TV do salão sabe desenhar (a mesma lista de web/src/generoDoJogo.ts). */
 const GENEROS_DE_JOGO = new Set(['moba', 'tiro', 'futebol', 'corrida', 'luta', 'aventura', 'construcao', 'fazenda', 'estrategia', 'cartas', 'terror', 'plataforma', 'festa', 'espaco', 'quebracabeca', 'esportes', 'voo', 'turnos', 'historia', 'ritmo']);
@@ -148,11 +149,18 @@ function voiceState(communityId: number): VoiceMember[] {
     .map(({ socketId: _s, voiceSessionId: _v, screenSessionId: _c, ...member }) => ({
       ...member,
       travado: microfoneTravado(communityId, member.userId),
+      // o microfone desligado pela partida (o Lobisomem: 'noite' ou 'fora'; ver silencio-do-jogo.ts)
+      silencioDoJogo: motivoDoSilencio(member.channelId, member.userId),
     }));
 }
 
 function broadcastVoice(io: IOServer, communityId: number) {
   io.to(communityRoom(communityId)).emit('voice:state', { communityId, members: voiceState(communityId) });
+}
+
+/** A lista das salas da comunidade de novo, para quem está nelas ver o que mudou (o microfone que o jogo desligou). */
+export function reanunciarVoz(io: IOServer, communityId: number) {
+  broadcastVoice(io, communityId);
 }
 
 /**

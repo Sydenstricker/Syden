@@ -44,6 +44,7 @@ import {
   GOL_PAUSA,
   marcarGol,
   MAXIMO_POR_TIME,
+  MINUTOS_POSSIVEIS,
   novoMundo,
   PARTIDA_PASSOS,
   passoDaBola,
@@ -143,7 +144,10 @@ export function criarFutebol({
       humanos.forEach((id, k) => times[k % 2].push(id));
       let proximoRobo = 1;
       for (const t of times) while (t.length < porTime) t.push(-proximoRobo++);
-      const m = novoMundo(times);
+      // o tempo de jogo e o gol de ouro, escolhidos por quem começa (20/11/2026); fora da lista, os 3 minutos de sempre
+      const minutos = MINUTOS_POSSIVEIS.includes(Number(corpo.minutos)) ? Number(corpo.minutos) : 3;
+      const golDeOuro = corpo.golDeOuro === true;
+      const m = novoMundo(times, 1, minutos * 60 * PASSOS_POR_SEGUNDO, golDeOuro);
       for (const j of m.jogadores) if (!ehRobo(j.id)) j.externo = true;
       const evento = `futebol-${ctx.comunidade ?? 0}-${agora()}`;
 
@@ -223,6 +227,7 @@ export function criarFutebol({
           pa: m.pausa,
           r: m.reinicios,
           ce: m.centro ? 1 : 0,
+          ou: m.prorrogacao ? 1 : 0,
           sa: m.saida,
           g: m.placar,
           fim: m.fim ? 1 : 0,
@@ -261,6 +266,8 @@ export function criarFutebol({
         resultado = {
           placar: [m.placar[0], m.placar[1]],
           venceu,
+          // decidido no gol de ouro (a prorrogação)
+          golDeOuro: m.prorrogacao && venceu !== -1,
           jogadores: m.jogadores.map((j) => ({ userId: j.id, username: ctx.nome(j.id), time: j.time, gols: j.gols, robo: ehRobo(j.id) })),
         };
         if (completa && ficaram.length >= 2) {
@@ -449,6 +456,9 @@ export function criarFutebol({
             ),
             placar: m.placar,
             resultado,
+            minutos,
+            golDeOuro,
+            duracao: m.duracao,
             partidaId: evento,
           };
         },
@@ -491,6 +501,8 @@ export interface Resultado {
   placar: [number, number];
   /** O time que venceu, ou -1 no empate. */
   venceu: 0 | 1 | -1;
+  /** A partida se decidiu no gol de ouro. */
+  golDeOuro?: boolean;
   jogadores: { userId: number; username: string; time: 0 | 1; gols: number; robo: boolean }[];
 }
 

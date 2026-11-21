@@ -232,9 +232,14 @@ export interface EstadoStop {
     | {
         userId: number;
         username: string;
-        respostas: { texto: string; valida: boolean; contra: number; contestei: boolean; pontos: number | null }[];
+        respostas: { texto: string; valida: boolean; contra: number; contestei: boolean; aceita?: boolean; pontos: number | null }[];
       }[]
     | null;
+  /** Com dois na partida, a resposta só cai com o aceite de quem a escreveu (20/11/2026). */
+  precisaAceite?: boolean;
+  /** O bônus de quem apertou STOP com tudo valendo, na rodada que acabou. */
+  bonus?: { userId: number; pontos: number } | null;
+  bonusDoStop?: number;
   prontos: number[];
   placar: LinhaDoPlacar[];
 }
@@ -294,6 +299,8 @@ export interface EstadoLobisomem {
   lobosMax: number;
   meuPapel: Papel | null;
   vivo: boolean;
+  /** O seu microfone, desligado pela partida (20/11/2026): de noite, ou fora do jogo até o fim. */
+  microfone?: 'noite' | 'fora' | null;
   jogadores: { userId: number; username: string; vivo: boolean; papel: Papel | null }[];
   ataque: Record<string, number> | null;
   conversa: { id: number; de: number; texto: string }[] | null;
@@ -486,13 +493,16 @@ export interface EstadoTabuleiro {
 /** Cidades à venda (server/src/minijogo-cidades.ts): o tabuleiro vem do servidor, que é quem decide tudo. */
 export type TipoDaCasaDasCidades = 'largada' | 'cidade' | 'transporte' | 'noticia' | 'pedagio' | 'engarrafamento' | 'feriado';
 export type CartaDasCidades =
-  | 'quadrilha' | 'bolso' | 'feira' | 'carro' | 'multa' | 'largada' | 'carona' | 'onibus-errado' | 'chuva' | 'reforma' | 'aniversario' | 'festa' | 'passagem';
+  | 'quadrilha' | 'bolso' | 'feira' | 'carro' | 'multa' | 'largada' | 'carona' | 'onibus-errado' | 'chuva' | 'reforma' | 'aniversario' | 'festa' | 'passagem'
+  // as notícias novas de 20/11/2026 (server/src/minijogo-cidades.ts)
+  | 'ciencias' | 'restituicao' | 'show' | 'geladeira' | 'dentista' | 'vaquinha' | 'churrasco' | 'atalho' | 'pneu' | 'proxima-cidade'
+  | 'feriadao' | 'alta-temporada' | 'baixa-temporada' | 'mutirao' | 'obras' | 'iptu' | 'turistas' | 'perdao';
 export type OcorridoDasCidades = { id: number } & (
   | { tipo: 'salario'; userId: number; valor: number }
   | { tipo: 'aluguel'; de: number; para: number; casa: number; valor: number }
   | { tipo: 'comprou'; userId: number; casa: number; valor: number }
   | { tipo: 'leilao'; userId: number | null; casa: number; valor: number }
-  | { tipo: 'carta'; userId: number; carta: CartaDasCidades; valor: number | null }
+  | { tipo: 'carta'; userId: number; carta: CartaDasCidades; valor: number | null; grupo?: number; casa?: number }
   | { tipo: 'pedagio'; userId: number; valor: number }
   | { tipo: 'engarrafado'; userId: number }
   | { tipo: 'perdeu-vez'; userId: number }
@@ -543,6 +553,10 @@ export interface EstadoCidades {
   deNovo?: boolean;
   /** Quanto custa sair do engarrafamento. */
   sairDoEngarrafamento?: number;
+  /** O tabuleiro (20/11/2026): 'capitais' (32 casas, o de fábrica) ou 'brasil' (40 casas, as 27 capitais). */
+  tabuleiro?: 'capitais' | 'brasil';
+  /** A temporada de uma notícia: os aluguéis do grupo vezes `fator` até `vezes` vezes passarem. */
+  temporada?: { grupo: number; fator: number; vezes: number } | null;
 }
 
 /** A Caça às pragas da horta (server/src/minijogo-caca.ts): cinco ondas de corvos e gafanhotos, mais pontos ganha. */

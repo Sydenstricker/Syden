@@ -179,6 +179,12 @@ export function moitaEm(cenario: Cenario, x: number, y: number): number {
 export const ZONA_DO_OBJETIVO = { x: 640, y: 448, raio: 110 };
 export const PONTOS_DA_ZONA = 60;
 
+/**
+ * O FIM COM PRESSÃO (20/11/2026): no último minuto da partida, as zonas da arena vêm mais depressa e maiores, e a tela avisa. O
+ * relógio que o quadro leva (o "r", o que falta) diz à tela quando começa; o servidor marca as zonas.
+ */
+export const ZONA_FINAL = { falta: 60_000, cada: 3500, raio: 70 };
+
 /** Onde cada um nasce e volta: [x, y]. Nos times, o 0 à esquerda e o 1 à direita; cada um por si, em roda. */
 export const NASCER_TIME: readonly (readonly (readonly [number, number])[])[] = [
   [

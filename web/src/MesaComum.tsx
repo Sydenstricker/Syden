@@ -1,6 +1,7 @@
 import { CircleHelp, Flag, Handshake, Undo2, X } from 'lucide-react';
 import { useEffect, useState, type ReactNode } from 'react';
 import { useT } from './i18n';
+import { MARES_DA_NAVAL } from './naval3d/montagem';
 import './MesaComum.css';
 
 /**
@@ -42,6 +43,11 @@ export function EscolhaDaMesa({
   const [sementes, setSementes] = useState(4);
   const [variante, setVariante] = useState<'kalah' | 'oware'>('kalah');
   const [salvo, setSalvo] = useState(false);
+  // as variantes de 20/11/2026 (o lote C da segunda auditoria): a regra de fábrica continua a de sempre
+  const [captura, setCaptura] = useState(false);
+  const [tresTres, setTresTres] = useState(false);
+  const [paraTras, setParaTras] = useState(true);
+  const [mar, setMar] = useState(10);
   const nomeDoNivel: Record<NivelDaMesa, string> = {
     iniciante: t('Iniciante'),
     facil: t('Fácil'),
@@ -56,9 +62,10 @@ export function EscolhaDaMesa({
       if (solo) corpo.nivel = nivel;
       else if (relogio) corpo.relogio = relogio;
     }
-    if (jogo === 'gomoku') Object.assign(corpo, { exato, troca });
+    if (jogo === 'gomoku') Object.assign(corpo, { exato, troca, captura, tresTres });
     if (jogo === 'mancala') Object.assign(corpo, { sementes, variante });
-    if (jogo === 'naval') corpo.salvo = salvo;
+    if (jogo === 'naval') Object.assign(corpo, { salvo, mar });
+    if (jogo === 'damas') corpo.paraTras = paraTras;
     aoEscolher(corpo);
   };
 
@@ -118,6 +125,22 @@ export function EscolhaDaMesa({
             <input type="checkbox" checked={troca} onChange={(e) => setTroca(e.target.checked)} />
             {t('Troca na abertura (quem responde escolhe a cor)')}
           </label>
+          <label className="mesa-opcao">
+            <input type="checkbox" checked={captura} onChange={(e) => setCaptura(e.target.checked)} />
+            {t('Captura: cercar duas pedras do outro tira as duas')}
+          </label>
+          <label className="mesa-opcao">
+            <input type="checkbox" checked={tresTres} onChange={(e) => setTresTres(e.target.checked)} />
+            {t('As escuras não fazem dois três abertos de uma vez')}
+          </label>
+        </fieldset>
+      )}
+      {jogo === 'damas' && (
+        <fieldset className="mesa-grupo">
+          <label className="mesa-opcao">
+            <input type="checkbox" checked={!paraTras} onChange={(e) => setParaTras(!e.target.checked)} />
+            {t('A pedra não come para trás')}
+          </label>
         </fieldset>
       )}
       {jogo === 'mancala' && (
@@ -153,6 +176,29 @@ export function EscolhaDaMesa({
       )}
       {jogo === 'naval' && (
         <fieldset className="mesa-grupo">
+          <legend>{t('Tamanho do mar')}</legend>
+          {/* os três mares (server/src/minijogo-naval.ts, MARES): o lado e a frota, só figura */}
+          <div className="mesa-botoes">
+            {MARES_DA_NAVAL.map((m) => (
+              <button
+                key={m.lado}
+                type="button"
+                className={`tab-rodadas-botao mesa-mar${mar === m.lado ? ' escolhida' : ''}`}
+                aria-pressed={mar === m.lado}
+                aria-label={`${m.lado} × ${m.lado}`}
+                onClick={() => setMar(m.lado)}
+              >
+                <span>
+                  {m.lado} × {m.lado}
+                </span>
+                <span className="mesa-mar-frota" aria-hidden="true">
+                  {m.frota.map((tamanho, i) => (
+                    <span key={i} style={{ width: `${tamanho * 5}px` }} />
+                  ))}
+                </span>
+              </button>
+            ))}
+          </div>
           <label className="mesa-opcao">
             <input type="checkbox" checked={salvo} onChange={(e) => setSalvo(e.target.checked)} />
             {t('Salvo: um tiro por navio que ainda boia')}
@@ -198,6 +244,8 @@ export function ComoJogar({ jogo, figura }: { jogo: string; figura?: ReactNode }
       t('Cada um põe uma pedra por vez. Vence quem fizer cinco seguidas, na linha, na coluna ou na diagonal.'),
       t('Com "exatamente 5", seis ou mais seguidas não valem.'),
       t('Com a troca, quem abre põe três pedras e quem responde escolhe a cor.'),
+      t('Com a captura, cercar duas pedras do outro entre duas suas tira as duas; cinco capturas também vencem.'),
+      t('Com a restrição 3-3, as escuras não podem fazer dois três abertos de uma vez.'),
     ],
     mancala: [
       t('Escolha uma casa sua: as sementes andam uma por casa, no sentido anti-horário. Vence quem guardar mais.'),
@@ -208,11 +256,13 @@ export function ComoJogar({ jogo, figura }: { jogo: string; figura?: ReactNode }
       t('As pedras andam uma casa na diagonal, para a frente. Comer é obrigatório, também para trás, e vale o lance que come mais.'),
       t('A pedra que termina o lance na última fileira vira dama, que anda a diagonal inteira.'),
       t('A mesma posição pela terceira vez empata, e 20 lances só de dama sem comer também.'),
+      t('Na variante sem comer para trás, a pedra só come para a frente; a dama continua comendo para todo lado.'),
     ],
     naval: [
       t('Ponha os navios sem encostar um no outro, nem na diagonal.'),
       t('Atire no mar do outro: acertou, atira de novo. Vence quem afundar a frota inteira.'),
       t('No salvo, cada vez é uma rajada com um tiro por navio seu que ainda boia.'),
+      t('O mar de 8 × 8 tem a frota menor, e o de 12 × 12, a maior.'),
     ],
     'partida-de-xadrez': [t('As regras do xadrez inteiras. Clique na peça e depois na casa: as casas que valem acendem.'), t('Quem abre fica com as brancas.')],
     xadrez: [
@@ -226,11 +276,14 @@ export function ComoJogar({ jogo, figura }: { jogo: string; figura?: ReactNode }
       t('A manilha é o valor seguinte ao da vira e ganha de todas. Entre elas: ouros, espadas, copas e paus, o zap.'),
       t('Peça truco e a mão vale 3. Quem responde aceita, corre ou aumenta para 6, 9 ou 12.'),
       t('Com 11 pontos, a dupla vê as cartas e decide se joga a mão de onze. Vence quem chegar a 12.'),
+      t('No mineiro não há vira: as manilhas são o 4 de paus, o 7 de copas, o ás de espadas e o 7 de ouros.'),
+      t('No mineiro, a mão vale 2, e o truco, o seis, o nove e o doze valem 4, 8, 10 e 12. Com 10 pontos, é a mão de dez: jogar valendo 4, ou correr e dar 2.'),
     ],
     domino: [
       t('Encoste uma pedra numa ponta da mesa com o mesmo número.'),
       t('Sem pedra que sirva, compre. Sem nada para comprar, a vez passa.'),
       t('Quem bate fica sem pedras e leva os pontos das mãos dos outros. Trancado, leva quem tem menos pontos na mão.'),
+      t('Com as batidas especiais, bater com carroça ou com a pedra que serve nas duas pontas vale o dobro; a carroça nas duas pontas, o quádruplo.'),
     ],
     cidades: [
       t('Ande pelo dado e compre a capital onde parar. Quem para na cidade de outro paga aluguel.'),

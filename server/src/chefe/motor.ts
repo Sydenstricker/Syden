@@ -51,6 +51,9 @@ import {
   MARCAS,
   naArena,
   normalizar,
+  PA,
+  apanhaDaPa,
+  paPega,
   PASSO_MS,
   tiroPega,
   TOCAS,
@@ -112,6 +115,22 @@ export const CRUZ_INTERVALO_MS = 110;
 export const CHEFES = ['toupeira', 'yeti'] as const;
 export type QualChefe = (typeof CHEFES)[number];
 export const BOLA_DE_NEVE = { raio: 14, vel: 200 };
+
+/**
+ * A MARATONA E O DIFÍCIL (20/11/2026, a segunda auditoria), só no Solo. A MARATONA é a toupeira (as três fases) e, sem parar, o
+ * yeti (as três dele): seis fases, o recorde é o tempo das duas. O DIFÍCIL dá ao chefe a vida da sala (a de uma pessoa) e
+ * encurta todos os avisos em AVISO_DIFICIL. Cada combinação tem o seu recorde na tabela comum (`varianteDoChefe`); a toupeira
+ * e o yeti normais continuam com a variante de antes ('' e 'yeti').
+ */
+export const AVISO_DIFICIL = 0.8;
+export type PedidoDoChefe = QualChefe | 'maratona';
+export const varianteDoChefe = (pedido: PedidoDoChefe, dificil: boolean): string => {
+  const base = pedido === 'toupeira' ? '' : pedido;
+  return dificil ? (base ? `${base}-dificil` : 'dificil') : base;
+};
+/** A folga do golpe de pá no servidor (px), além do alcance; e quanto antes da recarga ele ainda aceita (a rede). */
+export const FOLGA_PA = 8;
+export const PA_ADIANTADA_MS = 120;
 
 type Golpe = 'terremoto' | 'pedras' | 'investida' | 'torroes' | 'cruz' | 'rolar';
 
@@ -193,6 +212,8 @@ interface Jogador {
   baldes: { pos: Balde; acao: Balde };
   /** Sem vidas: desde quando alguém está perto para reviver (null: ninguém perto). */
   reviverDesde: number | null;
+  /** O último golpe de pá aceito (para a recarga). */
+  ultimaPa: number;
 }
 
 export interface ServicosDoChefe {
@@ -236,7 +257,20 @@ export function criarChefe({
       const n = inscritos.length;
       const evento = `chefe-${ctx.comunidade ?? 0}-${agora()}`;
       const inicio = agora();
-      const hpFase = vidaPorFase(n, solo);
+      // QUAL CHEFE (19/11/2026): a toupeira (a de sempre) ou o yeti; e, no Solo (20/11/2026), a MARATONA e o DIFÍCIL. A
+      // "categoria" é o que o "Jogar de novo" manda ("maratona-dificil", por exemplo)
+      const pedidoBruto = typeof corpo?.chefe === 'string' ? corpo.chefe : typeof corpo?.categoria === 'string' ? corpo.categoria : 'toupeira';
+      const pedidoDificil = corpo?.dificil === true || pedidoBruto.endsWith('-dificil');
+      const pedidoBase = pedidoBruto.replace(/-dificil$/, '');
+      const pedido: PedidoDoChefe = pedidoBase === 'yeti' ? 'yeti' : pedidoBase === 'maratona' && solo ? 'maratona' : 'toupeira';
+      const dificil = solo && pedidoDificil;
+      const maratona = pedido === 'maratona';
+      let qual: QualChefe = pedido === 'yeti' ? 'yeti' : 'toupeira';
+      /** Na maratona, 0 a toupeira e 1 o yeti; fora dela, sempre 0. */
+      let etapa = 0;
+      const etapas = maratona ? 2 : 1;
+      // no difícil, o chefe tem a vida da sala
+      const hpFase = vidaPorFase(n, solo && !dificil);
       let fase: 'lutando' | 'vitoria' | 'derrota' | 'fim' = 'lutando';
       let passo = 0;
       let proximoId = 1;
@@ -248,11 +282,9 @@ export function criarChefe({
       let ultimoMotivo: string | null = null;
       let venceuEm: number | null = null;
       let recorde: { ms: number; antes: number | null; novo: boolean } | null = null;
-      // QUAL CHEFE (19/11/2026): a toupeira (a de sempre) ou o yeti; "categoria" é o que o "Jogar de novo" manda
-      const pedido = typeof corpo?.chefe === 'string' ? corpo.chefe : typeof corpo?.categoria === 'string' ? corpo.categoria : 'toupeira';
-      const qual: QualChefe = pedido === 'yeti' ? 'yeti' : 'toupeira';
-      /** A variante do recorde: a toupeira continua sem nome (a de antes), o yeti com o dele. */
-      const variante = qual === 'toupeira' ? '' : qual;
+      /** A variante do recorde: a toupeira continua sem nome (a de antes), o yeti com o dele; a maratona e o difícil, à parte. */
+      const variante = varianteDoChefe(pedido, dificil);
+      const categoria = `${pedido}${dificil ? '-dificil' : ''}`;
       const melhorAntes = solo && servicos.recordeDe ? servicos.recordeDe(inscritos[0], variante) : null;
       /** As bolas de neve rolando: de onde, para onde, quando começa e a marca da linha. */
       const bolas = new Map<number, { id: number; x: number; y: number; dx: number; dy: number; fim: [number, number]; comeca: number; marca: number }>();
@@ -326,6 +358,7 @@ export function criarChefe({
             ultimoTiro: 0,
             baldes: { pos: balde(10, 24), acao: balde(8, 10) },
             reviverDesde: null,
+            ultimaPa: 0,
           },
         ]),
       );
@@ -335,7 +368,8 @@ export function criarChefe({
       const presentes = () => new Set(ctx.naSala());
       let naSalaAgora = presentes();
       const emPe = () => [...jogadores.values()].filter((j) => j.estado === 'em-pe' && naSalaAgora.has(j.userId));
-      const F = () => FASES[chefe.fase];
+      // no difícil, todos os avisos encurtam (o `k` da fase multiplica cada um)
+      const F = () => (dificil ? { ...FASES[chefe.fase], k: FASES[chefe.fase].k * AVISO_DIFICIL } : FASES[chefe.fase]);
 
       const mudar = (estado: EstadoDoChefe, ms: number) => {
         chefe.estado = estado;
@@ -649,6 +683,18 @@ export function criarChefe({
           mudar('fase', 1800);
           evento_('f', chefe.fase);
           ctx.avisar();
+        } else if (etapa < etapas - 1) {
+          // A MARATONA: a toupeira caiu, e o yeti entra, das três fases dele (o relógio do recorde segue correndo)
+          etapa++;
+          qual = 'yeti';
+          chefe.fase = 0;
+          chefe.hp = hpFase;
+          chefe.ultimoGolpe = null;
+          noChao.clear();
+          for (const o of jogadores.values()) if (o.estado === 'em-pe') o.bomba = true;
+          mudar('fase', 2400);
+          evento_('f', etapa * FASES.length);
+          ctx.avisar();
         } else {
           mudar('caida', 60_000);
           acabar(true);
@@ -742,6 +788,8 @@ export function criarChefe({
             Math.round(chefe.destino[1]),
             // qual chefe: 0 a toupeira, 1 o yeti
             qual === 'yeti' ? 1 : 0,
+            // a etapa da maratona (20/11/2026): 0 a toupeira, 1 o yeti (fora da maratona, sempre 0)
+            etapa,
           ],
           // as marcas: [id, tipo, x, y, r, x2, y2, ms até o impacto, fria, ms do aviso inteiro]
           m: [...marcas.values()].map((m) => [m.id, MARCAS.indexOf(m.tipo), Math.round(m.x), Math.round(m.y), m.r, Math.round(m.x2), Math.round(m.y2), ms(m.impacto), m.frio ? 1 : 0, Math.round(m.impacto - m.inicio)]),
@@ -910,6 +958,24 @@ export function criarChefe({
         return null;
       };
 
+      /**
+       * O GOLPE DE PÁ (20/11/2026): de perto, 1 de dano, só com o chefe tonto ou parado. Quem bate tem razão, conferido pelo
+       * passado dele (como o torrão): alguma posição do último HISTORIA_MS, nesses estados, a alcance da pá (+ FOLGA_PA).
+       */
+      const pa = (j: Jogador, d: Record<string, unknown>): string | null => {
+        const t = agora();
+        if (t - j.ultimaPa < PA.recargaMs - PA_ADIANTADA_MS) return 'pá depressa';
+        // a origem: a que a pessoa diz, se estiver perto da que o servidor viu
+        const deDiz = numero(d.x) && numero(d.y) && distancia(d.x as number, d.y as number, j.x, j.y) <= 24;
+        const x = deDiz ? (d.x as number) : j.x;
+        const y = deDiz ? (d.y as number) : j.y;
+        j.ultimaPa = t;
+        const h = chefe.historia.find((h) => h.t >= t - HISTORIA_MS && apanhaDaPa(h.estado) && paPega(x, y, h.x, h.y, FOLGA_PA));
+        if (!h) return 'longe do chefe';
+        danificar(j, PA.dano, false, h.x, h.y);
+        return null;
+      };
+
       const bomba = (j: Jogador, d: Record<string, unknown>): string | null => {
         if (!j.bomba) return 'sem bomba';
         if (!numero(d.x) || !numero(d.y)) return 'números';
@@ -929,8 +995,8 @@ export function criarChefe({
           return {
             fase,
             venceu: fase === 'vitoria' || (fase === 'fim' && venceuALuta),
-            faseDoChefe: chefe.fase + 1,
-            fases: FASES.length,
+            faseDoChefe: chefe.fase + 1 + etapa * FASES.length,
+            fases: FASES.length * etapas,
             danoDaTurma,
             jogadores: [...jogadores.values()].map((j) => ({
               userId: j.userId,
@@ -941,8 +1007,10 @@ export function criarChefe({
             })),
             resultado: fase === 'fim' ? resultado : null,
             partidaId: evento,
-            categoria: qual,
+            categoria,
             chefe: qual,
+            maratona,
+            dificil,
             ...(solo ? { melhorAntes, recorde } : {}),
           };
         },
@@ -957,11 +1025,12 @@ export function criarChefe({
           const d = dados as Record<string, unknown>;
           if (d.tipo === 'pos') {
             if (gastar(j.baldes.pos)) posicao(j, d);
-          } else if (d.tipo === 'pegar' || d.tipo === 'atirar' || d.tipo === 'acerto' || d.tipo === 'bomba') {
+          } else if (d.tipo === 'pegar' || d.tipo === 'atirar' || d.tipo === 'acerto' || d.tipo === 'bomba' || d.tipo === 'pa') {
             if (!gastar(j.baldes.acao)) ultimoMotivo = 'depressa demais';
             else if (d.tipo === 'pegar') ultimoMotivo = pegar(j, d);
             else if (d.tipo === 'atirar') ultimoMotivo = atirar(j, d);
             else if (d.tipo === 'acerto') ultimoMotivo = acerto(j, d);
+            else if (d.tipo === 'pa') ultimoMotivo = pa(j, d);
             else ultimoMotivo = bomba(j, d);
           }
           // nada se repassa direto: o quadro de 20 por segundo leva tudo a todos
@@ -972,7 +1041,7 @@ export function criarChefe({
         },
         parar,
         // para o teste
-        ...({ _passo: tick, _chefe: chefe, _jogadores: jogadores, _marcas: marcas, _noChao: noChao, _bolas: bolas, _motivo: () => ultimoMotivo } as object),
+        ...({ _passo: tick, _chefe: chefe, _jogadores: jogadores, _marcas: marcas, _noChao: noChao, _bolas: bolas, _motivo: () => ultimoMotivo, _etapa: () => etapa, _qual: () => qual, _hpFase: hpFase, _F: F } as object),
       };
     },
   };

@@ -6,6 +6,7 @@ import type { TipoDeInimigo } from './briga/fases';
 import { chave, useT } from './i18n';
 import { useJanelaComFoco } from './janelaComFoco';
 import {
+  definirRitmo,
   desenharCena,
   EVENTO_MS,
   H,
@@ -79,6 +80,9 @@ export interface EstadoLendas {
   rodada: number;
   rodadasTotais?: number;
   resolucao: number;
+  /** O botão de acelerar do Solo, e o ritmo da rodada que está sendo tocada (1, ou 0.5). */
+  acelerado?: boolean;
+  ritmo?: number;
   venceu: boolean;
   herois: Heroi[];
   inimigos: InimigoNaTela[];
@@ -112,6 +116,11 @@ const HABILIDADES: Record<string, { emoji: string; nome: string; dica: string }>
   tiro: { emoji: '🏹', nome: chave('Tiro certeiro'), dica: chave('Um tiro forte, que passa da defesa.') },
   atordoar: { emoji: '💫', nome: chave('Atordoar'), dica: chave('Um tiro que deixa o inimigo tonto: ele perde a vez.') },
   rajada: { emoji: '🎯', nome: chave('Rajada'), dica: chave('Três flechas em inimigos ao acaso.') },
+  // OS GOLPES FINAIS (20/11/2026): a quarta habilidade, no nível 3 (a turma chega com ele ao castelo)
+  investida: { emoji: '💥', nome: chave('Investida'), dica: chave('Um golpe forte de perto que deixa o inimigo tonto.') },
+  estrelas: { emoji: '🌠', nome: chave('Chuva de estrelas'), dica: chave('Magia forte em todos os inimigos.') },
+  florescer: { emoji: '🌸', nome: chave('Florescer'), dica: chave('Cura muito a turma e levanta quem caiu.') },
+  final: { emoji: '🎇', nome: chave('Flecha final'), dica: chave('Um tiro enorme que nunca erra.') },
 };
 /** O servidor antigo não manda a lista: a primeira de cada classe. */
 const PRIMEIRA: Record<Classe, string> = { escudo: 'proteger', faisca: 'chuva', erva: 'curar', flecha: 'tiro' };
@@ -204,6 +213,8 @@ export function JogoLendas({
   // as medalhas só com o pódio de verdade: o dragão vencido e duas pessoas ou mais (no Solo, a ordem é só a da turma)
   const medalhas = estado.venceu && (estado.resultado?.filter((l) => l.posicao !== null).length ?? 0) >= 2;
   const relogio = solo ? null : restante;
+  // o ritmo da rodada tocada agora (o servidor agendou com ele): o desenho e os sons andam junto
+  definirRitmo(estado.ritmo ?? 1);
 
   // o som da vitória e do recorde
   useEffect(() => {
@@ -225,6 +236,18 @@ export function JogoLendas({
           <p>{t(EVENTOS[estado.evento]?.texto ?? '')}</p>
           <Turma herois={estado.herois} eu={eu} />
         </div>
+      )}
+      {solo && jogador && estado.fase !== 'fim' && (
+        <button
+          type="button"
+          className={`lendas-acelerar${estado.acelerado ? ' ligado' : ''}`}
+          aria-pressed={!!estado.acelerado}
+          title={t('Acelerar')}
+          aria-label={t('Acelerar')}
+          onClick={() => void agir({ tipo: 'acelerar', ligado: !estado.acelerado })}
+        >
+          <span aria-hidden="true">{estado.acelerado ? '⏩' : '▶️'}</span>
+        </button>
       )}
       {(estado.fase === 'escolha' || estado.fase === 'acao') && <Luta estado={estado} eu={eu} meu={jogador ? meu : null} agir={agir} restante={relogio} />}
       {estado.fase === 'espolio' && <Espolio estado={estado} eu={eu} agir={agir} restante={relogio} />}
@@ -652,7 +675,9 @@ function somDoEvento(ev: Evento) {
     if (ev.hab === 'acelerar') return tocar('turbo');
     if (ev.hab === 'muralha' || ev.hab === 'proteger') return tocar('encaixe');
     if (ev.hab === 'provocar') return tocar('alarme');
-    if (ev.hab === 'raio') return tocar('explosao');
+    if (ev.hab === 'raio' || ev.hab === 'estrelas') return tocar('explosao');
+    if (ev.hab === 'investida') return tocar('impacto');
+    if (ev.hab === 'final') return tocar('tiro');
     if (ev.alvos.some((a) => a.cura)) return tocar('cura');
   }
   if (ev.alvos.some((a) => a.ko)) return tocar('queda');

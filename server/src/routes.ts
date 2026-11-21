@@ -26,9 +26,11 @@ import { salaDaPessoa,
   salaDeVozDe,
   cortarVideo,
   microfoneTravado,
+  reanunciarVoz,
   travarMicrofone,
   videoCortado,
 } from './realtime.js';
+import { aplicadorDoLiveKit, definirAplicador, devolverDepoisDaQueda, motivoDoSilencio } from './silencio-do-jogo.js';
 import { healthReport, recordClientError } from './health.js';
 import { INSIGNIAS, LIMITE_DA_VITRINE, catalogoDeInsignias, conferirPresentes } from './presentes.js';
 import { pessoaDeVerdade, turnstileLigado } from './turnstile.js';
@@ -193,7 +195,8 @@ export function permissaoNaSala(channel: { id: number; communityId: number }, us
   const podeFalar =
     !db.ehApresentacao(channel.id) || manages(db.memberRole(channel.communityId, userId)) || db.situacaoNoPalco(channel.id, userId) === 'palco';
   const fontes: TrackSource[] = [];
-  const travado = microfoneTravado(channel.communityId, userId);
+  // a moderação OU a partida (o Lobisomem: a noite e quem saiu do jogo; silencio-do-jogo.ts) desligam o microfone
+  const travado = microfoneTravado(channel.communityId, userId) || motivoDoSilencio(channel.id, userId) !== null;
   if (!travado) fontes.push(TrackSource.MICROPHONE);
   if (!videoCortado(userId, channel.id)) {
     fontes.push(TrackSource.CAMERA, TrackSource.SCREEN_SHARE);
@@ -294,6 +297,27 @@ export async function requireUser(request: FastifyRequest, reply: FastifyReply) 
 
 export function registerRoutes(app: FastifyInstance, io: IOServer) {
   app.decorateRequest('user', null as unknown as db.User);
+
+  // O MICROFONE QUE O JOGO DESLIGA (o Lobisomem, 20/11/2026; ver silencio-do-jogo.ts): cada mudança vai ao LiveKit pela
+  // permissão inteira da sala, e o que está mudo fica no kv, para a volta de uma queda devolver o microfone a todos.
+  definirAplicador(
+    aplicadorDoLiveKit({
+      cliente: rooms,
+      sala: voiceRoomName,
+      permissao: (channelId, userId) => {
+        const canal = db.findChannel(channelId);
+        return canal && canal.communityId !== null ? permissaoNaSala({ id: canal.id, communityId: canal.communityId }, userId) : null;
+      },
+      microfone: TrackSource.MICROPHONE,
+      depois: (channelId) => {
+        const canal = db.findChannel(channelId);
+        if (canal?.communityId != null) reanunciarVoz(io, canal.communityId);
+      },
+      log: (mensagem) => app.log.warn(mensagem),
+    }),
+    { ler: () => db.getKv('silencio-do-jogo'), gravar: (valor) => db.setKv('silencio-do-jogo', valor) },
+  );
+  devolverDepoisDaQueda();
 
   /** Endereço com cara de endereço. A conferência de verdade é o link que chega na caixa. */
   const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
@@ -1890,7 +1914,9 @@ export function registerRoutes(app: FastifyInstance, io: IOServer) {
         channelId: channel.id,
         e2ee: process.env.CHAMADAS_E2EE !== 'nao',
         // O app não tenta abrir o microfone ao entrar (seria recusado e pareceria defeito); ver useVoice.ts.
-        microfoneTravado: microfoneTravado(channel.communityId, request.user.id),
+        microfoneTravado: microfoneTravado(channel.communityId, request.user.id) || motivoDoSilencio(channel.id, request.user.id) !== null,
+        // e diz por quê, quando é a partida (a noite do Lobisomem, ou quem saiu do jogo)
+        silencioDoJogo: motivoDoSilencio(channel.id, request.user.id),
       };
     });
 

@@ -40,6 +40,8 @@ try {
   await p.locator('.jogos-painel .jogos-solo button', { hasText: 'Capitais' }).first().click();
   const robos = p.locator('.cid-robos-botao').first();
   if (await robos.isVisible({ timeout: 5000 }).catch(() => false)) await robos.click();
+  // BRASIL=1: o tabuleiro do Brasil inteiro (as 27 capitais, 40 casas; 20/11/2026)
+  if (process.env.BRASIL) await p.locator('.cid-escolha-tabuleiro button').nth(1).click();
   const rodadas = p.locator('.tab-rodadas-botao').first();
   if (await rodadas.isVisible({ timeout: 2000 }).catch(() => false)) await rodadas.click();
   await p.locator('.cid-tabuleiro-3d canvas').waitFor({ timeout: 30000 });

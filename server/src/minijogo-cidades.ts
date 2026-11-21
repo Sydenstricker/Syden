@@ -51,14 +51,14 @@ export interface Casa {
   valor?: number;
 }
 
-const cidade = (nome: string, uf: string, grupo: number, preco: number): Casa => ({
+const cidade = (nome: string, uf: string, grupo: number, preco: number, custo = CUSTO_DO_PREDIO[grupo]): Casa => ({
   tipo: 'cidade',
   nome,
   uf,
   grupo,
   preco,
   aluguel: Math.max(5, Math.round((preco * 0.08) / 5) * 5),
-  custo: CUSTO_DO_PREDIO[grupo],
+  custo,
 });
 
 /** O prédio custa pelo grupo. */
@@ -105,6 +105,63 @@ export const CASAS: Casa[] = [
 ];
 
 export const ENGARRAFAMENTO = CASAS.findIndex((c) => c.tipo === 'engarrafamento');
+
+/** O prédio no Brasil inteiro, pelos 9 grupos. */
+export const CUSTO_DO_PREDIO_NO_BRASIL = [60, 70, 80, 100, 110, 120, 150, 180, 200];
+const noBrasil = (nome: string, uf: string, grupo: number, preco: number) => cidade(nome, uf, grupo, preco, CUSTO_DO_PREDIO_NO_BRASIL[grupo]);
+
+/**
+ * O BRASIL INTEIRO (20/11/2026, a segunda auditoria): as 27 capitais numa volta de 40 casas (12 × 10), escolhida na largada. A
+ * de 32 continua a de fábrica, a partida mais curta. Os 9 grupos seguem as regiões, do mais barato ao mais caro: o Norte em
+ * três (2, 3 e 2), o Nordeste em três de 3, o Centro-Oeste e o Sudeste com 4 (fechar custa mais, e rende mais) e o Sul com 3.
+ * Os cantos são a Largada, o Engarrafamento, o Feriado e a Ferrovia, como na de 32.
+ */
+export const CASAS_DO_BRASIL: Casa[] = [
+  { tipo: 'largada' },
+  noBrasil('Rio Branco', 'AC', 0, 100),
+  { tipo: 'noticia' },
+  noBrasil('Boa Vista', 'RR', 0, 120),
+  { tipo: 'pedagio', valor: 100 },
+  { tipo: 'transporte', nome: 'rodoviaria', preco: PRECO_DO_TRANSPORTE },
+  noBrasil('Macapá', 'AP', 1, 140),
+  noBrasil('Porto Velho', 'RO', 1, 140),
+  noBrasil('Palmas', 'TO', 1, 160),
+  { tipo: 'noticia' },
+  noBrasil('Manaus', 'AM', 2, 180),
+  { tipo: 'engarrafamento' },
+  noBrasil('Belém', 'PA', 2, 200),
+  noBrasil('Teresina', 'PI', 3, 220),
+  { tipo: 'transporte', nome: 'porto', preco: PRECO_DO_TRANSPORTE },
+  noBrasil('São Luís', 'MA', 3, 220),
+  noBrasil('Aracaju', 'SE', 3, 240),
+  noBrasil('Maceió', 'AL', 4, 260),
+  { tipo: 'noticia' },
+  noBrasil('Natal', 'RN', 4, 260),
+  { tipo: 'feriado' },
+  noBrasil('João Pessoa', 'PB', 4, 280),
+  noBrasil('Fortaleza', 'CE', 5, 300),
+  { tipo: 'transporte', nome: 'aeroporto', preco: PRECO_DO_TRANSPORTE },
+  noBrasil('Recife', 'PE', 5, 300),
+  noBrasil('Salvador', 'BA', 5, 320),
+  noBrasil('Campo Grande', 'MS', 6, 340),
+  { tipo: 'pedagio', valor: 150 },
+  noBrasil('Cuiabá', 'MT', 6, 340),
+  noBrasil('Goiânia', 'GO', 6, 360),
+  noBrasil('Brasília', 'DF', 6, 380),
+  { tipo: 'transporte', nome: 'ferrovia', preco: PRECO_DO_TRANSPORTE },
+  { tipo: 'noticia' },
+  noBrasil('Porto Alegre', 'RS', 7, 400),
+  noBrasil('Florianópolis', 'SC', 7, 400),
+  noBrasil('Curitiba', 'PR', 7, 420),
+  noBrasil('Vitória', 'ES', 8, 440),
+  noBrasil('Belo Horizonte', 'MG', 8, 460),
+  noBrasil('Rio de Janeiro', 'RJ', 8, 480),
+  noBrasil('São Paulo', 'SP', 8, 520),
+];
+
+/** Os tabuleiros, pelo id que vem da largada (`corpo.tabuleiro`). */
+export const TABULEIROS_DAS_CIDADES = { capitais: CASAS, brasil: CASAS_DO_BRASIL } as const;
+export type TabuleiroDasCidades = keyof typeof TABULEIROS_DAS_CIDADES;
 export const DINHEIRO_INICIAL = 1500;
 export const SALARIO = 200;
 /** O aluguel com 0, 1, 2, 3 e 4 prédios, em vezes o aluguel sem prédio. O grupo inteiro sem prédio dobra. */
@@ -163,6 +220,25 @@ export const CARTAS = [
   'aniversario', // cada um te dá 10
   'festa', // pague 15 a cada um
   'passagem', // avance até o próximo transporte
+  // AS NOTÍCIAS NOVAS (20/11/2026, a segunda auditoria): nossas, curtas, de efeito claro.
+  'ciencias', // receba 80
+  'restituicao', // receba 120
+  'show', // receba 60
+  'geladeira', // pague 80
+  'dentista', // pague 40
+  'vaquinha', // cada um te dá 20
+  'churrasco', // dê 10 a cada um
+  'atalho', // avance 5 casas
+  'pneu', // volte 2 casas
+  'proxima-cidade', // avance até a próxima cidade
+  'feriadao', // vá até o Feriado
+  'alta-temporada', // os aluguéis de um grupo dobram por uma rodada
+  'baixa-temporada', // os aluguéis de um grupo caem pela metade por uma rodada
+  'mutirao', // um prédio grátis onde puder construir; sem onde, receba 100
+  'obras', // num grupo sorteado, cada dono paga 40 por prédio ali
+  'iptu', // pague 20 por cidade sua
+  'turistas', // receba 20 por cidade sua
+  'perdao', // a hipoteca mais cara volta sem custo; sem hipoteca, receba 50
 ] as const;
 export type Carta = (typeof CARTAS)[number];
 export const VALOR_DA_CARTA: Partial<Record<Carta, number>> = {
@@ -174,7 +250,22 @@ export const VALOR_DA_CARTA: Partial<Record<Carta, number>> = {
   reforma: 25,
   aniversario: 10,
   festa: 15,
+  ciencias: 80,
+  restituicao: 120,
+  show: 60,
+  geladeira: 80,
+  dentista: 40,
+  vaquinha: 20,
+  churrasco: 10,
+  mutirao: 100,
+  obras: 40,
+  iptu: 20,
+  turistas: 20,
+  perdao: 50,
 };
+/** A temporada: os aluguéis do grupo vezes isto, por uma rodada (uma vez de cada um que ainda joga). */
+export const FATOR_DA_ALTA = 2;
+export const FATOR_DA_BAIXA = 0.5;
 
 /** O que aconteceu, para a tela contar (o site monta a frase traduzida). */
 export type Ocorrido =
@@ -182,7 +273,7 @@ export type Ocorrido =
   | { tipo: 'aluguel'; de: number; para: number; casa: number; valor: number }
   | { tipo: 'comprou'; userId: number; casa: number; valor: number }
   | { tipo: 'leilao'; userId: number | null; casa: number; valor: number }
-  | { tipo: 'carta'; userId: number; carta: Carta; valor: number | null }
+  | { tipo: 'carta'; userId: number; carta: Carta; valor: number | null; grupo?: number; casa?: number }
   | { tipo: 'pedagio'; userId: number; valor: number }
   | { tipo: 'engarrafado'; userId: number }
   | { tipo: 'saiu-do-engarrafamento'; userId: number; valor: number }
@@ -239,6 +330,13 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
       // os robôs só no Solo: na sala, a turma é a graça (e o troféu é de gente contra gente)
       const robos = ctx.solo ? Math.min(MAXIMO_DE_ROBOS, Math.max(0, Math.floor(Number(corpo.robos) || 0))) : 0;
       if (naSala.length + robos < 2) return 'Ainda falta gente para começar.';
+      // O TABULEIRO da largada (20/11/2026): daqui em diante, CASAS e ENGARRAFAMENTO são os dele (escondem os do módulo).
+      const tabuleiro: TabuleiroDasCidades = corpo.tabuleiro === 'brasil' ? 'brasil' : 'capitais';
+      const CASAS = TABULEIROS_DAS_CIDADES[tabuleiro];
+      const ENGARRAFAMENTO = CASAS.findIndex((c) => c.tipo === 'engarrafamento');
+      const FERIADO = CASAS.findIndex((c) => c.tipo === 'feriado');
+      /** A temporada de uma notícia: os aluguéis do grupo vezes `fator`, até passarem `vezes` vezes. Uma de cada vez. */
+      let temporada: { grupo: number; fator: number; vezes: number } | null = null;
       const modo: 'rodadas' | 'falencia' = corpo.modo === 'falencia' ? 'falencia' : 'rodadas';
       const rodadas = modo === 'rodadas' ? (RODADAS_DAS_CIDADES.includes(Number(corpo.rodadas)) ? Number(corpo.rodadas) : 20) : null;
       // 'Até sobrar um' contra o computador tem teto (revisão independente, 05/11/2026): os robôs não propõem trocas, então com as
@@ -357,8 +455,8 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
           const n = CASAS.filter((c, k) => c.tipo === 'transporte' && posses.get(k)?.dono === p.dono).length;
           return ALUGUEL_DO_TRANSPORTE[Math.max(0, n - 1)];
         }
-        if (p.predios > 0) return casa.aluguel! * MULTIPLICADOR[p.predios];
-        return casa.aluguel! * (temOGrupo(p.dono, casa.grupo!) ? 2 : 1);
+        const base = p.predios > 0 ? casa.aluguel! * MULTIPLICADOR[p.predios] : casa.aluguel! * (temOGrupo(p.dono, casa.grupo!) ? 2 : 1);
+        return temporada && temporada.grupo === casa.grupo ? Math.round(base * temporada.fator) : base;
       };
 
       /**
@@ -442,6 +540,8 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
             continue;
           }
           fase = 'vez';
+          // a temporada passa a cada vez que começa (a dos dados iguais também conta: é mais uma jogada)
+          if (temporada && --temporada.vezes <= 0) temporada = null;
           trocasNaVez = 0;
           troca = null;
           leilao = null;
@@ -584,17 +684,103 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
         const j = jogadores.get(userId)!;
         const valor = VALOR_DA_CARTA[carta] ?? null;
         contar({ tipo: 'carta', userId, carta, valor });
+        /** A notícia contada: o grupo ou a cidade que ela tocou vão nela, para a tela dizer. */
+        const anotada = historico[historico.length - 1] as Extract<Ocorrido, { tipo: 'carta' }> & { id: number };
         const outros = ativos().filter((id) => id !== userId);
+        const minhasCidades = () => [...posses.entries()].filter(([i, p]) => p.dono === userId && CASAS[i].tipo === 'cidade');
+        /** Um grupo sorteado, de preferência entre os que `serve` aceita (o sorteio é do servidor, como os dados). */
+        const sortearGrupo = (serve: (g: number) => boolean) => {
+          const todos = [...new Set(CASAS.filter((c) => c.tipo === 'cidade').map((c) => c.grupo!))];
+          const bons = todos.filter(serve);
+          const de = bons.length ? bons : todos;
+          return de[inteiro(de.length)];
+        };
+        const andar = (passos: number) => {
+          const { caminho, passou } = caminhoDe(j.pos, passos);
+          return mover(userId, caminho, null, { salario: passou });
+        };
+        const ateA = (alvo: (i: number) => boolean) => {
+          let passos = 1;
+          while (!alvo((j.pos + passos) % CASAS.length)) passos++;
+          return andar(passos);
+        };
         switch (carta) {
           case 'quadrilha':
           case 'bolso':
           case 'feira':
+          case 'ciencias':
+          case 'restituicao':
+          case 'show':
             j.dinheiro += valor!;
             break;
           case 'carro':
           case 'multa':
+          case 'geladeira':
+          case 'dentista':
             cobrar(userId, null, valor!);
             break;
+          case 'vaquinha':
+            for (const o of outros) cobrar(o, userId, valor!);
+            break;
+          case 'churrasco':
+            for (const o of outros) if (!cobrar(userId, o, valor!)) break;
+            break;
+          case 'iptu':
+            cobrar(userId, null, minhasCidades().length * valor!);
+            break;
+          case 'turistas':
+            j.dinheiro += minhasCidades().length * valor!;
+            break;
+          case 'atalho':
+            return andar(5);
+          case 'pneu':
+            return mover(userId, caminhoDe(j.pos, -2).caminho, null);
+          case 'proxima-cidade':
+            return ateA((i) => CASAS[i].tipo === 'cidade');
+          case 'feriadao':
+            return ateA((i) => i === FERIADO);
+          case 'alta-temporada':
+          case 'baixa-temporada': {
+            // de preferência um grupo onde alguém já cobra aluguel, senão a notícia não muda nada
+            const grupo = sortearGrupo((g) => grupoInteiro(g).some((i) => posses.has(i)));
+            temporada = { grupo, fator: carta === 'alta-temporada' ? FATOR_DA_ALTA : FATOR_DA_BAIXA, vezes: ativos().length };
+            anotada.grupo = grupo;
+            break;
+          }
+          case 'obras': {
+            // cada dono paga pelos prédios do grupo; de preferência um grupo que tem prédio
+            const grupo = sortearGrupo((g) => prediosNoGrupo(g) > 0);
+            anotada.grupo = grupo;
+            const porDono = new Map<number, number>();
+            for (const i of grupoInteiro(grupo)) {
+              const p = posses.get(i);
+              if (p && p.predios > 0) porDono.set(p.dono, (porDono.get(p.dono) ?? 0) + p.predios);
+            }
+            for (const [dono, n] of porDono) if (!jogadores.get(dono)!.falido) cobrar(dono, null, n * valor!);
+            break;
+          }
+          case 'mutirao': {
+            // o prédio vai onde a regra deixa construir: a cidade com menos prédios, e entre elas a de prédio mais caro
+            const onde = minhasCidades()
+              .filter(([i, p]) => p.predios < MAXIMO_DE_PREDIOS && temOGrupo(userId, CASAS[i].grupo!))
+              .filter(([i]) => !grupoInteiro(CASAS[i].grupo!).some((k) => posses.get(k)!.hipotecada))
+              .sort((a, b) => a[1].predios - b[1].predios || CASAS[b[0]].custo! - CASAS[a[0]].custo!)[0];
+            if (onde) {
+              onde[1].predios++;
+              anotada.casa = onde[0];
+              anotada.valor = null;
+            } else j.dinheiro += valor!;
+            break;
+          }
+          case 'perdao': {
+            const hipotecada = [...posses.entries()].filter(([, p]) => p.dono === userId && p.hipotecada).sort((a, b) => CASAS[b[0]].preco! - CASAS[a[0]].preco!)[0];
+            if (hipotecada) {
+              hipotecada[1].hipotecada = false;
+              anotada.casa = hipotecada[0];
+              anotada.valor = null;
+            } else j.dinheiro += valor!;
+            break;
+          }
           case 'reforma': {
             const predios = [...posses.values()].filter((p) => p.dono === userId).reduce((n, p) => n + p.predios, 0);
             cobrar(userId, null, predios * valor!);
@@ -1022,6 +1208,8 @@ export function criarCidades({ agora = Date.now, aleatorio = Math.random, dinhei
             deNovo,
             duplas,
             sairDoEngarrafamento: SAIR_DO_ENGARRAFAMENTO,
+            tabuleiro,
+            temporada,
           };
         },
         acao(quem, corpo) {

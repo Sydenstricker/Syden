@@ -34,8 +34,13 @@ export const LIBERACOES_MAX = 400;
 /** No "até bater", a partida pode durar até 20 minutos: o prazo cresce junto. */
 export const PRAZO_SEM_FIM_MS = 30 * 60_000;
 
-/** A variante do recorde na tabela comum (o minuto no cruzamento fica na tabela antiga, transito_recordes). */
-export const varianteDoRecorde = (modo: Modo, mapa: Mapa) => `${modo}-${mapa}`;
+/**
+ * A variante do recorde na tabela comum (o minuto no cruzamento fica na tabela antiga, transito_recordes). O "até bater" mudou em
+ * 20/11/2026 (o trânsito continua apertando até os 5 minutos): os recordes dele recomeçam em "ate-bater-5min-<mapa>", e os de
+ * antes ficam guardados em "ate-bater-<mapa>", que ninguém mais oferece. O minuto não mudou de variante: só a ambulância com pressa
+ * entrou, e ela vale no máximo os 3 de antes.
+ */
+export const varianteDoRecorde = (modo: Modo, mapa: Mapa) => (modo === 'ate-bater' ? `ate-bater-5min-${mapa}` : `${modo}-${mapa}`);
 const ehOClassico = (modo: Modo, mapa: Mapa) => modo === 'minuto' && mapa === 'cruz';
 
 function recordeDe(userId: number, modo: Modo, mapa: Mapa): number | null {

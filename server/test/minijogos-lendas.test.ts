@@ -4,7 +4,7 @@
  */
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { atributos, criarLendas, HABILIDADES, INIMIGOS, nomeDoCombo, PASSOS_DA_ROTA, rotaDaSemente, TRACOS, type Heroi, type Inimigo } from '../src/lendas-regras.js';
+import { atributos, criarLendas, grupoDaParada, HABILIDADES, INIMIGOS, nomeDoCombo, PARADAS, PASSOS_DA_ROTA, rotaDaSemente, sorteioDaSemente, TRACOS, type Heroi, type Inimigo } from '../src/lendas-regras.js';
 import type { Contexto, Jogo } from '../src/minijogo-motor.js';
 
 /** Um sorteio repetível (mulberry32). */
@@ -19,7 +19,7 @@ function semente(s: number) {
 }
 
 interface Montagem {
-  jogo: Jogo & { _herois: Map<number, Heroi>; _inimigos: () => Inimigo[]; _caminho: { passos: string[][]; evento: string }; _escolhidas: (string | null)[] };
+  jogo: Jogo & { _herois: Map<number, Heroi>; _inimigos: () => Inimigo[]; _caminho: { passos: string[][]; evento: string; grupos: Record<string, { tipo: string; k: number }[]> }; _escolhidas: (string | null)[] };
   ver: (quem?: number) => Record<string, any>;
   tique: () => void;
   terminou: () => boolean;
@@ -119,7 +119,7 @@ test('a rodada: a escolha de quem é gente, o combo com o robô de par, e a reso
   m.tique(); // entra na floresta
   let v = m.ver();
   assert.equal(v.fase, 'escolha');
-  assert.equal(v.inimigos.length, 3);
+  assert.ok(v.inimigos.length >= 2 && v.inimigos.length <= 4, 'o grupo sorteado: de 2 a 4');
   assert.equal(m.jogo.acao(1, { tipo: 'acao', acao: 'atacar', alvo: 9 }), 'Agora não dá.', 'sem alvo que exista');
   // o combo: um robô vira o par, e a rodada resolve na hora (todos escolheram)
   assert.equal(m.jogo.acao(1, { tipo: 'acao', acao: 'combo', alvo: 0 }), null);
@@ -227,8 +227,8 @@ function ateALuta(m: Montagem, classes: Record<number, string>) {
 
 test('as habilidades: três por classe, a segunda e a terceira só com o nível; a do alvo pede o alvo', () => {
   for (const c of ['escudo', 'faisca', 'erva', 'flecha'] as const) {
-    assert.equal(HABILIDADES[c].length, 3);
-    assert.deepEqual(HABILIDADES[c].map((h) => h.nivel), [0, 1, 2]);
+    assert.equal(HABILIDADES[c].length, 4);
+    assert.deepEqual(HABILIDADES[c].map((h) => h.nivel), [0, 1, 2, 3]);
   }
   const m = montar([1], { s: 21 });
   ateALuta(m, { 1: 'faisca' });
@@ -261,6 +261,8 @@ test('o Escudo provoca: todos os golpes vão nele', () => {
 test('os traços: cada inimigo tem um, que vai à tela; o cacto devolve, o golem resiste, a abelha age duas vezes', () => {
   for (const [tipo, d] of Object.entries(INIMIGOS)) assert.ok(TRACOS.includes(d.traco), `${tipo} sem traço`);
   const m = montar([1], { s: 9 });
+  // três bichos na primeira parada (o grupo é sorteado pela semente)
+  for (const id of ['floresta', 'horta']) m.jogo._caminho.grupos[id] = ['cogumelo', 'sapo', 'abelha'].map((tipo) => ({ tipo, k: 1 }));
   ateALuta(m, { 1: 'escudo' });
   assert.ok(m.ver().inimigos.every((i: { traco: string }) => (TRACOS as readonly string[]).includes(i.traco)));
   const [a, b, c] = m.jogo._inimigos();
@@ -425,4 +427,118 @@ test('o recorde do Solo: as rodadas contadas pelo servidor, só com o dragão ve
     correr(m, 6000);
     assert.equal(m.recordes.length, 0, 'na sala, nada');
   }
+});
+
+// ---------------- 20/11/2026: o grupo sorteado, o botão de acelerar e o golpe final ----------------
+
+test('o grupo de cada parada sai da semente: de 2 a 4 do bando, o chefe sempre, e a força perto da referência', () => {
+  assert.deepEqual(rotaDaSemente(77).grupos, rotaDaSemente(77).grupos, 'a mesma semente dá o mesmo grupo');
+  const tamanhos = new Set<number>();
+  const forca = (g: { tipo: string; k: number }[]) => {
+    const sem = g.filter((x) => !INIMIGOS[x.tipo].chefe);
+    return sem.reduce((s, x) => s + INIMIGOS[x.tipo].hp * x.k, 0) * sem.reduce((s, x) => s + INIMIGOS[x.tipo].atk * x.k * (INIMIGOS[x.tipo].traco === 'ligeiro' ? 1.6 : 1), 0);
+  };
+  for (const [id, p] of Object.entries(PARADAS)) {
+    if (!p.bando) continue;
+    const referencia = forca(p.inimigos.map((tipo) => ({ tipo, k: 1 })));
+    for (let s = 1; s < 60; s++) {
+      const g = grupoDaParada(p, sorteioDaSemente(s));
+      if (p.chefe) {
+        assert.equal(g.filter((x) => x.tipo === p.chefe).length, 1, `${id}: o chefe está lá`);
+        assert.equal(g[1].tipo, p.chefe, 'o chefe no meio');
+        assert.ok(g.length >= 2 && g.length <= 3);
+      } else {
+        assert.ok(g.length >= 2 && g.length <= 4, `${id}: ${g.length}`);
+        tamanhos.add(g.length);
+      }
+      assert.ok(g.every((x) => p.bando!.includes(x.tipo) || x.tipo === p.chefe), 'só bichos da parada');
+      assert.equal(new Set(g.map((x) => x.tipo)).size, g.length, 'sem repetir bicho');
+      const f = forca(g) / referencia;
+      assert.ok(f > 0.6 && f < 1.4, `${id}: força ${f.toFixed(2)} da referência`);
+    }
+  }
+  assert.deepEqual([...tamanhos].sort(), [2, 3, 4]);
+  // a neve continua a parada de luta mais forte (a referência dela é a maior)
+  const ref = (id: string) => forca(PARADAS[id].inimigos.map((tipo) => ({ tipo, k: 1 })));
+  for (const id of ['floresta', 'horta', 'deserto', 'ruinas']) assert.ok(ref('neve') > ref(id), `a neve mais forte que ${id}`);
+  // na partida, os inimigos da parada são os do grupo, com a vida escalada
+  const m = montar([1], { s: 5, solo: true });
+  ateALuta(m, { 1: 'flecha' });
+  const v = m.ver();
+  const grupo = m.jogo._caminho.grupos[v.rota[0].escolhida];
+  assert.deepEqual(v.inimigos.map((i: { tipo: string }) => i.tipo), grupo.map((x) => x.tipo));
+  assert.deepEqual(v.inimigos.map((i: { hpMax: number }) => i.hpMax), grupo.map((x) => Math.round(INIMIGOS[x.tipo].hp * x.k)));
+});
+
+test('o botão de acelerar: só no Solo, e a rodada tocada na metade do tempo', () => {
+  const tempos: number[] = [];
+  const pedir = (solo: boolean, ligar: boolean) => {
+    let relogio: (() => void) | null = null;
+    let ultimoMs = 0;
+    const ctx: Contexto = {
+      agendar: (ms, depois) => ((relogio = depois), (ultimoMs = ms)),
+      avisar: () => {},
+      terminar: () => {},
+      naSala: () => [1],
+      nome: (id) => `p${id}`,
+      comunidade: solo ? 0 : 7,
+      solo,
+    };
+    const jogo = criarLendas({ agora: () => 1, aleatorio: semente(3) }).comecar(ctx, { naSala: [1], criadaPor: 1, corpo: {} }) as Jogo;
+    const r = jogo.acao(1, { tipo: 'acelerar', ligado: ligar });
+    jogo.acao(1, { tipo: 'classe', classe: 'flecha' });
+    const mapa = ultimoMs;
+    relogio!();
+    jogo.acao(1, { tipo: 'acao', acao: 'defender' });
+    tempos.push(mapa, ultimoMs);
+    return { r, v: jogo.publico(1) as Record<string, any> };
+  };
+  const normal = pedir(true, false);
+  const [mapaN, acaoN] = tempos.splice(0);
+  const rapido = pedir(true, true);
+  const [mapaR, acaoR] = tempos.splice(0);
+  assert.equal(rapido.r, null);
+  assert.equal(rapido.v.acelerado, true);
+  assert.equal(rapido.v.ritmo, 0.5);
+  assert.equal(normal.v.ritmo, 1);
+  assert.equal(mapaR, Math.round(mapaN / 2), 'o mapa na metade');
+  assert.ok(Math.abs(acaoR - acaoN / 2) <= 1, `a rodada na metade: ${acaoR} e ${acaoN}`);
+  assert.equal(pedir(false, true).r, 'Agora não dá.', 'na sala, não');
+});
+
+test('o golpe final: no nível 3 cada classe ganha a quarta habilidade, e cada uma faz o que diz', () => {
+  const m = montar([1, 2, 3, 4], { s: 6 });
+  for (const id of ['floresta', 'horta']) m.jogo._caminho.grupos[id] = ['cogumelo', 'sapo', 'abelha'].map((tipo) => ({ tipo, k: 1 }));
+  ateALuta(m, { 1: 'escudo', 2: 'faisca', 3: 'erva', 4: 'flecha' });
+  assert.equal(m.ver().herois[0].habilidades.length, 1);
+  assert.equal(m.jogo.acao(1, { tipo: 'acao', acao: 'habilidade', hab: 3, alvo: 0 }), 'Agora não dá.', 'antes do nível 3, não');
+  for (const id of [1, 2, 3, 4]) Object.assign(m.jogo._herois.get(id)!, { nivel: 3, en: 10 });
+  assert.equal(m.ver().herois[0].habilidades.length, 4);
+  // inimigos que não morrem nem batem, e um fantasma (o tiro final não erra)
+  for (const i of m.jogo._inimigos()) Object.assign(i, { traco: 'etereo', hp: 900, hpMax: 900, atk: 1, vel: 0 });
+  const erva = m.jogo._herois.get(3)!;
+  erva.hp = 1;
+  m.jogo._herois.get(2)!.hp = 0; // a Faísca caída: o florescer a levanta
+  m.jogo.acao(1, { tipo: 'acao', acao: 'habilidade', hab: 3, alvo: 0 });
+  m.jogo.acao(3, { tipo: 'acao', acao: 'habilidade', hab: 3 });
+  m.jogo.acao(4, { tipo: 'acao', acao: 'habilidade', hab: 3, alvo: 1 });
+  const v = m.ver();
+  assert.equal(v.fase, 'acao');
+  const ev = (hab: string) => v.eventos.find((e: { hab?: string }) => e.hab === hab);
+  assert.ok(ev('investida'), 'a investida do Escudo');
+  const flor = ev('florescer');
+  assert.ok(flor.alvos.some((a: { quem: { h: number }; volta?: boolean }) => a.quem.h === 2 && a.volta), 'levantou a Faísca');
+  assert.ok(v.herois[1].hp >= Math.round(v.herois[1].hpMax * 0.5) - 1, 'com metade da vida');
+  const final = ev('final');
+  assert.ok(final.alvos[0].dano > 40 && !final.alvos[0].errou, `o tiro final não erra: ${final.alvos[0].dano}`);
+  // a investida que acertou deixa tonto
+  const inv = ev('investida').alvos[0];
+  if (!inv.errou) assert.ok(v.eventos.some((e: { tipo: string; de: { i?: number } }) => e.tipo === 'tonto' && e.de.i === 0) || m.jogo._inimigos()[0].tonto);
+  // a Faísca (de pé de novo) chove estrelas na rodada seguinte
+  m.tique();
+  for (const id of [1, 3, 4]) m.jogo.acao(id, { tipo: 'acao', acao: 'defender' });
+  m.jogo._herois.get(2)!.en = 10;
+  m.jogo.acao(2, { tipo: 'acao', acao: 'habilidade', hab: 3 });
+  const estrelas = m.ver().eventos.find((e: { hab?: string }) => e.hab === 'estrelas');
+  assert.ok(estrelas && estrelas.alvos.length === 3, 'as estrelas em todos');
 });

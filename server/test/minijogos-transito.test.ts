@@ -153,7 +153,7 @@ test('o Solo começa na escolha; "até bater" no T vai para a tabela comum, e o 
   const fim = jogo.publico(biaId) as unknown as Estado;
   assert.equal(fim.meu!.pontos, esperado.pontos);
   if (esperado.pontos > 0) {
-    assert.equal(db.recordeDoSolo(biaId, 'transito', 'ate-bater-t')?.valor, esperado.pontos);
+    assert.equal(db.recordeDoSolo(biaId, 'transito', 'ate-bater-5min-t')?.valor, esperado.pontos);
     assert.equal(fim.recorde!.novo, true);
   }
   // o recorde antigo (o minuto no cruzamento) não foi tocado

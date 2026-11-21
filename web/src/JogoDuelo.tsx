@@ -23,6 +23,10 @@ type Estado = EstadoDuelo &
     antes?: number[] | null;
     quem?: 0 | 1 | null;
     variante?: 'kalah' | 'oware';
+    // o Cinco em linha com captura (20/11/2026): quantas cada lado fez, e as casas que o último lance tirou
+    captura?: boolean;
+    capturas?: [number, number];
+    capturadas?: number[];
   };
 
 /**
@@ -90,6 +94,7 @@ export function JogoDuelo({
           <span key={lado} className={`duelo-jogador${jogando && estado.vez === lado ? ' da-vez' : ''}${estado.vencedor === lado ? ' venceu' : ''}`}>
             <span className={`duelo-peca lado-${corDoLado(lado)}`} aria-hidden="true" />
             {estado.jogadores[lado]?.username ?? '…'}
+            {jogo === 'gomoku' && estado.captura && <MarcaDasCapturas feitas={estado.capturas?.[lado] ?? 0} />}
           </span>
         ))}
       </div>
@@ -139,14 +144,30 @@ export function JogoDuelo({
   );
 }
 
+/** Quantas pedras se capturam para vencer (CAPTURAS_PARA_VENCER em server/src/minijogo-tabuleiro.ts). */
+const CAPTURAS_PARA_VENCER = 5;
+
+/** As capturas de um lado, em cinco pontos ao lado do nome (20/11/2026): só figura. */
+function MarcaDasCapturas({ feitas }: { feitas: number }) {
+  return (
+    <span className="duelo-capturas" role="img" aria-label={`${feitas}/${CAPTURAS_PARA_VENCER}`}>
+      {Array.from({ length: CAPTURAS_PARA_VENCER }, (_, i) => (
+        <span key={i} className={i < feitas ? 'feita' : undefined} />
+      ))}
+    </span>
+  );
+}
+
 function TabuleiroGomoku({ estado, podeJogar, minhaCor, jogar }: { estado: Estado; podeJogar: boolean; minhaCor?: number; jogar: (casa: number) => void }) {
   const lado = estado.lado ?? 15;
   const linha = new Set(estado.linha ?? []);
+  const capturadas = new Set(estado.capturadas ?? []);
   const dados: GomokuDaCena = {
     lado,
     casas: estado.casas,
     ultima: estado.ultima,
     linha: estado.linha ?? [],
+    capturadas: estado.capturadas ?? [],
     clicaveis: podeJogar ? estado.casas.flatMap((c, i) => (c ? [] : [i])) : [],
     minhaCor,
   };
@@ -157,7 +178,7 @@ function TabuleiroGomoku({ estado, podeJogar, minhaCor, jogar }: { estado: Estad
           <button
             key={i}
             type="button"
-            className={`gomoku-casa${cor ? ` pedra lado-${cor - 1}` : ''}${estado.ultima === i ? ' ultima' : ''}${linha.has(i) ? ' na-linha' : ''}`}
+            className={`gomoku-casa${cor ? ` pedra lado-${cor - 1}` : ''}${estado.ultima === i ? ' ultima' : ''}${linha.has(i) ? ' na-linha' : ''}${capturadas.has(i) ? ' capturada' : ''}`}
             disabled={!podeJogar || cor !== 0}
             aria-label={`${Math.floor(i / lado) + 1}, ${(i % lado) + 1}`}
             onClick={() => jogar(i)}

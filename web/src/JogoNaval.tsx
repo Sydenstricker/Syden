@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { useT } from './i18n';
 import { ControlesDaMesa, ComHistorico, type EstadoDaMesa } from './MesaComum';
 import { Relogio } from './Minijogo';
 import { Mar3D } from './naval3d/Mar3D';
 import { temWebGL } from './temWebGL';
-import { FROTA, casasDoNavio, encosta, inicioDoNavio } from './naval3d/montagem';
+import { FROTA, MARES, casasDoNavio, encosta, inicioDoNavio } from './naval3d/montagem';
 import type { FrotaDaCena } from './naval3d/cena';
 import type { Partida } from './minijogos';
 import './naval3d/naval.css';
@@ -12,6 +12,7 @@ import './naval3d/naval.css';
 const JOGADA_MS = 90_000;
 /** O tempo da montagem (server/src/minijogo-naval.ts, MONTAGEM_MS): o mesmo da jogada. */
 const MONTAGEM_MS = 90_000;
+/** O mar de fábrica; a partida diz o dela (`mar`, 20/11/2026: 8, 10 ou 12). */
 const LADO = 10;
 
 /** O que se vê de um mar (server/src/minijogo-naval.ts): os tiros (0 nada, 1 água, 2 fogo) e os navios visíveis. */
@@ -37,6 +38,9 @@ export interface EstadoNaval {
   ultimo: { lado: 0 | 1; casa: number; resultado: 'agua' | 'acertou' | 'afundou' } | null;
   /** A montagem: a MINHA frota na ordem da FROTA (null: ainda não posto; quem assiste recebe null), e quem já está pronto. */
   montagem?: { navios: (number[] | null)[] | null; prontos: [boolean, boolean] };
+  /** O lado do mar e a frota dele (20/11/2026). */
+  mar?: number;
+  frota?: number[];
 }
 
 /** A frota que a pessoa vê no 3D (só aparência, só neste aparelho): a pirata ou a moderna. */
@@ -50,7 +54,9 @@ function frotaGuardada(): FrotaDaCena {
 }
 
 /** A coordenada do jogo de papel: a letra é a coluna, o número a linha ("B7"). */
-const coordenada = (casa: number) => `${String.fromCharCode(65 + (casa % LADO))}${Math.floor(casa / LADO) + 1}`;
+/** A grade 2D de um mar de `n` casas de lado (o fundo quadriculado lê o --lado: naval.css). */
+const estiloDaGrade = (n: number) => ({ gridTemplateColumns: `repeat(${n}, 1fr)`, gridTemplateRows: `repeat(${n}, 1fr)`, '--lado': n }) as CSSProperties;
+const coordenada = (casa: number, n = LADO) => `${String.fromCharCode(65 + (casa % n))}${Math.floor(casa / n) + 1}`;
 
 /**
  * BATALHA NAVAL, na mesa de duas pessoas (a mesma de JogoDuelo.tsx): quem joga vê o próprio mar com os navios e o mar do
@@ -71,6 +77,8 @@ export function JogoNaval({
 }) {
   const t = useT();
   const estado = partida as unknown as EstadoNaval & Partida;
+  const n = estado.mar ?? LADO;
+  const tamanhos: readonly number[] = estado.frota ?? MARES[n] ?? FROTA;
   const meuLado = estado.jogadores.findIndex((j) => j.userId === eu);
   const sentado = meuLado === 0 || meuLado === 1;
   const jogando = estado.fase === 'jogando';
@@ -176,7 +184,9 @@ export function JogoNaval({
         <MontagemDaFrota
           frotaVista={frota}
           mar={estado.mares[meuLado]}
-          frota={estado.montagem?.navios ?? FROTA.map(() => null)}
+          frota={estado.montagem?.navios ?? tamanhos.map(() => null)}
+          lado={n}
+          tamanhos={tamanhos}
           pronto={euPronto}
           agir={agir}
         />
@@ -199,6 +209,7 @@ export function JogoNaval({
                 atirar={mirar}
                 mira={alvo ? mira : []}
                 frota={frota}
+                lado={n}
               />
             );
           })}
@@ -213,7 +224,7 @@ export function JogoNaval({
       {estado.salvo && minhaVez && (
         <div className="minijogo-acoes">
           <span>
-            {t('Rajada: {n} de {total}', { n: mira.length, total: tirosDaVez })} {mira.map(coordenada).join(' ')}
+            {t('Rajada: {n} de {total}', { n: mira.length, total: tirosDaVez })} {mira.map((c) => coordenada(c, n)).join(' ')}
           </span>
           <button type="button" className="btn-primary" disabled={mira.length !== tirosDaVez} onClick={() => agir({ tipo: 'jogada', casas: mira })}>
             {t('Atirar a rajada')}
@@ -261,12 +272,17 @@ function MontagemDaFrota({
   mar,
   frota,
   pronto,
+  lado,
+  tamanhos,
   agir,
 }: {
   frotaVista: FrotaDaCena;
   mar: MarNaval;
   frota: (number[] | null)[];
   pronto: boolean;
+  /** O lado do mar e a frota da partida (20/11/2026). */
+  lado: number;
+  tamanhos: readonly number[];
   agir: (corpo: Record<string, unknown>) => void;
 }) {
   const t = useT();
@@ -286,8 +302,8 @@ function MontagemDaFrota({
   const donoDa = (casa: number) => frota.findIndex((n) => n?.includes(casa));
   const outros = (i: number) => frota.filter((_, k) => k !== i);
   const cabe = (i: number, inicio: number, deitadoAgora: boolean) => {
-    const casas = casasDoNavio(inicio, FROTA[i], deitadoAgora);
-    return casas && !encosta(casas, outros(i)) ? casas : null;
+    const casas = casasDoNavio(inicio, tamanhos[i], deitadoAgora, lado);
+    return casas && !encosta(casas, outros(i), lado) ? casas : null;
   };
 
   const por = (i: number, inicio: number, deitadoAgora: boolean, seguir: boolean) => {
@@ -316,7 +332,7 @@ function MontagemDaFrota({
     const dono = donoDa(casa);
     if (dono >= 0 && dono !== escolhido) return escolher(dono);
     if (escolhido === null || dono === escolhido) return;
-    por(escolhido, inicioDoNavio(casa, 0, FROTA[escolhido], deitado), deitado, frota[escolhido] === null);
+    por(escolhido, inicioDoNavio(casa, 0, tamanhos[escolhido], deitado, lado), deitado, frota[escolhido] === null);
   };
 
   const apertar = (casa: number) => {
@@ -341,7 +357,7 @@ function MontagemDaFrota({
     if (casa !== null && casa !== a.origem) {
       soltouEm.current = performance.now();
       const casas = frota[a.navio];
-      por(a.navio, inicioDoNavio(casa, pega, FROTA[a.navio], casas ? orientacao(casas) : deitado), casas ? orientacao(casas) : deitado, false);
+      por(a.navio, inicioDoNavio(casa, pega, tamanhos[a.navio], casas ? orientacao(casas) : deitado, lado), casas ? orientacao(casas) : deitado, false);
     }
     setPega(0);
   };
@@ -353,7 +369,7 @@ function MontagemDaFrota({
     if (escolhido === null) return;
     const casas = frota[escolhido];
     // o navio já posto gira na própria casa de cima (ou da esquerda), empurrado para dentro do mar; não cabendo, só o fantasma gira
-    if (casas) por(escolhido, inicioDoNavio(Math.min(...casas), 0, FROTA[escolhido], novo), novo, false);
+    if (casas) por(escolhido, inicioDoNavio(Math.min(...casas), 0, tamanhos[escolhido], novo, lado), novo, false);
   };
 
   const girarAgora = useRef(girar);
@@ -378,10 +394,10 @@ function MontagemDaFrota({
     // sem arrasto, tocar num navio o escolhe (não põe nada ali): sobre um navio, o fantasma não aparece
     const sobreNavio = !arrasto.current && donoDa(sobre) >= 0;
     if (!naoSaiu && !sobreNavio) {
-      const inicio = inicioDoNavio(sobre, arrasto.current ? pega : 0, FROTA[escolhido], deitado);
-      const casas = casasDoNavio(inicio, FROTA[escolhido], deitado);
-      const ordem = FROTA.slice(0, escolhido).filter((x) => x === FROTA[escolhido!]).length;
-      if (casas) fantasma = { casas, ok: !encosta(casas, outros(escolhido)), ordem };
+      const inicio = inicioDoNavio(sobre, arrasto.current ? pega : 0, tamanhos[escolhido], deitado, lado);
+      const casas = casasDoNavio(inicio, tamanhos[escolhido], deitado, lado);
+      const ordem = tamanhos.slice(0, escolhido).filter((x) => x === tamanhos[escolhido!]).length;
+      if (casas) fantasma = { casas, ok: !encosta(casas, outros(escolhido), lado), ordem };
     }
   }
   const casasDoFantasma = new Map((fantasma?.casas ?? []).map((c) => [c, fantasma!.ok]));
@@ -396,6 +412,7 @@ function MontagemDaFrota({
   const grade = (
     <div
       className="naval-grade naval-grade-montagem"
+      style={estiloDaGrade(lado)}
       onPointerMove={(e) => setSobre(casaNoPonto(e.clientX, e.clientY))}
       onPointerLeave={() => !arrasto.current && setSobre(null)}
       onPointerUp={(e) => soltar(casaNoPonto(e.clientX, e.clientY), false)}
@@ -404,8 +421,8 @@ function MontagemDaFrota({
         if (!casas) return null;
         const ordenadas = [...casas].sort((a, b) => a - b);
         const deitadoAqui = orientacao(ordenadas);
-        const linha = Math.floor(ordenadas[0] / LADO) + 1;
-        const coluna = (ordenadas[0] % LADO) + 1;
+        const linha = Math.floor(ordenadas[0] / lado) + 1;
+        const coluna = (ordenadas[0] % lado) + 1;
         return (
           <span
             key={i}
@@ -427,9 +444,9 @@ function MontagemDaFrota({
             type="button"
             data-casa={casa}
             className={`naval-casa${noFantasma === true ? ' fantasma-ok' : noFantasma === false ? ' fantasma-ruim' : ''}${escolhidas?.includes(casa) ? ' do-escolhido' : ''}`}
-            style={{ gridRow: Math.floor(casa / LADO) + 1, gridColumn: (casa % LADO) + 1 }}
+            style={{ gridRow: Math.floor(casa / lado) + 1, gridColumn: (casa % lado) + 1 }}
             disabled={pronto}
-            aria-label={dono >= 0 ? `${coordenada(casa)} · ${t('Navio de {n} casas', { n: FROTA[dono] })}` : coordenada(casa)}
+            aria-label={dono >= 0 ? `${coordenada(casa, lado)} · ${t('Navio de {n} casas', { n: tamanhos[dono] })}` : coordenada(casa, lado)}
             onFocus={() => setSobre(casa)}
             onPointerDown={(e) => {
               if (e.button > 0) return;
@@ -458,6 +475,7 @@ function MontagemDaFrota({
             podeAtirar: false,
             ultima: null,
             frota: frotaVista,
+            lado,
             montagem: pronto ? { fantasma: null, escolhido: null } : { fantasma, escolhido: escolhidas },
           }}
           aoAtirar={() => {}}
@@ -469,7 +487,7 @@ function MontagemDaFrota({
       {!pronto && (
         <>
           <div className="naval-frota" role="group" aria-label={t('Seus navios')}>
-            {FROTA.map((tamanho, i) => (
+            {tamanhos.map((tamanho, i) => (
               <button
                 key={i}
                 type="button"
@@ -511,11 +529,13 @@ function MarDaTela({
   ultima,
   atirar,
   frota,
+  lado = LADO,
   mira = [],
 }: {
   /** As casas da rajada do salvo já escolhidas. */
   mira?: number[];
   frota: FrotaDaCena;
+  lado?: number;
   titulo: string;
   mar: MarNaval;
   restam: number[];
@@ -531,16 +551,16 @@ function MarDaTela({
     <section className={`naval-mar${meu ? ' meu' : ''}${alvo ? ' alvo' : ''}${daVez ? ' na-mira' : ''}`}>
       <h4 className="naval-titulo">{titulo}</h4>
       <Mar3D
-        dados={{ tiros: mar.tiros, navios: mar.navios, meu, podeAtirar, ultima, frota, mirada: mira }}
+        dados={{ tiros: mar.tiros, navios: mar.navios, meu, podeAtirar, ultima, frota, mirada: mira, lado }}
         aoAtirar={atirar}
         grade={
-      <div className="naval-grade">
+      <div className="naval-grade" style={estiloDaGrade(lado)}>
         {mar.navios.map((navio) => {
           const casas = [...navio.casas].sort((a, b) => a - b);
           const primeira = casas[0];
           const deitado = casas.length > 1 && casas[1] - casas[0] === 1;
-          const linha = Math.floor(primeira / LADO) + 1;
-          const coluna = (primeira % LADO) + 1;
+          const linha = Math.floor(primeira / lado) + 1;
+          const coluna = (primeira % lado) + 1;
           return (
             <span
               key={primeira}
@@ -558,9 +578,9 @@ function MarDaTela({
             key={casa}
             type="button"
             className={`naval-casa${tiro === 1 ? ' agua' : tiro === 2 ? ' fogo' : ''}${ultima === casa ? ' ultima' : ''}${mira.includes(casa) ? ' naval-mira' : ''}`}
-            style={{ gridRow: Math.floor(casa / LADO) + 1, gridColumn: (casa % LADO) + 1 }}
+            style={{ gridRow: Math.floor(casa / lado) + 1, gridColumn: (casa % lado) + 1 }}
             disabled={!podeAtirar || tiro !== 0}
-            aria-label={coordenada(casa)}
+            aria-label={coordenada(casa, lado)}
             onClick={() => atirar(casa)}
           />
         ))}

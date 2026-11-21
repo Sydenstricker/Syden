@@ -11,12 +11,12 @@ import {
   RAIO_TIRO,
   VEL_NAVE,
   VOLEIAS,
+  deRaspao,
   posicaoBala,
   posicaoInimigo,
   posicaoItem,
   posicaoTiro,
   roteiro,
-  tirosDosInimigos,
   type Arma,
   type FaseDaNave,
   type Inimigo,
@@ -109,7 +109,7 @@ export interface Bala {
 
 /** O que só enfeita a tela: explosões, faíscas e o clarão da bomba. */
 export interface Efeito {
-  tipo: 'explosao' | 'faisca' | 'bomba' | 'escudo' | 'pegou' | 'perdeu';
+  tipo: 'explosao' | 'faisca' | 'bomba' | 'escudo' | 'pegou' | 'perdeu' | 'raspao';
   x: number;
   y: number;
   em: number;
@@ -130,6 +130,8 @@ export interface Ocorrido {
   loop: boolean;
   /** Os inimigos acertados (sem cair) neste passo: piscam branco. */
   acertados: number[];
+  /** Um tiro passou de raspão neste passo (20/11/2026). */
+  raspao: boolean;
 }
 
 const arred = (v: number) => Math.round(v * 100) / 100;
@@ -139,6 +141,8 @@ export class Mundo {
   readonly inimigos: Inimigo[];
   readonly tiros: TiroInimigo[];
   readonly ficha: Ficha;
+  /** O índice de cada tiro na lista (vai no evento do raspão). */
+  private indiceDoTiro: Map<TiroInimigo, number>;
   /** O último passo simulado (−1: ainda não começou). */
   passo = -1;
   nave = { ...NASCER };
@@ -167,8 +171,9 @@ export class Mundo {
     readonly fase: FaseDaNave = 'horta',
   ) {
     this.inimigos = roteiro(semente, fase);
-    this.tiros = tirosDosInimigos(this.inimigos);
     this.ficha = new Ficha(this.inimigos, fase);
+    this.tiros = this.ficha.tirosInimigos;
+    this.indiceDoTiro = new Map(this.tiros.map((t, j) => [t, j]));
     this.ordem = this.inimigos.map((_, i) => i).sort((a, b) => this.inimigos[a].t - this.inimigos[b].t);
   }
 
@@ -198,6 +203,7 @@ export class Mundo {
       chefe: false,
       loop: false,
       acertados: [],
+      raspao: false,
     };
 
     // os inimigos que entram e os que saem
@@ -349,6 +355,21 @@ export class Mundo {
           }
         }
         atingida = -1;
+      }
+    }
+
+    // O RASPÃO (20/11/2026): o tiro que passou perto sem acertar, e já se afasta; a Ficha confere, e a faísca sai entre os dois
+    if (pilota && n >= f.invulAte && !f.invulNoLoop(n) && f.vivoEm(n)) {
+      const { x, y } = this.nave;
+      for (const tiro of this.tirosAtivos) {
+        const j = this.indiceDoTiro.get(tiro);
+        if (j === undefined || f.raspados.has(j)) continue;
+        const b = posicaoTiro(tiro, n);
+        if (!b || !deRaspao(b, tiro.vx, tiro.vy, x, y)) continue;
+        if (f.raspao(n, j, x, y) !== null) continue;
+        this.eventos.push(['r', n, j, x, y]);
+        this.efeitos.push({ tipo: 'raspao', x: (b.x + x) / 2, y: (b.y + y) / 2, em: n });
+        o.raspao = true;
       }
     }
 

@@ -182,6 +182,28 @@ export function criarLobisomem({ aleatorio = Math.random, agora = Date.now }: Op
       const vivosCom = (p: Papel) => [...vivos].filter((id) => papel.get(id) === p);
       const lobosVivos = () => vivosCom('lobisomem');
       const temNaPartida = (p: Papel) => [...papel.values()].includes(p);
+      /**
+       * O MICROFONE, COMO NO JOGO DE MESA (20/11/2026, decisão dele): de noite (as duas etapas) ninguém da partida fala, e
+       * quem saiu do jogo só ouve até o fim. No preparo e no fim, todos falam. Quem só assiste à sala nunca entra.
+       */
+      const silencioDe = (id: number): 'noite' | 'fora' | null => {
+        if (fase === 'preparo' || fase === 'fim' || !naSala.includes(id)) return null;
+        if (!vivos.has(id)) return 'fora';
+        return fase === 'noite' ? 'noite' : null;
+      };
+      function sincronizarSilencio() {
+        const motivos = new Map<number, 'noite' | 'fora'>();
+        for (const id of naSala) {
+          const m = silencioDe(id);
+          if (m) motivos.set(id, m);
+        }
+        ctx.silenciar?.(motivos);
+      }
+      /** Toda mudança de estado passa por aqui: o microfone acompanha a fase, e a sala busca o estado novo. */
+      const avisar = () => {
+        sincronizarSilencio();
+        ctx.avisar();
+      };
       const marcar = (ms: number, depois: () => void) => {
         duracao = ms;
         ctx.agendar(ms, depois);
@@ -194,7 +216,7 @@ export function criarLobisomem({ aleatorio = Math.random, agora = Date.now }: Op
         if (!vencedor) return false;
         fase = 'fim';
         ctx.terminar();
-        ctx.avisar();
+        avisar();
         return true;
       }
 
@@ -219,7 +241,7 @@ export function criarLobisomem({ aleatorio = Math.random, agora = Date.now }: Op
         decidiuPocao = false;
         conversa = [];
         marcar(comp.noiteMs, fimDosLobos);
-        ctx.avisar();
+        avisar();
       }
 
       /** A etapa dos lobos acaba quando cada papel com ação já agiu (ou o tempo acaba). */
@@ -244,7 +266,7 @@ export function criarLobisomem({ aleatorio = Math.random, agora = Date.now }: Op
           ctx.agendar(6_000 + Math.floor(aleatorio() * 14_000), amanhecer);
           duracao = POCAO_MS;
         }
-        ctx.avisar();
+        avisar();
       }
 
       function amanhecer() {
@@ -277,7 +299,7 @@ export function criarLobisomem({ aleatorio = Math.random, agora = Date.now }: Op
           if (caiu !== undefined) return abrirArmadilha(caiu, comecarDia);
           comecarDia();
         });
-        ctx.avisar();
+        avisar();
       }
 
       // ---------------- A ARMADILHA ----------------
@@ -286,7 +308,7 @@ export function criarLobisomem({ aleatorio = Math.random, agora = Date.now }: Op
         armadilha = { quem, alvo: null };
         depoisDaArmadilha = depois;
         marcar(ARMADILHA_MS, () => dispararArmadilha(null));
-        ctx.avisar();
+        avisar();
       }
       function dispararArmadilha(alvo: number | null) {
         if (fase !== 'armadilha' || !armadilha) return;
@@ -307,7 +329,7 @@ export function criarLobisomem({ aleatorio = Math.random, agora = Date.now }: Op
         julgamento.clear();
         eliminado = null;
         marcar(comp.diaMs, fimDoDia);
-        ctx.avisar();
+        avisar();
       }
 
       function fimDoDia() {
@@ -321,7 +343,7 @@ export function criarLobisomem({ aleatorio = Math.random, agora = Date.now }: Op
         historia.push({ dia, tipo: 'acusado', alvo: acusado, votos: [...votos.values()].filter((v) => v === acusado).length });
         fase = 'defesa';
         marcar(DEFESA_MS, abrirJulgamento);
-        ctx.avisar();
+        avisar();
       }
 
       function abrirJulgamento() {
@@ -329,7 +351,7 @@ export function criarLobisomem({ aleatorio = Math.random, agora = Date.now }: Op
         fase = 'julgamento';
         julgamento.clear();
         marcar(JULGAMENTO_MS, fimDoJulgamento);
-        ctx.avisar();
+        avisar();
       }
       const juizes = () => [...vivos].filter((id) => id !== acusado);
 
@@ -356,11 +378,15 @@ export function criarLobisomem({ aleatorio = Math.random, agora = Date.now }: Op
           if (caiu !== null) return abrirArmadilha(caiu, proxima);
           proxima();
         });
-        ctx.avisar();
+        avisar();
       }
 
       marcar(PREPARO_MS, comecarPartida);
       return {
+        // a partida saiu da memória (acabou, foi encerrada, trocada ou quebrou): todos voltam a falar
+        parar() {
+          ctx.silenciar?.(new Map());
+        },
         publico(quem) {
           const meu = papel.get(quem) ?? null;
           const souLobo = meu === 'lobisomem';
@@ -376,6 +402,8 @@ export function criarLobisomem({ aleatorio = Math.random, agora = Date.now }: Op
             lobosMax: lobosMax(n),
             meuPapel: meu,
             vivo: vivoEu,
+            // o seu microfone, desligado pela partida: 'noite' (volta no amanhecer) ou 'fora' (até o fim)
+            microfone: silencioDe(quem),
             jogadores: naSala.map((userId) => ({
               userId,
               username: ctx.nome(userId),
@@ -415,7 +443,7 @@ export function criarLobisomem({ aleatorio = Math.random, agora = Date.now }: Op
             if (corpo.tipo === 'comecar') comecarPartida();
             else {
               comp = ajustar(n, corpo as Partial<Record<keyof Composicao, unknown>>, comp);
-              ctx.avisar();
+              avisar();
             }
             return null;
           }
@@ -440,7 +468,7 @@ export function criarLobisomem({ aleatorio = Math.random, agora = Date.now }: Op
             if (t - (ultimaFala.get(quem) ?? -Infinity) < CONVERSA_INTERVALO_MS || conversa.length >= CONVERSA_POR_NOITE) return 'Devagar.';
             ultimaFala.set(quem, t);
             conversa.push({ id: proximaFala++, de: quem, texto });
-            ctx.avisar();
+            avisar();
             return null;
           }
           if (corpo.tipo === 'noite') {
@@ -460,7 +488,7 @@ export function criarLobisomem({ aleatorio = Math.random, agora = Date.now }: Op
               protegido = alvo;
             } else return 'Quem é da vila dorme à noite.';
             if (lobosCompleto()) fimDosLobos();
-            else ctx.avisar();
+            else avisar();
             return null;
           }
           if (corpo.tipo === 'pocao') {
@@ -486,7 +514,7 @@ export function criarLobisomem({ aleatorio = Math.random, agora = Date.now }: Op
             if (alvo !== 0 && !vivos.has(alvo)) return 'Escolha alguém que ainda está no jogo.';
             votos.set(quem, alvo);
             if ([...vivos].every((id) => votos.has(id))) fimDoDia();
-            else ctx.avisar();
+            else avisar();
             return null;
           }
           if (corpo.tipo === 'pronto') {
@@ -500,7 +528,7 @@ export function criarLobisomem({ aleatorio = Math.random, agora = Date.now }: Op
             if (quem === acusado) return 'Quem está sendo julgado não vota.';
             julgamento.set(quem, corpo.sim === true);
             if (juizes().every((id) => julgamento.has(id))) fimDoJulgamento();
-            else ctx.avisar();
+            else avisar();
             return null;
           }
           return 'Ação desconhecida.';

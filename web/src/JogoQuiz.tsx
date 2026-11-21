@@ -307,29 +307,53 @@ export function JogoQuiz({
   );
 }
 
-/** A escolha de categoria de um quiz (a mitologia por continente), antes de começar: como a do "Qual é o tamanho?". */
+/**
+ * A largada de um quiz: as RODADAS (1, 3 ou 5; 20/11/2026, a segunda auditoria) e, nos temas que têm, a categoria (a mitologia
+ * por continente, o modo Bandeira dos países), como a do "Qual é o tamanho?". Clicar na categoria começa; sem categorias, o
+ * "Começar".
+ */
 export function EscolhaDoQuiz({
   categorias,
   aoEscolher,
   aoVoltar,
 }: {
   categorias: { id: string; nome: string }[];
-  aoEscolher: (categoria: string) => void;
+  aoEscolher: (categoria: string | null, rodadas: number) => void;
   aoVoltar: () => void;
 }) {
   const t = useT();
+  const [rodadas, setRodadas] = useState(3);
   return (
     <>
-      <ul className="quiz-categorias">
-        {categorias.map((categoria) => (
-          <li key={categoria.id}>
-            <button type="button" className="minijogo-jogo" onClick={() => aoEscolher(categoria.id)}>
-              <span>{t(categoria.nome)}</span>
-            </button>
-          </li>
-        ))}
-      </ul>
+      <div className="escolha-palavras">
+        <fieldset>
+          <legend>{t('Rodadas')}</legend>
+          <div className="opcoes">
+            {[1, 3, 5].map((n) => (
+              <button key={n} type="button" aria-pressed={n === rodadas} onClick={() => setRodadas(n)}>
+                {n}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+      </div>
+      {categorias.length > 0 && (
+        <ul className="quiz-categorias">
+          {categorias.map((categoria) => (
+            <li key={categoria.id}>
+              <button type="button" className="minijogo-jogo" onClick={() => aoEscolher(categoria.id, rodadas)}>
+                <span>{t(categoria.nome)}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
       <div className="minijogo-acoes">
+        {categorias.length === 0 && (
+          <button type="button" className="btn-primary" onClick={() => aoEscolher(null, rodadas)}>
+            {t('Começar')}
+          </button>
+        )}
         <button type="button" className="btn-secondary" onClick={aoVoltar}>
           {t('Outros jogos')}
         </button>

@@ -147,3 +147,40 @@ test('o yeti (19/11/2026): sozinho, com 200 ms de ida e volta, o piloto vence, d
   assert.equal(ultimo.f, 'vitoria', `fase ${ultimo.f}, o yeti na fase ${ultimo.c[6] + 1} com ${ultimo.c[4]}%`);
   assert.equal(publico.chefe, 'yeti');
 });
+
+// ---------------- A segunda auditoria (20/11/2026) ----------------
+
+test('a maratona: sozinho, o piloto vence a toupeira e depois o yeti, seis fases', async (t) => {
+  const { ultimo, publico, segundos } = await partida([7], 100, 5, { chefe: 'maratona' });
+  t.diagnostic(`a maratona levou ${Math.round(segundos)} s; vidas: ${ultimo.j[0][6]}; dano: ${ultimo.d}`);
+  assert.equal(ultimo.f, 'vitoria', `fase ${ultimo.f}, etapa ${ultimo.c[10]}, fase ${ultimo.c[6] + 1} com ${ultimo.c[4]}%`);
+  assert.equal(ultimo.c[10], 1, 'acabou no yeti');
+  assert.equal(publico.fases, 6);
+});
+
+test('o golpe de pá do cliente: só vai ao servidor com o chefe parado ou tonto e colado, e respeita a recarga', () => {
+  const enviados: Record<string, unknown>[] = [];
+  const c = new Cliente(7, (d) => enviados.push(d as Record<string, unknown>));
+  const q = (estado: string, n: number): Quadro => ({
+    tipo: 'q', n, f: 'lutando',
+    c: [240, 150, conta.ESTADOS.indexOf(estado as conta.EstadoDoChefe), 1, 100, 0, 0, 240, 150, 0, 0],
+    m: [], t: [], j: [[7, 240 - conta.CORPO_CHEFE - 10, 150, 1, 0, 0, 3, 0, 0, 0, 0, 1, 0, 0, 0]], p: [], b: [], d: 0, e: [],
+  });
+  let agora = 1000;
+  for (let n = 1; n <= 10; n++) c.chegou(q('parada', n), (agora += 50));
+  const cmd = comandosVazios();
+  cmd.pa = true;
+  c.passo(cmd, 1 / 60, agora, c.vista(agora));
+  assert.equal(enviados.filter((d) => d.tipo === 'pa').length, 1);
+  assert.equal(cmd.pa, false, 'o aperto é lido uma vez');
+  // logo de novo: a recarga
+  cmd.pa = true;
+  c.passo(cmd, 1 / 60, (agora += 50), c.vista(agora));
+  assert.equal(enviados.filter((d) => d.tipo === 'pa').length, 1);
+  // preparando um golpe: a pá sai (o coelho mexe), mas nada vai ao servidor
+  for (let n = 11; n <= 20; n++) c.chegou(q('prep-terremoto', n), (agora += 50));
+  agora += conta.PA.recargaMs;
+  cmd.pa = true;
+  c.passo(cmd, 1 / 60, agora, c.vista(agora));
+  assert.equal(enviados.filter((d) => d.tipo === 'pa').length, 1);
+});

@@ -19,6 +19,7 @@ import { comando } from './minijogo-comando.js';
 import { dueloDeAvioes } from './minijogo-duelo.js';
 import { torre } from './minijogo-torre.js';
 import type { Contexto, Definicao, Jogo } from './minijogo-motor.js';
+import { liberarSala, silenciarNaSala } from './silencio-do-jogo.js';
 import { lobisomem } from './minijogo-lobisomem.js';
 import { palavra } from './minijogo-palavra.js';
 import { plataforma } from './minijogo-plataforma.js';
@@ -239,6 +240,7 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
         // encerrar chama o parar do próprio jogo, que pode ser o que quebrou: a partida sai da memória mesmo assim
         if (p.solo) solos.delete(p.criadaPor);
         else partidas.delete(p.channelId);
+        if (!p.solo) liberarSala(p.channelId, p);
       }
       return undefined;
     }
@@ -258,6 +260,8 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
   function encerrar(p: Partida) {
     if (p.relogio) clearTimeout(p.relogio);
     p.instancia?.parar?.();
+    // o microfone que o jogo desligou (o Lobisomem) volta a todos, aconteça o que acontecer com a partida
+    if (!p.solo) liberarSala(p.channelId, p);
     // Encerrada antes do placar final (se já tinha terminado, a linha já está fechada e nada muda).
     if (p.registro !== null) db.fecharPartida(p.registro, false);
     if (p.solo) {
@@ -322,6 +326,12 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
       difundirPorPessoa: (fazer) => {
         if (p.solo) return emitToUser(io, p.criadaPor, 'minijogo-solo:tempo-real', { dados: fazer(p.criadaPor) });
         for (const id of quemEstaNaSala(p.channelId)) emitToUser(io, id, 'minijogo:tempo-real', { channelId: p.channelId, dados: fazer(id) });
+      },
+      // só na sala (no Solo não há com quem falar), e só a partida que ainda é a da sala silencia alguém
+      silenciar: (motivos) => {
+        if (p.solo) return;
+        if (motivos.size === 0) liberarSala(p.channelId, p);
+        else if (partidas.get(p.channelId) === p && !p.terminada) silenciarNaSala(p.channelId, motivos, p);
       },
     };
     // O relógio do convite sai antes: um jogo que não marca relógio ao começar herdaria o fim do convite.
@@ -496,6 +506,7 @@ export function registerMinijogosRoutes(app: FastifyInstance, io: IOServer) {
         else if (atual && !atual.terminada) return reply.code(409).send({ error: 'Já tem uma partida acontecendo nesta sala.' });
         if (atual?.relogio) clearTimeout(atual.relogio);
         atual?.instancia?.parar?.();
+        if (atual) liberarSala(canal.id, atual);
         // a de antes, terminada, sai sem passar por encerrar: as insígnias dela chegam aqui
         if (atual?.terminada && atual.registro !== null) entregarDoFliperama(atual.registro);
 

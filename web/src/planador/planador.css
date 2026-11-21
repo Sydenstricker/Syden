@@ -301,3 +301,35 @@
   font-size: 20px;
   color: #fff3c4;
 }
+
+/* 20/11/2026 (a segunda auditoria): o variômetro e o mapa do canto */
+.planador-vario {
+  position: absolute;
+  left: 14px;
+  top: 66px;
+  font-size: calc(15px * var(--escala-do-texto, 1));
+  opacity: 0.9;
+}
+.planador-vario.sobe {
+  color: #b8f0a0;
+}
+.planador-vario.pouso-verde {
+  color: #7ed36a;
+}
+.planador-vario.pouso-amarelo {
+  color: #f6c94a;
+}
+.planador-vario.pouso-vermelho {
+  color: #ff6b5a;
+}
+.planador-mapa {
+  position: absolute;
+  left: 50%;
+  top: 17%;
+  transform: translateX(-50%);
+  width: clamp(54px, 11vw, 96px);
+  height: auto;
+  aspect-ratio: 1;
+  pointer-events: none;
+  border-radius: 6px;
+}

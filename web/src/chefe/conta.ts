@@ -34,6 +34,24 @@ export const TORRAO = { raio: 12, vel: 260, alcance: 330, dano: 10, pegar: 18, n
 export const BOMBA = { alcance: 130, voo: 650, raio: 34, dano: 25 };
 /** Tonta depois da investida, a toupeira leva o dobro. */
 export const TONTA_VEZES = 2;
+/**
+ * O GOLPE DE PÁ (20/11/2026): de perto e fraco, para o coelho não passar a luta só esperando o torrão frio. Só pega o chefe
+ * TONTO ou PARADO (em pé, entre um golpe e outro), tira PA.dano (sem o dobro da tonta) e tem uma recarga. O servidor confere
+ * pelo passado do chefe, como o torrão.
+ */
+export const PA = { alcance: 16, dano: 1, recargaMs: 450 };
+
+/** A pá pega o chefe neste estado? */
+export function apanhaDaPa(estado: string): boolean {
+  return estado === 'tonta' || estado === 'parada';
+}
+
+/** O coelho em (x, y) alcança com a pá o chefe em (cx, cy)? `folga` como no tiro (0 no site). */
+export function paPega(x: number, y: number, cx: number, cy: number, folga: number): boolean {
+  const dx = x - cx;
+  const dy = y - cy;
+  return Math.sqrt(dx * dx + dy * dy) <= CORPO_CHEFE + PA.alcance + folga;
+}
 
 /** Os estados da toupeira, na ordem do código que vai no quadro. */
 export const ESTADOS = [

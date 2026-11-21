@@ -1,3 +1,4 @@
+import { Trophy } from 'lucide-react';
 import { ComandosDoJogo } from './ComandosDosJogos';
 import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
@@ -9,7 +10,7 @@ import type { Agir } from './Minijogo';
 import type { Partida } from './minijogos';
 import { H, W } from './plataforma/desenho';
 import { guardarPosicaoDoRival, type LinhaDaOrdem, type PosicaoDoRival, type Rival } from './plataforma/laco';
-import { Bloco, COLUNAS, MEDALHAS_DA_TORRE, medalhaDaTorre, TEMPO_DO_PILOTO, TORRES, torrePorId, type Torre } from './torre/fases';
+import { Bloco, COLUNAS, COPA_DO_CELEIRO, MEDALHAS_DA_TORRE, medalhaDaTorre, TEMPO_DO_PILOTO, TORRES, TORRES_DA_COPA, torrePorId, type Torre } from './torre/fases';
 import type { Comandos } from './torre/fisica';
 import { rodarTorre } from './torre/laco';
 import { nomeDaTorre } from './torre/nomes';
@@ -26,7 +27,7 @@ import './torre/torre.css';
  */
 
 export interface EstadoTorre {
-  fase: 'escolha' | 'correndo' | 'resultado' | 'largada' | 'fim';
+  fase: 'escolha' | 'correndo' | 'resultado' | 'largada' | 'intervalo' | 'fim';
   solo: boolean;
   pista: string;
   partidaId: string;
@@ -60,6 +61,13 @@ export interface EstadoTorre {
     avatar: number | string | null;
   }[];
   prazo?: boolean;
+  // a Copa do Celeiro (20/11/2026): as cinco torres seguidas, e o placar entre uma e outra
+  categoria?: string;
+  copa?: boolean;
+  corrida?: number;
+  corridas?: number;
+  placarDaCopa?: { userId: number; username: string; feitas: number; soma: number; posicao: number | null }[] | null;
+  ultima?: { userId: number; username: string; tempoMs: number | null; posicao: number | null }[] | null;
 }
 
 const MAX_FANTASMAS = 3;
@@ -261,6 +269,16 @@ export function EscolhaDaTorre({ aoEscolher, aoVoltar }: { aoEscolher: (torre: s
             </button>
           </li>
         ))}
+        {/* a Copa do Celeiro (20/11/2026): as cinco seguidas, ganha a soma menor */}
+        <li>
+          <button type="button" className="torre-botao torre-copa" onClick={() => aoEscolher(COPA_DO_CELEIRO)}>
+            <span className="torre-copa-figura" aria-hidden="true">
+              <Trophy size={28} />
+            </span>
+            <strong>{nomeDaTorre(t, COPA_DO_CELEIRO)}</strong>
+            <small>{TORRES_DA_COPA.map((id) => nomeDaTorre(t, id)).join(' · ')}</small>
+          </button>
+        </li>
       </ul>
       <div className="minijogo-acoes">
         <button type="button" className="btn-secondary" onClick={aoVoltar}>
@@ -280,7 +298,77 @@ export function JogoTorre(props: {
   socket: Socket | null;
   channelId: number;
 }) {
-  return props.estado.solo ? <TorreSolo {...props} /> : <TorreNaSala {...props} />;
+  return props.estado.solo ? <TorreSolo {...props} /> : <TorreDaSala {...props} />;
+}
+
+/**
+ * A SALA, com a COPA DO CELEIRO (20/11/2026): uma torre por laço (na copa, cada torre monta o seu, e os rivais recomeçam); entre
+ * uma torre e outra, e no fim da copa, o placar: quantas torres cada um subiu e a soma dos tempos (a ordem e a posição vêm do
+ * servidor, a mesma do troféu).
+ */
+function TorreDaSala(props: {
+  estado: EstadoTorre & Partida;
+  eu: number;
+  jogador: boolean;
+  restante: number;
+  agir: Agir;
+  socket: Socket | null;
+  channelId: number;
+}) {
+  const t = useT();
+  const { estado, eu } = props;
+  const fim = estado.fase === 'fim' || estado.terminada;
+  const copa = estado.copa === true;
+  const total = estado.corridas ?? TORRES_DA_COPA.length;
+  const cabecalho = copa && (
+    <div className="corrida-copa-topo">
+      <strong>{nomeDaTorre(t, COPA_DO_CELEIRO)}</strong>
+      <span>
+        {t('Rodada {n} de {total}', { n: estado.corrida ?? 1, total })} · {nomeDaTorre(t, estado.pista)}
+      </span>
+    </div>
+  );
+  if (copa && (estado.fase === 'intervalo' || fim)) {
+    const placar = estado.placarDaCopa ?? [];
+    const ficaram = placar.filter((l) => l.posicao !== null).length;
+    return (
+      <div className="torre">
+        {cabecalho}
+        <div className="corrida-tela corrida-placar-da-copa">
+          <div className="corrida-fim">
+            <ol className="corrida-classificacao">
+              {placar.map((p) => (
+                <li key={p.userId} className={[p.userId === eu ? 'eu' : '', p.posicao === null ? 'pulo-saiu' : ''].join(' ').trim() || undefined}>
+                  <span className="corrida-posicao">{fim ? marcaDoLugar(p.posicao, p.feitas >= total, ficaram) : (p.posicao ?? '–')}</span>
+                  <span className="corrida-quem">{p.username}</span>
+                  {/* quantas torres subiu (de cinco) e a soma dos tempos: só figura e números */}
+                  <span className="corrida-pontos" aria-label={`${p.feitas}/${total}`}>
+                    {p.feitas}/{total}
+                  </span>
+                  <span className="corrida-relogio">{p.feitas > 0 ? tempoLegivel(p.soma) : '—'}</span>
+                </li>
+              ))}
+            </ol>
+            {estado.ultima && (
+              <ol className="corrida-voltas corrida-ultima">
+                {estado.ultima.map((p) => (
+                  <li key={p.userId} className={p.posicao === null ? 'pulo-saiu' : undefined}>
+                    {p.posicao ?? '–'}. {p.username} · {p.tempoMs !== null ? tempoLegivel(p.tempoMs) : '—'}
+                  </li>
+                ))}
+              </ol>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <>
+      {cabecalho}
+      <TorreNaSala key={`${estado.corrida ?? 1}-${estado.pista}`} {...props} />
+    </>
+  );
 }
 
 // =====================================================================================================================

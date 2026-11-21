@@ -5,7 +5,7 @@ import { comandoDaPausa, TelaDePausa, usePausaComEsc } from './pausaDosJogos';
 import { tocar } from './somDosJogos';
 import { ALTURA, carregarImagens, DesenhoDoTransito, LARGURA, TECLAS } from './transito/desenho';
 import { escolhaDoPiloto } from './transito/piloto';
-import { liberar, novaPartida, passo, PASSO, PASSOS_DA_PARTIDA, travado, type Estado, type Mapa, type Modo } from './transito/sim';
+import { liberar, novaPartida, passo, PASSO, PASSOS_DA_PARTIDA, PENA_DA_AMBULANCIA, travado, type Estado, type Mapa, type Modo } from './transito/sim';
 import { Play, Timer } from 'lucide-react';
 import './transito.css';
 
@@ -287,6 +287,11 @@ function Cruzamento({ semente, modo, mapa, solo, aoTerminar }: { semente: number
               case 'sequencia':
                 tocar('combo');
                 d.placa(3.5, 3.5, `×${ev.n} +5`, e.passo, true);
+                break;
+              case 'atrasou':
+                // a ambulância esperou demais (20/11/2026)
+                tocar('alarme');
+                d.placa(ev.x, ev.y, `−${PENA_DA_AMBULANCIA}`, e.passo);
                 break;
             }
           }

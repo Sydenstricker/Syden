@@ -281,7 +281,21 @@ function janelaComFocoAgora(): boolean {
   return typeof document !== 'undefined' && !document.hidden && document.hasFocus();
 }
 
-const maestro = criarMaestro(motorWeb, () => !somDosJogosMudo() && !estaSurdo() && janelaComFocoAgora());
+/**
+ * A PAUSA DOS JOGOS (20/11/2026, a segunda auditoria: nos jogos que tocam só pela tabela, a música seguia na pausa do Solo). A
+ * pausa comum (`usePausaComEsc`, em pausaDosJogos.tsx) marca aqui cada pausa aberta, e a música cala enquanto houver uma, sem
+ * cada Jogo*.tsx precisar saber. Corrida, Jato, Regata e Pulo já calavam a deles pela própria pausa: a marca só confirma.
+ */
+const pausasAbertas = new Set<object>();
+export function marcarPausaDoJogo(dono: object, pausado: boolean) {
+  const antes = pausasAbertas.size;
+  if (pausado) pausasAbertas.add(dono);
+  else pausasAbertas.delete(dono);
+  if (pausasAbertas.size !== antes) maestro.conferir();
+}
+export const algumJogoPausado = () => pausasAbertas.size > 0;
+
+const maestro = criarMaestro(motorWeb, () => !somDosJogosMudo() && !estaSurdo() && janelaComFocoAgora() && !algumJogoPausado());
 
 let vigiando = false;
 let relogio: ReturnType<typeof setInterval> | null = null;

@@ -48,9 +48,19 @@ const MEDALHA = ['', '🥇', '🥈', '🥉'];
 const DA_CORRIDA = new Set(['horta-1', 'pomar-1', 'praia-1', 'bosque-1', 'neve-1', 'canion-1', 'copa-da-cenoura', 'copa-do-repolho']);
 const DO_PULO = new Set(['prado-1', 'toca-1', 'copas-1', 'copa-do-pulo', 'corrego-1', 'mina-1', 'ninho-1', 'copa-dos-bichos']);
 // as fases da Briga e a campanha (06/11/2026) são da Briga; a horta guarda a pista de antes, 'briga'
-// a Arena dos coelhos (17/11/2026) é dos Bichos da Toca
+// a Arena dos coelhos (17/11/2026) é dos Bichos da Toca; a Copa do Celeiro (20/11/2026), da Torre
 export const jogoDoTrofeu = (pista: string) =>
-  DA_CORRIDA.has(pista) ? 'corrida' : DO_PULO.has(pista) ? 'plataforma' : pista.startsWith('briga-') ? 'briga' : pista === 'bichos-arena' ? 'bichos' : pista;
+  DA_CORRIDA.has(pista)
+    ? 'corrida'
+    : DO_PULO.has(pista)
+      ? 'plataforma'
+      : pista.startsWith('briga-')
+        ? 'briga'
+        : pista === 'bichos-arena'
+          ? 'bichos'
+          : pista === 'copa-do-celeiro'
+            ? 'torre'
+            : pista;
 
 export function Trofeus({ aoFechar, dono }: { aoFechar: () => void; dono?: { id: number; nome: string } }) {
   const t = useT();

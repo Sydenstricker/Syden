@@ -528,6 +528,18 @@ export function desenhar(ctx: CanvasRenderingContext2D, d: Desenho) {
     const idade = n - e.em;
     const x = Math.round(e.x);
     const y = Math.round(e.y);
+    if (e.tipo === 'raspao') {
+      // O RASPÃO (20/11/2026): uma faísca azul-clara entre a nave e o tiro, que abre e some depressa
+      if (idade > 8) continue;
+      ctx.fillStyle = idade < 3 ? '#ffffff' : '#bfe6ff';
+      ctx.fillRect(x, y, 1, 1);
+      const r = 1 + idade;
+      ctx.fillRect(x - r, y - 1, 1, 1);
+      ctx.fillRect(x + r, y + 1, 1, 1);
+      ctx.fillRect(x - 1, y - r, 1, 1);
+      ctx.fillRect(x + 1, y + r, 1, 1);
+      continue;
+    }
     if (folha && e.tipo === 'faisca') {
       if (idade <= 4) ladrilhoNo(ctx, folha, L.faisca, x, y);
     } else if (folha && (e.tipo === 'explosao' || e.tipo === 'perdeu')) {

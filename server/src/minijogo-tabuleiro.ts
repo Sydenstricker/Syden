@@ -366,6 +366,12 @@ export function duelo<T>(regras: Regras<T>, aleatorio = Math.random, agora: () =
 // REGRA DE TROCA na abertura (`troca`, o "swap"): quem abre põe três pedras (escura, clara, escura) e quem responde ESCOLHE a
 // cor — fica com as claras e joga, ou troca e fica com as escuras. Tira a vantagem de quem abre sem pedir regra difícil.
 // As cores: 1 escura (a que abre), 2 clara; `cores[lado]` diz a cor de cada lado da mesa.
+//
+// MAIS DUAS VARIANTES (20/11/2026, o lote C da segunda auditoria), escolhidas na largada; a regra de fábrica continua a de
+// sempre. A CAPTURA (`captura`): a pedra que fecha duas do outro entre duas suas (X O O X, na linha, na coluna ou na
+// diagonal) tira as duas do tabuleiro; quem fizer CAPTURAS_PARA_VENCER capturas também vence. É a mecânica de domínio
+// público, com nome nosso. A RESTRIÇÃO 3-3 (`tresTres`): as escuras (quem abre) não podem pôr a pedra que faz DOIS três
+// abertos ao mesmo tempo, a não ser que ela feche o cinco.
 // ---------------------------------------------------------------------------------------------------
 
 export const LADO_DO_GOMOKU = 15;
@@ -397,12 +403,97 @@ export function linhaDeCinco(casas: number[], i: number, n = LADO_DO_GOMOKU, exa
   return null;
 }
 
+/** Quantas capturas (de duas pedras cada) vencem a partida, na variante da captura. */
+export const CAPTURAS_PARA_VENCER = 5;
+
+const OITO_DIRECOES = [
+  [0, 1],
+  [1, 0],
+  [1, 1],
+  [1, -1],
+  [0, -1],
+  [-1, 0],
+  [-1, -1],
+  [-1, 1],
+] as const;
+
+/**
+ * As pedras que a pedra em `i` captura: em cada uma das oito direções, X O O X (X a cor dela, O a do outro) tira as duas do
+ * meio. Só conta; quem tira do tabuleiro é quem chama.
+ */
+export function capturasDaPedra(casas: number[], i: number, cor: number, n = LADO_DO_GOMOKU): number[] {
+  const outra = cor === 1 ? 2 : 1;
+  const l0 = Math.floor(i / n);
+  const c0 = i % n;
+  const tiradas: number[] = [];
+  for (const [dl, dc] of OITO_DIRECOES) {
+    const l3 = l0 + 3 * dl;
+    const c3 = c0 + 3 * dc;
+    if (l3 < 0 || l3 >= n || c3 < 0 || c3 >= n) continue;
+    const a = (l0 + dl) * n + c0 + dc;
+    const b = (l0 + 2 * dl) * n + c0 + 2 * dc;
+    if (casas[a] === outra && casas[b] === outra && casas[l3 * n + c3] === cor) tiradas.push(a, b);
+  }
+  return tiradas;
+}
+
+/**
+ * Se a linha que passa por `i` na direção (dl, dc) é um TRÊS ABERTO depois da pedra: há uma casa vazia que, posta, faz quatro
+ * seguidas (com `i` entre elas) com as duas pontas vazias, o quatro que não se defende. Cobre o três seguido e o separado
+ * (X·XX).
+ */
+function tresAberto(casas: number[], i: number, cor: number, dl: number, dc: number, n: number): boolean {
+  const l0 = Math.floor(i / n);
+  const c0 = i % n;
+  const em = (k: number) => {
+    const l = l0 + k * dl;
+    const c = c0 + k * dc;
+    return l < 0 || l >= n || c < 0 || c >= n ? -1 : casas[l * n + c];
+  };
+  for (let e = -3; e <= 3; e++) {
+    if (e === 0 || em(e) !== 0) continue;
+    // com a pedra em e, a corrida de `cor` que passa por i
+    const com = (k: number) => (k === e ? cor : em(k));
+    let a = 0;
+    while (com(a - 1) === cor) a--;
+    let b = 0;
+    while (com(b + 1) === cor) b++;
+    if (b - a + 1 === 4 && a <= e && e <= b && em(a - 1) === 0 && em(b + 1) === 0) return true;
+  }
+  return false;
+}
+
+/** A pedra em `i` (já posta em `casas`) faz dois três abertos ao mesmo tempo, sem fechar o cinco? */
+export function fazTresTres(casas: number[], i: number, n = LADO_DO_GOMOKU, exato = false): boolean {
+  const cor = casas[i];
+  if (!cor || linhaDeCinco(casas, i, n, exato)) return false;
+  let abertos = 0;
+  for (const [dl, dc] of OITO_DIRECOES.slice(0, 4)) if (tresAberto(casas, i, cor, dl, dc, n)) abertos++;
+  return abertos >= 2;
+}
+
+/** A casa vazia `i` vale para a cor `cor` com a restrição 3-3 (que só pesa nas escuras)? */
+export function permitidaNoTresTres(casas: number[], i: number, cor: number, n = LADO_DO_GOMOKU, exato = false): boolean {
+  if (cor !== 1 || casas[i]) return true;
+  casas[i] = cor;
+  const proibida = fazTresTres(casas, i, n, exato);
+  casas[i] = 0;
+  return !proibida;
+}
+
 export interface EstadoDoGomoku {
   casas: number[];
   ultima: number | null;
   linha: number[] | null;
   exato: boolean;
   troca: boolean;
+  /** A variante da captura, e quantas capturas cada lado da mesa já fez. */
+  captura: boolean;
+  capturas: [number, number];
+  /** As casas que o último lance capturou (a tela as marca). */
+  capturadas: number[];
+  /** A restrição 3-3 das escuras. */
+  tresTres: boolean;
   /** A cor de cada lado da mesa (1 escura, 2 clara). */
   cores: [number, number];
   /** Na troca: quantas pedras da abertura já foram postas (0 a 3), e se quem responde está escolhendo a cor. */
@@ -416,13 +507,17 @@ export const nomeDaCasaDoGomoku = (i: number, n = LADO_DO_GOMOKU) => `${'ABCDEFG
 const outroLado = (l: Lado): Lado => (l === 0 ? 1 : 0);
 
 export const gomoku = duelo<EstadoDoGomoku>({
-  escolhas: (corpo) => ({ exato: corpo.exato === true, troca: corpo.troca === true }),
+  escolhas: (corpo) => ({ exato: corpo.exato === true, troca: corpo.troca === true, captura: corpo.captura === true, tresTres: corpo.tresTres === true }),
   inicio: (e) => ({
     casas: new Array<number>(LADO_DO_GOMOKU * LADO_DO_GOMOKU).fill(0),
     ultima: null,
     linha: null,
     exato: e.exato === true,
     troca: e.troca === true,
+    captura: e.captura === true,
+    capturas: [0, 0],
+    capturadas: [],
+    tresTres: e.tresTres === true,
     cores: [1, 2],
     abertura: 0,
     decidindo: false,
@@ -447,24 +542,39 @@ export const gomoku = duelo<EstadoDoGomoku>({
     // a abertura da troca: escura, clara, escura, todas de quem abre
     const naAbertura = estado.troca && estado.abertura < 3;
     const cor = naAbertura ? (estado.abertura === 1 ? 2 : 1) : estado.cores[lado];
+    if (!naAbertura && estado.tresTres && !permitidaNoTresTres(estado.casas, casa, cor, LADO_DO_GOMOKU, estado.exato)) return 'As escuras não podem fazer dois três abertos de uma vez.';
     estado.casas[casa] = cor;
     estado.ultima = casa;
+    estado.capturadas = [];
     if (naAbertura) {
       estado.abertura++;
       if (estado.abertura < 3) return { proximo: lado };
       estado.decidindo = true;
       return { proximo: outroLado(lado) };
     }
+    if (estado.captura) {
+      const tiradas = capturasDaPedra(estado.casas, casa, cor);
+      for (const k of tiradas) estado.casas[k] = 0;
+      estado.capturadas = tiradas;
+      estado.capturas[lado] += tiradas.length / 2;
+    }
     const linha = linhaDeCinco(estado.casas, casa, LADO_DO_GOMOKU, estado.exato);
     if (linha) {
       estado.linha = linha;
       return { proximo: lado, vencedor: lado };
     }
+    if (estado.captura && estado.capturas[lado] >= CAPTURAS_PARA_VENCER) return { proximo: lado, vencedor: lado };
     if (estado.casas.every((x) => x)) return { proximo: lado, vencedor: 'empate' };
     return { proximo: outroLado(lado) };
   },
   descrever: (estado, _lado, corpo) =>
-    typeof corpo.trocar === 'boolean' && corpo.casa === undefined ? (corpo.trocar ? '⇄' : '=') : estado.ultima === null ? '' : nomeDaCasaDoGomoku(estado.ultima),
+    typeof corpo.trocar === 'boolean' && corpo.casa === undefined
+      ? corpo.trocar
+        ? '⇄'
+        : '='
+      : estado.ultima === null
+        ? ''
+        : nomeDaCasaDoGomoku(estado.ultima) + (estado.capturadas.length ? `×${estado.capturadas.length / 2}` : ''),
   publico: (estado) => ({
     lado: LADO_DO_GOMOKU,
     casas: estado.casas,
@@ -475,6 +585,10 @@ export const gomoku = duelo<EstadoDoGomoku>({
     troca: estado.troca,
     abertura: estado.troca ? estado.abertura : 3,
     decidindo: estado.decidindo,
+    captura: estado.captura,
+    capturas: estado.capturas,
+    capturadas: estado.capturadas,
+    tresTres: estado.tresTres,
   }),
   robo: (estado, lado, aleatorio, nivel) => {
     if (estado.decidindo) return { trocar: trocarNaAbertura(estado.casas) };
@@ -482,9 +596,36 @@ export const gomoku = duelo<EstadoDoGomoku>({
     const cor = naAbertura ? (estado.abertura === 1 ? 2 : 1) : estado.cores[lado];
     // a abertura do robô: pedras soltas perto do meio (pensar a abertura toda seria jogar contra si mesmo)
     if (naAbertura) return { casa: aberturaDoGomoku(estado.casas, aleatorio) };
-    return { casa: jogadaDoGomoku(estado.casas, cor, aleatorio, LADO_DO_GOMOKU, nivel, estado.exato) };
+    return {
+      casa: jogadaDoGomoku(estado.casas, cor, aleatorio, LADO_DO_GOMOKU, nivel, estado.exato, {
+        captura: estado.captura,
+        tresTres: estado.tresTres,
+        minhas: estado.capturas[lado],
+        dele: estado.capturas[outroLado(lado)],
+      }),
+    };
   },
 });
+
+/** As variantes que o robô do Cinco em linha leva em conta (20/11/2026): a captura e a restrição 3-3. */
+export interface VariantesDoGomoku {
+  captura?: boolean;
+  tresTres?: boolean;
+  /** As capturas já feitas por quem joga e pelo outro (perto das cinco, capturar vale mais). */
+  minhas?: number;
+  dele?: number;
+}
+
+/**
+ * O que capturar vale na casa `i` para `cor`: cada par tirado pesa como uma três aberta (mais, quanto mais perto das cinco), e
+ * o par que fecha as cinco capturas vale a partida. `feitas`: as capturas que `cor` já tem.
+ */
+function valorDaCaptura(casas: number[], i: number, cor: number, n: number, feitas: number): number {
+  const pares = capturasDaPedra(casas, i, cor, n).length / 2;
+  if (!pares) return 0;
+  if (feitas + pares >= CAPTURAS_PARA_VENCER) return 1_000_000;
+  return pares * (2_500 + feitas * 1_500);
+}
 
 /** Uma casa livre perto do meio (a abertura da troca, quando quem abre é o robô). */
 function aberturaDoGomoku(casas: number[], aleatorio: () => number, n = LADO_DO_GOMOKU): number {
@@ -587,18 +728,26 @@ export function jogadaDoGomoku(
   n = LADO_DO_GOMOKU,
   nivel: Nivel = 'normal',
   exato = false,
+  variantes: VariantesDoGomoku = {},
 ): number {
   const outra = cor === 1 ? 2 : 1;
   const centro = Math.floor(n / 2) * n + Math.floor(n / 2);
   if (!casas.some((x) => x)) return centro;
   const { defesa, sorte, busca } = NIVEL_DO_GOMOKU[nivel];
-  const candidatas = candidatasDoGomoku(casas, n);
-  if (!candidatas.length) return casas.findIndex((x) => !x);
-  const nota = (tab: number[], i: number, minha: number, dele: number, peso = defesa) =>
-    valorDaCasa(tab, i, minha, n, exato) + peso * valorDaCasa(tab, i, dele, n, exato);
-  if (busca > 0) {
+  const tab = casas.slice();
+  // com a restrição 3-3, as escuras nem olham as casas proibidas
+  const vale = (i: number) => !variantes.tresTres || permitidaNoTresTres(tab, i, cor, n, exato);
+  const candidatas = candidatasDoGomoku(casas, n).filter(vale);
+  if (!candidatas.length) return casas.findIndex((x, i) => !x && vale(i));
+  const nota = (t: number[], i: number, minha: number, dele: number, peso = defesa) =>
+    valorDaCasa(t, i, minha, n, exato) +
+    peso * valorDaCasa(t, i, dele, n, exato) +
+    // a captura: tirar duas dele, e ocupar a casa onde ele tiraria duas minhas
+    (variantes.captura ? valorDaCaptura(t, i, minha, n, variantes.minhas ?? 0) + peso * valorDaCaptura(t, i, dele, n, variantes.dele ?? 0) : 0);
+  // a busca não conhece a captura: com ela ligada, o difícil fica na nota (que já pesa capturar e não ser capturado)
+  if (busca > 0 && !variantes.captura) {
     const escolha = buscaDoGomoku(casas, cor, outra, busca, n, exato);
-    if (escolha >= 0) return escolha;
+    if (escolha >= 0 && vale(escolha)) return escolha;
   }
   let melhor = -1;
   let melhorValor = -Infinity;

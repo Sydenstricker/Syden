@@ -8,9 +8,13 @@
  * ('acerto' `{ n, t }`), e o servidor só aceita as de quem está remando AGORA, no ritmo de quem rema muito, contado desde que o
  * trecho dele começou. A passagem do remo é do servidor: quando o trecho acaba, ele avisa a sala, e o próximo começa a remar
  * quando a tela dele vê (a ida e volta da internet pesa na equipe, uma vez por passagem; ver o relatório do lote).
+ *
+ * COM AS EQUIPES IMPOSTAS (20/11/2026: o 1 contra 3 do Tabuleiro da turma; ver ./lote4-turma.ts): quem vai sozinho é a equipe de
+ * um, e a de três faz o revezamento (quem não entrou a tempo fica fora da vez). Os robôs remam no ritmo de quem joga bem, pelo
+ * passo do relógio. Só o 1 contra 3: num 2 contra 2 não há quem vá sozinho, e as equipes ficam como sempre.
  */
 import { FOLGA_ACIMA, inteiro, numero, microjogo, type Largada, type Resultado } from './comum.js';
-import { avisarComFreio, entrar, JUNTAR_MS } from './lote4-turma.js';
+import { avisarComFreio, entrar, impostas, JUNTAR_MS, toquesDoRobo, type Impostas } from './lote4-turma.js';
 
 export const TRECHOS = 3;
 export const REMADAS_POR_TRECHO = 30;
@@ -59,7 +63,17 @@ interface Mem {
   avisadoEm?: number;
   comeco: number;
   etapa: VistaRevezamento['etapa'];
+  /** As equipes impostas (só o 1 contra 3), ou null. */
+  im: Impostas | null;
 }
+
+/** As impostas que servem aqui: uma equipe de um (quem vai sozinho) e a outra. */
+function umContraOs(im: Impostas | null): Impostas | null {
+  if (!im) return null;
+  return im.equipes.some((e) => e.length === 1) ? im : null;
+}
+/** Os robôs remam neste ritmo. */
+export const RITMO_DO_ROBO_NO_RIACHO = 7;
 
 const TOTAL = TRECHOS * REMADAS_POR_TRECHO;
 const trechoDaEquipe = (mem: Mem) => Math.min(TRECHOS - 1, Math.floor(mem.remadasEquipe / REMADAS_POR_TRECHO));
@@ -91,11 +105,62 @@ function resultadoDe(mem: Mem, id: number): Resultado {
   return { motivo: null, valor: minhas, chave };
 }
 
+/** Quem rema: os que entraram e, nas equipes impostas, os robôs com papel. */
+const quemRema = (mem: Mem) => {
+  const robos = (mem.im?.robos ?? []).filter((id) => id === mem.sozinho || mem.equipe.includes(id));
+  return [...mem.membros.filter((id) => id === mem.sozinho || mem.equipe.includes(id)), ...robos];
+};
+
+/** Os robôs que estão com o remo agora remam no ritmo deles (o passo do relógio chama). */
+function remamOsRobos(mem: Mem, passou: number, agora: number) {
+  if (!mem.im || mem.etapa !== 'remando') return;
+  const robos = mem.im.robos;
+  const daVez = mem.equipe[vezNaEquipe(mem)];
+  for (const id of [mem.sozinho, daVez]) {
+    if (id === null || id === undefined || !robos.includes(id)) continue;
+    if (id === mem.sozinho ? mem.chegouSozinho !== null : mem.chegouEquipe !== null) continue;
+    const r = mem.remadores.get(id);
+    if (!r) continue;
+    remar(mem, id, r.n0 + toquesDoRobo(passou, r.t0, RITMO_DO_ROBO_NO_RIACHO), passou, passou, agora);
+  }
+}
+
+/** Soma as remadas aceitas de `quem` (até `aceito`, o total dele) ao barco dele, e passa o remo no fim do trecho. */
+function remar(mem: Mem, quem: number, aceito: number, t: number, passou: number, agora: number) {
+  const r = mem.remadores.get(quem);
+  if (!r || aceito <= r.n) return;
+  const novas = aceito - r.n;
+  r.n = aceito;
+  r.t = t;
+  if (quem === mem.sozinho) {
+    mem.remadasSozinho = Math.min(TOTAL, mem.remadasSozinho + novas);
+    if (mem.remadasSozinho >= TOTAL) mem.chegouSozinho = passou;
+  } else {
+    const antes = trechoDaEquipe(mem);
+    // o que passou do fim do trecho não vai para o próximo: quem passa o remo é a passagem
+    const fimDoTrecho = (antes + 1) * REMADAS_POR_TRECHO;
+    mem.remadasEquipe = Math.min(fimDoTrecho, mem.remadasEquipe + novas);
+    if (mem.remadasEquipe >= TOTAL) mem.chegouEquipe = passou;
+    else if (mem.remadasEquipe >= fimDoTrecho) {
+      // a passagem do remo: o próximo rema desde agora (no relógio do servidor)
+      const prox = mem.equipe[vezNaEquipe(mem)];
+      const p = mem.remadores.get(prox);
+      // (o instante da tela dele fica um pouco atrás do relógio do servidor: a folga de 600 ms)
+      mem.remadores.set(prox, { n: p?.n ?? 0, t: p?.t ?? 0, n0: p?.n ?? 0, t0: passou - 600 });
+      mem.l!.avisar();
+    }
+  }
+  if (mem.chegouEquipe !== null && mem.chegouSozinho !== null && mem.sozinho !== RAPOSA) return mem.l!.revelar();
+  if (mem.chegouEquipe !== null && mem.sozinho === RAPOSA) return mem.l!.revelar();
+  avisarComFreio(mem, agora);
+}
+
 export default microjogo<DadosRevezamento, Mem>({
   id: 'revezamento',
   gerar: (aleatorio) => ({ sorteio: aleatorio() }),
   duracao: () => REVEZA_MS + 800,
-  memoria: () => ({
+  aceitaEquipes: true,
+  memoria: (_dados, turma) => ({
     l: null,
     membros: [],
     sozinho: null,
@@ -107,6 +172,7 @@ export default microjogo<DadosRevezamento, Mem>({
     chegouEquipe: null,
     comeco: 0,
     etapa: 'juntando',
+    im: umContraOs(impostas(turma)),
   }),
   iniciar(l) {
     const { dados, mem } = l;
@@ -114,19 +180,28 @@ export default microjogo<DadosRevezamento, Mem>({
     mem.comeco = l.agora();
     l.agendar(JUNTAR_MS, () => {
       const n = mem.membros.length;
-      if (n === 0) return l.agendar(REVEZA_MS - JUNTAR_MS, l.revelar);
-      if (n >= 2) {
-        mem.sozinho = mem.membros[Math.floor(dados.sorteio * n)];
-        mem.equipe = mem.membros.filter((id) => id !== mem.sozinho);
+      if (mem.im) {
+        // o 1 contra 3: a equipe de um vai sozinha; a outra reveza, só com quem entrou a tempo (e os robôs)
+        const im = mem.im;
+        const so = im.equipes.find((e) => e.length === 1)!;
+        const outra = im.equipes.find((e) => e !== so)!;
+        mem.sozinho = so[0];
+        mem.equipe = outra.filter((id) => mem.membros.includes(id) || im.robos.includes(id));
       } else {
-        mem.sozinho = RAPOSA;
-        mem.equipe = [...mem.membros];
+        if (n === 0) return l.agendar(REVEZA_MS - JUNTAR_MS, l.revelar);
+        if (n >= 2) {
+          mem.sozinho = mem.membros[Math.floor(dados.sorteio * n)];
+          mem.equipe = mem.membros.filter((id) => id !== mem.sozinho);
+        } else {
+          mem.sozinho = RAPOSA;
+          mem.equipe = [...mem.membros];
+        }
       }
       const t0 = JUNTAR_MS;
       if (mem.sozinho !== RAPOSA) mem.remadores.set(mem.sozinho, { n: 0, t: t0, n0: 0, t0 });
-      mem.remadores.set(mem.equipe[0], { n: 0, t: t0, n0: 0, t0 });
+      if (mem.equipe.length) mem.remadores.set(mem.equipe[0], { n: 0, t: t0, n0: 0, t0 });
       mem.etapa = 'remando';
-      // o passo do relógio: a raposa rema sozinha, a sala relê, e o fim
+      // o passo do relógio: a raposa e os robôs remam sozinhos, a sala relê, e o fim
       const passo = () => {
         const passou = l.agora() - mem.comeco;
         placar(mem, passou);
@@ -134,6 +209,8 @@ export default microjogo<DadosRevezamento, Mem>({
           mem.etapa = 'fim';
           return l.agendar(800, l.revelar);
         }
+        remamOsRobos(mem, passou, l.agora());
+        if (mem.chegouEquipe !== null && (mem.chegouSozinho !== null || mem.sozinho === RAPOSA)) return;
         l.avisar();
         l.agendar(Math.min(PASSO_MS, REVEZA_MS - passou), passo);
       };
@@ -165,6 +242,8 @@ export default microjogo<DadosRevezamento, Mem>({
     if (mem.etapa !== 'remando') return;
     const { n, t } = corpo;
     if (!inteiro(n) || !numero(t) || !cabe(t)) return;
+    // os robôs remam pelo passo do relógio, nunca por mensagem
+    if (mem.im?.robos.includes(quem)) return;
     const sozinho = quem === mem.sozinho;
     const naEquipe = mem.equipe.indexOf(quem);
     if (sozinho ? mem.chegouSozinho !== null : naEquipe < 0 || mem.chegouEquipe !== null || vezNaEquipe(mem) !== naEquipe) return;
@@ -172,37 +251,12 @@ export default microjogo<DadosRevezamento, Mem>({
     if (!r || n <= r.n || t < r.t) return;
     // o ritmo de quem rema muito, desde que o trecho desta pessoa começou (mais dois de folga)
     const teto = r.n0 + Math.floor(((Math.max(0, Math.min(t, passou + FOLGA_ACIMA) - r.t0)) * RITMO_MAXIMO) / 1000) + 2;
-    const aceito = Math.min(n, teto);
-    if (aceito <= r.n) return;
-    const novas = aceito - r.n;
-    r.n = aceito;
-    r.t = t;
-    if (sozinho) {
-      mem.remadasSozinho = Math.min(TOTAL, mem.remadasSozinho + novas);
-      if (mem.remadasSozinho >= TOTAL) mem.chegouSozinho = passou;
-    } else {
-      const antes = trechoDaEquipe(mem);
-      // o que passou do fim do trecho não vai para o próximo: quem passa o remo é a passagem
-      const fimDoTrecho = (antes + 1) * REMADAS_POR_TRECHO;
-      mem.remadasEquipe = Math.min(fimDoTrecho, mem.remadasEquipe + novas);
-      if (mem.remadasEquipe >= TOTAL) mem.chegouEquipe = passou;
-      else if (mem.remadasEquipe >= fimDoTrecho) {
-        // a passagem do remo: o próximo rema desde agora (no relógio do servidor)
-        const prox = mem.equipe[vezNaEquipe(mem)];
-        const p = mem.remadores.get(prox);
-        // (o instante da tela dele fica um pouco atrás do relógio do servidor: a folga de 600 ms)
-        mem.remadores.set(prox, { n: p?.n ?? 0, t: p?.t ?? 0, n0: p?.n ?? 0, t0: passou - 600 });
-        mem.l!.avisar();
-      }
-    }
-    if (mem.chegouEquipe !== null && mem.chegouSozinho !== null && mem.sozinho !== RAPOSA) return mem.l!.revelar();
-    if (mem.chegouEquipe !== null && mem.sozinho === RAPOSA) return mem.l!.revelar();
-    avisarComFreio(mem, agora);
+    remar(mem, quem, Math.min(n, teto), t, passou, agora);
   },
   avaliar: ({ mem, quem }) => (mem.membros.includes(quem) && mem.sozinho !== null ? resultadoDe(mem, quem) : { motivo: 'invalido', valor: null, chave: [] }),
   *noFim({ mem }) {
     if (mem.sozinho === null) return;
-    for (const id of mem.membros) yield [id, resultadoDe(mem, id)] as [number, Resultado];
+    for (const id of quemRema(mem)) yield [id, resultadoDe(mem, id)] as [number, Resultado];
   },
   robo(_dados, aleatorio, passouMs) {
     const ritmo = 6 + aleatorio() * 2;

@@ -25,6 +25,7 @@ import {
   UserPlus,
   Check,
 } from 'lucide-react';
+import { ROTULO_DO_SILENCIO } from './silencioDoJogo';
 import { mandarConvite } from './linkDeConvite';
 import { nivelDoPing, usePing } from './ping';
 import { type KeyboardEvent, type ReactNode, useState } from 'react';
@@ -416,7 +417,15 @@ export function Sidebar({
         <div className="icon-row">
           {/* Funciona fora de qualquer sala: quem se silencia aqui entra mudo na próxima chamada. */}
           <IconButton
-            label={voice.microfoneTravado ? t('Microfone travado pela moderação') : voice.media.muted ? t('Ativar microfone') : t('Silenciar')}
+            label={
+              voice.microfoneTravado
+                ? t('Microfone travado pela moderação')
+                : voice.silencioDoJogo
+                  ? t(ROTULO_DO_SILENCIO[voice.silencioDoJogo])
+                  : voice.media.muted
+                    ? t('Ativar microfone')
+                    : t('Silenciar')
+            }
             danger={voice.media.muted}
             onClick={voice.toggleMute}
           >

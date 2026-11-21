@@ -50,7 +50,7 @@ declare global {
 
 const ACAO_NA_FOLHA: Record<AcaoDoCoelho, Acao> = { parado: 'parado', andando: 'andando', atirando: 'soco1', dor: 'dor', caido: 'caido' };
 
-/** O teclado: setas ou WASD andam, X/J/Espaço atira o torrão, C/L solta a bomba de semente. */
+/** O teclado: setas ou WASD andam, X/J/Espaço atira o torrão, C/L solta a bomba de semente, Z/K dá o golpe de pá. */
 function useTeclado(ativo: boolean, cmd: Comandos) {
   useEffect(() => {
     if (!ativo) return;
@@ -68,6 +68,8 @@ function useTeclado(ativo: boolean, cmd: Comandos) {
         if (apertada && !e.repeat) cmd.atirar = true;
       } else if (k === 'c' || k === 'l') {
         if (apertada && !e.repeat) cmd.bomba = true;
+      } else if (k === 'z' || k === 'k') {
+        if (apertada && !e.repeat) cmd.pa = true;
       } else usou = false;
       if (usou) e.preventDefault();
     };
@@ -240,7 +242,8 @@ function Palco({
         setHud({
           linhas: ultimo.j.map((l) => ({ userId: l[0], vidas: l[6], pontos: l[7], estado: l[8] })),
           fase: ultimo.f,
-          faseDoChefe: ultimo.c[6] + 1,
+          // na maratona (20/11/2026), as fases do yeti vêm depois das três da toupeira
+          faseDoChefe: ultimo.c[6] + 1 + (ultimo.c[10] ?? 0) * 3,
           dano: ultimo.d,
           meuEstado: cliente.eu.estado,
           segura: cliente.eu.segura,
@@ -336,7 +339,7 @@ function Palco({
         g.fillStyle = `rgba(255, 246, 200, ${((cliente.clarao - agora) / 180) * 0.55})`;
         g.fillRect(0, 0, W, H);
       }
-      if (v.chefe) desenharVidaDoChefe(g, v.chefe.fase, v.chefe.hp, fases);
+      if (v.chefe) desenharVidaDoChefe(g, v.chefe.fase + v.chefe.etapa * 3, v.chefe.hp, fases);
     };
     quadroId = requestAnimationFrame(quadro);
     return () => {
@@ -391,6 +394,7 @@ function Palco({
             { teclas: ['setas'], rotulo: t('Andar') },
             { teclas: ['x', 'espaco'], rotulo: t('Atirar o torrão') },
             { teclas: ['c'], rotulo: t('Bomba de semente') },
+            { teclas: ['z'], rotulo: t('Golpe de pá') },
           ]}
         />
       )}
@@ -403,7 +407,7 @@ function Palco({
   );
 }
 
-/** Os botões da tela de toque: o direcional à esquerda, atirar e a bomba à direita. */
+/** Os botões da tela de toque: o direcional à esquerda, a pá, atirar e a bomba à direita. */
 function Toque({ cmd }: { cmd: Comandos }) {
   const t = useT();
   const segurar = (k: 'esquerda' | 'direita' | 'cima' | 'baixo') => ({
@@ -415,7 +419,7 @@ function Toque({ cmd }: { cmd: Comandos }) {
     onPointerCancel: () => (cmd[k] = false),
     onPointerLeave: () => (cmd[k] = false),
   });
-  const apertar = (k: 'atirar' | 'bomba') => ({
+  const apertar = (k: 'atirar' | 'bomba' | 'pa') => ({
     onPointerDown: (e: React.PointerEvent) => {
       e.preventDefault();
       cmd[k] = true;
@@ -431,6 +435,7 @@ function Toque({ cmd }: { cmd: Comandos }) {
       </div>
       <div className="briga-botoes">
         <button type="button" aria-label={t('Bomba de semente')} {...apertar('bomba')}>✿</button>
+        <button type="button" aria-label={t('Golpe de pá')} {...apertar('pa')}>⚒</button>
         <button type="button" aria-label={t('Atirar o torrão')} {...apertar('atirar')}>●</button>
       </div>
     </div>
@@ -472,24 +477,83 @@ function desenharYeti(g: CanvasRenderingContext2D, c: ChefeNaTela, tempo: number
   desenharBichoDaFolha(g, { tipo: 'yeti', estado: estadoDoYeti(c), lado: c.lado >= 0 ? 1 : -1, ms: c.passos * 50, piscando }, Math.round(c.x), Math.round(c.y), tempo);
 }
 
-/** A ESCOLHA DO CHEFE (19/11/2026): a toupeira-rei, a de sempre, ou o yeti, que empurra bolas de neve para devolver. */
-export function EscolhaDoChefe({ aoEscolher, aoVoltar }: { aoEscolher: (chefe: string) => void; aoVoltar: () => void }) {
+/** A dificuldade do Solo (20/11/2026), lembrada no aparelho. */
+const DIFICIL_GUARDADO = 'syden:chefe-dificil';
+
+/**
+ * A ESCOLHA DO CHEFE (19/11/2026): a toupeira-rei, a de sempre, ou o yeti, que empurra bolas de neve para devolver. No Solo
+ * (20/11/2026), também a MARATONA (os dois seguidos) e a dificuldade (o difícil: a vida da sala e os avisos mais curtos).
+ */
+export function EscolhaDoChefe({
+  aoEscolher,
+  aoVoltar,
+  solo = false,
+}: {
+  aoEscolher: (chefe: string, dificil?: boolean) => void;
+  aoVoltar: () => void;
+  solo?: boolean;
+}) {
   const t = useT();
+  const [dificil, setDificil] = useState(() => {
+    try {
+      return localStorage.getItem(DIFICIL_GUARDADO) === '1';
+    } catch {
+      return false;
+    }
+  });
+  const escolher = (chefe: string) => {
+    if (!solo) return aoEscolher(chefe);
+    try {
+      localStorage.setItem(DIFICIL_GUARDADO, dificil ? '1' : '0');
+    } catch {
+      // sem armazenamento: só não lembra
+    }
+    aoEscolher(chefe, dificil);
+  };
   return (
     <div className="corrida-escolha">
+      {solo && (
+        <fieldset className="mesa-grupo">
+          <legend>{t('Dificuldade')}</legend>
+          <div className="mesa-botoes">
+            {([false, true] as const).map((d) => (
+              <button
+                key={String(d)}
+                type="button"
+                className={`tab-rodadas-botao${dificil === d ? ' escolhida' : ''}`}
+                aria-pressed={dificil === d}
+                onClick={() => {
+                  tocar('clique');
+                  setDificil(d);
+                }}
+              >
+                {d ? t('Difícil') : t('Normal')}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+      )}
       <ul className="corrida-pistas">
         <li>
-          <button type="button" className="corrida-pista-botao" onClick={() => aoEscolher('toupeira')}>
+          <button type="button" className="corrida-pista-botao" onClick={() => escolher('toupeira')}>
             <MiniaturaDoChefe yeti={false} />
             <strong>{t('Toupeira-rei')}</strong>
           </button>
         </li>
         <li>
-          <button type="button" className="corrida-pista-botao" onClick={() => aoEscolher('yeti')}>
+          <button type="button" className="corrida-pista-botao" onClick={() => escolher('yeti')}>
             <MiniaturaDoChefe yeti />
             <strong>{t('Yeti')}</strong>
           </button>
         </li>
+        {solo && (
+          <li>
+            <button type="button" className="corrida-pista-botao copa" onClick={() => escolher('maratona')}>
+              <MiniaturaDoChefe yeti={false} maratona />
+              <strong>{t('Maratona')}</strong>
+            </button>
+          </li>
+        )}
       </ul>
       <div className="minijogo-acoes">
         <button type="button" className="btn-secondary" onClick={aoVoltar}>
@@ -501,18 +565,22 @@ export function EscolhaDoChefe({ aoEscolher, aoVoltar }: { aoEscolher: (chefe: s
 }
 
 /** A miniatura da escolha: a arena com o chefe no meio (o yeti, quando a folha dele chega). */
-function MiniaturaDoChefe({ yeti }: { yeti: boolean }) {
+function MiniaturaDoChefe({ yeti, maratona = false }: { yeti: boolean; maratona?: boolean }) {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const g = ref.current?.getContext('2d');
     if (!g) return;
     g.imageSmoothingEnabled = false;
-    if (yeti) carregarFolhas(['yeti']);
-    const chefe: ChefeNaTela = { x: 240, y: 170, estado: 'parada', lado: 1, hp: 100, passos: 0, fase: 0, destino: [240, 170], yeti };
+    if (yeti || maratona) carregarFolhas(['yeti']);
+    const chefe: ChefeNaTela = { x: 240, y: 170, estado: 'parada', lado: 1, hp: 100, passos: 0, fase: 0, destino: [240, 170], yeti, etapa: 0 };
     let vezes = 0;
     const desenhar = () => {
       desenharArena(g);
-      if (yeti) desenharYeti(g, chefe, 0, false);
+      // a maratona: a toupeira e o yeti lado a lado
+      if (maratona) {
+        desenharChefe(g, { ...chefe, x: 170 }, 0, false);
+        desenharYeti(g, { ...chefe, x: 310, lado: -1, yeti: true }, 0, false);
+      } else if (yeti) desenharYeti(g, chefe, 0, false);
       else desenharChefe(g, chefe, 0, false);
     };
     desenhar();
@@ -521,6 +589,6 @@ function MiniaturaDoChefe({ yeti }: { yeti: boolean }) {
       if (++vezes >= 6) clearInterval(h);
     }, 300);
     return () => clearInterval(h);
-  }, [yeti]);
+  }, [yeti, maratona]);
   return <canvas ref={ref} width={W} height={H} aria-hidden="true" className="briga-miniatura" />;
 }

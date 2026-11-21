@@ -47,7 +47,7 @@ export function Mar3D({
           passar: (casa) => toquesAgora.current?.passar(casa),
           apertar: (casa) => toquesAgora.current?.apertar(casa),
           soltar: (casa) => toquesAgora.current?.soltar(casa),
-        }, cair);
+        }, cair, ultimo.current.lado);
         criada.atualizar(ultimo.current);
         await criada.montar();
         if (!viva) return;

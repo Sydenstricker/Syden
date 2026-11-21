@@ -210,7 +210,7 @@ test('o formato do microjogo pela cor das casas: 2 contra 2, 1 contra 3 ou todos
   assert.deepEqual(formatoDaRodada([1, 2, 3, 4], [0, 0, 1, 0]), { formato: '1x3', equipes: [[3], [1, 2, 4]] });
   assert.equal(formatoDaRodada([1, 2, 3, 4], [0, 0, 0, 0]).formato, 'todos');
   assert.equal(formatoDaRodada([1, 2, 3], [0, 1, 0]).formato, 'todos');
-  for (const id of [...MICROJOGOS_2X2, ...MICROJOGOS_1X3]) assert.ok(festa.microjogoDe(id).equipes, `${id} é de equipe`);
+  for (const id of [...MICROJOGOS_2X2, ...MICROJOGOS_1X3]) assert.ok(festa.microjogoDe(id).equipes || festa.microjogoDe(id).aceitaEquipes, `${id} é de equipe`);
   // as equipes impostas valem na rodada
   const r = festa.rodadaDeFesta({
     ctx: { agendar: () => {}, avisar: () => {}, naSala: () => [1, 2, 3, 4], nome: (id) => `p${id}` },

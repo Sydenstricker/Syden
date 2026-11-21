@@ -5,6 +5,7 @@
 }
 
 .lendas {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -383,4 +384,24 @@
   margin: 0 0 6px;
   text-align: center;
   font-weight: 600;
+}
+
+/* O botão de acelerar do Solo (20/11/2026): no canto, na altura do caminho; ligado, a rodada toca no dobro da velocidade. */
+.lendas-acelerar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--bg-elevated, rgba(255, 255, 255, 0.06));
+  font-size: 16px;
+  cursor: pointer;
+}
+.lendas-acelerar.ligado {
+  border-color: var(--accent, #f0c93a);
+  background: color-mix(in srgb, var(--accent, #f0c93a) 22%, transparent);
 }

@@ -43,8 +43,10 @@ import {
   Volume2,
   VolumeX,
   Eye,
+  Moon,
   X,
 } from 'lucide-react';
+import { AVISO_DO_SILENCIO, ROTULO_DO_SILENCIO } from './silencioDoJogo';
 import { useMemo, type CSSProperties, type ReactNode, type RefObject, useEffect, useRef, useState } from 'react';
 import { api, mediaUrl } from './api';
 import { Avatar } from './Avatar';
@@ -1583,7 +1585,14 @@ export function Stage({
         </div>
       )}
 
-      {voice.mutedWarning && !voice.microfoneTravado && (
+      {/* A partida desligou o microfone (o Lobisomem): de noite, ou quem saiu do jogo. Diz quando volta. */}
+      {voice.silencioDoJogo && (
+        <div className="muted-warning" role="status">
+          {voice.silencioDoJogo === 'noite' ? <Moon size={16} /> : <MicOff size={16} />} {t(AVISO_DO_SILENCIO[voice.silencioDoJogo])}
+        </div>
+      )}
+
+      {voice.mutedWarning && !voice.microfoneTravado && !voice.silencioDoJogo && (
         <div className="muted-warning" role="status">
           <MicOff size={16} /> {t('Você está silenciado!')}
         </div>
@@ -1593,7 +1602,15 @@ export function Stage({
 
       <div className="stage-controls">
         <IconButton
-          label={voice.microfoneTravado ? t('Microfone travado pela moderação') : voice.media.muted ? t('Ativar microfone') : t('Silenciar')}
+          label={
+            voice.microfoneTravado
+              ? t('Microfone travado pela moderação')
+              : voice.silencioDoJogo
+                ? t(ROTULO_DO_SILENCIO[voice.silencioDoJogo])
+                : voice.media.muted
+                  ? t('Ativar microfone')
+                  : t('Silenciar')
+          }
           danger={voice.media.muted}
           onClick={voice.toggleMute}
         >

@@ -32,6 +32,8 @@ export const ERROS_TRADUZIDOS = [
   chave('Escolha um navio.'),
   chave('O navio não cabe aí.'),
   chave('Os navios não podem encostar um no outro.'),
+  // a restrição 3-3 do Cinco em linha (server/src/minijogo-tabuleiro.ts, 20/11/2026)
+  chave('As escuras não podem fazer dois três abertos de uma vez.'),
   // os clássicos de mesa (server/src/minijogo-damas.ts, -naval, -domino, -truco; 04/11/2026)
   chave('Escolha uma casa do mar.'),
   chave('Você já atirou nessa casa.'),

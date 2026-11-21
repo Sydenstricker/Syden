@@ -22,7 +22,7 @@ const biaId = await idDe(bia.token);
 type IdDaReceita = import('../src/cozinha-receitas.js').IdDaReceita;
 interface Estado {
   fase: string;
-  meu: { fila: { indice: number; receita: IdDaReceita }[]; pratos: number; pontos: number; gorjetas: number } | null;
+  meu: { fila: { indice: number; receita: IdDaReceita; prazoMs: number; restaMs: number | null }[]; pratos: number; pontos: number; gorjetas: number; perdidos: number } | null;
   placar: { userId: number; pratos: number; pontos: number; posicao: number | null }[];
   solo: boolean;
   planta: string;
@@ -148,7 +148,7 @@ test('os mesmos pedidos para todos, cada um anda na fila no próprio ritmo', () 
   p.andar();
   assert.equal(p.estado(anaId).fase, 'jogando');
   assert.deepEqual(p.estado(anaId).meu!.fila, p.estado(biaId).meu!.fila);
-  const filaAntes = p.estado(anaId).meu!.fila;
+  const filaAntes = p.estado(anaId).meu!.fila.map(({ indice, receita }) => ({ indice, receita }));
   const { pedido, erro } = entregarCerto(p, anaId);
   assert.equal(erro, null);
   const depois = p.estado(anaId).meu!;
@@ -160,7 +160,7 @@ test('os mesmos pedidos para todos, cada um anda na fila no próprio ritmo', () 
   assert.equal(depois.fila.length, receitas.PEDIDOS_NA_FILA);
   assert.equal(depois.fila[depois.fila.length - 1].indice, receitas.PEDIDOS_NA_FILA);
   // a Bia continua com a fila de antes
-  assert.deepEqual(p.estado(biaId).meu!.fila, filaAntes);
+  assert.deepEqual(p.estado(biaId).meu!.fila.map(({ indice, receita }) => ({ indice, receita })), filaAntes);
   assert.ok(PREPARO_MS > 0);
 });
 
@@ -354,26 +354,37 @@ test('a gorjeta é pelo relógio do servidor: rápido ganha mais, demorado não 
   agora += 29_000;
   const r1 = fila[1].receita;
   assert.equal(entregarCerto(p, anaId).erro, null);
-  agora += 30_000;
+  agora += 14_000;
   const r2 = fila[2].receita;
   assert.equal(entregarCerto(p, anaId).erro, null);
   const pontos = (id: IdDaReceita) => receitas.RECEITAS[id].pontos;
   const meu = p.estado(anaId).meu!;
   assert.equal(meu.gorjetas, 2 + 1 + 0);
-  assert.equal(meu.pontos, pontos(fila[0].receita) + pontos(r1) + pontos(r2) + 3);
+  // o quarto pedido do começo passou do prazo enquanto isso (a paciência): custa a pena
+  assert.equal(meu.pontos, pontos(fila[0].receita) + pontos(r1) + pontos(r2) + 3 - receitas.PENA_DO_PEDIDO_PERDIDO * meu.perdidos);
   // o pedido que entrou depois conta do momento em que entrou na fila
   agora += 5_000;
   const antes = p.estado(anaId).meu!.gorjetas;
-  assert.equal(entregarCerto(p, anaId).erro, null);
+  // o mais novo da fila (os do começo já estão perto do prazo)
+  const novo = p.estado(anaId).meu!.fila.reduce((a, b) => (b.restaMs! > a.restaMs! ? b : a));
+  agora += INTERVALO_MIN_MS;
+  for (const i of pratoDe(novo.receita)) if (i.estado === 'cozido') cozinhar(p, anaId, i);
+  assert.equal(p.jogo.acao(anaId, { tipo: 'entregar', pedido: novo.indice, prato: pratoDe(novo.receita) }), null);
   assert.ok(p.estado(anaId).meu!.gorjetas >= antes);
 });
 
 test('o recorde do Solo: por planta, com os pontos do servidor, e só quando melhora', () => {
   const ze = comecar([biaId], { solo: true, corpo: { planta: 'toca' } });
   ze.andar();
-  for (let n = 0; n < 2; n++) assert.equal(entregarCerto(ze, biaId).erro, null);
-  const feitos = ze.estado(biaId).meu!.pontos;
+  // entrega até perto do fim (parado, a fila venceria e os pontos cairiam: a paciência)
+  const largou = agora;
+  while (agora - largou < 170_000) {
+    assert.equal(entregarCerto(ze, biaId).erro, null);
+    agora += 4_000;
+  }
   ze.andar();
+  const feitos = ze.estado(biaId).meu!.pontos;
+  assert.ok(feitos > 0);
   assert.deepEqual(ze.estado(biaId).recorde, { antes: null, novo: true });
   assert.equal(db.recordeDoSolo(biaId, 'cozinha', 'toca')!.valor, feitos);
   // de novo, com menos: não vira recorde, e a tela recebe o de antes
@@ -408,4 +419,36 @@ test('a frigideira esquecida pega fogo no relógio do servidor: o "tirei" é rec
   // a estação ficou livre, e o extintor numa estação vazia não vale
   assert.equal(p.jogo.acao(anaId, { tipo: 'extintor', estacao: FOGAO }), 'Lance inválido.');
   assert.equal(p.jogo.acao(anaId, { tipo: 'fogo', estacao: FOGAO, item: { ing: 'ovo', estado: 'cru' } }), null);
+});
+
+test('a paciência (20/11/2026): o pedido vence no prazo pelo relógio do servidor, sai da fila e custa a pena', () => {
+  const p = comecar([anaId], { solo: true });
+  p.andar();
+  const fila = p.estado(anaId).meu!.fila;
+  for (const f of fila) {
+    assert.equal(f.prazoMs, receitas.prazoDoPedidoMs(f.receita));
+    assert.ok(f.prazoMs >= 60_000 && f.prazoMs <= 90_000);
+    assert.equal(f.restaMs, f.prazoMs);
+  }
+  // a receita mais trabalhosa tem mais paciência
+  assert.ok(receitas.prazoDoPedidoMs('pizza-calabresa') > receitas.prazoDoPedidoMs('sorvete-chocolate'));
+  // entrega um, para ter pontos
+  assert.equal(entregarCerto(p, anaId).erro, null);
+  const antes = p.estado(anaId).meu!;
+  // o primeiro que vence: um tico antes, nada; no prazo, sai
+  const proximo = Math.min(...antes.fila.map((f) => f.restaMs!));
+  const qual = antes.fila.find((f) => f.restaMs === proximo)!;
+  agora += proximo - 1;
+  assert.ok(p.estado(anaId).meu!.fila.some((f) => f.indice === qual.indice));
+  agora += 1;
+  const depois = p.estado(anaId).meu!;
+  assert.ok(!depois.fila.some((f) => f.indice === qual.indice));
+  assert.equal(depois.fila.length, receitas.PEDIDOS_NA_FILA);
+  assert.ok(depois.perdidos >= 1);
+  assert.equal(depois.pontos, Math.max(0, antes.pontos - receitas.PENA_DO_PEDIDO_PERDIDO * depois.perdidos));
+  // o vencido não se entrega mais
+  assert.equal(p.jogo.acao(anaId, { tipo: 'entregar', pedido: qual.indice, prato: pratoDe(qual.receita) }), 'Este prato não é o pedido.');
+  // parado o resto da partida, os pontos não ficam abaixo de zero
+  p.andar();
+  assert.ok(p.estado(anaId).meu!.pontos >= 0);
 });

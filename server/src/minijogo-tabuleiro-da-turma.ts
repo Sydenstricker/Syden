@@ -111,9 +111,13 @@ export const PRECOS_DOS_ITENS: Record<Item, number> = { duplo: 6, escolhido: 8, 
 export const MAXIMO_DE_ITENS = 3;
 /** Quantas casas à frente o ímã põe a dourada. */
 export const IMA_CASAS = 4;
-/** Os microjogos de cada formato (os de equipe que já existiam; o teste confere que têm equipes). */
-export const MICROJOGOS_2X2 = ['colheita', 'remada'];
-export const MICROJOGOS_1X3 = ['onda', 'ladeira'];
+/**
+ * Os microjogos de cada formato: os de equipe e, desde 20/11/2026, os que montavam os lados sozinhos e agora aceitam as equipes
+ * impostas (`aceitaEquipes`: a Torta e o Cabo nos dois; o Revezamento e o Esconde-esconde só no 1 contra 3, porque precisam de
+ * alguém sozinho). O teste confere que cada um tem equipes ou as aceita.
+ */
+export const MICROJOGOS_2X2 = ['colheita', 'remada', 'torta', 'cabo'];
+export const MICROJOGOS_1X3 = ['onda', 'ladeira', 'torta', 'cabo', 'revezamento', 'esconde'];
 export const PREMIOS = ['microjogos', 'andarilho', 'eventos'] as const;
 export type Premio = (typeof PREMIOS)[number];
 

@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
 import { escolhaDoPiloto } from '../src/transito/piloto';
-import { CAMINHOS, liberar, MAPA, novaPartida, passo, refazer, sortearChegadas, PASSOS_DA_PARTIDA, manobraPermitida, MEDIDAS, type Estado, type Opcoes } from '../src/transito/sim';
+import { CAMINHOS, liberar, MAPA, novaPartida, passo, refazer, sortearChegadas, PASSOS_DA_PARTIDA, manobraPermitida, MEDIDAS, PRAZO_DA_AMBULANCIA, PENA_DA_AMBULANCIA, PASSOS_DO_TETO, ritmoDaChegada, velocidade, valorDaAmbulancia, type Estado, type Opcoes } from '../src/transito/sim';
 import { PREDIOS, VEICULOS } from '../src/transito/atlas.gerado';
 
 function jogarComPiloto(semente: number, opcoes: Opcoes = {}, ate = Infinity): { e: Estado; lista: number[] } {
@@ -68,7 +68,7 @@ describe('trânsito da toca', () => {
     const e = novaPartida(1);
     e.chegadas = [
       { passo: 0, entrada: 0, manobra: 'reto', tipo: 'carro', pele: 0 },
-      { passo: 0, entrada: 1, manobra: 'reto', tipo: 'carro', pele: 1 },
+      { passo: 90, entrada: 1, manobra: 'reto', tipo: 'carro', pele: 1 },
       { passo: 0, entrada: 2, manobra: 'reto', tipo: 'carro', pele: 2 },
     ];
     for (let i = 0; i < 300; i++) passo(e);
@@ -133,5 +133,54 @@ describe('trânsito da toca', () => {
     assert.equal(parado.buzinas, 3);
     assert.ok(parado.passo < 60 * 60);
     assert.ok(lista.length > 0);
+  });
+
+  // ===== 20/11/2026: o "até bater" aperta até os 5 minutos, e a ambulância com pressa =====
+
+  it('o minuto é o de sempre, e o "até bater" continua apertando devagar até os 5 minutos', () => {
+    for (let p = 0; p <= PASSOS_DA_PARTIDA; p += 50) assert.equal(ritmoDaChegada(p), 1.6 - 1.05 * Math.min(1, p / 3000));
+    assert.ok(ritmoDaChegada(3 * PASSOS_DA_PARTIDA) < ritmoDaChegada(PASSOS_DA_PARTIDA));
+    assert.ok(ritmoDaChegada(PASSOS_DO_TETO) < ritmoDaChegada(3 * PASSOS_DA_PARTIDA));
+    assert.equal(ritmoDaChegada(PASSOS_DO_TETO + 999), ritmoDaChegada(PASSOS_DO_TETO));
+    assert.ok(velocidade(4 * PASSOS_DA_PARTIDA) > velocidade(2 * PASSOS_DA_PARTIDA));
+    assert.equal(velocidade(PASSOS_DO_TETO + 999), velocidade(PASSOS_DO_TETO));
+    // o piloto aguenta os 5 minutos
+    const { e } = jogarComPiloto(42, { modo: 'ate-bater' }, PASSOS_DO_TETO);
+    assert.equal(e.terminou, false);
+    assert.equal(e.batidas, 0);
+  });
+
+  it('a ambulância: solta rápido vale 3, demorando vale menos, e passado o prazo custa pontos', () => {
+    assert.deepEqual([0, 240, 241, 420, 421, 600, 601].map(valorDaAmbulancia), [3, 3, 2, 2, 1, 1, 0]);
+    const valorAoSoltar = (espera: number) => {
+      const e = novaPartida(1);
+      e.chegadas = [{ passo: 0, entrada: 0, manobra: 'reto', tipo: 'ambulancia', pele: 0 }];
+      for (let i = 0; i < espera; i++) passo(e);
+      const pontosAntes = e.pontos;
+      assert.ok(liberar(e, 0));
+      let n = 0;
+      while (e.atravessaram === 0 && n++ < 600) passo(e);
+      return { ganhou: e.pontos - pontosAntes, antes: pontosAntes, e };
+    };
+    assert.equal(valorAoSoltar(200).ganhou, 3);
+    assert.equal(valorAoSoltar(400).ganhou, 2);
+    assert.equal(valorAoSoltar(550).ganhou, 1);
+    // o prazo: os pontos caem ali mesmo, e ela não vale nada depois
+    const e = novaPartida(1);
+    e.chegadas = [
+      { passo: 0, entrada: 1, manobra: 'reto', tipo: 'caminhao', pele: 0 },
+      { passo: 0, entrada: 0, manobra: 'reto', tipo: 'ambulancia', pele: 0 },
+    ];
+    for (let i = 0; i < 200; i++) passo(e);
+    assert.ok(liberar(e, 1));
+    while (e.passo < PRAZO_DA_AMBULANCIA) passo(e);
+    assert.equal(e.atravessaram, 1, 'o caminhão passou antes do prazo');
+    const antes = e.pontos;
+    passo(e);
+    assert.ok(e.eventos.some((v) => v.tipo === 'atrasou'));
+    assert.equal(e.pontos, antes - PENA_DA_AMBULANCIA);
+    assert.ok(liberar(e, 0));
+    while (e.atravessaram === 1) passo(e);
+    assert.equal(e.pontos, antes - PENA_DA_AMBULANCIA);
   });
 });

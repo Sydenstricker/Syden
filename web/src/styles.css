@@ -18743,6 +18743,49 @@ body.arrastando-barra {
   font: 16px system-ui, sans-serif;
 }
 
+/* o selo da temporada (20/11/2026): ×2 ou ½ no canto das cidades do grupo */
+.cid-temporada {
+  font: 700 7px system-ui, sans-serif;
+  fill: #fff6e4;
+}
+
+.cid-temporada-agora {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #4f8fd6;
+  color: #fff6e4;
+  font-weight: 700;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.cid-temporada-agora.alta {
+  background: #e05a3a;
+}
+
+/* a escolha do tabuleiro na largada (20/11/2026) */
+.cid-escolha-tabuleiro {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+.cid-escolha-tabuleiro button {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg-darkest);
+  color: var(--text-strong);
+  font: inherit;
+  cursor: pointer;
+}
+
+.cid-escolha-tabuleiro button[aria-pressed='true'] {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 24%, var(--bg-darkest));
+}
+
 .cid-dados-meio {
   display: flex;
   gap: 8px;

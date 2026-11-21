@@ -132,8 +132,17 @@ export function JogoStop({
     <div className="stop">
       <PlacarAoVivo eu={eu} linhas={estado.placar} />
       <p className="minijogo-situacao">
-        {conferindo ? t('Clique numa resposta que não vale. Ela cai se mais da metade concordar.') : t('Pontos da rodada')}
+        {conferindo
+          ? estado.precisaAceite
+            ? t('Toque numa resposta que não vale. Com dois, ela só cai se quem escreveu aceitar.')
+            : t('Clique numa resposta que não vale. Ela cai se mais da metade concordar.')
+          : t('Pontos da rodada')}
       </p>
+      {!conferindo && estado.bonus && (
+        <p className="minijogo-situacao stop-parou" role="status">
+          <Hand size={14} aria-hidden="true" /> {t('{nome} parou com tudo valendo: +{n}', { nome: nomeDe(estado.bonus.userId), n: estado.bonus.pontos })}
+        </p>
+      )}
       <div className="stop-conferencia">
         {estado.categorias.map((categoria, c) => (
           <section key={categoria}>
@@ -143,17 +152,20 @@ export function JogoStop({
                 const r = pessoa.respostas[c];
                 const minha = pessoa.userId === eu;
                 const podeContestar = conferindo && !minha && r.texto.trim() !== '';
+                // a minha resposta contestada: posso aceitar que não vale (com dois, é o que a derruba)
+                const podeAceitar = conferindo && minha && r.contra > 0;
+                const marcada = podeAceitar ? r.aceita === true : r.contestei;
                 return (
                   <li key={pessoa.userId}>
                     <button
                       type="button"
-                      className={`stop-resposta${r.valida ? '' : ' nao-vale'}${r.contestei ? ' contestei' : ''}`}
-                      disabled={!podeContestar}
-                      aria-pressed={podeContestar ? r.contestei : undefined}
-                      title={podeContestar ? (r.contestei ? t('Desfazer') : t('Não vale')) : undefined}
+                      className={`stop-resposta${r.valida ? '' : ' nao-vale'}${marcada ? ' contestei' : ''}`}
+                      disabled={!podeContestar && !podeAceitar}
+                      aria-pressed={podeContestar || podeAceitar ? marcada : undefined}
+                      title={podeContestar || podeAceitar ? (marcada ? t('Desfazer') : podeAceitar ? t('Aceitar que não vale') : t('Não vale')) : undefined}
                       onClick={() => {
                         tocar('clique');
-                        agir({ tipo: 'contestar', categoria: c, alvo: pessoa.userId });
+                        agir(podeAceitar ? { tipo: 'aceitar', categoria: c } : { tipo: 'contestar', categoria: c, alvo: pessoa.userId });
                       }}
                     >
                       <span className="stop-quem">{pessoa.username}</span>
