@@ -18,6 +18,8 @@ import {
   andavelNo,
   atributos,
   CASA,
+  LIGA,
+  MOEDAS_DA_LIGA,
   casaNo,
   CESTA,
   chanceDeAmizade,
@@ -111,6 +113,8 @@ export interface Aventura {
   escada: number[];
   /** Quantas revanches da Nena venceu. */
   revanches: number;
+  /** Quantas vezes venceu a Liga da Toca inteira (21/11/2026). */
+  ligas: number;
   /** As pessoas do caminho já vencidas, e os achados já pegos (os ids). */
   vencidos: string[];
   achados: string[];
@@ -188,6 +192,7 @@ export function lerAventura(dados: unknown): Aventura | null {
     pegos: [...new Set([...pegos, ...meus])],
     escada: [...new Set(escada)].sort((p, q) => p - q),
     revanches: Math.max(0, Math.floor(Number(a.revanches) || 0)),
+    ligas: conta(a.ligas),
     vencidos: textos(a.vencidos),
     achados: textos(a.achados),
     volta,
@@ -238,6 +243,9 @@ export type EventoDaAventura =
   | { t: 'querAprender'; especie: string; golpe: string }
   | { t: 'esqueceu'; especie: string; antigo: string; golpe: string }
   | { t: 'presente'; nome: string; especie: string }
+  /** A Liga da Toca (21/11/2026): a luta `n` de `total`, e a Liga inteira vencida. */
+  | { t: 'liga'; n: number; total: number }
+  | { t: 'campeao'; n: number }
   | { t: 'venceu'; userId: number };
 
 /** A lista de eventos com número: a tela conta só os que ainda não contou. */
@@ -282,6 +290,8 @@ function aventuraSolo(ctx: Contexto, userId: number, aleatorio: () => number): J
     acabou: null | 'vitoria' | 'derrota' | 'fugiu' | 'amigo';
     /** O degrau da escada (ou -1: a revanche), e a pessoa do caminho. */
     desafio?: number;
+    /** A luta da Liga da Toca (o índice em LIGA): a próxima começa sem descanso. */
+    liga?: number;
     pessoa?: string;
     moedas: number;
     /** O bicho do mato escolhe com esperteza (o Bosque e a Serra). */
@@ -316,7 +326,7 @@ function aventuraSolo(ctx: Contexto, userId: number, aleatorio: () => number): J
     av!.chas = Math.max(av!.chas, CESTA.chas);
   };
 
-  const comecarLuta = (inimigos: Lutador[], tipo: TipoDeLuta, moedas: number, extra: { desafio?: number; pessoa?: string } = {}) => {
+  const comecarLuta = (inimigos: Lutador[], tipo: TipoDeLuta, moedas: number, extra: { desafio?: number; pessoa?: string; liga?: number } = {}) => {
     const meus = av!.equipe.map((b) => ({ ...lutador(b.especie, b.nivel, b.pv), golpes: [...b.golpes] }));
     const b = novaBatalha(meus, inimigos);
     luta = { b, tipo, acabou: null, moedas, esperto: !!mapaDe(av!.mapa).esperto, participantes: new Set([b.lados[0].ativo]), ...extra };
@@ -435,6 +445,12 @@ function aventuraSolo(ctx: Contexto, userId: number, aleatorio: () => number): J
           if (presente) saida.push({ t: 'presente', nome: DESAFIANTES[0].nome, especie: presente }, ...receber(presente, NIVEL_DO_PRESENTE));
         } else if (l.desafio !== undefined && !av!.escada.includes(l.desafio)) av!.escada = [...av!.escada, l.desafio].sort((p, q) => p - q);
         saida.push({ t: 'venceuDesafio' });
+        // a última luta da Liga: a Liga inteira vencida
+        if (l.liga === LIGA.length - 1) {
+          av!.ligas += 1;
+          l.moedas += MOEDAS_DA_LIGA;
+          saida.push({ t: 'campeao', n: av!.ligas });
+        }
       } else {
         if (l.pessoa && !av!.vencidos.includes(l.pessoa)) av!.vencidos.push(l.pessoa);
         saida.push({ t: 'vitoria' });
@@ -460,6 +476,14 @@ function aventuraSolo(ctx: Contexto, userId: number, aleatorio: () => number): J
   /** A escada inteira vencida: a porta da Nena dá a revanche, e o raro aparece na Serra. */
   const posJogo = () => DESAFIANTES.every((_, k) => av!.escada.includes(k));
 
+  /** Uma luta da LIGA DA TOCA (21/11/2026): quem desafia, e o aviso de qual é na sequência. */
+  const lutaDaLiga = (k: number) => {
+    const d = LIGA[k];
+    comecarLuta(d.equipe.map(([e, n]) => lutador(e, n)), 'desafio', d.moedas, { liga: k });
+    eventos.pôr([{ t: 'liga', n: k + 1, total: LIGA.length }, { t: 'desafio', nome: d.nome }]);
+    guardar();
+  };
+
   function andar(dir: unknown): string | null {
     const destino = passoNoMapa(av!.mapa, av!.x, av!.y, String(dir));
     if (!DIRECOES[String(dir)]) return 'Direção inválida.';
@@ -467,6 +491,12 @@ function aventuraSolo(ctx: Contexto, userId: number, aleatorio: () => number): J
     const { mapa, x, y } = destino;
     const casa = casaNo(mapa, x, y);
     const degrau = casa === 'c' ? mapaDe(mapa).portas[`${x},${y}`] : undefined;
+    const naLiga = casa === 'c' && mapaDe(mapa).liga === `${x},${y}`;
+    if (naLiga && !posJogo()) {
+      // a Liga só abre com a escada inteira vencida
+      eventos.pôr([{ t: 'espera', nome: LIGA[0].nome, antes: DESAFIANTES[DESAFIANTES.length - 1].nome }]);
+      return null;
+    }
     if (degrau !== undefined && degrau > 0 && !av!.escada.includes(degrau - 1)) {
       // a próxima casa da escada só abre com a de antes vencida
       eventos.pôr([{ t: 'espera', nome: DESAFIANTES[degrau].nome, antes: DESAFIANTES[degrau - 1].nome }]);
@@ -484,7 +514,9 @@ function aventuraSolo(ctx: Contexto, userId: number, aleatorio: () => number): J
       eventos.pôr([{ t: 'achou', item: achado.item, qtd: achado.qtd }]);
     }
     const pessoa = quemVe(mapa, x, y);
-    if (casa === 'h') {
+    if (naLiga) {
+      lutaDaLiga(0);
+    } else if (casa === 'h') {
       descansar();
       av!.volta = { mapa, x, y };
       eventos.pôr([{ t: 'descansou' }]);
@@ -535,6 +567,11 @@ function aventuraSolo(ctx: Contexto, userId: number, aleatorio: () => number): J
       }
       luta = null;
       fase = 'mapa';
+      // a Liga segue: a próxima luta começa já, com a vida que sobrou (sem descanso no meio)
+      if (l.acabou === 'vitoria' && l.liga !== undefined && l.liga + 1 < LIGA.length) {
+        lutaDaLiga(l.liga + 1);
+        return null;
+      }
       guardar();
       return null;
     }
@@ -696,8 +733,11 @@ function aventuraSolo(ctx: Contexto, userId: number, aleatorio: () => number): J
         vencidos: av?.vencidos ?? [],
         achados: av?.achados ?? [],
         loja: naLoja(),
+        ligas: av?.ligas ?? 0,
         luta: l && {
           tipo: l.tipo,
+          // a luta da Liga: qual é (1 a 4) e quantas são
+          ...(l.liga !== undefined ? { liga: { n: l.liga + 1, total: LIGA.length } } : {}),
           acabou: l.acabou,
           meu: vistaDoLado(l.b.lados[0], true),
           outro: vistaDoLado(l.b.lados[1], false),

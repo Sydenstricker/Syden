@@ -238,3 +238,20 @@ test('a fase curta (19/11/2026): o pomar no Solo, com o chefe novo; o recorde va
   const q = comecar([anaId], 0, { fase: 'lua' });
   assert.equal((q.estado(anaId) as unknown as { faseDaNave: string }).faseDaNave, 'horta');
 });
+
+test('a campanha (21/11/2026): as três fases numa partida só, o placar somado conferido, e o recorde à parte na tabela comum', () => {
+  const p = comecar([biaId], 0, { fase: 'campanha' });
+  p.andar();
+  const e = p.estado(biaId) as unknown as { faseDaNave: string; categoria: string; duracaoMs: number };
+  assert.equal(e.faseDaNave, 'campanha');
+  assert.equal(e.categoria, 'campanha', 'o "Jogar de novo" volta à campanha');
+  const tempos = sim.temposDaFase('campanha');
+  assert.equal(e.duracaoMs, Math.round((tempos.fim * 1000) / sim.PASSOS_POR_S));
+  const m = jogar(p, biaId, tempos.fim, 'campanha');
+  p.andar();
+  assert.ok(p.terminou());
+  const fim = p.estado(biaId);
+  assert.equal(fim.jogadores[0].pontos, m.ficha.total(tempos.fim, true));
+  assert.equal(db.recordeDoSolo(biaId, 'nave', 'campanha')?.valor, fim.jogadores[0].pontos);
+  assert.equal(db.recordeDaNave(biaId), null, 'o recorde da horta não foi tocado');
+});

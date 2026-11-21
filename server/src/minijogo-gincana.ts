@@ -74,7 +74,9 @@ export function criarGincana(agora: () => number = Date.now, sortear: () => numb
       const pedido = typeof corpo.percurso === 'string' ? corpo.percurso : typeof corpo.categoria === 'string' ? corpo.categoria : '';
       if (pedido === RODADAS) {
         const corridas = [...IDS_DOS_PERCURSOS].sort(() => sortear() - 0.5).slice(0, COTAS.length);
-        return sala(ctx, naSala, [...corridas, IDS_DA_SOBREVIVENCIA[0]], agora);
+        // a final é uma das sobrevivências, sorteada (21/11/2026: o campo 7 × 7 entrou)
+        const final = IDS_DA_SOBREVIVENCIA[Math.min(IDS_DA_SOBREVIVENCIA.length - 1, Math.floor(sortear() * IDS_DA_SOBREVIVENCIA.length))];
+        return sala(ctx, naSala, [...corridas, final], agora);
       }
       return sala(ctx, naSala, [percursoPedido(corpo)], agora);
     },

@@ -22,11 +22,20 @@
  * contam pela sessão que o servidor refez, e a SEGUNDA PISTA (a Praça, 'praca-1'): o recorde dela mora na tabela comum
  * (solo_recordes, jogo 'skate', variante = a pista), e o do parque continua em skate_recordes_1min. O mais de objetivos que a
  * pessoa já cumpriu numa sessão, por pista, também vai à tabela comum ('objetivos-<pista>').
+ *
+ * 21/11/2026: O SEGUNDO CONJUNTO DE OBJETIVOS (skate/pista.ts, `segundo`), escolhido na largada, no Solo e na sala: a sessão é
+ * refeita com ele (`conjunto`), e o mais de objetivos dele vai à tabela comum à parte ('objetivos2-<pista>'). Os pontos são os
+ * mesmos nos dois conjuntos, e o recorde de pontos também.
  */
 import * as db from './db.js';
 import type { Contexto, Definicao } from './minijogo-motor.js';
 import { entradasValidas, objetivos, PASSOS_DA_SESSAO, PASSOS_DE_FOLGA, refazer, type Objetivo } from './skate/fisica.js';
-import { IDS_DAS_PISTAS, indiceDaPista, LARGURA, PROFUNDIDADE } from './skate/pista.js';
+import { CONJUNTOS, IDS_DAS_PISTAS, indiceDaPista, LARGURA, PROFUNDIDADE } from './skate/pista.js';
+
+/** O conjunto de objetivos pedido (0 ou 1; o resto, o primeiro). */
+const conjuntoPedido = (x: unknown) => (Number.isInteger(x) && (x as number) >= 0 && (x as number) < CONJUNTOS ? (x as number) : 0);
+/** A variante da tabela comum com o mais de objetivos de cada conjunto. */
+const varianteDosObjetivos = (pista: number, conjunto: number) => `${conjunto === 1 ? 'objetivos2' : 'objetivos'}-${IDS_DAS_PISTAS[pista]}`;
 
 export { PASSOS_DA_SESSAO, PASSOS_DE_FOLGA };
 export const DURACAO_MS = (PASSOS_DA_SESSAO / 60) * 1000;
@@ -53,9 +62,9 @@ interface Skatista {
 export const skate: Definicao = criarSkate();
 
 /** Refaz a sessão pelas entradas, na pista `pista`; o erro, ou os pontos, o melhor combo, os objetivos e os passos que ela andou. */
-function conferirSessao(corpo: Record<string, unknown>, pista: number): { erro: string } | { pontos: number; melhorCombo: number; passos: number; objetivos: Objetivo[] } {
+function conferirSessao(corpo: Record<string, unknown>, pista: number, conjunto = 0): { erro: string } | { pontos: number; melhorCombo: number; passos: number; objetivos: Objetivo[] } {
   if (!entradasValidas(corpo.entradas)) return { erro: 'Sessão inválida.' };
-  const { k, passos } = refazer(corpo.entradas, pista);
+  const { k, passos } = refazer(corpo.entradas, pista, conjunto);
   // a sessão inteira, e nem um passo além do fim dela
   if (!k.terminou || passos !== k.passo) return { erro: 'Sessão inválida.' };
   return { pontos: k.pontos, melhorCombo: k.melhorCombo, passos: k.passo, objetivos: objetivos(k) };
@@ -66,16 +75,16 @@ const recordeNaPista = (userId: number, pista: number): number | null =>
   pista === 0 ? db.recordeDoSkate(userId) : (db.recordeDoSolo(userId, 'skate', IDS_DAS_PISTAS[pista])?.valor ?? null);
 
 /** Guarda a sessão (se for a melhor) e o mais de objetivos; devolve se virou o recorde de pontos. */
-function guardarSessao(userId: number, pista: number, pontos: number, melhorCombo: number, objs: Objetivo[]): boolean {
+function guardarSessao(userId: number, pista: number, pontos: number, melhorCombo: number, objs: Objetivo[], conjunto = 0): boolean {
   const feitos = objs.filter((o) => o.feito).map((o) => o.id);
-  if (feitos.length) db.guardarRecordeDoSolo(userId, 'skate', `objetivos-${IDS_DAS_PISTAS[pista]}`, feitos.length, false, { feitos });
+  if (feitos.length) db.guardarRecordeDoSolo(userId, 'skate', varianteDosObjetivos(pista, conjunto), feitos.length, false, { feitos });
   if (pontos <= 0) return false;
   return pista === 0 ? db.guardarRecordeDoSkate(userId, pontos) : db.guardarRecordeDoSolo(userId, 'skate', IDS_DAS_PISTAS[pista], pontos, false, { melhorCombo }).novo;
 }
 
-/** O mais de objetivos que a pessoa já cumpriu numa sessão, em cada pista. */
-const objetivosAntes = (userId: number) =>
-  Object.fromEntries(IDS_DAS_PISTAS.map((id) => [id, db.recordeDoSolo(userId, 'skate', `objetivos-${id}`)?.valor ?? 0]));
+/** O mais de objetivos que a pessoa já cumpriu numa sessão, em cada pista (do conjunto pedido). */
+const objetivosAntes = (userId: number, conjunto = 0) =>
+  Object.fromEntries(IDS_DAS_PISTAS.map((id, i) => [id, db.recordeDoSolo(userId, 'skate', varianteDosObjetivos(i, conjunto))?.valor ?? 0]));
 
 export function criarSkate({ agora = Date.now }: { agora?: () => number } = {}): Definicao {
   return {
@@ -85,7 +94,8 @@ export function criarSkate({ agora = Date.now }: { agora?: () => number } = {}):
       const inscritos = naSala.slice(0, MAXIMO);
       const solo = ctx.solo ?? inscritos.length === 1;
       const pista = Math.max(0, indiceDaPista(corpo?.pista ?? corpo?.categoria));
-      return solo ? sessaoSolo(ctx, inscritos[0], agora, pista) : sessaoNaSala(ctx, inscritos, agora, pista);
+      const conjunto = conjuntoPedido(corpo?.conjunto);
+      return solo ? sessaoSolo(ctx, inscritos[0], agora, pista, conjunto) : sessaoNaSala(ctx, inscritos, agora, pista, conjunto);
     },
   };
 }
@@ -94,20 +104,22 @@ export function criarSkate({ agora = Date.now }: { agora?: () => number } = {}):
 // O SOLO
 // =====================================================================================================================
 
-function sessaoSolo(ctx: Contexto, eu: number, agora: () => number, pistaPedida: number) {
+function sessaoSolo(ctx: Contexto, eu: number, agora: () => number, pistaPedida: number, conjuntoInicial = 0) {
   const evento = `skate-solo-${eu}-${agora()}`;
   let inicio = agora();
   let pista = pistaPedida;
+  let conjunto = conjuntoInicial;
   let fase: 'jogando' | 'fim' = 'jogando';
   const s: Skatista = { pontos: null, melhorCombo: null, objetivos: null, ultima: null };
   const recordesAntes = IDS_DAS_PISTAS.map((_, i) => recordeNaPista(eu, i));
   const objsAntes = objetivosAntes(eu);
+  const objsAntes2 = objetivosAntes(eu, 1);
   let recordeNovo = false;
 
   const terminar = () => {
     if (fase === 'fim') return;
     fase = 'fim';
-    if (s.pontos !== null && s.objetivos) recordeNovo = guardarSessao(eu, pista, s.pontos, s.melhorCombo ?? 0, s.objetivos);
+    if (s.pontos !== null && s.objetivos) recordeNovo = guardarSessao(eu, pista, s.pontos, s.melhorCombo ?? 0, s.objetivos, conjunto);
     ctx.terminar(s.pontos !== null);
   };
   ctx.agendar(PRAZO_MS, terminar);
@@ -125,6 +137,8 @@ function sessaoSolo(ctx: Contexto, eu: number, agora: () => number, pistaPedida:
         pista: IDS_DAS_PISTAS[pista],
         objetivos: s.objetivos,
         objetivosAntes: objsAntes,
+        objetivosAntes2: objsAntes2,
+        conjunto,
         partidaId: evento,
       };
     },
@@ -136,12 +150,13 @@ function sessaoSolo(ctx: Contexto, eu: number, agora: () => number, pistaPedida:
         const i = indiceDaPista(corpo.pista);
         if (i < 0) return 'Ação desconhecida.';
         pista = i;
+        conjunto = conjuntoPedido(corpo.conjunto);
         inicio = agora();
         ctx.avisar();
         return null;
       }
       if (corpo.tipo !== 'fim') return 'Ação desconhecida.';
-      const v = conferirSessao(corpo, pista);
+      const v = conferirSessao(corpo, pista, conjunto);
       if ('erro' in v) return v.erro;
       // a janela sem foco pausa a sessão (mais tempo), mas ninguém anda mais passos do que o relógio deixou
       if ((v.passos / 60) * 1000 > agora() - inicio + FOLGA_DO_RELOGIO_MS) return 'Sessão inválida.';
@@ -159,7 +174,7 @@ function sessaoSolo(ctx: Contexto, eu: number, agora: () => number, pistaPedida:
 // NA SALA: a mesma pista, o mesmo verde, cada um no próprio computador, os outros como fantasmas
 // =====================================================================================================================
 
-function sessaoNaSala(ctx: Contexto, inscritos: number[], agora: () => number, pista: number) {
+function sessaoNaSala(ctx: Contexto, inscritos: number[], agora: () => number, pista: number, conjunto = 0) {
   const evento = `skate-${ctx.comunidade ?? 0}-${agora()}`;
   let fase: 'largada' | 'jogando' | 'fim' = 'largada';
   let verdeEm = 0;
@@ -239,6 +254,7 @@ function sessaoNaSala(ctx: Contexto, inscritos: number[], agora: () => number, p
         pista: IDS_DAS_PISTAS[pista],
         categoria: IDS_DAS_PISTAS[pista],
         objetivos: meu?.objetivos ?? null,
+        conjunto,
         partidaId: evento,
       };
     },
@@ -247,14 +263,14 @@ function sessaoNaSala(ctx: Contexto, inscritos: number[], agora: () => number, p
       const s = skatistas.get(quem);
       if (!s) return 'Você está assistindo esta partida.';
       if (fase !== 'jogando' || s.pontos !== null) return 'Esta rodada já acabou.';
-      const v = conferirSessao(corpo, pista);
+      const v = conferirSessao(corpo, pista, conjunto);
       if ('erro' in v) return v.erro;
       if ((v.passos / 60) * 1000 > agora() - verdeEm + FOLGA_DO_RELOGIO_MS) return 'Sessão inválida.';
       s.pontos = v.pontos;
       s.melhorCombo = v.melhorCombo;
       s.objetivos = v.objetivos;
       // sem itens, a sessão da sala vale como a do Solo: se for a melhor da pessoa, vira o recorde
-      if (guardarSessao(quem, pista, v.pontos, v.melhorCombo, v.objetivos)) recordes.get(quem)!.novo = true;
+      if (guardarSessao(quem, pista, v.pontos, v.melhorCombo, v.objetivos, conjunto)) recordes.get(quem)!.novo = true;
 
       conferir();
       ctx.avisar();

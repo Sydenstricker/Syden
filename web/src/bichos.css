@@ -441,3 +441,12 @@
 .bichos-equipe li > .link-button { font-size: 12px; }
 .bichos-cesta { flex-wrap: wrap; }
 .bichos-toca-botoes, .bichos-toca-soltar { flex-basis: 100%; padding-left: 46px; }
+
+/* 21/11/2026: a Liga da Toca, a luta de agora entre as quatro */
+.bichos-liga {
+  margin: 4px 0 0;
+  text-align: center;
+  letter-spacing: 3px;
+  font-size: 14px;
+  color: #f2c84b;
+}

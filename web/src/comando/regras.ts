@@ -29,7 +29,9 @@ import {
   PERTO_DA_GAIOLA,
   pousoEm,
   PULO_VEL,
-  REFENS,
+  PLATAFORMAS_DA_FASE,
+  REFENS_DA_FASE,
+  mapaDoCodigo,
   TIPOS,
   VEL,
   VIDA,
@@ -37,6 +39,7 @@ import {
   type AcaoDoCoelho,
   type Arma,
   type EstadoDoBicho,
+  type MapaDoComando,
   type TipoDoBicho,
 } from './conta';
 
@@ -77,6 +80,8 @@ export interface Quadro {
   /** O cenário da fase (o índice das fases da Briga), e as armas no chão: [id, arma, x] (19/11/2026). */
   fs?: number;
   it?: number[][];
+  /** A fase (o índice em FASES_DO_COMANDO, 21/11/2026): as tábuas e as gaiolas dela. */
+  mp?: number;
   /** [userId, x, h, lado, ação, ms da ação, mira, vidas, golpes, pontos, estado, avatar, arma, ms de arma, ms piscando, último tiro] */
   j: number[][];
   /** [userId, n, x0, h0, direção, leque, ms desde] */
@@ -96,11 +101,13 @@ export interface Comandos {
   baixo: boolean;
   /** Segurado: atira no ritmo da arma. */
   atirar: boolean;
+  /** Segurado: FIRMA o coelho (21/11/2026): ele não anda, e as setas só miram, em oito direções (para baixo na diagonal também no chão). */
+  firmar: boolean;
   /** Apertos desde o último passo (o passo zera depois de ler). */
   pulo: boolean;
   granada: boolean;
 }
-export const comandosVazios = (): Comandos => ({ esquerda: false, direita: false, cima: false, baixo: false, atirar: false, pulo: false, granada: false });
+export const comandosVazios = (): Comandos => ({ esquerda: false, direita: false, cima: false, baixo: false, atirar: false, firmar: false, pulo: false, granada: false });
 
 export interface BichoNaTela {
   id: number;
@@ -138,6 +145,8 @@ export interface Vista {
   /** As armas no chão (a cápsula derrubada), e o cenário da fase. */
   itens: { id: number; arma: Arma; x: number }[];
   cenario: number;
+  /** A fase na tela (21/11/2026): as tábuas e as gaiolas são as dela. */
+  mapa: MapaDoComando;
 }
 
 export interface Efeito {
@@ -239,9 +248,13 @@ export function misturar(a: number[][], b: number[][], k: number, colunas: numbe
   });
 }
 
-/** A direção da mira pelas setas: para cima e na diagonal sempre; para baixo, só no ar. Sem nada, para a frente. */
+/**
+ * A direção da mira pelas setas: para cima e na diagonal sempre; para baixo, só no ar. Sem nada, para a frente. FIRMADO
+ * (21/11/2026), as diagonais para baixo valem também no chão (o reto para baixo, só no ar: no chão a bala morreria no pé).
+ */
 export function miraDe(cmd: Comandos, lado: 1 | -1, noAr: boolean): number {
   const lx = cmd.direita && !cmd.esquerda ? 1 : cmd.esquerda && !cmd.direita ? -1 : 0;
+  if (cmd.firmar && cmd.baixo && !cmd.cima && !noAr) return (lx || lado) > 0 ? 7 : 5;
   if (cmd.cima && !cmd.baixo) return lx > 0 ? 1 : lx < 0 ? 3 : 2;
   if (cmd.baixo && !cmd.cima && noAr) return lx > 0 ? 7 : lx < 0 ? 5 : 6;
   return lado > 0 ? 0 : 4;
@@ -331,7 +344,7 @@ export class Cliente {
         this.sons.push('explosao');
         this.tremor = Math.max(this.tremor, 0.5);
       } else if (tipo === 'l') {
-        const [x] = REFENS[r[0]] ?? [0];
+        const [x] = REFENS_DA_FASE[mapaDoCodigo(q.mp)][r[0]] ?? [0];
         this.efeitos.push({ tipo: 'solto', x, h: 0, em: agora });
         this.sons.push('moeda');
       } else if (tipo === 't') {
@@ -355,7 +368,7 @@ export class Cliente {
   /** O que a tela mostra agora. */
   vista(agora: number): Vista {
     const ultimo = this.linha.ultimo();
-    if (!ultimo) return { passo: 0, fase: null, onda: 0, arena: [0, 320], bichos: [], coelhos: [], balas: [], granadas: [], gaiolas: [0, 0, 0], balasDosOutros: [], itens: [], cenario: 1 };
+    if (!ultimo) return { passo: 0, fase: null, onda: 0, arena: [0, 320], bichos: [], coelhos: [], balas: [], granadas: [], gaiolas: [0, 0, 0], balasDosOutros: [], itens: [], cenario: 1, mapa: 'floresta' };
     const p = this.linha.passoNaTela(agora);
     const agoraNoServidor = this.linha.passoDoServidor(agora);
     const volta = this.linha.emVolta(p)!;
@@ -398,6 +411,7 @@ export class Cliente {
       gaiolas: ultimo.r,
       itens: (ultimo.it ?? []).map((l) => ({ id: l[0], arma: ARMAS[l[1]] ?? 'chama', x: l[2] })),
       cenario: ultimo.fs ?? 1,
+      mapa: mapaDoCodigo(ultimo.mp),
       balasDosOutros,
     };
   }
@@ -447,27 +461,30 @@ export class Cliente {
 
     // correr (dentro da arena da onda: a câmera não deixa sair)
     if (eu.acao === 'dor' && eu.t >= DOR_MS) eu.acao = 'parado';
-    const mx = (cmd.direita ? 1 : 0) - (cmd.esquerda ? 1 : 0);
+    const setas = (cmd.direita ? 1 : 0) - (cmd.esquerda ? 1 : 0);
+    // firmado, as setas só viram e miram: o coelho fica onde está
+    const mx = cmd.firmar ? 0 : setas;
     const [a0, a1] = v.arena;
+    const tabuas = PLATAFORMAS_DA_FASE[v.mapa];
     eu.x = Math.max(a0 + 8, Math.min(a1 - 8, eu.x + mx * VEL * dt));
-    if (mx > 0) eu.lado = 1;
-    else if (mx < 0) eu.lado = -1;
+    if (setas > 0) eu.lado = 1;
+    else if (setas < 0) eu.lado = -1;
 
     // pular, e cair (nas tábuas só por cima)
-    if (pular && apoiado(eu.x, eu.h) && eu.vh <= 0) {
+    if (pular && apoiado(eu.x, eu.h, tabuas) && eu.vh <= 0) {
       eu.vh = PULO_VEL;
       this.sons.push('pulo');
     }
-    if (eu.vh > 0 || !apoiado(eu.x, eu.h)) {
+    if (eu.vh > 0 || !apoiado(eu.x, eu.h, tabuas)) {
       const h1 = eu.h + eu.vh * dt;
       eu.vh -= GRAVIDADE * dt;
-      const pouso = eu.vh <= 0 ? pousoEm(eu.x, eu.h, h1) : null;
+      const pouso = eu.vh <= 0 ? pousoEm(eu.x, eu.h, h1, tabuas) : null;
       if (pouso !== null) {
         eu.h = pouso;
         eu.vh = 0;
       } else eu.h = Math.max(0, h1);
     }
-    const noAr = !apoiado(eu.x, eu.h) || eu.vh > 0;
+    const noAr = !apoiado(eu.x, eu.h, tabuas) || eu.vh > 0;
     if (eu.acao !== 'dor') {
       const acao: AcaoDoCoelho = noAr ? 'pulo' : mx !== 0 ? 'andando' : 'parado';
       if (acao !== eu.acao) ((eu.acao = acao), (eu.t = 0));
@@ -510,7 +527,7 @@ export class Cliente {
     }
 
     // encostou numa gaiola fechada: abre (o servidor confere e dá o reforço)
-    REFENS.forEach(([gx], k) => {
+    REFENS_DA_FASE[v.mapa].forEach(([gx], k) => {
       if (v.gaiolas[k] || Math.abs(eu.x - gx) > PERTO_DA_GAIOLA || eu.h > 20) return;
       if ((this.pediuGaiola.get(k) ?? -Infinity) > agora - 500) return;
       this.pediuGaiola.set(k, agora);

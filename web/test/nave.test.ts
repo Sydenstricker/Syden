@@ -285,3 +285,66 @@ test('o raspão: a ficha recusa o tiro longe, o que acerta, o repetido, o que ai
   f4.loops.push(q - 10);
   assert.equal(f4.raspao(q, j, x, yPerto), 'Raspão inválido.');
 });
+
+// ---------------- O lote D (21/11/2026): o bicho de cada fase e a campanha ----------------
+
+test('o bicho de cada fase: mariposas só no pomar, morcegos só no celeiro; as ondas de antes não mudaram', async () => {
+  const sim = await import('../src/nave/sim');
+  for (const semente of [3, 8]) {
+    const h = roteiro(semente, 'horta');
+    assert.ok(!h.some((e) => e.tipo === 'mariposa' || e.tipo === 'morcego'), 'a horta é a de sempre');
+    for (const [fase, tipo, outro] of [
+      ['pomar', 'mariposa', 'morcego'],
+      ['celeiro', 'morcego', 'mariposa'],
+    ] as const) {
+      const r = roteiro(semente, fase);
+      const bichos = r.filter((e) => e.tipo === tipo);
+      assert.ok(bichos.length >= 12, `${fase}: ${bichos.length} ${tipo}s`);
+      assert.ok(!r.some((e) => e.tipo === outro));
+      assert.equal(r.at(-1)?.tipo, 'chefe', 'o chefe continua o último');
+      // sem os bichos novos, as ondas são as mesmas de antes (o sorteio deles é à parte): os corvos, vespas e besouros iguais
+      const velhos = r.filter((e) => e.tipo !== tipo && e.tipo !== 'chefe');
+      assert.ok(velhos.length > 20);
+      // cada bicho anda pela tela e some
+      for (const e of bichos) {
+        const meio = posicaoInimigo(e, e.t + Math.floor(e.dur / 2))!;
+        assert.ok(meio.x > 0 && meio.x < sim.LARGURA && meio.y > 0 && meio.y < sim.ALTURA, `${tipo} no meio da tela`);
+      }
+      assert.ok(bichos.some((e) => e.item === 'escudo'), 'um bando por onda solta o escudo');
+    }
+  }
+});
+
+test('a campanha: as três fases seguidas, o chão de cada trecho, o chefe do meio não fecha a partida, e o piloto vai até o fim', async () => {
+  const sim = await import('../src/nave/sim');
+  const tempos = sim.temposDaFase('campanha');
+  assert.equal(tempos.trechos.length, 3);
+  assert.equal(tempos.ondas, 9);
+  assert.equal(tempos.trechos[0].fim, tempos.trechos[1].inicio);
+  assert.equal(sim.faseNoPasso('campanha', 0), 'horta');
+  assert.equal(sim.faseNoPasso('campanha', tempos.trechos[1].inicio + 10), 'pomar');
+  assert.equal(sim.faseNoPasso('campanha', tempos.fim), 'celeiro');
+  assert.equal(sim.faseNoPasso('pomar', 99999), 'pomar');
+  const r = roteiro(5, 'campanha');
+  const chefes = r.filter((e) => e.tipo === 'chefe');
+  assert.deepEqual(chefes.map((e) => e.rota[0] ?? 0), [0, 1, 2], 'o espantalho, o vespeiro e o trator');
+  assert.equal(chefes[0].dur, sim.CAMPANHA_CHEFE);
+  assert.equal(r.at(-1), chefes[2]);
+  assert.ok(r.some((e) => e.tipo === 'mariposa') && r.some((e) => e.tipo === 'morcego'));
+  // o piloto joga a campanha inteira com o servidor conferindo
+  const m = new Mundo(5, true, 'campanha');
+  const servidor = new Ficha(roteiro(5, 'campanha'), 'campanha');
+  let recusas = 0;
+  let chefeDoMeio = false;
+  for (let n = 0; n <= tempos.fim && !m.ficha.acabou; n++) {
+    m.avancar(pilotar(m));
+    if (m.ficha.mortos.has(r.indexOf(chefes[0])) && m.ficha.chefeEm === null) chefeDoMeio = true;
+    if (n % 6 === 0) for (const ev of m.eventos.splice(0)) if (servidor.aplicar(ev) !== null) recusas++;
+  }
+  for (const ev of m.eventos.splice(0)) if (servidor.aplicar(ev) !== null) recusas++;
+  assert.equal(recusas, 0, 'o servidor recusou eventos honestos');
+  assert.equal(servidor.total(tempos.fim, true), m.ficha.total(tempos.fim, true));
+  assert.ok(chefeDoMeio, 'o espantalho caiu e a campanha seguiu');
+  assert.ok(m.ficha.ondasVivas(tempos.fim) >= 5);
+  console.log(`campanha: ${m.ficha.total(tempos.fim, true)} pontos, ${m.ficha.vidas} vidas, chefe final ${m.ficha.chefeEm}, ondas ${m.ficha.ondasVivas(tempos.fim)}`);
+});

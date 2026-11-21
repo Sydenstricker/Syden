@@ -12,7 +12,8 @@ const servicos: NonNullable<OpcoesDasLendas['servicos']> = {
   avatarDe: (userId) => db.avatarDoJogo(userId),
   guardarTrofeu: (t) => db.guardarTrofeu(t),
   // o recorde do Solo (19/11/2026), na tabela comum: as rodadas até o dragão, contadas pelo servidor
-  guardarRecorde: (userId, rodadas, extra) => db.guardarRecordeDoSolo(userId, 'lendas', '', rodadas, true, extra),
+  // (21/11/2026: a variante é o nível de desafio; o 0 continua na de sempre)
+  guardarRecorde: (userId, rodadas, extra, variante) => db.guardarRecordeDoSolo(userId, 'lendas', variante, rodadas, true, extra),
 };
 
 export const lendas: Definicao = criarLendas({ servicos });

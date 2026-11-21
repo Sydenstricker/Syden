@@ -23,7 +23,7 @@ import { FicharioDeGeneros, naFicha, useFicha, classeDaFicha, fichaQueVale, emOr
 import { JogoGolfe3D, type EstadoGolfe3D } from './JogoGolfe3D';
 import { EscolhaDoFutebolNaSala, JogoFutebol, type EstadoFutebol } from './JogoFutebol';
 import { EscolhaDaSalaDasTocas, JogoTocas, type EstadoTocas } from './JogoTocas';
-import { JogoCaca } from './JogoCaca';
+import { EscolhaDaCaca, JogoCaca } from './JogoCaca';
 import { EscolhaDaFaseDaNave, JogoNave, type EstadoNave } from './JogoNave';
 import { JogoEstelar, type EstadoEstelar } from './JogoEstelar';
 import { EscolhaDaArena, JogoBalao, type EstadoBalao } from './JogoBalao';
@@ -47,7 +47,7 @@ import { JogoPlanador, type EstadoPlanador } from './JogoPlanador';
 import { JogoPinball, type EstadoPinball } from './JogoPinball';
 import { EscolhaDoPercurso, JogoGincana, type EstadoGincana } from './JogoGincana';
 import { JogoTransito, type EstadoTransito } from './JogoTransito';
-import { JogoRingue, type EstadoRingue } from './JogoRingue';
+import { EscolhaDoCircuito, JogoRingue, type EstadoRingue } from './JogoRingue';
 import { EscolhaDaPonte, JogoPonte, type EstadoPonte } from './JogoPonte';
 import { JogoLobisomem } from './JogoLobisomem';
 import { JogoPalavra } from './JogoPalavra';
@@ -238,7 +238,7 @@ export function PainelDoMinijogo({
     comecou.current = true;
     if (comecarCom === 'corrida') setCorrendo(true);
     else if (comecarCom === 'plataforma') setPulando(true);
-    else if (pedeCategoria(comecarCom) || comecarCom === 'briga' || comecarCom === 'comando' || comecarCom === 'chefe' || comecarCom === 'nave' || comecarCom === 'masmorra' || comecarCom === 'bichos' || comecarCom === 'ponte' || comecarCom === 'cidades' || comecarCom === 'tabuleiro' || comecarCom === 'festa' || ROBOS_NO_SOLO[comecarCom] || MESAS_COM_ESCOLHAS.has(comecarCom)) setEscolhendo(comecarCom);
+    else if (pedeCategoria(comecarCom) || comecarCom === 'ringue' || comecarCom === 'caca' || comecarCom === 'briga' || comecarCom === 'comando' || comecarCom === 'chefe' || comecarCom === 'nave' || comecarCom === 'masmorra' || comecarCom === 'bichos' || comecarCom === 'ponte' || comecarCom === 'cidades' || comecarCom === 'tabuleiro' || comecarCom === 'festa' || ROBOS_NO_SOLO[comecarCom] || MESAS_COM_ESCOLHAS.has(comecarCom)) setEscolhendo(comecarCom);
     else void tentar(() => aoComecar(comecarCom, {}, true));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [comecarCom]);
@@ -375,6 +375,19 @@ export function PainelDoMinijogo({
           aoVoltar={() => setEscolhendo(null)}
         />
       )}
+      {/* o lote D (21/11/2026): o circuito do Ringue, e o modo da Caça no Solo */}
+      {!partida && escolhendo === 'ringue' && (
+        <EscolhaDoCircuito
+          aoEscolher={(circuito) => tentar(() => aoComecar('ringue', { circuito }, aba === 'solo').then(() => setEscolhendo(null)))}
+          aoVoltar={() => setEscolhendo(null)}
+        />
+      )}
+      {!partida && escolhendo === 'caca' && (
+        <EscolhaDaCaca
+          aoEscolher={(modo) => tentar(() => aoComecar('caca', modo ? { categoria: modo } : {}, aba === 'solo').then(() => setEscolhendo(null)))}
+          aoVoltar={() => setEscolhendo(null)}
+        />
+      )}
       {!partida && escolhendo === 'nave' && (
         <EscolhaDaFaseDaNave
           aoEscolher={(fase) => tentar(() => aoComecar('nave', { fase }, aba === 'solo').then(() => setEscolhendo(null)))}
@@ -409,7 +422,7 @@ export function PainelDoMinijogo({
       {/* O Rolê do coelho na sala: a pista da turma (o parque ou a praça, 19/11/2026); no Solo, a escolha fica dentro do jogo. */}
       {!partida && escolhendo === 'skate' && (
         <EscolhaDaPistaDoSkate
-          aoEscolher={(pista) => tentar(() => aoComecar('skate', { pista }, false).then(() => setEscolhendo(null)))}
+          aoEscolher={(pista, conjunto) => tentar(() => aoComecar('skate', { pista, conjunto }, false).then(() => setEscolhendo(null)))}
           aoVoltar={() => setEscolhendo(null)}
         />
       )}
@@ -563,7 +576,7 @@ export function PainelDoMinijogo({
                         : setEscolhendo('plataforma')
                     : (jogo.id === 'balao' || jogo.id === 'jato' || jogo.id === 'barco' || jogo.id === 'torre' || jogo.id === 'gincana' || jogo.id === 'carrinhos' || jogo.id === 'skate' || jogo.id === 'tocas' || jogo.id === 'futebol') && aba === 'coletivo'
                       ? setEscolhendo(jogo.id)
-                    : jogo.id === 'briga' || jogo.id === 'comando' || jogo.id === 'chefe' || jogo.id === 'nave' || jogo.id === 'masmorra' || jogo.id === 'bichos' || jogo.id === 'ponte' || jogo.id === 'tabuleiro' || jogo.id === 'festa' || jogo.id === 'cidades' || ROBOS_NO_SOLO[jogo.id] || MESAS_COM_ESCOLHAS.has(jogo.id) || pedeCategoria(jogo.id, aba === 'solo')
+                    : jogo.id === 'ringue' || (jogo.id === 'caca' && aba === 'solo') || jogo.id === 'briga' || jogo.id === 'comando' || jogo.id === 'chefe' || jogo.id === 'nave' || jogo.id === 'masmorra' || jogo.id === 'bichos' || jogo.id === 'ponte' || jogo.id === 'tabuleiro' || jogo.id === 'festa' || jogo.id === 'cidades' || ROBOS_NO_SOLO[jogo.id] || MESAS_COM_ESCOLHAS.has(jogo.id) || pedeCategoria(jogo.id, aba === 'solo')
                       ? setEscolhendo(jogo.id)
                       : tentar(() => aoComecar(jogo.id, {}, aba === 'solo'))
                 }

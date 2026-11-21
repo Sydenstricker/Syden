@@ -405,3 +405,51 @@
   border-color: var(--accent, #f0c93a);
   background: color-mix(in srgb, var(--accent, #f0c93a) 22%, transparent);
 }
+
+/* 21/11/2026: o nível de desafio na tela das classes, e as peças com efeito */
+.lendas-desafio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 2px 0 8px;
+}
+.lendas-desafio-rotulo {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.lendas-desafio-nivel {
+  min-width: 44px;
+  min-height: 36px;
+  padding: 4px 8px;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: inherit;
+  font-size: 15px;
+  cursor: pointer;
+}
+.lendas-desafio-nivel.escolhido {
+  border-color: #f0c93a;
+  background: rgba(240, 201, 58, 0.16);
+}
+.lendas-desafio-nivel:disabled {
+  cursor: default;
+}
+.lendas-desafio-nivel:disabled:not(.escolhido) {
+  opacity: 0.45;
+}
+.lendas-efeito {
+  display: inline-block;
+  margin: 0 2px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: rgba(123, 200, 106, 0.18);
+}
+.lendas-efeito-texto {
+  font-size: 12px;
+  color: var(--text-muted);
+  max-width: 220px;
+  text-align: center;
+}

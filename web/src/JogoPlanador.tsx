@@ -596,7 +596,7 @@ function EscolhaDoDesafio({ aoEscolher, recordes, eu, escolhido }: { aoEscolher:
             <span>{t(NOMES_DOS_DESAFIOS[d.tipo])}</span>
             <span className="planador-nivel" aria-hidden="true">
               {'●'.repeat(d.nivel)}
-              {'○'.repeat(Math.max(0, 4 - d.nivel))}
+              {'○'.repeat(Math.max(0, 5 - d.nivel))}
               {(d.vento[0] || d.vento[1]) ? ' 🌬' : ''}
               {d.termicas.length ? ' ⇧' : ''}
             </span>

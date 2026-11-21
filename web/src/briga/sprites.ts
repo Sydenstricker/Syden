@@ -80,10 +80,16 @@ export function desenhoDoBicho(tipo: TipoDeInimigo, estado: EstadoDoInimigo, ms:
     case 'prep-investida':
     case 'prep-pancada':
     case 'prep-sopro':
+    case 'prep-esporos':
+    case 'prep-coice':
+    case 'prep-onda':
       return INICIO.prep + (ms < 300 ? 0 : 1);
     case 'atacando':
     case 'pancada':
     case 'sopro':
+    case 'esporos':
+    case 'coice':
+    case 'onda':
     case 'mergulhando':
       return INICIO.golpe + (ms < 100 ? 0 : 1);
     case 'saltando':
@@ -116,7 +122,7 @@ export function desenharBichoDaFolha(
   const f = FOLHAS_DOS_BICHOS[b.tipo];
   const x = folha(b.tipo);
   if (!f || !x) return;
-  const prep = b.estado === 'preparando' || b.estado === 'mirando' || b.estado === 'prep-investida' || b.estado === 'prep-pancada' || b.estado === 'prep-sopro';
+  const prep = b.estado === 'preparando' || b.estado === 'mirando' || b.estado.startsWith('prep-');
   const treme = prep && Math.floor(tempo / 50) % 2 ? 1 : 0;
   const quadro = desenhoDoBicho(b.tipo, b.estado, b.ms, tempo);
   const L = f.lado;

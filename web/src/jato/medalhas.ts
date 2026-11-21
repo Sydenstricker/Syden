@@ -9,4 +9,6 @@ export const TEMPO_DO_PILOTO_DO_JATO: Record<string, number> = {
   'nuvens-1': 2288,
   'aurora-1': 2740,
   'tempestade-1': 3060,
+  'asteroides-1': 2345,
+  'avenida-1': 2700,
 };

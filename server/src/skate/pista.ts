@@ -153,6 +153,21 @@ export interface Objetivos {
 
 export const PALAVRA = 'TOCA';
 
+/**
+ * O SEGUNDO CONJUNTO DE OBJETIVOS (21/11/2026, o lote D): escolhido na largada, nas duas pistas. Outra palavra no ar (também
+ * NOSSA: "PULO"), outro esconderijo da fita, metas maiores de pontos e de combo, e duas manobras: um giro de `giro` graus e um
+ * manual de `manual` segundos. Os saltos dele ficam vazios: os pontos dos saltos com nome continuam os do primeiro conjunto
+ * (a pista é a mesma, e o recorde de pontos também).
+ */
+export interface SegundoConjunto extends Objetivos {
+  giro: number;
+  manual: number;
+}
+export const PALAVRA_2 = 'PULO';
+/** As palavras dos conjuntos, pelo índice (0: o primeiro, 1: o segundo). */
+export const PALAVRAS = [PALAVRA, PALAVRA_2] as const;
+export const CONJUNTOS = 2;
+
 function montarParque(): { pecas: Peca[]; trilhos: Trilho[] } {
   const pecas: Peca[] = [];
   // as duas pontas: uma fileira de quarters de parede a parede, as bocas viradas uma para a outra
@@ -266,11 +281,13 @@ export interface Pista {
   pecas: Peca[];
   trilhos: Trilho[];
   objetivos: Objetivos;
+  /** O segundo conjunto de objetivos (21/11/2026). */
+  segundo: SegundoConjunto;
   /** As peças que têm chão (as do perfil), indexadas pela casa que tocam. */
   porCasa: number[][];
 }
 
-function criarPista(id: string, m: { pecas: Peca[]; trilhos: Trilho[] }, objetivos: Objetivos): Pista {
+function criarPista(id: string, m: { pecas: Peca[]; trilhos: Trilho[] }, objetivos: Objetivos, segundo: SegundoConjunto): Pista {
   const grade: number[][] = Array.from({ length: LARGURA * PROFUNDIDADE }, () => []);
   m.pecas.forEach((p, i) => {
     if (!p.perfil) return;
@@ -279,7 +296,7 @@ function criarPista(id: string, m: { pecas: Peca[]; trilhos: Trilho[] }, objetiv
     const cz = Math.floor(p.z);
     if (cx >= 0 && cx < LARGURA && cz >= 0 && cz < PROFUNDIDADE) grade[cz * LARGURA + cx].push(i);
   });
-  return { id, pecas: m.pecas, trilhos: m.trilhos, objetivos, porCasa: grade };
+  return { id, pecas: m.pecas, trilhos: m.trilhos, objetivos, segundo, porCasa: grade };
 }
 
 /**
@@ -305,6 +322,21 @@ export const PISTAS: Pista[] = [
       // da rampa de cá para cima da caixa
       { id: 'caixa', de: { x0: 5, x1: 7, z0: 3.8, z1: 5 }, ate: { x0: 8.2, x1: 8.8, z0: 7, z1: 11 }, pontos: 350 },
     ],
+  }, {
+    // o segundo: P acima da rampa de lá, U na outra ponta do corrimão, L no alto do quarter de cá, O na outra ponta da caixa
+    letras: [
+      { x: 6, y: 1.0, z: 13.4 },
+      { x: 3.5, y: 0.95, z: 10.5 },
+      { x: 6, y: 1.55, z: 17.55 },
+      { x: 8.5, y: 0.9, z: 7.5 },
+    ],
+    // a fita: no alto do quarter de lá, no outro canto
+    fita: { x: 0.8, y: 2.3, z: 0.3 },
+    pontos: 20000,
+    combo: 5000,
+    saltos: [],
+    giro: 540,
+    manual: 3,
   }),
   criarPista('praca-1', montarPraca(), {
     // T no alto da pirâmide, O acima do corrimão, C no alto do quarter de cá, A no fim da caixa da direita
@@ -325,6 +357,21 @@ export const PISTAS: Pista[] = [
       // do kicker da direita até o quarter de cá
       { id: 'quarter', de: { x0: 10, x1: 11, z0: 5.9, z1: 7 }, ate: { x0: 7, x1: 11.9, z0: 0.15, z1: 1 }, pontos: 450 },
     ],
+  }, {
+    // o segundo: P no alto da pirâmide (do outro lado), U no alto do quarter de lá, L no outro canto do quarter de cá, O no fim
+    // da caixa da esquerda
+    letras: [
+      { x: 6, y: 1.25, z: 9.2 },
+      { x: 6, y: 1.55, z: 0.45 },
+      { x: 10, y: 1.55, z: 17.55 },
+      { x: 1.5, y: 0.9, z: 8.4 },
+    ],
+    fita: { x: 11.4, y: 2.3, z: 17.7 },
+    pontos: 20000,
+    combo: 5000,
+    saltos: [],
+    giro: 540,
+    manual: 3,
   }),
 ];
 export const IDS_DAS_PISTAS = PISTAS.map((p) => p.id);
@@ -333,6 +380,7 @@ export const IDS_DAS_PISTAS = PISTAS.map((p) => p.id);
 export let PECAS: Peca[] = PISTAS[0].pecas;
 export let TRILHOS: Trilho[] = PISTAS[0].trilhos;
 export let OBJETIVOS: Objetivos = PISTAS[0].objetivos;
+export let SEGUNDO: SegundoConjunto = PISTAS[0].segundo;
 let PORCASA: number[][] = PISTAS[0].porCasa;
 let atual = 0;
 
@@ -344,6 +392,7 @@ export function usarPista(i: number) {
   PECAS = p.pecas;
   TRILHOS = p.trilhos;
   OBJETIVOS = p.objetivos;
+  SEGUNDO = p.segundo;
   PORCASA = p.porCasa;
 }
 

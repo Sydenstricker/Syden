@@ -534,7 +534,7 @@ export function montar(id: string, roteiro: Trecho[]): Percurso {
 }
 
 /**
- * OS TRÊS PERCURSOS (curtos, de ~40 s a ~80 s). Percurso novo é id novo: mudar um traçado não mistura fantasmas nem recordes.
+ * OS PERCURSOS (curtos, de ~40 s a ~80 s; o 4 e o 5 desde 21/11/2026). Percurso novo é id novo: mudar um traçado não mistura fantasmas nem recordes.
  */
 export const ROTEIROS: Record<string, Trecho[]> = {
   // 1 — o de aprender: pedras, a rampa, um varredor, a esteira, as plataformas que andam de lado e as serras
@@ -637,6 +637,72 @@ export const ROTEIROS: Record<string, Trecho[]> = {
     { t: 'chao', comp: 4 },
     { t: 'chegada' },
   ],
+  // 4 — o do lago (21/11/2026): a plataforma que vai e volta logo na saída, os espinhos estreitos, os blocos que caem
+  // depois do varredor de quatro braços e os canhões antes da rampa
+  'lago-4': [
+    { t: 'largada' },
+    { t: 'chao', comp: 4 },
+    { t: 'andamZ', vao: 10, periodo: 260 },
+    { t: 'chao', comp: 4 },
+    { t: 'larg', w: 4 },
+    { t: 'espinhos', n: 3 },
+    { t: 'larg', w: 6 },
+    { t: 'chao', comp: 4 },
+    { t: 'posto' },
+    { t: 'pedras', xs: [-1.5, 1.5, -1.5, 1.5], vao: 1.6 },
+    { t: 'chao', comp: 4 },
+    { t: 'varredor', bracos: 4, giro: -3 },
+    { t: 'chao', comp: 2 },
+    { t: 'caem', linhas: 5 },
+    { t: 'chao', comp: 4 },
+    { t: 'posto' },
+    { t: 'canhoes', comp: 12, zs: [3, 7, 11], periodo: 100 },
+    { t: 'chao', comp: 2 },
+    { t: 'sobe' },
+    { t: 'chao', comp: 4 },
+    { t: 'andamX', n: 3, periodo: 200 },
+    { t: 'chao', comp: 4 },
+    { t: 'serras', comp: 10, zs: [3, 7], periodo: 120 },
+    { t: 'chao', comp: 4 },
+    { t: 'chegada' },
+  ],
+  // 5 — o cume (21/11/2026): sobe sempre (duas molas e duas rampas), com as esteiras contra, os varredores em par e as
+  // pedras no alto
+  'cume-5': [
+    { t: 'largada' },
+    { t: 'chao', comp: 4 },
+    { t: 'sobe' },
+    { t: 'chao', comp: 4 },
+    { t: 'larg', w: 4 },
+    { t: 'esteira', pecas: 2, v: 3 },
+    { t: 'larg', w: 6 },
+    { t: 'chao', comp: 2 },
+    { t: 'mola', sobe: 3 },
+    { t: 'chao', comp: 4 },
+    { t: 'posto' },
+    { t: 'varredor', bracos: 2, giro: 4 },
+    { t: 'chao', comp: 2 },
+    { t: 'varredor', bracos: 2, giro: -4 },
+    { t: 'chao', comp: 4 },
+    { t: 'andamX', n: 3, periodo: 190 },
+    { t: 'chao', comp: 4 },
+    { t: 'caem', linhas: 4 },
+    { t: 'chao', comp: 2 },
+    { t: 'posto' },
+    { t: 'serras', comp: 12, zs: [3, 7, 11], periodo: 140 },
+    { t: 'chao', comp: 2 },
+    { t: 'mola', sobe: 3 },
+    { t: 'chao', comp: 4 },
+    { t: 'larg', w: 4 },
+    { t: 'espinhos', n: 3 },
+    { t: 'larg', w: 6 },
+    { t: 'chao', comp: 2 },
+    { t: 'sobe' },
+    { t: 'chao', comp: 2 },
+    { t: 'pedras', xs: [0, 2, 0, -2, 0], vao: 2 },
+    { t: 'chao', comp: 4 },
+    { t: 'chegada' },
+  ],
 };
 
 /**
@@ -645,6 +711,9 @@ export const ROTEIROS: Record<string, Trecho[]> = {
  */
 export const ROTEIROS_DE_SOBREVIVENCIA: Record<string, Trecho[]> = {
   'campo-1': [{ t: 'campo', lado: 5, giro: 2, acel: 1, bracos: 2, segundos: 120 }],
+  // a segunda (21/11/2026): o campo maior, 7 × 7: mais lugar para fugir, e o braço mais comprido, que varre a ponta mais depressa
+  // (o de quatro braços foi medido e não deu: o piloto do teste caía em 4 s)
+  'campo-2': [{ t: 'campo', lado: 7, giro: 2, acel: 1, bracos: 2, segundos: 120 }],
 };
 
 export const PERCURSOS: Record<string, Percurso> = Object.fromEntries(

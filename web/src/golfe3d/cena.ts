@@ -55,11 +55,51 @@ export const MODELO: Record<Peca, string> = {
   castelo: 'castle',
   moinho: 'windmill',
   lacuna: 'gap',
-  tunel: 'tunnel-wide',
+  // o túnel estreito (21/11/2026): o de antes, o largo, tinha pilares por dentro que a física não tem (e o arquivo não estava
+  // em web/public: o buraco do parque com túnel não abria o 3D)
+  tunel: 'tunnel-narrow',
   lado: 'side',
   aberto: 'open',
   'canto-interno': 'inner-corner',
+  bifurcacao: 'split',
+  'bifurcacao-inicio': 'split-start',
+  'bifurcacao-t': 'split-t',
+  crista: 'crest',
+  'canto-morro': 'hill-corner',
+  canaleta: 'spline-concave-straight',
+  'canaleta-ponta': 'spline-concave-straight',
 };
+
+/**
+ * A CANALETA (21/11/2026): o modelo do kit é uma pista côncava de 4 casas, com o chão em y = −1 e de z = 0 a 4. Cada casa
+ * leva um pedaço dele, encolhido a uma casa (a seção é a mesma em todo o comprimento). Na PONTA, o fundo sobe até o chão
+ * liso em v = −0,5, pela mesma conta da física (`canaleta(true)` em fisica.ts).
+ */
+function pecaDaCanaleta(o: THREE.Object3D, ponta: boolean, guardar: (g: THREE.BufferGeometry) => void): THREE.Object3D {
+  const g = new THREE.Group();
+  o.position.set(0, 1, -0.5);
+  o.scale.set(1, 1, 0.25);
+  g.add(o);
+  if (ponta)
+    o.traverse((n) => {
+      const mesh = n as THREE.Mesh;
+      if (!mesh.isMesh) return;
+      mesh.geometry = mesh.geometry.clone();
+      guardar(mesh.geometry);
+      const pos = mesh.geometry.getAttribute('position') as THREE.BufferAttribute;
+      for (let i = 0; i < pos.count; i++) {
+        const y = pos.getY(i) + 1;
+        // só o fundo da canaleta (entre o meio, 0,032, e a beira, 0,063); as paredes e a base ficam
+        if (y < 0.02 || y > 0.064) continue;
+        const s = pos.getZ(i) / 4;
+        const w = s * s * (3 - 2 * s);
+        pos.setY(i, -1 + 0.0633 - (0.0633 - y) * w);
+      }
+      pos.needsUpdate = true;
+      mesh.geometry.computeVertexNormals();
+    });
+  return g;
+}
 
 /** O alto das peças que têm prédio em cima (medido nos modelos). */
 const TETO: Partial<Record<Peca, number>> = { castelo: 0.68, moinho: 1.2 };
@@ -263,7 +303,8 @@ export class CenaDoGolfe3D {
 
     // as peças, cada uma na casa dela, com o giro e a altura da base (e os pilares embaixo de quem está no alto)
     for (const [peca, cx, cz, giro, base] of this.buraco.casas) {
-      const o = this.clonar(modelos.get(MODELO[peca])!);
+      const modelo = this.clonar(modelos.get(MODELO[peca])!);
+      const o = peca === 'canaleta' || peca === 'canaleta-ponta' ? pecaDaCanaleta(modelo, peca === 'canaleta-ponta', (g) => this.proprio(g)) : modelo;
       o.position.set(cx, base, cz);
       o.rotation.y = (giro * Math.PI) / 2;
       this.cena.add(o);

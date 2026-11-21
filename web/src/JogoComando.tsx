@@ -8,7 +8,8 @@ import { useT } from './i18n';
 import type { Partida } from './minijogos';
 import { desenharBarraDoChefe, desenharOndas, desenharSeta, folhaDe } from './briga/desenho';
 import { carregarFolhas } from './briga/sprites';
-import { ACOES, ARMAS, ARMA_MS, BICHOS, CAMPANHA_DO_COMANDO, CENARIO_DA_FASE, FASES_DO_COMANDO, GRANADA, W, H } from './comando/conta';
+import { ACOES, ARMAS, ARMA_MS, BICHOS, CAMPANHA_DO_COMANDO, CENARIO_DA_FASE, FASES_DO_COMANDO, GRANADA, PLATAFORMAS_DA_FASE, REFENS_DA_FASE, W, H } from './comando/conta';
+import { useGrupoDeToque } from './toqueDosJogos';
 import { desenharCenario } from './briga/cenarios';
 import { nomeDaFaseDaBriga } from './JogoBriga';
 import {
@@ -47,7 +48,7 @@ declare global {
   }
 }
 
-/** O teclado: setas ou WASD correm e miram, X/J atira (segurando), Z/K/Espaço pula, C/L solta a granada. */
+/** O teclado: setas ou WASD correm e miram, X/J atira (segurando), Z/K/Espaço pula, C/L solta a granada, Q/Shift firma (segurando). */
 function useTeclado(ativo: boolean, cmd: Comandos) {
   useEffect(() => {
     if (!ativo) return;
@@ -62,6 +63,7 @@ function useTeclado(ativo: boolean, cmd: Comandos) {
       else if (k === 'arrowup' || k === 'w') cmd.cima = apertada;
       else if (k === 'arrowdown' || k === 's') cmd.baixo = apertada;
       else if (k === 'x' || k === 'j') cmd.atirar = apertada;
+      else if (k === 'q' || k === 'shift') cmd.firmar = apertada;
       else if (k === 'z' || k === 'k' || k === ' ') {
         if (apertada && !e.repeat) cmd.pulo = true;
       } else if (k === 'c' || k === 'l') {
@@ -179,7 +181,7 @@ function Palco({
     g.imageSmoothingEnabled = false;
     const folha = new Image();
     folha.src = `${import.meta.env.BASE_URL}briga/coelho.png`;
-    carregarFolhas(['cogumelo', 'dino', 'abelha', 'dragao', 'cacto', 'golem', 'redemoinho', 'yeti']);
+    carregarFolhas(['cogumelo', 'dino', 'abelha', 'dragao', 'cacto', 'golem', 'redemoinho', 'yeti', 'alpaca-rei', 'macaco', 'espinhento', 'corvo']);
     const enviar = (dados: unknown) =>
       solo ? socket.emit('minijogo-solo:tempo-real', { dados }) : socket.emit('minijogo:tempo-real', { channelId, dados });
     const cliente = new Cliente(eu, enviar);
@@ -247,8 +249,9 @@ function Palco({
       g.save();
       g.translate(imp.dx, imp.dy);
       desenharFundo(g, cx, tempo, v.cenario);
-      desenharPlataformas(g, cx);
-      desenharGaiolas(g, cx, v.gaiolas, folhaDe(folha, null), tempo);
+      // as tábuas e as gaiolas da fase na tela (cada uma tem as suas desde 21/11/2026)
+      desenharPlataformas(g, cx, PLATAFORMAS_DA_FASE[v.mapa]);
+      desenharGaiolas(g, cx, v.gaiolas, folhaDe(folha, null), tempo, REFENS_DA_FASE[v.mapa]);
       desenharItens(g, cx, v.itens, tempo);
       desenharAvisos(g, v.bichos, cx, tempo);
       // quem leva bala pisca branco, alternando (com a arma rápida, branco direto apagava o bicho)
@@ -328,6 +331,7 @@ function Palco({
             { teclas: ['x'], rotulo: t('Atirar') },
             { teclas: ['z', 'espaco'], rotulo: t('Pular') },
             { teclas: ['c'], rotulo: t('Granada') },
+            { teclas: ['q'], rotulo: t('Firmar e mirar') },
           ]}
         />
       )}
@@ -335,36 +339,39 @@ function Palco({
   );
 }
 
-/** Os botões da tela de toque: o direcional à esquerda (corre e mira), e pular, atirar (segurando) e a granada à direita. */
+/**
+ * Os botões da tela de toque: o direcional à esquerda (corre e mira), e firmar e atirar (segurando), pular e a granada à direita.
+ * Desde 21/11/2026 pelo grupo comum (toqueDosJogos.tsx): o dedo é seguido pela POSIÇÃO (o polegar desliza de uma seta para a
+ * outra sem levantar) e dois dedos valem juntos (firmar com um, mirar e atirar com os outros).
+ */
 function Toque({ cmd }: { cmd: Comandos }) {
   const t = useT();
-  const segurar = (k: 'esquerda' | 'direita' | 'cima' | 'baixo' | 'atirar') => ({
-    onPointerDown: (e: React.PointerEvent) => {
-      e.preventDefault();
-      cmd[k] = true;
-    },
-    onPointerUp: () => (cmd[k] = false),
-    onPointerCancel: () => (cmd[k] = false),
-    onPointerLeave: () => (cmd[k] = false),
-  });
-  const apertar = (k: 'pulo' | 'granada') => ({
-    onPointerDown: (e: React.PointerEvent) => {
-      e.preventDefault();
-      cmd[k] = true;
-    },
+  const antes = useRef<ReadonlySet<string>>(new Set());
+  const grupo = useGrupoDeToque((s) => {
+    cmd.esquerda = s.has('esquerda');
+    cmd.direita = s.has('direita');
+    cmd.cima = s.has('cima');
+    cmd.baixo = s.has('baixo');
+    cmd.atirar = s.has('atirar');
+    cmd.firmar = s.has('firmar');
+    // o pulo e a granada são apertos: valem quando o dedo chega no botão
+    if (s.has('pulo') && !antes.current.has('pulo')) cmd.pulo = true;
+    if (s.has('granada') && !antes.current.has('granada')) cmd.granada = true;
+    antes.current = s;
   });
   return (
-    <div className="briga-toque">
+    <div className="briga-toque" {...grupo}>
       <div className="briga-direcional" role="group" aria-label={t('Andar e mirar')}>
-        <button type="button" className="briga-cima" aria-hidden="true" tabIndex={-1} {...segurar('cima')}>▲</button>
-        <button type="button" className="briga-esq" aria-hidden="true" tabIndex={-1} {...segurar('esquerda')}>◀</button>
-        <button type="button" className="briga-dir" aria-hidden="true" tabIndex={-1} {...segurar('direita')}>▶</button>
-        <button type="button" className="briga-baixo" aria-hidden="true" tabIndex={-1} {...segurar('baixo')}>▼</button>
+        <button type="button" className="briga-cima" data-toque="cima" aria-hidden="true" tabIndex={-1}>▲</button>
+        <button type="button" className="briga-esq" data-toque="esquerda" aria-hidden="true" tabIndex={-1}>◀</button>
+        <button type="button" className="briga-dir" data-toque="direita" aria-hidden="true" tabIndex={-1}>▶</button>
+        <button type="button" className="briga-baixo" data-toque="baixo" aria-hidden="true" tabIndex={-1}>▼</button>
       </div>
       <div className="briga-botoes">
-        <button type="button" aria-label={t('Granada')} {...apertar('granada')}>✿</button>
-        <button type="button" aria-label={t('Pular')} {...apertar('pulo')}>⤒</button>
-        <button type="button" aria-label={t('Atirar')} {...segurar('atirar')}>●</button>
+        <button type="button" data-toque="firmar" aria-label={t('Firmar e mirar')}>⌖</button>
+        <button type="button" data-toque="granada" aria-label={t('Granada')}>✿</button>
+        <button type="button" data-toque="pulo" aria-label={t('Pular')}>⤒</button>
+        <button type="button" data-toque="atirar" aria-label={t('Atirar')}>●</button>
       </div>
     </div>
   );
@@ -390,7 +397,8 @@ function MiniaturaDoComando({ cenario }: { cenario: number }) {
 }
 
 /**
- * A ESCOLHA DA FASE DO COMANDO (19/11/2026): a floresta, o deserto (com o yeti de subchefe) ou a campanha, as duas seguidas.
+ * A ESCOLHA DA FASE DO COMANDO (19/11/2026): a floresta, o deserto (com o yeti de subchefe e, desde 21/11/2026, a alpaca-rei no
+ * fim) ou a neve (21/11/2026), ou a campanha, as três seguidas.
  * Os nomes são os das fases da Briga (os mesmos cenários).
  */
 export function EscolhaDoComando({ aoEscolher, aoVoltar }: { aoEscolher: (fase: string) => void; aoVoltar: () => void }) {

@@ -205,3 +205,60 @@ test('a segunda mesa, o pomar: a rampa do lado esquerdo cai na terceira pista, e
   sim.aplicar(b, sim.compactar(cmds));
   assert.equal(b.pontos, a.pontos);
 });
+
+// ---------------- O lote D (21/11/2026): o modo final ----------------
+
+test('o modo final: cumpridas todas as missões, tudo vale o triplo por um tempo, e a partida continua acabando pelas bolas', () => {
+  // a mesa com cinco missões já feitas, na sexta, a um evento de cumprir: o próximo repolho fecha o ciclo
+  const k = sim.novaMesa();
+  k.feitas = sim.TODAS_AS_MISSOES & ~(1 << 1);
+  k.missao = 1;
+  k.missaoConta = sim.MISSOES[1].meta - 1;
+  const r = sim.MESAS[0].repolhos[0];
+  k.bolas = [{ x: r.x, y: r.y - r.r - sim.RAIO - 6, vx: 0, vy: 120, naMola: false, auto: false, presa: 0, orbita: 0, parada: 0, trilho: 0 }];
+  let comecou = false;
+  for (let i = 0; i < 60 && !comecou; i++) {
+    sim.passo(k, 0);
+    comecou = k.eventos.some((e) => e.tipo === 'final' && e.comecou);
+  }
+  assert.ok(comecou, 'o modo final começou');
+  assert.equal(k.final, sim.FINAL_PASSOS);
+  assert.equal(k.finais, 1);
+  assert.equal(k.feitas, 0, 'o ciclo recomeça');
+  assert.ok(k.tocaAcesa, 'a toca acende');
+  // no final, o repolho vale o triplo, e a missão não anda
+  const antes = k.pontos;
+  const missao = k.missaoConta;
+  let ganhou = 0;
+  for (let i = 0; i < 400 && ganhou === 0; i++) {
+    sim.passo(k, sim.pilotoAutomatico(k));
+    for (const e of k.eventos) if (e.tipo === 'repolho') ganhou = e.pontos;
+  }
+  if (ganhou > 0) assert.equal(ganhou % sim.FINAL_VEZES, 0, 'os pontos do final são o triplo');
+  assert.ok(k.pontos >= antes);
+  assert.equal(k.missaoConta, missao, 'as missões param no modo final');
+  // ele acaba (pelo prazo ou pela bola), e a partida acaba pelas bolas
+  let acabou = false;
+  while (!k.terminou) {
+    sim.passo(k, sim.pilotoAutomatico(k));
+    if (k.eventos.some((e) => e.tipo === 'final' && !e.comecou)) acabou = true;
+  }
+  assert.ok(acabou, 'o modo final acabou');
+  assert.ok(k.passo < sim.PASSOS_MAXIMOS, 'a partida acabou pelas bolas, não pelo teto');
+});
+
+test('o modo final: o piloto chega a ele em alguma partida, e a mesma partida refeita dá os mesmos pontos', () => {
+  let chegou = 0;
+  for (let s = 0; s < 12; s++) {
+    const { k, comandos, eventos } = partida(s);
+    assert.ok(k.passo < sim.PASSOS_MAXIMOS, `a partida ${s} acabou pelas bolas`);
+    if ((eventos.final ?? 0) > 0) {
+      chegou++;
+      const b = sim.novaMesa();
+      sim.aplicar(b, sim.compactar(comandos));
+      assert.equal(b.pontos, k.pontos);
+      assert.equal(b.finais, k.finais);
+    }
+  }
+  console.log(`o piloto chegou ao modo final em ${chegou} de 12 partidas`);
+});

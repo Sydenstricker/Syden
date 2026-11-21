@@ -54,6 +54,7 @@ import {
   type Comandos,
   type Quadro,
   coisaAFrente,
+  ehChefe,
   MASMORRAS,
   type Masmorra,
 } from './masmorra/regras';
@@ -97,6 +98,10 @@ export interface EstadoMasmorra {
   /** No Solo (19/11/2026): o tempo da masmorra vencida e o recorde de antes (a tabela comum). */
   /** Qual masmorra (19/11/2026): a toca de sempre, ou a mina dos postes. */
   masmorra?: Masmorra;
+  /** O heroico (21/11/2026): bichos mais fortes, menos corações. */
+  heroico?: boolean;
+  /** Os achados (21/11/2026): [quantos a turma achou, quantos há] dos baús e dos segredos. */
+  achados?: { baus: [number, number]; segredos: [number, number] };
   recorde?: {
     tempoMs: number | null;
     antes: number | null;
@@ -221,19 +226,59 @@ function useTeclado(ativo: boolean, cmd: Comandos) {
   }, [ativo, cmd]);
 }
 
-/** A ESCOLHA DA MASMORRA (19/11/2026): a toca de sempre, ou a mina dos postes (com o gancho). */
-export function EscolhaDaMasmorra({ aoEscolher, aoVoltar }: { aoEscolher: (m: Masmorra) => void; aoVoltar: () => void }) {
+/** O heroico escolhido da última vez, lembrado no aparelho. */
+const HEROICO_GUARDADO = 'syden:masmorra-heroico';
+
+/**
+ * A ESCOLHA DA MASMORRA (19/11/2026): a toca de sempre, ou a mina dos postes (com o gancho). Desde 21/11/2026, o HEROICO: a
+ * masmorra vai como "toca-heroico" ou "mina-heroico" (o servidor entende, e o "Jogar de novo" manda o mesmo de volta).
+ */
+export function EscolhaDaMasmorra({ aoEscolher, aoVoltar }: { aoEscolher: (m: string) => void; aoVoltar: () => void }) {
   const t = useT();
+  const [heroico, setHeroico] = useState(() => {
+    try {
+      return localStorage.getItem(HEROICO_GUARDADO) === '1';
+    } catch {
+      return false;
+    }
+  });
+  const escolher = (m: Masmorra) => {
+    try {
+      localStorage.setItem(HEROICO_GUARDADO, heroico ? '1' : '0');
+    } catch {
+      // sem armazenamento: só não lembra
+    }
+    aoEscolher(heroico ? `${m}-heroico` : m);
+  };
   const opcoes: { id: Masmorra; nome: string; cor: string }[] = [
     { id: 'toca', nome: t('Toca do rei-cogumelo'), cor: '#5e4e46' },
     { id: 'mina', nome: t('Mina dos postes'), cor: '#7b4f2e' },
   ];
   return (
     <div className="corrida-escolha">
+      <fieldset className="mesa-grupo">
+        <legend>{t('Dificuldade')}</legend>
+        <div className="mesa-botoes">
+          {([false, true] as const).map((h) => (
+            <button
+              key={String(h)}
+              type="button"
+              className={`tab-rodadas-botao${heroico === h ? ' escolhida' : ''}`}
+              aria-pressed={heroico === h}
+              onClick={() => {
+                tocar('clique');
+                setHeroico(h);
+              }}
+            >
+              {h ? t('Heroico') : t('Normal')}
+            </button>
+          ))}
+        </div>
+      </fieldset>
       <ul className="corrida-pistas">
         {opcoes.map((o) => (
           <li key={o.id}>
-            <button type="button" className="corrida-pista-botao" onClick={() => aoEscolher(o.id)}>
+            <button type="button" className="corrida-pista-botao" onClick={() => escolher(o.id)}>
               <span className="masmorra-escolha-cor" style={{ background: o.cor }} aria-hidden="true" />
               <strong>{o.nome}</strong>
             </button>
@@ -279,6 +324,12 @@ export function JogoMasmorra({
     return (
       <div className="masmorra">
         <p className="briga-desfecho">{estado.venceu ? t('Vitória!') : t('Derrota')}</p>
+        {estado.achados && (
+          <p className="minijogo-situacao masmorra-achados">
+            <span>{t('Baús: {n}/{total}', { n: estado.achados.baus[0], total: estado.achados.baus[1] })}</span>{' '}
+            <span>{t('Segredos: {n}/{total}', { n: estado.achados.segredos[0], total: estado.achados.segredos[1] })}</span>
+          </p>
+        )}
         {estado.recorde?.tempoMs != null && (
           <p className="minijogo-situacao">
             {estado.recorde.novo ? t('Novo recorde!') : null} <span className="corrida-relogio">{tempoLegivel(estado.recorde.tempoMs)}</span>
@@ -348,7 +399,8 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoMasmo
     const g = c?.getContext('2d');
     if (!c || !g || !socket) return;
     g.imageSmoothingEnabled = false;
-    carregarFolhas(['cogumelo', 'cacto', 'sapo', 'rei-cogumelo'] as TipoDeInimigo[]);
+    // o golem-rei é a folha do golem, em dobro (21/11/2026)
+    carregarFolhas(['cogumelo', 'cacto', 'sapo', 'rei-cogumelo', 'abelha', 'fantasma', 'golem'] as TipoDeInimigo[]);
     const folha = new Image();
     folha.src = `${import.meta.env.BASE_URL}briga/coelho.png`;
     const linha = new Linha();
@@ -478,7 +530,16 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoMasmo
         } else if (tipo === 'v') tocar('encaixe');
         else if (tipo === 'sm') tocar('item');
         else if (tipo === 'g') tocar('medalha');
-        else if (tipo === 'gh') {
+        else if (tipo === 'tk') {
+          // a couraça do golem-rei: o golpe tine
+          efeitos.push({ tipo: 'faisca', x: r[2] as number, y: (r[3] as number) - 24, em: agoraMs });
+          tocar('erro');
+        } else if (tipo === 'gb') {
+          // o gancho pegou o golem-rei: a corda dele até a pessoa, e o tranco
+          corda = { quem: r[0] as number, x: r[1] as number, y: (r[2] as number) + 10, ate: agoraMs + 320 };
+          tocar('impacto');
+          impacto.tremer(0.6, 250);
+        } else if (tipo === 'gh') {
           // o gancho puxou alguém: a corda aparece um instante, do poste até a pessoa
           corda = { quem: r[0] as number, x: r[1] as number, y: r[2] as number, ate: agoraMs + 260 };
           tocar('desliza');
@@ -527,6 +588,7 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoMasmo
               m: mundo,
               eu: eu_,
               temCenoura,
+              temGancho: ultimo.it[3] === 1,
               chaves: ultimo.it[1],
               placasResolvidas: ultimo.pr === 1,
               bauAberto: ultimo.bau === 2,
@@ -600,7 +662,7 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoMasmo
             enviar({ tipo: 'cortar', a: golpe.id, c: moita[0], l: moita[1] });
           }
           for (const b of naTela) {
-            if (acertados.has(b.id) || b.estado === 'morto' || b.z > 12) continue;
+            if (acertados.has(b.id) || b.estado === 'morto' || b.estado === 'sumido' || b.z > 12) continue;
             if (Math.hypot(b.x - (eu_.x + dx * PA.frente), b.y - (eu_.y + dy * PA.frente)) > PA.raio + BICHOS[b.tipo].raio) continue;
             acertados.add(b.id);
             enviar({
@@ -625,7 +687,7 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoMasmo
               y: Math.round(cenoura.y),
             });
           for (const b of naTela) {
-            if (acertados.has(b.id) || b.estado === 'morto') continue;
+            if (acertados.has(b.id) || b.estado === 'morto' || b.estado === 'sumido') continue;
             if (Math.hypot(b.x - cenoura.x, b.y - cenoura.y) > CENOURA.raio + BICHOS[b.tipo].raio) continue;
             acertados.add(b.id);
             enviar({
@@ -706,6 +768,15 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoMasmo
               g.ellipse(l[9], l[10] + 6, 24, 10, 0, 0, Math.PI * 2);
               g.stroke();
             }
+            // o mergulho da abelha: a faixa por onde ela vai passar
+            if (est === 'mirando' && tipo === 'abelha') {
+              g.fillStyle = Math.floor(agoraMs / 90) % 2 ? AVISOS.investida[0] : AVISOS.investida[1];
+              g.save();
+              g.translate(l[2], l[3]);
+              g.rotate(Math.atan2(l[10] - l[3], l[9] - l[2]));
+              g.fillRect(0, -16, 150, 32);
+              g.restore();
+            }
             if (est === 'prep-investida') {
               g.fillStyle = Math.floor(agoraMs / 90) % 2 ? AVISOS.investida[0] : AVISOS.investida[1];
               g.save();
@@ -715,19 +786,30 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoMasmo
               g.restore();
             }
             if (est !== 'morto') sombra(g, l[2], pe, raio * 2.2);
-            desenharBichoDaFolha(
-              g,
-              {
-                tipo: tipo as TipoDeInimigo,
-                estado: est as EstadoDoInimigo,
-                lado: l[6],
-                ms: l[8],
-                piscando: (piscando.get(l[0]) ?? 0) > agoraMs,
-              },
-              l[2],
-              pe - l[4],
-              agoraMs,
-            );
+            const doBicho = {
+              tipo: (tipo === 'golem-rei' ? 'golem' : tipo) as TipoDeInimigo,
+              estado: (est === 'sumido' ? 'parado' : est) as EstadoDoInimigo,
+              lado: l[6],
+              ms: l[8],
+              piscando: (piscando.get(l[0]) ?? 0) > agoraMs,
+            };
+            g.save();
+            // o fantasma sumido: quase transparente (sumido, nada o acerta)
+            if (tipo === 'fantasma') g.globalAlpha = est === 'sumido' ? 0.18 : 0.85;
+            if (tipo === 'golem-rei') {
+              // o golem-rei: a folha do golem em dobro; com a couraça fechada, o brilho de pedra em volta
+              if (est !== 'atordoado' && est !== 'morto') {
+                g.strokeStyle = Math.floor(agoraMs / 200) % 2 ? 'rgba(200, 210, 225, 0.55)' : 'rgba(150, 160, 180, 0.45)';
+                g.lineWidth = 3;
+                g.beginPath();
+                g.ellipse(l[2], pe - 28, 34, 36, 0, 0, Math.PI * 2);
+                g.stroke();
+              }
+              g.translate(l[2], pe - l[4]);
+              g.scale(2, 2);
+              desenharBichoDaFolha(g, doBicho, 0, 0, agoraMs);
+            } else desenharBichoDaFolha(g, doBicho, l[2], pe - l[4], agoraMs);
+            g.restore();
             if (est === 'atordoado')
               desenharEfeito(
                 g,
@@ -739,8 +821,8 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoMasmo
                 },
                 agoraMs,
               );
-            if (est === 'cansado') desenharEfeito(g, { tipo: 'estrelas', x: l[2], y: pe - 50, em: agoraMs - 1 }, agoraMs);
-            if (tipo !== 'rei-cogumelo' && l[7] < 100 && est !== 'morto') {
+            if (est === 'cansado' || (est === 'atordoado' && tipo === 'golem-rei')) desenharEfeito(g, { tipo: 'estrelas', x: l[2], y: pe - 50, em: agoraMs - 1 }, agoraMs);
+            if (!ehChefe(tipo) && l[7] < 100 && est !== 'morto' && est !== 'sumido') {
               g.fillStyle = '#2a1e1a';
               g.fillRect(l[2] - 12, pe - 50, 24, 4);
               g.fillStyle = '#e2574a';
@@ -857,7 +939,7 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoMasmo
         desenharSemente(g, ix + 9, 50);
         ix += 30;
       }
-      const rei = bichos.find((l) => TIPOS[l[1]] === 'rei-cogumelo');
+      const rei = bichos.find((l) => ehChefe(TIPOS[l[1]] ?? 'cogumelo'));
       if (rei) {
         g.fillStyle = '#2a1e1a';
         g.fillRect(W / 2 - 122, 10, 244, 14);

@@ -818,3 +818,91 @@ test('o mato do Bosque e da Serra é esperto; o do campo, não', () => {
   const b = luta.novaBatalha([luta.lutador('rochim', 10)], [Object.assign(luta.lutador('cardao', 10), { golpes: ['investida', 'semente'] })]);
   assert.deepEqual(luta.escolhaDoRobo(b, 1, () => 0.9, true), { tipo: 'golpe', i: 1 });
 });
+
+// ---------------------------------------------------------------- 21/11/2026: a Gruta e a Liga da Toca (lote D)
+test('a Gruta: depois da Serra pela borda da direita, com bichos que só moram lá, e a porta da Liga onde dá para chegar', () => {
+  const g = regras.MAPAS.gruta;
+  assert.equal(g.escuro, true);
+  assert.equal(regras.MAPAS.serra.vizinhos.d, 'gruta');
+  assert.deepEqual(regras.passoNoMapa('serra', 23, 10, 'd'), { mapa: 'gruta', x: 0, y: 10 });
+  const [lx, ly] = g.liga!.split(',').map(Number);
+  assert.equal(g.linhas[ly][lx], 'c');
+  // os do mato da gruta que não aparecem em nenhum outro mato
+  const outros = new Set(Object.entries(regras.MAPAS).filter(([id]) => id !== 'gruta').flatMap(([, m]) => Object.values(m.matos).flatMap((x) => x.especies)));
+  const proprios = g.matos[';'].especies.filter((e) => !outros.has(e));
+  assert.ok(proprios.length >= 3, proprios.join());
+  // a Liga: quatro lutas, cada uma mais forte, nomes próprios
+  assert.equal(regras.LIGA.length, 4);
+  const maior = (k: number) => Math.max(...regras.LIGA[k].equipe.map(([, n]) => n));
+  for (let k = 1; k < regras.LIGA.length; k++) assert.ok(maior(k) >= maior(k - 1));
+  assert.ok(maior(0) > Math.max(...regras.DESAFIANTES.at(-1)!.equipe.map(([, n]) => n)), 'a Liga vem depois da escada');
+  for (const d of regras.LIGA) for (const [e] of d.equipe) assert.ok(regras.ESPECIES[e], e);
+});
+
+test('a Liga da Toca: fechada antes da escada; depois, quatro lutas seguidas sem descanso, e a Liga vencida', () => {
+  const caio = caioId;
+  const [lx, ly] = regras.MAPAS.gruta.liga!.split(',').map(Number);
+  // na frente da porta, sem a escada
+  db.guardarAventuraDosBichos(caio, {
+    v: 1, mapa: 'gruta', x: lx, y: ly + 1, cenouras: 0, chas: 0, desafios: 1, proximoId: 3, escada: [0, 1],
+    equipe: [guardado(1, 'aurelho', 50), guardado(2, 'zunzi', 5)], toca: [],
+  });
+  let p = comecar({ solo: true, naSala: () => [caio] }, sorte(0.99), caio);
+  assert.equal(p.jogo.acao(caio, { tipo: 'andar', dir: 'c' }), null);
+  let e = p.estado(caio);
+  assert.equal(e.fase, 'mapa');
+  assert.deepEqual([e.x, e.y], [lx, ly + 1], 'ficou do lado de fora');
+  assert.ok(e.eventos.some((x: any) => x.t === 'espera' && x.nome === regras.LIGA[0].nome));
+  // com a escada inteira, a Liga
+  db.guardarAventuraDosBichos(caio, {
+    v: 1, mapa: 'gruta', x: lx, y: ly + 1, cenouras: 0, chas: 0, desafios: 1, proximoId: 3, escada: [0, 1, 2, 3], moedas: 0,
+    equipe: [1, 2, 3, 4, 5, 6].map((id) => guardado(id, 'aurelho', 50, { pv: Math.floor(regras.atributos('aurelho', 50).pvMax * 0.8) })), toca: [],
+  });
+  p = comecar({ solo: true, naSala: () => [caio] }, sorte(0.99), caio);
+  assert.equal(p.jogo.acao(caio, { tipo: 'andar', dir: 'c' }), null);
+  let vidaAntes: number[] = [];
+  for (let k = 0; k < regras.LIGA.length; k++) {
+    e = p.estado(caio);
+    assert.equal(e.fase, 'batalha', `luta ${k + 1}`);
+    assert.deepEqual(e.luta.liga, { n: k + 1, total: regras.LIGA.length });
+    assert.ok(e.eventos.some((x: any) => x.t === 'desafio' && x.nome === regras.LIGA[k].nome));
+    // sem descanso: a vida que sobrou da luta de antes
+    const vida = e.luta.meu.equipe.map((b: any) => b.pv);
+    if (k > 0) assert.deepEqual(vida, vidaAntes, 'não descansou no meio');
+    assert.ok(vida.every((v: number) => v < regras.atributos('aurelho', 50).pvMax));
+    for (let n = 0; n < 200 && !p.estado(caio).luta.acabou; n++) {
+      const meu = p.estado(caio).luta.meu;
+      const erro = meu.precisaTrocar
+        ? p.jogo.acao(caio, { tipo: 'trocar', i: meu.equipe.findIndex((b: any) => b.pv > 0) })
+        : p.jogo.acao(caio, { tipo: 'golpe', i: 1 });
+      if (erro) assert.fail(`luta ${k + 1}: ${erro} ${JSON.stringify(p.estado(caio).luta.meu)}`);
+    }
+    assert.equal(p.estado(caio).luta.acabou, 'vitoria', `venceu a luta ${k + 1}`);
+    vidaAntes = p.estado(caio).luta.meu.equipe.map((b: any) => b.pv);
+    assert.equal(p.jogo.acao(caio, { tipo: 'continuar' }), null);
+  }
+  e = p.estado(caio);
+  assert.equal(e.fase, 'mapa');
+  assert.ok(e.eventos.some((x: any) => x.t === 'campeao' && x.n === 1));
+  const g = lerAventura(db.aventuraDosBichos(caio))!;
+  assert.equal(g.ligas, 1);
+  assert.equal(g.moedas, regras.LIGA.reduce((s, d) => s + d.moedas, 0) + regras.MOEDAS_DA_LIGA);
+});
+
+test('a Liga perdida volta para casa e recomeça da primeira', () => {
+  const caio = caioId;
+  const [lx, ly] = regras.MAPAS.gruta.liga!.split(',').map(Number);
+  db.guardarAventuraDosBichos(caio, {
+    v: 1, mapa: 'gruta', x: lx, y: ly + 1, cenouras: 0, chas: 0, desafios: 1, proximoId: 2, escada: [0, 1, 2, 3],
+    equipe: [guardado(1, 'zunzi', 5)], toca: [], volta: { mapa: 'serra', x: 3, y: 13 },
+  });
+  const p = comecar({ solo: true, naSala: () => [caio] }, sorte(0.5), caio);
+  p.jogo.acao(caio, { tipo: 'andar', dir: 'c' });
+  for (let n = 0; n < 80 && !p.estado(caio).luta.acabou; n++) p.jogo.acao(caio, { tipo: 'golpe', i: 0 });
+  assert.equal(p.estado(caio).luta.acabou, 'derrota');
+  p.jogo.acao(caio, { tipo: 'continuar' });
+  const e = p.estado(caio);
+  assert.equal(e.fase, 'mapa');
+  assert.equal(e.mapa, 'serra');
+  assert.equal(lerAventura(db.aventuraDosBichos(caio))!.ligas, 0);
+});

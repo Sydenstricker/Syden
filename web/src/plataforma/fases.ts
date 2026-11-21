@@ -18,6 +18,11 @@ export const Bloco = {
   Tabua: 2,
   Espinho: 3,
   Mola: 4,
+  /** A PEDRA QUE RACHA (21/11/2026): segura por cima como a tábua; pisada, treme e cai, e volta depois (fisica.ts). */
+  Racha: 5,
+  /** AS TÁBUAS QUE PISCAM (21/11/2026): a A existe nos tempos pares, a B nos ímpares (`piscaPresente`); seguram por cima. */
+  PiscaA: 6,
+  PiscaB: 7,
 } as const;
 export type Bloco = (typeof Bloco)[keyof typeof Bloco];
 
@@ -46,6 +51,26 @@ export interface Patrulha {
   periodo: number;
 }
 
+/**
+ * Uma CORRENTE DE AR que sobe (21/11/2026): dentro do retângulo, o coelho no ar é empurrado para cima até VSOPRO (fisica.ts).
+ * Pelo meio do corpo; não depende do passo, então é igual para todos.
+ */
+export interface Vento {
+  x0: number;
+  x1: number;
+  y0: number;
+  y1: number;
+}
+
+/** Quantos passos dura cada tempo das tábuas que piscam (2 s), e quantos antes da troca elas avisam piscando. */
+export const PISCA_PERIODO = 120;
+export const PISCA_AVISO = 36;
+/** A tábua que pisca existe no passo `n`? A nos tempos pares, B nos ímpares. */
+export function piscaPresente(b: Bloco, n: number): boolean {
+  const par = Math.floor(n / PISCA_PERIODO) % 2 === 0;
+  return b === Bloco.PiscaA ? par : b === Bloco.PiscaB ? !par : false;
+}
+
 /** Uma cenoura para juntar: o meio dela. */
 export interface Ponto {
   x: number;
@@ -70,6 +95,10 @@ export interface Fase {
   /** A cenoura DOURADA, escondida: uma por fase. */
   dourada: Ponto | null;
   bichos: Patrulha[];
+  /** As correntes de ar (21/11/2026). */
+  ventos: Vento[];
+  /** As pedras que racham (21/11/2026): o índice de cada casa na grade (l × colunas + c), na ordem em que foram postas. */
+  rachas: number[];
 }
 
 /** O que existe numa casa da grade (fora dela: o alto é teto, os lados são parede, embaixo é vazio). */
@@ -122,6 +151,8 @@ function montador(id: string, tema: Tema, colunas: number) {
     cenouras: [],
     dourada: null,
     bichos: [],
+    ventos: [],
+    rachas: [],
   };
   const topo = (h: number) => (LINHAS - h) * T;
   return {
@@ -195,6 +226,21 @@ function montador(id: string, tema: Tema, colunas: number) {
         y: l * T + T / 2,
         periodo,
       });
+    },
+    /** Pedras que racham nas colunas [c0, c1), na linha l. */
+    racha(c0: number, c1: number, l: number) {
+      for (let c = c0; c < c1; c++) {
+        por(c, l, Bloco.Racha);
+        f.rachas.push(l * colunas + c);
+      }
+    },
+    /** Tábuas que piscam nas colunas [c0, c1), na linha l: a 'a' existe nos tempos pares, a 'b' nos ímpares. */
+    pisca(c0: number, c1: number, l: number, qual: 'a' | 'b') {
+      for (let c = c0; c < c1; c++) por(c, l, qual === 'a' ? Bloco.PiscaA : Bloco.PiscaB);
+    },
+    /** Uma corrente de ar nas colunas [c0, c1), das linhas [l0, l1); até o fundo, ela passa da tela (pega quem cai). */
+    vento(c0: number, c1: number, l0: number, l1: number) {
+      f.ventos.push({ x0: c0 * T, x1: c1 * T, y0: l0 * T, y1: l1 >= LINHAS ? ALTURA + 40 : l1 * T });
     },
     /** Uma plataforma que anda: da coluna c0 à c1 (o canto esquerdo), na linha l0 à l1, com w casas de largura. */
     movel(c0: number, l0: number, c1: number, l1: number, w: number, periodo: number) {
@@ -530,7 +576,178 @@ function ninho(): Fase {
   return b.f;
 }
 
-export const FASES: Fase[] = [prado(), toca(), copas(), corrego(), mina(), ninho()];
+/**
+ * O VENTO (21/11/2026): as copas com CORRENTES DE AR que sobem. Sobre o vão largo demais para o pulo, a corrente segura o
+ * coelho no alto e ele vai de lado até o outro galho; a do chão baixo leva ao galho alto. A dourada fica no galho mais alto
+ * de todos, onde só a corrente do meio alcança.
+ */
+function vento(): Fase {
+  const b = montador('vento-1', 'copas', 220);
+  b.chao(0, 14, 4);
+  b.largada(3, 4);
+  b.cenouras(6, 13, 4, 3);
+  // o primeiro vão, com a corrente no meio
+  b.vento(16, 24, 6, LINHAS);
+  b.cenouraNa(18, 5);
+  b.cenouraNa(20, 5);
+  b.cenouraNa(22, 5);
+  b.chao(26, 38, 5);
+  b.posto(28, 5);
+  b.espinhos(33, 35, 5);
+  // o chão baixo e a corrente que leva ao galho alto
+  b.chao(38, 46, 3);
+  b.vento(42, 46, 3, 11);
+  b.cenouraNa(44, 6);
+  b.chao(46, 62, 10);
+  b.posto(48, 10);
+  b.cenouras(50, 61, 10, 3);
+  // a descida pelas tábuas
+  b.tabua(64, 68, 6);
+  b.tabua(71, 75, 8);
+  b.chao(78, 92, 4);
+  b.posto(80, 4);
+  b.cenouras(82, 91, 4, 3);
+  // o vão grande, com duas correntes e uma folga entre elas
+  b.vento(94, 98, 6, LINHAS);
+  b.vento(100, 104, 6, LINHAS);
+  b.cenouraNa(96, 5);
+  b.cenouraNa(102, 5);
+  b.chao(107, 122, 5);
+  b.posto(109, 5);
+  b.espinhos(115, 117, 5);
+  b.chao(122, 142, 3);
+  b.cenouras(124, 134, 3, 3);
+  // a corrente do meio: leva ao galho de cima e, no alto dela, ao galho escondido com a dourada
+  b.vento(142, 146, 2, 11);
+  b.tabua(146, 152, 2);
+  b.dourada(150, 1);
+  b.chao(146, 160, 8);
+  b.posto(150, 8);
+  b.cenouras(152, 159, 8, 3);
+  b.chao(160, 174, 5);
+  b.espinhos(166, 168, 5);
+  // o último vão, com a corrente
+  b.vento(176, 184, 7, LINHAS);
+  b.cenouraNa(180, 6);
+  b.chao(186, 220, 4);
+  b.espinhos(192, 194, 4);
+  b.cenouras(196, 206, 4, 3);
+  b.chegada(208);
+  return b.f;
+}
+
+/**
+ * A CAVERNA (21/11/2026): a toca com PEDRAS QUE RACHAM. Pisada, a pedra treme meio segundo e cai; volta 3 s depois. Quem
+ * para em cima dela cai junto: a ponte comprida e a de cima dos espinhos se atravessam correndo. A dourada fica numa pedra
+ * solta no alto, depois da ribanceira.
+ */
+function caverna(): Fase {
+  const b = montador('caverna-1', 'toca', 224);
+  b.bloco(0, 224, 0, 2);
+  b.chao(0, 20, 3);
+  b.largada(3, 3);
+  b.cenouras(5, 18, 3, 3);
+  b.racha(23, 26, 10);
+  b.racha(29, 32, 9);
+  b.cenouraNa(24, 9);
+  b.cenouraNa(30, 8);
+  b.chao(34, 46, 3);
+  b.posto(36, 3);
+  b.espinhos(40, 42, 3);
+  // a ponte comprida
+  b.racha(46, 64, 11);
+  b.cenouraNa(50, 10);
+  b.cenouraNa(55, 10);
+  b.cenouraNa(60, 10);
+  b.chao(64, 80, 3);
+  b.posto(66, 3);
+  b.bloco(70, 78, 2, 7);
+  b.cenouras(70, 78, 3, 2);
+  // a escada de pedras até a ribanceira
+  b.racha(82, 85, 9);
+  b.racha(87, 90, 7);
+  b.racha(92, 95, 5);
+  b.chao(97, 112, 9);
+  b.posto(100, 9);
+  b.cenouras(101, 111, 9, 3);
+  // a pedra solta da dourada, depois da beira
+  b.racha(114, 116, 4);
+  b.dourada(115, 3);
+  b.chao(116, 134, 4);
+  b.posto(119, 4);
+  b.cenouras(121, 131, 4, 3);
+  // a ponte sobre os espinhos
+  b.chao(134, 150, 2);
+  b.espinhos(134, 150, 2);
+  b.racha(134, 150, 10);
+  b.chao(150, 166, 4);
+  b.posto(152, 4);
+  b.bloco(156, 164, 2, 7);
+  // os degraus que caem, sobre o buraco
+  b.racha(168, 171, 9);
+  b.racha(174, 177, 7);
+  b.racha(180, 183, 9);
+  b.cenouraNa(175, 6);
+  b.chao(186, 224, 4);
+  b.espinhos(194, 196, 4);
+  b.cenouras(198, 210, 4, 3);
+  b.chegada(212);
+  return b.f;
+}
+
+/**
+ * A CACHOEIRA (21/11/2026): o prado com TÁBUAS QUE PISCAM. A tábua clara existe num tempo, a escura no outro, e trocam a
+ * cada 2 s (piscando antes): o caminho sobre o rio se faz no ritmo delas. A dourada fica no alto do rio grande, no pulo mais alto de uma tábua.
+ */
+function cachoeira(): Fase {
+  const b = montador('cachoeira-1', 'prado', 222);
+  b.chao(0, 20, 3);
+  b.largada(3, 3);
+  b.cenouras(6, 18, 3, 3);
+  b.pisca(22, 26, 10, 'a');
+  b.pisca(28, 32, 10, 'b');
+  b.cenouraNa(24, 9);
+  b.cenouraNa(30, 9);
+  b.chao(34, 48, 3);
+  b.posto(36, 3);
+  b.cenouras(38, 46, 3, 3);
+  // a escada que pisca até a ribanceira
+  b.pisca(50, 53, 9, 'a');
+  b.pisca(55, 58, 7, 'b');
+  b.pisca(60, 63, 5, 'a');
+  b.chao(65, 80, 9);
+  b.posto(67, 9);
+  b.cenouras(69, 79, 9, 3);
+  // a descida
+  b.pisca(82, 86, 7, 'b');
+  b.pisca(88, 92, 9, 'a');
+  b.chao(94, 110, 4);
+  b.posto(96, 4);
+  b.espinhos(102, 104, 4);
+  // o rio grande
+  b.pisca(112, 115, 10, 'a');
+  b.pisca(117, 120, 10, 'b');
+  b.pisca(122, 125, 10, 'a');
+  b.pisca(127, 130, 10, 'b');
+  b.dourada(126, 6);
+  b.cenouraNa(113, 9);
+  b.cenouraNa(118, 9);
+  b.cenouraNa(128, 9);
+  b.chao(132, 148, 4);
+  b.posto(134, 4);
+  b.cenouras(136, 146, 4, 3);
+  b.movel(148, 10, 158, 10, 3, 240);
+  b.chao(161, 176, 4);
+  b.posto(164, 4);
+  b.espinhos(170, 172, 4);
+  b.chao(179, 222, 4);
+  b.espinhos(186, 188, 4);
+  b.cenouras(190, 206, 4, 3);
+  b.chegada(208);
+  return b.f;
+}
+
+export const FASES: Fase[] = [prado(), toca(), copas(), corrego(), mina(), ninho(), vento(), caverna(), cachoeira()];
 export const fasePorId = (id: string) => FASES.find((f) => f.id === id) ?? FASES[0];
 
 /** A copa: as três fases seguidas (o servidor tem a mesma lista: server/src/plataforma.ts). */
@@ -539,6 +756,8 @@ export const COPAS_DO_PULO: Record<string, string[]> = {
   [COPA_DO_PULO]: ['prado-1', 'toca-1', 'copas-1'],
   // a segunda copa (19/11/2026): as três fases com bichos
   'copa-dos-bichos': ['corrego-1', 'mina-1', 'ninho-1'],
+  // a terceira copa (21/11/2026): as três fases com um elemento novo cada (o vento, a pedra que racha, a tábua que pisca)
+  'copa-dos-elementos': ['vento-1', 'caverna-1', 'cachoeira-1'],
 };
 
 /**
@@ -553,5 +772,8 @@ export const TEMPO_DO_PILOTO_DO_PULO: Record<string, number> = {
   'corrego-1': 1988,
   'mina-1': 1909,
   'ninho-1': 1979,
+  'vento-1': 1788,
+  'caverna-1': 1827,
+  'cachoeira-1': 2429,
 };
 export const MEDALHAS_DO_PULO = [1, 1.25, 1.6] as const;

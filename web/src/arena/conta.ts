@@ -314,6 +314,32 @@ export const KITS: Record<string, { b: Golpe; s: Golpe; q: Golpe; e: Golpe; nome
   faisca: { b: tiro(7, 500, 330, 240, 5), s: tiro(15, 3000, 420, 260, 8), q: tiro(28, 6000, 520, 320, 9), e: zona(44, 0, 240, 60, 450), nomes: ['choque', 'raio'] },
 };
 
+/**
+ * A MARCA DE CADA ESPÉCIE (21/11/2026): o especial (e) tem a forma do elemento, e o bicho da frente o muda um pouco, pelo jeito
+ * dele. A forma, o alcance e o raio continuam os do kit (é o que a tela dos outros desenha); a marca é o que vem junto:
+ * - forte: o especial bate mais (`MARCA.forte`);
+ * - seiva: quem usa recupera vida (`MARCA.seiva`);
+ * - casca: quem usa leva menos dano por um tempo (`MARCA.casca`);
+ * - pressa: quem usa fica mais rápido por um tempo (o mesmo do suprimento de velocidade, por `MARCA.pressa` ms);
+ * - folego: o especial já volta com uma parte enchida (`MARCA.folego`).
+ * Quem não está na tabela tem a marca forte. Quem decide é o servidor; a tela mostra a figura no botão do especial.
+ */
+export const MARCAS = ['forte', 'seiva', 'casca', 'pressa', 'folego'] as const;
+export type Marca = (typeof MARCAS)[number];
+export const MARCA = { forte: 1.25, seiva: 25, casca: { mult: 0.6, ms: 3000 }, pressa: 2500, folego: 35 };
+export const MARCA_DA_ESPECIE: Record<string, Marca> = {
+  brotel: 'seiva', brotelao: 'seiva', cardao: 'seiva', cardeiro: 'seiva', bolhim: 'seiva', bolhao: 'seiva', lodim: 'seiva',
+  rochim: 'casca', rochedo: 'casca', picotim: 'casca', picolosso: 'casca', galoca: 'casca', cristalim: 'casca', cristalao: 'casca', nevasco: 'casca',
+  zunzi: 'pressa', zunzao: 'pressa', pruvi: 'pressa', pruvento: 'pressa', ventrolo: 'pressa', miasso: 'pressa', relampo: 'pressa', macalu: 'pressa',
+  vultim: 'folego', vultao: 'folego', tisco: 'folego', fornalho: 'folego', luzeta: 'folego', luzerna: 'folego',
+  dinito: 'forte', dinarco: 'forte', dragolim: 'forte', aurelho: 'forte',
+};
+export const marcaDe = (especie: string): Marca => MARCA_DA_ESPECIE[especie] ?? 'forte';
+/** O especial com a marca: só o dano muda (a forma é a do elemento). */
+export function especialComMarca(g: Golpe, marca: Marca): Golpe {
+  return marca === 'forte' ? { forma: g.forma, dano: Math.round(g.dano * MARCA.forte), recarga: g.recarga, vel: g.vel, alcance: g.alcance, raio: g.raio, balas: g.balas, abre: g.abre, aviso: g.aviso } : g;
+}
+
 /** De quão longe o golpe pega alguém: a roda, o raio dela; o tiro, o alcance; a zona, o alcance mais o raio dela. */
 export function alcanceDoGolpe(g: Golpe): number {
   return g.forma === 'roda' ? g.raio + RAIO : g.forma === 'tiro' ? g.alcance : g.alcance + g.raio;

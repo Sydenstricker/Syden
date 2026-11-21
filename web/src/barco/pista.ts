@@ -150,11 +150,96 @@ export const MANGUE: DefinicaoDoBarco = {
   },
 };
 
-export const PISTAS_DO_BARCO = [LAGO_DA_HORTA, RIACHO, MANGUE];
+/**
+ * A REPRESA (21/11/2026, a segunda copa): um lago grande e frio, de manhã cedo, com a volta comprida em torno da mata do
+ * meio, muitas boias de slalom e as duas rampas na reta de trás.
+ */
+export const REPRESA: DefinicaoDoBarco = {
+  id: 'represa-1',
+  pontos: [
+    [200, 220], [430, 150], [680, 170], [860, 280], [880, 480], [760, 600], [860, 760], [700, 880], [460, 860], [300, 760],
+    [180, 620], [250, 440], [140, 330],
+  ],
+  meiaLargura: 48,
+  voltas: 3,
+  boias: [[0.1, 0.3], [0.36, -0.3], [0.6, 0.3], [0.82, -0.25]],
+  correntezas: [],
+  pontes: [],
+  slalom: [[0.18, -0.25, 1], [0.22, 0.25, -1], [0.26, -0.25, 1], [0.46, 0.25, -1], [0.5, -0.25, 1], [0.88, 0, 1]],
+  rampas: [[0.7, 0], [0.74, 0.3]],
+  semente: 59,
+  tema: {
+    tipo: 'lago',
+    ceu: { topo: [150, 180, 220], baixo: [236, 228, 220] },
+    morros: [130, 150, 166],
+    mata: [56, 96, 80],
+    agua: { funda: [40, 80, 116], rasa: [100, 156, 176], espuma: [236, 244, 248] },
+    barranco: [128, 116, 100],
+    chao: [[96, 140, 86], [86, 128, 78]],
+    nevoa: [214, 222, 230],
+  },
+};
 
-/** A copa do Solo contra os barcos do computador (19/11/2026): as três pistas seguidas, pontos pela posição. Só no site. */
+/** A CORREDEIRA (21/11/2026): o rio mais rápido, com correntezas fortes a favor e contra, e três pontes de madeira. */
+export const CORREDEIRA: DefinicaoDoBarco = {
+  id: 'corredeira-1',
+  pontos: [
+    [190, 170], [460, 140], [720, 170], [880, 300], [840, 480], [880, 660], [780, 860], [540, 880], [420, 730], [260, 860],
+    [130, 720], [190, 520], [120, 340],
+  ],
+  meiaLargura: 38,
+  voltas: 2,
+  boias: [[0.08, -0.3], [0.33, 0.3], [0.58, -0.3], [0.8, 0.3]],
+  correntezas: [[0.05, 0.2, 75], [0.44, 0.5, -30], [0.6, 0.75, 70]],
+  pontes: [0.28, 0.52, 0.95],
+  slalom: [[0.16, 0.25, -1], [0.2, -0.25, 1], [0.66, -0.25, 1], [0.7, 0.25, -1]],
+  rampas: [[0.36, 0.2], [0.76, -0.2]],
+  semente: 67,
+  tema: {
+    tipo: 'riacho',
+    ceu: { topo: [100, 150, 210], baixo: [214, 232, 240] },
+    morros: [116, 128, 120],
+    mata: [44, 86, 56],
+    agua: { funda: [30, 84, 100], rasa: [92, 176, 176], espuma: [244, 252, 250] },
+    barranco: [120, 104, 88],
+    chao: [[80, 132, 70], [72, 120, 64]],
+    nevoa: [196, 216, 222],
+  },
+};
+
+/** O IGARAPÉ (21/11/2026): a água verde e escura no fim da tarde, as raízes e a mata fechada, a pista estreita e sinuosa. */
+export const IGARAPE: DefinicaoDoBarco = {
+  id: 'igarape-1',
+  pontos: [
+    [220, 260], [400, 150], [620, 230], [830, 160], [890, 350], [720, 470], [860, 600], [870, 840], [650, 880], [520, 720],
+    [360, 880], [170, 800], [250, 600], [130, 450],
+  ],
+  meiaLargura: 40,
+  voltas: 2,
+  boias: [[0.14, 0.3], [0.38, -0.3], [0.64, 0.3], [0.88, -0.25]],
+  correntezas: [[0.22, 0.3, 40], [0.7, 0.78, -26]],
+  pontes: [0.46],
+  slalom: [[0.08, -0.25, 1], [0.12, 0.25, -1], [0.56, 0.25, -1], [0.6, -0.25, 1], [0.94, 0, 1]],
+  rampas: [[0.32, -0.2], [0.82, 0.2]],
+  semente: 79,
+  tema: {
+    tipo: 'mangue',
+    ceu: { topo: [104, 128, 176], baixo: [246, 206, 150] },
+    morros: [86, 110, 92],
+    mata: [36, 78, 48],
+    agua: { funda: [34, 70, 52], rasa: [90, 128, 84], espuma: [210, 226, 196] },
+    barranco: [100, 82, 60],
+    chao: [[70, 96, 56], [62, 86, 50]],
+    nevoa: [200, 210, 190],
+  },
+};
+
+export const PISTAS_DO_BARCO = [LAGO_DA_HORTA, RIACHO, MANGUE, REPRESA, CORREDEIRA, IGARAPE];
+
+/** As copas do Solo contra os barcos do computador (19/11/2026; a segunda, 21/11/2026): três pistas seguidas, pontos pela posição. Só no site. */
 export const COPAS_DO_BARCO: Record<string, string[]> = {
   'copa-da-regata': ['lago-1', 'riacho-1', 'mangue-1'],
+  'copa-da-correnteza': ['represa-1', 'corredeira-1', 'igarape-1'],
 };
 /** Os pontos por posição na copa, entre os 6 barcos. */
 export const PONTOS_DA_COPA_DO_BARCO = [10, 8, 6, 4, 2, 1];

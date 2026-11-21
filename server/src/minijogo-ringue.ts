@@ -16,10 +16,30 @@
  * está, quantas quedas deu) vai pelo tempo real, só para a lista ao vivo. No fim, quem foi mais longe ganha (mais lutas
  * vencidas; o circuito inteiro, no menor tempo); os três primeiros vão à estante de troféus (pista 'ringue'). Sem itens, o
  * circuito da sala que bate o recorde da pessoa vira o recorde dela (como no Rolê).
+ *
+ * O SEGUNDO CIRCUITO (21/11/2026, o lote D): três adversários novos (ringue-sim.ts, ADVERSARIOS_DO_SEGUNDO), escolhido na largada
+ * (`corpo.circuito`, 0 ou 1). O recorde do primeiro continua em ringue_recordes; o do segundo vai à tabela comum do Solo (jogo
+ * 'ringue', variante VARIANTE_DO_SEGUNDO), com o resultado inteiro no `extra` e um valor que ordena como `comparar`.
  */
 import * as db from './db.js';
 import type { Contexto, Definicao } from './minijogo-motor.js';
-import { ADVERSARIOS, comparar, entradasValidas, PASSOS_MAXIMOS, refazer, resultadoDe, type Resultado } from './ringue-sim.js';
+import { ADVERSARIOS, comparar, ehCircuito, entradasValidas, PASSOS_MAXIMOS, refazer, resultadoDe, type Resultado } from './ringue-sim.js';
+
+/** O recorde do segundo circuito, na tabela comum. */
+export const VARIANTE_DO_SEGUNDO = 'circuito-2';
+
+/** Um número que ordena os resultados como `comparar` (maior é melhor): as lutas vencidas, e depois o tempo ou o dano. */
+export function valorDoResultado(r: Resultado): number {
+  return r.vencidas >= ADVERSARIOS.length ? r.vencidas * 1_000_000 + (PASSOS_MAXIMOS - r.passos) : r.vencidas * 1_000_000 + Math.min(999_999, r.dano);
+}
+
+/** O recorde da pessoa no circuito (o resultado, para a tela comparar). */
+function recordeDe(userId: number, circuito: number): Resultado | null {
+  if (circuito === 0) return db.recordeDoRingue(userId);
+  const r = db.recordeDoSolo(userId, 'ringue', VARIANTE_DO_SEGUNDO);
+  const x = r?.extra as Resultado | null | undefined;
+  return x && typeof x.vencidas === 'number' && typeof x.passos === 'number' && typeof x.dano === 'number' ? { vencidas: x.vencidas, passos: x.passos, dano: x.dano } : null;
+}
 
 /** A contagem da largada na tela (3 s) e a rede: os passos podem chegar um tico à frente do relógio do servidor. */
 export const FOLGA_DO_RELOGIO_MS = 3000;
@@ -39,17 +59,18 @@ interface Lutador {
 export const ringue: Definicao = criarRingue();
 
 /** Refaz o circuito pelos comandos; o erro, ou o resultado. */
-export function conferirCircuito(semente: number, entradas: unknown): { erro: string } | Resultado {
+export function conferirCircuito(semente: number, entradas: unknown, circuito = 0): { erro: string } | Resultado {
   if (!entradasValidas(entradas)) return { erro: 'Sessão inválida.' };
-  const { l, passos } = refazer(semente, entradas);
+  const { l, passos } = refazer(semente, entradas, circuito);
   // o circuito inteiro, e nem um passo além do fim dele
   if (!l.terminou || passos !== l.passo) return { erro: 'Sessão inválida.' };
   return resultadoDe(l);
 }
 
 /** Guarda se for o melhor da pessoa. Devolve true se virou recorde. */
-function guardarSeMelhor(userId: number, r: Resultado): boolean {
+function guardarSeMelhor(userId: number, r: Resultado, circuito = 0): boolean {
   if (r.vencidas === 0 && r.dano === 0) return false;
+  if (circuito !== 0) return db.guardarRecordeDoSolo(userId, 'ringue', VARIANTE_DO_SEGUNDO, valorDoResultado(r), false, r).novo;
   const antes = db.recordeDoRingue(userId);
   if (antes && comparar(r, antes) >= 0) return false;
   db.guardarRecordeDoRingue(userId, r);
@@ -60,11 +81,14 @@ export function criarRingue({ agora = Date.now, aleatorio = Math.random }: { ago
   return {
     minimo: 2,
     maximo: MAXIMO,
-    comecar(ctx, { naSala }) {
+    comecar(ctx, { naSala, corpo }) {
       const inscritos = naSala.slice(0, MAXIMO);
       const solo = ctx.solo ?? inscritos.length === 1;
       const semente = 1 + Math.floor(aleatorio() * 2_000_000_000);
-      return solo ? lutaSolo(ctx, inscritos[0], semente, agora) : lutaNaSala(ctx, inscritos, semente, agora);
+      // o circuito escolhido na largada (o "Jogar de novo" manda o mesmo pela categoria)
+      const pedido = corpo?.circuito ?? (corpo?.categoria === VARIANTE_DO_SEGUNDO ? 1 : undefined);
+      const circuito = ehCircuito(pedido) ? pedido : 0;
+      return solo ? lutaSolo(ctx, inscritos[0], semente, agora, circuito) : lutaNaSala(ctx, inscritos, semente, agora, circuito);
     },
   };
 }
@@ -73,19 +97,19 @@ export function criarRingue({ agora = Date.now, aleatorio = Math.random }: { ago
 // O SOLO
 // =====================================================================================================================
 
-function lutaSolo(ctx: Contexto, eu: number, semente: number, agora: () => number) {
+function lutaSolo(ctx: Contexto, eu: number, semente: number, agora: () => number, circuito = 0) {
   const evento = `ringue-solo-${eu}-${agora()}`;
   const inicio = agora();
   let fase: 'jogando' | 'fim' = 'jogando';
   let meu: Resultado | null = null;
-  const recordeAntes = db.recordeDoRingue(eu);
+  const recordeAntes = recordeDe(eu, circuito);
   let recordeNovo = false;
   const avatar = db.avatarDoJogo(eu);
 
   const terminar = () => {
     if (fase === 'fim') return;
     fase = 'fim';
-    if (meu) recordeNovo = guardarSeMelhor(eu, meu);
+    if (meu) recordeNovo = guardarSeMelhor(eu, meu, circuito);
     ctx.terminar(meu !== null);
   };
   ctx.agendar(PRAZO_MS, terminar);
@@ -96,6 +120,8 @@ function lutaSolo(ctx: Contexto, eu: number, semente: number, agora: () => numbe
         fase,
         solo: true,
         semente,
+        circuito,
+        ...(circuito !== 0 ? { categoria: VARIANTE_DO_SEGUNDO } : {}),
         adversarios: ADVERSARIOS.length,
         meu,
         avatar,
@@ -108,7 +134,7 @@ function lutaSolo(ctx: Contexto, eu: number, semente: number, agora: () => numbe
       if (corpo.tipo !== 'fim') return 'Ação desconhecida.';
       if (quem !== eu) return 'Você está assistindo esta partida.';
       if (fase !== 'jogando' || meu !== null) return 'Esta rodada já acabou.';
-      const v = conferirCircuito(semente, corpo.entradas);
+      const v = conferirCircuito(semente, corpo.entradas, circuito);
       if ('erro' in v) return v.erro;
       // a janela sem foco pausa a luta (mais tempo), mas ninguém anda mais passos do que o relógio deixou
       if ((v.passos / 60) * 1000 > agora() - inicio + FOLGA_DO_RELOGIO_MS) return 'Sessão inválida.';
@@ -124,13 +150,13 @@ function lutaSolo(ctx: Contexto, eu: number, semente: number, agora: () => numbe
 // NA SALA: a mesma semente, o mesmo verde, cada um no próprio ringue
 // =====================================================================================================================
 
-function lutaNaSala(ctx: Contexto, inscritos: number[], semente: number, agora: () => number) {
+function lutaNaSala(ctx: Contexto, inscritos: number[], semente: number, agora: () => number, circuito = 0) {
   const evento = `ringue-${ctx.comunidade ?? 0}-${agora()}`;
   let fase: 'largada' | 'jogando' | 'fim' = 'largada';
   let verdeEm = 0;
   const lutadores = new Map<number, Lutador>(inscritos.map((id) => [id, { resultado: null, ultimo: 0 }]));
   const avatares = new Map(inscritos.map((id) => [id, db.avatarDoJogo(id)]));
-  const recordes = new Map<number, { antes: db.RecordeDoRingue | null; novo: boolean }>(inscritos.map((id) => [id, { antes: db.recordeDoRingue(id), novo: false }]));
+  const recordes = new Map<number, { antes: Resultado | null; novo: boolean }>(inscritos.map((id) => [id, { antes: recordeDe(id, circuito), novo: false }]));
   /** Quem ficou na sala até o fim (fixado ao fechar): só esses têm posição. */
   let ficaram: Set<number> | null = null;
 
@@ -197,6 +223,8 @@ function lutaNaSala(ctx: Contexto, inscritos: number[], semente: number, agora: 
         fase,
         solo: false,
         semente,
+        circuito,
+        ...(circuito !== 0 ? { categoria: VARIANTE_DO_SEGUNDO } : {}),
         adversarios: ADVERSARIOS.length,
         meu: meu ? meu.resultado : null,
         avatar: avatares.get(quem) ?? null,
@@ -210,12 +238,12 @@ function lutaNaSala(ctx: Contexto, inscritos: number[], semente: number, agora: 
       const s = lutadores.get(quem);
       if (!s) return 'Você está assistindo esta partida.';
       if (fase !== 'jogando' || s.resultado !== null) return 'Esta rodada já acabou.';
-      const v = conferirCircuito(semente, corpo.entradas);
+      const v = conferirCircuito(semente, corpo.entradas, circuito);
       if ('erro' in v) return v.erro;
       if ((v.passos / 60) * 1000 > agora() - verdeEm + FOLGA_DO_RELOGIO_MS) return 'Sessão inválida.';
       s.resultado = v;
       // sem itens, o circuito da sala vale como o do Solo: se for o melhor da pessoa, vira o recorde
-      if (guardarSeMelhor(quem, v)) recordes.get(quem)!.novo = true;
+      if (guardarSeMelhor(quem, v, circuito)) recordes.get(quem)!.novo = true;
       conferir();
       ctx.avisar();
       return null;

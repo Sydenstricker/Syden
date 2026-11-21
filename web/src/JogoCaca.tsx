@@ -5,7 +5,8 @@ import { useT } from './i18n';
 import { Placar, Relogio } from './Minijogo';
 import type { EstadoCaca, Partida } from './minijogos';
 import { type Arte, carregarArte, desenhar, desenharCoelhoDaMoita, ESCALA, pintarCenario, pintarFrente, type Queda } from './caca/desenho';
-import { AMIGO_PENA, ALTURA, LARGURA, ehAmigo, multiplicador, posicao, pontosDoAcerto, pragaAtingida, pragasDaOnda } from './caca/voo';
+import { AMIGO_PENA, ALTURA, LARGURA, ehAmigo, multiplicador, posicao, pontosDoAcerto, pragaAtingida, todasAsPragasDaOnda } from './caca/voo';
+import { Heart, HeartCrack } from 'lucide-react';
 
 /**
  * A CAÇA ÀS PRAGAS DA HORTA (04/11/2026, server/src/minijogo-caca.ts). Corvos e gafanhotos atravessam a horta, e cada um mira
@@ -24,7 +25,49 @@ const INTERVALO_MS = 150;
 /** A munição da rodada bônus (20/11/2026): sem limite (o servidor manda -1). */
 const SEM_LIMITE = -1;
 /** O que o servidor manda a mais desde 20/11/2026 (a rodada bônus, as pragas abatidas sem a joaninha). */
-type Extra = { bonus?: boolean };
+type Extra = { bonus?: boolean; categoria?: string; errosRestantes?: number };
+/** O modo "até errar três" (21/11/2026): a categoria que o servidor conhece, e os erros que acabam a partida. */
+const MODO_TRES_ERROS = 'tres-erros';
+const ERROS_DO_MODO = 3;
+
+/**
+ * A ESCOLHA DO MODO (21/11/2026, só no Solo): as cinco ondas de sempre, ou "até errar três" (as ondas não acabam, sem limite de
+ * munição; o terceiro tiro errado acaba). Cada modo tem o seu recorde.
+ */
+export function EscolhaDaCaca({ aoEscolher, aoVoltar }: { aoEscolher: (modo: string | null) => void; aoVoltar: () => void }) {
+  const t = useT();
+  return (
+    <div className="corrida-escolha">
+      <ul className="corrida-pistas">
+        <li>
+          <button type="button" className="corrida-pista-botao" onClick={() => aoEscolher(null)}>
+            <span className="caca-placa" aria-hidden="true">
+              {[0, 1, 2, 3, 4].map((k) => (
+                <span key={k} className="caca-marca abatida" />
+              ))}
+            </span>
+            <strong>{t('Cinco ondas')}</strong>
+          </button>
+        </li>
+        <li>
+          <button type="button" className="corrida-pista-botao" onClick={() => aoEscolher(MODO_TRES_ERROS)}>
+            <span className="caca-erros" aria-hidden="true">
+              {[0, 1, 2].map((k) => (
+                <Heart key={k} size={18} />
+              ))}
+            </span>
+            <strong>{t('Até errar três')}</strong>
+          </button>
+        </li>
+      </ul>
+      <div className="minijogo-acoes">
+        <button type="button" className="btn-secondary" onClick={aoVoltar}>
+          {t('Outros jogos')}
+        </button>
+      </div>
+    </div>
+  );
+}
 type MeuExtra = { pragasAbatidas?: number; perfeita?: boolean; combo?: number };
 
 // a arte da barraca começa a vir junto com o jogo, para chegar antes do fim do "prepare-se"
@@ -51,7 +94,7 @@ export function JogoCaca({ estado, eu, jogador, agir }: { estado: EstadoCaca & P
     // só o placar
     const meu = estado.meu as (EstadoCaca['meu'] & MeuExtra) | null;
     const bonus = (estado as Extra).bonus === true;
-    const alegre = meu && !bonus ? (meu.pragasAbatidas ?? meu.abatidas.length) >= Math.ceil(pragasDaOnda(estado.onda) * 0.6) : null;
+    const alegre = meu && !bonus ? (meu.pragasAbatidas ?? meu.abatidas.length) >= Math.ceil(todasAsPragasDaOnda(estado.onda) * 0.6) : null;
     return (
       <div className="caca">
         {meu && alegre !== null && <CoelhoDaMoita key={estado.onda} alegre={alegre} />}
@@ -99,6 +142,9 @@ function Horta({ estado, eu, jogador, agir }: { estado: EstadoCaca & Partida; eu
 
   const pragas = estado.pragas;
   const bonus = (estado as Extra).bonus === true;
+  /** O "até errar três" (21/11/2026): os erros que sobram, antecipados aqui; o servidor corrige quando acalma. */
+  const tresErros = (estado as Extra).categoria === MODO_TRES_ERROS;
+  const [errosRestantes, setErrosRestantes] = useState((estado as Extra).errosRestantes ?? ERROS_DO_MODO);
   /** O que esta tela sabe de mim: as pragas que abati, a munição e os pontos. O servidor corrige quando acalma. */
   const abatidas = useRef(new Set<number>(estado.meu?.abatidas ?? []));
   const [municao, setMunicao] = useState(estado.meu?.municao ?? 0);
@@ -122,6 +168,9 @@ function Horta({ estado, eu, jogador, agir }: { estado: EstadoCaca & Partida; eu
     combo.current = (m as { combo?: number }).combo ?? combo.current;
     setMunicao(m.municao);
     setPontos(m.pontos);
+    const r = (estado as Extra).errosRestantes;
+    if (typeof r === 'number') setErrosRestantes(r);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [estado.meu]);
 
   const jogando = estado.fase === 'jogando' && !estado.terminada;
@@ -129,7 +178,7 @@ function Horta({ estado, eu, jogador, agir }: { estado: EstadoCaca & Partida; eu
 
   const atirar = (x: number, y: number) => {
     const ms = msDaOnda();
-    if (!souJogador || !jogando || ms === null || ms < 0 || municaoRef.current === 0) return;
+    if (!souJogador || !jogando || ms === null || ms < 0 || municaoRef.current === 0 || (tresErros && errosRestantes <= 0)) return;
     const agoraMs = Date.now();
     if (ultimoTiro.current && agoraMs - ultimoTiro.current.em < INTERVALO_MS) return;
     ultimoTiro.current = { x, y, em: agoraMs };
@@ -145,6 +194,7 @@ function Horta({ estado, eu, jogador, agir }: { estado: EstadoCaca & Partida; eu
       const pos = posicao(p, ms)!;
       quedas.current.push({ x: pos.x, y: pos.y, tipo: p.tipo, dir: p.vx >= 0 ? 1 : -1, em: agoraMs, pontos: -AMIGO_PENA });
       setPontos((n) => Math.max(0, n - AMIGO_PENA));
+      if (tresErros) setErrosRestantes((n) => n - 1);
     } else if (i >= 0 && bonus) {
       // a cenoura da rodada bônus: os pontos dela, sem combo
       abatidas.current.add(i);
@@ -168,6 +218,7 @@ function Horta({ estado, eu, jogador, agir }: { estado: EstadoCaca & Partida; eu
     } else {
       combo.current = 0;
       tocar('erro');
+      if (tresErros) setErrosRestantes((n) => n - 1);
     }
     pendentes.current++;
     void Promise.resolve(agir({ tipo: 'tiro', x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10, ms: Math.round(ms) })).finally(() => {
@@ -270,6 +321,15 @@ function Horta({ estado, eu, jogador, agir }: { estado: EstadoCaca & Partida; eu
                 ))}
               </span>
             )}
+            {/* o modo de três erros (21/11/2026): um coração por erro que sobra, os perdidos rachados */}
+            {tresErros && (
+              <span className="caca-erros" aria-label={t('Erros que sobram: {n}', { n: Math.max(0, errosRestantes) })}>
+                {Array.from({ length: ERROS_DO_MODO }, (_, k) =>
+                  k < errosRestantes ? <Heart key={k} size={16} aria-hidden="true" /> : <HeartCrack key={k} size={16} className="perdido" aria-hidden="true" />,
+                )}
+              </span>
+            )}
+            {tresErros && <span className="golfe-tacadas">{t('Onda {n}', { n: estado.onda })}</span>}
             <span className="golfe-tacadas">{t('Pontos: {n}', { n: pontos })}</span>
           </>
         )}
@@ -311,7 +371,8 @@ function Horta({ estado, eu, jogador, agir }: { estado: EstadoCaca & Partida; eu
           />
         ))}
       </div>
-      {souJogador && estado.fase === 'preparando' && !bonus && <p className="minijogo-situacao">{t('Mire e clique nas pragas antes que fujam. Cada tiro gasta uma cenoura.')}</p>}
+      {souJogador && estado.fase === 'preparando' && !bonus && !tresErros && <p className="minijogo-situacao">{t('Mire e clique nas pragas antes que fujam. Cada tiro gasta uma cenoura.')}</p>}
+      {souJogador && estado.fase === 'preparando' && tresErros && estado.onda === 1 && <p className="minijogo-situacao">{t('Tiros sem limite, mas o terceiro erro acaba a caçada.')}</p>}
       {/* a rodada bônus e a joaninha (20/11/2026): a dica no "prepare-se" */}
       {souJogador && estado.fase === 'preparando' && bonus && <p className="minijogo-situacao caca-recorde">{t('Rodada bônus: acerte as cenouras que sobem, sem limite de tiros.')}</p>}
       {souJogador && estado.fase === 'preparando' && !bonus && pragas.some(ehAmigo) && <p className="minijogo-situacao">{t('Não atire na joaninha: ela é amiga da horta.')}</p>}

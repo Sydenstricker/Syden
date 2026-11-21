@@ -31,22 +31,59 @@ export const FIM = CHEFE_T + 2700;
  * ondas, já mais cheias) e cada uma tem um chefe com um padrão novo: o VESPEIRO gira tiros em espiral, e o TRATOR solta
  * paredes de tiros com um vão (achar o vão é o jogo). Escolhidas na largada; o recorde do Solo é por fase.
  */
-export type FaseDaNave = 'horta' | 'pomar' | 'celeiro';
-export const FASES_DA_NAVE: Record<FaseDaNave, { ondas: number; dificuldade: number; chefe: 0 | 1 | 2; vidaDoChefe: number }> = {
+/** As três fases de verdade (o chão, os bichos e o chefe de cada uma). */
+export type FaseBase = 'horta' | 'pomar' | 'celeiro';
+/**
+ * A CAMPANHA (21/11/2026, o lote D): as três fases seguidas, numa partida só, com o placar somado. O chefe de cada fase tem um
+ * tempo mais curto (CAMPANHA_CHEFE) para a campanha não arrastar; quem não o derrubou segue, e a fase seguinte vem do mesmo jeito.
+ * Só o último chefe (o trator) fecha a partida. O recorde do Solo é à parte (a variante 'campanha').
+ */
+export type FaseDaNave = FaseBase | 'campanha';
+export const FASES_DA_NAVE: Record<FaseBase, { ondas: number; dificuldade: number; chefe: 0 | 1 | 2; vidaDoChefe: number }> = {
   horta: { ondas: 5, dificuldade: 0, chefe: 0, vidaDoChefe: 320 },
   pomar: { ondas: 2, dificuldade: 1, chefe: 1, vidaDoChefe: 260 },
   celeiro: { ondas: 2, dificuldade: 2, chefe: 2, vidaDoChefe: 280 },
 };
-export const ehFaseDaNave = (v: unknown): v is FaseDaNave => v === 'horta' || v === 'pomar' || v === 'celeiro';
-/** As ondas, a entrada do chefe e o fim de cada fase, em passos. */
+export const CAMPANHA: readonly FaseBase[] = ['horta', 'pomar', 'celeiro'];
+/** O tempo de cada chefe no meio da campanha (o último tem o de sempre). */
+export const CAMPANHA_CHEFE = 1800;
+const TEMPO_DO_CHEFE = 2700;
+export const ehFaseDaNave = (v: unknown): v is FaseDaNave => v === 'horta' || v === 'pomar' || v === 'celeiro' || v === 'campanha';
+/** Um trecho da partida: uma fase de verdade, do começo dela à entrada do chefe e ao fim. */
+export interface Trecho {
+  fase: FaseBase;
+  inicio: number;
+  chefeT: number;
+  fim: number;
+}
+/** As ondas, a entrada do (último) chefe e o fim de cada fase, em passos; e os trechos e o fim de cada onda. */
 export function temposDaFase(fase: FaseDaNave): {
   ondas: number;
   chefeT: number;
   fim: number;
+  fimDasOndas: number[];
+  trechos: Trecho[];
 } {
-  const ondas = FASES_DA_NAVE[fase].ondas;
-  const chefeT = INICIO_ONDAS + ondas * ONDA_PASSOS + 60;
-  return { ondas, chefeT, fim: chefeT + 2700 };
+  const bases: readonly FaseBase[] = fase === 'campanha' ? CAMPANHA : [fase];
+  const trechos: Trecho[] = [];
+  const fimDasOndas: number[] = [];
+  let inicio = 0;
+  bases.forEach((b, i) => {
+    const n = FASES_DA_NAVE[b].ondas;
+    for (let k = 1; k <= n; k++) fimDasOndas.push(inicio + INICIO_ONDAS + k * ONDA_PASSOS);
+    const chefeT = inicio + INICIO_ONDAS + n * ONDA_PASSOS + 60;
+    const fim = chefeT + (i === bases.length - 1 ? TEMPO_DO_CHEFE : CAMPANHA_CHEFE);
+    trechos.push({ fase: b, inicio, chefeT, fim });
+    inicio = fim;
+  });
+  const ultimo = trechos[trechos.length - 1];
+  return { ondas: fimDasOndas.length, chefeT: ultimo.chefeT, fim: ultimo.fim, fimDasOndas, trechos };
+}
+/** A fase de verdade que está na tela no passo `n` (na campanha, a do trecho de agora). */
+export function faseNoPasso(fase: FaseDaNave, n: number): FaseBase {
+  if (fase !== 'campanha') return fase;
+  for (const t of temposDaFase(fase).trechos) if (n < t.fim) return t.fase;
+  return CAMPANHA[CAMPANHA.length - 1];
 }
 
 /** A nave: a velocidade (unidades por passo, já contando a diagonal), o raio que leva dano, e onde nasce. */
@@ -107,7 +144,11 @@ export const VOLEIAS: readonly (readonly {
 ];
 
 export type Item = 'duplo' | 'espalhado' | 'escudo';
-export type TipoDeInimigo = 'corvo' | 'vespa' | 'besouro' | 'chefe';
+/**
+ * O BICHO DE CADA FASE (21/11/2026, o lote D): a MARIPOSA só no pomar (desce em voltas, larga e devagar, soltando o pó em leque) e
+ * o MORCEGO só no celeiro (mergulha em V do alto de um lado ao outro, em bando, e solta o leque no fundo do mergulho).
+ */
+export type TipoDeInimigo = 'corvo' | 'vespa' | 'besouro' | 'chefe' | 'mariposa' | 'morcego';
 export type Padrao = 'reto' | 'leque3' | 'leque5' | 'roda8' | 'roda12' | 'chuva' | 'roda8b' | 'parede' | 'parede2';
 
 export const RAIO: Record<TipoDeInimigo, number> = {
@@ -115,12 +156,16 @@ export const RAIO: Record<TipoDeInimigo, number> = {
   vespa: 6,
   besouro: 10,
   chefe: 20,
+  mariposa: 7,
+  morcego: 6,
 };
 export const PONTOS: Record<TipoDeInimigo, number> = {
   corvo: 100,
   vespa: 150,
   besouro: 400,
   chefe: 5000,
+  mariposa: 250,
+  morcego: 200,
 };
 /** Cada bala no chefe vale isto, além do abate. */
 export const PONTOS_NO_CHEFE = 10;
@@ -208,6 +253,22 @@ export function posicaoInimigo(e: Inimigo, n: number): { x: number; y: number } 
     if (s < entrada + pausa) return { x: x0 + 6 * vaivem((s - entrada) / 160), y: alvo };
     const k = s - entrada - pausa;
     return { x: x0 + vx * k, y: alvo + 0.012 * k * k };
+  }
+  if (e.tipo === 'mariposa') {
+    // [centro x, y0, vy, raio, período]: desce dando voltas (o vaivém de um eixo um quarto de volta atrás do outro)
+    const [cx, y0, vy, raio, periodo] = r;
+    return { x: cx + raio * vaivem(s / periodo), y: y0 + vy * s + raio * 0.6 * vaivem(s / periodo + 0.25) };
+  }
+  if (e.tipo === 'morcego') {
+    // [x0, y0, x do fundo, y do fundo, x2]: o mergulho em V (desce até o fundo e sobe para o outro lado)
+    const [x0, y0, xm, ym, x2] = r;
+    const u = s / e.dur;
+    if (u < 0.5) {
+      const v = u * 2;
+      return { x: x0 + (xm - x0) * v, y: y0 + (ym - y0) * v };
+    }
+    const v = u * 2 - 1;
+    return { x: xm + (x2 - xm) * v, y: ym + (y0 - ym) * v };
   }
   // o chefe: entra devagar e passeia de um lado para o outro (o vespeiro mais depressa; o trator mais baixo e devagar)
   const variante = r[0] ?? 0;
@@ -385,11 +446,16 @@ export const fimDaOnda = (k: number) => INICIO_ONDAS + k * ONDA_PASSOS;
 export function roteiro(semente: number, faseDaNave: FaseDaNave = 'horta'): Inimigo[] {
   const r = sorteio(semente);
   const inimigos: Inimigo[] = [];
-  let primeiroItem = true;
-  const def = FASES_DA_NAVE[faseDaNave];
-  const tempos = temposDaFase(faseDaNave);
+  const itens = { primeiro: true };
+  // cada trecho (na campanha, as três fases seguidas) com o mesmo sorteio, na ordem
+  for (const tr of temposDaFase(faseDaNave).trechos) roteiroDoTrecho(r, semente, inimigos, itens, tr);
+  return inimigos;
+}
+
+function roteiroDoTrecho(r: () => number, semente: number, inimigos: Inimigo[], itens: { primeiro: boolean }, tr: Trecho) {
+  const def = FASES_DA_NAVE[tr.fase];
   for (let onda = 1; onda <= def.ondas; onda++) {
-    const base = INICIO_ONDAS + (onda - 1) * ONDA_PASSOS;
+    const base = tr.inicio + INICIO_ONDAS + (onda - 1) * ONDA_PASSOS;
     // nas fases curtas, as ondas já começam mais cheias
     const n = onda + def.dificuldade;
     const vt = 1 + 0.12 * n;
@@ -471,10 +537,12 @@ export function roteiro(semente: number, faseDaNave: FaseDaNave = 'horta'): Inim
     for (let k = 0; k < 2 && candidatos.length > 0; k++) {
       const i = candidatos.splice(Math.floor(r() * candidatos.length), 1)[0];
       const sorte = r();
-      inimigos[i].item = primeiroItem ? 'duplo' : sorte < 0.36 ? 'duplo' : sorte < 0.7 ? 'espalhado' : 'escudo';
-      primeiroItem = false;
+      inimigos[i].item = itens.primeiro ? 'duplo' : sorte < 0.36 ? 'duplo' : sorte < 0.7 ? 'espalhado' : 'escudo';
+      itens.primeiro = false;
     }
   }
+  // O BICHO DA FASE (21/11/2026): por um sorteio À PARTE (o das ondas fica igual ao de antes), uns bandos por onda, entre os outros
+  bichosDaFase(sorteio((semente ^ 0x5bd1e995) + tr.inicio), inimigos, tr);
   // o chefe: o espantalho mecânico alterna a roda, o leque e a chuva, cada vez mais depressa; o vespeiro gira a roda em
   // espiral (a roda e a roda girada, bem seguidas); o trator solta paredes com o vão de um lado e do outro
   const tiros: [number, Padrao][] = [];
@@ -487,18 +555,76 @@ export function roteiro(semente: number, faseDaNave: FaseDaNave = 'horta'): Inim
   const ritmo = def.chefe === 1 ? 40 : def.chefe === 2 ? 95 : 80;
   const minimo = def.chefe === 1 ? 26 : 50;
   let k = 0;
-  for (let s = 200; s < tempos.fim - tempos.chefeT - 30; s += Math.max(minimo, ritmo - Math.floor(s / 400) * 4), k++) tiros.push([s, ciclo[k % ciclo.length]]);
+  for (let s = 200; s < tr.fim - tr.chefeT - 30; s += Math.max(minimo, ritmo - Math.floor(s / 400) * 4), k++) tiros.push([s, ciclo[k % ciclo.length]]);
   inimigos.push({
     tipo: 'chefe',
-    t: tempos.chefeT,
-    dur: tempos.fim - tempos.chefeT,
+    t: tr.chefeT,
+    dur: tr.fim - tr.chefeT,
     rota: def.chefe === 0 ? [] : [def.chefe],
     vida: def.vidaDoChefe,
     item: null,
     tiros,
     vt: def.chefe === 1 ? 1.1 : 1.3,
   });
-  return inimigos;
+}
+
+/**
+ * Os bichos de cada fase (21/11/2026): no pomar, três pares de MARIPOSAS por onda; no celeiro, três bandos de MORCEGOS. A horta não
+ * tem (o roteiro dela é o de sempre). Um bando por onda solta o escudo.
+ */
+function bichosDaFase(r: () => number, inimigos: Inimigo[], tr: Trecho) {
+  if (tr.fase === 'horta') return;
+  const def = FASES_DA_NAVE[tr.fase];
+  for (let onda = 1; onda <= def.ondas; onda++) {
+    const base = tr.inicio + INICIO_ONDAS + (onda - 1) * ONDA_PASSOS;
+    const n = onda + def.dificuldade;
+    const vt = 1 + 0.12 * n;
+    let comItem = Math.floor(r() * 3);
+    for (const atraso of [260, 680, 1100]) {
+      const t = base + atraso + Math.round(r() * 60);
+      if (tr.fase === 'pomar') {
+        // as mariposas: duas lado a lado, descendo em voltas largas; o pó em leque duas vezes na descida
+        const vy = 0.5 + 0.04 * n;
+        const raio = 20 + r() * 8;
+        const periodo = 140 + Math.round(r() * 40);
+        for (const lado of [-1, 1]) {
+          const cx = LARGURA / 2 + lado * (38 + r() * 14);
+          inimigos.push({
+            tipo: 'mariposa',
+            t,
+            dur: Math.ceil((ALTURA + 30 + raio) / vy),
+            rota: [cx, -12 - raio, vy, raio, periodo],
+            vida: 3,
+            item: comItem === 0 && lado > 0 ? 'escudo' : null,
+            tiros: [
+              [90, 'leque3'],
+              [200, 'leque3'],
+            ],
+            vt,
+          });
+        }
+      } else {
+        // os morcegos: um bando de três mergulhando em V de um lado ao outro, um atrás do outro; o leque no fundo do mergulho
+        const daEsquerda = r() < 0.5;
+        const xm = LARGURA / 2 + (r() - 0.5) * 70;
+        const ym = 120 + r() * 50;
+        const dur = 170 - n * 6;
+        for (let j = 0; j < 3; j++) {
+          inimigos.push({
+            tipo: 'morcego',
+            t: t + j * 16,
+            dur,
+            rota: daEsquerda ? [-12, 20 + j * 10, xm, ym, LARGURA + 12] : [LARGURA + 12, 20 + j * 10, xm, ym, -12],
+            vida: 2,
+            item: comItem === 0 && j === 2 ? 'escudo' : null,
+            tiros: j === 1 ? [[Math.round(dur / 2), 'leque3']] : [],
+            vt,
+          });
+        }
+      }
+      comItem--;
+    }
+  }
 }
 
 const perto = (a: { x: number; y: number }, x: number, y: number, raio: number) => (a.x - x) * (a.x - x) + (a.y - y) * (a.y - y) <= raio * raio;
@@ -544,7 +670,7 @@ export class Ficha {
   bombasEm: number[] = [];
   raspados = new Set<number>();
 
-  readonly tempos: { ondas: number; chefeT: number; fim: number };
+  readonly tempos: ReturnType<typeof temposDaFase>;
   private _tiros: TiroInimigo[] | null = null;
   /** Os tiros dos inimigos, na mesma ordem do site (o índice vai no evento do raspão). */
   get tirosInimigos(): TiroInimigo[] {
@@ -633,7 +759,8 @@ export class Ficha {
     this.dano.delete(i);
     this.pontos += PONTOS[e.tipo];
     this.novos.push(i);
-    if (e.tipo === 'chefe') this.chefeEm = q;
+    // só o último chefe fecha a partida (na campanha, os do meio caem e ela segue)
+    if (e.tipo === 'chefe' && i === this.inimigos.length - 1) this.chefeEm = q;
   }
 
   /** A bala `b` do disparo em `p`, da nave em (x, y), acertou o inimigo `i` no passo `q`. */
@@ -795,7 +922,7 @@ export class Ficha {
   ondasVivas(n: number): number {
     const ate = this.morteFinal === null ? n : Math.min(n, this.morteFinal - 1);
     let k = 0;
-    for (let o = 1; o <= this.tempos.ondas; o++) if (fimDaOnda(o) <= ate) k++;
+    for (const fim of this.tempos.fimDasOndas) if (fim <= ate) k++;
     return k;
   }
 

@@ -18,7 +18,7 @@
  * somados vezes o número de manobras. O combo se fecha quando o skatista roda no chão sem manobra por um instante; cair
  * (pousar torto, com o flip pela metade, perder o equilíbrio, bater de frente) perde o combo inteiro.
  */
-import { altura, alturaDaPeca, dentro, LARGURA, MARGEM, OBJETIVOS, pecaEm, PROFUNDIDADE, perfilDaPeca, subidaDaPeca, TRILHOS, usarPista, type Area, type Trilho } from './pista.js';
+import { altura, alturaDaPeca, dentro, LARGURA, MARGEM, OBJETIVOS, pecaEm, PROFUNDIDADE, perfilDaPeca, SEGUNDO, subidaDaPeca, TRILHOS, usarPista, type Area, type Trilho } from './pista.js';
 
 export const PASSO = 1 / 60;
 /** A sessão: 1 minuto (eram 2 até 06/11/2026, pedido dele). */
@@ -150,6 +150,14 @@ export interface Skatista {
   letras: number;
   fita: boolean;
   saltos: number;
+  /**
+   * O CONJUNTO DE OBJETIVOS da sessão (21/11/2026): 0 o primeiro, 1 o segundo (outra palavra, outra fita, as metas maiores e
+   * as duas manobras). As letras e a fita pegas são as do conjunto da sessão.
+   */
+  conjunto: number;
+  /** O maior giro pousado (graus) e o manual mais longo (segundos) da sessão: as manobras do segundo conjunto. */
+  maiorGiro: number;
+  maiorManual: number;
   /** De onde saiu do chão neste voo (para o salto com nome). */
   sx: number;
   sz: number;
@@ -157,9 +165,12 @@ export interface Skatista {
   eventos: Evento[];
 }
 
-export function novoSkatista(pista = 0): Skatista {
+export function novoSkatista(pista = 0, conjunto = 0): Skatista {
   return {
     pista,
+    conjunto: conjunto === 1 ? 1 : 0,
+    maiorGiro: 0,
+    maiorManual: 0,
     passo: 0,
     x: 6,
     y: 0,
@@ -262,6 +273,10 @@ function valorBase(nome: string, seg: number): number {
 
 /** Repetir a mesma manobra no combo vale menos: 100%, 75%, 50%, 25%. */
 function somar(k: Skatista, nome: string, seg = 0) {
+  // as manobras do segundo conjunto (21/11/2026): o maior giro e o manual mais longo, feitos (mesmo que o combo caia depois)
+  if (nome === 'Manual' && seg > k.maiorManual) k.maiorManual = seg;
+  const giro = Number(nome);
+  if (giro >= 180 && giro > k.maiorGiro) k.maiorGiro = giro;
   const vezes = k.combo.filter((m) => m.nome === nome).length;
   const pontos = Math.floor((valorBase(nome, seg) * Math.max(1, 4 - vezes)) / 4);
   if (pontos <= 0) return;
@@ -301,7 +316,7 @@ function conferirSaltos(k: Skatista) {
 
 /** As letras e a fita: passou perto, pegou (de qualquer jeito: no chão, no ar, na linha). */
 function pegarNoAr(k: Skatista) {
-  const o = OBJETIVOS;
+  const o = k.conjunto === 1 ? SEGUNDO : OBJETIVOS;
   const cy = k.y + 0.4;
   const perto = (p: { x: number; y: number; z: number }) => (p.x - k.x) * (p.x - k.x) + (p.y - cy) * (p.y - cy) + (p.z - k.z) * (p.z - k.z) < PEGA * PEGA;
   for (let i = 0; i < o.letras.length; i++) if (!(k.letras & (1 << i)) && perto(o.letras[i])) k.letras |= 1 << i;
@@ -864,7 +879,10 @@ export function comboAberto(k: Skatista): Manobra[] {
   return [...k.combo, ...extra];
 }
 
-/** Um objetivo da sessão, e se ele foi cumprido. `id`: 'letras', 'pontos', 'combo', 'fita' ou 'gap:<id do salto>'. */
+/**
+ * Um objetivo da sessão, e se ele foi cumprido. `id`: 'letras', 'pontos', 'combo', 'fita' ou 'gap:<id do salto>'; no segundo
+ * conjunto, também 'giro' e 'manual'.
+ */
 export interface Objetivo {
   id: string;
   feito: boolean;
@@ -875,6 +893,21 @@ export interface Objetivo {
 /** OS OBJETIVOS da sessão (19/11/2026), pelo que o skatista fez (o servidor os conta na sessão que ele refez). */
 export function objetivos(k: Skatista): Objetivo[] {
   usarPista(k.pista);
+  if (k.conjunto === 1) {
+    // o segundo conjunto (21/11/2026): 'giro' e 'manual' são as duas manobras, com a meta no valor
+    const d = SEGUNDO;
+    const todas2 = (1 << d.letras.length) - 1;
+    let pegas = 0;
+    for (let i = 0; i < d.letras.length; i++) if (k.letras & (1 << i)) pegas++;
+    return [
+      { id: 'letras', feito: (k.letras & todas2) === todas2, valor: pegas },
+      { id: 'pontos', feito: k.pontos >= d.pontos, valor: d.pontos },
+      { id: 'combo', feito: k.melhorCombo >= d.combo, valor: d.combo },
+      { id: 'fita', feito: k.fita },
+      { id: 'giro', feito: k.maiorGiro >= d.giro, valor: d.giro },
+      { id: 'manual', feito: k.maiorManual >= d.manual, valor: d.manual },
+    ];
+  }
   const o = OBJETIVOS;
   const todas = (1 << o.letras.length) - 1;
   let letras = 0;
@@ -926,8 +959,8 @@ export function entradasValidas(e: unknown): e is Entradas {
 }
 
 /** Refaz a sessão inteira pelas entradas, até ela terminar. `passos` diz quantos passos as entradas tinham. */
-export function refazer(e: Entradas, pista = 0): { k: Skatista; passos: number } {
-  const k = novoSkatista(pista);
+export function refazer(e: Entradas, pista = 0, conjunto = 0): { k: Skatista; passos: number } {
+  const k = novoSkatista(pista, conjunto);
 
   let passos = 0;
   for (let i = 0; i < e.length; i += 2) {

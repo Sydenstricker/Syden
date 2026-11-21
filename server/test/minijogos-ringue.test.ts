@@ -158,3 +158,59 @@ test('na sala: a mesma semente, quem foi mais longe ganha, e o pódio vai à est
   assert.equal(trofeu!.pontos, 3);
   assert.equal(trofeu!.tempoMs, Math.round((boa.l.passo / 60) * 1000));
 });
+
+// ---------------- O lote D (21/11/2026): o segundo circuito ----------------
+
+test('o segundo circuito no Solo: o servidor refaz com os adversários novos, e o recorde vai à tabela comum, à parte', () => {
+  const ctx = {
+    agendar: () => {},
+    avisar: () => {},
+    terminar: () => {},
+    naSala: () => [biaId],
+    nome: () => 'bia',
+    comunidade: 0,
+    solo: true,
+  };
+  const doPrimeiro = db.recordeDoRingue(biaId);
+  const jogo = criarRingue({ agora: () => agora, aleatorio: () => 0.2718 }).comecar(ctx as never, { naSala: [biaId], criadaPor: biaId, corpo: { circuito: 1 } });
+  assert.ok(typeof jogo !== 'string');
+  const e0 = jogo.publico(biaId) as unknown as Estado & { circuito: number; categoria?: string };
+  assert.equal(e0.circuito, 1);
+  assert.equal(e0.categoria, 'circuito-2');
+  // os comandos do circuito 2
+  const l = sim.novaLuta(e0.semente, 1);
+  const entradas: number[] = [];
+  while (!l.terminou) {
+    const bits = comandoDoPiloto(l);
+    sim.anotar(entradas, bits);
+    sim.passo(l, bits);
+  }
+  agora += (l.passo / 60) * 1000 + 1000;
+  // os mesmos comandos não fecham o primeiro circuito do mesmo jeito: o servidor refaz pelo circuito da partida
+  assert.equal(jogo.acao(biaId, { tipo: 'fim', entradas }), null);
+  const e = jogo.publico(biaId) as unknown as Estado;
+  assert.deepEqual(e.meu, sim.resultadoDe(l));
+  assert.equal(e.recorde?.novo, l.vencidas > 0 || sim.resultadoDe(l).dano > 0);
+  const r = db.recordeDoSolo(biaId, 'ringue', 'circuito-2');
+  assert.ok(r, 'o recorde do segundo circuito está na tabela comum');
+  assert.deepEqual(r!.extra, sim.resultadoDe(l));
+  // o recorde do primeiro circuito não foi tocado
+  assert.deepEqual(db.recordeDoRingue(biaId), doPrimeiro);
+  // o "Jogar de novo" manda a categoria: o mesmo circuito
+  const outra = criarRingue({ agora: () => agora }).comecar(ctx as never, { naSala: [biaId], criadaPor: biaId, corpo: { categoria: 'circuito-2' } });
+  assert.ok(typeof outra !== 'string');
+  assert.equal((outra.publico(biaId) as { circuito: number }).circuito, 1);
+});
+
+test('o valor do recorde do segundo circuito ordena como a regra compara', async () => {
+  const { valorDoResultado } = await import('../src/minijogo-ringue.js');
+  const casos = [
+    { vencidas: 3, passos: 9000, dano: 0 },
+    { vencidas: 3, passos: 12000, dano: 0 },
+    { vencidas: 2, passos: 20000, dano: 80 },
+    { vencidas: 2, passos: 9000, dano: 30 },
+    { vencidas: 0, passos: 3000, dano: 50 },
+  ];
+  for (const a of casos)
+    for (const b of casos) assert.equal(Math.sign(valorDoResultado(b) - valorDoResultado(a)), Math.sign(sim.comparar(a, b)), JSON.stringify([a, b]));
+});

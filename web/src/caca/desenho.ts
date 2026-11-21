@@ -406,6 +406,102 @@ function gafanhoto(ctx: CanvasRenderingContext2D, x: number, y: number, dir: num
   ctx.restore();
 }
 
+/** A MOSCA (21/11/2026): o corpinho escuro e listrado, os olhos vermelhos grandes e as asas zunindo (um borrão claro). */
+function mosca(ctx: CanvasRenderingContext2D, x: number, y: number, dir: number, ms: number) {
+  const asa = Math.sin(ms / 18);
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(dir, 1);
+  ctx.lineJoin = 'round';
+  // as asas: dois borrões claros, batendo depressa
+  ctx.fillStyle = 'rgba(220, 235, 255, 0.7)';
+  ctx.strokeStyle = 'rgba(80, 90, 110, 0.55)';
+  ctx.lineWidth = 0.5;
+  for (const k of [-1, 1]) {
+    ctx.beginPath();
+    ctx.ellipse(-1 + k * 0.5, -3.5 - 1.5 * asa * k, 4, 1.8, -0.6 - 0.5 * asa * k, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+  }
+  // o corpo, com as listras
+  ctx.fillStyle = '#2b2a33';
+  ctx.strokeStyle = '#141219';
+  ctx.lineWidth = 0.7;
+  ctx.beginPath();
+  ctx.ellipse(-1, 0.5, 4, 2.6, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+  ctx.strokeStyle = '#5a5866';
+  ctx.beginPath();
+  ctx.moveTo(-2.5, -1.5);
+  ctx.lineTo(-2.5, 2.5);
+  ctx.moveTo(-0.5, -1.8);
+  ctx.lineTo(-0.5, 2.8);
+  ctx.stroke();
+  // a cabeça e os olhos vermelhos
+  ctx.fillStyle = '#2b2a33';
+  ctx.beginPath();
+  ctx.arc(3.2, 0, 2, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#c8322a';
+  ctx.beginPath();
+  ctx.arc(4, -0.8, 1.2, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
+/**
+ * A TOUPEIRA (21/11/2026): o montinho de terra fica no chão a vida inteira dela, e ela sai dele até a cintura (o que está abaixo
+ * da boca do buraco não aparece): o focinho rosa, os olhinhos pequenos e as patas largas de cavar.
+ */
+function toupeira(ctx: CanvasRenderingContext2D, x: number, y: number, boca: number, ms: number) {
+  ctx.save();
+  // o corpo, cortado na boca do buraco
+  ctx.beginPath();
+  ctx.rect(x - 14, boca - 40, 28, 40);
+  ctx.clip();
+  const olha = Math.sin(ms / 160) * 0.8;
+  ctx.translate(x, y);
+  ctx.lineJoin = 'round';
+  ctx.fillStyle = '#5a4636';
+  ctx.strokeStyle = '#1d1712';
+  ctx.lineWidth = 0.8;
+  ctx.beginPath();
+  ctx.ellipse(0, 3, 6.5, 9, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+  // as patas largas, de cavar
+  ctx.fillStyle = '#e8a6a0';
+  for (const k of [-1, 1]) {
+    ctx.beginPath();
+    ctx.ellipse(k * 6, 4, 2.6, 1.8, k * 0.4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+  }
+  // o focinho rosa e os olhinhos
+  ctx.fillStyle = '#f0a0a8';
+  ctx.beginPath();
+  ctx.ellipse(olha, -3.5, 2.2, 1.6, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = '#141219';
+  ctx.fillRect(-2.6 + olha, -6.4, 1, 1);
+  ctx.fillRect(1.6 + olha, -6.4, 1, 1);
+  ctx.restore();
+  // o montinho de terra na frente
+  ctx.fillStyle = '#6b4424';
+  ctx.strokeStyle = '#3a2412';
+  ctx.lineWidth = 0.8;
+  ctx.beginPath();
+  ctx.ellipse(x, boca + 2, 12, 4.5, 0, Math.PI, Math.PI * 2);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = '#8a5a32';
+  ctx.fillRect(x - 6, boca - 1, 2, 1);
+  ctx.fillRect(x + 3, boca - 2, 2, 1);
+}
+
 /** A JOANINHA (20/11/2026), o bicho amigo: o casco vermelho de bolinhas abrindo um pouco no voo, as asas batendo. */
 function joaninha(ctx: CanvasRenderingContext2D, x: number, y: number, dir: number, ms: number) {
   const asa = Math.sin(ms / 45);
@@ -543,6 +639,8 @@ export function desenhar(ctx: CanvasRenderingContext2D, q: Quadro) {
       if (p.tipo === 'corvo') corvo(ctx, pos.x, pos.y, dir, q.ms! + i * 37);
       else if (p.tipo === 'joaninha') joaninha(ctx, pos.x, pos.y, dir, q.ms! + i * 29);
       else if (p.tipo === 'cenoura') cenoura(ctx, pos.x, pos.y, q.ms! + i * 113);
+      else if (p.tipo === 'mosca') mosca(ctx, pos.x, pos.y, dir, q.ms! + i * 31);
+      else if (p.tipo === 'toupeira') toupeira(ctx, pos.x, pos.y, p.y0 - 2, q.ms! + i * 61);
       else gafanhoto(ctx, pos.x, pos.y, dir, q.ms! + i * 53);
     });
   }
@@ -570,17 +668,32 @@ export function desenhar(ctx: CanvasRenderingContext2D, q: Quadro) {
       ctx.restore();
       continue;
     }
+    if (queda.tipo === 'toupeira') {
+      // a toupeira acertada some de volta no buraco, tonta (as estrelinhas em volta)
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, 1 - s / 0.8);
+      const boca = CHAO + 10;
+      toupeira(ctx, queda.x, queda.y + 40 * s, boca, 0);
+      ctx.fillStyle = '#ffd65a';
+      for (let k = 0; k < 3; k++) {
+        const a = s * 9 + (k * Math.PI * 2) / 3;
+        ctx.fillRect(queda.x + Math.cos(a) * 8 - 1, queda.y - 10 + Math.sin(a) * 3 - 1, 2, 2);
+      }
+      ctx.restore();
+      continue;
+    }
     ctx.save();
     ctx.globalAlpha = Math.max(0, 1 - s / 1.2);
     ctx.translate(queda.x, queda.y + 120 * s * s);
     ctx.rotate(queda.dir * s * 6);
     if (queda.tipo === 'corvo') corvo(ctx, 0, 0, queda.dir, 0);
+    else if (queda.tipo === 'mosca') mosca(ctx, 0, 0, queda.dir, 0);
     else gafanhoto(ctx, 0, 0, queda.dir, 0);
     ctx.restore();
     // as penas (ou as folhas) que voam
     ctx.save();
     ctx.globalAlpha = Math.max(0, 1 - s / 0.8);
-    ctx.fillStyle = queda.tipo === 'corvo' ? '#3d3a47' : '#7cbf45';
+    ctx.fillStyle = queda.tipo === 'corvo' || queda.tipo === 'mosca' ? '#3d3a47' : '#7cbf45';
     for (let k = 0; k < 5; k++) {
       const a = (k / 5) * Math.PI * 2;
       ctx.fillRect(queda.x + Math.cos(a) * 22 * s, queda.y + Math.sin(a) * 16 * s + 20 * s * s, 2, 1);

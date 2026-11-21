@@ -135,6 +135,11 @@ export interface Adversario {
    * às dele (um golpe ou uma cadeia nova) e espera menos entre uma e outra. Até lá, a luta é a de antes, passo a passo.
    */
   furia: { acoes: Acao[]; espera: [number, number] };
+  /**
+   * A GUARDA QUE DANÇA (21/11/2026, o segundo circuito): parado na guarda, a cada `danca` passos ele troca o lado coberto
+   * (esquerda, direita, esquerda...; da guarda alta vai à esquerda). Sem sorteio: é um ritmo para aprender. 0 ou ausente: não dança.
+   */
+  danca?: number;
 }
 
 export const ADVERSARIOS: Adversario[] = [
@@ -213,6 +218,97 @@ export const ADVERSARIOS: Adversario[] = [
   },
 ];
 
+/**
+ * O SEGUNDO CIRCUITO (21/11/2026, o lote D): três adversários novos, cada um com um padrão próprio, escolhido na largada e com
+ * recorde à parte. Os bichos são folhas da Briga que já existem (Quaternius, CC0).
+ */
+export const ADVERSARIOS_DO_SEGUNDO: Adversario[] = [
+  {
+    // O DANÇARINO: nunca fecha a guarda alta, e a troca de lado no ritmo dele (a brecha anda: bater no lado aberto pede o tempo
+    // certo). Golpes rápidos e médios, de todo lado.
+    bicho: 'diabinho',
+    luva: '#9a4ad8',
+    vida: 120,
+    cadeia: 3,
+    paciencia: 2,
+    espera: [30, 70],
+    guardas: [3, 0, 3],
+    acoes: [
+      { peso: 3, golpes: [golpe('direto', 30, [8, 22], 10, 30)] },
+      { peso: 2, golpes: [golpe('gancho-e', 36, [10, 26], 14, 40)] },
+      { peso: 2, golpes: [golpe('gancho-d', 36, [10, 26], 14, 40)] },
+      { peso: 2, golpes: [golpe('de-baixo', 34, [8, 24], 14, 40)] },
+    ],
+    resposta: golpe('direto', 22, null, 11, 24),
+    fintas: [],
+    levanta: [70, 45],
+    danca: 18,
+    // a fúria do dançarino: os dois ganchos emendados, o primeiro sem brilho
+    furia: { acoes: [{ peso: 3, golpes: [golpe('gancho-e', 30, null, 12, 18), golpe('gancho-d', 30, [8, 20], 12, 40)] }], espera: [20, 50] },
+  },
+  {
+    // O ESPINHO: o contra-golpe. Guarda quase sempre alta, e cada soco que bate nela é respondido NA HORA com um direto curto; e
+    // fecha a guarda depois de dois socos que entram. Quem vence espera o golpe dele e bate na brecha.
+    bicho: 'cacto',
+    luva: '#4aa85a',
+    vida: 140,
+    cadeia: 2,
+    paciencia: 1,
+    espera: [56, 100],
+    guardas: [1, 5, 1],
+    acoes: [
+      { peso: 3, golpes: [golpe('por-cima', 54, [18, 38], 24, 66)] },
+      { peso: 2, golpes: [golpe('direto', 30, [8, 22], 12, 30)] },
+      { peso: 2, golpes: [golpe('de-baixo', 46, [14, 32], 22, 60)] },
+      { peso: 1, provoca: true },
+    ],
+    resposta: golpe('direto', 18, null, 14, 24),
+    fintas: [],
+    levanta: [80, 55],
+    // a fúria do espinho: o direto sem brilho emendado na pancada de cima
+    furia: { acoes: [{ peso: 2, golpes: [golpe('direto', 22, null, 12, 16), golpe('por-cima', 40, [10, 24], 24, 64)] }], espera: [40, 80] },
+  },
+  {
+    // O CAMPEÃO: de tudo um pouco, e as CADEIAS: três golpes seguidos em que só o último brilha; finge também. Na fúria, a cadeia
+    // de quatro.
+    bicho: 'alpaca-rei',
+    luva: '#e8d23a',
+    vida: 180,
+    cadeia: 5,
+    paciencia: 3,
+    espera: [26, 64],
+    guardas: [2, 2, 2],
+    acoes: [
+      { peso: 2, finta: true },
+      { peso: 2, golpes: [golpe('direto', 28, [6, 18], 12, 30)] },
+      { peso: 1, golpes: [golpe('gancho-e', 34, [8, 22], 16, 40)] },
+      { peso: 1, golpes: [golpe('gancho-d', 34, [8, 22], 16, 40)] },
+      { peso: 2, golpes: [golpe('direto', 26, null, 10, 18), golpe('gancho-e', 28, null, 12, 18), golpe('por-cima', 38, [10, 26], 22, 60)] },
+      { peso: 1, golpes: [golpe('de-baixo', 32, [8, 22], 18, 40)] },
+    ],
+    resposta: golpe('direto', 20, null, 12, 24),
+    fintas: [golpe('gancho-e', 30, null, 14, 40), golpe('gancho-d', 30, null, 14, 40)],
+    levanta: [90, 60],
+    furia: {
+      acoes: [
+        {
+          peso: 2,
+          golpes: [golpe('gancho-d', 24, null, 10, 14), golpe('gancho-e', 24, null, 10, 14), golpe('direto', 24, null, 10, 14), golpe('de-baixo', 32, [8, 20], 20, 50)],
+        },
+      ],
+      espera: [16, 40],
+    },
+  },
+];
+
+/** Os circuitos: o primeiro (o de sempre) e o segundo (21/11/2026). Todos de três lutas. */
+export const CIRCUITOS: Adversario[][] = [ADVERSARIOS, ADVERSARIOS_DO_SEGUNDO];
+export const ehCircuito = (v: unknown): v is number => typeof v === 'number' && Number.isInteger(v) && v >= 0 && v < CIRCUITOS.length;
+/** O adversário da luta de agora, no circuito dela. */
+export function adversarioDe(l: Luta): Adversario {
+  return CIRCUITOS[l.circuito][l.adv];
+}
+
 /** O direto que vem depois de uma finta: rápido, e sem brilho. */
 const DEPOIS_DA_FINTA = golpe('direto', 24, null, 12, 30);
 /** Quantos toques cada queda pede para levantar (a terceira não levanta: nocaute técnico). */
@@ -283,6 +379,8 @@ export type Fase = 'apresentacao' | 'luta' | 'intervalo' | 'resultado';
 
 export interface Luta {
   semente: number;
+  /** Qual circuito (o índice em CIRCUITOS; 0 é o de sempre). */
+  circuito: number;
   /** O gerador (MINSTD: o produto cabe inteiro num double). */
   sorte: number;
   passo: number;
@@ -321,12 +419,12 @@ function novoJogador(): Jogador {
   return { estado: 'pronto', t: 0, lado: 0, vida: 100, folego: FOLEGO, cansado: 0, estrelas: 0, quedas: 0, toques: 0, aTempo: false };
 }
 
-function novoOponente(adv: number): Oponente {
+function novoOponente(adv: number, circuito = 0): Oponente {
   return {
     estado: 'guarda',
     t: 0,
     dura: 60,
-    vida: ADVERSARIOS[adv].vida,
+    vida: CIRCUITOS[circuito][adv].vida,
     quedas: 0,
     guarda: 0,
     golpe: null,
@@ -341,10 +439,12 @@ function novoOponente(adv: number): Oponente {
   };
 }
 
-export function novaLuta(semente: number): Luta {
+export function novaLuta(semente: number, circuito = 0): Luta {
   const s = Math.floor(Math.abs(semente)) % 2147483646;
+  const c = ehCircuito(circuito) ? circuito : 0;
   return {
     semente,
+    circuito: c,
     sorte: s + 1,
     passo: 0,
     fase: 'apresentacao',
@@ -354,7 +454,7 @@ export function novaLuta(semente: number): Luta {
     round: 1,
     relogio: 0,
     j: novoJogador(),
-    a: novoOponente(0),
+    a: novoOponente(0, c),
     queda: null,
     contagem: 0,
     contagemT: 0,
@@ -375,7 +475,7 @@ export function novaLuta(semente: number): Luta {
 /** A fúria (20/11/2026): no último round, ou com menos de um terço da vida, uma vez por luta. */
 function conferirFuria(l: Luta) {
   const a = l.a;
-  if (a.furia || (l.round < ROUNDS && a.vida * 3 >= ADVERSARIOS[l.adv].vida)) return;
+  if (a.furia || (l.round < ROUNDS && a.vida * 3 >= adversarioDe(l).vida)) return;
   a.furia = true;
   l.eventos.push({ tipo: 'furia' });
 }
@@ -383,7 +483,7 @@ function conferirFuria(l: Luta) {
 /** De volta à guarda, esperando `espera` passos (−1: o sorteio do jeito dele), com a guarda sorteada. */
 function voltarAGuarda(l: Luta, espera: number) {
   const a = l.a;
-  const A = ADVERSARIOS[l.adv];
+  const A = adversarioDe(l);
   conferirFuria(l);
   a.estado = 'guarda';
   a.t = 0;
@@ -406,7 +506,7 @@ function avisar(l: Luta, g: Golpe) {
 
 function proximaAcao(l: Luta) {
   const a = l.a;
-  const A = ADVERSARIOS[l.adv];
+  const A = adversarioDe(l);
   if (a.fila.length > 0) {
     avisar(l, a.fila.shift()!);
     return;
@@ -513,9 +613,15 @@ function passoDoAdversario(l: Luta) {
   a.t++;
   a.levou++;
   switch (a.estado) {
-    case 'guarda':
+    case 'guarda': {
       if (a.t >= a.dura) proximaAcao(l);
+      else {
+        // a guarda que dança (o segundo circuito): troca de lado no ritmo dele
+        const danca = adversarioDe(l).danca ?? 0;
+        if (danca > 0 && a.t % danca === 0) a.guarda = a.guarda < 0 ? 1 : -1;
+      }
       break;
+    }
     case 'aviso':
       if (a.t >= a.golpe!.aviso) resolverGolpe(l);
       break;
@@ -553,7 +659,7 @@ function passoDoAdversario(l: Luta) {
 function impacto(l: Luta, lado: number, forte: boolean) {
   const a = l.a;
   const j = l.j;
-  const A = ADVERSARIOS[l.adv];
+  const A = adversarioDe(l);
   if (l.queda !== null || a.estado === 'caido' || a.estado === 'levantando') return;
   const aberto = a.estado === 'aberto' || a.estado === 'atordoado' || a.estado === 'provoca';
   const interrompe = (a.estado === 'aviso' || a.estado === 'finta') && j.aTempo;
@@ -758,7 +864,7 @@ function passoDaContagem(l: Luta) {
   l.eventos.push({ tipo: 'contagem', n: l.contagem });
   if (l.queda === 'adversario' && l.contagem >= l.a.levantaEm && l.contagem < 10) {
     const a = l.a;
-    const A = ADVERSARIOS[l.adv];
+    const A = adversarioDe(l);
     l.queda = null;
     a.estado = 'levantando';
     a.t = 0;
@@ -812,7 +918,7 @@ export function passo(l: Luta, bits: number) {
         l.venceuUltima = null;
         l.nocaute = false;
         l.j = novoJogador();
-        l.a = novoOponente(l.adv);
+        l.a = novoOponente(l.adv, l.circuito);
       }
       return;
   }
@@ -839,7 +945,7 @@ export function passo(l: Luta, bits: number) {
     j.folego = FOLEGO;
     j.cansado = 0;
     const a = l.a;
-    a.vida = Math.min(ADVERSARIOS[l.adv].vida, a.vida + 15);
+    a.vida = Math.min(adversarioDe(l).vida, a.vida + 15);
     a.fila.length = 0;
     voltarAGuarda(l, 60);
     return;
@@ -878,8 +984,8 @@ export function anotar(e: Entradas, bits: number) {
 }
 
 /** Refaz o circuito inteiro pelos comandos. `passos` é quantos passos os comandos cobrem. */
-export function refazer(semente: number, e: Entradas): { l: Luta; passos: number } {
-  const l = novaLuta(semente);
+export function refazer(semente: number, e: Entradas, circuito = 0): { l: Luta; passos: number } {
+  const l = novaLuta(semente, circuito);
   let passos = 0;
   for (let i = 0; i < e.length; i += 2) {
     for (let k = 0; k < e[i]; k++) {

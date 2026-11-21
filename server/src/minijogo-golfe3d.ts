@@ -1,6 +1,6 @@
 /**
  * OS PERCURSOS, O RECORDE E AS PÁS (19/11/2026, a auditoria dos mini-games): quem começa escolhe o percurso do kit (os oito de
- * sempre) ou o do parque (nove, PERCURSOS_3D; sem escolha em 20 s, o do kit). No Solo, o total de tacadas que ESTE servidor
+ * sempre), o do parque (nove) ou a trilha (seis, desde 21/11/2026; PERCURSOS_3D; sem escolha em 20 s, o do kit). No Solo, o total de tacadas que ESTE servidor
  * simulou vira o recorde da pessoa naquele percurso (a tabela comum, solo_recordes, menos é melhor), só com todos os buracos
  * acertados. As pás do moinho giram pelo passo e fecham a passagem (golfe3d-fisica.ts): como o passo da tacada tem a janela de
  * 0,8 s, quem mexe no passo pelo console escolhe o momento da pá, entre amigos.

@@ -807,3 +807,125 @@ test('a dificuldade, medida contra o piloto (3 robôs, cada um por si): mais vid
   assert.ok(facil.sobra > dificil.sobra, 'sobra mais vida no fácil');
   assert.ok(facil.vitorias >= dificil.vitorias);
 });
+
+// ---------------- 21/11/2026: a marca de cada espécie e as ondas (lote D) ----------------
+test('a marca da espécie: o especial muda um pouco com o bicho da frente (forte, seiva, casca, pressa, fôlego), e o servidor decide', () => {
+  const conta = mod as unknown as typeof import('../src/arena/conta.js');
+  // toda espécie tem uma marca que existe
+  for (const e of Object.keys(ESPECIES)) assert.ok(conta.MARCAS.includes(conta.marcaDe(e)), e);
+  assert.ok(new Set(Object.keys(ESPECIES).map(conta.marcaDe)).size === conta.MARCAS.length, 'todas as marcas são usadas');
+  const m = comecar();
+  m.andar(2100);
+  const a = m.l(anaId) as Lut & { rapidoAte: number; cascaAte: number };
+  const b = m.l(biaId) as Lut & { cascaAte: number };
+  m.por(anaId, 300, 380);
+  m.por(biaId, 380, 380);
+  m.andar(200);
+  b.equipe = ['miasso', 'miasso', 'miasso'];
+  const vale = (el: string, dano: number) => Math.max(1, Math.round(dano * mod.fatorDaArena(eficacia(el as never, 'faisca'))));
+  let n = 0;
+  const especial = (especie: string) => {
+    a.equipe = [especie, especie, especie];
+    a.especial = mod.ESPECIAL_MAX;
+    return m.manda(anaId, { tipo: 'golpe', n: ++n, tecla: 'e', x: 316, y: 380, dx: 1, dy: 0 });
+  };
+  // forte (o dinito, brasa: a roda): mais dano que o do kit
+  let pv = b.pv;
+  assert.equal(especial('dinito'), null);
+  assert.equal(pv - b.pv, vale('brasa', Math.round(KITS.brasa.e.dano * conta.MARCA.forte)));
+  // fôlego (o tisco, brasa): o dano do kit, e o especial volta com uma parte
+  b.pv = PV;
+  pv = b.pv;
+  assert.equal(especial('tisco'), null);
+  assert.equal(pv - b.pv, vale('brasa', KITS.brasa.e.dano));
+  assert.ok(a.especial >= conta.MARCA.folego && a.especial < mod.ESPECIAL_MAX, String(a.especial));
+  // seiva (o brotel): quem usa recupera vida
+  a.pv = 40;
+  assert.equal(especial('brotel'), null);
+  assert.equal(a.pv, 40 + conta.MARCA.seiva);
+  // pressa (o zunzi): fica rápido
+  assert.equal(especial('zunzi'), null);
+  assert.ok(a.rapidoAte > 0);
+  // casca (o rochim): leva menos dano por um tempo
+  assert.equal(especial('rochim'), null);
+  assert.ok(a.cascaAte > 0);
+  m.jogo.parar!();
+});
+
+test('a casca segura o dano: o mesmo golpe dói menos em quem acabou de usar o especial do bicho de pedra', () => {
+  const m = comecar();
+  m.andar(2100);
+  const a = m.l(anaId) as Lut & { cascaAte: number };
+  const b = m.l(biaId);
+  m.por(anaId, 300, 380);
+  m.por(biaId, 380, 380);
+  m.andar(200);
+  a.equipe = ['tisco', 'tisco', 'tisco'];
+  b.equipe = ['rochim', 'rochim', 'rochim'];
+  const antes = b.pv;
+  a.especial = mod.ESPECIAL_MAX;
+  assert.equal(m.manda(anaId, { tipo: 'golpe', n: 1, tecla: 'e', x: 316, y: 380, dx: 1, dy: 0 }), null);
+  const semCasca = antes - b.pv;
+  b.pv = PV;
+  b.especial = mod.ESPECIAL_MAX;
+  // ela usa o especial (a casca) longe de ana, e leva a mesma roda
+  assert.equal(m.manda(biaId, { tipo: 'golpe', n: 1, tecla: 'e', x: 396, y: 380, dx: 1, dy: 0 }), null);
+  const comPv = b.pv;
+  a.especial = mod.ESPECIAL_MAX;
+  m.andar(100);
+  assert.equal(m.manda(anaId, { tipo: 'golpe', n: 2, tecla: 'e', x: 316, y: 380, dx: 1, dy: 0 }), null);
+  assert.ok(comPv - b.pv < semCasca, `com a casca ${comPv - b.pv}, sem ${semCasca}`);
+  m.jogo.parar!();
+});
+
+test('as ondas (só no Solo): a primeira com um robô, a próxima depois da pausa, mais robôs e mais espertos; o recorde é a onda alcançada', () => {
+  const recordes = new Map<string, number>();
+  const s = soloDeMao({ objetivo: 'ondas', cenario: 'grama' }, recordes);
+  const lut = () => [...s.i._lutadores.values()] as (Lut & { dif: string })[];
+  const daOnda = () => lut().filter((l) => l.time === 1 && l.estado !== 'sem-vidas');
+  assert.equal(lut().filter((l) => l.time === 0).length, 1, 'sozinho');
+  assert.equal(lut().filter((l) => l.time === 1).length, mod.ONDAS.vagas);
+  assert.equal(daOnda().length, 1);
+  assert.equal(daOnda()[0].dif, 'facil');
+  const limpar = () => {
+    for (const l of daOnda()) Object.assign(l, { estado: 'sem-vidas', vidas: 0 });
+    s.andar(PASSO_MS);
+    s.andar(mod.ONDAS.pausa + PASSO_MS);
+  };
+  for (let n = 2; n <= 6; n++) {
+    limpar();
+    const o = mod.onda(n);
+    assert.equal(daOnda().length, o.robos, `onda ${n}`);
+    assert.ok(daOnda().every((l) => l.dif === o.dif && l.vidas === o.vidas && l.pv === PV));
+    assert.equal((s.jogo.publico(70) as { ondas: { onda: number } }).ondas.onda, n);
+  }
+  assert.ok(mod.onda(9).robos === mod.ONDAS.vagas && mod.onda(9).dif === 'dificil' && mod.onda(9).vidas === 2);
+  // a pessoa sem vidas: acabou, e a onda alcançada é o recorde
+  const p = s.acabar(false) as unknown as { ondas: { onda: number; recorde: number; novo: boolean }; sequencia: unknown };
+  assert.deepEqual(p.ondas, { onda: 6, recorde: 6, novo: true });
+  assert.equal(recordes.get('ondas'), 6);
+  assert.equal(p.sequencia, null, 'as ondas não mexem nas vitórias seguidas');
+  // com o time (dois aliados), o recorde à parte
+  const t = soloDeMao({ objetivo: 'ondas', formato: '3x3', cenario: 'grama' }, recordes);
+  assert.equal([...t.i._lutadores.values()].filter((l) => l.time === 0).length, 3);
+  for (const l of [...t.i._lutadores.values()]) if (l.time === 1 && l.estado !== 'sem-vidas') Object.assign(l, { estado: 'sem-vidas', vidas: 0 });
+  t.andar(mod.ONDAS.pausa + 2 * PASSO_MS);
+  // o time inteiro fora (com os aliados de pé, a corrida segue)
+  for (const l of [...t.i._lutadores.values()]) if (l.time === 0 && l.id !== 70) Object.assign(l, { estado: 'sem-vidas', vidas: 0 });
+  t.acabar(false);
+  assert.equal(recordes.get('ondas:3x3'), 2);
+  // na primeira onda não vencida, nada se guarda; e na sala as ondas não existem
+  const r0 = new Map<string, number>();
+  soloDeMao({ objetivo: 'ondas' }, r0).acabar(false);
+  assert.equal(r0.size, 0);
+  const sala = comecar([anaId, biaId], { formato: '1x1', cenario: 'grama', objetivo: 'ondas' });
+  assert.equal((sala.jogo.publico(anaId) as { objetivo: string }).objetivo, 'luta');
+  sala.jogo.parar!();
+});
+
+test('as ondas contra o piloto: com 200 ms de ida e volta, ele passa das primeiras ondas', async (t) => {
+  const { publico } = await partida([83], { objetivo: 'ondas', cenario: 'grama' }, 100, 9);
+  const o = (publico as { ondas: { onda: number } }).ondas.onda;
+  t.diagnostic(`onda alcançada: ${o}`);
+  assert.ok(o >= 3, `onda ${o}`);
+});

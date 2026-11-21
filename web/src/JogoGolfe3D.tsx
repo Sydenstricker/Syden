@@ -122,7 +122,7 @@ const passoDe = (inicio: number, agora: number) => Math.max(0, Math.floor(((agor
 
 /** O que o servidor manda além de EstadoGolfe3D (19/11/2026): o percurso, o par, quem escolhe e o recorde do Solo. */
 interface DoPercurso3D {
-  percurso?: 'kit' | 'parque';
+  percurso?: 'kit' | 'parque' | 'trilha';
   par?: number;
   escolhe?: number;
   recordes?: Record<string, number> | null;
@@ -155,7 +155,7 @@ export function JogoGolfe3D({ estado, eu, jogador, agir, socket, channelId }: Pr
     if (extra.escolhe !== eu) return <p className="minijogo-situacao">{t('Esperando a escolha de quem começou…')}</p>;
     return (
       <div className="golfe3d-percursos">
-        {(['kit', 'parque'] as const).map((nome) => (
+        {(['kit', 'parque', 'trilha'] as const).map((nome) => (
           <button
             key={nome}
             type="button"
@@ -165,7 +165,7 @@ export function JogoGolfe3D({ estado, eu, jogador, agir, socket, channelId }: Pr
               void agir({ tipo: 'percurso', percurso: nome });
             }}
           >
-            <span className="golfe3d-percurso-nome">{nome === 'kit' ? '⛳' : '🌳'} {PERCURSOS_3D[nome].length}</span>
+            <span className="golfe3d-percurso-nome">{nome === 'kit' ? '⛳' : nome === 'parque' ? '🌳' : '⛰️'} {PERCURSOS_3D[nome].length}</span>
             {extra.recordes?.[nome] !== undefined && <span className="golfe3d-percurso-recorde">🏆 {extra.recordes[nome]}</span>}
           </button>
         ))}

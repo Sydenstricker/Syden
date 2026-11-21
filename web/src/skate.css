@@ -338,6 +338,26 @@
   width: 72px;
   height: 108px;
 }
+/* 21/11/2026: a escolha do conjunto de objetivos (a palavra de cada um) */
+.skate-conjuntos {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.skate-conjuntos button {
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  border: 2px solid var(--border);
+  background: var(--bg-raised);
+  color: var(--text);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+}
+.skate-conjuntos button.escolhida {
+  border-color: var(--accent);
+}
 
 /* 20/11/2026: os controles de toque (a alavanca à esquerda, os quatro botões no losango do controle à direita). Só na tela de
    toque (quem desenha decide pelo pointer: coarse); os botões são figura, com o nome para o leitor de tela. */

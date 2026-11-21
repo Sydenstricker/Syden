@@ -30,6 +30,7 @@ export const COPA = 'copa-da-cenoura';
 export const COPAS: Record<string, string[]> = {
   [COPA]: ['horta-1', 'pomar-1', 'praia-1'],
   'copa-do-repolho': ['bosque-1', 'neve-1', 'canion-1'],
+  'copa-do-milho': ['fazenda-1', 'brejo-1', 'vulcao-1'],
 };
 export const PISTAS_DA_COPA = COPAS[COPA];
 /** A contagem da largada: 3 s de semáforo, mais 1 s para todo mundo abrir a tela. */

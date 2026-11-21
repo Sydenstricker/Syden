@@ -127,6 +127,45 @@ function porta(g: CanvasRenderingContext2D, px: number, py: number) {
   g.fillRect(px + 10, py + 10, 1, 1);
 }
 
+/**
+ * A GRUTA (21/11/2026): a tela escura, por código como as outras. O chão de pedra, a parede (as pedras "r" e a borda), os
+ * fungos que brilham no lugar do mato e o lago escuro.
+ */
+function chaoDaGruta(g: CanvasRenderingContext2D, px: number, py: number, x: number, y: number) {
+  g.fillStyle = (x + y) % 2 ? '#4a4452' : '#47414f';
+  g.fillRect(px, py, CASA_PX, CASA_PX);
+  g.fillStyle = '#3a3542';
+  for (let k = 0; k < 2; k++) g.fillRect(px + Math.floor(ruido(x, y, k) * 13), py + Math.floor(ruido(x, y, k + 3) * 13), 3, 1);
+}
+function paredeDaGruta(g: CanvasRenderingContext2D, px: number, py: number, x: number, y: number) {
+  g.fillStyle = '#2a2530';
+  g.fillRect(px, py, CASA_PX, CASA_PX);
+  g.fillStyle = '#3d3646';
+  g.fillRect(px + 1 + Math.floor(ruido(x, y) * 4), py + 2, 9, 6);
+  g.fillStyle = '#56505e';
+  g.fillRect(px + 3 + Math.floor(ruido(x, y) * 4), py + 2, 5, 2);
+  g.fillStyle = '#1e1a24';
+  g.fillRect(px, py + 13, CASA_PX, 3);
+}
+function fungos(g: CanvasRenderingContext2D, px: number, py: number, x: number, y: number) {
+  chaoDaGruta(g, px, py, x, y);
+  // os fungos em tufos: o pé claro e o chapéu que brilha (azul ou roxo)
+  for (let k = 0; k < 4; k++) {
+    const fx = px + 1 + (k % 2) * 8 + Math.floor(ruido(x, y, k) * 4);
+    const fy = py + 2 + Math.floor(k / 2) * 7 + Math.floor(ruido(x, y, k + 5) * 3);
+    g.fillStyle = '#cfc6d8';
+    g.fillRect(fx + 1, fy + 2, 1, 3);
+    g.fillStyle = (x + y + k) % 2 ? '#7fd0e0' : '#b88ae0';
+    g.fillRect(fx, fy, 3, 2);
+  }
+}
+function lagoDaGruta(g: CanvasRenderingContext2D, px: number, py: number, x: number, y: number) {
+  g.fillStyle = '#25466a';
+  g.fillRect(px, py, CASA_PX, CASA_PX);
+  g.fillStyle = '#4f7fa8';
+  g.fillRect(px + 2 + Math.floor(ruido(x, y) * 6), py + 5, 4, 1);
+}
+
 /** As cores das casas: a de descansar (telhado vermelho), a do desafio (azul, com a bandeira) e a lojinha (verde, com a placa). */
 const TELHADOS: Record<string, [string, 'casa' | 'desafio' | 'loja']> = { H: ['#c4523f', 'casa'], C: ['#3f6fb0', 'desafio'], L: ['#4f8f4a', 'loja'] };
 
@@ -136,6 +175,7 @@ export function desenharCampo(mapa = 'campo'): HTMLCanvasElement {
   const pronto = campos.get(mapa);
   if (pronto) return pronto;
   const linhas = mapaDe(mapa).linhas;
+  const escuro = !!mapaDe(mapa).escuro;
   const c = document.createElement('canvas');
   c.width = LARGURA_PX;
   c.height = ALTURA_PX;
@@ -145,6 +185,19 @@ export function desenharCampo(mapa = 'campo'): HTMLCanvasElement {
       const k = linhas[y][x];
       const px = x * CASA_PX;
       const py = y * CASA_PX;
+      if (escuro) {
+        if (k === '"' || k === ';') fungos(g, px, py, x, y);
+        else if (k === 'r' || k === 'T') paredeDaGruta(g, px, py, x, y);
+        else if (k === '~') lagoDaGruta(g, px, py, x, y);
+        else {
+          chaoDaGruta(g, px, py, x, y);
+          if (k === '=') {
+            g.fillStyle = 'rgba(216, 191, 138, 0.22)';
+            g.fillRect(px, py, CASA_PX, CASA_PX);
+          }
+        }
+        continue;
+      }
       if (k === '"' || k === ';') mato(g, px, py, k === ';');
       else if (k === 'T') arvore(g, px, py, x, y);
       else if (k === '~') agua(g, px, py, x, y);

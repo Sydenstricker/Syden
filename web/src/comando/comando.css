@@ -15,3 +15,13 @@
   letter-spacing: 2px;
   min-height: 0.8em;
 }
+
+/* Os quatro botões da direita (21/11/2026, com o de firmar) cabem ao lado do direcional numa tela de 390 px. */
+.comando .briga-botoes {
+  gap: 6px;
+}
+
+.comando .briga-botoes button {
+  width: 46px;
+  height: 46px;
+}

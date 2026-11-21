@@ -312,7 +312,37 @@ export interface Item {
   peca: Peca;
   /** A arma soma no ataque e na magia; a armadura, na defesa; o amuleto, na vida máxima. */
   valor: number;
+  /** A PEÇA COM EFEITO (21/11/2026): além do número, ela faz alguma coisa (ver `EFEITO_DA_PECA`). */
+  efeito?: boolean;
 }
+/**
+ * AS PEÇAS COM EFEITO (21/11/2026): uma em cada quatro peças que caem (no espólio, na loja e no baú) traz um efeito, um por
+ * tipo de peça, que vale enquanto ela estiver vestida:
+ * - a arma de SEIVA: cada golpe que o herói dá cura um pouco dele (`SEIVA` do dano que entrou);
+ * - a armadura de REFLEXO: devolve parte do golpe levado ao inimigo que bateu (não o sopro, que vem de todo lado);
+ * - o amuleto de FÔLEGO: uma energia a mais a cada rodada.
+ */
+export const EFEITO_DA_PECA = { arma: 'seiva', armadura: 'reflexo', amuleto: 'folego' } as const satisfies Record<Peca, string>;
+export const CHANCE_DE_EFEITO = 0.2;
+export const SEIVA = 0.1;
+export const REFLEXO = 0.2;
+/** A peça com efeito vale menos no número (o efeito é o resto): medido para a turma de robôs vencer como antes. */
+export const PRECO_DO_EFEITO = 0.5;
+/** Quanto o robô acha que um efeito vale, em pontos da peça (o amuleto conta em vida, quatro vezes mais). */
+const VALOR_DO_EFEITO = 3;
+
+/**
+ * OS NÍVEIS DE DESAFIO (21/11/2026): escolhidos na largada (a tela de classes), de 0 (o de sempre) a 3, e somados:
+ * - 1: os inimigos com mais vida e golpe (`FORCA_DO_DESAFIO`);
+ * - 2: e a fogueira cura menos, e quem caiu levanta com menos vida depois da luta;
+ * - 3: e todo inimigo recupera um pouco de vida no fim de cada rodada, como o cogumelo (`REGENERA_NO_DESAFIO`).
+ * Cada nível tem o seu recorde do Solo (variante `desafio-N`; o 0 continua na variante de sempre).
+ */
+export const DESAFIOS = [0, 1, 2, 3] as const;
+export type Desafio = (typeof DESAFIOS)[number];
+export const FORCA_DO_DESAFIO: Record<Desafio, number> = { 0: 1, 1: 1.07, 2: 1.1, 3: 1.12 };
+export const REGENERA_NO_DESAFIO = 0.02;
+export const varianteDoDesafio = (d: Desafio) => (d === 0 ? '' : `desafio-${d}`);
 /** O valor de uma peça na parada `n` (a da neve é melhor que a da floresta). */
 export function valorDaPeca(peca: Peca, n: number, sorte: number) {
   return peca === 'amuleto' ? 10 + n * 4 + Math.floor(sorte * 8) : 2 + n + Math.floor(sorte * 3);
@@ -335,6 +365,8 @@ export interface Heroi {
   classe: Classe | null;
   hp: number;
   equip: Record<Peca, number>;
+  /** As peças vestidas que têm efeito (21/11/2026). */
+  efeitos: Record<Peca, boolean>;
   /** O que as melhorias somaram, e o nível (as lutas vencidas). */
   bonus: Bonus;
   nivel: number;
@@ -396,7 +428,9 @@ export type TipoDeEvento =
   | 'espinhos'
   | 'veneno'
   | 'renovar'
-  | 'regenera';
+  | 'regenera'
+  /** A armadura de reflexo devolvendo parte do golpe (21/11/2026): `de` é o herói, o alvo o inimigo. */
+  | 'reflexo';
 export interface Evento {
   id: number;
   tipo: TipoDeEvento;
@@ -417,8 +451,8 @@ export interface OpcoesDasLendas {
   servicos?: {
     avatarDe(userId: number): number | string | null;
     guardarTrofeu(t: { userId: number; evento: string; communityId: number; pista: string; posicao: number; tempoMs: number | null; pontos: number | null; rivais: number[] }): void;
-    /** O recorde do Solo (a tabela comum): as rodadas até o dragão, menor é melhor. */
-    guardarRecorde?(userId: number, rodadas: number, extra: { tempoMs: number }): { antes: number | null; novo: boolean };
+    /** O recorde do Solo (a tabela comum): as rodadas até o dragão, menor é melhor; a variante é a do nível de desafio. */
+    guardarRecorde?(userId: number, rodadas: number, extra: { tempoMs: number }, variante: string): { antes: number | null; novo: boolean };
   };
 }
 
@@ -447,7 +481,7 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
   return {
     minimo: 1,
     maximo: 4,
-    comecar(ctxDaSala, { naSala: naSalaDaSala }) {
+    comecar(ctxDaSala, { naSala: naSalaDaSala, criadaPor, corpo }) {
       const humanos = naSalaDaSala.slice(0, 4);
       if (!humanos.length) return 'Ainda falta gente para começar.';
       const robos = idsDosRobos(4 - humanos.length);
@@ -458,6 +492,10 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
       const partidaId = `lendas-${ctx.comunidade ?? 0}-${inicio}`;
       const sorteio = (a: number, b: number) => a + (b - a) * aleatorio();
       const variar = (x: number) => x * sorteio(0.9, 1.1);
+      /** O NÍVEL DE DESAFIO (21/11/2026): vem da largada, se veio, e quem começou pode mudar na tela das classes. */
+      let desafio: Desafio = DESAFIOS.includes(corpo?.desafio as Desafio) ? (corpo.desafio as Desafio) : 0;
+      /** Quem escolhe o desafio: quem começou (no Solo, a pessoa). */
+      const dono = humanos.includes(criadaPor) ? criadaPor : humanos[0];
       /** O CAMINHO desta partida (a semente vai à tela: quem quiser, compara caminhos). */
       const semente = Math.floor(aleatorio() * 2 ** 31);
       const caminho = rotaDaSemente(semente);
@@ -472,6 +510,7 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
             classe: null,
             hp: 0,
             equip: { arma: 0, armadura: 0, amuleto: 0 },
+            efeitos: { arma: false, armadura: false, amuleto: false },
             bonus: { ...SEM_BONUS },
             nivel: 0,
             melhorias: [],
@@ -594,7 +633,7 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
           // a fogueira: metade da vida de volta, quem caiu levanta, a energia cheia
           for (const h of herois.values()) {
             const a = atributos(h);
-            h.hp = Math.min(a.hpMax, Math.max(h.hp, 0) + Math.round(a.hpMax * 0.5));
+            h.hp = Math.min(a.hpMax, Math.max(h.hp, 0) + Math.round(a.hpMax * (desafio >= 2 ? 0.3 : 0.5)));
             h.en = a.enMax;
             h.veneno = null;
           }
@@ -613,9 +652,8 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
               h.veneno = null;
             } else if (caminho.evento === 'bau') {
               // o baú: uma peça para cada um, vestida se for melhor
-              const item: Item = { peca: PECAS[Math.floor(aleatorio() * PECAS.length)], valor: 0 };
-              item.valor = valorDaPeca(item.peca, parada + 1, aleatorio());
-              if (item.valor > h.equip[item.peca]) vestirPeca(h, item);
+              const item = sortearPeca(PECAS[Math.floor(aleatorio() * PECAS.length)], parada + 1);
+              if (ganhoDaPeca(h, item) > 0) vestirPeca(h, item);
             } else {
               // o treino: todo mundo mais forte, no golpe e na magia
               h.bonus.atk += 3;
@@ -630,8 +668,9 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
         // o grupo que a semente sorteou para esta parada (ver grupoDaParada)
         inimigos = (caminho.grupos[p.id] ?? p.inimigos.map((tipo) => ({ tipo, k: 1 }))).map(({ tipo, k }, id) => {
           const d = INIMIGOS[tipo];
-          const hp = Math.round(d.hp * k);
-          return { id, tipo, hp, hpMax: hp, atk: Math.round(d.atk * k), def: d.def, vel: d.vel, chefe: !!d.chefe, traco: d.traco, tonto: false, preparando: false, veneno: null };
+          const f = FORCA_DO_DESAFIO[desafio];
+          const hp = Math.round(d.hp * k * f);
+          return { id, tipo, hp, hpMax: hp, atk: Math.round(d.atk * k * f), def: d.def, vel: d.vel, chefe: !!d.chefe, traco: d.traco, tonto: false, preparando: false, veneno: null };
         });
         rodada = 0;
         rapidez = 0;
@@ -776,7 +815,11 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
         if (resistiu) d = Math.max(1, Math.round(d / 4));
         const real = Math.min(i.hp, d);
         i.hp -= real;
-        for (const h of quem) h.pontos += Math.round(real / quem.length);
+        for (const h of quem) {
+          h.pontos += Math.round(real / quem.length);
+          // a arma de seiva: o golpe cura um pouco de quem bateu
+          if (h.efeitos.arma && h.hp > 0) h.hp = Math.min(atributos(h).hpMax, h.hp + Math.round((real * SEIVA) / quem.length));
+        }
         if (contato && i.traco === 'espinhos' && real > 0) espinhos.push({ de: i, dano: Math.max(1, Math.round(real * 0.3)), em: quem });
         return { quem: { i: i.id }, dano: d, ko: i.hp <= 0, ...(resistiu ? { resistiu } : {}) };
       };
@@ -1005,6 +1048,13 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
           a.energia = -1;
         }
         evento({ tipo: 'inimigo', de: { i: i.id }, alvos: [a], protegido });
+        // a armadura de reflexo: parte do golpe volta a quem bateu
+        if (levou.efeitos.armadura && (a.dano ?? 0) > 0 && i.hp > 0) {
+          const real = Math.min(i.hp, Math.max(1, Math.round((a.dano ?? 0) * REFLEXO)));
+          i.hp -= real;
+          levou.pontos += real;
+          evento({ tipo: 'reflexo', de: { h: levou.userId }, alvos: [{ quem: { i: i.id }, dano: real, ko: i.hp <= 0 }] });
+        }
       };
 
       /** O fim da rodada: os venenos, a renovação da Erva e o cogumelo que regenera. */
@@ -1039,12 +1089,16 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
           evento({ tipo: 'renovar', de: { h: renovar.de }, alvos });
           if (--renovar.rodadas <= 0) renovar = null;
         }
+        // (num acontecimento só, com todos os que se curaram: no desafio 3 são todos, e a tela tocaria um por um)
+        const regeneram: Alvo[] = [];
         for (const i of inimigosVivos()) {
-          if (i.traco !== 'regenera' || i.hp >= i.hpMax) continue;
-          const cura = Math.min(i.hpMax - i.hp, Math.round(i.hpMax * 0.06));
+          const taxa = i.traco === 'regenera' ? 0.06 : desafio >= 3 ? REGENERA_NO_DESAFIO : 0;
+          if (!taxa || i.hp >= i.hpMax) continue;
+          const cura = Math.min(i.hpMax - i.hp, Math.max(1, Math.round(i.hpMax * taxa)));
           i.hp += cura;
-          evento({ tipo: 'regenera', de: { i: i.id }, alvos: [{ quem: { i: i.id }, cura }] });
+          regeneram.push({ quem: { i: i.id }, cura });
         }
+        if (regeneram.length) evento({ tipo: 'regenera', de: regeneram[0].quem, alvos: regeneram });
         if (rapidez > 0) rapidez--;
       };
 
@@ -1095,7 +1149,7 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
         }
         if (inimigosVivos().length && vivos().length) fimDaRodada();
         // a energia volta um pouco a cada rodada (mais a quem se defendeu)
-        for (const h of vivos()) h.en = Math.min(atributos(h).enMax, h.en + (h.defendendo ? 2 : 1));
+        for (const h of vivos()) h.en = Math.min(atributos(h).enMax, h.en + (h.defendendo ? 2 : 1) + (h.efeitos.amuleto ? 1 : 0));
         resolucao++;
         fase = 'acao';
         ritmo = solo && acelerado ? 0.5 : 1;
@@ -1111,7 +1165,7 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
         // a luta acabou: quem caiu levanta com um pouco de vida, a energia enche, e o nível sobe
         for (const h of herois.values()) {
           const a = atributos(h);
-          if (h.hp <= 0) h.hp = Math.round(a.hpMax * 0.3);
+          if (h.hp <= 0) h.hp = Math.round(a.hpMax * (desafio >= 2 ? 0.15 : 0.3));
           h.en = a.enMax;
           h.defendendo = h.protegendo = h.provocando = false;
           h.escolha = null;
@@ -1122,9 +1176,20 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
       };
 
       // ---------------- O EQUIPAMENTO ----------------
+      /** Uma peça sorteada na parada `n`: o valor e, uma vez em quatro, o efeito. */
+      const sortearPeca = (peca: Peca, n: number): Item => {
+        const valor = valorDaPeca(peca, n, aleatorio());
+        return aleatorio() < CHANCE_DE_EFEITO ? { peca, valor: Math.round(valor * PRECO_DO_EFEITO), efeito: true } : { peca, valor };
+      };
+      /** O quanto a peça melhora o herói (o efeito conta como uns pontos a mais; o amuleto, em vida, vale um quarto). */
+      const ganhoDaPeca = (h: Heroi, x: Item) => {
+        const ef = (Number(!!x.efeito) - Number(h.efeitos[x.peca])) * VALOR_DO_EFEITO;
+        return (x.valor - h.equip[x.peca]) / (x.peca === 'amuleto' ? 4 : 1) + ef;
+      };
       const vestirPeca = (h: Heroi, item: Item) => {
         const antes = atributos(h).hpMax;
         h.equip[item.peca] = item.valor;
+        h.efeitos[item.peca] = !!item.efeito;
         h.hp = Math.max(1, h.hp + atributos(h).hpMax - antes);
       };
       const aplicarMelhoria = (h: Heroi, m: Melhoria) => {
@@ -1147,7 +1212,7 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
         for (const id of ordem) {
           const peca = PECAS[Math.floor(aleatorio() * PECAS.length)];
           // a peça melhora com o caminho: a da neve é melhor que a da floresta
-          espolio.set(id, { peca, valor: valorDaPeca(peca, parada, aleatorio()) });
+          espolio.set(id, sortearPeca(peca, parada));
           const h = herois.get(id)!;
           ofertas.set(id, embaralhar([...MELHORIAS_DA_CLASSE[h.classe ?? 'escudo']], aleatorio).slice(0, 2));
         }
@@ -1161,7 +1226,7 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
         const h = herois.get(id)!;
         const item = espolio.get(id)!;
         if (equipar === null && !ehRobo(id)) peloRobo.add(id);
-        if (equipar ?? item.valor > h.equip[item.peca]) vestirPeca(h, item);
+        if (equipar ?? ganhoDaPeca(h, item) > 0) vestirPeca(h, item);
         decidiram.add(id);
       };
       /** `k` null: o robô escolhe (a primeira da ordem de preferência da classe). */
@@ -1199,7 +1264,7 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
         vitrine = new Map();
         decidiram.clear();
         peloRobo.clear();
-        for (const id of ordem) vitrine.set(id, PECAS.map((peca) => ({ peca, valor: valorDaPeca(peca, parada + 1, aleatorio()) })));
+        for (const id of ordem) vitrine.set(id, PECAS.map((peca) => sortearPeca(peca, parada + 1)));
         for (const id of ordem) if (ehRobo(id) || !presente(id)) decidirLoja(id, null);
         ctx.agendar(relogio(TEMPO_DA_LOJA), fecharLoja);
         if (!conferirLoja()) ctx.avisar();
@@ -1210,7 +1275,7 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
         const h = herois.get(id)!;
         const itens = vitrine.get(id)!;
         if (k === null && !ehRobo(id)) peloRobo.add(id);
-        const ganho = (x: Item) => (x.valor - h.equip[x.peca]) / (x.peca === 'amuleto' ? 4 : 1);
+        const ganho = (x: Item) => ganhoDaPeca(h, x);
         const escolhido = k === null ? [...itens].sort((a, b) => ganho(b) - ganho(a))[0] : k >= 0 ? itens[k] : undefined;
         if (escolhido && (k !== null || ganho(escolhido) > 0)) vestirPeca(h, escolhido);
         decidiram.add(id);
@@ -1246,7 +1311,7 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
         }));
         // O RECORDE DO SOLO: as rodadas que o SERVIDOR contou, da primeira luta ao dragão
         if (ganhou && solo && servicos?.guardarRecorde && ficaram.length) {
-          const r = servicos.guardarRecorde(humanos[0], rodadasTotais, { tempoMs: agora() - inicio });
+          const r = servicos.guardarRecorde(humanos[0], rodadasTotais, { tempoMs: agora() - inicio }, varianteDoDesafio(desafio));
           recorde = { valor: rodadasTotais, ...r };
         }
         // O PÓDIO: o dragão vencido, 2 pessoas ou mais que ficaram, até o 3º, fora do Solo
@@ -1281,6 +1346,9 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
             fase,
             parada,
             semente,
+            // o nível de desafio, e se sou eu quem o escolhe (só na tela das classes)
+            desafio,
+            escolhoDesafio: fase === 'classes' && quem === dono,
             // o caminho: as opções de cada passo e a escolhida
             rota: caminho.passos.map((opcoes, k) => ({
               opcoes: opcoes.map((id) => ({ id, tipo: PARADAS[id].tipo })),
@@ -1321,6 +1389,7 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
                 habilidades: habilidadesDe(h).map((d) => ({ id: d.id, custo: d.custo, alvo: d.alvo })),
                 envenenado: !!h.veneno,
                 equip: h.equip,
+                efeitos: h.efeitos,
                 pontos: h.pontos,
                 // os outros só sabem SE escolheu; a ação de cada um aparece quando a rodada se resolve (como numa mesa)
                 escolheu:
@@ -1354,9 +1423,9 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
             minhaEscolha: meu?.escolha ?? null,
             meuEspolio:
               fase === 'espolio' && meu
-                ? { item: espolio.get(quem) ?? null, atual: meu.equip, decidi: decidiram.has(quem), melhorias: ofertas.get(quem) ?? [], melhorei: melhorou.has(quem) }
+                ? { item: espolio.get(quem) ?? null, atual: meu.equip, efeitos: meu.efeitos, decidi: decidiram.has(quem), melhorias: ofertas.get(quem) ?? [], melhorei: melhorou.has(quem) }
                 : null,
-            minhaLoja: fase === 'loja' && meu ? { itens: vitrine.get(quem) ?? [], atual: meu.equip, decidi: decidiram.has(quem) } : null,
+            minhaLoja: fase === 'loja' && meu ? { itens: vitrine.get(quem) ?? [], atual: meu.equip, efeitos: meu.efeitos, decidi: decidiram.has(quem) } : null,
             resultado,
             recorde: fase === 'fim' ? recorde : null,
           };
@@ -1373,6 +1442,14 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
             vestir(h, c);
             if (humanos.every((id) => herois.get(id)!.classe)) fecharClasses();
             else ctx.avisar();
+            return null;
+          }
+          if (tipo === 'desafio') {
+            // o nível de desafio: só quem começou, e só antes de a aventura andar
+            const d = corpo.nivel as Desafio;
+            if (fase !== 'classes' || quem !== dono || !DESAFIOS.includes(d)) return 'Agora não dá.';
+            desafio = d;
+            ctx.avisar();
             return null;
           }
           if (tipo === 'acelerar') {
@@ -1446,6 +1523,7 @@ export function criarLendas({ agora = Date.now, aleatorio = Math.random, servico
         _inimigos: () => inimigos,
         _caminho: caminho,
         _escolhidas: escolhidas,
+        _desafio: () => desafio,
       };
       return jogo;
     },

@@ -96,10 +96,10 @@ function emPe(ax: number, ay: number, x: number, y: number, h: number, raio: num
 const deitado = (x: number, y: number, h: number, raio: number): Anel => ({ x, y, h, raio, deitado: true, nx: 0, ny: -1 });
 
 /**
- * OS DESAFIOS (19/11/2026: eram três; agora quatro na asa e três na mochila e no salto, em escala de dificuldade). Desafio novo
+ * OS DESAFIOS (19/11/2026: eram três; agora quatro na asa e três na mochila e no salto, em escala de dificuldade; desde 21/11/2026, cinco na asa e na mochila e quatro no salto). Desafio novo
  * é id novo: os recordes não se misturam. A ordem é a da tela: o veículo, e dentro dele o nível.
  */
-export const DESAFIOS: Desafio[] = [
+const LISTA_DOS_DESAFIOS: Desafio[] = [
   {
     id: 'asa-1',
     tipo: 'asa',
@@ -329,7 +329,117 @@ export const DESAFIOS: Desafio[] = [
     termicas: [],
     tema: 'neve',
   },
+  // ---- OS QUATRO DE 21/11/2026 (o lote D): o quinto da asa, o quarto e o quinto da mochila e o quarto do salto ----
+  {
+    // asa 5: larga BAIXA e os anéis do meio na mesma altura: sem as três térmicas em fila, a asa chega a eles uns 20 m abaixo
+    id: 'asa-5',
+    tipo: 'asa',
+    x: 460, y: 990, h: 70, hx: 0, hy: -1, v: 14,
+    aneis: [
+      emPe(460, 990, 470, 900, 62, 5.5),
+      emPe(470, 900, 520, 800, 61, 5.5),
+      emPe(520, 800, 560, 700, 62, 5.5),
+      emPe(560, 700, 520, 600, 59, 5.5),
+      emPe(520, 600, 450, 500, 50, 5.5),
+      emPe(450, 500, 480, 400, 38, 5.5),
+      emPe(480, 400, 540, 310, 22, 5.5),
+    ],
+    alvo: { x: 560, y: 200, h: 0, raio: 0 },
+    escala: 18,
+    combustivel: 0,
+    par: 80 * 60,
+    passosMaximos: 3 * 60 * 60,
+    limiteVs: 3.0,
+    limiteVh: 16,
+    nivel: 5,
+    vento: [0.8, 0.6],
+    termicas: [
+      { x: 475, y: 860, raio: 26, forca: 6 },
+      { x: 525, y: 770, raio: 24, forca: 5 },
+      { x: 560, y: 660, raio: 22, forca: 4 },
+    ],
+    tema: 'canion',
+  },
+  {
+    // mochila 4: o zigue-zague alto na horta, com o vento que vira, e a plataforma pequena
+    id: 'mochila-4',
+    tipo: 'mochila',
+    x: 512, y: 900, h: 0, hx: 0, hy: -1, v: 0,
+    aneis: [
+      emPe(512, 900, 500, 845, 24, 4.5),
+      emPe(500, 845, 550, 790, 38, 4.5),
+      emPe(550, 790, 480, 735, 46, 4.5),
+      emPe(480, 735, 540, 680, 34, 4.5),
+      emPe(540, 680, 480, 625, 44, 4.5),
+      emPe(480, 625, 512, 575, 38, 4.5),
+    ],
+    alvo: { x: 512, y: 530, h: 30, raio: 4 },
+    escala: 4,
+    combustivel: 6600,
+    par: 0,
+    passosMaximos: 2 * 60 * 60,
+    limiteVs: 3.5,
+    limiteVh: 5,
+    nivel: 4,
+    vento: [0.8, -0.6],
+    termicas: [],
+    tema: 'horta',
+  },
+  {
+    // mochila 5: o vento forte de lado no cânion, os anéis no alto e a plataforma menor de todas
+    id: 'mochila-5',
+    tipo: 'mochila',
+    x: 512, y: 900, h: 0, hx: 0, hy: -1, v: 0,
+    aneis: [
+      emPe(512, 900, 530, 840, 30, 4),
+      emPe(530, 840, 480, 780, 48, 4),
+      emPe(480, 780, 550, 720, 56, 4),
+      emPe(550, 720, 500, 660, 44, 4),
+      emPe(500, 660, 540, 600, 52, 4),
+      emPe(540, 600, 500, 545, 46, 4),
+    ],
+    alvo: { x: 512, y: 500, h: 38, raio: 3.5 },
+    escala: 3.5,
+    combustivel: 7200,
+    par: 0,
+    passosMaximos: 2 * 60 * 60,
+    limiteVs: 3.2,
+    limiteVh: 4.5,
+    nivel: 5,
+    vento: [1.8, 0.4],
+    termicas: [],
+    tema: 'canion',
+  },
+  {
+    // salto 4: o mais alto, sete anéis que vão e voltam e o vento de través, na horta
+    id: 'queda-4',
+    tipo: 'queda',
+    x: 512, y: 520, h: 520, hx: 0, hy: -1, v: 0,
+    aneis: [
+      deitado(514, 508, 460, 7.5),
+      deitado(508, 498, 394, 7.5),
+      deitado(514, 488, 328, 7.5),
+      deitado(508, 478, 262, 7.5),
+      deitado(514, 468, 198, 7.5),
+      deitado(512, 460, 138, 7.5),
+      deitado(514, 448, 86, 7.5),
+    ],
+    alvo: { x: 516, y: 400, h: 0, raio: 0 },
+    escala: 14,
+    combustivel: 0,
+    par: 65 * 60,
+    passosMaximos: 2 * 60 * 60,
+    limiteVs: 3.4,
+    limiteVh: 8.5,
+    nivel: 4,
+    vento: [1.2, -1.2],
+    termicas: [],
+    tema: 'horta',
+  },
 ];
+/** A ordem da tela: o veículo (asa, mochila, salto), e dentro dele o nível. */
+const ORDEM_DOS_TIPOS: Tipo[] = ['asa', 'mochila', 'queda'];
+export const DESAFIOS: Desafio[] = [...LISTA_DOS_DESAFIOS].sort((a, b) => ORDEM_DOS_TIPOS.indexOf(a.tipo) - ORDEM_DOS_TIPOS.indexOf(b.tipo) || a.nivel - b.nivel);
 
 /**
  * AS MEDALHAS (19/11/2026): bronze, prata e ouro pelos pontos, em fração do máximo do desafio (os anéis todos, a mosca, o

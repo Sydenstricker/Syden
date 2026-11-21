@@ -20,6 +20,7 @@ import {
 } from '../src/briga/regras';
 
 const DT = 1 / 60;
+import { noGelo } from '../src/briga/fases';
 
 test('as medidas do site são as do servidor', async () => {
   const s = await import('../../server/src/minijogo-briga.ts');
@@ -213,9 +214,9 @@ for (const faseId of ['horta', 'floresta', 'deserto', 'neve', 'castelo']) test(`
     c.hp = meu[7];
     if (meu[10] !== 0) continue;
     if (fim && quadros.at(-1)!.f !== 'lutando' && quadros.at(-1)!.f !== 'avancando') break;
-    const inimigos: InimigoNaTela[] = visto.i.map((l) => ({ id: l[0], tipo: TIPOS[l[1]], x: l[2], y: l[3], z: l[4], estado: ESTADOS[l[5]], faixa: l[9], alvoX: l[10] }));
-    pilotoAutomatico(c, inimigos, cmd, c.relogio, (visto.t ?? []).map((tr) => ({ x: tr[2], y: tr[3], lado: tr[4] })));
-    const n = passoDoCoelho(c, cmd, DT, quadros.at(-1)!.a);
+    const inimigos: InimigoNaTela[] = visto.i.map((l) => ({ id: l[0], tipo: TIPOS[l[1]], x: l[2], y: l[3], z: l[4], estado: ESTADOS[l[5]], faixa: l[9], alvoX: l[10], lado: l[6], ms: l[8] * 50 }));
+    pilotoAutomatico(c, inimigos, cmd, c.relogio, (visto.t ?? []).map((tr) => ({ x: tr[2], y: tr[3], lado: tr[4] })), (visto.el ?? []).map(regras.elementoDaLinha));
+    const n = passoDoCoelho(c, cmd, DT, quadros.at(-1)!.a, faseId === 'neve' ? noGelo : undefined);
     if (n.comecou) mandar(n.comecou);
     if (golpeAtivo(c) && c.golpe) {
       for (const i of inimigos) {
@@ -328,4 +329,37 @@ test('parado ao lado da raposa, com o servidor de verdade e 200 ms de atraso: le
   assert.ok(levou > 0, 'o servidor decidiu que o coelho parado levou golpes');
   assert.ok(menorHp < 100, `a vida que o quadro leva baixou: ${menorHp}`);
   assert.ok(piscou, 'quem leva um golpe fica piscando');
+});
+
+// ---------------- O GELO DA NEVE (21/11/2026) ----------------
+test('as arenas dos elementos são as das ondas', async () => {
+  const f = await import('../src/briga/fases');
+  assert.deepEqual(f.ARENAS_DA_BRIGA, regras.ONDAS_X);
+  assert.ok(f.noGelo(f.ARENAS_DA_BRIGA[2] + f.GELO_NA_ARENA[0][0], f.GELO_NA_ARENA[0][1]));
+  assert.ok(!f.noGelo(5, 50));
+});
+
+test('no gelo o coelho escorrega: demora a ganhar velocidade, continua andando ao soltar, e nunca passa da normal', async () => {
+  const { noGelo, GELO_NA_ARENA } = await import('../src/briga/fases');
+  const [dx, y] = GELO_NA_ARENA[1];
+  const andar = (gelo: boolean) => {
+    const c = novoCoelho(dx - 30, y);
+    const cmd = comandosVazios();
+    cmd.direita = true;
+    let maior = 0;
+    for (let k = 0; k < 12; k++) {
+      const x0 = c.x;
+      passoDoCoelho(c, cmd, DT, [0, 320], gelo ? noGelo : undefined);
+      maior = Math.max(maior, (c.x - x0) / DT);
+    }
+    const depois = c.x;
+    cmd.direita = false;
+    for (let k = 0; k < 10; k++) passoDoCoelho(c, cmd, DT, [0, 320], gelo ? noGelo : undefined);
+    return { andou: depois - (dx - 30), escorregou: c.x - depois, maior };
+  };
+  const seco = andar(false), gelado = andar(true);
+  assert.ok(gelado.andou < seco.andou * 0.8, 'no gelo, a arrancada é lenta');
+  assert.equal(seco.escorregou, 0, 'fora do gelo, para na hora');
+  assert.ok(gelado.escorregou > 2, 'no gelo, escorrega ao soltar');
+  assert.ok(gelado.maior <= regras.VEL_X + 1e-9, 'nunca mais rápido que o normal (o servidor confere)');
 });

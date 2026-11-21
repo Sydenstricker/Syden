@@ -2,10 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import { ComandosDoJogo } from './ComandosDosJogos';
 import { chave, useT } from './i18n';
 import { criarImpacto } from './impacto';
-import { Star, Vibrate } from 'lucide-react';
+import { Crown, Star, Vibrate } from 'lucide-react';
 import { comandoDaPausa, TelaDePausa, usePausaComEsc } from './pausaDosJogos';
 import { desenharFundo, desenharMesa, type Texto } from './pinball/desenho';
-import { BOLAS, compactar, DIR, ESQ, LARGURA, MISSOES, MOLA, novaMesa, PASSO, passo, PASSOS_POR_TRECHO, pilotoAutomatico, SACUDIR, type Evento, type IdDaMissao, type Mesa } from './pinball/sim';
+import { BOLAS, compactar, DIR, ESQ, FINAL_PASSOS, FINAL_VEZES, LARGURA, MISSOES, MOLA, novaMesa, PASSO, passo, PASSOS_POR_TRECHO, pilotoAutomatico, SACUDIR, type Evento, type IdDaMissao, type Mesa } from './pinball/sim';
 import { tocar, type Efeito } from './somDosJogos';
 import './pinball/pinball.css';
 
@@ -265,6 +265,7 @@ const SOM: Partial<Record<Evento['tipo'], Efeito>> = {
   tacada: 'medalha',
   extra: 'medalha',
   rampa: 'turbo',
+  final: 'torcida',
 };
 
 /** O texto de cada missão (19/11/2026), com a meta dela. */
@@ -295,8 +296,10 @@ interface Painel {
   mult: number;
   restante: number;
   contagem: number | null;
-  aviso: 'salva' | 'multibola' | 'tilt' | 'cuidado' | 'tacada' | 'extra' | 'missao' | null;
+  aviso: 'salva' | 'multibola' | 'tilt' | 'cuidado' | 'tacada' | 'extra' | 'missao' | 'final' | null;
   missao: number;
+  /** O modo final (21/11/2026): os passos que faltam (0: fora dele). */
+  final: number;
   missaoConta: number;
   missaoResta: number;
   patente: number;
@@ -344,6 +347,7 @@ function Partida({
     missaoConta: 0,
     missaoResta: MISSOES[0].passos,
     patente: 1,
+    final: 0,
   });
 
   useEffect(() => {
@@ -401,6 +405,12 @@ function Partida({
       else if (e.tipo === 'multibola') avisar('multibola', 2000);
       else if (e.tipo === 'tilt') avisar('tilt', 3000);
       else if (e.tipo === 'aviso') avisar('cuidado', 1200);
+      // o modo final (21/11/2026): o aviso grande e o tremor ao começar (no fim, os pontos dele sobem no meio da mesa, como os outros)
+      if (e.tipo === 'final' && e.comecou) {
+        avisar('final', 2600);
+        impacto.tremer(0.6, 400);
+        soltarFaiscas(LARGURA / 2, 200, 24, '#ffd65a');
+      }
     };
 
     // OS TRECHOS: do último passo que o servidor confirmou até o meu, um de cada vez
@@ -484,6 +494,7 @@ function Partida({
           missaoConta: k.missaoConta,
           missaoResta: k.missaoResta,
           patente: k.patente,
+          final: k.final,
         });
       }
     };
@@ -572,21 +583,35 @@ function Partida({
                           ? t('Bola extra!')
                           : painel.aviso === 'missao'
                             ? t('Missão cumprida!')
+                            : painel.aviso === 'final'
+                            ? t('Modo final: tudo vale ×{n}!', { n: FINAL_VEZES })
                             : t('Cuidado!')}
               </span>
             )}
             {painel.contagem !== null && <span className="pinball-contagem">{painel.contagem}</span>}
           </div>
           {/* A MISSÃO DA VEZ (19/11/2026): o que fazer, quanto falta, o prazo, e a patente da partida */}
-          <div className="pinball-missao" aria-live="polite">
-            <span className="pinball-patente" title={`★ ${painel.patente}`}>
-              <Star size={12} aria-hidden="true" /> {painel.patente}
-            </span>
-            <span className="pinball-missao-texto">{t(TEXTO_DA_MISSAO[MISSOES[painel.missao].id], { n: MISSOES[painel.missao].meta })}</span>
-            <span className="pinball-missao-conta">
-              {painel.missaoConta}/{MISSOES[painel.missao].meta} · {Math.ceil(painel.missaoResta * PASSO)}s
-            </span>
-          </div>
+          {/* O MODO FINAL (21/11/2026): no lugar da missão, a coroa, o ×3 e a barra do prazo dele */}
+          {painel.final > 0 ? (
+            <div className="pinball-missao pinball-final" aria-live="polite">
+              <Crown size={14} aria-hidden="true" />
+              <span className="pinball-missao-texto">×{FINAL_VEZES}</span>
+              <span className="pinball-final-barra" aria-hidden="true">
+                <i style={{ width: `${Math.round((100 * painel.final) / FINAL_PASSOS)}%` }} />
+              </span>
+              <span className="pinball-missao-conta">{Math.ceil(painel.final * PASSO)}s</span>
+            </div>
+          ) : (
+            <div className="pinball-missao" aria-live="polite">
+              <span className="pinball-patente" title={`★ ${painel.patente}`}>
+                <Star size={12} aria-hidden="true" /> {painel.patente}
+              </span>
+              <span className="pinball-missao-texto">{t(TEXTO_DA_MISSAO[MISSOES[painel.missao].id], { n: MISSOES[painel.missao].meta })}</span>
+              <span className="pinball-missao-conta">
+                {painel.missaoConta}/{MISSOES[painel.missao].meta} · {Math.ceil(painel.missaoResta * PASSO)}s
+              </span>
+            </div>
+          )}
           {pausado && <TelaDePausa aoContinuar={continuar} />}
         </div>
         {ordem && (

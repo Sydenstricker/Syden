@@ -10,6 +10,7 @@ import {
   BOMBA,
   distancia,
   ESTADOS,
+  foraDosBuracos,
   MARCAS,
   naArena,
   normalizar,
@@ -61,6 +62,8 @@ export interface Quadro {
   m: number[][];
   /** As bolas de neve do yeti rolando (19/11/2026): [id, x, y]. */
   bn?: number[][];
+  /** Os buracos da arena que muda (21/11/2026): [id, x, y, raio, ms até abrir]. */
+  bu?: number[][];
   /** [id, x, y, ms que faltam] */
   t: number[][];
   /** [userId, x, y, lado, ação, ms da ação, vidas, pontos, estado, avatar, segura, bomba, ms piscando, último tiro] */
@@ -104,6 +107,8 @@ export interface ChefeNaTela {
   yeti: boolean;
   /** A etapa da maratona (20/11/2026): 0 a toupeira, 1 o yeti; fora dela, 0. */
   etapa: number;
+  /** A alpaca-rei (21/11/2026), o terceiro chefe. */
+  alpaca?: boolean;
 }
 export interface MarcaNaTela {
   id: number;
@@ -131,6 +136,8 @@ export interface Vista {
   bombas: { id: number; x0: number; y0: number; x: number; y: number; resta: number }[];
   /** As bolas de neve do yeti rolando. */
   bolas: { id: number; x: number; y: number }[];
+  /** Os buracos da arena que muda (21/11/2026); `resta` até abrir (≤ 0: aberto). */
+  buracos: { id: number; x: number; y: number; r: number; resta: number }[];
   dano: number;
 }
 
@@ -314,6 +321,11 @@ export class Cliente {
         this.eu.segura = true;
         this.sons.push('moeda');
         this.efeitos.push({ tipo: 'pegou', x: this.eu.x, y: this.eu.y, em: agora });
+      } else if (tipo === 'o') {
+        // A ARENA QUE MUDA (21/11/2026): o buraco abriu
+        this.efeitos.push({ tipo: 'poeira', x: r[0], y: r[1], em: agora + ATRASO_MS });
+        this.sons.push('queda');
+        this.tremor = Math.max(this.tremor, 0.55);
       } else if (tipo === 't') {
         this.efeitos.push({ tipo: 'poeira', x: r[0], y: r[1], em: agora + ATRASO_MS });
         this.sons.push('queda');
@@ -325,7 +337,7 @@ export class Cliente {
   /** O que a tela mostra agora. */
   vista(agora: number): Vista {
     const ultimo = this.linha.ultimo();
-    const vazia: Vista = { passo: 0, fase: null, chefe: null, coelhos: [], marcas: [], noChao: [], tirosDosOutros: [], bombas: [], bolas: [], dano: 0 };
+    const vazia: Vista = { passo: 0, fase: null, chefe: null, coelhos: [], marcas: [], noChao: [], tirosDosOutros: [], bombas: [], bolas: [], buracos: [], dano: 0 };
     if (!ultimo) return vazia;
     const p = this.linha.passoNaTela(agora);
     const agoraNoServidor = this.linha.passoDoServidor(agora);
@@ -344,6 +356,7 @@ export class Cliente {
       destino: [cb[7], cb[8]],
       yeti: cb[9] === 1,
       etapa: cb[10] ?? 0,
+      alpaca: cb[9] === 2,
     };
     const resta = (passo: number) => (passo - agoraNoServidor) * PASSO_MS;
     return {
@@ -374,6 +387,7 @@ export class Cliente {
         .filter((s) => !s.fora),
       bombas: ultimo.b.map((b) => ({ id: b[0], x0: b[2], y0: b[3], x: b[4], y: b[5], resta: b[6] - (agoraNoServidor - ultimo.n) * PASSO_MS })),
       bolas: misturar(volta.a.bn ?? [], volta.b.bn ?? [], k, [1, 2]).map((l) => ({ id: l[0], x: l[1], y: l[2] })),
+      buracos: (ultimo.bu ?? []).map((b) => ({ id: b[0], x: b[1], y: b[2], r: b[3], resta: b[4] - (agoraNoServidor - ultimo.n) * PASSO_MS })),
       dano: ultimo.d,
     };
   }
@@ -425,6 +439,9 @@ export class Cliente {
     if (eu.acao === 'atirando' && eu.t >= ATIRANDO_MS) eu.acao = 'parado';
     const [mx, my] = normalizar((cmd.direita ? 1 : 0) - (cmd.esquerda ? 1 : 0), (cmd.baixo ? 1 : 0) - (cmd.cima ? 1 : 0));
     [eu.x, eu.y] = naArena(eu.x + mx * VEL * dt, eu.y + my * VEL * dt);
+    // a arena que muda: o buraco aberto é como uma parede (a mesma conta do servidor)
+    const abertos = v.buracos.filter((b) => b.resta <= 0).map((b) => [b.x, b.y, b.r]);
+    if (abertos.length) [eu.x, eu.y] = foraDosBuracos(eu.x, eu.y, abertos);
     if (mx > 0.1) eu.lado = 1;
     else if (mx < -0.1) eu.lado = -1;
     if (eu.acao === 'parado' || eu.acao === 'andando') {

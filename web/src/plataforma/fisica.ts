@@ -1,4 +1,4 @@
-import { ALTURA, BICHO_MEIA, Bloco, blocoEm, bichoEm, movelEm, T, type Fase } from './fases';
+import { ALTURA, BICHO_MEIA, Bloco, blocoEm, bichoEm, movelEm, piscaPresente, T, type Fase } from './fases';
 
 /**
  * A FÍSICA DO PULO DO COELHO (03/11/2026): plataforma no espírito dos jogos de 16 bits — corre e acelera, o pulo é mais
@@ -31,6 +31,15 @@ export const ESPERA = 36;
 /** Meia largura e altura do coelho (a caixa que bate). */
 export const MEIA = 5;
 export const ALTO = 22;
+/**
+ * A CORRENTE DE AR (21/11/2026): no ar, dentro dela, o coelho é empurrado para cima (SOPRO, contra a gravidade) até subir a
+ * VSOPRO. Os dois cabem no que o servidor aceita no y (a mola, 500/s).
+ */
+const SOPRO = 1700;
+export const VSOPRO = 220;
+/** A PEDRA QUE RACHA (21/11/2026): pisada, treme RACHA_TREME passos e some; volta RACHA_FORA passos depois. */
+export const RACHA_TREME = 30;
+export const RACHA_FORA = 180;
 /** De quantos em quantos passos o fantasma guarda uma posição (15 por segundo). */
 export const AMOSTRA = 4;
 
@@ -77,7 +86,15 @@ export interface Coelho {
   pegou: 'cenoura' | 'dourada' | null;
   pisou: number;
   ferido: 'buraco' | 'espinho' | 'bicho' | null;
+  /**
+   * As pedras que racham (21/11/2026), na ordem de f.rachas: o passo em que foram pisadas (0: inteiras). É uma LISTA: quem
+   * copia o coelho (o piloto automático) copia também ela (copiarCoelho).
+   */
+  racha: number[];
 }
+
+/** Uma cópia do coelho que não divide nada com ele (a lista das pedras que racham). */
+export const copiarCoelho = (k: Coelho): Coelho => ({ ...k, racha: k.racha.slice() });
 
 export function novoCoelho(f: Fase): Coelho {
   return {
@@ -106,10 +123,25 @@ export function novoCoelho(f: Fase): Coelho {
     pegou: null,
     pisou: -1,
     ferido: null,
+    racha: f.rachas.map(() => 0),
   };
 }
 
 const solido = (b: Bloco) => b === Bloco.Chao || b === Bloco.Mola;
+
+/** A pedra que racha (a i-ésima de f.rachas) está no lugar no passo de agora? */
+export function rachaPresente(k: Coelho, i: number): boolean {
+  const t = k.racha[i] ?? 0;
+  return t === 0 || k.passos - t < RACHA_TREME;
+}
+
+/** Um bloco que só segura por cima (a tábua, a pedra que racha, a tábua que pisca) existe agora para este coelho? */
+function seguraPorCima(f: Fase, k: Coelho, b: Bloco, c: number, l: number): boolean {
+  if (b === Bloco.Tabua) return true;
+  if (b === Bloco.PiscaA || b === Bloco.PiscaB) return piscaPresente(b, k.passos);
+  if (b === Bloco.Racha) return rachaPresente(k, f.rachas.indexOf(l * f.colunas + c));
+  return false;
+}
 
 /** Há bloco sólido em algum ponto da caixa [x0, x1) × [y0, y1)? */
 function bateEm(f: Fase, x0: number, y0: number, x1: number, y1: number): boolean {
@@ -160,6 +192,8 @@ function cair(k: Coelho, f: Fase, motivo: 'buraco' | 'espinho' | 'bicho') {
   k.segurando = false;
   k.espera = ESPERA;
   k.quedas++;
+  // as pedras que racham voltam todas (senão quem caiu poderia ficar sem caminho)
+  k.racha.fill(0);
 }
 
 export function passo(k: Coelho, c: Comandos, f: Fase): void {
@@ -170,6 +204,8 @@ export function passo(k: Coelho, c: Comandos, f: Fase): void {
   k.pisou = -1;
   k.ferido = null;
   if (k.terminou) c = { esquerda: false, direita: true, pula: false };
+  // a pedra que já caiu volta
+  for (let i = 0; i < k.racha.length; i++) if (k.racha[i] && k.passos - k.racha[i] >= RACHA_TREME + RACHA_FORA) k.racha[i] = 0;
   if (k.espera > 0) {
     k.espera--;
     k.pulaAntes = c.pula;
@@ -220,6 +256,11 @@ export function passo(k: Coelho, c: Comandos, f: Fase): void {
   if (k.vy >= 0) k.segurando = false;
 
   k.vy = Math.min(VQUEDA, k.vy + GRAVIDADE * dt);
+  // A CORRENTE DE AR: pelo meio do corpo
+  if (f.ventos.length) {
+    const meio = k.y - ALTO / 2;
+    if (f.ventos.some((v) => k.x >= v.x0 && k.x <= v.x1 && meio >= v.y0 && meio <= v.y1)) k.vy = Math.max(-VSOPRO, k.vy - SOPRO * dt);
+  }
 
   // ANDAR NO X, parando na parede
   const x0 = k.x;
@@ -258,7 +299,7 @@ export function passo(k: Coelho, c: Comandos, f: Fase): void {
         const b = blocoEm(f, col, l);
         const topo = l * T;
         if (topo < yAntes - 0.01 && !solido(b)) continue;
-        if (solido(b) || (b === Bloco.Tabua && topo >= yAntes - 0.01)) {
+        if (solido(b) || (topo >= yAntes - 0.01 && seguraPorCima(f, k, b, col, l))) {
           if (topo >= yAntes - 0.01 && topo <= ny && topo < chao) {
             chao = topo;
             mola = b === Bloco.Mola;
@@ -286,6 +327,15 @@ export function passo(k: Coelho, c: Comandos, f: Fase): void {
         k.vy = 0;
         k.noChao = true;
         k.sobre = sobre;
+        // pisou numa pedra que racha: ela começa a tremer
+        if (sobre < 0 && k.racha.length) {
+          const l = Math.round(chao / T);
+          for (let col = Math.floor((k.x - MEIA) / T); col <= Math.floor((k.x + MEIA - 0.001) / T); col++) {
+            if (blocoEm(f, col, l) !== Bloco.Racha) continue;
+            const i = f.rachas.indexOf(l * f.colunas + col);
+            if (i >= 0 && k.racha[i] === 0) k.racha[i] = k.passos;
+          }
+        }
       }
     } else {
       k.y = ny;

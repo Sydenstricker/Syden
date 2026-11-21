@@ -503,11 +503,16 @@ function CapaDasRodadas() {
   );
 }
 
-/** O nome de um percurso na escolha: "Fase n de 3", ou "Sobrevivência". */
+/** O nome de um percurso na escolha: "Fase n de 5", ou "Sobrevivência" (com o número, desde a segunda, de 21/11/2026). */
 function rotuloDoPercurso(t: ReturnType<typeof useT>, id: string) {
   const i = IDS_DOS_PERCURSOS.indexOf(id);
-  return i >= 0 ? t('Fase {n} de {total}', { n: i + 1, total: IDS_DOS_PERCURSOS.length }) : t('Sobrevivência');
+  if (i >= 0) return t('Fase {n} de {total}', { n: i + 1, total: IDS_DOS_PERCURSOS.length });
+  return IDS_DA_SOBREVIVENCIA.length > 1 ? `${t('Sobrevivência')} ${IDS_DA_SOBREVIVENCIA.indexOf(id) + 1}` : t('Sobrevivência');
 }
+
+/** O selo do botão: o número do percurso, ou o relógio da sobrevivência (com o número dela, se há mais de uma). */
+const seloDoPercurso = (i: number) =>
+  i < IDS_DOS_PERCURSOS.length ? i + 1 : IDS_DA_SOBREVIVENCIA.length > 1 ? `⏱${i - IDS_DOS_PERCURSOS.length + 1}` : '⏱';
 
 /** A escolha do percurso na sala (antes do convite): as rodadas, os três percursos de lado e o campo. */
 export function EscolhaDoPercurso({ aoEscolher, aoVoltar }: { aoEscolher: (percurso: string) => void; aoVoltar: () => void }) {
@@ -525,7 +530,7 @@ export function EscolhaDoPercurso({ aoEscolher, aoVoltar }: { aoEscolher: (percu
           <li key={id}>
             <button type="button" className="gincana-percurso" aria-label={rotuloDoPercurso(t, id)} onClick={() => aoEscolher(id)}>
               <PerfilDoPercurso percurso={PERCURSOS[id]} />
-              <strong>{i < IDS_DOS_PERCURSOS.length ? i + 1 : '⏱'}</strong>
+              <strong>{seloDoPercurso(i)}</strong>
             </button>
           </li>
         ))}
@@ -709,7 +714,7 @@ function GincanaSolo({ estado, eu, agir }: { estado: EstadoGincana & Partida; eu
                   onClick={() => setPercurso(id)}
                 >
                   <PerfilDoPercurso percurso={PERCURSOS[id]} />
-                  <strong>{i < IDS_DOS_PERCURSOS.length ? i + 1 : '⏱'}</strong>
+                  <strong>{seloDoPercurso(i)}</strong>
                 </button>
               </li>
             ))}

@@ -35,7 +35,28 @@
  * Solo, nada.
  */
 import * as db from './db.js';
-import { BICHOS, CAMPANHA, CORPO, FASES_DA_BRIGA, TIPOS, bicho, faseDaBriga, pistaDaBriga, type TipoDeInimigo } from './briga-fases.js';
+import {
+  BICHOS,
+  CAMPANHA,
+  COICE,
+  CORPO,
+  ELEMENTOS,
+  ESPINHOS,
+  ESPINHOS_NA_ARENA,
+  ESPOROS,
+  FASES_DA_BRIGA,
+  ONDA_DE_CHOQUE,
+  RODAMOINHO,
+  TIPOS,
+  TRONCO,
+  bicho,
+  distanciaDaOnda,
+  estadoDaGrade,
+  faseDaBriga,
+  pistaDaBriga,
+  raioDaOnda,
+  type TipoDeInimigo,
+} from './briga-fases.js';
 import type { Contexto, Definicao } from './minijogo-motor.js';
 
 // ---------------- AS MEDIDAS (as mesmas do site: web/src/briga/regras.ts; web/test/briga.test.ts confere) ----------------
@@ -84,6 +105,7 @@ export const GOLPES: Record<Golpe, { dura: number; alcance: [number, number]; fu
 export const VOLTAS_DO_GIRO = Math.ceil(GIRO_MS / GIRO_TICK_MS);
 // OS BICHOS E AS FASES moram em briga-fases.ts (a mesma cópia do site, web/src/briga/fases.ts)
 export { BICHOS, CAMPANHA, CORPO, FASES_DA_BRIGA, TIPOS, type TipoDeInimigo };
+export { COICE, ESPINHOS, ESPOROS, ONDA_DE_CHOQUE, RODAMOINHO, TRONCO } from './briga-fases.js';
 
 /** Os estados dos inimigos, na ordem do código que vai no quadro (o site tem a mesma lista). */
 export const ESTADOS = [
@@ -91,6 +113,8 @@ export const ESTADOS = [
   'rondando', 'mirando', 'mergulhando', 'subindo', 'prep-investida', 'investida', 'cansado', 'prep-pancada', 'pancada',
   // as fases novas (06/11/2026): o pulo de quem cai em cima, e a rajada do chefe que atira
   'saltando', 'prep-sopro', 'sopro',
+  // o golpe próprio de cada chefe (21/11/2026): os esporos, o coice e a onda de choque
+  'prep-esporos', 'esporos', 'prep-coice', 'coice', 'prep-onda', 'onda',
 ] as const;
 export type EstadoDoInimigo = (typeof ESTADOS)[number];
 /** As ações do coelho (o que a pessoa diz que ele está fazendo, para os outros o desenharem). */
@@ -183,7 +207,7 @@ export const AJUSTE_DA_DIFICULDADE: Record<DificuldadeDaBriga, { vida: number; d
   dificil: { vida: 1.3, dano: 1.3, naTela: 1, aviso: 0.8 },
 };
 /** Os estados de AVISO (a preparação visível de um golpe): a dificuldade estica ou encurta só eles. */
-const ESTADOS_DE_AVISO = new Set(['preparando', 'mirando', 'prep-investida', 'prep-pancada', 'prep-sopro']);
+const ESTADOS_DE_AVISO = new Set(['preparando', 'mirando', 'prep-investida', 'prep-pancada', 'prep-sopro', 'prep-esporos', 'prep-coice', 'prep-onda']);
 /** A variante do recorde do Solo: a fase, e a dificuldade quando não é a normal. */
 export const varianteDaBriga = (fase: string, dificuldade: DificuldadeDaBriga) => (dificuldade === 'normal' ? fase : `${fase}@${dificuldade}`);
 /**
@@ -256,6 +280,26 @@ interface Cura {
   x: number;
   y: number;
   ate: number;
+}
+
+/** Um elemento de cenário (21/11/2026): o tronco, o rodamoinho, o esporo do rei-cogumelo (as grades e o gelo não andam). */
+interface Elemento {
+  id: number;
+  tipo: (typeof ELEMENTOS)[number];
+  x: number;
+  y: number;
+  /** O tronco: 1 avisando, 2 rolando; o esporo: 1 o círculo, 2 a nuvem; o rodamoinho: o quadro do giro. */
+  estado: number;
+  lado: 1 | -1;
+  desde: number;
+  ate: number;
+  /** O rodamoinho: para onde vai. */
+  alvoX?: number;
+  alvoY?: number;
+  /** O esporo: o chefe que o marcou. */
+  dono?: number;
+  /** O tronco: os bichos que ele já derrubou. */
+  ja: Set<number>;
 }
 
 /** Um tiro no ar: o servidor o leva pela faixa, e cada passo é uma pancada (a folga vale igual). */
@@ -388,6 +432,8 @@ export function criarBriga({
       const tiros: Tiro[] = [];
       let proximoTiro = 1;
       const curas: Cura[] = [];
+      const elementos: Elemento[] = [];
+      let proximoElemento = 1;
       let proximaCura = 1;
       /** Os caixotes da fase: os inteiros, e o que voa (arremessado). */
       const caixotes = new Map<number, { id: number; x: number; y: number; hp: number; voando: { vx: number; ate: number; de: number; acertou: Set<number> } | null }>();
@@ -512,6 +558,8 @@ export function criarBriga({
         if (o.chefe && extras > 0) for (let i = 0; i < extras; i++) fila.push(deSoco);
         proximaEntrada = agora() + 600;
         eliteNaOnda = k === ONDA_DA_ELITE && !o.chefe;
+        // o rodamoinho nasce de novo no meio da arena nova
+        for (let e = elementos.length - 1; e >= 0; e--) if (elementos[e].tipo === 'rodamoinho') elementos.splice(e, 1);
         // a turma desta onda: quem estava na sala quando ela começou
         const p = presentes();
         ficaram = new Set([...ficaram].filter((id) => p.has(id)));
@@ -649,6 +697,192 @@ export function criarBriga({
         curas.push({ id: proximaCura++, grande, x, y: Math.max(0, Math.min(PROF, i.y)), ate: t + CURA_MS });
       };
 
+      // ---------------- OS ELEMENTOS DE CENÁRIO (21/11/2026; as medidas em briga-fases.ts) ----------------
+      /** O que o elemento pega no chão: o bicho de pé, que não voa e não é o chefe. */
+      const bichoDoChao = (o: Inimigo) =>
+        o.hp > 0 && !voador(o) && bicho(o.tipo).comp !== 'chefe' && o.z < 4 && o.estado !== 'caido' && o.estado !== 'levantando' && o.estado !== 'morto' && o.estado !== 'saltando';
+      /** O cenário machuca um bicho: sem pontos para ninguém (quem derruba de vez é o cenário). */
+      const machucarBicho = (o: Inimigo, dano: number, vx: number, derruba: boolean, t: number) => {
+        o.hp = Math.max(0, o.hp - dano);
+        evento_('h', o.id, 0, 'cenario', Math.round(o.x), Math.round(o.y), 0);
+        if (o.hp <= 0 || derruba) {
+          o.vx = vx;
+          mudar(o, 'caido', 1000);
+          if (o.hp <= 0) {
+            evento_('x', o.id, 0);
+            talvezCura(o, t);
+          }
+        } else {
+          o.vx = vx / 2;
+          mudar(o, 'dor', 380);
+        }
+      };
+      /** O elemento da fase que está na tela. */
+      const elementoDaFase = () => (faseDaBriga(etapas[etapa]) ?? FASES_DA_BRIGA[0]).elemento;
+      /** O começo da fase que está na tela (o ciclo das grades de espinhos conta daqui). */
+      let inicioDaEtapa = inicio;
+      let proximoTronco = inicio + TRONCO.intervalo[0];
+      /** Os esporos que o rei-cogumelo marcou: o círculo (estado 1) e a nuvem (estado 2). */
+      const passoDosElementos = (dt: number, t: number) => {
+        const el = elementoDaFase();
+        // O TRONCO: só com a onda lutando, um de cada vez
+        if (el === 'tronco' && fase === 'lutando' && t >= proximoTronco && !elementos.some((e) => e.tipo === 'tronco')) {
+          const quem = emPe();
+          if (quem.length) {
+            const alvo = quem[Math.floor(aleatorio() * quem.length) % quem.length];
+            const lado: 1 | -1 = aleatorio() < 0.5 ? 1 : -1;
+            elementos.push({
+              id: proximoElemento++,
+              tipo: 'tronco',
+              x: lado === 1 ? arena[0] + 6 : arena[1] - 6,
+              y: Math.max(6, Math.min(PROF - 6, alvo.y)),
+              estado: 1,
+              lado,
+              desde: t,
+              ate: t + TRONCO.aviso,
+              ja: new Set(),
+            });
+          }
+          proximoTronco = t + TRONCO.intervalo[0] + aleatorio() * (TRONCO.intervalo[1] - TRONCO.intervalo[0]);
+        }
+        // O RODAMOINHO: um por arena, que anda até um ponto sorteado e sorteia outro
+        if (el === 'rodamoinho' && (fase === 'lutando' || fase === 'avancando') && !elementos.some((e) => e.tipo === 'rodamoinho')) {
+          elementos.push({ id: proximoElemento++, tipo: 'rodamoinho', x: arena[0] + ARENA_L / 2, y: PROF / 2, estado: 0, lado: 1, desde: t, ate: t, ja: new Set(), alvoX: arena[0] + 60, alvoY: 10 });
+        }
+        for (let k = elementos.length - 1; k >= 0; k--) {
+          const e = elementos[k];
+          if (e.tipo === 'tronco') {
+            if (e.estado === 1) {
+              if (t >= e.ate) {
+                e.estado = 2;
+                e.desde = t;
+              }
+              continue;
+            }
+            const x0 = e.x;
+            e.x += e.lado * TRONCO.vel * dt;
+            const x1 = e.x, y = e.y;
+            pancadas.push({
+              em: t,
+              chave: `tronco-${e.id}`,
+              dano: TRONCO.dano,
+              derruba: true,
+              lado: e.lado,
+              dentro: (j) => j.x >= Math.min(x0, x1) - TRONCO.raio && j.x <= Math.max(x0, x1) + TRONCO.raio && Math.abs(j.y - y) <= TRONCO.fundo && j.z < 10,
+            });
+            for (const o of inimigos.values()) {
+              if (e.ja.has(o.id) || !bichoDoChao(o)) continue;
+              if (Math.abs(o.x - x1) > CORPO[o.tipo] + TRONCO.raio || Math.abs(o.y - y) > TRONCO.fundo) continue;
+              e.ja.add(o.id);
+              machucarBicho(o, TRONCO.danoNoBicho, e.lado * 120, true, t);
+            }
+            if ((e.lado > 0 && e.x > arena[1] + 20) || (e.lado < 0 && e.x < arena[0] - 20)) elementos.splice(k, 1);
+          } else if (e.tipo === 'rodamoinho') {
+            if (el !== 'rodamoinho') {
+              elementos.splice(k, 1);
+              continue;
+            }
+            // o ponto de chegada fica sempre dentro da arena de agora
+            const ax = Math.max(arena[0] + 20, Math.min(arena[1] - 20, e.alvoX ?? e.x));
+            const ay = e.alvoY ?? e.y;
+            const dx = ax - e.x, dy = ay - e.y;
+            const d = Math.hypot(dx, dy);
+            if (d < 4) {
+              e.alvoX = arena[0] + 30 + aleatorio() * (ARENA_L - 60);
+              e.alvoY = 6 + aleatorio() * (PROF - 12);
+            } else {
+              e.x += (dx / d) * RODAMOINHO.vel * dt;
+              e.y += (dy / d) * RODAMOINHO.vel * dt;
+            }
+            e.estado = Math.floor((t - e.desde) / 100) % 8;
+            // empurra quem encosta (um golpe a cada RODAMOINHO.cada; o empurrão vai para longe do centro)
+            const vez = Math.floor((t - e.desde) / RODAMOINHO.cada);
+            const ex = e.x, ey = e.y;
+            for (const j of emPe()) {
+              if (Math.abs(j.x - ex) > RODAMOINHO.raioX + 14 || Math.abs(j.y - ey) > RODAMOINHO.raioY + 10) continue;
+              pancadas.push({
+                em: t,
+                chave: `rm-${e.id}-${vez}`,
+                dano: RODAMOINHO.dano,
+                derruba: false,
+                lado: j.x >= ex ? 1 : -1,
+                dentro: (p) => Math.abs(p.x - ex) <= RODAMOINHO.raioX && Math.abs(p.y - ey) <= RODAMOINHO.raioY && p.z < 8,
+              });
+            }
+          } else if (e.tipo === 'esporo') {
+            // o chefe que marcou caiu: os círculos somem; a nuvem some sozinha
+            const dono = inimigos.get(e.dono ?? -1);
+            if ((e.estado === 1 && (!dono || dono.hp <= 0)) || (e.estado === 2 && t >= e.ate)) elementos.splice(k, 1);
+          }
+        }
+        // AS GRADES DE ESPINHOS: o ciclo é do relógio daqui, e a grade em pé pega coelho e bicho
+        if (el === 'espinhos') {
+          for (const [k, x, y] of gradesNaArena()) {
+            const { estado, ciclo } = estadoDaGrade(t - inicioDaEtapa, k);
+            if (estado !== 2) continue;
+            pancadas.push({
+              em: t,
+              chave: `grade-${k}-${ciclo}`,
+              dano: ESPINHOS.dano,
+              derruba: false,
+              lado: 1,
+              dentro: (p) => Math.abs(p.x - x) <= ESPINHOS.meiaL && Math.abs(p.y - y) <= ESPINHOS.meiaP && p.z < 6,
+            });
+            for (const o of inimigos.values()) {
+              const chave = `grade-${k}-${ciclo}-${o.id}`;
+              if (gradesQuePegaram.has(chave) || !bichoDoChao(o)) continue;
+              if (Math.abs(o.x - x) > ESPINHOS.meiaL || Math.abs(o.y - y) > ESPINHOS.meiaP) continue;
+              gradesQuePegaram.add(chave);
+              machucarBicho(o, ESPINHOS.danoNoBicho, o.lado * -40, false, t);
+            }
+          }
+          if (gradesQuePegaram.size > 300) for (const c of [...gradesQuePegaram].slice(0, 150)) gradesQuePegaram.delete(c);
+        }
+      };
+      /** Os bichos que já levaram cada subida de grade (uma vez por ciclo). */
+      const gradesQuePegaram = new Set<string>();
+      /** As grades da fase perto da arena de agora: [índice, x, y]. */
+      const gradesNaArena = (): [number, number, number][] => {
+        const r: [number, number, number][] = [];
+        ONDAS_X.forEach((a, ka) => {
+          if (a + ARENA_L < arena[0] - 20 || a > arena[1] + 20) return;
+          ESPINHOS_NA_ARENA.forEach(([dx, y], kg) => r.push([ka * ESPINHOS_NA_ARENA.length + kg, a + dx, y]));
+        });
+        return r;
+      };
+      /** O rei-cogumelo marca um círculo debaixo de cada coelho (e onde a turma não está, se for um só). */
+      const prepararEsporos = (i: Inimigo, t: number) => {
+        i.ataque++;
+        mudar(i, 'prep-esporos', ESPOROS.aviso);
+        const quem = emPe();
+        const lugares = quem.map((j) => [j.x, j.y] as [number, number]);
+        if (lugares.length < 2) lugares.push([arena[0] + 30 + aleatorio() * (ARENA_L - 60), 8 + aleatorio() * (PROF - 16)]);
+        for (const [x, y] of lugares) {
+          elementos.push({
+            id: proximoElemento++,
+            tipo: 'esporo',
+            x: Math.max(arena[0] + 12, Math.min(arena[1] - 12, x)),
+            y: Math.max(0, Math.min(PROF, y)),
+            estado: 1,
+            lado: 1,
+            desde: t,
+            ate: i.ate,
+            dono: i.id,
+            ja: new Set(),
+          });
+        }
+      };
+      /** Os círculos do rei-cogumelo estouram: cada um é uma pancada, e a nuvem fica um pouco à vista. */
+      const estourarEsporos = (i: Inimigo, t: number) => {
+        for (const e of elementos) {
+          if (e.tipo !== 'esporo' || e.dono !== i.id || e.estado !== 1) continue;
+          e.estado = 2;
+          e.ate = t + ESPOROS.nuvem;
+          const ex = e.x, ey = e.y;
+          pancada(i, `${i.id}-${i.ataque}`, danoDe(i) - 4, false, (j) => ((j.x - ex) / ESPOROS.raioX) ** 2 + ((j.y - ey) / ESPOROS.raioY) ** 2 <= 1 && j.z < 8);
+        }
+      };
+
       const passoDaRaposa = (i: Inimigo, dt: number, t: number) => {
         const alvo = maisPerto(i);
         switch (i.estado) {
@@ -759,8 +993,22 @@ export function criarBriga({
               if (t >= i.ate) mudar(i, 'andando', 0);
               return;
             }
-            // o chefe que atira, de longe, às vezes solta a rajada em vez da investida
-            if (t >= i.proximoAtaque && dx > 80 && bicho(i.tipo).sopro && aleatorio() < 0.45) {
+            const golpe = bicho(i.tipo).golpe;
+            // O GOLPE PRÓPRIO (21/11/2026): os esporos e a onda de choque, um ataque sim, um não (de qualquer distância); o
+            // coice no lugar da pancada, para quem está perto (atrás ou na frente: ela se vira de costas)
+            const especial = t >= i.proximoAtaque && (golpe === 'esporos' || golpe === 'onda') && i.ataque % 2 === 1;
+            if (especial && golpe === 'esporos') {
+              prepararEsporos(i, t);
+            } else if (especial && golpe === 'onda') {
+              i.alvoX = i.x;
+              i.faixa = i.y;
+              mudar(i, 'prep-onda', 1000);
+            } else if (t >= i.proximoAtaque && golpe === 'coice' && dx < 60 && Math.abs(alvo.y - i.y) < 16) {
+              // de costas para quem vai levar
+              i.lado = alvo.x > i.x ? -1 : 1;
+              mudar(i, 'prep-coice', 900);
+            } else if (t >= i.proximoAtaque && dx > 80 && golpe === 'sopro' && aleatorio() < 0.45) {
+              // o chefe que atira (o dragão), de longe, às vezes solta a rajada em vez da investida
               i.faixa = alvo.y;
               mudar(i, 'prep-sopro', 950);
             } else if (t >= i.proximoAtaque && dx > 80) {
@@ -805,6 +1053,8 @@ export function criarBriga({
             }
             return;
           case 'pancada':
+          case 'esporos':
+          case 'coice':
             if (t >= i.ate) mudar(i, 'recuperando', 900);
             return;
           case 'prep-sopro':
@@ -818,6 +1068,50 @@ export function criarBriga({
           case 'sopro':
             if (t >= i.ate) mudar(i, 'recuperando', 800);
             return;
+          case 'prep-esporos':
+            if (t >= i.ate) {
+              estourarEsporos(i, t);
+              mudar(i, 'esporos', 450);
+            }
+            return;
+          case 'prep-coice':
+            if (t >= i.ate) {
+              mudar(i, 'coice', 300);
+              const x0 = i.x, y0 = i.y, costas = -i.lado;
+              // o chute para trás: quem está nas costas dela, até COICE.alcance
+              pancada(i, `${i.id}-${++i.ataque}`, danoDe(i) + 4, true, (j) => {
+                const dx = (j.x - x0) * costas;
+                return dx >= 0 && dx <= COICE.alcance && Math.abs(j.y - y0) <= COICE.fundo && j.z < 8;
+              });
+              // a pancada empurra para longe dela
+              pancadas[pancadas.length - 1].lado = costas > 0 ? 1 : -1;
+            }
+            return;
+          case 'prep-onda':
+            if (t >= i.ate) {
+              i.ataque++;
+              mudar(i, 'onda', Math.round(((ONDA_DE_CHOQUE.alcance - ONDA_DE_CHOQUE.inicio) / ONDA_DE_CHOQUE.vel) * 1000));
+            }
+            return;
+          case 'onda': {
+            // o anel corre do pé dele: cada passo é uma pancada da faixa do anel (pular por cima escapa)
+            const r = raioDaOnda(t - i.desde);
+            const x0 = i.alvoX, y0 = i.faixa;
+            for (const j of emPe()) {
+              const d = distanciaDaOnda(j.x - x0, j.y - y0);
+              if (Math.abs(d - r) > ONDA_DE_CHOQUE.largura + 12) continue;
+              pancadas.push({
+                em: t,
+                chave: `${i.id}-${i.ataque}`,
+                dano: danoDe(i) - 4,
+                derruba: true,
+                lado: j.x >= x0 ? 1 : -1,
+                dentro: (p) => Math.abs(distanciaDaOnda(p.x - x0, p.y - y0) - r) <= ONDA_DE_CHOQUE.largura / 2 && p.z < 6,
+              });
+            }
+            if (t >= i.ate) mudar(i, 'recuperando', 900);
+            return;
+          }
           case 'cansado':
           case 'recuperando':
             if (t >= i.ate) {
@@ -1068,6 +1362,7 @@ export function criarBriga({
             while (i.historia.length && i.historia[0].t < t - 1000) i.historia.shift();
           }
           passoDosTiros(dt, t);
+          passoDosElementos(dt, t);
           decidirPancadas(t);
           passoDasCuras(t);
           passoDosCaixotes(dt, t);
@@ -1118,6 +1413,9 @@ export function criarBriga({
         ondas = ondasDa(etapas[etapa]);
         tiros.length = 0;
         curas.length = 0;
+        elementos.length = 0;
+        inicioDaEtapa = t;
+        proximoTronco = t + TRONCO.intervalo[0];
         porCaixotes();
         pancadas.length = 0;
         inimigos.clear();
@@ -1170,6 +1468,13 @@ export function criarBriga({
           ]),
           // as cenouras no chão: [id, grande, x, y]
           c: curas.map((c) => [c.id, c.grande ? 1 : 0, Math.round(c.x), Math.round(c.y)]),
+          // os elementos de cenário (21/11/2026): [id, código em ELEMENTOS, x, y, estado, lado]; as grades com o estado do ciclo
+          el: [
+            ...elementos.map((e) => [e.id, ELEMENTOS.indexOf(e.tipo), Math.round(e.x), Math.round(e.y), e.estado, e.lado]),
+            ...(elementoDaFase() === 'espinhos'
+              ? gradesNaArena().map(([k, x, y]) => [100_000 + k, ELEMENTOS.indexOf('espinhos'), x, y, estadoDaGrade(agora() - inicioDaEtapa, k).estado, 1])
+              : []),
+          ],
           // os caixotes: [id, x, y, vida %, voando (1/0)]
           cx: [...caixotes.values()].map((c) => [c.id, Math.round(c.x), Math.round(c.y), Math.round((c.hp / CAIXOTE.hp) * 100), c.voando ? 1 : 0]),
           j: [...jogadores.values()].map((j) => [
@@ -1579,7 +1884,7 @@ export function criarBriga({
         },
         parar,
         // para o teste
-        ...({ _passo: tick, _inimigos: inimigos, _jogadores: jogadores, _caixotes: caixotes, _curas: curas, _motivo: () => ultimoMotivo, _arena: () => arena } as object),
+        ...({ _passo: tick, _inimigos: inimigos, _jogadores: jogadores, _caixotes: caixotes, _curas: curas, _elementos: elementos, _motivo: () => ultimoMotivo, _arena: () => arena } as object),
       };
     },
   };

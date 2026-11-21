@@ -9,8 +9,8 @@
  */
 import { MOLETOM_DO_MASCOTE, PELO_DO_MASCOTE } from '../corrida/coresDosAvatares';
 import { coresDoJogador, type AvatarDoJogo } from '../coelho/cores';
-import { bicho } from './fases';
-import type { Acao, EstadoDoInimigo, TipoDeInimigo } from './regras';
+import { ARENAS_DA_BRIGA, bicho, COICE, ESPINHOS, ESPOROS, GELO_NA_ARENA, ONDA_DE_CHOQUE, TRONCO } from './fases';
+import type { Acao, ElementoNaTela, EstadoDoInimigo, TipoDeInimigo } from './regras';
 
 export const W = 320;
 export const H = 180;
@@ -446,6 +446,152 @@ export function desenharAviso(
     g.beginPath();
     g.ellipse(sx, sy, 54, 9, 0, 0, Math.PI * 2);
     g.stroke();
+  } else if (comp === 'chefe' && estado === 'prep-coice') {
+    // o coice (21/11/2026): a meia-lua atrás dela, do lado das costas
+    g.strokeStyle = pisca ? '#e2574a' : '#f0a070';
+    g.lineWidth = 1;
+    g.beginPath();
+    g.ellipse(sx - lado * (COICE.alcance / 2), sy, COICE.alcance / 2, COICE.fundo, 0, 0, Math.PI * 2);
+    g.stroke();
+  } else if (comp === 'chefe' && estado === 'prep-onda') {
+    // a onda de choque: o anel pequeno pisca no pé dele
+    g.strokeStyle = pisca ? '#e2574a' : '#f0a070';
+    g.lineWidth = 1;
+    g.beginPath();
+    g.ellipse(sx, sy, ONDA_DE_CHOQUE.inicio, ONDA_DE_CHOQUE.inicio / 3, 0, 0, Math.PI * 2);
+    g.stroke();
+  }
+}
+
+/** O anel da onda de choque do yeti (21/11/2026), achatado no chão, com o raio `r` (px do mundo). */
+export function desenharOndaDeChoque(g: CanvasRenderingContext2D, sx: number, sy: number, r: number, tempo: number) {
+  const pisca = Math.floor(tempo / 80) % 2 === 0;
+  g.lineWidth = 2;
+  g.strokeStyle = pisca ? '#e8f4ff' : '#9ab4cc';
+  g.beginPath();
+  g.ellipse(sx, sy, r, r / 3, 0, 0, Math.PI * 2);
+  g.stroke();
+  g.lineWidth = 1;
+  g.strokeStyle = '#5a7a98';
+  g.beginPath();
+  g.ellipse(sx, sy + 1, r - 2, r / 3 - 1, 0, 0, Math.PI);
+  g.stroke();
+}
+
+// ---------------- OS ELEMENTOS DE CENÁRIO (21/11/2026) ----------------
+/** As placas de gelo da neve, no chão: desenhadas antes de tudo (sem foco, sem brilho). */
+export function desenharGelo(g: CanvasRenderingContext2D, camX: number, tempo: number) {
+  for (const a of ARENAS_DA_BRIGA) {
+    for (const [dx, y, l, p] of GELO_NA_ARENA) {
+      const sx = Math.round(a + dx - camX);
+      if (sx + l < 0 || sx - l > W) continue;
+      const sy = CHAO + y;
+      g.fillStyle = '#9fc4dc';
+      g.beginPath();
+      g.ellipse(sx, sy, l + 1, p + 1, 0, 0, Math.PI * 2);
+      g.fill();
+      g.fillStyle = '#cfe6f4';
+      g.beginPath();
+      g.ellipse(sx, sy - 1, l - 1, p - 1, 0, 0, Math.PI * 2);
+      g.fill();
+      // os riscos claros e o brilho que corre devagar
+      g.fillStyle = '#f2fbff';
+      g.fillRect(sx - Math.round(l * 0.5), sy - 2, Math.round(l * 0.35), 1);
+      g.fillRect(sx + Math.round(l * 0.1), sy + 2, Math.round(l * 0.3), 1);
+      const b = Math.round(((tempo / 40 + dx) % (2 * l)) - l);
+      if (Math.abs(b) < l - 4) g.fillRect(sx + b, sy - 1, 2, 1);
+    }
+  }
+}
+
+/** O que fica no chão (as grades de espinhos e o círculo dos esporos): desenhado antes dos bichos e dos coelhos. */
+export function desenharElementoNoChao(g: CanvasRenderingContext2D, el: ElementoNaTela, camX: number, tempo: number) {
+  const sx = Math.round(el.x - camX);
+  const sy = CHAO + Math.round(el.y);
+  const pisca = Math.floor(tempo / 120) % 2 === 0;
+  if (el.tipo === 'espinhos') {
+    const l = ESPINHOS.meiaL, p = ESPINHOS.meiaP;
+    // a grade de ferro: o aviso a deixa vermelha, piscando
+    g.fillStyle = '#3a3440';
+    g.fillRect(sx - l, sy - p, 2 * l, 2 * p);
+    g.fillStyle = el.estado === 1 && pisca ? '#e2574a' : '#6a6070';
+    for (let x = -l + 2; x < l; x += 4) g.fillRect(sx + x, sy - p + 1, 2, 2 * p - 2);
+    if (el.estado === 2) {
+      // os espinhos em pé
+      for (let x = -l + 2; x < l; x += 4) {
+        for (const yy of [-p + 2, 0, p - 2]) {
+          g.fillStyle = '#d8d4dc';
+          g.fillRect(sx + x, sy + yy - 7, 1, 7);
+          g.fillStyle = '#f4f0f8';
+          g.fillRect(sx + x, sy + yy - 8, 1, 1);
+        }
+      }
+    }
+  } else if (el.tipo === 'esporo') {
+    if (el.estado === 1) {
+      g.strokeStyle = pisca ? '#c04aa0' : '#f0a0d0';
+      g.lineWidth = 1;
+      g.beginPath();
+      g.ellipse(sx, sy, ESPOROS.raioX, ESPOROS.raioY, 0, 0, Math.PI * 2);
+      g.stroke();
+      g.fillStyle = 'rgba(240, 160, 208, 0.25)';
+      g.fill();
+    }
+  }
+}
+
+/** O que fica de pé (o tronco, o rodamoinho, a nuvem dos esporos): entra na ordem do y com os bichos. */
+export function desenharElementoDePe(g: CanvasRenderingContext2D, el: ElementoNaTela, camX: number, tempo: number) {
+  const sx = Math.round(el.x - camX);
+  const sy = CHAO + Math.round(el.y);
+  if (el.tipo === 'tronco') {
+    const r = TRONCO.raio;
+    if (el.estado === 1) {
+      // o aviso: a linha da faixa pisca de borda a borda, e o tronco treme na borda
+      const pisca = Math.floor(tempo / 120) % 2 === 0;
+      g.fillStyle = pisca ? '#e2574a' : '#f0a070';
+      for (let x = 0; x < W; x += 8) g.fillRect(x, sy, 4, 1);
+    }
+    const treme = el.estado === 1 && Math.floor(tempo / 60) % 2 ? 1 : 0;
+    sombra(g, sx, sy, r * 2 + 4, 0);
+    g.fillStyle = '#6a4428';
+    g.beginPath();
+    g.arc(sx + treme, sy - r, r, 0, Math.PI * 2);
+    g.fill();
+    g.fillStyle = '#c89a62';
+    g.beginPath();
+    g.arc(sx + treme, sy - r, r - 2, 0, Math.PI * 2);
+    g.fill();
+    // os anéis do tronco giram quando ele rola
+    g.strokeStyle = '#8a5e36';
+    g.lineWidth = 1;
+    g.beginPath();
+    g.arc(sx + treme, sy - r, r - 5, 0, Math.PI * 2);
+    g.stroke();
+    const a = el.estado === 2 ? (el.lado * tempo) / 90 : 0;
+    g.fillStyle = '#6a4428';
+    g.fillRect(Math.round(sx + treme + Math.cos(a) * (r - 4)), Math.round(sy - r + Math.sin(a) * (r - 4)), 2, 2);
+  } else if (el.tipo === 'rodamoinho') {
+    // o rodamoinho de areia: um funil de faixas que giram
+    sombra(g, sx, sy, 22, 0);
+    for (let k = 0; k < 7; k++) {
+      const alto = k * 4;
+      const largo = 3 + k * 1.6;
+      const f = (tempo / 70 + k * 1.3) % (Math.PI * 2);
+      g.fillStyle = k % 2 ? '#d8b070' : '#ecd29a';
+      g.fillRect(Math.round(sx - largo + Math.sin(f) * 2), sy - 2 - alto, Math.round(largo * 2), 3);
+      g.fillStyle = '#b8884a';
+      g.fillRect(Math.round(sx + Math.cos(f) * largo), sy - 2 - alto, 2, 2);
+    }
+  } else if (el.tipo === 'esporo' && el.estado === 2) {
+    // a nuvem dos esporos estourada
+    for (let k = 0; k < 6; k++) {
+      const f = k * 1.1 + tempo / 200;
+      g.fillStyle = k % 2 ? '#e8b0d8' : '#c070a8';
+      g.beginPath();
+      g.arc(sx + Math.cos(f) * 12, sy - 6 - Math.abs(Math.sin(f)) * 8, 5, 0, Math.PI * 2);
+      g.fill();
+    }
   }
 }
 

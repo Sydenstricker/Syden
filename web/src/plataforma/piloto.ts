@@ -1,5 +1,5 @@
 import type { Fase } from './fases';
-import { passo, type Coelho, type Comandos } from './fisica';
+import { copiarCoelho, passo, type Coelho, type Comandos } from './fisica';
 
 /**
  * O PILOTO AUTOMÁTICO do Pulo do coelho: serve aos testes (web/test/plataforma.test.ts confere que toda fase se termina e
@@ -37,12 +37,12 @@ export function planejar(
   limite = 60 * 120,
   objetivo?: { x: number; y: number; feito: (k: Coelho) => boolean },
 ): Comandos[] | null {
-  let feixe: No[] = [{ k: { ...inicio }, pai: null, acao: -1 }];
+  let feixe: No[] = [{ k: copiarCoelho(inicio), pai: null, acao: -1 }];
   for (let t = 0; t * bloco < limite; t++) {
     const vistos = new Map<string, No>();
     for (const no of feixe) {
       for (let a = 0; a < ACOES.length; a++) {
-        const k = { ...no.k };
+        const k = copiarCoelho(no.k);
         let caiu = false;
         for (let i = 0; i < bloco; i++) {
           passo(k, ACOES[a], f);
@@ -55,7 +55,7 @@ export function planejar(
         if (caiu) continue;
         const filho = { k, pai: no, acao: a };
         if (objetivo ? objetivo.feito(k) : k.terminou) return desenrolar(filho, bloco, objetivo ? k.passos - inicio.passos : k.chegouEm - inicio.passos);
-        const chave = `${Math.round(k.x / 3)},${Math.round(k.y / 3)},${Math.round(k.vy / 80)},${k.noChao ? 1 : 0},${k.sobre},${k.pulaAntes ? 1 : 0}`;
+        const chave = `${Math.round(k.x / 3)},${Math.round(k.y / 3)},${Math.round(k.vy / 80)},${k.noChao ? 1 : 0},${k.sobre},${k.pulaAntes ? 1 : 0}${k.racha.length ? `,${k.racha.join('.')}` : ''}`;
         const ja = vistos.get(chave);
         if (!ja) vistos.set(chave, filho);
       }

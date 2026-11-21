@@ -5,8 +5,13 @@ export const NOMES_DAS_PISTAS_DO_BARCO: Record<string, string> = {
   'lago-1': chave('Lago da horta'),
   'riacho-1': chave('Riacho'),
   'mangue-1': chave('Mangue'),
+  // a segunda copa (21/11/2026)
+  'represa-1': chave('Represa'),
+  'corredeira-1': chave('Corredeira'),
+  'igarape-1': chave('Igarapé'),
   // a copa do Solo contra os barcos do computador (barco/pista.ts, COPAS_DO_BARCO)
   'copa-da-regata': chave('Copa da regata'),
+  'copa-da-correnteza': chave('Copa da correnteza'),
 };
 
 export const nomeDaPistaDoBarco = (t: (texto: string) => string, id: string) => t(NOMES_DAS_PISTAS_DO_BARCO[id] ?? id);

@@ -8,6 +8,11 @@
  * A FASE: quatro arenas de uma tela (como a Briga), cada uma com a sua onda, e a do chefe, o dragão. Entre elas, três
  * GAIOLAS com coelhinhos presos: quem encosta abre, e ganha um reforço por ARMA_MS (o leque de três ou a rápida).
  *
+ * DESDE 21/11/2026 (a segunda auditoria): cada fase tem as suas tábuas e as suas gaiolas (conta.ts, PLATAFORMAS_DA_FASE e
+ * REFENS_DA_FASE; o servidor não conhece as tábuas, só as gaiolas), há uma TERCEIRA fase, a neve (o yeti de chefe e a
+ * AVALANCHE), e o deserto tem o chefe dele, a alpaca-rei (o CUSPE em arco nas marcas e a INVESTIDA rente ao chão, de que a
+ * tábua salva). Cada chefe tem a sua roda de golpes (RODA_DO_CHEFE); o dragão da floresta continua o de antes.
+ *
  * A REDE É A DA BRIGA NA HORTA (minijogo-briga.ts) E DO CHEFE DA TURMA (chefe/motor.ts):
  * - OS BICHOS SÃO DO SERVIDOR, e as balas e sementes deles também: um passo próprio de 20 por segundo os move e manda o
  *   quadro a todos pelo `difundir`.
@@ -62,8 +67,9 @@ import {
   PASSO_MS,
   PERTO_DA_GAIOLA,
   PULO_VEL,
-  REFENS,
+  REFENS_DA_FASE,
   TIPOS,
+  VARIANTE_DO_RECORDE,
   VEL,
   VIDA,
   VIDAS,
@@ -98,6 +104,12 @@ export const ACUMULO_H = 26;
 /** As balas inimigas: a do atirador, rente ao chão, e o fogo do chefe. */
 export const TIRO_INIMIGO = { vel: 120, h: 12, raio: 4 };
 export const FOGO = { vel: 150, h: 10, raio: 5 };
+/** O CUSPE da alpaca-rei (21/11/2026): três bolas em arco, que caem perto das marcas (a gravidade delas, px/s²; o tempo de voo). */
+export const CUSPE = { g: 320, voo: 0.85, raio: 5, abre: 34 };
+/** A INVESTIDA da alpaca-rei: corre rente ao chão pela arena; quem está numa tábua (ou no alto do pulo) escapa. */
+export const INVESTIDA = { vel: 220, h: 28 };
+/** A AVALANCHE do yeti: pedras de gelo penduradas no alto, sobre as marcas; caem depois do aviso. */
+export const AVALANCHE = { h: 140, aviso: 900, vel: 300, raio: 7 };
 /** A semente do voador: cai a esta velocidade. */
 export const SEMENTE = { vel: 170, raio: 5 };
 /** A vida do chefe: no Solo, mais fraco; com mais gente, mais forte. */
@@ -110,7 +122,10 @@ type Onda = Partial<Record<TipoDoBicho, number>>;
 export const ONDAS_DA_FASE: Record<MapaDoComando, Onda[]> = {
   floresta: [{ cogumelo: 4 }, { cogumelo: 3, dino: 2 }, { cogumelo: 3, abelha: 3 }, { cogumelo: 4, dino: 2, abelha: 2 }, { dragao: 1 }],
   // o deserto (19/11/2026): bichos novos das folhas da Briga, e o yeti de subchefe no meio
-  deserto: [{ cacto: 4 }, { cacto: 3, golem: 2 }, { yeti: 1 }, { cacto: 4, golem: 2, redemoinho: 3 }, { dragao: 1 }],
+  // desde 21/11/2026 com o chefe dele, a alpaca-rei (antes, o dragão da floresta)
+  deserto: [{ cacto: 4 }, { cacto: 3, golem: 2 }, { yeti: 1 }, { cacto: 4, golem: 2, redemoinho: 3 }, { 'alpaca-rei': 1 }],
+  // a neve (21/11/2026): os bichos da neve da Briga, o pombo no ar e o yeti de chefe (o mesmo do subchefe do deserto, com toda a vida)
+  neve: [{ macaco: 4 }, { macaco: 3, espinhento: 2 }, { macaco: 3, corvo: 3 }, { macaco: 4, espinhento: 2, corvo: 2 }, { yeti: 1 }],
 };
 /** As ondas da floresta (o nome de antes, para quem já importava). */
 export const ONDAS = ONDAS_DA_FASE.floresta;
@@ -150,7 +165,11 @@ interface Bicho {
 
 interface BalaInimiga {
   id: number;
-  tipo: 0 | 1 | 2 | 3; // 0 o tiro do atirador, 1 o fogo do chefe, 2 a semente, 3 o sopro do yeti
+  // 0 o tiro do atirador, 1 o fogo do chefe, 2 a semente, 3 o sopro do yeti; 4 o cuspe da alpaca, 5 a pedra de gelo da avalanche (21/11/2026)
+  tipo: 0 | 1 | 2 | 3 | 4 | 5;
+  /** A gravidade (o cuspe cai em arco), e até quando a bala espera parada (a pedra de gelo pendurada). */
+  g?: number;
+  solta?: number;
   x: number;
   h: number;
   vx: number;
@@ -291,7 +310,8 @@ export function criarComando({
       let trocaEm: number | null = null;
       /** As armas no chão, soltas pelas cápsulas: [id, arma, x, até quando]. */
       const itens: { id: number; arma: Arma; x: number; ate: number }[] = [];
-      const melhorAntes = solo && servicos.recordeDe ? servicos.recordeDe(inscritos[0], escolha) : null;
+      const variante = VARIANTE_DO_RECORDE[escolha] ?? escolha;
+      const melhorAntes = solo && servicos.recordeDe ? servicos.recordeDe(inscritos[0], variante) : null;
       let ficaram = new Set(inscritos);
       const bichos = new Map<number, Bicho>();
       const balas: BalaInimiga[] = [];
@@ -299,7 +319,9 @@ export function criarComando({
       const pancadas: Pancada[] = [];
       const levaram = new Map<string, Set<number>>();
       /** As gaiolas: aberta por quem (0: ainda presa). */
-      const gaiolas = REFENS.map(() => 0);
+      const gaiolas = REFENS_DA_FASE[etapas[0]].map(() => 0);
+      /** As gaiolas da fase que está na tela. */
+      const refens = () => REFENS_DA_FASE[etapas[etapa]];
 
       const balde = (max: number, porSeg: number): Balde => ({ fichas: max, em: agora(), max, porSeg });
       const gastar = (b: Balde) => {
@@ -388,7 +410,7 @@ export function criarComando({
       const temChefe = (o: Onda) => (Object.keys(o) as TipoDoBicho[]).some((t) => BICHOS[t].comp === 'chefe');
       const maxNaTela = () => (temChefe(ondas[onda]) ? 3 : 2 + n);
       /** O andarilho da fase de agora (o chefe chama esse). */
-      const andarilhoDaFase = (): TipoDoBicho => (etapas[etapa] === 'deserto' ? 'cacto' : 'cogumelo');
+      const andarilhoDaFase = (): TipoDoBicho => (etapas[etapa] === 'deserto' ? 'cacto' : etapas[etapa] === 'neve' ? 'macaco' : 'cogumelo');
       /** A cápsula entra pela esquerda, no alto, e vai até a direita; derrubada, solta a arma. */
       const armaDe = new Map<number, Arma>();
       const soltarCapsula = (arma: Arma) => {
@@ -431,7 +453,8 @@ export function criarComando({
         const c = BICHOS[tipo].comp;
         const doLado: 1 | -1 = c === 'chefe' ? 1 : aleatorio() < 0.6 ? 1 : -1;
         const x = c === 'chefe' ? arena[1] - 50 : doLado === 1 ? arena[1] + 20 : arena[0] - 20;
-        const hpMax = tipo === 'dragao' ? vidaDoChefe(n, solo) : tipo === 'yeti' ? vidaDoSubchefe(n, solo) : BICHOS[tipo].hp;
+        // o chefe da última onda tem a vida de chefe; o do meio (o yeti no deserto), a de subchefe
+        const hpMax = c === 'chefe' ? (onda === ondas.length - 1 ? vidaDoChefe(n, solo) : vidaDoSubchefe(n, solo)) : BICHOS[tipo].hp;
         const b: Bicho = {
           id: proximoId++,
           tipo,
@@ -481,8 +504,8 @@ export function criarComando({
         b.x += Math.sign(dx) * Math.min(Math.abs(dx), vel * dt);
       };
       const pancada = (chave: string, dentro: Pancada['dentro']) => pancadas.push({ em: agora(), chave, dentro });
-      const atirar = (tipo: 0 | 1 | 2 | 3, x: number, h: number, vx: number, vh: number, raio: number) => {
-        balas.push({ id: proximoId++, tipo, x, h, vx, vh, raio, ate: agora() + 4000 });
+      const atirar = (tipo: BalaInimiga['tipo'], x: number, h: number, vx: number, vh: number, raio: number, extra: { g?: number; solta?: number } = {}) => {
+        balas.push({ id: proximoId++, tipo, x, h, vx, vh, raio, ate: agora() + 4000 + (extra.solta ? extra.solta - agora() : 0), ...extra });
       };
       const dentroDaArena = (x: number, margem: number) => Math.max(arena[0] + margem, Math.min(arena[1] - margem, x));
 
@@ -606,12 +629,22 @@ export function criarComando({
             // volta devagar ao canto dele, entre um golpe e outro
             andarAte(b, arena[1] - 50, 30, dt);
             if (t >= b.ate && t >= b.proximoAtaque) {
-              const g = b.golpes++ % 4;
-              if (g === 0 || g === 2) mudar(b, 'prep-fogo', 1000);
-              else if (g === 1 && alvo) {
+              // a roda de golpes de cada chefe (21/11/2026: a alpaca-rei e a avalanche do yeti são novas)
+              const g = (RODA_DO_CHEFE[b.tipo] ?? RODA_DO_CHEFE.dragao!)[b.golpes++ % 4];
+              if (g === 'fogo') mudar(b, 'prep-fogo', 1000);
+              else if (g === 'cuspe' && alvo) {
+                b.alvoX = dentroDaArena(alvo.x, 40);
+                mudar(b, 'prep-cuspe', 900);
+              } else if (g === 'investida') {
+                b.x0 = b.x;
+                mudar(b, 'prep-investida', 1000);
+              } else if (g === 'avalanche') {
+                prepararAvalanche(b, t);
+                mudar(b, 'prep-avalanche', AVALANCHE.aviso);
+              } else if (g === 'pisao' && alvo) {
                 b.alvoX = dentroDaArena(alvo.x, 30);
                 mudar(b, 'prep-pisao', 1000);
-              } else if (vivos().length < 3) {
+              } else if (g === 'chamado' && vivos().length < 3) {
                 for (let k = 0; k < Math.min(2, n + 1); k++) fila.push(andarilhoDaFase());
                 mudar(b, 'chamando', 1200);
                 b.proximoAtaque = t + 1200;
@@ -656,16 +689,82 @@ export function criarComando({
             }
             return;
           }
+          // O CUSPE (a alpaca-rei, 21/11/2026): as três marcas piscam em volta de quem ela mira, e as bolas caem nelas, em arco
+          case 'prep-cuspe':
+            if (t >= b.ate) {
+              const x0 = b.x + b.lado * BICHOS[b.tipo].larg, h0 = BICHOS[b.tipo].alto - 8;
+              for (const d of [-CUSPE.abre, 0, CUSPE.abre]) {
+                const tx = dentroDaArena(b.alvoX + d, 10);
+                const vx = (tx - x0) / CUSPE.voo;
+                const vh = (0 - h0 + 0.5 * CUSPE.g * CUSPE.voo * CUSPE.voo) / CUSPE.voo;
+                atirar(4, x0, h0, vx, vh, CUSPE.raio, { g: CUSPE.g });
+              }
+              mudar(b, 'cuspe', 500);
+            }
+            return;
+          case 'cuspe':
+            if (t >= b.ate) {
+              b.proximoAtaque = t + 800 + aleatorio() * 500;
+              mudar(b, 'recuperando', 0);
+            }
+            return;
+          // A INVESTIDA (a alpaca-rei): a linha pisca rente ao chão, e ela corre pela arena toda; subir numa tábua escapa
+          case 'prep-investida':
+            if (t >= b.ate) mudar(b, 'investida', 4000);
+            return;
+          case 'investida': {
+            const x0 = b.x;
+            b.x -= INVESTIDA.vel * dt;
+            b.lado = -1;
+            const x1 = b.x, larg = BICHOS[b.tipo].larg;
+            pancada(`b${b.id}-investida-${b.golpes}`, (q) => q.x >= x1 - larg - 4 && q.x <= x0 + larg && q.h < INVESTIDA.h);
+            if (b.x <= arena[0] + 40 || t >= b.ate) {
+              evento_('t', Math.round(b.x));
+              b.proximoAtaque = t + 1200 + aleatorio() * 500;
+              mudar(b, 'recuperando', 0);
+            }
+            return;
+          }
+          // A AVALANCHE (o yeti): as pedras de gelo já estão penduradas sobre as marcas; ele ruge até elas caírem
+          case 'prep-avalanche':
+            if (t >= b.ate) mudar(b, 'avalanche', 700);
+            return;
+          case 'avalanche':
+            if (t >= b.ate) {
+              b.proximoAtaque = t + 800 + aleatorio() * 500;
+              mudar(b, 'recuperando', 0);
+            }
+            return;
         }
+      };
+      /** A roda de golpes de cada chefe, um depois do outro. */
+      const RODA_DO_CHEFE: Partial<Record<TipoDoBicho, readonly string[]>> = {
+        dragao: ['fogo', 'pisao', 'fogo', 'chamado'],
+        yeti: ['fogo', 'pisao', 'avalanche', 'chamado'],
+        'alpaca-rei': ['cuspe', 'investida', 'cuspe', 'chamado'],
+      };
+      /** As pedras de gelo: uma em cima de cada um da turma e mais duas sorteadas na arena, penduradas no alto até o aviso acabar. */
+      const prepararAvalanche = (b: Bicho, t: number) => {
+        const xs = emPe().map((j) => j.x);
+        xs.push(arena[0] + 40 + aleatorio() * (ARENA_L - 120), arena[0] + 40 + aleatorio() * (ARENA_L - 120));
+        for (const x of xs) atirar(5, dentroDaArena(x, 12), AVALANCHE.h, 0, 0, AVALANCHE.raio, { solta: t + AVALANCHE.aviso });
+        void b;
       };
 
       /** As balas e sementes andam; cada passo é uma pancada do trecho (decidida com a folga, como as outras). */
       const passoDasBalas = (dt: number, t: number) => {
         for (let k = balas.length - 1; k >= 0; k--) {
           const b = balas[k];
+          // a pedra de gelo pendurada espera o aviso acabar, parada e sem pegar ninguém; depois cai
+          if (b.solta !== undefined) {
+            if (t < b.solta) continue;
+            b.solta = undefined;
+            b.vh = -AVALANCHE.vel;
+          }
           const x0 = b.x, h0 = b.h;
           b.x += b.vx * dt;
           b.h += b.vh * dt;
+          if (b.g) b.vh -= b.g * dt;
           const x1 = b.x, h1 = Math.max(0, b.h);
           const r = b.raio;
           pancadas.push({
@@ -675,7 +774,7 @@ export function criarComando({
               Math.max(x0, x1) + r >= p.x - COELHO_L && Math.min(x0, x1) - r <= p.x + COELHO_L && Math.max(h0, h1) + r >= p.h && Math.min(h0, h1) - r <= p.h + COELHO_A,
           });
           if (t >= b.ate || b.h <= 0 || b.x < arena[0] - 30 || b.x > arena[1] + 30) {
-            if (b.tipo === 2 && b.h <= 0) evento_('s', Math.round(b.x));
+            if ((b.tipo === 2 || b.tipo === 4 || b.tipo === 5) && b.h <= 0) evento_('s', Math.round(b.x), b.tipo);
             balas.splice(k, 1);
           }
         }
@@ -916,6 +1015,8 @@ export function criarComando({
           r: gaiolas,
           // o cenário da fase (o índice das fases da Briga) e as armas no chão: [id, arma, x]
           fs: CENARIO_DA_FASE[etapas[etapa]],
+          // a fase (o índice em FASES_DO_COMANDO, 21/11/2026): o site tira dela as tábuas e as gaiolas
+          mp: FASES_DO_COMANDO.indexOf(etapas[etapa]),
           it: itens.map((it) => [it.id, ARMAS.indexOf(it.arma), Math.round(it.x)]),
           // os coelhos: [userId, x, h, lado, ação, ms da ação, mira, vidas, golpes que aguenta, pontos, estado (0 em pé, 1
           // fora, 2 sem vidas), avatar, arma, ms de arma, ms piscando, último tiro aceito]
@@ -997,7 +1098,7 @@ export function criarComando({
         if (venceu && solo && venceuEm !== null && servicos.guardarRecorde) {
           const ms = venceuEm - inicio;
           try {
-            recorde = { ms, ...servicos.guardarRecorde(inscritos[0], escolha, ms, { pontos: jogadores.get(inscritos[0])?.pontos ?? 0 }) };
+            recorde = { ms, ...servicos.guardarRecorde(inscritos[0], variante, ms, { pontos: jogadores.get(inscritos[0])?.pontos ?? 0 }) };
           } catch {
             // sem a conta (o teste): a fase acaba igual
           }
@@ -1132,11 +1233,11 @@ export function criarComando({
 
       const soltar = (j: Jogador, d: Record<string, unknown>): string | null => {
         const k = d.gaiola;
-        if (!numero(k) || !Number.isInteger(k) || k < 0 || k >= REFENS.length) return 'gaiola';
+        if (!numero(k) || !Number.isInteger(k) || k < 0 || k >= refens().length) return 'gaiola';
         if (gaiolas[k]) return 'já aberta';
-        if (Math.abs(j.x - REFENS[k][0]) > PERTO_DA_GAIOLA + 10 || j.h > 30) return 'longe da gaiola';
+        if (Math.abs(j.x - refens()[k][0]) > PERTO_DA_GAIOLA + 10 || j.h > 30) return 'longe da gaiola';
         gaiolas[k] = j.userId;
-        j.arma = REFENS[k][1];
+        j.arma = refens()[k][1];
         j.armaAte = agora() + ARMA_MS;
         j.pontos += 200;
         evento_('l', k, j.userId, ARMAS.indexOf(j.arma));

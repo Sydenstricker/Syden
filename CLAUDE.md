@@ -832,6 +832,119 @@ que assume quem larga, as duas pessoas na MESMA equipe contra robôs (hoje, com 
 
 **A música para na pausa (20/11/2026, lote C da segunda auditoria):** a pausa comum (`usePausaComEsc`) marca em `musicaDosJogos.ts` cada pausa aberta (`marcarPausaDoJogo`), e a música cala enquanto houver uma, sem mexer em nenhum Jogo*.tsx.
 
+**O LOTE D DA SEGUNDA AUDITORIA, ONDA 1 (21/11/2026, "pode seguir para D"):** seis agentes, um por grupo de jogos; ninguém jogou nada disso com gente (os números são chute medido contra os pilotos).
+
+**A BRIGA, O GOLPE DE CADA CHEFE E O ELEMENTO DE CADA FASE (21/11/2026, o lote D da segunda auditoria):** os chefes novos dividiam a rajada; agora cada um tem a sua (`golpe` em `briga-fases.ts`, as duas cópias). O **rei-cogumelo** solta ESPOROS: o círculo pisca debaixo de cada coelho e estoura. A **alpaca-rei** dá o COICE: vira de costas para quem está perto e chuta quem ficou atrás. O **yeti** bate no chão e a ONDA DE CHOQUE corre em anel achatado; quem pula por cima escapa. O **dragão** fica com a rajada. Esporos e onda vêm um ataque sim, um não, pelo número do ataque, sem sorteio novo. Cada fase ganhou UM elemento de cenário, decidido pelo servidor como os bichos (`el` no quadro): o **TRONCO** da floresta (a linha pisca na faixa de alguém e ele rola de borda a borda, derrubando coelho e bicho), o **RODAMOINHO** de areia do deserto (anda pela arena e empurra quem encosta), as **PLACAS DE GELO** da neve (o coelho escorrega; é a física do próprio coelho, só no site, nunca acima da velocidade normal) e as **GRADES DE ESPINHOS** do castelo (piscam e sobem em ciclo, pegam coelho e bicho, nunca o chefe). A horta continua sem nada. Os estados novos entram no FIM das listas. Números chutados, medidos contra o piloto, que vence as cinco fases. Testes: `server/test/minijogos-briga.test.ts`, `web/test/briga.test.ts`.
+
+**O COMANDO, A NEVE, A ALPACA-REI E O FIRMAR (21/11/2026, o lote D):** cada fase tem as suas TÁBUAS e as suas GAIOLAS (`PLATAFORMAS_DA_FASE`, `REFENS_DA_FASE` em `comando/conta.ts`, as duas cópias). As do deserto e da neve têm DEGRAUS, e toda arena tem uma tábua; a floresta ficou com as de sempre. O quadro diz a fase (`mp`). A **TERCEIRA FASE, a NEVE**, vem das folhas da Briga: o macaco, o espinhento e o pombo no ar, com o yeti de chefe e a vida de chefe (a vida sai da onda, não do tipo). A campanha são as três. O **deserto tem o chefe dele, a ALPACA-REI**: o CUSPE (três marcas piscam e as bolas caem nelas em arco; as balas ganharam gravidade) e a INVESTIDA rente ao chão, de que a tábua salva. O **yeti** ganhou a AVALANCHE: pedras penduradas sobre a turma caem depois do aviso. Cada chefe tem a sua roda (`RODA_DO_CHEFE`), e o dragão da floresta não mudou. O **FIRMAR**: segurando Q ou Shift (no toque, o ⌖), o coelho não anda e as setas só miram, com as diagonais para baixo também no chão. Os botões de toque passaram ao grupo comum (`useGrupoDeToque`). O recorde do Solo: a floresta continua 'floresta'; o deserto mudou e vira 'deserto-2', a neve é 'neve' e a campanha 'campanha-3'. O yeti segue de subchefe no deserto: trocar é decisão dele. Números chutados; o piloto vence as três fases em 8 de 8 sementes. Testes: `server/test/minijogos-comando.test.ts`.
+
+**A Corrida dos coelhos, a terceira copa e a pista que mexe (21/11/2026, o lote D):** a **Copa do Milho** com três pistas novas
+por tema, ids novos (as seis de antes não mudaram): a **Fazenda** (`fazenda-1`, girassóis), o **Brejo** (`brejo-1`, terra molhada
+e três lagoas, pista de 28) e o **Vulcão** (`vulcao-1`, cinza, pedras e lagos de lava: `Tema.lago`). **A Fazenda é a pista que
+mexe: as PORTEIRAS** (`porteiras` na definição, `ladoFechado` em `corrida/pista.ts`): cada uma fecha UMA metade da pista de cada
+vez, num ciclo de 240 passos, pelo PASSO da corrida de cada um — no mesmo passo estão iguais em todo computador, e quem vê os
+outros no mesmo passo vê a porteira igual a eles. Sempre há uma metade aberta; a folha fechada é parede naquele passo, quem já
+estava em cima passa, e a toca passa por baixo. A folha que vai fechar pisca no último meio segundo. O piloto automático e os
+robôs miram a metade que estará aberta na chegada (`desvioDaPorteira`). O servidor não conhece as porteiras, como não conhece o
+chão: o fantasma de quem bate só fica mais lento. Pista sem porteira roda a conta de sempre (o tempo do piloto nas seis antigas
+é o mesmo). Medidas em `PISTAS` (server/src/corrida.ts), a copa em `COPAS` dos dois lados, as medalhas em `TEMPO_DO_PILOTO`.
+Equilíbrio chute: ninguém jogou.
+
+**A Regata da toca, a segunda copa (21/11/2026):** três pistas novas, a **Represa** (`represa-1`, lago frio da manhã, slalom e
+rampas; 3 voltas, ~70 s no piloto), a **Corredeira** (`corredeira-1`, correntezas fortes e três pontes) e o **Igarapé**
+(`igarape-1`, água verde no fim da tarde), e a **Copa da correnteza**, só no site como a primeira. Medidas em
+server/src/barco.ts e as medalhas em `barco/medalhas.ts`.
+
+**Os Coelhos a jato, os perigos (21/11/2026):** `perigos` na definição da pista (`jato/pista.ts`), pelo PASSO da corrida: o
+**METEORO** cruza a pista de um lado ao outro e volta (encostar cobra 8 e deixa metade da velocidade) e o **LASER** corta a pista
+inteira, liga 50 de 200 passos e pisca antes (cruzar ligado cobra 12 e deixa 40%), com respiro de 0,6 s. Duas pistas novas com
+eles, os **Asteroides** (`asteroides-1`, 5 meteoros) e a **Avenida neon** (`avenida-1`, 4 lasers), e a **Copa dos perigos** no Solo.
+**As cinco pistas de antes ficaram sem perigo, de propósito**: a física delas não muda e os recordes valem; pôr perigo nelas pede
+id novo (`cidade-2`…) e é decisão dele. O servidor não conhece os perigos (como não conhece a borda); as naves do computador
+não os levam (o caminho delas é calculado na largada). O piloto automático foge do meteoro e espera ou acelera no laser.
+
+**A ESQUADRILHA, o lote D (21/11/2026):** cada fase curta ganhou o SEU BICHO: a MARIPOSA só no pomar (desce dando voltas, dois a dois,
+soltando o pó em leque; 250 pontos) e o MORCEGO só no celeiro (bandos de três mergulhando em V de um lado ao outro, o leque no fundo do
+mergulho; 200). Saem de um sorteio À PARTE (`bichosDaFase` nas duas cópias de `nave-sim.ts`): as ondas de antes são as mesmas, e a horta
+não mudou. A CAMPANHA (`'campanha'`): as três fases numa partida só, com o placar somado pela mesma Ficha; o chefe do meio tem 30 s
+(`CAMPANHA_CHEFE`) e só o último fecha a partida; o chão troca com o trecho (`faseNoPasso`) e o nome da fase aparece num letreiro.
+Recorde do Solo na tabela comum (variante `'campanha'`). Os recordes do pomar e do celeiro continuam nas variantes de antes, apesar dos
+bichos novos (a confirmar com ele).
+
+**A CAÇA, o lote D (21/11/2026):** duas PRAGAS NOVAS no fim da lista do sorteio, nas duas cópias do voo: a TOUPEIRA (da 2ª onda; sai da
+terra no mesmo lugar, olha e se esconde; 175) e a MOSCA (da 3ª; pequena, rápida, em zigue-zague apertado; 200). Contam na onda perfeita
+e na munição (`todasAsPragasDaOnda`). O modo "ATÉ ERRAR TRÊS", só no Solo (`categoria: 'tres-erros'`): as ondas não acabam, sem limite de
+munição e sem rodada bônus; tiro no vazio ou na joaninha é erro, o terceiro acaba a partida, e uma onda inteira sem tiro também. O recorde
+das cinco ondas recomeçou na variante `'pragas'` (a `'bonus'` fica guardada; voltar a ela é decisão dele); o do modo novo é `'tres-erros'`.
+
+**O RINGUE, o lote D (21/11/2026):** o SEGUNDO CIRCUITO, escolhido na largada (`corpo.circuito`, nas duas abas), com três adversários
+novos de folhas da Briga, cada um com um padrão: o DANÇARINO (diabinho; nunca fecha a guarda alta e troca o lado dela no ritmo dele, a
+cada 18 passos: campo `danca`, sem sorteio), o ESPINHO (cacto; o contra-golpe: o soco na guarda é respondido na hora, e ele fecha depois
+de dois) e o CAMPEÃO (alpaca-rei; cadeias de três em que só o último golpe brilha, fintas, e na fúria a de quatro). A regra nas duas
+cópias (`CIRCUITOS`, `adversarioDe`, `novaLuta(semente, circuito)`); o primeiro circuito é o de sempre, passo a passo. O recorde do
+segundo vai à tabela comum (`'ringue'`, `'circuito-2'`, o resultado inteiro no extra); o do primeiro continua em `ringue_recordes`.
+
+**O PINBALL, o lote D (21/11/2026):** o MODO FINAL: cumpridas as seis missões do ciclo (cada uma pelo menos uma vez, em qualquer ordem e
+bola), por 30 s com bola em jogo tudo vale ×3, a toca acende e a bola fica salva; as missões param, e ele acaba no prazo ou quando a bola
+cai, com o ciclo recomeçando do zero (`feitas`, `final`, `comecarFinal`/`acabarFinal` nas duas cópias). Na tela, o aviso, e no lugar da
+missão a coroa e a barra do prazo. O piloto automático não chega a ele (nunca cumpre as seis); a partida continua acabando pelas bolas.
+
+**AS LENDAS, OS NÍVEIS DE DESAFIO E AS PEÇAS COM EFEITO (21/11/2026, lote D da segunda auditoria):** quem começou escolhe o DESAFIO na tela das classes (no Solo, a pessoa; `corpo.desafio` também vale na largada), de 0 a 3 e somados: inimigos mais fortes (`FORCA_DO_DESAFIO`), a fogueira e o levantar depois da luta curando menos, e todo inimigo se curando no fim da rodada (`REGENERA_NO_DESAFIO`). O chefe enchendo o fôlego mais vezes foi tentado para o 3 e deixou MAIS FÁCIL (ele perde a vez preparando). Medido com a turma de robôs, 300 sementes: 79%, 60%, 47% e 23%. O recorde do Solo é por nível (variante `desafio-N`; o 0 continua na de sempre). Uma peça em cinco traz EFEITO (`EFEITO_DA_PECA`): a arma de seiva cura quem bate, a armadura de reflexo devolve parte do golpe (o acontecimento 'reflexo'), o amuleto de fôlego dá uma energia a mais por rodada; ela vale metade no número, para a turma de robôs vencer como antes (com o número cheio, 86–89%). O golpe final do lote C ficou como estava. Testes: `server/test/minijogos-lendas.test.ts`.
+
+**OS BICHOS, A GRUTA E A LIGA DA TOCA (21/11/2026, lote D):** a GRUTA (`MAPAS.gruta`, `escuro`, desenhada por código: chão de pedra, fungos que brilham, lago escuro) fica pela borda da direita da Serra, com o mato de 26 a 33, três bichos que só moram lá (Luzeta, Cristalim, Lodim, as folhas da Briga recoloridas, e as formas crescidas Luzerna e Cristalão), Remi e Zaya no caminho e a porta da LIGA (`liga` no mapa, `LIGA` nas regras). A Liga só abre com a escada inteira: quatro lutas SEGUIDAS (Juno, Kai, Ariel e Sasha, níveis 34 a 41), sem descanso no meio (o "continuar" começa a próxima com a vida que sobrou; o chá vale dentro da luta); perder volta para casa e a Liga recomeça. A Liga inteira dá 500 moedas e conta em `ligas` na aventura (já no "Levar seus dados"). Os nomes são próprios, iguais em todo idioma. Os níveis da Liga são chute: ninguém jogou com gente. Testes: `server/test/minijogos-bichos.test.ts`.
+
+**A ARENA, A MARCA DE CADA ESPÉCIE E AS ONDAS (21/11/2026, lote D):** o especial continua com a forma do elemento, e o bicho da frente traz a MARCA dele (`MARCA_DA_ESPECIE` nas duas cópias de `conta.ts`): forte (mais dano), seiva (cura quem usa), casca (leva menos dano por 3 s), pressa (o rápido do suprimento) e fôlego (o especial volta com uma parte). Só o dano e o que acontece a quem usa mudam, porque a forma, o alcance e o raio são o que a tela dos outros desenha; o servidor aplica, e a figura vai no botão do especial. AS ONDAS, só no Solo (`objetivo: 'ondas'`): a pessoa sozinha ou com dois aliados contra ondas de robôs (`onda(n)`: 1, 1, 2, 2, 3, 3, 4…, fáceis, médios e difíceis, duas vidas da 8ª em diante), com 3 s de pausa e um pouco de vida entre elas; o recorde é a ONDA ALCANÇADA (tabela comum, `ondas` ou `ondas:3x3`), contada pelo servidor. O piloto, com 200 ms, chegou à 6ª em 5 minutos. Testes: `server/test/minijogos-bichos-arena.test.ts`.
+
+**A MASMORRA, O LOTE D (21/11/2026):** o chefe da Mina dos Postes passou a ser o **GOLEM-REI** (a folha do golem da Briga em
+dobro), de **COURAÇA**: a pá, o vaso e a bomba só tinem até o **GANCHO** pegá-lo; então ele fica atordoado 2,6 s, sem couraça (a pá
+tira 2), e por mais 1,8 s o gancho não o pega de novo. O servidor confere o gancho como o golpe, pela linha da corda contra o
+passado dele (`fimDoGancho`/`ganchoPega`, nas duas cópias das regras). Dois bichos novos, no fim de `TIPOS`: a **ABELHA** (voa por
+cima da água e mergulha na faixa marcada) e o **FANTASMA** (some e aparece; sumido, nada o acerta e ele não acerta ninguém). A mina
+ganhou a sua **sala secreta** (a parede rachada da entrada, com o coração grande). Os **ACHADOS** (baús e segredos, `achadosDa`,
+contados pelo servidor) aparecem no fim. O **HEROICO** (vida ×1,5, +1 de dano, 3 corações), na largada e na sala, vai como
+`toca-heroico`/`mina-heroico`, com o recorde do Solo à parte (`heroico`, `mina-heroico`). Números chutados contra o piloto.
+
+**O CHEFE, O LOTE D (21/11/2026):** a **ARENA QUE MUDA**: na 2ª e na 3ª fase de cada chefe o chão abre buracos (2 por fase; no
+Solo, 1), marcados 2 s antes; quem está dentro quando abre cai, e aberto ninguém pisa nele (`foraDosBuracos`, nas duas cópias de
+`chefe/conta.ts`, no site ao andar e no servidor ao receber a posição). Na maratona o yeti começa com o chão inteiro. O **3º
+CHEFE, A ALPACA-REI** (folha da Briga), na largada: no lugar da investida, o **LEQUE DE VENTO**, 5 faixas marcadas em ~120° na
+direção de alguém (marca `'faixa'`, no fim de MARCAS); na última fase, dois leques de 7, o segundo meio passo girado. Recorde do
+Solo em `alpaca` e `alpaca-dificil`. Números chutados contra o piloto.
+
+**O Pulo do coelho, o lote D (21/11/2026):** três fases com um ELEMENTO NOVO cada, e a **Copa dos Elementos** (`copa-dos-elementos`).
+O **Vento** (`vento-1`, nas copas) tem as CORRENTES DE AR que sobem (`Fase.ventos`): no ar, dentro delas, o coelho sobe até 220/s, e é
+assim que se atravessa o vão largo e se chega ao galho alto. A **Caverna** (`caverna-1`, na toca) tem as PEDRAS QUE RACHAM
+(`Bloco.Racha`): pisada, a pedra treme meio segundo e cai, e volta 3 s depois; o estado é de cada coelho (`Coelho.racha`, por isso
+`copiarCoelho`), e cair devolve todas. A **Cachoeira** (`cachoeira-1`, no prado) tem as TÁBUAS QUE PISCAM (`PiscaA`/`PiscaB`): a clara e a
+azul se revezam a cada 2 s pelo passo da corrida, piscando antes de sumir. Os três só seguram por cima, e nenhum muda o que o servidor
+confere (a corrente cabe no y da mola): só as medidas em `FASES_DO_PULO` e as cenouras. As seis fases de antes não mudaram. O piloto passa
+nas três (medalhas sobre 1788, 1827 e 2429 passos). A corda (o cipó que balança) ficou de fora: pediria um caso novo na conferência.
+
+**A Gincana, o lote D (21/11/2026):** dois percursos novos só com os trechos de sempre, o **lago-4** (a plataforma que vai e volta logo na
+saída, os espinhos estreitos, o varredor de quatro braços e os blocos que caem, os canhões antes da rampa) e o **cume-5** (sobe sempre:
+duas molas, duas rampas, a esteira contra, os varredores em par), e a **segunda sobrevivência, o campo-2** (7 × 7, o braço mais comprido).
+O de quatro braços foi medido e não deu (o piloto do teste caía em 4 s). Nas Rodadas, a final sorteia uma das duas. Na escolha, "⏱1" e "⏱2".
+
+**O Minigolfe 3D, a Trilha (21/11/2026):** o terceiro percurso, seis buracos com as peças do Minigolf Kit que faltavam: a BIFURCAÇÃO (a
+mureta do meio, e o "T" que abre dois caminhos em volta de um vão e os junta de novo), a CRISTA (a pista afunda e volta), os CANTOS DE
+MORRO (o canto sobe e devolve a bola), a CANALETA (a pista côncava; a ponta entra lisa, sem degrau) e o túnel. Escolhida na largada (⛰️),
+com o recorde por percurso. A forma de cada peça foi medida no modelo (a vista de cima rasterizada) e o piloto acerta todos os buracos em
+até o par + 1. **Defeito achado:** os modelos do túnel e da rampa baixa nunca tinham ido para `web/public/golfe3d/`, e os buracos 2 e 5
+do Parque não abriam o 3D; foram copiados, e o túnel passou a ser o estreito (o largo tem pilares por dentro que a física não tem). Um
+teste confere que todo modelo usado num percurso está lá.
+
+**O Planador, o lote D (21/11/2026):** mais quatro desafios: a **asa 5** (larga baixa no cânion; só as três térmicas em fila seguram a
+altura dos anéis do meio), a **mochila 4** (zigue-zague alto na horta, o vento que vira) e a **mochila 5** (vento forte no cânion, a
+plataforma menor de todas), e o **salto 4** (o mais alto, sete anéis, vento de través). A lista se ordena por veículo e nível. O piloto
+passa em todos com prata. Chute medido contra o piloto.
+
+**O Rolê, o segundo conjunto de objetivos (21/11/2026):** escolhido na largada (no Solo e na sala), nas duas pistas: outra palavra no ar,
+também nossa, **PULO**, outro esconderijo da fita, metas maiores (20 000 pontos, combo de 5 000) e duas manobras, **pousar um 540** e **um
+manual de 3 s** (`Skatista.maiorGiro`/`maiorManual`, anotados em `somar`). Os saltos com nome do segundo conjunto ficam vazios: os pontos são
+os mesmos nos dois conjuntos, e o recorde de pontos também. O servidor refaz a sessão no conjunto dela (`refazer(e, pista, conjunto)`), e o
+mais de objetivos do segundo mora à parte na tabela comum (`objetivos2-<pista>`). Os botões da escolha são as próprias palavras (★ TOCA,
+★★ PULO). As letras da praça não foram conferidas uma a uma: conferir jogando.
+
 **OS JOGOS NOVOS DE 16/11/2026 (pedido dele: "implemente esses jogos"; feitos por agentes, um por jogo, com arte só do que já
 existia no projeto). Todos fora das conquistas da turma até ele decidir; em nenhum alguém jogou com gente (o equilíbrio é chute
 medido contra o piloto automático); os Coletivos sem e2e com o LiveKit, só o teste do servidor.**

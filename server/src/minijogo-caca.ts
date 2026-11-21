@@ -20,6 +20,13 @@
  * RODADA BÔNUS entre a 3ª e a 4ª onda (cenouras lançadas para cima, sem limite de munição). O bônus muda a escala dos pontos,
  * então o recorde do Solo passou para a tabela comum (jogo 'caca', variante VARIANTE_DO_RECORDE); o de antes (caca_recordes)
  * fica guardado, e não se compara com o novo.
+ *
+ * O LOTE D (21/11/2026): as PRAGAS NOVAS (a mosca e a toupeira, caca-voo.ts) mudam a escala dos pontos de novo, e o recorde da
+ * partida de cinco ondas passou à variante VARIANTE_DO_RECORDE ('pragas'; a 'bonus' de 20/11 fica guardada, sem comparar). E o
+ * modo "ATÉ ERRAR TRÊS", só no Solo (`corpo.categoria === MODO_TRES_ERROS`): as ondas não acabam (cada uma mais cheia e mais rápida,
+ * a mesma conta), sem limite de munição e sem rodada bônus; cada tiro que não acerta praga nenhuma (ou acerta a joaninha) é um
+ * ERRO, e o terceiro acaba a partida. Uma onda inteira sem nenhum tiro também acaba (ninguém fica parado com a partida aberta).
+ * Recorde à parte (variante MODO_TRES_ERROS).
  */
 import { AMIGO_PENA, BONUS_DEPOIS_DA_ONDA, BONUS_PERFEITA, ONDAS, ehAmigo, ehPraga, fimDaOnda, multiplicador, municaoDaOnda, pontosDoAcerto, pragaAtingida, sortearBonus, sortearOnda, type Praga, LARGURA, ALTURA } from './caca-voo.js';
 import * as db from './db.js';
@@ -34,7 +41,10 @@ export const FOLGA_FUTURO_MS = 400;
 export const ATRASO_MAX_MS = 800;
 export const INTERVALO_MIN_MS = 120;
 /** O recorde do Solo na tabela comum desde a rodada bônus (20/11/2026). */
-export const VARIANTE_DO_RECORDE = 'bonus';
+export const VARIANTE_DO_RECORDE = 'pragas';
+/** O modo "até errar três" (21/11/2026): a categoria que o pede, e quantos erros acabam a partida. */
+export const MODO_TRES_ERROS = 'tres-erros';
+export const ERROS_DO_MODO = 3;
 /** A munição na rodada bônus: sem limite (o site mostra o infinito). */
 export const SEM_LIMITE = -1;
 
@@ -53,6 +63,9 @@ interface Cacador {
   perfeitas: number;
   /** Quantas vezes acertou o bicho amigo (20/11/2026). */
   amigos: number;
+  /** O "até errar três" (21/11/2026): os erros da partida, e os tiros da onda de agora. */
+  erros: number;
+  tirosDaOnda: number;
 }
 
 export const caca: Definicao = criarCaca();
@@ -60,9 +73,12 @@ export const caca: Definicao = criarCaca();
 export function criarCaca({ agora = Date.now, aleatorio = Math.random }: { agora?: () => number; aleatorio?: () => number } = {}): Definicao {
   return {
     minimo: 2,
-    comecar(ctx, { naSala }) {
+    comecar(ctx, { naSala, corpo }) {
       const inscritos = [...naSala];
       const solo = inscritos.length === 1;
+      /** O "até errar três" (21/11/2026): só no Solo. */
+      const tresErros = solo && corpo?.categoria === MODO_TRES_ERROS;
+      const variante = tresErros ? MODO_TRES_ERROS : VARIANTE_DO_RECORDE;
       const evento = `caca-${ctx.comunidade ?? 0}-${agora()}`;
       let onda = 1;
       /** A rodada bônus (20/11/2026), entre a onda BONUS_DEPOIS_DA_ONDA e a seguinte. */
@@ -71,14 +87,14 @@ export function criarCaca({ agora = Date.now, aleatorio = Math.random }: { agora
       let inicio = 0;
       let pragas: Praga[] = [];
       const cacadores = new Map<number, Cacador>(
-        inscritos.map((id) => [id, { pontos: 0, abatidas: new Set(), municao: 0, daOnda: 0, ultimoTiro: -Infinity, acertos: 0, combo: 0, perfeita: false, perfeitas: 0, amigos: 0 }]),
+        inscritos.map((id) => [id, { pontos: 0, abatidas: new Set(), municao: 0, daOnda: 0, ultimoTiro: -Infinity, acertos: 0, combo: 0, perfeita: false, perfeitas: 0, amigos: 0, erros: 0, tirosDaOnda: 0 }]),
       );
       let totalDePragas = 0;
       /** Quem estava na sala no fim de TODAS as ondas: só eles são "a turma" do pódio. */
       let ficaram: Set<number> | null = null;
       /** No Solo: se a partida virou o recorde da pessoa, e o recorde de antes (para a tela comparar). */
       let recordeNovo = false;
-      const recordeAntes = solo ? (db.recordeDoSolo(inscritos[0], 'caca', VARIANTE_DO_RECORDE)?.valor ?? null) : null;
+      const recordeAntes = solo ? (db.recordeDoSolo(inscritos[0], 'caca', variante)?.valor ?? null) : null;
       /** Quantas pragas de verdade (sem o amigo) a onda tem, e quantas dessas cada um abateu. */
       const nDePragas = () => pragas.filter(ehPraga).length;
       const pragasAbatidas = (c: Cacador) => [...c.abatidas].filter((i) => pragas[i] && ehPraga(pragas[i])).length;
@@ -94,8 +110,9 @@ export function criarCaca({ agora = Date.now, aleatorio = Math.random }: { agora
         if (!bonus) totalDePragas += nDePragas();
         for (const c of cacadores.values()) {
           c.abatidas = new Set();
-          c.municao = bonus ? SEM_LIMITE : municaoDaOnda(onda);
+          c.municao = bonus || tresErros ? SEM_LIMITE : municaoDaOnda(onda);
           c.daOnda = 0;
+          c.tirosDaOnda = 0;
           c.perfeita = false;
         }
         ctx.agendar(PREPARO_MS, jogar);
@@ -124,9 +141,13 @@ export function criarCaca({ agora = Date.now, aleatorio = Math.random }: { agora
         }
         const aqui = new Set(presentes());
         ficaram = new Set((ficaram ? [...ficaram] : inscritos).filter((id) => aqui.has(id)));
-        if (!bonus && onda >= ONDAS) return terminar();
+        // o "até errar três": as ondas não acabam; uma onda inteira sem tiro nenhum acaba a partida
+        if (tresErros) {
+          const c = cacadores.get(inscritos[0])!;
+          if (c.tirosDaOnda === 0 || c.erros >= ERROS_DO_MODO) return terminar();
+        } else if (!bonus && onda >= ONDAS) return terminar();
         fase = 'placar';
-        const proxima = !bonus && onda === BONUS_DEPOIS_DA_ONDA ? 'bonus' : 'onda';
+        const proxima = !bonus && !tresErros && onda === BONUS_DEPOIS_DA_ONDA ? 'bonus' : 'onda';
         ctx.agendar(PLACAR_ENTRE_MS, () => {
           if (proxima === 'bonus') bonus = true;
           else {
@@ -152,11 +173,13 @@ export function criarCaca({ agora = Date.now, aleatorio = Math.random }: { agora
       };
 
       const terminar = () => {
+        if (fase === 'fim') return;
         fase = 'fim';
         const turma = ficaram ?? new Set<number>();
         if (solo) {
           const c = cacadores.get(inscritos[0])!;
-          if (turma.has(inscritos[0]) && c.pontos > 0) recordeNovo = db.guardarRecordeDoSolo(inscritos[0], 'caca', VARIANTE_DO_RECORDE, c.pontos, false, { acertos: c.acertos, perfeitas: c.perfeitas }).novo;
+          if (turma.has(inscritos[0]) && c.pontos > 0)
+            recordeNovo = db.guardarRecordeDoSolo(inscritos[0], 'caca', variante, c.pontos, false, tresErros ? { acertos: c.acertos, ondas: onda } : { acertos: c.acertos, perfeitas: c.perfeitas }).novo;
         } else if (turma.size >= 2) {
           for (const l of placar()) {
             if (l.posicao === null || l.posicao > 3 || l.pontos <= 0) continue;
@@ -195,10 +218,11 @@ export function criarCaca({ agora = Date.now, aleatorio = Math.random }: { agora
           return {
             fase,
             onda,
-            ondas: ONDAS,
-            // os nomes de sempre, para o topo da estante dizer "Rodada 2 de 5" como nos outros jogos
-            rodada: onda,
-            rodadas: ONDAS,
+            ondas: tresErros ? null : ONDAS,
+            // os nomes de sempre, para o topo da estante dizer "Rodada 2 de 5" como nos outros jogos (no "até errar três", sem fim)
+            ...(tresErros ? {} : { rodada: onda, rodadas: ONDAS }),
+            /** O "até errar três" (21/11/2026): a categoria (o "Jogar de novo" a manda de volta), e os erros que sobram. */
+            ...(tresErros ? { categoria: MODO_TRES_ERROS, errosRestantes: Math.max(0, ERROS_DO_MODO - (meu?.erros ?? 0)) } : {}),
             /** As pragas da onda (as trajetórias): o site as desenha com a mesma conta do servidor (caca-voo.ts). */
             pragas: fase === 'preparando' || fase === 'jogando' ? pragas : [],
             duracaoMs: fimDaOnda(pragas),
@@ -225,9 +249,10 @@ export function criarCaca({ agora = Date.now, aleatorio = Math.random }: { agora
           const passou = agoraMs - inicio;
           if (ms > passou + FOLGA_FUTURO_MS || ms < passou - ATRASO_MAX_MS) return 'Tiro inválido.';
           if (agoraMs - c.ultimoTiro < INTERVALO_MIN_MS) return 'Tiro inválido.';
-          if (!bonus && c.municao <= 0) return 'Acabou a munição desta onda.';
+          if (!bonus && !tresErros && c.municao <= 0) return 'Acabou a munição desta onda.';
           c.ultimoTiro = agoraMs;
-          if (!bonus) c.municao--;
+          c.tirosDaOnda++;
+          if (!bonus && !tresErros) c.municao--;
           const i = pragaAtingida(pragas, c.abatidas, x, y, ms);
           if (bonus) {
             // a rodada bônus: cada cenoura vale os pontos dela, sem combo, e errar não custa nada
@@ -245,6 +270,7 @@ export function criarCaca({ agora = Date.now, aleatorio = Math.random }: { agora
             const tira = Math.min(AMIGO_PENA, c.pontos);
             c.pontos -= tira;
             c.daOnda -= tira;
+            if (tresErros) c.erros++;
           } else if (i >= 0) {
             c.abatidas.add(i);
             c.combo++;
@@ -252,7 +278,17 @@ export function criarCaca({ agora = Date.now, aleatorio = Math.random }: { agora
             c.pontos += p;
             c.daOnda += p;
             c.acertos++;
-          } else c.combo = 0;
+          } else {
+            c.combo = 0;
+            if (tresErros) c.erros++;
+          }
+          // o terceiro erro acaba a partida na hora
+          if (tresErros && c.erros >= ERROS_DO_MODO) {
+            ficaram = new Set(presentes());
+            terminar();
+            ctx.avisar();
+            return null;
+          }
           conferir();
           ctx.avisar();
           return null;

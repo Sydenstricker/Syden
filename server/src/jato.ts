@@ -38,6 +38,16 @@ export const PISTAS_DO_JATO: Record<
     voltas: 4, comprimento: 3232, linha: [260, 200], largada: [197.7, 277.1], meiaLargura: 36,
     marcos: [[545, 152], [803, 275], [760, 503], [480, 480], [438, 705], [721, 709], [716, 892], [426, 907], [191, 747], [143, 462]],
   },
+  // as duas com PERIGOS (21/11/2026): os meteoros e os lasers andam pelo passo no site; o servidor não os conhece (como não
+  // conhece a borda), e quem leva um só fica mais lento
+  'asteroides-1': {
+    voltas: 3, comprimento: 2804, linha: [200, 200], largada: [130.7, 269.3], meiaLargura: 38,
+    marcos: [[447, 141], [698, 173], [888, 332], [819, 554], [844, 786], [635, 892], [455, 745], [271, 820], [119, 632], [175, 405]],
+  },
+  'avenida-1': {
+    voltas: 3, comprimento: 3337, linha: [220, 170], largada: [169.7, 253.4], meiaLargura: 38,
+    marcos: [[518, 140], [813, 189], [886, 467], [641, 520], [536, 702], [818, 786], [686, 928], [384, 904], [149, 752], [134, 454]],
+  },
 };
 
 export const ANDAR_POR_VOLTA = 0.7;

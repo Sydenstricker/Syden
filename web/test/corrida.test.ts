@@ -331,3 +331,44 @@ test('o mestre: mais rápido que o difícil e que o piloto automático, e o empu
   andarRobo(d, pista, 5);
   assert.equal(d.kart.classe, 1);
 });
+
+test('a Fazenda (21/11/2026): a porteira fechada é parede pelo passo, sempre deixa uma metade aberta, e os robôs a passam', async () => {
+  const { FAZENDA, ladoFechado, porteiraEm, CICLO_DA_PORTEIRA } = await import('../src/corrida/pista');
+  const p = montarPista(FAZENDA);
+  assert.equal(p.porteiras?.length, 2);
+  // a mesma porteira, no mesmo passo, é a mesma em qualquer computador; e nunca as duas folhas fechadas
+  for (const por of p.porteiras!) {
+    let fechados = 0;
+    for (let n = 0; n < CICLO_DA_PORTEIRA; n++) {
+      const l = ladoFechado(por, n);
+      if (l !== 0) fechados++;
+      assert.equal(l, ladoFechado(por, n + 7 * CICLO_DA_PORTEIRA), 'o ciclo se repete');
+    }
+    assert.ok(fechados > CICLO_DA_PORTEIRA * 0.8, 'quase sempre uma folha fechada');
+    // fechada de um lado, aberta do outro
+    const n = [...Array(CICLO_DA_PORTEIRA).keys()].find((i) => ladoFechado(por, i) === 1)!;
+    const nx = -por.ty, ny = por.tx;
+    assert.ok(porteiraEm(p, por.x + nx * 15, por.y + ny * 15, n), 'a folha +1 fechada');
+    assert.equal(porteiraEm(p, por.x - nx * 15, por.y - ny * 15, n), null, 'a outra aberta');
+  }
+  // um kart mirando o lado fechado bate e para; do lado aberto passa
+  const por = p.porteiras![0];
+  const n0 = [...Array(CICLO_DA_PORTEIRA).keys()].find((i) => ladoFechado(por, i) === 1 && ladoFechado(por, i + 60) === 1)!;
+  const contra = (lado: number) => {
+    const k = novoKart(p);
+    const nx = -por.ty, ny = por.tx;
+    Object.assign(k, { x: por.x - por.tx * 30 + nx * 15 * lado, y: por.y - por.ty * 30 + ny * 15 * lado, angulo: Math.atan2(por.ty, por.tx), rumo: Math.atan2(por.ty, por.tx), v: 140, passos: n0 });
+    for (let i = 0; i < 40; i++) passo(k, { acelera: true, freia: false, vira: 0, derrapa: false }, p);
+    return (k.x - por.x) * por.tx + (k.y - por.y) * por.ty;
+  };
+  assert.ok(contra(1) < 0, 'a folha fechada segura o kart');
+  assert.ok(contra(-1) > 20, 'pelo lado aberto, passa');
+  // o piloto automático sem desviar perde tempo nas porteiras; desviando, quase não bate
+  const { andarRobo, criarRobos, largadaDoRobo } = await import('../src/corrida/robos');
+  for (const dificuldade of ['facil', 'dificil'] as const) {
+    const robos = criarRobos(p, 7, dificuldade);
+    for (const r of robos) largadaDoRobo(r, dificuldade, 180);
+    for (let n = 0; n < 60 * 60 * 6 && robos.some((r) => !r.kart.terminou); n++) for (const r of robos) andarRobo(r, p);
+    for (const r of robos) assert.ok(r.kart.terminou, `${dificuldade}: ${r.nome} não terminou a Fazenda`);
+  }
+});

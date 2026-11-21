@@ -1,4 +1,4 @@
-import { naLinha, pontoMaisPerto, pontoNaLinha, type PistaDoJato } from './pista';
+import { DANO_DO_PERIGO, ladoDoMeteoro, laserLigado, naLinha, perigoQueAtinge, pontoMaisPerto, pontoNaLinha, SOBRA_DO_PERIGO, type Perigo, type PistaDoJato } from './pista';
 
 /**
  * A FÍSICA DOS COELHOS A JATO (05/11/2026): a corrida antigravidade dos 16 bits, só a mecânica. Bem mais rápida que o kart
@@ -100,6 +100,9 @@ export interface Nave {
   turboAntes: boolean;
   /** Quanto caiu (para o desenho: a nave encolhe e escurece lá embaixo). */
   queda: number;
+  /** O perigo da pista que a pegou neste passo (21/11/2026), e os segundos desde o último (o mesmo perigo não pega duas vezes seguidas). */
+  atingido: Perigo | null;
+  desdePerigo: number;
 }
 
 export function novaNave(p: PistaDoJato): Nave {
@@ -107,7 +110,7 @@ export function novaNave(p: PistaDoJato): Nave {
   return {
     x, y, angulo, rumo: angulo, v: 0, energia: ENERGIA_MAXIMA, turbo: 0, banco: 0, indice, volta: 0, meio: false, voltas: [], passos: 0,
     terminou: false, explodiu: false, caindo: 0, resgate: 0, de: null, para: null, seguro: p.la[indice], bateu: false, encostado: false, desdeBatida: RESPIRO,
-    placa: false, recarga: false, usouTurbo: false, fezVolta: false, turboAntes: false, queda: 0,
+    placa: false, recarga: false, usouTurbo: false, fezVolta: false, turboAntes: false, queda: 0, atingido: null, desdePerigo: RESPIRO,
   };
 }
 
@@ -128,6 +131,7 @@ export function passo(n: Nave, c: ComandosDoJato, p: PistaDoJato): void {
   n.recarga = false;
   n.usouTurbo = false;
   n.fezVolta = false;
+  n.atingido = null;
   if (n.explodiu) {
     n.v = 0;
     return;
@@ -251,6 +255,18 @@ export function passo(n: Nave, c: ComandosDoJato, p: PistaDoJato): void {
       n.seguro = l.s;
     }
   }
+  // OS PERIGOS DA PISTA (21/11/2026; só nas pistas que os têm): o meteoro e o laser cobram energia e freiam, pelo passo
+  if (p.def.perigos?.length && n.caindo === 0) {
+    n.desdePerigo += dt;
+    const pe = n.desdePerigo >= RESPIRO ? perigoQueAtinge(p, aqui.s, l.s, l.lado, n.passos) : null;
+    if (pe) {
+      n.energia -= DANO_DO_PERIGO[pe.tipo];
+      n.v *= SOBRA_DO_PERIGO[pe.tipo];
+      n.turbo = 0;
+      n.desdePerigo = 0;
+      n.atingido = pe;
+    }
+  }
   if (n.energia <= 0) {
     n.energia = 0;
     n.explodiu = true;
@@ -297,18 +313,45 @@ export function pilotoAutomatico(n: Nave, p: PistaDoJato): ComandosDoJato {
   const aqui = naLinha(p, n.x, n.y, n.indice);
   // o rumo que se quer: o da pista um pouco à frente, puxado de volta para o meio pelo quanto a nave está de lado
   const q = pontoNaLinha(p, aqui.s + 20 + n.v * 0.12);
-  const desejado = Math.atan2(q.dy, q.dx) - Math.max(-0.6, Math.min(0.6, aqui.lado * 0.025));
+  // OS PERIGOS (21/11/2026, só nas pistas que os têm): foge para o lado de onde o meteoro não estará, e tira o pé antes do
+  // laser que estará ligado na chegada
+  const desvio = p.def.perigos?.length ? desvioDosPerigos(n, p, aqui.s) : null;
+  const alvoLado = desvio?.lado ?? 0;
+  const desejado = Math.atan2(q.dy, q.dx) - Math.max(-0.6, Math.min(0.6, (aqui.lado - alvoLado) * 0.025));
   const dif = normal(desejado - n.rumo);
   // a curva mais fechada que vem pela frente decide a velocidade que dá para levar
   let kmax = 0;
   for (let k = 0; k < 16 + n.v / 7; k += 2) kmax = Math.max(kmax, p.curva[(n.indice + k) % total]);
   const freio = kmax * n.v > GIRO * 0.95;
   const limite = kmax > 0 ? (freio ? GIRO_COM_FREIO : GIRO) / kmax : VTURBO;
+  const espera = desvio?.espera === true;
   return {
-    acelera: n.v < limite * 0.92,
-    freia: n.v > limite * 1.15,
+    acelera: (n.v < limite * 0.92 || desvio?.corre === true) && !espera,
+    freia: n.v > limite * 1.15 || espera,
     vira: Math.max(-1, Math.min(1, dif / 0.08)),
-    turbo: kmax < 0.004 && n.energia > 45 && n.v > 220,
+    turbo: ((kmax < 0.004 && n.v > 220) || desvio?.corre === true) && n.energia > 45 && !espera,
     freioDeAr: freio && Math.abs(dif) > 0.02,
   };
+}
+
+/**
+ * O que o piloto automático faz por causa dos perigos à frente (21/11/2026): o lado para onde fugir do meteoro (do lado oposto
+ * ao de onde ele estará quando a nave chegar), e se tira o pé antes de um laser que estará ligado na chegada.
+ */
+function desvioDosPerigos(n: Nave, p: PistaDoJato, s: number): { lado: number | null; espera: boolean; corre: boolean } {
+  let lado: number | null = null, espera = false, corre = false;
+  for (const pe of p.def.perigos ?? []) {
+    const ds = (((pe.f * p.comprimento - s) % p.comprimento) + p.comprimento) % p.comprimento;
+    if (ds > 160) continue;
+    const chega = n.passos + Math.round((ds / Math.max(80, n.v)) * 60);
+    if (pe.tipo === 'meteoro') {
+      const m = ladoDoMeteoro(pe, p.def.meiaLargura, chega);
+      lado = (m > 0 ? -1 : 1) * p.def.meiaLargura * 0.55;
+    } else if (ds < 110 && (laserLigado(pe, chega) || laserLigado(pe, chega + 4) || laserLigado(pe, chega - 4))) {
+      // ligado agora: espera desligar; desligado agora (vai ligar na chegada): passa antes, no turbo se der
+      if (laserLigado(pe, n.passos)) espera = true;
+      else corre = true;
+    }
+  }
+  return { lado, espera, corre };
 }

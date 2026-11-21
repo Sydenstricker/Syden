@@ -15,12 +15,14 @@ import { ACOES, BOMBA, H, W, type AcaoDoCoelho } from './chefe/conta';
 import {
   desenharArena,
   desenharBomba,
+  desenharBuraco,
   desenharChefe,
   desenharEfeito,
   desenharMarcaNoChao,
   bolaDeNeve,
   desenharNoAr,
   monteDeNeve,
+  monteDeAreia,
   desenharReviver,
   desenharTorraoNoChao,
   desenharVidaDoChefe,
@@ -122,7 +124,15 @@ export function JogoChefe({
     const { recorde, melhorAntes } = estado as { recorde?: { ms: number; antes: number | null; novo: boolean } | null; melhorAntes?: number | null };
     return (
       <div className="briga chefe">
-        <p className="briga-desfecho">{estado.venceu ? ((estado as { chefe?: string }).chefe === 'yeti' ? t('O yeti caiu!') : t('A toupeira-rei caiu!')) : t('A turma caiu.')}</p>
+        <p className="briga-desfecho">
+          {estado.venceu
+            ? (estado as { chefe?: string }).chefe === 'yeti'
+              ? t('O yeti caiu!')
+              : (estado as { chefe?: string }).chefe === 'alpaca'
+                ? t('A alpaca-rei caiu!')
+                : t('A toupeira-rei caiu!')
+            : t('A turma caiu.')}
+        </p>
         <p className="chefe-dano-final">{t('Dano da turma: {n}', { n: estado.danoDaTurma })}</p>
         {/* O RECORDE DO SOLO (19/11/2026): o tempo até a toupeira cair, contado pelo servidor */}
         {recorde && (
@@ -188,7 +198,7 @@ function Palco({
     if (!c || !g || !socket) return;
     g.imageSmoothingEnabled = false;
     const folha = new Image();
-    carregarFolhas(['yeti']);
+    carregarFolhas(['yeti', 'alpaca-rei']);
     folha.src = `${import.meta.env.BASE_URL}briga/coelho.png`;
     const enviar = (dados: unknown) =>
       solo ? socket.emit('minijogo-solo:tempo-real', { dados }) : socket.emit('minijogo:tempo-real', { channelId, dados });
@@ -259,6 +269,8 @@ function Palco({
       g.translate(imp.dx, imp.dy);
       desenharArena(g);
       const coisas0: { y: number; desenhar: () => void }[] = [];
+      // a arena que muda (21/11/2026): os buracos, por baixo de tudo
+      for (const b of v.buracos) desenharBuraco(g, b, tempo);
       for (const m of v.marcas) desenharMarcaNoChao(g, m, tempo);
       for (const tc of v.noChao) desenharTorraoNoChao(g, tc.x, tc.y, tc.resta, tempo);
       for (const b of v.bolas) coisas0.push({ y: b.y, desenhar: () => bolaDeNeve(g, b.x, b.y, tempo) });
@@ -267,7 +279,15 @@ function Palco({
       const coisas: { y: number; desenhar: () => void }[] = [...coisas0];
       if (v.chefe) {
         const ch = v.chefe;
-        coisas.push({ y: ch.y, desenhar: () => (ch.yeti ? desenharYeti(g, ch, tempo, piscandoChefe.ate > agora) : desenharChefe(g, ch, tempo, piscandoChefe.ate > agora)) });
+        coisas.push({
+          y: ch.y,
+          desenhar: () =>
+            ch.yeti
+              ? desenharYeti(g, ch, tempo, piscandoChefe.ate > agora)
+              : ch.alpaca
+                ? desenharAlpaca(g, ch, tempo, piscandoChefe.ate > agora)
+                : desenharChefe(g, ch, tempo, piscandoChefe.ate > agora),
+        });
       }
       const imagem = folhaDe(folha, null);
       for (const l of v.coelhos) {
@@ -477,6 +497,18 @@ function desenharYeti(g: CanvasRenderingContext2D, c: ChefeNaTela, tempo: number
   desenharBichoDaFolha(g, { tipo: 'yeti', estado: estadoDoYeti(c), lado: c.lado >= 0 ? 1 : -1, ms: c.passos * 50, piscando }, Math.round(c.x), Math.round(c.y), tempo);
 }
 
+/** A ALPACA-REI (21/11/2026): a folha dela da Briga, de pé na arena; embaixo da areia, o monte que anda. */
+function desenharAlpaca(g: CanvasRenderingContext2D, c: ChefeNaTela, tempo: number, piscando: boolean) {
+  if (c.estado === 'embaixo') return monteDeAreia(g, Math.round(c.x), Math.round(c.y), tempo);
+  g.save();
+  g.fillStyle = 'rgba(30, 20, 15, 0.3)';
+  g.beginPath();
+  g.ellipse(c.x, c.y, 22, 6, 0, 0, Math.PI * 2);
+  g.fill();
+  g.restore();
+  desenharBichoDaFolha(g, { tipo: 'alpaca-rei', estado: estadoDoYeti(c), lado: c.lado >= 0 ? 1 : -1, ms: c.passos * 50, piscando }, Math.round(c.x), Math.round(c.y), tempo);
+}
+
 /** A dificuldade do Solo (20/11/2026), lembrada no aparelho. */
 const DIFICIL_GUARDADO = 'syden:chefe-dificil';
 
@@ -546,6 +578,12 @@ export function EscolhaDoChefe({
             <strong>{t('Yeti')}</strong>
           </button>
         </li>
+        <li>
+          <button type="button" className="corrida-pista-botao" onClick={() => escolher('alpaca')}>
+            <MiniaturaDoChefe yeti={false} alpaca />
+            <strong>{t('Alpaca-rei')}</strong>
+          </button>
+        </li>
         {solo && (
           <li>
             <button type="button" className="corrida-pista-botao copa" onClick={() => escolher('maratona')}>
@@ -565,13 +603,14 @@ export function EscolhaDoChefe({
 }
 
 /** A miniatura da escolha: a arena com o chefe no meio (o yeti, quando a folha dele chega). */
-function MiniaturaDoChefe({ yeti, maratona = false }: { yeti: boolean; maratona?: boolean }) {
+function MiniaturaDoChefe({ yeti, maratona = false, alpaca = false }: { yeti: boolean; maratona?: boolean; alpaca?: boolean }) {
   const ref = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
     const g = ref.current?.getContext('2d');
     if (!g) return;
     g.imageSmoothingEnabled = false;
     if (yeti || maratona) carregarFolhas(['yeti']);
+    if (alpaca) carregarFolhas(['alpaca-rei']);
     const chefe: ChefeNaTela = { x: 240, y: 170, estado: 'parada', lado: 1, hp: 100, passos: 0, fase: 0, destino: [240, 170], yeti, etapa: 0 };
     let vezes = 0;
     const desenhar = () => {
@@ -581,6 +620,7 @@ function MiniaturaDoChefe({ yeti, maratona = false }: { yeti: boolean; maratona?
         desenharChefe(g, { ...chefe, x: 170 }, 0, false);
         desenharYeti(g, { ...chefe, x: 310, lado: -1, yeti: true }, 0, false);
       } else if (yeti) desenharYeti(g, chefe, 0, false);
+      else if (alpaca) desenharAlpaca(g, { ...chefe, alpaca: true }, 0, false);
       else desenharChefe(g, chefe, 0, false);
     };
     desenhar();
@@ -589,6 +629,6 @@ function MiniaturaDoChefe({ yeti, maratona = false }: { yeti: boolean; maratona?
       if (++vezes >= 6) clearInterval(h);
     }, 300);
     return () => clearInterval(h);
-  }, [yeti, maratona]);
+  }, [yeti, maratona, alpaca]);
   return <canvas ref={ref} width={W} height={H} aria-hidden="true" className="briga-miniatura" />;
 }

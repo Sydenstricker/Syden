@@ -27,7 +27,7 @@ import {
   type Skatista,
 } from './skate/fisica';
 import { criarPiloto } from './skate/piloto';
-import { IDS_DAS_PISTAS, pecaEm, PALAVRA, PISTAS, usarPista } from './skate/pista';
+import { CONJUNTOS, IDS_DAS_PISTAS, pecaEm, PALAVRAS, PISTAS, usarPista } from './skate/pista';
 import type { CenaDoSkate, QuadroDoOutro } from './skate/cena';
 import './skate.css';
 
@@ -61,8 +61,11 @@ export interface EstadoSkate {
   pista?: string;
   recordes?: Record<string, number | null>;
   objetivos?: Objetivo[] | null;
-  /** No Solo: o mais de objetivos já cumpridos numa sessão, por pista. */
+  /** No Solo: o mais de objetivos já cumpridos numa sessão, por pista (e os do segundo conjunto, 21/11/2026). */
   objetivosAntes?: Record<string, number>;
+  objetivosAntes2?: Record<string, number>;
+  /** O conjunto de objetivos da sessão (21/11/2026): 0 o primeiro, 1 o segundo. */
+  conjunto?: number;
 }
 
 type T = ReturnType<typeof useT>;
@@ -86,10 +89,15 @@ function nomeDaManobra(t: T, nome: string): string {
 }
 
 /** O texto de um objetivo. */
-function textoDoObjetivo(t: T, o: Objetivo): string {
+function textoDoObjetivo(t: T, o: Objetivo, conjunto = 0): string {
   switch (o.id) {
     case 'letras':
-      return t('Pegue as letras {palavra}', { palavra: PALAVRA });
+      return t('Pegue as letras {palavra}', { palavra: PALAVRAS[conjunto] ?? PALAVRAS[0] });
+    // as duas manobras do segundo conjunto (21/11/2026)
+    case 'giro':
+      return t('Pouse um giro de {n}', { n: o.valor ?? 0 });
+    case 'manual':
+      return t('Faça um manual de {n} s', { n: o.valor ?? 0 });
     case 'pontos':
       return t('Faça {n} pontos', { n: mil(o.valor ?? 0) });
     case 'combo':
@@ -105,13 +113,13 @@ function textoDoObjetivo(t: T, o: Objetivo): string {
 const nomeDaPista = (t: T, id: string) => (id === 'praca-1' ? t('Praça') : t('Parque'));
 
 /** A lista dos objetivos, com o ✓ dos cumpridos (sem pressão: o que falta só fica sem o ✓). */
-function ListaDeObjetivos({ lista }: { lista: Objetivo[] }) {
+function ListaDeObjetivos({ lista, conjunto = 0 }: { lista: Objetivo[]; conjunto?: number }) {
   const t = useT();
   return (
     <ul className="skate-objetivos">
       {lista.map((o) => (
         <li key={o.id} className={o.feito ? 'feito' : undefined}>
-          <span aria-hidden="true">{o.feito ? '✓' : '·'}</span> {textoDoObjetivo(t, o)}
+          <span aria-hidden="true">{o.feito ? '✓' : '·'}</span> {textoDoObjetivo(t, o, conjunto)}
         </li>
       ))}
     </ul>
@@ -173,7 +181,7 @@ function Placar({ estado, eu, fim, solo }: { estado: EstadoSkate; eu: number; fi
           <p className="minijogo-situacao">
             {t('Objetivos')}: {estado.objetivos.filter((o) => o.feito).length}/{estado.objetivos.length}
           </p>
-          <ListaDeObjetivos lista={estado.objetivos} />
+          <ListaDeObjetivos lista={estado.objetivos} conjunto={estado.conjunto ?? 0} />
         </>
       )}
       {linhas.length > 1 && (
@@ -198,6 +206,8 @@ function SkateSolo({ estado, eu, jogador, agir }: Props) {
   // A ESCOLHA DA PISTA (19/11/2026), antes do minuto: o servidor recomeça o relógio dele quando ela chega
   const [pista, setPista] = useState<string | null>(null);
   const [marcada, setMarcada] = useState(estado.pista ?? IDS_DAS_PISTAS[0]);
+  /** O conjunto de objetivos (21/11/2026), escolhido junto com a pista. */
+  const [conjunto, setConjunto] = useState(estado.conjunto ?? 0);
   /** O TREINO LIVRE (20/11/2026): a pista sem relógio, só no site (o servidor nem sabe). */
   const [livre, setLivre] = useState<string | null>(null);
   /** Cada "Jogar de novo" (a pausa ou a tecla R) é uma sessão nova, do zero. */
@@ -205,7 +215,7 @@ function SkateSolo({ estado, eu, jogador, agir }: Props) {
   const andando = livre !== null || (pista !== null && !fim && !!meu && meu.pontos === null);
   const recomecar = () => {
     // no minuto que vale, o relógio do servidor recomeça junto (só fica mais estrito); no treino, nada vai ao servidor
-    if (livre === null && pista !== null) Promise.resolve(agir({ tipo: 'pista', pista })).catch(() => {});
+    if (livre === null && pista !== null) Promise.resolve(agir({ tipo: 'pista', pista, conjunto })).catch(() => {});
     setRodada((r) => r + 1);
   };
   const sair = () => {
@@ -220,6 +230,7 @@ function SkateSolo({ estado, eu, jogador, agir }: Props) {
         solo
         livre
         pista={Math.max(0, IDS_DAS_PISTAS.indexOf(livre))}
+        conjunto={conjunto}
         aoTerminar={() => {}}
         aoRecomecar={recomecar}
         aoSair={sair}
@@ -235,24 +246,26 @@ function SkateSolo({ estado, eu, jogador, agir }: Props) {
           {IDS_DAS_PISTAS.map((id) => (
             <li key={id}>
               <button type="button" role="radio" aria-checked={marcada === id} className={marcada === id ? 'escolhida' : undefined} onClick={() => setMarcada(id)}>
-                <MapaDaPista id={id} />
+                <MapaDaPista id={id} conjunto={conjunto} />
                 <strong>{nomeDaPista(t, id)}</strong>
                 {estado.recordes?.[id] != null && <span>{t('Seu recorde: {tempo}', { tempo: mil(estado.recordes[id]!) })}</span>}
-                {(estado.objetivosAntes?.[id] ?? 0) > 0 && (
+                {((conjunto === 1 ? estado.objetivosAntes2 : estado.objetivosAntes)?.[id] ?? 0) > 0 && (
                   <span>
-                    {t('Objetivos')}: {estado.objetivosAntes![id]}/{4 + PISTAS[IDS_DAS_PISTAS.indexOf(id)].objetivos.saltos.length}
+                    {t('Objetivos')}: {(conjunto === 1 ? estado.objetivosAntes2 : estado.objetivosAntes)![id]}/
+                    {conjunto === 1 ? 6 : 4 + PISTAS[IDS_DAS_PISTAS.indexOf(id)].objetivos.saltos.length}
                   </span>
                 )}
               </button>
             </li>
           ))}
         </ul>
+        <EscolhaDoConjunto conjunto={conjunto} aoEscolher={setConjunto} />
         <div className="minijogo-acoes">
           <button
             type="button"
             className="btn-primary"
             onClick={() => {
-              Promise.resolve(agir({ tipo: 'pista', pista: marcada }))
+              Promise.resolve(agir({ tipo: 'pista', pista: marcada, conjunto }))
                 .then(() => setPista(marcada))
                 .catch(() => setPista(marcada));
             }}
@@ -272,6 +285,7 @@ function SkateSolo({ estado, eu, jogador, agir }: Props) {
       key={`${estado.partidaId}-${rodada}`}
       solo
       pista={Math.max(0, IDS_DAS_PISTAS.indexOf(pista))}
+      conjunto={conjunto}
       aoTerminar={(entradas) => void agir({ tipo: 'fim', entradas })}
       aoRecomecar={recomecar}
       aoSair={sair}
@@ -279,9 +293,35 @@ function SkateSolo({ estado, eu, jogador, agir }: Props) {
   );
 }
 
+/**
+ * A ESCOLHA DO CONJUNTO DE OBJETIVOS (21/11/2026): cada botão é a palavra do conjunto ("TOCA", "PULO"), que é nossa e igual em
+ * todo idioma; o nome para o leitor de tela é "Objetivos 1" e "Objetivos 2".
+ */
+function EscolhaDoConjunto({ conjunto, aoEscolher }: { conjunto: number; aoEscolher: (c: number) => void }) {
+  const t = useT();
+  return (
+    <div className="skate-conjuntos" role="radiogroup" aria-label={t('Objetivos')}>
+      {Array.from({ length: CONJUNTOS }, (_, c) => (
+        <button
+          key={c}
+          type="button"
+          role="radio"
+          aria-checked={conjunto === c}
+          aria-label={`${t('Objetivos')} ${c + 1}`}
+          className={conjunto === c ? 'escolhida' : undefined}
+          onClick={() => aoEscolher(c)}
+        >
+          {'★'.repeat(c + 1)} {PALAVRAS[c]}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 /** O mapa da pista, de cima (as peças com chão, por perfil), para a escolha. */
-function MapaDaPista({ id }: { id: string }) {
+function MapaDaPista({ id, conjunto = 0 }: { id: string; conjunto?: number }) {
   const p = PISTAS[Math.max(0, IDS_DAS_PISTAS.indexOf(id))];
+  const letras = conjunto === 1 ? p.segundo.letras : p.objetivos.letras;
   const cor: Record<string, string> = { quarter: '#8fa3b8', rampa: '#d9a65a', caixa: '#c46d4a', corrimao: '#3b4050' };
   return (
     <svg className="skate-mapa" viewBox="-0.5 -0.5 13 19" aria-hidden="true">
@@ -295,7 +335,7 @@ function MapaDaPista({ id }: { id: string }) {
             <rect key={i} x={q.x - (deLado ? 0.5 : fino / 2)} y={q.z - (deLado ? fino / 2 : 0.5)} width={deLado ? 1 : fino} height={deLado ? fino : 1} fill={cor[q.perfil!]} />
           );
         })}
-      {p.objetivos.letras.map((l, i) => (
+      {letras.map((l, i) => (
         <circle key={i} cx={l.x} cy={l.z} r="0.28" fill="#f2c14e" stroke="#2a2333" strokeWidth="0.08" />
       ))}
     </svg>
@@ -337,6 +377,7 @@ function SkateNaSala({ estado, eu, jogador, agir, restante = 0, socket = null, c
     <Sessao
       key={estado.partidaId}
       pista={Math.max(0, IDS_DAS_PISTAS.indexOf(estado.pista ?? IDS_DAS_PISTAS[0]))}
+      conjunto={estado.conjunto ?? 0}
       corro={corro}
       contagemMs={contagem}
       rivais={rivais.current}
@@ -535,6 +576,7 @@ function skatistaDoRival(q: Posicao, k: Skatista): Skatista {
 export function Sessao({
   aoTerminar,
   pista = 0,
+  conjunto = 0,
   solo = false,
   corro = true,
   contagemMs = CONTAGEM_MS,
@@ -547,6 +589,8 @@ export function Sessao({
   aoTerminar: (entradas: Entradas, k: Skatista) => void;
   /** A pista (o índice em PISTAS). */
   pista?: number;
+  /** O conjunto de objetivos (21/11/2026): 0 ou 1. */
+  conjunto?: number;
   solo?: boolean;
   /** false: só assisto (a câmera segue quem tem mais pontos). */
   corro?: boolean;
@@ -600,9 +644,9 @@ export function Sessao({
         await cena.montar(lista.map(([, r]) => ({ cores: coresDoAvatar(r.avatar), nome: r.nome })));
         if (!viva) return;
         usarPista(pista);
-        cena.montarObjetivos(PISTAS[pista].objetivos, PALAVRA);
+        cena.montarObjetivos(conjunto === 1 ? PISTAS[pista].segundo : PISTAS[pista].objetivos, PALAVRAS[conjunto] ?? PALAVRAS[0]);
         setEstado('pronta');
-        const k = novoSkatista(pista);
+        const k = novoSkatista(pista, conjunto);
         if (import.meta.env.DEV && corro) window.skateSessaoDoTeste = k;
         const gravar = gravador();
         const piloto = criarPiloto();
@@ -845,7 +889,7 @@ export function Sessao({
             {corro && (
               <div className="skate-objetivos-painel">
                 <span className="skate-letras">
-                  {[...PALAVRA].map((l, i) => (
+                  {[...(PALAVRAS[conjunto] ?? PALAVRAS[0])].map((l, i) => (
                     <b key={i} className={painel.letras & (1 << i) ? 'pega' : undefined}>
                       {l}
                     </b>
@@ -885,15 +929,17 @@ export function Sessao({
 }
 
 /** A escolha da pista na sala (antes do convite): o mapa de cada uma, e clicar começa (19/11/2026). */
-export function EscolhaDaPistaDoSkate({ aoEscolher, aoVoltar }: { aoEscolher: (pista: string) => void; aoVoltar: () => void }) {
+export function EscolhaDaPistaDoSkate({ aoEscolher, aoVoltar }: { aoEscolher: (pista: string, conjunto: number) => void; aoVoltar: () => void }) {
   const t = useT();
+  const [conjunto, setConjunto] = useState(0);
   return (
     <div className="skate-escolha">
+      <EscolhaDoConjunto conjunto={conjunto} aoEscolher={setConjunto} />
       <ul className="skate-pistas">
         {IDS_DAS_PISTAS.map((id) => (
           <li key={id}>
-            <button type="button" onClick={() => aoEscolher(id)}>
-              <MapaDaPista id={id} />
+            <button type="button" onClick={() => aoEscolher(id, conjunto)}>
+              <MapaDaPista id={id} conjunto={conjunto} />
               <strong>{nomeDaPista(t, id)}</strong>
             </button>
           </li>

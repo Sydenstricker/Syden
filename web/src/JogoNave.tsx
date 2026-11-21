@@ -10,7 +10,7 @@ import { carregarArte } from './nave/arte';
 import { CORES_DA_ESQUADRILHA, desenhar, pintarChao, type Outro } from './nave/desenho';
 import { Mundo, comandosDoJogador, reancorar, type Comandos, type Teclas, type Toque } from './nave/mundo';
 import { pilotar } from './nave/piloto';
-import { ALTURA, ehFaseDaNave, LARGURA, LOOP_RECARGA, PASSOS_POR_S, SEM_QUEDA, temposDaFase, type FaseDaNave } from './nave/sim';
+import { ALTURA, ehFaseDaNave, faseNoPasso, LARGURA, LOOP_RECARGA, PASSOS_POR_S, SEM_QUEDA, temposDaFase, type FaseBase, type FaseDaNave } from './nave/sim';
 import './nave/nave.css';
 
 /**
@@ -62,7 +62,11 @@ const FASES: { id: FaseDaNave; nome: string; cor: string }[] = [
   { id: 'horta', nome: chave('Horta'), cor: '#6fa356' },
   { id: 'pomar', nome: chave('Pomar'), cor: '#d9883a' },
   { id: 'celeiro', nome: chave('Celeiro'), cor: '#a83a2e' },
+  // a campanha (21/11/2026): as três seguidas, com as três cores
+  { id: 'campanha', nome: chave('Campanha'), cor: '#a8703a' },
 ];
+/** O nome de cada fase de verdade (o letreiro da campanha, quando uma fase dá lugar à outra). */
+const NOME_DA_FASE: Record<FaseBase, string> = { horta: chave('Horta'), pomar: chave('Pomar'), celeiro: chave('Celeiro') };
 
 /** A ESCOLHA DA FASE (19/11/2026): a horta de sempre, ou uma das curtas com chefe novo. */
 export function EscolhaDaFaseDaNave({ aoEscolher, aoVoltar }: { aoEscolher: (fase: FaseDaNave) => void; aoVoltar: () => void }) {
@@ -73,7 +77,7 @@ export function EscolhaDaFaseDaNave({ aoEscolher, aoVoltar }: { aoEscolher: (fas
         {FASES.map((f) => (
           <li key={f.id}>
             <button type="button" className="corrida-pista-botao" onClick={() => aoEscolher(f.id)}>
-              <span className="nave-fase-cor" style={{ background: f.cor }} aria-hidden="true" />
+              <span className={`nave-fase-cor${f.id === 'campanha' ? ' campanha' : ''}`} style={{ background: f.cor }} aria-hidden="true" />
               <strong>{t(f.nome)}</strong>
             </button>
           </li>
@@ -186,6 +190,8 @@ function Ceu({ estado, eu, jogador, socket, channelId }: { estado: EstadoNave & 
   const nomes = useRef(new Map<number, string>());
   for (const l of estado.jogadores) nomes.current.set(l.userId, l.username);
 
+  /** O letreiro da campanha (21/11/2026): a fase que começa, até quando aparece. */
+  const [letreiro, setLetreiro] = useState<{ fase: FaseBase; ate: number } | null>(null);
   const [hud, setHud] = useState({
     pontos: 0,
     vidas: 3,
@@ -293,12 +299,19 @@ function Ceu({ estado, eu, jogador, socket, channelId }: { estado: EstadoNave & 
     const ctx = tela?.getContext('2d');
     const m = mundo.current;
     if (!tela || !ctx || !m) return;
-    // o chão da fase: o desenho por código até a folha de ladrilhos chegar (nave/arte.ts), e ela no lugar quando chega
-    let horta = pintarChao(m.fase);
+    // o chão da fase: o desenho por código até a folha de ladrilhos chegar (nave/arte.ts), e ela no lugar quando chega; na
+    // campanha (21/11/2026), o chão de cada trecho, feito na primeira vez que aparece
+    const chaos = new Map<FaseBase, HTMLCanvasElement>();
+    const chaoDe = (b: FaseBase) => {
+      let c = chaos.get(b);
+      if (!c) chaos.set(b, (c = pintarChao(b)));
+      return c;
+    };
     let vivo = true;
     void carregarArte().then((f) => {
-      if (f && vivo) horta = pintarChao(m.fase);
+      if (f && vivo) chaos.clear();
     });
+    let faseNaTela: FaseBase = faseNoPasso(m.fase, 0);
     // o tremor da bomba e do golpe, e o piscar branco do acerto: só desenho (impacto.ts)
     const impacto = criarImpacto({ pixelsPorForca: 4 });
     const FIM = temposDaFase(m.fase).fim;
@@ -408,11 +421,17 @@ function Ceu({ estado, eu, jogador, socket, channelId }: { estado: EstadoNave & 
           vivo: !o.fim || o.vidas > 0,
         });
       }
+      // a campanha: o trecho que está na tela, e o letreiro com o nome da fase quando ela troca
+      const base = faseNoPasso(m.fase, passoNaTela);
+      if (base !== faseNaTela) {
+        faseNaTela = base;
+        setLetreiro({ fase: base, ate: agoraMs + 2600 });
+      }
       const tremor = impacto.quadro();
       ctx.save();
       ctx.translate(tremor.dx, tremor.dy);
       desenhar(ctx, {
-        horta,
+        horta: chaoDe(base),
         passo: passoNaTela,
         mundo: m,
         outros: naTela,
@@ -540,6 +559,8 @@ function Ceu({ estado, eu, jogador, socket, channelId }: { estado: EstadoNave & 
             {contagem}
           </span>
         )}
+        {/* a campanha (21/11/2026): o nome da fase que começa, no meio do céu, por um instante */}
+        {letreiro && Date.now() < letreiro.ate && <span className="nave-letreiro">{t(NOME_DA_FASE[letreiro.fase])}</span>}
         {pilotando && eToque && hud.bombas > 0 && (
           <button
             type="button"

@@ -10,7 +10,7 @@ import { desenharCenario } from '../briga/cenarios';
 import { desenharCoelho, desenhoDoCoelho } from '../briga/desenho';
 import type { EstadoDoInimigo } from '../briga/regras';
 import { desenharBichoDaFolha, desenharTiro } from '../briga/sprites';
-import { BICHOS, CHAO_TELA, DIRECOES, FIM_DA_FASE, GRANADA, H, PLATAFORMAS, REFENS, W, type Arma, type EstadoDoBicho } from './conta';
+import { BICHOS, CHAO_TELA, DIRECOES, FIM_DA_FASE, GRANADA, H, PLATAFORMAS, REFENS, W, type Arma, type EstadoDoBicho, type Tabuas } from './conta';
 import type { BichoNaTela, Efeito } from './regras';
 
 type G = CanvasRenderingContext2D;
@@ -18,21 +18,24 @@ export const naTela = (camX: number, x: number, h: number) => ({ sx: Math.round(
 
 /** O índice da floresta em FASES_DA_BRIGA (o cenário que o Comando usa). */
 const FLORESTA = 1;
+/** O da neve (a terceira fase, 21/11/2026). */
+const NEVE = 3;
 
 export function desenharFundo(g: G, camX: number, tempo: number, cenario = FLORESTA) {
   desenharCenario(g, cenario, camX, FIM_DA_FASE, tempo);
-  // a trilha onde se corre: uma faixa de terra batida mais clara, com a borda
-  g.fillStyle = '#5a4430';
+  // a trilha onde se corre: uma faixa de terra batida mais clara, com a borda (na neve, neve pisada, 21/11/2026)
+  const neve = cenario === NEVE;
+  g.fillStyle = neve ? '#b8c8d8' : '#5a4430';
   g.fillRect(0, CHAO_TELA, W, H - CHAO_TELA);
-  g.fillStyle = '#6e5538';
+  g.fillStyle = neve ? '#e8f0f8' : '#6e5538';
   g.fillRect(0, CHAO_TELA, W, 2);
-  g.fillStyle = '#4a3828';
+  g.fillStyle = neve ? '#94a8bc' : '#4a3828';
   for (let x = -((camX * 1) % 23) - 23; x < W; x += 23) g.fillRect(Math.round(x), CHAO_TELA + 8 + (Math.round(x + camX) % 3), 4, 1);
 }
 
-/** As tábuas sobre caixotes. */
-export function desenharPlataformas(g: G, camX: number) {
-  for (const [x0, x1, h] of PLATAFORMAS) {
+/** As tábuas sobre caixotes (as da fase: cada uma tem as suas desde 21/11/2026). */
+export function desenharPlataformas(g: G, camX: number, tabuas: Tabuas = PLATAFORMAS) {
+  for (const [x0, x1, h] of tabuas) {
     if (x1 - camX < -10 || x0 - camX > W + 10) continue;
     const a = Math.round(x0 - camX), b = Math.round(x1 - camX), y = CHAO_TELA - h;
     // os caixotes embaixo, um em cada ponta
@@ -58,8 +61,8 @@ export function desenharPlataformas(g: G, camX: number) {
 }
 
 /** As gaiolas: fechada, com o coelhinho dentro; aberta, a porta caída. */
-export function desenharGaiolas(g: G, camX: number, gaiolas: number[], folha: CanvasImageSource | null, tempo: number) {
-  REFENS.forEach(([x], k) => {
+export function desenharGaiolas(g: G, camX: number, gaiolas: number[], folha: CanvasImageSource | null, tempo: number, refens: readonly (readonly [number, Arma])[] = REFENS) {
+  refens.forEach(([x], k) => {
     const sx = Math.round(x - camX);
     if (sx < -30 || sx > W + 30) return;
     const y = CHAO_TELA;
@@ -114,7 +117,15 @@ function estadoNaFolha(e: EstadoDoBicho): EstadoDoInimigo {
     case 'marcando':
     case 'prep-fogo':
     case 'prep-pisao':
+    case 'prep-cuspe':
+    case 'prep-investida':
+    case 'prep-avalanche':
       return 'preparando';
+    case 'investida':
+      return 'investida';
+    case 'cuspe':
+    case 'avalanche':
+      return 'atacando';
     case 'atacando':
     case 'fogo':
     case 'chamando':
@@ -162,6 +173,20 @@ export function desenharAvisos(g: G, bichos: BichoNaTela[], camX: number, tempo:
       g.fillStyle = '#ff9a3a';
       const y = CHAO_TELA - 10;
       for (let k = 0; k < 40; k++) g.fillRect(sx - 30 - k * 8, y, 4, 2);
+    } else if (b.estado === 'prep-cuspe' && pisca(b.ms)) {
+      // o cuspe (21/11/2026): as três marcas onde as bolas vão cair
+      g.strokeStyle = '#ffd36a';
+      g.lineWidth = 1;
+      for (const d of [-34, 0, 34]) {
+        g.beginPath();
+        g.ellipse(Math.round(b.alvoX + d - camX), CHAO_TELA - 1, 10, 3, 0, 0, Math.PI * 2);
+        g.stroke();
+      }
+    } else if (b.estado === 'prep-investida' && pisca(b.ms)) {
+      // a investida: a linha rente ao chão, de onde ela está até o fim da arena
+      g.fillStyle = '#ff6a4a';
+      const y = CHAO_TELA - 6;
+      for (let k = 0; k < 40; k++) g.fillRect(sx - 30 - k * 8, y, 4, 2);
     } else if ((b.estado === 'marcando' || b.estado === 'prep-pisao' || b.estado === 'saltando') && pisca(b.ms)) {
       const ax = Math.round(b.alvoX - camX);
       const chefe = BICHOS[b.tipo].comp === 'chefe';
@@ -176,7 +201,7 @@ export function desenharAvisos(g: G, bichos: BichoNaTela[], camX: number, tempo:
 }
 
 /** As balas dos bichos: o tiro e o fogo (os da Briga), e a semente que cai. */
-export function desenharBalasInimigas(g: G, balas: { tipo: number; x: number; h: number; vx: number }[], camX: number, tempo: number) {
+export function desenharBalasInimigas(g: G, balas: { tipo: number; x: number; h: number; vx: number; vh?: number }[], camX: number, tempo: number) {
   for (const b of balas) {
     const { sx, sy } = naTela(camX, b.x, b.h);
     if (b.tipo === 2) {
@@ -186,6 +211,29 @@ export function desenharBalasInimigas(g: G, balas: { tipo: number; x: number; h:
       g.fillRect(sx - 1, sy - 2, 3, 4);
       g.fillStyle = '#6f9a4e';
       g.fillRect(sx, sy - 5, 1, 2);
+    } else if (b.tipo === 4) {
+      // o cuspe da alpaca-rei (21/11/2026): uma bola clara que cai em arco
+      g.fillStyle = '#c89a5a';
+      g.fillRect(sx - 3, sy - 3, 6, 6);
+      g.fillStyle = '#fff0c8';
+      g.fillRect(sx - 2, sy - 2, 4, 4);
+    } else if (b.tipo === 5) {
+      // a pedra de gelo da avalanche: pendurada (a marca pisca no chão embaixo dela) ou caindo
+      const parada = b.vh === 0;
+      if (parada ? Math.floor(tempo / 120) % 2 === 0 : true) {
+        g.strokeStyle = '#ff6a4a';
+        g.lineWidth = 1;
+        g.beginPath();
+        g.ellipse(sx, CHAO_TELA - 1, 9, 3, 0, 0, Math.PI * 2);
+        g.stroke();
+      }
+      g.fillStyle = '#7a9ab8';
+      g.fillRect(sx - 4, sy - 8, 8, 4);
+      g.fillStyle = '#c4dcf0';
+      g.fillRect(sx - 3, sy - 4, 6, 4);
+      g.fillRect(sx - 2, sy, 4, 3);
+      g.fillStyle = '#e8f4ff';
+      g.fillRect(sx - 1, sy + 3, 2, 3);
     } else desenharTiro(g, b.tipo === 3 ? 'yeti' : b.tipo === 1 ? 'dragao' : 'dino', sx, sy, b.vx > 0 ? 1 : -1, tempo);
   }
 }

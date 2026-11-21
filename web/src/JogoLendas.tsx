@@ -46,6 +46,13 @@ type Peca = 'arma' | 'armadura' | 'amuleto';
 type Melhoria = 'vida' | 'forca' | 'magia' | 'pele' | 'pressa' | 'folego';
 type TipoDeParada = 'luta' | 'descanso' | 'loja' | 'evento' | 'chefe';
 
+/** Uma peça; a com efeito (21/11/2026) faz alguma coisa além do número. */
+interface ItemDaPeca {
+  peca: Peca;
+  valor: number;
+  efeito?: boolean;
+}
+
 interface Heroi extends HeroiNaTela {
   avatar: number | string | null;
   robo: boolean;
@@ -61,6 +68,8 @@ interface Heroi extends HeroiNaTela {
   /** (servidor antigo) o custo da habilidade única */
   custo?: number;
   equip: Record<Peca, number>;
+  /** As peças vestidas com efeito (21/11/2026). */
+  efeitos?: Record<Peca, boolean>;
   pontos: number;
   escolheu: boolean;
   peloRobo: boolean;
@@ -72,6 +81,9 @@ export interface EstadoLendas {
   partidaId: string;
   fase: 'classes' | 'mapa' | 'rumo' | 'descanso' | 'loja' | 'evento' | 'escolha' | 'acao' | 'espolio' | 'fim';
   parada: number;
+  /** O nível de desafio (21/11/2026) e se sou eu quem o escolhe (quem começou, na tela das classes). */
+  desafio?: number;
+  escolhoDesafio?: boolean;
   rota: { opcoes: { id: string; tipo: TipoDeParada }[]; escolhida: string | null }[];
   cenario?: string;
   tipoDaParada?: TipoDeParada;
@@ -88,8 +100,8 @@ export interface EstadoLendas {
   inimigos: InimigoNaTela[];
   eventos: Evento[];
   minhaEscolha: { acao: Acao; alvo: number | null; hab?: number } | null;
-  meuEspolio: { item: { peca: Peca; valor: number } | null; atual: Record<Peca, number>; decidi: boolean; melhorias?: Melhoria[]; melhorei?: boolean } | null;
-  minhaLoja?: { itens: { peca: Peca; valor: number }[]; atual: Record<Peca, number>; decidi: boolean } | null;
+  meuEspolio: { item: ItemDaPeca | null; atual: Record<Peca, number>; efeitos?: Record<Peca, boolean>; decidi: boolean; melhorias?: Melhoria[]; melhorei?: boolean } | null;
+  minhaLoja?: { itens: ItemDaPeca[]; atual: Record<Peca, number>; efeitos?: Record<Peca, boolean>; decidi: boolean } | null;
   resultado: { userId: number; username: string; pontos: number; posicao: number | null }[] | null;
   recorde?: { valor: number; antes: number | null; novo: boolean } | null;
 }
@@ -182,6 +194,19 @@ const PECAS: Record<Peca, { emoji: string; atributo: string }> = {
   armadura: { emoji: '🪖', atributo: '🛡️' },
   amuleto: { emoji: '💍', atributo: '❤️' },
 };
+/** AS PEÇAS COM EFEITO (21/11/2026): um efeito por tipo de peça (EFEITO_DA_PECA no servidor), a figura e a frase. */
+const EFEITOS: Record<Peca, { emoji: string; texto: string }> = {
+  arma: { emoji: '🌱', texto: chave('Seiva: cada golpe seu cura um pouco você.') },
+  armadura: { emoji: '🪞', texto: chave('Reflexo: devolve parte do golpe a quem bateu.') },
+  amuleto: { emoji: '⚡', texto: chave('Fôlego: uma energia a mais a cada rodada.') },
+};
+/** OS NÍVEIS DE DESAFIO (21/11/2026): a figura e o que cada um soma ao de baixo. */
+const DESAFIOS: { emoji: string; dica: string }[] = [
+  { emoji: '🌱', dica: chave('O caminho de sempre.') },
+  { emoji: '🔥', dica: chave('Inimigos mais fortes.') },
+  { emoji: '🔥🔥', dica: chave('E a fogueira cura menos.') },
+  { emoji: '🔥🔥🔥', dica: chave('E os inimigos se curam a cada rodada.') },
+];
 
 declare global {
   interface Window {
@@ -259,6 +284,7 @@ export function JogoLendas({
           </p>
           {estado.recorde && (
             <p className="lendas-recorde">
+              {!!estado.desafio && <span title={t(DESAFIOS[estado.desafio]?.dica ?? '')}>{DESAFIOS[estado.desafio]?.emoji} </span>}
               {estado.recorde.novo ? `🏆 ${t('Novo recorde!')} ` : ''}
               {t('{n} rodadas até o dragão', { n: estado.recorde.valor })}
               {estado.recorde.antes !== null && ` · ${t('Recorde: {n} rodadas', { n: Math.min(estado.recorde.antes, estado.recorde.valor) })}`}
@@ -378,6 +404,7 @@ function EscolhaDaClasse({
     <div className="lendas-classes">
       {restante !== null && <Relogio restante={restante} total={TEMPO_DA_CLASSE} />}
       <p className="lendas-titulo">{t('Escolha o seu herói')}</p>
+      {estado.desafio !== undefined && <EscolhaDoDesafio estado={estado} agir={agir} />}
       <div className="lendas-cartas">
         {CLASSES.map((c) => (
           <button
@@ -417,6 +444,45 @@ function EscolhaDaClasse({
   );
 }
 
+/**
+ * O NÍVEL DE DESAFIO (21/11/2026): quem começou escolhe (no Solo, a pessoa); a turma vê qual é. Só figura, com a dica de cada
+ * nível no título (o que ele soma ao de baixo).
+ */
+function EscolhaDoDesafio({ estado, agir }: { estado: EstadoLendas; agir: (corpo: Record<string, unknown>) => Promise<void> }) {
+  const t = useT();
+  return (
+    <div className="lendas-desafio" role="radiogroup" aria-label={t('Desafio')}>
+      <span className="lendas-desafio-rotulo">{t('Desafio')}</span>
+      {DESAFIOS.map((d, k) => (
+        <button
+          key={k}
+          type="button"
+          role="radio"
+          aria-checked={estado.desafio === k}
+          className={`lendas-desafio-nivel${estado.desafio === k ? ' escolhido' : ''}`}
+          disabled={!estado.escolhoDesafio}
+          title={t(d.dica)}
+          aria-label={t(d.dica)}
+          onClick={() => void agir({ tipo: 'desafio', nivel: k })}
+          data-desafio={k}
+        >
+          <span aria-hidden="true">{d.emoji}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/** A marca da peça com efeito: a figura, com a frase no título. */
+function MarcaDoEfeito({ peca }: { peca: Peca }) {
+  const t = useT();
+  return (
+    <span className="lendas-efeito" title={t(EFEITOS[peca].texto)} aria-label={t(EFEITOS[peca].texto)}>
+      {EFEITOS[peca].emoji}
+    </span>
+  );
+}
+
 /** A turma em linhas: a classe, o nome, o nível, a vida e a energia (o painel de baixo dos RPGs de turno). */
 function Turma({ herois, eu, descanso = false, marcas = false }: { herois: Heroi[]; eu: number; descanso?: boolean; marcas?: boolean }) {
   return (
@@ -430,6 +496,15 @@ function Turma({ herois, eu, descanso = false, marcas = false }: { herois: Heroi
             {h.username}
             {!!h.nivel && <small className="lendas-nivel"> ★{h.nivel}</small>}
             {h.envenenado && <small aria-hidden="true"> 🧪</small>}
+            {h.efeitos &&
+              (Object.keys(EFEITOS) as Peca[])
+                .filter((p) => h.efeitos![p])
+                .map((p) => (
+                  <small key={p} aria-hidden="true">
+                    {' '}
+                    {EFEITOS[p].emoji}
+                  </small>
+                ))}
           </span>
           <span className="lendas-vida" title={`${h.hp}/${h.hpMax}`}>
             <i style={{ width: `${(100 * h.hp) / Math.max(1, h.hpMax)}%` }} />
@@ -670,6 +745,7 @@ function somDoEvento(ev: Evento) {
   if (ev.tipo === 'veneno') return tocar('chiado');
   if (ev.tipo === 'renovar' || ev.tipo === 'regenera') return tocar('cura');
   if (ev.tipo === 'espinhos') return tocar('dano');
+  if (ev.tipo === 'reflexo') return tocar('encaixe');
   if (ev.tipo === 'sopro') return tocar('explosao');
   if (ev.tipo === 'habilidade') {
     if (ev.hab === 'acelerar') return tocar('turbo');
@@ -713,8 +789,11 @@ function Espolio({ estado, eu, agir, restante }: { estado: EstadoLendas; eu: num
             {PECAS[item.peca].emoji}
           </span>
           <span className="lendas-peca-troca">
-            {PECAS[item.peca].atributo} +{meu.atual[item.peca]} → <strong className={item.valor > meu.atual[item.peca] ? 'melhor' : 'pior'}>+{item.valor}</strong>
+            {PECAS[item.peca].atributo} +{meu.atual[item.peca]}
+            {meu.efeitos?.[item.peca] && <MarcaDoEfeito peca={item.peca} />} → <strong className={item.valor > meu.atual[item.peca] ? 'melhor' : 'pior'}>+{item.valor}</strong>
+            {item.efeito && <MarcaDoEfeito peca={item.peca} />}
           </span>
+          {item.efeito && <small className="lendas-efeito-texto">{t(EFEITOS[item.peca].texto)}</small>}
           {!meu.decidi && (
             <div className="minijogo-acoes">
               <button type="button" className="btn-primary" onClick={() => void agir({ tipo: 'espolio', equipar: true })}>
@@ -770,8 +849,11 @@ function Loja({ estado, eu, agir, restante }: { estado: EstadoLendas; eu: number
                 {PECAS[item.peca].emoji}
               </span>
               <span className="lendas-peca-troca">
-                {PECAS[item.peca].atributo} +{loja.atual[item.peca]} → <strong className={item.valor > loja.atual[item.peca] ? 'melhor' : 'pior'}>+{item.valor}</strong>
+                {PECAS[item.peca].atributo} +{loja.atual[item.peca]}
+                {loja.efeitos?.[item.peca] && <MarcaDoEfeito peca={item.peca} />} → <strong className={item.valor > loja.atual[item.peca] ? 'melhor' : 'pior'}>+{item.valor}</strong>
+                {item.efeito && <MarcaDoEfeito peca={item.peca} />}
               </span>
+              {item.efeito && <small className="lendas-efeito-texto">{t(EFEITOS[item.peca].texto)}</small>}
             </button>
           ))}
           <button type="button" className="btn-secondary" onClick={() => void agir({ tipo: 'loja', item: -1 })}>

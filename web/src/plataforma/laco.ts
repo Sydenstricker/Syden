@@ -199,6 +199,8 @@ export function rodarFase(o: OpcoesDoLaco): () => void {
         escala = [1.3, 0.75];
         poeira(k.x, k.y, 6);
       }
+      // pisou numa pedra que racha (21/11/2026): ela range
+      if (k.racha.includes(k.passos)) tocar('rangido');
       if (k.pegou === 'cenoura') {
         tocar('moeda');
         estouro(k.x, k.y - 14, ['#f8b878', '#fff4c0'], 5);
@@ -301,7 +303,7 @@ export function rodarFase(o: OpcoesDoLaco): () => void {
       const tremor = impacto.quadro();
       p.ctx.save();
       p.ctx.translate(tremor.dx, tremor.dy);
-      pintar(p, camX, camY, n, figuras, o.piloto ? { cenouras: k.cenouras, dourada: k.dourada, pisados: k.pisados } : undefined);
+      pintar(p, camX, camY, n, figuras, o.piloto ? { cenouras: k.cenouras, dourada: k.dourada, pisados: k.pisados, racha: k.racha } : undefined);
       desenharParticulas(p.ctx, particulas, camX, camY);
       p.ctx.restore();
       barraDoCaminho(p.ctx, [

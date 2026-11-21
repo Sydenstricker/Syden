@@ -47,7 +47,7 @@ interface Interno {
   _motivo: () => string | null;
 }
 
-function comecar(naSala = [anaId, biaId], comunidadeId = comunidade.id, corpo: Record<string, unknown> = {}) {
+function comecar(naSala = [anaId, biaId], comunidadeId = comunidade.id, corpo: Record<string, unknown> = {}, aleatorio = () => 0.5) {
   let terminou = false;
   const quadros: Record<string, unknown>[] = [];
   const relogio: { ms: number; depois: () => void }[] = [];
@@ -63,7 +63,7 @@ function comecar(naSala = [anaId, biaId], comunidadeId = comunidade.id, corpo: R
     difundir: (d: unknown) => quadros.push(d as Record<string, unknown>),
   };
   let passo: (() => void) | null = null;
-  const jogo = criarChefeComBanco({ agora: () => agora, aleatorio: () => 0.5, intervalo: (p) => ((passo = p), 1), limpar: () => {} }).comecar(ctx, {
+  const jogo = criarChefeComBanco({ agora: () => agora, aleatorio, intervalo: (p) => ((passo = p), 1), limpar: () => {} }).comecar(ctx, {
     naSala,
     criadaPor: naSala[0],
     corpo,
@@ -593,4 +593,113 @@ test('o difícil (Solo): a vida da sala, os avisos mais curtos e o recorde à pa
   assert.equal(varianteDoChefe('toupeira', false), '');
   assert.equal(varianteDoChefe('yeti', false), 'yeti');
   assert.equal(varianteDoChefe('maratona', true), 'maratona-dificil');
+});
+
+// ---------------- O lote D (21/11/2026): a arena que muda e a alpaca-rei ----------------
+
+/** Um sorteio que varia (o de sempre, 0,5, põe todo buraco no mesmo lugar, na toca do meio, e nenhum entra). */
+const sorteador = (semente0: number) => {
+  let semente = semente0;
+  return () => {
+    semente = (semente * 1103515245 + 12345) % 2147483648;
+    return semente / 2147483648;
+  };
+};
+type ComBuracos = Interno & { _buracos: Map<number, { id: number; x: number; y: number; r: number; abre: number; aberto: boolean }> };
+
+test('a arena que muda: a 2ª fase abre buracos marcados antes; quem está dentro quando abre cai, e ninguém fica dentro depois', () => {
+  const m = comecar([anaId, biaId], comunidade.id, {}, sorteador(9));
+  const i = m.i as unknown as ComBuracos;
+  assert.equal(i._buracos.size, 0, 'a 1ª fase tem o chão inteiro');
+  derrubarFase(m, anaId, 1);
+  assert.equal(i._chefe.fase, 1);
+  assert.equal(i._buracos.size, mod.BURACOS_POR_FASE);
+  const b = [...i._buracos.values()][0];
+  assert.equal(b.aberto, false, 'primeiro, só o aviso');
+  for (const [tx, ty] of mod.TOCAS) assert.ok(Math.hypot(b.x - tx, b.y - ty) > b.r + 30, 'longe das tocas');
+  const q = m.quadros.at(-1) as { bu: number[][] };
+  assert.equal(q.bu.length, mod.BURACOS_POR_FASE);
+  assert.ok(q.bu[0][4] > 0, 'o quadro diz quanto falta para abrir');
+  // a Ana parada dentro dele; a Bia longe (o chefe parado, para não atrapalhar)
+  Object.assign(i._chefe, { estado: 'parada', ate: agora + 600_000, x: 60, y: 100 });
+  const ana_ = i._jogadores.get(anaId)!;
+  ana_.invulAte = 0;
+  const vidas = ana_.vidas;
+  for (let t = 0; t < mod.BURACO.aviso + mod.GRACA_MS + 400; t += 50) {
+    m.por(anaId, b.x, b.y);
+    m.andar(50);
+    if (b.aberto) break;
+  }
+  m.andar(mod.GRACA_MS + 100);
+  assert.equal(b.aberto, true);
+  assert.equal(ana_.vidas, vidas - 1, 'quem estava dentro caiu');
+  assert.ok(m.quadros.some((qq) => (qq as { e: unknown[][] }).e.some((e) => e[1] === 'o')), 'o evento do buraco abrindo');
+  // aberto, a posição dentro dele vai para a borda
+  m.por(anaId, b.x + 3, b.y);
+  assert.ok(Math.hypot(ana_.x - b.x, ana_.y - b.y) >= b.r + mod.CORPO_COELHO - 0.01);
+  // a 3ª fase abre mais
+  derrubarFase(m, anaId, 500);
+  assert.equal(i._buracos.size, 2 * mod.BURACOS_POR_FASE);
+  m.jogo.parar!();
+});
+
+test('a conta dos buracos (as duas pontas): fora do buraco, nada muda; dentro, a borda mais perto', () => {
+  assert.deepEqual(mod.foraDosBuracos(100, 150, [[200, 150, 20]]), [100, 150]);
+  const [x, y] = mod.foraDosBuracos(205, 150, [[200, 150, 20]]);
+  assert.equal(Math.round(x), 200 + 20 + mod.CORPO_COELHO);
+  assert.equal(y, 150);
+});
+
+test('a alpaca-rei (o 3º chefe): o leque de faixas na direção de alguém; quem fica numa faixa leva, quem fica entre elas escapa', () => {
+  const m = comecar([anaId, biaId], comunidade.id, { chefe: 'alpaca' });
+  const pub = m.jogo.publico(anaId) as { chefe: string; categoria: string };
+  assert.equal(pub.chefe, 'alpaca');
+  assert.equal(pub.categoria, 'alpaca');
+  Object.assign(m.i._jogadores.get(biaId)!, { estado: 'sem-vidas', vidas: 0 });
+  Object.assign(m.i._chefe, { x: 120, y: 170, estado: 'parada', ate: agora + 600_000 });
+  m.andar(1000);
+  // a Ana à direita, na faixa do meio (o leque mira nela)
+  m.por(anaId, 260, 170);
+  const ana_ = m.i._jogadores.get(anaId)!;
+  ana_.invulAte = 0;
+  const vidas = ana_.vidas;
+  Object.assign(m.i._chefe, { estado: 'parada', ate: agora + 50, fila: ['leque'] });
+  m.andar(100);
+  const faixas = [...m.i._marcas.values()].filter((k) => k.tipo === 'faixa');
+  assert.equal(faixas.length, mod.LEQUE.faixas);
+  for (let t = 0; t < 2500; t += 50) {
+    m.por(anaId, 260, 170);
+    m.andar(50);
+  }
+  assert.equal(ana_.vidas, vidas - 1, 'na faixa do meio, levou');
+  // de novo, agora entre a faixa do meio e a de cima (meio passo de ângulo, longe do corpo dela)
+  m.andar(3000);
+  ana_.invulAte = 0;
+  const vidas2 = ana_.vidas;
+  Object.assign(m.i._chefe, { x: 120, y: 170, estado: 'parada', ate: agora + 50, fila: ['leque'] });
+  m.por(anaId, 260, 170);
+  m.andar(100);
+  const meio = mod.LEQUE.abertura / (mod.LEQUE.faixas - 1) / 2;
+  const [ex, ey] = [120 + Math.cos(-meio) * 140, 170 + Math.sin(-meio) * 140];
+  for (let t = 0; t < 2500; t += 50) {
+    m.por(anaId, ex, ey);
+    m.andar(50);
+  }
+  assert.equal(ana_.vidas, vidas2, 'entre as faixas, escapou');
+  const q = m.quadros.at(-1) as { c: number[] };
+  assert.equal(q.c[9], 2, 'o quadro diz que é a alpaca');
+  m.jogo.parar!();
+});
+
+test('a alpaca na última fase: o leque vem duas vezes, com mais faixas; o recorde dela é à parte', async () => {
+  const db = await import('../src/db.js');
+  const m = comecar([anaId], 0, { chefe: 'alpaca' });
+  m.i._chefe.fase = 2;
+  Object.assign(m.i._chefe, { x: 240, y: 170, estado: 'parada', ate: agora + 50, fila: ['leque'] });
+  m.andar(100);
+  assert.equal([...m.i._marcas.values()].filter((k) => k.tipo === 'faixa').length, 2 * mod.LEQUE.faixasNoFim);
+  assert.equal(varianteDoChefe('alpaca', false), 'alpaca');
+  assert.equal(varianteDoChefe('alpaca', true), 'alpaca-dificil');
+  assert.equal(db.recordeDoSolo(anaId, 'chefe', 'alpaca'), null);
+  m.jogo.parar!();
 });

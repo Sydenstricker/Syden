@@ -1,4 +1,4 @@
-import type { FaseDaNave } from './sim';
+import type { FaseBase } from './sim';
 
 /**
  * A ARTE DA ESQUADRILHA (20/11/2026): o chão de cada fase em ladrilhos, as explosões e os itens vêm do Pixel Shmup da Kenney
@@ -140,7 +140,7 @@ const TERRA: Record<string, number> = {
   J: 105,
 };
 
-const MAPAS: Record<FaseDaNave, { pecas: Record<string, number>; linhas: string[] }> = {
+const MAPAS: Record<FaseBase, { pecas: Record<string, number>; linhas: string[] }> = {
   // a horta: canteiros de brotos, fileiras de plantio, o laguinho, a casa com a bandeira e a trilha de terra
   horta: {
     pecas: GRAMA,
@@ -252,7 +252,7 @@ const MAPAS: Record<FaseDaNave, { pecas: Record<string, number>; linhas: string[
 };
 
 /** O rolo do chão da fase, em ladrilhos (`largura` × 480). */
-export function pintarChaoDeLadrilhos(f: HTMLCanvasElement, fase: FaseDaNave, largura: number, altura: number): HTMLCanvasElement {
+export function pintarChaoDeLadrilhos(f: HTMLCanvasElement, fase: FaseBase, largura: number, altura: number): HTMLCanvasElement {
   const c = document.createElement('canvas');
   c.width = largura;
   c.height = altura;

@@ -1,4 +1,4 @@
-import { Chao, chaoEm, pontoMaisPerto, type Pista } from './pista';
+import { Chao, chaoEm, desvioDaPorteira, pontoMaisPerto, porteiraEm, type Pista } from './pista';
 
 /**
  * A FÍSICA DO KART (03/11/2026): arcade, no espírito dos karts do Super Nintendo — acelera sozinho até o teto, a grama
@@ -218,11 +218,16 @@ export function passo(k: Kart, c: Comandos, p: Pista): void {
   k.rumo = giraPara(k.rumo, k.angulo, (noGelo ? 1.6 : k.deriva !== 0 ? 2.6 : naGrama ? 7 : 13) * dt);
 
   // ANDAR, com as batidas: na parede, não passa e volta um pouco; na árvore, é empurrado para fora dela
+  // AS PORTEIRAS (21/11/2026, a Fazenda): a folha fechada é parede neste passo; quem já estava em cima dela quando fechou
+  // passa (a folha não prende ninguém), e quem está na toca passa por baixo. Pista sem porteira: a conta de sempre.
+  const naPorteira = (x: number, y: number) => !!p.porteiras?.length && !naToca && porteiraEm(p, x, y, k.passos) !== null;
+  const jaNaPorteira = naPorteira(k.x, k.y);
+  const parede = (x: number, y: number) => chaoEm(p, x, y) === Chao.Parede || (!jaNaPorteira && naPorteira(x, y));
   const nx = k.x + Math.cos(k.rumo) * k.v * dt;
   const ny = k.y + Math.sin(k.rumo) * k.v * dt;
-  if (chaoEm(p, nx, ny) === Chao.Parede) {
-    if (chaoEm(p, nx, k.y) !== Chao.Parede) k.x = nx;
-    else if (chaoEm(p, k.x, ny) !== Chao.Parede) k.y = ny;
+  if (parede(nx, ny)) {
+    if (!parede(nx, k.y)) k.x = nx;
+    else if (!parede(k.x, ny)) k.y = ny;
     k.v *= Math.abs(k.v) > 40 ? -0.3 : 0.5;
     k.deriva = 0;
     k.carga = 0;
@@ -299,7 +304,15 @@ export function tempoLegivel(ms: number): string {
 export function pilotoAutomatico(k: Kart, p: Pista, derrapar = false): Comandos {
   const n = p.lx.length;
   const alvo = (k.indice + 10) % n;
-  let dif = Math.atan2(p.ly[alvo] - k.y, p.lx[alvo] - k.x) - k.angulo;
+  let mx = p.lx[alvo], my = p.ly[alvo];
+  // a porteira à frente: mira a metade que estará aberta (sem porteira, o meio, como sempre)
+  const desvio = p.porteiras?.length ? desvioDaPorteira(p, k.indice, k.passos, k.v) : null;
+  if (desvio !== null) {
+    const j = (alvo + 1) % n, dx = p.lx[j] - p.lx[alvo], dy = p.ly[j] - p.ly[alvo], l = Math.hypot(dx, dy) || 1;
+    mx -= (dy / l) * desvio;
+    my += (dx / l) * desvio;
+  }
+  let dif = Math.atan2(my - k.y, mx - k.x) - k.angulo;
   while (dif > Math.PI) dif -= 2 * Math.PI;
   while (dif < -Math.PI) dif += 2 * Math.PI;
   return { acelera: true, freia: false, vira: Math.abs(dif) < 0.04 ? 0 : Math.sign(dif), derrapa: derrapar && Math.abs(dif) > 0.25 };

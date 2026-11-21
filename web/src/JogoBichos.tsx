@@ -86,7 +86,18 @@ interface EstadoSolo {
   /** O golpe novo que espera a escolha de qual esquecer. */
   aprender?: { id: number; especie: string; golpe: string; golpes: string[]; fila: number } | null;
   desafios: number;
-  luta: { tipo: 'mato' | 'desafio' | 'pessoa'; acabou: string | null; meu: LadoNaTela; outro: LadoNaTela; chance: number; chanceDourada?: number } | null;
+  luta: {
+    tipo: 'mato' | 'desafio' | 'pessoa';
+    acabou: string | null;
+    meu: LadoNaTela;
+    outro: LadoNaTela;
+    chance: number;
+    chanceDourada?: number;
+    /** A luta da Liga da Toca (21/11/2026): qual é e quantas são. */
+    liga?: { n: number; total: number };
+  } | null;
+  /** Quantas vezes venceu a Liga da Toca. */
+  ligas?: number;
   eventos: Evento[];
 }
 interface EstadoSala {
@@ -150,6 +161,10 @@ function textoDo(e: Evento, t: ReturnType<typeof useT>, nomeDaPessoa: (id: numbe
       return t('{nome} quer aprender {golpe}, mas já sabe 4 golpes.', { nome, golpe: nomeDoGolpe(e.golpe, t) });
     case 'esqueceu':
       return t('{nome} esqueceu {antigo} e aprendeu {golpe}.', { nome, antigo: nomeDoGolpe(e.antigo, t), golpe: nomeDoGolpe(e.golpe, t) });
+    case 'liga':
+      return `🏅 ${t('Liga da Toca: luta {n} de {total}', { n: Number(e.n), total: Number(e.total) })}`;
+    case 'campeao':
+      return `🏆 ${t('Você venceu a Liga da Toca!')}`;
     case 'presente':
       return `🎁 ${t('{nome} deu {bicho} para você cuidar.', { nome: String(e.nome), bicho: nome })}`;
     case 'apareceu':
@@ -239,7 +254,8 @@ function somDo(e: Evento) {
   else if (e.t === 'errou') tocar('erro');
   else if (e.t === 'efeito') tocar(e.efeito === 'cura' ? 'cura' : e.efeito === 'veneno' ? 'dano' : 'item');
   else if (e.t === 'moedas' || e.t === 'achou' || e.t === 'comprou') tocar('moeda');
-  else if (e.t === 'raro' || e.t === 'presente') tocar('medalha');
+  else if (e.t === 'raro' || e.t === 'presente' || e.t === 'campeao') tocar('medalha');
+  else if (e.t === 'liga') tocar('largada');
   else if (e.t === 'erva') tocar('cura');
   else if (e.t === 'aprendeu' || e.t === 'esqueceu') tocar('moeda');
   else if (e.t === 'querAprender') tocar('vez');
@@ -576,6 +592,16 @@ function Aventura({ estado, agir }: { estado: EstadoSolo; agir: (corpo: Record<s
     return (
       <div className="bichos bichos-luta">
         <PalcoDaLuta lados={narracao.vista} meu={0} golpe={narracao.golpe} desafio={luta.tipo === 'desafio'} />
+        {luta.liga && (
+          <p className="bichos-liga" title={t('Liga da Toca: luta {n} de {total}', { n: luta.liga.n, total: luta.liga.total })}>
+            🏅{' '}
+            {Array.from({ length: luta.liga.total }, (_, k) => (
+              <span key={k} aria-hidden="true">
+                {k < luta.liga!.n - 1 ? '●' : k === luta.liga!.n - 1 ? '◉' : '○'}
+              </span>
+            ))}
+          </p>
+        )}
         <p className="bichos-narracao" aria-live="polite">
           {narracao.atual ? textoDo(narracao.atual, t, () => '') : ' '}
         </p>

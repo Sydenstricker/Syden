@@ -140,6 +140,16 @@ export function desenharMarcaNoChao(g: CanvasRenderingContext2D, m: MarcaNaTela,
       anel(g, m.x, m.y, m.r * (0.4 + k * 0.7), m.r * (0.4 + k * 0.7) * 0.62, '#fbf3e4');
       anel(g, m.x, m.y, m.r * (0.4 + k * 0.7) - 2, (m.r * (0.4 + k * 0.7) - 2) * 0.62, '#c4a888');
       g.globalAlpha = 1;
+    } else if (m.tipo === 'faixa') {
+      // o vento passou: um risco claro que some
+      g.globalAlpha = (1 - k) * 0.6;
+      g.strokeStyle = '#fbf3e4';
+      g.lineWidth = 2;
+      g.beginPath();
+      g.moveTo(m.x, m.y);
+      g.lineTo(m.x2, m.y2);
+      g.stroke();
+      g.globalAlpha = 1;
     } else if (m.tipo === 'pedra') {
       g.globalAlpha = 1 - k;
       for (let i = 0; i < 6; i++) {
@@ -170,8 +180,8 @@ export function desenharMarcaNoChao(g: CanvasRenderingContext2D, m: MarcaNaTela,
     disco(g, m.x2, m.y2, Math.round(r * (0.3 + 0.7 * s)), Math.round(r * (0.3 + 0.7 * s) * 0.6), '#2a1e1a');
     g.globalAlpha = 1;
     anel(g, m.x2, m.y2, r, r * 0.6, m.frio ? (pisca ? '#7ec8e3' : '#d6f0fa') : pisca ? '#e2574a' : '#ffd36a');
-  } else if (m.tipo === 'investida') {
-    // o corredor da investida: as duas bordas tracejadas e as setas
+  } else if (m.tipo === 'investida' || m.tipo === 'faixa') {
+    // o corredor da investida (e a faixa do leque da alpaca, 21/11/2026): as duas bordas tracejadas e as setas
     const dx = m.x2 - m.x, dy = m.y2 - m.y;
     const L = Math.sqrt(dx * dx + dy * dy) || 1;
     const ux = dx / L, uy = dy / L;
@@ -634,4 +644,40 @@ export function monteDeNeve(g: CanvasRenderingContext2D, x: number, y: number, t
   disco(g, x, y - 3, 13, 6, '#c8d6e2');
   disco(g, x - 2, y - 5, 9, 4, '#eef4f8');
   for (let k = 0; k < 4; k++) px(g, x - 12 + ((k * 7 + Math.floor(tempo / 90)) % 24), y - 2 - (k % 2) * 4, 3, 2, '#ffffff');
+}
+
+/**
+ * O BURACO DA ARENA QUE MUDA (21/11/2026): antes de abrir, as rachaduras crescem e o contorno pisca; aberto, o buraco escuro com
+ * a borda de terra. Vai por baixo de tudo, com as marcas.
+ */
+export function desenharBuraco(g: CanvasRenderingContext2D, b: { x: number; y: number; r: number; resta: number }, tempo: number) {
+  const ry = Math.round(b.r * 0.62);
+  if (b.resta > 0) {
+    const s = Math.max(0, Math.min(1, 1 - b.resta / 2000));
+    const pisca = Math.floor(tempo / 120) % 2 === 0;
+    g.globalAlpha = 0.18 + 0.3 * s;
+    disco(g, b.x, b.y, Math.round(b.r * s), Math.round(ry * s), '#2a1e1a');
+    g.globalAlpha = 1;
+    anel(g, b.x, b.y, b.r, ry, pisca ? '#e2574a' : '#ffd36a', 3, Math.floor(tempo / 80));
+    // as rachaduras, do meio para fora
+    for (let k = 0; k < 6; k++) {
+      const a = (k / 6) * Math.PI * 2 + 0.4;
+      const L = b.r * (0.3 + 0.7 * s);
+      for (let d = 2; d < L; d += 3) px(g, b.x + Math.cos(a) * d, b.y + Math.sin(a) * d * 0.62, 2, 1, '#5a4030');
+    }
+    return;
+  }
+  disco(g, b.x, b.y + 1, b.r + 3, ry + 2, '#7a5a3e');
+  disco(g, b.x, b.y, b.r, ry, '#1e1410');
+  disco(g, b.x, b.y + 2, b.r - 5, ry - 4, '#0c0806');
+  // a borda de cima, mais clara (o chão cortado)
+  for (let k = -b.r + 4; k < b.r - 4; k += 4) px(g, b.x + k, b.y - ry + 1, 3, 1, '#a3805f');
+}
+
+/** O monte de areia que anda (a alpaca embaixo da areia, indo de uma toca a outra). */
+export function monteDeAreia(g: CanvasRenderingContext2D, x: number, y: number, tempo: number) {
+  sombra(g, x, y + 1, 14, 4);
+  disco(g, x, y - 3, 13, 6, '#c8a46a');
+  disco(g, x - 2, y - 5, 9, 4, '#e6c88e');
+  for (let k = 0; k < 4; k++) px(g, x - 12 + ((k * 7 + Math.floor(tempo / 90)) % 24), y - 2 - (k % 2) * 4, 3, 2, '#f4e0b4');
 }

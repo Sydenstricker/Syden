@@ -1,6 +1,6 @@
 import { arte, L, ladrilhoNo, pintarChaoDeLadrilhos } from './arte';
 import type { Mundo } from './mundo';
-import { ALTURA, LARGURA, LOOP_DURA, posicaoBala, posicaoInimigo, posicaoItem, posicaoTiro, type FaseDaNave, type Inimigo } from './sim';
+import { ALTURA, LARGURA, LOOP_DURA, posicaoBala, posicaoInimigo, posicaoItem, posicaoTiro, type FaseBase, type Inimigo } from './sim';
 
 /**
  * O DESENHO DA ESQUADRILHA DA TOCA (05/11/2026), todo por código, numa tela de 180 × 240 ampliada em pixels inteiros: a horta
@@ -48,6 +48,32 @@ const CORVO_A = ['k...........k', 'kk.........kk', '.kkk.....kkk.', '..kkkKKKkkk
 const CORVO_B = ['.............', '.............', 'kkkk.....kkkk', '.kkkkKKKkkkk.', '...kkKKKkk...', '.....KKK.....', '....kkkkk....', '....krkrk....', '......y......'];
 const VESPA_A = ['....k....', 'c..kyk..c', 'cc.yyy.cc', '.cckkkcc.', '..yyyyy..', '..kkkkk..', '..yyyyy..', '...kkk...', '..kyyyk..', '..ekkke..', '...k.k...'];
 const VESPA_B = VESPA_A.map((l, i) => (i <= 3 ? l.replace(/c/g, '.') : l)).map((l, i) => (i === 3 ? '..ckkkc..' : i === 4 ? '.cyyyyyc.' : l));
+/** A MARIPOSA do pomar (21/11/2026): as asas cor de palha com as manchas, abrindo e fechando. */
+const MARIPOSA_A = [
+  '....k...k....',
+  '..bb.k.k.bb..',
+  '.bbbb.k.bbbb.',
+  'bbKbbbkbbbKbb',
+  'bbbbbbkbbbbbb',
+  '.bbbbbkbbbbb.',
+  '..bbb.k.bbb..',
+  '...b.kkk.b...',
+  '......k......',
+];
+const MARIPOSA_B = [
+  '....k...k....',
+  '.....k.k.....',
+  '....bbkbb....',
+  '...bKbkbKb...',
+  '...bbbkbbb...',
+  '....bbkbb....',
+  '.....bkb.....',
+  '.....kkk.....',
+  '......k......',
+];
+/** O MORCEGO do celeiro (21/11/2026): as asas de couro subindo e descendo, os olhinhos vermelhos. */
+const MORCEGO_A = ['K...........K', 'KK.........KK', 'KKK..k.k..KKK', 'KKKKkkkkkKKKK', '.KKKkrkrkKKK.', '..K.kkkkk.K..', '.....kkk.....'];
+const MORCEGO_B = ['.....k.k.....', '....kkkkk....', '...KkrkrkK...', '..KKkkkkkKK..', '.KKK.kkk.KKK.', 'KKK.......KKK', 'K...........K'];
 const BESOURO = [
   '..k.........k..',
   '...k.VVVVV.k...',
@@ -198,7 +224,7 @@ export function pintarHorta(): HTMLCanvasElement {
  * O chão da fase: em ladrilhos do Pixel Shmup quando a folha já chegou (`arte.ts`), senão a horta por código de sempre (a
  * reserva, igual nas três fases).
  */
-export function pintarChao(fase: FaseDaNave): HTMLCanvasElement {
+export function pintarChao(fase: FaseBase): HTMLCanvasElement {
   const f = arte();
   return f ? pintarChaoDeLadrilhos(f, fase, LARGURA, ALTURA_DO_ROLO) : pintarHorta();
 }
@@ -270,6 +296,8 @@ function desenharInimigo(ctx: CanvasRenderingContext2D, e: Inimigo, x: number, y
   if (e.tipo === 'corvo') no(ctx, figura(bate ? CORVO_A : CORVO_B), x, y);
   else if (e.tipo === 'vespa') no(ctx, figura(Math.floor(n / 3) % 2 ? VESPA_A : VESPA_B), x, y);
   else if (e.tipo === 'besouro') no(ctx, figura(BESOURO), x, y);
+  else if (e.tipo === 'mariposa') no(ctx, figura(Math.floor(n / 7) % 2 ? MARIPOSA_A : MARIPOSA_B), x, y);
+  else if (e.tipo === 'morcego') no(ctx, figura(Math.floor(n / 4) % 2 ? MORCEGO_A : MORCEGO_B), x, y);
   else if (e.rota[0] === 1) desenharVespeiro(ctx, x, y, n, dano / e.vida);
   else if (e.rota[0] === 2) desenharTrator(ctx, x, y, n, dano / e.vida);
   else desenharChefe(ctx, x, y, n, dano / e.vida);
@@ -592,9 +620,9 @@ export function desenhar(ctx: CanvasRenderingContext2D, d: Desenho) {
     }
   }
 
-  // a vida do chefe, no alto (a desta tela)
-  const chefe = m.inimigos.length - 1;
-  if (m.ativos.includes(chefe) && m.mortoEm(chefe) === null) {
+  // a vida do chefe, no alto (a desta tela); na campanha (21/11/2026), o chefe que está na tela agora
+  const chefe = m.ativos.find((i) => m.inimigos[i].tipo === 'chefe' && m.mortoEm(i) === null) ?? -1;
+  if (chefe >= 0) {
     const e = m.inimigos[chefe];
     const resta = Math.max(0, 1 - (m.ficha.dano.get(chefe) ?? 0) / e.vida);
     ctx.fillStyle = '#2b2633';

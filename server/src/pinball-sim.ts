@@ -78,6 +78,15 @@ export const MISSOES: readonly { id: IdDaMissao; evento: string; meta: number; p
   { id: 'estilingues', evento: 'estilingue', meta: 6, passos: 1200 },
 ];
 export const PONTOS_DA_MISSAO = 1000;
+/**
+ * O MODO FINAL (21/11/2026, o lote D): cumpridas TODAS as missões do ciclo (cada uma pelo menos uma vez, em qualquer ordem e em
+ * qualquer bola), a mesa entra na fase curta em que tudo vale FINAL_VEZES (a recompensa de quem jogou as missões inteiras, como nos
+ * pinballs de verdade). Dura FINAL_PASSOS com bola em jogo, acende a toca e liga a bola salva; acaba antes se a bola cair. Durante
+ * ela as missões param; depois, o ciclo recomeça do zero (e o final pode vir de novo).
+ */
+export const FINAL_PASSOS = 1800;
+export const FINAL_VEZES = 3;
+export const TODAS_AS_MISSOES = (1 << MISSOES.length) - 1;
 export const PATENTE_MAXIMA = 9;
 
 /** A RAMPA: a boca (o sensor, em y) e o trilho até o alto, que solta a bola na primeira pista. */
@@ -377,6 +386,7 @@ export type Evento =
   | { tipo: 'extra' }
   | { tipo: 'rampa'; x: number; y: number; pontos: number }
   | { tipo: 'missao'; missao: IdDaMissao; cumpriu: boolean; pontos: number; x: number; y: number }
+  | { tipo: 'final'; comecou: boolean; pontos: number; x: number; y: number }
   | { tipo: 'fim' };
 
 export interface Mesa {
@@ -429,6 +439,12 @@ export interface Mesa {
   patente: number;
   /** Missões cumpridas na partida. */
   cumpridas: number;
+  /** As missões do ciclo já cumpridas (um bit por missão, desde o último modo final). */
+  feitas: number;
+  /** O modo final: os passos que faltam (0: fora dele), quantas vezes ele veio, e os pontos dele na vez de agora. */
+  final: number;
+  finais: number;
+  finalPontos: number;
 }
 
 const bolaNaMola = (auto: boolean): Bola => ({ x: RAIA_X, y: MOLA_Y, vx: 0, vy: 0, naMola: true, auto, presa: 0, orbita: 0, parada: 0, trilho: 0 });
@@ -469,11 +485,17 @@ export function novaMesa(limite = PASSOS_MAXIMOS, mesa = 0): Mesa {
     missaoResta: MISSOES[0].passos,
     patente: 1,
     cumpridas: 0,
+    feitas: 0,
+    final: 0,
+    finais: 0,
+    finalPontos: 0,
   };
 }
 
 /** Conta os eventos do passo na missão da vez (só o que pontuou: a mesa travada não conta). */
 function contarMissao(k: Mesa) {
+  // no modo final as missões param
+  if (k.final > 0) return;
   const m = MISSOES[k.missao];
   let n = 0;
   for (const e of k.eventos) {
@@ -488,9 +510,32 @@ function contarMissao(k: Mesa) {
     const pontos = marcar(k, PONTOS_DA_MISSAO * k.patente, 0);
     k.eventos.push({ tipo: 'missao', missao: m.id, cumpriu: true, pontos, x: MEIO, y: 230 });
     k.cumpridas++;
+    k.feitas |= 1 << k.missao;
     if (k.patente < PATENTE_MAXIMA) k.patente++;
     proximaMissao(k);
+    if (k.feitas === TODAS_AS_MISSOES) comecarFinal(k);
   }
+}
+
+/** O MODO FINAL começa: tudo vale FINAL_VEZES, a toca acende (o multibola à mão) e a bola fica salva por um tempo. */
+function comecarFinal(k: Mesa) {
+  k.feitas = 0;
+  k.final = FINAL_PASSOS;
+  k.finais++;
+  k.finalPontos = 0;
+  k.tocaAcesa = true;
+  k.salva = Math.max(k.salva, SALVA_MULTIBOLA);
+  k.eventos.push({ tipo: 'final', comecou: true, pontos: 0, x: MEIO, y: 200 });
+}
+
+/** O modo final acaba (o prazo, ou a bola caiu): o ciclo das missões recomeça do zero. */
+function acabarFinal(k: Mesa) {
+  if (k.final <= 0) return;
+  k.final = 0;
+  k.eventos.push({ tipo: 'final', comecou: false, pontos: k.finalPontos, x: MEIO, y: 200 });
+  k.missao = 0;
+  k.missaoConta = 0;
+  k.missaoResta = MISSOES[0].passos;
 }
 
 function proximaMissao(k: Mesa) {
@@ -513,6 +558,10 @@ export function pontaDaPalheta(lado: -1 | 1, estado: number): { x: number; y: nu
 function marcar(k: Mesa, pontos: number, bonus: number) {
   if (k.tilt) return 0;
   k.tacada = 0;
+  if (k.final > 0) {
+    pontos *= FINAL_VEZES;
+    k.finalPontos += pontos;
+  }
   k.pontos += pontos;
   k.reserva += bonus;
   return pontos;
@@ -699,8 +748,11 @@ export function passo(k: Mesa, comando: number) {
   if (k.tremor > 0) k.tremor--;
   if (k.salva > 0) k.salva--;
   if (k.tacada > 0) k.tacada--;
-  // o prazo da missão só anda com bola em jogo (fora da mola)
-  if (k.bolas.some((b) => !b.naMola) && --k.missaoResta <= 0) {
+  // o prazo da missão só anda com bola em jogo (fora da mola); no modo final, anda o prazo dele
+  if (k.final > 0) {
+    if (k.bolas.some((b) => !b.naMola) && k.final === 1) acabarFinal(k);
+    else if (k.bolas.some((b) => !b.naMola)) k.final--;
+  } else if (k.bolas.some((b) => !b.naMola) && --k.missaoResta <= 0) {
     k.eventos.push({ tipo: 'missao', missao: MISSOES[k.missao].id, cumpriu: false, pontos: 0, x: MEIO, y: 230 });
     proximaMissao(k);
   }
@@ -869,6 +921,8 @@ export function passo(k: Mesa, comando: number) {
       const bonus = k.tilt ? 0 : k.reserva * k.mult;
       k.pontos += bonus;
       k.eventos.push({ tipo: 'perdeu', bonus });
+      // a bola caiu no meio do modo final: ele acaba ali
+      acabarFinal(k);
       k.reserva = 0;
       k.mult = 1;
       k.tilt = false;

@@ -268,3 +268,81 @@ test('as medalhas de cada fase: o tempo do piloto automático é o ouro (20/11/2
     assert.equal(medalhaPelosPassos(k.chegouEm, k.chegouEm * 2, MEDALHAS_DO_PULO), null);
   }
 });
+
+// ---------------- As fases com um elemento novo (21/11/2026) ----------------
+
+test('a corrente de ar sobe o coelho no ar, sem passar de VSOPRO', async () => {
+  const { fasePorId } = await import('../src/plataforma/fases');
+  const { VSOPRO } = await import('../src/plataforma/fisica');
+  const f = fasePorId('vento-1');
+  const v = f.ventos[0];
+  const k = novoCoelho(f);
+  k.x = (v.x0 + v.x1) / 2;
+  k.y = 180;
+  k.vy = 300;
+  k.noChao = false;
+  let menor = Infinity;
+  for (let i = 0; i < 120; i++) {
+    passo(k, { esquerda: false, direita: false, pula: false }, f);
+    menor = Math.min(menor, k.vy);
+  }
+  assert.equal(k.quedas, 0, 'a corrente segurou: não caiu no buraco');
+  assert.ok(menor < 0 && menor >= -VSOPRO - 0.001, `subiu (${menor.toFixed(0)}/s)`);
+  assert.ok(k.y < 180, 'ficou mais alto do que entrou');
+});
+
+test('a pedra que racha: pisada, cai depois de RACHA_TREME passos e volta depois de RACHA_FORA', async () => {
+  const { fasePorId } = await import('../src/plataforma/fases');
+  const { RACHA_FORA, RACHA_TREME, rachaPresente } = await import('../src/plataforma/fisica');
+  const f = fasePorId('caverna-1');
+  const i = f.rachas.indexOf(11 * f.colunas + 50); // a ponte comprida
+  assert.ok(i >= 0);
+  const k = novoCoelho(f);
+  k.x = 50 * T + T / 2;
+  k.y = 11 * T - 4;
+  k.noChao = false;
+  const parado: Comandos = { esquerda: false, direita: false, pula: false };
+  for (let n = 0; n < 20 && !k.noChao; n++) passo(k, parado, f);
+  assert.ok(k.noChao, 'em cima da pedra');
+  const pisada = k.racha[i];
+  assert.ok(pisada > 0, 'começou a tremer');
+  for (let n = 0; n < RACHA_TREME - 4; n++) passo(k, parado, f);
+  assert.ok(k.noChao && rachaPresente(k, i), 'ainda segura enquanto treme');
+  for (let n = 0; n < 60 && k.quedas === 0; n++) passo(k, parado, f);
+  assert.equal(k.quedas, 1, 'caiu com a pedra');
+  assert.equal(k.racha[i], 0, 'cair devolve as pedras');
+  // sem cair, a pedra volta sozinha
+  const j = novoCoelho(f);
+  j.racha[i] = 1;
+  j.passos = 1 + RACHA_TREME;
+  assert.equal(rachaPresente(j, i), false);
+  j.passos = RACHA_TREME + RACHA_FORA;
+  passo(j, parado, f);
+  assert.equal(j.racha[i], 0, 'voltou');
+});
+
+test('as tábuas que piscam: a clara e a azul se revezam, e quem fica em cima na troca cai', async () => {
+  const { fasePorId, piscaPresente, PISCA_PERIODO } = await import('../src/plataforma/fases');
+  assert.equal(piscaPresente(Bloco.PiscaA, 0), true);
+  assert.equal(piscaPresente(Bloco.PiscaB, 0), false);
+  assert.equal(piscaPresente(Bloco.PiscaA, PISCA_PERIODO), false);
+  assert.equal(piscaPresente(Bloco.PiscaB, PISCA_PERIODO), true);
+  const f = fasePorId('cachoeira-1');
+  assert.equal(blocoEm(f, 23, 10), Bloco.PiscaA);
+  const k = novoCoelho(f);
+  k.x = 23 * T + T / 2;
+  k.y = 10 * T - 3;
+  k.noChao = false;
+  const parado: Comandos = { esquerda: false, direita: false, pula: false };
+  for (let n = 0; n < 20 && !k.noChao; n++) passo(k, parado, f);
+  assert.ok(k.noChao, 'em cima da clara');
+  for (let n = 0; n < PISCA_PERIODO + 60 && k.quedas === 0; n++) passo(k, parado, f);
+  assert.equal(k.quedas, 1, 'a clara sumiu e o coelho caiu');
+});
+
+test('a Copa dos Elementos é igual no site e no servidor, e as fases antigas não mudaram', async () => {
+  const { COPAS_DO_PULO: NO_SERVIDOR } = await import('../../server/src/plataforma.ts');
+  assert.deepEqual(COPAS_DO_PULO['copa-dos-elementos'], ['vento-1', 'caverna-1', 'cachoeira-1']);
+  assert.deepEqual(NO_SERVIDOR['copa-dos-elementos'], COPAS_DO_PULO['copa-dos-elementos']);
+  for (const f of FASES.slice(0, 6)) assert.equal(f.ventos.length + f.rachas.length, 0, `${f.id}: sem elemento novo`);
+});

@@ -11,7 +11,9 @@ import { coresDoJogador, type AvatarDoJogo } from '../coelho/cores';
 import { MOLETOM_DO_MASCOTE, PELO_DO_MASCOTE } from '../corrida/coresDosAvatares';
 import {
   ADVERSARIOS,
+  adversarioDe,
   ATINGIDO,
+  CIRCUITOS,
   ESQUIVA,
   GOLPE_SAINDO,
   IMPACTO_DO_FORTE,
@@ -34,7 +36,7 @@ const MEIO = LARGURA / 2;
 /** Onde fica o pé do adversário. */
 const PE_Y = 170;
 /** A ampliação de cada folha (pixel art só cresce bem em inteiros; o pesado, de folha maior, fica com 2 e ainda é o maior). */
-const ESCALA: Record<string, number> = { macaco: 3, yeti: 2, 'demonio-azul': 3 };
+const ESCALA: Record<string, number> = { macaco: 3, yeti: 2, 'demonio-azul': 3, diabinho: 3, cacto: 3, 'alpaca-rei': 2 };
 
 /** A ordem dos desenhos na folha (a mesma de briga/sprites.ts e do briga-monstros-pos.py). */
 const QUADRO = { parado: 0, prep: 10, golpe: 12, dor: 14, caido: 16, pulo: 19 } as const;
@@ -77,10 +79,10 @@ function folha(bicho: string): { img: HTMLImageElement; branca: HTMLCanvasElemen
   return x;
 }
 
-/** Pede as três folhas de antemão (a apresentação do primeiro já aparece com ele). */
-export function carregarFolhas(): Promise<void> {
+/** Pede as três folhas do circuito de antemão (a apresentação do primeiro já aparece com ele). */
+export function carregarFolhas(circuito = 0): Promise<void> {
   return Promise.all(
-    ADVERSARIOS.map(
+    (CIRCUITOS[circuito] ?? ADVERSARIOS).map(
       (a) =>
         new Promise<void>((pronto) => {
           folha(a.bicho);
@@ -240,7 +242,7 @@ export class DesenhoDoRingue {
   // ------------------------------------------------------------------ o adversário
   private adversario(l: Luta, agora: number) {
     const g = this.g;
-    const A = ADVERSARIOS[l.adv];
+    const A = adversarioDe(l);
     const a = l.a;
     const f = FOLHAS_DOS_BICHOS[A.bicho];
     const s = ESCALA[A.bicho] ?? 2;
@@ -338,7 +340,7 @@ export class DesenhoDoRingue {
 
   private luvasDoAdversario(l: Luta, cx: number, cy: number, agora: number) {
     const a = l.a;
-    const A = ADVERSARIOS[l.adv];
+    const A = adversarioDe(l);
     const gl = a.golpe;
     // as duas luvas: [x, y, raio] de cada uma (esquerda e direita da tela)
     let e: [number, number, number] = [cx - 18, cy + 6, 10];
@@ -596,7 +598,7 @@ export class DesenhoDoRingue {
   // ------------------------------------------------------------------ o painel
   private painel(l: Luta, agora: number, dicaDoLevantar: boolean) {
     const g = this.g;
-    const A = ADVERSARIOS[l.adv];
+    const A = adversarioDe(l);
     const j = l.j;
     // as barras de vida: a de quem joga à esquerda, a do adversário à direita (com a cor das luvas dele)
     this.barra(8, 8, 120, j.vida / 100, '#7fd06a');
@@ -613,8 +615,9 @@ export class DesenhoDoRingue {
       this.estrelaCheia(14 + i * 14, 36, 6);
     }
     // o circuito: um ponto por adversário (os vencidos cheios)
+    const circuito = CIRCUITOS[l.circuito];
     for (let i = 0; i < ADVERSARIOS.length; i++) {
-      g.fillStyle = i < l.vencidas ? '#ffd84a' : i === l.adv ? ADVERSARIOS[i].luva : 'rgba(255,255,255,0.2)';
+      g.fillStyle = i < l.vencidas ? '#ffd84a' : i === l.adv ? circuito[i].luva : 'rgba(255,255,255,0.2)';
       g.beginPath();
       g.arc(LARGURA - 14 - (ADVERSARIOS.length - 1 - i) * 12, 26, 4, 0, Math.PI * 2);
       g.fill();

@@ -22,6 +22,9 @@
  * nave-sim.ts); o recorde da horta continua em nave_recordes, e o das outras vai à tabela comum do Solo. A ESQUADRILHA
  * INTACTA: com a turma (2 ou mais que ficaram), se ninguém perdeu vida, cada um ganha SEM_QUEDA pontos no fim (a medalha que
  * vale mais). E o loop de esquiva ('l') passa pela mesma ficha.
+ *
+ * DESDE 21/11/2026 (o lote D): o pomar e o celeiro têm cada um o seu bicho (a mariposa e o morcego, nave-sim.ts), e a CAMPANHA
+ * ('campanha') junta as três fases numa partida só, com o placar somado; o recorde dela vai à tabela comum (variante 'campanha').
  */
 import { ehFaseDaNave, Ficha, PASSOS_POR_S, roteiro, SEM_QUEDA, temposDaFase, type Inimigo } from './nave-sim.js';
 import * as db from './db.js';

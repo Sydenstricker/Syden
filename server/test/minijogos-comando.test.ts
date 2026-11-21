@@ -584,35 +584,234 @@ test('o deserto: os bichos dele entram, o yeti é o subchefe da terceira onda e 
   m.jogo.parar!();
 });
 
-test('a campanha: vencido o dragão da floresta, o deserto começa do começo; o recorde é da campanha inteira', async () => {
+test('a campanha: vencido o chefe de cada fase, a próxima começa do começo (floresta, deserto e neve); o recorde é da campanha inteira', async () => {
   const db = await import('../src/db.js');
   const m = comecar([anaId], 0, { fase: 'campanha' });
   let viuDeserto = false;
-  for (let k = 0; k < 4000 && (m.quadros.at(-1) as { f: string } | undefined)?.f !== 'vitoria'; k++) {
+  let viuNeve = false;
+  for (let k = 0; k < 6000 && (m.quadros.at(-1) as { f: string } | undefined)?.f !== 'vitoria'; k++) {
     const q = m.quadros.at(-1) as { f: string; a: [number, number]; fs: number } | undefined;
     if (q?.fs === mod.CENARIO_DA_FASE.deserto) viuDeserto = true;
+    if (q?.fs === mod.CENARIO_DA_FASE.neve) viuNeve = true;
     const pub = m.jogo.publico(anaId) as { onda: number; ondas: number };
-    const dragao = [...m.i._bichos.values()].find((b) => b.tipo === 'dragao' && b.hp > 0);
+    const ehChefe = (b: Bicho) => BICHOS[b.tipo as keyof typeof BICHOS].comp === 'chefe';
+    const chefe = [...m.i._bichos.values()].find((b) => ehChefe(b) && b.hp > 0);
     if (pub.onda < pub.ondas) m.i._fila().length = 0;
-    for (const b of [...m.i._bichos.values()]) if (b.tipo !== 'dragao') m.i._bichos.delete(b.id);
-    if (dragao) {
-      dragao.hp = 1;
-      dragao.historia.push({ t: agora, x: dragao.x, h: 0 });
-      m.por(anaId, dragao.x - BICHOS.dragao.larg - 4);
-      m.manda(anaId, { tipo: 'faca', inimigo: dragao.id });
+    for (const b of [...m.i._bichos.values()]) if (!ehChefe(b)) m.i._bichos.delete(b.id);
+    if (chefe) {
+      chefe.hp = 1;
+      chefe.historia.push({ t: agora, x: chefe.x, h: 0 });
+      m.por(anaId, chefe.x - BICHOS[chefe.tipo as keyof typeof BICHOS].larg - 4);
+      m.manda(anaId, { tipo: 'faca', inimigo: chefe.id });
     }
     if (q?.f === 'avancando') m.por(anaId, q.a[1] - 20);
     m.andar(PASSO_MS * 8);
   }
   assert.equal((m.quadros.at(-1) as { f: string }).f, 'vitoria');
   assert.ok(viuDeserto, 'passou pelo deserto');
-  assert.equal((m.jogo.publico(anaId) as { etapa: number }).etapa, 2);
+  assert.ok(viuNeve, 'passou pela neve');
+  assert.equal((m.jogo.publico(anaId) as { etapa: number }).etapa, 3);
   m.disparar();
-  assert.ok(db.recordeDoSolo(anaId, 'comando', 'campanha'));
+  // a campanha ganhou a neve: o recorde dela tem nome novo (o de antes, de duas fases, não se compara)
+  assert.ok(db.recordeDoSolo(anaId, 'comando', 'campanha-3'));
 });
 
 test('no deserto, o piloto vence sozinho com 200 ms de ida e volta', async (t) => {
   const { ultimo, segundos } = await partida([7], 100, 5, { fase: 'deserto' });
   t.diagnostic(`o deserto levou ${Math.round(segundos)} s; vidas ${ultimo.j[0][7]}, pontos ${ultimo.j[0][9]}`);
   assert.equal(ultimo.f, 'vitoria', `fase ${ultimo.f} na onda ${ultimo.o + 1}`);
+});
+
+// ---------------- O conteúdo de 21/11/2026: as tábuas e as gaiolas de cada fase, a neve, a alpaca-rei, a avalanche, o firmar ----------------
+
+test('cada fase tem as suas tábuas e as suas gaiolas; a floresta continua com as de sempre', () => {
+  assert.deepEqual(mod.PLATAFORMAS_DA_FASE.floresta, mod.PLATAFORMAS);
+  assert.deepEqual(mod.REFENS_DA_FASE.floresta, REFENS);
+  const fases = mod.FASES_DO_COMANDO;
+  assert.deepEqual([...fases], ['floresta', 'deserto', 'neve']);
+  for (const a of fases) {
+    for (const b of fases) {
+      if (a === b) continue;
+      assert.notDeepEqual(mod.PLATAFORMAS_DA_FASE[a], mod.PLATAFORMAS_DA_FASE[b], `tábuas ${a} × ${b}`);
+      assert.notDeepEqual(mod.REFENS_DA_FASE[a], mod.REFENS_DA_FASE[b], `gaiolas ${a} × ${b}`);
+    }
+    const tabuas = mod.PLATAFORMAS_DA_FASE[a];
+    // toda arena tem tábua (é para ela que se sobe no fogo, na investida e na avalanche), e nenhuma é alta demais
+    for (const x0 of ONDAS_X) assert.ok(tabuas.some(([p0, p1]) => p0 >= x0 && p1 <= x0 + 320), `${a}: tábua na arena ${x0}`);
+    for (const [, , h] of tabuas) assert.ok(h <= 55, `${a}: tábua até 55`);
+    // a tábua alta se alcança de uma baixa ao lado (o pulo sobe ~45)
+    for (const [p0, p1, h] of tabuas) {
+      if (h <= 45) continue;
+      assert.ok(tabuas.some(([q0, q1, hq]) => hq < h && hq + 40 >= h && (Math.abs(q1 - p0) < 20 || Math.abs(p1 - q0) < 20)), `${a}: a de ${h} tem degrau`);
+    }
+    // as gaiolas ficam no chão, entre as arenas (só se chega com a onda vencida)
+    for (const [x] of mod.REFENS_DA_FASE[a]) assert.ok(ONDAS_X.some((x0) => x > x0 + 320 && x < x0 + 400), `${a}: gaiola ${x} entre arenas`);
+  }
+  // a conta aceita as tábuas de cada fase
+  const [x0, , h] = mod.PLATAFORMAS_DA_FASE.deserto[1];
+  assert.equal(mod.pousoEm(x0 + 5, h + 5, h - 2, mod.PLATAFORMAS_DA_FASE.deserto), h);
+  assert.equal(mod.pousoEm(x0 + 5, h + 5, h - 2), null, 'sem a fase, as da floresta');
+});
+
+test('as gaiolas do deserto: o servidor confere pelas da fase (não pelas da floresta)', () => {
+  const m = comecar([anaId], 0, { fase: 'deserto' });
+  m.andar(200);
+  irAteAOnda(m, 2);
+  // a segunda onda vencida: a arena vai até a terceira, onde fica a segunda gaiola do deserto (a da floresta é bem depois)
+  m.i._fila().length = 0;
+  m.i._bichos.clear();
+  m.andar(200);
+  const [gx, arma] = mod.REFENS_DA_FASE.deserto[1];
+  m.por(anaId, gx - 60);
+  assert.equal(m.manda(anaId, { tipo: 'soltar', gaiola: 1 }), 'longe da gaiola');
+  m.por(anaId, gx);
+  assert.equal(m.manda(anaId, { tipo: 'soltar', gaiola: 1 }), null);
+  assert.equal(m.i._jogadores.get(anaId)!.arma, arma);
+  assert.equal((m.quadros.at(-1) as { mp: number }).mp, 1, 'o quadro diz a fase');
+  m.jogo.parar!();
+});
+
+/** O chefe da última onda da fase, sozinho e pronto para golpear. */
+function chefeDaFase(fase: string, tipo: string) {
+  const m = comecar([anaId], 0, { fase });
+  m.andar(200);
+  irAteAOnda(m, 5);
+  m.andar(2000);
+  const chefe = [...m.i._bichos.values()].find((b) => b.tipo === tipo)!;
+  assert.ok(chefe, `o chefe ${tipo}`);
+  m.i._fila().length = 0;
+  for (const b of [...m.i._bichos.values()]) if (b !== chefe) m.i._bichos.delete(b.id);
+  return { m, chefe: chefe as Bicho & { golpes: number; alvoX: number; lado: number }, j: m.i._jogadores.get(anaId)! };
+}
+
+test('o deserto tem o chefe dele: a alpaca-rei, com a vida de chefe', () => {
+  const { m, chefe } = chefeDaFase('deserto', 'alpaca-rei');
+  assert.equal(chefe.hp, mod.vidaDoChefe(1, true));
+  assert.equal(mod.VARIANTE_DO_RECORDE.deserto, 'deserto-2', 'o recorde do deserto recomeça');
+  m.jogo.parar!();
+});
+
+test('o cuspe da alpaca-rei: as marcas piscam em volta de quem ela mira, e as três bolas caem nelas em arco', () => {
+  const { m, chefe, j } = chefeDaFase('deserto', 'alpaca-rei');
+  const x = chefe.x - 120;
+  m.por(anaId, x);
+  chefe.golpes = 0;
+  chefe.proximoAtaque = 0;
+  chefe.estado = 'recuperando';
+  chefe.ate = 0;
+  m.andar(PASSO_MS);
+  assert.equal(chefe.estado, 'prep-cuspe');
+  assert.ok(Math.abs(chefe.alvoX - x) < 2, 'a marca no lugar da Ana');
+  j.invulAte = 0;
+  const hp = j.hp;
+  const caiu: number[] = [];
+  for (let t = 0; t < 2500; t += PASSO_MS) {
+    m.por(anaId, x);
+    m.andar(PASSO_MS);
+    for (const e of (m.quadros.at(-1) as { e: unknown[][] }).e) if (e[1] === 's' && e[3] === 4) caiu.push(e[2] as number);
+  }
+  assert.equal(caiu.length, 3, 'três bolas');
+  for (const cx of caiu) assert.ok([-34, 0, 34].some((d) => Math.abs(cx - (x + d)) < 12), `a bola caiu perto de uma marca (${cx - x})`);
+  assert.ok(j.hp < hp, 'quem fica na marca leva');
+  m.jogo.parar!();
+});
+
+test('a investida da alpaca-rei: corre rente ao chão pela arena; quem está numa tábua escapa', () => {
+  const caso = (naTabua: boolean) => {
+    const { m, chefe, j } = chefeDaFase('deserto', 'alpaca-rei');
+    const [p0, p1, h] = mod.PLATAFORMAS_DA_FASE.deserto.find(([a, b, hh]) => a > 1600 && b < chefe.x - 30 && hh < 40)!;
+    const x = (p0 + p1) / 2;
+    m.por(anaId, x, naTabua ? h : 0);
+    chefe.golpes = 1;
+    chefe.proximoAtaque = 0;
+    chefe.estado = 'recuperando';
+    chefe.ate = 0;
+    m.andar(PASSO_MS);
+    assert.equal(chefe.estado, 'prep-investida');
+    j.invulAte = 0;
+    const hp = j.hp;
+    let passou = false;
+    for (let t = 0; t < 3500; t += PASSO_MS) {
+      m.por(anaId, x, naTabua ? h : 0);
+      m.andar(PASSO_MS);
+      if (chefe.x < x - 30) passou = true;
+    }
+    assert.ok(passou, 'ela passou pela Ana');
+    m.jogo.parar!();
+    return hp - j.hp;
+  };
+  assert.ok(caso(false) > 0, 'no chão: leva');
+  assert.equal(caso(true), 0, 'na tábua: escapa');
+});
+
+test('a neve: os bichos dela entram, e o yeti é o chefe, com a vida de chefe e a avalanche', () => {
+  const m0 = comecar([anaId], 0, { fase: 'neve' });
+  m0.andar(4000);
+  assert.equal((m0.quadros.at(-1) as { fs: number }).fs, mod.CENARIO_DA_FASE.neve);
+  assert.ok([...m0.i._bichos.values()].some((b) => b.tipo === 'macaco'), 'o macaco anda na neve');
+  m0.jogo.parar!();
+  const caso = (foge: boolean) => {
+    const { m, chefe, j } = chefeDaFase('neve', 'yeti');
+    assert.equal(chefe.hp, mod.vidaDoChefe(1, true), 'na neve, o yeti é o chefe de verdade');
+    const x = chefe.x - 100;
+    m.por(anaId, x);
+    chefe.golpes = 2;
+    chefe.proximoAtaque = 0;
+    chefe.estado = 'recuperando';
+    chefe.ate = 0;
+    m.andar(PASSO_MS);
+    assert.equal(chefe.estado, 'prep-avalanche');
+    const pedras = (m.i._balas as { tipo: number; x: number; h: number }[]).filter((b) => b.tipo === 5);
+    assert.ok(pedras.length >= 2 && pedras.some((p) => Math.abs(p.x - x) < 2), 'uma pedra em cima da Ana');
+    assert.ok(pedras.every((p) => p.h === mod.AVALANCHE.h), 'penduradas no alto');
+    const longe = [x - 50, x + 50, x - 90].find((cx) => pedras.every((p) => Math.abs(p.x - cx) > 30))!;
+    j.invulAte = 0;
+    const hp = j.hp;
+    for (let t = 0; t < 2000; t += PASSO_MS) {
+      m.por(anaId, foge ? longe : x);
+      m.andar(PASSO_MS);
+    }
+    m.jogo.parar!();
+    return hp - j.hp;
+  };
+  assert.ok(caso(false) > 0, 'embaixo da pedra: leva');
+  assert.equal(caso(true), 0, 'longe das pedras: escapa');
+});
+
+test('na neve, o piloto vence sozinho com 200 ms de ida e volta', async (t) => {
+  const { ultimo, segundos } = await partida([7], 100, 5, { fase: 'neve' });
+  t.diagnostic(`a neve levou ${Math.round(segundos)} s; vidas ${ultimo.j[0][7]}, pontos ${ultimo.j[0][9]}; gaiolas ${ultimo.r.join(',')}`);
+  assert.equal(ultimo.f, 'vitoria', `fase ${ultimo.f} na onda ${ultimo.o + 1}`);
+  assert.ok(ultimo.r.every((g) => g === 7), 'as três gaiolas da neve abertas');
+});
+
+test('firmar: segurando, o coelho não anda, as setas só miram, e no chão mira para baixo na diagonal', () => {
+  const enviados: Record<string, unknown>[] = [];
+  const c = new site.Cliente(7, (d) => enviados.push(d as Record<string, unknown>));
+  const q = { tipo: 'q', n: 1, f: 'lutando', o: 0, a: [0, 320], i: [], b: [], g: [], r: [0, 0, 0], j: [[7, 100, 0, 1, 0, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 0]], p: [], e: [], mp: 0 };
+  c.chegou(q as never, 1000);
+  const cmd = site.comandosVazios();
+  const v = () => c.vista(1100);
+  cmd.firmar = true;
+  cmd.direita = true;
+  cmd.baixo = true;
+  for (let k = 0; k < 30; k++) c.passo(cmd, 1 / 60, 1100 + k * 16, v());
+  assert.equal(c.eu.x, 100, 'firmado, não anda');
+  assert.equal(c.eu.mira, 7, 'para baixo e para a frente');
+  cmd.direita = false;
+  cmd.esquerda = true;
+  c.passo(cmd, 1 / 60, 1700, v());
+  assert.equal(c.eu.lado, -1, 'mas vira');
+  assert.equal(c.eu.mira, 5);
+  cmd.baixo = false;
+  cmd.cima = true;
+  c.passo(cmd, 1 / 60, 1716, v());
+  assert.equal(c.eu.mira, 3, 'para cima na diagonal');
+  // solto, anda de novo; para baixo no chão, só para a frente
+  cmd.firmar = false;
+  cmd.cima = false;
+  cmd.baixo = true;
+  c.passo(cmd, 1 / 60, 1732, v());
+  assert.ok(c.eu.x < 100, 'solto, anda');
+  assert.equal(c.eu.mira, 4);
 });

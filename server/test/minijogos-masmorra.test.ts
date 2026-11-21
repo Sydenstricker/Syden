@@ -145,6 +145,7 @@ function site(m: ReturnType<typeof comecar>, eu: number) {
           m: mundo,
           eu: c,
           temCenoura: q.it[0] === 1,
+          temGancho: q.it[3] === 1,
           chaves: q.it[1],
           placasResolvidas: q.pr === 1,
           bauAberto: q.bau === 2,
@@ -152,6 +153,11 @@ function site(m: ReturnType<typeof comecar>, eu: number) {
         },
         cmd,
       );
+      // o gancho (a mina): como o site, o item manda a direção, e o servidor acha o poste (ou o golem-rei)
+      if (cmd.item && q.it[3] === 1) {
+        cmd.item = false;
+        m.mandar(eu, { tipo: 'gancho', dir: c.dir });
+      }
       for (let k = 0; k < 3; k++) {
         const nov = R.passoDoCoelho(sala, mundo, c, cmd, 1 / 60, q.it[0] === 1);
         if (nov.comecou) {
@@ -705,4 +711,181 @@ test('a mina no Solo: o recorde de tempo vai à variante dela, sem misturar com 
   assert.ok(m.terminou());
   assert.ok((db.recordeDoSolo(anaId, 'masmorra', 'mina')?.valor ?? 0) >= 50_000);
   assert.equal(db.recordeDoSolo(anaId, 'masmorra')?.valor ?? null, antes, 'a toca não mudou');
+});
+
+// ---------------- O lote D (21/11/2026): o golem-rei, a abelha, o fantasma, os achados e o heroico ----------------
+
+type ComEntrar = Interno & { _entrar: (d: number, l: 'n' | 's' | 'o' | 'l' | null) => void; _darGancho: () => void };
+type BichoDoTeste = { id: number; tipo: string; x: number; y: number; estado: string; hp: number; ate: number; trocaEm: number };
+type JogadorDoTeste = { x: number; y: number; dir: number; hp: number; livreAte: number; tp: number; invulAte: number };
+
+test('o golem-rei (o chefe da mina): de couraça, a pá só tine; o gancho que pega nele o deixa atordoado, e aí ele apanha', () => {
+  const m = comecar([anaId, biaId], comunidade.id, () => 0.5, { masmorra: 'mina' });
+  const i = m.interno as unknown as ComEntrar;
+  i._darGancho();
+  i._entrar(R.MASMORRAS.mina.chefe, 's');
+  for (const [id, b] of i._bichos) if (b.tipo !== 'golem-rei') i._bichos.delete(id);
+  const g = [...i._bichos.values()][0] as unknown as BichoDoTeste;
+  assert.equal(g.tipo, 'golem-rei');
+  for (let k = 0; k < 30; k++) m.passo();
+  const j = i._jogadores.get(anaId)! as unknown as JogadorDoTeste;
+  // parado (para o teste): fica onde está
+  const parar = () => {
+    g.estado = 'recuperando';
+    g.ate = agora + 60_000;
+  };
+  parar();
+  m.passo();
+  const pos = (x: number, y: number, dir: number, ataque?: { id: number; g: string }) => {
+    j.livreAte = agora + 1000;
+    return m.mandar(anaId, { tipo: 'pos', x, y, dir, acao: 0, ta: 0, tp: j.tp, ...(ataque ? { ataque } : {}) });
+  };
+  // ao lado dele, de frente: a pá tine na couraça
+  pos(g.x - 50, g.y, 3, { id: 1, g: 'pa' });
+  const hp0 = g.hp;
+  assert.equal(m.mandar(anaId, { tipo: 'golpe', a: 1, inimigo: g.id, x: g.x - 50, y: g.y }), 'couraça');
+  assert.equal(g.hp, hp0);
+  // o gancho olhando para o outro lado não pega
+  assert.equal(m.mandar(anaId, { tipo: 'gancho', dir: 2 }), 'sem poste');
+  assert.notEqual(g.estado, 'atordoado');
+  // de frente, pega: atordoado
+  assert.equal(m.mandar(anaId, { tipo: 'gancho', dir: 3 }), null);
+  assert.equal(g.estado, 'atordoado');
+  m.passo();
+  assert.ok(
+    m.quadros.at(-1)!.e.some((e) => e[1] === 'gb'),
+    'o evento do gancho no golem',
+  );
+  // agora a pá fere (o dobro: ele está sem a couraça)
+  pos(g.x - 50, g.y, 3, { id: 2, g: 'pa' });
+  assert.equal(m.mandar(anaId, { tipo: 'golpe', a: 2, inimigo: g.id, x: g.x - 50, y: g.y }), null);
+  assert.equal(g.hp, hp0 - 2);
+  // logo depois do atordoado, o gancho não o pega de novo (ninguém o prende para sempre)
+  agora += R.GOLEM.atordoado + 100;
+  m.passo();
+  parar();
+  m.passo();
+  pos(g.x - 50, g.y, 3);
+  assert.notEqual(m.mandar(anaId, { tipo: 'gancho', dir: 3 }), null);
+  assert.notEqual(g.estado, 'atordoado');
+  agora += R.GOLEM.imune;
+  m.passo();
+  parar();
+  pos(g.x - 50, g.y, 3);
+  assert.equal(m.mandar(anaId, { tipo: 'gancho', dir: 3 }), null);
+});
+
+test('SOZINHO, o piloto vence o golem-rei com o gancho, contra o servidor de verdade', () => {
+  const m = comecar([anaId], 0, () => 0.5, { masmorra: 'mina' });
+  const i = m.interno as unknown as ComEntrar;
+  i._darGancho();
+  i._entrar(R.MASMORRAS.mina.chefe, 's');
+  const ana_ = site(m, anaId);
+  let atordoado = 0;
+  for (let k = 0; k < 8 * 60 * 20 && m.quadros.at(-1)?.f !== 'vitoria'; k++) {
+    ana_.passo();
+    m.passo();
+    const q = m.quadros.at(-1)!;
+    if (q.i.some((l) => R.TIPOS[l[1]] === 'golem-rei' && R.ESTADOS[l[5]] === 'atordoado')) atordoado++;
+  }
+  const q = m.quadros.at(-1)!;
+  assert.equal(q.f, 'vitoria', `o golem com ${q.i.find((l) => R.TIPOS[l[1]] === 'golem-rei')?.[7]}%`);
+  assert.ok(atordoado > 0, 'o gancho o atordoou');
+});
+
+test('a abelha e o fantasma: o piloto limpa a encruzilhada e a sala do gancho, e o fantasma sumido não se acerta', () => {
+  const m = comecar([anaId], 0, () => 0.5, { masmorra: 'mina' });
+  const i = m.interno as unknown as ComEntrar;
+  const ana_ = site(m, anaId);
+  for (const sala of [9, 10]) {
+    i._entrar(sala, 's');
+    const tipos = [...i._bichos.values()].map((b) => b.tipo);
+    assert.ok(tipos.includes(sala === 9 ? 'abelha' : 'fantasma'));
+    // antes de o piloto se mexer, o fantasma some e aparece sozinho
+    let sumiu = false;
+    for (let k = 0; k < 90; k++) {
+      m.passo();
+      if ([...i._bichos.values()].some((b) => b.estado === 'sumido')) sumiu = true;
+    }
+    if (sala === 10) assert.ok(sumiu, 'o fantasma sumiu alguma vez');
+    for (let k = 0; k < 4 * 60 * 20 && i._bichos.size > 0; k++) {
+      ana_.passo();
+      m.passo();
+    }
+    assert.equal(i._bichos.size, 0, `a sala ${sala} ficou limpa`);
+  }
+  // sumido, nada o acerta (outra partida: a sala de lá já está limpa)
+  const m3 = comecar([anaId], 0, () => 0.5, { masmorra: 'mina' });
+  const i3 = m3.interno as unknown as ComEntrar;
+  i3._entrar(10, 'l');
+  const f = [...i3._bichos.values()].find((b) => b.tipo === 'fantasma')! as unknown as BichoDoTeste;
+  for (const [id, b] of i3._bichos) if (b.tipo !== 'fantasma') i3._bichos.delete(id);
+  for (let k = 0; k < 20; k++) m3.passo();
+  f.estado = 'sumido';
+  f.trocaEm = agora + 60_000;
+  const j = i3._jogadores.get(anaId)! as unknown as JogadorDoTeste;
+  j.livreAte = agora + 1000;
+  m3.mandar(anaId, { tipo: 'pos', x: f.x - 40, y: f.y, dir: 3, acao: 0, ta: 0, tp: j.tp, ataque: { id: 900, g: 'pa' } });
+  assert.equal(m3.mandar(anaId, { tipo: 'golpe', a: 900, inimigo: f.id, x: f.x - 40, y: f.y }), 'sumido');
+});
+
+test('os achados: quantos baús e segredos cada masmorra tem, e quantos a turma achou, na tela do fim', () => {
+  assert.deepEqual(R.achadosDa('toca'), { baus: 2, segredos: 2 });
+  assert.deepEqual(R.achadosDa('mina'), { baus: 2, segredos: 2 });
+  assert.ok(R.salasDa('mina').includes(13), 'a sala secreta da mina');
+  assert.ok(!R.salasDa('mina').includes(7), 'a secreta da toca é da toca');
+  const m = comecar([anaId], 0, () => 0.5, { masmorra: 'mina' });
+  const i = m.interno as unknown as ComEntrar;
+  const pub = () => m.jogo.publico(anaId) as { achados: { baus: number[]; segredos: number[] } };
+  assert.deepEqual(pub().achados, { baus: [0, 2], segredos: [0, 2] });
+  // a bomba de semente ao lado da parede rachada da entrada da mina
+  const j = i._jogadores.get(anaId)! as unknown as JogadorDoTeste;
+  m.passo();
+  j.livreAte = agora + 1000;
+  const [px, py] = R.centro(...R.PORTA.o);
+  m.mandar(anaId, { tipo: 'pos', x: px + R.TILE, y: py, dir: 2, acao: 0, ta: 0, tp: j.tp });
+  assert.equal(m.mandar(anaId, { tipo: 'bomba' }), null);
+  agora += R.BOMBA.pavio + 10;
+  m.passo();
+  assert.deepEqual(pub().achados.segredos, [1, 2]);
+  assert.equal(m.quadros.at(-1)!.p[2], 1, 'a parede do oeste abriu');
+});
+
+test('o heroico: menos corações, bichos com mais vida e mais dano; o recorde do Solo à parte', async () => {
+  const db = await import('../src/db.js');
+  const m = comecar([anaId], 0, () => 0.5, { masmorra: 'toca-heroico' });
+  const i = m.interno as unknown as ComEntrar;
+  const pub = m.jogo.publico(anaId) as { categoria: string; heroico: boolean; masmorra: string };
+  assert.equal(pub.categoria, 'toca-heroico');
+  assert.equal(pub.heroico, true);
+  assert.equal(pub.masmorra, 'toca');
+  assert.equal(i._jogadores.get(anaId)!.hp, R.HEROICO.coracoes);
+  i._entrar(1, 's');
+  const cog = [...i._bichos.values()].find((b) => b.tipo === 'cogumelo')!;
+  assert.equal(cog.hp, Math.ceil(R.BICHOS.cogumelo.hp * R.HEROICO.vida));
+  // o recorde vai à variante 'heroico', sem mexer na de sempre
+  const antes = db.recordeDoSolo(anaId, 'masmorra')?.valor ?? null;
+  agora += 40_000;
+  i._entrar(R.SALA_DO_CHEFE, 's');
+  i._bichos.clear();
+  m.passo();
+  m.relogio[0].depois();
+  assert.ok((db.recordeDoSolo(anaId, 'masmorra', 'heroico')?.valor ?? 0) >= 40_000);
+  assert.equal(db.recordeDoSolo(anaId, 'masmorra')?.valor ?? null, antes);
+  // o dano a mais: a mordida do cogumelo tira 1 + 1
+  const m2 = comecar([anaId], 0, () => 0.5, { masmorra: 'mina', heroico: true });
+  const i2 = m2.interno as unknown as ComEntrar;
+  assert.equal((m2.jogo.publico(anaId) as { categoria: string }).categoria, 'mina-heroico');
+  i2._entrar(9, 's');
+  for (const [id, b] of i2._bichos) if (b.tipo !== 'cogumelo') i2._bichos.delete(id);
+  const c2 = [...i2._bichos.values()][0];
+  const j2 = i2._jogadores.get(anaId)! as unknown as JogadorDoTeste;
+  for (let k = 0; k < 30; k++) m2.passo();
+  j2.invulAte = 0;
+  for (let k = 0; k < 80 && j2.hp === R.HEROICO.coracoes; k++) {
+    j2.livreAte = agora + 1000;
+    m2.mandar(anaId, { tipo: 'pos', x: c2.x - 30, y: c2.y, dir: 3, acao: 0, ta: 0, tp: j2.tp });
+    m2.passo();
+  }
+  assert.equal(j2.hp, R.HEROICO.coracoes - 2, 'a mordida tirou 1 + 1');
 });

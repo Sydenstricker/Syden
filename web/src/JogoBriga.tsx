@@ -16,7 +16,11 @@ import {
   desenharCoelho,
   desenharCurou,
   desenharEfeito,
+  desenharElementoDePe,
+  desenharElementoNoChao,
+  desenharGelo,
   desenharGiro,
+  desenharOndaDeChoque,
   desenharOndas,
   desenharRastro,
   desenharSeta,
@@ -29,7 +33,7 @@ import {
   type Efeito,
 } from './briga/desenho';
 import { desenharCenario } from './briga/cenarios';
-import { bicho, CAMPANHA, CORPO, FASES_DA_BRIGA, pistaDaBriga, type TipoDeInimigo } from './briga/fases';
+import { bicho, CAMPANHA, CORPO, FASES_DA_BRIGA, noGelo, pistaDaBriga, raioDaOnda, type TipoDeInimigo } from './briga/fases';
 import { alturaDoBicho, carregarFolhas, desenhaPelaFolha, desenharBichoDaFolha, desenharTiro } from './briga/sprites';
 import { nomeDaPistaEm } from './corrida/nomes';
 import {
@@ -44,6 +48,7 @@ import {
   encosta,
   ESTADOS,
   ehQuadro,
+  elementoDaLinha,
   golpeAtivo,
   LinhaDoTempo,
   marcaDoLugar,
@@ -263,6 +268,7 @@ function Palco({
     const impacto = criarImpacto();
     const vidaAte = new Map<number, number>();
     const estadoAntes = new Map<number, string>();
+    const elementoAntes = new Map<number, number>();
     const curou: { quem: number; em: number }[] = [];
     let congeladoEm = 0;
     const somDoAcerto = (golpe: string, meu: boolean) => {
@@ -379,9 +385,11 @@ function Palco({
         const antes = estadoAntes.get(l[0]);
         if (antes !== undefined && antes !== est) {
           const comp = bicho(TIPOS[l[1]] ?? 'raposa').comp;
-          if (comp === 'chefe' && est === 'pancada') {
-            impacto.tremer(0.6, 260);
-            tocar('queda');
+          if (comp === 'chefe' && (est === 'pancada' || est === 'onda' || est === 'coice')) {
+            impacto.tremer(est === 'coice' ? 0.4 : 0.6, 260);
+            tocar(est === 'coice' ? 'empurrao' : 'queda');
+          } else if (comp === 'chefe' && est === 'esporos') {
+            tocar('chiado');
           } else if (comp === 'pulo' && antes === 'saltando' && est !== 'caido') {
             impacto.tremer(0.3);
             tocar('queda');
@@ -390,6 +398,17 @@ function Palco({
         estadoAntes.set(l[0], est);
       }
       if (estadoAntes.size > 200) for (const k of [...estadoAntes.keys()].slice(0, 100)) estadoAntes.delete(k);
+      // os elementos de cenário (21/11/2026): o tronco que começa a rolar e a grade que sobe perto da câmera soam
+      for (const l of q.el ?? []) {
+        const el = elementoDaLinha(l);
+        const antes = elementoAntes.get(l[0]);
+        if (antes !== undefined && antes !== el.estado && Math.abs(el.x - (camX + ARENA_L / 2)) < ARENA_L / 2 + 20) {
+          if (el.tipo === 'tronco' && el.estado === 2) tocar('rangido');
+          else if (el.tipo === 'espinhos' && el.estado === 2) tocar('serra');
+        }
+        elementoAntes.set(l[0], el.estado);
+      }
+      if (elementoAntes.size > 200) for (const k of [...elementoAntes.keys()].slice(0, 100)) elementoAntes.delete(k);
     };
     const evento = solo ? 'minijogo-solo:tempo-real' : 'minijogo:tempo-real';
     socket.on(evento, aoQuadro);
@@ -422,7 +441,11 @@ function Palco({
         estado: ESTADOS[l[5]] ?? 'andando',
         faixa: l[9],
         alvoX: l[10],
+        lado: l[6],
+        ms: l[8] * 50,
       }));
+      // os elementos de cenário (21/11/2026), interpolados como os bichos: o tronco e o rodamoinho andam
+      const elementos = (volta ? misturar(volta.a.el ?? [], volta.b.el ?? [], volta.k, [2, 3]) : []).map(elementoDaLinha);
       // os tiros no ar, interpolados como os bichos: [id, tipo, x, y, lado]
       const tiros = volta ? misturar(volta.a.t ?? [], volta.b.t ?? [], volta.k, [2]) : [];
       // a fase na tela: as folhas dos bichos dela já pedidas, e o nome dela aparece quando muda
@@ -440,8 +463,9 @@ function Palco({
       while (sobra >= 1 / 60) {
         sobra -= 1 / 60;
         if (!jogando) continue;
-        if (import.meta.env.DEV && window.brigaPilotoAutomatico) pilotoAutomatico(eu_, naTelaAgora, cmd, eu_.relogio, tiros.map((l) => ({ x: l[2], y: l[3], lado: l[4] })));
-        const novo = passoDoCoelho(eu_, cmd, 1 / 60, arena);
+        if (import.meta.env.DEV && window.brigaPilotoAutomatico) pilotoAutomatico(eu_, naTelaAgora, cmd, eu_.relogio, tiros.map((l) => ({ x: l[2], y: l[3], lado: l[4] })), elementos);
+        // o gelo da neve: o meu coelho escorrega nele (21/11/2026)
+        const novo = passoDoCoelho(eu_, cmd, 1 / 60, arena, FASES_DA_BRIGA[fs]?.elemento === 'gelo' ? noGelo : undefined);
         if (novo.comecou) {
           // o golpe que começou vai na hora, antes de qualquer acerto dele
           mandarPosicao(novo.comecou);
@@ -510,6 +534,11 @@ function Palco({
       g.save();
       g.translate(imp.dx, imp.dy);
       desenharCenario(g, fs, cam, FIM_DA_FASE, agoraMs);
+      // o chão dos elementos (21/11/2026): o gelo, as grades e o círculo dos esporos, antes de tudo o que fica de pé
+      if (FASES_DA_BRIGA[fs]?.elemento === 'gelo') desenharGelo(g, cam, agoraMs);
+      for (const el of elementos) desenharElementoNoChao(g, el, cam, agoraMs);
+      // a onda de choque do yeti corre pelo chão, do pé dele (o x e a faixa de onde saiu vão no quadro)
+      for (const l of inimigos) if (ESTADOS[l[5]] === 'onda') desenharOndaDeChoque(g, Math.round(l[10] - cam), CHAO + Math.round(l[9]), raioDaOnda(l[8] * 50), agoraMs);
       const coisas: { y: number; desenhar: () => void }[] = [];
       // os caixotes: [id, x, y, vida %, voando]; o que voa vem interpolado entre os quadros
       const caixotesNaTela = volta ? misturar(volta.a.cx ?? [], volta.b.cx ?? [], volta.k, [1]) : [];
@@ -550,6 +579,9 @@ function Palco({
             }
           },
         });
+      }
+      for (const el of elementos) {
+        if (el.tipo === 'tronco' || el.tipo === 'rodamoinho' || el.tipo === 'esporo') coisas.push({ y: el.y, desenhar: () => desenharElementoDePe(g, el, cam, agoraMs) });
       }
       for (const l of tiros) {
         const tipo = TIPOS[l[1]] ?? 'dino';

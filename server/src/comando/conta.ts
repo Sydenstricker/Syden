@@ -32,7 +32,7 @@ export const VIDAS = 3;
 /** Os golpes que cada vida aguenta. */
 export const VIDA = 3;
 
-/** As plataformas (tábuas sobre caixotes): de x0 a x1, na altura h. Só se pisa nelas por cima. */
+/** As plataformas (tábuas sobre caixotes): de x0 a x1, na altura h. Só se pisa nelas por cima. As da floresta (as de sempre). */
 export const PLATAFORMAS: readonly (readonly [number, number, number])[] = [
   [110, 180, 38],
   [470, 540, 38],
@@ -45,16 +45,50 @@ export const PLATAFORMAS: readonly (readonly [number, number, number])[] = [
   [1800, 1850, 40],
 ];
 
+/**
+ * AS TÁBUAS DE CADA FASE (21/11/2026, a segunda auditoria: antes, as mesmas nas duas): a floresta continua com as de sempre; o
+ * deserto e a neve têm as delas, com DEGRAUS (uma tábua alta ao lado de uma baixa, a alta só se alcança pela baixa). Toda arena
+ * tem pelo menos uma tábua: é para ela que se sobe para fugir do fogo, da investida e da avalanche do chefe. Nenhuma passa de
+ * 55, para o pulo em cima dela caber em H_MAX.
+ */
+export type Tabuas = readonly (readonly [number, number, number])[];
+export const PLATAFORMAS_DA_FASE: Record<'floresta' | 'deserto' | 'neve', Tabuas> = {
+  floresta: PLATAFORMAS,
+  deserto: [
+    [90, 150, 32],
+    [158, 208, 52],
+    [480, 560, 38],
+    [860, 920, 32],
+    [928, 978, 52],
+    [1240, 1310, 40],
+    [1450, 1510, 38],
+    [1650, 1710, 32],
+    [1718, 1768, 52],
+    [1830, 1890, 34],
+  ],
+  neve: [
+    [150, 230, 40],
+    [520, 580, 30],
+    [588, 638, 50],
+    [900, 990, 40],
+    [1280, 1330, 32],
+    [1338, 1388, 52],
+    [1440, 1500, 36],
+    [1660, 1730, 44],
+    [1800, 1870, 44],
+  ],
+};
+
 /** A altura do chão (ou da plataforma) embaixo de x, para quem cai de `h0` até `h1` (null: nada embaixo, segue caindo). */
-export function pousoEm(x: number, h0: number, h1: number): number | null {
-  for (const [x0, x1, h] of PLATAFORMAS) if (x >= x0 && x <= x1 && h0 >= h && h1 <= h) return h;
+export function pousoEm(x: number, h0: number, h1: number, tabuas: Tabuas = PLATAFORMAS): number | null {
+  for (const [x0, x1, h] of tabuas) if (x >= x0 && x <= x1 && h0 >= h && h1 <= h) return h;
   return h1 <= 0 ? 0 : null;
 }
 
 /** Está em pé em cima de alguma coisa? */
-export function apoiado(x: number, h: number): boolean {
+export function apoiado(x: number, h: number, tabuas: Tabuas = PLATAFORMAS): boolean {
   if (h <= 0) return true;
-  for (const [x0, x1, ph] of PLATAFORMAS) if (x >= x0 && x <= x1 && h > ph - 0.5 && h < ph + 0.5) return true;
+  for (const [x0, x1, ph] of tabuas) if (x >= x0 && x <= x1 && h > ph - 0.5 && h < ph + 0.5) return true;
   return false;
 }
 
@@ -156,7 +190,7 @@ export const GRANADA = { alcance: 92, voo: 650, raio: 34, dano: 5, recarga: 4000
  * perto e bate, o atirador (o dino) para longe e atira rente ao chão, o voador (a abelha) fica no alto e solta sementes, e o
  * chefe é o dragão. A ordem é o código que vai no quadro: bicho novo entra no FIM.
  */
-export const TIPOS = ['cogumelo', 'dino', 'abelha', 'dragao', 'capsula', 'cacto', 'golem', 'redemoinho', 'yeti'] as const;
+export const TIPOS = ['cogumelo', 'dino', 'abelha', 'dragao', 'capsula', 'cacto', 'golem', 'redemoinho', 'yeti', 'alpaca-rei', 'macaco', 'espinhento', 'corvo'] as const;
 export type TipoDoBicho = (typeof TIPOS)[number];
 /**
  * O que cada bicho FAZ (19/11/2026: a segunda fase traz bichos novos das folhas da Briga com os comportamentos de sempre): o
@@ -175,19 +209,30 @@ export const BICHOS: Record<TipoDoBicho, { larg: number; alto: number; hp: numbe
   golem: { larg: 9, alto: 36, hp: 6, pontos: 130, comp: 'atirador' },
   redemoinho: { larg: 10, alto: 26, hp: 3, pontos: 130, comp: 'voador' },
   yeti: { larg: 22, alto: 64, hp: 90, pontos: 700, comp: 'chefe' },
+  // 21/11/2026: o chefe próprio do deserto, e os bichos da neve (a terceira fase)
+  'alpaca-rei': { larg: 22, alto: 66, hp: 150, pontos: 1000, comp: 'chefe' },
+  macaco: { larg: 9, alto: 40, hp: 5, pontos: 110, comp: 'andarilho' },
+  espinhento: { larg: 10, alto: 30, hp: 6, pontos: 130, comp: 'atirador' },
+  corvo: { larg: 9, alto: 24, hp: 3, pontos: 120, comp: 'voador' },
 };
 
 /** A CÁPSULA VOADORA: atravessa o alto da arena devagar, ondulando; derrubada, a arma cai no chão e fica ITEM_MS. */
 export const CAPSULA = { vel: 45, h: 84, onda: 8, itemMs: 15_000 };
 
 /**
- * AS FASES (19/11/2026): a floresta (a de sempre) e o deserto (bichos novos e o yeti de subchefe no meio). Escolhe-se na
- * largada uma delas ou a campanha (as duas seguidas). O índice é o cenário da Briga em que cada uma acontece.
+ * AS FASES (19/11/2026): a floresta (a de sempre) e o deserto (bichos novos e o yeti de subchefe no meio); desde 21/11/2026, a
+ * NEVE (os bichos da neve da Briga e o pombo no ar, com o yeti de chefe), e o deserto com o chefe dele, a alpaca-rei. Escolhe-se
+ * na largada uma delas ou a campanha (as três seguidas). O índice é o cenário da Briga em que cada uma acontece.
  */
-export const FASES_DO_COMANDO = ['floresta', 'deserto'] as const;
+export const FASES_DO_COMANDO = ['floresta', 'deserto', 'neve'] as const;
 export type MapaDoComando = (typeof FASES_DO_COMANDO)[number];
 export const CAMPANHA_DO_COMANDO = 'campanha';
-export const CENARIO_DA_FASE: Record<MapaDoComando, number> = { floresta: 1, deserto: 2 };
+export const CENARIO_DA_FASE: Record<MapaDoComando, number> = { floresta: 1, deserto: 2, neve: 3 };
+/**
+ * A VARIANTE DO RECORDE do Solo (21/11/2026): o deserto mudou (as tábuas, as gaiolas, o chefe) e a campanha ganhou a neve, então
+ * os dois guardam o recorde com um nome novo; o da floresta continua o de sempre.
+ */
+export const VARIANTE_DO_RECORDE: Record<string, string> = { floresta: 'floresta', deserto: 'deserto-2', neve: 'neve', campanha: 'campanha-3' };
 /** A altura em que o voador paira. */
 export const VOO_H = 66;
 
@@ -208,6 +253,13 @@ export const ESTADOS = [
   'prep-pisao',
   'saltando',
   'chamando',
+  // 21/11/2026: o cuspe e a investida da alpaca-rei, a avalanche do yeti
+  'prep-cuspe',
+  'cuspe',
+  'prep-investida',
+  'investida',
+  'prep-avalanche',
+  'avalanche',
 ] as const;
 export type EstadoDoBicho = (typeof ESTADOS)[number];
 
@@ -216,11 +268,27 @@ export const ACOES = ['parado', 'andando', 'pulo', 'dor', 'caido'] as const;
 export type AcaoDoCoelho = (typeof ACOES)[number];
 
 // ---------------- OS COELHINHOS PRESOS ----------------
-/** Onde estão as gaiolas e o reforço que cada uma dá a quem a abre. */
+/** Onde estão as gaiolas e o reforço que cada uma dá a quem a abre (as da floresta, as de sempre). */
 export const REFENS: readonly (readonly [number, Arma])[] = [
   [350, 'leque'],
   [1150, 'rapida'],
   [1550, 'leque'],
 ];
+/** As gaiolas de cada fase (21/11/2026): três em cada, em lugares e com reforços próprios. */
+export const REFENS_DA_FASE: Record<MapaDoComando, readonly (readonly [number, Arma])[]> = {
+  floresta: REFENS,
+  deserto: [
+    [360, 'rapida'],
+    [760, 'leque'],
+    [1560, 'rapida'],
+  ],
+  neve: [
+    [740, 'leque'],
+    [1160, 'rapida'],
+    [1540, 'leque'],
+  ],
+};
+/** A fase pelo código do quadro (`mp`); sem ele, a floresta. */
+export const mapaDoCodigo = (k: number | undefined): MapaDoComando => FASES_DO_COMANDO[k ?? 0] ?? 'floresta';
 /** De quão perto se abre a gaiola. */
 export const PERTO_DA_GAIOLA = 18;

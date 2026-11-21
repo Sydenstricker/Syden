@@ -42,7 +42,9 @@ import {
   alvoDaBomba,
   ARENA,
   BOMBA,
+  BURACO,
   CORPO_CHEFE,
+  foraDosBuracos,
   CORPO_COELHO,
   distancia,
   distSegmento,
@@ -112,9 +114,23 @@ export const CRUZ_INTERVALO_MS = 110;
  * DE NEVE que rola pela linha marcada (quem fica nela leva) e PARA no fim, fria: o coelho que passa por cima a pega e a atira de
  * volta, como o torrão frio. Os outros golpes são os da toupeira (os torrões viram bolas de neve no desenho).
  */
-export const CHEFES = ['toupeira', 'yeti'] as const;
+export const CHEFES = ['toupeira', 'yeti', 'alpaca'] as const;
 export type QualChefe = (typeof CHEFES)[number];
 export const BOLA_DE_NEVE = { raio: 14, vel: 200 };
+
+/**
+ * O TERCEIRO CHEFE, A ALPACA-REI (21/11/2026, o lote D), escolhida na largada (a folha dela é a da Briga): no lugar da
+ * investida, o LEQUE DE VENTO: LEQUE.faixas faixas saem dela, abertas em LEQUE.abertura (rad) na direção de alguém; quem fica numa
+ * faixa leva, e escapa quem fica entre elas ou atrás dela. Na última fase, o leque vem DUAS vezes, a segunda girada meio passo
+ * (fecha os vãos da primeira), com mais faixas. Os torrões, a cruz e o resto são os da toupeira.
+ */
+export const LEQUE = { faixas: 5, faixasNoFim: 7, abertura: 2.1, raio: 11, aviso: 1300, segunda: 550 };
+
+/**
+ * A ARENA QUE MUDA (21/11/2026): ao começar a 2ª e a 3ª fase de cada chefe, BURACOS_POR_FASE buracos se abrem no chão (o
+ * aviso, BURACO.aviso, em conta.ts; no Solo, um só). Ficam até o fim daquele chefe (na maratona, o yeti começa com o chão inteiro).
+ */
+export const BURACOS_POR_FASE = 2;
 
 /**
  * A MARATONA E O DIFÍCIL (20/11/2026, a segunda auditoria), só no Solo. A MARATONA é a toupeira (as três fases) e, sem parar, o
@@ -132,7 +148,7 @@ export const varianteDoChefe = (pedido: PedidoDoChefe, dificil: boolean): string
 export const FOLGA_PA = 8;
 export const PA_ADIANTADA_MS = 120;
 
-type Golpe = 'terremoto' | 'pedras' | 'investida' | 'torroes' | 'cruz' | 'rolar';
+type Golpe = 'terremoto' | 'pedras' | 'investida' | 'torroes' | 'cruz' | 'rolar' | 'leque';
 
 interface Ponto {
   t: number;
@@ -262,10 +278,11 @@ export function criarChefe({
       const pedidoBruto = typeof corpo?.chefe === 'string' ? corpo.chefe : typeof corpo?.categoria === 'string' ? corpo.categoria : 'toupeira';
       const pedidoDificil = corpo?.dificil === true || pedidoBruto.endsWith('-dificil');
       const pedidoBase = pedidoBruto.replace(/-dificil$/, '');
-      const pedido: PedidoDoChefe = pedidoBase === 'yeti' ? 'yeti' : pedidoBase === 'maratona' && solo ? 'maratona' : 'toupeira';
+      const pedido: PedidoDoChefe =
+        pedidoBase === 'yeti' ? 'yeti' : pedidoBase === 'alpaca' ? 'alpaca' : pedidoBase === 'maratona' && solo ? 'maratona' : 'toupeira';
       const dificil = solo && pedidoDificil;
       const maratona = pedido === 'maratona';
-      let qual: QualChefe = pedido === 'yeti' ? 'yeti' : 'toupeira';
+      let qual: QualChefe = pedido === 'maratona' ? 'toupeira' : pedido;
       /** Na maratona, 0 a toupeira e 1 o yeti; fora dela, sempre 0. */
       let etapa = 0;
       const etapas = maratona ? 2 : 1;
@@ -318,6 +335,10 @@ export function criarChefe({
       };
       const marcas = new Map<number, Marca>();
       const noChao = new Map<number, { id: number; x: number; y: number; ate: number }>();
+      /** A arena que muda: os buracos (abre: quando deixa de ser aviso). */
+      const buracos = new Map<number, { id: number; x: number; y: number; r: number; abre: number; aberto: boolean }>();
+      const abertos = () => [...buracos.values()].filter((b) => b.aberto).map((b) => [b.x, b.y, b.r]);
+      const noBuraco = (x: number, y: number, folga: number) => [...buracos.values()].some((b) => distancia(x, y, b.x, b.y) < b.r + folga);
       const pancadas: Pancada[] = [];
       const levaram = new Map<string, Set<number>>();
       const tiros = new Map<string, Tiro>();
@@ -386,15 +407,30 @@ export function criarChefe({
       const lugarLivre = (longeDe: [number, number], min: number): [number, number] => {
         for (let k = 0; k < 12; k++) {
           const p: [number, number] = [sorteio(ARENA.x0 + 14, ARENA.x1 - 14), sorteio(ARENA.y0 + 10, ARENA.y1 - 8)];
-          if (distancia(p[0], p[1], longeDe[0], longeDe[1]) >= min) return p;
+          if (distancia(p[0], p[1], longeDe[0], longeDe[1]) >= min && !noBuraco(p[0], p[1], 20)) return p;
         }
-        return [sorteio(ARENA.x0 + 14, ARENA.x1 - 14), ARENA.y1 - 10];
+        return foraDosBuracos(sorteio(ARENA.x0 + 14, ARENA.x1 - 14), ARENA.y1 - 10, [...buracos.values()].map((b) => [b.x, b.y, b.r + 20]));
+      };
+      /** Os buracos da fase que começa: longe das tocas, uns dos outros e de onde o chefe está. */
+      const abrirBuracos = (quantos: number) => {
+        const t = agora();
+        for (let k = 0; k < quantos; k++) {
+          for (let tenta = 0; tenta < 80; tenta++) {
+            const x = sorteio(ARENA.x0 + 40, ARENA.x1 - 40);
+            const y = sorteio(ARENA.y0 + 26, ARENA.y1 - 22);
+            if (TOCAS.some(([tx, ty]) => distancia(x, y, tx, ty) < BURACO.raio + 32)) continue;
+            if ([...buracos.values()].some((b) => distancia(x, y, b.x, b.y) < b.r + BURACO.raio + 28)) continue;
+            const id = proximoId++;
+            buracos.set(id, { id, x, y, r: BURACO.raio, abre: t + BURACO.aviso, aberto: false });
+            break;
+          }
+        }
       };
 
       // ---------------- OS GOLPES ----------------
       const sortearGolpe = (): Golpe => {
         // a cruz é só da última fase
-        const corrida: Golpe = qual === 'yeti' ? 'rolar' : 'investida';
+        const corrida: Golpe = qual === 'yeti' ? 'rolar' : qual === 'alpaca' ? 'leque' : 'investida';
         const todos: Golpe[] = chefe.fase === FASES.length - 1 ? ['terremoto', 'pedras', corrida, 'cruz'] : ['terremoto', 'pedras', corrida];
         const opcoes = todos.filter((g) => g !== chefe.ultimoGolpe);
         return opcoes[Math.min(opcoes.length - 1, Math.floor(aleatorio() * opcoes.length))];
@@ -450,6 +486,30 @@ export function criarChefe({
             if (!alguma) break;
           }
           mudar('prep-pedras', Math.max(300, ultimo - t));
+        } else if (g === 'leque') {
+          // O LEQUE DA ALPACA (21/11/2026): as faixas a partir dela, abertas na direção de alguém
+          const alvos = emPe();
+          const alvo = alvos.length ? alvos[Math.min(alvos.length - 1, Math.floor(aleatorio() * alvos.length))] : null;
+          const base = alvo ? Math.atan2(alvo.y - chefe.y, alvo.x - chefe.x) : aleatorio() * Math.PI * 2;
+          chefe.lado = Math.cos(base) >= 0 ? 1 : -1;
+          const ultimaFase = chefe.fase === FASES.length - 1;
+          const quantas = ultimaFase ? LEQUE.faixasNoFim : LEQUE.faixas;
+          const passo_ = LEQUE.abertura / (quantas - 1);
+          let ultimo = t;
+          for (let onda = 0; onda < (ultimaFase ? 2 : 1); onda++) {
+            const impacto = t + LEQUE.aviso * f.k + onda * LEQUE.segunda;
+            for (let k = 0; k < quantas; k++) {
+              const a = base - LEQUE.abertura / 2 + passo_ * k + (onda ? passo_ / 2 : 0);
+              const dx = Math.cos(a);
+              const dy = Math.sin(a);
+              const x0 = chefe.x + dx * CORPO_CHEFE;
+              const y0 = chefe.y + dy * CORPO_CHEFE;
+              const [x1, y1] = fimDaInvestida(x0, y0, dx, dy, 6);
+              novaMarca('faixa', x0, y0, LEQUE.raio, x1, y1, impacto);
+            }
+            ultimo = impacto;
+          }
+          mudar('prep-pedras', ultimo - t);
         } else if (g === 'rolar') {
           // a bola de neve: a linha até a borda, na direção de alguém; ela rola depois do aviso e para no fim, fria
           const alvos = emPe();
@@ -602,7 +662,8 @@ export function criarChefe({
             // parou: fria, no chão, para devolver
             bolas.delete(b.id);
             marcas.delete(b.marca);
-            noChao.set(b.id, { id: b.id, x: b.x, y: b.y, ate: t + TORRAO.noChaoMs });
+            const [px, py] = foraDosBuracos(b.x, b.y, abertos().map((u) => [u[0], u[1], u[2] + TORRAO.pegar]));
+            noChao.set(b.id, { id: b.id, x: px, y: py, ate: t + TORRAO.noChaoMs });
             evento_('t', Math.round(b.x), Math.round(b.y));
           }
         }
@@ -612,17 +673,32 @@ export function criarChefe({
       const resolverMarcas = (t: number) => {
         for (const m of [...marcas.values()]) {
           if (m.tipo === 'investida') continue;
-          if (!m.resolvida && t >= m.impacto) {
+          if (!m.resolvida && t >= m.impacto && m.tipo === 'faixa') {
+            m.resolvida = true;
+            pancada(`m-${m.id}`, (h) => distSegmento(h.x, h.y, m.x, m.y, m.x2, m.y2) <= m.r + CORPO_COELHO);
+          } else if (!m.resolvida && t >= m.impacto) {
             m.resolvida = true;
             const cx = m.tipo === 'torrao' ? m.x2 : m.x;
             const cy = m.tipo === 'torrao' ? m.y2 : m.y;
             pancada(`m-${m.id}`, (h) => distancia(h.x, h.y, cx, cy) <= m.r + CORPO_COELHO);
-            if (m.tipo === 'torrao' && m.frio) noChao.set(m.id, { id: m.id, x: m.x2, y: m.y2, ate: t + TORRAO.noChaoMs });
+            if (m.tipo === 'torrao' && m.frio) {
+              // caiu na beira de um buraco (aberto depois do arremesso): fica na borda, onde se pega
+              const [px, py] = foraDosBuracos(m.x2, m.y2, [...buracos.values()].map((b) => [b.x, b.y, b.r + TORRAO.pegar]));
+              noChao.set(m.id, { id: m.id, x: px, y: py, ate: t + TORRAO.noChaoMs });
+            }
           }
           // fica um pouco depois do impacto (a onda do anel, a poeira da pedra)
           if (m.resolvida && t >= m.impacto + 400) marcas.delete(m.id);
         }
         for (const c of [...noChao.values()]) if (t >= c.ate) noChao.delete(c.id);
+        // os buracos que abrem: quem está dentro cai (com a folga de sempre), e o torrão que estava ali vai à borda
+        for (const b of buracos.values()) {
+          if (b.aberto || t < b.abre) continue;
+          b.aberto = true;
+          pancada(`bur-${b.id}`, (h) => distancia(h.x, h.y, b.x, b.y) <= b.r);
+          for (const c of noChao.values()) [c.x, c.y] = foraDosBuracos(c.x, c.y, [[b.x, b.y, b.r + TORRAO.pegar]]);
+          evento_('o', Math.round(b.x), Math.round(b.y));
+        }
       };
 
       // ---------------- OS GOLPES DECIDIDOS COM A FOLGA ----------------
@@ -680,6 +756,8 @@ export function criarChefe({
           chefe.fase++;
           chefe.hp = hpFase;
           for (const o of jogadores.values()) if (o.estado === 'em-pe') o.bomba = true;
+          // A ARENA QUE MUDA: o chão abre (o aviso já começa aqui)
+          abrirBuracos(solo ? 1 : BURACOS_POR_FASE);
           mudar('fase', 1800);
           evento_('f', chefe.fase);
           ctx.avisar();
@@ -691,6 +769,8 @@ export function criarChefe({
           chefe.hp = hpFase;
           chefe.ultimoGolpe = null;
           noChao.clear();
+          // o yeti começa com o chão inteiro
+          buracos.clear();
           for (const o of jogadores.values()) if (o.estado === 'em-pe') o.bomba = true;
           mudar('fase', 2400);
           evento_('f', etapa * FASES.length);
@@ -786,8 +866,8 @@ export function criarChefe({
             chefe.fase,
             Math.round(chefe.destino[0]),
             Math.round(chefe.destino[1]),
-            // qual chefe: 0 a toupeira, 1 o yeti
-            qual === 'yeti' ? 1 : 0,
+            // qual chefe: 0 a toupeira, 1 o yeti, 2 a alpaca (21/11/2026)
+            CHEFES.indexOf(qual),
             // a etapa da maratona (20/11/2026): 0 a toupeira, 1 o yeti (fora da maratona, sempre 0)
             etapa,
           ],
@@ -821,6 +901,8 @@ export function criarChefe({
           b: [...bombas.values()].map((b) => [b.id, b.userId, Math.round(b.x0), Math.round(b.y0), Math.round(b.x), Math.round(b.y), ms(b.explode)]),
           // as bolas de neve rolando: [id, x, y]
           bn: [...bolas.values()].filter((b) => t >= b.comeca).map((b) => [b.id, Math.round(b.x), Math.round(b.y)]),
+          // os buracos da arena que muda (21/11/2026): [id, x, y, raio, ms até abrir (negativo: aberto)]
+          bu: [...buracos.values()].map((b) => [b.id, Math.round(b.x), Math.round(b.y), b.r, ms(b.abre)]),
           d: danoDaTurma,
           e: eventos,
         });
@@ -904,6 +986,8 @@ export function criarChefe({
           j.credX -= Math.abs(nx - j.x);
           j.credY -= Math.abs(ny - j.y);
         }
+        // a arena que muda: ninguém fica dentro de um buraco aberto
+        [nx, ny] = foraDosBuracos(nx, ny, abertos());
         j.x = nx;
         j.y = ny;
         j.lado = lado === -1 ? -1 : 1;
@@ -1041,7 +1125,7 @@ export function criarChefe({
         },
         parar,
         // para o teste
-        ...({ _passo: tick, _chefe: chefe, _jogadores: jogadores, _marcas: marcas, _noChao: noChao, _bolas: bolas, _motivo: () => ultimoMotivo, _etapa: () => etapa, _qual: () => qual, _hpFase: hpFase, _F: F } as object),
+        ...({ _passo: tick, _chefe: chefe, _jogadores: jogadores, _marcas: marcas, _noChao: noChao, _bolas: bolas, _motivo: () => ultimoMotivo, _etapa: () => etapa, _qual: () => qual, _hpFase: hpFase, _F: F, _buracos: buracos } as object),
       };
     },
   };

@@ -252,3 +252,28 @@ test('19/11/2026: a praça no Solo (escolhida antes do minuto) tem o recorde del
   assert.deepEqual(p.objetivos, fisica.objetivos(k));
   assert.equal(db.recordeDoSolo(biaId, 'skate', 'praca-1')?.valor, k.pontos);
 });
+
+test('21/11/2026: o segundo conjunto de objetivos no Solo: a sessão é refeita com ele, e o mais de objetivos vai à variante dele', () => {
+  const { jogo } = comecar([caioId], { solo: true });
+  assert.equal(jogo.acao(caioId, { tipo: 'pista', pista: 'parque-1', conjunto: 1 }), null);
+  assert.equal(jogo.publico(caioId).conjunto, 1);
+  const g = fisica.gravador();
+  const k = fisica.novoSkatista(0, 1);
+  const piloto = criarPiloto();
+  while (!k.terminou) {
+    const c = piloto(k);
+    g.anotar(c);
+    fisica.passo(k, c);
+  }
+  agora += ((k.passo / 60) * 1000) | 0;
+  assert.equal(jogo.acao(caioId, { tipo: 'fim', entradas: g.entradas }), null);
+  const p = jogo.publico(caioId) as unknown as { objetivos: { id: string; feito: boolean }[] };
+  assert.deepEqual(p.objetivos, fisica.objetivos(k));
+  assert.ok(p.objetivos.some((o) => o.id === 'manual'), 'os do segundo conjunto');
+  const feitos = p.objetivos.filter((o) => o.feito).length;
+  if (feitos) assert.equal(db.recordeDoSolo(caioId, 'skate', 'objetivos2-parque-1')?.valor, feitos);
+  // o conjunto pedido fora da lista vira o primeiro
+  const outro = comecar([anaId], { solo: true });
+  assert.equal(outro.jogo.acao(anaId, { tipo: 'pista', pista: 'praca-1', conjunto: 7 }), null);
+  assert.equal(outro.jogo.publico(anaId).conjunto, 0);
+});

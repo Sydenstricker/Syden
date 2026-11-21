@@ -1,4 +1,5 @@
-import { ALTURA, BICHO_MEIA, Bloco, blocoEm, bichoEm, LINHAS, movelEm, T, type Fase, type Tema } from './fases';
+import { ALTURA, BICHO_MEIA, Bloco, blocoEm, bichoEm, LINHAS, movelEm, PISCA_AVISO, PISCA_PERIODO, piscaPresente, T, type Fase, type Tema } from './fases';
+import { RACHA_TREME } from './fisica';
 
 /**
  * O DESENHO DO PULO DO COELHO (03/11/2026): tudo por código, numa tela de 320 × 180 ampliada com os pixels nítidos, como
@@ -575,6 +576,8 @@ export interface Vivos {
   cenouras: number;
   dourada: boolean;
   pisados: number;
+  /** As pedras que racham deste coelho (21/11/2026): o passo em que foram pisadas, 0 se inteiras. */
+  racha?: number[];
 }
 
 /** Uma partícula só de desenho: a poeira do pulo e do pouso, o estouro do espinho, o brilho da cenoura. */
@@ -709,6 +712,7 @@ export function pintar(p: Pintura, camX: number, camY: number, n: number, figura
     ctx.fillStyle = cores.tabua[1];
     ctx.fillRect(Math.round(q.x - camX) + 2, Math.round(q.y - camY) + 6, m.w - 4, 1);
   }
+  elementos(ctx, fase, camX, camY, n, vivos?.racha);
   // as cenouras, a dourada e os bichos (quem assiste vê todos: as cenouras de cada um são dele)
   fase.cenouras.forEach((c, i) => {
     if (vivos && vivos.cenouras & (1 << i)) return;
@@ -723,6 +727,68 @@ export function pintar(p: Pintura, camX: number, camY: number, n: number, figura
     bicho(ctx, b.tipo, Math.round(q.x - camX), Math.round(q.y - camY), q.lado, n);
   });
   for (const f of figuras) desenharCoelho(p, f, camX, camY);
+}
+
+/**
+ * OS ELEMENTOS NOVOS (21/11/2026), desenhados a cada quadro porque mudam: as correntes de ar (riscos que sobem), as pedras
+ * que racham (tremem antes de cair; quem assiste as vê inteiras, porque cada um tem as suas) e as tábuas que piscam (a clara e
+ * a azul; piscam antes de trocar, e a que não está aparece só pelo contorno).
+ */
+function elementos(ctx: CanvasRenderingContext2D, f: Fase, camX: number, camY: number, n: number, racha?: number[]) {
+  for (const v of f.ventos) {
+    if (v.x1 < camX || v.x0 > camX + W) continue;
+    const alto = Math.min(v.y1, ALTURA) - v.y0;
+    for (let x = v.x0 + 3; x < v.x1 - 1; x += 6) {
+      for (let k = 0; k < 3; k++) {
+        const y = v.y0 + alto - ((n * 3 + x * 7 + k * Math.floor(alto / 3)) % Math.max(1, alto));
+        ctx.fillStyle = k === 1 ? '#ffffff70' : '#f4ead850';
+        ctx.fillRect(Math.round(x + ((Math.floor(n / 10) + k) % 2) - camX), Math.round(y - camY), 1, 6);
+      }
+    }
+  }
+  const c0 = Math.max(0, Math.floor(camX / T)),
+    c1 = Math.min(f.colunas, Math.ceil((camX + W) / T) + 1);
+  const fase = Math.floor(n / PISCA_PERIODO);
+  const avisando = n % PISCA_PERIODO >= PISCA_PERIODO - PISCA_AVISO && Math.floor(n / 4) % 2 === 0;
+  for (let l = 0; l < LINHAS; l++) {
+    for (let c = c0; c < c1; c++) {
+      const b = blocoEm(f, c, l);
+      const x = Math.round(c * T - camX),
+        y = Math.round(l * T - camY);
+      if (b === Bloco.Racha) {
+        const t = racha?.[f.rachas.indexOf(l * f.colunas + c)] ?? 0;
+        if (t !== 0 && n - t >= RACHA_TREME) continue;
+        const dx = t !== 0 ? (Math.floor(n / 2) % 2 ? 1 : -1) : 0;
+        ctx.fillStyle = '#5a4e58';
+        ctx.fillRect(x + dx, y, T, 7);
+        ctx.fillStyle = '#9a8c92';
+        ctx.fillRect(x + dx, y, T, 5);
+        ctx.fillStyle = '#c8bcc0';
+        ctx.fillRect(x + dx + 1, y, T - 2, 1);
+        ctx.fillStyle = '#5a4e58';
+        // a rachadura: fina na pedra inteira, aberta na que treme
+        ctx.fillRect(x + dx + 7, y + 1, 1, t !== 0 ? 5 : 2);
+        if (t !== 0) ctx.fillRect(x + dx + 4, y + 3, 3, 1);
+      } else if (b === Bloco.PiscaA || b === Bloco.PiscaB) {
+        const clara = b === Bloco.PiscaA;
+        const ali = piscaPresente(b, n);
+        const [cor, borda] = clara ? ['#f0c870', '#a87a3a'] : ['#7ab0e0', '#3a5c8a'];
+        if (ali && !(avisando && fase % 2 === (clara ? 0 : 1))) {
+          ctx.fillStyle = borda;
+          ctx.fillRect(x, y, T, 6);
+          ctx.fillStyle = cor;
+          ctx.fillRect(x, y, T, 4);
+        } else {
+          // só o contorno, tracejado
+          ctx.fillStyle = borda + '90';
+          for (let i = 0; i < T; i += 4) {
+            ctx.fillRect(x + i, y, 2, 1);
+            ctx.fillRect(x + i, y + 5, 2, 1);
+          }
+        }
+      }
+    }
+  }
 }
 
 function desenharCoelho(p: Pintura, f: Figura, camX: number, camY: number) {

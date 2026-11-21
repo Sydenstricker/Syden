@@ -57,8 +57,8 @@ export interface EstadoArena {
   fase: FaseDaArena;
   formato: FormatoDaArena;
   cenario: Cenario;
-  /** A luta de sempre, ou segurar a zona (19/11/2026). */
-  objetivo?: 'luta' | 'zona';
+  /** A luta de sempre, segurar a zona (19/11/2026) ou, no Solo, as ondas (21/11/2026). */
+  objetivo?: 'luta' | 'zona' | 'ondas';
   solo: boolean;
   vencedor: number | null;
   jogadores: { userId: number; username: string; avatar: number | string | null; time: number; equipe: string[]; robo: boolean }[];
@@ -68,6 +68,8 @@ export interface EstadoArena {
   /** O Solo (20/11/2026): a dificuldade dos robôs e as vitórias seguidas da sessão (no fim, já com esta partida). */
   dificuldade?: 'facil' | 'medio' | 'dificil';
   sequencia?: { atual: number; recorde: number | null; novo: boolean } | null;
+  /** As ondas do Solo (21/11/2026): a de agora (no fim, a alcançada) e o recorde. */
+  ondas?: { onda: number; recorde: number | null; novo: boolean } | null;
 }
 
 export interface Quadro {
@@ -88,6 +90,8 @@ export interface Quadro {
   /** Segurando a zona: [time, pontos], e o time que está nela agora (-1: ninguém, ou disputada). */
   o?: number[][];
   od?: number;
+  /** As ondas (21/11/2026): [a onda de agora, ms até a próxima (0: lutando)]. */
+  w?: number[];
   /** [id, ponto, tipo] */
   s: number[][];
   e: unknown[][];
@@ -189,6 +193,8 @@ export interface Vista {
   suprimentos: { id: number; x: number; y: number; tipo: Suprimento }[];
   /** Segurando a zona: os pontos de cada time, e quem está nela. */
   zona: { pontos: Map<number, number>; dono: number } | null;
+  /** As ondas: a de agora, e quanto falta para a próxima (0: lutando). */
+  onda?: { n: number; proxima: number } | null;
 }
 
 export interface Efeito {
@@ -420,6 +426,14 @@ export class Cliente {
         if (r[0] === this.id) this.sons.push('moeda');
       } else if (tipo === 's') {
         this.sons.push('vez');
+      } else if (tipo === 'm') {
+        // a marca do especial (21/11/2026): [quem, marca] — o brilho em quem usou
+        const l = q.j.find((x) => x[0] === r[0]);
+        if (l && !l[17]) this.efeitos.push({ tipo: 'pegou', x: l[1], y: l[2], em: agora + (r[0] === this.id ? 0 : ATRASO_MS) });
+        if (r[0] === this.id) this.sons.push('moeda');
+      } else if (tipo === 'o') {
+        // a próxima onda vem: [n, ms]
+        this.sons.push('vez');
       } else if (tipo === 't' && r[0] === this.id) {
         this.eu.ativo = r[1];
       }
@@ -472,7 +486,8 @@ export class Cliente {
       return { id: s[0], x, y, tipo: SUPRIMENTOS[s[2]] ?? 'cura' };
     });
     const zona = ultimo.o ? { pontos: new Map(ultimo.o.map(([time, n]) => [time, n] as [number, number])), dono: ultimo.od ?? -1 } : null;
-    return { passo: p, fase: ultimo.f, resta: Math.max(0, ultimo.r - agoraNoServidor), coelhos, balas, zonas, suprimentos, zona };
+    const onda = ultimo.w ? { n: ultimo.w[0], proxima: Math.max(0, ultimo.w[1] - agoraNoServidor) } : null;
+    return { passo: p, fase: ultimo.f, resta: Math.max(0, ultimo.r - agoraNoServidor), coelhos, balas, zonas, suprimentos, zona, onda };
   }
 
   /** Pode jogar agora (a partida segue e eu estou de pé)? */

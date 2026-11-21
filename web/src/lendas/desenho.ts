@@ -36,7 +36,7 @@ export interface Alvo {
 }
 export interface Evento {
   id: number;
-  tipo: 'ataque' | 'habilidade' | 'defender' | 'combo' | 'inimigo' | 'sopro' | 'preparar' | 'tonto' | 'espinhos' | 'veneno' | 'renovar' | 'regenera';
+  tipo: 'ataque' | 'habilidade' | 'defender' | 'combo' | 'inimigo' | 'sopro' | 'preparar' | 'tonto' | 'espinhos' | 'veneno' | 'renovar' | 'regenera' | 'reflexo';
   de: Ator;
   alvos: Alvo[];
   /** Qual habilidade (19/11/2026: três por classe). */

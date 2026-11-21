@@ -44,18 +44,38 @@ export const DIRS: [number, number][] = [
 export const LADO_DA_DIR: Lado[] = ['s', 'n', 'o', 'l'];
 
 // ---------------- OS BICHOS (as folhas da Briga: os monstros da Quaternius, CC0) ----------------
-export const TIPOS = ['cogumelo', 'cacto', 'sapo', 'rei-cogumelo'] as const;
+// bicho novo entra no FIM (o índice vai no quadro): a abelha, o fantasma e o golem-rei são de 21/11/2026
+export const TIPOS = ['cogumelo', 'cacto', 'sapo', 'rei-cogumelo', 'abelha', 'fantasma', 'golem-rei'] as const;
 export type TipoDoBicho = (typeof TIPOS)[number];
 /**
  * Cada bicho é um COMPORTAMENTO: o cogumelo anda até quem está perto e morde (a preparação treme), o cacto mira e atira
  * reto, o sapo agacha mirando onde a pessoa está e cai em cima, e o rei-cogumelo é o chefe.
+ *
+ * Os de 21/11/2026 (o lote D da segunda auditoria): a ABELHA voa (passa por cima da água), ronda e MERGULHA reto na linha
+ * marcada; o FANTASMA some e aparece (sumido, nada o acerta e ele não acerta ninguém) e, visível e perto, dá o susto em volta
+ * de si; o GOLEM-REI é o chefe da mina, de COURAÇA: nada o fere até o GANCHO o puxar (fica atordoado, sem a couraça, por
+ * GOLEM.atordoado ms).
  */
 export const BICHOS: Record<TipoDoBicho, { hp: number; raio: number; vel: number; pontos: number }> = {
   cogumelo: { hp: 3, raio: 14, vel: 55, pontos: 20 },
   cacto: { hp: 3, raio: 14, vel: 0, pontos: 25 },
   sapo: { hp: 2, raio: 13, vel: 0, pontos: 25 },
   'rei-cogumelo': { hp: 20, raio: 30, vel: 45, pontos: 200 },
+  abelha: { hp: 2, raio: 11, vel: 85, pontos: 25 },
+  fantasma: { hp: 3, raio: 13, vel: 40, pontos: 30 },
+  'golem-rei': { hp: 14, raio: 28, vel: 40, pontos: 250 },
 };
+/** Os chefes (a sala deles, limpa, vence a masmorra). */
+export const ehChefe = (tipo: TipoDoBicho) => tipo === 'rei-cogumelo' || tipo === 'golem-rei';
+/** O golem-rei: quanto fica atordoado depois do gancho, e quanto depois disso o gancho não o pega de novo. */
+export const GOLEM = { atordoado: 2600, imune: 1800 };
+/** O fantasma: quanto fica visível e quanto some. */
+export const FANTASMA = { visivel: 2600, sumido: 1300 };
+/**
+ * O MODO HEROICO (21/11/2026): os bichos com mais vida (×vida, arredondado para cima) e mais dano (+dano em cada golpe), e a
+ * turma com menos corações. O recorde do Solo fica à parte ('heroico' e 'mina-heroico').
+ */
+export const HEROICO = { vida: 1.5, dano: 1, coracoes: 3 };
 /** Os estados dos bichos, na ordem do código que vai no quadro. */
 export const ESTADOS = [
   'entrando',
@@ -74,6 +94,8 @@ export const ESTADOS = [
   'cansado',
   'prep-sopro',
   'sopro',
+  // o fantasma sumido (21/11/2026)
+  'sumido',
 ] as const;
 export type EstadoDoBicho = (typeof ESTADOS)[number];
 /** As ações do coelho (o que a pessoa diz que ele está fazendo, para os outros o desenharem). */
@@ -326,7 +348,8 @@ SALAS.push(
       '#T.............T#',
       '#################',
     ],
-    portas: { n: { para: 9 } },
+    // a parede rachada do oeste (21/11/2026): a sala secreta da mina, com o coração grande
+    portas: { n: { para: 9 }, o: { para: 13, trava: 'rachada' } },
     bichos: [],
   },
   {
@@ -351,6 +374,7 @@ SALAS.push(
       { tipo: 'cacto', c: 3, l: 2 },
       { tipo: 'cacto', c: 13, l: 2 },
       { tipo: 'cogumelo', c: 8, l: 5 },
+      { tipo: 'abelha', c: 8, l: 8 },
     ],
   },
   {
@@ -376,6 +400,7 @@ SALAS.push(
       { tipo: 'sapo', c: 12, l: 7 },
       { tipo: 'cogumelo', c: 8, l: 2 },
       { tipo: 'cogumelo', c: 8, l: 8 },
+      { tipo: 'fantasma', c: 5, l: 5 },
     ],
     bau: { guarda: 'gancho', aparece: 'limpa' },
   },
@@ -400,11 +425,12 @@ SALAS.push(
     bichos: [
       { tipo: 'sapo', c: 3, l: 8 },
       { tipo: 'cogumelo', c: 3, l: 3 },
+      { tipo: 'abelha', c: 12, l: 2 },
     ],
     bau: { guarda: 'chave' },
   },
   {
-    // o rei-cogumelo da mina, com os postes no meio do salão
+    // o GOLEM-REI da mina (21/11/2026; era o rei-cogumelo), com os postes no meio do salão: só o gancho tira a couraça dele
     id: 12,
     mapa: [2, 4],
     grade: [
@@ -422,16 +448,95 @@ SALAS.push(
     ],
     portas: { s: { para: 9 } },
     bichos: [
-      { tipo: 'rei-cogumelo', c: 8, l: 4 },
+      { tipo: 'golem-rei', c: 8, l: 5 },
       { tipo: 'cacto', c: 2, l: 1 },
       { tipo: 'cacto', c: 14, l: 1 },
     ],
     chefe: true,
   },
+  {
+    // a sala secreta da mina (21/11/2026): atrás da parede rachada da entrada, o coração grande entre vasos e moitas
+    id: 13,
+    mapa: [1, 6],
+    grade: [
+      '#################',
+      '#V.............V#',
+      '#...............#',
+      '#..M.........M..#',
+      '#...............#',
+      '#.......H.......#',
+      '#...............#',
+      '#..M.........M..#',
+      '#...............#',
+      '#V.............V#',
+      '#################',
+    ],
+    portas: { l: { para: 8 } },
+    bichos: [],
+  },
 );
+
+/** As salas de cada masmorra: as que se alcançam da entrada pelas portas. */
+export function salasDa(qual: Masmorra): number[] {
+  const vistas = new Set<number>([MASMORRAS[qual].inicio]);
+  const fila = [MASMORRAS[qual].inicio];
+  while (fila.length) {
+    const s = SALAS[fila.shift()!];
+    for (const p of Object.values(s.portas)) {
+      if (!p || vistas.has(p.para)) continue;
+      vistas.add(p.para);
+      fila.push(p.para);
+    }
+  }
+  return [...vistas].sort((a, b) => a - b);
+}
+
+/**
+ * OS ACHADOS DE CADA MASMORRA (21/11/2026), contados na tela do fim: os BAÚS e os SEGREDOS (cada parede rachada aberta e o
+ * coração grande). Aqui, quantos há; quantos a turma achou, o servidor conta.
+ */
+export function achadosDa(qual: Masmorra): { baus: number; segredos: number } {
+  let baus = 0;
+  let segredos = 0;
+  for (const id of salasDa(qual)) {
+    const s = SALAS[id];
+    if (s.bau) baus++;
+    segredos += Object.values(s.portas).filter((p) => p?.trava === 'rachada').length + casasDe(s, 'H').length;
+  }
+  return { baus, segredos };
+}
 
 /** O gancho: até quantas casas ele alcança um poste ('E'). */
 export const GANCHO = { alcance: 7 };
+
+/**
+ * Até onde a corda do gancho vai, de quem olha para `dir` de (x, y): o ponto (px) da borda da primeira casa que a para (o
+ * poste, a parede) ou o fim do alcance. É a linha em que o gancho pega o golem-rei (21/11/2026).
+ */
+export function fimDoGancho(s: Sala, m: Mundo, x: number, y: number, dir: number): [number, number] {
+  const [dx, dy] = DIRS[dir];
+  let c = Math.floor(x / TILE);
+  let l = Math.floor(y / TILE);
+  for (let k = 1; k <= GANCHO.alcance; k++) {
+    const nc = c + dx;
+    const nl = l + dy;
+    if (s.grade[nl]?.[nc] === 'E' || solida(s, m, nc, nl, 'tiro')) break;
+    c = nc;
+    l = nl;
+  }
+  const [cx, cy] = centro(c, l);
+  return [cx + (dx * TILE) / 2, cy + (dy * TILE) / 2];
+}
+
+/** O gancho lançado de (x, y) para `dir` pega um bicho em (bx, by) de raio `r`? Ele está na frente, perto da linha da corda. */
+export function ganchoPega(s: Sala, m: Mundo, x: number, y: number, dir: number, bx: number, by: number, r: number, folga: number): boolean {
+  const [dx, dy] = DIRS[dir];
+  const [fx, fy] = fimDoGancho(s, m, x, y, dir);
+  const ao = (bx - x) * dx + (by - y) * dy;
+  const ate = (fx - x) * dx + (fy - y) * dy;
+  const lado = Math.abs((bx - x) * dy - (by - y) * dx);
+  return ao > 0 && ao <= ate + r + folga && lado <= r + folga;
+}
 
 /**
  * Para onde o gancho leva quem olha para `dir` de (x, y): a primeira coisa na linha que não é chão nem água (o gancho passa por
@@ -893,6 +998,8 @@ export interface VistaDoPiloto {
   m: Mundo;
   eu: Coelho;
   temCenoura: boolean;
+  /** A turma tem o gancho (a mina): o piloto o usa no golem-rei. */
+  temGancho?: boolean;
   chaves: number;
   /** O enigma dos botões resolvido; os botões apertados agora (ordem da grade). */
   placasResolvidas: boolean;
@@ -945,7 +1052,36 @@ export function piloto(v: VistaDoPiloto, cmd: Comandos) {
   // 1. os bichos
   const vivos = v.bichos.filter((b) => b.estado !== 'morto');
   if (vivos.length) {
-    const alvo = vivos.sort((a, b) => Math.hypot(a.x - eu.x, a.y - eu.y) - Math.hypot(b.x - eu.x, b.y - eu.y))[0];
+    // o fantasma sumido não se acerta: os outros primeiro
+    const visiveis = vivos.filter((b) => b.estado !== 'sumido');
+    const alvo = (visiveis.length ? visiveis : vivos).sort((a, b) => Math.hypot(a.x - eu.x, a.y - eu.y) - Math.hypot(b.x - eu.x, b.y - eu.y))[0];
+    // o golem-rei de couraça: alinhar com ele (a linha livre, a 2 a 4 casas) e lançar o gancho; atordoado, a pá
+    if (alvo.tipo === 'golem-rei' && v.temGancho && alvo.estado !== 'atordoado') {
+      let melhor: [number, number, number] | null = null;
+      for (const k of [3, 2, 4]) {
+        for (let dir = 0; dir < 4; dir++) {
+          const [ddx, ddy] = DIRS[dir];
+          const x = alvo.x - ddx * k * TILE;
+          const y = alvo.y - ddy * k * TILE;
+          if (!livre(sala, m, x, y, RAIO, 'coelho')) continue;
+          if (!ganchoPega(sala, m, x, y, dir, alvo.x, alvo.y, BICHOS[alvo.tipo].raio, 0)) continue;
+          const d = Math.hypot(x - eu.x, y - eu.y);
+          if (!melhor || d < Math.hypot(melhor[0] - eu.x, melhor[1] - eu.y)) melhor = [x, y, dir];
+        }
+        if (melhor) break;
+      }
+      if (melhor) {
+        const [lx, ly, dir] = melhor;
+        // já alinhado de onde estou: lança daqui
+        if (ganchoPega(sala, m, eu.x, eu.y, dir, alvo.x, alvo.y, BICHOS[alvo.tipo].raio, -4) || Math.hypot(lx - eu.x, ly - eu.y) < 9) {
+          olharEBater(cmd, dir);
+          cmd.item = eu.dir === dir;
+          return;
+        }
+        irPara(v, cmd, lx, ly);
+        return;
+      }
+    }
     const raio = BICHOS[alvo.tipo].raio;
     const ddx = alvo.x - eu.x;
     const ddy = alvo.y - eu.y;

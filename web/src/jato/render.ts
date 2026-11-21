@@ -1,6 +1,6 @@
 import { sorteio } from './util';
 import { folhaGuardada, LADO, PE_X, PE_Y, vistaDaNave, type CoresDaNave } from './nave';
-import { Chao, MUNDO, RES, type Fundo, type PistaDoJato, type TemaDoJato } from './pista';
+import { AVISO_DO_LASER, Chao, ladoDoMeteoro, laserLigado, MUNDO, passosAteOLaser, pontoNaLinha, RAIO_DO_METEORO, RES, type Fundo, type PistaDoJato, type TemaDoJato } from './pista';
 
 /**
  * O DESENHO DOS COELHOS A JATO (05/11/2026): a mesma câmera do "Mode 7" da Corrida dos coelhos (corrida/render.ts, de onde a
@@ -306,6 +306,81 @@ export function postesNaTela(d: Desenho, p: PistaDoJato, cam: Camera, figuras: F
     const w = Math.max(1, Math.round(5 * pr.escala * 1.4)), h = Math.max(1, Math.round(16 * pr.escala * 1.4));
     if (pr.sx + w < 0 || pr.sx - w > W) continue;
     figuras.push({ z: pr.z, desenhar: (ctx) => ctx.drawImage(d.poste, Math.round(pr.sx - w / 2), Math.round(pr.sy - h), w, h) });
+  }
+}
+
+/**
+ * OS PERIGOS NA TELA (21/11/2026), no passo `passos` da corrida de quem olha: o meteoro (a rocha em brasa, girando, com a sombra
+ * na pista) e o laser (os dois postes nas bordas e o feixe entre eles; piscando fino antes de ligar).
+ */
+export function perigosNaTela(p: PistaDoJato, cam: Camera, passos: number, tempo: number, figuras: Figura[]) {
+  const hw = p.def.meiaLargura;
+  for (const pe of p.def.perigos ?? []) {
+    const q = pontoNaLinha(p, pe.f * p.comprimento);
+    const nx = -q.dy, ny = q.dx;
+    if (pe.tipo === 'meteoro') {
+      const l = ladoDoMeteoro(pe, hw, passos);
+      const pr = projetar(cam, q.x + nx * l, q.y + ny * l);
+      if (!pr || pr.z > 600) continue;
+      const r = Math.max(1, RAIO_DO_METEORO * pr.escala * 0.9);
+      figuras.push({
+        z: pr.z,
+        desenhar: (ctx) => {
+          const cy = pr.sy - r * 1.6;
+          ctx.fillStyle = 'rgba(10, 6, 16, 0.35)';
+          ctx.beginPath();
+          ctx.ellipse(pr.sx, pr.sy, r, r * 0.3, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#5a4a48';
+          ctx.beginPath();
+          ctx.arc(pr.sx, cy, r, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#ff9a4a';
+          const a = tempo * 4;
+          for (let i = 0; i < 3; i++) {
+            const ang = a + i * 2.1;
+            ctx.fillRect(Math.round(pr.sx + Math.cos(ang) * r * 0.5) - 1, Math.round(cy + Math.sin(ang) * r * 0.5) - 1, Math.max(1, Math.round(r * 0.3)), Math.max(1, Math.round(r * 0.3)));
+          }
+          ctx.strokeStyle = '#1e1416';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+        },
+      });
+    } else {
+      const ligado = laserLigado(pe, passos);
+      const falta = passosAteOLaser(pe, passos);
+      const aviso = !ligado && falta <= AVISO_DO_LASER && Math.floor(falta / 4) % 2 === 0;
+      const a = projetar(cam, q.x + nx * (hw + 2), q.y + ny * (hw + 2));
+      const b = projetar(cam, q.x - nx * (hw + 2), q.y - ny * (hw + 2));
+      if (!a || !b || Math.min(a.z, b.z) > 600) continue;
+      const z = Math.min(a.z, b.z);
+      figuras.push({
+        z,
+        desenhar: (ctx) => {
+          const ha = 14 * a.escala * 1.4, hb = 14 * b.escala * 1.4;
+          ctx.fillStyle = '#1e1828';
+          ctx.fillRect(Math.round(a.sx - 1), Math.round(a.sy - ha), Math.max(2, Math.round(3 * a.escala)), Math.round(ha));
+          ctx.fillRect(Math.round(b.sx - 1), Math.round(b.sy - hb), Math.max(2, Math.round(3 * b.escala)), Math.round(hb));
+          if (!ligado && !aviso) return;
+          ctx.strokeStyle = ligado ? '#ff3a6a' : 'rgba(255, 120, 160, 0.7)';
+          ctx.lineWidth = ligado ? Math.max(1, Math.round(3 * Math.min(a.escala, b.escala))) : 1;
+          for (const k of ligado ? [0.35, 0.6] : [0.5]) {
+            ctx.beginPath();
+            ctx.moveTo(a.sx, a.sy - ha * k);
+            ctx.lineTo(b.sx, b.sy - hb * k);
+            ctx.stroke();
+          }
+          if (ligado) {
+            ctx.strokeStyle = '#ffe0ea';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(a.sx, a.sy - ha * 0.35);
+            ctx.lineTo(b.sx, b.sy - hb * 0.35);
+            ctx.stroke();
+          }
+        },
+      });
+    }
   }
 }
 

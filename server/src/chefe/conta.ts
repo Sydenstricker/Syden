@@ -72,8 +72,8 @@ export const ESTADOS = [
   'caida',
 ] as const;
 export type EstadoDoChefe = (typeof ESTADOS)[number];
-/** As marcas no chão (o aviso de cada golpe), na ordem do código que vai no quadro. */
-export const MARCAS = ['anel', 'pedra', 'investida', 'torrao'] as const;
+/** As marcas no chão (o aviso de cada golpe), na ordem do código que vai no quadro. A 'faixa' (21/11/2026) é a do leque da alpaca. */
+export const MARCAS = ['anel', 'pedra', 'investida', 'torrao', 'faixa'] as const;
 export type TipoDeMarca = (typeof MARCAS)[number];
 /** O que o coelho está fazendo (para os outros o desenharem). */
 export const ACOES = ['parado', 'andando', 'atirando', 'dor', 'caido'] as const;
@@ -148,4 +148,31 @@ export function fimDaInvestida(x: number, y: number, dx: number, dy: number, mar
   if (dy < -0.0001) k = Math.min(k, (ARENA.y0 + margem - y) / dy);
   if (k < 0) k = 0;
   return [x + dx * k, y + dy * k];
+}
+
+/**
+ * A ARENA QUE MUDA (21/11/2026): da 2ª fase em diante, o chão abre BURACOS, marcados antes (BURACO.aviso ms). Aberto, ninguém
+ * pisa dentro: o coelho é empurrado para a borda (o site ao andar, o servidor ao receber a posição). Quem está dentro quando ele
+ * abre cai (perde uma vida). Cada buraco: [x, y, raio].
+ */
+export const BURACO = { raio: 26, aviso: 2000 };
+
+/** Tira (x, y) de dentro dos buracos abertos: vai à borda mais perto (o raio do buraco + o corpo do coelho). */
+export function foraDosBuracos(x: number, y: number, buracos: readonly (readonly number[])[]): [number, number] {
+  let px = x;
+  let py = y;
+  for (const b of buracos) {
+    const lim = b[2] + CORPO_COELHO;
+    const dx = px - b[0];
+    const dy = py - b[1];
+    const d = Math.sqrt(dx * dx + dy * dy);
+    if (d >= lim) continue;
+    if (d < 0.0001) {
+      px = b[0] + lim;
+      continue;
+    }
+    px = b[0] + (dx / d) * lim;
+    py = b[1] + (dy / d) * lim;
+  }
+  return naArena(px, py);
 }

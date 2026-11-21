@@ -20,7 +20,7 @@ import {
 import { criarMotor, tocar } from '../somDosJogos';
 import { comandosComControle } from './controle';
 import { andarRobo, CASA_DE_QUEM_JOGA, criarRobos, largadaDoRobo, ordemDaCorrida, porNaGrade, progressoDoRobo, type DificuldadeDaCorrida, type RoboDoKart } from './robos';
-import { HORTA, montarPista, type DefinicaoDaPista, type Pista } from './pista';
+import { HORTA, ladoFechado, montarPista, passosAteFechar, type DefinicaoDaPista, type Pista } from './pista';
 import {
   cameraAtras,
   desenharChao,
@@ -660,6 +660,25 @@ export function rodarCorrida(o: OpcoesDoLaco): () => void {
       for (const ob of p.objetos) {
         const f = figuraNoChao(d, cam, ob.tipo, ob.x, ob.y, ob.raio > 0 ? 2.6 : ob.tipo === 'cenoura' ? 1 : 0.8);
         if (f) figuras.push(f);
+      }
+      // AS PORTEIRAS (a Fazenda): os três mourões, e a folha fechada de lado a lado da metade dela. A folha que vai fechar
+      // pisca meio transparente no último meio segundo antes, para dar tempo de trocar de lado.
+      for (const por of p.porteiras ?? []) {
+        const nx = -por.ty, ny = por.tx, hw = p.def.meiaLargura + 4;
+        for (const lat of [-hw, 0, hw]) {
+          const f = figuraNoChao(d, cam, 'mourao', por.x + nx * lat, por.y + ny * lat, 1.6);
+          if (f) figuras.push(f);
+        }
+        const fechado = ladoFechado(por, n);
+        for (const lado of [-1, 1] as const) {
+          const falta = fechado === lado ? 0 : passosAteFechar(por, lado, n);
+          if (falta > 30 || (falta > 0 && Math.floor(falta / 5) % 2 === 1)) continue;
+          for (let lat = 5; lat < hw - 2; lat += 7) {
+            const f = figuraNoChao(d, cam, 'porteira', por.x + nx * lat * lado, por.y + ny * lat * lado, 1.4);
+            if (!f) continue;
+            figuras.push(falta > 0 ? { z: f.z, desenhar: (ctx) => { ctx.globalAlpha = 0.45; f.desenhar(ctx); ctx.globalAlpha = 1; } } : f);
+          }
+        }
       }
       // as caixas pulsam devagar; a que eu peguei some até voltar
       for (const cx of caixas) {

@@ -4,7 +4,7 @@
  */
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { atributos, criarLendas, grupoDaParada, HABILIDADES, INIMIGOS, nomeDoCombo, PARADAS, PASSOS_DA_ROTA, rotaDaSemente, sorteioDaSemente, TRACOS, type Heroi, type Inimigo } from '../src/lendas-regras.js';
+import { atributos, criarLendas, FORCA_DO_DESAFIO, REFLEXO, grupoDaParada, HABILIDADES, INIMIGOS, nomeDoCombo, PARADAS, PASSOS_DA_ROTA, rotaDaSemente, sorteioDaSemente, TRACOS, type Heroi, type Inimigo } from '../src/lendas-regras.js';
 import type { Contexto, Jogo } from '../src/minijogo-motor.js';
 
 /** Um sorteio repetível (mulberry32). */
@@ -19,16 +19,16 @@ function semente(s: number) {
 }
 
 interface Montagem {
-  jogo: Jogo & { _herois: Map<number, Heroi>; _inimigos: () => Inimigo[]; _caminho: { passos: string[][]; evento: string; grupos: Record<string, { tipo: string; k: number }[]> }; _escolhidas: (string | null)[] };
+  jogo: Jogo & { _herois: Map<number, Heroi>; _inimigos: () => Inimigo[]; _caminho: { passos: string[][]; evento: string; grupos: Record<string, { tipo: string; k: number }[]> }; _escolhidas: (string | null)[]; _desafio: () => number };
   ver: (quem?: number) => Record<string, any>;
   tique: () => void;
   terminou: () => boolean;
   sala: number[];
   trofeus: { userId: number; posicao: number; pontos: number | null; rivais: number[]; pista: string }[];
-  recordes: { userId: number; rodadas: number; tempoMs: number }[];
+  recordes: { userId: number; rodadas: number; tempoMs: number; variante: string }[];
 }
 
-function montar(naSala: number[], { solo = false, s = 1 } = {}): Montagem {
+function montar(naSala: number[], { solo = false, s = 1, corpo = {} as Record<string, unknown> } = {}): Montagem {
   let terminou = false;
   let relogio: (() => void) | null = null;
   const sala = [...naSala];
@@ -47,10 +47,10 @@ function montar(naSala: number[], { solo = false, s = 1 } = {}): Montagem {
   const def = criarLendas({ agora: () => t++, aleatorio: semente(s), servicos: {
       avatarDe: () => null,
       guardarTrofeu: (x) => trofeus.push(x),
-      guardarRecorde: (userId, rodadas, extra) => (recordes.push({ userId, rodadas, ...extra }), { antes: null, novo: true }),
+      guardarRecorde: (userId, rodadas, extra, variante) => (recordes.push({ userId, rodadas, ...extra, variante }), { antes: null, novo: true }),
     },
   });
-  const jogo = def.comecar(ctx, { naSala, criadaPor: naSala[0], corpo: {} });
+  const jogo = def.comecar(ctx, { naSala, criadaPor: naSala[0], corpo });
   assert.equal(typeof jogo, 'object');
   return {
     jogo: jogo as Montagem['jogo'],
@@ -541,4 +541,104 @@ test('o golpe final: no nível 3 cada classe ganha a quarta habilidade, e cada u
   m.jogo.acao(2, { tipo: 'acao', acao: 'habilidade', hab: 3 });
   const estrelas = m.ver().eventos.find((e: { hab?: string }) => e.hab === 'estrelas');
   assert.ok(estrelas && estrelas.alvos.length === 3, 'as estrelas em todos');
+});
+
+// ---------------- 21/11/2026: os níveis de desafio e as peças com efeito ----------------
+
+test('o nível de desafio: só quem começou escolhe, só na tela das classes, e os inimigos vêm mais fortes', () => {
+  const m = montar([1, 2], { s: 5 });
+  assert.equal(m.ver(1).escolhoDesafio, true);
+  assert.equal(m.ver(2).escolhoDesafio, false);
+  assert.equal(m.jogo.acao(2, { tipo: 'desafio', nivel: 2 }), 'Agora não dá.', 'só quem começou');
+  assert.equal(m.jogo.acao(1, { tipo: 'desafio', nivel: 9 }), 'Agora não dá.');
+  assert.equal(m.jogo.acao(1, { tipo: 'desafio', nivel: 2 }), null);
+  assert.equal(m.ver(2).desafio, 2, 'a turma vê');
+  ateALuta(m, { 1: 'escudo', 2: 'flecha' });
+  assert.equal(m.jogo.acao(1, { tipo: 'desafio', nivel: 0 }), 'Agora não dá.', 'depois da largada, não muda');
+  // os mesmos inimigos do nível 0, com a mesma semente, ficam mais fracos
+  const base = montar([1, 2], { s: 5 });
+  ateALuta(base, { 1: 'escudo', 2: 'flecha' });
+  const forte = m.jogo._inimigos();
+  base.jogo._inimigos().forEach((i, k) => {
+    assert.equal(forte[k].tipo, i.tipo);
+    assert.ok(Math.abs(forte[k].hpMax - i.hpMax * FORCA_DO_DESAFIO[2]) <= 1, `${i.tipo}: ${forte[k].hpMax} contra ${i.hpMax}`);
+  });
+  // a largada também pode mandar o desafio
+  assert.equal(montar([1], { corpo: { desafio: 3 } }).ver().desafio, 3);
+  assert.equal(montar([1], { corpo: { desafio: 'x' } }).ver().desafio, 0);
+});
+
+test('o desafio: cada nível é mais difícil para a turma de robôs, e o recorde vai à variante dele', () => {
+  const N = 80;
+  const vitorias: number[] = [];
+  for (const desafio of [0, 1, 2, 3]) {
+    let v = 0;
+    for (let s = 1; s <= N; s++) {
+      const m = montar([1], { solo: true, s: s * 7919, corpo: { desafio } });
+      correr(m, 8000);
+      if (m.ver().venceu) {
+        v++;
+        assert.equal(m.recordes[0].variante, desafio === 0 ? '' : `desafio-${desafio}`);
+      }
+    }
+    vitorias.push(v);
+  }
+  for (let k = 1; k < vitorias.length; k++) assert.ok(vitorias[k] < vitorias[k - 1], `vitórias por nível: ${vitorias.join(', ')}`);
+  assert.ok(vitorias[3] > 0, `o desafio 3 ainda se vence: ${vitorias.join(', ')}`);
+});
+
+test('no desafio 3, todo inimigo se cura no fim da rodada, num acontecimento só', () => {
+  const m = montar([1], { s: 3, corpo: { desafio: 3 } });
+  ateALuta(m, { 1: 'escudo' });
+  for (const i of m.jogo._inimigos()) Object.assign(i, { traco: 'furia', hp: i.hpMax - 30 });
+  m.jogo.acao(1, { tipo: 'acao', acao: 'defender' });
+  const v = m.ver();
+  const regen = v.eventos.filter((e: { tipo: string }) => e.tipo === 'regenera');
+  assert.equal(regen.length, 1);
+  assert.ok(regen[0].alvos.length >= 2);
+});
+
+test('as peças com efeito: a seiva cura quem bate, o reflexo devolve o golpe, o fôlego dá energia', () => {
+  // o reflexo e o fôlego
+  const m = montar([1], { s: 8 });
+  ateALuta(m, { 1: 'escudo' });
+  const h = m.jogo._herois.get(1)!;
+  h.efeitos = { arma: false, armadura: true, amuleto: true };
+  h.en = 0;
+  for (const i of m.jogo._inimigos()) Object.assign(i, { traco: 'furia', hp: 900, hpMax: 900 });
+  m.jogo.acao(1, { tipo: 'acao', acao: 'atacar', alvo: 0 });
+  let v = m.ver();
+  const golpes = v.eventos.filter((e: { tipo: string; alvos: { quem: { h?: number }; dano?: number }[] }) => e.tipo === 'inimigo' && e.alvos[0].quem.h === 1 && (e.alvos[0].dano ?? 0) > 0);
+  const reflexos = v.eventos.filter((e: { tipo: string }) => e.tipo === 'reflexo');
+  assert.ok(golpes.length > 0);
+  assert.equal(reflexos.length, golpes.length, 'cada golpe levado volta um pouco');
+  assert.equal(reflexos[0].alvos[0].dano, Math.max(1, Math.round(golpes[0].alvos[0].dano * REFLEXO)));
+  assert.equal(h.en, 2, 'a energia da rodada e mais uma do fôlego');
+  // a seiva: o golpe cura um pouco
+  const s = montar([1], { s: 8 });
+  ateALuta(s, { 1: 'flecha' });
+  const f = s.jogo._herois.get(1)!;
+  f.efeitos.arma = true;
+  f.hp = 10;
+  for (const i of s.jogo._inimigos()) Object.assign(i, { traco: 'furia', hp: 900, hpMax: 900, atk: 0, tonto: true });
+  s.jogo.acao(1, { tipo: 'acao', acao: 'atacar', alvo: 0 });
+  v = s.ver();
+  assert.ok(v.herois[0].hp > 10, `a seiva curou (${v.herois[0].hp})`);
+  assert.equal(v.herois[0].efeitos.arma, true, 'o efeito vai à tela');
+});
+
+test('o espólio e a loja trazem peças com efeito, e o robô as veste', () => {
+  let comEfeito = 0;
+  let vestidas = 0;
+  for (let s = 1; s <= 30; s++) {
+    const m = montar([1], { solo: true, s });
+    for (let k = 0; k < 8000 && !m.terminou(); k++) {
+      const v = m.ver();
+      if (v.meuEspolio?.item?.efeito) comEfeito++;
+      m.tique();
+    }
+    for (const h of m.jogo._herois.values()) vestidas += Object.values(h.efeitos).filter(Boolean).length;
+  }
+  assert.ok(comEfeito > 0, 'caiu peça com efeito');
+  assert.ok(vestidas > 0, 'e alguém vestiu');
 });

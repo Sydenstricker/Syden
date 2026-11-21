@@ -115,7 +115,15 @@ export type Peca =
   | 'tunel'
   | 'lado'
   | 'aberto'
-  | 'canto-interno';
+  | 'canto-interno'
+  // as peças da trilha (21/11/2026), do mesmo Minigolf Kit
+  | 'bifurcacao'
+  | 'bifurcacao-inicio'
+  | 'bifurcacao-t'
+  | 'crista'
+  | 'canto-morro'
+  | 'canaleta'
+  | 'canaleta-ponta';
 
 /** Uma casa da grade: [peça, coluna (x), linha (z), giro (quartos de volta), altura da base]. */
 export type Casa = [Peca, number, number, number, number];
@@ -345,10 +353,110 @@ export const BURACOS_DO_PARQUE: Buraco[] = [
   },
 ];
 
-/** OS PERCURSOS: o do kit (os oito de sempre) e o do parque. */
-export type Percurso3D = 'kit' | 'parque';
-export const PERCURSOS_3D: Record<Percurso3D, Buraco[]> = { kit: BURACOS, parque: BURACOS_DO_PARQUE };
-export const percursoValido = (x: unknown): Percurso3D | null => (x === 'kit' || x === 'parque' ? x : null);
+/**
+ * A TRILHA (21/11/2026): o terceiro percurso, de seis buracos, com as peças do Minigolf Kit que ainda não estavam em nenhum: a
+ * bifurcação (a pista dividida por uma mureta, e o "T" que abre dois caminhos e os junta de novo), o túnel estreito, a crista
+ * (a pista que afunda e volta), os cantos de morro (o canto que sobe e devolve a bola) e a canaleta (a pista côncava, que
+ * segura a bola no meio). O recorde do Solo é por percurso, como os outros.
+ */
+export const BURACOS_DA_TRILHA: Buraco[] = [
+  {
+    // 1. As duas cristas.
+    par: 2,
+    inicio: [0, 0],
+    casas: [c('fim', 0, 0, 2), c('reta', 0, 1), c('crista', 0, 2), c('crista', 0, 3), c('buraco', 0, 4)],
+  },
+  {
+    // 2. A canaleta: entra, segue pelo meio e sai.
+    par: 2,
+    inicio: [0, 0],
+    casas: [
+      c('fim', 0, 0, 2),
+      c('canaleta-ponta', 0, 1),
+      c('canaleta', 0, 2),
+      c('canaleta', 0, 3),
+      c('canaleta-ponta', 0, 4, 2),
+      c('buraco', 0, 5),
+    ],
+  },
+  {
+    // 3. A mureta no meio: escolher o lado antes de ela começar.
+    par: 3,
+    inicio: [0, 0],
+    casas: [
+      c('fim', 0, 0, 2),
+      c('reta', 0, 1),
+      c('bifurcacao-inicio', 0, 2),
+      c('bifurcacao', 0, 3),
+      c('bifurcacao-inicio', 0, 4, 2),
+      c('monte', 0, 5),
+      c('buraco', 0, 6),
+    ],
+  },
+  {
+    // 4. O "T": dois caminhos em volta do vão, a crista de um lado e o bloco do outro, que se juntam no outro "T".
+    par: 3,
+    inicio: [0, 0],
+    casas: [
+      c('fim', 0, 0, 2),
+      c('reta', 0, 1),
+      c('bifurcacao-t', 0, 2),
+      c('curva', -1, 2, 2),
+      c('curva', 1, 2, 1),
+      c('crista', -1, 3),
+      c('bloco', 1, 3),
+      c('curva', -1, 4, 3),
+      c('curva', 1, 4, 0),
+      c('bifurcacao-t', 0, 4, 2),
+      c('reta', 0, 5),
+      c('buraco', 0, 6),
+    ],
+  },
+  {
+    // 5. O campo largo com os cantos de morro: a bola que vai ao canto volta.
+    par: 3,
+    inicio: [1, 0],
+    casas: [
+      c('canto-morro', 0, 0, 2),
+      c('lado', 1, 0, 1),
+      c('canto-morro', 2, 0, 1),
+      c('lado', 0, 1, 2),
+      c('aberto', 1, 1),
+      c('lado', 2, 1, 0),
+      c('lado', 0, 2, 2),
+      c('losango', 1, 2),
+      c('lado', 2, 2, 0),
+      c('lado', 0, 3, 2),
+      c('buraco-aberto', 1, 3),
+      c('lado', 2, 3, 0),
+      c('canto-morro', 0, 4, 3),
+      c('lado', 1, 4, 3),
+      c('canto-morro', 2, 4, 0),
+    ],
+  },
+  {
+    // 6. O túnel, a canaleta, a volta, o outro túnel e a crista antes do buraco.
+    par: 4,
+    inicio: [0, 0],
+    casas: [
+      c('fim', 0, 0, 2),
+      c('tunel', 0, 1),
+      c('canaleta-ponta', 0, 2),
+      c('canaleta-ponta', 0, 3, 2),
+      c('curva', 0, 4, 3),
+      c('reta', 1, 4, 1),
+      c('tunel', 2, 4, 1),
+      c('curva', 3, 4, 1),
+      c('crista', 3, 5),
+      c('buraco', 3, 6),
+    ],
+  },
+];
+
+/** OS PERCURSOS: o do kit (os oito de sempre), o do parque e a trilha (21/11/2026). */
+export type Percurso3D = 'kit' | 'parque' | 'trilha';
+export const PERCURSOS_3D: Record<Percurso3D, Buraco[]> = { kit: BURACOS, parque: BURACOS_DO_PARQUE, trilha: BURACOS_DA_TRILHA };
+export const percursoValido = (x: unknown): Percurso3D | null => (x === 'kit' || x === 'parque' || x === 'trilha' ? x : null);
 
 // ——— as formas das peças, no sistema da peça (u para +x, v para +z, de −0,5 a 0,5) ———
 
@@ -404,6 +512,35 @@ const rampa =
   (subida: number): Relevo =>
   (_u, v) => [subida * (v + 0.5), 0, subida];
 
+/**
+ * O CANTO DE MORRO (21/11/2026, o hill-corner do kit): o canto de +u e +v sobe, a partir da diagonal u + v = 0,37, primeiro
+ * devagar e depois a 0,47 por unidade (medido no modelo: chega a ~0,22 acima do chão junto das paredes).
+ */
+const MORRO_S0 = 0.37;
+const morroNoCanto: Relevo = (u, v) => {
+  const s = u + v - MORRO_S0;
+  if (s <= 0) return [0, 0, 0];
+  const [h, d] = s < 0.1 ? [2.35 * s * s, 4.7 * s] : [0.47 * (s - 0.05), 0.47];
+  return [h, d, d];
+};
+
+/**
+ * A CANALETA (21/11/2026, a spline côncava do kit): a pista afunda no meio, D abaixo das beiras, em parábola de u = −0,4 a 0,4
+ * (medido no modelo: 0,032 no meio contra 0,063 na beira). A PONTA entra devagar: de chão liso em v = −0,5 à canaleta inteira em
+ * v = 0,5 (o "smoothstep"), para não ter degrau nem na reta nem na canaleta.
+ */
+const CANALETA_D = 0.031;
+const canaleta =
+  (ponta: boolean): Relevo =>
+  (u, v) => {
+    const q = (u * u) / 0.16;
+    if (q >= 1) return [0, 0, 0];
+    const s = v + 0.5;
+    const w = ponta ? s * s * (3 - 2 * s) : 1;
+    const dw = ponta ? 6 * s * (1 - s) : 0;
+    return [-CANALETA_D * (1 - q) * w, ((CANALETA_D * 2 * u) / 0.16) * w, -CANALETA_D * (1 - q) * dw];
+  };
+
 interface Forma {
   paredes: number[][];
   /** Os buracos do chão (a bola cai e volta). */
@@ -443,6 +580,16 @@ export const FORMAS: Record<Peca, Forma> = {
   lado: forma([PAREDE_X]),
   aberto: forma([]),
   'canto-interno': forma([ret(0.4, -0.5, 0.5, -0.4)]),
+  // a mureta do meio, de ponta a ponta (split), e a que começa no meio da casa (split-start: aberta para −z)
+  bifurcacao: forma([...LADOS, ret(-0.042, -0.5, 0.042, 0.5)]),
+  'bifurcacao-inicio': forma([...LADOS, ret(-0.042, -0.29, 0.042, 0.5)]),
+  // o "T" (split-t): entra por −z e sai por −x e +x; a parede do fundo em +z
+  'bifurcacao-t': forma([ret(-0.5, -0.5, -0.4, -0.42), ret(0.4, -0.5, 0.5, -0.42), PAREDE_Z]),
+  // a crista (crest): afunda 0,03 no meio e volta, de v = −0,27 a 0,27
+  crista: forma(LADOS, { relevo: lombada(-0.03, 0.27) }),
+  'canto-morro': forma([PAREDE_X, PAREDE_Z], { relevo: morroNoCanto }),
+  canaleta: forma(LADOS, { relevo: canaleta(false) }),
+  'canaleta-ponta': forma(LADOS, { relevo: canaleta(true) }),
 };
 
 // ——— o giro: o mesmo do rotation.y do three.js, em quartos de volta (x' = cos·u + sen·v; z' = −sen·u + cos·v) ———

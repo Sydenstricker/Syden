@@ -11,6 +11,11 @@ export const NOMES_DAS_PISTAS: Record<string, string> = {
   'canion-1': chave('Cânion'),
   [COPA]: chave('Copa da Cenoura'),
   'copa-do-repolho': chave('Copa do Repolho'),
+  // a terceira copa (21/11/2026)
+  'fazenda-1': chave('Fazenda'),
+  'brejo-1': chave('Brejo'),
+  'vulcao-1': chave('Vulcão'),
+  'copa-do-milho': chave('Copa do Milho'),
   // o pódio da Festa dos coelhos mora na mesma estante (server/src/minijogo-festa.ts)
   festa: chave('Festa dos coelhos'),
   // e o do modo Relâmpago dela (server/src/minijogo-festa-relampago.ts, 19/11/2026): os pontos são os acertos
@@ -37,6 +42,11 @@ export const NOMES_DAS_PISTAS: Record<string, string> = {
   'mina-1': chave('Mina'),
   'ninho-1': chave('Ninho'),
   'copa-dos-bichos': chave('Copa dos Bichos'),
+  // as fases com um elemento novo cada e a copa delas (21/11/2026)
+  'vento-1': chave('Vento'),
+  'caverna-1': chave('Caverna'),
+  'cachoeira-1': chave('Cachoeira'),
+  'copa-dos-elementos': chave('Copa dos Elementos'),
   // e o do Minigolfe da toca (server/src/minijogo-golfe.ts): os pontos são o total de tacadas, e MENOS é melhor
   golfe: chave('Minigolfe da toca'),
   // e o da Caça às pragas da horta (server/src/minijogo-caca.ts): os pontos, e MAIS é melhor

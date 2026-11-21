@@ -316,3 +316,73 @@ test('o servidor refaz os objetivos: a mesma sessão dá os mesmos objetivos nas
   assert.equal(r.k.pontos, k.pontos);
   assert.deepEqual(s.objetivos(r.k), f.objetivos(k));
 });
+
+// ---------------- O segundo conjunto de objetivos (21/11/2026) ----------------
+
+/** Como rodarDe, com o conjunto de objetivos da sessão. */
+async function rodarNoConjunto(conjunto: number, pista: number, x: number, z: number, rx: number, rz: number, vel: number, n: number) {
+  const f = await import('../src/skate/fisica');
+  const k = f.novoSkatista(pista, conjunto);
+  for (let j = 0; j < 2; j++) {
+    Object.assign(k, { x, z, rx, rz, cx: rx, cz: rz, vel });
+    if (!j) f.passo(k, f.NADA);
+  }
+  for (let i = 0; i < n; i++) f.passo(k, f.NADA);
+  return k;
+}
+
+test('o segundo conjunto: outra palavra e outra fita, as mesmas peças; os pontos de uma sessão são os mesmos nos dois', async () => {
+  const p = await import('../src/skate/pista');
+  const f = await import('../src/skate/fisica');
+  const s = await import('../../server/src/skate/fisica');
+  assert.deepEqual([...p.PALAVRAS], ['TOCA', 'PULO']);
+  for (const q of p.PISTAS) {
+    assert.equal(q.segundo.letras.length, p.PALAVRA_2.length);
+    assert.equal(q.segundo.saltos.length, 0, 'os saltos (e os pontos deles) são os do primeiro conjunto');
+    assert.ok(q.segundo.pontos > q.objetivos.pontos && q.segundo.combo > q.objetivos.combo);
+  }
+  for (const pista of [0, 1]) {
+    const um = f.novoSkatista(pista, 0);
+    const dois = f.novoSkatista(pista, 1);
+    const g = f.gravador();
+    const piloto = criarPiloto();
+    while (!um.terminou) {
+      const c = piloto(um);
+      g.anotar(c);
+      f.passo(um, c);
+    }
+    for (let i = 0; i < g.entradas.length; i += 2) for (let j = 0; j < g.entradas[i]; j++) if (!dois.terminou) f.passo(dois, f.deBits(g.entradas[i + 1]));
+    assert.equal(dois.pontos, um.pontos, 'os pontos não mudam com o conjunto');
+    const objs = f.objetivos(dois);
+    assert.deepEqual(
+      objs.map((o) => o.id),
+      ['letras', 'pontos', 'combo', 'fita', 'giro', 'manual'],
+    );
+    // o servidor refaz no mesmo conjunto
+    const r = s.refazer(g.entradas, pista, 1);
+    assert.deepEqual(s.objetivos(r.k), objs);
+    // e o primeiro conjunto continua o de antes
+    assert.deepEqual(s.objetivos(s.refazer(g.entradas, pista, 0).k), f.objetivos(um));
+  }
+});
+
+test('o segundo conjunto: o L no alto do quarter de cá e a fita no canto do quarter de lá (o vert embalado)', async () => {
+  const f = await import('../src/skate/fisica');
+  const vert = await rodarNoConjunto(1, 0, 6, 14, 0, 1, 5.5, 200);
+  assert.ok(vert.letras & 4, 'o L no alto do quarter de cá');
+  const rapido = await rodarNoConjunto(1, 0, 0.8, 4, 0, -1, 6.5, 200);
+  assert.ok(rapido.fita, 'a fita do segundo conjunto');
+  assert.ok(f.objetivos(rapido).find((o) => o.id === 'fita')!.feito);
+  // no primeiro conjunto, ali não há fita
+  assert.ok(!(await rodarNoConjunto(0, 0, 0.8, 4, 0, -1, 6.5, 200)).fita);
+});
+
+test('o segundo conjunto: as manobras (o maior giro e o manual mais longo) contam pela sessão', async () => {
+  const f = await import('../src/skate/fisica');
+  const k = f.novoSkatista(0, 1);
+  assert.ok(!f.objetivos(k).find((o) => o.id === 'giro')!.feito);
+  k.maiorGiro = 540;
+  k.maiorManual = 3.2;
+  assert.ok(f.objetivos(k).find((o) => o.id === 'giro')!.feito);
+  assert.ok(f.objetivos(k).find((o) => o.id === 'manual')!.feito);
+});

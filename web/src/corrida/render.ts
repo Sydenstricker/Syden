@@ -66,6 +66,10 @@ export function prepararDesenho(canvas: HTMLCanvasElement, tema: Tema): Desenho 
       'pinheiro-neve': pinheiro(true),
       cacto: cacto(),
       coqueiro: coqueiro(),
+      girassol: girassol(),
+      pedra: pedra(),
+      porteira: folhaDaPorteira(),
+      mourao: mourao(),
       cenoura: cenoura(),
       flor: flor(),
       caixa: caixa(),
@@ -282,6 +286,72 @@ function coqueiro() {
     ],
     { k: '#1e2a1e', G: '#4e9a58', g: '#7cc070', c: '#7a5432', T: '#a8784a', t: '#86603a' },
   );
+}
+
+/** O girassol da Fazenda (21/11/2026): a flor grande no alto da haste. */
+function girassol() {
+  return figura(
+    [
+      '....k.kk.k....',
+      '...kYkYYkYk...',
+      '..kYYyYYyYYk..',
+      '.kYyYBBBByYYk.',
+      '.kYYBbBBbBYYk.',
+      'kYyYBBBbBBYyYk',
+      '.kYYBbBBBBYYk.',
+      '.kYyYBBBByYYk.',
+      '..kYYyYYyYYk..',
+      '...kYkYYkYk...',
+      '....k.kGk.k...',
+      '.......kGk....',
+      '...kk..kGk....',
+      '..kLLk.kGk....',
+      '...kLLkkGk....',
+      '....kkLkGk....',
+      '.......kGkkk..',
+      '.......kGkLLk.',
+      '.......kGLLk..',
+      '.......kGkk...',
+      '.......kGk....',
+      '......kkkkk...',
+    ],
+    { k: '#2a2014', Y: '#f2c23a', y: '#ffe27a', B: '#7a4a22', b: '#5a3418', G: '#5e9a4c', L: '#86bc62' },
+  );
+}
+
+/** A pedra do Vulcão (21/11/2026): a rocha escura com o brilho da brasa nas frestas. */
+function pedra() {
+  return figura(
+    [
+      '.....kkkkk......',
+      '...kkPPpPPkk....',
+      '..kPPPPPPpPPk...',
+      '.kPpPPPPPPPPPkk.',
+      '.kPPPPrPPPPpPPk.',
+      'kPPPpPPrPPPPPPPk',
+      'kPPPPPPPPPpPPPdk',
+      'kdPPPPPPPPPPPddk',
+      '.kddPPPPPPPdddk.',
+      '..kkddddddddkk..',
+      '....kkkkkkkk....',
+    ],
+    { k: '#1a1416', P: '#5a4e52', p: '#7a6e72', d: '#3e3438', r: '#f08a3a' },
+  );
+}
+
+/** A folha da porteira fechada (21/11/2026): um pedaço da cancela listrada; a fechada é feita de vários, de lado a lado. */
+function folhaDaPorteira() {
+  return figura(
+    ['kkkkkkkk', 'kRRWWRRk', 'kRRWWRRk', 'kkkkkkkk', '.kT..Tk.', '.kT..Tk.', '.kk..kk.'],
+    { k: '#2a1a14', R: '#d0483e', W: '#f4ece0', T: '#8a5a36' },
+  );
+}
+
+/** O mourão da porteira: o poste de madeira nas pontas e no meio. */
+function mourao() {
+  return figura(['kkkk', 'kYYk', 'kTtk', 'kTtk', 'kTtk', 'kTtk', 'kTtk', 'kTtk', 'kTtk', 'kkkk'], {
+    k: '#2a1a14', T: '#8a5a36', t: '#6a4428', Y: '#f2c23a',
+  });
 }
 
 /** A caixa de item (a corrida da sala): um caixote com a cenoura pintada. */

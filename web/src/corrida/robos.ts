@@ -1,5 +1,5 @@
 import { largada, novoKart, passo, progresso, type Comandos, type Kart } from './fisica';
-import { pontoMaisPerto, sorteio, type Pista } from './pista';
+import { desvioDaPorteira, pontoMaisPerto, sorteio, type Pista } from './pista';
 
 /**
  * OS ROBÔS DA CORRIDA (19/11/2026, a auditoria: "a Copa no Solo contra robôs"). Sete karts do computador na pista do
@@ -137,7 +137,9 @@ export function comandosDoRobo(r: RoboDoKart, p: Pista): Comandos {
   const proximo = (alvo + 1) % n;
   const dx = p.lx[proximo] - p.lx[alvo], dy = p.ly[proximo] - p.ly[alvo];
   const l = Math.hypot(dx, dy) || 1;
-  const mx = p.lx[alvo] - (dy / l) * r.faixa, my = p.ly[alvo] + (dx / l) * r.faixa;
+  // a porteira à frente (a Fazenda): a faixa vira a metade que estará aberta
+  const faixa = (p.porteiras?.length ? desvioDaPorteira(p, k.indice, k.passos, k.v) : null) ?? r.faixa;
+  const mx = p.lx[alvo] - (dy / l) * faixa, my = p.ly[alvo] + (dx / l) * faixa;
   let dif = Math.atan2(my - k.y, mx - k.x) - k.angulo;
   while (dif > Math.PI) dif -= 2 * Math.PI;
   while (dif < -Math.PI) dif += 2 * Math.PI;

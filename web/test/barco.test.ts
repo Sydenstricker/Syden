@@ -265,3 +265,13 @@ test('as medalhas: o tempo guardado é o do piloto automático, e as voltas do f
     voltas.forEach((v, i) => assert.ok(Math.abs(v - b.voltas[i]) <= AMOSTRA, `${def.id}, volta ${i + 1}: ${v} contra ${b.voltas[i]}`));
   }
 });
+
+test('as copas (a segunda, 21/11/2026): toda pista delas existe no servidor e tem o tempo do piloto', async () => {
+  const { COPAS_DO_BARCO } = await import('../src/barco/pista');
+  const { TEMPO_DO_PILOTO_DO_BARCO } = await import('../src/barco/medalhas.ts');
+  assert.equal(Object.keys(COPAS_DO_BARCO).length, 2);
+  for (const pistasDaCopa of Object.values(COPAS_DO_BARCO)) {
+    assert.equal(pistasDaCopa.length, 3);
+    for (const id of pistasDaCopa) assert.ok(NO_SERVIDOR[id] && TEMPO_DO_PILOTO_DO_BARCO[id], id);
+  }
+});

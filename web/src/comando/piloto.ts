@@ -4,20 +4,20 @@
  * e o golpe do andarilho, sai de baixo da semente marcada e do pisão do chefe, mira no bicho mais perto (para cima no voador)
  * e atira sem parar; a granada, quando um bicho está na distância dela. Sem bicho, anda para a direita (e passa pelas gaiolas).
  */
-import { apoiado, BICHOS, GRANADA, ONDAS_X } from './conta';
+import { apoiado, BICHOS, COELHO_L, GRANADA, ONDAS_X, PLATAFORMAS_DA_FASE } from './conta';
 import type { Comandos, Meu, Vista } from './regras';
 
 export function pilotoAutomatico(eu: Meu, v: Vista, cmd: Comandos) {
   cmd.esquerda = cmd.direita = cmd.cima = cmd.baixo = false;
   cmd.atirar = false;
-  const noChao = apoiado(eu.x, eu.h) && eu.vh <= 0;
+  const noChao = apoiado(eu.x, eu.h, PLATAFORMAS_DA_FASE[v.mapa]) && eu.vh <= 0;
   const [a0, a1] = v.arena;
   const vivos = v.bichos.filter((b) => b.estado !== 'morto' && b.hp > 0);
 
   // ---- o perigo: pular ----
   let pula = false;
   for (const b of v.balas) {
-    if (b.tipo === 2) continue;
+    if (b.tipo === 2 || b.tipo === 4 || b.tipo === 5) continue;
     const dx = eu.x - b.x;
     if (Math.sign(dx) !== Math.sign(b.vx) && Math.abs(dx) > 10) continue;
     const t = (Math.abs(dx) - 12) / Math.abs(b.vx || 1);
@@ -25,6 +25,11 @@ export function pilotoAutomatico(eu: Meu, v: Vista, cmd: Comandos) {
   }
   for (const b of vivos) {
     if (BICHOS[b.tipo].comp === 'andarilho' && b.estado === 'preparando' && b.ms > 300 && Math.abs(b.x - eu.x) < 40) pula = true;
+    // a investida da alpaca-rei (21/11/2026): pula quando a frente dela está chegando (a tela mostra ~100 ms atrás)
+    if (b.estado === 'investida' && eu.x < b.x) {
+      const vao = b.x - BICHOS[b.tipo].larg - (eu.x + COELHO_L);
+      if (vao > 18 && vao < 62) pula = true;
+    }
   }
   // ---- o perigo: sair de baixo ----
   let foge: number | null = null;
@@ -33,6 +38,10 @@ export function pilotoAutomatico(eu: Meu, v: Vista, cmd: Comandos) {
     if (BICHOS[b.tipo].comp === 'chefe' && (b.estado === 'prep-pisao' || b.estado === 'saltando') && Math.abs(b.alvoX - eu.x) < 56) foge = b.alvoX;
   }
   for (const b of v.balas) if (b.tipo === 2 && Math.abs(b.x - eu.x) < 18 && b.h > eu.h) foge = b.x;
+  // as pedras de gelo da avalanche (penduradas ou caindo) e as marcas e as bolas do cuspe (21/11/2026)
+  for (const b of v.balas) if (b.tipo === 5 && Math.abs(b.x - eu.x) < 22 && b.h > eu.h) foge = b.x;
+  for (const b of v.balas) if (b.tipo === 4 && b.vh < 0 && Math.abs(b.x + b.vx * 0.3 - eu.x) < 20) foge = b.x;
+  for (const b of vivos) if (b.estado === 'prep-cuspe' && Math.abs(b.alvoX - eu.x) < 52) foge = b.alvoX;
 
   // ---- o alvo ----
   let alvo = null as (typeof vivos)[number] | null;

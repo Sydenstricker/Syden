@@ -39,6 +39,11 @@
  *
  * O RECORDE DO SOLO (19/11/2026): o tempo da masmorra vencida sozinho vai à tabela comum dos recordes do Solo ('masmorra').
  *
+ * O LOTE D (21/11/2026): o chefe da mina é o GOLEM-REI, de couraça (nada o fere até o GANCHO pegá-lo: o servidor confere a
+ * linha da corda contra o passado dele, como o golpe, e o deixa atordoado por GOLEM.atordoado ms); dois bichos novos, a ABELHA
+ * (voa e mergulha na linha marcada) e o FANTASMA (some e aparece); a sala secreta da mina; os ACHADOS (baús e segredos, contados
+ * aqui e mostrados no fim); e o HEROICO (mais vida e dano dos bichos, menos corações; o recorde do Solo à parte).
+ *
  * OS TROFÉUS: com o rei-cogumelo vencido e 2 pessoas ou mais que ficaram até o fim, o pódio (até o 3º, empatados dividem, só quem
  * fez ponto) vai para a estante do quarto (corrida_trofeus, "pista" 'masmorra', com os pontos). Fora das conquistas da turma até
  * ele decidir. No Solo, nada.
@@ -48,7 +53,14 @@ import type { Contexto, Definicao } from './minijogo-motor.js';
 import {
   ACOES,
   alvoDoGancho,
+  achadosDa,
+  ehChefe,
   ehMasmorra,
+  FANTASMA,
+  ganchoPega,
+  GANCHO,
+  GOLEM,
+  HEROICO,
   MASMORRAS,
   ALCANCE_DA_MAO,
   ARREMESSO,
@@ -144,6 +156,9 @@ interface Bicho {
   acertos: Set<string>;
   historia: Ponto[];
   invocou: boolean;
+  /** O golem-rei: até quando o gancho não o pega de novo. O fantasma: quando ele some ou aparece. */
+  ganchoAte: number;
+  trocaEm: number;
 }
 
 interface Tiro {
@@ -246,10 +261,19 @@ export function criarMasmorra({
       const n = inscritos.length;
       let fase: Fase = 'jogando';
       // qual masmorra (19/11/2026): a toca de sempre, ou a mina dos postes
-      const qual = ehMasmorra(corpo?.masmorra) ? corpo.masmorra : ehMasmorra(corpo?.categoria) ? corpo.categoria : 'toca';
+      // e o HEROICO (21/11/2026): "toca-heroico"/"mina-heroico" (o que o "Jogar de novo" manda de volta) ou heroico: true
+      const pedido = typeof corpo?.masmorra === 'string' ? corpo.masmorra : typeof corpo?.categoria === 'string' ? corpo.categoria : 'toca';
+      const heroico = corpo?.heroico === true || pedido.endsWith('-heroico');
+      const base = pedido.replace(/-heroico$/, '');
+      const qual = ehMasmorra(base) ? base : 'toca';
       const daMasmorra = MASMORRAS[qual];
-      /** A variante do recorde do Solo: a toca guarda a de antes (''). */
-      const variante = qual === 'toca' ? '' : qual;
+      /** A variante do recorde do Solo: a toca guarda a de antes (''); o heroico, à parte. */
+      const variante = heroico ? (qual === 'toca' ? 'heroico' : `${qual}-heroico`) : qual === 'toca' ? '' : qual;
+      const categoria = heroico ? `${qual}-heroico` : qual;
+      const coracoesDaTurma = heroico ? HEROICO.coracoes : CORACOES;
+      /** O dano a mais dos bichos no heroico. */
+      const danoExtra = heroico ? HEROICO.dano : 0;
+      const totalDeAchados = achadosDa(qual);
       let sala: Sala = SALAS[daMasmorra.inicio];
       /** Por onde a turma entrou na sala de agora (null na entrada: o começo). */
       let entrada: Lado | null = null;
@@ -334,7 +358,7 @@ export function criarMasmorra({
               dir: 1,
               acao: 0,
               tAcao: 0,
-              hp: CORACOES,
+              hp: coracoesDaTurma,
               pontos: 0,
               acertos: 0,
               nocautes: 0,
@@ -360,7 +384,7 @@ export function criarMasmorra({
                 pa: balde(3, 4),
               },
               carrega: false,
-              hpMax: CORACOES,
+              hpMax: coracoesDaTurma,
             },
           ];
         }),
@@ -388,7 +412,8 @@ export function criarMasmorra({
 
       const novoBicho = (tipo: TipoDoBicho, x: number, y: number): Bicho => {
         const def = BICHOS[tipo];
-        const hpMax = tipo === 'rei-cogumelo' ? Math.round(def.hp * (1 + 0.5 * (n - 1))) : def.hp;
+        const daTurma = ehChefe(tipo) ? Math.round(def.hp * (1 + 0.5 * (n - 1))) : def.hp;
+        const hpMax = heroico ? Math.ceil(daTurma * HEROICO.vida) : daTurma;
         const t = agora();
         const b: Bicho = {
           id: proximoId++,
@@ -401,7 +426,7 @@ export function criarMasmorra({
           hpMax,
           estado: 'entrando',
           desde: t,
-          ate: t + (tipo === 'rei-cogumelo' ? 1200 : 700),
+          ate: t + (ehChefe(tipo) ? 1200 : 700),
           dx: 0,
           dy: 1,
           x0: x,
@@ -415,6 +440,8 @@ export function criarMasmorra({
           acertos: new Set(),
           historia: [],
           invocou: false,
+          ganchoAte: 0,
+          trocaEm: t + FANTASMA.visivel,
         };
         bichos.set(b.id, b);
         return b;
@@ -461,6 +488,8 @@ export function criarMasmorra({
         b.desde = agora();
         b.ate = agora() + ms;
       };
+      /** A couraça do golem-rei está fechada (só o gancho a abre: atordoado, ele apanha). */
+      const couracaFechada = (b: Bicho) => b.tipo === 'golem-rei' && b.estado !== 'atordoado';
       const maisPerto = (b: Bicho): Jogador | null => {
         let melhor: Jogador | null = null;
         let d = Infinity;
@@ -492,7 +521,7 @@ export function criarMasmorra({
           em: agora(),
           chave,
           dentro: (x, y) => Math.hypot(x - px, y - py) <= raio + RAIO,
-          dano,
+          dano: dano + danoExtra,
           deX: b.x,
           deY: b.y,
         });
@@ -511,7 +540,7 @@ export function criarMasmorra({
         if (b.estado === 'morto') {
           if (t >= b.ate) {
             bichos.delete(b.id);
-            if (b.tipo !== 'rei-cogumelo' && aleatorio() < CHANCE_DE_CORACAO) coracoes.push({ id: proximoId++, x: b.x, y: b.y });
+            if (!ehChefe(b.tipo) && aleatorio() < CHANCE_DE_CORACAO) coracoes.push({ id: proximoId++, x: b.x, y: b.y });
           }
           return;
         }
@@ -523,7 +552,7 @@ export function criarMasmorra({
           return;
         }
         if (b.estado === 'entrando' || b.estado === 'atordoado' || b.estado === 'recuperando' || b.estado === 'cansado') {
-          if (t >= b.ate) mudar(b, b.tipo === 'rei-cogumelo' ? 'andando' : 'parado', b.tipo === 'rei-cogumelo' ? 1800 : 0);
+          if (t >= b.ate) mudar(b, ehChefe(b.tipo) ? 'andando' : 'parado', ehChefe(b.tipo) ? 1800 : 0);
           return;
         }
         const alvo = maisPerto(b);
@@ -613,6 +642,91 @@ export function criarMasmorra({
             }
             return;
           }
+          case 'abelha': {
+            // voa (passa por cima da água): chega perto, mira a linha e MERGULHA reto nela
+            const voar = (dx: number, dy: number) => {
+              const [nx, ny] = mover(sala, mundo(), b.x, b.y, dx, dy, BICHOS.abelha.raio, 'tiro');
+              const bateu = Math.abs(nx - b.x - dx) > 0.01 || Math.abs(ny - b.y - dy) > 0.01;
+              b.x = nx;
+              b.y = ny;
+              return bateu;
+            };
+            b.z = 8;
+            if (b.estado === 'mirando') {
+              if (t >= b.ate) {
+                b.ataque++;
+                mudar(b, 'investida', 450);
+              }
+              return;
+            }
+            if (b.estado === 'investida') {
+              const bateu = voar(b.dx * 330 * dt, b.dy * 330 * dt);
+              pancada(b, b.x, b.y, 16, 1);
+              if (bateu || t >= b.ate) mudar(b, 'recuperando', 700);
+              return;
+            }
+            if (!alvo) return void (b.estado !== 'parado' && mudar(b, 'parado', 0));
+            const d = Math.hypot(alvo.x - b.x, alvo.y - b.y);
+            mira(b, alvo);
+            if (d < 130 && t >= b.proximo) {
+              mudar(b, 'mirando', 650);
+              b.proximo = t + 1800 + aleatorio() * 900;
+              return;
+            }
+            if (d > 90) {
+              if (b.estado !== 'andando') mudar(b, 'andando', 0);
+              voar(b.dx * vel * dt, b.dy * vel * dt);
+            } else if (b.estado !== 'parado') mudar(b, 'parado', 0);
+            return;
+          }
+          case 'fantasma': {
+            // some e aparece: sumido, ninguém o acerta e ele não acerta ninguém (mas continua vindo)
+            if (b.estado === 'sumido') {
+              if (alvo) {
+                mira(b, alvo);
+                andar(b, b.dx * vel * dt, b.dy * vel * dt);
+              }
+              if (t >= b.trocaEm) {
+                b.trocaEm = t + FANTASMA.visivel;
+                mudar(b, 'parado', 0);
+              }
+              return;
+            }
+            if (b.estado === 'preparando') {
+              if (t >= b.ate) {
+                b.ataque++;
+                // o susto: em volta dele
+                pancada(b, b.x, b.y, 34, 1);
+                mudar(b, 'atacando', 250);
+              }
+              return;
+            }
+            if (b.estado === 'atacando') {
+              if (t >= b.ate) mudar(b, 'recuperando', 500);
+              return;
+            }
+            if (t >= b.trocaEm) {
+              b.trocaEm = t + FANTASMA.sumido;
+              mudar(b, 'sumido', FANTASMA.sumido);
+              return;
+            }
+            if (!alvo) return void (b.estado !== 'parado' && mudar(b, 'parado', 0));
+            const d = Math.hypot(alvo.x - b.x, alvo.y - b.y);
+            mira(b, alvo);
+            if (d < 48 && t >= b.proximo) {
+              mudar(b, 'preparando', 650);
+              b.proximo = t + 1500;
+              // não some no meio do susto
+              b.trocaEm = Math.max(b.trocaEm, t + 1500);
+              return;
+            }
+            if (d > 28) {
+              if (b.estado !== 'andando') mudar(b, 'andando', 0);
+              andar(b, b.dx * vel * dt, b.dy * vel * dt);
+            }
+            return;
+          }
+          case 'golem-rei':
           case 'rei-cogumelo': {
             if (b.estado === 'prep-investida') {
               if (t >= b.ate) {
@@ -622,7 +736,7 @@ export function criarMasmorra({
               return;
             }
             if (b.estado === 'investida') {
-              const bateu = andar(b, b.dx * 250 * dt, b.dy * 250 * dt);
+              const bateu = andar(b, b.dx * (b.tipo === 'golem-rei' ? 220 : 250) * dt, b.dy * (b.tipo === 'golem-rei' ? 220 : 250) * dt);
               pancada(b, b.x, b.y, 30, 2);
               if (bateu) mudar(b, 'cansado', 1700);
               else if (t >= b.ate) mudar(b, 'recuperando', 600);
@@ -646,7 +760,7 @@ export function criarMasmorra({
               andar(b, b.dx * vel * dt, b.dy * vel * dt);
               return;
             }
-            // na metade da vida, chama dois cogumelos uma vez; depois, investida e sopro em vez
+            // na metade da vida, chama dois cogumelos (o golem, duas abelhas) uma vez; depois, investida e sopro em vez
             if (b.hp <= b.hpMax / 2 && !b.invocou) {
               b.invocou = true;
               const m = mundo();
@@ -654,7 +768,7 @@ export function criarMasmorra({
                 [-70, 30],
                 [70, 30],
               ])
-                if (livre(sala, m, b.x + ox, b.y + oy, 14, 'bicho')) novoBicho('cogumelo', b.x + ox, b.y + oy);
+                if (livre(sala, m, b.x + ox, b.y + oy, 14, 'bicho')) novoBicho(b.tipo === 'golem-rei' ? 'abelha' : 'cogumelo', b.x + ox, b.y + oy);
               mudar(b, 'prep-sopro', 700);
             } else if (b.ataque % 2 === 0) mudar(b, 'prep-investida', 800);
             else {
@@ -743,7 +857,7 @@ export function criarMasmorra({
               em: t,
               chave: `tiro:${tr.id}`,
               dentro: (px, py) => Math.hypot(px - x, py - y) <= 8 + RAIO,
-              dano: 1,
+              dano: 1 + danoExtra,
               deX: x - tr.vx * 0.1,
               deY: y - tr.vy * 0.1,
               tiro: tr.id,
@@ -1032,6 +1146,7 @@ export function criarMasmorra({
         const b = bichos.get(d.inimigo as number);
         if (!b || b.hp <= 0 || b.estado === 'morto') return 'bicho fora';
         if (a.g === 'pa' && b.z > 12) return 'alto demais';
+        if (b.estado === 'sumido') return 'sumido';
         const chave = `${j.userId}:${a.id}`;
         if (b.acertos.has(chave)) return 'já acertou';
         const { x, y } = d;
@@ -1046,11 +1161,17 @@ export function criarMasmorra({
         } else if (Math.hypot(x - j.x, y - j.y) > CENOURA.alcance + 60) return 'longe de si';
         const alcance = (a.g === 'pa' ? PA.raio : CENOURA.raio + 6) + raio + FOLGA_ACERTO;
         if (!b.historia.some((h) => h.t >= t - HISTORIA_MS && Math.hypot(h.x - px, h.y - py) <= alcance)) return 'longe do bicho';
+        // a couraça do golem-rei: sem o gancho, o golpe só tine
+        if (couracaFechada(b)) {
+          b.acertos.add(chave);
+          evento_('tk', b.id, j.userId, Math.round(b.x), Math.round(b.y));
+          return 'couraça';
+        }
         // valeu
         b.acertos.add(chave);
         a.acertos++;
-        const chefe = b.tipo === 'rei-cogumelo';
-        const dano = chefe && b.estado === 'cansado' && a.g === 'pa' ? 2 : 1;
+        const chefe = ehChefe(b.tipo);
+        const dano = chefe && (b.estado === 'cansado' || b.estado === 'atordoado') && a.g === 'pa' ? 2 : 1;
         b.hp = Math.max(0, b.hp - dano);
         j.pontos += PONTOS.acerto;
         j.acertos++;
@@ -1215,12 +1336,13 @@ export function criarMasmorra({
           a.y += a.dy * passo_;
           a.andou += passo_;
           const alvo = [...bichos.values()].find(
-            (b) => b.estado !== 'morto' && b.hp > 0 && b.z < 14 && Math.hypot(b.x - a.x, b.y - a.y) <= ARREMESSO.raio + BICHOS[b.tipo].raio,
+            (b) => b.estado !== 'morto' && b.estado !== 'sumido' && b.hp > 0 && b.z < 14 && Math.hypot(b.x - a.x, b.y - a.y) <= ARREMESSO.raio + BICHOS[b.tipo].raio,
           );
           const bateu = solida(sala, m, Math.floor(a.x / TILE), Math.floor(a.y / TILE), 'tiro');
           if (!alvo && !bateu && a.andou < ARREMESSO.alcance) continue;
           arremessos.splice(k, 1);
-          if (alvo) {
+          if (alvo && couracaFechada(alvo)) evento_('tk', alvo.id, a.dono, Math.round(alvo.x), Math.round(alvo.y));
+          else if (alvo) {
             const dono = jogadores.get(a.dono);
             alvo.hp = Math.max(0, alvo.hp - ARREMESSO.dano);
             if (dono) dono.pontos += PONTOS.acerto;
@@ -1233,7 +1355,7 @@ export function criarMasmorra({
               alvo.z = 0;
               mudar(alvo, 'morto', 500);
               evento_('x', alvo.id, Math.round(alvo.x), Math.round(alvo.y));
-            } else if (alvo.tipo !== 'rei-cogumelo') mudar(alvo, 'atordoado', 1000);
+            } else if (!ehChefe(alvo.tipo)) mudar(alvo, 'atordoado', 1000);
           }
           // o vaso quebra onde parou (um pouco antes da parede)
           const qx = bateu ? a.x - a.dx * 12 : a.x;
@@ -1251,14 +1373,18 @@ export function criarMasmorra({
           evento_('e', Math.round(b.x), Math.round(b.y));
           // os bichos em volta
           for (const bi of bichos.values()) {
-            if (bi.estado === 'morto' || bi.hp <= 0 || Math.hypot(bi.x - b.x, bi.y - b.y) > BOMBA.raio + BICHOS[bi.tipo].raio) continue;
+            if (bi.estado === 'morto' || bi.estado === 'sumido' || bi.hp <= 0 || Math.hypot(bi.x - b.x, bi.y - b.y) > BOMBA.raio + BICHOS[bi.tipo].raio) continue;
+            if (couracaFechada(bi)) {
+              evento_('tk', bi.id, 0, Math.round(bi.x), Math.round(bi.y));
+              continue;
+            }
             bi.hp = Math.max(0, bi.hp - BOMBA.dano);
             evento_('h', bi.id, 0, Math.round(bi.x), Math.round(bi.y));
             if (bi.hp <= 0) {
               bi.z = 0;
               mudar(bi, 'morto', 500);
               evento_('x', bi.id, Math.round(bi.x), Math.round(bi.y));
-            } else if (bi.tipo !== 'rei-cogumelo') mudar(bi, 'atordoado', 1200);
+            } else if (!ehChefe(bi.tipo)) mudar(bi, 'atordoado', 1200);
           }
           // quem está perto também leva (com a folga de sempre)
           const { x, y } = b;
@@ -1294,10 +1420,24 @@ export function criarMasmorra({
       const gancho = (j: Jogador, d: Record<string, unknown>): string | null => {
         if (!temGancho) return 'sem gancho';
         if (!numero(d.dir) || d.dir < 0 || d.dir > 3) return 'direção';
-        const dir = Math.floor(d.dir);
-        const alvo = alvoDoGancho(sala, mundo(), j.x, j.y, dir);
-        if (!alvo) return 'sem poste';
         const t = agora();
+        const dir = Math.floor(d.dir);
+        // O GOLEM-REI (21/11/2026): o gancho que pega nele (pelo passado dele, como o golpe) o deixa atordoado, sem a couraça
+        const m = mundo();
+        for (const b of bichos.values()) {
+          if (b.tipo !== 'golem-rei' || b.estado === 'morto' || b.estado === 'atordoado' || b.hp <= 0 || t < b.ganchoAte || b.estado === 'entrando') continue;
+          const r = BICHOS[b.tipo].raio;
+          const h = b.historia.find((h) => h.t >= t - HISTORIA_MS && ganchoPega(sala, m, j.x, j.y, dir, h.x, h.y, r, FOLGA_ACERTO));
+          if (!h) continue;
+          j.dir = dir;
+          mudar(b, 'atordoado', GOLEM.atordoado);
+          b.ganchoAte = t + GOLEM.atordoado + GOLEM.imune;
+          j.pontos += PONTOS.acerto;
+          evento_('gb', j.userId, Math.round(b.x), Math.round(b.y));
+          return null;
+        }
+        const alvo = alvoDoGancho(sala, m, j.x, j.y, dir);
+        if (!alvo) return 'sem poste';
         j.dir = dir;
         [j.x, j.y] = alvo.para;
         j.historia = [];
@@ -1327,8 +1467,14 @@ export function criarMasmorra({
             })),
             resultado: fase === 'fim' ? resultado : null,
             masmorra: qual,
-            // o "Jogar de novo" do painel manda a categoria de volta: a mesma masmorra
-            categoria: qual,
+            heroico,
+            // o "Jogar de novo" do painel manda a categoria de volta: a mesma masmorra (e o heroico)
+            categoria,
+            // OS ACHADOS (21/11/2026): [quantos a turma achou, quantos há] dos baús e dos segredos desta masmorra
+            achados: {
+              baus: [bausAbertos.size, totalDeAchados.baus],
+              segredos: [rachadas.size + (coracaoGrande ? 1 : 0), totalDeAchados.segredos],
+            },
             recorde: solo
               ? {
                   tempoMs: tempoDaVitoria,
@@ -1379,6 +1525,9 @@ export function criarMasmorra({
           _sementes: () => sementes,
           _coracoes: coracoes,
           _sementesNoChao: sementesNoChao,
+          _darGancho: () => {
+            temGancho = true;
+          },
         } as object),
       };
     },

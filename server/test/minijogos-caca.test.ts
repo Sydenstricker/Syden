@@ -146,7 +146,7 @@ test('as cinco ondas, cada uma mais cheia, e o pódio vai para a estante com a t
     p.andar(); // preparando → jogando
     const e = p.estado(anaId);
     assert.equal(e.onda, n);
-    assert.equal(e.pragas.filter(voo.ehPraga).length, voo.pragasDaOnda(n));
+    assert.equal(e.pragas.filter(voo.ehPraga).length, voo.todasAsPragasDaOnda(n));
     pragasVistas += e.pragas.filter(voo.ehPraga).length;
     // a Ana acerta a primeira praga de cada onda; a Bia não atira
     const tiro = mirar(e.pragas[0]);
@@ -272,7 +272,8 @@ test('a dourada é rara, mais rápida e vale o triplo; a onda de pares vem de do
   for (let k = 0; k < 40; k++) {
     for (let n = 1; n <= voo.ONDAS; n++) {
       // o par é das pragas: a joaninha (20/11/2026) vem no fim da lista, à parte
-      const ps = voo.sortearOnda(n, aleatorio).filter(voo.ehPraga);
+      // (as pragas novas de 21/11/2026, a mosca e a toupeira, também vêm à parte, no fim)
+      const ps = voo.sortearOnda(n, aleatorio).filter((pr) => pr.tipo === 'corvo' || pr.tipo === 'gafanhoto');
       const d = ps.filter((pr) => pr.dourada);
       assert.ok(d.length <= 1);
       if (n === 1) assert.equal(d.length, 0, 'a primeira onda não tem dourada');
@@ -403,7 +404,113 @@ test('a rodada bônus: depois da 3ª onda, cenouras para cima, sem limite de mun
 });
 
 test('o recorde do Solo com a rodada bônus mora na tabela comum, à parte do de antes', () => {
-  assert.equal(VARIANTE_DO_RECORDE, 'bonus');
+  // desde 21/11/2026 (as pragas novas mudaram a escala de novo), a variante 'pragas'; a 'bonus' fica guardada
+  assert.equal(VARIANTE_DO_RECORDE, 'pragas');
   const p = comecar([anaId]);
-  assert.equal(p.estado(anaId).recorde?.antes, db.recordeDoSolo(anaId, 'caca', 'bonus')?.valor ?? null);
+  assert.equal(p.estado(anaId).recorde?.antes, db.recordeDoSolo(anaId, 'caca', 'pragas')?.valor ?? null);
+});
+
+// ---------------- O lote D (21/11/2026): as pragas novas e o "até errar três" ----------------
+
+test('as pragas novas: a toupeira da 2ª onda em diante e a mosca da 3ª, no FIM da lista (as de antes ficam iguais)', () => {
+  for (let n = 1; n <= voo.ONDAS; n++) {
+    let s1 = 21 + n;
+    const a1 = () => ((s1 = (s1 * 16807) % 2147483647) - 1) / 2147483646;
+    const ps = voo.sortearOnda(n, a1);
+    const novas = ps.filter((p) => p.tipo === 'mosca' || p.tipo === 'toupeira');
+    assert.equal(novas.filter((p) => p.tipo === 'toupeira').length, voo.toupeirasDaOnda(n));
+    assert.equal(novas.filter((p) => p.tipo === 'mosca').length, voo.moscasDaOnda(n));
+    // no fim da lista: nada de praga velha depois de uma nova
+    const primeira = ps.findIndex((p) => p.tipo === 'mosca' || p.tipo === 'toupeira');
+    if (primeira >= 0) assert.ok(ps.slice(primeira).every((p) => p.tipo === 'mosca' || p.tipo === 'toupeira'));
+    assert.equal(voo.municaoDaOnda(n), Math.ceil(voo.todasAsPragasDaOnda(n) * 1.5));
+    for (const p of novas) {
+      // a toupeira fica no mesmo lugar, sobe da terra e desce; a mosca atravessa
+      const meio = voo.posicao(p, p.t + p.vida / 2)!;
+      if (p.tipo === 'toupeira') {
+        assert.equal(meio.x, p.x0);
+        assert.ok(meio.y < p.y0 - 15, 'no meio da vida está fora da terra');
+        assert.equal(voo.posicao(p, p.t)!.y, p.y0, 'no começo, ainda na terra');
+      } else assert.ok(Math.abs(voo.posicao(p, p.t + p.vida)!.x - p.x0) > voo.LARGURA);
+      assert.ok(voo.ehPraga(p));
+      assert.ok(voo.pontosDoAcerto(p, p.t) > 0);
+    }
+  }
+});
+
+function comecarTresErros() {
+  const relogio: { ms: number; depois: () => void }[] = [];
+  let terminou = false;
+  const ctx = {
+    agendar: (ms: number, depois: () => void) => relogio.splice(0, relogio.length, { ms, depois }),
+    avisar: () => {},
+    terminar: () => (terminou = true),
+    naSala: () => [biaId],
+    nome: () => 'bia',
+    comunidade: 0,
+  };
+  let semente = 13;
+  const aleatorio = () => ((semente = (semente * 16807) % 2147483647) - 1) / 2147483646;
+  const jogo = criarCaca({ agora: () => agora, aleatorio }).comecar(ctx, { naSala: [biaId], criadaPor: biaId, corpo: { categoria: 'tres-erros' } });
+  assert.ok(typeof jogo !== 'string');
+  let inicio = 0;
+  return {
+    jogo,
+    estado: () => jogo.publico(biaId) as unknown as Estado & { categoria?: string; errosRestantes?: number; ondas: number | null; bonus: boolean },
+    terminou: () => terminou,
+    andar() {
+      const r = relogio[0];
+      agora += r.ms;
+      r.depois();
+      if (jogo.publico(biaId).fase === 'jogando') inicio = agora;
+    },
+    irPara(ms: number) {
+      agora = inicio + ms;
+    },
+  };
+}
+
+test('o "até errar três": as ondas passam da quinta, sem munição contada e sem rodada bônus; o terceiro erro acaba, e o recorde é à parte', () => {
+  const p = comecarTresErros();
+  assert.equal(p.estado().categoria, 'tres-erros');
+  assert.equal(p.estado().ondas, null);
+  // seis ondas, acertando a primeira praga de cada uma (e nunca errando)
+  for (let n = 1; n <= voo.ONDAS + 1; n++) {
+    p.andar(); // preparando → jogando
+    const e = p.estado();
+    assert.equal(e.onda, n);
+    assert.equal(e.bonus, false, 'sem rodada bônus');
+    assert.equal(e.meu.municao, SEM_LIMITE);
+    const tiro = mirar(e.pragas[0]);
+    p.irPara(tiro.ms + 50);
+    assert.equal(p.jogo.acao(biaId, { tipo: 'tiro', ...tiro }), null);
+    p.andar(); // a onda fecha
+    assert.equal(p.estado().fase, 'placar');
+    p.andar(); // o placar → a próxima
+  }
+  p.andar(); // a sétima começa
+  assert.equal(p.estado().onda, voo.ONDAS + 2);
+  assert.equal(p.estado().errosRestantes, 3);
+  // três tiros no vazio: o terceiro acaba a partida na hora
+  for (let k = 0; k < 3; k++) {
+    p.irPara(800 + k * 300);
+    assert.equal(p.jogo.acao(biaId, { tipo: 'tiro', x: 160, y: -30, ms: 800 + k * 300 }), null);
+  }
+  assert.ok(p.terminou());
+  const fim = p.estado();
+  assert.equal(fim.fase, 'fim');
+  assert.ok(fim.meu.pontos > 0);
+  assert.equal(fim.recorde?.novo, true);
+  assert.equal(db.recordeDoSolo(biaId, 'caca', 'tres-erros')?.valor, fim.meu.pontos);
+  assert.equal(p.jogo.acao(biaId, { tipo: 'tiro', x: 160, y: 60, ms: 1800 }), 'Esta rodada já acabou.');
+});
+
+test('o "até errar três": uma onda inteira sem nenhum tiro acaba a partida; e na sala o modo não existe', () => {
+  const p = comecarTresErros();
+  p.andar(); // jogando
+  p.andar(); // a onda fecha sem tiro
+  assert.ok(p.terminou());
+  const sala = comecar([anaId, biaId], 1);
+  sala.andar();
+  assert.notEqual((sala.estado(anaId) as { categoria?: string }).categoria, 'tres-erros');
 });

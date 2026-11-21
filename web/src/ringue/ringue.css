@@ -212,3 +212,27 @@
     flex: none;
   }
 }
+
+/* 21/11/2026: a escolha do circuito, pelos três bichos de cada um (o primeiro quadro da folha) com a cor das luvas */
+.ringue-circuito {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+}
+.ringue-circuito-bicho {
+  display: block;
+  width: 44px;
+  height: 44px;
+  border: 2px solid;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+.ringue-circuito-bicho i {
+  display: block;
+  width: 44px;
+  height: 44px;
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  image-rendering: pixelated;
+}

@@ -203,6 +203,17 @@ export const ESPECIES: Record<string, Especie> = {
     aprende: [[1, 'sopro'], [1, 'investida'], [14, 'neblina'], [18, 'tornado'], [24, 'avalanche'], [30, 'assobio']] },
   aurelho: { nome: 'Aurelho', elemento: 'faisca', desenho: 'alpaca-rei', base: { pv: 86, atq: 90, def: 82, vel: 88 }, taxa: 0.12, xp: 200,
     aprende: [[1, 'choque'], [1, 'estalo'], [20, 'raio'], [30, 'carga'], [36, 'orvalho']] },
+  // os da GRUTA (21/11/2026): só aparecem lá, recoloridos por código das folhas que já existem
+  luzeta: { nome: 'Luzeta', elemento: 'faisca', desenho: 'fantasma', matiz: 60, base: { pv: 52, atq: 64, def: 50, vel: 74 }, taxa: 0.35, xp: 75,
+    aprende: [[1, 'choque'], [1, 'neblina'], [20, 'estalo'], [26, 'raio'], [30, 'carga']], evolui: { nivel: 34, para: 'luzerna' } },
+  luzerna: { nome: 'Luzerna', elemento: 'faisca', desenho: 'fantasma', matiz: 75, escala: 1.4, base: { pv: 72, atq: 88, def: 68, vel: 94 }, taxa: 0.2, xp: 125,
+    aprende: [[1, 'choque'], [20, 'estalo'], [26, 'raio'], [30, 'carga'], [36, 'assobio']] },
+  cristalim: { nome: 'Cristalim', elemento: 'pedra', desenho: 'golem', matiz: 260, base: { pv: 58, atq: 60, def: 80, vel: 34 }, taxa: 0.35, xp: 75,
+    aprende: [[1, 'pedrada'], [1, 'casca'], [22, 'avalanche'], [28, 'choque'], [32, 'tremor']], evolui: { nivel: 34, para: 'cristalao' } },
+  cristalao: { nome: 'Cristalão', elemento: 'pedra', desenho: 'golem', matiz: 280, escala: 1.5, base: { pv: 80, atq: 84, def: 104, vel: 42 }, taxa: 0.2, xp: 130,
+    aprende: [[1, 'pedrada'], [1, 'casca'], [22, 'avalanche'], [28, 'raio'], [32, 'tremor']] },
+  lodim: { nome: 'Lodim', elemento: 'gota', desenho: 'sapo', matiz: 230, escala: 1.15, base: { pv: 66, atq: 62, def: 64, vel: 50 }, taxa: 0.35, xp: 80,
+    aprende: [[1, 'chuva'], [1, 'espinho'], [22, 'onda'], [26, 'neblina'], [30, 'orvalho']] },
 };
 
 export const INICIAIS = ['brotel', 'tisco', 'bolhim'] as const;
@@ -242,6 +253,20 @@ export const PRESENTES_DA_REVANCHE = ['galoca', 'macalu', 'dragolim'] as const;
 export const NIVEL_DO_PRESENTE = 30;
 /** Os do começo que a pessoa não escolheu: raros no mato da Serra, só depois da escada inteira (como o raro). */
 export const INICIAL_RARO = { mapa: 'serra', chance: 0.08 };
+
+/**
+ * A LIGA DA TOCA (21/11/2026): depois da escada inteira, a porta da Liga, na Gruta, abre uma SEQUÊNCIA de quatro lutas
+ * seguidas, sem descansar no meio (só o que se leva na cesta). Perder em qualquer uma volta para casa, e a Liga recomeça da
+ * primeira. Os nomes são próprios, iguais em todo idioma.
+ */
+export const LIGA: { nome: string; avatar: number; equipe: [string, number][]; moedas: number }[] = [
+  { nome: 'Juno', avatar: 3, equipe: [['cristalim', 34], ['rochedo', 35], ['picolosso', 36]], moedas: 150 },
+  { nome: 'Kai', avatar: 6, equipe: [['lodim', 35], ['vultao', 36], ['bolhao', 37]], moedas: 150 },
+  { nome: 'Ariel', avatar: 10, equipe: [['luzerna', 37], ['pruvento', 37], ['relampo', 38]], moedas: 200 },
+  { nome: 'Sasha', avatar: 14, equipe: [['dinarco', 39], ['fornalho', 40], ['cristalao', 40], ['dragolim', 41]], moedas: 300 },
+];
+/** O que a Liga inteira vencida dá, além das moedas de cada luta. */
+export const MOEDAS_DA_LIGA = 500;
 
 /** A equipe de quem chega à sala sem bicho nenhum: os três do começo, no mesmo nível, para a luta ser justa. */
 export const EQUIPE_EMPRESTADA: [string, number][] = [['brotel', 9], ['tisco', 9], ['bolhim', 9]];
@@ -422,6 +447,10 @@ export interface Mapa {
   achados: Achado[];
   /** O bicho do mato escolhe o golpe como quem desafia (20/11/2026: do Bosque em diante). */
   esperto?: boolean;
+  /** A tela é uma gruta (21/11/2026): o site desenha o chão de pedra, a parede e o mato de fungos. */
+  escuro?: boolean;
+  /** "x,y" da porta da Liga da Toca (21/11/2026). */
+  liga?: string;
 }
 
 export const MAPAS: Record<string, Mapa> = {
@@ -477,7 +506,7 @@ export const MAPAS: Record<string, Mapa> = {
       'T;;;;;;;...=...;;;;;;;.T',
       'T;;;;;;;...=...;;;;;;;.T',
       'T;;;;;;;...=...;;;;;;;.T',
-      'T..........=...........T',
+      'T..........=............',
       'T.HHH......=.....rr....T',
       'T.HhH......=.......f...T',
       'T...========........~~.T',
@@ -485,7 +514,7 @@ export const MAPAS: Record<string, Mapa> = {
       'TTTTTTTTTTT..TTTTTTTTTTT',
     ],
     matos: { ';': { especies: ['nevasco', 'dinito', 'rochim', 'ventrolo', 'miasso', 'picotim'], de: 17, ate: 24 } },
-    vizinhos: { b: 'bosque' },
+    vizinhos: { b: 'bosque', d: 'gruta' },
     esperto: true,
     portas: { '6,3': 2, '19,3': 3 },
     pessoas: [
@@ -495,6 +524,45 @@ export const MAPAS: Record<string, Mapa> = {
     achados: [
       { id: 'serra-cha', x: 22, y: 10, item: 'cha', qtd: 2 },
       { id: 'serra-moedas', x: 1, y: 1, item: 'moedas', qtd: 60 },
+    ],
+  },
+  /**
+   * A GRUTA (21/11/2026), depois da Serra (pela borda da direita): o chão de pedra, o lago escuro, os fungos onde moram os
+   * bichos que só aparecem aqui (Luzeta, Cristalim, Lodim), duas pessoas no caminho e a porta da LIGA DA TOCA.
+   */
+  gruta: {
+    linhas: [
+      'rrrrrrrrrrrrrrrrrrrrrrrr',
+      'r;;;;;;....rr...CCCCC..r',
+      'r;;;;;;....rr...CCCCC..r',
+      'r;;;;;;.........CCcCC..r',
+      'r.......=========.=....r',
+      'r..rr...=.....~~~.=..;;r',
+      'r..rr...=.....~~~.=..;;r',
+      'r;;;....=.....~~~.=..;;r',
+      'r;;;....=.........=....r',
+      'r;;;....===========....r',
+      '.........=......rr.....r',
+      'r........=..;;;;;;;....r',
+      'r..rr....=..;;;;;;;.rr.r',
+      'r..rr....=..;;;;;;;....r',
+      'r........=.............r',
+      'rrrrrrrrrrrrrrrrrrrrrrrr',
+    ],
+    matos: { ';': { especies: ['luzeta', 'cristalim', 'lodim', 'vultim', 'picotim', 'nevasco'], de: 26, ate: 33 } },
+    vizinhos: { e: 'serra' },
+    esperto: true,
+    escuro: true,
+    portas: {},
+    liga: '18,3',
+    pessoas: [
+      { id: 'remi', nome: 'Remi', x: 5, y: 10, olha: 'd', avatar: 5, equipe: [['lodim', 28], ['cristalim', 29]], moedas: 90 },
+      { id: 'zaya', nome: 'Zaya', x: 12, y: 8, olha: 'b', avatar: 11, equipe: [['luzeta', 30], ['nevasco', 30], ['picotim', 31]], moedas: 110 },
+    ],
+    achados: [
+      { id: 'gruta-cha', x: 22, y: 14, item: 'cha', qtd: 2 },
+      { id: 'gruta-moedas', x: 1, y: 14, item: 'moedas', qtd: 80 },
+      { id: 'gruta-cenoura', x: 22, y: 1, item: 'cenoura', qtd: 3 },
     ],
   },
 };

@@ -184,3 +184,26 @@ test('o golpe de pá do cliente: só vai ao servidor com o chefe parado ou tonto
   c.passo(cmd, 1 / 60, agora, c.vista(agora));
   assert.equal(enviados.filter((d) => d.tipo === 'pa').length, 1);
 });
+
+// ---------------- O lote D (21/11/2026): a arena que muda e a alpaca-rei ----------------
+
+test('a conta dos buracos: o coelho que anda para dentro de um buraco aberto fica na borda', () => {
+  const [x, y] = conta.foraDosBuracos(200, 150, [[200, 150, conta.BURACO.raio]]);
+  assert.ok(Math.hypot(x - 200, y - 150) >= conta.BURACO.raio + conta.CORPO_COELHO - 0.001);
+  assert.deepEqual(conta.foraDosBuracos(100, 100, [[200, 150, conta.BURACO.raio]]), [100, 100]);
+});
+
+test('a alpaca-rei: sozinho, com 200 ms de ida e volta, o piloto vence, desviando do leque e dos buracos', async (t) => {
+  const { ultimo, publico, segundos } = await partida([7], 100, 13, { chefe: 'alpaca' });
+  t.diagnostic(`a luta com a alpaca levou ${Math.round(segundos)} s; vidas: ${ultimo.j[0][6]}; buracos: ${ultimo.bu?.length ?? 0}`);
+  assert.equal(ultimo.c[9], 2, 'o quadro diz que é a alpaca');
+  assert.equal(ultimo.f, 'vitoria', `fase ${ultimo.f}, a alpaca na fase ${ultimo.c[6] + 1} com ${ultimo.c[4]}%`);
+  assert.equal(publico.chefe, 'alpaca');
+  assert.ok((ultimo.bu?.length ?? 0) > 0, 'a arena mudou');
+});
+
+test('com quatro, contra a alpaca, a turma vence junta', async (t) => {
+  const { ultimo, segundos } = await partida([21, 22, 23, 24], 100, 17, { chefe: 'alpaca' });
+  t.diagnostic(`levou ${Math.round(segundos)} s; vidas: ${ultimo.j.map((l) => l[6]).join(', ')}`);
+  assert.equal(ultimo.f, 'vitoria');
+});

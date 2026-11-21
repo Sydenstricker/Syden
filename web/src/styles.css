@@ -19193,6 +19193,26 @@ body.arrastando-barra {
   border-radius: 2px;
 }
 
+/* 21/11/2026: as pragas novas da Caça (a mosca e a toupeira) */
+.caca-marca.mosca {
+  border-radius: 50% 0;
+}
+
+.caca-marca.toupeira {
+  border-radius: 6px 6px 1px 1px;
+}
+
+/* o "até errar três": um coração por erro que sobra */
+.caca-erros {
+  display: inline-flex;
+  gap: 2px;
+  color: var(--red, #e2483d);
+}
+
+.caca-erros .perdido {
+  opacity: 0.35;
+}
+
 .caca-marca.abatida {
   background: var(--green);
   border-color: var(--green);

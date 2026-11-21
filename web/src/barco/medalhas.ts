@@ -7,4 +7,7 @@ export const TEMPO_DO_PILOTO_DO_BARCO: Record<string, number> = {
   'lago-1': 3439,
   'riacho-1': 3534,
   'mangue-1': 3473,
+  'represa-1': 4216,
+  'corredeira-1': 3501,
+  'igarape-1': 3721,
 };

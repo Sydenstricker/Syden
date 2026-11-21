@@ -71,6 +71,9 @@ export const TEMPO_DO_PILOTO: Record<string, number> = {
   'bosque-1': 3368,
   'neve-1': 4169,
   'canion-1': 3749,
+  'fazenda-1': 3673,
+  'brejo-1': 3518,
+  'vulcao-1': 3760,
 };
 export const MEDALHAS_DA_CORRIDA = [1, 1.08, 1.18] as const;
 

@@ -4,6 +4,7 @@ import { test } from 'node:test';
 import {
   BURACOS,
   BURACOS_DO_PARQUE,
+  BURACOS_DA_TRILHA,
   CHAO,
   DY_MAX,
   avancar,
@@ -25,8 +26,8 @@ import {
   temChao,
 } from '../src/golfe3d/fisica';
 
-/** Os dois percursos (o do kit e, desde 19/11/2026, o do parque): todo buraco passa pelos mesmos testes. */
-const TODOS = [...BURACOS, ...BURACOS_DO_PARQUE];
+/** Os três percursos (o do kit, o do parque desde 19/11/2026 e a trilha desde 21/11/2026): todo buraco passa pelos mesmos testes. */
+const TODOS = [...BURACOS, ...BURACOS_DO_PARQUE, ...BURACOS_DA_TRILHA];
 
 test('a física do minigolfe 3D é o MESMO arquivo no site e no servidor, byte a byte', () => {
   const site = readFileSync(new URL('../src/golfe3d/fisica.ts', import.meta.url));
@@ -276,4 +277,29 @@ test('os itens da própria bola (19/11/2026): o quique extra volta mais da pared
   assert.ok(volta('quique') > volta() && volta() > volta('pesada'), `${volta('quique')} ${volta()} ${volta('pesada')}`);
   assert.equal(volta('mira'), volta());
   assert.equal(f.tacadaInvalida(f.novaBola(b), { passo: 0, dx: 300, dz: 0, item: 'foguete' as never }), 'item');
+});
+
+test('todo modelo de peça usado num percurso está em web/public/golfe3d (21/11/2026: o túnel e a rampa baixa faltavam)', async () => {
+  const { existsSync } = await import('node:fs');
+  // a tabela MODELO de cena.ts, lida como texto (a cena usa import.meta.env, que o Node não tem)
+  const texto = readFileSync(new URL('../src/golfe3d/cena.ts', import.meta.url), 'utf8');
+  const tabela = texto.slice(texto.indexOf('export const MODELO'), texto.indexOf('};', texto.indexOf('export const MODELO')));
+  const MODELO: Record<string, string> = Object.fromEntries([...tabela.matchAll(/^\s+'?([\w-]+)'?: '([\w-]+)',/gm)].map((m) => [m[1], m[2]]));
+  for (const b of TODOS)
+    for (const [peca] of b.casas) assert.ok(existsSync(new URL(`../public/golfe3d/${MODELO[peca]}.glb`, import.meta.url)), `falta ${MODELO[peca]}.glb (${peca})`);
+});
+
+test('a trilha (21/11/2026): a canaleta segura a bola no meio, e o canto de morro devolve quem vai ao canto', () => {
+  const b = BURACOS_DA_TRILHA[1];
+  // a canaleta (0,2): o meio é mais baixo que a beira, e a inclinação aponta para o meio
+  const [hMeio] = relevo(b, 0, 2);
+  const [hBeira, dx] = relevo(b, 0.3, 2);
+  assert.ok(hMeio < hBeira - 0.01, 'o meio afunda');
+  assert.ok(dx > 0, 'a beira desce para o meio');
+  // a ponta: lisa na entrada, inteira na saída
+  assert.ok(Math.abs(relevo(b, 0, 0.51)[0] - CHAO) < 0.001);
+  assert.ok(Math.abs(relevo(b, 0, 1.49)[0] - hMeio) < 0.001);
+  // o canto de morro (o de cima à esquerda do campo, giro 2): mais alto no canto que no meio da casa
+  const campo = BURACOS_DA_TRILHA[4];
+  assert.ok(relevo(campo, -0.35, -0.35)[0] > relevo(campo, 0, 0)[0] + 0.1);
 });

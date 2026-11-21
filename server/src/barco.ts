@@ -28,6 +28,19 @@ export const PISTAS_DO_BARCO: Record<
     voltas: 2, comprimento: 2848, linha: [200, 300], largada: [169.8, 351.7], meiaLargura: 44,
     marcos: [[416, 168], [669, 205], [881, 211], [818, 424], [856, 605], [840, 850], [600, 820], [362, 893], [284, 711], [153, 541]],
   },
+  // a segunda copa (21/11/2026): a Represa, a Corredeira e o Igarapé
+  'represa-1': {
+    voltas: 3, comprimento: 2601, linha: [200, 220], largada: [156.2, 260.4], meiaLargura: 48,
+    marcos: [[425, 151], [660, 164], [860, 280], [864, 506], [809, 677], [766, 853], [536, 878], [324, 781], [180, 603], [217, 396]],
+  },
+  'corredeira-1': {
+    voltas: 2, comprimento: 2806, linha: [190, 170], largada: [148.6, 212.6], meiaLargura: 38,
+    marcos: [[441, 140], [695, 162], [884, 317], [861, 562], [830, 804], [606, 892], [429, 733], [228, 850], [150, 635], [138, 400]],
+  },
+  'igarape-1': {
+    voltas: 2, comprimento: 3070, linha: [220, 260], largada: [183.2, 307.3], meiaLargura: 40,
+    marcos: [[461, 164], [719, 196], [895, 300], [723, 485], [884, 695], [752, 887], [550, 739], [349, 882], [189, 731], [164, 503]],
+  },
 };
 
 export const ANDAR_POR_VOLTA = 0.7;

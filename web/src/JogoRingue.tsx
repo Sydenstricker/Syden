@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Socket } from 'socket.io-client';
 import { ComandosDoJogo } from './ComandosDosJogos';
-import { useT } from './i18n';
+import { chave, useT } from './i18n';
 import { comandoDaPausa, TelaDePausa, usePausaComEsc } from './pausaDosJogos';
 import { carregarFolhas, DesenhoDoRingue, LARGURA, ALTURA } from './ringue/desenho';
 import { comandoDoPiloto } from './ringue/piloto';
-import { ADVERSARIOS, anotar, BAIXO, CIMA, DIR, ESQ, FORTE, novaLuta, passo, PASSO, SOCO_D, SOCO_E, type Evento, type Luta, type Resultado } from './ringue/sim';
+import { anotar, CIRCUITOS, BAIXO, CIMA, DIR, ESQ, FORTE, novaLuta, passo, PASSO, SOCO_D, SOCO_E, type Evento, type Luta, type Resultado } from './ringue/sim';
 import { tocar } from './somDosJogos';
 import type { AvatarDoJogo } from './coelho/cores';
+import { FOLHAS_DOS_BICHOS } from './briga/folhasDosBichos';
 import './ringue/ringue.css';
 
 /**
@@ -26,6 +27,8 @@ export interface EstadoRingue {
   solo: boolean;
   semente: number;
   adversarios: number;
+  /** O circuito (21/11/2026): 0 o de sempre, 1 o segundo; sem ele, o primeiro. */
+  circuito?: number;
   meu: Resultado | null;
   avatar: AvatarDoJogo;
   placar: { userId: number; username: string; avatar: AvatarDoJogo; resultado: Resultado | null; posicao: number | null }[];
@@ -60,6 +63,53 @@ const tempo = (passos: number) => {
 };
 /** "2/3", ou "3/3 · 2:14" quando venceu o circuito inteiro. */
 const resumo = (r: Resultado, total: number) => (r.vencidas >= total ? `${r.vencidas}/${total} · ${tempo(r.passos)}` : `${r.vencidas}/${total}`);
+
+/** Os nomes dos circuitos, na escolha da largada. */
+const NOMES_DOS_CIRCUITOS = [chave('Primeiro circuito'), chave('Segundo circuito')];
+
+/**
+ * A ESCOLHA DO CIRCUITO (21/11/2026, o lote D): o de sempre ou o segundo, cada um pelos três bichos dele (o primeiro quadro da folha
+ * da Briga) e a cor das luvas. Cada circuito tem o seu recorde.
+ */
+export function EscolhaDoCircuito({ aoEscolher, aoVoltar }: { aoEscolher: (circuito: number) => void; aoVoltar: () => void }) {
+  const t = useT();
+  return (
+    <div className="corrida-escolha">
+      <ul className="corrida-pistas">
+        {CIRCUITOS.map((advs, c) => (
+          <li key={c}>
+            <button type="button" className="corrida-pista-botao" onClick={() => aoEscolher(c)}>
+              <span className="ringue-circuito" aria-hidden="true">
+                {advs.map((A) => {
+                  const f = FOLHAS_DOS_BICHOS[A.bicho];
+                  const k = 44 / (f?.lado ?? 80);
+                  return (
+                    <span key={A.bicho} className="ringue-circuito-bicho" style={{ borderColor: A.luva }}>
+                      {f && (
+                        <i
+                          style={{
+                            backgroundImage: `url(${import.meta.env.BASE_URL}briga/${f.fase}/${A.bicho}.png)`,
+                            backgroundSize: `${Math.round(f.lado * 21 * k)}px ${Math.round(f.lado * k)}px`,
+                          }}
+                        />
+                      )}
+                    </span>
+                  );
+                })}
+              </span>
+              <strong>{t(NOMES_DOS_CIRCUITOS[c] ?? NOMES_DOS_CIRCUITOS[0])}</strong>
+            </button>
+          </li>
+        ))}
+      </ul>
+      <div className="minijogo-acoes">
+        <button type="button" className="btn-secondary" onClick={aoVoltar}>
+          {t('Outros jogos')}
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export function JogoRingue(props: Props) {
   const { estado, eu, jogador, agir, restante = 0, socket = null, channelId = 0 } = props;
@@ -120,6 +170,7 @@ export function JogoRingue(props: Props) {
     <Ringue
       key={estado.partidaId}
       semente={estado.semente}
+      circuito={estado.circuito ?? 0}
       solo={estado.solo}
       avatar={estado.avatar}
       esperaMs={estado.solo ? 0 : contagem}
@@ -199,6 +250,7 @@ function somDe(e: Evento) {
 
 function Ringue({
   semente,
+  circuito,
   solo,
   avatar,
   esperaMs,
@@ -207,6 +259,7 @@ function Ringue({
   aoTerminar,
 }: {
   semente: number;
+  circuito: number;
   solo: boolean;
   avatar: AvatarDoJogo;
   esperaMs: number;
@@ -238,10 +291,10 @@ function Ringue({
     }
     let viva = true;
     let id = 0;
-    carregarFolhas().then(() => {
+    carregarFolhas(circuito).then(() => {
       if (!viva) return;
       const d = new DesenhoDoRingue(ctx, avatar);
-      const l = novaLuta(semente);
+      const l = novaLuta(semente, circuito);
       if (import.meta.env.DEV) window.ringueDoTeste = l;
       const entradas: number[] = [];
       let acumulado = 0;
@@ -387,7 +440,7 @@ function Ringue({
               <li key={o.nome} className={o.caido ? 'caido' : undefined}>
                 <span className="minijogo-nome">{o.nome}</span>
                 <span className="ringue-turma-luta">
-                  {ADVERSARIOS.map((A, i) => (
+                  {(CIRCUITOS[circuito] ?? CIRCUITOS[0]).map((A, i) => (
                     <i key={A.bicho} style={{ background: i < o.adv ? '#ffd84a' : i === o.adv ? A.luva : undefined }} />
                   ))}
                 </span>

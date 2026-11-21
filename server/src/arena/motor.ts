@@ -64,6 +64,10 @@ import {
   fatorDaArena,
   foraDosObstaculos,
   KITS,
+  MARCA,
+  MARCAS,
+  marcaDe,
+  especialComMarca,
   MATO,
   moitaEm,
   NASCER_TIME,
@@ -151,6 +155,22 @@ const sequencias = new Map<string, { seguidas: number; em: number }>();
 /** Para os testes. */
 export const _sequenciasDaArena = sequencias;
 
+/**
+ * AS ONDAS (21/11/2026), só no Solo: o time da pessoa (sozinha, ou com dois robôs aliados) contra ONDAS de robôs, cada uma mais
+ * forte — mais robôs, mais espertos, e do meio em diante com duas vidas cada. A pessoa tem as vidas de sempre para a corrida
+ * inteira; entre uma onda e outra, uma pausa curta, e quem está de pé no time ganha um pouco de vida. O recorde (a tabela
+ * comum, maior é melhor) é a ONDA ALCANÇADA, contada pelo servidor.
+ */
+export const ONDAS = { pausa: 3000, vagas: 4, cura: 35, maximoMs: 20 * 60_000 };
+/** Quantos robôs vêm na onda `n` (1, 1, 2, 2, 3, 3, 4…), de que dificuldade e com quantas vidas. */
+export function onda(n: number): { robos: number; dif: DificuldadeDaArena; vidas: number } {
+  return {
+    robos: Math.min(ONDAS.vagas, 1 + Math.floor((n - 1) / 2)),
+    dif: n <= 2 ? 'facil' : n <= 5 ? 'medio' : 'dificil',
+    vidas: n >= 8 ? 2 : 1,
+  };
+}
+
 export const FORMATOS = ['1x1', '3x3', 'todos'] as const;
 export type Formato = (typeof FORMATOS)[number];
 
@@ -236,6 +256,8 @@ interface Lutador {
   livreAte: number;
   especial: number;
   rapidoAte: number;
+  /** A marca casca do especial (21/11/2026): até quando leva menos dano. */
+  cascaAte: number;
   trocaEm: number;
   ultimaEm: number;
   cred: number;
@@ -352,15 +374,24 @@ export function criarArena({
       let formato: Formato = (FORMATOS as readonly unknown[]).includes(corpo.formato) ? (corpo.formato as Formato) : solo ? 'todos' : humanos.length === 2 ? '1x1' : 'todos';
       const pedidos = solo ? Math.min(MAXIMO_DE_ROBOS, Math.max(1, Math.floor(Number(corpo.robos) || 1))) : 0;
       if (solo && formato === '1x1') formato = 'todos';
+      /** O modo: a luta de sempre, SEGURAR A ZONA (ver conta.ts, ZONA_DO_OBJETIVO) ou, no Solo, AS ONDAS. */
+      const objetivo: 'luta' | 'zona' | 'ondas' = corpo.objetivo === 'zona' ? 'zona' : solo && corpo.objetivo === 'ondas' ? 'ondas' : 'luta';
+      const ondas = objetivo === 'ondas';
       // no Solo, cada um por si com 1 robô é o 1×1
-      const lugares = montarTimes(solo ? humanos.slice(0, 1) : humanos, formato, solo ? pedidos : 0, solo ? 2 : 3);
+      let lugares = montarTimes(solo ? humanos.slice(0, 1) : humanos, formato, solo ? pedidos : 0, solo ? 2 : 3);
+      if (ondas) {
+        // as ondas: a pessoa no time 0 (com dois aliados, se escolheu o time), e as vagas dos robôs da onda no time 1
+        const aliados = formato === '3x3' ? 2 : 0;
+        const ids = idsDosRobos(aliados + ONDAS.vagas);
+        lugares = [[humanos[0], 0], ...ids.slice(0, aliados).map((id) => [id, 0] as [number, number]), ...ids.slice(aliados).map((id) => [id, 1] as [number, number])];
+        formato = '3x3';
+      }
+      const comAliados = ondas && lugares.filter(([, time]) => time === 0).length > 1;
       const cenario: Cenario = (CENARIOS as readonly unknown[]).includes(corpo.cenario) ? (corpo.cenario as Cenario) : CENARIOS[Math.floor(aleatorio() * CENARIOS.length)];
-      /** O modo: a luta de sempre, ou SEGURAR A ZONA (ver conta.ts, ZONA_DO_OBJETIVO). */
-      const objetivo: 'luta' | 'zona' = corpo.objetivo === 'zona' ? 'zona' : 'luta';
       /** A dificuldade dos robôs adversários (só no Solo; na sala, e para os aliados, o médio). */
       const dificuldade: DificuldadeDaArena = solo && (DIFICULDADES_DA_ARENA as readonly unknown[]).includes(corpo.dificuldade) ? (corpo.dificuldade as DificuldadeDaArena) : 'medio';
       /** A sequência do Solo: a chave é a pessoa e a variante (dificuldade, adversários e o modo). */
-      const varianteDoRecorde = `${dificuldade}:${formato === '3x3' ? '3x3' : lugares.length - 1}${objetivo === 'zona' ? ':zona' : ''}`;
+      const varianteDoRecorde = ondas ? (comAliados ? 'ondas:3x3' : 'ondas') : `${dificuldade}:${formato === '3x3' ? '3x3' : lugares.length - 1}${objetivo === 'zona' ? ':zona' : ''}`;
       const quemJogaSozinho = solo ? humanos[0] : null;
       const chaveDaSequencia = `${quemJogaSozinho}:${varianteDoRecorde}`;
       let sequencia: { atual: number; recorde: number | null; novo: boolean } | null = null;
@@ -369,6 +400,10 @@ export function criarArena({
         const atual = s && agora() - s.em <= SESSAO_DA_ARENA_MS ? s.seguidas : 0;
         sequencia = { atual, recorde: servicos.recordeDoSolo?.(quemJogaSozinho, varianteDoRecorde) ?? null, novo: false };
       }
+      /** As ondas: a de agora, quando vem a próxima (0: lutando), e a recorde/novo do fim. */
+      let ondaAgora = 1;
+      let proximaOnda = 0;
+      let recordeDasOndas: { onda: number; recorde: number | null; novo: boolean } | null = ondas && quemJogaSozinho !== null ? { onda: 1, recorde: servicos.recordeDoSolo?.(quemJogaSozinho, varianteDoRecorde) ?? null, novo: false } : null;
       const pontosDaZona = new Map<number, number>();
       let msNaZona = 0;
       let donoDaZona = -1;
@@ -431,6 +466,7 @@ export function criarArena({
             livreAte: t + 1000,
             especial: 0,
             rapidoAte: 0,
+            cascaAte: 0,
             trocaEm: -Infinity,
             ultimaEm: t,
             cred: ACUMULO,
@@ -494,7 +530,7 @@ export function criarArena({
       const ferir = (alvo: Lutador, dono: number, base: number, elemento: string, t: number) => {
         if (alvo.estado !== 'em-pe' || alvo.invulAte > t) return;
         const efic = eficacia(elemento as Elemento, elementoDe(alvo) as Elemento);
-        const dano = Math.max(1, Math.round(base * fatorDaArena(efic)));
+        const dano = Math.max(1, Math.round(base * fatorDaArena(efic) * (alvo.cascaAte > t ? MARCA.casca.mult : 1)));
         alvo.pv = Math.max(0, alvo.pv - dano);
         alvo.levou += dano;
         // quem leva um golpe se mexe no mato: aparece por um instante
@@ -507,7 +543,7 @@ export function criarArena({
         evento_('h', alvo.id, dono, dano, efic >= 2 ? 1 : efic <= 0.5 ? 2 : 0, ELEMENTOS_DA_ARENA.indexOf(elemento as never));
         if (alvo.pv > 0) return;
         // segurando a zona, ninguém fica sem vidas: quem cai sempre volta
-        if (objetivo === 'luta') alvo.vidas = Math.max(0, alvo.vidas - 1);
+        if (objetivo !== 'zona') alvo.vidas = Math.max(0, alvo.vidas - 1);
         alvo.estado = alvo.vidas === 0 ? 'sem-vidas' : 'fora';
         alvo.voltaEm = t + VOLTA_MS;
         if (alvo.estado === 'sem-vidas') alvo.eliminadoEm = t;
@@ -578,8 +614,18 @@ export function criarArena({
       /** Um golpe aceito: a recarga anda, e a forma dele acontece. Devolve o tiro (na forma tiro). */
       const golpear = (l: Lutador, tecla: TeclaDeGolpe, n: number, ox: number, oy: number, dx: number, dy: number, ax: number, ay: number, t: number) => {
         const elemento = elementoDe(l);
-        const g = KITS[elemento][tecla];
-        if (tecla === 'e') l.especial = 0;
+        let g = KITS[elemento][tecla];
+        if (tecla === 'e') {
+          l.especial = 0;
+          // A MARCA DA ESPÉCIE (21/11/2026): o bicho da frente muda um pouco o especial
+          const marca = marcaDe(l.equipe[l.ativo]);
+          g = especialComMarca(g, marca);
+          if (marca === 'seiva') l.pv = Math.min(PV, l.pv + MARCA.seiva);
+          else if (marca === 'casca') l.cascaAte = t + MARCA.casca.ms;
+          else if (marca === 'pressa') l.rapidoAte = Math.max(l.rapidoAte, t + MARCA.pressa);
+          else if (marca === 'folego') l.especial = MARCA.folego;
+          evento_('m', l.id, MARCAS.indexOf(marca));
+        }
         else l.proximo[tecla] = Math.max(l.proximo[tecla], t - FOLGA_RECARGA) + g.recarga;
         // golpear de dentro do mato revela quem golpeou, por um instante
         l.reveladoAte = t + REVELADO_MS;
@@ -834,7 +880,7 @@ export function criarArena({
       const zonaDaArena = (t: number) => {
         if (t < proximaZona) return;
         // O FIM COM PRESSÃO (ZONA_FINAL): no último minuto, mais depressa e maiores
-        const final = PARTIDA_MS - (t - inicio) <= ZONA_FINAL.falta;
+        const final = !ondas && PARTIDA_MS - (t - inicio) <= ZONA_FINAL.falta;
         const raio = final ? ZONA_FINAL.raio : ZONA.raio;
         proximaZona = t + (final ? ZONA_FINAL.cada : ZONA.cada);
         // perto de alguém (para obrigar a mexer), mas num lugar sorteado em volta
@@ -870,6 +916,58 @@ export function criarArena({
         evento_('g', l.id, SUPRIMENTOS.indexOf(s.tipo), s.ponto);
         return null;
       };
+
+      // ---------------- AS ONDAS ----------------
+      /** A onda `n`: as vagas dela voltam à arena com bichos novos; as outras ficam de fora. */
+      const chamarOnda = (n: number, t: number) => {
+        ondaAgora = n;
+        proximaOnda = 0;
+        const o = onda(n);
+        let k = 0;
+        for (const l of lutadores.values()) {
+          if (l.time === 0) {
+            // quem está de pé no time ganha um pouco de vida entre as ondas
+            if (l.estado === 'em-pe') l.pv = Math.min(PV, l.pv + ONDAS.cura);
+            continue;
+          }
+          if (k++ >= o.robos) {
+            l.estado = 'sem-vidas';
+            l.vidas = 0;
+            continue;
+          }
+          l.equipe = equipeDoRobo(aleatorio);
+          l.ativo = 0;
+          l.dif = o.dif;
+          l.vidas = o.vidas;
+          l.pv = PV;
+          l.estado = 'em-pe';
+          l.especial = 0;
+          l.cascaAte = 0;
+          l.rapidoAte = 0;
+          [l.x, l.y] = foraDosObstaculos(cenario, l.nasce[0], l.nasce[1]);
+          l.invulAte = t + INVUL_VOLTA_MS;
+          l.historia = [];
+          l.ia.alvo = null;
+          l.ia.decide = t + 600 + aleatorio() * 400;
+          evento_('v', l.id, Math.round(l.x), Math.round(l.y));
+        }
+        ctx.avisar();
+      };
+      if (ondas) {
+        // a primeira onda: só as vagas dela entram
+        const o = onda(1);
+        let k = 0;
+        for (const l of lutadores.values()) {
+          if (l.time !== 1) continue;
+          if (k++ >= o.robos) {
+            l.estado = 'sem-vidas';
+            l.vidas = 0;
+          } else {
+            l.dif = o.dif;
+            l.vidas = o.vidas;
+          }
+        }
+      }
 
       // ---------------- O PASSO ----------------
       const tick = () => {
@@ -933,6 +1031,19 @@ export function criarArena({
           if (timesPresentes.size <= 1) return acabar(timesPresentes.size === 1 ? [...timesPresentes][0] : null);
           return difundir();
         }
+        if (ondas) {
+          // AS ONDAS: o time da pessoa sem ninguém, acabou; a onda sem ninguém, vem a próxima depois da pausa
+          const doTime = (time: number) => [...lutadores.values()].filter((l) => l.time === time && l.estado !== 'sem-vidas' && conta(l));
+          if (!doTime(0).length) return acabar(1);
+          if (proximaOnda === 0 && !doTime(1).length) {
+            proximaOnda = t + ONDAS.pausa;
+            evento_('o', ondaAgora + 1, ONDAS.pausa);
+            ctx.avisar();
+          }
+          if (proximaOnda > 0 && t >= proximaOnda) chamarOnda(ondaAgora + 1, t);
+          if (t - inicio >= ONDAS.maximoMs) return acabar(null);
+          return difundir();
+        }
         // quem ficou: os times com alguém de pé (ou voltando)
         const vivos = new Set([...lutadores.values()].filter((l) => l.estado !== 'sem-vidas' && conta(l)).map((l) => l.time));
         if (vivos.size <= 1) return acabar(vivos.size === 1 ? [...vivos][0] : null);
@@ -991,7 +1102,9 @@ export function criarArena({
           tipo: 'q',
           n: passo,
           f: fase,
-          r: Math.max(0, PARTIDA_MS - (t - inicio)),
+          r: Math.max(0, (ondas ? ONDAS.maximoMs : PARTIDA_MS) - (t - inicio)),
+          // as ondas: a de agora, e quanto falta para a próxima (0: lutando)
+          ...(ondas ? { w: [ondaAgora, proximaOnda > 0 ? Math.max(0, Math.round(proximaOnda - t)) : 0] } : {}),
           // as balas no ar (de todos, para cada um desenhar as dos outros): [dono, n, k, x0, y0, dx ×1000, dy ×1000, ms desde,
           // elemento, tecla, até onde vai]
           p: [...lutadores.values()].flatMap((l) =>
@@ -1040,8 +1153,17 @@ export function criarArena({
         fase = 'fim';
         const p = presentes();
         ficaram = new Set([...ficaram].filter((id) => p.has(id)));
+        // AS ONDAS: o recorde é a onda alcançada (só conta quem venceu ao menos a primeira)
+        if (ondas && quemJogaSozinho !== null && recordeDasOndas) {
+          recordeDasOndas.onda = ondaAgora;
+          if (ondaAgora >= 2 && servicos.guardarRecorde) {
+            const r = servicos.guardarRecorde(quemJogaSozinho, varianteDoRecorde, ondaAgora);
+            recordeDasOndas.novo = r.novo;
+            recordeDasOndas.recorde = r.novo ? ondaAgora : r.antes;
+          }
+        }
         // AS VITÓRIAS SEGUIDAS DO SOLO: vencer soma, o resto zera (o servidor decidiu quem venceu)
-        if (quemJogaSozinho !== null && sequencia) {
+        if (quemJogaSozinho !== null && sequencia && !ondas) {
           const venceu = completa && vencedor !== null && vencedor === meuTime;
           const seguidas = venceu ? sequencia.atual + 1 : 0;
           sequencias.set(chaveDaSequencia, { seguidas, em: agora() });
@@ -1207,7 +1329,9 @@ export function criarArena({
             solo,
             vencedor,
             // o Solo: a dificuldade dos robôs e as vitórias seguidas (a do fim já com esta partida)
-            ...(solo ? { dificuldade, sequencia } : {}),
+            ...(solo ? { dificuldade, sequencia: ondas ? null : sequencia } : {}),
+            // as ondas (21/11/2026): a de agora e, no fim, o recorde
+            ...(ondas ? { ondas: { onda: ondaAgora, recorde: recordeDasOndas?.recorde ?? null, novo: recordeDasOndas?.novo ?? false } } : {}),
             jogadores: [...lutadores.values()].map((l) => ({
               userId: l.id,
               username: ctxNome(l.id),

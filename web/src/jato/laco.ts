@@ -14,6 +14,7 @@ import {
   naveNaTela,
   painel,
   pontoNoMapa,
+  perigosNaTela,
   postesNaTela,
   prepararDesenho,
   riscosDeVento,
@@ -236,6 +237,11 @@ export function rodarJato(o: OpcoesDoLaco): () => void {
         ladoDaFaisca = Math.sign(naLinha(p, nave.x, nave.y, nave.indice).lado) || 1;
         tocar('impacto');
       }
+      // o perigo da pista (o meteoro, o laser): treme e cobra, como a batida
+      if (nave.atingido) {
+        tremor = 10;
+        tocar('dano');
+      }
       if (nave.usouTurbo) tocar('turbo');
       if (nave.placa) tocar('turbo');
       if (nave.caindo > 0 && nave.queda === 0) tocar('queda');
@@ -309,6 +315,7 @@ export function rodarJato(o: OpcoesDoLaco): () => void {
     desenharChao(d, p, cam);
     const figuras: Figura[] = [];
     postesNaTela(d, p, cam, figuras);
+    perigosNaTela(p, cam, n, tempo, figuras);
     // as naves do computador
     robos.forEach((r, i) => {
       if (fora(i)) return;

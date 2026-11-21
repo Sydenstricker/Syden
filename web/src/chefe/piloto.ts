@@ -19,13 +19,18 @@ function perigo(x: number, y: number, v: Vista): number {
     if (m.resta < -150 || m.resta > 2200) continue;
     const peso = 1000 / (1 + Math.max(0, m.resta) / 300);
     const margem = CORPO_COELHO + 10;
-    if (m.tipo === 'investida') {
+    if (m.tipo === 'investida' || m.tipo === 'faixa') {
       if (distSegmento(x, y, m.x, m.y, m.x2, m.y2) <= m.r + margem) p += peso;
     } else {
       const cx = m.tipo === 'torrao' ? m.x2 : m.x;
       const cy = m.tipo === 'torrao' ? m.y2 : m.y;
       if (distancia(x, y, cx, cy) <= m.r + margem) p += peso;
     }
+  }
+  // os buracos (21/11/2026): dentro do aberto não se entra; o que vai abrir, sair dele
+  for (const b of v.buracos) {
+    if (b.resta > 2600) continue;
+    if (distancia(x, y, b.x, b.y) <= b.r + CORPO_COELHO + 8) p += b.resta <= 0 ? 3000 : 1000 / (1 + Math.max(0, b.resta) / 300);
   }
   // a bola de neve rolando: longe dela
   for (const b of v.bolas) if (distancia(x, y, b.x, b.y) < 40) p += 800;
@@ -37,6 +42,10 @@ function perigo(x: number, y: number, v: Vista): number {
   return p;
 }
 
+/** O caminho reto de (x0, y0) a (x1, y1) atravessa um buraco aberto (o coelho pararia na borda dele)? */
+const cruzaBuraco = (v: Vista, x0: number, y0: number, x1: number, y1: number) =>
+  v.buracos.some((b) => b.resta <= 0 && distSegmento(b.x, b.y, x0, y0, x1, y1) < b.r + CORPO_COELHO + 2);
+
 /** O lugar escolhido fica escolhido por um tempo (sem isso o piloto treme entre dois lugares e não sai de nenhum). */
 const escolhas = new WeakMap<Meu, { x: number; y: number; ate: number; perigo: number }>();
 
@@ -44,7 +53,7 @@ export function pilotoAutomatico(eu: Meu, v: Vista, cmd: Comandos) {
   cmd.esquerda = cmd.direita = cmd.cima = cmd.baixo = false;
   const c = v.chefe;
   const antes = escolhas.get(eu);
-  const vale = !!antes && antes.ate > eu.relogio && distancia(eu.x, eu.y, antes.x, antes.y) > 3 && perigo(antes.x, antes.y, v) <= antes.perigo + 1;
+  const vale = !!antes && antes.ate > eu.relogio && distancia(eu.x, eu.y, antes.x, antes.y) > 3 && perigo(antes.x, antes.y, v) <= antes.perigo + 1 && !cruzaBuraco(v, eu.x, eu.y, antes.x, antes.y);
   // o objetivo: o torrão frio mais perto (de mãos vazias), ou a ~110 px da toupeira
   let alvo: [number, number] = [240, 230];
   const livres = v.noChao.filter((t) => t.resta > 300);
@@ -62,6 +71,8 @@ export function pilotoAutomatico(eu: Meu, v: Vista, cmd: Comandos) {
       const [x, y] = naArena(eu.x + dx * passo, eu.y + dy * passo);
       // fora da arena por pouco não vale: preso na borda, o coelho não chega lá
       if (x <= ARENA.x0 + 1 || x >= ARENA.x1 - 1 || y <= ARENA.y0 + 1 || y >= ARENA.y1 - 1) continue;
+      // o caminho reto até lá não atravessa um buraco aberto (o coelho pararia na borda dele)
+      if (cruzaBuraco(v, eu.x, eu.y, x, y)) continue;
       const n = perigo(x, y, v) * 4 + distancia(x, y, alvo[0], alvo[1]) + passo * 0.2;
       if (n < nota) {
         nota = n;

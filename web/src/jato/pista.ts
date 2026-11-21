@@ -49,6 +49,8 @@ export interface DefinicaoDoJato {
   recargas: [number, number][];
   /** Os trechos SEM borda (quem sai da pista cai): [começo, fim] em fração da volta. */
   abertos: [number, number][];
+  /** OS PERIGOS da pista (21/11/2026): ver `Perigo` e `perigoQueAtinge`. */
+  perigos?: Perigo[];
   semente: number;
   tema: TemaDoJato;
 }
@@ -175,12 +177,135 @@ export const TEMPESTADE: DefinicaoDoJato = {
   },
 };
 
-export const PISTAS_DO_JATO = [CIDADE, ORBITA, NUVENS, AURORA, TEMPESTADE];
+/**
+ * OS PERIGOS (21/11/2026, a segunda auditoria: "um elemento de cada pista que tira energia ou atrapalha"). Andam pelo PASSO
+ * da corrida de cada um (o tempo é de passos): no mesmo passo estão no mesmo lugar em todo computador, e quem vê os outros
+ * no mesmo passo os vê iguais. O servidor não os conhece (como não conhece a borda): quem leva um só fica mais lento.
+ * - O METEORO atravessa a pista de um lado ao outro e volta, num ponto da volta; encostar nele cobra energia e freia.
+ * - O LASER corta a pista inteira de lado a lado: liga, desliga, e pisca antes de ligar; passar com ele ligado cobra e freia.
+ * Só nas pistas novas: nas cinco de antes a física é a mesma, e os recordes e fantasmas delas valem como eram.
+ */
+export interface Perigo {
+  tipo: 'meteoro' | 'laser';
+  /** Onde fica, em fração da volta. */
+  f: number;
+  /** Onde começa o ciclo dele, em passos. */
+  fase: number;
+}
+export const CICLO_DO_METEORO = 160;
+export const RAIO_DO_METEORO = 13;
+export const CICLO_DO_LASER = 200;
+/** O laser fica ligado nos primeiros LASER_LIGADO passos do ciclo, e pisca nos AVISO_DO_LASER antes de ligar. */
+export const LASER_LIGADO = 50;
+export const AVISO_DO_LASER = 30;
+/** O que cada um faz: a energia que cobra e quanto da velocidade sobra. */
+export const DANO_DO_PERIGO = { meteoro: 8, laser: 12 } as const;
+export const SOBRA_DO_PERIGO = { meteoro: 0.5, laser: 0.4 } as const;
+
+const ciclo = (passos: number, fase: number, total: number) => (((passos + fase) % total) + total) % total;
+
+/** De que lado do meio está o meteoro no passo `passos`, em unidades (vai e volta, de −0,85 a 0,85 da meia largura). */
+export function ladoDoMeteoro(pe: Perigo, meiaLargura: number, passos: number): number {
+  const t = ciclo(passos, pe.fase, CICLO_DO_METEORO) / CICLO_DO_METEORO;
+  const tri = t < 0.5 ? t * 4 - 1 : 3 - t * 4;
+  return tri * meiaLargura * 0.85;
+}
+
+/** O laser está ligado neste passo? E quantos passos faltam para ligar (0 se ligado). */
+export const laserLigado = (pe: Perigo, passos: number) => ciclo(passos, pe.fase, CICLO_DO_LASER) < LASER_LIGADO;
+export const passosAteOLaser = (pe: Perigo, passos: number) => {
+  const t = ciclo(passos, pe.fase, CICLO_DO_LASER);
+  return t < LASER_LIGADO ? 0 : CICLO_DO_LASER - t;
+};
+
+/**
+ * O perigo que pega a nave que andou de `de` a `ate` (o s da linha do meio) e está a `lado` do meio, no passo `passos`; ou null.
+ * O laser pega quem CRUZOU a linha dele neste passo (a nave anda até 7 unidades por passo); o meteoro, quem está encostado.
+ */
+export function perigoQueAtinge(p: Pick<PistaDoJato, 'def' | 'comprimento'>, de: number, ate: number, lado: number, passos: number): Perigo | null {
+  const C = p.comprimento;
+  for (const pe of p.def.perigos ?? []) {
+    const s = pe.f * C;
+    const ds = (((ate - s) % C) + C * 1.5) % C - C / 2;
+    if (pe.tipo === 'meteoro') {
+      if (Math.hypot(ds, lado - ladoDoMeteoro(pe, p.def.meiaLargura, passos)) < RAIO_DO_METEORO) return pe;
+    } else if (laserLigado(pe, passos)) {
+      const antes = (((de - s) % C) + C * 1.5) % C - C / 2;
+      if (antes < 0 && ds >= 0 && ds < 40) return pe;
+    }
+  }
+  return null;
+}
+
+/** O CINTURÃO DE ASTEROIDES (21/11/2026): no espaço, a volta longa entre as rochas, e os METEOROS que cruzam a pista. */
+export const ASTEROIDES: DefinicaoDoJato = {
+  id: 'asteroides-1',
+  pontos: [
+    [200, 200], [470, 140], [740, 190], [890, 340], [800, 500], [880, 680], [760, 880], [520, 860], [420, 700],
+    [260, 820], [120, 640], [200, 460], [120, 320],
+  ],
+  meiaLargura: 38,
+  voltas: 3,
+  placas: [[0.12, 0.4], [0.4, -0.4], [0.62, 0.3], [0.86, -0.3]],
+  recargas: [[0.03, 0.1]],
+  abertos: [[0.7, 0.75]],
+  perigos: [
+    { tipo: 'meteoro', f: 0.2, fase: 0 },
+    { tipo: 'meteoro', f: 0.32, fase: 80 },
+    { tipo: 'meteoro', f: 0.52, fase: 40 },
+    { tipo: 'meteoro', f: 0.78, fase: 120 },
+    { tipo: 'meteoro', f: 0.93, fase: 60 },
+  ],
+  semente: 61,
+  tema: {
+    ceu: { topo: [10, 8, 20], meio: [30, 22, 46], baixo: [80, 50, 60] },
+    fundo: 'espaco',
+    piso: [rgb(80, 70, 70), rgb(86, 76, 76), rgb(74, 64, 64)],
+    costura: rgb(50, 44, 46),
+    luz: rgb(255, 170, 110),
+    borda: [rgb(255, 150, 80), rgb(120, 200, 255)],
+    nevoa: [60, 40, 54],
+  },
+};
+
+/** A AVENIDA NEON (21/11/2026): por cima da cidade, retas longas cortadas pelos LASERS que ligam e desligam. */
+export const AVENIDA: DefinicaoDoJato = {
+  id: 'avenida-1',
+  pontos: [
+    [220, 170], [520, 140], [800, 180], [900, 380], [820, 560], [620, 520], [480, 620], [620, 760], [860, 800],
+    [780, 920], [460, 910], [220, 860], [120, 640], [150, 380],
+  ],
+  meiaLargura: 38,
+  voltas: 3,
+  placas: [[0.08, -0.4], [0.3, 0.3], [0.58, -0.3], [0.8, 0.4]],
+  recargas: [[0.02, 0.09]],
+  abertos: [[0.44, 0.49]],
+  perigos: [
+    { tipo: 'laser', f: 0.16, fase: 0 },
+    { tipo: 'laser', f: 0.38, fase: 70 },
+    { tipo: 'laser', f: 0.66, fase: 130 },
+    { tipo: 'laser', f: 0.9, fase: 40 },
+  ],
+  semente: 73,
+  tema: {
+    ceu: { topo: [20, 8, 40], meio: [70, 24, 90], baixo: [170, 60, 120] },
+    fundo: 'cidade',
+    piso: [rgb(50, 46, 76), rgb(56, 52, 82), rgb(46, 42, 70)],
+    costura: rgb(34, 30, 54),
+    luz: rgb(255, 90, 200),
+    borda: [rgb(255, 80, 200), rgb(90, 240, 255)],
+    nevoa: [96, 40, 100],
+  },
+};
+
+export const PISTAS_DO_JATO = [CIDADE, ORBITA, NUVENS, AURORA, TEMPESTADE, ASTEROIDES, AVENIDA];
 
 /** As copas do Solo contra o computador (19/11/2026): três pistas seguidas, pontos pela posição. Só no site: não vale nada no servidor. */
 export const COPAS_DO_JATO: Record<string, string[]> = {
   'copa-estelar': ['cidade-1', 'orbita-1', 'nuvens-1'],
   'copa-da-tempestade': ['aurora-1', 'tempestade-1', 'orbita-1'],
+  // a terceira (21/11/2026): as duas pistas com perigos e a cidade
+  'copa-dos-perigos': ['avenida-1', 'asteroides-1', 'cidade-1'],
 };
 /** Os pontos por posição na copa, entre as 12 naves. */
 export const PONTOS_DA_COPA_DO_JATO = [15, 12, 10, 8, 7, 6, 5, 4, 3, 2, 1, 0];

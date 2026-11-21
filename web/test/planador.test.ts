@@ -93,10 +93,10 @@ test('entradas inválidas', () => {
 // 19/11/2026: mais desafios por veículo, o vento, as térmicas e as medalhas
 // ---------------------------------------------------------------------------------------------------------------------
 
-test('3 a 4 desafios por veículo, em escala (o nível sobe), com ids diferentes', () => {
+test('3 a 5 desafios por veículo, em escala (o nível sobe), com ids diferentes', () => {
   for (const tipo of ['asa', 'mochila', 'queda'] as const) {
     const lista = sim.DESAFIOS.filter((d) => d.tipo === tipo);
-    assert.ok(lista.length >= 3 && lista.length <= 4, tipo);
+    assert.ok(lista.length >= 3 && lista.length <= 5, tipo);
     assert.deepEqual(lista.map((d) => d.nivel), lista.map((_, i) => i + 1), `${tipo}: os níveis em ordem`);
   }
   assert.equal(new Set(sim.DESAFIOS.map((d) => d.id)).size, sim.DESAFIOS.length);

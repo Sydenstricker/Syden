@@ -128,3 +128,70 @@ describe('ringue da toca', () => {
     if (!viu) assert.ok(parado.terminou);
   });
 });
+
+// ---------------- O lote D (21/11/2026): o segundo circuito ----------------
+
+describe('o segundo circuito', () => {
+  function lutarNo(circuito: number, semente: number, erro = 0) {
+    const l = novaLuta(semente, circuito);
+    const entradas: number[] = [];
+    let x = semente;
+    let falha = false;
+    const eventos: Record<string, number> = {};
+    while (!l.terminou) {
+      if (l.a.estado === 'aviso' && l.a.t === 0) {
+        x = (x * 48271) % 2147483647;
+        falha = (x % 1000) / 1000 < erro;
+      }
+      const bits = falha && l.a.estado === 'aviso' ? 0 : comandoDoPiloto(l);
+      anotar(entradas, bits);
+      passo(l, bits);
+      for (const e of l.eventos) eventos[e.tipo] = (eventos[e.tipo] ?? 0) + 1;
+    }
+    return { l, entradas, eventos };
+  }
+
+  it('são três adversários novos, de bichos que existem na Briga, e o primeiro circuito não mudou', async () => {
+    const sim = await import('../src/ringue/sim');
+    const { FOLHAS_DOS_BICHOS } = await import('../src/briga/folhasDosBichos');
+    assert.equal(sim.CIRCUITOS.length, 2);
+    assert.equal(sim.CIRCUITOS[0], ADVERSARIOS);
+    assert.equal(sim.CIRCUITOS[1].length, ADVERSARIOS.length);
+    for (const A of sim.CIRCUITOS[1]) {
+      assert.ok(FOLHAS_DOS_BICHOS[A.bicho], A.bicho);
+      assert.ok(!ADVERSARIOS.some((B) => B.bicho === A.bicho), `${A.bicho} é novo`);
+    }
+    // sem circuito, o de sempre; circuito estranho, também
+    assert.equal(novaLuta(5).circuito, 0);
+    assert.equal(novaLuta(5, 9).circuito, 0);
+    assert.deepEqual(resultadoDe(lutarNo(0, 42).l), resultadoDe(lutar(42).l));
+  });
+
+  it('a guarda do dançarino troca de lado no ritmo dele', () => {
+    const l = novaLuta(11, 1);
+    const lados = new Set<number>();
+    while (l.fase !== 'luta') passo(l, 0);
+    for (let i = 0; i < 600 && !l.terminou; i++) {
+      passo(l, 0);
+      if (l.a.estado === 'guarda') lados.add(l.a.guarda);
+    }
+    assert.ok(lados.has(-1) && lados.has(1), `lados: ${[...lados]}`);
+  });
+
+  it('o piloto lê os avisos e vence o segundo circuito', () => {
+    let venceu = 0;
+    for (const semente of [1, 7, 42, 2024, 99999, 1234567]) {
+      const { l } = lutarNo(1, semente);
+      if (l.vencidas === ADVERSARIOS.length) venceu++;
+      console.log(`segundo circuito, semente ${semente}: ${l.vencidas} lutas, ${l.passo} passos`);
+    }
+    assert.ok(venceu >= 5, `venceu ${venceu} de 6`);
+  });
+
+  it('o servidor refaz o segundo circuito pelos comandos', () => {
+    const { l, entradas } = lutarNo(1, 77, 0.3);
+    const { l: r, passos } = refazer(77, entradas, 1);
+    assert.equal(passos, l.passo);
+    assert.deepEqual(resultadoDe(r), resultadoDe(l));
+  });
+});

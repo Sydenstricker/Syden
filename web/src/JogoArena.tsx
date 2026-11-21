@@ -9,7 +9,7 @@ import { ESPECIES, GOLPES } from './bichos/regras';
 import { chave, useT } from './i18n';
 import { primeiraForma, type Partida } from './minijogos';
 import { tocar } from './somDosJogos';
-import { CENARIOS, H, KITS, MATO, moitaEm, MUNDO_H, MUNDO_W, OBSTACULOS, PONTOS_DA_ZONA, PV, TECLAS_DE_GOLPE, W, ZONA_FINAL, type Cenario, type TeclaDeGolpe } from './arena/conta';
+import { CENARIOS, H, KITS, marcaDe, MATO, moitaEm, MUNDO_H, MUNDO_W, OBSTACULOS, PONTOS_DA_ZONA, PV, TECLAS_DE_GOLPE, W, ZONA_FINAL, type Cenario, type Marca, type TeclaDeGolpe } from './arena/conta';
 import { prepararCoelho, quadroDaArena, receitaDoAvatar } from './arena/coelhos';
 import {
   chaoDo,
@@ -149,7 +149,21 @@ interface Hud {
   fase: string | null;
   /** Segurando a zona: [time, pontos]. */
   zona: [number, number][] | null;
+  /** As ondas: a de agora e quanto falta para a próxima (0: lutando). */
+  onda: { n: number; proxima: number } | null;
 }
+
+/**
+ * A MARCA DE CADA ESPÉCIE (21/11/2026, conta.ts): a figura no botão do especial e a frase no título. O servidor decide; a tela
+ * só mostra o que o bicho da frente faz.
+ */
+const MARCAS_NA_TELA: Record<Marca, { emoji: string; texto: string }> = {
+  forte: { emoji: '💥', texto: chave('O especial bate mais forte.') },
+  seiva: { emoji: '🌱', texto: chave('O especial cura você um pouco.') },
+  casca: { emoji: '🛡️', texto: chave('Depois do especial, você leva menos dano por um tempo.') },
+  pressa: { emoji: '💨', texto: chave('Depois do especial, você corre mais por um tempo.') },
+  folego: { emoji: '⚡', texto: chave('O especial já volta com uma parte cheia.') },
+};
 
 export function JogoArena({
   estado,
@@ -186,6 +200,13 @@ export function JogoArena({
           <p className="minijogo-fim-titulo">
             <Trophy size={20} aria-hidden="true" /> {t('Fim de jogo!')}
           </p>
+          {estado.solo && estado.ondas && (
+            // AS ONDAS (21/11/2026): a onda alcançada, contada pelo servidor
+            <p className="arena-sequencia" role="status">
+              🌊 {t('Onda {n}', { n: estado.ondas.onda })}
+              {estado.ondas.novo ? ` · 🏅 ${t('Novo recorde!')}` : estado.ondas.recorde !== null ? ` · ${t('Seu recorde: {n}', { n: estado.ondas.recorde })}` : ''}
+            </p>
+          )}
           {estado.solo && estado.sequencia && (
             // AS VITÓRIAS SEGUIDAS DO SOLO (20/11/2026; contadas pelo servidor, só na sessão: sem calendário)
             <p className="arena-sequencia" role="status">
@@ -418,6 +439,7 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoArena
           meuEstado: meu.estado,
           fase: v.fase,
           zona: v.zona ? [...v.zona.pontos.entries()] : null,
+          onda: v.onda ?? null,
         });
       }
 
@@ -516,10 +538,12 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoArena
   const meuTime = estado.jogadores.find((j) => j.userId === eu)?.time;
   const aviso = hud?.fase === 'vitoria' ? (meuTime !== undefined && estado.vencedor !== null ? (estado.vencedor === meuTime ? t('Vitória!') : t('Derrota')) : null) : jogador && hud?.meuEstado === 2 ? t('Sem vidas.') : null;
   const kit = KITS[ESPECIES[minhaEquipe[hud?.ativo ?? 0] ?? '']?.elemento ?? 'folha'];
+  const minhaMarca = MARCAS_NA_TELA[marcaDe(minhaEquipe[hud?.ativo ?? 0] ?? '')];
+  const ondas = estado.objetivo === 'ondas';
   const nomeDoGolpe = (id: string) => primeiraForma(t(GOLPES[id]?.nome ?? ''));
   const segundos = Math.ceil((hud?.resta ?? 0) / 1000);
   // O FIM COM PRESSÃO (20/11/2026): no último minuto, as zonas vêm mais depressa e maiores; a tela avisa (e o relógio fica vermelho)
-  const ultimoMinuto = !!hud && hud.fase === 'lutando' && hud.resta > 0 && hud.resta <= ZONA_FINAL.falta;
+  const ultimoMinuto = !ondas && !!hud && hud.fase === 'lutando' && hud.resta > 0 && hud.resta <= ZONA_FINAL.falta;
   const avisouFinal = useRef<string | null>(null);
   useEffect(() => {
     if (!ultimoMinuto || avisouFinal.current === estado.partidaId) return;
@@ -530,7 +554,10 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoArena
   return (
     <div className="briga arena">
       <ul className="briga-hud arena-hud" aria-live="off">
-        {(hud?.linhas ?? []).map((l) => {
+        {(hud?.linhas ?? [])
+          // nas ondas, quem está fora da onda (as vagas que ela não usa) não aparece
+          .filter((l) => !ondas || l.time === meuTime || l.estado !== 2)
+          .map((l) => {
           const p = pessoas.current.get(l.userId);
           const especie = p?.equipe[l.ativo] ?? '';
           return (
@@ -549,7 +576,18 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoArena
       </ul>
       <div className="briga-tela arena-tela">
         <canvas ref={canvas} width={W} height={H} />
-        {hud && <span className={'arena-relogio' + (ultimoMinuto ? ' final' : '')}>{`${Math.floor(segundos / 60)}:${String(segundos % 60).padStart(2, '0')}`}</span>}
+        {hud && !ondas && <span className={'arena-relogio' + (ultimoMinuto ? ' final' : '')}>{`${Math.floor(segundos / 60)}:${String(segundos % 60).padStart(2, '0')}`}</span>}
+        {hud?.onda && (
+          // AS ONDAS (21/11/2026): no lugar do relógio, a onda de agora; entre uma e outra, a próxima chegando
+          <span className="arena-relogio arena-onda" aria-label={t('Onda {n}', { n: hud.onda.n })}>
+            🌊 {hud.onda.n}
+          </span>
+        )}
+        {hud?.onda && hud.onda.proxima > 0 && (
+          <p className="arena-ultimo-minuto" role="status">
+            <span aria-hidden="true">🌊</span> {t('Onda {n}', { n: hud.onda.n + 1 })}
+          </p>
+        )}
         {ultimoMinuto && segundos > ZONA_FINAL.falta / 1000 - 4 && (
           <p className="arena-ultimo-minuto" role="status">
             <span aria-hidden="true">⏱️</span> {t('Último minuto!')}
@@ -595,7 +633,7 @@ function Palco({ estado, eu, jogador, socket, channelId }: { estado: EstadoArena
                 ['b', '●', nomeDoGolpe(kit.nomes[0])],
                 ['s', '◐', t('Habilidade')],
                 ['q', 'Q', t('Golpe forte')],
-                ['e', 'E', `${t('Especial')} ${Math.floor(hud.especial)}%`],
+                ['e', 'E', `${minhaMarca.emoji} ${t('Especial')} ${Math.floor(hud.especial)}%`],
               ] as const
             ).map(([k, tecla, rotulo]) => (
               <span key={k} className={'arena-golpe' + (hud.cargas[k] >= 1 ? ' pronto' : '')} style={{ '--carga': hud.cargas[k] } as CSSProperties}>
@@ -783,6 +821,12 @@ const OPCOES_DO_SOLO: { formato: FormatoDaArena; robos: number; lados: Figura[][
   { formato: '3x3', robos: 5, lados: [['eu', 'robo', 'robo'], ['robo', 'robo', 'robo']], rotulo: '3 × 3' },
 ];
 
+/** AS ONDAS (21/11/2026): sozinho contra as ondas, ou com dois robôs aliados. */
+const OPCOES_DAS_ONDAS: { formato: FormatoDaArena; robos: number; lados: Figura[][]; rotulo: string }[] = [
+  { formato: 'todos', robos: 1, lados: [['eu'], ['robo', 'robo', 'robo']], rotulo: '1' },
+  { formato: '3x3', robos: 5, lados: [['eu', 'robo', 'robo'], ['robo', 'robo', 'robo']], rotulo: '3' },
+];
+
 /** A miniatura do cenário na largada: o chão do mundo inteiro, reduzido, com os obstáculos e as moitas por cima. */
 function PreviaDoCenario({ cenario }: { cenario: Cenario }) {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -869,6 +913,8 @@ export function EscolhaDosBichos({ solo, aoEscolher, aoVoltar }: { solo: boolean
   };
   // o modo de objetivo (19/11/2026): segurar a zona do meio, em vez de lutar até sobrar um
   const [zona, setZona] = useState(false);
+  // AS ONDAS (21/11/2026), só no Solo: o time contra ondas de robôs cada vez mais fortes
+  const [ondas, setOndas] = useState(false);
   const [cenario, setCenario] = useState<Cenario | null>(null);
   if (!arena) {
     return (
@@ -901,17 +947,22 @@ export function EscolhaDosBichos({ solo, aoEscolher, aoVoltar }: { solo: boolean
       </div>
     );
   }
-  const opcoes = solo ? OPCOES_DO_SOLO : OPCOES_DA_SALA;
+  const opcoes = solo ? (ondas ? OPCOES_DAS_ONDAS : OPCOES_DO_SOLO) : OPCOES_DA_SALA;
   return (
     <div className="tab-escolha arena-escolha">
       {solo && <p className="minijogo-situacao">{t('Quantos adversários do computador?')}</p>}
       <div className="minijogo-acoes">
-        <button type="button" className={zona ? 'btn-primary' : 'btn-secondary'} aria-pressed={zona} onClick={() => setZona((z) => !z)}>
+        <button type="button" className={zona ? 'btn-primary' : 'btn-secondary'} aria-pressed={zona} onClick={() => (setZona((z) => !z), setOndas(false))}>
           🚩 {t('Segurar a zona')}
         </button>
+        {solo && (
+          <button type="button" className={ondas ? 'btn-primary' : 'btn-secondary'} aria-pressed={ondas} onClick={() => (setOndas((o) => !o), setZona(false))}>
+            🌊 {t('Ondas')}
+          </button>
+        )}
       </div>
       <EscolhaDoCenario cenario={cenario} aoMudar={setCenario} />
-      {solo && (
+      {solo && !ondas && (
         <div className="minijogo-abas arena-dificuldade" role="radiogroup" aria-label={t('Computador')}>
           {DIFICULDADES.map((d) => (
             <button key={d} type="button" role="radio" aria-checked={dificuldade === d} className={dificuldade === d ? 'ativa' : undefined} onClick={() => escolherDificuldade(d)}>
@@ -928,7 +979,7 @@ export function EscolhaDosBichos({ solo, aoEscolher, aoVoltar }: { solo: boolean
               className="cid-robos-botao"
               aria-label={o.rotulo}
               title={o.rotulo}
-              onClick={() => aoEscolher({ modo: 'arena', corpo: { formato: o.formato, ...('robos' in o ? { robos: o.robos } : {}), ...(zona ? { objetivo: 'zona' } : {}), ...(cenario ? { cenario } : {}), ...(solo ? { dificuldade } : {}) } })}
+              onClick={() => aoEscolher({ modo: 'arena', corpo: { formato: o.formato, ...('robos' in o ? { robos: o.robos } : {}), ...(zona ? { objetivo: 'zona' } : ondas ? { objetivo: 'ondas' } : {}), ...(cenario ? { cenario } : {}), ...(solo ? { dificuldade } : {}) } })}
             >
               <MesaDosRobos lados={o.lados} />
             </button>

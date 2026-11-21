@@ -292,3 +292,29 @@
     width: min(36vw, 180px);
   }
 }
+
+/* 21/11/2026: o modo final (todas as missões cumpridas): o aviso, e a faixa com a coroa e a barra do prazo */
+.pinball-aviso.final {
+  color: #ffd65a;
+  text-shadow: 0 0 6px rgba(255, 214, 90, 0.8);
+}
+.pinball-final {
+  background: rgba(120, 70, 10, 0.85);
+  color: #ffd65a;
+}
+.pinball-final .pinball-missao-texto {
+  flex: 0 0 auto;
+  font-weight: 800;
+}
+.pinball-final-barra {
+  flex: 1;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+}
+.pinball-final-barra i {
+  display: block;
+  height: 100%;
+  background: #ffd65a;
+}

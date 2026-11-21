@@ -232,37 +232,41 @@ test('a sobrevivência: cair é sair (sem voltar à bandeira), e quem aguenta at
 });
 
 test('a sobrevivência: um coelho que foge do varredor e troca de bloco aguenta um bom tempo (o campo não é impossível)', () => {
-  const p = sim.PERCURSOS[sim.IDS_DA_SOBREVIVENCIA[0]];
-  // o piloto da sobrevivência do teste: a cada bloco de 6 passos, a ação que deixa o coelho em pé por mais tempo olhando 30
-  // passos à frente (sem cair)
-  const acoes = [0, sim.FRENTE, sim.TRAS, sim.ESQUERDA, sim.DIREITA, sim.PULO, sim.FRENTE | sim.PULO, sim.TRAS | sim.PULO, sim.ESQUERDA | sim.PULO, sim.DIREITA | sim.PULO];
-  const c = sim.novoCoelho(p);
-  const g = sim.gravador();
-  while (!c.chegou && c.passo < 60 * 40) {
-    let melhor = 0, melhorFolga = -1;
-    for (const a of acoes) {
-      const k = sim.copiarCoelho(c);
-      let folga = 0;
-      for (let i = 0; i < 36 && !k.chegou; i++) {
-        sim.passo(k, i < 6 ? a : 0, p);
-        folga++;
+  // as duas (a segunda, o campo 7 × 7, desde 21/11/2026)
+  for (const id of sim.IDS_DA_SOBREVIVENCIA) {
+    const p = sim.PERCURSOS[id];
+    const meio = p.comprimento / 2;
+    // o piloto da sobrevivência do teste: a cada bloco de 6 passos, a ação que deixa o coelho em pé por mais tempo olhando 30
+    // passos à frente (sem cair)
+    const acoes = [0, sim.FRENTE, sim.TRAS, sim.ESQUERDA, sim.DIREITA, sim.PULO, sim.FRENTE | sim.PULO, sim.TRAS | sim.PULO, sim.ESQUERDA | sim.PULO, sim.DIREITA | sim.PULO];
+    const c = sim.novoCoelho(p);
+    const g = sim.gravador();
+    while (!c.chegou && c.passo < 60 * 40) {
+      let melhor = 0, melhorFolga = -1;
+      for (const a of acoes) {
+        const k = sim.copiarCoelho(c);
+        let folga = 0;
+        for (let i = 0; i < 36 && !k.chegou; i++) {
+          sim.passo(k, i < 6 ? a : 0, p);
+          folga++;
+        }
+        const centro = -Math.abs(k.x) - Math.abs(k.z - meio);
+        const nota = folga * 10 + (k.chegou ? 0 : centro);
+        if (nota > melhorFolga) {
+          melhorFolga = nota;
+          melhor = a;
+        }
       }
-      const centro = -Math.abs(k.x) - Math.abs(k.z - 5);
-      const nota = folga * 10 + (k.chegou ? 0 : centro);
-      if (nota > melhorFolga) {
-        melhorFolga = nota;
-        melhor = a;
+      for (let i = 0; i < 6 && !c.chegou; i++) {
+        g.anotar(melhor);
+        sim.passo(c, melhor, p);
       }
     }
-    for (let i = 0; i < 6 && !c.chegou; i++) {
-      g.anotar(melhor);
-      sim.passo(c, melhor, p);
-    }
+    assert.ok(c.passo > 60 * 10, `${id}: aguentou ${c.passo / 60} s`);
+    // e o servidor refaz igual
+    const r = sim.refazer(p, g.entradas.length ? g.entradas : [1, 0]);
+    if (c.chegou) assert.equal(r.chegouEm, c.chegouEm);
   }
-  assert.ok(c.passo > 60 * 10, `aguentou ${c.passo / 60} s`);
-  // e o servidor refaz igual
-  const r = sim.refazer(p, g.entradas.length ? g.entradas : [1, 0]);
-  if (c.chegou) assert.equal(r.chegouEm, c.chegouEm);
 });
 
 test('os coelhos-robô do Solo: o planejador com erro chega, mais devagar que o piloto, e as entradas são válidas', async () => {

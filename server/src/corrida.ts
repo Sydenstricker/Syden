@@ -45,6 +45,20 @@ export const PISTAS: Record<
     voltas: 3, comprimento: 3204, linha: [220, 180], caixas: 2, meiaLargura: 30,
     marcos: [[505, 214], [774, 155], [893, 386], [648, 417], [738, 620], [824, 851], [547, 872], [299, 873], [145, 674], [190, 427]],
   },
+  // a Copa do Milho (21/11/2026): a Fazenda tem as PORTEIRAS que abrem e fecham pelo passo da corrida; o servidor não as
+  // conhece (como não conhece o chão), e o fantasma de quem bate nelas só fica mais lento
+  'fazenda-1': {
+    voltas: 3, comprimento: 3098, linha: [230, 200], caixas: 2, meiaLargura: 32,
+    marcos: [[504, 149], [779, 198], [844, 426], [590, 508], [718, 699], [832, 876], [562, 881], [341, 801], [144, 697], [176, 443]],
+  },
+  'brejo-1': {
+    voltas: 3, comprimento: 3010, linha: [240, 170], caixas: 2, meiaLargura: 28,
+    marcos: [[509, 140], [777, 170], [814, 369], [870, 540], [842, 793], [713, 908], [483, 787], [247, 864], [184, 650], [135, 409]],
+  },
+  'vulcao-1': {
+    voltas: 3, comprimento: 3251, linha: [250, 160], caixas: 2, meiaLargura: 30,
+    marcos: [[541, 198], [821, 177], [805, 414], [880, 648], [718, 881], [503, 776], [319, 651], [222, 843], [142, 585], [246, 360]],
+  },
 };
 
 /** Quanto de cada volta o kart tem de andar, no mínimo (o resto é o atalho que se aceita). */

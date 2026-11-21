@@ -1082,3 +1082,210 @@ test('o recorde do Solo é por fase e dificuldade; o normal fica na variante de 
   assert.ok(pub.recorde);
   assert.equal(db.recordeDoSolo(anaId, 'briga', 'horta@facil')?.valor, pub.recorde!.ms);
 });
+
+// ---------------- O GOLPE DE CADA CHEFE E O ELEMENTO DE CADA FASE (21/11/2026) ----------------
+type IniX = Ini & { ataque: number; proximoAtaque: number; alvoX: number; faixa: number };
+interface El {
+  id: number;
+  tipo: string;
+  x: number;
+  y: number;
+  estado: number;
+  lado: number;
+  dono?: number;
+}
+const elementosDe = (m: ReturnType<typeof comecar>) => (m.interno as unknown as { _elementos: El[] })._elementos;
+/** Os bichos ficam parados, sem atacar (os do cenário e o chefe são testados sozinhos). */
+const congelar = (m: ReturnType<typeof comecar>, menos?: Ini) => {
+  for (const i of m.interno._inimigos.values()) {
+    if (i === menos || i.estado === 'morto' || i.estado === 'caido') continue;
+    i.estado = 'esperando';
+    (i as unknown as { ate: number }).ate = agora + 1e9;
+  }
+};
+/** O chefe da fase, sozinho na arena dele, pronto para o próximo ataque. */
+function chefeSozinho(fase: string, tipo: string) {
+  const m = comecar([anaId], comunidade.id, () => 0.5, { fase });
+  passarOndas(m, 4);
+  const chefe = esperar(m, (i) => i.tipo === tipo && i.estado === 'andando') as IniX;
+  for (const i of m.interno._inimigos.values()) if (i !== chefe) i.estado = 'morto';
+  return { m, chefe, j: m.interno._jogadores.get(anaId)! };
+}
+
+test('cada chefe novo tem o golpe dele; o texugo continua sem', () => {
+  assert.equal(mod.BICHOS['rei-cogumelo'].golpe, 'esporos');
+  assert.equal(mod.BICHOS['alpaca-rei'].golpe, 'coice');
+  assert.equal(mod.BICHOS.yeti.golpe, 'onda');
+  assert.equal(mod.BICHOS.dragao.golpe, 'sopro');
+  assert.equal((mod.BICHOS.texugo as { golpe?: string }).golpe, undefined);
+});
+
+test('os esporos do rei-cogumelo: o círculo pisca debaixo de quem está ali; ficar leva, sair escapa', () => {
+  const caso = (foge: boolean) => {
+    const { m, chefe, j } = chefeSozinho('floresta', 'rei-cogumelo');
+    const [x, y] = [chefe.x - 70, chefe.y];
+    teleportar(m, anaId, x, y);
+    m.andar(PASSO_MS);
+    chefe.ataque = 1;
+    chefe.proximoAtaque = 0;
+    m.andar(PASSO_MS);
+    assert.equal(chefe.estado, 'prep-esporos');
+    const circulo = elementosDe(m).find((e) => e.tipo === 'esporo' && Math.abs(e.x - x) < 3);
+    assert.ok(circulo, 'o círculo debaixo da Ana');
+    assert.ok((m.quadros.at(-1)!.el as number[][]).some((l) => l[1] === 4 && l[4] === 1), 'o círculo vai no quadro');
+    // fugir para um lugar longe de todos os círculos (o segundo é sorteado quando a turma é uma pessoa só)
+    const circulos = elementosDe(m).filter((e) => e.tipo === 'esporo');
+    const longe = [x - 60, x + 60, x - 120].find((cx) => circulos.every((e) => Math.abs(e.x - cx) > 40))!;
+    j.invulAte = 0;
+    const hp = j.hp;
+    for (let t = 0; t < 1600; t += PASSO_MS) {
+      // o tronco da floresta não entra neste teste
+      for (let k = elementosDe(m).length - 1; k >= 0; k--) if (elementosDe(m)[k].tipo === 'tronco') elementosDe(m).splice(k, 1);
+      teleportar(m, anaId, foge ? longe : x, y);
+      m.andar(PASSO_MS);
+    }
+    m.jogo.parar!();
+    return hp - j.hp;
+  };
+  assert.ok(caso(false) > 0, 'parada no círculo: leva');
+  assert.equal(caso(true), 0, 'fora do círculo: escapa');
+});
+
+test('o coice da alpaca-rei: ela vira de costas para quem está perto e chuta; quem passa para a frente escapa', () => {
+  const caso = (foge: boolean) => {
+    const { m, chefe, j } = chefeSozinho('deserto', 'alpaca-rei');
+    const x = chefe.x - 36, y = chefe.y;
+    teleportar(m, anaId, x, y);
+    chefe.proximoAtaque = 0;
+    m.andar(PASSO_MS);
+    assert.equal(chefe.estado, 'prep-coice');
+    assert.equal(chefe.lado, 1, 'de costas para a Ana, que está à esquerda');
+    j.invulAte = 0;
+    const hp = j.hp;
+    for (let t = 0; t < 1300; t += PASSO_MS) {
+      teleportar(m, anaId, foge ? chefe.x + 40 : x, y);
+      m.andar(PASSO_MS);
+    }
+    m.jogo.parar!();
+    return hp - j.hp;
+  };
+  assert.ok(caso(false) > 0, 'atrás dela: leva');
+  assert.equal(caso(true), 0, 'na frente dela: escapa');
+});
+
+test('a onda de choque do yeti: o anel corre pelo chão; quem fica leva, quem pula por cima escapa', () => {
+  const caso = (pula: boolean) => {
+    const { m, chefe, j } = chefeSozinho('neve', 'yeti');
+    const x = chefe.x - 70, y = chefe.y;
+    teleportar(m, anaId, x, y);
+    chefe.ataque = 1;
+    chefe.proximoAtaque = 0;
+    m.andar(PASSO_MS);
+    assert.equal(chefe.estado, 'prep-onda');
+    j.invulAte = 0;
+    const hp = j.hp;
+    let noAr = 0;
+    for (let t = 0; t < 3000; t += PASSO_MS) {
+      const subir = pula && chefe.estado === 'onda' && noAr < 900;
+      if (subir) noAr += PASSO_MS;
+      j.livreAte = agora + 1000;
+      m.pos(anaId, { x, y, z: subir ? 24 : 0 });
+      m.andar(PASSO_MS);
+    }
+    m.jogo.parar!();
+    return hp - j.hp;
+  };
+  assert.ok(caso(false) > 0, 'no chão: leva');
+  assert.equal(caso(true), 0, 'no ar: escapa');
+});
+
+test('o tronco da floresta: avisa na faixa de alguém, rola, derruba quem fica na faixa e os bichos do caminho', () => {
+  const caso = (foge: boolean) => {
+    const m = comecar([anaId], comunidade.id, () => 0.5, { fase: 'floresta' });
+    const j = m.interno._jogadores.get(anaId)!;
+    let tronco: El | undefined;
+    for (let t = 0; t < 14_000 && !tronco; t += PASSO_MS) {
+      congelar(m);
+      j.invulAte = agora + 10_000;
+      teleportar(m, anaId, 160, 30);
+      m.andar(PASSO_MS);
+      tronco = elementosDe(m).find((e) => e.tipo === 'tronco');
+    }
+    assert.ok(tronco, 'o tronco apareceu');
+    assert.equal(tronco!.estado, 1, 'primeiro o aviso');
+    assert.equal(tronco!.y, 30, 'na faixa da Ana');
+    // um bicho no caminho dele
+    const bicho = [...m.interno._inimigos.values()].find((i) => i.estado === 'esperando')!;
+    const hpBicho = bicho.hp;
+    j.invulAte = 0;
+    const hp = j.hp;
+    for (let t = 0; t < 4500; t += PASSO_MS) {
+      congelar(m, bicho);
+      if (bicho.estado !== 'caido' && bicho.estado !== 'morto') {
+        bicho.estado = 'esperando';
+        bicho.x = tronco!.lado > 0 ? 230 : 90;
+        bicho.y = 30;
+      }
+      teleportar(m, anaId, 160, foge ? 52 : 30);
+      m.andar(PASSO_MS);
+    }
+    m.jogo.parar!();
+    if (!foge) assert.ok(bicho.hp < hpBicho, 'o bicho do caminho levou');
+    return hp - j.hp;
+  };
+  assert.ok(caso(false) > 0, 'na faixa: leva');
+  assert.equal(caso(true), 0, 'fora da faixa: escapa');
+});
+
+test('o rodamoinho do deserto anda pela arena e empurra quem encosta', () => {
+  const m = comecar([anaId], comunidade.id, () => 0.5, { fase: 'deserto' });
+  const j = m.interno._jogadores.get(anaId)!;
+  m.andar(PASSO_MS);
+  const rm = elementosDe(m).find((e) => e.tipo === 'rodamoinho');
+  assert.ok(rm, 'um rodamoinho na arena');
+  const x0 = rm!.x;
+  m.andar(1000);
+  assert.notEqual(rm!.x, x0, 'ele anda');
+  j.invulAte = 0;
+  const hp = j.hp;
+  const antes = m.quadros.length;
+  for (let t = 0; t < 800; t += PASSO_MS) {
+    congelar(m);
+    teleportar(m, anaId, rm!.x + 4, rm!.y);
+    m.andar(PASSO_MS);
+  }
+  assert.equal(hp - j.hp, mod.RODAMOINHO.dano, 'um empurrão, pouco dano');
+  const p = m.quadros
+    .slice(antes)
+    .flatMap((q) => q.e as unknown[][])
+    .find((e) => e[1] === 'p' && e[2] === anaId);
+  assert.ok(p && p[4] === 0 && p[5] === 1, 'empurra para longe do centro, sem derrubar');
+  m.jogo.parar!();
+});
+
+test('as grades de espinhos do castelo: piscam antes, sobem em ciclo e pegam coelho e bicho', () => {
+  const m = comecar([anaId], comunidade.id, () => 0.5, { fase: 'castelo' });
+  const j = m.interno._jogadores.get(anaId)!;
+  m.andar(PASSO_MS);
+  const grades = (m.quadros.at(-1)!.el as number[][]).filter((l) => l[1] === 3);
+  assert.equal(grades.length, 3, 'as três da arena de agora');
+  const [, , gx, gy] = grades[0];
+  const bicho = esperar(m, (i) => i.estado === 'andando' || i.estado === 'entrando');
+  const estados = new Set<number>();
+  j.invulAte = 0;
+  const hp = j.hp;
+  const hpBicho = bicho.hp;
+  for (let t = 0; t < mod.ESPINHOS.ciclo + 200; t += PASSO_MS) {
+    congelar(m);
+    bicho.x = gx;
+    bicho.y = gy;
+    if (bicho.estado !== 'dor') bicho.estado = 'esperando';
+    teleportar(m, anaId, gx, gy);
+    m.andar(PASSO_MS);
+    estados.add((m.quadros.at(-1)!.el as number[][]).find((l) => l[2] === gx && l[3] === gy)![4]);
+  }
+  assert.deepEqual([...estados].sort(), [0, 1, 2], 'quieta, piscando e em pé');
+  assert.equal(hp - j.hp, mod.ESPINHOS.dano, 'a Ana leva uma vez por subida');
+  assert.ok(bicho.hp < hpBicho, 'o bicho também');
+  m.jogo.parar!();
+});

@@ -17,7 +17,7 @@ export const CHAO = 138;
  * nela, e acertá-la tira AMIGO_PENA pontos e zera o combo. A CENOURA é o alvo da RODADA BÔNUS (20/11/2026), lançada do chão
  * para cima, entre a 3ª e a 4ª onda, sem limite de munição.
  */
-export type TipoDePraga = 'corvo' | 'gafanhoto' | 'joaninha' | 'cenoura';
+export type TipoDePraga = 'corvo' | 'gafanhoto' | 'joaninha' | 'cenoura' | 'mosca' | 'toupeira';
 
 /** Uma praga: quando aparece (ms desde o começo da onda), de onde sai, a velocidade e a ondulação, e quanto fica na tela. */
 export interface Praga {
@@ -39,14 +39,23 @@ export interface Praga {
 }
 
 /** O raio de acerto, em unidades: o gafanhoto é menor e vale mais. */
-export const RAIO: Record<TipoDePraga, number> = { corvo: 12, gafanhoto: 9, joaninha: 8, cenoura: 9 };
-export const PONTOS: Record<TipoDePraga, number> = { corvo: 100, gafanhoto: 150, joaninha: 0, cenoura: 50 };
+export const RAIO: Record<TipoDePraga, number> = { corvo: 12, gafanhoto: 9, joaninha: 8, cenoura: 9, mosca: 7, toupeira: 10 };
+export const PONTOS: Record<TipoDePraga, number> = { corvo: 100, gafanhoto: 150, joaninha: 0, cenoura: 50, mosca: 200, toupeira: 175 };
 /** Acertar a joaninha custa isto (e zera o combo). */
 export const AMIGO_PENA = 200;
 /** O bicho amigo: não se atira nele. */
 export const ehAmigo = (p: Praga) => p.tipo === 'joaninha';
 /** As pragas de verdade da onda (sem o amigo): é delas que se conta a onda perfeita. */
-export const ehPraga = (p: Praga) => p.tipo === 'corvo' || p.tipo === 'gafanhoto';
+export const ehPraga = (p: Praga) => p.tipo === 'corvo' || p.tipo === 'gafanhoto' || p.tipo === 'mosca' || p.tipo === 'toupeira';
+/**
+ * AS PRAGAS NOVAS (21/11/2026, o lote D): a MOSCA (pequena, rápida, em zigue-zague apertado; da 3ª onda em diante) e a TOUPEIRA
+ * (sai da terra, olha em volta um instante e se esconde de novo, no mesmo lugar; da 2ª onda em diante). Elas entram no FIM da
+ * lista do sorteio, depois da joaninha: as pragas e as joaninhas de cada onda são as mesmas de antes.
+ */
+export const toupeirasDaOnda = (n: number) => (n >= 2 ? (n >= 5 ? 2 : 1) : 0);
+export const moscasDaOnda = (n: number) => (n >= 3 ? (n >= 5 ? 2 : 1) : 0);
+/** Quanto tempo a toupeira leva para subir e para descer (ms). */
+export const TOUPEIRA_SOBE = 250;
 /** Depois desta onda vem a RODADA BÔNUS. */
 export const BONUS_DEPOIS_DA_ONDA = 3;
 /** Quantas cenouras sobem na rodada bônus. */
@@ -73,7 +82,13 @@ export function posicao(p: Praga, ms: number): { x: number; y: number } | null {
   const s = (ms - p.t) / 1000;
   // a cenoura do bônus: lançada para cima, e a gravidade (amp é a metade dela) a traz de volta
   if (p.tipo === 'cenoura') return { x: p.x0 + p.vx * s, y: p.y0 + p.vy * s + p.amp * s * s };
-  const onda = p.tipo === 'corvo' || p.tipo === 'joaninha' ? Math.sin(s * p.freq * 2 * Math.PI) : -Math.abs(Math.sin(s * p.freq * Math.PI));
+  // a toupeira: sobe da terra (amp é a altura), fica, e desce de volta, sempre no mesmo lugar
+  if (p.tipo === 'toupeira') {
+    const ms2 = ms - p.t;
+    const fora = Math.max(0, Math.min(1, ms2 / TOUPEIRA_SOBE, (p.vida - ms2) / TOUPEIRA_SOBE));
+    return { x: p.x0, y: p.y0 - p.amp * fora };
+  }
+  const onda = p.tipo === 'corvo' || p.tipo === 'joaninha' || p.tipo === 'mosca' ? Math.sin(s * p.freq * 2 * Math.PI) : -Math.abs(Math.sin(s * p.freq * Math.PI));
   return { x: p.x0 + p.vx * s, y: p.y0 + p.vy * s + p.amp * onda };
 }
 
@@ -104,9 +119,11 @@ export function pragaAtingida(pragas: Praga[], abatidas: ReadonlySet<number>, x:
   return melhor;
 }
 
-/** Quantas pragas tem a onda `n` (de 1 a ONDAS), e a munição dela. */
+/** Quantas pragas tem a onda `n` (de 1 a ONDAS; no "até errar três", sem fim), e a munição dela. */
 export const pragasDaOnda = (n: number) => 4 + n * 2;
-export const municaoDaOnda = (n: number) => Math.ceil(pragasDaOnda(n) * 1.5);
+/** As pragas de verdade da onda, contando as novas (21/11/2026): é delas que sai a munição. */
+export const todasAsPragasDaOnda = (n: number) => pragasDaOnda(n) + toupeirasDaOnda(n) + moscasDaOnda(n);
+export const municaoDaOnda = (n: number) => Math.ceil(todasAsPragasDaOnda(n) * 1.5);
 
 /**
  * As pragas da onda `n`, sorteadas: cada onda mais rápida e mais cheia. Os corvos cruzam o céu de um lado ao outro, com
@@ -172,6 +189,42 @@ export function sortearOnda(n: number, aleatorio: () => number = Math.random): P
         vy: 0,
         amp: 5 + aleatorio() * 8,
         freq: 0.8 + aleatorio() * 0.6,
+        vida,
+      });
+    }
+  }
+  // AS PRAGAS NOVAS (21/11/2026): depois de tudo (as de antes ficam iguais), as toupeiras e as moscas da onda
+  if (pragas.length > 0) {
+    const fimDasPragas = Math.max(...pragas.map((p) => p.t + p.vida));
+    for (let k = 0; k < toupeirasDaOnda(n); k++) {
+      const vida = Math.max(900, Math.round(2400 / ritmo));
+      const t0 = 800 + aleatorio() * Math.max(0, fimDasPragas - vida - 800);
+      pragas.push({
+        tipo: 'toupeira',
+        t: Math.round(t0),
+        x0: 40 + aleatorio() * (LARGURA - 80),
+        y0: CHAO + 12,
+        vx: 0,
+        vy: 0,
+        amp: 18 + aleatorio() * 6,
+        freq: 0,
+        vida,
+      });
+    }
+    for (let k = 0; k < moscasDaOnda(n); k++) {
+      const daEsquerda = aleatorio() < 0.5;
+      const vida = Math.round(2200 / ritmo);
+      const t0 = 600 + aleatorio() * Math.max(0, fimDasPragas - vida - 600);
+      const distancia = LARGURA + 40;
+      pragas.push({
+        tipo: 'mosca',
+        t: Math.round(t0),
+        x0: daEsquerda ? -20 : LARGURA + 20,
+        y0: 30 + aleatorio() * 60,
+        vx: ((daEsquerda ? 1 : -1) * distancia) / (vida / 1000),
+        vy: 0,
+        amp: 12 + aleatorio() * 10,
+        freq: 2.2 + aleatorio() * 0.8,
         vida,
       });
     }

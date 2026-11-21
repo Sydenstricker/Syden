@@ -53,13 +53,15 @@ export const ATIVO: Record<Golpe, [number, number]> = {
   especial: [0, 1],
 };
 // os bichos e as fases: a mesma cópia do servidor (fases.ts ↔ server/src/briga-fases.ts)
-import { bicho, CORPO, TIPOS, type TipoDeInimigo } from './fases';
+import { bicho, COICE, CORPO, ELEMENTOS, ESPINHOS, ESPOROS, GELO, ONDA_DE_CHOQUE, RODAMOINHO, TIPOS, TRONCO, distanciaDaOnda, raioDaOnda, type TipoDeInimigo } from './fases';
 export { CORPO, TIPOS, type TipoDeInimigo };
 export const ESTADOS = [
   'entrando', 'andando', 'esperando', 'preparando', 'atacando', 'recuperando', 'dor', 'caido', 'levantando', 'morto',
   'rondando', 'mirando', 'mergulhando', 'subindo', 'prep-investida', 'investida', 'cansado', 'prep-pancada', 'pancada',
   // as fases novas (06/11/2026): o pulo de quem cai em cima, e a rajada do chefe que atira
   'saltando', 'prep-sopro', 'sopro',
+  // o golpe próprio de cada chefe (21/11/2026): os esporos, o coice e a onda de choque
+  'prep-esporos', 'esporos', 'prep-coice', 'coice', 'prep-onda', 'onda',
 ] as const;
 export type EstadoDoInimigo = (typeof ESTADOS)[number];
 // a ordem é o código que vai na rede: ação nova entra no FIM ('arrancada', 09/11/2026)
@@ -136,6 +138,9 @@ export interface Coelho {
   /** O relógio do coelho (ms). */
   relogio: number;
   hp: number;
+  /** A velocidade de andar de agora (px/s): no gelo ela chega aos poucos à que as setas pedem (21/11/2026). */
+  gx: number;
+  gy: number;
 }
 
 export const novoCoelho = (x: number, y: number): Coelho => ({
@@ -159,6 +164,8 @@ export const novoCoelho = (x: number, y: number): Coelho => ({
   volta: 0,
   relogio: 0,
   hp: VIDA,
+  gx: 0,
+  gy: 0,
 });
 
 /** O que um passo do coelho fez de novo: um golpe que começou (vai ao servidor na hora). */
@@ -204,7 +211,7 @@ function proximoSoco(c: Coelho): Golpe {
  * UM PASSO DO COELHO (dt em segundos). `arena` limita o x. Os apertos de `cmd` são consumidos aqui. Devolve o golpe que
  * começou, para o laço mandá-lo na hora (o servidor só aceita acerto de golpe que já sabe que começou).
  */
-export function passoDoCoelho(c: Coelho, cmd: Comandos, dt: number, arena: [number, number]): Novidade {
+export function passoDoCoelho(c: Coelho, cmd: Comandos, dt: number, arena: [number, number], gelo?: (x: number, y: number) => boolean): Novidade {
   const ms = dt * 1000;
   c.relogio += ms;
   c.t += ms;
@@ -214,7 +221,26 @@ export function passoDoCoelho(c: Coelho, cmd: Comandos, dt: number, arena: [numb
   cmd.arrancada = 0;
   const mx = (cmd.direita ? 1 : 0) - (cmd.esquerda ? 1 : 0);
   const my = (cmd.baixo ? 1 : 0) - (cmd.cima ? 1 : 0);
+  /** Anda pelas setas; no GELO (a neve, 21/11/2026), a velocidade chega aos poucos e o coelho escorrega ao soltar. */
+  const andar = () => {
+    const qx = mx * VEL_X, qy = my * VEL_Y;
+    if (gelo?.(c.x, c.y)) {
+      const k = Math.min(1, dt * GELO.aderencia);
+      c.gx += (qx - c.gx) * k;
+      c.gy += (qy - c.gy) * k;
+    } else {
+      c.gx = qx;
+      c.gy = qy;
+    }
+    c.x += c.gx * dt;
+    c.y += c.gy * dt;
+  };
+  const parar = () => {
+    c.gx = 0;
+    c.gy = 0;
+  };
 
+  if (c.acao !== 'parado' && c.acao !== 'andando' && c.acao !== 'especial') parar();
   switch (c.acao) {
     case 'dor':
       c.x += c.vx * dt;
@@ -242,8 +268,7 @@ export function passoDoCoelho(c: Coelho, cmd: Comandos, dt: number, arena: [numb
       break;
     case 'especial': {
       // o giro anda e troca de faixa como o coelho parado; cada volta nova pega todo mundo de novo
-      c.x += mx * VEL_X * dt;
-      c.y += my * VEL_Y * dt;
+      andar();
       if (mx) c.lado = mx > 0 ? 1 : -1;
       const volta = Math.min(Math.floor(c.t / GIRO_TICK_MS), Math.ceil(GIRO_MS / GIRO_TICK_MS) - 1);
       if (volta !== c.volta) {
@@ -316,10 +341,9 @@ export function passoDoCoelho(c: Coelho, cmd: Comandos, dt: number, arena: [numb
         comecar(c, 'pulo');
         break;
       }
-      c.x += mx * VEL_X * dt;
-      c.y += my * VEL_Y * dt;
+      andar();
       if (mx) c.lado = mx > 0 ? 1 : -1;
-      const anda = mx !== 0 || my !== 0;
+      const anda = mx !== 0 || my !== 0 || Math.abs(c.gx) > 6 || Math.abs(c.gy) > 6;
       if (anda && c.acao !== 'andando') comecar(c, 'andando');
       else if (!anda && c.acao !== 'parado') comecar(c, 'parado');
     }
@@ -373,7 +397,21 @@ export interface InimigoNaTela {
   /** A faixa do aviso (o mergulho, a investida, o tiro; no pulo, o y da queda) e, no pulo, o x da queda. */
   faixa?: number;
   alvoX?: number;
+  /** Para onde olha, e há quanto tempo (ms) está no estado (o piloto usa no coice e na onda de choque). */
+  lado?: number;
+  ms?: number;
 }
+
+/** Um elemento de cenário, como o quadro o traz (21/11/2026). */
+export interface ElementoNaTela {
+  tipo: (typeof ELEMENTOS)[number];
+  x: number;
+  y: number;
+  estado: number;
+  lado: number;
+}
+/** A linha `el` do quadro vira o elemento. */
+export const elementoDaLinha = (l: number[]): ElementoNaTela => ({ tipo: ELEMENTOS[l[1]] ?? 'tronco', x: l[2], y: l[3], estado: l[4], lado: l[5] });
 
 /** Um tiro no ar, como o quadro o traz. */
 export interface TiroNaTela {
@@ -412,6 +450,8 @@ export interface Quadro {
   t?: number[][];
   /** As cenouras de cura no chão (19/11/2026): [id, grande (1/0), x, y]. */
   c?: number[][];
+  /** Os elementos de cenário (21/11/2026): [id, código em ELEMENTOS, x, y, estado, lado]. */
+  el?: number[][];
   /** Os caixotes (19/11/2026): [id, x, y, vida %, voando (1/0)]. */
   cx?: number[][];
   /** [userId, x, y, z, lado, ação, ms da ação, hp, vidas, pontos, estado (0 em pé, 1 fora, 2 sem vidas), avatar, último golpe aceito] */
@@ -498,7 +538,7 @@ export function misturar(a: number[][], b: number[][], k: number, colunas: numbe
  * Anda até o inimigo mais perto e bate; sem inimigo, anda para a direita (a seta). Pula e dá voadora no corvo que está
  * no alto. Só para o e2e/briga.mjs terminar a fase (window.brigaPilotoAutomatico, ver JogoBriga.tsx).
  */
-export function pilotoAutomatico(c: Coelho, inimigos: InimigoNaTela[], cmd: Comandos, relogio: number, tiros: TiroNaTela[] = []) {
+export function pilotoAutomatico(c: Coelho, inimigos: InimigoNaTela[], cmd: Comandos, relogio: number, tiros: TiroNaTela[] = [], elementos: ElementoNaTela[] = []) {
   cmd.esquerda = cmd.direita = cmd.cima = cmd.baixo = false;
   const vivos = inimigos.filter((i) => i.estado !== 'morto' && i.estado !== 'caido' && i.estado !== 'levantando');
   const alvo = vivos.sort((a, b) => Math.abs(a.x - c.x) + Math.abs(a.y - c.y) - (Math.abs(b.x - c.x) + Math.abs(b.y - c.y)))[0];
@@ -525,8 +565,44 @@ export function pilotoAutomatico(c: Coelho, inimigos: InimigoNaTela[], cmd: Coma
     else cmd.direita = true;
     return;
   }
+  // OS ELEMENTOS DE CENÁRIO (21/11/2026): a faixa do tronco, o rodamoinho, a grade que pisca, o círculo dos esporos
+  const tronco = elementos.find((e) => e.tipo === 'tronco' && Math.abs(e.y - c.y) < TRONCO.fundo + 8 && (e.estado === 1 || (c.x - e.x) * e.lado > -14));
+  if (tronco) return fugirDaFaixa(tronco.y);
+  const perigo = elementos.find(
+    (e) =>
+      (e.tipo === 'rodamoinho' && Math.abs(e.x - c.x) < RODAMOINHO.raioX + 22 && Math.abs(e.y - c.y) < RODAMOINHO.raioY + 10) ||
+      (e.tipo === 'espinhos' && e.estado !== 0 && Math.abs(e.x - c.x) < ESPINHOS.meiaL + 10 && Math.abs(e.y - c.y) < ESPINHOS.meiaP + 7) ||
+      (e.tipo === 'esporo' && e.estado === 1 && Math.abs(e.x - c.x) < ESPOROS.raioX + 10 && Math.abs(e.y - c.y) < ESPOROS.raioY + 7),
+  );
+  if (perigo) {
+    if (perigo.x >= c.x) cmd.esquerda = true;
+    else cmd.direita = true;
+    if (perigo.tipo !== 'esporo') {
+      if (perigo.y >= c.y && c.y > 6) cmd.cima = true;
+      else cmd.baixo = true;
+    }
+    return;
+  }
   // o chefe avisa antes: sai da faixa da investida e de perto da pancada
   const chefe = vivos.find((i) => bicho(i.tipo).comp === 'chefe');
+  // a onda de choque: pula quando o anel está chegando
+  if (chefe && (chefe.estado === 'onda' || chefe.estado === 'prep-onda')) {
+    const r = chefe.estado === 'onda' ? raioDaOnda((chefe.ms ?? 0) + 200) : 0;
+    const d = distanciaDaOnda(c.x - (chefe.alvoX ?? chefe.x), c.y - (chefe.faixa ?? chefe.y));
+    if (chefe.estado === 'onda' && d - r > -4 && d - r < 34 && (c.acao === 'parado' || c.acao === 'andando')) cmd.pulo = true;
+    return;
+  }
+  // o coice: sai de trás dela
+  if (chefe && chefe.estado === 'prep-coice') {
+    const atras = (c.x - chefe.x) * -(chefe.lado ?? 1);
+    if (atras > -8 && atras < COICE.alcance + 16 && Math.abs(chefe.y - c.y) < COICE.fundo + 8) {
+      if (c.x >= chefe.x) cmd.direita = true;
+      else cmd.esquerda = true;
+      if (chefe.y >= c.y && c.y > 6) cmd.cima = true;
+      else cmd.baixo = true;
+      return;
+    }
+  }
   if (chefe && (chefe.estado === 'prep-investida' || chefe.estado === 'investida') && Math.abs(chefe.y - c.y) < 18) {
     if (chefe.y >= c.y && c.y > 4) cmd.cima = true;
     else cmd.baixo = true;

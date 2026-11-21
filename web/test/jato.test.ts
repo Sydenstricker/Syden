@@ -278,3 +278,42 @@ test('a eliminação: sai a última a passar pela linha de cada volta, e a últi
   assert.equal(e.passo(30, [a]), null);
   assert.deepEqual(e.fora, [-100, -101]);
 });
+
+test('os perigos (21/11/2026): o meteoro vai e volta e pega quem encosta; o laser só pega ligado; as pistas antigas não têm nenhum', async () => {
+  const { ASTEROIDES, AVENIDA, ladoDoMeteoro, laserLigado, perigoQueAtinge, CICLO_DO_LASER, CICLO_DO_METEORO, COPAS_DO_JATO } = await import('../src/jato/pista');
+  for (const id of ['cidade-1', 'orbita-1', 'nuvens-1', 'aurora-1', 'tempestade-1']) {
+    assert.equal(PISTAS_DO_JATO.find((d) => d.id === id)!.perigos, undefined, `${id}: a física de antes, os recordes valem`);
+  }
+  for (const pistasDaCopa of Object.values(COPAS_DO_JATO)) for (const id of pistasDaCopa) assert.ok(NO_SERVIDOR[id], id);
+  // o meteoro: o mesmo lugar no mesmo passo, e passa pela pista inteira de um lado ao outro
+  const p = pistas.get(ASTEROIDES.id)!;
+  const m = ASTEROIDES.perigos![0];
+  const lados = Array.from({ length: CICLO_DO_METEORO }, (_, n) => ladoDoMeteoro(m, ASTEROIDES.meiaLargura, n));
+  assert.ok(Math.min(...lados) < -ASTEROIDES.meiaLargura * 0.8 && Math.max(...lados) > ASTEROIDES.meiaLargura * 0.8);
+  assert.equal(ladoDoMeteoro(m, 38, 17), ladoDoMeteoro(m, 38, 17 + 5 * CICLO_DO_METEORO));
+  const s = m.f * p.comprimento;
+  const l0 = ladoDoMeteoro(m, ASTEROIDES.meiaLargura, 100);
+  assert.equal(perigoQueAtinge(p, s - 5, s, l0, 100), m, 'em cima do meteoro, pega');
+  assert.equal(perigoQueAtinge(p, s - 5, s, l0 + 30 * (l0 > 0 ? -1 : 1), 100), null, 'longe dele, não');
+  // a nave encostada leva o dano e freia; o mesmo meteoro não pega de novo no passo seguinte
+  const n = novaNave(p);
+  const q = pontoNaLinha(p, s - 3);
+  let passos = 0;
+  while (Math.abs(ladoDoMeteoro(m, ASTEROIDES.meiaLargura, passos + 1)) > 3) passos++;
+  Object.assign(n, { x: q.x, y: q.y, angulo: Math.atan2(q.dy, q.dx), rumo: Math.atan2(q.dy, q.dx), v: 200, passos, indice: q.indice });
+  passo(n, { ...nada, acelera: true }, p);
+  assert.equal(n.atingido, m);
+  assert.ok(n.energia < ENERGIA_MAXIMA && n.v < 150, `energia ${n.energia}, v ${n.v}`);
+  const e = n.energia;
+  passo(n, { ...nada, acelera: true }, p);
+  assert.equal(n.energia, e, 'o respiro');
+  // o laser: atravessar a linha dele pega só com ele ligado
+  const a = pistas.get(AVENIDA.id)!;
+  const laser = AVENIDA.perigos![0];
+  const sl = laser.f * a.comprimento;
+  const ligado = Array.from({ length: CICLO_DO_LASER }, (_, k) => k).find((k) => laserLigado(laser, k))!;
+  const desligado = Array.from({ length: CICLO_DO_LASER }, (_, k) => k).find((k) => !laserLigado(laser, k))!;
+  assert.equal(perigoQueAtinge(a, sl - 4, sl + 3, 0, ligado), laser);
+  assert.equal(perigoQueAtinge(a, sl - 4, sl + 3, 0, desligado), null);
+  assert.equal(perigoQueAtinge(a, sl + 3, sl + 9, 0, ligado), null, 'só quem cruza a linha');
+});
