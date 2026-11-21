@@ -31,6 +31,9 @@ import * as db from './db.js';
 import type { Definicao } from './minijogo-motor.js';
 
 /** O "prepare-se" antes da largada. */
+/** Os recordes do pomar e do celeiro RECOMEÇARAM em 21/11/2026 (decisão dele): o lote D pôs um bicho novo em cada fase. Os de
+ * antes ficam em 'pomar' e 'celeiro', sem comparar. A horta (nave_recordes) e a campanha não mudaram. */
+export const VARIANTE_DO_RECORDE: Record<string, string> = { pomar: 'pomar-2', celeiro: 'celeiro-2' };
 export const PREPARO_MS = 3000;
 /** O evento não pode estar à frente do passo do servidor mais do que isto (a rede), nem atrás mais que ATRASO. */
 export const FOLGA_PASSOS = 30;
@@ -67,7 +70,8 @@ export function criarNave({ agora = Date.now, aleatorio = Math.random }: { agora
       /** Quem estava na sala no fim: só eles são "a turma" do pódio. */
       let ficaram: Set<number> | null = null;
       let recordeNovo = false;
-      const recordeAntes = !solo ? null : faseDaNave === 'horta' ? db.recordeDaNave(inscritos[0]) : (db.recordeDoSolo(inscritos[0], 'nave', faseDaNave)?.valor ?? null);
+      const varianteDoRecorde = VARIANTE_DO_RECORDE[faseDaNave] ?? faseDaNave;
+      const recordeAntes = !solo ? null : faseDaNave === 'horta' ? db.recordeDaNave(inscritos[0]) : (db.recordeDoSolo(inscritos[0], 'nave', varianteDoRecorde)?.valor ?? null);
       /** A esquadrilha intacta: decidido no fim, com quem ficou. */
       let intacta = false;
       let fechando = false;
@@ -109,7 +113,7 @@ export function criarNave({ agora = Date.now, aleatorio = Math.random }: { agora
           const l = linhas[0];
           if (ficaram.has(inscritos[0]) && l.pontos > 0) {
             recordeNovo =
-              faseDaNave === 'horta' ? db.guardarRecordeDaNave(inscritos[0], l.pontos) : db.guardarRecordeDoSolo(inscritos[0], 'nave', faseDaNave, l.pontos, false).novo;
+              faseDaNave === 'horta' ? db.guardarRecordeDaNave(inscritos[0], l.pontos) : db.guardarRecordeDoSolo(inscritos[0], 'nave', varianteDoRecorde, l.pontos, false).novo;
           }
         } else if (ficaram.size >= 2) {
           for (const l of linhas) {

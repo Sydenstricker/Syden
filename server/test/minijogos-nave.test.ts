@@ -233,7 +233,7 @@ test('a fase curta (19/11/2026): o pomar no Solo, com o chefe novo; o recorde va
   assert.ok(p.terminou());
   const fim = p.estado(anaId);
   assert.equal(fim.jogadores[0].pontos, m.ficha.total(sim.temposDaFase('pomar').fim, true));
-  assert.equal(db.recordeDoSolo(anaId, 'nave', 'pomar')?.valor, fim.jogadores[0].pontos);
+  assert.equal(db.recordeDoSolo(anaId, 'nave', 'pomar-2')?.valor, fim.jogadores[0].pontos);
   // uma fase que não existe vira a horta
   const q = comecar([anaId], 0, { fase: 'lua' });
   assert.equal((q.estado(anaId) as unknown as { faseDaNave: string }).faseDaNave, 'horta');

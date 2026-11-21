@@ -868,14 +868,14 @@ soltando o pó em leque; 250 pontos) e o MORCEGO só no celeiro (bandos de três
 mergulho; 200). Saem de um sorteio À PARTE (`bichosDaFase` nas duas cópias de `nave-sim.ts`): as ondas de antes são as mesmas, e a horta
 não mudou. A CAMPANHA (`'campanha'`): as três fases numa partida só, com o placar somado pela mesma Ficha; o chefe do meio tem 30 s
 (`CAMPANHA_CHEFE`) e só o último fecha a partida; o chão troca com o trecho (`faseNoPasso`) e o nome da fase aparece num letreiro.
-Recorde do Solo na tabela comum (variante `'campanha'`). Os recordes do pomar e do celeiro continuam nas variantes de antes, apesar dos
-bichos novos (a confirmar com ele).
+Recorde do Solo na tabela comum (variante `'campanha'`). Os recordes do pomar e do celeiro RECOMEÇARAM (decisão dele, 21/11/2026) em
+`pomar-2` e `celeiro-2` (`VARIANTE_DO_RECORDE` em minijogo-nave.ts); os de antes ficam guardados, sem comparar.
 
 **A CAÇA, o lote D (21/11/2026):** duas PRAGAS NOVAS no fim da lista do sorteio, nas duas cópias do voo: a TOUPEIRA (da 2ª onda; sai da
 terra no mesmo lugar, olha e se esconde; 175) e a MOSCA (da 3ª; pequena, rápida, em zigue-zague apertado; 200). Contam na onda perfeita
 e na munição (`todasAsPragasDaOnda`). O modo "ATÉ ERRAR TRÊS", só no Solo (`categoria: 'tres-erros'`): as ondas não acabam, sem limite de
 munição e sem rodada bônus; tiro no vazio ou na joaninha é erro, o terceiro acaba a partida, e uma onda inteira sem tiro também. O recorde
-das cinco ondas recomeçou na variante `'pragas'` (a `'bonus'` fica guardada; voltar a ela é decisão dele); o do modo novo é `'tres-erros'`.
+das cinco ondas recomeçou na variante `'pragas'` (a `'bonus'` fica guardada; a nova fica, decisão dele, 21/11/2026); o do modo novo é `'tres-erros'`.
 
 **O RINGUE, o lote D (21/11/2026):** o SEGUNDO CIRCUITO, escolhido na largada (`corpo.circuito`, nas duas abas), com três adversários
 novos de folhas da Briga, cada um com um padrão: o DANÇARINO (diabinho; nunca fecha a guarda alta e troca o lado dela no ritmo dele, a
@@ -901,7 +901,7 @@ tira 2), e por mais 1,8 s o gancho não o pega de novo. O servidor confere o gan
 passado dele (`fimDoGancho`/`ganchoPega`, nas duas cópias das regras). Dois bichos novos, no fim de `TIPOS`: a **ABELHA** (voa por
 cima da água e mergulha na faixa marcada) e o **FANTASMA** (some e aparece; sumido, nada o acerta e ele não acerta ninguém). A mina
 ganhou a sua **sala secreta** (a parede rachada da entrada, com o coração grande). Os **ACHADOS** (baús e segredos, `achadosDa`,
-contados pelo servidor) aparecem no fim. O **HEROICO** (vida ×1,5, +1 de dano, 3 corações), na largada e na sala, vai como
+contados pelo servidor) aparecem no fim. O **HEROICO** (vida ×1,5, +1 de dano, 3 corações), na largada e na sala (vale com a turma também: decisão dele, 21/11/2026), vai como
 `toca-heroico`/`mina-heroico`, com o recorde do Solo à parte (`heroico`, `mina-heroico`). Números chutados contra o piloto.
 
 **O CHEFE, O LOTE D (21/11/2026):** a **ARENA QUE MUDA**: na 2ª e na 3ª fase de cada chefe o chão abre buracos (2 por fase; no
