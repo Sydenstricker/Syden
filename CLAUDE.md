@@ -746,8 +746,7 @@ que assume quem larga, as duas pessoas na MESMA equipe contra robôs (hoje, com 
   7. Os números chutados: o nível 20 da mesa dos Bichos e os preços da lojinha; os preços dos itens e o duelo de 5 cenouras
      do Tabuleiro; o +5 da Festa; a gorjeta da Cozinha.
   8. Quais modos novos entram nas **conquistas da turma** (a Arena, o Relâmpago, as Tocas na sala…: hoje nenhum).
-  9. **Cazaque e uzbeque:** os textos antigos dos jogos tratam por сіз / siz e os novos por сен / sen (a regra do "você");
-     uniformizar. No hebraico, a chave "Você" do placar ficou "אני" (eu), como a 'você' que já existia.
+  9. ~~Cazaque e uzbeque~~: **passados ao informal em 21/11/2026** (decisão dele; o arquivo inteiro, não só os jogos: o cabeçalho mandava сіз/siz). Tadjique, persa, urdu, tâmil e telugo FICAM COMO ESTÃO (decisão dele, mesmo dia): o app no formal, os jogos no informal. No hebraico, a chave "Você" do placar ficou "אני" (eu), como a 'você' que já existia.
   10. Alinhar termos antigos com os novos: no russo, "Pista" era "Полотно" e os novos usam "Трасса"; no montenegrino,
       "Kolovoz" e "Staza".
 - O material de trabalho dos lotes (os relatórios por grupo, com o que cada agente fez, e os scripts de tradução
